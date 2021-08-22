@@ -2,34 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0E833F3E13
-	for <lists+netdev@lfdr.de>; Sun, 22 Aug 2021 07:59:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1B9A3F3E1A
+	for <lists+netdev@lfdr.de>; Sun, 22 Aug 2021 08:14:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231410AbhHVGAa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Aug 2021 02:00:30 -0400
-Received: from out02.smtpout.orange.fr ([193.252.22.211]:31291 "EHLO
-        out.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231153AbhHVGA3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Aug 2021 02:00:29 -0400
+        id S231622AbhHVGOu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Aug 2021 02:14:50 -0400
+Received: from smtp04.smtpout.orange.fr ([80.12.242.126]:42551 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230436AbhHVGOt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Aug 2021 02:14:49 -0400
 Received: from pop-os.home ([90.126.253.178])
         by mwinf5d59 with ME
-        id kVzl2500D3riaq203VzlCp; Sun, 22 Aug 2021 07:59:47 +0200
+        id kWE6250053riaq203WE6su; Sun, 22 Aug 2021 08:14:07 +0200
 X-ME-Helo: pop-os.home
 X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Sun, 22 Aug 2021 07:59:47 +0200
+X-ME-Date: Sun, 22 Aug 2021 08:14:07 +0200
 X-ME-IP: 90.126.253.178
 From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     rmody@marvell.com, GR-Linux-NIC-Dev@marvell.com,
-        davem@davemloft.net, kuba@kernel.org, michael.chan@broadcom.com,
-        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, siva.kallam@broadcom.com,
-        prashant@broadcom.com
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+To:     rajur@chelsio.com, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
         Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] net: broadcom: switch from 'pci_' to 'dma_' API
-Date:   Sun, 22 Aug 2021 07:59:44 +0200
-Message-Id: <c609bc53686fb8326244194a9bfccb75e0aef3f5.1629611777.git.christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] net: chelsio: switch from 'pci_' to 'dma_' API
+Date:   Sun, 22 Aug 2021 08:14:03 +0200
+Message-Id: <0be58ad9de650bfe430a3a02b64f2294457e0669.1629612718.git.christophe.jaillet@wanadoo.fr>
 X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -40,6 +36,10 @@ X-Mailing-List: netdev@vger.kernel.org
 The wrappers in include/linux/pci-dma-compat.h should go away.
 
 The patch has been generated with the coccinelle script below.
+
+It has been hand modified to use 'dma_set_mask_and_coherent()' instead of
+'pci_set_dma_mask()/pci_set_consistent_dma_mask()' when applicable.
+This is less verbose.
 
 It has been compile tested.
 
@@ -165,508 +165,397 @@ Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 If needed, see post from Christoph Hellwig on the kernel-janitors ML:
    https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
 ---
- drivers/net/ethernet/broadcom/bnx2.c          | 43 ++++++------
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 20 +++---
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c |  4 +-
- drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c |  2 +-
- drivers/net/ethernet/broadcom/tg3.c           | 69 +++++++++----------
- 5 files changed, 68 insertions(+), 70 deletions(-)
+ .../net/ethernet/chelsio/cxgb3/cxgb3_main.c   |  10 +-
+ drivers/net/ethernet/chelsio/cxgb3/sge.c      | 101 +++++++++---------
+ .../net/ethernet/chelsio/cxgb4/cxgb4_main.c   |  12 +--
+ drivers/net/ethernet/chelsio/cxgb4/sge.c      |   8 +-
+ .../ethernet/chelsio/cxgb4vf/cxgb4vf_main.c   |  10 +-
+ drivers/net/ethernet/chelsio/cxgb4vf/sge.c    |   8 +-
+ 6 files changed, 63 insertions(+), 86 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnx2.c b/drivers/net/ethernet/broadcom/bnx2.c
-index 89ee1c0e9c79..7acf88696b25 100644
---- a/drivers/net/ethernet/broadcom/bnx2.c
-+++ b/drivers/net/ethernet/broadcom/bnx2.c
-@@ -2730,7 +2730,7 @@ bnx2_alloc_rx_page(struct bnx2 *bp, struct bnx2_rx_ring_info *rxr, u16 index, gf
- 	if (!page)
- 		return -ENOMEM;
- 	mapping = dma_map_page(&bp->pdev->dev, page, 0, PAGE_SIZE,
--			       PCI_DMA_FROMDEVICE);
-+			       DMA_FROM_DEVICE);
- 	if (dma_mapping_error(&bp->pdev->dev, mapping)) {
- 		__free_page(page);
- 		return -EIO;
-@@ -2753,7 +2753,7 @@ bnx2_free_rx_page(struct bnx2 *bp, struct bnx2_rx_ring_info *rxr, u16 index)
- 		return;
- 
- 	dma_unmap_page(&bp->pdev->dev, dma_unmap_addr(rx_pg, mapping),
--		       PAGE_SIZE, PCI_DMA_FROMDEVICE);
-+		       PAGE_SIZE, DMA_FROM_DEVICE);
- 
- 	__free_page(page);
- 	rx_pg->page = NULL;
-@@ -2775,7 +2775,7 @@ bnx2_alloc_rx_data(struct bnx2 *bp, struct bnx2_rx_ring_info *rxr, u16 index, gf
- 	mapping = dma_map_single(&bp->pdev->dev,
- 				 get_l2_fhdr(data),
- 				 bp->rx_buf_use_size,
--				 PCI_DMA_FROMDEVICE);
-+				 DMA_FROM_DEVICE);
- 	if (dma_mapping_error(&bp->pdev->dev, mapping)) {
- 		kfree(data);
- 		return -EIO;
-@@ -2881,7 +2881,7 @@ bnx2_tx_int(struct bnx2 *bp, struct bnx2_napi *bnapi, int budget)
- 		}
- 
- 		dma_unmap_single(&bp->pdev->dev, dma_unmap_addr(tx_buf, mapping),
--			skb_headlen(skb), PCI_DMA_TODEVICE);
-+			skb_headlen(skb), DMA_TO_DEVICE);
- 
- 		tx_buf->skb = NULL;
- 		last = tx_buf->nr_frags;
-@@ -2895,7 +2895,7 @@ bnx2_tx_int(struct bnx2 *bp, struct bnx2_napi *bnapi, int budget)
- 			dma_unmap_page(&bp->pdev->dev,
- 				dma_unmap_addr(tx_buf, mapping),
- 				skb_frag_size(&skb_shinfo(skb)->frags[i]),
--				PCI_DMA_TODEVICE);
-+				DMA_TO_DEVICE);
- 		}
- 
- 		sw_cons = BNX2_NEXT_TX_BD(sw_cons);
-@@ -3003,7 +3003,7 @@ bnx2_reuse_rx_data(struct bnx2 *bp, struct bnx2_rx_ring_info *rxr,
- 
- 	dma_sync_single_for_device(&bp->pdev->dev,
- 		dma_unmap_addr(cons_rx_buf, mapping),
--		BNX2_RX_OFFSET + BNX2_RX_COPY_THRESH, PCI_DMA_FROMDEVICE);
-+		BNX2_RX_OFFSET + BNX2_RX_COPY_THRESH, DMA_FROM_DEVICE);
- 
- 	rxr->rx_prod_bseq += bp->rx_buf_use_size;
- 
-@@ -3044,7 +3044,7 @@ bnx2_rx_skb(struct bnx2 *bp, struct bnx2_rx_ring_info *rxr, u8 *data,
+diff --git a/drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c b/drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c
+index 72af9d2a00ae..538f737af4fa 100644
+--- a/drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c
++++ b/drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c
+@@ -3235,15 +3235,9 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		goto out_disable_device;
  	}
  
- 	dma_unmap_single(&bp->pdev->dev, dma_addr, bp->rx_buf_use_size,
--			 PCI_DMA_FROMDEVICE);
-+			 DMA_FROM_DEVICE);
- 	skb = build_skb(data, 0);
- 	if (!skb) {
- 		kfree(data);
-@@ -3110,7 +3110,7 @@ bnx2_rx_skb(struct bnx2 *bp, struct bnx2_rx_ring_info *rxr, u8 *data,
- 			}
- 
- 			dma_unmap_page(&bp->pdev->dev, mapping_old,
--				       PAGE_SIZE, PCI_DMA_FROMDEVICE);
-+				       PAGE_SIZE, DMA_FROM_DEVICE);
- 
- 			frag_size -= frag_len;
- 			skb->data_len += frag_len;
-@@ -3180,7 +3180,7 @@ bnx2_rx_int(struct bnx2 *bp, struct bnx2_napi *bnapi, int budget)
- 
- 		dma_sync_single_for_cpu(&bp->pdev->dev, dma_addr,
- 			BNX2_RX_OFFSET + BNX2_RX_COPY_THRESH,
--			PCI_DMA_FROMDEVICE);
-+			DMA_FROM_DEVICE);
- 
- 		next_ring_idx = BNX2_RX_RING_IDX(BNX2_NEXT_RX_BD(sw_cons));
- 		next_rx_buf = &rxr->rx_buf_ring[next_ring_idx];
-@@ -5449,7 +5449,7 @@ bnx2_free_tx_skbs(struct bnx2 *bp)
- 			dma_unmap_single(&bp->pdev->dev,
- 					 dma_unmap_addr(tx_buf, mapping),
- 					 skb_headlen(skb),
--					 PCI_DMA_TODEVICE);
-+					 DMA_TO_DEVICE);
- 
- 			tx_buf->skb = NULL;
- 
-@@ -5460,7 +5460,7 @@ bnx2_free_tx_skbs(struct bnx2 *bp)
- 				dma_unmap_page(&bp->pdev->dev,
- 					dma_unmap_addr(tx_buf, mapping),
- 					skb_frag_size(&skb_shinfo(skb)->frags[k]),
--					PCI_DMA_TODEVICE);
-+					DMA_TO_DEVICE);
- 			}
- 			dev_kfree_skb(skb);
- 		}
-@@ -5491,7 +5491,7 @@ bnx2_free_rx_skbs(struct bnx2 *bp)
- 			dma_unmap_single(&bp->pdev->dev,
- 					 dma_unmap_addr(rx_buf, mapping),
- 					 bp->rx_buf_use_size,
--					 PCI_DMA_FROMDEVICE);
-+					 DMA_FROM_DEVICE);
- 
- 			rx_buf->data = NULL;
- 
-@@ -5843,7 +5843,7 @@ bnx2_run_loopback(struct bnx2 *bp, int loopback_mode)
- 		packet[i] = (unsigned char) (i & 0xff);
- 
- 	map = dma_map_single(&bp->pdev->dev, skb->data, pkt_size,
--			     PCI_DMA_TODEVICE);
-+			     DMA_TO_DEVICE);
- 	if (dma_mapping_error(&bp->pdev->dev, map)) {
- 		dev_kfree_skb(skb);
- 		return -EIO;
-@@ -5882,7 +5882,7 @@ bnx2_run_loopback(struct bnx2 *bp, int loopback_mode)
- 
- 	udelay(5);
- 
--	dma_unmap_single(&bp->pdev->dev, map, pkt_size, PCI_DMA_TODEVICE);
-+	dma_unmap_single(&bp->pdev->dev, map, pkt_size, DMA_TO_DEVICE);
- 	dev_kfree_skb(skb);
- 
- 	if (bnx2_get_hw_tx_cons(tx_napi) != txr->tx_prod)
-@@ -5901,7 +5901,7 @@ bnx2_run_loopback(struct bnx2 *bp, int loopback_mode)
- 
- 	dma_sync_single_for_cpu(&bp->pdev->dev,
- 		dma_unmap_addr(rx_buf, mapping),
--		bp->rx_buf_use_size, PCI_DMA_FROMDEVICE);
-+		bp->rx_buf_use_size, DMA_FROM_DEVICE);
- 
- 	if (rx_hdr->l2_fhdr_status &
- 		(L2_FHDR_ERRORS_BAD_CRC |
-@@ -6660,7 +6660,8 @@ bnx2_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 	} else
- 		mss = 0;
- 
--	mapping = dma_map_single(&bp->pdev->dev, skb->data, len, PCI_DMA_TODEVICE);
-+	mapping = dma_map_single(&bp->pdev->dev, skb->data, len,
-+				 DMA_TO_DEVICE);
- 	if (dma_mapping_error(&bp->pdev->dev, mapping)) {
- 		dev_kfree_skb_any(skb);
- 		return NETDEV_TX_OK;
-@@ -6741,7 +6742,7 @@ bnx2_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 	tx_buf = &txr->tx_buf_ring[ring_prod];
- 	tx_buf->skb = NULL;
- 	dma_unmap_single(&bp->pdev->dev, dma_unmap_addr(tx_buf, mapping),
--			 skb_headlen(skb), PCI_DMA_TODEVICE);
-+			 skb_headlen(skb), DMA_TO_DEVICE);
- 
- 	/* unmap remaining mapped pages */
- 	for (i = 0; i < last_frag; i++) {
-@@ -6750,7 +6751,7 @@ bnx2_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 		tx_buf = &txr->tx_buf_ring[ring_prod];
- 		dma_unmap_page(&bp->pdev->dev, dma_unmap_addr(tx_buf, mapping),
- 			       skb_frag_size(&skb_shinfo(skb)->frags[i]),
--			       PCI_DMA_TODEVICE);
-+			       DMA_TO_DEVICE);
+-	if (!pci_set_dma_mask(pdev, DMA_BIT_MASK(64))) {
++	if (!dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64))) {
+ 		pci_using_dac = 1;
+-		err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
+-		if (err) {
+-			dev_err(&pdev->dev, "unable to obtain 64-bit DMA for "
+-			       "coherent allocations\n");
+-			goto out_release_regions;
+-		}
+-	} else if ((err = pci_set_dma_mask(pdev, DMA_BIT_MASK(32))) != 0) {
++	} else if ((err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32))) != 0) {
+ 		dev_err(&pdev->dev, "no usable DMA configuration\n");
+ 		goto out_release_regions;
  	}
+diff --git a/drivers/net/ethernet/chelsio/cxgb3/sge.c b/drivers/net/ethernet/chelsio/cxgb3/sge.c
+index cb5c79c43bc9..175e5b2aa12b 100644
+--- a/drivers/net/ethernet/chelsio/cxgb3/sge.c
++++ b/drivers/net/ethernet/chelsio/cxgb3/sge.c
+@@ -244,8 +244,8 @@ static inline void unmap_skb(struct sk_buff *skb, struct sge_txq *q,
+ 	frag_idx = d->fragidx;
  
- 	dev_kfree_skb_any(skb);
-@@ -8224,15 +8225,15 @@ bnx2_init_board(struct pci_dev *pdev, struct net_device *dev)
- 		persist_dma_mask = dma_mask = DMA_BIT_MASK(64);
- 
- 	/* Configure DMA attributes. */
--	if (pci_set_dma_mask(pdev, dma_mask) == 0) {
-+	if (dma_set_mask(&pdev->dev, dma_mask) == 0) {
- 		dev->features |= NETIF_F_HIGHDMA;
--		rc = pci_set_consistent_dma_mask(pdev, persist_dma_mask);
-+		rc = dma_set_coherent_mask(&pdev->dev, persist_dma_mask);
- 		if (rc) {
- 			dev_err(&pdev->dev,
- 				"pci_set_consistent_dma_mask failed, aborting\n");
- 			goto err_out_unmap;
- 		}
--	} else if ((rc = pci_set_dma_mask(pdev, DMA_BIT_MASK(32))) != 0) {
-+	} else if ((rc = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32))) != 0) {
- 		dev_err(&pdev->dev, "System does not support DMA, aborting\n");
- 		goto err_out_unmap;
- 	}
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 893bdaf03043..980e22e4e0e1 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -672,7 +672,7 @@ static netdev_tx_t bnxt_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 	prod = txr->tx_prod;
- 	tx_buf = &txr->tx_buf_ring[prod];
- 	dma_unmap_single(&pdev->dev, dma_unmap_addr(tx_buf, mapping),
--			 skb_headlen(skb), PCI_DMA_TODEVICE);
-+			 skb_headlen(skb), DMA_TO_DEVICE);
- 	prod = NEXT_TX(prod);
- 
- 	/* unmap remaining mapped pages */
-@@ -681,7 +681,7 @@ static netdev_tx_t bnxt_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 		tx_buf = &txr->tx_buf_ring[prod];
- 		dma_unmap_page(&pdev->dev, dma_unmap_addr(tx_buf, mapping),
- 			       skb_frag_size(&skb_shinfo(skb)->frags[i]),
--			       PCI_DMA_TODEVICE);
-+			       DMA_TO_DEVICE);
- 	}
- 
- tx_free:
-@@ -720,7 +720,7 @@ static void bnxt_tx_int(struct bnxt *bp, struct bnxt_napi *bnapi, int nr_pkts)
- 		}
- 
- 		dma_unmap_single(&pdev->dev, dma_unmap_addr(tx_buf, mapping),
+ 	if (frag_idx == 0 && skb_headlen(skb)) {
+-		pci_unmap_single(pdev, be64_to_cpu(sgp->addr[0]),
 -				 skb_headlen(skb), PCI_DMA_TODEVICE);
++		dma_unmap_single(&pdev->dev, be64_to_cpu(sgp->addr[0]),
 +				 skb_headlen(skb), DMA_TO_DEVICE);
- 		last = tx_buf->nr_frags;
- 
- 		for (j = 0; j < last; j++) {
-@@ -730,7 +730,7 @@ static void bnxt_tx_int(struct bnxt *bp, struct bnxt_napi *bnapi, int nr_pkts)
- 				&pdev->dev,
- 				dma_unmap_addr(tx_buf, mapping),
- 				skb_frag_size(&skb_shinfo(skb)->frags[j]),
--				PCI_DMA_TODEVICE);
-+				DMA_TO_DEVICE);
- 		}
- 		if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_IN_PROGRESS)) {
- 			if (bp->flags & BNXT_FLAG_CHIP_P5) {
-@@ -903,7 +903,7 @@ static inline int bnxt_alloc_rx_page(struct bnxt *bp,
+ 		j = 1;
  	}
  
- 	mapping = dma_map_page_attrs(&pdev->dev, page, offset,
--				     BNXT_RX_PAGE_SIZE, PCI_DMA_FROMDEVICE,
-+				     BNXT_RX_PAGE_SIZE, DMA_FROM_DEVICE,
- 				     DMA_ATTR_WEAK_ORDERING);
- 	if (dma_mapping_error(&pdev->dev, mapping)) {
- 		__free_page(page);
-@@ -1143,7 +1143,7 @@ static struct sk_buff *bnxt_rx_pages(struct bnxt *bp,
- 		}
+@@ -253,9 +253,9 @@ static inline void unmap_skb(struct sk_buff *skb, struct sge_txq *q,
+ 	nfrags = skb_shinfo(skb)->nr_frags;
  
- 		dma_unmap_page_attrs(&pdev->dev, mapping, BNXT_RX_PAGE_SIZE,
--				     PCI_DMA_FROMDEVICE,
-+				     DMA_FROM_DEVICE,
- 				     DMA_ATTR_WEAK_ORDERING);
+ 	while (frag_idx < nfrags && curflit < WR_FLITS) {
+-		pci_unmap_page(pdev, be64_to_cpu(sgp->addr[j]),
++		dma_unmap_page(&pdev->dev, be64_to_cpu(sgp->addr[j]),
+ 			       skb_frag_size(&skb_shinfo(skb)->frags[frag_idx]),
+-			       PCI_DMA_TODEVICE);
++			       DMA_TO_DEVICE);
+ 		j ^= 1;
+ 		if (j == 0) {
+ 			sgp++;
+@@ -355,15 +355,14 @@ static void clear_rx_desc(struct pci_dev *pdev, const struct sge_fl *q,
+ 	if (q->use_pages && d->pg_chunk.page) {
+ 		(*d->pg_chunk.p_cnt)--;
+ 		if (!*d->pg_chunk.p_cnt)
+-			pci_unmap_page(pdev,
+-				       d->pg_chunk.mapping,
+-				       q->alloc_size, PCI_DMA_FROMDEVICE);
++			dma_unmap_page(&pdev->dev, d->pg_chunk.mapping,
++				       q->alloc_size, DMA_FROM_DEVICE);
  
- 		skb->data_len += frag_len;
-@@ -2713,7 +2713,7 @@ static void bnxt_free_tx_skbs(struct bnxt *bp)
- 				dma_unmap_single(&pdev->dev,
- 					dma_unmap_addr(tx_buf, mapping),
- 					dma_unmap_len(tx_buf, len),
--					PCI_DMA_TODEVICE);
-+					DMA_TO_DEVICE);
- 				xdp_return_frame(tx_buf->xdpf);
- 				tx_buf->action = 0;
- 				tx_buf->xdpf = NULL;
-@@ -2738,7 +2738,7 @@ static void bnxt_free_tx_skbs(struct bnxt *bp)
- 			dma_unmap_single(&pdev->dev,
- 					 dma_unmap_addr(tx_buf, mapping),
- 					 skb_headlen(skb),
--					 PCI_DMA_TODEVICE);
-+					 DMA_TO_DEVICE);
+ 		put_page(d->pg_chunk.page);
+ 		d->pg_chunk.page = NULL;
+ 	} else {
+-		pci_unmap_single(pdev, dma_unmap_addr(d, dma_addr),
+-				 q->buf_size, PCI_DMA_FROMDEVICE);
++		dma_unmap_single(&pdev->dev, dma_unmap_addr(d, dma_addr),
++				 q->buf_size, DMA_FROM_DEVICE);
+ 		kfree_skb(d->skb);
+ 		d->skb = NULL;
+ 	}
+@@ -414,8 +413,8 @@ static inline int add_one_rx_buf(void *va, unsigned int len,
+ {
+ 	dma_addr_t mapping;
  
- 			last = tx_buf->nr_frags;
- 			j += 2;
-@@ -2750,7 +2750,7 @@ static void bnxt_free_tx_skbs(struct bnxt *bp)
- 				dma_unmap_page(
- 					&pdev->dev,
- 					dma_unmap_addr(tx_buf, mapping),
--					skb_frag_size(frag), PCI_DMA_TODEVICE);
-+					skb_frag_size(frag), DMA_TO_DEVICE);
- 			}
- 			dev_kfree_skb(skb);
- 		}
-@@ -2817,7 +2817,7 @@ static void bnxt_free_one_rx_ring_skbs(struct bnxt *bp, int ring_nr)
- 			continue;
- 
- 		dma_unmap_page_attrs(&pdev->dev, rx_agg_buf->mapping,
--				     BNXT_RX_PAGE_SIZE, PCI_DMA_FROMDEVICE,
-+				     BNXT_RX_PAGE_SIZE, DMA_FROM_DEVICE,
- 				     DMA_ATTR_WEAK_ORDERING);
- 
- 		rx_agg_buf->page = NULL;
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index 485252d12245..364460ef8db7 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -3366,7 +3366,7 @@ static int bnxt_run_loopback(struct bnxt *bp)
- 		data[i] = (u8)(i & 0xff);
- 
- 	map = dma_map_single(&bp->pdev->dev, skb->data, pkt_size,
--			     PCI_DMA_TODEVICE);
-+			     DMA_TO_DEVICE);
- 	if (dma_mapping_error(&bp->pdev->dev, map)) {
- 		dev_kfree_skb(skb);
- 		return -EIO;
-@@ -3379,7 +3379,7 @@ static int bnxt_run_loopback(struct bnxt *bp)
- 	bnxt_db_write(bp, &txr->tx_db, txr->tx_prod);
- 	rc = bnxt_poll_loopback(bp, cpr, pkt_size);
- 
--	dma_unmap_single(&bp->pdev->dev, map, pkt_size, PCI_DMA_TODEVICE);
-+	dma_unmap_single(&bp->pdev->dev, map, pkt_size, DMA_TO_DEVICE);
- 	dev_kfree_skb(skb);
- 	return rc;
- }
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-index bee6e091a997..c8083df5e0ab 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-@@ -87,7 +87,7 @@ void bnxt_tx_int_xdp(struct bnxt *bp, struct bnxt_napi *bnapi, int nr_pkts)
- 			dma_unmap_single(&pdev->dev,
- 					 dma_unmap_addr(tx_buf, mapping),
- 					 dma_unmap_len(tx_buf, len),
--					 PCI_DMA_TODEVICE);
-+					 DMA_TO_DEVICE);
- 			xdp_return_frame(tx_buf->xdpf);
- 			tx_buf->action = 0;
- 			tx_buf->xdpf = NULL;
-diff --git a/drivers/net/ethernet/broadcom/tg3.c b/drivers/net/ethernet/broadcom/tg3.c
-index 6f82eeaa4b9f..eefb070a68d2 100644
---- a/drivers/net/ethernet/broadcom/tg3.c
-+++ b/drivers/net/ethernet/broadcom/tg3.c
-@@ -6564,10 +6564,8 @@ static void tg3_tx(struct tg3_napi *tnapi)
- 			skb_tstamp_tx(skb, &timestamp);
- 		}
- 
--		pci_unmap_single(tp->pdev,
--				 dma_unmap_addr(ri, mapping),
--				 skb_headlen(skb),
--				 PCI_DMA_TODEVICE);
-+		dma_unmap_single(&tp->pdev->dev, dma_unmap_addr(ri, mapping),
-+				 skb_headlen(skb), DMA_TO_DEVICE);
- 
- 		ri->skb = NULL;
- 
-@@ -6584,10 +6582,10 @@ static void tg3_tx(struct tg3_napi *tnapi)
- 			if (unlikely(ri->skb != NULL || sw_idx == hw_idx))
- 				tx_bug = 1;
- 
--			pci_unmap_page(tp->pdev,
-+			dma_unmap_page(&tp->pdev->dev,
- 				       dma_unmap_addr(ri, mapping),
- 				       skb_frag_size(&skb_shinfo(skb)->frags[i]),
--				       PCI_DMA_TODEVICE);
-+				       DMA_TO_DEVICE);
- 
- 			while (ri->fragmented) {
- 				ri->fragmented = false;
-@@ -6646,8 +6644,8 @@ static void tg3_rx_data_free(struct tg3 *tp, struct ring_info *ri, u32 map_sz)
- 	if (!ri->data)
- 		return;
- 
--	pci_unmap_single(tp->pdev, dma_unmap_addr(ri, mapping),
--			 map_sz, PCI_DMA_FROMDEVICE);
-+	dma_unmap_single(&tp->pdev->dev, dma_unmap_addr(ri, mapping), map_sz,
-+			 DMA_FROM_DEVICE);
- 	tg3_frag_free(skb_size <= PAGE_SIZE, ri->data);
- 	ri->data = NULL;
- }
-@@ -6711,11 +6709,9 @@ static int tg3_alloc_rx_data(struct tg3 *tp, struct tg3_rx_prodring_set *tpr,
- 	if (!data)
+-	mapping = pci_map_single(pdev, va, len, PCI_DMA_FROMDEVICE);
+-	if (unlikely(pci_dma_mapping_error(pdev, mapping)))
++	mapping = dma_map_single(&pdev->dev, va, len, DMA_FROM_DEVICE);
++	if (unlikely(dma_mapping_error(&pdev->dev, mapping)))
  		return -ENOMEM;
  
--	mapping = pci_map_single(tp->pdev,
--				 data + TG3_RX_OFFSET(tp),
--				 data_size,
--				 PCI_DMA_FROMDEVICE);
--	if (unlikely(pci_dma_mapping_error(tp->pdev, mapping))) {
-+	mapping = dma_map_single(&tp->pdev->dev, data + TG3_RX_OFFSET(tp),
-+				 data_size, DMA_FROM_DEVICE);
-+	if (unlikely(dma_mapping_error(&tp->pdev->dev, mapping))) {
- 		tg3_frag_free(skb_size <= PAGE_SIZE, data);
- 		return -EIO;
- 	}
-@@ -6882,8 +6878,8 @@ static int tg3_rx(struct tg3_napi *tnapi, int budget)
- 			if (skb_size < 0)
- 				goto drop_it;
+ 	dma_unmap_addr_set(sd, dma_addr, mapping);
+@@ -453,9 +452,9 @@ static int alloc_pg_chunk(struct adapter *adapter, struct sge_fl *q,
+ 		q->pg_chunk.p_cnt = q->pg_chunk.va + (PAGE_SIZE << order) -
+ 				    SGE_PG_RSVD;
+ 		q->pg_chunk.offset = 0;
+-		mapping = pci_map_page(adapter->pdev, q->pg_chunk.page,
+-				       0, q->alloc_size, PCI_DMA_FROMDEVICE);
+-		if (unlikely(pci_dma_mapping_error(adapter->pdev, mapping))) {
++		mapping = dma_map_page(&adapter->pdev->dev, q->pg_chunk.page,
++				       0, q->alloc_size, DMA_FROM_DEVICE);
++		if (unlikely(dma_mapping_error(&adapter->pdev->dev, mapping))) {
+ 			__free_pages(q->pg_chunk.page, order);
+ 			q->pg_chunk.page = NULL;
+ 			return -EIO;
+@@ -522,9 +521,9 @@ nomem:				q->alloc_failed++;
+ 			dma_unmap_addr_set(sd, dma_addr, mapping);
  
--			pci_unmap_single(tp->pdev, dma_addr, skb_size,
--					 PCI_DMA_FROMDEVICE);
-+			dma_unmap_single(&tp->pdev->dev, dma_addr, skb_size,
-+					 DMA_FROM_DEVICE);
- 
- 			/* Ensure that the update to the data happens
- 			 * after the usage of the old DMA mapping.
-@@ -6908,11 +6904,13 @@ static int tg3_rx(struct tg3_napi *tnapi, int budget)
- 				goto drop_it_no_recycle;
- 
- 			skb_reserve(skb, TG3_RAW_IP_ALIGN);
--			pci_dma_sync_single_for_cpu(tp->pdev, dma_addr, len, PCI_DMA_FROMDEVICE);
-+			dma_sync_single_for_cpu(&tp->pdev->dev, dma_addr, len,
-+						DMA_FROM_DEVICE);
- 			memcpy(skb->data,
- 			       data + TG3_RX_OFFSET(tp),
- 			       len);
--			pci_dma_sync_single_for_device(tp->pdev, dma_addr, len, PCI_DMA_FROMDEVICE);
-+			dma_sync_single_for_device(&tp->pdev->dev, dma_addr,
-+						   len, DMA_FROM_DEVICE);
- 		}
- 
- 		skb_put(skb, len);
-@@ -7762,10 +7760,8 @@ static void tg3_tx_skb_unmap(struct tg3_napi *tnapi, u32 entry, int last)
- 	skb = txb->skb;
- 	txb->skb = NULL;
- 
--	pci_unmap_single(tnapi->tp->pdev,
--			 dma_unmap_addr(txb, mapping),
--			 skb_headlen(skb),
--			 PCI_DMA_TODEVICE);
-+	dma_unmap_single(&tnapi->tp->pdev->dev, dma_unmap_addr(txb, mapping),
-+			 skb_headlen(skb), DMA_TO_DEVICE);
- 
- 	while (txb->fragmented) {
- 		txb->fragmented = false;
-@@ -7779,9 +7775,9 @@ static void tg3_tx_skb_unmap(struct tg3_napi *tnapi, u32 entry, int last)
- 		entry = NEXT_TX(entry);
- 		txb = &tnapi->tx_buffers[entry];
- 
--		pci_unmap_page(tnapi->tp->pdev,
-+		dma_unmap_page(&tnapi->tp->pdev->dev,
- 			       dma_unmap_addr(txb, mapping),
--			       skb_frag_size(frag), PCI_DMA_TODEVICE);
-+			       skb_frag_size(frag), DMA_TO_DEVICE);
- 
- 		while (txb->fragmented) {
- 			txb->fragmented = false;
-@@ -7816,10 +7812,10 @@ static int tigon3_dma_hwbug_workaround(struct tg3_napi *tnapi,
- 		ret = -1;
- 	} else {
- 		/* New SKB is guaranteed to be linear. */
--		new_addr = pci_map_single(tp->pdev, new_skb->data, new_skb->len,
--					  PCI_DMA_TODEVICE);
-+		new_addr = dma_map_single(&tp->pdev->dev, new_skb->data,
-+					  new_skb->len, DMA_TO_DEVICE);
- 		/* Make sure the mapping succeeded */
--		if (pci_dma_mapping_error(tp->pdev, new_addr)) {
-+		if (dma_mapping_error(&tp->pdev->dev, new_addr)) {
- 			dev_kfree_skb_any(new_skb);
- 			ret = -1;
+ 			add_one_rx_chunk(mapping, d, q->gen);
+-			pci_dma_sync_single_for_device(adap->pdev, mapping,
+-						q->buf_size - SGE_PG_RSVD,
+-						PCI_DMA_FROMDEVICE);
++			dma_sync_single_for_device(&adap->pdev->dev, mapping,
++						   q->buf_size - SGE_PG_RSVD,
++						   DMA_FROM_DEVICE);
  		} else {
-@@ -8043,8 +8039,9 @@ static netdev_tx_t tg3_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 			void *buf_start;
  
- 	len = skb_headlen(skb);
- 
--	mapping = pci_map_single(tp->pdev, skb->data, len, PCI_DMA_TODEVICE);
--	if (pci_dma_mapping_error(tp->pdev, mapping))
-+	mapping = dma_map_single(&tp->pdev->dev, skb->data, len,
-+				 DMA_TO_DEVICE);
-+	if (dma_mapping_error(&tp->pdev->dev, mapping))
- 		goto drop;
- 
- 
-@@ -13499,8 +13496,8 @@ static int tg3_run_loopback(struct tg3 *tp, u32 pktsz, bool tso_loopback)
- 	for (i = data_off; i < tx_len; i++)
- 		tx_data[i] = (u8) (i & 0xff);
- 
--	map = pci_map_single(tp->pdev, skb->data, tx_len, PCI_DMA_TODEVICE);
--	if (pci_dma_mapping_error(tp->pdev, map)) {
-+	map = dma_map_single(&tp->pdev->dev, skb->data, tx_len, DMA_TO_DEVICE);
-+	if (dma_mapping_error(&tp->pdev->dev, map)) {
- 		dev_kfree_skb(skb);
- 		return -EIO;
- 	}
-@@ -13598,8 +13595,8 @@ static int tg3_run_loopback(struct tg3 *tp, u32 pktsz, bool tso_loopback)
- 		} else
- 			goto out;
- 
--		pci_dma_sync_single_for_cpu(tp->pdev, map, rx_len,
+@@ -793,13 +792,13 @@ static struct sk_buff *get_packet(struct adapter *adap, struct sge_fl *fl,
+ 		skb = alloc_skb(len, GFP_ATOMIC);
+ 		if (likely(skb != NULL)) {
+ 			__skb_put(skb, len);
+-			pci_dma_sync_single_for_cpu(adap->pdev,
+-					    dma_unmap_addr(sd, dma_addr), len,
 -					    PCI_DMA_FROMDEVICE);
-+		dma_sync_single_for_cpu(&tp->pdev->dev, map, rx_len,
-+					DMA_FROM_DEVICE);
++			dma_sync_single_for_cpu(&adap->pdev->dev,
++						dma_unmap_addr(sd, dma_addr),
++						len, DMA_FROM_DEVICE);
+ 			memcpy(skb->data, sd->skb->data, len);
+-			pci_dma_sync_single_for_device(adap->pdev,
+-					    dma_unmap_addr(sd, dma_addr), len,
+-					    PCI_DMA_FROMDEVICE);
++			dma_sync_single_for_device(&adap->pdev->dev,
++						   dma_unmap_addr(sd, dma_addr),
++						   len, DMA_FROM_DEVICE);
+ 		} else if (!drop_thres)
+ 			goto use_orig_buf;
+ recycle:
+@@ -813,8 +812,8 @@ static struct sk_buff *get_packet(struct adapter *adap, struct sge_fl *fl,
+ 		goto recycle;
  
- 		rx_data += TG3_RX_OFFSET(tp);
- 		for (i = data_off; i < rx_len; i++, val++) {
-@@ -17755,11 +17752,11 @@ static int tg3_init_one(struct pci_dev *pdev,
- 
- 	/* Configure DMA attributes. */
- 	if (dma_mask > DMA_BIT_MASK(32)) {
--		err = pci_set_dma_mask(pdev, dma_mask);
-+		err = dma_set_mask(&pdev->dev, dma_mask);
- 		if (!err) {
- 			features |= NETIF_F_HIGHDMA;
--			err = pci_set_consistent_dma_mask(pdev,
--							  persist_dma_mask);
-+			err = dma_set_coherent_mask(&pdev->dev,
-+						    persist_dma_mask);
- 			if (err < 0) {
- 				dev_err(&pdev->dev, "Unable to obtain 64 bit "
- 					"DMA for consistent allocations\n");
-@@ -17768,7 +17765,7 @@ static int tg3_init_one(struct pci_dev *pdev,
- 		}
+ use_orig_buf:
+-	pci_unmap_single(adap->pdev, dma_unmap_addr(sd, dma_addr),
+-			 fl->buf_size, PCI_DMA_FROMDEVICE);
++	dma_unmap_single(&adap->pdev->dev, dma_unmap_addr(sd, dma_addr),
++			 fl->buf_size, DMA_FROM_DEVICE);
+ 	skb = sd->skb;
+ 	skb_put(skb, len);
+ 	__refill_fl(adap, fl);
+@@ -854,12 +853,11 @@ static struct sk_buff *get_packet_pg(struct adapter *adap, struct sge_fl *fl,
+ 		newskb = alloc_skb(len, GFP_ATOMIC);
+ 		if (likely(newskb != NULL)) {
+ 			__skb_put(newskb, len);
+-			pci_dma_sync_single_for_cpu(adap->pdev, dma_addr, len,
+-					    PCI_DMA_FROMDEVICE);
++			dma_sync_single_for_cpu(&adap->pdev->dev, dma_addr,
++						len, DMA_FROM_DEVICE);
+ 			memcpy(newskb->data, sd->pg_chunk.va, len);
+-			pci_dma_sync_single_for_device(adap->pdev, dma_addr,
+-						       len,
+-						       PCI_DMA_FROMDEVICE);
++			dma_sync_single_for_device(&adap->pdev->dev, dma_addr,
++						   len, DMA_FROM_DEVICE);
+ 		} else if (!drop_thres)
+ 			return NULL;
+ recycle:
+@@ -883,14 +881,12 @@ static struct sk_buff *get_packet_pg(struct adapter *adap, struct sge_fl *fl,
+ 		goto recycle;
  	}
- 	if (err || dma_mask == DMA_BIT_MASK(32)) {
+ 
+-	pci_dma_sync_single_for_cpu(adap->pdev, dma_addr, len,
+-				    PCI_DMA_FROMDEVICE);
++	dma_sync_single_for_cpu(&adap->pdev->dev, dma_addr, len,
++				DMA_FROM_DEVICE);
+ 	(*sd->pg_chunk.p_cnt)--;
+ 	if (!*sd->pg_chunk.p_cnt && sd->pg_chunk.page != fl->pg_chunk.page)
+-		pci_unmap_page(adap->pdev,
+-			       sd->pg_chunk.mapping,
+-			       fl->alloc_size,
+-			       PCI_DMA_FROMDEVICE);
++		dma_unmap_page(&adap->pdev->dev, sd->pg_chunk.mapping,
++			       fl->alloc_size, DMA_FROM_DEVICE);
+ 	if (!skb) {
+ 		__skb_put(newskb, SGE_RX_PULL_LEN);
+ 		memcpy(newskb->data, sd->pg_chunk.va, SGE_RX_PULL_LEN);
+@@ -968,9 +964,9 @@ static int map_skb(struct pci_dev *pdev, const struct sk_buff *skb,
+ 	const struct skb_shared_info *si;
+ 
+ 	if (skb_headlen(skb)) {
+-		*addr = pci_map_single(pdev, skb->data, skb_headlen(skb),
+-				       PCI_DMA_TODEVICE);
+-		if (pci_dma_mapping_error(pdev, *addr))
++		*addr = dma_map_single(&pdev->dev, skb->data,
++				       skb_headlen(skb), DMA_TO_DEVICE);
++		if (dma_mapping_error(&pdev->dev, *addr))
+ 			goto out_err;
+ 		addr++;
+ 	}
+@@ -981,7 +977,7 @@ static int map_skb(struct pci_dev *pdev, const struct sk_buff *skb,
+ 	for (fp = si->frags; fp < end; fp++) {
+ 		*addr = skb_frag_dma_map(&pdev->dev, fp, 0, skb_frag_size(fp),
+ 					 DMA_TO_DEVICE);
+-		if (pci_dma_mapping_error(pdev, *addr))
++		if (dma_mapping_error(&pdev->dev, *addr))
+ 			goto unwind;
+ 		addr++;
+ 	}
+@@ -992,7 +988,8 @@ static int map_skb(struct pci_dev *pdev, const struct sk_buff *skb,
+ 		dma_unmap_page(&pdev->dev, *--addr, skb_frag_size(fp),
+ 			       DMA_TO_DEVICE);
+ 
+-	pci_unmap_single(pdev, addr[-1], skb_headlen(skb), PCI_DMA_TODEVICE);
++	dma_unmap_single(&pdev->dev, addr[-1], skb_headlen(skb),
++			 DMA_TO_DEVICE);
+ out_err:
+ 	return -ENOMEM;
+ }
+@@ -1592,13 +1589,14 @@ static void deferred_unmap_destructor(struct sk_buff *skb)
+ 	p = dui->addr;
+ 
+ 	if (skb_tail_pointer(skb) - skb_transport_header(skb))
+-		pci_unmap_single(dui->pdev, *p++, skb_tail_pointer(skb) -
+-				 skb_transport_header(skb), PCI_DMA_TODEVICE);
++		dma_unmap_single(&dui->pdev->dev, *p++,
++				 skb_tail_pointer(skb) - skb_transport_header(skb),
++				 DMA_TO_DEVICE);
+ 
+ 	si = skb_shinfo(skb);
+ 	for (i = 0; i < si->nr_frags; i++)
+-		pci_unmap_page(dui->pdev, *p++, skb_frag_size(&si->frags[i]),
+-			       PCI_DMA_TODEVICE);
++		dma_unmap_page(&dui->pdev->dev, *p++,
++			       skb_frag_size(&si->frags[i]), DMA_TO_DEVICE);
+ }
+ 
+ static void setup_deferred_unmapping(struct sk_buff *skb, struct pci_dev *pdev,
+@@ -2153,17 +2151,14 @@ static void lro_add_page(struct adapter *adap, struct sge_qset *qs,
+ 
+ 	fl->credits--;
+ 
+-	pci_dma_sync_single_for_cpu(adap->pdev,
+-				    dma_unmap_addr(sd, dma_addr),
+-				    fl->buf_size - SGE_PG_RSVD,
+-				    PCI_DMA_FROMDEVICE);
++	dma_sync_single_for_cpu(&adap->pdev->dev,
++				dma_unmap_addr(sd, dma_addr),
++				fl->buf_size - SGE_PG_RSVD, DMA_FROM_DEVICE);
+ 
+ 	(*sd->pg_chunk.p_cnt)--;
+ 	if (!*sd->pg_chunk.p_cnt && sd->pg_chunk.page != fl->pg_chunk.page)
+-		pci_unmap_page(adap->pdev,
+-			       sd->pg_chunk.mapping,
+-			       fl->alloc_size,
+-			       PCI_DMA_FROMDEVICE);
++		dma_unmap_page(&adap->pdev->dev, sd->pg_chunk.mapping,
++			       fl->alloc_size, DMA_FROM_DEVICE);
+ 
+ 	if (!skb) {
+ 		put_page(sd->pg_chunk.page);
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+index aa8573202c37..fb6ac730fb50 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+@@ -4008,7 +4008,7 @@ static void adap_free_hma_mem(struct adapter *adapter)
+ 
+ 	if (adapter->hma.flags & HMA_DMA_MAPPED_FLAG) {
+ 		dma_unmap_sg(adapter->pdev_dev, adapter->hma.sgt->sgl,
+-			     adapter->hma.sgt->nents, PCI_DMA_BIDIRECTIONAL);
++			     adapter->hma.sgt->nents, DMA_BIDIRECTIONAL);
+ 		adapter->hma.flags &= ~HMA_DMA_MAPPED_FLAG;
+ 	}
+ 
+@@ -6687,16 +6687,10 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		return 0;
+ 	}
+ 
+-	if (!pci_set_dma_mask(pdev, DMA_BIT_MASK(64))) {
++	if (!dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64))) {
+ 		highdma = true;
+-		err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
+-		if (err) {
+-			dev_err(&pdev->dev, "unable to obtain 64-bit DMA for "
+-				"coherent allocations\n");
+-			goto out_free_adapter;
+-		}
+ 	} else {
 -		err = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
 +		err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
  		if (err) {
- 			dev_err(&pdev->dev,
- 				"No usable DMA configuration, aborting\n");
+ 			dev_err(&pdev->dev, "no usable DMA configuration\n");
+ 			goto out_free_adapter;
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/sge.c b/drivers/net/ethernet/chelsio/cxgb4/sge.c
+index 6a099cb34b12..fa5b596ff23a 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/sge.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/sge.c
+@@ -443,7 +443,7 @@ static void free_rx_bufs(struct adapter *adap, struct sge_fl *q, int n)
+ 		if (is_buf_mapped(d))
+ 			dma_unmap_page(adap->pdev_dev, get_buf_addr(d),
+ 				       get_buf_size(adap, d),
+-				       PCI_DMA_FROMDEVICE);
++				       DMA_FROM_DEVICE);
+ 		put_page(d->page);
+ 		d->page = NULL;
+ 		if (++q->cidx == q->size)
+@@ -469,7 +469,7 @@ static void unmap_rx_buf(struct adapter *adap, struct sge_fl *q)
+ 
+ 	if (is_buf_mapped(d))
+ 		dma_unmap_page(adap->pdev_dev, get_buf_addr(d),
+-			       get_buf_size(adap, d), PCI_DMA_FROMDEVICE);
++			       get_buf_size(adap, d), DMA_FROM_DEVICE);
+ 	d->page = NULL;
+ 	if (++q->cidx == q->size)
+ 		q->cidx = 0;
+@@ -566,7 +566,7 @@ static unsigned int refill_fl(struct adapter *adap, struct sge_fl *q, int n,
+ 
+ 		mapping = dma_map_page(adap->pdev_dev, pg, 0,
+ 				       PAGE_SIZE << s->fl_pg_order,
+-				       PCI_DMA_FROMDEVICE);
++				       DMA_FROM_DEVICE);
+ 		if (unlikely(dma_mapping_error(adap->pdev_dev, mapping))) {
+ 			__free_pages(pg, s->fl_pg_order);
+ 			q->mapping_err++;
+@@ -596,7 +596,7 @@ static unsigned int refill_fl(struct adapter *adap, struct sge_fl *q, int n,
+ 		}
+ 
+ 		mapping = dma_map_page(adap->pdev_dev, pg, 0, PAGE_SIZE,
+-				       PCI_DMA_FROMDEVICE);
++				       DMA_FROM_DEVICE);
+ 		if (unlikely(dma_mapping_error(adap->pdev_dev, mapping))) {
+ 			put_page(pg);
+ 			q->mapping_err++;
+diff --git a/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c b/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c
+index 2842628ad2c5..e5882df551ec 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c
++++ b/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c
+@@ -2917,17 +2917,11 @@ static int cxgb4vf_pci_probe(struct pci_dev *pdev,
+ 	 * Set up our DMA mask: try for 64-bit address masking first and
+ 	 * fall back to 32-bit if we can't get 64 bits ...
+ 	 */
+-	err = pci_set_dma_mask(pdev, DMA_BIT_MASK(64));
++	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
+ 	if (err == 0) {
+-		err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
+-		if (err) {
+-			dev_err(&pdev->dev, "unable to obtain 64-bit DMA for"
+-				" coherent allocations\n");
+-			goto err_release_regions;
+-		}
+ 		pci_using_dac = 1;
+ 	} else {
+-		err = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
++		err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
+ 		if (err != 0) {
+ 			dev_err(&pdev->dev, "no usable DMA configuration\n");
+ 			goto err_release_regions;
+diff --git a/drivers/net/ethernet/chelsio/cxgb4vf/sge.c b/drivers/net/ethernet/chelsio/cxgb4vf/sge.c
+index 7bc80eeb2c21..0295b2406646 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4vf/sge.c
++++ b/drivers/net/ethernet/chelsio/cxgb4vf/sge.c
+@@ -478,7 +478,7 @@ static void free_rx_bufs(struct adapter *adapter, struct sge_fl *fl, int n)
+ 		if (is_buf_mapped(sdesc))
+ 			dma_unmap_page(adapter->pdev_dev, get_buf_addr(sdesc),
+ 				       get_buf_size(adapter, sdesc),
+-				       PCI_DMA_FROMDEVICE);
++				       DMA_FROM_DEVICE);
+ 		put_page(sdesc->page);
+ 		sdesc->page = NULL;
+ 		if (++fl->cidx == fl->size)
+@@ -507,7 +507,7 @@ static void unmap_rx_buf(struct adapter *adapter, struct sge_fl *fl)
+ 	if (is_buf_mapped(sdesc))
+ 		dma_unmap_page(adapter->pdev_dev, get_buf_addr(sdesc),
+ 			       get_buf_size(adapter, sdesc),
+-			       PCI_DMA_FROMDEVICE);
++			       DMA_FROM_DEVICE);
+ 	sdesc->page = NULL;
+ 	if (++fl->cidx == fl->size)
+ 		fl->cidx = 0;
+@@ -644,7 +644,7 @@ static unsigned int refill_fl(struct adapter *adapter, struct sge_fl *fl,
+ 
+ 		dma_addr = dma_map_page(adapter->pdev_dev, page, 0,
+ 					PAGE_SIZE << s->fl_pg_order,
+-					PCI_DMA_FROMDEVICE);
++					DMA_FROM_DEVICE);
+ 		if (unlikely(dma_mapping_error(adapter->pdev_dev, dma_addr))) {
+ 			/*
+ 			 * We've run out of DMA mapping space.  Free up the
+@@ -682,7 +682,7 @@ static unsigned int refill_fl(struct adapter *adapter, struct sge_fl *fl,
+ 		poison_buf(page, PAGE_SIZE);
+ 
+ 		dma_addr = dma_map_page(adapter->pdev_dev, page, 0, PAGE_SIZE,
+-				       PCI_DMA_FROMDEVICE);
++				       DMA_FROM_DEVICE);
+ 		if (unlikely(dma_mapping_error(adapter->pdev_dev, dma_addr))) {
+ 			put_page(page);
+ 			break;
 -- 
 2.30.2
 
