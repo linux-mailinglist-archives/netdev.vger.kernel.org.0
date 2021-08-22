@@ -2,328 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65E6E3F4118
-	for <lists+netdev@lfdr.de>; Sun, 22 Aug 2021 21:12:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFE663F412D
+	for <lists+netdev@lfdr.de>; Sun, 22 Aug 2021 21:23:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232261AbhHVTN1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Aug 2021 15:13:27 -0400
-Received: from out02.smtpout.orange.fr ([193.252.22.211]:47035 "EHLO
-        out.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232245AbhHVTNZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Aug 2021 15:13:25 -0400
-Received: from pop-os.home ([90.126.253.178])
-        by mwinf5d51 with ME
-        id kjCi250013riaq203jCiV0; Sun, 22 Aug 2021 21:12:42 +0200
-X-ME-Helo: pop-os.home
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Sun, 22 Aug 2021 21:12:42 +0200
-X-ME-IP: 90.126.253.178
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     tariqt@nvidia.com, davem@davemloft.net, kuba@kernel.org,
-        saeedm@nvidia.com, leon@kernel.org
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] net/mellanox: switch from 'pci_' to 'dma_' API
-Date:   Sun, 22 Aug 2021 21:12:41 +0200
-Message-Id: <33167c57d1aaec10f130fe7604d6db3a43cfa381.1629659490.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.30.2
+        id S232819AbhHVTXo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Aug 2021 15:23:44 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:60516 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S232828AbhHVTXm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Aug 2021 15:23:42 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.0.43) with SMTP id 17MInZ2j017874;
+        Sun, 22 Aug 2021 12:21:39 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=VeaaqVkI1Ssa1GuXyl3jJWdzre2Akr58UN3NF7vwkCs=;
+ b=iY4PNdR5/gdldys6a2LgUnXudbDrrHt1cTNYWDwxYUWijBVBo7lN6U1N1ww+8tUnvNdE
+ zgUu9O8MJe/1KV5YvJ9OCXTZqBHrt56BwWOwP40jnSkv/A8bmvHPCs6Vw+dJq0tizsbU
+ EUDzK8YO1tMaNsfYFRYGz8K9gRRzLm7LR04NYLyPRK0IJxLf9fbs4i9Iors8xN1QVyQo
+ ghhdNHXBWfzySkXJieY+WlqYj2FacILAp1Jg1IDXZpHZ8wIqBd2zMwVQL2NXfeVCrsAN
+ ThkMQT1Y3gLDyWtsGKDPfcstaFpyx8jUR9jIpPtSXLb70ZP4fL1evqVxXRKFiY+0NGTm QQ== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0a-0016f401.pphosted.com with ESMTP id 3akj8dh89j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Sun, 22 Aug 2021 12:21:38 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.23; Sun, 22 Aug
+ 2021 12:21:37 -0700
+Received: from lbtlvb-pcie154.il.qlogic.org (10.69.176.80) by
+ DC5-EXCH01.marvell.com (10.69.176.38) with Microsoft SMTP Server id
+ 15.0.1497.23 via Frontend Transport; Sun, 22 Aug 2021 12:21:35 -0700
+From:   Shai Malin <smalin@marvell.com>
+To:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <aelior@marvell.com>, <smalin@marvell.com>, <malin1024@gmail.com>,
+        Prabhakar Kushwaha <pkushwaha@marvell.com>
+Subject: [PATCH] qed: Fix the VF msix vectors flow
+Date:   Sun, 22 Aug 2021 22:21:14 +0300
+Message-ID: <20210822192114.11622-1-smalin@marvell.com>
+X-Mailer: git-send-email 2.16.6
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-GUID: q9QgRkVa2fBFcSdqbD739YhtI-Rr5bel
+X-Proofpoint-ORIG-GUID: q9QgRkVa2fBFcSdqbD739YhtI-Rr5bel
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
+ definitions=2021-08-22_04,2021-08-20_03,2020-04-07_01
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The wrappers in include/linux/pci-dma-compat.h should go away.
+For VFs we should return with an error in case we didn't get the exact
+number of msix vectors as we requested.
+Not doing that will lead to a crash when starting queues for this VF.
 
-The patch has been generated with the coccinelle script below.
-
-It has been hand modified to use 'dma_set_mask_and_coherent()' instead of
-'pci_set_dma_mask()/pci_set_consistent_dma_mask()' when applicable.
-This is less verbose.
-
-It has been compile tested.
-
-
-@@
-@@
--    PCI_DMA_BIDIRECTIONAL
-+    DMA_BIDIRECTIONAL
-
-@@
-@@
--    PCI_DMA_TODEVICE
-+    DMA_TO_DEVICE
-
-@@
-@@
--    PCI_DMA_FROMDEVICE
-+    DMA_FROM_DEVICE
-
-@@
-@@
--    PCI_DMA_NONE
-+    DMA_NONE
-
-@@
-expression e1, e2, e3;
-@@
--    pci_alloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
-
-@@
-expression e1, e2, e3;
-@@
--    pci_zalloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_free_consistent(e1, e2, e3, e4)
-+    dma_free_coherent(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_single(e1, e2, e3, e4)
-+    dma_map_single(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_single(e1, e2, e3, e4)
-+    dma_unmap_single(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4, e5;
-@@
--    pci_map_page(e1, e2, e3, e4, e5)
-+    dma_map_page(&e1->dev, e2, e3, e4, e5)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_page(e1, e2, e3, e4)
-+    dma_unmap_page(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_sg(e1, e2, e3, e4)
-+    dma_map_sg(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_sg(e1, e2, e3, e4)
-+    dma_unmap_sg(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
-+    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_device(e1, e2, e3, e4)
-+    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
-+    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
-+    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2;
-@@
--    pci_dma_mapping_error(e1, e2)
-+    dma_mapping_error(&e1->dev, e2)
-
-@@
-expression e1, e2;
-@@
--    pci_set_dma_mask(e1, e2)
-+    dma_set_mask(&e1->dev, e2)
-
-@@
-expression e1, e2;
-@@
--    pci_set_consistent_dma_mask(e1, e2)
-+    dma_set_coherent_mask(&e1->dev, e2)
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
+Signed-off-by: Ariel Elior <aelior@marvell.com>
+Signed-off-by: Shai Malin <smalin@marvell.com>
 ---
-If needed, see post from Christoph Hellwig on the kernel-janitors ML:
-   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
----
- drivers/net/ethernet/mellanox/mlx4/en_rx.c     |  4 ++--
- drivers/net/ethernet/mellanox/mlx4/en_tx.c     | 14 +++++++-------
- drivers/net/ethernet/mellanox/mlx4/main.c      | 13 ++-----------
- drivers/net/ethernet/mellanox/mlx5/core/main.c | 16 ++--------------
- 4 files changed, 13 insertions(+), 34 deletions(-)
+ drivers/net/ethernet/qlogic/qed/qed_main.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/en_rx.c b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-index 442991d91c15..7f6d3b82c29b 100644
---- a/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-@@ -991,7 +991,7 @@ void mlx4_en_calc_rx_buf(struct net_device *dev)
- 		 * expense of more costly truesize accounting
- 		 */
- 		priv->frag_info[0].frag_stride = PAGE_SIZE;
--		priv->dma_dir = PCI_DMA_BIDIRECTIONAL;
-+		priv->dma_dir = DMA_BIDIRECTIONAL;
- 		priv->rx_headroom = XDP_PACKET_HEADROOM;
- 		i = 1;
- 	} else {
-@@ -1021,7 +1021,7 @@ void mlx4_en_calc_rx_buf(struct net_device *dev)
- 			buf_size += frag_size;
- 			i++;
- 		}
--		priv->dma_dir = PCI_DMA_FROMDEVICE;
-+		priv->dma_dir = DMA_FROM_DEVICE;
- 		priv->rx_headroom = 0;
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_main.c b/drivers/net/ethernet/qlogic/qed/qed_main.c
+index 6871d892eabf..15ef59aa34ff 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_main.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_main.c
+@@ -615,7 +615,12 @@ static int qed_enable_msix(struct qed_dev *cdev,
+ 			rc = cnt;
  	}
  
-diff --git a/drivers/net/ethernet/mellanox/mlx4/en_tx.c b/drivers/net/ethernet/mellanox/mlx4/en_tx.c
-index 31b74bddb7cd..c56b9dba4c71 100644
---- a/drivers/net/ethernet/mellanox/mlx4/en_tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/en_tx.c
-@@ -297,12 +297,12 @@ u32 mlx4_en_free_tx_desc(struct mlx4_en_priv *priv,
- 			dma_unmap_single(priv->ddev,
- 					 tx_info->map0_dma,
- 					 tx_info->map0_byte_count,
--					 PCI_DMA_TODEVICE);
-+					 DMA_TO_DEVICE);
- 		else
- 			dma_unmap_page(priv->ddev,
- 				       tx_info->map0_dma,
- 				       tx_info->map0_byte_count,
--				       PCI_DMA_TODEVICE);
-+				       DMA_TO_DEVICE);
- 		/* Optimize the common case when there are no wraparounds */
- 		if (likely((void *)tx_desc +
- 			   (tx_info->nr_txbb << LOG_TXBB_SIZE) <= end)) {
-@@ -311,7 +311,7 @@ u32 mlx4_en_free_tx_desc(struct mlx4_en_priv *priv,
- 				dma_unmap_page(priv->ddev,
- 					(dma_addr_t)be64_to_cpu(data->addr),
- 					be32_to_cpu(data->byte_count),
--					PCI_DMA_TODEVICE);
-+					DMA_TO_DEVICE);
- 			}
- 		} else {
- 			if ((void *)data >= end)
-@@ -325,7 +325,7 @@ u32 mlx4_en_free_tx_desc(struct mlx4_en_priv *priv,
- 				dma_unmap_page(priv->ddev,
- 					(dma_addr_t)be64_to_cpu(data->addr),
- 					be32_to_cpu(data->byte_count),
--					PCI_DMA_TODEVICE);
-+					DMA_TO_DEVICE);
- 			}
- 		}
- 	}
-@@ -831,7 +831,7 @@ static bool mlx4_en_build_dma_wqe(struct mlx4_en_priv *priv,
- 
- 		dma = dma_map_single(ddev, skb->data +
- 				     lso_header_size, byte_count,
--				     PCI_DMA_TODEVICE);
-+				     DMA_TO_DEVICE);
- 		if (dma_mapping_error(ddev, dma))
- 			goto tx_drop_unmap;
- 
-@@ -853,7 +853,7 @@ static bool mlx4_en_build_dma_wqe(struct mlx4_en_priv *priv,
- 		++data;
- 		dma_unmap_page(ddev, (dma_addr_t)be64_to_cpu(data->addr),
- 			       be32_to_cpu(data->byte_count),
--			       PCI_DMA_TODEVICE);
-+			       DMA_TO_DEVICE);
- 	}
- 
- 	return false;
-@@ -1170,7 +1170,7 @@ netdev_tx_t mlx4_en_xmit_frame(struct mlx4_en_rx_ring *rx_ring,
- 	tx_info->nr_bytes = max_t(unsigned int, length, ETH_ZLEN);
- 
- 	dma_sync_single_range_for_device(priv->ddev, dma, frame->page_offset,
--					 length, PCI_DMA_TODEVICE);
-+					 length, DMA_TO_DEVICE);
- 
- 	data->addr = cpu_to_be64(dma + frame->page_offset);
- 	dma_wmb();
-diff --git a/drivers/net/ethernet/mellanox/mlx4/main.c b/drivers/net/ethernet/mellanox/mlx4/main.c
-index 7267c6c6d2e2..5a6b0fcaf7f8 100644
---- a/drivers/net/ethernet/mellanox/mlx4/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/main.c
-@@ -3806,24 +3806,15 @@ static int __mlx4_init_one(struct pci_dev *pdev, int pci_dev_data,
- 
- 	pci_set_master(pdev);
- 
--	err = pci_set_dma_mask(pdev, DMA_BIT_MASK(64));
-+	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
- 	if (err) {
- 		dev_warn(&pdev->dev, "Warning: couldn't set 64-bit PCI DMA mask\n");
--		err = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
-+		err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
- 		if (err) {
- 			dev_err(&pdev->dev, "Can't set PCI DMA mask, aborting\n");
- 			goto err_release_regions;
- 		}
- 	}
--	err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
--	if (err) {
--		dev_warn(&pdev->dev, "Warning: couldn't set 64-bit consistent PCI DMA mask\n");
--		err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
--		if (err) {
--			dev_err(&pdev->dev, "Can't set consistent PCI DMA mask, aborting\n");
--			goto err_release_regions;
--		}
--	}
- 
- 	/* Allow large DMA segments, up to the firmware limit of 1 GB */
- 	dma_set_max_seg_size(&pdev->dev, 1024 * 1024 * 1024);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-index 80cabf9b1787..79482824c64f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@ -252,28 +252,16 @@ static int set_dma_caps(struct pci_dev *pdev)
- {
- 	int err;
- 
--	err = pci_set_dma_mask(pdev, DMA_BIT_MASK(64));
-+	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
- 	if (err) {
- 		dev_warn(&pdev->dev, "Warning: couldn't set 64-bit PCI DMA mask\n");
--		err = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
-+		err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
- 		if (err) {
- 			dev_err(&pdev->dev, "Can't set PCI DMA mask, aborting\n");
- 			return err;
- 		}
- 	}
- 
--	err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
--	if (err) {
--		dev_warn(&pdev->dev,
--			 "Warning: couldn't set 64-bit consistent PCI DMA mask\n");
--		err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
--		if (err) {
--			dev_err(&pdev->dev,
--				"Can't set consistent PCI DMA mask, aborting\n");
--			return err;
--		}
--	}
--
- 	dma_set_max_seg_size(&pdev->dev, 2u * 1024 * 1024 * 1024);
- 	return err;
- }
+-	if (rc > 0) {
++	/* For VFs, we should return with an error in case we didn't get the
++	 * exact number of msix vectors as we requested.
++	 * Not doing that will lead to a crash when starting queues for
++	 * this VF.
++	 */
++	if ((IS_PF(cdev) && rc > 0) || (IS_VF(cdev) && rc == cnt)) {
+ 		/* MSI-x configuration was achieved */
+ 		int_params->out.int_mode = QED_INT_MODE_MSIX;
+ 		int_params->out.num_vectors = rc;
 -- 
-2.30.2
+2.22.0
 
