@@ -2,86 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 403133F4195
-	for <lists+netdev@lfdr.de>; Sun, 22 Aug 2021 22:50:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D80883F41C7
+	for <lists+netdev@lfdr.de>; Sun, 22 Aug 2021 23:41:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233168AbhHVUuu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Aug 2021 16:50:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33882 "EHLO mail.kernel.org"
+        id S233446AbhHVVlx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Aug 2021 17:41:53 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:35508 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232819AbhHVUut (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 22 Aug 2021 16:50:49 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 214DA61354;
-        Sun, 22 Aug 2021 20:50:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629665408;
-        bh=3StiiUCoQc/73l+OzPYY/uiMM0i1NvmIdaJHoYTPVWM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=UtfYHRcJQcV5RcmDuMI924BRXUxNd2IvZOmKuyRZ/Ym00M9UgJZoNFA3G449rBR6e
-         wtQGZ8zYnnCdOYnf8+qVwsLsi9rxQgflSXhI2A9txHFsfIEyNmoRJKgXPuqYh9reAd
-         uXyg/195KDCsgAZa4IrooBIn3HtmKDw2YqsP2GAwsXBdjY3TVLvXBBNrcYweVk8zSM
-         rmENQoOdPuyYpIOr9u+RtM0tMepxnfBG8o4ecalI4pCq7+3gs28M3xO80aLJokWs2W
-         KlaNlqSUOitxpbY8RDAZ/uAdNdfhiKkZm0FY1PFYkUs3pOb78aaZg+4+M7Fhl/q4MT
-         EHpJ9GdWzwfOg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 12B28609D8;
-        Sun, 22 Aug 2021 20:50:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S230311AbhHVVlw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 22 Aug 2021 17:41:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=WjHgg2RoVpjMaNdEtPWxt1gfEbjLkGTCJql1tYv9138=; b=k1
+        ouKxQ/NcaV6l2WRqLE/XMZc5syUMG78Jd5K/ifYD7UUvVeBL+hAaMqrhviqwVu6IZZSV/MNJ20dD9
+        eujAxUTrEHmbHBnt88u4LiU9dw4zNmy13iIcMAHj+wTUZYpb/GZ7aZ7q7dC/rvPawEWYx/Mr0x7/M
+        M3FX9ti1u6ZPNjQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mHvD4-003Nb2-78; Sun, 22 Aug 2021 23:40:54 +0200
+Date:   Sun, 22 Aug 2021 23:40:54 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Alvin =?utf-8?Q?=C5=A0ipraga?= <alvin@pqrs.dk>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, mir@bang-olufsen.dk,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH net-next 1/5] net: dsa: realtek-smi: fix mdio_free
+ bug on module unload
+Message-ID: <YSLEZmuWlD5kUOlx@lunn.ch>
+References: <20210822193145.1312668-1-alvin@pqrs.dk>
+ <20210822193145.1312668-2-alvin@pqrs.dk>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Subject: Re: [net PATCH 00/10] Miscellaneous fixes
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162966540807.2709.625412987713500074.git-patchwork-notify@kernel.org>
-Date:   Sun, 22 Aug 2021 20:50:08 +0000
-References: <1629633747-22061-1-git-send-email-sgoutham@marvell.com>
-In-Reply-To: <1629633747-22061-1-git-send-email-sgoutham@marvell.com>
-To:     Sunil Goutham <sgoutham@marvell.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
+In-Reply-To: <20210822193145.1312668-2-alvin@pqrs.dk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (refs/heads/master):
-
-On Sun, 22 Aug 2021 17:32:17 +0530 you wrote:
-> This patch series contains a bunch of miscellaneous fixes
-> for various issues like
-> - Free unallocated memory during driver unload
-> - HW reading transmit descriptor from wrong address
-> - VF VLAN strip offload MCAM entry installation failure
-> - Pkts not being distributed across queues in RSS context
-> - Wrong interface backpressure configuration for NIX1 block on 98xx
-> - etc
+On Sun, Aug 22, 2021 at 09:31:39PM +0200, Alvin Šipraga wrote:
+> From: Alvin Šipraga <alsi@bang-olufsen.dk>
 > 
-> [...]
+> realtek-smi-core fails to unregister the slave MII bus on module unload,
+> raising the following BUG warning:
+> 
+>     mdio_bus.c:650: BUG_ON(bus->state != MDIOBUS_UNREGISTERED);
+> 
+>     kernel BUG at drivers/net/phy/mdio_bus.c:650!
+>     Internal error: Oops - BUG: 0 [#1] PREEMPT_RT SMP
+>     Call trace:
+>      mdiobus_free+0x4c/0x50
+>      devm_mdiobus_free+0x18/0x20
+>      release_nodes.isra.0+0x1c0/0x2b0
+>      devres_release_all+0x38/0x58
+>      device_release_driver_internal+0x124/0x1e8
+>      driver_detach+0x54/0xe0
+>      bus_remove_driver+0x60/0xd8
+>      driver_unregister+0x34/0x60
+>      platform_driver_unregister+0x18/0x20
+>      realtek_smi_driver_exit+0x14/0x1c [realtek_smi]
+> 
+> Fix this by duly unregistering the slave MII bus with
+> mdiobus_unregister. We do this in the DSA teardown path, since
+> registration is performed in the DSA setup path.
 
-Here is the summary with links:
-  - [net,01/10] octeontx2-pf: Fix NIX1_RX interface backpressure
-    https://git.kernel.org/netdev/net-next/c/e8fb4df1f5d8
-  - [net,02/10] octeontx2-af: cn10k: Fix SDP base channel number
-    https://git.kernel.org/netdev/net-next/c/477b53f3f95b
-  - [net,03/10] octeontx2-af: Handle return value in block reset.
-    https://git.kernel.org/netdev/net-next/c/c0fa2cff8822
-  - [net,04/10] octeontx2-pf: Don't mask out supported link modes
-    https://git.kernel.org/netdev/net-next/c/50602408c8e2
-  - [net,05/10] octeontx2-pf: send correct vlan priority mask to npc_install_flow_req
-    https://git.kernel.org/netdev/net-next/c/10df5a13ac67
-  - [net,06/10] octeontx2-af: Use DMA_ATTR_FORCE_CONTIGUOUS attribute in DMA alloc
-    https://git.kernel.org/netdev/net-next/c/73d33dbc0723
-  - [net,07/10] octeontx2-af: Check capability flag while freeing ipolicer memory
-    https://git.kernel.org/netdev/net-next/c/07cccffdbdd3
-  - [net,08/10] octeontx2-pf: Don't install VLAN offload rule if netdev is down
-    https://git.kernel.org/netdev/net-next/c/05209e3570e4
-  - [net,09/10] octeontx2-pf: Fix algorithm index in MCAM rules with RSS action
-    https://git.kernel.org/netdev/net-next/c/e7938365459f
-  - [net,10/10] octeontx2-af: cn10k: Use FLIT0 register instead of FLIT1
-    https://git.kernel.org/netdev/net-next/c/623da5ca70b7
+Looking at the setup code, is there anything undoing what
+rtl8366rb_setup_cascaded_irq() does?
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+This patch however loos O.K.
 
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
+    Andrew
