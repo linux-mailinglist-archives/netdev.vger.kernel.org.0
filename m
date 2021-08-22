@@ -2,121 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA7E03F40A3
-	for <lists+netdev@lfdr.de>; Sun, 22 Aug 2021 19:13:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 399BF3F40AB
+	for <lists+netdev@lfdr.de>; Sun, 22 Aug 2021 19:21:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231349AbhHVRO1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Aug 2021 13:14:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54028 "EHLO
+        id S230315AbhHVRVf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Aug 2021 13:21:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229586AbhHVRO0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Aug 2021 13:14:26 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48D67C061575;
-        Sun, 22 Aug 2021 10:13:45 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id a25so5044789ejv.6;
-        Sun, 22 Aug 2021 10:13:45 -0700 (PDT)
+        with ESMTP id S229920AbhHVRVe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Aug 2021 13:21:34 -0400
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0C61C061575
+        for <netdev@vger.kernel.org>; Sun, 22 Aug 2021 10:20:52 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id u1so9070509wmm.0
+        for <netdev@vger.kernel.org>; Sun, 22 Aug 2021 10:20:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0fmNxroS5SpgAIXhN5w/j2vi67JXUEs6Ajnwb8jCbzo=;
-        b=SqYFubdNy8QBGBHenNDL8htKljeVcnImXNjFXwM9DfYKuYq9iYZNMswbUN0Ueb1PiT
-         9GeYhl02lF8CvK3HXkBGNFKuvrbr6dtRnY4KDIslThrEp86eHWJVVaNxDxYISsJ8IQ3t
-         htotdE+bdiCvvO0IXDg3qBQ6pjThkSGSe8lanZrpXS8C0zSwCPttfx4Rdg/tY1D4RCeO
-         ZnR+QcRBz9UDGNqbYh+DmrplghlnornM+69Aucp2QvK24DTfYyxIeY438z2HwAx2S3Y8
-         BUqYaiHdvDrHdVhqwEs+X4PrjC/ELByYa5P3WBDvFSlZtdhMi2KXWZAg9ktoEtmxDQvC
-         jqdg==
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=ySFyNOmXc2vwcHT1cuuUNM1YuCJ0oO/SVz0VBVYIjCM=;
+        b=nz1BOsGVtC7DYy0XvDk5d2sUFU88Z0041FSfOA7DFqipwF510cv0bfcd6FPn4zM+oM
+         Z4Vlpm7lP9ClsNcTvhznA6bFI2zo4h90zTYazsEKUOX9UiEqmFS5Vh+M3xc8JrC6M+aX
+         iihyOnZSzsHZIviCLulY+K4V6myb5L3z7dgFQT8/AQAzV3IE6Yd3/usl0Cps0w4ZWQhL
+         /1CibVUEkcPeU4aiYxYz6olLHFpDSBG/ZupRlQm2W5ULwEzYvSQMvuQXY5By+Z2dcS8Y
+         zIgVwfJQZZZuHH2dcDC9wULg0UZ5bocLBRBhd80INu8AFqLDcGdWcusu3maCDiEekWnI
+         jG4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0fmNxroS5SpgAIXhN5w/j2vi67JXUEs6Ajnwb8jCbzo=;
-        b=mKnoMYN1WWSkyxKRA4Xo/K5AFZvWCz3MqRivc2vwjDkgatw4oKI728GJWqat832Gt4
-         U42utttaSAhxunHECES12AHlQs9hBvizY3vqniktcoGkuoDj8VdsXpFRZ7A1Ks4SfdEw
-         JusCuHwLD3jzX4zRWW5zkBDPZ5JW2UhIoW0tnZUVLc3axXA055LcROA0srNFdz7k1Fh+
-         3dpLUD0SnHe8RH22np+kJo1D4JSApB47PV9OflZHAjVoMFmbw2841qH5cnBYg9BiSEPX
-         EpX3D3IXE6t3enWiz/9W5stm0rl0Qal/ipH1VzexBqqmbbCIXApwYgtfTj99PRKKRZ6o
-         vvaw==
-X-Gm-Message-State: AOAM530g83A86/tM/Lg+Ff3JIbIHKgFDoXtwsimYWSH3DPbfm3vRlhfs
-        XaepZT+uMklQWiMjySUE+itAm1I260MHp0vG73E=
-X-Google-Smtp-Source: ABdhPJwg3J4bTj6c7O9lehMPZo11j1wXhHP3L/sNexMay3wHrut3RXYWHdh7gyx4ag9XeveGHWo78F94tF01aqECTOU=
-X-Received: by 2002:a17:906:720e:: with SMTP id m14mr31417254ejk.500.1629652423852;
- Sun, 22 Aug 2021 10:13:43 -0700 (PDT)
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=ySFyNOmXc2vwcHT1cuuUNM1YuCJ0oO/SVz0VBVYIjCM=;
+        b=GUi/zUANg65IDKGRo2VHnyzcXy36dyqpgo4qNA153Q8XWbXIVYAR+3qT45d+hgoopG
+         zhCsomU2ZY68ME4xDQcppG6DSRAYBfHKHZp+0TziSQeJ05F4a3dNRQXTUCLm789oqbUH
+         pO9LYB4FGo1mcjm+Mcy/U5A4/vq3XhyQlbgznKsV4JTMy7M6qQ8A5akfCv9ibbV4P3Z/
+         NKCQezFhMclDgrWSlrWRGC83a2FOZFkVoqGO9laPH9gaiOou7OfDepSf2wh8hj78WjEY
+         D8e4P6xrnd3I4LKQ3xnG9Lmw9WLSv0CDQGVmZ2+YALjAeLxKgtOSakx19rFHZXLT62hu
+         i8rA==
+X-Gm-Message-State: AOAM530QAoCBd3xf+yJhLC+lUs620Kq61K7R2jQPj+tYQt6iX2GFILMO
+        6givM5HWkFPHfWRdLKUJsmiM9Qh+ZSxN2Q==
+X-Google-Smtp-Source: ABdhPJyMiZ4y9p79girexzL77veTxVn5cYkaAuRO96rbzqIUn0LX/003BwHPlOMcaJOOkH9Q90GbjQ==
+X-Received: by 2002:a05:600c:4fcc:: with SMTP id o12mr13063689wmq.0.1629652851208;
+        Sun, 22 Aug 2021 10:20:51 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f08:4500:fc53:5e22:f926:c43b? (p200300ea8f084500fc535e22f926c43b.dip0.t-ipconnect.de. [2003:ea:8f08:4500:fc53:5e22:f926:c43b])
+        by smtp.googlemail.com with ESMTPSA id q10sm10607993wmq.12.2021.08.22.10.20.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 22 Aug 2021 10:20:50 -0700 (PDT)
+To:     Raju Rangoju <rajur@chelsio.com>, Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next] cxgb4: improve printing NIC information
+Message-ID: <8b4286fe-b16b-d29e-4e26-f7f225b83840@gmail.com>
+Date:   Sun, 22 Aug 2021 19:20:42 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-References: <ccce7edb-54dd-e6bf-1e84-0ec320d8886c@linux.ibm.com>
- <cover.1628235065.git.vvs@virtuozzo.com> <77f3e358-c75e-b0bf-ca87-6f8297f5593c@virtuozzo.com>
- <CALMXkpaay1y=0tkbnskr4gf-HTMjJJsVryh4Prnej_ws-hJvBg@mail.gmail.com>
- <CALMXkpa4RqwssO2QNKMjk=f8pGWDMtj4gpQbAYWbGDRfN4J6DQ@mail.gmail.com>
- <ff75b068-8165-a45c-0026-8b8f1c745213@virtuozzo.com> <CALMXkpZVkqFDKiCa4yHV0yJ7qEESqzcanu4mrWTNvc9jm=gxcw@mail.gmail.com>
-In-Reply-To: <CALMXkpZVkqFDKiCa4yHV0yJ7qEESqzcanu4mrWTNvc9jm=gxcw@mail.gmail.com>
-From:   Christoph Paasch <christoph.paasch@gmail.com>
-Date:   Sun, 22 Aug 2021 10:13:32 -0700
-Message-ID: <CALMXkpYeR+DegQJ7Eec2cx=z8i+Z8Y-Aygftjg08Y2+bQXJZ7Q@mail.gmail.com>
-Subject: Re: [PATCH NET v4 3/7] ipv6: use skb_expand_head in ip6_xmit
-To:     Vasily Averin <vvs@virtuozzo.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, kernel@openvz.org,
-        Julian Wiedmann <jwi@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 22, 2021 at 10:04 AM Christoph Paasch
-<christoph.paasch@gmail.com> wrote:
->
-> Hello Vasily,
->
-> On Fri, Aug 20, 2021 at 11:21 PM Vasily Averin <vvs@virtuozzo.com> wrote:
-> >
-> > On 8/21/21 1:44 AM, Christoph Paasch wrote:
-> > > (resend without html - thanks gmail web-interface...)
-> > > On Fri, Aug 20, 2021 at 3:41 PM Christoph Paasch
-> > >> AFAICS, this is because pskb_expand_head (called from
-> > >> skb_expand_head) is not adjusting skb->truesize when skb->sk is set
-> > >> (which I guess is the case in this particular scenario). I'm not
-> > >> sure what the proper fix would be though...
-> >
-> > Could you please elaborate?
-> > it seems to me skb_realloc_headroom used before my patch called pskb_expand_head() too
-> > and did not adjusted skb->truesize too. Am I missed something perhaps?
-> >
-> > The only difference in my patch is that skb_clone can be not called,
-> > though I do not understand how this can affect skb->truesize.
->
-> I *believe* that the difference is that after skb_clone() skb->sk is
-> NULL and thus truesize will be adjusted.
->
-> I will try to confirm that with some more debugging.
+Currently the interface name and PCI address are printed twice, because
+netdev_info() is printing this information implicitly already. This results
+in messages like the following. remove the duplicated information.
 
-Yes indeed.
+cxgb4 0000:81:00.4 eth3: eth3: Chelsio T6225-OCP-SO (0000:81:00.4) 1G/10G/25GBASE-SFP28
 
-Before your patch:
-[   19.154039] ip6_xmit before realloc truesize 4864 sk? 000000002ccd6868
-[   19.155230] ip6_xmit after realloc truesize 5376 sk? 0000000000000000
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-skb->sk is not set and thus truesize will be adjusted.
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+index aa8573202..f85d02757 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+@@ -6162,8 +6162,7 @@ static void print_port_info(const struct net_device *dev)
+ 		--bufp;
+ 	sprintf(bufp, "BASE-%s", t4_get_port_type_description(pi->port_type));
+ 
+-	netdev_info(dev, "%s: Chelsio %s (%s) %s\n",
+-		    dev->name, adap->params.vpd.id, adap->name, buf);
++	netdev_info(dev, "Chelsio %s %s\n", adap->params.vpd.id, buf);
+ }
+ 
+ /*
+-- 
+2.33.0
 
-
-With your change:
-[   15.092933] ip6_xmit before realloc truesize 4864 sk? 00000000072930fd
-[   15.094131] ip6_xmit after realloc truesize 4864 sk? 00000000072930fd
-
-skb->sk is set and thus truesize is not adjusted.
-
-
-Christoph
-
->
->
-> Christoph
->
-> >
-> > Thank you,
-> >         Vasily Averin
