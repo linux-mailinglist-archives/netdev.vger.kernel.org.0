@@ -2,106 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C8DF3F3DFE
-	for <lists+netdev@lfdr.de>; Sun, 22 Aug 2021 07:16:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D5893F3E0F
+	for <lists+netdev@lfdr.de>; Sun, 22 Aug 2021 07:50:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231192AbhHVFRD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Aug 2021 01:17:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39282 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229910AbhHVFRA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Aug 2021 01:17:00 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89076C061756
-        for <netdev@vger.kernel.org>; Sat, 21 Aug 2021 22:16:20 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id bo18so9972354pjb.0
-        for <netdev@vger.kernel.org>; Sat, 21 Aug 2021 22:16:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=y8ajL1MXjnm98ftlu2xw9F3LVfgwHRHrIy4fib1NoNg=;
-        b=Y0a8GbxIDGsupMPfALs9c9spCnnTUj10GqcmI81qVhXcdsNXwx3+WXpuFT/OMEwdqV
-         ov72OppMgo1s3fFQNnWub4aPQ3g1ot25/8ftkZ5p3ZUdFTAy3eibMgeUHw1Ncik4DfoH
-         1fyvWtmEFxySeGpMWW3u1iMK9poENxq7thhvU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=y8ajL1MXjnm98ftlu2xw9F3LVfgwHRHrIy4fib1NoNg=;
-        b=QxUeKo3EHoPVep1yP9MD5UL9CoVOTJGeooCn4o9KDsdZz/Pzac6gDFT295KCNKd+y3
-         6GtARAzzuS/t11ynz57KyUadsvAIBz8zlMbxXnxY/TD/uUI8AvXu0jbuXF6/mFMuKXSR
-         giQ+dtNB4343Y/q6ffhffmPzK2ULF8bc+RJL3qIU5VgV3a8RKvIePVlPwRLss+mmWQ2+
-         FQbafto0rkjTTw1rnYYyHxohOPy5TBNaJzoVdULj08Gq5UTHA3r9xwuie3sjW0I9CJGv
-         nqzM6FrOUI+Wppgs3tt/KsGJcMD7cQ6+fkrRkvEO+9OJUtwQAa8O3Tr/bQYCWPWNw2mX
-         gsYA==
-X-Gm-Message-State: AOAM5322pgmVGoooXmoVgX50WEMio2X92g4J9BqjEcZ/CB/g0kSaIWhC
-        uiahb3hgzpM/MOut2EhjRj2cMg==
-X-Google-Smtp-Source: ABdhPJyR+NATVJLBLIhcM5YqAZh+Upqb5pIwMTUuXQGDWIR7A9ZoJQ38xuDUEW6TSdHtuwjl1NIx8w==
-X-Received: by 2002:a17:90a:5147:: with SMTP id k7mr11682056pjm.73.1629609380131;
-        Sat, 21 Aug 2021 22:16:20 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id m194sm11771124pfd.58.2021.08.21.22.16.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 Aug 2021 22:16:19 -0700 (PDT)
-Date:   Sat, 21 Aug 2021 22:16:18 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Stanislav Yakovlev <stas.yakovlev@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Leon Romanovsky <leon@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-rdma@vger.kernel.org,
-        bpf@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH 0/3] net: Cleanups for FORTIFY_SOURCE
-Message-ID: <202108212215.35185C924B@keescook>
-References: <20210819202825.3545692-1-keescook@chromium.org>
- <20210820100151.25f7ccd4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <87tujjt8d9.fsf@codeaurora.org>
- <87eean9kby.fsf@tynnyri.adurom.net>
+        id S231255AbhHVFuc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Aug 2021 01:50:32 -0400
+Received: from smtp04.smtpout.orange.fr ([80.12.242.126]:58561 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229611AbhHVFu2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Aug 2021 01:50:28 -0400
+Received: from pop-os.home ([90.126.253.178])
+        by mwinf5d59 with ME
+        id kVpj2500B3riaq203Vpjfn; Sun, 22 Aug 2021 07:49:45 +0200
+X-ME-Helo: pop-os.home
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Sun, 22 Aug 2021 07:49:45 +0200
+X-ME-IP: 90.126.253.178
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     irusskikh@marvell.com, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] net: atlantic: switch from 'pci_' to 'dma_' API
+Date:   Sun, 22 Aug 2021 07:49:42 +0200
+Message-Id: <b263cad7a606091efb10392a81ee45f294f16bab.1629611296.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87eean9kby.fsf@tynnyri.adurom.net>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Aug 21, 2021 at 01:13:37PM +0300, Kalle Valo wrote:
-> Kalle Valo <kvalo@codeaurora.org> writes:
-> 
-> > Jakub Kicinski <kuba@kernel.org> writes:
-> >
-> >> On Thu, 19 Aug 2021 13:28:22 -0700 Kees Cook wrote:
-> >>> Hi,
-> >>> 
-> >>> In preparation for FORTIFY_SOURCE performing compile-time and run-time
-> >>> field bounds checking for memcpy(), memmove(), and memset(), avoid
-> >>> intentionally writing across neighboring fields.
-> >>> 
-> >>> These three changes have been living in my memcpy() series[1], but have
-> >>> no external dependencies. It's probably better to have these go via
-> >>> netdev.
-> >>
-> >> Thanks.
-> >>
-> >> Kalle, Saeed - would you like to take the relevant changes? Presumably
-> >> they would get into net-next anyway by the time the merge window opens.
-> >
-> > Ok, I'll take patch 1 to wireless-drivers-next.
-> 
-> Correction: I'll take patches 1 and 3 to wireless-drivers-next.
+The wrappers in include/linux/pci-dma-compat.h should go away.
 
-Great; thanks!
+The patch has been generated with the coccinelle script below.
 
+It has been hand modified to use 'dma_set_mask_and_coherent()' instead of
+'pci_set_dma_mask()/pci_set_consistent_dma_mask()' when applicable.
+This is less verbose.
+
+A useless "!= 0" has also been removed in a test.
+
+It has been compile tested.
+
+
+@@
+@@
+-    PCI_DMA_BIDIRECTIONAL
++    DMA_BIDIRECTIONAL
+
+@@
+@@
+-    PCI_DMA_TODEVICE
++    DMA_TO_DEVICE
+
+@@
+@@
+-    PCI_DMA_FROMDEVICE
++    DMA_FROM_DEVICE
+
+@@
+@@
+-    PCI_DMA_NONE
++    DMA_NONE
+
+@@
+expression e1, e2, e3;
+@@
+-    pci_alloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+
+@@
+expression e1, e2, e3;
+@@
+-    pci_zalloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_free_consistent(e1, e2, e3, e4)
++    dma_free_coherent(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_single(e1, e2, e3, e4)
++    dma_map_single(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_single(e1, e2, e3, e4)
++    dma_unmap_single(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4, e5;
+@@
+-    pci_map_page(e1, e2, e3, e4, e5)
++    dma_map_page(&e1->dev, e2, e3, e4, e5)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_page(e1, e2, e3, e4)
++    dma_unmap_page(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_sg(e1, e2, e3, e4)
++    dma_map_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_sg(e1, e2, e3, e4)
++    dma_unmap_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
++    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_device(e1, e2, e3, e4)
++    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
++    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
++    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2;
+@@
+-    pci_dma_mapping_error(e1, e2)
++    dma_mapping_error(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_dma_mask(e1, e2)
++    dma_set_mask(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_consistent_dma_mask(e1, e2)
++    dma_set_coherent_mask(&e1->dev, e2)
+
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+If needed, see post from Christoph Hellwig on the kernel-janitors ML:
+   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
+---
+ drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c | 12 +++---------
+ 1 file changed, 3 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
+index 59253846e885..cdeece459c14 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
+@@ -119,16 +119,10 @@ static int aq_pci_func_init(struct pci_dev *pdev)
+ {
+ 	int err;
+ 
+-	err = pci_set_dma_mask(pdev, DMA_BIT_MASK(64));
+-	if (!err)
+-		err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
++	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
++	if (err)
++		err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
+ 	if (err) {
+-		err = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
+-		if (!err)
+-			err = pci_set_consistent_dma_mask(pdev,
+-							  DMA_BIT_MASK(32));
+-	}
+-	if (err != 0) {
+ 		err = -ENOSR;
+ 		goto err_exit;
+ 	}
 -- 
-Kees Cook
+2.30.2
+
