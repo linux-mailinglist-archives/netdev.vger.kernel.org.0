@@ -2,195 +2,255 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85ADA3F3E42
-	for <lists+netdev@lfdr.de>; Sun, 22 Aug 2021 09:19:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4B5D3F3E4E
+	for <lists+netdev@lfdr.de>; Sun, 22 Aug 2021 09:40:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231410AbhHVHUF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Aug 2021 03:20:05 -0400
-Received: from new2-smtp.messagingengine.com ([66.111.4.224]:57085 "EHLO
-        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230403AbhHVHUF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Aug 2021 03:20:05 -0400
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 465E4580B2F;
-        Sun, 22 Aug 2021 03:19:24 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute5.internal (MEProxy); Sun, 22 Aug 2021 03:19:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=qshXaL
-        l3eCR6CTjOxib6q3IxHsv5hzHsOnRqrLEr/QY=; b=SfhZadEnW6pIE9BsRP2XK7
-        vnB0nqB/Owip6Rd325QxpTJ2BOwrDnS+8lGArcjyBqoC2B/jH7vlJ9KTFkZKZnI+
-        PXxzgK4ht5gpjOy6OZ/fDkruUxavRwCOx24XtXO85gVXpvIk1TvlYirEXTwPrAVc
-        xS8P4qehBgSH3WJQ6B11uQeANvAmeE7TAf1m4ekxQq4KqNEvremnfiA9BLEP9dRb
-        KlSKy9xjZ8kixMew+Tz884EN/oB8tDs0u+i5ULuCrUTSKXHnH6W4HkNA6k4A/PlW
-        vOpdP8u4qtbUfzDzPph3/25Nikga65qoWcaQYvU6fatxAa0jchOAf/mA/ktORdmQ
-        ==
-X-ME-Sender: <xms:d_ohYbh-ojvknE10OsYhY-8Ys3fkcqVzKKStQk102z8eD_rwKVx3hw>
-    <xme:d_ohYYBgnwtfwYzbh-jiSmvamTZaUzi6PLE9i0IODMXGvEzXXJSMMSlmoqRirFVue
-    5H3rUNCaD2WhmM>
-X-ME-Received: <xmr:d_ohYbFu7xCOBp_6xucpWYt3SdTaGaROkCGfccF8Yz8Dpce_hBqXbiBtps0Hnn0FWS7bda_R-kkeeX9kEA3p8ot6MKZKfA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddruddtvddgudduiecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
-    leetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
-    guohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:d_ohYYSTdCFy1YtH8S6T8qgCWW0SOjjrM6IrbwcuQpxcoIWGQPqIkw>
-    <xmx:d_ohYYwrH63Ts5nfb9e1_IdmvBaavz-_2iZZD1lSmK1_t048y9cEXw>
-    <xmx:d_ohYe7uW8WN4KMknhvBXdd8mZeNb-FRa6lmxoQGuAsK7fbChDEs0w>
-    <xmx:fPohYeQ5duLfnp5MzWfEBuPtZ0oI2Fge9l3_GBQ8fat3pZIFE2iHKQ>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 22 Aug 2021 03:19:18 -0400 (EDT)
-Date:   Sun, 22 Aug 2021 10:19:14 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        UNGLinuxDriver@microchip.com,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Marek Behun <kabel@blackhole.sk>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Julian Wiedmann <jwi@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        Jianbo Liu <jianbol@nvidia.com>,
-        Mark Bloch <mbloch@nvidia.com>, Roi Dayan <roid@nvidia.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>
-Subject: Re: [PATCH v2 net-next 0/5] Make SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE
- blocking
-Message-ID: <YSH6ckM65582PB3P@shredder>
-References: <20210819160723.2186424-1-vladimir.oltean@nxp.com>
- <YR9y2nwQWtGTumIS@shredder>
- <20210820104948.vcnomur33fhvcmas@skbuf>
- <YR/UI/SrR9R/8TAt@shredder>
- <20210821190914.dkrjtcbn277m67bk@skbuf>
+        id S231690AbhHVHkd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Aug 2021 03:40:33 -0400
+Received: from out02.smtpout.orange.fr ([193.252.22.211]:23663 "EHLO
+        out.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230328AbhHVHkc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Aug 2021 03:40:32 -0400
+Received: from pop-os.home ([90.126.253.178])
+        by mwinf5d59 with ME
+        id kXfn2500K3riaq203XfnP5; Sun, 22 Aug 2021 09:39:50 +0200
+X-ME-Helo: pop-os.home
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Sun, 22 Aug 2021 09:39:50 +0200
+X-ME-IP: 90.126.253.178
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     nbd@nbd.name, lorenzo.bianconi83@gmail.com, ryder.lee@mediatek.com,
+        davem@davemloft.net, kvalo@codeaurora.org, kuba@kernel.org,
+        matthias.bgg@gmail.com
+Cc:     linux-wireless@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] mt76: switch from 'pci_' to 'dma_' API
+Date:   Sun, 22 Aug 2021 09:39:45 +0200
+Message-Id: <83b2da6ff8a07d576fa3627051daa705aba37a3c.1629617782.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210821190914.dkrjtcbn277m67bk@skbuf>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Aug 21, 2021 at 10:09:14PM +0300, Vladimir Oltean wrote:
-> On Fri, Aug 20, 2021 at 07:11:15PM +0300, Ido Schimmel wrote:
-> > On Fri, Aug 20, 2021 at 01:49:48PM +0300, Vladimir Oltean wrote:
-> > > On Fri, Aug 20, 2021 at 12:16:10PM +0300, Ido Schimmel wrote:
-> > > > On Thu, Aug 19, 2021 at 07:07:18PM +0300, Vladimir Oltean wrote:
-> > > > > Problem statement:
-> > > > >
-> > > > > Any time a driver needs to create a private association between a bridge
-> > > > > upper interface and use that association within its
-> > > > > SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE handler, we have an issue with FDB
-> > > > > entries deleted by the bridge when the port leaves. The issue is that
-> > > > > all switchdev drivers schedule a work item to have sleepable context,
-> > > > > and that work item can be actually scheduled after the port has left the
-> > > > > bridge, which means the association might have already been broken by
-> > > > > the time the scheduled FDB work item attempts to use it.
-> > > >
-> > > > This is handled in mlxsw by telling the device to flush the FDB entries
-> > > > pointing to the {port, FID} when the VLAN is deleted (synchronously).
-> > > 
-> > > If you have FDB entries pointing to bridge ports that are foreign
-> > > interfaces and you offload them, do you catch the VLAN deletion on the
-> > > foreign port and flush your entries towards it at that time?
-> > 
-> > Yes, that's how VXLAN offload works. VLAN addition is used to determine
-> > the mapping between VNI and VLAN.
-> 
-> I was only able to follow as far as:
-> 
-> mlxsw_sp_switchdev_blocking_event
-> -> mlxsw_sp_switchdev_handle_vxlan_obj_del
->    -> mlxsw_sp_switchdev_vxlan_vlans_del
->       -> mlxsw_sp_switchdev_vxlan_vlan_del
->          -> ??? where are the FDB entries flushed?
+The wrappers in include/linux/pci-dma-compat.h should go away.
 
- mlxsw_sp_switchdev_blocking_event
- -> mlxsw_sp_switchdev_handle_vxlan_obj_del
-    -> mlxsw_sp_switchdev_vxlan_vlans_del
-       -> mlxsw_sp_switchdev_vxlan_vlan_del
-          -> mlxsw_sp_bridge_vxlan_leave
-	     -> mlxsw_sp_nve_fid_disable
-	        -> mlxsw_sp_nve_fdb_flush_by_fid
+The patch has been generated with the coccinelle script below.
 
-> 
-> I was expecting to see something along the lines of
-> 
-> mlxsw_sp_switchdev_blocking_event
-> -> mlxsw_sp_port_vlans_del
->    -> mlxsw_sp_bridge_port_vlan_del
->       -> mlxsw_sp_port_vlan_bridge_leave
->          -> mlxsw_sp_bridge_port_fdb_flush
-> 
-> but that is exactly on the other branch of the "if (netif_is_vxlan(dev))"
-> condition (and also, mlxsw_sp_bridge_port_fdb_flush flushes an externally-facing
-> port, not really what I needed to know, see below).
-> 
-> Anyway, it also seems to me that we are referring to slightly different
-> things by "foreign" interfaces. To me, a "foreign" interface is one
-> towards which there is no hardware data path. Like for example if you
-> have a mlxsw port in a plain L2 bridge with an Intel card. The data path
-> is the CPU and that was my question: do you track FDB entries towards
-> those interfaces (implicitly: towards the CPU)? You've answered about
-> VXLAN, which is quite not "foreign" in the sense I am thinking about,
-> because mlxsw does have a hardware data path towards a VXLAN interface
-> (as you've mentioned, it associates a VID with each VNI).
-> 
-> I've been searching through the mlxsw driver and I don't see that this
-> is being done, so I'm guessing you might wonder/ask why you would want
-> to do that in the first place. If you bridge a mlxsw port with an Intel
-> card, then (from another thread where you've said that mlxsw always
-> injects control packets where hardware learning is not performed) my
-> guess is that the MAC addresses learned on the Intel bridge port will
-> never be learned on the mlxsw device. So every packet that ingresses the
-> mlxsw and must egress the Intel card will reach the CPU through flooding
-> (and will consequently be flooded in the entire broadcast domain of the
-> mlxsw side of the bridge). Right?
+It has been compile tested.
 
-I can see how this use case makes sense on systems where the difference
-in performance between the ASIC and the CPU is not huge, but it doesn't
-make much sense with Spectrum and I have yet to get requests to support
-it (might change). Keep in mind that Spectrum is able to forward several
-Bpps with a switching capacity of several Tbps. It is usually connected
-to a weak CPU (e.g., low-end ARM, Intel Atom) through a PCI bus with a
-bandwidth of several Gbps. There is usually one "Intel card" on such
-systems which is connected to the management network that is separated
-from the data plane network.
 
-If we were to support it, FDB entries towards "foreign" interfaces would
-be programmed to trap packets to the CPU. For now, for correctness /
-rigor purposes, I would prefer simply returning an error / warning via
-extack when such topologies are configured.
+@@
+@@
+-    PCI_DMA_BIDIRECTIONAL
++    DMA_BIDIRECTIONAL
+
+@@
+@@
+-    PCI_DMA_TODEVICE
++    DMA_TO_DEVICE
+
+@@
+@@
+-    PCI_DMA_FROMDEVICE
++    DMA_FROM_DEVICE
+
+@@
+@@
+-    PCI_DMA_NONE
++    DMA_NONE
+
+@@
+expression e1, e2, e3;
+@@
+-    pci_alloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+
+@@
+expression e1, e2, e3;
+@@
+-    pci_zalloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_free_consistent(e1, e2, e3, e4)
++    dma_free_coherent(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_single(e1, e2, e3, e4)
++    dma_map_single(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_single(e1, e2, e3, e4)
++    dma_unmap_single(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4, e5;
+@@
+-    pci_map_page(e1, e2, e3, e4, e5)
++    dma_map_page(&e1->dev, e2, e3, e4, e5)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_page(e1, e2, e3, e4)
++    dma_unmap_page(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_sg(e1, e2, e3, e4)
++    dma_map_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_sg(e1, e2, e3, e4)
++    dma_unmap_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
++    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_device(e1, e2, e3, e4)
++    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
++    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
++    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2;
+@@
+-    pci_dma_mapping_error(e1, e2)
++    dma_mapping_error(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_dma_mask(e1, e2)
++    dma_set_mask(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_consistent_dma_mask(e1, e2)
++    dma_set_coherent_mask(&e1->dev, e2)
+
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+If needed, see post from Christoph Hellwig on the kernel-janitors ML:
+   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
+---
+ drivers/net/wireless/mediatek/mt76/mt7603/pci.c | 2 +-
+ drivers/net/wireless/mediatek/mt76/mt7615/pci.c | 2 +-
+ drivers/net/wireless/mediatek/mt76/mt76x0/pci.c | 2 +-
+ drivers/net/wireless/mediatek/mt76/mt76x2/pci.c | 2 +-
+ drivers/net/wireless/mediatek/mt76/mt7915/pci.c | 2 +-
+ drivers/net/wireless/mediatek/mt76/mt7921/pci.c | 2 +-
+ 6 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7603/pci.c b/drivers/net/wireless/mediatek/mt76/mt7603/pci.c
+index aa6cb668b012..3d94cdb4314a 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7603/pci.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7603/pci.c
+@@ -28,7 +28,7 @@ mt76pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 
+ 	pci_set_master(pdev);
+ 
+-	ret = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
++	ret = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
+ 	if (ret)
+ 		return ret;
+ 
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/pci.c b/drivers/net/wireless/mediatek/mt76/mt7615/pci.c
+index 11f169cdd603..7a54ea6a86d0 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7615/pci.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7615/pci.c
+@@ -39,7 +39,7 @@ static int mt7615_pci_probe(struct pci_dev *pdev,
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
++	ret = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
+ 	if (ret)
+ 		goto error;
+ 
+diff --git a/drivers/net/wireless/mediatek/mt76/mt76x0/pci.c b/drivers/net/wireless/mediatek/mt76/mt76x0/pci.c
+index b795e7245c07..92ddb8c68938 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt76x0/pci.c
++++ b/drivers/net/wireless/mediatek/mt76/mt76x0/pci.c
+@@ -176,7 +176,7 @@ mt76x0e_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 
+ 	pci_set_master(pdev);
+ 
+-	ret = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
++	ret = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
+ 	if (ret)
+ 		return ret;
+ 
+diff --git a/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c b/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
+index adf288e50e21..fb8de1833937 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
++++ b/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
+@@ -47,7 +47,7 @@ mt76x2e_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 
+ 	pci_set_master(pdev);
+ 
+-	ret = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
++	ret = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
+ 	if (ret)
+ 		return ret;
+ 
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/pci.c b/drivers/net/wireless/mediatek/mt76/mt7915/pci.c
+index 340b364da5f0..c79b526346e7 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/pci.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/pci.c
+@@ -251,7 +251,7 @@ static int mt7915_pci_probe(struct pci_dev *pdev,
+ 
+ 	pci_set_master(pdev);
+ 
+-	ret = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
++	ret = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
+ 	if (ret)
+ 		return ret;
+ 
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/pci.c b/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
+index c3905bcab360..7e8cff3a1b94 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
+@@ -128,7 +128,7 @@ static int mt7921_pci_probe(struct pci_dev *pdev,
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
++	ret = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
+ 	if (ret)
+ 		goto err_free_pci_vec;
+ 
+-- 
+2.30.2
+
