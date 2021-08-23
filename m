@@ -2,246 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B54D13F43FA
-	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 05:35:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06DA23F43F2
+	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 05:32:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234143AbhHWDgj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Aug 2021 23:36:39 -0400
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:48544
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234054AbhHWDgi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Aug 2021 23:36:38 -0400
-X-Greylist: delayed 544 seconds by postgrey-1.27 at vger.kernel.org; Sun, 22 Aug 2021 23:36:38 EDT
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 3ED714079A
-        for <netdev@vger.kernel.org>; Mon, 23 Aug 2021 03:26:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1629689212;
-        bh=Cypx4Nn+r/dXMbYAm6m3pweXCOI+f20/ritVZIXiH5w=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=Jsci6frtugZ8MkyqcZOGV2KXbAVklW190pLFWDj9yyu/UCV0rMUhK1LsSEcob1UvT
-         oQDsnCnGrkH/zr9xZLYMeNRoU70hDsMxkkGokF0WrG4UNLp3N7eqVD2UkbPtHFv8Sj
-         y0KIemxtI0pgLXGcfr7x499Urmn6zh9pRh/H2wE/hsvikJVaE0z3PwEsWy5SjZWr/u
-         +dWttxXFs/9m5cR+QtHo96yuTU4v6nofSjkpCMUbjZMziozunkHzrGBwZrb2JBGEFF
-         bnCwL/PriUGoR0Z/O6XgiqiQDLKKBpZkidEQ0b6POQDk8GRD9TeJRQ+uAPm5zP3cAi
-         7Ma/ivBTF/sNA==
-Received: by mail-ed1-f71.google.com with SMTP id b16-20020a0564022790b02903be6352006cso8016290ede.15
-        for <netdev@vger.kernel.org>; Sun, 22 Aug 2021 20:26:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Cypx4Nn+r/dXMbYAm6m3pweXCOI+f20/ritVZIXiH5w=;
-        b=bH26o9mimnqsvmuFZFS1IFOrq/wVudmhbC5NvBbqVmHATWuhkxlBYxQrZ+SzqBrteh
-         Sjg8na4L9PgLSaH3T0V/p+0XLHOAmbVgjY3VBgTFRzptf6IJqz1jEV4aKw9xnVmh9quY
-         qK3w7quTj8q/wGWTEjzHRQO9HSbpycucSjCVM5Lij+BsXY7fl+JDJrLjzGJbBPlHOIsT
-         9awXKJ33rMY7zMqdW4aepdnQ5Fph1fuYllmeBp1jQsrc2T0p3buPZYdDx4jSqxD4t0rS
-         56HpcrVB6gfzjbafhtEvMPQidibzMpeClo//bj6pKVmpV7qRk/L9qSH0qeYA+Dt7Ewhx
-         yDsA==
-X-Gm-Message-State: AOAM532u9SAlidtNx7IwJ3rI4RVqsetjSfh3QGJQLhhH3tZuN23rdu/e
-        edXbjGbXK3rwWfjMDcn9Kr8ZO9cAEWMkIlTfdG5khxSzuxj/xqM+u3DFYdB2AGvwWNucrFIFKNZ
-        t6+nKyJyhqojai7OyJy5XgZkng2XlgARD6EWVuV8DFM/sAm55Jw==
-X-Received: by 2002:a50:ec0e:: with SMTP id g14mr33889326edr.157.1629689211633;
-        Sun, 22 Aug 2021 20:26:51 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy4NaD5EZD9YyEnnx2kyjQZGtgZgz1h2jLXjJib7TrkVr6SsYEOZKkJx63kjgOlyjTzaPjSSrkTRMU5zwF+7Eo=
-X-Received: by 2002:a50:ec0e:: with SMTP id g14mr33889314edr.157.1629689211456;
- Sun, 22 Aug 2021 20:26:51 -0700 (PDT)
+        id S233373AbhHWDct (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Aug 2021 23:32:49 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:8919 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231565AbhHWDcs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Aug 2021 23:32:48 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GtHkN4QSQz8tFT;
+        Mon, 23 Aug 2021 11:27:56 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Mon, 23 Aug 2021 11:32:03 +0800
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Mon, 23 Aug
+ 2021 11:32:02 +0800
+Subject: Re: [PATCH RFC 0/7] add socket to netdev page frag recycling support
+To:     David Ahern <dsahern@gmail.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>
+CC:     <alexander.duyck@gmail.com>, <linux@armlinux.org.uk>,
+        <mw@semihalf.com>, <linuxarm@openeuler.org>,
+        <yisen.zhuang@huawei.com>, <salil.mehta@huawei.com>,
+        <thomas.petazzoni@bootlin.com>, <hawk@kernel.org>,
+        <ilias.apalodimas@linaro.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <john.fastabend@gmail.com>,
+        <akpm@linux-foundation.org>, <peterz@infradead.org>,
+        <will@kernel.org>, <willy@infradead.org>, <vbabka@suse.cz>,
+        <fenghua.yu@intel.com>, <guro@fb.com>, <peterx@redhat.com>,
+        <feng.tang@intel.com>, <jgg@ziepe.ca>, <mcroce@microsoft.com>,
+        <hughd@google.com>, <jonathan.lemon@gmail.com>, <alobakin@pm.me>,
+        <willemb@google.com>, <wenxu@ucloud.cn>, <cong.wang@bytedance.com>,
+        <haokexin@gmail.com>, <nogikh@google.com>, <elver@google.com>,
+        <yhs@fb.com>, <kpsingh@kernel.org>, <andrii@kernel.org>,
+        <kafai@fb.com>, <songliubraving@fb.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <chenhao288@hisilicon.com>, <edumazet@google.com>,
+        <yoshfuji@linux-ipv6.org>, <dsahern@kernel.org>,
+        <memxor@gmail.com>, <linux@rempel-privat.de>, <atenart@kernel.org>,
+        <weiwan@google.com>, <ap420073@gmail.com>, <arnd@arndb.de>,
+        <mathew.j.martineau@linux.intel.com>, <aahringo@redhat.com>,
+        <ceggers@arri.de>, <yangbo.lu@nxp.com>, <fw@strlen.de>,
+        <xiangxia.m.yue@gmail.com>, <linmiaohe@huawei.com>
+References: <1629257542-36145-1-git-send-email-linyunsheng@huawei.com>
+ <83b8bae8-d524-36a1-302e-59198410d9a9@gmail.com>
+ <f0d935b9-45fe-4c51-46f0-1f526167877f@huawei.com>
+ <619b5ca5-a48b-49e9-2fef-a849811d62bb@gmail.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <744e88b6-7cb4-ea99-0523-4bfa5a23e15c@huawei.com>
+Date:   Mon, 23 Aug 2021 11:32:01 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-References: <20210809032809.1224002-1-acelan.kao@canonical.com>
- <YRDCcDZGVkCdNF34@unreal> <CAFv23Qn=c_EZNPxu90s0n-HB6_vQCqaUG34YAq7-T6Np+10ZUA@mail.gmail.com>
- <YRIl0WKm+n8EZjlk@unreal>
-In-Reply-To: <YRIl0WKm+n8EZjlk@unreal>
-From:   AceLan Kao <acelan.kao@canonical.com>
-Date:   Mon, 23 Aug 2021 11:26:40 +0800
-Message-ID: <CAFv23Q=Ue3kupfvMm2AnGP9iHXkpjpsCzzD36Ohd=SAGC=rzNg@mail.gmail.com>
-Subject: Re: [RESEND][PATCH] net: called rtnl_unlock() before runpm resumes devices
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Antoine Tenart <atenart@kernel.org>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Wei Wang <weiwan@google.com>, Taehee Yoo <ap420073@gmail.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <619b5ca5-a48b-49e9-2fef-a849811d62bb@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme716-chm.china.huawei.com (10.1.199.112) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Leon Romanovsky <leon@kernel.org> =E6=96=BC 2021=E5=B9=B48=E6=9C=8810=E6=97=
-=A5 =E9=80=B1=E4=BA=8C =E4=B8=8B=E5=8D=883:08=E5=AF=AB=E9=81=93=EF=BC=9A
->
-> On Tue, Aug 10, 2021 at 09:57:57AM +0800, AceLan Kao wrote:
-> > Leon Romanovsky <leon@kernel.org> =E6=96=BC 2021=E5=B9=B48=E6=9C=889=E6=
-=97=A5 =E9=80=B1=E4=B8=80 =E4=B8=8B=E5=8D=881:51=E5=AF=AB=E9=81=93=EF=BC=9A
-> > >
-> > > On Mon, Aug 09, 2021 at 11:28:09AM +0800, AceLan Kao wrote:
-> > > > From: "Chia-Lin Kao (AceLan)" <acelan.kao@canonical.com>
-> > > >
-> > > > The rtnl_lock() has been called in rtnetlink_rcv_msg(), and then in
-> > > > __dev_open() it calls pm_runtime_resume() to resume devices, and in
-> > > > some devices' resume function(igb_resum,igc_resume) they calls rtnl=
-_lock()
-> > > > again. That leads to a recursive lock.
-> > > >
-> > > > It should leave the devices' resume function to decide if they need=
- to
-> > > > call rtnl_lock()/rtnl_unlock(),
-> > >
-> > > Why? It doesn't sound right that drivers internally decide if to take=
- or
-> > > release some external to them lock without seeing full picture.
-> > From what I observed, this is the only calling path that acquired
-> > rtnl_lock() before calling drivers' resume function.
-> > So, it encounters recursive lock while driver is going to cal rtnl_lock=
-() again.
->
-> I clearly see the problem, but don't agree with a solution.
->
-> >
-> > >
-> > > Most of the time, device driver authors do it wrong. I afraid that ig=
-s
-> > > is one of such drivers that did it wrong.
-> > The issues could be if we remove rtnl_lock in device drivers, then in
-> > other calling path, it won't be protected by the rtnl lock,
-> > and maybe we shouldn't call pm_runtime_resume() here(within rtnl
-> > lock), for device drivers don't know if they are protected by the rtnl
-> > lock while their resume() got called.
->
-> This is exactly the problem, every driver guesses if rtnl_lock is needed
-> or not in specific path. It is wrong by design. You should ensure that
-> all paths that are triggered through rtnl should hold rtnl_lock.
-Hi Jesse, Tony,
+On 2021/8/20 22:35, David Ahern wrote:
+> On 8/19/21 2:18 AM, Yunsheng Lin wrote:
+>> On 2021/8/19 6:05, David Ahern wrote:
+>>> On 8/17/21 9:32 PM, Yunsheng Lin wrote:
+>>>> This patchset adds the socket to netdev page frag recycling
+>>>> support based on the busy polling and page pool infrastructure.
+>>>>
+>>>> The profermance improve from 30Gbit to 41Gbit for one thread iperf
+>>>> tcp flow, and the CPU usages decreases about 20% for four threads
+>>>> iperf flow with 100Gb line speed in IOMMU strict mode.
+>>>>
+>>>> The profermance improve about 2.5% for one thread iperf tcp flow
+>>>> in IOMMU passthrough mode.
+>>>>
+>>>
+>>> Details about the test setup? cpu model, mtu, any other relevant changes
+>>> / settings.
+>>
+>> CPU is arm64 Kunpeng 920, see:
+>> https://www.hisilicon.com/en/products/Kunpeng/Huawei-Kunpeng-920
+>>
+>> mtu is 1500, the relevant changes/settings I can think of the iperf
+>> client runs on the same numa as the nic hw exists(which has one 100Gbit
+>> port), and the driver has the XPS enabled too.
+>>
+>>>
+>>> How does that performance improvement compare with using the Tx ZC API?
+>>> At 1500 MTU I see a CPU drop on the Tx side from 80% to 20% with the ZC
+>>> API and ~10% increase in throughput. Bumping the MTU to 3300 and
+>>> performance with the ZC API is 2x the current model with 1/2 the cpu.
+>>
+>> I added a sysctl node to decide whether pfrag pool is used:
+>> net.ipv4.tcp_use_pfrag_pool
+>>
 
-As you are the Intel Ethernet drivers' maintainers, do you have any
-idea about this?
-We can reproduce this issue on the machine with PCI Ethernet card
-using igb or igc driver.
+[..]
 
->
-> You dropped rtnl_lock() without any protection, it is 100% bug.
->
-> Thanks
->
-> >
-> > >
-> > > Thanks
-> > >
-> > > > so call rtnl_unlock() before calling pm_runtime_resume() and then c=
-all
-> > > > rtnl_lock() after it in __dev_open().
-> > > >
-> > > > [  967.723577] INFO: task ip:6024 blocked for more than 120 seconds=
-.
-> > > > [  967.723588]       Not tainted 5.12.0-rc3+ #1
-> > > > [  967.723592] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" d=
-isables this message.
-> > > > [  967.723594] task:ip              state:D stack:    0 pid: 6024 p=
-pid:  5957 flags:0x00004000
-> > > > [  967.723603] Call Trace:
-> > > > [  967.723610]  __schedule+0x2de/0x890
-> > > > [  967.723623]  schedule+0x4f/0xc0
-> > > > [  967.723629]  schedule_preempt_disabled+0xe/0x10
-> > > > [  967.723636]  __mutex_lock.isra.0+0x190/0x510
-> > > > [  967.723644]  __mutex_lock_slowpath+0x13/0x20
-> > > > [  967.723651]  mutex_lock+0x32/0x40
-> > > > [  967.723657]  rtnl_lock+0x15/0x20
-> > > > [  967.723665]  igb_resume+0xee/0x1d0 [igb]
-> > > > [  967.723687]  ? pci_pm_default_resume+0x30/0x30
-> > > > [  967.723696]  igb_runtime_resume+0xe/0x10 [igb]
-> > > > [  967.723713]  pci_pm_runtime_resume+0x74/0x90
-> > > > [  967.723718]  __rpm_callback+0x53/0x1c0
-> > > > [  967.723725]  rpm_callback+0x57/0x80
-> > > > [  967.723730]  ? pci_pm_default_resume+0x30/0x30
-> > > > [  967.723735]  rpm_resume+0x547/0x760
-> > > > [  967.723740]  __pm_runtime_resume+0x52/0x80
-> > > > [  967.723745]  __dev_open+0x56/0x160
-> > > > [  967.723753]  ? _raw_spin_unlock_bh+0x1e/0x20
-> > > > [  967.723758]  __dev_change_flags+0x188/0x1e0
-> > > > [  967.723766]  dev_change_flags+0x26/0x60
-> > > > [  967.723773]  do_setlink+0x723/0x10b0
-> > > > [  967.723782]  ? __nla_validate_parse+0x5b/0xb80
-> > > > [  967.723792]  __rtnl_newlink+0x594/0xa00
-> > > > [  967.723800]  ? nla_put_ifalias+0x38/0xa0
-> > > > [  967.723807]  ? __nla_reserve+0x41/0x50
-> > > > [  967.723813]  ? __nla_reserve+0x41/0x50
-> > > > [  967.723818]  ? __kmalloc_node_track_caller+0x49b/0x4d0
-> > > > [  967.723824]  ? pskb_expand_head+0x75/0x310
-> > > > [  967.723830]  ? nla_reserve+0x28/0x30
-> > > > [  967.723835]  ? skb_free_head+0x25/0x30
-> > > > [  967.723843]  ? security_sock_rcv_skb+0x2f/0x50
-> > > > [  967.723850]  ? netlink_deliver_tap+0x3d/0x210
-> > > > [  967.723859]  ? sk_filter_trim_cap+0xc1/0x230
-> > > > [  967.723863]  ? skb_queue_tail+0x43/0x50
-> > > > [  967.723870]  ? sock_def_readable+0x4b/0x80
-> > > > [  967.723876]  ? __netlink_sendskb+0x42/0x50
-> > > > [  967.723888]  ? security_capable+0x3d/0x60
-> > > > [  967.723894]  ? __cond_resched+0x19/0x30
-> > > > [  967.723900]  ? kmem_cache_alloc_trace+0x390/0x440
-> > > > [  967.723906]  rtnl_newlink+0x49/0x70
-> > > > [  967.723913]  rtnetlink_rcv_msg+0x13c/0x370
-> > > > [  967.723920]  ? _copy_to_iter+0xa0/0x460
-> > > > [  967.723927]  ? rtnl_calcit.isra.0+0x130/0x130
-> > > > [  967.723934]  netlink_rcv_skb+0x55/0x100
-> > > > [  967.723939]  rtnetlink_rcv+0x15/0x20
-> > > > [  967.723944]  netlink_unicast+0x1a8/0x250
-> > > > [  967.723949]  netlink_sendmsg+0x233/0x460
-> > > > [  967.723954]  sock_sendmsg+0x65/0x70
-> > > > [  967.723958]  ____sys_sendmsg+0x218/0x290
-> > > > [  967.723961]  ? copy_msghdr_from_user+0x5c/0x90
-> > > > [  967.723966]  ? lru_cache_add_inactive_or_unevictable+0x27/0xb0
-> > > > [  967.723974]  ___sys_sendmsg+0x81/0xc0
-> > > > [  967.723980]  ? __mod_memcg_lruvec_state+0x22/0xe0
-> > > > [  967.723987]  ? kmem_cache_free+0x244/0x420
-> > > > [  967.723991]  ? dentry_free+0x37/0x70
-> > > > [  967.723996]  ? mntput_no_expire+0x4c/0x260
-> > > > [  967.724001]  ? __cond_resched+0x19/0x30
-> > > > [  967.724007]  ? security_file_free+0x54/0x60
-> > > > [  967.724013]  ? call_rcu+0xa4/0x250
-> > > > [  967.724021]  __sys_sendmsg+0x62/0xb0
-> > > > [  967.724026]  ? exit_to_user_mode_prepare+0x3d/0x1a0
-> > > > [  967.724032]  __x64_sys_sendmsg+0x1f/0x30
-> > > > [  967.724037]  do_syscall_64+0x38/0x90
-> > > > [  967.724044]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> > > >
-> > > > Fixes: bd869245a3dc ("net: core: try to runtime-resume detached dev=
-ice in __dev_open")
-> > > > Signed-off-by: Chia-Lin Kao (AceLan) <acelan.kao@canonical.com>
-> > > > ---
-> > > >  net/core/dev.c | 5 ++++-
-> > > >  1 file changed, 4 insertions(+), 1 deletion(-)
-> > > >
-> > > > diff --git a/net/core/dev.c b/net/core/dev.c
-> > > > index 8f1a47ad6781..dd43a29419fd 100644
-> > > > --- a/net/core/dev.c
-> > > > +++ b/net/core/dev.c
-> > > > @@ -1585,8 +1585,11 @@ static int __dev_open(struct net_device *dev=
-, struct netlink_ext_ack *extack)
-> > > >
-> > > >       if (!netif_device_present(dev)) {
-> > > >               /* may be detached because parent is runtime-suspende=
-d */
-> > > > -             if (dev->dev.parent)
-> > > > +             if (dev->dev.parent) {
-> > > > +                     rtnl_unlock();
-> > > >                       pm_runtime_resume(dev->dev.parent);
-> > > > +                     rtnl_lock();
-> > > > +             }
-> > > >               if (!netif_device_present(dev))
-> > > >                       return -ENODEV;
-> > > >       }
-> > > > --
-> > > > 2.25.1
-> > > >
+>>
+>>
+>>>
+>>> Epyc 7502, ConnectX-6, IOMMU off.
+>>>
+>>> In short, it seems like improving the Tx ZC API is the better path
+>>> forward than per-socket page pools.
+>>
+>> The main goal is to optimize the SMMU mapping/unmaping, if the cost of memcpy
+>> it higher than the SMMU mapping/unmaping + page pinning, then Tx ZC may be a
+>> better path, at leas it is not sure for small packet?
+>>
+> 
+> It's a CPU bound problem - either Rx or Tx is cpu bound depending on the
+> test configuration. In my tests 3.3 to 3.5M pps is the limit (not using
+> LRO in the NIC - that's a different solution with its own problems).
+
+I assumed the "either Rx or Tx is cpu bound" meant either Rx or Tx is the
+bottleneck?
+
+It seems iperf3 support the Tx ZC, I retested using the iperf3, Rx settings
+is not changed when testing, MTU is 1500:
+
+IOMMU in strict mode:
+1. Tx ZC case:
+   22Gbit with Tx being bottleneck(cpu bound)
+2. Tx non-ZC case with pfrag pool enabled:
+   40Git with Rx being bottleneck(cpu bound)
+3. Tx non-ZC case with pfrag pool disabled:
+   30Git, the bottleneck seems not to be cpu bound, as the Rx and Tx does
+   not have a single CPU reaching about 100% usage.
+
+> 
+> At 1500 MTU lowering CPU usage on the Tx side does not accomplish much
+> on throughput since the Rx is 100% cpu.
+
+As above performance data, enabling ZC does not seems to help when IOMMU
+is involved, which has about 30% performance degrade when pfrag pool is
+disabled and 50% performance degrade when pfrag pool is enabled.
+
+> 
+> At 3300 MTU you have ~47% the pps for the same throughput. Lower pps
+> reduces Rx processing and lower CPU to process the incoming stream. Then
+> using the Tx ZC API you lower the Tx overehad allowing a single stream
+> to faster - sending more data which in the end results in much higher
+> pps and throughput. At the limit you are CPU bound (both ends in my
+> testing as Rx side approaches the max pps, and Tx side as it continually
+> tries to send data).
+> 
+> Lowering CPU usage on Tx the side is a win regardless of whether there
+> is a big increase on the throughput at 1500 MTU since that configuration
+> is an Rx CPU bound problem. Hence, my point that we have a good start
+> point for lowering CPU usage on the Tx side; we should improve it rather
+> than add per-socket page pools.
+
+Acctually it is not a per-socket page pools, the page pool is still per
+NAPI, this patchset adds multi allocation context to the page pool, so that
+the tx can reuse the same page pool with rx, which is quite usefully if the
+ARFS is enabled.
+
+> 
+> You can stress the Tx side and emphasize its overhead by modifying the
+> receiver to drop the data on Rx rather than copy to userspace which is a
+> huge bottleneck (e.g., MSG_TRUNC on recv). This allows the single flow
+
+As the frag page is supported in page pool for Rx, the Rx probably is not
+a bottleneck any more, at least not for IOMMU in strict mode.
+
+It seems iperf3 does not support MSG_TRUNC yet, any testing tool supporting
+MSG_TRUNC? Or do I have to hack the kernel or iperf3 tool to do that?
+
+> stream to go faster and emphasize Tx bottlenecks as the pps at 3300
+> approaches the top pps at 1500. e.g., doing this with iperf3 shows the
+> spinlock overhead with tcp_sendmsg, overhead related to 'select' and
+> then gup_pgd_range.
+
+When IOMMU is in strict mode, the overhead with IOMMU seems to be much
+bigger than spinlock(23% to 10%).
+
+Anyway, I still think ZC mostly benefit to packet which is bigger than a
+specific size and IOMMU disabling case.
+
+
+> .
+> 
