@@ -2,135 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7C3B3F4AC9
-	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 14:37:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05EE43F4AE8
+	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 14:42:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235881AbhHWMiO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Aug 2021 08:38:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60840 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236248AbhHWMiN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Aug 2021 08:38:13 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01825C061575
-        for <netdev@vger.kernel.org>; Mon, 23 Aug 2021 05:37:31 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1mI9Cb-0007g8-I4; Mon, 23 Aug 2021 14:37:21 +0200
-Received: from pengutronix.de (2a03-f580-87bc-d400-5f1f-6edb-8f7f-ac9e.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:5f1f:6edb:8f7f:ac9e])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id D09D366D61D;
-        Mon, 23 Aug 2021 12:37:16 +0000 (UTC)
-Date:   Mon, 23 Aug 2021 14:37:15 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Tang Bin <tangbin@cmss.chinamobile.com>
-Cc:     davem@davemloft.net, wg@grandegger.com, kuba@kernel.org,
-        kevinbrace@bracecomputerlab.com, romieu@fr.zoreil.com,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] can: mscan: mpc5xxx_can: Use
- of_device_get_match_data to simplify code
-Message-ID: <20210823123715.j4khoyld5mfl6kdv@pengutronix.de>
-References: <20210823113338.3568-1-tangbin@cmss.chinamobile.com>
- <20210823113338.3568-4-tangbin@cmss.chinamobile.com>
+        id S236868AbhHWMnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Aug 2021 08:43:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50648 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233755AbhHWMnF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Aug 2021 08:43:05 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 88A83613AC;
+        Mon, 23 Aug 2021 12:42:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1629722542;
+        bh=Ggwchvs84GPqibIZ0xAZy50qZZakHVUzDDoEZDT3RE4=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=C2nL8/BLctxvnTUPudVmyoNqy8c8pZ+PMDwIgLye4/tCeqPBwwQh6p5tNgVpQsb5e
+         pZPmjX2+ymZGOYQS1AhcCRdpc6jHkmQt9Oc+Z87Re9/VT/ztS0FnJAnIUaqnXq9rxe
+         aQf7GOmHrtzmJZrt+gyDwKSodbleWsohQ9y2lvQDUuid/jIltF65Nk4Yy699of9W0H
+         uyWPmfcGZsEbuCP3Wq2qo5K50TBXNL5fypHSNuZO19uap7KazuuAltbv4tn8fXsWGL
+         5vJ3cep4NoisawJLMtgrp7x6Nkdwo10mrtRl2SOJCKw/IssZUYfkf9t+6dpnfoSVJ5
+         U1Y4+TC5oSQOw==
+Received: by mail-ej1-f42.google.com with SMTP id lc21so4324622ejc.7;
+        Mon, 23 Aug 2021 05:42:22 -0700 (PDT)
+X-Gm-Message-State: AOAM533J3T7b7V3H8ayPEXZqS812Y8yVsnoxevt3GOsPdjdbiKpOaSFg
+        1f30/npirf3a1ILLopJ3rzMFn3BL9JKr5COPGg==
+X-Google-Smtp-Source: ABdhPJz9aEVSU49faJLZnqJhCIZ53qCZLTmM1TpsMhCaPqt3iGo1r07w4vMA2hc4rS/swQ+zi21Afq2zu8Y5LNN8jmw=
+X-Received: by 2002:a17:906:8cd:: with SMTP id o13mr35853250eje.341.1629722541063;
+ Mon, 23 Aug 2021 05:42:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="tzba5ik5srkh4lwi"
-Content-Disposition: inline
-In-Reply-To: <20210823113338.3568-4-tangbin@cmss.chinamobile.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+References: <CGME20210823120849eucas1p11d3919886444358472be3edd1c662755@eucas1p1.samsung.com>
+ <20210818021717.3268255-1-saravanak@google.com> <0a2c4106-7f48-2bb5-048e-8c001a7c3fda@samsung.com>
+In-Reply-To: <0a2c4106-7f48-2bb5-048e-8c001a7c3fda@samsung.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Mon, 23 Aug 2021 07:42:08 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqJ50mU2OfHs5eJmgn_8YnJsAsQXzGrzr4_3LQFb6336hg@mail.gmail.com>
+Message-ID: <CAL_JsqJ50mU2OfHs5eJmgn_8YnJsAsQXzGrzr4_3LQFb6336hg@mail.gmail.com>
+Subject: Re: [PATCH v2] of: property: fw_devlink: Add support for "phy-handle" property
+To:     Marek Szyprowski <m.szyprowski@samsung.com>
+Cc:     Saravana Kannan <saravanak@google.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, netdev <netdev@vger.kernel.org>,
+        Android Kernel Team <kernel-team@android.com>,
+        devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Aug 23, 2021 at 7:08 AM Marek Szyprowski
+<m.szyprowski@samsung.com> wrote:
+>
+> Hi,
+>
+> On 18.08.2021 04:17, Saravana Kannan wrote:
+> > Allows tracking dependencies between Ethernet PHYs and their consumers.
+> >
+> > Cc: Andrew Lunn <andrew@lunn.ch>
+> > Cc: netdev@vger.kernel.org
+> > Signed-off-by: Saravana Kannan <saravanak@google.com>
+>
+> This patch landed recently in linux-next as commit cf4b94c8530d ("of:
+> property: fw_devlink: Add support for "phy-handle" property"). It breaks
+> ethernet operation on my Amlogic-based ARM64 boards: Odroid C4
+> (arm64/boot/dts/amlogic/meson-sm1-odroid-c4.dts) and N2
+> (meson-g12b-odroid-n2.dts) as well as Khadas VIM3/VIM3l
+> (meson-g12b-a311d-khadas-vim3.dts and meson-sm1-khadas-vim3l.dts).
+>
+> In case of OdroidC4 I see the following entries in the
+> /sys/kernel/debug/devices_deferred:
+>
+> ff64c000.mdio-multiplexer
+> ff3f0000.ethernet
+>
+> Let me know if there is anything I can check to help debugging this issue.
 
---tzba5ik5srkh4lwi
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Looks to me like we need to handle 'mdio-parent-bus' dependency.
 
-On 23.08.2021 19:33:38, Tang Bin wrote:
-> Retrieve OF match data, it's better and cleaner to use
-> 'of_device_get_match_data' over 'of_match_device'.
->=20
-> Signed-off-by: Tang Bin <tangbin@cmss.chinamobile.com>
-
-Thanks for the patch!
-
-LGTM, comment inside.
-
-> ---
->  drivers/net/can/mscan/mpc5xxx_can.c | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
->=20
-> diff --git a/drivers/net/can/mscan/mpc5xxx_can.c b/drivers/net/can/mscan/=
-mpc5xxx_can.c
-> index e254e04ae..3b7465acd 100644
-> --- a/drivers/net/can/mscan/mpc5xxx_can.c
-> +++ b/drivers/net/can/mscan/mpc5xxx_can.c
-> @@ -279,7 +279,6 @@ static u32 mpc512x_can_get_clock(struct platform_devi=
-ce *ofdev,
->  static const struct of_device_id mpc5xxx_can_table[];
->  static int mpc5xxx_can_probe(struct platform_device *ofdev)
->  {
-> -	const struct of_device_id *match;
->  	const struct mpc5xxx_can_data *data;
->  	struct device_node *np =3D ofdev->dev.of_node;
->  	struct net_device *dev;
-> @@ -289,10 +288,9 @@ static int mpc5xxx_can_probe(struct platform_device =
-*ofdev)
->  	int irq, mscan_clksrc =3D 0;
->  	int err =3D -ENOMEM;
-> =20
-> -	match =3D of_match_device(mpc5xxx_can_table, &ofdev->dev);
-> -	if (!match)
-> +	data =3D of_device_get_match_data(&ofdev->dev);
-> +	if (!data)
->  		return -EINVAL;
-
-Please remove the "BUG_ON(!data)", which comes later.
-
-> -	data =3D match->data;
-> =20
->  	base =3D of_iomap(np, 0);
->  	if (!base) {
-> --=20
-> 2.20.1.windows.1
->=20
->=20
->=20
->=20
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---tzba5ik5srkh4lwi
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmEjlnkACgkQqclaivrt
-76lOCgf+KYF+o99Kg2iOCfI60mHHeBPkPjnzLl7AFALXMjkAiWjh9nL0c3mybPpU
-XkVqIxlJ1OEXOLdHXNhsguxrPMLrampXYBgLajVcQQH1EWj0p9Ty2bqth6NptZXz
-hOcKIltTJ04uOwsHcziYt54EsE7RlOcoAN+y1/aQCDd6GF+tC7Vm9g3QwukpLEcT
-ZvaDPa+CwljvPznAjB77QSfJMPwcl8ggh4Y9wS2aQZkVKbuecgN7PGMIa2NxrlWH
-g9XyFKWpXa1Gl7+fubXpgCLhcPqK1B8Hstjd3nonh2qJjA0GJYzvdaMvYc2FnWPz
-O6WExKQvp89qzAGfKhyKL1tyoZdChw==
-=Dg0F
------END PGP SIGNATURE-----
-
---tzba5ik5srkh4lwi--
+Rob
