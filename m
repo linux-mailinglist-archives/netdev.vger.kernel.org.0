@@ -2,189 +2,276 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 732693F4357
-	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 04:11:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49F0A3F435A
+	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 04:12:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234765AbhHWCLt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Aug 2021 22:11:49 -0400
-Received: from mail-eopbgr80058.outbound.protection.outlook.com ([40.107.8.58]:24870
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234692AbhHWCLr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 22 Aug 2021 22:11:47 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FtlVjdSDhlYKCk7ulz6kvm8xT6wA5il6IuUvGuhDgjOnQdAwSBB5CaXVZtx/vY/k6I5bBbPNPDqUBxXQkylSrISq1zyFOCRDBa99o3ryZ7OYGNq6byucPPvx/koHS0ZnvEz+WDZb204Ek6lyTB9A5hS+OSvIKiy+ExQVq22VlnLKC9vFC+3dSU3Cqa6G60fr26ku4PDnBDNqLvVvhuocqJlrMd7+sYx5TUnqEHZfOHhx2+uhfpaa6UiLcp0t3K7qh3Fp0lf4ATR33f426ivMe/2d4IpNimFcst4EclaIFg+GEbmJvfDBIAKan/KIvXoQSY+hpLwXUMjl/EBihUnMkQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4OmkCD/gneWNH2iXR7MG+JtDIvl2BKDPpfM2eCZ4kLg=;
- b=LOJ0Gts4X4v+bmYC7aEFFVH+Qi+x1rO4As47XgAXph8rienMeyuNnxPr3AaHA1esij+Ck5C/E32OOILTSxIoMbK2auU3tlcu+sV58xjhgdVEHKo/Gzob5HjZ1fc44vX21gnkUIc6JsP4xQSni73F1p3VvIPPKBoQd3PXg5c+xryTqDSmmlDIApeKS9BXdjD6Tm51+PAb3uBZePFcv8/tJ/eoHdRxi5t0JclMUZ5b4KK5myUkjFd7HFqECIpjjA8CZuowGaBgRY3erLddGjYnlDuwzviMA9GzApu8QQZ8z0L2nOg3xDOR+aF0Ywxuf8RiVgxGrBn4v+RN58O2H3uPOw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4OmkCD/gneWNH2iXR7MG+JtDIvl2BKDPpfM2eCZ4kLg=;
- b=euq/llLmN+0lkAUAKY8KkQJdmkT/B6Kp1yVSe1trVsjeg+ZMQ/oNekp7T93MHbtgChWlcqxWljfqGj9WGP7nib4Gh3J3rTorKq7VIwUqLEzPVZqi266NBTarQF/lB8kqAXg81wepn5gm9o5SGVVCvWHFMJ303c082LSpbFQlxew=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR04MB5501.eurprd04.prod.outlook.com (2603:10a6:803:d3::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19; Mon, 23 Aug
- 2021 02:11:01 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4436.024; Mon, 23 Aug 2021
- 02:11:01 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        id S234813AbhHWCNC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Aug 2021 22:13:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59624 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234692AbhHWCM6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Aug 2021 22:12:58 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8258C061575;
+        Sun, 22 Aug 2021 19:12:16 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id b7so23848652edu.3;
+        Sun, 22 Aug 2021 19:12:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=0h3XCbRKBIzU8x5V3P81nVICWznGgvidv4tikLcQT7A=;
+        b=TpZo0fBmDR8L+TM6pb6mV/FmwdinoGL4sxc6e1twjPSbO3yF2o40bRFD23Qk6JIoE6
+         +hNKmob3Y4/W44RetPBqsUQDDK8btswIssIakBTYFeS7ZEk+0nh+qlEAOa1wA9IQ7oQ2
+         4EtKx7H68Z0KzfpbLByijJyZ4V0sS41ZC0CbusfFYsaz8pat9qrFl4HKBg8bcF3+ZVqM
+         mJDFqgqgNHqZ/9thrj8P3kIoW+Rzc96U1I2HzvqMx8uzFzzWkn3vOgBur0sY6zvoXarJ
+         JusAvkGoKOMcURpokz+D/hg1ol0nQJhCfaknbe04SEaX4SzFdSNmWnvxNL/457Kvf1Ox
+         rGow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=0h3XCbRKBIzU8x5V3P81nVICWznGgvidv4tikLcQT7A=;
+        b=gNRS/8RjARPdY+Z+iUEvNHZiSfvc0X1MGgB7TVaMKuZqHciYSbQYJphemv9ST/fgrA
+         3TPwWfYtGXKhp59zjXtLb2Lmf411dlM7FHFj+yTNlIxcn9reAeNmyiHx+NdF88QbLaLl
+         R4uc8QgYw4bK8Ah9hvHEeGBLD5uZS07KR3og/Fk1RyE2gMreEnZWjK7OW+yEj21R0oFs
+         drA5TLb/CYqy7cABh4dMoGbl/JKAORZnhDYZs7XRYS0qmKX/PVd6eWhuAQWGRvRIpi5k
+         m2pnEAx/PF0f1KpoPZo2UP5ih1o111b/MF+Lxwox6+PFp1Sg1+e3uz8XaWXXEnFmDvZF
+         cwWQ==
+X-Gm-Message-State: AOAM5319EUYMeZ7XaZu7uSSZU6ffj5JglW9+1iqh8cpfimYhErbgjZ1K
+        3tdOtX5GRce1NXr6RpgHyRA=
+X-Google-Smtp-Source: ABdhPJyLdY/T1KSQ9tQfvlrRl6ODTwjYtJeU4H+Yl+E3Dbp33YqGSTZ3FwY3OSdWQLH8dBJ9GimSSw==
+X-Received: by 2002:a50:99d9:: with SMTP id n25mr35298353edb.310.1629684735264;
+        Sun, 22 Aug 2021 19:12:15 -0700 (PDT)
+Received: from skbuf ([188.25.144.60])
+        by smtp.gmail.com with ESMTPSA id c21sm6457710ejz.69.2021.08.22.19.12.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 22 Aug 2021 19:12:15 -0700 (PDT)
+Date:   Mon, 23 Aug 2021 05:12:13 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Alvin =?utf-8?Q?=C5=A0ipraga?= <ALSI@bang-olufsen.dk>
+Cc:     Alvin =?utf-8?Q?=C5=A0ipraga?= <alvin@pqrs.dk>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>
-Subject: [PATCH v2 net-next] net: dsa: properly fall back to software bridging
-Date:   Mon, 23 Aug 2021 05:10:50 +0300
-Message-Id: <20210823021050.2320679-1-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.25.1
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: VI1PR0501CA0047.eurprd05.prod.outlook.com
- (2603:10a6:800:60::33) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Michael Rasmussen <MIR@bang-olufsen.dk>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH net-next 4/5] net: dsa: realtek-smi: add rtl8365mb
+ subdriver for RTL8365MB-VC
+Message-ID: <20210823021213.tqnnjdquxywhaprq@skbuf>
+References: <20210822193145.1312668-1-alvin@pqrs.dk>
+ <20210822193145.1312668-5-alvin@pqrs.dk>
+ <20210822224805.p4ifpynog2jvx3il@skbuf>
+ <dd2947d5-977d-b150-848e-fb9a20c16668@bang-olufsen.dk>
+ <20210823001953.rsss4fvnvkcqtebj@skbuf>
+ <75d2820b-9429-5145-c02d-9c5ce8ceb78f@bang-olufsen.dk>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.25.144.60) by VI1PR0501CA0047.eurprd05.prod.outlook.com (2603:10a6:800:60::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19 via Frontend Transport; Mon, 23 Aug 2021 02:11:01 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7851802c-2c36-4c9e-fcb6-08d965db4114
-X-MS-TrafficTypeDiagnostic: VI1PR04MB5501:
-X-Microsoft-Antispam-PRVS: <VI1PR04MB5501FC71CDB4B2CE058CFD5BE0C49@VI1PR04MB5501.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: hXYftoBZ3Nx9Qe8AdmHO41ATzF9NrxE4g3ACtE0okIsP5zyC4S0JyKiejMNM386rWFqeMQw3f7eVyyyJYCW9tGZRGNQslCPKVmEz0QQHe8+3CCxZ1eICJcA8Au5eNFv53c4BnIP8GCjPvvIkt8+HRq2uiLTyvyy1CYQ8aqcH8oOS2KdfdIYgwGGnm38LxZLVTZy/kh9J7VN0AvxebG9n7KWQEDDEPLvxNNFcv5kStpBTdHk4wdmgemVAz5JwZcsuNXg5pA6sdg584C3DC5DSS6SsrT+asIACoZoXWC6SHuUaRcnqPZWjkESoQPlG9xBuJSuvVnascJLgrSZaTcTZ+yugevs76qLGwoVdeA8q9uEdAGLQu2vGarfRYzLNshbNyOZAeA02aKWvFDhA6pyEPFiHOJhs6WxM0nHJrjcgZkcI1Txz65Z8TTzdp7ylK2r4SWqjNL1jup4Z9821qV7gb/whVR80SGO9Q5h+rwLYDiAWEZNiGI88rnfryxGjfucavusA/VhiKNoNX4moQgiLau3mFVG08rEZVR0JFAcn+JJuK9/mpuqlPs35wwLq+BvOlr2bH+KFiCfpWEVkx22tvF/gjQyBUntV+GKHZaNU6FNDSzTRQcEsq5jptfrykcedqtiM6hCLGziakpb5AbkAQxLZ0MZcoVhBwSHKu/84YIb2oi9ndvj7EM/jlTu3GDotfdWnxa6WraGYWjZDPW2JRQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(346002)(136003)(396003)(366004)(39860400002)(54906003)(36756003)(478600001)(956004)(316002)(8676002)(8936002)(26005)(4326008)(1076003)(6916009)(186003)(38100700002)(38350700002)(2616005)(44832011)(5660300002)(66946007)(2906002)(83380400001)(6666004)(86362001)(6486002)(66476007)(66556008)(52116002)(6506007)(6512007)(66574015);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?K1ZaU2RoQ0Z2eGEyaXNtU1poeitOZFRMNWkyY3ZFUkdXbnFqaVM5N2lDOVFE?=
- =?utf-8?B?VkJtTFJlckIzbUhYVVNkMjliQS9URWRzNDdWaFhlN01YZFJ1QVVKS29sMmVo?=
- =?utf-8?B?dlpQM2w5ODRvd29EM1FwQnVQWE5hZWZxeWpSK0xZYm5JdkxuZEZCV2hLUXRn?=
- =?utf-8?B?d3UxekpJajc3MEV1YTM4dXoxT1E4VVU1L1p6alp0YzBKTGExN1NHNDVBeHBQ?=
- =?utf-8?B?RmJLbkpSTHBYajNQdXplL1lEaUJTQ2hlRXllNE9lUTMrb2srSFE4Wkx4aGlF?=
- =?utf-8?B?S0xvRUM0Tk1ENHRZVmZCbFlyQnN1YWlxaVlCZThQWjVkVUx3MWZPN2FpOU5v?=
- =?utf-8?B?QStLMkRDTFdTdk0zN1dRSThvMnVaZDFUc1RnM2E0c0dJWjcyUjVveSt0dGUr?=
- =?utf-8?B?MnlCWk1kYktvTGoxNEU2SitHN3pVc0hlVXdpSldPUXFBc2tiWkRucVhTaVJv?=
- =?utf-8?B?cEs2QlFtQnlXMjRRUkREMDRuVDZxSU9yUytvZVFQTW9OVTdHUjh5Z1RFTkt1?=
- =?utf-8?B?VEZCRHZMNER2blBwYlFZdzZiVGRVWUpGWSsxMVE5aWxLOEtlZ09KckMrbUcx?=
- =?utf-8?B?NDJDdkR0ekxucVJiMmVURGdOd3IyQ2R3dkY4K2JQQUx1Wm5CajlGSlVLL2kv?=
- =?utf-8?B?ekF0SnRaRmFZK2ZsVGpFa0ZjM3R4UEVtZktwMFlxTFJzQTMzQlFwb0h3MTRC?=
- =?utf-8?B?NVpZblhvTFozUDBNWm1nUEpjclo2K3hLa1YrMUlnL0VPMFFnZEhIOXhNYkF5?=
- =?utf-8?B?cWhYeHhSd0NnWmRhUGZwTTgzTWptUit6aHJ3SWFBa0xaTHVhSXNsa3dUWFhi?=
- =?utf-8?B?TGZoeC83Qi9mQXpBOHdseHBjVmZoMm1iNkY2cnZGSFRGR3JCaExpbGpxTGpv?=
- =?utf-8?B?cjR6bDE2YnhJSUhWS0IwaHhJblhYTVg2SFU4bzkvbXVmQWozMzIyMjZYUDNP?=
- =?utf-8?B?bWVaTHVINmJjd3VEN0VVTmE2TjZtU0E3NHVRRGFLYWQ4bjVLczFjNE4vcHZi?=
- =?utf-8?B?QWoyZnJRejhUNm90RHhwQlJuTGp2U21hZDVQK3hkYkFScTUvMnRMdlBBZEFK?=
- =?utf-8?B?SWh6TUdlaTdKNUdVRnczYUorU2pCK21ubXBjNnprWmdJTThHVnhnRDdCZGph?=
- =?utf-8?B?T0RrdXNDT3h1cVczbDVWWHBTUm1Zb1RhMFpBNlhGb0JHellmSjU2NlJSUW9h?=
- =?utf-8?B?T2JFaWE4QU9QZDJLdWM1TDk2K3JYMHBxYTEyRmZnTk5lbWZGUUxPaHloOFRr?=
- =?utf-8?B?Z2VwVkFpWUJBSm11Y2hKZ2dMbmdKS2RvTTVjaEVvYWpsSG81WldsQmhNci9v?=
- =?utf-8?B?RWptNTNZWDlxQzBYRXdqSHV5YjR1RkNjczJrRlBNdFVIbkZDR1FvTFJOd05I?=
- =?utf-8?B?eFRETTI3TzBybVhLRTNrSXlYL1UyOFhPcHdPRlh2QTNRc05HM09jSHpQS1Fs?=
- =?utf-8?B?bHhiYzMvL1hBRzVQRGpnaTBUT0kzSlRMQk1KMnVtQnBESlVvaitmK2xtaDVk?=
- =?utf-8?B?bGVKRm8xQkJlYXlKOHJnRy9Jb2lzckdUcjdqN3hDT2tLcDdXUlBQVVlDc0pJ?=
- =?utf-8?B?cGR6ckhaUmJkL0ZOZlZUOUdydkdBN1VsOUNzVmM2RjZvZVhmdTVZUHRURUJl?=
- =?utf-8?B?NHNuTHVaMTZBVlI0L0Q5OUZpZ3lMUnh0c0IzUk05WVVLV29lMFhRUkdlSTZn?=
- =?utf-8?B?OVVuRFhaMTBwYmkwS2dhVUhsTytOdWVNcFZCN0YwMmYrWmRXU1plejRRRzA0?=
- =?utf-8?Q?llzYEqaz/7hezR1WRfT9ou0+O24dTDwlJhUJ2Mn?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7851802c-2c36-4c9e-fcb6-08d965db4114
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Aug 2021 02:11:01.4972
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: TLf/O6WVI2nF/VGufKN33KIRPbi0haXa49YEJuksiFwjFzoyqAltP8kOtWa99N4NOfwEXBvEJmUcNx6PSLEgtg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5501
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <75d2820b-9429-5145-c02d-9c5ce8ceb78f@bang-olufsen.dk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the driver does not implement .port_bridge_{join,leave}, then we must
-fall back to standalone operation on that port, and trigger the error
-path of dsa_port_bridge_join. This sets dp->bridge_dev = NULL.
+On Mon, Aug 23, 2021 at 01:22:53AM +0000, Alvin Šipraga wrote:
+> On 8/23/21 2:19 AM, Vladimir Oltean wrote:
+> > On Sun, Aug 22, 2021 at 11:56:04PM +0000, Alvin Šipraga wrote:
+> >>> I'm not going to lie, the realtek_smi_ops VLAN methods seem highly
+> >>> cryptic to me. Why do you do the same thing from .enable_vlan4k as from
+> >>> .enable_vlan? What are these supposed to do in the first place?
+> >>> Or to quote from rtl8366_vlan_add: "what's with this 4k business?"
+> >>
+> >> I think realtek-smi was written with rtl8366rb.c in mind, which appears
+> >> to have different control registers for VLAN and VLAN4k modes, whatever
+> >> that's supposed to mean. Since the RTL8365MB doesn't distinguish between
+> >> the two, I just route one to the other. The approach is one of caution,
+> >> since I don't want to break the other driver (I don't have hardware to
+> >> test for regressions). Maybe Linus can chime in?
+> >
+> > You don't _have_ to use the rtl8366 ops for VLAN, especially if they
+> > don't make sense, do you?
+>
+> I was mainly referring to the enablement of VLAN versus VLAN4k when I
+> said it didn't make sense. The add/del ops seemed to fit well though, so
+> I sought to reuse code where I could. But they make use of
+> .enable_{vlan,vlan4k}, hence the weird stub you see.
+>
+> >
+> >>> Also, stupid question: what do you need the VLAN ops for if you haven't
+> >>> implemented .port_bridge_join and .port_bridge_leave? How have you
+> >>> tested them?
+> >>
+> >> I have to admit that I am also in some doubt about that. To illustrate,
+> >> this is a typical configuration I have been testing:
+> >>
+> >>                                 br0
+> >>                                  +
+> >>                                  |
+> >>                 +----------+-----+-----+----------+
+> >>                 |          |           |          |
+> >> (DHCP)          +          +           +          +      (static IP)
+> >>    wan0      brwan0       swp2        swp3     brpriv0      priv0
+> >>     |           + 1 P u    + 1 P u     + 1 P u    +           +
+> >>     |           |          |           | 2        | 2 P u     |
+> >>     |           |          |           |          |           |
+> >>     +-----------+          +           +          +-----------+
+> >>                           LAN         PRIV
+> >>
+> >>            n P u
+> >>            ^ ^ ^
+> >>            | | |
+> >>            | | `--- Egress Untagged
+> >>            | `----- Port VLAN ID (PVID)
+> >>            `------- VLAN ID n
+> >
+> > What are priv0 and wan0? Are they local interfaces of your board, put in
+> > loopback with switch ports? Are they external devices?
+>
+> Sorry, I should have clarified. They are veth interface pairs, with one
+> end added to the bridge, and the other end used as a standalone "VLAN
+> unaware" interface to perform specific functions. wan0 is used as a
+> typical Ethernet interface for contacting the Internet and other devices
+> on the LAN. priv0 is an interface used to communicate with a private
+> device PRIV over VLAN2.
 
-In turn, having dp->bridge_dev = NULL makes the following things go wrong:
+Ok, understood.
 
-- dsa_default_offload_fwd_mark make the wrong decision in setting
-  skb->offload_fwd_mark. It should set skb->offload_fwd_mark = 0 for
-  ports that don't offload the bridge, which should instruct the bridge
-  to forward in software. But this does not happen, dp->bridge_dev is
-  incorrectly set to point to the bridge, so the bridge is told that
-  packets have been forwarded in hardware, which they haven't.
+> > What does DHCP mean? Is there a server there, or does it mean that the
+> > wan0 interface gets IP over DHCP? Where is the DHCP server? Why is "DHCP"
+> > relevant?
+>
+> It was meant to indicate that it is getting an IP address over DHCP over
+> the LAN.
 
-- switchdev objects (MDBs, VLANs) should not be offloaded by ports that
-  don't offload the bridge. Standalone ports should behave as packet-in,
-  packet-out and the bridge should not be able to manipulate the pvid of
-  the port, or tag stripping on egress, or ingress filtering. This
-  should already work fine because dsa_slave_port_obj_add has:
+Ok, so not relevant.
 
-	case SWITCHDEV_OBJ_ID_PORT_VLAN:
-		if (!dsa_port_offloads_bridge_port(dp, obj->orig_dev))
-			return -EOPNOTSUPP;
+> >> In this configuration, priv0 is used to communicate directly with the
+> >> PRIV device over VLAN2. PRIV can also access the wider LAN by
+> >> transmitting untagged frames. My understanding was that the VLAN
+> >> configuration is necessary for e.g. packets to be untagged properly on
+> >> swp2 egress.
+> >
+> > swp2 egresses packets only in VLAN 1. In your example, how would any
+> > packet become tagged in VLAN 1? VLAN 1 is a pvid on all ports which are
+> > members of it.
+>
+> I thought that frames forwarded by the bridge from brwan0 to swp2 would
+> be tagged VLAN 1, and that the switch port should untag it. Is that not
+> the case?
 
-		err = dsa_slave_vlan_add(dev, obj, extack);
+Your hardware switch does not know about the existence of brwan0. It
+just sees what packets the tagger is sending to it. And in your example,
+no one will be sending packets to the switch that the switch must untag.
+Packets in VLAN 1 are sent as untagged by the bridge, as a tcpdump on
+swp2 will show.
 
-  but since dsa_port_offloads_bridge_port works based on dp->bridge_dev,
-  this is again sabotaging us.
+> >> But are you suggesting that this is being done in software
+> >> already? I.e. we are sending untagged frames from CPU->switch without
+> >> any VLAN tag?
+> >
+> > With the exception of ports with the TX_FWD_OFFLOAD feature where the
+> > VLAN is always left in the packet, the bridge will pop the VLAN ID on
+> > transmission if that VLAN is configured as egress-untagged in the
+> > software VLAN database corresponding to the destination bridge port.
+> > See br_handle_vlan:
+> >
+> > 	/* If the skb will be sent using forwarding offload, the assumption is
+> > 	 * that the switchdev will inject the packet into hardware together
+> > 	 * with the bridge VLAN, so that it can be forwarded according to that
+> > 	 * VLAN. The switchdev should deal with popping the VLAN header in
+> > 	 * hardware on each egress port as appropriate. So only strip the VLAN
+> > 	 * header if forwarding offload is not being used.
+> > 	 */
+> > 	if (v->flags & BRIDGE_VLAN_INFO_UNTAGGED &&
+> > 	    !br_switchdev_frame_uses_tx_fwd_offload(skb))
+> > 		__vlan_hwaccel_clear_tag(skb);
+>
+> Right, so that answers my question immediately above: of course it's not
+> the case - the bridge will pop the tag before sending it to swp2.
+>
+> >
+> >>
+> >> In case you think the VLAN ops are unnecessary given that
+> >> .port_bridge_{join,leave} aren't implemented, do you think they should
+> >> be removed in their entirety from the current patch?
+> >
+> > I don't think it's a matter of whether _I_ think that they are
+> > unnecessary. Are they necessary? Are these code paths really exercised?
+> > What happens if you delete them? These are unanswered questions.
+>
+> The code paths are exercised, insofar as they are called when I
+> configure my bridge.
 
-All the above work in case the port has an unoffloaded LAG interface, so
-this is well exercised code, we should apply it for plain unoffloaded
-bridge ports too.
+See? That's exactly where the problem is: "they are called". Let me
+explain why they shouldn't.
 
-Fixes: bea7907837c5 ("net: dsa: don't set skb->offload_fwd_mark when not offloading the bridge")
-Reported-by: Alvin Šipraga <alsi@bang-olufsen.dk>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- net/dsa/slave.c  | 5 +++++
- net/dsa/switch.c | 6 ++++--
- 2 files changed, 9 insertions(+), 2 deletions(-)
+When a port joins a bridge, dsa_slave_changeupper() will call
+dsa_port_bridge_join(). This will dive a bit into DSA internals but will
+finally return -EOPNOTSUPP because ds->ops->port_bridge_join is NULL.
+This triggers the error path of dsa_broadcast(DSA_NOTIFIER_BRIDGE_JOIN)
+which sets back dp->bridge_dev to NULL. The port should behave as
+standalone.
 
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index eb9d9e53c536..f785d24fcf23 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -2009,6 +2009,11 @@ static int dsa_slave_changeupper(struct net_device *dev,
- 			err = dsa_port_bridge_join(dp, info->upper_dev, extack);
- 			if (!err)
- 				dsa_bridge_mtu_normalization(dp);
-+			if (err == -EOPNOTSUPP) {
-+				NL_SET_ERR_MSG_MOD(extack,
-+						   "Offloading not supported");
-+				err = 0;
-+			}
- 			err = notifier_from_errno(err);
- 		} else {
- 			dsa_port_bridge_leave(dp, info->upper_dev);
-diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-index fd1a1c6bf9cf..dd042fd7f800 100644
---- a/net/dsa/switch.c
-+++ b/net/dsa/switch.c
-@@ -92,8 +92,10 @@ static int dsa_switch_bridge_join(struct dsa_switch *ds,
- 	struct dsa_switch_tree *dst = ds->dst;
- 	int err;
- 
--	if (dst->index == info->tree_index && ds->index == info->sw_index &&
--	    ds->ops->port_bridge_join) {
-+	if (dst->index == info->tree_index && ds->index == info->sw_index) {
-+		if (!ds->ops->port_bridge_join)
-+			return -EOPNOTSUPP;
-+
- 		err = ds->ops->port_bridge_join(ds, info->port, info->br);
- 		if (err)
- 			return err;
--- 
-2.25.1
+Now I just went through the whole code path and this does not happen for
+plain bridging: in lack of a ds->ops->port_bridge_join method, DSA is
+still happy to return zero, although I don't understand why - I recall
+writing a patch specifically for that. Anyway. I just rewrote it and
+posted it to the list.
 
+I can understand why a lot of things didn't make sense for you. I thought
+we were on the same page about what is happening, but we weren't.
+
+> Perhaps I could rephrase my question as follows: If
+> the switch driver behaves properly (i.e. does not strip or tag frames)
+> despite the switch being VLAN-aware, is it a problem?
+>
+> (We can of course argue whether the switch is behaving correctly with my
+> driver, but the question assumes that it is.)
+>
+> The VLAN code will be of use when implementing bridge offload, so I'm
+> seeking some advice from you with regards to the process. I can remove
+> all the VLAN stuff and resubmit the driver such that the switch behaves
+> in a completely VLAN-unaware fashion, but that will require some
+> backtracking and the work will have to be done again if any offloading
+> is to be implemented. So if we can agree that it doesn't cause any harm,
+> I would think that it's OK to keep it in.
+
+With DSA now doing the right thing with the patch I just sent, I hope it is
+now clearer why having VLAN ops does not make sense if you don't offload
+the bridge. They were not supposed to be called.
+
+> > My best guess is: you have a problem with transmitting VLAN-tagged
+> > packets on a port, even if that port doesn't offload the bridge
+> > forwarding process. You keep transmitting the packet to the switch as
+> > VLAN-tagged and the switch keeps stripping the tag. You need the VLAN
+> > ops to configure the VLAN 2 as egress-tagged on the port, so the switch
+> > will leave it alone.
+> > It all has to do with the KEEP bit from the xmit DSA header. The switch
+> > has VLAN ingress filtering disabled but is not VLAN-unaware. A standalone
+> > port (one which does not offload a Linux bridge) is expected to be
+> > completely VLAN-unaware and not inject or strip any VLAN header from any
+> > packet, at least not in any user-visible manner. It should behave just
+> > like any other network interface. Packet in, packet out, and the skb
+> > that the network stack sees, after stripping the DSA tag, should look
+> > like the packet that was on the wire (and similarly in the reverse direction).
+> >
+>
+> I am actually enabling VLAN ingress filtering. And I don't have a
+> problem transmitting VLAN 2-tagged packets on swp3 in my example.
+> Whether or not the driver is following the best practices - I'm not
+> sure. Following on from above: is the best practice to make the switch
+> completely VLAN-unaware if I am submitting a driver which does not
+> support any bridge offloading?
+
+VLAN unaware, no ingress filtering, no address learning, all ports
+forward to the CPU port and only to the CPU port.
