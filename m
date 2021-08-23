@@ -2,85 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8076C3F525A
-	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 22:44:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4240D3F526B
+	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 22:49:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232245AbhHWUos (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Aug 2021 16:44:48 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:37420 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232237AbhHWUor (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Aug 2021 16:44:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=HnrRRMFf9rYwkdlthq8ooWMSYviV7lDDwzhWgOFlixk=; b=Asi+fyrm2XjeEC4O/G0lYn6jpT
-        e9JEKHW+6daJQeErgh6XxK+Wx7/JxBqF95bygCyq1tJdMYsL4OyCrPse1wvwwKcQcQ1OcpXAi+Mdb
-        yKsrBVNBh7sGause6z9BkH+azH7CYGRgh2gyr+jeqMX6J+n1Lo2mhnTSIR/cwTDDY+rk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mIGnW-003VvM-6R; Mon, 23 Aug 2021 22:43:58 +0200
-Date:   Mon, 23 Aug 2021 22:43:58 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     Alvin =?utf-8?Q?=C5=A0ipraga?= <ALSI@bang-olufsen.dk>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH net] net: dsa: sja1105: fix use-after-free after calling
- of_find_compatible_node, or worse
-Message-ID: <YSQIjtkJPg3lFg7t@lunn.ch>
-References: <cd0d9c40-d07b-e2ab-b068-d0bcb4685d09@bang-olufsen.dk>
- <20210817223101.7wbdofi7xkeqa2cp@skbuf>
- <CAGETcx8T-ReJ_Gj-U+nxQyZPsv1v67DRBvpp9hS0fXgGRUQ17w@mail.gmail.com>
- <6b89a9e1-e92e-ca99-9fbd-1d98f6a7864b@bang-olufsen.dk>
- <CAGETcx_uj0V4DChME-gy5HGKTYnxLBX=TH2rag29f_p=UcG+Tg@mail.gmail.com>
- <875f7448-8402-0c93-2a90-e1d83bb7586a@bang-olufsen.dk>
- <CAGETcx_M5pEtpYhuc-Fx6HvC_9KzZnPMYUH_YjcBb4pmq8-ghA@mail.gmail.com>
- <CAGETcx_+=TmMq9hP=95xferAmyA1ZCT3sMRLVnzJ9Or9OnDsDA@mail.gmail.com>
- <14891624-655b-a71d-dc04-24404e0c2e1a@bang-olufsen.dk>
- <CAGETcx-7xgt5y_zNHzSMQf4YFCmWRPfP4_voshbNxKPgQ=b1tA@mail.gmail.com>
+        id S232739AbhHWUto (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Aug 2021 16:49:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33502 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232548AbhHWUtm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Aug 2021 16:49:42 -0400
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E19C8C061757
+        for <netdev@vger.kernel.org>; Mon, 23 Aug 2021 13:48:59 -0700 (PDT)
+Received: by mail-yb1-xb2c.google.com with SMTP id z5so36684115ybj.2
+        for <netdev@vger.kernel.org>; Mon, 23 Aug 2021 13:48:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=c4QWnKvyWpOH8RqtwiwvK1dM7ed/hnT2KBqNw0j6U7A=;
+        b=WbLChwgFihPdWlSC5y/qfShp0sIMtUsZdd/qhdA8yq+uKZnAylNBckILex07AGi/wm
+         rgZ5uYq0OPLEDOjJjQNpJ+Ju8diDdxaDfCQwrnIx6lNmgzG/K2/mjgJLi6O9hgP9CCSf
+         dAr8SWboRRD53wvgWYtAkjNiKwtx3QVlmKpOmrZzZczCSdPUvwPvbZTPXzhzLvAdAErk
+         L9Q1MmJtxS/hNGKqRBqgzPLO1pCbAe5NUB7lFPq7KGs+5AAx41fIbogLHTls71Tlvoad
+         RCv0gxozyF+yls+T9/8vUIxB2JtDhqhZt2c8n/mXIiynaLbj1SkY6RzF6Plg37vpje3f
+         AtGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=c4QWnKvyWpOH8RqtwiwvK1dM7ed/hnT2KBqNw0j6U7A=;
+        b=H6FtjqB79r+aChmxtDeMgr7esbIGTi33ZLE5/gLCt8nEof0iHK8RsOovAJG1694WU0
+         Yx8m36hCQY9uF9VBpxORar56Ipm6sUiMk2yVQTnV4UkODfO7z0dq7HmcAm1+7mx6S0xe
+         W1lLYHL6Xs/C40GdjozGy5UIkbNFOOa2pjdvO5Ro76K6DQlLAZosF67zUAoRugotQX7I
+         vE1XG/govY+v5uZYIT7OtfRLdy4FfKF9U0Djal0SkULoJfHfNLjB3BqTLeYtk1lSxmlo
+         9bPHwbNQEQPd4Ajd1UgupR8Oap8vF1bqxKhP77hFBe3XufzdocMG/1bAH0mK3TCbF4aO
+         rqng==
+X-Gm-Message-State: AOAM53015zdQDesIJWcxsuu7I1AshRwgZg/Xs4qXlx+M1naFN3cdJ1gU
+        Vjo60/0TOMhbmrJnlXyp2QC5K4nW7VxZaSKyzoT4Zw==
+X-Google-Smtp-Source: ABdhPJwU4w+ipd7j7HdZ0lrNLOvWfCuRfa/YomiIcCCPAc8CHcQ0D0Ea8O7+8nRuOQnuqDlL/BU0zgvC8Y9HniorxT0=
+X-Received: by 2002:a25:8445:: with SMTP id r5mr47936513ybm.20.1629751738986;
+ Mon, 23 Aug 2021 13:48:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGETcx-7xgt5y_zNHzSMQf4YFCmWRPfP4_voshbNxKPgQ=b1tA@mail.gmail.com>
+References: <CGME20210823120849eucas1p11d3919886444358472be3edd1c662755@eucas1p1.samsung.com>
+ <20210818021717.3268255-1-saravanak@google.com> <0a2c4106-7f48-2bb5-048e-8c001a7c3fda@samsung.com>
+ <CAGETcx_xJCqOWtwZ9Ee2+0sPGNLM5=F=djtbdYENkAYZa0ynqQ@mail.gmail.com> <YSP91FfbzUHKiv+L@lunn.ch>
+In-Reply-To: <YSP91FfbzUHKiv+L@lunn.ch>
+From:   Saravana Kannan <saravanak@google.com>
+Date:   Mon, 23 Aug 2021 13:48:23 -0700
+Message-ID: <CAGETcx8j+bOPL_-qFzHHJkX41Ljzq8HBkbBqtd4E0-2u6a3_Hg@mail.gmail.com>
+Subject: Re: [PATCH v2] of: property: fw_devlink: Add support for "phy-handle" property
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>, netdev@vger.kernel.org,
+        kernel-team@android.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        linux-amlogic@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> I thought about this in the background the past few days. I think
-> there are a couple of options:
-> 1. We (community/Andrew) agree that this driver would only work with
-> fw_devlink=on and we can confirm that the other upstream uses of
-> "realtek,rtl8366rb" won't have any unprobed consumers problem and
-> switch to using my patch. Benefit is that it's a trivial and quick
-> change that gets things working again.
+On Mon, Aug 23, 2021 at 12:58 PM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> > PHY seems to be one of those cases where it's okay to have the
+> > compatible property but also okay to not have it.
+>
+> Correct. They are like PCI or USB devices. You can ask it, what are
+> you? There are two registers in standard locations which give you a
+> vendor and product ID. We use that to find the correct driver.
 
-I don't think realtek,rtl8366rb is doing anything particularly
-unusual. It is not the only switch driver with an MDIO bus driver with
-its internal PHYs on it.
+For all the cases of PHYs that currently don't need any compatible
+string, requiring a compatible string of type "ethernet-phy-standard"
+would have been nice. That would have made PHYs consistent with the
+general DT norm of "you need a compatible string to be matched with
+the device". Anyway, it's too late to do that now. So I'll have to
+deal with this some other way (I have a bunch of ideas, so it's not
+the end of the world).
 
-> 2. The "realtek,rtl8366rb" driver needs to be fixed to use a
-> "component device".
+> You only need a compatible when things are not so simple.
+>
+> 1) The IDs are wrong. Some silicon vendors do stupid things
+>
+> 2) Chicken/egg problems, you cannot read the ID registers until you
+>    load the driver and some resource is enabled.
+>
+> 3) It is a C45 devices, e.g. part of clause 45 of 802.3, which
+>    requires a different protocol to be talked over the bus. So the
+>    compatible string tells you to talk C45 to get the IDs.
+>
+> 4) It is not a PHY, but some sort of other MDIO device, and hence
+>    there are no ID registers.
 
-Again, i don't think "realtek,rtl8366rb is doing anything unusual,
-compared to the other DSA drivers. If you are suggesting it needs to
-make use of the component driver, you might also be suggesting that
-all the switch drivers need to be component devices. I don't fully
-understand the details here, but it might be, you are also suggesting
-some Ethernet drivers need modifying to use the component framework?
-And that is not going to fly.
+Yeah, I was digging through of_mdiobus_child_is_phy() when I was doing
+the mdio-mux fixes and noticed this. But I missed/forgot the mdiobus
+doesn't probe part when I sent out the phy-handle patch.
 
-This has all worked until now, things might need a few iterations with
-deferral, but we get there in the end. Maybe we need to back out the
-phy-handle patch? It does appear to be causing regressions.
-
-	   Andrew
+-Saravana
