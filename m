@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EE8D3F4C0F
-	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 16:03:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12C0C3F4C0E
+	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 16:02:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229763AbhHWOD6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Aug 2021 10:03:58 -0400
-Received: from beige.elm.relay.mailchannels.net ([23.83.212.16]:7446 "EHLO
+        id S229887AbhHWODA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Aug 2021 10:03:00 -0400
+Received: from beige.elm.relay.mailchannels.net ([23.83.212.16]:43437 "EHLO
         beige.elm.relay.mailchannels.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229627AbhHWOD5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Aug 2021 10:03:57 -0400
+        by vger.kernel.org with ESMTP id S229758AbhHWOC7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Aug 2021 10:02:59 -0400
 X-Sender-Id: 9wt3zsp42r|x-authuser|john.efstathiades@pebblebay.com
 Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id 7B1A26818E9;
-        Mon, 23 Aug 2021 13:53:33 +0000 (UTC)
-Received: from ares.krystal.co.uk (100-96-18-119.trex.outbound.svc.cluster.local [100.96.18.119])
+        by relay.mailchannels.net (Postfix) with ESMTP id 005BB342C96;
+        Mon, 23 Aug 2021 13:53:34 +0000 (UTC)
+Received: from ares.krystal.co.uk (100-96-16-227.trex-nlb.outbound.svc.cluster.local [100.96.16.227])
         (Authenticated sender: 9wt3zsp42r)
-        by relay.mailchannels.net (Postfix) with ESMTPA id 09D2A6810BB;
-        Mon, 23 Aug 2021 13:53:31 +0000 (UTC)
+        by relay.mailchannels.net (Postfix) with ESMTPA id AB83234305A;
+        Mon, 23 Aug 2021 13:53:32 +0000 (UTC)
 X-Sender-Id: 9wt3zsp42r|x-authuser|john.efstathiades@pebblebay.com
 Received: from ares.krystal.co.uk (ares.krystal.co.uk [77.72.0.130])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384)
-        by 100.96.18.119 (trex/6.3.3);
+        by 100.96.16.227 (trex/6.3.3);
         Mon, 23 Aug 2021 13:53:33 +0000
 X-MC-Relay: Neutral
 X-MailChannels-SenderId: 9wt3zsp42r|x-authuser|john.efstathiades@pebblebay.com
 X-MailChannels-Auth-Id: 9wt3zsp42r
-X-Macabre-Shade: 5b932fcb7f9b68e2_1629726813163_3628583243
-X-MC-Loop-Signature: 1629726813162:1413360738
-X-MC-Ingress-Time: 1629726813162
+X-Absorbed-Celery: 1c7a1ad6044ee0c8_1629726813660_91461395
+X-MC-Loop-Signature: 1629726813660:3355135082
+X-MC-Ingress-Time: 1629726813660
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=pebblebay.com; s=default; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=TAOYQM2xKgwR8WKXZT+qSZ63rAx/IdgHp+O009rVNaI=; b=PUpCQRItgs3NvU5HHA00glq+Bt
-        sZ7TdUTQPaxFalSsl7v8BrBe7taZkw0RftMGNpfIA6OfA+9Wzky6yUa3GiaWt9kpDTOCXswMlqYic
-        ihTLBLEhDQ/ENLI2+qwMStkDJj8ksXGACwwt+QFRMwH3Gv+2c8Xn/h3gLKxCHmks46HdmZScf1iZM
-        QpgUfZAztDr1tHxKiU5vadG3grtTv7/QQZojvQRQBN92qpmIc/hkLBB+XNGhQZy43f0aH3Rp4rv4n
-        ktAdvH3+MEoEUYV4+8gSwYQwmKqZ+5smrxUCpupbr0YYoPhfr2hbydp/t6Us3LDFBYTpbN0Bu71JI
-        uynEpIhA==;
+        bh=NS9GFi66ypyDfAeRNPz+5eoUZPUwwd01djzPnBU4FgE=; b=vy4jJnZLhYBp2jfr0Z7vG+Kbio
+        k3434ZVd8suyoUPbORTywivOtibD6nEXj/edJpO/EqaQwi2S+rHifrVXh7WnfzFBW3twodJwLgrPN
+        lZGSIF2Zvo0Kj40ArjTKMQJB09l9Da/d76GculT3r3nYYn+ZB8PTDvLxrF6ZxDXSV7F7syMZiuqhH
+        39B8Q7iPbRANGLbnuX7tRKF/A7mMX8tWqA7RWr+gTD6Uv00i0/ei2trUOeFpn1HT1o/cV8ipnzeG7
+        45tAGtPK6gsN2ps7Eo2FH9TTdtApCMULoo8GbH77jg82M03rBFtEVkJwpjzpEtybGIcm4iYao2IO5
+        80+s7Mww==;
 Received: from cpc160185-warw19-2-0-cust743.3-2.cable.virginm.net ([82.21.62.232]:51812 helo=pbcl-dsk9.pebblebay.com)
         by ares.krystal.co.uk with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
         (Exim 4.94.2)
         (envelope-from <john.efstathiades@pebblebay.com>)
-        id 1mIAOI-003PzY-9z; Mon, 23 Aug 2021 14:53:29 +0100
+        id 1mIAOJ-003PzY-1T; Mon, 23 Aug 2021 14:53:30 +0100
 From:   John Efstathiades <john.efstathiades@pebblebay.com>
 Cc:     UNGLinuxDriver@microchip.com, woojung.huh@microchip.com,
         davem@davemloft.net, netdev@vger.kernel.org,
         john.efstathiades@pebblebay.com
-Subject: [PATCH net-next 01/10] lan78xx: Fix white space and style issues
-Date:   Mon, 23 Aug 2021 14:52:20 +0100
-Message-Id: <20210823135229.36581-2-john.efstathiades@pebblebay.com>
+Subject: [PATCH net-next 05/10] lan78xx: Disable USB3 link power state transitions
+Date:   Mon, 23 Aug 2021 14:52:24 +0100
+Message-Id: <20210823135229.36581-6-john.efstathiades@pebblebay.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210823135229.36581-1-john.efstathiades@pebblebay.com>
 References: <20210823135229.36581-1-john.efstathiades@pebblebay.com>
@@ -65,246 +65,157 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix white space and code style issues identified by checkpatch.
+Disable USB3 link power state transitions from U0 (Fully Powered) to
+U1 (Standby with Fast Recovery) or U2 (Standby with Slow Recovery).
+
+The device can initiate U1 and U2 state transitions when there is no
+activity on the bus which can save power. However, testing with some
+USB3 hosts and hubs showed erratic ping response time due to the time
+required to transition back to U0 state.
+
+In the following example the outgoing packets were delayed until the
+device transitioned from U2 back to U0 giving the misleading
+response time.
+
+console:/data/local # ping 192.168.73.1
+PING 192.168.73.1 (192.168.73.1) 56(84) bytes of data.
+64 bytes from 192.168.73.1: icmp_seq=1 ttl=64 time=466 ms
+64 bytes from 192.168.73.1: icmp_seq=2 ttl=64 time=225 ms
+64 bytes from 192.168.73.1: icmp_seq=3 ttl=64 time=155 ms
+64 bytes from 192.168.73.1: icmp_seq=4 ttl=64 time=7.07 ms
+64 bytes from 192.168.73.1: icmp_seq=5 ttl=64 time=141 ms
+64 bytes from 192.168.73.1: icmp_seq=6 ttl=64 time=152 ms
+64 bytes from 192.168.73.1: icmp_seq=7 ttl=64 time=51.9 ms
+64 bytes from 192.168.73.1: icmp_seq=8 ttl=64 time=136 ms
+
+The following shows the behaviour when the U1 and U2 transitions
+were disabled.
+
+console:/data/local # ping 192.168.73.1
+PING 192.168.73.1 (192.168.73.1) 56(84) bytes of data.
+64 bytes from 192.168.73.1: icmp_seq=1 ttl=64 time=6.66 ms
+64 bytes from 192.168.73.1: icmp_seq=2 ttl=64 time=2.97 ms
+64 bytes from 192.168.73.1: icmp_seq=3 ttl=64 time=2.02 ms
+64 bytes from 192.168.73.1: icmp_seq=4 ttl=64 time=2.42 ms
+64 bytes from 192.168.73.1: icmp_seq=5 ttl=64 time=2.47 ms
+64 bytes from 192.168.73.1: icmp_seq=6 ttl=64 time=2.55 ms
+64 bytes from 192.168.73.1: icmp_seq=7 ttl=64 time=2.43 ms
+64 bytes from 192.168.73.1: icmp_seq=8 ttl=64 time=2.13 ms
 
 Signed-off-by: John Efstathiades <john.efstathiades@pebblebay.com>
 ---
- drivers/net/usb/lan78xx.c | 80 ++++++++++++++++++++-------------------
- 1 file changed, 42 insertions(+), 38 deletions(-)
+ drivers/net/usb/lan78xx.c | 44 ++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 39 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
-index 4e8d3c28f73e..ece044dd0236 100644
+index 746aeeaa9d6e..3181753b1621 100644
 --- a/drivers/net/usb/lan78xx.c
 +++ b/drivers/net/usb/lan78xx.c
-@@ -382,7 +382,7 @@ struct lan78xx_net {
- 	struct usb_anchor	deferred;
+@@ -430,6 +430,12 @@ struct lan78xx_net {
+ #define	PHY_LAN8835			(0x0007C130)
+ #define	PHY_KSZ9031RNX			(0x00221620)
  
- 	struct mutex		phy_mutex; /* for phy access */
--	unsigned		pipe_in, pipe_out, pipe_intr;
-+	unsigned int		pipe_in, pipe_out, pipe_intr;
- 
- 	u32			hard_mtu;	/* count any extra framing */
- 	size_t			rx_urb_size;	/* size for rx urbs */
-@@ -392,7 +392,7 @@ struct lan78xx_net {
- 	wait_queue_head_t	*wait;
- 	unsigned char		suspend_count;
- 
--	unsigned		maxpacket;
-+	unsigned int		maxpacket;
- 	struct timer_list	delay;
- 	struct timer_list	stat_monitor;
- 
-@@ -501,7 +501,7 @@ static int lan78xx_read_stats(struct lan78xx_net *dev,
- 	if (likely(ret >= 0)) {
- 		src = (u32 *)stats;
- 		dst = (u32 *)data;
--		for (i = 0; i < sizeof(*stats)/sizeof(u32); i++) {
-+		for (i = 0; i < sizeof(*stats) / sizeof(u32); i++) {
- 			le32_to_cpus(&src[i]);
- 			dst[i] = src[i];
- 		}
-@@ -515,10 +515,11 @@ static int lan78xx_read_stats(struct lan78xx_net *dev,
- 	return ret;
- }
- 
--#define check_counter_rollover(struct1, dev_stats, member) {	\
--	if (struct1->member < dev_stats.saved.member)		\
--		dev_stats.rollover_count.member++;		\
--	}
-+#define check_counter_rollover(struct1, dev_stats, member)		\
-+	do {								\
-+		if ((struct1)->member < (dev_stats).saved.member)	\
-+			(dev_stats).rollover_count.member++;		\
-+	} while (0)
- 
- static void lan78xx_check_stat_rollover(struct lan78xx_net *dev,
- 					struct lan78xx_statstage *stats)
-@@ -844,9 +845,9 @@ static int lan78xx_read_raw_otp(struct lan78xx_net *dev, u32 offset,
- 
- 	for (i = 0; i < length; i++) {
- 		lan78xx_write_reg(dev, OTP_ADDR1,
--					((offset + i) >> 8) & OTP_ADDR1_15_11);
-+				  ((offset + i) >> 8) & OTP_ADDR1_15_11);
- 		lan78xx_write_reg(dev, OTP_ADDR2,
--					((offset + i) & OTP_ADDR2_10_3));
-+				  ((offset + i) & OTP_ADDR2_10_3));
- 
- 		lan78xx_write_reg(dev, OTP_FUNC_CMD, OTP_FUNC_CMD_READ_);
- 		lan78xx_write_reg(dev, OTP_CMD_GO, OTP_CMD_GO_GO_);
-@@ -900,9 +901,9 @@ static int lan78xx_write_raw_otp(struct lan78xx_net *dev, u32 offset,
- 
- 	for (i = 0; i < length; i++) {
- 		lan78xx_write_reg(dev, OTP_ADDR1,
--					((offset + i) >> 8) & OTP_ADDR1_15_11);
-+				  ((offset + i) >> 8) & OTP_ADDR1_15_11);
- 		lan78xx_write_reg(dev, OTP_ADDR2,
--					((offset + i) & OTP_ADDR2_10_3));
-+				  ((offset + i) & OTP_ADDR2_10_3));
- 		lan78xx_write_reg(dev, OTP_PRGM_DATA, data[i]);
- 		lan78xx_write_reg(dev, OTP_TST_CMD, OTP_TST_CMD_PRGVRFY_);
- 		lan78xx_write_reg(dev, OTP_CMD_GO, OTP_CMD_GO_GO_);
-@@ -959,7 +960,7 @@ static int lan78xx_dataport_wait_not_busy(struct lan78xx_net *dev)
- 		usleep_range(40, 100);
- 	}
- 
--	netdev_warn(dev->net, "lan78xx_dataport_wait_not_busy timed out");
-+	netdev_warn(dev->net, "%s timed out", __func__);
- 
- 	return -EIO;
- }
-@@ -972,7 +973,7 @@ static int lan78xx_dataport_write(struct lan78xx_net *dev, u32 ram_select,
- 	int i, ret;
- 
- 	if (usb_autopm_get_interface(dev->intf) < 0)
--			return 0;
-+		return 0;
- 
- 	mutex_lock(&pdata->dataport_mutex);
- 
-@@ -1045,9 +1046,9 @@ static void lan78xx_deferred_multicast_write(struct work_struct *param)
- 	for (i = 1; i < NUM_OF_MAF; i++) {
- 		lan78xx_write_reg(dev, MAF_HI(i), 0);
- 		lan78xx_write_reg(dev, MAF_LO(i),
--					pdata->pfilter_table[i][1]);
-+				  pdata->pfilter_table[i][1]);
- 		lan78xx_write_reg(dev, MAF_HI(i),
--					pdata->pfilter_table[i][0]);
-+				  pdata->pfilter_table[i][0]);
- 	}
- 
- 	lan78xx_write_reg(dev, RFE_CTL, pdata->rfe_ctl);
-@@ -1066,11 +1067,12 @@ static void lan78xx_set_multicast(struct net_device *netdev)
- 			    RFE_CTL_DA_PERFECT_ | RFE_CTL_MCAST_HASH_);
- 
- 	for (i = 0; i < DP_SEL_VHF_HASH_LEN; i++)
--			pdata->mchash_table[i] = 0;
-+		pdata->mchash_table[i] = 0;
++/* Enabling link power state transitions will reduce power consumption
++ * when the link is idle. However, this can cause problems with some
++ * USB3 hubs resulting in erratic packet flow.
++ */
++static bool enable_link_power_states;
 +
- 	/* pfilter_table[0] has own HW address */
- 	for (i = 1; i < NUM_OF_MAF; i++) {
--			pdata->pfilter_table[i][0] =
--			pdata->pfilter_table[i][1] = 0;
-+		pdata->pfilter_table[i][0] = 0;
-+		pdata->pfilter_table[i][1] = 0;
+ /* use ethtool to change the level for any given device */
+ static int msg_level = -1;
+ module_param(msg_level, int, 0);
+@@ -1173,7 +1179,7 @@ static int lan78xx_link_reset(struct lan78xx_net *dev)
+ 	/* clear LAN78xx interrupt status */
+ 	ret = lan78xx_write_reg(dev, INT_STS, INT_STS_PHY_INT_);
+ 	if (unlikely(ret < 0))
+-		return -EIO;
++		return ret;
+ 
+ 	mutex_lock(&phydev->lock);
+ 	phy_read_status(phydev);
+@@ -1186,11 +1192,11 @@ static int lan78xx_link_reset(struct lan78xx_net *dev)
+ 		/* reset MAC */
+ 		ret = lan78xx_read_reg(dev, MAC_CR, &buf);
+ 		if (unlikely(ret < 0))
+-			return -EIO;
++			return ret;
+ 		buf |= MAC_CR_RST_;
+ 		ret = lan78xx_write_reg(dev, MAC_CR, buf);
+ 		if (unlikely(ret < 0))
+-			return -EIO;
++			return ret;
+ 
+ 		del_timer(&dev->stat_monitor);
+ 	} else if (link && !dev->link_on) {
+@@ -1198,23 +1204,49 @@ static int lan78xx_link_reset(struct lan78xx_net *dev)
+ 
+ 		phy_ethtool_ksettings_get(phydev, &ecmd);
+ 
+-		if (dev->udev->speed == USB_SPEED_SUPER) {
++		if (enable_link_power_states &&
++		    dev->udev->speed == USB_SPEED_SUPER) {
+ 			if (ecmd.base.speed == 1000) {
+ 				/* disable U2 */
+ 				ret = lan78xx_read_reg(dev, USB_CFG1, &buf);
++				if (ret < 0)
++					return ret;
+ 				buf &= ~USB_CFG1_DEV_U2_INIT_EN_;
+ 				ret = lan78xx_write_reg(dev, USB_CFG1, buf);
++				if (ret < 0)
++					return ret;
+ 				/* enable U1 */
+ 				ret = lan78xx_read_reg(dev, USB_CFG1, &buf);
++				if (ret < 0)
++					return ret;
+ 				buf |= USB_CFG1_DEV_U1_INIT_EN_;
+ 				ret = lan78xx_write_reg(dev, USB_CFG1, buf);
++				if (ret < 0)
++					return ret;
+ 			} else {
+ 				/* enable U1 & U2 */
+ 				ret = lan78xx_read_reg(dev, USB_CFG1, &buf);
++				if (ret < 0)
++					return ret;
+ 				buf |= USB_CFG1_DEV_U2_INIT_EN_;
+ 				buf |= USB_CFG1_DEV_U1_INIT_EN_;
+ 				ret = lan78xx_write_reg(dev, USB_CFG1, buf);
++				if (ret < 0)
++					return ret;
+ 			}
++		} else {
++			/* Disabling initiation of U1 and U2 transitions
++			 * prevents erratic ping times when connected to
++			 * some USB3 hubs.
++			 */
++			ret = lan78xx_read_reg(dev, USB_CFG1, &buf);
++			if (ret < 0)
++				return ret;
++			buf &= ~USB_CFG1_DEV_U2_INIT_EN_;
++			buf &= ~USB_CFG1_DEV_U1_INIT_EN_;
++			ret = lan78xx_write_reg(dev, USB_CFG1, buf);
++			if (ret < 0)
++				return ret;
+ 		}
+ 
+ 		ladv = phy_read(phydev, MII_ADVERTISE);
+@@ -1231,6 +1263,8 @@ static int lan78xx_link_reset(struct lan78xx_net *dev)
+ 
+ 		ret = lan78xx_update_flowcontrol(dev, ecmd.base.duplex, ladv,
+ 						 radv);
++		if (ret < 0)
++			return ret;
+ 
+ 		if (!timer_pending(&dev->stat_monitor)) {
+ 			dev->delta = 1;
+@@ -1241,7 +1275,7 @@ static int lan78xx_link_reset(struct lan78xx_net *dev)
+ 		tasklet_schedule(&dev->bh);
  	}
  
- 	pdata->rfe_ctl |= RFE_CTL_BCAST_EN_;
-@@ -1264,9 +1266,10 @@ static void lan78xx_status(struct lan78xx_net *dev, struct urb *urb)
- 			generic_handle_irq(dev->domain_data.phyirq);
- 			local_irq_enable();
- 		}
--	} else
-+	} else {
- 		netdev_warn(dev->net,
- 			    "unexpected interrupt: 0x%08x\n", intdata);
-+	}
+-	return ret;
++	return 0;
  }
  
- static int lan78xx_ethtool_get_eeprom_len(struct net_device *netdev)
-@@ -1355,7 +1358,7 @@ static void lan78xx_get_wol(struct net_device *netdev,
- 	struct lan78xx_priv *pdata = (struct lan78xx_priv *)(dev->data[0]);
- 
- 	if (usb_autopm_get_interface(dev->intf) < 0)
--			return;
-+		return;
- 
- 	ret = lan78xx_read_reg(dev, USB_CFG0, &buf);
- 	if (unlikely(ret < 0)) {
-@@ -2003,7 +2006,7 @@ static int lan8835_fixup(struct phy_device *phydev)
- 
- 	/* RGMII MAC TXC Delay Enable */
- 	lan78xx_write_reg(dev, MAC_RGMII_ID,
--				MAC_RGMII_ID_TXC_DELAY_EN_);
-+			  MAC_RGMII_ID_TXC_DELAY_EN_);
- 
- 	/* RGMII TX DLL Tune Adjust */
- 	lan78xx_write_reg(dev, RGMII_TX_BYP_DLL, 0x3D00);
-@@ -3356,9 +3359,10 @@ static void lan78xx_tx_bh(struct lan78xx_net *dev)
- 		if (skb)
- 			dev_kfree_skb_any(skb);
- 		usb_free_urb(urb);
--	} else
-+	} else {
- 		netif_dbg(dev, tx_queued, dev->net,
- 			  "> tx, len %d, type 0x%x\n", length, skb->protocol);
-+	}
- }
- 
- static void lan78xx_rx_bh(struct lan78xx_net *dev)
-@@ -3459,7 +3463,7 @@ static void lan78xx_delayedwork(struct work_struct *work)
- 		unlink_urbs(dev, &dev->rxq);
- 		status = usb_autopm_get_interface(dev->intf);
- 		if (status < 0)
--				goto fail_halt;
-+			goto fail_halt;
- 		status = usb_clear_halt(dev->udev, dev->pipe_in);
- 		usb_autopm_put_interface(dev->intf);
- 		if (status < 0 &&
-@@ -3632,8 +3636,8 @@ static int lan78xx_probe(struct usb_interface *intf,
- 	struct net_device *netdev;
- 	struct usb_device *udev;
- 	int ret;
--	unsigned maxp;
--	unsigned period;
-+	unsigned int maxp;
-+	unsigned int period;
- 	u8 *buf = NULL;
- 
- 	udev = interface_to_usbdev(intf);
-@@ -3858,10 +3862,10 @@ static int lan78xx_set_suspend(struct lan78xx_net *dev, u32 wol)
- 		/* set WUF_CFG & WUF_MASK for IPv4 Multicast */
- 		crc = lan78xx_wakeframe_crc16(ipv4_multicast, 3);
- 		lan78xx_write_reg(dev, WUF_CFG(mask_index),
--					WUF_CFGX_EN_ |
--					WUF_CFGX_TYPE_MCAST_ |
--					(0 << WUF_CFGX_OFFSET_SHIFT_) |
--					(crc & WUF_CFGX_CRC16_MASK_));
-+				  WUF_CFGX_EN_ |
-+				  WUF_CFGX_TYPE_MCAST_ |
-+				  (0 << WUF_CFGX_OFFSET_SHIFT_) |
-+				  (crc & WUF_CFGX_CRC16_MASK_));
- 
- 		lan78xx_write_reg(dev, WUF_MASK0(mask_index), 7);
- 		lan78xx_write_reg(dev, WUF_MASK1(mask_index), 0);
-@@ -3872,10 +3876,10 @@ static int lan78xx_set_suspend(struct lan78xx_net *dev, u32 wol)
- 		/* for IPv6 Multicast */
- 		crc = lan78xx_wakeframe_crc16(ipv6_multicast, 2);
- 		lan78xx_write_reg(dev, WUF_CFG(mask_index),
--					WUF_CFGX_EN_ |
--					WUF_CFGX_TYPE_MCAST_ |
--					(0 << WUF_CFGX_OFFSET_SHIFT_) |
--					(crc & WUF_CFGX_CRC16_MASK_));
-+				  WUF_CFGX_EN_ |
-+				  WUF_CFGX_TYPE_MCAST_ |
-+				  (0 << WUF_CFGX_OFFSET_SHIFT_) |
-+				  (crc & WUF_CFGX_CRC16_MASK_));
- 
- 		lan78xx_write_reg(dev, WUF_MASK0(mask_index), 3);
- 		lan78xx_write_reg(dev, WUF_MASK1(mask_index), 0);
-@@ -3902,10 +3906,10 @@ static int lan78xx_set_suspend(struct lan78xx_net *dev, u32 wol)
- 		 */
- 		crc = lan78xx_wakeframe_crc16(arp_type, 2);
- 		lan78xx_write_reg(dev, WUF_CFG(mask_index),
--					WUF_CFGX_EN_ |
--					WUF_CFGX_TYPE_ALL_ |
--					(0 << WUF_CFGX_OFFSET_SHIFT_) |
--					(crc & WUF_CFGX_CRC16_MASK_));
-+				  WUF_CFGX_EN_ |
-+				  WUF_CFGX_TYPE_ALL_ |
-+				  (0 << WUF_CFGX_OFFSET_SHIFT_) |
-+				  (crc & WUF_CFGX_CRC16_MASK_));
- 
- 		lan78xx_write_reg(dev, WUF_MASK0(mask_index), 0x3000);
- 		lan78xx_write_reg(dev, WUF_MASK1(mask_index), 0);
-@@ -4050,7 +4054,7 @@ static int lan78xx_resume(struct usb_interface *intf)
- 	if (!--dev->suspend_count) {
- 		/* resume interrupt URBs */
- 		if (dev->urb_intr && test_bit(EVENT_DEV_OPEN, &dev->flags))
--				usb_submit_urb(dev->urb_intr, GFP_NOIO);
-+			usb_submit_urb(dev->urb_intr, GFP_NOIO);
- 
- 		spin_lock_irq(&dev->txq.lock);
- 		while ((res = usb_get_from_anchor(&dev->deferred))) {
+ /* some work can't be done in tasklets, so we use keventd
 -- 
 2.25.1
 
