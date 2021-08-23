@@ -2,40 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D82D13F4E73
-	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 18:36:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA2503F4EA3
+	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 18:44:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229969AbhHWQgl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Aug 2021 12:36:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35694 "EHLO mail.kernel.org"
+        id S230154AbhHWQpK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Aug 2021 12:45:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39036 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229632AbhHWQgi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Aug 2021 12:36:38 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 840A66101C;
-        Mon, 23 Aug 2021 16:35:55 +0000 (UTC)
+        id S229454AbhHWQpJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Aug 2021 12:45:09 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 55BF6610F8;
+        Mon, 23 Aug 2021 16:44:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629736555;
-        bh=HBJBKVfBVUOvY/poMB/Dsj5WZ69VPn9lVCfO1CUxGBc=;
+        s=k20201202; t=1629737066;
+        bh=7w5FXWeb8P/JBu4RqLDy7fzGAXbval5K4YO4wkz3Tn8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=RK3fRxoR8xzAdOD2fU9/etykDOZi7wjr51ntGuEtXiTUsWrEJSO8Qm8YikJGmVtfR
-         dluMQWSAt/O4td6ZT4LHc4ud4wM/yEZOe18Xp9BjcKBufEqFuQ9hcwFKEnqu51FcYC
-         ahnG44wqmM6U5R1+kqcJqc0CLhrtFv3x+qCMTTUYvZ4pGJkg4hhkW3PmFIFAksu/ip
-         +VN3vpBc6+i+8yb7vb26X6pcRXbv2VLuqEkecvTx0vAcleKnZ2fF/eZZU8UtqUiQsr
-         v5tvk/M5Vt2zRnM5RrWe6OhEj64lfNefmuKqNKT7rjVaOXtEmy0Sf0EoS6QUvFI0VN
-         6tIaRIZ2UMZAQ==
-Date:   Mon, 23 Aug 2021 09:35:54 -0700
+        b=QRPsy8S1buyVDP9dLd+eDgJJ0x7b+mpjd+QiKp17gSoCfIyr9cTC4G+Px9ZSVsWbl
+         OdMipVIHQKzyX4St+fNM8uMsktO3/osoQjVeJb+ijLUj8UaVHBY/dPo+oZdngbIXh0
+         ep3Odv0n41HiNoR6MKshMxFAVDF3GuvV55qj3gaFSjUPLv194qHl5K/prEJ2Jauk+C
+         e7gxbFkoiMd3hTXRZB1zMeM+AORbj1pyS+jfibY7MCqLj9NvEk/Y1qiEDIlMLsUvUO
+         1HifTcI35mpL7oJFxzbg1laOWr4bUQKUdazBHG6sSSPv2vX4rvZJvnGTTJXsBfuyAM
+         O0suswGiISgGQ==
+Date:   Mon, 23 Aug 2021 09:44:25 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Pavel Begunkov <asml.silence@gmail.com>,
-        Jens Axboe <axboe@kernel.dk>
-Cc:     io-uring@vger.kernel.org, Josh Triplett <josh@joshtriplett.org>,
+To:     Michael Riesch <michael.riesch@wolfvision.net>
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-rockchip@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
         "David S . Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Stefan Metzmacher <metze@samba.org>
-Subject: Re: [PATCH v3 1/4] net: add accept helper not installing fd
-Message-ID: <20210823093554.30e4c343@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <0c5d77e34ebff09f1f2f6b9bff15b97ec8fbf8ca.1629559905.git.asml.silence@gmail.com>
-References: <cover.1629559905.git.asml.silence@gmail.com>
-        <0c5d77e34ebff09f1f2f6b9bff15b97ec8fbf8ca.1629559905.git.asml.silence@gmail.com>
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Subject: Re: [PATCH] net: stmmac: dwmac-rk: fix unbalanced pm_runtime_enable
+ warnings
+Message-ID: <20210823094425.78d7a73e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210823143754.14294-1-michael.riesch@wolfvision.net>
+References: <20210823143754.14294-1-michael.riesch@wolfvision.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -43,11 +46,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 21 Aug 2021 16:52:37 +0100 Pavel Begunkov wrote:
-> Introduce and reuse a helper that acts similarly to __sys_accept4_file()
-> but returns struct file instead of installing file descriptor. Will be
-> used by io_uring.
-> 
-> Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+On Mon, 23 Aug 2021 16:37:54 +0200 Michael Riesch wrote:
+> In the commit to be reverted, support for power management was
+> introduced to the Rockchip glue code. Later, power management support
+> was introduced to the stmmac core code, resulting in multiple
+> invocations of pm_runtime_{enable,disable,get_sync,put_sync}.
 
-Acked-by: Jakub Kicinski <kuba@kernel.org>
+Can we get a Fixes tag? I.e. reference to the earliest commit where 
+the warning can be triggered?
+
+> The multiple invocations happen in rk_gmac_powerup and
+> stmmac_{dvr_probe, resume} as well as in rk_gmac_powerdown and
+> stmmac_{dvr_remove, suspend}, respectively, which are always called
+> in conjunction.
