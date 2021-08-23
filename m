@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66A903F530D
-	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 23:53:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D2DB3F5310
+	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 23:53:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233027AbhHWVyB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Aug 2021 17:54:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48128 "EHLO
+        id S233040AbhHWVyK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Aug 2021 17:54:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232808AbhHWVx7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Aug 2021 17:53:59 -0400
-Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B8B9C061575;
-        Mon, 23 Aug 2021 14:53:16 -0700 (PDT)
-Received: by mail-qv1-xf29.google.com with SMTP id q6so10585224qvs.12;
-        Mon, 23 Aug 2021 14:53:16 -0700 (PDT)
+        with ESMTP id S233029AbhHWVyJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Aug 2021 17:54:09 -0400
+Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46383C061575;
+        Mon, 23 Aug 2021 14:53:26 -0700 (PDT)
+Received: by mail-qv1-xf2f.google.com with SMTP id jz1so10585045qvb.13;
+        Mon, 23 Aug 2021 14:53:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references:reply-to
          :mime-version:content-transfer-encoding;
-        bh=3uiK9gtjB0S4i1poBW9ZjT+AKRBDj1R5XFX8+4rV54g=;
-        b=XFV2ixZOR6KvosBFXA2XTZEBqcLgtQM8aMyBx1m1GCcvqj9xA3EZ2ivAiiRydunu5e
-         oLyFHfYeuiitTTyPTZbaUKXLXu+TgonZjBLr0x1kIH1Ee8nXWBZoNmhSzvoBUNekeczd
-         UtX4+tBBOUxehE+ieTUYNIwa6eD6mectrCgz+k3txKBy1UWMMNOQ5BLd6suCQ0lBXdTF
-         qC0PxulxYvIg2GajDN5HanUS14MzLWiihxvOeQOk1bEhXRdk9KGdRo9WJU6E3fdIdpWx
-         1XqVjIzDa1Jz5mvUVgQ7oHLxPnX3lKgnG+3SlnmAVPLgwr8ofilhFu/wvH/VALxoSLA8
-         ZeVQ==
+        bh=rREGuTwP1+4wHWH12BihyPoN4oNvTOi9vc36dumglaA=;
+        b=KnOj592NG8kxPiKFyAauX9fW0ixlq6hDevUHSfdIHfisAt5oQwG+lpSsCGv/cwUfR/
+         zW9wWNq+ee1CkHSlw34kEt4jGuN+3iykI4o7X3ERCg3mDHcc3+IycxmLcUQQGyLhu6FD
+         BCoM8eGK+I+Obs95RI8lb3LIRvhRkKiuMVYCXG7KMM5vdWUFTfPnoRIbkPjOZYAzpf9n
+         cmTitojjfhXhx/1w21B2CU9g25WavcffDG+lT86ecD6KqnlGlWJsIvDnsvYTsXsEdNmb
+         xF8sMzcL8d4gZhcO6SlO7eFtV8mVczGBgmOXc1ho5DOY5EhKSTgdZHVMge1Ae4iRkvBL
+         gFaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:reply-to:mime-version:content-transfer-encoding;
-        bh=3uiK9gtjB0S4i1poBW9ZjT+AKRBDj1R5XFX8+4rV54g=;
-        b=B1Vr7A5iXkvo4/esSIJRJdjV88yNfE3+YfK4Hb56zESJl+R+zTCXYB9aG3tLclk4Zn
-         uEPJP6xCuhng1LGNpzBQ0B/aC02Un70HHFDfxEF1Gn+RUBYw+5bK4Ocr5gcuYTg1MPor
-         /pT60v761vVbPJTNwEh61nDzm1JbnIFj9o3guyGQW7XcW/iCg8Nsm0O61tgwN+iCjOAQ
-         joHNZ2JfWYb7USKNjuhQ+wbEg1VbR05XJsMNJtM+meR3JgEjDzIGRk30fJqyrT2YmQHZ
-         74Vhq+8q5HjI2Qo3k4stGDqJdFnoltgg435THO4e2LE0aXC4a02uNLf11PI29axzFrew
-         OBaQ==
-X-Gm-Message-State: AOAM532gEbRF2ti9LNDtrlC9gJLOj0CJQ91MUndpLbxKCflvRyVyXrV0
-        GURImwcqhlxaEaBs4OdnRx1YbT+6g7eSPFLi
-X-Google-Smtp-Source: ABdhPJwYq0RXC2Hie2/uzedPeibN1JJ4k06AykQITcgX41CZh6DLBZtmBsT9OYPQDxsBNJamtbFyBw==
-X-Received: by 2002:ad4:59cf:: with SMTP id el15mr8512630qvb.55.1629755595213;
-        Mon, 23 Aug 2021 14:53:15 -0700 (PDT)
+        bh=rREGuTwP1+4wHWH12BihyPoN4oNvTOi9vc36dumglaA=;
+        b=dV0WVXPiFoAGJGCmhFp7JmOQqo0LJI6JnPKZ5nBmHpXnDmz0OyuXx05kT8P/c2Y3vK
+         mchV2QIM5E7mmlvDMT4BvnhlYCHt1Bw60U33G7qkvlX/uz72X8w4DBQOSfmpNZtXJ7zd
+         LOeP25lrM5TyNmruRtPmhILky5uYF/TSvBQCLZanZXkfaOzXsUccnzBOtEtqUdUroDw8
+         ySQihJxqS024NMgfRBGYZuTI1CU7k8mQ5z3TnQX2OuALsPl0wsJ2XHuYd5reZnkhMhSS
+         s4nXRhJIngiYCthFOWX5OrkfSmT4RoG0mlri8Ktby/ZsLhg6J7Hwa/mc0IIuyHXIN62K
+         nunQ==
+X-Gm-Message-State: AOAM533YaWUMG4dZi0EMzaouMD8JKgRRrYK/ND3xSGF62VWmGAZl5KSE
+        iMcz4iU4AaxO+V2aFuPDjLwUz2SfDOvrlPka
+X-Google-Smtp-Source: ABdhPJxIeDU7xKYoM2EBiIlmFqQ7QSdktNRL1/+1b5JkzlJ4M11FFCdE77916H4NreYoNX1fnMF0eA==
+X-Received: by 2002:a0c:a702:: with SMTP id u2mr34178648qva.62.1629755605251;
+        Mon, 23 Aug 2021 14:53:25 -0700 (PDT)
 Received: from localhost.localdomain (cpe-74-65-249-7.nyc.res.rr.com. [74.65.249.7])
-        by smtp.gmail.com with ESMTPSA id 18sm7004261qtx.76.2021.08.23.14.53.14
+        by smtp.gmail.com with ESMTPSA id 18sm7004261qtx.76.2021.08.23.14.53.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Aug 2021 14:53:14 -0700 (PDT)
+        Mon, 23 Aug 2021 14:53:24 -0700 (PDT)
 From:   Hans Montero <hansmontero99@gmail.com>
 To:     bpf@vger.kernel.org, netdev@vger.kernel.org
 Cc:     hjm2133@columbia.edu, sdf@google.com, ppenkov@google.com
-Subject: [RFC PATCH bpf-next 1/2] bpf: Implement shared sk_storage optimization
-Date:   Mon, 23 Aug 2021 17:52:51 -0400
-Message-Id: <20210823215252.15936-2-hansmontero99@gmail.com>
+Subject: [RFC PATCH bpf-next 2/2] selftests/bpf: Extend tests for shared sk_storage
+Date:   Mon, 23 Aug 2021 17:52:52 -0400
+Message-Id: <20210823215252.15936-3-hansmontero99@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210823215252.15936-1-hansmontero99@gmail.com>
 References: <20210823215252.15936-1-hansmontero99@gmail.com>
@@ -65,186 +65,273 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Hans Montero <hjm2133@columbia.edu>
 
-Shared sk_storage mode inlines the data directly into the socket,
-providing fast and persistent storage.
-
 Suggested-by: Stanislav Fomichev <sdf@google.com>
 Signed-off-by: Hans Montero <hjm2133@columbia.edu>
 ---
- include/net/sock.h             |  3 +++
- include/uapi/linux/bpf.h       |  6 +++++
- kernel/bpf/Kconfig             | 11 ++++++++
- kernel/bpf/bpf_local_storage.c |  3 ++-
- net/core/bpf_sk_storage.c      | 47 +++++++++++++++++++++++++++++++++-
- 5 files changed, 68 insertions(+), 2 deletions(-)
+ tools/testing/selftests/bpf/config            |  1 +
+ .../selftests/bpf/prog_tests/bpf_iter.c       | 31 +++++++++++++++++--
+ .../bpf/prog_tests/test_local_storage.c       |  3 ++
+ .../progs/bpf_iter_bpf_sk_storage_helpers.c   | 27 ++++++++++++++--
+ .../selftests/bpf/progs/local_storage.c       | 30 ++++++++++++++++++
+ 5 files changed, 88 insertions(+), 4 deletions(-)
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 6e761451c927..ccb9c867824b 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -528,6 +528,9 @@ struct sock {
- 	struct sock_reuseport __rcu	*sk_reuseport_cb;
- #ifdef CONFIG_BPF_SYSCALL
- 	struct bpf_local_storage __rcu	*sk_bpf_storage;
-+#if CONFIG_BPF_SHARED_LOCAL_STORAGE_SIZE > 0
-+	u8 bpf_shared_local_storage[CONFIG_BPF_SHARED_LOCAL_STORAGE_SIZE];
-+#endif
- #endif
- 	struct rcu_head		sk_rcu;
- };
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index c4f7892edb2b..ef09e49a9381 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -1210,6 +1210,12 @@ enum {
+diff --git a/tools/testing/selftests/bpf/config b/tools/testing/selftests/bpf/config
+index 5192305159ec..f2d614ab744c 100644
+--- a/tools/testing/selftests/bpf/config
++++ b/tools/testing/selftests/bpf/config
+@@ -1,5 +1,6 @@
+ CONFIG_BPF=y
+ CONFIG_BPF_SYSCALL=y
++CONFIG_BPF_SHARED_LOCAL_STORAGE_SIZE=8
+ CONFIG_NET_CLS_BPF=m
+ CONFIG_BPF_EVENTS=y
+ CONFIG_TEST_BPF=m
+diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c b/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
+index 77ac24b191d4..c768cf6c399a 100644
+--- a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
++++ b/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
+@@ -943,7 +943,7 @@ static void test_bpf_sk_storage_delete(void)
+ 	DECLARE_LIBBPF_OPTS(bpf_iter_attach_opts, opts);
+ 	struct bpf_iter_bpf_sk_storage_helpers *skel;
+ 	union bpf_iter_link_info linfo;
+-	int err, len, map_fd, iter_fd;
++	int err, len, map_fd, dummy_map_fd, iter_fd;
+ 	struct bpf_link *link;
+ 	int sock_fd = -1;
+ 	__u32 val = 42;
+@@ -955,6 +955,7 @@ static void test_bpf_sk_storage_delete(void)
+ 		return;
  
- /* Create a map that is suitable to be an inner map with dynamic max entries */
- 	BPF_F_INNER_MAP		= (1U << 12),
+ 	map_fd = bpf_map__fd(skel->maps.sk_stg_map);
++	dummy_map_fd = bpf_map__fd(skel->maps.dummy_sk_stg_map);
+ 
+ 	sock_fd = socket(AF_INET6, SOCK_STREAM, 0);
+ 	if (CHECK(sock_fd < 0, "socket", "errno: %d\n", errno))
+@@ -962,6 +963,10 @@ static void test_bpf_sk_storage_delete(void)
+ 	err = bpf_map_update_elem(map_fd, &sock_fd, &val, BPF_NOEXIST);
+ 	if (CHECK(err, "map_update", "map_update failed\n"))
+ 		goto out;
++	err = bpf_map_update_elem(dummy_map_fd, &sock_fd, &val, BPF_NOEXIST);
++	if (CHECK(err, "(shared local storage) map_update",
++		  "map_update failed\n"))
++		goto out;
+ 
+ 	memset(&linfo, 0, sizeof(linfo));
+ 	linfo.map.map_fd = map_fd;
+@@ -987,6 +992,12 @@ static void test_bpf_sk_storage_delete(void)
+ 	if (CHECK(!err || errno != ENOENT, "bpf_map_lookup_elem",
+ 		  "map value wasn't deleted (err=%d, errno=%d)\n", err, errno))
+ 		goto close_iter;
++	err = bpf_map_lookup_elem(dummy_map_fd, &sock_fd, &val);
++	if (CHECK(
++	    err || val != 0, "(shared local storage) bpf_map_lookup_elem",
++	    "map value wasn't deleted (expected val=0, got val=%d, err=%d)\n",
++	    val, err))
++		goto close_iter;
+ 
+ close_iter:
+ 	close(iter_fd);
+@@ -1007,7 +1018,7 @@ static void test_bpf_sk_storage_delete(void)
+ static void test_bpf_sk_storage_get(void)
+ {
+ 	struct bpf_iter_bpf_sk_storage_helpers *skel;
+-	int err, map_fd, val = -1;
++	int err, map_fd, dummy_map_fd, val = -1;
+ 	int sock_fd = -1;
+ 
+ 	skel = bpf_iter_bpf_sk_storage_helpers__open_and_load();
+@@ -1024,10 +1035,15 @@ static void test_bpf_sk_storage_get(void)
+ 		goto close_socket;
+ 
+ 	map_fd = bpf_map__fd(skel->maps.sk_stg_map);
++	dummy_map_fd = bpf_map__fd(skel->maps.dummy_sk_stg_map);
+ 
+ 	err = bpf_map_update_elem(map_fd, &sock_fd, &val, BPF_NOEXIST);
+ 	if (CHECK(err, "bpf_map_update_elem", "map_update_failed\n"))
+ 		goto close_socket;
++	err = bpf_map_update_elem(dummy_map_fd, &sock_fd, &val, BPF_NOEXIST);
++	if (CHECK(err, "(shared socket storage) bpf_map_update_elem",
++		  "map_update_failed\n"))
++		goto close_socket;
+ 
+ 	do_dummy_read(skel->progs.fill_socket_owner);
+ 
+@@ -1036,6 +1052,12 @@ static void test_bpf_sk_storage_get(void)
+ 	    "map value wasn't set correctly (expected %d, got %d, err=%d)\n",
+ 	    getpid(), val, err))
+ 		goto close_socket;
++	err = bpf_map_lookup_elem(dummy_map_fd, &sock_fd, &val);
++	if (CHECK(err || val != getpid(),
++	    "(shared local storage) bpf_map_lookup_elem",
++	    "map value wasn't set correctly (expected %d, got %d, err=%d)\n",
++	    getpid(), val, err))
++		goto close_socket;
+ 
+ 	do_dummy_read(skel->progs.negate_socket_local_storage);
+ 
+@@ -1043,6 +1065,11 @@ static void test_bpf_sk_storage_get(void)
+ 	CHECK(err || val != -getpid(), "bpf_map_lookup_elem",
+ 	      "map value wasn't set correctly (expected %d, got %d, err=%d)\n",
+ 	      -getpid(), val, err);
++	err = bpf_map_lookup_elem(dummy_map_fd, &sock_fd, &val);
++	CHECK(err || val != -getpid(),
++	      "(shared local storage) bpf_map_lookup_elem",
++	      "map value wasn't set correctly (expected %d, got %d, err=%d)\n",
++	      -getpid(), val, err);
+ 
+ close_socket:
+ 	close(sock_fd);
+diff --git a/tools/testing/selftests/bpf/prog_tests/test_local_storage.c b/tools/testing/selftests/bpf/prog_tests/test_local_storage.c
+index d2c16eaae367..2cb24b38447b 100644
+--- a/tools/testing/selftests/bpf/prog_tests/test_local_storage.c
++++ b/tools/testing/selftests/bpf/prog_tests/test_local_storage.c
+@@ -189,6 +189,9 @@ void test_test_local_storage(void)
+ 				      serv_sk))
+ 		goto close_prog_rmdir;
+ 
++	CHECK(skel->data->fast_sk_storage_result != 0, "fast_sk_storage_result",
++	      "fast_sk_local_storage not set\n");
 +
-+/* Instead of accessing local storage via map lookup, the local storage API
-+ * will use the CONFIG_BPF_SHARED_LOCAL_STORAGE_SIZE bytes inlined directly
-+ * into struct sock. This flag is ignored for non-SK_STORAGE maps.
-+ */
-+	BPF_F_SHARED_LOCAL_STORAGE = (1U << 13),
- };
+ close_prog_rmdir:
+ 	snprintf(cmd, sizeof(cmd), "rm -rf %s", tmp_dir_path);
+ 	system(cmd);
+diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_bpf_sk_storage_helpers.c b/tools/testing/selftests/bpf/progs/bpf_iter_bpf_sk_storage_helpers.c
+index 6cecab2b32ba..f124dc22a7cc 100644
+--- a/tools/testing/selftests/bpf/progs/bpf_iter_bpf_sk_storage_helpers.c
++++ b/tools/testing/selftests/bpf/progs/bpf_iter_bpf_sk_storage_helpers.c
+@@ -13,11 +13,22 @@ struct {
+ 	__type(value, int);
+ } sk_stg_map SEC(".maps");
  
- /* Flags for BPF_PROG_QUERY. */
-diff --git a/kernel/bpf/Kconfig b/kernel/bpf/Kconfig
-index a82d6de86522..88798f26b535 100644
---- a/kernel/bpf/Kconfig
-+++ b/kernel/bpf/Kconfig
-@@ -35,6 +35,17 @@ config BPF_SYSCALL
- 	  Enable the bpf() system call that allows to manipulate BPF programs
- 	  and maps via file descriptors.
- 
-+config BPF_SHARED_LOCAL_STORAGE_SIZE
-+	int "BPF Socket Local Storage Optimization Buffer Size"
-+	depends on BPF_SYSCALL
-+	default 0
-+	help
-+	  Enable shared socket storage mode where the data is inlined directly
-+	  into the socket. Provides fast and persistent storage, see
-+	  BPF_F_SHARED_LOCAL_STORAGE. This option controls how many bytes to
-+	  pre-allocate in each socket.
++struct {
++	__uint(type, BPF_MAP_TYPE_SK_STORAGE);
++	__uint(map_flags, BPF_F_NO_PREALLOC | BPF_F_SHARED_LOCAL_STORAGE);
++	__type(key, int);
++	__type(value, int);
++} dummy_sk_stg_map SEC(".maps");
 +
+ SEC("iter/bpf_sk_storage_map")
+ int delete_bpf_sk_storage_map(struct bpf_iter__bpf_sk_storage_map *ctx)
+ {
+-	if (ctx->sk)
+-		bpf_sk_storage_delete(&sk_stg_map, ctx->sk);
++	struct sock *sk = ctx->sk;
 +
- config BPF_JIT
- 	bool "Enable BPF Just In Time compiler"
- 	depends on BPF
-diff --git a/kernel/bpf/bpf_local_storage.c b/kernel/bpf/bpf_local_storage.c
-index b305270b7a4b..6f97927aa1d7 100644
---- a/kernel/bpf/bpf_local_storage.c
-+++ b/kernel/bpf/bpf_local_storage.c
-@@ -12,7 +12,8 @@
- #include <uapi/linux/sock_diag.h>
- #include <uapi/linux/btf.h>
++	if (sk) {
++		bpf_sk_storage_delete(&sk_stg_map, sk);
++		bpf_sk_storage_delete(&dummy_sk_stg_map, sk);
++	}
  
--#define BPF_LOCAL_STORAGE_CREATE_FLAG_MASK (BPF_F_NO_PREALLOC | BPF_F_CLONE)
-+#define BPF_LOCAL_STORAGE_CREATE_FLAG_MASK \
-+	(BPF_F_NO_PREALLOC | BPF_F_CLONE | BPF_F_SHARED_LOCAL_STORAGE)
+ 	return 0;
+ }
+@@ -43,6 +54,12 @@ int fill_socket_owner(struct bpf_iter__task_file *ctx)
  
- static struct bpf_local_storage_map_bucket *
- select_bucket(struct bpf_local_storage_map *smap,
-diff --git a/net/core/bpf_sk_storage.c b/net/core/bpf_sk_storage.c
-index 68d2cbf8331a..9173b89f9d3b 100644
---- a/net/core/bpf_sk_storage.c
-+++ b/net/core/bpf_sk_storage.c
-@@ -92,6 +92,16 @@ static void bpf_sk_storage_map_free(struct bpf_map *map)
- 	bpf_local_storage_map_free(smap, NULL);
+ 	*sock_tgid = task->tgid;
+ 
++	sock_tgid = bpf_sk_storage_get(&dummy_sk_stg_map, sock->sk, 0, 0);
++	if (!sock_tgid)
++		return 0;
++
++	*sock_tgid = task->tgid;
++
+ 	return 0;
  }
  
-+static int bpf_sk_storage_map_alloc_check(union bpf_attr *attr)
-+{
-+#if CONFIG_BPF_SHARED_LOCAL_STORAGE_SIZE > 0
-+	if (attr->map_flags & BPF_F_SHARED_LOCAL_STORAGE &&
-+	    attr->value_size > CONFIG_BPF_SHARED_LOCAL_STORAGE_SIZE)
-+		return -E2BIG;
-+#endif
-+	return bpf_local_storage_map_alloc_check(attr);
-+}
-+
- static struct bpf_map *bpf_sk_storage_map_alloc(union bpf_attr *attr)
- {
- 	struct bpf_local_storage_map *smap;
-@@ -119,6 +129,10 @@ static void *bpf_fd_sk_storage_lookup_elem(struct bpf_map *map, void *key)
- 	fd = *(int *)key;
- 	sock = sockfd_lookup(fd, &err);
- 	if (sock) {
-+#if CONFIG_BPF_SHARED_LOCAL_STORAGE_SIZE > 0
-+		if (map->map_flags & BPF_F_SHARED_LOCAL_STORAGE)
-+			return sock->sk->bpf_shared_local_storage;
-+#endif
- 		sdata = bpf_sk_storage_lookup(sock->sk, map, true);
- 		sockfd_put(sock);
- 		return sdata ? sdata->data : NULL;
-@@ -137,6 +151,13 @@ static int bpf_fd_sk_storage_update_elem(struct bpf_map *map, void *key,
- 	fd = *(int *)key;
- 	sock = sockfd_lookup(fd, &err);
- 	if (sock) {
-+#if CONFIG_BPF_SHARED_LOCAL_STORAGE_SIZE > 0
-+		if (map_flags & BPF_F_SHARED_LOCAL_STORAGE) {
-+			memcpy(sock->sk->bpf_shared_local_storage, value,
-+			       sizeof(sock->sk->bpf_shared_local_storage));
-+			return 0;
-+		}
-+#endif
- 		sdata = bpf_local_storage_update(
- 			sock->sk, (struct bpf_local_storage_map *)map, value,
- 			map_flags);
-@@ -155,6 +176,13 @@ static int bpf_fd_sk_storage_delete_elem(struct bpf_map *map, void *key)
- 	fd = *(int *)key;
- 	sock = sockfd_lookup(fd, &err);
- 	if (sock) {
-+#if CONFIG_BPF_SHARED_LOCAL_STORAGE_SIZE > 0
-+		if (map->map_flags & BPF_F_SHARED_LOCAL_STORAGE) {
-+			memset(sock->sk->bpf_shared_local_storage, 0,
-+			       sizeof(sock->sk->bpf_shared_local_storage));
-+			return 0;
-+		}
-+#endif
- 		err = bpf_sk_storage_del(sock->sk, map);
- 		sockfd_put(sock);
- 		return err;
-@@ -261,6 +289,15 @@ BPF_CALL_4(bpf_sk_storage_get, struct bpf_map *, map, struct sock *, sk,
- 	if (!sk || !sk_fullsock(sk) || flags > BPF_SK_STORAGE_GET_F_CREATE)
- 		return (unsigned long)NULL;
+@@ -61,5 +78,11 @@ int negate_socket_local_storage(struct bpf_iter__tcp *ctx)
  
-+#if CONFIG_BPF_SHARED_LOCAL_STORAGE_SIZE > 0
-+	if (map->map_flags & BPF_F_SHARED_LOCAL_STORAGE) {
-+		if (unlikely(value || flags & BPF_SK_STORAGE_GET_F_CREATE))
-+			return (unsigned long)NULL;
-+
-+		return (unsigned long)sk->bpf_shared_local_storage;
-+	}
-+#endif
-+
- 	sdata = bpf_sk_storage_lookup(sk, map, true);
- 	if (sdata)
- 		return (unsigned long)sdata->data;
-@@ -291,6 +328,14 @@ BPF_CALL_2(bpf_sk_storage_delete, struct bpf_map *, map, struct sock *, sk)
- 	if (!sk || !sk_fullsock(sk))
- 		return -EINVAL;
+ 	*sock_tgid = -*sock_tgid;
  
-+#if CONFIG_BPF_SHARED_LOCAL_STORAGE_SIZE > 0
-+	if (map->map_flags & BPF_F_SHARED_LOCAL_STORAGE) {
-+		memset(sk->bpf_shared_local_storage, 0,
-+		       sizeof(sk->bpf_shared_local_storage));
++	sock_tgid = bpf_sk_storage_get(&dummy_sk_stg_map, sk_common, 0, 0);
++	if (!sock_tgid)
 +		return 0;
-+	}
-+#endif
 +
- 	if (refcount_inc_not_zero(&sk->sk_refcnt)) {
- 		int err;
++	*sock_tgid = -*sock_tgid;
++
+ 	return 0;
+ }
+diff --git a/tools/testing/selftests/bpf/progs/local_storage.c b/tools/testing/selftests/bpf/progs/local_storage.c
+index 95868bc7ada9..502a118f57ed 100644
+--- a/tools/testing/selftests/bpf/progs/local_storage.c
++++ b/tools/testing/selftests/bpf/progs/local_storage.c
+@@ -16,6 +16,7 @@ char _license[] SEC("license") = "GPL";
+ int monitored_pid = 0;
+ int inode_storage_result = -1;
+ int sk_storage_result = -1;
++int fast_sk_storage_result = -1;
  
-@@ -336,7 +381,7 @@ bpf_sk_storage_ptr(void *owner)
- static int sk_storage_map_btf_id;
- const struct bpf_map_ops sk_storage_map_ops = {
- 	.map_meta_equal = bpf_map_meta_equal,
--	.map_alloc_check = bpf_local_storage_map_alloc_check,
-+	.map_alloc_check = bpf_sk_storage_map_alloc_check,
- 	.map_alloc = bpf_sk_storage_map_alloc,
- 	.map_free = bpf_sk_storage_map_free,
- 	.map_get_next_key = notsupp_get_next_key,
+ struct local_storage {
+ 	struct inode *exec_inode;
+@@ -23,6 +24,10 @@ struct local_storage {
+ 	struct bpf_spin_lock lock;
+ };
+ 
++struct fast_storage {
++	__u32 value;
++};
++
+ struct {
+ 	__uint(type, BPF_MAP_TYPE_INODE_STORAGE);
+ 	__uint(map_flags, BPF_F_NO_PREALLOC);
+@@ -37,6 +42,14 @@ struct {
+ 	__type(value, struct local_storage);
+ } sk_storage_map SEC(".maps");
+ 
++struct {
++	__uint(type, BPF_MAP_TYPE_SK_STORAGE);
++	__uint(map_flags, BPF_F_NO_PREALLOC | BPF_F_CLONE |
++			  BPF_F_SHARED_LOCAL_STORAGE);
++	__type(key, int);
++	__type(value, struct fast_storage);
++} dummy_sk_storage_map SEC(".maps");
++
+ struct {
+ 	__uint(type, BPF_MAP_TYPE_TASK_STORAGE);
+ 	__uint(map_flags, BPF_F_NO_PREALLOC);
+@@ -107,6 +120,7 @@ int BPF_PROG(socket_bind, struct socket *sock, struct sockaddr *address,
+ {
+ 	__u32 pid = bpf_get_current_pid_tgid() >> 32;
+ 	struct local_storage *storage;
++	struct fast_storage *fast_storage;
+ 	int err;
+ 
+ 	if (pid != monitored_pid)
+@@ -126,6 +140,14 @@ int BPF_PROG(socket_bind, struct socket *sock, struct sockaddr *address,
+ 	if (!err)
+ 		sk_storage_result = err;
+ 
++	fast_storage =
++		bpf_sk_storage_get(&dummy_sk_storage_map, sock->sk, 0, 0);
++	if (!fast_storage)
++		return 0;
++
++	fast_sk_storage_result =
++		fast_storage->value == DUMMY_STORAGE_VALUE ? 0 : -1;
++
+ 	return 0;
+ }
+ 
+@@ -135,6 +157,7 @@ int BPF_PROG(socket_post_create, struct socket *sock, int family, int type,
+ {
+ 	__u32 pid = bpf_get_current_pid_tgid() >> 32;
+ 	struct local_storage *storage;
++	struct fast_storage *fast_storage;
+ 
+ 	if (pid != monitored_pid)
+ 		return 0;
+@@ -148,6 +171,13 @@ int BPF_PROG(socket_post_create, struct socket *sock, int family, int type,
+ 	storage->value = DUMMY_STORAGE_VALUE;
+ 	bpf_spin_unlock(&storage->lock);
+ 
++	fast_storage =
++		bpf_sk_storage_get(&dummy_sk_storage_map, sock->sk, 0, 0);
++	if (!fast_storage || fast_storage != sock->sk->bpf_shared_local_storage)
++		return 0;
++
++	fast_storage->value = DUMMY_STORAGE_VALUE;
++
+ 	return 0;
+ }
+ 
 -- 
 2.30.2
 
