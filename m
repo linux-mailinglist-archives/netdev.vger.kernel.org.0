@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D6A83F4E0E
-	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 18:12:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82CE23F4E4E
+	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 18:23:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229627AbhHWQMp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Aug 2021 12:12:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53888 "EHLO
+        id S229694AbhHWQYU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Aug 2021 12:24:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229759AbhHWQMo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Aug 2021 12:12:44 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD3D0C061575
-        for <netdev@vger.kernel.org>; Mon, 23 Aug 2021 09:12:01 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id bt14so38150153ejb.3
-        for <netdev@vger.kernel.org>; Mon, 23 Aug 2021 09:12:01 -0700 (PDT)
+        with ESMTP id S229477AbhHWQYT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Aug 2021 12:24:19 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC82BC061575
+        for <netdev@vger.kernel.org>; Mon, 23 Aug 2021 09:23:36 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id n12so27033707edx.8
+        for <netdev@vger.kernel.org>; Mon, 23 Aug 2021 09:23:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=LOOVTjBWLXk9b77JvewF8WYFGU0rc87bf502taFTkOk=;
-        b=PUYkgyyJZSvb/og6uSLYeQ77Yt+idYcAvohPWDnGl1ScZzUIKDqroLRmaXPHwvxrJk
-         gWdHOkk411QjIcDOV0LMyYcYj3atY5LF2WZ4BDZUsiNdwgDuEPn9boT/jN0ITTVQr8M5
-         guQbYm5EgYxFt0upCqosws6EeygNvVt+aQc/l+Ju1ruKcaFIcRGnANckWXDWmLUexRRh
-         ZtgdZvX4Mzu+HFgrorM+xL/Bz6ikmj8MvvLUWHfQk74n9w9YIfjWUD3Km1UG7h8zXrlj
-         4mZqGiood532tORpy3UAso57tvjn21WP1iVMm7QLrqBeAxeCc5YueiAyFjM25Dnbj5R4
-         ZfhQ==
+        bh=4oZp2oA2DoFMe6YUkEUj/Z9Cb0F+Usy+fOwEsJnYYYs=;
+        b=Dow8kezNib4j+RHeulxeiHR8AB8/6cQaqiFjNmQ4/SegWJPigFsS9a8m5mqxakZk8/
+         9FL9f5FI3dfM8Sx5pJvFpHieFV04XRtC92LCuDG+9G6ASLAUhtm1aCH2FahibTqjMi5b
+         RVPWcwit3+6giuVZnoqFTe7kcmDGDznTdqel8czLpKdCTAOO2BNPX01YyoFyok/vP/Lt
+         UjKpjQXfwq+Mo32b9hhE2/mxNiRvqDDkIWWM03v+Z6gnmLBLuUcrZRPrLdpcElFTypXg
+         4SkP9bd3N+ouKeJ/ph0rE4gZvTuij/uWpV1Rhpgt+cbDzJmxaDIObZ9wviTgSV8Ky3ua
+         ki5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=LOOVTjBWLXk9b77JvewF8WYFGU0rc87bf502taFTkOk=;
-        b=YzN1Z+r5uNB8N5vUUnyIrNGy7wiv6dkLIPNGPeyXQlkkYD3vrOxpjPODCOXIzJ079a
-         NaqnkTn0YQ/I6YVukdDjFjhbW9qhH6NQalDwus6yvP+W+TQ9U2OGnha/TPd6CFPQ3QF7
-         zbkPpmy1U78SuDq3uKs01Azq3v5ZRuoPx5oBDYEuu7Bd/UCw1n83iDswPjOV5A/fXXEP
-         1SFO09tlpWZS2Bpfw+pXAf7XVese2e6pToDJqv17TTl7/gExPBAdatheeaGMx1a7nUmt
-         8NRO2DDbOV0jk/f92l82ZODdNFYQv4h7Crg56rHqIu+OJCo2NdxCLsyTmdV2f62fcX/W
-         Levg==
-X-Gm-Message-State: AOAM532bTrowiFjJ1XNCuHrnbkCpfSVyYbnZH74nospTb0ilzFisiyk+
-        TXYc1atggtJOzDT2hj0sejc=
-X-Google-Smtp-Source: ABdhPJxMmE5mHLVZSb0TmdUUg1k9OZf/eWslzmzokZyBAOAlMQx6rtK3v6SFYT8MY4Jfo+JPpnawEQ==
-X-Received: by 2002:a17:906:30d0:: with SMTP id b16mr35986623ejb.495.1629735120368;
-        Mon, 23 Aug 2021 09:12:00 -0700 (PDT)
+        bh=4oZp2oA2DoFMe6YUkEUj/Z9Cb0F+Usy+fOwEsJnYYYs=;
+        b=Z55n/MZFny7AO1/I+MsNWmyUQWYxBUiVYMoYvQLaKQgNbTj4Qq8YYogNPnLkiyR/lp
+         zeSd9pnphh2wrJWj2nGLug9mnBhBdZKZtXCgXTB5xWWi3iPk2HP5vz0L99Hh7DeecEsj
+         fQsYagaGoqdYPKmsNPGqjQFklzCTOTvgqXG/ZvbpKXAdA60qvRj9lJkCOPbfzMmCW4HP
+         5+7oW+PVudaRwpomTRAcMKEBNJ4IZscNKWPiI99w62k/t+qnmlWamm5gUIJoQXV6bkwd
+         uHGzRtC4EETjCe9deGv7ZQyBo/beV90OyE13q81Ivh+G7uZ0hFwiqVJLiCF5qIgRr+iM
+         xfzQ==
+X-Gm-Message-State: AOAM53113CVZg6sWNANnDLSaa3p5O14SRyro4qALwRdQZRu+Zbe7NF1m
+        86Aqp7Ahn6lERzDp83g8GpA=
+X-Google-Smtp-Source: ABdhPJz3yWkAA7ZvGhlbe6uNWEU+sDiji4NYwhHQwHj31nIaJ52tiBOHt55jkAdfQVOeflfAGBVQHA==
+X-Received: by 2002:a05:6402:1215:: with SMTP id c21mr38355779edw.137.1629735815213;
+        Mon, 23 Aug 2021 09:23:35 -0700 (PDT)
 Received: from skbuf ([188.25.144.60])
-        by smtp.gmail.com with ESMTPSA id k3sm528222eje.117.2021.08.23.09.11.57
+        by smtp.gmail.com with ESMTPSA id l16sm7702024eje.67.2021.08.23.09.23.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Aug 2021 09:11:59 -0700 (PDT)
-Date:   Mon, 23 Aug 2021 19:11:57 +0300
+        Mon, 23 Aug 2021 09:23:34 -0700 (PDT)
+Date:   Mon, 23 Aug 2021 19:23:32 +0300
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Ido Schimmel <idosch@idosch.org>
 Cc:     Nikolay Aleksandrov <nikolay@nvidia.com>,
@@ -91,7 +91,7 @@ Cc:     Nikolay Aleksandrov <nikolay@nvidia.com>,
         Jesse Brandeburg <jesse.brandeburg@intel.com>
 Subject: Re: [PATCH v2 net-next 0/5] Make SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE
  blocking
-Message-ID: <20210823161157.mg3rtswzje3ww32k@skbuf>
+Message-ID: <20210823162332.mj5gmjb4to3uacnq@skbuf>
 References: <20210822133145.jjgryhlkgk4av3c7@skbuf>
  <YSKD+DK4kavYJrRK@shredder>
  <20210822174449.nby7gmrjhwv3walp@skbuf>
@@ -111,78 +111,31 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On Mon, Aug 23, 2021 at 07:02:15PM +0300, Ido Schimmel wrote:
-> > > Inside the work item you would do something like:
-> > >
-> > > spin_lock_bh()
-> > > list_splice_init()
-> > > spin_unlock_bh()
-> > >
-> > > mutex_lock() // rtnl or preferably private lock
-> > > list_for_each_entry_safe()
-> > > 	// process entry
-> > > 	cond_resched()
-> > > mutex_unlock()
-> >
 > > When is the work item scheduled in your proposal?
->
+> 
 > Calling queue_work() whenever you get a notification. The work item
 > might already be queued, which is fine.
->
+> 
 > > I assume not only when SWITCHDEV_FDB_FLUSH_TO_DEVICE is emitted. Is
 > > there some sort of timer to allow for some batching to occur?
->
+> 
 > You can add an hysteresis timer if you want, but I don't think it's
 > necessary. Assuming user space is programming entries at a high rate,
 > then by the time you finish a batch, you will have a new one enqueued.
 
-With the current model, nobody really stops any driver from doing that
-if so they wish. No switchdev or bridge changes needed. We have maximum
-flexibility now, with this async model. Yet it just so happens that no
-one is exploiting it, and instead the existing options are poorly
-utilized by most drivers.
-
-> > > In del_nbp(), after br_fdb_delete_by_port(), the bridge will emit some
-> > > new blocking event (e.g., SWITCHDEV_FDB_FLUSH_TO_DEVICE) that will
-> > > instruct the driver to flush all its pending FDB notifications. You
-> > > don't strictly need this notification because of the
-> > > netdev_upper_dev_unlink() that follows, but it helps in making things
-> > > more structured.
-> > >
-> > > Pros:
-> > >
-> > > 1. Solves your problem?
-> > > 2. Pattern is not worse than what we currently have
-> > > 3. Does not force RTNL
-> > > 4. Allows for batching. For example, mlxsw has the ability to program up
-> > > to 64 entries in one transaction with the device. I assume other devices
-> > > in the same grade have similar capabilities
-> > >
-> > > Cons:
-> > >
-> > > 1. Asynchronous
-> > > 2. Pattern we will see in multiple drivers? Can consider migrating it
-> > > into switchdev itself at some point
-> >
-> > I can already flush_workqueue(dsa_owq) in dsa_port_pre_bridge_leave()
-> > and this will solve the problem in the same way, will it not?
->
-> Problem is that you will deadlock if your work item tries to take RTNL.
-
-I think we agreed that the rtnl_lock could be dropped from driver FDB work items.
-I have not tried that yet though.
-
-> > It's not that I don't have driver-level solutions and hook points.
-> > My concern is that there are way too many moving parts and the entrance
-> > barrier for a new switchdev driver is getting higher and higher to
-> > achieve even basic stuff.
->
-> I understand the frustration, but that's my best proposal at the moment.
-> IMO, it doesn't make things worse and has some nice advantages.
-
-Reconsidering my options, I don't want to reduce the available optimizations
-that other switchdev drivers can make, in the name of a simpler baseline.
-I am also not smart enough for reworking the bridge data path.
-I will probably do something like flush_workqueue in the PRECHANGEUPPER
-handler, see what other common patterns there might be, and try to synthesize
-them in library code (a la switchdev_handle_*) that can be used by drivers
-that wish to, and ignored by drivers that don't.
+I tried to do something similar in DSA. There we have .ndo_fdb_dump
+because we don't sync the hardware FDB. We also have some drivers where
+the FDB flush on a port is a very slow procedure, because the FDB needs
+to be walked element by element to see what needs to be deleted.
+So I wanted to defer the FDB flush to a background work queue, and let
+the port leave the bridge quickly and not block the rtnl_mutex.
+But it gets really nasty really quick. The FDB flush workqueue cannot
+run concurrently with the ndo_fdb_dump, for reasons that have to do with
+hardware access. Also, any fdb_add or fdb_del would need to flush the
+FDB flush workqueue, for the same reasons. All these are currently
+implicitly serialized by the rtnl_mutex now. Your hardware/firmware might
+be smarter, but I think that if you drop the rtnl_mutex requirement, you
+will be seriously surprised by the amount of extra concurrency you need
+to handle.
+In the end I scrapped everything and I'm happy with a synchronous FDB
+flush even if it's slow. YMMV of course.
