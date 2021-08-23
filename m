@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03D1C3F52D0
-	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 23:23:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98E493F52D2
+	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 23:23:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232814AbhHWVYC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Aug 2021 17:24:02 -0400
-Received: from mail-eopbgr80085.outbound.protection.outlook.com ([40.107.8.85]:59364
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        id S232952AbhHWVYO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Aug 2021 17:24:14 -0400
+Received: from mail-eopbgr30042.outbound.protection.outlook.com ([40.107.3.42]:5229
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232503AbhHWVX7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Aug 2021 17:23:59 -0400
+        id S232724AbhHWVYA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Aug 2021 17:24:00 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=a59RRfBQC9Mge9h0wm8SEeOEfUxO6Hed0lqz+ZrKLpxnfkQ/Fhq6eFAOwq4BFPqovvUbY1/vl2MNuhLIRfcJdYdi6y+MReyRmntY33SrKsgRBWBKTPcQ65OJsf57XKtWcg6r9OyDswbLmCthtLyFkPWgrPnX9VTr0iboHl/HKkMsfvan3X0phf4nCeqV0R5+S6PeshG+PZIEHeRm8ivHF2h5lvmfPLIC/NZpB2qF1wUS0aXBceCDq9mSliqAGSQ1Ne62mnAfdflGC3xO6BApiFZAdteqj2lK4+/mZLG6YOqm4H36xLEiwhKWCZ8jXbchAwMpg6hm0+gp+dC/UWeC9g==
+ b=HeZGnL68QPSSEjCz1ajgJOCNGOQfXENVgwyqUwWGRPn67ST9p87+YeZKOsfCdIllDtPPmsKI0UOzCQnyR8WfIC6PtgztvNojjTooVT8WEQOf452NuRcT6L9Qj5TDLrgvhvZTZdGlu7mAAWz4rnYj/05woCH1txwb5DWbGcAUaRn5tBX9W0NLRotdK5oltcOcR5qIvpSTCIJvJaw7+dWA+d2i/sKVkf+F9aHu4IS/jiy1mxBZZdZTF5PmRmFIL4Ay+raqw6w6QiflpUj+WSnlno/NG80LmhqViuNe92/fFqNmxQarfD+anmns/YJtwh561rcecOsR6+bTfEEP/al0qQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lS08ksLDTATGQViWBzuBerZpUIvmHgME3NCskVLaIdg=;
- b=cUiGXkKYRFI+TXlggAH6cVV1lyFYImu97CFCXqb/73GypSxEJuRPH7/pDXctk0BpYBeXQy1PV1BipiadAHdboEuD8fhukjxoqWibFDP/nKnJ1fYt+zenA8G3mbK1YSJ8OZ0L0gKYEoUcNpdkbqItFMLeoP5nCRQ2PlDCzVT9E4PHfQBJpOeWtXhWD/KZgYujA+RNRfMjsF/gLeKJ32vEYbvIDUF9n1I/HtVEcrECgGYK72A+wUr40deLvpNA5uf/7otlOjKmnBQGLtl8O+FcHfMb40Ujcm0vfNqJxpqzNYN6tjAwC43CX14TlQav1FN5nf2f22Q8/NFw4MiL3ZSykg==
+ bh=3jV3mPb8PPAsAc846U6PNc4Qha/nVyXRJKB+MO1YCBQ=;
+ b=LppSwtnkRcJD2xXBM+5rC6GmpKLs7R9qb7oh3j4EQl910Fdn5ATjIKGiOcRW6qcEB2ui9CDaXooqvKvnSUaTg0Phq9xymbPRVjWmAEhC/DtaobhaBxM3eI/5Ekj9VrnXIs94/ncFuT98LpD67q631D3w1eEa3REGNBcmfeh1dsJObjKTooYmZgxOh+69zJ7Z6XEqIFZtUkmsS9U1ZLLwiNEYCgm4zYFpvWU0UNFT2piQuujxxaOiu6y1wwbmsXxBYOBv9C+iAtwtC0I896NvEkcamAkOXBLEldtE/mbUI5JXIHIFYhkkZBrYHgL9XTz1Djbnq1dACGbUr/BMCjVoXQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lS08ksLDTATGQViWBzuBerZpUIvmHgME3NCskVLaIdg=;
- b=PIwMy57HkiS8wDwKh3c+Z8WGeSVjtd3mZkb1wJ1jOUK4C+SvIUf5yxvj3BQLx/ANxmI3gIFjvgis+rNbPvQdEqdRK1pwMwF1MnNSVmxQL5UmLOzeZ7N96lZpHwjkkkdzMdsUEI8zvp4Y22Yl7eiUASzybuL9P6oH6zt3InZ041c=
+ bh=3jV3mPb8PPAsAc846U6PNc4Qha/nVyXRJKB+MO1YCBQ=;
+ b=XGh0uCRKgpoGTnwu2/geHWupgdgrfdXvX8vgurso5svMrwa6kcNQ7nm41LfR49986vWLatWLDk776ttfcCu4UATYGEMkuHmvoU222E1wqKYluMZ4TEnXPdxEaHhoxJSPq+w2LsDTSHa3yynNrhiOpMAKupVWjcJQrkhhBs2zu04=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR04MB4221.eurprd04.prod.outlook.com (2603:10a6:803:3e::20) with
+ by VI1PR0401MB2685.eurprd04.prod.outlook.com (2603:10a6:800:58::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19; Mon, 23 Aug
- 2021 21:23:14 +0000
+ 2021 21:23:15 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4436.025; Mon, 23 Aug 2021
- 21:23:14 +0000
+ 21:23:15 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -46,104 +46,153 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Tobias Waldekranz <tobias@waldekranz.com>,
         Kurt Kanzenbach <kurt@linutronix.de>,
         =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>
-Subject: [PATCH v2 net-next 1/4] net: dsa: don't call switchdev_bridge_port_unoffload for unoffloaded bridge ports
-Date:   Tue, 24 Aug 2021 00:22:55 +0300
-Message-Id: <20210823212258.3190699-2-vladimir.oltean@nxp.com>
+Subject: [PATCH v2 net-next 2/4] net: dsa: properly fall back to software bridging
+Date:   Tue, 24 Aug 2021 00:22:56 +0300
+Message-Id: <20210823212258.3190699-3-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210823212258.3190699-1-vladimir.oltean@nxp.com>
 References: <20210823212258.3190699-1-vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 X-ClientProxiedBy: AM3PR05CA0150.eurprd05.prod.outlook.com
  (2603:10a6:207:3::28) To VI1PR04MB5136.eurprd04.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.25.144.60) by AM3PR05CA0150.eurprd05.prod.outlook.com (2603:10a6:207:3::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.18 via Frontend Transport; Mon, 23 Aug 2021 21:23:13 +0000
+Received: from localhost.localdomain (188.25.144.60) by AM3PR05CA0150.eurprd05.prod.outlook.com (2603:10a6:207:3::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.18 via Frontend Transport; Mon, 23 Aug 2021 21:23:14 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c5fe2bcd-f8ef-4d46-aa32-08d9667c3748
-X-MS-TrafficTypeDiagnostic: VI1PR04MB4221:
-X-Microsoft-Antispam-PRVS: <VI1PR04MB4221ABA8EB3DE532BFFD5D2DE0C49@VI1PR04MB4221.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3968;
+X-MS-Office365-Filtering-Correlation-Id: ffc078a3-070c-4472-32aa-08d9667c37e6
+X-MS-TrafficTypeDiagnostic: VI1PR0401MB2685:
+X-Microsoft-Antispam-PRVS: <VI1PR0401MB2685FFBCD8309D50FDCC4374E0C49@VI1PR0401MB2685.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4714;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: NCgjZTxE35h/f/qmGDLym4gigTnx4giE9nbOeKAr6Q33Ktas9rsrpogQ6Pczix5n7hPiJOlDuIKOsKMrM6r+Rh+ikVaey1wVZpO95FVvYcYUxnmUoKQPQuy55EmccU+jGe6phtOMJS+WynGcbN+VRNpe5/gnieuQ2KmyZRTZwUXw0OgwQgVJCx6alMREWJOvr2QXGnTozM2CkcXHtuSER9855pVwF5lUon5iRHTsglxQNUMCmBo6EzjC+lQ+F8WLPK3TsMwciATI9nV09HN5innhTBZ2UsVWHki+CmPVLvnIwRDOplFAcgrRfgTEHqfGiw9W+/CW+o58d3wVquKYXJvClV/UNB6Xa4dlMldQHcF1MqOPjot3Frpro7RaAZEACZJ5MORf3P/tSgEd9x534A0DP9We7K6FcpEIKSdKG0WsaUvpT6dOCoPcnCFxsBTGctEzuWEgmlaIeBm9QP56JnUQteVsScwvUOJ/xWkfYdzB+cMw2V4csAvzPToKpHxCIHuS0vH9+u4lCYeQr5p70YiA0dbVbK9pA/s3bMEVrLh8f3VyWPNa9a2WGBU6tbwOjWPgoypNyhGu1NPgwlLMZ0Uagw93w5fAo98LNl0S8YOa8j99tUGQo+J0k/0reYBzS0j0PrQraoyBL2cdUWDpHDwLFIefiudbHiMQcdx28Iw7cm9jrI7eWOjwUg5vL+D9SuB4yvkhUxIdT8V4ooG9Zg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(376002)(346002)(39850400004)(366004)(396003)(83380400001)(66476007)(66556008)(6506007)(26005)(4326008)(8676002)(66946007)(8936002)(6512007)(186003)(6486002)(86362001)(6666004)(38350700002)(6916009)(38100700002)(52116002)(5660300002)(316002)(44832011)(36756003)(54906003)(1076003)(2616005)(2906002)(478600001)(956004);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: Lal147Ysg8OR7a4Q6QawQDEwhmZkjPytwZkG9PGhMATvMTeDmI5IfRawFUoavNwrmrYzAbCzQGHXoKwUbATAWrezO6/soK4nzTJo6OVN/JPgKd4X5CtZ2wz6jJ7PyUIZECMCkOsjZSqhhQ0W0YUsn5w01G38Twv2c3rUrlgwkj3xfl2O+7tnybkgHQ58a91Yq1XBj1zDzEORrrTK8hO+YPAFK+iP4qO5MNjGh194s0t/cYePR1vpaLK2CLg3NJD8fE2z7kjDD0IBRc4ym4QD7+r4LmEhuomfySdkmNpoqSu2f+rC18PZOzM7Rjv/sWNZFOXl3ENX/PPm8wd42kevbJkYTI0rXQFxDoofSMjqfUv3eo6FpnupvTBi10O2vi6EveKGE1nQANJmPuoxhR1Er6+9pn9BDITD81IGjgnOGY5Yc+5rQ4Rw5VRC6MD2/bWpQSMX1JIMc9olv2aE9dJolZQ9BfrLAMXrslHnuaAjJMkJc3t0sTh0dOAgtUNTMe8/ToKQAXKvBxKwXQkzy8MK7FiKIDgnGh9eT+EXWo7W4tlEpqUFsqx8R16TdNMejK13Wi/vaRNClEZxKaZsRD3atZaoY9UG7PispAg0GjnVdx1sMZP1fKeRhHZVuTzlFgan+UCa07ddxGxKRkovmjo0+M6KjYBf+DLWzibcW++WMP3w/z2G1pDvI0xaaN+sAOvaW8RhGmB7YuW7iggPzqz04g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39850400004)(376002)(366004)(346002)(396003)(136003)(86362001)(66476007)(66946007)(66556008)(316002)(6916009)(54906003)(478600001)(83380400001)(66574015)(38100700002)(2906002)(38350700002)(186003)(36756003)(5660300002)(1076003)(6512007)(8936002)(6506007)(2616005)(956004)(6666004)(4326008)(44832011)(52116002)(6486002)(26005)(8676002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?SHrja/h1kzhrFiERkXUQlu+OOcDGzu+GOlQCY458GzM6fFMD6K3LxdUWSToc?=
- =?us-ascii?Q?MuZ/lrLM7Hf69uy/Tj6IIrO2ObBLHB8ofVJsH04Ib8tFZ+j2TajKDy9HOP4T?=
- =?us-ascii?Q?+6RFAzQSQLzf7G+ON19hecGJJfzxWSzsEHxbiWwuTrqkYFZilckwqY5QbOLk?=
- =?us-ascii?Q?9MPbN4Uuifj8SR1b0hqYEcwl/bBuhgCkEd1nlPJh+ab+gIPjPb8neCQsBozt?=
- =?us-ascii?Q?989vd3aO1TxxcOpUAkg6NhGnzBLp3tF+CflVio5r7mDavb5H0Bupo+VFfv2Z?=
- =?us-ascii?Q?rcwBVin83N5Ibd1oBAIavuuYwsw6sr6uBuN6utviFkJujm/ImsntK27PwmQn?=
- =?us-ascii?Q?HfPZ3UxXG7MiakQk8OoOJZdsbvUDskjaCmhgPtIPGeJtbg4fLCR541kuKuvL?=
- =?us-ascii?Q?ZServI699y+8Uelfv/ukDEYUWsYsle+euE2Bg9I1/wZhRS8IY1OCaraTCeZF?=
- =?us-ascii?Q?oGAJBtpkkB4oBADbsYcsbQ4FWfL9VcZ2lhVzC2r/X8M8NDbHQjtYR3haqZv3?=
- =?us-ascii?Q?SKN+giH+fn5Ayy92rdTJXXIWNmp/OgFGxieq3PzIyMSB64CyxVVreDkmyTsN?=
- =?us-ascii?Q?LETqW0uwoQnSLBjmm2EeijJvNw9PERunHAM4yFGmJkMJxaFwX7R0aaae6KD2?=
- =?us-ascii?Q?vUZ1WDGvacPqvYEnI7VmoL4uTubREiSEpMdRLoEDtUq6I8f+ISw0w0szfPFS?=
- =?us-ascii?Q?q1d8z8TuUVBziNfL9SIPTxv7wJKcRltJRdkAarN2lzMWKy0Fneo0yz5bly9I?=
- =?us-ascii?Q?2v7WA13WzxP9tdsEAHsZTdvInW/CKwbW2MpffIYDiyCaQT4ZlvO1nzi8bxLl?=
- =?us-ascii?Q?UNua4NdTancLYPX+bo2rE05MyaQbO2Rm2Cmn+DHJsAw8FW8RCitwKXPQLjrY?=
- =?us-ascii?Q?Tc0HQtPKKnmHA+FN7plMCu+Ow8GjuABWoOhY3wdW8MkXQxVVOh/Xqclm6xaf?=
- =?us-ascii?Q?7v8a1D0teP40EdRX3s99SZj7Zno6QOmy2Rpi6seNjnmKP0Mr9loBhr4y8CwU?=
- =?us-ascii?Q?qUGlzb4Aby5xHmcPL1l3/lnIWv+GUztBkV2//peMRsTDpC/0R3fVQBVUAXUi?=
- =?us-ascii?Q?5JGr6iWjJf1+YlA2FnIiE25fCwDr2ndRdla8C74SErtf/tYLtz6hsbbkUS2W?=
- =?us-ascii?Q?JJGSk1ewBitVvRf5o0Lui+uKWxXN2atdwUE/LxzAAnKRsfJBMtYh2bT8fwyu?=
- =?us-ascii?Q?UWbeySQ75r67PdYxi9WS0nCAU9kWKOepIYaSaCfbcvZczjkxakGOJFZbIXOA?=
- =?us-ascii?Q?ZwFiDeEI0crBajdV3AXIUUvxOzmUl54DC0bov7nMRGUQlWP7YoLF4YVtDf9B?=
- =?us-ascii?Q?dHDHCr0FAn5i+g7/Wa6HXGbR?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?dWRZSUtNNzR0aUhwejJJekpGWmd3VXUxaTg4VE9FZ3pGa1FIbmR4UDJ4K1du?=
+ =?utf-8?B?QW9Sd3J3c2ljaDdsdHdTTnc4bHVDTlhNLzRaV2JjRGN4S29MeGhzVXZyOFhZ?=
+ =?utf-8?B?eXNLVkFBQnpUY0VaQ1NjME1OOTEyeDRPYzcyeHRhV2JmeWdoWHQ0UE1GWXZw?=
+ =?utf-8?B?WDNqaThsTjcxb2U0SVpZOFNZV3pTN3hPZDRvUDNJNmU4cTJqcS9ndlBDZWJF?=
+ =?utf-8?B?cFpQSm9Cdk43R1JyRHExa0toN09pa04rdm8yTUEyVWpWdGdzZWpWZmJjQWlx?=
+ =?utf-8?B?NXZMdFdRbnNqUTZIdHUxVzNvUVlmUkhNTm50d1djOFZxZ21pNlQ2SWhEUTBt?=
+ =?utf-8?B?NWt1bXRlWWQ0cDJHZ3IvMTJYbnlNeTVZS3kxSDZTRzFkeUZlVnRrVmMyQUo5?=
+ =?utf-8?B?SUZ0UXZUT2c4L0l1ek11cFNOZVo5MGovemFtVGxKOW9vQkUrMHFVZU5RdnFY?=
+ =?utf-8?B?VmRtZEUxNHBRMmN3UXBDdGxGTUpZMHB3VHZ6MTZIRlVJTUQ4bkpqeDczKy9F?=
+ =?utf-8?B?bHNyL3NvK2FPU21SM3pSeDJqUVFhVEh4TzVRdzNiY0cyeElTYWRVSHA3dUpX?=
+ =?utf-8?B?dHJtV2l0T3l5Yjgvb01tMEdsN3JHSmc3SlFFMVJNakVCZUtQS2FnOGNQV09i?=
+ =?utf-8?B?a2lOTGM2VS9nVmliQ1VkeStFTk9uMU00WUhydWlGM29OY2RmQUdLZ3huaEc1?=
+ =?utf-8?B?LzVnaFN2ZGNiWWdzQnJxQnVoTFovVm5nWXkrdUVFd2dLWHlIWXk5VHpLV3ln?=
+ =?utf-8?B?U3BFWGNuUElha1gyNFVPN1V1L0xtUGJJdk9lRUZNS2RSMGZ4b2J3N1ZKTmxm?=
+ =?utf-8?B?WUw1TzdzbDRHd2VVK0I1emFhNTBCb3hkZ09HU1BTL21DQjhxQlZjblVxVWJq?=
+ =?utf-8?B?UitRVFdyZXhNSTVMbWlFK2dKR3JTR1k0Q0FoWjNJbHEwdkIwRWNZbFlHdlVh?=
+ =?utf-8?B?KzNrNlRoYmlwSXFqMnNyZVErUXAwc2RZRU5hL3RlRzdzREMyelVicG45b3Rt?=
+ =?utf-8?B?UXdzdTYveU9MT1ZYaHNOMENSSlVrcm94NmNJK2E0ZUFuaHdmTm5lc2J0M0Z3?=
+ =?utf-8?B?c0tLODRLaGZsYyswbWlydlFSbzN4M01xZEp6b2ErSmFJd0d2Z2kwUzgyTTRB?=
+ =?utf-8?B?YXlBUUpJZURaRTRsR2FKTS9JVlNjOElmaWVPUFNraUEwMVFZV0owaisyMitO?=
+ =?utf-8?B?ZmZTZGV1b2Rpa1R0TkhwSGY3aDBHTTk5c1hiQkxQRGtJYVQ2MDBtbVdKeGV4?=
+ =?utf-8?B?YStVdnBSOFFiT1pMVWlkbVR1QUppWGZ0aWZud1l2blUvVkoxSVEybkcyNitZ?=
+ =?utf-8?B?bzR6REZHTlhEK2lacUR3Y1diaHN5UVV0bkMwWEZ2RlAzWFgzS3BacmNyYnNH?=
+ =?utf-8?B?cGVUUk5lZERQR2pyZjYrSXBGWVR6RHFmMy9qY0FVSzFZMTUxUEVWSGxCRXI0?=
+ =?utf-8?B?Z0pOdExoSU9qQVNXbXkzNU9FRmVLV2c0SzZnVzZqNFNBOFNDV2hsRU05MnVi?=
+ =?utf-8?B?ZE5ZbkRWSDlBSWwvWENzdnUyakR3SGZkUVNNdUI2V0tsMURwWXhOaW9YZ2Fa?=
+ =?utf-8?B?Z3JhN2VOWmJKMmtYZlBMSW93Rmo1UDY4eGgzWlU1TnEyVHc5RXBhTzVxbTBB?=
+ =?utf-8?B?WThVMHdmdThxVk54Y1paeFdzODJMbDVsSXp5VFd2Qk9KRnozdTZkaGFscVJ5?=
+ =?utf-8?B?K0xVR2o4MDVGcTByU0g5L0RURkcwdVQ2S0JqUnJxbVN1VmpNMnZCcHgxY2tS?=
+ =?utf-8?Q?pVL/6AZW/E6no2Lqb7H/MYv4yuhzmBaAvYCAlHY?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c5fe2bcd-f8ef-4d46-aa32-08d9667c3748
+X-MS-Exchange-CrossTenant-Network-Message-Id: ffc078a3-070c-4472-32aa-08d9667c37e6
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Aug 2021 21:23:14.1141
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Aug 2021 21:23:15.1185
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: NkQAgSG9WqfcuqU/xtl+EomIQR/pnTRTA69nk1iyvf2SYmlatDtbI4U9yaR6pVYF8ZMQolVxyBJJ8dy56rHVsg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4221
+X-MS-Exchange-CrossTenant-UserPrincipalName: oRSQYdTIjJp/zKjnG6R4AEzSXjmsGUWSg1jCny6YKn1K+Rg6u1GX+E6DK1MfPS24X5rXM10laHr08RlbJ2MM+A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2685
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For ports that have a NULL dp->bridge_dev, dsa_port_to_bridge_port()
-also returns NULL as expected.
+If the driver does not implement .port_bridge_{join,leave}, then we must
+fall back to standalone operation on that port, and trigger the error
+path of dsa_port_bridge_join. This sets dp->bridge_dev = NULL.
 
-Issue #1 is that we are performing a NULL pointer dereference on brport_dev.
+In turn, having a non-NULL dp->bridge_dev when there is no offloading
+support makes the following things go wrong:
 
-Issue #2 is that these are ports on which switchdev_bridge_port_offload
-has not been called, so we should not call switchdev_bridge_port_unoffload
-on them either.
+- dsa_default_offload_fwd_mark make the wrong decision in setting
+  skb->offload_fwd_mark. It should set skb->offload_fwd_mark = 0 for
+  ports that don't offload the bridge, which should instruct the bridge
+  to forward in software. But this does not happen, dp->bridge_dev is
+  incorrectly set to point to the bridge, so the bridge is told that
+  packets have been forwarded in hardware, which they haven't.
 
-Both issues are addressed by checking against a NULL brport_dev in
-dsa_port_pre_bridge_leave and exiting early.
+- switchdev objects (MDBs, VLANs) should not be offloaded by ports that
+  don't offload the bridge. Standalone ports should behave as packet-in,
+  packet-out and the bridge should not be able to manipulate the pvid of
+  the port, or tag stripping on egress, or ingress filtering. This
+  should already work fine because dsa_slave_port_obj_add has:
 
-Fixes: 2f5dc00f7a3e ("net: bridge: switchdev: let drivers inform which bridge ports are offloaded")
+	case SWITCHDEV_OBJ_ID_PORT_VLAN:
+		if (!dsa_port_offloads_bridge_port(dp, obj->orig_dev))
+			return -EOPNOTSUPP;
+
+		err = dsa_slave_vlan_add(dev, obj, extack);
+
+  but since dsa_port_offloads_bridge_port works based on dp->bridge_dev,
+  this is again sabotaging us.
+
+All the above work in case the port has an unoffloaded LAG interface, so
+this is well exercised code, we should apply it for plain unoffloaded
+bridge ports too.
+
+Reported-by: Alvin Šipraga <alsi@bang-olufsen.dk>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
-v1->v2: Patch is new
+v1->v2: made a correction in the commit message about what's wrong:
+"dp->bridge_dev is non-NULL" rather than "dp->bridge_dev is NULL".
 
- net/dsa/port.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ net/dsa/slave.c  | 5 +++++
+ net/dsa/switch.c | 6 ++++--
+ 2 files changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index 4fbe81ffb1ce..3b775d7adee2 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -373,6 +373,10 @@ void dsa_port_pre_bridge_leave(struct dsa_port *dp, struct net_device *br)
- {
- 	struct net_device *brport_dev = dsa_port_to_bridge_port(dp);
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index eb9d9e53c536..f785d24fcf23 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -2009,6 +2009,11 @@ static int dsa_slave_changeupper(struct net_device *dev,
+ 			err = dsa_port_bridge_join(dp, info->upper_dev, extack);
+ 			if (!err)
+ 				dsa_bridge_mtu_normalization(dp);
++			if (err == -EOPNOTSUPP) {
++				NL_SET_ERR_MSG_MOD(extack,
++						   "Offloading not supported");
++				err = 0;
++			}
+ 			err = notifier_from_errno(err);
+ 		} else {
+ 			dsa_port_bridge_leave(dp, info->upper_dev);
+diff --git a/net/dsa/switch.c b/net/dsa/switch.c
+index fd1a1c6bf9cf..dd042fd7f800 100644
+--- a/net/dsa/switch.c
++++ b/net/dsa/switch.c
+@@ -92,8 +92,10 @@ static int dsa_switch_bridge_join(struct dsa_switch *ds,
+ 	struct dsa_switch_tree *dst = ds->dst;
+ 	int err;
  
-+	/* Don't try to unoffload something that is not offloaded */
-+	if (!brport_dev)
-+		return;
+-	if (dst->index == info->tree_index && ds->index == info->sw_index &&
+-	    ds->ops->port_bridge_join) {
++	if (dst->index == info->tree_index && ds->index == info->sw_index) {
++		if (!ds->ops->port_bridge_join)
++			return -EOPNOTSUPP;
 +
- 	switchdev_bridge_port_unoffload(brport_dev, dp,
- 					&dsa_slave_switchdev_notifier,
- 					&dsa_slave_switchdev_blocking_notifier);
+ 		err = ds->ops->port_bridge_join(ds, info->port, info->br);
+ 		if (err)
+ 			return err;
 -- 
 2.25.1
 
