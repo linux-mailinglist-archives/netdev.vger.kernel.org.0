@@ -2,57 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B0D73F44E2
-	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 08:25:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8213B3F44E8
+	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 08:28:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234929AbhHWGZn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Aug 2021 02:25:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:50161 "EHLO
+        id S230260AbhHWG2p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Aug 2021 02:28:45 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:44523 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232501AbhHWGZl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Aug 2021 02:25:41 -0400
+        by vger.kernel.org with ESMTP id S229465AbhHWG2p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Aug 2021 02:28:45 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1629699898;
+        s=mimecast20190719; t=1629700082;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=fTBmg72UzrJzwwgyL0XX6MmGnq4XiN30FwOUg0WyeL8=;
-        b=FP2I2eF6Vxj4C/mxETXrKldB7G93JIfxP2rg+iQuY6zkP7hxPWMnt/LYHoLJPesp5185TT
-        2M2WmoRjIDg1DTPRbPilW/A8x+plT6ZweSyMVBOdwaOXI8PutPBFnfXl31D/yohln3perb
-        4DnkMDSyWr8ktMsfO1ZigPp2uOdA4bU=
+        bh=qEgW76/QbsdmzDpY6YbWFRp1GnxyCaBmFQdXxX32rA8=;
+        b=XpqL2107gFtLp+Gaw3H9HFw1sanAspYerjv2BGW8ZfGvhhSe0hfdJEGNnIm0CLu8HA90xo
+        5Z7gMrnipFqKLmdFd++0KE74j1fIbPSdXepH+W3EtLU0zcGVrmlj44JZ0NA5Epm4nWo8YO
+        zwYVCfPv24oX31AjslE5oy7EQPEvWmQ=
 Received: from mail-pg1-f200.google.com (mail-pg1-f200.google.com
  [209.85.215.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-135-P3LBYOf2OamAa9pwKo1YOQ-1; Mon, 23 Aug 2021 02:24:56 -0400
-X-MC-Unique: P3LBYOf2OamAa9pwKo1YOQ-1
-Received: by mail-pg1-f200.google.com with SMTP id z19-20020a631913000000b00252ede336caso1896811pgl.4
-        for <netdev@vger.kernel.org>; Sun, 22 Aug 2021 23:24:56 -0700 (PDT)
+ us-mta-259-0dqOT6yzPjawF6J0lBB9mw-1; Mon, 23 Aug 2021 02:28:01 -0400
+X-MC-Unique: 0dqOT6yzPjawF6J0lBB9mw-1
+Received: by mail-pg1-f200.google.com with SMTP id 135-20020a63058d0000b029023cdca61836so9817371pgf.23
+        for <netdev@vger.kernel.org>; Sun, 22 Aug 2021 23:28:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-transfer-encoding
          :content-language;
-        bh=fTBmg72UzrJzwwgyL0XX6MmGnq4XiN30FwOUg0WyeL8=;
-        b=ryP1AZcHDnljfdwGShL5VPiNJyuMs6RtkLUzu8icx/P5bQtsyeVdF9tM/XCqViKT61
-         vDtMT8zfMI2rQdIleXMrwpr61uDMuIeDu9wjwVRIraOGhAnFn1WBOw408LtzCILjS/UL
-         M6okmQNZzdVNau2fG7jstLI9cksLDh/L5Pp7u8yMQkbcQ5epEQz/a9FoOefeMJ6p6fDX
-         RmhS5+amSgKz7Jd8RaRWjUqIPAMGH0dV+QTY8wO+Q3mKVGzwQbeO0XNstZap2cbOzYAP
-         eD0jFx3bwyc7TAFlOppMNr0OW+t2kLrZrQzfcI3pRT+WnGeAOLcvnegQCVcTa9DzJz9i
-         TOAA==
-X-Gm-Message-State: AOAM533h5s0It2gCcsuqrYIirRXK1v9MYCyJr3wNLUA6L1cISJLvygou
-        EFkIdFng/Ec9ifgS/WqqTg6G4b9U3IKec+7JSxwma6AM7VisJIVzek21JVV0yToDlwJfXeDz3YY
-        tBaspMArYlNpwoPhs
-X-Received: by 2002:a17:90a:b016:: with SMTP id x22mr7315317pjq.205.1629699895449;
-        Sun, 22 Aug 2021 23:24:55 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwYnrO75usjjlrGCgZzdsLDtPE2dKORuqu4cQ6/SLHByjgTAawINCsTeerUMEDWc0TN8ooDAw==
-X-Received: by 2002:a17:90a:b016:: with SMTP id x22mr7315281pjq.205.1629699895193;
-        Sun, 22 Aug 2021 23:24:55 -0700 (PDT)
+        bh=qEgW76/QbsdmzDpY6YbWFRp1GnxyCaBmFQdXxX32rA8=;
+        b=aFvSlG0cV0nbVsXC6y4ff/BD6JF696VKSoHXr4rEsWO0fHVjMOruBsnDxqCAb8IVNB
+         o/t75w9bkE/QwL3HxDUwTqQ0aqPak3bVMQ/2xteXtvtIouqK6Es7AtbA2jRS3ifGjII4
+         um8JGDmN+T81gi/uwglSK8z3TtUXwydpDU7yQ1bgT7DfXy9z7VYr7IJGBXyCmRok4JEe
+         hxlN+XDMXiywzx0Ak8t00jyZo7kntQEdrPsgm5twzHFYy3K7fMusJb9AdkhX3M03kmgr
+         sVrlZuCGy1ovhjuaOd2I8kutg9ZsxVD8JAxDO7pqqsj2YEmmW9pcLSEvgqdNi5P0PM6K
+         fv3w==
+X-Gm-Message-State: AOAM5317rHJD1Uyq414VFuaO/D4OQan1iQr59GbRuRRNh0ioGdOXBvZ1
+        IGpi6b52tHeZMncJrE2313ORij+7dQiveHB06xjmfo9L/1Cu8IVP8FsMkhZGnYCI/zCzKauTifG
+        nr3BMgRWyJWrarpNG
+X-Received: by 2002:a17:902:7d90:b0:134:d977:22de with SMTP id a16-20020a1709027d9000b00134d97722demr1865271plm.30.1629700080193;
+        Sun, 22 Aug 2021 23:28:00 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw9Au0/duLZTHlJC0wzzpusIjoVy6rg0evHqzqvyikarIys4G/LFXCzlPnifIHGbSty2QhnOQ==
+X-Received: by 2002:a17:902:7d90:b0:134:d977:22de with SMTP id a16-20020a1709027d9000b00134d97722demr1865251plm.30.1629700079950;
+        Sun, 22 Aug 2021 23:27:59 -0700 (PDT)
 Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id g3sm14314416pfi.197.2021.08.22.23.24.47
+        by smtp.gmail.com with ESMTPSA id j20sm2254119pgb.2.2021.08.22.23.27.51
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 22 Aug 2021 23:24:54 -0700 (PDT)
-Subject: Re: [PATCH v11 01/12] iova: Export alloc_iova_fast() and
- free_iova_fast()
+        Sun, 22 Aug 2021 23:27:59 -0700 (PDT)
+Subject: Re: [PATCH v11 03/12] vdpa: Fix some coding style issues
 To:     Xie Yongji <xieyongji@bytedance.com>, mst@redhat.com,
         stefanha@redhat.com, sgarzare@redhat.com, parav@nvidia.com,
         hch@infradead.org, christian.brauner@canonical.com,
@@ -67,14 +66,14 @@ Cc:     songmuchun@bytedance.com,
         kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org,
         iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 References: <20210818120642.165-1-xieyongji@bytedance.com>
- <20210818120642.165-2-xieyongji@bytedance.com>
+ <20210818120642.165-4-xieyongji@bytedance.com>
 From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <3ff77bab-8bb7-ae5b-4cf1-a90ebcc00118@redhat.com>
-Date:   Mon, 23 Aug 2021 14:24:42 +0800
+Message-ID: <d0ca19ee-3318-df4f-a023-c72034bbb411@redhat.com>
+Date:   Mon, 23 Aug 2021 14:27:50 +0800
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.13.0
 MIME-Version: 1.0
-In-Reply-To: <20210818120642.165-2-xieyongji@bytedance.com>
+In-Reply-To: <20210818120642.165-4-xieyongji@bytedance.com>
 Content-Type: text/plain; charset=gbk; format=flowed
 Content-Transfer-Encoding: 8bit
 Content-Language: en-US
@@ -84,43 +83,93 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 ÔÚ 2021/8/18 ÏÂÎç8:06, Xie Yongji Ð´µÀ:
-> Export alloc_iova_fast() and free_iova_fast() so that
-> some modules can make use of the per-CPU cache to get
-> rid of rbtree spinlock in alloc_iova() and free_iova()
-> during IOVA allocation.
+> Fix some code indent issues and following checkpatch warning:
+>
+> WARNING: Prefer 'unsigned int' to bare use of 'unsigned'
+> 371: FILE: include/linux/vdpa.h:371:
+> +static inline void vdpa_get_config(struct vdpa_device *vdev, unsigned offset,
 >
 > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
 
 
 Acked-by: Jason Wang <jasowang@redhat.com>
 
-(If we need respin, I'd suggest to put the numbers you measured here)
-
-Thanks
-
 
 > ---
->   drivers/iommu/iova.c | 2 ++
->   1 file changed, 2 insertions(+)
+>   include/linux/vdpa.h | 34 +++++++++++++++++-----------------
+>   1 file changed, 17 insertions(+), 17 deletions(-)
 >
-> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> index b6cf5f16123b..3941ed6bb99b 100644
-> --- a/drivers/iommu/iova.c
-> +++ b/drivers/iommu/iova.c
-> @@ -521,6 +521,7 @@ alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
+> diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
+> index 954b340f6c2f..8a645f8f4476 100644
+> --- a/include/linux/vdpa.h
+> +++ b/include/linux/vdpa.h
+> @@ -43,17 +43,17 @@ struct vdpa_vq_state_split {
+>    * @last_used_idx: used index
+>    */
+>   struct vdpa_vq_state_packed {
+> -        u16	last_avail_counter:1;
+> -        u16	last_avail_idx:15;
+> -        u16	last_used_counter:1;
+> -        u16	last_used_idx:15;
+> +	u16	last_avail_counter:1;
+> +	u16	last_avail_idx:15;
+> +	u16	last_used_counter:1;
+> +	u16	last_used_idx:15;
+>   };
 >   
->   	return new_iova->pfn_lo;
+>   struct vdpa_vq_state {
+> -     union {
+> -          struct vdpa_vq_state_split split;
+> -          struct vdpa_vq_state_packed packed;
+> -     };
+> +	union {
+> +		struct vdpa_vq_state_split split;
+> +		struct vdpa_vq_state_packed packed;
+> +	};
+>   };
+>   
+>   struct vdpa_mgmt_dev;
+> @@ -131,7 +131,7 @@ struct vdpa_iova_range {
+>    *				@vdev: vdpa device
+>    *				@idx: virtqueue index
+>    *				@state: pointer to returned state (last_avail_idx)
+> - * @get_vq_notification: 	Get the notification area for a virtqueue
+> + * @get_vq_notification:	Get the notification area for a virtqueue
+>    *				@vdev: vdpa device
+>    *				@idx: virtqueue index
+>    *				Returns the notifcation area
+> @@ -353,25 +353,25 @@ static inline struct device *vdpa_get_dma_dev(struct vdpa_device *vdev)
+>   
+>   static inline void vdpa_reset(struct vdpa_device *vdev)
+>   {
+> -        const struct vdpa_config_ops *ops = vdev->config;
+> +	const struct vdpa_config_ops *ops = vdev->config;
+>   
+>   	vdev->features_valid = false;
+> -        ops->set_status(vdev, 0);
+> +	ops->set_status(vdev, 0);
 >   }
-> +EXPORT_SYMBOL_GPL(alloc_iova_fast);
 >   
->   /**
->    * free_iova_fast - free iova pfn range into rcache
-> @@ -538,6 +539,7 @@ free_iova_fast(struct iova_domain *iovad, unsigned long pfn, unsigned long size)
+>   static inline int vdpa_set_features(struct vdpa_device *vdev, u64 features)
+>   {
+> -        const struct vdpa_config_ops *ops = vdev->config;
+> +	const struct vdpa_config_ops *ops = vdev->config;
 >   
->   	free_iova(iovad, pfn);
+>   	vdev->features_valid = true;
+> -        return ops->set_features(vdev, features);
+> +	return ops->set_features(vdev, features);
 >   }
-> +EXPORT_SYMBOL_GPL(free_iova_fast);
 >   
->   #define fq_ring_for_each(i, fq) \
->   	for ((i) = (fq)->head; (i) != (fq)->tail; (i) = ((i) + 1) % IOVA_FQ_SIZE)
+> -
+> -static inline void vdpa_get_config(struct vdpa_device *vdev, unsigned offset,
+> -				   void *buf, unsigned int len)
+> +static inline void vdpa_get_config(struct vdpa_device *vdev,
+> +				   unsigned int offset, void *buf,
+> +				   unsigned int len)
+>   {
+> -        const struct vdpa_config_ops *ops = vdev->config;
+> +	const struct vdpa_config_ops *ops = vdev->config;
+>   
+>   	/*
+>   	 * Config accesses aren't supposed to trigger before features are set.
 
