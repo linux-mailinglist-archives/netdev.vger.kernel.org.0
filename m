@@ -2,223 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DDC483F52BB
-	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 23:20:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DDA63F52D1
+	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 23:23:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232875AbhHWVUt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Aug 2021 17:20:49 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:45356 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232724AbhHWVUs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Aug 2021 17:20:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1629753604;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=lbEqjMJoQt3yLrlY+GFqpGqyp8tEIHBCyDKiHKEv/pY=;
-        b=Il6J/Fx9hOOOyRQ3AWWy08D6YanOKSFnLly3oT9ClK8ERdd91dlErKte9HODqGKftOQj8y
-        riqhZaE5tS/oGzVPpjcP2NSok4+Qhh2eg8i6mBPWLyd6tSktBxQDBEcYxOtGiV0vlzsd0S
-        lxd+cX0TpzVImKb1AxVN6k4nmw9LTyU=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-518-JerYSOd4OAawlsq9YMdZPQ-1; Mon, 23 Aug 2021 17:20:02 -0400
-X-MC-Unique: JerYSOd4OAawlsq9YMdZPQ-1
-Received: by mail-ej1-f69.google.com with SMTP id q15-20020a17090622cf00b005c42d287e6aso2191480eja.18
-        for <netdev@vger.kernel.org>; Mon, 23 Aug 2021 14:20:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=lbEqjMJoQt3yLrlY+GFqpGqyp8tEIHBCyDKiHKEv/pY=;
-        b=GACaijpkl0dEl4V9aFpjhwyS2RbgOQKv0QbwhK9QWHy9I9/N/V8uA0DwIB+GxI6orK
-         4f7JNVD+FwPQpC+d03bZ0W8fHNe48BUaAIkqj+ZaUM+GqxrU1k25chfJQXoekQNG/Y7b
-         GQwBZEJZyYvKaYlpStzBo38EYohYZz+U8AYuFu1KqUqTuoRXhEbYlJTDuc9R5+fD/WqE
-         EDgDBCSxA5S8wivaiW7ja+1yxiSoYztBheVik9co3L01/n095IQ12Je3IjknvAvkeaIA
-         /Xj0of9gpSFEX+Wfi3n3fo45pMvWUtrLQ6KE4B3Gz34+WcsbPUQdaMR1TunoA10lRnZ1
-         LmiA==
-X-Gm-Message-State: AOAM530LJCOJFNB9BtenCOVnDFT7waohFA5uEzSZ/5xEamVc1iaAb0Pl
-        EdCT429m1cu5/gHU8DFLT9A8yD/qQFgAKdjWnU6FtW1zS0skUTeOgPmksM4x6qo2sR8yhl7Ltpg
-        0u5fGVYN6l8BkS4E7
-X-Received: by 2002:a17:906:3e59:: with SMTP id t25mr37538271eji.24.1629753601612;
-        Mon, 23 Aug 2021 14:20:01 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzzIHZ0Z0HNuaN8AoD24ulxJU892EPBBSYFsufMqZCOer/+b6UyS89yQ4kH2OcGDMz/lsPACw==
-X-Received: by 2002:a17:906:3e59:: with SMTP id t25mr37538256eji.24.1629753601471;
-        Mon, 23 Aug 2021 14:20:01 -0700 (PDT)
-Received: from redhat.com ([2.55.137.225])
-        by smtp.gmail.com with ESMTPSA id t1sm5488155edq.31.2021.08.23.14.19.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Aug 2021 14:20:00 -0700 (PDT)
-Date:   Mon, 23 Aug 2021 17:19:56 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Vincent Whitchurch <vincent.whitchurch@axis.com>
-Cc:     Jason Wang <jasowang@redhat.com>, kernel@axis.com,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] vhost: add support for mandatory barriers
-Message-ID: <20210823171609-mutt-send-email-mst@kernel.org>
-References: <20210823081437.14274-1-vincent.whitchurch@axis.com>
+        id S232871AbhHWVYG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Aug 2021 17:24:06 -0400
+Received: from mail-eopbgr80085.outbound.protection.outlook.com ([40.107.8.85]:59364
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232772AbhHWVYB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Aug 2021 17:24:01 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MOdQP6zIZfq813BSQMipos2SZ7teTvdzOnFmR1ki1IWhmPASMGd6zcnMfOBVWzxWNdGepF93hGakxWTMBbz5krDKEOmwovTsfWV/XVPv0FPGP8oLv/zat7hqkiDZl/nSpLOYXJ1YhI8HywBVA4KpzSGxwEFAWyWe44Bw6GW31cgxn9AM3aSKgc7+E+m38ySOCTgtXIDdyey5FX9RMdLBPySLppkNyYpQq2sDoD5/7jgVTOt+FEsWz55RE5XrSNS6Qi0jUNwtUhwqhPR+3X1U1YYfDIN0kXE0NyQpUTb85uwCV7hycqLBS2t3qYh/g+DR+IxPwwTU4izNdhx/s/Sc2Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IYdt9pmp/u/bDgDP2eX5GO1Jkj9eqi5VP2KlLxBJCsc=;
+ b=hRB2nqz/sRwu5pI5RRQZXYA4PHc25AcQNTXzaoaiIckFrVLzVdZWXn6gRrF3RWA0N/cuzOxeQ4uD6l6yriDZu2X84Wo+fiDvCg07IJ5HP3Yd540aEL66TFcSUOSRmasajyo+VDvYGsS+MSUOiJXS54HRjrQU3wgieFmrRo/pCWttTYnQYJ/L7eiQH2Ooc9OkoiOzNtj5YGK8Oan5UImGYblW/N8dvVrKb3Jp+a3kCMoNL+aob6pEFAvNrqdlfGWbcSIgzKJaaawBMVN30iUDhiJyWKW/WD6+FcwN8nPuW7tSdSMOYQhp9puSVY/k36zYWJzFbeRGfCrQnWePzZhHog==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IYdt9pmp/u/bDgDP2eX5GO1Jkj9eqi5VP2KlLxBJCsc=;
+ b=U/9s3xsKwn2WYYMVydiOcI0/BykU8QsC6V+iYklmmI4t3iNA8sgAAwuMmP29bHPksomOB4V1h8//PzF30ksy1rKjBD2y8xlkMdWx23SOKVYLZLDRyNz0iXM+UMfMCAx1L4mgxmz0GsvIlWEHElqQrGKIavafUW95vLQe8zb3I/A=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR04MB4221.eurprd04.prod.outlook.com (2603:10a6:803:3e::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19; Mon, 23 Aug
+ 2021 21:23:13 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4436.025; Mon, 23 Aug 2021
+ 21:23:13 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>
+Subject: [PATCH v2 net-next 0/4] Plug holes in DSA's software bridging support
+Date:   Tue, 24 Aug 2021 00:22:54 +0300
+Message-Id: <20210823212258.3190699-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: AM3PR05CA0150.eurprd05.prod.outlook.com
+ (2603:10a6:207:3::28) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210823081437.14274-1-vincent.whitchurch@axis.com>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (188.25.144.60) by AM3PR05CA0150.eurprd05.prod.outlook.com (2603:10a6:207:3::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.18 via Frontend Transport; Mon, 23 Aug 2021 21:23:12 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 439f5d47-3517-4beb-c77a-08d9667c369e
+X-MS-TrafficTypeDiagnostic: VI1PR04MB4221:
+X-Microsoft-Antispam-PRVS: <VI1PR04MB42214D848A48EBC4C2A76A65E0C49@VI1PR04MB4221.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4502;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: RGpj/y2mnnWO+v47wBqVVx/yRlVbgOmA26cktsGnTysM8uxeKCKtUGpDMUl9yGM4aK24tyrQ53pVO6VySFLzz6lp96e2nKTXE5ZXH9QIdepCiiJACzoxiw964QiwIJ4bwbAB1M2TuOqQNsJEcQWJpKVNGb6JbCVN77ehuUH5NHmmg0McEkqYiYJjpEcBKel2Og5zsPakLljEH5ZdfTwD6jJiepzMN2iip7ugZl3Q8js7Macjqwua5i7tQhGjNuW303Ubkx7Yp7BtymTAyWksBumVWXqqxZ3Ny+0tN+rPrChwyYv/OzqA7qm8BOMunRWfLVYWOVDkPqkOiMj99T6OwxwbC73pg4DMwELj04g6Kc+K3HBjotxV+ybZTXtejzWSV4WnlZ/MlBcp1UqCep5blrNhbT7/mMs5SRjslZBFvXEwPpSnRvmgAe/J1jVA4C5hcSnt3cz3vqPXkCiZdVRAbHXcqq1HrJnm648PerDGjzdjmnhR2JONvIhq8ZWmY4zfhd2d9E6zCwexLIYXprFVcoAl5Frnx0XDUuylDCyxeH4Cdc/pg7vWmqzAoi7xBElZNpQ8tGgmgG1Qk6lj3kVzTo4nE6827HomCt48SRHciBHchzxji/KwZMgifYEW47f2y6/tcw0WMYcrIHiyk8KTz8/SIziafS4Ov3BkabMjjILlr1BQCuFkmFy4ocg0CY09wqTi3zQRt0vURT6aVW+z4+rpUCNX8sbv/NmzV50m5zdU01SP9OBQIcE8+lTNFPob5eZrVZ3ZAZIlAUJkpmCBzQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(376002)(346002)(39850400004)(366004)(396003)(83380400001)(66476007)(66556008)(6506007)(26005)(4326008)(8676002)(66946007)(8936002)(6512007)(186003)(6486002)(86362001)(6666004)(38350700002)(6916009)(38100700002)(52116002)(5660300002)(316002)(966005)(44832011)(36756003)(54906003)(1076003)(2616005)(2906002)(478600001)(956004);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SDNrQlhNeDFFQXg0dWZEOFg1VTRJVVhCeWV4eG82Y2w4dEJoenZPZ3JDZnZq?=
+ =?utf-8?B?dDFDNVFmeURpNHhVM0lMSzQ1azlQQXZvYUowWXdEM285MGUxQ0lBa1dDYmpS?=
+ =?utf-8?B?T25zREhaSXRSQXdhUk9aZWx2aFZDQk5tZk5GcDFLK29QQVhKU1REN3dsY0hz?=
+ =?utf-8?B?VzRuMDNYSXZrejA5Ry84WE5yWVBiemhYQ0lrZlVLdVVHRXBqT2J6aGgvMy9N?=
+ =?utf-8?B?UEc3bXZDZ0x4M2V1VVpyNVJPb0JEK0g2VGdHbzd1U1QzMERUeitYZUdlTGVN?=
+ =?utf-8?B?UEVkbWo4QTNmdmVqTmtHamgvam9MV0UzbE1BSFFXTGhneTJZL2lYamY4eXha?=
+ =?utf-8?B?YjJIV3BSTWlCV2llVFo0TEJUSDVObWhXK2prYnB3Sy90MzFBUHZwU3NBZWpz?=
+ =?utf-8?B?UmpQdXVxNUtBa0R4M3dZQjcwbTVLNnF6Q1RWQzdZdUNnUlJjWlQ2Qlp5Uk9p?=
+ =?utf-8?B?cU9YaHlmT3ZTak9OQ0M2YVhrSlpDOFhvYUl0aXJpT2xsVSsvbm51bE9qNlQw?=
+ =?utf-8?B?U0ZQdE1RVC95L0s2LzJINVdBV2cwR3cwUnJxNGxHRjRVOHhSZi9QQzJZanJx?=
+ =?utf-8?B?K3pFSmgzZXkzRmJxOGdqVkZJc1htT2laZU04TGxzdEFGVWI4MEZ2S0xObDdG?=
+ =?utf-8?B?ZTR2NmU0ekVZOG5DL2U4em8vUVI1UEtvSFErdXF0NXpWOXRhcDJuWVMyMUxZ?=
+ =?utf-8?B?T040M1hKZnk5Y2FDNjYzaTRRMUZoYkdRcWxOV0JUM1NwUkRDUi9QQ2FkcjlW?=
+ =?utf-8?B?TzVXck5NVmd3a212WjluWU1hZTRjQS9Ebml1d2hvZ1BId1QxRHZGZXhaVXZF?=
+ =?utf-8?B?QWFwcVhQcG0wdkQ2dXpBM2I1SGVHaWlxS1ZFN2JCYWppdmhxenlRWXcvMm1w?=
+ =?utf-8?B?VGd2NU5aNGhhK3I2eGo5YnFwRVhYRHZjLzZ0ZTc4NWxsL2VRVklwZUFiUHpw?=
+ =?utf-8?B?YTBNdzdSclhqMDVrendxNENhZ0pBNWxmMHgrZFoxcjBFbkM2VzR2NkwvWStv?=
+ =?utf-8?B?elNnMFBPVkV2QXBOSlhyMHdvUWt4RFB1YUtzY1RLTWpycDRFV2lSZWl6UGwv?=
+ =?utf-8?B?WXI1TWpGQzNxZ3N6cEhWenlUUk4yMnBsWUI1dWV4alFsc2R3WEQvN3FKMldh?=
+ =?utf-8?B?Tk9ic3p5WDBwR2UrbktUWWRqRUErSTk1Ny9hV3BzRUdOQU9hVUNwWlZFOHF1?=
+ =?utf-8?B?K3dSV0xUdURMMGVnallESVVaRlRuSkY4OG5DdXNRdHhFamZ4YXhodlBZd3hP?=
+ =?utf-8?B?Z00yOHJWQ1BJU1hIU2RoYzYyWE9UekdTeWU5dm1lcXN6NHVqZG9zMkljbWdZ?=
+ =?utf-8?B?cXdhV3IrTnhKblNCY2pJaGY5WWRmS2o0TnhBd1krVXFZNnZSaFpzZWR2c0RZ?=
+ =?utf-8?B?emd5QmZlRHcvNXFMU0I3KzJGMmhjR08wZVN1WGFnNVptUW8zZTdPbk00K0J4?=
+ =?utf-8?B?TEw0Z0RQRDU2bnBNc1NPRnorZkxZWStGYWFCUG5hOUVHSW0yVDM5bUZxY0hK?=
+ =?utf-8?B?T0xBYVU2Y2ZDK2J2VjAySzllbXIzdTVQanl4REIvbWVtSmNwaWYzS3U3bmVB?=
+ =?utf-8?B?ZC9DUjVlcFhGRWt3SnM5SWhrN0pJRlFnSm03dFhIMWJSVWdFa3R6VHdqcUhP?=
+ =?utf-8?B?alZnaFdHZFM1Tm5sd0VuYlY4aXdkRGJzK3FNSXFPT2d6Nko4WGNjdk0vanpD?=
+ =?utf-8?B?MzBPN2Z5aWN6NE9kS1k4cWpWajlRRzQ4K0pOc2Noc1RBa2MzbnNIWEdQajRF?=
+ =?utf-8?Q?/S2uROX/rwGHy3/rS9ZtqC+wgMZFSTtQ5y8ZsfR?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 439f5d47-3517-4beb-c77a-08d9667c369e
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Aug 2021 21:23:13.0747
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: MHz/2ayvUiniUQaNTCXnnp1bnKfFeouIsc0r0w0rNrWVO3IWL7IYABzZ7+wTho8CuSj1sZz6gU8HdibNAGDnlQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4221
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 23, 2021 at 10:14:37AM +0200, Vincent Whitchurch wrote:
-> vhost always uses SMP-conditional barriers, but these may not be
-> sufficient when vhost is used to communicate between heterogeneous
-> processors in an AMP configuration, especially since they're NOPs on
-> !SMP builds.
-> 
-> To solve this, use the virtio_*() barrier functions and ask them for
-> non-weak barriers if requested by userspace.
-> 
-> Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+Changes in v2:
+- Make sure that leaving an unoffloaded bridge works well too
+- Remove a set but unused variable
+- Tweak a commit message
 
-I am inclined to say let's (ab)use VIRTIO_F_ORDER_PLATFORM for this.
-Jason what do you think?
+This series addresses some oddities reported by Alvin while he was
+working on the new rtl8365mb driver (a driver which does not implement
+bridge offloading for now, and relies on software bridging).
 
-Also is the use of DMA variants really the intended thing here? Could
-you point me at some examples please?
+First is that DSA behaves, in the lack of a .port_bridge_join method, as
+if the operation succeeds, and does not kick off its internal procedures
+for software bridging (the same procedures that were written for indirect
+software bridging, meaning bridging with an unoffloaded software LAG).
 
+Second is that even after being patched to treat ports with software
+bridging as standalone, we still don't get rid of bridge VLANs, even
+though we have code to ignore them, that code manages to get bypassed.
+This is in fact a recurring issue which was brought up by Tobias
+Waldekranz a while ago, but the solution never made it to the git tree.
 
-> ---
->  drivers/vhost/vhost.c      | 23 ++++++++++++++---------
->  drivers/vhost/vhost.h      |  2 ++
->  include/uapi/linux/vhost.h |  2 ++
->  3 files changed, 18 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> index b9e853e6094d..f7172e1bc395 100644
-> --- a/drivers/vhost/vhost.c
-> +++ b/drivers/vhost/vhost.c
-> @@ -500,6 +500,7 @@ void vhost_dev_init(struct vhost_dev *dev,
->  		vq->indirect = NULL;
->  		vq->heads = NULL;
->  		vq->dev = dev;
-> +		vq->weak_barriers = true;
->  		mutex_init(&vq->mutex);
->  		vhost_vq_reset(dev, vq);
->  		if (vq->handle_kick)
-> @@ -1801,6 +1802,10 @@ long vhost_dev_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *argp)
->  		if (ctx)
->  			eventfd_ctx_put(ctx);
->  		break;
-> +	case VHOST_SET_STRONG_BARRIERS:
-> +		for (i = 0; i < d->nvqs; ++i)
-> +			d->vqs[i]->weak_barriers = false;
-> +		break;
->  	default:
->  		r = -ENOIOCTLCMD;
->  		break;
-> @@ -1927,7 +1932,7 @@ int vhost_log_write(struct vhost_virtqueue *vq, struct vhost_log *log,
->  	int i, r;
->  
->  	/* Make sure data written is seen before log. */
-> -	smp_wmb();
-> +	virtio_wmb(vq->weak_barriers);
->  
->  	if (vq->iotlb) {
->  		for (i = 0; i < count; i++) {
-> @@ -1964,7 +1969,7 @@ static int vhost_update_used_flags(struct vhost_virtqueue *vq)
->  		return -EFAULT;
->  	if (unlikely(vq->log_used)) {
->  		/* Make sure the flag is seen before log. */
-> -		smp_wmb();
-> +		virtio_wmb(vq->weak_barriers);
->  		/* Log used flag write. */
->  		used = &vq->used->flags;
->  		log_used(vq, (used - (void __user *)vq->used),
-> @@ -1982,7 +1987,7 @@ static int vhost_update_avail_event(struct vhost_virtqueue *vq, u16 avail_event)
->  	if (unlikely(vq->log_used)) {
->  		void __user *used;
->  		/* Make sure the event is seen before log. */
-> -		smp_wmb();
-> +		virtio_wmb(vq->weak_barriers);
->  		/* Log avail event write */
->  		used = vhost_avail_event(vq);
->  		log_used(vq, (used - (void __user *)vq->used),
-> @@ -2228,7 +2233,7 @@ int vhost_get_vq_desc(struct vhost_virtqueue *vq,
->  		/* Only get avail ring entries after they have been
->  		 * exposed by guest.
->  		 */
-> -		smp_rmb();
-> +		virtio_rmb(vq->weak_barriers);
->  	}
->  
->  	/* Grab the next descriptor number they're advertising, and increment
-> @@ -2367,7 +2372,7 @@ static int __vhost_add_used_n(struct vhost_virtqueue *vq,
->  	}
->  	if (unlikely(vq->log_used)) {
->  		/* Make sure data is seen before log. */
-> -		smp_wmb();
-> +		virtio_wmb(vq->weak_barriers);
->  		/* Log used ring entry write. */
->  		log_used(vq, ((void __user *)used - (void __user *)vq->used),
->  			 count * sizeof *used);
-> @@ -2402,14 +2407,14 @@ int vhost_add_used_n(struct vhost_virtqueue *vq, struct vring_used_elem *heads,
->  	r = __vhost_add_used_n(vq, heads, count);
->  
->  	/* Make sure buffer is written before we update index. */
-> -	smp_wmb();
-> +	virtio_wmb(vq->weak_barriers);
->  	if (vhost_put_used_idx(vq)) {
->  		vq_err(vq, "Failed to increment used idx");
->  		return -EFAULT;
->  	}
->  	if (unlikely(vq->log_used)) {
->  		/* Make sure used idx is seen before log. */
-> -		smp_wmb();
-> +		virtio_wmb(vq->weak_barriers);
->  		/* Log used index update. */
->  		log_used(vq, offsetof(struct vring_used, idx),
->  			 sizeof vq->used->idx);
-> @@ -2428,7 +2433,7 @@ static bool vhost_notify(struct vhost_dev *dev, struct vhost_virtqueue *vq)
->  	/* Flush out used index updates. This is paired
->  	 * with the barrier that the Guest executes when enabling
->  	 * interrupts. */
-> -	smp_mb();
-> +	virtio_mb(vq->weak_barriers);
->  
->  	if (vhost_has_feature(vq, VIRTIO_F_NOTIFY_ON_EMPTY) &&
->  	    unlikely(vq->avail_idx == vq->last_avail_idx))
-> @@ -2530,7 +2535,7 @@ bool vhost_enable_notify(struct vhost_dev *dev, struct vhost_virtqueue *vq)
->  	}
->  	/* They could have slipped one in as we were doing that: make
->  	 * sure it's written, then check again. */
-> -	smp_mb();
-> +	virtio_mb(vq->weak_barriers);
->  	r = vhost_get_avail_idx(vq, &avail_idx);
->  	if (r) {
->  		vq_err(vq, "Failed to check avail idx at %p: %d\n",
-> diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
-> index 638bb640d6b4..5bd20d0db457 100644
-> --- a/drivers/vhost/vhost.h
-> +++ b/drivers/vhost/vhost.h
-> @@ -108,6 +108,8 @@ struct vhost_virtqueue {
->  	bool log_used;
->  	u64 log_addr;
->  
-> +	bool weak_barriers;
-> +
->  	struct iovec iov[UIO_MAXIOV];
->  	struct iovec iotlb_iov[64];
->  	struct iovec *indirect;
-> diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
-> index c998860d7bbc..4b8656307f51 100644
-> --- a/include/uapi/linux/vhost.h
-> +++ b/include/uapi/linux/vhost.h
-> @@ -97,6 +97,8 @@
->  #define VHOST_SET_BACKEND_FEATURES _IOW(VHOST_VIRTIO, 0x25, __u64)
->  #define VHOST_GET_BACKEND_FEATURES _IOR(VHOST_VIRTIO, 0x26, __u64)
->  
-> +#define VHOST_SET_STRONG_BARRIERS _IO(VHOST_VIRTIO, 0x27)
-> +
->  /* VHOST_NET specific defines */
->  
->  /* Attach virtio net ring to a raw socket, or tap device.
-> -- 
-> 2.28.0
+After debugging with Florian the last time:
+https://patchwork.kernel.org/project/netdevbpf/patch/20210320225928.2481575-3-olteanv@gmail.com/
+I became very concerned about sending these patches to stable kernels.
+They are relatively large reworks, and they are only tested properly on
+net-next.
+
+A few commands on my test vehicle which has ds->vlan_filtering_is_global
+set to true:
+
+| Nothing is committed to hardware when we add VLAN 100 on a standalone
+| port
+$ ip link add link sw0p2 name sw0p2.100 type vlan id 100
+| When a neighbor port joins a VLAN-aware bridge, VLAN filtering gets
+| enabled globally on the switch. This replays the VLAN 100 from
+| sw0p2.100 and also installs VLAN 1 from the bridge on sw0p0.
+$ ip link add br0 type bridge vlan_filtering 1 && ip link set sw0p0 master br0
+[   97.948087] sja1105 spi2.0: Reset switch and programmed static config. Reason: VLAN filtering
+[   97.957989] sja1105 spi2.0: sja1105_bridge_vlan_add: port 2 vlan 100
+[   97.964442] sja1105 spi2.0: sja1105_bridge_vlan_add: port 4 vlan 100
+[   97.971202] device sw0p0 entered promiscuous mode
+[   97.976129] sja1105 spi2.0: sja1105_bridge_vlan_add: port 0 vlan 1
+[   97.982640] sja1105 spi2.0: sja1105_bridge_vlan_add: port 4 vlan 1
+| We can see that sw0p2, the standalone port, is now filtering because
+| of the bridge
+$ ethtool -k sw0p2 | grep vlan
+rx-vlan-filter: on [fixed]
+| When we make the bridge VLAN-unaware, the 8021q upper sw0p2.100 is
+| uncomitted from hardware. The VLANs managed by the bridge still remain
+| committed to hardware, because they are managed by the bridge.
+$ ip link set br0 type bridge vlan_filtering 0
+[  134.218869] sja1105 spi2.0: Reset switch and programmed static config. Reason: VLAN filtering
+[  134.228913] sja1105 spi2.0: sja1105_bridge_vlan_del: port 2 vlan 100
+| And now the standalone port is not filtering anymore.
+ethtool -k sw0p2 | grep vlan
+rx-vlan-filter: off [fixed]
+
+The same test with .port_bridge_join and .port_bridge_leave commented
+out from this driver:
+
+| Not a flinch
+$ ip link add link sw0p2 name sw0p2.100 type vlan id 100
+$ ip link add br0 type bridge vlan_filtering 1 && ip link set sw0p0 master br0
+Warning: dsa_core: Offloading not supported.
+$ ethtool -k sw0p2 | grep vlan
+rx-vlan-filter: off [fixed]
+$ ip link set br0 type bridge vlan_filtering 0
+$ ethtool -k sw0p2 | grep vlan
+rx-vlan-filter: off [fixed]
+
+Vladimir Oltean (4):
+  net: dsa: don't call switchdev_bridge_port_unoffload for unoffloaded
+    bridge ports
+  net: dsa: properly fall back to software bridging
+  net: dsa: don't advertise 'rx-vlan-filter' when not needed
+  net: dsa: let drivers state that they need VLAN filtering while
+    standalone
+
+ drivers/net/dsa/hirschmann/hellcreek.c |  1 +
+ include/net/dsa.h                      |  3 +
+ net/dsa/dsa_priv.h                     |  2 +
+ net/dsa/port.c                         | 46 ++++++++++++++-
+ net/dsa/slave.c                        | 79 +++++++++++++++++++++++++-
+ net/dsa/switch.c                       | 27 ++++++---
+ 6 files changed, 147 insertions(+), 11 deletions(-)
+
+-- 
+2.25.1
 
