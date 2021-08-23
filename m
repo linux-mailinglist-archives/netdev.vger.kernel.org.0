@@ -2,126 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2D333F4407
-	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 05:56:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D92C3F4419
+	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 06:21:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234421AbhHWD5f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Aug 2021 23:57:35 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:8920 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232866AbhHWD5e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Aug 2021 23:57:34 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GtJGy4ljtz8t9b;
-        Mon, 23 Aug 2021 11:52:42 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 23 Aug 2021 11:56:49 +0800
-Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Mon, 23 Aug
- 2021 11:56:49 +0800
-Subject: Re: [PATCH net-next v2 2/2] page_pool: optimize the cpu sync
- operation when DMA mapping
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <hawk@kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <hkallweit1@gmail.com>
-References: <1629442611-61547-1-git-send-email-linyunsheng@huawei.com>
- <1629442611-61547-3-git-send-email-linyunsheng@huawei.com>
- <YR94YYRv2qpQtdSZ@Iliass-MBP>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <16468e57-49d8-0a23-0058-c920af99d74a@huawei.com>
-Date:   Mon, 23 Aug 2021 11:56:48 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
-MIME-Version: 1.0
-In-Reply-To: <YR94YYRv2qpQtdSZ@Iliass-MBP>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme716-chm.china.huawei.com (10.1.199.112) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+        id S230241AbhHWEVw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Aug 2021 00:21:52 -0400
+Received: from mail-m963.mail.126.com ([123.126.96.3]:56370 "EHLO
+        mail-m963.mail.126.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229462AbhHWEVw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Aug 2021 00:21:52 -0400
+X-Greylist: delayed 1892 seconds by postgrey-1.27 at vger.kernel.org; Mon, 23 Aug 2021 00:21:51 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=bLhi3x2BRyUWAiafje
+        v5SWx5KYU1bHlvlbbBzV4bLnE=; b=FY7fauIIqcnAlOmbWnbp7Va3q+/qJNzUV3
+        FoVNwe7Rswat5MLYow+aiHGnCkIeFYhqy1vQgN+HCD2RpKMh/Iv2Y6BHXUfgDpXm
+        WUXtEVt6AtN5NX0OgSBJ3DdoBIpd7nHNxTopijQkmvwb0gM7Ds74nZAFQjst4afJ
+        VK2GhoT2k=
+Received: from localhost.localdomain (unknown [222.128.173.92])
+        by smtp8 (Coremail) with SMTP id NORpCgD3zFy9GiNhsulwOg--.5885S4;
+        Mon, 23 Aug 2021 11:49:18 +0800 (CST)
+From:   zhang kai <zhangkaiheb@126.com>
+To:     davem@davemloft.net
+Cc:     yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        zhang kai <zhangkaiheb@126.com>
+Subject: [PATCH] ipv6: correct comments about fib6_node sernum
+Date:   Mon, 23 Aug 2021 11:49:00 +0800
+Message-Id: <20210823034900.22967-1-zhangkaiheb@126.com>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: NORpCgD3zFy9GiNhsulwOg--.5885S4
+X-Coremail-Antispam: 1Uf129KBjvJXoW7ur4rtFy3Kr1xCF1DKFy8Xwb_yoW8XFyfpF
+        4qkrs7KrnruFyYkrWkJF18Zr13WanrCFW3Ww4fAayvkw1vqw18XF1kKr1SvF18GFWSvanx
+        JF42qrWfJF45uw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07U59N3UUUUU=
+X-Originating-IP: [222.128.173.92]
+X-CM-SenderInfo: x2kd0wxndlxvbe6rjloofrz/1tbi1x73-l53W4+6DgAAsJ
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/8/20 17:39, Ilias Apalodimas wrote:
-> On Fri, Aug 20, 2021 at 02:56:51PM +0800, Yunsheng Lin wrote:
->> If the DMA_ATTR_SKIP_CPU_SYNC is not set, cpu syncing is
->> also done in dma_map_page_attrs(), so set the attrs according
->> to pool->p.flags to avoid calling cpu sync function again.
-> 
-> Isn't DMA_ATTR_SKIP_CPU_SYNC checked within dma_map_page_attrs() anyway?
+correct comments in set and get fn_sernum
 
-Yes, the checking in dma_map_page_attrs() should save us from
-calling dma_sync_single_for_device() again if we set the attrs
-according to "pool->p.flags & PP_FLAG_DMA_SYNC_DEV".
+Signed-off-by: zhang kai <zhangkaiheb@126.com>
+---
+ include/net/ip6_fib.h | 4 ++--
+ net/ipv6/ip6_fib.c    | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-As dma_sync_single_for_device() is EXPORT_SYMBOL()'ed, and
-should be a no-op for dma coherent device, so there may be a
-function calling overhead for dma coherent device, letting
-dma_map_page_attrs() handling the sync seems to avoid the stack
-pushing/poping overhead:
+diff --git a/include/net/ip6_fib.h b/include/net/ip6_fib.h
+index 15b7fbe6b..c412dde4d 100644
+--- a/include/net/ip6_fib.h
++++ b/include/net/ip6_fib.h
+@@ -267,7 +267,7 @@ static inline bool fib6_check_expired(const struct fib6_info *f6i)
+ 	return false;
+ }
+ 
+-/* Function to safely get fn->sernum for passed in rt
++/* Function to safely get fn->fn_sernum for passed in rt
+  * and store result in passed in cookie.
+  * Return true if we can get cookie safely
+  * Return false if not
+@@ -282,7 +282,7 @@ static inline bool fib6_get_cookie_safe(const struct fib6_info *f6i,
+ 
+ 	if (fn) {
+ 		*cookie = fn->fn_sernum;
+-		/* pairs with smp_wmb() in fib6_update_sernum_upto_root() */
++		/* pairs with smp_wmb() in __fib6_update_sernum_upto_root() */
+ 		smp_rmb();
+ 		status = true;
+ 	}
+diff --git a/net/ipv6/ip6_fib.c b/net/ipv6/ip6_fib.c
+index 679699e95..4d7b93baa 100644
+--- a/net/ipv6/ip6_fib.c
++++ b/net/ipv6/ip6_fib.c
+@@ -1340,7 +1340,7 @@ static void __fib6_update_sernum_upto_root(struct fib6_info *rt,
+ 	struct fib6_node *fn = rcu_dereference_protected(rt->fib6_node,
+ 				lockdep_is_held(&rt->fib6_table->tb6_lock));
+ 
+-	/* paired with smp_rmb() in rt6_get_cookie_safe() */
++	/* paired with smp_rmb() in fib6_get_cookie_safe() */
+ 	smp_wmb();
+ 	while (fn) {
+ 		fn->fn_sernum = sernum;
+-- 
+2.17.1
 
-https://elixir.bootlin.com/linux/latest/source/kernel/dma/direct.h#L104
-
-The one thing I am not sure about is that the pool->p.offset
-and pool->p.max_len are used to decide the sync range before this
-patch, while the sync range is the same as the map range when doing
-the sync in dma_map_page_attrs().
-
-I assumed the above is not a issue? only sync more than we need?
-and it won't hurt the performance?
-
-> 
-> Regards
-> /Ilias
->>
->> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
->> ---
->>  net/core/page_pool.c | 9 +++++----
->>  1 file changed, 5 insertions(+), 4 deletions(-)
->>
->> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
->> index 1a69784..3df5554 100644
->> --- a/net/core/page_pool.c
->> +++ b/net/core/page_pool.c
->> @@ -191,8 +191,12 @@ static void page_pool_dma_sync_for_device(struct page_pool *pool,
->>  
->>  static bool page_pool_dma_map(struct page_pool *pool, struct page *page)
->>  {
->> +	unsigned long attrs = DMA_ATTR_SKIP_CPU_SYNC;
->>  	dma_addr_t dma;
->>  
->> +	if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
->> +		attrs = 0;
->> +
->>  	/* Setup DMA mapping: use 'struct page' area for storing DMA-addr
->>  	 * since dma_addr_t can be either 32 or 64 bits and does not always fit
->>  	 * into page private data (i.e 32bit cpu with 64bit DMA caps)
->> @@ -200,15 +204,12 @@ static bool page_pool_dma_map(struct page_pool *pool, struct page *page)
->>  	 */
->>  	dma = dma_map_page_attrs(pool->p.dev, page, 0,
->>  				 (PAGE_SIZE << pool->p.order),
->> -				 pool->p.dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
->> +				 pool->p.dma_dir, attrs);
->>  	if (dma_mapping_error(pool->p.dev, dma))
->>  		return false;
->>  
->>  	page_pool_set_dma_addr(page, dma);
->>  
->> -	if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
->> -		page_pool_dma_sync_for_device(pool, page, pool->p.max_len);
->> -
->>  	return true;
->>  }
->>  
->> -- 
->> 2.7.4
->>
-> .
-> 
