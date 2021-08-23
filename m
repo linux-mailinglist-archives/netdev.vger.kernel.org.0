@@ -2,213 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FFC43F5306
-	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 23:51:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0376C3F530A
+	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 23:53:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232949AbhHWVw3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Aug 2021 17:52:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47764 "EHLO
+        id S232993AbhHWVxu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Aug 2021 17:53:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232503AbhHWVw1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Aug 2021 17:52:27 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4BDBC061575;
-        Mon, 23 Aug 2021 14:51:44 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id s11so17894957pgr.11;
-        Mon, 23 Aug 2021 14:51:44 -0700 (PDT)
+        with ESMTP id S232808AbhHWVxt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Aug 2021 17:53:49 -0400
+Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA59AC061575;
+        Mon, 23 Aug 2021 14:53:06 -0700 (PDT)
+Received: by mail-qt1-x82a.google.com with SMTP id u21so12166367qtw.8;
+        Mon, 23 Aug 2021 14:53:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=/4sa3hRKHYJGIpFu2RJ99Np1mz1P713WKUCXGQ7iJ/Q=;
-        b=CIWhz7kp8gl/zgbtxNFGtTMSZ+gnaR8xvtCnRG2sa/p2P+PzAwJMYt9KYytxMKb23e
-         8NP3/T3i2fxZ03EKpg/nLweR6mAjDJ4hK21jgLUuvWq1GbdkIyWz6VoqyD70JNq5V11q
-         +SVZxiz+uTRd5TxYkK5rC+BpKhuvyJzOM2ReFqibVzUTxYGDc2wrL07FYtnQE3fxT1oF
-         PY4jYk8um+69/UG8IM6Pnk0R1KNUM3/k3tw4AGrdzoghiI5KOcITlzcVB7cvXZoa2Q2M
-         /YW0+8ipJT+NaCvRcPsY0MS7N+WGQ3aeEEIppSbPzhtt12N+zyfHbG2y7bOTUmapHeer
-         ++tA==
+        h=from:to:cc:subject:date:message-id:reply-to:mime-version
+         :content-transfer-encoding;
+        bh=sLxjM71SuGe9hGuMszxC2z30QFVA4P0rmUHgi02d4SY=;
+        b=e+ErOFc33bysvfbMCOJrjf9S+MokkR7iuUlFWgn7SSJHZebdotXndGH18psCqdnoPd
+         5BH+Cb9t2DFWlsxB+zDaEeV2XpDH+qUm9D6COz39Kiq3KoqCdfTLZ0je+tbb9FBdFSR7
+         mLLfHIkBOixaZy3D/ryxZ+zRIHs+0WyCxj8g6qWIVEOlybpMS4d1TN6Bho+n8No6r8NG
+         tMDOlG+FwsxF5aDnyUWXd7dmLL7HfGGN8Q16qffK/KAUrgXbEqOE8xKOnVtsvFF5cEcd
+         RpT+pVB4XUKgWfGqPaRhmrbpyMRr2vH89SNJhKHghkyDE+WhJI03xzsJ5dPsQl6JEqcx
+         YQOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=/4sa3hRKHYJGIpFu2RJ99Np1mz1P713WKUCXGQ7iJ/Q=;
-        b=Q5bQwiQeV8cXUAzbiKA5PnfUbpeVb1dAkeEMbSEzIO1B1aO1UrBHV7Z2Lv8siZ2eqF
-         pZjos3bwhBfMvGnemgdtza3m6hZnhjsbuhF1bGQI3n0qdf2+3JDH1YeyBqNuGGKTCoad
-         fqdUhsRRA3BjX+RO8aIBVIE0nPTMId7RHH2d91CCOgps9Y3SwI9g82JB5o9YhX3hueO/
-         Y2ZIYgYeOfYMwyvQ942vNaWVLTycNW75hD1E/4RoYqAF05VYcnfIbndRK1yV48veztJl
-         Fur6OUIUypxLXw9hBWBvb5vIWBkfhxmqA9gmnvOhDgBufsdkIn//jwZZF1cEqd42BdE4
-         BypA==
-X-Gm-Message-State: AOAM532qmiCIE/OiAZTk1l2D5ZxZ6O4RzUOYNUm6tdoJuLZODYs4w2JA
-        usrBJUoL0wXXh4oMfSz9n+w=
-X-Google-Smtp-Source: ABdhPJz7ykDAk2ewsdsErG1eLUx8tkDakwd9PXhQh5tnA9bj4a6ZNxrmlkLQ+KwOukGYcdHV7J3N5w==
-X-Received: by 2002:a62:3301:0:b0:3eb:2fee:87cc with SMTP id z1-20020a623301000000b003eb2fee87ccmr7194794pfz.62.1629755504454;
-        Mon, 23 Aug 2021 14:51:44 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id j4sm19534603pgi.6.2021.08.23.14.51.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 Aug 2021 14:51:43 -0700 (PDT)
-Subject: Re: [PATCH NET-NEXT] ipv6: skb_expand_head() adjust skb->truesize
- incorrectly
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Christoph Paasch <christoph.paasch@gmail.com>,
-        Vasily Averin <vvs@virtuozzo.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, kernel@openvz.org,
-        Julian Wiedmann <jwi@linux.ibm.com>
-References: <6858f130-e6b4-1ba7-ed6f-58c00152be69@virtuozzo.com>
- <ef4458d9-c4d7-f419-00f2-0f1cea5140ce@virtuozzo.com>
- <CALMXkpZkW+ULMMFgeY=cag1F0=891F-v9NEVcdn7Tyd-VUWGYA@mail.gmail.com>
- <1c12b056-79d2-126a-3f78-64629f072345@gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <2d8a102a-d641-c6c1-b417-7a35efa4e5da@gmail.com>
-Date:   Mon, 23 Aug 2021 14:51:42 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :mime-version:content-transfer-encoding;
+        bh=sLxjM71SuGe9hGuMszxC2z30QFVA4P0rmUHgi02d4SY=;
+        b=SKA+NNM5lTQwV7Y2RjXWVuxjDyp53YFeDgmzOUb8ZizIiW3hPAs1JCiN/pITiemhG0
+         bMvoMN9kn3GxcN5wPBJiEdDZjbjvt3uLXdaMjOtgDmUL+r1Pe237Gq4la2KXoDmYOB54
+         dy8i9NhRY3ucGcM3jO2ub5WDwXMI9AApUgfrtGG3vqi4bM5k4dFo0pTF7fI5g1Oj4A90
+         o84H5u+BYn+3Ahi/RGsdpj5Gx1WR7FBGXtNYd/6bB7k3VjdFYO2x+eXls63JzY2K0G+G
+         Czx/8IAks2HB69cIkVMuI6WAnO5qbYKT8unpypQOJ8Jdp2nzBM/YOJwxR/h9LftX2mgU
+         XTcg==
+X-Gm-Message-State: AOAM530DFrtYC3HFKQNxzMxEk3j/axfnmrQkYuN4JoTS5KwznIL/wK7B
+        MauTxzTx6Gsz0xo69jV6YrW99v/etaiaErc/
+X-Google-Smtp-Source: ABdhPJytSrRjL9t0kkC3gX1sulAHct2Oo68Y4XoCZ/EfbjBb3Wj3PDOuHvC2g6wLJpn8HM1y8VQXeg==
+X-Received: by 2002:ac8:6bcc:: with SMTP id b12mr8033154qtt.243.1629755585877;
+        Mon, 23 Aug 2021 14:53:05 -0700 (PDT)
+Received: from localhost.localdomain (cpe-74-65-249-7.nyc.res.rr.com. [74.65.249.7])
+        by smtp.gmail.com with ESMTPSA id 18sm7004261qtx.76.2021.08.23.14.53.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 Aug 2021 14:53:05 -0700 (PDT)
+From:   Hans Montero <hansmontero99@gmail.com>
+To:     bpf@vger.kernel.org, netdev@vger.kernel.org
+Cc:     hjm2133@columbia.edu, sdf@google.com, ppenkov@google.com
+Subject: [RFC PATCH bpf-next 0/2] bpf: Implement shared persistent fast(er) sk_storoage mode
+Date:   Mon, 23 Aug 2021 17:52:50 -0400
+Message-Id: <20210823215252.15936-1-hansmontero99@gmail.com>
+X-Mailer: git-send-email 2.30.2
+Reply-To: hjm2133@columbia.edu
 MIME-Version: 1.0
-In-Reply-To: <1c12b056-79d2-126a-3f78-64629f072345@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Hans Montero <hjm2133@columbia.edu>
 
+This patch set adds a BPF local storage optimization. The first patch adds the
+feature, and the second patch extends the bpf selftests so that the feature is
+tested.
 
-On 8/23/21 2:45 PM, Eric Dumazet wrote:
-> 
-> 
-> On 8/23/21 10:25 AM, Christoph Paasch wrote:
->> Hello,
->>
->> On Mon, Aug 23, 2021 at 12:56 AM Vasily Averin <vvs@virtuozzo.com> wrote:
->>>
->>> Christoph Paasch reports [1] about incorrect skb->truesize
->>> after skb_expand_head() call in ip6_xmit.
->>> This happen because skb_set_owner_w() for newly clone skb is called
->>> too early, before pskb_expand_head() where truesize is adjusted for
->>> (!skb-sk) case.
->>>
->>> [1] https://lkml.org/lkml/2021/8/20/1082
->>>
->>> Reported-by: Christoph Paasch <christoph.paasch@gmail.com>
->>> Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
->>> ---
->>>  net/core/skbuff.c | 24 +++++++++++++-----------
->>>  1 file changed, 13 insertions(+), 11 deletions(-)
->>>
->>> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
->>> index f931176..508d5c4 100644
->>> --- a/net/core/skbuff.c
->>> +++ b/net/core/skbuff.c
->>> @@ -1803,6 +1803,8 @@ struct sk_buff *skb_realloc_headroom(struct sk_buff *skb, unsigned int headroom)
->>>
->>>  struct sk_buff *skb_expand_head(struct sk_buff *skb, unsigned int headroom)
->>>  {
->>> +       struct sk_buff *oskb = skb;
->>> +       struct sk_buff *nskb = NULL;
->>>         int delta = headroom - skb_headroom(skb);
->>>
->>>         if (WARN_ONCE(delta <= 0,
->>> @@ -1811,21 +1813,21 @@ struct sk_buff *skb_expand_head(struct sk_buff *skb, unsigned int headroom)
->>>
->>>         /* pskb_expand_head() might crash, if skb is shared */
->>>         if (skb_shared(skb)) {
->>> -               struct sk_buff *nskb = skb_clone(skb, GFP_ATOMIC);
->>> -
->>> -               if (likely(nskb)) {
->>> -                       if (skb->sk)
->>> -                               skb_set_owner_w(nskb, skb->sk);
->>> -                       consume_skb(skb);
->>> -               } else {
->>> -                       kfree_skb(skb);
->>> -               }
->>> +               nskb = skb_clone(skb, GFP_ATOMIC);
->>>                 skb = nskb;
->>>         }
->>>         if (skb &&
->>> -           pskb_expand_head(skb, SKB_DATA_ALIGN(delta), 0, GFP_ATOMIC)) {
->>> -               kfree_skb(skb);
->>> +           pskb_expand_head(skb, SKB_DATA_ALIGN(delta), 0, GFP_ATOMIC))
->>>                 skb = NULL;
->>> +
->>> +       if (!skb) {
->>> +               kfree_skb(oskb);
->>> +               if (nskb)
->>> +                       kfree_skb(nskb);
->>> +       } else if (nskb) {
->>> +               if (oskb->sk)
->>> +                       skb_set_owner_w(nskb, oskb->sk);
->>> +               consume_skb(oskb);
->>
->> sorry, this does not fix the problem. The syzkaller repro still
->> triggers the WARN.
->>
->> When it happens, the skb in ip6_xmit() is not shared as it comes from
->> __tcp_transmit_skb, where it is skb_clone()'d.
->>
->>
-> 
-> Old code (in skb_realloc_headroom())
-> was first calling skb2 = skb_clone(skb, GFP_ATOMIC); 
-> 
-> At this point, skb2->sk was NULL
-> So pskb_expand_head(skb2, SKB_DATA_ALIGN(delta), 0, ...) was able to tweak skb2->truesize
-> 
-> I would try :
-> 
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index f9311762cc475bd38d87c33e988d7c983b902e56..326749a8938637b044a616cc33b6a19ed191ac41 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -1804,6 +1804,7 @@ EXPORT_SYMBOL(skb_realloc_headroom);
->  struct sk_buff *skb_expand_head(struct sk_buff *skb, unsigned int headroom)
->  {
->         int delta = headroom - skb_headroom(skb);
-> +       struct sk_buff *oskb = NULL;
->  
->         if (WARN_ONCE(delta <= 0,
->                       "%s is expecting an increase in the headroom", __func__))
-> @@ -1813,19 +1814,21 @@ struct sk_buff *skb_expand_head(struct sk_buff *skb, unsigned int headroom)
->         if (skb_shared(skb)) {
->                 struct sk_buff *nskb = skb_clone(skb, GFP_ATOMIC);
->  
-> -               if (likely(nskb)) {
-> -                       if (skb->sk)
-> -                               skb_set_owner_w(nskb, skb->sk);
-> -                       consume_skb(skb);
-> -               } else {
-> +               if (unlikely(!nskb)) {
->                         kfree_skb(skb);
-> +                       return NULL;
->                 }
-> +               oskb = skb;
->                 skb = nskb;
->         }
-> -       if (skb &&
-> -           pskb_expand_head(skb, SKB_DATA_ALIGN(delta), 0, GFP_ATOMIC)) {
-> +       if (pskb_expand_head(skb, SKB_DATA_ALIGN(delta), 0, GFP_ATOMIC)) {
->                 kfree_skb(skb);
-> -               skb = NULL;
-> +               kfree_skb(oskb);
-> +               return NULL;
-> +       }
-> +       if (oskb) {
-> +               skb_set_owner_w(skb, oskb->sk);
-> +               consume_skb(oskb);
->         }
->         return skb;
->  }
+We are running BPF programs for each egress packet and noticed that
+bpf_sk_storage_get incurs a significant amount of cpu time. By inlining the
+storage into struct sock and accessing that instead of performing a map lookup,
+we expect to reduce overhead for our specific use-case. This also has a
+side-effect of persisting the socket storage, which can be beneficial.
 
+This optimization is disabled by default and can be enabled by setting
+CONFIG_BPF_SHARED_LOCAL_STORAGE_SIZE, the byte length of the inline buffer, to
+a non-zero number.
 
-Oh well, probably not going to work.
+Hans Montero (2):
+  bpf: Implement shared sk_storage optimization
+  selftests/bpf: Extend tests for shared sk_storage
 
-We have to find a way to properly increase skb->truesize, even if skb_clone() is _not_ called.
+ include/net/sock.h                            |  3 ++
+ include/uapi/linux/bpf.h                      |  6 +++
+ kernel/bpf/Kconfig                            | 11 +++++
+ kernel/bpf/bpf_local_storage.c                |  3 +-
+ net/core/bpf_sk_storage.c                     | 47 ++++++++++++++++++-
+ tools/testing/selftests/bpf/config            |  1 +
+ .../selftests/bpf/prog_tests/bpf_iter.c       | 31 +++++++++++-
+ .../bpf/prog_tests/test_local_storage.c       |  3 ++
+ .../progs/bpf_iter_bpf_sk_storage_helpers.c   | 27 ++++++++++-
+ .../selftests/bpf/progs/local_storage.c       | 30 ++++++++++++
+ 10 files changed, 156 insertions(+), 6 deletions(-)
 
-
+-- 
+2.30.2
 
