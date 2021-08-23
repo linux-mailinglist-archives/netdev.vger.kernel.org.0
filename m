@@ -2,261 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B71293F4A75
-	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 14:17:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7C3B3F4AC9
+	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 14:37:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236868AbhHWMRt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Aug 2021 08:17:49 -0400
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:42041 "EHLO
-        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236080AbhHWMRs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Aug 2021 08:17:48 -0400
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 7B0B9580A2E;
-        Mon, 23 Aug 2021 08:16:58 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute5.internal (MEProxy); Mon, 23 Aug 2021 08:16:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=wjZ1Ab
-        3tT/gw6i3R6kDawbC7G4Vz4VHhTxsGWTGUDG8=; b=pfVnaAHNd58uLPax7rftEg
-        9vlYkcZb95W1KKAnNYR5Gg5zWR324nmezhQfz4VttC2lhmqlS/1ZHukLQn0pt2G7
-        vQassDGDi53E4IM4SZGq3v0Sm6MFo2X2k2NnyVqd+oqLm0nYKmfmG25PoS/yYZKr
-        0D5ynm5q3sadQv0UaTAVwKQOoyBC6z9KRWDPYYu56Ixx/j7yyvdpgSmP5h27vMMB
-        v7oe3Zm2dcgl9xub5s04eFxqiKU3POFyr8Fzhg8aWcBsAOsyd3gnklFLVHIg3UZI
-        MYrq8Dd28HTu8XNpRwDzqJWgkKdFEjjUo2iuhdY+wx4uHDEXUbYrTkRRfkZZovYA
-        ==
-X-ME-Sender: <xms:tZEjYdrLR9PUFiT6K5hLSipPIgZRBl3BfclKVhvBm1RSkqn1cT7e3Q>
-    <xme:tZEjYfrDpbcnKprHov9k7SRe7A5ckpUgcPmWXVJZ5ab8zpIYuu-86xCsSCpMFkk82
-    Pfxs5_bFcmlDYw>
-X-ME-Received: <xmr:tZEjYaNlf42xlHcudIlY8AvpU7aixt30Z-oMDRARlu_ccKvzciQlAhZLC7VA8Ai8G3NJx71kwceFVQ73kPmxmu3Rnmqa0Q>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddruddthedggeelucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
-    teenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
-    hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:tZEjYY4ktgXOMEqFpEU-8eP7uOtie0xmWovaSiMRHsZLb70vJWxt6A>
-    <xmx:tZEjYc7okCaHwQuMXggTcsaB92PJO8b7jWryip3ZAi7YkFRZaWRPQg>
-    <xmx:tZEjYQjQql8JpyByfPGGkJpyo1L4PLAjm0Gc4AnC8DW4f09xXD855Q>
-    <xmx:upEjYW6uknflZHSezfNFu0X5Uw10nAduqJEGe_U9XhsAZfl-4vIigw>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 23 Aug 2021 08:16:52 -0400 (EDT)
-Date:   Mon, 23 Aug 2021 15:16:48 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Roopa Prabhu <roopa@nvidia.com>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        UNGLinuxDriver@microchip.com,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Marek Behun <kabel@blackhole.sk>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Julian Wiedmann <jwi@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        Jianbo Liu <jianbol@nvidia.com>,
-        Mark Bloch <mbloch@nvidia.com>, Roi Dayan <roid@nvidia.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>
-Subject: Re: [PATCH v2 net-next 0/5] Make SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE
- blocking
-Message-ID: <YSORsKDOwklF19Gm@shredder>
-References: <YR/TrkbhhN7QpRcQ@shredder>
- <20210820170639.rvzlh4b6agvrkv2w@skbuf>
- <65f3529f-06a3-b782-7436-83e167753609@nvidia.com>
- <YSHzLKpixhCrrgJ0@shredder>
- <fbfce8d7-5bd8-723a-8ab3-0ce5bc6b073a@nvidia.com>
- <20210822133145.jjgryhlkgk4av3c7@skbuf>
- <YSKD+DK4kavYJrRK@shredder>
- <20210822174449.nby7gmrjhwv3walp@skbuf>
- <YSN83d+wwLnba349@shredder>
- <20210823110046.xuuo37kpsxdbl6c2@skbuf>
+        id S235881AbhHWMiO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Aug 2021 08:38:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60840 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236248AbhHWMiN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Aug 2021 08:38:13 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01825C061575
+        for <netdev@vger.kernel.org>; Mon, 23 Aug 2021 05:37:31 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1mI9Cb-0007g8-I4; Mon, 23 Aug 2021 14:37:21 +0200
+Received: from pengutronix.de (2a03-f580-87bc-d400-5f1f-6edb-8f7f-ac9e.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:5f1f:6edb:8f7f:ac9e])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id D09D366D61D;
+        Mon, 23 Aug 2021 12:37:16 +0000 (UTC)
+Date:   Mon, 23 Aug 2021 14:37:15 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Tang Bin <tangbin@cmss.chinamobile.com>
+Cc:     davem@davemloft.net, wg@grandegger.com, kuba@kernel.org,
+        kevinbrace@bracecomputerlab.com, romieu@fr.zoreil.com,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/3] can: mscan: mpc5xxx_can: Use
+ of_device_get_match_data to simplify code
+Message-ID: <20210823123715.j4khoyld5mfl6kdv@pengutronix.de>
+References: <20210823113338.3568-1-tangbin@cmss.chinamobile.com>
+ <20210823113338.3568-4-tangbin@cmss.chinamobile.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="tzba5ik5srkh4lwi"
 Content-Disposition: inline
-In-Reply-To: <20210823110046.xuuo37kpsxdbl6c2@skbuf>
+In-Reply-To: <20210823113338.3568-4-tangbin@cmss.chinamobile.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 23, 2021 at 02:00:46PM +0300, Vladimir Oltean wrote:
-> On Mon, Aug 23, 2021 at 01:47:57PM +0300, Ido Schimmel wrote:
-> > On Sun, Aug 22, 2021 at 08:44:49PM +0300, Vladimir Oltean wrote:
-> > > On Sun, Aug 22, 2021 at 08:06:00PM +0300, Ido Schimmel wrote:
-> > > > On Sun, Aug 22, 2021 at 04:31:45PM +0300, Vladimir Oltean wrote:
-> > > > > 3. There is a larger issue that SWITCHDEV_FDB_ADD_TO_DEVICE events are
-> > > > >    deferred by drivers even from code paths that are initially blocking
-> > > > >    (are running in process context):
-> > > > >
-> > > > > br_fdb_add
-> > > > > -> __br_fdb_add
-> > > > >    -> fdb_add_entry
-> > > > >       -> fdb_notify
-> > > > >          -> br_switchdev_fdb_notify
-> > > > >
-> > > > >     It seems fairly trivial to move the fdb_notify call outside of the
-> > > > >     atomic section of fdb_add_entry, but with switchdev offering only an
-> > > > >     API where the SWITCHDEV_FDB_ADD_TO_DEVICE is atomic, drivers would
-> > > > >     still have to defer these events and are unable to provide
-> > > > >     synchronous feedback to user space (error codes, extack).
-> > > > >
-> > > > > The above issues would warrant an attempt to fix a central problem, and
-> > > > > make switchdev expose an API that is easier to consume rather than
-> > > > > having drivers implement lateral workarounds.
-> > > > >
-> > > > > In this case, we must notice that
-> > > > >
-> > > > > (a) switchdev already has the concept of notifiers emitted from the fast
-> > > > >     path that are still processed by drivers from blocking context. This
-> > > > >     is accomplished through the SWITCHDEV_F_DEFER flag which is used by
-> > > > >     e.g. SWITCHDEV_OBJ_ID_HOST_MDB.
-> > > > >
-> > > > > (b) the bridge del_nbp() function already calls switchdev_deferred_process().
-> > > > >     So if we could hook into that, we could have a chance that the
-> > > > >     bridge simply waits for our FDB entry offloading procedure to finish
-> > > > >     before it calls netdev_upper_dev_unlink() - which is almost
-> > > > >     immediately afterwards, and also when switchdev drivers typically
-> > > > >     break their stateful associations between the bridge upper and
-> > > > >     private data.
-> > > > >
-> > > > > So it is in fact possible to use switchdev's generic
-> > > > > switchdev_deferred_enqueue mechanism to get a sleepable callback, and
-> > > > > from there we can call_switchdev_blocking_notifiers().
-> > > > >
-> > > > > To address all requirements:
-> > > > >
-> > > > > - drivers that are unconverted from atomic to blocking still work
-> > > > > - drivers that currently have a private workqueue are not worse off
-> > > > > - drivers that want the bridge to wait for their deferred work can use
-> > > > >   the bridge's defer mechanism
-> > > > > - a SWITCHDEV_FDB_ADD_TO_DEVICE event which does not have any interested
-> > > > >   parties does not get deferred for no reason, because this takes the
-> > > > >   rtnl_mutex and schedules a worker thread for nothing
-> > > > >
-> > > > > it looks like we can in fact start off by emitting
-> > > > > SWITCHDEV_FDB_ADD_TO_DEVICE on the atomic chain. But we add a new bit in
-> > > > > struct switchdev_notifier_fdb_info called "needs_defer", and any
-> > > > > interested party can set this to true.
-> > > > >
-> > > > > This way:
-> > > > >
-> > > > > - unconverted drivers do their work (i.e. schedule their private work
-> > > > >   item) based on the atomic notifier, and do not set "needs_defer"
-> > > > > - converted drivers only mark "needs_defer" and treat a separate
-> > > > >   notifier, on the blocking chain, called SWITCHDEV_FDB_ADD_TO_DEVICE_DEFERRED
-> > > > > - SWITCHDEV_FDB_ADD_TO_DEVICE events with no interested party do not
-> > > > >   generate any follow-up SWITCHDEV_FDB_ADD_TO_DEVICE_DEFERRED
-> > > > >
-> > > > > Additionally, code paths that are blocking right not, like br_fdb_replay,
-> > > > > could notify only SWITCHDEV_FDB_ADD_TO_DEVICE_DEFERRED, as long as all
-> > > > > consumers of the replayed FDB events support that (right now, that is
-> > > > > DSA and dpaa2-switch).
-> > > > >
-> > > > > Once all consumers of SWITCHDEV_FDB_ADD_TO_DEVICE are converted to set
-> > > > > needs_defer as appropriate, then the notifiers emitted from process
-> > > > > context by the bridge could call SWITCHDEV_FDB_ADD_TO_DEVICE_DEFERRED
-> > > > > directly, and we would also have fully blocking context all the way
-> > > > > down, with the opportunity for error propagation and extack.
-> > > >
-> > > > IIUC, at this stage all the FDB notifications drivers get are blocking,
-> > > > either from the work queue (because they were deferred) or directly from
-> > > > process context. If so, how do we synchronize the two and ensure drivers
-> > > > get the notifications at the correct order?
-> > >
-> > > What does 'at this stage' mean? Does it mean 'assuming the patch we're
-> > > discussing now gets accepted'? If that's what it means, then 'at this
-> > > stage' all drivers would first receive the atomic FDB_ADD_TO_DEVICE,
-> > > then would set needs_defer, then would receive the blocking
-> > > FDB_ADD_TO_DEVICE.
-> >
-> > I meant after:
-> >
-> > "Once all consumers of SWITCHDEV_FDB_ADD_TO_DEVICE are converted to set
-> > needs_defer as appropriate, then the notifiers emitted from process
-> > context by the bridge could call SWITCHDEV_FDB_ADD_TO_DEVICE_DEFERRED
-> > directly, and we would also have fully blocking context all the way
-> > down, with the opportunity for error propagation and extack."
-> >
-> > IIUC, after the conversion the 'needs_defer' is gone and all the FDB
-> > events are blocking? Either from syscall context or the workqueue.
-> 
-> We would not delete 'needs_defer'. It still offers a useful preliminary
-> filtering mechanism for the fast path (and for br_fdb_replay). In
-> retrospect, the SWITCHDEV_OBJ_ID_HOST_MDB would also benefit from 'needs_defer'
-> instead of jumping to blocking context (if we care so much about performance).
-> 
-> If a FDB event does not need to be processed by anyone (dynamically
-> learned entry on a switchdev port), the bridge notifies the atomic call
-> chain for the sake of it, but not the blocking chain.
-> 
-> > If so, I'm not sure how we synchronize the two. That is, making sure
-> > that an event from syscall context does not reach drivers before an
-> > earlier event that was added to the 'deferred' list.
-> >
-> > I mean, in syscall context we are holding RTNL so whatever is already on
-> > the 'deferred' list cannot be dequeued and processed.
-> 
-> So switchdev_deferred_process() has ASSERT_RTNL. If we call
-> switchdev_deferred_process() right before adding the blocking FDB entry
-> in process context (and we already hold rtnl_mutex), I though that would
-> be enough to ensure we have a synchronization point: Everything that was
-> scheduled before is flushed now, everything that is scheduled while we
-> are running will run after we unlock the rtnl_mutex. Is that not the
-> order we expect? I mean, if there is a fast path FDB entry being learned
-> / deleted while user space say adds that same FDB entry as static, how
-> is the relative ordering ensured between the two?
 
-I was thinking about the following case:
+--tzba5ik5srkh4lwi
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-t0 - <MAC1,VID1,P1> is added in syscall context under 'hash_lock'
-t1 - br_fdb_delete_by_port() flushes entries under 'hash_lock' in
-     response to STP state. Notifications are added to 'deferred' list
-t2 - switchdev_deferred_process() is called in syscall context
-t3 - <MAC1,VID1,P1> is notified as blocking
+On 23.08.2021 19:33:38, Tang Bin wrote:
+> Retrieve OF match data, it's better and cleaner to use
+> 'of_device_get_match_data' over 'of_match_device'.
+>=20
+> Signed-off-by: Tang Bin <tangbin@cmss.chinamobile.com>
 
-Updates to the SW FDB are protected by 'hash_lock', but updates to the
-HW FDB are not. In this case, <MAC1,VID1,P1> does not exist in SW, but
-it will exist in HW.
+Thanks for the patch!
 
-Another case assuming switchdev_deferred_process() is called first:
+LGTM, comment inside.
 
-t0 - switchdev_deferred_process() is called in syscall context
-t1 - <MAC1,VID,P1> is learned under 'hash_lock'. Notification is added
-     to 'deferred' list
-t2 - <MAC1,VID1,P1> is modified in syscall context under 'hash_lock' to
-     <MAC1,VID1,P2>
-t3 - <MAC1,VID1,P2> is notified as blocking
-t4 - <MAC1,VID1,P1> is notified as blocking (next time the 'deferred'
-     list is processed)
+> ---
+>  drivers/net/can/mscan/mpc5xxx_can.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
+>=20
+> diff --git a/drivers/net/can/mscan/mpc5xxx_can.c b/drivers/net/can/mscan/=
+mpc5xxx_can.c
+> index e254e04ae..3b7465acd 100644
+> --- a/drivers/net/can/mscan/mpc5xxx_can.c
+> +++ b/drivers/net/can/mscan/mpc5xxx_can.c
+> @@ -279,7 +279,6 @@ static u32 mpc512x_can_get_clock(struct platform_devi=
+ce *ofdev,
+>  static const struct of_device_id mpc5xxx_can_table[];
+>  static int mpc5xxx_can_probe(struct platform_device *ofdev)
+>  {
+> -	const struct of_device_id *match;
+>  	const struct mpc5xxx_can_data *data;
+>  	struct device_node *np =3D ofdev->dev.of_node;
+>  	struct net_device *dev;
+> @@ -289,10 +288,9 @@ static int mpc5xxx_can_probe(struct platform_device =
+*ofdev)
+>  	int irq, mscan_clksrc =3D 0;
+>  	int err =3D -ENOMEM;
+> =20
+> -	match =3D of_match_device(mpc5xxx_can_table, &ofdev->dev);
+> -	if (!match)
+> +	data =3D of_device_get_match_data(&ofdev->dev);
+> +	if (!data)
+>  		return -EINVAL;
 
-In this case, the HW will have <MAC1,VID1,P1>, but SW will have
-<MAC1,VID1,P2>
+Please remove the "BUG_ON(!data)", which comes later.
+
+> -	data =3D match->data;
+> =20
+>  	base =3D of_iomap(np, 0);
+>  	if (!base) {
+> --=20
+> 2.20.1.windows.1
+>=20
+>=20
+>=20
+>=20
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--tzba5ik5srkh4lwi
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmEjlnkACgkQqclaivrt
+76lOCgf+KYF+o99Kg2iOCfI60mHHeBPkPjnzLl7AFALXMjkAiWjh9nL0c3mybPpU
+XkVqIxlJ1OEXOLdHXNhsguxrPMLrampXYBgLajVcQQH1EWj0p9Ty2bqth6NptZXz
+hOcKIltTJ04uOwsHcziYt54EsE7RlOcoAN+y1/aQCDd6GF+tC7Vm9g3QwukpLEcT
+ZvaDPa+CwljvPznAjB77QSfJMPwcl8ggh4Y9wS2aQZkVKbuecgN7PGMIa2NxrlWH
+g9XyFKWpXa1Gl7+fubXpgCLhcPqK1B8Hstjd3nonh2qJjA0GJYzvdaMvYc2FnWPz
+O6WExKQvp89qzAGfKhyKL1tyoZdChw==
+=Dg0F
+-----END PGP SIGNATURE-----
+
+--tzba5ik5srkh4lwi--
