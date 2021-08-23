@@ -2,60 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA2503F4EA3
-	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 18:44:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF97A3F4EE6
+	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 19:01:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230154AbhHWQpK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Aug 2021 12:45:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39036 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229454AbhHWQpJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Aug 2021 12:45:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 55BF6610F8;
-        Mon, 23 Aug 2021 16:44:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629737066;
-        bh=7w5FXWeb8P/JBu4RqLDy7fzGAXbval5K4YO4wkz3Tn8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=QRPsy8S1buyVDP9dLd+eDgJJ0x7b+mpjd+QiKp17gSoCfIyr9cTC4G+Px9ZSVsWbl
-         OdMipVIHQKzyX4St+fNM8uMsktO3/osoQjVeJb+ijLUj8UaVHBY/dPo+oZdngbIXh0
-         ep3Odv0n41HiNoR6MKshMxFAVDF3GuvV55qj3gaFSjUPLv194qHl5K/prEJ2Jauk+C
-         e7gxbFkoiMd3hTXRZB1zMeM+AORbj1pyS+jfibY7MCqLj9NvEk/Y1qiEDIlMLsUvUO
-         1HifTcI35mpL7oJFxzbg1laOWr4bUQKUdazBHG6sSSPv2vX4rvZJvnGTTJXsBfuyAM
-         O0suswGiISgGQ==
-Date:   Mon, 23 Aug 2021 09:44:25 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Michael Riesch <michael.riesch@wolfvision.net>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-rockchip@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Subject: Re: [PATCH] net: stmmac: dwmac-rk: fix unbalanced pm_runtime_enable
- warnings
-Message-ID: <20210823094425.78d7a73e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210823143754.14294-1-michael.riesch@wolfvision.net>
-References: <20210823143754.14294-1-michael.riesch@wolfvision.net>
+        id S231337AbhHWRCA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Aug 2021 13:02:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37178 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231273AbhHWRB5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Aug 2021 13:01:57 -0400
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DCACC061575;
+        Mon, 23 Aug 2021 10:01:15 -0700 (PDT)
+Received: by mail-yb1-xb2d.google.com with SMTP id q70so19195883ybg.11;
+        Mon, 23 Aug 2021 10:01:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=9dChikHVgwG7d/711i1s9qvxIpLptusWO5nO6BvhLUo=;
+        b=GNvXr/klOHZL1ZA7nzMMaAdqniR9VRCPwLZbRzG/fEQSpfufYJSJr5lJ24edEMOcE9
+         K0Cx69cjOLgZBMYPX8TRt4nkvTuEPluJop8k4ZWnkYHP92Y6Z3dzFFj0YqMOvO4ZmVTv
+         H3ye+UKtCJNWa6g+c4YWU4C989oXLnU13CF66wkyoiiJj27+rDglFyB2A+DV9G0EhrGp
+         JSAnesh1wkhfCs8ZlRHpSs10N3FyR79whXGx+Xfv/lxq+5qePlGGsgCy65MKUnaxIrSQ
+         IaE/5JzQfRsA7aGhqrpyK3tHWnwCw29BHv8FkuCDV3SJiBaUkRIOeSjqlwFKMjlcdjTr
+         dvKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=9dChikHVgwG7d/711i1s9qvxIpLptusWO5nO6BvhLUo=;
+        b=tadywR2tbaKN4kU4qG9LezqTh3XBlb8F3750atOjwe+S0rINSA3xRAvubOY+zeCtO7
+         tXGxkrIfov+xxVbH7DS/+0hKANipoOXWHjXIyuewdxPjbk5E2Xu9dzbs9oorWAICIPAu
+         g/AELc5XBf1E4nLBDJU6/JjpH4fkkqIbC95iactrv4L8uky4a3Bnu47Qc+SqDsSatPdr
+         MilJ9oOrk/5AnSkAtzsTUFHDCk3qFwQKVdRAM4RoWm9aP42sHFhkCiwOaIpM37fOMW5i
+         DOXVuz48nlWlMkUwxqCVX7OIoXugH7Qq6xzP58abfxTqvXpW8/jhjCYf+MqGOhz2QXzi
+         GSzg==
+X-Gm-Message-State: AOAM5327uLalMa4wosvymmFiMzEwuC0JkR+qAil6A5WPeogg2W1PA5xC
+        biXQ4DBuae8H4cV7SOnGB1mAvwbM5dyBsH6fhw0=
+X-Google-Smtp-Source: ABdhPJyGU4kMfCciHNO8O+6GnbLAOsGM06FQW5NNmI91xMkL9CZsZYi+5EsZKEYgTs/P3ictQHhhNTv4Y/wQPeiTDyc=
+X-Received: by 2002:a25:505:: with SMTP id 5mr45360934ybf.157.1629738074248;
+ Mon, 23 Aug 2021 10:01:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Date:   Mon, 23 Aug 2021 19:01:14 +0200
+Message-ID: <CAKXUXMzdGdyQg9CXJ2AZStrBk3J10r5r=gyiAuU4WimnoQNyvA@mail.gmail.com>
+Subject: Suspicious pattern for use of function xt_register_template()
+To:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        netfilter-devel@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>, coreteam@netfilter.org,
+        clang-built-linux <clang-built-linux@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 23 Aug 2021 16:37:54 +0200 Michael Riesch wrote:
-> In the commit to be reverted, support for power management was
-> introduced to the Rockchip glue code. Later, power management support
-> was introduced to the stmmac core code, resulting in multiple
-> invocations of pm_runtime_{enable,disable,get_sync,put_sync}.
+Dear Florian, dear netfilter maintainers,
 
-Can we get a Fixes tag? I.e. reference to the earliest commit where 
-the warning can be triggered?
+Commit fdacd57c79b ("netfilter: x_tables: never register tables by
+default") on linux-next
+introduces the function xt_register_template() and in all cases but
+one, the calls to that function are followed by:
 
-> The multiple invocations happen in rk_gmac_powerup and
-> stmmac_{dvr_probe, resume} as well as in rk_gmac_powerdown and
-> stmmac_{dvr_remove, suspend}, respectively, which are always called
-> in conjunction.
+    if (ret < 0)
+        return ret;
+
+All these checks were also added with the commit above.
+
+In the one case, for iptable_mangle_init() in
+./net/ipv4/netfilter/iptable_mangle.c, this pattern was not followed.
+This makes this ret assignment in this function a Dead Store and
+hence, clang-analyzer warns about that.
+
+Are we missing here an early return for a negative return value as
+well, or is this case for iptable_mangle_init() in
+./net/ipv4/netfilter/iptable_mangle.c special?
+
+
+Best regards,
+
+Lukas
