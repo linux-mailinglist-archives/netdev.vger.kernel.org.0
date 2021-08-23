@@ -2,60 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F7F03F4298
-	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 02:31:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 637F33F42E3
+	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 03:14:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234399AbhHWAcS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Aug 2021 20:32:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37050 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231835AbhHWAcR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Aug 2021 20:32:17 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 917F8C061575;
-        Sun, 22 Aug 2021 17:31:35 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id lc21so880629ejc.7;
-        Sun, 22 Aug 2021 17:31:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=jowtOTpjNwqucfYjuJgTUiClzxtr7mn0OII0JVTDIs4=;
-        b=sV4cROVbci+qn31l06I0BOL/BjGaS1l9u8CR9wXrVGw9el/mdkBh+WRWUyFI030YuE
-         kse5xB/cxs+MUdVH8uVIVHgkJno+uO9k4hufQfbQR1gEZICJupBHiaEA76BeENv2drBl
-         m7FBq5K0NekFivSccitH49IWI6ZqQ1ey6DIwMgnUSF2mIVsMNgmSA92QrSICKjSVB9VV
-         UigtYNpI7xL+dvQfhAp4gEUQy6uttMDKCpx+A5IqUejlDO/kxC9XHemsDSowrXn4X5oT
-         ycQT4zIJaavZUOJpBxNt/fv16BsWBv0k2Ul2R6/HjAggIX3U4lO9wKZKynpyNnXp/zV4
-         XetA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=jowtOTpjNwqucfYjuJgTUiClzxtr7mn0OII0JVTDIs4=;
-        b=GftcEhEj9JayXONrjjhY4lnPBJNc+9LHVLR+Mzm47UY38kIwMnhqs5J9+3IC/mz2Jq
-         8YiqYClRotkUO9ckv+Sytm6Ff9kWl4Mu6Tx2OYJYBn6Ak74ruD2nHjgmO8bgIVVIry1A
-         HmTag9PdZFOqelbtuerM0z/Q6VJgd5JELWnKooT8cZLkIIqQ1dwMvAwivLEKcoYGKmTI
-         zCr2Hzp0fEhDPlemtPUfyxJtW9K18QzpiELSuJUOeUfiYvuCSf0V1ah0sybqP6KZbeRS
-         xS7XGoKzLEIu7F01CT8FxA5ZQ6hGTy74CaNZCbFIZ4CONR9QmU9hLB7FFvhql/rcV8k0
-         IcmA==
-X-Gm-Message-State: AOAM533RlTc32pPuOAGlEDJs9t7eZGI4TuY1cyhCMYv35BNXkv5RpjYi
-        /BZsXvdIYyk6aRkGzQqb6PE=
-X-Google-Smtp-Source: ABdhPJxDGc/GUX1m73NPQNXtTRrERjbgD1KmnZNNVG7t8kgUpusl+RxLu6QqCgpLC4d/ItjQPake/A==
-X-Received: by 2002:a17:907:a043:: with SMTP id gz3mr10487959ejc.366.1629678694239;
-        Sun, 22 Aug 2021 17:31:34 -0700 (PDT)
-Received: from skbuf ([188.25.144.60])
-        by smtp.gmail.com with ESMTPSA id cr9sm8090439edb.17.2021.08.22.17.31.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 Aug 2021 17:31:34 -0700 (PDT)
-Date:   Mon, 23 Aug 2021 03:31:32 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
+        id S234591AbhHWBPA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Aug 2021 21:15:00 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:35850 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234399AbhHWBO7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 22 Aug 2021 21:14:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=wbnAYhyJCCQuqsnRX8KSLXK76ZWOG7IY6CLRzf1Po2Q=; b=tiPUNZsMUQZ4OP0ZbMfGArMxe1
+        gchNctkkyBaMZwvNDnNZZWxzQk39DUdfnuQ2IECyNi4kOJT2T2bTGXWimrgt55WcFpEJayDhnhDZV
+        +sZ1Oz73FocHoMk0qJwIAhKbjtyqC300H15jxG0eX/MZZCC4sbTpInXyIW+duu6XNeio=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mHyXN-003OwD-5x; Mon, 23 Aug 2021 03:14:05 +0200
+Date:   Mon, 23 Aug 2021 03:14:05 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
 To:     Alvin =?utf-8?Q?=C5=A0ipraga?= <ALSI@bang-olufsen.dk>
 Cc:     Alvin =?utf-8?Q?=C5=A0ipraga?= <alvin@pqrs.dk>,
         Linus Walleij <linus.walleij@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -65,76 +39,83 @@ Cc:     Alvin =?utf-8?Q?=C5=A0ipraga?= <alvin@pqrs.dk>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH net-next 3/5] net: dsa: tag_rtl8_4: add realtek 8
- byte protocol 4 tag
-Message-ID: <20210823003132.fdafjnci4y56cmnd@skbuf>
+Subject: Re: [RFC PATCH net-next 4/5] net: dsa: realtek-smi: add rtl8365mb
+ subdriver for RTL8365MB-VC
+Message-ID: <YSL2XcUmb7PO5H0y@lunn.ch>
 References: <20210822193145.1312668-1-alvin@pqrs.dk>
- <20210822193145.1312668-4-alvin@pqrs.dk>
- <20210822221307.mh4bggohdvx2yehy@skbuf>
- <9d6af614-d9f9-6e7b-b6b5-a5f5f0eb8af2@bang-olufsen.dk>
- <20210822232538.pkjsbipmddle5bdt@skbuf>
- <0606e849-5a4e-08c9-fcd1-d4661c10a51c@bang-olufsen.dk>
- <20210822234516.pwlu4wk3s3pfzbmi@skbuf>
- <e92dd0b2-0720-b848-900d-7f383f133111@bang-olufsen.dk>
+ <20210822193145.1312668-5-alvin@pqrs.dk>
+ <YSLX7qhyZ4YGec83@lunn.ch>
+ <283675c4-90cf-6e5c-8178-5e3eba7592ba@bang-olufsen.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <e92dd0b2-0720-b848-900d-7f383f133111@bang-olufsen.dk>
+In-Reply-To: <283675c4-90cf-6e5c-8178-5e3eba7592ba@bang-olufsen.dk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 23, 2021 at 12:28:51AM +0000, Alvin Šipraga wrote:
-> On 8/23/21 1:45 AM, Vladimir Oltean wrote:
-> > On Sun, Aug 22, 2021 at 11:37:28PM +0000, Alvin Šipraga wrote:
-> >>>>>> +	skb->offload_fwd_mark = 1;
-> >>>>>
-> >>>>> At the very least, please use
-> >>>>>
-> >>>>> 	dsa_default_offload_fwd_mark(skb);
-> >>>>>
-> >>>>> which does the right thing when the port is not offloading the bridge.
-> >>>>
-> >>>> Sure. Can you elaborate on what you mean by "at the very least"? Can it
-> >>>> be improved even further?
-> >>>
-> >>> The elaboration is right below. skb->offload_fwd_mark should be set to
-> >>> zero for packets that have been forwarded only to the host (like packets
-> >>> that have hit a trapping rule). I guess the switch will denote this
-> >>> piece of info through the REASON code.
-> >>
-> >> Yes, I think it will be communicated in REASON too. I haven't gotten to
-> >> deciphering the contents of this field since it has not been needed so
-> >> far: the ports are fully isolated and all bridging is done in software.
-> >
-> > In that case, setting skb->offload_fwd_mark to true is absolutely wrong,
-> > since the bridge is told that no software forwarding should be done
-> > between ports, as it was already done in hardware (see nbp_switchdev_allowed_egress).
-> >
-> > I wonder how this has ever worked? Are you completely sure that bridging
-> > is done in software?
->
-> You are absolutely right, and indeed I checked just now and the bridging
-> is not working at all.
->
-> Deleting the line (i.e. skb->offload_fwd_mark = 0) restores the expected
-> bridging behaviour.
->
-> Based on what you have said, do I understand correctly that
-> offload_fwd_mark shouldn't be set until bridge hardware offloading has
-> been implemented?
->
-> Thanks for your detailed review so far.
+> Just to clarify, this means I should set the physical port number in the 
+> reg field of the device tree? i.e.:
+> 
+> 	port@4 {
+> 		reg = <6>; /* <--- instead of <4>? */
+> 		label = "cpu";
+> 		ethernet = <&fec1>;
+> 		phy-mode = "rgmii-id";
+> 		fixed-link {
+> 			speed = <1000>;
+> 			full-duplex;
+> 			pause;
+> 		};
+> 	};
 
-So back to my initial suggestion:
+Yes, this is fine.
 
-| At the very least, please use
-|
-| 	dsa_default_offload_fwd_mark(skb);
-|
-| which does the right thing when the port is not offloading the bridge.
+> >> +static int rtl8365mb_port_enable(struct dsa_switch *ds, int port,
+> >> +				 struct phy_device *phy)
+> >> +{
+> >> +	struct realtek_smi *smi = ds->priv;
+> >> +	int val;
+> >> +
+> >> +	if (dsa_is_user_port(ds, port)) {
+> >> +		/* Power up the internal PHY and restart autonegotiation */
+> >> +		val = rtl8365mb_phy_read(smi, port, MII_BMCR);
+> >> +		if (val < 0)
+> >> +			return val;
+> >> +
+> >> +		val &= ~BMCR_PDOWN;
+> >> +		val |= BMCR_ANRESTART;
+> >> +
+> >> +		return rtl8365mb_phy_write(smi, port, MII_BMCR, val);
+> >> +	}
+> > 
+> > There should not be any need to do this. phylib should do it. In
+> > generally, you should not need to touch any PHY registers, you just
+> > need to allow access to the PHY registers.
+> 
+> Will phylib also the opposite when the interface is administratively put 
+> down (e.g. ip link set dev swp2 down)? The switch doesn't seem to have 
+> any other handle for stopping the flow of packets from a port except to 
+> power down the internal PHY, hence why I put this in for port_disable. 
+> For port_enable I just did the opposite but I can see why it's not 
+> necessary.
 
-This way, you won't have to touch this code even after you start
-implementing .port_bridge_join and .port_bridge_leave. It deals with
-both cases.
+When the MAC and PHY are attached phy_attach_direct() gets called,
+which calls phy_resume(phydev); The generic implementation clears the
+BMCR_PDOWN bit.
+
+phy_detach() will suspend the PHY, which sets the BMCR_PDOWN bit.
+
+But there are two different schemes for doing this.  Some MAC drivers
+connect the PHY during probe. Others do it at open. DSA does it at
+probe. So this is generic feature is not going to work for you. You
+might want to put some printk() in phy_suspend and phy_resume to check
+that.
+
+So, setting/clearing the PDOWN bit does seems reasonable. But please
+document in the functions why you are doing this. Also, don't restart
+autoneg. That really should be up to phylib, and it should be
+triggered by phylink_start() which should be called directly after
+port_enable().
+
+	Andrew
