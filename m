@@ -2,115 +2,309 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8DAA3F4BF9
-	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 15:56:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EE8D3F4C0F
+	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 16:03:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229801AbhHWN5X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Aug 2021 09:57:23 -0400
-Received: from mail-eopbgr130082.outbound.protection.outlook.com ([40.107.13.82]:58785
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229625AbhHWN5T (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Aug 2021 09:57:19 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Bs5zxybiHaNhpIQQLH+DS0OtXspCVwQLK8q3E/9Ku65nOpd1y+y60UPs2Vq9rn+RfmWriz9KloxejTs14BnsjcqxSIZz7klQYz2HK6JOmSA6G0+Fu0BwMtSHOmrw17Vm9yFPy8e2K5EmYxeV8S3AQc9S2i1i6dI92UZYdBmEfGtP+M9HalgUrAYVV9+jWMLdN73ldNkS7pjas2B494NXOEq4FIcZ4VMbQWbxKVis9WIJBsrx0XKCzFCVKgp/Ki4PgDrhuP3TMnVg5VgLektWNtHdCc89IxLZOWoH0ssIGf6tYgX27yjt5TjGpOuwNqYMzDnfIbjVnNwJAzCYXGhcEA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DOb5t4CRFW5UCTAuV7Nr2l5OJtiT6z/gGgbFEzEfEkA=;
- b=WYDi8HSTmYPLYVse6vkbYTcwEn+entZmBCvky4X/3oIicyNrKqkp/fQT79+xqxTEIIyqOTGlSd8v4JUY497qQRAPZ27japA5BC6sGg1phNrjtbHQcURS7GzeJK1/7JWLUA+tkbqDArQIQCZRuepVCav0nvu5t/poFcH0hxAe6NtShNmAd8Y2+6E6L8SC1E0Spjqp815/fwVut2v3S7t1/aTOWO7UgTYa5rzG1KYEJcCORpdLlvBAfFMWXa4pdaxZa07jMgD02lBcWmcdfjq/7eENrCD75yw2T1PfeEdgwZaQUc1qF+MJ8q76OyxnGfMZxH+EQQiPOd1PQeYU/Z5LBg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DOb5t4CRFW5UCTAuV7Nr2l5OJtiT6z/gGgbFEzEfEkA=;
- b=rqtXcKyrQ7Zj4wjVowXkYPTbQzgHV98KEeB+P45RWuAZ5bprMga9qX9tepbC1l81FVBjfNGWtCaM6hot8Po6BCpXFieZz958UX/amK9Pys5ZyvkrVEzRpAsK+IVxCgPr0PuInYFSj37MEChkcL4Tr9XqX4H64fd5rQV8IiBjDsM=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR0401MB2686.eurprd04.prod.outlook.com (2603:10a6:800:5b::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.22; Mon, 23 Aug
- 2021 13:56:34 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4436.024; Mon, 23 Aug 2021
- 13:56:34 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        =?Windows-1252?Q?Alvin_=8Aipraga?= <alsi@bang-olufsen.dk>
-Subject: Re: [PATCH v2 net-next] net: dsa: properly fall back to software
- bridging
-Thread-Topic: [PATCH v2 net-next] net: dsa: properly fall back to software
- bridging
-Thread-Index: AQHXl8QeOm8U3eWAykGLv0EZXKt9jauBHdSA
-Date:   Mon, 23 Aug 2021 13:56:34 +0000
-Message-ID: <20210823135633.3h6io6ajmfh6hjzp@skbuf>
-References: <20210823021050.2320679-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20210823021050.2320679-1-vladimir.oltean@nxp.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e04d81ef-042b-4908-a8c4-08d9663dd1a5
-x-ms-traffictypediagnostic: VI1PR0401MB2686:
-x-microsoft-antispam-prvs: <VI1PR0401MB2686FD2E41035498E6BE00F7E0C49@VI1PR0401MB2686.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6108;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: WJIV2yrcW7QC+EHKAowFIstEEbE/gzTDTLIZED1VxkW7fm5QhhKPiqNb7IieNRqZfPERwfjAdJmsyz7aZSuSeujoyfdGoh7lJkX+cCtDkAhU05ks4jyDBeRhpO7GWwwmxi2TAUcEjBu3x/hb8HQtW2hvHl8VY2AdCL9JWwmzgfjKzED1wN7A2eRiy2kCgxDbxuoIbZFU2up29/vRvPXYbGMb3tgNrnS5PEN4ok4eQ2V51JmMkkqPqavr4q7989+7i2uRJE6lFUOBg4trKz/IbWuOHaicA+iYcLpClAhSKCaoaBVV9sloAeI7mJXa3+UIMMUvj77Y17Pl0kExbs29m/Gmndv1jM0vmwfLpwSftP2kdKIhjbNAFNblwDy0kFKZuFDp4LY+koVPwu7pjRZb2P0pOKlLWffGeS1XiBUOyLAigXd8pM3WaWx19jmv/mTRp2Mfg/eP5iHVaOFf0TaBrwE6YN7o52SrVjn1/DGhJEcYimIlXAx7Uv5ptH6GrIFTPqdRi5b8B35ZBJ/AJ/cY38MEstuMoNQNqhzPjuGsUmnzp6fjQzSo9H4R8MQlNw8OB3eLeN//5VRrzjzXNvwIkHtzC2RhsVNO4AcWyw9Lg1Op5vWdAz7Q6Bh33j6TZADh/lzvIqheflxBaRb05GQvGxkZ3230P3g6P5bRNHbi3eFs43dTWifcaLnTsgkw++LzSOVbL9LfslKGuirRJAB9xQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(346002)(366004)(376002)(39860400002)(136003)(396003)(66446008)(66946007)(76116006)(66476007)(64756008)(91956017)(26005)(38070700005)(478600001)(1076003)(316002)(66556008)(6486002)(54906003)(186003)(86362001)(6916009)(5660300002)(8676002)(33716001)(44832011)(558084003)(4326008)(8936002)(38100700002)(71200400001)(6512007)(9686003)(2906002)(122000001)(6506007);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?Windows-1252?Q?Oh+SGifVHzYu+UmDyXa5uV/MYNfsrxcyxYTo/DUIwn79GdPGezxcsuPF?=
- =?Windows-1252?Q?AXWVBriMH6luaxrUX0BTKUejjL9/xESSOvdlLjGxupmbi/mh0cMQETtt?=
- =?Windows-1252?Q?G6sq3KkL8I7kStnHPVozWG5iYOsgq2yLrpWmEaS6t+B2eDWnw5VbgBsh?=
- =?Windows-1252?Q?7TLb9LCHVQiGjWBLdz6PfsnpVK0X4zaCs0MzqKIpMVKnNxJv71swlAYR?=
- =?Windows-1252?Q?X/yldg4joBKJblvry0QqzecuiRg/T0eEawE49q+XRxlvLTMgLAzsM6zi?=
- =?Windows-1252?Q?ES5jikM9bU3qENEkN8DcXrmnqpfNP1h5792p7t5wdXsJQUxng0tmyS9U?=
- =?Windows-1252?Q?RMgKz9gu6AIipRVVZnOH1JpKjfOgEJ8pmrYeU+zBlZdPOj+2KlfeRReE?=
- =?Windows-1252?Q?by0Z9HP7PwFNi5+cCPTwzJYs+5UjMLMQ8Xx5G4RrLNhbAEtHjsnr5tN7?=
- =?Windows-1252?Q?Hcll0/RDGnmH9J0vxQQ1U9Xbm14/i+OGDEsv3ZPMqcYfKY6+s5SFqY6w?=
- =?Windows-1252?Q?z1D7iI4PYKB4s2n1CiurZmH1HqKmylrxCOgeoDONJyrT6khjt62HaFj+?=
- =?Windows-1252?Q?3kq2J1iefTUxYR6bNF9re3N4eOXMqKsPPvNLlqez/RDyeEOAEzyhbVen?=
- =?Windows-1252?Q?ujQN6mn+Ir/BBgsg0948RJUrNyK5tUq+rQYg26EuL41RlOH8kc+sA1rk?=
- =?Windows-1252?Q?SnMSBUewfFyvl89ZVMGQBBI2cpD12+/aQZqxV/uT/CbuhocGScThbXqN?=
- =?Windows-1252?Q?7ehYEcd0KJ/hEtO0sKwCRdK/1AmO1Cy57dJ/d8iBR721ypVt/+8AeXkz?=
- =?Windows-1252?Q?3fN81+vYC2WA+AMwaZBcWlEZ1A2LUjNBJE+m7ZaZo9tG6jvFrRvmhHYC?=
- =?Windows-1252?Q?ek6Hn4RFGM4Hqz46x+vgiVoms9y8+a4MXH++lR4Njh23kU7+ji00jX/D?=
- =?Windows-1252?Q?SvX0xlmuIVkr9PVlaMF58+/UYFNcM/O3tPyJt+l/J1lAwVrx0q0xmTbY?=
- =?Windows-1252?Q?2xJTBAHVDYfyWK5WIAlKRZlAyBP8LnCuOZluBtiezM+ZWdcPMATCdbgC?=
- =?Windows-1252?Q?AFrnnc4OBMp/lCZ8kYGyQCBmZ3wQPatuIOm3B1aaq7y+C54gPGRjy6CD?=
- =?Windows-1252?Q?kTwY/oOh9E7KLBewd0aiJIUOJWJAUgoUya/wkONgmZXbrAjqYpJ1vlH4?=
- =?Windows-1252?Q?GGqENmPUC1OjI+fdJxsq7vb3Z2n2OnOeL06C3V4HOioXRNUCn+H1+OwN?=
- =?Windows-1252?Q?FhW5XFUNdebZmNUAREo/UoMLh68ehIoROkdXVAp24/7fseGWQyDQUNVo?=
- =?Windows-1252?Q?3PPwfbMLK+uKsHl9Xe3eLYFXKNUkfydvUQLafxP0u5GqNotYWmCXuKmO?=
- =?Windows-1252?Q?+YKfvuziRYgak9lJTqZcoiBXBAiEm3c0H4yCcCeBaAiHNF6a4xx7NDLB?=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="Windows-1252"
-Content-ID: <3ED40BD7775E9C468655D89333C2D423@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S229763AbhHWOD6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Aug 2021 10:03:58 -0400
+Received: from beige.elm.relay.mailchannels.net ([23.83.212.16]:7446 "EHLO
+        beige.elm.relay.mailchannels.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229627AbhHWOD5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Aug 2021 10:03:57 -0400
+X-Sender-Id: 9wt3zsp42r|x-authuser|john.efstathiades@pebblebay.com
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id 7B1A26818E9;
+        Mon, 23 Aug 2021 13:53:33 +0000 (UTC)
+Received: from ares.krystal.co.uk (100-96-18-119.trex.outbound.svc.cluster.local [100.96.18.119])
+        (Authenticated sender: 9wt3zsp42r)
+        by relay.mailchannels.net (Postfix) with ESMTPA id 09D2A6810BB;
+        Mon, 23 Aug 2021 13:53:31 +0000 (UTC)
+X-Sender-Id: 9wt3zsp42r|x-authuser|john.efstathiades@pebblebay.com
+Received: from ares.krystal.co.uk (ares.krystal.co.uk [77.72.0.130])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384)
+        by 100.96.18.119 (trex/6.3.3);
+        Mon, 23 Aug 2021 13:53:33 +0000
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: 9wt3zsp42r|x-authuser|john.efstathiades@pebblebay.com
+X-MailChannels-Auth-Id: 9wt3zsp42r
+X-Macabre-Shade: 5b932fcb7f9b68e2_1629726813163_3628583243
+X-MC-Loop-Signature: 1629726813162:1413360738
+X-MC-Ingress-Time: 1629726813162
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=pebblebay.com; s=default; h=Content-Transfer-Encoding:MIME-Version:
+        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
+        Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=TAOYQM2xKgwR8WKXZT+qSZ63rAx/IdgHp+O009rVNaI=; b=PUpCQRItgs3NvU5HHA00glq+Bt
+        sZ7TdUTQPaxFalSsl7v8BrBe7taZkw0RftMGNpfIA6OfA+9Wzky6yUa3GiaWt9kpDTOCXswMlqYic
+        ihTLBLEhDQ/ENLI2+qwMStkDJj8ksXGACwwt+QFRMwH3Gv+2c8Xn/h3gLKxCHmks46HdmZScf1iZM
+        QpgUfZAztDr1tHxKiU5vadG3grtTv7/QQZojvQRQBN92qpmIc/hkLBB+XNGhQZy43f0aH3Rp4rv4n
+        ktAdvH3+MEoEUYV4+8gSwYQwmKqZ+5smrxUCpupbr0YYoPhfr2hbydp/t6Us3LDFBYTpbN0Bu71JI
+        uynEpIhA==;
+Received: from cpc160185-warw19-2-0-cust743.3-2.cable.virginm.net ([82.21.62.232]:51812 helo=pbcl-dsk9.pebblebay.com)
+        by ares.krystal.co.uk with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <john.efstathiades@pebblebay.com>)
+        id 1mIAOI-003PzY-9z; Mon, 23 Aug 2021 14:53:29 +0100
+From:   John Efstathiades <john.efstathiades@pebblebay.com>
+Cc:     UNGLinuxDriver@microchip.com, woojung.huh@microchip.com,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        john.efstathiades@pebblebay.com
+Subject: [PATCH net-next 01/10] lan78xx: Fix white space and style issues
+Date:   Mon, 23 Aug 2021 14:52:20 +0100
+Message-Id: <20210823135229.36581-2-john.efstathiades@pebblebay.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210823135229.36581-1-john.efstathiades@pebblebay.com>
+References: <20210823135229.36581-1-john.efstathiades@pebblebay.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e04d81ef-042b-4908-a8c4-08d9663dd1a5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Aug 2021 13:56:34.4729
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: VJdFEXqlfcPhLitvM4IroArafyIdwiD0jm3afinRLmYp2yNLbEaRAlnhbeMFoHwvUhtReKQdUnRcF+kWpwAT+w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2686
+Content-Transfer-Encoding: 8bit
+X-AuthUser: john.efstathiades@pebblebay.com
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This needs more work before it fully addresses Alvin's issue, please
-drop from patchwork for now. Thanks.=
+Fix white space and code style issues identified by checkpatch.
+
+Signed-off-by: John Efstathiades <john.efstathiades@pebblebay.com>
+---
+ drivers/net/usb/lan78xx.c | 80 ++++++++++++++++++++-------------------
+ 1 file changed, 42 insertions(+), 38 deletions(-)
+
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index 4e8d3c28f73e..ece044dd0236 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -382,7 +382,7 @@ struct lan78xx_net {
+ 	struct usb_anchor	deferred;
+ 
+ 	struct mutex		phy_mutex; /* for phy access */
+-	unsigned		pipe_in, pipe_out, pipe_intr;
++	unsigned int		pipe_in, pipe_out, pipe_intr;
+ 
+ 	u32			hard_mtu;	/* count any extra framing */
+ 	size_t			rx_urb_size;	/* size for rx urbs */
+@@ -392,7 +392,7 @@ struct lan78xx_net {
+ 	wait_queue_head_t	*wait;
+ 	unsigned char		suspend_count;
+ 
+-	unsigned		maxpacket;
++	unsigned int		maxpacket;
+ 	struct timer_list	delay;
+ 	struct timer_list	stat_monitor;
+ 
+@@ -501,7 +501,7 @@ static int lan78xx_read_stats(struct lan78xx_net *dev,
+ 	if (likely(ret >= 0)) {
+ 		src = (u32 *)stats;
+ 		dst = (u32 *)data;
+-		for (i = 0; i < sizeof(*stats)/sizeof(u32); i++) {
++		for (i = 0; i < sizeof(*stats) / sizeof(u32); i++) {
+ 			le32_to_cpus(&src[i]);
+ 			dst[i] = src[i];
+ 		}
+@@ -515,10 +515,11 @@ static int lan78xx_read_stats(struct lan78xx_net *dev,
+ 	return ret;
+ }
+ 
+-#define check_counter_rollover(struct1, dev_stats, member) {	\
+-	if (struct1->member < dev_stats.saved.member)		\
+-		dev_stats.rollover_count.member++;		\
+-	}
++#define check_counter_rollover(struct1, dev_stats, member)		\
++	do {								\
++		if ((struct1)->member < (dev_stats).saved.member)	\
++			(dev_stats).rollover_count.member++;		\
++	} while (0)
+ 
+ static void lan78xx_check_stat_rollover(struct lan78xx_net *dev,
+ 					struct lan78xx_statstage *stats)
+@@ -844,9 +845,9 @@ static int lan78xx_read_raw_otp(struct lan78xx_net *dev, u32 offset,
+ 
+ 	for (i = 0; i < length; i++) {
+ 		lan78xx_write_reg(dev, OTP_ADDR1,
+-					((offset + i) >> 8) & OTP_ADDR1_15_11);
++				  ((offset + i) >> 8) & OTP_ADDR1_15_11);
+ 		lan78xx_write_reg(dev, OTP_ADDR2,
+-					((offset + i) & OTP_ADDR2_10_3));
++				  ((offset + i) & OTP_ADDR2_10_3));
+ 
+ 		lan78xx_write_reg(dev, OTP_FUNC_CMD, OTP_FUNC_CMD_READ_);
+ 		lan78xx_write_reg(dev, OTP_CMD_GO, OTP_CMD_GO_GO_);
+@@ -900,9 +901,9 @@ static int lan78xx_write_raw_otp(struct lan78xx_net *dev, u32 offset,
+ 
+ 	for (i = 0; i < length; i++) {
+ 		lan78xx_write_reg(dev, OTP_ADDR1,
+-					((offset + i) >> 8) & OTP_ADDR1_15_11);
++				  ((offset + i) >> 8) & OTP_ADDR1_15_11);
+ 		lan78xx_write_reg(dev, OTP_ADDR2,
+-					((offset + i) & OTP_ADDR2_10_3));
++				  ((offset + i) & OTP_ADDR2_10_3));
+ 		lan78xx_write_reg(dev, OTP_PRGM_DATA, data[i]);
+ 		lan78xx_write_reg(dev, OTP_TST_CMD, OTP_TST_CMD_PRGVRFY_);
+ 		lan78xx_write_reg(dev, OTP_CMD_GO, OTP_CMD_GO_GO_);
+@@ -959,7 +960,7 @@ static int lan78xx_dataport_wait_not_busy(struct lan78xx_net *dev)
+ 		usleep_range(40, 100);
+ 	}
+ 
+-	netdev_warn(dev->net, "lan78xx_dataport_wait_not_busy timed out");
++	netdev_warn(dev->net, "%s timed out", __func__);
+ 
+ 	return -EIO;
+ }
+@@ -972,7 +973,7 @@ static int lan78xx_dataport_write(struct lan78xx_net *dev, u32 ram_select,
+ 	int i, ret;
+ 
+ 	if (usb_autopm_get_interface(dev->intf) < 0)
+-			return 0;
++		return 0;
+ 
+ 	mutex_lock(&pdata->dataport_mutex);
+ 
+@@ -1045,9 +1046,9 @@ static void lan78xx_deferred_multicast_write(struct work_struct *param)
+ 	for (i = 1; i < NUM_OF_MAF; i++) {
+ 		lan78xx_write_reg(dev, MAF_HI(i), 0);
+ 		lan78xx_write_reg(dev, MAF_LO(i),
+-					pdata->pfilter_table[i][1]);
++				  pdata->pfilter_table[i][1]);
+ 		lan78xx_write_reg(dev, MAF_HI(i),
+-					pdata->pfilter_table[i][0]);
++				  pdata->pfilter_table[i][0]);
+ 	}
+ 
+ 	lan78xx_write_reg(dev, RFE_CTL, pdata->rfe_ctl);
+@@ -1066,11 +1067,12 @@ static void lan78xx_set_multicast(struct net_device *netdev)
+ 			    RFE_CTL_DA_PERFECT_ | RFE_CTL_MCAST_HASH_);
+ 
+ 	for (i = 0; i < DP_SEL_VHF_HASH_LEN; i++)
+-			pdata->mchash_table[i] = 0;
++		pdata->mchash_table[i] = 0;
++
+ 	/* pfilter_table[0] has own HW address */
+ 	for (i = 1; i < NUM_OF_MAF; i++) {
+-			pdata->pfilter_table[i][0] =
+-			pdata->pfilter_table[i][1] = 0;
++		pdata->pfilter_table[i][0] = 0;
++		pdata->pfilter_table[i][1] = 0;
+ 	}
+ 
+ 	pdata->rfe_ctl |= RFE_CTL_BCAST_EN_;
+@@ -1264,9 +1266,10 @@ static void lan78xx_status(struct lan78xx_net *dev, struct urb *urb)
+ 			generic_handle_irq(dev->domain_data.phyirq);
+ 			local_irq_enable();
+ 		}
+-	} else
++	} else {
+ 		netdev_warn(dev->net,
+ 			    "unexpected interrupt: 0x%08x\n", intdata);
++	}
+ }
+ 
+ static int lan78xx_ethtool_get_eeprom_len(struct net_device *netdev)
+@@ -1355,7 +1358,7 @@ static void lan78xx_get_wol(struct net_device *netdev,
+ 	struct lan78xx_priv *pdata = (struct lan78xx_priv *)(dev->data[0]);
+ 
+ 	if (usb_autopm_get_interface(dev->intf) < 0)
+-			return;
++		return;
+ 
+ 	ret = lan78xx_read_reg(dev, USB_CFG0, &buf);
+ 	if (unlikely(ret < 0)) {
+@@ -2003,7 +2006,7 @@ static int lan8835_fixup(struct phy_device *phydev)
+ 
+ 	/* RGMII MAC TXC Delay Enable */
+ 	lan78xx_write_reg(dev, MAC_RGMII_ID,
+-				MAC_RGMII_ID_TXC_DELAY_EN_);
++			  MAC_RGMII_ID_TXC_DELAY_EN_);
+ 
+ 	/* RGMII TX DLL Tune Adjust */
+ 	lan78xx_write_reg(dev, RGMII_TX_BYP_DLL, 0x3D00);
+@@ -3356,9 +3359,10 @@ static void lan78xx_tx_bh(struct lan78xx_net *dev)
+ 		if (skb)
+ 			dev_kfree_skb_any(skb);
+ 		usb_free_urb(urb);
+-	} else
++	} else {
+ 		netif_dbg(dev, tx_queued, dev->net,
+ 			  "> tx, len %d, type 0x%x\n", length, skb->protocol);
++	}
+ }
+ 
+ static void lan78xx_rx_bh(struct lan78xx_net *dev)
+@@ -3459,7 +3463,7 @@ static void lan78xx_delayedwork(struct work_struct *work)
+ 		unlink_urbs(dev, &dev->rxq);
+ 		status = usb_autopm_get_interface(dev->intf);
+ 		if (status < 0)
+-				goto fail_halt;
++			goto fail_halt;
+ 		status = usb_clear_halt(dev->udev, dev->pipe_in);
+ 		usb_autopm_put_interface(dev->intf);
+ 		if (status < 0 &&
+@@ -3632,8 +3636,8 @@ static int lan78xx_probe(struct usb_interface *intf,
+ 	struct net_device *netdev;
+ 	struct usb_device *udev;
+ 	int ret;
+-	unsigned maxp;
+-	unsigned period;
++	unsigned int maxp;
++	unsigned int period;
+ 	u8 *buf = NULL;
+ 
+ 	udev = interface_to_usbdev(intf);
+@@ -3858,10 +3862,10 @@ static int lan78xx_set_suspend(struct lan78xx_net *dev, u32 wol)
+ 		/* set WUF_CFG & WUF_MASK for IPv4 Multicast */
+ 		crc = lan78xx_wakeframe_crc16(ipv4_multicast, 3);
+ 		lan78xx_write_reg(dev, WUF_CFG(mask_index),
+-					WUF_CFGX_EN_ |
+-					WUF_CFGX_TYPE_MCAST_ |
+-					(0 << WUF_CFGX_OFFSET_SHIFT_) |
+-					(crc & WUF_CFGX_CRC16_MASK_));
++				  WUF_CFGX_EN_ |
++				  WUF_CFGX_TYPE_MCAST_ |
++				  (0 << WUF_CFGX_OFFSET_SHIFT_) |
++				  (crc & WUF_CFGX_CRC16_MASK_));
+ 
+ 		lan78xx_write_reg(dev, WUF_MASK0(mask_index), 7);
+ 		lan78xx_write_reg(dev, WUF_MASK1(mask_index), 0);
+@@ -3872,10 +3876,10 @@ static int lan78xx_set_suspend(struct lan78xx_net *dev, u32 wol)
+ 		/* for IPv6 Multicast */
+ 		crc = lan78xx_wakeframe_crc16(ipv6_multicast, 2);
+ 		lan78xx_write_reg(dev, WUF_CFG(mask_index),
+-					WUF_CFGX_EN_ |
+-					WUF_CFGX_TYPE_MCAST_ |
+-					(0 << WUF_CFGX_OFFSET_SHIFT_) |
+-					(crc & WUF_CFGX_CRC16_MASK_));
++				  WUF_CFGX_EN_ |
++				  WUF_CFGX_TYPE_MCAST_ |
++				  (0 << WUF_CFGX_OFFSET_SHIFT_) |
++				  (crc & WUF_CFGX_CRC16_MASK_));
+ 
+ 		lan78xx_write_reg(dev, WUF_MASK0(mask_index), 3);
+ 		lan78xx_write_reg(dev, WUF_MASK1(mask_index), 0);
+@@ -3902,10 +3906,10 @@ static int lan78xx_set_suspend(struct lan78xx_net *dev, u32 wol)
+ 		 */
+ 		crc = lan78xx_wakeframe_crc16(arp_type, 2);
+ 		lan78xx_write_reg(dev, WUF_CFG(mask_index),
+-					WUF_CFGX_EN_ |
+-					WUF_CFGX_TYPE_ALL_ |
+-					(0 << WUF_CFGX_OFFSET_SHIFT_) |
+-					(crc & WUF_CFGX_CRC16_MASK_));
++				  WUF_CFGX_EN_ |
++				  WUF_CFGX_TYPE_ALL_ |
++				  (0 << WUF_CFGX_OFFSET_SHIFT_) |
++				  (crc & WUF_CFGX_CRC16_MASK_));
+ 
+ 		lan78xx_write_reg(dev, WUF_MASK0(mask_index), 0x3000);
+ 		lan78xx_write_reg(dev, WUF_MASK1(mask_index), 0);
+@@ -4050,7 +4054,7 @@ static int lan78xx_resume(struct usb_interface *intf)
+ 	if (!--dev->suspend_count) {
+ 		/* resume interrupt URBs */
+ 		if (dev->urb_intr && test_bit(EVENT_DEV_OPEN, &dev->flags))
+-				usb_submit_urb(dev->urb_intr, GFP_NOIO);
++			usb_submit_urb(dev->urb_intr, GFP_NOIO);
+ 
+ 		spin_lock_irq(&dev->txq.lock);
+ 		while ((res = usb_get_from_anchor(&dev->deferred))) {
+-- 
+2.25.1
+
