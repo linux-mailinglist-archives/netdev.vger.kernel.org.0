@@ -2,84 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF97A3F4EE6
-	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 19:01:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B03A93F4F61
+	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 19:18:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231337AbhHWRCA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Aug 2021 13:02:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37178 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231273AbhHWRB5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Aug 2021 13:01:57 -0400
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DCACC061575;
-        Mon, 23 Aug 2021 10:01:15 -0700 (PDT)
-Received: by mail-yb1-xb2d.google.com with SMTP id q70so19195883ybg.11;
-        Mon, 23 Aug 2021 10:01:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=9dChikHVgwG7d/711i1s9qvxIpLptusWO5nO6BvhLUo=;
-        b=GNvXr/klOHZL1ZA7nzMMaAdqniR9VRCPwLZbRzG/fEQSpfufYJSJr5lJ24edEMOcE9
-         K0Cx69cjOLgZBMYPX8TRt4nkvTuEPluJop8k4ZWnkYHP92Y6Z3dzFFj0YqMOvO4ZmVTv
-         H3ye+UKtCJNWa6g+c4YWU4C989oXLnU13CF66wkyoiiJj27+rDglFyB2A+DV9G0EhrGp
-         JSAnesh1wkhfCs8ZlRHpSs10N3FyR79whXGx+Xfv/lxq+5qePlGGsgCy65MKUnaxIrSQ
-         IaE/5JzQfRsA7aGhqrpyK3tHWnwCw29BHv8FkuCDV3SJiBaUkRIOeSjqlwFKMjlcdjTr
-         dvKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=9dChikHVgwG7d/711i1s9qvxIpLptusWO5nO6BvhLUo=;
-        b=tadywR2tbaKN4kU4qG9LezqTh3XBlb8F3750atOjwe+S0rINSA3xRAvubOY+zeCtO7
-         tXGxkrIfov+xxVbH7DS/+0hKANipoOXWHjXIyuewdxPjbk5E2Xu9dzbs9oorWAICIPAu
-         g/AELc5XBf1E4nLBDJU6/JjpH4fkkqIbC95iactrv4L8uky4a3Bnu47Qc+SqDsSatPdr
-         MilJ9oOrk/5AnSkAtzsTUFHDCk3qFwQKVdRAM4RoWm9aP42sHFhkCiwOaIpM37fOMW5i
-         DOXVuz48nlWlMkUwxqCVX7OIoXugH7Qq6xzP58abfxTqvXpW8/jhjCYf+MqGOhz2QXzi
-         GSzg==
-X-Gm-Message-State: AOAM5327uLalMa4wosvymmFiMzEwuC0JkR+qAil6A5WPeogg2W1PA5xC
-        biXQ4DBuae8H4cV7SOnGB1mAvwbM5dyBsH6fhw0=
-X-Google-Smtp-Source: ABdhPJyGU4kMfCciHNO8O+6GnbLAOsGM06FQW5NNmI91xMkL9CZsZYi+5EsZKEYgTs/P3ictQHhhNTv4Y/wQPeiTDyc=
-X-Received: by 2002:a25:505:: with SMTP id 5mr45360934ybf.157.1629738074248;
- Mon, 23 Aug 2021 10:01:14 -0700 (PDT)
+        id S231315AbhHWRTg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Aug 2021 13:19:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50414 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229755AbhHWRTe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Aug 2021 13:19:34 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A6ED961501;
+        Mon, 23 Aug 2021 17:18:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1629739131;
+        bh=sXFez6GCJcIUZP7DNnqylGtMEnOm11ZhHcPII95H6rg=;
+        h=Date:From:To:Cc:Subject:From;
+        b=KcM68az9xJ3QqQDGOGi8XcXdovAC7wHrbTtBKPeji1izXq1+0xpCvg8MZ231KbKYK
+         XQ3E1fbYdVsTlL+Hd1leFAKj2lo90mgEbk0UT3Wb2indGHOlcIKJ6fA+SWQAoVNO0e
+         9T2kve/00ustILUHoVFMozWEMSRKw26OSnxWuULf1qnJBUxze1bmWnRVnUT+RGJlt3
+         MPETqjS3NbwMKnXhDVy52QbpHJ00mJmlJzzZhOoxRxxRcDMtepK1xPWSaw71v73u7X
+         s0MCLiyjHGqel7QpDxZQYCFfNj7q8WWg72hNkZinheYS3ktpv7iTAnYe7OGiRvfvlh
+         x40hX50jvUd0A==
+Date:   Mon, 23 Aug 2021 12:21:59 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] ath11k: Replace one-element array with flexible-array
+ member
+Message-ID: <20210823172159.GA25800@embeddedor>
 MIME-Version: 1.0
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Date:   Mon, 23 Aug 2021 19:01:14 +0200
-Message-ID: <CAKXUXMzdGdyQg9CXJ2AZStrBk3J10r5r=gyiAuU4WimnoQNyvA@mail.gmail.com>
-Subject: Suspicious pattern for use of function xt_register_template()
-To:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        netfilter-devel@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>, coreteam@netfilter.org,
-        clang-built-linux <clang-built-linux@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Florian, dear netfilter maintainers,
+There is a regular need in the kernel to provide a way to declare having a
+dynamically sized set of trailing elements in a structure. Kernel code
+should always use "flexible array members"[1] for these cases. The older
+style of one-element or zero-length arrays should no longer be used[2].
 
-Commit fdacd57c79b ("netfilter: x_tables: never register tables by
-default") on linux-next
-introduces the function xt_register_template() and in all cases but
-one, the calls to that function are followed by:
+Refactor the code a bit according to the use of a flexible-array member in
+struct scan_chan_list_params instead of a one-element array, and use the
+struct_size() helper.
 
-    if (ret < 0)
-        return ret;
+Also, save 25 (too many) bytes that were being allocated:
 
-All these checks were also added with the commit above.
+$ pahole -C channel_param drivers/net/wireless/ath/ath11k/reg.o
+struct channel_param {
+	u8                         chan_id;              /*     0     1 */
+	u8                         pwr;                  /*     1     1 */
+	u32                        mhz;                  /*     2     4 */
 
-In the one case, for iptable_mangle_init() in
-./net/ipv4/netfilter/iptable_mangle.c, this pattern was not followed.
-This makes this ret assignment in this function a Dead Store and
-hence, clang-analyzer warns about that.
+	/* Bitfield combined with next fields */
 
-Are we missing here an early return for a negative return value as
-well, or is this case for iptable_mangle_init() in
-./net/ipv4/netfilter/iptable_mangle.c special?
+	u32                        half_rate:1;          /*     4:16  4 */
+	u32                        quarter_rate:1;       /*     4:17  4 */
+	u32                        dfs_set:1;            /*     4:18  4 */
+	u32                        dfs_set_cfreq2:1;     /*     4:19  4 */
+	u32                        is_chan_passive:1;    /*     4:20  4 */
+	u32                        allow_ht:1;           /*     4:21  4 */
+	u32                        allow_vht:1;          /*     4:22  4 */
+	u32                        allow_he:1;           /*     4:23  4 */
+	u32                        set_agile:1;          /*     4:24  4 */
+	u32                        psc_channel:1;        /*     4:25  4 */
 
+	/* XXX 6 bits hole, try to pack */
 
-Best regards,
+	u32                        phy_mode;             /*     8     4 */
+	u32                        cfreq1;               /*    12     4 */
+	u32                        cfreq2;               /*    16     4 */
+	char                       maxpower;             /*    20     1 */
+	char                       minpower;             /*    21     1 */
+	char                       maxregpower;          /*    22     1 */
+	u8                         antennamax;           /*    23     1 */
+	u8                         reg_class_id;         /*    24     1 */
 
-Lukas
+	/* size: 25, cachelines: 1, members: 21 */
+	/* sum members: 23 */
+	/* sum bitfield members: 10 bits, bit holes: 1, sum bit holes: 6 bits */
+	/* last cacheline: 25 bytes */
+} __attribute__((__packed__));
+
+as previously, sizeof(struct scan_chan_list_params) was 32 bytes:
+
+$ pahole -C scan_chan_list_params drivers/net/wireless/ath/ath11k/reg.o
+struct scan_chan_list_params {
+	u32                        pdev_id;              /*     0     4 */
+	u16                        nallchans;            /*     4     2 */
+	struct channel_param       ch_param[1];          /*     6    25 */
+
+	/* size: 32, cachelines: 1, members: 3 */
+	/* padding: 1 */
+	/* last cacheline: 32 bytes */
+};
+
+and now with the flexible array transformation it is just 8 bytes:
+
+$ pahole -C scan_chan_list_params drivers/net/wireless/ath/ath11k/reg.o
+struct scan_chan_list_params {
+	u32                        pdev_id;              /*     0     4 */
+	u16                        nallchans;            /*     4     2 */
+	struct channel_param       ch_param[];           /*     6     0 */
+
+	/* size: 8, cachelines: 1, members: 3 */
+	/* padding: 2 */
+	/* last cacheline: 8 bytes */
+};
+
+This helps with the ongoing efforts to globally enable -Warray-bounds and
+get us closer to being able to tighten the FORTIFY_SOURCE routines on
+memcpy().
+
+This issue was found with the help of Coccinelle and audited and fixed,
+manually.
+
+[1] https://en.wikipedia.org/wiki/Flexible_array_member
+[2] https://www.kernel.org/doc/html/v5.10/process/deprecated.html#zero-length-and-one-element-arrays
+
+Link: https://github.com/KSPP/linux/issues/79
+Link: https://github.com/KSPP/linux/issues/109
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ drivers/net/wireless/ath/ath11k/reg.c | 7 ++-----
+ drivers/net/wireless/ath/ath11k/wmi.c | 2 +-
+ drivers/net/wireless/ath/ath11k/wmi.h | 2 +-
+ 3 files changed, 4 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/net/wireless/ath/ath11k/reg.c b/drivers/net/wireless/ath/ath11k/reg.c
+index e1a1df169034..c83d265185f1 100644
+--- a/drivers/net/wireless/ath/ath11k/reg.c
++++ b/drivers/net/wireless/ath/ath11k/reg.c
+@@ -97,7 +97,6 @@ int ath11k_reg_update_chan_list(struct ath11k *ar)
+ 	struct channel_param *ch;
+ 	enum nl80211_band band;
+ 	int num_channels = 0;
+-	int params_len;
+ 	int i, ret;
+ 
+ 	bands = hw->wiphy->bands;
+@@ -117,10 +116,8 @@ int ath11k_reg_update_chan_list(struct ath11k *ar)
+ 	if (WARN_ON(!num_channels))
+ 		return -EINVAL;
+ 
+-	params_len = sizeof(struct scan_chan_list_params) +
+-			num_channels * sizeof(struct channel_param);
+-	params = kzalloc(params_len, GFP_KERNEL);
+-
++	params = kzalloc(struct_size(params, ch_param, num_channels),
++			 GFP_KERNEL);
+ 	if (!params)
+ 		return -ENOMEM;
+ 
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
+index 6c253eae9d06..0a634ba04509 100644
+--- a/drivers/net/wireless/ath/ath11k/wmi.c
++++ b/drivers/net/wireless/ath/ath11k/wmi.c
+@@ -2285,7 +2285,7 @@ int ath11k_wmi_send_scan_chan_list_cmd(struct ath11k *ar,
+ 	u16 num_send_chans, num_sends = 0, max_chan_limit = 0;
+ 	u32 *reg1, *reg2;
+ 
+-	tchan_info = &chan_list->ch_param[0];
++	tchan_info = chan_list->ch_param;
+ 	while (chan_list->nallchans) {
+ 		len = sizeof(*cmd) + TLV_HDR_SIZE;
+ 		max_chan_limit = (wmi->wmi_ab->max_msg_len[ar->pdev_idx] - len) /
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.h b/drivers/net/wireless/ath/ath11k/wmi.h
+index d35c47e0b19d..d9c83726f65d 100644
+--- a/drivers/net/wireless/ath/ath11k/wmi.h
++++ b/drivers/net/wireless/ath/ath11k/wmi.h
+@@ -3608,7 +3608,7 @@ struct wmi_stop_scan_cmd {
+ struct scan_chan_list_params {
+ 	u32 pdev_id;
+ 	u16 nallchans;
+-	struct channel_param ch_param[1];
++	struct channel_param ch_param[];
+ };
+ 
+ struct wmi_scan_chan_list_cmd {
+-- 
+2.27.0
+
