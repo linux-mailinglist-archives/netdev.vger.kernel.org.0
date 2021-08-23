@@ -2,101 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D53503F4383
-	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 05:02:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 220D43F4392
+	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 05:07:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232355AbhHWDCa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Aug 2021 23:02:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42170 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231172AbhHWDC3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Aug 2021 23:02:29 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B457DC061575;
-        Sun, 22 Aug 2021 20:01:47 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id u13-20020a17090abb0db0290177e1d9b3f7so17719014pjr.1;
-        Sun, 22 Aug 2021 20:01:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=VUSCWaHr794uxKbw9ZSl7eYSMxn8eUX4SnaHucm+ud0=;
-        b=hJ2KLDu4n+kQBjkiaj+Yo65M/r88NnH2nM7kiC4/3ilhwd5qqh4rXXHITzQr+4kf/M
-         639/nj28RSaoAcR2Fdyrziin5L/MMxeQJNfN0jOnlYlGOozL6BsUgDnAQgorCqIxEDwy
-         IR71UH43gdxi+tpHFdPyCAWA6RJn8jn0v/R22nXTYHAbFJ4hhObhDG8n36uYWkoEIT3y
-         QGfjVlH0g2Zxk3F1k+A0RWBPykbRJoaSwRjqiFaIwi++F+xr1vXcdojTZCXGDw14T34Z
-         HnM8HwX63d80xs1vhlGvW4bABS0vE/3wS/B4N0jSjY646uriq710UhCF1ETmU5IYDfXI
-         o8Pw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=VUSCWaHr794uxKbw9ZSl7eYSMxn8eUX4SnaHucm+ud0=;
-        b=PztiMzCTpYc2DSfu3J+pMKvgThgaeKc+WHrdvuuM85i5t1D7oxKoA8bXlHA3apT81N
-         9zAVcqJD0jr4yeVCzUvSi+HIM1+XIt2d4+605TUrO9YPrkp5WtJ4EXWMOvWo6oGchnV9
-         nFuBKIeJF8AvVRcVSgWEnd7pobqEwBr57wBmCzTQGBu8zHg6NY/kf3+g3aks8H/e17FP
-         7hvDJmBPkmp9xhNEy0LLl4QNgZN2nrRcBjmzo4/D2z4Tf9hgDb+MxB2uMOoUO2sioWB/
-         KCIFL0anEBmAky+KV+IsatYxke0uJctcevL3Rt9nbCyWrZkOKHxGVBWZBzr4w6xasX/c
-         zzmg==
-X-Gm-Message-State: AOAM533uLLu0MxyJWpQhTa5N4Mnq6slwiaOVz6J609MNOhTh0+GNDrGM
-        4UisZ0VnxH8qG8QwZ5BWGj0=
-X-Google-Smtp-Source: ABdhPJyn7EDf07XPgwZJOFJi32fo1jg/MVO7kaTlBY4eMx/tOVZ2oMuX1Z65Qs4NFgK0iQSCHf0JVQ==
-X-Received: by 2002:a17:90a:ec0f:: with SMTP id l15mr1573221pjy.82.1629687707322;
-        Sun, 22 Aug 2021 20:01:47 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.45.42.119])
-        by smtp.googlemail.com with ESMTPSA id a15sm7192486pfn.219.2021.08.22.20.01.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 22 Aug 2021 20:01:46 -0700 (PDT)
-Subject: Re: [PATCH net-next v4] ipv6: add IFLA_INET6_RA_MTU to expose mtu
- value in the RA message
-To:     Rocco Yue <rocco.yue@mediatek.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, rocco.yue@gmail.com,
-        chao.song@mediatek.com, zhuoliang.zhang@mediatek.com
-References: <ad32c931-3056-cdef-4b9b-aab654c61cb9@gmail.com>
- <20210821061030.26632-1-rocco.yue@mediatek.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <a4a52162-c645-b369-a9f3-120f48115cde@gmail.com>
-Date:   Sun, 22 Aug 2021 20:01:44 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.12.0
+        id S232769AbhHWDHw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Aug 2021 23:07:52 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:14313 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231172AbhHWDHv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Aug 2021 23:07:51 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4GtHG63xdQz899l;
+        Mon, 23 Aug 2021 11:06:54 +0800 (CST)
+Received: from dggpeml500024.china.huawei.com (7.185.36.10) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Mon, 23 Aug 2021 11:07:00 +0800
+Received: from [10.67.103.6] (10.67.103.6) by dggpeml500024.china.huawei.com
+ (7.185.36.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Mon, 23 Aug
+ 2021 11:07:00 +0800
+Subject: Re: [PATCH V3 net-next 2/4] ethtool: extend coalesce setting uAPI
+ with CQE mode
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+References: <1629444920-25437-1-git-send-email-moyufeng@huawei.com>
+ <1629444920-25437-3-git-send-email-moyufeng@huawei.com>
+ <32fd0b32-e748-42d9-6468-b5b1393511e9@ti.com>
+ <20210820152116.0741369a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <shenjian15@huawei.com>, <lipeng321@huawei.com>,
+        <yisen.zhuang@huawei.com>, <linyunsheng@huawei.com>,
+        <huangguangbin2@huawei.com>, <chenhao288@hisilicon.com>,
+        <salil.mehta@huawei.com>, <linuxarm@huawei.com>,
+        <linuxarm@openeuler.org>, <dledford@redhat.com>, <jgg@ziepe.ca>,
+        <netanel@amazon.com>, <akiyano@amazon.com>,
+        <thomas.lendacky@amd.com>, <irusskikh@marvell.com>,
+        <michael.chan@broadcom.com>, <edwin.peer@broadcom.com>,
+        <rohitm@chelsio.com>, <jacob.e.keller@intel.com>,
+        <ioana.ciornei@nxp.com>, <vladimir.oltean@nxp.com>,
+        <sgoutham@marvell.com>, <sbhatta@marvell.com>, <saeedm@nvidia.com>,
+        <ecree.xilinx@gmail.com>, <merez@codeaurora.org>,
+        <kvalo@codeaurora.org>, <linux-wireless@vger.kernel.org>,
+        <moyufeng@huawei.com>
+From:   moyufeng <moyufeng@huawei.com>
+Message-ID: <659649ed-4697-e622-424d-0ab418c571a3@huawei.com>
+Date:   Mon, 23 Aug 2021 11:06:59 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.8.0
 MIME-Version: 1.0
-In-Reply-To: <20210821061030.26632-1-rocco.yue@mediatek.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+In-Reply-To: <20210820152116.0741369a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.103.6]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpeml500024.china.huawei.com (7.185.36.10)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/21/21 12:10 AM, Rocco Yue wrote:
-> In this patch, if an RA no longer carries an MTU or if accept_ra_mtu is reset,
-> in6_dev->ra_mtu will not be reset to 0, its value will remain the previous
-> accept_ra_mtu=1 and the value of the mtu carried in the RA msg. This behavior
-> is same with mtu6. This should be reasonable, it would show that the device
-> had indeed received the ra_mtu before set accept_ra_mtu to 0 or an RA no longer
-> carries an mtu value. I am willing to listen to your suggestions and make
-> changes if needed, maybe it needs to add a new separate proc handler for
-> accept_ra_mtu.
-
-fair point. Consistency is important.
 
 
+On 2021/8/21 6:21, Jakub Kicinski wrote:
+> On Fri, 20 Aug 2021 21:27:13 +0300 Grygorii Strashko wrote:
+>> This is very big change which is not only mix two separate changes, but also looks
+>> half-done. From one side you're adding HW feature supported by limited number of HW,
+>> from another - changing most of net drivers to support it by generating mix of legacy
+>> and new kernel_ethtool_coalesce parameters.
+>>
+>> There is also an issue - you do not account get/set_per_queue_coalesce() in any way.
 > 
-> In addition, at your prompt, I find that this patch maybe have a defect for
-> some types of virtual devices, that is, when the state of the virtual device
-> updates the value of ra_mtu during the UP period, when its state is set to
-> DOWN, ra_mtu is not reset to 0, so that its ra_mtu value remains the previous
-> value after the interface is re-UP. I think I need to fix it.
+> ethtool's netlink interface does not support per queue coalescing.
+> I don't think it's fair to require it as part of this series.
+> 
+>> Would it be possible to consider following, please?
+>>
+>> - move extack change out of this series
+> 
+> Why? To have to change all the drivers twice?
+> 
+>> - option (a)
+>>    add new callbacks in ethtool_ops as set_coalesce_cqe/get_coalesce_cqe for CQE support.
+>>    Only required drivers will need to be changed.
+> 
+> All the params are changed as one operation from user space's
+> perspective. Having two ops would make it problematic for drivers 
+> to fail the entire op without modifying half of the parameters in 
+> a previous callback.
+> 
+>> - option (b)
+>>    add struct ethtool_coalesce as first field of kernel_ethtool_coalesce
+> 
+> This ends up being more painful than passing an extra parameter 
+> in my experience.
+> 
+>> struct kernel_ethtool_coalesce {
+>> 	/* legacy */
+>> 	struct ethtool_coalesce coal;
+>>
+>> 	/* new */
+>> 	u8 use_cqe_mode_tx;
+>> 	u8 use_cqe_mode_rx;
+>> };
+>>
+>> --  then b.1
+>>    drivers can be updated as
+>>     static int set_coalesce(struct net_device *dev,
+>>     			    struct kernel_ethtool_coalesce *kernel_coal)
+>>     {
+>> 	struct ethtool_coalesce *coal = &kernel_coal->coal;
+>>     
+>>     (which will clearly indicate migration to the new interface )
+>>
+>> -- then b.2
+>>      add new callbacks in ethtool_ops as set_coalesce_ext/get_coalesce_ext (extended)
+>>      which will accept struct kernel_ethtool_coalesce as parameter an allow drivers to migrate when needed
+>>      (or as separate patch which will do only migration).
+>>
+>> Personally, I like "b.2".
+> 
+> These options were considered. None of the options is great to 
+> be honest. Let's try the new params, I say. 
+> .
 > 
 
-Please do. Also, that problem should apply to all netdev's not just
-virtual devices if you are referring to admin down (e.g., ip link set
-$DEV down)
+Yes, these have been considered in previous RFCs. For details, please refer to [1].
+
+[1]https://lore.kernel.org/netdev/20210526165633.3f7982c9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/
+
