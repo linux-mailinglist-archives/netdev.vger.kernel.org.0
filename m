@@ -2,333 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AC3F3F437E
-	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 04:48:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AB1F3F43C3
+	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 05:12:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231465AbhHWCs4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Aug 2021 22:48:56 -0400
-Received: from smtp03.smtpout.orange.fr ([80.12.242.125]:31258 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229958AbhHWCsz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Aug 2021 22:48:55 -0400
-Received: from tomoyo.flets-east.jp ([114.149.34.46])
-        by mwinf5d20 with ME
-        id kqnw250020zjR6y03qo9EU; Mon, 23 Aug 2021 04:48:11 +0200
-X-ME-Helo: tomoyo.flets-east.jp
-X-ME-Auth: bWFpbGhvbC52aW5jZW50QHdhbmFkb28uZnI=
-X-ME-Date: Mon, 23 Aug 2021 04:48:11 +0200
-X-ME-IP: 114.149.34.46
-From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH v2] can: netlink: prevent incoherent can configuration in case of early return
-Date:   Mon, 23 Aug 2021 11:47:50 +0900
-Message-Id: <20210823024750.702542-1-mailhol.vincent@wanadoo.fr>
-X-Mailer: git-send-email 2.31.1
+        id S231757AbhHWDN1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Aug 2021 23:13:27 -0400
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:48188
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232682AbhHWDLj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Aug 2021 23:11:39 -0400
+X-Greylist: delayed 512 seconds by postgrey-1.27 at vger.kernel.org; Sun, 22 Aug 2021 23:11:39 EDT
+Received: from mail-pf1-f197.google.com (mail-pf1-f197.google.com [209.85.210.197])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 7A4C940794
+        for <netdev@vger.kernel.org>; Mon, 23 Aug 2021 03:02:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1629687744;
+        bh=mu4K9UEbVVgKl8wqKqQriHgKtmS1iIjJ4mnsH+d8LhI=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=uhITjlCfwpl74B8LkNa3N7830qMD2izkZn7lBBUakdL7+cY83m8JT1MUoKiAK1l02
+         EAAtV2HMhN5E+GfrMgjXj/WdwiUQjss5LCpUvSFbJcUelDTtI9i3AvnXsM5bdgtUXQ
+         iIbKFMs7qvjXqB0q5y1LGJ+gbiZfMZE3jS1/jcasgAYsntnTjYGcgvPnx2FpBfhpFP
+         iPMi78BqFS5Vz+kCRX58qYxIeNBlE8ZJJQGrimPsGA6qH6XNmL2Hm9nVtDnZPOPwT6
+         9sUChxZdKIQ78P75zFK8gnOiW48X6XPQqK1pbijpsACw7xVbZdyLOQi5zZIz2KrypW
+         5fR6cxHwj0BTA==
+Received: by mail-pf1-f197.google.com with SMTP id g17-20020a056a00079100b003e1010a1ad4so7894138pfu.5
+        for <netdev@vger.kernel.org>; Sun, 22 Aug 2021 20:02:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mu4K9UEbVVgKl8wqKqQriHgKtmS1iIjJ4mnsH+d8LhI=;
+        b=pFMlU0SmhE9gsUu5cWtPZiNuWR18mVzlpBLLvsSVITrM7LvXdCJetahNBp9OXcVaHr
+         kowmTp8zUVMQw/wqrkqL90vqjBTthLpHyMMzF+ENSrvzPnWecaMOsxUphMevFm0HGQsR
+         RAlPlHRKKKdkyiVIwDZ7PdnpDV0Lbc/91Nu7Vv/iZ2o1y+5LBDYSnVCL0dM1YiGYtX+3
+         Fm7Z2Kvq1+pnZaepXXYS5pKGPK42WruYKzGA9BGsDyfg6b6/q5O6PGJcTzrM/asmB9qO
+         RZK0GyXruzE3cHrjv4b84EzupRL8lDsMSitXfbMvF2DR66O22NqIhXaI2mMhTMpWOb+7
+         JCEw==
+X-Gm-Message-State: AOAM533L+ls11AMhhp0QLC2P9bbtHyzrP/shBjTmo0W/7Nvz+5FLCwse
+        vrNaK78Q5yi0+vBGXAD8+Z4beqEbcR2mh+O32SzT8PqTPc58zgBZtke4rSUYaRniKu99eVXVWbU
+        cR649XqKDvubjHZ0Tg3+iZm0plrMMaFC2
+X-Received: by 2002:a62:5304:0:b029:3c7:9dce:8a4c with SMTP id h4-20020a6253040000b02903c79dce8a4cmr31320751pfb.37.1629687742871;
+        Sun, 22 Aug 2021 20:02:22 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw+vzGPc4KrjtFTFTzCJYdN8VamfWYiJRRG4JYPzYCNxJQfvTUy+Dzq+sDO9ovEM8y9xdHDjw==
+X-Received: by 2002:a62:5304:0:b029:3c7:9dce:8a4c with SMTP id h4-20020a6253040000b02903c79dce8a4cmr31320728pfb.37.1629687742612;
+        Sun, 22 Aug 2021 20:02:22 -0700 (PDT)
+Received: from localhost.localdomain (223-137-217-38.emome-ip.hinet.net. [223.137.217.38])
+        by smtp.gmail.com with ESMTPSA id y7sm12655675pfi.204.2021.08.22.20.02.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 22 Aug 2021 20:02:21 -0700 (PDT)
+From:   Po-Hsu Lin <po-hsu.lin@canonical.com>
+To:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org
+Cc:     po-hsu.lin@canonical.com, hawk@kernel.org, kuba@kernel.org,
+        davem@davemloft.net, kpsingh@kernel.org, john.fastabend@gmail.com,
+        yhs@fb.com, songliubraving@fb.com, kafai@fb.com, andrii@kernel.org,
+        daniel@iogearbox.net, ast@kernel.org, skhan@linuxfoundation.org
+Subject: [PATCH] selftests/bpf: Use kselftest skip code for skipped tests
+Date:   Mon, 23 Aug 2021 11:01:43 +0800
+Message-Id: <20210823030143.29937-1-po-hsu.lin@canonical.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-struct can_priv has a set of flags (can_priv::ctrlmode) which are
-correlated with the other fields of the structure. In
-can_changelink(), those flags are set first and copied to can_priv. If
-the function has to return early, for example due to an out of range
-value provided by the user, then the global configuration might become
-incoherent.
+There are several test cases in the bpf directory are still using
+exit 0 when they need to be skipped. Use kselftest framework skip
+code instead so it can help us to distinguish the return status.
 
-Example: the user provides an out of range dbitrate (e.g. 20
-Mbps). The command fails (-EINVAL), however the FD flag was already
-set resulting in a configuration where FD is on but the databittiming
-parameters are empty.
+Criterion to filter out what should be fixed in bpf directory:
+  grep -r "exit 0" -B1 | grep -i skip
 
-* Illustration of above example *
+This change might cause some false-positives if people are running
+these test scripts directly and only checking their return codes,
+which will change from 0 to 4. However I think the impact should be
+small as most of our scripts here are already using this skip code.
+And there will be no such issue if running them with the kselftest
+framework.
 
-| $ ip link set can0 type can bitrate 500000 dbitrate 20000000 fd on
-| RTNETLINK answers: Invalid argument
-| $ ip --details link show can0
-| 1: can0: <NOARP,ECHO> mtu 72 qdisc noop state DOWN mode DEFAULT group default qlen 10
-|     link/can  promiscuity 0 minmtu 0 maxmtu 0
-|     can <FD> state STOPPED restart-ms 0
-           ^^ FD flag is set without any of the databittiming parameters...
-| 	  bitrate 500000 sample-point 0.875
-| 	  tq 12 prop-seg 69 phase-seg1 70 phase-seg2 20 sjw 1
-| 	  ES582.1/ES584.1: tseg1 2..256 tseg2 2..128 sjw 1..128 brp 1..512 brp-inc 1
-| 	  ES582.1/ES584.1: dtseg1 2..32 dtseg2 1..16 dsjw 1..8 dbrp 1..32 dbrp-inc 1
-| 	  clock 80000000 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535
-
-To prevent this from happening, we do a local copy of can_priv, work
-on it, an copy it at the very end of the function (i.e. only if all
-previous checks succeeded).
-
-Once this done, there is no more need to have a temporary variable for
-a specific parameter. As such, the bittiming and data bittiming (bt
-and dbt) are directly written to the temporary priv variable.
-
-Finally, function can_calc_tdco() was retrieving can_priv from the
-net_device and directly modifying it. We changed the prototype so that
-it instead writes its changes into our temporary priv variable.
-
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Signed-off-by: Po-Hsu Lin <po-hsu.lin@canonical.com>
 ---
-* Changelog *
+ tools/testing/selftests/bpf/test_bpftool_build.sh | 5 ++++-
+ tools/testing/selftests/bpf/test_xdp_meta.sh      | 5 ++++-
+ tools/testing/selftests/bpf/test_xdp_vlan.sh      | 7 +++++--
+ 3 files changed, 13 insertions(+), 4 deletions(-)
 
-v1 -> v2:
-  - Change the prototype of can_calc_tdco() so that the changes are
-    applied to the temporary priv instead of netdev_priv(dev).
----
- drivers/net/can/dev/bittiming.c |  8 +--
- drivers/net/can/dev/netlink.c   | 88 +++++++++++++++++----------------
- include/linux/can/bittiming.h   |  7 ++-
- 3 files changed, 53 insertions(+), 50 deletions(-)
-
-diff --git a/drivers/net/can/dev/bittiming.c b/drivers/net/can/dev/bittiming.c
-index f49170eadd54..bddd93e2e439 100644
---- a/drivers/net/can/dev/bittiming.c
-+++ b/drivers/net/can/dev/bittiming.c
-@@ -175,13 +175,9 @@ int can_calc_bittiming(struct net_device *dev, struct can_bittiming *bt,
- 	return 0;
- }
+diff --git a/tools/testing/selftests/bpf/test_bpftool_build.sh b/tools/testing/selftests/bpf/test_bpftool_build.sh
+index ac349a5..b6fab1e 100755
+--- a/tools/testing/selftests/bpf/test_bpftool_build.sh
++++ b/tools/testing/selftests/bpf/test_bpftool_build.sh
+@@ -1,6 +1,9 @@
+ #!/bin/bash
+ # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
  
--void can_calc_tdco(struct net_device *dev)
-+void can_calc_tdco(struct can_tdc *tdc, const struct can_tdc_const *tdc_const,
-+		   const struct can_bittiming *dbt)
- {
--	struct can_priv *priv = netdev_priv(dev);
--	const struct can_bittiming *dbt = &priv->data_bittiming;
--	struct can_tdc *tdc = &priv->tdc;
--	const struct can_tdc_const *tdc_const = priv->tdc_const;
--
- 	if (!tdc_const)
- 		return;
- 
-diff --git a/drivers/net/can/dev/netlink.c b/drivers/net/can/dev/netlink.c
-index 80425636049d..50dfed462711 100644
---- a/drivers/net/can/dev/netlink.c
-+++ b/drivers/net/can/dev/netlink.c
-@@ -58,14 +58,20 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
- 			  struct nlattr *data[],
- 			  struct netlink_ext_ack *extack)
- {
--	struct can_priv *priv = netdev_priv(dev);
-+	/* Work on a local copy of priv to prevent inconsistent value
-+	 * in case of early return. net/core/rtnetlink.c has a global
-+	 * mutex so using a static declaration is race free
-+	 */
-+	static struct can_priv priv;
- 	int err;
- 
- 	/* We need synchronization with dev->stop() */
- 	ASSERT_RTNL();
- 
-+	memcpy(&priv, netdev_priv(dev), sizeof(priv));
++# Kselftest framework requirement - SKIP code is 4.
++ksft_skip=4
 +
- 	if (data[IFLA_CAN_BITTIMING]) {
--		struct can_bittiming bt;
-+		struct can_bittiming *bt = &priv.bittiming;
+ case $1 in
+ 	-h|--help)
+ 		echo -e "$0 [-j <n>]"
+@@ -22,7 +25,7 @@ KDIR_ROOT_DIR=$(realpath $PWD/$SCRIPT_REL_DIR/../../../../)
+ cd $KDIR_ROOT_DIR
+ if [ ! -e tools/bpf/bpftool/Makefile ]; then
+ 	echo -e "skip:    bpftool files not found!\n"
+-	exit 0
++	exit $ksft_skip
+ fi
  
- 		/* Do not allow changing bittiming while running */
- 		if (dev->flags & IFF_UP)
-@@ -76,28 +82,26 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
- 		 * directly via do_set_bitrate(). Bail out if neither
- 		 * is given.
- 		 */
--		if (!priv->bittiming_const && !priv->do_set_bittiming)
-+		if (!priv.bittiming_const && !priv.do_set_bittiming)
- 			return -EOPNOTSUPP;
+ ERROR=0
+diff --git a/tools/testing/selftests/bpf/test_xdp_meta.sh b/tools/testing/selftests/bpf/test_xdp_meta.sh
+index 637fcf4..fd3f218 100755
+--- a/tools/testing/selftests/bpf/test_xdp_meta.sh
++++ b/tools/testing/selftests/bpf/test_xdp_meta.sh
+@@ -1,5 +1,8 @@
+ #!/bin/sh
  
--		memcpy(&bt, nla_data(data[IFLA_CAN_BITTIMING]), sizeof(bt));
--		err = can_get_bittiming(dev, &bt,
--					priv->bittiming_const,
--					priv->bitrate_const,
--					priv->bitrate_const_cnt);
-+		memcpy(bt, nla_data(data[IFLA_CAN_BITTIMING]), sizeof(*bt));
-+		err = can_get_bittiming(dev, bt,
-+					priv.bittiming_const,
-+					priv.bitrate_const,
-+					priv.bitrate_const_cnt);
- 		if (err)
- 			return err;
- 
--		if (priv->bitrate_max && bt.bitrate > priv->bitrate_max) {
-+		if (priv.bitrate_max && bt->bitrate > priv.bitrate_max) {
- 			netdev_err(dev, "arbitration bitrate surpasses transceiver capabilities of %d bps\n",
--				   priv->bitrate_max);
-+				   priv.bitrate_max);
- 			return -EINVAL;
- 		}
- 
--		memcpy(&priv->bittiming, &bt, sizeof(bt));
--
--		if (priv->do_set_bittiming) {
-+		if (priv.do_set_bittiming) {
- 			/* Finally, set the bit-timing registers */
--			err = priv->do_set_bittiming(dev);
-+			err = priv.do_set_bittiming(dev);
- 			if (err)
- 				return err;
- 		}
-@@ -112,11 +116,11 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
- 		if (dev->flags & IFF_UP)
- 			return -EBUSY;
- 		cm = nla_data(data[IFLA_CAN_CTRLMODE]);
--		ctrlstatic = priv->ctrlmode_static;
-+		ctrlstatic = priv.ctrlmode_static;
- 		maskedflags = cm->flags & cm->mask;
- 
- 		/* check whether provided bits are allowed to be passed */
--		if (maskedflags & ~(priv->ctrlmode_supported | ctrlstatic))
-+		if (maskedflags & ~(priv.ctrlmode_supported | ctrlstatic))
- 			return -EOPNOTSUPP;
- 
- 		/* do not check for static fd-non-iso if 'fd' is disabled */
-@@ -128,16 +132,16 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
- 			return -EOPNOTSUPP;
- 
- 		/* clear bits to be modified and copy the flag values */
--		priv->ctrlmode &= ~cm->mask;
--		priv->ctrlmode |= maskedflags;
-+		priv.ctrlmode &= ~cm->mask;
-+		priv.ctrlmode |= maskedflags;
- 
- 		/* CAN_CTRLMODE_FD can only be set when driver supports FD */
--		if (priv->ctrlmode & CAN_CTRLMODE_FD) {
-+		if (priv.ctrlmode & CAN_CTRLMODE_FD) {
- 			dev->mtu = CANFD_MTU;
- 		} else {
- 			dev->mtu = CAN_MTU;
--			memset(&priv->data_bittiming, 0,
--			       sizeof(priv->data_bittiming));
-+			memset(&priv.data_bittiming, 0,
-+			       sizeof(priv.data_bittiming));
- 		}
- 	}
- 
-@@ -145,7 +149,7 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
- 		/* Do not allow changing restart delay while running */
- 		if (dev->flags & IFF_UP)
- 			return -EBUSY;
--		priv->restart_ms = nla_get_u32(data[IFLA_CAN_RESTART_MS]);
-+		priv.restart_ms = nla_get_u32(data[IFLA_CAN_RESTART_MS]);
- 	}
- 
- 	if (data[IFLA_CAN_RESTART]) {
-@@ -158,7 +162,7 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
- 	}
- 
- 	if (data[IFLA_CAN_DATA_BITTIMING]) {
--		struct can_bittiming dbt;
-+		struct can_bittiming *dbt = &priv.data_bittiming;
- 
- 		/* Do not allow changing bittiming while running */
- 		if (dev->flags & IFF_UP)
-@@ -169,31 +173,29 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
- 		 * directly via do_set_bitrate(). Bail out if neither
- 		 * is given.
- 		 */
--		if (!priv->data_bittiming_const && !priv->do_set_data_bittiming)
-+		if (!priv.data_bittiming_const && !priv.do_set_data_bittiming)
- 			return -EOPNOTSUPP;
- 
--		memcpy(&dbt, nla_data(data[IFLA_CAN_DATA_BITTIMING]),
--		       sizeof(dbt));
--		err = can_get_bittiming(dev, &dbt,
--					priv->data_bittiming_const,
--					priv->data_bitrate_const,
--					priv->data_bitrate_const_cnt);
-+		memcpy(dbt, nla_data(data[IFLA_CAN_DATA_BITTIMING]),
-+		       sizeof(*dbt));
-+		err = can_get_bittiming(dev, dbt,
-+					priv.data_bittiming_const,
-+					priv.data_bitrate_const,
-+					priv.data_bitrate_const_cnt);
- 		if (err)
- 			return err;
- 
--		if (priv->bitrate_max && dbt.bitrate > priv->bitrate_max) {
-+		if (priv.bitrate_max && dbt->bitrate > priv.bitrate_max) {
- 			netdev_err(dev, "canfd data bitrate surpasses transceiver capabilities of %d bps\n",
--				   priv->bitrate_max);
-+				   priv.bitrate_max);
- 			return -EINVAL;
- 		}
- 
--		memcpy(&priv->data_bittiming, &dbt, sizeof(dbt));
--
--		can_calc_tdco(dev);
-+		can_calc_tdco(&priv.tdc, priv.tdc_const, &priv.data_bittiming);
- 
--		if (priv->do_set_data_bittiming) {
-+		if (priv.do_set_data_bittiming) {
- 			/* Finally, set the bit-timing registers */
--			err = priv->do_set_data_bittiming(dev);
-+			err = priv.do_set_data_bittiming(dev);
- 			if (err)
- 				return err;
- 		}
-@@ -201,28 +203,30 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
- 
- 	if (data[IFLA_CAN_TERMINATION]) {
- 		const u16 termval = nla_get_u16(data[IFLA_CAN_TERMINATION]);
--		const unsigned int num_term = priv->termination_const_cnt;
-+		const unsigned int num_term = priv.termination_const_cnt;
- 		unsigned int i;
- 
--		if (!priv->do_set_termination)
-+		if (!priv.do_set_termination)
- 			return -EOPNOTSUPP;
- 
- 		/* check whether given value is supported by the interface */
- 		for (i = 0; i < num_term; i++) {
--			if (termval == priv->termination_const[i])
-+			if (termval == priv.termination_const[i])
- 				break;
- 		}
- 		if (i >= num_term)
- 			return -EINVAL;
- 
- 		/* Finally, set the termination value */
--		err = priv->do_set_termination(dev, termval);
-+		err = priv.do_set_termination(dev, termval);
- 		if (err)
- 			return err;
- 
--		priv->termination = termval;
-+		priv.termination = termval;
- 	}
- 
-+	memcpy(netdev_priv(dev), &priv, sizeof(priv));
++# Kselftest framework requirement - SKIP code is 4.
++ksft_skip=4
 +
- 	return 0;
- }
- 
-diff --git a/include/linux/can/bittiming.h b/include/linux/can/bittiming.h
-index 9de6e9053e34..b3c1711ee0f0 100644
---- a/include/linux/can/bittiming.h
-+++ b/include/linux/can/bittiming.h
-@@ -87,7 +87,8 @@ struct can_tdc_const {
- int can_calc_bittiming(struct net_device *dev, struct can_bittiming *bt,
- 		       const struct can_bittiming_const *btc);
- 
--void can_calc_tdco(struct net_device *dev);
-+void can_calc_tdco(struct can_tdc *tdc, const struct can_tdc_const *tdc_const,
-+		   const struct can_bittiming *dbt);
- #else /* !CONFIG_CAN_CALC_BITTIMING */
- static inline int
- can_calc_bittiming(struct net_device *dev, struct can_bittiming *bt,
-@@ -97,7 +98,9 @@ can_calc_bittiming(struct net_device *dev, struct can_bittiming *bt,
- 	return -EINVAL;
- }
- 
--static inline void can_calc_tdco(struct net_device *dev)
-+static inline void
-+can_calc_tdco(struct can_tdc *tdc, const struct can_tdc_const *tdc_const,
-+	      const struct can_bittiming *dbt)
+ cleanup()
  {
- }
- #endif /* CONFIG_CAN_CALC_BITTIMING */
+ 	if [ "$?" = "0" ]; then
+@@ -17,7 +20,7 @@ cleanup()
+ ip link set dev lo xdp off 2>/dev/null > /dev/null
+ if [ $? -ne 0 ];then
+ 	echo "selftests: [SKIP] Could not run test without the ip xdp support"
+-	exit 0
++	exit $ksft_skip
+ fi
+ set -e
+ 
+diff --git a/tools/testing/selftests/bpf/test_xdp_vlan.sh b/tools/testing/selftests/bpf/test_xdp_vlan.sh
+index bb8b0da..1aa7404 100755
+--- a/tools/testing/selftests/bpf/test_xdp_vlan.sh
++++ b/tools/testing/selftests/bpf/test_xdp_vlan.sh
+@@ -2,6 +2,9 @@
+ # SPDX-License-Identifier: GPL-2.0
+ # Author: Jesper Dangaard Brouer <hawk@kernel.org>
+ 
++# Kselftest framework requirement - SKIP code is 4.
++ksft_skip=4
++
+ # Allow wrapper scripts to name test
+ if [ -z "$TESTNAME" ]; then
+     TESTNAME=xdp_vlan
+@@ -94,7 +97,7 @@ while true; do
+ 	    -h | --help )
+ 		usage;
+ 		echo "selftests: $TESTNAME [SKIP] usage help info requested"
+-		exit 0
++		exit $ksft_skip
+ 		;;
+ 	    * )
+ 		shift
+@@ -117,7 +120,7 @@ fi
+ ip link set dev lo xdpgeneric off 2>/dev/null > /dev/null
+ if [ $? -ne 0 ]; then
+ 	echo "selftests: $TESTNAME [SKIP] need ip xdp support"
+-	exit 0
++	exit $ksft_skip
+ fi
+ 
+ # Interactive mode likely require us to cleanup netns
 -- 
-2.31.1
+2.7.4
 
