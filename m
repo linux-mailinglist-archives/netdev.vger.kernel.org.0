@@ -2,126 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF9443F45E2
-	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 09:38:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A03713F45EF
+	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 09:45:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235254AbhHWHiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Aug 2021 03:38:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46880 "EHLO
+        id S235226AbhHWHpz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Aug 2021 03:45:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235168AbhHWHiu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Aug 2021 03:38:50 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E566C061757
-        for <netdev@vger.kernel.org>; Mon, 23 Aug 2021 00:38:06 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1mI4Wn-000377-OG; Mon, 23 Aug 2021 09:37:53 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1mI4Wn-0005qI-9w; Mon, 23 Aug 2021 09:37:53 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Robin van der Gracht <robin@protonic.nl>,
-        kernel@pengutronix.de, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net v2 2/2] net: usb: asix: do not call phy_disconnect() for ax88178
-Date:   Mon, 23 Aug 2021 09:37:48 +0200
-Message-Id: <20210823073748.22384-3-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210823073748.22384-1-o.rempel@pengutronix.de>
-References: <20210823073748.22384-1-o.rempel@pengutronix.de>
+        with ESMTP id S235153AbhHWHpy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Aug 2021 03:45:54 -0400
+Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E776FC061575
+        for <netdev@vger.kernel.org>; Mon, 23 Aug 2021 00:45:11 -0700 (PDT)
+Received: by mail-il1-x130.google.com with SMTP id g8so1542092ilc.5
+        for <netdev@vger.kernel.org>; Mon, 23 Aug 2021 00:45:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=IlaNENSlWA7O36ThQC1swNGBkoYWjvx5SXQg/rTQMmI=;
+        b=v/xf3p30Lok05NM5hFl5e4TCzreiVTbA7dm0nJz7Bf/rS+4kdz0RU6rdoBpuE/Bshr
+         W2cwC5Rqg/vXWKdF3VDojkslVRYUpIIV1qOXJTZX6k9PFSBoGRovz6xeO18fgCyEcYvS
+         hCv1Jon8C9lNgxDZ9meHG0kI+gMNr3M2A8yONcgxn/hUFoqTirFa2ZhbYcM8YyalIe9x
+         khb9sMBSITynIRl1l+Ano9dtDdqXz0TaKK+4P02tlu6/bBFepF8x97BN24XkLkmCbvZ3
+         QhrCp8ZUtmoLx/J0Y0tfnF8VtnQ8CkBgf2iVDfJnkPLnMfd/gQ2HaUkLgJubWjp+ggZe
+         qzCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=IlaNENSlWA7O36ThQC1swNGBkoYWjvx5SXQg/rTQMmI=;
+        b=hjsFK0EsGNtq3YC3Pnl0CjRPxvTTR9XagdzFdxr3CTLOOGqW8lILTyvyLsKHq4UDS0
+         56gcTGyNpsZkTB6PJdQY/6p9v7Z5HO1C/dORtSOOYWSYCgLv/nn5hhyko2Z8/3zrVmau
+         H/qkzVZaUjpaUE9eNnn/7ofLLTLdyL2690Me+AHpOoLq0m19hYUhT5qAaKlKObbeHsgT
+         /fjuxIge47bc7Ap3LKLXx0h7rOT6HBx25suyBwCboH6/60/Kw+9n3dBxuV6iawiYoE3/
+         Uf2Lwzg6HCRdo0lnj65tO91DZxRCtn6J19vMA2zqtgz/rIYowdOwahEfBVnaMGzPjkvF
+         mbqg==
+X-Gm-Message-State: AOAM533WinzeiQf+9YwjGJsV0mpDyKCFAH8Vs0I9r647vTvcqGdpt53o
+        miwsdBb1FMXd91nV8MJ2JHohEX2Gtg9Pj4ZCIp/O
+X-Google-Smtp-Source: ABdhPJypCdtizHYoxZDBKevH2qzGpkSgui7qYBLxMbmXcESyZsC9N17OihZaUrjlMnAjFtHM+k3anHAL8J48FceAkUo=
+X-Received: by 2002:a92:7b0c:: with SMTP id w12mr22446677ilc.307.1629704711346;
+ Mon, 23 Aug 2021 00:45:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+References: <20210818120642.165-1-xieyongji@bytedance.com> <20210818120642.165-5-xieyongji@bytedance.com>
+ <4470fdac-89fb-1216-78d7-6335c3bfeb22@redhat.com>
+In-Reply-To: <4470fdac-89fb-1216-78d7-6335c3bfeb22@redhat.com>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Mon, 23 Aug 2021 15:44:59 +0800
+Message-ID: <CACycT3sjeWhUmHSAeniSnMO6Jus_d1p3eO--y0qc9FYP_cDMzQ@mail.gmail.com>
+Subject: Re: [PATCH v11 04/12] vdpa: Add reset callback in vdpa_config_ops
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christian Brauner <christian.brauner@canonical.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
+        Greg KH <gregkh@linuxfoundation.org>,
+        He Zhe <zhe.he@windriver.com>,
+        Liu Xiaodong <xiaodong.liu@intel.com>,
+        Joe Perches <joe@perches.com>,
+        Robin Murphy <robin.murphy@arm.com>, songmuchun@bytedance.com,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix crash on reboot on a system with ASIX AX88178 USB adapter attached
-to it:
-| asix 1-1.4:1.0 eth0: unregister 'asix' usb-ci_hdrc.0-1.4, ASIX AX88178 USB 2.0 Ethernet
-| 8<--- cut here ---
-| Unable to handle kernel NULL pointer dereference at virtual address 0000028c
-| pgd = 5ec93aee
-| [0000028c] *pgd=00000000
-| Internal error: Oops: 5 [#1] PREEMPT SMP ARM
-| Modules linked in:
-| CPU: 1 PID: 1 Comm: systemd-shutdow Not tainted 5.14.0-rc1-20210811-1 #4
-| Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
-| PC is at phy_disconnect+0x8/0x48
-| LR is at ax88772_unbind+0x14/0x20
-| [<80650d04>] (phy_disconnect) from [<80741aa4>] (ax88772_unbind+0x14/0x20)
-| [<80741aa4>] (ax88772_unbind) from [<8074e250>] (usbnet_disconnect+0x48/0xd8)
-| [<8074e250>] (usbnet_disconnect) from [<807655e0>] (usb_unbind_interface+0x78/0x25c)
-| [<807655e0>] (usb_unbind_interface) from [<805b03a0>] (__device_release_driver+0x154/0x20c)
-| [<805b03a0>] (__device_release_driver) from [<805b0478>] (device_release_driver+0x20/0x2c)
-| [<805b0478>] (device_release_driver) from [<805af944>] (bus_remove_device+0xcc/0xf8)
-| [<805af944>] (bus_remove_device) from [<805ab26c>] (device_del+0x178/0x4b0)
-| [<805ab26c>] (device_del) from [<807634a4>] (usb_disable_device+0xcc/0x178)
-| [<807634a4>] (usb_disable_device) from [<8075a060>] (usb_disconnect+0xd8/0x238)
-| [<8075a060>] (usb_disconnect) from [<8075a02c>] (usb_disconnect+0xa4/0x238)
-| [<8075a02c>] (usb_disconnect) from [<8075a02c>] (usb_disconnect+0xa4/0x238)
-| [<8075a02c>] (usb_disconnect) from [<80af3520>] (usb_remove_hcd+0xa0/0x198)
-| [<80af3520>] (usb_remove_hcd) from [<807902e0>] (host_stop+0x38/0xa8)
-| [<807902e0>] (host_stop) from [<8078d9e4>] (ci_hdrc_remove+0x3c/0x118)
-| [<8078d9e4>] (ci_hdrc_remove) from [<805b27ec>] (platform_remove+0x20/0x50)
-| [<805b27ec>] (platform_remove) from [<805b03a0>] (__device_release_driver+0x154/0x20c)
-| [<805b03a0>] (__device_release_driver) from [<805b0478>] (device_release_driver+0x20/0x2c)
-| [<805b0478>] (device_release_driver) from [<805af944>] (bus_remove_device+0xcc/0xf8)
-| [<805af944>] (bus_remove_device) from [<805ab26c>] (device_del+0x178/0x4b0)
+On Mon, Aug 23, 2021 at 2:31 PM Jason Wang <jasowang@redhat.com> wrote:
+>
+>
+> =E5=9C=A8 2021/8/18 =E4=B8=8B=E5=8D=888:06, Xie Yongji =E5=86=99=E9=81=93=
+:
+> > This adds a new callback to support device specific reset
+> > behavior. The vdpa bus driver will call the reset function
+> > instead of setting status to zero during resetting if device
+> > driver supports the new callback.
+> >
+> > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+> > ---
+> >   drivers/vhost/vdpa.c |  9 +++++++--
+> >   include/linux/vdpa.h | 11 ++++++++++-
+> >   2 files changed, 17 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> > index b07aa161f7ad..b1c91b4db0ba 100644
+> > --- a/drivers/vhost/vdpa.c
+> > +++ b/drivers/vhost/vdpa.c
+> > @@ -157,7 +157,7 @@ static long vhost_vdpa_set_status(struct vhost_vdpa=
+ *v, u8 __user *statusp)
+> >       struct vdpa_device *vdpa =3D v->vdpa;
+> >       const struct vdpa_config_ops *ops =3D vdpa->config;
+> >       u8 status, status_old;
+> > -     int nvqs =3D v->nvqs;
+> > +     int ret, nvqs =3D v->nvqs;
+> >       u16 i;
+> >
+> >       if (copy_from_user(&status, statusp, sizeof(status)))
+> > @@ -172,7 +172,12 @@ static long vhost_vdpa_set_status(struct vhost_vdp=
+a *v, u8 __user *statusp)
+> >       if (status !=3D 0 && (ops->get_status(vdpa) & ~status) !=3D 0)
+> >               return -EINVAL;
+> >
+> > -     ops->set_status(vdpa, status);
+> > +     if (status =3D=3D 0 && ops->reset) {
+> > +             ret =3D ops->reset(vdpa);
+> > +             if (ret)
+> > +                     return ret;
+> > +     } else
+> > +             ops->set_status(vdpa, status);
+> >
+> >       if ((status & VIRTIO_CONFIG_S_DRIVER_OK) && !(status_old & VIRTIO=
+_CONFIG_S_DRIVER_OK))
+> >               for (i =3D 0; i < nvqs; i++)
+> > diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
+> > index 8a645f8f4476..af7ea5ad795f 100644
+> > --- a/include/linux/vdpa.h
+> > +++ b/include/linux/vdpa.h
+> > @@ -196,6 +196,9 @@ struct vdpa_iova_range {
+> >    *                          @vdev: vdpa device
+> >    *                          Returns the iova range supported by
+> >    *                          the device.
+> > + * @reset:                   Reset device (optional)
+> > + *                           @vdev: vdpa device
+> > + *                           Returns integer: success (0) or error (< =
+0)
+>
+>
+> It looks to me we'd better make this mandatory. This help to reduce the
+> confusion for the parent driver.
+>
 
-For this adapter we call ax88178_bind() and ax88772_unbind(), which is
-related to different chip version and different counter part *bind()
-function.
+OK, will do it in next version.
 
-Since this chip is currently not ported to the PHYLIB, we do not need to
-call phy_disconnect() here. So, to fix this crash, we need to add
-ax88178_unbind().
-
-Fixes: e532a096be0e ("net: usb: asix: ax88772: add phylib support")
-Reported-by: Robin van der Gracht <robin@protonic.nl>
-Tested-by: Robin van der Gracht <robin@protonic.nl>
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/usb/asix_devices.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
-index 15460d419e3f..f6f3955a3a0f 100644
---- a/drivers/net/usb/asix_devices.c
-+++ b/drivers/net/usb/asix_devices.c
-@@ -816,6 +816,12 @@ static void ax88772_unbind(struct usbnet *dev, struct usb_interface *intf)
- 	asix_rx_fixup_common_free(dev->driver_priv);
- }
- 
-+static void ax88178_unbind(struct usbnet *dev, struct usb_interface *intf)
-+{
-+	asix_rx_fixup_common_free(dev->driver_priv);
-+	kfree(dev->driver_priv);
-+}
-+
- static const struct ethtool_ops ax88178_ethtool_ops = {
- 	.get_drvinfo		= asix_get_drvinfo,
- 	.get_link		= asix_get_link,
-@@ -1224,7 +1230,7 @@ static const struct driver_info ax88772b_info = {
- static const struct driver_info ax88178_info = {
- 	.description = "ASIX AX88178 USB 2.0 Ethernet",
- 	.bind = ax88178_bind,
--	.unbind = ax88772_unbind,
-+	.unbind = ax88178_unbind,
- 	.status = asix_status,
- 	.link_reset = ax88178_link_reset,
- 	.reset = ax88178_reset,
--- 
-2.30.2
-
+Thanks,
+Yongji
