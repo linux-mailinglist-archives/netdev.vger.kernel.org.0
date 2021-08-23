@@ -2,106 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D37663F4BC3
-	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 15:34:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDEAF3F4BE6
+	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 15:54:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231698AbhHWNe0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Aug 2021 09:34:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45772 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229881AbhHWNeZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Aug 2021 09:34:25 -0400
-Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 598E9C061575
-        for <netdev@vger.kernel.org>; Mon, 23 Aug 2021 06:33:42 -0700 (PDT)
-Received: by mail-qv1-xf2b.google.com with SMTP id j9so9635450qvt.4
-        for <netdev@vger.kernel.org>; Mon, 23 Aug 2021 06:33:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=+i7ftpgcAy6juUqrZQfkVnQ/sNvqoHPFnUsAUO0x4ik=;
-        b=bUO7IaUt9wfvoXicoSfWvNK5GhmYubg9q26ENc3ga+LFE3vqz/Fp1+HGuirrNQ/s/9
-         rqUo+yfXTDUxO+E5g3TsmjBZdfYgPgsZbr1m+nHWouONgg+/t9h7swAOJO4WhVO2+SF/
-         cbDf+1QOAXYizeNFK+JBkX5NQhoIu1CvWojJ5sEMf+075serfTQ2kYrUxOAUV4aZaxHl
-         M0AETKXh6J+hV1bcsSA+Jaapsuye3VHURqqEF9PKEHMcst7EZaLyVLg0H22f4ThD4bGN
-         gvyBeiuaivgxTtc4OnBPPW6X2v1mSpm7kB9ASg+FMG5YoGCu0EQTDjdaQJI8E02xivg5
-         zsWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+i7ftpgcAy6juUqrZQfkVnQ/sNvqoHPFnUsAUO0x4ik=;
-        b=YGNzBthxXwHsqEpqILHJ9NItKIRrHS1YM/NTQVktKTzqhEdymnCdDZfut+HUpTlJud
-         heIXCYfJxpJh2da34oX3wOGhhT1N8QKXwfRcySjvaQrAbW3/bybSF48ML3bX9sm9kmIk
-         G+9YeokGuPBt4xttbm1j/oBzUPddyI00mn03w7tVAiIiknJ/WOSJuQonoWF2Vl4CtbzJ
-         2+9immNoTiBsBcDqleZfMAaS7txOKXgkmii/vmy2TgWhJwhbPIdMP/zdSWRZ8W9BtV0C
-         nqk95P005uzWpo65JE+BQvbmIE1ltT9K6YakTCAtlZfTYinTrrFH+c5UIkhDKo0t3pfT
-         pNpQ==
-X-Gm-Message-State: AOAM531XXmoEQynUHSlG0GQbrra1SP8FUsc/2tlAQ2QEztJXgyWx3zra
-        VOAZ2Fv5vgN+asOc5DkmrJ+R/w==
-X-Google-Smtp-Source: ABdhPJz0YGX9lWSXuoSKnQ/jyr3rhNQEaCoAyF53Ew9VGSRBCOzUKpcfs5ON6tDJnLJ/S8abz7QWmQ==
-X-Received: by 2002:a05:6214:2123:: with SMTP id r3mr33266735qvc.19.1629725621588;
-        Mon, 23 Aug 2021 06:33:41 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
-        by smtp.gmail.com with ESMTPSA id v128sm8736482qkh.27.2021.08.23.06.33.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Aug 2021 06:33:40 -0700 (PDT)
-Received: from jgg by mlx with local (Exim 4.94)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1mIA56-003Gpi-1k; Mon, 23 Aug 2021 10:33:40 -0300
-Date:   Mon, 23 Aug 2021 10:33:40 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Shai Malin <smalin@marvell.com>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org, aelior@marvell.com,
-        malin1024@gmail.com, RDMA mailing list <linux-rdma@vger.kernel.org>
-Subject: Re: [PATCH] qed: Enable RDMA relaxed ordering
-Message-ID: <20210823133340.GC543798@ziepe.ca>
-References: <20210822185448.12053-1-smalin@marvell.com>
- <YSOL9TNeLy3uHma6@unreal>
+        id S229766AbhHWNxF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Aug 2021 09:53:05 -0400
+Received: from cmccmta3.chinamobile.com ([221.176.66.81]:64763 "EHLO
+        cmccmta3.chinamobile.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229477AbhHWNxE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Aug 2021 09:53:04 -0400
+Received: from spf.mail.chinamobile.com (unknown[172.16.121.9]) by rmmx-syy-dmz-app11-12011 (RichMail) with SMTP id 2eeb6123a804ec8-05972; Mon, 23 Aug 2021 21:52:04 +0800 (CST)
+X-RM-TRANSID: 2eeb6123a804ec8-05972
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG: 00000000
+Received: from [192.168.26.114] (unknown[10.42.68.12])
+        by rmsmtp-syy-appsvr05-12005 (RichMail) with SMTP id 2ee56123a803594-cd5d4;
+        Mon, 23 Aug 2021 21:52:04 +0800 (CST)
+X-RM-TRANSID: 2ee56123a803594-cd5d4
+Subject: Re: [PATCH 3/3] can: mscan: mpc5xxx_can: Useof_device_get_match_data
+ to simplify code
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     davem@davemloft.net, wg@grandegger.com, kuba@kernel.org,
+        kevinbrace@bracecomputerlab.com, romieu@fr.zoreil.com,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210823113338.3568-1-tangbin@cmss.chinamobile.com>
+ <20210823113338.3568-4-tangbin@cmss.chinamobile.com>
+ <20210823123715.j4khoyld5mfl6kdv@pengutronix.de>
+From:   tangbin <tangbin@cmss.chinamobile.com>
+Message-ID: <eafd35fd-bf71-167a-b1c8-50e3117e4be4@cmss.chinamobile.com>
+Date:   Mon, 23 Aug 2021 21:52:03 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YSOL9TNeLy3uHma6@unreal>
+In-Reply-To: <20210823123715.j4khoyld5mfl6kdv@pengutronix.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 23, 2021 at 02:52:21PM +0300, Leon Romanovsky wrote:
-> +RDMA
-> 
-> Jakub, David
-> 
-> Can we please ask that everything directly or indirectly related to RDMA
-> will be sent to linux-rdma@ too?
-> 
-> On Sun, Aug 22, 2021 at 09:54:48PM +0300, Shai Malin wrote:
-> > Enable the RoCE and iWARP FW relaxed ordering.
-> > 
-> > Signed-off-by: Ariel Elior <aelior@marvell.com>
-> > Signed-off-by: Shai Malin <smalin@marvell.com>
-> >  drivers/net/ethernet/qlogic/qed/qed_rdma.c | 2 ++
-> >  1 file changed, 2 insertions(+)
-> > 
-> > diff --git a/drivers/net/ethernet/qlogic/qed/qed_rdma.c b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
-> > index 4f4b79250a2b..496092655f26 100644
-> > +++ b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
-> > @@ -643,6 +643,8 @@ static int qed_rdma_start_fw(struct qed_hwfn *p_hwfn,
-> >  				    cnq_id);
-> >  	}
-> >  
-> > +	p_params_header->relaxed_ordering = 1;
-> 
-> Maybe it is only description that needs to be updated, but I would
-> expect to see call to pcie_relaxed_ordering_enabled() before setting
-> relaxed_ordering to always true.
-> 
-> If we are talking about RDMA, the IB_ACCESS_RELAXED_ORDERING flag should
-> be taken into account too.
+Hi Marc:
 
-Why does this file even exist in netdev? This whole struct
-qed_rdma_ops mess looks like another mis-design to support out of tree
-modules??
+On 2021/8/23 20:37, Marc Kleine-Budde wrote:
+> On 23.08.2021 19:33:38, Tang Bin wrote:
+>> Retrieve OF match data, it's better and cleaner to use
+>> 'of_device_get_match_data' over 'of_match_device'.
+>>
+>> Signed-off-by: Tang Bin <tangbin@cmss.chinamobile.com>
+> Thanks for the patch!
+>
+> LGTM, comment inside.
+>
+>> ---
+>>   drivers/net/can/mscan/mpc5xxx_can.c | 6 ++----
+>>   1 file changed, 2 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/net/can/mscan/mpc5xxx_can.c b/drivers/net/can/mscan/mpc5xxx_can.c
+>> index e254e04ae..3b7465acd 100644
+>> --- a/drivers/net/can/mscan/mpc5xxx_can.c
+>> +++ b/drivers/net/can/mscan/mpc5xxx_can.c
+>> @@ -279,7 +279,6 @@ static u32 mpc512x_can_get_clock(struct platform_device *ofdev,
+>>   static const struct of_device_id mpc5xxx_can_table[];
+>>   static int mpc5xxx_can_probe(struct platform_device *ofdev)
+>>   {
+>> -	const struct of_device_id *match;
+>>   	const struct mpc5xxx_can_data *data;
+>>   	struct device_node *np = ofdev->dev.of_node;
+>>   	struct net_device *dev;
+>> @@ -289,10 +288,9 @@ static int mpc5xxx_can_probe(struct platform_device *ofdev)
+>>   	int irq, mscan_clksrc = 0;
+>>   	int err = -ENOMEM;
+>>   
+>> -	match = of_match_device(mpc5xxx_can_table, &ofdev->dev);
+>> -	if (!match)
+>> +	data = of_device_get_match_data(&ofdev->dev);
+>> +	if (!data)
+>>   		return -EINVAL;
+> Please remove the "BUG_ON(!data)", which comes later.
 
-Jason
+For this place, may I send another patch to fix this 'BUG_ON()' by 
+itself, not in this patch series?
+
+Thanks
+
+Tang Bin
+
+>
+>> -	data = match->data;
+>>   
+>>   	base = of_iomap(np, 0);
+>>   	if (!base) {
+>> -- 
+>> 2.20.1.windows.1
+>>
+>>
+>>
+>>
+> regards,
+> Marc
+>
+
+
