@@ -2,75 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2BF93F4B42
-	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 15:00:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 812563F4B44
+	for <lists+netdev@lfdr.de>; Mon, 23 Aug 2021 15:00:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237202AbhHWNAw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Aug 2021 09:00:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54774 "EHLO mail.kernel.org"
+        id S237242AbhHWNBJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Aug 2021 09:01:09 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:36672 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235731AbhHWNAv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Aug 2021 09:00:51 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id EDFD9613C8;
-        Mon, 23 Aug 2021 13:00:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629723609;
-        bh=jlMYI2wq3qAtpmX7x3t1yFUv2yIsZ5oqvaHDi9/CJKo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=e+ef2JFZq0Y2gXjiTbqvKLuUhRa1Bmz2T/R6lInYTK6tmWniMIeWt3CU+YK59NLO3
-         VwoRrY2NtdWlyq+hKq91+bRpV5anBGXcyJ/Ur/OuqW46Yqz+QtTvZe946GWKeSnzE+
-         jq1Sh0gPzn5NR+sjzVzHZI/lB8ktAK+lduzoZiWB7GOlY5qgjQI580SHhSaQahKuYf
-         xN7uLDLWr3k3D6QZjR3Rg4w4vPeECh2iEkC+hhtgur6z7v8jIJ70GGJpX78dv4CgoZ
-         ZnF3BLwkp/vn03NyOQ4F2zVAiifL875ZXSPQCl+6vpayTWQT6py37sr56GAfkvenI1
-         avgC7YkWcE7bg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id DF6616098C;
-        Mon, 23 Aug 2021 13:00:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S235731AbhHWNBI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Aug 2021 09:01:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=9/tBCOrNN6HOH/HQzSZBbpwJBymsGtxfOYgu9nxvJp4=; b=BqMsOxowNDy/kNDClNSwwh6eO+
+        Ijd7pC8aw3e2B+T264CWAdIrmTWbGkkRPCljTglOLTGYqbe9FXsc0doHboeo040GSTeQK07mJ2Vtc
+        al2P5HlUh1X4khdI0Vg+QcAEwB1whh7HfOR4ldbw519VQHtuvGNNUG0WzT5SDNRHAwqo=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mI9Ye-003T0A-B8; Mon, 23 Aug 2021 15:00:08 +0200
+Date:   Mon, 23 Aug 2021 15:00:08 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     DENG Qingfang <dqfext@gmail.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "open list:ETHERNET PHY LIBRARY" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>
+Subject: Re: [PATCH net] net: phy: mediatek: add the missing suspend/resume
+ callbacks
+Message-ID: <YSOb2P43svWca9IJ@lunn.ch>
+References: <20210823044422.164184-1-dqfext@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next v2] af_unix: fix NULL pointer bug in unix_shutdown
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162972360690.29348.8530821383166301782.git-patchwork-notify@kernel.org>
-Date:   Mon, 23 Aug 2021 13:00:06 +0000
-References: <20210821180738.1151155-1-jiang.wang@bytedance.com>
-In-Reply-To: <20210821180738.1151155-1-jiang.wang@bytedance.com>
-To:     Jiang Wang <jiang.wang@bytedance.com>
-Cc:     bpf@vger.kernel.org, cong.wang@bytedance.com,
-        duanxiongchun@bytedance.com, xieyongji@bytedance.com,
-        chaiwen.cc@bytedance.com, kuniyu@amazon.co.jp, digetx@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, viro@zeniv.linux.org.uk,
-        christian.brauner@ubuntu.com, rao.shoaib@oracle.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210823044422.164184-1-dqfext@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to bpf/bpf-next.git (refs/heads/master):
-
-On Sat, 21 Aug 2021 18:07:36 +0000 you wrote:
-> Commit 94531cfcbe79 ("af_unix: Add unix_stream_proto for sockmap")
-> introduced a bug for af_unix SEQPACKET type. In unix_shutdown, the
-> unhash function will call prot->unhash(), which is NULL for SEQPACKET.
-> And kernel will panic. On ARM32, it will show following messages: (it
-> likely affects x86 too).
+On Mon, Aug 23, 2021 at 12:44:21PM +0800, DENG Qingfang wrote:
+> Without suspend/resume callbacks, the PHY cannot be powered down/up
+> administratively.
 > 
-> Fix the bug by checking the prot->unhash is NULL or not first.
-> 
-> [...]
+> Fixes: e40d2cca0189 ("net: phy: add MediaTek Gigabit Ethernet PHY driver")
+> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
 
-Here is the summary with links:
-  - [bpf-next,v2] af_unix: fix NULL pointer bug in unix_shutdown
-    https://git.kernel.org/bpf/bpf-next/c/d359902d5c35
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+    Andrew
