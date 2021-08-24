@@ -2,131 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D72493F6B9F
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 00:15:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BBDE3F6BA4
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 00:18:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238671AbhHXWQK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 18:16:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44766 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230177AbhHXWQK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 18:16:10 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ABADC061757;
-        Tue, 24 Aug 2021 15:15:25 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id m4so2081186pll.0;
-        Tue, 24 Aug 2021 15:15:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Dxd11OUrvB9RJEaZboe/M/emqrU0iALdwV2Fo+CWDbA=;
-        b=llO0hESPXEUWWbhqYNKsh8j7d4KqbafG2I0nGffiAkD7wSf6k4DFXiiDk5Q/GzalS+
-         sYZzue2qiXOLeZCHX27kL8JfdZAjUt6Si2IlSQsFE+vxEzuyVTl+YQxFIB60f1AXM3pA
-         wPMtZglRINiR2TZlvnlj5q67jD9y8YPqfFOz8waUL+snvukVzrKkQBxSTITgo0V4/Pho
-         mF4mhnc/5ek3DGNxImumte9a9BR9UDg74ZBjw7YUFhXjfkgH/S4yS/LcbWpC+iADAzK8
-         TDKaeGknKligzssLm/XeL3gvcZeE5ALFcuj2oOF0HjbmovuyQS2EArbx7+iS5fROwNVw
-         op6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Dxd11OUrvB9RJEaZboe/M/emqrU0iALdwV2Fo+CWDbA=;
-        b=dynJPLEAIMOROqDrbza7tbsp3BqJvUsTcWlDnJqAKuHE4LPESKAYbf4NDwvz2AR/UB
-         gmA4XL9xJix/W9KcM2Nf3/WDQc/4iDAXICgKE+bJzpd1W3p0QsTECZDGzljAGxNJhCqq
-         57cxvT2pTEOy/8MCzy7KvFYXJNbVD51OBQIdrP4LbIRyuN7BwHZNBFP2Xbr3B8RTMFnh
-         9xnkrt/LJ3HECSihlgkDh79YndbDIL3K6R4Ind5u8YwI2uCQv9poL26QA8YjD8VL1M1/
-         rzjyTHFmVI7oR39cONnWeVs5xLmqYGYk2gTaQ8rTeliLJbdgn0rqMbfnF2pavHX89uES
-         sW5w==
-X-Gm-Message-State: AOAM5303XhMKaFqqmRRywulJ6X3459l3faqOFrdVCUdkyFQ7erxSjcXU
-        6BWpiwGwae+CPpGfmBZ5wGg=
-X-Google-Smtp-Source: ABdhPJzp4glQnPn/CBKVieurs7ALor3fKFLUsN5YcHWLhtoitrMttuCwr7r8zQm7fK2MccpygXRF9g==
-X-Received: by 2002:a17:90a:28a6:: with SMTP id f35mr7036524pjd.68.1629843324783;
-        Tue, 24 Aug 2021 15:15:24 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:500::6:5aca])
-        by smtp.gmail.com with ESMTPSA id h8sm3404851pjs.8.2021.08.24.15.15.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Aug 2021 15:15:24 -0700 (PDT)
-Date:   Tue, 24 Aug 2021 15:15:22 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     sdf@google.com
-Cc:     hjm2133@columbia.edu, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        ppenkov@google.com
-Subject: Re: [RFC PATCH bpf-next 0/2] bpf: Implement shared persistent
- fast(er) sk_storoage mode
-Message-ID: <20210824221522.5kokuv3eekalo2ha@ast-mbp.dhcp.thefacebook.com>
-References: <20210823215252.15936-1-hansmontero99@gmail.com>
- <20210824003847.4jlkv2hpx7milwfr@ast-mbp.dhcp.thefacebook.com>
- <YSUYSIYyXmBgKRwr@google.com>
+        id S236345AbhHXWTH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 18:19:07 -0400
+Received: from mga18.intel.com ([134.134.136.126]:55914 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229605AbhHXWTG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Aug 2021 18:19:06 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10086"; a="204543029"
+X-IronPort-AV: E=Sophos;i="5.84,348,1620716400"; 
+   d="scan'208";a="204543029"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2021 15:18:21 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,348,1620716400"; 
+   d="scan'208";a="493901200"
+Received: from lkp-server02.sh.intel.com (HELO 181e7be6f509) ([10.239.97.151])
+  by fmsmga008.fm.intel.com with ESMTP; 24 Aug 2021 15:18:18 -0700
+Received: from kbuild by 181e7be6f509 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1mIekL-0000uB-Pb; Tue, 24 Aug 2021 22:18:17 +0000
+Date:   Wed, 25 Aug 2021 06:17:16 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     kbuild-all@lists.01.org,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Colin Ian King <colin.king@canonical.com>,
+        Grant Grundler <grundler@chromium.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Oliver Neukum <oneukum@suse.com>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: usb: asix: ax88772: fix boolconv.cocci warnings
+Message-ID: <20210824221716.GA23759@2b586af07b64>
+References: <202108250651.uuW5Q2Rg-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YSUYSIYyXmBgKRwr@google.com>
+In-Reply-To: <202108250651.uuW5Q2Rg-lkp@intel.com>
+X-Patchwork-Hint: ignore
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 24, 2021 at 09:03:20AM -0700, sdf@google.com wrote:
-> On 08/23, Alexei Starovoitov wrote:
-> > On Mon, Aug 23, 2021 at 05:52:50PM -0400, Hans Montero wrote:
-> > > From: Hans Montero <hjm2133@columbia.edu>
-> > >
-> > > This patch set adds a BPF local storage optimization. The first patch
-> > adds the
-> > > feature, and the second patch extends the bpf selftests so that the
-> > feature is
-> > > tested.
-> > >
-> > > We are running BPF programs for each egress packet and noticed that
-> > > bpf_sk_storage_get incurs a significant amount of cpu time. By
-> > inlining the
-> > > storage into struct sock and accessing that instead of performing a
-> > map lookup,
-> > > we expect to reduce overhead for our specific use-case.
-> 
-> > Looks like a hack to me. Please share the perf numbers and setup details.
-> > I think there should be a different way to address performance concerns
-> > without going into such hacks.
-> 
-> What kind of perf numbers would you like to see? What we see here is
-> that bpf_sk_storage_get() cycles are somewhere on par with hashtable
-> lookups (we've moved off of 5-tuple ht lookup to sk_storage). Looking
-> at the code, it seems it's mostly coming from the following:
-> 
->   sk_storage = rcu_dereference(sk->sk_bpf_storage);
->   sdata = rcu_dereference(local_storage->cache[smap->cache_idx]);
->   return sdata->data
-> 
-> We do 3 cold-cache references :-( 
+From: kernel test robot <lkp@intel.com>
 
-Only if the prog doesn't read anything at all through 'sk' pointer,
-but sounds like the bpf logic is accessing it, so for a system with millions
-of sockets the first access to 'sk' will pay that penalty.
-I suspect if you rearrange bpf prog to do sk->foo first the cache
-miss will move and bpf_sk_storage_get() won't be hot anymore.
-That's why optimizing loads like this without considering the full
-picture might not achieve the desired result at the end.
+drivers/net/usb/asix_devices.c:757:60-65: WARNING: conversion to bool not needed here
 
-> This is where the idea of inlining
-> something in the socket itself came from. The RFC is just to present
-> the case and discuss. I was thinking about doing some kind of
-> inlining at runtime (and fallback to non-inlined case) but wanted
-> to start with discussing this compile-time option first.
-> 
-> We can also try to save sdata somewhere in the socket to avoid two
-> lookups for the cached case, this can potentially save us two
-> rcu_dereference's.
-> Is that something that looks acceptable? 
+ Remove unneeded conversion to bool
 
-Not until there is clear 'perf report' where issue is obvious.
+Semantic patch information:
+ Relational and logical operators evaluate to bool,
+ explicit conversion is overly verbose and unneeded.
 
-> I was wondering whether you've
-> considered any socket storage optimizations on your side?
+Generated by: scripts/coccinelle/misc/boolconv.cocci
 
-Quite the opposite. We've refactored several bpf progs to use
-local storage instead of hash maps and achieved nice perf wins.
+Fixes: 7a141e64cf14 ("net: usb: asix: ax88772: move embedded PHY detection as early as possible")
+CC: Oleksij Rempel <o.rempel@pengutronix.de>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: kernel test robot <lkp@intel.com>
+---
 
-> I can try to set up some office hours to discuss in person if that's
-> preferred.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+head:   372b2891c15acbf7b90d948b08ac174bde77102c
+commit: 7a141e64cf14099d84e530db0e86fcb2c489e341 [9154/10077] net: usb: asix: ax88772: move embedded PHY detection as early as possible
+:::::: branch date: 12 hours ago
+:::::: commit date: 35 hours ago
 
-Indeed, it's probably the best do discuss it on a call.
+ asix_devices.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/drivers/net/usb/asix_devices.c
++++ b/drivers/net/usb/asix_devices.c
+@@ -754,7 +754,7 @@ static int ax88772_bind(struct usbnet *d
+ 		return ret;
+ 
+ 	priv->phy_addr = ret;
+-	priv->embd_phy = ((priv->phy_addr & 0x1f) == 0x10 ? true : false);
++	priv->embd_phy = ((priv->phy_addr & 0x1f) == 0x10);
+ 
+ 	asix_read_cmd(dev, AX_CMD_STATMNGSTS_REG, 0, 0, 1, &chipcode, 0);
+ 	chipcode &= AX_CHIPCODE_MASK;
