@@ -2,203 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60E433F68CA
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 20:06:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7E473F68CF
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 20:08:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232910AbhHXSHd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 14:07:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43922 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232615AbhHXSHc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 14:07:32 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A6C7C061757;
-        Tue, 24 Aug 2021 11:06:48 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id q11so5627395wrr.9;
-        Tue, 24 Aug 2021 11:06:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=nXvsXISSw63LUGa7Bgo8rtlGjSjsjgtm/x18Ma0OOG8=;
-        b=RLqCoA8krgQqWoS0yZidKUPoNfVAMVHZAKsSE8QXW+cD82dcujtcSQCWSW9dfDDovu
-         WwsFv+qpn35wXYCIgcTmdC6UVnO/RdTwNK+9wtDUVAuNmpo5+zIC3feo+HCiCrlegRQN
-         gLYIrCUaQR2DhescnlT/S60pA4w+DynG7hEFCKt7JfdYBHhQ+LBQ0SIMhXwhkr3xT3gY
-         /8DAeujK2Zh/MTEF5iAaXCoNwmpCwwI3DajtihR7dfcTpMo8ZRn8lYD7564H4hVwpr/Q
-         I9AWDYXgrCmXb7laY8ko2tfQA7lp4GC4retT0c+VkSI6O5Wm/U0hSKedrULI10lwusF7
-         nsOQ==
+        id S232615AbhHXSJ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 14:09:27 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:27665 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230080AbhHXSJ0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 14:09:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1629828521;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=wf/taVlZFNs0ougRCLlTYVmNw738QSiSdoCHx8OR6ig=;
+        b=OaBhncK3OkMt0iQW1wbKSWlrzuyIK4RzdLEEyCOnADDe3fZMcr0Znmr9gTeNX+qdzHGCUD
+        isQ96y/EyQfvQgIIc+2/XmjMkJbJWtKDq2aOr9nuZzoqSKk49+kZzeBnujzedBG7NszFI5
+        g8HQ9CwLSe2ibjWvIjh7UEILuTWngCM=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-519-CGvhgctSNWSufrCL2e-oXg-1; Tue, 24 Aug 2021 14:08:39 -0400
+X-MC-Unique: CGvhgctSNWSufrCL2e-oXg-1
+Received: by mail-wr1-f71.google.com with SMTP id a9-20020a0560000509b029015485b95d0cso6013757wrf.5
+        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 11:08:39 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=nXvsXISSw63LUGa7Bgo8rtlGjSjsjgtm/x18Ma0OOG8=;
-        b=SlMF3TRrSOpo3zaXfdQ1l/iQU6xh16exregXG7KlUmKaCYpLCMG7oJcz8/yih2EofL
-         THDKM7OhGlvslI+JDff5LSpfjCFRL0NxPKDMGFSlScqDPMuo5M18pnTXC/qUWIe7SVMU
-         fGoUZCbraSYFy0h1kxBpTH7WLwdw0TVFRyNnApcfz7aiq8ZNx4TGYcikVVbev+adlyl+
-         9I8m4sqmRVX4QjPNdMTSiiVRgl/17OxJ4y2Vac5fLbjCKg5hfhBKdexmzsCvqhBAyS5R
-         VQqC6hCY4a1UgeCy952rIg5YfK4xKjAZQjFvp5DwZ+xKgVwWEfUXn6aZNreXf9Ylv5WL
-         AFgw==
-X-Gm-Message-State: AOAM5307iiZHH5kxsTgR9G626pTXpSI6BO/Uim133GZnivhbak4j0tH5
-        qpIUsxIvTwxeSY2SK0MlWH7vVO/5KZsIEA==
-X-Google-Smtp-Source: ABdhPJzIqkHx9q/ewvHxC+ns6U6Jh779JRx6/ua44/pwLGUhSr8suvDpP95nplfNARgIAqgvkc93zA==
-X-Received: by 2002:adf:ee48:: with SMTP id w8mr12627782wro.10.1629828406361;
-        Tue, 24 Aug 2021 11:06:46 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f08:4500:6d7d:72e5:938b:6820? (p200300ea8f0845006d7d72e5938b6820.dip0.t-ipconnect.de. [2003:ea:8f08:4500:6d7d:72e5:938b:6820])
-        by smtp.googlemail.com with ESMTPSA id f2sm18435904wru.31.2021.08.24.11.06.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 24 Aug 2021 11:06:45 -0700 (PDT)
-Subject: Re: [PATCH 11/12] cxgb4: Search VPD with
- pci_vpd_find_ro_info_keyword()
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Raju Rangoju <rajur@chelsio.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20210824171142.GA3478603@bjorn-Precision-5520>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <affa0bd6-b67b-6065-34e3-98f1420f121c@gmail.com>
-Date:   Tue, 24 Aug 2021 20:06:35 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=wf/taVlZFNs0ougRCLlTYVmNw738QSiSdoCHx8OR6ig=;
+        b=TjlKdbyQVDssnwnyMAppzmEQcINSqIt9XGeOMbN9uGYfcSd1wue/9t711i5pucU5TM
+         l1vYSYZ6pkLj/Mbng86k12i6Cw+lvql96yo/ThJ5R1rU32YCZlbBj93RIn50XYRZE/qS
+         2huCpVEsLP7/TQat2A07J8OcNgYs9RoP/C4Wz+BuaLFruJhm/aOecd6Pbcs7hFwFqgGa
+         3hYr5Mw1JjA4TPV3S4V5qJ1UlK9OV9BuC+VIN9W1OQ5+Kf8sbE5zPCMSCCU1JDVOk7DT
+         pf+KK4hXWnbHjDaxPOkAWhluZPpOkBOtXyapc7/EmmI66fKV/O5EOLVSsJ7Pw4jSSAMJ
+         Y5jQ==
+X-Gm-Message-State: AOAM530dlZT4ftuTStKh2HYeDoYaNwuJIdkUFL3x/wlH6LFW22iZxPRt
+        Rd8AmhWwJajce+276oIgmm/MKGAweid8U/FVTvIx5BcHvjlhRIaMeg5ZUGBPtMHdOatOdUiU14U
+        nrvAeSZFsAo/v3jHs
+X-Received: by 2002:adf:f541:: with SMTP id j1mr20290129wrp.180.1629828518661;
+        Tue, 24 Aug 2021 11:08:38 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxfDkwHQb1CTI5AdZfg7DL+P9GYpcylznvSa7+7v+ifINTac25O0lU3KK9ol/wm7Mi5FZusQw==
+X-Received: by 2002:adf:f541:: with SMTP id j1mr20290112wrp.180.1629828518469;
+        Tue, 24 Aug 2021 11:08:38 -0700 (PDT)
+Received: from redhat.com ([212.116.168.114])
+        by smtp.gmail.com with ESMTPSA id l187sm327519wml.39.2021.08.24.11.08.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Aug 2021 11:08:37 -0700 (PDT)
+Date:   Tue, 24 Aug 2021 14:08:33 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Xie Yongji <xieyongji@bytedance.com>
+Cc:     jasowang@redhat.com, stefanha@redhat.com, sgarzare@redhat.com,
+        parav@nvidia.com, hch@infradead.org,
+        christian.brauner@canonical.com, rdunlap@infradead.org,
+        willy@infradead.org, viro@zeniv.linux.org.uk, axboe@kernel.dk,
+        bcrl@kvack.org, corbet@lwn.net, mika.penttila@nextfour.com,
+        dan.carpenter@oracle.com, joro@8bytes.org,
+        gregkh@linuxfoundation.org, zhe.he@windriver.com,
+        xiaodong.liu@intel.com, joe@perches.com, robin.murphy@arm.com,
+        songmuchun@bytedance.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        Will Deacon <will@kernel.org>
+Subject: Re: [PATCH v11 01/12] iova: Export alloc_iova_fast() and
+ free_iova_fast()
+Message-ID: <20210824140758-mutt-send-email-mst@kernel.org>
+References: <20210818120642.165-1-xieyongji@bytedance.com>
+ <20210818120642.165-2-xieyongji@bytedance.com>
 MIME-Version: 1.0
-In-Reply-To: <20210824171142.GA3478603@bjorn-Precision-5520>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210818120642.165-2-xieyongji@bytedance.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 24.08.2021 19:11, Bjorn Helgaas wrote:
-> On Sun, Aug 22, 2021 at 03:59:21PM +0200, Heiner Kallweit wrote:
->> Use pci_vpd_find_ro_info_keyword() to search for keywords in VPD to
->> simplify the code.
->>
->> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
->> ---
->>  drivers/net/ethernet/chelsio/cxgb4/t4_hw.c | 67 +++++++++-------------
->>  1 file changed, 27 insertions(+), 40 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
->> index 2aeb2f80f..5e8ac42ac 100644
->> --- a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
->> +++ b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
->> @@ -2743,10 +2743,9 @@ int t4_seeprom_wp(struct adapter *adapter, bool enable)
->>   */
->>  int t4_get_raw_vpd_params(struct adapter *adapter, struct vpd_params *p)
->>  {
->> -	int i, ret = 0, addr;
->> -	int sn, pn, na;
->> +	unsigned int id_len, pn_len, sn_len, na_len;
->> +	int sn, pn, na, addr, ret = 0;
->>  	u8 *vpd, base_val = 0;
->> -	unsigned int vpdr_len, kw_offset, id_len;
->>  
->>  	vpd = vmalloc(VPD_LEN);
->>  	if (!vpd)
->> @@ -2772,60 +2771,48 @@ int t4_get_raw_vpd_params(struct adapter *adapter, struct vpd_params *p)
->>  	}
->>  
->>  	id_len = pci_vpd_lrdt_size(vpd);
->> -	if (id_len > ID_LEN)
->> -		id_len = ID_LEN;
->>  
->> -	i = pci_vpd_find_tag(vpd, VPD_LEN, PCI_VPD_LRDT_RO_DATA);
->> -	if (i < 0) {
->> -		dev_err(adapter->pdev_dev, "missing VPD-R section\n");
->> +	ret = pci_vpd_check_csum(vpd, VPD_LEN);
->> +	if (ret) {
->> +		dev_err(adapter->pdev_dev, "VPD checksum incorrect or missing\n");
->>  		ret = -EINVAL;
->>  		goto out;
->>  	}
->>  
->> -	vpdr_len = pci_vpd_lrdt_size(&vpd[i]);
->> -	kw_offset = i + PCI_VPD_LRDT_TAG_SIZE;
->> -	if (vpdr_len + kw_offset > VPD_LEN) {
->> -		dev_err(adapter->pdev_dev, "bad VPD-R length %u\n", vpdr_len);
->> -		ret = -EINVAL;
->> +	ret = pci_vpd_find_ro_info_keyword(vpd, VPD_LEN,
->> +					   PCI_VPD_RO_KEYWORD_SERIALNO, &sn_len);
->> +	if (ret < 0)
->>  		goto out;
->> -	}
->> +	sn = ret;
->>  
->> -#define FIND_VPD_KW(var, name) do { \
->> -	var = pci_vpd_find_info_keyword(vpd, kw_offset, vpdr_len, name); \
->> -	if (var < 0) { \
->> -		dev_err(adapter->pdev_dev, "missing VPD keyword " name "\n"); \
+On Wed, Aug 18, 2021 at 08:06:31PM +0800, Xie Yongji wrote:
+> Export alloc_iova_fast() and free_iova_fast() so that
+> some modules can make use of the per-CPU cache to get
+> rid of rbtree spinlock in alloc_iova() and free_iova()
+> during IOVA allocation.
 > 
-> Just for the record, I guess this patch gives up these error messages
-> that mention the specific keyword that's missing?  Not really an issue
-> for *me*, since the people generating the VPD content should be able to
-> easily validate this and figure out any errors.  Just pointing it out
-> in case the cxgb4 folks are attached to the messages.
-> 
-Right. My thought was: With userspace tools like "lspci -vv" or
-"od <path>/vpd" it's easy to check the actual content of VPD and find
-out which keyword is missing. Therefore the missing keyword doesn't
-necessarily has to be referenced in an error message.
+> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
 
->> -		ret = -EINVAL; \
->> -		goto out; \
->> -	} \
->> -	var += PCI_VPD_INFO_FLD_HDR_SIZE; \
->> -} while (0)
->> -
->> -	ret = pci_vpd_check_csum(vpd, VPD_LEN);
->> -	if (ret) {
->> -		dev_err(adapter->pdev_dev, "VPD checksum incorrect or missing\n");
->> -		ret = -EINVAL;
->> +	ret = pci_vpd_find_ro_info_keyword(vpd, VPD_LEN,
->> +					   PCI_VPD_RO_KEYWORD_PARTNO, &pn_len);
->> +	if (ret < 0)
->>  		goto out;
->> -	}
->> +	pn = ret;
->>  
->> -	FIND_VPD_KW(sn, "SN");
->> -	FIND_VPD_KW(pn, "PN");
->> -	FIND_VPD_KW(na, "NA");
->> -#undef FIND_VPD_KW
->> +	ret = pci_vpd_find_ro_info_keyword(vpd, VPD_LEN, "NA", &na_len);
->> +	if (ret < 0)
->> +		goto out;
->> +	na = ret;
->>  
->> -	memcpy(p->id, vpd + PCI_VPD_LRDT_TAG_SIZE, id_len);
->> +	memcpy(p->id, vpd + PCI_VPD_LRDT_TAG_SIZE, min_t(int, id_len, ID_LEN));
->>  	strim(p->id);
->> -	i = pci_vpd_info_field_size(vpd + sn - PCI_VPD_INFO_FLD_HDR_SIZE);
->> -	memcpy(p->sn, vpd + sn, min(i, SERNUM_LEN));
->> +	memcpy(p->sn, vpd + sn, min_t(int, sn_len, SERNUM_LEN));
->>  	strim(p->sn);
->> -	i = pci_vpd_info_field_size(vpd + pn - PCI_VPD_INFO_FLD_HDR_SIZE);
->> -	memcpy(p->pn, vpd + pn, min(i, PN_LEN));
->> +	memcpy(p->pn, vpd + pn, min_t(int, pn_len, PN_LEN));
->>  	strim(p->pn);
->> -	memcpy(p->na, vpd + na, min(i, MACADDR_LEN));
->> +	memcpy(p->na, vpd + na, min_t(int, na_len, MACADDR_LEN));
->>  	strim((char *)p->na);
->>  
->>  out:
->>  	vfree(vpd);
->> -	return ret < 0 ? ret : 0;
->> +	if (ret < 0) {
->> +		dev_err(adapter->pdev_dev, "error reading VPD\n");
->> +		return ret;
->> +	}
->> +
->> +	return 0;
->>  }
->>  
->>  /**
->> -- 
->> 2.33.0
->>
->>
+
+This needs ack from iommu maintainers. Guys?
+
+> ---
+>  drivers/iommu/iova.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+> index b6cf5f16123b..3941ed6bb99b 100644
+> --- a/drivers/iommu/iova.c
+> +++ b/drivers/iommu/iova.c
+> @@ -521,6 +521,7 @@ alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
+>  
+>  	return new_iova->pfn_lo;
+>  }
+> +EXPORT_SYMBOL_GPL(alloc_iova_fast);
+>  
+>  /**
+>   * free_iova_fast - free iova pfn range into rcache
+> @@ -538,6 +539,7 @@ free_iova_fast(struct iova_domain *iovad, unsigned long pfn, unsigned long size)
+>  
+>  	free_iova(iovad, pfn);
+>  }
+> +EXPORT_SYMBOL_GPL(free_iova_fast);
+>  
+>  #define fq_ring_for_each(i, fq) \
+>  	for ((i) = (fq)->head; (i) != (fq)->tail; (i) = ((i) + 1) % IOVA_FQ_SIZE)
+> -- 
+> 2.11.0
 
