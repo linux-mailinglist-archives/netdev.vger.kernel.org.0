@@ -2,64 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B737D3F59D9
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 10:30:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EEBBA3F59EF
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 10:40:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235323AbhHXIaw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 04:30:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56518 "EHLO mail.kernel.org"
+        id S235366AbhHXIkw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 04:40:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57924 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233920AbhHXIat (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Aug 2021 04:30:49 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 6B06E61265;
-        Tue, 24 Aug 2021 08:30:05 +0000 (UTC)
+        id S235068AbhHXIkw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Aug 2021 04:40:52 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id C9A7E61262;
+        Tue, 24 Aug 2021 08:40:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629793805;
-        bh=Nc+Jk7A4Dvrszf5SqvbSuE3rMGWWG+yKcwvSrjEfqXg=;
+        s=k20201202; t=1629794407;
+        bh=lkWPyRjSayK24aAOrWwv6ox2HliGIGhNCkeZx1vBdTU=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=uR9uo35N/bEQ+9OOU56e7IRUnDLGgZsinIVepufkfSDvLl9V091MWtCHbeKaSRdnj
-         ZoOG/FgiJYU12gnviGVIHVYuNINqnYl3//Hb2vUT+CSeHdyg1givL7wxKZQOiP3mFc
-         /HiIz/wa+RW9FL/z+wbhb7N2hQUU/5M68LzxS0/ipbOY6RbakobQO3Gbt6uOo/aKpD
-         ZaI0+3YvTDU1h0oGImHPQzdWZi91IGx8d3+JycAock2X5WrAoDAJS3dnKMR7AzRGe2
-         CwW+qEAlJYWboh3WlY9rKPtVIAfgsOX2Cta7oqBTTGMl8ZjiPGLV6Jq6OFxKnsu/Pu
-         +oSohnBVOPtIQ==
+        b=WzFSdkJvtiUXe+Dx850bFKRhpCbyQGlMNu8BcdfjaCX2QSo9blRPkap3Jv1qcpJL0
+         fkO4XHZqIp2KdyRamS8lngOlaPFjGyV29wri9iihcj5u42on1DpM9qB4IIwiz7toRc
+         zAjl2ASqGyaE4XlCodiNmq7lGiBlHopahApwEWcyw4gdl+EW73pFi/KnzkCNc8yKHO
+         mkFg/a3MLtY11Z4NiLpcr0nj6cKx5asoFMnVpNZR+iBExCOCnxWnqnW4dJRgojNfoM
+         ZjLSV0l24Gn8+kA848TybSj7OCdrTCQnUDpouEeL9poS6spjVWUeW1uG1UJ7HRB8C3
+         AkxA7ocr40ABw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5E8C96096F;
-        Tue, 24 Aug 2021 08:30:05 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id BE71B608FC;
+        Tue, 24 Aug 2021 08:40:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] qed: Fix the VF msix vectors flow
+Subject: Re: [PATCH net-next 0/6] mptcp: Refactor ADD_ADDR/RM_ADDR handling
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162979380538.25178.5288848210577184493.git-patchwork-notify@kernel.org>
-Date:   Tue, 24 Aug 2021 08:30:05 +0000
-References: <20210822192114.11622-1-smalin@marvell.com>
-In-Reply-To: <20210822192114.11622-1-smalin@marvell.com>
-To:     Shai Malin <smalin@marvell.com>
+Message-Id: <162979440777.30048.9430649440436990103.git-patchwork-notify@kernel.org>
+Date:   Tue, 24 Aug 2021 08:40:07 +0000
+References: <20210824010544.68600-1-mathew.j.martineau@linux.intel.com>
+In-Reply-To: <20210824010544.68600-1-mathew.j.martineau@linux.intel.com>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
 Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        aelior@marvell.com, malin1024@gmail.com, pkushwaha@marvell.com
+        matthieu.baerts@tessares.net, mptcp@lists.linux.dev,
+        liyonglong@chinatelecom.cn
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Sun, 22 Aug 2021 22:21:14 +0300 you wrote:
-> For VFs we should return with an error in case we didn't get the exact
-> number of msix vectors as we requested.
-> Not doing that will lead to a crash when starting queues for this VF.
-> 
-> Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
-> Signed-off-by: Ariel Elior <aelior@marvell.com>
-> Signed-off-by: Shai Malin <smalin@marvell.com>
+On Mon, 23 Aug 2021 18:05:38 -0700 you wrote:
+> This patch set changes the way MPTCP ADD_ADDR and RM_ADDR options are
+> handled to improve the reliability of sending and updating address
+> advertisements. The information used to populate outgoing advertisement
+> option headers is now stored separately to avoid rare cases where a more
+> recent request would overwrite something that had not been sent
+> yet. While the peers would recover from this, it's better to avoid the
+> problem in the first place.
 > 
 > [...]
 
 Here is the summary with links:
-  - qed: Fix the VF msix vectors flow
-    https://git.kernel.org/netdev/net/c/b0cd08537db8
+  - [net-next,1/6] mptcp: move drop_other_suboptions check under pm lock
+    https://git.kernel.org/netdev/net-next/c/1f5e9e2f5fd5
+  - [net-next,2/6] mptcp: make MPTCP_ADD_ADDR_SIGNAL and MPTCP_ADD_ADDR_ECHO separate
+    https://git.kernel.org/netdev/net-next/c/18fc1a922e24
+  - [net-next,3/6] mptcp: fix ADD_ADDR and RM_ADDR maybe flush addr_signal each other
+    https://git.kernel.org/netdev/net-next/c/119c022096f5
+  - [net-next,4/6] mptcp: build ADD_ADDR/echo-ADD_ADDR option according pm.add_signal
+    https://git.kernel.org/netdev/net-next/c/f462a446384d
+  - [net-next,5/6] mptcp: remove MPTCP_ADD_ADDR_IPV6 and MPTCP_ADD_ADDR_PORT
+    https://git.kernel.org/netdev/net-next/c/c233ef139070
+  - [net-next,6/6] selftests: mptcp: add_addr and echo race test
+    https://git.kernel.org/netdev/net-next/c/33c563ad28e3
 
 You are awesome, thank you!
 --
