@@ -2,94 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B28323F5CE3
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 13:10:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 995B53F5CE4
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 13:10:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236471AbhHXLKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 07:10:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59072 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236394AbhHXLKb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 07:10:31 -0400
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF0F1C061757
-        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 04:09:46 -0700 (PDT)
-Received: by mail-lf1-x142.google.com with SMTP id i9so44647707lfg.10
-        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 04:09:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=k3+PIl84BDEKsR+afDftURi+daSqqQKQrezVjb4o2gs=;
-        b=HL2ZN425rjnXIjmmmz1plZJHfn6IwwlknZsE2CPsUa5VAhjXA2YvDeoxlzXUTUFvJk
-         IRl/f7WvZBS4bnSnWc+lb4dumd/L3JrytWiH3m84nbp1tz4e5vAGGD2BXMmrvTUNyG8X
-         N8YvulqWe5gd0ovtGhZ7/Wwk//4kzrv1amH16H37+VxcBqj9pVipI3lPRfxLLVZnD/e0
-         p2levuSAkbMnWzuZwk7eIjhFQ24dZym9m3hIozXRGzPEMpe1+Xv4IIDUcta7KNUU5hOy
-         0XdaVe5CALyAo+XnZiOAUsp0TPo7IVX2cn4BDzRIxYm2hiq7PdfvjlDvkYFmOqBwfcpN
-         ZAtQ==
+        id S236697AbhHXLKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 07:10:49 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:57328 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236394AbhHXLKs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 07:10:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1629803403;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=6MzIVYD6Rkcf1avefY9xlULEY3kI1KocMJ7+mbhVSUk=;
+        b=J9zoicPacGc8JCVXDTJ1GPTrxpOvQpo1Q/257vWmOFjmtp5Agg0IF8Dg9Q/xwcx1Ik7eRK
+        BWYjpB6K7Aqy5VmftBmDWsYkhPbASYgWnqYorRktJDMywF5vTY/k8HvGljgnemD44ew/Nv
+        OpbAykFaiQPxE3CZdd2bEWOOJrxEAyM=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-63-c6sAH01CP5esHDmnYQINdA-1; Tue, 24 Aug 2021 07:10:02 -0400
+X-MC-Unique: c6sAH01CP5esHDmnYQINdA-1
+Received: by mail-ed1-f72.google.com with SMTP id bx23-20020a0564020b5700b003bf2eb11718so10320945edb.20
+        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 04:10:02 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=k3+PIl84BDEKsR+afDftURi+daSqqQKQrezVjb4o2gs=;
-        b=D/RBTIL0hMNWu0A1zHS+IJrUTu4NROU5jfBu++xGmCAuNM8KHHVQQAvLT6xvzWxMHW
-         iXHmICVRObMMLtNVlLOvdWK5FHVM3sVRPMWi1coEfjnDB+AO8El0dUC3hpcqjS8vQHDD
-         TZ3mjswSDwqeVqc623AxwoKeBBLQJbASbqNs1TBCb4rgTM1Ce2DN/ar795FlDCoEZvO2
-         /YtowjLesxfYP8mMWY4j2zFmKmReDPRHwz+jnL4EuAFXSwJj+d+HrfwJOYBlNvqfGmRV
-         xiyo72Uf21jqsXeVcNMAMTCnWvSXWFUYCuJc835yfT9WlQlYRLD8Tq7ZcPY/Gf5/Cn7t
-         tk7g==
-X-Gm-Message-State: AOAM530i0L+Hebs8G1fJwKfG41agy/qKXBXzuLVLg8/okLTO1B7zk3X5
-        GgELctPjGuOFRWTzdDgbpQ+8REfqtGFBxbEyeyI=
-X-Google-Smtp-Source: ABdhPJwxXYnvPaZDmXEzNextPZ+5Lv8IAzuSmQgw6N2v3dGZBRrsvNZ3Yw4vhSd7m78iTFPvZolsDoCxlneR9HlWLRI=
-X-Received: by 2002:a05:6512:605:: with SMTP id b5mr28775311lfe.72.1629803385128;
- Tue, 24 Aug 2021 04:09:45 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=6MzIVYD6Rkcf1avefY9xlULEY3kI1KocMJ7+mbhVSUk=;
+        b=nwh8U9TZ86Q6Kz4p54Ct97LaA/h/Tv/nX0py6CwrJ9MScNEV2aqfvkYj8wb+l14NaK
+         Ywr052v4sINYY039BcWPqtesX93DiNs5ELuhNqcX/nZxWXj+RvtjVAyXlkw+EJx8HmI0
+         tkJRoeDUd0AzMvdRl2TbiLxdMWjA+l7P1kVB9ikjCjVTcIVL1QdhZOOHlvEEtRGM1/YF
+         pBnxhNLl+rEToTL2tDZ4OhBGuIou73Ds36HL2UDbP1xx7Lob5OzRwYIQn8/MYUhlqukm
+         LHqNXRRO2KfadnM0Di2G3PCad6MR5GDlR40WM+p+vdI/NhXRC8JBwg3AIoCjUO/ZjXLE
+         ghGg==
+X-Gm-Message-State: AOAM532k9GVgz5bjooCSQVncdgE5IvpqHfphjhe5d1JsZawL97j7SnwQ
+        UCLaPIiXfbyd2zDlX3BoT5JcdulXJnmV0CMXOesgLTsEXhSs+P3aJbexydIbXv6S6SINS/aZEG4
+        UqzCZ4udBRGHSVLFD
+X-Received: by 2002:a17:906:9bdc:: with SMTP id de28mr40030304ejc.154.1629803401150;
+        Tue, 24 Aug 2021 04:10:01 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJym2zZCfOfkB6aYg6hvpM9EYCUNutnmi5ZkMGiE/H3YmE4qf/VSJ5+nHLjDGlfYfIZpl2VYMg==
+X-Received: by 2002:a17:906:9bdc:: with SMTP id de28mr40030281ejc.154.1629803400969;
+        Tue, 24 Aug 2021 04:10:00 -0700 (PDT)
+Received: from steredhat (host-79-45-8-152.retail.telecomitalia.it. [79.45.8.152])
+        by smtp.gmail.com with ESMTPSA id u2sm9003772ejc.61.2021.08.24.04.09.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Aug 2021 04:10:00 -0700 (PDT)
+Date:   Tue, 24 Aug 2021 13:09:56 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Xie Yongji <xieyongji@bytedance.com>
+Cc:     mst@redhat.com, jasowang@redhat.com, stefanha@redhat.com,
+        parav@nvidia.com, hch@infradead.org,
+        christian.brauner@canonical.com, rdunlap@infradead.org,
+        willy@infradead.org, viro@zeniv.linux.org.uk, axboe@kernel.dk,
+        bcrl@kvack.org, corbet@lwn.net, mika.penttila@nextfour.com,
+        dan.carpenter@oracle.com, joro@8bytes.org,
+        gregkh@linuxfoundation.org, zhe.he@windriver.com,
+        xiaodong.liu@intel.com, joe@perches.com, robin.murphy@arm.com,
+        songmuchun@bytedance.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v11 03/12] vdpa: Fix some coding style issues
+Message-ID: <20210824110956.gtajf34s2xpm66gx@steredhat>
+References: <20210818120642.165-1-xieyongji@bytedance.com>
+ <20210818120642.165-4-xieyongji@bytedance.com>
 MIME-Version: 1.0
-Sender: mrselisabethpeter1206@gmail.com
-Received: by 2002:ab3:6915:0:0:0:0:0 with HTTP; Tue, 24 Aug 2021 04:09:44
- -0700 (PDT)
-From:   Mrs Lila Haber <mrslilahabe2016@gmail.com>
-Date:   Tue, 24 Aug 2021 11:09:44 +0000
-X-Google-Sender-Auth: jhkqdYg_kIpA6k_qmfOWQyw7SZw
-Message-ID: <CAAw7UWF3C=RqQSTwDJF86kv-yzQjBMMXDWe3mc-At69uw-12oA@mail.gmail.com>
-Subject: Dear Child of God
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20210818120642.165-4-xieyongji@bytedance.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Child of God,
+On Wed, Aug 18, 2021 at 08:06:33PM +0800, Xie Yongji wrote:
+>Fix some code indent issues and following checkpatch warning:
+>
+>WARNING: Prefer 'unsigned int' to bare use of 'unsigned'
+>371: FILE: include/linux/vdpa.h:371:
+>+static inline void vdpa_get_config(struct vdpa_device *vdev, unsigned offset,
+>
+>Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+>---
+> include/linux/vdpa.h | 34 +++++++++++++++++-----------------
+> 1 file changed, 17 insertions(+), 17 deletions(-)
 
-Calvary Greetings in the name of the LORD Almighty and Our LORD JESUS
-CHRIST the giver of every good thing. Good day and compliments of the
-seasons, i know this letter will definitely come to you as a huge
-surprise, but I implore you to take the time to go through it
-carefully as the decision you make will go off a long way to determine
-my future and continued existence. I am Mrs Lila Haber aging widow of
-57 years old suffering from long time illness.I have some funds I
-inherited from my late husband, the sum of (19.1Million Dollars) and I
-needed a very honest and God fearing who can withdraw this money then
-use the funds for Charity works. I WISH TO GIVE THIS FUNDS TO YOU FOR
-CHARITY WORKS. I found your email address from the internet after
-honest prayers to the LORD to bring me a helper and i decided to
-contact you if you may be willing and interested to handle these trust
-funds in good faith before anything happens to me.
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 
-I accept this decision because I do not have any child who will
-inherit this money after I die. I want your urgent reply to me so that
-I will give you the deposit receipt which the SECURITY COMPANY issued
-to me as next of kin for immediate transfer of the money to your
-account in your country, to start the good work of God, I want you to
-use the 25/percent of the total amount to help yourself in doing the
-project. I am desperately in keen need of assistance and I have
-summoned up courage to contact you for this task, you must not fail me
-and the millions of the poor people in our todays WORLD. This is no
-stolen money and there are no dangers involved,100% RISK FREE with
-full legal proof. Please if you would be able to use the funds for the
-Charity works kindly let me know immediately.I will appreciate your
-utmost confidentiality and trust in this matter to accomplish my heart
-desire, as I don't want anything that will jeopardize my last wish.
-Please
-kindly respond quickly for further details.
+>
+>diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
+>index 954b340f6c2f..8a645f8f4476 100644
+>--- a/include/linux/vdpa.h
+>+++ b/include/linux/vdpa.h
+>@@ -43,17 +43,17 @@ struct vdpa_vq_state_split {
+>  * @last_used_idx: used index
+>  */
+> struct vdpa_vq_state_packed {
+>-        u16	last_avail_counter:1;
+>-        u16	last_avail_idx:15;
+>-        u16	last_used_counter:1;
+>-        u16	last_used_idx:15;
+>+	u16	last_avail_counter:1;
+>+	u16	last_avail_idx:15;
+>+	u16	last_used_counter:1;
+>+	u16	last_used_idx:15;
+> };
+>
+> struct vdpa_vq_state {
+>-     union {
+>-          struct vdpa_vq_state_split split;
+>-          struct vdpa_vq_state_packed packed;
+>-     };
+>+	union {
+>+		struct vdpa_vq_state_split split;
+>+		struct vdpa_vq_state_packed packed;
+>+	};
+> };
+>
+> struct vdpa_mgmt_dev;
+>@@ -131,7 +131,7 @@ struct vdpa_iova_range {
+>  *				@vdev: vdpa device
+>  *				@idx: virtqueue index
+>  *				@state: pointer to returned state (last_avail_idx)
+>- * @get_vq_notification: 	Get the notification area for a virtqueue
+>+ * @get_vq_notification:	Get the notification area for a virtqueue
+>  *				@vdev: vdpa device
+>  *				@idx: virtqueue index
+>  *				Returns the notifcation area
+>@@ -353,25 +353,25 @@ static inline struct device *vdpa_get_dma_dev(struct vdpa_device *vdev)
+>
+> static inline void vdpa_reset(struct vdpa_device *vdev)
+> {
+>-        const struct vdpa_config_ops *ops = vdev->config;
+>+	const struct vdpa_config_ops *ops = vdev->config;
+>
+> 	vdev->features_valid = false;
+>-        ops->set_status(vdev, 0);
+>+	ops->set_status(vdev, 0);
+> }
+>
+> static inline int vdpa_set_features(struct vdpa_device *vdev, u64 features)
+> {
+>-        const struct vdpa_config_ops *ops = vdev->config;
+>+	const struct vdpa_config_ops *ops = vdev->config;
+>
+> 	vdev->features_valid = true;
+>-        return ops->set_features(vdev, features);
+>+	return ops->set_features(vdev, features);
+> }
+>
+>-
+>-static inline void vdpa_get_config(struct vdpa_device *vdev, unsigned offset,
+>-				   void *buf, unsigned int len)
+>+static inline void vdpa_get_config(struct vdpa_device *vdev,
+>+				   unsigned int offset, void *buf,
+>+				   unsigned int len)
+> {
+>-        const struct vdpa_config_ops *ops = vdev->config;
+>+	const struct vdpa_config_ops *ops = vdev->config;
+>
+> 	/*
+> 	 * Config accesses aren't supposed to trigger before features are set.
+>-- 
+>2.11.0
+>
 
-Warmest Regards,
-Mrs Lila Haber
