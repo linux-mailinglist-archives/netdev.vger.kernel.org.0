@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD0A43F5E9E
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 15:04:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74D093F5EA0
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 15:05:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237486AbhHXNFb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 09:05:31 -0400
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:44105 "EHLO
+        id S237495AbhHXNFi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 09:05:38 -0400
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:48389 "EHLO
         new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237470AbhHXNF3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 09:05:29 -0400
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 6E33A580B13;
-        Tue, 24 Aug 2021 09:04:45 -0400 (EDT)
+        by vger.kernel.org with ESMTP id S237470AbhHXNFe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 09:05:34 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id C99515803E9;
+        Tue, 24 Aug 2021 09:04:49 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Tue, 24 Aug 2021 09:04:45 -0400
+  by compute4.internal (MEProxy); Tue, 24 Aug 2021 09:04:49 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=L12Ypjet8k6HNb2eP4MNpL4scZO+doI8NwD06cv5JmU=; b=MK9D1XD3
-        jm65PGjBMM76oEuxEOMvKC5fSKnIjOC+jRfNsyOTNoneYau13XzIR7WDDj7g+kii
-        mpsaXUOAY5T0uLN5SGXLG2biKGnsJ7JpI8NBKzVpQQh63G1qyEE84w36xGYhooeO
-        24be43WO9ZykdI/Uw8pocfPrxrNZ+oNfiYAHRifN/op4J4qjuboj4ctKutD62Fj8
-        uNo3jqR+UxQqTjZJZnKXtWeN8hYQYekAgNenDw7+VP5xnPtEt0cWIL7AvIvVukIn
-        C+i/tkHnmR0uxk5r3HgYUFkq+B5WilSx+N2IRbMfmeh4L2oPT6g/1ZeYnxYEUy/L
-        NUBVpCnMowNLZQ==
-X-ME-Sender: <xms:bO4kYXkOk-xM-fKwDQhsInIag-jXoa5ElnRouIr2IKZCnZ-ukiqDHw>
-    <xme:bO4kYa37H2c7VH55zVnKHKzUkKvtzoAOoG7M8PCsfe82Xt5bFWfEtz27TvMuqgDG7
-    iuSW3i1FPWgUow>
-X-ME-Received: <xmr:bO4kYdrul6VDizNkFXupRmb_1agll7bGD4-Xa3N0iRLneiIP5BY-o8JSQc1Ag-V5aQNoUOfb1gJ8wsPupQxSml_Ua1amlOfqPk28PUGnAgPXyw>
+        fm3; bh=PF6mVx16rimKKOC+b+uNYjnoT9ynubRMQrM0kk6CEOI=; b=rbeeLRiD
+        8gjPHNceCKVsY/53eoDyThzIhd98xYvpCRGge9IuebMX4XGZSsSgQH9FbyZkjO9k
+        TS7zeor5u/6u0VT5zFNLIk75Wa2rKstGTDXBBVsnsf/t31ywByhkL/YYhdwJbZeP
+        XnTnq9Hs3hcpR3/e1z9fp+EPR5FpFFro0GaaOpAIzTUEHx2gQ0T0p7YplfZiNgeI
+        yk9zL7XpQ3hgorNf6jKrB1F6CwwWVewz3gP2arlJVAQzNyZ0iF9e1QKyYFKZZPR8
+        8yybcxN9zbDYcRKhYViPVvOPPmS+lgrh8bT7KMfgSnK3lsKs6wFjMvaUv7fYSBpp
+        HmNkvfbWt9E4dA==
+X-ME-Sender: <xms:cO4kYVKmERqRqcATG20CZK_A_ajH812IjwVg-B4fo-X_9opEQVZk8g>
+    <xme:cO4kYRKZf6ypakAxw8_2Fgw1l3fJjveSafPXdSmsHdMNv3pYPfiNGA6ML4QIanT4w
+    x4U1VYdMdWHawc>
+X-ME-Received: <xmr:cO4kYduw0sXQkMIDKIHAVAbjbr1KRkNN8rKq5INwwjKkNfJEUQ5meoo8yGJd6X6v3QoVB85RtZf7M55VD1xWNN-2g6Lj0A-RsXXTAHGLy6UBZw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddruddtjedgiedtucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -38,21 +38,21 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddruddtjedgiedtucetufdoteggod
     shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
     ehgfdtffethfelvdejgffghefgveejkefhnecuvehluhhsthgvrhfuihiivgeptdenucfr
     rghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:bO4kYfn6I4Qiya0Cvdk7hyHtKqwjFcNRtG7Xwx5DOMNsFME2gmUJ3Q>
-    <xmx:bO4kYV1WnR4jA0VHg4edPw8xdqaddwNPot_VHyclJPknnyB_TlGg7Q>
-    <xmx:bO4kYevvNykfxUyd33MTPxqINKGIf0UtgUoOHgVYT2Jb8BaL3DVQSA>
-    <xmx:be4kYeJB6G1Rb7gMl_E_-ujSel4KLBhJ6te6oAX_Lg0swXwADZOarg>
+X-ME-Proxy: <xmx:cO4kYWZ7Yb6o7OImvGpFDmYLuxloeb7TDg1ZLlChtz8iAs2m-r0sGA>
+    <xmx:cO4kYcbyqhZOatq-GOh9s68WNkkXRgbTwB_wGqXj_0_mlXdT04Fj5Q>
+    <xmx:cO4kYaDeVUBkJeS2MeYXpAL0jyYtVi_RPse5KXKgtriKM8PPmztuYQ>
+    <xmx:ce4kYSOGy1pTGy99zvTIqMjSj80YzlGyC7dMxMIXojU64JwYQQrSQg>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 24 Aug 2021 09:04:41 -0400 (EDT)
+ 24 Aug 2021 09:04:45 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
         mkubecek@suse.cz, pali@kernel.org, jacob.e.keller@intel.com,
         jiri@nvidia.com, vadimp@nvidia.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [RFC PATCH net-next v3 4/6] mlxsw: Add ability to control transceiver modules' power mode
-Date:   Tue, 24 Aug 2021 16:03:42 +0300
-Message-Id: <20210824130344.1828076-5-idosch@idosch.org>
+Subject: [RFC PATCH net-next v3 5/6] ethtool: Add transceiver module extended states
+Date:   Tue, 24 Aug 2021 16:03:43 +0300
+Message-Id: <20210824130344.1828076-6-idosch@idosch.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210824130344.1828076-1-idosch@idosch.org>
 References: <20210824130344.1828076-1-idosch@idosch.org>
@@ -64,423 +64,102 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-Implement support for ethtool_ops::.get_module_power_mode and
-ethtool_ops::set_module_power_mode.
+Add an extended state and two extended sub-states to describe link
+issues related to transceiver modules.
 
-The get operation is implemented using the Management Cable IO and
-Notifications (MCION) register that reports the operational power mode
-of the module and its presence. In case a module is not present, its
-operational power mode is not reported to ethtool and user space. If not
-set before, the power mode policy is reported as "high", which is the
-default on Mellanox systems.
+The first, 'ETHTOOL_LINK_EXT_SUBSTATE_MODULE_LOW_POWER_MODE', tells user
+space that port is unable to gain a carrier because the associated
+transceiver module is in low power mode where the data path is
+deactivated. This is applicable to both SFF-8636 and CMIS modules.
+Currently, user space cannot force a module to stay in low power mode
+while putting the associated port administratively up, so the extended
+sub-state is indicative of a problem in the module/driver.
 
-The set operation is implemented using the Port Module Memory Map
-Properties (PMMP) register. The register instructs the device's firmware
-to transition a plugged-in module to / out of low power mode by writing
-to its memory map.
+The second, 'ETHTOOL_LINK_EXT_SUBSTATE_MODULE_CMIS_NOT_READY', tells
+user space that port is unable to gain a carrier because the CMIS Module
+State Machine did not reach the ModuleReady (Fully Operational) state.
+For example, if the module is stuck at ModuleFault state. In which case,
+user space can read the fault reason from the module's EEPROM and
+potentially reset it.
 
-When the power mode policy is set to 'auto', a module will not
-transition to low power mode as long as any ports using it are
-administratively up. Example:
-
- # devlink port split swp11 count 4
-
- # ethtool --set-module swp11s0 power-mode-policy auto
-
- $ ethtool --show-module swp11s0
- Module parameters for swp11s0:
- power-mode-policy auto
- power-mode low
-
- # ip link set dev swp11s0 up
-
- # ip link set dev swp11s1 up
-
- $ ethtool --show-module swp11s0
- Module parameters for swp11s0:
- power-mode-policy auto
- power-mode high
-
- # ip link set dev swp11s1 down
-
- $ ethtool --show-module swp11s0
- Module parameters for swp11s0:
- power-mode-policy auto
- power-mode high
-
- # ip link set dev swp11s0 down
-
- $ ethtool --show-module swp11s0
- Module parameters for swp11s0:
- power-mode-policy auto
- power-mode low
+For CMIS modules, the first extended sub-state is contained in the
+second, but has the added advantage of being applicable to more module
+types and being more specific about the nature of the problem.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlxsw/core_env.c    | 194 +++++++++++++++++-
- .../net/ethernet/mellanox/mlxsw/core_env.h    |  10 +
- drivers/net/ethernet/mellanox/mlxsw/minimal.c |  26 +++
- .../mellanox/mlxsw/spectrum_ethtool.c         |  28 +++
- 4 files changed, 255 insertions(+), 3 deletions(-)
+ Documentation/networking/ethtool-netlink.rst | 12 ++++++++++++
+ include/linux/ethtool.h                      |  1 +
+ include/uapi/linux/ethtool.h                 |  7 +++++++
+ 3 files changed, 20 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_env.c b/drivers/net/ethernet/mellanox/mlxsw/core_env.c
-index 9e367174743d..0911d9019246 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core_env.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core_env.c
-@@ -17,6 +17,7 @@ struct mlxsw_env_module_info {
- 	bool is_overheat;
- 	int num_ports_mapped;
- 	int num_ports_up;
-+	enum ethtool_module_power_mode_policy power_mode_policy;
+diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
+index 245ce2eab9a5..c258b3f30a2e 100644
+--- a/Documentation/networking/ethtool-netlink.rst
++++ b/Documentation/networking/ethtool-netlink.rst
+@@ -523,6 +523,8 @@ Link extended states:
+                                                         power required from cable or module
+ 
+   ``ETHTOOL_LINK_EXT_STATE_OVERHEAT``                   The module is overheated
++
++  ``ETHTOOL_LINK_EXT_STATE_MODULE``                     Transceiver module issue
+   ================================================      ============================================
+ 
+ Link extended substates:
+@@ -616,6 +618,16 @@ Link extended substates:
+   ``ETHTOOL_LINK_EXT_SUBSTATE_CI_CABLE_TEST_FAILURE``   Cable test failure
+   ===================================================   ============================================
+ 
++  Transceiver module issue substates:
++
++  ===================================================   ============================================
++  ``ETHTOOL_LINK_EXT_SUBSTATE_MODULE_LOW_POWER_MODE``   The transceiver module is in low power mode
++
++  ``ETHTOOL_LINK_EXT_SUBSTATE_MODULE_CMIS_NOT_READY``   The CMIS Module State Machine did not reach
++                                                        the ModuleReady state. For example, if the
++                                                        module is stuck at ModuleFault state
++  ===================================================   ============================================
++
+ DEBUG_GET
+ =========
+ 
+diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
+index 07d40dc20ca4..1f71293011ca 100644
+--- a/include/linux/ethtool.h
++++ b/include/linux/ethtool.h
+@@ -93,6 +93,7 @@ struct ethtool_link_ext_state_info {
+ 		enum ethtool_link_ext_substate_link_logical_mismatch link_logical_mismatch;
+ 		enum ethtool_link_ext_substate_bad_signal_integrity bad_signal_integrity;
+ 		enum ethtool_link_ext_substate_cable_issue cable_issue;
++		enum ethtool_link_ext_substate_module module;
+ 		u8 __link_ext_substate;
+ 	};
+ };
+diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
+index 8cc79811ee5d..7d453f0e993b 100644
+--- a/include/uapi/linux/ethtool.h
++++ b/include/uapi/linux/ethtool.h
+@@ -603,6 +603,7 @@ enum ethtool_link_ext_state {
+ 	ETHTOOL_LINK_EXT_STATE_CALIBRATION_FAILURE,
+ 	ETHTOOL_LINK_EXT_STATE_POWER_BUDGET_EXCEEDED,
+ 	ETHTOOL_LINK_EXT_STATE_OVERHEAT,
++	ETHTOOL_LINK_EXT_STATE_MODULE,
  };
  
- struct mlxsw_env {
-@@ -445,6 +446,153 @@ int mlxsw_env_reset_module(struct net_device *netdev,
- }
- EXPORT_SYMBOL(mlxsw_env_reset_module);
- 
-+int
-+mlxsw_env_get_module_power_mode(struct mlxsw_core *mlxsw_core, u8 module,
-+				struct ethtool_module_power_mode_params *params,
-+				struct netlink_ext_ack *extack)
-+{
-+	struct mlxsw_env *mlxsw_env = mlxsw_core_env(mlxsw_core);
-+	char mcion_pl[MLXSW_REG_MCION_LEN];
-+	u32 status_bits;
-+	int err;
-+
-+	if (WARN_ON_ONCE(module >= mlxsw_env->module_count))
-+		return -EINVAL;
-+
-+	mutex_lock(&mlxsw_env->module_info_lock);
-+
-+	params->policy = mlxsw_env->module_info[module].power_mode_policy;
-+
-+	mlxsw_reg_mcion_pack(mcion_pl, module);
-+	err = mlxsw_reg_query(mlxsw_core, MLXSW_REG(mcion), mcion_pl);
-+	if (err) {
-+		NL_SET_ERR_MSG_MOD(extack, "Failed to retrieve module's power mode");
-+		goto out;
-+	}
-+
-+	status_bits = mlxsw_reg_mcion_module_status_bits_get(mcion_pl);
-+	if (!(status_bits & MLXSW_REG_MCION_MODULE_STATUS_BITS_PRESENT_MASK))
-+		goto out;
-+
-+	if (status_bits & MLXSW_REG_MCION_MODULE_STATUS_BITS_LOW_POWER_MASK)
-+		params->mode = ETHTOOL_MODULE_POWER_MODE_LOW;
-+	else
-+		params->mode = ETHTOOL_MODULE_POWER_MODE_HIGH;
-+
-+	params->mode_valid = true;
-+
-+out:
-+	mutex_unlock(&mlxsw_env->module_info_lock);
-+	return err;
-+}
-+EXPORT_SYMBOL(mlxsw_env_get_module_power_mode);
-+
-+static int mlxsw_env_module_enable_set(struct mlxsw_core *mlxsw_core,
-+				       u8 module, bool enable)
-+{
-+	enum mlxsw_reg_pmaos_admin_status admin_status;
-+	char pmaos_pl[MLXSW_REG_PMAOS_LEN];
-+
-+	mlxsw_reg_pmaos_pack(pmaos_pl, module);
-+	admin_status = enable ? MLXSW_REG_PMAOS_ADMIN_STATUS_ENABLED :
-+				MLXSW_REG_PMAOS_ADMIN_STATUS_DISABLED;
-+	mlxsw_reg_pmaos_admin_status_set(pmaos_pl, admin_status);
-+	mlxsw_reg_pmaos_ase_set(pmaos_pl, true);
-+
-+	return mlxsw_reg_write(mlxsw_core, MLXSW_REG(pmaos), pmaos_pl);
-+}
-+
-+static int mlxsw_env_module_low_power_set(struct mlxsw_core *mlxsw_core,
-+					  u8 module, bool low_power)
-+{
-+	u16 eeprom_override_mask, eeprom_override;
-+	char pmmp_pl[MLXSW_REG_PMMP_LEN];
-+
-+	mlxsw_reg_pmmp_pack(pmmp_pl, module);
-+	/* Mask all the bits except low power mode. */
-+	eeprom_override_mask = ~MLXSW_REG_PMMP_EEPROM_OVERRIDE_LOW_POWER_MASK;
-+	mlxsw_reg_pmmp_eeprom_override_mask_set(pmmp_pl, eeprom_override_mask);
-+	eeprom_override = low_power ? MLXSW_REG_PMMP_EEPROM_OVERRIDE_LOW_POWER_MASK :
-+				      0;
-+	mlxsw_reg_pmmp_eeprom_override_set(pmmp_pl, eeprom_override);
-+
-+	return mlxsw_reg_write(mlxsw_core, MLXSW_REG(pmmp), pmmp_pl);
-+}
-+
-+static int __mlxsw_env_set_module_power_mode(struct mlxsw_core *mlxsw_core,
-+					     u8 module, bool low_power,
-+					     struct netlink_ext_ack *extack)
-+{
-+	int err;
-+
-+	err = mlxsw_env_module_enable_set(mlxsw_core, module, false);
-+	if (err) {
-+		NL_SET_ERR_MSG_MOD(extack, "Failed to disable module");
-+		return err;
-+	}
-+
-+	err = mlxsw_env_module_low_power_set(mlxsw_core, module, low_power);
-+	if (err) {
-+		NL_SET_ERR_MSG_MOD(extack, "Failed to set module's power mode");
-+		goto err_module_low_power_set;
-+	}
-+
-+	err = mlxsw_env_module_enable_set(mlxsw_core, module, true);
-+	if (err) {
-+		NL_SET_ERR_MSG_MOD(extack, "Failed to enable module");
-+		goto err_module_enable_set;
-+	}
-+
-+	return 0;
-+
-+err_module_enable_set:
-+	mlxsw_env_module_low_power_set(mlxsw_core, module, !low_power);
-+err_module_low_power_set:
-+	mlxsw_env_module_enable_set(mlxsw_core, module, true);
-+	return err;
-+}
-+
-+int
-+mlxsw_env_set_module_power_mode(struct mlxsw_core *mlxsw_core, u8 module,
-+				enum ethtool_module_power_mode_policy policy,
-+				struct netlink_ext_ack *extack)
-+{
-+	struct mlxsw_env *mlxsw_env = mlxsw_core_env(mlxsw_core);
-+	bool low_power;
-+	int err = 0;
-+
-+	if (WARN_ON_ONCE(module >= mlxsw_env->module_count))
-+		return -EINVAL;
-+
-+	if (policy != ETHTOOL_MODULE_POWER_MODE_POLICY_HIGH &&
-+	    policy != ETHTOOL_MODULE_POWER_MODE_POLICY_AUTO) {
-+		NL_SET_ERR_MSG_MOD(extack, "Unsupported power mode policy");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	mutex_lock(&mlxsw_env->module_info_lock);
-+
-+	if (mlxsw_env->module_info[module].power_mode_policy == policy)
-+		goto out;
-+
-+	/* If any ports are up, we are already in high power mode. */
-+	if (mlxsw_env->module_info[module].num_ports_up)
-+		goto out_set_policy;
-+
-+	low_power = policy == ETHTOOL_MODULE_POWER_MODE_POLICY_AUTO;
-+	err = __mlxsw_env_set_module_power_mode(mlxsw_core, module, low_power,
-+						extack);
-+	if (err)
-+		goto out;
-+
-+out_set_policy:
-+	mlxsw_env->module_info[module].power_mode_policy = policy;
-+out:
-+	mutex_unlock(&mlxsw_env->module_info_lock);
-+	return err;
-+}
-+EXPORT_SYMBOL(mlxsw_env_set_module_power_mode);
-+
- static int mlxsw_env_module_has_temp_sensor(struct mlxsw_core *mlxsw_core,
- 					    u8 module,
- 					    bool *p_has_temp_sensor)
-@@ -794,15 +942,33 @@ EXPORT_SYMBOL(mlxsw_env_module_port_unmap);
- int mlxsw_env_module_port_up(struct mlxsw_core *mlxsw_core, u8 module)
- {
- 	struct mlxsw_env *mlxsw_env = mlxsw_core_env(mlxsw_core);
-+	int err = 0;
- 
- 	if (WARN_ON_ONCE(module >= mlxsw_env->module_count))
- 		return -EINVAL;
- 
- 	mutex_lock(&mlxsw_env->module_info_lock);
-+
-+	if (mlxsw_env->module_info[module].power_mode_policy !=
-+	    ETHTOOL_MODULE_POWER_MODE_POLICY_AUTO)
-+		goto out_inc;
-+
-+	if (mlxsw_env->module_info[module].num_ports_up != 0)
-+		goto out_inc;
-+
-+	/* Transition to high power mode following first port using the module
-+	 * being put administratively up.
-+	 */
-+	err = __mlxsw_env_set_module_power_mode(mlxsw_core, module, false,
-+						NULL);
-+	if (err)
-+		goto out_unlock;
-+
-+out_inc:
- 	mlxsw_env->module_info[module].num_ports_up++;
-+out_unlock:
- 	mutex_unlock(&mlxsw_env->module_info_lock);
--
--	return 0;
-+	return err;
- }
- EXPORT_SYMBOL(mlxsw_env_module_port_up);
- 
-@@ -814,7 +980,22 @@ void mlxsw_env_module_port_down(struct mlxsw_core *mlxsw_core, u8 module)
- 		return;
- 
- 	mutex_lock(&mlxsw_env->module_info_lock);
-+
- 	mlxsw_env->module_info[module].num_ports_up--;
-+
-+	if (mlxsw_env->module_info[module].power_mode_policy !=
-+	    ETHTOOL_MODULE_POWER_MODE_POLICY_AUTO)
-+		goto out_unlock;
-+
-+	if (mlxsw_env->module_info[module].num_ports_up != 0)
-+		goto out_unlock;
-+
-+	/* Transition to low power mode following last port using the module
-+	 * being put administratively down.
-+	 */
-+	__mlxsw_env_set_module_power_mode(mlxsw_core, module, true, NULL);
-+
-+out_unlock:
- 	mutex_unlock(&mlxsw_env->module_info_lock);
- }
- EXPORT_SYMBOL(mlxsw_env_module_port_down);
-@@ -824,7 +1005,7 @@ int mlxsw_env_init(struct mlxsw_core *mlxsw_core, struct mlxsw_env **p_env)
- 	char mgpir_pl[MLXSW_REG_MGPIR_LEN];
- 	struct mlxsw_env *env;
- 	u8 module_count;
--	int err;
-+	int i, err;
- 
- 	mlxsw_reg_mgpir_pack(mgpir_pl);
- 	err = mlxsw_reg_query(mlxsw_core, MLXSW_REG(mgpir), mgpir_pl);
-@@ -837,6 +1018,13 @@ int mlxsw_env_init(struct mlxsw_core *mlxsw_core, struct mlxsw_env **p_env)
- 	if (!env)
- 		return -ENOMEM;
- 
-+	/* Firmware defaults to high power mode policy where modules are
-+	 * transitioned to high power mode following plug-in.
-+	 */
-+	for (i = 0; i < module_count; i++)
-+		env->module_info[i].power_mode_policy =
-+			ETHTOOL_MODULE_POWER_MODE_POLICY_HIGH;
-+
- 	mutex_init(&env->module_info_lock);
- 	env->core = mlxsw_core;
- 	env->module_count = module_count;
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_env.h b/drivers/net/ethernet/mellanox/mlxsw/core_env.h
-index c486397f5dfe..da121b1a84b4 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core_env.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core_env.h
-@@ -28,6 +28,16 @@ int mlxsw_env_reset_module(struct net_device *netdev,
- 			   struct mlxsw_core *mlxsw_core, u8 module,
- 			   u32 *flags);
- 
-+int
-+mlxsw_env_get_module_power_mode(struct mlxsw_core *mlxsw_core, u8 module,
-+				struct ethtool_module_power_mode_params *params,
-+				struct netlink_ext_ack *extack);
-+
-+int
-+mlxsw_env_set_module_power_mode(struct mlxsw_core *mlxsw_core, u8 module,
-+				enum ethtool_module_power_mode_policy policy,
-+				struct netlink_ext_ack *extack);
-+
- int
- mlxsw_env_module_overheat_counter_get(struct mlxsw_core *mlxsw_core, u8 module,
- 				      u64 *p_counter);
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/minimal.c b/drivers/net/ethernet/mellanox/mlxsw/minimal.c
-index 9644e9c486b8..e0892f259adf 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/minimal.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/minimal.c
-@@ -145,12 +145,38 @@ static int mlxsw_m_reset(struct net_device *netdev, u32 *flags)
- 				      flags);
- }
- 
-+static int
-+mlxsw_m_get_module_power_mode(struct net_device *netdev,
-+			      struct ethtool_module_power_mode_params *params,
-+			      struct netlink_ext_ack *extack)
-+{
-+	struct mlxsw_m_port *mlxsw_m_port = netdev_priv(netdev);
-+	struct mlxsw_core *core = mlxsw_m_port->mlxsw_m->core;
-+
-+	return mlxsw_env_get_module_power_mode(core, mlxsw_m_port->module,
-+					       params, extack);
-+}
-+
-+static int
-+mlxsw_m_set_module_power_mode(struct net_device *netdev,
-+			      const struct ethtool_module_power_mode_params *params,
-+			      struct netlink_ext_ack *extack)
-+{
-+	struct mlxsw_m_port *mlxsw_m_port = netdev_priv(netdev);
-+	struct mlxsw_core *core = mlxsw_m_port->mlxsw_m->core;
-+
-+	return mlxsw_env_set_module_power_mode(core, mlxsw_m_port->module,
-+					       params->policy, extack);
-+}
-+
- static const struct ethtool_ops mlxsw_m_port_ethtool_ops = {
- 	.get_drvinfo		= mlxsw_m_module_get_drvinfo,
- 	.get_module_info	= mlxsw_m_get_module_info,
- 	.get_module_eeprom	= mlxsw_m_get_module_eeprom,
- 	.get_module_eeprom_by_page = mlxsw_m_get_module_eeprom_by_page,
- 	.reset			= mlxsw_m_reset,
-+	.get_module_power_mode	= mlxsw_m_get_module_power_mode,
-+	.set_module_power_mode	= mlxsw_m_set_module_power_mode,
+ /* More information in addition to ETHTOOL_LINK_EXT_STATE_AUTONEG. */
+@@ -649,6 +650,12 @@ enum ethtool_link_ext_substate_cable_issue {
+ 	ETHTOOL_LINK_EXT_SUBSTATE_CI_CABLE_TEST_FAILURE,
  };
  
- static int
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c
-index 06f1645561c6..7329bc84a8ee 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c
-@@ -1206,6 +1206,32 @@ static int mlxsw_sp_reset(struct net_device *dev, u32 *flags)
- 	return mlxsw_env_reset_module(dev, mlxsw_sp->core, module, flags);
- }
++/* More information in addition to ETHTOOL_LINK_EXT_STATE_MODULE. */
++enum ethtool_link_ext_substate_module {
++	ETHTOOL_LINK_EXT_SUBSTATE_MODULE_LOW_POWER_MODE = 1,
++	ETHTOOL_LINK_EXT_SUBSTATE_MODULE_CMIS_NOT_READY,
++};
++
+ #define ETH_GSTRING_LEN		32
  
-+static int
-+mlxsw_sp_get_module_power_mode(struct net_device *dev,
-+			       struct ethtool_module_power_mode_params *params,
-+			       struct netlink_ext_ack *extack)
-+{
-+	struct mlxsw_sp_port *mlxsw_sp_port = netdev_priv(dev);
-+	struct mlxsw_sp *mlxsw_sp = mlxsw_sp_port->mlxsw_sp;
-+	u8 module = mlxsw_sp_port->mapping.module;
-+
-+	return mlxsw_env_get_module_power_mode(mlxsw_sp->core, module, params,
-+					       extack);
-+}
-+
-+static int
-+mlxsw_sp_set_module_power_mode(struct net_device *dev,
-+			       const struct ethtool_module_power_mode_params *params,
-+			       struct netlink_ext_ack *extack)
-+{
-+	struct mlxsw_sp_port *mlxsw_sp_port = netdev_priv(dev);
-+	struct mlxsw_sp *mlxsw_sp = mlxsw_sp_port->mlxsw_sp;
-+	u8 module = mlxsw_sp_port->mapping.module;
-+
-+	return mlxsw_env_set_module_power_mode(mlxsw_sp->core, module,
-+					       params->policy, extack);
-+}
-+
- const struct ethtool_ops mlxsw_sp_port_ethtool_ops = {
- 	.cap_link_lanes_supported	= true,
- 	.get_drvinfo			= mlxsw_sp_port_get_drvinfo,
-@@ -1228,6 +1254,8 @@ const struct ethtool_ops mlxsw_sp_port_ethtool_ops = {
- 	.get_eth_ctrl_stats		= mlxsw_sp_get_eth_ctrl_stats,
- 	.get_rmon_stats			= mlxsw_sp_get_rmon_stats,
- 	.reset				= mlxsw_sp_reset,
-+	.get_module_power_mode		= mlxsw_sp_get_module_power_mode,
-+	.set_module_power_mode		= mlxsw_sp_set_module_power_mode,
- };
- 
- struct mlxsw_sp1_port_link_mode {
+ /**
 -- 
 2.31.1
 
