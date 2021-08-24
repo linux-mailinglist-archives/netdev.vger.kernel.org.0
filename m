@@ -2,171 +2,250 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2A413F5880
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 08:52:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EA403F5889
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 08:55:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232245AbhHXGww (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 02:52:52 -0400
-Received: from mailout1.w1.samsung.com ([210.118.77.11]:11282 "EHLO
-        mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230192AbhHXGwv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 02:52:51 -0400
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20210824065206euoutp01b4c6877dfb6b3193877ffb8dfe8070f8~eK3vWZxT11819218192euoutp01U
-        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 06:52:06 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20210824065206euoutp01b4c6877dfb6b3193877ffb8dfe8070f8~eK3vWZxT11819218192euoutp01U
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1629787926;
-        bh=hOewvhmSLW2lG+mu5+rYxlmwZoHyCa6gXj2IAgjI0cU=;
-        h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
-        b=q8pnaa6QI706lMMFcIw34CzI7K1aiKPEhe8jFyyCZG9gZwJSH71WPNP67T+qBZlVP
-         w5DcIWnezpOxj1bndHbYUNXbgaqxz69FBsj9p59NOGExYEX2oC8Bn2ESfoRljtfSyL
-         UgfLC4pvj9Jx870zzus89Wr1kyuuz5/DtVRzFoSU=
-Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-        20210824065205eucas1p1b87ec04f3ed154fd70073694c8440500~eK3vCFrto0051900519eucas1p1q;
-        Tue, 24 Aug 2021 06:52:05 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-        eusmges1new.samsung.com (EUCPMTA) with SMTP id FB.9A.45756.51794216; Tue, 24
-        Aug 2021 07:52:05 +0100 (BST)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-        20210824065205eucas1p1b4fffa57afb640bf9e33cb86436ec6f9~eK3ufr0sW0037900379eucas1p1k;
-        Tue, 24 Aug 2021 06:52:05 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20210824065205eusmtrp15ff9e7aeb101d7a2f43dd80f2a9f4bf2~eK3ueh8GL2568325683eusmtrp1V;
-        Tue, 24 Aug 2021 06:52:05 +0000 (GMT)
-X-AuditID: cbfec7f2-7bdff7000002b2bc-7f-61249715611e
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-        eusmgms2.samsung.com (EUCPMTA) with SMTP id 09.1E.20981.41794216; Tue, 24
-        Aug 2021 07:52:04 +0100 (BST)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-        eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20210824065204eusmtip1358d9eda4d304412d70dc61abd014851~eK3tzf3P40183701837eusmtip1R;
-        Tue, 24 Aug 2021 06:52:04 +0000 (GMT)
-Subject: Re: [PATCH v2] of: property: fw_devlink: Add support for
- "phy-handle" property
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Saravana Kannan <saravanak@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>, netdev@vger.kernel.org,
-        kernel-team@android.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        linux-amlogic@lists.infradead.org
-From:   Marek Szyprowski <m.szyprowski@samsung.com>
-Message-ID: <460fcbed-ef4f-2122-3e1f-1517b8d21876@samsung.com>
-Date:   Tue, 24 Aug 2021 08:52:03 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0)
-        Gecko/20100101 Thunderbird/78.13.0
+        id S232245AbhHXG4W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 02:56:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55750 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231292AbhHXG4T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 02:56:19 -0400
+Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54DC7C061575;
+        Mon, 23 Aug 2021 23:55:35 -0700 (PDT)
+Received: by mail-qv1-xf2a.google.com with SMTP id q6so11123178qvs.12;
+        Mon, 23 Aug 2021 23:55:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rFn2OBk8wKvVC+gZ/hQgYxD/xSmcUa/BDPBqvKKIdBI=;
+        b=VjeL2PFMDB4tOdxkWq5ym5nPBpEKH+3JcCJ8c5yezlH7cmtu3vmExu932AwLBtJXDE
+         ZdYUCNw4HPOPt/QVNL/TUBduSeqXAy1c+lkwTE5VanOFiS1qHiVRXfJ4ixhf/cfPvlZs
+         8tuDASNRfOycPCbF8J7fA4kDVXUkAkxh62cktbLr8zHaF8uek7RgPMSHVIkmhgeZ/bGS
+         Lsq7E5yAiZxARsAYKFnGnEF4BTT1U+8prRB8OW0KF5YysSUF3Svut3D5GR2bd0kudskv
+         4eEvWb4O+szxHHxg5lQagOa/wzPGsGKPHwVJqTIFEkupBtCJd180HpPNJwJqSfTi6exH
+         odhA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rFn2OBk8wKvVC+gZ/hQgYxD/xSmcUa/BDPBqvKKIdBI=;
+        b=SPJWxQL095wnv0ALlf6FPKr7wW6HK/OurngfIKnuND0zw4eRTL50r4fhdxbh0K6e6n
+         +zNmmd7QHT1rvLt75O1qLh2mCFv9q8ZgccKErFWYnnIBlO6yXZ1CvvDnHIUolGLQVUcG
+         s0MFK3krnd/aL0H1hLjshMoDIDqSUE4Z3mm8X3Hs4SsdO9yObk9CPqil73RE5KXQSnYe
+         jw0Et+yZR3/Rr3yXz1eXpqAkJmvGELhPSFqaCt/8mcAfSJbqyaYlb6psISrfEpR/w8ty
+         E642D/2iyVQu79IG2FTnU2YtL1SPsKwnv+/8AxpFRc+gBtDPSXwEdp9+5mZhIB2svo2E
+         ggSQ==
+X-Gm-Message-State: AOAM531HXhBvG9GtEPsJsinPNtk1PL/11ZrNJcySqGeaRb1cXEYE0jtE
+        lZQ5XfdmyV8lX0fJe7KdD5I=
+X-Google-Smtp-Source: ABdhPJxO8MfhmUTISjdPZLZcgmb+LCRa4h1ZOm4rFbosDMrWxlSORWm9iGvz4e87TsUsQyYyDDa9kg==
+X-Received: by 2002:a05:6214:410e:: with SMTP id kc14mr37712503qvb.33.1629788134597;
+        Mon, 23 Aug 2021 23:55:34 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id j184sm10420617qkd.74.2021.08.23.23.55.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 Aug 2021 23:55:34 -0700 (PDT)
+From:   CGEL <cgel.zte@gmail.com>
+X-Google-Original-From: CGEL <deng.changcheng@zte.com.cn>
+To:     Alexei Starovoitov <ast@kernel.org>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Yonghong Song <yhs@fb.com>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jing Yangyang <jing.yangyang@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH linux-next] tools:test_xdp_noinline: fix boolreturn.cocci warnings
+Date:   Mon, 23 Aug 2021 23:55:26 -0700
+Message-Id: <20210824065526.60416-1-deng.changcheng@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <YSOfvMIltzWPCKc/@lunn.ch>
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrGKsWRmVeSWpSXmKPExsWy7djPc7qi01USDS4tVbE4f/cQs8X8I+dY
-        LWa++c9msWO7iMWC2dwWl3fNYbM41BdtcWyBmEXr3iPsFl2H/rI5cHls272N1eP9jVZ2j52z
-        7rJ7LNhU6rFpVSebx+Yl9R47d3xm8vi8SS6AI4rLJiU1J7MstUjfLoEr48lFk4IrghVfTs1h
-        bmDczdfFyMkhIWAi8eDEYcYuRi4OIYEVjBK9k0+wQjhfGCXaTl6Ecj4zSpybMJcdpuXT5w4m
-        iMRyRomzL36xQzgfGSWuP9jLAlIlLBApcXbfXjYQW0RAQWLKyT9go5gFNjNJHP/+lBkkwSZg
-        KNH1tgusiFfATuL/xtNMIDaLgKrEur+fGUFsUYFkiYlPJrFC1AhKnJz5BGwBp4C6RFfTI7Aa
-        ZgF5ie1v5zBD2OISt57MBztPQqCZU+LWmadACziAHBeJq+/qIV4Qlnh1fAvUOzISpyf3sEDV
-        M0o8PLeWHcLpYZS43DSDEaLKWuLOuV9gg5gFNCXW79KHCDtK/G5/zAoxn0/ixltBiBv4JCZt
-        m84MEeaV6GgTgqhWk5h1fB3c2oMXLjFPYFSaheSzWUi+mYXkm1kIexcwsqxiFE8tLc5NTy02
-        zEst1ytOzC0uzUvXS87P3cQITFqn/x3/tINx7quPeocYmTgYDzFKcDArifD+ZVJOFOJNSays
-        Si3Kjy8qzUktPsQozcGiJM67avaaeCGB9MSS1OzU1ILUIpgsEwenVANT9l877wn1xkJbg7bZ
-        L8kr5dK/kyt3+84S86w5OT+upG50bVSe7fN8Vk/O/lyR9L1HTcOin+5jnMXNcc+IOf7It3PT
-        NAqtWY/dLdWP/8t0Um9bDcvOhiqbiYtVNhbtPFn/4tE6/gyjLzd4n4QJsN8+V3WC0aXCZ1b8
-        zo6d+nWlr/6rnmE4bpLzLau8WML2/jT+zaacD3n0orwU/6d+frqB9RVjg+eFsiJRsQ0TRH7M
-        TDwvVHnA+PM6fY2uuxt+KH7UmHy97FzUGaZF/148Om78sOZr9IyXDpsV3395dTDufvU5O631
-        r+IFV5p9cPhb8zTmUVXM7k5pj+TTpr/OC369ejnhDO/HV246E2Y+6ZflVWIpzkg01GIuKk4E
-        AOF/qzfJAwAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrBIsWRmVeSWpSXmKPExsVy+t/xu7oi01USDV52WVmcv3uI2WL+kXOs
-        FjPf/Gez2LFdxGLBbG6Ly7vmsFkc6ou2OLZAzKJ17xF2i65Df9kcuDy27d7G6vH+Riu7x85Z
-        d9k9Fmwq9di0qpPNY/OSeo+dOz4zeXzeJBfAEaVnU5RfWpKqkJFfXGKrFG1oYaRnaGmhZ2Ri
-        qWdobB5rZWSqpG9nk5Kak1mWWqRvl6CX8eSiScEVwYovp+YwNzDu5uti5OSQEDCR+PS5g6mL
-        kYtDSGApo8T9pTOZIBIyEienNbBC2MISf651sUEUvWeUOPz0DTNIQlggUuL7s5OMILaIgILE
-        lJN/WEGKmAU2M0ms2nEGrEhI4D6jxPyl7iA2m4ChRNdbkEmcHLwCdhL/N54G28YioCqx7u9n
-        sEGiAskSH04vZYWoEZQ4OfMJC4jNKaAu0dX0CKyGWcBMYt7mh8wQtrzE9rdzoGxxiVtP5jNN
-        YBSahaR9FpKWWUhaZiFpWcDIsopRJLW0ODc9t9hIrzgxt7g0L10vOT93EyMwSrcd+7llB+PK
-        Vx/1DjEycTAeYpTgYFYS4f3LpJwoxJuSWFmVWpQfX1Sak1p8iNEU6J+JzFKiyfnANJFXEm9o
-        ZmBqaGJmaWBqaWasJM5rcmRNvJBAemJJanZqakFqEUwfEwenVAOTLCfLnymubBmLC+Ycqvra
-        ZxZoyzs3ckGGn9vvhycqtJeK/1oXueyOWqbK1iXCdz6svaTdr+a+eo7phxMvdn62m/dtBqvU
-        9uC1be7la/tum8bY/RaROXz8y8GPWWcTShbPLla29rsUv/uE3UNpnntlv44fMq7802JcvsBl
-        d/GCb/INh35bqfEtNPNjmfW2aoGceJEjm0vMpGNbf9wPf2vlz3rR0q9AaLPS+2O2Z54G10nL
-        zJER2P5PTjzZRNdt56G9ayXtPgYv4TqpPzcnUyBq0sUr1e1888rjzf5lz+BLWd/awnLu0Iri
-        Ca5TTnElBc14vOHasinZe0Wv7E+ftbUtKfJd2KlT9w9vPL3pwLpYByWW4oxEQy3mouJEAACc
-        LldbAwAA
-X-CMS-MailID: 20210824065205eucas1p1b4fffa57afb640bf9e33cb86436ec6f9
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20210823120849eucas1p11d3919886444358472be3edd1c662755
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20210823120849eucas1p11d3919886444358472be3edd1c662755
-References: <20210818021717.3268255-1-saravanak@google.com>
-        <CGME20210823120849eucas1p11d3919886444358472be3edd1c662755@eucas1p1.samsung.com>
-        <0a2c4106-7f48-2bb5-048e-8c001a7c3fda@samsung.com>
-        <YSOfvMIltzWPCKc/@lunn.ch>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+From: Jing Yangyang <jing.yangyang@zte.com.cn>
 
-On 23.08.2021 15:16, Andrew Lunn wrote:
-> On Mon, Aug 23, 2021 at 02:08:48PM +0200, Marek Szyprowski wrote:
->> On 18.08.2021 04:17, Saravana Kannan wrote:
->>> Allows tracking dependencies between Ethernet PHYs and their consumers.
->>>
->>> Cc: Andrew Lunn <andrew@lunn.ch>
->>> Cc: netdev@vger.kernel.org
->>> Signed-off-by: Saravana Kannan <saravanak@google.com>
->> This patch landed recently in linux-next as commit cf4b94c8530d ("of:
->> property: fw_devlink: Add support for "phy-handle" property"). It breaks
->> ethernet operation on my Amlogic-based ARM64 boards: Odroid C4
->> (arm64/boot/dts/amlogic/meson-sm1-odroid-c4.dts) and N2
->> (meson-g12b-odroid-n2.dts) as well as Khadas VIM3/VIM3l
->> (meson-g12b-a311d-khadas-vim3.dts and meson-sm1-khadas-vim3l.dts).
->>
->> In case of OdroidC4 I see the following entries in the
->> /sys/kernel/debug/devices_deferred:
->>
->> ff64c000.mdio-multiplexer
->> ff3f0000.ethernet
->>
->> Let me know if there is anything I can check to help debugging this issue.
-> Hi Marek
->
-> Please try this. Completetly untested, not even compile teseted:
+Return statements in functions returning bool should use true/false
+instead of 1/0.
 
-Nope, this doesn't help in this case.
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Jing Yangyang <jing.yangyang@zte.com.cn>
+---
+ .../selftests/bpf/progs/test_xdp_noinline.c        | 42 +++++++++++-----------
+ 1 file changed, 21 insertions(+), 21 deletions(-)
 
-> diff --git a/drivers/of/property.c b/drivers/of/property.c
-> index 0c0dc2e369c0..7c4e257c0a81 100644
-> --- a/drivers/of/property.c
-> +++ b/drivers/of/property.c
-> @@ -1292,6 +1292,7 @@ DEFINE_SIMPLE_PROP(resets, "resets", "#reset-cells")
->   DEFINE_SIMPLE_PROP(leds, "leds", NULL)
->   DEFINE_SIMPLE_PROP(backlight, "backlight", NULL)
->   DEFINE_SIMPLE_PROP(phy_handle, "phy-handle", NULL)
-> +DEFINE_SIMPLE_PROP(mdio_parent_bus, "mdio-parent-bus", NULL);
->   DEFINE_SUFFIX_PROP(regulators, "-supply", NULL)
->   DEFINE_SUFFIX_PROP(gpio, "-gpio", "#gpio-cells")
->   
-> @@ -1381,6 +1382,7 @@ static const struct supplier_bindings of_supplier_bindings[] = {
->          { .parse_prop = parse_leds, },
->          { .parse_prop = parse_backlight, },
->          { .parse_prop = parse_phy_handle, },
-> +       { .parse_prop = parse_mdio_parent_bus, },
->          { .parse_prop = parse_gpio_compat, },
->          { .parse_prop = parse_interrupts, },
->          { .parse_prop = parse_regulators, },
->
-> 	Andrew
->
-Best regards
+diff --git a/tools/testing/selftests/bpf/progs/test_xdp_noinline.c b/tools/testing/selftests/bpf/progs/test_xdp_noinline.c
+index 3a67921..37075f8 100644
+--- a/tools/testing/selftests/bpf/progs/test_xdp_noinline.c
++++ b/tools/testing/selftests/bpf/progs/test_xdp_noinline.c
+@@ -239,7 +239,7 @@ bool parse_udp(void *data, void *data_end,
+ 	udp = data + off;
+ 
+ 	if (udp + 1 > data_end)
+-		return 0;
++		return false;
+ 	if (!is_icmp) {
+ 		pckt->flow.port16[0] = udp->source;
+ 		pckt->flow.port16[1] = udp->dest;
+@@ -247,7 +247,7 @@ bool parse_udp(void *data, void *data_end,
+ 		pckt->flow.port16[0] = udp->dest;
+ 		pckt->flow.port16[1] = udp->source;
+ 	}
+-	return 1;
++	return true;
+ }
+ 
+ static __attribute__ ((noinline))
+@@ -261,7 +261,7 @@ bool parse_tcp(void *data, void *data_end,
+ 
+ 	tcp = data + off;
+ 	if (tcp + 1 > data_end)
+-		return 0;
++		return false;
+ 	if (tcp->syn)
+ 		pckt->flags |= (1 << 1);
+ 	if (!is_icmp) {
+@@ -271,7 +271,7 @@ bool parse_tcp(void *data, void *data_end,
+ 		pckt->flow.port16[0] = tcp->dest;
+ 		pckt->flow.port16[1] = tcp->source;
+ 	}
+-	return 1;
++	return true;
+ }
+ 
+ static __attribute__ ((noinline))
+@@ -287,7 +287,7 @@ bool encap_v6(struct xdp_md *xdp, struct ctl_value *cval,
+ 	void *data;
+ 
+ 	if (bpf_xdp_adjust_head(xdp, 0 - (int)sizeof(struct ipv6hdr)))
+-		return 0;
++		return false;
+ 	data = (void *)(long)xdp->data;
+ 	data_end = (void *)(long)xdp->data_end;
+ 	new_eth = data;
+@@ -295,7 +295,7 @@ bool encap_v6(struct xdp_md *xdp, struct ctl_value *cval,
+ 	old_eth = data + sizeof(struct ipv6hdr);
+ 	if (new_eth + 1 > data_end ||
+ 	    old_eth + 1 > data_end || ip6h + 1 > data_end)
+-		return 0;
++		return false;
+ 	memcpy(new_eth->eth_dest, cval->mac, 6);
+ 	memcpy(new_eth->eth_source, old_eth->eth_dest, 6);
+ 	new_eth->eth_proto = 56710;
+@@ -314,7 +314,7 @@ bool encap_v6(struct xdp_md *xdp, struct ctl_value *cval,
+ 	ip6h->saddr.in6_u.u6_addr32[2] = 3;
+ 	ip6h->saddr.in6_u.u6_addr32[3] = ip_suffix;
+ 	memcpy(ip6h->daddr.in6_u.u6_addr32, dst->dstv6, 16);
+-	return 1;
++	return true;
+ }
+ 
+ static __attribute__ ((noinline))
+@@ -335,7 +335,7 @@ bool encap_v4(struct xdp_md *xdp, struct ctl_value *cval,
+ 	ip_suffix <<= 15;
+ 	ip_suffix ^= pckt->flow.src;
+ 	if (bpf_xdp_adjust_head(xdp, 0 - (int)sizeof(struct iphdr)))
+-		return 0;
++		return false;
+ 	data = (void *)(long)xdp->data;
+ 	data_end = (void *)(long)xdp->data_end;
+ 	new_eth = data;
+@@ -343,7 +343,7 @@ bool encap_v4(struct xdp_md *xdp, struct ctl_value *cval,
+ 	old_eth = data + sizeof(struct iphdr);
+ 	if (new_eth + 1 > data_end ||
+ 	    old_eth + 1 > data_end || iph + 1 > data_end)
+-		return 0;
++		return false;
+ 	memcpy(new_eth->eth_dest, cval->mac, 6);
+ 	memcpy(new_eth->eth_source, old_eth->eth_dest, 6);
+ 	new_eth->eth_proto = 8;
+@@ -367,8 +367,8 @@ bool encap_v4(struct xdp_md *xdp, struct ctl_value *cval,
+ 		csum += *next_iph_u16++;
+ 	iph->check = ~((csum & 0xffff) + (csum >> 16));
+ 	if (bpf_xdp_adjust_head(xdp, (int)sizeof(struct iphdr)))
+-		return 0;
+-	return 1;
++		return false;
++	return true;
+ }
+ 
+ static __attribute__ ((noinline))
+@@ -386,10 +386,10 @@ bool decap_v6(struct xdp_md *xdp, void **data, void **data_end, bool inner_v4)
+ 	else
+ 		new_eth->eth_proto = 56710;
+ 	if (bpf_xdp_adjust_head(xdp, (int)sizeof(struct ipv6hdr)))
+-		return 0;
++		return false;
+ 	*data = (void *)(long)xdp->data;
+ 	*data_end = (void *)(long)xdp->data_end;
+-	return 1;
++	return true;
+ }
+ 
+ static __attribute__ ((noinline))
+@@ -404,10 +404,10 @@ bool decap_v4(struct xdp_md *xdp, void **data, void **data_end)
+ 	memcpy(new_eth->eth_dest, old_eth->eth_dest, 6);
+ 	new_eth->eth_proto = 8;
+ 	if (bpf_xdp_adjust_head(xdp, (int)sizeof(struct iphdr)))
+-		return 0;
++		return false;
+ 	*data = (void *)(long)xdp->data;
+ 	*data_end = (void *)(long)xdp->data_end;
+-	return 1;
++	return true;
+ }
+ 
+ static __attribute__ ((noinline))
+@@ -564,22 +564,22 @@ static bool get_packet_dst(struct real_definition **real,
+ 	hash = get_packet_hash(pckt, hash_16bytes);
+ 	if (hash != 0x358459b7 /* jhash of ipv4 packet */  &&
+ 	    hash != 0x2f4bc6bb /* jhash of ipv6 packet */)
+-		return 0;
++		return false;
+ 	key = 2 * vip_info->vip_num + hash % 2;
+ 	real_pos = bpf_map_lookup_elem(&ch_rings, &key);
+ 	if (!real_pos)
+-		return 0;
++		return false;
+ 	key = *real_pos;
+ 	*real = bpf_map_lookup_elem(&reals, &key);
+ 	if (!(*real))
+-		return 0;
++		return false;
+ 	if (!(vip_info->flags & (1 << 1))) {
+ 		__u32 conn_rate_key = 512 + 2;
+ 		struct lb_stats *conn_rate_stats =
+ 		    bpf_map_lookup_elem(&stats, &conn_rate_key);
+ 
+ 		if (!conn_rate_stats)
+-			return 1;
++			return true;
+ 		cur_time = bpf_ktime_get_ns();
+ 		if ((cur_time - conn_rate_stats->v2) >> 32 > 0xffFFFF) {
+ 			conn_rate_stats->v1 = 1;
+@@ -587,14 +587,14 @@ static bool get_packet_dst(struct real_definition **real,
+ 		} else {
+ 			conn_rate_stats->v1 += 1;
+ 			if (conn_rate_stats->v1 >= 1)
+-				return 1;
++				return true;
+ 		}
+ 		if (pckt->flow.proto == IPPROTO_UDP)
+ 			new_dst_lru.atime = cur_time;
+ 		new_dst_lru.pos = key;
+ 		bpf_map_update_elem(lru_map, &pckt->flow, &new_dst_lru, 0);
+ 	}
+-	return 1;
++	return true;
+ }
+ 
+ __attribute__ ((noinline))
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+1.8.3.1
+
 
