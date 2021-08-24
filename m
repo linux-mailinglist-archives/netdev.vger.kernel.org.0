@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE60E3F5A0E
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 10:46:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8E0B3F5A22
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 10:49:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235418AbhHXIri (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 04:47:38 -0400
-Received: from verein.lst.de ([213.95.11.211]:50858 "EHLO verein.lst.de"
+        id S235446AbhHXIu2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 04:50:28 -0400
+Received: from verein.lst.de ([213.95.11.211]:50894 "EHLO verein.lst.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234988AbhHXIre (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Aug 2021 04:47:34 -0400
+        id S235167AbhHXIuZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Aug 2021 04:50:25 -0400
 Received: by verein.lst.de (Postfix, from userid 2407)
-        id E9A5C67373; Tue, 24 Aug 2021 10:46:46 +0200 (CEST)
-Date:   Tue, 24 Aug 2021 10:46:46 +0200
+        id 6100567373; Tue, 24 Aug 2021 10:49:35 +0200 (CEST)
+Date:   Tue, 24 Aug 2021 10:49:34 +0200
 From:   "hch@lst.de" <hch@lst.de>
-To:     Tianyu Lan <ltykernel@gmail.com>
-Cc:     Michael Kelley <mikelley@microsoft.com>,
+To:     Michael Kelley <mikelley@microsoft.com>
+Cc:     "hch@lst.de" <hch@lst.de>, Tianyu Lan <ltykernel@gmail.com>,
         KY Srinivasan <kys@microsoft.com>,
         Haiyang Zhang <haiyangz@microsoft.com>,
         Stephen Hemminger <sthemmin@microsoft.com>,
@@ -39,7 +39,7 @@ Cc:     Michael Kelley <mikelley@microsoft.com>,
         "kuba@kernel.org" <kuba@kernel.org>,
         "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
         "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
-        "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
+        "arnd@arndb.de" <arnd@arndb.de>,
         "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
         "robin.murphy@arm.com" <robin.murphy@arm.com>,
         "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
@@ -67,25 +67,30 @@ Cc:     Michael Kelley <mikelley@microsoft.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         vkuznets <vkuznets@redhat.com>,
         "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
-        "dave.hansen@intel.com" <dave.hansen@intel.com>
-Subject: Re: [PATCH V3 13/13] HV/Storvsc: Add Isolation VM support for
- storvsc driver
-Message-ID: <20210824084646.GB29844@lst.de>
-References: <20210809175620.720923-1-ltykernel@gmail.com> <20210809175620.720923-14-ltykernel@gmail.com> <MWHPR21MB1593EEF30FFD5C60ED744985D7C09@MWHPR21MB1593.namprd21.prod.outlook.com> <a96626db-4ac9-3ce4-64e9-92568e4f827a@gmail.com> <CY4PR21MB158664748760672446BFA075D7C19@CY4PR21MB1586.namprd21.prod.outlook.com> <939aa552-5c24-65ee-518d-1cf72867c15d@gmail.com>
+        "dave.hansen@intel.com" <dave.hansen@intel.com>,
+        linux-rdma@vger.kernel.org, mpi3mr-linuxdrv.pdl@broadcom.com
+Subject: min_align_mask Re: [PATCH V3 13/13] HV/Storvsc: Add Isolation VM
+ support for storvsc driver
+Message-ID: <20210824084934.GC29844@lst.de>
+References: <20210809175620.720923-1-ltykernel@gmail.com> <20210809175620.720923-14-ltykernel@gmail.com> <MWHPR21MB1593EEF30FFD5C60ED744985D7C09@MWHPR21MB1593.namprd21.prod.outlook.com> <20210820043237.GC26450@lst.de> <CY4PR21MB1586FEB6F6ADD592C04E541BD7C19@CY4PR21MB1586.namprd21.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <939aa552-5c24-65ee-518d-1cf72867c15d@gmail.com>
+In-Reply-To: <CY4PR21MB1586FEB6F6ADD592C04E541BD7C19@CY4PR21MB1586.namprd21.prod.outlook.com>
 User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Aug 21, 2021 at 02:04:11AM +0800, Tianyu Lan wrote:
-> After dma_map_sg(), we still need to go through scatter list again to 
-> populate payload->rrange.pfn_array. We may just go through the scatter list 
-> just once if dma_map_sg() accepts a callback and run it during go
-> through scatter list.
+On Fri, Aug 20, 2021 at 03:40:08PM +0000, Michael Kelley wrote:
+> I see that the swiotlb code gets and uses the min_align_mask field.  But
+> the NVME driver is the only driver that ever sets it, so the value is zero
+> in all other cases.  Does swiotlb just use PAGE_SIZE in that that case?  I
+> couldn't tell from a quick glance at the swiotlb code.
 
-Iterating a cache hot array is way faster than doing lots of indirect
-calls.
+The encoding isn't all that common.  I only know it for the RDMA memory
+registration format, and RDMA in general does not interact very well
+with swiotlb (although the in-kernel drivers should work fine, it is
+userspace RDMA that is the problem).  It seems recently a new driver
+using the format (mpi3mr) also showed up.  All these should probably set
+the min_align_mask.
