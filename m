@@ -2,309 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2AEC3F5E68
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 14:52:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C02113F5E98
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 15:04:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237240AbhHXMwn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 08:52:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54430 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237063AbhHXMwm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 08:52:42 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22FEEC061757;
-        Tue, 24 Aug 2021 05:51:58 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id h1so8324251pjs.2;
-        Tue, 24 Aug 2021 05:51:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DvLQbm0Ty3NQtjMeizQYgOKEyU1Gv/bb1V4BEqqzMKw=;
-        b=ctMxmWZcu988FrDiEkWUIUlZL3g1kvdtKjFmKEY1trLrCY24tCkaucUPPOl6JTewfe
-         g0BORneGWXphjqTXq8RHs01IvmJc8NDhwRqJYNAepyESPBGMjutj04fQmCG3wB97hF5k
-         R8o2gDdlqibG3dF3muu5Di2Pa6AW2WSTi8sXmoUBbjG0epituaR6gmETQUf/G2GvsFFY
-         zeVBHDe3nAugyaTCne5wAH7X0NMcYCqrLMo2fODf9qs5/3Kmdv1V/CuBe0WwHVNOAGQI
-         yF3SllHFqkIVgJihXau126NUcDKXhmN9H1qfoxjIerrYyBj5Y33JEyate/Gq0C6bKKZn
-         zgZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DvLQbm0Ty3NQtjMeizQYgOKEyU1Gv/bb1V4BEqqzMKw=;
-        b=j6yKZY4wgiZocy9oSSKCC1D+viHeQ10OaAaAmL17bLRX5Iu3zXzFhrUEdQ6oVbMMJ6
-         BIt+dPwJwZxsftoFmCHdrwuPwrZoyDoQsNPoyJ0oQXaLw5ceyVTtHdSDn4tbiU1UuT7K
-         yQBNAeJwFygWx+tE4EH9Wmq6QXNIXyqWPFuLz7VTjQdMBDDp4YK5IBV5DwMboMJjecNe
-         u7Y2T2joeytjHS7i+KkAESBBmJFSDHvkJAS7BHRUgpzfrSWAxrTaNWiQX08GdOOpwdqg
-         E+5zMzMKIrZsVmBXeQHgEI35NwbWu1UYvpL0kdSP/gtiqrM12QFeGDogm2MUtG2lifgT
-         4rIw==
-X-Gm-Message-State: AOAM532phl6IWY5BCuHrLcVbBFK0bt2JjkB8WyWnNEi4g+u/lEpoKotB
-        4WEFiTzdFRfmnxVfdbn4Jg/5yrgGeWYcVTrr
-X-Google-Smtp-Source: ABdhPJx5YXHeLIk4/X6hbxC6HKJCPnUQ/QgIJN1DUHBdo1f3kAyBRzLoUlSfkMMLVoKsHpRApyGssw==
-X-Received: by 2002:a17:90a:744c:: with SMTP id o12mr4373891pjk.139.1629809517684;
-        Tue, 24 Aug 2021 05:51:57 -0700 (PDT)
-Received: from localhost.localdomain ([221.225.34.48])
-        by smtp.googlemail.com with ESMTPSA id on15sm2348032pjb.19.2021.08.24.05.51.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Aug 2021 05:51:57 -0700 (PDT)
-From:   Zhongya Yan <yan2228598786@gmail.com>
-To:     kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        edumazet@google.com, rostedt@goodmis.org, mingo@redhat.com,
-        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        hengqi.chen@gmail.com, yhs@fb.com,
-        Zhongya Yan <yan2228598786@gmail.com>
-Subject: [PATCH] net: tcp_drop adds `reason` parameter for tracing
-Date:   Tue, 24 Aug 2021 05:51:40 -0700
-Message-Id: <20210824125140.190253-1-yan2228598786@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S237363AbhHXNFP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 09:05:15 -0400
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:43847 "EHLO
+        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236443AbhHXNFP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 09:05:15 -0400
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailnew.nyi.internal (Postfix) with ESMTP id A24655803E9;
+        Tue, 24 Aug 2021 09:04:30 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Tue, 24 Aug 2021 09:04:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=3Nhao+SewolVrE6To
+        ti4sLuXYXfxz2qS77ueIIWZqGA=; b=dJMv9SMYlPMg/HEAsaM0G/XAq7t8MKaXa
+        A98lGF1axDwb5f3Ye2fIjbvBLt9Os20sCWnHHLtFygkl7ugH7St3RgJPCLXC7bvx
+        xindqAe56B45IFYIEIFSIihE76WDtnmfoZscqITP8FAbALiEZMEMq08bINWxPSwk
+        owLpkS5cps6vjO3Ob3gpGNGYR/xV5bOOaD2jSyE5SZWc6W387C625L2FhTZKVVvv
+        jWCaOlfbsURj9ZyIGfu4VxXfUyI+tGZWWUo23cWJo7z6Z5tXRNz89GvWqSYgWCEm
+        qsyHEF7Z27qTcW9Zfa2NgjV0vnhiv0ZKRCIUwfb0+U32rs8qvnh2g==
+X-ME-Sender: <xms:Xe4kYTvlAq1qVaJgn-icC5HXUdYpTHn_e-maICmlPy9wz_pFwNTz3w>
+    <xme:Xe4kYUe4iAjILE48CvZlkzFE1TqC0WBEbkP8cvHxXEf9zW21jEhBc91NZ01cZqwdA
+    SB6mqn0qDmfzDQ>
+X-ME-Received: <xmr:Xe4kYWyYmuJnSbuK9JuOT-NDuA6Cwey2J9VQ0N4SdffJp7jz99HT8YmJdTUjjMt4X5Z3VIDRf0qrZXvl8GCH_pEKJwkTuPad_mNGYJWocAP-bw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddruddtjedgheelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecuggftrfgrthhtvghrnhepueekgefggeekkeelfeeltdehveektdevke
+    egtdfhudektefggefhfeelleefleffnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghdp
+    shhnihgrrdhorhhgpdhqshhfphdquggurdgtohhmnecuvehluhhsthgvrhfuihiivgeptd
+    enucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:Xe4kYSNaN9Em55r4FUwXEZ569WODlFr9DJCv7B5LmJMDfFLnuen2lQ>
+    <xmx:Xe4kYT-XFH4oxebQvbd8PK2cbmHhg_twUHUigNOSUN6ltD0N7b5PmQ>
+    <xmx:Xe4kYSWcob8URYa11ZgAjcbz386KkmIuWZwBswl1HlHB5umk-IATaw>
+    <xmx:Xu4kYfRzEIcj8LR2WFHJvpf472WM3tTxjdDRpIIUrAKWi97weGLmhg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 24 Aug 2021 09:04:26 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        mkubecek@suse.cz, pali@kernel.org, jacob.e.keller@intel.com,
+        jiri@nvidia.com, vadimp@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: [RFC PATCH net-next v3 0/6] ethtool: Add ability to control transceiver modules' power mode
+Date:   Tue, 24 Aug 2021 16:03:38 +0300
+Message-Id: <20210824130344.1828076-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When using `tcp_drop(struct sock *sk, struct sk_buff *skb)` we can
-not tell why we need to delete `skb`. To solve this problem I updated the
-method `tcp_drop(struct sock *sk, struct sk_buff *skb, enum tcp_drop_reason reason)`
-to include the source of the deletion when it is done, so you can
-get an idea of the reason for the deletion based on the source.
+From: Ido Schimmel <idosch@nvidia.com>
 
-The current purpose is mainly derived from the suggestions
-of `Yonghong Song` and `brendangregg`:
+This patchset extends the ethtool netlink API to allow user space to
+control transceiver modules. Two specific APIs are added, but the plan
+is to extend the interface with more APIs in the future (see "Future
+plans").
 
-https://github.com/iovisor/bcc/issues/3533.
+This submission is a complete rework of a previous submission [1] that
+tried to achieve the same goal by allowing user space to write to the
+EEPROMs of these modules. It was rejected as it could have enabled user
+space binary blob drivers.
 
-"It is worthwhile to mention the context/why we want to this
-tracepoint with bcc issue https://github.com/iovisor/bcc/issues/3533.
-Mainly two reasons: (1). tcp_drop is a tiny function which
-may easily get inlined, a tracepoint is more stable, and (2).
-tcp_drop does not provide enough information on why it is dropped.
-" by Yonghong Song
+However, the main issue is that by directly writing to some pages of
+these EEPROMs, we are interfering with the entity that is controlling
+the modules (kernel / device firmware). In addition, some functionality
+cannot be implemented solely by writing to the EEPROM, as it requires
+the assertion / de-assertion of hardware signals (e.g., "ResetL" pin in
+SFF-8636).
 
-Signed-off-by: Zhongya Yan <yan2228598786@gmail.com>
----
- include/net/tcp.h          | 11 ++++++++
- include/trace/events/tcp.h | 56 ++++++++++++++++++++++++++++++++++++++
- net/ipv4/tcp_input.c       | 34 +++++++++++++++--------
- 3 files changed, 89 insertions(+), 12 deletions(-)
+Motivation
+==========
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 784d5c3ef1c5..dd8cd8d6f2f1 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -254,6 +254,17 @@ extern atomic_long_t tcp_memory_allocated;
- extern struct percpu_counter tcp_sockets_allocated;
- extern unsigned long tcp_memory_pressure;
- 
-+enum tcp_drop_reason {
-+	TCP_OFO_QUEUE = 1,
-+	TCP_DATA_QUEUE_OFO = 2,
-+	TCP_DATA_QUEUE = 3,
-+	TCP_PRUNE_OFO_QUEUE = 4,
-+	TCP_VALIDATE_INCOMING = 5,
-+	TCP_RCV_ESTABLISHED = 6,
-+	TCP_RCV_SYNSENT_STATE_PROCESS = 7,
-+	TCP_RCV_STATE_PROCESS = 8
-+};
-+
- /* optimized version of sk_under_memory_pressure() for TCP sockets */
- static inline bool tcp_under_memory_pressure(const struct sock *sk)
- {
-diff --git a/include/trace/events/tcp.h b/include/trace/events/tcp.h
-index 521059d8dc0a..a0d3d31eb591 100644
---- a/include/trace/events/tcp.h
-+++ b/include/trace/events/tcp.h
-@@ -371,6 +371,62 @@ DEFINE_EVENT(tcp_event_skb, tcp_bad_csum,
- 	TP_ARGS(skb)
- );
- 
-+TRACE_EVENT(tcp_drop,
-+		TP_PROTO(struct sock *sk, struct sk_buff *skb, enum tcp_drop_reason reason),
-+
-+		TP_ARGS(sk, skb, reason),
-+
-+		TP_STRUCT__entry(
-+			__array(__u8, saddr, sizeof(struct sockaddr_in6))
-+			__array(__u8, daddr, sizeof(struct sockaddr_in6))
-+			__field(__u16, sport)
-+			__field(__u16, dport)
-+			__field(__u32, mark)
-+			__field(__u16, data_len)
-+			__field(__u32, snd_nxt)
-+			__field(__u32, snd_una)
-+			__field(__u32, snd_cwnd)
-+			__field(__u32, ssthresh)
-+			__field(__u32, snd_wnd)
-+			__field(__u32, srtt)
-+			__field(__u32, rcv_wnd)
-+			__field(__u64, sock_cookie)
-+			__field(__u32, reason)
-+			),
-+
-+		TP_fast_assign(
-+				const struct tcphdr *th = (const struct tcphdr *)skb->data;
-+				const struct inet_sock *inet = inet_sk(sk);
-+				const struct tcp_sock *tp = tcp_sk(sk);
-+
-+				memset(__entry->saddr, 0, sizeof(struct sockaddr_in6));
-+				memset(__entry->daddr, 0, sizeof(struct sockaddr_in6));
-+
-+				TP_STORE_ADDR_PORTS(__entry, inet, sk);
-+
-+				__entry->sport = ntohs(inet->inet_sport);
-+				__entry->dport = ntohs(inet->inet_dport);
-+				__entry->mark = skb->mark;
-+
-+				__entry->data_len = skb->len - __tcp_hdrlen(th);
-+				__entry->snd_nxt = tp->snd_nxt;
-+				__entry->snd_una = tp->snd_una;
-+				__entry->snd_cwnd = tp->snd_cwnd;
-+				__entry->snd_wnd = tp->snd_wnd;
-+				__entry->rcv_wnd = tp->rcv_wnd;
-+				__entry->ssthresh = tcp_current_ssthresh(sk);
-+		__entry->srtt = tp->srtt_us >> 3;
-+		__entry->sock_cookie = sock_gen_cookie(sk);
-+		__entry->reason = reason;
-+		),
-+
-+		TP_printk("src=%pISpc dest=%pISpc mark=%#x data_len=%d snd_nxt=%#x snd_una=%#x snd_cwnd=%u ssthresh=%u snd_wnd=%u srtt=%u rcv_wnd=%u sock_cookie=%llx reason=%d",
-+				__entry->saddr, __entry->daddr, __entry->mark,
-+				__entry->data_len, __entry->snd_nxt, __entry->snd_una,
-+				__entry->snd_cwnd, __entry->ssthresh, __entry->snd_wnd,
-+				__entry->srtt, __entry->rcv_wnd, __entry->sock_cookie, __entry->reason)
-+);
-+
- #endif /* _TRACE_TCP_H */
- 
- /* This part must be outside protection */
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 149ceb5c94ff..83e31661876b 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -4643,12 +4643,22 @@ static bool tcp_ooo_try_coalesce(struct sock *sk,
- 	return res;
- }
- 
--static void tcp_drop(struct sock *sk, struct sk_buff *skb)
-+static void __tcp_drop(struct sock *sk,
-+		   struct sk_buff *skb)
- {
- 	sk_drops_add(sk, skb);
- 	__kfree_skb(skb);
- }
- 
-+/* tcp_drop whit reason,for epbf trace
-+ */
-+static void tcp_drop(struct sock *sk, struct sk_buff *skb,
-+		 enum tcp_drop_reason reason)
-+{
-+	trace_tcp_drop(sk, skb, reason);
-+	__tcp_drop(sk, skb);
-+}
-+
- /* This one checks to see if we can put data from the
-  * out_of_order queue into the receive_queue.
-  */
-@@ -4676,7 +4686,7 @@ static void tcp_ofo_queue(struct sock *sk)
- 		rb_erase(&skb->rbnode, &tp->out_of_order_queue);
- 
- 		if (unlikely(!after(TCP_SKB_CB(skb)->end_seq, tp->rcv_nxt))) {
--			tcp_drop(sk, skb);
-+			tcp_drop(sk, skb, TCP_OFO_QUEUE);
- 			continue;
- 		}
- 
-@@ -4732,7 +4742,7 @@ static void tcp_data_queue_ofo(struct sock *sk, struct sk_buff *skb)
- 	if (unlikely(tcp_try_rmem_schedule(sk, skb, skb->truesize))) {
- 		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPOFODROP);
- 		sk->sk_data_ready(sk);
--		tcp_drop(sk, skb);
-+		tcp_drop(sk, skb, TCP_DATA_QUEUE_OFO);
- 		return;
- 	}
- 
-@@ -4795,7 +4805,7 @@ static void tcp_data_queue_ofo(struct sock *sk, struct sk_buff *skb)
- 				/* All the bits are present. Drop. */
- 				NET_INC_STATS(sock_net(sk),
- 					      LINUX_MIB_TCPOFOMERGE);
--				tcp_drop(sk, skb);
-+				tcp_drop(sk, skb, TCP_DATA_QUEUE_OFO);
- 				skb = NULL;
- 				tcp_dsack_set(sk, seq, end_seq);
- 				goto add_sack;
-@@ -4814,7 +4824,7 @@ static void tcp_data_queue_ofo(struct sock *sk, struct sk_buff *skb)
- 						 TCP_SKB_CB(skb1)->end_seq);
- 				NET_INC_STATS(sock_net(sk),
- 					      LINUX_MIB_TCPOFOMERGE);
--				tcp_drop(sk, skb1);
-+				tcp_drop(sk, skb1, TCP_DATA_QUEUE_OFO);
- 				goto merge_right;
- 			}
- 		} else if (tcp_ooo_try_coalesce(sk, skb1,
-@@ -4842,7 +4852,7 @@ static void tcp_data_queue_ofo(struct sock *sk, struct sk_buff *skb)
- 		tcp_dsack_extend(sk, TCP_SKB_CB(skb1)->seq,
- 				 TCP_SKB_CB(skb1)->end_seq);
- 		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPOFOMERGE);
--		tcp_drop(sk, skb1);
-+		tcp_drop(sk, skb1, TCP_DATA_QUEUE_OFO);
- 	}
- 	/* If there is no skb after us, we are the last_skb ! */
- 	if (!skb1)
-@@ -5019,7 +5029,7 @@ static void tcp_data_queue(struct sock *sk, struct sk_buff *skb)
- 		tcp_enter_quickack_mode(sk, TCP_MAX_QUICKACKS);
- 		inet_csk_schedule_ack(sk);
- drop:
--		tcp_drop(sk, skb);
-+		tcp_drop(sk, skb, TCP_DATA_QUEUE);
- 		return;
- 	}
- 
-@@ -5276,7 +5286,7 @@ static bool tcp_prune_ofo_queue(struct sock *sk)
- 		prev = rb_prev(node);
- 		rb_erase(node, &tp->out_of_order_queue);
- 		goal -= rb_to_skb(node)->truesize;
--		tcp_drop(sk, rb_to_skb(node));
-+		tcp_drop(sk, rb_to_skb(node), TCP_PRUNE_OFO_QUEUE);
- 		if (!prev || goal <= 0) {
- 			sk_mem_reclaim(sk);
- 			if (atomic_read(&sk->sk_rmem_alloc) <= sk->sk_rcvbuf &&
-@@ -5701,7 +5711,7 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
- 	return true;
- 
- discard:
--	tcp_drop(sk, skb);
-+	tcp_drop(sk, skb, TCP_VALIDATE_INCOMING);
- 	return false;
- }
- 
-@@ -5905,7 +5915,7 @@ void tcp_rcv_established(struct sock *sk, struct sk_buff *skb)
- 	TCP_INC_STATS(sock_net(sk), TCP_MIB_INERRS);
- 
- discard:
--	tcp_drop(sk, skb);
-+	tcp_drop(sk, skb, TCP_RCV_ESTABLISHED);
- }
- EXPORT_SYMBOL(tcp_rcv_established);
- 
-@@ -6196,7 +6206,7 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
- 						  TCP_DELACK_MAX, TCP_RTO_MAX);
- 
- discard:
--			tcp_drop(sk, skb);
-+			tcp_drop(sk, skb, TCP_RCV_SYNSENT_STATE_PROCESS);
- 			return 0;
- 		} else {
- 			tcp_send_ack(sk);
-@@ -6568,7 +6578,7 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
- 
- 	if (!queued) {
- discard:
--		tcp_drop(sk, skb);
-+		tcp_drop(sk, skb, TCP_RCV_STATE_PROCESS);
- 	}
- 	return 0;
- }
+The kernel can currently dump the contents of module EEPROMs to user
+space via the ethtool legacy ioctl API or the new netlink API. These
+dumps can then be parsed by ethtool(8) according to the specification
+that defines the memory map of the EEPROM. For example, SFF-8636 [2] for
+QSFP and CMIS [3] for QSFP-DD.
+
+In addition to read-only elements, these specifications also define
+writeable elements that can be used to control the behavior of the
+module. For example, controlling whether the module is put in low or
+high power mode to limit its power consumption.
+
+The CMIS specification even defines a message exchange mechanism (CDB,
+Command Data Block) on top of the module's memory map. This allows the
+host to send various commands to the module. For example, to update its
+firmware.
+
+Implementation
+==============
+
+The ethtool netlink API is extended with two new messages,
+'ETHTOOL_MSG_MODULE_SET' and 'ETHTOOL_MSG_MODULE_GET', that allow user
+space to set and get transceiver module parameters. Specifically, the
+'ETHTOOL_A_MODULE_POWER_MODE_POLICY' attribute allows user space to
+control the power mode policy of the module in order to limit its power
+consumption. See detailed description in patch #1.
+
+The user API is designed to be generic enough so that it could be used
+for modules with different memory maps (e.g., SFF-8636, CMIS).
+
+The only implementation of the device driver API in this series is for a
+MAC driver (mlxsw) where the module is controlled by the device's
+firmware, but it is designed to be generic enough so that it could also
+be used by implementations where the module is controlled by the kernel.
+
+Testing and introspection
+=========================
+
+See detailed description in patches #1 and #5.
+
+Patchset overview
+=================
+
+Patch #1 adds the initial infrastructure in ethtool along with the
+ability to control transceiver modules' power mode.
+
+Patches #2-#3 add required device registers in mlxsw.
+
+Patch #4 implements in mlxsw the ethtool operations added in patch #1.
+
+Patch #5 adds extended link states in order to allow user space to
+troubleshoot link down issues related to transceiver modules.
+
+Patch #6 adds support for these extended states in mlxsw.
+
+Future plans
+============
+
+* Extend 'ETHTOOL_MSG_MODULE_SET' to control Tx output among other
+attributes.
+
+* Add new ethtool message(s) to update firmware on transceiver modules.
+
+* Extend ethtool(8) to parse more diagnostic information from CMIS
+modules. No kernel changes required.
+
+Changes since RFC v2 [4]:
+
+* Change 'high-on-up' power mode policy to 'auto'
+* Remove 'low' power mode policy
+* Document that default power mode policy is driver-dependent
+* Remove restrictions regarding interface administrative state when
+  setting the power mode policy
+
+Changes since RFC v1 [5]:
+
+* Split 'ETHTOOL_A_MODULE_LOW_POWER_ENABLED' into two attributes.
+* Add 'high-on-up' power mode policy.
+* Drop 'ETHTOOL_MSG_MODULE_RESET_ACT' in favor of existing ioctl
+  interface.
+* Add extended link states to help in troubleshooting.
+
+Note: This series does not apply to net-next (it is RFC, anyway) because
+I left out mundane infra work in mlxsw. Will submit it with reset
+support as part of a separate set.
+
+[1] https://lore.kernel.org/netdev/20210623075925.2610908-1-idosch@idosch.org/
+[2] https://members.snia.org/document/dl/26418
+[3] http://www.qsfp-dd.com/wp-content/uploads/2021/05/CMIS5p0.pdf
+[4] https://lore.kernel.org/netdev/20210818155202.1278177-1-idosch@idosch.org/
+[5] https://lore.kernel.org/netdev/20210809102152.719961-1-idosch@idosch.org/
+
+Ido Schimmel (6):
+  ethtool: Add ability to control transceiver modules' power mode
+  mlxsw: reg: Add Port Module Memory Map Properties register
+  mlxsw: reg: Add Management Cable IO and Notifications register
+  mlxsw: Add ability to control transceiver modules' power mode
+  ethtool: Add transceiver module extended states
+  mlxsw: Add support for transceiver module extended states
+
+ Documentation/networking/ethtool-netlink.rst  |  76 ++++++-
+ .../net/ethernet/mellanox/mlxsw/core_env.c    | 194 +++++++++++++++++-
+ .../net/ethernet/mellanox/mlxsw/core_env.h    |  10 +
+ drivers/net/ethernet/mellanox/mlxsw/minimal.c |  26 +++
+ drivers/net/ethernet/mellanox/mlxsw/reg.h     |  78 +++++++
+ .../mellanox/mlxsw/spectrum_ethtool.c         |  73 ++++++-
+ include/linux/ethtool.h                       |  26 +++
+ include/uapi/linux/ethtool.h                  |  30 +++
+ include/uapi/linux/ethtool_netlink.h          |  17 ++
+ net/ethtool/Makefile                          |   2 +-
+ net/ethtool/module.c                          | 184 +++++++++++++++++
+ net/ethtool/netlink.c                         |  19 ++
+ net/ethtool/netlink.h                         |   4 +
+ 13 files changed, 731 insertions(+), 8 deletions(-)
+ create mode 100644 net/ethtool/module.c
+
 -- 
-2.25.1
+2.31.1
 
