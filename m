@@ -2,101 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A5543F6209
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 17:52:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F89E3F6211
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 17:53:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238467AbhHXPwt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 11:52:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40936 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238304AbhHXPwq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 11:52:46 -0400
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A687BC061764
-        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 08:52:02 -0700 (PDT)
-Received: by mail-io1-xd2a.google.com with SMTP id a13so26898495iol.5
-        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 08:52:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=G9UnSSnlYRLUttWk790OTUp3vVDNhuFNpjJPwPR33gg=;
-        b=eiDog05hn6geYVERCCz83M7DncCeFgjW4iVb4MF6TQEZkST+XbuWGBUN1J6xMd4+Jf
-         oM6/wKi3lPr7xBEq/SDCgNOErb+C8y5w78/D3J30mqecQNi6O/28hBNP1LgaZjVpIfoq
-         tgO3TkEdbvxp+lDdPSMN9Ujo3Q7e2wtUN10sM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=G9UnSSnlYRLUttWk790OTUp3vVDNhuFNpjJPwPR33gg=;
-        b=nqC74SwVF+v7EBCgndgvnJ9QOOgFtbOGX33Q9wLyrWtXNhPKVuf5Zw4fHoRZcXI8xt
-         gD1BNoGJ5axuC+41rUHXu37ev8yn5VuZfECjXxKzEdgaGQy1mHhCPZZ5WHFLaMqNd2ur
-         BDnq5VDaqKSL3+kyXb0rT70EXsXWRZefge5fx/20M4ELP8xadSERuuyTUtE3hcy1TByr
-         loB1kF18icul8bCwWXFfp63FFHWqUK5GZqMSGQzEfdLK+uUBeuYjdWz1hK3kDKtCGs9C
-         ero8jPh3wcem40wf0XjDhsVTQ7vjF7830EkrgDV6wGPbyBne1J6X7XkexroVlyX0JqrR
-         Itdw==
-X-Gm-Message-State: AOAM531cdoI9KNepzFxF672nJ8sK51b6ixA51pTOPbAiYTELMR8TTQ26
-        QfB31pOG87m+IBTEgNmt4ZsjQg==
-X-Google-Smtp-Source: ABdhPJw12PHQe4ldQaJd+CQv6s5KafuQsOqHWMdAGHu+kcNMgcpKWej3e22m86/A7SuIEuuLmE4LnQ==
-X-Received: by 2002:a05:6638:1504:: with SMTP id b4mr32944162jat.144.1629820321934;
-        Tue, 24 Aug 2021 08:52:01 -0700 (PDT)
-Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
-        by smtp.gmail.com with ESMTPSA id c25sm10609598iom.9.2021.08.24.08.52.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 24 Aug 2021 08:52:01 -0700 (PDT)
-Subject: Re: [PATCH linux-next] tools:test_xdp_noinline: fix boolreturn.cocci
- warnings
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     CGEL <cgel.zte@gmail.com>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Yonghong Song <yhs@fb.com>, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jing Yangyang <jing.yangyang@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20210824065526.60416-1-deng.changcheng@zte.com.cn>
- <2d701f13-8996-ed7d-3d41-794aa8a6e96c@linuxfoundation.org>
- <20210824074657.363455a6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <2b6bf2fa-cf40-9610-ede5-ceab35004864@linuxfoundation.org>
-Date:   Tue, 24 Aug 2021 09:52:00 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        id S238517AbhHXPx6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 11:53:58 -0400
+Received: from beige.elm.relay.mailchannels.net ([23.83.212.16]:21794 "EHLO
+        beige.elm.relay.mailchannels.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238437AbhHXPx6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 11:53:58 -0400
+X-Sender-Id: 9wt3zsp42r|x-authuser|john.efstathiades@pebblebay.com
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id DE80D701C1A;
+        Tue, 24 Aug 2021 15:53:11 +0000 (UTC)
+Received: from ares.krystal.co.uk (100-96-13-125.trex.outbound.svc.cluster.local [100.96.13.125])
+        (Authenticated sender: 9wt3zsp42r)
+        by relay.mailchannels.net (Postfix) with ESMTPA id 17E087019B3;
+        Tue, 24 Aug 2021 15:53:09 +0000 (UTC)
+X-Sender-Id: 9wt3zsp42r|x-authuser|john.efstathiades@pebblebay.com
+Received: from ares.krystal.co.uk (ares.krystal.co.uk [77.72.0.130])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384)
+        by 100.96.13.125 (trex/6.3.3);
+        Tue, 24 Aug 2021 15:53:11 +0000
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: 9wt3zsp42r|x-authuser|john.efstathiades@pebblebay.com
+X-MailChannels-Auth-Id: 9wt3zsp42r
+X-Inform-Interest: 5c645723559f1033_1629820391569_639225716
+X-MC-Loop-Signature: 1629820391569:518000359
+X-MC-Ingress-Time: 1629820391569
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=pebblebay.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        MIME-Version:Message-ID:Date:Subject:In-Reply-To:References:Cc:To:From:
+        Reply-To:Sender:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=l+XbIoJpmVeAnyL1nxsNAek3LZ8eCgH5+Lwv/8h1w3s=; b=2Apcq4CsDL0bEZqJGFA0OwpZQH
+        SMgAbIvkcDrDVw8hpBEAQKNWwSqLudMvfoX6phZB/SMA9VV9AF+f36ZcrmhN0BrRCAZJOyl/LVF/K
+        fDm7I15OmGju3hgtTIKjLm98+fFDQgbiWNyf6VALu/7uC3qJlj43RWOIt8MfCtzWV03DOlr360Sq7
+        UoGw4flEurGRoMUH4ea3X0d3XQ/fhxVxJq81yaVs6niMZQVl1L9U/Je7JZTzPNgmreY8WxpW2B+Mn
+        HayZhUo0zEa9U1qowX4STRd3aK/pbSspDsJErW8uulpDeNQlbv1b9KlHcukLP6q69fQ9+BTZftl8T
+        VMDHY7Yg==;
+Received: from cpc160185-warw19-2-0-cust743.3-2.cable.virginm.net ([82.21.62.232]:36057 helo=pbcllap7)
+        by ares.krystal.co.uk with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <john.efstathiades@pebblebay.com>)
+        id 1mIYjd-008tZ7-BS; Tue, 24 Aug 2021 16:53:08 +0100
+Reply-To: <john.efstathiades@pebblebay.com>
+From:   "John Efstathiades" <john.efstathiades@pebblebay.com>
+To:     "'Jakub Kicinski'" <kuba@kernel.org>
+Cc:     <linux-usb@vger.kernel.org>, <UNGLinuxDriver@microchip.com>,
+        <woojung.huh@microchip.com>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>
+References: <20210823135229.36581-1-john.efstathiades@pebblebay.com>    <20210823135229.36581-6-john.efstathiades@pebblebay.com>        <20210823154022.490688a6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <001b01d798c6$5b4d7b30$11e87190$@pebblebay.com> <20210824065303.17f23421@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <02d701d798f5$04a23df0$0de6b9d0$@pebblebay.com> <20210824081958.407b4009@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210824081958.407b4009@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Subject: RE: [PATCH net-next 05/10] lan78xx: Disable USB3 link power state transitions
+Date:   Tue, 24 Aug 2021 16:52:45 +0100
+Organization: Pebble Bay Consulting Ltd
+Message-ID: <02dc01d79900$20a60580$61f21080$@pebblebay.com>
 MIME-Version: 1.0
-In-Reply-To: <20210824074657.363455a6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain;
+        charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Content-Language: en-gb
+Thread-Index: AQHPAB61dMYAY/LsGMENMAjMWftvdQFrXfllAlVKFxsBlFp99AImpXjOAZ+0+pYBLhbmb6tBs5Ow
+X-AuthUser: john.efstathiades@pebblebay.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/24/21 8:46 AM, Jakub Kicinski wrote:
-> On Tue, 24 Aug 2021 08:42:15 -0600 Shuah Khan wrote:
->> On 8/24/21 12:55 AM, CGEL wrote:
->>> From: Jing Yangyang <jing.yangyang@zte.com.cn>
->>>
->>> Return statements in functions returning bool should use true/false
->>> instead of 1/0.
->>>
->>> Reported-by: Zeal Robot <zealci@zte.com.cn>
->>> Signed-off-by: Jing Yangyang <jing.yangyang@zte.com.cn>
->>
->> We can't accept this patch. The from and Signed-off-by don't match.
+
+
+> > I like the sound of the device match list but I don't know what you
+> mean.
+> > Is there a driver or other reference you could point me at that provides
+> > additional info?
 > 
-> That's what I thought but there is a From in the email body which git
-> will pick up. The submission is correct.
-> 
+> Depends on what the discriminator is. If problems happen with
+> a particular ASIC revisions driver needs to read the revision
+> out and make a match. If it's product by product you can use
+> struct usb_device_id :: driver_info to attach metadata per
+> device ID. If it's related to the platform things like DMI
+> matching are sometimes used. I have very limited experience
+> with Android / embedded ARM so not sure what would work there.
 
-Missed that. Thanks.
+Thanks. Based on that I will remove this change from the patch set and
+discuss again with the driver maintainer.
 
-> Please trim your responses.
-> 
-
-Will do.
-
-thanks,
--- Shuah
