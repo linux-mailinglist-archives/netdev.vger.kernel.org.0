@@ -2,145 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9F683F5774
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 06:59:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 975333F57B6
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 07:50:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230121AbhHXFAF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 01:00:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57950 "EHLO
+        id S234384AbhHXFvT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 01:51:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229709AbhHXFAE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 01:00:04 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFD96C061575;
-        Mon, 23 Aug 2021 21:59:20 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id f15so10229865ybg.3;
-        Mon, 23 Aug 2021 21:59:20 -0700 (PDT)
+        with ESMTP id S229925AbhHXFvQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 01:51:16 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD1A3C061575;
+        Mon, 23 Aug 2021 22:50:32 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id w6so11560201plg.9;
+        Mon, 23 Aug 2021 22:50:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=17KYTMCnTi2z2l5ALdgtQNaS1BaS2qFMHtmvlTtkPYg=;
-        b=TBa6yO1R49zx2vQEc8KiF/cj1vR7hwwx+hhVwgiXJeDvsIYAQtPgszQmtZURB9Md5u
-         7KUrBxWdru4+C29RIIYlYLQ9T5aQhC70TYAYxEczXHFtodm99iuncS3ID5g7zKY8rOOG
-         sLXbAjttxH0X/1Tv1jsH/u5JaZbxjg4vkxCG89erpvPQ4/g91QXnB/izrfkBh2bL94Rr
-         kB8wM2Ui70iunTI0kC38+IfiTOdzD70qSrd6H6EEK+1G55whLs0h9xVqXUXCOqqyJVOr
-         RZMMaqo2fXQHHV1oyeNwMQM64wtLcciNJKTYlyNkksE4IenblxXmKaGXfuEN4nAishlF
-         VMBg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+gSDqXBdeSRky6h/E1OhzdBjGEqrt1+vEPvVVQ4fmdY=;
+        b=fkEVVaTV2+cKJJTlepLZ+0uRX9rphvYYfm69e6vR0mmyT45p0tH4xcrDtLDjUJ0IWj
+         B5Pk6Rf63UvqGjwmtNPuqFriO9Cmk/8zLn6bIr218PYLHhLzm0dtRS+lmndoYqgSVdnO
+         Y6l1pl9z8Y8YeCJ03gCEKEqeB0BPaRUEgwIRJ0QDfJdOQK8vHgcK48T/rLHQlaeLBTIV
+         y2mIs/vttXwW5aXJAqi9EdhYpZwReJp2gUgaSrWpgIRbHG70pL2ejANsWYu1lubgUmf6
+         WwFWwm4Kw9K76q9qx9VU/OHB1OhXiIPTA4NFZIqhaeLLr/jXV5cXLs6Rr7QRbxpfAPoD
+         Scew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=17KYTMCnTi2z2l5ALdgtQNaS1BaS2qFMHtmvlTtkPYg=;
-        b=O5CAUomsAY/hCGNmqANZOukn9ulkWwHWcDhv+oDZO06dKth02YK+dsxF6XSPYvcez2
-         AK87wwbgcAc2knsLVrxfVPmLB6lPqN1fAyuhdNzFvmsaXsaNjssDSLmTjpvH389UpHTz
-         d3x8NgGEVSbnugSBsWHkCVidhQWj3VKdj1bvFosBylVZrYJggc8bMIado4MMaRkCHOez
-         jDt6+KiLfDV6BXoHOPeOajIJC7NZH/THgxdzrJ7wnfIvUOxOWQ/bL4UQEFElZUhQGUaz
-         7avWe20hdn61mRsuz/R83EBu3rj85CTHAU9vWlt77yGrgiQzQOtcpzx1swK1HYvd/8QT
-         8sVg==
-X-Gm-Message-State: AOAM5323QP7GSrb8+vx38qWZfGqgQKumhXkmfMv2/YMg0wLt9MFD/nhn
-        6mC+B0+GnkwRxugN8TtXqBj9SNX8983Wm3t3oOQ=
-X-Google-Smtp-Source: ABdhPJzdcHojAcoPBe4rwfc1cc2oB0rZzhFw00nrhVl5HjKyYUyMIB6dj1/hrRuGrZItzhj6ojojSHuvvNYTGNoh38A=
-X-Received: by 2002:a25:fc10:: with SMTP id v16mr28237345ybd.510.1629781160100;
- Mon, 23 Aug 2021 21:59:20 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+gSDqXBdeSRky6h/E1OhzdBjGEqrt1+vEPvVVQ4fmdY=;
+        b=XteW6DRjZz+BJWf1Amoh9SzpC/7/1DroneA5VzsaxxwVEd7JW9Wx31QGAgzt3u9jo2
+         1jKqjriJqGPgQklnrCww+LzS/RBhMQomHKUDovH6xF1GDobjjFkvrazwAL4Irqt0THhr
+         rg/mp3V0im8vXXpe/9EkqH+wO7ZKA0/UjQcpoe9J434PgzN9SSVQw6SdrqjivTMv8OW0
+         NgAL+cHS9UfelTbx7UQxqjtmO06GVKfOwtIg/e5EBDYUzNLug3u775aux+ewuHg8vVPy
+         ucR/JN42Pepl0T+iXPs6UlULe3Bhb0tZI0fTeEeRP1t2vQv9+jtMXA1QT/8Nf6zqL+Na
+         uFMg==
+X-Gm-Message-State: AOAM532zGf7gscBeLPYbAGjDKrZ2THkcfikrGSycXYc0Q+AqqNJeA4pS
+        4ZLpZjszpjtnQ9yPxhPAmD3GapAB/LJk1OJ/
+X-Google-Smtp-Source: ABdhPJxVYFJEp7CkpwK0eGclGAm8CLw2ohd2D9rXLv5HSKLtdOEkciNduvW28N51frgsTWS87ms+rQ==
+X-Received: by 2002:a17:902:aa02:b0:134:b387:facc with SMTP id be2-20020a170902aa0200b00134b387faccmr6828783plb.22.1629784231961;
+        Mon, 23 Aug 2021 22:50:31 -0700 (PDT)
+Received: from haswell-ubuntu20.lan ([138.197.212.246])
+        by smtp.gmail.com with ESMTPSA id s32sm18278054pfw.84.2021.08.23.22.50.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 Aug 2021 22:50:31 -0700 (PDT)
+From:   DENG Qingfang <dqfext@gmail.com>
+To:     stable@vger.kernel.org
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Russell King <linux@armlinux.org.uk>,
+        netdev@vger.kernel.org (open list:MEDIATEK SWITCH DRIVER),
+        linux-arm-kernel@lists.infradead.org (moderated list:ARM/Mediatek SoC
+        support),
+        linux-mediatek@lists.infradead.org (moderated list:ARM/Mediatek SoC
+        support), linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH 5.10.y] net: dsa: mt7530: disable learning on standalone ports
+Date:   Tue, 24 Aug 2021 13:50:19 +0800
+Message-Id: <20210824055020.1315672-1-dqfext@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20210821025837.1614098-1-davemarchevsky@fb.com> <20210821025837.1614098-6-davemarchevsky@fb.com>
-In-Reply-To: <20210821025837.1614098-6-davemarchevsky@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 23 Aug 2021 21:59:09 -0700
-Message-ID: <CAEf4BzYeRNKWfSaqyzhNbm7qdLoWGzFLp9A05pVmQKU_f0zY5Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 5/5] selftests/bpf: add trace_vprintk test prog
-To:     Dave Marchevsky <davemarchevsky@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Yonghong Song <yhs@fb.com>,
-        Florent Revest <revest@chromium.org>,
-        Networking <netdev@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 20, 2021 at 7:59 PM Dave Marchevsky <davemarchevsky@fb.com> wrote:
->
-> This commit adds a test prog for vprintk which confirms that:
->   * bpf_trace_vprintk is writing to dmesg
->   * bpf_vprintk convenience macro works as expected
->   * >3 args are printed
->
-> Approach and code are borrowed from trace_printk test.
->
-> Signed-off-by: Dave Marchevsky <davemarchevsky@fb.com>
-> ---
->  tools/testing/selftests/bpf/Makefile          |  3 +-
->  .../selftests/bpf/prog_tests/trace_vprintk.c  | 75 +++++++++++++++++++
->  .../selftests/bpf/progs/trace_vprintk.c       | 25 +++++++
->  3 files changed, 102 insertions(+), 1 deletion(-)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/trace_vprintk.c
->  create mode 100644 tools/testing/selftests/bpf/progs/trace_vprintk.c
->
-> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-> index 2a58b7b5aea4..af5e7a1e9a7c 100644
-> --- a/tools/testing/selftests/bpf/Makefile
-> +++ b/tools/testing/selftests/bpf/Makefile
-> @@ -313,7 +313,8 @@ LINKED_SKELS := test_static_linked.skel.h linked_funcs.skel.h               \
->                 linked_vars.skel.h linked_maps.skel.h
->
->  LSKELS := kfunc_call_test.c fentry_test.c fexit_test.c fexit_sleep.c \
-> -       test_ksyms_module.c test_ringbuf.c atomics.c trace_printk.c
-> +       test_ksyms_module.c test_ringbuf.c atomics.c trace_printk.c \
-> +       trace_vprintk.c
->  SKEL_BLACKLIST += $$(LSKELS)
->
->  test_static_linked.skel.h-deps := test_static_linked1.o test_static_linked2.o
-> diff --git a/tools/testing/selftests/bpf/prog_tests/trace_vprintk.c b/tools/testing/selftests/bpf/prog_tests/trace_vprintk.c
-> new file mode 100644
-> index 000000000000..fd70427d2918
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/prog_tests/trace_vprintk.c
-> @@ -0,0 +1,75 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/* Copyright (c) 2021 Facebook */
-> +
-> +#include <test_progs.h>
-> +
-> +#include "trace_vprintk.lskel.h"
-> +
-> +#define TRACEBUF       "/sys/kernel/debug/tracing/trace_pipe"
-> +#define SEARCHMSG      "1,2,3,4,5,6,7,8,9,10"
-> +
-> +void test_trace_vprintk(void)
-> +{
-> +       int err, iter = 0, duration = 0, found = 0;
-> +       struct trace_vprintk__bss *bss;
-> +       struct trace_vprintk *skel;
-> +       char *buf = NULL;
-> +       FILE *fp = NULL;
-> +       size_t buflen;
-> +
-> +       skel = trace_vprintk__open();
-> +       if (CHECK(!skel, "skel_open", "failed to open skeleton\n"))
-> +               return;
+This is a partial backport of commit 5a30833b9a16f8d1aa15de06636f9317ca51f9df
+("net: dsa: mt7530: support MDB and bridge flag operations") upstream.
 
-Let's use ASSERT_xxx() in new tests, no new CHECK() uses.
+Make sure that the standalone ports start up with learning disabled.
 
+Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+---
+ drivers/net/dsa/mt7530.c | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
 
-> +
-> +       err = trace_vprintk__load(skel);
-> +       if (CHECK(err, "skel_load", "failed to load skeleton: %d\n", err))
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index 3fa2f81c8b47..c9c02da3382d 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -1083,6 +1083,8 @@ mt7530_port_bridge_join(struct dsa_switch *ds, int port,
+ 			   PCR_MATRIX_MASK, PCR_MATRIX(port_bitmap));
+ 	priv->ports[port].pm |= PCR_MATRIX(port_bitmap);
+ 
++	mt7530_clear(priv, MT7530_PSC_P(port), SA_DIS);
++
+ 	mutex_unlock(&priv->reg_mutex);
+ 
+ 	return 0;
+@@ -1183,6 +1185,8 @@ mt7530_port_bridge_leave(struct dsa_switch *ds, int port,
+ 			   PCR_MATRIX(BIT(MT7530_CPU_PORT)));
+ 	priv->ports[port].pm = PCR_MATRIX(BIT(MT7530_CPU_PORT));
+ 
++	mt7530_set(priv, MT7530_PSC_P(port), SA_DIS);
++
+ 	mutex_unlock(&priv->reg_mutex);
+ }
+ 
+@@ -1636,9 +1640,13 @@ mt7530_setup(struct dsa_switch *ds)
+ 			ret = mt753x_cpu_port_enable(ds, i);
+ 			if (ret)
+ 				return ret;
+-		} else
++		} else {
+ 			mt7530_port_disable(ds, i);
+ 
++			/* Disable learning by default on all user ports */
++			mt7530_set(priv, MT7530_PSC_P(i), SA_DIS);
++		}
++
+ 		/* Enable consistent egress tag */
+ 		mt7530_rmw(priv, MT7530_PVC_P(i), PVC_EG_TAG_MASK,
+ 			   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
+@@ -1792,9 +1800,13 @@ mt7531_setup(struct dsa_switch *ds)
+ 			ret = mt753x_cpu_port_enable(ds, i);
+ 			if (ret)
+ 				return ret;
+-		} else
++		} else {
+ 			mt7530_port_disable(ds, i);
+ 
++			/* Disable learning by default on all user ports */
++			mt7530_set(priv, MT7530_PSC_P(i), SA_DIS);
++		}
++
+ 		/* Enable consistent egress tag */
+ 		mt7530_rmw(priv, MT7530_PVC_P(i), PVC_EG_TAG_MASK,
+ 			   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
+-- 
+2.25.1
 
-you should be able to combine open and load into trace_vprintk__open_and_load()
-
-> +               goto cleanup;
-> +
-> +       bss = skel->bss;
-> +
-> +       err = trace_vprintk__attach(skel);
-> +       if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
-> +               goto cleanup;
-> +
-
-[...]
