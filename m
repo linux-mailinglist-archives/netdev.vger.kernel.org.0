@@ -2,131 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A0D63F5823
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 08:25:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 725F33F5867
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 08:44:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230494AbhHXGZp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 02:25:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48752 "EHLO
+        id S231540AbhHXGpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 02:45:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230038AbhHXGZk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 02:25:40 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88CB8C061575
-        for <netdev@vger.kernel.org>; Mon, 23 Aug 2021 23:24:56 -0700 (PDT)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1629786293;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=IycFmQLx+9zK6D5CdCxSRQBjjujbQXqbSPoN0u6h8i0=;
-        b=JR9ea8/Vn/TNmFQ1fawTIWgwZvi2ws89aXGOuN5Fhw4Bf0Q0nK7xQyOfEG6oKEy/vOOuKG
-        c4HvwXPkJ/8Db3cjowzUoHNbnvph4hdvs/XHd/XOBvj3L6jiS+9REne87opJS69AyRVCHH
-        EETcqnq3L67yRmSJEuKHYAoHd8FIpQdBsfYsuqeIZ/Rr/cANSthpVAzrWOW0nojIiOAOPA
-        sbvb9MCRFXOpO2Q5HGhfcHflSnA8bSkiIpJr+lUd6d6msj6J4TC7RTk1f6mBeIaOWBZ+4F
-        MgV/HLx4k2C10Tm5ro76jEtbl2Ucvw2Q56p0Hn1ZLbBMC8Xb6PG1NW2Yf/WUJw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1629786293;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=IycFmQLx+9zK6D5CdCxSRQBjjujbQXqbSPoN0u6h8i0=;
-        b=HSgLY7jiayTvwpcvLVh9WJP4xBA5WgpVl4O/jKphIcoC188hc8AEycVsVnbUzgRN+ynzyZ
-        yLSowgb+gn9n+xBA==
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        with ESMTP id S230378AbhHXGpJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 02:45:09 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ACEDC061575
+        for <netdev@vger.kernel.org>; Mon, 23 Aug 2021 23:44:25 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id v123so2763495pfb.11
+        for <netdev@vger.kernel.org>; Mon, 23 Aug 2021 23:44:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=nathanrossi.com; s=google;
+        h=date:message-id:from:to:cc:subject:content-transfer-encoding
+         :mime-version;
+        bh=F+iP6sdhDu7M9+Lwp23Im3s5iE2JstLP0U7/CVbXU6A=;
+        b=KA4CLqVpW8ZC/aaX8B5ognYyOUXOrhYJzwBQq8MlVvTvDijDE9qJ03wK5sZgqIsvz8
+         2DeslHCC1fu+34QjZ+EOj/ZSE/KzM2I72Jsx5+PJjR9hVpPwnX0V+dxxBOfowJPS8DjP
+         7bQ+J8e1bwsrCKAzqtvSVhuNKcpVwME9gePQFk+/4u4FfAy0LQKtDai66+nvecGqpoYl
+         9I1jKTDj7Ff68M51XhbPQYztl902oWF07jkHkIfNn/yaPmyhjTTib0EnaHVf4aWVL6nm
+         Fd8bhtQb9zhyMoGMgGSxHy77h9b8SRyvZjX9WPkqvJY30pcy40YZqJkiZM3y5JBf6GtK
+         2eBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:from:to:cc:subject
+         :content-transfer-encoding:mime-version;
+        bh=F+iP6sdhDu7M9+Lwp23Im3s5iE2JstLP0U7/CVbXU6A=;
+        b=CVmtT0v36ebzwsa+yjAFbt7vM1sUmaTkcRdslOiFv4zX1vi0WEV/f3Gfo2NTe5jDYB
+         fTZJ7HG+fmC2CJMvMk9g7MMWgqqA6JCh5+4jRixry08LvFXVrCeFoWype8iUIzeSCNft
+         EWJ52N7pmPtUEp4FJGQ+sM7lSIDE4ad3wIaDdt2GImD/UDthyGN0Wj8QcH+zx2LIzOqA
+         e8xg0ZRLOS4pur4mRPVnPudQvwX3EqCW6t9DsbjxfuTC5028vLRqekPpFTWpRwl1tR8A
+         J1d+Pfh/djm4tf8NfuuAoIqmHAIitl/RXUnj6oesmmJ2AXfIfyJhk8C9cb9u4H/4QvzG
+         Nfbg==
+X-Gm-Message-State: AOAM530TmhGkq98wBBRzqUrDoefSPQMSdPIGzDmoSgMO+hKI9Kpj8tWU
+        zDl42YoM+BsIDIY3PV4X/wMn2BRSUP+1Ha7JCYU=
+X-Google-Smtp-Source: ABdhPJz7pBk27cD0Q0YPvSKufaE4bmrLxOnn3pN3fTLFmSYEni3FZ0Py7vfoTRRML7qtS4PRh3NDHw==
+X-Received: by 2002:a63:cc0e:: with SMTP id x14mr35812903pgf.352.1629787464956;
+        Mon, 23 Aug 2021 23:44:24 -0700 (PDT)
+Received: from [127.0.1.1] (117-20-69-24.751445.bne.nbn.aussiebb.net. [117.20.69.24])
+        by smtp.gmail.com with UTF8SMTPSA id u17sm17553370pfh.184.2021.08.23.23.44.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 Aug 2021 23:44:24 -0700 (PDT)
+Date:   Tue, 24 Aug 2021 06:44:13 +0000
+Message-Id: <20210824064413.95675-1-nathan@nathanrossi.com>
+From:   Nathan Rossi <nathan@nathanrossi.com>
+To:     netdev@vger.kernel.org
+Cc:     Nathan Rossi <nathan@nathanrossi.com>,
+        Nathan Rossi <nathan.rossi@digi.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>
-Subject: Re: [PATCH v2 net-next 4/4] net: dsa: let drivers state that they
- need VLAN filtering while standalone
-In-Reply-To: <20210823212258.3190699-5-vladimir.oltean@nxp.com>
-References: <20210823212258.3190699-1-vladimir.oltean@nxp.com>
- <20210823212258.3190699-5-vladimir.oltean@nxp.com>
-Date:   Tue, 24 Aug 2021 08:24:52 +0200
-Message-ID: <87tujfpdfv.fsf@kurt>
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH] net: dsa: mv88e6xxx: Update mv88e6393x serdes errata
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
+From: Nathan Rossi <nathan.rossi@digi.com>
 
-On Tue Aug 24 2021, Vladimir Oltean wrote:
-> As explained in commit e358bef7c392 ("net: dsa: Give drivers the chance
-> to veto certain upper devices"), the hellcreek driver uses some tricks
-> to comply with the network stack expectations: it enforces port
-> separation in standalone mode using VLANs. For untagged traffic,
-> bridging between ports is prevented by using different PVIDs, and for
-> VLAN-tagged traffic, it never accepts 8021q uppers with the same VID on
-> two ports, so packets with one VLAN cannot leak from one port to another.
->
-> That is almost fine*, and has worked because hellcreek relied on an
-> implicit behavior of the DSA core that was changed by the previous
-> patch: the standalone ports declare the 'rx-vlan-filter' feature as 'on
-> [fixed]'. Since most of the DSA drivers are actually VLAN-unaware in
-> standalone mode, that feature was actually incorrectly reflecting the
-> hardware/driver state, so there was a desire to fix it. This leaves the
-> hellcreek driver in a situation where it has to explicitly request this
-> behavior from the DSA framework.
->
-> We configure the ports as follows:
->
-> - Standalone: 'rx-vlan-filter' is on. An 8021q upper on top of a
->   standalone hellcreek port will go through dsa_slave_vlan_rx_add_vid
->   and will add a VLAN to the hardware tables, giving the driver the
->   opportunity to refuse it through .port_prechangeupper.
->
-> - Bridged with vlan_filtering=0: 'rx-vlan-filter' is off. An 8021q upper
->   on top of a bridged hellcreek port will not go through
->   dsa_slave_vlan_rx_add_vid, because there will not be any attempt to
->   offload this VLAN. The driver already disables VLAN awareness, so that
->   upper should receive the traffic it needs.
->
-> - Bridged with vlan_filtering=1: 'rx-vlan-filter' is on. An 8021q upper
->   on top of a bridged hellcreek port will call dsa_slave_vlan_rx_add_vid,
->   and can again be vetoed through .port_prechangeupper.
->
-> *It is not actually completely fine, because if I follow through
-> correctly, we can have the following situation:
->
-> ip link add br0 type bridge vlan_filtering 0
-> ip link set lan0 master br0 # lan0 now becomes VLAN-unaware
-> ip link set lan0 nomaster # lan0 fails to become VLAN-aware again, therefore breaking isolation
->
-> This patch fixes that corner case by extending the DSA core logic, based
-> on this requested attribute, to change the VLAN awareness state of the
-> switch (port) when it leaves the bridge.
->
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+In early erratas this issue only covered port 0 when changing from
+[x]MII (rev A 3.6). In subsequent errata versions this errata changed to
+cover the additional "Hardware reset in CPU managed mode" condition, and
+removed the note specifying that it only applied to port 0.
 
-Acked-by: Kurt Kanzenbach <kurt@linutronix.de>
+In designs where the device is configured with CPU managed mode
+(CPU_MGD), on reset all SERDES ports (p0, p9, p10) have a stuck power
+down bit and require this initial power up procedure. As such apply this
+errata to all three SERDES ports of the mv88e6393x.
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
+Signed-off-by: Nathan Rossi <nathan.rossi@digi.com>
+---
+ drivers/net/dsa/mv88e6xxx/serdes.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
------BEGIN PGP SIGNATURE-----
-
-iQJHBAEBCgAxFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAmEkkLQTHGt1cnRAbGlu
-dXRyb25peC5kZQAKCRB5KluBy5jwplyCEACtKTtf0k7TnewKZaWQg0sq//nY5Q6l
-6ah4W04w/xJ698/0jJ7KkuOHpQ1iFuC979XGfJLaQveF34votNPL/zE0qppqTO1l
-Sr3KmONN0LiSIN5oyoBe2Ma/1dfvk0juYa18tqFpFxFmQsOPb28l5VbOgWaSDAUn
-LN6pS2a6aOHQKnLHRJF/cj8PrpC9IGjvVp9LMCbp35JSat8/GCIz1zV79VQTGnwU
-ikcvg58M/9bJMT2soIEvKj/Z6/Wv5/lS62qjR0U2uUK46CptzBUkrsJzcRXBUU1W
-goqndlN0zUINtUxBhDIgIRr+05XaOB+t1gM2E5iWsQfxWQ6it4DlJf+2oUk+Nmkw
-i6CFGO5+EAiw3jehjpjYZkRncgI+L8Hk4Y8Ct2ai4cbSW60JUOnlFt0fP7WvxgPG
-w1unKJC+pSFpO5mAebFTiRR2GLvn8Es5dnIkjz8Bz/ia0Gp77TiKKgt1dIrVzQtm
-FujN4OyL7v/fHj8RQ6IQ7SIHlLJxluVg4FzUqhyLcSuzid0LPnO/+PkyVdMiWz6B
-qlULfcuutZdS7MGvB9SITGVqyCeL7zun919vj2bklPa+4J17JaYA6iBLmVs9SyLy
-lsr/XjB2RagLKkPDXdZoG/HOj/JWMOc7Zl+lhusvgUBlmbaZKbayksX8fAxot8TI
-SMB+Aivb4r5Gkw==
-=eSo+
------END PGP SIGNATURE-----
---=-=-=--
+diff --git a/drivers/net/dsa/mv88e6xxx/serdes.c b/drivers/net/dsa/mv88e6xxx/serdes.c
+index b1d46dd8ea..6ea0036787 100644
+--- a/drivers/net/dsa/mv88e6xxx/serdes.c
++++ b/drivers/net/dsa/mv88e6xxx/serdes.c
+@@ -1277,15 +1277,16 @@ static int mv88e6393x_serdes_port_errata(struct mv88e6xxx_chip *chip, int lane)
+ 	int err;
+ 
+ 	/* mv88e6393x family errata 4.6:
+-	 * Cannot clear PwrDn bit on SERDES on port 0 if device is configured
+-	 * CPU_MGD mode or P0_mode is configured for [x]MII.
+-	 * Workaround: Set Port0 SERDES register 4.F002 bit 5=0 and bit 15=1.
++	 * Cannot clear PwrDn bit on SERDES if device is configured CPU_MGD
++	 * mode or P0_mode is configured for [x]MII.
++	 * Workaround: Set SERDES register 4.F002 bit 5=0 and bit 15=1.
+ 	 *
+ 	 * It seems that after this workaround the SERDES is automatically
+ 	 * powered up (the bit is cleared), so power it down.
+ 	 */
+-	if (lane == MV88E6393X_PORT0_LANE) {
+-		err = mv88e6390_serdes_read(chip, MV88E6393X_PORT0_LANE,
++	if (lane == MV88E6393X_PORT0_LANE || lane == MV88E6393X_PORT9_LANE ||
++	    lane == MV88E6393X_PORT10_LANE) {
++		err = mv88e6390_serdes_read(chip, lane,
+ 					    MDIO_MMD_PHYXS,
+ 					    MV88E6393X_SERDES_POC, &reg);
+ 		if (err)
+---
+2.33.0
