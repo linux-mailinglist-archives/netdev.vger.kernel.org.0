@@ -2,162 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 496C83F5EBF
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 15:11:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 826C23F5EC1
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 15:13:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237421AbhHXNMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 09:12:34 -0400
-Received: from mail-co1nam11on2067.outbound.protection.outlook.com ([40.107.220.67]:57147
-        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
+        id S237370AbhHXNOV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 09:14:21 -0400
+Received: from mail-mw2nam10on2057.outbound.protection.outlook.com ([40.107.94.57]:8513
+        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233952AbhHXNMd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Aug 2021 09:12:33 -0400
+        id S236443AbhHXNOU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Aug 2021 09:14:20 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IBmvFrwT++ED9giZOIfMfuAfLPvCyNCDMbD4cgutaZ/gEdKFmUNVhnjSy3nyIzqY1BCjkkbDnF0adWWgLAXaarjQjj01XTY5ip5mMemKjmqwgoijasHYYaCgqsa1DozmeayP9jIpkwjMLbH5v6sXXbVPM0mrDmo2vyhto9RhD8WhDXM4RujZ0IgqOXwpNi0RRuEbhjxiaogYGFKi6VavTwfTZ+TerCOkOIzyHpBIqOhxJbKD0kX4K7rtxGD5AzFwwRgV1cm7vapnngKbrD5n1NlYWvYmix0UnMia0Iv1w4/rp+wEVAEEELl3zcmpoX+oyCey0VCz1OmB4MUofQ/JRA==
+ b=jQsbfRDmLNQFJ/DQ+m0FyK9Q0i+YeaBRxOMP7sCKAEjanP9VU/cq0c+FtJRrBBk8PQWohjZfxHXKvbj7MnFsg5eeSl2W6upcK+FaymfNYtBLfMR/yyTFoZ7fQY/BltuTfLhJJmXxnpKYyklLKkkrHj8fuAJBAPye1P6nIOCsv/BQcjI0Cd0XjoGYOm1Rv0XChhyjqIujKrIMhs3FTAubCrKX8MfisJBLNAsgLXQDCDTB/biBCIORoL93x0wnc4ErxyQT/tDzfDjHoTwY1Mm6pzj5v+suWKuqRERkyFPYufc7FUwc4/+TVW1nFCFb59b/7nj2CFdQ2O2F3wSCQQrJ4Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NHJgialJn5xrWIFZ8ArAMG4iLKCdb/rYXs7sk4Sqlxw=;
- b=aYidBK7EckAjIuQFsBnvC5Fna0sd6TXbicoEneruW1wNrrT+pkgVFGD8B/u+kQyUxHH6748TLX8FqSdFlex7rElYqz7RjK5HIb1IY2saTITmeh0p0TL/jGTmGKfsZKsDJMWFfGrO11gDMBC91A+E4b96V8LAOJzWU9AOlcODOtescaE5CqCbmFcbstH8AYK10+4xLAsfRFw3P2RbgqVGtUHCpjjKYOU3yqz0THZBcnmgGtZFR8CTv3phjl+QPCg1Ybm9+A771NDi28p8W2VomBoGikVdX6HU4WCfz6MGBw/ifx1fEelLzSRqTpCzGhhPE3v0RxpA7C6ukaEg46vWmg==
+ bh=aMJ0WJ58HseRtifSwka7BEiPkGEbJiqtY+z1H08GGYU=;
+ b=chs/ii6YoJeO8nssiYmNaOXE/n+sdpcggCWygIzMHLxNXY8Z2bh2ZwHORee81aWEhxUDvE3iSQpI35FccHfrbgrzY/vgJFxX3LaC+EHbupxshLx4FP0bg+HhirVBHfQXEDDXarMvHy11210yXAWVfdrE12emlOU/A1R18ZE5o54Wv8c+gGW2+kreUxAX94yxvIKuK4O4h9fCTBQ6RZsMJLuQYKmufuBLbn3wfh9nErevH52C8rR2mP3Ann0yrWfYvnKiAURzO5SgHJs3RhecUEzWDKgG4l3UoOrhO84kPPg/iia3CSwOyy/uYUOGZddfUdwthqRz67GTQaOFu9cJVQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NHJgialJn5xrWIFZ8ArAMG4iLKCdb/rYXs7sk4Sqlxw=;
- b=Xtc58COk5GNhQHZklDkC6B5f5u5EnWEUchxK3Z69BI/d6YtTYr09TQteypxIz9o6Bf1gHTRnEB5JVy+qrV+FvLqDHFYf3LT8OmqfeEHraQcz4JXMuJby9gjvB0UI+14Qgsc7RuxWbq/EO827TAte0DHCJko5TFoBx1WI4+tG+hTZv6Okhwb8YtsyPRguAh21fJCgKw7+FpVp0e4gabpl466NU5XwQSi+ZfzWgzmWo51xL6726MhxJI4bkL/lZIaf7hviH+sfprpzXwEq4dyIE2AzGvMeNAzxVtVJOnvfFYcBMxbi4cPPu1e0T5A24lB1hMGfvDfK/eSGxYZkU5156g==
+ bh=aMJ0WJ58HseRtifSwka7BEiPkGEbJiqtY+z1H08GGYU=;
+ b=QNNhRa7mszQlZALzgkBIIpsLKb814wPHw5SCtQ1jyACO48axaOfPnCDHCWFfsKtM60fYst0nVMLHi0NLr8skgqJoqvT8wJDIuBssdVcdMq/TeS0cSInAu5nKW17Sor3WmN1GFTWkhxqhOKaWtFAr8vNXhVbUNOr6jKsm33ypzDkI28iEJ6vC0SIDv96S2r3tYas6ofMWyA8bZoCz+qTai6gxVFSgn//jGBHRvKzHREmh3z4KUUwku/O2HCsoPCR67O7/+bpTrOIhFz0KWVfUNDRrzKUE1okAxOBWE37nTv/u/cYh5EwivWtNWlpevnnEQSWFf8THXgkQZ+jgBCNRhg==
 Authentication-Results: nvidia.com; dkim=none (message not signed)
  header.d=none;nvidia.com; dmarc=none action=none header.from=nvidia.com;
 Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL1PR12MB5303.namprd12.prod.outlook.com (2603:10b6:208:317::14) with
+ by BL1PR12MB5094.namprd12.prod.outlook.com (2603:10b6:208:312::18) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19; Tue, 24 Aug
- 2021 13:11:47 +0000
+ 2021 13:13:30 +0000
 Received: from BL0PR12MB5506.namprd12.prod.outlook.com
  ([fe80::1de1:52a9:cf66:f336]) by BL0PR12MB5506.namprd12.prod.outlook.com
  ([fe80::1de1:52a9:cf66:f336%8]) with mapi id 15.20.4436.024; Tue, 24 Aug 2021
- 13:11:47 +0000
-Date:   Tue, 24 Aug 2021 10:11:46 -0300
+ 13:13:30 +0000
+Date:   Tue, 24 Aug 2021 10:13:28 -0300
 From:   Jason Gunthorpe <jgg@nvidia.com>
 To:     Mark Zhang <markzhang@nvidia.com>
 Cc:     dledford@redhat.com, saeedm@nvidia.com, linux-rdma@vger.kernel.org,
         netdev@vger.kernel.org, aharonl@nvidia.com, netao@nvidia.com,
         leonro@nvidia.com
-Subject: Re: [PATCH rdma-next 00/10] Optional counter statistics support
-Message-ID: <20210824131146.GU1721383@nvidia.com>
+Subject: Re: [PATCH rdma-next 10/10] RDMA/nldev: Add support to get current
+ enabled optional counters
+Message-ID: <20210824131328.GV1721383@nvidia.com>
 References: <20210818112428.209111-1-markzhang@nvidia.com>
- <20210823193307.GA1006065@nvidia.com>
- <36e3e090-2568-4c7e-868f-673ac6eca7f9@nvidia.com>
+ <20210818112428.209111-11-markzhang@nvidia.com>
+ <20210823194459.GC1006065@nvidia.com>
+ <29c4973e-2e9b-9ea1-e8f4-c10e73671f21@nvidia.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <36e3e090-2568-4c7e-868f-673ac6eca7f9@nvidia.com>
-X-ClientProxiedBy: BL0PR1501CA0022.namprd15.prod.outlook.com
- (2603:10b6:207:17::35) To BL0PR12MB5506.namprd12.prod.outlook.com
+In-Reply-To: <29c4973e-2e9b-9ea1-e8f4-c10e73671f21@nvidia.com>
+X-ClientProxiedBy: BL1PR13CA0316.namprd13.prod.outlook.com
+ (2603:10b6:208:2c1::21) To BL0PR12MB5506.namprd12.prod.outlook.com
  (2603:10b6:208:1cb::22)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (142.162.113.129) by BL0PR1501CA0022.namprd15.prod.outlook.com (2603:10b6:207:17::35) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19 via Frontend Transport; Tue, 24 Aug 2021 13:11:46 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1mIWDS-004SJA-2b; Tue, 24 Aug 2021 10:11:46 -0300
+Received: from mlx.ziepe.ca (142.162.113.129) by BL1PR13CA0316.namprd13.prod.outlook.com (2603:10b6:208:2c1::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4457.6 via Frontend Transport; Tue, 24 Aug 2021 13:13:29 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1mIWF6-004SKO-TW; Tue, 24 Aug 2021 10:13:28 -0300
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5fb817cd-eae2-4451-2249-08d96700ba14
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5303:
+X-MS-Office365-Filtering-Correlation-Id: 31e9802a-cdd3-4ce4-7d71-08d96700f766
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5094:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BL1PR12MB5303F0C9F401B7FB7C8F8EE9C2C59@BL1PR12MB5303.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
+X-Microsoft-Antispam-PRVS: <BL1PR12MB5094B947D97FAFDBF26EA64FC2C59@BL1PR12MB5094.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: fEOwEh3750b1yaiCzt3RvVCnv34OowP1TDAPD6NNht7Dyay9jfhOrRko6KH0e2NQkVJlO7zX8hwPm60bXze/XAw8cifglf7Cc74i97prpRnQDDBq+flMmqHPktpHksSbPncTqMs9f2lK34ZiUzGLZoKKo0L8cFMyl8Ij0Cc5SU9DynJIjJkj6+DddM3tBy+KXvxH/KHK7bFLxKo9JfRPywvK7bv3afROMyT0+76W3J1Gl4iY19C3QIBG174jmcDK6DwWv2MvJA2yS9a7HcC5wuxnoExJtdu31AMX7jPzcw2nqX+MfiDxUToG4W28UugwXimlrQCxCFux5WlovKS+sKrE0z8jH10SoBAhjvQNXg2TIp9eL+nW7BhncDcJL1fIa5GGWqymu8/QZfwENDAZT3VjYv2S/L0V90EWR2PeOux5sgkURYIs0xHhOZXoGy1BYcF1O9j3234cjFYQ6SS7zZxBq8b0dkysStbwSAKU+qVH1LMID6MqmJokiF0GoODJAewCp9ba0BB69WfHSHvOCK8uAZsGgf8FZDwKNhNotF3SOoCOdciWM8DVKknV24IXcNWHvbz1FhcfdcrCSs1ax64Pd+xLF45s0JntSoV9uxvzvJmkt/V2YwlEjOm3prT2iu5wq+pdS1ShGUh+x9S+IQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR12MB5506.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(396003)(346002)(366004)(136003)(376002)(86362001)(38100700002)(1076003)(6862004)(426003)(36756003)(8936002)(8676002)(66476007)(186003)(26005)(53546011)(66556008)(9786002)(6636002)(2906002)(9746002)(107886003)(37006003)(4326008)(5660300002)(316002)(66946007)(33656002)(478600001)(2616005);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: RLDjWzwwdlRTZfSgjdZJ3mzmj/cVTH30hIB+ZkldRJPt5xqtXpO9KLJgblvOPYbLDOVTsPcuPR3hWn69GgtQPDguFvirA+w+YyhW5bkxuiGX+waUUyB7D+m81hQnQpT9RsBGCZO5st/oQY6DoAIaoM8c5daWpHxoHj3wWH3+xyub+6LfU1LHoGJJZWNzPy8Rg5udGsmbVb7toHptVBsVM7pLxhKAjMSna2M2XMYcWwXwkMeB+6OOpLV73I6Jil+oBh3mXLZbw3JZKbbkX48nzD3NYuAxDTi+2Oyg4uAk4axl/fEfR+Aw8srg4XirNmjGLPZy6WWQC8lK1sxpTzCW39x3GYle1P8X6xLgr0b1J962sr4feepFdKrnmWXCbmV5E1C8PqBGOtTOxTr1prklUV8G1jVClRIHd6Arc7UDlj/v03vT8h0utMCcGATz7pTjDnu3wnRdMt1TGt8CSpLxnklpxYL5yJFxxRhoHiUPii3X13GJafCPMIn80Bl1sPjvRhAvVwKk2+qzKtLUzWBK0Nd1u4YW26q9NLh6hBmue5dCVjdXJcSJrZhB9SnF2nooaray5tcKv5DlOcv5sVrvoIm6gyR3Df2flDym620MI5oEsR+dKw9hcxDSmf8dqOohJVrPp7yuKz5IpUT+58fslg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR12MB5506.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(316002)(426003)(8676002)(37006003)(2906002)(86362001)(1076003)(26005)(36756003)(9786002)(6636002)(9746002)(53546011)(66556008)(66476007)(8936002)(66946007)(6862004)(38100700002)(5660300002)(186003)(4326008)(107886003)(508600001)(2616005)(33656002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?eKWMenfI8LVx8sEU0vqLSZz4lclJSgyQIQQGpO4T6jDlYyBldE+MXNVRjFpB?=
- =?us-ascii?Q?+rcdySkTT1rkiggErqPCvd7DO04nyIS3118bIAhtNCrqKY774pczmD6DX6ok?=
- =?us-ascii?Q?7S83sE1Km10nvdbBzl04Wa7yN2vnI5NVSLaM9o8aoGVdCPq2JHlx5Ckd6g01?=
- =?us-ascii?Q?zlUEWN01IUJA3JOdpajGFC3sR+6MEWTzbQHlYX76TFQOAVlggiTGpY6oYpwh?=
- =?us-ascii?Q?48ybatM84+xB1QBrlR5oq1eJRc/VJiVEHT6dlY7jt5SBttw5f5srkDBFr7Tn?=
- =?us-ascii?Q?6EZEAJLQKBYsvs8MUKalCu/ZPH/NoWuH++W6ezj+jP0ILj5R4Va7+qisuayY?=
- =?us-ascii?Q?9TPbII74ZRba0nA6hYE0uEdLekXjwzr7//GQt51dU8k6X/fRRjkGv+oiZ/mG?=
- =?us-ascii?Q?fkUMKyHnY2jRWNlp19DTQWFyS+rtNoJbNH5gsyJH+pgMKVLzK8adRGsI8H5E?=
- =?us-ascii?Q?KkB5+CgwjEOUv57sv5OPa1zUl93VFNnQNaxYX1cKaBCIolp9XLblw9Mn0x22?=
- =?us-ascii?Q?AydBEzK+1/uqivJaS/U1J/a5Z8fyo+sQwwMx4jq7tThNNdCgRhowPRU9WvF2?=
- =?us-ascii?Q?baX4BLcJbcAVGwL+/XiJ8QAfygLXsfm2U9H1s0dnheKlndsozsmgJfK7ryBa?=
- =?us-ascii?Q?1qV/S3LdY7VuK+yKQ98UMnp1awPLHpOH8fmrYYTeeWsnK0tAgHE69Pw3IopT?=
- =?us-ascii?Q?UvEo/OlW3N87kodA+MHdESxrZLMDmGHucRJyB9r2H7A2t0ooHoIusBD3hiMz?=
- =?us-ascii?Q?wexWbgi7EnqGMviKwbeTdBxYq2oQMxynX9nFdL3369VU1Jcx3JMfQc0rlfiZ?=
- =?us-ascii?Q?/eqexOFqwnE8ZTdQmxAyq9cRxcVSTOQzV74kDzlIWjFXOaxd9Iug15Q6Hzs1?=
- =?us-ascii?Q?QspNvaWATWEZpxJwBj/k6JLZsUQVhCtwgv6Kc9g7miJ8uJOK03SMEbwF3Xhg?=
- =?us-ascii?Q?/4crMCqfOOblu5RNjyG9kKATlAAVOX8LDMpiO816mNQ40l7BSJWQCGJmA1J1?=
- =?us-ascii?Q?uq70sdBvqh+eGhcxxw0SbBoEk0/amJJPGDxa5sUgU3JJnUkrnwKwAnJ9Ry/I?=
- =?us-ascii?Q?rWh7xgnjoVSvUglBZp05PmngQJQOqHTW2HYvdYkXerhjGcdjIt0FHirMOouZ?=
- =?us-ascii?Q?6W+wNGLG/FkpzfKvDLwKLeInMrS6H2G0unbgCGpj3NTFE5FkOAelW5UjZULr?=
- =?us-ascii?Q?DP5xn7odnJBOxnEzk8KndBceoXSr5XFRcR0Q1vulFI6QjRz7zJrZakGHiBVf?=
- =?us-ascii?Q?cFWWN/hTJ1DrmHd+VjAdvREaKC9g8zxYSb1F0Pn5Pe6CBijSE0MHQV955Pvj?=
- =?us-ascii?Q?fHctGHhJ68hEGHmqDmE84C8t?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?cXTod175rVu6H4WCpHObhn6uzeG+mhXpWH2IzFM8Y154JzZFsUG6qAMYk+Cx?=
+ =?us-ascii?Q?NxnMM+Ye+PfL4XnZN9KEC3qZExG735/NIr7FWJxcfWhWvRGupVr2mFUGaVjq?=
+ =?us-ascii?Q?uU8Jjdy61O0LXvoFStikZvtK+gQv3ooHqyoJ6CVr1zL57zdhzHB2ssL9whGB?=
+ =?us-ascii?Q?AbRqJ3zBByHentk9K6HRtxoLfgzUm4/x6XeOW0h8aVJDzHrcZGpvC5lgodUu?=
+ =?us-ascii?Q?5gK9hsEPo+xcb7eTi07EnGZMfHgmYf4xmr3F/RXvM37xrg28yxgJN2IxFysh?=
+ =?us-ascii?Q?AmW+Di6zLZKhTYVZw/b8PjyDQO86/cwl1dBkPA/5k0+GezOTbMFIxeuI1onl?=
+ =?us-ascii?Q?QuqgDoLoXHlBVMUChznRoIz8KHIlftuAMkoJqBszEavEDpHgtiRPsgwjB8fx?=
+ =?us-ascii?Q?dS+HuyV+B0iiSwFxvbJnr5ibwPnv/efHV7/aPJbd47s36WEaxiyk00twLWH7?=
+ =?us-ascii?Q?2LS6A2S+8KWz81Saeq4XYchhy2LfVyKqSOeRYfX6wMGL28Qu1M44nrWweKyM?=
+ =?us-ascii?Q?r5LGmXEz6ISlI+MlmcMg78X3WIKF/ZRTtypM34xC+1ovT65Pnev+HUIkkUST?=
+ =?us-ascii?Q?5CP3urFoNpEchx6hXRxiHJHNE/c4zK8wbnGZD1XaPe3IZcjrPFFypE8S4+/t?=
+ =?us-ascii?Q?HsQFCyKq9IqVP3yC5qwON2l5Iq5LMysWwT5eYWZ4nFBRbFLRewfckLPueslk?=
+ =?us-ascii?Q?R02iFSdrMaP0a5AJrJlZZDFFj1rd7gmvL/O9NoINew0Xqert0li6TlEFbP6p?=
+ =?us-ascii?Q?dK45JLPmOe7ivbbsru3tlPtRKk1slfnEFwv5IQIuxI+ZFXxGm8nbupcUHKQq?=
+ =?us-ascii?Q?9pALHQA2cvdmdOq8Vy74wPxXN6rqxVJqJE2L+Ncv2iXA9OvHj7In2lyECzpz?=
+ =?us-ascii?Q?vP40jIPLc092K2Kfq1Jf8XRSExKZAMqExhKxo5uVwwfDc6YZInW85LaavdnT?=
+ =?us-ascii?Q?iW/TQ0BydG7HCFOiGDdWk/e5iSOhM/xX801KuGA/imZUrfksY6xFmcg2koMR?=
+ =?us-ascii?Q?jET6us8KSkmwV1k5nhqsKnGA/lIJpyRizzeLzXr9Ep94Xid3zIXqurle9LAb?=
+ =?us-ascii?Q?1v31SH6SXHgRJEmFn343X9qUKDFcUEGksgN0yIGPTMJYWaYaF4XmXOerRiOS?=
+ =?us-ascii?Q?a2tRK+75im+fGwp/ten1iOzxaFzmhavX2mAF+HSDGbmfJHudjw13CEivwi6W?=
+ =?us-ascii?Q?7vOztLTumkYKFVtagJ/USIlJqhO5fN3NRTmq+RuOQr4+QMkEm3XlVH8FgSOK?=
+ =?us-ascii?Q?WqtfjzWqMCHpO39zSBrm2qouK0q3WZDxBTG37AwM/Hb5fPJY52y+HRaoi2Ui?=
+ =?us-ascii?Q?TqD1W38OoaLoKmyTPNs0R+qK?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5fb817cd-eae2-4451-2249-08d96700ba14
+X-MS-Exchange-CrossTenant-Network-Message-Id: 31e9802a-cdd3-4ce4-7d71-08d96700f766
 X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Aug 2021 13:11:47.1050
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Aug 2021 13:13:30.0544
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ei4Rtr2sAf2muuBzRIOWMM8H9rjfSv9+Elpu/3ZYfsZzrSd3Fo7Dfm//jseezhoA
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5303
+X-MS-Exchange-CrossTenant-UserPrincipalName: FJJJhvu6Lh8TWvVyjfq4D6xZ7hm131AJKALgMGmKKB68X7qoPoInu46sjkAGcw8T
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5094
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 24, 2021 at 09:44:26AM +0800, Mark Zhang wrote:
-> On 8/24/2021 3:33 AM, Jason Gunthorpe wrote:
-> > On Wed, Aug 18, 2021 at 02:24:18PM +0300, Mark Zhang wrote:
-> > > Hi,
-> > > 
-> > > This series from Aharon and Neta provides an extension to the rdma
-> > > statistics tool that allows to add and remove optional counters
-> > > dynamically, using new netlink commands.
-> > > 
-> > > The idea of having optional counters is to provide to the users the
-> > > ability to get statistics of counters that hurts performance.
-> > > 
-> > > Once an optional counter was added, its statistics will be presented
-> > > along with all the counters, using the show command.
-> > > 
-> > > Binding objects to the optional counters is currently not supported,
-> > > neither in auto mode nor in manual mode.
-> > > 
-> > > To get the list of optional counters that are supported on this device,
-> > > use "rdma statistic mode supported". To see which counters are currently
-> > > enabled, use "rdma statistic mode".
-> > > 
-> > > $ rdma statistic mode supported
-> > > link rocep8s0f0/1
-> > >      Optional-set: cc_rx_ce_pkts cc_rx_cnp_pkts cc_tx_cnp_pkts
-> > > link rocep8s0f1/1
-> > >      Optional-set: cc_rx_ce_pkts cc_rx_cnp_pkts cc_tx_cnp_pkts
-> > > 
-> > > $ sudo rdma statistic add link rocep8s0f0/1 optional-set cc_rx_ce_pkts
-> > > $ rdma statistic mode
-> > > link rocep8s0f0/1
-> > >      Optional-set: cc_rx_ce_pkts
-> > > $ sudo rdma statistic add link rocep8s0f0/1 optional-set cc_tx_cnp_pkts
-> > > $ rdma statistic mode
-> > > link rocep8s0f0/1
-> > >      Optional-set: cc_rx_ce_pkts cc_tx_cnp_pkts
+On Tue, Aug 24, 2021 at 10:13:34AM +0800, Mark Zhang wrote:
+> On 8/24/2021 3:44 AM, Jason Gunthorpe wrote:
+> > On Wed, Aug 18, 2021 at 02:24:28PM +0300, Mark Zhang wrote:
 > > 
-> > This doesn't look like the right output to iproute to me, the two
-> > command should not be using the same tag and the output of iproute
-> > should always be formed to be valid input to iproute
+> > > diff --git a/include/uapi/rdma/rdma_netlink.h b/include/uapi/rdma/rdma_netlink.h
+> > > index 79e6ca87d2e0..57f39d8fe434 100644
+> > > +++ b/include/uapi/rdma/rdma_netlink.h
+> > > @@ -557,6 +557,8 @@ enum rdma_nldev_attr {
+> > >   	RDMA_NLDEV_ATTR_STAT_OPCOUNTER_ENTRY,	/* nested table */
+> > >   	RDMA_NLDEV_ATTR_STAT_OPCOUNTER_ENTRY_NAME,	/* string */
+> > >   	RDMA_NLDEV_ATTR_STAT_OPCOUNTER_ENTRY_VALUE,	/* u64 */
+> > > +	RDMA_NLDEV_ATTR_STAT_OP_MODE_LIST,		/* u8 */
+> > > +	RDMA_NLDEV_ATTR_STAT_OP_MODE_LIST_SUPPORTED,	/* u8 */
+> > 
+> > See, here - shouldn't manipulation of MODE_LIST be done by a normal
+> > RDMA_NLDEV_CMD_STAT_SET with the new MODE_LIST array? This doesn't seem
+> > netlinky at all..
 > 
-> So it should be like this:
-> 
-> $ rdma statistic mode supported
-> link rocep8s0f0/1 optional-set cc_rx_ce_pkts cc_rx_cnp_pkts  cc_tx_cnp_pkts
-> link rocep8s0f1/1 optional-set cc_rx_ce_pkts cc_rx_cnp_pkts cc_tx_cnp_pkts
+> Both of them are flags and this is a "get" operation; "MODE_LIST" asks
+> kernel to return currently enabled op-counters, "MODE_LIST_SUPPORTED" asks
+> kernel to return supported op-counters. Maybe the macro name are not good?
 
-Each netlink tag in the protocol should have a unique string in the
-output. So you need strings that mean "optional set supported" and
-"optional set currently enabled"
+The marcors are fine, the protocol is just a bit wonky. The ADD/REMOVE
+idea should only be used on top level objects, but this is a nested
+sub so you should be using SET to manipulate it and it should provide
+the entire current list, not a add/remove type operation.
 
 Jason
