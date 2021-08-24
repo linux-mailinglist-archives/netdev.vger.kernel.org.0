@@ -2,199 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1070C3F668D
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 19:25:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CD823F6752
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 19:32:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240064AbhHXRZS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 13:25:18 -0400
-Received: from relay.sw.ru ([185.231.240.75]:35480 "EHLO relay.sw.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240567AbhHXRWi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Aug 2021 13:22:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:From:
-        Subject; bh=8i1v+A0+fnakBZkFrRSDHnZZu3IYLEQL/+VJgmo3gnI=; b=tXNIpfw8Fj4uxBFmS
-        UeFukxBW8iBp1qB7pFd2QtksSf3Tr2/lVNBFa7SO8N55CxNb2rnuVGTJNfcGHWHOogtql8pg+gm6L
-        0AGylF7hl1N2+JsUgjc4DM/sXAlia3TqrKApSfAJmJfvLsr3SvOPSm54MRtqYvYMHhgPoSc/95iIY
-        =;
-Received: from [10.93.0.56]
-        by relay.sw.ru with esmtp (Exim 4.94.2)
-        (envelope-from <vvs@virtuozzo.com>)
-        id 1mIa7M-008j7d-EG; Tue, 24 Aug 2021 20:21:44 +0300
-Subject: Re: [PATCH NET-NEXT] ipv6: skb_expand_head() adjust skb->truesize
- incorrectly
-From:   Vasily Averin <vvs@virtuozzo.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Christoph Paasch <christoph.paasch@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, kernel@openvz.org,
-        Julian Wiedmann <jwi@linux.ibm.com>
-References: <6858f130-e6b4-1ba7-ed6f-58c00152be69@virtuozzo.com>
- <ef4458d9-c4d7-f419-00f2-0f1cea5140ce@virtuozzo.com>
- <CALMXkpZkW+ULMMFgeY=cag1F0=891F-v9NEVcdn7Tyd-VUWGYA@mail.gmail.com>
- <1c12b056-79d2-126a-3f78-64629f072345@gmail.com>
- <2d8a102a-d641-c6c1-b417-7a35efa4e5da@gmail.com>
- <bd90616e-8e86-016b-0979-c4f4167b8bc2@gmail.com>
- <4fe6edb4-a364-0e59-f902-9a362dd998d4@virtuozzo.com>
-Message-ID: <61da35a1-e609-02d5-609d-5228e184e43f@virtuozzo.com>
-Date:   Tue, 24 Aug 2021 20:21:43 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S239841AbhHXRc7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 13:32:59 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:18190 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238425AbhHXRaw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 13:30:52 -0400
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 17OHU0Jc001168
+        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 10:30:05 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=G2gKnmW+A9fdO+WKJw8vDzIvrP/mzMN8631sIzWI/Cg=;
+ b=n5jDNj2OFminDC6gjfWeHoVo0Rzxd/hhic7S+uQOe7WmUvbwQ9tF7lYw40KKkjURf/6o
+ RvtC2bqZ6WcBrbMIo5tykixRARpH1GUSy75m4wDvZ0of94RtmiL9gkLx+QKy1Bhn6Hg0
+ pBSzG+wXVX+Xs9UmrYW6b51L0X4+I3shmgI= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 3amfqt7t75-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 10:30:05 -0700
+Received: from intmgw001.37.frc1.facebook.com (2620:10d:c085:208::f) by
+ mail.thefacebook.com (2620:10d:c085:11d::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Tue, 24 Aug 2021 10:30:01 -0700
+Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
+        id 04BEB2940D05; Tue, 24 Aug 2021 10:30:00 -0700 (PDT)
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     <bpf@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
+        <netdev@vger.kernel.org>
+Subject: [PATCH v2 bpf-next 0/4] bpf: tcp: Allow bpf-tcp-cc to call bpf_(get|set)sockopt
+Date:   Tue, 24 Aug 2021 10:30:00 -0700
+Message-ID: <20210824173000.3976470-1-kafai@fb.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-In-Reply-To: <4fe6edb4-a364-0e59-f902-9a362dd998d4@virtuozzo.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-FB-Source: Intern
+X-Proofpoint-GUID: kXYhtRE8bCLEzYytPQieyh3_tOeK40o9
+X-Proofpoint-ORIG-GUID: kXYhtRE8bCLEzYytPQieyh3_tOeK40o9
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-08-24_05:2021-08-24,2021-08-24 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ lowpriorityscore=0 malwarescore=0 adultscore=0 phishscore=0
+ mlxlogscore=590 mlxscore=0 spamscore=0 impostorscore=0 suspectscore=0
+ clxscore=1015 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2107140000 definitions=main-2108240115
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/24/21 11:50 AM, Vasily Averin wrote:
-> On 8/24/21 1:23 AM, Eric Dumazet wrote:
->> On 8/23/21 2:51 PM, Eric Dumazet wrote:
->>> On 8/23/21 2:45 PM, Eric Dumazet wrote:
->>>> On 8/23/21 10:25 AM, Christoph Paasch wrote:
->>>>> Hello,
->>>>>
->>>>> On Mon, Aug 23, 2021 at 12:56 AM Vasily Averin <vvs@virtuozzo.com> wrote:
->>>>>>
->>>>>> Christoph Paasch reports [1] about incorrect skb->truesize
->>>>>> after skb_expand_head() call in ip6_xmit.
->>>>>> This happen because skb_set_owner_w() for newly clone skb is called
->>>>>> too early, before pskb_expand_head() where truesize is adjusted for
->>>>>> (!skb-sk) case.
->>>>>>
->>>>>> [1] https://lkml.org/lkml/2021/8/20/1082
->>>>>>
->>>>>> Reported-by: Christoph Paasch <christoph.paasch@gmail.com>
->>>>>> Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
->>>>>> ---
->>>>>>  net/core/skbuff.c | 24 +++++++++++++-----------
->>>>>>  1 file changed, 13 insertions(+), 11 deletions(-)
->>>>>>
->>>>>> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
->>>>>> index f931176..508d5c4 100644
->>>>>> --- a/net/core/skbuff.c
->>>>>> +++ b/net/core/skbuff.c
->>>>>> @@ -1803,6 +1803,8 @@ struct sk_buff *skb_realloc_headroom(struct sk_buff *skb, unsigned int headroom)
->>>>>>
->>>>>>  struct sk_buff *skb_expand_head(struct sk_buff *skb, unsigned int headroom)
->>>>>>  {
->>>>>> +       struct sk_buff *oskb = skb;
->>>>>> +       struct sk_buff *nskb = NULL;
->>>>>>         int delta = headroom - skb_headroom(skb);
->>>>>>
->>>>>>         if (WARN_ONCE(delta <= 0,
->>>>>> @@ -1811,21 +1813,21 @@ struct sk_buff *skb_expand_head(struct sk_buff *skb, unsigned int headroom)
->>>>>>
->>>>>>         /* pskb_expand_head() might crash, if skb is shared */
->>>>>>         if (skb_shared(skb)) {
->>>>>> -               struct sk_buff *nskb = skb_clone(skb, GFP_ATOMIC);
->>>>>> -
->>>>>> -               if (likely(nskb)) {
->>>>>> -                       if (skb->sk)
->>>>>> -                               skb_set_owner_w(nskb, skb->sk);
->>>>>> -                       consume_skb(skb);
->>>>>> -               } else {
->>>>>> -                       kfree_skb(skb);
->>>>>> -               }
->>>>>> +               nskb = skb_clone(skb, GFP_ATOMIC);
->>>>>>                 skb = nskb;
->>>>>>         }
->>>>>>         if (skb &&
->>>>>> -           pskb_expand_head(skb, SKB_DATA_ALIGN(delta), 0, GFP_ATOMIC)) {
->>>>>> -               kfree_skb(skb);
->>>>>> +           pskb_expand_head(skb, SKB_DATA_ALIGN(delta), 0, GFP_ATOMIC))
->>>>>>                 skb = NULL;
->>>>>> +
->>>>>> +       if (!skb) {
->>>>>> +               kfree_skb(oskb);
->>>>>> +               if (nskb)
->>>>>> +                       kfree_skb(nskb);
->>>>>> +       } else if (nskb) {
->>>>>> +               if (oskb->sk)
->>>>>> +                       skb_set_owner_w(nskb, oskb->sk);
->>>>>> +               consume_skb(oskb);
->>>>>
->>>>> sorry, this does not fix the problem. The syzkaller repro still
->>>>> triggers the WARN.
->>>>>
->>>>> When it happens, the skb in ip6_xmit() is not shared as it comes from
->>>>> __tcp_transmit_skb, where it is skb_clone()'d.
->>>>>
->>>>>
->>>>
->>>> Old code (in skb_realloc_headroom())
->>>> was first calling skb2 = skb_clone(skb, GFP_ATOMIC); 
->>>>
->>>> At this point, skb2->sk was NULL
->>>> So pskb_expand_head(skb2, SKB_DATA_ALIGN(delta), 0, ...) was able to tweak skb2->truesize
->>>>
->>>> I would try :
->>>>
->>>> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
->>>> index f9311762cc475bd38d87c33e988d7c983b902e56..326749a8938637b044a616cc33b6a19ed191ac41 100644
->>>> --- a/net/core/skbuff.c
->>>> +++ b/net/core/skbuff.c
->>>> @@ -1804,6 +1804,7 @@ EXPORT_SYMBOL(skb_realloc_headroom);
->>>>  struct sk_buff *skb_expand_head(struct sk_buff *skb, unsigned int headroom)
->>>>  {
->>>>         int delta = headroom - skb_headroom(skb);
->>>> +       struct sk_buff *oskb = NULL;
->>>>  
->>>>         if (WARN_ONCE(delta <= 0,
->>>>                       "%s is expecting an increase in the headroom", __func__))
->>>> @@ -1813,19 +1814,21 @@ struct sk_buff *skb_expand_head(struct sk_buff *skb, unsigned int headroom)
->>>>         if (skb_shared(skb)) {
->>>>                 struct sk_buff *nskb = skb_clone(skb, GFP_ATOMIC);
->>>>  
->>>> -               if (likely(nskb)) {
->>>> -                       if (skb->sk)
->>>> -                               skb_set_owner_w(nskb, skb->sk);
->>>> -                       consume_skb(skb);
->>>> -               } else {
->>>> +               if (unlikely(!nskb)) {
->>>>                         kfree_skb(skb);
->>>> +                       return NULL;
->>>>                 }
->>>> +               oskb = skb;
->>>>                 skb = nskb;
->>>>         }
->>>> -       if (skb &&
->>>> -           pskb_expand_head(skb, SKB_DATA_ALIGN(delta), 0, GFP_ATOMIC)) {
->>>> +       if (pskb_expand_head(skb, SKB_DATA_ALIGN(delta), 0, GFP_ATOMIC)) {
->>>>                 kfree_skb(skb);
->>>> -               skb = NULL;
->>>> +               kfree_skb(oskb);
->>>> +               return NULL;
->>>> +       }
->>>> +       if (oskb) {
->>>> +               skb_set_owner_w(skb, oskb->sk);
->>>> +               consume_skb(oskb);
->>>>         }
->>>>         return skb;
->>>>  }
->>>
->>>
->>> Oh well, probably not going to work.
->>>
->>> We have to find a way to properly increase skb->truesize, even if skb_clone() is _not_ called.
-> 
-> Can we adjust truesize outside pskb_expand_head()?
-> Could you please explain why it can be not safe?
+This set allows the bpf-tcp-cc to call bpf_setsockopt.  One use
+case is to allow a bpf-tcp-cc switching to another cc during init().
+For example, when the tcp flow is not ecn ready, the bpf_dctcp
+can switch to another cc by calling setsockopt(TCP_CONGESTION).
 
-Do you mean truesize change should not break balance of sk->sk_wmem_alloc?
+bpf_getsockopt() is also added to have a symmetrical API, so
+less usage surprise.
+   =20
+v2:
+- Not allow switching to kernel's tcp_cdg because it is the only
+  kernel tcp-cc that stores a pointer to icsk_ca_priv.
+  Please see the commit log in patch 1 for details.
+  Test is added in patch 4 to check switching to tcp_cdg.
+- Refactor the logic finding the offset of a func ptr
+  in the "struct tcp_congestion_ops" to prog_ops_moff()
+  in patch 1.
+- bpf_setsockopt() has been disabled in release() since v1 (please
+  see commit log in patch 1 for reason).  bpf_getsockopt() is
+  also disabled together in release() in v2 to avoid usage surprise
+  because both of them are usually expected to be available together.
+  bpf-tcp-cc can already use PTR_TO_BTF_ID to read from tcp_sock.
 
->> I also note that current use of skb_set_owner_w(), forcing skb->destructor to sock_wfree()
->> is probably breaking TCP Small queues, since original skb->destructor would be tcp_wfree() or __sock_wfree()
-> 
-> I agree, however as far as I understand it is separate and more global problem.
-> 
-> Thank you,
-> 	Vasily Averin
-> 
+Martin KaFai Lau (4):
+  bpf: tcp: Allow bpf-tcp-cc to call bpf_(get|set)sockopt
+  bpf: selftests: Add sk_state to bpf_tcp_helpers.h
+  bpf: selftests: Add connect_to_fd_opts to network_helpers
+  bpf: selftests: Add dctcp fallback test
+
+ kernel/bpf/bpf_struct_ops.c                   |  22 +++-
+ net/core/filter.c                             |   6 +
+ net/ipv4/bpf_tcp_ca.c                         |  41 ++++++-
+ tools/testing/selftests/bpf/bpf_tcp_helpers.h |   1 +
+ tools/testing/selftests/bpf/network_helpers.c |  23 +++-
+ tools/testing/selftests/bpf/network_helpers.h |   6 +
+ .../selftests/bpf/prog_tests/bpf_tcp_ca.c     | 106 ++++++++++++++----
+ .../selftests/bpf/prog_tests/kfunc_call.c     |   2 +-
+ tools/testing/selftests/bpf/progs/bpf_dctcp.c |  25 +++++
+ .../selftests/bpf/progs/bpf_dctcp_release.c   |  26 +++++
+ .../bpf/progs/kfunc_call_test_subprog.c       |   4 +-
+ 11 files changed, 230 insertions(+), 32 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/bpf_dctcp_release.c
+
+--=20
+2.30.2
 
