@@ -2,91 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F5FF3F551C
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 02:59:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCB6A3F5540
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 03:02:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235109AbhHXA7e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Aug 2021 20:59:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47890 "EHLO mail.kernel.org"
+        id S235262AbhHXBCt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Aug 2021 21:02:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54958 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234499AbhHXA5P (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Aug 2021 20:57:15 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id ED54D617E3;
-        Tue, 24 Aug 2021 00:55:46 +0000 (UTC)
+        id S234205AbhHXBAs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Aug 2021 21:00:48 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 9E65B61360;
+        Tue, 24 Aug 2021 01:00:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629766548;
-        bh=qhESlreqaguGA6UjYwAFl9MniaY/yGL8vZMgJ69S/zY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XYURGX/CL5ldnw/JWmVHfi16J/AsCY+U3c8Lp7VeusUJfUUEeyWr26H0GD4r8N+sy
-         OHt3CF3o+lz1z8Dqicj4n2KREF+UfrGbqJTTZmMc7MLocTksRSTA9+zIQNbH9bNEBQ
-         ZeTNE7j6t8an1/1ex0sUGGuiEXpYeWYIUsaaDjBe4GEKeNrp3czL5pG4PxmUS4C6Jg
-         7zHhwOMc/zDtew4V80TIMF78SJB1l12WT7hL/O1zxkw8sXWuapBBBgVZdHCgR3SpZ7
-         HU5pRKKnZX+7xX//VGZjslZBljm3PFdujXVMLTdjnuhyLJzpiYI/PWVsnDhdZiBf4P
-         pS0wrn+hQxAiw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Neeraj Upadhyay <neeraju@codeaurora.org>,
-        Jason Wang <jasowang@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 2/2] vringh: Use wiov->used to check for read/write desc order
-Date:   Mon, 23 Aug 2021 20:55:44 -0400
-Message-Id: <20210824005544.631899-2-sashal@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210824005544.631899-1-sashal@kernel.org>
-References: <20210824005544.631899-1-sashal@kernel.org>
+        s=k20201202; t=1629766805;
+        bh=C4C9EC93l2NXJl2GeHU5g8pzFErFS251vY0sAquMUPU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=EqdU3TM+GEiKCU1OdFUshE9+iCSL6kQ/mp83hR9rCTQTN6dI0Z2eR0k6+ikF/6B0b
+         c29/ccAiTwvI579NDmqBHu8wkmuBx6pSeG/Uz/MHLpO4muc7BOsz3Qvrsc41Bjtr+t
+         O6/4xgrBPmRPe0TGb7I2FjFtkSr924H6jXrHE56mDwL0REtNRrPX50CwXWi9Vxl4OS
+         b5DtgloMD9lpY8n9SB0fyDfTnwKYyb2cNGsCRKOoeZ7RopNmWE1T2RWb8iqx1EMfSs
+         lYHYAojIrDWVxF4F2YVqI/kwscJa6Lyry7CENt9Ry93izVX9318FMZDTbhqE9Cj3Dx
+         zwauLB7LSpkEg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 90E376098C;
+        Tue, 24 Aug 2021 01:00:05 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next v2 0/1] Refactor cgroup_bpf internals to use more
+ specific attach_type
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162976680558.16394.17738506707111563389.git-patchwork-notify@kernel.org>
+Date:   Tue, 24 Aug 2021 01:00:05 +0000
+References: <20210819092420.1984861-1-davemarchevsky@fb.com>
+In-Reply-To: <20210819092420.1984861-1-davemarchevsky@fb.com>
+To:     Dave Marchevsky <davemarchevsky@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Neeraj Upadhyay <neeraju@codeaurora.org>
+Hello:
 
-[ Upstream commit e74cfa91f42c50f7f649b0eca46aa049754ccdbd ]
+This patch was applied to bpf/bpf-next.git (refs/heads/master):
 
-As __vringh_iov() traverses a descriptor chain, it populates
-each descriptor entry into either read or write vring iov
-and increments that iov's ->used member. So, as we iterate
-over a descriptor chain, at any point, (riov/wriov)->used
-value gives the number of descriptor enteries available,
-which are to be read or written by the device. As all read
-iovs must precede the write iovs, wiov->used should be zero
-when we are traversing a read descriptor. Current code checks
-for wiov->i, to figure out whether any previous entry in the
-current descriptor chain was a write descriptor. However,
-iov->i is only incremented, when these vring iovs are consumed,
-at a later point, and remain 0 in __vringh_iov(). So, correct
-the check for read and write descriptor order, to use
-wiov->used.
+On Thu, 19 Aug 2021 02:24:19 -0700 you wrote:
+> The cgroup_bpf struct has a few arrays (effective, progs, and flags) of
+> size MAX_BPF_ATTACH_TYPE. These are meant to separate progs by their
+> attach type, currently represented by the bpf_attach_type enum.
+> 
+> There are some bpf_attach_type values which are not valid attach types
+> for cgroup bpf programs. Programs with these attach types will never be
+> handled by cgroup_bpf_{attach,detach} and thus will never be held in
+> cgroup_bpf structs. Even if such programs did make it into their
+> reserved slot in those arrays, they would never be executed.
+> 
+> [...]
 
-Acked-by: Jason Wang <jasowang@redhat.com>
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
-Signed-off-by: Neeraj Upadhyay <neeraju@codeaurora.org>
-Link: https://lore.kernel.org/r/1624591502-4827-1-git-send-email-neeraju@codeaurora.org
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/vhost/vringh.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Here is the summary with links:
+  - [bpf-next,v2,1/1] bpf: migrate cgroup_bpf to internal cgroup_bpf_attach_type enum
+    https://git.kernel.org/bpf/bpf-next/c/4ed589a27893
 
-diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
-index d56736655dec..da47542496cc 100644
---- a/drivers/vhost/vringh.c
-+++ b/drivers/vhost/vringh.c
-@@ -329,7 +329,7 @@ __vringh_iov(struct vringh *vrh, u16 i,
- 			iov = wiov;
- 		else {
- 			iov = riov;
--			if (unlikely(wiov && wiov->i)) {
-+			if (unlikely(wiov && wiov->used)) {
- 				vringh_bad("Readable desc %p after writable",
- 					   &descs[i]);
- 				err = -EINVAL;
--- 
-2.30.2
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
