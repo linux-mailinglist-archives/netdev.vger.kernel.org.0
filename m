@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DFB03F5C25
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 12:29:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE0943F5C19
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 12:28:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236373AbhHXK3I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 06:29:08 -0400
-Received: from smtp-out1.suse.de ([195.135.220.28]:37148 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235982AbhHXK26 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 06:28:58 -0400
+        id S236289AbhHXK3D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 06:29:03 -0400
+Received: from smtp-out2.suse.de ([195.135.220.29]:44522 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236120AbhHXK27 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 06:28:59 -0400
 Received: from imap1.suse-dmz.suse.de (imap1.suse-dmz.suse.de [192.168.254.73])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id EF470220AC;
-        Tue, 24 Aug 2021 10:28:13 +0000 (UTC)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 4AF9E20050;
+        Tue, 24 Aug 2021 10:28:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1629800893; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1629800894; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=xzRnNXEpYNK6Fr5aUl3tWJGBJDdvhYuHIaqCmKzznYU=;
-        b=Q+8gdbEVImSGds7mmPaM4UehS+aTvl6Jy+7iX7DxXXhxkZgPpS4IOcdZd25ZzMRAmjW9kb
-        n32wpEB0gsPm6SzdwQNp6wxpOyyxsoznmynuAgqxBufivgjhWLcd+aRn5E+MizuAVJZgcV
-        QPa5WwxRjK/QKCMDzUCCm08y/G8KCEU=
+        bh=dRfHDlbGvJX0Rh3aH0nd0i0HxQzYtne2EnV2YC+Etxk=;
+        b=WA3W65tQDCGvZ6HWHIGUJZAQZYk/ziLqp7BG4E0U2Kn9UPepZzumKpmbZ0uW+XGqsGRDGm
+        hc3woFMVOqUqQY8GKTWR9k337NFfSSOWEWki45zkGpCXg4Tdq40AaS6+pew3yTMN51P8xQ
+        BAUavhaDsivS2qpG2Z9jGgMWI7k70rk=
 Received: from imap1.suse-dmz.suse.de (imap1.suse-dmz.suse.de [192.168.254.73])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by imap1.suse-dmz.suse.de (Postfix) with ESMTPS id AAFBB136DD;
+        by imap1.suse-dmz.suse.de (Postfix) with ESMTPS id 048EE136DD;
         Tue, 24 Aug 2021 10:28:13 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
         by imap1.suse-dmz.suse.de with ESMTPSA
-        id 6BJGKL3JJGG8DwAAGKfGzw
+        id aKYuO73JJGG8DwAAGKfGzw
         (envelope-from <jgross@suse.com>); Tue, 24 Aug 2021 10:28:13 +0000
 From:   Juergen Gross <jgross@suse.com>
 To:     xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
@@ -44,9 +44,9 @@ Cc:     Juergen Gross <jgross@suse.com>,
         Stefano Stabellini <sstabellini@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH v2 2/4] xen/netfront: don't read data from request on the ring page
-Date:   Tue, 24 Aug 2021 12:28:07 +0200
-Message-Id: <20210824102809.26370-3-jgross@suse.com>
+Subject: [PATCH v2 3/4] xen/netfront: disentangle tx_skb_freelist
+Date:   Tue, 24 Aug 2021 12:28:08 +0200
+Message-Id: <20210824102809.26370-4-jgross@suse.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210824102809.26370-1-jgross@suse.com>
 References: <20210824102809.26370-1-jgross@suse.com>
@@ -56,210 +56,179 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to avoid a malicious backend being able to influence the local
-processing of a request build the request locally first and then copy
-it to the ring page. Any reading from the request influencing the
-processing in the frontend needs to be done on the local instance.
+The tx_skb_freelist elements are in a single linked list with the
+request id used as link reference. The per element link field is in a
+union with the skb pointer of an in use request.
+
+Move the link reference out of the union in order to enable a later
+reuse of it for requests which need a populated skb pointer.
+
+Rename add_id_to_freelist() and get_id_from_freelist() to
+add_id_to_list() and get_id_from_list() in order to prepare using
+those for other lists as well. Define ~0 as value to indicate the end
+of a list and place that value into the link for a request not being
+on the list.
+
+When freeing a skb zero the skb pointer in the request. Use a NULL
+value of the skb pointer instead of skb_entry_is_link() for deciding
+whether a request has a skb linked to it.
+
+Remove skb_entry_set_link() and open code it instead as it is really
+trivial now.
 
 Signed-off-by: Juergen Gross <jgross@suse.com>
 ---
 V2:
-- drop local tx variable (Jan Beulich)
-- fix oversight of reading value from ring page (Jan Beulich)
+- new patch
 ---
- drivers/net/xen-netfront.c | 86 +++++++++++++++++++-------------------
- 1 file changed, 42 insertions(+), 44 deletions(-)
+ drivers/net/xen-netfront.c | 61 ++++++++++++++++----------------------
+ 1 file changed, 25 insertions(+), 36 deletions(-)
 
 diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
-index 003cdf2ffc92..714fe9d2c534 100644
+index 714fe9d2c534..956e1266bd1a 100644
 --- a/drivers/net/xen-netfront.c
 +++ b/drivers/net/xen-netfront.c
-@@ -435,7 +435,8 @@ struct xennet_gnttab_make_txreq {
- 	struct netfront_queue *queue;
- 	struct sk_buff *skb;
- 	struct page *page;
--	struct xen_netif_tx_request *tx; /* Last request */
-+	struct xen_netif_tx_request *tx;      /* Last request on ring page */
-+	struct xen_netif_tx_request tx_local; /* Last request local copy*/
- 	unsigned int size;
+@@ -126,17 +126,11 @@ struct netfront_queue {
+ 
+ 	/*
+ 	 * {tx,rx}_skbs store outstanding skbuffs. Free tx_skb entries
+-	 * are linked from tx_skb_freelist through skb_entry.link.
+-	 *
+-	 *  NB. Freelist index entries are always going to be less than
+-	 *  PAGE_OFFSET, whereas pointers to skbs will always be equal or
+-	 *  greater than PAGE_OFFSET: we use this property to distinguish
+-	 *  them.
++	 * are linked from tx_skb_freelist through tx_link.
+ 	 */
+-	union skb_entry {
+-		struct sk_buff *skb;
+-		unsigned long link;
+-	} tx_skbs[NET_TX_RING_SIZE];
++	struct sk_buff *tx_skbs[NET_TX_RING_SIZE];
++	unsigned short tx_link[NET_TX_RING_SIZE];
++#define TX_LINK_NONE 0xffff
+ 	grant_ref_t gref_tx_head;
+ 	grant_ref_t grant_tx_ref[NET_TX_RING_SIZE];
+ 	struct page *grant_tx_page[NET_TX_RING_SIZE];
+@@ -181,33 +175,25 @@ struct netfront_rx_info {
+ 	struct xen_netif_extra_info extras[XEN_NETIF_EXTRA_TYPE_MAX - 1];
  };
  
-@@ -463,30 +464,27 @@ static void xennet_tx_setup_grant(unsigned long gfn, unsigned int offset,
+-static void skb_entry_set_link(union skb_entry *list, unsigned short id)
+-{
+-	list->link = id;
+-}
+-
+-static int skb_entry_is_link(const union skb_entry *list)
+-{
+-	BUILD_BUG_ON(sizeof(list->skb) != sizeof(list->link));
+-	return (unsigned long)list->skb < PAGE_OFFSET;
+-}
+-
+ /*
+  * Access macros for acquiring freeing slots in tx_skbs[].
+  */
+ 
+-static void add_id_to_freelist(unsigned *head, union skb_entry *list,
+-			       unsigned short id)
++static void add_id_to_list(unsigned *head, unsigned short *list,
++			   unsigned short id)
+ {
+-	skb_entry_set_link(&list[id], *head);
++	list[id] = *head;
+ 	*head = id;
+ }
+ 
+-static unsigned short get_id_from_freelist(unsigned *head,
+-					   union skb_entry *list)
++static unsigned short get_id_from_list(unsigned *head, unsigned short *list)
+ {
+ 	unsigned int id = *head;
+-	*head = list[id].link;
++
++	if (id != TX_LINK_NONE) {
++		*head = list[id];
++		list[id] = TX_LINK_NONE;
++	}
+ 	return id;
+ }
+ 
+@@ -406,7 +392,8 @@ static void xennet_tx_buf_gc(struct netfront_queue *queue)
+ 				continue;
+ 
+ 			id  = txrsp.id;
+-			skb = queue->tx_skbs[id].skb;
++			skb = queue->tx_skbs[id];
++			queue->tx_skbs[id] = NULL;
+ 			if (unlikely(gnttab_query_foreign_access(
+ 				queue->grant_tx_ref[id]) != 0)) {
+ 				pr_alert("%s: warning -- grant still in use by backend domain\n",
+@@ -419,7 +406,7 @@ static void xennet_tx_buf_gc(struct netfront_queue *queue)
+ 				&queue->gref_tx_head, queue->grant_tx_ref[id]);
+ 			queue->grant_tx_ref[id] = GRANT_INVALID_REF;
+ 			queue->grant_tx_page[id] = NULL;
+-			add_id_to_freelist(&queue->tx_skb_freelist, queue->tx_skbs, id);
++			add_id_to_list(&queue->tx_skb_freelist, queue->tx_link, id);
+ 			dev_kfree_skb_irq(skb);
+ 		}
+ 
+@@ -452,7 +439,7 @@ static void xennet_tx_setup_grant(unsigned long gfn, unsigned int offset,
+ 	struct netfront_queue *queue = info->queue;
+ 	struct sk_buff *skb = info->skb;
+ 
+-	id = get_id_from_freelist(&queue->tx_skb_freelist, queue->tx_skbs);
++	id = get_id_from_list(&queue->tx_skb_freelist, queue->tx_link);
+ 	tx = RING_GET_REQUEST(&queue->tx, queue->tx.req_prod_pvt++);
+ 	ref = gnttab_claim_grant_reference(&queue->gref_tx_head);
+ 	WARN_ON_ONCE(IS_ERR_VALUE((unsigned long)(int)ref));
+@@ -460,7 +447,7 @@ static void xennet_tx_setup_grant(unsigned long gfn, unsigned int offset,
+ 	gnttab_grant_foreign_access_ref(ref, queue->info->xbdev->otherend_id,
+ 					gfn, GNTMAP_readonly);
+ 
+-	queue->tx_skbs[id].skb = skb;
++	queue->tx_skbs[id] = skb;
  	queue->grant_tx_page[id] = page;
  	queue->grant_tx_ref[id] = ref;
  
--	tx->id = id;
--	tx->gref = ref;
--	tx->offset = offset;
--	tx->size = len;
--	tx->flags = 0;
-+	info->tx_local.id = id;
-+	info->tx_local.gref = ref;
-+	info->tx_local.offset = offset;
-+	info->tx_local.size = len;
-+	info->tx_local.flags = 0;
-+
-+	*tx = info->tx_local;
+@@ -1284,17 +1271,18 @@ static void xennet_release_tx_bufs(struct netfront_queue *queue)
  
- 	info->tx = tx;
--	info->size += tx->size;
-+	info->size += info->tx_local.size;
+ 	for (i = 0; i < NET_TX_RING_SIZE; i++) {
+ 		/* Skip over entries which are actually freelist references */
+-		if (skb_entry_is_link(&queue->tx_skbs[i]))
++		if (!queue->tx_skbs[i])
+ 			continue;
+ 
+-		skb = queue->tx_skbs[i].skb;
++		skb = queue->tx_skbs[i];
++		queue->tx_skbs[i] = NULL;
+ 		get_page(queue->grant_tx_page[i]);
+ 		gnttab_end_foreign_access(queue->grant_tx_ref[i],
+ 					  GNTMAP_readonly,
+ 					  (unsigned long)page_address(queue->grant_tx_page[i]));
+ 		queue->grant_tx_page[i] = NULL;
+ 		queue->grant_tx_ref[i] = GRANT_INVALID_REF;
+-		add_id_to_freelist(&queue->tx_skb_freelist, queue->tx_skbs, i);
++		add_id_to_list(&queue->tx_skb_freelist, queue->tx_link, i);
+ 		dev_kfree_skb_irq(skb);
+ 	}
  }
+@@ -1851,13 +1839,14 @@ static int xennet_init_queue(struct netfront_queue *queue)
+ 	snprintf(queue->name, sizeof(queue->name), "vif%s-q%u",
+ 		 devid, queue->id);
  
- static struct xen_netif_tx_request *xennet_make_first_txreq(
--	struct netfront_queue *queue, struct sk_buff *skb,
--	struct page *page, unsigned int offset, unsigned int len)
-+	struct xennet_gnttab_make_txreq *info,
-+	unsigned int offset, unsigned int len)
- {
--	struct xennet_gnttab_make_txreq info = {
--		.queue = queue,
--		.skb = skb,
--		.page = page,
--		.size = 0,
--	};
-+	info->size = 0;
- 
--	gnttab_for_one_grant(page, offset, len, xennet_tx_setup_grant, &info);
-+	gnttab_for_one_grant(info->page, offset, len, xennet_tx_setup_grant, info);
- 
--	return info.tx;
-+	return info->tx;
- }
- 
- static void xennet_make_one_txreq(unsigned long gfn, unsigned int offset,
-@@ -499,35 +497,27 @@ static void xennet_make_one_txreq(unsigned long gfn, unsigned int offset,
- 	xennet_tx_setup_grant(gfn, offset, len, data);
- }
- 
--static struct xen_netif_tx_request *xennet_make_txreqs(
--	struct netfront_queue *queue, struct xen_netif_tx_request *tx,
--	struct sk_buff *skb, struct page *page,
-+static void xennet_make_txreqs(
-+	struct xennet_gnttab_make_txreq *info,
-+	struct page *page,
- 	unsigned int offset, unsigned int len)
- {
--	struct xennet_gnttab_make_txreq info = {
--		.queue = queue,
--		.skb = skb,
--		.tx = tx,
--	};
--
- 	/* Skip unused frames from start of page */
- 	page += offset >> PAGE_SHIFT;
- 	offset &= ~PAGE_MASK;
- 
- 	while (len) {
--		info.page = page;
--		info.size = 0;
-+		info->page = page;
-+		info->size = 0;
- 
- 		gnttab_foreach_grant_in_range(page, offset, len,
- 					      xennet_make_one_txreq,
--					      &info);
-+					      info);
- 
- 		page++;
- 		offset = 0;
--		len -= info.size;
-+		len -= info->size;
+-	/* Initialise tx_skbs as a free chain containing every entry. */
++	/* Initialise tx_skb_freelist as a free chain containing every entry. */
+ 	queue->tx_skb_freelist = 0;
+ 	for (i = 0; i < NET_TX_RING_SIZE; i++) {
+-		skb_entry_set_link(&queue->tx_skbs[i], i+1);
++		queue->tx_link[i] = i + 1;
+ 		queue->grant_tx_ref[i] = GRANT_INVALID_REF;
+ 		queue->grant_tx_page[i] = NULL;
  	}
--
--	return info.tx;
- }
++	queue->tx_link[NET_TX_RING_SIZE - 1] = TX_LINK_NONE;
  
- /*
-@@ -580,10 +570,14 @@ static int xennet_xdp_xmit_one(struct net_device *dev,
- {
- 	struct netfront_info *np = netdev_priv(dev);
- 	struct netfront_stats *tx_stats = this_cpu_ptr(np->tx_stats);
-+	struct xennet_gnttab_make_txreq info = {
-+		.queue = queue,
-+		.skb = NULL,
-+		.page = virt_to_page(xdpf->data),
-+	};
- 	int notify;
- 
--	xennet_make_first_txreq(queue, NULL,
--				virt_to_page(xdpf->data),
-+	xennet_make_first_txreq(&info,
- 				offset_in_page(xdpf->data),
- 				xdpf->len);
- 
-@@ -638,7 +632,7 @@ static netdev_tx_t xennet_start_xmit(struct sk_buff *skb, struct net_device *dev
- {
- 	struct netfront_info *np = netdev_priv(dev);
- 	struct netfront_stats *tx_stats = this_cpu_ptr(np->tx_stats);
--	struct xen_netif_tx_request *tx, *first_tx;
-+	struct xen_netif_tx_request *first_tx;
- 	unsigned int i;
- 	int notify;
- 	int slots;
-@@ -647,6 +641,7 @@ static netdev_tx_t xennet_start_xmit(struct sk_buff *skb, struct net_device *dev
- 	unsigned int len;
- 	unsigned long flags;
- 	struct netfront_queue *queue = NULL;
-+	struct xennet_gnttab_make_txreq info = { };
- 	unsigned int num_queues = dev->real_num_tx_queues;
- 	u16 queue_index;
- 	struct sk_buff *nskb;
-@@ -704,21 +699,24 @@ static netdev_tx_t xennet_start_xmit(struct sk_buff *skb, struct net_device *dev
- 	}
- 
- 	/* First request for the linear area. */
--	first_tx = tx = xennet_make_first_txreq(queue, skb,
--						page, offset, len);
--	offset += tx->size;
-+	info.queue = queue;
-+	info.skb = skb;
-+	info.page = page;
-+	first_tx = xennet_make_first_txreq(&info, offset, len);
-+	offset += info.tx_local.size;
- 	if (offset == PAGE_SIZE) {
- 		page++;
- 		offset = 0;
- 	}
--	len -= tx->size;
-+	len -= info.tx_local.size;
- 
- 	if (skb->ip_summed == CHECKSUM_PARTIAL)
- 		/* local packet? */
--		tx->flags |= XEN_NETTXF_csum_blank | XEN_NETTXF_data_validated;
-+		first_tx->flags |= XEN_NETTXF_csum_blank |
-+				   XEN_NETTXF_data_validated;
- 	else if (skb->ip_summed == CHECKSUM_UNNECESSARY)
- 		/* remote but checksummed. */
--		tx->flags |= XEN_NETTXF_data_validated;
-+		first_tx->flags |= XEN_NETTXF_data_validated;
- 
- 	/* Optional extra info after the first request. */
- 	if (skb_shinfo(skb)->gso_size) {
-@@ -727,7 +725,7 @@ static netdev_tx_t xennet_start_xmit(struct sk_buff *skb, struct net_device *dev
- 		gso = (struct xen_netif_extra_info *)
- 			RING_GET_REQUEST(&queue->tx, queue->tx.req_prod_pvt++);
- 
--		tx->flags |= XEN_NETTXF_extra_info;
-+		first_tx->flags |= XEN_NETTXF_extra_info;
- 
- 		gso->u.gso.size = skb_shinfo(skb)->gso_size;
- 		gso->u.gso.type = (skb_shinfo(skb)->gso_type & SKB_GSO_TCPV6) ?
-@@ -741,12 +739,12 @@ static netdev_tx_t xennet_start_xmit(struct sk_buff *skb, struct net_device *dev
- 	}
- 
- 	/* Requests for the rest of the linear area. */
--	tx = xennet_make_txreqs(queue, tx, skb, page, offset, len);
-+	xennet_make_txreqs(&info, page, offset, len);
- 
- 	/* Requests for all the frags. */
- 	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
- 		skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
--		tx = xennet_make_txreqs(queue, tx, skb, skb_frag_page(frag),
-+		xennet_make_txreqs(&info, skb_frag_page(frag),
- 					skb_frag_off(frag),
- 					skb_frag_size(frag));
- 	}
+ 	/* Clear out rx_skbs */
+ 	for (i = 0; i < NET_RX_RING_SIZE; i++) {
 -- 
 2.26.2
 
