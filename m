@@ -2,141 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1BAB3F6176
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 17:22:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 993723F6189
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 17:24:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238248AbhHXPXM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 11:23:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33804 "EHLO
+        id S238332AbhHXPYx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 11:24:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238130AbhHXPXI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 11:23:08 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A726BC061757
-        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 08:22:23 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id z18so41766689ybg.8
-        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 08:22:23 -0700 (PDT)
+        with ESMTP id S238305AbhHXPYu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 11:24:50 -0400
+Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EE51C0613C1;
+        Tue, 24 Aug 2021 08:24:06 -0700 (PDT)
+Received: by mail-ot1-x334.google.com with SMTP id k12-20020a056830150c00b0051abe7f680bso41971327otp.1;
+        Tue, 24 Aug 2021 08:24:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Fwrh7Ma93YqHeODSroVO5xFqEdFE+DoKS8enYFO4wgY=;
-        b=ZRdVwHBOwg6wZSSKlvs22KmEcuWScMAwPAoS5LMwClAjyr4iO3gGTdZLw6l0uIFj03
-         lFX1xo3zeQypiJZFHkrtaKfNMmFfOjhKNYq+l03uUaaFzbbp20woXQslQHD5Ol0C0COj
-         J9hFt4pYV+jvX8AWMHiyvTLcXYX55FyG8+8Aa/ObtDDb1rhPz4eIOfQ0hvB0K9kafkLC
-         eNMqnXUKWeeMlzBNc6lxyJV8bk+Sn6Q2vnksFn5UfK+GAejcZWciOUXsVFytYOhF0zIU
-         5nWdPM4zTSlGnoOcBV/RUP2M6x+bNx8D2rpZj8xjTxVbvWLmYDNEO/QhBvBx9S1h/VQh
-         FF1w==
+        bh=oeGV5t/oJZwqNMB4jX1FuHm+Z0cA2twU4gN/nkkX+8A=;
+        b=SFUT5QMnrpG848wlRzo/0AfLJVjur8Qo1T9Lz0HM4GJS+LOQcQzqpAD9b6x3yll444
+         S473LxVNAIJyWwFOVIqr/HUgDkX+T0qgceS8A9m+NRiQ7gmDeIBaK+y1TQ3YtHVcMOQi
+         mYAn1SmcAq20Nw74K6bPs+eWszTRocP5WfVWvmnl/VZNtSVA2ZOpYuaL//ZfRFihjjxU
+         sbSX/QRZZWz0IaA3UY4SBPsOxKxhk3lgCiXSOn4e8wVz1NcqqSy0Z8OaU4/blrQ55iqe
+         3BdBHw3Nyb4kDl5yLxPU+KmoNGeaHEY+29K3stzCDjOe7j3Gf/3IyKFCkSBpSf/p99Do
+         9U1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Fwrh7Ma93YqHeODSroVO5xFqEdFE+DoKS8enYFO4wgY=;
-        b=dToCSUWVXy3oeNHM7Jkb4npsiYw8jhFBcxxmPjf3+h8ipf4WPRrT90qBPw17yA+NAy
-         WwwC+TPuQJQ4FvDXJjL/pX7h8CG+9298dFoU4y4ofZnggwNUYrCzCbXzvRqsXIIPzgbK
-         xUVtxf5/XgZTIdjoACOqzxvB+GZ1SbX+JlK0M1kJSUQ6m6cVLNpgIKEIHlKEXL39ZWZO
-         ItJsq0F+d6EaxPNzbGQbgEm9defZbTLqEloGIOSQY9Inv2pVXWm2fiEJlU2oiTftOE6b
-         eUJK/vzIM+ELw7xUMS4Mta5QKS7bQ+0tpvINV9a5gHbDpbctot0flEkIrEaIptGJ3fkQ
-         /hPQ==
-X-Gm-Message-State: AOAM533pE5TKf1JizAsGHdfwgxxMwTLotbClRTRDR2Hv1DE721R5kVWa
-        auiehMYCIfuG64vKoGhTDsHVO3Vr+WU5CWeMga+oQw==
-X-Google-Smtp-Source: ABdhPJwEbBpvie3B4unGZj+uzJP7Web1EazlNgqQrk0+cD8irKHliF49e5a6ZnaalofzvcmxwMqwm13ud7ZaBo3/Gbk=
-X-Received: by 2002:a25:afcd:: with SMTP id d13mr49822032ybj.504.1629818542211;
- Tue, 24 Aug 2021 08:22:22 -0700 (PDT)
+        bh=oeGV5t/oJZwqNMB4jX1FuHm+Z0cA2twU4gN/nkkX+8A=;
+        b=eJ4cAznxudB6zsbO6pLS6jHlnRdP+for13cw0g95GwsCo2wITBRlTYt0xowKxo/Tnr
+         cufZGhfs8o9F30whUReGbtuUIlwUvxcwN/YHOwI3DosTY141L6lBZOdQuBHCkKI9qpNy
+         3kTRo6k1B2/5gBnG/7+TzKYXYiKQK0Plc1RJYBYDTk9kFo0X5eOuboc8vcYALWZS8sBP
+         g/pd1+gBSdzAeyiVqdIR02fqUcR2lzYE0zJYvMPowD9BYWXt+eDheXdZC8YCywsoXDS8
+         rQeEozvvR2nuGGdVGHcAX0N37DtTAbXmYo5rNwLsdr/PwBZhtOz1dJvMqcNjXeRY7uJu
+         xpSQ==
+X-Gm-Message-State: AOAM53013GAaUFKNi+nLc+qYg9/iLDHnikMfZ2Eh/xuQRm/5Our5Wayd
+        5mEbQBNvmokkdGW6VBQALFTJqaQ5tnFliFSJ+eA=
+X-Google-Smtp-Source: ABdhPJxJq0hfArntSLZ0Abf4D5GQ30roxEYoGaXVebZpbQrC3CJzfxuKFpUFpNA7eAbrlywZMiuj9ilh9kov66IugqA=
+X-Received: by 2002:a05:6808:208b:: with SMTP id s11mr3145964oiw.95.1629818645584;
+ Tue, 24 Aug 2021 08:24:05 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210824125140.190253-1-yan2228598786@gmail.com>
-In-Reply-To: <20210824125140.190253-1-yan2228598786@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 24 Aug 2021 08:22:11 -0700
-Message-ID: <CANn89i+-EnK-zZ_kXsVAW_Or+8w3V3F4orbt40GFP2zQrr6gvw@mail.gmail.com>
-Subject: Re: [PATCH] net: tcp_drop adds `reason` parameter for tracing
-To:     Zhongya Yan <yan2228598786@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, hengqi.chen@gmail.com,
-        Yonghong Song <yhs@fb.com>
+References: <20210824104918.7930-1-kerneljasonxing@gmail.com> <59dff551-2d52-5ecc-14ac-4a6ada5b1275@redhat.com>
+In-Reply-To: <59dff551-2d52-5ecc-14ac-4a6ada5b1275@redhat.com>
+From:   Jason Xing <kerneljasonxing@gmail.com>
+Date:   Tue, 24 Aug 2021 23:23:29 +0800
+Message-ID: <CAL+tcoDERDZqtjK1BCc0vYYwYtvgRtb8H6z2FTVbGqr+N7bVmA@mail.gmail.com>
+Subject: Re: [PATCH] ixgbe: let the xdpdrv work with more than 64 cpus
+To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        David Miller <davem@davemloft.net>, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
+        john.fastabend@gmail.com, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org,
+        brouer@redhat.com, intel-wired-lan@lists.osuosl.org,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf@vger.kernel.org,
+        Jason Xing <xingwanli@kuaishou.com>,
+        Shujin Li <lishujin@kuaishou.com>,
+        =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 24, 2021 at 5:52 AM Zhongya Yan <yan2228598786@gmail.com> wrote:
+On Tue, Aug 24, 2021 at 9:32 PM Jesper Dangaard Brouer
+<jbrouer@redhat.com> wrote:
 >
-> When using `tcp_drop(struct sock *sk, struct sk_buff *skb)` we can
-> not tell why we need to delete `skb`. To solve this problem I updated the
-> method `tcp_drop(struct sock *sk, struct sk_buff *skb, enum tcp_drop_reason reason)`
-> to include the source of the deletion when it is done, so you can
-> get an idea of the reason for the deletion based on the source.
 >
-> The current purpose is mainly derived from the suggestions
-> of `Yonghong Song` and `brendangregg`:
 >
-> https://github.com/iovisor/bcc/issues/3533.
+> On 24/08/2021 12.49, kerneljasonxing@gmail.com wrote:
+> > From: Jason Xing <xingwanli@kuaishou.com>
+> >
+> > Originally, ixgbe driver doesn't allow the mounting of xdpdrv if the
+> > server is equipped with more than 64 cpus online. So it turns out that
+> > the loading of xdpdrv causes the "NOMEM" failure.
+> >
+> > Actually, we can adjust the algorithm and then make it work, which has
+> > no harm at all, only if we set the maxmium number of xdp queues.
 >
-> "It is worthwhile to mention the context/why we want to this
-> tracepoint with bcc issue https://github.com/iovisor/bcc/issues/3533.
-> Mainly two reasons: (1). tcp_drop is a tiny function which
-> may easily get inlined, a tracepoint is more stable, and (2).
-> tcp_drop does not provide enough information on why it is dropped.
-> " by Yonghong Song
+> This is not true, it can cause harm, because XDP transmission queues are
+> used without locking. See drivers ndo_xdp_xmit function ixgbe_xdp_xmit().
+> As driver assumption is that each CPU have its own XDP TX-queue.
 >
-> Signed-off-by: Zhongya Yan <yan2228598786@gmail.com>
-> ---
 
-That is a good start, but really if people want to use this
-tracepoint, they will hit a wall soon.
+Point taken. I indeed miss that part which would cause bad behavior if it
+happens.
 
+At this point, I think I should find all the allocation and use of XDP
+related, say,
+queues and rings, then adjust them all?
 
->         return true;
+Let's say if the server is shipped with 128 cpus, we could map 128 cpus to 64
+rings in the function ixgbe_xdp_xmit(). However, it sounds a little bit odd.
+
+Do you think that it makes any sense?
+
+Thanks,
+Jason
+
+> This patch is not a proper fix.
 >
->  discard:
-
-There are many " goto discards;" in this function, so using a common
-value ("TCP_VALIDATE_INCOMING" ) is not helpful.
-
-
-> -       tcp_drop(sk, skb);
-> +       tcp_drop(sk, skb, TCP_VALIDATE_INCOMING);
->         return false;
->  }
+> I do think we need a proper fix for this issue on ixgbe.
 >
-> @@ -5905,7 +5915,7 @@ void tcp_rcv_established(struct sock *sk, struct sk_buff *skb)
->         TCP_INC_STATS(sock_net(sk), TCP_MIB_INERRS);
 >
->  discard:
-> -       tcp_drop(sk, skb);
-
-Same here.
-
-> +       tcp_drop(sk, skb, TCP_RCV_ESTABLISHED);
->  }
->  EXPORT_SYMBOL(tcp_rcv_established);
->
-> @@ -6196,7 +6206,7 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
->                                                   TCP_DELACK_MAX, TCP_RTO_MAX);
->
->  discard:
-> -                       tcp_drop(sk, skb);
-> +                       tcp_drop(sk, skb, TCP_RCV_SYNSENT_STATE_PROCESS);
->                         return 0;
->                 } else {
->                         tcp_send_ack(sk);
-> @@ -6568,7 +6578,7 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
->
->         if (!queued) {
->  discard:
-
-same here.
-
-> -               tcp_drop(sk, skb);
-> +               tcp_drop(sk, skb, TCP_RCV_STATE_PROCESS);
->         }
->         return 0;
->  }
-> --
-> 2.25.1
+> > Fixes: 33fdc82f08 ("ixgbe: add support for XDP_TX action")
+> > Co-developed-by: Shujin Li <lishujin@kuaishou.com>
+> > Signed-off-by: Shujin Li <lishujin@kuaishou.com>
+> > Signed-off-by: Jason Xing <xingwanli@kuaishou.com>
+> > ---
+> >   drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c  | 2 +-
+> >   drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 3 ---
+> >   2 files changed, 1 insertion(+), 4 deletions(-)
+> >
+> > diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
+> > index 0218f6c..5953996 100644
+> > --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
+> > +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
+> > @@ -299,7 +299,7 @@ static void ixgbe_cache_ring_register(struct ixgbe_adapter *adapter)
+> >
+> >   static int ixgbe_xdp_queues(struct ixgbe_adapter *adapter)
+> >   {
+> > -     return adapter->xdp_prog ? nr_cpu_ids : 0;
+> > +     return adapter->xdp_prog ? min_t(int, MAX_XDP_QUEUES, nr_cpu_ids) : 0;
+> >   }
+> >
+> >   #define IXGBE_RSS_64Q_MASK  0x3F
+> > diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> > index 14aea40..b36d16b 100644
+> > --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> > +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> > @@ -10130,9 +10130,6 @@ static int ixgbe_xdp_setup(struct net_device *dev, struct bpf_prog *prog)
+> >                       return -EINVAL;
+> >       }
+> >
+> > -     if (nr_cpu_ids > MAX_XDP_QUEUES)
+> > -             return -ENOMEM;
+> > -
+> >       old_prog = xchg(&adapter->xdp_prog, prog);
+> >       need_reset = (!!prog != !!old_prog);
+> >
+> >
 >
