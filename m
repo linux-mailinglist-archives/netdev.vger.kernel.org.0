@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ACBF03F5E9B
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 15:04:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AA6B3F5E9C
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 15:04:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237464AbhHXNFZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 09:05:25 -0400
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:57177 "EHLO
+        id S237467AbhHXNF1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 09:05:27 -0400
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:57823 "EHLO
         new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237455AbhHXNFX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 09:05:23 -0400
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
-        by mailnew.nyi.internal (Postfix) with ESMTP id A91E4580B1C;
-        Tue, 24 Aug 2021 09:04:38 -0400 (EDT)
+        by vger.kernel.org with ESMTP id S237463AbhHXNFZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 09:05:25 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id A436C580B13;
+        Tue, 24 Aug 2021 09:04:41 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute6.internal (MEProxy); Tue, 24 Aug 2021 09:04:38 -0400
+  by compute3.internal (MEProxy); Tue, 24 Aug 2021 09:04:41 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=TbpKZ13GFZEfyQKgxRy+PtEOzP33EG0S4dq9TUbndXc=; b=X9rwmvsL
-        mKXJuNRlVXjlE5nIULX33SWfwVZVU7GXLXjfD80kO827OCOWjAvL9/QDM7kABg1a
-        xlq2U5rMfPcV2Vr20OD34upxNzLgf+ZaJIfTwDqeO/pQw8WJL2IWtfm1y85GpzHu
-        drofzdogMdr5/Kt8/yE2GskPWgy0TEh22u74rmtGRrJi1Wh/Up2vAEk5v71WQLJX
-        QjtgWwT/Glju4mP1f591dOe5pBJHWHlXWvMzrNNldhEekxxoA/dVRcisBmABGfWw
-        XLhMiCD+IN+CGnmkimFNzNqnEim2/Rb4Y/zlQgpnnejZRD3Jjv8oPOx3CqSGskh2
-        JHwEtyVEbB75iQ==
-X-ME-Sender: <xms:Ze4kYbym4hKobZETd-Bh0lMn8t8DM8EFCt2P7et4eJrLvEDPDsmoPA>
-    <xme:Ze4kYTQClLEYLp5X1LxaV7gUvAgECjIqjoJb-Ts_cuetlDA8tmSnPvAzOhBhrq4ty
-    Q2QU2fV_UonKTI>
-X-ME-Received: <xmr:Ze4kYVUAUK293957aAwf3laK_XcUUP9OBFB4UdKLB06Pe0kh6KkOwsJl0_EPzcdFBl31wemIp5jtQbtRmeAve3jcDaiDAiSyk0DsTxmyaNUgLg>
+        fm3; bh=uaH6gIO9jSc0rt1izId1IU5t4+RcSMjHQkMx39VP+HQ=; b=If67y3yu
+        HpwkozQXTGgJcraSHTYpY3CrBbsWe2xipujTwcIkS12PvGrBfl+d4eA4RHGQCIQZ
+        A8zjnorzJkzCVYHYQNBmkB+QzNQULdvyBPFFy0Lq+V54Z/wLagyPl7vtept8nZTm
+        rnt4QeIFxj9fEPdS9+q1T6IpAFaGtBCsvjFgcLFn25SBXW6BnLTK+GPnXpiNPAjf
+        ZiVXql15E90RcyTnH8/g04n2Pj+wsQwRYRBjtOe2seXXNwFeUUcl9zGjuskeZM5o
+        WnLbrUeDWOgCOvQfBjQsGjIghXIXlQAuUo2/G5nK1yDah9KkJOQgWV8Mfy56/eCh
+        X0wqqrT/4AG1ig==
+X-ME-Sender: <xms:ae4kYWE2cMfeCic4Wr0p7tx346ITXGfbrotM6zB3p_tiKwVC2LCWEg>
+    <xme:ae4kYXVpBEN9jIWG2rXMNGYUsZJwy2aaZLLk2m5eNRCEI7lLIIRoce94PoADwVHwm
+    Q8kCWTWVQz5Tso>
+X-ME-Received: <xmr:ae4kYQJd3CSSguSW3SsshWrSANSnbI0VH_nTxLQFyXm9II4l_xdWw7r83jYuc8oQIQ65URAgikj11D6tU7w1McHQ_Gqpb2buE6TaW9o5oDnXvA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddruddtjedgiedtucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
     shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
-    ehgfdtffethfelvdejgffghefgveejkefhnecuvehluhhsthgvrhfuihiivgeptdenucfr
+    ehgfdtffethfelvdejgffghefgveejkefhnecuvehluhhsthgvrhfuihiivgepudenucfr
     rghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:Ze4kYVjum_R5Y0ppD9BJNcMi1KZ5AeXHFjyGNEbSVPRYkXNZraZDRw>
-    <xmx:Ze4kYdBP64NlebMh1l-3pWcwn3iON_j28wYUOI8UfLTKzTqYpmFKaw>
-    <xmx:Ze4kYeJ3jAmAGp_uYnvn5o1gFEJejCC-TKwMSt1aRj9Ta1hovSL5Xw>
-    <xmx:Zu4kYR2og9_fdbp5BCVjd-uy0H37um46pcsawHZ2Z9zSQ_rXidrRjA>
+X-ME-Proxy: <xmx:ae4kYQHSHmycRThwUU9GspcdHHmpxC0NOeLSfNI-XbPkyeNtkorW5w>
+    <xmx:ae4kYcUU_GwPsvOkiITF-dhQJRgfInwFA6oW9EgYJCokrBmTMb3dOQ>
+    <xmx:ae4kYTNygF6rBMyKGmbB9gTQ-moXeytT7J1ZotRFp7SSY9UtVi596Q>
+    <xmx:ae4kYQqKRDG7EKJyteWrwwqyNAwdGdtnL_tk-jjkC1YmnTeA8L1pfA>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 24 Aug 2021 09:04:35 -0400 (EDT)
+ 24 Aug 2021 09:04:38 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
         mkubecek@suse.cz, pali@kernel.org, jacob.e.keller@intel.com,
         jiri@nvidia.com, vadimp@nvidia.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [RFC PATCH net-next v3 2/6] mlxsw: reg: Add Port Module Memory Map Properties register
-Date:   Tue, 24 Aug 2021 16:03:40 +0300
-Message-Id: <20210824130344.1828076-3-idosch@idosch.org>
+Subject: [RFC PATCH net-next v3 3/6] mlxsw: reg: Add Management Cable IO and Notifications register
+Date:   Tue, 24 Aug 2021 16:03:41 +0300
+Message-Id: <20210824130344.1828076-4-idosch@idosch.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210824130344.1828076-1-idosch@idosch.org>
 References: <20210824130344.1828076-1-idosch@idosch.org>
@@ -64,76 +64,67 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-Add the Port Module Memory Map Properties register. It will be used to
-set the power mode of a module in subsequent patches.
+Add the Management Cable IO and Notifications register. It will be used
+to retrieve the power mode status of a module in subsequent patches and
+whether a module is present in a cage or not.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/reg.h | 44 +++++++++++++++++++++++
- 1 file changed, 44 insertions(+)
+ drivers/net/ethernet/mellanox/mlxsw/reg.h | 34 +++++++++++++++++++++++
+ 1 file changed, 34 insertions(+)
 
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-index 6c96e124e4c8..fe9bf6ce3508 100644
+index fe9bf6ce3508..b862e56c1f9e 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
 +++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-@@ -5946,6 +5946,49 @@ static inline void mlxsw_reg_pddr_pack(char *payload, u8 local_port,
- 	mlxsw_reg_pddr_page_select_set(payload, page_select);
+@@ -10321,6 +10321,39 @@ static inline void mlxsw_reg_mlcr_pack(char *payload, u8 local_port,
+ 					   MLXSW_REG_MLCR_DURATION_MAX : 0);
  }
  
-+/* PMMP - Port Module Memory Map Properties Register
-+ * -------------------------------------------------
-+ * The PMMP register allows to override the module memory map advertisement.
-+ * The register can only be set when the module is disabled by PMAOS register.
++/* MCION - Management Cable IO and Notifications Register
++ * ------------------------------------------------------
++ * The MCION register is used to query transceiver modules' IO pins and other
++ * notifications.
 + */
-+#define MLXSW_REG_PMMP_ID 0x5044
-+#define MLXSW_REG_PMMP_LEN 0x2C
++#define MLXSW_REG_MCION_ID 0x9052
++#define MLXSW_REG_MCION_LEN 0x18
 +
-+MLXSW_REG_DEFINE(pmmp, MLXSW_REG_PMMP_ID, MLXSW_REG_PMMP_LEN);
++MLXSW_REG_DEFINE(mcion, MLXSW_REG_MCION_ID, MLXSW_REG_MCION_LEN);
 +
-+/* reg_pmmp_module
++/* reg_mcion_module
 + * Module number.
 + * Access: Index
 + */
-+MLXSW_ITEM32(reg, pmmp, module, 0x00, 16, 8);
-+
-+/* reg_pmmp_eeprom_override_mask
-+ * Write mask bit (negative polarity).
-+ * 0 - Allow write
-+ * 1 - Ignore write
-+ * On write, indicates which of the bits from eeprom_override field are
-+ * updated.
-+ * Access: WO
-+ */
-+MLXSW_ITEM32(reg, pmmp, eeprom_override_mask, 0x04, 16, 16);
++MLXSW_ITEM32(reg, mcion, module, 0x00, 16, 8);
 +
 +enum {
-+	/* Set module to low power mode */
-+	MLXSW_REG_PMMP_EEPROM_OVERRIDE_LOW_POWER_MASK = BIT(8),
++	MLXSW_REG_MCION_MODULE_STATUS_BITS_PRESENT_MASK = BIT(0),
++	MLXSW_REG_MCION_MODULE_STATUS_BITS_LOW_POWER_MASK = BIT(8),
 +};
 +
-+/* reg_pmmp_eeprom_override
-+ * Override / ignore EEPROM advertisement properties bitmask
-+ * Access: RW
++/* reg_mcion_module_status_bits
++ * Module IO status as defined by SFF.
++ * Access: RO
 + */
-+MLXSW_ITEM32(reg, pmmp, eeprom_override, 0x04, 0, 16);
++MLXSW_ITEM32(reg, mcion, module_status_bits, 0x04, 0, 16);
 +
-+static inline void mlxsw_reg_pmmp_pack(char *payload, u8 module)
++static inline void mlxsw_reg_mcion_pack(char *payload, u8 module)
 +{
-+	MLXSW_REG_ZERO(pmmp, payload);
-+	mlxsw_reg_pmmp_module_set(payload, module);
++	MLXSW_REG_ZERO(mcion, payload);
++	mlxsw_reg_mcion_module_set(payload, module);
 +}
 +
- /* PLLP - Port Local port to Label Port mapping Register
-  * -----------------------------------------------------
-  * The PLLP register returns the mapping from Local Port into Label Port.
-@@ -12273,6 +12316,7 @@ static const struct mlxsw_reg_info *mlxsw_reg_infos[] = {
- 	MLXSW_REG(pmtdb),
- 	MLXSW_REG(pmpe),
- 	MLXSW_REG(pddr),
-+	MLXSW_REG(pmmp),
- 	MLXSW_REG(pllp),
- 	MLXSW_REG(htgt),
- 	MLXSW_REG(hpkt),
+ /* MTPPS - Management Pulse Per Second Register
+  * --------------------------------------------
+  * This register provides the device PPS capabilities, configure the PPS in and
+@@ -12364,6 +12397,7 @@ static const struct mlxsw_reg_info *mlxsw_reg_infos[] = {
+ 	MLXSW_REG(mgir),
+ 	MLXSW_REG(mrsr),
+ 	MLXSW_REG(mlcr),
++	MLXSW_REG(mcion),
+ 	MLXSW_REG(mtpps),
+ 	MLXSW_REG(mtutc),
+ 	MLXSW_REG(mpsc),
 -- 
 2.31.1
 
