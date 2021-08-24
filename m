@@ -2,257 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22A523F60C2
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 16:42:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09BFD3F60D2
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 16:44:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237974AbhHXOnE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 10:43:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52470 "EHLO
+        id S238026AbhHXOpF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 10:45:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237943AbhHXOnB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 10:43:01 -0400
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BD29C061757
-        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 07:42:17 -0700 (PDT)
-Received: by mail-io1-xd32.google.com with SMTP id q3so9234964iot.3
-        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 07:42:17 -0700 (PDT)
+        with ESMTP id S237890AbhHXOpC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 10:45:02 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEFD4C061764;
+        Tue, 24 Aug 2021 07:44:17 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id v10so20480840wrd.4;
+        Tue, 24 Aug 2021 07:44:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
+        d=gmail.com; s=20161025;
+        h=to:cc:references:from:subject:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=FwbKzIHfOUcOHLQOCoMjPPJ39zypjy/jBf8c4OAsOC4=;
-        b=IMBvfBTGP0rgkTV9Ly4yXPRhv6n82+4zUKI4dUNOn5l7JSdlu5Ljw+GLWItYfTglfj
-         hl9dRhTpuDUMR8Ggc1PYWqnqrDDt0+Rt+u9ooWFILBODRXZnAf5XvPNUDwh44ego36Ti
-         EkTCNd09fluwejVub3lNVkdjRYdbezUO3A0/M=
+        bh=1NzbKqbkTUbaFr+lA6+JmiCj0QXO0t1xf2uOeDq9W8Q=;
+        b=QIWtxOCX0oHdFAhMS0IA+Nk/oigUtaZqVLUx+1JyZzUkGeFvj66ZPB4rEzpmC/KKUJ
+         nRwsRbine1J6TlOGxl7jhaZzTj0CISRCUtp/3F/0TNtxGc3pvkC14lmd4RsFhMVGc4Ht
+         R6RmvTtyk2fk9EbE2Mb2AKc7SnCwnGVJ3StiCbSVnU82frso0FicLyNLp4mm3lA855Bc
+         usNz+hVKdO6zLKvNMAhcCjS67mMSwqw/9vUu/fSS2B3tlkwWA6C4h9d7WBtjq26eqvNp
+         6tskO4cQIpQdM4HGHbUGeoxSLfitKpA2T1X4BcmcXW1IhxR6fxCHO1PpbnzIuHZM0F9v
+         vPXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=FwbKzIHfOUcOHLQOCoMjPPJ39zypjy/jBf8c4OAsOC4=;
-        b=IYuCdmh2DidHeM1/zndd1lfOvFQk4HHp2qta/pOFrkEYGMY4IutCD5v1koE5krihm+
-         IT3Pksj/HaFyU/RMzEIDd+gcjSY25F5aRd8mitm/N5KP7JtPfRZsYhMr+dhYlmhCLp5C
-         wZ5kMQaM3fqhszJcCur5FiAuiOxoT3SXoFjIXyavUgx9xKUWmgbbKMD3LC4igO4Pux+O
-         CJzgXv+hKW55iNSECPHHbtoEsEhQeTBhY2Neo2ammAfkp42nOF5raOl0EXVoFPOACy7X
-         xKBYij4R0kLXzcP3gcjHyj439IxGvVtkIwyKiG7UbRsJWmDHYhxXL74Tue8lv7Z9r7xR
-         tc3g==
-X-Gm-Message-State: AOAM530SxPYZfIYFvEsr1hoycdQQyTRbD8+lvP0TbAh7d0BA4F4kWIkT
-        biSQF03rr38RCsfyexvZ525v+w==
-X-Google-Smtp-Source: ABdhPJxQqu8mETyqzXRwMvnGEqy/vUzqQMc7CKp8pg0AuUJ9ABYvX7tg4YhSapD5b3Uqbgkex9hkBw==
-X-Received: by 2002:a6b:5a04:: with SMTP id o4mr1540398iob.44.1629816136793;
-        Tue, 24 Aug 2021 07:42:16 -0700 (PDT)
-Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
-        by smtp.gmail.com with ESMTPSA id q10sm10318395ion.3.2021.08.24.07.42.16
+        bh=1NzbKqbkTUbaFr+lA6+JmiCj0QXO0t1xf2uOeDq9W8Q=;
+        b=SglvO4XD/0AWr6ERK1qHUaUlHu87tplO/lWsRiqupKHG6xBm3xPWdVXbJ30gC9FBwm
+         04ZDGUdud7aYu7KeGec1tdmmGl3CO8TU1reiBMxNYX1WceWZeujQndbHYKwHuMg2zImG
+         oEMmJysG+/sf5G8cdYYjpsia60vgxHUoWIQ6dFcurUF8xCt9DlZW4+DIIvdVgoxSQVYW
+         ms9D3pL6oQU70bRfESncoVlYMebg0kxjOfPbABHupiZBNMrrPuAe9BuHLcuAI26SOwJ8
+         ve0Avuu3RccktgPuKnlDhm876Xhc9iv/66D4bpXHBzGW2DwjmsFrCSYu3QO8n89BgN0g
+         qcog==
+X-Gm-Message-State: AOAM531BbBrlP4q6En/PXgqLpXID3xEMNH+dhrEhaV6y+Kp/292UE+8E
+        Xnl1JMlSKEQV8+xEmKIPdV0=
+X-Google-Smtp-Source: ABdhPJwVzopxdLaEHLT47W3U+AaaD3NlZ7TYfWpSMAL/CjrUYRkdBmkjawuQUMi15yYA2TNeP4StzA==
+X-Received: by 2002:adf:e711:: with SMTP id c17mr1160877wrm.417.1629816256556;
+        Tue, 24 Aug 2021 07:44:16 -0700 (PDT)
+Received: from [192.168.8.197] ([85.255.232.113])
+        by smtp.gmail.com with ESMTPSA id o7sm2452557wmc.46.2021.08.24.07.44.15
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 24 Aug 2021 07:42:16 -0700 (PDT)
-Subject: Re: [PATCH linux-next] tools:test_xdp_noinline: fix boolreturn.cocci
- warnings
-To:     CGEL <cgel.zte@gmail.com>, Alexei Starovoitov <ast@kernel.org>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Yonghong Song <yhs@fb.com>, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jing Yangyang <jing.yangyang@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20210824065526.60416-1-deng.changcheng@zte.com.cn>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <2d701f13-8996-ed7d-3d41-794aa8a6e96c@linuxfoundation.org>
-Date:   Tue, 24 Aug 2021 08:42:15 -0600
+        Tue, 24 Aug 2021 07:44:16 -0700 (PDT)
+To:     Jens Axboe <axboe@kernel.dk>, Josh Triplett <josh@joshtriplett.org>
+Cc:     io-uring@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Stefan Metzmacher <metze@samba.org>
+References: <cover.1629559905.git.asml.silence@gmail.com>
+ <7fa72eec-9222-60eb-9ec6-e4b6efbfc5fb@kernel.dk> <YSPzab+g8ee84bX7@localhost>
+ <59494bda-f804-4185-dd7d-4827b14bae61@kernel.dk>
+ <2527d712-bc8b-7393-f4c0-3035dd525b1e@gmail.com>
+ <c4653859-4003-70db-8b81-291dd17a6718@kernel.dk>
+From:   Pavel Begunkov <asml.silence@gmail.com>
+Subject: Re: [PATCH v3 0/4] open/accept directly into io_uring fixed file
+ table
+Message-ID: <ce1aba5d-3fdd-092d-9870-ff989642ffd2@gmail.com>
+Date:   Tue, 24 Aug 2021 15:43:44 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-In-Reply-To: <20210824065526.60416-1-deng.changcheng@zte.com.cn>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <c4653859-4003-70db-8b81-291dd17a6718@kernel.dk>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/24/21 12:55 AM, CGEL wrote:
-> From: Jing Yangyang <jing.yangyang@zte.com.cn>
+On 8/24/21 3:02 PM, Jens Axboe wrote:
+> On 8/24/21 3:48 AM, Pavel Begunkov wrote:
+>> On 8/23/21 8:40 PM, Jens Axboe wrote:
+>>> On 8/23/21 1:13 PM, Josh Triplett wrote:
+>>>> On Sat, Aug 21, 2021 at 08:18:12PM -0600, Jens Axboe wrote:
+>>>>> On 8/21/21 9:52 AM, Pavel Begunkov wrote:
+>>>>>> Add an optional feature to open/accept directly into io_uring's fixed
+>>>>>> file table bypassing the normal file table. Same behaviour if as the
+>>>>>> snippet below, but in one operation:
+>>>>>>
+>>>>>> sqe = prep_[open,accept](...);
+>>>>>> cqe = submit_and_wait(sqe);
+>>>>>> io_uring_register_files_update(uring_idx, (fd = cqe->res));
+>>>>>> close((fd = cqe->res));
+>>>>>>
+>>>>>> The idea in pretty old, and was brough up and implemented a year ago
+>>>>>> by Josh Triplett, though haven't sought the light for some reasons.
+>>>>>>
+>>>>>> The behaviour is controlled by setting sqe->file_index, where 0 implies
+>>>>>> the old behaviour. If non-zero value is specified, then it will behave
+>>>>>> as described and place the file into a fixed file slot
+>>>>>> sqe->file_index - 1. A file table should be already created, the slot
+>>>>>> should be valid and empty, otherwise the operation will fail.
+>>>>>>
+>>>>>> we can't use IOSQE_FIXED_FILE to switch between modes, because accept
+>>>>>> takes a file, and it already uses the flag with a different meaning.
+>>>>>>
+>>>>>> since RFC:
+>>>>>>  - added attribution
+>>>>>>  - updated descriptions
+>>>>>>  - rebased
+>>>>>>
+>>>>>> since v1:
+>>>>>>  - EBADF if slot is already used (Josh Triplett)
+>>>>>>  - alias index with splice_fd_in (Josh Triplett)
+>>>>>>  - fix a bound check bug
+>>>>>
+>>>>> With the prep series, this looks good to me now. Josh, what do you
+>>>>> think?
+>>>>
+>>>> I would still like to see this using a union with the `nofile` field in
+>>>> io_open and io_accept, rather than overloading the 16-bit buf_index
+>>>> field. That would avoid truncating to 16 bits, and make less work for
+>>>> expansion to more than 16 bits of fixed file indexes.
+>>>>
+>>>> (I'd also like that to actually use a union, rather than overloading the
+>>>> meaning of buf_index/nofile.)
+>>>
+>>> Agree, and in fact there's room in the open and accept command parts, so
+>>> we can just make it a separate entry there instead of using ->buf_index.
+>>> Then just pass in the index to io_install_fixed_file() instead of having
+>>> it pull it from req->buf_index.
+>>
+>> That's internal details, can be expanded at wish in the future, if we'd
+>> ever need larger tables. ->buf_index already holds indexes to different
+>> resources just fine.
 > 
-> Return statements in functions returning bool should use true/false
-> instead of 1/0.
+> Sure it's internal and can always be changed, doesn't change the fact
+> that it's a bit iffy that it's used differently in different spots. As
+> it costs us nothing to simply add a 'fixed_file' u32 for io_accept and
+> io_open, I really think that should be done instead.
 > 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Jing Yangyang <jing.yangyang@zte.com.cn>
-> ---
->   .../selftests/bpf/progs/test_xdp_noinline.c        | 42 +++++++++++-----------
->   1 file changed, 21 insertions(+), 21 deletions(-)
+>> Aliasing with nofile would rather be ugly, so the only option, as you
+>> mentioned, is to grab some space from open/accept structs, but don't see
+>> why we'd want it when there is a more convenient alternative.
 > 
-> diff --git a/tools/testing/selftests/bpf/progs/test_xdp_noinline.c b/tools/testing/selftests/bpf/progs/test_xdp_noinline.c
-> index 3a67921..37075f8 100644
-> --- a/tools/testing/selftests/bpf/progs/test_xdp_noinline.c
-> +++ b/tools/testing/selftests/bpf/progs/test_xdp_noinline.c
-> @@ -239,7 +239,7 @@ bool parse_udp(void *data, void *data_end,
->   	udp = data + off;
->   
->   	if (udp + 1 > data_end)
-> -		return 0;
-> +		return false;
->   	if (!is_icmp) {
->   		pckt->flow.port16[0] = udp->source;
->   		pckt->flow.port16[1] = udp->dest;
-> @@ -247,7 +247,7 @@ bool parse_udp(void *data, void *data_end,
->   		pckt->flow.port16[0] = udp->dest;
->   		pckt->flow.port16[1] = udp->source;
->   	}
-> -	return 1;
-> +	return true;
->   }
->   
->   static __attribute__ ((noinline))
-> @@ -261,7 +261,7 @@ bool parse_tcp(void *data, void *data_end,
->   
->   	tcp = data + off;
->   	if (tcp + 1 > data_end)
-> -		return 0;
-> +		return false;
->   	if (tcp->syn)
->   		pckt->flags |= (1 << 1);
->   	if (!is_icmp) {
-> @@ -271,7 +271,7 @@ bool parse_tcp(void *data, void *data_end,
->   		pckt->flow.port16[0] = tcp->dest;
->   		pckt->flow.port16[1] = tcp->source;
->   	}
-> -	return 1;
-> +	return true;
->   }
->   
->   static __attribute__ ((noinline))
-> @@ -287,7 +287,7 @@ bool encap_v6(struct xdp_md *xdp, struct ctl_value *cval,
->   	void *data;
->   
->   	if (bpf_xdp_adjust_head(xdp, 0 - (int)sizeof(struct ipv6hdr)))
-> -		return 0;
-> +		return false;
->   	data = (void *)(long)xdp->data;
->   	data_end = (void *)(long)xdp->data_end;
->   	new_eth = data;
-> @@ -295,7 +295,7 @@ bool encap_v6(struct xdp_md *xdp, struct ctl_value *cval,
->   	old_eth = data + sizeof(struct ipv6hdr);
->   	if (new_eth + 1 > data_end ||
->   	    old_eth + 1 > data_end || ip6h + 1 > data_end)
-> -		return 0;
-> +		return false;
->   	memcpy(new_eth->eth_dest, cval->mac, 6);
->   	memcpy(new_eth->eth_source, old_eth->eth_dest, 6);
->   	new_eth->eth_proto = 56710;
-> @@ -314,7 +314,7 @@ bool encap_v6(struct xdp_md *xdp, struct ctl_value *cval,
->   	ip6h->saddr.in6_u.u6_addr32[2] = 3;
->   	ip6h->saddr.in6_u.u6_addr32[3] = ip_suffix;
->   	memcpy(ip6h->daddr.in6_u.u6_addr32, dst->dstv6, 16);
-> -	return 1;
-> +	return true;
->   }
->   
->   static __attribute__ ((noinline))
-> @@ -335,7 +335,7 @@ bool encap_v4(struct xdp_md *xdp, struct ctl_value *cval,
->   	ip_suffix <<= 15;
->   	ip_suffix ^= pckt->flow.src;
->   	if (bpf_xdp_adjust_head(xdp, 0 - (int)sizeof(struct iphdr)))
-> -		return 0;
-> +		return false;
->   	data = (void *)(long)xdp->data;
->   	data_end = (void *)(long)xdp->data_end;
->   	new_eth = data;
-> @@ -343,7 +343,7 @@ bool encap_v4(struct xdp_md *xdp, struct ctl_value *cval,
->   	old_eth = data + sizeof(struct iphdr);
->   	if (new_eth + 1 > data_end ||
->   	    old_eth + 1 > data_end || iph + 1 > data_end)
-> -		return 0;
-> +		return false;
->   	memcpy(new_eth->eth_dest, cval->mac, 6);
->   	memcpy(new_eth->eth_source, old_eth->eth_dest, 6);
->   	new_eth->eth_proto = 8;
-> @@ -367,8 +367,8 @@ bool encap_v4(struct xdp_md *xdp, struct ctl_value *cval,
->   		csum += *next_iph_u16++;
->   	iph->check = ~((csum & 0xffff) + (csum >> 16));
->   	if (bpf_xdp_adjust_head(xdp, (int)sizeof(struct iphdr)))
-> -		return 0;
-> -	return 1;
-> +		return false;
-> +	return true;
->   }
->   
->   static __attribute__ ((noinline))
-> @@ -386,10 +386,10 @@ bool decap_v6(struct xdp_md *xdp, void **data, void **data_end, bool inner_v4)
->   	else
->   		new_eth->eth_proto = 56710;
->   	if (bpf_xdp_adjust_head(xdp, (int)sizeof(struct ipv6hdr)))
-> -		return 0;
-> +		return false;
->   	*data = (void *)(long)xdp->data;
->   	*data_end = (void *)(long)xdp->data_end;
-> -	return 1;
-> +	return true;
->   }
->   
->   static __attribute__ ((noinline))
-> @@ -404,10 +404,10 @@ bool decap_v4(struct xdp_md *xdp, void **data, void **data_end)
->   	memcpy(new_eth->eth_dest, old_eth->eth_dest, 6);
->   	new_eth->eth_proto = 8;
->   	if (bpf_xdp_adjust_head(xdp, (int)sizeof(struct iphdr)))
-> -		return 0;
-> +		return false;
->   	*data = (void *)(long)xdp->data;
->   	*data_end = (void *)(long)xdp->data_end;
-> -	return 1;
-> +	return true;
->   }
->   
->   static __attribute__ ((noinline))
-> @@ -564,22 +564,22 @@ static bool get_packet_dst(struct real_definition **real,
->   	hash = get_packet_hash(pckt, hash_16bytes);
->   	if (hash != 0x358459b7 /* jhash of ipv4 packet */  &&
->   	    hash != 0x2f4bc6bb /* jhash of ipv6 packet */)
-> -		return 0;
-> +		return false;
->   	key = 2 * vip_info->vip_num + hash % 2;
->   	real_pos = bpf_map_lookup_elem(&ch_rings, &key);
->   	if (!real_pos)
-> -		return 0;
-> +		return false;
->   	key = *real_pos;
->   	*real = bpf_map_lookup_elem(&reals, &key);
->   	if (!(*real))
-> -		return 0;
-> +		return false;
->   	if (!(vip_info->flags & (1 << 1))) {
->   		__u32 conn_rate_key = 512 + 2;
->   		struct lb_stats *conn_rate_stats =
->   		    bpf_map_lookup_elem(&stats, &conn_rate_key);
->   
->   		if (!conn_rate_stats)
-> -			return 1;
-> +			return true;
->   		cur_time = bpf_ktime_get_ns();
->   		if ((cur_time - conn_rate_stats->v2) >> 32 > 0xffFFFF) {
->   			conn_rate_stats->v1 = 1;
-> @@ -587,14 +587,14 @@ static bool get_packet_dst(struct real_definition **real,
->   		} else {
->   			conn_rate_stats->v1 += 1;
->   			if (conn_rate_stats->v1 >= 1)
-> -				return 1;
-> +				return true;
->   		}
->   		if (pckt->flow.proto == IPPROTO_UDP)
->   			new_dst_lru.atime = cur_time;
->   		new_dst_lru.pos = key;
->   		bpf_map_update_elem(lru_map, &pckt->flow, &new_dst_lru, 0);
->   	}
-> -	return 1;
-> +	return true;
->   }
->   
->   __attribute__ ((noinline))
-> 
+> Because it's a lot more readable and less error prone imho. Agree on the
+> union, we don't have to resort to that.
 
-We can't accept this patch. The from and Signed-off-by don't match.
+Ok, I don't have a strong opinion on that. Will resend
 
-thanks,
--- Shuah
+
+
+>>>> I personally still feel that using non-zero to signify index-plus-one is
+>>>> both error-prone and not as future-compatible. I think we could do
+>>>> better with no additional overhead. But I think the final call on that
+>>>> interface is up to you, Jens. Do you think it'd be worth spending a flag
+>>>> bit or using a different opcode, to get a cleaner interface? If you
+>>>> don't, then I'd be fine with seeing this go in with just the io_open and
+>>>> io_accept change.
+>>>
+>>> I'd be inclined to go the extra opcode route instead, as the flag only
+>>> really would make sense to requests that instantiate file descriptors.
+>>> For this particular case, we'd need 3 new opcodes for
+>>> openat/openat2/accept, which is probably a worthwhile expenditure.
+>>>
+>>> Pavel, what do you think? Switch to using a different opcode for the new
+>>> requests, and just grab some space in io_open and io_accept for the fd
+>>> and pass it in to install.
+>>
+>> I don't get it, why it's even called hackish? How that's anyhow better?
+>> To me the feature looks like a natural extension to the operations, just
+>> like a read can be tuned with flags, so and creating new opcodes seems
+>> a bit ugly, unnecessary taking space from opcodes and adding duplication
+>> (even if both versions call the same handler).
+> 
+> I agree that it's a natural extension, the problem is that we have to do
+> unnatural things (somewhat) to make it work. I'm fine with using the
+> union for the splice_fd_in to pass it in, I don't think it's a big deal.
+> 
+> I do wish that IORING_OP_CLOSE would work with them, though. I think we
+> should to that as a followup patch. It's a bit odd to be able to open a
+> file with IORING_OP_OPENAT and not being able to close it with
+> IORING_OP_CLOSE. For the latter, we should just give it fixed file
+> support, which would be pretty trivial.
+> 
+>> First, why it's not future-compatible? It's a serious argument, but I
+>> don't see where it came from. Do I miss something?
+>>
+>> It's u32 now, and so will easily cover all indexes. SQE fields should
+>> always be zeroed, that's a rule, liburing follows it, and there would
+>> have been already lots of problems for users not honoring it. And there
+>> will be a helper hiding all the index conversions for convenience.
+>>
+>> void io_uring_prep_open_direct(sqe, index, ...)
+>> {
+>> 	io_uring_prep_open(sqe, ...);
+>> 	sqe->file_index = index + 1;
+>> }
+> 
+> Let's keep it the way that it is, but I do want to see the buf_index
+> thing go away and just req->open.fixed_file or whatever being used for
+> open and accept. We should fold that in.
+
+-- 
+Pavel Begunkov
