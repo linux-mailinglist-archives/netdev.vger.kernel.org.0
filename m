@@ -2,154 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 396113F5B98
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 12:02:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5944E3F5BA1
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 12:05:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235932AbhHXKDA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 06:03:00 -0400
-Received: from mail-bn8nam11on2051.outbound.protection.outlook.com ([40.107.236.51]:13953
-        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235566AbhHXKC7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Aug 2021 06:02:59 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iJjlQa6jK9v0kn55pZbNlnKCYDjzejnqfESqB1LTHzCTvpDGcHZPj8Ds0G593MCZ6UtPF71fvDJQ/0uGDB1mUK90fDNmntjmVGs/qSCf5a1cBQFEbMNHwGaLwUsNLqG4BsnB8m/YP4MRZY4alBaGXYpzzZD+2BFO7sQo9n8dYnRkByKqiQuZpKKMGCdhgKe5R0YdKbukDTZtZNskyzqvJD2u9PvGtDbIyjwHJj4zFXd7+FS1l9fkXmV1LHyINpyzD2E/yq70RIHNLe9gVA9h1FSN6m+Z+lZwDqPL4mGUzJRxFt3u+Sg9M2icXH4w++Mr+mO9ppWF8sK1HS6OLeqdxw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7MENq0npf6tic9k78xXh/EZZK1mRaxDAomX33VpcHb0=;
- b=oBNhu+PBFxI+Pqra8mG/cZAVmkIXWFcnbJNDJdjmO0A7z+Z0E8WNPGP0FBy9RVhN5Yde69VsSCai6cco5M0cDKpVkY4fE4EZQ3QBlktrIuY2of7KFNhoTOVx0hElVuSyMEiR2rrVzeuDIWOeCIVEsYxfUOgrJfGZdGwhCuWvTM6yIPpF+qYXp9GIiGc/GH9tA65erNW0LsClLkESObty5N/3ZoZkMTAXwQpUKS4/ZKBEn6KDzzaFKevZPyP+6JfefG+Pa+d+QyeON4XEKrQNQgQCsFb6XjYHGmCrKdmso8eD7IyMRgLqrUjqB9ZQoKUsAQHzXuhilJkcOZ61wxfsQQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.62.198) smtp.rcpttodomain=microchip.com smtp.mailfrom=xilinx.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7MENq0npf6tic9k78xXh/EZZK1mRaxDAomX33VpcHb0=;
- b=cKm7JorYOYS+J5TuDZAluPGHsliX/BMRHNOr/4FUQ/KdIBSCfe3yAP1HgY3j3cNwDXXvdHwScndTWgTsZ13GjmD0uAAwFZN8j4IvJhQ8cJvlIXyN103PgRxOeeO/EZajxrucr+Rz/mQWWVFvVVSwW75cO70nKnBzCixZPOEX6u0=
-Received: from DM5PR13CA0022.namprd13.prod.outlook.com (2603:10b6:3:23::32) by
- BN7PR02MB5281.namprd02.prod.outlook.com (2603:10b6:408:2b::15) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4436.19; Tue, 24 Aug 2021 10:02:13 +0000
-Received: from DM3NAM02FT017.eop-nam02.prod.protection.outlook.com
- (2603:10b6:3:23:cafe::6e) by DM5PR13CA0022.outlook.office365.com
- (2603:10b6:3:23::32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4457.6 via Frontend
- Transport; Tue, 24 Aug 2021 10:02:13 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
- smtp.mailfrom=xilinx.com; microchip.com; dkim=none (message not signed)
- header.d=none;microchip.com; dmarc=pass action=none header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com;
-Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
- DM3NAM02FT017.mail.protection.outlook.com (10.13.5.6) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.4436.19 via Frontend Transport; Tue, 24 Aug 2021 10:02:13 +0000
-Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Tue, 24 Aug 2021 03:02:12 -0700
-Received: from smtp.xilinx.com (172.19.127.96) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Tue, 24 Aug 2021 03:02:12 -0700
-Envelope-to: nicolas.ferre@microchip.com,
- davem@davemloft.net,
- claudiu.beznea@microchip.com,
- kuba@kernel.org,
- netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- harinikatakamlinux@gmail.com
-Received: from [10.140.6.13] (port=53502 helo=xhdharinik40.xilinx.com)
-        by smtp.xilinx.com with esmtp (Exim 4.90)
-        (envelope-from <harini.katakam@xilinx.com>)
-        id 1mITFz-000Aqg-U4; Tue, 24 Aug 2021 03:02:12 -0700
-From:   Harini Katakam <harini.katakam@xilinx.com>
-To:     <nicolas.ferre@microchip.com>, <davem@davemloft.net>,
-        <claudiu.beznea@microchip.com>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <michal.simek@xilinx.com>, <harinikatakamlinux@gmail.com>,
-        <harini.katakam@xilinx.com>
-Subject: [PATCH] net: macb: Add a NULL check on desc_ptp
-Date:   Tue, 24 Aug 2021 15:32:09 +0530
-Message-ID: <20210824100209.20418-1-harini.katakam@xilinx.com>
-X-Mailer: git-send-email 2.17.1
+        id S235991AbhHXKGO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 06:06:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:51406 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235905AbhHXKGM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 06:06:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1629799528;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=acXZTsv+ZGRCIMsgyzotp4JqHaREWpj8Vd1U498dQK8=;
+        b=WjwNCwr8K1nqqWbWHHfhLtIeigItP/QyG3TKHyE30g8rkYtAsT7TA4Pz1EjX0fu5hD7gVU
+        9DxL3zj+8FiH/fU56jx6UCJnQ5sajvGAk18Nw1aqRmbYOJ9ZEsTmCSG4mnVbWQB1yOOdcI
+        7ODbpDYzyiYu9hJnsRx/FC+TuYQQN+Q=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-518-z4uTjKq9NBCU12cMtpY-FQ-1; Tue, 24 Aug 2021 06:05:27 -0400
+X-MC-Unique: z4uTjKq9NBCU12cMtpY-FQ-1
+Received: by mail-ej1-f69.google.com with SMTP id gg1-20020a170906e281b029053d0856c4cdso6825833ejb.15
+        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 03:05:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=acXZTsv+ZGRCIMsgyzotp4JqHaREWpj8Vd1U498dQK8=;
+        b=paYdLZtJg0KXcFhEKnU0Dvvg4GjfKHQlXVj+nTMjhvg24eRNf4O6j54Og5MkaQ5Xo1
+         vtJC+pRM2ICUu2M4o8WlakIVRousqsOIZiN6OSzsAmLZjzD2s6LTEREj8fEVY6dvd/OU
+         ctK8xjDJzkCthScD7vTbD7A3ac53qXKN4SxfEHBuwcF4hWdXIT0KpXhB91CMYZH04FSi
+         5rdIPUOBvYMP1+CmzQrO+ugsoTgVCBVjZEfu7RMnivfZPH64gA596KiNdTM8LatE9RMP
+         G/MBfewZldGT4pgE1X7dyiOE5omK7uZX5q7AK4DL/xv0+L0hOxtDrKLb3Xdv6hOybQf5
+         G9Gg==
+X-Gm-Message-State: AOAM531UpIS9RswMi2G8ibKwfN5kbtEv2Rj8G+kfm63asQJAdW1SZhuk
+        rNWUzPB4X0fomSfnhGgSlFpU+acuqNX7kAThKKdgru/A2ZOtMbp4G5qfivK29DIfs974hDPmxdV
+        8JVBz5hh18iLSJppI
+X-Received: by 2002:a05:6402:5206:: with SMTP id s6mr42111199edd.151.1629799526228;
+        Tue, 24 Aug 2021 03:05:26 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzI44Z4judGCzN7R2zpOlFSwZBSbEmkd/UBfNZmHvvZCXJIff7B6uB+tsb4YfaMzeFQo6RVNA==
+X-Received: by 2002:a05:6402:5206:: with SMTP id s6mr42111185edd.151.1629799526106;
+        Tue, 24 Aug 2021 03:05:26 -0700 (PDT)
+Received: from steredhat (host-79-45-8-152.retail.telecomitalia.it. [79.45.8.152])
+        by smtp.gmail.com with ESMTPSA id k21sm8853122ejj.55.2021.08.24.03.05.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Aug 2021 03:05:25 -0700 (PDT)
+Date:   Tue, 24 Aug 2021 12:05:23 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Norbert Slusarek <nslusarek@gmx.net>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "stsp2@yandex.ru" <stsp2@yandex.ru>, oxffffaa@gmail.com
+Subject: Re: [RFC PATCH v3 0/6] virtio/vsock: introduce MSG_EOR flag for
+ SEQPACKET
+Message-ID: <20210824100523.yn5hgiycz2ysdnvm@steredhat>
+References: <20210816085036.4173627-1-arseny.krasnov@kaspersky.com>
+ <3f3fc268-10fc-1917-32c2-dc0e7737dc48@kaspersky.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 19f75e73-6fe6-4dcc-6ccf-08d966e63f2f
-X-MS-TrafficTypeDiagnostic: BN7PR02MB5281:
-X-Microsoft-Antispam-PRVS: <BN7PR02MB5281A9307D2096DFAF5B21E3C9C59@BN7PR02MB5281.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 1qr4B1NkP6lglim6c38lVMQIwuOfh1G6DfBpsADVEuI1X2/CRO0wgEqMrTV6xFuh++My53C/KUSs60xxAg1lDY0gbBdUAU6KEa7W1nzsMCwLhdUDDUiZGbwmeYud5UFRM9dP0qK8CtMjiWPODo0LmDVzYbckFOkAEVk2EPZOTi88E3PTK1zIs6/ePcuetKCkf07TPKbDe2XscLZKdXSDvedUOwqDL7eGuLOrnUuISEUoS/xUKj7bhtTSLACEnt4Cv6AoA6mLRosDlzaevxfjh6soNYQ/exWOcBmQzKvbiLz+fJUrNGmX/EJYdJkcgY4JFnOE3idnIBMcREVCM7HVUB7kBBUkgTQL6bBtEviUwz52AezhLW6p6fndCv1AKPxyyM/ZvvTxIFYDAN4icomltaUC9C8UQ1ROJsSdkekn/DQgoX6cdt5IZ7fFHwEJS934Vf+vDS28nh9GsMl+gqIQl0xqW6nbi2gnxQbTL8JlFhfSCxr/x6/aZguzh96K7bJEugkCvFl+25uN3S4N9aYKARpLjLMqXGL0eDP7mBf3R+FVYzHM0NcHsYDjD/YcN9uacnm8M6Kx7HA4sZSi8sWf8oqWTKqWTUg9m7r3Hde2eBSjmRbsGoHynqWQbpN2OxEdvKfsNaHHoGjJI2OkMxj/MU1iBnq1DGy68kqBo5hP/ehjZJo9+YjeAUdTSGMLBIGMI7vuyD+u1bveB6bJuaFbTXUzI/qZLn8ts9npgT2qnds=
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(110136005)(47076005)(6666004)(36906005)(70206006)(54906003)(508600001)(186003)(44832011)(26005)(2616005)(70586007)(107886003)(426003)(36860700001)(8676002)(336012)(316002)(2906002)(356005)(7696005)(8936002)(7636003)(1076003)(36756003)(83380400001)(82310400003)(5660300002)(9786002)(4326008)(102446001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Aug 2021 10:02:13.7310
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 19f75e73-6fe6-4dcc-6ccf-08d966e63f2f
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT017.eop-nam02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR02MB5281
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <3f3fc268-10fc-1917-32c2-dc0e7737dc48@kaspersky.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-macb_ptp_desc will not return NULL under most circumstances with correct
-Kconfig and IP design config register. But for the sake of the extreme
-corner case, check for NULL when using the helper. In case of rx_tstamp,
-no action is necessary except to return (similar to timestamp disabled)
-and warn. In case of TX, return -EINVAL to let the skb be free. Perform
-this check before marking skb in progress.
-Fixes coverity warning:
-(4) Event dereference:
-Dereferencing a null pointer "desc_ptp"
+Hi Arseny,
 
-Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
-Reviewed-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-Signed-off-by: Michal Simek <michal.simek@xilinx.com>
----
- drivers/net/ethernet/cadence/macb_ptp.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+On Mon, Aug 23, 2021 at 09:41:16PM +0300, Arseny Krasnov wrote:
+>Hello, please ping :)
+>
 
-diff --git a/drivers/net/ethernet/cadence/macb_ptp.c b/drivers/net/ethernet/cadence/macb_ptp.c
-index 5c368a9cbbbc..c2e1f163bb14 100644
---- a/drivers/net/ethernet/cadence/macb_ptp.c
-+++ b/drivers/net/ethernet/cadence/macb_ptp.c
-@@ -275,6 +275,12 @@ void gem_ptp_rxstamp(struct macb *bp, struct sk_buff *skb,
- 
- 	if (GEM_BFEXT(DMA_RXVALID, desc->addr)) {
- 		desc_ptp = macb_ptp_desc(bp, desc);
-+		/* Unlikely but check */
-+		if (!desc_ptp) {
-+			dev_warn_ratelimited(&bp->pdev->dev,
-+					     "Timestamp not supported in BD\n");
-+			return;
-+		}
- 		gem_hw_timestamp(bp, desc_ptp->ts_1, desc_ptp->ts_2, &ts);
- 		memset(shhwtstamps, 0, sizeof(struct skb_shared_hwtstamps));
- 		shhwtstamps->hwtstamp = ktime_set(ts.tv_sec, ts.tv_nsec);
-@@ -307,8 +313,11 @@ int gem_ptp_txstamp(struct macb_queue *queue, struct sk_buff *skb,
- 	if (CIRC_SPACE(head, tail, PTP_TS_BUFFER_SIZE) == 0)
- 		return -ENOMEM;
- 
--	skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
- 	desc_ptp = macb_ptp_desc(queue->bp, desc);
-+	/* Unlikely but check */
-+	if (!desc_ptp)
-+		return -EINVAL;
-+	skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
- 	tx_timestamp = &queue->tx_timestamps[head];
- 	tx_timestamp->skb = skb;
- 	/* ensure ts_1/ts_2 is loaded after ctrl (TX_USED check) */
--- 
-2.17.1
+Sorry, I was off last week.
+I left some minor comments in the patches.
+
+Let's wait a bit for other comments before next version, also on the 
+spec, then I think you can send the next version without RFC tag.
+The target should be the net-next tree, since this is a new feature.
+
+Thanks,
+Stefano
 
