@@ -2,116 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFA8B3F5A67
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 11:05:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A95F73F5A73
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 11:08:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235473AbhHXJGD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 05:06:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57806 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233529AbhHXJGB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 05:06:01 -0400
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1A49C061760
-        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 02:05:17 -0700 (PDT)
-Received: by mail-yb1-xb33.google.com with SMTP id r4so39602658ybp.4
-        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 02:05:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pi0qo+xXuS6kSGyNH78LnLRPJynXHSFWOYYRHFd34qo=;
-        b=PxhEdmeB/PXelisPbyIKQvxHmi3BUgZIxo5wWrWayhicredLhmyj3CWbAz7HkZGhdl
-         Z8BKInt415hq3gB2qIfuz0ogwMzaTdJRQaS6n4BpfuYZC39NSiBe6WZEWJXMSeep89fw
-         JueJs6jUnu+SAiFmbpWqmAv/lgsb7kNin7NHPLoswZ13uOgoyn4HKm7JCoRbc9ORSDDh
-         XbpVJql/C2jYY9hFTipQ6NEJ8RD7uKlTndGQvTmb0oId31BTyf0MqGhpmBkkJfJ3Ofdg
-         UiuV6y3QpLYHocdUw7VlfAVF45Ee5QVWvvAdvr1Z3Slctf4+lT6bb69weW+QnG2c/7K9
-         8lHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pi0qo+xXuS6kSGyNH78LnLRPJynXHSFWOYYRHFd34qo=;
-        b=mqzUbRNR3C1wOR1I2gtAsTg5PlLE15pq8qxEagMgYkFBeridtVbu5ViBuDluuShQMP
-         KT+jNguTmrh7F2tyYFP0cRZVDt2YftvnDh29ZlsR74RshoJndkZyLeExgGTHDYDDqn+z
-         na07abBK72ZNop1jCgvZZLa02wYxcbUbmm/RPYwt/r1BgyaKIkret/2R2vNPfF1y1Q2F
-         ycu1axXVbTXyOt/8LhfOM5GMvmyFZlmV+p5nGJkoS3X0Y7zh1pqtXz6CoxzG4Cj/8yeb
-         D01NhZnxI4yeFetRxJvtWrynw6fvDBLR7pRZam7MKdUKMiLlP37Eo24VAeK24Gdms2YC
-         r2Qg==
-X-Gm-Message-State: AOAM530uI7o36inMqI2dVWErzpgvgsAn5oNWSCyWGOOOH+GVOHMQi3U8
-        adljDllwAIOw7uoSY9/M7rqzoYHBluS2sap904lmhA==
-X-Google-Smtp-Source: ABdhPJznUmLZTKao/oVi1ucNxWn1wWlDzcxsU890EijJqsIQjaLFUMysOXFz8jgVuxMaDWp1Df/UYSasSd6y8D7N9xk=
-X-Received: by 2002:a25:57:: with SMTP id 84mr13065154yba.201.1629795916090;
- Tue, 24 Aug 2021 02:05:16 -0700 (PDT)
+        id S235509AbhHXJIs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 05:08:48 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:18031 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234037AbhHXJIo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 05:08:44 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Gv37s2D9Tzbdyp;
+        Tue, 24 Aug 2021 17:04:09 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Tue, 24 Aug 2021 17:07:58 +0800
+Received: from localhost.localdomain (10.69.192.56) by
+ dggpemm500005.china.huawei.com (7.185.36.74) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Tue, 24 Aug 2021 17:07:58 +0800
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <hawk@kernel.org>, <ilias.apalodimas@linaro.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <hkallweit1@gmail.com>
+Subject: [PATCH net-next v3] page_pool: use relaxed atomic for release side accounting
+Date:   Tue, 24 Aug 2021 17:06:49 +0800
+Message-ID: <1629796009-11010-1-git-send-email-linyunsheng@huawei.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-References: <1629442611-61547-1-git-send-email-linyunsheng@huawei.com>
- <1629442611-61547-3-git-send-email-linyunsheng@huawei.com>
- <YR94YYRv2qpQtdSZ@Iliass-MBP> <16468e57-49d8-0a23-0058-c920af99d74a@huawei.com>
- <YSOXwdLgeY1ti8ZO@enceladus> <710fcc40-64d0-cafc-5dde-8762cc0ae457@huawei.com>
-In-Reply-To: <710fcc40-64d0-cafc-5dde-8762cc0ae457@huawei.com>
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Date:   Tue, 24 Aug 2021 12:04:38 +0300
-Message-ID: <CAC_iWj+KiPWjztQsQ-1Qi1rLDCojnzFsK18KYfyLLhsxz0k5FA@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 2/2] page_pool: optimize the cpu sync
- operation when DMA mapping
-To:     Yunsheng Lin <linyunsheng@huawei.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.56]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Yunsheng,
+There is no need to synchronize the account updating, so
+use the relaxed atomic to avoid some memory barrier in the
+data path.
 
-+cc Lorenzo, which has done some tests on non-coherent platforms
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+---
+V3: Drop patch 2.
+V2: Remove unnecessary unliky() mark as pointed out by
+    Heiner.
+---
+ net/core/page_pool.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On Tue, 24 Aug 2021 at 10:00, Yunsheng Lin <linyunsheng@huawei.com> wrote:
->
-> On 2021/8/23 20:42, Ilias Apalodimas wrote:
-> > On Mon, Aug 23, 2021 at 11:56:48AM +0800, Yunsheng Lin wrote:
-> >> On 2021/8/20 17:39, Ilias Apalodimas wrote:
-> >>> On Fri, Aug 20, 2021 at 02:56:51PM +0800, Yunsheng Lin wrote:
->
-> [..]
-> >>
-> >> https://elixir.bootlin.com/linux/latest/source/kernel/dma/direct.h#L104
-> >>
-> >> The one thing I am not sure about is that the pool->p.offset
-> >> and pool->p.max_len are used to decide the sync range before this
-> >> patch, while the sync range is the same as the map range when doing
-> >> the sync in dma_map_page_attrs().
-> >
-> > I am not sure I am following here. We always sync the entire range as well
-> > in the current code as the mapping function is called with max_len.
-> >
-> >>
-> >> I assumed the above is not a issue? only sync more than we need?
-> >> and it won't hurt the performance?
-> >
-> > We can sync more than we need, but if it's a non-coherent architecture,
-> > there's a performance penalty.
->
-> Since I do not have any performance data to prove if there is a
-> performance penalty for non-coherent architecture, I will drop it:)
+diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+index e140905..1a69784 100644
+--- a/net/core/page_pool.c
++++ b/net/core/page_pool.c
+@@ -370,7 +370,7 @@ void page_pool_release_page(struct page_pool *pool, struct page *page)
+ 	/* This may be the last page returned, releasing the pool, so
+ 	 * it is not safe to reference pool afterwards.
+ 	 */
+-	count = atomic_inc_return(&pool->pages_state_release_cnt);
++	count = atomic_inc_return_relaxed(&pool->pages_state_release_cnt);
+ 	trace_page_pool_state_release(pool, page, count);
+ }
+ EXPORT_SYMBOL(page_pool_release_page);
+-- 
+2.7.4
 
-I am pretty sure it does affect it.  Unless I am missing something the
-patch simply re-arranges calls to avoid calling dma_map_page_attrs()
-right?
-However since dma_map_page_attrs() won't do anything sync-related
-since it's called with DMA_ATTR_SKIP_CPU_SYNC, I doubt calling it will
-have any measurable difference.  If there is, we should pick it up.
-
-
-Regards
-/Ilias
->
-> >
-> > Regards
-> > /Ilias
-> >>
