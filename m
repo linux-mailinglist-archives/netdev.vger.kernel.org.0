@@ -2,85 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B56263F58EE
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 09:24:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CC403F5907
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 09:32:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234763AbhHXHZQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 03:25:16 -0400
-Received: from new2-smtp.messagingengine.com ([66.111.4.224]:37557 "EHLO
-        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234734AbhHXHZE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 03:25:04 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 3877E580582;
-        Tue, 24 Aug 2021 03:24:18 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Tue, 24 Aug 2021 03:24:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=23+OLJ
-        AyGOsAQ21B6Kc7ZzhH18/xeF38azdp237++QU=; b=r6iyg76fNVgj+2ix/dlYI5
-        dxqn1I0PFMnMWk09SljcaWCRtBrt4l7YNE3+IaDhwKYaZbkpIVMf5yM41W6+DhQO
-        QVRC6Qc/T7EfWzMXZks0J00wUf+ZE9hZx+ytejmWinKE6/1qYMzkSff4IvjiGom/
-        YncRhB/H5zQwhBh0j1iOqeByRdbM6A8GfTEpSGMoN2+HnyOlVt2RdvAYS9cs+GAp
-        pG+37kyZfBt2eDZGi8p8Fgp6SzG3+yQV5/zp8Ye+NdAKvsxhsqD+s9D+YSGj31fZ
-        FbCnywLDGGyl4gwS35gxwmyt986Gm0wqnyqijQ/hZ0sPP9Ru4RGKP7cX0edu6RnQ
-        ==
-X-ME-Sender: <xms:oZ4kYUargjpQUJ7haGOagqb01eAYbCGxzyrqvpNNv412Ne06sgqZqw>
-    <xme:oZ4kYfbsATAX6W5PTqwY_ma7XOMdIfggJQO9Cc7cVRKj44IOFFDnMYni98VGv6Q9e
-    kgTzJ_WYgDRP9U>
-X-ME-Received: <xmr:oZ4kYe9A3-mm1qOFO7VHcWEFnGwAxSRHH0m2qhcxTSmxEDNrvjGJI0RlXmk5YhSs49jH4lG6MqO3G3w5gDAIIYypnFd8hQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddruddtiedguddukecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecunecujfgurhepfffhvffukfhfgggtuggjsehttd
-    ertddttddvnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihgu
-    ohhstghhrdhorhhgqeenucggtffrrghtthgvrhhnpedtffekkeefudffveegueejffejhf
-    etgfeuuefgvedtieehudeuueekhfduheelteenucevlhhushhtvghrufhiiigvpedtnecu
-    rfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:oZ4kYerLnIvIx1HAoYpsKSocLUA1IH70cNWNL9KEoob9qUn-0r23pQ>
-    <xmx:oZ4kYfrS8nTsBR0KysYpR4GPNOulos9Mn888yDX5foeVYnN47vAAdQ>
-    <xmx:oZ4kYcQMT8BeoPNLJptgpMrlciN6QBPFrrJx-L9NL1bj5zgadQ0txg>
-    <xmx:op4kYY7W1x5m5JwIA8ZsqDnYVG-aOtbc2GeFKu06Xu2lMsiVw85aAA>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 24 Aug 2021 03:24:16 -0400 (EDT)
-Date:   Tue, 24 Aug 2021 10:24:11 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Po-Hsu Lin <po-hsu.lin@canonical.com>
-Cc:     linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        skhan@linuxfoundation.org, petrm@nvidia.co,
-        oleksandr.mazur@plvision.eu, idosch@nvidia.com, jiri@nvidia.com,
-        nikolay@nvidia.com, gnault@redhat.com, simon.horman@netronome.com,
-        baowen.zheng@corigine.com, danieller@nvidia.com
-Subject: Re: [PATCH] selftests/net: Use kselftest skip code for skipped tests
-Message-ID: <YSSemxg1JQRdqxsP@shredder>
-References: <20210823085854.40216-1-po-hsu.lin@canonical.com>
+        id S234787AbhHXHcl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 03:32:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36170 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234827AbhHXHcg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 03:32:36 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 173D3C061760
+        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 00:31:43 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id z18so39156837ybg.8
+        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 00:31:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nAbhJg9KzDnSNui0yJFPZ9VTbEY+6KHkXkiM9wTMo7U=;
+        b=nw4GMUAkEusgHcP8d+XatSp56K8mVrgcAEDxlvnhk5nj3gCmkWNUhunL8PbtN2+Su2
+         aAE8EeODCWz5wgPJtYsnyCsiaBlaonNAUyXmi49vtlFPWD+bIzy9D9MtWMGtg2UddqPY
+         frTZm0fjszj+0N3xpRKkIhJT8Hvl1lpr4Dt+Lf//YDmw+FID7xex/zLoXT76jJ0ohc7F
+         2E62YNsI9hbs4mxQncZc6hIvbELPWQhroUCkJLB5QuCJ/WmKemulF0GYj63+xCG4dQFq
+         UjDRMt2JEPyRRu7U0qIMdJpC/puZIpFCl2Z71FWFkrC5UnIFWGpK1nImA0Oy4nhku4CO
+         acUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nAbhJg9KzDnSNui0yJFPZ9VTbEY+6KHkXkiM9wTMo7U=;
+        b=BMUiALK+rmmsZriwuyyhv+WDMdnXuz8cSCW9JSpsbWGdjtdq6IuNN2LYbuhwRwo3+4
+         wsC9evECIwfIOzPXZmEsWKtvQEDrud5WSqUpuRWTLG/5DBhcA3oO5raXKH5rEszy9Ex+
+         ctCm/fuY+qmPIUHkz6Xwf4XYrQkA5xBf1YtYSGm7BQ1FNAt7Gf7KYOwWI2M39VZ82YAR
+         BLqdaK5wzJWtlY45gxFazybeJsUaHGQ6fq8JBzRGPxPqSQV+b1QQoMqgimIbyPyF3u9I
+         WbJTOjWYi91z3yLoq3fYrqTLyeWEscqGpCVZN93Wp5Qn11T41+lb8GHRF7I1qo1OGlj4
+         5ILw==
+X-Gm-Message-State: AOAM532dxfSdEets8RFPacbe1PwcCti1Oamnaf/haY+6MQALyKmKJl27
+        H9w+1eEtuLFNpZvqBkqspirGMHDBnA8AFqczj4i1fg==
+X-Google-Smtp-Source: ABdhPJymfsqgvR+b9ZJBIHgV7DoRSEBfuTSnP4UhGjvYXCirnQKW+aO1kLAlKKbxF8PIZ0jHatdmxdXWNg621TxPflU=
+X-Received: by 2002:a25:da50:: with SMTP id n77mr19168506ybf.96.1629790302026;
+ Tue, 24 Aug 2021 00:31:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210823085854.40216-1-po-hsu.lin@canonical.com>
+References: <CGME20210823120849eucas1p11d3919886444358472be3edd1c662755@eucas1p1.samsung.com>
+ <20210818021717.3268255-1-saravanak@google.com> <0a2c4106-7f48-2bb5-048e-8c001a7c3fda@samsung.com>
+ <CAGETcx_xJCqOWtwZ9Ee2+0sPGNLM5=F=djtbdYENkAYZa0ynqQ@mail.gmail.com> <427ce8cd-977b-03ae-2020-f5ddc7439390@samsung.com>
+In-Reply-To: <427ce8cd-977b-03ae-2020-f5ddc7439390@samsung.com>
+From:   Saravana Kannan <saravanak@google.com>
+Date:   Tue, 24 Aug 2021 00:31:05 -0700
+Message-ID: <CAGETcx8cRXDciKiRMSb=ybKo8=SyiNyAv=7oeHU1HUhkZ60qmg@mail.gmail.com>
+Subject: Re: [PATCH v2] of: property: fw_devlink: Add support for "phy-handle" property
+To:     Marek Szyprowski <m.szyprowski@samsung.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        kernel-team@android.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        linux-amlogic@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 23, 2021 at 04:58:54PM +0800, Po-Hsu Lin wrote:
-> There are several test cases in the net directory are still using
-> exit 0 or exit 1 when they need to be skipped. Use kselftest
-> framework skip code instead so it can help us to distinguish the
-> return status.
-> 
-> Criterion to filter out what should be fixed in net directory:
->   grep -r "exit [01]" -B1 | grep -i skip
-> 
-> This change might cause some false-positives if people are running
-> these test scripts directly and only checking their return codes,
-> which will change from 0 to 4. However I think the impact should be
-> small as most of our scripts here are already using this skip code.
-> And there will be no such issue if running them with the kselftest
-> framework.
-> 
-> Signed-off-by: Po-Hsu Lin <po-hsu.lin@canonical.com>
+On Tue, Aug 24, 2021 at 12:03 AM Marek Szyprowski
+<m.szyprowski@samsung.com> wrote:
+>
+> Hi,
+>
+> On 23.08.2021 20:22, Saravana Kannan wrote:
+> > On Mon, Aug 23, 2021 at 5:08 AM Marek Szyprowski
+> > <m.szyprowski@samsung.com> wrote:
+> >> On 18.08.2021 04:17, Saravana Kannan wrote:
+> >>> Allows tracking dependencies between Ethernet PHYs and their consumers.
+> >>>
+> >>> Cc: Andrew Lunn <andrew@lunn.ch>
+> >>> Cc: netdev@vger.kernel.org
+> >>> Signed-off-by: Saravana Kannan <saravanak@google.com>
+> >> This patch landed recently in linux-next as commit cf4b94c8530d ("of:
+> >> property: fw_devlink: Add support for "phy-handle" property"). It breaks
+> >> ethernet operation on my Amlogic-based ARM64 boards: Odroid C4
+> >> (arm64/boot/dts/amlogic/meson-sm1-odroid-c4.dts) and N2
+> >> (meson-g12b-odroid-n2.dts) as well as Khadas VIM3/VIM3l
+> >> (meson-g12b-a311d-khadas-vim3.dts and meson-sm1-khadas-vim3l.dts).
+> >>
+> >> In case of OdroidC4 I see the following entries in the
+> >> /sys/kernel/debug/devices_deferred:
+> >>
+> >> ff64c000.mdio-multiplexer
+> >> ff3f0000.ethernet
+> >>
+> >> Let me know if there is anything I can check to help debugging this issue.
+> > I'm fairly certain you are hitting this issue because the PHY device
+> > doesn't have a compatible property. And so the device link dependency
+> > is propagated up to the mdio bus. But busses as suppliers aren't good
+> > because busses never "probe".
+> >
+> > PHY seems to be one of those cases where it's okay to have the
+> > compatible property but also okay to not have it. You can confirm my
+> > theory by checking for the list of suppliers under
+> > ff64c000.mdio-multiplexer. You'd see mdio@0 (ext_mdio) and if you look
+> > at the "status" file under the folder it should be "dormant". If you
+> > add a compatible property that fits the formats a PHY node can have,
+> > that should also fix your issue (not the solution though).
+>
+> Where should I look for the mentioned device links 'status' file?
+>
+> # find /sys -name ff64c000.mdio-multiplexer
+> /sys/devices/platform/soc/ff600000.bus/ff64c000.mdio-multiplexer
+> /sys/bus/platform/devices/ff64c000.mdio-multiplexer
+>
+> # ls -l /sys/devices/platform/soc/ff600000.bus/ff64c000.mdio-multiplexer
+> total 0
 
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-Tested-by: Ido Schimmel <idosch@nvidia.com>
+This is the folder I wanted you to check.
+
+> lrwxrwxrwx 1 root root    0 Jan  1 00:04
+> consumer:platform:ff3f0000.ethernet ->
+> ../../../../virtual/devlink/platform:ff64c000.mdio-multiplexer--platform:ff3f0000.ethernet
+
+But I should have asked to look for the consumer list and not the
+supplier list. In any case, we can see that the ethernet is marked as
+the consumer of the mdio-multiplexer instead of the PHY device. So my
+hunch seems to be right.
+
+> -rw-r--r-- 1 root root 4096 Jan  1 00:04 driver_override
+> -r--r--r-- 1 root root 4096 Jan  1 00:04 modalias
+> lrwxrwxrwx 1 root root    0 Jan  1 00:04 of_node ->
+> ../../../../../firmware/devicetree/base/soc/bus@ff600000/mdio-multiplexer@4c000
+> drwxr-xr-x 2 root root    0 Jan  1 00:02 power
+> lrwxrwxrwx 1 root root    0 Jan  1 00:04 subsystem ->
+> ../../../../../bus/platform
+> lrwxrwxrwx 1 root root    0 Jan  1 00:04
+> supplier:platform:ff63c000.system-controller:clock-controller ->
+> ../../../../virtual/devlink/platform:ff63c000.system-controller:clock-controller--platform:ff64c000.mdio-multiplexer
+> -rw-r--r-- 1 root root 4096 Jan  1 00:04 uevent
+> -r--r--r-- 1 root root 4096 Jan  1 00:04 waiting_for_supplier
+>
+> # cat
+> /sys/devices/platform/soc/ff600000.bus/ff64c000.mdio-multiplexer/waiting_for_supplier
+> 0
+>
+> I'm also not sure what compatible string should I add there.
+
+It should have been added to external_phy: ethernet-phy@0. But don't
+worry about it (because you need to use a specific format for the
+compatible string).
+
+-Saravana
+
+>
+> > I'll send out a fix this week (once you confirm my analysis). Thanks
+> > for reporting it.
+>
+> Best regards
+>
+> --
+> Marek Szyprowski, PhD
+> Samsung R&D Institute Poland
+>
