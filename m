@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 094123F6C35
+	by mail.lfdr.de (Postfix) with ESMTP id 519F83F6C36
 	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 01:26:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235464AbhHXX1Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 19:27:24 -0400
+        id S234477AbhHXX10 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 19:27:26 -0400
 Received: from mga03.intel.com ([134.134.136.65]:39254 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232824AbhHXX1S (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S234261AbhHXX1S (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 24 Aug 2021 19:27:18 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10086"; a="217448937"
+X-IronPort-AV: E=McAfee;i="6200,9189,10086"; a="217448939"
 X-IronPort-AV: E=Sophos;i="5.84,348,1620716400"; 
-   d="scan'208";a="217448937"
+   d="scan'208";a="217448939"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
   by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2021 16:26:33 -0700
 X-IronPort-AV: E=Sophos;i="5.84,348,1620716400"; 
-   d="scan'208";a="515847905"
+   d="scan'208";a="515847906"
 Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.209.40.105])
   by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2021 16:26:33 -0700
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
@@ -26,9 +26,9 @@ Cc:     Geliang Tang <geliangtang@xiaomi.com>, davem@davemloft.net,
         kuba@kernel.org, matthieu.baerts@tessares.net,
         mptcp@lists.linux.dev, pabeni@redhat.com,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 6/7] mptcp: add the mibs for MP_FAIL
-Date:   Tue, 24 Aug 2021 16:26:18 -0700
-Message-Id: <20210824232619.136912-7-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 7/7] selftests: mptcp: add MP_FAIL mibs check
+Date:   Tue, 24 Aug 2021 16:26:19 -0700
+Message-Id: <20210824232619.136912-8-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20210824232619.136912-1-mathew.j.martineau@linux.intel.com>
 References: <20210824232619.136912-1-mathew.j.martineau@linux.intel.com>
@@ -40,67 +40,69 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Geliang Tang <geliangtang@xiaomi.com>
 
-This patch added the mibs for MP_FAIL: MPTCP_MIB_MPFAILTX and
-MPTCP_MIB_MPFAILRX.
+This patch added a function chk_fail_nr to check the mibs for MP_FAIL.
 
 Signed-off-by: Geliang Tang <geliangtang@xiaomi.com>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- net/mptcp/mib.c     | 2 ++
- net/mptcp/mib.h     | 2 ++
- net/mptcp/options.c | 1 +
- net/mptcp/subflow.c | 1 +
- 4 files changed, 6 insertions(+)
+ .../testing/selftests/net/mptcp/mptcp_join.sh | 38 +++++++++++++++++++
+ 1 file changed, 38 insertions(+)
 
-diff --git a/net/mptcp/mib.c b/net/mptcp/mib.c
-index 3a7c4e7b2d79..b21ff9be04c6 100644
---- a/net/mptcp/mib.c
-+++ b/net/mptcp/mib.c
-@@ -44,6 +44,8 @@ static const struct snmp_mib mptcp_snmp_list[] = {
- 	SNMP_MIB_ITEM("RmSubflow", MPTCP_MIB_RMSUBFLOW),
- 	SNMP_MIB_ITEM("MPPrioTx", MPTCP_MIB_MPPRIOTX),
- 	SNMP_MIB_ITEM("MPPrioRx", MPTCP_MIB_MPPRIORX),
-+	SNMP_MIB_ITEM("MPFailTx", MPTCP_MIB_MPFAILTX),
-+	SNMP_MIB_ITEM("MPFailRx", MPTCP_MIB_MPFAILRX),
- 	SNMP_MIB_ITEM("RcvPruned", MPTCP_MIB_RCVPRUNED),
- 	SNMP_MIB_ITEM("SubflowStale", MPTCP_MIB_SUBFLOWSTALE),
- 	SNMP_MIB_ITEM("SubflowRecover", MPTCP_MIB_SUBFLOWRECOVER),
-diff --git a/net/mptcp/mib.h b/net/mptcp/mib.h
-index 8ec16c991aac..ecd3d8b117e0 100644
---- a/net/mptcp/mib.h
-+++ b/net/mptcp/mib.h
-@@ -37,6 +37,8 @@ enum linux_mptcp_mib_field {
- 	MPTCP_MIB_RMSUBFLOW,		/* Remove a subflow */
- 	MPTCP_MIB_MPPRIOTX,		/* Transmit a MP_PRIO */
- 	MPTCP_MIB_MPPRIORX,		/* Received a MP_PRIO */
-+	MPTCP_MIB_MPFAILTX,		/* Transmit a MP_FAIL */
-+	MPTCP_MIB_MPFAILRX,		/* Received a MP_FAIL */
- 	MPTCP_MIB_RCVPRUNED,		/* Incoming packet dropped due to memory limit */
- 	MPTCP_MIB_SUBFLOWSTALE,		/* Subflows entered 'stale' status */
- 	MPTCP_MIB_SUBFLOWRECOVER,	/* Subflows returned to active status after being stale */
-diff --git a/net/mptcp/options.c b/net/mptcp/options.c
-index fa287a49dc84..bec3ed82e253 100644
---- a/net/mptcp/options.c
-+++ b/net/mptcp/options.c
-@@ -1158,6 +1158,7 @@ bool mptcp_incoming_options(struct sock *sk, struct sk_buff *skb)
+diff --git a/tools/testing/selftests/net/mptcp/mptcp_join.sh b/tools/testing/selftests/net/mptcp/mptcp_join.sh
+index 7b3e6cc56935..255793c5ac4f 100755
+--- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
++++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
+@@ -578,6 +578,43 @@ chk_csum_nr()
+ 	fi
+ }
  
- 	if (mp_opt.mp_fail) {
- 		mptcp_pm_mp_fail_received(sk, mp_opt.fail_seq);
-+		MPTCP_INC_STATS(sock_net(sk), MPTCP_MIB_MPFAILRX);
- 		mp_opt.mp_fail = 0;
- 	}
- 
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index dba8ad700fb8..54b7ffc21861 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -911,6 +911,7 @@ static enum mapping_status validate_data_csum(struct sock *ssk, struct sk_buff *
- 	if (unlikely(csum_fold(csum))) {
- 		MPTCP_INC_STATS(sock_net(ssk), MPTCP_MIB_DATACSUMERR);
- 		subflow->send_mp_fail = 1;
-+		MPTCP_INC_STATS(sock_net(ssk), MPTCP_MIB_MPFAILTX);
- 		return subflow->mp_join ? MAPPING_INVALID : MAPPING_DUMMY;
- 	}
++chk_fail_nr()
++{
++	local mp_fail_nr_tx=$1
++	local mp_fail_nr_rx=$2
++	local count
++	local dump_stats
++
++	printf "%-39s %s" " " "ftx"
++	count=`ip netns exec $ns1 nstat -as | grep MPTcpExtMPFailTx | awk '{print $2}'`
++	[ -z "$count" ] && count=0
++	if [ "$count" != "$mp_fail_nr_tx" ]; then
++		echo "[fail] got $count MP_FAIL[s] TX expected $mp_fail_nr_tx"
++		ret=1
++		dump_stats=1
++	else
++		echo -n "[ ok ]"
++	fi
++
++	echo -n " - frx   "
++	count=`ip netns exec $ns2 nstat -as | grep MPTcpExtMPFailRx | awk '{print $2}'`
++	[ -z "$count" ] && count=0
++	if [ "$count" != "$mp_fail_nr_rx" ]; then
++		echo "[fail] got $count MP_FAIL[s] RX expected $mp_fail_nr_rx"
++		ret=1
++		dump_stats=1
++	else
++		echo "[ ok ]"
++	fi
++
++	if [ "${dump_stats}" = 1 ]; then
++		echo Server ns stats
++		ip netns exec $ns1 nstat -as | grep MPTcp
++		echo Client ns stats
++		ip netns exec $ns2 nstat -as | grep MPTcp
++	fi
++}
++
+ chk_join_nr()
+ {
+ 	local msg="$1"
+@@ -627,6 +664,7 @@ chk_join_nr()
+ 	fi
+ 	if [ $checksum -eq 1 ]; then
+ 		chk_csum_nr
++		chk_fail_nr 0 0
+ 	fi
+ }
  
 -- 
 2.33.0
