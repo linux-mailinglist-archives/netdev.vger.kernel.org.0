@@ -2,72 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 975333F57B6
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 07:50:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F2BC3F57BC
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 07:53:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234384AbhHXFvT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 01:51:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40910 "EHLO
+        id S234520AbhHXFx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 01:53:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229925AbhHXFvQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 01:51:16 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD1A3C061575;
-        Mon, 23 Aug 2021 22:50:32 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id w6so11560201plg.9;
-        Mon, 23 Aug 2021 22:50:32 -0700 (PDT)
+        with ESMTP id S230123AbhHXFxp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 01:53:45 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C73E0C061575;
+        Mon, 23 Aug 2021 22:53:01 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id u15so11535028plg.13;
+        Mon, 23 Aug 2021 22:53:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=+gSDqXBdeSRky6h/E1OhzdBjGEqrt1+vEPvVVQ4fmdY=;
-        b=fkEVVaTV2+cKJJTlepLZ+0uRX9rphvYYfm69e6vR0mmyT45p0tH4xcrDtLDjUJ0IWj
-         B5Pk6Rf63UvqGjwmtNPuqFriO9Cmk/8zLn6bIr218PYLHhLzm0dtRS+lmndoYqgSVdnO
-         Y6l1pl9z8Y8YeCJ03gCEKEqeB0BPaRUEgwIRJ0QDfJdOQK8vHgcK48T/rLHQlaeLBTIV
-         y2mIs/vttXwW5aXJAqi9EdhYpZwReJp2gUgaSrWpgIRbHG70pL2ejANsWYu1lubgUmf6
-         WwFWwm4Kw9K76q9qx9VU/OHB1OhXiIPTA4NFZIqhaeLLr/jXV5cXLs6Rr7QRbxpfAPoD
-         Scew==
+        bh=lrFQm7flTkEFFwdFjWBoVvPjc3n+60qzJ4VZO7fQv8w=;
+        b=QtHbrhx+OiFXKxbRJkfrAnvATXqGIwuBUfDWLS4K1YRlorq3cvz7LGthbDYr/oXXVk
+         s7cdECmXymt8NJ57+vFAUdnp68J1mH0/y2Tw0y4vh+yNWAE/Crd3fUE+VrbvsaKJ16Id
+         HF5JzDzZbgD5534vSeV8IdU2O/rwDIMn12/k2hjXE9sUSIynYswyuDD6kpXxMAmeRkoJ
+         tPCwt7QBEsUa+DWKdGvyvYC5oyhS2AFF+sDIXqiujdm3CMU/inbiVTakOhMonUeETN8h
+         mj7PapFPePifK07+7iaFsg9ZFWTeb1+BcydRX7gr4m7vi8/ROq3D8ETloDq8wg4/KCCu
+         Kt+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=+gSDqXBdeSRky6h/E1OhzdBjGEqrt1+vEPvVVQ4fmdY=;
-        b=XteW6DRjZz+BJWf1Amoh9SzpC/7/1DroneA5VzsaxxwVEd7JW9Wx31QGAgzt3u9jo2
-         1jKqjriJqGPgQklnrCww+LzS/RBhMQomHKUDovH6xF1GDobjjFkvrazwAL4Irqt0THhr
-         rg/mp3V0im8vXXpe/9EkqH+wO7ZKA0/UjQcpoe9J434PgzN9SSVQw6SdrqjivTMv8OW0
-         NgAL+cHS9UfelTbx7UQxqjtmO06GVKfOwtIg/e5EBDYUzNLug3u775aux+ewuHg8vVPy
-         ucR/JN42Pepl0T+iXPs6UlULe3Bhb0tZI0fTeEeRP1t2vQv9+jtMXA1QT/8Nf6zqL+Na
-         uFMg==
-X-Gm-Message-State: AOAM532zGf7gscBeLPYbAGjDKrZ2THkcfikrGSycXYc0Q+AqqNJeA4pS
-        4ZLpZjszpjtnQ9yPxhPAmD3GapAB/LJk1OJ/
-X-Google-Smtp-Source: ABdhPJxVYFJEp7CkpwK0eGclGAm8CLw2ohd2D9rXLv5HSKLtdOEkciNduvW28N51frgsTWS87ms+rQ==
-X-Received: by 2002:a17:902:aa02:b0:134:b387:facc with SMTP id be2-20020a170902aa0200b00134b387faccmr6828783plb.22.1629784231961;
-        Mon, 23 Aug 2021 22:50:31 -0700 (PDT)
+        bh=lrFQm7flTkEFFwdFjWBoVvPjc3n+60qzJ4VZO7fQv8w=;
+        b=iTbxig1NGA/u0jaJftNNSD3ovLc5W7v+Tdfy7rk1Timf9jYduuTPOpknE0fXQBfHu9
+         uTPOeLpssiy2tc0NEUGbz6NMtFp9S18XJ7FHSsZT65xsIyGIbkY1Y7MIkCAh9xkPpBLo
+         BxI3ISRbYvj5CDl7MyUvoOCoyx4niQBAEFfsjHPulophVZFpjYv8nkXeTQYr+kjngu2y
+         IQjKsdzbv4+17DGObeq/RXojTDQ08LOhwguwdH4z6VujM/xp95FdxBBdTNkzTCQcqP8+
+         MVe7GEMJswyr125fIhYJxLnFuertc76VfJvIcmKx11YcXZkmLSyUSBnesa1TsCS0KMrf
+         si5w==
+X-Gm-Message-State: AOAM5329b+aNMi9XCl/l+E6/iso2RgKC7a8l6seVwWC7tqgEqnHDFzNE
+        XbfwzfZpKWP08hhJV/Pus+n9SrM96Vy2r1S/
+X-Google-Smtp-Source: ABdhPJzz5xrfLOEviDCGsTH9xdIXyACp3PC0jd7A6XrFLpI3PQQm8uMigntzQtlu6oOPAeuketZ3bA==
+X-Received: by 2002:a17:90a:e641:: with SMTP id ep1mr2530027pjb.209.1629784380935;
+        Mon, 23 Aug 2021 22:53:00 -0700 (PDT)
 Received: from haswell-ubuntu20.lan ([138.197.212.246])
-        by smtp.gmail.com with ESMTPSA id s32sm18278054pfw.84.2021.08.23.22.50.25
+        by smtp.gmail.com with ESMTPSA id c23sm20665523pgb.74.2021.08.23.22.52.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Aug 2021 22:50:31 -0700 (PDT)
+        Mon, 23 Aug 2021 22:53:00 -0700 (PDT)
 From:   DENG Qingfang <dqfext@gmail.com>
 To:     stable@vger.kernel.org
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
+Cc:     Sean Wang <sean.wang@mediatek.com>, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
         Matthias Brugger <matthias.bgg@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
         Russell King <linux@armlinux.org.uk>,
         netdev@vger.kernel.org (open list:MEDIATEK SWITCH DRIVER),
         linux-arm-kernel@lists.infradead.org (moderated list:ARM/Mediatek SoC
         support),
         linux-mediatek@lists.infradead.org (moderated list:ARM/Mediatek SoC
         support), linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH 5.10.y] net: dsa: mt7530: disable learning on standalone ports
-Date:   Tue, 24 Aug 2021 13:50:19 +0800
-Message-Id: <20210824055020.1315672-1-dqfext@gmail.com>
+Subject: [PATCH 5.4.y] net: dsa: mt7530: disable learning on standalone ports
+Date:   Tue, 24 Aug 2021 13:52:50 +0800
+Message-Id: <20210824055250.1315862-1-dqfext@gmail.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -82,14 +77,14 @@ Make sure that the standalone ports start up with learning disabled.
 
 Signed-off-by: DENG Qingfang <dqfext@gmail.com>
 ---
- drivers/net/dsa/mt7530.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+ drivers/net/dsa/mt7530.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 3fa2f81c8b47..c9c02da3382d 100644
+index e1a3c33fdad9..b21444b38377 100644
 --- a/drivers/net/dsa/mt7530.c
 +++ b/drivers/net/dsa/mt7530.c
-@@ -1083,6 +1083,8 @@ mt7530_port_bridge_join(struct dsa_switch *ds, int port,
+@@ -764,6 +764,8 @@ mt7530_port_bridge_join(struct dsa_switch *ds, int port,
  			   PCR_MATRIX_MASK, PCR_MATRIX(port_bitmap));
  	priv->ports[port].pm |= PCR_MATRIX(port_bitmap);
  
@@ -98,7 +93,7 @@ index 3fa2f81c8b47..c9c02da3382d 100644
  	mutex_unlock(&priv->reg_mutex);
  
  	return 0;
-@@ -1183,6 +1185,8 @@ mt7530_port_bridge_leave(struct dsa_switch *ds, int port,
+@@ -864,6 +866,8 @@ mt7530_port_bridge_leave(struct dsa_switch *ds, int port,
  			   PCR_MATRIX(BIT(MT7530_CPU_PORT)));
  	priv->ports[port].pm = PCR_MATRIX(BIT(MT7530_CPU_PORT));
  
@@ -107,26 +102,14 @@ index 3fa2f81c8b47..c9c02da3382d 100644
  	mutex_unlock(&priv->reg_mutex);
  }
  
-@@ -1636,9 +1640,13 @@ mt7530_setup(struct dsa_switch *ds)
- 			ret = mt753x_cpu_port_enable(ds, i);
- 			if (ret)
- 				return ret;
--		} else
-+		} else {
- 			mt7530_port_disable(ds, i);
+@@ -1246,11 +1250,15 @@ mt7530_setup(struct dsa_switch *ds)
+ 		mt7530_rmw(priv, MT7530_PCR_P(i), PCR_MATRIX_MASK,
+ 			   PCR_MATRIX_CLR);
  
-+			/* Disable learning by default on all user ports */
-+			mt7530_set(priv, MT7530_PSC_P(i), SA_DIS);
-+		}
-+
- 		/* Enable consistent egress tag */
- 		mt7530_rmw(priv, MT7530_PVC_P(i), PVC_EG_TAG_MASK,
- 			   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
-@@ -1792,9 +1800,13 @@ mt7531_setup(struct dsa_switch *ds)
- 			ret = mt753x_cpu_port_enable(ds, i);
- 			if (ret)
- 				return ret;
--		} else
+-		if (dsa_is_cpu_port(ds, i))
++		if (dsa_is_cpu_port(ds, i)) {
+ 			mt7530_cpu_port_enable(priv, i);
+-		else
 +		} else {
  			mt7530_port_disable(ds, i);
  
