@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EEBBA3F59EF
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 10:40:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2FF83F59F0
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 10:40:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235366AbhHXIkw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 04:40:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57924 "EHLO mail.kernel.org"
+        id S235396AbhHXIky (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 04:40:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57920 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235068AbhHXIkw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232714AbhHXIkw (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 24 Aug 2021 04:40:52 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id C9A7E61262;
+Received: by mail.kernel.org (Postfix) with ESMTPS id C11CD6115A;
         Tue, 24 Aug 2021 08:40:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1629794407;
-        bh=lkWPyRjSayK24aAOrWwv6ox2HliGIGhNCkeZx1vBdTU=;
+        bh=STJ/i6P3q6ssBrBIuQRH8IN9VjGwetxyFGYvH9iL0rE=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=WzFSdkJvtiUXe+Dx850bFKRhpCbyQGlMNu8BcdfjaCX2QSo9blRPkap3Jv1qcpJL0
-         fkO4XHZqIp2KdyRamS8lngOlaPFjGyV29wri9iihcj5u42on1DpM9qB4IIwiz7toRc
-         zAjl2ASqGyaE4XlCodiNmq7lGiBlHopahApwEWcyw4gdl+EW73pFi/KnzkCNc8yKHO
-         mkFg/a3MLtY11Z4NiLpcr0nj6cKx5asoFMnVpNZR+iBExCOCnxWnqnW4dJRgojNfoM
-         ZjLSV0l24Gn8+kA848TybSj7OCdrTCQnUDpouEeL9poS6spjVWUeW1uG1UJ7HRB8C3
-         AkxA7ocr40ABw==
+        b=Cs3ye/l+eop34RIyZYhv3TGaFrfvi5IrsZQEh4RnFgfw4piozEO+5lz6GxwpSjwoW
+         YsT0xm4qip4gzdIthX7cpyIQKEIEDC/ufa/qJZUUYULjhBGFECCQNUkCXNbpsq8kEP
+         7rTf0O4bsoz8GYEdZz4iy5smpfh04wYfdaY4t8gMWSoET77tPfTaqrAMkc9MBZJ4Sv
+         bbT1JEDjWqcWdRc6OHyRsgE5cM73CsgiLPk6C2Y9Yhq75R11a+cTcPx2l14q+/TM3C
+         1A8ef65VwKhhpin7CkVbuB7tyLLGJ3mHkrTR4appuMRx/0L0S6IBD2uHQUYjGDr6FJ
+         yr2VAy8A3xEHw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id BE71B608FC;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B436060978;
         Tue, 24 Aug 2021 08:40:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/6] mptcp: Refactor ADD_ADDR/RM_ADDR handling
+Subject: Re: [PATCH v2 net-next 0/4] Plug holes in DSA's software bridging support
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162979440777.30048.9430649440436990103.git-patchwork-notify@kernel.org>
+Message-Id: <162979440773.30048.11995709555080920336.git-patchwork-notify@kernel.org>
 Date:   Tue, 24 Aug 2021 08:40:07 +0000
-References: <20210824010544.68600-1-mathew.j.martineau@linux.intel.com>
-In-Reply-To: <20210824010544.68600-1-mathew.j.martineau@linux.intel.com>
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        matthieu.baerts@tessares.net, mptcp@lists.linux.dev,
-        liyonglong@chinatelecom.cn
+References: <20210823212258.3190699-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20210823212258.3190699-1-vladimir.oltean@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, f.fainelli@gmail.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, olteanv@gmail.com, tobias@waldekranz.com,
+        kurt@linutronix.de, alsi@bang-olufsen.dk
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -47,30 +47,27 @@ Hello:
 
 This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Mon, 23 Aug 2021 18:05:38 -0700 you wrote:
-> This patch set changes the way MPTCP ADD_ADDR and RM_ADDR options are
-> handled to improve the reliability of sending and updating address
-> advertisements. The information used to populate outgoing advertisement
-> option headers is now stored separately to avoid rare cases where a more
-> recent request would overwrite something that had not been sent
-> yet. While the peers would recover from this, it's better to avoid the
-> problem in the first place.
+On Tue, 24 Aug 2021 00:22:54 +0300 you wrote:
+> Changes in v2:
+> - Make sure that leaving an unoffloaded bridge works well too
+> - Remove a set but unused variable
+> - Tweak a commit message
+> 
+> This series addresses some oddities reported by Alvin while he was
+> working on the new rtl8365mb driver (a driver which does not implement
+> bridge offloading for now, and relies on software bridging).
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,1/6] mptcp: move drop_other_suboptions check under pm lock
-    https://git.kernel.org/netdev/net-next/c/1f5e9e2f5fd5
-  - [net-next,2/6] mptcp: make MPTCP_ADD_ADDR_SIGNAL and MPTCP_ADD_ADDR_ECHO separate
-    https://git.kernel.org/netdev/net-next/c/18fc1a922e24
-  - [net-next,3/6] mptcp: fix ADD_ADDR and RM_ADDR maybe flush addr_signal each other
-    https://git.kernel.org/netdev/net-next/c/119c022096f5
-  - [net-next,4/6] mptcp: build ADD_ADDR/echo-ADD_ADDR option according pm.add_signal
-    https://git.kernel.org/netdev/net-next/c/f462a446384d
-  - [net-next,5/6] mptcp: remove MPTCP_ADD_ADDR_IPV6 and MPTCP_ADD_ADDR_PORT
-    https://git.kernel.org/netdev/net-next/c/c233ef139070
-  - [net-next,6/6] selftests: mptcp: add_addr and echo race test
-    https://git.kernel.org/netdev/net-next/c/33c563ad28e3
+  - [v2,net-next,1/4] net: dsa: don't call switchdev_bridge_port_unoffload for unoffloaded bridge ports
+    https://git.kernel.org/netdev/net-next/c/09dba21b432a
+  - [v2,net-next,2/4] net: dsa: properly fall back to software bridging
+    https://git.kernel.org/netdev/net-next/c/67b5fb5db76d
+  - [v2,net-next,3/4] net: dsa: don't advertise 'rx-vlan-filter' when not needed
+    https://git.kernel.org/netdev/net-next/c/06cfb2df7eb0
+  - [v2,net-next,4/4] net: dsa: let drivers state that they need VLAN filtering while standalone
+    https://git.kernel.org/netdev/net-next/c/58adf9dcb15b
 
 You are awesome, thank you!
 --
