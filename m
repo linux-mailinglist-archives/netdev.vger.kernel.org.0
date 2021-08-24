@@ -2,87 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4D7F3F6267
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 18:10:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF2243F6268
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 18:10:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232263AbhHXQKx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 12:10:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51408 "EHLO mail.kernel.org"
+        id S232494AbhHXQKz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 12:10:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51420 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229660AbhHXQKv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229837AbhHXQKv (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 24 Aug 2021 12:10:51 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id DCFEA6135F;
+Received: by mail.kernel.org (Postfix) with ESMTPS id E948E61360;
         Tue, 24 Aug 2021 16:10:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629821406;
-        bh=NFYBQsug1qLmGOJIHQ8wXjC+JoH4ajtAMvdSJrtjmsM=;
+        s=k20201202; t=1629821407;
+        bh=E1Ksxp+X+PPCUkhgVn4HQEignA8RTOMvWxmhWHUHBGU=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=iV3WfeZI8igQJtUGCVVqcrn8Vq1CBraKDta5QtIDiXHYe+BE6syjR1C3dZHwjnJSZ
-         ij1EC+gX/Q093IMNxO0Kr+HZGVW4bkYseO17SWSEV2gA1doCowuZdWZiREZcWCoJ5g
-         B7jhRwSOG142U5H4pErMHVsF8DlRo3VHAWAGPo66B+IRYBmpKy6iJoweuqMjtm1YHo
-         0aNS2JH7DEl8hSgg0ElEWQ88IRotqLMe6rzvFQzg7kVHPmQXKjVQNPQ2TN3S+DK6j+
-         /knl/bHS3SGC+z8DrJfzcqMcuP7AYlXmmfiz1yKANpks/6miMiZeDCTrSs8KJzeGfr
-         1HyZjtAWm9Wag==
+        b=kkwnFzErtfFSq2FgGApZ4UjhomtJ6J9965oORL0YudALwXSc8oJcXNbU7S2Y+xnZZ
+         5RL1cpZohxTUuTBjE9IVrwxacFUtkRahAY1JFp+ETsY/Q1rF9H7WZGIUWOqRLzC5w0
+         HppKl0om6X0Q3zqDvkqrgFJHP+NBhbPaEzKeI4S0ohBwZ4bgY8W4h61EBxE3cGih+P
+         rjM02H0XZDNlxnERJkWioQVgJAqVNTzfo4IgRp1W3yyXBN676fn29zb/KDDXNkjNLV
+         hBz3p+sCWJH3g1G1FxPvQQdisi13GRs9w9EvL94RadhiFMZ2ivw6QN4EOsARdYvxt6
+         xwEqKqQawzm8Q==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id CAD696096F;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id DB59A6097B;
         Tue, 24 Aug 2021 16:10:06 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH V3 net-next 0/4] ethtool: extend coalesce uAPI
+Subject: Re: [PATCH net-next] netdevice: move xdp_rxq within netdev_rx_queue
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162982140682.5804.10398853408532337419.git-patchwork-notify@kernel.org>
+Message-Id: <162982140689.5804.3511834694954723686.git-patchwork-notify@kernel.org>
 Date:   Tue, 24 Aug 2021 16:10:06 +0000
-References: <1629444920-25437-1-git-send-email-moyufeng@huawei.com>
-In-Reply-To: <1629444920-25437-1-git-send-email-moyufeng@huawei.com>
-To:     moyufeng <moyufeng@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        shenjian15@huawei.com, lipeng321@huawei.com,
-        yisen.zhuang@huawei.com, linyunsheng@huawei.com,
-        huangguangbin2@huawei.com, chenhao288@hisilicon.com,
-        salil.mehta@huawei.com, linuxarm@huawei.com,
-        linuxarm@openeuler.org, dledford@redhat.com, jgg@ziepe.ca,
-        netanel@amazon.com, akiyano@amazon.com, thomas.lendacky@amd.com,
-        irusskikh@marvell.com, michael.chan@broadcom.com,
-        edwin.peer@broadcom.com, rohitm@chelsio.com,
-        jacob.e.keller@intel.com, ioana.ciornei@nxp.com,
-        vladimir.oltean@nxp.com, sgoutham@marvell.com, sbhatta@marvell.com,
-        saeedm@nvidia.com, ecree.xilinx@gmail.com,
-        grygorii.strashko@ti.com, merez@codeaurora.org,
-        kvalo@codeaurora.org, linux-wireless@vger.kernel.org
+References: <20210823180135.1153608-1-kuba@kernel.org>
+In-Reply-To: <20210823180135.1153608-1-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        hawk@kernel.org, magnus.karlsson@intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Fri, 20 Aug 2021 15:35:16 +0800 you wrote:
-> In order to support some configuration in coalesce uAPI, this series
-> extend coalesce uAPI and add support for CQE mode.
+On Mon, 23 Aug 2021 11:01:35 -0700 you wrote:
+> Both struct netdev_rx_queue and struct xdp_rxq_info are cacheline
+> aligned. This causes extra padding before and after the xdp_rxq
+> member. Move the member upfront, so that it's naturally aligned.
 > 
-> Below is some test result with HNS3 driver:
-> 1. old ethtool(ioctl) + new kernel:
-> estuary:/$ ethtool -c eth0
-> Coalesce parameters for eth0:
-> Adaptive RX: on  TX: on
-> stats-block-usecs: 0
-> sample-interval: 0
-> pkt-rate-low: 0
-> pkt-rate-high: 0
+> Before:
+> 	/* size: 256, cachelines: 4, members: 6 */
+> 	/* sum members: 160, holes: 1, sum holes: 40 */
+> 	/* padding: 56 */
+> 	/* paddings: 1, sum paddings: 36 */
+> 	/* forced alignments: 1, forced holes: 1, sum forced holes: 40 */
 > 
 > [...]
 
 Here is the summary with links:
-  - [V3,net-next,1/4] ethtool: add two coalesce attributes for CQE mode
-    https://git.kernel.org/netdev/net-next/c/029ee6b14356
-  - [V3,net-next,2/4] ethtool: extend coalesce setting uAPI with CQE mode
-    https://git.kernel.org/netdev/net-next/c/f3ccfda19319
-  - [V3,net-next,3/4] net: hns3: add support for EQE/CQE mode configuration
-    https://git.kernel.org/netdev/net-next/c/9f0c6f4b7475
-  - [V3,net-next,4/4] net: hns3: add ethtool support for CQE/EQE mode configuration
-    https://git.kernel.org/netdev/net-next/c/cce1689eb58d
+  - [net-next] netdevice: move xdp_rxq within netdev_rx_queue
+    https://git.kernel.org/netdev/net-next/c/95d1d2490c27
 
 You are awesome, thank you!
 --
