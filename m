@@ -2,162 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CC403F5907
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 09:32:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A17D23F591A
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 09:36:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234787AbhHXHcl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 03:32:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36170 "EHLO
+        id S235108AbhHXHhX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 03:37:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234827AbhHXHcg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 03:32:36 -0400
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 173D3C061760
-        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 00:31:43 -0700 (PDT)
-Received: by mail-yb1-xb2f.google.com with SMTP id z18so39156837ybg.8
-        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 00:31:43 -0700 (PDT)
+        with ESMTP id S234998AbhHXHhW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 03:37:22 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A920DC061757
+        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 00:36:38 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id x11so42468662ejv.0
+        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 00:36:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nAbhJg9KzDnSNui0yJFPZ9VTbEY+6KHkXkiM9wTMo7U=;
-        b=nw4GMUAkEusgHcP8d+XatSp56K8mVrgcAEDxlvnhk5nj3gCmkWNUhunL8PbtN2+Su2
-         aAE8EeODCWz5wgPJtYsnyCsiaBlaonNAUyXmi49vtlFPWD+bIzy9D9MtWMGtg2UddqPY
-         frTZm0fjszj+0N3xpRKkIhJT8Hvl1lpr4Dt+Lf//YDmw+FID7xex/zLoXT76jJ0ohc7F
-         2E62YNsI9hbs4mxQncZc6hIvbELPWQhroUCkJLB5QuCJ/WmKemulF0GYj63+xCG4dQFq
-         UjDRMt2JEPyRRu7U0qIMdJpC/puZIpFCl2Z71FWFkrC5UnIFWGpK1nImA0Oy4nhku4CO
-         acUQ==
+        d=tessares-net.20150623.gappssmtp.com; s=20150623;
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ohQP/1UpMRPWfOIH909jZeqhXx82KjuL1nCKK9Lczqs=;
+        b=ScIf9fPFFbRhexoClHs4VFnCx1ReIkjSsslA5dqpARKNb9Bvx6NPJHAG3IQ3iHHBkk
+         g+xLJWQWBZ2q/KxmLc3zV7tQnwK9wCpM6e2/CAA0f9DMlka7YGekua8AX/HwypywrLFJ
+         wIs8rJML38TA2btLMJWXCw9buJ9I6loVZntwUHFpW9ObNnZS3pFh81RHSrGSTioZsynD
+         89v0IH/KI2rMd/ErkUAS/QQ02lZVD6tBEiAYdWGDKm6kKvdFdm2H6+t+GNjcKiIcMwTy
+         VieSQzRqhjDzO8ojaYX4Ar4GFvm80aF+aGoh+87ktxOk2/fuOw7WD9JOaUdjhjJxCvUk
+         E1SQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nAbhJg9KzDnSNui0yJFPZ9VTbEY+6KHkXkiM9wTMo7U=;
-        b=BMUiALK+rmmsZriwuyyhv+WDMdnXuz8cSCW9JSpsbWGdjtdq6IuNN2LYbuhwRwo3+4
-         wsC9evECIwfIOzPXZmEsWKtvQEDrud5WSqUpuRWTLG/5DBhcA3oO5raXKH5rEszy9Ex+
-         ctCm/fuY+qmPIUHkz6Xwf4XYrQkA5xBf1YtYSGm7BQ1FNAt7Gf7KYOwWI2M39VZ82YAR
-         BLqdaK5wzJWtlY45gxFazybeJsUaHGQ6fq8JBzRGPxPqSQV+b1QQoMqgimIbyPyF3u9I
-         WbJTOjWYi91z3yLoq3fYrqTLyeWEscqGpCVZN93Wp5Qn11T41+lb8GHRF7I1qo1OGlj4
-         5ILw==
-X-Gm-Message-State: AOAM532dxfSdEets8RFPacbe1PwcCti1Oamnaf/haY+6MQALyKmKJl27
-        H9w+1eEtuLFNpZvqBkqspirGMHDBnA8AFqczj4i1fg==
-X-Google-Smtp-Source: ABdhPJymfsqgvR+b9ZJBIHgV7DoRSEBfuTSnP4UhGjvYXCirnQKW+aO1kLAlKKbxF8PIZ0jHatdmxdXWNg621TxPflU=
-X-Received: by 2002:a25:da50:: with SMTP id n77mr19168506ybf.96.1629790302026;
- Tue, 24 Aug 2021 00:31:42 -0700 (PDT)
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ohQP/1UpMRPWfOIH909jZeqhXx82KjuL1nCKK9Lczqs=;
+        b=ulY9aw9/V0b2UWo2nRTNzGaUp0YH5WgHmx9Oc69F7Y3Ls1G54tVT0yD58zcQuZvVjd
+         4VY8zMnl9dq4YZ0FBSCyT8+b+5nOxpZScdfOVJXBAo5g4xl10IFyRiSUSueWjJXaeNyc
+         i0XMzAdDqOdcutq8VH9wh21uymgDrrLeLfsLeyM+8exR61MWx9tA9/VjxlKbXmPD3/6K
+         1ixup8Mz0DvJApG69E8FK8/igql47k70FesHiWXGC0vZ5Ffs16v7b8vy513rQ6tRl7GQ
+         rMxlkz3ySHGOjMfhKFcxHTXrzrXx7iDWn7igmQcmBWRpzk3NppWQsSMUSfootTrNU9aE
+         VH3Q==
+X-Gm-Message-State: AOAM531ddE4iXZvJdCPwm/E5Zj9Opf6ODJjSgYeOrXtVYoLa3fOf3FSv
+        mgbgDlJAfwLyreuyhWoY88zMlQ==
+X-Google-Smtp-Source: ABdhPJyKKboCkA1UwhTOouJjkqZjzqafar68hOnaLrflOftkHOt3FPI2uvaCwaaO+K8OjSNol3CJxg==
+X-Received: by 2002:a17:907:2492:: with SMTP id zg18mr7398248ejb.233.1629790597326;
+        Tue, 24 Aug 2021 00:36:37 -0700 (PDT)
+Received: from tsr-lap-08.nix.tessares.net (94.105.103.227.dyn.edpnet.net. [94.105.103.227])
+        by smtp.gmail.com with ESMTPSA id p3sm9032454ejy.20.2021.08.24.00.36.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 24 Aug 2021 00:36:37 -0700 (PDT)
+To:     Jiang Biao <benbjiang@gmail.com>,
+        mathew.j.martineau@linux.intel.com, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, mptcp@lists.linux.dev,
+        linux-kernel@vger.kernel.org, benbjiang@tencent.com,
+        Jiang Biao <tcs_robot@tencent.com>
+References: <20210824071926.68019-1-benbjiang@gmail.com>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+Subject: Re: [PATCH] ipv4/mptcp: fix divide error
+Message-ID: <fe512c8b-6f5a-0210-3f23-2c1fc75cd6e5@tessares.net>
+Date:   Tue, 24 Aug 2021 09:36:35 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-References: <CGME20210823120849eucas1p11d3919886444358472be3edd1c662755@eucas1p1.samsung.com>
- <20210818021717.3268255-1-saravanak@google.com> <0a2c4106-7f48-2bb5-048e-8c001a7c3fda@samsung.com>
- <CAGETcx_xJCqOWtwZ9Ee2+0sPGNLM5=F=djtbdYENkAYZa0ynqQ@mail.gmail.com> <427ce8cd-977b-03ae-2020-f5ddc7439390@samsung.com>
-In-Reply-To: <427ce8cd-977b-03ae-2020-f5ddc7439390@samsung.com>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Tue, 24 Aug 2021 00:31:05 -0700
-Message-ID: <CAGETcx8cRXDciKiRMSb=ybKo8=SyiNyAv=7oeHU1HUhkZ60qmg@mail.gmail.com>
-Subject: Re: [PATCH v2] of: property: fw_devlink: Add support for "phy-handle" property
-To:     Marek Szyprowski <m.szyprowski@samsung.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        kernel-team@android.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        linux-amlogic@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210824071926.68019-1-benbjiang@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 24, 2021 at 12:03 AM Marek Szyprowski
-<m.szyprowski@samsung.com> wrote:
->
-> Hi,
->
-> On 23.08.2021 20:22, Saravana Kannan wrote:
-> > On Mon, Aug 23, 2021 at 5:08 AM Marek Szyprowski
-> > <m.szyprowski@samsung.com> wrote:
-> >> On 18.08.2021 04:17, Saravana Kannan wrote:
-> >>> Allows tracking dependencies between Ethernet PHYs and their consumers.
-> >>>
-> >>> Cc: Andrew Lunn <andrew@lunn.ch>
-> >>> Cc: netdev@vger.kernel.org
-> >>> Signed-off-by: Saravana Kannan <saravanak@google.com>
-> >> This patch landed recently in linux-next as commit cf4b94c8530d ("of:
-> >> property: fw_devlink: Add support for "phy-handle" property"). It breaks
-> >> ethernet operation on my Amlogic-based ARM64 boards: Odroid C4
-> >> (arm64/boot/dts/amlogic/meson-sm1-odroid-c4.dts) and N2
-> >> (meson-g12b-odroid-n2.dts) as well as Khadas VIM3/VIM3l
-> >> (meson-g12b-a311d-khadas-vim3.dts and meson-sm1-khadas-vim3l.dts).
-> >>
-> >> In case of OdroidC4 I see the following entries in the
-> >> /sys/kernel/debug/devices_deferred:
-> >>
-> >> ff64c000.mdio-multiplexer
-> >> ff3f0000.ethernet
-> >>
-> >> Let me know if there is anything I can check to help debugging this issue.
-> > I'm fairly certain you are hitting this issue because the PHY device
-> > doesn't have a compatible property. And so the device link dependency
-> > is propagated up to the mdio bus. But busses as suppliers aren't good
-> > because busses never "probe".
-> >
-> > PHY seems to be one of those cases where it's okay to have the
-> > compatible property but also okay to not have it. You can confirm my
-> > theory by checking for the list of suppliers under
-> > ff64c000.mdio-multiplexer. You'd see mdio@0 (ext_mdio) and if you look
-> > at the "status" file under the folder it should be "dormant". If you
-> > add a compatible property that fits the formats a PHY node can have,
-> > that should also fix your issue (not the solution though).
->
-> Where should I look for the mentioned device links 'status' file?
->
-> # find /sys -name ff64c000.mdio-multiplexer
-> /sys/devices/platform/soc/ff600000.bus/ff64c000.mdio-multiplexer
-> /sys/bus/platform/devices/ff64c000.mdio-multiplexer
->
-> # ls -l /sys/devices/platform/soc/ff600000.bus/ff64c000.mdio-multiplexer
-> total 0
+Hi Jiang,
 
-This is the folder I wanted you to check.
+On 24/08/2021 09:19, Jiang Biao wrote:
 
-> lrwxrwxrwx 1 root root    0 Jan  1 00:04
-> consumer:platform:ff3f0000.ethernet ->
-> ../../../../virtual/devlink/platform:ff64c000.mdio-multiplexer--platform:ff3f0000.ethernet
+(...)
 
-But I should have asked to look for the consumer list and not the
-supplier list. In any case, we can see that the ethernet is marked as
-the consumer of the mdio-multiplexer instead of the PHY device. So my
-hunch seems to be right.
+> There is a fix divide error reported,
+> divide error: 0000 [#1] PREEMPT SMP KASAN
+> RIP: 0010:tcp_tso_autosize build/../net/ipv4/tcp_output.c:1975 [inline]
+> RIP: 0010:tcp_tso_segs+0x14f/0x250 build/../net/ipv4/tcp_output.c:1992
 
-> -rw-r--r-- 1 root root 4096 Jan  1 00:04 driver_override
-> -r--r--r-- 1 root root 4096 Jan  1 00:04 modalias
-> lrwxrwxrwx 1 root root    0 Jan  1 00:04 of_node ->
-> ../../../../../firmware/devicetree/base/soc/bus@ff600000/mdio-multiplexer@4c000
-> drwxr-xr-x 2 root root    0 Jan  1 00:02 power
-> lrwxrwxrwx 1 root root    0 Jan  1 00:04 subsystem ->
-> ../../../../../bus/platform
-> lrwxrwxrwx 1 root root    0 Jan  1 00:04
-> supplier:platform:ff63c000.system-controller:clock-controller ->
-> ../../../../virtual/devlink/platform:ff63c000.system-controller:clock-controller--platform:ff64c000.mdio-multiplexer
-> -rw-r--r-- 1 root root 4096 Jan  1 00:04 uevent
-> -r--r--r-- 1 root root 4096 Jan  1 00:04 waiting_for_supplier
->
-> # cat
-> /sys/devices/platform/soc/ff600000.bus/ff64c000.mdio-multiplexer/waiting_for_supplier
-> 0
->
-> I'm also not sure what compatible string should I add there.
+Thank you for this patch and validating MPTCP on your side!
 
-It should have been added to external_phy: ethernet-phy@0. But don't
-worry about it (because you need to use a specific format for the
-compatible string).
+This issue is actively tracked on our Github project [1] and a patch is
+already in our tree [2] but still under validation.
+> It's introduced by non-initialized info->mss_now in __mptcp_push_pending.
+> Fix it by adding protection in mptcp_push_release.
 
--Saravana
+Indeed, you are right, info->mss_now can be set to 0 in some cases but
+that's not normal.
 
->
-> > I'll send out a fix this week (once you confirm my analysis). Thanks
-> > for reporting it.
->
-> Best regards
->
-> --
-> Marek Szyprowski, PhD
-> Samsung R&D Institute Poland
->
+Instead of adding a protection here, we preferred fixing the root cause,
+see [2]. Do not hesitate to have a look at the other patch and comment
+there if you don't agree with this version.
+Except if [2] is difficult to backport, I think we don't need your extra
+protection. WDYT?
+
+Cheers,
+Matt
+
+[1] https://github.com/multipath-tcp/mptcp_net-next/issues/219
+[2]
+https://patchwork.kernel.org/project/mptcp/patch/286de8f451b32f60e75d3b8bcc4df515e186b930.1629481305.git.pabeni@redhat.com/
+-- 
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
