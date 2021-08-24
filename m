@@ -2,116 +2,257 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9DD93F60F7
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 16:52:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22A523F60C2
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 16:42:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238004AbhHXOxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 10:53:15 -0400
-Received: from bee.birch.relay.mailchannels.net ([23.83.209.14]:28531 "EHLO
-        bee.birch.relay.mailchannels.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237816AbhHXOxO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 10:53:14 -0400
-X-Sender-Id: 9wt3zsp42r|x-authuser|john.efstathiades@pebblebay.com
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id F0348402ECA;
-        Tue, 24 Aug 2021 14:33:40 +0000 (UTC)
-Received: from ares.krystal.co.uk (100-96-133-152.trex.outbound.svc.cluster.local [100.96.133.152])
-        (Authenticated sender: 9wt3zsp42r)
-        by relay.mailchannels.net (Postfix) with ESMTPA id E2E88402EA8;
-        Tue, 24 Aug 2021 14:33:38 +0000 (UTC)
-X-Sender-Id: 9wt3zsp42r|x-authuser|john.efstathiades@pebblebay.com
-Received: from ares.krystal.co.uk (ares.krystal.co.uk [77.72.0.130])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384)
-        by 100.96.133.152 (trex/6.3.3);
-        Tue, 24 Aug 2021 14:33:40 +0000
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: 9wt3zsp42r|x-authuser|john.efstathiades@pebblebay.com
-X-MailChannels-Auth-Id: 9wt3zsp42r
-X-Attack-Glossy: 7c70750a65989e35_1629815620642_2978677931
-X-MC-Loop-Signature: 1629815620642:4164483608
-X-MC-Ingress-Time: 1629815620642
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=pebblebay.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-        MIME-Version:Message-ID:Date:Subject:In-Reply-To:References:Cc:To:From:
-        Reply-To:Sender:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=pYGndTSuBhdYtsig6UISFCHAQdimMYMZvLX860uJV08=; b=WRsA8LmXKXN0EuzskYU1cxiIPF
-        Uk8HLCf3GUVGX7C3S7w7MsqUkcRZRpqexsxXM0KUQFybPkzq/vXS11kyh+ywRgG9bTXpaAl5XqzgJ
-        k/AxoocfVA6lkd6nFXPN0lEvvjZsPt63swloDqGRY/oerEdcWC5uflFFb4fQA0nvLrRM2z1sc7NO5
-        s2F846IS3JUdUaAauSFEcHq6QrCWNahvqGuxaCYk2Jbqq93/wqGnF4OhGfWwMFdaaJ2S6xW6zBT79
-        sY/Jqew0emJz/5eequTrrCkr8dlORbvYWIeoBZximqI7KTgN7VRuJW5SIoi9XybadE4Wmix5DI8A/
-        b4zoJUNA==;
-Received: from cpc160185-warw19-2-0-cust743.3-2.cable.virginm.net ([82.21.62.232]:34532 helo=pbcllap7)
-        by ares.krystal.co.uk with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <john.efstathiades@pebblebay.com>)
-        id 1mIXUf-007ht0-RP; Tue, 24 Aug 2021 15:33:36 +0100
-Reply-To: <john.efstathiades@pebblebay.com>
-From:   "John Efstathiades" <john.efstathiades@pebblebay.com>
-To:     "'Jakub Kicinski'" <kuba@kernel.org>
-Cc:     <linux-usb@vger.kernel.org>, <UNGLinuxDriver@microchip.com>,
-        <woojung.huh@microchip.com>, <davem@davemloft.net>,
-        <netdev@vger.kernel.org>
-References: <20210823135229.36581-1-john.efstathiades@pebblebay.com>    <20210823135229.36581-6-john.efstathiades@pebblebay.com>        <20210823154022.490688a6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <001b01d798c6$5b4d7b30$11e87190$@pebblebay.com> <20210824065303.17f23421@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210824065303.17f23421@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Subject: RE: [PATCH net-next 05/10] lan78xx: Disable USB3 link power state transitions
-Date:   Tue, 24 Aug 2021 15:33:13 +0100
-Organization: Pebble Bay Consulting Ltd
-Message-ID: <02d701d798f5$04a23df0$0de6b9d0$@pebblebay.com>
+        id S237974AbhHXOnE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 10:43:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52470 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237943AbhHXOnB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 10:43:01 -0400
+Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BD29C061757
+        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 07:42:17 -0700 (PDT)
+Received: by mail-io1-xd32.google.com with SMTP id q3so9234964iot.3
+        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 07:42:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=FwbKzIHfOUcOHLQOCoMjPPJ39zypjy/jBf8c4OAsOC4=;
+        b=IMBvfBTGP0rgkTV9Ly4yXPRhv6n82+4zUKI4dUNOn5l7JSdlu5Ljw+GLWItYfTglfj
+         hl9dRhTpuDUMR8Ggc1PYWqnqrDDt0+Rt+u9ooWFILBODRXZnAf5XvPNUDwh44ego36Ti
+         EkTCNd09fluwejVub3lNVkdjRYdbezUO3A0/M=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=FwbKzIHfOUcOHLQOCoMjPPJ39zypjy/jBf8c4OAsOC4=;
+        b=IYuCdmh2DidHeM1/zndd1lfOvFQk4HHp2qta/pOFrkEYGMY4IutCD5v1koE5krihm+
+         IT3Pksj/HaFyU/RMzEIDd+gcjSY25F5aRd8mitm/N5KP7JtPfRZsYhMr+dhYlmhCLp5C
+         wZ5kMQaM3fqhszJcCur5FiAuiOxoT3SXoFjIXyavUgx9xKUWmgbbKMD3LC4igO4Pux+O
+         CJzgXv+hKW55iNSECPHHbtoEsEhQeTBhY2Neo2ammAfkp42nOF5raOl0EXVoFPOACy7X
+         xKBYij4R0kLXzcP3gcjHyj439IxGvVtkIwyKiG7UbRsJWmDHYhxXL74Tue8lv7Z9r7xR
+         tc3g==
+X-Gm-Message-State: AOAM530SxPYZfIYFvEsr1hoycdQQyTRbD8+lvP0TbAh7d0BA4F4kWIkT
+        biSQF03rr38RCsfyexvZ525v+w==
+X-Google-Smtp-Source: ABdhPJxQqu8mETyqzXRwMvnGEqy/vUzqQMc7CKp8pg0AuUJ9ABYvX7tg4YhSapD5b3Uqbgkex9hkBw==
+X-Received: by 2002:a6b:5a04:: with SMTP id o4mr1540398iob.44.1629816136793;
+        Tue, 24 Aug 2021 07:42:16 -0700 (PDT)
+Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
+        by smtp.gmail.com with ESMTPSA id q10sm10318395ion.3.2021.08.24.07.42.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 24 Aug 2021 07:42:16 -0700 (PDT)
+Subject: Re: [PATCH linux-next] tools:test_xdp_noinline: fix boolreturn.cocci
+ warnings
+To:     CGEL <cgel.zte@gmail.com>, Alexei Starovoitov <ast@kernel.org>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Yonghong Song <yhs@fb.com>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jing Yangyang <jing.yangyang@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20210824065526.60416-1-deng.changcheng@zte.com.cn>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <2d701f13-8996-ed7d-3d41-794aa8a6e96c@linuxfoundation.org>
+Date:   Tue, 24 Aug 2021 08:42:15 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="us-ascii"
+In-Reply-To: <20210824065526.60416-1-deng.changcheng@zte.com.cn>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 16.0
-Content-Language: en-gb
-Thread-Index: AQHPAB61dMYAY/LsGMENMAjMWftvdQFrXfllAlVKFxsBlFp99AImpXjOq1gIZxA=
-X-AuthUser: john.efstathiades@pebblebay.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Do you expect the device-initiated transitions to always be causing
-> trouble or are there scenarios where they are useful?
-
-It's a particular problem on Android devices.
-
-> Having to recompile the driver is a middle ground rarely chosen
-> upstream. If the code has very low chance of being useful - let's
-> remove it (git will hold it forever if needed); if there are reasonable
-> chances someone will find it useful it should be configurable from user
-> space, or preferably automatically enabled based on some device match
-> list.
-
-I like the sound of the device match list but I don't know what you mean.
-Is there a driver or other reference you could point me at that provides
-additional info?
-
-> > > Was linux-usb consulted? Adding the list to Cc.
-> >
-> > No, they weren't, but the change was discussed with the driver
-> maintainer at
-> > Microchip.
+On 8/24/21 12:55 AM, CGEL wrote:
+> From: Jing Yangyang <jing.yangyang@zte.com.cn>
 > 
-> Good to hear manufacturer is advising but the Linux USB community
-> may have it's own preferences / experience.
-
-Understood.
-
-> > > Please split the ret code changes to a separate, earlier patch.
-> >
-> > There are ret code changes in later patches in this set. As a general,
-> rule
-> > should ret code changes be put into their own patch?
+> Return statements in functions returning bool should use true/false
+> instead of 1/0.
 > 
-> It's case by case, in this patch the ret code changes and error
-> propagation does not seem to be inherently related to the main
-> change the patch is making. I think you're referring to patch 7 -
-> similar comment indeed applies there. I'd recommend taking the
-> error propagation changes into a separate patch (can be a single
-> one for code extracted from both patches).
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Jing Yangyang <jing.yangyang@zte.com.cn>
+> ---
+>   .../selftests/bpf/progs/test_xdp_noinline.c        | 42 +++++++++++-----------
+>   1 file changed, 21 insertions(+), 21 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/bpf/progs/test_xdp_noinline.c b/tools/testing/selftests/bpf/progs/test_xdp_noinline.c
+> index 3a67921..37075f8 100644
+> --- a/tools/testing/selftests/bpf/progs/test_xdp_noinline.c
+> +++ b/tools/testing/selftests/bpf/progs/test_xdp_noinline.c
+> @@ -239,7 +239,7 @@ bool parse_udp(void *data, void *data_end,
+>   	udp = data + off;
+>   
+>   	if (udp + 1 > data_end)
+> -		return 0;
+> +		return false;
+>   	if (!is_icmp) {
+>   		pckt->flow.port16[0] = udp->source;
+>   		pckt->flow.port16[1] = udp->dest;
+> @@ -247,7 +247,7 @@ bool parse_udp(void *data, void *data_end,
+>   		pckt->flow.port16[0] = udp->dest;
+>   		pckt->flow.port16[1] = udp->source;
+>   	}
+> -	return 1;
+> +	return true;
+>   }
+>   
+>   static __attribute__ ((noinline))
+> @@ -261,7 +261,7 @@ bool parse_tcp(void *data, void *data_end,
+>   
+>   	tcp = data + off;
+>   	if (tcp + 1 > data_end)
+> -		return 0;
+> +		return false;
+>   	if (tcp->syn)
+>   		pckt->flags |= (1 << 1);
+>   	if (!is_icmp) {
+> @@ -271,7 +271,7 @@ bool parse_tcp(void *data, void *data_end,
+>   		pckt->flow.port16[0] = tcp->dest;
+>   		pckt->flow.port16[1] = tcp->source;
+>   	}
+> -	return 1;
+> +	return true;
+>   }
+>   
+>   static __attribute__ ((noinline))
+> @@ -287,7 +287,7 @@ bool encap_v6(struct xdp_md *xdp, struct ctl_value *cval,
+>   	void *data;
+>   
+>   	if (bpf_xdp_adjust_head(xdp, 0 - (int)sizeof(struct ipv6hdr)))
+> -		return 0;
+> +		return false;
+>   	data = (void *)(long)xdp->data;
+>   	data_end = (void *)(long)xdp->data_end;
+>   	new_eth = data;
+> @@ -295,7 +295,7 @@ bool encap_v6(struct xdp_md *xdp, struct ctl_value *cval,
+>   	old_eth = data + sizeof(struct ipv6hdr);
+>   	if (new_eth + 1 > data_end ||
+>   	    old_eth + 1 > data_end || ip6h + 1 > data_end)
+> -		return 0;
+> +		return false;
+>   	memcpy(new_eth->eth_dest, cval->mac, 6);
+>   	memcpy(new_eth->eth_source, old_eth->eth_dest, 6);
+>   	new_eth->eth_proto = 56710;
+> @@ -314,7 +314,7 @@ bool encap_v6(struct xdp_md *xdp, struct ctl_value *cval,
+>   	ip6h->saddr.in6_u.u6_addr32[2] = 3;
+>   	ip6h->saddr.in6_u.u6_addr32[3] = ip_suffix;
+>   	memcpy(ip6h->daddr.in6_u.u6_addr32, dst->dstv6, 16);
+> -	return 1;
+> +	return true;
+>   }
+>   
+>   static __attribute__ ((noinline))
+> @@ -335,7 +335,7 @@ bool encap_v4(struct xdp_md *xdp, struct ctl_value *cval,
+>   	ip_suffix <<= 15;
+>   	ip_suffix ^= pckt->flow.src;
+>   	if (bpf_xdp_adjust_head(xdp, 0 - (int)sizeof(struct iphdr)))
+> -		return 0;
+> +		return false;
+>   	data = (void *)(long)xdp->data;
+>   	data_end = (void *)(long)xdp->data_end;
+>   	new_eth = data;
+> @@ -343,7 +343,7 @@ bool encap_v4(struct xdp_md *xdp, struct ctl_value *cval,
+>   	old_eth = data + sizeof(struct iphdr);
+>   	if (new_eth + 1 > data_end ||
+>   	    old_eth + 1 > data_end || iph + 1 > data_end)
+> -		return 0;
+> +		return false;
+>   	memcpy(new_eth->eth_dest, cval->mac, 6);
+>   	memcpy(new_eth->eth_source, old_eth->eth_dest, 6);
+>   	new_eth->eth_proto = 8;
+> @@ -367,8 +367,8 @@ bool encap_v4(struct xdp_md *xdp, struct ctl_value *cval,
+>   		csum += *next_iph_u16++;
+>   	iph->check = ~((csum & 0xffff) + (csum >> 16));
+>   	if (bpf_xdp_adjust_head(xdp, (int)sizeof(struct iphdr)))
+> -		return 0;
+> -	return 1;
+> +		return false;
+> +	return true;
+>   }
+>   
+>   static __attribute__ ((noinline))
+> @@ -386,10 +386,10 @@ bool decap_v6(struct xdp_md *xdp, void **data, void **data_end, bool inner_v4)
+>   	else
+>   		new_eth->eth_proto = 56710;
+>   	if (bpf_xdp_adjust_head(xdp, (int)sizeof(struct ipv6hdr)))
+> -		return 0;
+> +		return false;
+>   	*data = (void *)(long)xdp->data;
+>   	*data_end = (void *)(long)xdp->data_end;
+> -	return 1;
+> +	return true;
+>   }
+>   
+>   static __attribute__ ((noinline))
+> @@ -404,10 +404,10 @@ bool decap_v4(struct xdp_md *xdp, void **data, void **data_end)
+>   	memcpy(new_eth->eth_dest, old_eth->eth_dest, 6);
+>   	new_eth->eth_proto = 8;
+>   	if (bpf_xdp_adjust_head(xdp, (int)sizeof(struct iphdr)))
+> -		return 0;
+> +		return false;
+>   	*data = (void *)(long)xdp->data;
+>   	*data_end = (void *)(long)xdp->data_end;
+> -	return 1;
+> +	return true;
+>   }
+>   
+>   static __attribute__ ((noinline))
+> @@ -564,22 +564,22 @@ static bool get_packet_dst(struct real_definition **real,
+>   	hash = get_packet_hash(pckt, hash_16bytes);
+>   	if (hash != 0x358459b7 /* jhash of ipv4 packet */  &&
+>   	    hash != 0x2f4bc6bb /* jhash of ipv6 packet */)
+> -		return 0;
+> +		return false;
+>   	key = 2 * vip_info->vip_num + hash % 2;
+>   	real_pos = bpf_map_lookup_elem(&ch_rings, &key);
+>   	if (!real_pos)
+> -		return 0;
+> +		return false;
+>   	key = *real_pos;
+>   	*real = bpf_map_lookup_elem(&reals, &key);
+>   	if (!(*real))
+> -		return 0;
+> +		return false;
+>   	if (!(vip_info->flags & (1 << 1))) {
+>   		__u32 conn_rate_key = 512 + 2;
+>   		struct lb_stats *conn_rate_stats =
+>   		    bpf_map_lookup_elem(&stats, &conn_rate_key);
+>   
+>   		if (!conn_rate_stats)
+> -			return 1;
+> +			return true;
+>   		cur_time = bpf_ktime_get_ns();
+>   		if ((cur_time - conn_rate_stats->v2) >> 32 > 0xffFFFF) {
+>   			conn_rate_stats->v1 = 1;
+> @@ -587,14 +587,14 @@ static bool get_packet_dst(struct real_definition **real,
+>   		} else {
+>   			conn_rate_stats->v1 += 1;
+>   			if (conn_rate_stats->v1 >= 1)
+> -				return 1;
+> +				return true;
+>   		}
+>   		if (pckt->flow.proto == IPPROTO_UDP)
+>   			new_dst_lru.atime = cur_time;
+>   		new_dst_lru.pos = key;
+>   		bpf_map_update_elem(lru_map, &pckt->flow, &new_dst_lru, 0);
+>   	}
+> -	return 1;
+> +	return true;
+>   }
+>   
+>   __attribute__ ((noinline))
+> 
 
-Thanks, I am working on this and have incorporated the error propagation
-changes from patch 7.
+We can't accept this patch. The from and Signed-off-by don't match.
 
-
+thanks,
+-- Shuah
