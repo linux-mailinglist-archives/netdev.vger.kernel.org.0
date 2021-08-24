@@ -2,40 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9677C3F5516
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 02:59:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A9673F5526
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 02:59:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235391AbhHXA7Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Aug 2021 20:59:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47756 "EHLO mail.kernel.org"
+        id S233616AbhHXBAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Aug 2021 21:00:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47770 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233971AbhHXA5N (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S233986AbhHXA5N (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 23 Aug 2021 20:57:13 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 837AD61528;
-        Tue, 24 Aug 2021 00:55:37 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 77560617E2;
+        Tue, 24 Aug 2021 00:55:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629766538;
-        bh=vSW7KQeakcHYXjDc8nLEj/T4IT9NFEEg150K6geatiM=;
+        s=k20201202; t=1629766542;
+        bh=qhESlreqaguGA6UjYwAFl9MniaY/yGL8vZMgJ69S/zY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AWYwwwlI7wN5i5SgYifBxQf6jB6Jd19hw27Xs06k8tfDirtROG1TjNdOt+7RG7Gl5
-         bDejjHLLdxqHoWYXhagKhYXoj/BKWt9UUvTGdzVZsuMFG/ygVqH2AkxjtviqePq3TZ
-         nxAAgQfXYweOJiMPKKR5hmL0TcjjiDcJAmcWJrRVOuTcjtTf9EEZnRbJUPU+yEQU9E
-         r7UdBsoGaiQAOiel1RiSEtFVeSM2ipc6zf8Kz8eYi5/d/SesdYwdY3p8RIDLh9AJ3P
-         SFidTef10nRQ5lX/FwGS/TRjn5uUJ+BOz8JgUYcn25nPwNKTvzXM3OKvrj7XvVO0BP
-         dc2LRqwSbooBA==
+        b=KQcbf4OsSTUMWcexDJg6LKYFdW3xQkGX3kgU+bF+RK7rtq8V3yTdKqSGfjLTc2yy5
+         oNggMYYiZfu+3lXKiBg5ZZcVCTVIjQDvuXYh/cFCVMQK2Wfbjmerq9v1YI9O0MbLKJ
+         0ty5wfylSsCfyJ7NfYgWnaWwO2TPVewZnxp/cKhQFS5W4fXrutBTVo9Oo3oeoVfAc8
+         sAvLbUADY3bxqHUyydwKB+6t1UdmEZ9Cc6OVcdqXd5lkMA7b3glwniedZKhFn4O39T
+         7M99vaYyn9+1on7XsSsByB3Eqr6XwnnKtjWqR6qYFKOhIQq4i0pk2AUZQJKK7+Qbm5
+         7aHEzv0PWnXkw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Gerd Rausch <gerd.rausch@oracle.com>,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, rds-devel@oss.oracle.com
-Subject: [PATCH AUTOSEL 4.14 7/7] net/rds: dma_map_sg is entitled to merge entries
-Date:   Mon, 23 Aug 2021 20:55:28 -0400
-Message-Id: <20210824005528.631702-7-sashal@kernel.org>
+Cc:     Neeraj Upadhyay <neeraju@codeaurora.org>,
+        Jason Wang <jasowang@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 2/3] vringh: Use wiov->used to check for read/write desc order
+Date:   Mon, 23 Aug 2021 20:55:38 -0400
+Message-Id: <20210824005539.631820-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210824005528.631702-1-sashal@kernel.org>
-References: <20210824005528.631702-1-sashal@kernel.org>
+In-Reply-To: <20210824005539.631820-1-sashal@kernel.org>
+References: <20210824005539.631820-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -44,47 +45,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Gerd Rausch <gerd.rausch@oracle.com>
+From: Neeraj Upadhyay <neeraju@codeaurora.org>
 
-[ Upstream commit fb4b1373dcab086d0619c29310f0466a0b2ceb8a ]
+[ Upstream commit e74cfa91f42c50f7f649b0eca46aa049754ccdbd ]
 
-Function "dma_map_sg" is entitled to merge adjacent entries
-and return a value smaller than what was passed as "nents".
+As __vringh_iov() traverses a descriptor chain, it populates
+each descriptor entry into either read or write vring iov
+and increments that iov's ->used member. So, as we iterate
+over a descriptor chain, at any point, (riov/wriov)->used
+value gives the number of descriptor enteries available,
+which are to be read or written by the device. As all read
+iovs must precede the write iovs, wiov->used should be zero
+when we are traversing a read descriptor. Current code checks
+for wiov->i, to figure out whether any previous entry in the
+current descriptor chain was a write descriptor. However,
+iov->i is only incremented, when these vring iovs are consumed,
+at a later point, and remain 0 in __vringh_iov(). So, correct
+the check for read and write descriptor order, to use
+wiov->used.
 
-Subsequently "ib_map_mr_sg" needs to work with this value ("sg_dma_len")
-rather than the original "nents" parameter ("sg_len").
-
-This old RDS bug was exposed and reliably causes kernel panics
-(using RDMA operations "rds-stress -D") on x86_64 starting with:
-commit c588072bba6b ("iommu/vt-d: Convert intel iommu driver to the iommu ops")
-
-Simply put: Linux 5.11 and later.
-
-Signed-off-by: Gerd Rausch <gerd.rausch@oracle.com>
-Acked-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
-Link: https://lore.kernel.org/r/60efc69f-1f35-529d-a7ef-da0549cad143@oracle.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Acked-by: Jason Wang <jasowang@redhat.com>
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+Signed-off-by: Neeraj Upadhyay <neeraju@codeaurora.org>
+Link: https://lore.kernel.org/r/1624591502-4827-1-git-send-email-neeraju@codeaurora.org
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/rds/ib_frmr.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/vhost/vringh.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/rds/ib_frmr.c b/net/rds/ib_frmr.c
-index d290416e79e9..9fd550d4116c 100644
---- a/net/rds/ib_frmr.c
-+++ b/net/rds/ib_frmr.c
-@@ -112,9 +112,9 @@ static int rds_ib_post_reg_frmr(struct rds_ib_mr *ibmr)
- 		cpu_relax();
- 	}
- 
--	ret = ib_map_mr_sg_zbva(frmr->mr, ibmr->sg, ibmr->sg_len,
-+	ret = ib_map_mr_sg_zbva(frmr->mr, ibmr->sg, ibmr->sg_dma_len,
- 				&off, PAGE_SIZE);
--	if (unlikely(ret != ibmr->sg_len))
-+	if (unlikely(ret != ibmr->sg_dma_len))
- 		return ret < 0 ? ret : -EINVAL;
- 
- 	/* Perform a WR for the fast_reg_mr. Each individual page
+diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
+index d56736655dec..da47542496cc 100644
+--- a/drivers/vhost/vringh.c
++++ b/drivers/vhost/vringh.c
+@@ -329,7 +329,7 @@ __vringh_iov(struct vringh *vrh, u16 i,
+ 			iov = wiov;
+ 		else {
+ 			iov = riov;
+-			if (unlikely(wiov && wiov->i)) {
++			if (unlikely(wiov && wiov->used)) {
+ 				vringh_bad("Readable desc %p after writable",
+ 					   &descs[i]);
+ 				err = -EINVAL;
 -- 
 2.30.2
 
