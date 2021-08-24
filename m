@@ -2,92 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6C2A3F621B
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 17:58:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A01E93F6237
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 18:06:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238471AbhHXP6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 11:58:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42316 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236565AbhHXP6u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 11:58:50 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88D5CC061757;
-        Tue, 24 Aug 2021 08:58:06 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id z2so46598487lft.1;
-        Tue, 24 Aug 2021 08:58:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pebXoQmUWBzlSnu9s+ZDsnyoaDKmmttwsIKNnt3weIE=;
-        b=Q9jhvSUqhX4lkX2eoeELlFAvl6kH+1JR7rYZ70PDorFWAptKs27wemZX6u7svTpdNi
-         CQZNEsfniIV6d6WzPb8J7yhbOdzMtA5DOYaA5EKxM1vJhU8ZsxUmndRdY+EzVlKU+W8w
-         Rm9Lbcsw3p1hnRA996p40sb5DwjklycrpqSZ/b+oVZ0KHu3GYiUBBRFs5mK+Gcg0B8g0
-         9JaskRUdVbEFtWMRx2qwC8zni6l0aLf8bq8hynPFCSg9xduGOuSe5DWyLiR4DIkf3ECP
-         1VDS3ZeN449pq3V8mdMrBV2QsqSrBloBUL2lZQlmqzPi7XtP1aCEQTe+EGu6mBW507dU
-         Rs/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pebXoQmUWBzlSnu9s+ZDsnyoaDKmmttwsIKNnt3weIE=;
-        b=oIPB3GJfJ/TR0ruEsQG2LiGvZ/QmprSzLCPcFtfh1VhR/sxvZ28CA2mf4y7X3vOojp
-         NXR9+hMuJZn88YcvR+esGWBmhUkv2h7F805nnmxI+UfwTVvUOgAmb+9xnGK2+UiyCZn4
-         KBum56GM9owknjQKbsCXafh+nAymTQsuRyWGj385CjQFUJe/VcGDDkM/MVGUF7UaBYNG
-         OBoiZ2Yn7XZ9vCthY+rHEQMUMIVaVfRs95cWld0pC4mjyKMZhIRCfshltL96VWxMsFUb
-         dPEuze/oym3QLhQbVmX9BO3EFHt/knuKs4hMLSXVYecy8AExVeU38EVsXHudgycODfkm
-         YeTg==
-X-Gm-Message-State: AOAM533U+HI0ocEXtBktAsIxRctcc/kKxl8hEbgDp8WINeyIo9d4iZvg
-        St3IXnNvomxc/WogVg1cTtny2KWIpF74Waau1o6HMQSYlqnm6zm1
-X-Google-Smtp-Source: ABdhPJweeFB0/46GdTiQUi5WpATivrTK3DsqcsNXnsmBkdTL+2KZ4sgT2Ov+HDFZhbevcaMt0c1LJEJaFOfF4svpZsM=
-X-Received: by 2002:a05:6512:3f8e:: with SMTP id x14mr28533152lfa.389.1629820684972;
- Tue, 24 Aug 2021 08:58:04 -0700 (PDT)
+        id S232300AbhHXQHR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 12:07:17 -0400
+Received: from mga07.intel.com ([134.134.136.100]:13426 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232037AbhHXQHQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Aug 2021 12:07:16 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10086"; a="281059309"
+X-IronPort-AV: E=Sophos;i="5.84,347,1620716400"; 
+   d="scan'208";a="281059309"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2021 09:03:14 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,347,1620716400"; 
+   d="scan'208";a="493592392"
+Received: from siang-ilbpg0.png.intel.com ([10.88.227.28])
+  by fmsmga008.fm.intel.com with ESMTP; 24 Aug 2021 09:03:06 -0700
+From:   Song Yoong Siang <yoong.siang.song@intel.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Song Yoong Siang <yoong.siang.song@intel.com>
+Subject: [PATCH net 1/1] net: stmmac: fix kernel panic due to NULL pointer dereference of xsk_pool
+Date:   Tue, 24 Aug 2021 23:56:12 +0800
+Message-Id: <20210824155612.978529-1-yoong.siang.song@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20210824055509.1316124-1-dqfext@gmail.com> <YSUQV3jhfbhbf5Ct@sashalap>
-In-Reply-To: <YSUQV3jhfbhbf5Ct@sashalap>
-From:   DENG Qingfang <dqfext@gmail.com>
-Date:   Tue, 24 Aug 2021 23:57:53 +0800
-Message-ID: <CALW65ja3hYGmEqcWZzifP2-0WsJOnxcUXsey2ZH5vDbD0-nDeQ@mail.gmail.com>
-Subject: Re: [PATCH 4.19.y] net: dsa: mt7530: disable learning on standalone ports
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     stable@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@savoirfairelinux.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "open list:MEDIATEK SWITCH DRIVER" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Sasha,
+After free xsk_pool, there is possibility that napi polling is still
+running in the middle, thus causes a kernel crash due to kernel NULL
+pointer dereference of rx_q->xsk_pool and tx_q->xsk_pool.
 
-On Tue, Aug 24, 2021 at 11:29 PM Sasha Levin <sashal@kernel.org> wrote:
-> What's the reasoning behind:
->
-> 1. Backporting this patch?
+Fix this by changing the XDP pool setup sequence to:
+ 1. disable napi before free xsk_pool
+ 2. enable napi after init xsk_pool
 
-Standalone ports should have address learning disabled, according to
-the documentation:
-https://www.kernel.org/doc/html/v5.14-rc7/networking/dsa/dsa.html#bridge-layer
-dsa_switch_ops on 5.10 or earlier does not have .port_bridge_flags
-function so it has to be done differently.
+The following kernel panic is observed without this patch:
 
-I've identified an issue related to this.
+RIP: 0010:xsk_uses_need_wakeup+0x5/0x10
+Call Trace:
+stmmac_napi_poll_rxtx+0x3a9/0xae0 [stmmac]
+__napi_poll+0x27/0x130
+net_rx_action+0x233/0x280
+__do_softirq+0xe2/0x2b6
+run_ksoftirqd+0x1a/0x20
+smpboot_thread_fn+0xac/0x140
+? sort_range+0x20/0x20
+kthread+0x124/0x150
+? set_kthread_struct+0x40/0x40
+ret_from_fork+0x1f/0x30
+---[ end trace a77c8956b79ac107 ]---
 
-> 2. A partial backport of this patch?
+Fixes: bba2556efad6 ("net: stmmac: Enable RX via AF_XDP zero-copy")
+Cc: <stable@vger.kernel.org> # 5.13.x
+Signed-off-by: Song Yoong Siang <yoong.siang.song@intel.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_xdp.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-The other part does not actually fix anything.
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_xdp.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_xdp.c
+index 105821b53020..2a616c6f7cd0 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_xdp.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_xdp.c
+@@ -34,18 +34,18 @@ static int stmmac_xdp_enable_pool(struct stmmac_priv *priv,
+ 	need_update = netif_running(priv->dev) && stmmac_xdp_is_enabled(priv);
+ 
+ 	if (need_update) {
+-		stmmac_disable_rx_queue(priv, queue);
+-		stmmac_disable_tx_queue(priv, queue);
+ 		napi_disable(&ch->rx_napi);
+ 		napi_disable(&ch->tx_napi);
++		stmmac_disable_rx_queue(priv, queue);
++		stmmac_disable_tx_queue(priv, queue);
+ 	}
+ 
+ 	set_bit(queue, priv->af_xdp_zc_qps);
+ 
+ 	if (need_update) {
+-		napi_enable(&ch->rxtx_napi);
+ 		stmmac_enable_rx_queue(priv, queue);
+ 		stmmac_enable_tx_queue(priv, queue);
++		napi_enable(&ch->rxtx_napi);
+ 
+ 		err = stmmac_xsk_wakeup(priv->dev, queue, XDP_WAKEUP_RX);
+ 		if (err)
+@@ -72,10 +72,10 @@ static int stmmac_xdp_disable_pool(struct stmmac_priv *priv, u16 queue)
+ 	need_update = netif_running(priv->dev) && stmmac_xdp_is_enabled(priv);
+ 
+ 	if (need_update) {
++		napi_disable(&ch->rxtx_napi);
+ 		stmmac_disable_rx_queue(priv, queue);
+ 		stmmac_disable_tx_queue(priv, queue);
+ 		synchronize_rcu();
+-		napi_disable(&ch->rxtx_napi);
+ 	}
+ 
+ 	xsk_pool_dma_unmap(pool, STMMAC_RX_DMA_ATTR);
+@@ -83,10 +83,10 @@ static int stmmac_xdp_disable_pool(struct stmmac_priv *priv, u16 queue)
+ 	clear_bit(queue, priv->af_xdp_zc_qps);
+ 
+ 	if (need_update) {
+-		napi_enable(&ch->rx_napi);
+-		napi_enable(&ch->tx_napi);
+ 		stmmac_enable_rx_queue(priv, queue);
+ 		stmmac_enable_tx_queue(priv, queue);
++		napi_enable(&ch->rx_napi);
++		napi_enable(&ch->tx_napi);
+ 	}
+ 
+ 	return 0;
+-- 
+2.25.1
 
->
-> --
-> Thanks,
-> Sasha
