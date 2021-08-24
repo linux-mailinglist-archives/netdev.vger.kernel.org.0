@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2394C3F6B43
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 23:36:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A28D3F6B3D
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 23:36:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239294AbhHXVhT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 17:37:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35468 "EHLO
+        id S239185AbhHXVhJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 17:37:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238497AbhHXVgh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 17:36:37 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30D53C06129E;
-        Tue, 24 Aug 2021 14:35:52 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id me10so18847624ejb.11;
-        Tue, 24 Aug 2021 14:35:52 -0700 (PDT)
+        with ESMTP id S238580AbhHXVgj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 17:36:39 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F396C0613D9;
+        Tue, 24 Aug 2021 14:35:54 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id cn28so33787529edb.6;
+        Tue, 24 Aug 2021 14:35:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=fle/cTZNggWURF3rB6Z0CqaoPxK7NUDk4k8IoxtpQ5I=;
-        b=Zw9EP6Q0NrWos5kbL1Ea/yL0Hj9Qt5SQjSsdM5C+OdhyAwJE32sLDOAa6+faOkg3zg
-         sZ1L6vYvVAB2eIlX+v+IdBYW29M2tgFM3/TVwBAS04YCMVKogvTOMPbIlAuvQ1VQtWSf
-         iBk9XlxCF1zcJPrgfQxRFbOcCn5sYa+6jxYQGetguu7w6DdJgTx9dAKbC48H5Qg4V3Vf
-         33OZwrLIdZgUcjh2+Qm4iPi9DGlKKG/RMXHSy7/kko+dW/ubSVeKt6cFSK1ioo2g5Hyq
-         2f65usG6qiaJ1ecuhELjM28+GfJnr1hD5sfAiVraCpSunEe+TYEDdNk6tRERMep96WAy
-         uAkQ==
+        bh=uYg+pR6vYz9c1bRkh62Hdk42D02UPnrW7k5nCWY1NW8=;
+        b=pvMk+T4WZCrC7nWe5m9ylmSL9MQXtm/fzxow/nqQFgOpAB62Qi2IKTZrz275eYB+F6
+         B9qkKa/apTpeJ1JQnyAekVkZG034OQ3uV53tnKX678WcUfytsV+uTgrBh3ky8s18Grd1
+         AtGjr+ZXM3FVtYdd+fKBFH8bXn5N/lAj4391t6S4Hb+qEgA+0UPMKhwloDh4+AdD0xsL
+         qbRtshmG1c7rOWHN8dlNt17MmiMreHy9vbobTRE0ZAdirnpP73t/O5z+1rpwyxwPp8E6
+         YAd1CNsdQGO8hN4u31zrOxnoWfHn9cX0IunUue6JYw8hAUtT1xdVXZpHnUNr6ibKNpdH
+         h+5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=fle/cTZNggWURF3rB6Z0CqaoPxK7NUDk4k8IoxtpQ5I=;
-        b=c3iwA+JgD5e9BvH94zwBMOB5sm7hXU0v0tl3FwhVFPLWoZ6SEGETDamd4dgh9e85Tz
-         6dOlCGMpAweCVeekCsdRY4O5ermSRBNmF8Tl/Y9GvmnC5BZpg74Zn0w+TxkyCQjWMP7a
-         bzUp6WKcjIhFMNp1/UVRziJLahk6b13t8CelU9KvKtMOd+9YFSkAjLmmZyZiSSbdd/hj
-         vncW9qbP/aOXibjpGi2avgYg7qkyD6H50VOpzJZ9pPkd+ZlXGAEc1i2uQY9pijome4pn
-         D1UG4Gw41AE6cQPJI43NZhi8HPrDJ6yw/dcKBweEAQbQLsnBUJePG4Oq9QbIFLloLMCu
-         IhLw==
-X-Gm-Message-State: AOAM530SkyKaTB2RvfkU3ekFfauTjX8hqTAMkG+4oVRuWbdnRLDRzOGT
-        W0iU0DGTVkzIRFM7NZL4Bs7d3KzDV8CGUNby
-X-Google-Smtp-Source: ABdhPJyzcrwsEfNjhQobNuk9Qw5CDuHfEHWru/T8WjKEQBURNjaabdnPiuHl8fYd6TtVg34BfLP8nQ==
-X-Received: by 2002:a17:907:2083:: with SMTP id pv3mr14439471ejb.402.1629840950714;
-        Tue, 24 Aug 2021 14:35:50 -0700 (PDT)
+        bh=uYg+pR6vYz9c1bRkh62Hdk42D02UPnrW7k5nCWY1NW8=;
+        b=FmOYksf0JdT8SJBYkpUMZApythhVKabCZnmiuQmkyTjirolzguwZc//j0eHKLAe3zV
+         o2yz5p5R358/3j7sbNr+XoA/uEjFCe9oGCo+JieIfGRi0+JBAnBoRA5TjVQA+1mhLnP7
+         re0DSjGQGkAzp+aw1mv+5RCJ4c886j1UYNBI/2gFm5MmUuKr/VThJh4kdhckmrIiDNFw
+         YJHYnG7EBGzd0z8RdevmDDRfNtg4qOJkceW1/JRTvoow47jHtgba++WQOEuglh7bz4hA
+         CLkQihxOJp2zFUmN5j4p7fA6rVlgODU0suAUzQplfBUw9vEqzKm89pO+LGXTh7PK16K6
+         L5ag==
+X-Gm-Message-State: AOAM531uy5EJHr4vsTQH23t2XNrwIc/iHm9yUjq8ozJC+tFdEBZ35TeB
+        c2XvHmB6jMWw9MblZ0yo1Yp4rJJA5hfp9OfU
+X-Google-Smtp-Source: ABdhPJwM0O/eQj0aHa0mdC8c0VZLnoY0K6EGSdGpZerSepu5QoUz5VhXh9saUk7+Xz7cXMSOsgYpgw==
+X-Received: by 2002:a05:6402:3512:: with SMTP id b18mr14022046edd.240.1629840952781;
+        Tue, 24 Aug 2021 14:35:52 -0700 (PDT)
 Received: from localhost.localdomain ([2a04:241e:502:1d80:ed0a:7326:fbac:b4c])
-        by smtp.gmail.com with ESMTPSA id d16sm12348357edu.8.2021.08.24.14.35.49
+        by smtp.gmail.com with ESMTPSA id d16sm12348357edu.8.2021.08.24.14.35.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Aug 2021 14:35:50 -0700 (PDT)
+        Tue, 24 Aug 2021 14:35:52 -0700 (PDT)
 From:   Leonard Crestez <cdleonard@gmail.com>
 To:     Dmitry Safonov <0x7f454c46@gmail.com>,
         David Ahern <dsahern@kernel.org>, Shuah Khan <shuah@kernel.org>
@@ -65,9 +65,9 @@ Cc:     Eric Dumazet <edumazet@google.com>,
         Menglong Dong <dong.menglong@zte.com.cn>,
         netdev@vger.kernel.org, linux-crypto@vger.kernel.org,
         linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [RFCv3 14/15] tcp: authopt: Add key selection controls
-Date:   Wed, 25 Aug 2021 00:34:47 +0300
-Message-Id: <36ba357a7f43a883fe6f470a4b65d16a85553e52.1629840814.git.cdleonard@gmail.com>
+Subject: [RFCv3 15/15] selftests: tcp_authopt: Add tests for rollover
+Date:   Wed, 25 Aug 2021 00:34:48 +0300
+Message-Id: <67aea6d5bd20f43ca74b3aea63cc1f043edd3750.1629840814.git.cdleonard@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1629840814.git.cdleonard@gmail.com>
 References: <cover.1629840814.git.cdleonard@gmail.com>
@@ -77,302 +77,262 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The RFC requires that TCP can report the keyid and rnextkeyid values
-being sent or received, implement this via getsockopt values.
+RFC5925 requires that the use can examine or control the keys being
+used. This is implemented in linux via fields on the TCP_AUTHOPT
+sockopt.
 
-The RFC also requires that user can select the sending key and that the
-sending key is automatically switched based on rnextkeyid. These
-requirements can conflict so we implement both and add a flag which
-specifies if user or peer request takes priority.
+Add socket-level tests for the adjusting keyids on live connections and
+checking the they are reflected on the peer.
 
-Also add an option to control rnextkeyid explicitly from userspace.
+Also check smooth transitions via rnextkeyid.
 
 Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
 ---
- Documentation/networking/tcp_authopt.rst | 25 ++++++++++
- include/net/tcp_authopt.h                | 10 ++++
- include/uapi/linux/tcp.h                 | 31 ++++++++++++
- net/ipv4/tcp_authopt.c                   | 60 +++++++++++++++++++++++-
- 4 files changed, 124 insertions(+), 2 deletions(-)
+ .../tcp_authopt_test/linux_tcp_authopt.py     |  16 +-
+ .../tcp_authopt_test/test_rollover.py         | 181 ++++++++++++++++++
+ 2 files changed, 194 insertions(+), 3 deletions(-)
+ create mode 100644 tools/testing/selftests/tcp_authopt/tcp_authopt_test/test_rollover.py
 
-diff --git a/Documentation/networking/tcp_authopt.rst b/Documentation/networking/tcp_authopt.rst
-index 484f66f41ad5..cded87a70d05 100644
---- a/Documentation/networking/tcp_authopt.rst
-+++ b/Documentation/networking/tcp_authopt.rst
-@@ -35,10 +35,35 @@ Keys can be bound to remote addresses in a way that is similar to TCP_MD5.
+diff --git a/tools/testing/selftests/tcp_authopt/tcp_authopt_test/linux_tcp_authopt.py b/tools/testing/selftests/tcp_authopt/tcp_authopt_test/linux_tcp_authopt.py
+index 41374f9851aa..23de148a4078 100644
+--- a/tools/testing/selftests/tcp_authopt/tcp_authopt_test/linux_tcp_authopt.py
++++ b/tools/testing/selftests/tcp_authopt/tcp_authopt_test/linux_tcp_authopt.py
+@@ -20,10 +20,12 @@ def BIT(x):
+ TCP_AUTHOPT = 38
+ TCP_AUTHOPT_KEY = 39
  
- RFC5925 requires that key ids do not overlap when tcp identifiers (addr/port)
- overlap. This is not enforced by linux, configuring ambiguous keys will result
- in packet drops and lost connections.
+ TCP_AUTHOPT_MAXKEYLEN = 80
  
-+Key selection
-+-------------
++TCP_AUTHOPT_FLAG_LOCK_KEYID = BIT(0)
++TCP_AUTHOPT_FLAG_LOCK_RNEXTKEYID = BIT(1)
+ TCP_AUTHOPT_FLAG_REJECT_UNEXPECTED = BIT(2)
+ 
+ TCP_AUTHOPT_KEY_DEL = BIT(0)
+ TCP_AUTHOPT_KEY_EXCLUDE_OPTS = BIT(1)
+ TCP_AUTHOPT_KEY_BIND_ADDR = BIT(2)
+@@ -35,24 +37,32 @@ TCP_AUTHOPT_ALG_AES_128_CMAC_96 = 2
+ @dataclass
+ class tcp_authopt:
+     """Like linux struct tcp_authopt"""
+ 
+     flags: int = 0
+-    sizeof = 4
++    send_keyid: int = 0
++    send_rnextkeyid: int = 0
++    recv_keyid: int = 0
++    recv_rnextkeyid: int = 0
++    sizeof = 8
+ 
+     def pack(self) -> bytes:
+         return struct.pack(
+-            "I",
++            "IBBBB",
+             self.flags,
++            self.send_keyid,
++            self.send_rnextkeyid,
++            self.recv_keyid,
++            self.recv_rnextkeyid,
+         )
+ 
+     def __bytes__(self):
+         return self.pack()
+ 
+     @classmethod
+     def unpack(cls, b: bytes):
+-        tup = struct.unpack("I", b)
++        tup = struct.unpack("IBBBB", b)
+         return cls(*tup)
+ 
+ 
+ def set_tcp_authopt(sock, opt: tcp_authopt):
+     return sock.setsockopt(socket.IPPROTO_TCP, TCP_AUTHOPT, bytes(opt))
+diff --git a/tools/testing/selftests/tcp_authopt/tcp_authopt_test/test_rollover.py b/tools/testing/selftests/tcp_authopt/tcp_authopt_test/test_rollover.py
+new file mode 100644
+index 000000000000..68c59c6d1e33
+--- /dev/null
++++ b/tools/testing/selftests/tcp_authopt/tcp_authopt_test/test_rollover.py
+@@ -0,0 +1,181 @@
++# SPDX-License-Identifier: GPL-2.0
++import typing
++import socket
++from .server import SimpleServerThread
++from .linux_tcp_authopt import (
++    TCP_AUTHOPT_FLAG_LOCK_KEYID,
++    TCP_AUTHOPT_FLAG_LOCK_RNEXTKEYID,
++    set_tcp_authopt_key,
++    tcp_authopt,
++    tcp_authopt_key,
++    set_tcp_authopt,
++    get_tcp_authopt,
++)
++from .utils import DEFAULT_TCP_SERVER_PORT, create_listen_socket, check_socket_echo
++from contextlib import ExitStack, contextmanager
++from .conftest import skipif_missing_tcp_authopt
 +
-+On getsockopt(TCP_AUTHOPT) information is provided about keyid/rnextkeyid in
-+the last send packet and about the keyid/rnextkeyd in the last valid received
-+packet.
++pytestmark = skipif_missing_tcp_authopt
 +
-+By default the sending keyid is selected to match the "rnextkeyid" value sent
-+by the remote side. If that keyid is not available (or for new connections) a
-+random matching key is selected.
 +
-+If the `TCP_AUTHOPT_LOCK_KEYID` is set then the sending key is selected by the
-+`tcp_authopt.send_local_id` field and rnextkeyid is ignored. If no key with
-+local_id == send_local_id is configured then a random matching key is
-+selected.
++@contextmanager
++def make_tcp_authopt_socket_pair(
++    server_addr="127.0.0.1",
++    server_authopt: tcp_authopt = None,
++    server_key_list: typing.Iterable[tcp_authopt_key] = [],
++    client_authopt: tcp_authopt = None,
++    client_key_list: typing.Iterable[tcp_authopt_key] = [],
++) -> typing.Tuple[socket.socket, socket.socket]:
++    """Make a pair for connected sockets for key switching tests
 +
-+The current sending key is cached in the socket and will not change unless
-+requested by remote rnextkeyid or by setsockopt.
++    Server runs in a background thread implementing echo protocol"""
++    with ExitStack() as exit_stack:
++        listen_socket = exit_stack.enter_context(
++            create_listen_socket(bind_addr=server_addr)
++        )
++        server_thread = exit_stack.enter_context(
++            SimpleServerThread(listen_socket, mode="echo")
++        )
++        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
++        client_socket.settimeout(1.0)
 +
-+The rnextkeyid value sent on the wire is usually the recv_id of the current
-+key used for sending. If the TCP_AUTHOPT_LOCK_RNEXTKEY flag is set in
-+`tcp_authopt.flags` the value of `tcp_authopt.send_rnextkeyid` is send
-+instead.  This can be used to implement smooth rollover: the peer will switch
-+its keyid to the received rnextkeyid when it is available.
++        if server_authopt:
++            set_tcp_authopt(listen_socket, server_authopt)
++        for k in server_key_list:
++            set_tcp_authopt_key(listen_socket, k)
++        if client_authopt:
++            set_tcp_authopt(client_socket, client_authopt)
++        for k in client_key_list:
++            set_tcp_authopt_key(client_socket, k)
 +
- ABI Reference
- =============
- 
- .. kernel-doc:: include/uapi/linux/tcp.h
-    :identifiers: tcp_authopt tcp_authopt_flag tcp_authopt_key tcp_authopt_key_flag tcp_authopt_alg
-diff --git a/include/net/tcp_authopt.h b/include/net/tcp_authopt.h
-index 61db268f36f8..92d0c2333272 100644
---- a/include/net/tcp_authopt.h
-+++ b/include/net/tcp_authopt.h
-@@ -36,11 +36,21 @@ struct tcp_authopt_key_info {
-  */
- struct tcp_authopt_info {
- 	/** @head: List of tcp_authopt_key_info */
- 	struct hlist_head head;
- 	struct rcu_head rcu;
-+	/**
-+	 * @send_keyid - Current key used for sending, cached.
-+	 *
-+	 * Once a key is found it only changes by user or remote request.
-+	 */
-+	struct tcp_authopt_key_info *send_key;
- 	u32 flags;
-+	u8 send_keyid;
-+	u8 send_rnextkeyid;
-+	u8 recv_keyid;
-+	u8 recv_rnextkeyid;
- 	u32 src_isn;
- 	u32 dst_isn;
- };
- 
- #ifdef CONFIG_TCP_AUTHOPT
-diff --git a/include/uapi/linux/tcp.h b/include/uapi/linux/tcp.h
-index 575162e7e281..43df8e3cd4cc 100644
---- a/include/uapi/linux/tcp.h
-+++ b/include/uapi/linux/tcp.h
-@@ -346,10 +346,24 @@ struct tcp_diag_md5sig {
- 
- /**
-  * enum tcp_authopt_flag - flags for `tcp_authopt.flags`
-  */
- enum tcp_authopt_flag {
-+	/**
-+	 * @TCP_AUTHOPT_FLAG_LOCK_KEYID: keyid controlled by sockopt
-+	 *
-+	 * If this is set `tcp_authopt.send_keyid` is used to determined sending
-+	 * key. Otherwise a key with send_id == recv_rnextkeyid is preferred.
-+	 */
-+	TCP_AUTHOPT_FLAG_LOCK_KEYID = (1 << 0),
-+	/**
-+	 * @TCP_AUTHOPT_FLAG_LOCK_RNEXTKEYID: Override rnextkeyid from userspace
-+	 *
-+	 * If this is set then `tcp_authopt.send_rnextkeyid` is sent on outbound
-+	 * packets. Other the recv_id of the current sending key is sent.
-+	 */
-+	TCP_AUTHOPT_FLAG_LOCK_RNEXTKEYID = (1 << 1),
- 	/**
- 	 * @TCP_AUTHOPT_FLAG_REJECT_UNEXPECTED:
- 	 *	Configure behavior of segments with TCP-AO coming from hosts for which no
- 	 *	key is configured. The default recommended by RFC is to silently accept
- 	 *	such connections.
-@@ -361,10 +375,27 @@ enum tcp_authopt_flag {
-  * struct tcp_authopt - Per-socket options related to TCP Authentication Option
-  */
- struct tcp_authopt {
- 	/** @flags: Combination of &enum tcp_authopt_flag */
- 	__u32	flags;
-+	/**
-+	 * @send_keyid: `tcp_authopt_key.send_id` of preferred send key
-+	 *
-+	 * This is only used if `TCP_AUTHOPT_FLAG_LOCK_KEYID` is set.
-+	 */
-+	__u8	send_keyid;
-+	/**
-+	 * @send_rnextkeyid: The rnextkeyid to send in packets
-+	 *
-+	 * This is controlled by the user iff TCP_AUTHOPT_FLAG_LOCK_RNEXTKEYID is
-+	 * set. Otherwise rnextkeyid is the recv_id of the current key.
-+	 */
-+	__u8	send_rnextkeyid;
-+	/** @recv_keyid: A recently-received keyid value. Only for getsockopt. */
-+	__u8	recv_keyid;
-+	/** @recv_rnextkeyid: A recently-received rnextkeyid value. Only for getsockopt. */
-+	__u8	recv_rnextkeyid;
- };
- 
- /**
-  * enum tcp_authopt_key_flag - flags for `tcp_authopt.flags`
-  *
-diff --git a/net/ipv4/tcp_authopt.c b/net/ipv4/tcp_authopt.c
-index 08ca77f01c46..1a80df739fd2 100644
---- a/net/ipv4/tcp_authopt.c
-+++ b/net/ipv4/tcp_authopt.c
-@@ -255,17 +255,44 @@ struct tcp_authopt_key_info *tcp_authopt_lookup_send(struct tcp_authopt_info *in
-  */
- struct tcp_authopt_key_info *tcp_authopt_select_key(const struct sock *sk,
- 						    const struct sock *addr_sk,
- 						    u8 *rnextkeyid)
- {
-+	struct tcp_authopt_key_info *key, *new_key;
- 	struct tcp_authopt_info *info;
- 
- 	info = rcu_dereference(tcp_sk(sk)->authopt_info);
- 	if (!info)
- 		return NULL;
- 
--	return tcp_authopt_lookup_send(info, addr_sk, -1);
-+	key = info->send_key;
-+	if (info->flags & TCP_AUTHOPT_FLAG_LOCK_KEYID) {
-+		int send_keyid = info->send_keyid;
++        client_socket.connect((server_addr, DEFAULT_TCP_SERVER_PORT))
++        check_socket_echo(client_socket)
++        server_socket = server_thread.server_socket[0]
 +
-+		if (!key || key->send_id != send_keyid)
-+			new_key = tcp_authopt_lookup_send(info, addr_sk, send_keyid);
-+	} else {
-+		if (!key || key->send_id != info->recv_rnextkeyid)
-+			new_key = tcp_authopt_lookup_send(info, addr_sk, info->recv_rnextkeyid);
-+	}
-+	if (!key && !new_key)
-+		new_key = tcp_authopt_lookup_send(info, addr_sk, -1);
++        yield client_socket, server_socket
 +
-+	// Change current key.
-+	if (key != new_key && new_key) {
-+		key = new_key;
-+		info->send_key = key;
-+	}
 +
-+	if (key) {
-+		if (info->flags & TCP_AUTHOPT_FLAG_LOCK_RNEXTKEYID)
-+			*rnextkeyid = info->send_rnextkeyid;
-+		else
-+			*rnextkeyid = info->send_rnextkeyid = key->recv_id;
-+	}
++def test_get_keyids(exit_stack: ExitStack):
++    """Check reading key ids"""
++    sk1 = tcp_authopt_key(send_id=11, recv_id=12, key="111")
++    sk2 = tcp_authopt_key(send_id=21, recv_id=22, key="222")
++    ck1 = tcp_authopt_key(send_id=12, recv_id=11, key="111")
++    client_socket, server_socket = exit_stack.enter_context(
++        make_tcp_authopt_socket_pair(
++            server_key_list=[sk1, sk2],
++            client_key_list=[ck1],
++        )
++    )
 +
-+	return key;
- }
- 
- static struct tcp_authopt_info *__tcp_authopt_info_get_or_create(struct sock *sk)
- {
- 	struct tcp_sock *tp = tcp_sk(sk);
-@@ -285,10 +312,12 @@ static struct tcp_authopt_info *__tcp_authopt_info_get_or_create(struct sock *sk
- 
- 	return info;
- }
- 
- #define TCP_AUTHOPT_KNOWN_FLAGS ( \
-+	TCP_AUTHOPT_FLAG_LOCK_KEYID | \
-+	TCP_AUTHOPT_FLAG_LOCK_RNEXTKEYID | \
- 	TCP_AUTHOPT_FLAG_REJECT_UNEXPECTED)
- 
- int tcp_set_authopt(struct sock *sk, sockptr_t optval, unsigned int optlen)
- {
- 	struct tcp_authopt opt;
-@@ -309,10 +338,14 @@ int tcp_set_authopt(struct sock *sk, sockptr_t optval, unsigned int optlen)
- 	info = __tcp_authopt_info_get_or_create(sk);
- 	if (IS_ERR(info))
- 		return PTR_ERR(info);
- 
- 	info->flags = opt.flags & TCP_AUTHOPT_KNOWN_FLAGS;
-+	if (opt.flags & TCP_AUTHOPT_FLAG_LOCK_KEYID)
-+		info->send_keyid = opt.send_keyid;
-+	if (opt.flags & TCP_AUTHOPT_FLAG_LOCK_RNEXTKEYID)
-+		info->send_rnextkeyid = opt.send_rnextkeyid;
- 
- 	return 0;
- }
- 
- int tcp_get_authopt_val(struct sock *sk, struct tcp_authopt *opt)
-@@ -326,10 +359,21 @@ int tcp_get_authopt_val(struct sock *sk, struct tcp_authopt *opt)
- 	info = rcu_dereference_check(tp->authopt_info, lockdep_sock_is_held(sk));
- 	if (!info)
- 		return -EINVAL;
- 
- 	opt->flags = info->flags & TCP_AUTHOPT_KNOWN_FLAGS;
-+	/* These keyids might be undefined, for example before connect.
-+	 * Reporting zero is not strictly correct because there are no reserved
-+	 * values.
-+	 */
-+	if (info->send_key)
-+		opt->send_keyid = info->send_key->send_id;
-+	else
-+		opt->send_keyid = 0;
-+	opt->send_rnextkeyid = info->send_rnextkeyid;
-+	opt->recv_keyid = info->recv_keyid;
-+	opt->recv_rnextkeyid = info->recv_rnextkeyid;
- 
- 	return 0;
- }
- 
- static void tcp_authopt_key_free_rcu(struct rcu_head *rcu)
-@@ -343,10 +387,12 @@ static void tcp_authopt_key_free_rcu(struct rcu_head *rcu)
- static void tcp_authopt_key_del(struct sock *sk,
- 				struct tcp_authopt_info *info,
- 				struct tcp_authopt_key_info *key)
- {
- 	hlist_del_rcu(&key->node);
-+	if (info->send_key == key)
-+		info->send_key = NULL;
- 	atomic_sub(sizeof(*key), &sk->sk_omem_alloc);
- 	call_rcu(&key->rcu, tcp_authopt_key_free_rcu);
- }
- 
- /* free info and keys but don't touch tp->authopt_info */
-@@ -496,10 +542,13 @@ int __tcp_authopt_openreq(struct sock *newsk, const struct sock *oldsk, struct r
- 		return -ENOMEM;
- 
- 	sk_nocaps_add(newsk, NETIF_F_GSO_MASK);
- 	new_info->src_isn = tcp_rsk(req)->snt_isn;
- 	new_info->dst_isn = tcp_rsk(req)->rcv_isn;
-+	new_info->send_keyid = old_info->send_keyid;
-+	new_info->send_rnextkeyid = old_info->send_rnextkeyid;
-+	new_info->flags = old_info->flags;
- 	INIT_HLIST_HEAD(&new_info->head);
- 	err = tcp_authopt_clone_keys(newsk, oldsk, new_info, old_info);
- 	if (err) {
- 		__tcp_authopt_info_free(newsk, new_info);
- 		return err;
-@@ -1088,11 +1137,11 @@ int __tcp_authopt_inbound_check(struct sock *sk, struct sk_buff *skb, struct tcp
- 			NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPAUTHOPTFAILURE);
- 			net_info_ratelimited("TCP Authentication Unexpected: Rejected\n");
- 			return -EINVAL;
- 		} else {
- 			net_info_ratelimited("TCP Authentication Unexpected: Accepted\n");
--			return 0;
-+			goto accept;
- 		}
- 	}
- 
- 	/* bad inbound key len */
- 	if (key->maclen + 4 != opt->len)
-@@ -1106,7 +1155,14 @@ int __tcp_authopt_inbound_check(struct sock *sk, struct sk_buff *skb, struct tcp
- 		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPAUTHOPTFAILURE);
- 		net_info_ratelimited("TCP Authentication Failed\n");
- 		return -EINVAL;
- 	}
- 
-+accept:
-+	/* Doing this for all valid packets will results in keyids temporarily
-+	 * flipping back and forth if packets are reordered or retransmitted.
-+	 */
-+	info->recv_keyid = opt->keyid;
-+	info->recv_rnextkeyid = opt->rnextkeyid;
++    check_socket_echo(client_socket)
++    client_tcp_authopt = get_tcp_authopt(client_socket)
++    server_tcp_authopt = get_tcp_authopt(server_socket)
++    assert server_tcp_authopt.send_keyid == 11
++    assert server_tcp_authopt.send_rnextkeyid == 12
++    assert server_tcp_authopt.recv_keyid == 12
++    assert server_tcp_authopt.recv_rnextkeyid == 11
++    assert client_tcp_authopt.send_keyid == 12
++    assert client_tcp_authopt.send_rnextkeyid == 11
++    assert client_tcp_authopt.recv_keyid == 11
++    assert client_tcp_authopt.recv_rnextkeyid == 12
 +
- 	return 0;
- }
++
++def test_rollover_send_keyid(exit_stack: ExitStack):
++    """Check reading key ids"""
++    sk1 = tcp_authopt_key(send_id=11, recv_id=12, key="111")
++    sk2 = tcp_authopt_key(send_id=21, recv_id=22, key="222")
++    ck1 = tcp_authopt_key(send_id=12, recv_id=11, key="111")
++    ck2 = tcp_authopt_key(send_id=22, recv_id=21, key="222")
++    client_socket, server_socket = exit_stack.enter_context(
++        make_tcp_authopt_socket_pair(
++            server_key_list=[sk1, sk2],
++            client_key_list=[ck1, ck2],
++            client_authopt=tcp_authopt(
++                send_keyid=12, flags=TCP_AUTHOPT_FLAG_LOCK_KEYID
++            ),
++        )
++    )
++
++    check_socket_echo(client_socket)
++    assert get_tcp_authopt(client_socket).recv_keyid == 11
++    assert get_tcp_authopt(server_socket).recv_keyid == 12
++
++    # Explicit request for key2
++    set_tcp_authopt(
++        client_socket, tcp_authopt(send_keyid=22, flags=TCP_AUTHOPT_FLAG_LOCK_KEYID)
++    )
++    check_socket_echo(client_socket)
++    assert get_tcp_authopt(client_socket).recv_keyid == 21
++    assert get_tcp_authopt(server_socket).recv_keyid == 22
++
++
++def test_rollover_rnextkeyid(exit_stack: ExitStack):
++    """Check reading key ids"""
++    sk1 = tcp_authopt_key(send_id=11, recv_id=12, key="111")
++    sk2 = tcp_authopt_key(send_id=21, recv_id=22, key="222")
++    ck1 = tcp_authopt_key(send_id=12, recv_id=11, key="111")
++    ck2 = tcp_authopt_key(send_id=22, recv_id=21, key="222")
++    client_socket, server_socket = exit_stack.enter_context(
++        make_tcp_authopt_socket_pair(
++            server_key_list=[sk1],
++            client_key_list=[ck1, ck2],
++            client_authopt=tcp_authopt(
++                send_keyid=12, flags=TCP_AUTHOPT_FLAG_LOCK_KEYID
++            ),
++        )
++    )
++
++    check_socket_echo(client_socket)
++    assert get_tcp_authopt(server_socket).recv_rnextkeyid == 11
++
++    # request rnextkeyd=22 but server does not have it
++    set_tcp_authopt(
++        client_socket,
++        tcp_authopt(send_rnextkeyid=21, flags=TCP_AUTHOPT_FLAG_LOCK_RNEXTKEYID),
++    )
++    check_socket_echo(client_socket)
++    check_socket_echo(client_socket)
++    assert get_tcp_authopt(server_socket).recv_rnextkeyid == 21
++    assert get_tcp_authopt(server_socket).send_keyid == 11
++
++    # after adding k2 on server the key is switched
++    set_tcp_authopt_key(server_socket, sk2)
++    check_socket_echo(client_socket)
++    check_socket_echo(client_socket)
++    assert get_tcp_authopt(server_socket).send_keyid == 21
++
++
++def test_rollover_delkey(exit_stack: ExitStack):
++    sk1 = tcp_authopt_key(send_id=11, recv_id=12, key="111")
++    sk2 = tcp_authopt_key(send_id=21, recv_id=22, key="222")
++    ck1 = tcp_authopt_key(send_id=12, recv_id=11, key="111")
++    ck2 = tcp_authopt_key(send_id=22, recv_id=21, key="222")
++    client_socket, server_socket = exit_stack.enter_context(
++        make_tcp_authopt_socket_pair(
++            server_key_list=[sk1, sk2],
++            client_key_list=[ck1, ck2],
++            client_authopt=tcp_authopt(
++                send_keyid=12, flags=TCP_AUTHOPT_FLAG_LOCK_KEYID
++            ),
++        )
++    )
++
++    check_socket_echo(client_socket)
++    assert get_tcp_authopt(server_socket).recv_keyid == 12
++
++    # invalid send_keyid is just ignored
++    set_tcp_authopt(client_socket, tcp_authopt(send_keyid=7))
++    check_socket_echo(client_socket)
++    assert get_tcp_authopt(client_socket).send_keyid == 12
++    assert get_tcp_authopt(server_socket).recv_keyid == 12
++    assert get_tcp_authopt(client_socket).recv_keyid == 11
++
++    # If a key is removed it is replaced by anything that matches
++    ck1.delete_flag = True
++    set_tcp_authopt_key(client_socket, ck1)
++    check_socket_echo(client_socket)
++    check_socket_echo(client_socket)
++    assert get_tcp_authopt(client_socket).send_keyid == 22
++    assert get_tcp_authopt(server_socket).send_keyid == 21
++    assert get_tcp_authopt(server_socket).recv_keyid == 22
++    assert get_tcp_authopt(client_socket).recv_keyid == 21
 -- 
 2.25.1
 
