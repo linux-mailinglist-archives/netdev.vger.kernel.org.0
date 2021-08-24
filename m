@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2349D3F54E6
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 02:57:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E28BE3F5504
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 02:58:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235082AbhHXA5b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Aug 2021 20:57:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48720 "EHLO mail.kernel.org"
+        id S234700AbhHXA6b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Aug 2021 20:58:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48138 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234012AbhHXA4O (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Aug 2021 20:56:14 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BDEB3614C8;
-        Tue, 24 Aug 2021 00:55:20 +0000 (UTC)
+        id S234787AbhHXA4d (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Aug 2021 20:56:33 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4888761502;
+        Tue, 24 Aug 2021 00:55:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629766521;
-        bh=KZj7r2rwRatg88XVRLTbBU6z0+dYmS7JKKEcrlFzO9k=;
+        s=k20201202; t=1629766527;
+        bh=QONAH+3jqD003oDlj6R3c/flRDJM4gzHyhBoBu7qr1k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LXglBW6DLV6dipYDFGHfbu1ayWqBMGJ+oPw33kpcAr3Hg78zwe4S4OkXcDj9WmAlT
-         gukKcMegJB5bBxRYLiSNiHgR8WlOMcmOUlYbRYpRwFf8/mSXyyP2Eh4FlTe9Fwc8LB
-         VBbzBNihPsawOFC8wRJeFiGSy5USNx5qX8uB99PkWtYX1hVZyp1xH7d7x85K0x/6E7
-         oN0Js2UCIK2T9CKmpnFp/a9YPyHNd7n06p+9la6ZbLD1SLM+2jWB2fDov6QxDanFKy
-         nVbChC8n3WIukHxhmdgxS9vnCPLuZZZOrC8CMznUX9Dthgcwxf+MMyiyg+qhaeLzJL
-         ipAaNubAH4Diw==
+        b=rWMJ3aTcU/m1H7mnZX0PI++jARVuE9+Y7qzs6x5v/twjL44s2saVGc2qN7qDbrziC
+         ADFu/k6pusABV4ofaRuL1ZXwC/SdlshpBojCdjwfQ0icFr2k1YincfFVfbEKpTgTyk
+         LEq9YA7/yzS9I6kE/IlZVwQeNW6zVGGn9OfNp9tEQkENYbAY1F3+bvkU4y5CbLA5L5
+         NvAWgCE7B+U4+Ea6gu8ZeZPwbUhHVnw9Feae98mhj+AuChCUbsjpa8m0thm9WCnLYF
+         OueLj+XZoZPFdvY3ZVqH4Ed+k5GpbCfY5ALqHmhAsL3hmC8nJAO+zHISJe9zxAW8vd
+         Lh+yC733sCK7g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Shai Malin <smalin@marvell.com>,
-        TOTE Robot <oslab@tsinghua.edu.cn>,
-        Ariel Elior <aelior@marvell.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 06/10] qed: Fix null-pointer dereference in qed_rdma_create_qp()
-Date:   Mon, 23 Aug 2021 20:55:08 -0400
-Message-Id: <20210824005513.631557-6-sashal@kernel.org>
+Cc:     Gerd Rausch <gerd.rausch@oracle.com>,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, rds-devel@oss.oracle.com
+Subject: [PATCH AUTOSEL 4.19 10/10] net/rds: dma_map_sg is entitled to merge entries
+Date:   Mon, 23 Aug 2021 20:55:12 -0400
+Message-Id: <20210824005513.631557-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210824005513.631557-1-sashal@kernel.org>
 References: <20210824005513.631557-1-sashal@kernel.org>
@@ -44,38 +44,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shai Malin <smalin@marvell.com>
+From: Gerd Rausch <gerd.rausch@oracle.com>
 
-[ Upstream commit d33d19d313d3466abdf8b0428be7837aff767802 ]
+[ Upstream commit fb4b1373dcab086d0619c29310f0466a0b2ceb8a ]
 
-Fix a possible null-pointer dereference in qed_rdma_create_qp().
+Function "dma_map_sg" is entitled to merge adjacent entries
+and return a value smaller than what was passed as "nents".
 
-Changes from V2:
-- Revert checkpatch fixes.
+Subsequently "ib_map_mr_sg" needs to work with this value ("sg_dma_len")
+rather than the original "nents" parameter ("sg_len").
 
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Ariel Elior <aelior@marvell.com>
-Signed-off-by: Shai Malin <smalin@marvell.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+This old RDS bug was exposed and reliably causes kernel panics
+(using RDMA operations "rds-stress -D") on x86_64 starting with:
+commit c588072bba6b ("iommu/vt-d: Convert intel iommu driver to the iommu ops")
+
+Simply put: Linux 5.11 and later.
+
+Signed-off-by: Gerd Rausch <gerd.rausch@oracle.com>
+Acked-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
+Link: https://lore.kernel.org/r/60efc69f-1f35-529d-a7ef-da0549cad143@oracle.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/qlogic/qed/qed_rdma.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ net/rds/ib_frmr.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_rdma.c b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
-index 909422d93903..3392982ff374 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_rdma.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
-@@ -1244,8 +1244,7 @@ qed_rdma_create_qp(void *rdma_cxt,
- 
- 	if (!rdma_cxt || !in_params || !out_params ||
- 	    !p_hwfn->p_rdma_info->active) {
--		DP_ERR(p_hwfn->cdev,
--		       "qed roce create qp failed due to NULL entry (rdma_cxt=%p, in=%p, out=%p, roce_info=?\n",
-+		pr_err("qed roce create qp failed due to NULL entry (rdma_cxt=%p, in=%p, out=%p, roce_info=?\n",
- 		       rdma_cxt, in_params, out_params);
- 		return NULL;
+diff --git a/net/rds/ib_frmr.c b/net/rds/ib_frmr.c
+index 6431a023ac89..46988c009a3e 100644
+--- a/net/rds/ib_frmr.c
++++ b/net/rds/ib_frmr.c
+@@ -111,9 +111,9 @@ static int rds_ib_post_reg_frmr(struct rds_ib_mr *ibmr)
+ 		cpu_relax();
  	}
+ 
+-	ret = ib_map_mr_sg_zbva(frmr->mr, ibmr->sg, ibmr->sg_len,
++	ret = ib_map_mr_sg_zbva(frmr->mr, ibmr->sg, ibmr->sg_dma_len,
+ 				&off, PAGE_SIZE);
+-	if (unlikely(ret != ibmr->sg_len))
++	if (unlikely(ret != ibmr->sg_dma_len))
+ 		return ret < 0 ? ret : -EINVAL;
+ 
+ 	/* Perform a WR for the fast_reg_mr. Each individual page
 -- 
 2.30.2
 
