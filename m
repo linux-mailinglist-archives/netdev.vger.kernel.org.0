@@ -2,106 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EA8A3F5818
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 08:21:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B283F3F581E
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 08:23:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232040AbhHXGVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 02:21:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47800 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230350AbhHXGVc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 02:21:32 -0400
-Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B5FFC061575;
-        Mon, 23 Aug 2021 23:20:49 -0700 (PDT)
-Received: by mail-qv1-xf36.google.com with SMTP id jv8so11113630qvb.3;
-        Mon, 23 Aug 2021 23:20:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dntYHUzQ96z9Ky92LFdr542JcEb8KpIOuE1biM9oOng=;
-        b=XCRXYTyzatkPP8LEC19ZZxojm7wRfPfgig0TBX/WzVke5FJ94VLVeHBozn0K0xawJZ
-         hliKrJhvaacXh8PutX7ZOBMRfD7PmXd1C5avwhjShdNy05M0ZrK2MaFWDkFJvdcMxgup
-         3/+4OiQeJIPJMfPdnEr31zobPvuqOgmFtAaVF9Dn2kxn4CwLYxN9sIBwNntW7PxM+SAk
-         U+IIZ7W2W7RIFLUVLuXklqh3aeTNWACPFfYYaWWuhpKt8qSPmrbBClP6jkzgf08CP8fO
-         4PxNQkekqeupxF8Ohwn1ptAhB29JhZ06zqUatNmV/lpg+2CKqbKNc0eroYIWxjoXXtUz
-         g1mg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dntYHUzQ96z9Ky92LFdr542JcEb8KpIOuE1biM9oOng=;
-        b=XFmhspIBRgDDi2c4CMP4bUWOKkMWgxtTk4BpMLVgAFOm1KcdiEe8OBFMn8PduSsvCx
-         mRzvXwwZdoe5SA1voIAix8ZifYDfJ8HgUUTmAJF0XOztKhhBK6IFgktHxTibSN8mYo6j
-         0OZl37gwD1hF99fRnSQ0OAcQmiqVcSyvtM7WhlPZtyd9rKr291CRCzEDc943mOPtw9Cz
-         jSfz6p63XedYnyoaD36PYPbwDCAU+eJACWULQa5oZ9JL4YhG5HVxDY3vitLlQVyxzv6u
-         NQk++Y+mhpIccxU/kLucvNwTi2RAl8nqH0qsIVJR1wGH0p0ZzFyL7qIg/K4Mtxb0skIi
-         upCQ==
-X-Gm-Message-State: AOAM532g5fUf/NaScRMqmrd+XD3vnrLL2nKgoQ00myJCMFYFRYeX/4Q1
-        E7XDUQR4aKgDrE8LiP/hbZs=
-X-Google-Smtp-Source: ABdhPJw1m88JOSSpAu2p8G5KZFCnC1u84/ZdM/n5H8zPBv7IWbRO4BJEhMcVC8+mWl8PCdPbjahU/Q==
-X-Received: by 2002:a05:6214:1c1:: with SMTP id c1mr37231034qvt.37.1629786048450;
-        Mon, 23 Aug 2021 23:20:48 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id d129sm10144598qkf.136.2021.08.23.23.20.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Aug 2021 23:20:48 -0700 (PDT)
-From:   CGEL <cgel.zte@gmail.com>
-X-Google-Original-From: CGEL <deng.changcheng@zte.com.cn>
-To:     Luca Coelho <luciano.coelho@intel.com>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Gregory Greenman <gregory.greenman@intel.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Jing Yangyang <jing.yangyang@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH linux-next] iwlwifi:rfi: fix memdup.cocci warnings
-Date:   Mon, 23 Aug 2021 23:20:40 -0700
-Message-Id: <20210824062040.59414-1-deng.changcheng@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        id S230350AbhHXGXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 02:23:50 -0400
+Received: from mail-dm6nam10on2060.outbound.protection.outlook.com ([40.107.93.60]:24222
+        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229854AbhHXGXn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Aug 2021 02:23:43 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GsW0noQqhKHCWhRfVy+r7W6lr98NRfPNmDxRELyPyjylwA1tq+fC+P5TgcAcTorVvJ/yHP1EeNcFUFkQnAdQvyH9/5KUMj5EJzptB2u4Y7rYTr8FomtJDXqmNBX0/21XH6CI/P1nDjQHKGBC7eRaVN8SNQVclOcd8YWyShAW3QQ7C2DdLUN5DqF1+mrj0LZBKtwGKrahqg4SVohVIhRtOQfLHU26ZcPIyXHO8zR78MQ0VWCVJGFsdALENkNKLb1hQnde2Sje4qu7gJ73PnJYdEOmKbaBX02vVSBcBaB49RZCI/ykjtpKXbR7kbhrSXVNsKyxlPfs845v+kzEKyuwMw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nQoxIUOFRFDHL/1iUhlMcFYV5mSGLqlTVXko29CdRKU=;
+ b=K2jLogtZsVZGIzOpgcNwdn9IwlEIlkTt0HNbPpqhlyeQvwYMa4kDe0TIqjFQa7UOHZ54MpOqFLYEtS6DhzY+YJUhyUCrAVfpdAJMncgZRqyCssfHbDMp/NJgP51zgcd+legTlFMked/8UB4qKK2qkjszAmZ7dN4INZ5YLluZcpGU8WCdgcjokRzOYVrM+OZP2sctDOnqS6h1iS1Ldg1BkpYcV6T7VclrGu6YnJzLPTufhs7hcQyl3dFUqVatOC4lhBezSTPw2zrVHG+kqg0NsZzSim3nxw0b17z2oounydOdEqEI7HLFjIsBAzV9TfzLwsgbdreoQ/9L+9uWmb7tLw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nQoxIUOFRFDHL/1iUhlMcFYV5mSGLqlTVXko29CdRKU=;
+ b=hr7wBPiEj+19AVrNB3pevHMWCFHA1Fj4j2LKf4EmDNMXpjXceZdoz0IiymYIO6XODCLIY/CiKudE+wqM1kGTMU8ADj0X3dxpCCxjIzzFMUxzEB5Qw1oCbIrvr4xMdosVwVgzTINz2RaV+YozUpD/QaFwMta/fgwwQsaMguxS438GWydb+SE4iz2MGafm7LnnE4Q5Q9qPKzZhkoterCh5drbEgK4VjXBoy4WLRWdkzFmzyOM1at30D6HX5H9EndTS+bSpoRZf5hF0di+BEioApDisbZdaLLYpI4ZBwl9yQvyJAIRDa0yAJPDJDgs6zWqz/aOnvhN7ZfE1E6sNfpsMoQ==
+Received: from DM6PR02CA0141.namprd02.prod.outlook.com (2603:10b6:5:332::8) by
+ MWHPR12MB1614.namprd12.prod.outlook.com (2603:10b6:301:f::15) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4436.19; Tue, 24 Aug 2021 06:22:58 +0000
+Received: from DM6NAM11FT063.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:332:cafe::99) by DM6PR02CA0141.outlook.office365.com
+ (2603:10b6:5:332::8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19 via Frontend
+ Transport; Tue, 24 Aug 2021 06:22:58 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ DM6NAM11FT063.mail.protection.outlook.com (10.13.172.219) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4436.19 via Frontend Transport; Tue, 24 Aug 2021 06:22:58 +0000
+Received: from DRHQMAIL107.nvidia.com (10.27.9.16) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 24 Aug
+ 2021 06:22:57 +0000
+Received: from [172.27.8.76] (172.20.187.5) by DRHQMAIL107.nvidia.com
+ (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 24 Aug
+ 2021 06:22:55 +0000
+Subject: Re: [PATCH rdma-next 03/10] RDMA/counters: Support to allocate
+ per-port optional counter statistics
+To:     Jason Gunthorpe <jgg@nvidia.com>
+CC:     <dledford@redhat.com>, <saeedm@nvidia.com>,
+        <linux-rdma@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <aharonl@nvidia.com>, <netao@nvidia.com>, <leonro@nvidia.com>
+References: <20210818112428.209111-1-markzhang@nvidia.com>
+ <20210818112428.209111-4-markzhang@nvidia.com>
+ <20210823193020.GA1002624@nvidia.com>
+From:   Mark Zhang <markzhang@nvidia.com>
+Message-ID: <736545a9-c5a8-5f0c-8051-9f519c8bad89@nvidia.com>
+Date:   Tue, 24 Aug 2021 14:22:52 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210823193020.GA1002624@nvidia.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [172.20.187.5]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ DRHQMAIL107.nvidia.com (10.27.9.16)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 16398c90-66a5-4417-2489-08d966c79e1b
+X-MS-TrafficTypeDiagnostic: MWHPR12MB1614:
+X-Microsoft-Antispam-PRVS: <MWHPR12MB1614A87402E4FA2272C7804AC7C59@MWHPR12MB1614.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4941;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: GBW0TtU4lD4Ve47OerCJTyWToAuxn6wrRFzQ8SiA1c8HqTP4pbkxIYQBPo1bmNT8fDpV9mYIwmeOaJmbm7mBzWERQQXGTxgMofoXkLvS4ntOTuBVt3PrcP+/XGQOxJ5POdZeJ5ulBPzKDsdMXOugev+iD9JPodYbr2KmYag8OICYMGQ8K91CYqUBJsUE+rH7RwzUuI/tU57Ujq4XQ0/Z1EQiD++KakVwx1BIiW1RKG3lwAPp0b8y+KyWrqXp62+s7lSv5cS9fNXLn5WbjABzDmue9+0ug7l1hDj0CSTHmVPfktbVmBCxouzQ1YvfJUYb5OgXrBiPomUZXZOkXvi2BI/r6qIH0E3safFeombIUSkb5w+wWK2E/25X238LFfV0nNpBCLo53sS5QTo4lnnacnk9GHsBD/1f+MVMSImGs8lu0fpIWw79Q4+Mii3Z4mQrBTsEpHBJS0Ky5eqeTMA9tT7VgQ7ljNZngicimxSMAtr+A0+cdxxAxMheZvOy2Meog2Wjmn37M+L3zXgtNy7DjsItE5sYYat3bCukQJp81Bc2E8mntLL7EJQ5h01am+odNFlJetfhyUroW/BaeTJ70jCyeghIZqYmHG46Gn9gysQ5NWAXmGehU5kkCJnqfyBIyPRKNm/bBW3RbzCkE+7avyn5tkAEgOvZM/Z5XhA5Xgl7QZ+2KyoQQnmI0vMfPrvJqP14B+r+pM1RAukJhzus6f39R8Ymi73UQfXBrGZrcPY=
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(346002)(396003)(136003)(376002)(39860400002)(46966006)(36840700001)(82740400003)(4326008)(83380400001)(31686004)(7636003)(107886003)(8676002)(2616005)(6862004)(31696002)(36756003)(356005)(36860700001)(47076005)(86362001)(6636002)(82310400003)(53546011)(26005)(186003)(16526019)(426003)(37006003)(16576012)(478600001)(5660300002)(36906005)(54906003)(316002)(336012)(70206006)(6666004)(2906002)(70586007)(8936002)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Aug 2021 06:22:58.5580
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 16398c90-66a5-4417-2489-08d966c79e1b
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT063.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR12MB1614
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jing Yangyang <jing.yangyang@zte.com.cn>
+On 8/24/2021 3:30 AM, Jason Gunthorpe wrote:
+> On Wed, Aug 18, 2021 at 02:24:21PM +0300, Mark Zhang wrote:
+>> From: Aharon Landau <aharonl@nvidia.com>
+>>
+>> Add an alloc_op_port_stats() API, as well as related structures, to support
+>> per-port op_stats allocation during counter module initialization.
+>>
+>> Signed-off-by: Aharon Landau <aharonl@nvidia.com>
+>> Signed-off-by: Neta Ostrovsky <netao@nvidia.com>
+>> Signed-off-by: Mark Zhang <markzhang@nvidia.com>
+>>   drivers/infiniband/core/counters.c | 18 ++++++++++++++++++
+>>   drivers/infiniband/core/device.c   |  1 +
+>>   include/rdma/ib_verbs.h            | 24 ++++++++++++++++++++++++
+>>   include/rdma/rdma_counter.h        |  1 +
+>>   4 files changed, 44 insertions(+)
+>>
+>> diff --git a/drivers/infiniband/core/counters.c b/drivers/infiniband/core/counters.c
+>> index df9e6c5e4ddf..b8b6db98bfdf 100644
+>> +++ b/drivers/infiniband/core/counters.c
+>> @@ -611,6 +611,15 @@ void rdma_counter_init(struct ib_device *dev)
+>>   		port_counter->hstats = dev->ops.alloc_hw_port_stats(dev, port);
+>>   		if (!port_counter->hstats)
+>>   			goto fail;
+>> +
+>> +		if (dev->ops.alloc_op_port_stats) {
+>> +			port_counter->opstats =
+>> +				dev->ops.alloc_op_port_stats(dev, port);
+>> +			if (!port_counter->opstats)
+>> +				goto fail;
+> 
+> It would be nicer to change the normal stats to have more detailed
+> meta information instead of adding an entire parallel interface like
+> this.
+> 
+> struct rdma_hw_stats {
+> 	struct mutex	lock;
+> 	unsigned long	timestamp;
+> 	unsigned long	lifespan;
+> 	const char * const *names;
+> 
+> Change the names to a struct
+> 
+>   const struct rdma_hw_stat_desc *descs;
+> 
+> struct rdma_hw_stat_desc {
+>     const char *name;
+>     unsigned int flags;
+>     unsigned int private;
+> }
+> 
+> and then define a FLAG_OPTIONAL.
+> 
+> Then alot of this oddness goes away.
+> 
+> You might also need a small allocated bitmap to store the
+> enabled/disabled state
+> 
+> Then the series basically boils down to adding some 'modify counter'
+> driver op that flips the enable/disable flag
+> 
+> And the netlink patches to expose the additional information.
 
-./drivers/net/wireless/intel/iwlwifi/mvm/rfi.c:110:8-15:8-15:WARNING:
-opportunity for kmemdup
+Maybe it can be defined like this:
 
-Use kmemdup rather than duplicating its implementation
+struct rdma_stat_desc {
+         bool enabled;
+         const char *name;
+         u64 value;
+};
 
-Generated by: scripts/coccinelle/api/memdup.cocci
-
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Jing Yangyang <jing.yangyang@zte.com.cn>
----
- drivers/net/wireless/intel/iwlwifi/mvm/rfi.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/rfi.c b/drivers/net/wireless/intel/iwlwifi/mvm/rfi.c
-index 0b81806..2225c4f 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/rfi.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/rfi.c
-@@ -107,12 +107,10 @@ struct iwl_rfi_freq_table_resp_cmd *iwl_rfi_get_freq_table(struct iwl_mvm *mvm)
- 	if (WARN_ON_ONCE(iwl_rx_packet_payload_len(cmd.resp_pkt) != resp_size))
- 		return ERR_PTR(-EIO);
+struct rdma_hw_stats {
+         struct mutex    lock; /* Protect lifespan and values[] */
+         unsigned long   timestamp;
+         unsigned long   lifespan;
+         int             num_counters;
+         unsigned int    private;  // ?
+         u64             flags;    // 0 or FLAG_OPTIONAL
+         struct rdma_stat_desc descs[];
+         //const char * const *names;
+         //u64           value[]; 
  
--	resp = kzalloc(resp_size, GFP_KERNEL);
-+	resp = kmemdup(cmd.resp_pkt->data, resp_size, GFP_KERNEL);
- 	if (!resp)
- 		return ERR_PTR(-ENOMEM);
- 
--	memcpy(resp, cmd.resp_pkt->data, resp_size);
--
- 	iwl_free_resp(&cmd);
- 	return resp;
- }
--- 
-1.8.3.1
 
+};
 
+What does the "private" field mean? Driver-specific? Aren't all counters 
+driver-specific?
+
+Thanks.
