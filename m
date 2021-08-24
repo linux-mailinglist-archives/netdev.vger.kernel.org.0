@@ -2,48 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66B593F6C51
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 01:47:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE84F3F6C5D
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 01:52:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234352AbhHXXsR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 19:48:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58006 "EHLO mail.kernel.org"
+        id S235679AbhHXXwz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 19:52:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59158 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231552AbhHXXsQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Aug 2021 19:48:16 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E381E61212;
-        Tue, 24 Aug 2021 23:47:30 +0000 (UTC)
+        id S235429AbhHXXwy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Aug 2021 19:52:54 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4E25361247;
+        Tue, 24 Aug 2021 23:52:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629848851;
-        bh=SH5Z0I94oakJnVKdkh9AL9GwjcqWTK9lpkjNT/sh8XM=;
+        s=k20201202; t=1629849129;
+        bh=Y+YdA+2CMsgqdmmpnQ4ORVcuiQP93MiMTcXGC05a0x8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=UQYWZO1o57EQ94iAESLffaEP6yP8vG5zBOslT+mk0ZwJvykg4yu+b5xk8dYdrGmTz
-         xxfkqgRs0mrRaqWNXeM7+dUrUPHu/OOSxn/O+vgnC6x6j3RSJYEeEHUxq6YIej9U7W
-         DF6Tv4IhgUxWyBxakbmRyl74jjz2Dd1a/snHUjBsHRMDDgZj/JPqVhUY2wR5jxl2BB
-         WPlBI3U/gzB4Sa/h5RmmVF3n4zsQsPR02QRUavX6klwLGy86Ee/jeNbH7VxyZzJDtO
-         RKFraVPUVmn5ohp185lgkGUzNhj/HliUujATpI//XkXpdVzYBv9WNOPtTTPGi45bQF
-         pQp++YPcxSW3Q==
-Date:   Tue, 24 Aug 2021 16:47:30 -0700
+        b=P76SmD/+8qyjtGB124/Yo5+ywHRqyZ/spCL7h8+blkI86gF0FXQs/HUJJQKpLiLkB
+         5RhnTM7hVGcPauQvKe9vziKnZGWmCYjdD+tuW4vpXJ92WHG54t5ZP/mnfUizL8CcQW
+         QZdvcpTD9z/yHCQjEDJULv8FWPSkrLXW5tFYHv9FKSDoqnVRncqLZkux0n++Ubo+Qr
+         VyG5U5nnrWbBdqppsHYfnIjMAlucgE2zy/ypEtF8GXHuP7mJvPIAjimAfYoIeIKh7a
+         Y/F7kc3fbApgHP9tJuRaH+CL0EDx9WuVA7IlO894qEzaDHqNbVTjydrfD5xjE7R+GP
+         6sMorJjKV8UPA==
+Date:   Tue, 24 Aug 2021 16:52:08 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Keller, Jacob E" <jacob.e.keller@intel.com>
-Cc:     Ido Schimmel <idosch@idosch.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "mkubecek@suse.cz" <mkubecek@suse.cz>,
-        "pali@kernel.org" <pali@kernel.org>,
-        "jiri@nvidia.com" <jiri@nvidia.com>,
-        "vadimp@nvidia.com" <vadimp@nvidia.com>,
-        "mlxsw@nvidia.com" <mlxsw@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [RFC PATCH net-next v3 1/6] ethtool: Add ability to control
- transceiver modules' power mode
-Message-ID: <20210824164730.38035109@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CO1PR11MB5089F1466B2072C6AD8614F1D6C59@CO1PR11MB5089.namprd11.prod.outlook.com>
-References: <20210824130344.1828076-1-idosch@idosch.org>
-        <20210824130344.1828076-2-idosch@idosch.org>
-        <20210824161231.5e281f1e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CO1PR11MB5089F1466B2072C6AD8614F1D6C59@CO1PR11MB5089.namprd11.prod.outlook.com>
+To:     Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Kangmin Park <l4stpr0gr4m@gmail.com>
+Cc:     Roopa Prabhu <roopa@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 net-next] net: bridge: change return type of
+ br_handle_ingress_vlan_tunnel
+Message-ID: <20210824165208.36944d77@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <d37ff915-6d94-2d22-9e93-46b374fc47d7@nvidia.com>
+References: <20210823102118.17966-1-l4stpr0gr4m@gmail.com>
+        <d37ff915-6d94-2d22-9e93-46b374fc47d7@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -51,20 +44,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 24 Aug 2021 23:18:56 +0000 Keller, Jacob E wrote:
-> > > + * @mode_valid: Indicates the validity of the @mode field. Should be set by
-> > > + * device drivers on get operations when a module is plugged-in.  
+On Mon, 23 Aug 2021 13:25:20 +0300 Nikolay Aleksandrov wrote:
+> On 23/08/2021 13:21, Kangmin Park wrote:
+> > br_handle_ingress_vlan_tunnel() is only referenced in
+> > br_handle_frame(). If br_handle_ingress_vlan_tunnel() is called and
+> > return non-zero value, goto drop in br_handle_frame().
 > > 
-> > Should we make a firm decision on whether we want to use these kind of
-> > valid bits or choose invalid defaults? As you may guess my preference
-> > is the latter since that's what I usually do, that way drivers don't
-> > have to write two fields.
+> > But, br_handle_ingress_vlan_tunnel() always return 0. So, the
+> > routines that check the return value and goto drop has no meaning.
 > > 
-> > Actually I think this may be the first "valid" in ethtool, I thought we
-> > already had one but I don't see it now..
+> > Therefore, change return type of br_handle_ingress_vlan_tunnel() to
+> > void and remove if statement of br_handle_frame().
+> > 
+> > Signed-off-by: Kangmin Park <l4stpr0gr4m@gmail.com>
 > 
-> coalesce settings have a valid mode don't they? Or at least an "accepted modes"?
+> Looks good to me,
+> Acked-by: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-That's a static per-driver bitmask 'cause we don't trust driver writers
-to error out on all the unsupported fields. The driver code doesn't
-operate on it in the callbacks.
+Applied, thanks!
