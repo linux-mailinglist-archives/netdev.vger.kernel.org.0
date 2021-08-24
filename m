@@ -2,193 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C98E43F5A2B
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 10:51:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D498F3F5A4B
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 10:59:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235382AbhHXIvo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 04:51:44 -0400
-Received: from relay.sw.ru ([185.231.240.75]:51706 "EHLO relay.sw.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234180AbhHXIvn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Aug 2021 04:51:43 -0400
+        id S235447AbhHXJA3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 05:00:29 -0400
+Received: from bee.birch.relay.mailchannels.net ([23.83.209.14]:52967 "EHLO
+        bee.birch.relay.mailchannels.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235396AbhHXJA0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 05:00:26 -0400
+X-Sender-Id: 9wt3zsp42r|x-authuser|john.efstathiades@pebblebay.com
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id BA3B9541A85;
+        Tue, 24 Aug 2021 08:59:39 +0000 (UTC)
+Received: from ares.krystal.co.uk (100-96-17-244.trex.outbound.svc.cluster.local [100.96.17.244])
+        (Authenticated sender: 9wt3zsp42r)
+        by relay.mailchannels.net (Postfix) with ESMTPA id CC926541E6F;
+        Tue, 24 Aug 2021 08:59:37 +0000 (UTC)
+X-Sender-Id: 9wt3zsp42r|x-authuser|john.efstathiades@pebblebay.com
+Received: from ares.krystal.co.uk (ares.krystal.co.uk [77.72.0.130])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384)
+        by 100.96.17.244 (trex/6.3.3);
+        Tue, 24 Aug 2021 08:59:39 +0000
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: 9wt3zsp42r|x-authuser|john.efstathiades@pebblebay.com
+X-MailChannels-Auth-Id: 9wt3zsp42r
+X-Shoe-Spicy: 0a0e57163cb71ea3_1629795579291_3221969190
+X-MC-Loop-Signature: 1629795579291:1426253782
+X-MC-Ingress-Time: 1629795579291
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:From:
-        Subject; bh=9D4fyRT1vynNlON46SKzRI4rfptMAN4FO2EgEZOwqTo=; b=crv0T4XGrLJjgIFSR
-        ePqVz4uxfjesUbSqMGznifPwgBvYgSftxJCdb7m4EQ/nf1br2lDzbeuipHjtVQEg4Lr4iLxWgkK2O
-        8NS5nTX4ByAzvFvjNgb0g5rfUSouyZKIHeqQ77gqL4r8PI/FogIZPE94Jjc34gc312wSmmxix8gBU
-        =;
-Received: from [10.93.0.56]
-        by relay.sw.ru with esmtp (Exim 4.94.2)
-        (envelope-from <vvs@virtuozzo.com>)
-        id 1mIS8w-008fjA-1R; Tue, 24 Aug 2021 11:50:50 +0300
-Subject: Re: [PATCH NET-NEXT] ipv6: skb_expand_head() adjust skb->truesize
- incorrectly
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Christoph Paasch <christoph.paasch@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, kernel@openvz.org,
-        Julian Wiedmann <jwi@linux.ibm.com>
-References: <6858f130-e6b4-1ba7-ed6f-58c00152be69@virtuozzo.com>
- <ef4458d9-c4d7-f419-00f2-0f1cea5140ce@virtuozzo.com>
- <CALMXkpZkW+ULMMFgeY=cag1F0=891F-v9NEVcdn7Tyd-VUWGYA@mail.gmail.com>
- <1c12b056-79d2-126a-3f78-64629f072345@gmail.com>
- <2d8a102a-d641-c6c1-b417-7a35efa4e5da@gmail.com>
- <bd90616e-8e86-016b-0979-c4f4167b8bc2@gmail.com>
-From:   Vasily Averin <vvs@virtuozzo.com>
-Message-ID: <4fe6edb4-a364-0e59-f902-9a362dd998d4@virtuozzo.com>
-Date:   Tue, 24 Aug 2021 11:50:48 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        d=pebblebay.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        MIME-Version:Message-ID:Date:Subject:In-Reply-To:References:Cc:To:From:
+        Reply-To:Sender:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=DOQwcDkhSRipWIPoC1AMW2JUFZ3b2sns9QhIkdA4BZ4=; b=kiFU1atF+qghr8BQTeK1KIexmn
+        aHqWMBCD9SbZRk7hbLiYu7u+vjJddd1KHhHQ9sG70bZXfjjpVVCUI5Qbt4dVR/RD19mXjtNlqJSkD
+        ur/6ISTgCW8+AWhzx3YUW1QyCw0MWPglv4oQe9LoFUwh0KROEjKusoXFHR/6VBhq4ebEwPTZzlbvb
+        oZMyVPySIGAu+bRXusBWc19djQXFyNpzifq2A7sLrSVca8sTZYUVYIXgCKo68zmEjEWq8dQYh1tA5
+        SAlviFX/px8W6doklSiwLRe3KaYsIC4SS/HqVnyE+QV0CbTCN9ezVxoiklP+xTAuH8/P+jidz05jQ
+        oP1UWueQ==;
+Received: from cpc160185-warw19-2-0-cust743.3-2.cable.virginm.net ([82.21.62.232]:39069 helo=pbcllap7)
+        by ares.krystal.co.uk with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <john.efstathiades@pebblebay.com>)
+        id 1mISHQ-002Sgw-NT; Tue, 24 Aug 2021 09:59:35 +0100
+Reply-To: <john.efstathiades@pebblebay.com>
+From:   "John Efstathiades" <john.efstathiades@pebblebay.com>
+To:     "'Jakub Kicinski'" <kuba@kernel.org>, <linux-usb@vger.kernel.org>
+Cc:     <UNGLinuxDriver@microchip.com>, <woojung.huh@microchip.com>,
+        <davem@davemloft.net>, <netdev@vger.kernel.org>
+References: <20210823135229.36581-1-john.efstathiades@pebblebay.com>    <20210823135229.36581-6-john.efstathiades@pebblebay.com> <20210823154022.490688a6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210823154022.490688a6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Subject: RE: [PATCH net-next 05/10] lan78xx: Disable USB3 link power state transitions
+Date:   Tue, 24 Aug 2021 09:59:12 +0100
+Organization: Pebble Bay Consulting Ltd
+Message-ID: <001b01d798c6$5b4d7b30$11e87190$@pebblebay.com>
 MIME-Version: 1.0
-In-Reply-To: <bd90616e-8e86-016b-0979-c4f4167b8bc2@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain;
+        charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Content-Language: en-gb
+Thread-Index: AQHPAB61dMYAY/LsGMENMAjMWftvdQFrXfllAlVKFxurdYEy8A==
+X-AuthUser: john.efstathiades@pebblebay.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/24/21 1:23 AM, Eric Dumazet wrote:
-> On 8/23/21 2:51 PM, Eric Dumazet wrote:
->> On 8/23/21 2:45 PM, Eric Dumazet wrote:
->>> On 8/23/21 10:25 AM, Christoph Paasch wrote:
->>>> Hello,
->>>>
->>>> On Mon, Aug 23, 2021 at 12:56 AM Vasily Averin <vvs@virtuozzo.com> wrote:
->>>>>
->>>>> Christoph Paasch reports [1] about incorrect skb->truesize
->>>>> after skb_expand_head() call in ip6_xmit.
->>>>> This happen because skb_set_owner_w() for newly clone skb is called
->>>>> too early, before pskb_expand_head() where truesize is adjusted for
->>>>> (!skb-sk) case.
->>>>>
->>>>> [1] https://lkml.org/lkml/2021/8/20/1082
->>>>>
->>>>> Reported-by: Christoph Paasch <christoph.paasch@gmail.com>
->>>>> Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
->>>>> ---
->>>>>  net/core/skbuff.c | 24 +++++++++++++-----------
->>>>>  1 file changed, 13 insertions(+), 11 deletions(-)
->>>>>
->>>>> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
->>>>> index f931176..508d5c4 100644
->>>>> --- a/net/core/skbuff.c
->>>>> +++ b/net/core/skbuff.c
->>>>> @@ -1803,6 +1803,8 @@ struct sk_buff *skb_realloc_headroom(struct sk_buff *skb, unsigned int headroom)
->>>>>
->>>>>  struct sk_buff *skb_expand_head(struct sk_buff *skb, unsigned int headroom)
->>>>>  {
->>>>> +       struct sk_buff *oskb = skb;
->>>>> +       struct sk_buff *nskb = NULL;
->>>>>         int delta = headroom - skb_headroom(skb);
->>>>>
->>>>>         if (WARN_ONCE(delta <= 0,
->>>>> @@ -1811,21 +1813,21 @@ struct sk_buff *skb_expand_head(struct sk_buff *skb, unsigned int headroom)
->>>>>
->>>>>         /* pskb_expand_head() might crash, if skb is shared */
->>>>>         if (skb_shared(skb)) {
->>>>> -               struct sk_buff *nskb = skb_clone(skb, GFP_ATOMIC);
->>>>> -
->>>>> -               if (likely(nskb)) {
->>>>> -                       if (skb->sk)
->>>>> -                               skb_set_owner_w(nskb, skb->sk);
->>>>> -                       consume_skb(skb);
->>>>> -               } else {
->>>>> -                       kfree_skb(skb);
->>>>> -               }
->>>>> +               nskb = skb_clone(skb, GFP_ATOMIC);
->>>>>                 skb = nskb;
->>>>>         }
->>>>>         if (skb &&
->>>>> -           pskb_expand_head(skb, SKB_DATA_ALIGN(delta), 0, GFP_ATOMIC)) {
->>>>> -               kfree_skb(skb);
->>>>> +           pskb_expand_head(skb, SKB_DATA_ALIGN(delta), 0, GFP_ATOMIC))
->>>>>                 skb = NULL;
->>>>> +
->>>>> +       if (!skb) {
->>>>> +               kfree_skb(oskb);
->>>>> +               if (nskb)
->>>>> +                       kfree_skb(nskb);
->>>>> +       } else if (nskb) {
->>>>> +               if (oskb->sk)
->>>>> +                       skb_set_owner_w(nskb, oskb->sk);
->>>>> +               consume_skb(oskb);
->>>>
->>>> sorry, this does not fix the problem. The syzkaller repro still
->>>> triggers the WARN.
->>>>
->>>> When it happens, the skb in ip6_xmit() is not shared as it comes from
->>>> __tcp_transmit_skb, where it is skb_clone()'d.
->>>>
->>>>
->>>
->>> Old code (in skb_realloc_headroom())
->>> was first calling skb2 = skb_clone(skb, GFP_ATOMIC); 
->>>
->>> At this point, skb2->sk was NULL
->>> So pskb_expand_head(skb2, SKB_DATA_ALIGN(delta), 0, ...) was able to tweak skb2->truesize
->>>
->>> I would try :
->>>
->>> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
->>> index f9311762cc475bd38d87c33e988d7c983b902e56..326749a8938637b044a616cc33b6a19ed191ac41 100644
->>> --- a/net/core/skbuff.c
->>> +++ b/net/core/skbuff.c
->>> @@ -1804,6 +1804,7 @@ EXPORT_SYMBOL(skb_realloc_headroom);
->>>  struct sk_buff *skb_expand_head(struct sk_buff *skb, unsigned int headroom)
->>>  {
->>>         int delta = headroom - skb_headroom(skb);
->>> +       struct sk_buff *oskb = NULL;
->>>  
->>>         if (WARN_ONCE(delta <= 0,
->>>                       "%s is expecting an increase in the headroom", __func__))
->>> @@ -1813,19 +1814,21 @@ struct sk_buff *skb_expand_head(struct sk_buff *skb, unsigned int headroom)
->>>         if (skb_shared(skb)) {
->>>                 struct sk_buff *nskb = skb_clone(skb, GFP_ATOMIC);
->>>  
->>> -               if (likely(nskb)) {
->>> -                       if (skb->sk)
->>> -                               skb_set_owner_w(nskb, skb->sk);
->>> -                       consume_skb(skb);
->>> -               } else {
->>> +               if (unlikely(!nskb)) {
->>>                         kfree_skb(skb);
->>> +                       return NULL;
->>>                 }
->>> +               oskb = skb;
->>>                 skb = nskb;
->>>         }
->>> -       if (skb &&
->>> -           pskb_expand_head(skb, SKB_DATA_ALIGN(delta), 0, GFP_ATOMIC)) {
->>> +       if (pskb_expand_head(skb, SKB_DATA_ALIGN(delta), 0, GFP_ATOMIC)) {
->>>                 kfree_skb(skb);
->>> -               skb = NULL;
->>> +               kfree_skb(oskb);
->>> +               return NULL;
->>> +       }
->>> +       if (oskb) {
->>> +               skb_set_owner_w(skb, oskb->sk);
->>> +               consume_skb(oskb);
->>>         }
->>>         return skb;
->>>  }
->>
->>
->> Oh well, probably not going to work.
->>
->> We have to find a way to properly increase skb->truesize, even if skb_clone() is _not_ called.
 
-Can we adjust truesize outside pskb_expand_head()?
-Could you please explain why it can be not safe?
+> > +/* Enabling link power state transitions will reduce power consumption
+> > + * when the link is idle. However, this can cause problems with some
+> > + * USB3 hubs resulting in erratic packet flow.
+> > + */
+> > +static bool enable_link_power_states;
+> 
+> How is the user supposed to control this? Are similar issues not
+> addressed at the USB layer? There used to be a "no autosuspend"
+> flag that all netdev drivers set..
 
-> I also note that current use of skb_set_owner_w(), forcing skb->destructor to sock_wfree()
-> is probably breaking TCP Small queues, since original skb->destructor would be tcp_wfree() or __sock_wfree()
+The change is specific to U1 and U2 transitions initiated by the device
+itself and does not affect ability of the device to respond to
+host-initiated U1 and U2 transitions.
 
-I agree, however as far as I understand it is separate and more global problem.
+There is no user access to this. The driver would have to be recompiled to
+change the default. 
 
-Thank you,
-	Vasily Averin
+> 
+> Was linux-usb consulted? Adding the list to Cc.
+> 
+No, they weren't, but the change was discussed with the driver maintainer at
+Microchip.
+
+> >  		/* reset MAC */
+> >  		ret = lan78xx_read_reg(dev, MAC_CR, &buf);
+> >  		if (unlikely(ret < 0))
+> > -			return -EIO;
+> > +			return ret;
+> >  		buf |= MAC_CR_RST_;
+> >  		ret = lan78xx_write_reg(dev, MAC_CR, buf);
+> >  		if (unlikely(ret < 0))
+> > -			return -EIO;
+> > +			return ret;
+> 
+> Please split the ret code changes to a separate, earlier patch.
+
+There are ret code changes in later patches in this set. As a general, rule
+should ret code changes be put into their own patch?
+
