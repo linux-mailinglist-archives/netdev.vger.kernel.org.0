@@ -2,173 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 420583F6B00
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 23:29:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05BBB3F6B0C
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 23:35:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234725AbhHXV3t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 17:29:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33976 "EHLO
+        id S235556AbhHXVgU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 17:36:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230523AbhHXV3s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 17:29:48 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A4E1C061757;
-        Tue, 24 Aug 2021 14:29:03 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id a5so13060772plh.5;
-        Tue, 24 Aug 2021 14:29:03 -0700 (PDT)
+        with ESMTP id S235265AbhHXVgJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 17:36:09 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A020AC061757;
+        Tue, 24 Aug 2021 14:35:24 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id z19so9235911edi.9;
+        Tue, 24 Aug 2021 14:35:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=R4j615OZaMu2Chi/1Ezy9Ev2hUd100VaJBKaj5Pnvng=;
-        b=WZ7qvbgdmoeN3nuzDmPSfajhG7GNqQunszLjPajQ/geEvwTTA6Q2FoTUpYnK3WsaSI
-         r1hjX7z7OdUyZX7C4NP3VZkEzi9DDth+Lh5NRlv5q3xEtnZcP3YNAX82RUdhuAVCZQhw
-         oSFxXfRPZLUHsxrkLMAF1n8baGFq0lCR+qO/fW2N3fKPJI7skzcbq9lbjeI4KvLQwT3W
-         O53kIq3Qj1RmZeopU2IXyPARjh3fgIDZgKNFlZmH/WslQCbwxTkuLX9Ebnj4Sefnxn8N
-         rYBmu24Y0S08PFVclZEcXUnAJ9hQtEoHUN4eKGQ7L5L0T+B6dONI/1/AenhpPDAIoAXo
-         5EUg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=v5KB3TDKU2JZKZBE8m69mrlD1i/Ya5eflODCh/zuQvA=;
+        b=Jyus8ROef22dYWjwXe6vtkBVd8t/6YH+HpofLzFuer5LbL1PI53OdLxzoxXtygawQi
+         LRgvu0+QCJVm7sWHEDCXoJr8d44QS3pGGWpBEG0uLTVGa8HGlrHw+lzNu9fuiO0NEbNx
+         +Lwapsk9AtW5qjVim/7u0zKkfCempDbdpSzmONn9AE1zn2Mu61cDwR9ftA9y36uxmKaq
+         vGfwdqo5ivVYPmqlrtSyW33IqZ9dwPv06X32nTPIsgP2wCD9XuEbgt/KvTSwNRDS51g/
+         R5OznqLENpUI/QY9slKIDv5DTfn2WgBvWuc9a3c2EY0dM2RcYaeT6+36YitPTpdkboF9
+         jNkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=R4j615OZaMu2Chi/1Ezy9Ev2hUd100VaJBKaj5Pnvng=;
-        b=RjAvnnZ1pVj09RaqvLVpCt1V+0nVIXNIjJmuvaGrNrX42GTZyaZQ9f8J4tgfRp9lCN
-         dPwxR3Nd6iSUeaBqa1v7G4cmOxLWlP1su8inS7m2mqakeyiM0bxGAOqFJIcNRBTD+G4s
-         GG7+9thbi6VbhFDS9VFU4ORS4ORP3WyQdP/naqIl467+vwLGpW4dOYWFQbCOWhVEO59r
-         rSSgmgMvUX48wrIp6+8reQMqVis9C2cKacegn9ugv0HIQjuONhZpWP24PD8FUO7v+4SN
-         mGGm8pZOsVZhCLaYe89BIh1pEMwOORVJVOQO1KlxojBi1DbAS/Vm9vPchtEpmBgHMpss
-         fJQA==
-X-Gm-Message-State: AOAM5322FI7F1JCEv+G/aJo5DcX5ORpqDHjUx8WeKmfMk8LK4NDnpVxt
-        WrtHxzHN8nvWJ1zPobwBaRLWxvoFq57SNW/zAIw=
-X-Google-Smtp-Source: ABdhPJwL+QMcCwxBwlme63E9hugypiaghoBFJfpg78sfqxpzlM5ctspsVO8yO7dvdcDL/pEeGDguRauhBcj+UduC1gI=
-X-Received: by 2002:a17:90a:6009:: with SMTP id y9mr6558517pji.93.1629840543001;
- Tue, 24 Aug 2021 14:29:03 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=v5KB3TDKU2JZKZBE8m69mrlD1i/Ya5eflODCh/zuQvA=;
+        b=TgZMnxY5G2RdE0f9avqQ3SkrGQeR4o1mcV3pQwz+3a13svY5Pf+da//ydmi289L2Jj
+         fXVPKEn8yZSEmoWCNSsS4I/Tl5RN9b4sG60BfyH+onARZLoiu5byFV3oDNDTfnP+xrhW
+         x4G9z98V+qPMu/q8kYhgmj4N8tggl9mhoVLTjelYFPyjqwuegaP7/8H2ckCQu/tJt0Nb
+         uIHUJsOnyp1jS6pERrtn3P0cc/ahTcWDrmoVPTStSmZRX6ccvaMDbmu9hEpFDjB9eMgL
+         HIL0FFEbdQC0fkiB3Qv8R6bOqXsH0N6N2xsH836fIXr+7DHGK2zqRIHwRgr3qDRla28P
+         DCCA==
+X-Gm-Message-State: AOAM531rrlmKvh7goyfLltx3LjqNNg8gBOZDqCPGjX5jshjHFahW/LHL
+        HL7VKX0WkTvCqNSl7YWEIg2crG/IAIAGT6O+
+X-Google-Smtp-Source: ABdhPJzdLq7IBaoRVFqNaDhK/Q5E4Jafw2rqtP73KSmRneKfKkBwuvt8JDasZi1rXA4JpvJUSWKzHw==
+X-Received: by 2002:a50:eb8a:: with SMTP id y10mr1883448edr.137.1629840923195;
+        Tue, 24 Aug 2021 14:35:23 -0700 (PDT)
+Received: from localhost.localdomain ([2a04:241e:502:1d80:ed0a:7326:fbac:b4c])
+        by smtp.gmail.com with ESMTPSA id d16sm12348357edu.8.2021.08.24.14.35.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Aug 2021 14:35:22 -0700 (PDT)
+From:   Leonard Crestez <cdleonard@gmail.com>
+To:     Dmitry Safonov <0x7f454c46@gmail.com>,
+        David Ahern <dsahern@kernel.org>, Shuah Khan <shuah@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Yuchung Cheng <ycheng@google.com>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Christoph Paasch <cpaasch@apple.com>,
+        Ivan Delalande <colona@arista.com>,
+        Priyaranjan Jha <priyarjha@google.com>,
+        Menglong Dong <dong.menglong@zte.com.cn>,
+        netdev@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [RFCv3 00/15] tcp: Initial support for RFC5925 auth option
+Date:   Wed, 25 Aug 2021 00:34:33 +0300
+Message-Id: <cover.1629840814.git.cdleonard@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20210821025837.1614098-1-davemarchevsky@fb.com>
- <20210821025837.1614098-3-davemarchevsky@fb.com> <CAEf4BzYEOzfmwi8n8K_W_6Pc+gC081ncmRCAq8Fz0vr=y7eMcg@mail.gmail.com>
- <CAADnVQLUWHO0EhLhMVATc9-z11H7ROF6DCmJ=sW+-iP1baeWWg@mail.gmail.com>
- <CAEf4Bza30Rkg02AzmG7Mw5AyE1wykPBuH6f_fXAQXLu2qH2POA@mail.gmail.com>
- <CAADnVQ+Kxei6_q4PWQ57zVr86gKqu=4s07Y1Kwy9SNz__PWYdQ@mail.gmail.com>
- <CAEf4BzbU6xt49+VYSDGoXonOMdB3SPDdh_sr2pTeUC66sT3kPw@mail.gmail.com>
- <CAADnVQL_6XNoUaO_J43OSfyirjRRLUgK7B18BVopd49suUJt6A@mail.gmail.com> <CAEf4BzZf84FWnrz7zimcW0tw-k1im6kaJJ+g6ypzushXEb3oeA@mail.gmail.com>
-In-Reply-To: <CAEf4BzZf84FWnrz7zimcW0tw-k1im6kaJJ+g6ypzushXEb3oeA@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 24 Aug 2021 14:28:52 -0700
-Message-ID: <CAADnVQLV7UGpxiNEphZKodMzdVheAaw1pmLechupevBifBF0OA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 2/5] bpf: add bpf_trace_vprintk helper
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Dave Marchevsky <davemarchevsky@fb.com>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Yonghong Song <yhs@fb.com>,
-        Florent Revest <revest@chromium.org>,
-        Networking <netdev@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 24, 2021 at 2:24 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Tue, Aug 24, 2021 at 2:00 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Tue, Aug 24, 2021 at 11:24 AM Andrii Nakryiko
-> > <andrii.nakryiko@gmail.com> wrote:
-> > >
-> > > On Tue, Aug 24, 2021 at 11:17 AM Alexei Starovoitov
-> > > <alexei.starovoitov@gmail.com> wrote:
-> > > >
-> > > > On Tue, Aug 24, 2021 at 11:02 AM Andrii Nakryiko
-> > > > <andrii.nakryiko@gmail.com> wrote:
-> > > > >
-> > > > > On Tue, Aug 24, 2021 at 10:57 AM Alexei Starovoitov
-> > > > > <alexei.starovoitov@gmail.com> wrote:
-> > > > > >
-> > > > > > On Mon, Aug 23, 2021 at 9:50 PM Andrii Nakryiko
-> > > > > > <andrii.nakryiko@gmail.com> wrote:
-> > > > > > >
-> > > > > > > On Fri, Aug 20, 2021 at 7:59 PM Dave Marchevsky <davemarchevsky@fb.com> wrote:
-> > > > > > > >
-> > > > > > > > This helper is meant to be "bpf_trace_printk, but with proper vararg
-> > > > > > >
-> > > > > > > We have bpf_snprintf() and bpf_seq_printf() names for other BPF
-> > > > > > > helpers using the same approach. How about we call this one simply
-> > > > > > > `bpf_printf`? It will be in line with other naming, it is logical BPF
-> > > > > > > equivalent of user-space printf (which outputs to stderr, which in BPF
-> > > > > > > land is /sys/kernel/debug/tracing/trace_pipe). And it will be logical
-> > > > > > > to have a nice and short BPF_PRINTF() convenience macro provided by
-> > > > > > > libbpf.
-> > > > > > >
-> > > > > > > > support". Follow bpf_snprintf's example and take a u64 pseudo-vararg
-> > > > > > > > array. Write to dmesg using the same mechanism as bpf_trace_printk.
-> > > > > > >
-> > > > > > > Are you sure about the dmesg part?... bpf_trace_printk is outputting
-> > > > > > > into /sys/kernel/debug/tracing/trace_pipe.
-> > > > > >
-> > > > > > Actually I like bpf_trace_vprintk() name, since it makes it obvious that
-> > > > >
-> > > > > It's the inconsistency with bpf_snprintf() and bpf_seq_printf() that's
-> > > > > mildly annoying (it's f at the end, and no v- prefix). Maybe
-> > > > > bpf_trace_printf() then? Or is it too close to bpf_trace_printk()?
-> > > >
-> > > > bpf_trace_printf could be ok, but see below.
-> > > >
-> > > > > But
-> > > > > either way you would be using BPF_PRINTF() macro for this. And we can
-> > > > > make that macro use bpf_trace_printk() transparently for <3 args, so
-> > > > > that new macro works on old kernels.
-> > > >
-> > > > Cannot we change the existing bpf_printk() macro to work on old and new kernels?
-> > >
-> > > Only if we break backwards compatibility. And I only know how to
-> > > detect the presence of new helper with CO-RE, which automatically
-> > > makes any BPF program using this macro CO-RE-dependent, which might
-> > > not be what users want (vmlinux BTF is still not universally
-> > > available). If I could do something like that without breaking change
-> > > and without CO-RE, I'd update bpf_printk() to use `const char *fmt`
-> > > for format string a long time ago. But adding CO-RE dependency for
-> > > bpf_printk() seems like a no-go.
-> >
-> > I see. Naming is the hardest.
-> > I think Dave's current choice of lower case bpf_vprintk() macro and
-> > bpf_trace_vprintk()
-> > helper fits the existing bpf_printk/bpf_trace_printk the best.
-> > Yes, it's inconsistent with BPF_SEQ_PRINTF/BPF_SNPRINTF,
-> > but consistent with trace_printk. Whichever way we go it will be inconsistent.
-> > Stylistically I like the lower case macro, since it doesn't scream at me.
->
-> Ok, it's fine. Even more so because we don't need a new macro, we can
-> just extend the existing bpf_printk() macro to automatically pick
-> bpf_trace_printk() if more than 3 arguments is provided.
->
-> Dave, you'll have to solve a bit of a puzzle macro-wise, but it's
-> possible to use either bpf_trace_printk() or bpf_trace_vprintk()
-> transparently for the user.
->
-> The only downside is that for <3 args, for backwards compatibility,
-> we'd have to stick to
->
-> char ___fmt[] = fmt;
->
-> vs more efficient
->
-> static const char ___fmt[] = fmt;
->
-> But I'm thinking it might be time to finally make this improvement. We
-> can also allow users to fallback to less efficient ways for really old
-> kernels with some extra flag, like so
->
-> #ifdef BPF_NO_GLOBAL_DATA
-> char ___fmt[] = fmt;
-> #else
-> static const char ___fmt[] = fmt;
-> #end
->
-> Thoughts?
+This is similar to TCP MD5 in functionality but it's sufficiently
+different that wire formats are incompatible. Compared to TCP-MD5
+more algorithms are supported and multiple keys can be used on the
+same connection but there is still no negotiation mechanism.
+Expected use-case is protecting long-duration BGP/LDP connections
+between routers using pre-shared keys.
 
-+1 from me for the latter assuming macro magic is possible.
+This version is mostly functional, it incorporates ABI feedback from
+previous versions and adds tests to kselftests. More discussion and
+testing is required and obvious optimizations were skipped in favor of
+adding functionality. Here are several flaws:
+
+* RST and TIMEWAIT are mostly unhandled
+* Locking is lockdep-clean but need to be revised
+* Sequence Number Extension not implemented
+* User is responsible for ensuring keys do not overlap
+* Traffic key is not cached (reducing performance)
+
+Not all ABI suggestions were incorporated, they can be discussed further.
+However I very much want to avoid supporting algorithms beyond RFC5926.
+
+Test suite was added to tools/selftests/tcp_authopt. Tests are written
+in python using pytest and scapy and check the API in some detail and
+validate packet captures. Python code is already in linux and in
+kselftests but virtualenvs not very much. This test suite uses `tox` to
+create a private virtualenv and hide dependencies. Let me know if this
+is OK or how it can be improved.
+
+Limited testing support is also included in nettest and fcnal-test.sh,
+those tests are slow and cover much less.
+
+Changes for frr: https://github.com/FRRouting/frr/pull/9442
+That PR was made early for ABI feedback, it has many issues.
+
+Changes for yabgp: https://github.com/cdleonard/yabgp/commits/tcp_authopt
+The patched version of yabgp can establish a BGP session protected by
+TCP Authentication Option with a Cisco IOS-XR router. It old now.
+
+Changes since RFCv2:
+* Removed local_id from ABI and match on send_id/recv_id/addr
+* Add all relevant out-of-tree tests to tools/testing/selftests
+* Return an error instead of ignoring unknown flags, hopefully this makes
+it easier to extend.
+* Check sk_family before __tcp_authopt_info_get_or_create in tcp_set_authopt_key
+* Use sock_owned_by_me instead of WARN_ON(!lockdep_sock_is_held(sk))
+* Fix some intermediate build failures reported by kbuild robot
+* Improve documentation
+Link: https://lore.kernel.org/netdev/cover.1628544649.git.cdleonard@gmail.com/
+ 
+Changes since RFC:
+* Split into per-topic commits for ease of review. The intermediate
+commits compile with a few "unused function" warnings and don't do
+anything useful by themselves.
+* Add ABI documention including kernel-doc on uapi
+* Fix lockdep warnings from crypto by creating pools with one shash for
+each cpu
+* Accept short options to setsockopt by padding with zeros; this
+approach allows increasing the size of the structs in the future.
+* Support for aes-128-cmac-96
+* Support for binding addresses to keys in a way similar to old tcp_md5
+* Add support for retrieving received keyid/rnextkeyid and controling
+the keyid/rnextkeyid being sent.
+Link: https://lore.kernel.org/netdev/01383a8751e97ef826ef2adf93bfde3a08195a43.1626693859.git.cdleonard@gmail.com/
+
+Leonard Crestez (15):
+  tcp: authopt: Initial support and key management
+  docs: Add user documentation for tcp_authopt
+  selftests: Initial tcp_authopt test module
+  selftests: tcp_authopt: Initial sockopt manipulation
+  tcp: authopt: Add crypto initialization
+  tcp: authopt: Compute packet signatures
+  tcp: authopt: Hook into tcp core
+  tcp: authopt: Add snmp counters
+  selftests: tcp_authopt: Test key address binding
+  selftests: tcp_authopt: Capture and verify packets
+  selftests: Initial tcp_authopt support for nettest
+  selftests: Initial tcp_authopt support for fcnal-test
+  selftests: Add -t tcp_authopt option for fcnal-test.sh
+  tcp: authopt: Add key selection controls
+  selftests: tcp_authopt: Add tests for rollover
+
+ Documentation/networking/index.rst            |    1 +
+ Documentation/networking/tcp_authopt.rst      |   69 +
+ include/linux/tcp.h                           |    6 +
+ include/net/tcp.h                             |    1 +
+ include/net/tcp_authopt.h                     |  134 ++
+ include/uapi/linux/snmp.h                     |    1 +
+ include/uapi/linux/tcp.h                      |  110 ++
+ net/ipv4/Kconfig                              |   14 +
+ net/ipv4/Makefile                             |    1 +
+ net/ipv4/proc.c                               |    1 +
+ net/ipv4/tcp.c                                |   27 +
+ net/ipv4/tcp_authopt.c                        | 1168 +++++++++++++++++
+ net/ipv4/tcp_input.c                          |   17 +
+ net/ipv4/tcp_ipv4.c                           |    5 +
+ net/ipv4/tcp_minisocks.c                      |    2 +
+ net/ipv4/tcp_output.c                         |   74 +-
+ net/ipv6/tcp_ipv6.c                           |    4 +
+ tools/testing/selftests/net/fcnal-test.sh     |   34 +
+ tools/testing/selftests/net/nettest.c         |   34 +-
+ tools/testing/selftests/tcp_authopt/Makefile  |    5 +
+ .../testing/selftests/tcp_authopt/README.rst  |   15 +
+ tools/testing/selftests/tcp_authopt/config    |    6 +
+ tools/testing/selftests/tcp_authopt/run.sh    |   11 +
+ tools/testing/selftests/tcp_authopt/setup.cfg |   17 +
+ tools/testing/selftests/tcp_authopt/setup.py  |    5 +
+ .../tcp_authopt/tcp_authopt_test/__init__.py  |    0
+ .../tcp_authopt/tcp_authopt_test/conftest.py  |   21 +
+ .../full_tcp_sniff_session.py                 |   53 +
+ .../tcp_authopt_test/linux_tcp_authopt.py     |  198 +++
+ .../tcp_authopt_test/netns_fixture.py         |   63 +
+ .../tcp_authopt/tcp_authopt_test/server.py    |   82 ++
+ .../tcp_authopt/tcp_authopt_test/sockaddr.py  |  101 ++
+ .../tcp_authopt_test/tcp_authopt_alg.py       |  276 ++++
+ .../tcp_authopt/tcp_authopt_test/test_bind.py |  143 ++
+ .../tcp_authopt_test/test_rollover.py         |  181 +++
+ .../tcp_authopt_test/test_sockopt.py          |   74 ++
+ .../tcp_authopt_test/test_vectors.py          |  359 +++++
+ .../tcp_authopt_test/test_verify_capture.py   |  123 ++
+ .../tcp_authopt/tcp_authopt_test/utils.py     |  154 +++
+ .../tcp_authopt/tcp_authopt_test/validator.py |  158 +++
+ 40 files changed, 3746 insertions(+), 2 deletions(-)
+ create mode 100644 Documentation/networking/tcp_authopt.rst
+ create mode 100644 include/net/tcp_authopt.h
+ create mode 100644 net/ipv4/tcp_authopt.c
+ create mode 100644 tools/testing/selftests/tcp_authopt/Makefile
+ create mode 100644 tools/testing/selftests/tcp_authopt/README.rst
+ create mode 100644 tools/testing/selftests/tcp_authopt/config
+ create mode 100755 tools/testing/selftests/tcp_authopt/run.sh
+ create mode 100644 tools/testing/selftests/tcp_authopt/setup.cfg
+ create mode 100644 tools/testing/selftests/tcp_authopt/setup.py
+ create mode 100644 tools/testing/selftests/tcp_authopt/tcp_authopt_test/__init__.py
+ create mode 100644 tools/testing/selftests/tcp_authopt/tcp_authopt_test/conftest.py
+ create mode 100644 tools/testing/selftests/tcp_authopt/tcp_authopt_test/full_tcp_sniff_session.py
+ create mode 100644 tools/testing/selftests/tcp_authopt/tcp_authopt_test/linux_tcp_authopt.py
+ create mode 100644 tools/testing/selftests/tcp_authopt/tcp_authopt_test/netns_fixture.py
+ create mode 100644 tools/testing/selftests/tcp_authopt/tcp_authopt_test/server.py
+ create mode 100644 tools/testing/selftests/tcp_authopt/tcp_authopt_test/sockaddr.py
+ create mode 100644 tools/testing/selftests/tcp_authopt/tcp_authopt_test/tcp_authopt_alg.py
+ create mode 100644 tools/testing/selftests/tcp_authopt/tcp_authopt_test/test_bind.py
+ create mode 100644 tools/testing/selftests/tcp_authopt/tcp_authopt_test/test_rollover.py
+ create mode 100644 tools/testing/selftests/tcp_authopt/tcp_authopt_test/test_sockopt.py
+ create mode 100644 tools/testing/selftests/tcp_authopt/tcp_authopt_test/test_vectors.py
+ create mode 100644 tools/testing/selftests/tcp_authopt/tcp_authopt_test/test_verify_capture.py
+ create mode 100644 tools/testing/selftests/tcp_authopt/tcp_authopt_test/utils.py
+ create mode 100644 tools/testing/selftests/tcp_authopt/tcp_authopt_test/validator.py
+
+
+base-commit: 3a62c333497b164868fdcd241842a1dd4e331825
+-- 
+2.25.1
+
