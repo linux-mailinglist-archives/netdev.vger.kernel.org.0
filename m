@@ -2,136 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40FDE3F67F9
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 19:40:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59E393F6881
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 19:58:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242100AbhHXRjI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 13:39:08 -0400
-Received: from smtp-out1.suse.de ([195.135.220.28]:49370 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241343AbhHXRhA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 13:37:00 -0400
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id C6DE2220FC;
-        Tue, 24 Aug 2021 17:36:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1629826574; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=M8Onpp9sd6nINjjS7fypRmQwJX7oYnMUIBtqtDjiGJQ=;
-        b=gAk/AcOZQUqil4ulHVwmLyRENsXEtQcWr7xuPu1ckXHiFGg1eTUU1cIUezR+mTiUzCWhhd
-        L1yDeC4HFj3EEwLkyn80jpeBAsJBbNIMO8a00pIZoFlw4TMwtzzqVuLS0TfbkoHy8cUSxw
-        wBglYqTzqaV3+mwii5VmTOud9qaNA8w=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1629826574;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=M8Onpp9sd6nINjjS7fypRmQwJX7oYnMUIBtqtDjiGJQ=;
-        b=pNavi2EJjL/czon1+iarHA9lTbfiZ+55tTcP1eP7seLyPC9/xKkZ5YQYX/OkOV0HbUemDQ
-        m9w603LuYr4egLCQ==
-Received: from lion.mk-sys.cz (unknown [10.100.200.14])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 6F78BA3BBC;
-        Tue, 24 Aug 2021 17:36:14 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 2C1B9603F6; Tue, 24 Aug 2021 19:36:14 +0200 (CEST)
-Date:   Tue, 24 Aug 2021 19:36:14 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Guangbin Huang <huangguangbin2@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, amitc@mellanox.com,
-        idosch@idosch.org, andrew@lunn.ch, o.rempel@pengutronix.de,
-        f.fainelli@gmail.com, jacob.e.keller@intel.com, mlxsw@mellanox.com,
-        netdev@vger.kernel.org, lipeng321@huawei.com
-Subject: Re: [PATCH RESEND ethtool-next] netlink: settings: add two link
- extended substates of bad signal integrity
-Message-ID: <20210824173614.mkv5i72sutxtdvrk@lion.mk-sys.cz>
-References: <1629771291-31425-1-git-send-email-huangguangbin2@huawei.com>
+        id S240323AbhHXR7F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 13:59:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41832 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235557AbhHXR7A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 13:59:00 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BB6CC061151;
+        Tue, 24 Aug 2021 10:37:18 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id dm15so7853499edb.10;
+        Tue, 24 Aug 2021 10:37:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=96yzP4yz3JLzphy1QSUobmPAufme29yUUfQ0C0CWToI=;
+        b=NG9DD7VYMrDSJ8MYlV0FkIB2v8q1mKFjZfj05Nnk5ESWT8HhHTyUVAsYFevs9IkNyL
+         JXo9XP59AbbNqAIxp//KozFSIgv51nkiWoumTWAAW6RPwtS07R6ZZSyAgoKNQJCDQT8Y
+         j4esFUzW0qFGXQOFh0Lk5hsP/Hw03KRWV9bgSUve1FL44AQXGAWJaHecZ7XLI1lv6DdL
+         qpoECFR709R1Gcr6tsSeFWDqZ27mJOnxSKYf6jSJ2QYoWQ+E5Aa20lb1wU8hk/GU0XFV
+         Wo7TjZpNxBx/5kFTSkZtLF66PTUz9W80O5SXRZg3HeXw6mEQXXe1deskGa2qb6/gz5+J
+         Mh0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=96yzP4yz3JLzphy1QSUobmPAufme29yUUfQ0C0CWToI=;
+        b=UknWO3hY0DE/wgwhpJq6EwJolokFHPR5w9x7+GtAD8g5qgij/evVv64VkJ+cKDvzdy
+         UYA3Oj+iJ4bxgNCWCcZ6TQeSBsr7+k7AeLoSgQqZAXD+RTw3BotSdhngFh1ayuq6MO/G
+         i6Olcx2xlFDNmR9yZEeD7ADQzGUmPqWM0pk/MaHQdb2GhaLysqCrTl/U0JVIt2+h0dzb
+         T33KEZm7rx0B6SVl1eoagx6De4AaDh4tw8pxajEX+Z/PHSvdkoc3cr+rpr848Xa6h8WZ
+         f8/JFBe+NTLXPYno9+Lt9eEACTMb24l5UYjmvhI7FQb1/fM2lJHrubYFwJ+0IaaQBAln
+         oU/Q==
+X-Gm-Message-State: AOAM532DYl5G+TFylX/yzWcxLzlStxSGvUztjGH9aQfiymQ9byMKKHza
+        mvrXZJCIRtoW48V+WKkUtNg=
+X-Google-Smtp-Source: ABdhPJzA9v8OaCPg4dfXbckH5OLHW+S0cfVd3W/bRRrUZfgwkih0AjV5JuTsER9E1AEn0bGG9WU7dg==
+X-Received: by 2002:aa7:c94c:: with SMTP id h12mr25211234edt.378.1629826636863;
+        Tue, 24 Aug 2021 10:37:16 -0700 (PDT)
+Received: from skbuf ([188.25.144.60])
+        by smtp.gmail.com with ESMTPSA id p5sm9549629ejl.73.2021.08.24.10.37.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Aug 2021 10:37:16 -0700 (PDT)
+Date:   Tue, 24 Aug 2021 20:37:14 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     DENG Qingfang <dqfext@gmail.com>
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Russell King <linux@armlinux.org.uk>,
+        "open list:MEDIATEK SWITCH DRIVER" <netdev@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next] net: dsa: mt7530: manually set up VLAN ID 0
+Message-ID: <20210824173714.cgpt2addxyjzlbyy@skbuf>
+References: <20210824165253.1691315-1-dqfext@gmail.com>
+ <20210824165742.xvkb3ke7boryfoj4@skbuf>
+ <20210824173237.1691654-1-dqfext@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="jm4gttuytbiaj4yb"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1629771291-31425-1-git-send-email-huangguangbin2@huawei.com>
+In-Reply-To: <20210824173237.1691654-1-dqfext@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Aug 25, 2021 at 01:32:37AM +0800, DENG Qingfang wrote:
+> On Tue, Aug 24, 2021 at 07:57:42PM +0300, Vladimir Oltean wrote:
+> > I understand that this is how you noticed the issue, but please remember
+> > that one can always compile a kernel with CONFIG_VLAN_8021Q=n. So the
+> > issue predates my patch by much longer. You might reconsider the Fixes:
+> > tag in light of this, maybe the patch needs to be sent to stable.
+>
+> Okay. So the Fixes tag should be 6087175b7991, which initially adds the
+> software fallback support for mt7530.
 
---jm4gttuytbiaj4yb
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Ok. Did the old code not need VLAN 0 for VLAN-unaware ports, or are you
+saying that since the VLAN table lookup was bypassed completely in the
+old code, 'no VLAN 0' was an inconsequential error?
 
-On Tue, Aug 24, 2021 at 10:14:51AM +0800, Guangbin Huang wrote:
-> Add two link extended substates of bad signal integrity available in the
-> kernel.
->=20
-> ETHTOOL_LINK_EXT_SUBSTATE_BSI_SERDES_REFERENCE_CLOCK_LOST means the input
-> external clock signal for SerDes is too weak or lost.
->=20
-> ETHTOOL_LINK_EXT_SUBSTATE_BSI_SERDES_ALOS means the received signal for
-> SerDes is too weak because analog loss of signal.
->=20
-> Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
-> ---
->  netlink/settings.c   | 4 ++++
->  uapi/linux/ethtool.h | 2 ++
->  2 files changed, 6 insertions(+)
->=20
-> diff --git a/netlink/settings.c b/netlink/settings.c
-> index e47a38f3058f..6d10a0703861 100644
-> --- a/netlink/settings.c
-> +++ b/netlink/settings.c
-> @@ -639,6 +639,10 @@ static const char *const names_bad_signal_integrity_=
-link_ext_substate[] =3D {
->  		"Large number of physical errors",
->  	[ETHTOOL_LINK_EXT_SUBSTATE_BSI_UNSUPPORTED_RATE]		=3D
->  		"Unsupported rate",
-> +	[ETHTOOL_LINK_EXT_SUBSTATE_BSI_SERDES_REFERENCE_CLOCK_LOST]	=3D
-> +		"Serdes reference clock lost",
-> +	[ETHTOOL_LINK_EXT_SUBSTATE_BSI_SERDES_ALOS]			=3D
-> +		"Serdes ALOS",
->  };
-> =20
->  static const char *const names_cable_issue_link_ext_substate[] =3D {
-> diff --git a/uapi/linux/ethtool.h b/uapi/linux/ethtool.h
-> index c6ec1111ffa3..bd1f09b23cf5 100644
-> --- a/uapi/linux/ethtool.h
-> +++ b/uapi/linux/ethtool.h
-> @@ -637,6 +637,8 @@ enum ethtool_link_ext_substate_link_logical_mismatch {
->  enum ethtool_link_ext_substate_bad_signal_integrity {
->  	ETHTOOL_LINK_EXT_SUBSTATE_BSI_LARGE_NUMBER_OF_PHYSICAL_ERRORS =3D 1,
->  	ETHTOOL_LINK_EXT_SUBSTATE_BSI_UNSUPPORTED_RATE,
-> +	ETHTOOL_LINK_EXT_SUBSTATE_BSI_SERDES_REFERENCE_CLOCK_LOST,
-> +	ETHTOOL_LINK_EXT_SUBSTATE_BSI_SERDES_ALOS,
->  };
-> =20
->  /* More information in addition to ETHTOOL_LINK_EXT_STATE_CABLE_ISSUE. */
+I think it's the latter. Just wanted to make sure. So that means, either
+this Fixes: tag or the other, the patch still belongs to net-next. From
+my side you shouldn't need to resend.
 
-Please split the uapi header update into a separate patch and update all
-headers to a specific commit (preferrably current net-next head) as
-described in the last section of
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 
-  https://www.kernel.org/pub/software/network/ethtool/devel.html
+> > > +static int
+> > > +mt7530_setup_vlan0(struct mt7530_priv *priv)
+> > > +{
+> > > +	u32 val;
+> > > +
+> > > +	/* Validate the entry with independent learning, keep the original
+> > > +	 * ingress tag attribute.
+> > > +	 */
+> > > +	val = IVL_MAC | EG_CON | PORT_MEM(MT7530_ALL_MEMBERS) | FID(FID_BRIDGED) |
+> >
+> > FID_BRIDGED?
+>
+> What's wrong with that?
 
-The patch looks good otherwise.
-
-Michal
-
---jm4gttuytbiaj4yb
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmElLggACgkQ538sG/LR
-dpUYswgAiryTWu/K1dyVeTlS0dvOmdc1vRf9gvpwRH4n2GkMEPOKIJjXk9bAQP/2
-GlfrwEglwFMV4UPtj1vw/t32n2jVQ5EgKKvXZqa42xQBwU+n5LG1FmRbpCCi01Em
-GcSkTJpGc1oRSJmXlyTfXUdRXeC+pmHczRtK8AOxD3pkk+8yfwa1EmROjisLetht
-D4NujtWTAeiUh3ELbW7rzIcR6s03/n25CEhfyvrI5JKe25Uw0wmLNuUiG7g5uF4c
-cK4nEl/GH24PArSdGQfdaB0wTTkcykpjyOH0ewVyvDQge53WC4gSlJGGb1epbk9R
-une+MnS0ie7maIWlTC3pUzrdAOJ+Uw==
-=/3mn
------END PGP SIGNATURE-----
-
---jm4gttuytbiaj4yb--
+Nothing, I had a senior moment and I forgot how mt7530 sets up things.
