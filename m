@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 397013F6359
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 18:51:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E15513F6357
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 18:51:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232261AbhHXQwS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 12:52:18 -0400
+        id S233104AbhHXQwR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 12:52:17 -0400
 Received: from mail-centralus01namln1003.outbound.protection.outlook.com ([40.93.8.3]:59676
         "EHLO outbound.mail.eo.outlook.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S233454AbhHXQwP (ORCPT
+        by vger.kernel.org with ESMTP id S231792AbhHXQwP (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 12:52:15 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Rsyq2IsB5TtkU7w022S5FzHa2MN4pxzHuXHDf4a11jyyfyi0scqjLAN8C/q+soMAsFvh5JAxO4jguf9SG5wOm3sOiE+tgF+/rXARAoYTwEiOh5nHTnpl6lREibxTYDIgsNetlzvMGJTbIHf5PGOys0K5nO8mekBa47Q2eYR1bG+yBUHoW3PUrpyJNOHnVn0yICjzA0+3DWP+DimPwt7pdXAyWUqPL3PyD77I601+Mr3uZYpWvt0BjgIHcxnNoGmdIBB8qIf0OWajJJqSoi4m38A1+tg8pOFRuzC+f3pQxGdBJSJkOKviQ6Bnk6N2b3cmdm+HS3MY/x7RCLDKCxHfkA==
+ b=JpyyoX+IugoFWVASpVim2cnJsX+gdLFnrkVvGJteqFKlzaIXgwWzE4ChbQwDFRiuQSmS8hLCnXTfb7v0dlad2tLicotAlGirlJCRQlcTRSfL4V18zR9ao6f9Dl1PHQ4G+xof1gyL/jz2do+/X7LC3Uc4YnNeFrhTaNjQiUoJNvo36+mvJP/9t9oXE2nr/50iUyVnRiCWcrFKQYLonm50Dr+Qt6Upx2uqpzwN0iiVTMTXuHLnqzDadK4T0QpdKrb73iHKF+CLyeuyr4MLs2n9FSa9aTpnIrxD1RnSgA9LmVKC1GClEMKOqEMcnAkASmdTgS/lEwmIbEqaWliJmQslNA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=rnpFooEe3yqanIC8qztDi29xzpmO85kOlyGn9lug7VI=;
- b=BtOScOOSlxpvLtPTY4AXmDHOADpE6Gfl/SuVeaHuMIwwziGbHxbW/R2VmLtrHE5evTBrsY/9Ly9SA3trO2PJBAtgO1b6EoA2iym0DZpVb+65SfgFlGf405Z/JcK+Q8QCHUsRDb+gnD3QiVkfa5XhCNhp8ToCZEnIgQijVVIHW+TspHH81ibtRJgdrycltuDlG7jBfUFPvENZs3SWTrR5yXD6ZzIBBXNYWowvbXCGStCb0KDPb0MZt5MtBzRhDTHkLf7r21RxyJIaWuv51B+RZu6Kq1mPJgunrKJ36/6xyVFrxUY6GiYO21RJZAmfy+9Y3A/lJoW0pjXI2jTzXl6Vqg==
+ bh=UFppqmzBOpyIetks7QL9fLp4lH8qpSsw81UxFyilf/k=;
+ b=NGG4gO4fEjp3WfzBf0ZLyh+iGv5NCcfhLZUlN8ZebxZJ1iHNphof/DIPDBM8r2hTO+mo330lGyd3lNbHTDV4ZozEhMXRUfe0EiX3Cq7cImrbdM6Ou6Pft7cx9vkzZTvPMDEmYf9IDu1xpEyP8q+IL6yXo+kfk9U7JZ7dFbqcOKYtatWOlGeFLpW1aF44Gh22AGWmnHD7RqueXKG365ZvsEETF3U6SyB818rx7FXm+SVZ6jguwdcqTTc5mGyAPrh4HvxUp+7nil3xEp80PMbCKo5x9QV/2NM9i3KdgBYovYC9x3GTUueWXm4THmERN911rnenvgLgz2JMxr5l/6ubHQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=microsoft.com; dmarc=pass action=none
  header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rnpFooEe3yqanIC8qztDi29xzpmO85kOlyGn9lug7VI=;
- b=AGvVzx2uyppWEy5NftDyNZKcwjQriBM9kEM+goPYCoJpUiom9t4LTYJDVDR7kWObAWkb5X3n9PXR8wh9+wj6nQqS4MlmhQf7iu+MHRbrIT5/YfGiclNDkChKG4AOWzSFuxvyTLBWIkIUXj9ULYNDHEcTzsYDlqpPAqm2PctsyZM=
+ bh=UFppqmzBOpyIetks7QL9fLp4lH8qpSsw81UxFyilf/k=;
+ b=JI8rP5Xkzb2QBPAaPW9YsfKWXcvA104cfE3IQ699bRCdvXijLPOEj/zvjAsgD5WIKMu/IR2yPl65+jFqLc7epgL2mm9aFcpREuwI9Sm7uuFvhBd5KqXvfdgsAAe4FvdueAvWa9HfPpwxVUZUZLlKUITpmK/Har1mJtnWVeW3lhs=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=microsoft.com;
 Received: from DM6PR21MB1340.namprd21.prod.outlook.com (2603:10b6:5:175::19)
  by DM5PR21MB1765.namprd21.prod.outlook.com (2603:10b6:4:a4::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4478.2; Tue, 24 Aug
- 2021 16:46:53 +0000
+ 2021 16:46:54 +0000
 Received: from DM6PR21MB1340.namprd21.prod.outlook.com
  ([fe80::a09a:c9ba:8030:2247]) by DM6PR21MB1340.namprd21.prod.outlook.com
  ([fe80::a09a:c9ba:8030:2247%9]) with mapi id 15.20.4478.005; Tue, 24 Aug 2021
- 16:46:47 +0000
+ 16:46:54 +0000
 From:   Haiyang Zhang <haiyangz@microsoft.com>
 To:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org
 Cc:     haiyangz@microsoft.com, kys@microsoft.com, sthemmin@microsoft.com,
         paulros@microsoft.com, shacharr@microsoft.com, olaf@aepfle.de,
         vkuznets@redhat.com, davem@davemloft.net,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V2,net-next, 1/3] net: mana: Move NAPI from EQ to CQ
-Date:   Tue, 24 Aug 2021 09:45:59 -0700
-Message-Id: <1629823561-2261-2-git-send-email-haiyangz@microsoft.com>
+Subject: [PATCH V2,net-next, 2/3] net: mana: Add support for EQ sharing
+Date:   Tue, 24 Aug 2021 09:46:00 -0700
+Message-Id: <1629823561-2261-3-git-send-email-haiyangz@microsoft.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1629823561-2261-1-git-send-email-haiyangz@microsoft.com>
 References: <1629823561-2261-1-git-send-email-haiyangz@microsoft.com>
@@ -54,517 +54,456 @@ X-ClientProxiedBy: CO2PR04CA0133.namprd04.prod.outlook.com (2603:10b6:104::11)
 MIME-Version: 1.0
 Sender: LKML haiyangz <lkmlhyz@microsoft.com>
 X-MS-Exchange-MessageSentRepresentingType: 2
-Received: from linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net (13.77.154.182) by CO2PR04CA0133.namprd04.prod.outlook.com (2603:10b6:104::11) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19 via Frontend Transport; Tue, 24 Aug 2021 16:46:46 +0000
+Received: from linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net (13.77.154.182) by CO2PR04CA0133.namprd04.prod.outlook.com (2603:10b6:104::11) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19 via Frontend Transport; Tue, 24 Aug 2021 16:46:49 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 00dc4b74-0da1-4500-2055-08d9671ec33d
+X-MS-Office365-Filtering-Correlation-Id: 941450d2-150b-4e37-d942-08d9671ec4a6
 X-MS-TrafficTypeDiagnostic: DM5PR21MB1765:
 X-MS-Exchange-Transport-Forked: True
 X-LD-Processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-X-Microsoft-Antispam-PRVS: <DM5PR21MB176552071CA1A75C581B91B8ACC59@DM5PR21MB1765.namprd21.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1079;
+X-Microsoft-Antispam-PRVS: <DM5PR21MB1765A70FBA7BBAB3BAD57636ACC59@DM5PR21MB1765.namprd21.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1468;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: GpiA+fEe0MqD+6GPZoGPe6ESpxC/LATtllxtbyDmqADpFUsMBZd8jmvUARf8lRitXax92DyZnrs1MNmvsgKj+3y+o6Qi87DVIftYffoCukFb33L/TPf86+zMF/yyU1PxFJxtYvuU9oGH0qQrnZid8gUdYL0Al/WriaqzfjUBLQPN9qt1roCbOnYHmVUhjRH3toj8hIhEIXfr/k6Yi8eQmcCR3xI+oCmRKSK4E7MtgVsHFpX9B3UtwaP37wFG885sxa5nlP6Yn/bE6lwtX83g07l2S1E+Kh0KKo+C1f2al0WBGGQZtGKQdS3/kVLw20hANNzPwzneexFnHCUZIZ9+/iSQYxHTbbeKgKOOgXobV4zHySTnD/Q4kSC761Fq4l+oxty12XGP+pbzu7ymItzARdzYONJqqpQc9rbC5wg1pswLo2idwLfGc1tWbNpbgjzyFrRhiwvO6uyiBcfXaBz/FbVneGpGThPYb0bSINnpgHwoxCgrdiPukJRvPz1noLDabbFYhuQ7sLrj8hpouKCB3MO2VYIEE0aDR8duCI3lZIVv2pwZxDde2ehPfzdedsJp1e/gbiNEkoepNV5VjN0/Tbg5nVZx5QSJGFJLp1bT2zHUmgcqYDujCNK2SBQtrJNlLxt4uIT/WPB+xvuSH2x0JIWcwGr1XoyBcRQaajVwcV/04tKGtW/LkXxJuNQG9MuJ7CBXEL81vzPO2GzljvWr+A==
+X-Microsoft-Antispam-Message-Info: Qw+jNrIEv2HSfC1HvFEXv6NecjphZ/bnLLOEw7xS5XxZ/4QcT/SSDFHys63a3ontJfEFV2dnqojXmdS7aGXQ4bujsc6FMXKhLBmKlnHgdNjNn1ks7+z2WyM3OMbnQTFBE2Yp8PjLBPggwpzLYxvOJYcPXtbGFVQOqmdhcivDgdI5JE44q2uMsMfE8ZuaaYl+xCcQQ4vpKrThvFVXuSGn4C1vWlYCtET3M8oJuQapalo519IOCPq8rGOyWsxrxr3eO447hkhi0YpAJziLl9QhB0u/RLgO53mK0+on0Q0FhnWBOqaGtnlHVWmZAIJ4RA17nslOO9wxm5gjXrdH7SH4nIOe+p5IQtpM4zuVqlLkcrPi/CyLO0TCWs67hMS7aPviLskcYz/L3hVijLwyqPAuemI7i/GnO3aYaq23xVX6kRVKR2iiW1GowZy5Hw5SrZuwaKnffJBWYMIwNkYH+GUPL9/Dff7mj/Zj1wdckp9WQUpiziHeuyQQdYEQLHJIiz+fWn24K1rKZqWikqJSD79GHScIBq0bqKoxALpGjie8V67KHW30hMLo2nnFuWZxRwc2iDruL56Qchtu8SBDqwl7NsT284kXJG5kvipnFxT5cwwQmEx0uXPcVW6JBAUdBFpUwomIVgGEyXLomihf6jVdDhRBLsIuppo21+Q61WL09qKdaMW4re2wLT5BUHATNbR7pVzj/PThNQDJAAtQbia9AQ==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR21MB1340.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(82950400001)(5660300002)(30864003)(6486002)(316002)(10290500003)(82960400001)(956004)(6512007)(7846003)(36756003)(2616005)(38100700002)(66946007)(38350700002)(66556008)(66476007)(186003)(2906002)(26005)(6666004)(8676002)(83380400001)(4326008)(52116002)(6506007)(8936002)(508600001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Tvv/MMYmUHbp+OBS8oNtk7Pwex9I7KyFkpMjTXzW8/O8aq4M/o/AVjGDAsx8?=
- =?us-ascii?Q?iS3c/UI9q3iNprYERGHFuJsb3eGghEK6Ad3W9COnP2Drmw2xGV7Tp4FYe+5I?=
- =?us-ascii?Q?+xba749S61tXEoy2VnjE/L8guv6nP6KQi0VAAJQhz7wZ9cKTl44WP6VVEWL8?=
- =?us-ascii?Q?S+U1ID7gVR4ZnsuJ7y5iTCHOsQDxKlaNEhH2siKp1DPjONx35HsFhYAN1xdt?=
- =?us-ascii?Q?gUhBMAP6I5F8wXwjR1CsiY75rXYtXC/6bWnm4++7zyb3MeD/HWMwPArU4qcF?=
- =?us-ascii?Q?HAjkmuE2SLb0NR63yeAuwYSltU3kYXQdhlUvswFwXccPDzsO5PmsOLBdVq45?=
- =?us-ascii?Q?uhU6ilsuyikcNsjfQhGPI5/fi6h/6V0KGvXe6WQHLVZChJaOzJCoDl8gqSI1?=
- =?us-ascii?Q?+FwuhZknvJFD/oTdIdqrncgYX5C9MIJFIawJmsJIqHIBDq7ZhS/x9NXKW4az?=
- =?us-ascii?Q?luEWumeEnKRxCFYZbVmZ4BwfyWujkWGJ1PimhjATrAiLZvundvgk651/KTdV?=
- =?us-ascii?Q?9gzMvlFnJ/vlJamib/00zxRhTPDhKZB8+bRrk2pxThLErL8kQyAp5O1vWwhT?=
- =?us-ascii?Q?QJ+oURtrnZQ6PSE6f5b5cxfsdRTrT9RZa52y6YxCkmHCPK11pgE7ugPBISY/?=
- =?us-ascii?Q?bE9NtLDJQLCcWMfY3LuuKJqjxOyDeUzx7c+qm1Wo3Ff11JMagUQpsrlgGziK?=
- =?us-ascii?Q?g+WcUJlFxUsmgpTbnOFLD5qYMqpM8MvhLTSVF/vQIpnrWnuzAx94M7DPLbCI?=
- =?us-ascii?Q?DJ5ySLhrXpSoK3evS4UEVx1zpqp5cGtwpzWw44RRXbNaMnNc/TI3gn8IxLVA?=
- =?us-ascii?Q?ZRa1yX4gC7raNsSDUei0eURo0kRuXV2UHwaBO75SnQDh0nI2LyJMb355KiNd?=
- =?us-ascii?Q?eHolMAkg+pq1D7himlSbKYwEPaZVMnygVbjA+NS+694v7Vev4BELEULFETA6?=
- =?us-ascii?Q?k5z1bPeHvjPm4k+N/veWwvvYKCepT3qtXkr72sCha0pQzH0IGf3NLTbj7YsV?=
- =?us-ascii?Q?I2AYa3nK1K+EI/A2x9Pjuxr6t1TM3TV37csCP6aESLMU0cS40Uuv77uUCrlD?=
- =?us-ascii?Q?FBB7vy8pRsLMAkapziPeEbQoMXMO9Ec+Dgc6QVwKfp8CLUNfS4Jy+wT2NXux?=
- =?us-ascii?Q?hj/H7r4sXys5H4R7u3hweidLywk6+UssQqzhH2UqsQFm2SkqpDTKTSu+nVdT?=
- =?us-ascii?Q?3bIVRmZZcviJc4HUDHX78o8qsF7yq3wtJYwEPkX4cpFz/MCfG8V9Ad856QHm?=
- =?us-ascii?Q?ogtuitSAFvg2Hqq89VjvrsKW9PTeSFXG90kzcCGKcTZ0H7qHPQ2tLh6UzLcd?=
- =?us-ascii?Q?MMHupt7cwNyhWRFn+JL3JDdq?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?RxR61f73e7suETWCqK8qqT9EX7Z1IAR5SENXglKVOX0Cr8iFdRLTPgqNPCbM?=
+ =?us-ascii?Q?fFiFdGYYfNy11fmK3cV8XA/xatYAa5I5RGdVybdIliOe9y/ZueiV3bLf6f53?=
+ =?us-ascii?Q?C+XpF6T6pL2AOKUyJ3i/BNv4PBPokqBRFTo4UiUv1HoQ9WMikqMb8fMT8ZvX?=
+ =?us-ascii?Q?EJ1GeDiEx4EdOpELeiuDpLiLGOUP772/YtwOk2TJ107d3GHGqUprjXctv9C2?=
+ =?us-ascii?Q?Xf13OEH6XkxLyBQ7q0bGDwmIam3pbj3blW15V2TAQIZYFaApXY9DWWJfuwsI?=
+ =?us-ascii?Q?7UHGthIjxYLm+7JrwqnAff3Za15QxXewU4cDQFtJHx3NYyN4fhSo/kvfIK9U?=
+ =?us-ascii?Q?RsfV5q0TAe1XIs85qEIoJ9Dv0ZktiAHl2O6CA6QguYJsXFKsWNmI1WTSkAJF?=
+ =?us-ascii?Q?MA1h7hBf19zyX5N6CZ+9PSBglRcxXWLdqvUCnYUhgH8+XXT8rkUZkgvtL9Qx?=
+ =?us-ascii?Q?14lS7hHYJNsL4zNUQRbDl8xquwD+Zu30u1esRQZmm2GWUfy5NhWAbaUE7dpM?=
+ =?us-ascii?Q?PbcoejFzSxVRah3I+J9eitxfx3jOwWYvWEd8RvisC5hytdteMmbiBPFuJqWP?=
+ =?us-ascii?Q?momoxopOICjrIJai8O9lBpCrupouq+lBSs7GTjmj869kkdNum9S2PFSdizcj?=
+ =?us-ascii?Q?r4vDkbDxl30HTC+BuAJknuzBeK7qG3Ik49hmQq+u3ujbaJyDufieYkPfauAD?=
+ =?us-ascii?Q?xrRH+mDxJ+rqgakyqUowLVvESgTrbQCnYdY8aJHMYop1LyGKFcy0QDfqhMDG?=
+ =?us-ascii?Q?GSjyhYDzgUXzJFCdAyP7NzxmHS8VdASSLfL2Pvw/SY220bNUf3pMzq+0uxvf?=
+ =?us-ascii?Q?36TP+xOul6ZpyNOtv04LmDES7qtqamM4Ohlpe1bLlJZ/Z3To8c2OL1s0F/Nf?=
+ =?us-ascii?Q?Y0N2FHJTZjOJCi3nC8DgdPLyC7ZdJ/irSKioiNQIBKtcE0dhB+0Y1saq6gNu?=
+ =?us-ascii?Q?pr9kRgo31P2md5BVhNbtYLy79PS/GsPvF5P16Mtp/THw6/k6wuuDxx094STY?=
+ =?us-ascii?Q?Qo/AS6z12BxskaXPPcReAbm2ynqQzLheLwcXVAhinaHlhxerCv1CvwD2nIOl?=
+ =?us-ascii?Q?qDh7xZCm0Js/Klbgrx1DPWf/Laewryjt9Sp8881C/GoY8Ibcc1tz4aHDgoB+?=
+ =?us-ascii?Q?c08v6HD16CkdEp2aixZxx6LkKlBsQKlVEI4Rd0OJrwQFAMXpPkDtymvwmop9?=
+ =?us-ascii?Q?YM3Cy4I4j9vott4ylEUpnsXwzJgkPgoEGz6g2Bii3JQwoG9sst8H8k/5k2mD?=
+ =?us-ascii?Q?RQ9dd1NQpN/nEUVU/xv6Q4+nsfO2Do9JvGMLPld0o4/jzVKNR+GHarQp1MWH?=
+ =?us-ascii?Q?wmGthCAvRGudb2icS8NqvbWT?=
 X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 00dc4b74-0da1-4500-2055-08d9671ec33d
+X-MS-Exchange-CrossTenant-Network-Message-Id: 941450d2-150b-4e37-d942-08d9671ec4a6
 X-MS-Exchange-CrossTenant-AuthSource: DM6PR21MB1340.namprd21.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Aug 2021 16:46:47.3939
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Aug 2021 16:46:49.6789
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: xVeIX+FjFu8JsAgUJBS0QHTASBnWkuN8qMIMiRiPsBvFeSIE3S5518qdxJcsT6XhCA48adwDkpQPhKfSt++blA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: o9PtSB73qFnpXXCLYPCd01snrJq3HcDFLZUuQiJfu9dx1s30jHWbjV2JTQzZmCFY655BGxIYZdRTXX1iD6VViQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR21MB1765
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The existing code has NAPI threads polling on EQ directly. To prepare
-for EQ sharing among vPorts, move NAPI from EQ to CQ so that one EQ
-can serve multiple CQs from different vPorts.
+The existing code uses (1 + #vPorts * #Queues) MSIXs, which may exceed
+the device limit.
 
-The "arm bit" is only set when CQ processing is completed to reduce
-the number of EQ entries, which in turn reduce the number of interrupts
-on EQ.
+Support EQ sharing, so that multiple vPorts (NICs) can share the same
+set of MSIXs.
+
+And, report the EQ-sharing capability bit to the host, which means the
+host can potentially offer more vPorts and queues to the VM.
+
+Also update the resource limit checking and error handling for better
+robustness.
+
+Now, we support up to 256 virtual ports per VF (it was 16/VF), and
+support up to 64 queues per vPort (it was 16).
 
 Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
 
 ---
 v2: Updates suggested by Dexuan Cui <decui@microsoft.com>
+  Limit max_num_queues to (gc->num_msix_usable - 1)
+  Add BUILD_BUG_ON(MAX_PORTS_IN_MANA_DEV * 2 * GDMA_EQE_SIZE > EQ_SIZE)
+  More detailed descriptions
 ---
- drivers/net/ethernet/microsoft/mana/gdma.h    |   9 +-
- .../net/ethernet/microsoft/mana/gdma_main.c   |  55 +---------
- .../net/ethernet/microsoft/mana/hw_channel.c  |   2 +-
- drivers/net/ethernet/microsoft/mana/mana.h    |  11 +-
- drivers/net/ethernet/microsoft/mana/mana_en.c | 100 +++++++++++-------
- 5 files changed, 74 insertions(+), 103 deletions(-)
+ drivers/net/ethernet/microsoft/mana/gdma.h    | 23 ++++---
+ .../net/ethernet/microsoft/mana/gdma_main.c   | 31 +++++++---
+ drivers/net/ethernet/microsoft/mana/mana.h    | 18 +++---
+ drivers/net/ethernet/microsoft/mana/mana_en.c | 62 +++++++++----------
+ 4 files changed, 78 insertions(+), 56 deletions(-)
 
 diff --git a/drivers/net/ethernet/microsoft/mana/gdma.h b/drivers/net/ethernet/microsoft/mana/gdma.h
-index 33e53d32e891..ddbca64bab07 100644
+index ddbca64bab07..41ecd156e95f 100644
 --- a/drivers/net/ethernet/microsoft/mana/gdma.h
 +++ b/drivers/net/ethernet/microsoft/mana/gdma.h
-@@ -239,10 +239,8 @@ struct gdma_event {
+@@ -312,9 +312,6 @@ struct gdma_queue_spec {
+ 			void *context;
  
- struct gdma_queue;
- 
--#define CQE_POLLING_BUFFER 512
- struct mana_eq {
- 	struct gdma_queue *eq;
--	struct gdma_comp cqe_poll[CQE_POLLING_BUFFER];
- };
- 
- typedef void gdma_eq_callback(void *context, struct gdma_queue *q,
-@@ -291,11 +289,6 @@ struct gdma_queue {
- 			unsigned int msix_index;
- 
- 			u32 log2_throttle_limit;
+ 			unsigned long log2_throttle_limit;
 -
--			/* NAPI data */
--			struct napi_struct napi;
--			int work_done;
--			int budget;
+-			/* Only used by the MANA device. */
+-			struct net_device *ndev;
  		} eq;
  
  		struct {
-@@ -406,7 +399,7 @@ void mana_gd_destroy_queue(struct gdma_context *gc, struct gdma_queue *queue);
+@@ -489,16 +486,28 @@ enum {
+ 	GDMA_PROTOCOL_LAST	= GDMA_PROTOCOL_V1,
+ };
  
- int mana_gd_poll_cq(struct gdma_queue *cq, struct gdma_comp *comp, int num_cqe);
++#define GDMA_DRV_CAP_FLAG_1_EQ_SHARING_MULTI_VPORT BIT(0)
++
++#define GDMA_DRV_CAP_FLAGS1 GDMA_DRV_CAP_FLAG_1_EQ_SHARING_MULTI_VPORT
++
++#define GDMA_DRV_CAP_FLAGS2 0
++
++#define GDMA_DRV_CAP_FLAGS3 0
++
++#define GDMA_DRV_CAP_FLAGS4 0
++
+ struct gdma_verify_ver_req {
+ 	struct gdma_req_hdr hdr;
  
--void mana_gd_arm_cq(struct gdma_queue *cq);
-+void mana_gd_ring_cq(struct gdma_queue *cq, u8 arm_bit);
+ 	/* Mandatory fields required for protocol establishment */
+ 	u64 protocol_ver_min;
+ 	u64 protocol_ver_max;
+-	u64 drv_cap_flags1;
+-	u64 drv_cap_flags2;
+-	u64 drv_cap_flags3;
+-	u64 drv_cap_flags4;
++
++	/* Gdma Driver Capability Flags */
++	u64 gd_drv_cap_flags1;
++	u64 gd_drv_cap_flags2;
++	u64 gd_drv_cap_flags3;
++	u64 gd_drv_cap_flags4;
  
- struct gdma_wqe {
- 	u32 reserved	:24;
+ 	/* Advisory fields */
+ 	u64 drv_ver;
 diff --git a/drivers/net/ethernet/microsoft/mana/gdma_main.c b/drivers/net/ethernet/microsoft/mana/gdma_main.c
-index 2f87bf90f8ec..560472fa2d00 100644
+index 560472fa2d00..798099d64202 100644
 --- a/drivers/net/ethernet/microsoft/mana/gdma_main.c
 +++ b/drivers/net/ethernet/microsoft/mana/gdma_main.c
-@@ -267,7 +267,7 @@ void mana_gd_wq_ring_doorbell(struct gdma_context *gc, struct gdma_queue *queue)
- 			      queue->id, queue->head * GDMA_WQE_BU_SIZE, 1);
+@@ -67,6 +67,10 @@ static int mana_gd_query_max_resources(struct pci_dev *pdev)
+ 	if (gc->max_num_queues > resp.max_rq)
+ 		gc->max_num_queues = resp.max_rq;
+ 
++	/* The Hardware Channel (HWC) used 1 MSI-X */
++	if (gc->max_num_queues > gc->num_msix_usable - 1)
++		gc->max_num_queues = gc->num_msix_usable - 1;
++
+ 	return 0;
  }
  
--void mana_gd_arm_cq(struct gdma_queue *cq)
-+void mana_gd_ring_cq(struct gdma_queue *cq, u8 arm_bit)
- {
- 	struct gdma_context *gc = cq->gdma_dev->gdma_context;
+@@ -384,28 +388,31 @@ static int mana_gd_register_irq(struct gdma_queue *queue,
+ 	struct gdma_resource *r;
+ 	unsigned int msi_index;
+ 	unsigned long flags;
+-	int err;
++	struct device *dev;
++	int err = 0;
  
-@@ -276,7 +276,7 @@ void mana_gd_arm_cq(struct gdma_queue *cq)
- 	u32 head = cq->head % (num_cqe << GDMA_CQE_OWNER_BITS);
+ 	gc = gd->gdma_context;
+ 	r = &gc->msix_resource;
++	dev = gc->dev;
  
- 	mana_gd_ring_doorbell(gc, cq->gdma_dev->doorbell, cq->type, cq->id,
--			      head, SET_ARM_BIT);
-+			      head, arm_bit);
- }
+ 	spin_lock_irqsave(&r->lock, flags);
  
- static void mana_gd_process_eqe(struct gdma_queue *eq)
-@@ -339,7 +339,6 @@ static void mana_gd_process_eq_events(void *arg)
- 	struct gdma_queue *eq = arg;
- 	struct gdma_context *gc;
- 	struct gdma_eqe *eqe;
--	unsigned int arm_bit;
- 	u32 head, num_eqe;
- 	int i;
- 
-@@ -370,48 +369,16 @@ static void mana_gd_process_eq_events(void *arg)
- 		eq->head++;
+ 	msi_index = find_first_zero_bit(r->map, r->size);
+-	if (msi_index >= r->size) {
++	if (msi_index >= r->size || msi_index >= gc->num_msix_usable) {
+ 		err = -ENOSPC;
+ 	} else {
+ 		bitmap_set(r->map, msi_index, 1);
+ 		queue->eq.msix_index = msi_index;
+-		err = 0;
  	}
  
--	/* Always rearm the EQ for HWC. For MANA, rearm it when NAPI is done. */
--	if (mana_gd_is_hwc(eq->gdma_dev)) {
--		arm_bit = SET_ARM_BIT;
--	} else if (eq->eq.work_done < eq->eq.budget &&
--		   napi_complete_done(&eq->eq.napi, eq->eq.work_done)) {
--		arm_bit = SET_ARM_BIT;
--	} else {
--		arm_bit = 0;
--	}
--
- 	head = eq->head % (num_eqe << GDMA_EQE_OWNER_BITS);
+ 	spin_unlock_irqrestore(&r->lock, flags);
  
- 	mana_gd_ring_doorbell(gc, eq->gdma_dev->doorbell, eq->type, eq->id,
--			      head, arm_bit);
--}
--
--static int mana_poll(struct napi_struct *napi, int budget)
--{
--	struct gdma_queue *eq = container_of(napi, struct gdma_queue, eq.napi);
--
--	eq->eq.work_done = 0;
--	eq->eq.budget = budget;
--
--	mana_gd_process_eq_events(eq);
--
--	return min(eq->eq.work_done, budget);
--}
--
--static void mana_gd_schedule_napi(void *arg)
--{
--	struct gdma_queue *eq = arg;
--	struct napi_struct *napi;
--
--	napi = &eq->eq.napi;
--	napi_schedule_irqoff(napi);
-+			      head, SET_ARM_BIT);
- }
+-	if (err)
+-		return err;
++	if (err) {
++		dev_err(dev, "Register IRQ err:%d, msi:%u rsize:%u, nMSI:%u",
++			err, msi_index, r->size, gc->num_msix_usable);
  
- static int mana_gd_register_irq(struct gdma_queue *queue,
- 				const struct gdma_queue_spec *spec)
- {
- 	struct gdma_dev *gd = queue->gdma_dev;
--	bool is_mana = mana_gd_is_mana(gd);
- 	struct gdma_irq_context *gic;
- 	struct gdma_context *gc;
- 	struct gdma_resource *r;
-@@ -442,20 +409,11 @@ static int mana_gd_register_irq(struct gdma_queue *queue,
+-	WARN_ON(msi_index >= gc->num_msix_usable);
++		return err;
++	}
  
  	gic = &gc->irq_contexts[msi_index];
  
--	if (is_mana) {
--		netif_napi_add(spec->eq.ndev, &queue->eq.napi, mana_poll,
--			       NAPI_POLL_WEIGHT);
--		napi_enable(&queue->eq.napi);
--	}
+@@ -836,6 +843,11 @@ int mana_gd_verify_vf_version(struct pci_dev *pdev)
+ 	req.protocol_ver_min = GDMA_PROTOCOL_FIRST;
+ 	req.protocol_ver_max = GDMA_PROTOCOL_LAST;
+ 
++	req.gd_drv_cap_flags1 = GDMA_DRV_CAP_FLAGS1;
++	req.gd_drv_cap_flags2 = GDMA_DRV_CAP_FLAGS2;
++	req.gd_drv_cap_flags3 = GDMA_DRV_CAP_FLAGS3;
++	req.gd_drv_cap_flags4 = GDMA_DRV_CAP_FLAGS4;
++
+ 	err = mana_gd_send_request(gc, sizeof(req), &req, sizeof(resp), &resp);
+ 	if (err || resp.hdr.status) {
+ 		dev_err(gc->dev, "VfVerifyVersionOutput: %d, status=0x%x\n",
+@@ -1154,10 +1166,8 @@ static int mana_gd_setup_irqs(struct pci_dev *pdev)
+ 	if (max_queues_per_port > MANA_MAX_NUM_QUEUES)
+ 		max_queues_per_port = MANA_MAX_NUM_QUEUES;
+ 
+-	max_irqs = max_queues_per_port * MAX_PORTS_IN_MANA_DEV;
 -
- 	WARN_ON(gic->handler || gic->arg);
+ 	/* Need 1 interrupt for the Hardware communication Channel (HWC) */
+-	max_irqs++;
++	max_irqs = max_queues_per_port + 1;
  
- 	gic->arg = queue;
+ 	nvec = pci_alloc_irq_vectors(pdev, 2, max_irqs, PCI_IRQ_MSIX);
+ 	if (nvec < 0)
+@@ -1244,6 +1254,9 @@ static int mana_gd_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	int bar = 0;
+ 	int err;
  
--	if (is_mana)
--		gic->handler = mana_gd_schedule_napi;
--	else
--		gic->handler = mana_gd_process_eq_events;
-+	gic->handler = mana_gd_process_eq_events;
- 
- 	return 0;
- }
-@@ -549,11 +507,6 @@ static void mana_gd_destroy_eq(struct gdma_context *gc, bool flush_evenets,
- 
- 	mana_gd_deregiser_irq(queue);
- 
--	if (mana_gd_is_mana(queue->gdma_dev)) {
--		napi_disable(&queue->eq.napi);
--		netif_napi_del(&queue->eq.napi);
--	}
--
- 	if (queue->eq.disable_needed)
- 		mana_gd_disable_queue(queue);
- }
-diff --git a/drivers/net/ethernet/microsoft/mana/hw_channel.c b/drivers/net/ethernet/microsoft/mana/hw_channel.c
-index 1a923fd99990..c1310ea1c216 100644
---- a/drivers/net/ethernet/microsoft/mana/hw_channel.c
-+++ b/drivers/net/ethernet/microsoft/mana/hw_channel.c
-@@ -304,7 +304,7 @@ static void mana_hwc_comp_event(void *ctx, struct gdma_queue *q_self)
- 						&comp_data);
- 	}
- 
--	mana_gd_arm_cq(q_self);
-+	mana_gd_ring_cq(q_self, SET_ARM_BIT);
- }
- 
- static void mana_hwc_destroy_cq(struct gdma_context *gc, struct hwc_cq *hwc_cq)
++	/* Each port has 2 CQs, each CQ has at most 1 EQE at a time */
++	BUILD_BUG_ON(2 * MAX_PORTS_IN_MANA_DEV * GDMA_EQE_SIZE > EQ_SIZE);
++
+ 	err = pci_enable_device(pdev);
+ 	if (err)
+ 		return -ENXIO;
 diff --git a/drivers/net/ethernet/microsoft/mana/mana.h b/drivers/net/ethernet/microsoft/mana/mana.h
-index a2c3f826f022..5341dbdb726e 100644
+index 5341dbdb726e..fc98a5ba5ed0 100644
 --- a/drivers/net/ethernet/microsoft/mana/mana.h
 +++ b/drivers/net/ethernet/microsoft/mana/mana.h
-@@ -225,6 +225,8 @@ struct mana_tx_comp_oob {
+@@ -46,7 +46,7 @@ enum TRI_STATE {
+ #define EQ_SIZE (8 * PAGE_SIZE)
+ #define LOG2_EQ_THROTTLE 3
  
- struct mana_rxq;
+-#define MAX_PORTS_IN_MANA_DEV 16
++#define MAX_PORTS_IN_MANA_DEV 256
  
-+#define CQE_POLLING_BUFFER 512
+ struct mana_stats {
+ 	u64 packets;
+@@ -322,6 +322,8 @@ struct mana_context {
+ 
+ 	u16 num_ports;
+ 
++	struct mana_eq *eqs;
 +
- struct mana_cq {
- 	struct gdma_queue *gdma_cq;
- 
-@@ -244,8 +246,13 @@ struct mana_cq {
- 	 */
- 	struct mana_txq *txq;
- 
--	/* Pointer to a buffer which the CQ handler can copy the CQE's into. */
--	struct gdma_comp *gdma_comp_buf;
-+	/* Buffer which the CQ handler can copy the CQE's into. */
-+	struct gdma_comp gdma_comp_buf[CQE_POLLING_BUFFER];
-+
-+	/* NAPI data */
-+	struct napi_struct napi;
-+	int work_done;
-+	int budget;
+ 	struct net_device *ports[MAX_PORTS_IN_MANA_DEV];
  };
  
- #define GDMA_MAX_RQE_SGES 15
+@@ -331,8 +333,6 @@ struct mana_port_context {
+ 
+ 	u8 mac_addr[ETH_ALEN];
+ 
+-	struct mana_eq *eqs;
+-
+ 	enum TRI_STATE rss_state;
+ 
+ 	mana_handle_t default_rxobj;
+@@ -402,11 +402,11 @@ enum mana_command_code {
+ struct mana_query_device_cfg_req {
+ 	struct gdma_req_hdr hdr;
+ 
+-	/* Driver Capability flags */
+-	u64 drv_cap_flags1;
+-	u64 drv_cap_flags2;
+-	u64 drv_cap_flags3;
+-	u64 drv_cap_flags4;
++	/* MANA Nic Driver Capability flags */
++	u64 mn_drv_cap_flags1;
++	u64 mn_drv_cap_flags2;
++	u64 mn_drv_cap_flags3;
++	u64 mn_drv_cap_flags4;
+ 
+ 	u32 proto_major_ver;
+ 	u32 proto_minor_ver;
+@@ -523,7 +523,7 @@ struct mana_cfg_rx_steer_resp {
+ 	struct gdma_resp_hdr hdr;
+ }; /* HW DATA */
+ 
+-#define MANA_MAX_NUM_QUEUES 16
++#define MANA_MAX_NUM_QUEUES 64
+ 
+ #define MANA_SHORT_VPORT_OFFSET_MAX ((1U << 8) - 1)
+ 
 diff --git a/drivers/net/ethernet/microsoft/mana/mana_en.c b/drivers/net/ethernet/microsoft/mana/mana_en.c
-index 83eb28c132f3..8643d8cf1d5a 100644
+index 8643d8cf1d5a..a41a7e7b2bd3 100644
 --- a/drivers/net/ethernet/microsoft/mana/mana_en.c
 +++ b/drivers/net/ethernet/microsoft/mana/mana_en.c
-@@ -696,14 +696,6 @@ static void mana_destroy_wq_obj(struct mana_port_context *apc, u32 wq_type,
+@@ -696,56 +696,56 @@ static void mana_destroy_wq_obj(struct mana_port_context *apc, u32 wq_type,
  			   resp.hdr.status);
  }
  
--static void mana_init_cqe_poll_buf(struct gdma_comp *cqe_poll_buf)
--{
--	int i;
--
--	for (i = 0; i < CQE_POLLING_BUFFER; i++)
--		memset(&cqe_poll_buf[i], 0, sizeof(struct gdma_comp));
--}
--
- static void mana_destroy_eq(struct gdma_context *gc,
- 			    struct mana_port_context *apc)
+-static void mana_destroy_eq(struct gdma_context *gc,
+-			    struct mana_port_context *apc)
++static void mana_destroy_eq(struct mana_context *ac)
  {
-@@ -746,8 +738,6 @@ static int mana_create_eq(struct mana_port_context *apc)
- 	spec.eq.ndev = apc->ndev;
- 
- 	for (i = 0; i < apc->num_queues; i++) {
--		mana_init_cqe_poll_buf(apc->eqs[i].cqe_poll);
--
- 		err = mana_gd_create_mana_eq(gd, &spec, &apc->eqs[i].eq);
- 		if (err)
- 			goto out;
-@@ -790,7 +780,6 @@ static void mana_unmap_skb(struct sk_buff *skb, struct mana_port_context *apc)
- 
- static void mana_poll_tx_cq(struct mana_cq *cq)
- {
--	struct gdma_queue *gdma_eq = cq->gdma_cq->cq.parent;
- 	struct gdma_comp *completions = cq->gdma_comp_buf;
- 	struct gdma_posted_wqe_info *wqe_info;
- 	unsigned int pkt_transmitted = 0;
-@@ -812,6 +801,9 @@ static void mana_poll_tx_cq(struct mana_cq *cq)
- 	comp_read = mana_gd_poll_cq(cq->gdma_cq, completions,
- 				    CQE_POLLING_BUFFER);
- 
-+	if (comp_read < 1)
-+		return;
-+
- 	for (i = 0; i < comp_read; i++) {
- 		struct mana_tx_comp_oob *cqe_oob;
- 
-@@ -863,7 +855,7 @@ static void mana_poll_tx_cq(struct mana_cq *cq)
- 
- 		mana_unmap_skb(skb, apc);
- 
--		napi_consume_skb(skb, gdma_eq->eq.budget);
-+		napi_consume_skb(skb, cq->budget);
- 
- 		pkt_transmitted++;
- 	}
-@@ -892,6 +884,8 @@ static void mana_poll_tx_cq(struct mana_cq *cq)
- 
- 	if (atomic_sub_return(pkt_transmitted, &txq->pending_sends) < 0)
- 		WARN_ON_ONCE(1);
-+
-+	cq->work_done = pkt_transmitted;
- }
- 
- static void mana_post_pkt_rxq(struct mana_rxq *rxq)
-@@ -920,17 +914,13 @@ static void mana_rx_skb(void *buf_va, struct mana_rxcomp_oob *cqe,
- 	struct mana_stats *rx_stats = &rxq->stats;
- 	struct net_device *ndev = rxq->ndev;
- 	uint pkt_len = cqe->ppi[0].pkt_len;
--	struct mana_port_context *apc;
- 	u16 rxq_idx = rxq->rxq_idx;
- 	struct napi_struct *napi;
--	struct gdma_queue *eq;
- 	struct sk_buff *skb;
- 	u32 hash_value;
- 
--	apc = netdev_priv(ndev);
--	eq = apc->eqs[rxq_idx].eq;
--	eq->eq.work_done++;
--	napi = &eq->eq.napi;
-+	rxq->rx_cq.work_done++;
-+	napi = &rxq->rx_cq.napi;
- 
- 	if (!buf_va) {
- 		++ndev->stats.rx_dropped;
-@@ -1083,6 +1073,7 @@ static void mana_poll_rx_cq(struct mana_cq *cq)
- static void mana_cq_handler(void *context, struct gdma_queue *gdma_queue)
- {
- 	struct mana_cq *cq = context;
-+	u8 arm_bit;
- 
- 	WARN_ON_ONCE(cq->gdma_cq != gdma_queue);
- 
-@@ -1091,7 +1082,33 @@ static void mana_cq_handler(void *context, struct gdma_queue *gdma_queue)
- 	else
- 		mana_poll_tx_cq(cq);
- 
--	mana_gd_arm_cq(gdma_queue);
-+	if (cq->work_done < cq->budget &&
-+	    napi_complete_done(&cq->napi, cq->work_done)) {
-+		arm_bit = SET_ARM_BIT;
-+	} else {
-+		arm_bit = 0;
-+	}
-+
-+	mana_gd_ring_cq(gdma_queue, arm_bit);
-+}
-+
-+static int mana_poll(struct napi_struct *napi, int budget)
-+{
-+	struct mana_cq *cq = container_of(napi, struct mana_cq, napi);
-+
-+	cq->work_done = 0;
-+	cq->budget = budget;
-+
-+	mana_cq_handler(cq, cq->gdma_cq);
-+
-+	return min(cq->work_done, budget);
-+}
-+
-+static void mana_schedule_napi(void *context, struct gdma_queue *gdma_queue)
-+{
-+	struct mana_cq *cq = context;
-+
-+	napi_schedule_irqoff(&cq->napi);
- }
- 
- static void mana_deinit_cq(struct mana_port_context *apc, struct mana_cq *cq)
-@@ -1116,12 +1133,18 @@ static void mana_deinit_txq(struct mana_port_context *apc, struct mana_txq *txq)
- 
- static void mana_destroy_txq(struct mana_port_context *apc)
- {
-+	struct napi_struct *napi;
++	struct gdma_context *gc = ac->gdma_dev->gdma_context;
+ 	struct gdma_queue *eq;
  	int i;
  
- 	if (!apc->tx_qp)
+-	if (!apc->eqs)
++	if (!ac->eqs)
  		return;
  
- 	for (i = 0; i < apc->num_queues; i++) {
-+		napi = &apc->tx_qp[i].tx_cq.napi;
-+		napi_synchronize(napi);
-+		napi_disable(napi);
-+		netif_napi_del(napi);
-+
- 		mana_destroy_wq_obj(apc, GDMA_SQ, apc->tx_qp[i].tx_object);
+-	for (i = 0; i < apc->num_queues; i++) {
+-		eq = apc->eqs[i].eq;
++	for (i = 0; i < gc->max_num_queues; i++) {
++		eq = ac->eqs[i].eq;
+ 		if (!eq)
+ 			continue;
  
- 		mana_deinit_cq(apc, &apc->tx_qp[i].tx_cq);
-@@ -1188,7 +1211,6 @@ static int mana_create_txq(struct mana_port_context *apc,
+ 		mana_gd_destroy_queue(gc, eq);
+ 	}
  
- 		/* Create SQ's CQ */
- 		cq = &apc->tx_qp[i].tx_cq;
--		cq->gdma_comp_buf = apc->eqs[i].cqe_poll;
- 		cq->type = MANA_CQ_TYPE_TX;
+-	kfree(apc->eqs);
+-	apc->eqs = NULL;
++	kfree(ac->eqs);
++	ac->eqs = NULL;
+ }
  
- 		cq->txq = txq;
-@@ -1197,7 +1219,7 @@ static int mana_create_txq(struct mana_port_context *apc,
- 		spec.type = GDMA_CQ;
- 		spec.monitor_avl_buf = false;
- 		spec.queue_size = cq_size;
--		spec.cq.callback = mana_cq_handler;
-+		spec.cq.callback = mana_schedule_napi;
- 		spec.cq.parent_eq = apc->eqs[i].eq;
- 		spec.cq.context = cq;
- 		err = mana_gd_create_mana_wq_cq(gd, &spec, &cq->gdma_cq);
-@@ -1239,7 +1261,10 @@ static int mana_create_txq(struct mana_port_context *apc,
+-static int mana_create_eq(struct mana_port_context *apc)
++static int mana_create_eq(struct mana_context *ac)
+ {
+-	struct gdma_dev *gd = apc->ac->gdma_dev;
++	struct gdma_dev *gd = ac->gdma_dev;
++	struct gdma_context *gc = gd->gdma_context;
+ 	struct gdma_queue_spec spec = {};
+ 	int err;
+ 	int i;
  
- 		gc->cq_table[cq->gdma_id] = cq->gdma_cq;
+-	apc->eqs = kcalloc(apc->num_queues, sizeof(struct mana_eq),
+-			   GFP_KERNEL);
+-	if (!apc->eqs)
++	ac->eqs = kcalloc(gc->max_num_queues, sizeof(struct mana_eq),
++			  GFP_KERNEL);
++	if (!ac->eqs)
+ 		return -ENOMEM;
  
--		mana_gd_arm_cq(cq->gdma_cq);
-+		netif_tx_napi_add(net, &cq->napi, mana_poll, NAPI_POLL_WEIGHT);
-+		napi_enable(&cq->napi);
-+
-+		mana_gd_ring_cq(cq->gdma_cq, SET_ARM_BIT);
+ 	spec.type = GDMA_EQ;
+ 	spec.monitor_avl_buf = false;
+ 	spec.queue_size = EQ_SIZE;
+ 	spec.eq.callback = NULL;
+-	spec.eq.context = apc->eqs;
++	spec.eq.context = ac->eqs;
+ 	spec.eq.log2_throttle_limit = LOG2_EQ_THROTTLE;
+-	spec.eq.ndev = apc->ndev;
+ 
+-	for (i = 0; i < apc->num_queues; i++) {
+-		err = mana_gd_create_mana_eq(gd, &spec, &apc->eqs[i].eq);
++	for (i = 0; i < gc->max_num_queues; i++) {
++		err = mana_gd_create_mana_eq(gd, &spec, &ac->eqs[i].eq);
+ 		if (err)
+ 			goto out;
  	}
  
  	return 0;
-@@ -1248,21 +1273,6 @@ static int mana_create_txq(struct mana_port_context *apc,
+ out:
+-	mana_destroy_eq(gd->gdma_context, apc);
++	mana_destroy_eq(ac);
  	return err;
  }
  
--static void mana_napi_sync_for_rx(struct mana_rxq *rxq)
--{
--	struct net_device *ndev = rxq->ndev;
--	struct mana_port_context *apc;
--	u16 rxq_idx = rxq->rxq_idx;
--	struct napi_struct *napi;
--	struct gdma_queue *eq;
--
--	apc = netdev_priv(ndev);
--	eq = apc->eqs[rxq_idx].eq;
--	napi = &eq->eq.napi;
--
--	napi_synchronize(napi);
--}
--
- static void mana_destroy_rxq(struct mana_port_context *apc,
- 			     struct mana_rxq *rxq, bool validate_state)
- 
-@@ -1270,13 +1280,19 @@ static void mana_destroy_rxq(struct mana_port_context *apc,
- 	struct gdma_context *gc = apc->ac->gdma_dev->gdma_context;
- 	struct mana_recv_buf_oob *rx_oob;
- 	struct device *dev = gc->dev;
-+	struct napi_struct *napi;
+@@ -1159,7 +1159,8 @@ static void mana_destroy_txq(struct mana_port_context *apc)
+ static int mana_create_txq(struct mana_port_context *apc,
+ 			   struct net_device *net)
+ {
+-	struct gdma_dev *gd = apc->ac->gdma_dev;
++	struct mana_context *ac = apc->ac;
++	struct gdma_dev *gd = ac->gdma_dev;
+ 	struct mana_obj_spec wq_spec;
+ 	struct mana_obj_spec cq_spec;
+ 	struct gdma_queue_spec spec;
+@@ -1220,7 +1221,7 @@ static int mana_create_txq(struct mana_port_context *apc,
+ 		spec.monitor_avl_buf = false;
+ 		spec.queue_size = cq_size;
+ 		spec.cq.callback = mana_schedule_napi;
+-		spec.cq.parent_eq = apc->eqs[i].eq;
++		spec.cq.parent_eq = ac->eqs[i].eq;
+ 		spec.cq.context = cq;
+ 		err = mana_gd_create_mana_wq_cq(gd, &spec, &cq->gdma_cq);
+ 		if (err)
+@@ -1504,12 +1505,13 @@ static struct mana_rxq *mana_create_rxq(struct mana_port_context *apc,
+ static int mana_add_rx_queues(struct mana_port_context *apc,
+ 			      struct net_device *ndev)
+ {
++	struct mana_context *ac = apc->ac;
+ 	struct mana_rxq *rxq;
+ 	int err = 0;
  	int i;
  
- 	if (!rxq)
- 		return;
+ 	for (i = 0; i < apc->num_queues; i++) {
+-		rxq = mana_create_rxq(apc, i, &apc->eqs[i], ndev);
++		rxq = mana_create_rxq(apc, i, &ac->eqs[i], ndev);
+ 		if (!rxq) {
+ 			err = -ENOMEM;
+ 			goto out;
+@@ -1621,16 +1623,11 @@ static int mana_init_port(struct net_device *ndev)
+ int mana_alloc_queues(struct net_device *ndev)
+ {
+ 	struct mana_port_context *apc = netdev_priv(ndev);
+-	struct gdma_dev *gd = apc->ac->gdma_dev;
+ 	int err;
  
-+	napi = &rxq->rx_cq.napi;
+-	err = mana_create_eq(apc);
+-	if (err)
+-		return err;
+-
+ 	err = mana_create_vport(apc, ndev);
+ 	if (err)
+-		goto destroy_eq;
++		return err;
+ 
+ 	err = netif_set_real_num_tx_queues(ndev, apc->num_queues);
+ 	if (err)
+@@ -1656,8 +1653,6 @@ int mana_alloc_queues(struct net_device *ndev)
+ 
+ destroy_vport:
+ 	mana_destroy_vport(apc);
+-destroy_eq:
+-	mana_destroy_eq(gd->gdma_context, apc);
+ 	return err;
+ }
+ 
+@@ -1734,8 +1729,6 @@ static int mana_dealloc_queues(struct net_device *ndev)
+ 
+ 	mana_destroy_vport(apc);
+ 
+-	mana_destroy_eq(apc->ac->gdma_dev->gdma_context, apc);
+-
+ 	return 0;
+ }
+ 
+@@ -1788,7 +1781,7 @@ static int mana_probe_port(struct mana_context *ac, int port_idx,
+ 	apc->ac = ac;
+ 	apc->ndev = ndev;
+ 	apc->max_queues = gc->max_num_queues;
+-	apc->num_queues = min_t(uint, gc->max_num_queues, MANA_MAX_NUM_QUEUES);
++	apc->num_queues = gc->max_num_queues;
+ 	apc->port_handle = INVALID_MANA_HANDLE;
+ 	apc->port_idx = port_idx;
+ 
+@@ -1859,6 +1852,10 @@ int mana_probe(struct gdma_dev *gd)
+ 	ac->num_ports = 1;
+ 	gd->driver_data = ac;
+ 
++	err = mana_create_eq(ac);
++	if (err)
++		goto out;
 +
- 	if (validate_state)
--		mana_napi_sync_for_rx(rxq);
-+		napi_synchronize(napi);
+ 	err = mana_query_device_cfg(ac, MANA_MAJOR_VERSION, MANA_MINOR_VERSION,
+ 				    MANA_MICRO_VERSION, &ac->num_ports);
+ 	if (err)
+@@ -1908,6 +1905,9 @@ void mana_remove(struct gdma_dev *gd)
+ 
+ 		free_netdev(ndev);
+ 	}
 +
-+	napi_disable(napi);
-+	netif_napi_del(napi);
- 
- 	mana_destroy_wq_obj(apc, GDMA_RQ, rxq->rxobj);
- 
-@@ -1420,7 +1436,6 @@ static struct mana_rxq *mana_create_rxq(struct mana_port_context *apc,
- 
- 	/* Create RQ's CQ */
- 	cq = &rxq->rx_cq;
--	cq->gdma_comp_buf = eq->cqe_poll;
- 	cq->type = MANA_CQ_TYPE_RX;
- 	cq->rxq = rxq;
- 
-@@ -1428,7 +1443,7 @@ static struct mana_rxq *mana_create_rxq(struct mana_port_context *apc,
- 	spec.type = GDMA_CQ;
- 	spec.monitor_avl_buf = false;
- 	spec.queue_size = cq_size;
--	spec.cq.callback = mana_cq_handler;
-+	spec.cq.callback = mana_schedule_napi;
- 	spec.cq.parent_eq = eq->eq;
- 	spec.cq.context = cq;
- 	err = mana_gd_create_mana_wq_cq(gd, &spec, &cq->gdma_cq);
-@@ -1468,7 +1483,10 @@ static struct mana_rxq *mana_create_rxq(struct mana_port_context *apc,
- 
- 	gc->cq_table[cq->gdma_id] = cq->gdma_cq;
- 
--	mana_gd_arm_cq(cq->gdma_cq);
-+	netif_napi_add(ndev, &cq->napi, mana_poll, 1);
-+	napi_enable(&cq->napi);
++	mana_destroy_eq(ac);
 +
-+	mana_gd_ring_cq(cq->gdma_cq, SET_ARM_BIT);
  out:
- 	if (!err)
- 		return rxq;
+ 	mana_gd_deregister_device(gd);
+ 	gd->driver_data = NULL;
 -- 
 2.25.1
 
