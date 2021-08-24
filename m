@@ -2,57 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B081E3F5EA3
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 15:05:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 555B73F5EA4
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 15:06:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237405AbhHXNGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 09:06:21 -0400
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:58407 "EHLO
+        id S237470AbhHXNGY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 09:06:24 -0400
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:53179 "EHLO
         new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237158AbhHXNGT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 09:06:19 -0400
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailnew.nyi.internal (Postfix) with ESMTP id E6FB9580B1E;
-        Tue, 24 Aug 2021 09:05:34 -0400 (EDT)
+        by vger.kernel.org with ESMTP id S237158AbhHXNGW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 09:06:22 -0400
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 9622B580B17;
+        Tue, 24 Aug 2021 09:05:38 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute5.internal (MEProxy); Tue, 24 Aug 2021 09:05:34 -0400
+  by compute2.internal (MEProxy); Tue, 24 Aug 2021 09:05:38 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=4ZTXSdqmI6SNWgKRs
-        jS3QaMxl9cnr+43pp92411Vl9Q=; b=rbjQIkdbnqCo4NuiBgcIHzSB+0XiUKEmA
-        p27FnIQKDyZtw7Q89BKPH4KvxqSl50jA8xdw3hB/qvxZHrIdikU6UPjp02XEkPZr
-        26VNOvdOpTnXeCR1I3lzILitgOw1Yd32loUhwJX3ruazbpwJOuni8nHKn0xeleRu
-        DQZfjWNjbDhDe5+nntoks3+pNW5pZ6Hw2MRVHXH8HZsY3uNtBREJPBeM6jl1tDYX
-        OjgMgkgUcL8m6wVLibYVvz7WS6v42EAHZvb8tBLH+/Skl91n+6NharzNgrUr3GvC
-        RLTpDkbRL6Rdz9BkYUltngRR2ZnE0ZNTynPKJJ+Z9u240laKDap5g==
-X-ME-Sender: <xms:ne4kYVEGx2ngN5wKe1synTsiwlUf4U0qJEmihDMUMdJKX5GKIoX2vw>
-    <xme:ne4kYaWSDDLN8NQkm_LuDapK835PC76QTReU0q_lQC68uT-WYq-p1qVVKsSMwbCS3
-    OGIQ4DyBu7TI0A>
-X-ME-Received: <xmr:ne4kYXIGl9jsdmEhmesrjMd2jK24pEicFgqTwH1MDYhAYElUzaXjbt-LW2J1J3CgoxPCeYgd9LzsJ2CpweunFg5MZ5U2yNYLOunocnWge48lXQ>
+        :in-reply-to:message-id:mime-version:references:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; bh=SafjVa4LD927oYo+uJkPV8NThLnqVMef7p/G/aA9gu8=; b=KzZtRzZb
+        UfOLOIfg/OYMPQv2IAaEZQUISSmQvAaNIAAjc0jCNx6hvME0G7c+y7pVyt9unEqD
+        K9AwiAO67L9GpArFMz0nu0aAPGAswhpzDOrwRb9DLxr1D7uWpJl7ZQFStUcxOiux
+        ViELZCnHb5S9gd7Lmxx9xC5eJ7f5FqQWAUvptNvkWtDb6QKEGxRnrFpEZHaRfBgw
+        BRjM7CrT4Lw76qOtoJ5Zx+lDxk5TAUYBr2tdVYjGTuChDmhb43QaW78nHof5ycBW
+        majo9o0eh4cR/pVwvua2x80IJA7OUKY8WiZeLnPTfvO9L5a0qo+DHzEk31VlLYbe
+        rCl5r+xO6sM6/w==
+X-ME-Sender: <xms:ou4kYS2SNNXYzGx0OLzYVqXAzlLeOMxeZzCXAKrYVmI10NVlHgBWkA>
+    <xme:ou4kYVHHKBJAia4aJl3W0IDDyJjylv0-1I3f32QHBwq0ox1QmpIL9lR1a5Lmp85wD
+    OUfEM4QfYOmpI8>
+X-ME-Received: <xmr:ou4kYa77e1KZgTj5h51-6jeAFTbFxDX05IE3OiDPKTWalZv6eNg5q8M-nWQluGuA46zh9mZHvJpQlauN4ayfWpup38vvkiwpKVd25I1gMLw_7w>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddruddtjedgheelucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
-    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
-    hhdrohhrgheqnecuggftrfgrthhtvghrnhepteevgefhvefggfffkeeuffeuvdfhueehhe
-    etffeikeegheevfedvgeelvdffudfhnecuvehluhhsthgvrhfuihiivgeptdenucfrrghr
-    rghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:ne4kYbGWE_pgEAN8fPPH3ZsAwzcIwFA_hA4QTBkGll_W_1Anlltv9g>
-    <xmx:ne4kYbXzKblEf__FrOUpn1DdwBJogaqfxIu3dJxYo-1eh_Q0gcP5SQ>
-    <xmx:ne4kYWP-k6k-41LFQDbd6dwRn5M8OyDeKV29MgxQ06Cu50AqzIfxXQ>
-    <xmx:nu4kYXpvvA8l-PqVr7GQNJmUMfw1HH5yJAZ9N-4HzW1TqB_-LCAGLg>
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
+    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
+    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
+    ehgfdtffethfelvdejgffghefgveejkefhnecuvehluhhsthgvrhfuihiivgepudenucfr
+    rghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:ou4kYT3pM7ATl6iS1-QDZPYZvujFrQgwA-cuu_vzReYMLvtb7yx4AQ>
+    <xmx:ou4kYVHhJtDOkpoCjSKslAVFWjcAd7feTQVW86_bSn3J2BcmyO1F3A>
+    <xmx:ou4kYc9RjwQ1yrrq_2afNcstWUPFPdfAAXz4rPWNNnz7J9HGEhF4GQ>
+    <xmx:ou4kYbYr-WugdwIc6lZLK9UqYNZZv0d1NPowPKJn5ZAaJySu7d2REg>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 24 Aug 2021 09:05:30 -0400 (EDT)
+ 24 Aug 2021 09:05:35 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
         mkubecek@suse.cz, pali@kernel.org, jacob.e.keller@intel.com,
         jiri@nvidia.com, vadimp@nvidia.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [RFC PATCH ethtool-next v3 0/6] ethtool: Add ability to control transceiver modules' power mode
-Date:   Tue, 24 Aug 2021 16:05:09 +0300
-Message-Id: <20210824130515.1828270-1-idosch@idosch.org>
+Subject: [RFC PATCH ethtool-next v3 1/6] Update UAPI header copies
+Date:   Tue, 24 Aug 2021 16:05:10 +0300
+Message-Id: <20210824130515.1828270-2-idosch@idosch.org>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210824130515.1828270-1-idosch@idosch.org>
+References: <20210824130515.1828270-1-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -61,49 +64,290 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-Patch #1 updates the UAPI headers.
+Update to kernel commit XXX.
 
-Patch #2 adds the actual implementation that allows user space to
-control transceiver modules' power mode. See the commit message for
-example output.
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+---
+ uapi/linux/ethtool.h         | 36 ++++++++++++++++++++++++++++++++++--
+ uapi/linux/ethtool_netlink.h | 34 +++++++++++++++++++++++++++++++++-
+ uapi/linux/if_link.h         | 21 +++++++++++++++++++++
+ uapi/linux/net_tstamp.h      | 17 +++++++++++++++--
+ uapi/linux/netlink.h         |  5 +++--
+ 5 files changed, 106 insertions(+), 7 deletions(-)
 
-Patches #3-#5 parse more fields from SFF-8636 and CMIS EEPROMs to
-provide better observability regarding the power mode of the modules.
-
-Patch #6 adds support for two new extended link states in order to allow
-user space to troubleshoot link down issues related to transceiver
-modules. See the commit message for example output.
-
-Ido Schimmel (6):
-  Update UAPI header copies
-  ethtool: Add ability to control transceiver modules' power mode
-  ethtool: Print CMIS Module State
-  ethtool: Print CMIS Module-Level Controls
-  ethtool: Print SFF-8636 Power set and Power override bits
-  ethtool: Add transceiver module extended states
-
- Makefile.am                   |   2 +-
- cmis.c                        |  87 +++++++++++++++++
- cmis.h                        |  20 ++++
- ethtool.8.in                  |  25 +++++
- ethtool.c                     |  11 +++
- netlink/desc-ethtool.c        |  11 +++
- netlink/extapi.h              |   4 +
- netlink/module.c              | 179 ++++++++++++++++++++++++++++++++++
- netlink/monitor.c             |   4 +
- netlink/netlink.h             |   1 +
- netlink/settings.c            |  12 +++
- qsfp.c                        |   6 ++
- qsfp.h                        |   2 +-
- shell-completion/bash/ethtool |  23 +++++
- uapi/linux/ethtool.h          |  36 ++++++-
- uapi/linux/ethtool_netlink.h  |  34 ++++++-
- uapi/linux/if_link.h          |  21 ++++
- uapi/linux/net_tstamp.h       |  17 +++-
- uapi/linux/netlink.h          |   5 +-
- 19 files changed, 491 insertions(+), 9 deletions(-)
- create mode 100644 netlink/module.c
-
+diff --git a/uapi/linux/ethtool.h b/uapi/linux/ethtool.h
+index c6ec1111ffa3..805f5559f433 100644
+--- a/uapi/linux/ethtool.h
++++ b/uapi/linux/ethtool.h
+@@ -231,7 +231,7 @@ enum tunable_id {
+ 	ETHTOOL_PFC_PREVENTION_TOUT, /* timeout in msecs */
+ 	/*
+ 	 * Add your fresh new tunable attribute above and remember to update
+-	 * tunable_strings[] in net/core/ethtool.c
++	 * tunable_strings[] in net/ethtool/common.c
+ 	 */
+ 	__ETHTOOL_TUNABLE_COUNT,
+ };
+@@ -295,7 +295,7 @@ enum phy_tunable_id {
+ 	ETHTOOL_PHY_EDPD,
+ 	/*
+ 	 * Add your fresh new phy tunable attribute above and remember to update
+-	 * phy_tunable_strings[] in net/core/ethtool.c
++	 * phy_tunable_strings[] in net/ethtool/common.c
+ 	 */
+ 	__ETHTOOL_PHY_TUNABLE_COUNT,
+ };
+@@ -601,6 +601,7 @@ enum ethtool_link_ext_state {
+ 	ETHTOOL_LINK_EXT_STATE_CALIBRATION_FAILURE,
+ 	ETHTOOL_LINK_EXT_STATE_POWER_BUDGET_EXCEEDED,
+ 	ETHTOOL_LINK_EXT_STATE_OVERHEAT,
++	ETHTOOL_LINK_EXT_STATE_MODULE,
+ };
+ 
+ /* More information in addition to ETHTOOL_LINK_EXT_STATE_AUTONEG. */
+@@ -637,6 +638,8 @@ enum ethtool_link_ext_substate_link_logical_mismatch {
+ enum ethtool_link_ext_substate_bad_signal_integrity {
+ 	ETHTOOL_LINK_EXT_SUBSTATE_BSI_LARGE_NUMBER_OF_PHYSICAL_ERRORS = 1,
+ 	ETHTOOL_LINK_EXT_SUBSTATE_BSI_UNSUPPORTED_RATE,
++	ETHTOOL_LINK_EXT_SUBSTATE_BSI_SERDES_REFERENCE_CLOCK_LOST,
++	ETHTOOL_LINK_EXT_SUBSTATE_BSI_SERDES_ALOS,
+ };
+ 
+ /* More information in addition to ETHTOOL_LINK_EXT_STATE_CABLE_ISSUE. */
+@@ -645,6 +648,12 @@ enum ethtool_link_ext_substate_cable_issue {
+ 	ETHTOOL_LINK_EXT_SUBSTATE_CI_CABLE_TEST_FAILURE,
+ };
+ 
++/* More information in addition to ETHTOOL_LINK_EXT_STATE_MODULE. */
++enum ethtool_link_ext_substate_module {
++	ETHTOOL_LINK_EXT_SUBSTATE_MODULE_LOW_POWER_MODE = 1,
++	ETHTOOL_LINK_EXT_SUBSTATE_MODULE_CMIS_NOT_READY,
++};
++
+ #define ETH_GSTRING_LEN		32
+ 
+ /**
+@@ -702,6 +711,29 @@ enum ethtool_stringset {
+ 	ETH_SS_COUNT
+ };
+ 
++/**
++ * enum ethtool_module_power_mode_policy - plug-in module power mode policy
++ * @ETHTOOL_MODULE_POWER_MODE_POLICY_HIGH: Module is always in high power mode.
++ * @ETHTOOL_MODULE_POWER_MODE_POLICY_AUTO: Module is transitioned by the host
++ *	to high power mode when the first port using it is put administratively
++ *	up and to low power mode when the last port using it is put
++ *	administratively down.
++ */
++enum ethtool_module_power_mode_policy {
++	ETHTOOL_MODULE_POWER_MODE_POLICY_HIGH,
++	ETHTOOL_MODULE_POWER_MODE_POLICY_AUTO,
++};
++
++/**
++ * enum ethtool_module_power_mode - plug-in module power mode
++ * @ETHTOOL_MODULE_POWER_MODE_LOW: Module is in low power mode.
++ * @ETHTOOL_MODULE_POWER_MODE_HIGH: Module is in high power mode.
++ */
++enum ethtool_module_power_mode {
++	ETHTOOL_MODULE_POWER_MODE_LOW,
++	ETHTOOL_MODULE_POWER_MODE_HIGH,
++};
++
+ /**
+  * struct ethtool_gstrings - string set for data tagging
+  * @cmd: Command number = %ETHTOOL_GSTRINGS
+diff --git a/uapi/linux/ethtool_netlink.h b/uapi/linux/ethtool_netlink.h
+index 4653c4c79972..d706aa03925a 100644
+--- a/uapi/linux/ethtool_netlink.h
++++ b/uapi/linux/ethtool_netlink.h
+@@ -46,6 +46,9 @@ enum {
+ 	ETHTOOL_MSG_FEC_SET,
+ 	ETHTOOL_MSG_MODULE_EEPROM_GET,
+ 	ETHTOOL_MSG_STATS_GET,
++	ETHTOOL_MSG_PHC_VCLOCKS_GET,
++	ETHTOOL_MSG_MODULE_GET,
++	ETHTOOL_MSG_MODULE_SET,
+ 
+ 	/* add new constants above here */
+ 	__ETHTOOL_MSG_USER_CNT,
+@@ -88,6 +91,9 @@ enum {
+ 	ETHTOOL_MSG_FEC_NTF,
+ 	ETHTOOL_MSG_MODULE_EEPROM_GET_REPLY,
+ 	ETHTOOL_MSG_STATS_GET_REPLY,
++	ETHTOOL_MSG_PHC_VCLOCKS_GET_REPLY,
++	ETHTOOL_MSG_MODULE_GET_REPLY,
++	ETHTOOL_MSG_MODULE_NTF,
+ 
+ 	/* add new constants above here */
+ 	__ETHTOOL_MSG_KERNEL_CNT,
+@@ -440,6 +446,19 @@ enum {
+ 	ETHTOOL_A_TSINFO_MAX = (__ETHTOOL_A_TSINFO_CNT - 1)
+ };
+ 
++/* PHC VCLOCKS */
++
++enum {
++	ETHTOOL_A_PHC_VCLOCKS_UNSPEC,
++	ETHTOOL_A_PHC_VCLOCKS_HEADER,			/* nest - _A_HEADER_* */
++	ETHTOOL_A_PHC_VCLOCKS_NUM,			/* u32 */
++	ETHTOOL_A_PHC_VCLOCKS_INDEX,			/* array, s32 */
++
++	/* add new constants above here */
++	__ETHTOOL_A_PHC_VCLOCKS_CNT,
++	ETHTOOL_A_PHC_VCLOCKS_MAX = (__ETHTOOL_A_PHC_VCLOCKS_CNT - 1)
++};
++
+ /* CABLE TEST */
+ 
+ enum {
+@@ -675,7 +694,7 @@ enum {
+ 	ETHTOOL_A_MODULE_EEPROM_PAGE,			/* u8 */
+ 	ETHTOOL_A_MODULE_EEPROM_BANK,			/* u8 */
+ 	ETHTOOL_A_MODULE_EEPROM_I2C_ADDRESS,		/* u8 */
+-	ETHTOOL_A_MODULE_EEPROM_DATA,			/* nested */
++	ETHTOOL_A_MODULE_EEPROM_DATA,			/* binary */
+ 
+ 	__ETHTOOL_A_MODULE_EEPROM_CNT,
+ 	ETHTOOL_A_MODULE_EEPROM_MAX = (__ETHTOOL_A_MODULE_EEPROM_CNT - 1)
+@@ -816,6 +835,19 @@ enum {
+ 	ETHTOOL_A_STATS_RMON_MAX = (__ETHTOOL_A_STATS_RMON_CNT - 1)
+ };
+ 
++/* MODULE */
++
++enum {
++	ETHTOOL_A_MODULE_UNSPEC,
++	ETHTOOL_A_MODULE_HEADER,		/* nest - _A_HEADER_* */
++	ETHTOOL_A_MODULE_POWER_MODE_POLICY,	/* u8 */
++	ETHTOOL_A_MODULE_POWER_MODE,		/* u8 */
++
++	/* add new constants above here */
++	__ETHTOOL_A_MODULE_CNT,
++	ETHTOOL_A_MODULE_MAX = (__ETHTOOL_A_MODULE_CNT - 1)
++};
++
+ /* generic netlink info */
+ #define ETHTOOL_GENL_NAME "ethtool"
+ #define ETHTOOL_GENL_VERSION 1
+diff --git a/uapi/linux/if_link.h b/uapi/linux/if_link.h
+index 0e81707a9637..330a3c1e0035 100644
+--- a/uapi/linux/if_link.h
++++ b/uapi/linux/if_link.h
+@@ -341,6 +341,13 @@ enum {
+ 	IFLA_ALT_IFNAME, /* Alternative ifname */
+ 	IFLA_PERM_ADDRESS,
+ 	IFLA_PROTO_DOWN_REASON,
++
++	/* device (sysfs) name as parent, used instead
++	 * of IFLA_LINK where there's no parent netdev
++	 */
++	IFLA_PARENT_DEV_NAME,
++	IFLA_PARENT_DEV_BUS_NAME,
++
+ 	__IFLA_MAX
+ };
+ 
+@@ -470,6 +477,7 @@ enum {
+ 	IFLA_BR_MCAST_MLD_VERSION,
+ 	IFLA_BR_VLAN_STATS_PER_PORT,
+ 	IFLA_BR_MULTI_BOOLOPT,
++	IFLA_BR_MCAST_QUERIER_STATE,
+ 	__IFLA_BR_MAX,
+ };
+ 
+@@ -846,6 +854,7 @@ enum {
+ 	IFLA_BOND_AD_ACTOR_SYSTEM,
+ 	IFLA_BOND_TLB_DYNAMIC_LB,
+ 	IFLA_BOND_PEER_NOTIF_DELAY,
++	IFLA_BOND_AD_LACP_ACTIVE,
+ 	__IFLA_BOND_MAX,
+ };
+ 
+@@ -1234,6 +1243,8 @@ enum {
+ #define RMNET_FLAGS_INGRESS_MAP_COMMANDS          (1U << 1)
+ #define RMNET_FLAGS_INGRESS_MAP_CKSUMV4           (1U << 2)
+ #define RMNET_FLAGS_EGRESS_MAP_CKSUMV4            (1U << 3)
++#define RMNET_FLAGS_INGRESS_MAP_CKSUMV5           (1U << 4)
++#define RMNET_FLAGS_EGRESS_MAP_CKSUMV5            (1U << 5)
+ 
+ enum {
+ 	IFLA_RMNET_UNSPEC,
+@@ -1249,4 +1260,14 @@ struct ifla_rmnet_flags {
+ 	__u32	mask;
+ };
+ 
++/* MCTP section */
++
++enum {
++	IFLA_MCTP_UNSPEC,
++	IFLA_MCTP_NET,
++	__IFLA_MCTP_MAX,
++};
++
++#define IFLA_MCTP_MAX (__IFLA_MCTP_MAX - 1)
++
+ #endif /* _LINUX_IF_LINK_H */
+diff --git a/uapi/linux/net_tstamp.h b/uapi/linux/net_tstamp.h
+index 7ed0b3d1c00a..fcc61c73a666 100644
+--- a/uapi/linux/net_tstamp.h
++++ b/uapi/linux/net_tstamp.h
+@@ -13,7 +13,7 @@
+ #include <linux/types.h>
+ #include <linux/socket.h>   /* for SO_TIMESTAMPING */
+ 
+-/* SO_TIMESTAMPING gets an integer bit field comprised of these values */
++/* SO_TIMESTAMPING flags */
+ enum {
+ 	SOF_TIMESTAMPING_TX_HARDWARE = (1<<0),
+ 	SOF_TIMESTAMPING_TX_SOFTWARE = (1<<1),
+@@ -30,8 +30,9 @@ enum {
+ 	SOF_TIMESTAMPING_OPT_STATS = (1<<12),
+ 	SOF_TIMESTAMPING_OPT_PKTINFO = (1<<13),
+ 	SOF_TIMESTAMPING_OPT_TX_SWHW = (1<<14),
++	SOF_TIMESTAMPING_BIND_PHC = (1 << 15),
+ 
+-	SOF_TIMESTAMPING_LAST = SOF_TIMESTAMPING_OPT_TX_SWHW,
++	SOF_TIMESTAMPING_LAST = SOF_TIMESTAMPING_BIND_PHC,
+ 	SOF_TIMESTAMPING_MASK = (SOF_TIMESTAMPING_LAST - 1) |
+ 				 SOF_TIMESTAMPING_LAST
+ };
+@@ -46,6 +47,18 @@ enum {
+ 					 SOF_TIMESTAMPING_TX_SCHED | \
+ 					 SOF_TIMESTAMPING_TX_ACK)
+ 
++/**
++ * struct so_timestamping - SO_TIMESTAMPING parameter
++ *
++ * @flags:	SO_TIMESTAMPING flags
++ * @bind_phc:	Index of PTP virtual clock bound to sock. This is available
++ *		if flag SOF_TIMESTAMPING_BIND_PHC is set.
++ */
++struct so_timestamping {
++	int flags;
++	int bind_phc;
++};
++
+ /**
+  * struct hwtstamp_config - %SIOCGHWTSTAMP and %SIOCSHWTSTAMP parameter
+  *
+diff --git a/uapi/linux/netlink.h b/uapi/linux/netlink.h
+index 5024c5435749..e83e2e300130 100644
+--- a/uapi/linux/netlink.h
++++ b/uapi/linux/netlink.h
+@@ -91,9 +91,10 @@ struct nlmsghdr {
+ #define NLMSG_HDRLEN	 ((int) NLMSG_ALIGN(sizeof(struct nlmsghdr)))
+ #define NLMSG_LENGTH(len) ((len) + NLMSG_HDRLEN)
+ #define NLMSG_SPACE(len) NLMSG_ALIGN(NLMSG_LENGTH(len))
+-#define NLMSG_DATA(nlh)  ((void*)(((char*)nlh) + NLMSG_LENGTH(0)))
++#define NLMSG_DATA(nlh)  ((void *)(((char *)nlh) + NLMSG_HDRLEN))
+ #define NLMSG_NEXT(nlh,len)	 ((len) -= NLMSG_ALIGN((nlh)->nlmsg_len), \
+-				  (struct nlmsghdr*)(((char*)(nlh)) + NLMSG_ALIGN((nlh)->nlmsg_len)))
++				  (struct nlmsghdr *)(((char *)(nlh)) + \
++				  NLMSG_ALIGN((nlh)->nlmsg_len)))
+ #define NLMSG_OK(nlh,len) ((len) >= (int)sizeof(struct nlmsghdr) && \
+ 			   (nlh)->nlmsg_len >= sizeof(struct nlmsghdr) && \
+ 			   (nlh)->nlmsg_len <= (len))
 -- 
 2.31.1
 
