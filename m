@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CBE33F547D
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 02:55:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F9E83F5484
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 02:55:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233682AbhHXAzS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Aug 2021 20:55:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47578 "EHLO mail.kernel.org"
+        id S234316AbhHXAz2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Aug 2021 20:55:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47676 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233806AbhHXAy5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Aug 2021 20:54:57 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3F3C0613A7;
-        Tue, 24 Aug 2021 00:54:13 +0000 (UTC)
+        id S233639AbhHXAzA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Aug 2021 20:55:00 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 816F8613E6;
+        Tue, 24 Aug 2021 00:54:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629766454;
-        bh=yYIXePsMDMr4LSqP3OftBiaHJtUfw08euqDDpGm+8Og=;
+        s=k20201202; t=1629766455;
+        bh=F9yoIotIzFik7ysVZVflN4Wd+6wIU7YL3+6ONdX9auI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MMzpz8iSmTwcryQdKKa7p6uZULgYL85vG5MFG+Q5Gt3aSmJOlO7QKrj4N6ziWttRT
-         NbYN1uv1GZ1IABEFfgcNOecZN7Yn0QSQ8RQ6uEiu4ltFRcKYnnL+Acdy0PwwmT9gKx
-         PehZdzzcMGIsb6xQVwF8VqMyT+9P7+/9K3qEOlY1HPIXW11seX9W9sLJPq1iTyHKVG
-         F7Pgxt+eF9Jv+CKKmpF5XfiPDJah9f9/lpn7pEhTzl7WduyvAjMoPQmzW5D0RG0Bdi
-         RHEfBPbGUp16IU+i5Pd2bGODo1iPfSc2mMUCzkTEm5hrGedIs78DtOVqADRadDztHw
-         cTPl/BkzW9Tzg==
+        b=ZwTxxaw5/aElDdIgbWJbVOTiNXkd4u2ByVsGMn7oxKCUKc/uOBqmiawV3E5n6TnI4
+         Eg76REc9aGRLUk7T04EUBfcHGadtCXwhM20NRMcDxQhTLkutppd+WMHlz3XGNiOdjr
+         XO/s/bH7UM3JMBbtlqGnA4QhYALL2RCYb/5Aetk+HSsE5lmP5Gzlp/BNG/4e7mSVR/
+         oO3OQtIEpk2K5ddYHkBu8Ry7rIY/GgoEDypgExwW+nVqiCU1gQ9qfKIzDbbSk0c6Ci
+         7e2SRW/w3Ec0rQKwa4GmPFfwXp6xlGdTV8M0souob7U/R9dS2QbtHATeRaqOHkVL2+
+         i5lCi54gY77wQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Shai Malin <smalin@marvell.com>, Ariel Elior <aelior@marvell.com>,
+Cc:     Shai Malin <smalin@marvell.com>,
+        TOTE Robot <oslab@tsinghua.edu.cn>,
+        Ariel Elior <aelior@marvell.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.13 13/26] qed: qed ll2 race condition fixes
-Date:   Mon, 23 Aug 2021 20:53:43 -0400
-Message-Id: <20210824005356.630888-13-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.13 14/26] qed: Fix null-pointer dereference in qed_rdma_create_qp()
+Date:   Mon, 23 Aug 2021 20:53:44 -0400
+Message-Id: <20210824005356.630888-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210824005356.630888-1-sashal@kernel.org>
 References: <20210824005356.630888-1-sashal@kernel.org>
@@ -44,86 +46,36 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Shai Malin <smalin@marvell.com>
 
-[ Upstream commit 37110237f31105d679fc0aa7b11cdec867750ea7 ]
+[ Upstream commit d33d19d313d3466abdf8b0428be7837aff767802 ]
 
-Avoiding qed ll2 race condition and NULL pointer dereference as part
-of the remove and recovery flows.
+Fix a possible null-pointer dereference in qed_rdma_create_qp().
 
-Changes form V1:
-- Change (!p_rx->set_prod_addr).
-- qed_ll2.c checkpatch fixes.
+Changes from V2:
+- Revert checkpatch fixes.
 
-Change from V2:
-- Revert "qed_ll2.c checkpatch fixes".
-
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
 Signed-off-by: Ariel Elior <aelior@marvell.com>
 Signed-off-by: Shai Malin <smalin@marvell.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/qlogic/qed/qed_ll2.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+ drivers/net/ethernet/qlogic/qed/qed_rdma.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_ll2.c b/drivers/net/ethernet/qlogic/qed/qed_ll2.c
-index 49783f365079..f2c8273dce67 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_ll2.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_ll2.c
-@@ -327,6 +327,9 @@ static int qed_ll2_txq_completion(struct qed_hwfn *p_hwfn, void *p_cookie)
- 	unsigned long flags;
- 	int rc = -EINVAL;
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_rdma.c b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
+index da864d12916b..4f4b79250a2b 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_rdma.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
+@@ -1285,8 +1285,7 @@ qed_rdma_create_qp(void *rdma_cxt,
  
-+	if (!p_ll2_conn)
-+		return rc;
-+
- 	spin_lock_irqsave(&p_tx->lock, flags);
- 	if (p_tx->b_completing_packet) {
- 		rc = -EBUSY;
-@@ -500,7 +503,16 @@ static int qed_ll2_rxq_completion(struct qed_hwfn *p_hwfn, void *cookie)
- 	unsigned long flags = 0;
- 	int rc = 0;
- 
-+	if (!p_ll2_conn)
-+		return rc;
-+
- 	spin_lock_irqsave(&p_rx->lock, flags);
-+
-+	if (!QED_LL2_RX_REGISTERED(p_ll2_conn)) {
-+		spin_unlock_irqrestore(&p_rx->lock, flags);
-+		return 0;
-+	}
-+
- 	cq_new_idx = le16_to_cpu(*p_rx->p_fw_cons);
- 	cq_old_idx = qed_chain_get_cons_idx(&p_rx->rcq_chain);
- 
-@@ -821,6 +833,9 @@ static int qed_ll2_lb_rxq_completion(struct qed_hwfn *p_hwfn, void *p_cookie)
- 	struct qed_ll2_info *p_ll2_conn = (struct qed_ll2_info *)p_cookie;
- 	int rc;
- 
-+	if (!p_ll2_conn)
-+		return 0;
-+
- 	if (!QED_LL2_RX_REGISTERED(p_ll2_conn))
- 		return 0;
- 
-@@ -844,6 +859,9 @@ static int qed_ll2_lb_txq_completion(struct qed_hwfn *p_hwfn, void *p_cookie)
- 	u16 new_idx = 0, num_bds = 0;
- 	int rc;
- 
-+	if (!p_ll2_conn)
-+		return 0;
-+
- 	if (!QED_LL2_TX_REGISTERED(p_ll2_conn))
- 		return 0;
- 
-@@ -1725,6 +1743,8 @@ int qed_ll2_post_rx_buffer(void *cxt,
- 	if (!p_ll2_conn)
- 		return -EINVAL;
- 	p_rx = &p_ll2_conn->rx_queue;
-+	if (!p_rx->set_prod_addr)
-+		return -EIO;
- 
- 	spin_lock_irqsave(&p_rx->lock, flags);
- 	if (!list_empty(&p_rx->free_descq))
+ 	if (!rdma_cxt || !in_params || !out_params ||
+ 	    !p_hwfn->p_rdma_info->active) {
+-		DP_ERR(p_hwfn->cdev,
+-		       "qed roce create qp failed due to NULL entry (rdma_cxt=%p, in=%p, out=%p, roce_info=?\n",
++		pr_err("qed roce create qp failed due to NULL entry (rdma_cxt=%p, in=%p, out=%p, roce_info=?\n",
+ 		       rdma_cxt, in_params, out_params);
+ 		return NULL;
+ 	}
 -- 
 2.30.2
 
