@@ -2,108 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 519F83F6C36
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 01:26:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8E423F6C42
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 01:31:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234477AbhHXX10 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 19:27:26 -0400
-Received: from mga03.intel.com ([134.134.136.65]:39254 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234261AbhHXX1S (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Aug 2021 19:27:18 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10086"; a="217448939"
-X-IronPort-AV: E=Sophos;i="5.84,348,1620716400"; 
-   d="scan'208";a="217448939"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2021 16:26:33 -0700
-X-IronPort-AV: E=Sophos;i="5.84,348,1620716400"; 
-   d="scan'208";a="515847906"
-Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.209.40.105])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2021 16:26:33 -0700
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Geliang Tang <geliangtang@xiaomi.com>, davem@davemloft.net,
-        kuba@kernel.org, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev, pabeni@redhat.com,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 7/7] selftests: mptcp: add MP_FAIL mibs check
-Date:   Tue, 24 Aug 2021 16:26:19 -0700
-Message-Id: <20210824232619.136912-8-mathew.j.martineau@linux.intel.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20210824232619.136912-1-mathew.j.martineau@linux.intel.com>
-References: <20210824232619.136912-1-mathew.j.martineau@linux.intel.com>
+        id S233718AbhHXXcj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 19:32:39 -0400
+Received: from smtp-out2.suse.de ([195.135.220.29]:44586 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231552AbhHXXcg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 19:32:36 -0400
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id BDE1E1FDD2;
+        Tue, 24 Aug 2021 23:31:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1629847910; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=z9rIqmYC7KNVP7RMaR756BWFFV/qtN/abPIOMZ9BZsI=;
+        b=v4Hvkgpr0EVXXPn2XF7apywDNN4AKiNXV9CE+ophp3erypN8Tf6NBYLKBEw8gEbSaavS28
+        1VRHZyyjP73L/nGjsVT9ePzdcWTdmafSZhpJHjUU7bN4m13Xcr3Ds7iz2KUVKpWL1v87F9
+        k/wS6wIUyFRZRSuSAxeYO8MY753mw9Y=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1629847910;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=z9rIqmYC7KNVP7RMaR756BWFFV/qtN/abPIOMZ9BZsI=;
+        b=Cu+tL1g/oCmf1GIz17oADk11WKicnkdPwQAKBuFvjoXJakwI0jPYMbwwiKBBAjel6f4s1P
+        sPtn8uU416msu4AA==
+Received: from lion.mk-sys.cz (unknown [10.100.200.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id A850CA3B89;
+        Tue, 24 Aug 2021 23:31:50 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 57DEB603F6; Wed, 25 Aug 2021 01:31:47 +0200 (CEST)
+Date:   Wed, 25 Aug 2021 01:31:47 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     "Keller, Jacob E" <jacob.e.keller@intel.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Ido Schimmel <idosch@idosch.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "pali@kernel.org" <pali@kernel.org>,
+        "jiri@nvidia.com" <jiri@nvidia.com>,
+        "vadimp@nvidia.com" <vadimp@nvidia.com>,
+        "mlxsw@nvidia.com" <mlxsw@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [RFC PATCH net-next v3 1/6] ethtool: Add ability to control
+ transceiver modules' power mode
+Message-ID: <20210824233147.3ppmq4xk2n3n7afz@lion.mk-sys.cz>
+References: <20210824130344.1828076-1-idosch@idosch.org>
+ <20210824130344.1828076-2-idosch@idosch.org>
+ <20210824161231.5e281f1e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CO1PR11MB5089F1466B2072C6AD8614F1D6C59@CO1PR11MB5089.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CO1PR11MB5089F1466B2072C6AD8614F1D6C59@CO1PR11MB5089.namprd11.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Geliang Tang <geliangtang@xiaomi.com>
+On Tue, Aug 24, 2021 at 11:18:56PM +0000, Keller, Jacob E wrote:
+> > -----Original Message-----
+> > From: Jakub Kicinski <kuba@kernel.org>
+> > Sent: Tuesday, August 24, 2021 4:13 PM
+> > To: Ido Schimmel <idosch@idosch.org>
+> > Cc: netdev@vger.kernel.org; davem@davemloft.net; andrew@lunn.ch;
+> > mkubecek@suse.cz; pali@kernel.org; Keller, Jacob E <jacob.e.keller@intel.com>;
+> > jiri@nvidia.com; vadimp@nvidia.com; mlxsw@nvidia.com; Ido Schimmel
+> > <idosch@nvidia.com>
+> > Subject: Re: [RFC PATCH net-next v3 1/6] ethtool: Add ability to control
+> > transceiver modules' power mode
+> > 
+> > On Tue, 24 Aug 2021 16:03:39 +0300 Ido Schimmel wrote:
+[...]
+> > > +/**
+> > > + * struct ethtool_module_power_mode_params - module power mode
+> > parameters
+> > > + * @policy: The power mode policy enforced by the host for the plug-in
+> > module.
+> > > + * @mode: The operational power mode of the plug-in module. Should be
+> > filled by
+> > > + * device drivers on get operations.
+> > 
+> > Indent continuation lines by one tab.
+> > 
+> > > + * @mode_valid: Indicates the validity of the @mode field. Should be set by
+> > > + * device drivers on get operations when a module is plugged-in.
+> > 
+> > Should we make a firm decision on whether we want to use these kind of
+> > valid bits or choose invalid defaults? As you may guess my preference
+> > is the latter since that's what I usually do, that way drivers don't
+> > have to write two fields.
+> > 
+> > Actually I think this may be the first "valid" in ethtool, I thought we
+> > already had one but I don't see it now..
+> > 
+> 
+> 
+> coalesce settings have a valid mode don't they? Or at least an
+> "accepted modes"?
 
-This patch added a function chk_fail_nr to check the mibs for MP_FAIL.
+That's different, IIUC. In coalesce settings, the driver declares which
+parameters are allowed in "set" requests so that this part of request
+checks can be done in the general ethtool code rather than in each
+driver separately. Here the "valid" field says whether mode field holds
+a meaningful value or should be ignored.
 
-Signed-off-by: Geliang Tang <geliangtang@xiaomi.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
----
- .../testing/selftests/net/mptcp/mptcp_join.sh | 38 +++++++++++++++++++
- 1 file changed, 38 insertions(+)
-
-diff --git a/tools/testing/selftests/net/mptcp/mptcp_join.sh b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-index 7b3e6cc56935..255793c5ac4f 100755
---- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
-+++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-@@ -578,6 +578,43 @@ chk_csum_nr()
- 	fi
- }
- 
-+chk_fail_nr()
-+{
-+	local mp_fail_nr_tx=$1
-+	local mp_fail_nr_rx=$2
-+	local count
-+	local dump_stats
-+
-+	printf "%-39s %s" " " "ftx"
-+	count=`ip netns exec $ns1 nstat -as | grep MPTcpExtMPFailTx | awk '{print $2}'`
-+	[ -z "$count" ] && count=0
-+	if [ "$count" != "$mp_fail_nr_tx" ]; then
-+		echo "[fail] got $count MP_FAIL[s] TX expected $mp_fail_nr_tx"
-+		ret=1
-+		dump_stats=1
-+	else
-+		echo -n "[ ok ]"
-+	fi
-+
-+	echo -n " - frx   "
-+	count=`ip netns exec $ns2 nstat -as | grep MPTcpExtMPFailRx | awk '{print $2}'`
-+	[ -z "$count" ] && count=0
-+	if [ "$count" != "$mp_fail_nr_rx" ]; then
-+		echo "[fail] got $count MP_FAIL[s] RX expected $mp_fail_nr_rx"
-+		ret=1
-+		dump_stats=1
-+	else
-+		echo "[ ok ]"
-+	fi
-+
-+	if [ "${dump_stats}" = 1 ]; then
-+		echo Server ns stats
-+		ip netns exec $ns1 nstat -as | grep MPTcp
-+		echo Client ns stats
-+		ip netns exec $ns2 nstat -as | grep MPTcp
-+	fi
-+}
-+
- chk_join_nr()
- {
- 	local msg="$1"
-@@ -627,6 +664,7 @@ chk_join_nr()
- 	fi
- 	if [ $checksum -eq 1 ]; then
- 		chk_csum_nr
-+		chk_fail_nr 0 0
- 	fi
- }
- 
--- 
-2.33.0
-
+Michal
