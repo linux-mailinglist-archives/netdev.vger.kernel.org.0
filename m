@@ -2,82 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36E973F61A2
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 17:29:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F0253F619F
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 17:29:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238317AbhHXPaS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 11:30:18 -0400
-Received: from mail-yb1-f182.google.com ([209.85.219.182]:43675 "EHLO
-        mail-yb1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234546AbhHXPaQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 11:30:16 -0400
-Received: by mail-yb1-f182.google.com with SMTP id z128so41786986ybc.10;
-        Tue, 24 Aug 2021 08:29:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bj6/PIAHxTxWiNTDP0ZybZlwOVfBWJrxxo5gWj3Vjh4=;
-        b=lrKUPVu4zjRMH6kndntOSRZCqQWHoKqMthoEB4X7xUVB0r7I6oku3AeoTv1eRjQyuV
-         IYkGhEd5lVIPM+fOW/M8HnYNUzUkdgEyhPxONauLTNpJ8QB9NYIYjoBI2752duReHg8g
-         EC7M7p4rS4ps24GE1zcJH9TzZLIG9nsOvbq8A7CG31S0EwsKACpyqf2Re1n93mSE+n5q
-         vwhmDrBSn0rDLj4EBOWGlTuCC/cxnOlUbrX7W5A30FpcmQgKtBgZ8GFf/P/TXoPSaF5T
-         tXHByLH3lJow8Bf8X2Q4mFqr67CXIAXfO20BB7Eg+SVEayldl6cvGAzHijwRl3I1lI1l
-         Z1tQ==
-X-Gm-Message-State: AOAM531sAKgU5HUVGyFqbSRsJj7mLeJ+oK3A+V0Agp1hUJ0xXA49Jj9Z
-        Y45Ui6ZoGpWwrY1LXcgaXMAaqVoSaTvGiywH0LU=
-X-Google-Smtp-Source: ABdhPJybMAropxVAgAdwF2hgd9qQDL3dbrW1+qEOIIaZM4BUH364bfuFHZKbaDVefItlsjAQMfi7PR4lROGM6BtdB+M=
-X-Received: by 2002:a5b:108:: with SMTP id 8mr52503590ybx.174.1629818971616;
- Tue, 24 Aug 2021 08:29:31 -0700 (PDT)
+        id S238247AbhHXPaO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 11:30:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41286 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235683AbhHXPaN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Aug 2021 11:30:13 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7E66561265;
+        Tue, 24 Aug 2021 15:29:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1629818968;
+        bh=6+biN29D5WoAzfO9BDov2cPTbiGldallkUXFPOK88js=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ZbXQuqv9UCGWSbmnuGM2/SP4M86QwDXHD/0D0Ely67U4o2yVP56OBp6jRRMlh1oSF
+         5veYNBtnUJ3pXEHicLmMF6V/a9iOwysLhlt/vsqQUdHtlgwaAorueBnqOszTuJSabv
+         TsEt6GGwl8QO6aCvLpqHWBQUw6JqRhg75NNX81YzwXOx0HUEZje9xsvcaExeSvMI1Q
+         omsbDbz5VS00VWVaLSIgWWbzeK3lBiYYH22ewdgCCICvGcvsvui8HzCvkjo9B8XdgL
+         WVVI1RDoxyNZJwEMsnopBguQZG1QXEfa/8eYw9wpje9g2LWHi/mRztpi9Xb943SZLm
+         ISBlKzlij56ew==
+Date:   Tue, 24 Aug 2021 11:29:27 -0400
+From:   Sasha Levin <sashal@kernel.org>
+To:     DENG Qingfang <dqfext@gmail.com>
+Cc:     stable@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@savoirfairelinux.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "open list:MEDIATEK SWITCH DRIVER" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>
+Subject: Re: [PATCH 4.19.y] net: dsa: mt7530: disable learning on standalone
+ ports
+Message-ID: <YSUQV3jhfbhbf5Ct@sashalap>
+References: <20210824055509.1316124-1-dqfext@gmail.com>
 MIME-Version: 1.0
-References: <20210824101238.21105-1-harini.katakam@xilinx.com> <20210824140542.GA17195@hoboy.vegasvil.org>
-In-Reply-To: <20210824140542.GA17195@hoboy.vegasvil.org>
-From:   Harini Katakam <harinik@xilinx.com>
-Date:   Tue, 24 Aug 2021 20:59:20 +0530
-Message-ID: <CAFcVECKXOVwpsR=bEUmTXZpSQTjez1fjf1X9bXV_sFCe_U3_qA@mail.gmail.com>
-Subject: Re: [RFC PATCH] net: macb: Process tx timestamp only on ptp packets
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Harini Katakam <harini.katakam@xilinx.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        David Miller <davem@davemloft.net>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Andrei Pistirica <andrei.pistirica@microchip.com>,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Michal Simek <michal.simek@xilinx.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20210824055509.1316124-1-dqfext@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Richard,
+On Tue, Aug 24, 2021 at 01:55:08PM +0800, DENG Qingfang wrote:
+>This is a partial backport of commit 5a30833b9a16f8d1aa15de06636f9317ca51f9df
+>("net: dsa: mt7530: support MDB and bridge flag operations") upstream.
+>
+>Make sure that the standalone ports start up with learning disabled.
 
-On Tue, Aug 24, 2021 at 7:35 PM Richard Cochran
-<richardcochran@gmail.com> wrote:
->
-> On Tue, Aug 24, 2021 at 03:42:38PM +0530, Harini Katakam wrote:
-> > The current implementation timestamps all packets and also processes
-> > the BD timestamp for the same. While it is true that HWTSTAMP_TX_ON
-> > enables timestamps for outgoing packets, the sender of the packet
-> > i.e. linuxptp enables timestamp for PTP or PTP event packets. Cadence
-> > GEM IP has a provision to enable this in HW only for PTP packets.
-> > Enable this option in DMA BD settings register to decrease overhead.
->
-> NAK, because the HWTSTAMP_TX_ON means to time stamp any frame marked
-> by user space, not just PTP frames.
->
-> This patch does not "decrease overhead" because the code tests whether
-> time stamping was request per packet:
->
+What's the reasoning behind:
 
-Thanks for the review.
-Yes, there is no SW overhead because the  skb check ensures timestamp
-post processing is done only on requested packets. But the IP
-timestamps all packets
-because this is a register level setting, not per packet. That's the
-overhead I was referring to.
-But based on your explanation, it looks like we have no option but to enable
-TSTAMP_ALL_FRAMES. Thanks.
+1. Backporting this patch?
+2. A partial backport of this patch?
 
-Regards,
-Harini
+-- 
+Thanks,
+Sasha
