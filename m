@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB8E13F6B23
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 23:36:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C0F73F6B16
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 23:36:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238487AbhHXVgh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 17:36:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35392 "EHLO
+        id S235477AbhHXVgb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 17:36:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235402AbhHXVgR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 17:36:17 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31A8DC061764;
-        Tue, 24 Aug 2021 14:35:32 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id y5so2954305edp.8;
-        Tue, 24 Aug 2021 14:35:32 -0700 (PDT)
+        with ESMTP id S235483AbhHXVgT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 17:36:19 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E2BBC0617A8;
+        Tue, 24 Aug 2021 14:35:34 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id me10so18846182ejb.11;
+        Tue, 24 Aug 2021 14:35:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=autER7PyitAMFgEV0l7oy4w2DFTvFUx0CJDt9c8sGts=;
-        b=adotWc98jGjOBo1FXUq00DR7sewFLxSKWDkuUeEFVbFQQf52xraWGwpXvnvuUgDoPp
-         YplJQgo9am+KHB0D6Cy8ID+v//XQt0gz2i4jTWlGPcUT7fV0toCzKOR4TBxifm5H37go
-         ZrCiUDc1Ve9ZgbPCyPxIsxMZZU2/Y4jhYO+zuSkQ/P8KkzoijWly0Fn2864odonKxDqU
-         B352kizqBKPbE9r3o5Vg7U1HySslaL3MoIrZtUo0Czg/JJgHn1J/QaGIBkpqH48P0Rk+
-         UlOzYecoSYjLf4NEVGAzZaUsmRhRBmhkiHzwvLzuhZK45mnNgE1W54NB3dfwULr7jc0Y
-         XXeA==
+        bh=rH4bYGauaxv2Wl+jiZaPd02GWdhR4IMZOZfUFE7drY0=;
+        b=MWO7txWzOK+UA7qYaeB0ByfyroreBfP5IoTlKFGUWageT3HiILxZxtvz0OtmnuZq5N
+         b/HUGHnhyElFkfuSmlPd6LhciErcOlh/4EWNqwiYBXY3eb91OXeUV4ZNyFUayypW2pTW
+         KnDgNLk9/IZi7bygKl6p8WrpCqtioV+13geeytH4/U9/L61HJY0EdkKFRYlJV2PfhVG4
+         bYdX+aa0A3RWlP7ZBpHfG3TAFutkyT8xKCFlLBEN7f8OE0Q1DT7i86OYNIzps3iDY3Nh
+         YphheMSppTlCHVU69/xxnANkk1WZ2V5NpXAnxFiuKtfXnV+ails3XLFvYtdOehhtv7ar
+         6vPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=autER7PyitAMFgEV0l7oy4w2DFTvFUx0CJDt9c8sGts=;
-        b=IbsoTqOR1sYl6sLtxWMZCqeXdjZpQbwD4nDEkHE5W62kp4sGnlndbMDyLlzhVg9CPm
-         Xqa8WJ7hWphnvRXE8kb3r7dDyBTrKCOmzkKojg6khWC8oQAsNssJQCaP72+9pS4hmpoN
-         2RroyDinhCdPpCiXWmGZ8gO3yxLrxm9HH1lml3d40lDP5/W8irS1scMsVTJkJNG6tMZP
-         c9PCBLWV7dTf2AfBgrZjVSDBhbM7EXdzsLJQT1SN0WE9iMQAlM7j3yJS/DTyRe7xkv7t
-         cjSUexhGD1UPFRYUzMyiu0siROH2qVJMVJ4poHdCIhoB6dJ/cKnHcBZYxeh+RyKsJoSk
-         spgA==
-X-Gm-Message-State: AOAM532HfRUD6vbTY0ktCjuPNpQLzepPE4WpXkFaBmZGOMzqG9SMrOG9
-        /tNvWjtFp2ZCRxYacieMuC8=
-X-Google-Smtp-Source: ABdhPJw972+rsM6aYWwSKQPgplrJhNl29soKx2dG+lCrG8IP8FlHJOZU3+2mmUZU6inCP1msbzoZvw==
-X-Received: by 2002:a05:6402:289b:: with SMTP id eg27mr40367810edb.106.1629840930743;
-        Tue, 24 Aug 2021 14:35:30 -0700 (PDT)
+        bh=rH4bYGauaxv2Wl+jiZaPd02GWdhR4IMZOZfUFE7drY0=;
+        b=uBIYuWDrwYX/ejkWjIOorfKbFCMoP3mrOAmJl0xKXWqSMRv4eVW3phWJ48k4hfHurl
+         I3vH1FPFSeGXWNkLpNJxMc8ueAWPwTOn7JKctHx7aE7II9sq5LD7zDAVJXLSIpCbhzJp
+         UiYJl1K29+LZXfinaPb7tB0FRxLd+xJsedzx6MF7l+jopVpzMEfthFtrilimYXoYmaAS
+         1CeTZaEiLjz2DaNsJqJ3/VNIPWwp9UHLdHCUl1BiGeEYHbtTXg/TTTHIY9KyY5jvuqHh
+         hIwR4vwpa9kC07MxnyitNr5s9ulXYspyCBu8MGIG+G7vbA+kj8w84K3kQ0rbJ+rq/kGh
+         9Okg==
+X-Gm-Message-State: AOAM530qGOoCPtItt1VZOd8NCaQ4E5Wy3H76KwchziiE4mqMJgQ7sPMW
+        uKu1iCqatCr0tN3Oxm5TLeA=
+X-Google-Smtp-Source: ABdhPJznRja0rsYkh10d5kdpNeqHjeMPeBMFgYdTO5pZTJuljEJfr1aDNsVRZQGwleqza+aX8ra4+A==
+X-Received: by 2002:a17:906:378f:: with SMTP id n15mr16338909ejc.467.1629840932724;
+        Tue, 24 Aug 2021 14:35:32 -0700 (PDT)
 Received: from localhost.localdomain ([2a04:241e:502:1d80:ed0a:7326:fbac:b4c])
-        by smtp.gmail.com with ESMTPSA id d16sm12348357edu.8.2021.08.24.14.35.28
+        by smtp.gmail.com with ESMTPSA id d16sm12348357edu.8.2021.08.24.14.35.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Aug 2021 14:35:30 -0700 (PDT)
+        Tue, 24 Aug 2021 14:35:32 -0700 (PDT)
 From:   Leonard Crestez <cdleonard@gmail.com>
 To:     Dmitry Safonov <0x7f454c46@gmail.com>,
         David Ahern <dsahern@kernel.org>, Shuah Khan <shuah@kernel.org>
@@ -65,9 +65,9 @@ Cc:     Eric Dumazet <edumazet@google.com>,
         Menglong Dong <dong.menglong@zte.com.cn>,
         netdev@vger.kernel.org, linux-crypto@vger.kernel.org,
         linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [RFCv3 04/15] selftests: tcp_authopt: Initial sockopt manipulation
-Date:   Wed, 25 Aug 2021 00:34:37 +0300
-Message-Id: <e5d1d887325815300c92953575b2b5272e5bc0e5.1629840814.git.cdleonard@gmail.com>
+Subject: [RFCv3 05/15] tcp: authopt: Add crypto initialization
+Date:   Wed, 25 Aug 2021 00:34:38 +0300
+Message-Id: <abb720b34b9eef1cc52ef68017334e27a2af83c6.1629840814.git.cdleonard@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1629840814.git.cdleonard@gmail.com>
 References: <cover.1629840814.git.cdleonard@gmail.com>
@@ -77,426 +77,299 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The crypto_shash API is used in order to compute packet signatures. The
+API comes with several unfortunate limitations:
+
+1) Allocating a crypto_shash can sleep and must be done in user context.
+2) Packet signatures must be computed in softirq context
+3) Packet signatures use dynamic "traffic keys" which require exclusive
+access to crypto_shash for crypto_setkey.
+
+The solution is to allocate one crypto_shash for each possible cpu for
+each algorithm at setsockopt time. The per-cpu tfm is then borrowed from
+softirq context, signatures are computed and the tfm is returned.
+
+The pool for each algorithm is reference counted, initialized at
+setsockopt time and released in tcp_authopt_key_info's rcu callback
+
 Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
 ---
- .../tcp_authopt/tcp_authopt_test/conftest.py  |  21 ++
- .../tcp_authopt_test/linux_tcp_authopt.py     | 188 ++++++++++++++++++
- .../tcp_authopt/tcp_authopt_test/sockaddr.py  | 101 ++++++++++
- .../tcp_authopt_test/test_sockopt.py          |  74 +++++++
- 4 files changed, 384 insertions(+)
- create mode 100644 tools/testing/selftests/tcp_authopt/tcp_authopt_test/conftest.py
- create mode 100644 tools/testing/selftests/tcp_authopt/tcp_authopt_test/linux_tcp_authopt.py
- create mode 100644 tools/testing/selftests/tcp_authopt/tcp_authopt_test/sockaddr.py
- create mode 100644 tools/testing/selftests/tcp_authopt/tcp_authopt_test/test_sockopt.py
+ include/net/tcp_authopt.h |   3 +
+ net/ipv4/tcp_authopt.c    | 177 +++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 178 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/tcp_authopt/tcp_authopt_test/conftest.py b/tools/testing/selftests/tcp_authopt/tcp_authopt_test/conftest.py
-new file mode 100644
-index 000000000000..c17c8ea2a943
---- /dev/null
-+++ b/tools/testing/selftests/tcp_authopt/tcp_authopt_test/conftest.py
-@@ -0,0 +1,21 @@
-+# SPDX-License-Identifier: GPL-2.0
-+from tcp_authopt_test.linux_tcp_authopt import has_tcp_authopt
-+import pytest
-+import logging
-+from contextlib import ExitStack
-+
-+logger = logging.getLogger(__name__)
-+
-+skipif_missing_tcp_authopt = pytest.mark.skipif(
-+    not has_tcp_authopt(), reason="Need CONFIG_TCP_AUTHOPT"
-+)
-+
-+
-+@pytest.fixture
-+def exit_stack():
-+    """Return a contextlib.ExitStack as a pytest fixture
-+
-+    This reduces indentation making code more readable
-+    """
-+    with ExitStack() as exit_stack:
-+        yield exit_stack
-diff --git a/tools/testing/selftests/tcp_authopt/tcp_authopt_test/linux_tcp_authopt.py b/tools/testing/selftests/tcp_authopt/tcp_authopt_test/linux_tcp_authopt.py
-new file mode 100644
-index 000000000000..41374f9851aa
---- /dev/null
-+++ b/tools/testing/selftests/tcp_authopt/tcp_authopt_test/linux_tcp_authopt.py
-@@ -0,0 +1,188 @@
-+# SPDX-License-Identifier: GPL-2.0
-+"""Python wrapper around linux TCP_AUTHOPT ABI"""
-+
-+from dataclasses import dataclass
-+from ipaddress import IPv4Address, IPv6Address, ip_address
-+import socket
-+import errno
-+import logging
-+from .sockaddr import sockaddr_in, sockaddr_in6, sockaddr_storage, sockaddr_unpack
-+import typing
-+import struct
-+
-+logger = logging.getLogger(__name__)
-+
-+
-+def BIT(x):
-+    return 1 << x
-+
-+
-+TCP_AUTHOPT = 38
-+TCP_AUTHOPT_KEY = 39
-+
-+TCP_AUTHOPT_MAXKEYLEN = 80
-+
-+TCP_AUTHOPT_FLAG_REJECT_UNEXPECTED = BIT(2)
-+
-+TCP_AUTHOPT_KEY_DEL = BIT(0)
-+TCP_AUTHOPT_KEY_EXCLUDE_OPTS = BIT(1)
-+TCP_AUTHOPT_KEY_BIND_ADDR = BIT(2)
-+
-+TCP_AUTHOPT_ALG_HMAC_SHA_1_96 = 1
-+TCP_AUTHOPT_ALG_AES_128_CMAC_96 = 2
-+
-+
-+@dataclass
-+class tcp_authopt:
-+    """Like linux struct tcp_authopt"""
-+
-+    flags: int = 0
-+    sizeof = 4
-+
-+    def pack(self) -> bytes:
-+        return struct.pack(
-+            "I",
-+            self.flags,
-+        )
-+
-+    def __bytes__(self):
-+        return self.pack()
-+
-+    @classmethod
-+    def unpack(cls, b: bytes):
-+        tup = struct.unpack("I", b)
-+        return cls(*tup)
-+
-+
-+def set_tcp_authopt(sock, opt: tcp_authopt):
-+    return sock.setsockopt(socket.IPPROTO_TCP, TCP_AUTHOPT, bytes(opt))
-+
-+
-+def get_tcp_authopt(sock: socket.socket) -> tcp_authopt:
-+    b = sock.getsockopt(socket.IPPROTO_TCP, TCP_AUTHOPT, tcp_authopt.sizeof)
-+    return tcp_authopt.unpack(b)
-+
-+
-+class tcp_authopt_key:
-+    """Like linux struct tcp_authopt_key"""
-+
-+    def __init__(
-+        self,
-+        flags: int = 0,
-+        send_id: int = 0,
-+        recv_id: int = 0,
-+        alg=TCP_AUTHOPT_ALG_HMAC_SHA_1_96,
-+        key: bytes = b"",
-+        addr: bytes = b"",
-+        include_options=None,
-+    ):
-+        self.flags = flags
-+        self.send_id = send_id
-+        self.recv_id = recv_id
-+        self.alg = alg
-+        self.key = key
-+        self.addr = addr
-+        if include_options is not None:
-+            self.include_options = include_options
-+
-+    def pack(self):
-+        if len(self.key) > TCP_AUTHOPT_MAXKEYLEN:
-+            raise ValueError(f"Max key length is {TCP_AUTHOPT_MAXKEYLEN}")
-+        data = struct.pack(
-+            "IBBBB80s",
-+            self.flags,
-+            self.send_id,
-+            self.recv_id,
-+            self.alg,
-+            len(self.key),
-+            self.key,
-+        )
-+        data += bytes(self.addrbuf.ljust(sockaddr_storage.sizeof, b"\x00"))
-+        return data
-+
-+    def __bytes__(self):
-+        return self.pack()
-+
-+    @property
-+    def key(self) -> bytes:
-+        return self._key
-+
-+    @key.setter
-+    def key(self, val: typing.Union[bytes, str]) -> bytes:
-+        if isinstance(val, str):
-+            val = val.encode("utf-8")
-+        if len(val) > TCP_AUTHOPT_MAXKEYLEN:
-+            raise ValueError(f"Max key length is {TCP_AUTHOPT_MAXKEYLEN}")
-+        self._key = val
-+        return val
-+
-+    @property
-+    def addr(self):
-+        if not self.addrbuf:
-+            return None
-+        else:
-+            return sockaddr_unpack(bytes(self.addrbuf))
-+
-+    @addr.setter
-+    def addr(self, val):
-+        if isinstance(val, bytes):
-+            if len(val) > sockaddr_storage.sizeof:
-+                raise ValueError(f"Must be up to {sockaddr_storage.sizeof}")
-+            self.addrbuf = val
-+        elif val is None:
-+            self.addrbuf = b""
-+        elif isinstance(val, str):
-+            self.addr = ip_address(val)
-+        elif isinstance(val, IPv4Address):
-+            self.addr = sockaddr_in(addr=val)
-+        elif isinstance(val, IPv6Address):
-+            self.addr = sockaddr_in6(addr=val)
-+        elif (
-+            isinstance(val, sockaddr_in)
-+            or isinstance(val, sockaddr_in6)
-+            or isinstance(val, sockaddr_storage)
-+        ):
-+            self.addr = bytes(val)
-+        else:
-+            raise TypeError(f"Can't handle addr {val}")
-+        return self.addr
-+
-+    @property
-+    def include_options(self) -> bool:
-+        return (self.flags & TCP_AUTHOPT_KEY_EXCLUDE_OPTS) == 0
-+
-+    @include_options.setter
-+    def include_options(self, value) -> bool:
-+        if value:
-+            self.flags &= ~TCP_AUTHOPT_KEY_EXCLUDE_OPTS
-+        else:
-+            self.flags |= TCP_AUTHOPT_KEY_EXCLUDE_OPTS
-+
-+    @property
-+    def delete_flag(self) -> bool:
-+        return bool(self.flags & TCP_AUTHOPT_KEY_DEL)
-+
-+    @delete_flag.setter
-+    def delete_flag(self, value) -> bool:
-+        if value:
-+            self.flags |= TCP_AUTHOPT_KEY_DEL
-+        else:
-+            self.flags &= ~TCP_AUTHOPT_KEY_DEL
-+
-+
-+def set_tcp_authopt_key(sock, key: tcp_authopt_key):
-+    return sock.setsockopt(socket.IPPROTO_TCP, TCP_AUTHOPT_KEY, bytes(key))
-+
-+
-+def has_tcp_authopt() -> bool:
-+    """Check is TCP_AUTHOPT is implemented by the OS"""
-+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-+        try:
-+            optbuf = bytes(4)
-+            sock.setsockopt(socket.IPPROTO_TCP, TCP_AUTHOPT, optbuf)
-+            return True
-+        except OSError as e:
-+            if e.errno == errno.ENOPROTOOPT:
-+                return False
-+            else:
-+                raise
-diff --git a/tools/testing/selftests/tcp_authopt/tcp_authopt_test/sockaddr.py b/tools/testing/selftests/tcp_authopt/tcp_authopt_test/sockaddr.py
-new file mode 100644
-index 000000000000..f61d0f190a0c
---- /dev/null
-+++ b/tools/testing/selftests/tcp_authopt/tcp_authopt_test/sockaddr.py
-@@ -0,0 +1,101 @@
-+# SPDX-License-Identifier: GPL-2.0
-+"""pack/unpack wrappers for sockaddr"""
-+import socket
-+import struct
-+from dataclasses import dataclass
-+from ipaddress import IPv4Address, IPv6Address
-+
-+
-+@dataclass
-+class sockaddr_in:
-+    port: int
-+    addr: IPv4Address
-+    sizeof = 8
-+
-+    def __init__(self, port=0, addr=None):
-+        self.port = port
-+        if addr is None:
-+            addr = IPv4Address(0)
-+        self.addr = IPv4Address(addr)
-+
-+    def pack(self):
-+        return struct.pack("HH4s", socket.AF_INET, self.port, self.addr.packed)
-+
-+    @classmethod
-+    def unpack(cls, buffer):
-+        family, port, addr_packed = struct.unpack("HH4s", buffer[:8])
-+        if family != socket.AF_INET:
-+            raise ValueError(f"Must be AF_INET not {family}")
-+        return cls(port, addr_packed)
-+
-+    def __bytes__(self):
-+        return self.pack()
-+
-+
-+@dataclass
-+class sockaddr_in6:
-+    """Like sockaddr_in6 but for python. Always contains scope_id"""
-+
-+    port: int
-+    addr: IPv6Address
-+    flowinfo: int
-+    scope_id: int
-+    sizeof = 28
-+
-+    def __init__(self, port=0, addr=None, flowinfo=0, scope_id=0):
-+        self.port = port
-+        if addr is None:
-+            addr = IPv6Address(0)
-+        self.addr = IPv6Address(addr)
-+        self.flowinfo = flowinfo
-+        self.scope_id = scope_id
-+
-+    def pack(self):
-+        return struct.pack(
-+            "HHI16sI",
-+            socket.AF_INET6,
-+            self.port,
-+            self.flowinfo,
-+            self.addr.packed,
-+            self.scope_id,
-+        )
-+
-+    @classmethod
-+    def unpack(cls, buffer):
-+        family, port, flowinfo, addr_packed, scope_id = struct.unpack(
-+            "HHI16sI", buffer[:28]
-+        )
-+        if family != socket.AF_INET6:
-+            raise ValueError(f"Must be AF_INET6 not {family}")
-+        return cls(port, addr_packed, flowinfo=flowinfo, scope_id=scope_id)
-+
-+    def __bytes__(self):
-+        return self.pack()
-+
-+
-+@dataclass
-+class sockaddr_storage:
-+    family: int
-+    data: bytes
-+    sizeof = 128
-+
-+    def pack(self):
-+        return struct.pack("H126s", self.family, self.data)
-+
-+    def __bytes__(self):
-+        return self.pack()
-+
-+    @classmethod
-+    def unpack(cls, buffer):
-+        return cls(*struct.unpack("H126s", buffer))
-+
-+
-+def sockaddr_unpack(buffer: bytes):
-+    """Unpack based on family"""
-+    family = struct.unpack("H", buffer[:2])[0]
-+    if family == socket.AF_INET:
-+        return sockaddr_in.unpack(buffer)
-+    elif family == socket.AF_INET6:
-+        return sockaddr_in6.unpack(buffer)
-+    else:
-+        return sockaddr_storage.unpack(buffer)
-diff --git a/tools/testing/selftests/tcp_authopt/tcp_authopt_test/test_sockopt.py b/tools/testing/selftests/tcp_authopt/tcp_authopt_test/test_sockopt.py
-new file mode 100644
-index 000000000000..06a05bf8aeec
---- /dev/null
-+++ b/tools/testing/selftests/tcp_authopt/tcp_authopt_test/test_sockopt.py
-@@ -0,0 +1,74 @@
-+# SPDX-License-Identifier: GPL-2.0
-+"""Test TCP_AUTHOPT sockopt API"""
-+import errno
-+import socket
-+import struct
-+from ipaddress import IPv4Address, IPv6Address
-+
-+import pytest
-+
-+from .linux_tcp_authopt import (
-+    set_tcp_authopt,
-+    set_tcp_authopt_key,
-+    tcp_authopt,
-+    tcp_authopt_key,
-+)
-+from .sockaddr import sockaddr_unpack
-+from .conftest import skipif_missing_tcp_authopt
-+
-+pytestmark = skipif_missing_tcp_authopt
-+
-+
-+def test_authopt_key_pack_noaddr():
-+    b = bytes(tcp_authopt_key(key=b"a\x00b"))
-+    assert b[7] == 3
-+    assert b[8:13] == b"a\x00b\x00\x00"
-+
-+
-+def test_authopt_key_pack_addr():
-+    b = bytes(tcp_authopt_key(key=b"a\x00b", addr="10.0.0.1"))
-+    assert struct.unpack("H", b[88:90])[0] == socket.AF_INET
-+    assert sockaddr_unpack(b[88:]).addr == IPv4Address("10.0.0.1")
-+
-+
-+def test_authopt_key_pack_addr6():
-+    b = bytes(tcp_authopt_key(key=b"abc", addr="fd00::1"))
-+    assert struct.unpack("H", b[88:90])[0] == socket.AF_INET6
-+    assert sockaddr_unpack(b[88:]).addr == IPv6Address("fd00::1")
-+
-+
-+def test_tcp_authopt_key_del_without_active(exit_stack):
-+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-+    exit_stack.push(sock)
-+
-+    # nothing happens:
-+    key = tcp_authopt_key()
-+    assert key.delete_flag is False
-+    key.delete_flag = True
-+    assert key.delete_flag is True
-+    with pytest.raises(OSError) as e:
-+        set_tcp_authopt_key(sock, key)
-+    assert e.value.errno in [errno.EINVAL, errno.ENOENT]
-+
-+
-+def test_tcp_authopt_key_setdel(exit_stack):
-+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-+    exit_stack.push(sock)
-+    set_tcp_authopt(sock, tcp_authopt())
-+
-+    # delete returns ENOENT
-+    key = tcp_authopt_key()
-+    key.delete_flag = True
-+    with pytest.raises(OSError) as e:
-+        set_tcp_authopt_key(sock, key)
-+    assert e.value.errno == errno.ENOENT
-+
-+    key = tcp_authopt_key(send_id=1, recv_id=2)
-+    set_tcp_authopt_key(sock, key)
-+    # First delete works fine:
-+    key.delete_flag = True
-+    set_tcp_authopt_key(sock, key)
-+    # Duplicate delete returns ENOENT
-+    with pytest.raises(OSError) as e:
-+        set_tcp_authopt_key(sock, key)
-+    assert e.value.errno == errno.ENOENT
+diff --git a/include/net/tcp_authopt.h b/include/net/tcp_authopt.h
+index b4277112b506..c9ee2059b442 100644
+--- a/include/net/tcp_authopt.h
++++ b/include/net/tcp_authopt.h
+@@ -2,10 +2,12 @@
+ #ifndef _LINUX_TCP_AUTHOPT_H
+ #define _LINUX_TCP_AUTHOPT_H
+ 
+ #include <uapi/linux/tcp.h>
+ 
++struct tcp_authopt_alg_imp;
++
+ /**
+  * struct tcp_authopt_key_info - Representation of a Master Key Tuple as per RFC5925
+  *
+  * Key structure lifetime is only protected by RCU so readers needs to hold a
+  * single rcu_read_lock until they're done with the key.
+@@ -20,10 +22,11 @@ struct tcp_authopt_key_info {
+ 	u8 send_id, recv_id;
+ 	u8 alg_id;
+ 	u8 keylen;
+ 	u8 key[TCP_AUTHOPT_MAXKEYLEN];
+ 	struct sockaddr_storage addr;
++	struct tcp_authopt_alg_imp *alg;
+ };
+ 
+ /**
+  * struct tcp_authopt_info - Per-socket information regarding tcp_authopt
+  *
+diff --git a/net/ipv4/tcp_authopt.c b/net/ipv4/tcp_authopt.c
+index f6dddc5775ff..ce560bd88903 100644
+--- a/net/ipv4/tcp_authopt.c
++++ b/net/ipv4/tcp_authopt.c
+@@ -4,10 +4,161 @@
+ #include <net/tcp.h>
+ #include <net/tcp_authopt.h>
+ #include <crypto/hash.h>
+ #include <trace/events/tcp.h>
+ 
++/* All current algorithms have a mac length of 12 but crypto API digestsize can be larger */
++#define TCP_AUTHOPT_MAXMACBUF	20
++#define TCP_AUTHOPT_MAX_TRAFFIC_KEY_LEN	20
++
++struct tcp_authopt_alg_imp {
++	/* Name of algorithm in crypto-api */
++	const char *alg_name;
++	/* One of the TCP_AUTHOPT_ALG_* constants from uapi */
++	u8 alg_id;
++	/* Length of traffic key */
++	u8 traffic_key_len;
++	/* Length of mac in TCP option */
++	u8 maclen;
++
++	/* shared crypto_shash */
++	spinlock_t lock;
++	int ref_cnt;
++	struct crypto_shash *tfm;
++};
++
++static struct tcp_authopt_alg_imp tcp_authopt_alg_list[] = {
++	{
++		.alg_id = TCP_AUTHOPT_ALG_HMAC_SHA_1_96,
++		.alg_name = "hmac(sha1)",
++		.traffic_key_len = 20,
++		.maclen = 12,
++		.lock = __SPIN_LOCK_UNLOCKED(tcp_authopt_alg_list[0].lock),
++	},
++	{
++		.alg_id = TCP_AUTHOPT_ALG_AES_128_CMAC_96,
++		.alg_name = "cmac(aes)",
++		.traffic_key_len = 16,
++		.maclen = 12,
++		.lock = __SPIN_LOCK_UNLOCKED(tcp_authopt_alg_list[1].lock),
++	},
++};
++
++/* get a pointer to the tcp_authopt_alg instance or NULL if id invalid */
++static inline struct tcp_authopt_alg_imp *tcp_authopt_alg_get(int alg_num)
++{
++	if (alg_num <= 0 || alg_num > 2)
++		return NULL;
++	return &tcp_authopt_alg_list[alg_num - 1];
++}
++
++/* Mark an algorithm as in-use from user context */
++static int tcp_authopt_alg_require(struct tcp_authopt_alg_imp *alg)
++{
++	struct crypto_shash *tfm = NULL;
++	bool need_init = false;
++
++	might_sleep();
++
++	/* If we're the first user then we need to initialize shash but we might lose the race. */
++	spin_lock_bh(&alg->lock);
++	WARN_ON(alg->ref_cnt < 0);
++	if (alg->ref_cnt == 0)
++		need_init = true;
++	else
++		++alg->ref_cnt;
++	spin_unlock_bh(&alg->lock);
++
++	/* Already initialized */
++	if (!need_init)
++		return 0;
++
++	tfm = crypto_alloc_shash(alg->alg_name, 0, 0);
++	if (IS_ERR(tfm))
++		return PTR_ERR(tfm);
++
++	spin_lock_bh(&alg->lock);
++	if (alg->ref_cnt == 0)
++		/* race won */
++		alg->tfm = tfm;
++	else
++		/* race lost, free tfm later */
++		need_init = false;
++	++alg->ref_cnt;
++	spin_unlock_bh(&alg->lock);
++
++	if (!need_init)
++		crypto_free_shash(tfm);
++	else
++		pr_info("initialized tcp-ao %s", alg->alg_name);
++
++	return 0;
++}
++
++static void tcp_authopt_alg_release(struct tcp_authopt_alg_imp *alg)
++{
++	struct crypto_shash *tfm_to_free = NULL;
++
++	spin_lock_bh(&alg->lock);
++	--alg->ref_cnt;
++	WARN_ON(alg->ref_cnt < 0);
++	if (alg->ref_cnt == 0) {
++		tfm_to_free = alg->tfm;
++		alg->tfm = NULL;
++	}
++	spin_unlock_bh(&alg->lock);
++
++	if (tfm_to_free) {
++		pr_info("released tcp-ao %s", alg->alg_name);
++		crypto_free_shash(tfm_to_free);
++	}
++}
++
++/* increase reference count on an algorithm that is already in use */
++static void tcp_authopt_alg_incref(struct tcp_authopt_alg_imp *alg)
++{
++	spin_lock_bh(&alg->lock);
++	WARN_ON(alg->ref_cnt <= 0);
++	++alg->ref_cnt;
++	spin_unlock_bh(&alg->lock);
++}
++
++static struct crypto_shash *tcp_authopt_alg_get_tfm(struct tcp_authopt_alg_imp *alg)
++{
++	spin_lock_bh(&alg->lock);
++	WARN_ON(alg->ref_cnt < 0);
++	return alg->tfm;
++}
++
++static void tcp_authopt_alg_put_tfm(struct tcp_authopt_alg_imp *alg, struct crypto_shash *tfm)
++{
++	WARN_ON(tfm != alg->tfm);
++	spin_unlock_bh(&alg->lock);
++}
++
++static struct crypto_shash *tcp_authopt_get_kdf_shash(struct tcp_authopt_key_info *key)
++{
++	return tcp_authopt_alg_get_tfm(key->alg);
++}
++
++static void tcp_authopt_put_kdf_shash(struct tcp_authopt_key_info *key,
++				      struct crypto_shash *tfm)
++{
++	return tcp_authopt_alg_put_tfm(key->alg, tfm);
++}
++
++static struct crypto_shash *tcp_authopt_get_mac_shash(struct tcp_authopt_key_info *key)
++{
++	return tcp_authopt_alg_get_tfm(key->alg);
++}
++
++static void tcp_authopt_put_mac_shash(struct tcp_authopt_key_info *key,
++				      struct crypto_shash *tfm)
++{
++	return tcp_authopt_alg_put_tfm(key->alg, tfm);
++}
++
+ /* checks that ipv4 or ipv6 addr matches. */
+ static bool ipvx_addr_match(struct sockaddr_storage *a1,
+ 			    struct sockaddr_storage *a2)
+ {
+ 	if (a1->ss_family != a2->ss_family)
+@@ -118,17 +269,25 @@ int tcp_get_authopt_val(struct sock *sk, struct tcp_authopt *opt)
+ 	opt->flags = info->flags & TCP_AUTHOPT_KNOWN_FLAGS;
+ 
+ 	return 0;
+ }
+ 
++static void tcp_authopt_key_free_rcu(struct rcu_head *rcu)
++{
++	struct tcp_authopt_key_info *key = container_of(rcu, struct tcp_authopt_key_info, rcu);
++
++	tcp_authopt_alg_release(key->alg);
++	kfree(key);
++}
++
+ static void tcp_authopt_key_del(struct sock *sk,
+ 				struct tcp_authopt_info *info,
+ 				struct tcp_authopt_key_info *key)
+ {
+ 	hlist_del_rcu(&key->node);
+ 	atomic_sub(sizeof(*key), &sk->sk_omem_alloc);
+-	kfree_rcu(key, rcu);
++	call_rcu(&key->rcu, tcp_authopt_key_free_rcu);
+ }
+ 
+ /* free info and keys but don't touch tp->authopt_info */
+ static void __tcp_authopt_info_free(struct sock *sk, struct tcp_authopt_info *info)
+ {
+@@ -160,10 +319,12 @@ void tcp_authopt_clear(struct sock *sk)
+ int tcp_set_authopt_key(struct sock *sk, sockptr_t optval, unsigned int optlen)
+ {
+ 	struct tcp_authopt_key opt;
+ 	struct tcp_authopt_info *info;
+ 	struct tcp_authopt_key_info *key_info;
++	struct tcp_authopt_alg_imp *alg;
++	int err;
+ 
+ 	sock_owned_by_me(sk);
+ 
+ 	/* If userspace optlen is too short fill the rest with zeros */
+ 	if (optlen > sizeof(opt))
+@@ -199,23 +360,35 @@ int tcp_set_authopt_key(struct sock *sk, sockptr_t optval, unsigned int optlen)
+ 	/* Initialize tcp_authopt_info if not already set */
+ 	info = __tcp_authopt_info_get_or_create(sk);
+ 	if (IS_ERR(info))
+ 		return PTR_ERR(info);
+ 
++	/* check the algorithm */
++	alg = tcp_authopt_alg_get(opt.alg);
++	if (!alg)
++		return -EINVAL;
++	WARN_ON(alg->alg_id != opt.alg);
++	err = tcp_authopt_alg_require(alg);
++	if (err)
++		return err;
++
+ 	/* If an old key exists with exact ID then remove and replace.
+ 	 * RCU-protected readers might observe both and pick any.
+ 	 */
+ 	key_info = tcp_authopt_key_lookup_exact(sk, info, &opt);
+ 	if (key_info)
+ 		tcp_authopt_key_del(sk, info, key_info);
+ 	key_info = sock_kmalloc(sk, sizeof(*key_info), GFP_KERNEL | __GFP_ZERO);
+-	if (!key_info)
++	if (!key_info) {
++		tcp_authopt_alg_release(alg);
+ 		return -ENOMEM;
++	}
+ 	key_info->flags = opt.flags & TCP_AUTHOPT_KEY_KNOWN_FLAGS;
+ 	key_info->send_id = opt.send_id;
+ 	key_info->recv_id = opt.recv_id;
+ 	key_info->alg_id = opt.alg;
++	key_info->alg = alg;
+ 	key_info->keylen = opt.keylen;
+ 	memcpy(key_info->key, opt.key, opt.keylen);
+ 	memcpy(&key_info->addr, &opt.addr, sizeof(key_info->addr));
+ 	hlist_add_head_rcu(&key_info->node, &info->head);
+ 
 -- 
 2.25.1
 
