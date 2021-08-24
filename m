@@ -2,190 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD11E3F58A8
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 09:03:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F1743F58D1
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 09:19:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234732AbhHXHE3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 03:04:29 -0400
-Received: from mailout2.w1.samsung.com ([210.118.77.12]:61611 "EHLO
-        mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231363AbhHXHE2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 03:04:28 -0400
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20210824070343euoutp0284c983cd265daea3fad48aab99e075ce~eLB5EcgFn1481914819euoutp02_
-        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 07:03:43 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20210824070343euoutp0284c983cd265daea3fad48aab99e075ce~eLB5EcgFn1481914819euoutp02_
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1629788623;
-        bh=K7UcmSiFeYIOQ4+FF8trOkGP6PZRVAmTewD5ZmA1IiY=;
-        h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
-        b=Jktda2QXVQN4FoGQyCjj//PxhEyo/A1Ud7cR8R+t7/x4pa6DJH+Zb/2VW9mWsk5DZ
-         K/EchbnT/8Qjhod1D2dAFNUvCVfI5arenxmdEVOh2dup7jsLrljAEtOx+cz7fCAvYC
-         Nt0kff8af6BX+c+65iDbutK+mIyfXxbVnYsvKKkA=
-Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-        20210824070343eucas1p1b780ef683d1f7bb4b90669590f8f0e65~eLB4xq0Pf2738027380eucas1p18;
-        Tue, 24 Aug 2021 07:03:43 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-        eusmges2new.samsung.com (EUCPMTA) with SMTP id 7D.A6.42068.FC994216; Tue, 24
-        Aug 2021 08:03:43 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-        20210824070342eucas1p1c0293540f5c1138aa0c7b7e877ef1da9~eLB4M9k520119901199eucas1p1Q;
-        Tue, 24 Aug 2021 07:03:42 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20210824070342eusmtrp2f3f6005efdc359dbb440103206c25839~eLB4L90IY0846908469eusmtrp2I;
-        Tue, 24 Aug 2021 07:03:42 +0000 (GMT)
-X-AuditID: cbfec7f4-c71ff7000002a454-90-612499cfdc75
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-        eusmgms2.samsung.com (EUCPMTA) with SMTP id 08.A0.20981.EC994216; Tue, 24
-        Aug 2021 08:03:42 +0100 (BST)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-        eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20210824070342eusmtip1decc011336f231776205c3907c391e6b~eLB3kOT1P1034810348eusmtip1T;
-        Tue, 24 Aug 2021 07:03:42 +0000 (GMT)
-Subject: Re: [PATCH v2] of: property: fw_devlink: Add support for
- "phy-handle" property
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        kernel-team@android.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        linux-amlogic@lists.infradead.org
-From:   Marek Szyprowski <m.szyprowski@samsung.com>
-Message-ID: <427ce8cd-977b-03ae-2020-f5ddc7439390@samsung.com>
-Date:   Tue, 24 Aug 2021 09:03:41 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0)
-        Gecko/20100101 Thunderbird/78.13.0
+        id S234430AbhHXHU0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 03:20:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33196 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231437AbhHXHUZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 03:20:25 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E07DEC061575;
+        Tue, 24 Aug 2021 00:19:41 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id g184so447494pgc.6;
+        Tue, 24 Aug 2021 00:19:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bGy+Odlh1NNX+SVQo45RJ9LRSk2xxUJvjKlteUtof4o=;
+        b=qwDkdhUQgNa4eLNy5eQ42gaALhmbE8kxY4T8hAOW5WIXGk2PsV3/STX1wsdqMCvTBh
+         NIjjFt7DTtSTRmT2kSw2xKgxvKiB3IJSU+1p/rCyfu8784a8SdrX0vCS0OBmYsmc/vw7
+         oFaHyqYsglXPedUTL5WNjTTBSlI1YY6pkaz8B06hyX+6dx+0bX4KZiev5jAX0wKIWZpm
+         Zy57pWqnR6JWr8fhQcZwOv/k4oBJLftgQUN+evNSY9f01mMJrnT9bX2jSCfYN8DUBFF8
+         DD6dZcJbkqbW7jyi0piidGkwDQ/nTa+pxDV1Ps8LWIOq3jRxEdFCxcOL2YCA8+3guWNl
+         jP3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bGy+Odlh1NNX+SVQo45RJ9LRSk2xxUJvjKlteUtof4o=;
+        b=k/RUG6PWcGFvnQBXcEzZdEVLVEdO63xOnE2TIS2aD0LZ6VUEAN5lD1LFtS8IgjQVQk
+         2LChqGncqmI7YMH2RUMof0V40GnH6TnzRbomGcI6/ONKTMXWezk2FbNOFA0WGisdhUwl
+         /dQk1PhGm0KhZApZbMllWmZ82uVJb38bbsstEfwU5W8Ysoi/FEz3yeHFwdLrTM01hIOF
+         CUt0cvld8ZfopEXn3LKIbUsDgmXwDcxyoVvi8FYbXbs+Xy9tCITQD1jCF/5RmH87x0hy
+         ByyXW1TBqUHatQKLfSYYAoeUD/X4iPhezwBYuZjP65me82JPdkDnrWF+XE2/l8M59VBZ
+         AByA==
+X-Gm-Message-State: AOAM530xiqI+1kTcVhwbaHXHaoieIE+k++JPsMHqMvrgMYsuVn5IVtYm
+        ErSRCcovRtpCI5xYzzb7060=
+X-Google-Smtp-Source: ABdhPJwxrBq1c63ij1GbBbxt/Iby9FrVpNK1Mfz4X/UQbaQ2sx4Wk8WSrxRnZUZYCCoSSAKW1jIdtA==
+X-Received: by 2002:a63:df0d:: with SMTP id u13mr35067158pgg.417.1629789581510;
+        Tue, 24 Aug 2021 00:19:41 -0700 (PDT)
+Received: from localhost.localdomain ([103.7.29.30])
+        by smtp.gmail.com with ESMTPSA id a4sm16868817pfa.203.2021.08.24.00.19.39
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 24 Aug 2021 00:19:41 -0700 (PDT)
+From:   Jiang Biao <benbjiang@gmail.com>
+To:     mathew.j.martineau@linux.intel.com, matthieu.baerts@tessares.net,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, mptcp@lists.linux.dev,
+        linux-kernel@vger.kernel.org, benbjiang@tencent.com,
+        Jiang Biao <tcs_robot@tencent.com>
+Subject: [PATCH] ipv4/mptcp: fix divide error
+Date:   Tue, 24 Aug 2021 15:19:26 +0800
+Message-Id: <20210824071926.68019-1-benbjiang@gmail.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-In-Reply-To: <CAGETcx_xJCqOWtwZ9Ee2+0sPGNLM5=F=djtbdYENkAYZa0ynqQ@mail.gmail.com>
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrOKsWRmVeSWpSXmKPExsWy7djP87rnZ6okGsx4IGBx/u4hZov5R86x
-        Wsx885/NYsd2EYsFs7ktLu+aw2ZxqC/a4tgCMYvWvUfYLboO/WVz4PLYtnsbq8f7G63sHjtn
-        3WX3WLCp1GPTqk42j81L6j127vjM5PF5k1wARxSXTUpqTmZZapG+XQJXxrG/B9kLpktVfL01
-        k7mBcYJYFyMnh4SAiURr63PGLkYuDiGBFYwSp689Y4dwvjBK/N06lRnC+cwo8ejlAUaYlnPP
-        b0JVLWeUePv6LCuE85FRYvX0LewgVcICkRJn9+1lA7FFBLQkNl17zAJSxCywkkni9vpHLCAJ
-        NgFDia63XWBFvAJ2Eh2nIWwWAVWJtbvvgA0SFUiWmPhkEitEjaDEyZlPgHo5ODgFAiW+XTQE
-        CTMLyEs0b53NDGGLS9x6Mp8JZJeEwH8OiQ0vtrBBnO0i0XywiwXCFpZ4dRziUAkBGYn/O2Ea
-        mhklHp5byw7h9DBKXG6aAfW0tcSdc7/YQDYzC2hKrN+lDxF2lPjd/pgVJCwhwCdx460gxBF8
-        EpO2TWeGCPNKdLQJQVSrScw6vg5u7cELl5gnMCrNQvLZLCTvzELyziyEvQsYWVYxiqeWFuem
-        pxYb5aWW6xUn5haX5qXrJefnbmIEpq3T/45/2cG4/NVHvUOMTByMhxglOJiVRHj/MiknCvGm
-        JFZWpRblxxeV5qQWH2KU5mBREudN2rImXkggPbEkNTs1tSC1CCbLxMEp1cAUtDVLV4xb9M2y
-        VRPtpBt5GhfMr+r4wr9v/UxVhidnT/vMqLG2XHGBSSdH8FTBtdmLsl+uCFI1Maw07HptppHd
-        7TLDTe+mXlXVvN2X5s9ZdWm6iBTn1jau4+4/c47s0Og4OUtk3t50fbb9uufZ8oXUjp42mLlg
-        4rfSi8npJetCLhhOT3pZ8bM4f3rj8/LlW+74l/e+yNT7+T3J/UnljzAhg9uSsrznT2gwii6L
-        uuS68KBUdbb7iUvxEy6Xx/e5f7603041b9H7DTO2qW64Nfk+v8ab6XPnLwjaW/PnZj6/sOsX
-        AW6R/fVNCi8lwrMr5TRqVqe1TL9zUWGSJ+veEtWIN5uOv3/bcug+j3GBzKLLSizFGYmGWsxF
-        xYkAnR9FucoDAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrBIsWRmVeSWpSXmKPExsVy+t/xu7rnZqokGjy8qGpx/u4hZov5R86x
-        Wsx885/NYsd2EYsFs7ktLu+aw2ZxqC/a4tgCMYvWvUfYLboO/WVz4PLYtnsbq8f7G63sHjtn
-        3WX3WLCp1GPTqk42j81L6j127vjM5PF5k1wAR5SeTVF+aUmqQkZ+cYmtUrShhZGeoaWFnpGJ
-        pZ6hsXmslZGpkr6dTUpqTmZZapG+XYJexrG/B9kLpktVfL01k7mBcYJYFyMnh4SAicS55zfZ
-        uxi5OIQEljJKPLn9lBkiISNxcloDK4QtLPHnWhcbRNF7RonHv+cwgSSEBSIlvj87yQhiiwho
-        SWy69pgFxGYWWMkksfJROURDN5PElBlNYAk2AUOJrrcgkzg5eAXsJDpOQ9gsAqoSa3ffYQex
-        RQWSJT6cXsoKUSMocXLmE6BeDg5OgUCJbxcNIeabSczb/JAZwpaXaN46G8oWl7j1ZD7TBEah
-        WUi6ZyFpmYWkZRaSlgWMLKsYRVJLi3PTc4uN9IoTc4tL89L1kvNzNzECo3TbsZ9bdjCufPVR
-        7xAjEwfjIUYJDmYlEd6/TMqJQrwpiZVVqUX58UWlOanFhxhNgd6ZyCwlmpwPTBN5JfGGZgam
-        hiZmlgamlmbGSuK8JkfWxAsJpCeWpGanphakFsH0MXFwSjUwqeiW1H8/re2+Q0l/q9TMeu5F
-        Xu8WuZWwHN01N9KqOvoa62OdkNV76zRF19yaZcrFYLnrfV3ckajQE41JMq7//+oEPxDMe7az
-        fn5F9U+/dkfWi/JODIpzVCZsdGzfKnVlb2D9F6ONywpmPQ05vUXx9ek2Eb1ejzuzlBfuvb3N
-        akXY16fznwea7wy6NPngeQ4fodbs/u+OdpdVHp7eO2myy/ZS09pVWqkP6/vyS9Y9+xgtG3Oi
-        X+RrwjGuiPgLmUE/nvw4sl42vmrztuQY1gP7i7xEFIOvKr6q5tl9xGDBqcefZ5zm644rExZy
-        vOi3WqV7gyfLl6K386Pi8m7Hf/BZLXLrm9iW8B9h+1Z67z32VImlOCPRUIu5qDgRAGox1BNb
-        AwAA
-X-CMS-MailID: 20210824070342eucas1p1c0293540f5c1138aa0c7b7e877ef1da9
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20210823120849eucas1p11d3919886444358472be3edd1c662755
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20210823120849eucas1p11d3919886444358472be3edd1c662755
-References: <CGME20210823120849eucas1p11d3919886444358472be3edd1c662755@eucas1p1.samsung.com>
-        <20210818021717.3268255-1-saravanak@google.com>
-        <0a2c4106-7f48-2bb5-048e-8c001a7c3fda@samsung.com>
-        <CAGETcx_xJCqOWtwZ9Ee2+0sPGNLM5=F=djtbdYENkAYZa0ynqQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Jiang Biao <benbjiang@tencent.com>
 
-On 23.08.2021 20:22, Saravana Kannan wrote:
-> On Mon, Aug 23, 2021 at 5:08 AM Marek Szyprowski
-> <m.szyprowski@samsung.com> wrote:
->> On 18.08.2021 04:17, Saravana Kannan wrote:
->>> Allows tracking dependencies between Ethernet PHYs and their consumers.
->>>
->>> Cc: Andrew Lunn <andrew@lunn.ch>
->>> Cc: netdev@vger.kernel.org
->>> Signed-off-by: Saravana Kannan <saravanak@google.com>
->> This patch landed recently in linux-next as commit cf4b94c8530d ("of:
->> property: fw_devlink: Add support for "phy-handle" property"). It breaks
->> ethernet operation on my Amlogic-based ARM64 boards: Odroid C4
->> (arm64/boot/dts/amlogic/meson-sm1-odroid-c4.dts) and N2
->> (meson-g12b-odroid-n2.dts) as well as Khadas VIM3/VIM3l
->> (meson-g12b-a311d-khadas-vim3.dts and meson-sm1-khadas-vim3l.dts).
->>
->> In case of OdroidC4 I see the following entries in the
->> /sys/kernel/debug/devices_deferred:
->>
->> ff64c000.mdio-multiplexer
->> ff3f0000.ethernet
->>
->> Let me know if there is anything I can check to help debugging this issue.
-> I'm fairly certain you are hitting this issue because the PHY device
-> doesn't have a compatible property. And so the device link dependency
-> is propagated up to the mdio bus. But busses as suppliers aren't good
-> because busses never "probe".
->
-> PHY seems to be one of those cases where it's okay to have the
-> compatible property but also okay to not have it. You can confirm my
-> theory by checking for the list of suppliers under
-> ff64c000.mdio-multiplexer. You'd see mdio@0 (ext_mdio) and if you look
-> at the "status" file under the folder it should be "dormant". If you
-> add a compatible property that fits the formats a PHY node can have,
-> that should also fix your issue (not the solution though).
+From: Jiang Biao <tcs_robot@tencent.com>
 
-Where should I look for the mentioned device links 'status' file?
+There is a fix divide error reported,
+divide error: 0000 [#1] PREEMPT SMP KASAN
+RIP: 0010:tcp_tso_autosize build/../net/ipv4/tcp_output.c:1975 [inline]
+RIP: 0010:tcp_tso_segs+0x14f/0x250 build/../net/ipv4/tcp_output.c:1992
+Code: 38 d0 7c 08 84 d2 0f 85 d6 00 00 00 8b 83 8c 03 00 00 48 8d bb 9e 03 00 00 48 89 f9 2d 41 01 00 00 4c 39 e8 49 0f 47 c5 31 d2 <41> f7 f4 48 ba 00 00 00 00 00 fc ff df 39 e8 0f 42 c5 48 c1 e9 03
+RSP: 0018:ffffc9000205f558 EFLAGS: 00010246
+RAX: 000000000000febf RBX: ffff88801ed48000 RCX: ffff88801ed4839e
+RDX: 0000000000000000 RSI: ffff888102ad2340 RDI: ffff88801ed4839e
+RBP: 0000000000000002 R08: ffffffff8796862a R09: 000000000000003f
+R10: 0000000000000001 R11: 000000000000000a R12: 0000000000000000
+R13: 000000000024705b R14: 000000000000000a R15: ffff88801ed48350
+FS:  00007f923ce99700(0000) GS:ffff888023e00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f4f25fa3000 CR3: 0000000088b09000 CR4: 0000000000752ef0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+PKRU: 55555554
+Call Trace:
+ tcp_write_xmit+0x135/0x5d50 build/../net/ipv4/tcp_output.c:2623
+ __tcp_push_pending_frames+0xab/0x390 build/../net/ipv4/tcp_output.c:2874
+ tcp_push+0x473/0x6f0 build/../net/ipv4/tcp.c:736
+ mptcp_push_release.isra.32+0x17c/0x280 build/../net/mptcp/protocol.c:1437
+ __mptcp_push_pending+0x451/0x530 build/../net/mptcp/protocol.c:1478
+ mptcp_sendmsg+0x1759/0x1c00 build/../net/mptcp/protocol.c:1697
+ inet_sendmsg+0xa1/0xd0 build/../net/ipv4/af_inet.c:821
+ sock_sendmsg_nosec build/../net/socket.c:703 [inline]
+ sock_sendmsg+0xc9/0x120 build/../net/socket.c:723
+ ____sys_sendmsg+0x375/0x820 build/../net/socket.c:2392
+ ___sys_sendmsg+0x10a/0x180 build/../net/socket.c:2446
+ __sys_sendmmsg+0x193/0x470 build/../net/socket.c:2532
+ __do_sys_sendmmsg build/../net/socket.c:2561 [inline]
+ __se_sys_sendmmsg build/../net/socket.c:2558 [inline]
+ __x64_sys_sendmmsg+0x99/0x100 build/../net/socket.c:2558
+ do_syscall_x64 build/../arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x34/0xb0 build/../arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-# find /sys -name ff64c000.mdio-multiplexer
-/sys/devices/platform/soc/ff600000.bus/ff64c000.mdio-multiplexer
-/sys/bus/platform/devices/ff64c000.mdio-multiplexer
+It's introduced by non-initialized info->mss_now in __mptcp_push_pending.
+Fix it by adding protection in mptcp_push_release.
 
-# ls -l /sys/devices/platform/soc/ff600000.bus/ff64c000.mdio-multiplexer
-total 0
-lrwxrwxrwx 1 root root    0 Jan  1 00:04 
-consumer:platform:ff3f0000.ethernet -> 
-../../../../virtual/devlink/platform:ff64c000.mdio-multiplexer--platform:ff3f0000.ethernet
--rw-r--r-- 1 root root 4096 Jan  1 00:04 driver_override
--r--r--r-- 1 root root 4096 Jan  1 00:04 modalias
-lrwxrwxrwx 1 root root    0 Jan  1 00:04 of_node -> 
-../../../../../firmware/devicetree/base/soc/bus@ff600000/mdio-multiplexer@4c000
-drwxr-xr-x 2 root root    0 Jan  1 00:02 power
-lrwxrwxrwx 1 root root    0 Jan  1 00:04 subsystem -> 
-../../../../../bus/platform
-lrwxrwxrwx 1 root root    0 Jan  1 00:04 
-supplier:platform:ff63c000.system-controller:clock-controller -> 
-../../../../virtual/devlink/platform:ff63c000.system-controller:clock-controller--platform:ff64c000.mdio-multiplexer
--rw-r--r-- 1 root root 4096 Jan  1 00:04 uevent
--r--r--r-- 1 root root 4096 Jan  1 00:04 waiting_for_supplier
+Signed-off-by: Jiang Biao <tcs_robot@tencent.com>
+---
+ net/mptcp/protocol.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-# cat 
-/sys/devices/platform/soc/ff600000.bus/ff64c000.mdio-multiplexer/waiting_for_supplier
-0
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index a88924947815..bfb3cd85bf19 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -1433,8 +1433,10 @@ static struct sock *mptcp_subflow_get_send(struct mptcp_sock *msk)
+ static void mptcp_push_release(struct sock *sk, struct sock *ssk,
+ 			       struct mptcp_sendmsg_info *info)
+ {
++	int mss_now = info->mss_now ? info->mss_now : tcp_current_mss(ssk);
++
+ 	mptcp_set_timeout(sk, ssk);
+-	tcp_push(ssk, 0, info->mss_now, tcp_sk(ssk)->nonagle, info->size_goal);
++	tcp_push(ssk, 0, mss_now, tcp_sk(ssk)->nonagle, info->size_goal);
+ 	release_sock(ssk);
+ }
 
-I'm also not sure what compatible string should I add there.
-
-> I'll send out a fix this week (once you confirm my analysis). Thanks
-> for reporting it.
-
-Best regards
-
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+--
+2.21.0
 
