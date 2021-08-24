@@ -2,147 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 993723F6189
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 17:24:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFE463F618C
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 17:24:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238332AbhHXPYx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 11:24:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34248 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238305AbhHXPYu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 11:24:50 -0400
-Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EE51C0613C1;
-        Tue, 24 Aug 2021 08:24:06 -0700 (PDT)
-Received: by mail-ot1-x334.google.com with SMTP id k12-20020a056830150c00b0051abe7f680bso41971327otp.1;
-        Tue, 24 Aug 2021 08:24:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oeGV5t/oJZwqNMB4jX1FuHm+Z0cA2twU4gN/nkkX+8A=;
-        b=SFUT5QMnrpG848wlRzo/0AfLJVjur8Qo1T9Lz0HM4GJS+LOQcQzqpAD9b6x3yll444
-         S473LxVNAIJyWwFOVIqr/HUgDkX+T0qgceS8A9m+NRiQ7gmDeIBaK+y1TQ3YtHVcMOQi
-         mYAn1SmcAq20Nw74K6bPs+eWszTRocP5WfVWvmnl/VZNtSVA2ZOpYuaL//ZfRFihjjxU
-         sbSX/QRZZWz0IaA3UY4SBPsOxKxhk3lgCiXSOn4e8wVz1NcqqSy0Z8OaU4/blrQ55iqe
-         3BdBHw3Nyb4kDl5yLxPU+KmoNGeaHEY+29K3stzCDjOe7j3Gf/3IyKFCkSBpSf/p99Do
-         9U1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oeGV5t/oJZwqNMB4jX1FuHm+Z0cA2twU4gN/nkkX+8A=;
-        b=eJ4cAznxudB6zsbO6pLS6jHlnRdP+for13cw0g95GwsCo2wITBRlTYt0xowKxo/Tnr
-         cufZGhfs8o9F30whUReGbtuUIlwUvxcwN/YHOwI3DosTY141L6lBZOdQuBHCkKI9qpNy
-         3kTRo6k1B2/5gBnG/7+TzKYXYiKQK0Plc1RJYBYDTk9kFo0X5eOuboc8vcYALWZS8sBP
-         g/pd1+gBSdzAeyiVqdIR02fqUcR2lzYE0zJYvMPowD9BYWXt+eDheXdZC8YCywsoXDS8
-         rQeEozvvR2nuGGdVGHcAX0N37DtTAbXmYo5rNwLsdr/PwBZhtOz1dJvMqcNjXeRY7uJu
-         xpSQ==
-X-Gm-Message-State: AOAM53013GAaUFKNi+nLc+qYg9/iLDHnikMfZ2Eh/xuQRm/5Our5Wayd
-        5mEbQBNvmokkdGW6VBQALFTJqaQ5tnFliFSJ+eA=
-X-Google-Smtp-Source: ABdhPJxJq0hfArntSLZ0Abf4D5GQ30roxEYoGaXVebZpbQrC3CJzfxuKFpUFpNA7eAbrlywZMiuj9ilh9kov66IugqA=
-X-Received: by 2002:a05:6808:208b:: with SMTP id s11mr3145964oiw.95.1629818645584;
- Tue, 24 Aug 2021 08:24:05 -0700 (PDT)
+        id S238320AbhHXPZV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 11:25:21 -0400
+Received: from de-smtp-delivery-102.mimecast.com ([194.104.111.102]:32672 "EHLO
+        de-smtp-delivery-102.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238245AbhHXPZU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 11:25:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=mimecast20200619;
+        t=1629818674;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=z9BB9UGbJaV8rw1zPPuxCWxYQ8f2EjiX1JJeVB7tOik=;
+        b=HX72X8OlU/m4JtRjvIFZJz+KfH/VrK4KFLtzScSqGspZ1RKGet3pWO84/9Jn1tsGvvHF+3
+        bpuWCCT+cLBbz3qYDeRWxhJMp1qsVAPt7QYHkfe9SjusVfcPu2xHP7ELQsGCYx+e0K5Y0j
+        KIsKedB+xoJi3wthKW31hk1LHBdEAek=
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com
+ (mail-vi1eur05lp2173.outbound.protection.outlook.com [104.47.17.173])
+ (Using TLS) by relay.mimecast.com with ESMTP id
+ de-mta-30-zGN7UektPUuyjOUhxh0nHQ-1; Tue, 24 Aug 2021 17:24:33 +0200
+X-MC-Unique: zGN7UektPUuyjOUhxh0nHQ-1
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DCKm4fKYDYI2FOT5wF7y3uIqzFpjXhvZ5rrGgAxnWnvHgIVixsfw0IINFV0OzVYlO7D7TPoeIzF9v8Bh8rcVH8WJD0q/3fwPZIWpN3WGKFv2TTfHlWl4QM2mfkSZrOkh0vHEVIuKUvDu85l7/Kf2uvYgeboVEBtSdDM08zRYIVbJpPLrDG2m1F4Jj86w0x5DeDlGGxrxBCAWXGSpNGnXXIuxvHeBxdeh2/64Qq2/tB4o1t3PY1laXgUNE1zn+x7Kh8FkRg9pPZjRgg6kYotlpQ3R7e1NXyD3Eeviq5WUgTIcRXAGXYMbfjEOP9vJUzyBZ583xNVhpQzbBJdeswqD8Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=z9BB9UGbJaV8rw1zPPuxCWxYQ8f2EjiX1JJeVB7tOik=;
+ b=fG03s95B+RDAoQo6raY02ZirExwOdT4OjxgicRqZDvogFErrjnlvOBBJiQD6ee7uRvaDLbeXmHid+vRzLOQaDupISDFRclZ5cWha8m4glhdxz20d6piN3z8dEsOHuRpUQPemTYR8fN3clxt5KvolvZHSJ4Zp8t44cu+JhZ5Jr4CAZuQYUnyTYAQN2Ql4WMYei1rWB3WkoKclYsH8QzfLJllDOtq5zCo/hMqifsLorZueur13DHriHb7uyr86oybexq/lvdOq6dDFXn4L8mIAaWPxEiYJp8hg0g3mYsIAZ26dNmdlegjcOduF98895OPw8/d970oAAJPnZG0IQR7sOA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
+ dkim=pass header.d=suse.com; arc=none
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=suse.com;
+Received: from AM0PR04MB5587.eurprd04.prod.outlook.com (2603:10a6:208:125::12)
+ by AM0PR04MB5218.eurprd04.prod.outlook.com (2603:10a6:208:c4::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19; Tue, 24 Aug
+ 2021 15:24:32 +0000
+Received: from AM0PR04MB5587.eurprd04.prod.outlook.com
+ ([fe80::4822:460f:7561:33bf]) by AM0PR04MB5587.eurprd04.prod.outlook.com
+ ([fe80::4822:460f:7561:33bf%5]) with mapi id 15.20.4436.025; Tue, 24 Aug 2021
+ 15:24:32 +0000
+Subject: Re: [PATCH v2 2/4] xen/netfront: don't read data from request on the
+ ring page
+To:     Juergen Gross <jgross@suse.com>
+Cc:     Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210824102809.26370-1-jgross@suse.com>
+ <20210824102809.26370-3-jgross@suse.com>
+From:   Jan Beulich <jbeulich@suse.com>
+Message-ID: <9ca2d6a2-03a5-ff4e-8d20-dfad9cd14e4f@suse.com>
+Date:   Tue, 24 Aug 2021 17:24:30 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
+In-Reply-To: <20210824102809.26370-3-jgross@suse.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: PR3P189CA0040.EURP189.PROD.OUTLOOK.COM
+ (2603:10a6:102:53::15) To AM0PR04MB5587.eurprd04.prod.outlook.com
+ (2603:10a6:208:125::12)
 MIME-Version: 1.0
-References: <20210824104918.7930-1-kerneljasonxing@gmail.com> <59dff551-2d52-5ecc-14ac-4a6ada5b1275@redhat.com>
-In-Reply-To: <59dff551-2d52-5ecc-14ac-4a6ada5b1275@redhat.com>
-From:   Jason Xing <kerneljasonxing@gmail.com>
-Date:   Tue, 24 Aug 2021 23:23:29 +0800
-Message-ID: <CAL+tcoDERDZqtjK1BCc0vYYwYtvgRtb8H6z2FTVbGqr+N7bVmA@mail.gmail.com>
-Subject: Re: [PATCH] ixgbe: let the xdpdrv work with more than 64 cpus
-To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        David Miller <davem@davemloft.net>, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org,
-        brouer@redhat.com, intel-wired-lan@lists.osuosl.org,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, bpf@vger.kernel.org,
-        Jason Xing <xingwanli@kuaishou.com>,
-        Shujin Li <lishujin@kuaishou.com>,
-        =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [10.156.60.236] (37.24.206.209) by PR3P189CA0040.EURP189.PROD.OUTLOOK.COM (2603:10a6:102:53::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.19 via Frontend Transport; Tue, 24 Aug 2021 15:24:31 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d3ebcb00-4987-4762-400d-08d9671345c5
+X-MS-TrafficTypeDiagnostic: AM0PR04MB5218:
+X-LD-Processed: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba,ExtFwd
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM0PR04MB521875D6A8E5A5998AB9487AB3C59@AM0PR04MB5218.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 3NLlGJyaNs4KiAZzCU8qZ8g+AohI3Vowr+YXBOpmGn6yRFZbWXol4kJMYxBFdWABR6b8u7sky9dK3Fr+hDVd2tRHu66U0xrSSkKaWbE2K7gkV0+a9IaWORlHMLEHD5lWh4qvUo2k5VHapr/L2fEataZIBXubdyRyczg+0HzxNGnCOo64X3Krm2xXTTao1l+SaYcQkNs0JHNKSfsh4nMO3PoFLjMCN07cmaFZYGslQwy0uDYFqHK/7Sj4LsEZB+3MAGagzxtNSZ0/jliv8M+SftXKuZvnN0PxI5cD2U0HUpFxPjYf93VKodTG5VnWIiq3GtH4uGxkbB+HL0rFfb2QAD0bkNxV7LWkU1rNl24jx7qt1JNPFkunBsOMSbDvdKiLG6cvtqaCq4XPdFL+afCeGyeXEkbPj95xltQGqaW4DlMIPBR/vuC/NJLXkqI6Gbgv+eYvEw/mavMRMjBPDDe8gDqhzid+DqVEaWk1GD/A7o6iF5fqJ3WEAobc3OwtYrucb1wZTx9ROzzFqEm67N1D7ZyprhH2vjRLjP2Uii4cxYfDknvtX00j3VJ6W6QjyCY3+nh5UY0qeHzLiLU5o8CtNp08KAr8RgyyYRku1K6VfN9TRHn+K3pX4l7BN3b5P8DIFUPN8WWR7FOrpBZMJKmx7taAvxoGF7wbfFORo24t/XLZzoHLOLR8aT9t62kJD0ACy0F/xe8hxjJKwvenEVYEK85otRAyK4W15Lb/xverzJg=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5587.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(376002)(346002)(366004)(39860400002)(396003)(316002)(5660300002)(26005)(6862004)(4326008)(4744005)(8936002)(83380400001)(31686004)(66556008)(36756003)(16576012)(478600001)(66946007)(8676002)(54906003)(37006003)(6636002)(53546011)(6486002)(2906002)(38100700002)(956004)(2616005)(66476007)(86362001)(31696002)(186003)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Ly8vZHNOTXVBQjNpc0NocXNNWm5TZVpnY1BESU5maE1KVTh3MVQ5QUJzMXpa?=
+ =?utf-8?B?emhlQldHejAzQ0VCNlJxdm9wYUZTQ05qWGZ2aHlMZlkzazhzbVNJN251Y3hP?=
+ =?utf-8?B?SGxUVndWV0lXTzM4YVJVUytqaVBFOVZZdFFNTUZyUktRdUdXZTRVNEoySnlT?=
+ =?utf-8?B?d0pERlpoQWlaOHJSSEx3VzVkUjNrVVJENGFPYTdKUUlKaEFpc3dKUTNRNnow?=
+ =?utf-8?B?UHoxWFdEWEpiUHBidUpoQUJyMEd4aHZ6M2M2WnE0S3gyOXZiN2c4OXUrYXd0?=
+ =?utf-8?B?VmRzVk5iZFMzbnE0VlFHci80eE1hS1IvRVRMWWNzTzdtVTRnZm93S3kzd2Fl?=
+ =?utf-8?B?bG1EYkdEVExnUGFMa2NROWl6cVN6dXpkQzhDVnhTTkw1RkNkOXh2amp3eG1v?=
+ =?utf-8?B?bWpZYVgxbFlFV1VDL3k3czJ4b3k3SEdrWmZjUDVKNVVsOTAwUzBOd0pGOU1m?=
+ =?utf-8?B?L21IdGc0T3Z3YkVxRE9wbjBoajRzSXVmNnN5RGl2T2JaR1M2STdseS80RjFV?=
+ =?utf-8?B?UThCTXh0THNKNGpDVFNZUG40Skd1aUlTWnIxV2ZnQnJPU0JkNGFmcXhKOWZ4?=
+ =?utf-8?B?Kys3YUdTWVNRR0daMlVJOUMzN0pERnVZSk5Hd3FOVk9XeWdtS3luQTV3ajY1?=
+ =?utf-8?B?UWRFL3pKUWU1WU44dzd2eC9sZlVhTHhxVE5TMC93ZVJKN0Q1ckF5S1FiTm8x?=
+ =?utf-8?B?Zi8xTlIzQ1VzaG9lcHRDNktJdGx6MEtEZ0dseHdYeU0yeGlpS2Jic1FLbzUw?=
+ =?utf-8?B?V1N0OHhDTTB1b2o0OEFhZG8wajhRL3M1NzdyUFZBdU1GRGhzVjZBdkdVSElL?=
+ =?utf-8?B?clgycy9EL3pMU0c2ZVVrdmVOMlNlTWdzdE9Od3pOclozb2NONEpMQlBzeHBh?=
+ =?utf-8?B?NXcvOG5abGttd3RrdW1Gc0g1K2hMZ3RNdHpRQlg2UTBKVjNiTjh4MDN3WFFH?=
+ =?utf-8?B?d0hiSXNWU2lNNzl6UVpwejY5dGdFQjNXS1cyaXB3UXVUdFhHOUJMa1hzM0dp?=
+ =?utf-8?B?aWNQclF0RDlxMkxzeUY4dWZHK1prMy95WVlqbGlEcnBadFkvVTdsU0EySjNZ?=
+ =?utf-8?B?dnp0NHlLTTZPRkJGQUtKRzZ6dDhpeGF6YlRxdDF4c2IyUmIyeWFOcUg5UEIz?=
+ =?utf-8?B?akx2MVV4b2VxWHVTcEovNllTWWNnVS9BaGZUQzFjR1JMTmRuclM0UlI4QVFr?=
+ =?utf-8?B?V2ZQN0dHOXh5TEhhanZHTW1XVE1aNWFwTFo1QzRteVVkTTZlb1BKVVNFbWw4?=
+ =?utf-8?B?M2hsMXRTRGlvN1dRS1o3UlJUaXc2U1NHcXliUFFSdXdKVCtyZ0RiVnN3cFFs?=
+ =?utf-8?B?bEtmRElrbHhSTXhOaHRqLzZRZ0hpZHBNRkwzSFkrVWJNNmR2dkVCektPeGhz?=
+ =?utf-8?B?eVZwSS9vOXRsKytjZklFTHVZNjUrTmpOZjFFTE9aRGFvY0JYaU00K2U0RWE4?=
+ =?utf-8?B?Z0w1RnpicEVGWkRsTmMxTkVGUXJLT3NZRWpCMVhqWnZYdk5EK1doZlJBcnps?=
+ =?utf-8?B?c2pPQnBSK3d3dWhhQXlCOEg5RGZuSEpkalVCWjFrdkg1YjA3UFZwcTlpY2Mv?=
+ =?utf-8?B?Q2VVZXhrek5scktxczVlVXJueXc4bVFqTGZvNDE5UHpXdmE2QW9FeDhoTGEr?=
+ =?utf-8?B?UGFjYjdMdVhwNXljZ1Y3QmZXNjNyanRBQU50c2lHV0VwaDJmaW55eWZvWXJo?=
+ =?utf-8?B?UEszL1JrTkMrUFo1SWdBaCtEaklYSDh6SVNLODUvbnhGN2ZhQ011cExvbjNG?=
+ =?utf-8?Q?B169Qo6awFRrl7NKwK2nPZFdAOXGjSHd61N0zx6?=
+X-OriginatorOrg: suse.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d3ebcb00-4987-4762-400d-08d9671345c5
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5587.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Aug 2021 15:24:32.4159
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1zR4daAO9DB/4XrzurRQDYzN2RrJQj6rfR33g987cW987N0yTwzfLPHeorq9peTknQaI8G+EhR+W2x5L5KKVUg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB5218
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 24, 2021 at 9:32 PM Jesper Dangaard Brouer
-<jbrouer@redhat.com> wrote:
->
->
->
-> On 24/08/2021 12.49, kerneljasonxing@gmail.com wrote:
-> > From: Jason Xing <xingwanli@kuaishou.com>
-> >
-> > Originally, ixgbe driver doesn't allow the mounting of xdpdrv if the
-> > server is equipped with more than 64 cpus online. So it turns out that
-> > the loading of xdpdrv causes the "NOMEM" failure.
-> >
-> > Actually, we can adjust the algorithm and then make it work, which has
-> > no harm at all, only if we set the maxmium number of xdp queues.
->
-> This is not true, it can cause harm, because XDP transmission queues are
-> used without locking. See drivers ndo_xdp_xmit function ixgbe_xdp_xmit().
-> As driver assumption is that each CPU have its own XDP TX-queue.
->
+On 24.08.2021 12:28, Juergen Gross wrote:
+> In order to avoid a malicious backend being able to influence the local
+> processing of a request build the request locally first and then copy
+> it to the ring page. Any reading from the request influencing the
+> processing in the frontend needs to be done on the local instance.
+> 
+> Signed-off-by: Juergen Gross <jgross@suse.com>
 
-Point taken. I indeed miss that part which would cause bad behavior if it
-happens.
+Reviewed-by: Jan Beulich <jbeulich@suse.com>
 
-At this point, I think I should find all the allocation and use of XDP
-related, say,
-queues and rings, then adjust them all?
-
-Let's say if the server is shipped with 128 cpus, we could map 128 cpus to 64
-rings in the function ixgbe_xdp_xmit(). However, it sounds a little bit odd.
-
-Do you think that it makes any sense?
-
-Thanks,
-Jason
-
-> This patch is not a proper fix.
->
-> I do think we need a proper fix for this issue on ixgbe.
->
->
-> > Fixes: 33fdc82f08 ("ixgbe: add support for XDP_TX action")
-> > Co-developed-by: Shujin Li <lishujin@kuaishou.com>
-> > Signed-off-by: Shujin Li <lishujin@kuaishou.com>
-> > Signed-off-by: Jason Xing <xingwanli@kuaishou.com>
-> > ---
-> >   drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c  | 2 +-
-> >   drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 3 ---
-> >   2 files changed, 1 insertion(+), 4 deletions(-)
-> >
-> > diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
-> > index 0218f6c..5953996 100644
-> > --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
-> > +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
-> > @@ -299,7 +299,7 @@ static void ixgbe_cache_ring_register(struct ixgbe_adapter *adapter)
-> >
-> >   static int ixgbe_xdp_queues(struct ixgbe_adapter *adapter)
-> >   {
-> > -     return adapter->xdp_prog ? nr_cpu_ids : 0;
-> > +     return adapter->xdp_prog ? min_t(int, MAX_XDP_QUEUES, nr_cpu_ids) : 0;
-> >   }
-> >
-> >   #define IXGBE_RSS_64Q_MASK  0x3F
-> > diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> > index 14aea40..b36d16b 100644
-> > --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> > +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> > @@ -10130,9 +10130,6 @@ static int ixgbe_xdp_setup(struct net_device *dev, struct bpf_prog *prog)
-> >                       return -EINVAL;
-> >       }
-> >
-> > -     if (nr_cpu_ids > MAX_XDP_QUEUES)
-> > -             return -ENOMEM;
-> > -
-> >       old_prog = xchg(&adapter->xdp_prog, prog);
-> >       need_reset = (!!prog != !!old_prog);
-> >
-> >
->
