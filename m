@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 892843F5446
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 02:54:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CAF43F546D
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 02:55:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233725AbhHXAyx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Aug 2021 20:54:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47202 "EHLO mail.kernel.org"
+        id S233938AbhHXAzC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Aug 2021 20:55:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47404 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233536AbhHXAyo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Aug 2021 20:54:44 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 97AF7613AD;
-        Tue, 24 Aug 2021 00:54:00 +0000 (UTC)
+        id S233682AbhHXAyw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Aug 2021 20:54:52 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 25259613BD;
+        Tue, 24 Aug 2021 00:54:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629766441;
-        bh=8uGhlzw8itBNSqnqsC9IrVharzy9ChGrbnsD8NU3DQ0=;
+        s=k20201202; t=1629766449;
+        bh=HigKvF2qlGkAo5mFN3wN0d0VrImeDgmCAblcxl/51ZQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=urdxF2d2Rrilwg8fMEl0nGnhH+8qyluNbyQWmUXq5MLVS6pVcRANFgiahxtZ0huuN
-         9eWWkBmDqTvxyfb+Lu3nZUmCYiHPq0EwPxIdpHqpgDStjObw1s5Go7Y2UXL42NRcEy
-         f+f3RXvCoD9cavwFGiB37InL7mnBix+XavPrfcTOC5z/qllREFVMfHWtd55rjKw++p
-         qJhSsyuJgah6lOtEUK2SiVfM382bc0xuWWZV0/tq6I+0aYYJXWWWEAasgaaSQ2LDro
-         Uge+okqCcTt39hniaDdUrmqmvE7sV2qZzdteM95XygnANpmTVdsUEC1D/kvKSz2WY2
-         a9YDMwIC8Q8Zw==
+        b=K4NhVefoVDPYpOH0i4aRpgIICQ95O8lAxUlsK96MJibMlWPuJLA3vmG2/bwu5fy6T
+         rBzWF+A5+cf9ho4MZ8f3EVLqJe6kWU3plJAzppblARuMwI2m8ezg+fV0OJzbqs0Ysh
+         nalxLdgC+FWpYLEqUX3UJl+s6G8UqSjUJJj6D76iiTz3Opef49XF3/3ZU8mWXNwX/+
+         Om7BBmCLYhzkp9N6PAhrr06THeK/YQAmhrQxHaltBIdv5erA4ELqsJmtAMNVBufKA4
+         TnskoqXuDfQFvEtuq6mkxNdi4CentUP5U/HbgDoNWA6vAFon8y9fMugsraJd1ZIsnw
+         0zaD0zrZN5GLw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yaara Baruch <yaara.baruch@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.13 03/26] iwlwifi: add new so-jf devices
-Date:   Mon, 23 Aug 2021 20:53:33 -0400
-Message-Id: <20210824005356.630888-3-sashal@kernel.org>
+Cc:     Neeraj Upadhyay <neeraju@codeaurora.org>,
+        Jason Wang <jasowang@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.13 09/26] vringh: Use wiov->used to check for read/write desc order
+Date:   Mon, 23 Aug 2021 20:53:39 -0400
+Message-Id: <20210824005356.630888-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210824005356.630888-1-sashal@kernel.org>
 References: <20210824005356.630888-1-sashal@kernel.org>
@@ -44,68 +45,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yaara Baruch <yaara.baruch@intel.com>
+From: Neeraj Upadhyay <neeraju@codeaurora.org>
 
-[ Upstream commit 891332f697e14bfb2002f56e21d9bbd4800a7098 ]
+[ Upstream commit e74cfa91f42c50f7f649b0eca46aa049754ccdbd ]
 
-Add new so-jf devices to the driver.
+As __vringh_iov() traverses a descriptor chain, it populates
+each descriptor entry into either read or write vring iov
+and increments that iov's ->used member. So, as we iterate
+over a descriptor chain, at any point, (riov/wriov)->used
+value gives the number of descriptor enteries available,
+which are to be read or written by the device. As all read
+iovs must precede the write iovs, wiov->used should be zero
+when we are traversing a read descriptor. Current code checks
+for wiov->i, to figure out whether any previous entry in the
+current descriptor chain was a write descriptor. However,
+iov->i is only incremented, when these vring iovs are consumed,
+at a later point, and remain 0 in __vringh_iov(). So, correct
+the check for read and write descriptor order, to use
+wiov->used.
 
-Signed-off-by: Yaara Baruch <yaara.baruch@intel.com>
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20210719144523.1c9a59fd2760.If5aef1942007828210f0f2c4a17985f63050bb45@changeid
+Acked-by: Jason Wang <jasowang@redhat.com>
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+Signed-off-by: Neeraj Upadhyay <neeraju@codeaurora.org>
+Link: https://lore.kernel.org/r/1624591502-4827-1-git-send-email-neeraju@codeaurora.org
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/pcie/drv.c | 36 ++++++++++++++++++-
- 1 file changed, 35 insertions(+), 1 deletion(-)
+ drivers/vhost/vringh.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
-index cd204a9ec87d..9f11a1d5d034 100644
---- a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
-+++ b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
-@@ -1142,7 +1142,41 @@ static const struct iwl_dev_info iwl_dev_info_table[] = {
- 		      IWL_CFG_MAC_TYPE_SO, IWL_CFG_ANY,
- 		      IWL_CFG_RF_TYPE_GF, IWL_CFG_ANY,
- 		      IWL_CFG_160, IWL_CFG_ANY, IWL_CFG_NO_CDB,
--		      iwlax211_2ax_cfg_so_gf_a0, iwl_ax211_name)
-+		      iwlax211_2ax_cfg_so_gf_a0, iwl_ax211_name),
-+
-+/* So with JF2 */
-+	_IWL_DEV_INFO(IWL_CFG_ANY, IWL_CFG_ANY,
-+		      IWL_CFG_MAC_TYPE_SO, IWL_CFG_ANY,
-+		      IWL_CFG_RF_TYPE_JF2, IWL_CFG_RF_ID_JF,
-+		      IWL_CFG_160, IWL_CFG_CORES_BT, IWL_CFG_NO_CDB,
-+		      iwlax210_2ax_cfg_so_jf_b0, iwl9560_160_name),
-+	_IWL_DEV_INFO(IWL_CFG_ANY, IWL_CFG_ANY,
-+		      IWL_CFG_MAC_TYPE_SO, IWL_CFG_ANY,
-+		      IWL_CFG_RF_TYPE_JF2, IWL_CFG_RF_ID_JF,
-+		      IWL_CFG_NO_160, IWL_CFG_CORES_BT, IWL_CFG_NO_CDB,
-+		      iwlax210_2ax_cfg_so_jf_b0, iwl9560_name),
-+
-+/* So with JF */
-+	_IWL_DEV_INFO(IWL_CFG_ANY, IWL_CFG_ANY,
-+		      IWL_CFG_MAC_TYPE_SO, IWL_CFG_ANY,
-+		      IWL_CFG_RF_TYPE_JF1, IWL_CFG_RF_ID_JF1,
-+		      IWL_CFG_160, IWL_CFG_CORES_BT, IWL_CFG_NO_CDB,
-+		      iwlax210_2ax_cfg_so_jf_b0, iwl9461_160_name),
-+	_IWL_DEV_INFO(IWL_CFG_ANY, IWL_CFG_ANY,
-+		      IWL_CFG_MAC_TYPE_SO, IWL_CFG_ANY,
-+		      IWL_CFG_RF_TYPE_JF1, IWL_CFG_RF_ID_JF1_DIV,
-+		      IWL_CFG_160, IWL_CFG_CORES_BT, IWL_CFG_NO_CDB,
-+		      iwlax210_2ax_cfg_so_jf_b0, iwl9462_160_name),
-+	_IWL_DEV_INFO(IWL_CFG_ANY, IWL_CFG_ANY,
-+		      IWL_CFG_MAC_TYPE_SO, IWL_CFG_ANY,
-+		      IWL_CFG_RF_TYPE_JF1, IWL_CFG_RF_ID_JF1,
-+		      IWL_CFG_NO_160, IWL_CFG_CORES_BT, IWL_CFG_NO_CDB,
-+		      iwlax210_2ax_cfg_so_jf_b0, iwl9461_name),
-+	_IWL_DEV_INFO(IWL_CFG_ANY, IWL_CFG_ANY,
-+		      IWL_CFG_MAC_TYPE_SO, IWL_CFG_ANY,
-+		      IWL_CFG_RF_TYPE_JF1, IWL_CFG_RF_ID_JF1_DIV,
-+		      IWL_CFG_NO_160, IWL_CFG_CORES_BT, IWL_CFG_NO_CDB,
-+		      iwlax210_2ax_cfg_so_jf_b0, iwl9462_name)
- 
- #endif /* CONFIG_IWLMVM */
- };
+diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
+index 4af8fa259d65..14e2043d7685 100644
+--- a/drivers/vhost/vringh.c
++++ b/drivers/vhost/vringh.c
+@@ -359,7 +359,7 @@ __vringh_iov(struct vringh *vrh, u16 i,
+ 			iov = wiov;
+ 		else {
+ 			iov = riov;
+-			if (unlikely(wiov && wiov->i)) {
++			if (unlikely(wiov && wiov->used)) {
+ 				vringh_bad("Readable desc %p after writable",
+ 					   &descs[i]);
+ 				err = -EINVAL;
 -- 
 2.30.2
 
