@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E2DD3F60D3
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 16:44:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C94F3F60E6
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 16:47:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237794AbhHXOpI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 10:45:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52984 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237861AbhHXOpB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 10:45:01 -0400
-Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1364FC061757
-        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 07:44:17 -0700 (PDT)
-Received: by mail-qv1-xf34.google.com with SMTP id jv8so11813685qvb.3
-        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 07:44:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=rMLkxtrErBAtBHrKvLuFz7AHBJYirv2PR3dag9tQ2Pw=;
-        b=rZCclgpRCFQUIkQ1cnh+ZTL9lvh3CcA9NZ9p5MtvbcENuP4nzjwVQyTvbMkAvvUXA2
-         B2EgdCgRKLRwIakD5zfGJxYLINjHgFCvzH7J127yP9o+9urIROh/YET6aauZbxesabQt
-         vosmGjHdJ6NhtiLwZMhaBpRelXuJh8FXFWMZTeI8Rhi1Bn0SIZB5srIDpjUlZiP58v8q
-         cFQJ9xOzX4udVVoucoEzq284mdKDjq2f3ZNl1tLFTNPwqmcKXFBn60H3rt1A0laKTyrY
-         S54o1r6R9AN8gy5vAjYghco4r83HVvkf0YDs1x+wk902QdZaaMtshDGILpK+xFATWawU
-         shrQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=rMLkxtrErBAtBHrKvLuFz7AHBJYirv2PR3dag9tQ2Pw=;
-        b=BQdL6tF7gAzuDLBTOv8H0/F9SJgaJZgh81/Nm57l6r3yd7zelErhVpOXrXudszB0wz
-         sUzw/w+Cgy/Fz6Nj1EPN4Yx9ngkANprklXZHaJP0wyIrizw6KcO7A3Otffygej1MLy5Q
-         buchWM6nmwVNYWHmOtjz1QjE/OVYJ5Gst7RwWvQcqfKoZT3SztkPijNIZ6FOGX1g0HUd
-         p8FKmPj0m25meYZWMm7KJlmoHL80xwtfEd0ZN9nETsGUHuuHdfS+i9j5cMYlEeVn18fK
-         DF20oJaIZsclOgUtdCFswhz/huIoJDCbQ2woW7x572+03LDRPFmahpmChBtCsiAoQPGz
-         wD5g==
-X-Gm-Message-State: AOAM530m/6cgdFVbgVnePD2hEA+xuUoiYlohdePkt3woOVEKvOKU2ZBH
-        NrIL0FmBLOuK+NYtYrorSEISm2Z4z+OV9E7+Bac=
-X-Google-Smtp-Source: ABdhPJwROxP+MwQHiJHTJWq/dX4qJMBbhX9zHDXAuUGDt06ntNmiSE1ZuMt1HsVPxA+hDi+JabO7tgm+QNid7buBUv4=
-X-Received: by 2002:ad4:5551:: with SMTP id v17mr39747138qvy.11.1629816256268;
- Tue, 24 Aug 2021 07:44:16 -0700 (PDT)
+        id S237987AbhHXOrn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 10:47:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58128 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237755AbhHXOrm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Aug 2021 10:47:42 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5383061214;
+        Tue, 24 Aug 2021 14:46:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1629816418;
+        bh=Y2VvGS4ewH0QFV6jn39fYPmqIbAtnr1Y+vm2V40pcbc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Df8kuWrSWWNcLUXAcC0rexKKK2wVu7j9FZnPDxVf3Fhhti5KIsPTGoxxVc9OrpnKn
+         PoYnGctC6V0MyPhVbQ3RA9a2u5tLdAwuBLRtqABOUbjbSZtGpEscGAwba+1yJ/faAc
+         CBDEyRLWnnYl+o6+pmKXZMdcRXq43s36S14dMjdPS9zhUBWHpzLZ4QtN3hVhpUFNGh
+         cf/KnVaz0pXNqjls71nDDHmVXdnRzqQIFOwSjYuSgr/WJRIIryCSNllTe2mqM+Df7Y
+         JXuTU1gLB4mCpWB1cLt56xmLT/sf19tXQkDw3nRaCAse4S0wa2c/bUEvy9stYII5b/
+         u2vq0kcFE/pfw==
+Date:   Tue, 24 Aug 2021 07:46:57 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Shuah Khan <skhan@linuxfoundation.org>
+Cc:     CGEL <cgel.zte@gmail.com>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Yonghong Song <yhs@fb.com>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jing Yangyang <jing.yangyang@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: Re: [PATCH linux-next] tools:test_xdp_noinline: fix
+ boolreturn.cocci warnings
+Message-ID: <20210824074657.363455a6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <2d701f13-8996-ed7d-3d41-794aa8a6e96c@linuxfoundation.org>
+References: <20210824065526.60416-1-deng.changcheng@zte.com.cn>
+        <2d701f13-8996-ed7d-3d41-794aa8a6e96c@linuxfoundation.org>
 MIME-Version: 1.0
-Received: by 2002:ad4:4f8e:0:0:0:0:0 with HTTP; Tue, 24 Aug 2021 07:44:15
- -0700 (PDT)
-Reply-To: johnsondavidu00@gmail.com
-From:   "johnson.davidu41" <johnson.davidu41@gmail.com>
-Date:   Tue, 24 Aug 2021 15:44:15 +0100
-Message-ID: <CABCOMrEjMKzfJnuAfWPeU_GejESCaBEbwgPVcebu=JiaE4-cxw@mail.gmail.com>
-Subject: Barr Johnson David
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Good Day,
-There is an unclaimed inheritance fund Bequeathed in your name from my
-deceased client who has the same last name  and nationalty  with you,
-very urgent,
+On Tue, 24 Aug 2021 08:42:15 -0600 Shuah Khan wrote:
+> On 8/24/21 12:55 AM, CGEL wrote:
+> > From: Jing Yangyang <jing.yangyang@zte.com.cn>
+> > 
+> > Return statements in functions returning bool should use true/false
+> > instead of 1/0.
+> > 
+> > Reported-by: Zeal Robot <zealci@zte.com.cn>
+> > Signed-off-by: Jing Yangyang <jing.yangyang@zte.com.cn>
+> 
+> We can't accept this patch. The from and Signed-off-by don't match.
 
-Best regards
-Barr  Johnson David
+That's what I thought but there is a From in the email body which git
+will pick up. The submission is correct.
+
+Please trim your responses.
