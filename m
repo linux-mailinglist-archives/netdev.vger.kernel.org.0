@@ -2,167 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1C023F64EA
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 19:07:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F26573F660C
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 19:20:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239193AbhHXRIY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 13:08:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57684 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239198AbhHXRGd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 13:06:33 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2F5BC0611C2;
-        Tue, 24 Aug 2021 09:57:45 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id a25so19014430ejv.6;
-        Tue, 24 Aug 2021 09:57:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=2CPHVf9LVvR1vrFypltnSkd8psChBds8RTv71kfke/g=;
-        b=VAjjLhwy5EUDHkBFLS6IK/OURmv9p6XDFTIdDQrxNgXUrBpLHyjoRWx1AFS+Y9ZFZE
-         mRbocH6GFcBOoMBfw7pBBf5/+E+jiKWVggYX8UAONU+90/q2JL6KG7NN1hm1VVp+arhk
-         Gp1QFr/gXj2TMfaIL0cbP2rQdpetGkn7CRzK4TTvnG7ozydtXXZeFbqoG8PtqSTfiMhi
-         OdNp4yn5RmtsHDIlJ6COOuyS95a0NexigEqGT9waGhePHJUaIlFKEZ+9pH1OtcVBUv8X
-         QmM+/lk9ypH1T1kLaKyRfysicQVTli907NmoOIBhuMqo6bTgJyfSmfbaIM1wC5MrmZcW
-         oFvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=2CPHVf9LVvR1vrFypltnSkd8psChBds8RTv71kfke/g=;
-        b=spP50nPR79kqCYPi4GHbTsQ3+SX2yzVu8l8TLSuKeoQyZkg4pTyM9bECJGzc+AFx8n
-         CD3Nc4QjPqbBZYOPDyVNBZoshfcOSeG35UrcF+iJTCq79uBaSLI0GVRNfiNlPSVfuWyj
-         xn9PscPFZ3ZctWwnoEw6U0PxbJd22HVNHCyOgfpwvr5rZ3dv5Zo784pr5oSLI4nYalbD
-         9azWw/ss4icqG24FiYJTPnkLuR865OM44bEoRhKQuhkMMvjOcCNov0o1BZP1ZtOTa0zn
-         of8oSC19SfP9uSmpBxZNdHu39mWcf/1s9Xkl+E46ec200LfYqkrxqCq5QxeKFNWlgz11
-         31jA==
-X-Gm-Message-State: AOAM533bstC+CcjDAouKDncCsQhObCSbUKYqBxsih7MF3rwim2NqcsL/
-        3/c2K7TY2BgfdmlyLiHKz/M=
-X-Google-Smtp-Source: ABdhPJz35lI7gG+zU2usTviK/+6HHY2TQK8d1wdwtxQLUYeHHWpj4yZQVaxPxFC2dCOBTq1kpsr9lw==
-X-Received: by 2002:a17:906:374e:: with SMTP id e14mr20474775ejc.161.1629824264492;
-        Tue, 24 Aug 2021 09:57:44 -0700 (PDT)
-Received: from skbuf ([188.25.144.60])
-        by smtp.gmail.com with ESMTPSA id c19sm6732518ejs.116.2021.08.24.09.57.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Aug 2021 09:57:44 -0700 (PDT)
-Date:   Tue, 24 Aug 2021 19:57:42 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     DENG Qingfang <dqfext@gmail.com>
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Russell King <linux@armlinux.org.uk>,
-        "open list:MEDIATEK SWITCH DRIVER" <netdev@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next] net: dsa: mt7530: manually set up VLAN ID 0
-Message-ID: <20210824165742.xvkb3ke7boryfoj4@skbuf>
-References: <20210824165253.1691315-1-dqfext@gmail.com>
+        id S238999AbhHXRUP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 13:20:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55476 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239968AbhHXRSC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Aug 2021 13:18:02 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 68D6D6140B;
+        Tue, 24 Aug 2021 17:02:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1629824560;
+        bh=MdJJa0Q/hFLCTbRIO/pYfO7Fg1Ens19ug6IpZWK/RWY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=XiNNMp8S3doi8po/ByyIMlZgiajZY0EzaLCWA93tThbR6taP07Z3hiexnl7DAVov7
+         MonYnODaKpKU9CoWy/MTR46xUUvmQ+JWvbVeS5oPMgHpPFQEkPKW1VHXsr9iOceJM/
+         6vp7Z/we7KIFY3sCIMhbgdjPIXF03LmlbyMRDbLfsG/0XTIckGwp53Bncpy1cGrMQk
+         CJjXycNkd+CMCHpLEQ+ELXi3JogoUsfK5OCHZS6+7Nx/3OlKuz3OG2JHOcmwOO0e7y
+         GCTkkmovrGX7zK0zC4RGB3gcTZfgld58WmNXuWk49R/Mux0LsrIG2KPxNRt5AuYoDs
+         iUv4EkTOCOK2A==
+Date:   Tue, 24 Aug 2021 12:02:39 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Ariel Elior <aelior@marvell.com>,
+        Sudarsana Kalluru <skalluru@marvell.com>,
+        GR-everest-linux-l2@marvell.com, Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH 06/12] bnx2x: Search VPD with
+ pci_vpd_find_ro_info_keyword()
+Message-ID: <20210824170239.GA3477243@bjorn-Precision-5520>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210824165253.1691315-1-dqfext@gmail.com>
+In-Reply-To: <a9f730cf-e31e-902b-7b39-0ff2e99636e0@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 25, 2021 at 12:52:52AM +0800, DENG Qingfang wrote:
-> The driver was relying on dsa_slave_vlan_rx_add_vid to add VLAN ID 0. After
-> the blamed commit, VLAN ID 0 won't be set up anymore, breaking software
-> bridging fallback on VLAN-unaware bridges.
+On Sun, Aug 22, 2021 at 03:54:23PM +0200, Heiner Kallweit wrote:
+> Use pci_vpd_find_ro_info_keyword() to search for keywords in VPD to
+> simplify the code.
 > 
-> Manually set up VLAN ID 0 to fix this.
-> 
-> Fixes: 06cfb2df7eb0 ("net: dsa: don't advertise 'rx-vlan-filter' when not needed")
-> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+> str_id_reg and str_id_cap hold the same string and are used in the same
+> comparison. This doesn't make sense, use one string str_id instead.
+
+str_id_reg is printed with "%04x" (lower-case hex letters) and
+str_id_cap with "%04X" (upper-case hex letters), so the previous code
+would match either 0xabcd or 0xABCD.  After this patch, we'd match
+only the latter.
+
+PCI_VENDOR_ID_DELL is 0x1028, so it shouldn't make any difference,
+which makes me wonder why somebody bothered with both.
+
+But it does seem like a potential landmine to change the case
+sensitivity.  Maybe strncasecmp() instead?
+
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 > ---
-
-I understand that this is how you noticed the issue, but please remember
-that one can always compile a kernel with CONFIG_VLAN_8021Q=n. So the
-issue predates my patch by much longer. You might reconsider the Fixes:
-tag in light of this, maybe the patch needs to be sent to stable.
-
->  drivers/net/dsa/mt7530.c | 25 +++++++++++++++++++++++++
->  drivers/net/dsa/mt7530.h |  2 ++
->  2 files changed, 27 insertions(+)
+>  .../net/ethernet/broadcom/bnx2x/bnx2x_main.c  | 57 +++++--------------
+>  1 file changed, 15 insertions(+), 42 deletions(-)
 > 
-> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-> index d757d9dcba51..d0cba2d1cd68 100644
-> --- a/drivers/net/dsa/mt7530.c
-> +++ b/drivers/net/dsa/mt7530.c
-> @@ -1599,6 +1599,21 @@ mt7530_hw_vlan_update(struct mt7530_priv *priv, u16 vid,
->  	mt7530_vlan_cmd(priv, MT7530_VTCR_WR_VID, vid);
->  }
+> diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+> index 0466adf8d..2c7bfc416 100644
+> --- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+> +++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+> @@ -12189,11 +12189,10 @@ static int bnx2x_get_hwinfo(struct bnx2x *bp)
 >  
-> +static int
-> +mt7530_setup_vlan0(struct mt7530_priv *priv)
-> +{
-> +	u32 val;
-> +
-> +	/* Validate the entry with independent learning, keep the original
-> +	 * ingress tag attribute.
-> +	 */
-> +	val = IVL_MAC | EG_CON | PORT_MEM(MT7530_ALL_MEMBERS) | FID(FID_BRIDGED) |
-
-FID_BRIDGED?
-
-> +	      VLAN_VALID;
-> +	mt7530_write(priv, MT7530_VAWD1, val);
-> +
-> +	return mt7530_vlan_cmd(priv, MT7530_VTCR_WR_VID, 0);
-> +}
-> +
->  static int
->  mt7530_port_vlan_add(struct dsa_switch *ds, int port,
->  		     const struct switchdev_obj_port_vlan *vlan,
-> @@ -2174,6 +2189,11 @@ mt7530_setup(struct dsa_switch *ds)
->  			   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
+>  static void bnx2x_read_fwinfo(struct bnx2x *bp)
+>  {
+> -	int i, block_end, rodi;
+> -	char str_id_reg[VENDOR_ID_LEN+1];
+> -	char str_id_cap[VENDOR_ID_LEN+1];
+> -	unsigned int vpd_len;
+> -	u8 *vpd_data, len;
+> +	char str_id[VENDOR_ID_LEN + 1];
+> +	unsigned int vpd_len, kw_len;
+> +	u8 *vpd_data;
+> +	int rodi;
+>  
+>  	memset(bp->fw_ver, 0, sizeof(bp->fw_ver));
+>  
+> @@ -12201,46 +12200,20 @@ static void bnx2x_read_fwinfo(struct bnx2x *bp)
+>  	if (IS_ERR(vpd_data))
+>  		return;
+>  
+> -	/* VPD RO tag should be first tag after identifier string, hence
+> -	 * we should be able to find it in first BNX2X_VPD_LEN chars
+> -	 */
+> -	i = pci_vpd_find_tag(vpd_data, vpd_len, PCI_VPD_LRDT_RO_DATA);
+> -	if (i < 0)
+> -		goto out_not_found;
+> -
+> -	block_end = i + PCI_VPD_LRDT_TAG_SIZE +
+> -		    pci_vpd_lrdt_size(&vpd_data[i]);
+> -	i += PCI_VPD_LRDT_TAG_SIZE;
+> -
+> -	rodi = pci_vpd_find_info_keyword(vpd_data, i, block_end,
+> -				   PCI_VPD_RO_KEYWORD_MFR_ID);
+> -	if (rodi < 0)
+> -		goto out_not_found;
+> -
+> -	len = pci_vpd_info_field_size(&vpd_data[rodi]);
+> -
+> -	if (len != VENDOR_ID_LEN)
+> +	rodi = pci_vpd_find_ro_info_keyword(vpd_data, vpd_len,
+> +					    PCI_VPD_RO_KEYWORD_MFR_ID, &kw_len);
+> +	if (rodi < 0 || kw_len != VENDOR_ID_LEN)
+>  		goto out_not_found;
+>  
+> -	rodi += PCI_VPD_INFO_FLD_HDR_SIZE;
+> -
+>  	/* vendor specific info */
+> -	snprintf(str_id_reg, VENDOR_ID_LEN + 1, "%04x", PCI_VENDOR_ID_DELL);
+> -	snprintf(str_id_cap, VENDOR_ID_LEN + 1, "%04X", PCI_VENDOR_ID_DELL);
+> -	if (!strncmp(str_id_reg, &vpd_data[rodi], VENDOR_ID_LEN) ||
+> -	    !strncmp(str_id_cap, &vpd_data[rodi], VENDOR_ID_LEN)) {
+> -
+> -		rodi = pci_vpd_find_info_keyword(vpd_data, i, block_end,
+> -						PCI_VPD_RO_KEYWORD_VENDOR0);
+> -		if (rodi >= 0) {
+> -			len = pci_vpd_info_field_size(&vpd_data[rodi]);
+> -
+> -			rodi += PCI_VPD_INFO_FLD_HDR_SIZE;
+> -
+> -			if (len < 32 && (len + rodi) <= vpd_len) {
+> -				memcpy(bp->fw_ver, &vpd_data[rodi], len);
+> -				bp->fw_ver[len] = ' ';
+> -			}
+> +	snprintf(str_id, VENDOR_ID_LEN + 1, "%04X", PCI_VENDOR_ID_DELL);
+> +	if (!strncmp(str_id, &vpd_data[rodi], VENDOR_ID_LEN)) {
+> +		rodi = pci_vpd_find_ro_info_keyword(vpd_data, vpd_len,
+> +						    PCI_VPD_RO_KEYWORD_VENDOR0,
+> +						    &kw_len);
+> +		if (rodi >= 0 && kw_len < sizeof(bp->fw_ver)) {
+> +			memcpy(bp->fw_ver, &vpd_data[rodi], kw_len);
+> +			bp->fw_ver[kw_len] = ' ';
+>  		}
 >  	}
->  
-> +	/* Setup VLAN ID 0 for VLAN-unaware bridges */
-> +	ret = mt7530_setup_vlan0(priv);
-> +	if (ret)
-> +		return ret;
-> +
->  	/* Setup port 5 */
->  	priv->p5_intf_sel = P5_DISABLED;
->  	interface = PHY_INTERFACE_MODE_NA;
-> @@ -2346,6 +2366,11 @@ mt7531_setup(struct dsa_switch *ds)
->  			   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
->  	}
->  
-> +	/* Setup VLAN ID 0 for VLAN-unaware bridges */
-> +	ret = mt7530_setup_vlan0(priv);
-> +	if (ret)
-> +		return ret;
-> +
->  	ds->assisted_learning_on_cpu_port = true;
->  	ds->mtu_enforcement_ingress = true;
->  
-> diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
-> index fe4cd2ac26d0..91508e2feef9 100644
-> --- a/drivers/net/dsa/mt7530.h
-> +++ b/drivers/net/dsa/mt7530.h
-> @@ -145,6 +145,8 @@ enum mt7530_vlan_cmd {
->  #define  PORT_STAG			BIT(31)
->  /* Independent VLAN Learning */
->  #define  IVL_MAC			BIT(30)
-> +/* Egress Tag Consistent */
-> +#define  EG_CON				BIT(29)
->  /* Per VLAN Egress Tag Control */
->  #define  VTAG_EN			BIT(28)
->  /* VLAN Member Control */
+>  out_not_found:
 > -- 
-> 2.25.1
+> 2.33.0
+> 
 > 
