@@ -2,38 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85E5B3F54B7
-	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 02:55:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 943373F54BD
+	for <lists+netdev@lfdr.de>; Tue, 24 Aug 2021 02:55:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234287AbhHXA42 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Aug 2021 20:56:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48470 "EHLO mail.kernel.org"
+        id S234433AbhHXA4a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Aug 2021 20:56:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47872 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234352AbhHXAza (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Aug 2021 20:55:30 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1BA0B613A7;
-        Tue, 24 Aug 2021 00:54:41 +0000 (UTC)
+        id S233930AbhHXAze (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Aug 2021 20:55:34 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D3A9C61503;
+        Tue, 24 Aug 2021 00:54:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629766482;
-        bh=wcH7vU2eTeQRAkcXC8NdS1JplMlqCQXC0XZMfkTE6z0=;
+        s=k20201202; t=1629766484;
+        bh=yYIXePsMDMr4LSqP3OftBiaHJtUfw08euqDDpGm+8Og=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EBGSSXtrdCxbP6E2V3LcpbxzcBE99cdyjobvg85Sm8UaUFtjjAVYSnNyKVojI+eLx
-         s9VSGnuPrU1QGewOb8Ogw38BXo+ZIubSeq2Q9OJ/67o8FbbVYg+njTF9dpCPUy4E/M
-         W5wtip6bIvvyhnmjeLxESjFrgOZPJpjO4H00vttxE4QUO/4QjXt8wH8IthnAL9mJNU
-         u9n7c7OATF8nFIaVbl/SZaRviakWrO1b2E1mw4zzOkiStM9PtCCalVFousrFq5NI0t
-         SPWNYV1ZZgXXud9fqtC4cN+SntvbO3MRjQaorzdv+X4n5qDpLfCN1U84I+GrSqrcgo
-         UThdEl3IjP0NQ==
+        b=I397uiT69JpNl+Q7+b06a8ryRpVeT3cSoVLAzqfxq5Ly+uvB2qShsquGYGoyROUmW
+         Vea19KUkMfOT5rTPq1OHi19oCW3F15CQylZKjtPpIyJg8QVYsBJEqeMqIva/Fq9hG2
+         ycDieYF8263R3RilfPuB0MH5gP9E44c686pBP/SCqlHKcalANtlR99Azgb7lBmLyps
+         VsbYXhcjYiSn535P3rZ8RU0/DUC8y7umxgAZ74IUqG3EkTVrhOV8wPQs8gPeZUcoxy
+         Ed6MlJDo/C3sFUcWY1Hz8cQGjbenm777mNpRyHW9217yKrSYp4+IK2Vqj74CtqnLCQ
+         nUP/Pb6G0QYew==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Neeraj Upadhyay <neeraju@codeaurora.org>,
-        Jason Wang <jasowang@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 07/18] vringh: Use wiov->used to check for read/write desc order
-Date:   Mon, 23 Aug 2021 20:54:21 -0400
-Message-Id: <20210824005432.631154-7-sashal@kernel.org>
+Cc:     Shai Malin <smalin@marvell.com>, Ariel Elior <aelior@marvell.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 09/18] qed: qed ll2 race condition fixes
+Date:   Mon, 23 Aug 2021 20:54:23 -0400
+Message-Id: <20210824005432.631154-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210824005432.631154-1-sashal@kernel.org>
 References: <20210824005432.631154-1-sashal@kernel.org>
@@ -45,48 +42,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Neeraj Upadhyay <neeraju@codeaurora.org>
+From: Shai Malin <smalin@marvell.com>
 
-[ Upstream commit e74cfa91f42c50f7f649b0eca46aa049754ccdbd ]
+[ Upstream commit 37110237f31105d679fc0aa7b11cdec867750ea7 ]
 
-As __vringh_iov() traverses a descriptor chain, it populates
-each descriptor entry into either read or write vring iov
-and increments that iov's ->used member. So, as we iterate
-over a descriptor chain, at any point, (riov/wriov)->used
-value gives the number of descriptor enteries available,
-which are to be read or written by the device. As all read
-iovs must precede the write iovs, wiov->used should be zero
-when we are traversing a read descriptor. Current code checks
-for wiov->i, to figure out whether any previous entry in the
-current descriptor chain was a write descriptor. However,
-iov->i is only incremented, when these vring iovs are consumed,
-at a later point, and remain 0 in __vringh_iov(). So, correct
-the check for read and write descriptor order, to use
-wiov->used.
+Avoiding qed ll2 race condition and NULL pointer dereference as part
+of the remove and recovery flows.
 
-Acked-by: Jason Wang <jasowang@redhat.com>
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
-Signed-off-by: Neeraj Upadhyay <neeraju@codeaurora.org>
-Link: https://lore.kernel.org/r/1624591502-4827-1-git-send-email-neeraju@codeaurora.org
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Changes form V1:
+- Change (!p_rx->set_prod_addr).
+- qed_ll2.c checkpatch fixes.
+
+Change from V2:
+- Revert "qed_ll2.c checkpatch fixes".
+
+Signed-off-by: Ariel Elior <aelior@marvell.com>
+Signed-off-by: Shai Malin <smalin@marvell.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vhost/vringh.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/qlogic/qed/qed_ll2.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
-index b7403ba8e7f7..0bd7e64331f0 100644
---- a/drivers/vhost/vringh.c
-+++ b/drivers/vhost/vringh.c
-@@ -341,7 +341,7 @@ __vringh_iov(struct vringh *vrh, u16 i,
- 			iov = wiov;
- 		else {
- 			iov = riov;
--			if (unlikely(wiov && wiov->i)) {
-+			if (unlikely(wiov && wiov->used)) {
- 				vringh_bad("Readable desc %p after writable",
- 					   &descs[i]);
- 				err = -EINVAL;
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_ll2.c b/drivers/net/ethernet/qlogic/qed/qed_ll2.c
+index 49783f365079..f2c8273dce67 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_ll2.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_ll2.c
+@@ -327,6 +327,9 @@ static int qed_ll2_txq_completion(struct qed_hwfn *p_hwfn, void *p_cookie)
+ 	unsigned long flags;
+ 	int rc = -EINVAL;
+ 
++	if (!p_ll2_conn)
++		return rc;
++
+ 	spin_lock_irqsave(&p_tx->lock, flags);
+ 	if (p_tx->b_completing_packet) {
+ 		rc = -EBUSY;
+@@ -500,7 +503,16 @@ static int qed_ll2_rxq_completion(struct qed_hwfn *p_hwfn, void *cookie)
+ 	unsigned long flags = 0;
+ 	int rc = 0;
+ 
++	if (!p_ll2_conn)
++		return rc;
++
+ 	spin_lock_irqsave(&p_rx->lock, flags);
++
++	if (!QED_LL2_RX_REGISTERED(p_ll2_conn)) {
++		spin_unlock_irqrestore(&p_rx->lock, flags);
++		return 0;
++	}
++
+ 	cq_new_idx = le16_to_cpu(*p_rx->p_fw_cons);
+ 	cq_old_idx = qed_chain_get_cons_idx(&p_rx->rcq_chain);
+ 
+@@ -821,6 +833,9 @@ static int qed_ll2_lb_rxq_completion(struct qed_hwfn *p_hwfn, void *p_cookie)
+ 	struct qed_ll2_info *p_ll2_conn = (struct qed_ll2_info *)p_cookie;
+ 	int rc;
+ 
++	if (!p_ll2_conn)
++		return 0;
++
+ 	if (!QED_LL2_RX_REGISTERED(p_ll2_conn))
+ 		return 0;
+ 
+@@ -844,6 +859,9 @@ static int qed_ll2_lb_txq_completion(struct qed_hwfn *p_hwfn, void *p_cookie)
+ 	u16 new_idx = 0, num_bds = 0;
+ 	int rc;
+ 
++	if (!p_ll2_conn)
++		return 0;
++
+ 	if (!QED_LL2_TX_REGISTERED(p_ll2_conn))
+ 		return 0;
+ 
+@@ -1725,6 +1743,8 @@ int qed_ll2_post_rx_buffer(void *cxt,
+ 	if (!p_ll2_conn)
+ 		return -EINVAL;
+ 	p_rx = &p_ll2_conn->rx_queue;
++	if (!p_rx->set_prod_addr)
++		return -EIO;
+ 
+ 	spin_lock_irqsave(&p_rx->lock, flags);
+ 	if (!list_empty(&p_rx->free_descq))
 -- 
 2.30.2
 
