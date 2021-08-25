@@ -2,120 +2,518 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10C9D3F7E09
-	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 00:02:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 854673F7E26
+	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 00:19:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233792AbhHYVyJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 17:54:09 -0400
-Received: from mail-eopbgr00132.outbound.protection.outlook.com ([40.107.0.132]:48611
-        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229707AbhHYVyI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Aug 2021 17:54:08 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CH529VG7k0BXO5froUG9TyxAKLWvmC03QO4/ZMEcUEn+uP5DBn0v13ke0eVuJwyQz3A0P+x+oJ31MQHJnTi9mfpps/X59vw26Cl8K0HTYfj9mVRFf9FtNgT6zm/EV3qQlZddtDk8Q+FI60MB/87WUjY+bkimTPNCG3yTtp1xnwus2JkyPs6iIE4X8bVPhEH6jCTtR+R0XGaxn8gZwk5+Jl3ItObL7G6q4Aobt8Ssrpd+IA+WugS83BMGpfwRi4f8XFV2DcqEdw1pbbqT8hd1Zo9HDa5W8mlcVNhs3zck/iVwXqC1hMMKUtU4uHt6ay4dt2y8yWPfPPewCWRpX7FqlA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5BtOpUdW+JaHWG5tH1USJRKSPORFjaePfcrEOGDsQGk=;
- b=Hj2+4r5Q/RprqZoGG+gi+oU6NIWm63tZrGQSQpqVAQ3FMLjTmGCNf16cXO+AeHXi1bKacsy/r3KkN0uiqylOFwLOPGdytbbFCnr74nv5QdUSlatGYtcktvimfWNtGflZwXLEo4fXvFhdQ5nOliKEJzON+lGFDPwAzizin+Ydoa6+Nez/DGtDb4svAQkCt2lIzba4vMBjrj3xF9+gO1UHX0Brttiw0IGxHJSJGNJgJ1wO3zEdcGIskeGlUc0bwZV2WLWcK8EjyHz9L/DCW1qniHG4EV0LRqdKJR46Z5hcIwncXhRHW+B1wtD3lKpnRPdC/wo4/in7rTWgkMK9qVyxiA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 81.14.233.218) smtp.rcpttodomain=esd.eu smtp.mailfrom=esd.eu;
- dmarc=bestguesspass action=none header.from=esd.eu; dkim=none (message not
- signed); arc=none
+        id S234564AbhHYWFi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 18:05:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33320 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229707AbhHYWFi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 18:05:38 -0400
+Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFFF7C061757;
+        Wed, 25 Aug 2021 15:04:51 -0700 (PDT)
+Received: by mail-qk1-x72b.google.com with SMTP id e14so1167329qkg.3;
+        Wed, 25 Aug 2021 15:04:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=esdhannover.onmicrosoft.com; s=selector1-esdhannover-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5BtOpUdW+JaHWG5tH1USJRKSPORFjaePfcrEOGDsQGk=;
- b=Yt4KYwdQBtAoqHajB+cJWjR22o4UZpgh6TkBXn3dkiLTWEtpHJ/D/85ruGO+G7NcS2LGyaHlj8BrOw4aP9U2gU32FnEyFP9KP8FTqHMcl3Y3hJmD3jeArKdd+mMImzMmvR4T67UVnZ7rDAFAm/hC8PVYMOr/46MvJmfPlqBbw7c=
-Received: from FR3P281CA0034.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10:1c::20)
- by AS8PR03MB7448.eurprd03.prod.outlook.com (2603:10a6:20b:293::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.22; Wed, 25 Aug
- 2021 21:53:20 +0000
-Received: from VI1EUR06FT054.eop-eur06.prod.protection.outlook.com
- (2603:10a6:d10:1c:cafe::cb) by FR3P281CA0034.outlook.office365.com
- (2603:10a6:d10:1c::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4457.6 via Frontend
- Transport; Wed, 25 Aug 2021 21:53:19 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 81.14.233.218)
- smtp.mailfrom=esd.eu; esd.eu; dkim=none (message not signed)
- header.d=none;esd.eu; dmarc=bestguesspass action=none header.from=esd.eu;
-Received-SPF: Pass (protection.outlook.com: domain of esd.eu designates
- 81.14.233.218 as permitted sender) receiver=protection.outlook.com;
- client-ip=81.14.233.218; helo=esd-s7.esd;
-Received: from esd-s7.esd (81.14.233.218) by
- VI1EUR06FT054.mail.protection.outlook.com (10.13.6.124) with Microsoft SMTP
- Server id 15.20.4457.17 via Frontend Transport; Wed, 25 Aug 2021 21:53:19
- +0000
-Received: from esd-s9.esd.local (unknown [10.0.0.190])
-        by esd-s7.esd (Postfix) with ESMTP id 8BAB57C16C5;
-        Wed, 25 Aug 2021 23:53:19 +0200 (CEST)
-Received: by esd-s9.esd.local (Postfix, from userid 2044)
-        id 889E3E00E4; Wed, 25 Aug 2021 23:53:19 +0200 (CEST)
-From:   =?UTF-8?q?Stefan=20M=C3=A4tje?= <stefan.maetje@esd.eu>
-To:     linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>, netdev@vger.kernel.org,
-        =?UTF-8?q?Stefan=20M=C3=A4tje?= <stefan.maetje@esd.eu>
-Subject: [PATCH 1/1] can: usb: esd_usb2: Fix the interchange of the CAN RX and TX error counters.
-Date:   Wed, 25 Aug 2021 23:52:27 +0200
-Message-Id: <20210825215227.4947-2-stefan.maetje@esd.eu>
-X-Mailer: git-send-email 2.19.2
-In-Reply-To: <20210825215227.4947-1-stefan.maetje@esd.eu>
-References: <20210825215227.4947-1-stefan.maetje@esd.eu>
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=AF94OSzEcYXYBvqkvRu82PPdBBMSfKvS7av3vEYPGxI=;
+        b=SSURKh+u9fP+PC9A7d2VRXFxOHGW+wpsrTh2w0N6wcQ7p/BIaEaas+qUEIO4hlz29c
+         RBlF1Dk2EcXMcBS/QGz1Cg3TCnhYqtQlyk8ra48CXZBLQV5eNBKRBOIXMzxu4YfdBqo7
+         2qcOf9Z5pE5CpfzHr9gw3+MlddIwRjc3wYEcx6bxRzJqn5M8UDI3O0XjlUoBQgKezJgl
+         ZskFFyxYSwtgQJdTROyUf95FLpGbehdnlixNCWRVyvjFCm0dSn15Ka8IJNmnoj4dOb4J
+         O7SBPPtRHk5DLsCIbbnkyERKlmE4rnbZ2PbIF+3/kny3TbTMvwUnLFbJMP6PyH8UJ3Pc
+         rpgA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=AF94OSzEcYXYBvqkvRu82PPdBBMSfKvS7av3vEYPGxI=;
+        b=ENr1quqL8bv3ZZPxDIBMJmbvcy9NjgyIt+2z18FHL1BTpx2MSAPrtRez3LFntScXHi
+         yzTxJa5/+wB3ph5OETdqRFbMI74dB3/FZrSWqPHrp5jbibcoi5Q5VJbUfRS0t50d2j2u
+         rtbd0RgQ70I1hqbD02BY+PyMWu1qPec1LKHDjh5WgtwR7q0Nh9kOlt0Ax2MlAVhnMKfO
+         Bu9T5pbVPQOuQr1qrTmD5kLzbdHanIm/q47E+TTev7wovLyXzecmenZLCU7DTU1XJvvj
+         ghun56DBH9hZPadyYfikqYcwc4c+0jqbZqXgL60VfKIrS5fGjxYLe7iQYpt2gw8x4CX9
+         rNww==
+X-Gm-Message-State: AOAM5339uv+n3N0l5CIvR2//17OGN92rkeLIOKYgyKmivl22/bC33GZQ
+        qyekei4KDZs06arxuBIpUc8bhkSfwKnUIxzQ
+X-Google-Smtp-Source: ABdhPJyHlj9bkJyi/Uz9biI+pE8doAnc8ZBEZ7vXV4B61kCtWeIZilajw3lt6RVXlendresi2SzP7w==
+X-Received: by 2002:a05:620a:1525:: with SMTP id n5mr774152qkk.386.1629929090843;
+        Wed, 25 Aug 2021 15:04:50 -0700 (PDT)
+Received: from errol.ini.cmu.edu (pool-71-112-192-175.pitbpa.fios.verizon.net. [71.112.192.175])
+        by smtp.gmail.com with ESMTPSA id i27sm962589qkl.111.2021.08.25.15.04.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Aug 2021 15:04:50 -0700 (PDT)
+Date:   Wed, 25 Aug 2021 18:04:47 -0400
+From:   "Gabriel L. Somlo" <gsomlo@gmail.com>
+To:     Joel Stanley <joel@jms.id.au>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        devicetree@vger.kernel.org,
+        Florent Kermarrec <florent@enjoy-digital.fr>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        David Shah <dave@ds0.me>, Stafford Horne <shorne@gmail.com>
+Subject: Re: [PATCH v3 2/2] net: Add driver for LiteX's LiteETH network
+ interface
+Message-ID: <YSa+f7yeE4ZGQiuX@errol.ini.cmu.edu>
+References: <20210825124655.3104348-1-joel@jms.id.au>
+ <20210825124655.3104348-3-joel@jms.id.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f6fd9878-3859-442a-228c-08d96812c086
-X-MS-TrafficTypeDiagnostic: AS8PR03MB7448:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AS8PR03MB74488E85AE1DEE799A2D108E81C69@AS8PR03MB7448.eurprd03.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 4bKLPF7kR3hFQahmfKoUwR1Nm6TQeQqRWvtsHUJWQhCGcgjbEgaqUHCY8UyGjJCLSRFQnpQPy3fd9i/Ia+ATfCZZkqihnmdcIiF7R9JS1PzrdPru+YEHmG1DITbePae7dZbSQqG9hb9/wFTv7V4eCwxuwUTdJA/1aJ0F7ZGNH79IipuZfgvsgYnEhAciUhkKs5vtSpR/R6zVeAGnRVISJ1DC1qrDAgHvw1BwOpMcAKYW87wh6My9Rwpnl/yVWVjXYrQ188DLbaavurQl5+1W7IyT4xTlWFn9USmk4N115DFu330wxGj1W/xSYVyr2qfRBj6Ra0c1RGZMPTQ49KXepbC903YqKnpAjRFqZfjFtDkNtpOk1CTCAtWCahuHZwHfBI3exvSvXDD4P9ew44XTEn08BeLtiemzNLjhTrCoeoGFPyAlXm15QCoYQzKaEEFWv3Bpfj74AUCSBkaekh51ar/KmGct93Z6bHZAbWmPg0akv4OjKp5v5rW+iWzdbaXKFw+1FV0uJCbbyHLGOynSKJfyGyEIf3egfCIrgsnZlwrVjwgDJr7fMbGAzqymxlWMmluvds4TYP5yNGCmBwmp7jjqhAjQDKL6KE33Tg6fClaaNHHf2qaSDRj+FvM/Y7FVxLU1E1Rleuj/u6Hr+LIzLtbcteRnnIWEf3eID+2gMtBe/1NrFG/aBqmyCE3ey4uNjZAtzIV1lOI5BWbSj/B0dA==
-X-Forefront-Antispam-Report: CIP:81.14.233.218;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:esd-s7.esd;PTR:a81-14-233-218.net-htp.de;CAT:NONE;SFS:(39840400004)(376002)(346002)(136003)(396003)(46966006)(36840700001)(336012)(26005)(186003)(6266002)(86362001)(82310400003)(47076005)(36860700001)(83380400001)(1076003)(2616005)(2906002)(4744005)(4326008)(316002)(8936002)(8676002)(5660300002)(70206006)(36756003)(6666004)(42186006)(478600001)(6916009)(54906003)(356005)(70586007)(81166007);DIR:OUT;SFP:1102;
-X-OriginatorOrg: esd.eu
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Aug 2021 21:53:19.7462
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f6fd9878-3859-442a-228c-08d96812c086
-X-MS-Exchange-CrossTenant-Id: 5a9c3a1d-52db-4235-b74c-9fd851db2e6b
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=5a9c3a1d-52db-4235-b74c-9fd851db2e6b;Ip=[81.14.233.218];Helo=[esd-s7.esd]
-X-MS-Exchange-CrossTenant-AuthSource: VI1EUR06FT054.eop-eur06.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR03MB7448
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210825124655.3104348-3-joel@jms.id.au>
+X-Clacks-Overhead: GNU Terry Pratchett
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes the interchanged fetch of the CAN RX and TX error counters
-from the ESD_EV_CAN_ERROR_EXT message. The RX error counter is really in
-struct rx_msg::data[2] and the TX error counter is in struct rx_msg::data[3].
+On Wed, Aug 25, 2021 at 10:16:55PM +0930, Joel Stanley wrote:
+> LiteX is a soft system-on-chip that targets FPGAs. LiteETH is a basic
+> network device that is commonly used in LiteX designs.
+> 
+> The driver was first written in 2017 and has been maintained by the
+> LiteX community in various trees. Thank you to all who have contributed.
+> 
+> Co-developed-by: Gabriel Somlo <gsomlo@gmail.com>
+> Co-developed-by: David Shah <dave@ds0.me>
+> Co-developed-by: Stafford Horne <shorne@gmail.com>
+> Signed-off-by: Joel Stanley <joel@jms.id.au>
+> ---
+> v2:
+>  - check for bad len in liteeth_rx before getting skb
+>  - use netdev_alloc_skb_ip_align
+>  - remove unused duplex/speed and mii_bus variables
+>  - set carrier off when stopping device
+>  - increment packet count in the same place as bytes
+>  - fix error return code when irq could not be found
+>  - remove request of mdio base address until it is used
+>  - fix of_property_read line wrapping/alignment
+>  - only check that reader isn't busy, and then send off next packet
+>  - drop third reset
+>  - Add an description to the kconfig text
+>  - stop tx queue when busy and re-start after tx complete irq fires
+>  - use litex accessors to support big endain socs
+>  - clean up unused includes
+>  - use standard fifo-depth properties, which are in bytes
+> v3:
+>  - make fifo helper static
+>  - fix error messages about invalid slot sizes
+>  - use slot size from device tree instead of inferring it
+>  - update to match the latest version of the bindings, which describes
+>    the number of slots
 
-Signed-off-by: Stefan Mätje <stefan.maetje@esd.eu>
----
- drivers/net/can/usb/esd_usb2.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+LGTM -- thanks!
 
-diff --git a/drivers/net/can/usb/esd_usb2.c b/drivers/net/can/usb/esd_usb2.c
-index 7370981e9b34..c6068a251fbe 100644
---- a/drivers/net/can/usb/esd_usb2.c
-+++ b/drivers/net/can/usb/esd_usb2.c
-@@ -224,8 +224,8 @@ static void esd_usb2_rx_event(struct esd_usb2_net_priv *priv,
- 	if (id == ESD_EV_CAN_ERROR_EXT) {
- 		u8 state = msg->msg.rx.data[0];
- 		u8 ecc = msg->msg.rx.data[1];
--		u8 txerr = msg->msg.rx.data[2];
--		u8 rxerr = msg->msg.rx.data[3];
-+		u8 rxerr = msg->msg.rx.data[2];
-+		u8 txerr = msg->msg.rx.data[3];
- 
- 		skb = alloc_can_err_skb(priv->netdev, &cf);
- 		if (skb == NULL) {
--- 
-2.25.1
+Tested-and-reviewed-by: Gabriel Somlo <gsomlo@gmail.com>
 
+> ---
+>  drivers/net/ethernet/Kconfig               |   1 +
+>  drivers/net/ethernet/Makefile              |   1 +
+>  drivers/net/ethernet/litex/Kconfig         |  27 ++
+>  drivers/net/ethernet/litex/Makefile        |   5 +
+>  drivers/net/ethernet/litex/litex_liteeth.c | 317 +++++++++++++++++++++
+>  5 files changed, 351 insertions(+)
+>  create mode 100644 drivers/net/ethernet/litex/Kconfig
+>  create mode 100644 drivers/net/ethernet/litex/Makefile
+>  create mode 100644 drivers/net/ethernet/litex/litex_liteeth.c
+> 
+> diff --git a/drivers/net/ethernet/Kconfig b/drivers/net/ethernet/Kconfig
+> index 1cdff1dca790..d796684ec9ca 100644
+> --- a/drivers/net/ethernet/Kconfig
+> +++ b/drivers/net/ethernet/Kconfig
+> @@ -118,6 +118,7 @@ config LANTIQ_XRX200
+>  	  Support for the PMAC of the Gigabit switch (GSWIP) inside the
+>  	  Lantiq / Intel VRX200 VDSL SoC
+>  
+> +source "drivers/net/ethernet/litex/Kconfig"
+>  source "drivers/net/ethernet/marvell/Kconfig"
+>  source "drivers/net/ethernet/mediatek/Kconfig"
+>  source "drivers/net/ethernet/mellanox/Kconfig"
+> diff --git a/drivers/net/ethernet/Makefile b/drivers/net/ethernet/Makefile
+> index cb3f9084a21b..aaa5078cd7d1 100644
+> --- a/drivers/net/ethernet/Makefile
+> +++ b/drivers/net/ethernet/Makefile
+> @@ -51,6 +51,7 @@ obj-$(CONFIG_JME) += jme.o
+>  obj-$(CONFIG_KORINA) += korina.o
+>  obj-$(CONFIG_LANTIQ_ETOP) += lantiq_etop.o
+>  obj-$(CONFIG_LANTIQ_XRX200) += lantiq_xrx200.o
+> +obj-$(CONFIG_NET_VENDOR_LITEX) += litex/
+>  obj-$(CONFIG_NET_VENDOR_MARVELL) += marvell/
+>  obj-$(CONFIG_NET_VENDOR_MEDIATEK) += mediatek/
+>  obj-$(CONFIG_NET_VENDOR_MELLANOX) += mellanox/
+> diff --git a/drivers/net/ethernet/litex/Kconfig b/drivers/net/ethernet/litex/Kconfig
+> new file mode 100644
+> index 000000000000..265dba414b41
+> --- /dev/null
+> +++ b/drivers/net/ethernet/litex/Kconfig
+> @@ -0,0 +1,27 @@
+> +#
+> +# LiteX device configuration
+> +#
+> +
+> +config NET_VENDOR_LITEX
+> +	bool "LiteX devices"
+> +	default y
+> +	help
+> +	  If you have a network (Ethernet) card belonging to this class, say Y.
+> +
+> +	  Note that the answer to this question doesn't directly affect the
+> +	  kernel: saying N will just cause the configurator to skip all
+> +	  the questions about LiteX devices. If you say Y, you will be asked
+> +	  for your specific card in the following questions.
+> +
+> +if NET_VENDOR_LITEX
+> +
+> +config LITEX_LITEETH
+> +	tristate "LiteX Ethernet support"
+> +	help
+> +	  If you wish to compile a kernel for hardware with a LiteX LiteEth
+> +	  device then you should answer Y to this.
+> +
+> +	  LiteX is a soft system-on-chip that targets FPGAs. LiteETH is a basic
+> +	  network device that is commonly used in LiteX designs.
+> +
+> +endif # NET_VENDOR_LITEX
+> diff --git a/drivers/net/ethernet/litex/Makefile b/drivers/net/ethernet/litex/Makefile
+> new file mode 100644
+> index 000000000000..9343b73b8e49
+> --- /dev/null
+> +++ b/drivers/net/ethernet/litex/Makefile
+> @@ -0,0 +1,5 @@
+> +#
+> +# Makefile for the LiteX network device drivers.
+> +#
+> +
+> +obj-$(CONFIG_LITEX_LITEETH) += litex_liteeth.o
+> diff --git a/drivers/net/ethernet/litex/litex_liteeth.c b/drivers/net/ethernet/litex/litex_liteeth.c
+> new file mode 100644
+> index 000000000000..10e6f2dedfad
+> --- /dev/null
+> +++ b/drivers/net/ethernet/litex/litex_liteeth.c
+> @@ -0,0 +1,317 @@
+> +// SPDX-License-Identifier: GPL-2.0-or-later
+> +/*
+> + * LiteX Liteeth Ethernet
+> + *
+> + * Copyright 2017 Joel Stanley <joel@jms.id.au>
+> + *
+> + */
+> +
+> +#include <linux/etherdevice.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/litex.h>
+> +#include <linux/module.h>
+> +#include <linux/of_net.h>
+> +#include <linux/platform_device.h>
+> +
+> +#define LITEETH_WRITER_SLOT       0x00
+> +#define LITEETH_WRITER_LENGTH     0x04
+> +#define LITEETH_WRITER_ERRORS     0x08
+> +#define LITEETH_WRITER_EV_STATUS  0x0C
+> +#define LITEETH_WRITER_EV_PENDING 0x10
+> +#define LITEETH_WRITER_EV_ENABLE  0x14
+> +#define LITEETH_READER_START      0x18
+> +#define LITEETH_READER_READY      0x1C
+> +#define LITEETH_READER_LEVEL      0x20
+> +#define LITEETH_READER_SLOT       0x24
+> +#define LITEETH_READER_LENGTH     0x28
+> +#define LITEETH_READER_EV_STATUS  0x2C
+> +#define LITEETH_READER_EV_PENDING 0x30
+> +#define LITEETH_READER_EV_ENABLE  0x34
+> +#define LITEETH_PREAMBLE_CRC      0x38
+> +#define LITEETH_PREAMBLE_ERRORS   0x3C
+> +#define LITEETH_CRC_ERRORS        0x40
+> +
+> +#define LITEETH_PHY_CRG_RESET     0x00
+> +#define LITEETH_MDIO_W            0x04
+> +#define LITEETH_MDIO_R            0x0C
+> +
+> +#define DRV_NAME	"liteeth"
+> +
+> +struct liteeth {
+> +	void __iomem *base;
+> +	struct net_device *netdev;
+> +	struct device *dev;
+> +	u32 slot_size;
+> +
+> +	/* Tx */
+> +	u32 tx_slot;
+> +	u32 num_tx_slots;
+> +	void __iomem *tx_base;
+> +
+> +	/* Rx */
+> +	u32 rx_slot;
+> +	u32 num_rx_slots;
+> +	void __iomem *rx_base;
+> +};
+> +
+> +static int liteeth_rx(struct net_device *netdev)
+> +{
+> +	struct liteeth *priv = netdev_priv(netdev);
+> +	struct sk_buff *skb;
+> +	unsigned char *data;
+> +	u8 rx_slot;
+> +	int len;
+> +
+> +	rx_slot = litex_read8(priv->base + LITEETH_WRITER_SLOT);
+> +	len = litex_read32(priv->base + LITEETH_WRITER_LENGTH);
+> +
+> +	if (len == 0 || len > 2048)
+> +		goto rx_drop;
+> +
+> +	skb = netdev_alloc_skb_ip_align(netdev, len);
+> +	if (!skb) {
+> +		netdev_err(netdev, "couldn't get memory\n");
+> +		goto rx_drop;
+> +	}
+> +
+> +	data = skb_put(skb, len);
+> +	memcpy_fromio(data, priv->rx_base + rx_slot * priv->slot_size, len);
+> +	skb->protocol = eth_type_trans(skb, netdev);
+> +
+> +	netdev->stats.rx_packets++;
+> +	netdev->stats.rx_bytes += len;
+> +
+> +	return netif_rx(skb);
+> +
+> +rx_drop:
+> +	netdev->stats.rx_dropped++;
+> +	netdev->stats.rx_errors++;
+> +
+> +	return NET_RX_DROP;
+> +}
+> +
+> +static irqreturn_t liteeth_interrupt(int irq, void *dev_id)
+> +{
+> +	struct net_device *netdev = dev_id;
+> +	struct liteeth *priv = netdev_priv(netdev);
+> +	u8 reg;
+> +
+> +	reg = litex_read8(priv->base + LITEETH_READER_EV_PENDING);
+> +	if (reg) {
+> +		if (netif_queue_stopped(netdev))
+> +			netif_wake_queue(netdev);
+> +		litex_write8(priv->base + LITEETH_READER_EV_PENDING, reg);
+> +	}
+> +
+> +	reg = litex_read8(priv->base + LITEETH_WRITER_EV_PENDING);
+> +	if (reg) {
+> +		liteeth_rx(netdev);
+> +		litex_write8(priv->base + LITEETH_WRITER_EV_PENDING, reg);
+> +	}
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static int liteeth_open(struct net_device *netdev)
+> +{
+> +	struct liteeth *priv = netdev_priv(netdev);
+> +	int err;
+> +
+> +	/* Clear pending events */
+> +	litex_write8(priv->base + LITEETH_WRITER_EV_PENDING, 1);
+> +	litex_write8(priv->base + LITEETH_READER_EV_PENDING, 1);
+> +
+> +	err = request_irq(netdev->irq, liteeth_interrupt, 0, netdev->name, netdev);
+> +	if (err) {
+> +		netdev_err(netdev, "failed to request irq %d\n", netdev->irq);
+> +		return err;
+> +	}
+> +
+> +	/* Enable IRQs */
+> +	litex_write8(priv->base + LITEETH_WRITER_EV_ENABLE, 1);
+> +	litex_write8(priv->base + LITEETH_READER_EV_ENABLE, 1);
+> +
+> +	netif_carrier_on(netdev);
+> +	netif_start_queue(netdev);
+> +
+> +	return 0;
+> +}
+> +
+> +static int liteeth_stop(struct net_device *netdev)
+> +{
+> +	struct liteeth *priv = netdev_priv(netdev);
+> +
+> +	netif_stop_queue(netdev);
+> +	netif_carrier_off(netdev);
+> +
+> +	litex_write8(priv->base + LITEETH_WRITER_EV_ENABLE, 0);
+> +	litex_write8(priv->base + LITEETH_READER_EV_ENABLE, 0);
+> +
+> +	free_irq(netdev->irq, netdev);
+> +
+> +	return 0;
+> +}
+> +
+> +static int liteeth_start_xmit(struct sk_buff *skb, struct net_device *netdev)
+> +{
+> +	struct liteeth *priv = netdev_priv(netdev);
+> +	void __iomem *txbuffer;
+> +
+> +	if (!litex_read8(priv->base + LITEETH_READER_READY)) {
+> +		if (net_ratelimit())
+> +			netdev_err(netdev, "LITEETH_READER_READY not ready\n");
+> +
+> +		netif_stop_queue(netdev);
+> +
+> +		return NETDEV_TX_BUSY;
+> +	}
+> +
+> +	/* Reject oversize packets */
+> +	if (unlikely(skb->len > priv->slot_size)) {
+> +		if (net_ratelimit())
+> +			netdev_err(netdev, "tx packet too big\n");
+> +
+> +		dev_kfree_skb_any(skb);
+> +		netdev->stats.tx_dropped++;
+> +		netdev->stats.tx_errors++;
+> +
+> +		return NETDEV_TX_OK;
+> +	}
+> +
+> +	txbuffer = priv->tx_base + priv->tx_slot * priv->slot_size;
+> +	memcpy_toio(txbuffer, skb->data, skb->len);
+> +	litex_write8(priv->base + LITEETH_READER_SLOT, priv->tx_slot);
+> +	litex_write16(priv->base + LITEETH_READER_LENGTH, skb->len);
+> +	litex_write8(priv->base + LITEETH_READER_START, 1);
+> +
+> +	netdev->stats.tx_bytes += skb->len;
+> +	netdev->stats.tx_packets++;
+> +
+> +	priv->tx_slot = (priv->tx_slot + 1) % priv->num_tx_slots;
+> +	dev_kfree_skb_any(skb);
+> +
+> +	return NETDEV_TX_OK;
+> +}
+> +
+> +static const struct net_device_ops liteeth_netdev_ops = {
+> +	.ndo_open		= liteeth_open,
+> +	.ndo_stop		= liteeth_stop,
+> +	.ndo_start_xmit         = liteeth_start_xmit,
+> +};
+> +
+> +static void liteeth_setup_slots(struct liteeth *priv)
+> +{
+> +	struct device_node *np = priv->dev->of_node;
+> +	int err;
+> +
+> +	err = of_property_read_u32(np, "litex,rx-slots", &priv->num_rx_slots);
+> +	if (err) {
+> +		dev_dbg(priv->dev, "unable to get litex,rx-slots, using 2\n");
+> +		priv->num_rx_slots = 2;
+> +	}
+> +
+> +	err = of_property_read_u32(np, "litex,tx-slots", &priv->num_tx_slots);
+> +	if (err) {
+> +		dev_dbg(priv->dev, "unable to get litex,tx-slots, using 2\n");
+> +		priv->num_tx_slots = 2;
+> +	}
+> +
+> +	err = of_property_read_u32(np, "litex,slot-size", &priv->slot_size);
+> +	if (err) {
+> +		dev_dbg(priv->dev, "unable to get litex,slot-size, using 0x800\n");
+> +		priv->slot_size = 0x800;
+> +	}
+> +}
+> +
+> +static int liteeth_probe(struct platform_device *pdev)
+> +{
+> +	struct net_device *netdev;
+> +	void __iomem *buf_base;
+> +	struct resource *res;
+> +	struct liteeth *priv;
+> +	int irq, err;
+> +
+> +	netdev = devm_alloc_etherdev(&pdev->dev, sizeof(*priv));
+> +	if (!netdev)
+> +		return -ENOMEM;
+> +
+> +	SET_NETDEV_DEV(netdev, &pdev->dev);
+> +	platform_set_drvdata(pdev, netdev);
+> +
+> +	priv = netdev_priv(netdev);
+> +	priv->netdev = netdev;
+> +	priv->dev = &pdev->dev;
+> +
+> +	irq = platform_get_irq(pdev, 0);
+> +	if (irq < 0) {
+> +		dev_err(&pdev->dev, "Failed to get IRQ %d\n", irq);
+> +		return irq;
+> +	}
+> +	netdev->irq = irq;
+> +
+> +	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "mac");
+> +	priv->base = devm_ioremap_resource(&pdev->dev, res);
+> +	if (IS_ERR(priv->base))
+> +		return PTR_ERR(priv->base);
+> +
+> +	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "buffer");
+> +	buf_base = devm_ioremap_resource(&pdev->dev, res);
+> +	if (IS_ERR(buf_base))
+> +		return PTR_ERR(buf_base);
+> +
+> +	liteeth_setup_slots(priv);
+> +
+> +	/* Rx slots */
+> +	priv->rx_base = buf_base;
+> +	priv->rx_slot = 0;
+> +
+> +	/* Tx slots come after Rx slots */
+> +	priv->tx_base = buf_base + priv->num_rx_slots * priv->slot_size;
+> +	priv->tx_slot = 0;
+> +
+> +	err = of_get_mac_address(pdev->dev.of_node, netdev->dev_addr);
+> +	if (err)
+> +		eth_hw_addr_random(netdev);
+> +
+> +	netdev->netdev_ops = &liteeth_netdev_ops;
+> +
+> +	err = register_netdev(netdev);
+> +	if (err) {
+> +		dev_err(&pdev->dev, "Failed to register netdev %d\n", err);
+> +		return err;
+> +	}
+> +
+> +	netdev_info(netdev, "irq %d slots: tx %d rx %d size %d\n",
+> +		    netdev->irq, priv->num_tx_slots, priv->num_rx_slots, priv->slot_size);
+> +
+> +	return 0;
+> +}
+> +
+> +static int liteeth_remove(struct platform_device *pdev)
+> +{
+> +	struct net_device *netdev = platform_get_drvdata(pdev);
+> +
+> +	unregister_netdev(netdev);
+> +	free_netdev(netdev);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct of_device_id liteeth_of_match[] = {
+> +	{ .compatible = "litex,liteeth" },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(of, liteeth_of_match);
+> +
+> +static struct platform_driver liteeth_driver = {
+> +	.probe = liteeth_probe,
+> +	.remove = liteeth_remove,
+> +	.driver = {
+> +		.name = DRV_NAME,
+> +		.of_match_table = liteeth_of_match,
+> +	},
+> +};
+> +module_platform_driver(liteeth_driver);
+> +
+> +MODULE_AUTHOR("Joel Stanley <joel@jms.id.au>");
+> +MODULE_LICENSE("GPL");
+> -- 
+> 2.33.0
+> 
