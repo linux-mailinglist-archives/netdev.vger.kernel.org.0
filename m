@@ -2,107 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91DEB3F6E3F
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 06:22:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8C8D3F6EB0
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 07:05:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230297AbhHYEXJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 00:23:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41728 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbhHYEXI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 00:23:08 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35951C061757
-        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 21:22:23 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1mIkQU-00040Z-Cl; Wed, 25 Aug 2021 06:22:10 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1mIkQR-0000tw-UG; Wed, 25 Aug 2021 06:22:07 +0200
-Date:   Wed, 25 Aug 2021 06:22:07 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     kernel test robot <lkp@intel.com>
-Cc:     kbuild-all@lists.01.org,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Colin Ian King <colin.king@canonical.com>,
-        Grant Grundler <grundler@chromium.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Oliver Neukum <oneukum@suse.com>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: usb: asix: ax88772: fix boolconv.cocci warnings
-Message-ID: <20210825042207.GC14337@pengutronix.de>
-References: <202108250651.uuW5Q2Rg-lkp@intel.com>
- <20210824221716.GA23759@2b586af07b64>
+        id S231735AbhHYFFs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 01:05:48 -0400
+Received: from mail.cn.fujitsu.com ([183.91.158.132]:15318 "EHLO
+        heian.cn.fujitsu.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S230407AbhHYFFs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 01:05:48 -0400
+IronPort-HdrOrdr: =?us-ascii?q?A9a23=3ALdJKkqjjMwc7y6KTzTLN7IwF1XBQXuYji2hC?=
+ =?us-ascii?q?6mlwRA09TyX4rbHLoB1/73LJYVkqNk3I5urrBEDtexLhHP1OkOws1NWZLWrbUQ?=
+ =?us-ascii?q?KTRekM0WKI+UyDJ8SRzI5g/JYlW61/Jfm1NlJikPv9iTPSL/8QhPWB74Ck7N2z?=
+ =?us-ascii?q?80tQ?=
+X-IronPort-AV: E=Sophos;i="5.84,349,1620662400"; 
+   d="scan'208";a="113428576"
+Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
+  by heian.cn.fujitsu.com with ESMTP; 25 Aug 2021 13:05:01 +0800
+Received: from G08CNEXMBPEKD04.g08.fujitsu.local (unknown [10.167.33.201])
+        by cn.fujitsu.com (Postfix) with ESMTP id 302994D0D497;
+        Wed, 25 Aug 2021 13:04:57 +0800 (CST)
+Received: from G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.85) by
+ G08CNEXMBPEKD04.g08.fujitsu.local (10.167.33.201) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.23; Wed, 25 Aug 2021 13:04:56 +0800
+Received: from localhost.localdomain (10.167.225.141) by
+ G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.209) with Microsoft SMTP Server
+ id 15.0.1497.23 via Frontend Transport; Wed, 25 Aug 2021 13:04:56 +0800
+From:   Li Zhijian <lizhijian@cn.fujitsu.com>
+To:     <rjw@rjwysocki.net>, <viresh.kumar@linaro.org>, <shuah@kernel.org>,
+        <Jason@zx2c4.com>, <masahiroy@kernel.org>,
+        <linux-kselftest@vger.kernel.org>
+CC:     <linux-pm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <wireguard@lists.zx2c4.com>, <netdev@vger.kernel.org>,
+        Li Zhijian <lizhijian@cn.fujitsu.com>,
+        Philip Li <philip.li@intel.com>,
+        "kernel test robot" <lkp@intel.com>
+Subject: [PATCH] selftests: cleanup config
+Date:   Wed, 25 Aug 2021 13:09:48 +0800
+Message-ID: <20210825050948.10339-1-lizhijian@cn.fujitsu.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20210824221716.GA23759@2b586af07b64>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 06:08:53 up 188 days,  7:32, 79 users,  load average: 0.06, 0.23,
- 0.30
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-yoursite-MailScanner-ID: 302994D0D497.A0473
+X-yoursite-MailScanner: Found to be clean
+X-yoursite-MailScanner-From: lizhijian@fujitsu.com
+X-Spam-Status: No
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 25, 2021 at 06:17:16AM +0800, kernel test robot wrote:
-> From: kernel test robot <lkp@intel.com>
-> 
-> drivers/net/usb/asix_devices.c:757:60-65: WARNING: conversion to bool not needed here
-> 
->  Remove unneeded conversion to bool
-> 
-> Semantic patch information:
->  Relational and logical operators evaluate to bool,
->  explicit conversion is overly verbose and unneeded.
-> 
-> Generated by: scripts/coccinelle/misc/boolconv.cocci
-> 
-> Fixes: 7a141e64cf14 ("net: usb: asix: ax88772: move embedded PHY detection as early as possible")
-> CC: Oleksij Rempel <o.rempel@pengutronix.de>
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: kernel test robot <lkp@intel.com>
+- DEBUG_PI_LIST was renamed to DEBUG_PLIST since 8e18faeac3 ("lib/plist: rename DEBUG_PI_LIST to DEBUG_PLIST")
+- SYNC was removed since aff9da10e21 ("staging/android: make sync_timeline internal to sw_sync")
 
-Reviewed-by: Oleksij Rempel <o.rempel@pengutronix.de>
+$ for k in $(grep ^CONFIG $(find tools/testing/selftests/ -name config) | awk -F'=' '{print$1}' | awk -F':' '{print $2}' | sort | uniq); do  k=${k#CONFIG_}; git grep -qw -e "menuconfig $k" -e "config $k" || echo "$k is missing"; done;
+DEBUG_PI_LIST is missing
+SYNC is missing
 
-> ---
-> 
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-> head:   372b2891c15acbf7b90d948b08ac174bde77102c
-> commit: 7a141e64cf14099d84e530db0e86fcb2c489e341 [9154/10077] net: usb: asix: ax88772: move embedded PHY detection as early as possible
-> :::::: branch date: 12 hours ago
-> :::::: commit date: 35 hours ago
-> 
->  asix_devices.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> --- a/drivers/net/usb/asix_devices.c
-> +++ b/drivers/net/usb/asix_devices.c
-> @@ -754,7 +754,7 @@ static int ax88772_bind(struct usbnet *d
->  		return ret;
->  
->  	priv->phy_addr = ret;
-> -	priv->embd_phy = ((priv->phy_addr & 0x1f) == 0x10 ? true : false);
-> +	priv->embd_phy = ((priv->phy_addr & 0x1f) == 0x10);
->  
->  	asix_read_cmd(dev, AX_CMD_STATMNGSTS_REG, 0, 0, 1, &chipcode, 0);
->  	chipcode &= AX_CHIPCODE_MASK;
-> 
+CC: Philip Li <philip.li@intel.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Li Zhijian <lizhijian@cn.fujitsu.com>
+---
+ tools/testing/selftests/cpufreq/config              | 2 +-
+ tools/testing/selftests/sync/config                 | 1 -
+ tools/testing/selftests/wireguard/qemu/debug.config | 2 +-
+ 3 files changed, 2 insertions(+), 3 deletions(-)
 
+diff --git a/tools/testing/selftests/cpufreq/config b/tools/testing/selftests/cpufreq/config
+index 27ff72ebd0f5..75e900793e8a 100644
+--- a/tools/testing/selftests/cpufreq/config
++++ b/tools/testing/selftests/cpufreq/config
+@@ -6,7 +6,7 @@ CONFIG_CPU_FREQ_GOV_ONDEMAND=y
+ CONFIG_CPU_FREQ_GOV_CONSERVATIVE=y
+ CONFIG_CPU_FREQ_GOV_SCHEDUTIL=y
+ CONFIG_DEBUG_RT_MUTEXES=y
+-CONFIG_DEBUG_PI_LIST=y
++CONFIG_DEBUG_PLIST=y
+ CONFIG_DEBUG_SPINLOCK=y
+ CONFIG_DEBUG_MUTEXES=y
+ CONFIG_DEBUG_LOCK_ALLOC=y
+diff --git a/tools/testing/selftests/sync/config b/tools/testing/selftests/sync/config
+index 1ab7e8130db2..47ff5afc3727 100644
+--- a/tools/testing/selftests/sync/config
++++ b/tools/testing/selftests/sync/config
+@@ -1,4 +1,3 @@
+ CONFIG_STAGING=y
+ CONFIG_ANDROID=y
+-CONFIG_SYNC=y
+ CONFIG_SW_SYNC=y
+diff --git a/tools/testing/selftests/wireguard/qemu/debug.config b/tools/testing/selftests/wireguard/qemu/debug.config
+index fe07d97df9fa..2b321b8a96cf 100644
+--- a/tools/testing/selftests/wireguard/qemu/debug.config
++++ b/tools/testing/selftests/wireguard/qemu/debug.config
+@@ -47,7 +47,7 @@ CONFIG_DEBUG_ATOMIC_SLEEP=y
+ CONFIG_TRACE_IRQFLAGS=y
+ CONFIG_DEBUG_BUGVERBOSE=y
+ CONFIG_DEBUG_LIST=y
+-CONFIG_DEBUG_PI_LIST=y
++CONFIG_DEBUG_PLIST=y
+ CONFIG_PROVE_RCU=y
+ CONFIG_SPARSE_RCU_POINTER=y
+ CONFIG_RCU_CPU_STALL_TIMEOUT=21
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.31.1
+
+
+
