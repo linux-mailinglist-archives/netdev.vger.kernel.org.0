@@ -2,71 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A5283F7764
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 16:29:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B20C3F7765
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 16:30:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241700AbhHYOaa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 10:30:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50246 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240965AbhHYOa3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Aug 2021 10:30:29 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2754D61073;
-        Wed, 25 Aug 2021 14:29:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629901783;
-        bh=M/QfzRtodu9KXBAwfCQo4kX0VmxUKWjfKlzbgDW2W7Y=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=h8Sb4zuuz8lNXMKCHGHvIe1vGxv5ayjQHEj9/2VtkUoF9uBOcFL9Z/rIazPHILKkP
-         OOJJz4IL2WRllHZkEJoBt8ofW1ZECIAGzNwEFBwyxG9m0SbZgpLU+klvivOl8dGatM
-         6PETFFGbfEJM8IaYzmu5XUQv69ruOjDslzmITQDqFxC5rWjsN+Uh6ioE/5mFVIm6Md
-         RWMgmQU1oprXTSgS8lw/17yW4AHfwiwWFUmYC7FAAJhj1qeS8IS0ppvhWdEi0Px9ZV
-         MHJmovUv7CSbAMclO4mEiPk69LCTw0bab+s8FoNYWdoVMtyKsyN4tqEnrcdZ/6Pcji
-         5oUEEoWLbzLZw==
-Date:   Wed, 25 Aug 2021 07:29:42 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
-        Linux Memory Management List <linux-mm@kvack.org>,
+        id S241724AbhHYObJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 10:31:09 -0400
+Received: from mxout02.lancloud.ru ([45.84.86.82]:59812 "EHLO
+        mxout02.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232168AbhHYObI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 10:31:08 -0400
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout02.lancloud.ru E5BB320BF7D9
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [PATCH net-next 01/13] ravb: Remove the macros
+ NUM_TX_DESC_GEN[23]
+To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
         Andrew Lunn <andrew@lunn.ch>,
-        Colin Ian King <colin.king@canonical.com>,
-        Grant Grundler <grundler@chromium.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Oliver Neukum <oneukum@suse.com>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: usb: asix: ax88772: fix boolconv.cocci warnings
-Message-ID: <20210825072942.676fd0f2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210825042207.GC14337@pengutronix.de>
-References: <202108250651.uuW5Q2Rg-lkp@intel.com>
-        <20210824221716.GA23759@2b586af07b64>
-        <20210825042207.GC14337@pengutronix.de>
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        "Geert Uytterhoeven" <geert+renesas@glider.be>,
+        Adam Ford <aford173@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>
+References: <20210825070154.14336-1-biju.das.jz@bp.renesas.com>
+ <20210825070154.14336-2-biju.das.jz@bp.renesas.com>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <08405c60-fd9c-cc9b-0256-eb3ce80f7372@omp.ru>
+Date:   Wed, 25 Aug 2021 17:30:17 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20210825070154.14336-2-biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 25 Aug 2021 06:22:07 +0200 Oleksij Rempel wrote:
-> On Wed, Aug 25, 2021 at 06:17:16AM +0800, kernel test robot wrote:
-> > From: kernel test robot <lkp@intel.com>
-> > 
-> > drivers/net/usb/asix_devices.c:757:60-65: WARNING: conversion to bool not needed here
-> > 
-> >  Remove unneeded conversion to bool
-> > 
-> > Semantic patch information:
-> >  Relational and logical operators evaluate to bool,
-> >  explicit conversion is overly verbose and unneeded.
-> > 
-> > Generated by: scripts/coccinelle/misc/boolconv.cocci
-> > 
-> > Fixes: 7a141e64cf14 ("net: usb: asix: ax88772: move embedded PHY detection as early as possible")
-> > CC: Oleksij Rempel <o.rempel@pengutronix.de>
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > Signed-off-by: kernel test robot <lkp@intel.com>  
-> 
-> Reviewed-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Hello!
 
-This patch never made it into patchwork, would you mind resending it,
-Oleksij?
+On 8/25/21 10:01 AM, Biju Das wrote:
+
+> For addressing 4 bytes alignment restriction on transmission
+> buffer for R-Car Gen2 we use 2 descriptors whereas it is a single
+> descriptor for other cases.
+> Replace the macros NUM_TX_DESC_GEN[23] with magic number and
+> add a comment to explain it.
+> 
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> Suggested-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+[...]
+> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+> index 02842b980a7f..073e690ab830 100644
+> --- a/drivers/net/ethernet/renesas/ravb_main.c
+> +++ b/drivers/net/ethernet/renesas/ravb_main.c
+> @@ -2160,8 +2160,12 @@ static int ravb_probe(struct platform_device *pdev)
+>  	ndev->max_mtu = 2048 - (ETH_HLEN + VLAN_HLEN + ETH_FCS_LEN);
+>  	ndev->min_mtu = ETH_MIN_MTU;
+>  
+> -	priv->num_tx_desc = info->aligned_tx ?
+> -		NUM_TX_DESC_GEN2 : NUM_TX_DESC_GEN3;
+> +	/* FIXME: R-Car Gen2 has 4byte alignment restriction for tx buffer
+
+   Mhm, what are you going to fix here?
+
+> +	 * Use two descriptor to handle such situation. First descriptor to
+> +	 * handle aligned data buffer and second descriptor to handle the
+> +	 * overflow data because of alignment.
+> +	 */
+> +	priv->num_tx_desc = info->aligned_tx ? 2 : 1;
+>  
+>  	/* Set function */
+>  	ndev->netdev_ops = &ravb_netdev_ops;
+
+   Other than that:
+
+Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+
+[...]
+
+MBR, Sergey
