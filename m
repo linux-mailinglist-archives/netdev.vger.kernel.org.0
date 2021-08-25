@@ -2,73 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83B293F72D6
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 12:20:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FC1D3F72DB
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 12:20:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239807AbhHYKVZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 06:21:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36128 "EHLO mail.kernel.org"
+        id S239869AbhHYKVb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 06:21:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36176 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238799AbhHYKUy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Aug 2021 06:20:54 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id F228E611EF;
-        Wed, 25 Aug 2021 10:20:08 +0000 (UTC)
+        id S235904AbhHYKUz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Aug 2021 06:20:55 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 1A6CE6121E;
+        Wed, 25 Aug 2021 10:20:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1629886809;
-        bh=ubKSMLaf0Bu90+7mm5SA839aehOR3fneQebmdHeiZc4=;
+        bh=O6J+rHSYQXPSx/jFP12S7IvB9F9Rnmxsu4WHal3JfBk=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=sW2Y8nLjLCoOUEPK7yBabGXTBeh/WWF+hR42IBcrL6CPlxG9QWuOnvRruwHflg8OT
-         V2L991cNlRJh7pnqg7WWMeJGPaYnHSnH6qWG5QUCh1elAcOriOxYEv8ThwJmCKWOED
-         eQuRnUbXFrObPHf+jD6ANXmIgeQO1XAkwP7J72++Qrjx/nxK/d93g3mzI3/KR/4vfH
-         pNO/AkAprRkcJw/QIWiLy4IFejUiJLcuL74aX7sXfqFxJPAWs1ODUYk1scF6AwPHA9
-         Eca3y0BHWEiFC5qqEyWZK3J7HCqM+EwbpxmD1XIFQIWK3PqLlfTiKt62SCjiTs8ge2
-         RZkzg7HcGCJbw==
+        b=mfiF8rnrwSWnhZtl9cutMWs9KS7pJmd5V9UXYRN7mQojIGUEEj0CjoJiCAksH2gGc
+         0sDQfSJWbdZVGaAccmXKEPWlqwXymTc75x25Dr4Zbwo2jHo5zu2jcKU3EodtTt5pzN
+         EBkEO6WZoa0Oq3VXCkcN/aIepZDFzn8J8SZjOYmlkGI83HD1hQpk04xBbxomNsGd2L
+         6r1jWY+NYUBDYDYSKBHb/ii6+h3gTq0INasryEjUcAGQhuEicTYTnaeiZsC7hTtX9i
+         jxutHwxzd62N4hM7uryPV6HPGZ0IQo4zWVqcr4J3dlmXpEuvpcbdm2gxOAPeCEHHBg
+         DbZMJ33tFlJpw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E417360A02;
-        Wed, 25 Aug 2021 10:20:08 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1121960A12;
+        Wed, 25 Aug 2021 10:20:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH V2,net-next, 0/3] net: mana: Add support for EQ sharing
+Subject: Re: [PATCH net-next] net: dsa: mt7530: manually set up VLAN ID 0
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162988680892.8958.11271831152775576933.git-patchwork-notify@kernel.org>
-Date:   Wed, 25 Aug 2021 10:20:08 +0000
-References: <1629823561-2261-1-git-send-email-haiyangz@microsoft.com>
-In-Reply-To: <1629823561-2261-1-git-send-email-haiyangz@microsoft.com>
-To:     Haiyang Zhang <haiyangz@microsoft.com>
-Cc:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        kys@microsoft.com, sthemmin@microsoft.com, paulros@microsoft.com,
-        shacharr@microsoft.com, olaf@aepfle.de, vkuznets@redhat.com,
-        davem@davemloft.net, linux-kernel@vger.kernel.org
+Message-Id: <162988680906.8958.16937803471017689459.git-patchwork-notify@kernel.org>
+Date:   Wed, 25 Aug 2021 10:20:09 +0000
+References: <20210824165253.1691315-1-dqfext@gmail.com>
+In-Reply-To: <20210824165253.1691315-1-dqfext@gmail.com>
+To:     DENG Qingfang <dqfext@gmail.com>
+Cc:     sean.wang@mediatek.com, Landen.Chao@mediatek.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, matthias.bgg@gmail.com,
+        p.zabel@pengutronix.de, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue, 24 Aug 2021 09:45:58 -0700 you wrote:
-> The existing code uses (1 + #vPorts * #Queues) MSIXs, which may exceed
-> the device limit.
+On Wed, 25 Aug 2021 00:52:52 +0800 you wrote:
+> The driver was relying on dsa_slave_vlan_rx_add_vid to add VLAN ID 0. After
+> the blamed commit, VLAN ID 0 won't be set up anymore, breaking software
+> bridging fallback on VLAN-unaware bridges.
 > 
-> Support EQ sharing, so that multiple vPorts can share the same set of
-> MSIXs.
+> Manually set up VLAN ID 0 to fix this.
 > 
-> Haiyang Zhang (3):
->   net: mana: Move NAPI from EQ to CQ
->   net: mana: Add support for EQ sharing
->   net: mana: Add WARN_ON_ONCE in case of CQE read overflow
+> Fixes: 06cfb2df7eb0 ("net: dsa: don't advertise 'rx-vlan-filter' when not needed")
+> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [V2,net-next,1/3] net: mana: Move NAPI from EQ to CQ
-    https://git.kernel.org/netdev/net-next/c/e1b5683ff62e
-  - [V2,net-next,2/3] net: mana: Add support for EQ sharing
-    https://git.kernel.org/netdev/net-next/c/1e2d0824a9c3
-  - [V2,net-next,3/3] net: mana: Add WARN_ON_ONCE in case of CQE read overflow
-    https://git.kernel.org/netdev/net-next/c/c1a3e9f98dde
+  - [net-next] net: dsa: mt7530: manually set up VLAN ID 0
+    https://git.kernel.org/netdev/net-next/c/1ca8a193cade
 
 You are awesome, thank you!
 --
