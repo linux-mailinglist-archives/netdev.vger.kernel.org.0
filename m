@@ -2,121 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A7BD3F7A46
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 18:19:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B18BE3F7A68
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 18:21:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242232AbhHYQUQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 12:20:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38490 "EHLO
+        id S241421AbhHYQWA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 12:22:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237894AbhHYQT3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 12:19:29 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D79F9C0612A9
-        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 09:18:26 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id y5so6957985edp.8
-        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 09:18:26 -0700 (PDT)
+        with ESMTP id S240595AbhHYQVw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 12:21:52 -0400
+Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F5DFC0611DD
+        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 09:20:51 -0700 (PDT)
+Received: by mail-qk1-x736.google.com with SMTP id t190so28191864qke.7
+        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 09:20:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=oYsoLSMuOzMjDvy8lt1twkggcFShlOOTyGCbIOCpMO4=;
-        b=gex5LlFCGSJBsOdMvLQeXlhE1hu401J/SfKtMaOVZOND/C7MwUcl9/wKb0v3OgMai3
-         MN/eyq3pM7e/ue0plkLLpqKQp85GXvN0vHfUshfCn59azb7i8v4TIJQfABBxA0KUsmCb
-         YY17u7U1z3yFDacjaejv+tdby1r18FImwvKZaXj+sFBQaLWLrA9bLyvRy0F6nvsEO5HI
-         7WLyKII9d7KbG6cwDrAyOvuYNlKVohqdytVKNpGvw+Mc3g8lSYqDhbwsMItkvAiK5Nrh
-         bT7P/2Vg4Z8o9w+iuneEohDTNHZjcX1IuKjtUQvuQ/XffVDyPjgmlexaOl5xWJqxPY/X
-         Gwnw==
+        bh=7HEJVL6vS0URIXz+R1rpadDnrKkkkmIihS3Y5sG4WlI=;
+        b=ngOwM2o0ybZwCcD6lZ+0y5TYEwPRYDq6uZwJqDulv0Zy/ZeECFCo+28MuhV+77gHot
+         IXnJL3y1Bsj/pU5OE+KuLltaH4lyZoq8buXPDgggoVPPhq88tQLWwklWMUyBJXb4I7pP
+         yPzX8OurKEATEwA7rLTuxe6sM+tJ65Q/X9boM31iYtDiXdoGVKFeNv4JEO2W1dlSVAu4
+         LnyfEDWqIhMweKdUseaXF4YZTFVOr6TIivN9lnRcO2RcEWyKtSqAgWa1oeVqytiN9LK8
+         LeQKT8asU94d/YeSp8M5VyWXRSS86/u66YQQpQZ+x8uMi6HZCzXtrXR9iT8s4WtnS0W9
+         /AXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=oYsoLSMuOzMjDvy8lt1twkggcFShlOOTyGCbIOCpMO4=;
-        b=GqUJxi5ZGoWsR75iCUXsJMN/tPAdf5WDevWQeZjkofh5QltpHCYDzXVR0ZKh5Dok8z
-         dXTwEGKygpgeXMMIY4x7eBx+tA3msoZzF83J0BzBZJpqeA90/voswcJAtAqJxiPlBaqJ
-         ETf8SmxzAsvyD9jEQ0YPQawmcTj0k+ljJXx/irse3tXI25L2hGSvh+qhugUnNKEXlZck
-         7j+PH5BX4TG+qQNLplJ5FVBfmZQ3wxsWnqcE5chS9Y3TIuUk1ALdNAEDa+L9qtK3v6Gh
-         gZM7V8jeORjrg2U1sGR6kmZu0XCKqARUxaNbuG/5yGcBqPXqnQPaAb+7292q0OjhxZPt
-         iWqQ==
-X-Gm-Message-State: AOAM530NdL2nN26uso/qElaiX4coWB0ihaEvJvIGrpjMm4x2vcQQjFC9
-        RPk2FxWtt8QruHH6PyIAO0hm8MJoh38=
-X-Google-Smtp-Source: ABdhPJz/28xyMkipK/TJlIpXdFyV02d4V4kV8KvLY5ThLEr63DyFjLI+KjeHkH+YW9J9S+DifdqQ/A==
-X-Received: by 2002:aa7:ca4b:: with SMTP id j11mr23280803edt.342.1629908305491;
-        Wed, 25 Aug 2021 09:18:25 -0700 (PDT)
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com. [209.85.221.45])
-        by smtp.gmail.com with ESMTPSA id t8sm74297ejc.8.2021.08.25.09.18.24
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 25 Aug 2021 09:18:24 -0700 (PDT)
-Received: by mail-wr1-f45.google.com with SMTP id n5so76556wro.12
-        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 09:18:24 -0700 (PDT)
-X-Received: by 2002:a5d:6da4:: with SMTP id u4mr26716519wrs.50.1629908303911;
- Wed, 25 Aug 2021 09:18:23 -0700 (PDT)
+        bh=7HEJVL6vS0URIXz+R1rpadDnrKkkkmIihS3Y5sG4WlI=;
+        b=ObH8fqP77S/OlSX6JYxYYHMQbIF4HiV+8LCX332aTIaZZX9NkMAK6w2xiHBoZC61SE
+         9dRn45Ss75O2ATaiUlTzoq99abazcVExZSEMjrddKgVPii9DYpjcnFD35WxpMjdEs8+d
+         3xOgXAOBZZh36y2u7kSRQ/DzyvVQxNu9+EOUdvvHph2n7mPChoX6gj54AIBlacGTUcS6
+         Ucfbx3p5s5JsEDTDPy+9KLzwKrAWiCHFC+BfRMLjaocK0KhIDlgNFIXn60rdX4wiJXmD
+         hXUgT4ogX/JCc4rZpFdp3ZIRBKL9/AGu3ZseKuxNFQ14UIckcmbCN+s/L5WhUzmc3Zy4
+         6/Vg==
+X-Gm-Message-State: AOAM531X2aPniTEKKQi+vl0k6rdeyvGFrzOS/YJcFsYbYzFlCj7UIZx/
+        47BZoa5R1byeRE0zqg+gXEuOBk6oZZACEzjGN/B5RA==
+X-Google-Smtp-Source: ABdhPJw9e/9xv+EJVkpFFB3A16VUA8QTZQwQz17yaBy3MDsjXiqap7ZkCevB4HVgau08nc4qsazA14VSZYNrmifEmvg=
+X-Received: by 2002:a25:bec2:: with SMTP id k2mr61019188ybm.234.1629908448906;
+ Wed, 25 Aug 2021 09:20:48 -0700 (PDT)
 MIME-Version: 1.0
-References: <2d9ca8df08aed8dcb8c56554225f8f71db621bbe.1629886126.git.pabeni@redhat.com>
-In-Reply-To: <2d9ca8df08aed8dcb8c56554225f8f71db621bbe.1629886126.git.pabeni@redhat.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 25 Aug 2021 12:17:45 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSeavsMkRtuLO1EqWjod9ua=Yp4UHnV15+xJJ_6P1gxc7w@mail.gmail.com>
-Message-ID: <CA+FuTSeavsMkRtuLO1EqWjod9ua=Yp4UHnV15+xJJ_6P1gxc7w@mail.gmail.com>
-Subject: Re: [PATCH net-next] selftests/net: allow GRO coalesce test on veth
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Shuah Khan <shuah@kernel.org>, Coco Li <lixiaoyan@google.com>
+References: <20210825154043.247764-1-yan2228598786@gmail.com>
+ <CANn89iJO8jzjFWvJ610TPmKDE8WKi8ojTr_HWXLz5g=4pdQHEA@mail.gmail.com> <20210825090418.57fd7d2f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210825090418.57fd7d2f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 25 Aug 2021 09:20:37 -0700
+Message-ID: <CANn89iKkjtj68yksMg6fhpv2tZ9j2k0xgNK7S-wWi3e=XUrXmw@mail.gmail.com>
+Subject: Re: [PATCH] net: tcp_drop adds `reason` parameter for tracing v2
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Zhongya Yan <yan2228598786@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, hengqi.chen@gmail.com,
+        Yonghong Song <yhs@fb.com>, Neil Spring <ntspring@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 25, 2021 at 6:25 AM Paolo Abeni <pabeni@redhat.com> wrote:
+On Wed, Aug 25, 2021 at 9:04 AM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> This change extends the existing GRO coalesce test to
-> allow running on top of a veth pair, so that no H/W dep
-> is required to run them.
+> On Wed, 25 Aug 2021 08:47:46 -0700 Eric Dumazet wrote:
+> > On Wed, Aug 25, 2021 at 8:41 AM Zhongya Yan <yan2228598786@gmail.com> wrote:
+> > > @@ -5703,15 +5700,15 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
+> > >                         TCP_INC_STATS(sock_net(sk), TCP_MIB_INERRS);
+> > >                 NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPSYNCHALLENGE);
+> > >                 tcp_send_challenge_ack(sk, skb);
+> > > -               goto discard;
+> > > +               tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_VALIDATE_INCOMING));
+> >
+> > I'd rather use a string. So that we can more easily identify _why_ the
+> > packet was drop, without looking at the source code
+> > of the exact kernel version to locate line number 1057
 >
-> By default gro.sh will use the veth backend, and will try
-> to use exiting H/W in loopback mode if a specific device
-> name is provided with the '-i' command line option.
+> Yeah, the line number seems like a particularly bad idea. Hopefully
+> strings won't be problematic, given we can expect most serious users
+> to feed the tracepoints via BPF. enum would be more convenient there,
+> I'd think.
 >
-> No functional change is intended for the loopback-based
-> tests, just move all the relevant initialization/cleanup
-> code into the related script.
+> > You can be sure that we will get reports in the future from users of
+> > heavily modified kernels.
+> > Having to download a git tree, or apply semi-private patches is a no go.
 >
-> Introduces a new initialization helper script for the
-> veth backend, and plugs the correct helper script according
-> to the provided command line.
->
-> Additionally, enable veth-based tests by default.
+> I'm slightly surprised by this angle. Are there downstream kernels with
+> heavily modified TCP other than Google's?
 
-Very nice. Thanks for extending the test to be run as part of
-continuous testing over veth, Paolo.
+Not sure why Google is mentioned here ?
+Have you ever received a public report about TCP behavior in a Google kernel ?
 
-> +setup_veth_ns() {
-> +       local -r link_dev="$1"
-> +       local -r ns_name="$2"
-> +       local -r ns_dev="$3"
-> +       local -r ns_mac="$4"
-> +       local -r addr="$5"
-> +
-> +       [[ -e /var/run/netns/"${ns_name}" ]] || ip netns add "${ns_name}"
-> +       echo 100000 > "/sys/class/net/${ns_dev}/gro_flush_timeout"
-> +       ip link set dev "${ns_dev}" netns "${ns_name}" mtu 65535
-> +       ip -netns "${ns_name}" link set dev "${ns_dev}" up
-> +       if [[ -n "${addr}" ]]; then
-> +               ip -netns "${ns_name}" addr add dev "${ns_dev}" "${addr}"
-> +       fi
-
-unused? setup_veth_ns is always called with four arguments.
-
-> +
-> +       ip netns exec "${ns_name}" ethtool -K "${ns_dev}" gro on tso off
-> +}
-> +
-> +setup_ns() {
-> +       # Set up server_ns namespace and client_ns namespace
-> +       ip link add name server type veth peer name client
-> +
-> +       setup_veth_ns "${dev}" server_ns server "${SERVER_MAC}"
-> +       setup_veth_ns "${dev}" client_ns client "${CLIENT_MAC}"
-> +}
+Over the years, we received hundreds of TCP bug reports on
+netdev@vger, where users claim to use  kernel version 4.19 (or other),
+when in fact they use 4.19.xxx
+It takes in general multiple emails exchange before we get a more
+realistic version number.
+Not to mention distro kernels, or even worse private kernels, which
+are not exactly easy to track for us upstream developers.
