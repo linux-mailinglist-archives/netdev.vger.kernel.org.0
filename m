@@ -2,99 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3994E3F7360
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 12:35:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B20983F73D0
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 12:55:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238882AbhHYKgS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 06:36:18 -0400
-Received: from frasgout.his.huawei.com ([185.176.79.56]:3690 "EHLO
-        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234177AbhHYKgQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 06:36:16 -0400
-Received: from fraeml739-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Gvj5P2sxjz67N2l;
-        Wed, 25 Aug 2021 18:34:17 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml739-chm.china.huawei.com (10.206.15.220) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.8; Wed, 25 Aug 2021 12:35:28 +0200
-Received: from [10.47.26.214] (10.47.26.214) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.8; Wed, 25 Aug
- 2021 11:35:27 +0100
-From:   John Garry <john.garry@huawei.com>
-Subject: Re: [PATCH v11 01/12] iova: Export alloc_iova_fast() and
- free_iova_fast()
-To:     Will Deacon <will@kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-CC:     <kvm@vger.kernel.org>, <jasowang@redhat.com>,
-        <virtualization@lists.linux-foundation.org>,
-        <christian.brauner@canonical.com>, <corbet@lwn.net>,
-        <willy@infradead.org>, <hch@infradead.org>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        <dan.carpenter@oracle.com>, <sgarzare@redhat.com>,
-        <xiaodong.liu@intel.com>, <linux-fsdevel@vger.kernel.org>,
-        <viro@zeniv.linux.org.uk>, <stefanha@redhat.com>,
-        <songmuchun@bytedance.com>, <axboe@kernel.dk>,
-        <zhe.he@windriver.com>, <gregkh@linuxfoundation.org>,
-        <rdunlap@infradead.org>, <linux-kernel@vger.kernel.org>,
-        <iommu@lists.linux-foundation.org>, <bcrl@kvack.org>,
-        <netdev@vger.kernel.org>, <joe@perches.com>,
-        <robin.murphy@arm.com>, <mika.penttila@nextfour.com>
-References: <20210818120642.165-1-xieyongji@bytedance.com>
- <20210818120642.165-2-xieyongji@bytedance.com>
- <20210824140758-mutt-send-email-mst@kernel.org>
- <20210825095540.GA24546@willie-the-truck>
-Message-ID: <5f4eadda-5500-9bac-4368-48cfca6d0a4d@huawei.com>
-Date:   Wed, 25 Aug 2021 11:39:22 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.1
+        id S240171AbhHYK43 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 06:56:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50538 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240147AbhHYK42 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Aug 2021 06:56:28 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AA3616113C
+        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 10:55:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1629888942;
+        bh=UotmhqxofGpvvQkvxOp1E79lCEXlcshwQIXkdStegzk=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=hSSuD2MOe6hHkd3hjHDbVqXs/wnQhwcp0O06jqOqpKbyJChF1twk94U9YO/9hoTpp
+         sD0qjCq36WHh5QJcjvV3GK91/1jNtVpkNN0vcbh79wVaU6AXQW2xEYshR/kq+oBLn0
+         7VUFolw4UIB9SE8/2pb490dmcw41Y+knA97wTV+NZ2W+aJRl8qvQ0F6SNaiSF6WfiX
+         jJdu6ptCEyzNLIPQvHs1RGQGuGlDbh8itGFVGOj8hBxmTlFxO/rUQceChvCRLaScWh
+         +g9JEuqxDgJ5WRKT3P90LJoVwBQ9gt+VDP1Gzm2P/6yIotAWPms5tVSO3LUnWqXQKT
+         I3IYhx9ZxtHWw==
+Received: by mail-wr1-f52.google.com with SMTP id h13so35801063wrp.1
+        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 03:55:42 -0700 (PDT)
+X-Gm-Message-State: AOAM533yIh0O107cM+sS6rJ9fuAE6kcKX7i7OV4r6rVVeRcQRS4kGzI5
+        QzDRQzlfCKJTwcNh2RPDxgKe3Jd53CDdi1BRR1g=
+X-Google-Smtp-Source: ABdhPJzOZzYmnc4+3NQzqJAUrZmU8KCO7rlzuL9+ziC6Nczucg2O335v773X/Y4w7oKAWw/nM0Qs5n2ou+LRgCl1VyM=
+X-Received: by 2002:a5d:58c8:: with SMTP id o8mr14402242wrf.361.1629888941350;
+ Wed, 25 Aug 2021 03:55:41 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210825095540.GA24546@willie-the-truck>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.47.26.214]
-X-ClientProxiedBy: lhreml721-chm.china.huawei.com (10.201.108.72) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+References: <20210813203026.27687-1-rdunlap@infradead.org> <CAK8P3a3QGF2=WZz6N8wQo2ZQxmVqKToHGmhT4wEtB7tAL+-ruQ@mail.gmail.com>
+ <20210820153100.GA9604@hoboy.vegasvil.org> <80be0a74-9b0d-7386-323c-c261ca378eef@infradead.org>
+In-Reply-To: <80be0a74-9b0d-7386-323c-c261ca378eef@infradead.org>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Wed, 25 Aug 2021 12:55:25 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a11wvEhoEutCNBs5NqiZ2VUA1r-oE1CKBBaYbu_abr4Aw@mail.gmail.com>
+Message-ID: <CAK8P3a11wvEhoEutCNBs5NqiZ2VUA1r-oE1CKBBaYbu_abr4Aw@mail.gmail.com>
+Subject: Re: [PATCH] ptp: ocp: don't allow on S390
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        Networking <netdev@vger.kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 25/08/2021 10:55, Will Deacon wrote:
-> On Tue, Aug 24, 2021 at 02:08:33PM -0400, Michael S. Tsirkin wrote:
->> On Wed, Aug 18, 2021 at 08:06:31PM +0800, Xie Yongji wrote:
->>> Export alloc_iova_fast() and free_iova_fast() so that
->>> some modules can make use of the per-CPU cache to get
->>> rid of rbtree spinlock in alloc_iova() and free_iova()
->>> during IOVA allocation.
->>>
->>> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
->>
->>
->> This needs ack from iommu maintainers. Guys?
-> 
-> Looks fine to me:
-> 
-> Acked-by: Will Deacon <will@kernel.org>
-> 
-> Will
-> _______________________________________________
-> iommu mailing list
-> iommu@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-> .
-> 
+On Tue, Aug 24, 2021 at 11:48 PM Randy Dunlap <rdunlap@infradead.org> wrote:
+>
+> On 8/20/21 8:31 AM, Richard Cochran wrote:
+> > On Fri, Aug 20, 2021 at 12:45:42PM +0200, Arnd Bergmann wrote:
+> >
+> >> I would also suggest removing all the 'imply' statements, they
+> >> usually don't do what the original author intended anyway.
+> >> If there is a compile-time dependency with those drivers,
+> >> it should be 'depends on', otherwise they can normally be
+> >> left out.
+> >
+> > +1
+>
+> Hi,
+>
+> Removing the "imply" statements is simple enough and the driver
+> still builds cleanly without them, so Yes, they aren't needed here.
+>
+> Removing the SPI dependency is also clean.
+>
+> The driver does use I2C, MTD, and SERIAL_8250 interfaces, so they
+> can't be removed without some other driver changes, like using
+> #ifdef/#endif (or #if IS_ENABLED()) blocks and some function stubs.
 
-JFYI, There was a preliminary discussion to move the iova rcache code 
-(which the iova fast alloc and free functions are based on) out of the 
-iova code and maybe into dma-iommu (being the only user). There was 
-other motivation.
+If the SERIAL_8250 dependency is actually required, then using
+'depends on' for this is probably better than an IS_ENABLED() check.
+The 'select' is definitely misplaced here, that doesn't even work when
+the dependencies fo 8250 itself are not met, and it does force-enable
+the entire TTY subsystem.
 
-https://lore.kernel.org/linux-iommu/83de3911-145d-77c8-17c1-981e4ff825d3@arm.com/
+      Arnd
 
-Having more users complicates that...
 
-Thanks,
-John
+        Arnd
