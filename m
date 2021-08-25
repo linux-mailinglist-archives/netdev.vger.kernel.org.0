@@ -2,134 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 371BB3F721D
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 11:44:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8EC03F724D
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 11:50:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239562AbhHYJou (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 05:44:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58874 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237275AbhHYJot (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 05:44:49 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8F2EC0613CF
-        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 02:44:03 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id k5so51643037lfu.4
-        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 02:44:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=mVBCLMrmtNi0cBtd2h0yR4rj69aPWXuUyL2zj6muVGc=;
-        b=nvhJO0jOM9EWIg+YirpaPwyNot5o45tv1yCyrmltHv0cBZhd17TNcCrZ4atxwswTl4
-         5uhYYq3S9cLZPs9WAV3wSBKLyJwPW/XfLAlH1kvqTSTPi58I/oU36SmUuST6bOGHp4Qb
-         yh3p+qfKpVDwWAggGmGVFa8olBj3vQF2keIu4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=mVBCLMrmtNi0cBtd2h0yR4rj69aPWXuUyL2zj6muVGc=;
-        b=rwhnzPo+xwivky2KEY63LOd2pWZvyyroi2cat5VoYNOogQs/LamS5gVGjYtbUqeaxc
-         Q/8v6Y5azZju+atFAM4FcL0dLesiAKkrResJ8QVNbaiJtej88PMo8w9M9Hilo3dX8TGy
-         zQzAyAFezqT4PGJXBqJW1wqI5LvGstbJCmBGo0ZrVUtASHti+H9e9IXWsjofSe+9oiZJ
-         B1hTVYOb4PZLAh7Nx5z5uljqMI1jCiXl+KfONMfNnpYtYzOxt46vLQBMvpQBYWZeAJ/b
-         cXT1OaG1e62o5gPvYOewZmZ8ZihfXKPqY1A+x946p0IR8iktofnFoQPYqbg2oHv5HWJ4
-         vV5A==
-X-Gm-Message-State: AOAM533wn+eR0obysw8OXg754QxovJjbeTEmzWWwxaDBO3Fpbtd2NvU/
-        9MyqNsKq9vOksBi3MAqNtyPnlQ==
-X-Google-Smtp-Source: ABdhPJzCdAERMdrEjkk3bVyLtyl+jMyTKe5MEdSUZQWrko89ztd+kwzLWjgykYkketLnht4xsCSQ0Q==
-X-Received: by 2002:ac2:4d52:: with SMTP id 18mr32810334lfp.550.1629884642112;
-        Wed, 25 Aug 2021 02:44:02 -0700 (PDT)
-Received: from cloudflare.com ([2a01:110f:480d:6f00:ff34:bf12:ef2:5071])
-        by smtp.gmail.com with ESMTPSA id g25sm691895lfv.62.2021.08.25.02.44.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Aug 2021 02:44:01 -0700 (PDT)
-References: <20210823030143.29937-1-po-hsu.lin@canonical.com>
-User-agent: mu4e 1.1.0; emacs 27.2
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Po-Hsu Lin <po-hsu.lin@canonical.com>
-Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        hawk@kernel.org, kuba@kernel.org, davem@davemloft.net,
-        kpsingh@kernel.org, john.fastabend@gmail.com, yhs@fb.com,
-        songliubraving@fb.com, kafai@fb.com, andrii@kernel.org,
-        daniel@iogearbox.net, ast@kernel.org, skhan@linuxfoundation.org
-Subject: Re: [PATCH] selftests/bpf: Use kselftest skip code for skipped tests
-In-reply-to: <20210823030143.29937-1-po-hsu.lin@canonical.com>
-Date:   Wed, 25 Aug 2021 11:44:00 +0200
-Message-ID: <87h7fdg8pr.fsf@cloudflare.com>
+        id S239784AbhHYJuy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 05:50:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56778 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239513AbhHYJuv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Aug 2021 05:50:51 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id E37A6610FD;
+        Wed, 25 Aug 2021 09:50:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1629885005;
+        bh=G9W19wcM7scN5TQI5aCEGctxyPWqb76aI4QghIn1k44=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=T2Rd6S2Y6qeStlduHD6EE0+u4FNeu23Pg6ejMu5pFTLW9GWCCHnAP63t1j9/7zO2f
+         i79zpmRX57TPJWgjo+iLJmDsDGqPciyWNXnYh5wgw9gzqDkw9GRcnFcynfO934GMcU
+         B69aFjXC7ORzbHcOrwl0p7JjISS/ROb6zZBBBrchirvRdILedFW9Q53UF7r0ajbxXA
+         3XWPKCPKRz8p/0bMN0hJyXjLGGyU6mCAFKNcQFabqLy3VrWm2F1d6gii4FDSTbwZhE
+         jl6XlQY0ovXdWomHJXYDke2e+fBUu0/IbQjkOH3jGK27PNIWVGXpmWueQ0P/XVWCgb
+         lWB9Rr5HzNuUg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D0A6760A12;
+        Wed, 25 Aug 2021 09:50:05 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: stmmac: dwmac-rk: fix unbalanced pm_runtime_enable
+ warnings
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162988500584.26256.659865970373423632.git-patchwork-notify@kernel.org>
+Date:   Wed, 25 Aug 2021 09:50:05 +0000
+References: <20210823143754.14294-1-michael.riesch@wolfvision.net>
+In-Reply-To: <20210823143754.14294-1-michael.riesch@wolfvision.net>
+To:     Michael Riesch <michael.riesch@wolfvision.net>
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-rockchip@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
+        mcoquelin.stm32@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 23, 2021 at 05:01 AM CEST, Po-Hsu Lin wrote:
-> There are several test cases in the bpf directory are still using
-> exit 0 when they need to be skipped. Use kselftest framework skip
-> code instead so it can help us to distinguish the return status.
->
-> Criterion to filter out what should be fixed in bpf directory:
->   grep -r "exit 0" -B1 | grep -i skip
->
-> This change might cause some false-positives if people are running
-> these test scripts directly and only checking their return codes,
-> which will change from 0 to 4. However I think the impact should be
-> small as most of our scripts here are already using this skip code.
-> And there will be no such issue if running them with the kselftest
-> framework.
->
-> Signed-off-by: Po-Hsu Lin <po-hsu.lin@canonical.com>
-> ---
->  tools/testing/selftests/bpf/test_bpftool_build.sh | 5 ++++-
->  tools/testing/selftests/bpf/test_xdp_meta.sh      | 5 ++++-
->  tools/testing/selftests/bpf/test_xdp_vlan.sh      | 7 +++++--
->  3 files changed, 13 insertions(+), 4 deletions(-)
->
-> diff --git a/tools/testing/selftests/bpf/test_bpftool_build.sh b/tools/testing/selftests/bpf/test_bpftool_build.sh
-> index ac349a5..b6fab1e 100755
-> --- a/tools/testing/selftests/bpf/test_bpftool_build.sh
-> +++ b/tools/testing/selftests/bpf/test_bpftool_build.sh
-> @@ -1,6 +1,9 @@
->  #!/bin/bash
->  # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->  
-> +# Kselftest framework requirement - SKIP code is 4.
-> +ksft_skip=4
-> +
->  case $1 in
->  	-h|--help)
->  		echo -e "$0 [-j <n>]"
-> @@ -22,7 +25,7 @@ KDIR_ROOT_DIR=$(realpath $PWD/$SCRIPT_REL_DIR/../../../../)
->  cd $KDIR_ROOT_DIR
->  if [ ! -e tools/bpf/bpftool/Makefile ]; then
->  	echo -e "skip:    bpftool files not found!\n"
-> -	exit 0
-> +	exit $ksft_skip
->  fi
->  
->  ERROR=0
+Hello:
 
-This bit has been fixed a couple days ago by a similar change:
+This patch was applied to netdev/net.git (refs/heads/master):
 
-https://lore.kernel.org/bpf/20210820025549.28325-1-lizhijian@cn.fujitsu.com
+On Mon, 23 Aug 2021 16:37:54 +0200 you wrote:
+> This reverts commit 2c896fb02e7f65299646f295a007bda043e0f382
+> "net: stmmac: dwmac-rk: add pd_gmac support for rk3399" and fixes
+> unbalanced pm_runtime_enable warnings.
+> 
+> In the commit to be reverted, support for power management was
+> introduced to the Rockchip glue code. Later, power management support
+> was introduced to the stmmac core code, resulting in multiple
+> invocations of pm_runtime_{enable,disable,get_sync,put_sync}.
+> 
+> [...]
 
-> diff --git a/tools/testing/selftests/bpf/test_xdp_meta.sh b/tools/testing/selftests/bpf/test_xdp_meta.sh
-> index 637fcf4..fd3f218 100755
-> --- a/tools/testing/selftests/bpf/test_xdp_meta.sh
-> +++ b/tools/testing/selftests/bpf/test_xdp_meta.sh
-> @@ -1,5 +1,8 @@
->  #!/bin/sh
->  
-> +# Kselftest framework requirement - SKIP code is 4.
-> +ksft_skip=4
-> +
->  cleanup()
->  {
->  	if [ "$?" = "0" ]; then
+Here is the summary with links:
+  - net: stmmac: dwmac-rk: fix unbalanced pm_runtime_enable warnings
+    https://git.kernel.org/netdev/net/c/2d26f6e39afb
 
-Would consider making it read-only:
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-  readonly KSFT_SKIP=4
 
-[...]
