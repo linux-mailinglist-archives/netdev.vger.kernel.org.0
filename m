@@ -2,42 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E51D23F7C4A
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 20:36:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C2A13F7C4D
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 20:36:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238062AbhHYSgp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 14:36:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42782 "EHLO
+        id S235675AbhHYShS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 14:37:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235766AbhHYSgn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 14:36:43 -0400
+        with ESMTP id S238552AbhHYShQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 14:37:16 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D424C0613C1
-        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 11:35:56 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85D7CC0613C1
+        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 11:36:24 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1mIxkU-0005eY-Nq; Wed, 25 Aug 2021 20:35:42 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        id 1mIxl0-0005pG-9H; Wed, 25 Aug 2021 20:36:14 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1mIxkS-0003S3-Oq; Wed, 25 Aug 2021 20:35:40 +0200
+        id 1mIxky-0001DO-Pg; Wed, 25 Aug 2021 20:36:12 +0200
+Date:   Wed, 25 Aug 2021 20:36:12 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Colin Ian King <colin.king@canonical.com>,
+        Grant Grundler <grundler@chromium.org>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     kernel test robot <lkp@intel.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        kernel@pengutronix.de, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net v1 1/1] net: usb: asix: ax88772: fix boolconv.cocci warnings
-Date:   Wed, 25 Aug 2021 20:35:38 +0200
-Message-Id: <20210825183538.13070-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+        Oliver Neukum <oneukum@suse.com>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: usb: asix: ax88772: fix boolconv.cocci warnings
+Message-ID: <20210825183612.GD14337@pengutronix.de>
+References: <202108250651.uuW5Q2Rg-lkp@intel.com>
+ <20210824221716.GA23759@2b586af07b64>
+ <20210825042207.GC14337@pengutronix.de>
+ <20210825072942.676fd0f2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20210825072942.676fd0f2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 20:35:53 up 188 days, 21:59, 95 users,  load average: 0.24, 0.28,
+ 0.30
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
 X-SA-Exim-Mail-From: ore@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: netdev@vger.kernel.org
@@ -45,39 +59,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: kernel test robot <lkp@intel.com>
+On Wed, Aug 25, 2021 at 07:29:42AM -0700, Jakub Kicinski wrote:
+> On Wed, 25 Aug 2021 06:22:07 +0200 Oleksij Rempel wrote:
+> > On Wed, Aug 25, 2021 at 06:17:16AM +0800, kernel test robot wrote:
+> > > From: kernel test robot <lkp@intel.com>
+> > > 
+> > > drivers/net/usb/asix_devices.c:757:60-65: WARNING: conversion to bool not needed here
+> > > 
+> > >  Remove unneeded conversion to bool
+> > > 
+> > > Semantic patch information:
+> > >  Relational and logical operators evaluate to bool,
+> > >  explicit conversion is overly verbose and unneeded.
+> > > 
+> > > Generated by: scripts/coccinelle/misc/boolconv.cocci
+> > > 
+> > > Fixes: 7a141e64cf14 ("net: usb: asix: ax88772: move embedded PHY detection as early as possible")
+> > > CC: Oleksij Rempel <o.rempel@pengutronix.de>
+> > > Reported-by: kernel test robot <lkp@intel.com>
+> > > Signed-off-by: kernel test robot <lkp@intel.com>  
+> > 
+> > Reviewed-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> 
+> This patch never made it into patchwork, would you mind resending it,
+> Oleksij?
 
-drivers/net/usb/asix_devices.c:757:60-65: WARNING: conversion to bool not needed here
+ack. done.
 
- Remove unneeded conversion to bool
-
-Semantic patch information:
- Relational and logical operators evaluate to bool,
- explicit conversion is overly verbose and unneeded.
-
-Generated by: scripts/coccinelle/misc/boolconv.cocci
-
-Fixes: 7a141e64cf14 ("net: usb: asix: ax88772: move embedded PHY detection as early as possible")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: kernel test robot <lkp@intel.com>
-Reviewed-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/usb/asix_devices.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
-index f6f3955a3a0f..dc87e8caf954 100644
---- a/drivers/net/usb/asix_devices.c
-+++ b/drivers/net/usb/asix_devices.c
-@@ -754,7 +754,7 @@ static int ax88772_bind(struct usbnet *dev, struct usb_interface *intf)
- 		return ret;
- 
- 	priv->phy_addr = ret;
--	priv->embd_phy = ((priv->phy_addr & 0x1f) == 0x10 ? true : false);
-+	priv->embd_phy = ((priv->phy_addr & 0x1f) == 0x10);
- 
- 	asix_read_cmd(dev, AX_CMD_STATMNGSTS_REG, 0, 0, 1, &chipcode, 0);
- 	chipcode &= AX_CHIPCODE_MASK;
+Regards,
+Oleksij
 -- 
-2.30.2
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
