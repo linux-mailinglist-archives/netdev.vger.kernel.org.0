@@ -2,88 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 142E13F733B
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 12:27:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B912B3F7351
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 12:30:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240207AbhHYK2d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 06:28:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39992 "EHLO mail.kernel.org"
+        id S239716AbhHYKa7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 06:30:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41394 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240167AbhHYK2P (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Aug 2021 06:28:15 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 14E3161212;
-        Wed, 25 Aug 2021 10:27:29 +0000 (UTC)
+        id S239770AbhHYKaz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Aug 2021 06:30:55 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id C7DCB613E6;
+        Wed, 25 Aug 2021 10:30:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629887249;
-        bh=/dGcdnDJQSuikSxYpLybghGo6DeDQ9TcuR3g7ByXcx8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YzQfIITYt+EvmJkw15OcJ5ISgWzmfAAa9l1OY26UMXJYFyuibz1c+h+8Mk1FZCuHQ
-         kAJTQSl0ONbTNT/9lrv6hzN6QhLVWUwE815h7VOrCdY8YvCWgS3u1bctTLujiM8iyu
-         M2sRBLq78Vru85NB9m3LEF3gSubrENg5UHN8Qhq244f/WJpBeL5APGDRjTizsqga+P
-         R+am+zkLRFhNBWRZjsjF1VkOahqzMZZHXYrgTUgbynHQ0MUTdn3jtNfP6dJ5fNKPOR
-         2OS8+sxjO8jOeELe4bpM0maGGU4KaC22/bulQY5Ka345TX0/+psJIL/4XIVTsRsbp1
-         lpZrdGca7ZZAQ==
-Date:   Wed, 25 Aug 2021 11:27:01 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Vinod Koul <vkoul@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Vignesh R <vigneshr@ti.com>, Marc Zyngier <maz@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        dmaengine@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-media@vger.kernel.org, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-serial@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-spi@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: Use 'enum' instead of 'oneOf' plus 'const'
- entries
-Message-ID: <20210825102701.GB5186@sirena.org.uk>
-References: <20210824202014.978922-1-robh@kernel.org>
+        s=k20201202; t=1629887409;
+        bh=e/LAykflif0RBhpsIOZvQ3sVJ8TY37/rhNRX4Fg3+uo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=kU1Ver5TI2MtY7Bg18qsmxcezb9mC9bRS/ryBhFqpA82PhEiaELLUkRnNXs/VEFUn
+         4/9BvpGq96iwLNV1+1/FFdGCEW5fS7KrZlAl0R+kTIaLruh0tKRGzvAGJF0cZq35Ei
+         1GUTLWn+vy1VWzbiFukOhCPG6DudT7iHh1cXrP+9stnkQ1h8uBrCjjh1ecIdbAvchH
+         A6NMskVsgofymFp4ZP2W4unF1VlU55hIj31aprO0owbIjO055QFaTYNq+u2/03v8En
+         9t3ZH8V/XDfNlpHyE9cBi3yDbeZgOEplvM3ZOHjMrZtOFs0MSBAaTy9YQEvZ+Rl4fV
+         EPjh+LVpgZn7g==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id BDB1160A0C;
+        Wed, 25 Aug 2021 10:30:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="7ZAtKRhVyVSsbBD2"
-Content-Disposition: inline
-In-Reply-To: <20210824202014.978922-1-robh@kernel.org>
-X-Cookie: MY income is ALL disposable!
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] mctp: Remove the repeated declaration
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162988740977.13655.6240015284304517437.git-patchwork-notify@kernel.org>
+Date:   Wed, 25 Aug 2021 10:30:09 +0000
+References: <1629873271-63348-1-git-send-email-zhangshaokun@hisilicon.com>
+In-Reply-To: <1629873271-63348-1-git-send-email-zhangshaokun@hisilicon.com>
+To:     Shaokun Zhang <zhangshaokun@hisilicon.com>
+Cc:     netdev@vger.kernel.org, jk@codeconstruct.com.au,
+        matt@codeconstruct.com.au, davem@davemloft.net, kuba@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
---7ZAtKRhVyVSsbBD2
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue, Aug 24, 2021 at 03:20:14PM -0500, Rob Herring wrote:
+On Wed, 25 Aug 2021 14:34:31 +0800 you wrote:
+> Function 'mctp_dev_get_rtnl' is declared twice, so remove the
+> repeated declaration.
+> 
+> Cc: Jeremy Kerr <jk@codeconstruct.com.au>
+> Cc: Matt Johnston <matt@codeconstruct.com.au>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Signed-off-by: Shaokun Zhang <zhangshaokun@hisilicon.com>
+> 
+> [...]
 
-> 'enum' is equivalent to 'oneOf' with a list of 'const' entries, but 'enum'
-> is more concise and yields better error messages.
+Here is the summary with links:
+  - mctp: Remove the repeated declaration
+    https://git.kernel.org/netdev/net-next/c/87e5ef4b19ce
 
-Acked-by: Mark Brown <broonie@kernel.org>
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
---7ZAtKRhVyVSsbBD2
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmEmGvUACgkQJNaLcl1U
-h9AfCwf/TPAwmd3i8vLyV5kU4MWAOn8zovhbZ+gXG2hJek5nLRjdW7eTl2yXz1gx
-xdOp2MMA5ldnXUjncRKHMJYykdL7ZtEsOUWT44WgHT0h1WEQzTHSnoVgkt/DDbsP
-tuovH5NV986VPCJXIC+mBkt5a4MPzdD1nYVmPss+8R+HXfTRZauTlZefXvwCzNDT
-Md/IxPvIbcqw5Ks12P4kdojbEGB92MONTO3vRYkzCeY1toRL9fOY3DJE30Kd6o3+
-hzCYzeRkTgoibpK8oG+ZqMOJ38/shj8Wiyfovdhd7LOj9orgkbGdGRi10R1997IR
-tDWFSsOVWZ8p+r2ZuI06T7GlVjygag==
-=GpUP
------END PGP SIGNATURE-----
-
---7ZAtKRhVyVSsbBD2--
