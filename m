@@ -2,86 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63BC13F6D4F
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 04:08:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96FF33F6D64
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 04:19:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237079AbhHYCJE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 22:09:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40262 "EHLO
+        id S236824AbhHYCTw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 22:19:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233459AbhHYCJC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 22:09:02 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3B7FC061757;
-        Tue, 24 Aug 2021 19:08:17 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id j187so19961479pfg.4;
-        Tue, 24 Aug 2021 19:08:17 -0700 (PDT)
+        with ESMTP id S235237AbhHYCTv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 22:19:51 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C714C061757
+        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 19:19:06 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id c17so21604912pgc.0
+        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 19:19:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=chromium.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=w9co/Z3JPFE7W47WAwwudJGkR309x+OS12nqwpHf8Y8=;
-        b=KcTYKsZI4og0V07s0t/UEUL5/aCBPQvJO80104Uqe1nWqW4s2B/6gO/Aqf9WpFydRm
-         Lk905uu8rLSokyCH6RSoA/9qeKpceNOwiQYQr+AV+Ln+YxR5sHyoHyODTIyrax6u/faZ
-         qX73Bn0pm+H9Rx0dSfw3oimlg6HZfaiom8yKEzU/2kZWh+1gsf4iC+NIRZHSXrKOl5pZ
-         Ke4CEMoQCvz9U4D0+3ytjrsk2wXPoMDrWJIk+HW2UZ59h95oM98hlYo7TxO7+IYd47C4
-         STyqBWq+1zQaq/Zq1IWkdKLjroVxwtXNwHEqNGJfqrBpQKciY37m6LU5r+3YshYceyYv
-         qGfQ==
+         :content-disposition:in-reply-to;
+        bh=eTC/uQbzVSL+Ti5t7weoDEPLp7c2RLXHEGW56znnqkA=;
+        b=PlFwOe1Tkp1SxJpz8WQt4ki+KpKsP/BSqxZpV26oAc7e1fqdsHNTPl0AfrAEeC3Frv
+         9QtAgjbX7fcLayPLJw/uoq3Dc0w3U4B2fY+WnuztuVsKIu4WzoIIHUvnVjxqvEeNm4eW
+         OZ9N4D+yMXCHFFzt55c5fDzOmsEvmCiJ3XY2M=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=w9co/Z3JPFE7W47WAwwudJGkR309x+OS12nqwpHf8Y8=;
-        b=t7m0O+nb8TqZaOxbS1QtH3mNqCHub3FB3JgZnuPD3LqQyb4PZ05LnDKWEVZhpUvz93
-         gU+rRp4UisHeYxv2Yj8l+RBMF29dVYGNNpzIo8+b3F/j6VVMdtDbfaL4zeNU515lJxsn
-         4BqWVbZvvF+CjgSkh6ebtyHrVPSO6Vw/zb9VFRum+EZQgkJjoU+7nBcAV8ADk51epS5k
-         86cat9QK+QXuV7ygU37pDRfIXAQGSkN2QrPwVkrzDK/+xqYB7iI+nOuEQtRTqepDVqCb
-         h6skw53cXiM2PRDXqwOZkvQv8vrV1cG/wUXGIcInK9njkenowaCilxd/r9AMhg3Rv+BW
-         i3yw==
-X-Gm-Message-State: AOAM530fOFL5djLKMDE48//lVsSKHP2s8wpIm/srAkVeEtbOhl1Ju4ZO
-        id+9PZnewX8O6tMPAX2llmU=
-X-Google-Smtp-Source: ABdhPJx16wW1ttpl7E5qo06Nx9PsX8rFidufdQRkMkUHx6+dDKFDBx8u4hMUrHK5gpJN19nWx0JOPQ==
-X-Received: by 2002:aa7:8746:0:b0:3e3:e45:f726 with SMTP id g6-20020aa78746000000b003e30e45f726mr33052339pfo.47.1629857297543;
-        Tue, 24 Aug 2021 19:08:17 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:645:c000:2163:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id w2sm3559244pjq.5.2021.08.24.19.08.16
+         :mime-version:content-disposition:in-reply-to;
+        bh=eTC/uQbzVSL+Ti5t7weoDEPLp7c2RLXHEGW56znnqkA=;
+        b=gl+Bju41myUy3fNEPX+kpa3FHTDyK3p0iQKJI0SSjzyU2JhhwVS1+H4mpGA2CrnhIp
+         NsHcKWvM7Cpp/LzF4E5gMi8jpO6VZ8pvmgNWH36ikmeJBipek20RB75rcXD9ZAzk4/fp
+         jT+LxDj5K1ywPQDgSknpMFjx3fghsRK9mQ4yr1JlkWHHSymt3s+w2wD670nKmPWz9hEK
+         7MWWImwMwHCcAzoDSdwmsO7d4PuaFIYuP0w/XwrLRWNlYmvjcL2UALYqnoFnDUxb/VSw
+         +Ze0h/p22v131bFR0GZqEyewVuDRt2BkffFZLgwLJrL8jE7E0PntOki8dBtz1ltIG3DP
+         6OCw==
+X-Gm-Message-State: AOAM531WoB/3XVkHqLAgo/byuTxkQT5N9jhnchojkaeAq8lgJQpaiQu1
+        qxBCWTKTkORYE3oYS+9lqpIgmgKVh8pqvA==
+X-Google-Smtp-Source: ABdhPJwXZ/XwTGQmMk14RkumEAjXI0fIL6/Y/w1S9H60rDTYyiUJq5+mkid+ElC+nrSr/EBJm1HsEA==
+X-Received: by 2002:a65:6919:: with SMTP id s25mr39923709pgq.2.1629857945962;
+        Tue, 24 Aug 2021 19:19:05 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id 143sm20243706pfx.1.2021.08.24.19.19.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Aug 2021 19:08:16 -0700 (PDT)
-Date:   Tue, 24 Aug 2021 19:08:14 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Harini Katakam <harinik@xilinx.com>
-Cc:     Harini Katakam <harini.katakam@xilinx.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        David Miller <davem@davemloft.net>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Andrei Pistirica <andrei.pistirica@microchip.com>,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Michal Simek <michal.simek@xilinx.com>
-Subject: Re: [RFC PATCH] net: macb: Process tx timestamp only on ptp packets
-Message-ID: <20210825020814.GB25797@hoboy.vegasvil.org>
-References: <20210824101238.21105-1-harini.katakam@xilinx.com>
- <20210824140542.GA17195@hoboy.vegasvil.org>
- <CAFcVECKXOVwpsR=bEUmTXZpSQTjez1fjf1X9bXV_sFCe_U3_qA@mail.gmail.com>
+        Tue, 24 Aug 2021 19:19:05 -0700 (PDT)
+Date:   Tue, 24 Aug 2021 19:19:04 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Shai Malin <smalin@marvell.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        aelior@marvell.com, malin1024@gmail.com,
+        Prabhakar Kushwaha <pkushwaha@marvell.com>
+Subject: Re: [PATCH] qede: Fix memset corruption
+Message-ID: <202108241918.EA31FB40@keescook>
+References: <20210824165249.7063-1-smalin@marvell.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAFcVECKXOVwpsR=bEUmTXZpSQTjez1fjf1X9bXV_sFCe_U3_qA@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20210824165249.7063-1-smalin@marvell.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 24, 2021 at 08:59:20PM +0530, Harini Katakam wrote:
-> Yes, there is no SW overhead because the  skb check ensures timestamp
-> post processing is done only on requested packets. But the IP
-> timestamps all packets
-> because this is a register level setting, not per packet. That's the
-> overhead I was referring to.
+On Tue, Aug 24, 2021 at 07:52:49PM +0300, Shai Malin wrote:
+> Thanks to Kees Cook who detected the problem of memset that starting
+> from not the first member, but sized for the whole struct.
+> The better change will be to remove the redundant memset and to clear
+> only the msix_cnt member.
 
-But the IP block time stamps the frames in silicon, no?
+Okay, thanks. It wasn't clear if this needs to be _only_ the msix_cnt
+member or something else.
 
-I don't see how that is "overhead" in any sense of the word.
+> 
+> Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
+> Signed-off-by: Ariel Elior <aelior@marvell.com>
+> Signed-off-by: Shai Malin <smalin@marvell.com>
 
-Thanks,
-Richard
+Reported-by: Kees Cook <keescook@chromium.org>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+
+-Kees
+
+> ---
+>  drivers/net/ethernet/qlogic/qede/qede_main.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/qlogic/qede/qede_main.c b/drivers/net/ethernet/qlogic/qede/qede_main.c
+> index d400e9b235bf..a0f20c5337d0 100644
+> --- a/drivers/net/ethernet/qlogic/qede/qede_main.c
+> +++ b/drivers/net/ethernet/qlogic/qede/qede_main.c
+> @@ -1866,6 +1866,7 @@ static void qede_sync_free_irqs(struct qede_dev *edev)
+>  	}
+>  
+>  	edev->int_info.used_cnt = 0;
+> +	edev->int_info.msix_cnt = 0;
+>  }
+>  
+>  static int qede_req_msix_irqs(struct qede_dev *edev)
+> @@ -2419,7 +2420,6 @@ static int qede_load(struct qede_dev *edev, enum qede_load_mode mode,
+>  	goto out;
+>  err4:
+>  	qede_sync_free_irqs(edev);
+> -	memset(&edev->int_info.msix_cnt, 0, sizeof(struct qed_int_info));
+>  err3:
+>  	qede_napi_disable_remove(edev);
+>  err2:
+> -- 
+> 2.22.0
+> 
+
+-- 
+Kees Cook
