@@ -2,104 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FB493F7806
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 17:09:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84A433F783B
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 17:26:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240844AbhHYPJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 11:09:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57734 "EHLO mail.kernel.org"
+        id S240987AbhHYP1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 11:27:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60912 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231995AbhHYPJz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Aug 2021 11:09:55 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BE3B761100;
-        Wed, 25 Aug 2021 15:09:09 +0000 (UTC)
+        id S240741AbhHYP1H (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Aug 2021 11:27:07 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 18E2E61052;
+        Wed, 25 Aug 2021 15:26:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629904150;
-        bh=8tsHrftLkYibnSX9r9OAwrT38gSVSfWcUHnYVtmUTa0=;
+        s=k20201202; t=1629905180;
+        bh=sTxwrPsGsJErgKqE0ljBSfzQNjKMYgAnyDG+b7Oc4c4=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Tu7RZK21d0H1tc3JOIuf2KkV5FFDoSNqop7FDWLiA6zm2uBrokG7amkPLw+d4PVrj
-         Jejd6SV63pC/Y53J84fjRT3zayzOjKelYEUryeiiFG1aArhEexHQKoYtUr5i2SM3TG
-         g7Z7/fCLyJKc+8V2Vn5FcjIT8ZIO5WNB+3+eaoUB8CYZhGpTOFnHEePF6KeVBZoAss
-         GF8C7vk9mvMIInHyTnh66UZZWSrjxmEba4F9Jfg1gyGZFREGjoITAwAu33Q3micZUs
-         PLY3XXKPw/ZlIYRhRxWkXKGMlodqAV3pcy5WewWfC9rxsObb/RdTnpNj/5eKFeTS/S
-         4+IDAKe54HUqA==
-Date:   Wed, 25 Aug 2021 08:09:08 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Guangbin Huang <huangguangbin2@huawei.com>
-Cc:     <davem@davemloft.net>, <mkubecek@suse.cz>, <andrew@lunn.ch>,
-        <amitc@mellanox.com>, <idosch@idosch.org>, <danieller@nvidia.com>,
-        <netdev@vger.kernel.org>, <lipeng321@huawei.com>,
-        <chenhao288@hisilicon.com>
-Subject: Re: [PATCH net-next 3/5] ethtool: add support to set/get rx buf len
-Message-ID: <20210825080908.1a5690a1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1629873655-51539-4-git-send-email-huangguangbin2@huawei.com>
-References: <1629873655-51539-1-git-send-email-huangguangbin2@huawei.com>
-        <1629873655-51539-4-git-send-email-huangguangbin2@huawei.com>
+        b=AAfTbxTRyg1uJXamrEu8JFGe6inO1d1UFzuD6Vp1WvHS4yr5c8vGTvcy4/6Ozha9B
+         mZWPH5BsZi5KjsFTMYNWW3sjUP4EZvhmZSn64F+uMOtmg1C2EiEgHIkRbg2vIRpqZV
+         ntXMx1LWKCeaxEL52veZyTXngkmammNkYmw367iz3SZ9OLY0Y+w8pKY52P0Kcf9pTf
+         GqzV1acbE8ebrrgT4UNRnJYvLZNrgE6Qx3M2a/tgfCC9N54Fmy5FwqTO8NHtNokOV7
+         AeVnE/Jwsao724aoHVJtndWY3V9JAe1e7bIQptyYOXVS71XW5mkD6L+M5Sd+weB91W
+         FBo4hlqoJITQw==
+Date:   Wed, 25 Aug 2021 17:26:13 +0200
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Pavel Machek <pavel@ucw.cz>, andrew@lunn.ch
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Michael Walle <michael@walle.cc>, anthony.l.nguyen@intel.com,
+        bigeasy@linutronix.de, davem@davemloft.net,
+        dvorax.fuxbrumer@linux.intel.com, f.fainelli@gmail.com,
+        jacek.anaszewski@gmail.com, kuba@kernel.org, kurt@linutronix.de,
+        linux-leds@vger.kernel.org, netdev@vger.kernel.org,
+        sasha.neftin@intel.com, vinicius.gomes@intel.com,
+        vitaly.lifshits@intel.com
+Subject: Re: [PATCH net-next 5/5] igc: Export LEDs
+Message-ID: <20210825172613.71b62113@dellmb>
+In-Reply-To: <20210817190241.GA15389@amd>
+References: <20210727165605.5c8ddb68@thinkpad>
+        <c56fd3dbe1037a5c2697b311f256b3d8@walle.cc>
+        <20210727172828.1529c764@thinkpad>
+        <8edcc387025a6212d58fe01865725734@walle.cc>
+        <20210727183213.73f34141@thinkpad>
+        <25d3e798-09f5-56b5-5764-c60435109dd2@gmail.com>
+        <20210810172927.GB3302@amd>
+        <20210810195550.261189b3@thinkpad>
+        <20210810195335.GA7659@duo.ucw.cz>
+        <20210810225353.6a19f772@thinkpad>
+        <20210817190241.GA15389@amd>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 25 Aug 2021 14:40:53 +0800 Guangbin Huang wrote:
-> From: Hao Chen <chenhao288@hisilicon.com>
-> 
-> Add support to set rx buf len via ethtool -G parameter and get
-> rx buf len via ethtool -g parameter.
-> 
-> Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
-> Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+On Tue, 17 Aug 2021 21:02:42 +0200
+Pavel Machek <pavel@ucw.cz> wrote:
 
-> diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
-> index 266e95e4fb33..6e26586274b3 100644
-> --- a/include/uapi/linux/ethtool.h
-> +++ b/include/uapi/linux/ethtool.h
-> @@ -516,6 +516,7 @@ struct ethtool_coalesce {
->   *	jumbo ring
->   * @tx_pending: Current maximum supported number of pending entries
->   *	per TX ring
-> + * @rx_buf_len: Current supported size of rx ring BD buffer.
+> On Tue 2021-08-10 22:53:53, Marek Beh=C3=BAn wrote:
+> > On Tue, 10 Aug 2021 21:53:35 +0200
+> > Pavel Machek <pavel@ucw.cz> wrote:
+> >  =20
+> > > > Pavel, one point of the discussion is that in this case the LED
+> > > > is controlled by MAC, not PHY. So the question is whether we
+> > > > want to do "ethmacN" (in addition to "ethphyN").   =20
+> > >=20
+> > > Sorry, I missed that. I guess that yes, ethmacX is okay, too.
+> > >=20
+> > > Even better would be to find common term that could be used for
+> > > both ethmacN and ethphyN and just use that. (Except that we want
+> > > to avoid ethX). Maybe "ethportX" would be suitable? =20
+> >=20
+> > See
+> >   https://lore.kernel.org/linux-leds/YQAlPrF2uu3Gr+0d@lunn.ch/
+> > and
+> >   https://lore.kernel.org/linux-leds/20210727172828.1529c764@thinkpad/
+> > =20
+>=20
+> Ok, I guess I'd preffer all LEDs corresponding to one port to be
+> grouped, but that may be hard to do.
 
-How about "Current length of buffers on the rx ring"?
+Hi Pavel (and Andrew),
 
->   * If the interface does not have separate RX mini and/or jumbo rings,
->   * @rx_mini_max_pending and/or @rx_jumbo_max_pending will be 0.
-> @@ -533,6 +534,7 @@ struct ethtool_ringparam {
->  	__u32	rx_mini_pending;
->  	__u32	rx_jumbo_pending;
->  	__u32	tx_pending;
-> +	__u32	rx_buf_len;
->  };
+The thing is that normally we are creating LED classdevs when the
+parent device is probed. In this case when the PHY is probed. But we
+will know the corresponding MAC only once the PHY is attached to it's
+network interface.
 
-You can't extend this structure, because it's used by the IOCTL
-interface directly. You need to pass the new value to the drivers 
-in a different way. You can look at what Yufeng Mo did recently
-for an example approach.
+Also, a PHY may be theoretically attached to multiple different
+interfaces during it's lifetime. I guess there isn't many boards
+currently that have such a configuration wired (maybe none), but
+kernel's API is prepared for this.
 
-> @@ -105,6 +109,7 @@ const struct nla_policy ethnl_rings_set_policy[] = {
->  	[ETHTOOL_A_RINGS_RX_MINI]		= { .type = NLA_U32 },
->  	[ETHTOOL_A_RINGS_RX_JUMBO]		= { .type = NLA_U32 },
->  	[ETHTOOL_A_RINGS_TX]			= { .type = NLA_U32 },
-> +	[ETHTOOL_A_RINGS_RX_BUF_LEN]            = { .type = NLA_U32 },
+So we really can't group them under one parent device, unless:
 
-We should prevent user space for passing 0 as input, so we can use it
-as a special value in the kernel. NLA_POLICY_MIN()
+- we create LED classdevs only after PHY is attached (which will make
+  us unable to blink the LEDs when the PHY is not attached yet) and
+  destroy them when PHY is detached. I find this solution wrong - the
+  LEDs will be unavailable for example if the MAC driver fails to probe
+  for some reason
 
->  };
->  
->  int ethnl_set_rings(struct sk_buff *skb, struct genl_info *info)
-> @@ -142,6 +147,8 @@ int ethnl_set_rings(struct sk_buff *skb, struct genl_info *info)
->  	ethnl_update_u32(&ringparam.rx_jumbo_pending,
->  			 tb[ETHTOOL_A_RINGS_RX_JUMBO], &mod);
->  	ethnl_update_u32(&ringparam.tx_pending, tb[ETHTOOL_A_RINGS_TX], &mod);
-> +	ethnl_update_u32(&ringparam.rx_buf_len,
-> +			 tb[ETHTOOL_A_RINGS_RX_BUF_LEN], &mod);
->  	ret = 0;
->  	if (!mod)
->  		goto out_ops;
+- or we add a mechanism to reprobe LEDs upon request (which also seems
+  a rather unsatisfactory solution to me...)
 
-We need a way of preventing drivers which don't support the new option
-from just silently ignoring it. Please add a capability like
-cap_link_lanes_supported and reject non-0 ETHTOOL_A_RINGS_RX_BUF_LEN
-if it's not set.
+- maybe some other solution?
+
+Marek
