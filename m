@@ -2,100 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 274F63F77EA
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 17:00:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FB493F7806
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 17:09:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241812AbhHYPBE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 11:01:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48328 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240940AbhHYPA7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 11:00:59 -0400
-Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D359C0613C1
-        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 08:00:14 -0700 (PDT)
-Received: by mail-io1-xd2b.google.com with SMTP id a15so31227670iot.2
-        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 08:00:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=iLfJeET2ve0H5UgkAIjYFsr7rtgqOzhLAiJ9vDMCtuc=;
-        b=CUXmdc1nbVcvgegRerTbifpZts7ufvUAqg4rpm1mItTX8pHSMRcRc9mmAXKW+yFIVM
-         wY1pPZPsIBFqLl+UyJmlupEzWvSp/A4U4NtuNp14vqMeSV/KSvMBzpEb0OPyvOW7Fz2x
-         7HROreHktuMu366P2mbOrYEcWK2d4g2Kg9fHMqKaRzX9zQXGM2NiGKbv+gRCuFDkWP4E
-         PgKnP/ObMLO+orS3a4Q5jW0kSXGQ8FALoP/geajGrkfu3fS/lneoRgbBcZ9F/1cTkWkD
-         NWNaF9Up9BLKGTzxwQ/zUB/8pzYNuRXM5FdKuUWaxucUhpe9mP8S/D6zPZNiTAP95uiG
-         4aOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=iLfJeET2ve0H5UgkAIjYFsr7rtgqOzhLAiJ9vDMCtuc=;
-        b=KBTCDNfqsTnQy7pNY6L/i15fXQQMRQN1aewh0Lcyo6Vxa5gfLfz3MQPrvlQqB4i+fS
-         Lrqb5p2SchaiIoBdXX5mMHqK2dK9FwE/TX3jXaLjzc/Pp5sQnaCnhLUYNjj9JY9+Slc7
-         /NIQmV6nKBxXM5AclRPeCiP29jQInBl5fz2UFaILJB0G7A3iqDgkxvd58A3wnCvSxhQl
-         /C+hJxkHAu02pJSnk+ohaU/qWbh1vrLJY2mR0KlV5X+46P8tA1OdqFHiLviM5QThGnQX
-         3RMCbclWOtoqPeGOBLuZPZTH8NufWpL1Xi8QQ3sAHDN4bKP7yUqzr5POx1uYzsQPecgX
-         xdMg==
-X-Gm-Message-State: AOAM533/aM+ki1M52DNFX/2jwVLV3Fn2hjU1ScOv6FvuG77StWm51tcX
-        9G9y0yYzwrQcBDBeFa37sMSbVA==
-X-Google-Smtp-Source: ABdhPJxowRvu6BIeDfSetidf16jz/ifyPgByV7bD5kDRnJANvWVMae8HWHHtySbzPxdwPBKI0tu1kw==
-X-Received: by 2002:a05:6602:2436:: with SMTP id g22mr36663718iob.109.1629903613651;
-        Wed, 25 Aug 2021 08:00:13 -0700 (PDT)
-Received: from [192.168.1.30] ([207.135.234.126])
-        by smtp.gmail.com with ESMTPSA id f9sm110864ilk.56.2021.08.25.08.00.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 25 Aug 2021 08:00:12 -0700 (PDT)
-Subject: Re: [PATCH v4 0/4] open/accept directly into io_uring fixed file
- table
-To:     Pavel Begunkov <asml.silence@gmail.com>, io-uring@vger.kernel.org,
-        Josh Triplett <josh@joshtriplett.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Stefan Metzmacher <metze@samba.org>
-References: <cover.1629888991.git.asml.silence@gmail.com>
-From:   Jens Axboe <axboe@kernel.dk>
-Message-ID: <230278aa-9774-e31f-b4f9-c1785a2ecfc5@kernel.dk>
-Date:   Wed, 25 Aug 2021 09:00:12 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S240844AbhHYPJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 11:09:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57734 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231995AbhHYPJz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Aug 2021 11:09:55 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BE3B761100;
+        Wed, 25 Aug 2021 15:09:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1629904150;
+        bh=8tsHrftLkYibnSX9r9OAwrT38gSVSfWcUHnYVtmUTa0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Tu7RZK21d0H1tc3JOIuf2KkV5FFDoSNqop7FDWLiA6zm2uBrokG7amkPLw+d4PVrj
+         Jejd6SV63pC/Y53J84fjRT3zayzOjKelYEUryeiiFG1aArhEexHQKoYtUr5i2SM3TG
+         g7Z7/fCLyJKc+8V2Vn5FcjIT8ZIO5WNB+3+eaoUB8CYZhGpTOFnHEePF6KeVBZoAss
+         GF8C7vk9mvMIInHyTnh66UZZWSrjxmEba4F9Jfg1gyGZFREGjoITAwAu33Q3micZUs
+         PLY3XXKPw/ZlIYRhRxWkXKGMlodqAV3pcy5WewWfC9rxsObb/RdTnpNj/5eKFeTS/S
+         4+IDAKe54HUqA==
+Date:   Wed, 25 Aug 2021 08:09:08 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Guangbin Huang <huangguangbin2@huawei.com>
+Cc:     <davem@davemloft.net>, <mkubecek@suse.cz>, <andrew@lunn.ch>,
+        <amitc@mellanox.com>, <idosch@idosch.org>, <danieller@nvidia.com>,
+        <netdev@vger.kernel.org>, <lipeng321@huawei.com>,
+        <chenhao288@hisilicon.com>
+Subject: Re: [PATCH net-next 3/5] ethtool: add support to set/get rx buf len
+Message-ID: <20210825080908.1a5690a1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1629873655-51539-4-git-send-email-huangguangbin2@huawei.com>
+References: <1629873655-51539-1-git-send-email-huangguangbin2@huawei.com>
+        <1629873655-51539-4-git-send-email-huangguangbin2@huawei.com>
 MIME-Version: 1.0
-In-Reply-To: <cover.1629888991.git.asml.silence@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/25/21 5:25 AM, Pavel Begunkov wrote:
-> Add an optional feature to open/accept directly into io_uring's fixed
-> file table bypassing the normal file table. Same behaviour if as the
-> snippet below, but in one operation:
+On Wed, 25 Aug 2021 14:40:53 +0800 Guangbin Huang wrote:
+> From: Hao Chen <chenhao288@hisilicon.com>
 > 
-> sqe = io_uring_[open|accept]_prep();
-> io_uring_submit(sqe);
-> // ... once we get a CQE back
-> io_uring_register_files_update(uring_idx, (fd = cqe->res));
-> close((fd = cqe->res));
+> Add support to set rx buf len via ethtool -G parameter and get
+> rx buf len via ethtool -g parameter.
 > 
-> The idea is old, and was brough up and implemented a year ago by
-> Josh Triplett, though haven't sought the light.
-> 
-> The behaviour is controlled by setting sqe->file_index, where 0 implies
-> the old behaviour using normal file tables. If non-zero value is
-> specified, then it will behave as described and place the file into a
-> fixed file slot sqe->file_index - 1. A file table should be already
-> created, the slot should be valid and empty, otherwise the operation
-> will fail.
-> 
-> note: IOSQE_FIXED_FILE can't be used as a mode switch, because accept
-> takes a file, and it already uses the flag with a different meaning.
+> Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
+> Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 
-Updated the tree and picked you davem's ack as well.
+> diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
+> index 266e95e4fb33..6e26586274b3 100644
+> --- a/include/uapi/linux/ethtool.h
+> +++ b/include/uapi/linux/ethtool.h
+> @@ -516,6 +516,7 @@ struct ethtool_coalesce {
+>   *	jumbo ring
+>   * @tx_pending: Current maximum supported number of pending entries
+>   *	per TX ring
+> + * @rx_buf_len: Current supported size of rx ring BD buffer.
 
--- 
-Jens Axboe
+How about "Current length of buffers on the rx ring"?
 
+>   * If the interface does not have separate RX mini and/or jumbo rings,
+>   * @rx_mini_max_pending and/or @rx_jumbo_max_pending will be 0.
+> @@ -533,6 +534,7 @@ struct ethtool_ringparam {
+>  	__u32	rx_mini_pending;
+>  	__u32	rx_jumbo_pending;
+>  	__u32	tx_pending;
+> +	__u32	rx_buf_len;
+>  };
+
+You can't extend this structure, because it's used by the IOCTL
+interface directly. You need to pass the new value to the drivers 
+in a different way. You can look at what Yufeng Mo did recently
+for an example approach.
+
+> @@ -105,6 +109,7 @@ const struct nla_policy ethnl_rings_set_policy[] = {
+>  	[ETHTOOL_A_RINGS_RX_MINI]		= { .type = NLA_U32 },
+>  	[ETHTOOL_A_RINGS_RX_JUMBO]		= { .type = NLA_U32 },
+>  	[ETHTOOL_A_RINGS_TX]			= { .type = NLA_U32 },
+> +	[ETHTOOL_A_RINGS_RX_BUF_LEN]            = { .type = NLA_U32 },
+
+We should prevent user space for passing 0 as input, so we can use it
+as a special value in the kernel. NLA_POLICY_MIN()
+
+>  };
+>  
+>  int ethnl_set_rings(struct sk_buff *skb, struct genl_info *info)
+> @@ -142,6 +147,8 @@ int ethnl_set_rings(struct sk_buff *skb, struct genl_info *info)
+>  	ethnl_update_u32(&ringparam.rx_jumbo_pending,
+>  			 tb[ETHTOOL_A_RINGS_RX_JUMBO], &mod);
+>  	ethnl_update_u32(&ringparam.tx_pending, tb[ETHTOOL_A_RINGS_TX], &mod);
+> +	ethnl_update_u32(&ringparam.rx_buf_len,
+> +			 tb[ETHTOOL_A_RINGS_RX_BUF_LEN], &mod);
+>  	ret = 0;
+>  	if (!mod)
+>  		goto out_ops;
+
+We need a way of preventing drivers which don't support the new option
+from just silently ignoring it. Please add a capability like
+cap_link_lanes_supported and reject non-0 ETHTOOL_A_RINGS_RX_BUF_LEN
+if it's not set.
