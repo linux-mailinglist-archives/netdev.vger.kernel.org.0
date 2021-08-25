@@ -2,76 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4986C3F79C4
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 18:04:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41D733F79C8
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 18:05:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234602AbhHYQFG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 12:05:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48698 "EHLO mail.kernel.org"
+        id S236214AbhHYQFo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 12:05:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49134 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234330AbhHYQFF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Aug 2021 12:05:05 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 531E161212;
-        Wed, 25 Aug 2021 16:04:19 +0000 (UTC)
+        id S232081AbhHYQFn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Aug 2021 12:05:43 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E9BBC61423;
+        Wed, 25 Aug 2021 16:04:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629907459;
-        bh=4PpP/xVSQQyMFeqCK4UU8Iiiit03YHt+jjy7lQiJThg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=LytHCMjaz2HLlW850RzBQGVKqF7KoVy0WOTohOx/nPOKNyNwaqoiSSdEBe/uPTVlk
-         hzqIvXlyb3d/IkIxJEM6QhtWdxyloH1yT95UbvHj93U1eyBkOeiYWwrOKCJ5ysBh4t
-         JyuER9108jK/lnaRwUNSGITdDOUdxe2ceQg/GJyHZcFV1XuUy653v945Kq0PK+Pq3v
-         FFVuQuN2bQNNrjfM2RnOP94T8oqIm0oM87tBr0QXPgATjHxX/vbCYkxJgRG/eJsas8
-         BH9rLx/vVLQ/46FtNK1bmVRMA3uQBNziqoYEoLjfcU/TyqPxzX4XtJgWaaeObIBJc+
-         Gccv9t5NUWVSg==
-Date:   Wed, 25 Aug 2021 09:04:18 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Zhongya Yan <yan2228598786@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, hengqi.chen@gmail.com,
-        Yonghong Song <yhs@fb.com>, ntspring@fb.com
-Subject: Re: [PATCH] net: tcp_drop adds `reason` parameter for tracing v2
-Message-ID: <20210825090418.57fd7d2f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CANn89iJO8jzjFWvJ610TPmKDE8WKi8ojTr_HWXLz5g=4pdQHEA@mail.gmail.com>
-References: <20210825154043.247764-1-yan2228598786@gmail.com>
-        <CANn89iJO8jzjFWvJ610TPmKDE8WKi8ojTr_HWXLz5g=4pdQHEA@mail.gmail.com>
+        s=k20201202; t=1629907498;
+        bh=DaGsaCXXMEaJVHJDUEzQa5k0dv8atCixW2ZNnqxcsWE=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Hg0JbfCUqVGPE1Utc3XvHT2ZzmwhuzauXDTMQT2bg0Ip3+FLII4GI6ZWUjPDnjPfF
+         M7RzD76tXFraOz1XVubXfFD1foCgTS2rmLMFAdjzJTeAchBuGiJ8DNuzxpjb9Oyuw9
+         K73UgSv8J9dUObTEx+7S6T/nJ6t5O20iLzjbbQOlbcUSL+GIQ6qpjm6dz0or7qUrK5
+         CiA+mlBO4yxQywjuQ9f1Y6FKeZeMu87Sbfk1kqUHlxVt4cxxxu9anecBEv+bQdi6Hx
+         klPqNTADkiRAwFhy2Iap/IILPm1FVl01v57ITdwVID37P++NR1Frw+phAuEFjyihaq
+         ao1/IxVW64apw==
+Received: by mail-ot1-f41.google.com with SMTP id o16-20020a9d2210000000b0051b1e56c98fso40671568ota.8;
+        Wed, 25 Aug 2021 09:04:57 -0700 (PDT)
+X-Gm-Message-State: AOAM530ym4mNxDQSzBmX8FwHo2B+a1GjfxQ6XPn1Z93+psNSaCSaJEca
+        uAXiyrzPM/+3i3ZI+zy8yeaFgSy2KEWDscBBzgY=
+X-Google-Smtp-Source: ABdhPJzmlzK7LAvef8jbDy6p7UNkjEVB1dgSKHHKPZQG94aNN8fvddSxhazPzywPle3BYA5ZzcpcGjEz4CbQKhGhtII=
+X-Received: by 2002:a9d:5c2:: with SMTP id 60mr36449769otd.77.1629907497260;
+ Wed, 25 Aug 2021 09:04:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <cover.1629840814.git.cdleonard@gmail.com> <abb720b34b9eef1cc52ef68017334e27a2af83c6.1629840814.git.cdleonard@gmail.com>
+ <30f73293-ea03-d18f-d923-0cf499d4b208@gmail.com> <20210825080817.GA19149@gondor.apana.org.au>
+In-Reply-To: <20210825080817.GA19149@gondor.apana.org.au>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Wed, 25 Aug 2021 18:04:46 +0200
+X-Gmail-Original-Message-ID: <CAMj1kXE_sDZJjmkoqHcLz=9fDqLPBNbyfH4zxN2s2RdgKO=eSw@mail.gmail.com>
+Message-ID: <CAMj1kXE_sDZJjmkoqHcLz=9fDqLPBNbyfH4zxN2s2RdgKO=eSw@mail.gmail.com>
+Subject: Re: [RFCv3 05/15] tcp: authopt: Add crypto initialization
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Eric Biggers <ebiggers@kernel.org>,
+        Leonard Crestez <cdleonard@gmail.com>,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Yuchung Cheng <ycheng@google.com>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Christoph Paasch <cpaasch@apple.com>,
+        Ivan Delalande <colona@arista.com>,
+        Priyaranjan Jha <priyarjha@google.com>,
+        Menglong Dong <dong.menglong@zte.com.cn>,
+        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
+        <netdev@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 25 Aug 2021 08:47:46 -0700 Eric Dumazet wrote:
-> On Wed, Aug 25, 2021 at 8:41 AM Zhongya Yan <yan2228598786@gmail.com> wrote:
-> > @@ -5703,15 +5700,15 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
-> >                         TCP_INC_STATS(sock_net(sk), TCP_MIB_INERRS);
-> >                 NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPSYNCHALLENGE);
-> >                 tcp_send_challenge_ack(sk, skb);
-> > -               goto discard;
-> > +               tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_VALIDATE_INCOMING));  
-> 
-> I'd rather use a string. So that we can more easily identify _why_ the
-> packet was drop, without looking at the source code
-> of the exact kernel version to locate line number 1057
+On Wed, 25 Aug 2021 at 10:08, Herbert Xu <herbert@gondor.apana.org.au> wrote:
+>
+> On Tue, Aug 24, 2021 at 04:34:58PM -0700, Eric Dumazet wrote:
+> >
+> > On 8/24/21 2:34 PM, Leonard Crestez wrote:
+> > > The crypto_shash API is used in order to compute packet signatures. The
+> > > API comes with several unfortunate limitations:
+> > >
+> > > 1) Allocating a crypto_shash can sleep and must be done in user context.
+> > > 2) Packet signatures must be computed in softirq context
+> > > 3) Packet signatures use dynamic "traffic keys" which require exclusive
+> > > access to crypto_shash for crypto_setkey.
+> > >
+> > > The solution is to allocate one crypto_shash for each possible cpu for
+> > > each algorithm at setsockopt time. The per-cpu tfm is then borrowed from
+> > > softirq context, signatures are computed and the tfm is returned.
+> > >
+> >
+> > I could not see the per-cpu stuff that you mention in the changelog.
+>
+> Perhaps it's time we moved the key information from the tfm into
+> the request structure for hashes? Or at least provide a way for
+> the key to be in the request structure in addition to the tfm as
+> the tfm model still works for IPsec.  Ard/Eric, what do you think
+> about that?
+>
 
-Yeah, the line number seems like a particularly bad idea. Hopefully
-strings won't be problematic, given we can expect most serious users 
-to feed the tracepoints via BPF. enum would be more convenient there,
-I'd think.
-
-> You can be sure that we will get reports in the future from users of
-> heavily modified kernels.
-> Having to download a git tree, or apply semi-private patches is a no go.
-
-I'm slightly surprised by this angle. Are there downstream kernels with
-heavily modified TCP other than Google's?
-
-> If you really want to include __FILE__ and __LINE__, these both can be
-> stringified and included in the report, with the help of macros.
-
+I think it makes sense for a shash desc to have the ability to carry a
+key, which will be used instead of the TFM key, but this seems like
+quite a lot of work, given that all implementations will need to be
+updated. Also, setkey() can currently sleep, so we need to check
+whether the existing key manipulation code can actually execute during
+init/update/final if sleeping is not permitted.
