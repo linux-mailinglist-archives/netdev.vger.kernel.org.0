@@ -2,132 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0DC93F7161
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 11:01:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DDAB3F71D4
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 11:37:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239452AbhHYJCT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 05:02:19 -0400
-Received: from mail-sn1anam02on2069.outbound.protection.outlook.com ([40.107.96.69]:48391
-        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S239563AbhHYJCP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Aug 2021 05:02:15 -0400
+        id S239654AbhHYJhx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 05:37:53 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:23280 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S239517AbhHYJhw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 05:37:52 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.0.43) with SMTP id 17P6e3Zc014197;
+        Wed, 25 Aug 2021 02:35:02 -0700
+Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2170.outbound.protection.outlook.com [104.47.57.170])
+        by mx0a-0016f401.pphosted.com with ESMTP id 3angt00mag-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 25 Aug 2021 02:35:01 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Pgp7IBDh9Xe91c3aNnbLJCXUlBxFBVILgni5RJma1jiye0vVegbNAfvdV2ixa7VJc8RiTBG4ZOgz/yHVkDIxsRR+QTTvrdC0YN1se3CI8gUS62KUvcq/bH6FmQgan3of3YoHfPvNcB0Wprz+03kfOKo1o7KSeBV6f8o0zId9StwfKdB4u2opDHTAoBTcLIj+HS7tBaEGifqFSlgtYXePyjf/ZCx3GfCvWuClCOaFZ/SnzjJJX2iGqBCmmBjPgbbH10C/AX0RwRtpqz7uscrnMjfmNhgqMzX2kusuYsJoZUpIuyi5dtySNYa2IRI0rYnca0kXtrCzMUPZOMAiWv8+1Q==
+ b=Jbxsm6ZlBaQ2zUEyqGM80rXlFDk+eNi8Ib5ZF8Xo8jAkkd1i2Ky+yNvOsYR9U8yxXJsM0pB8KcPXUygx4YyVV3SlQqvDiiaYyv+ZbOG2wUMdABObTP8ezW5we8C900EdrLm9pGRF7Xd7Sk9U5n6eu9f8YMR0hBvr956AfCGyeHF4AjbTt5dP2Wz8iFIxXicx9jv2052MVdj+crtVhkPKj7GYdghQ9pkX1gbhPYQz9mFsFR5Hw0vMkC5kZ8QbcS/KxfouCWeHQa7BcyGL3sAZIoobAcW1/jBAyaSCRUiM3Tep/ttCIJMMeM6cebYrXo/Hm9BmmQDukTBXz2rcT2KVpQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JdmDYf8ei7Uq6X129vGEpTA/IrC1QBhdXKcA591Boqs=;
- b=SzB6ssy+6Pfy1VJ1KglYgGEfq0Tim6cCA4iwA5uvdE3OTR33+iJUGJN8uJrvvr30J9ilYOub1NeUJfqYYWMh/GBi5XlPytR+jq+3UVA3o503jVR4a1PBlQ4PFAm/Q4LqYZ+4ywrSl96/1ZRZUAViXtE+Rl/znIsIweEdHgdaQ8cny6GeGgIbH7VrB484vd8zxW1PxQ1nyw1Y1jYxtO/CD11T3SZVk9ZR1mB5qkseISyy8IYJBcF6rU4U04KYwkNs5HdIhhnLTQ/DeHjN1ChL0DHHAxplKks2fsSuEIw8LHPMt3UO4zgGQ9PWhyLNmql6hpQY5aeftEmXbE0Z0puheQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.35) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ bh=shIfwYf1W6ZUuDgUwTj1C18ClkhNDwyj3mVCutBNX3A=;
+ b=IV/f3dxu00lt+19PggCevzT1ER3r8Ea8946Oj6fLjH1gU6kbKhuSGos7c5i+u7Qb2e0dtWQcn7sHg2CCt137JSe7t60udSElnGgG4f8Z/uP9+G3YWAUcIza//3Gpzfm8Pt1OuwYEV00sgWOANGUqPVmSpZXUkw3tZPVvk0VFUNQ5jtD9vXKIJSXEKRG8G7rREXDC2aEYBRyHGFBWeaH0xDv/Ot237adPeuGhsKiC5qcmDFW0pSEDBJGAfO0rsPhsZ0xMFDCd3la4KblXGQ/gnSNbVVib1DBLA4fAi61HZNabOL2EEqh63lAZqwBLp5AlPgi80hk4RV2OItx6V0LzYw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JdmDYf8ei7Uq6X129vGEpTA/IrC1QBhdXKcA591Boqs=;
- b=tc+YmP6NBI01zcQ0snFfUBwoej/5payfEKyIwsJfm2ANlcGmW7X1EKaCw4LWSjsWDdO0gdaieRL4mKFIZHWQnQfASp1SU/AFJsmbBIRg7UpZsIeSrz4st3ikd5JzTamo0w7lC6T8wgxP8BsytzNsdHi8lVWiQIf42ON0Tb9eLpAnPyGt05w8jZM+WJYSgbuB0eXS0c5bjTxirX4Fywc0fK/gql8a0Sq4nWbvm/UDhwlPTadzXupgB+ZCsZp3WK+vACzGpK5PC/4mz746kVCaMILKLAN9n8ZVo4Eo7VP0FwF8NqPn37vQh3JvcRUOW+0dsyMRyjX9dd1ndqeyeFTfpg==
-Received: from BN9PR03CA0110.namprd03.prod.outlook.com (2603:10b6:408:fd::25)
- by BYAPR12MB2998.namprd12.prod.outlook.com (2603:10b6:a03:dd::16) with
+ bh=shIfwYf1W6ZUuDgUwTj1C18ClkhNDwyj3mVCutBNX3A=;
+ b=cnPiz0NLg8zD4MKsNVivognBRvmC2bsNHgTMHIW7xz8EuFW8HNfIyjLEyReUF1RNu2ky4S7I9Zg9ghLrkfAa5x7ZnPW8c5hhBAGEM1KP8mfbbagwRv7gzjXFUmubMQLrDQuA4UY2JniE1O5GEErnkqHvjDt/LGDjxIz3BUnE+M8=
+Received: from BY3PR18MB4641.namprd18.prod.outlook.com (2603:10b6:a03:3c4::8)
+ by BY3PR18MB4785.namprd18.prod.outlook.com (2603:10b6:a03:3cc::18) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.22; Wed, 25 Aug
- 2021 09:01:28 +0000
-Received: from BN8NAM11FT021.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:fd:cafe::41) by BN9PR03CA0110.outlook.office365.com
- (2603:10b6:408:fd::25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4457.17 via Frontend
- Transport; Wed, 25 Aug 2021 09:01:28 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.35)
- smtp.mailfrom=nvidia.com; kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.35 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.35; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.35) by
- BN8NAM11FT021.mail.protection.outlook.com (10.13.177.114) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4457.17 via Frontend Transport; Wed, 25 Aug 2021 09:01:28 +0000
-Received: from DRHQMAIL107.nvidia.com (10.27.9.16) by HQMAIL111.nvidia.com
- (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 25 Aug
- 2021 09:01:26 +0000
-Received: from localhost (172.20.187.6) by DRHQMAIL107.nvidia.com (10.27.9.16)
- with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 25 Aug 2021 09:01:26
- +0000
-Date:   Wed, 25 Aug 2021 12:01:22 +0300
-From:   Leon Romanovsky <leonro@nvidia.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        "David S . Miller" <davem@davemloft.net>
-CC:     Dmytro Linkin <dlinkin@nvidia.com>, <netdev@vger.kernel.org>,
-        Roi Dayan <roid@nvidia.com>,
-        Yicong Yang <yangyicong@hisilicon.com>
-Subject: Re: [PATCH net] net/mlx5: Remove all auxiliary devices at the
- unregister event
-Message-ID: <YSYG4it61d7ztmuq@unreal>
-References: <10641ab4c3de708f61a968158cac7620cef27067.1629547326.git.leonro@nvidia.com>
-MIME-Version: 1.0
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4457.17; Wed, 25 Aug
+ 2021 09:35:00 +0000
+Received: from BY3PR18MB4641.namprd18.prod.outlook.com
+ ([fe80::bc38:940a:28c3:7e4f]) by BY3PR18MB4641.namprd18.prod.outlook.com
+ ([fe80::bc38:940a:28c3:7e4f%8]) with mapi id 15.20.4436.024; Wed, 25 Aug 2021
+ 09:35:00 +0000
+From:   Ariel Elior <aelior@marvell.com>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+CC:     Leon Romanovsky <leon@kernel.org>, Shai Malin <smalin@marvell.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "malin1024@gmail.com" <malin1024@gmail.com>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>
+Subject: RE: [EXT] Re: [PATCH] qed: Enable RDMA relaxed ordering
+Thread-Topic: [EXT] Re: [PATCH] qed: Enable RDMA relaxed ordering
+Thread-Index: AQHXl4dCntCauhMEGUiY44ZhI+K7ZKuA+5qAgAAcTwCAABQ6gIAACNcAgAFiEgCAAHEuUIAACQiAgADmcpA=
+Date:   Wed, 25 Aug 2021 09:35:00 +0000
+Message-ID: <BY3PR18MB4641FFF30A6F424889A4B0E5C4C69@BY3PR18MB4641.namprd18.prod.outlook.com>
+References: <20210822185448.12053-1-smalin@marvell.com>
+ <YSOL9TNeLy3uHma6@unreal> <20210823133340.GC543798@ziepe.ca>
+ <BY3PR18MB46419B2A887EFFCB5B74F30BC4C49@BY3PR18MB4641.namprd18.prod.outlook.com>
+ <20210823151742.GD543798@ziepe.ca> <YSTlGlnDYjI/VhNB@unreal>
+ <BY3PR18MB4641E80F8ABF42A5621B7573C4C59@BY3PR18MB4641.namprd18.prod.outlook.com>
+ <20210824194223.GG543798@ziepe.ca>
+In-Reply-To: <20210824194223.GG543798@ziepe.ca>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: ziepe.ca; dkim=none (message not signed)
+ header.d=none;ziepe.ca; dmarc=none action=none header.from=marvell.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c80ca423-9476-428e-913d-08d967ab9c05
+x-ms-traffictypediagnostic: BY3PR18MB4785:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BY3PR18MB4785D7C54A2A11E5F9D55493C4C69@BY3PR18MB4785.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: VO+ysMaDwF8zSynTqXUCJItm21qdsYM+PpUgEGqC/498itUuLjpt465n1yvGrthvYc9/cs7HBwXQcWh2TsgOzZdZ75eXhMjg+6u5EYhSJ6ZCJd3wCyuI1E1iHtZJ4dSTpVY+16ifSvVmb+126ieyvqydYHZI17VKV4NZr0sMK9LuIlpZyygTuwQuhtZFIQE1cnHqxOTm55r2vhbWJHTEcLY385kXRhImC3V7bgexp3iAEeYsmJYiONDvn11PHNRQDLNcsjm22KfGJNjdgEuQrXJCFsoCSIzZi302FvhTpoYkpp+eCQDd9CfvkoajByAZboOYgAt/wMM/lBOywBamt29WE3EZrbSfchQD1Dc7jjNbV4F4Vrtw6ayrxEwrxrZorSERkZjcW3hRqB1qzpgsRCikcWVFJxVpGbcVrG35kk5/6uDtiK1dfE3UeUhNE1I7N/LXHlt5tL1Sq3FV0ejul6IKgX8mjnPrvh6+vWQFxFq8FljdufL/gNh+NWZoJ6CrwD3cSJlxCeAQwaKKDTmXSytKJexZ8b+FtwHFBfb8S29GDLo6mp9wvOdfMSCpjJ+ydRajhIndpBgmH9m+JeLKdwbfCqaRV2Zoi7+m3YuTSFRcgC0NR/M4Tl/hxPneQIkhKCrVBlKeenRtlHXwEEHgVHXe4cfRggGxl5P55SkTeNl5ZiPBTSz81jJcCf5g3I4lRSdbCZ1gtDl49ISWit4ocQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY3PR18MB4641.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(376002)(396003)(136003)(366004)(346002)(8676002)(316002)(86362001)(33656002)(54906003)(38100700002)(53546011)(478600001)(8936002)(7696005)(186003)(71200400001)(26005)(122000001)(76116006)(2906002)(6506007)(38070700005)(5660300002)(66446008)(52536014)(55016002)(83380400001)(9686003)(66946007)(6916009)(66476007)(66556008)(4326008)(64756008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?5jxEG93X3IjkJ1KaIk7ul+3efJKvGvW2OxzriXUVVZmTm0tJ7nVD5yedZ4gB?=
+ =?us-ascii?Q?uDp3vahQHcwmRf6aHF14YmSsT2LHWUcnpqo8yH6XcsealoJ5IhTlmyRZbXIP?=
+ =?us-ascii?Q?hwWu+MK20tmd8cFH9+p+SY0mOvDL2zYsQrJ0WDkxQoH1Ij0orAxVVy+RGJl4?=
+ =?us-ascii?Q?F7cGQizBg8cSV1IJ0tFOklHet5SPgH1DF52qYlQTpfjUegShTrLtpK2zJlDI?=
+ =?us-ascii?Q?9w85xILekdS89xd1zwNxrONnAniZCQq5yn9GgHKt1TyUdZQJMx6qxnD/LKBD?=
+ =?us-ascii?Q?sR85lJrBryOOE7TTOuS16B9lG9suNLT8LXvkGz65nh7/WjdKNEGq3FpIMD54?=
+ =?us-ascii?Q?y2y+ZIiVM7V2gmLd4R6XhmKoAvAaTYerNIhnzoRlzDJYty31JPSCSRn4qAL5?=
+ =?us-ascii?Q?9kUIQqle3XLU2i6QUiATWqHtZMn5YEmhViFOHUJy0AjymuJSumRTDp3s/UsW?=
+ =?us-ascii?Q?+gE4Q6UHJz+eIKbxU7RhDXL7aRXhT8xcyqyLGsqWRtia9qUZvgiIQA6Quzpj?=
+ =?us-ascii?Q?5uec+mgncrUgRXXJ+cUC9cdzKYnbVWGxcz16XyRNvuVO0/wOriegtQ4ckYQV?=
+ =?us-ascii?Q?s4MFeuzFe60EuKT5hWKo3rehle+/xc5DTNxuZrC3cw9EXKWZgUzLOciHSh77?=
+ =?us-ascii?Q?7Ao+AmnTKbhsW6D3GEvo9lzpoayOc++BxLIjlwnhZA2UocSnsx9Tv/qrr25I?=
+ =?us-ascii?Q?6dFtw6WicxPGKMb4YmDI4QL1vt2iZtW+PC8S3b/cGIxJq2VhR/iB1iVzcQug?=
+ =?us-ascii?Q?CtDxdX0xakCjF13kp2VR7JRa94W47yd3cixcmssW5B8/fV4vqI8eo3HE87Xu?=
+ =?us-ascii?Q?FutFmioXYniP6dIdWCIy8uTyfxgRwUyU18dr3dXCr1oL77xFmo85dSZRtLFJ?=
+ =?us-ascii?Q?2enickkyBpQKS0xi1kNqeBzzKKPi9x0eMr8gF7drsniwS6+lfYSLFntG347H?=
+ =?us-ascii?Q?C7npKpFbG4wwJHpLsyM7zVUcbm0/JZMszbEDQaKbqpbENS+KornMB7NtDMCd?=
+ =?us-ascii?Q?qzIQhWld5qOCAzf60LYm7jF5BSpg0ZYwtGkuLRHI5hE13+EQJTXb2HKSJAsH?=
+ =?us-ascii?Q?EvJmoJYXniqC8ltET6HN+kTUCLQEftwYisJrz9lteISst2zMvpgxTpHAoZqt?=
+ =?us-ascii?Q?ptGDIsM4PYyDh7a/ZvfUP5Q3ItcFjPKkgEIRAew95a2QTNNydJB1nLd7R6NH?=
+ =?us-ascii?Q?7durmWHzzyCgbXNPrw1tnVE87FpP9kmNbEvvy8eMvlOYGuVIVYyGcJFINkhZ?=
+ =?us-ascii?Q?VCcW7p1ektTtCccxOwZd/O1noQX/T8fwLPfRtN+KD4SwxeUro5kMPLipWKrE?=
+ =?us-ascii?Q?6xV+rNANJZzmsflGvEbCwyx3?=
 Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <10641ab4c3de708f61a968158cac7620cef27067.1629547326.git.leonro@nvidia.com>
-X-Originating-IP: [172.20.187.6]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- DRHQMAIL107.nvidia.com (10.27.9.16)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ce263b7a-a32c-45f2-2c13-08d967a6ecba
-X-MS-TrafficTypeDiagnostic: BYAPR12MB2998:
-X-Microsoft-Antispam-PRVS: <BYAPR12MB29987AB3F0BF438545ED8106BDC69@BYAPR12MB2998.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:608;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Oi3jI/bhUjfyA3BWxiwj1DregITWlNrwz272IGQjWVNKRzUp6LcDo/ObxLnK2Ybz4d0xim73x9nBqgg83oAtM53AnibGZNdzqQd7Y6qDzED7FRaJZN4wzBW/c/+dxrIkeUxa7fRGf5t8VecIc7W1xfa2ctCfkuKT1yMmPD0hHIROwFHZf/FsAfqaJRK9eIwtQ1i+XhGJN0WHnC33fR5UZinw7ie1ykigtdh118A+B2zJgePcFf2hxn52WknAURuTbFRBfGOCCflLS2NTeUmoCy4mXSbXQjFoUapVodTV8pdtWYFgLC7ENHiz/UHbxGZJga1/1eHwQL+ngw8BN9uIJp/32C37fI1Vxi09GSl/MVAznAJkw39haPU7JG7hSpWGvw34g75Cg7Wk/26Agtov7VXUvu3QcYa7hhoJVIkWvldLwNRIPLTqfBRKSC82BknkcGtmvWuFEWRhPqv+3j0xDY4moAAYQujkijst20J4RPB0tBWFkhKccblfA9DzRO3twA83JvYirmpHmj4RSHDdSbPLKmCR7bXellmQFXNmC6Wzf9Z0AsNsJ8Ew1vwU6VNnhZ8HMVL6iJcDQgtKzAMotWUkgd48WnM2/w7DMNCKTivjVAyZnqoLcXUk6ipvxOewFHkVu+I9C/A3YVBSnu6WelXC5HBcy3ywaFp8PDQMwC/6kHV4lzRIyORXdBm5LLRAvYodd88c2/4B21qHxSGeVg==
-X-Forefront-Antispam-Report: CIP:216.228.112.35;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid04.nvidia.com;CAT:NONE;SFS:(7916004)(4636009)(346002)(376002)(136003)(39860400002)(396003)(46966006)(36840700001)(33716001)(36860700001)(83380400001)(9686003)(86362001)(7636003)(6666004)(54906003)(426003)(16526019)(478600001)(316002)(47076005)(336012)(82740400003)(186003)(2906002)(82310400003)(70586007)(8676002)(356005)(5660300002)(8936002)(4326008)(70206006)(36906005)(26005)(110136005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Aug 2021 09:01:28.1842
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: marvell.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BY3PR18MB4641.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c80ca423-9476-428e-913d-08d967ab9c05
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Aug 2021 09:35:00.3389
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ce263b7a-a32c-45f2-2c13-08d967a6ecba
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.35];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT021.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB2998
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 7p5HWrT1G5+N/Ds1NwiRlBPf9DEuPtya1YIRX/zrNLivsPw8h4r9MefXM78k5ZGwv2htpm++C4sSIGJtVn1wtg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY3PR18MB4785
+X-Proofpoint-ORIG-GUID: q-u4gVAE9d7fFAusSFNeoVmFyJGXOwd4
+X-Proofpoint-GUID: q-u4gVAE9d7fFAusSFNeoVmFyJGXOwd4
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
+ definitions=2021-08-25_02,2021-08-25_01,2020-04-07_01
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Aug 21, 2021 at 03:05:11PM +0300, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
-> 
-> The call to mlx5_unregister_device() means that mlx5_core driver is
-> removed. In such scenario, we need to disregard all other flags like
-> attach/detach and forcibly remove all auxiliary devices.
-> 
-> Fixes: a5ae8fc9058e ("net/mlx5e: Don't create devices during unload flow")
-> Tested-and-Reported-by: Yicong Yang <yangyicong@hisilicon.com>
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> ---
->  drivers/net/ethernet/mellanox/mlx5/core/dev.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Any reason do not apply this patch?
 
-> 
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/dev.c b/drivers/net/ethernet/mellanox/mlx5/core/dev.c
-> index ff6b03dc7e32..e8093c4e09d4 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/dev.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/dev.c
-> @@ -450,7 +450,7 @@ int mlx5_register_device(struct mlx5_core_dev *dev)
->  void mlx5_unregister_device(struct mlx5_core_dev *dev)
->  {
->  	mutex_lock(&mlx5_intf_mutex);
-> -	dev->priv.flags |= MLX5_PRIV_FLAGS_DISABLE_ALL_ADEV;
-> +	dev->priv.flags = MLX5_PRIV_FLAGS_DISABLE_ALL_ADEV;
->  	mlx5_rescan_drivers_locked(dev);
->  	mutex_unlock(&mlx5_intf_mutex);
->  }
-> -- 
-> 2.31.1
-> 
+> -----Original Message-----
+> From: Jason Gunthorpe <jgg@ziepe.ca>
+> Sent: Tuesday, August 24, 2021 10:42 PM
+> To: Ariel Elior <aelior@marvell.com>
+> Cc: Leon Romanovsky <leon@kernel.org>; Shai Malin
+> <smalin@marvell.com>; davem@davemloft.net; kuba@kernel.org;
+> netdev@vger.kernel.org; malin1024@gmail.com; RDMA mailing list <linux-
+> rdma@vger.kernel.org>
+> Subject: Re: [EXT] Re: [PATCH] qed: Enable RDMA relaxed ordering
+>=20
+> On Tue, Aug 24, 2021 at 07:16:41PM +0000, Ariel Elior wrote:
+>=20
+> > In our view the qed/qede/qedr/qedi/qedf are separate drivers, hence we
+> > used function pointer structures for the communication between them.
+> > We use hierarchies of structures of function pointers to group
+> > toghether those which have common purposes (dcbx, ll2, Ethernet,
+> > rdma). Changing that to flat exported functions for the RDMA protocol i=
+s no
+> problem if it is preferred by you.
+>=20
+> I wouldn't twist the driver into knots, but you definately should not be =
+using
+> function pointers when there is only one implementation, eliminating that
+> would be a fine start and looks straightforward.
+>=20
+> Many of the functions in the rdma ops do not look complicated to move, ye=
+s,
+> it moves around the layering a bit, but that is OK and probably more
+> maintainable in the end. eg modify_qp seems fairly disconnected at the fi=
+rst
+> couple layers of function calls.
+>=20
+> > In summary - we got the message and will work on it, but this is no
+> > small task and may take some time, and will likely not result in total
+> > removal of any mention whatsoever of rdma from the core module (but
+> > will reduce it considerably).
+>=20
+> I wouldn't go for complete removal, you just need to have a core driver w=
+ith
+> an exported API that makes some sense for the device.
+>=20
+> eg looking at a random op
+>=20
+> qed_iwarp_set_engine_affin()
+>=20
+> Is an "rdma" function but all it does is call
+> qed_llh_set_ppfid_affinity()
+>=20
+> So export qed_llh and move the qed_iwarp to the rdma driver
+>=20
+> etc
+
+Got it, and makes sense to me. I get the point on single instance of
+function pointers being redundant. We will start work on the
+necessary redesign right away. Meanwhile you may see a few
+more critical fixes/small features coming from us which are already
+queued up internally on our end, which I hope can be accepted
+before we perform the changes discussed here.
+Thanks,
+Ariel
+
+
+
+
+>=20
+> Jason
