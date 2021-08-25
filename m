@@ -2,68 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C84F3F7D90
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 23:17:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C2B93F7DBF
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 23:32:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231735AbhHYVSY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 17:18:24 -0400
-Received: from smtp1.emailarray.com ([65.39.216.14]:59380 "EHLO
-        smtp1.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231245AbhHYVSX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 17:18:23 -0400
-Received: (qmail 43948 invoked by uid 89); 25 Aug 2021 21:17:34 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21ANzEuMjEyLjEzOC4zOQ==) (POLARISLOCAL)  
-  by smtp1.emailarray.com with SMTP; 25 Aug 2021 21:17:34 -0000
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+        id S229923AbhHYVcV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 17:32:21 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:26520 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229599AbhHYVcU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 17:32:20 -0400
+Received: from localhost (scalar.blr.asicdesigners.com [10.193.185.94])
+        by stargate.chelsio.com (8.14.7/8.14.7) with ESMTP id 17PLVOdg031286;
+        Wed, 25 Aug 2021 14:31:24 -0700
+From:   Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
 To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, arnd@kernel.org,
-        rdunlap@infradead.org, richardcochran@gmail.com, kernel-team@fb.com
-Subject: [PATCH net-next] ptp: ocp: Simplify Kconfig.
-Date:   Wed, 25 Aug 2021 14:17:33 -0700
-Message-Id: <20210825211733.264844-1-jonathan.lemon@gmail.com>
-X-Mailer: git-send-email 2.31.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Cc:     davem@davemloft.net, kuba@kernel.org, rajur@chelsio.com
+Subject: [PATCH net] cxgb4: dont touch blocked freelist bitmap after free
+Date:   Thu, 26 Aug 2021 02:59:42 +0530
+Message-Id: <1629926982-6393-1-git-send-email-rahul.lakkireddy@chelsio.com>
+X-Mailer: git-send-email 2.5.3
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove the 'imply' statements, these apparently are not doing
-what I expected.  Platform modules which are used by the driver
-still need to be enabled in the overall config for them to be
-used, but there isn't a hard dependency on them.
+When adapter init fails, the blocked freelist bitmap is already freed
+up and should not be touched. So, move the bitmap zeroing closer to
+where it was successfully allocated. Also handle adapter init failure
+unwind path immediately and avoid setting up RDMA memory windows.
 
-Use 'depend' for selectable modules which provide functions
-used directly by the driver.
-
-Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+Fixes: 5b377d114f2b ("cxgb4: Add debugfs facility to inject FL starvation")
+Signed-off-by: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
 ---
- drivers/ptp/Kconfig | 10 ++--------
- 1 file changed, 2 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/ptp/Kconfig b/drivers/ptp/Kconfig
-index 32660dc11354..f02bedf41264 100644
---- a/drivers/ptp/Kconfig
-+++ b/drivers/ptp/Kconfig
-@@ -171,16 +171,10 @@ config PTP_1588_CLOCK_OCP
- 	tristate "OpenCompute TimeCard as PTP clock"
- 	depends on PTP_1588_CLOCK
- 	depends on HAS_IOMEM && PCI
--	depends on SPI && I2C && MTD
-+	depends on I2C && MTD
-+	depends on SERIAL_8250
- 	depends on !S390
--	imply SPI_MEM
--	imply SPI_XILINX
--	imply MTD_SPI_NOR
--	imply I2C_XILINX
--	select SERIAL_8250
- 	select NET_DEVLINK
--
--	default n
- 	help
- 	  This driver adds support for an OpenCompute time card.
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+index dbf9a0e6601d..710cb00ce3a3 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+@@ -5068,6 +5068,7 @@ static int adap_init0(struct adapter *adap, int vpd_skip)
+ 		ret = -ENOMEM;
+ 		goto bye;
+ 	}
++	bitmap_zero(adap->sge.blocked_fl, adap->sge.egr_sz);
+ #endif
  
+ 	params[0] = FW_PARAM_PFVF(CLIP_START);
+@@ -6788,13 +6789,11 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ 	setup_memwin(adapter);
+ 	err = adap_init0(adapter, 0);
+-#ifdef CONFIG_DEBUG_FS
+-	bitmap_zero(adapter->sge.blocked_fl, adapter->sge.egr_sz);
+-#endif
+-	setup_memwin_rdma(adapter);
+ 	if (err)
+ 		goto out_unmap_bar;
+ 
++	setup_memwin_rdma(adapter);
++
+ 	/* configure SGE_STAT_CFG_A to read WC stats */
+ 	if (!is_t4(adapter->params.chip))
+ 		t4_write_reg(adapter, SGE_STAT_CFG_A, STATSOURCE_T5_V(7) |
 -- 
-2.31.1
+2.27.0
 
