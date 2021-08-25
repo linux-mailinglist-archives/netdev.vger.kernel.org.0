@@ -2,510 +2,284 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A0773F7554
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 14:47:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 779F83F7607
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 15:40:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241011AbhHYMsK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 08:48:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45320 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241029AbhHYMsH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 08:48:07 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D265C0617AF;
-        Wed, 25 Aug 2021 05:47:21 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id d17so14241642plr.12;
-        Wed, 25 Aug 2021 05:47:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=imY1sQT0/lpEGhDIGogn209SW9JcfCkHmDP9lVMvNu8=;
-        b=UT2J5QnYZ0kwFFXvFALA3zKOZ+kK+h+o0sSN3WpzA2QNhvdp0uxonk66waHT6p/J4v
-         yWjncGWoqCWM845s2Jy4yRD5BcjZrfCvzEQKIWuyxDguRp2xBiRpHZ6OimVvcG/8+6O4
-         NGaAYmzjY5qXLgq8ndGeWGKEhpLIbGymCKvrvA9DLrVWgYGS+FsHIszm2hds7pL7UMKT
-         LjkQlOQUa/01xnw9a/eCx3PTRBxx+IkxqOeara6jVxQBFW1+tXTGDGMj54YmXSG8S5s3
-         K2B5I3YEXCIktXQiUC3yoME8OBA1x9lcidFPsBQx6KaNy3paix20PuA6iPE8L1DTR0D6
-         WwgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=imY1sQT0/lpEGhDIGogn209SW9JcfCkHmDP9lVMvNu8=;
-        b=FoF63rZ+seNjdj3D9bgdaRY1KeJKjiE5yr4vd9s/VLDlX8ZT9cegvyH0tA2HVmN1oc
-         lb7rmfop/in2c6FMGFNUXZtdYY4KG44lNMQCOSWQn0iz0PE1pViJiGa+tgjBOGf0O2mp
-         COn8h9PqXTbLTY4+hiTNoIPssvjD1ILLjpn2rjml/dKmcLoIeKKE6+iWq1FH9VZP65uT
-         spUZYJogCyTMe/33/Lf/58oUM2uHmsdXUodVJUqoEJHWvsGk5Fw8vc/HfPdkyFQzhOF+
-         JxsV4ltXqK9WP5wDTIGui7TVtH2u/3GD5x3K/7oMM7XU2Zr6RkDO87o5EZnb3nV3i6eJ
-         kiVQ==
-X-Gm-Message-State: AOAM533HC3Gu6WDi7RVf7uGI+OfmShzpsF+5Joij7hcMCkRoJKtsxGeq
-        Pcc5zj+/U0t4+r37S3rj3/I=
-X-Google-Smtp-Source: ABdhPJwtwTdRNcs1IU5SxUkU9lBIZiTVr6WZNo6xuOw4kaot7iIjJbQLpscdGHOoB/FeB9XGW6HAng==
-X-Received: by 2002:a17:90a:458c:: with SMTP id v12mr10643510pjg.50.1629895640870;
-        Wed, 25 Aug 2021 05:47:20 -0700 (PDT)
-Received: from localhost.localdomain ([45.124.203.15])
-        by smtp.gmail.com with ESMTPSA id s16sm21511301pfk.185.2021.08.25.05.47.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Aug 2021 05:47:19 -0700 (PDT)
-Sender: "joel.stan@gmail.com" <joel.stan@gmail.com>
-From:   Joel Stanley <joel@jms.id.au>
-To:     "David S . Miller" <davem@davemloft.net>,
+        id S241314AbhHYNk7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 09:40:59 -0400
+Received: from mail-eopbgr10101.outbound.protection.outlook.com ([40.107.1.101]:55950
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S240220AbhHYNk6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Aug 2021 09:40:58 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=I5+iG0JVexhvnBemoebRBMrGLfyw3IZDvW9avqCWJV34I4Z+4xX6ygxaE2zDNz9GwV6yfDnXPiYxgcFQkycQ8hAb4aYme/eYImreZN09lGCaIL1QP4Qj5RDAsjUekH/ZW1m1ikBMjIeAjrpE2pC/DtqEiaPM1MZMMpRS8U/AxEZE/XNSbMOF4FU6+xaVu8SE30AIjhYfzr0dF+24K+d/svnkQFISosO027HVc49jC3X35i7PxsKXc6Tsk5xbt3uuRAQDoURYmfM9x+llIWzogLa9xwW6u0UflMM+/Xz/oAG52pcl38qdoC6Mxer6CagN6RLQwejg8cF9AIOddl4Swg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AP8qPFKW+aeLYjv84LKwS9W4/1KMaOWWNiSbSQvxKbQ=;
+ b=cUr/mNWzoSYHpySKUWlNESL/to56xvlceEbuoiY+QkIW9JqTP/m17aPyZKo0R6N6GxpxYxII7LaYEmplVQJqJsInSYl0/aOOlvIdIsxJhOM95nhVRdjSyJ9bPiPCEKUcsB+YdQ9HmzdZ1TBNWfHNwZ+NrVEm7M8pfIc0qppj4kNlj1cQBg+ZD4wXU/hTfqQ8aWF/tdh2RSe5dxy6RVOL1kDGioiH8FoaUSMEMbk8uCyxDLvu4Rv4c8UJ10FdAFv9KDy9pFyirYEz0vvUf7LWqucXexL3LaJ4tvqZd0Ow5RvAUXDwXBlafKnmJz0Z0zKviNly7Hg2xBDZtHLguCemLA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=bang-olufsen.dk; dmarc=pass action=none
+ header.from=bang-olufsen.dk; dkim=pass header.d=bang-olufsen.dk; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bang-olufsen.dk;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AP8qPFKW+aeLYjv84LKwS9W4/1KMaOWWNiSbSQvxKbQ=;
+ b=nFivWXxj52q/9AGSCurAtwexQh3tA3Zn68CAYBB0B6Jp1lT0coxsmxd7/wXLBdTKwMREFrddrSKMW+fl1i1AVXVVFFe7F5wTrSJg6ubpWhJ2sgXl1KvBT1Tfn49mTaFgkZiVetVb06Yb5kMYCCce0kSH/VAlYPsyASJHF0tGFk0=
+Received: from HE1PR03MB3114.eurprd03.prod.outlook.com (2603:10a6:7:60::18) by
+ HE1PR03MB2940.eurprd03.prod.outlook.com (2603:10a6:7:57::21) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4457.17; Wed, 25 Aug 2021 13:40:07 +0000
+Received: from HE1PR03MB3114.eurprd03.prod.outlook.com
+ ([fe80::7cc8:2d4:32b3:320f]) by HE1PR03MB3114.eurprd03.prod.outlook.com
+ ([fe80::7cc8:2d4:32b3:320f%5]) with mapi id 15.20.4436.025; Wed, 25 Aug 2021
+ 13:40:06 +0000
+From:   =?utf-8?B?QWx2aW4gxaBpcHJhZ2E=?= <ALSI@bang-olufsen.dk>
+To:     Saravana Kannan <saravanak@google.com>
+CC:     Vladimir Oltean <olteanv@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Frank Rowand <frowand.list@gmail.com>,
         Rob Herring <robh+dt@kernel.org>
-Cc:     Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        devicetree@vger.kernel.org,
-        Florent Kermarrec <florent@enjoy-digital.fr>,
-        "Gabriel L . Somlo" <gsomlo@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, David Shah <dave@ds0.me>,
-        Stafford Horne <shorne@gmail.com>
-Subject: [PATCH v3 2/2] net: Add driver for LiteX's LiteETH network interface
-Date:   Wed, 25 Aug 2021 22:16:55 +0930
-Message-Id: <20210825124655.3104348-3-joel@jms.id.au>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20210825124655.3104348-1-joel@jms.id.au>
-References: <20210825124655.3104348-1-joel@jms.id.au>
+Subject: Re: [PATCH net] net: dsa: sja1105: fix use-after-free after calling
+ of_find_compatible_node, or worse
+Thread-Topic: [PATCH net] net: dsa: sja1105: fix use-after-free after calling
+ of_find_compatible_node, or worse
+Thread-Index: AQHXk3edAldLqW55BEm1kFydkTRTGqt4NdyAgAASUYCAAEdPAIAAfkAAgAEf9ACAAKtuAIAAv5oAgAEH2ACAAvoCAIAB3hQAgALN14A=
+Date:   Wed, 25 Aug 2021 13:40:06 +0000
+Message-ID: <7e8a9f73-7b30-4bcb-0cf5-bd124e7a147e@bang-olufsen.dk>
+References: <20210817145245.3555077-1-vladimir.oltean@nxp.com>
+ <cd0d9c40-d07b-e2ab-b068-d0bcb4685d09@bang-olufsen.dk>
+ <20210817223101.7wbdofi7xkeqa2cp@skbuf>
+ <CAGETcx8T-ReJ_Gj-U+nxQyZPsv1v67DRBvpp9hS0fXgGRUQ17w@mail.gmail.com>
+ <6b89a9e1-e92e-ca99-9fbd-1d98f6a7864b@bang-olufsen.dk>
+ <CAGETcx_uj0V4DChME-gy5HGKTYnxLBX=TH2rag29f_p=UcG+Tg@mail.gmail.com>
+ <875f7448-8402-0c93-2a90-e1d83bb7586a@bang-olufsen.dk>
+ <CAGETcx_M5pEtpYhuc-Fx6HvC_9KzZnPMYUH_YjcBb4pmq8-ghA@mail.gmail.com>
+ <CAGETcx_+=TmMq9hP=95xferAmyA1ZCT3sMRLVnzJ9Or9OnDsDA@mail.gmail.com>
+ <14891624-655b-a71d-dc04-24404e0c2e1a@bang-olufsen.dk>
+ <CAGETcx-7xgt5y_zNHzSMQf4YFCmWRPfP4_voshbNxKPgQ=b1tA@mail.gmail.com>
+In-Reply-To: <CAGETcx-7xgt5y_zNHzSMQf4YFCmWRPfP4_voshbNxKPgQ=b1tA@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
+authentication-results: google.com; dkim=none (message not signed)
+ header.d=none;google.com; dmarc=none action=none header.from=bang-olufsen.dk;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: dca912b9-6d75-4a87-c905-08d967cdd9aa
+x-ms-traffictypediagnostic: HE1PR03MB2940:
+x-microsoft-antispam-prvs: <HE1PR03MB2940BAB36F047B128F7C077183C69@HE1PR03MB2940.eurprd03.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: ByNbvsdCSvBIoiyrvw9hJz4riH/bUFLzpdp0AFdSwvhz1q7i5i9RNEf2Q5Z212wiLunRdYE4uY1PeCOBDkZiejFuYkq3fFCITHe7mXe9DWOVbOcUNVPCA1XayzYnMsksErrRWHWM7FfD9+GvsRj4ytW1V/0iF7YDlXYL11AUReKZFYto1n1xEquRYn66pU9hdeAexqmvkODXZ9OSkPq4jyAkcTzAQx/HgX88x/tCMakpHV0JHvKI9XvVkttd/cFJYDqU44srISsWOzR0HVyeKh7VEaZalx0gLFwiXsj7Z7OaVmpdr5ZGcHIACXN9KOADBdf5WZEPd5kbSbItf+Vua9LHA/DZHFbNnO3MKJ6bsvHHTUreCsDP32Y3vNd73NczPNKjA66A4z/7FmxuCVXMZMejTauSFjHYkTfVty4Kd/ocCVOuQc4ZcCwRUaMjUi6ltjXv0kx7TPjOiNDotHzGy+J6SidcBAMDxO7KylGTTnVjmAF3G+bv90Cyxq0HXJ7jJsQdSFOFBxvjAOQFfY+AnKVebd0FQBdp7d3/BBAt3/IZxqqlFOp25wT1Th9aDmO18WxbrCD1xvj0eGTW9thjGy+CPg3j36qkKnMXX5LF0vy9mUfzigB3T1PHjkw/LU+0R+c1AQA3iGNogzJxfIMVkDfp5g1RJC1Ggxdzh03SueVq4GrpqJvWWNUp4oZeaqlchTzXJvPNhwMc3nB9EeuvqiulIZcJ/umoTarepG9mz7DeEDFLBi7Vd5gD7xhQSrSpe3M/eFqBqHtyC8jzcbVmeAGAalx/owZTjO+hBWy7qmY0NBLdut/TF7D2xiTzDNhw1CAkEDSsZnPnt83Zb4gj2dslhnXTC79qtbmx3TknEoQ=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR03MB3114.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(136003)(366004)(396003)(39850400004)(376002)(122000001)(36756003)(2906002)(478600001)(38100700002)(966005)(8976002)(86362001)(5660300002)(31686004)(83380400001)(6486002)(8676002)(8936002)(38070700005)(85182001)(2616005)(6916009)(31696002)(66476007)(4326008)(66446008)(64756008)(66556008)(66946007)(76116006)(71200400001)(53546011)(186003)(26005)(66574015)(6506007)(54906003)(316002)(6512007)(7416002)(85202003)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?b1lPTERhY3R4NXFHTE4zVGk0SGYrWWVvTmF6RlJjVGxZTGFvMmV1RjJXaVZJ?=
+ =?utf-8?B?aDlNQWhHczl2VHJLTytwdDJyY29lNlY3cmlBU05jZWdmWUJJYlVUL2RGTW44?=
+ =?utf-8?B?ejJyKzB0LzdvVjlyRjRpZkpTSzUwR2FoQWRGeHc1ZDhxMlVKN3ZLRWVGMThP?=
+ =?utf-8?B?ckd0aVpObndra2dHTmk1SmtQbmJVb1R6TUZhU3ZnNWJVbThqR24wbzFDS0ZV?=
+ =?utf-8?B?Yksvc3E4NFNUM1NKN1czMlhiTmJuN0tlaFFMMitmdUVvWEpUUjVJOExIMUFF?=
+ =?utf-8?B?dHNhU1VkaEdVbytZZkRqTEF1R2VDcWR6RGdUWXdaamtaZHBQNjZOR3RWZWY5?=
+ =?utf-8?B?QUhWMWxWcVdVYldWYmtscXNjZzhMS3ZLejNGTHVCQ25MQ0FVK092dkFJNVU0?=
+ =?utf-8?B?RGI5SEhPZ2R5aDJ2WHBidC92Q0xWdTRobGhQUWNYMkZNdFdLaGI4Ulc2R1RW?=
+ =?utf-8?B?Z0VzMkU0UWtrVXJWVU10NktHYUhqVnFvTzFDamJIbHpuZVFJbWF3WTJUc3dt?=
+ =?utf-8?B?eWdPTW9pSHV4VGRvNXg2M2tEYWhOMS9RemN3NzJQcmI3K1FYRjYySTJzUFds?=
+ =?utf-8?B?RTBwMG0vWkpudXZVRDY4VHdQeDFnWnpCNis3WFhGVkpOb1RqVlRGQTdyNzdi?=
+ =?utf-8?B?QTR3aWlod0ROaE5jRjl3dlRxTmtsN09saGNxdkduMlZWS0FMVnl2WUpkbDVh?=
+ =?utf-8?B?NDZWVEtmZEt5dCtVMHcxdDFibkQwLzhmT1UyYnpMNG4yU1RaSmh1TGxXbFAy?=
+ =?utf-8?B?bEJ6N3pycFBjUHhEM2VKRjNrV000Z0NsNWo3QU9OejZ4eVF4dmZXSXZCTEQz?=
+ =?utf-8?B?UmI5eWFjeTMzcVJYSjRtdDYzc0gwZkwvRVp5a2RpWGlLWjZqMVNUVzRuWGZv?=
+ =?utf-8?B?aGVmOGxMWlhra3M5QUszZVV3MnBzNnBwVlVvdXFjeW9nTVJMVUFuN3NiczlM?=
+ =?utf-8?B?YWNyc2UyejdTazc5L0Z3YVJHWFVrOTlJeVlvY1VreXlGa0NSQUJVQ0xjbkg5?=
+ =?utf-8?B?Y0l0cXh2eDJXV0E4MGg1WVBTL3NHZFN3NHFLRkcwUFJFZ3Yvc3J1UmtqR0JX?=
+ =?utf-8?B?TzR6ZmkrZlZuV3d2YldQSVVxWDlNV1Z0UHFzNWFXU0o4UmhjQWNXUFZYekJS?=
+ =?utf-8?B?RWtNS3NkVXlRc2NRcFMzQ3BtWTgzV3gva1NPZXl1NTdmc1ZrU2lvRG1HcVFm?=
+ =?utf-8?B?bDk3ZUlvak5QNFBCZ3JGLzBta1hacjBKZmJIWFBFU2U2dXlqb3JFVXBxSEE5?=
+ =?utf-8?B?OXJrRU9RMDlpcHZSZjhZbjZiVitlUmZGTzVIaUJCcGJSbUFxRHZzQ0xsQW14?=
+ =?utf-8?B?emZub2pjZnBhWG1WSEhWS2xxWFN2ZG9pMWpnaXh6cTlBakhvUFoxYlVvZ0tv?=
+ =?utf-8?B?ajZlTkZPNjlWdXJxVEVNUS8zQ3c0Y2JBQTlrVlVwYXJsT3c3cTJpeEN3SEtP?=
+ =?utf-8?B?bGxubi9wMjZ0N21ua2ZMVW9Cb2xyUGczM1RMWnNpRko2cFduVGpuY1cxTVdm?=
+ =?utf-8?B?V2U0WGVzdnpzanNYcnBaZFVMVkRiNUF5cDFYS0lsVVdFSUl2QVF0Rk5QZUlR?=
+ =?utf-8?B?ak1tdWgxSnRrZEtMSGMveEh3bGVYaHA5bitLK2FaRTRaOXdNNEpqdCswcVhp?=
+ =?utf-8?B?RktPdUo4OUNQbEl1OHlzdTViVUhpVVVqMlhpRVhWZGJnZ2VDa2UxNW1tbVMw?=
+ =?utf-8?B?S3lGYStIU1F3TE5JQkNCRGU2NHFGTll0MXVMNk9BWWV1RG5rRTRVT21JUDBq?=
+ =?utf-8?Q?G47Ajol9WCFdQ5ZWUZq8XdO40nA84EyyJOu6cOs?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <2A14CB06EBDA2A498DE0232453C3DEF4@eurprd03.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: bang-olufsen.dk
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: HE1PR03MB3114.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: dca912b9-6d75-4a87-c905-08d967cdd9aa
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Aug 2021 13:40:06.6231
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 210d08b8-83f7-470a-bc96-381193ca14a1
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: yn+U8LErqoIrbSgYTK3Ud23Qc/BQ4yTRaQw32G3pfDrjZiP91jmVXjAcp5Xt1ZzLbFd8QzHmBX3EoibcCripPg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR03MB2940
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-LiteX is a soft system-on-chip that targets FPGAs. LiteETH is a basic
-network device that is commonly used in LiteX designs.
-
-The driver was first written in 2017 and has been maintained by the
-LiteX community in various trees. Thank you to all who have contributed.
-
-Co-developed-by: Gabriel Somlo <gsomlo@gmail.com>
-Co-developed-by: David Shah <dave@ds0.me>
-Co-developed-by: Stafford Horne <shorne@gmail.com>
-Signed-off-by: Joel Stanley <joel@jms.id.au>
----
-v2:
- - check for bad len in liteeth_rx before getting skb
- - use netdev_alloc_skb_ip_align
- - remove unused duplex/speed and mii_bus variables
- - set carrier off when stopping device
- - increment packet count in the same place as bytes
- - fix error return code when irq could not be found
- - remove request of mdio base address until it is used
- - fix of_property_read line wrapping/alignment
- - only check that reader isn't busy, and then send off next packet
- - drop third reset
- - Add an description to the kconfig text
- - stop tx queue when busy and re-start after tx complete irq fires
- - use litex accessors to support big endain socs
- - clean up unused includes
- - use standard fifo-depth properties, which are in bytes
-v3:
- - make fifo helper static
- - fix error messages about invalid slot sizes
- - use slot size from device tree instead of inferring it
- - update to match the latest version of the bindings, which describes
-   the number of slots
----
- drivers/net/ethernet/Kconfig               |   1 +
- drivers/net/ethernet/Makefile              |   1 +
- drivers/net/ethernet/litex/Kconfig         |  27 ++
- drivers/net/ethernet/litex/Makefile        |   5 +
- drivers/net/ethernet/litex/litex_liteeth.c | 317 +++++++++++++++++++++
- 5 files changed, 351 insertions(+)
- create mode 100644 drivers/net/ethernet/litex/Kconfig
- create mode 100644 drivers/net/ethernet/litex/Makefile
- create mode 100644 drivers/net/ethernet/litex/litex_liteeth.c
-
-diff --git a/drivers/net/ethernet/Kconfig b/drivers/net/ethernet/Kconfig
-index 1cdff1dca790..d796684ec9ca 100644
---- a/drivers/net/ethernet/Kconfig
-+++ b/drivers/net/ethernet/Kconfig
-@@ -118,6 +118,7 @@ config LANTIQ_XRX200
- 	  Support for the PMAC of the Gigabit switch (GSWIP) inside the
- 	  Lantiq / Intel VRX200 VDSL SoC
- 
-+source "drivers/net/ethernet/litex/Kconfig"
- source "drivers/net/ethernet/marvell/Kconfig"
- source "drivers/net/ethernet/mediatek/Kconfig"
- source "drivers/net/ethernet/mellanox/Kconfig"
-diff --git a/drivers/net/ethernet/Makefile b/drivers/net/ethernet/Makefile
-index cb3f9084a21b..aaa5078cd7d1 100644
---- a/drivers/net/ethernet/Makefile
-+++ b/drivers/net/ethernet/Makefile
-@@ -51,6 +51,7 @@ obj-$(CONFIG_JME) += jme.o
- obj-$(CONFIG_KORINA) += korina.o
- obj-$(CONFIG_LANTIQ_ETOP) += lantiq_etop.o
- obj-$(CONFIG_LANTIQ_XRX200) += lantiq_xrx200.o
-+obj-$(CONFIG_NET_VENDOR_LITEX) += litex/
- obj-$(CONFIG_NET_VENDOR_MARVELL) += marvell/
- obj-$(CONFIG_NET_VENDOR_MEDIATEK) += mediatek/
- obj-$(CONFIG_NET_VENDOR_MELLANOX) += mellanox/
-diff --git a/drivers/net/ethernet/litex/Kconfig b/drivers/net/ethernet/litex/Kconfig
-new file mode 100644
-index 000000000000..265dba414b41
---- /dev/null
-+++ b/drivers/net/ethernet/litex/Kconfig
-@@ -0,0 +1,27 @@
-+#
-+# LiteX device configuration
-+#
-+
-+config NET_VENDOR_LITEX
-+	bool "LiteX devices"
-+	default y
-+	help
-+	  If you have a network (Ethernet) card belonging to this class, say Y.
-+
-+	  Note that the answer to this question doesn't directly affect the
-+	  kernel: saying N will just cause the configurator to skip all
-+	  the questions about LiteX devices. If you say Y, you will be asked
-+	  for your specific card in the following questions.
-+
-+if NET_VENDOR_LITEX
-+
-+config LITEX_LITEETH
-+	tristate "LiteX Ethernet support"
-+	help
-+	  If you wish to compile a kernel for hardware with a LiteX LiteEth
-+	  device then you should answer Y to this.
-+
-+	  LiteX is a soft system-on-chip that targets FPGAs. LiteETH is a basic
-+	  network device that is commonly used in LiteX designs.
-+
-+endif # NET_VENDOR_LITEX
-diff --git a/drivers/net/ethernet/litex/Makefile b/drivers/net/ethernet/litex/Makefile
-new file mode 100644
-index 000000000000..9343b73b8e49
---- /dev/null
-+++ b/drivers/net/ethernet/litex/Makefile
-@@ -0,0 +1,5 @@
-+#
-+# Makefile for the LiteX network device drivers.
-+#
-+
-+obj-$(CONFIG_LITEX_LITEETH) += litex_liteeth.o
-diff --git a/drivers/net/ethernet/litex/litex_liteeth.c b/drivers/net/ethernet/litex/litex_liteeth.c
-new file mode 100644
-index 000000000000..10e6f2dedfad
---- /dev/null
-+++ b/drivers/net/ethernet/litex/litex_liteeth.c
-@@ -0,0 +1,317 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * LiteX Liteeth Ethernet
-+ *
-+ * Copyright 2017 Joel Stanley <joel@jms.id.au>
-+ *
-+ */
-+
-+#include <linux/etherdevice.h>
-+#include <linux/interrupt.h>
-+#include <linux/litex.h>
-+#include <linux/module.h>
-+#include <linux/of_net.h>
-+#include <linux/platform_device.h>
-+
-+#define LITEETH_WRITER_SLOT       0x00
-+#define LITEETH_WRITER_LENGTH     0x04
-+#define LITEETH_WRITER_ERRORS     0x08
-+#define LITEETH_WRITER_EV_STATUS  0x0C
-+#define LITEETH_WRITER_EV_PENDING 0x10
-+#define LITEETH_WRITER_EV_ENABLE  0x14
-+#define LITEETH_READER_START      0x18
-+#define LITEETH_READER_READY      0x1C
-+#define LITEETH_READER_LEVEL      0x20
-+#define LITEETH_READER_SLOT       0x24
-+#define LITEETH_READER_LENGTH     0x28
-+#define LITEETH_READER_EV_STATUS  0x2C
-+#define LITEETH_READER_EV_PENDING 0x30
-+#define LITEETH_READER_EV_ENABLE  0x34
-+#define LITEETH_PREAMBLE_CRC      0x38
-+#define LITEETH_PREAMBLE_ERRORS   0x3C
-+#define LITEETH_CRC_ERRORS        0x40
-+
-+#define LITEETH_PHY_CRG_RESET     0x00
-+#define LITEETH_MDIO_W            0x04
-+#define LITEETH_MDIO_R            0x0C
-+
-+#define DRV_NAME	"liteeth"
-+
-+struct liteeth {
-+	void __iomem *base;
-+	struct net_device *netdev;
-+	struct device *dev;
-+	u32 slot_size;
-+
-+	/* Tx */
-+	u32 tx_slot;
-+	u32 num_tx_slots;
-+	void __iomem *tx_base;
-+
-+	/* Rx */
-+	u32 rx_slot;
-+	u32 num_rx_slots;
-+	void __iomem *rx_base;
-+};
-+
-+static int liteeth_rx(struct net_device *netdev)
-+{
-+	struct liteeth *priv = netdev_priv(netdev);
-+	struct sk_buff *skb;
-+	unsigned char *data;
-+	u8 rx_slot;
-+	int len;
-+
-+	rx_slot = litex_read8(priv->base + LITEETH_WRITER_SLOT);
-+	len = litex_read32(priv->base + LITEETH_WRITER_LENGTH);
-+
-+	if (len == 0 || len > 2048)
-+		goto rx_drop;
-+
-+	skb = netdev_alloc_skb_ip_align(netdev, len);
-+	if (!skb) {
-+		netdev_err(netdev, "couldn't get memory\n");
-+		goto rx_drop;
-+	}
-+
-+	data = skb_put(skb, len);
-+	memcpy_fromio(data, priv->rx_base + rx_slot * priv->slot_size, len);
-+	skb->protocol = eth_type_trans(skb, netdev);
-+
-+	netdev->stats.rx_packets++;
-+	netdev->stats.rx_bytes += len;
-+
-+	return netif_rx(skb);
-+
-+rx_drop:
-+	netdev->stats.rx_dropped++;
-+	netdev->stats.rx_errors++;
-+
-+	return NET_RX_DROP;
-+}
-+
-+static irqreturn_t liteeth_interrupt(int irq, void *dev_id)
-+{
-+	struct net_device *netdev = dev_id;
-+	struct liteeth *priv = netdev_priv(netdev);
-+	u8 reg;
-+
-+	reg = litex_read8(priv->base + LITEETH_READER_EV_PENDING);
-+	if (reg) {
-+		if (netif_queue_stopped(netdev))
-+			netif_wake_queue(netdev);
-+		litex_write8(priv->base + LITEETH_READER_EV_PENDING, reg);
-+	}
-+
-+	reg = litex_read8(priv->base + LITEETH_WRITER_EV_PENDING);
-+	if (reg) {
-+		liteeth_rx(netdev);
-+		litex_write8(priv->base + LITEETH_WRITER_EV_PENDING, reg);
-+	}
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static int liteeth_open(struct net_device *netdev)
-+{
-+	struct liteeth *priv = netdev_priv(netdev);
-+	int err;
-+
-+	/* Clear pending events */
-+	litex_write8(priv->base + LITEETH_WRITER_EV_PENDING, 1);
-+	litex_write8(priv->base + LITEETH_READER_EV_PENDING, 1);
-+
-+	err = request_irq(netdev->irq, liteeth_interrupt, 0, netdev->name, netdev);
-+	if (err) {
-+		netdev_err(netdev, "failed to request irq %d\n", netdev->irq);
-+		return err;
-+	}
-+
-+	/* Enable IRQs */
-+	litex_write8(priv->base + LITEETH_WRITER_EV_ENABLE, 1);
-+	litex_write8(priv->base + LITEETH_READER_EV_ENABLE, 1);
-+
-+	netif_carrier_on(netdev);
-+	netif_start_queue(netdev);
-+
-+	return 0;
-+}
-+
-+static int liteeth_stop(struct net_device *netdev)
-+{
-+	struct liteeth *priv = netdev_priv(netdev);
-+
-+	netif_stop_queue(netdev);
-+	netif_carrier_off(netdev);
-+
-+	litex_write8(priv->base + LITEETH_WRITER_EV_ENABLE, 0);
-+	litex_write8(priv->base + LITEETH_READER_EV_ENABLE, 0);
-+
-+	free_irq(netdev->irq, netdev);
-+
-+	return 0;
-+}
-+
-+static int liteeth_start_xmit(struct sk_buff *skb, struct net_device *netdev)
-+{
-+	struct liteeth *priv = netdev_priv(netdev);
-+	void __iomem *txbuffer;
-+
-+	if (!litex_read8(priv->base + LITEETH_READER_READY)) {
-+		if (net_ratelimit())
-+			netdev_err(netdev, "LITEETH_READER_READY not ready\n");
-+
-+		netif_stop_queue(netdev);
-+
-+		return NETDEV_TX_BUSY;
-+	}
-+
-+	/* Reject oversize packets */
-+	if (unlikely(skb->len > priv->slot_size)) {
-+		if (net_ratelimit())
-+			netdev_err(netdev, "tx packet too big\n");
-+
-+		dev_kfree_skb_any(skb);
-+		netdev->stats.tx_dropped++;
-+		netdev->stats.tx_errors++;
-+
-+		return NETDEV_TX_OK;
-+	}
-+
-+	txbuffer = priv->tx_base + priv->tx_slot * priv->slot_size;
-+	memcpy_toio(txbuffer, skb->data, skb->len);
-+	litex_write8(priv->base + LITEETH_READER_SLOT, priv->tx_slot);
-+	litex_write16(priv->base + LITEETH_READER_LENGTH, skb->len);
-+	litex_write8(priv->base + LITEETH_READER_START, 1);
-+
-+	netdev->stats.tx_bytes += skb->len;
-+	netdev->stats.tx_packets++;
-+
-+	priv->tx_slot = (priv->tx_slot + 1) % priv->num_tx_slots;
-+	dev_kfree_skb_any(skb);
-+
-+	return NETDEV_TX_OK;
-+}
-+
-+static const struct net_device_ops liteeth_netdev_ops = {
-+	.ndo_open		= liteeth_open,
-+	.ndo_stop		= liteeth_stop,
-+	.ndo_start_xmit         = liteeth_start_xmit,
-+};
-+
-+static void liteeth_setup_slots(struct liteeth *priv)
-+{
-+	struct device_node *np = priv->dev->of_node;
-+	int err;
-+
-+	err = of_property_read_u32(np, "litex,rx-slots", &priv->num_rx_slots);
-+	if (err) {
-+		dev_dbg(priv->dev, "unable to get litex,rx-slots, using 2\n");
-+		priv->num_rx_slots = 2;
-+	}
-+
-+	err = of_property_read_u32(np, "litex,tx-slots", &priv->num_tx_slots);
-+	if (err) {
-+		dev_dbg(priv->dev, "unable to get litex,tx-slots, using 2\n");
-+		priv->num_tx_slots = 2;
-+	}
-+
-+	err = of_property_read_u32(np, "litex,slot-size", &priv->slot_size);
-+	if (err) {
-+		dev_dbg(priv->dev, "unable to get litex,slot-size, using 0x800\n");
-+		priv->slot_size = 0x800;
-+	}
-+}
-+
-+static int liteeth_probe(struct platform_device *pdev)
-+{
-+	struct net_device *netdev;
-+	void __iomem *buf_base;
-+	struct resource *res;
-+	struct liteeth *priv;
-+	int irq, err;
-+
-+	netdev = devm_alloc_etherdev(&pdev->dev, sizeof(*priv));
-+	if (!netdev)
-+		return -ENOMEM;
-+
-+	SET_NETDEV_DEV(netdev, &pdev->dev);
-+	platform_set_drvdata(pdev, netdev);
-+
-+	priv = netdev_priv(netdev);
-+	priv->netdev = netdev;
-+	priv->dev = &pdev->dev;
-+
-+	irq = platform_get_irq(pdev, 0);
-+	if (irq < 0) {
-+		dev_err(&pdev->dev, "Failed to get IRQ %d\n", irq);
-+		return irq;
-+	}
-+	netdev->irq = irq;
-+
-+	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "mac");
-+	priv->base = devm_ioremap_resource(&pdev->dev, res);
-+	if (IS_ERR(priv->base))
-+		return PTR_ERR(priv->base);
-+
-+	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "buffer");
-+	buf_base = devm_ioremap_resource(&pdev->dev, res);
-+	if (IS_ERR(buf_base))
-+		return PTR_ERR(buf_base);
-+
-+	liteeth_setup_slots(priv);
-+
-+	/* Rx slots */
-+	priv->rx_base = buf_base;
-+	priv->rx_slot = 0;
-+
-+	/* Tx slots come after Rx slots */
-+	priv->tx_base = buf_base + priv->num_rx_slots * priv->slot_size;
-+	priv->tx_slot = 0;
-+
-+	err = of_get_mac_address(pdev->dev.of_node, netdev->dev_addr);
-+	if (err)
-+		eth_hw_addr_random(netdev);
-+
-+	netdev->netdev_ops = &liteeth_netdev_ops;
-+
-+	err = register_netdev(netdev);
-+	if (err) {
-+		dev_err(&pdev->dev, "Failed to register netdev %d\n", err);
-+		return err;
-+	}
-+
-+	netdev_info(netdev, "irq %d slots: tx %d rx %d size %d\n",
-+		    netdev->irq, priv->num_tx_slots, priv->num_rx_slots, priv->slot_size);
-+
-+	return 0;
-+}
-+
-+static int liteeth_remove(struct platform_device *pdev)
-+{
-+	struct net_device *netdev = platform_get_drvdata(pdev);
-+
-+	unregister_netdev(netdev);
-+	free_netdev(netdev);
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id liteeth_of_match[] = {
-+	{ .compatible = "litex,liteeth" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, liteeth_of_match);
-+
-+static struct platform_driver liteeth_driver = {
-+	.probe = liteeth_probe,
-+	.remove = liteeth_remove,
-+	.driver = {
-+		.name = DRV_NAME,
-+		.of_match_table = liteeth_of_match,
-+	},
-+};
-+module_platform_driver(liteeth_driver);
-+
-+MODULE_AUTHOR("Joel Stanley <joel@jms.id.au>");
-+MODULE_LICENSE("GPL");
--- 
-2.33.0
-
+SGkgU2FyYXZhbmEsDQoNClNvcnJ5IGZvciB0aGUgZGVsYXllZCByZXNwb25zZS4NCg0KT24gOC8y
+My8yMSA4OjUwIFBNLCBTYXJhdmFuYSBLYW5uYW4gd3JvdGU6DQo+IE9uIFN1biwgQXVnIDIyLCAy
+MDIxIGF0IDc6MTkgQU0gQWx2aW4gxaBpcHJhZ2EgPEFMU0lAYmFuZy1vbHVmc2VuLmRrPiB3cm90
+ZToNCj4+DQo+PiBIaSBTYXJhdmFuYSwNCj4+DQo+PiBUaGFua3MgZm9yIHRoZSBmb2xsb3ctdXAu
+IEkgdGVzdGVkIHlvdXIgY2hhbmdlIGFuZCBpdCBkb2VzIHRoZSB0cmljazoNCj4+IHRoZXJlIGlz
+IG5vIGRlZmVycmFsIGFuZCB0aGUgUEhZIGRyaXZlciBnZXRzIHByb2JlZCBmaXJzdC10cnkgZHVy
+aW5nIHRoZQ0KPj4gbWRpb2J1cyByZWdpc3RyYXRpb24gZHVyaW5nIHRoZSBjYWxsIHRvIGRzYV9y
+ZWdpc3Rlcl9zd2l0Y2goKS4NCj4gDQo+IEknbSBmYWlybHkgY2VydGFpbiB0aGUgbWRpb2J1cyBy
+ZWdpc3RyYXRpb24gaGFwcGVucyBiZWZvcmUNCj4gZHNhX3JlZ2lzdGVyX3N3aXRjaCgpLiBJdCdz
+IGluIHRoZSBwcm9iZSBjYWxsIHBhdGggb2YgdGhlIERTQS4gVGhlDQo+IGNvbm5lY3Rpbmcgb2Yg
+dGhlIFBIWXMgd2l0aCB0aGUgRFNBIGlzIHdoYXQgaGFwcGVucyB3aGVuDQo+IGRzYV9yZWdpc3Rl
+cl9zd2l0Y2goKSBpcyBjYWxsZWQuDQoNCkhtLCBhcmUgeW91IHN1cmUgYWJvdXQgdGhpcz8gTXkg
+dW5kZXJzdGFuZGluZyBpcyB0aGF0IG1kaW9idXMgDQpyZWdpc3RyYXRpb24gaGFwcGVucyBhcyBm
+b2xsb3dzOg0KDQpkc2FfcmVnaXN0ZXJfc3dpdGNoKCkNCiAgICAgLT4gLi4uDQogICAgICAgICAt
+PiBydGw4MzZ7Niw1bWJ9X3NldHVwKCkgIyBzZWUgWzFdIGZvciBSRkMgcGF0Y2ggd2l0aCBydGw4
+MzY1bWINCiAgICAgICAgICAgICAtPiByZWFsdGVrX3NtaV9zZXR1cF9tZGlvKCkNCiAgICAgICAg
+ICAgICAgICAgLT4gb2ZfbWRpb2J1c19yZWdpc3RlcigpDQoNCkFzIGl0IHN0YW5kcywgZHNhX3Jl
+Z2lzdGVyX3N3aXRjaCgpIGlzIGN1cnJlbnRseSBjYWxsZWQgZnJvbSANCnJlYWx0ZWtfc21pX3By
+b2JlKCkuIFlvdXIgcGF0Y2gganVzdCBtb3ZlcyB0aGlzIGNhbGwgdG8gDQpyZWFsdGVrX3NtaV9z
+eW5jX3N0YXRlKCksIGJ1dCBwZXIgdGhlIGFib3ZlLCB0aGUgbWRpb2J1cyByZWdpc3RyYXRpb24g
+DQpoYXBwZW5zIGluc2lkZSBkc2FfcmVnaXN0ZXJfc3dpdGNoKCksIG1lYW5pbmcgaXQgZG9lc24n
+dCBoYXBwZW4gaW4gdGhlIA0KcHJvYmUgY2FsbCBwYXRoLiBPciBhbSBJIG1pc3Npbmcgc29tZXRo
+aW5nPyBJJ20gaGFwcHkgdG8gYmUgd3JvbmcgOi0pDQoNClsxXSBodHRwczovL2xvcmUua2VybmVs
+Lm9yZy9uZXRkZXYvMjAyMTA4MjIxOTMxNDUuMTMxMjY2OC0xLWFsdmluQHBxcnMuZGsvVC8NCg0K
+PiANCj4+IEkgdGVzdGVkDQo+PiB3aXRoIHRoZSBzd2l0Y2gsIFBIWSwgYW5kIHRhZ2dpbmcgZHJp
+dmVycyBhbGwgYnVpbHRpbiwgb3IgYWxsIG1vZHVsZXMsDQo+PiBhbmQgaXQgd29ya2VkIGluIGJv
+dGggY2FzZXMuDQo+Pg0KPj4gT24gOC8yMC8yMSA2OjUyIFBNLCBTYXJhdmFuYSBLYW5uYW4gd3Jv
+dGU6DQo+Pj4gSGkgQWx2aW4sDQo+Pj4NCj4+PiBDYW4geW91IGdpdmUgdGhpcyBhIHNob3QgdG8g
+c2VlIGlmIGl0IGZpeGVzIHlvdXIgaXNzdWU/IEl0IGJhc2ljYWxseQ0KPj4+IGRlbGF5cyB0aGUg
+cmVnaXN0cmF0aW9uIG9mIGRzYV9yZWdpc3Rlcl9zd2l0Y2goKSB1bnRpbCBhbGwgdGhlDQo+Pj4g
+Y29uc3VtZXJzIG9mIHRoaXMgc3dpdGNoIGhhdmUgcHJvYmVkLiBTbyBpdCBoYXMgYSBjb3VwbGUg
+b2YgY2F2ZWF0czoNCj4+DQo+PiBIbSwgd2VyZW4ndCB0aGUgb25seSBjb25zdW1lcnMgdGhlIFBI
+WXMgdGhlbXNlbHZlcz8gSXQgc2VlbXMgbGlrZSB0aGUNCj4+IG1haW4gZWZmZWN0IG9mIHlvdXIg
+Y2hhbmdlIGlzIHRoYXQgLSBieSBkb2luZyB0aGUgYWN0dWFsDQo+PiBkc2FfcmVnaXN0ZXJfc3dp
+dGNoKCkgY2FsbCBhZnRlciB0aGUgc3dpdGNoIGRyaXZlciBwcm9iZSAtIHRoZQ0KPj4gZXRoZXJu
+ZXQtc3dpdGNoIChwcm92aWRlcikgaXMgYWxyZWFkeSBwcm9iZWQsIHRoZXJlYnkgYWxsb3dpbmcg
+dGhlIFBIWQ0KPj4gKGNvbnN1bWVyKSB0byBwcm9iZSBpbW1lZGlhdGVseS4NCj4gDQo+IENvcnJl
+Y3QtaXNoIC0tIGlmIHlvdSBtb2RpZnkgdGhpcyB0byBhY2NvdW50IGZvciB3aGF0IEkgc2FpZCBh
+Ym92ZS4NCj4gDQo+Pg0KPj4+IDEuIEknbSBob3BpbmcgdGhlIFBIWXMgYXJlIHRoZSBvbmx5IGNv
+bnN1bWVycyBvZiB0aGlzIHN3aXRjaC4NCj4+DQo+PiBJbiBteSBjYXNlIHRoYXQgaXMgdHJ1ZSwg
+aWYgeW91IGNvdW50IHRoZSBtZGlvX2J1cyBhcyB3ZWxsOg0KPj4NCj4+IC9zeXMvZGV2aWNlcy9w
+bGF0Zm9ybS9ldGhlcm5ldC1zd2l0Y2gjIGxzIC1sIGNvbnN1bWVyXDoqDQo+PiBscnd4cnd4cnd4
+ICAgIDEgcm9vdCAgICAgcm9vdCAgICAgICAgICAgICAwIEF1ZyAyMiAxNjowMA0KPj4gY29uc3Vt
+ZXI6bWRpb19idXM6U01JLTAgLT4NCj4+IC4uLy4uL3ZpcnR1YWwvZGV2bGluay9wbGF0Zm9ybTpl
+dGhlcm5ldC1zd2l0Y2gtLW1kaW9fYnVzOlNNSS0wDQo+PiBscnd4cnd4cnd4ICAgIDEgcm9vdCAg
+ICAgcm9vdCAgICAgICAgICAgICAwIEF1ZyAyMiAxNjowMA0KPj4gY29uc3VtZXI6bWRpb19idXM6
+U01JLTA6MDAgLT4NCj4+IC4uLy4uL3ZpcnR1YWwvZGV2bGluay9wbGF0Zm9ybTpldGhlcm5ldC1z
+d2l0Y2gtLW1kaW9fYnVzOlNNSS0wOjAwDQo+PiBscnd4cnd4cnd4ICAgIDEgcm9vdCAgICAgcm9v
+dCAgICAgICAgICAgICAwIEF1ZyAyMiAxNjowMA0KPj4gY29uc3VtZXI6bWRpb19idXM6U01JLTA6
+MDEgLT4NCj4+IC4uLy4uL3ZpcnR1YWwvZGV2bGluay9wbGF0Zm9ybTpldGhlcm5ldC1zd2l0Y2gt
+LW1kaW9fYnVzOlNNSS0wOjAxDQo+PiBscnd4cnd4cnd4ICAgIDEgcm9vdCAgICAgcm9vdCAgICAg
+ICAgICAgICAwIEF1ZyAyMiAxNjowMA0KPj4gY29uc3VtZXI6bWRpb19idXM6U01JLTA6MDIgLT4N
+Cj4+IC4uLy4uL3ZpcnR1YWwvZGV2bGluay9wbGF0Zm9ybTpldGhlcm5ldC1zd2l0Y2gtLW1kaW9f
+YnVzOlNNSS0wOjAyDQo+PiBscnd4cnd4cnd4ICAgIDEgcm9vdCAgICAgcm9vdCAgICAgICAgICAg
+ICAwIEF1ZyAyMiAxNjowMA0KPj4gY29uc3VtZXI6bWRpb19idXM6U01JLTA6MDMgLT4NCj4+IC4u
+Ly4uL3ZpcnR1YWwvZGV2bGluay9wbGF0Zm9ybTpldGhlcm5ldC1zd2l0Y2gtLW1kaW9fYnVzOlNN
+SS0wOjAzDQo+IA0KPiBIbW0uLi4gbWRpb19idXMgYmVpbmcgYSBjb25zdW1lciBzaG91bGQgcHJl
+dmVudCB0aGUgc3luY19zdGF0ZSgpIGZyb20NCj4gYmVpbmcgY2FsbGVkIG9uICJldGhlcm5ldC1z
+d2l0Y2giLiBXaGF0J3MgdGhlIHZhbHVlIG9mIHRoZSAic3RhdHVzIg0KPiBhbmQgInN5bmNfc3Rh
+dGVfb25seSIgZmlsZXMgaW5zaWRlIHRoYXQgbWRpb19idXMgZm9sZGVyPw0KDQpXaXRob3V0IHlv
+dXIgcGF0Y2g6DQoNCi9zeXMvZGV2aWNlcy9wbGF0Zm9ybS9ldGhlcm5ldC1zd2l0Y2gjIGxzIC1s
+IGNvbnN1bWVyXDoqDQpscnd4cnd4cnd4ICAgIDEgcm9vdCAgICAgcm9vdCAgICAgICAgICAgICAw
+IEF1ZyAyNSAxMzo0MiANCmNvbnN1bWVyOm1kaW9fYnVzOlNNSS0wIC0+IA0KLi4vLi4vdmlydHVh
+bC9kZXZsaW5rL3BsYXRmb3JtOmV0aGVybmV0LXN3aXRjaC0tbWRpb19idXM6U01JLTANCi9zeXMv
+ZGV2aWNlcy9wbGF0Zm9ybS9ldGhlcm5ldC1zd2l0Y2gjIGNhdCBjb25zdW1lclw6Ki9zdGF0dXMN
+CmF2YWlsYWJsZQ0KL3N5cy9kZXZpY2VzL3BsYXRmb3JtL2V0aGVybmV0LXN3aXRjaCMgY2F0IGNv
+bnN1bWVyXDoqL3N5bmNfc3RhdGVfb25seQ0KMQ0KDQoNCldpdGggeW91ciBwYXRjaDoNCg0KMC4w
+LjAuMEBDQTQ0LTovc3lzL2RldmljZXMvcGxhdGZvcm0vZXRoZXJuZXQtc3dpdGNoIyBscyAtbCBj
+b25zdW1lclw6Kg0KbHJ3eHJ3eHJ3eCAgICAxIHJvb3QgICAgIHJvb3QgICAgICAgICAgICAgMCBB
+dWcgMjUgMTU6MDMgDQpjb25zdW1lcjptZGlvX2J1czpTTUktMCAtPiANCi4uLy4uL3ZpcnR1YWwv
+ZGV2bGluay9wbGF0Zm9ybTpldGhlcm5ldC1zd2l0Y2gtLW1kaW9fYnVzOlNNSS0wDQpscnd4cnd4
+cnd4ICAgIDEgcm9vdCAgICAgcm9vdCAgICAgICAgICAgICAwIEF1ZyAyNSAxNTowMyANCmNvbnN1
+bWVyOm1kaW9fYnVzOlNNSS0wOjAwIC0+IA0KLi4vLi4vdmlydHVhbC9kZXZsaW5rL3BsYXRmb3Jt
+OmV0aGVybmV0LXN3aXRjaC0tbWRpb19idXM6U01JLTA6MDANCmxyd3hyd3hyd3ggICAgMSByb290
+ICAgICByb290ICAgICAgICAgICAgIDAgQXVnIDI1IDE1OjAzIA0KY29uc3VtZXI6bWRpb19idXM6
+U01JLTA6MDEgLT4gDQouLi8uLi92aXJ0dWFsL2RldmxpbmsvcGxhdGZvcm06ZXRoZXJuZXQtc3dp
+dGNoLS1tZGlvX2J1czpTTUktMDowMQ0KbHJ3eHJ3eHJ3eCAgICAxIHJvb3QgICAgIHJvb3QgICAg
+ICAgICAgICAgMCBBdWcgMjUgMTU6MDMgDQpjb25zdW1lcjptZGlvX2J1czpTTUktMDowMiAtPiAN
+Ci4uLy4uL3ZpcnR1YWwvZGV2bGluay9wbGF0Zm9ybTpldGhlcm5ldC1zd2l0Y2gtLW1kaW9fYnVz
+OlNNSS0wOjAyDQpscnd4cnd4cnd4ICAgIDEgcm9vdCAgICAgcm9vdCAgICAgICAgICAgICAwIEF1
+ZyAyNSAxNTowMyANCmNvbnN1bWVyOm1kaW9fYnVzOlNNSS0wOjAzIC0+IA0KLi4vLi4vdmlydHVh
+bC9kZXZsaW5rL3BsYXRmb3JtOmV0aGVybmV0LXN3aXRjaC0tbWRpb19idXM6U01JLTA6MDMNCjAu
+MC4wLjBAQ0E0NC06L3N5cy9kZXZpY2VzL3BsYXRmb3JtL2V0aGVybmV0LXN3aXRjaCMNCjAuMC4w
+LjBAQ0E0NC06L3N5cy9kZXZpY2VzL3BsYXRmb3JtL2V0aGVybmV0LXN3aXRjaCMNCjAuMC4wLjBA
+Q0E0NC06L3N5cy9kZXZpY2VzL3BsYXRmb3JtL2V0aGVybmV0LXN3aXRjaCMgY2F0IA0KY29uc3Vt
+ZXJcOiovc3RhdHVzDQphdmFpbGFibGUNCmFjdGl2ZQ0KYWN0aXZlDQphY3RpdmUNCmFjdGl2ZQ0K
+MC4wLjAuMEBDQTQ0LTovc3lzL2RldmljZXMvcGxhdGZvcm0vZXRoZXJuZXQtc3dpdGNoIyBjYXQg
+DQpjb25zdW1lclw6Ki9zeW5jX3N0YXRlX29ubHkNCjENCjANCjANCjANCjANCg0KSG9wZSB0aGF0
+IGhlbHBzIHlvdSB1bmRlcnN0YW5kIHdoYXQncyBnb2luZyBvbiBiZXR0ZXIuDQoNCkJUVywgSSBu
+b3RpY2VkIHRoYXQgd2hlbiBJIGJ1aWxkIHJlYWx0ZWstc21pIGFzIGEgbW9kdWxlIHdpdGggeW91
+ciANCnBhdGNoLCBteSBrZXJuZWwgY3Jhc2hlcyBpZiBJIHVubG9hZCB0aGUgbW9kdWxlLiBJIGhh
+dmVuJ3QgZGVidWdnZWQgdGhpcyANCmJlY2F1c2UgaXQgd2FzIGp1c3QgYSB0ZXN0LCBub3IgZGlk
+IEkgZ2V0IGEgc3RhY2t0cmFjZS4gTE1LIGlmIHlvdSB3YW50IA0KbW9yZSBpbmZvLg0KDQo+IA0K
+Pj4+IDIuIEFsbCBvZiB0aGVtIGhhdmUgdG8gcHJvYmUgc3VjY2Vzc2Z1bGx5IGJlZm9yZSB0aGUg
+c3dpdGNoIHdpbGwNCj4+PiByZWdpc3RlciBpdHNlbGYuDQo+Pg0KPj4gWWVzLg0KPiANCj4gUmln
+aHQsIGl0J3MgYSB5ZXMgaW4geW91ciBjYXNlLiBCdXQgd2lsbCBpdCBiZSBhIHllcyBmb3IgYWxs
+IGluc3RhbmNlcw0KPiBvZiAicmVhbHRlayxydGw4MzY2cmIiPw0KPiANCj4+PiAzLiBJZiBkc2Ff
+cmVnaXN0ZXJfc3dpdGNoKCkgZmFpbHMsIHdlIGNhbid0IGRlZmVyIHRoZSBwcm9iZSAoYmVjYXVz
+ZQ0KPj4+IGl0IGFscmVhZHkgc3VjY2VlZGVkKS4gQnV0IEknbSBub3Qgc3VyZSBpZiBpdCdzIGEg
+bGlrZWx5IGVycm9yIGNvZGUuDQo+Pg0KPj4gSXQncyBvZiBjb3Vyc2UgcG9zc2libGUgdGhhdCBk
+c2FfcmVnaXN0ZXJfc3dpdGNoKCkgZmFpbHMuIEFzc3VtaW5nDQo+PiBmd19kZXZsaW5rIGlzIGRv
+aW5nIGl0cyBqb2IgcHJvcGVybHksIEkgdGhpbmsgdGhlIHJlYXNvbiBpcyBtb3N0IGxpa2VseQ0K
+Pj4gZ29pbmcgdG8gYmUgc29tZXRoaW5nIHNwZWNpZmljIHRvIHRoZSBkcml2ZXIsIHN1Y2ggYXMg
+YSBjb21tdW5pY2F0aW9uDQo+PiB0aW1lb3V0IHdpdGggdGhlIHN3aXRjaCBoYXJkd2FyZSBpdHNl
+bGYuDQo+IA0KPiBCdXQgd2hhdCBpZiBzb21lb25lIHNldHMgZndfZGV2bGluaz1wZXJtaXNzaXZl
+PyBJcyBpdCBva2F5IHRvIGJyZWFrDQo+IHRoaXM/IFRoZXJlIGFyZSB3YXlzIHRvIG1ha2UgdGhp
+cyB3b3JrIGZvciBmd19kZXZsaW5rPXBlcm1pc3NpdmUgYW5kDQo+ID1vbiAtLSB5b3UgY2hlY2sg
+Zm9yIGVhY2ggYW5kIGRlY2lkZSB3aGVyZSB0byBjYWxsDQo+IGRzYV9yZWdpc3Rlcl9zd2l0Y2go
+KSBiYXNlZCBvbiB0aGF0Lg0KDQpJIGFtIG5ldyB0byBEU0EgbXlzZWxmIHNvIEkgdGhpbmsgSSBh
+bSB1bnF1YWxpZmllZCB0byBhbnN3ZXIgd2hldGhlciANCml0J3MgT0sgdG8gYnJlYWsgdGhpbmdz
+IG9yIG5vdC4NCg0KPiANCj4+IEkgZ2V0IHRoZSBpbXByZXNzaW9uIHRoYXQgeW91IGRvbid0IG5l
+Y2Vzc2FyaWx5IHJlZ2FyZCB0aGlzIGNoYW5nZSBhcyBhDQo+PiBwcm9wZXIgZml4LCBzbyBJJ20g
+aGFwcHkgdG8gZG8gZnVydGhlciB0ZXN0cyBpZiB5b3UgY2hvb3NlIHRvDQo+PiBpbnZlc3RpZ2F0
+ZSBmdXJ0aGVyLg0KPiANCj4gSSB0aG91Z2h0IGFib3V0IHRoaXMgaW4gdGhlIGJhY2tncm91bmQg
+dGhlIHBhc3QgZmV3IGRheXMuIEkgdGhpbmsNCj4gdGhlcmUgYXJlIGEgY291cGxlIG9mIG9wdGlv
+bnM6DQo+IDEuIFdlIChjb21tdW5pdHkvQW5kcmV3KSBhZ3JlZSB0aGF0IHRoaXMgZHJpdmVyIHdv
+dWxkIG9ubHkgd29yayB3aXRoDQo+IGZ3X2Rldmxpbms9b24gYW5kIHdlIGNhbiBjb25maXJtIHRo
+YXQgdGhlIG90aGVyIHVwc3RyZWFtIHVzZXMgb2YNCj4gInJlYWx0ZWsscnRsODM2NnJiIiB3b24n
+dCBoYXZlIGFueSB1bnByb2JlZCBjb25zdW1lcnMgcHJvYmxlbSBhbmQNCj4gc3dpdGNoIHRvIHVz
+aW5nIG15IHBhdGNoLiBCZW5lZml0IGlzIHRoYXQgaXQncyBhIHRyaXZpYWwgYW5kIHF1aWNrDQo+
+IGNoYW5nZSB0aGF0IGdldHMgdGhpbmdzIHdvcmtpbmcgYWdhaW4uDQo+IDIuIFRoZSAicmVhbHRl
+ayxydGw4MzY2cmIiIGRyaXZlciBuZWVkcyB0byBiZSBmaXhlZCB0byB1c2UgYQ0KPiAiY29tcG9u
+ZW50IGRldmljZSIuIEEgY29tcG9uZW50IGRldmljZSBpcyBhIGxvZ2ljYWwgZGV2aWNlIHRoYXQN
+Cj4gcmVwcmVzZW50cyBhIGdyb3VwIG9mIG90aGVyIGRldmljZXMuIEl0J3Mgb25seSBpbml0aWFs
+aXplZCBhZnRlciBhbGwNCj4gdGhlc2UgZGV2aWNlcyBoYXZlIHByb2JlZCBzdWNjZXNzZnVsbHku
+IFRoZSBhY3R1YWwgc3dpdGNoIHNob3VsZCBiZSBhDQo+IGNvbXBvbmVudCBkZXZpY2UgYW5kIGl0
+IHNob3VsZCBjYWxsIGRzYV9yZWdpc3Rlcl9zd2l0Y2goKSBpbiBpdCdzDQo+ICJiaW5kIiAoZXF1
+aXZhbGVudCBvZiBwcm9iZSkuIFRoYXQgd2F5IHlvdSBjYW4gZXhwbGljaXRseSBjb250cm9sIHdo
+YXQNCj4gZGV2aWNlcyBuZWVkIHRvIGJlIHByb2JlZCBpbnN0ZWFkIG9mIGRlcGVuZGluZyBvbiBz
+eW5jX3N0YXRlKCkgdGhhdA0KPiBoYXZlIGEgYnVuY2ggb2YgY2F2ZWF0cy4NCj4gDQo+IEFsdmlu
+LCBkbyB5b3Ugd2FudCB0byB0YWtlIHVwICgyKT8NCg0KSSBjYW4gZ2l2ZSBpdCBhIHNob3QsIGJ1
+dCBmaXJzdDoNCg0KICAgLSBJdCBzZWVtcyBBbmRyZXcgbWF5IGFsc28gbmVlZCBzb21lIGNvbnZp
+bmNpbmcgdGhhdCB0aGlzIGlzIHRoZSANCnJpZ2h0IGFwcHJvYWNoLg0KICAgLSBBcmUgeW91IHN1
+cmUgdGhhdCB0aGlzIHdpbGwgc29sdmUgdGhlIHByb2JsZW0/IFNlZSB3aGF0IEkgd3JvdGUgDQp1
+cHN0YWlycyBpbiB0aGlzIGVtYWlsLg0KICAgLSBJIGhhdmUgbmV2ZXIgd3JpdHRlbiAtIG5vciBj
+YW4gSSByZWNhbGwgcmVhZGluZyAtIGEgY29tcG9uZW50IA0KZHJpdmVyLCBzbyBJIHdvdWxkIGFw
+cHJlY2lhdGUgaWYgeW91IGNvdWxkIHBvaW50IG1lIHRvIGFuIHVwc3RyZWFtIA0KZXhhbXBsZSB0
+aGF0IHlvdSB0aGluayBpcyBpbGx1c3RyYXRpdmUuDQoNClRoZXJlJ3Mgb25lIG1vcmUgaXNzdWU6
+IEkgZG8gbm90IGhhdmUgYW4gUlRMODM2NiB0byB0ZXN0IG9uIC0gcmF0aGVyLCBJIA0KZW5jb3Vu
+dGVyZWQgdGhpcyBwcm9ibGVtIGluIHJlYWx0ZWstc21pIHdoaWxlIHdyaXRpbmcgYSBuZXcgc3Vi
+ZHJpdmVyIA0KZm9yIGl0IHRvIHN1cHBvcnQgdGhlIFJUTDgzNjVNQi4gU28gYW55IHByb3Bvc2Vk
+IGZpeCBtYXkgYmUgcGVyY2VpdmVkIGFzIA0Kc3BlY3VsYXRpdmUgaWYgSSBjYW5ub3QgdGVzdCBv
+biB0aGUgJzY2IGhhcmR3YXJlLiBJbiB0aGF0IGNhc2UgdGhpcyBtYXkgDQpoYXZlIHRvIHdhaXQg
+dW50aWwgdGhlICc2NU1CIHN1YmRyaXZlciBpcyBhY2NlcHRlZC4gTWFueSBpZnMgYW5kIG1heWJl
+cywgDQpidXQgZG9uJ3QgdGFrZSBpdCB0byBtZWFuIEknbSBub3QgaW50ZXJlc3RlZCBpbiBoZWxw
+aW5nLiBPbiB0aGUgY29udHJhcnkgDQotIEkgd291bGQgbGlrZSB0byBmaXggdGhpcyBidWcgc2lu
+Y2UgSSBhbSBhZmZlY3RlZCBieSBpdCENCg0KS2luZCByZWdhcmRzLA0KQWx2aW4NCg0KPiANCj4g
+LVNhcmF2YW5hDQo+IA0K
