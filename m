@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31D273F7CEF
+	by mail.lfdr.de (Postfix) with ESMTP id C98763F7CF1
 	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 21:58:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242517AbhHYT7d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 15:59:33 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:50028 "EHLO
+        id S242525AbhHYT7e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 15:59:34 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:20294 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S242507AbhHYT7a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 15:59:30 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 17PJpONr008913
-        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 12:58:44 -0700
+        by vger.kernel.org with ESMTP id S242510AbhHYT7b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 15:59:31 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 17PJmE4O007127
+        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 12:58:45 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=zMLxDb4KnCnHDg/fz+i9Y5/zBLd+vVuW8ncpktLpjm8=;
- b=F1YW6UXBQFKE8dNc1T0tuAcMnAjDrmC9c0XhP0QtoqmPK0RgLATeciddB7lpvVA2PmP3
- ndWONwXUWZCJxtcBSqgqiI6xS/R0d062t3vK5sDKmVNhU48LDXUH9ZMxZfpdP5QSHFrA
- sR2dr7IATXqahF1nUTOyDSgIT+rScOC0fb0= 
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=facebook;
+ bh=npoIg0hH/PLsSOOKa3cr7jFeeSikgJuTg/witRzt/oE=;
+ b=hubicx3VKvmYrkQFMCHI4sN6xLfRb0l7kd/UHIn1ZYCGiTNRXnwr41hRyBo20293pb0C
+ ijscrezFq1VaWZGTF6UxeqQ4zMrk8RtNp1anR9IB57x/0DFBVttLwoC3YkVS4YtOH3bp
+ r5DzH04l07XcMnkWZMuixwH8Oos10zOhSyA= 
 Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 3an5sm894f-3
+        by mx0a-00082601.pphosted.com with ESMTP id 3anuusg88q-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 12:58:44 -0700
-Received: from intmgw001.25.frc3.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:11d::7) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 12:58:45 -0700
+Received: from intmgw001.38.frc1.facebook.com (2620:10d:c085:108::4) by
+ mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 25 Aug 2021 12:58:43 -0700
+ 15.1.2176.2; Wed, 25 Aug 2021 12:58:44 -0700
 Received: by devbig030.frc3.facebook.com (Postfix, from userid 158236)
-        id 245115A34ED9; Wed, 25 Aug 2021 12:58:37 -0700 (PDT)
+        id C323A5A34F26; Wed, 25 Aug 2021 12:58:39 -0700 (PDT)
 From:   Dave Marchevsky <davemarchevsky@fb.com>
 To:     <bpf@vger.kernel.org>
 CC:     Alexei Starovoitov <ast@kernel.org>,
@@ -38,135 +38,120 @@ CC:     Alexei Starovoitov <ast@kernel.org>,
         Andrii Nakryiko <andrii@kernel.org>,
         Yonghong Song <yhs@fb.com>, <netdev@vger.kernel.org>,
         Dave Marchevsky <davemarchevsky@fb.com>
-Subject: [PATCH v2 bpf-next 3/6] libbpf: Modify bpf_printk to choose helper based on arg count
-Date:   Wed, 25 Aug 2021 12:58:20 -0700
-Message-ID: <20210825195823.381016-4-davemarchevsky@fb.com>
+Subject: [PATCH v2 bpf-next 4/6] bpftool: only probe trace_vprintk feature in 'full' mode
+Date:   Wed, 25 Aug 2021 12:58:21 -0700
+Message-ID: <20210825195823.381016-5-davemarchevsky@fb.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210825195823.381016-1-davemarchevsky@fb.com>
 References: <20210825195823.381016-1-davemarchevsky@fb.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
 X-FB-Internal: Safe
 Content-Type: text/plain
 X-FB-Source: Intern
-X-Proofpoint-GUID: Lkr36jhIch-SBTEzApAE2bkrzqzZ_iBI
-X-Proofpoint-ORIG-GUID: Lkr36jhIch-SBTEzApAE2bkrzqzZ_iBI
-Content-Transfer-Encoding: quoted-printable
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
-MIME-Version: 1.0
+X-Proofpoint-GUID: ck0ZlPZaOGGA0dfmGHkowAOP3sleQ5i0
+X-Proofpoint-ORIG-GUID: ck0ZlPZaOGGA0dfmGHkowAOP3sleQ5i0
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
  definitions=2021-08-25_07:2021-08-25,2021-08-25 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- phishscore=0 spamscore=0 mlxlogscore=999 suspectscore=0 lowpriorityscore=0
- priorityscore=1501 bulkscore=0 impostorscore=0 clxscore=1015 adultscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2107140000 definitions=main-2108250117
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 adultscore=0
+ impostorscore=0 bulkscore=0 phishscore=0 mlxlogscore=999
+ lowpriorityscore=0 malwarescore=0 priorityscore=1501 spamscore=0
+ suspectscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2107140000 definitions=main-2108250117
 X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of being a thin wrapper which calls into bpf_trace_printk,
-libbpf's bpf_printk convenience macro now chooses between
-bpf_trace_printk and bpf_trace_vprintk. If the arg count (excluding
-format string) is >3, use bpf_trace_vprintk, otherwise use the older
-helper.
+Since commit 368cb0e7cdb5e ("bpftool: Make probes which emit dmesg
+warnings optional"), some helpers aren't probed by bpftool unless
+`full` arg is added to `bpftool feature probe`.
 
-The motivation behind this added complexity - instead of migrating
-entirely to bpf_trace_vprintk - is to maintain good developer experience
-for users compiling against new libbpf but running on older kernels.
-Users who are passing <=3D3 args to bpf_printk will see no change in their
-bytecode.
-
-__bpf_vprintk functions similarly to BPF_SEQ_PRINTF and BPF_SNPRINTF
-macros elsewhere in the file - it allows use of bpf_trace_vprintk
-without manual conversion of varargs to u64 array. Previous
-implementation of bpf_printk macro is moved to __bpf_printk for use by
-the new implementation.
-
-This does change behavior of bpf_printk calls with >3 args in the "new
-libbpf, old kernels" scenario. On my system, using a clang built from
-recent upstream sources (14.0.0 https://github.com/llvm/llvm-project.git
-50b62731452cb83979bbf3c06e828d26a4698dca), attempting to use 4 args to
-__bpf_printk (old impl) results in a compile-time error:
-
-  progs/trace_printk.c:21:21: error: too many args to 0x6cdf4b8: i64 =3D Co=
-nstant<6>
-        trace_printk_ret =3D __bpf_printk("testing,testing %d %d %d %d\n",
-
-I was able to replicate this behavior with an older clang as well. When
-the format string has >3 format specifiers, there is no output to the
-trace_pipe in either case.
-
-After this patch, using bpf_printk with 4 args would result in a
-trace_vprintk helper call being emitted and a load-time failure on older
-kernels.
+bpf_trace_vprintk can emit dmesg warnings when probed, so include it.
 
 Signed-off-by: Dave Marchevsky <davemarchevsky@fb.com>
 ---
- tools/lib/bpf/bpf_helpers.h | 45 ++++++++++++++++++++++++++++++-------
- 1 file changed, 37 insertions(+), 8 deletions(-)
+ tools/bpf/bpftool/feature.c                 |  1 +
+ tools/testing/selftests/bpf/test_bpftool.py | 22 +++++++++------------
+ 2 files changed, 10 insertions(+), 13 deletions(-)
 
-diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
-index b9987c3efa3c..5f087306cdfe 100644
---- a/tools/lib/bpf/bpf_helpers.h
-+++ b/tools/lib/bpf/bpf_helpers.h
-@@ -14,14 +14,6 @@
- #define __type(name, val) typeof(val) *name
- #define __array(name, val) typeof(val) *name[]
+diff --git a/tools/bpf/bpftool/feature.c b/tools/bpf/bpftool/feature.c
+index 7f36385aa9e2..ade44577688e 100644
+--- a/tools/bpf/bpftool/feature.c
++++ b/tools/bpf/bpftool/feature.c
+@@ -624,6 +624,7 @@ probe_helpers_for_progtype(enum bpf_prog_type prog_ty=
+pe, bool supported_type,
+ 		 */
+ 		switch (id) {
+ 		case BPF_FUNC_trace_printk:
++		case BPF_FUNC_trace_vprintk:
+ 		case BPF_FUNC_probe_write_user:
+ 			if (!full_mode)
+ 				continue;
+diff --git a/tools/testing/selftests/bpf/test_bpftool.py b/tools/testing/=
+selftests/bpf/test_bpftool.py
+index 4fed2dc25c0a..1c2408ee1f5d 100644
+--- a/tools/testing/selftests/bpf/test_bpftool.py
++++ b/tools/testing/selftests/bpf/test_bpftool.py
+@@ -57,6 +57,11 @@ def default_iface(f):
+         return f(*args, iface, **kwargs)
+     return wrapper
 =20
--/* Helper macro to print out debug messages */
--#define bpf_printk(fmt, ...)				\
--({							\
--	char ____fmt[] =3D fmt;				\
--	bpf_trace_printk(____fmt, sizeof(____fmt),	\
--			 ##__VA_ARGS__);		\
--})
--
- /*
-  * Helper macro to place programs, maps, license in
-  * different sections in elf_bpf file. Section names
-@@ -224,4 +216,41 @@ enum libbpf_tristate {
- 		     ___param, sizeof(___param));		\
- })
++DMESG_EMITTING_HELPERS =3D [
++        "bpf_probe_write_user",
++        "bpf_trace_printk",
++        "bpf_trace_vprintk",
++    ]
 =20
-+/* Helper macro to print out debug messages */
-+#define __bpf_printk(fmt, ...)				\
-+({							\
-+	char ____fmt[] =3D fmt;				\
-+	bpf_trace_printk(____fmt, sizeof(____fmt),	\
-+			 ##__VA_ARGS__);		\
-+})
-+
-+/*
-+ * __bpf_vprintk wraps the bpf_trace_vprintk helper with variadic arguments
-+ * instead of an array of u64.
-+ */
-+#define __bpf_vprintk(fmt, args...)				\
-+({								\
-+	static const char ___fmt[] =3D fmt;			\
-+	unsigned long long ___param[___bpf_narg(args)];		\
-+								\
-+	_Pragma("GCC diagnostic push")				\
-+	_Pragma("GCC diagnostic ignored \"-Wint-conversion\"")	\
-+	___bpf_fill(___param, args);				\
-+	_Pragma("GCC diagnostic pop")				\
-+								\
-+	bpf_trace_vprintk(___fmt, sizeof(___fmt),		\
-+		     ___param, sizeof(___param));		\
-+})
-+
-+#define ___bpf_pick_printk(...) \
-+	___bpf_nth(_, ##__VA_ARGS__, __bpf_vprintk, __bpf_vprintk, __bpf_vprintk,=
-	\
-+		__bpf_vprintk, __bpf_vprintk, __bpf_vprintk, __bpf_vprintk,		\
-+		__bpf_vprintk, __bpf_vprintk, __bpf_printk, __bpf_printk,		\
-+		__bpf_printk, __bpf_printk)
-+
-+#define bpf_printk(fmt, args...)		\
-+({						\
-+	___bpf_pick_printk(args)(fmt, args);	\
-+})
-+
- #endif
+ class TestBpftool(unittest.TestCase):
+     @classmethod
+@@ -67,10 +72,7 @@ class TestBpftool(unittest.TestCase):
+=20
+     @default_iface
+     def test_feature_dev_json(self, iface):
+-        unexpected_helpers =3D [
+-            "bpf_probe_write_user",
+-            "bpf_trace_printk",
+-        ]
++        unexpected_helpers =3D DMESG_EMITTING_HELPERS
+         expected_keys =3D [
+             "syscall_config",
+             "program_types",
+@@ -94,10 +96,7 @@ class TestBpftool(unittest.TestCase):
+             bpftool_json(["feature", "probe"]),
+             bpftool_json(["feature"]),
+         ]
+-        unexpected_helpers =3D [
+-            "bpf_probe_write_user",
+-            "bpf_trace_printk",
+-        ]
++        unexpected_helpers =3D DMESG_EMITTING_HELPERS
+         expected_keys =3D [
+             "syscall_config",
+             "system_config",
+@@ -121,10 +120,7 @@ class TestBpftool(unittest.TestCase):
+             bpftool_json(["feature", "probe", "kernel", "full"]),
+             bpftool_json(["feature", "probe", "full"]),
+         ]
+-        expected_helpers =3D [
+-            "bpf_probe_write_user",
+-            "bpf_trace_printk",
+-        ]
++        expected_helpers =3D DMESG_EMITTING_HELPERS
+=20
+         for tc in test_cases:
+             # Check if expected helpers are included at least once in an=
+y
+@@ -157,7 +153,7 @@ class TestBpftool(unittest.TestCase):
+                 not_full_set.add(helper)
+=20
+         self.assertCountEqual(full_set - not_full_set,
+-                                {"bpf_probe_write_user", "bpf_trace_prin=
+tk"})
++                              set(DMESG_EMITTING_HELPERS))
+         self.assertCountEqual(not_full_set - full_set, set())
+=20
+     def test_feature_macros(self):
 --=20
 2.30.2
 
