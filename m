@@ -2,96 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AAC53F6DA8
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 05:21:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 054553F6DEF
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 05:56:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237913AbhHYDWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 23:22:08 -0400
-Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:40464
-        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237766AbhHYDWH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 23:22:07 -0400
-Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com [209.85.216.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 64E393F322
-        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 03:21:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1629861674;
-        bh=bubKe1V2wVnyhV9MMzcO3LsuU+2HkzzeQ/usUihXRL4=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=pNK5/VUbe8Zo5NVmRDNXnLvbxS6+TDoeocuhytiPuOPSTnH+EtAC+l4dMQ+6uBahA
-         d6mgRGg6g0KzUhJsmyXt/+mi07hDCvElqnSYRgcuDDe/0F18G4jUKYeQxzHACrS0nm
-         ItwPsP+cyOXbAJhd5bn22PB4mYrVwmO9gdW8wr3zpBmiWsNI0dX/oieLFDCeQonKoZ
-         HZ17s66ylUNCu4JUbjdlRMQA+Mong1/e69m4IRUFhEpEsk0+dOm6KiEEA4AP8xPwgK
-         2e2TBROrye5c+F8TyYROZ7sIB8PtXrpzdxT+o061zpps6MIpHU0vIziYp3Pny9VHBh
-         dGuoRmTCHy7Bw==
-Received: by mail-pj1-f69.google.com with SMTP id c2-20020a17090a558200b001873dcb7f09so3416621pji.7
-        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 20:21:14 -0700 (PDT)
+        id S236811AbhHYD4v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 23:56:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35914 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235816AbhHYD4l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 23:56:41 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 526D5C061757;
+        Tue, 24 Aug 2021 20:55:56 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id fz10so4259564pjb.0;
+        Tue, 24 Aug 2021 20:55:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=rIAtfGj5qvVENV9WWVZMFVGBJuT4wuu3+yhzjBnrODs=;
+        b=FFLev3F07ILuAs83PdrenjINmyoPq0n77COtk2VIQDbIdEIeXPxZuh6I0B7OU+4Tt1
+         /E2LjvMMHnXZrAtRJc68INgHwY+om8QEUIereki+erzJLc59mmv0+1E4hb+pliTjsmta
+         ndeTK1oMki5pOWNxKSvJzaJsxln2TScgQ5SamfpiNJoXpv3KMxIBerlRqClBYSqdCooB
+         U8lLIVYl7tisFR0hGB6gNqVn0ZCbM4B+L/PJxhQg/O5q8o6fwNJUUyiw2WLrhxzP8wc0
+         2Cpx0nIq0CB10pBWCp0R5uPg16kAk9b44mmjvPweTdxHy3yQnIEoIZKrKj6BApCD6lhS
+         O8ow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bubKe1V2wVnyhV9MMzcO3LsuU+2HkzzeQ/usUihXRL4=;
-        b=R/axo3+KAal4vluhZI/hROp+ocdRNW2ENGzEcwraTyQaobDd1s613jVtL/PUauc+Mv
-         HfYFris/LEIw9j6hFdlLcTlS06jw//NK4gsJQWzkYZdbQMgQGKKv3DF9/WGW2PeYxwlw
-         6BcscJnkjftJByyL/tj4EZ0gppzYUzTdgymEab9U7Jz1UMdvRuLJvS6uAAKpIQOD6r4R
-         WDHQAfCGhvnO2o+7UIDEycoNpUz5IfwHIb4K17qiawnUyFfP7dmAJcLzqxvuAaY7Y4eI
-         t1bdaM1kIsyM/Unzs2exB0u0lh1hth0m1C3utDp4ogMdCRMmj9DYy2WGuha/6CL1j9rn
-         R3jg==
-X-Gm-Message-State: AOAM531jj69/o9OYe8+OLF81+47TGg+PRKI36wMbzodLB5lbEbgeoJkX
-        BYpOqT8wpmxwrw6IqJoxOW5rGWsyteDwnYzgk7Zg1GutiFgEv0B3kdFi8Tq5BvOebd8UJUibLWT
-        G/LjJ9hBNa3214nan5QIQpUXs1XK4GJ/SBrfNSCcpT3ADODur
-X-Received: by 2002:a65:494e:: with SMTP id q14mr40030658pgs.314.1629861672698;
-        Tue, 24 Aug 2021 20:21:12 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxhWn0jS2YhuUhIxgZx+PjfbGWTVTBIIjMe7EFktPXwyVRjO7xHttqYBJgkFKlGl1VfvTS2JVhsyO4eOepp7Jw=
-X-Received: by 2002:a65:494e:: with SMTP id q14mr40030623pgs.314.1629861672376;
- Tue, 24 Aug 2021 20:21:12 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210823085854.40216-1-po-hsu.lin@canonical.com> <YSSemxg1JQRdqxsP@shredder>
-In-Reply-To: <YSSemxg1JQRdqxsP@shredder>
-From:   Po-Hsu Lin <po-hsu.lin@canonical.com>
-Date:   Wed, 25 Aug 2021 11:21:13 +0800
-Message-ID: <CAMy_GT9xMGsX2dqDRhq=2LPf4OZLc3j1YLCYKOVZACKhPyTu8Q@mail.gmail.com>
-Subject: Re: [PATCH] selftests/net: Use kselftest skip code for skipped tests
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        David Miller <davem@davemloft.net>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=rIAtfGj5qvVENV9WWVZMFVGBJuT4wuu3+yhzjBnrODs=;
+        b=SLThGdUJpMb5UI5c0/7Pl7lsnOPQetayGyiseigS+6jSs7I2sfsmamBV+1mvhdj9VK
+         dYlPDrdxzxs2w8jzE/M8T5hA/jSLN30Pa3EuaFYJhI60G6FYqKUWfDmVM2tp4Zix6gI3
+         wPXRQLtbdgXJFght3GI5c7EHjbKPbHIAcurD5+2dFJMvhdWwb7y8XE7GHcY33GzXP38G
+         CfA8a2x4jIu1a47zvObLiiOLoUwqdJEQKvH/RraEovpDwcuJfOzXFy44ck3IkCjPC/PY
+         HJ0m8oklP5riOJ7Wvd3dlW79rB/Dd97TtWPxR2XaTf3w+rvIkLG4sqrvmOaWUkjx8vIh
+         8MaA==
+X-Gm-Message-State: AOAM5332q9Jtq+5AcfUd9ToGiUmoBzAXJi7QFqpZi/j08M3h3ODGUFIm
+        jZ04/cQ/dJaKEp2bA7+p9kM=
+X-Google-Smtp-Source: ABdhPJzGY1gLl625kG0Emo3PW5/KunYn2jQ8ZmvIFLtams9OGpbD31KTB44Cic0fv4r3bexeCiy9bA==
+X-Received: by 2002:a17:90b:4a82:: with SMTP id lp2mr8271118pjb.103.1629863755885;
+        Tue, 24 Aug 2021 20:55:55 -0700 (PDT)
+Received: from haswell-ubuntu20.lan ([138.197.212.246])
+        by smtp.gmail.com with ESMTPSA id a4sm21298248pfk.0.2021.08.24.20.55.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Aug 2021 20:55:55 -0700 (PDT)
+From:   DENG Qingfang <dqfext@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>, petrm@nvidia.co,
-        oleksandr.mazur@plvision.eu, idosch@nvidia.com, jiri@nvidia.com,
-        nikolay@nvidia.com, gnault@redhat.com, simon.horman@netronome.com,
-        baowen.zheng@corigine.com, danieller@nvidia.com
-Content-Type: text/plain; charset="UTF-8"
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Russell King <linux@armlinux.org.uk>,
+        "open list:MEDIATEK SWITCH DRIVER" <netdev@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next] net: dsa: mt7530: manually set up VLAN ID 0
+Date:   Wed, 25 Aug 2021 11:55:45 +0800
+Message-Id: <20210825035545.1836274-1-dqfext@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210824173714.cgpt2addxyjzlbyy@skbuf>
+References: <20210824165253.1691315-1-dqfext@gmail.com> <20210824165742.xvkb3ke7boryfoj4@skbuf> <20210824173237.1691654-1-dqfext@gmail.com> <20210824173714.cgpt2addxyjzlbyy@skbuf>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 24, 2021 at 3:24 PM Ido Schimmel <idosch@idosch.org> wrote:
->
-> On Mon, Aug 23, 2021 at 04:58:54PM +0800, Po-Hsu Lin wrote:
-> > There are several test cases in the net directory are still using
-> > exit 0 or exit 1 when they need to be skipped. Use kselftest
-> > framework skip code instead so it can help us to distinguish the
-> > return status.
-> >
-> > Criterion to filter out what should be fixed in net directory:
-> >   grep -r "exit [01]" -B1 | grep -i skip
-> >
-> > This change might cause some false-positives if people are running
-> > these test scripts directly and only checking their return codes,
-> > which will change from 0 to 4. However I think the impact should be
-> > small as most of our scripts here are already using this skip code.
-> > And there will be no such issue if running them with the kselftest
-> > framework.
-> >
-> > Signed-off-by: Po-Hsu Lin <po-hsu.lin@canonical.com>
->
-> Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-> Tested-by: Ido Schimmel <idosch@nvidia.com>
+On Tue, Aug 24, 2021 at 08:37:14PM +0300, Vladimir Oltean wrote:
+> On Wed, Aug 25, 2021 at 01:32:37AM +0800, DENG Qingfang wrote:
+> > Okay. So the Fixes tag should be 6087175b7991, which initially adds the
+> > software fallback support for mt7530.
+> 
+> Ok. Did the old code not need VLAN 0 for VLAN-unaware ports, or are you
+> saying that since the VLAN table lookup was bypassed completely in the
+> old code, 'no VLAN 0' was an inconsequential error?
+> 
+> I think it's the latter. Just wanted to make sure. So that means, either
+> this Fixes: tag or the other, the patch still belongs to net-next. From
+> my side you shouldn't need to resend.
 
-Thank you for the test and the review!
-PHLin
+You're right. The old code does not use VLAN table lookup for VLAN-unaware
+ports, and the current code set VLAN-unaware ports to fallback mode so
+missing VLAN 0 will only make them fallback to SVL.
+
+> 
+> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
