@@ -2,199 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 48A193F6FA3
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 08:35:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 801463F6FC3
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 08:45:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239272AbhHYGgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 02:36:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43648 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238843AbhHYGgP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 02:36:15 -0400
-Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FDF2C061757;
-        Tue, 24 Aug 2021 23:35:30 -0700 (PDT)
-Received: by mail-qt1-x835.google.com with SMTP id e15so18995444qtx.1;
-        Tue, 24 Aug 2021 23:35:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=jms.id.au; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=e5wA7aNOTXP+Y+al0rHQG+1sA1f1Ihy6VxwekY9Btnk=;
-        b=iNhptUYApDmWVR9/kxA2NJILtiGqdNuKxWxkcICQDZlpakv72q9iGgCgpPO/py4qbL
-         5dJkOGHGOsm8qwMXV/vOMmrLpR381UCZIzd3ug9N1j61yjY7SsArccQ/uYhs5nP3QTPA
-         1g8YX8Mb1MWrNYPo7FZDsFzbfu4U3rk52yhqQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=e5wA7aNOTXP+Y+al0rHQG+1sA1f1Ihy6VxwekY9Btnk=;
-        b=JBWjJU1Y8n+GpBQHbRQMkTpSQ1fWTIQ0+J7LLvf82Lc/PO5USmaDMdManTbUBFFEva
-         tlraCsNEcGhLZccqh/OSsQiNl1lIDU3BpneP090Dr2tnga3e2qMxZswYH+O6D3tDtrCq
-         itGxEvTbO41iBCeRi93PdEdOPCtN0qHc54286Cq+aOPLJZf/NAHS3DXMFes5onuPVjRP
-         8zHBhRhBmHk9rbDZJcyYLs7GoBRX8znLDbLpQVyAFEbzZnTShQm5Roi5wEVMsPUQPvov
-         kDAugkr8HC760BhjoWDTJ3NSDhbP/2pEXYPVrq32Rtob3OQWVYatKvrrb6FrmVDT5Ef0
-         x/9Q==
-X-Gm-Message-State: AOAM530/YqQXquVGXakc0gzQUEBkYRefohdMiGtxr9sLWOpg649fcFtp
-        IbQAM5okzAiNZ35LmzlhTa2LUOBym2TlDdPLKrM=
-X-Google-Smtp-Source: ABdhPJzoQd1eVp0Nn8cXdqG70rpQMroeT9FhJwqNIOeYfwtsRZmSWCp7ZGquB/gZIrsUByLbU5N0LQNDy4Fj+3RjN2c=
-X-Received: by 2002:ac8:4b64:: with SMTP id g4mr36120313qts.263.1629873329235;
- Tue, 24 Aug 2021 23:35:29 -0700 (PDT)
+        id S239157AbhHYGpx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 02:45:53 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:8768 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239085AbhHYGpt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 02:45:49 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Gvc0F3zBgzYsVx;
+        Wed, 25 Aug 2021 14:44:29 +0800 (CST)
+Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2176.2; Wed, 25 Aug 2021 14:44:46 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ dggemi759-chm.china.huawei.com (10.1.198.145) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Wed, 25 Aug 2021 14:44:45 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <mkubecek@suse.cz>,
+        <andrew@lunn.ch>, <amitc@mellanox.com>, <idosch@idosch.org>,
+        <danieller@nvidia.com>
+CC:     <netdev@vger.kernel.org>, <lipeng321@huawei.com>,
+        <chenhao288@hisilicon.com>, <huangguangbin2@huawei.com>
+Subject: [PATCH net-next 0/5] ethtool: add support to set/get tx spare buf size and rx buf len
+Date:   Wed, 25 Aug 2021 14:40:50 +0800
+Message-ID: <1629873655-51539-1-git-send-email-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-References: <20210820074726.2860425-3-joel@jms.id.au> <YSVLz0Se+hTVr0DA@errol.ini.cmu.edu>
-In-Reply-To: <YSVLz0Se+hTVr0DA@errol.ini.cmu.edu>
-From:   Joel Stanley <joel@jms.id.au>
-Date:   Wed, 25 Aug 2021 06:35:17 +0000
-Message-ID: <CACPK8Xf9LGQBUHmS9sQ4zG1akk5SoQ-31MD-GMWVSRuByAT7KQ@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] net: Add driver for LiteX's LiteEth network interface
-To:     "Gabriel L. Somlo" <gsomlo@gmail.com>,
-        Florent Kermarrec <florent@enjoy-digital.fr>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        David Shah <dave@ds0.me>, Stafford Horne <shorne@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggemi759-chm.china.huawei.com (10.1.198.145)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 24 Aug 2021 at 19:43, Gabriel L. Somlo <gsomlo@gmail.com> wrote:
->
-> Hi Joel,
->
-> Couple of comments below:
->
-> On Fri, Aug 20, 2021 at 05:17:26PM +0930, Joel Stanley wrote:
+This series add support to set/get tx spare buf size and rx buf len via
+ethtool and hns3 driver implements them.
 
-> > diff --git a/drivers/net/ethernet/litex/Kconfig b/drivers/net/ethernet/litex/Kconfig
-> > new file mode 100644
-> > index 000000000000..265dba414b41
-> > --- /dev/null
-> > +++ b/drivers/net/ethernet/litex/Kconfig
+Tx spare buf size is used for tx copybreak feature which for small size
+packet or frag. Use ethtool --get-tunable command to get it, and ethtool
+--set-tunable command to set it, examples are as follow:
 
-> > +
-> > +config LITEX_LITEETH
-> > +     tristate "LiteX Ethernet support"
->
-> Mostly cosmetic, but should there be a "depends on LITEX" statement in here?
+1. set tx spare buf size to 102400:
+$ ethtool --set-tunable eth1 tx-buf-size 102400
 
-No, there's as there is no dependency on the litex soc driver.
+2. get tx spare buf size:
+$ ethtool --get-tunable eth1 tx-buf-size
+tx-buf-size: 102400
 
-> Maybe also "select MII" and "select PHYLIB"?
+Rx buf len is buffer length of each rx BD. Use ethtool -g command to get
+it, and ethtool -G command to set it, examples are as follow:
 
-Again, there is no mii or phy code so the driver doesn't need these.
+1. set rx buf len to 4096
+$ ethtool -G eth1 rx-buf-len 4096
 
-> > diff --git a/drivers/net/ethernet/litex/Makefile b/drivers/net/ethernet/litex/Makefile
-> > new file mode 100644
-> > index 000000000000..9343b73b8e49
-> > --- /dev/null
-> > +++ b/drivers/net/ethernet/litex/Makefile
-> > +int liteeth_setup_slots(struct liteeth *priv)
-> > +{
-> > +     struct device_node *np = priv->dev->of_node;
-> > +     int err, depth;
-> > +
-> > +     err = of_property_read_u32(np, "rx-fifo-depth", &depth);
-> > +     if (err) {
-> > +             dev_err(priv->dev, "unable to get rx-fifo-depth\n");
-> > +             return err;
-> > +     }
-> > +     if (depth < LITEETH_BUFFER_SIZE) {
->
-> If I set depth to be *equal* to LITEETH_BUFFER_SIZE (2048) in DTS,
-> no traffic makes it out of my network interface (linux-on-litex-rocket
-> on an ecpix5 board, see github.com/litex-hub/linux-on-litex-rocket).
->
-> May I suggest rejecting if (depth / LITEETH_BUFFER_SIZE < 2) instead?
-> When that's enforced, the interface actually works fine for me.
+2. get rx buf len
+$ ethtool -g eth1
+...
+RX Buf Len:     4096
 
-Yes, I was using BUFFER_SIZE as the slot size, which it is not. I'll
-rework it to use the slot size I think.
 
-I spent some time digging through the migen source and I couldn't work
-out where the 1024 length comes from. If anything it should be
-eth_mtu, which is 1530.
+Hao Chen (5):
+  ethtool: add support to set/get tx spare buf size
+  net: hns3: add support to set/get tx spare buf via ethtool for hns3
+    driver
+  ethtool: add support to set/get rx buf len
+  net: hns3: add support to set/get rx buf len via ethtool for hns3
+    driver
+  net: hns3: remove the way to set tx spare buf via module parameter
 
-Florent, can you clear that up?
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    | 11 +--
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |  2 +
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 98 ++++++++++++++++++++--
+ include/uapi/linux/ethtool.h                       |  3 +
+ include/uapi/linux/ethtool_netlink.h               |  1 +
+ net/ethtool/ioctl.c                                |  1 +
+ net/ethtool/netlink.h                              |  2 +-
+ net/ethtool/rings.c                                | 11 ++-
+ 8 files changed, 112 insertions(+), 17 deletions(-)
 
->
-> > +             dev_err(priv->dev, "invalid tx-fifo-depth: %d\n", depth);
->
-> This should read "rx-fifo-depth".
+-- 
+2.8.1
 
-Thanks.
-
->
-> > +             return -EINVAL;
-> > +     }
-> > +     priv->num_rx_slots = depth / LITEETH_BUFFER_SIZE;
-> > +
-> > +     err = of_property_read_u32(np, "tx-fifo-depth", &depth);
-> > +     if (err) {
-> > +             dev_err(priv->dev, "unable to get tx-fifo-depth\n");
-> > +             return err;
-> > +     }
-> > +     if (depth < LITEETH_BUFFER_SIZE) {
->
-> Ditto reject if (depth / LITEETH_BUFFER_SIZE < 2) instead.
->
-> > +             dev_err(priv->dev, "invalid rx-fifo-depth: %d\n", depth);
->
-> This should read "tx-fifo-depth".
-
-Ack.
-
->
-> > +             return -EINVAL;
-> > +     }
-> > +     priv->num_tx_slots = depth / LITEETH_BUFFER_SIZE;
-> > +
-> > +     return 0;
-> > +}
-> > +
-> > +static int liteeth_probe(struct platform_device *pdev)
-> > +{
-> > +     struct net_device *netdev;
-> > +     void __iomem *buf_base;
-> > +     struct resource *res;
-> > +     struct liteeth *priv;
-> > +     int irq, err;
-> > +
-> > +     netdev = devm_alloc_etherdev(&pdev->dev, sizeof(*priv));
-> > +     if (!netdev)
-> > +             return -ENOMEM;
-> > +
-> > +     SET_NETDEV_DEV(netdev, &pdev->dev);
-> > +     platform_set_drvdata(pdev, netdev);
-> > +
-> > +     priv = netdev_priv(netdev);
-> > +     priv->netdev = netdev;
-> > +     priv->dev = &pdev->dev;
-> > +
-> > +     irq = platform_get_irq(pdev, 0);
-> > +     if (irq < 0) {
-> > +             dev_err(&pdev->dev, "Failed to get IRQ %d\n", irq);
-> > +             return irq;
->
-> At this point, netdev has been dynamically allocated, and should
-> probably be free'd before liteeth_probe() is allowed to fail,
-> to avoid any potential leaks...
-
-We use the managed variant of alloc_etherdev, which means the
-structure is freed by the driver core when the driver is removed. This
-saves having to open code the cleanup/free code.
-
-Have a read of Documentation/driver-api/driver-model/devres.rst for
-more information.
-
-Thanks for the review Gabriel. I'll send a v3 with some fixes for the
-fifo buffer handling.
-
-Cheers,
-
-Joel
