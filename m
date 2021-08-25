@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4EF43F7279
+	by mail.lfdr.de (Postfix) with ESMTP id 5B0E33F7278
 	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 12:00:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239807AbhHYKBE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 06:01:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58924 "EHLO mail.kernel.org"
+        id S239773AbhHYKBC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 06:01:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58922 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239611AbhHYKA7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S237574AbhHYKA7 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 25 Aug 2021 06:00:59 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 80EA661178;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 78B5861181;
         Wed, 25 Aug 2021 10:00:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1629885613;
-        bh=yp3IRO9FCB9oK1+XLLX639+q9a7keOG91VnqqQQXNBk=;
+        bh=/j7V0rHN5mvkR3PCKNqygqm9JTsHOAgX7rRf0HZfO2E=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=mvvAXOOjCMbGE2rLJUvufqrW2+2SsAkPzoZ8FoMc4HtXrui78wEou98+it7HIQQt1
-         Y0A0yzImCMv9iTDiaPqu3buf6mc5mBXD01635oEoFeOdDYwb52aVOG2bXsOnbpS5ET
-         gqkFZ3FcFWBHfVJYTrPqJe45XZ6c4Ov8ocaCjCDiydr1VnqeTNDLX+I+/j/vj+blI7
-         f0ePQ/pE24G1MQDIKDYnA9ScB/kQ8+IkRAJuLc43zNz34K1z60H+2r6GGGvgBd9zNQ
-         vLh+lYsI1HlHHjLwSJSTXE/TeX91lrPPWEhlO83CnRi7GrNV8Q4uh0wAmVagJPifj4
-         wr9CzYKzBS0aw==
+        b=o0WmhyakyWd+GT0TLgfyHN5honhXpJ+lsSLrdO/zX8G0cLrHrhKlSI7CryVGSy6n5
+         DrnJj0HDTzPpTWw9v5PVu116H0EXyZ8VJmmfoMYk1tOC84uyK/ew+JSwUdBuQ4QTuE
+         qBrCbw6M7zMITEu3CXArGWYTHdYEAPJV1TMfK+MpOcNwP8eKNtyDa1b3UfJ5r8yfP/
+         8YAFVXPDb0CNwy09JIqOPncaDJ8PX1EwxtU0Di4R84FVc3VOQIh4lyzeiUngapo6Xv
+         2Epug1LDx7/Oyb+tKYZsXLTIaEVe0re9b9yTJx/ku0dLau49WwZGxTR0v50wK78+30
+         LYo3JxTxLJfIA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 751FB60A02;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6BCC460A0C;
         Wed, 25 Aug 2021 10:00:13 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 00/10] LAN7800 driver improvements
+Subject: Re: [PATCH v2 0/4] xen: harden netfront against malicious backends
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162988561347.31154.16868294892793404021.git-patchwork-notify@kernel.org>
+Message-Id: <162988561343.31154.5658614827184945239.git-patchwork-notify@kernel.org>
 Date:   Wed, 25 Aug 2021 10:00:13 +0000
-References: <20210824185613.49545-1-john.efstathiades@pebblebay.com>
-In-Reply-To: <20210824185613.49545-1-john.efstathiades@pebblebay.com>
-To:     John Efstathiades <john.efstathiades@pebblebay.com>
-Cc:     UNGLinuxDriver@microchip.com, woojung.huh@microchip.com,
-        davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        linux-usb@vger.kernel.org
+References: <20210824102809.26370-1-jgross@suse.com>
+In-Reply-To: <20210824102809.26370-1-jgross@suse.com>
+To:     Juergen Gross <jgross@suse.com>
+Cc:     xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, boris.ostrovsky@oracle.com,
+        sstabellini@kernel.org, davem@davemloft.net, kuba@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -47,37 +47,25 @@ Hello:
 
 This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue, 24 Aug 2021 19:56:03 +0100 you wrote:
-> This patch set introduces a number of improvements and fixes for
-> problems found during testing of a modification to add a NAPI-style
-> approach to packet handling to improve performance.
-> 
-> NOTE: the NAPI changes are not part of this patch set and the issues
->       fixed by this patch set are not coupled to the NAPI changes.
+On Tue, 24 Aug 2021 12:28:05 +0200 you wrote:
+> Xen backends of para-virtualized devices can live in dom0 kernel, dom0
+> user land, or in a driver domain. This means that a backend might
+> reside in a less trusted environment than the Xen core components, so
+> a backend should not be able to do harm to a Xen guest (it can still
+> mess up I/O data, but it shouldn't be able to e.g. crash a guest by
+> other means or cause a privilege escalation in the guest).
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v2,01/10] lan78xx: Fix white space and style issues
-    https://git.kernel.org/netdev/net-next/c/9ceec7d33adf
-  - [net-next,v2,02/10] lan78xx: Remove unused timer
-    https://git.kernel.org/netdev/net-next/c/3bef6b9e9888
-  - [net-next,v2,03/10] lan78xx: Set flow control threshold to prevent packet loss
-    https://git.kernel.org/netdev/net-next/c/dc35f8548e00
-  - [net-next,v2,04/10] lan78xx: Remove unused pause frame queue
-    https://git.kernel.org/netdev/net-next/c/40b8452fa8b4
-  - [net-next,v2,05/10] lan78xx: Add missing return code checks
-    https://git.kernel.org/netdev/net-next/c/3415f6baaddb
-  - [net-next,v2,06/10] lan78xx: Fix exception on link speed change
-    https://git.kernel.org/netdev/net-next/c/b1f6696daafe
-  - [net-next,v2,07/10] lan78xx: Fix partial packet errors on suspend/resume
-    https://git.kernel.org/netdev/net-next/c/e1210fe63bf8
-  - [net-next,v2,08/10] lan78xx: Fix race conditions in suspend/resume handling
-    https://git.kernel.org/netdev/net-next/c/5f4cc6e25148
-  - [net-next,v2,09/10] lan78xx: Fix race condition in disconnect handling
-    https://git.kernel.org/netdev/net-next/c/77dfff5bb7e2
-  - [net-next,v2,10/10] lan78xx: Limit number of driver warning messages
-    https://git.kernel.org/netdev/net-next/c/df0d6f7a342c
+  - [v2,1/4] xen/netfront: read response from backend only once
+    https://git.kernel.org/netdev/net-next/c/8446066bf8c1
+  - [v2,2/4] xen/netfront: don't read data from request on the ring page
+    https://git.kernel.org/netdev/net-next/c/162081ec33c2
+  - [v2,3/4] xen/netfront: disentangle tx_skb_freelist
+    https://git.kernel.org/netdev/net-next/c/21631d2d741a
+  - [v2,4/4] xen/netfront: don't trust the backend response data blindly
+    https://git.kernel.org/netdev/net-next/c/a884daa61a7d
 
 You are awesome, thank you!
 --
