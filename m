@@ -2,84 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C630E3F77DB
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 16:56:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 274F63F77EA
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 17:00:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239899AbhHYO5n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 10:57:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55134 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231975AbhHYO5n (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Aug 2021 10:57:43 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EE1E36101A;
-        Wed, 25 Aug 2021 14:56:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629903417;
-        bh=01RvTi53kWwY1p/XGYd00O30ciAQK3IhAd1LXE71E60=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=oFfdb4U5mywPCgNICrItDXIaTTfeOUT/9iCF9+8wnPGJgJY8rDuvBrqsc4cnqDn9W
-         /aSjI4SDMDEbE+IA1Cm0NFBXCkH/c54WiRi06u7h8hSp9RjGjv36iOynTFN9gUgLr4
-         LNloZKdzD0RvGxw7wLrV7wXq7NcsBu6g3fuK2zZG4ICXrf5eiQkN+fqcSAWql3QlXI
-         H1w4isvmgNFknCpziUb+84UGVJg1TXy/7Og3Wubvo5wjhQiCWw5Vh6/BEEbPytP3V1
-         1pfmXi5HiDukDgC8RQdq6MklKDqgLdlg1BaHlmyfyT+h3PsG/wcByoVtSKiXJgx8V4
-         B94EGxTbRUG5w==
-Date:   Wed, 25 Aug 2021 07:56:56 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Guangbin Huang <huangguangbin2@huawei.com>
-Cc:     <davem@davemloft.net>, <mkubecek@suse.cz>, <andrew@lunn.ch>,
-        <amitc@mellanox.com>, <idosch@idosch.org>, <danieller@nvidia.com>,
-        <netdev@vger.kernel.org>, <lipeng321@huawei.com>,
-        <chenhao288@hisilicon.com>
-Subject: Re: [PATCH net-next 1/5] ethtool: add support to set/get tx spare
- buf size
-Message-ID: <20210825075656.4db0890a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1629873655-51539-2-git-send-email-huangguangbin2@huawei.com>
-References: <1629873655-51539-1-git-send-email-huangguangbin2@huawei.com>
-        <1629873655-51539-2-git-send-email-huangguangbin2@huawei.com>
+        id S241812AbhHYPBE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 11:01:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48328 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240940AbhHYPA7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 11:00:59 -0400
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D359C0613C1
+        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 08:00:14 -0700 (PDT)
+Received: by mail-io1-xd2b.google.com with SMTP id a15so31227670iot.2
+        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 08:00:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=iLfJeET2ve0H5UgkAIjYFsr7rtgqOzhLAiJ9vDMCtuc=;
+        b=CUXmdc1nbVcvgegRerTbifpZts7ufvUAqg4rpm1mItTX8pHSMRcRc9mmAXKW+yFIVM
+         wY1pPZPsIBFqLl+UyJmlupEzWvSp/A4U4NtuNp14vqMeSV/KSvMBzpEb0OPyvOW7Fz2x
+         7HROreHktuMu366P2mbOrYEcWK2d4g2Kg9fHMqKaRzX9zQXGM2NiGKbv+gRCuFDkWP4E
+         PgKnP/ObMLO+orS3a4Q5jW0kSXGQ8FALoP/geajGrkfu3fS/lneoRgbBcZ9F/1cTkWkD
+         NWNaF9Up9BLKGTzxwQ/zUB/8pzYNuRXM5FdKuUWaxucUhpe9mP8S/D6zPZNiTAP95uiG
+         4aOA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=iLfJeET2ve0H5UgkAIjYFsr7rtgqOzhLAiJ9vDMCtuc=;
+        b=KBTCDNfqsTnQy7pNY6L/i15fXQQMRQN1aewh0Lcyo6Vxa5gfLfz3MQPrvlQqB4i+fS
+         Lrqb5p2SchaiIoBdXX5mMHqK2dK9FwE/TX3jXaLjzc/Pp5sQnaCnhLUYNjj9JY9+Slc7
+         /NIQmV6nKBxXM5AclRPeCiP29jQInBl5fz2UFaILJB0G7A3iqDgkxvd58A3wnCvSxhQl
+         /C+hJxkHAu02pJSnk+ohaU/qWbh1vrLJY2mR0KlV5X+46P8tA1OdqFHiLviM5QThGnQX
+         3RMCbclWOtoqPeGOBLuZPZTH8NufWpL1Xi8QQ3sAHDN4bKP7yUqzr5POx1uYzsQPecgX
+         xdMg==
+X-Gm-Message-State: AOAM533/aM+ki1M52DNFX/2jwVLV3Fn2hjU1ScOv6FvuG77StWm51tcX
+        9G9y0yYzwrQcBDBeFa37sMSbVA==
+X-Google-Smtp-Source: ABdhPJxowRvu6BIeDfSetidf16jz/ifyPgByV7bD5kDRnJANvWVMae8HWHHtySbzPxdwPBKI0tu1kw==
+X-Received: by 2002:a05:6602:2436:: with SMTP id g22mr36663718iob.109.1629903613651;
+        Wed, 25 Aug 2021 08:00:13 -0700 (PDT)
+Received: from [192.168.1.30] ([207.135.234.126])
+        by smtp.gmail.com with ESMTPSA id f9sm110864ilk.56.2021.08.25.08.00.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 25 Aug 2021 08:00:12 -0700 (PDT)
+Subject: Re: [PATCH v4 0/4] open/accept directly into io_uring fixed file
+ table
+To:     Pavel Begunkov <asml.silence@gmail.com>, io-uring@vger.kernel.org,
+        Josh Triplett <josh@joshtriplett.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Stefan Metzmacher <metze@samba.org>
+References: <cover.1629888991.git.asml.silence@gmail.com>
+From:   Jens Axboe <axboe@kernel.dk>
+Message-ID: <230278aa-9774-e31f-b4f9-c1785a2ecfc5@kernel.dk>
+Date:   Wed, 25 Aug 2021 09:00:12 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <cover.1629888991.git.asml.silence@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 25 Aug 2021 14:40:51 +0800 Guangbin Huang wrote:
-> From: Hao Chen <chenhao288@hisilicon.com>
+On 8/25/21 5:25 AM, Pavel Begunkov wrote:
+> Add an optional feature to open/accept directly into io_uring's fixed
+> file table bypassing the normal file table. Same behaviour if as the
+> snippet below, but in one operation:
 > 
-> Add support for ethtool to set/get tx spare buf size.
+> sqe = io_uring_[open|accept]_prep();
+> io_uring_submit(sqe);
+> // ... once we get a CQE back
+> io_uring_register_files_update(uring_idx, (fd = cqe->res));
+> close((fd = cqe->res));
 > 
-> Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
-> Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
-> ---
->  include/uapi/linux/ethtool.h | 1 +
->  net/ethtool/ioctl.c          | 1 +
->  2 files changed, 2 insertions(+)
+> The idea is old, and was brough up and implemented a year ago by
+> Josh Triplett, though haven't sought the light.
 > 
-> diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
-> index b6db6590baf0..266e95e4fb33 100644
-> --- a/include/uapi/linux/ethtool.h
-> +++ b/include/uapi/linux/ethtool.h
-> @@ -231,6 +231,7 @@ enum tunable_id {
->  	ETHTOOL_RX_COPYBREAK,
->  	ETHTOOL_TX_COPYBREAK,
->  	ETHTOOL_PFC_PREVENTION_TOUT, /* timeout in msecs */
-> +	ETHTOOL_TX_COPYBREAK_BUF_SIZE,
+> The behaviour is controlled by setting sqe->file_index, where 0 implies
+> the old behaviour using normal file tables. If non-zero value is
+> specified, then it will behave as described and place the file into a
+> fixed file slot sqe->file_index - 1. A file table should be already
+> created, the slot should be valid and empty, otherwise the operation
+> will fail.
+> 
+> note: IOSQE_FIXED_FILE can't be used as a mode switch, because accept
+> takes a file, and it already uses the flag with a different meaning.
 
-We need good documentation for the new tunable.
+Updated the tree and picked you davem's ack as well.
 
->  	/*
->  	 * Add your fresh new tunable attribute above and remember to update
->  	 * tunable_strings[] in net/ethtool/common.c
-> diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
-> index f2abc3152888..9fc801298fde 100644
-> --- a/net/ethtool/ioctl.c
-> +++ b/net/ethtool/ioctl.c
-> @@ -2377,6 +2377,7 @@ static int ethtool_tunable_valid(const struct ethtool_tunable *tuna)
->  	switch (tuna->id) {
->  	case ETHTOOL_RX_COPYBREAK:
->  	case ETHTOOL_TX_COPYBREAK:
-> +	case ETHTOOL_TX_COPYBREAK_BUF_SIZE:
->  		if (tuna->len != sizeof(u32) ||
->  		    tuna->type_id != ETHTOOL_TUNABLE_U32)
->  			return -EINVAL;
+-- 
+Jens Axboe
 
