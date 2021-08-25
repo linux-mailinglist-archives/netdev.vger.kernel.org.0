@@ -2,122 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 967D23F6D7A
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 04:44:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30E5D3F6D95
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 05:00:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237904AbhHYCpO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Aug 2021 22:45:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48300 "EHLO
+        id S237573AbhHYDB1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Aug 2021 23:01:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237739AbhHYCpN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 22:45:13 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CE7BC061757
-        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 19:44:28 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id j187so20018303pfg.4
-        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 19:44:28 -0700 (PDT)
+        with ESMTP id S236811AbhHYDB0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Aug 2021 23:01:26 -0400
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 982B3C061757;
+        Tue, 24 Aug 2021 20:00:41 -0700 (PDT)
+Received: by mail-qk1-x732.google.com with SMTP id t190so25622571qke.7;
+        Tue, 24 Aug 2021 20:00:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=IFpAwSjFvRUpCCEgflLsEqCbO4jnDj91zb2+drlqQHY=;
-        b=CRHRxzNNeLjjaYmy8LiBN60siMF08xXwdN/fHtKdWXu9q/wpOqr2lMGA3wS3gxlRDP
-         4nobd+29V/TY34PayddSzKNNI+ygCGSkGGsEamK+Ds+gcFBz4omf3xpB5pjThJ/wiKZB
-         JAmPNHM/LhkncS+VMglbF17MwErAhuAx/um9zLGpcEprSXACavxJB3HxUJf0jwDyOvwe
-         V8DTf9jFh44xguhi+ZP8fEAWC7+j0dK/kAssVB5fukDxNFwZgESoHRt0jYrzlrF8hocR
-         XKUf4vGkB5Lr0pObn5680MKbYEER0NEZQOrpR90MbR2/BjeyFqXIRt6Mr4Qjmk7P3rDD
-         BsqQ==
+        d=jms.id.au; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QHaHVfC9ZxdCotTX4ZlHKoxMecl4et3Tc+Q5i4v+294=;
+        b=Nm5KC+mwaP5nSOwDKdt5G/qE9bXDYFPJYJSgz4UdqogrQe4unOKPDA2nrXmqCCBS+z
+         gtPspbN/wzGVbOH2toSxpv+josum4DrKzylgAsnwRN4BkOpheBxD6/rlWTMTMaaixKnc
+         R6pj8hEAyWp2CXC0nkQrM/i3FQji7GHNPa2lI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=IFpAwSjFvRUpCCEgflLsEqCbO4jnDj91zb2+drlqQHY=;
-        b=oima26P3XlWG9KSI4bB8+FQHADHam6HEswxwsajOXmX/raC2knpwmtrQsL/r36bmvl
-         9iETjyPkeCYtF33exHcp/uc47L0ZNx4pbCmTO99gO+GaSkyb1idnI6SOp0h4LQxAPOiL
-         IhneVGVVGFTQguwtHusQJAvfb7JTYuat4x05XDxgva065lxSQPRokXnMixuPOYRuyGQM
-         O+fM8AdvAaqG+ZrOy/YMTP/DjtqWdaLLYm0hAQbArYmX1duqhrl6n150RHhv1HJdMpOX
-         qiPUrCf+sc2eTI6AugSwkvkBIs826bbkoeGL/AtTU8VKwdhEgmhsv14Hvayut2Z3ptVT
-         dnEA==
-X-Gm-Message-State: AOAM530xz2U+7iNdT0ndTLToWlRuBW7TIoGDc9J4Gdj1AC/SoZ5nM9QX
-        dLrtogOJEmqRBxUCv0emA48=
-X-Google-Smtp-Source: ABdhPJyB3oV8U+DeTfPO5U5zwrYBp0opVEF+1OlVUZaQjzyUVYWvy9laee3ZBBYJg6zScDRmRCyWDg==
-X-Received: by 2002:a63:215c:: with SMTP id s28mr39508962pgm.99.1629859467779;
-        Tue, 24 Aug 2021 19:44:27 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id m18sm3706158pjq.32.2021.08.24.19.44.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 24 Aug 2021 19:44:27 -0700 (PDT)
-Subject: Re: [PATCH net-next v2] tcp: enable mid stream window clamp
-To:     Neil Spring <ntspring@fb.com>, davem@davemloft.net,
-        edumazet@google.com
-Cc:     yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
-        netdev@vger.kernel.org, ncardwell@google.com, ycheng@google.com
-References: <20210819195443.1191973-1-ntspring@fb.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <6070816e-f7d2-725a-ec10-9d85f15455a2@gmail.com>
-Date:   Tue, 24 Aug 2021 19:44:25 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QHaHVfC9ZxdCotTX4ZlHKoxMecl4et3Tc+Q5i4v+294=;
+        b=DPSNI0cH7q2uoHVQU+zEIdp84ByLAkyshE/MiISHJW3bXtQuIr4wyaoWtGpY4K1vJ+
+         QTlG9tKVv4oW4JL5CzHPUYkF5PCrUVDihFNo+Byl1H8BokDCAsaSdRJHe4r8qUBQXOUM
+         uqjDSP8NVxalx7GpT5DF5nXszxE5c6gNrKTg/69fCVv4JFfOqnfMDN4Nmhs2trkRlqOB
+         U/cKj5r5869av4aVekALMczpue6KwdJ6bEhhLhxn50+///wK3zOY60ScyFE81b/x5mIG
+         bOnO5yIb7Fop3Zt+78S1XY5bW4rCK5wX4/AWDeb1FI7ThnAu2lL/fjGhOlLfSgLzkNl5
+         iuJw==
+X-Gm-Message-State: AOAM531oK0FrgMa/IQ+FGR3LoqmyPhE/wMT0taDeXNoXwc6+y8JVJ19r
+        3L/ufsyY1tmjSsjAUD58zSEuHZcnoQAYJ7giNi4=
+X-Google-Smtp-Source: ABdhPJwD0kTW8mIAWxw5LZiPoTqn2EmnDmUw4QVy9ogHF2fbLdzS9nl9FYamNANpFM5qtQTEND97mxvtWAt4bt6ARYY=
+X-Received: by 2002:a05:620a:2223:: with SMTP id n3mr5811879qkh.66.1629860440525;
+ Tue, 24 Aug 2021 20:00:40 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210819195443.1191973-1-ntspring@fb.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210820074726.2860425-1-joel@jms.id.au> <20210820074726.2860425-2-joel@jms.id.au>
+ <YSPseMd1nDHnF/Db@robh.at.kernel.org> <CACPK8XcU+i6hQeTWpYmt=w7A=1EzwgYcMucz7y6oLxwTFTJsiQ@mail.gmail.com>
+ <CAL_Jsq+q6o88_6910brD4wEWBTi068jGDmaD8pucEFrT5FcWMw@mail.gmail.com>
+In-Reply-To: <CAL_Jsq+q6o88_6910brD4wEWBTi068jGDmaD8pucEFrT5FcWMw@mail.gmail.com>
+From:   Joel Stanley <joel@jms.id.au>
+Date:   Wed, 25 Aug 2021 03:00:28 +0000
+Message-ID: <CACPK8Xey50=7CGb--Myue-KzFLqGKWRMiW5j0z+fp4PLnYBUqA@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] dt-bindings: net: Add bindings for LiteETH
+To:     Rob Herring <robh@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        devicetree <devicetree@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 24 Aug 2021 at 11:52, Rob Herring <robh@kernel.org> wrote:
+>
+> On Mon, Aug 23, 2021 at 10:52 PM Joel Stanley <joel@jms.id.au> wrote:
+> >
+> > On Mon, 23 Aug 2021 at 18:44, Rob Herring <robh@kernel.org> wrote:
+> > >
+> > > On Fri, Aug 20, 2021 at 05:17:25PM +0930, Joel Stanley wrote:
+> >
+> > > > +
+> > > > +  interrupts:
+> > > > +    maxItems: 1
+> > > > +
+> > >
+> > > > +  rx-fifo-depth: true
+> > > > +  tx-fifo-depth: true
+> > >
+> > > Needs a vendor prefix, type, description and constraints.
+> >
+> > These are the standard properties from the ethernet-controller.yaml. I
+> > switched the driver to using those once I discovered they existed (v1
+> > defined these in terms of slots, whereas the ethernet-controller
+> > bindings use bytes).
+>
+> Indeed (grepping the wrong repo didn't work too well :) ).
+>
+> Still, I'd assume there's some valid range for this h/w you can
+> define? Or 0 - 2^32 is valid?
 
+0 would be problematic, but there's not really any bound on it.
 
-On 8/19/21 12:54 PM, Neil Spring wrote:
-> The TCP_WINDOW_CLAMP socket option is defined in tcp(7) to "Bound the size of
-> the advertised window to this value."  Window clamping is distributed across two
-> variables, window_clamp ("Maximal window to advertise" in tcp.h) and rcv_ssthresh
-> ("Current window clamp").
-> 
-> This patch updates the function where the window clamp is set to also reduce the current
-> window clamp, rcv_sshthresh, if needed.  With this, setting the TCP_WINDOW_CLAMP option
-> has the documented effect of limiting the window.
-> 
-> Signed-off-by: Neil Spring <ntspring@fb.com>
-> ---
-> v2: - fix email formatting
-> 
-> 
->  net/ipv4/tcp.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> index f931def6302e..2dc6212d5888 100644
-> --- a/net/ipv4/tcp.c
-> +++ b/net/ipv4/tcp.c
-> @@ -3338,6 +3338,8 @@ int tcp_set_window_clamp(struct sock *sk, int val)
->  	} else {
->  		tp->window_clamp = val < SOCK_MIN_RCVBUF / 2 ?
->  			SOCK_MIN_RCVBUF / 2 : val;
-> +		tp->rcv_ssthresh = min(tp->rcv_ssthresh,
-> +				       tp->window_clamp);
+I'll send a v3 with the reg-names documented. Thanks for the review.
 
-This fits in a single line I think.
-		tp->rcv_ssthresh = min(tp->rcv_ssthresh, tp->window_clamp);
+Cheers,
 
->  	}
->  	return 0;
->  }
-> 
-
-Hi Neil
-
-Can you provide a packetdrill test showing the what the new expected behavior is ?
-
-It is not really clear why you need this.
-
-Also if we are unable to increase tp->rcv_ssthresh, this means the following sequence
-will not work as we would expect :
-
-+0 setsockopt(5, IPPROTO_TCP, TCP_WINDOW_CLAMP, [10000], 4) = 0
-+0 setsockopt(5, IPPROTO_TCP, TCP_WINDOW_CLAMP, [100000], 4) = 0
-
-
-Thanks.
+Joel
