@@ -2,64 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 525BA3F76FF
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 16:18:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 808803F7734
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 16:24:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240920AbhHYOTb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 10:19:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47324 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240148AbhHYOTa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Aug 2021 10:19:30 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8FEDF61073;
-        Wed, 25 Aug 2021 14:18:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629901124;
-        bh=fDtNSTEYyOXNle4YzEzsDGLFQ+vxMYJdh6Vy7iJQy8M=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=falDQpo3fOQ8n4bpyEj8fMH3mf9AvCCwJAADR6r0ROROepK69mnryB5ALylrBBc5j
-         APq3i/FifuTfxjFfhHGQcN0td+jQLGK4z0X/a1b0txy4ChDDaYTu/Eg+F7j9xyJ0Y8
-         s+ByM9MbSqDnsra4R49OodVkCMDM/indl1pvQyluz34W+DkgtFrRYH0siz8ONle3j9
-         L2HtXr2CGXLcOv7XUNOV+p/bIl2cr0aSlPoGZ2FC1m2WPXXW1C+uysHUprjmhsbkr+
-         /kcbSpIcFPRJAvJZMOFbMTl9yyUT0oq8aHefIZV8oqMO7TuRDCbF/tHkVcCRFaX3Ak
-         JNy9AOMQ46DKQ==
-Date:   Wed, 25 Aug 2021 07:18:43 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leon Romanovsky <leonro@nvidia.com>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Dmytro Linkin <dlinkin@nvidia.com>, <netdev@vger.kernel.org>,
-        Roi Dayan <roid@nvidia.com>,
-        Yicong Yang <yangyicong@hisilicon.com>
-Subject: Re: [PATCH net] net/mlx5: Remove all auxiliary devices at the
- unregister event
-Message-ID: <20210825071843.17f7831d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <YSYG4it61d7ztmuq@unreal>
-References: <10641ab4c3de708f61a968158cac7620cef27067.1629547326.git.leonro@nvidia.com>
-        <YSYG4it61d7ztmuq@unreal>
+        id S241576AbhHYOZY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 10:25:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39988 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241618AbhHYOZM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 10:25:12 -0400
+Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62A40C06129D
+        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 07:24:11 -0700 (PDT)
+Received: by mail-io1-xd32.google.com with SMTP id a21so31096769ioq.6
+        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 07:24:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=alZxIaoIDfxA+gB3N1wqbJA/fAEGksDbpqCRYJudRzo=;
+        b=QbPIFI40pPNYXaANCynBs3Z7Otsb8bg+fajhbuyxgUuig5l28WOcgv44G0c3jIQ0YI
+         yJaV1yjanV86W4Dm6Y3ilavjWTWtpchzEQoRsl/08Y6EE0hHmH5m8djw+wLH12qA1aAv
+         IbggIn6azoye8/UBq/kUOz8EhtkTdSAx3I3y+RmC7j918ebgN1clyQ3FkKFyOvsweZ1f
+         hYltquu6O8Ivy0Xx5wp04v8vr/KWiiNXufYoABpaAI5FdCrzS92Vd27TAydzSc1qF2Ft
+         YqxVNMtK6sN4mz0ktpiS/Q9Ei1IVY9162Ne68gvLgjwAnfQfQYHk2HdKKiOSNhiAUz6l
+         FItA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=alZxIaoIDfxA+gB3N1wqbJA/fAEGksDbpqCRYJudRzo=;
+        b=L81HF34O3qD3pAmJ6cNHHlf3SWdeoyRY1EH5akzN0sXkPdM9314d/GCUbj8VJM2MOM
+         LGfYPafXyZ4gAMnH1LDLcF82tip5swN1YMEM/zuaIyY9/NPh3qEGnNiZlvGi4ThlLFs4
+         aw4mqPesNpR6DQgp8bZAapf5zQI6WdHXRSg6HwHesfHNqNF2bTZXDcEu73gYvzrAYB5X
+         +Ep7KBLHUA/obWA9GwE/w7Vn8Hmkh2w5oAQ5etKBz69OwIvPZTVLRHqk+Z/6G7fi5fTb
+         FAmwXueeK4W9iDQbwiryCYm9xD5qzRlYToeacOsFq8ZfA/boxBZNJFQXemJHQ8+KpLk3
+         vyJQ==
+X-Gm-Message-State: AOAM5306uLNwizZUbkPZB2HRgod2DdHXiMWTnoDDMbqZm0mvs80PhqKJ
+        ww8WFaFIRrhZTw9QiLUmhmTzY6VrMzhf19JppGs=
+X-Google-Smtp-Source: ABdhPJwO87D1rAN2WFUkfw30RcgS28GUp92xEl7wepaK1hm+KM8gLFcFpIhkrTmoRQeHMWijvOF/hauszlWcI+19SBU=
+X-Received: by 2002:a05:6638:185:: with SMTP id a5mr6897462jaq.31.1629901449370;
+ Wed, 25 Aug 2021 07:24:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Received: by 2002:a5d:93c4:0:0:0:0:0 with HTTP; Wed, 25 Aug 2021 07:24:09
+ -0700 (PDT)
+Reply-To: wlsndvdsn@gmail.com
+From:   Wilson Davidson <stuhdidly999@gmail.com>
+Date:   Wed, 25 Aug 2021 14:24:09 +0000
+Message-ID: <CAOgALxJEmyZWG7GLiqPGhtK2UsCbpo62SWujiS-cZyusOhq4KA@mail.gmail.com>
+Subject: Hello
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 25 Aug 2021 12:01:22 +0300 Leon Romanovsky wrote:
-> On Sat, Aug 21, 2021 at 03:05:11PM +0300, Leon Romanovsky wrote:
-> > From: Leon Romanovsky <leonro@nvidia.com>
-> > 
-> > The call to mlx5_unregister_device() means that mlx5_core driver is
-> > removed. In such scenario, we need to disregard all other flags like
-> > attach/detach and forcibly remove all auxiliary devices.
-> > 
-> > Fixes: a5ae8fc9058e ("net/mlx5e: Don't create devices during unload flow")
-> > Tested-and-Reported-by: Yicong Yang <yangyicong@hisilicon.com>
-> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > ---
-> >  drivers/net/ethernet/mellanox/mlx5/core/dev.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)  
-> 
-> Any reason do not apply this patch?
-
-'Awaiting upstream' => we expect Saeed to take it via his tree.
-If special handling is requested is should be noted somewhere.
+Hello,Kindly be informed that this email that came to your mailbox is
+not an error but was specifically addressed to you for your
+consideration. I have a proposal of ($7.500.000.00) left by my late
+client Engineer Carlos Rodrigo, who used to work and lived here in
+Lom=C3=A9 Togo.  My late client and family were involved in a car accident
+that took their lives. I am contacting you as the next of kin to the
+deceased so you could receive the funds upon claims.I will give you
+more details upon your reply
