@@ -2,92 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBD843F7BD6
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 19:56:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD4783F7C02
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 20:05:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242414AbhHYR5K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 13:57:10 -0400
-Received: from mga03.intel.com ([134.134.136.65]:42586 "EHLO mga03.intel.com"
+        id S235503AbhHYSGJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 14:06:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33302 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235032AbhHYR5K (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Aug 2021 13:57:10 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10087"; a="217614869"
-X-IronPort-AV: E=Sophos;i="5.84,351,1620716400"; 
-   d="scan'208";a="217614869"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2021 10:56:24 -0700
-X-IronPort-AV: E=Sophos;i="5.84,351,1620716400"; 
-   d="scan'208";a="527422217"
-Received: from jambrizm-mobl1.amr.corp.intel.com ([10.212.224.56])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2021 10:56:23 -0700
-Date:   Wed, 25 Aug 2021 10:56:14 -0700 (PDT)
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     Jiang Biao <benbjiang@gmail.com>
-cc:     Matthieu Baerts <matthieu.baerts@tessares.net>,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        mptcp@lists.linux.dev, linux-kernel <linux-kernel@vger.kernel.org>,
-        Jiang Biao <benbjiang@tencent.com>,
-        Jiang Biao <tcs_robot@tencent.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH] ipv4/mptcp: fix divide error
-In-Reply-To: <CAPJCdBmTPW5gcO6DO5i=T+R2TNypzbaA666krk=7Duf2mt1yBw@mail.gmail.com>
-Message-ID: <f9b97b7f-cb48-f0bf-2dfb-a13bf1296b19@linux.intel.com>
-References: <20210824071926.68019-1-benbjiang@gmail.com> <fe512c8b-6f5a-0210-3f23-2c1fc75cd6e5@tessares.net> <CAPJCdBmTPW5gcO6DO5i=T+R2TNypzbaA666krk=7Duf2mt1yBw@mail.gmail.com>
+        id S229599AbhHYSGH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Aug 2021 14:06:07 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E53CD610C9
+        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 18:05:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1629914721;
+        bh=4X5LPpQNtCtwaVCdBoKhK0t58slkTfkLJw00xz+L1pw=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=HoTc2el8ysbw1WUQirqjMGXR3U3s65jLDQNdSbKQFdlX4LErhbWOF0xcR5GUQbw3w
+         Ccy3JVRev2SMpFBEe6bbo8+SXg00+8DHM6JvmXbWnJw+3qfhbFNGmz9TE2MkbQHSo6
+         ++lYo/Yrl2sOGyhLuLLoIYvfDfsFAJugTmlxjpaEguG2XmKgLcPXasejAKXQ4Iyszw
+         TYSd/bVdKnx1m/UeCYnFGqov0qV6lQnC1Vhh5E4pyJauzoDhgEgFvteck4U2ItwMpa
+         tTUBC5Q5Mbi250W6Q97ldhkmuKSB1TQ698J7r9RSQRA8eG3XYeaK2yN+n8aQFrPBwj
+         928J0GOdu8PiA==
+Received: by mail-wr1-f53.google.com with SMTP id q11so534442wrr.9
+        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 11:05:21 -0700 (PDT)
+X-Gm-Message-State: AOAM533L4EJipEEDv6QZrAALqePrhMVTnLQNAzI0Ex583JrtSTBwRsKs
+        RWuAcqhyzZhnjiWGoqawvt2NialIX5ZtGum4wQo=
+X-Google-Smtp-Source: ABdhPJzpb1zL6G1GvZSRpBFlWhk+gfOj7VFdG1qBEmH8DuolSfxIjHAw/zpbRbed9dBu7ylwRkWi/pTK3g9Br8FW9zE=
+X-Received: by 2002:a5d:58c8:: with SMTP id o8mr16697160wrf.361.1629914720609;
+ Wed, 25 Aug 2021 11:05:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed; charset=US-ASCII
+References: <20210813203026.27687-1-rdunlap@infradead.org> <CAK8P3a3QGF2=WZz6N8wQo2ZQxmVqKToHGmhT4wEtB7tAL+-ruQ@mail.gmail.com>
+ <20210820153100.GA9604@hoboy.vegasvil.org> <80be0a74-9b0d-7386-323c-c261ca378eef@infradead.org>
+ <CAK8P3a11wvEhoEutCNBs5NqiZ2VUA1r-oE1CKBBaYbu_abr4Aw@mail.gmail.com>
+ <20210825170813.7muvouqsijy3ysrr@bsd-mbp.dhcp.thefacebook.com> <8f0848a6-354d-ff58-7d41-8610dc095773@infradead.org>
+In-Reply-To: <8f0848a6-354d-ff58-7d41-8610dc095773@infradead.org>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Wed, 25 Aug 2021 20:05:04 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a3YHBNDNb8ThXzN844FHhMYJW-95kQ5Y=nfOYxYcMms6Q@mail.gmail.com>
+Message-ID: <CAK8P3a3YHBNDNb8ThXzN844FHhMYJW-95kQ5Y=nfOYxYcMms6Q@mail.gmail.com>
+Subject: Re: [PATCH] ptp: ocp: don't allow on S390
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On Tue, 24 Aug 2021, Jiang Biao wrote:
-
-> Hi,
+On Wed, Aug 25, 2021 at 7:29 PM Randy Dunlap <rdunlap@infradead.org> wrote:
+> On 8/25/21 10:08 AM, Jonathan Lemon wrote:
+> > So, something like the following (untested) patch?
+> > I admit to not fully understanding all the nuances around Kconfig.
 >
-> On Tue, 24 Aug 2021 at 15:36, Matthieu Baerts
-> <matthieu.baerts@tessares.net> wrote:
->>
->> Hi Jiang,
->>
->> On 24/08/2021 09:19, Jiang Biao wrote:
->>
->> (...)
->>
->>> There is a fix divide error reported,
->>> divide error: 0000 [#1] PREEMPT SMP KASAN
->>> RIP: 0010:tcp_tso_autosize build/../net/ipv4/tcp_output.c:1975 [inline]
->>> RIP: 0010:tcp_tso_segs+0x14f/0x250 build/../net/ipv4/tcp_output.c:1992
->>
->> Thank you for this patch and validating MPTCP on your side!
->>
->> This issue is actively tracked on our Github project [1] and a patch is
->> already in our tree [2] but still under validation.
->>> It's introduced by non-initialized info->mss_now in __mptcp_push_pending.
->>> Fix it by adding protection in mptcp_push_release.
->>
->> Indeed, you are right, info->mss_now can be set to 0 in some cases but
->> that's not normal.
->>
->> Instead of adding a protection here, we preferred fixing the root cause,
->> see [2]. Do not hesitate to have a look at the other patch and comment
->> there if you don't agree with this version.
->> Except if [2] is difficult to backport, I think we don't need your extra
->> protection. WDYT?
->>
-> Agreed, fixing the root cause is much better.
-> Thanks for the reply.
+> You can also remove the "select NET_DEVLINK". The driver builds fine
+> without it. And please drop the "default n" while at it.
 >
+> After that, your patch will match my (tested) patch.  :)
 
-Hi Jiang -
+That version sounds good to me.
 
-Could you try cherry-picking this commit to see if it eliminates the error 
-in your system?
-
-https://github.com/multipath-tcp/mptcp_net-next/commit/9ef5aea5a794f4a369e26ed816e9c80cdc5a5f86
-
-
-Thanks!
-
---
-Mat Martineau
-Intel
+       Arnd
