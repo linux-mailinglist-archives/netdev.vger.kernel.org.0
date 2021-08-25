@@ -2,228 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79B543F7B02
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 18:57:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9C6E3F7B24
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 19:05:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231854AbhHYQ6a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 12:58:30 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:14966 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229791AbhHYQ62 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 12:58:28 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 17PGs7n9026997;
-        Wed, 25 Aug 2021 09:57:32 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=EMmubK/Diwfqxqr6eDjc5qrOUqc/ZEg85I8WYRLJc4k=;
- b=PtBfWAOAVgnAan+vyn31XHSMUb+K6uSvVlJ1Ptzay6F/b+FCHkwlIPqFcK/ium9KkoRm
- A6JmkfojgbpOra7vgIMZxMw22q6QsL5TLfwc+N9C/iW+dNASKLEFZvvdeJ6J/1sHIUfI
- +5/QDU1iSu6/Sz8fmLoYDub47w2Jy/R6xE8= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 3an3pc8959-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 25 Aug 2021 09:57:32 -0700
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 25 Aug 2021 09:57:31 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=al4qWtY2V6ISILQ7zBagxIdeXLMQLHZleUxTVD9V3qSn16JLyBljjx3vxFYTxagDrrqWezZf2qvkc1LjinDFMjaFxVMInhjhyNrQSjsTG4Xy6NLPZawmbjL337y6zUwd90nVBeoNM0rO7LS1YtS+kwRrthWgirD4mkEytb2A7Ue0D72wyAgANx84k4bK3jC2M6cEM7i6wkVE9JUgdzrXmDD1WVxvlBcUPwb3AV0uXB+XLplmpodl9yrtSE56qvQaeE9lzrzDFgUbNPRocsfiqI7SKadhvRM/iFGv0tX72F6TX6XOJxQbp9MXOBXF+ZN+HwTepa4ERa9rwET1YbHpzA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zFwI3tOWE/OYUBFEG8qO2OFncp1fy3YCriX+xPZBJqE=;
- b=i4ab8dMgwCczU8IBB1DXNilWxev9fnAjw8S+EtMPF0n+bwt0OJNCPhOf9rbf5mJBR2bqQPdRpZshLo3kq5c+g3zauarV4uXq9/iI3utmrsudJ6jnH0Qyxbcfvau8CoV2eZIWUR4gQw67TY0k/PvbitjPaXPjZ6qOZK4lLGxjI8I8arKvU5M7a9SZ9YHHHrUF0+tylIaMbLYHKYRtEPwPNJMLATvYw0puts+Imz8E4aIdRTmKVaYW6oVneGLY7u5iIcIKkeCY30sTm5pl8Q8spJBqLRLKYK/yp6uudaRgG7huOcWJdYYTEPDdqpSfz8/PJyyOYH3LVCRSEs06KdDMDw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from BYAPR15MB2518.namprd15.prod.outlook.com (2603:10b6:a03:157::25)
- by SJ0PR15MB4599.namprd15.prod.outlook.com (2603:10b6:a03:37c::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.21; Wed, 25 Aug
- 2021 16:57:31 +0000
-Received: from BYAPR15MB2518.namprd15.prod.outlook.com
- ([fe80::e4ab:a5a3:304e:63a4]) by BYAPR15MB2518.namprd15.prod.outlook.com
- ([fe80::e4ab:a5a3:304e:63a4%3]) with mapi id 15.20.4436.024; Wed, 25 Aug 2021
- 16:57:31 +0000
-From:   Neil Spring <ntspring@fb.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>
-CC:     "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>,
-        "dsahern@kernel.org" <dsahern@kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "ncardwell@google.com" <ncardwell@google.com>,
-        "ycheng@google.com" <ycheng@google.com>
-Subject: Re: [PATCH net-next v2] tcp: enable mid stream window clamp
-Thread-Topic: [PATCH net-next v2] tcp: enable mid stream window clamp
-Thread-Index: AQHXlTQfKFkAskglpkOVK0EMsm2wlauDi9OAgADaGdc=
-Date:   Wed, 25 Aug 2021 16:57:30 +0000
-Message-ID: <BYAPR15MB251818EA80E5569A768F0EC5BAC69@BYAPR15MB2518.namprd15.prod.outlook.com>
-References: <20210819195443.1191973-1-ntspring@fb.com>
- <6070816e-f7d2-725a-ec10-9d85f15455a2@gmail.com>
-In-Reply-To: <6070816e-f7d2-725a-ec10-9d85f15455a2@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 9ecd3637-a1df-48ce-e8b3-08d967e96d66
-x-ms-traffictypediagnostic: SJ0PR15MB4599:
-x-microsoft-antispam-prvs: <SJ0PR15MB45994F28A2FF790BC32573C5BAC69@SJ0PR15MB4599.namprd15.prod.outlook.com>
-x-fb-source: Internal
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 4XhYBlcQSCl0NaAYDTliX4lh/Q8sGyAVDlUXoiBO8SDic4X8b3p46wyXTYHMDHCTyQd4TcmFfZNr2Af4Pd7Gl/MUqswKqWtvuwFgUe36WI9aGjU6fLjg3PLQuQg+oSX+SNaewKflalOLdf1n+3vkOfujuWTgTMcJGe5e5FKVlY97msyt0BbcifJIptY2ExxzCwKCUP8gbFJVG97H1ysGgyxHdoCIzFu8EI2GUOK7FAdJm204qSFGwVL2ga5+dlJGHUa+jJtAGC05/XLadr9Mr2YynZe9HeKMWnyLQE1CiXh6GkobPcMIgMAvgp7vWCAOw78veFeGdzgeADf2dX9/6rekuybN9B5qM7JcTXM2bMxSeNhziV4+uXGWwloFn6HKz0K9LZbvF/fc5XLoxS5QyFM8nlsMAGS5OBe+WN3uuAsftSXEsLHQBVmcppG0blWYybCCALuSU3hNsp8hT7C+8emhiEgtoQNhTnNgjrZSbV6jM/qBs2VyZXASw+rbDyWlQPG4rnpI24vca7a5DE3TnMDtLQNeCbtwSKVjAPQuIO2nptkB6oHV3Ovl5yOPWyUvme+XGI3042R1E1HAohbEd2dGxBAahK9JTB9EvyAsSGTp1u8LURyXJ31ISRYqlQbMKWmC0oVKNrfUuSIkSmd+MtV3XMvWrx2ZKCBHW0k5z2b/IGUhukYS2d5p893W7K/x9njmAfk6vRz0DjL4TRj+6GOf7n5Kw70uB5o/tlXQ3VjIC/h2DSzc14TuQGcrkNqrByqWqRq/2+MqN/pGtjMa64gX4AAk7Jdpfjyd7e443Uo=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB2518.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(376002)(136003)(396003)(346002)(39860400002)(5660300002)(53546011)(6506007)(4326008)(8676002)(8936002)(54906003)(110136005)(86362001)(83380400001)(38070700005)(66476007)(55016002)(66946007)(9686003)(7696005)(66446008)(52536014)(33656002)(64756008)(66556008)(186003)(122000001)(76116006)(966005)(71200400001)(38100700002)(2906002)(316002)(478600001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?eswnXQqNBiSsGojd+ES9r9IAg6hEGAvzB5ZKf1fSwGismNuDYqNXESpI3r?=
- =?iso-8859-1?Q?zw2PDUNG5RmQTfg+k4aWK1uOkOCSymQXU1r01pw9WnpThJf7DvZPelDSCl?=
- =?iso-8859-1?Q?rQqv9Tzunf+U1r6zdUAJIXyzLwxRmUmmwRsN8iJaCCithlCLap+gC968tp?=
- =?iso-8859-1?Q?1ro6LAef10Q3FQIzFtVJH+TxxugbLlK1Q5XTbTpfNUNimRoq0W6yMnafFG?=
- =?iso-8859-1?Q?7Gz6Ig0gvx56u8zPAOq31/j+OwPJX8hkEumtyM9JR2TeVVqkhM2BdmqfWl?=
- =?iso-8859-1?Q?euftvGLPbdqj3Efa69VZCfy4m/k6N6Vd4LfcK8h7zv83hh8rb12pvz30Ih?=
- =?iso-8859-1?Q?kiPeJOl++v9xBma2DLVdFflSbu4Ffw9dwhKWcyAMdU1m+uUnaE968G7VQD?=
- =?iso-8859-1?Q?Ry/hsm7PIqEhOp8giXWJpxkmTKGjBTWGnzg9HjRxa9ua6gEuYgtwDi/JbC?=
- =?iso-8859-1?Q?oP9azAf7wQkL7fUusouRsWgPEuY9n/OCCZlpeJkUyXtvPdxDAOdPoEM+2f?=
- =?iso-8859-1?Q?mYhF/4M1dMY9GzIE7KS79zgIlZx+yO1gFC6g/XXE5bp+IbLQcFcmPom4SH?=
- =?iso-8859-1?Q?Q5iYkkts5VP92lUfUcU/oJl8pklP8adZAi/M5UohqRV4JWMbEmuTP9jSEB?=
- =?iso-8859-1?Q?9Pjw8pLA+qvs9t+1CBWL0AQNl4fuyMmWOAsycuLAgW/3AUF98w6rvg8EKI?=
- =?iso-8859-1?Q?PZSIcO8aiZF2STvyDH8gvWur8PPb7scteM3Ee1xAbwp0EhlnI8DPV++jSd?=
- =?iso-8859-1?Q?frxGJA6QgB3T3oYt6AHt5FfADxo5xuW4Br+phj6jcG8dVr5Jt2aZbQtVTV?=
- =?iso-8859-1?Q?Y22TXlKKrbT8ukjOvjO7y55l2QTtaGKCzqs2dhLfPzWCs2ijhRPwRPvca5?=
- =?iso-8859-1?Q?gseSI1+i9rwJN6UG/YEmdPO8HpSdKXIvpY6iyE7IsHXPBf0oy1XGkd2aO/?=
- =?iso-8859-1?Q?BrViRNAPbkKfll0u93J9CP4tCkrxFPVoBBmfM/yoyyEUxTLWeLxP4g+Ch/?=
- =?iso-8859-1?Q?ZhiFbS3tsbdvyTvV/bla1ut19EsLbmp6Zf/+Ly+FgcTnWr1Qo9fXf3pBGN?=
- =?iso-8859-1?Q?1hRdnzKsK3ITvPDnaDsPcYDPIlamPHJxjXOHg9hxFWMwe0remfxCCzt+wG?=
- =?iso-8859-1?Q?igQLB7X5Jr2bRLOLTZ38PVrG8ZcpCvuKBvhCxVWlvR/kSurIEP2y1lQvih?=
- =?iso-8859-1?Q?JUqZnXHo0rXj+JzZQK7sY4gq9ADb783T3o+5M/JqO7BASTuiJuei5k/FBM?=
- =?iso-8859-1?Q?AJgjv1FfHPa66agT5oMg+t7o2MvCVuIiJQb5zaIjI2MOqEGQM8pjqnH6u6?=
- =?iso-8859-1?Q?I+yyOEDQX1TPv9CDTZvctX4d381UoVK9S7LYiJB7C89/BjvPuDN+PbNjW8?=
- =?iso-8859-1?Q?R+aAj2e4Ago1HExU2n15nTL1awwYGm+A=3D=3D?=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="iso-8859-1"
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB2518.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9ecd3637-a1df-48ce-e8b3-08d967e96d66
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Aug 2021 16:57:30.8548
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: luDS4u0Ykany1OI3h1VWC28qrDFXcXXVwIavfJRmG1TopnYh7QsgExLMTue6J1sd
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR15MB4599
-X-OriginatorOrg: fb.com
-X-Proofpoint-ORIG-GUID: gub5MoI8PtGW7BYKRZ58jToIzmcRWV95
-X-Proofpoint-GUID: gub5MoI8PtGW7BYKRZ58jToIzmcRWV95
-Content-Transfer-Encoding: quoted-printable
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        id S242163AbhHYRGX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 13:06:23 -0400
+Received: from mail.netfilter.org ([217.70.188.207]:53282 "EHLO
+        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229540AbhHYRGW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 13:06:22 -0400
+Received: from netfilter.org (unknown [78.30.35.141])
+        by mail.netfilter.org (Postfix) with ESMTPSA id 558FF60126;
+        Wed, 25 Aug 2021 19:04:39 +0200 (CEST)
+Date:   Wed, 25 Aug 2021 19:05:29 +0200
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Cole Dishington <Cole.Dishington@alliedtelesis.co.nz>
+Cc:     kadlec@netfilter.org, fw@strlen.de, davem@davemloft.net,
+        kuba@kernel.org, shuah@kernel.org, linux-kernel@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        Anthony Lineham <anthony.lineham@alliedtelesis.co.nz>,
+        Scott Parlane <scott.parlane@alliedtelesis.co.nz>,
+        Blair Steven <blair.steven@alliedtelesis.co.nz>
+Subject: Re: [PATCH net-next 2/3] net: netfilter: Add RFC-7597 Section 5.1
+ PSID support
+Message-ID: <20210825170529.GA31115@salvia>
+References: <20210726143729.GN9904@breakpoint.cc>
+ <20210809041037.29969-1-Cole.Dishington@alliedtelesis.co.nz>
+ <20210809041037.29969-3-Cole.Dishington@alliedtelesis.co.nz>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-08-25_07:2021-08-25,2021-08-25 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
- lowpriorityscore=0 malwarescore=0 mlxlogscore=999 mlxscore=0 bulkscore=0
- clxscore=1011 priorityscore=1501 adultscore=0 spamscore=0 impostorscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2107140000 definitions=main-2108250100
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20210809041037.29969-3-Cole.Dishington@alliedtelesis.co.nz>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
-Eric Dumazet wrote:
-> On 8/19/21 12:54 PM, Neil Spring wrote:
-> > The TCP_WINDOW_CLAMP socket option is defined in tcp(7) to "Bound the s=
-ize of
-> > the advertised window to this value."=A0 Window clamping is distributed=
- across two
-> > variables, window_clamp ("Maximal window to advertise" in tcp.h) and rc=
-v_ssthresh
-> > ("Current window clamp").
-> >
-> > This patch updates the function where the window clamp is set to also r=
-educe the current
-> > window clamp, rcv_sshthresh, if needed.=A0 With this, setting the TCP_W=
-INDOW_CLAMP option
-> > has the documented effect of limiting the window.
-> >
-> > Signed-off-by: Neil Spring <ntspring@fb.com>
-> > ---
-> > v2: - fix email formatting
-> >
-> >
-> >=A0 net/ipv4/tcp.c | 2 ++
-> >=A0 1 file changed, 2 insertions(+)
-> >
-> > diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> > index f931def6302e..2dc6212d5888 100644
-> > --- a/net/ipv4/tcp.c
-> > +++ b/net/ipv4/tcp.c
-> > @@ -3338,6 +3338,8 @@ int tcp_set_window_clamp(struct sock *sk, int val)
-> >=A0=A0=A0=A0=A0=A0=A0 } else {
-> >=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 tp->window_clamp =3D val <=
- SOCK_MIN_RCVBUF / 2 ?
-> >=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 SO=
-CK_MIN_RCVBUF / 2 : val;
-> > +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 tp->rcv_ssthresh =3D min(tp->rcv_=
-ssthresh,
-> > +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
-=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 tp->window_clamp);
+On Mon, Aug 09, 2021 at 04:10:36PM +1200, Cole Dishington wrote:
+> Adds support for masquerading into a smaller subset of ports -
+> defined by the PSID values from RFC-7597 Section 5.1. This is part of
+> the support for MAP-E and Lightweight 4over6, which allows multiple
+> devices to share an IPv4 address by splitting the L4 port / id into
+> ranges.
+> 
+> Co-developed-by: Anthony Lineham <anthony.lineham@alliedtelesis.co.nz>
+> Signed-off-by: Anthony Lineham <anthony.lineham@alliedtelesis.co.nz>
+> Co-developed-by: Scott Parlane <scott.parlane@alliedtelesis.co.nz>
+> Signed-off-by: Scott Parlane <scott.parlane@alliedtelesis.co.nz>
+> Signed-off-by: Blair Steven <blair.steven@alliedtelesis.co.nz>
+> Signed-off-by: Cole Dishington <Cole.Dishington@alliedtelesis.co.nz>
+> Reviewed-by: Florian Westphal <fw@strlen.de>
+[...]
 
-> This fits in a single line I think.
-> =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 tp->rcv_ssthresh =3D min(tp=
-->rcv_ssthresh, tp->window_clamp);
+Looking at the userspace logic:
 
-I'll fix in v3 in a moment, thanks!
+https://patchwork.ozlabs.org/project/netfilter-devel/patch/20210716002219.30193-1-Cole.Dishington@alliedtelesis.co.nz/
 
-> >=A0=A0=A0=A0=A0=A0=A0 }
-> >=A0=A0=A0=A0=A0=A0=A0 return 0;
-> >=A0 }
-> >
+Chunk extracted from void parse_psid(...)
 
-> Hi Neil
->=20
-> Can you provide a packetdrill test showing the what the new expected beha=
-vior is ?
+>        offset = (1 << (16 - offset_len));
 
-Sure.  I submitted a pull request on packetdrill -
-https://github.com/google/packetdrill/pull/56 - to document the intended be=
-havior.
+Assuming offset_len = 6, then you skip 0-1023 ports, OK.
 
-> It is not really clear why you need this.
+>        psid = psid << (16 - offset_len - psid_len);
 
-The observation is that this option is currently ineffective at limiting on=
-ce the
-connection is exchanging data. I interpret this as a result of only looking=
- at=20
-the window clamp when growing rcv_ssthresh, not as a key to reduce this=20
-limit.=20=20
+This psid calculation is correct? Maybe:
 
-The packetdrill example will fail at the point where an ack should have a r=
-educed
-window due to the clamp.
+        psid = psid << (16 - offset_len);
 
-> Also if we are unable to increase tp->rcv_ssthresh, this means the follow=
-ing sequence
-> will not work as we would expect :
+instead?
 
-> +0 setsockopt(5, IPPROTO_TCP, TCP_WINDOW_CLAMP, [10000], 4) =3D 0
-> +0 setsockopt(5, IPPROTO_TCP, TCP_WINDOW_CLAMP, [100000], 4) =3D 0
+        psid=0  =>      0 << (16 - 6) = 1024
+        psid=1  =>      1 << (16 - 6) = 2048
 
-The packetdrill shows that raising the window clamp works:
-tcp_grow_window takes over and raises the window quickly, but I'll add
-a specific test for this sequence (with no intervening data) to confirm.
+This is implicitly assuming that 64 PSIDs are available, each of them
+taking 1024 ports, ie. psid_len is 6 bits. But why are you subtracting
+the psid_len above?
 
-> Thanks.
+>        /* Handle the special case of no offset bits (a=0), so offset loops */
+>        min = psid;
 
-Thanks Eric!
+OK, this line above is the minimal port in the range
 
--neil=
+>        if (offset)
+>                min += offset;
+
+... which is incremented by the offset (to skip the 0-1023 ports).
+
+>       r->min_proto.all = htons(min);
+>       r->max_proto.all = htons(min + ((1 << (16 - offset_len - psid_len)) - 1));
+
+Here, you subtract psid_len again, not sure why.
+
+>       r->base_proto.all = htons(offset);
+
+base is set to offset, ie. 1024.
+
+>       r->flags |= NF_NAT_RANGE_PSID;
+>       r->flags |= NF_NAT_RANGE_PROTO_SPECIFIED;
+
+Now looking at the kernel side.
+
+> diff --git a/net/netfilter/nf_nat_masquerade.c b/net/netfilter/nf_nat_masquerade.c
+> index 8e8a65d46345..19a4754cda76 100644
+> --- a/net/netfilter/nf_nat_masquerade.c
+> +++ b/net/netfilter/nf_nat_masquerade.c
+> @@ -55,8 +55,31 @@ nf_nat_masquerade_ipv4(struct sk_buff *skb, unsigned int hooknum,
+>  	newrange.flags       = range->flags | NF_NAT_RANGE_MAP_IPS;
+>  	newrange.min_addr.ip = newsrc;
+>  	newrange.max_addr.ip = newsrc;
+> -	newrange.min_proto   = range->min_proto;
+> -	newrange.max_proto   = range->max_proto;
+> +
+> +	if (range->flags & NF_NAT_RANGE_PSID) {
+> +		u16 base = ntohs(range->base_proto.all);
+> +		u16 min =  ntohs(range->min_proto.all);
+> +		u16 off = 0;
+> +
+> +		/* xtables should stop base > 2^15 by enforcement of
+> +		 * 0 <= offset_len < 16 argument, with offset_len=0
+> +		 * as a special case inwhich base=0.
+
+I don't understand this comment.
+
+> +		 */
+> +		if (WARN_ON_ONCE(base > (1 << 15)))
+> +			return NF_DROP;
+> +
+> +		/* If offset=0, port range is in one contiguous block */
+> +		if (base)
+> +			off = prandom_u32_max(((1 << 16) / base) - 1);
+
+Assuming the example above, base is set to 1024. Then, off is a random
+value between UINT16_MAX (you expressed this as 1 << 16) and the base
+which is 1024 minus 1.
+
+So this is picking a random off (actually the PSID?) between 0 and 63.
+What about clashes? I mean, two different machines behind the NAT
+might get the same off.
+
+> +		newrange.min_proto.all   = htons(min + base * off);
+
+min could be 1024, 2048, 3072... you add base which is 1024 * off.
+
+Is this duplicated? Both calculated in user and kernel space?
+
+> +		newrange.max_proto.all   = htons(ntohs(newrange.min_proto.all) + ntohs(range->max_proto.all) - min);
+
+I'm stopping here, I'm getting lost.
+
+My understanding about this RFC is that you would like to split the
+16-bit ports in ranges to uniquely identify the host behind the NAT.
+
+Why don't you just you just select the port range from userspace
+utilizing the existing infrastructure? I mean, why do you need this
+kernel patch?
+
+Florian already suggested:
+
+> Is it really needed to place all of this in the nat core?
+> 
+> The only thing that has to be done in the NAT core, afaics, is to
+> suppress port reallocation attmepts when NF_NAT_RANGE_PSID is set.
+> 
+> Is there a reason why nf_nat_masquerade_ipv4/6 can't be changed instead
+> to do what you want?
+> 
+> AFAICS its enough to set NF_NAT_RANGE_PROTO_SPECIFIED and init the
+> upper/lower boundaries, i.e. change input given to nf_nat_setup_info().
+
+extracted from:
+
+https://patchwork.ozlabs.org/project/netfilter-devel/patch/20210422023506.4651-1-Cole.Dishington@alliedtelesis.co.nz/
