@@ -2,289 +2,485 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB93E3F7931
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 17:39:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 318903F793B
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 17:41:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239899AbhHYPkk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 11:40:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57710 "EHLO
+        id S240461AbhHYPlt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 11:41:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232625AbhHYPkj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 11:40:39 -0400
-Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ED75C0613C1
-        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 08:39:53 -0700 (PDT)
-Received: by mail-qk1-x730.google.com with SMTP id b64so13885026qkg.0
-        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 08:39:53 -0700 (PDT)
+        with ESMTP id S231995AbhHYPls (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 11:41:48 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09869C061757;
+        Wed, 25 Aug 2021 08:41:03 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id 28-20020a17090a031cb0290178dcd8a4d1so4187134pje.0;
+        Wed, 25 Aug 2021 08:41:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=zjssu5ahlXThFXNBjYOHJIYjJl60yuZstUx26e7TTp0=;
-        b=htWC6Nv5ySrGX2xuBWtOPuyg8qgjrsPVrKobVhrtrKxoLrRSEB4K1lc40aUJHg2ypP
-         U56wBsk5aHSqRUkpjcJvITpQY2S1UA7MfAVyasq7eXi60Yb2lR5hiZDyTH7cGG0e8GsK
-         HXGkohxsud/vQcxA3d+AZxc5lZXEZF0ZbwGxGTVLHA1Fg/fX3IncH8hCvfRr228sKk+S
-         jzeIuafPN2Y+Z/dhjVJetDHV86RaeywL9N6quKUo5Cg0lQkl6VjBRzICH36ln/btpO+d
-         jqwDn2SguuR74G+yyizWIIrrO+iK6jSVQibR5CAmzeQN8ipll6onyre6ZyoaSj9F0L6M
-         rsEA==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=E0acZteVNB6bdCtIp/5XbiopasQnADo+xEQHQFmWG/c=;
+        b=S1RZH45kmE8OON74359skFQWMNEwZevH5vagQqDm95ydeqDjHPh0sXy/A10mXBVJxu
+         1XgT9ZYN2u+quDla+N+i8sKm1HFVFNyxKmx1HD05aOkM+xP40uOxs4Ci0wwLGZHyS4k2
+         LM1PD9Igf/t3rYAY66/ddjEZMrtI/Zlqakdg5ZRwYjTrVw/aGiw8uaghgj8HLYCERUWs
+         YfZKcjnfPo7MNwlmSjoodFhD/8jJGlBVsKmvrsSjnvF+jOd8oFtC+3P11LiyVF0NU8GK
+         zLAc0K0GB2Yl/2PFh3BNY4mbf6hE3Y49+wrs1Abylh80D21qc5vHFBZS9edaWD7wxrRQ
+         qtvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=zjssu5ahlXThFXNBjYOHJIYjJl60yuZstUx26e7TTp0=;
-        b=sfn3qF94VoGhbE1b2HMSlg9D0fQbHVAfxP7bZ24JCqkMXtbrod3+TtBf5vHlp9E8gu
-         pCmss4El+DlC6p+DRe1ms6yNm/L/rzWfm7pxeZJPI4j7N4NnE8CwZU5gVDg7i3WSrnt/
-         zRD7/IdVWWJrBWEMDWB8mjSMMuzPnIueSLQz9NiK1fwNXlFFem01KyOoF6Who9hhr8mp
-         KW4mVysYcWTuEupcEsIge4Kjat+07hEPbVBwxLaatKCTw9jQRRfBifYOfF+b7HAEy+EC
-         TsHRJAcwvrOQD0VP2nlZB+ZQNauFNZpDqKRFPz/4mL0MoX0wiD0BnHFi9L124O3CN15U
-         eIhQ==
-X-Gm-Message-State: AOAM532QK2bdHIHTK8myBn/yIodO8+jDs/8bO+qEFt0XMhvUzmlPQ/Cm
-        iynUYFkTwRDzpXs/apDs+aDYbihCY/CDvf5ZavAQww==
-X-Google-Smtp-Source: ABdhPJwnx8VGSiF3ofmAzyFVczdtlbK+E3GAYoUX5PekX2iKCZs5fZ/8w/F5Hz+f6EBeOvVKSXQmmPFvFq6QTgUyPuY=
-X-Received: by 2002:a25:d6d8:: with SMTP id n207mr20551970ybg.518.1629905991975;
- Wed, 25 Aug 2021 08:39:51 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=E0acZteVNB6bdCtIp/5XbiopasQnADo+xEQHQFmWG/c=;
+        b=qnFiMT63oKPOetjZtE0efcEc7TchhyF9JSzOVoErmpzVix2Ta7yq2TbGrSzH/FnZon
+         QUBwgvEA7YLo8vVxxQ9JBUzCyfsgsD8b08r1O422Frw8nh8DthHuxQ4qSdBz9owwleq1
+         NO+eLqOodKFxnIuLkt11sSrk16ge92dM9rjark9Yzi+g+oEMkS0326651x6D2+Wnhdcy
+         m0rCPUC/w0dHsvAeWga8nYXOIn5SC98ULV33/rgXo0CLp8KU2bH4u60lJs9gcU9qOarE
+         8lmKsbNUQct8k82SHjjOGkcYrcFNXni8HpSF638VyMNiK57hT3ISghdSpb6nQQ407T+q
+         k6xg==
+X-Gm-Message-State: AOAM532W3/GwV974h0mG0Gzbt9U0/SmWhw/Zu+dbFreUTZ7QCgsspJ5x
+        jA9AbDForLx4CCkYIjeoKQM=
+X-Google-Smtp-Source: ABdhPJzE+Hji5DahEjxMdpraFODw3NxPPd96N9e/YbCLcTiRGJBEuWyCAZhRsM2Xqz8lVeGrTpipfg==
+X-Received: by 2002:a17:90a:8b8d:: with SMTP id z13mr11242309pjn.1.1629906062474;
+        Wed, 25 Aug 2021 08:41:02 -0700 (PDT)
+Received: from localhost.localdomain ([221.225.34.48])
+        by smtp.googlemail.com with ESMTPSA id y13sm6038209pjr.50.2021.08.25.08.40.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Aug 2021 08:41:02 -0700 (PDT)
+From:   Zhongya Yan <yan2228598786@gmail.com>
+To:     kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        edumazet@google.com, rostedt@goodmis.org, mingo@redhat.com,
+        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        hengqi.chen@gmail.com, yhs@fb.com,
+        Zhongya Yan <yan2228598786@gmail.com>
+Subject: [PATCH] net: tcp_drop adds `reason` parameter for tracing v2
+Date:   Wed, 25 Aug 2021 08:40:43 -0700
+Message-Id: <20210825154043.247764-1-yan2228598786@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20210824125140.190253-1-yan2228598786@gmail.com>
- <20210824112957.3a780186@oasis.local.home> <CALcyL7icKx5RH9UXiEqLmZtP5MViip5Pn1yNyogbADA3Xeo3xw@mail.gmail.com>
-In-Reply-To: <CALcyL7icKx5RH9UXiEqLmZtP5MViip5Pn1yNyogbADA3Xeo3xw@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 25 Aug 2021 08:39:40 -0700
-Message-ID: <CANn89iKCDkKTJxK2LuAXN7DmVMwE9zbemtKRAhrTpHR+Uc71SA@mail.gmail.com>
-Subject: Re: [PATCH] net: tcp_drop adds `reason` parameter for tracing
-To:     Zhongya Yan <yan2228598786@gmail.com>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, hengqi.chen@gmail.com,
-        Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 24, 2021 at 5:08 PM Zhongya Yan <yan2228598786@gmail.com> wrote=
-:
->
-> Cool, thanks!
-> i will do it
+In this version, fix and modify some code issues. Changed the reason for `tcp_drop` from an enumeration to a mask and enumeration usage in the trace output.
+By shifting `__LINE__` left by 6 bits to accommodate the `tcp_drop` call method source, 6 bits are enough to use. This allows for a more granular identification of the reason for calling `tcp_drop` without conflicts and essentially without overflow.
+Example.
+```
+enum {
+TCP_OFO_QUEUE = 1
+}
+reason = __LINE__ << 6
+reason |= TCP_OFO_QUEUE
+```
+Suggestions from Jakub Kicinski, Eric Dumazet, much appreciated.
 
-Since these drops are hardly hot path, why not simply use a string ?
-An ENUM will not really help grep games.
+Modified the expression of the enumeration, and the use of the output under the trace definition.
+Suggestion from Steven Rostedt. Thanks.
 
-tcp_drop(sk, skb, "csum error");
+Signed-off-by: Zhongya Yan <yan2228598786@gmail.com>
+---
+ include/net/tcp.h          |  18 +++---
+ include/trace/events/tcp.h |  39 +++++++++++--
+ net/ipv4/tcp_input.c       | 114 ++++++++++++++++++++++---------------
+ 3 files changed, 112 insertions(+), 59 deletions(-)
 
-The const char * argument would not be used unless tracepoint is
-active, but who cares.
-
-(Speaking of csum errors, they are not currently calling tcp_drop(),
-but we could unify all packet drops to use this tracepoint,
-and get rid of adhoc ones, like trace_tcp_bad_csum()
-
->
-> Steven Rostedt <rostedt@goodmis.org> =E4=BA=8E2021=E5=B9=B48=E6=9C=8824=
-=E6=97=A5=E5=91=A8=E4=BA=8C =E4=B8=8B=E5=8D=8811:30=E5=86=99=E9=81=93=EF=BC=
-=9A
->>
->> On Tue, 24 Aug 2021 05:51:40 -0700
->> Zhongya Yan <yan2228598786@gmail.com> wrote:
->>
->> > When using `tcp_drop(struct sock *sk, struct sk_buff *skb)` we can
->> > not tell why we need to delete `skb`. To solve this problem I updated =
-the
->> > method `tcp_drop(struct sock *sk, struct sk_buff *skb, enum tcp_drop_r=
-eason reason)`
->> > to include the source of the deletion when it is done, so you can
->> > get an idea of the reason for the deletion based on the source.
->> >
->> > The current purpose is mainly derived from the suggestions
->> > of `Yonghong Song` and `brendangregg`:
->> >
->> > https://github.com/iovisor/bcc/issues/3533.
->> >
->> > "It is worthwhile to mention the context/why we want to this
->> > tracepoint with bcc issue https://github.com/iovisor/bcc/issues/3533.
->> > Mainly two reasons: (1). tcp_drop is a tiny function which
->> > may easily get inlined, a tracepoint is more stable, and (2).
->> > tcp_drop does not provide enough information on why it is dropped.
->> > " by Yonghong Song
->> >
->> > Signed-off-by: Zhongya Yan <yan2228598786@gmail.com>
->> > ---
->> >  include/net/tcp.h          | 11 ++++++++
->> >  include/trace/events/tcp.h | 56 +++++++++++++++++++++++++++++++++++++=
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index dd8cd8d6f2f1..75614a252675 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -256,15 +256,19 @@ extern unsigned long tcp_memory_pressure;
+ 
+ enum tcp_drop_reason {
+ 	TCP_OFO_QUEUE = 1,
+-	TCP_DATA_QUEUE_OFO = 2,
+-	TCP_DATA_QUEUE = 3,
+-	TCP_PRUNE_OFO_QUEUE = 4,
+-	TCP_VALIDATE_INCOMING = 5,
+-	TCP_RCV_ESTABLISHED = 6,
+-	TCP_RCV_SYNSENT_STATE_PROCESS = 7,
+-	TCP_RCV_STATE_PROCESS = 8
++	TCP_DATA_QUEUE_OFO,
++	TCP_DATA_QUEUE,
++	TCP_PRUNE_OFO_QUEUE,
++	TCP_VALIDATE_INCOMING,
++	TCP_RCV_ESTABLISHED,
++	TCP_RCV_SYNSENT_STATE_PROCESS,
++	TCP_RCV_STATE_PROCESS
+ };
+ 
++#define TCP_DROP_MASK(line, code)	((line << 6) | code) /* reason for masking */
++#define TCP_DROP_LINE(mask)		(mask >> 6)	/* Cause decode to get unique identifier */
++#define TCP_DROP_CODE(mask)		(mask&0x3F) /* Cause decode get function code */
 +
->> >  net/ipv4/tcp_input.c       | 34 +++++++++++++++--------
->> >  3 files changed, 89 insertions(+), 12 deletions(-)
->> >
->> > diff --git a/include/net/tcp.h b/include/net/tcp.h
->> > index 784d5c3ef1c5..dd8cd8d6f2f1 100644
->> > --- a/include/net/tcp.h
->> > +++ b/include/net/tcp.h
->> > @@ -254,6 +254,17 @@ extern atomic_long_t tcp_memory_allocated;
->> >  extern struct percpu_counter tcp_sockets_allocated;
->> >  extern unsigned long tcp_memory_pressure;
->> >
->> > +enum tcp_drop_reason {
->> > +     TCP_OFO_QUEUE =3D 1,
->> > +     TCP_DATA_QUEUE_OFO =3D 2,
->> > +     TCP_DATA_QUEUE =3D 3,
->> > +     TCP_PRUNE_OFO_QUEUE =3D 4,
->> > +     TCP_VALIDATE_INCOMING =3D 5,
->> > +     TCP_RCV_ESTABLISHED =3D 6,
->> > +     TCP_RCV_SYNSENT_STATE_PROCESS =3D 7,
->> > +     TCP_RCV_STATE_PROCESS =3D 8
->>
->> As enums increase by one, you could save yourself the burden of
->> updating the numbers and just have:
->>
->> enum tcp_drop_reason {
->>         TCP_OFO_QUEUE =3D 1,
->>         TCP_DATA_QUEUE_OFO,
->>         TCP_DATA_QUEUE,
->>         TCP_PRUNE_OFO_QUEUE,
->>         TCP_VALIDATE_INCOMING,
->>         TCP_RCV_ESTABLISHED,
->>         TCP_RCV_SYNSENT_STATE_PROCESS,
->>         TCP_RCV_STATE_PROCESS
->> };
->>
->> Which would do the same.
->>
->>
->> > +};
->> > +
->> >  /* optimized version of sk_under_memory_pressure() for TCP sockets */
->> >  static inline bool tcp_under_memory_pressure(const struct sock *sk)
->> >  {
->> > diff --git a/include/trace/events/tcp.h b/include/trace/events/tcp.h
->> > index 521059d8dc0a..a0d3d31eb591 100644
->> > --- a/include/trace/events/tcp.h
->> > +++ b/include/trace/events/tcp.h
->> > @@ -371,6 +371,62 @@ DEFINE_EVENT(tcp_event_skb, tcp_bad_csum,
->> >       TP_ARGS(skb)
->> >  );
->> >
->>
->> If you would like to see the english translation of what these
->> "reasons" are and not have to remember which number is which, you can
->> do the following:
->>
->> #define TCP_DROP_REASON                                                 =
-\
->>         EM(TCP_OFO_QUEUE,               ofo_queue)                      =
-\
->>         EM(TCP_DATA_QUEUE_OFO,          data_queue_ofo)                 =
-\
->>         EM(TCP_DATA_QUEUE,              data_queue)                     =
-\
->>         EM(TCP_PRUNE_OFO_QUEUE,         prune_ofo_queue)                =
-\
->>         EM(TCP_VALIDATE_INCOMING,       validate_incoming)              =
-\
->>         EM(TCP_RCV_ESTABLISHED,         rcv_established)                =
-\
->>         EM(TCP_RCV_SYNSENT_STATE_PROCESS, rcv_synsent_state_process)    =
-\
->>         EMe(TCP_RCV_STATE_PROCESS,      rcv_state_proces)
->>
->> #undef EM
->> #undef EMe
->>
->> #define EM(a,b) { a, #b },
->> #define EMe(a, b) { a, #b }
->>
->>
->> > +TRACE_EVENT(tcp_drop,
->> > +             TP_PROTO(struct sock *sk, struct sk_buff *skb, enum tcp_=
-drop_reason reason),
->> > +
->> > +             TP_ARGS(sk, skb, reason),
->> > +
->> > +             TP_STRUCT__entry(
->> > +                     __array(__u8, saddr, sizeof(struct sockaddr_in6)=
-)
->> > +                     __array(__u8, daddr, sizeof(struct sockaddr_in6)=
-)
->> > +                     __field(__u16, sport)
->> > +                     __field(__u16, dport)
->> > +                     __field(__u32, mark)
->> > +                     __field(__u16, data_len)
->> > +                     __field(__u32, snd_nxt)
->> > +                     __field(__u32, snd_una)
->> > +                     __field(__u32, snd_cwnd)
->> > +                     __field(__u32, ssthresh)
->> > +                     __field(__u32, snd_wnd)
->> > +                     __field(__u32, srtt)
->> > +                     __field(__u32, rcv_wnd)
->> > +                     __field(__u64, sock_cookie)
->> > +                     __field(__u32, reason)
->> > +                     ),
->> > +
->> > +             TP_fast_assign(
->> > +                             const struct tcphdr *th =3D (const struc=
-t tcphdr *)skb->data;
->> > +                             const struct inet_sock *inet =3D inet_sk=
-(sk);
->> > +                             const struct tcp_sock *tp =3D tcp_sk(sk)=
-;
->> > +
->> > +                             memset(__entry->saddr, 0, sizeof(struct =
-sockaddr_in6));
->> > +                             memset(__entry->daddr, 0, sizeof(struct =
-sockaddr_in6));
->> > +
->> > +                             TP_STORE_ADDR_PORTS(__entry, inet, sk);
->> > +
->> > +                             __entry->sport =3D ntohs(inet->inet_spor=
-t);
->> > +                             __entry->dport =3D ntohs(inet->inet_dpor=
-t);
->> > +                             __entry->mark =3D skb->mark;
->> > +
->> > +                             __entry->data_len =3D skb->len - __tcp_h=
-drlen(th);
->> > +                             __entry->snd_nxt =3D tp->snd_nxt;
->> > +                             __entry->snd_una =3D tp->snd_una;
->> > +                             __entry->snd_cwnd =3D tp->snd_cwnd;
->> > +                             __entry->snd_wnd =3D tp->snd_wnd;
->> > +                             __entry->rcv_wnd =3D tp->rcv_wnd;
->> > +                             __entry->ssthresh =3D tcp_current_ssthre=
-sh(sk);
->> > +             __entry->srtt =3D tp->srtt_us >> 3;
->> > +             __entry->sock_cookie =3D sock_gen_cookie(sk);
->> > +             __entry->reason =3D reason;
->> > +             ),
->> > +
->> > +             TP_printk("src=3D%pISpc dest=3D%pISpc mark=3D%#x data_le=
-n=3D%d snd_nxt=3D%#x snd_una=3D%#x snd_cwnd=3D%u ssthresh=3D%u snd_wnd=3D%u=
- srtt=3D%u rcv_wnd=3D%u sock_cookie=3D%llx reason=3D%d",
->>
->> Then above you can have: "reason=3D%s"
->>
->> > +                             __entry->saddr, __entry->daddr, __entry-=
->mark,
->> > +                             __entry->data_len, __entry->snd_nxt, __e=
-ntry->snd_una,
->> > +                             __entry->snd_cwnd, __entry->ssthresh, __=
-entry->snd_wnd,
->> > +                             __entry->srtt, __entry->rcv_wnd, __entry=
-->sock_cookie, __entry->reason)
->>
->> And here:
->>
->>         __print_symbolic(__entry->reason, TCP_DROP_REASON)
->>
->> -- Steve
->>
->>
->> > +);
->> > +
->> >  #endif /* _TRACE_TCP_H */
->> >
->> >  /* This part must be outside protection */
->> >
+ /* optimized version of sk_under_memory_pressure() for TCP sockets */
+ static inline bool tcp_under_memory_pressure(const struct sock *sk)
+ {
+diff --git a/include/trace/events/tcp.h b/include/trace/events/tcp.h
+index a0d3d31eb591..699539702ea9 100644
+--- a/include/trace/events/tcp.h
++++ b/include/trace/events/tcp.h
+@@ -371,8 +371,26 @@ DEFINE_EVENT(tcp_event_skb, tcp_bad_csum,
+ 	TP_ARGS(skb)
+ );
+ 
++// from author @{Steven Rostedt}
++#define TCP_DROP_REASON							\
++	REASON_STRING(TCP_OFO_QUEUE,		ofo_queue)			\
++	REASON_STRING(TCP_DATA_QUEUE_OFO,		data_queue_ofo)			\
++	REASON_STRING(TCP_DATA_QUEUE,		data_queue)			\
++	REASON_STRING(TCP_PRUNE_OFO_QUEUE,		prune_ofo_queue)		\
++	REASON_STRING(TCP_VALIDATE_INCOMING,	validate_incoming)		\
++	REASON_STRING(TCP_RCV_ESTABLISHED,		rcv_established)		\
++	REASON_STRING(TCP_RCV_SYNSENT_STATE_PROCESS, rcv_synsent_state_process)	\
++	REASON_STRINGe(TCP_RCV_STATE_PROCESS,	rcv_state_proces)
++
++#undef REASON_STRING
++#undef REASON_STRINGe
++
++#define REASON_STRING(code, name) {code , #name},
++#define REASON_STRINGe(code, name) {code, #name}
++
++
+ TRACE_EVENT(tcp_drop,
+-		TP_PROTO(struct sock *sk, struct sk_buff *skb, enum tcp_drop_reason reason),
++		TP_PROTO(struct sock *sk, struct sk_buff *skb, __u32 reason),
+ 
+ 		TP_ARGS(sk, skb, reason),
+ 
+@@ -392,6 +410,8 @@ TRACE_EVENT(tcp_drop,
+ 			__field(__u32, rcv_wnd)
+ 			__field(__u64, sock_cookie)
+ 			__field(__u32, reason)
++			__field(__u32, reason_code)
++			__field(__u32, reason_line)
+ 			),
+ 
+ 		TP_fast_assign(
+@@ -415,16 +435,23 @@ TRACE_EVENT(tcp_drop,
+ 				__entry->snd_wnd = tp->snd_wnd;
+ 				__entry->rcv_wnd = tp->rcv_wnd;
+ 				__entry->ssthresh = tcp_current_ssthresh(sk);
+-		__entry->srtt = tp->srtt_us >> 3;
+-		__entry->sock_cookie = sock_gen_cookie(sk);
+-		__entry->reason = reason;
++				__entry->srtt = tp->srtt_us >> 3;
++				__entry->sock_cookie = sock_gen_cookie(sk);
++				__entry->reason = reason;
++				__entry->reason_code = TCP_DROP_CODE(reason);
++				__entry->reason_line = TCP_DROP_LINE(reason);
+ 		),
+ 
+-		TP_printk("src=%pISpc dest=%pISpc mark=%#x data_len=%d snd_nxt=%#x snd_una=%#x snd_cwnd=%u ssthresh=%u snd_wnd=%u srtt=%u rcv_wnd=%u sock_cookie=%llx reason=%d",
++		TP_printk("src=%pISpc dest=%pISpc mark=%#x data_len=%d snd_nxt=%#x snd_una=%#x \
++				snd_cwnd=%u ssthresh=%u snd_wnd=%u srtt=%u rcv_wnd=%u \
++				sock_cookie=%llx reason=%d reason_type=%s reason_line=%d",
+ 				__entry->saddr, __entry->daddr, __entry->mark,
+ 				__entry->data_len, __entry->snd_nxt, __entry->snd_una,
+ 				__entry->snd_cwnd, __entry->ssthresh, __entry->snd_wnd,
+-				__entry->srtt, __entry->rcv_wnd, __entry->sock_cookie, __entry->reason)
++				__entry->srtt, __entry->rcv_wnd, __entry->sock_cookie,
++				__entry->reason,
++				__print_symbolic(__entry->reason_code, TCP_DROP_REASON),
++				__entry->reason_line)
+ );
+ 
+ #endif /* _TRACE_TCP_H */
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 83e31661876b..7dfcc4253c35 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -4643,20 +4643,14 @@ static bool tcp_ooo_try_coalesce(struct sock *sk,
+ 	return res;
+ }
+ 
+-static void __tcp_drop(struct sock *sk,
+-		   struct sk_buff *skb)
+-{
+-	sk_drops_add(sk, skb);
+-	__kfree_skb(skb);
+-}
+ 
+-/* tcp_drop whit reason,for epbf trace
++/* tcp_drop with reason
+  */
+ static void tcp_drop(struct sock *sk, struct sk_buff *skb,
+-		 enum tcp_drop_reason reason)
++		 __u32 reason)
+ {
+ 	trace_tcp_drop(sk, skb, reason);
+-	__tcp_drop(sk, skb);
++	__kfree_skb(skb);
+ }
+ 
+ /* This one checks to see if we can put data from the
+@@ -5621,7 +5615,8 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
+ 						  LINUX_MIB_TCPACKSKIPPEDPAWS,
+ 						  &tp->last_oow_ack_time))
+ 				tcp_send_dupack(sk, skb);
+-			goto discard;
++			tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_VALIDATE_INCOMING));
++			goto end;
+ 		}
+ 		/* Reset is accepted even if it did not pass PAWS. */
+ 	}
+@@ -5644,7 +5639,8 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
+ 		} else if (tcp_reset_check(sk, skb)) {
+ 			tcp_reset(sk, skb);
+ 		}
+-		goto discard;
++		tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_VALIDATE_INCOMING));
++		goto end;
+ 	}
+ 
+ 	/* Step 2: check RST bit */
+@@ -5689,7 +5685,8 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
+ 				tcp_fastopen_active_disable(sk);
+ 			tcp_send_challenge_ack(sk, skb);
+ 		}
+-		goto discard;
++		tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_VALIDATE_INCOMING));
++		goto end;
+ 	}
+ 
+ 	/* step 3: check security and precedence [ignored] */
+@@ -5703,15 +5700,15 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
+ 			TCP_INC_STATS(sock_net(sk), TCP_MIB_INERRS);
+ 		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPSYNCHALLENGE);
+ 		tcp_send_challenge_ack(sk, skb);
+-		goto discard;
++		tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_VALIDATE_INCOMING));
++		goto end;
+ 	}
+ 
+ 	bpf_skops_parse_hdr(sk, skb);
+ 
+ 	return true;
+ 
+-discard:
+-	tcp_drop(sk, skb, TCP_VALIDATE_INCOMING);
++end:
+ 	return false;
+ }
+ 
+@@ -5829,7 +5826,8 @@ void tcp_rcv_established(struct sock *sk, struct sk_buff *skb)
+ 				return;
+ 			} else { /* Header too small */
+ 				TCP_INC_STATS(sock_net(sk), TCP_MIB_INERRS);
+-				goto discard;
++				tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_ESTABLISHED));
++				goto end;
+ 			}
+ 		} else {
+ 			int eaten = 0;
+@@ -5883,8 +5881,10 @@ void tcp_rcv_established(struct sock *sk, struct sk_buff *skb)
+ 	if (len < (th->doff << 2) || tcp_checksum_complete(skb))
+ 		goto csum_error;
+ 
+-	if (!th->ack && !th->rst && !th->syn)
+-		goto discard;
++	if (!th->ack && !th->rst && !th->syn) {
++		tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_ESTABLISHED));
++		goto end;
++	}
+ 
+ 	/*
+ 	 *	Standard slow path.
+@@ -5894,8 +5894,10 @@ void tcp_rcv_established(struct sock *sk, struct sk_buff *skb)
+ 		return;
+ 
+ step5:
+-	if (tcp_ack(sk, skb, FLAG_SLOWPATH | FLAG_UPDATE_TS_RECENT) < 0)
+-		goto discard;
++	if (tcp_ack(sk, skb, FLAG_SLOWPATH | FLAG_UPDATE_TS_RECENT) < 0) {
++		tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_ESTABLISHED));
++		goto end;
++	}
+ 
+ 	tcp_rcv_rtt_measure_ts(sk, skb);
+ 
+@@ -5913,9 +5915,9 @@ void tcp_rcv_established(struct sock *sk, struct sk_buff *skb)
+ 	trace_tcp_bad_csum(skb);
+ 	TCP_INC_STATS(sock_net(sk), TCP_MIB_CSUMERRORS);
+ 	TCP_INC_STATS(sock_net(sk), TCP_MIB_INERRS);
+-
+-discard:
+-	tcp_drop(sk, skb, TCP_RCV_ESTABLISHED);
++	tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_ESTABLISHED));
++end:
++	return;
+ }
+ EXPORT_SYMBOL(tcp_rcv_established);
+ 
+@@ -6115,7 +6117,8 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
+ 
+ 		if (th->rst) {
+ 			tcp_reset(sk, skb);
+-			goto discard;
++			tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_SYNSENT_STATE_PROCESS));
++			goto end;
+ 		}
+ 
+ 		/* rfc793:
+@@ -6204,9 +6207,9 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
+ 			tcp_enter_quickack_mode(sk, TCP_MAX_QUICKACKS);
+ 			inet_csk_reset_xmit_timer(sk, ICSK_TIME_DACK,
+ 						  TCP_DELACK_MAX, TCP_RTO_MAX);
++			tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_SYNSENT_STATE_PROCESS));
+ 
+-discard:
+-			tcp_drop(sk, skb, TCP_RCV_SYNSENT_STATE_PROCESS);
++end:
+ 			return 0;
+ 		} else {
+ 			tcp_send_ack(sk);
+@@ -6279,7 +6282,8 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
+ 		 */
+ 		return -1;
+ #else
+-		goto discard;
++		tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_SYNSENT_STATE_PROCESS));
++		goto end;
+ #endif
+ 	}
+ 	/* "fifth, if neither of the SYN or RST bits is set then
+@@ -6289,7 +6293,8 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
+ discard_and_undo:
+ 	tcp_clear_options(&tp->rx_opt);
+ 	tp->rx_opt.mss_clamp = saved_clamp;
+-	goto discard;
++	tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_SYNSENT_STATE_PROCESS));
++	goto end;
+ 
+ reset_and_undo:
+ 	tcp_clear_options(&tp->rx_opt);
+@@ -6347,18 +6352,23 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+ 
+ 	switch (sk->sk_state) {
+ 	case TCP_CLOSE:
+-		goto discard;
++		tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_STATE_PROCESS));
++		goto end;
+ 
+ 	case TCP_LISTEN:
+ 		if (th->ack)
+ 			return 1;
+ 
+-		if (th->rst)
+-			goto discard;
++		if (th->rst) {
++			tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_STATE_PROCESS));
++			goto end;
++		}
+ 
+ 		if (th->syn) {
+-			if (th->fin)
+-				goto discard;
++			if (th->fin) {
++				tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_STATE_PROCESS));
++				goto end;
++			}
+ 			/* It is possible that we process SYN packets from backlog,
+ 			 * so we need to make sure to disable BH and RCU right there.
+ 			 */
+@@ -6373,7 +6383,8 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+ 			consume_skb(skb);
+ 			return 0;
+ 		}
+-		goto discard;
++		tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_STATE_PROCESS));
++		goto end;
+ 
+ 	case TCP_SYN_SENT:
+ 		tp->rx_opt.saw_tstamp = 0;
+@@ -6399,12 +6410,16 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+ 		WARN_ON_ONCE(sk->sk_state != TCP_SYN_RECV &&
+ 		    sk->sk_state != TCP_FIN_WAIT1);
+ 
+-		if (!tcp_check_req(sk, skb, req, true, &req_stolen))
+-			goto discard;
++		if (!tcp_check_req(sk, skb, req, true, &req_stolen)) {
++			tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_STATE_PROCESS));
++			goto end;
++		}
+ 	}
+ 
+-	if (!th->ack && !th->rst && !th->syn)
+-		goto discard;
++	if (!th->ack && !th->rst && !th->syn) {
++		tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_STATE_PROCESS));
++		goto end;
++	}
+ 
+ 	if (!tcp_validate_incoming(sk, skb, th, 0))
+ 		return 0;
+@@ -6418,7 +6433,8 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+ 		if (sk->sk_state == TCP_SYN_RECV)
+ 			return 1;	/* send one RST */
+ 		tcp_send_challenge_ack(sk, skb);
+-		goto discard;
++		tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_STATE_PROCESS));
++		goto end;
+ 	}
+ 	switch (sk->sk_state) {
+ 	case TCP_SYN_RECV:
+@@ -6511,7 +6527,8 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+ 			inet_csk_reset_keepalive_timer(sk, tmo);
+ 		} else {
+ 			tcp_time_wait(sk, TCP_FIN_WAIT2, tmo);
+-			goto discard;
++			tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_STATE_PROCESS));
++			goto end;
+ 		}
+ 		break;
+ 	}
+@@ -6519,7 +6536,8 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+ 	case TCP_CLOSING:
+ 		if (tp->snd_una == tp->write_seq) {
+ 			tcp_time_wait(sk, TCP_TIME_WAIT, 0);
+-			goto discard;
++			tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_STATE_PROCESS));
++			goto end;
+ 		}
+ 		break;
+ 
+@@ -6527,7 +6545,8 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+ 		if (tp->snd_una == tp->write_seq) {
+ 			tcp_update_metrics(sk);
+ 			tcp_done(sk);
+-			goto discard;
++			tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_STATE_PROCESS));
++			goto end;
+ 		}
+ 		break;
+ 	}
+@@ -6544,8 +6563,10 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+ 			/* If a subflow has been reset, the packet should not
+ 			 * continue to be processed, drop the packet.
+ 			 */
+-			if (sk_is_mptcp(sk) && !mptcp_incoming_options(sk, skb))
+-				goto discard;
++			if (sk_is_mptcp(sk) && !mptcp_incoming_options(sk, skb)) {
++				tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_STATE_PROCESS));
++				goto end;
++			}
+ 			break;
+ 		}
+ 		fallthrough;
+@@ -6577,9 +6598,10 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+ 	}
+ 
+ 	if (!queued) {
+-discard:
+-		tcp_drop(sk, skb, TCP_RCV_STATE_PROCESS);
++		tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_STATE_PROCESS));
+ 	}
++
++end:
+ 	return 0;
+ }
+ EXPORT_SYMBOL(tcp_rcv_state_process);
+-- 
+2.25.1
+
