@@ -2,89 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 853563F7CC3
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 21:32:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 275F83F7CE7
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 21:58:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236313AbhHYTdb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 15:33:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55502 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231445AbhHYTda (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 15:33:30 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 829F7C061757;
-        Wed, 25 Aug 2021 12:32:44 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id z24-20020a17090acb1800b0018e87a24300so579801pjt.0;
-        Wed, 25 Aug 2021 12:32:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Q9woyFvZscziXAkEJcOlKEFMpONuxgV7zFshtJwHQb0=;
-        b=UIAciSu6TlZobeFzDa0D8Bitf2GOv5lOAtDKOzLIvSnnAUcFMZVkPeVruL3ZRPNUcl
-         eJlBpcRpiFDxHUskHAj38qdJj1UvXSbvjXaASb7hthCSGtP8Jb0mPzx3xdACaghKZGyz
-         xxQInYY70nGNfWfP9ROLwDrc3oVOU60V9AEM65uMZWN1eipl+LXab8amQZdMCO+sVR+N
-         SFEj+/WghWlduAzjFLdzCzrHhAT3q+KhTYlZzuiKQSxf09QO9klVQVmS4zM3zo0S4ONz
-         qgeETe7E1oqt17weppFrzK1JWM5NFovymB7/yOHhfCPAkzW/9xhW8X1q3iHm6Nb3cBvB
-         NESA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Q9woyFvZscziXAkEJcOlKEFMpONuxgV7zFshtJwHQb0=;
-        b=mPHXOGNH0FWYx923maqOQuINtZ9oWOq1ok2D4qJ+1s26bqIWw4Y7WDF/1/cppoWZ0x
-         P09EScndEiwvA3CDYr7IFeg50U49eHNfEKQwDO4t5gqIvsvyoQlOV+PlKENNOABaktT0
-         bTXC6rvtGIKPHYOvIEa5qA6mdJ3vjz/0Leu1SjwBR3Oc45OX4V4KdQL04pEx621G3VZO
-         bWzvYYowADGFxSGQPeh5KIGtmxi61GTsJP22MAwPbtY4A5WptleMgPlh/9M/PErTSE/v
-         4JDOXPA0eVYP9M7HEg1GnGPGa7cML/Fk4XWYYjTdPlnbXltX5ew0Vz/GaexyqIKpeTrk
-         xoFg==
-X-Gm-Message-State: AOAM530OWSzOJiLzaUks3tfyTrwrEL1zDXKg9brKlubkDAhfO/5skE1D
-        uiFJU1WGznMPI/gvfHx0CKIEnEqhPU0lKSH+IlI=
-X-Google-Smtp-Source: ABdhPJxjp/j1nFXX+libRk/30fJtdvDJaKPtZSbwldDH1FLk3WLy43zDTFJUjubwi7cXJZ3L74xbKarGGzJoKJXvlcs=
-X-Received: by 2002:a17:90a:6009:: with SMTP id y9mr12179405pji.93.1629919964009;
- Wed, 25 Aug 2021 12:32:44 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210825093722.10219-1-magnus.karlsson@gmail.com> <20210825182656.GA26792@ranger.igk.intel.com>
-In-Reply-To: <20210825182656.GA26792@ranger.igk.intel.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 25 Aug 2021 12:32:33 -0700
-Message-ID: <CAADnVQJHOmpRgzs0xXbm334XP_cTmGfrMfn=NoQw+eCw3WqBfA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 00/16] selftests: xsk: various simplifications
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     Magnus Karlsson <magnus.karlsson@gmail.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+        id S231862AbhHYT7T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 15:59:19 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:60840 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230301AbhHYT7T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 15:59:19 -0400
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 17PJm4AE015535
+        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 12:58:32 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : content-type : content-transfer-encoding :
+ mime-version; s=facebook; bh=ppzl12XIXXdF6lrhtCyadV6Yuf7hv9PvvXVSD+QLf3Y=;
+ b=qldT6Yft1pBxL3BWY/dqdvKoVtvA+EmfT/G7kBDaYLbDVJoggZocYqqQ14sgqrRoZ+dj
+ dNtDsVkR4xi7AR01A68vYu32UzURLarjjsw0HW8yRpysFtDt6XXsA5tYKzZhkfsey2pb
+ R/eNn02Uai0fQKWp/xByRa1hPW1Ij5ZHra4= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 3an8n4y8mm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 12:58:32 -0700
+Received: from intmgw002.25.frc3.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Wed, 25 Aug 2021 12:58:31 -0700
+Received: by devbig030.frc3.facebook.com (Postfix, from userid 158236)
+        id A46535A34E51; Wed, 25 Aug 2021 12:58:26 -0700 (PDT)
+From:   Dave Marchevsky <davemarchevsky@fb.com>
+To:     <bpf@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Ciara Loftus <ciara.loftus@intel.com>,
-        bpf <bpf@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Andrii Nakryiko <andrii@kernel.org>,
+        Yonghong Song <yhs@fb.com>, <netdev@vger.kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>
+Subject: [PATCH v2 bpf-next 0/6] bpf: implement variadic printk helper
+Date:   Wed, 25 Aug 2021 12:58:17 -0700
+Message-ID: <20210825195823.381016-1-davemarchevsky@fb.com>
+X-Mailer: git-send-email 2.30.2
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-FB-Source: Intern
+X-Proofpoint-GUID: hnyq6rztXvufUzykrsdpXKNHYT0SjEiM
+X-Proofpoint-ORIG-GUID: hnyq6rztXvufUzykrsdpXKNHYT0SjEiM
+Content-Transfer-Encoding: quoted-printable
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+MIME-Version: 1.0
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-08-25_07:2021-08-25,2021-08-25 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
+ mlxlogscore=999 phishscore=0 spamscore=0 priorityscore=1501 suspectscore=0
+ bulkscore=0 clxscore=1015 impostorscore=0 lowpriorityscore=0 mlxscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2107140000 definitions=main-2108250117
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 25, 2021 at 11:42 AM Maciej Fijalkowski
-<maciej.fijalkowski@intel.com> wrote:
->
-> On Wed, Aug 25, 2021 at 11:37:06AM +0200, Magnus Karlsson wrote:
-> > This patch set mainly contains various simplifications to the xsk
-> > selftests. The only exception is the introduction of packet streams
-> > that describes what the Tx process should send and what the Rx process
-> > should receive. If it receives anything else, the test fails. This
-> > mechanism can be used to produce tests were all packets are not
-> > received by the Rx thread or modified in some way. An example of this
-> > is if an XDP program does XDP_PASS on some of the packets.
-> >
-> > This patch set will be followed by another patch set that implements a
-> > new structure that will facilitate adding new tests. A couple of new
-> > tests will also be included in that patch set.
->
-> I went through the series and besides the typo found by Alexei I have no
-> objections.
->
-> Acked-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+This series introduces a new helper, bpf_trace_vprintk, which functions
+like bpf_trace_printk but supports > 3 arguments via a pseudo-vararg u64
+array. The bpf_printk libbpf convenience macro is modified to use
+bpf_trace_vprintk when > 3 varargs are passed, otherwise the previous
+behavior - using bpf_trace_printk - is retained.
 
-Great. Applied. Thanks everyone.
+Helper functions and macros added during the implementation of
+bpf_seq_printf and bpf_snprintf do most of the heavy lifting for
+bpf_trace_vprintk. There's no novel format string wrangling here.
+
+Usecase here is straightforward: Giving BPF program writers a more
+powerful printk will ease development of BPF programs, particularly
+during debugging and testing, where printk tends to be used.
+
+This feature was proposed by Andrii in libbpf mirror's issue tracker
+[1].
+
+[1] https://github.com/libbpf/libbpf/issues/315
+
+
+v1 -> v2:
+
+* Naming conversation seems to have gone in favor of keeping
+  bpf_trace_vprintk, names are unchanged
+
+* Patch 3 now modifies bpf_printk convenience macro to choose between
+  __bpf_printk and __bpf_vprintk 'implementation' macros based on arg
+  count. __bpf_vprintk is a renaming of bpf_vprintk convenience macro
+  from v1, __bpf_printk is the existing bpf_printk implementation.
+
+  This patch could use some scrutiny as I think current implementation
+  may regress developer experience in a specific case, turning a
+  compile-time error into a load-time error. Unclear to me how
+  common the case is, or whether the macro magic I chose is ideal.
+
+* char ___fmt[] to static const char ___fmt[] change was not done,
+  wanted to leave __bpf_printk 'implementation' macro unchanged for v2
+  to ease discussion of above point
+
+* Removed __always_inline from __set_printk_clr_event [Andrii]
+* Simplified bpf_trace_printk docstring to refer to other functions
+  instead of copy/pasting and avoid specifying 12 vararg limit [Andrii]
+* Migrated trace_printk selftest to use ASSERT_ instead of CHECK
+  * Adds new patch 5, previous patch 5 is now 6
+* Migrated trace_vprintk selftest to use ASSERT_ instead of CHECK,
+  open_and_load instead of separate open, load [Andrii]
+* Patch 2's commit message now correctly mentions trace_pipe instead of
+  dmesg [Andrii]
+
+
+Dave Marchevsky (6):
+  bpf: merge printk and seq_printf VARARG max macros
+  bpf: add bpf_trace_vprintk helper
+  libbpf: Modify bpf_printk to choose helper based on arg count
+  bpftool: only probe trace_vprintk feature in 'full' mode
+  selftests/bpf: Migrate prog_tests/trace_printk CHECKs to ASSERTs
+  selftests/bpf: add trace_vprintk test prog
+
+ include/linux/bpf.h                           |  3 +
+ include/uapi/linux/bpf.h                      |  9 +++
+ kernel/bpf/core.c                             |  5 ++
+ kernel/bpf/helpers.c                          |  6 +-
+ kernel/trace/bpf_trace.c                      | 54 ++++++++++++++-
+ tools/bpf/bpftool/feature.c                   |  1 +
+ tools/include/uapi/linux/bpf.h                |  9 +++
+ tools/lib/bpf/bpf_helpers.h                   | 45 ++++++++++---
+ tools/testing/selftests/bpf/Makefile          |  3 +-
+ .../selftests/bpf/prog_tests/trace_printk.c   | 24 +++----
+ .../selftests/bpf/prog_tests/trace_vprintk.c  | 65 +++++++++++++++++++
+ .../selftests/bpf/progs/trace_vprintk.c       | 25 +++++++
+ tools/testing/selftests/bpf/test_bpftool.py   | 22 +++----
+ 13 files changed, 228 insertions(+), 43 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/trace_vprintk.c
+ create mode 100644 tools/testing/selftests/bpf/progs/trace_vprintk.c
+
+--=20
+2.30.2
+
