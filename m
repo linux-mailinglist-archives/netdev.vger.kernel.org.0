@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03A1A3F6FC1
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 08:45:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5A3E3F6FBF
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 08:44:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239077AbhHYGpk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 02:45:40 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:14414 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238906AbhHYGpd (ORCPT
+        id S239068AbhHYGpg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 02:45:36 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:8767 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238843AbhHYGpd (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 02:45:33 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Gvbw85TCmzbdZZ;
-        Wed, 25 Aug 2021 14:40:56 +0800 (CST)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Gvbzx4Zg8zYt0H;
+        Wed, 25 Aug 2021 14:44:13 +0800 (CST)
 Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
  dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
@@ -28,9 +28,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>, <mkubecek@suse.cz>,
         <danieller@nvidia.com>
 CC:     <netdev@vger.kernel.org>, <lipeng321@huawei.com>,
         <chenhao288@hisilicon.com>, <huangguangbin2@huawei.com>
-Subject: [PATCH net-next 4/5] net: hns3: add support to set/get rx buf len via ethtool for hns3 driver
-Date:   Wed, 25 Aug 2021 14:40:54 +0800
-Message-ID: <1629873655-51539-5-git-send-email-huangguangbin2@huawei.com>
+Subject: [PATCH net-next 5/5] net: hns3: remove the way to set tx spare buf via module parameter
+Date:   Wed, 25 Aug 2021 14:40:55 +0800
+Message-ID: <1629873655-51539-6-git-send-email-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1629873655-51539-1-git-send-email-huangguangbin2@huawei.com>
 References: <1629873655-51539-1-git-send-email-huangguangbin2@huawei.com>
@@ -46,127 +46,42 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Hao Chen <chenhao288@hisilicon.com>
 
-Rx buf len is for rx BD buffer size, support setting it via ethtool -G
-parameter and getting it via ethtool -g parameter.
+The way to set tx spare buf via module parameter is not such
+convenient as the way to set it via ethtool.
+
+So,remove the way to set tx spare buf via module parameter.
 
 Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 42 ++++++++++++++++++----
- 1 file changed, 36 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-index 5a21b9eb9820..c78b3a377197 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-@@ -616,7 +616,7 @@ static void hns3_get_ringparam(struct net_device *netdev,
- {
- 	struct hns3_nic_priv *priv = netdev_priv(netdev);
- 	struct hnae3_handle *h = priv->ae_handle;
--	int queue_num = h->kinfo.num_tqps;
-+	int rx_queue_index = h->kinfo.num_tqps;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+index c945fa4b3c9c..92d7e18f008f 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+@@ -53,10 +53,6 @@ static int debug = -1;
+ module_param(debug, int, 0);
+ MODULE_PARM_DESC(debug, " Network interface message level setting");
  
- 	if (hns3_nic_resetting(netdev)) {
- 		netdev_err(netdev, "dev resetting!");
-@@ -627,7 +627,8 @@ static void hns3_get_ringparam(struct net_device *netdev,
- 	param->rx_max_pending = HNS3_RING_MAX_PENDING;
+-static unsigned int tx_spare_buf_size;
+-module_param(tx_spare_buf_size, uint, 0400);
+-MODULE_PARM_DESC(tx_spare_buf_size, "Size used to allocate tx spare buffer");
+-
+ static unsigned int tx_sgl = 1;
+ module_param(tx_sgl, uint, 0600);
+ MODULE_PARM_DESC(tx_sgl, "Minimum number of frags when using dma_map_sg() to optimize the IOMMU mapping");
+@@ -1037,8 +1033,7 @@ static void hns3_init_tx_spare_buffer(struct hns3_enet_ring *ring)
+ 	dma_addr_t dma;
+ 	int order;
  
- 	param->tx_pending = priv->ring[0].desc_num;
--	param->rx_pending = priv->ring[queue_num].desc_num;
-+	param->rx_pending = priv->ring[rx_queue_index].desc_num;
-+	param->rx_buf_len = priv->ring[rx_queue_index].buf_size;
- }
+-	alloc_size = tx_spare_buf_size ? tx_spare_buf_size :
+-		     ring->tqp->handle->kinfo.tx_spare_buf_size;
++	alloc_size = ring->tqp->handle->kinfo.tx_spare_buf_size;
+ 	if (!alloc_size)
+ 		return;
  
- static void hns3_get_pauseparam(struct net_device *netdev,
-@@ -1031,12 +1032,20 @@ static struct hns3_enet_ring *hns3_backup_ringparam(struct hns3_nic_priv *priv)
- static int hns3_check_ringparam(struct net_device *ndev,
- 				struct ethtool_ringparam *param)
- {
-+#define RX_BUF_LEN_2K 2048
-+#define RX_BUF_LEN_4K 4096
- 	if (hns3_nic_resetting(ndev))
- 		return -EBUSY;
- 
- 	if (param->rx_mini_pending || param->rx_jumbo_pending)
- 		return -EINVAL;
- 
-+	if (param->rx_buf_len != RX_BUF_LEN_2K &&
-+	    param->rx_buf_len != RX_BUF_LEN_4K) {
-+		netdev_err(ndev, "Rx buf len only support 2048 and 4096\n");
-+		return -EINVAL;
-+	}
-+
- 	if (param->tx_pending > HNS3_RING_MAX_PENDING ||
- 	    param->tx_pending < HNS3_RING_MIN_PENDING ||
- 	    param->rx_pending > HNS3_RING_MAX_PENDING ||
-@@ -1049,6 +1058,22 @@ static int hns3_check_ringparam(struct net_device *ndev,
- 	return 0;
- }
- 
-+static int hns3_change_rx_buf_len(struct net_device *ndev, u32 rx_buf_len)
-+{
-+	struct hns3_nic_priv *priv = netdev_priv(ndev);
-+	struct hnae3_handle *h = priv->ae_handle;
-+	int i;
-+
-+	h->kinfo.rx_buf_len = rx_buf_len;
-+
-+	for (i = 0; i < h->kinfo.num_tqps; i++) {
-+		h->kinfo.tqp[i]->buf_size = rx_buf_len;
-+		priv->ring[i + h->kinfo.num_tqps].buf_size = rx_buf_len;
-+	}
-+
-+	return 0;
-+}
-+
- static int hns3_set_ringparam(struct net_device *ndev,
- 			      struct ethtool_ringparam *param)
- {
-@@ -1059,6 +1084,7 @@ static int hns3_set_ringparam(struct net_device *ndev,
- 	u32 old_tx_desc_num, new_tx_desc_num;
- 	u32 old_rx_desc_num, new_rx_desc_num;
- 	u16 queue_num = h->kinfo.num_tqps;
-+	u32 old_rx_buf_len;
- 	int ret, i;
- 
- 	ret = hns3_check_ringparam(ndev, param);
-@@ -1070,8 +1096,10 @@ static int hns3_set_ringparam(struct net_device *ndev,
- 	new_rx_desc_num = ALIGN(param->rx_pending, HNS3_RING_BD_MULTIPLE);
- 	old_tx_desc_num = priv->ring[0].desc_num;
- 	old_rx_desc_num = priv->ring[queue_num].desc_num;
-+	old_rx_buf_len = priv->ring[queue_num].buf_size;
- 	if (old_tx_desc_num == new_tx_desc_num &&
--	    old_rx_desc_num == new_rx_desc_num)
-+	    old_rx_desc_num == new_rx_desc_num &&
-+	    param->rx_buf_len == old_rx_buf_len)
- 		return 0;
- 
- 	tmp_rings = hns3_backup_ringparam(priv);
-@@ -1082,19 +1110,21 @@ static int hns3_set_ringparam(struct net_device *ndev,
- 	}
- 
- 	netdev_info(ndev,
--		    "Changing Tx/Rx ring depth from %u/%u to %u/%u\n",
-+		    "Changing Tx/Rx ring depth from %u/%u to %u/%u, Changing rx buffer len to %d\n",
- 		    old_tx_desc_num, old_rx_desc_num,
--		    new_tx_desc_num, new_rx_desc_num);
-+		    new_tx_desc_num, new_rx_desc_num, param->rx_buf_len);
- 
- 	if (if_running)
- 		ndev->netdev_ops->ndo_stop(ndev);
- 
- 	hns3_change_all_ring_bd_num(priv, new_tx_desc_num, new_rx_desc_num);
-+	hns3_change_rx_buf_len(ndev, param->rx_buf_len);
- 	ret = hns3_init_all_ring(priv);
- 	if (ret) {
--		netdev_err(ndev, "Change bd num fail, revert to old value(%d)\n",
-+		netdev_err(ndev, "set ringparam fail, revert to old value(%d)\n",
- 			   ret);
- 
-+		hns3_change_rx_buf_len(ndev, old_rx_buf_len);
- 		hns3_change_all_ring_bd_num(priv, old_tx_desc_num,
- 					    old_rx_desc_num);
- 		for (i = 0; i < h->kinfo.num_tqps * 2; i++)
 -- 
 2.8.1
 
