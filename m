@@ -2,67 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF5CC3F7276
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 12:00:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26F7A3F727A
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 12:00:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239762AbhHYKBB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 06:01:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58948 "EHLO mail.kernel.org"
+        id S239845AbhHYKBJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 06:01:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58936 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237077AbhHYKA7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S239628AbhHYKA7 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 25 Aug 2021 06:00:59 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 92CDE61212;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 894E861184;
         Wed, 25 Aug 2021 10:00:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1629885613;
-        bh=/ntJ2mMXX4PtgpsnFtVxq4/rtW5hlIIX8CFtQHf8yp4=;
+        bh=1eoaKEeilo/wpb+m3uoKx3QtEoAXXbps1ms6hYWZMuU=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=K5uPDU86ilRD5Sw8HRmQUUgvv4E27sRI8uEX2H+52Fo854TNfOAHfvY9WYiWg34BQ
-         fPn/XVM77C8lXrXq+9LRuXOydbYq/mkw6vJntgvJJLeqkOxbqUGnWLrs6qn7zYdWpQ
-         bS3ZE2kLpIB3OzYYV57gdWfo/lkan4vuTsnXqiviR4MDvpO/TNs0xr5U7Tg8fMTsdm
-         CKIk4EAEsoQPvIFvC0EtGOsa1MOF/ksLMoYBizUk6W9QezOuzE9qbNVZtOJ2coZYkE
-         gwdbefT9G/CxrJqgX7z6d4oC38g7jP1p7eTSgbYsENWDWEJOeRuuED0AYMVOz59qSS
-         SP9K7qQFmIRPQ==
+        b=tyXkUrQOQ0iQG7o8Pkz7kKA032mqd+zI45jOoamiBBhT+epMFnp0kiynsQgZO3qak
+         qgQmFzfFTCA5LdykdcPKkOfAot1j9VjvB18gRvqArnwPDA5WCbreG5/wFVayZKBNW3
+         oLO7DlUvIvwXFPPtJRpLCK58p1QBQdp+W61chet2UuaNcjAmFx7XpnT+GQyNBD8Phl
+         GJo2v7gwWbkvuNN3tKdzEWJAey+9vqYyNx539w/8nBubP1wu5xWfqft5f3v7QHrKuy
+         goZhYispbmo0DcXF2ors2Ru1Dw1UI8TAz4YRQUpaXE+KCJJgCJejksouFeVfRmL6Ug
+         fKMaStDe05T6g==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 889B360A12;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 7DF2960A14;
         Wed, 25 Aug 2021 10:00:13 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] qed: Enable automatic recovery on error condition.
+Subject: Re: [PATCH net-next 0/4][pull request] 1GbE Intel Wired LAN Driver
+ Updates 2021-08-24
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162988561355.31154.13741354935010932574.git-patchwork-notify@kernel.org>
+Message-Id: <162988561351.31154.7675459871694727833.git-patchwork-notify@kernel.org>
 Date:   Wed, 25 Aug 2021 10:00:13 +0000
-References: <20210824040246.21689-1-palok@marvell.com>
-In-Reply-To: <20210824040246.21689-1-palok@marvell.com>
-To:     Alok Prasad <palok@marvell.com>
+References: <20210824204248.2957134-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20210824204248.2957134-1-anthony.l.nguyen@intel.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
 Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        GR-everest-linux-l2@marvell.com, smalin@marvell.com,
-        aelior@marvell.com, irusskikh@marvell.com
+        bhelgaas@google.com, linux-pci@vger.kernel.org,
+        sasha.neftin@intel.com, vitaly.lifshits@intel.com,
+        richardcochran@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue, 24 Aug 2021 04:02:46 +0000 you wrote:
-> This patch enables automatic recovery by default in case of various
-> error condition like fw assert , hardware error etc.
-> This also ensure driver can handle multiple iteration of assertion
-> conditions.
+On Tue, 24 Aug 2021 13:42:44 -0700 you wrote:
+> Vinicius Costa Gomes says:
 > 
-> Signed-off-by: Ariel Elior <aelior@marvell.com>
-> Signed-off-by: Shai Malin <smalin@marvell.com>
-> Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
-> Signed-off-by: Alok Prasad <palok@marvell.com>
+> This adds support for PCIe PTM (Precision Time Measurement) to the igc
+> driver. PCIe PTM allows the NIC and Host clocks to be compared more
+> precisely, improving the clock synchronization accuracy.
+> 
+> Patch 1/4 reverts a commit that made pci_enable_ptm() private to the
+> PCI subsystem, reverting makes it possible for it to be called from
+> the drivers.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] qed: Enable automatic recovery on error condition.
-    https://git.kernel.org/netdev/net-next/c/755f90534080
+  - [net-next,1/4] Revert "PCI: Make pci_enable_ptm() private"
+    https://git.kernel.org/netdev/net-next/c/1d71eb53e451
+  - [net-next,2/4] PCI: Add pcie_ptm_enabled()
+    https://git.kernel.org/netdev/net-next/c/014408cd624e
+  - [net-next,3/4] igc: Enable PCIe PTM
+    https://git.kernel.org/netdev/net-next/c/1b5d73fb8624
+  - [net-next,4/4] igc: Add support for PTP getcrosststamp()
+    https://git.kernel.org/netdev/net-next/c/a90ec8483732
 
 You are awesome, thank you!
 --
