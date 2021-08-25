@@ -2,133 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A3D23F7D46
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 22:42:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 827E43F7D53
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 22:46:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242616AbhHYUnU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 16:43:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42842 "EHLO
+        id S241842AbhHYUqr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 16:46:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231873AbhHYUnU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 16:43:20 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FF1EC061757;
-        Wed, 25 Aug 2021 13:42:33 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id u3so1034408ejz.1;
-        Wed, 25 Aug 2021 13:42:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-transfer-encoding:content-language;
-        bh=dabBHAyYMNJrMunVHxQpPmbHkWUexAisLjuitLVnyCU=;
-        b=drB8cHzFMpEkUIXSe30YWp8fzHrXOS5C6cuxuw6HmDy3VjLCNveuBDMaobh4xfXll5
-         pQVH1TOjT7NGCgZKTMvrZQ2koMkZCJabc5w1rLFDqqxU1dowo1OEl2Wv58hm6/6uqC0a
-         vAy3XIGQcJarzrRpY51YJkKURLSjMQ/JklrH8t6SNBlhXiPas3ZU/mtoIlVnPYCLK0PS
-         VtZi4ChACDboM8f2K77PFuWvjxRAMAU9pYCxB7kTr5N/XgAGzwF5dSmjzrG52rCi1Nro
-         A+R/muvVbIVWnEqD7dMjruetbuxHHSLwCzvbfiLpQQFhXsA9wqLFlc0+kdVt/0WpkWvY
-         LxBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-transfer-encoding:content-language;
-        bh=dabBHAyYMNJrMunVHxQpPmbHkWUexAisLjuitLVnyCU=;
-        b=JTPy/qopbTXy1Zni6/T3ZkmC9IFbj46JzPmVGQNEjNLIoMCUtG5b2Fp2znv+q1sWmp
-         b0ivqzQPgQ20Hq3maUxHaueJlmmT1WhuR0iwARCvW8GZ9D0jJKeb2H+A/xp6FDl6ioIz
-         GZiU2ZjMRe/xq+Ifnvv9wkj2Z8psentXlBILVQvwhMJsOwwlvkA3LfabiIYO/OxNaZ4J
-         XH4wHc+eNgK6wFSHVSgeNzH8tjh4rWENqRyCMZIFsiJEbw2ecwwz5CvDV3PRWuInLscA
-         t/lkqUILYy/nJZIf0l9YiXcGwXJdF7PwVxAvdGgLriWJO5WfK5UeHzWR7jYOThnlXbkz
-         HACA==
-X-Gm-Message-State: AOAM532uqELOuhjpTYkVAB0mLs1oISoQf3OkvqnTg6PKR4ZcXkWcF2v6
-        JTIC4Dbha1AYKXwRm5kwwssIh64moDg=
-X-Google-Smtp-Source: ABdhPJw0s7s3hrC7CNamNGiQnz/WoJziS49ap6Sl0XBBpHQvfysiByi6MQVxm3zd6dIQjyS22swzlw==
-X-Received: by 2002:a17:907:384:: with SMTP id ss4mr528779ejb.478.1629924152236;
-        Wed, 25 Aug 2021 13:42:32 -0700 (PDT)
-Received: from ?IPv6:2001:981:6fec:1:2090:c45b:fc0a:29b3? ([2001:981:6fec:1:2090:c45b:fc0a:29b3])
-        by smtp.gmail.com with ESMTPSA id f30sm312558ejl.78.2021.08.25.13.42.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 25 Aug 2021 13:42:31 -0700 (PDT)
-To:     UNGLinuxDriver@microchip.com
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, linux-usb@vger.kernel.org
-From:   Ferry Toth <fntoth@gmail.com>
-Subject: Crash on unplug smsc95xx on 5.14.0-rc6
-Message-ID: <07628a9b-1370-98b7-c1f3-98b9bf8cc38f@gmail.com>
-Date:   Wed, 25 Aug 2021 22:42:31 +0200
+        with ESMTP id S239932AbhHYUqq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 16:46:46 -0400
+Received: from bombadil.infradead.org (unknown [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFC85C061757
+        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 13:46:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
+        Subject:Sender:Reply-To:Content-ID:Content-Description;
+        bh=W8HubMk2k127/cjthS0iFTTQjAWrh+oTRlU1IO0/1XI=; b=3VXIkonCXPgh5swcF2mdZo8MWW
+        2G859Tg/fqcNDyW4useUmOD7rj3LKc+UAKqm+egmS9JWlzwyjDt/GH4J4UqDAcmkR41EcPbg/2WFO
+        7yP2GnC6SPLK2IPVB0sbcOsT5bhKmH+YTRXJjIgMaI0oWJjoA1NmPGXDJmj+EsIB2C0Qz8idc+m6y
+        pXKARBGf5vTpwHFNkYqavo16W3Xuqb9OfAYOwB8Wm6o305p0ANnTJPuwB9zJq9+Y3Z/vvJHn34mRr
+        bqBhvWlwkoIEMKXmu79UjSGJzgI0ioi4X0zjbSP85EH4Nd77tN/uSVq4G05WuUBlu42dc/YiQIUu9
+        7/EYMigA==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1mIzmY-008Sjt-5W; Wed, 25 Aug 2021 20:45:58 +0000
+Subject: Re: [PATCH] ptp: ocp: don't allow on S390
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     Arnd Bergmann <arnd@kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Networking <netdev@vger.kernel.org>
+References: <20210813203026.27687-1-rdunlap@infradead.org>
+ <CAK8P3a3QGF2=WZz6N8wQo2ZQxmVqKToHGmhT4wEtB7tAL+-ruQ@mail.gmail.com>
+ <20210820153100.GA9604@hoboy.vegasvil.org>
+ <80be0a74-9b0d-7386-323c-c261ca378eef@infradead.org>
+ <CAK8P3a11wvEhoEutCNBs5NqiZ2VUA1r-oE1CKBBaYbu_abr4Aw@mail.gmail.com>
+ <20210825170813.7muvouqsijy3ysrr@bsd-mbp.dhcp.thefacebook.com>
+ <8f0848a6-354d-ff58-7d41-8610dc095773@infradead.org>
+ <20210825204042.5v7ad3ntor6s3pq3@bsd-mbp.dhcp.thefacebook.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <35952ae9-07a5-11aa-76ae-d698bcaa9804@infradead.org>
+Date:   Wed, 25 Aug 2021 13:45:57 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+ Thunderbird/78.12.0
 MIME-Version: 1.0
+In-Reply-To: <20210825204042.5v7ad3ntor6s3pq3@bsd-mbp.dhcp.thefacebook.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
 Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With 5.14.0-rc6 smsc9504 attached to dwc3 host (Intel Merrifield) 
-unplugging leads to the following stack trace:
+On 8/25/21 1:40 PM, Jonathan Lemon wrote:
+> On Wed, Aug 25, 2021 at 10:29:51AM -0700, Randy Dunlap wrote:
+>> On 8/25/21 10:08 AM, Jonathan Lemon wrote:
+>>> On Wed, Aug 25, 2021 at 12:55:25PM +0200, Arnd Bergmann wrote:
+>>>> On Tue, Aug 24, 2021 at 11:48 PM Randy Dunlap <rdunlap@infradead.org> wrote:
+>>>>>
+>>>>> On 8/20/21 8:31 AM, Richard Cochran wrote:
+>>>>>> On Fri, Aug 20, 2021 at 12:45:42PM +0200, Arnd Bergmann wrote:
+>>>>>>
+>>>>>>> I would also suggest removing all the 'imply' statements, they
+>>>>>>> usually don't do what the original author intended anyway.
+>>>>>>> If there is a compile-time dependency with those drivers,
+>>>>>>> it should be 'depends on', otherwise they can normally be
+>>>>>>> left out.
+>>>>>>
+>>>>>> +1
+>>>>>
+>>>>> Hi,
+>>>>>
+>>>>> Removing the "imply" statements is simple enough and the driver
+>>>>> still builds cleanly without them, so Yes, they aren't needed here.
+>>>>>
+>>>>> Removing the SPI dependency is also clean.
+>>>>>
+>>>>> The driver does use I2C, MTD, and SERIAL_8250 interfaces, so they
+>>>>> can't be removed without some other driver changes, like using
+>>>>> #ifdef/#endif (or #if IS_ENABLED()) blocks and some function stubs.
+>>>>
+>>>> If the SERIAL_8250 dependency is actually required, then using
+>>>> 'depends on' for this is probably better than an IS_ENABLED() check.
+>>>> The 'select' is definitely misplaced here, that doesn't even work when
+>>>> the dependencies fo 8250 itself are not met, and it does force-enable
+>>>> the entire TTY subsystem.
+>>>
+>>> So, something like the following (untested) patch?
+>>> I admit to not fully understanding all the nuances around Kconfig.
+>>
+>> Hi,
+>>
+>> You can also remove the "select NET_DEVLINK". The driver builds fine
+>> without it. And please drop the "default n" while at it.
+> 
+> I had to add this one because devlink is a dependency and the kbuild
+> robot generated a config without it.
 
-kernel: kernfs: can not remove 'attached_dev', no directory
-kernel: WARNING: CPU: 0 PID: 23 at fs/kernfs/dir.c:1508 
-kernfs_remove_by_name_ns+0x7e/0x90
-kernel: Modules linked in: rfcomm iptable_nat bnep snd_sof_nocodec 
-spi_pxa2xx_platform dw_dmac smsc smsc95xx pwm_lpss_pci dw_dmac_pci 
-pwm_lpss dw_dmac_core snd_sof_pc>
-kernel: CPU: 0 PID: 23 Comm: kworker/0:1 Not tainted 
-5.14.0-rc6-edison-acpi-standard #1
-kernel: Hardware name: Intel Corporation Merrifield/BODEGA BAY, BIOS 542 
-2015.01.21:18.19.48
-kernel: Workqueue: usb_hub_wq hub_event
-kernel: RIP: 0010:kernfs_remove_by_name_ns+0x7e/0x90
-kernel: Code: ff 9a 00 31 c0 5d 41 5c 41 5d c3 48 c7 c7 e0 48 f6 b2 e8 
-15 ff 9a 00 b8 fe ff ff ff eb e7 48 c7 c7 d0 fa a8 b2 e8 cb c6 94 00 
-<0f> 0b b8 fe ff ff ff eb >
-kernel: RSP: 0018:ffffa514000cfa10 EFLAGS: 00010282
-kernel: RAX: 0000000000000000 RBX: ffff9a9008a3d8c0 RCX: ffff9a903e217478
-kernel: RDX: 00000000ffffffd8 RSI: 0000000000000027 RDI: ffff9a903e217470
-kernel: RBP: ffff9a90023d3000 R08: ffffffffb2f341c8 R09: 0000000000009ffb
-kernel: R10: 00000000ffffe000 R11: 3fffffffffffffff R12: ffffffffb2af705d
-kernel: R13: ffff9a9008a3d8c0 R14: ffffa514000cfb10 R15: 0000000000000003
-kernel: FS:  0000000000000000(0000) GS:ffff9a903e200000(0000) 
-knlGS:0000000000000000
-kernel: CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-kernel: CR2: 00007fe6971fcca0 CR3: 0000000007b02000 CR4: 00000000001006f0
-kernel: Call Trace:
-kernel:  phy_detach+0x10b/0x170
-kernel:  smsc95xx_disconnect_phy+0x2a/0x30 [smsc95xx]
-kernel:  usbnet_stop+0x5d/0x130
-kernel:  __dev_close_many+0x99/0x110
-kernel:  dev_close_many+0x76/0x120
-kernel:  unregister_netdevice_many+0x13d/0x750
-kernel:  unregister_netdevice_queue+0x80/0xc0
-kernel:  unregister_netdev+0x13/0x20
-kernel:  usbnet_disconnect+0x54/0xb0
-kernel:  usb_unbind_interface+0x85/0x270
-kernel:  ? kernfs_find_ns+0x30/0xc0
-kernel:  __device_release_driver+0x175/0x230
-kernel:  device_release_driver+0x1f/0x30
-kernel:  bus_remove_device+0xd3/0x140
-kernel:  device_del+0x186/0x3e0
-kernel:  ? kobject_put+0x91/0x1d0
-kernel:  usb_disable_device+0xc1/0x1e0
-kernel:  usb_disconnect.cold+0x7a/0x1f7
-kernel:  usb_disconnect.cold+0x29/0x1f7
-kernel:  hub_event+0xbb9/0x1830
-kernel:  ? __switch_to_asm+0x42/0x70
-kernel:  ? __switch_to_asm+0x36/0x70
-kernel:  process_one_work+0x1cf/0x370
-kernel:  worker_thread+0x48/0x3d0
-kernel:  ? rescuer_thread+0x360/0x360
-kernel:  kthread+0x122/0x140
-kernel:  ? set_kthread_struct+0x40/0x40
-kernel:  ret_from_fork+0x22/0x30
+What kind of dependency is devlink?
+The driver builds without NET_DEVLINK.
 
-The unplug event happen when switching dwc3 from host  to device mode.
 
-I'm not sure when this behavior started exactly, but al least since 
-5.14.0-rc1.
+> The 'imply' statements were added because while the driver builds
+> without them, the resources don't show up unless the platform
+> modules are also present.  This was really confusing users, since
+> they selected the OCP driver and then were not able to use the
+> flash since the XILINX modules had not been selected.
+> 
+> Is there a better way of specifying these type of dependencies?
 
-Maybe related: smsc95xx plugin seems to trigger:
+Documentation/  and/or one can add comments/docs in the Kconfig help
+section.
 
-DMA-API: cacheline tracking EEXIST, overlapping mappings aren't supported
 
+-- 
+~Randy
 
