@@ -2,92 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53A013F6F4A
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 08:17:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E8133F6F6F
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 08:24:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238328AbhHYGSc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 02:18:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39290 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237913AbhHYGSb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 02:18:31 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08FBCC061757
-        for <netdev@vger.kernel.org>; Tue, 24 Aug 2021 23:17:46 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1mImEE-0006SA-6d; Wed, 25 Aug 2021 08:17:38 +0200
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:b509:65fb:e781:8611])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 2391066E7BC;
-        Wed, 25 Aug 2021 06:17:36 +0000 (UTC)
-Date:   Wed, 25 Aug 2021 08:17:35 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, Biju Das <biju.das.jz@bp.renesas.com>,
-        Prabhakar <prabhakar.csengg@gmail.com>
-Subject: Re: [PATCH -next] can: rcar_canfd: Fix redundant assignment
-Message-ID: <20210825061735.x3izwhs2koy4o4qp@pengutronix.de>
-References: <20210820161449.18169-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        id S238328AbhHYGYt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 02:24:49 -0400
+Received: from mx21.baidu.com ([220.181.3.85]:60422 "EHLO baidu.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S237993AbhHYGYt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Aug 2021 02:24:49 -0400
+Received: from BC-Mail-HQEX01.internal.baidu.com (unknown [172.31.51.57])
+        by Forcepoint Email with ESMTPS id E806622C041D02F36F5F;
+        Wed, 25 Aug 2021 14:23:57 +0800 (CST)
+Received: from BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) by
+ BC-Mail-HQEX01.internal.baidu.com (172.31.51.57) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2242.12; Wed, 25 Aug 2021 14:23:57 +0800
+Received: from LAPTOP-UKSR4ENP.internal.baidu.com (172.31.63.8) by
+ BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.14; Wed, 25 Aug 2021 14:23:57 +0800
+From:   Cai Huoqing <caihuoqing@baidu.com>
+To:     <wg@grandegger.com>, <mkl@pengutronix.de>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <geert+renesas@glider.be>,
+        <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Cai Huoqing <caihuoqing@baidu.com>
+Subject: [PATCH] can: rcar: Kconfig: Add helper dependency on COMPILE_TEST
+Date:   Wed, 25 Aug 2021 14:23:41 +0800
+Message-ID: <20210825062341.2332-1-caihuoqing@baidu.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="th6pl7v54vicbrcb"
-Content-Disposition: inline
-In-Reply-To: <20210820161449.18169-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain
+X-Originating-IP: [172.31.63.8]
+X-ClientProxiedBy: BC-Mail-Ex30.internal.baidu.com (172.31.51.24) To
+ BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+it's helpful for complie test in other platform(e.g.X86)
 
---th6pl7v54vicbrcb
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
+---
+ drivers/net/can/rcar/Kconfig | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-On 20.08.2021 17:14:49, Lad Prabhakar wrote:
-> Fix redundant assignment of 'priv' to itself in
-> rcar_canfd_handle_channel_tx().
->=20
-> Fixes: 76e9353a80e9 ("can: rcar_canfd: Add support for RZ/G2L family")
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+diff --git a/drivers/net/can/rcar/Kconfig b/drivers/net/can/rcar/Kconfig
+index 29cabc20109e..56320a7f828b 100644
+--- a/drivers/net/can/rcar/Kconfig
++++ b/drivers/net/can/rcar/Kconfig
+@@ -1,7 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0
+ config CAN_RCAR
+ 	tristate "Renesas R-Car and RZ/G CAN controller"
+-	depends on ARCH_RENESAS || ARM
++	depends on ARCH_RENESAS || ARM || COMPILE_TEST
+ 	help
+ 	  Say Y here if you want to use CAN controller found on Renesas R-Car
+ 	  or RZ/G SoCs.
+@@ -11,7 +11,7 @@ config CAN_RCAR
+ 
+ config CAN_RCAR_CANFD
+ 	tristate "Renesas R-Car CAN FD controller"
+-	depends on ARCH_RENESAS || ARM
++	depends on ARCH_RENESAS || ARM || COMPILE_TEST
+ 	help
+ 	  Say Y here if you want to use CAN FD controller found on
+ 	  Renesas R-Car SoCs. The driver puts the controller in CAN FD only
+-- 
+2.25.1
 
-Applied to linux-can-next/testing
-
-Thanks,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---th6pl7v54vicbrcb
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmEl4HwACgkQqclaivrt
-76mHtgf+L41N6scrOm0h9o+PDnNvJscBHw3+LLuiB1J6Nw+07SHjlj71p5orr2K2
-+hBymWJcoSn7z5Wk1WdioM5T2LFXTqAp79MmxOrAlhg96+cVcgCem+eASheVOLMa
-KM8B0HjPQoCvH+TWko8EuGoHX1/wc3eVr4Yy7hnIw9YcxR8ykMBGL8CtzUap4I/b
-PQ7qkX2y+ePs8CJnGeVEG/+c078YrnvSNhiuK9S18a/qDXt/unY3FdNk/ABurPKZ
-OACDylrR7IEgpQeO6qTLbXxY06oC5SEKx5cUIK3dxssmTTl3cObyMPrlKp7Ye5Lc
-UMcj7ODrPvjsSn/RaE4X8EM7PHaDUw==
-=3+Gz
------END PGP SIGNATURE-----
-
---th6pl7v54vicbrcb--
