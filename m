@@ -2,107 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 412933F7C05
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 20:07:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA3B33F7C5E
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 20:42:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241282AbhHYSId (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 14:08:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36386 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235251AbhHYSIc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 14:08:32 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26D57C061757
-        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 11:07:46 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id i21so332303ejd.2
-        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 11:07:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxtx.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EcYKVqQSFav1GX+z3dOkJIc4nB4fMZOFfEayNc3CdZA=;
-        b=MWBegt9r0CkqgxFcqDtewibUSNsZ1bQl+pb0B6BQvvhIgHW+/lZ7gHh802g+Ho3zjw
-         gqQp4+Vh2WP08rW72lYsSWVa8dVfodLMVnFAbO0DgNrkuE/ROW2Buu5GzX8gX0VHY3gJ
-         yJ0XuUt7P4yWx9MFK/pFwP4pYtBZFlCl+UKpE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EcYKVqQSFav1GX+z3dOkJIc4nB4fMZOFfEayNc3CdZA=;
-        b=FlV0umfcrnUEBm6eeIoGd/43ZiNxN6i7+tjp2z4hQ2MqrlpSUTUScOYD1E2pLmz9xq
-         /c/FNhoRpIXWAyjkB7yTcBdhfAQIoaAFh0nhMmY58XxEaeUAtg3TSTNlYUEEYNtcPv/G
-         Su/0zZUbgISzlmyl7kFut5MReQTHj8tu2c3CmNJuVt088K3CrgF4zArcvHC4K+/p8PVi
-         vfSld3tO+TmkaNMYC+2+e7IA2YHxdppZdSqdADV3KnKvxwl5pFEDGf7zoMZva4//1/+b
-         yhy5esgsdU2XCVN3M2MMc6o5pqEFIIXJMMrNeXpI9z3E28Hc5GxnHVARGy9ald2/qBKf
-         UWUA==
-X-Gm-Message-State: AOAM530GE+3Hfxhgbq/zIcQFaqXXA1jblEnncivcjjbiyuqeTYOQzfmu
-        qopJO4Ngxh+ciIcRpo9RcYgLIA7oOozpFCWXFlTPGg==
-X-Google-Smtp-Source: ABdhPJxNfrBB4SRP7AEr2PstKyZ1UcKE7jB+fsPlnc3d+DtyMYlgpBb8XNigBy9JNwuG2+WzeSMznGaq1/298lXOJ/g=
-X-Received: by 2002:a17:907:2126:: with SMTP id qo6mr19587033ejb.476.1629914864682;
- Wed, 25 Aug 2021 11:07:44 -0700 (PDT)
+        id S241849AbhHYSnk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 14:43:40 -0400
+Received: from mga14.intel.com ([192.55.52.115]:29739 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241704AbhHYSnh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Aug 2021 14:43:37 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10087"; a="217309983"
+X-IronPort-AV: E=Sophos;i="5.84,351,1620716400"; 
+   d="scan'208";a="217309983"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2021 11:42:50 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,351,1620716400"; 
+   d="scan'208";a="684612821"
+Received: from ranger.igk.intel.com ([10.102.21.164])
+  by fmsmga006.fm.intel.com with ESMTP; 25 Aug 2021 11:42:46 -0700
+Date:   Wed, 25 Aug 2021 20:26:56 +0200
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        jonathan.lemon@gmail.com, ciara.loftus@intel.com,
+        bpf@vger.kernel.org, yhs@fb.com, andrii@kernel.org
+Subject: Re: [PATCH bpf-next v3 00/16] selftests: xsk: various simplifications
+Message-ID: <20210825182656.GA26792@ranger.igk.intel.com>
+References: <20210825093722.10219-1-magnus.karlsson@gmail.com>
 MIME-Version: 1.0
-References: <20210702223155.1981510-1-jforbes@fedoraproject.org>
- <CGME20210709173244epcas1p3ea6488202595e182d45f59fcba695e0a@epcas1p3.samsung.com>
- <CAFxkdApGUeGdg4=rH=iC2SK58FO6yzbFiq3uSFMFTyZsDQ5j5w@mail.gmail.com>
- <8c55c7c9-a5ae-3b0e-8a0f-8954a8da7e7b@samsung.com> <94edb3c4-43a6-1031-8431-2befb0eca2bf@samsung.com>
- <87ilzyudk0.fsf@codeaurora.org>
-In-Reply-To: <87ilzyudk0.fsf@codeaurora.org>
-From:   Justin Forbes <jmforbes@linuxtx.org>
-Date:   Wed, 25 Aug 2021 13:07:33 -0500
-Message-ID: <CAFxkdArjsp4YxYWYZ_qW7UsNobzodKOaNJqKTHpPf5RmtT+Rww@mail.gmail.com>
-Subject: Re: [PATCH] iwlwifi Add support for ax201 in Samsung Galaxy Book
- Flex2 Alpha
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Jaehoon Chung <jh80.chung@samsung.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matti Gottlieb <matti.gottlieb@intel.com>,
-        ybaruch <yaara.baruch@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Ihab Zhaika <ihab.zhaika@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        linux-wireless@vger.kernel.org,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <netdev@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        yj99.shin@samsung.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210825093722.10219-1-magnus.karlsson@gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Aug 21, 2021 at 8:34 AM Kalle Valo <kvalo@codeaurora.org> wrote:
->
-> Jaehoon Chung <jh80.chung@samsung.com> writes:
->
-> > Hi
-> >
-> > On 8/9/21 8:09 AM, Jaehoon Chung wrote:
-> >> Hi
-> >>
-> >> On 7/10/21 2:32 AM, Justin Forbes wrote:
-> >>> On Fri, Jul 2, 2021 at 5:32 PM Justin M. Forbes
-> >>> <jforbes@fedoraproject.org> wrote:
-> >>>>
-> >>>> The Samsung Galaxy Book Flex2 Alpha uses an ax201 with the ID a0f0/6074.
-> >>>> This works fine with the existing driver once it knows to claim it.
-> >>>> Simple patch to add the device.
-> >>>>
-> >>>> Signed-off-by: Justin M. Forbes <jforbes@fedoraproject.org>
-> >
-> > If this patch is merged, can this patch be also applied on stable tree?
->
-> Luca, what should we do with this patch?
->
+On Wed, Aug 25, 2021 at 11:37:06AM +0200, Magnus Karlsson wrote:
+> This patch set mainly contains various simplifications to the xsk
+> selftests. The only exception is the introduction of packet streams
+> that describes what the Tx process should send and what the Rx process
+> should receive. If it receives anything else, the test fails. This
+> mechanism can be used to produce tests were all packets are not
+> received by the Rx thread or modified in some way. An example of this
+> is if an XDP program does XDP_PASS on some of the packets.
+> 
+> This patch set will be followed by another patch set that implements a
+> new structure that will facilitate adding new tests. A couple of new
+> tests will also be included in that patch set.
+
+I went through the series and besides the typo found by Alexei I have no
+objections.
+
+Acked-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+
+Looking forward to next set that you mention above :)
+
+> 
+> v2 -> v3:
+> 
+> * Reworked patch 12 so that it now has functions for creating and
+>   destroying ifobjects. Simplifies the code. [Maciej]
+> * The packet stream now allocates the supplied buffer array length,
+>   instead of the default one. [Maciej]
+> * pkt_stream_get_pkt() now returns NULL when indexing a non-existing
+>   packet. [Maciej]
+> * pkt_validate() is now is_pkt_valid(). [Maciej]
+> * Slowed down packet sending speed even more in patch 11 so that slow
+>   systems do not silenty drop packets in skb mode.
+> 
+> v1 -> v2:
+> 
+> * Dropped the patch with per process limit changes as it is not needed
+>   [Yonghong]
+> * Improved the commit message of patch 1 [Yonghong]
+> * Fixed a spelling error in patch 9
+> 
+> Thanks: Magnus
+> 
+> Magnus Karlsson (16):
+>   selftests: xsk: remove color mode
+>   selftests: xsk: remove the num_tx_packets option
+>   selftests: xsk: remove unused variables
+>   selftests: xsk: return correct error codes
+>   selftests: xsk: simplify the retry code
+>   selftests: xsk: remove end-of-test packet
+>   selftests: xsk: disassociate umem size with packets sent
+>   selftests: xsk: rename worker_* functions that are not thread entry
+>     points
+>   selftests: xsk: simplify packet validation in xsk tests
+>   selftests: xsk: validate tx stats on tx thread
+>   selftests: xsk: decrease sending speed
+>   selftests: xsk: simplify cleanup of ifobjects
+>   selftests: xsk: generate packet directly in umem
+>   selftests: xsk: generate packets from specification
+>   selftests: xsk: make enums lower case
+>   selftests: xsk: preface options with opt
+> 
+>  tools/testing/selftests/bpf/test_xsk.sh    |  10 +-
+>  tools/testing/selftests/bpf/xdpxceiver.c   | 681 ++++++++++-----------
+>  tools/testing/selftests/bpf/xdpxceiver.h   |  63 +-
+>  tools/testing/selftests/bpf/xsk_prereqs.sh |  30 +-
+>  4 files changed, 356 insertions(+), 428 deletions(-)
+> 
+> 
+> base-commit: 3bbc8ee7c363a83aa192d796ad37b6bf462a2947
 > --
-> https://patchwork.kernel.org/project/linux-wireless/list/
->
-> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
-
-Is that to imply that there is an issue with the submission?  Happy to
-fix any problems, but it would nice to get this in soon.  I know the
-5.14 merge window was already opened when I sent it, but the 5.15 MR
-is opening soon.  Hardware is definitely shipping and in users hands.
-
-Justin
+> 2.29.0
