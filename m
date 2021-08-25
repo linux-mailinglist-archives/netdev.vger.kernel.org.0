@@ -2,79 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55B6B3F7252
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 11:52:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B1C83F725C
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 11:55:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237109AbhHYJx2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 05:53:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57238 "EHLO mail.kernel.org"
+        id S236958AbhHYJ4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 05:56:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57942 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236405AbhHYJx0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Aug 2021 05:53:26 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CCBE561153;
-        Wed, 25 Aug 2021 09:52:40 +0000 (UTC)
+        id S234372AbhHYJ4e (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Aug 2021 05:56:34 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B2CCD61153;
+        Wed, 25 Aug 2021 09:55:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629885161;
-        bh=k4qW2MGVv6lsjTMeqsBszx1sWAWurkEnyKnzQikbJaI=;
+        s=k20201202; t=1629885349;
+        bh=CJy1cRP3PcwXA1bUMtODTgzMZI8sWPjuw/TQT8Z9LZg=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=fiSY+43j4Yih7SIz3JeRfD7Rgrum1vl+IBCXizvIdRvKFNbHORmNquKph2O/mZFRh
-         nfnkwO0kk+g94JiI/lke5bRCFWyWnrIK2d4F+V7PIa8e93uvD2jszET7/qYhjEfpdo
-         6RVHYPzGKhojaacCwIneU6t45qN5FSjx/KJ0r6uhLXYutK6/mb6n2iw/s5fKCVVIkJ
-         3t5qOjE/JSk0EW0Pu3xauaJjN5JX2mdk9BD9Md6HwFdcwryA36HC+f2ttCR0T4Sz2c
-         6zX+eNo+YOTQblU2vYu91g/NBewiko35f4e1YrxSY9K6jEkVvIFv7SueGGGs6gGvSf
-         VxQUkq1/zAe6g==
-Date:   Wed, 25 Aug 2021 10:52:14 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-kbuild@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
-        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH] kconfig: forbid symbols that end with '_MODULE'
-Message-ID: <20210825095214.GA5186@sirena.org.uk>
-References: <20210825041637.365171-1-masahiroy@kernel.org>
+        b=kvyuuMxo422V81XfuNsgTXQdG3hm39SW5PhGUrw45JcXygc98vMLozMP82RcUmsQo
+         VUzQiTEqRSpp8ROEbWpr2eLfukPTzYOsYlXAzH+2I3FeXxA4V1LP0/apWcvIPS79n7
+         qrsG+1wPt2uBqnxJAd0IQ+pHs6jFkO9rUBGLOTvT6JZ81gnP56eu1OgkMI45oeTdBP
+         uily1IR3utV4v0wrJpFKIkZtuzLeOrL/4kImeUKsL/yhS3J/BJM/gnvyE6jHdm/d14
+         QVgrrOEYeV2MKnO1zmRDCO257vhiuMU9/Aqk45CzK/2+eUiQA2NseRuGvk6JHjudXF
+         tl9asW0TnLq5g==
+Date:   Wed, 25 Aug 2021 10:55:41 +0100
+From:   Will Deacon <will@kernel.org>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Xie Yongji <xieyongji@bytedance.com>, jasowang@redhat.com,
+        stefanha@redhat.com, sgarzare@redhat.com, parav@nvidia.com,
+        hch@infradead.org, christian.brauner@canonical.com,
+        rdunlap@infradead.org, willy@infradead.org,
+        viro@zeniv.linux.org.uk, axboe@kernel.dk, bcrl@kvack.org,
+        corbet@lwn.net, mika.penttila@nextfour.com,
+        dan.carpenter@oracle.com, joro@8bytes.org,
+        gregkh@linuxfoundation.org, zhe.he@windriver.com,
+        xiaodong.liu@intel.com, joe@perches.com, robin.murphy@arm.com,
+        songmuchun@bytedance.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v11 01/12] iova: Export alloc_iova_fast() and
+ free_iova_fast()
+Message-ID: <20210825095540.GA24546@willie-the-truck>
+References: <20210818120642.165-1-xieyongji@bytedance.com>
+ <20210818120642.165-2-xieyongji@bytedance.com>
+ <20210824140758-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="mYCpIKhGyMATD0i+"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210825041637.365171-1-masahiroy@kernel.org>
-X-Cookie: MY income is ALL disposable!
+In-Reply-To: <20210824140758-mutt-send-email-mst@kernel.org>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Aug 24, 2021 at 02:08:33PM -0400, Michael S. Tsirkin wrote:
+> On Wed, Aug 18, 2021 at 08:06:31PM +0800, Xie Yongji wrote:
+> > Export alloc_iova_fast() and free_iova_fast() so that
+> > some modules can make use of the per-CPU cache to get
+> > rid of rbtree spinlock in alloc_iova() and free_iova()
+> > during IOVA allocation.
+> > 
+> > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+> 
+> 
+> This needs ack from iommu maintainers. Guys?
 
---mYCpIKhGyMATD0i+
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Looks fine to me:
 
-On Wed, Aug 25, 2021 at 01:16:37PM +0900, Masahiro Yamada wrote:
-> Kconfig (syncconfig) generates include/generated/autoconf.h to make
-> CONFIG options available to the pre-processor.
+Acked-by: Will Deacon <will@kernel.org>
 
-Acked-by: Mark Brown <broonie@kernel.org>
-
---mYCpIKhGyMATD0i+
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmEmEs0ACgkQJNaLcl1U
-h9Aq4Af+OUuZSvmzbZyoTGGCofB/L+N5Ehn/9iHBJTZBr46S9ip0Zv7RZXiHqhtu
-yJO2Gq1P6j1xVYtqqPCDOvNgaeEghTvLtpukroOGR/uA/S21Xobqhy6F3Tb/jrPm
-KTrf5LWtRKS0I2sxbgteQRvOOjPIELQv8Lr0Y2ykO+yL+UEtNDJH4OsuNdXhdbh5
-t2jZ7OgZ/Ot/6AB78YWbaZTZZHqfGM/jzeUpWG6kCdItSPXam0Q5LyYheMGn7MBb
-6zAG6O+2Napi31AkH6Pyx18+hzh4XhnBLSX9ZPNP8ZM5iRQZjLHt1sYdukoFEATI
-zkcxGg7hM8LCp7KGuyMcTafl0ikf4A==
-=yeET
------END PGP SIGNATURE-----
-
---mYCpIKhGyMATD0i+--
+Will
