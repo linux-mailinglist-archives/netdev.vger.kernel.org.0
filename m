@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 302053F7EF5
+	by mail.lfdr.de (Postfix) with ESMTP id 78FF23F7EF6
 	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 01:20:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233772AbhHYXTW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 19:19:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42252 "EHLO mail.kernel.org"
+        id S233812AbhHYXTY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 19:19:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42266 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233577AbhHYXTU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S233594AbhHYXTU (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 25 Aug 2021 19:19:20 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E097A610CB;
-        Wed, 25 Aug 2021 23:18:33 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2F01E610CE;
+        Wed, 25 Aug 2021 23:18:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1629933514;
-        bh=hH8WVt+KNrvsr3utkgrPKJFbggc3FspzmQMjE+R9Kao=;
+        bh=lozxBCSeJDigd15rfYvNs2OPJ5f6wSM8ZObjOJtEaJA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Gr+OgWKNLwIbjIBZRFHw4naYqInAdaUsqYKEGD0zN/wqa7RBfjXZq+Ethisb+45mZ
-         43ITN5sg+1m9abcc48/13+2jA77vuDrbcMjy0I95ZgKNJ7AXgsuJdVfQgYeW0kMAli
-         9AAEdP3wuAAM+Ue9zzNxLk1opLWyyJVmPqlyYct3NWTzyzBkU9sOPYCFcTZIPQp+9S
-         mLcDgvwQrGJnzfKkndTXjefXpUk0VUIRVJUeg8jqpLyC6c97tVMDLeN4Qgrr428GBz
-         b+3gJJcNbySzs3XlvW4YAwbGgzKsqpnkySHP3YHJbXw+7b/F6c3KzldILA4kzkzcsH
-         /bC8ZI/0elH0w==
+        b=my6Fqg29faGQxWIeKugpQnZq5ppNZXzn+Z0oRIeb6gmTyCoTFOxmz+m6qYNane/gy
+         tq77XuifUHY9eWNYzQV4E8EyuppyVIeAbeGl2wB2+lRIyii10u4vtvTlZ0ZNe6l9Qs
+         bMYeSjUfRoiKF/hLyjYnPttjjj+xjDNReDFSY8wwUZsvlVNPCRKnXZox2Wva/GtIL4
+         8MUeTxwc3wNiNgItaFOis2HHbKwMgEmtFhGMhizIFT//7ysnZ6XJ5C2T2eVSj5OOo3
+         imp8x8YlqsyYoalSzsLOStVQDP90oZzwLmSyEKnd/4CUYrA8SAjA06Pf0AnzBJrK7s
+         Ec5u/Nh+DBqvA==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     michael.chan@broadcom.com
 Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 2/3] bnxt: count packets discarded because of netpoll
-Date:   Wed, 25 Aug 2021 16:18:29 -0700
-Message-Id: <20210825231830.2748915-3-kuba@kernel.org>
+Subject: [PATCH net-next 3/3] bnxt: count discards due to memory allocation errors
+Date:   Wed, 25 Aug 2021 16:18:30 -0700
+Message-Id: <20210825231830.2748915-4-kuba@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210825231830.2748915-1-kuba@kernel.org>
 References: <20210825231830.2748915-1-kuba@kernel.org>
@@ -38,184 +38,129 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-bnxt may discard packets if Rx completions are consumed
-in an attempt to let netpoll make progress. It should be
-exteremely rare in practice but nonetheless such events
-should be counted.
-
-Since completion ring memory is allocated dynamically use
-a similar scheme to what is done for HW stats to save them.
-
-Report the stats in rx_dropped and per-netdev ethtool
-counter. Chances that users care which ring dropped are
-very low.
+Count packets dropped due to buffer or skb allocation errors.
+Report as part of rx_dropped, and per-queue in ethtool
+(retaining only the former across down/up cycles).
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 31 ++++++++++++++-----
- drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  2 ++
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c |  6 ++++
- 3 files changed, 32 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c         | 14 +++++++++++++-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h         |  1 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c |  1 +
+ 3 files changed, 15 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index d39449e7b236..d12a9052388f 100644
+index d12a9052388f..bdc5eb42f55b 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -2003,6 +2003,7 @@ static int bnxt_force_rx_discard(struct bnxt *bp,
- 	struct rx_cmp *rxcmp;
- 	u16 cp_cons;
- 	u8 cmp_type;
-+	int ret;
+@@ -1651,6 +1651,7 @@ static inline struct sk_buff *bnxt_tpa_end(struct bnxt *bp,
+ 		skb = bnxt_copy_skb(bnapi, data_ptr, len, mapping);
+ 		if (!skb) {
+ 			bnxt_abort_tpa(cpr, idx, agg_bufs);
++			cpr->sw_stats.rx.rx_oom_discards += 1;
+ 			return NULL;
+ 		}
+ 	} else {
+@@ -1660,6 +1661,7 @@ static inline struct sk_buff *bnxt_tpa_end(struct bnxt *bp,
+ 		new_data = __bnxt_alloc_rx_data(bp, &new_mapping, GFP_ATOMIC);
+ 		if (!new_data) {
+ 			bnxt_abort_tpa(cpr, idx, agg_bufs);
++			cpr->sw_stats.rx.rx_oom_discards += 1;
+ 			return NULL;
+ 		}
  
- 	cp_cons = RING_CMP(tmp_raw_cons);
- 	rxcmp = (struct rx_cmp *)
-@@ -2031,7 +2032,10 @@ static int bnxt_force_rx_discard(struct bnxt *bp,
- 		tpa_end1->rx_tpa_end_cmp_errors_v2 |=
- 			cpu_to_le32(RX_TPA_END_CMP_ERRORS);
+@@ -1675,6 +1677,7 @@ static inline struct sk_buff *bnxt_tpa_end(struct bnxt *bp,
+ 		if (!skb) {
+ 			kfree(data);
+ 			bnxt_abort_tpa(cpr, idx, agg_bufs);
++			cpr->sw_stats.rx.rx_oom_discards += 1;
+ 			return NULL;
+ 		}
+ 		skb_reserve(skb, bp->rx_offset);
+@@ -1685,6 +1688,7 @@ static inline struct sk_buff *bnxt_tpa_end(struct bnxt *bp,
+ 		skb = bnxt_rx_pages(bp, cpr, skb, idx, agg_bufs, true);
+ 		if (!skb) {
+ 			/* Page reuse already handled by bnxt_rx_pages(). */
++			cpr->sw_stats.rx.rx_oom_discards += 1;
+ 			return NULL;
+ 		}
  	}
--	return bnxt_rx_pkt(bp, cpr, raw_cons, event);
-+	ret = bnxt_rx_pkt(bp, cpr, raw_cons, event);
-+	if (ret != -EBUSY)
-+		cpr->sw_stats.rx.rx_netpoll_discards += 1;
-+	return ret;
- }
+@@ -1888,6 +1892,7 @@ static int bnxt_rx_pkt(struct bnxt *bp, struct bnxt_cp_ring_info *cpr,
+ 			if (agg_bufs)
+ 				bnxt_reuse_rx_agg_bufs(cpr, cp_cons, 0,
+ 						       agg_bufs, false);
++			cpr->sw_stats.rx.rx_oom_discards += 1;
+ 			rc = -ENOMEM;
+ 			goto next_rx;
+ 		}
+@@ -1901,6 +1906,7 @@ static int bnxt_rx_pkt(struct bnxt *bp, struct bnxt_cp_ring_info *cpr,
+ 		skb = bp->rx_skb_func(bp, rxr, cons, data, data_ptr, dma_addr,
+ 				      payload | len);
+ 		if (!skb) {
++			cpr->sw_stats.rx.rx_oom_discards += 1;
+ 			rc = -ENOMEM;
+ 			goto next_rx;
+ 		}
+@@ -1909,6 +1915,7 @@ static int bnxt_rx_pkt(struct bnxt *bp, struct bnxt_cp_ring_info *cpr,
+ 	if (agg_bufs) {
+ 		skb = bnxt_rx_pages(bp, cpr, skb, cp_cons, agg_bufs, false);
+ 		if (!skb) {
++			cpr->sw_stats.rx.rx_oom_discards += 1;
+ 			rc = -ENOMEM;
+ 			goto next_rx;
+ 		}
+@@ -10656,6 +10663,8 @@ static void bnxt_get_ring_stats(struct bnxt *bp,
  
- u32 bnxt_fw_health_readl(struct bnxt *bp, int reg_idx)
-@@ -10441,7 +10445,8 @@ static bool bnxt_drv_busy(struct bnxt *bp)
- }
- 
- static void bnxt_get_ring_stats(struct bnxt *bp,
--				struct rtnl_link_stats64 *stats);
-+				struct rtnl_link_stats64 *stats,
-+				struct bnxt_sw_stats *bsw_stats);
- 
- static void __bnxt_close_nic(struct bnxt *bp, bool irq_re_init,
- 			     bool link_re_init)
-@@ -10470,7 +10475,8 @@ static void __bnxt_close_nic(struct bnxt *bp, bool irq_re_init,
- 
- 	/* Save ring stats before shutdown */
- 	if (bp->bnapi && irq_re_init)
--		bnxt_get_ring_stats(bp, &bp->net_stats_prev);
-+		bnxt_get_ring_stats(bp, &bp->net_stats_prev,
-+				    &bp->sw_stats_prev);
- 	if (irq_re_init) {
- 		bnxt_free_irq(bp);
- 		bnxt_del_napi(bp);
-@@ -10615,7 +10621,8 @@ static int bnxt_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- }
- 
- static void bnxt_get_ring_stats(struct bnxt *bp,
--				struct rtnl_link_stats64 *stats)
-+				struct rtnl_link_stats64 *stats,
-+				struct bnxt_sw_stats *bsw_stats)
- {
- 	int i;
- 
-@@ -10646,11 +10653,15 @@ static void bnxt_get_ring_stats(struct bnxt *bp,
- 		stats->multicast += BNXT_GET_RING_STATS64(sw, rx_mcast_pkts);
- 
- 		stats->tx_dropped += BNXT_GET_RING_STATS64(sw, tx_error_pkts);
-+
-+		bsw_stats->rx.rx_netpoll_discards +=
-+			cpr->sw_stats.rx.rx_netpoll_discards;
+ 		bsw_stats->rx.rx_netpoll_discards +=
+ 			cpr->sw_stats.rx.rx_netpoll_discards;
++		bsw_stats->rx.rx_oom_discards +=
++			cpr->sw_stats.rx.rx_oom_discards;
  	}
  }
  
- static void bnxt_add_prev_stats(struct bnxt *bp,
--				struct rtnl_link_stats64 *stats)
-+				struct rtnl_link_stats64 *stats,
-+				struct bnxt_sw_stats *bsw_stats)
- {
- 	struct rtnl_link_stats64 *prev_stats = &bp->net_stats_prev;
+@@ -10675,6 +10684,7 @@ static void bnxt_add_prev_stats(struct bnxt *bp,
  
-@@ -10661,11 +10672,15 @@ static void bnxt_add_prev_stats(struct bnxt *bp,
- 	stats->rx_missed_errors += prev_stats->rx_missed_errors;
- 	stats->multicast += prev_stats->multicast;
- 	stats->tx_dropped += prev_stats->tx_dropped;
-+
-+	bsw_stats->rx.rx_netpoll_discards +=
-+		bp->sw_stats_prev.rx.rx_netpoll_discards;
+ 	bsw_stats->rx.rx_netpoll_discards +=
+ 		bp->sw_stats_prev.rx.rx_netpoll_discards;
++	bsw_stats->rx.rx_oom_discards += bp->sw_stats_prev.rx.rx_oom_discards;
  }
  
  static void
- bnxt_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *stats)
- {
-+	struct bnxt_sw_stats bsw_stats = {};
- 	struct bnxt *bp = netdev_priv(dev);
- 
- 	set_bit(BNXT_STATE_READ_STATS, &bp->state);
-@@ -10699,9 +10714,11 @@ bnxt_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *stats)
- 		stats->tx_errors = BNXT_GET_TX_PORT_STATS64(tx, tx_err);
- 	}
- 
--	bnxt_get_ring_stats(bp, stats);
-+	bnxt_get_ring_stats(bp, stats, &bsw_stats);
+@@ -10718,7 +10728,9 @@ bnxt_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *stats)
  skip_current:
--	bnxt_add_prev_stats(bp, stats);
-+	bnxt_add_prev_stats(bp, stats, &bsw_stats);
-+
-+	stats->rx_dropped += bsw_stats.rx.rx_netpoll_discards;
+ 	bnxt_add_prev_stats(bp, stats, &bsw_stats);
+ 
+-	stats->rx_dropped += bsw_stats.rx.rx_netpoll_discards;
++	stats->rx_dropped +=
++		bsw_stats.rx.rx_netpoll_discards +
++		bsw_stats.rx.rx_oom_discards;
  
  	clear_bit(BNXT_STATE_READ_STATS, &bp->state);
  }
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 7b989b6e4f6e..5c2e9a06e959 100644
+index 5c2e9a06e959..2f37f03b7e2d 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
 @@ -939,6 +939,7 @@ struct bnxt_rx_sw_stats {
  	u64			rx_l4_csum_errors;
  	u64			rx_resets;
  	u64			rx_buf_errors;
-+	u64			rx_netpoll_discards;
++	u64			rx_oom_discards;
+ 	u64			rx_netpoll_discards;
  };
  
- struct bnxt_cmn_sw_stats {
-@@ -1917,6 +1918,7 @@ struct bnxt {
- 	dma_addr_t		hwrm_cmd_kong_resp_dma_addr;
- 
- 	struct rtnl_link_stats64	net_stats_prev;
-+	struct bnxt_sw_stats	sw_stats_prev;
- 	struct bnxt_stats_mem	port_stats;
- 	struct bnxt_stats_mem	rx_port_stats_ext;
- 	struct bnxt_stats_mem	tx_port_stats_ext;
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index 9f8c72d95228..25f1327aedb6 100644
+index 25f1327aedb6..f8a28021389b 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -307,6 +307,7 @@ static const char * const bnxt_cmn_sw_stats_str[] = {
- enum {
- 	RX_TOTAL_DISCARDS,
- 	TX_TOTAL_DISCARDS,
-+	RX_NETPOLL_DISCARDS,
+@@ -188,6 +188,7 @@ static const char * const bnxt_rx_sw_stats_str[] = {
+ 	"rx_l4_csum_errors",
+ 	"rx_resets",
+ 	"rx_buf_errors",
++	"rx_oom_discards",
  };
  
- static struct {
-@@ -315,6 +316,7 @@ static struct {
- } bnxt_sw_func_stats[] = {
- 	{0, "rx_total_discard_pkts"},
- 	{0, "tx_total_discard_pkts"},
-+	{0, "rx_netpoll_discards"},
- };
- 
- #define NUM_RING_RX_SW_STATS		ARRAY_SIZE(bnxt_rx_sw_stats_str)
-@@ -561,6 +563,8 @@ static void bnxt_get_ethtool_stats(struct net_device *dev,
- 
- 	for (i = 0; i < BNXT_NUM_SW_FUNC_STATS; i++)
- 		bnxt_sw_func_stats[i].counter = 0;
-+	bnxt_sw_func_stats[RX_NETPOLL_DISCARDS].counter =
-+		bp->sw_stats_prev.rx.rx_netpoll_discards;
- 
- 	tpa_stats = bnxt_get_num_tpa_ring_stats(bp);
- 	for (i = 0; i < bp->cp_nr_rings; i++) {
-@@ -603,6 +607,8 @@ static void bnxt_get_ethtool_stats(struct net_device *dev,
- 			BNXT_GET_RING_STATS64(sw_stats, rx_discard_pkts);
- 		bnxt_sw_func_stats[TX_TOTAL_DISCARDS].counter +=
- 			BNXT_GET_RING_STATS64(sw_stats, tx_discard_pkts);
-+		bnxt_sw_func_stats[RX_NETPOLL_DISCARDS].counter +=
-+			cpr->sw_stats.rx.rx_netpoll_discards;
- 	}
- 
- 	for (i = 0; i < BNXT_NUM_SW_FUNC_STATS; i++, j++)
+ static const char * const bnxt_cmn_sw_stats_str[] = {
 -- 
 2.31.1
 
