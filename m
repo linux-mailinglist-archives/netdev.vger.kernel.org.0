@@ -2,125 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B6193F7D3B
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 22:38:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BC923F7D41
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 22:40:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240970AbhHYUjX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 16:39:23 -0400
-Received: from mxout03.lancloud.ru ([45.84.86.113]:37336 "EHLO
-        mxout03.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231745AbhHYUjV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 16:39:21 -0400
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout03.lancloud.ru 86C8520E0F1E
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-Subject: Re: [PATCH net-next 04/13] ravb: Add ptp_cfg_active to struct
- ravb_hw_info
-To:     Biju Das <biju.das.jz@bp.renesas.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        "Geert Uytterhoeven" <geert+renesas@glider.be>,
-        Adam Ford <aford173@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>
-References: <20210825070154.14336-1-biju.das.jz@bp.renesas.com>
- <20210825070154.14336-5-biju.das.jz@bp.renesas.com>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <777c30b1-e94e-e241-b10c-ecd4d557bc06@omp.ru>
-Date:   Wed, 25 Aug 2021 23:38:30 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        id S239932AbhHYUld (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 16:41:33 -0400
+Received: from smtp5.emailarray.com ([65.39.216.39]:12352 "EHLO
+        smtp5.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229562AbhHYUlc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 16:41:32 -0400
+Received: (qmail 85684 invoked by uid 89); 25 Aug 2021 20:40:45 -0000
+Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuMQ==) (POLARISLOCAL)  
+  by smtp5.emailarray.com with SMTP; 25 Aug 2021 20:40:45 -0000
+Date:   Wed, 25 Aug 2021 13:40:42 -0700
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Arnd Bergmann <arnd@kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Networking <netdev@vger.kernel.org>
+Subject: Re: [PATCH] ptp: ocp: don't allow on S390
+Message-ID: <20210825204042.5v7ad3ntor6s3pq3@bsd-mbp.dhcp.thefacebook.com>
+References: <20210813203026.27687-1-rdunlap@infradead.org>
+ <CAK8P3a3QGF2=WZz6N8wQo2ZQxmVqKToHGmhT4wEtB7tAL+-ruQ@mail.gmail.com>
+ <20210820153100.GA9604@hoboy.vegasvil.org>
+ <80be0a74-9b0d-7386-323c-c261ca378eef@infradead.org>
+ <CAK8P3a11wvEhoEutCNBs5NqiZ2VUA1r-oE1CKBBaYbu_abr4Aw@mail.gmail.com>
+ <20210825170813.7muvouqsijy3ysrr@bsd-mbp.dhcp.thefacebook.com>
+ <8f0848a6-354d-ff58-7d41-8610dc095773@infradead.org>
 MIME-Version: 1.0
-In-Reply-To: <20210825070154.14336-5-biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
- LFEX1907.lancloud.ru (fd00:f066::207)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8f0848a6-354d-ff58-7d41-8610dc095773@infradead.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/25/21 10:01 AM, Biju Das wrote:
-
-> There are some H/W differences for the gPTP feature between
-> R-Car Gen3, R-Car Gen2, and RZ/G2L as below.
+On Wed, Aug 25, 2021 at 10:29:51AM -0700, Randy Dunlap wrote:
+> On 8/25/21 10:08 AM, Jonathan Lemon wrote:
+> > On Wed, Aug 25, 2021 at 12:55:25PM +0200, Arnd Bergmann wrote:
+> > > On Tue, Aug 24, 2021 at 11:48 PM Randy Dunlap <rdunlap@infradead.org> wrote:
+> > > > 
+> > > > On 8/20/21 8:31 AM, Richard Cochran wrote:
+> > > > > On Fri, Aug 20, 2021 at 12:45:42PM +0200, Arnd Bergmann wrote:
+> > > > > 
+> > > > > > I would also suggest removing all the 'imply' statements, they
+> > > > > > usually don't do what the original author intended anyway.
+> > > > > > If there is a compile-time dependency with those drivers,
+> > > > > > it should be 'depends on', otherwise they can normally be
+> > > > > > left out.
+> > > > > 
+> > > > > +1
+> > > > 
+> > > > Hi,
+> > > > 
+> > > > Removing the "imply" statements is simple enough and the driver
+> > > > still builds cleanly without them, so Yes, they aren't needed here.
+> > > > 
+> > > > Removing the SPI dependency is also clean.
+> > > > 
+> > > > The driver does use I2C, MTD, and SERIAL_8250 interfaces, so they
+> > > > can't be removed without some other driver changes, like using
+> > > > #ifdef/#endif (or #if IS_ENABLED()) blocks and some function stubs.
+> > > 
+> > > If the SERIAL_8250 dependency is actually required, then using
+> > > 'depends on' for this is probably better than an IS_ENABLED() check.
+> > > The 'select' is definitely misplaced here, that doesn't even work when
+> > > the dependencies fo 8250 itself are not met, and it does force-enable
+> > > the entire TTY subsystem.
+> > 
+> > So, something like the following (untested) patch?
+> > I admit to not fully understanding all the nuances around Kconfig.
 > 
-> 1) On R-Car Gen3, gPTP support is active in config mode.
-> 2) On R-Car Gen2, gPTP support is not active in config mode.
-> 3) RZ/G2L does not support the gPTP feature.
+> Hi,
 > 
-> Add a ptp_cfg_active hw feature bit to struct ravb_hw_info for
-> supporting gPTP active in config mode for R-Car Gen3.
+> You can also remove the "select NET_DEVLINK". The driver builds fine
+> without it. And please drop the "default n" while at it.
 
-   Wait, we've just done this ion the previous patch!
+I had to add this one because devlink is a dependency and the kbuild
+robot generated a config without it.
 
-> This patch also removes enum ravb_chip_id, chip_id from both
-> struct ravb_hw_info and struct ravb_private, as it is unused.
-> 
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> ---
->  drivers/net/ethernet/renesas/ravb.h      |  8 +-------
->  drivers/net/ethernet/renesas/ravb_main.c | 12 +++++-------
->  2 files changed, 6 insertions(+), 14 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
-> index 9ecf1a8c3ca8..209e030935aa 100644
-> --- a/drivers/net/ethernet/renesas/ravb.h
-> +++ b/drivers/net/ethernet/renesas/ravb.h
-> @@ -979,17 +979,11 @@ struct ravb_ptp {
->  	struct ravb_ptp_perout perout[N_PER_OUT];
->  };
->  
-> -enum ravb_chip_id {
-> -	RCAR_GEN2,
-> -	RCAR_GEN3,
-> -};
-> -
->  struct ravb_hw_info {
->  	const char (*gstrings_stats)[ETH_GSTRING_LEN];
->  	size_t gstrings_size;
->  	netdev_features_t net_hw_features;
->  	netdev_features_t net_features;
-> -	enum ravb_chip_id chip_id;
->  	int stats_len;
->  	size_t max_rx_len;
+The 'imply' statements were added because while the driver builds
+without them, the resources don't show up unless the platform
+modules are also present.  This was really confusing users, since
+they selected the OCP driver and then were not able to use the 
+flash since the XILINX modules had not been selected.
 
-   I would put the above in a spearte patch...
-
->  	unsigned aligned_tx: 1;
-> @@ -999,6 +993,7 @@ struct ravb_hw_info {
->  	unsigned tx_counters:1;		/* E-MAC has TX counters */
->  	unsigned multi_irqs:1;		/* AVB-DMAC and E-MAC has multiple irqs */
->  	unsigned no_ptp_cfg_active:1;	/* AVB-DMAC does not support gPTP active in config mode */
-> +	unsigned ptp_cfg_active:1;	/* AVB-DMAC has gPTP support active in config mode */
-
-   Huh?
-
->  };
->  
->  struct ravb_private {
-[...]
-> @@ -2216,7 +2213,7 @@ static int ravb_probe(struct platform_device *pdev)
->  	INIT_LIST_HEAD(&priv->ts_skb_list);
->  
->  	/* Initialise PTP Clock driver */
-> -	if (info->chip_id != RCAR_GEN2)
-> +	if (info->ptp_cfg_active)
->  		ravb_ptp_init(ndev, pdev);
-
-   What's that? Didn't you touch this lie in patch #3?
-
-   This seems lie a NAK bait... :-(
-
-MBR, Sergey
+Is there a better way of specifying these type of dependencies?
+-- 
+Jonathan
