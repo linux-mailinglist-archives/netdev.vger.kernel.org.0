@@ -2,89 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19F8F3F7B28
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 19:06:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3ECD03F7B34
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 19:08:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242190AbhHYRHG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 13:07:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46190 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242183AbhHYRHF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Aug 2021 13:07:05 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0161061058;
-        Wed, 25 Aug 2021 17:06:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629911179;
-        bh=d2lCqJb48k/VCROtiXDkkcJZlUlABGvCvA1gpbGnLCM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PXCH12JzYdNIEH4ZxijPfSTxWlaDJcGRJ56zW+dv/KG0byJ6s4GHTKGaMW8JgmW/0
-         AvFa/7mngnhBvcFjsvMdplHef4kzyxGmfVRXz6WDbnhRTckfGrw35YRycS0bo8EVzy
-         eLz7HAFW95G9mT22PHRUFQiHHZ0Y14WlN89ML01izv6GKHOzhNrjHz7DKcNAd3pfYV
-         fvBrfUfZhXiST2kjRpZ2EQUD4lDz71Aviuuphrfw1bOSxlk1b4E+fcKXMCn1zRc6vY
-         4dvlnhAQoUixCkUoyU4hSVtj7MKEdEdCvW6E3AmF9zPSjCiOXLr5JB9G44Ko8nftAY
-         SxyKGul0wSRTQ==
-Date:   Wed, 25 Aug 2021 10:06:18 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Zhongya Yan <yan2228598786@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, hengqi.chen@gmail.com,
-        Yonghong Song <yhs@fb.com>
-Subject: Re: [PATCH] net: tcp_drop adds `reason` parameter for tracing v2
-Message-ID: <20210825100618.687eedae@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CANn89iKkjtj68yksMg6fhpv2tZ9j2k0xgNK7S-wWi3e=XUrXmw@mail.gmail.com>
-References: <20210825154043.247764-1-yan2228598786@gmail.com>
-        <CANn89iJO8jzjFWvJ610TPmKDE8WKi8ojTr_HWXLz5g=4pdQHEA@mail.gmail.com>
-        <20210825090418.57fd7d2f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CANn89iKkjtj68yksMg6fhpv2tZ9j2k0xgNK7S-wWi3e=XUrXmw@mail.gmail.com>
+        id S242163AbhHYRJF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 13:09:05 -0400
+Received: from smtp8.emailarray.com ([65.39.216.67]:29566 "EHLO
+        smtp8.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229711AbhHYRJE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 13:09:04 -0400
+Received: (qmail 97070 invoked by uid 89); 25 Aug 2021 17:08:15 -0000
+Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuMQ==) (POLARISLOCAL)  
+  by smtp8.emailarray.com with SMTP; 25 Aug 2021 17:08:15 -0000
+Date:   Wed, 25 Aug 2021 10:08:13 -0700
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Networking <netdev@vger.kernel.org>
+Subject: Re: [PATCH] ptp: ocp: don't allow on S390
+Message-ID: <20210825170813.7muvouqsijy3ysrr@bsd-mbp.dhcp.thefacebook.com>
+References: <20210813203026.27687-1-rdunlap@infradead.org>
+ <CAK8P3a3QGF2=WZz6N8wQo2ZQxmVqKToHGmhT4wEtB7tAL+-ruQ@mail.gmail.com>
+ <20210820153100.GA9604@hoboy.vegasvil.org>
+ <80be0a74-9b0d-7386-323c-c261ca378eef@infradead.org>
+ <CAK8P3a11wvEhoEutCNBs5NqiZ2VUA1r-oE1CKBBaYbu_abr4Aw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAK8P3a11wvEhoEutCNBs5NqiZ2VUA1r-oE1CKBBaYbu_abr4Aw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 25 Aug 2021 09:20:37 -0700 Eric Dumazet wrote:
-> On Wed, Aug 25, 2021 at 9:04 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> > On Wed, 25 Aug 2021 08:47:46 -0700 Eric Dumazet wrote:  
-> > > I'd rather use a string. So that we can more easily identify _why_ the
-> > > packet was drop, without looking at the source code
-> > > of the exact kernel version to locate line number 1057  
+On Wed, Aug 25, 2021 at 12:55:25PM +0200, Arnd Bergmann wrote:
+> On Tue, Aug 24, 2021 at 11:48 PM Randy Dunlap <rdunlap@infradead.org> wrote:
 > >
-> > Yeah, the line number seems like a particularly bad idea. Hopefully
-> > strings won't be problematic, given we can expect most serious users
-> > to feed the tracepoints via BPF. enum would be more convenient there,
-> > I'd think.
-> >  
-> > > You can be sure that we will get reports in the future from users of
-> > > heavily modified kernels.
-> > > Having to download a git tree, or apply semi-private patches is a no go.  
+> > On 8/20/21 8:31 AM, Richard Cochran wrote:
+> > > On Fri, Aug 20, 2021 at 12:45:42PM +0200, Arnd Bergmann wrote:
+> > >
+> > >> I would also suggest removing all the 'imply' statements, they
+> > >> usually don't do what the original author intended anyway.
+> > >> If there is a compile-time dependency with those drivers,
+> > >> it should be 'depends on', otherwise they can normally be
+> > >> left out.
+> > >
+> > > +1
 > >
-> > I'm slightly surprised by this angle. Are there downstream kernels with
-> > heavily modified TCP other than Google's?  
+> > Hi,
+> >
+> > Removing the "imply" statements is simple enough and the driver
+> > still builds cleanly without them, so Yes, they aren't needed here.
+> >
+> > Removing the SPI dependency is also clean.
+> >
+> > The driver does use I2C, MTD, and SERIAL_8250 interfaces, so they
+> > can't be removed without some other driver changes, like using
+> > #ifdef/#endif (or #if IS_ENABLED()) blocks and some function stubs.
 > 
-> Not sure why Google is mentioned here ?
-> Have you ever received a public report about TCP behavior in a Google kernel ?
+> If the SERIAL_8250 dependency is actually required, then using
+> 'depends on' for this is probably better than an IS_ENABLED() check.
+> The 'select' is definitely misplaced here, that doesn't even work when
+> the dependencies fo 8250 itself are not met, and it does force-enable
+> the entire TTY subsystem.
 
-That's a rhetorical question quite likely, but to be clear - what 
-I meant is that Google is the main contributor to Linux TCP and has 
-the expertise to make changes. I don't know of any others hence the
-question.
+So, something like the following (untested) patch?
+I admit to not fully understanding all the nuances around Kconfig.
+-- 
+Jonathan
 
-> Over the years, we received hundreds of TCP bug reports on
-> netdev@vger, where users claim to use  kernel version 4.19 (or other),
-> when in fact they use 4.19.xxx
-> It takes in general multiple emails exchange before we get a more
-> realistic version number.
-> Not to mention distro kernels, or even worse private kernels, which
-> are not exactly easy to track for us upstream developers.
-
-Right but for backports values come from original patch, enum or string.
-
-I don't mean to dispute your preference tho, if you want strings,
-strings it is.
+diff --git a/drivers/ptp/Kconfig b/drivers/ptp/Kconfig
+index 32660dc11354..c3372efd1bb7 100644
+--- a/drivers/ptp/Kconfig
++++ b/drivers/ptp/Kconfig
+@@ -171,15 +171,10 @@ config PTP_1588_CLOCK_OCP
+        tristate "OpenCompute TimeCard as PTP clock"
+        depends on PTP_1588_CLOCK
+        depends on HAS_IOMEM && PCI
+-       depends on SPI && I2C && MTD
++       depends on I2C && MTD
++       depends on SERIAL_8250
+        depends on !S390
+-       imply SPI_MEM
+-       imply SPI_XILINX
+-       imply MTD_SPI_NOR
+-       imply I2C_XILINX
+-       select SERIAL_8250
+        select NET_DEVLINK
+-
+        default n
+        help
+          This driver adds support for an OpenCompute time card.
