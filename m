@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02F033F71F5
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 11:38:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24A4A3F71F8
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 11:38:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239844AbhHYJjO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 05:39:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57468 "EHLO
+        id S239973AbhHYJjQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 05:39:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239923AbhHYJjG (ORCPT
+        with ESMTP id S239928AbhHYJjG (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 05:39:06 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BAE2C0617AE;
-        Wed, 25 Aug 2021 02:38:14 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id u15so14535494wmj.1;
-        Wed, 25 Aug 2021 02:38:13 -0700 (PDT)
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D584C0617AF;
+        Wed, 25 Aug 2021 02:38:15 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id k20-20020a05600c0b5400b002e87ad6956eso2460360wmr.1;
+        Wed, 25 Aug 2021 02:38:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=P3gmMFF/pARRjL2MbmTlFa4EJ5UypikEnXafJNPFVec=;
-        b=BuXFVrMEaELWGkieTn+mbGtLWc6eiGWLtH8hrbliwiMJpDQh6rzOkONpej4NpKeAi8
-         ucCe1K7UKrohm+DVZbJTz3SgQfUDjqD1p4bN4wPu+Bqk+iS0vL6eiYoxCfdYgeBFRWEL
-         X3IHTSM4EhAnOrvCXXR8XPB4PRUZ0mhHEjEv9pWGgaQzGUkLRfj/CxjlH3ASs+9Z/Zog
-         8cD5cCqUnec+aTF9dRjmWbCa2bprWM2eotdbcu/6YuwiHyaFnn9MVavBNOnoqB/Ed0lg
-         tcdB4KEQkaI6O7LhzzsDESo4ulxkMWOimRT62VOw8SkNarLMjT5GADPwqgVUH+LU+Jz0
-         3Gjw==
+        bh=k1HJRSJMwl0Oep5SI3/5ET+XuXdJP32c8tVWrTf0FdU=;
+        b=bl9vHTzutCnxlStSFlq56I2B0tS+1t33qeosIMbdjbZe7I3kW73cq0qy+PzSXpyq8W
+         o3IVA4bIPVSHlXL7DJKvkCHNkTWPIfGfNBt5Nmn958+W/VjWyEtol8lPKafhBPuhQeVQ
+         ClCNvcb/TZAT73OI3ZmOzgVEkhHBFCHzCeX4fVdLAzX5Y+Jbx3Fej03lSYm5cKjLy2Aw
+         AXI3iLI8Qg725RGzkXlAHdvaoFSGWDGJs63fibniKuvpAFvGsY9144JbnI195vrraZfi
+         Luj3NcEglKFYVWoHCIHC5p4lZ0qkVDT+553MYVvspcYj/X5TJeAptpBsvNz+PNP/xxHL
+         jbbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=P3gmMFF/pARRjL2MbmTlFa4EJ5UypikEnXafJNPFVec=;
-        b=X9NqS9tgjoVzXOjLEecOKw0Ek5mD3ZtjjnKjIclMU5GcpoouotaOAxEtCyZ3nGnv1D
-         yNKQbaQaQFQaoRk0RsuEUXxkV3zpP2owf/cL7c5vhdEnTxzAEPGAeRQf6eFhQZ+oPpou
-         J/r5SeZ9l6slNPj9anOxBKxEFLq6PTmbsSzuTPiDfuWuIncZCRB4KoJSqcv6sUwhX8TJ
-         owkKfhiNeZ9W5GWpeG7R9CuHLOw/z3o5OPfvKQRsqyoD6wn/IIVRB6JQbXLJ84lVN3A7
-         Uq1FcBqZNuteg0O2HrGuW5+YBIC4Pig2FQnXsCinwsjHnWp4JeN113BnazT/nIch/PS8
-         RPmw==
-X-Gm-Message-State: AOAM53292wLAjRy7sBqndvxpoBcKaVHrdZxRYjRvmURXMgGAiFZ2cGrc
-        GwqcXEnIhwHlmqEh1WkTM7A=
-X-Google-Smtp-Source: ABdhPJxjY98+a9UXWSgcMuEMNJ2mTPKZGlhVj4aQD6KlUGHQCBzGRVduCDwl4SuBDQl0WYA4QGtX/g==
-X-Received: by 2002:a05:600c:1ca7:: with SMTP id k39mr8695263wms.115.1629884292571;
-        Wed, 25 Aug 2021 02:38:12 -0700 (PDT)
+        bh=k1HJRSJMwl0Oep5SI3/5ET+XuXdJP32c8tVWrTf0FdU=;
+        b=RXti0AvNL++jKgCtvciIKtP8Z+z/cPRcJwfKmRoXrtAgGBwsirVArEwuloZOkmnxbS
+         eUanCfRLPc7Bh+W9DcEiZ+YlU9Pw1hTT+DK9hcq1hW8IVzfhuxywvRdRSEIqlEv/pXGS
+         nVCbk/xme+e5Fd09pMJEzBxY2IzIrlDSMgsG+/MzS+iUqAwkkEYJciv77hpcJ83J9vib
+         8ngaYKlP3GqCeTrtjp0gZSTK3uRd2ujcXnIgqwjxOW48SOLHB0hFxdhIPWOd235CnBNe
+         LKDCWMorPhpNP57zqdAQfVdFSLpkg3uJ5Xg4lu3UjpYEqxsUzuJJ+H9hL32z/AmIUNnm
+         RpIg==
+X-Gm-Message-State: AOAM5329UVp4lbiWZlMFI74MUvLIQxnQbL+G+qKiBaptHCsiSPrWgteH
+        +KSZOn3yH4x2Mng3fMHMqlk=
+X-Google-Smtp-Source: ABdhPJyLQalIztQWckm2f17BF/EbdjiIHusQOJi8/5p/mGxWQL+hlA6QzyYaBW9/t33V80pFtcN4ag==
+X-Received: by 2002:a05:600c:1c08:: with SMTP id j8mr8464798wms.27.1629884294099;
+        Wed, 25 Aug 2021 02:38:14 -0700 (PDT)
 Received: from localhost.localdomain (h-46-59-47-246.A165.priv.bahnhof.se. [46.59.47.246])
-        by smtp.gmail.com with ESMTPSA id k18sm4767910wmi.25.2021.08.25.02.38.11
+        by smtp.gmail.com with ESMTPSA id k18sm4767910wmi.25.2021.08.25.02.38.12
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 25 Aug 2021 02:38:12 -0700 (PDT)
+        Wed, 25 Aug 2021 02:38:13 -0700 (PDT)
 From:   Magnus Karlsson <magnus.karlsson@gmail.com>
 To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
         daniel@iogearbox.net, netdev@vger.kernel.org,
         maciej.fijalkowski@intel.com
 Cc:     jonathan.lemon@gmail.com, ciara.loftus@intel.com,
         bpf@vger.kernel.org, yhs@fb.com, andrii@kernel.org
-Subject: [PATCH bpf-next v3 14/16] selftests: xsk: generate packets from specification
-Date:   Wed, 25 Aug 2021 11:37:20 +0200
-Message-Id: <20210825093722.10219-15-magnus.karlsson@gmail.com>
+Subject: [PATCH bpf-next v3 15/16] selftests: xsk: make enums lower case
+Date:   Wed, 25 Aug 2021 11:37:21 +0200
+Message-Id: <20210825093722.10219-16-magnus.karlsson@gmail.com>
 X-Mailer: git-send-email 2.29.0
 In-Reply-To: <20210825093722.10219-1-magnus.karlsson@gmail.com>
 References: <20210825093722.10219-1-magnus.karlsson@gmail.com>
@@ -67,529 +67,76 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Generate packets from a specification instead of something hard
-coded. The idea is that a test generates one or more packet
-specifications and provides it/them to both Tx and Rx. The Tx thread
-will generate from this specification and Rx will validate that it
-receives what is in the specification. The specification can be the
-same on both ends, meaning that everything that was sent should be
-received, or different which means that Rx will only receive part of
-the sent packets.
-
-Currently, the packet specification is the same for both Rx and Tx and
-the same for each test. This will change in later work as features
-and tests are added.
-
-The data path functions are also renamed to better reflect what
-actions they are performing after introducing this feature.
+Make enums lower case as that is the standard. Also drop the
+unnecessary TEST_MODE_UNCONFIGURED mode.
 
 Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 ---
- tools/testing/selftests/bpf/xdpxceiver.c | 271 +++++++++++++----------
- tools/testing/selftests/bpf/xdpxceiver.h |  16 +-
- 2 files changed, 166 insertions(+), 121 deletions(-)
+ tools/testing/selftests/bpf/xdpxceiver.c | 11 +++--------
+ tools/testing/selftests/bpf/xdpxceiver.h |  9 ++++-----
+ 2 files changed, 7 insertions(+), 13 deletions(-)
 
 diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
-index 433c5c7b1928..5ca853cf27a1 100644
+index 5ca853cf27a1..0c7b40d5f4b6 100644
 --- a/tools/testing/selftests/bpf/xdpxceiver.c
 +++ b/tools/testing/selftests/bpf/xdpxceiver.c
-@@ -417,18 +417,59 @@ static void parse_command_line(int argc, char **argv)
- 	}
- }
+@@ -105,14 +105,9 @@ static const u16 UDP_PORT2 = 2121;
  
--static void pkt_generate(struct ifobject *ifobject, u32 pkt_nb, u64 addr)
-+static struct pkt *pkt_stream_get_pkt(struct pkt_stream *pkt_stream, u32 pkt_nb)
+ static void __exit_with_error(int error, const char *file, const char *func, int line)
  {
--	void *data = xsk_umem__get_data(ifobject->umem->buffer, addr);
--	struct udphdr *udp_hdr =
--		(struct udphdr *)(data + sizeof(struct ethhdr) + sizeof(struct iphdr));
--	struct iphdr *ip_hdr = (struct iphdr *)(data + sizeof(struct ethhdr));
--	struct ethhdr *eth_hdr = (struct ethhdr *)data;
-+	if (pkt_nb >= pkt_stream->nb_pkts)
-+		return NULL;
-+
-+	return &pkt_stream->pkts[pkt_nb];
-+}
-+
-+static struct pkt_stream *pkt_stream_generate(u32 nb_pkts, u32 pkt_len)
-+{
-+	struct pkt_stream *pkt_stream;
-+	u32 i;
-+
-+	pkt_stream = malloc(sizeof(*pkt_stream));
-+	if (!pkt_stream)
-+		exit_with_error(ENOMEM);
-+
-+	pkt_stream->pkts = calloc(nb_pkts, sizeof(*pkt_stream->pkts));
-+	if (!pkt_stream->pkts)
-+		exit_with_error(ENOMEM);
-+
-+	pkt_stream->nb_pkts = nb_pkts;
-+	for (i = 0; i < nb_pkts; i++) {
-+		pkt_stream->pkts[i].addr = (i % num_frames) * XSK_UMEM__DEFAULT_FRAME_SIZE;
-+		pkt_stream->pkts[i].len = pkt_len;
-+		pkt_stream->pkts[i].payload = i;
-+	}
-+
-+	return pkt_stream;
-+}
-+
-+static struct pkt *pkt_generate(struct ifobject *ifobject, u32 pkt_nb)
-+{
-+	struct pkt *pkt = pkt_stream_get_pkt(ifobject->pkt_stream, pkt_nb);
-+	struct udphdr *udp_hdr;
-+	struct ethhdr *eth_hdr;
-+	struct iphdr *ip_hdr;
-+	void *data;
-+
-+	if (!pkt)
-+		return NULL;
-+
-+	data = xsk_umem__get_data(ifobject->umem->buffer, pkt->addr);
-+	udp_hdr = (struct udphdr *)(data + sizeof(struct ethhdr) + sizeof(struct iphdr));
-+	ip_hdr = (struct iphdr *)(data + sizeof(struct ethhdr));
-+	eth_hdr = (struct ethhdr *)data;
- 
- 	gen_udp_hdr(pkt_nb, data, ifobject, udp_hdr);
- 	gen_ip_hdr(ifobject, ip_hdr);
- 	gen_udp_csum(udp_hdr, ip_hdr);
- 	gen_eth_hdr(ifobject, eth_hdr);
-+
-+	return pkt;
- }
- 
- static void pkt_dump(void *pkt, u32 len)
-@@ -468,33 +509,43 @@ static void pkt_dump(void *pkt, u32 len)
- 	fprintf(stdout, "---------------------------------------\n");
- }
- 
--static void pkt_validate(void *buffer, u64 addr)
-+static bool is_pkt_valid(struct pkt *pkt, void *buffer, const struct xdp_desc *desc)
- {
--	void *data = xsk_umem__get_data(buffer, addr);
-+	void *data = xsk_umem__get_data(buffer, desc->addr);
- 	struct iphdr *iphdr = (struct iphdr *)(data + sizeof(struct ethhdr));
- 
-+	if (!pkt) {
-+		ksft_test_result_fail("ERROR: [%s] too many packets received\n", __func__);
-+		return false;
-+	}
-+
- 	if (iphdr->version == IP_PKT_VER && iphdr->tos == IP_PKT_TOS) {
- 		u32 seqnum = ntohl(*((u32 *)(data + PKT_HDR_SIZE)));
--		u32 expected_seqnum = pkt_counter % num_frames;
- 
- 		if (debug_pkt_dump && test_type != TEST_TYPE_STATS)
- 			pkt_dump(data, PKT_SIZE);
- 
--		if (expected_seqnum != seqnum) {
-+		if (pkt->len != desc->len) {
- 			ksft_test_result_fail
--				("ERROR: [%s] expected seqnum [%d], got seqnum [%d]\n",
--					__func__, expected_seqnum, seqnum);
--			sigvar = 1;
-+				("ERROR: [%s] expected length [%d], got length [%d]\n",
-+					__func__, pkt->len, desc->len);
-+			return false;
- 		}
- 
--		if (++pkt_counter == opt_pkt_count)
--			sigvar = 1;
-+		if (pkt->payload != seqnum) {
-+			ksft_test_result_fail
-+				("ERROR: [%s] expected seqnum [%d], got seqnum [%d]\n",
-+					__func__, pkt->payload, seqnum);
-+			return false;
-+		}
- 	} else {
- 		ksft_print_msg("Invalid frame received: ");
- 		ksft_print_msg("[IP_PKT_VER: %02X], [IP_PKT_TOS: %02X]\n", iphdr->version,
- 			       iphdr->tos);
--		sigvar = 1;
-+		return false;
- 	}
-+
-+	return true;
- }
- 
- static void kick_tx(struct xsk_socket_info *xsk)
-@@ -507,7 +558,7 @@ static void kick_tx(struct xsk_socket_info *xsk)
- 	exit_with_error(errno);
- }
- 
--static void complete_tx_only(struct xsk_socket_info *xsk, int batch_size)
-+static void complete_pkts(struct xsk_socket_info *xsk, int batch_size)
- {
- 	unsigned int rcvd;
- 	u32 idx;
-@@ -525,116 +576,105 @@ static void complete_tx_only(struct xsk_socket_info *xsk, int batch_size)
- 	}
- }
- 
--static void rx_pkt(struct xsk_socket_info *xsk, struct pollfd *fds)
-+static void receive_pkts(struct pkt_stream *pkt_stream, struct xsk_socket_info *xsk,
-+			 struct pollfd *fds)
- {
--	unsigned int rcvd, i;
--	u32 idx_rx = 0, idx_fq = 0;
-+	u32 idx_rx = 0, idx_fq = 0, rcvd, i, pkt_count = 0;
-+	struct pkt *pkt;
- 	int ret;
- 
--	rcvd = xsk_ring_cons__peek(&xsk->rx, BATCH_SIZE, &idx_rx);
--	if (!rcvd) {
--		if (xsk_ring_prod__needs_wakeup(&xsk->umem->fq)) {
--			ret = poll(fds, 1, POLL_TMOUT);
--			if (ret < 0)
--				exit_with_error(-ret);
-+	pkt = pkt_stream_get_pkt(pkt_stream, pkt_count++);
-+	while (pkt) {
-+		rcvd = xsk_ring_cons__peek(&xsk->rx, BATCH_SIZE, &idx_rx);
-+		if (!rcvd) {
-+			if (xsk_ring_prod__needs_wakeup(&xsk->umem->fq)) {
-+				ret = poll(fds, 1, POLL_TMOUT);
-+				if (ret < 0)
-+					exit_with_error(-ret);
-+			}
-+			continue;
- 		}
--		return;
+-	if (configured_mode == TEST_MODE_UNCONFIGURED) {
+-		ksft_exit_fail_msg
+-		("[%s:%s:%i]: ERROR: %d/\"%s\"\n", file, func, line, error, strerror(error));
+-	} else {
+-		ksft_test_result_fail
+-		("[%s:%s:%i]: ERROR: %d/\"%s\"\n", file, func, line, error, strerror(error));
+-		ksft_exit_xfail();
 -	}
- 
--	ret = xsk_ring_prod__reserve(&xsk->umem->fq, rcvd, &idx_fq);
--	while (ret != rcvd) {
--		if (ret < 0)
--			exit_with_error(-ret);
--		if (xsk_ring_prod__needs_wakeup(&xsk->umem->fq)) {
--			ret = poll(fds, 1, POLL_TMOUT);
-+		ret = xsk_ring_prod__reserve(&xsk->umem->fq, rcvd, &idx_fq);
-+		while (ret != rcvd) {
- 			if (ret < 0)
- 				exit_with_error(-ret);
-+			if (xsk_ring_prod__needs_wakeup(&xsk->umem->fq)) {
-+				ret = poll(fds, 1, POLL_TMOUT);
-+				if (ret < 0)
-+					exit_with_error(-ret);
-+			}
-+			ret = xsk_ring_prod__reserve(&xsk->umem->fq, rcvd, &idx_fq);
- 		}
--		ret = xsk_ring_prod__reserve(&xsk->umem->fq, rcvd, &idx_fq);
--	}
- 
--	for (i = 0; i < rcvd; i++) {
--		u64 addr, orig;
-+		for (i = 0; i < rcvd; i++) {
-+			const struct xdp_desc *desc = xsk_ring_cons__rx_desc(&xsk->rx, idx_rx++);
-+			u64 addr = desc->addr, orig;
- 
--		addr = xsk_ring_cons__rx_desc(&xsk->rx, idx_rx)->addr;
--		xsk_ring_cons__rx_desc(&xsk->rx, idx_rx++);
--		orig = xsk_umem__extract_addr(addr);
-+			orig = xsk_umem__extract_addr(addr);
-+			addr = xsk_umem__add_offset_to_addr(addr);
-+			if (!is_pkt_valid(pkt, xsk->umem->buffer, desc))
-+				return;
- 
--		addr = xsk_umem__add_offset_to_addr(addr);
--		pkt_validate(xsk->umem->buffer, addr);
-+			*xsk_ring_prod__fill_addr(&xsk->umem->fq, idx_fq++) = orig;
-+			pkt = pkt_stream_get_pkt(pkt_stream, pkt_count++);
-+		}
- 
--		*xsk_ring_prod__fill_addr(&xsk->umem->fq, idx_fq++) = orig;
-+		xsk_ring_prod__submit(&xsk->umem->fq, rcvd);
-+		xsk_ring_cons__release(&xsk->rx, rcvd);
- 	}
--
--	xsk_ring_prod__submit(&xsk->umem->fq, rcvd);
--	xsk_ring_cons__release(&xsk->rx, rcvd);
++	ksft_test_result_fail("[%s:%s:%i]: ERROR: %d/\"%s\"\n", file, func, line, error,
++			      strerror(error));
++	ksft_exit_xfail();
  }
  
--static void tx_only(struct ifobject *ifobject, u32 *frameptr, int batch_size)
-+static u32 __send_pkts(struct ifobject *ifobject, u32 pkt_nb)
- {
- 	struct xsk_socket_info *xsk = ifobject->xsk;
--	u32 idx = 0;
--	unsigned int i;
--	bool tx_invalid_test = stat_test_type == STAT_TEST_TX_INVALID;
--	u32 len = tx_invalid_test ? XSK_UMEM__DEFAULT_FRAME_SIZE + 1 : PKT_SIZE;
-+	u32 i, idx;
- 
--	while (xsk_ring_prod__reserve(&xsk->tx, batch_size, &idx) < batch_size)
--		complete_tx_only(xsk, batch_size);
-+	while (xsk_ring_prod__reserve(&xsk->tx, BATCH_SIZE, &idx) < BATCH_SIZE)
-+		complete_pkts(xsk, BATCH_SIZE);
- 
--	for (i = 0; i < batch_size; i++) {
-+	for (i = 0; i < BATCH_SIZE; i++) {
- 		struct xdp_desc *tx_desc = xsk_ring_prod__tx_desc(&xsk->tx, idx + i);
-+		struct pkt *pkt = pkt_generate(ifobject, pkt_nb);
- 
--		tx_desc->addr = (*frameptr + i) << XSK_UMEM__DEFAULT_FRAME_SHIFT;
--		tx_desc->len = len;
--		pkt_generate(ifobject, *frameptr + i, tx_desc->addr);
--	}
-+		if (!pkt)
-+			break;
- 
--	xsk_ring_prod__submit(&xsk->tx, batch_size);
--	if (!tx_invalid_test) {
--		xsk->outstanding_tx += batch_size;
--	} else if (xsk_ring_prod__needs_wakeup(&xsk->tx)) {
--		kick_tx(xsk);
-+		tx_desc->addr = pkt->addr;
-+		tx_desc->len = pkt->len;
-+		pkt_nb++;
- 	}
--	*frameptr += batch_size;
--	*frameptr %= num_frames;
--	complete_tx_only(xsk, batch_size);
--}
- 
--static int get_batch_size(int pkt_cnt)
--{
--	if (pkt_cnt + BATCH_SIZE <= opt_pkt_count)
--		return BATCH_SIZE;
-+	xsk_ring_prod__submit(&xsk->tx, i);
-+	if (stat_test_type != STAT_TEST_TX_INVALID)
-+		xsk->outstanding_tx += i;
-+	else if (xsk_ring_prod__needs_wakeup(&xsk->tx))
-+		kick_tx(xsk);
-+	complete_pkts(xsk, i);
- 
--	return opt_pkt_count - pkt_cnt;
-+	return i;
- }
- 
--static void complete_tx_only_all(struct ifobject *ifobject)
-+static void wait_for_tx_completion(struct xsk_socket_info *xsk)
- {
--	bool pending;
--
--	do {
--		pending = false;
--		if (ifobject->xsk->outstanding_tx) {
--			complete_tx_only(ifobject->xsk, BATCH_SIZE);
--			pending = !!ifobject->xsk->outstanding_tx;
--		}
--	} while (pending);
-+	while (xsk->outstanding_tx)
-+		complete_pkts(xsk, BATCH_SIZE);
- }
- 
--static void tx_only_all(struct ifobject *ifobject)
-+static void send_pkts(struct ifobject *ifobject)
- {
- 	struct pollfd fds[MAX_SOCKS] = { };
--	u32 frame_nb = 0;
--	int pkt_cnt = 0;
--	int ret;
-+	u32 pkt_cnt = 0;
- 
- 	fds[0].fd = xsk_socket__fd(ifobject->xsk->xsk);
- 	fds[0].events = POLLOUT;
- 
--	while (pkt_cnt < opt_pkt_count) {
--		int batch_size = get_batch_size(pkt_cnt);
-+	while (pkt_cnt < ifobject->pkt_stream->nb_pkts) {
-+		u32 sent;
- 
- 		if (test_type == TEST_TYPE_POLL) {
-+			int ret;
-+
- 			ret = poll(fds, 1, POLL_TMOUT);
- 			if (ret <= 0)
- 				continue;
-@@ -643,17 +683,17 @@ static void tx_only_all(struct ifobject *ifobject)
- 				continue;
- 		}
- 
--		tx_only(ifobject, &frame_nb, batch_size);
--		pkt_cnt += batch_size;
-+		sent = __send_pkts(ifobject, pkt_cnt);
-+		pkt_cnt += sent;
- 		usleep(10);
- 	}
- 
--	complete_tx_only_all(ifobject);
-+	wait_for_tx_completion(ifobject->xsk);
- }
- 
- static bool rx_stats_are_valid(struct ifobject *ifobject)
- {
--	u32 xsk_stat = 0, expected_stat = opt_pkt_count;
-+	u32 xsk_stat = 0, expected_stat = ifobject->pkt_stream->nb_pkts;
- 	struct xsk_socket *xsk = ifobject->xsk->xsk;
- 	int fd = xsk_socket__fd(xsk);
- 	struct xdp_statistics stats;
-@@ -709,11 +749,11 @@ static void tx_stats_validate(struct ifobject *ifobject)
- 		return;
- 	}
- 
--	if (stats.tx_invalid_descs == opt_pkt_count)
-+	if (stats.tx_invalid_descs == ifobject->pkt_stream->nb_pkts)
- 		return;
- 
- 	ksft_test_result_fail("ERROR: [%s] tx_invalid_descs incorrect. Got [%u] expected [%u]\n",
--			      __func__, stats.tx_invalid_descs, opt_pkt_count);
-+			      __func__, stats.tx_invalid_descs, ifobject->pkt_stream->nb_pkts);
- }
- 
- static void thread_common_ops(struct ifobject *ifobject, void *bufs)
-@@ -782,8 +822,9 @@ static void *worker_testapp_validate_tx(void *arg)
- 	if (!second_step)
- 		thread_common_ops(ifobject, bufs);
- 
--	print_verbose("Sending %d packets on interface %s\n", opt_pkt_count, ifobject->ifname);
--	tx_only_all(ifobject);
-+	print_verbose("Sending %d packets on interface %s\n", ifobject->pkt_stream->nb_pkts,
-+		      ifobject->ifname);
-+	send_pkts(ifobject);
- 
- 	if (stat_test_type == STAT_TEST_TX_INVALID)
- 		tx_stats_validate(ifobject);
-@@ -809,19 +850,11 @@ static void *worker_testapp_validate_rx(void *arg)
- 
- 	pthread_barrier_wait(&barr);
- 
--	while (1) {
--		if (test_type != TEST_TYPE_STATS) {
--			rx_pkt(ifobject->xsk, fds);
--		} else {
--			if (rx_stats_are_valid(ifobject))
--				break;
--		}
--		if (sigvar)
--			break;
--	}
--
--	print_verbose("Received %d packets on interface %s\n",
--		      pkt_counter, ifobject->ifname);
-+	if (test_type == TEST_TYPE_STATS)
-+		while (!rx_stats_are_valid(ifobject))
-+			continue;
-+	else
-+		receive_pkts(ifobject->pkt_stream, ifobject->xsk, fds);
- 
- 	if (test_type == TEST_TYPE_TEARDOWN)
- 		print_verbose("Destroying socket\n");
-@@ -834,10 +867,18 @@ static void testapp_validate(void)
- {
- 	bool bidi = test_type == TEST_TYPE_BIDI;
- 	bool bpf = test_type == TEST_TYPE_BPF_RES;
-+	struct pkt_stream *pkt_stream;
- 
- 	if (pthread_barrier_init(&barr, NULL, 2))
- 		exit_with_error(errno);
- 
-+	if (stat_test_type == STAT_TEST_TX_INVALID)
-+		pkt_stream = pkt_stream_generate(DEFAULT_PKT_CNT, XSK_UMEM__INVALID_FRAME_SIZE);
-+	else
-+		pkt_stream = pkt_stream_generate(DEFAULT_PKT_CNT, PKT_SIZE);
-+	ifdict_tx->pkt_stream = pkt_stream;
-+	ifdict_rx->pkt_stream = pkt_stream;
-+
- 	/*Spawn RX thread */
- 	pthread_create(&t0, NULL, ifdict_rx->func_ptr, ifdict_rx);
- 
-@@ -860,8 +901,6 @@ static void testapp_teardown(void)
- 	int i;
- 
- 	for (i = 0; i < MAX_TEARDOWN_ITER; i++) {
--		pkt_counter = 0;
--		sigvar = 0;
- 		print_verbose("Creating socket\n");
- 		testapp_validate();
- 	}
-@@ -887,8 +926,6 @@ static void swap_vectors(struct ifobject *ifobj1, struct ifobject *ifobj2)
- static void testapp_bidi(void)
- {
- 	for (int i = 0; i < MAX_BIDI_ITER; i++) {
--		pkt_counter = 0;
--		sigvar = 0;
- 		print_verbose("Creating socket\n");
- 		testapp_validate();
- 		if (!second_step) {
-@@ -920,8 +957,6 @@ static void testapp_bpf_res(void)
- 	int i;
- 
- 	for (i = 0; i < MAX_BPF_ITER; i++) {
--		pkt_counter = 0;
--		sigvar = 0;
- 		print_verbose("Creating socket\n");
- 		testapp_validate();
- 		if (!second_step)
-@@ -949,6 +984,8 @@ static void testapp_stats(void)
- 		case STAT_TEST_RX_FULL:
- 			rxqsize = RX_FULL_RXQSIZE;
- 			break;
-+		case STAT_TEST_TX_INVALID:
-+			continue;
- 		default:
- 			break;
- 		}
-@@ -994,9 +1031,7 @@ static void run_pkt_test(int mode, int type)
- 
- 	/* reset defaults after potential previous test */
- 	xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
--	pkt_counter = 0;
- 	second_step = 0;
--	sigvar = 0;
- 	stat_test_type = -1;
- 	rxqsize = XSK_RING_CONS__DEFAULT_NUM_DESCS;
- 	frame_headroom = XSK_UMEM__DEFAULT_FRAME_HEADROOM;
+ #define exit_with_error(error) __exit_with_error(error, __FILE__, __func__, __LINE__)
 diff --git a/tools/testing/selftests/bpf/xdpxceiver.h b/tools/testing/selftests/bpf/xdpxceiver.h
-index 7670df7e7746..3e5394295ac1 100644
+index 3e5394295ac1..582af3505c15 100644
 --- a/tools/testing/selftests/bpf/xdpxceiver.h
 +++ b/tools/testing/selftests/bpf/xdpxceiver.h
-@@ -40,6 +40,7 @@
- #define POLL_TMOUT 1000
- #define DEFAULT_PKT_CNT (4 * 1024)
- #define RX_FULL_RXQSIZE 32
-+#define XSK_UMEM__INVALID_FRAME_SIZE (XSK_UMEM__DEFAULT_FRAME_SIZE + 1)
+@@ -44,14 +44,13 @@
  
  #define print_verbose(x...) do { if (opt_verbose) ksft_print_msg(x); } while (0)
  
-@@ -74,13 +75,10 @@ static u32 num_frames = DEFAULT_PKT_CNT / 4;
- static bool second_step;
- static int test_type;
- 
--static u32 opt_pkt_count = DEFAULT_PKT_CNT;
- static u8 opt_verbose;
- 
- static u32 xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
- static u32 xdp_bind_flags = XDP_USE_NEED_WAKEUP | XDP_COPY;
--static u32 pkt_counter;
--static int sigvar;
- static int stat_test_type;
- static u32 rxqsize;
- static u32 frame_headroom;
-@@ -107,6 +105,17 @@ struct flow_vector {
- 	} vector;
+-enum TEST_MODES {
+-	TEST_MODE_UNCONFIGURED = -1,
++enum test_mode {
+ 	TEST_MODE_SKB,
+ 	TEST_MODE_DRV,
+ 	TEST_MODE_MAX
  };
  
-+struct pkt {
-+	u64 addr;
-+	u32 len;
-+	u32 payload;
-+};
-+
-+struct pkt_stream {
-+	u32 nb_pkts;
-+	struct pkt *pkts;
-+};
-+
- struct ifobject {
- 	char ifname[MAX_INTERFACE_NAME_CHARS];
- 	char nsname[MAX_INTERFACES_NAMESPACE_CHARS];
-@@ -116,6 +125,7 @@ struct ifobject {
- 	struct xsk_umem_info *umem;
- 	void *(*func_ptr)(void *arg);
- 	struct flow_vector fv;
-+	struct pkt_stream *pkt_stream;
- 	int ns_fd;
- 	u32 dst_ip;
- 	u32 src_ip;
+-enum TEST_TYPES {
++enum test_type {
+ 	TEST_TYPE_NOPOLL,
+ 	TEST_TYPE_POLL,
+ 	TEST_TYPE_TEARDOWN,
+@@ -61,7 +60,7 @@ enum TEST_TYPES {
+ 	TEST_TYPE_MAX
+ };
+ 
+-enum STAT_TEST_TYPES {
++enum stat_test_type {
+ 	STAT_TEST_RX_DROPPED,
+ 	STAT_TEST_TX_INVALID,
+ 	STAT_TEST_RX_FULL,
+@@ -69,7 +68,7 @@ enum STAT_TEST_TYPES {
+ 	STAT_TEST_TYPE_MAX
+ };
+ 
+-static int configured_mode = TEST_MODE_UNCONFIGURED;
++static int configured_mode;
+ static u8 debug_pkt_dump;
+ static u32 num_frames = DEFAULT_PKT_CNT / 4;
+ static bool second_step;
 -- 
 2.29.0
 
