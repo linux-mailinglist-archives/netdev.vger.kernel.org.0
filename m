@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34E5A3F72D8
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 12:20:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A1A73F72D4
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 12:20:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239901AbhHYKV2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 06:21:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36134 "EHLO mail.kernel.org"
+        id S239845AbhHYKVK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 06:21:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36112 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238807AbhHYKUy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S238783AbhHYKUy (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 25 Aug 2021 06:20:54 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 0515F61222;
-        Wed, 25 Aug 2021 10:20:09 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPS id E15EF61181;
+        Wed, 25 Aug 2021 10:20:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629886809;
-        bh=+yvj9WBCj5Yftb66ia8SReidOS9AML/FLWu14G/C9vg=;
+        s=k20201202; t=1629886808;
+        bh=TMVIOQGKX9rDKi9mEJtwQevZno6SE1kvisi9NxHV8Tk=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=lIU1PaKx8hRdkd4Upg1egO2Yug78vMS8KThfDCG3QuyP0dr+zh1hIo8e6lQylcJ/9
-         FWcfxLqxV7Gf9sCdcAkJ9QgkeXmfLfuvKsEjDmIIA91QNyGJ6cimly2jIwPpiFvwR1
-         zVLo2UH8f/+aDpQkEOYPhkxawdYHKgNv49hsqyM6emOE9KlCOOa+vxHWcM5SFsGHxA
-         vcSkt0A6Rclihye2a72XIA8QIjP/TL8tKhqbWIX0Y91anjOFLF7CcAqj/BjpxyC89X
-         55FcZpWwsxpdYTvSui+rj3Jr0PBAmkOml9l9p1rw5sm2kV8WQM0c2Mdt+ywrQ2Xz+L
-         HbXnZfpxv8v2A==
+        b=Alr+AuOG6+V0MZwLJYS1QczUrv9CgqPugsrIr6qJCls1pN5UsGz3IXIOrFEAYqB/z
+         04ewRQ1yONlZTm6wVofMbET1VA9W0br3vxZvQz5C/8YKythHBu2WirC0rlxRvCfzew
+         H/wz/51IqknN1pqzAzeTLjwzMhjToOx+X11Z6oIWKKRykbwpKiDmJvwLgp2kKB8iJO
+         RRkKoOGuAwvjg7OJdBSRuLmjK1YFu4Ejbaxc1cqeXedqGzUxk0oL7yD9xf7aOciV2J
+         Z05w8aRxectuY6Seebb4GxDjkwMOMeRNEubH5g5vuE5v2SeebAZnCNrKeG6QYIbtMz
+         83jIoA3jbAPAg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id ED26A60A14;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id DB88160A0C;
         Wed, 25 Aug 2021 10:20:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/7] mptcp: Optimize output options and add MP_FAIL
+Subject: Re: [PATCH net-next 0/3] Make sja1105 treat tag_8021q VLANs more like
+ real DSA tags
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162988680896.8958.11835123498453806538.git-patchwork-notify@kernel.org>
+Message-Id: <162988680889.8958.5434578700591120496.git-patchwork-notify@kernel.org>
 Date:   Wed, 25 Aug 2021 10:20:08 +0000
-References: <20210824232619.136912-1-mathew.j.martineau@linux.intel.com>
-In-Reply-To: <20210824232619.136912-1-mathew.j.martineau@linux.intel.com>
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        matthieu.baerts@tessares.net, mptcp@lists.linux.dev,
-        pabeni@redhat.com, geliangtang@xiaomi.com
+References: <20210824171502.4122088-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20210824171502.4122088-1-vladimir.oltean@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, f.fainelli@gmail.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, olteanv@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -47,31 +47,24 @@ Hello:
 
 This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue, 24 Aug 2021 16:26:12 -0700 you wrote:
-> This patch set contains two groups of changes that we've been testing in
-> the MPTCP tree.
+On Tue, 24 Aug 2021 20:14:59 +0300 you wrote:
+> This series solves a nuisance with the sja1105 driver, which is that
+> non-DSA tagged packets sent directly by the DSA master would still exit
+> the switch just fine.
 > 
-> 
-> The first optimizes the code path and data structure for populating
-> MPTCP option headers when transmitting.
+> We also had an issue for packets coming from the outside world with a
+> crafted DSA tag, the switch would not reject that tag but think it was
+> valid.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,1/7] mptcp: optimize out option generation
-    https://git.kernel.org/netdev/net-next/c/1bff1e43a30e
-  - [net-next,2/7] mptcp: shrink mptcp_out_options struct
-    https://git.kernel.org/netdev/net-next/c/d7b269083786
-  - [net-next,3/7] mptcp: MP_FAIL suboption sending
-    https://git.kernel.org/netdev/net-next/c/c25aeb4e0953
-  - [net-next,4/7] mptcp: MP_FAIL suboption receiving
-    https://git.kernel.org/netdev/net-next/c/5580d41b758a
-  - [net-next,5/7] mptcp: send out MP_FAIL when data checksum fails
-    https://git.kernel.org/netdev/net-next/c/478d770008b0
-  - [net-next,6/7] mptcp: add the mibs for MP_FAIL
-    https://git.kernel.org/netdev/net-next/c/eb7f33654dc1
-  - [net-next,7/7] selftests: mptcp: add MP_FAIL mibs check
-    https://git.kernel.org/netdev/net-next/c/6bb3ab4913e9
+  - [net-next,1/3] net: dsa: sja1105: prevent tag_8021q VLANs from being received on user ports
+    https://git.kernel.org/netdev/net-next/c/73ceab832652
+  - [net-next,2/3] net: dsa: sja1105: drop untagged packets on the CPU and DSA ports
+    https://git.kernel.org/netdev/net-next/c/b0b8c67eaa5c
+  - [net-next,3/3] net: dsa: tag_sja1105: stop asking the sja1105 driver in sja1105_xmit_tpid
+    https://git.kernel.org/netdev/net-next/c/8ded9160928e
 
 You are awesome, thank you!
 --
