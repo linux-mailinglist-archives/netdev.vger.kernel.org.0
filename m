@@ -2,42 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 889823F7B77
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 19:21:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DB0D3F7B7B
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 19:22:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242280AbhHYRWL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 13:22:11 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:56099 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231685AbhHYRWI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 13:22:08 -0400
-Received: by mail-io1-f70.google.com with SMTP id o128-20020a6bbe86000000b005bd06eaeca6so2842950iof.22
-        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 10:21:22 -0700 (PDT)
+        id S242302AbhHYRXL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 13:23:11 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:46757 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242293AbhHYRXH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 13:23:07 -0400
+Received: by mail-io1-f72.google.com with SMTP id s6-20020a5ec646000000b005b7f88ffdd3so14933636ioo.13
+        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 10:22:21 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=Mloyvwemb1SpqsP3Dg11cFkPPufZ+GS36X4XhnDfSTs=;
-        b=EICPuVt43AzgkG6Z/MLQJOviMnhlaa9tQ/8zpzTquNIZGOhaWfVeIVFKa+PizMSuwI
-         R1ayLzS+G/Vnx6xVAwz+XMMbMHJ0WrIV0BcyekADgeN9hsmd8s3sViOFQKhkv1M1brGQ
-         n8NKowDT2nfDIjYXG1WmK5dQbBBN1mjjt9BCf3qRLUhFFyRMHW8Jtdxne0EsVGE2pGG/
-         zbEL0Cfh5mhNZ9JxmTaL1wlJq3qm2gLqJ8FAA+YT0DT4fQEtpEfC16ueBwI80P0ZcThG
-         lSya+7BUJFlivDIPamQ5x4vWAOslEEkqny0irY6p+SEKmCQv64Uw3LbSh46RKQW4dZCK
-         Yilg==
-X-Gm-Message-State: AOAM531/Ml0yz2okq8hXYhTwe7y4XpZLNJWhXkzxsWeGi9CtSgTieH+N
-        zKv2V8PaI0hp2ObHx/rdKq0fUpzsBOgijuI00/ROPfwlknMF
-X-Google-Smtp-Source: ABdhPJyC1doROmxuD1XsSGxuQ+bqAaCQdUrXWFPA6eu1KADQEUP+KZbzDARu0ukdydb6MSVo7x4kb+ocnhrm1aMC2t7xRzIvoA4u
+        bh=UafuiKZgAuV2PQ23F5jJQAl5WEpSCaM94FX2b+wQ71o=;
+        b=tWL9p6eWo10rMRba2sv8zbJ3N+uhUKcdTe3XB3TWJMyYFLqC8kdGU2NgK5R0lf9VoD
+         0UWnsVblbGu0gOYymf2oCI7jz5k3OzuZQvwFT4sStjFw82d1UU1UHBoN8H1zrWCXg5MQ
+         9fnDslBA4nSVshMs5kK+J+YG/BWZ9NVq353uHcGkio/ZUe6oRZmR3MyIrzPG8Juq/chy
+         07PkyoKrj3t9pPuxNfAhcLDjRwirhQZ+pGeNh7gRvzeRxcIQFgvWVbeTzyQaiycPthKo
+         ikaxqfhl9WdVuWcSelS544i3uAjYGORWooNpOQueotx2psdD2OIicU7sutKISi4LsRcG
+         VZ5w==
+X-Gm-Message-State: AOAM532zcxc4Dn3iqL2hitKoLWntoaNPv5wQR/mV5I/d9G58Zq1az6g9
+        IKIVs69NtSy6j6ksXD1aVb89oJKn3VVYYBrgGkryIHcvBmDk
+X-Google-Smtp-Source: ABdhPJwEXsMo0bYz1m5FQ1xc1aqLAAroEoH/9OO8P9HYsfI7jGUGXbN+nX5oCGWycS6uQ/df7lD0MsfMC/Xtx1zj/8pBEKmuHC1B
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:130e:: with SMTP id g14mr31724876ilr.81.1629912081894;
- Wed, 25 Aug 2021 10:21:21 -0700 (PDT)
-Date:   Wed, 25 Aug 2021 10:21:21 -0700
+X-Received: by 2002:a05:6638:13d6:: with SMTP id i22mr40383008jaj.13.1629912141118;
+ Wed, 25 Aug 2021 10:22:21 -0700 (PDT)
+Date:   Wed, 25 Aug 2021 10:22:21 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000a814c505ca657a4e@google.com>
-Subject: [syzbot] KASAN: use-after-free Read in netlbl_catmap_walk
-From:   syzbot <syzbot+3f91de0b813cc3d19a80@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        paul@paul-moore.com, syzkaller-bugs@googlegroups.com
+Message-ID: <0000000000002fc21105ca657edf@google.com>
+Subject: [syzbot] INFO: task hung in __xfs_buf_submit (2)
+From:   syzbot <syzbot+4bb1622c9a583bb6f9f2@syzkaller.appspotmail.com>
+To:     a@unstable.cc, axboe@kernel.dk, b.a.t.m.a.n@lists.open-mesh.org,
+        davem@davemloft.net, djwong@kernel.org, josef@toxicpanda.com,
+        linux-kernel@vger.kernel.org, linux-xfs@vger.kernel.org,
+        mareklindner@neomailbox.ch, mchristi@redhat.com,
+        netdev@vger.kernel.org, sw@simonwunderlich.de,
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -49,152 +52,146 @@ syzbot found the following issue on:
 
 HEAD commit:    6e764bcd1cf7 Merge tag 'for-linus' of git://git.kernel.org..
 git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=124e77c5300000
+console output: https://syzkaller.appspot.com/x/log.txt?x=10504885300000
 kernel config:  https://syzkaller.appspot.com/x/.config?x=2fd902af77ff1e56
-dashboard link: https://syzkaller.appspot.com/bug?extid=3f91de0b813cc3d19a80
+dashboard link: https://syzkaller.appspot.com/bug?extid=4bb1622c9a583bb6f9f2
 compiler:       Debian clang version 11.0.1-2, GNU ld (GNU Binutils for Debian) 2.35.1
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13f72f16300000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=133e338d300000
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14427606300000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=149b3cce300000
+
+The issue was bisected to:
+
+commit 887e975c4172d0d5670c39ead2f18ba1e4ec8133
+Author: Mike Christie <mchristi@redhat.com>
+Date:   Tue Aug 13 16:39:51 2019 +0000
+
+    nbd: add missing config put
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11980ad5300000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=13980ad5300000
+console output: https://syzkaller.appspot.com/x/log.txt?x=15980ad5300000
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+3f91de0b813cc3d19a80@syzkaller.appspotmail.com
+Reported-by: syzbot+4bb1622c9a583bb6f9f2@syzkaller.appspotmail.com
+Fixes: 887e975c4172 ("nbd: add missing config put")
 
-==================================================================
-BUG: KASAN: use-after-free in _netlbl_catmap_getnode net/netlabel/netlabel_kapi.c:564 [inline]
-BUG: KASAN: use-after-free in netlbl_catmap_walk+0x28b/0x2e0 net/netlabel/netlabel_kapi.c:615
-Read of size 4 at addr ffff8880161c9800 by task syz-executor742/8768
+INFO: task syz-executor519:8442 blocked for more than 143 seconds.
+      Not tainted 5.14.0-rc7-syzkaller #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:syz-executor519 state:D stack:22808 pid: 8442 ppid:  8441 flags:0x00004004
+Call Trace:
+ context_switch kernel/sched/core.c:4681 [inline]
+ __schedule+0xc07/0x11f0 kernel/sched/core.c:5938
+ schedule+0x14b/0x210 kernel/sched/core.c:6017
+ schedule_timeout+0x98/0x2f0 kernel/time/timer.c:1857
+ do_wait_for_common+0x2da/0x480 kernel/sched/completion.c:85
+ __wait_for_common kernel/sched/completion.c:106 [inline]
+ wait_for_common kernel/sched/completion.c:117 [inline]
+ wait_for_completion+0x48/0x60 kernel/sched/completion.c:138
+ xfs_buf_iowait fs/xfs/xfs_buf.c:1571 [inline]
+ __xfs_buf_submit+0x39d/0x6d0 fs/xfs/xfs_buf.c:1636
+ xfs_buf_submit fs/xfs/xfs_buf.c:58 [inline]
+ xfs_buf_read_uncached+0x1fa/0x390 fs/xfs/xfs_buf.c:884
+ xfs_readsb+0x1dc/0x670 fs/xfs/xfs_mount.c:178
+ xfs_fs_fill_super+0x483/0x1780 fs/xfs/xfs_super.c:1428
+ get_tree_bdev+0x406/0x630 fs/super.c:1293
+ vfs_get_tree+0x86/0x270 fs/super.c:1498
+ do_new_mount fs/namespace.c:2923 [inline]
+ path_mount+0x1981/0x2c10 fs/namespace.c:3253
+ do_mount fs/namespace.c:3266 [inline]
+ __do_sys_mount fs/namespace.c:3474 [inline]
+ __se_sys_mount+0x2f9/0x3b0 fs/namespace.c:3451
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x444239
+RSP: 002b:00007ffd4feb56f8 EFLAGS: 00000246 ORIG_RAX: 00000000000000a5
+RAX: ffffffffffffffda RBX: 0030656c69662f2e RCX: 0000000000444239
+RDX: 0000000020000140 RSI: 0000000020000000 RDI: 00000000200000c0
+RBP: 0000000000000000 R08: 0000000000000000 R09: 00007ffd4feb5898
+R10: 0000000000008002 R11: 0000000000000246 R12: 0000000000403550
+R13: 431bde82d7b634db R14: 00000000004b2018 R15: 00000000004004a0
 
-CPU: 0 PID: 8768 Comm: syz-executor742 Not tainted 5.14.0-rc7-syzkaller #0
+Showing all locks held in the system:
+1 lock held by khungtaskd/1644:
+ #0: ffffffff8c717ec0 (rcu_read_lock){....}-{1:2}, at: rcu_lock_acquire+0x0/0x30 arch/x86/pci/mmconfig_64.c:151
+2 locks held by in:imklog/8141:
+ #0: ffff888023be8870 (&f->f_pos_lock){+.+.}-{3:3}, at: __fdget_pos+0x24e/0x2f0 fs/file.c:974
+ #1: ffffffff8c717ec0 (rcu_read_lock){....}-{1:2}, at: rcu_lock_acquire+0x5/0x30 include/linux/rcupdate.h:266
+1 lock held by syz-executor519/8442:
+ #0: ffff888030e060e0 (&type->s_umount_key#49/1){+.+.}-{3:3}, at: alloc_super+0x1c8/0x860 fs/super.c:229
+
+=============================================
+
+NMI backtrace for cpu 1
+CPU: 1 PID: 1644 Comm: khungtaskd Not tainted 5.14.0-rc7-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
 Call Trace:
  __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0x1ae/0x29f lib/dump_stack.c:105
- print_address_description+0x66/0x3b0 mm/kasan/report.c:233
- __kasan_report mm/kasan/report.c:419 [inline]
- kasan_report+0x163/0x210 mm/kasan/report.c:436
- _netlbl_catmap_getnode net/netlabel/netlabel_kapi.c:564 [inline]
- netlbl_catmap_walk+0x28b/0x2e0 net/netlabel/netlabel_kapi.c:615
- cipso_seq_show+0x15f/0x280 security/smack/smackfs.c:789
- traverse+0x1dc/0x530 fs/seq_file.c:111
- seq_lseek+0x12b/0x240 fs/seq_file.c:323
- vfs_llseek fs/read_write.c:300 [inline]
- ksys_lseek fs/read_write.c:313 [inline]
- __do_sys_lseek fs/read_write.c:324 [inline]
- __se_sys_lseek fs/read_write.c:322 [inline]
- __x64_sys_lseek+0x15b/0x1e0 fs/read_write.c:322
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x445889
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 11 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f9a9cff0318 EFLAGS: 00000246 ORIG_RAX: 0000000000000008
-RAX: ffffffffffffffda RBX: 00000000004ca408 RCX: 0000000000445889
-RDX: 0000000000000000 RSI: 0000000100000001 RDI: 0000000000000003
-RBP: 00000000004ca400 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00000000004ca40c
-R13: 00007ffead4e31bf R14: 00007f9a9cff0400 R15: 0000000000022000
-
-Allocated by task 8768:
- kasan_save_stack mm/kasan/common.c:38 [inline]
- kasan_set_track mm/kasan/common.c:46 [inline]
- set_alloc_info mm/kasan/common.c:434 [inline]
- ____kasan_kmalloc+0xcd/0x100 mm/kasan/common.c:513
- kasan_kmalloc include/linux/kasan.h:264 [inline]
- kmem_cache_alloc_trace+0x96/0x340 mm/slub.c:2986
- kmalloc include/linux/slab.h:591 [inline]
- kzalloc include/linux/slab.h:721 [inline]
- netlbl_catmap_alloc include/net/netlabel.h:317 [inline]
- _netlbl_catmap_getnode net/netlabel/netlabel_kapi.c:582 [inline]
- netlbl_catmap_setbit+0x1cb/0x3f0 net/netlabel/netlabel_kapi.c:782
- smk_netlbl_mls+0x103/0x5e0 security/smack/smack_access.c:505
- smk_set_cipso+0x621/0x810 security/smack/smackfs.c:921
- vfs_write+0x289/0xc90 fs/read_write.c:603
- ksys_write+0x171/0x2a0 fs/read_write.c:658
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Freed by task 8769:
- kasan_save_stack mm/kasan/common.c:38 [inline]
- kasan_set_track+0x3d/0x70 mm/kasan/common.c:46
- kasan_set_free_info+0x1f/0x40 mm/kasan/generic.c:360
- ____kasan_slab_free+0x10d/0x150 mm/kasan/common.c:366
- kasan_slab_free include/linux/kasan.h:230 [inline]
- slab_free_hook mm/slub.c:1628 [inline]
- slab_free_freelist_hook+0x1e8/0x2a0 mm/slub.c:1653
- slab_free mm/slub.c:3213 [inline]
- kfree+0xcf/0x2e0 mm/slub.c:4267
- netlbl_catmap_free include/net/netlabel.h:335 [inline]
- smk_set_cipso+0x682/0x810 security/smack/smackfs.c:923
- vfs_write+0x289/0xc90 fs/read_write.c:603
- ksys_write+0x171/0x2a0 fs/read_write.c:658
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-The buggy address belongs to the object at ffff8880161c9800
- which belongs to the cache kmalloc-64 of size 64
-The buggy address is located 0 bytes inside of
- 64-byte region [ffff8880161c9800, ffff8880161c9840)
-The buggy address belongs to the page:
-page:ffffea0000587240 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x161c9
-flags: 0xfff00000000200(slab|node=0|zone=1|lastcpupid=0x7ff)
-raw: 00fff00000000200 0000000000000000 0000000b00000001 ffff888011041640
-raw: 0000000000000000 0000000080200020 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-page_owner tracks the page as allocated
-page last allocated via order 0, migratetype Unmovable, gfp_mask 0x12cc0(GFP_KERNEL|__GFP_NOWARN|__GFP_NORETRY), pid 6484, ts 27339779214, free_ts 27310944203
- prep_new_page mm/page_alloc.c:2436 [inline]
- get_page_from_freelist+0x779/0xa30 mm/page_alloc.c:4168
- __alloc_pages+0x26c/0x5f0 mm/page_alloc.c:5390
- alloc_slab_page mm/slub.c:1691 [inline]
- allocate_slab+0xf1/0x540 mm/slub.c:1831
- new_slab mm/slub.c:1894 [inline]
- new_slab_objects mm/slub.c:2640 [inline]
- ___slab_alloc+0x1cf/0x350 mm/slub.c:2803
- __slab_alloc mm/slub.c:2843 [inline]
- slab_alloc_node mm/slub.c:2925 [inline]
- __kmalloc_node+0x310/0x430 mm/slub.c:4159
- kmalloc_node include/linux/slab.h:614 [inline]
- kvmalloc_node+0x81/0xf0 mm/util.c:587
- kvmalloc include/linux/mm.h:806 [inline]
- simple_xattr_alloc+0x3f/0xa0 fs/xattr.c:951
- shmem_initxattrs+0x91/0x1e0 mm/shmem.c:3142
- security_inode_init_security+0x37a/0x3c0 security/security.c:1099
- shmem_mknod+0xb0/0x1b0 mm/shmem.c:2822
- lookup_open fs/namei.c:3228 [inline]
- open_last_lookups fs/namei.c:3298 [inline]
- path_openat+0x13b7/0x36b0 fs/namei.c:3504
- do_filp_open+0x253/0x4d0 fs/namei.c:3534
- do_sys_openat2+0x124/0x460 fs/open.c:1204
- do_sys_open fs/open.c:1220 [inline]
- __do_sys_open fs/open.c:1228 [inline]
- __se_sys_open fs/open.c:1224 [inline]
- __x64_sys_open+0x221/0x270 fs/open.c:1224
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-page last free stack trace:
- reset_page_owner include/linux/page_owner.h:24 [inline]
- free_pages_prepare mm/page_alloc.c:1346 [inline]
- free_pcp_prepare+0xc29/0xd20 mm/page_alloc.c:1397
- free_unref_page_prepare mm/page_alloc.c:3332 [inline]
- free_unref_page+0x7e/0x550 mm/page_alloc.c:3411
- __vunmap+0x926/0xa70 mm/vmalloc.c:2587
- free_work+0x66/0x90 mm/vmalloc.c:82
- process_one_work+0x833/0x10c0 kernel/workqueue.c:2276
- worker_thread+0xac1/0x1320 kernel/workqueue.c:2422
+ dump_stack_lvl+0x1d3/0x29f lib/dump_stack.c:105
+ nmi_cpu_backtrace+0x16c/0x190 lib/nmi_backtrace.c:105
+ nmi_trigger_cpumask_backtrace+0x191/0x2f0 lib/nmi_backtrace.c:62
+ trigger_all_cpu_backtrace include/linux/nmi.h:146 [inline]
+ check_hung_uninterruptible_tasks kernel/hung_task.c:210 [inline]
+ watchdog+0xd06/0xd50 kernel/hung_task.c:295
  kthread+0x453/0x480 kernel/kthread.c:319
  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
-
-Memory state around the buggy address:
- ffff8880161c9700: 00 00 00 00 00 00 00 00 fc fc fc fc fc fc fc fc
- ffff8880161c9780: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
->ffff8880161c9800: fa fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
-                   ^
- ffff8880161c9880: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
- ffff8880161c9900: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
-==================================================================
+Sending NMI from CPU 1 to CPUs 0:
+NMI backtrace for cpu 0
+CPU: 0 PID: 4862 Comm: systemd-journal Not tainted 5.14.0-rc7-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:check_wait_context kernel/locking/lockdep.c:4688 [inline]
+RIP: 0010:__lock_acquire+0x5fc/0x6100 kernel/locking/lockdep.c:4965
+Code: 00 fc ff df 4c 8b 7c 24 58 4c 8b 64 24 50 48 81 c3 b8 00 00 00 48 89 d8 48 c1 e8 03 8a 04 10 84 c0 0f 85 c1 25 00 00 44 8a 33 <48> 8b 44 24 60 8a 04 10 84 c0 0f 85 d2 25 00 00 41 8b 1c 24 81 e3
+RSP: 0018:ffffc9000162f940 EFLAGS: 00000046
+RAX: 1ffffffff1f10400 RBX: ffffffff8f882478 RCX: ffffffff816219b8
+RDX: dffffc0000000000 RSI: 0000000000000008 RDI: ffffffff8faf3dd0
+RBP: ffffc9000162fcd0 R08: dffffc0000000000 R09: fffffbfff1f5e7bb
+R10: fffffbfff1f5e7bb R11: 0000000000000000 R12: ffff888015bc5ed0
+R13: ffff888015bc5eb8 R14: 00000000000c0000 R15: ffff888015bc54c0
+FS:  00007f6e3c3a48c0(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f6e39776000 CR3: 00000000213b3000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ lock_acquire+0x182/0x4a0 kernel/locking/lockdep.c:5625
+ do_write_seqcount_begin_nested include/linux/seqlock.h:520 [inline]
+ do_write_seqcount_begin include/linux/seqlock.h:545 [inline]
+ vtime_user_exit+0xb9/0x3e0 kernel/sched/cputime.c:719
+ __context_tracking_exit+0x7a/0xd0 kernel/context_tracking.c:160
+ user_exit_irqoff include/linux/context_tracking.h:47 [inline]
+ __enter_from_user_mode kernel/entry/common.c:22 [inline]
+ syscall_enter_from_user_mode+0x199/0x1b0 kernel/entry/common.c:104
+ do_syscall_64+0x1e/0xb0 arch/x86/entry/common.c:76
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f6e3b65f9c7
+Code: 83 c4 08 48 3d 01 f0 ff ff 73 01 c3 48 8b 0d c8 d4 2b 00 f7 d8 64 89 01 48 83 c8 ff c3 66 0f 1f 44 00 00 b8 15 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d a1 d4 2b 00 f7 d8 64 89 01 48
+RSP: 002b:00007ffebb868098 EFLAGS: 00000246 ORIG_RAX: 0000000000000015
+RAX: ffffffffffffffda RBX: 00007ffebb86b0c0 RCX: 00007f6e3b65f9c7
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 000055c77e4df9a3
+RBP: 00007ffebb8681e0 R08: 000055c77e4d53e5 R09: 0000000000000018
+R10: 0000000000000069 R11: 0000000000000246 R12: 0000000000000000
+R13: 0000000000000000 R14: 000055c77fce98a0 R15: 00007ffebb8686d0
+----------------
+Code disassembly (best guess), 3 bytes skipped:
+   0:	df 4c 8b 7c          	fisttps 0x7c(%rbx,%rcx,4)
+   4:	24 58                	and    $0x58,%al
+   6:	4c 8b 64 24 50       	mov    0x50(%rsp),%r12
+   b:	48 81 c3 b8 00 00 00 	add    $0xb8,%rbx
+  12:	48 89 d8             	mov    %rbx,%rax
+  15:	48 c1 e8 03          	shr    $0x3,%rax
+  19:	8a 04 10             	mov    (%rax,%rdx,1),%al
+  1c:	84 c0                	test   %al,%al
+  1e:	0f 85 c1 25 00 00    	jne    0x25e5
+  24:	44 8a 33             	mov    (%rbx),%r14b
+* 27:	48 8b 44 24 60       	mov    0x60(%rsp),%rax <-- trapping instruction
+  2c:	8a 04 10             	mov    (%rax,%rdx,1),%al
+  2f:	84 c0                	test   %al,%al
+  31:	0f 85 d2 25 00 00    	jne    0x2609
+  37:	41 8b 1c 24          	mov    (%r12),%ebx
+  3b:	81                   	.byte 0x81
+  3c:	e3                   	.byte 0xe3
 
 
 ---
@@ -204,5 +201,6 @@ syzbot engineers can be reached at syzkaller@googlegroups.com.
 
 syzbot will keep track of this issue. See:
 https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
 syzbot can test patches for this issue, for details see:
 https://goo.gl/tpsmEJ#testing-patches
