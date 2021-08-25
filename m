@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 801463F6FC3
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 08:45:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA77B3F6FBE
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 08:44:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239157AbhHYGpx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 02:45:53 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:8768 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239085AbhHYGpt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 02:45:49 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Gvc0F3zBgzYsVx;
-        Wed, 25 Aug 2021 14:44:29 +0800 (CST)
+        id S239018AbhHYGpe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 02:45:34 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:15211 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238416AbhHYGpd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 02:45:33 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Gvbzx1rxtz1DDBH;
+        Wed, 25 Aug 2021 14:44:13 +0800 (CST)
 Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
  15.1.2176.2; Wed, 25 Aug 2021 14:44:46 +0800
 Received: from localhost.localdomain (10.67.165.24) by
@@ -28,10 +28,12 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>, <mkubecek@suse.cz>,
         <danieller@nvidia.com>
 CC:     <netdev@vger.kernel.org>, <lipeng321@huawei.com>,
         <chenhao288@hisilicon.com>, <huangguangbin2@huawei.com>
-Subject: [PATCH net-next 0/5] ethtool: add support to set/get tx spare buf size and rx buf len
-Date:   Wed, 25 Aug 2021 14:40:50 +0800
-Message-ID: <1629873655-51539-1-git-send-email-huangguangbin2@huawei.com>
+Subject: [PATCH net-next 1/5] ethtool: add support to set/get tx spare buf size
+Date:   Wed, 25 Aug 2021 14:40:51 +0800
+Message-ID: <1629873655-51539-2-git-send-email-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.8.1
+In-Reply-To: <1629873655-51539-1-git-send-email-huangguangbin2@huawei.com>
+References: <1629873655-51539-1-git-send-email-huangguangbin2@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.67.165.24]
@@ -42,51 +44,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series add support to set/get tx spare buf size and rx buf len via
-ethtool and hns3 driver implements them.
+From: Hao Chen <chenhao288@hisilicon.com>
 
-Tx spare buf size is used for tx copybreak feature which for small size
-packet or frag. Use ethtool --get-tunable command to get it, and ethtool
---set-tunable command to set it, examples are as follow:
+Add support for ethtool to set/get tx spare buf size.
 
-1. set tx spare buf size to 102400:
-$ ethtool --set-tunable eth1 tx-buf-size 102400
+Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+---
+ include/uapi/linux/ethtool.h | 1 +
+ net/ethtool/ioctl.c          | 1 +
+ 2 files changed, 2 insertions(+)
 
-2. get tx spare buf size:
-$ ethtool --get-tunable eth1 tx-buf-size
-tx-buf-size: 102400
-
-Rx buf len is buffer length of each rx BD. Use ethtool -g command to get
-it, and ethtool -G command to set it, examples are as follow:
-
-1. set rx buf len to 4096
-$ ethtool -G eth1 rx-buf-len 4096
-
-2. get rx buf len
-$ ethtool -g eth1
-...
-RX Buf Len:     4096
-
-
-Hao Chen (5):
-  ethtool: add support to set/get tx spare buf size
-  net: hns3: add support to set/get tx spare buf via ethtool for hns3
-    driver
-  ethtool: add support to set/get rx buf len
-  net: hns3: add support to set/get rx buf len via ethtool for hns3
-    driver
-  net: hns3: remove the way to set tx spare buf via module parameter
-
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    | 11 +--
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |  2 +
- drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 98 ++++++++++++++++++++--
- include/uapi/linux/ethtool.h                       |  3 +
- include/uapi/linux/ethtool_netlink.h               |  1 +
- net/ethtool/ioctl.c                                |  1 +
- net/ethtool/netlink.h                              |  2 +-
- net/ethtool/rings.c                                | 11 ++-
- 8 files changed, 112 insertions(+), 17 deletions(-)
-
+diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
+index b6db6590baf0..266e95e4fb33 100644
+--- a/include/uapi/linux/ethtool.h
++++ b/include/uapi/linux/ethtool.h
+@@ -231,6 +231,7 @@ enum tunable_id {
+ 	ETHTOOL_RX_COPYBREAK,
+ 	ETHTOOL_TX_COPYBREAK,
+ 	ETHTOOL_PFC_PREVENTION_TOUT, /* timeout in msecs */
++	ETHTOOL_TX_COPYBREAK_BUF_SIZE,
+ 	/*
+ 	 * Add your fresh new tunable attribute above and remember to update
+ 	 * tunable_strings[] in net/ethtool/common.c
+diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+index f2abc3152888..9fc801298fde 100644
+--- a/net/ethtool/ioctl.c
++++ b/net/ethtool/ioctl.c
+@@ -2377,6 +2377,7 @@ static int ethtool_tunable_valid(const struct ethtool_tunable *tuna)
+ 	switch (tuna->id) {
+ 	case ETHTOOL_RX_COPYBREAK:
+ 	case ETHTOOL_TX_COPYBREAK:
++	case ETHTOOL_TX_COPYBREAK_BUF_SIZE:
+ 		if (tuna->len != sizeof(u32) ||
+ 		    tuna->type_id != ETHTOOL_TUNABLE_U32)
+ 			return -EINVAL;
 -- 
 2.8.1
 
