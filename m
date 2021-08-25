@@ -2,100 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 551AB3F7B92
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 19:29:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAA343F7B94
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 19:30:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242363AbhHYRaj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 13:30:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55860 "EHLO
+        id S234115AbhHYRbc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 13:31:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242359AbhHYRaj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 13:30:39 -0400
-Received: from bombadil.infradead.org (unknown [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 528E7C061757
-        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 10:29:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
-        Subject:Sender:Reply-To:Content-ID:Content-Description;
-        bh=7y3Q6M07gXg4HMRB4g9ObQ0nQ6TauvKwSdCFCWQ0WDw=; b=L04eDKQi9X5O02xlO9Av5ZZ12E
-        JkhFJv4hzRFtNtlXW/q3Nuh5ixFie84jxhZiVdynrboONsdl3x1BjAOT/PZxDyEJRUDBe8ByCRKd+
-        +vOuSTT0hDWg5DRaFtc2++SvPUXfsB+6kQTXFxfbmaD0wIRdQBp7WMi+yKCXN0ma1QNxEpJHf+zaT
-        Zdj9p3Yw2CwTD4U74qrJFPf9hrVpqxnmx8bkfxokzDL2P5QJTt6/g91xgyVUff0wYL8yhhfhTiArW
-        1iK3FtdJkJiKJx9ct9WhnpJVQho9xZMeX2pZ2s1iXj9kqLOTiJAzJ43QU9xGIiVYBEYatp6V5orD8
-        DJJAtNcQ==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1mIwim-0086HX-Mw; Wed, 25 Aug 2021 17:29:52 +0000
-Subject: Re: [PATCH] ptp: ocp: don't allow on S390
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Arnd Bergmann <arnd@kernel.org>
-Cc:     Richard Cochran <richardcochran@gmail.com>,
-        Networking <netdev@vger.kernel.org>
-References: <20210813203026.27687-1-rdunlap@infradead.org>
- <CAK8P3a3QGF2=WZz6N8wQo2ZQxmVqKToHGmhT4wEtB7tAL+-ruQ@mail.gmail.com>
- <20210820153100.GA9604@hoboy.vegasvil.org>
- <80be0a74-9b0d-7386-323c-c261ca378eef@infradead.org>
- <CAK8P3a11wvEhoEutCNBs5NqiZ2VUA1r-oE1CKBBaYbu_abr4Aw@mail.gmail.com>
- <20210825170813.7muvouqsijy3ysrr@bsd-mbp.dhcp.thefacebook.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <8f0848a6-354d-ff58-7d41-8610dc095773@infradead.org>
-Date:   Wed, 25 Aug 2021 10:29:51 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        with ESMTP id S232053AbhHYRba (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 13:31:30 -0400
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3194C061757
+        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 10:30:44 -0700 (PDT)
+Received: by mail-yb1-xb2c.google.com with SMTP id f15so428039ybg.3
+        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 10:30:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IjaKFcdDlMXQhr8y0HwTBE8DtlwAHkcS5mN74swsR6Y=;
+        b=BBmNe5wV45Fcry5cA8g1RApKzotuemRgBPCV5EgsXeaUHksOI7Ngb/ESJ766LXC0gm
+         LXykKKWEP4DBHAL2wbRnQZ6PNm9cgoJnoIRlLCxNAF2Pl+8+X5S7RmaaiXrE7hb1fc6N
+         yr9cDKQPPyMOGsAtpK+HG6vqjyPh/gTah3ijJNcXhUXNmRxUN4DxbJZVNW4SPMR80dtD
+         yjAGrmKRPE/g7kN0C0S34Utirqdy7dzVAYnrNP46mPwI6Wd9lrsX3oX2gE7MbYhQiqTf
+         ITMFSTMGB24VZv0DZxny099839cMQoDMyz6zJDJ0RvjfPwVRpN5DOZ0rydYYl6p5iqSQ
+         hEpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IjaKFcdDlMXQhr8y0HwTBE8DtlwAHkcS5mN74swsR6Y=;
+        b=X3/a689MxBAJpZ7jNKo8v0AlL9i4SgVmakC6Vft5j4po5OejZ5bL4Wu+rfaRNZe96u
+         mJvZpSqNfef540c1/OqJrB2323R+s0BPJgdp5+TlkBnF2Y+3MvaMgra3AuY1tvr5I8pW
+         zQGxsYqkMcEdzBUm5tajRP4CKH3HcGREMZqQCQhNWrA7Fsrg0vxiuHOcWGIBqJnjGDyK
+         An0eiRxDR8mRP7/TkRncExSTVUKzsd7Qn6SXZDQW8ziXfiXey8pZEf/8a35DimW/ywWR
+         ai7koyqYeY9l8ELcz1ObZCFgMQntrm06xbEPisu84iFZksiQwUDmdHz5VdcqaVGNoKQD
+         Y/wQ==
+X-Gm-Message-State: AOAM532ekZvsvOfkLfuy0c+/EINF2sg8Cy05rZbS7iM6YAf0b36II24e
+        lzhTyQP0dO7dpifh0UtzyOgApUFq7lI27sjAUKAx7g==
+X-Google-Smtp-Source: ABdhPJyeMZZUoDCk62uqmfv04cxai6sVPMwaQ4o53o6zml5ROlVvs8babMxPXYIPcSXWjto3r/HMRo05sQJIERBr9L0=
+X-Received: by 2002:a25:2cd5:: with SMTP id s204mr11145390ybs.452.1629912643509;
+ Wed, 25 Aug 2021 10:30:43 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210825170813.7muvouqsijy3ysrr@bsd-mbp.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210819195443.1191973-1-ntspring@fb.com> <6070816e-f7d2-725a-ec10-9d85f15455a2@gmail.com>
+ <BYAPR15MB251818EA80E5569A768F0EC5BAC69@BYAPR15MB2518.namprd15.prod.outlook.com>
+In-Reply-To: <BYAPR15MB251818EA80E5569A768F0EC5BAC69@BYAPR15MB2518.namprd15.prod.outlook.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 25 Aug 2021 10:30:32 -0700
+Message-ID: <CANn89iLjeY6PBACwb0CetwUC3Pn-rryAqsCNytCrcFRwtwC6GA@mail.gmail.com>
+Subject: Re: [PATCH net-next v2] tcp: enable mid stream window clamp
+To:     Neil Spring <ntspring@fb.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>,
+        "dsahern@kernel.org" <dsahern@kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "ncardwell@google.com" <ncardwell@google.com>,
+        "ycheng@google.com" <ycheng@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/25/21 10:08 AM, Jonathan Lemon wrote:
-> On Wed, Aug 25, 2021 at 12:55:25PM +0200, Arnd Bergmann wrote:
->> On Tue, Aug 24, 2021 at 11:48 PM Randy Dunlap <rdunlap@infradead.org> wrote:
->>>
->>> On 8/20/21 8:31 AM, Richard Cochran wrote:
->>>> On Fri, Aug 20, 2021 at 12:45:42PM +0200, Arnd Bergmann wrote:
->>>>
->>>>> I would also suggest removing all the 'imply' statements, they
->>>>> usually don't do what the original author intended anyway.
->>>>> If there is a compile-time dependency with those drivers,
->>>>> it should be 'depends on', otherwise they can normally be
->>>>> left out.
->>>>
->>>> +1
->>>
->>> Hi,
->>>
->>> Removing the "imply" statements is simple enough and the driver
->>> still builds cleanly without them, so Yes, they aren't needed here.
->>>
->>> Removing the SPI dependency is also clean.
->>>
->>> The driver does use I2C, MTD, and SERIAL_8250 interfaces, so they
->>> can't be removed without some other driver changes, like using
->>> #ifdef/#endif (or #if IS_ENABLED()) blocks and some function stubs.
->>
->> If the SERIAL_8250 dependency is actually required, then using
->> 'depends on' for this is probably better than an IS_ENABLED() check.
->> The 'select' is definitely misplaced here, that doesn't even work when
->> the dependencies fo 8250 itself are not met, and it does force-enable
->> the entire TTY subsystem.
-> 
-> So, something like the following (untested) patch?
-> I admit to not fully understanding all the nuances around Kconfig.
+On Wed, Aug 25, 2021 at 9:57 AM Neil Spring <ntspring@fb.com> wrote:
+>
+>
+> Eric Dumazet wrote:
+> > On 8/19/21 12:54 PM, Neil Spring wrote:
+> > > The TCP_WINDOW_CLAMP socket option is defined in tcp(7) to "Bound the size of
+> > > the advertised window to this value."  Window clamping is distributed across two
+> > > variables, window_clamp ("Maximal window to advertise" in tcp.h) and rcv_ssthresh
+> > > ("Current window clamp").
+> > >
+> > > This patch updates the function where the window clamp is set to also reduce the current
+> > > window clamp, rcv_sshthresh, if needed.  With this, setting the TCP_WINDOW_CLAMP option
+> > > has the documented effect of limiting the window.
+> > >
+> > > Signed-off-by: Neil Spring <ntspring@fb.com>
+> > > ---
+> > > v2: - fix email formatting
+> > >
+> > >
+> > >  net/ipv4/tcp.c | 2 ++
+> > >  1 file changed, 2 insertions(+)
+> > >
+> > > diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> > > index f931def6302e..2dc6212d5888 100644
+> > > --- a/net/ipv4/tcp.c
+> > > +++ b/net/ipv4/tcp.c
+> > > @@ -3338,6 +3338,8 @@ int tcp_set_window_clamp(struct sock *sk, int val)
+> > >        } else {
+> > >                tp->window_clamp = val < SOCK_MIN_RCVBUF / 2 ?
+> > >                        SOCK_MIN_RCVBUF / 2 : val;
+> > > +             tp->rcv_ssthresh = min(tp->rcv_ssthresh,
+> > > +                                    tp->window_clamp);
+>
+> > This fits in a single line I think.
+> >                 tp->rcv_ssthresh = min(tp->rcv_ssthresh, tp->window_clamp);
+>
+> I'll fix in v3 in a moment, thanks!
+>
+> > >        }
+> > >        return 0;
+> > >  }
+> > >
+>
+> > Hi Neil
+> >
+> > Can you provide a packetdrill test showing the what the new expected behavior is ?
+>
+> Sure.  I submitted a pull request on packetdrill -
+> https://github.com/google/packetdrill/pull/56 - to document the intended behavior.
+>
+> > It is not really clear why you need this.
+>
+> The observation is that this option is currently ineffective at limiting once the
+> connection is exchanging data. I interpret this as a result of only looking at
+> the window clamp when growing rcv_ssthresh, not as a key to reduce this
+> limit.
+>
+> The packetdrill example will fail at the point where an ack should have a reduced
+> window due to the clamp.
+>
+> > Also if we are unable to increase tp->rcv_ssthresh, this means the following sequence
+> > will not work as we would expect :
+>
+> > +0 setsockopt(5, IPPROTO_TCP, TCP_WINDOW_CLAMP, [10000], 4) = 0
+> > +0 setsockopt(5, IPPROTO_TCP, TCP_WINDOW_CLAMP, [100000], 4) = 0
+>
+> The packetdrill shows that raising the window clamp works:
+> tcp_grow_window takes over and raises the window quickly, but I'll add
+> a specific test for this sequence (with no intervening data) to confirm.
 
-Hi,
+Sure, raising the window clamping is working (even before your patch)
 
-You can also remove the "select NET_DEVLINK". The driver builds fine
-without it. And please drop the "default n" while at it.
+But after your patch, rcv_ssthresh will still be 10000, instead of
+something maybe bigger ?
 
-After that, your patch will match my (tested) patch.  :)
-
-thanks.
-
--- 
-~Randy
-
+>
+> > Thanks.
+>
+> Thanks Eric!
+>
+> -neil
