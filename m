@@ -2,67 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 23C903F7DC5
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 23:39:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E23403F7DF3
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 23:53:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232768AbhHYVd1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 17:33:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35580 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229599AbhHYVd1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Aug 2021 17:33:27 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C6CFF610C8
-        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 21:32:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629927160;
-        bh=2kxD9oBMpmUQaqdwC3YSWCKXgSyHZNK0XfZzIMdaD3M=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=R0pXi+tDMirwe4JascDOZPHgFM183tv+m/+jSXFfZYf1FH0lmDSmNk+hu8D6S+4NH
-         p9OjqcbpARNO+KMOg7IGNtxabiZbraBmup7oqYTQznLYuhcQ95d1sBmDbiItPDer1z
-         JxnVXTmS+ABVjkgZjm8u/gpWstfbuhpUF5M2iLUzpUEK3Z0skKbVhK61jQ9AhdYAUE
-         LpppzxHh46Hu41SW2+vWusEiJtgilxEYLPxovBH5rm5V8C7RhfVZcq/qvhSGAddJOT
-         SKxAn+T90Ng71WNkdQDhEeYnM4ipwuAQHOY3x2i1FAJavoV/Sc//9/lSj6FNbUjaCR
-         UkVDFAnfbbJ7g==
-Received: by mail-wr1-f41.google.com with SMTP id x12so1457263wrr.11
-        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 14:32:40 -0700 (PDT)
-X-Gm-Message-State: AOAM530hQ4fUOESR6b0ytohDWERg/VvrjRgtLg7XlMZgpxzKmIkgCnE/
-        DfpNftqZQ6wXp0LuHiV535ZuK4y8WZxJHTnD8D8=
-X-Google-Smtp-Source: ABdhPJzFC7z1Fmpxgi8a0UwzcW/TvcolFKW5Ch+zYJ5fO74cKeBtt/Mb/0NA4X1r8H99nD+fqU9osFBvtykSxqSocGw=
-X-Received: by 2002:adf:d1c3:: with SMTP id b3mr224413wrd.286.1629927159486;
- Wed, 25 Aug 2021 14:32:39 -0700 (PDT)
+        id S233563AbhHYVqd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 17:46:33 -0400
+Received: from mail109.syd.optusnet.com.au ([211.29.132.80]:56862 "EHLO
+        mail109.syd.optusnet.com.au" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231559AbhHYVqc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 17:46:32 -0400
+Received: from dread.disaster.area (pa49-195-182-146.pa.nsw.optusnet.com.au [49.195.182.146])
+        by mail109.syd.optusnet.com.au (Postfix) with ESMTPS id 40F32845F7;
+        Thu, 26 Aug 2021 07:45:38 +1000 (AEST)
+Received: from dave by dread.disaster.area with local (Exim 4.92.3)
+        (envelope-from <david@fromorbit.com>)
+        id 1mJ0iE-004w5c-8M; Thu, 26 Aug 2021 07:45:34 +1000
+Date:   Thu, 26 Aug 2021 07:45:34 +1000
+From:   Dave Chinner <david@fromorbit.com>
+To:     syzbot <syzbot+4bb1622c9a583bb6f9f2@syzkaller.appspotmail.com>
+Cc:     a@unstable.cc, axboe@kernel.dk, b.a.t.m.a.n@lists.open-mesh.org,
+        davem@davemloft.net, djwong@kernel.org, josef@toxicpanda.com,
+        linux-kernel@vger.kernel.org, linux-xfs@vger.kernel.org,
+        mareklindner@neomailbox.ch, mchristi@redhat.com,
+        netdev@vger.kernel.org, sw@simonwunderlich.de,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] INFO: task hung in __xfs_buf_submit (2)
+Message-ID: <20210825214534.GM3657114@dread.disaster.area>
+References: <0000000000002fc21105ca657edf@google.com>
 MIME-Version: 1.0
-References: <20210825211733.264844-1-jonathan.lemon@gmail.com>
-In-Reply-To: <20210825211733.264844-1-jonathan.lemon@gmail.com>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Wed, 25 Aug 2021 23:32:23 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a21pov6f578=ewBKHJUxKvDJTO=iVYypHx3KPKQOHEcmA@mail.gmail.com>
-Message-ID: <CAK8P3a21pov6f578=ewBKHJUxKvDJTO=iVYypHx3KPKQOHEcmA@mail.gmail.com>
-Subject: Re: [PATCH net-next] ptp: ocp: Simplify Kconfig.
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     Networking <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Richard Cochran <richardcochran@gmail.com>, kernel-team@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0000000000002fc21105ca657edf@google.com>
+X-Optus-CM-Score: 0
+X-Optus-CM-Analysis: v=2.3 cv=Tu+Yewfh c=1 sm=1 tr=0
+        a=QpfB3wCSrn/dqEBSktpwZQ==:117 a=QpfB3wCSrn/dqEBSktpwZQ==:17
+        a=kj9zAlcOel0A:10 a=MhDmnRu9jo8A:10 a=VwQbUJbxAAAA:8 a=edf1wS77AAAA:8
+        a=20KFwNOVAAAA:8 a=hSkVLCK3AAAA:8 a=7-415B0cAAAA:8 a=uqB4RbaozhEYDSnVuTIA:9
+        a=CjuIK1q_8ugA:10 a=AjGcO6oz07-iQ99wixmX:22 a=DcSpbTIhAlouE1Uv7lRv:22
+        a=cQPPKAXgyycSBL8etih5:22 a=biEYGPWJfzWAr4FL6Ov7:22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 25, 2021 at 11:17 PM Jonathan Lemon
-<jonathan.lemon@gmail.com> wrote:
->
-> Remove the 'imply' statements, these apparently are not doing
-> what I expected.  Platform modules which are used by the driver
-> still need to be enabled in the overall config for them to be
-> used, but there isn't a hard dependency on them.
->
-> Use 'depend' for selectable modules which provide functions
-> used directly by the driver.
->
-> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
-> ---
->  drivers/ptp/Kconfig | 10 ++--------
->  1 file changed, 2 insertions(+), 8 deletions(-)
+On Wed, Aug 25, 2021 at 10:22:21AM -0700, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following issue on:
+> 
+> HEAD commit:    6e764bcd1cf7 Merge tag 'for-linus' of git://git.kernel.org..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=10504885300000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=2fd902af77ff1e56
+> dashboard link: https://syzkaller.appspot.com/bug?extid=4bb1622c9a583bb6f9f2
+> compiler:       Debian clang version 11.0.1-2, GNU ld (GNU Binutils for Debian) 2.35.1
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14427606300000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=149b3cce300000
+> 
+> The issue was bisected to:
+> 
+> commit 887e975c4172d0d5670c39ead2f18ba1e4ec8133
+> Author: Mike Christie <mchristi@redhat.com>
+> Date:   Tue Aug 13 16:39:51 2019 +0000
+> 
+>     nbd: add missing config put
+> 
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11980ad5300000
+> final oops:     https://syzkaller.appspot.com/x/report.txt?x=13980ad5300000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=15980ad5300000
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+4bb1622c9a583bb6f9f2@syzkaller.appspotmail.com
+> Fixes: 887e975c4172 ("nbd: add missing config put")
 
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+XFS is waiting on IO completion to be signalled from the block
+device, and the bisect points to commit fixing a problem with a
+block device processing IO timeout errors.
+
+IOWs, the above commit is probably exposing a latent bug in the
+commit that changes all the error handling in nbd to fix completion
+races in IO completion. The commit message for 8f3ea35929a0 ("nbd:
+handle unexpected replies better") also makes mention of races with
+timeout errors, and the above commit is touching the timeout error
+handling.
+
+Josef, this one looks like it is yours...
+
+Cheers,
+
+Dave.
+-- 
+Dave Chinner
+david@fromorbit.com
