@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 426353F6FC0
-	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 08:44:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A8F63F6FC2
+	for <lists+netdev@lfdr.de>; Wed, 25 Aug 2021 08:45:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239116AbhHYGpi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 02:45:38 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:14413 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238483AbhHYGpd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 02:45:33 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Gvbw83FwVzbdLH;
-        Wed, 25 Aug 2021 14:40:56 +0800 (CST)
+        id S239118AbhHYGpw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 02:45:52 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:8769 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239111AbhHYGpt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 02:45:49 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Gvc0F4FxTzYsZb;
+        Wed, 25 Aug 2021 14:44:29 +0800 (CST)
 Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
  15.1.2176.2; Wed, 25 Aug 2021 14:44:46 +0800
 Received: from localhost.localdomain (10.67.165.24) by
@@ -28,9 +28,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>, <mkubecek@suse.cz>,
         <danieller@nvidia.com>
 CC:     <netdev@vger.kernel.org>, <lipeng321@huawei.com>,
         <chenhao288@hisilicon.com>, <huangguangbin2@huawei.com>
-Subject: [PATCH net-next 2/5] net: hns3: add support to set/get tx spare buf via ethtool for hns3 driver
-Date:   Wed, 25 Aug 2021 14:40:52 +0800
-Message-ID: <1629873655-51539-3-git-send-email-huangguangbin2@huawei.com>
+Subject: [PATCH net-next 3/5] ethtool: add support to set/get rx buf len
+Date:   Wed, 25 Aug 2021 14:40:53 +0800
+Message-ID: <1629873655-51539-4-git-send-email-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1629873655-51539-1-git-send-email-huangguangbin2@huawei.com>
 References: <1629873655-51539-1-git-send-email-huangguangbin2@huawei.com>
@@ -46,145 +46,106 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Hao Chen <chenhao288@hisilicon.com>
 
-Tx spare buf size is used for tx copybreak feature, the feature is
-used for small size packet or frag. It adds a queue based tx shared
-bounce buffer to memcpy the small packet when the len of xmitted skb is
-below tx_copybreak(value to distinguish small size and normal size),
-and reduce the overhead of dma map and unmap when IOMMU is on.
-
-Support setting it via ethtool --set-tunable parameter and getting
-it via ethtool --get-tunable parameter.
+Add support to set rx buf len via ethtool -G parameter and get
+rx buf len via ethtool -g parameter.
 
 Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    |  4 +-
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |  2 +
- drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 56 ++++++++++++++++++++++
- 3 files changed, 60 insertions(+), 2 deletions(-)
+ include/uapi/linux/ethtool.h         |  2 ++
+ include/uapi/linux/ethtool_netlink.h |  1 +
+ net/ethtool/netlink.h                |  2 +-
+ net/ethtool/rings.c                  | 11 +++++++++--
+ 4 files changed, 13 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index 39d01ca026da..c945fa4b3c9c 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -5533,8 +5533,8 @@ static int hns3_reset_notify_uninit_enet(struct hnae3_handle *handle)
+diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
+index 266e95e4fb33..6e26586274b3 100644
+--- a/include/uapi/linux/ethtool.h
++++ b/include/uapi/linux/ethtool.h
+@@ -516,6 +516,7 @@ struct ethtool_coalesce {
+  *	jumbo ring
+  * @tx_pending: Current maximum supported number of pending entries
+  *	per TX ring
++ * @rx_buf_len: Current supported size of rx ring BD buffer.
+  *
+  * If the interface does not have separate RX mini and/or jumbo rings,
+  * @rx_mini_max_pending and/or @rx_jumbo_max_pending will be 0.
+@@ -533,6 +534,7 @@ struct ethtool_ringparam {
+ 	__u32	rx_mini_pending;
+ 	__u32	rx_jumbo_pending;
+ 	__u32	tx_pending;
++	__u32	rx_buf_len;
+ };
+ 
+ /**
+diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
+index 5545f1ca9237..3883fa4168e9 100644
+--- a/include/uapi/linux/ethtool_netlink.h
++++ b/include/uapi/linux/ethtool_netlink.h
+@@ -325,6 +325,7 @@ enum {
+ 	ETHTOOL_A_RINGS_RX_MINI,			/* u32 */
+ 	ETHTOOL_A_RINGS_RX_JUMBO,			/* u32 */
+ 	ETHTOOL_A_RINGS_TX,				/* u32 */
++	ETHTOOL_A_RINGS_RX_BUF_LEN,                     /* u32 */
+ 
+ 	/* add new constants above here */
+ 	__ETHTOOL_A_RINGS_CNT,
+diff --git a/net/ethtool/netlink.h b/net/ethtool/netlink.h
+index e8987e28036f..3183f1fc6990 100644
+--- a/net/ethtool/netlink.h
++++ b/net/ethtool/netlink.h
+@@ -355,7 +355,7 @@ extern const struct nla_policy ethnl_features_set_policy[ETHTOOL_A_FEATURES_WANT
+ extern const struct nla_policy ethnl_privflags_get_policy[ETHTOOL_A_PRIVFLAGS_HEADER + 1];
+ extern const struct nla_policy ethnl_privflags_set_policy[ETHTOOL_A_PRIVFLAGS_FLAGS + 1];
+ extern const struct nla_policy ethnl_rings_get_policy[ETHTOOL_A_RINGS_HEADER + 1];
+-extern const struct nla_policy ethnl_rings_set_policy[ETHTOOL_A_RINGS_TX + 1];
++extern const struct nla_policy ethnl_rings_set_policy[ETHTOOL_A_RINGS_RX_BUF_LEN + 1];
+ extern const struct nla_policy ethnl_channels_get_policy[ETHTOOL_A_CHANNELS_HEADER + 1];
+ extern const struct nla_policy ethnl_channels_set_policy[ETHTOOL_A_CHANNELS_COMBINED_COUNT + 1];
+ extern const struct nla_policy ethnl_coalesce_get_policy[ETHTOOL_A_COALESCE_HEADER + 1];
+diff --git a/net/ethtool/rings.c b/net/ethtool/rings.c
+index 4e097812a967..8847b1daf477 100644
+--- a/net/ethtool/rings.c
++++ b/net/ethtool/rings.c
+@@ -49,7 +49,8 @@ static int rings_reply_size(const struct ethnl_req_info *req_base,
+ 	       nla_total_size(sizeof(u32)) +	/* _RINGS_RX */
+ 	       nla_total_size(sizeof(u32)) +	/* _RINGS_RX_MINI */
+ 	       nla_total_size(sizeof(u32)) +	/* _RINGS_RX_JUMBO */
+-	       nla_total_size(sizeof(u32));	/* _RINGS_TX */
++	       nla_total_size(sizeof(u32)) +	/* _RINGS_TX */
++	       nla_total_size(sizeof(u32));     /* _RINGS_RX_BUF_LEN */
+ }
+ 
+ static int rings_fill_reply(struct sk_buff *skb,
+@@ -78,7 +79,10 @@ static int rings_fill_reply(struct sk_buff *skb,
+ 	     (nla_put_u32(skb, ETHTOOL_A_RINGS_TX_MAX,
+ 			  ringparam->tx_max_pending) ||
+ 	      nla_put_u32(skb, ETHTOOL_A_RINGS_TX,
+-			  ringparam->tx_pending))))
++			  ringparam->tx_pending)))  ||
++	    (ringparam->rx_buf_len &&
++	     (nla_put_u32(skb, ETHTOOL_A_RINGS_RX_BUF_LEN,
++			  ringparam->rx_buf_len))))
+ 		return -EMSGSIZE;
+ 
  	return 0;
- }
+@@ -105,6 +109,7 @@ const struct nla_policy ethnl_rings_set_policy[] = {
+ 	[ETHTOOL_A_RINGS_RX_MINI]		= { .type = NLA_U32 },
+ 	[ETHTOOL_A_RINGS_RX_JUMBO]		= { .type = NLA_U32 },
+ 	[ETHTOOL_A_RINGS_TX]			= { .type = NLA_U32 },
++	[ETHTOOL_A_RINGS_RX_BUF_LEN]            = { .type = NLA_U32 },
+ };
  
--static int hns3_reset_notify(struct hnae3_handle *handle,
--			     enum hnae3_reset_notify_type type)
-+int hns3_reset_notify(struct hnae3_handle *handle,
-+		      enum hnae3_reset_notify_type type)
- {
- 	int ret = 0;
- 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-index dfad9060c284..3287d846d7e0 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-@@ -705,6 +705,8 @@ void hns3_set_vector_coalesce_tx_ql(struct hns3_enet_tqp_vector *tqp_vector,
- 				    u32 ql_value);
- 
- void hns3_request_update_promisc_mode(struct hnae3_handle *handle);
-+int hns3_reset_notify(struct hnae3_handle *handle,
-+		      enum hnae3_reset_notify_type type);
- 
- #ifdef CONFIG_HNS3_DCB
- void hns3_dcbnl_setup(struct hnae3_handle *handle);
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-index b8d9851aefc5..5a21b9eb9820 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-@@ -1664,6 +1664,7 @@ static int hns3_get_tunable(struct net_device *netdev,
- 			    void *data)
- {
- 	struct hns3_nic_priv *priv = netdev_priv(netdev);
-+	struct hnae3_handle *h = priv->ae_handle;
- 	int ret = 0;
- 
- 	switch (tuna->id) {
-@@ -1674,6 +1675,9 @@ static int hns3_get_tunable(struct net_device *netdev,
- 	case ETHTOOL_RX_COPYBREAK:
- 		*(u32 *)data = priv->rx_copybreak;
- 		break;
-+	case ETHTOOL_TX_COPYBREAK_BUF_SIZE:
-+		*(u32 *)data = h->kinfo.tx_spare_buf_size;
-+		break;
- 	default:
- 		ret = -EOPNOTSUPP;
- 		break;
-@@ -1682,12 +1686,44 @@ static int hns3_get_tunable(struct net_device *netdev,
- 	return ret;
- }
- 
-+static int hns3_set_tx_spare_buf_size(struct net_device *netdev,
-+				      u32 data)
-+{
-+	struct hns3_nic_priv *priv = netdev_priv(netdev);
-+	struct hnae3_handle *h = priv->ae_handle;
-+	int ret;
-+
-+	if (test_bit(HNS3_NIC_STATE_RESETTING, &priv->state))
-+		return -EBUSY;
-+
-+	h->kinfo.tx_spare_buf_size = data;
-+
-+	ret = hns3_reset_notify(h, HNAE3_DOWN_CLIENT);
-+	if (ret)
-+		return ret;
-+
-+	ret = hns3_reset_notify(h, HNAE3_UNINIT_CLIENT);
-+	if (ret)
-+		return ret;
-+
-+	ret = hns3_reset_notify(h, HNAE3_INIT_CLIENT);
-+	if (ret)
-+		return ret;
-+
-+	ret = hns3_reset_notify(h, HNAE3_UP_CLIENT);
-+	if (ret)
-+		hns3_reset_notify(h, HNAE3_UNINIT_CLIENT);
-+
-+	return ret;
-+}
-+
- static int hns3_set_tunable(struct net_device *netdev,
- 			    const struct ethtool_tunable *tuna,
- 			    const void *data)
- {
- 	struct hns3_nic_priv *priv = netdev_priv(netdev);
- 	struct hnae3_handle *h = priv->ae_handle;
-+	u32 old_tx_spare_buf_size, new_tx_spare_buf_size;
- 	int i, ret = 0;
- 
- 	switch (tuna->id) {
-@@ -1705,6 +1741,26 @@ static int hns3_set_tunable(struct net_device *netdev,
- 			priv->ring[i].rx_copybreak = priv->rx_copybreak;
- 
- 		break;
-+	case ETHTOOL_TX_COPYBREAK_BUF_SIZE:
-+		old_tx_spare_buf_size = h->kinfo.tx_spare_buf_size;
-+		new_tx_spare_buf_size = *(u32 *)data;
-+		ret = hns3_set_tx_spare_buf_size(netdev, new_tx_spare_buf_size);
-+		if (ret) {
-+			int ret1;
-+
-+			netdev_warn(netdev,
-+				    "change tx spare buf size fail, revert to old value\n");
-+			ret1 = hns3_set_tx_spare_buf_size(netdev,
-+							  old_tx_spare_buf_size);
-+			if (ret1) {
-+				netdev_err(netdev,
-+					   "revert to old tx spare buf size fail\n");
-+				return ret1;
-+			}
-+
-+		return ret;
-+		}
-+		break;
- 	default:
- 		ret = -EOPNOTSUPP;
- 		break;
+ int ethnl_set_rings(struct sk_buff *skb, struct genl_info *info)
+@@ -142,6 +147,8 @@ int ethnl_set_rings(struct sk_buff *skb, struct genl_info *info)
+ 	ethnl_update_u32(&ringparam.rx_jumbo_pending,
+ 			 tb[ETHTOOL_A_RINGS_RX_JUMBO], &mod);
+ 	ethnl_update_u32(&ringparam.tx_pending, tb[ETHTOOL_A_RINGS_TX], &mod);
++	ethnl_update_u32(&ringparam.rx_buf_len,
++			 tb[ETHTOOL_A_RINGS_RX_BUF_LEN], &mod);
+ 	ret = 0;
+ 	if (!mod)
+ 		goto out_ops;
 -- 
 2.8.1
 
