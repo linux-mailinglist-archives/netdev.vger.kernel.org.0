@@ -2,195 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53C043F8B9D
-	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 18:16:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 868663F8BA8
+	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 18:18:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234549AbhHZQQy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 12:16:54 -0400
-Received: from out02.mta.xmission.com ([166.70.13.232]:42200 "EHLO
-        out02.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232555AbhHZQQy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 12:16:54 -0400
-Received: from in02.mta.xmission.com ([166.70.13.52]:50700)
-        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1mJI2v-00Dn3R-Rw; Thu, 26 Aug 2021 10:16:05 -0600
-Received: from ip68-227-160-95.om.om.cox.net ([68.227.160.95]:57710 helo=email.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1mJI2u-00BzM3-F2; Thu, 26 Aug 2021 10:16:05 -0600
-From:   ebiederm@xmission.com (Eric W. Biederman)
-To:     Andrey Ignatov <rdna@fb.com>
-Cc:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <kernel-team@fb.com>
-References: <20210826002540.11306-1-rdna@fb.com>
-Date:   Thu, 26 Aug 2021 11:15:22 -0500
-In-Reply-To: <20210826002540.11306-1-rdna@fb.com> (Andrey Ignatov's message of
-        "Wed, 25 Aug 2021 17:25:40 -0700")
-Message-ID: <8735qwi3mt.fsf@disp2133>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S243061AbhHZQTK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 12:19:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56986 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232509AbhHZQTK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 12:19:10 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3C08C061757;
+        Thu, 26 Aug 2021 09:18:22 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id 7so3172299pfl.10;
+        Thu, 26 Aug 2021 09:18:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=dOyIpQNn1Wv/pADBDK73i6xsgkcQlLak+x+jp44hVCc=;
+        b=bE2i9Y6FpKsaXS3UjsA1KPXFLrFcJMKSvIU8iMbzjz1VFSN5OvDPKLvYbkTeysQFqb
+         bqRy8g4xO3osIKTfzDkrb3IWqq9dzZpua8YlIle/aFPPuD5E8zCPXo5BYzgu6XIuJ98a
+         2Ss1w8Yg8VvCFyQR3B8t0ja9DInfgSx/mUF208h0bWvaXLG466vd36Vnol54HuZOB10I
+         BBKTtz+CAkjvCt1nmy6EhnHpMZIQQ25hA2mSquuBRyHfTA1ZSgY7mWSQLzJR2p//qiFr
+         0kJA4VqFibMNUcCQlGBQE9KhG1yv04o2CyFa1AUQS4P52F0GJnm5Jadvby9rLqYinldT
+         4fqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=dOyIpQNn1Wv/pADBDK73i6xsgkcQlLak+x+jp44hVCc=;
+        b=KMwL9E5kMoT/ivqCgOKsGAtLSCrUMEwreeZuFANfn3m/VzWCU5AKFM6hI5V70B83JT
+         8PPnbeYuMsa3rFLVtSrL2SWgZrhQWbxW6NpPl8IZ2ypwYO/4oKZlTbIZf2583Vb53i86
+         T6xzfnzTvczmA1UL3ijdLU31KuNYXULyhOq0rLn1jGWya1a7mC2wH5s56ar+aPSWTyBn
+         9kQszpmoPbxq/qy1D/YbF1jtoZIgulNyy4lcVXFW5OX5nC7+VXOAA3qrLkf7302UMfqM
+         jpZU3vqi6g+EoV8pUoIBI7m94gjimV5/dCcdqXJRrosOOWtFn7r+pT9tH9oMnPJgEgkN
+         uf/Q==
+X-Gm-Message-State: AOAM531//VmagdZgiIWR63hwcpITYGcpBwVY3dJ4BcuVDDkKbPA+AUri
+        Vqh/DAev4jVS5i7ETGWDrLssD1p2otg=
+X-Google-Smtp-Source: ABdhPJwcKlndbk9gwN6SyO3+bdthDmcnVOq1T77Rx4GVlTCUYigx9bEWdomUjGHW032/Qu8CChs9QA==
+X-Received: by 2002:a63:cf44:: with SMTP id b4mr3892793pgj.215.1629994702325;
+        Thu, 26 Aug 2021 09:18:22 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id b7sm1525236pgs.64.2021.08.26.09.18.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 26 Aug 2021 09:18:21 -0700 (PDT)
+Subject: Re: [PATCH v4] ixgbe: let the xdpdrv work with more than 64 cpus
+To:     kerneljasonxing@gmail.com, jesse.brandeburg@intel.com,
+        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
+        john.fastabend@gmail.com, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        Jason Xing <xingwanli@kuaishou.com>,
+        Shujin Li <lishujin@kuaishou.com>
+References: <20210826141623.8151-1-kerneljasonxing@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <00890ff4-3264-337a-19cc-521a6434d1d0@gmail.com>
+Date:   Thu, 26 Aug 2021 09:18:16 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1mJI2u-00BzM3-F2;;;mid=<8735qwi3mt.fsf@disp2133>;;;hst=in02.mta.xmission.com;;;ip=68.227.160.95;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX18O0MHBnGBms9iJGdbWEfxJYjsADzP7rog=
-X-SA-Exim-Connect-IP: 68.227.160.95
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on sa06.xmission.com
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=8.0 tests=ALL_TRUSTED,BAYES_50,
-        DCC_CHECK_NEGATIVE,T_TM2_M_HEADER_IN_MSG,XMSubLong autolearn=disabled
-        version=3.4.2
-X-Spam-Report: * -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5000]
-        *  0.7 XMSubLong Long Subject
-        *  0.0 T_TM2_M_HEADER_IN_MSG BODY: No description available.
-        * -0.0 DCC_CHECK_NEGATIVE Not listed in DCC
-        *      [sa06 1397; Body=1 Fuz1=1 Fuz2=1]
-X-Spam-DCC: XMission; sa06 1397; Body=1 Fuz1=1 Fuz2=1 
-X-Spam-Combo: ;Andrey Ignatov <rdna@fb.com>
-X-Spam-Relay-Country: 
-X-Spam-Timing: total 786 ms - load_scoreonly_sql: 0.04 (0.0%),
-        signal_user_changed: 9 (1.1%), b_tie_ro: 7 (0.9%), parse: 1.00 (0.1%),
-        extract_message_metadata: 20 (2.6%), get_uri_detail_list: 3.1 (0.4%),
-        tests_pri_-1000: 26 (3.4%), tests_pri_-950: 1.29 (0.2%),
-        tests_pri_-900: 1.03 (0.1%), tests_pri_-90: 223 (28.4%), check_bayes:
-        221 (28.1%), b_tokenize: 11 (1.4%), b_tok_get_all: 10 (1.2%),
-        b_comp_prob: 3.1 (0.4%), b_tok_touch_all: 193 (24.5%), b_finish: 1.17
-        (0.1%), tests_pri_0: 492 (62.5%), check_dkim_signature: 0.58 (0.1%),
-        check_dkim_adsp: 2.7 (0.3%), poll_dns_idle: 0.74 (0.1%), tests_pri_10:
-        2.0 (0.3%), tests_pri_500: 8 (1.0%), rewrite_mail: 0.00 (0.0%)
-Subject: Re: [PATCH net] rtnetlink: Return correct error on changing device netns
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+In-Reply-To: <20210826141623.8151-1-kerneljasonxing@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrey Ignatov <rdna@fb.com> writes:
 
-> Currently when device is moved between network namespaces using
-> RTM_NEWLINK message type and one of netns attributes (FLA_NET_NS_PID,
-> IFLA_NET_NS_FD, IFLA_TARGET_NETNSID) but w/o specifying IFLA_IFNAME, and
-> target namespace already has device with same name, userspace will get
-> EINVAL what is confusing and makes debugging harder.
->
-> Fix it so that userspace gets more appropriate EEXIST instead what makes
-> debugging much easier.
->
-> Before:
->
->   # ./ifname.sh
->   + ip netns add ns0
->   + ip netns exec ns0 ip link add l0 type dummy
->   + ip netns exec ns0 ip link show l0
->   8: l0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
->       link/ether 66:90:b5:d5:78:69 brd ff:ff:ff:ff:ff:ff
->   + ip link add l0 type dummy
->   + ip link show l0
->   10: l0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
->       link/ether 6e:c6:1f:15:20:8d brd ff:ff:ff:ff:ff:ff
->   + ip link set l0 netns ns0
->   RTNETLINK answers: Invalid argument
->
-> After:
->
->   # ./ifname.sh
->   + ip netns add ns0
->   + ip netns exec ns0 ip link add l0 type dummy
->   + ip netns exec ns0 ip link show l0
->   8: l0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
->       link/ether 1e:4a:72:e3:e3:8f brd ff:ff:ff:ff:ff:ff
->   + ip link add l0 type dummy
->   + ip link show l0
->   10: l0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
->       link/ether f2:fc:fe:2b:7d:a6 brd ff:ff:ff:ff:ff:ff
->   + ip link set l0 netns ns0
->   RTNETLINK answers: File exists
->
-> The problem is that do_setlink() passes its `char *ifname` argument,
-> that it gets from a caller, to __dev_change_net_namespace() as is (as
-> `const char *pat`), but semantics of ifname and pat can be different.
->
-> For example, __rtnl_newlink() does this:
->
-> net/core/rtnetlink.c
->     3270	char ifname[IFNAMSIZ];
->      ...
->     3286	if (tb[IFLA_IFNAME])
->     3287		nla_strscpy(ifname, tb[IFLA_IFNAME], IFNAMSIZ);
->     3288	else
->     3289		ifname[0] = '\0';
->      ...
->     3364	if (dev) {
->      ...
->     3394		return do_setlink(skb, dev, ifm, extack, tb, ifname, status);
->     3395	}
->
-> , i.e. do_setlink() gets ifname pointer that is always valid no matter
-> if user specified IFLA_IFNAME or not and then do_setlink() passes this
-> ifname pointer as is to __dev_change_net_namespace() as pat argument.
->
-> But the pat (pattern) in __dev_change_net_namespace() is used as:
->
-> net/core/dev.c
->    11198	err = -EEXIST;
->    11199	if (__dev_get_by_name(net, dev->name)) {
->    11200		/* We get here if we can't use the current device name */
->    11201		if (!pat)
->    11202			goto out;
->    11203		err = dev_get_valid_name(net, dev, pat);
->    11204		if (err < 0)
->    11205			goto out;
->    11206	}
->
-> As the result the `goto out` path on line 11202 is neven taken and
-> instead of returning EEXIST defined on line 11198,
-> __dev_change_net_namespace() returns an error from dev_get_valid_name()
-> and this, in turn, will be EINVAL for ifname[0] = '\0' set earlier.
->
-> Fixes: d8a5ec672768 ("[NET]: netlink support for moving devices between network namespaces.")
-> Signed-off-by: Andrey Ignatov <rdna@fb.com>
 
-The analysis and the fix looks good to me.
+On 8/26/21 7:16 AM, kerneljasonxing@gmail.com wrote:
+> From: Jason Xing <xingwanli@kuaishou.com>
+> 
+> Originally, ixgbe driver doesn't allow the mounting of xdpdrv if the
+> server is equipped with more than 64 cpus online. So it turns out that
+> the loading of xdpdrv causes the "NOMEM" failure.
+> 
+> Actually, we can adjust the algorithm and then make it work through
+> mapping the current cpu to some xdp ring with the protect of @tx_lock.
+> 
+> v4:
+> - Update the wrong commit messages. (Jason)
+> 
+> v3:
+> - Change nr_cpu_ids to num_online_cpus() (Maciej)
 
-The code calling do_setlink is inconsistent.  One caller of do_setlink
-passes a NULL to indicate not name has been specified.  Other callers
-pass a string of zero bytes to indicate no name has been specified.
+I suspect this is wrong.
 
-I wonder if we might want to fix the callers to uniformly pass NULL,
-instead of a string of length zero.
-
-There is a slight chance this will trigger a regression somewhere
-because we are changing the error code but this change looks easy enough
-to revert in the unlikely event this breaks existing userspace.
-
-Reviewed-by: "Eric W. Biederman" <ebiederm@xmission.com>
-
+> - Rename MAX_XDP_QUEUES to IXGBE_MAX_XDP_QS (Maciej)
+> - Rename ixgbe_determine_xdp_cpu() to ixgbe_determine_xdp_q_idx() (Maciej)
+> - Wrap ixgbe_xdp_ring_update_tail() with lock into one function (Maciej)
+> 
+> v2:
+> - Adjust cpu id in ixgbe_xdp_xmit(). (Jesper)
+> - Add a fallback path. (Maciej)
+> - Adjust other parts related to xdp ring.
+> 
+> Fixes: 33fdc82f08 ("ixgbe: add support for XDP_TX action")
+> Co-developed-by: Shujin Li <lishujin@kuaishou.com>
+> Signed-off-by: Shujin Li <lishujin@kuaishou.com>
+> Signed-off-by: Jason Xing <xingwanli@kuaishou.com>
 > ---
->  net/core/rtnetlink.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+>  drivers/net/ethernet/intel/ixgbe/ixgbe.h           | 15 ++++-
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c       |  9 ++-
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c      | 64 ++++++++++++++++------
+>  .../net/ethernet/intel/ixgbe/ixgbe_txrx_common.h   |  1 +
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c       |  9 +--
+>  5 files changed, 73 insertions(+), 25 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe.h b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
+> index a604552..5f7f181 100644
+> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe.h
+> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
+> @@ -82,6 +82,8 @@
+>  #define IXGBE_2K_TOO_SMALL_WITH_PADDING \
+>  ((NET_SKB_PAD + IXGBE_RXBUFFER_1536) > SKB_WITH_OVERHEAD(IXGBE_RXBUFFER_2K))
+>  
+> +DECLARE_STATIC_KEY_FALSE(ixgbe_xdp_locking_key);
+> +
+>  static inline int ixgbe_compute_pad(int rx_buf_len)
+>  {
+>  	int page_size, pad_size;
+> @@ -351,6 +353,7 @@ struct ixgbe_ring {
+>  	};
+>  	u16 rx_offset;
+>  	struct xdp_rxq_info xdp_rxq;
+> +	spinlock_t tx_lock;	/* used in XDP mode */
+>  	struct xsk_buff_pool *xsk_pool;
+>  	u16 ring_idx;		/* {rx,tx,xdp}_ring back reference idx */
+>  	u16 rx_buf_len;
+> @@ -375,7 +378,7 @@ enum ixgbe_ring_f_enum {
+>  #define IXGBE_MAX_FCOE_INDICES		8
+>  #define MAX_RX_QUEUES			(IXGBE_MAX_FDIR_INDICES + 1)
+>  #define MAX_TX_QUEUES			(IXGBE_MAX_FDIR_INDICES + 1)
+> -#define MAX_XDP_QUEUES			(IXGBE_MAX_FDIR_INDICES + 1)
+> +#define IXGBE_MAX_XDP_QS		(IXGBE_MAX_FDIR_INDICES + 1)
+>  #define IXGBE_MAX_L2A_QUEUES		4
+>  #define IXGBE_BAD_L2A_QUEUE		3
+>  #define IXGBE_MAX_MACVLANS		63
+> @@ -629,7 +632,7 @@ struct ixgbe_adapter {
+>  
+>  	/* XDP */
+>  	int num_xdp_queues;
+> -	struct ixgbe_ring *xdp_ring[MAX_XDP_QUEUES];
+> +	struct ixgbe_ring *xdp_ring[IXGBE_MAX_XDP_QS];
+>  	unsigned long *af_xdp_zc_qps; /* tracks AF_XDP ZC enabled rings */
+>  
+>  	/* TX */
+> @@ -772,6 +775,14 @@ struct ixgbe_adapter {
+>  #endif /* CONFIG_IXGBE_IPSEC */
+>  };
+>  
+> +static inline int ixgbe_determine_xdp_q_idx(int cpu)
+> +{
+> +	if (static_key_enabled(&ixgbe_xdp_locking_key))
+> +		return cpu % IXGBE_MAX_XDP_QS;
+> +	else
+> +		return cpu;
+
+Even if num_online_cpus() is 8, the returned cpu here could be
+
+0, 32, 64, 96, 128, 161, 197, 224
+
+Are we sure this will still be ok ?
+
+> +}
+> +
+>  static inline u8 ixgbe_max_rss_indices(struct ixgbe_adapter *adapter)
+>  {
+>  	switch (adapter->hw.mac.type) {
+> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
+> index 0218f6c..884bf99 100644
+> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
+> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
+> @@ -299,7 +299,10 @@ static void ixgbe_cache_ring_register(struct ixgbe_adapter *adapter)
+>  
+>  static int ixgbe_xdp_queues(struct ixgbe_adapter *adapter)
+>  {
+> -	return adapter->xdp_prog ? nr_cpu_ids : 0;
+> +	int queues;
+> +
+> +	queues = min_t(int, IXGBE_MAX_XDP_QS, num_online_cpus());
+
+num_online_cpus() might change later...
+
+
+
+
+> +	return adapter->xdp_prog ? queues : 0;
+>  }
+>  
+>  #define IXGBE_RSS_64Q_MASK	0x3F
+> @@ -947,6 +950,7 @@ static int ixgbe_alloc_q_vector(struct ixgbe_adapter *adapter,
+>  		ring->count = adapter->tx_ring_count;
+>  		ring->queue_index = xdp_idx;
+>  		set_ring_xdp(ring);
+> +		spin_lock_init(&ring->tx_lock);
+>  
+>  		/* assign ring to adapter */
+>  		WRITE_ONCE(adapter->xdp_ring[xdp_idx], ring);
+> @@ -1032,6 +1036,9 @@ static void ixgbe_free_q_vector(struct ixgbe_adapter *adapter, int v_idx)
+>  	adapter->q_vector[v_idx] = NULL;
+>  	__netif_napi_del(&q_vector->napi);
+>  
+> +	if (static_key_enabled(&ixgbe_xdp_locking_key))
+> +		static_branch_dec(&ixgbe_xdp_locking_key);
+> +
+>  	/*
 >
-> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-> index f6af3e74fc44..662eb1c37f47 100644
-> --- a/net/core/rtnetlink.c
-> +++ b/net/core/rtnetlink.c
-> @@ -2608,6 +2608,7 @@ static int do_setlink(const struct sk_buff *skb,
->  		return err;
->  
->  	if (tb[IFLA_NET_NS_PID] || tb[IFLA_NET_NS_FD] || tb[IFLA_TARGET_NETNSID]) {
-> +		const char *pat = ifname && ifname[0] ? ifname : NULL;
->  		struct net *net;
->  		int new_ifindex;
->  
-> @@ -2623,7 +2624,7 @@ static int do_setlink(const struct sk_buff *skb,
->  		else
->  			new_ifindex = 0;
->  
-> -		err = __dev_change_net_namespace(dev, net, ifname, new_ifindex);
-> +		err = __dev_change_net_namespace(dev, net, pat, new_ifindex);
->  		put_net(net);
->  		if (err)
->  			goto errout;
+
+
