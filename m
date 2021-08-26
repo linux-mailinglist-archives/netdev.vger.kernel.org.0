@@ -2,132 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 018E83F8216
-	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 07:32:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AD0D3F8212
+	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 07:30:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238770AbhHZFd0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 01:33:26 -0400
-Received: from home.keithp.com ([63.227.221.253]:59102 "EHLO elaine.keithp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235822AbhHZFdZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 26 Aug 2021 01:33:25 -0400
-X-Greylist: delayed 493 seconds by postgrey-1.27 at vger.kernel.org; Thu, 26 Aug 2021 01:33:24 EDT
-Received: from localhost (localhost [127.0.0.1])
-        by elaine.keithp.com (Postfix) with ESMTP id 5899F3F3072E;
-        Wed, 25 Aug 2021 22:24:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=keithp.com; s=mail;
-        t=1629955441; bh=9PZ6q0rR03ga0cJLlX7wkSjnkm2X7nPpg5xxJCy9RtY=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=V8ZHAWsNxg4cKzN6mnE+JjdKstvoz5QndsaHqm/0JKqtYHx7qf+sik19WnSbpeZ6Q
-         AjEX1Klqm4x12oAgQH8lJrLC6u/4pXIci4EaQ4RxiiP5jw2kJ+Wr1BlcxY8C2Wy4Fb
-         jWWcjACtFjQ8oJwH37HJ6c1VpqU7hCwsS5ybTnP5lAV/3zY5d1sdDagmQ9vi3jIuy+
-         +aNC6ttZBX0IIhNSuXRK8/CLxra6k3qQh4vmIkuBLdI1dM2E+Madd2GgJ1+vrteow/
-         mf12Ssnv9TySnCx3Kuw4vVdulBma/XNZ1AJsO0j9bHMsWffgJiNgYOkatDiua0iEHW
-         KwBc5Fi629JHw==
-X-Virus-Scanned: Debian amavisd-new at keithp.com
-Received: from elaine.keithp.com ([127.0.0.1])
-        by localhost (elaine.keithp.com [127.0.0.1]) (amavisd-new, port 10024)
-        with LMTP id d8LHxscT6hWs; Wed, 25 Aug 2021 22:23:56 -0700 (PDT)
-Received: from keithp.com (koto.keithp.com [192.168.11.2])
-        by elaine.keithp.com (Postfix) with ESMTPSA id C066C3F3072D;
-        Wed, 25 Aug 2021 22:23:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=keithp.com; s=mail;
-        t=1629955436; bh=9PZ6q0rR03ga0cJLlX7wkSjnkm2X7nPpg5xxJCy9RtY=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=oucPIc+p1TEr9jHm30BEh6nsSTrl/DjfKsV2qOrmVf1DMQG6349VUmW+3mP9GkPUL
-         I83NAfeJdVNAQulPEjD7Ix9GtzkxVOtuCnS0CPRIYVo9SJp4x3PsZAV1p6NNDeHXq/
-         Pvkro7bsTJKioLnocCmT9z4E0ITr88YmjIXCsx4OjlbFg31K5rB1VNwJFPKdtbo5B+
-         wgAwhV3gKYrPc9G+VvgOJO5hAdM4ZTbw91d0PzSsU+T1k5fE3VrZWyO/aC9xvXNFSi
-         KVrT1uAFAENSHmXt2n1lMtYd2RbyVO6pV2gORcBCJ0iIFawEM3Cwmy0/lQqQH6aom9
-         27qjOJbYQhByQ==
-Received: by keithp.com (Postfix, from userid 1000)
-        id E3F3E1E6011A; Wed, 25 Aug 2021 22:24:18 -0700 (PDT)
-From:   Keith Packard <keithp@keithp.com>
-To:     Kees Cook <keescook@chromium.org>, linux-kernel@vger.kernel.org
-Cc:     Kees Cook <keescook@chromium.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        id S238509AbhHZFay (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 01:30:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48418 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229753AbhHZFax (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 01:30:53 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37417C061757;
+        Wed, 25 Aug 2021 22:30:07 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id n18so2085123pgm.12;
+        Wed, 25 Aug 2021 22:30:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=x4RmyD5fclG+LrgWWesbcdVQE97Kggxj6lIU2hXpp1s=;
+        b=Iwld+o5kE3cC7dKFDVPDZ5uAL6M+SDCzXILZlsoW4OOYMm1/e0Pz1EuVluvNGV+rop
+         Vd7AzU0ZiFZWltIItaqBiQH8BFMyJCN11+7Hg0sWlJQq3YRn2FjbESWBmqHttTe0L3L0
+         4zywT7UMIMUTmOUt8yeDuQdSyFNUrWkcJFlAUM4Gh5AU6SinB9cNKI6CyB2qEne/VZO5
+         dFeQ9aOT/l5wfnPAhkUi2zi3V3+K6tvp3WZ0yOMf3ZePhkzSV8+iA4qsPMg325NJrN3T
+         c0TdPGJn/xdGWEn9vHLJoRcl5l+zhTLrJsnc477kPc37YLpR46u2Sf5O3cycGwttBe8M
+         8rvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=x4RmyD5fclG+LrgWWesbcdVQE97Kggxj6lIU2hXpp1s=;
+        b=bTHFN4OWPKneT1ISfaQxwbBxJjrrjFw2tXKkTyGHIgHeLJcx6YmeooxSBABY+b3Yn0
+         XC7pGGOte0XQQzy22C5nSVN2C9wNnDvELPHqrCIxa8XUtAZugCSf4/MAdu2OHEf8A+wl
+         VfoAh8rg5nOR/OQGHXx9lVxwgk2d/U0/G3pt51Q9EIVMKs7HmkrZtcOdADBh5KvJr4Wf
+         3M6iyo2FczMkHILjfgLKnvKEnFg9dmGtsge/pythil4Hzd+7Zen7BH9uj8Bf6wtF3kPt
+         qV38dyR2v6PD9W+GyCuSrSt11RA3AdqvshAZR+T87noMNucrPZ+VKLJDFa9l/QVBYp+X
+         6+VQ==
+X-Gm-Message-State: AOAM53222UuaXuG9ppFlqLSX85jkh80eK16E9r+dBsPcx7SKZQgZZrjh
+        EKyF6cYocoUPswmb99RWD5E9LSO1qWqMcWIp
+X-Google-Smtp-Source: ABdhPJwXQo89ZTUyaW5hgncilg4Qn18/2ISbQ2HecVAww0acCXr7JAbk83ELloXGBqr8+KhTkkp1xQ==
+X-Received: by 2002:a62:e90b:0:b029:30e:4530:8dca with SMTP id j11-20020a62e90b0000b029030e45308dcamr2041539pfh.17.1629955806691;
+        Wed, 25 Aug 2021 22:30:06 -0700 (PDT)
+Received: from haswell-ubuntu20.lan ([138.197.212.246])
+        by smtp.gmail.com with ESMTPSA id u3sm1316019pfg.58.2021.08.25.22.30.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Aug 2021 22:30:06 -0700 (PDT)
+From:   DENG Qingfang <dqfext@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Nilesh Javali <njavali@marvell.com>,
-        Manish Rangankar <mrangankar@marvell.com>,
-        GR-QLogic-Storage-Upstream@marvell.com,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Florian Schilhabel <florian.c.schilhabel@googlemail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Fabio Aiuto <fabioaiuto83@gmail.com>,
-        Ross Schmidt <ross.schm.dev@gmail.com>,
-        Marco Cesati <marcocesati@gmail.com>,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-scsi@vger.kernel.org,
-        linux-staging@lists.linux.dev,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        clang-built-linux@googlegroups.com, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH v2 3/5] treewide: Replace 0-element memcpy()
- destinations with flexible arrays
-In-Reply-To: <20210826050458.1540622-4-keescook@chromium.org>
-References: <20210826050458.1540622-1-keescook@chromium.org>
- <20210826050458.1540622-4-keescook@chromium.org>
-Date:   Wed, 25 Aug 2021 22:24:18 -0700
-Message-ID: <87r1egpym5.fsf@keithp.com>
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC net-next 2/2] net: dsa: tag_mtk: handle VLAN tag insertion on TX
+Date:   Thu, 26 Aug 2021 13:29:56 +0800
+Message-Id: <20210826052956.3101243-1-dqfext@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210826000349.q3s5gjuworxtbcna@skbuf>
+References: <20210825083832.2425886-1-dqfext@gmail.com> <20210825083832.2425886-3-dqfext@gmail.com> <20210826000349.q3s5gjuworxtbcna@skbuf>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha256; protocol="application/pgp-signature"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
+On Thu, Aug 26, 2021 at 03:03:49AM +0300, Vladimir Oltean wrote:
+> 
+> You cannot just remove the old code. Only things like 8021q uppers will
+> send packets with the VLAN in the hwaccel area.
+> 
+> If you have an application that puts the VLAN in the actual AF_PACKET
+> payload, like:
+> 
+> https://github.com/vladimiroltean/tsn-scripts/blob/master/isochron/send.c
+> 
+> then you need to handle the VLAN being in the skb payload.
 
-Kees Cook <keescook@chromium.org> writes:
+I've actually tested this (only apply patch 2 without .features) and it
+still worked.
 
-> In some cases, use of the flex_array() helper is needed when a flexible
-> array is part of a union.
-
-The code below seems to show that the helper is also needed when the
-flexible array is the only member of a struct? Or is this just an
-extension of the 'part of a union' clause?
-
-> @@ -160,7 +160,7 @@ struct bmi_cmd {
->=20=20
->  union bmi_resp {
->  	struct {
-> -		u8 payload[0];
-> +		DECLARE_FLEX_ARRAY(u8, payload);
->  	} read_mem;
->  	struct {
->  		__le32 result;
-
-=2D-=20
-=2Dkeith
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEw4O3eCVWE9/bQJ2R2yIaaQAAABEFAmEnJYIACgkQ2yIaaQAA
-ABFJwg/9HnuEf5sIRlyVndEk8XKVsPy1mM63I9dwsOPTB031099GdKund7uEfybJ
-1kjf3GQv9nMAM0Cq3Uoiqfqv2liuTW2dGKBY2wHAVOtWjQXyTiN3NP3iNx1kVd7X
-txLF08RakTjjbca72QM9P47VuaJMHchiiYQfGrUxaQY9/lUuyR1DawpZLomXT9kV
-fUuBUpYUO/Xta1zs/e6IudCJRL0h6Hlk2nLqV+zrjTNsbEhI+Ztd0Lv40VrIVfUJ
-ZXMCNHomviUCwybnTodcUdtWYU5JqokjGWqYZawyErshiEew6AiM1e5CHkl0fDQU
-OUSteni1sY0nJ32L74MN0A2vjPcOeY3lzE8FTxeY7BzbAorxELYD4jBXhopA0+MW
-CPXS0xfn6crMm2vyFH+6YB2udPlLr1+n0qfxaYr36Tr+dZ81D0lJ5g5UjX4J6q3G
-nqx/vxHjWYvTQpHVZCstuABCHad/J/0X9SRS4xwu4983bMwDOCfKCkF+RNitHfpO
-/m+mzWJYEQokqKtj/V8i1PDUYhpWO9Kx7G2zQZ31le75zrcfKmBccid3m65Z0OAD
-e0w8NfJ1NDwSFTl4duKB8gE5gNKuppuzLlDBQWhrqIK+5mKCapZ0sCjSqJjVxNjK
-Q41Bm6/blVaF0IaP2fnjEbyQYhy9tbuVEwYZ630P5ctqCHxsZ40=
-=cojg
------END PGP SIGNATURE-----
---=-=-=--
+The comment says the VLAN tag need to be combined with the special tag in
+order to perform VLAN table lookup, so we can set its destination port
+vector to all zeroes and the switch will forward it like a data frame
+(TX forward offload), but as we allow multiple bridges which are either
+VLAN-unaware or VLAN-aware with the same VID, there is no way to determine
+the destination bridge unless we maintain some VLAN translation mapping.
