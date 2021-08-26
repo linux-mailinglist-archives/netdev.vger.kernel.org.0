@@ -2,143 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E67DD3F81F8
-	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 07:13:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 018E83F8216
+	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 07:32:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238711AbhHZFO0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 01:14:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44800 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238571AbhHZFOY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 01:14:24 -0400
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D3C9C061757;
-        Wed, 25 Aug 2021 22:13:37 -0700 (PDT)
-Received: by mail-lj1-x22a.google.com with SMTP id d16so2820205ljq.4;
-        Wed, 25 Aug 2021 22:13:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1Sd0+XXFPugAVdBjgsEQFMRcu4xSZzGD3CudwU0zHpw=;
-        b=hyyr/p5tGhiebDOvJuNjtLIWcBr08r7T6S27++36/FgGfHuEla/KCLopPdXqqStUK2
-         bco1swQzp3x+d7vruMjPVgZXKLLIsZK0U5AUaKrF1+8eeTlq/t4wmVJef5ri4odVJ0ii
-         0HhjfZOFOQ4zUZuffRoN044rwCQy+I0q20/YUxKoLGrVl6ccyjgxlHofPY0LBcTVlZFr
-         2NgYkN2aISXrFvu5xYJz1XTcQ88XK516wAFZaTvaPUZ/AbSbR9Fc5fOixFqlx2Cyg+G2
-         3laPYkYtAce31B01+RKRubJcK7RxgEaL/V2HnYxTT700abmAHnGD3LDVYoZmSvV22DNo
-         ivpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1Sd0+XXFPugAVdBjgsEQFMRcu4xSZzGD3CudwU0zHpw=;
-        b=ExL9BSahxxw8/yqztkSaX0AuKKXcO5KENMEMCIMeHDjzb3EbuXjcZHeahnJ1dKIIid
-         7okv9gd3lBlW2s/opHCFazcGtKSkSnCe3Qfbc86GYNVFbOBLpZ9jntwaRRcW7s3ytE3S
-         Kw3YltGKnlVHyL2Tb2kjef9SSJQbpYhzk1LGiipuBq2XV9GqrGhZg/g2vPSNjoY0HQmc
-         VG7H0BmPMgDkzCLSUY3VUm3TWtzCUTr4XzaglJ/xcTA+TQOJp685d4Bb13bw2h8j0ZW5
-         KrsxfO1SVkaMVsJ2tHk0nofaT85l6mAcFTHEATmx8l1nAVchkjzrJOupZQ9Nw46fZcqT
-         fzLg==
-X-Gm-Message-State: AOAM530vo6JjRW0Zf/8Itc4rr/wCHTR1CslHlnZpI69+HYxFNGcC8rK3
-        4n3FKNvDa0JbHx65PhmtidQBAHjkPZ2oABsNZsUfMNaVOjY=
-X-Google-Smtp-Source: ABdhPJzLtahGOcyAtDvWWVsYfc6nYZpPEj1i7jqeH0tKbfPDgm581v+elTyBIWWY7byCV3dXi7wSrepAFDCFLeIjt/k=
-X-Received: by 2002:a2e:8e8f:: with SMTP id z15mr1393895ljk.121.1629954815329;
- Wed, 25 Aug 2021 22:13:35 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210825154043.247764-1-yan2228598786@gmail.com>
- <CANn89iJO8jzjFWvJ610TPmKDE8WKi8ojTr_HWXLz5g=4pdQHEA@mail.gmail.com> <20210825231942.18f9b17e@rorschach.local.home>
-In-Reply-To: <20210825231942.18f9b17e@rorschach.local.home>
-From:   Brendan Gregg <brendan.d.gregg@gmail.com>
-Date:   Thu, 26 Aug 2021 15:13:07 +1000
-Message-ID: <CAE40pdd+yHnh6fyjYV0UDcZ_ZwTCzP019Mf4_tTKWFc_5M6gaw@mail.gmail.com>
-Subject: Re: [PATCH] net: tcp_drop adds `reason` parameter for tracing v2
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Zhongya Yan <yan2228598786@gmail.com>,
+        id S238770AbhHZFd0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 01:33:26 -0400
+Received: from home.keithp.com ([63.227.221.253]:59102 "EHLO elaine.keithp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235822AbhHZFdZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Aug 2021 01:33:25 -0400
+X-Greylist: delayed 493 seconds by postgrey-1.27 at vger.kernel.org; Thu, 26 Aug 2021 01:33:24 EDT
+Received: from localhost (localhost [127.0.0.1])
+        by elaine.keithp.com (Postfix) with ESMTP id 5899F3F3072E;
+        Wed, 25 Aug 2021 22:24:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=keithp.com; s=mail;
+        t=1629955441; bh=9PZ6q0rR03ga0cJLlX7wkSjnkm2X7nPpg5xxJCy9RtY=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=V8ZHAWsNxg4cKzN6mnE+JjdKstvoz5QndsaHqm/0JKqtYHx7qf+sik19WnSbpeZ6Q
+         AjEX1Klqm4x12oAgQH8lJrLC6u/4pXIci4EaQ4RxiiP5jw2kJ+Wr1BlcxY8C2Wy4Fb
+         jWWcjACtFjQ8oJwH37HJ6c1VpqU7hCwsS5ybTnP5lAV/3zY5d1sdDagmQ9vi3jIuy+
+         +aNC6ttZBX0IIhNSuXRK8/CLxra6k3qQh4vmIkuBLdI1dM2E+Madd2GgJ1+vrteow/
+         mf12Ssnv9TySnCx3Kuw4vVdulBma/XNZ1AJsO0j9bHMsWffgJiNgYOkatDiua0iEHW
+         KwBc5Fi629JHw==
+X-Virus-Scanned: Debian amavisd-new at keithp.com
+Received: from elaine.keithp.com ([127.0.0.1])
+        by localhost (elaine.keithp.com [127.0.0.1]) (amavisd-new, port 10024)
+        with LMTP id d8LHxscT6hWs; Wed, 25 Aug 2021 22:23:56 -0700 (PDT)
+Received: from keithp.com (koto.keithp.com [192.168.11.2])
+        by elaine.keithp.com (Postfix) with ESMTPSA id C066C3F3072D;
+        Wed, 25 Aug 2021 22:23:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=keithp.com; s=mail;
+        t=1629955436; bh=9PZ6q0rR03ga0cJLlX7wkSjnkm2X7nPpg5xxJCy9RtY=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=oucPIc+p1TEr9jHm30BEh6nsSTrl/DjfKsV2qOrmVf1DMQG6349VUmW+3mP9GkPUL
+         I83NAfeJdVNAQulPEjD7Ix9GtzkxVOtuCnS0CPRIYVo9SJp4x3PsZAV1p6NNDeHXq/
+         Pvkro7bsTJKioLnocCmT9z4E0ITr88YmjIXCsx4OjlbFg31K5rB1VNwJFPKdtbo5B+
+         wgAwhV3gKYrPc9G+VvgOJO5hAdM4ZTbw91d0PzSsU+T1k5fE3VrZWyO/aC9xvXNFSi
+         KVrT1uAFAENSHmXt2n1lMtYd2RbyVO6pV2gORcBCJ0iIFawEM3Cwmy0/lQqQH6aom9
+         27qjOJbYQhByQ==
+Received: by keithp.com (Postfix, from userid 1000)
+        id E3F3E1E6011A; Wed, 25 Aug 2021 22:24:18 -0700 (PDT)
+From:   Keith Packard <keithp@keithp.com>
+To:     Kees Cook <keescook@chromium.org>, linux-kernel@vger.kernel.org
+Cc:     Kees Cook <keescook@chromium.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, hengqi.chen@gmail.com,
-        Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        Nilesh Javali <njavali@marvell.com>,
+        Manish Rangankar <mrangankar@marvell.com>,
+        GR-QLogic-Storage-Upstream@marvell.com,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Florian Schilhabel <florian.c.schilhabel@googlemail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Fabio Aiuto <fabioaiuto83@gmail.com>,
+        Ross Schmidt <ross.schm.dev@gmail.com>,
+        Marco Cesati <marcocesati@gmail.com>,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linux-staging@lists.linux.dev,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        clang-built-linux@googlegroups.com, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH v2 3/5] treewide: Replace 0-element memcpy()
+ destinations with flexible arrays
+In-Reply-To: <20210826050458.1540622-4-keescook@chromium.org>
+References: <20210826050458.1540622-1-keescook@chromium.org>
+ <20210826050458.1540622-4-keescook@chromium.org>
+Date:   Wed, 25 Aug 2021 22:24:18 -0700
+Message-ID: <87r1egpym5.fsf@keithp.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha256; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 26, 2021 at 1:20 PM Steven Rostedt <rostedt@goodmis.org> wrote:
->
-> On Wed, 25 Aug 2021 08:47:46 -0700
-> Eric Dumazet <edumazet@google.com> wrote:
->
-> > > @@ -5703,15 +5700,15 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
-> > >                         TCP_INC_STATS(sock_net(sk), TCP_MIB_INERRS);
-> > >                 NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPSYNCHALLENGE);
-> > >                 tcp_send_challenge_ack(sk, skb);
-> > > -               goto discard;
-> > > +               tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_VALIDATE_INCOMING));
-> >
-> > I'd rather use a string. So that we can more easily identify _why_ the
-> > packet was drop, without looking at the source code
-> > of the exact kernel version to locate line number 1057
-> >
-> > You can be sure that we will get reports in the future from users of
-> > heavily modified kernels.
-> > Having to download a git tree, or apply semi-private patches is a no go.
-> >
-> > If you really want to include __FILE__ and __LINE__, these both can be
-> > stringified and included in the report, with the help of macros.
->
-> I agree the __LINE__ is pointless, but if this has a tracepoint
-> involved, then you can simply enable the stacktrace trigger to it and
-> it will save a stack trace in the ring buffer for you.
->
->    echo stacktrace > /sys/kernel/tracing/events/tcp/tcp_drop/trigger
->
-> And when the event triggers it will record a stack trace. You can also
-> even add a filter to do it only for specific reasons.
->
->    echo 'stacktrace if reason == 1' > /sys/kernel/tracing/events/tcp/tcp_drop/trigger
->
-> And it even works for flags:
->
->    echo 'stacktrace if reason & 0xa' > /sys/kernel/tracing/events/tcp/tcp_drop/trigger
->
-> Which gives another reason to use an enum over a string.
+--=-=-=
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-You can't do string comparisons? The more string support Ftrace has,
-the more convenient they will be. Using bpftrace as an example of
-convenience and showing drop frequency counted by human-readable
-reason and stack trace:
+Kees Cook <keescook@chromium.org> writes:
 
-# bpftrace -e 'k:tcp_drop { @[str(arg2), kstack] = count(); }'
+> In some cases, use of the flex_array() helper is needed when a flexible
+> array is part of a union.
 
-Don't need further translation beyond the str(arg2). And filtering on
-backlog drops:
+The code below seems to show that the helper is also needed when the
+flexible array is the only member of a struct? Or is this just an
+extension of the 'part of a union' clause?
 
-bpftrace -e 'k:tcp_drop /str(arg2) == "SYN backlog drop"/ { @[kstack]
-= count(); }'
+> @@ -160,7 +160,7 @@ struct bmi_cmd {
+>=20=20
+>  union bmi_resp {
+>  	struct {
+> -		u8 payload[0];
+> +		DECLARE_FLEX_ARRAY(u8, payload);
+>  	} read_mem;
+>  	struct {
+>  		__le32 result;
 
-etc. (Although ultimately we'll want a tracepoint added in tcp_drop
-with those arguments.) If it's a enum I'll need to translate it back,
-and deal with enum additions that my tool might not be coded for. I
-can do it, it just needs maintenance, e.g. [0]. Plus the kernel code
-needs maintenance. For a narrow observability use case, it starts to
-feel like overkill to maintain an enum.
+=2D-=20
+=2Dkeith
 
-I wouldn't mind an optional _additional_ reason argument that's the
-enum SNMP counter if appropriate. E.g.:
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
-tcpdrop(sk, skb, "Accept backlog full", LINUX_MIB_LISTENDROPS);
-tcpdrop(sk, skb, "No route", LINUX_MIB_LISTENDROPS);
+-----BEGIN PGP SIGNATURE-----
 
-So you could trace LINUX_MIB_LISTENDROPS and see different string
-reasons for each different code path.
-
-I don't feel strongly about having __LINE__. I'd look it up from the
-stack trace anyway.
-
-Brendan
-
-[0] https://github.com/brendangregg/bpf-perf-tools-book/blob/master/originals/Ch16_Hypervisors/kvmexits.bt
+iQIzBAEBCAAdFiEEw4O3eCVWE9/bQJ2R2yIaaQAAABEFAmEnJYIACgkQ2yIaaQAA
+ABFJwg/9HnuEf5sIRlyVndEk8XKVsPy1mM63I9dwsOPTB031099GdKund7uEfybJ
+1kjf3GQv9nMAM0Cq3Uoiqfqv2liuTW2dGKBY2wHAVOtWjQXyTiN3NP3iNx1kVd7X
+txLF08RakTjjbca72QM9P47VuaJMHchiiYQfGrUxaQY9/lUuyR1DawpZLomXT9kV
+fUuBUpYUO/Xta1zs/e6IudCJRL0h6Hlk2nLqV+zrjTNsbEhI+Ztd0Lv40VrIVfUJ
+ZXMCNHomviUCwybnTodcUdtWYU5JqokjGWqYZawyErshiEew6AiM1e5CHkl0fDQU
+OUSteni1sY0nJ32L74MN0A2vjPcOeY3lzE8FTxeY7BzbAorxELYD4jBXhopA0+MW
+CPXS0xfn6crMm2vyFH+6YB2udPlLr1+n0qfxaYr36Tr+dZ81D0lJ5g5UjX4J6q3G
+nqx/vxHjWYvTQpHVZCstuABCHad/J/0X9SRS4xwu4983bMwDOCfKCkF+RNitHfpO
+/m+mzWJYEQokqKtj/V8i1PDUYhpWO9Kx7G2zQZ31le75zrcfKmBccid3m65Z0OAD
+e0w8NfJ1NDwSFTl4duKB8gE5gNKuppuzLlDBQWhrqIK+5mKCapZ0sCjSqJjVxNjK
+Q41Bm6/blVaF0IaP2fnjEbyQYhy9tbuVEwYZ630P5ctqCHxsZ40=
+=cojg
+-----END PGP SIGNATURE-----
+--=-=-=--
