@@ -2,98 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41F373F847D
-	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 11:25:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 079293F8486
+	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 11:28:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240851AbhHZJ0k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 05:26:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45116 "EHLO
+        id S241001AbhHZJ3m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 05:29:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233744AbhHZJ0H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 05:26:07 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 075D0C061757
-        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 02:25:17 -0700 (PDT)
+        with ESMTP id S233249AbhHZJ3l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 05:29:41 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13F6BC061757;
+        Thu, 26 Aug 2021 02:28:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=W1Klj3CMNoWPAHRXpNFXpx71pl7hHS2bAkksyUM37vA=; b=mdk6FtVk1OllNPr7szkwJU/QO
-        fKYPzg9rV8wOosya9uGgbWuKMwxjmQ+2a3KO4vqJu5MGzzodcrFblAgJSdPxbZFija+4J2t6V3cOh
-        Nz1NMRAUj0I+BJgD+nz8cG7dsjjLh6m+TRN4B2zhJmCVXCCoWv87gRYi0xdy7qFqgbaqojoaSeFM9
-        Wo4Kmy+y6MKSDbmQlx1WLfZmn23Bbqr0HOLQM+VQlO8gYtWmu9inhtQjlX5JcSlFXLKCfW6yJ5e2S
-        yd2FeL+w7UfQ/IsqIZ1PakUgljZcjk5gyZtDiAWN1z3LHtsTK3VVTtV/VGMPMJhAfP0IPPgeALyca
-        K5NyfFYRQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:47702)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mJBdJ-0007eM-9z; Thu, 26 Aug 2021 10:25:13 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mJBdH-0000hW-Li; Thu, 26 Aug 2021 10:25:11 +0100
-Date:   Thu, 26 Aug 2021 10:25:11 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Nathan Rossi <nathan@nathanrossi.com>
-Cc:     netdev@vger.kernel.org, Nathan Rossi <nathan.rossi@digi.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH] net: phylink: Update SFP selected interface on
- advertising changes
-Message-ID: <20210826092511.GQ22278@shell.armlinux.org.uk>
-References: <20210826071230.11296-1-nathan@nathanrossi.com>
+        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Content-Type:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-To:Resent-Cc:
+        Resent-Message-ID:In-Reply-To:References;
+        bh=h/jIXyoyAHbuXfwf0yKoxIhgV6fCX+3ThenGetfLVts=; t=1629970134; x=1631179734; 
+        b=pBvhrgSZOP8cDkbnD88eWHn0x+pDjWuV3khFKenbs5O9pzSUTtIrEf/PowYBRThDy8LP8vvfBuo
+        +dJPzQduD6VSE77uvb1W77jYWVDNPHZJkT79s68oa9mWA8mtzmEJbuev8QiGsM99oRw9sOqz/RpK8
+        73+b5uSZgcJBLLzu5RFX0rkrCVVwNJ04vz7NMva2OQ85EzOo8aRscHWkV4uNRm+PlOVHVANkGaHWw
+        8nneXzXqRgrsd2ZzAkXfpO1H2ck/a4DWnuILsNoc84xTCOVNLKpkqUVtBOJXmpi44lXKpRkdWMM21
+        ANhoJi4mwUovJSO7k31Arr9dEpjFF2rJKDoQ==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94.2)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1mJBgp-00G5uI-JE; Thu, 26 Aug 2021 11:28:51 +0200
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     netdev@vger.kernel.org
+Cc:     linux-wireless@vger.kernel.org
+Subject: pull-request: mac80211-next 2021-08-26
+Date:   Thu, 26 Aug 2021 11:28:47 +0200
+Message-Id: <20210826092848.45290-1-johannes@sipsolutions.net>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210826071230.11296-1-nathan@nathanrossi.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 26, 2021 at 07:12:30AM +0000, Nathan Rossi wrote:
-> From: Nathan Rossi <nathan.rossi@digi.com>
-> 
-> Currently changes to the advertising state via ethtool do not cause any
-> reselection of the configured interface mode after the SFP is already
-> inserted and initially configured.
-> 
-> While it is not typical to change the advertised link modes for an
-> interface using an SFP in certain use cases it is desirable. In the case
-> of a SFP port that is capable of handling both SFP and SFP+ modules it
-> will automatically select between 1G and 10G modes depending on the
-> supported mode of the SFP. However if the SFP module is capable of
-> working in multiple modes (e.g. a SFP+ DAC that can operate at 1G or
-> 10G), one end of the cable may be attached to a SFP 1000base-x port thus
-> the SFP+ end must be manually configured to the 1000base-x mode in order
-> for the link to be established.
-> 
-> This change causes the ethtool setting of advertised mode changes to
-> reselect the interface mode so that the link can be established.
+Hi,
 
-This may be a better solution than the phylink_helper_basex_speed()
-approach used to select between 2500 and 1000 base-X, but the config
-needs to be validated after selecting a different interface mode, as
-per what phylink_sfp_config() does.
+As I mentioned last time, since we got another week, I have
+a few more changes - I had been waiting for a respin of the
+TWT and 6 GHz regulatory, but in the end not all of the
+latter made it.
 
-I also suspect that this will allow you to select e.g. 1000base-X but
-there will be no way back to 10G modes as they will be masked out of
-the advertising mask from that point on, as the 1000base-X interface
-mode does not allow them.
+Please pull and let me know if there's any problem.
 
-So, I think the suggested code is problematical as it stands.
+Thanks,
+johannes
 
-phylink_sfp_config() uses a multi-step approach to selecting the
-interface mode for a reason - first step is to discover what the MAC
-is capable of in _any_ interface mode using _NA to reduce the supported
-and advertised mask down, and then to select the interface from that.
-I'm not entirely convinced that is a good idea here yet though.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+
+The following changes since commit f6a4e0e8a00ff6fadb29f3646ccd33cc85195a38:
+
+  via-velocity: Use of_device_get_match_data to simplify code (2021-08-23 12:56:15 +0100)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next.git tags/mac80211-next-for-net-next-2021-08-26
+
+for you to fetch changes up to 90bd5bee50f2a209ba66f013866959a56ff400b9:
+
+  cfg80211: use wiphy DFS domain if it is self-managed (2021-08-26 11:04:55 +0200)
+
+----------------------------------------------------------------
+A few more things:
+ * Use correct DFS domain for self-managed devices
+ * some preparations for transmit power element handling
+   and other 6 GHz regulatory handling
+ * TWT support in AP mode in mac80211
+
+----------------------------------------------------------------
+Lorenzo Bianconi (2):
+      ieee80211: add TWT element definitions
+      mac80211: introduce individual TWT support in AP mode
+
+Sriram R (1):
+      cfg80211: use wiphy DFS domain if it is self-managed
+
+Wen Gong (3):
+      ieee80211: add definition of regulatory info in 6 GHz operation information
+      ieee80211: add definition for transmit power envelope element
+      mac80211: parse transmit power envelope element
+
+ include/linux/ieee80211.h  | 106 +++++++++++++++++++++++++-
+ include/net/mac80211.h     |  12 +++
+ net/mac80211/driver-ops.h  |  36 +++++++++
+ net/mac80211/ieee80211_i.h |   9 +++
+ net/mac80211/iface.c       |  41 +++++++++++
+ net/mac80211/rx.c          |  73 ++++++++++++++++++
+ net/mac80211/s1g.c         | 180 +++++++++++++++++++++++++++++++++++++++++++++
+ net/mac80211/status.c      |  17 ++++-
+ net/mac80211/trace.h       |  67 +++++++++++++++++
+ net/mac80211/util.c        |  12 +++
+ net/wireless/reg.c         |   9 ++-
+ 11 files changed, 558 insertions(+), 4 deletions(-)
+
