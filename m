@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C3883F8EF2
+	by mail.lfdr.de (Postfix) with ESMTP id 84E453F8EF3
 	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 21:45:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243586AbhHZTlq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 15:41:46 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:44538 "EHLO
+        id S243600AbhHZTlt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 15:41:49 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:22233 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S243538AbhHZTlf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 15:41:35 -0400
+        by vger.kernel.org with ESMTP id S243597AbhHZTlk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 15:41:40 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1630006847;
+        s=mimecast20190719; t=1630006853;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=z2XITBrOxDpGRyjAJ/GeVEmFFxm+Vz1j/C47GlqXHzU=;
-        b=Lw1A6wOP8nC5CRP2xAJw+SRdOfhZH3wJmGw1aDOk/5Pxz3xEiidK3hAwBHwDEoioGXLkjO
-        WMfE9FrNiwMHl0CgUp/koZf3/4amyvrGptmW8sIUXLTtmLfwsf7nI0t/dbAPJSc3rN/8Gg
-        BWmNpzBzpuicFcae2JrWA068olSsLR4=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-248-gwJ_cUiSO9mf6jR66IYLGw-1; Thu, 26 Aug 2021 15:40:45 -0400
-X-MC-Unique: gwJ_cUiSO9mf6jR66IYLGw-1
-Received: by mail-wm1-f70.google.com with SMTP id z186-20020a1c7ec30000b02902e6a27a9962so4768274wmc.3
-        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 12:40:45 -0700 (PDT)
+        bh=zTg+zzMWSEF+4A/U8wBHLOWp42sO4HXvxr5/nTc1gqE=;
+        b=a5KBP3g/y7ytiteK1wwxDfet8sMJpZGZvE1kAkPSqdLkjQpebBp7HYEwKOxmQWQfSrh0US
+        GKIywtS750X+rWzi5nNa+9NWwkkpfxPpwSO3sYglB4nne0dWfnzxHXyIvUOW1M7St4BWRR
+        thCytPk/yZ2MBOmTigW3ahnl6MaQzxo=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-30-ubXADf6HMziXU-j4oB6amQ-1; Thu, 26 Aug 2021 15:40:51 -0400
+X-MC-Unique: ubXADf6HMziXU-j4oB6amQ-1
+Received: by mail-wr1-f72.google.com with SMTP id h14-20020a056000000e00b001575b00eb08so1184590wrx.13
+        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 12:40:51 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=z2XITBrOxDpGRyjAJ/GeVEmFFxm+Vz1j/C47GlqXHzU=;
-        b=WkAh7VPiiPpztWU2PO8I8P8wTlFdKzMqrl//ISRWuxqg5/YuFcpyYgm77Rcncwkya+
-         jBWjz50oVVcdUhNygeUbkmSjYuKmw69TRsXw+zS1wsp6dUHS1kNLp4cmgqSuiW4y0S++
-         980aur/SIfNbScRLF3AFZyx2iHJOcbmz2XUQi/XSZ/xPKCjvROBDFEVYACfl04y2UI9R
-         gvwMrTGRq6236Ie882z5eimAlNDMQ+KKl2aW5bScON8IjoDIb1pcLIJyRxK5k0NEtg3s
-         Tix8PrjzKZ4FSik6ucc7PusKsb779aXwP4OFWcm5IHORVB1DmnXMqwG4odPYawhUgDLR
-         ZgmQ==
-X-Gm-Message-State: AOAM530HmKux7ZlENRbpV9nffutdgkKoMhbwk2pTLtHUW6fqW+teNwCL
-        1YjKS72LpI3Tc8xH9tO5LYUuTj/8Z4GJsVpk4x00mVzAelVUnCH3UsXlBZISixkFXSLgVJot34H
-        lMA3ZJY4bUmjzU0UC
-X-Received: by 2002:a1c:ed10:: with SMTP id l16mr15751505wmh.8.1630006844418;
-        Thu, 26 Aug 2021 12:40:44 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzitQXnasWLsuJudMdZeXK+TS2WTVT2UhHDl/35tfbJIVjoTYJHVpOxEFwQ00OumMXLgAsD+g==
-X-Received: by 2002:a1c:ed10:: with SMTP id l16mr15751486wmh.8.1630006844263;
-        Thu, 26 Aug 2021 12:40:44 -0700 (PDT)
+        bh=zTg+zzMWSEF+4A/U8wBHLOWp42sO4HXvxr5/nTc1gqE=;
+        b=VCpBKWnKxOFch2GWqv66Jc0f5KGILJ/Wzn242DB+YZzUhY60AmI76wmRYSQjV4zbAv
+         XABljK+2KzVmy9TvU23OphIYuI0Z/WJV91wvR86cdr0b60//5Sbs0lT1/4QwvIlIaurU
+         /+9gMuT2N/nHFyHCA0lUdOsh4JuuRlinCCfrlEKyhhwtXa+/yhCoXaCSdKe/j0N4miud
+         /dVHpT5i/PBXO0dE6wO4Tyy42JeKpq6QSosBUc+c9AQeKIgbl8oRYY/XhvYtWncURgqu
+         Zn/19OT7A0mZnpSlHVYcKqghj/+oC/UqjznTdBoOPWdJ9dfK00agNjfDkrvE8Zdtunhw
+         wd/Q==
+X-Gm-Message-State: AOAM530p+JmBwJzPZxDeftg5yrCOk63Pg295fnTPOjJysv//x4l3JOr1
+        hr5DM1jqnGDkFC+0pR/yYC3Igz1a1DRHgWCZhvWPORR5ssGZF18NFeIK3nL/hXm5unhXh+PscUO
+        N56+4e4C7EDMZUDjo
+X-Received: by 2002:a5d:58e7:: with SMTP id f7mr6128979wrd.51.1630006850528;
+        Thu, 26 Aug 2021 12:40:50 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwynqmTqvsqW9iFYuNy6lebFZRAvc8nScDmoxg+QC4b5TbglOriSiC/Vk1eFd/doAeMYyC5tA==
+X-Received: by 2002:a5d:58e7:: with SMTP id f7mr6128964wrd.51.1630006850387;
+        Thu, 26 Aug 2021 12:40:50 -0700 (PDT)
 Received: from krava.redhat.com ([83.240.63.86])
-        by smtp.gmail.com with ESMTPSA id f7sm9136006wmh.20.2021.08.26.12.40.43
+        by smtp.gmail.com with ESMTPSA id h12sm3568113wmm.29.2021.08.26.12.40.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Aug 2021 12:40:43 -0700 (PDT)
+        Thu, 26 Aug 2021 12:40:50 -0700 (PDT)
 From:   Jiri Olsa <jolsa@redhat.com>
 X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
@@ -62,9 +62,9 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
         Viktor Malik <vmalik@redhat.com>
-Subject: [PATCH bpf-next v4 13/27] bpf: Factor out __bpf_trampoline_put function
-Date:   Thu, 26 Aug 2021 21:39:08 +0200
-Message-Id: <20210826193922.66204-14-jolsa@kernel.org>
+Subject: [PATCH bpf-next v4 14/27] bpf: Change bpf_trampoline_get to return error pointer
+Date:   Thu, 26 Aug 2021 21:39:09 +0200
+Message-Id: <20210826193922.66204-15-jolsa@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210826193922.66204-1-jolsa@kernel.org>
 References: <20210826193922.66204-1-jolsa@kernel.org>
@@ -74,58 +74,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Separating out __bpf_trampoline_put function, so it can
-be used from other places in following patches.
+Changing bpf_trampoline_get to return error pointer,
+so we can return other than ENOMEM error in following
+changes.
 
 Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- kernel/bpf/trampoline.c | 21 +++++++++++++--------
- 1 file changed, 13 insertions(+), 8 deletions(-)
+ kernel/bpf/syscall.c    | 4 ++--
+ kernel/bpf/trampoline.c | 8 +++++---
+ kernel/bpf/verifier.c   | 4 ++--
+ 3 files changed, 9 insertions(+), 7 deletions(-)
 
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index e667d392cc33..537687664bdf 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -2793,8 +2793,8 @@ static int bpf_tracing_prog_attach(struct bpf_prog *prog,
+ 			goto out_unlock;
+ 
+ 		tr = bpf_trampoline_get(key, &tgt_info);
+-		if (!tr) {
+-			err = -ENOMEM;
++		if (IS_ERR(tr)) {
++			err = PTR_ERR(tr);
+ 			goto out_unlock;
+ 		}
+ 	} else {
 diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
-index 6dba43266e0b..8aa0aca38b3a 100644
+index 8aa0aca38b3a..c9794e9f24ee 100644
 --- a/kernel/bpf/trampoline.c
 +++ b/kernel/bpf/trampoline.c
-@@ -522,18 +522,16 @@ struct bpf_trampoline *bpf_trampoline_get(u64 key,
- 	return tr;
- }
- 
--void bpf_trampoline_put(struct bpf_trampoline *tr)
-+static void __bpf_trampoline_put(struct bpf_trampoline *tr)
- {
+@@ -97,8 +97,10 @@ static struct bpf_trampoline *bpf_trampoline_lookup(u64 key)
+ 		goto out;
+ 	}
+ 	tr = kzalloc(sizeof(*tr), GFP_KERNEL);
 -	if (!tr)
--		return;
--	mutex_lock(&trampoline_mutex);
-+	lockdep_assert_held(&trampoline_mutex);
- 	if (!refcount_dec_and_test(&tr->refcnt))
--		goto out;
-+		return;
- 	WARN_ON_ONCE(mutex_is_locked(&tr->mutex));
- 	if (WARN_ON_ONCE(!hlist_empty(&tr->progs_hlist[BPF_TRAMP_FENTRY])))
--		goto out;
-+		return;
- 	if (WARN_ON_ONCE(!hlist_empty(&tr->progs_hlist[BPF_TRAMP_FEXIT])))
--		goto out;
-+		return;
- 	/* This code will be executed even when the last bpf_tramp_image
- 	 * is alive. All progs are detached from the trampoline and the
- 	 * trampoline image is patched with jmp into epilogue to skip
-@@ -542,7 +540,14 @@ void bpf_trampoline_put(struct bpf_trampoline *tr)
- 	 */
- 	hlist_del(&tr->hlist);
- 	kfree(tr);
--out:
-+}
-+
-+void bpf_trampoline_put(struct bpf_trampoline *tr)
-+{
-+	if (!tr)
-+		return;
-+	mutex_lock(&trampoline_mutex);
-+	__bpf_trampoline_put(tr);
- 	mutex_unlock(&trampoline_mutex);
- }
++	if (!tr) {
++		tr = ERR_PTR(-ENOMEM);
+ 		goto out;
++	}
+ 	bpf_trampoline_init(tr, key);
+ 	head = &trampoline_table[hash_64(key, TRAMPOLINE_HASH_BITS)];
+ 	hlist_add_head(&tr->hlist, head);
+@@ -508,8 +510,8 @@ struct bpf_trampoline *bpf_trampoline_get(u64 key,
+ 	struct bpf_trampoline *tr;
  
+ 	tr = bpf_trampoline_lookup(key);
+-	if (!tr)
+-		return NULL;
++	if (IS_ERR(tr))
++		return tr;
+ 
+ 	mutex_lock(&tr->mutex);
+ 	if (tr->func.addr)
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index e9e84adfb974..ad410e1222e4 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -13642,8 +13642,8 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
+ 
+ 	key = bpf_trampoline_compute_key(tgt_prog, prog->aux->attach_btf, btf_id);
+ 	tr = bpf_trampoline_get(key, &tgt_info);
+-	if (!tr)
+-		return -ENOMEM;
++	if (IS_ERR(tr))
++		return PTR_ERR(tr);
+ 
+ 	prog->aux->dst_trampoline = tr;
+ 	return 0;
 -- 
 2.31.1
 
