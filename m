@@ -2,99 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 539CF3F8FE9
-	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 23:29:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4C5B3F8FED
+	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 23:29:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243527AbhHZUwh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 16:52:37 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:34506 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230095AbhHZUwg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 16:52:36 -0400
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1630011107;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=weqSKBDICcsYc3zvuUXTCsucNGbY5lYHThcH84k67EU=;
-        b=MZuIiaosjhBeWU9bjlAgQxWkHixtuZAjMM6xVonwnp727kheIAqJM4NCx6SNv3vhVQuz1Q
-        FnoYFveCAugJ6k1l+LC/wP4mESr+2BG+EuhxN+2DFNlOxbGuD0+asP+PG8elGwyTXHtzdT
-        TSHCmjYafZDgmjiXK17ycKw/O+ty9jQBhX83u9sN+b0yDHUjoLpwUdFT/PLRoHpMXuvpn6
-        q5Nyfs1VSv4JWyyrww72TFw8I3TOPXtTsIJRzhW0xdDi1zervOHLEzsDec9w6yUHzWKMxV
-        sY2UErbD+nN61ol20VY+SMlmUvP9ZB43fUjCMgYKu74kNTinXy5fJ7wArD2c6w==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1630011107;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=weqSKBDICcsYc3zvuUXTCsucNGbY5lYHThcH84k67EU=;
-        b=bN3CorDdCaaddkUS7ZQsFE3/F65XaF8TekVvoprZ7tVlQyNV6W4YqWwtOhXYQ9d27sgrVW
-        txlDV1ieAMDIikDw==
-To:     syzbot <syzbot+ae14beb9462a89054786@syzkaller.appspotmail.com>,
+        id S243584AbhHZUyE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 16:54:04 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:43772 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S243561AbhHZUyD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Aug 2021 16:54:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=qC9/a8QwjDtxsvgwRxW0lzbEcViqsOvHK7tcWNdMLbQ=; b=zMzBLIqCfZ/pbHHDZG1oQ6Pt2v
+        HrbBiDt6y4JivV0Gvj8EA/iOEiybhzEbk+LqeG7Es/mHBDe2MtxmetfUgQS0wWsnnBDgehyNvgyC9
+        p34jvzvu2WpMJGjkvBG2OPZlfGvsW6AW8I/B7J9KdJKWvPXXWB+wf4UC6YV2pRFhu4Ps=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mJMN0-0040b5-3d; Thu, 26 Aug 2021 22:53:06 +0200
+Date:   Thu, 26 Aug 2021 22:53:06 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
+        Alvin Sipraga <ALSI@bang-olufsen.dk>, kernel-team@android.com,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] WARNING in timerqueue_del (2)
-In-Reply-To: <000000000000d7055905ca3101a4@google.com>
-References: <000000000000d7055905ca3101a4@google.com>
-Date:   Thu, 26 Aug 2021 22:51:47 +0200
-Message-ID: <87h7fc2al8.ffs@tglx>
+        linux-acpi@vger.kernel.org
+Subject: Re: [PATCH v1 1/2] driver core: fw_devlink: Add support for
+ FWNODE_FLAG_BROKEN_PARENT
+Message-ID: <YSf/Mps9E77/6kZX@lunn.ch>
+References: <20210826074526.825517-1-saravanak@google.com>
+ <20210826074526.825517-2-saravanak@google.com>
+ <YSeTdb6DbHbBYabN@lunn.ch>
+ <CAGETcx-pSi60NtMM=59cve8kN9ff9fgepQ5R=uJ3Gynzh=0_BA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGETcx-pSi60NtMM=59cve8kN9ff9fgepQ5R=uJ3Gynzh=0_BA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 22 2021 at 19:45, syzbot wrote:
-> HEAD commit:    3349d3625d62 Merge branch '40GbE' of git://git.kernel.org/..
-> git tree:       net-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=11282731300000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=a03b1e3ef878f6c1
-> dashboard link: https://syzkaller.appspot.com/bug?extid=ae14beb9462a89054786
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
->
-> Unfortunately, I don't have any reproducer for this issue yet.
->
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+ae14beb9462a89054786@syzkaller.appspotmail.com
->
-> ------------[ cut here ]------------
-> WARNING: CPU: 1 PID: 3780 at lib/timerqueue.c:55 timerqueue_del+0xf2/0x140 lib/timerqueue.c:55
-> Modules linked in:
-> CPU: 1 PID: 3780 Comm: syz-executor.5 Not tainted 5.14.0-rc5-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> RIP: 0010:timerqueue_del+0xf2/0x140 lib/timerqueue.c:55
-> Code: 48 89 df e8 c0 7c ff ff 4c 89 e1 48 ba 00 00 00 00 00 fc ff df 48 c1 e9 03 80 3c 11 00 75 40 48 89 45 08 eb 82 e8 0e b8 82 fd <0f> 0b e9 4c ff ff ff 48 89 df e8 1f 51 c9 fd eb 93 4c 89 e7 e8 95
-> RSP: 0000:ffffc9000101f370 EFLAGS: 00010046
-> RAX: 0000000000040000 RBX: ffffe8ffffd3fce0 RCX: ffffc900145f4000
-> RDX: 0000000000040000 RSI: ffffffff83f2f1a2 RDI: 0000000000000003
-> RBP: ffff8880b9d42490 R08: ffffe8ffffd3fce0 R09: 0000000000000001
-> R10: ffffffff83f2f0ec R11: 0000000000000000 R12: ffffe8ffffd3fce0
-> R13: 0000000000000001 R14: ffff8880b9d423c0 R15: 0000000000000000
-> FS:  00007f8847706700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00007f333ef09f80 CR3: 0000000064822000 CR4: 00000000001506e0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->  __remove_hrtimer+0xa1/0x2a0 kernel/time/hrtimer.c:1014
->  remove_hrtimer+0x19f/0x410 kernel/time/hrtimer.c:1054
->  hrtimer_try_to_cancel kernel/time/hrtimer.c:1186 [inline]
->  hrtimer_try_to_cancel+0x102/0x1e0 kernel/time/hrtimer.c:1168
->  hrtimer_cancel+0x13/0x40 kernel/time/hrtimer.c:1295
->  napi_disable+0xc3/0x110 net/core/dev.c:6909
+> The  DT node in [2] is probed by realtek_smi_probe() [3]. The call flow is:
+> realtek_smi_probe()
+>   -> dsa_register_switch()
+>     -> dsa_switch_probe()
+>       -> dsa_tree_setup()
+>         -> dsa_tree_setup_switches()
+>           -> dsa_switch_setup()
+>             -> ds->ops->setup(ds)
+>               -> rtl8366rb_setup()
+>                 -> realtek_smi_setup_mdio()
+>                   -> of_mdiobus_register()
+>                      This scans the MDIO bus/DT and device_add()s the PHYs
+>           -> dsa_port_setup()
+>             -> dsa_port_link_register_of()
+>               -> dsa_port_phylink_register()
+>                 -> phylink_of_phy_connect()
+>                   -> phylink_fwnode_phy_connect()
+>                     -> phy_attach_direct()
+>                        This checks if PHY device has already probed (by
+>                        checking for dev->driver). If not, it forces the
+>                        probe of the PHY using one of the generic PHY
+>                        drivers.
+> 
+> So within dsa_register_switch() the PHY device is added and then
+> expected to have probed in the same thread/calling context. As stated
+> earlier, this is not guaranteed by the driver core.
 
-This smells badly of memory corruption.
+Have you looked at:
 
-remove_hrtimer() invokes __remove_hrtimer() only when hrtimer->state has
-the HRTIMER_STATE_ENQUEUED bit set which in turn means that the hrtimer
-is queued in the timerqueue. But timerqueue_del() sees an empty
-hrtimer->node.
+commit 16983507742cbcaa5592af530872a82e82fb9c51
+Author: Heiner Kallweit <hkallweit1@gmail.com>
+Date:   Fri Mar 27 01:00:22 2020 +0100
 
-I double checked the hrtimer code whether there is a blind spot where
-the timer state and the node state could get out of sync, but I could
-not find one.
+    net: phy: probe PHY drivers synchronously
 
-Thanks,
+See the full commit message, but the code change is:
 
-        tglx
+iff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 3b8f6b0b47b5..d543df282365 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -2577,6 +2577,7 @@ int phy_driver_register(struct phy_driver *new_driver, struct module *owner)
+        new_driver->mdiodrv.driver.probe = phy_probe;
+        new_driver->mdiodrv.driver.remove = phy_remove;
+        new_driver->mdiodrv.driver.owner = owner;
++       new_driver->mdiodrv.driver.probe_type = PROBE_FORCE_SYNCHRONOUS;
+ 
+        retval = driver_register(&new_driver->mdiodrv.driver);
+        if (retval) {
+
+How does this add to the overall picture?
+
+    Andrew
