@@ -2,176 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E19803F7F8F
-	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 02:59:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 083103F7F9A
+	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 03:01:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235440AbhHZA7q convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 25 Aug 2021 20:59:46 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:47535 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234396AbhHZA7n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 20:59:43 -0400
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 17Q0wERN1006279, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36501.realtek.com.tw[172.21.6.27])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 17Q0wERN1006279
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 26 Aug 2021 08:58:15 +0800
-Received: from RTEXDAG02.realtek.com.tw (172.21.6.101) by
- RTEXH36501.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Thu, 26 Aug 2021 08:58:14 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXDAG02.realtek.com.tw (172.21.6.101) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Thu, 26 Aug 2021 08:58:13 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::cdd5:82a3:e854:7098]) by
- RTEXMBS04.realtek.com.tw ([fe80::cdd5:82a3:e854:7098%5]) with mapi id
- 15.01.2106.013; Thu, 26 Aug 2021 08:58:13 +0800
-From:   Pkshih <pkshih@realtek.com>
-To:     Kees Cook <keescook@chromium.org>
-CC:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Colin Ian King <colin.king@canonical.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Joe Perches <joe@perches.com>,
-        Kaixu Xia <kaixuxia@tencent.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hardening@vger.kernel.org" <linux-hardening@vger.kernel.org>
-Subject: RE: [PATCH] rtlwifi: rtl8192de: Style clean-ups
-Thread-Topic: [PATCH] rtlwifi: rtl8192de: Style clean-ups
-Thread-Index: AQHXmd/DHYB2maO/lkCxyh94iMiVM6uE9bHg
-Date:   Thu, 26 Aug 2021 00:58:13 +0000
-Message-ID: <3e0b0efc0c0142bbb79cb11f927967bb@realtek.com>
-References: <20210825183350.1145441-1-keescook@chromium.org>
-In-Reply-To: <20210825183350.1145441-1-keescook@chromium.org>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.146]
-x-kse-serverinfo: RTEXDAG02.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2021/8/25_=3F=3F_08:00:00?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S235342AbhHZBCG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 21:02:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44800 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234655AbhHZBCF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 21:02:05 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9999C061757;
+        Wed, 25 Aug 2021 18:01:18 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id om1-20020a17090b3a8100b0017941c44ce4so5335845pjb.3;
+        Wed, 25 Aug 2021 18:01:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=x5mp1VjUCkbnes2xyPEjiw2HZc5+2DQzif1w2BN7Ye0=;
+        b=OBNgVHwcN7Z0uCYy+iVg9+Ea5EWbV1zbaBavQ+PR44M0n/Eecz6LA2PexDn6ZPmIJQ
+         jI7oHP2dm9psRfI75JRT0eYCSvkFJmy8MSYfZuAisMzos8dzY7VwmvP9s5w5IF/lrAoY
+         xTEvX705foD6o+IjF0hZ/GtGHOfal2qdMj4KyfdnxgeF4PYyaP11FoDu+NXku2+/JkdR
+         vTvEQE1X03VrExHY2UGd25gRj1wK1+0kexobN7ZmkoLMxU47hDsOOeRJjUEHms5jscYa
+         L7AN1U9F/uvx8IJjJx48DxCtpMxA9gGKc0mFx/Geh7QHJem92iqlw8CfGnIjii7w0WZk
+         jeCg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=x5mp1VjUCkbnes2xyPEjiw2HZc5+2DQzif1w2BN7Ye0=;
+        b=D74x2ArdE+uhDHGnDwwzvjOCrMdkmBXBPHqHUGYYRE3mFRyXLmDpabAvIO+1w2Qikm
+         RPe0/6jVAyR0clGkzV2uNmx0qLzRpiiDBRsUVv9jqRzb7p3H16qkXasy/jWhcW6/w0Ta
+         Q1r4lf27yClcoSMTLvLP+4FEyjsDJqEQzo2of2Wfx+60rKapuzyKQ187N6x/dazFgP9o
+         Yigzwqx2EoDOUp1T3gI3l2NDgCb9EQtMGEDDq2oNE5EK37jA9wGvmK+hRloCnoDHDRMi
+         +b9dXnG27ybK+aDOULN2Q0N19ZFyNWobCl7VXvRSDX0wor+qrIw3tr7ZyCwxlzJSMRHu
+         Nsxw==
+X-Gm-Message-State: AOAM533A/D3RRb9TVRA+BBp3La6lGOFqar9lYc3pyoDwLdFhqTuTV3D8
+        UV5I2n6ofqebTSy/6uKIKs7Qd+nBLFuHluvZ0wE=
+X-Google-Smtp-Source: ABdhPJzsKunXcLhpw2bOxAf2aklpZ0Je4JdcOp+kWYbtnW8IF2Lwqw6d+1NBUkCCmRNT67qkEwC2D4iNrR0P1Z4noPc=
+X-Received: by 2002:a17:90a:6ac2:: with SMTP id b2mr1213682pjm.36.1629939678250;
+ Wed, 25 Aug 2021 18:01:18 -0700 (PDT)
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36501.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 08/26/2021 00:43:02
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 165781 [Aug 25 2021]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: pkshih@realtek.com
-X-KSE-AntiSpam-Info: LuaCore: 457 457 f9912fc467375383fbac52a53ade5bbe1c769e2a
-X-KSE-AntiSpam-Info: {Tracking_uf_ne_domains}
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: realtek.com:7.1.1;127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 08/26/2021 00:46:00
+References: <20210825195823.381016-1-davemarchevsky@fb.com> <20210825195823.381016-4-davemarchevsky@fb.com>
+In-Reply-To: <20210825195823.381016-4-davemarchevsky@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 25 Aug 2021 18:01:07 -0700
+Message-ID: <CAADnVQJ+SRO-PZHYb9ef_RV3Yw_FOuOL0V+Q6A3Z_NYOn-Ezzw@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 3/6] libbpf: Modify bpf_printk to choose
+ helper based on arg count
+To:     Dave Marchevsky <davemarchevsky@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Yonghong Song <yhs@fb.com>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Aug 25, 2021 at 12:58 PM Dave Marchevsky <davemarchevsky@fb.com> wrote:
+>
+> Instead of being a thin wrapper which calls into bpf_trace_printk,
+> libbpf's bpf_printk convenience macro now chooses between
+> bpf_trace_printk and bpf_trace_vprintk. If the arg count (excluding
+> format string) is >3, use bpf_trace_vprintk, otherwise use the older
+> helper.
+>
+> The motivation behind this added complexity - instead of migrating
+> entirely to bpf_trace_vprintk - is to maintain good developer experience
+> for users compiling against new libbpf but running on older kernels.
+> Users who are passing <=3 args to bpf_printk will see no change in their
+> bytecode.
+>
+> __bpf_vprintk functions similarly to BPF_SEQ_PRINTF and BPF_SNPRINTF
+> macros elsewhere in the file - it allows use of bpf_trace_vprintk
+> without manual conversion of varargs to u64 array. Previous
+> implementation of bpf_printk macro is moved to __bpf_printk for use by
+> the new implementation.
+>
+> This does change behavior of bpf_printk calls with >3 args in the "new
+> libbpf, old kernels" scenario. On my system, using a clang built from
+> recent upstream sources (14.0.0 https://github.com/llvm/llvm-project.git
+> 50b62731452cb83979bbf3c06e828d26a4698dca), attempting to use 4 args to
+> __bpf_printk (old impl) results in a compile-time error:
+>
+>   progs/trace_printk.c:21:21: error: too many args to 0x6cdf4b8: i64 = Constant<6>
+>         trace_printk_ret = __bpf_printk("testing,testing %d %d %d %d\n",
 
-> -----Original Message-----
-> From: Kees Cook [mailto:keescook@chromium.org]
-> Sent: Thursday, August 26, 2021 2:34 AM
-> To: Pkshih
-> Cc: Kees Cook; Kalle Valo; David S. Miller; Jakub Kicinski; Larry Finger; Colin Ian King;
-> linux-wireless@vger.kernel.org; netdev@vger.kernel.org; Joe Perches; Kaixu Xia;
-> linux-kernel@vger.kernel.org; linux-hardening@vger.kernel.org
-> Subject: [PATCH] rtlwifi: rtl8192de: Style clean-ups
-> 
-> Clean up some style issues:
-> - Use ARRAY_SIZE() even though it's a u8 array.
-> - Remove redundant CHANNEL_MAX_NUMBER_2G define.
-> Additionally fix some dead code WARNs.
-> 
-> Cc: Ping-Ke Shih <pkshih@realtek.com>
-> Cc: Kalle Valo <kvalo@codeaurora.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Larry Finger <Larry.Finger@lwfinger.net>
-> Cc: Colin Ian King <colin.king@canonical.com>
-> Cc: linux-wireless@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Kees Cook <keescook@chromium.org>
-> ---
->  drivers/net/wireless/realtek/rtlwifi/rtl8192de/phy.c | 8 +++-----
->  drivers/net/wireless/realtek/rtlwifi/wifi.h          | 1 -
->  2 files changed, 3 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192de/phy.c
-> b/drivers/net/wireless/realtek/rtlwifi/rtl8192de/phy.c
-> index b32fa7a75f17..9807c9e91998 100644
-> --- a/drivers/net/wireless/realtek/rtlwifi/rtl8192de/phy.c
-> +++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192de/phy.c
-> @@ -899,7 +899,7 @@ static u8 _rtl92c_phy_get_rightchnlplace(u8 chnl)
->  	u8 place = chnl;
-> 
->  	if (chnl > 14) {
-> -		for (place = 14; place < sizeof(channel5g); place++) {
-> +		for (place = 14; place < ARRAY_SIZE(channel5g); place++) {
+and with a new bpf_printk it will compile to use bpf_trace_vprintk
+and gets rejected during load on old kernels, right?
+That will be the case for any clang.
+It's fine.
+Would be good to clarify the commit log.
 
-There are still many places we can use ARRAY_SIZE() instead of sizeof().
-Could you fix them within this file, even this driver?
-Otherwise, this patch looks good to me.
+> I was able to replicate this behavior with an older clang as well. When
+> the format string has >3 format specifiers, there is no output to the
+> trace_pipe in either case.
 
-Acked-by: Ping-Ke Shih <pkshih@realtek.com>
+I don't understand this paragraph. What are the cases?
 
->  			if (channel5g[place] == chnl) {
->  				place++;
->  				break;
-> @@ -2861,16 +2861,14 @@ u8 rtl92d_phy_sw_chnl(struct ieee80211_hw *hw)
->  	case BAND_ON_5G:
->  		/* Get first channel error when change between
->  		 * 5G and 2.4G band. */
-> -		if (channel <= 14)
-> +		if (WARN_ONCE(channel <= 14, "rtl8192de: 5G but channel<=14\n"))
->  			return 0;
-> -		WARN_ONCE((channel <= 14), "rtl8192de: 5G but channel<=14\n");
->  		break;
->  	case BAND_ON_2_4G:
->  		/* Get first channel error when change between
->  		 * 5G and 2.4G band. */
-> -		if (channel > 14)
-> +		if (WARN_ONCE(channel > 14, "rtl8192de: 2G but channel>14\n"))
->  			return 0;
-> -		WARN_ONCE((channel > 14), "rtl8192de: 2G but channel>14\n");
->  		break;
->  	default:
->  		WARN_ONCE(true, "rtl8192de: Invalid WirelessMode(%#x)!!\n",
-> diff --git a/drivers/net/wireless/realtek/rtlwifi/wifi.h
-> b/drivers/net/wireless/realtek/rtlwifi/wifi.h
-> index aa07856411b1..31f9e9e5c680 100644
-> --- a/drivers/net/wireless/realtek/rtlwifi/wifi.h
-> +++ b/drivers/net/wireless/realtek/rtlwifi/wifi.h
-> @@ -108,7 +108,6 @@
->  #define	CHANNEL_GROUP_IDX_5GM		6
->  #define	CHANNEL_GROUP_IDX_5GH		9
->  #define	CHANNEL_GROUP_MAX_5G		9
-> -#define CHANNEL_MAX_NUMBER_2G		14
->  #define AVG_THERMAL_NUM			8
->  #define AVG_THERMAL_NUM_88E		4
->  #define AVG_THERMAL_NUM_8723BE		4
-> --
-> 2.30.2
+> After this patch, using bpf_printk with 4 args would result in a
+> trace_vprintk helper call being emitted and a load-time failure on older
+> kernels.
 
+right.
+
+> +#define __bpf_printk(fmt, ...)                         \
+> +({                                                     \
+> +       char ____fmt[] = fmt;                           \
+
+Andrii was suggesting to make it const while we're at it,
+but that could be done in a follow up.
