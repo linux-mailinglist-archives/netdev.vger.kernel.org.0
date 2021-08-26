@@ -2,102 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BDB23F8B02
-	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 17:27:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BC363F8B17
+	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 17:33:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242926AbhHZP2f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 11:28:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45272 "EHLO
+        id S242925AbhHZPem (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 11:34:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231864AbhHZP2e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 11:28:34 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD134C061757;
-        Thu, 26 Aug 2021 08:27:46 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id f11-20020a17090aa78b00b0018e98a7cddaso2615175pjq.4;
-        Thu, 26 Aug 2021 08:27:46 -0700 (PDT)
+        with ESMTP id S230203AbhHZPel (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 11:34:41 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ADA8C0613C1
+        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 08:33:54 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id b6so5697112wrh.10
+        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 08:33:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=EsDDLFruXfgXRGBZ4psfYrG5xfY4R6rx1WaKqay82xg=;
-        b=SYQ4w04r1YPinHAM+T4jRVRpPJhOSpjnJjngD6fmvJjfkVUqfvsuS7U5XuB35Mzg9Y
-         j5GCZ0QXaN/xzJTwfmx5CgXnJQTMn88R318UQg45dsQutt4Vp0TDIJZiU6qBWH+wePi3
-         gC2l/trUQ4rgzP8l90aKAg+HNpagV4/XNd9685pxUq4AWmLv7rDo3/U0kKUD/421Tdl8
-         IFsMF60TponD8ZnQk60fjZneakmVnnT4p580IIvFzR7Hoat/JW9Yz49P5o6iCOfCs6Jm
-         EqTFFIgVCniovO+cAhLAt+GVlzwmwZbi8wgQfD976yC9wCxHPPMei3pUcrqKAAf09nLi
-         ki/Q==
+        d=6wind.com; s=google;
+        h=reply-to:subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=NKQHjgSXACuCK3NartetwamP6Lz6Q0ZQdPM75F6K/sA=;
+        b=BsPy/aEQQJl6mCtUnSjzipauNbVbyrICBnxni56sSlSLny4uMl22ew/PxBEcgAtOWQ
+         lD8DZDnBTy5jDhxDm0lALevVJVUQ8M/BvmpX6ni+3tEmROVECFmUwrl6BKTMIT69snUI
+         6Pa4CwXmxoLl1I1Wm3t2Kqfv578msIWxINeawef7CFTWFdJhffy/9kUedp2x4Si/tD6h
+         IUEIY73NGJA2uP6v6ZBNHY8hIWpXBuzIR/mxalxmdN8eUVJJXGvUg5pyue1o7dQ1nYqw
+         idWH027gzJ6DYFI5ggkgiDIOmeIIe7m+8qro1azXtvpTJzPpKh2B/NeqSIYGCMvhQAxP
+         chzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=EsDDLFruXfgXRGBZ4psfYrG5xfY4R6rx1WaKqay82xg=;
-        b=Ywc5smT9NgPAvKCJBqBzfHWqNxddAC8Zw5fyN9TdlH89SvzNvDx+TWuNGY4Glp0Qvn
-         l7k+B22GikUVtRzCdoAM8t/+Zt+w1J4yWQr/jauZClccb4H0lGGWSbXUzq9Yw70i9I7v
-         N4cjRkD6J5yYIT66t+0j86H9v6x7BSwq1Yxu9pZabcr2EtzNVvlWK28azZI0w6Nuw1c2
-         Qea0HRxUkUw48r2XkrIRnqO5bCsJWQ4h6Nl4se3X3OiIvJHiz9C3uWvJD3qUNtNivRq4
-         4a83J+suiw5EegjL29bnESUmfHtXYBjAlwtip9POGM5eMKPZ+y3FXd6bSZ8iEm0+WWsQ
-         IqzA==
-X-Gm-Message-State: AOAM5307KoGkDC3RLtGuPImSslwqkwBrYbbyoGV7NO1WBFjmxLFXZgHF
-        Y4NOgzeL0qxJJyxXSLMCx/I=
-X-Google-Smtp-Source: ABdhPJzgulZo1l4aidr56hzMH6tvcn7ua9S8kOn5bpUgwTIF5YUsvQDRBUxw2ie25n0kV5INj6CX0Q==
-X-Received: by 2002:a17:90a:bb0b:: with SMTP id u11mr17402574pjr.18.1629991666283;
-        Thu, 26 Aug 2021 08:27:46 -0700 (PDT)
-Received: from haswell-ubuntu20.lan ([138.197.212.246])
-        by smtp.gmail.com with ESMTPSA id e21sm1505066pfl.188.2021.08.26.08.27.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Aug 2021 08:27:45 -0700 (PDT)
-From:   DENG Qingfang <dqfext@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC net-next 2/2] net: dsa: tag_mtk: handle VLAN tag insertion on TX
-Date:   Thu, 26 Aug 2021 23:27:37 +0800
-Message-Id: <20210826152737.3280662-1-dqfext@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210826141326.xa52776uh3r3jpg4@skbuf>
-References: <20210825083832.2425886-1-dqfext@gmail.com> <20210825083832.2425886-3-dqfext@gmail.com> <20210826000349.q3s5gjuworxtbcna@skbuf> <20210826052956.3101243-1-dqfext@gmail.com> <20210826141326.xa52776uh3r3jpg4@skbuf>
+        h=x-gm-message-state:reply-to:subject:to:cc:references:from
+         :organization:message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=NKQHjgSXACuCK3NartetwamP6Lz6Q0ZQdPM75F6K/sA=;
+        b=Me9cfLGWS7hcQoHWxX+TdpRq1nUwuXRT7QZLYSmPVMqFcnTQMUz1gpA1oA4Trqes9S
+         ZJraFdnPGs/2N3Z8yTAEjbVj5qgFQfFpkiViNN/Q86CdjklsYwb9bq62BWsTdzLgePqQ
+         mg6iRmiffvaiGaVJxEo8C95N6grTY7NOFdX5xtyOIzuPO67DM0Tgi8jUkiutkoRsaFGv
+         hSZVxeTkiIiBZrBhNaV+nzjl9e4ARVHIjm+PUU3V19G4Aa7CVrNiApelpWpFONe9JCAM
+         jtph1Np1M8aNgEKz32SdKu2eCpNSruBMqWmLeKM6hbZkMEm0I5hplYAMIKRZM/1C99ys
+         jk7g==
+X-Gm-Message-State: AOAM533KOCVWFdqHpmYq6bAR84Tsfog1uxb2RVKAZC95gScNsXXJ5jeS
+        PEp9jgpGHVYu8QCfEzClCVk3hw==
+X-Google-Smtp-Source: ABdhPJwviO8Zl8nXZ/dv4J73hcfS4RWHUl8cGWNJtqHW2e/sfCyQN02D5z/L0MUqgazclAUB3Ls72A==
+X-Received: by 2002:a5d:508e:: with SMTP id a14mr4798042wrt.306.1629992032726;
+        Thu, 26 Aug 2021 08:33:52 -0700 (PDT)
+Received: from ?IPv6:2a01:e0a:410:bb00:9871:c4a8:efb1:30ac? ([2a01:e0a:410:bb00:9871:c4a8:efb1:30ac])
+        by smtp.gmail.com with ESMTPSA id n15sm7892426wmq.7.2021.08.26.08.33.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 26 Aug 2021 08:33:52 -0700 (PDT)
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [RFC net-next] ipv6: Support for anonymous tunnel decapsulation
+To:     Justin Iurman <justin.iurman@uliege.be>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, tom@herbertland.com, edumazet@google.com
+References: <20210826140150.19920-1-justin.iurman@uliege.be>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+Message-ID: <fd41d544-31f0-8e60-a301-eb4f4e323a5b@6wind.com>
+Date:   Thu, 26 Aug 2021 17:33:51 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+In-Reply-To: <20210826140150.19920-1-justin.iurman@uliege.be>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 26, 2021 at 05:13:26PM +0300, Vladimir Oltean wrote:
-> On Thu, Aug 26, 2021 at 01:29:56PM +0800, DENG Qingfang wrote:
-> > 
-> > The comment says the VLAN tag need to be combined with the special tag in
-> > order to perform VLAN table lookup,
+Le 26/08/2021 à 16:01, Justin Iurman a écrit :
+> Nowadays, there are more and more private domains where a lot of ingresses and
+> egresses must be linked altogether. Configuring each possible tunnel explicitly
+> could quickly become a nightmare in such use case. Therefore, introducing
+> support for ip6ip6 decapsulation without an explicit tunnel configuration looks
+> like the best solution (e.g., for IOAM). For now, this patch only adds support
+> for ip6ip6 decap, but ip6ip4 could probably be added too if needed.
 > 
-> It does say this.
+> Last year, we had an interesting discussion [1] with Tom about this topic, and
+> especially on how such solution could be implemented in a more generic way. Here
+> is the summary of the thread.
 > 
-> > so we can set its destination port vector to all zeroes and the switch
-> > will forward it like a data frame (TX forward offload),
+> Tom said:
+> "This is just IP in IP encapsulation that happens to be terminated at
+> an egress node of the IOAM domain. The fact that it's IOAM isn't
+> germaine, this IP in IP is done in a variety of ways. We should be
+> using the normal protocol handler for NEXTHDR_IPV6  instead of special
+> case code."
 > 
-> And it does not say this. So this is supported after all with mt7530?
-> Are you looking to add support for that?
+> He also said:
+> "The current implementation might not be what you're looking for since
+> ip6ip6 wants a tunnel configured. What we really want is more like
+> anonymous decapsulation, that is just decap the ip6ip6 packet and
+> resubmit the packet into the stack (this is what you patch is doing).
+> The idea has been kicked around before, especially in the use case
+> where we're tunneling across a domain and there could be hundreds of
+> such tunnels to some device. I think it's generally okay to do this,
+> although someone might raise security concerns since it sort of
+> obfuscates the "real packet". Probably makes sense to have a sysctl to
+> enable this and probably could default to on. Of course, if we do this
+> the next question is should we also implement anonymous decapsulation
+> for 44,64,46 tunnels."
+> 
+> Based on the above, here is a generic solution to introduce anonymous tunnels
+> for IPv6. We know that the tunnel6 module is, when loaded, already responsible
+> for handling IPPROTO_IPV6 from an IPv6 context (= ip6ip6). Therefore, when
+> tunnel6 is loaded, it handles ip6ip6 with its tunnel6_rcv handler. Inside the
+> handler, we add a check for anonymous tunnel decapsulation and, if enabled,
+> perform the decap. When tunnel6 is unloaded, it gives the responsability back to
+> tunnel6_anonymous and its own handler. Note that the introduced sysctl to
+> enable anonymous decapsulation is equal to 0 (= disabled) by default. Indeed,
+> as opposed to what Tom suggested, I think it should be disabled by default in
+> order to make sure that users won't have it enabled without knowing it (for
+> security reasons, obviously).
+> 
+> Thoughts?
+I'm not sure to understand why the current code isn't enough. The fallback
+tunnels created by legacy IP tunnels drivers are able to receive and decapsulate
+any encapsulated packets.
+I made a quick try with an ip6 tunnel and it works perfectly:
 
-I already run-tested that, it works, as long as there is only one bridge.
+host1 -- router1 -- router2 -- host2
+
+A ping is done from host1 to host2. router1 is configured with a standard ip6
+tunnel and screenshots are done on router2:
+
+$ modprobe ip6_tunnel
+$ ip l s ip6tnl0 up
+$ tcpdump -ni ip6tnl0
+tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+listening on ip6tnl0, link-type LINUX_SLL (Linux cooked), capture size 262144 bytes
+17:22:22.749246 IP6 fd00:100::1 > fd00:200::1: ICMP6, echo request, seq 0, length 64
+
+And a tcpdump on the link interface:
+$ tcpdump -ni ntfp2
+tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+listening on ntfp2, link-type EN10MB (Ethernet), capture size 262144 bytes
+17:23:41.587252 IP6 fd00:125::1 > fd00:125::2: IP6 fd00:100::1 > fd00:200::1:
+ICMP6, echo request, seq 0, length 64
+17:23:41.589291 IP6 fd00:200::1 > fd00:100::1: ICMP6, echo reply, seq 0, length 64
+
+$ ip -d a l dev ip6tnl0
+6: ip6tnl0@NONE: <NOARP,UP,LOWER_UP> mtu 1452 qdisc noqueue state UNKNOWN group
+default qlen 1000
+    link/tunnel6 :: brd :: promiscuity 0 minmtu 68 maxmtu 65407
+    ip6tnl ip6ip6 remote any local any hoplimit inherit encaplimit 0 tclass 0x00
+flowlabel 0x00000 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535
+    inet6 fe80::b47d:abff:feac:ec09/64 scope link
+       valid_lft forever preferred_lft forever
+
+Am I missing something?
+
+
+Regards,
+Nicolas
 
 > 
-> > but as we allow multiple bridges which are either VLAN-unaware or
-> > VLAN-aware with the same VID, there is no way to determine the
-> > destination bridge unless we maintain some VLAN translation mapping.
+> Some feedback would be really appreciated, specifically on these points:
+>  - Should the anonymous decapsulation happen before (as it is right now) or
+>    after tunnel6 handlers? "Before" looks like the most logical solution as,
+>    even if you configure a tunnel and enable anonymous decap, the latter will
+>    take precedence.
+>  - Any comments on the choice of the sysctl name ("tunnel66_decap_enabled")?
+>  - Any comments on the patch in general?
 > 
-> What does "VLAN translation mapping" mean, practically?
-
-It's just VLAN remapping, as you stated below.
-
-> Other drivers which cannot remap VIDs to internal VLANs just restrict a
-> single VLAN-aware bridge, and potentially multiple VLAN-unaware ones.
+> [1] https://lore.kernel.org/netdev/CALx6S374PQ7GGA_ey6wCwc55hUzOx+2kWT=96TzyF0=g=8T=WA@mail.gmail.com
