@@ -2,102 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 079293F8486
-	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 11:28:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 286063F8490
+	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 11:31:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241001AbhHZJ3m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 05:29:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45942 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233249AbhHZJ3l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 05:29:41 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13F6BC061757;
-        Thu, 26 Aug 2021 02:28:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Content-Type:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-To:Resent-Cc:
-        Resent-Message-ID:In-Reply-To:References;
-        bh=h/jIXyoyAHbuXfwf0yKoxIhgV6fCX+3ThenGetfLVts=; t=1629970134; x=1631179734; 
-        b=pBvhrgSZOP8cDkbnD88eWHn0x+pDjWuV3khFKenbs5O9pzSUTtIrEf/PowYBRThDy8LP8vvfBuo
-        +dJPzQduD6VSE77uvb1W77jYWVDNPHZJkT79s68oa9mWA8mtzmEJbuev8QiGsM99oRw9sOqz/RpK8
-        73+b5uSZgcJBLLzu5RFX0rkrCVVwNJ04vz7NMva2OQ85EzOo8aRscHWkV4uNRm+PlOVHVANkGaHWw
-        8nneXzXqRgrsd2ZzAkXfpO1H2ck/a4DWnuILsNoc84xTCOVNLKpkqUVtBOJXmpi44lXKpRkdWMM21
-        ANhoJi4mwUovJSO7k31Arr9dEpjFF2rJKDoQ==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.94.2)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1mJBgp-00G5uI-JE; Thu, 26 Aug 2021 11:28:51 +0200
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Subject: pull-request: mac80211-next 2021-08-26
-Date:   Thu, 26 Aug 2021 11:28:47 +0200
-Message-Id: <20210826092848.45290-1-johannes@sipsolutions.net>
-X-Mailer: git-send-email 2.31.1
+        id S241101AbhHZJbj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 05:31:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35472 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241112AbhHZJa7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Aug 2021 05:30:59 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id A5346610C9;
+        Thu, 26 Aug 2021 09:30:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1629970206;
+        bh=eCaIeOtnaMDMs70PFG3hI5otTZvCFJsFQB37iSnmNmM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=HXe4boagblmont4TaYsRP29bcxpckTvhSdUCYHKSJcIV3EjIvH6jy7kNKDJ6SZT82
+         uClRzdQwgJzKsSOqboqUudJJX6YwCZynwxbR5mFMvm+aS5ssoXIOZjuZoWY4J6Kedk
+         fidINiEB7sTBLYz03fI2kyEJyQiCgHjzV6I2iv/cLOGjNHJprvQSFBdHyoZMf6PaZA
+         XG9MuPG1fmdFU0T2bdP5nwomjDHkT4/P6hwwBGbstuLJ6uahgjteZ9tZUmsxY/RvM/
+         +iIiJ3rR8xzxhJNZpOzf/JhuNyyyri1EK6HLk4yijd24wjYYHx+Lx5fYwFxB7Qv1Ok
+         8hXRwmFCTCfMQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 96DA060A12;
+        Thu, 26 Aug 2021 09:30:06 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 0/2] inet: use siphash in exception handling
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162997020661.28182.14261277414825954591.git-patchwork-notify@kernel.org>
+Date:   Thu, 26 Aug 2021 09:30:06 +0000
+References: <20210825231729.401676-1-eric.dumazet@gmail.com>
+In-Reply-To: <20210825231729.401676-1-eric.dumazet@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        edumazet@google.com, w@1wt.eu, kman001@ucr.edu
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hello:
 
-As I mentioned last time, since we got another week, I have
-a few more changes - I had been waiting for a respin of the
-TWT and 6 GHz regulatory, but in the end not all of the
-latter made it.
+This series was applied to netdev/net.git (refs/heads/master):
 
-Please pull and let me know if there's any problem.
+On Wed, 25 Aug 2021 16:17:27 -0700 you wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> A group of security researchers brought to our attention
+> the weakness of hash functions used in rt6_exception_hash()
+> and fnhe_hashfun()
+> 
+> I made two distinct patches to help backports, since IPv6
+> part was added in 4.15
+> 
+> [...]
 
-Thanks,
-johannes
+Here is the summary with links:
+  - [net,1/2] ipv6: use siphash in rt6_exception_hash()
+    https://git.kernel.org/netdev/net/c/4785305c05b2
+  - [net,2/2] ipv4: use siphash instead of Jenkins in fnhe_hashfun()
+    https://git.kernel.org/netdev/net/c/6457378fe796
 
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-
-The following changes since commit f6a4e0e8a00ff6fadb29f3646ccd33cc85195a38:
-
-  via-velocity: Use of_device_get_match_data to simplify code (2021-08-23 12:56:15 +0100)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next.git tags/mac80211-next-for-net-next-2021-08-26
-
-for you to fetch changes up to 90bd5bee50f2a209ba66f013866959a56ff400b9:
-
-  cfg80211: use wiphy DFS domain if it is self-managed (2021-08-26 11:04:55 +0200)
-
-----------------------------------------------------------------
-A few more things:
- * Use correct DFS domain for self-managed devices
- * some preparations for transmit power element handling
-   and other 6 GHz regulatory handling
- * TWT support in AP mode in mac80211
-
-----------------------------------------------------------------
-Lorenzo Bianconi (2):
-      ieee80211: add TWT element definitions
-      mac80211: introduce individual TWT support in AP mode
-
-Sriram R (1):
-      cfg80211: use wiphy DFS domain if it is self-managed
-
-Wen Gong (3):
-      ieee80211: add definition of regulatory info in 6 GHz operation information
-      ieee80211: add definition for transmit power envelope element
-      mac80211: parse transmit power envelope element
-
- include/linux/ieee80211.h  | 106 +++++++++++++++++++++++++-
- include/net/mac80211.h     |  12 +++
- net/mac80211/driver-ops.h  |  36 +++++++++
- net/mac80211/ieee80211_i.h |   9 +++
- net/mac80211/iface.c       |  41 +++++++++++
- net/mac80211/rx.c          |  73 ++++++++++++++++++
- net/mac80211/s1g.c         | 180 +++++++++++++++++++++++++++++++++++++++++++++
- net/mac80211/status.c      |  17 ++++-
- net/mac80211/trace.h       |  67 +++++++++++++++++
- net/mac80211/util.c        |  12 +++
- net/wireless/reg.c         |   9 ++-
- 11 files changed, 558 insertions(+), 4 deletions(-)
 
