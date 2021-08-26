@@ -2,67 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 286063F8490
+	by mail.lfdr.de (Postfix) with ESMTP id 722103F8491
 	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 11:31:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241101AbhHZJbj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 05:31:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35472 "EHLO mail.kernel.org"
+        id S241112AbhHZJbn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 05:31:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35482 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241112AbhHZJa7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S241120AbhHZJa7 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 26 Aug 2021 05:30:59 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id A5346610C9;
+Received: by mail.kernel.org (Postfix) with ESMTPS id B31E9610CD;
         Thu, 26 Aug 2021 09:30:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1629970206;
-        bh=eCaIeOtnaMDMs70PFG3hI5otTZvCFJsFQB37iSnmNmM=;
+        bh=NyLoSJ+rp2cx5CiOkqrd0r7D0yxRMTkV5vFSeHna51s=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=HXe4boagblmont4TaYsRP29bcxpckTvhSdUCYHKSJcIV3EjIvH6jy7kNKDJ6SZT82
-         uClRzdQwgJzKsSOqboqUudJJX6YwCZynwxbR5mFMvm+aS5ssoXIOZjuZoWY4J6Kedk
-         fidINiEB7sTBLYz03fI2kyEJyQiCgHjzV6I2iv/cLOGjNHJprvQSFBdHyoZMf6PaZA
-         XG9MuPG1fmdFU0T2bdP5nwomjDHkT4/P6hwwBGbstuLJ6uahgjteZ9tZUmsxY/RvM/
-         +iIiJ3rR8xzxhJNZpOzf/JhuNyyyri1EK6HLk4yijd24wjYYHx+Lx5fYwFxB7Qv1Ok
-         8hXRwmFCTCfMQ==
+        b=CsvvSipvAZ00JTVR01bsKLj0AXWneNXSixcxB5jRTkFC8cYKBvOnhxLKUs6K5xJk/
+         PJ6Pr7RYkRF+nJdFT5tdu249clky0LYONZ07lnAzrkEQoXxfwGrv8U21ReMW6ZOz7J
+         AEix40zD0oZKXUlqWCSJQNbwmhVegmAc/+c75h2nsF7L/L1LN1qn7IsMTqQh81YewI
+         LP7tWynPlFgzmOipziYnUOZhTSKiDnrNzyMqhCQavrTDAQNL91yy/dB8B0eEY7zycJ
+         xGojSfQNxg45Yehg3VR1yAxNpIw8Zu/F3FlpE1/0S5KBkOT8fqVO2CYAy0Qjff5/ci
+         l0IBrvrU2OL6w==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 96DA060A12;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A8F1F60A14;
         Thu, 26 Aug 2021 09:30:06 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/2] inet: use siphash in exception handling
+Subject: Re: [PATCH net] cxgb4: dont touch blocked freelist bitmap after free
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162997020661.28182.14261277414825954591.git-patchwork-notify@kernel.org>
+Message-Id: <162997020668.28182.4516840602174292379.git-patchwork-notify@kernel.org>
 Date:   Thu, 26 Aug 2021 09:30:06 +0000
-References: <20210825231729.401676-1-eric.dumazet@gmail.com>
-In-Reply-To: <20210825231729.401676-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        edumazet@google.com, w@1wt.eu, kman001@ucr.edu
+References: <1629926982-6393-1-git-send-email-rahul.lakkireddy@chelsio.com>
+In-Reply-To: <1629926982-6393-1-git-send-email-rahul.lakkireddy@chelsio.com>
+To:     Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        rajur@chelsio.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net.git (refs/heads/master):
 
-On Wed, 25 Aug 2021 16:17:27 -0700 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
+On Thu, 26 Aug 2021 02:59:42 +0530 you wrote:
+> When adapter init fails, the blocked freelist bitmap is already freed
+> up and should not be touched. So, move the bitmap zeroing closer to
+> where it was successfully allocated. Also handle adapter init failure
+> unwind path immediately and avoid setting up RDMA memory windows.
 > 
-> A group of security researchers brought to our attention
-> the weakness of hash functions used in rt6_exception_hash()
-> and fnhe_hashfun()
-> 
-> I made two distinct patches to help backports, since IPv6
-> part was added in 4.15
+> Fixes: 5b377d114f2b ("cxgb4: Add debugfs facility to inject FL starvation")
+> Signed-off-by: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,1/2] ipv6: use siphash in rt6_exception_hash()
-    https://git.kernel.org/netdev/net/c/4785305c05b2
-  - [net,2/2] ipv4: use siphash instead of Jenkins in fnhe_hashfun()
-    https://git.kernel.org/netdev/net/c/6457378fe796
+  - [net] cxgb4: dont touch blocked freelist bitmap after free
+    https://git.kernel.org/netdev/net/c/43fed4d48d32
 
 You are awesome, thank you!
 --
