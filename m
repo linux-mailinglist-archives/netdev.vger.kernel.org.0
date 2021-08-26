@@ -2,113 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72E683F8F2B
-	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 21:48:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEB583F8F53
+	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 21:57:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243606AbhHZTs5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 15:48:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49486 "EHLO
+        id S243442AbhHZT5d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 15:57:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243602AbhHZTs4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 15:48:56 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45356C061757
-        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 12:48:08 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id b6so6770359wrh.10
-        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 12:48:08 -0700 (PDT)
+        with ESMTP id S230011AbhHZT5c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 15:57:32 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F6B0C061757
+        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 12:56:44 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id a93so8186432ybi.1
+        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 12:56:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=dMDFVnjoFtKuliCaT9z36pJ6LfmG3Y44Dky0mkGS32s=;
-        b=C9g8lT2y/fE8BDwIYO7CwZ1wmrJepmm/ArIdyxBdgQVSz5HLP0hCvwKE3F5i1Y85Dy
-         8FHv0KX4ptNoOcUNtzCtnVKrIysmrL4QEU2slsLUeuFMqV2BfKS4mE4EjCOZM2dRp6Kb
-         J6/eH6xJd9/lry2pfisWmG++60+rcGnnoysecpHgpZGc9cmv3aQE8L6wqbyusT3zobiz
-         KJppZB9WA2JVQtEE4d44GjAMUZ88GJY0sD7b3V+dM25OpSylPoD3Si5JXiujuJ9zNcqd
-         5uVMOMA6sHEXtyADG7k7ODQe132k+1zuJVTWTE0ieiCOy5cStZjwGlbKLDnJ3aO9OBlg
-         H7/A==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JFAHUDZyyahIcWw7Cvy/uu3QfGKT8k+W/eOL0ZhDFn8=;
+        b=c+HL58Mpu2qY6DsQ+9tdT8HIhGv/o4TXrZcytK40XxfLh9zT8seGs3u5kCCzTcU003
+         jdsJW57wCClGc++F1QNvfZVWckvIeVg0m3pgIollN6wnDlvbpKmO8/miYyJzHVAHwqkC
+         ldYQc3mdQaenCOiXecR7PJH7eRuc9AjV1o6RuGNLGz2YZSD0qVK/7TQkQxmbQ/jkgT+X
+         nmeaxdvhysNcdyvv/ANfl53RKclFCFliPC8zLxzi7YT8FGBuC4lw7koeJKvbpeSD68dK
+         4ztpfrk9xmB5hKJEKdcjcSrd9O+IUErBt0tovr4zKJC8W60FqaavUtcgHQDOAEdV9KqE
+         EGzA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=dMDFVnjoFtKuliCaT9z36pJ6LfmG3Y44Dky0mkGS32s=;
-        b=IcuY3ALiv4Np9FCPlCcowWPd1T+LIDF9zVHi5QnP8uCyYMCHD1EAlAw+5a9pn3sqma
-         jd1Fv7ZPG059OzHpSHWw2yiCP4yMwXAFdcElCaWwgvrO7/IOuQc4f+WnLMbOUmHfTMSY
-         lxat5Ugu3d+2asxmMzupuOIO5cmtwZugcV6Jtt+WatEhlkt4x8DrMg4BwKy12m3nQptm
-         dTWwdPY+dI1Yi2UcLqAGWexXykakddsB5bEgLGHa3KHf8wK0g2Yoa6uHqfngVf4irEte
-         PKgdxPeYVA60YTzQcq4IQwvSyW+qhxSO6zlp2FUbyCOUhzMwTPU0At2aNzT7WeUV0JGl
-         Q6dw==
-X-Gm-Message-State: AOAM5301XJJYhpX+urmETUvOqC5Sf3xBTcGGSD2MSgPeHfK36FTUuP51
-        NP5qn4mja56DI2u6OnW4Ht+9eaqXCUJdvQ==
-X-Google-Smtp-Source: ABdhPJxEacnzFvwVFE9Ccq8bIh5ScxTkcPHIHp7W/cS8Qz3d3KW831LmGU3oqJbRzhj35AP6XfNJQQ==
-X-Received: by 2002:adf:f2d1:: with SMTP id d17mr5933982wrp.381.1630007286643;
-        Thu, 26 Aug 2021 12:48:06 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f08:4500:b5d8:a3dc:f88f:cae2? (p200300ea8f084500b5d8a3dcf88fcae2.dip0.t-ipconnect.de. [2003:ea:8f08:4500:b5d8:a3dc:f88f:cae2])
-        by smtp.googlemail.com with ESMTPSA id x18sm4149363wrw.19.2021.08.26.12.48.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 26 Aug 2021 12:48:06 -0700 (PDT)
-To:     =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>,
-        Raju Rangoju <rajur@chelsio.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: cxgb3: error when removing driver module
-Message-ID: <fafb7c49-45e7-8096-45fd-e4b7984d7b06@gmail.com>
-Date:   Thu, 26 Aug 2021 21:47:57 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JFAHUDZyyahIcWw7Cvy/uu3QfGKT8k+W/eOL0ZhDFn8=;
+        b=hvwpulH47JQWZWAV/fYr5GNRgEr4lO9/TgnwnamBpXda2ysaIkj4qua55uCQfOKcpf
+         9JH/QEZso7f/mLs7fNn+BEL0xGdAmtP/UUVtwpk1MnHwQruv749cmAwYh28CqC5NPVMC
+         jDluS/dCylZ8didBYB2B8IvEgFTqb/rG9OQ3HN3ydR4zbgyNPmT8J/AV1u/JawlGyo/B
+         FTDkSucR52zgcd8HPezbMLX1KAeoQpN01ARBlXAeXfVteT0ZW8fOP79nxQc/ARAyXAGH
+         y0yvtCa1rpasJIYdPfA9SlO7JzdAtblXFbA2UQgFasxW1JhcI1MeX6N4N/yXf+42w27a
+         K+mw==
+X-Gm-Message-State: AOAM531Xx1753Rw9inv52avAhjyJpnLwocz8Q7VbjFZQPRIt6OcsK1Tr
+        meSMiO83BJQmQa4V3B6eEpcbIel19SN3z4BZAVPBGQ==
+X-Google-Smtp-Source: ABdhPJzBanXg7oKhlkUNt9M+hgCQcqMj4csOvmzyt41Q9AP5DJSOE8icqZgGfMzxdnGjwp2AlOc5gP15GOVzMlQ6fHQ=
+X-Received: by 2002:a25:bdc6:: with SMTP id g6mr552373ybk.310.1630007803595;
+ Thu, 26 Aug 2021 12:56:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20210826074526.825517-1-saravanak@google.com> <20210826074526.825517-2-saravanak@google.com>
+ <YSeTdb6DbHbBYabN@lunn.ch>
+In-Reply-To: <YSeTdb6DbHbBYabN@lunn.ch>
+From:   Saravana Kannan <saravanak@google.com>
+Date:   Thu, 26 Aug 2021 12:56:07 -0700
+Message-ID: <CAGETcx-pSi60NtMM=59cve8kN9ff9fgepQ5R=uJ3Gynzh=0_BA@mail.gmail.com>
+Subject: Re: [PATCH v1 1/2] driver core: fw_devlink: Add support for FWNODE_FLAG_BROKEN_PARENT
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
+        Alvin Sipraga <ALSI@bang-olufsen.dk>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-acpi@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When removing the driver module w/o bringing an interface up
-before then the error below occurs. Reason seems to be that
-cancel_work_sync() is called in t3_sge_stop() for a queue
-that hasn't been initialized yet.
+Greg, Florian, Vladimir, Alvin,
 
-Root cause may be 5e0b8928927f ("net:cxgb3: replace tasklets with works").
+Let's continue the rest of the discussion here.
 
-[10085.941785] ------------[ cut here ]------------
-[10085.941799] WARNING: CPU: 1 PID: 5850 at kernel/workqueue.c:3074 __flush_work+0x3ff/0x480
-[10085.941819] Modules linked in: vfat snd_hda_codec_hdmi fat snd_hda_codec_realtek snd_hda_codec_generic ledtrig_audio led_class ee1004 iTCO_
-wdt intel_tcc_cooling x86_pkg_temp_thermal coretemp aesni_intel crypto_simd cryptd snd_hda_intel snd_intel_dspcfg snd_hda_codec snd_hda_core r
-8169 snd_pcm realtek mdio_devres snd_timer snd i2c_i801 i2c_smbus libphy i915 i2c_algo_bit cxgb3(-) intel_gtt ttm mdio drm_kms_helper mei_me s
-yscopyarea sysfillrect sysimgblt mei fb_sys_fops acpi_pad sch_fq_codel crypto_user drm efivarfs ext4 mbcache jbd2 crc32c_intel
-[10085.941944] CPU: 1 PID: 5850 Comm: rmmod Not tainted 5.14.0-rc7-next-20210826+ #6
-[10085.941974] Hardware name: System manufacturer System Product Name/PRIME H310I-PLUS, BIOS 2603 10/21/2019
-[10085.941992] RIP: 0010:__flush_work+0x3ff/0x480
-[10085.942003] Code: c0 74 6b 65 ff 0d d1 bd 78 75 e8 bc 2f 06 00 48 c7 c6 68 b1 88 8a 48 c7 c7 e0 5f b4 8b 45 31 ff e8 e6 66 04 00 e9 4b fe ff ff <0f> 0b 45 31 ff e9 41 fe ff ff e8 72 c1 79 00 85 c0 74 87 80 3d 22
-[10085.942036] RSP: 0018:ffffa1744383fc08 EFLAGS: 00010246
-[10085.942048] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000923
-[10085.942062] RDX: 0000000000000000 RSI: 0000000000000001 RDI: ffff91c901710a88
-[10085.942076] RBP: ffffa1744383fce8 R08: 0000000000000001 R09: 0000000000000001
-[10085.942090] R10: 00000000000000c2 R11: 0000000000000000 R12: ffff91c901710a88
-[10085.942104] R13: 0000000000000000 R14: ffff91c909a96100 R15: 0000000000000001
-[10085.942118] FS:  00007fe417837740(0000) GS:ffff91c969d00000(0000) knlGS:0000000000000000
-[10085.942134] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[10085.942146] CR2: 000055a8d567ecd8 CR3: 0000000121690003 CR4: 00000000003706e0
-[10085.942160] Call Trace:
-[10085.942166]  ? __lock_acquire+0x3af/0x22e0
-[10085.942177]  ? cancel_work_sync+0xb/0x10
-[10085.942187]  __cancel_work_timer+0x128/0x1b0
-[10085.942197]  ? __pm_runtime_resume+0x5b/0x90
-[10085.942208]  cancel_work_sync+0xb/0x10
-[10085.942217]  t3_sge_stop+0x2f/0x50 [cxgb3]
-[10085.942234]  remove_one+0x26/0x190 [cxgb3]
-[10085.942248]  pci_device_remove+0x39/0xa0
-[10085.942258]  __device_release_driver+0x15e/0x240
-[10085.942269]  driver_detach+0xd9/0x120
-[10085.942278]  bus_remove_driver+0x53/0xd0
-[10085.942288]  driver_unregister+0x2c/0x50
-[10085.942298]  pci_unregister_driver+0x31/0x90
-[10085.942307]  cxgb3_cleanup_module+0x10/0x18c [cxgb3]
-[10085.942324]  __do_sys_delete_module+0x191/0x250
-[10085.942336]  ? syscall_enter_from_user_mode+0x21/0x60
-[10085.942347]  ? trace_hardirqs_on+0x2a/0xe0
-[10085.942357]  __x64_sys_delete_module+0x13/0x20
-[10085.942368]  do_syscall_64+0x40/0x90
-[10085.942377]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[10085.942389] RIP: 0033:0x7fe41796323b
+On Thu, Aug 26, 2021 at 6:13 AM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> On Thu, Aug 26, 2021 at 12:45:24AM -0700, Saravana Kannan wrote:
+> > If a parent device is also a supplier to a child device, fw_devlink=on
+> > (correctly) delays the probe() of the child device until the probe() of
+> > the parent finishes successfully.
+> >
+> > However, some drivers of such parent devices (where parent is also a
+> > supplier) incorrectly expect the child device to finish probing
+> > successfully as soon as they are added using device_add() and before the
+> > probe() of the parent device has completed successfully.
+>
+> Please can you point at the code making this assumption. It sounds
+> like we are missing some EPROBE_DEFER handling in the driver, or maybe
+> the DSA framework.
+
+For context, this was discussed and explained in [1] and subsequent
+replies. But let me summarize it here.
+
+Alvin reported an issue that with fw_devlink=on, his downstream
+hardware which is very similar to [2] doesn't have its PHYs probed
+correctly. Instead of the PHYs being probed by the specific driver, it
+gets probed by the "Generic PHY" driver. For those who aren't very
+familiar with PHYs/networking (this is based on what Andrew explained
+to me earlier), Ethernet PHYs follow a specific standard and can have
+some extended functionality. The specific driver would give the full
+functionality, but if it's not available when the PHY needs to be
+used/connected, the generic PHY driver is force bound to the PHY and
+it gives the basic functionality.
+
+So upon digging into this, this is what I found and where I think we
+have some bad assumptions about the driver core are present:
+
+The  DT node in [2] is probed by realtek_smi_probe() [3]. The call flow is:
+realtek_smi_probe()
+  -> dsa_register_switch()
+    -> dsa_switch_probe()
+      -> dsa_tree_setup()
+        -> dsa_tree_setup_switches()
+          -> dsa_switch_setup()
+            -> ds->ops->setup(ds)
+              -> rtl8366rb_setup()
+                -> realtek_smi_setup_mdio()
+                  -> of_mdiobus_register()
+                     This scans the MDIO bus/DT and device_add()s the PHYs
+          -> dsa_port_setup()
+            -> dsa_port_link_register_of()
+              -> dsa_port_phylink_register()
+                -> phylink_of_phy_connect()
+                  -> phylink_fwnode_phy_connect()
+                    -> phy_attach_direct()
+                       This checks if PHY device has already probed (by
+                       checking for dev->driver). If not, it forces the
+                       probe of the PHY using one of the generic PHY
+                       drivers.
+
+So within dsa_register_switch() the PHY device is added and then
+expected to have probed in the same thread/calling context. As stated
+earlier, this is not guaranteed by the driver core. And this is what
+needs fixing. This works as long as the PHYs don't have dependencies
+on any other devices/suppliers and never defer probe. In the issue
+Alvin reported, the PHYs have a dependency and things fall apart. I
+don't have a strong opinion on whether this is a framework level fix
+or fixes in a few drivers.
+
+In the specific instance of [2] (providing snippet below to make it
+easier to follow), the "phy0" device [4] depends on the "switch"
+device [2] since "switch_intc" (the interrupt provider for phy0) is
+initialized by the "switch" driver. And fw_devlink=on delays the probe
+of phy0 until switch[2] finishes probing successfully (i.e. after
+dsa_register_switch() <- realtek_smi_probe() returns) -- this is the
+whole point of fw_devlink=on this is what reduces the useless deferred
+probes/probe attempts of consumers before the suppliers finish probing
+successfully.
+
+Since dsa_register_switch() assumes the PHYs would have been probed as
+soon as they are added, but they aren't probed in this case, the PHY
+is force bound to the generic PHY driver. Which is the original issue
+Alvin reported. Hope this clears things up for everyone.
+
+-Saravana
+
+switch {
+        compatible = "realtek,rtl8366rb";
+...
+
+        switch_intc: interrupt-controller {
+...
+        };
+
+        ports {
+...
+                port@0 {
+                        phy-handle = <&phy0>;
+                };
+                port@1 {
+                };
+...
+        };
+
+        mdio {
+                compatible = "realtek,smi-mdio";
+...
+                phy0: phy@0 {
+...
+                        interrupt-parent = <&switch_intc>;
+                        interrupts = <0>;
+                };
+...
+        };
+};
+
+[1] - https://lore.kernel.org/netdev/CAGETcx_uj0V4DChME-gy5HGKTYnxLBX=TH2rag29f_p=UcG+Tg@mail.gmail.com/
+[2] - https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/arm/boot/dts/gemini-dlink-dir-685.dts?id=73f3af7b4611d77bdaea303fb639333eb28e37d7#n190
+[3] - https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/net/dsa/realtek-smi-core.c?id=73f3af7b4611d77bdaea303fb639333eb28e37d7#n386
+[4] - https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/arm/boot/dts/gemini-dlink-dir-685.dts?id=73f3af7b4611d77bdaea303fb639333eb28e37d7#n255
