@@ -2,232 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F49F3F8078
-	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 04:29:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 648943F807F
+	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 04:32:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237821AbhHZCaG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 22:30:06 -0400
-Received: from conssluserg-04.nifty.com ([210.131.2.83]:49430 "EHLO
-        conssluserg-04.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236341AbhHZCaF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 22:30:05 -0400
-Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com [209.85.210.179]) (authenticated)
-        by conssluserg-04.nifty.com with ESMTP id 17Q2T2HF007418;
-        Thu, 26 Aug 2021 11:29:03 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-04.nifty.com 17Q2T2HF007418
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1629944943;
-        bh=nhsNDBtebvHsUPUvr/G9QvWMQeecme+7wcswpepJRZg=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=rQ+lyNmFM5eaAxgStAoXTmP6Y6h+8ewkmnRP9nC51jxmPAjaOq4ogzUkJpDBZTaNF
-         HA7l/zpAHFMOvsY6L+ZSE6/YfJ9onLbz3yzUVmWw932gRGp0BwaXVgxz0CLz7PJSdd
-         KKVC/0AjOP8JfH9Yxr+ilaBql0RBQZoIw9yrazYn/W3j/tEM8AlZycUZxrJx0csJik
-         2f9D346PSR342NLYkB0D/xR5Wm9Wd9JtpuDTZ1aaRagFSZfsRn/iHsO7KEkgGE22pD
-         +mIFrBEPxM8kQnBB/ZqCRjx388o3KyvknvnacVQn94rRkFTajYfVfI1we/K2KK4wpH
-         GSclM8U3uyUHQ==
-X-Nifty-SrcIP: [209.85.210.179]
-Received: by mail-pf1-f179.google.com with SMTP id j187so1393498pfg.4;
-        Wed, 25 Aug 2021 19:29:03 -0700 (PDT)
-X-Gm-Message-State: AOAM530/i0tv0FLJrFLNgxur/YPyXBgCb6PIlSVlY+MXV1O5roRhYVvn
-        BIFLKC0IasqutLDjaVp38BooiyjnQ+2P2YP/xjM=
-X-Google-Smtp-Source: ABdhPJwwlP7PCNjslmyo5yR609R7WW/wRzQQGe7mqFLUz3FdVmlyPiGja/E6H9UbwHCjku2hsLeSB2jltn/jv1aaFCY=
-X-Received: by 2002:aa7:98da:0:b029:3e0:8b98:df83 with SMTP id
- e26-20020aa798da0000b02903e08b98df83mr1335775pfm.63.1629944942299; Wed, 25
- Aug 2021 19:29:02 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210825041637.365171-1-masahiroy@kernel.org> <9df591f6-53fc-4567-8758-0eb1be4eade5@gmail.com>
-In-Reply-To: <9df591f6-53fc-4567-8758-0eb1be4eade5@gmail.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Thu, 26 Aug 2021 11:28:24 +0900
-X-Gmail-Original-Message-ID: <CAK7LNATDMzR1DnwwAcQFHaKZeGVYDZ1oDKL-QOe_7DaB_yByAA@mail.gmail.com>
-Message-ID: <CAK7LNATDMzR1DnwwAcQFHaKZeGVYDZ1oDKL-QOe_7DaB_yByAA@mail.gmail.com>
-Subject: Re: [PATCH] kconfig: forbid symbols that end with '_MODULE'
-To:     =?UTF-8?Q?P=C3=A9ter_Ujfalusi?= <peter.ujfalusi@gmail.com>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
+        id S237527AbhHZCdU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 22:33:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37156 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231268AbhHZCdT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 22:33:19 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69758C061757
+        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 19:32:33 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id n12so824007plk.10
+        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 19:32:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sa/nW4B31bLiuXLun+YFSekb3642FEfxwXU0dTsAlnE=;
+        b=ZBuTlfplIkQb+vR5ip3wVmXdUxEEOH1wxloijrdnzs+f/S0pQk9kJovxrg9D+lWhqj
+         Vm9mcR0i1n5d9xZRDPVXKdMKeBDXm5nr61rdjKONWqkMfAvcOFxcx+Iih6waiGir8fPX
+         7EuoL3M1gBfMN8ry0QCWW07peLlJiAplQSzq0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sa/nW4B31bLiuXLun+YFSekb3642FEfxwXU0dTsAlnE=;
+        b=eAAF9oChOaZkESI0U7YAGOusweZIdi9ZZ05cqKksZ4BDcKeagfSd3PG5Hh1UGRf9mV
+         J3/hfYQTrT8gu3PqquH2L0luhaH5OCYmC89Zy9EGYAnN1PXI4eLbhURZ0aVYcGCUgp4Y
+         PZoa4U/JRXMCUosKEHEUiPLvUfX+tvI0gJkvUBNFCPWh2L6lE3VnhAACBSRY7pB5wdrq
+         KcSe74zMmQ3XGPb9jWzfD7C6M2ZOE2w/V2kle/LCdeBC0DBPJ4BR5Nt+090lWMDDwaRK
+         oItaNNf62fQt7ge4uIUjdY1FJQQ5Cgrefjs1gxirVYTdHnNrvuK9h10/ilEvbo9OCkx/
+         N3RQ==
+X-Gm-Message-State: AOAM532vbct62OlNYLGkUvaXVenhiMNyuvlogvUTZO3dHJqGbwYl8pTO
+        egop0AulkPW19ZRMaVHdfO6p0g==
+X-Google-Smtp-Source: ABdhPJwG0OmgF8T2Bnu61CNWcQJbxDyUgb85RYFbTKg0hsA7liR0FTDs0T8UMHjGh6ZumqMzNe73Ug==
+X-Received: by 2002:a17:903:410b:b0:137:c1d1:78da with SMTP id r11-20020a170903410b00b00137c1d178damr1566164pld.8.1629945152976;
+        Wed, 25 Aug 2021 19:32:32 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id g6sm861512pfv.156.2021.08.25.19.32.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Aug 2021 19:32:32 -0700 (PDT)
+From:   Kees Cook <keescook@chromium.org>
+To:     Ping-Ke Shih <pkshih@realtek.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Mark Brown <broonie@kernel.org>, Takashi Iwai <tiwai@suse.com>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-wireless@vger.kernel.org, Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Colin Ian King <colin.king@canonical.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Joe Perches <joe@perches.com>,
+        Kaixu Xia <kaixuxia@tencent.com>, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH v2] rtlwifi: rtl8192de: Style clean-ups
+Date:   Wed, 25 Aug 2021 19:32:30 -0700
+Message-Id: <20210826023230.1148924-1-keescook@chromium.org>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3604; h=from:subject; bh=Nk85qP5mbq9tmesp4DRR/h+08jrOCCvAl9nQvtsIsB8=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhJv09j1hxATAHrt4DQPNUVX517LRlIh6QF+knxxZZ slv/y+uJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYSb9PQAKCRCJcvTf3G3AJmVRD/ kBx4q7+vGSsn7a7qzkLKNkPwOmwW2Rjbvs50U496QZKQXznRU6WNH32WQDAEDjTTo9WGkgI0GFsgSH KzGCocxCNuPZlZ4ozZrt1j4SPq4G5o6BMdo5RfjCd4mPlMaDuzqcADQ+V/hEP1r4c6vqwVI5ONPEEI q8cArDxrdCA/Yx5KxPo2Fn/1AsndjNm/1DarOQMmEQ/BvyX1rxf4SfapXMaTedMztDsl8cQ/wQLo4z p+GOEyz/I5TIGEK5oInUbaGuTuQXUPLus7mCOaIl0mWR8EhG7YCHziyhCqc6Ja+ea+4scxV6P3BePn 6h5YFD7eO5j2nHd2gV/0UNCuQhYj0oiEwMQztQ0Zxx8R9zD/SdzWsLWuHDKlaXYAPVGftl7i7DxbYG 1011nWdsNVipd8sY7oLzGiBTPkt3EShGqZYH4E1wsI02hd3lwfvJNPGa0h2Ybfd76gcvbnHjxTe35Q xe1E48Irfuv9cvJXQRlkUJEUI4IcaCNprYUS+z64Woxqs1H4nMwGwFjQK0DakSidLJYzNuIFatwA70 nH+dMqXAW5xj2StHIvjDdeu5KHVgN4deqEm3QzZw+R3BZ8viHhtM1CIlg1SzQNRJE7g6YSQ0B5gxU4 0/ZqyOBUaIeIpWsvLLyVGLuxxzLHR4qMfltpd8u77+Sbfyrpnet0WpC30liA==
+X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 25, 2021 at 8:59 PM P=C3=A9ter Ujfalusi <peter.ujfalusi@gmail.c=
-om> wrote:
->
-> Hi,
->
-> On 25/08/2021 07:16, Masahiro Yamada wrote:
-> > Kconfig (syncconfig) generates include/generated/autoconf.h to make
-> > CONFIG options available to the pre-processor.
-> >
-> > The macros are suffixed with '_MODULE' for symbols with the value 'm'.
-> >
-> > Here is a conflict; CONFIG_FOO=3Dm results in '#define CONFIG_FOO_MODUL=
-E 1',
-> > but CONFIG_FOO_MODULE=3Dy also results in the same define.
-> >
-> > fixdep always assumes CONFIG_FOO_MODULE comes from CONFIG_FOO=3Dm, so t=
-he
-> > dependency is not properly tracked for symbols that end with '_MODULE'.
-> >
-> > This commit makes Kconfig error out if it finds a symbol suffixed with
-> > '_MODULE'. This restriction does not exist if the module feature is not
-> > supported (at least from the Kconfig perspective).
-> >
-> > It detected one error:
-> >   error: SND_SOC_DM365_VOICE_CODEC_MODULE: symbol name must not end wit=
-h '_MODULE'
-> >
-> > Rename it to SND_SOC_DM365_VOICE_CODEC_MODULAR. Commit 147162f57515
-> > ("ASoC: ti: fix SND_SOC_DM365_VOICE_CODEC dependencies") added it for
-> > internal use. So, this renaming has no impact on users.
-> >
-> > Remove a comment from drivers/net/wireless/intel/iwlwifi/Kconfig since
-> > this is a hard error now.
-> >
-> > Add a comment to include/linux/kconfig.h in order not to worry observan=
-t
-> > developers.
-> >
-> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> > ---
-> >
-> >  drivers/net/wireless/intel/iwlwifi/Kconfig |  1 -
-> >  include/linux/kconfig.h                    |  3 ++
-> >  scripts/kconfig/parser.y                   | 40 +++++++++++++++++++++-
-> >  sound/soc/ti/Kconfig                       |  2 +-
-> >  4 files changed, 43 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/drivers/net/wireless/intel/iwlwifi/Kconfig b/drivers/net/w=
-ireless/intel/iwlwifi/Kconfig
-> > index 1085afbefba8..5b238243617c 100644
-> > --- a/drivers/net/wireless/intel/iwlwifi/Kconfig
-> > +++ b/drivers/net/wireless/intel/iwlwifi/Kconfig
-> > @@ -70,7 +70,6 @@ config IWLMVM
-> >         of the devices that use this firmware is available here:
-> >         https://wireless.wiki.kernel.org/en/users/drivers/iwlwifi#firmw=
-are
-> >
-> > -# don't call it _MODULE -- will confuse Kconfig/fixdep/...
-> >  config IWLWIFI_OPMODE_MODULAR
-> >       bool
-> >       default y if IWLDVM=3Dm
-> > diff --git a/include/linux/kconfig.h b/include/linux/kconfig.h
-> > index 20d1079e92b4..54f677e742fe 100644
-> > --- a/include/linux/kconfig.h
-> > +++ b/include/linux/kconfig.h
-> > @@ -53,6 +53,9 @@
-> >   * IS_MODULE(CONFIG_FOO) evaluates to 1 if CONFIG_FOO is set to 'm', 0
-> >   * otherwise.  CONFIG_FOO=3Dm results in "#define CONFIG_FOO_MODULE 1"=
- in
-> >   * autoconf.h.
-> > + * CONFIG_FOO_MODULE=3Dy would also result in "#define CONFIG_FOO_MODU=
-LE 1",
-> > + * but Kconfig forbids symbol names that end with '_MODULE', so that w=
-ould
-> > + * not happen.
-> >   */
-> >  #define IS_MODULE(option) __is_defined(option##_MODULE)
-> >
-> > diff --git a/scripts/kconfig/parser.y b/scripts/kconfig/parser.y
-> > index 2af7ce4e1531..b0f73f74ccd3 100644
-> > --- a/scripts/kconfig/parser.y
-> > +++ b/scripts/kconfig/parser.y
-> > @@ -475,6 +475,37 @@ assign_val:
-> >
-> >  %%
-> >
-> > +/*
-> > + * Symbols suffixed with '_MODULE' would cause a macro conflict in aut=
-oconf.h,
-> > + * and also confuse the interaction between syncconfig and fixdep.
-> > + * Error out if a symbol with the '_MODULE' suffix is found.
-> > + */
-> > +static int sym_check_name(struct symbol *sym)
-> > +{
-> > +     static const char *suffix =3D "_MODULE";
-> > +     static const size_t suffix_len =3D strlen("_MODULE");
-> > +     char *name;
-> > +     size_t len;
-> > +
-> > +     name =3D sym->name;
-> > +
-> > +     if (!name)
-> > +             return 0;
-> > +
-> > +     len =3D strlen(name);
-> > +
-> > +     if (len < suffix_len)
-> > +             return 0;
-> > +
-> > +     if (strcmp(name + len - suffix_len, suffix))
-> > +             return 0;
-> > +
-> > +     fprintf(stderr, "error: %s: symbol name must not end with '%s'\n"=
-,
-> > +             name, suffix);
-> > +
-> > +     return -1;
-> > +}
-> > +
-> >  void conf_parse(const char *name)
-> >  {
-> >       struct symbol *sym;
-> > @@ -493,8 +524,15 @@ void conf_parse(const char *name)
-> >
-> >       if (yynerrs)
-> >               exit(1);
-> > -     if (!modules_sym)
-> > +
-> > +     if (modules_sym) {
-> > +             for_all_symbols(i, sym) {
-> > +                     if (sym_check_name(sym))
-> > +                             yynerrs++;
-> > +             }
-> > +     } else {
-> >               modules_sym =3D sym_find( "n" );
-> > +     }
-> >
-> >       if (!menu_has_prompt(&rootmenu)) {
-> >               current_entry =3D &rootmenu;
-> > diff --git a/sound/soc/ti/Kconfig b/sound/soc/ti/Kconfig
-> > index 698d7bc84dcf..c56a5789056f 100644
-> > --- a/sound/soc/ti/Kconfig
-> > +++ b/sound/soc/ti/Kconfig
-> > @@ -211,7 +211,7 @@ config SND_SOC_DM365_VOICE_CODEC
-> >         Say Y if you want to add support for SoC On-chip voice codec
-> >  endchoice
-> >
-> > -config SND_SOC_DM365_VOICE_CODEC_MODULE
-> > +config SND_SOC_DM365_VOICE_CODEC_MODULAR
->
-> This Kconfig option is only used to select the codecs needed for the
-> voice mode, I think it would be better to use something like
->
-> SND_SOC_DM365_SELECT_VOICE_CODECS ?
+Clean up some style issues:
+- Use ARRAY_SIZE() for arrays (even when u8 sized)
+- Remove redundant CHANNEL_MAX_NUMBER_2G define.
+Additionally fix some dead code WARNs.
 
+Cc: Ping-Ke Shih <pkshih@realtek.com>
+Cc: Kalle Valo <kvalo@codeaurora.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Larry Finger <Larry.Finger@lwfinger.net>
+Cc: Colin Ian King <colin.king@canonical.com>
+Cc: linux-wireless@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Signed-off-by: Kees Cook <keescook@chromium.org>
+---
+ .../wireless/realtek/rtlwifi/rtl8192de/phy.c    | 17 +++++++----------
+ drivers/net/wireless/realtek/rtlwifi/wifi.h     |  1 -
+ 2 files changed, 7 insertions(+), 11 deletions(-)
 
-I do not have a strong opinion.
-I am fine with any name unless it ends with _MODULE.
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192de/phy.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192de/phy.c
+index b32fa7a75f17..d73148805b9c 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8192de/phy.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192de/phy.c
+@@ -899,7 +899,7 @@ static u8 _rtl92c_phy_get_rightchnlplace(u8 chnl)
+ 	u8 place = chnl;
+ 
+ 	if (chnl > 14) {
+-		for (place = 14; place < sizeof(channel5g); place++) {
++		for (place = 14; place < ARRAY_SIZE(channel5g); place++) {
+ 			if (channel5g[place] == chnl) {
+ 				place++;
+ 				break;
+@@ -1366,7 +1366,7 @@ u8 rtl92d_get_rightchnlplace_for_iqk(u8 chnl)
+ 	u8 place = chnl;
+ 
+ 	if (chnl > 14) {
+-		for (place = 14; place < sizeof(channel_all); place++) {
++		for (place = 14; place < ARRAY_SIZE(channel_all); place++) {
+ 			if (channel_all[place] == chnl)
+ 				return place - 13;
+ 		}
+@@ -2428,7 +2428,7 @@ static bool _rtl92d_is_legal_5g_channel(struct ieee80211_hw *hw, u8 channel)
+ 
+ 	int i;
+ 
+-	for (i = 0; i < sizeof(channel5g); i++)
++	for (i = 0; i < ARRAY_SIZE(channel5g); i++)
+ 		if (channel == channel5g[i])
+ 			return true;
+ 	return false;
+@@ -2692,9 +2692,8 @@ void rtl92d_phy_reset_iqk_result(struct ieee80211_hw *hw)
+ 	u8 i;
+ 
+ 	rtl_dbg(rtlpriv, COMP_INIT, DBG_LOUD,
+-		"settings regs %d default regs %d\n",
+-		(int)(sizeof(rtlphy->iqk_matrix) /
+-		      sizeof(struct iqk_matrix_regs)),
++		"settings regs %zu default regs %d\n",
++		ARRAY_SIZE(rtlphy->iqk_matrix),
+ 		IQK_MATRIX_REG_NUM);
+ 	/* 0xe94, 0xe9c, 0xea4, 0xeac, 0xeb4, 0xebc, 0xec4, 0xecc */
+ 	for (i = 0; i < IQK_MATRIX_SETTINGS_NUM; i++) {
+@@ -2861,16 +2860,14 @@ u8 rtl92d_phy_sw_chnl(struct ieee80211_hw *hw)
+ 	case BAND_ON_5G:
+ 		/* Get first channel error when change between
+ 		 * 5G and 2.4G band. */
+-		if (channel <= 14)
++		if (WARN_ONCE(channel <= 14, "rtl8192de: 5G but channel<=14\n"))
+ 			return 0;
+-		WARN_ONCE((channel <= 14), "rtl8192de: 5G but channel<=14\n");
+ 		break;
+ 	case BAND_ON_2_4G:
+ 		/* Get first channel error when change between
+ 		 * 5G and 2.4G band. */
+-		if (channel > 14)
++		if (WARN_ONCE(channel > 14, "rtl8192de: 2G but channel>14\n"))
+ 			return 0;
+-		WARN_ONCE((channel > 14), "rtl8192de: 2G but channel>14\n");
+ 		break;
+ 	default:
+ 		WARN_ONCE(true, "rtl8192de: Invalid WirelessMode(%#x)!!\n",
+diff --git a/drivers/net/wireless/realtek/rtlwifi/wifi.h b/drivers/net/wireless/realtek/rtlwifi/wifi.h
+index aa07856411b1..31f9e9e5c680 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/wifi.h
++++ b/drivers/net/wireless/realtek/rtlwifi/wifi.h
+@@ -108,7 +108,6 @@
+ #define	CHANNEL_GROUP_IDX_5GM		6
+ #define	CHANNEL_GROUP_IDX_5GH		9
+ #define	CHANNEL_GROUP_MAX_5G		9
+-#define CHANNEL_MAX_NUMBER_2G		14
+ #define AVG_THERMAL_NUM			8
+ #define AVG_THERMAL_NUM_88E		4
+ #define AVG_THERMAL_NUM_8723BE		4
+-- 
+2.30.2
 
-
-The sound subsystem maintainers and Arnd,
-author of 147162f575152db800 are CC'ed.
-
-If they suggest a better name, I'd be happy to adopt it.
-
-
-
---=20
-Best Regards
-Masahiro Yamada
