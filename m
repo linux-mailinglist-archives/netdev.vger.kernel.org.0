@@ -2,43 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE4973F84CA
-	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 11:50:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEEC23F8516
+	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 12:10:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241009AbhHZJuz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 05:50:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51084 "EHLO mail.kernel.org"
+        id S241295AbhHZKKy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 06:10:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44780 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237918AbhHZJuy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 26 Aug 2021 05:50:54 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 7AF4B610C8;
-        Thu, 26 Aug 2021 09:50:05 +0000 (UTC)
+        id S233880AbhHZKKx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Aug 2021 06:10:53 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 7AA28610E9;
+        Thu, 26 Aug 2021 10:10:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629971405;
-        bh=HmbObn9Mh4Zs6oU39fJUUCKi69qKXb0qZskEKzNY2cM=;
+        s=k20201202; t=1629972606;
+        bh=bRlNbWjWJdP1+itFRLbB52Xs7pco+kB/NRCXYlnJnC0=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Y45ExiTAZ/8x5c5quKszP5FgwOPxBzfhUoMVttJgNdJ2Tg10Wab7CJkqBOrObOFxS
-         h+4jZXCwGwU4Tge6lDPrsbbteL09lVW6xLWzXFS6CO7+LRGI/9CujQmAPfVpFsx1mc
-         vF0k6uX+fZz6KG7itP+5pgrAT5kgafkVKwWLk7Jkr+fMD6HTOkH6pPH1XddiBEioug
-         jpzs5Q+qnjiSQ8cIQau5znd9w8s+Lx6aQvwB4iTmQ50Hs6Ksvsxa0Ccw/ZXeDyRu/n
-         63yct9kqTGnUxN9D9v7A/kcwEB11lea9VafwcncVSerw058htEV/nv1Jtv7gX0v8Kv
-         Y56JZBCZIcCJQ==
+        b=Nii1y9lrl4YCUv26fY/LFrZcZxvwaERuBH0ZKw/i4nkdLgM8pHFtCA5x3nKd4wfej
+         Lv+aSjx/q+cj1kN0t1KaJRkdqH0SmpqEDOkEMS8P7lD3pYmYjGhIFG/98fNyowWtEI
+         NXnK0DMQUVz+ldWyl7kqdAswYVpVXoI5unOngiUy2+eRJAlRbhMR7PeM36qxcp89hy
+         XBb0En7UBC7m5XPh3E91yoDzhLIgCl5h4b4wzHpOXDfdOX2lzxiARflPu4iQcf+q0g
+         ST7rSCwL5AUtXnLS18kTXUjsQywxRbROcxtb/NnsOOqVINDB85+Uux47mr962NEoo1
+         75kQTbXPAUTWw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6E6F4609EA;
-        Thu, 26 Aug 2021 09:50:05 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6CFF260A14;
+        Thu, 26 Aug 2021 10:10:06 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH -next] octeontx2-pf: cn10k: Fix error return code in
- otx2_set_flowkey_cfg()
+Subject: Re: [PATCH net-next] sock: remove one redundant SKB_FRAG_PAGE_ORDER macro
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162997140544.6566.1812675590777880112.git-patchwork-notify@kernel.org>
-Date:   Thu, 26 Aug 2021 09:50:05 +0000
-References: <20210825063447.2383587-1-yangyingliang@huawei.com>
-In-Reply-To: <20210825063447.2383587-1-yangyingliang@huawei.com>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        sgoutham@marvell.com, davem@davemloft.net
+Message-Id: <162997260644.16360.3820820200576524198.git-patchwork-notify@kernel.org>
+Date:   Thu, 26 Aug 2021 10:10:06 +0000
+References: <1629946187-60536-1-git-send-email-linyunsheng@huawei.com>
+In-Reply-To: <1629946187-60536-1-git-send-email-linyunsheng@huawei.com>
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, linuxarm@openeuler.org,
+        mst@redhat.com, jasowang@redhat.com, edumazet@google.com,
+        pabeni@redhat.com, fw@strlen.de, aahringo@redhat.com,
+        xiangxia.m.yue@gmail.com, yangbo.lu@nxp.com, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -47,19 +50,19 @@ Hello:
 
 This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Wed, 25 Aug 2021 14:34:47 +0800 you wrote:
-> If otx2_mbox_get_rsp() fails, otx2_set_flowkey_cfg() need return an
-> error code.
+On Thu, 26 Aug 2021 10:49:47 +0800 you wrote:
+> Both SKB_FRAG_PAGE_ORDER are defined to the same value in
+> net/core/sock.c and drivers/vhost/net.c.
 > 
-> Fixes: e7938365459f ("octeontx2-pf: Fix algorithm index in MCAM rules with RSS action")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+> Move the SKB_FRAG_PAGE_ORDER definition to net/core/sock.h,
+> as both net/core/sock.c and drivers/vhost/net.c include it,
+> and it seems a reasonable file to put the macro.
 > 
 > [...]
 
 Here is the summary with links:
-  - [-next] octeontx2-pf: cn10k: Fix error return code in otx2_set_flowkey_cfg()
-    https://git.kernel.org/netdev/net-next/c/5e8243e66b4d
+  - [net-next] sock: remove one redundant SKB_FRAG_PAGE_ORDER macro
+    https://git.kernel.org/netdev/net-next/c/723783d077e3
 
 You are awesome, thank you!
 --
