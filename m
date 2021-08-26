@@ -2,96 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EC643F800B
-	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 03:51:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C767B3F8017
+	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 03:54:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236803AbhHZBvu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 21:51:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56094 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229514AbhHZBvs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 21:51:48 -0400
-Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0C89C061757;
-        Wed, 25 Aug 2021 18:50:57 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Gw5R247K5z9sWw;
-        Thu, 26 Aug 2021 11:50:54 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1629942654;
-        bh=k5smgdEICQPus7zNUFtNhEf5uZslp3cctU0LteXWTyw=;
-        h=Date:From:To:Cc:Subject:From;
-        b=qXiqqO0MbPtjMQnEv2u8eHbWEfdNg2HJUSKS/jR3EanEpiQ4doAv55ljZc2TO4CIf
-         Tkalo9MEeQtWjnTM53td9u3tgzrxDBSAwOfzPKrkttmuC6trA59qHP13LYu7hD5hOv
-         ZotxIygHI3LRp2gkumruEGIzyPcliH/Mfc9Dl5rFShVOb5pgc4IAxXf0pBn0OpNX+U
-         TroO4U/rPkIMq0ORx141RaHp9OjMpaEj0sjptLThAFlehDTKBZlSd+Joo91+x+a7Ce
-         cj9NEyiwAfJigmOw0+Wze8FcBuJRAYLpfp6ECMz6MxCNXXkz0dXFAk9hpxpz7MpH/Y
-         BGB7iiS/LmAUg==
-Date:   Thu, 26 Aug 2021 11:50:50 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Daniel Xu <dxu@dxuuu.xyz>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build failure after merge of the bpf-next tree
-Message-ID: <20210826115050.7612b9cc@canb.auug.org.au>
+        id S236968AbhHZBzU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 21:55:20 -0400
+Received: from mail.cn.fujitsu.com ([183.91.158.132]:41401 "EHLO
+        heian.cn.fujitsu.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S236054AbhHZBzT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 21:55:19 -0400
+IronPort-HdrOrdr: =?us-ascii?q?A9a23=3APcJ9O6EuGuDjaXxapLqE1MeALOsnbusQ8zAX?=
+ =?us-ascii?q?PiFKOHhom6mj+vxG88506faKslwssR0b+OxoW5PwJE80l6QFgrX5VI3KNGbbUQ?=
+ =?us-ascii?q?CTXeNfBOXZowHIKmnX8+5x8eNaebFiNduYNzNHpPe/zA6mM9tI+rW6zJw=3D?=
+X-IronPort-AV: E=Sophos;i="5.84,352,1620662400"; 
+   d="scan'208";a="113479370"
+Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
+  by heian.cn.fujitsu.com with ESMTP; 26 Aug 2021 09:54:25 +0800
+Received: from G08CNEXMBPEKD05.g08.fujitsu.local (unknown [10.167.33.204])
+        by cn.fujitsu.com (Postfix) with ESMTP id DDD494D0D9D5;
+        Thu, 26 Aug 2021 09:54:24 +0800 (CST)
+Received: from G08CNEXJMPEKD02.g08.fujitsu.local (10.167.33.202) by
+ G08CNEXMBPEKD05.g08.fujitsu.local (10.167.33.204) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.23; Thu, 26 Aug 2021 09:54:21 +0800
+Received: from G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.85) by
+ G08CNEXJMPEKD02.g08.fujitsu.local (10.167.33.202) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.23; Thu, 26 Aug 2021 09:54:19 +0800
+Received: from localhost.localdomain (10.167.225.141) by
+ G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.209) with Microsoft SMTP Server
+ id 15.0.1497.23 via Frontend Transport; Thu, 26 Aug 2021 09:54:17 +0800
+From:   Li Zhijian <lizhijian@cn.fujitsu.com>
+To:     <shuah@kernel.org>, <linux-kselftest@vger.kernel.org>
+CC:     <philip.li@intel.com>, <linux-kernel@vger.kernel.org>,
+        Li Zhijian <lizhijian@cn.fujitsu.com>,
+        kernel test robot <lkp@intel.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        <wireguard@lists.zx2c4.com>, <netdev@vger.kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        "Viresh Kumar" <viresh.kumar@linaro.org>,
+        <linux-pm@vger.kernel.org>
+Subject: [PATCH v2 0/3] kselftests: clean configs
+Date:   Thu, 26 Aug 2021 09:58:44 +0800
+Message-ID: <20210826015847.7416-1-lizhijian@cn.fujitsu.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/gfTRhjvh6OzaGsm.NFKy3Cx";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-yoursite-MailScanner-ID: DDD494D0D9D5.A2F2B
+X-yoursite-MailScanner: Found to be clean
+X-yoursite-MailScanner-From: lizhijian@fujitsu.com
+X-Spam-Status: No
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/gfTRhjvh6OzaGsm.NFKy3Cx
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+0Day will check if all configs listing under selftests are able to be enabled properly.
 
-Hi all,
+For the missing configs, it will report something like:
+LKP WARN miss config CONFIG_SYNC= of sync/config
 
-After merging the bpf-next tree, today's linux-next build (powerpc
-ppc64_defconfig) failed like this:
+CC: kernel test robot <lkp@intel.com>
+CC: "Jason A. Donenfeld" <Jason@zx2c4.com>
+CC: Nick Desaulniers <ndesaulniers@google.com>
+CC: Masahiro Yamada <masahiroy@kernel.org>
+CC: wireguard@lists.zx2c4.com
+CC: netdev@vger.kernel.org
 
-kernel/trace/bpf_trace.c:717:47: error: expected ')' before 'struct'
-  717 | BTF_ID_LIST_GLOBAL_SINGLE(btf_task_struct_ids, struct, task_struct)
-      |                                               ^~~~~~~
-      |                                               )
-kernel/trace/bpf_trace.c: In function 'bpf_tracing_func_proto':
-kernel/trace/bpf_trace.c:1051:11: error: 'bpf_get_current_task_btf_proto' u=
-ndeclared (first use in this function); did you mean 'bpf_get_current_task_=
-proto'?
- 1051 |   return &bpf_get_current_task_btf_proto;
-      |           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      |           bpf_get_current_task_proto
+CC: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+CC: Viresh Kumar <viresh.kumar@linaro.org>
+CC: linux-pm@vger.kernel.org
+Reported-by: kernel test robot <lkp@intel.com>
 
-Caused by commit
+Li Zhijian (3):
+  selftests/sync: Remove the deprecated config SYNC
+  selftests/cpufreq: Rename DEBUG_PI_LIST to DEBUG_PLIST
+  selftests/wireguard: Rename DEBUG_PI_LIST to DEBUG_PLIST
 
-  33c5cb36015a ("bpf: Consolidate task_struct BTF_ID declarations")
+ tools/testing/selftests/cpufreq/config              | 2 +-
+ tools/testing/selftests/sync/config                 | 1 -
+ tools/testing/selftests/wireguard/qemu/debug.config | 2 +-
+ 3 files changed, 2 insertions(+), 3 deletions(-)
 
-I have used the bpf-next tree from next-20210825 for today.
+-- 
+2.31.1
 
---=20
-Cheers,
-Stephen Rothwell
 
---Sig_/gfTRhjvh6OzaGsm.NFKy3Cx
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmEm83oACgkQAVBC80lX
-0Gw1MQf/czYLimBca4jH7A3Q3SEw5vtpwL6ZzaAIR87GZ5+zepPhCF1Fmn27jBbB
-BrtAoaSFxsOP/qNUdgew2TJLc+R0Jl/wceFHMVHUU1UJRISmyQgQ7FiHsYfsRO9h
-GERiTRk/qV6sSbQDpYBK7CUYkR2yna8Ro/3c4AT6L/HPgvpGaaIWOXf1S0GXAjEi
-QA26Yeg+oAB8n0J9qN/n3W4u2YA6Y4/Y26eXUjCkUpsDw3JDgt6ha9qOLs3yIto3
-N1b5+oH7gJfx9YbrtLPBX33X98/yMhYDwuTooTqNDqPH0p69SNCV8oQ4DI7YEVgJ
-erWd3Ab1QYvSriL9tMyIJpPBsQcsfw==
-=9y7b
------END PGP SIGNATURE-----
-
---Sig_/gfTRhjvh6OzaGsm.NFKy3Cx--
