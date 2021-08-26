@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AE533F909C
-	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 01:00:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 035003F909D
+	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 01:00:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243762AbhHZWTK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 18:19:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59276 "EHLO mail.kernel.org"
+        id S243766AbhHZWTL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 18:19:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59298 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243744AbhHZWTC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 26 Aug 2021 18:19:02 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 666F46103C;
+        id S243748AbhHZWTD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Aug 2021 18:19:03 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D74A26101C;
         Thu, 26 Aug 2021 22:18:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1630016294;
-        bh=lnQAeGTn+8M+vYaerizPHMRYbpoc1/SJmABsVzBx88w=;
+        s=k20201202; t=1630016295;
+        bh=A5c3HPy2lnfYNAviZNqT4kCykr0LSoaNK8LhST4oHqs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kCyqju6Hbp/DfZ1EnP2Rvsa1NaptQ9EbeCD/6B87IiGGar8LBCXOI4mMsSxE+AHGH
-         IF5yftrbNM0OH4ZGe1k7//fZxEsCMRDw8e1A5T7tvDgdQ7bGdIDHQP2PNDSijfdfpi
-         Gg8SQ8q8dHbwPAHC83l8n5jY2j4lLjLGr3HPRrYoVTnGVLsvQaT48WQ9zrt+vpTBLx
-         a5nPDBzAj20fXpfxqNiyxnyBeyarW/8m+nwXFgDBv9JHwWlBE3h/vaEFpuOq1rhPOZ
-         Ni4b2bUsE+0saUC0/lrC9rBMfL3uyjYAdbWHjli5L1yffKT85Qy/Fr+Ra+9C08Dudq
-         +Vf5Fk1rlYo8g==
+        b=IwYR4A4dddR14FmDCSHz7uJ5uGMhEo5UWdTwzcux7Qmg/SuR+gvGGmoygIcGB8c3g
+         gxEwPBRIGMp+nrNoRed+rLssFABGKizET1xzSjvEyTdBQ40hPO21l8PYBwepAtGEiy
+         DG5pEUBZr1kU86UjeI/0HW37lvb4aUTOOk/cN7mLr3+6k9+qioKMCIoV0pZJF5iJ+K
+         YH6xYxBLATmLzMQrtox2kDG2JTbzP3SxIU3kK0dWfIdwQTLK/NSPc00MEzVHkikYh4
+         TQOBMY9RqKwEk6fuXhcKIklmr36mTsdYRBZDk6xSju6s2VUkYUuu+rP6fUtmN7TBR8
+         vwljSPCjjV+GA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Dmytro Linkin <dlinkin@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 5/6] net/mlx5e: Use correct eswitch for stack devices with lag
-Date:   Thu, 26 Aug 2021 15:18:09 -0700
-Message-Id: <20210826221810.215968-6-saeed@kernel.org>
+Cc:     netdev@vger.kernel.org, Wentao_Liang <Wentao_Liang_g@163.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net 6/6] net/mlx5: DR, fix a potential use-after-free bug
+Date:   Thu, 26 Aug 2021 15:18:10 -0700
+Message-Id: <20210826221810.215968-7-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210826221810.215968-1-saeed@kernel.org>
 References: <20210826221810.215968-1-saeed@kernel.org>
@@ -40,60 +40,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dmytro Linkin <dlinkin@nvidia.com>
+From: Wentao_Liang <Wentao_Liang_g@163.com>
 
-If link aggregation is used within stack devices driver rejects encap
-rules if PF of the VF tunnel device is down. This happens because route
-resolved for other PF and its eswitch instance is used to determine
-correct vport.
-To fix that use devcom feature to retrieve other eswitch instance if
-failed to find vport for the 1st eswitch and LAG is active.
+In line 849 (#1), "mlx5dr_htbl_put(cur_htbl);" drops the reference to
+cur_htbl and may cause cur_htbl to be freed.
 
-Fixes: 10742efc20a4 ("net/mlx5e: VF tunnel TX traffic offloading")
-Signed-off-by: Dmytro Linkin <dlinkin@nvidia.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
+However, cur_htbl is subsequently used in the next line, which may result
+in an use-after-free bug.
+
+Fix this by calling mlx5dr_err() before the cur_htbl is put.
+
+Signed-off-by: Wentao_Liang <Wentao_Liang_g@163.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/en_tc.c    | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index d273758255c3..6eba574c5a36 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -1338,6 +1338,7 @@ bool mlx5e_tc_is_vf_tunnel(struct net_device *out_dev, struct net_device *route_
- int mlx5e_tc_query_route_vport(struct net_device *out_dev, struct net_device *route_dev, u16 *vport)
- {
- 	struct mlx5e_priv *out_priv, *route_priv;
-+	struct mlx5_devcom *devcom = NULL;
- 	struct mlx5_core_dev *route_mdev;
- 	struct mlx5_eswitch *esw;
- 	u16 vhca_id;
-@@ -1349,7 +1350,24 @@ int mlx5e_tc_query_route_vport(struct net_device *out_dev, struct net_device *ro
- 	route_mdev = route_priv->mdev;
- 
- 	vhca_id = MLX5_CAP_GEN(route_mdev, vhca_id);
-+	if (mlx5_lag_is_active(out_priv->mdev)) {
-+		/* In lag case we may get devices from different eswitch instances.
-+		 * If we failed to get vport num, it means, mostly, that we on the wrong
-+		 * eswitch.
-+		 */
-+		err = mlx5_eswitch_vhca_id_to_vport(esw, vhca_id, vport);
-+		if (err != -ENOENT)
-+			return err;
-+
-+		devcom = out_priv->mdev->priv.devcom;
-+		esw = mlx5_devcom_get_peer_data(devcom, MLX5_DEVCOM_ESW_OFFLOADS);
-+		if (!esw)
-+			return -ENODEV;
-+	}
-+
- 	err = mlx5_eswitch_vhca_id_to_vport(esw, vhca_id, vport);
-+	if (devcom)
-+		mlx5_devcom_release_peer_data(devcom, MLX5_DEVCOM_ESW_OFFLOADS);
- 	return err;
- }
- 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
+index 43356fad53de..ffdfb5a94b14 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
+@@ -846,9 +846,9 @@ dr_rule_handle_ste_branch(struct mlx5dr_rule *rule,
+ 			new_htbl = dr_rule_rehash(rule, nic_rule, cur_htbl,
+ 						  ste_location, send_ste_list);
+ 			if (!new_htbl) {
+-				mlx5dr_htbl_put(cur_htbl);
+ 				mlx5dr_err(dmn, "Failed creating rehash table, htbl-log_size: %d\n",
+ 					   cur_htbl->chunk_size);
++				mlx5dr_htbl_put(cur_htbl);
+ 			} else {
+ 				cur_htbl = new_htbl;
+ 			}
 -- 
 2.31.1
 
