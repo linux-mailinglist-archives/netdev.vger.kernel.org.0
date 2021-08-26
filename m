@@ -2,397 +2,437 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BBDCB3F85F3
-	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 12:57:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEBB63F860E
+	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 13:03:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241861AbhHZK6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 06:58:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38042 "EHLO
+        id S242057AbhHZLEb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 07:04:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241491AbhHZK6I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 06:58:08 -0400
-Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BDF6C061757;
-        Thu, 26 Aug 2021 03:57:21 -0700 (PDT)
-Received: by mail-ot1-x333.google.com with SMTP id 61-20020a9d0d430000b02903eabfc221a9so2982409oti.0;
-        Thu, 26 Aug 2021 03:57:21 -0700 (PDT)
+        with ESMTP id S241983AbhHZLEW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 07:04:22 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ED2DC0612A6;
+        Thu, 26 Aug 2021 04:03:35 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id s11so2722199pgr.11;
+        Thu, 26 Aug 2021 04:03:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BpVfgPJQqu1T2BNyWHG4aZ/UYKO1p3kvDq2Q9ndPgME=;
-        b=XDJ18b5ZVJB2beq6iBiNjw3ggE5o88SBOKTMhYWM1AZKABXMwKaHFBk14eohc6/CF1
-         apkQ4+sL5ND8iU2qX2I2AJVeZkjcrm1ovl90+iJUqtkrwipsIsMl+CDxPuMv3y0K9Tpy
-         r1ta24VdFuYn+cEhgNiFgRz3LTjOjIrXDV5JbWD0OvAm6rgAGJ8mOiw7JMDa4I2bAYPl
-         +r0AoiPNTEqiTnLMcn1w1K0GCX3yBmiqWZdWEeUePj0NsqRREBzZsTHMyi1aOOHN7W/q
-         FFzTTdHAg8xdX9bhX78m66qMz0hjx3jNi7Ox1BcxmWTYuLR1jZIdIqsoBehyVJXKbq6u
-         bjPA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jE0c8w2D14yLBkd6fnDZwzC11wjJI2M6zzsF5Zja4T8=;
+        b=gb1p7+2nezB4q4qvxbCe0fmMZcaIzCp7LsW105XeDU93ztgveifSjJ2osysPYLuZpm
+         J3QSdp5UsM0roUR7YVUDoS5DYSObT8fpizdprWqLK2pdrPQRa6HhadtQucwamkfQcnkk
+         OfcRUtd9qAbNltMnSHBXRzsBy4jl59jm5a/e8drf5w+VjgUf0lJBXh+003j4evDwQ2xf
+         f6ZY37hQ1UBP56uF4r1Vre+MJrqxmhAyDi4hnP4JrD6ScOKRR84RYJqTr5I97lmvNz04
+         Aa/vs2T8ZfWycTo/7lexV5dGuQqvh7+dckBtJ8wg50+293nCAFdKYmS1YjHzMtwFmEBV
+         00tg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BpVfgPJQqu1T2BNyWHG4aZ/UYKO1p3kvDq2Q9ndPgME=;
-        b=J2VjJBlza0YyGy6tFN0vU5u6OMlH/QDsUyVsauLSmKS++S9DfzY98prMmoDihoA5vE
-         kIz3VrKV287+PqXyEz7P9maPVYW7KD4PA3kId1atCuh9VBahYGW0b35e5kZTJ2TvrB9y
-         E84mRodk1jUCtPFRMOvSAEmD9k0PLDGOF0iJi9DNx0ZCoG4qpzGd2Yr1vvg+tUeoWqpW
-         cr+Aj0gR/3XlA+Hk3rgKX6KbzSrUw4bVcgYmYzdVLO8QTnVcbWQOcZjTcJVs3FJjDIBM
-         MezJW0825kUiQN620BUx2WoMDyltf/Kdw2dFx9mx/Y16cnQo5YoKNXHVlJ7MUPdgwlx4
-         1wLA==
-X-Gm-Message-State: AOAM530OWbwLSGcLbQ5pLn/EAkzrSKIcptpFPNQ0ZgSaUnLw/Gmm2w0/
-        rNFNApt63xjcdVuozMiA2OWegBdHG0sLlkS7tmeSFiY9QjqVJhLxUp0=
-X-Google-Smtp-Source: ABdhPJxYXHa5/Xu+/ZaqXVrsg7/WZWWxRj1w+vKFhJO3lD7AgYRCU3hMtNmmVotEo9kaAw9NlrR2ZipbdgPSTOvDymY=
-X-Received: by 2002:a9d:4e96:: with SMTP id v22mr2432942otk.110.1629975440633;
- Thu, 26 Aug 2021 03:57:20 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jE0c8w2D14yLBkd6fnDZwzC11wjJI2M6zzsF5Zja4T8=;
+        b=BRUrGINLYyPKS2p/eJItxz28KIncHe7tA3slSmuL6gH1KbwE9xUfNkQR6CwUNs9wnq
+         5hDsFkBRiyeNduqtoMuYJnA62sv9JNNIKiU5VioloUMjW43+jklFN1XJRPnm2+VDNhFD
+         Fg7nQ3GtzHVEhd0Aqex1qGJWbplxS64xHNcyaYe0kZmoaWmoYoaEKWjSiOzn1xW1VcYM
+         eTRBf6qEpgLvGcHHXdiHVftZiUc92MMWeZ7NZ9NHA82Cz2OwKTf/LU1LHsq/Np2W6fg6
+         dL/bslLxinyf2f6WFcSb5GNOGXADm53rbX4GloNpLnNTggRQI3h4SR/Eq1v455W5t1Cd
+         cVfQ==
+X-Gm-Message-State: AOAM533VDt17nM4oj7rpP4fNkhd0DW66rdMlZJaezW/LjUWSGdcDM1cm
+        LythGFmwuDyRweBOQEP3Lf0=
+X-Google-Smtp-Source: ABdhPJyhiOD54K79m4D2HScz7WT43sJB4E5yIwn6zRRkZn3wt4/YKNaPIa5x4h+gGnGcl15H9wVcXA==
+X-Received: by 2002:a65:62c4:: with SMTP id m4mr2883326pgv.453.1629975814495;
+        Thu, 26 Aug 2021 04:03:34 -0700 (PDT)
+Received: from arn.com ([49.206.7.248])
+        by smtp.googlemail.com with ESMTPSA id n24sm3106018pgv.60.2021.08.26.04.03.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Aug 2021 04:03:34 -0700 (PDT)
+From:   Abhiram R N <abhiramrn@gmail.com>
+To:     saeedm@nvidia.com
+Cc:     abhiramrn@gmail.com, hakhande@redhat.com, arn@redhat.com,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net/mlx5e: Add extack msgs related to TC for better debug
+Date:   Thu, 26 Aug 2021 16:32:53 +0530
+Message-Id: <20210826110253.311456-1-abhiramrn@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-References: <CAL+tcoDUhZfy3NTx4TOv3wa1f8SMkNhzNpVS5qyySaVOm6L-qQ@mail.gmail.com>
- <20210825120241.7389-1-kerneljasonxing@gmail.com> <20210826085148.GB26792@ranger.igk.intel.com>
-In-Reply-To: <20210826085148.GB26792@ranger.igk.intel.com>
-From:   Jason Xing <kerneljasonxing@gmail.com>
-Date:   Thu, 26 Aug 2021 18:56:44 +0800
-Message-ID: <CAL+tcoCrOc1L+Y_SeScYJXjn542GYvu9n7EMhN_75h-P4FQFoQ@mail.gmail.com>
-Subject: Re: [PATCH v2] ixgbe: let the xdpdrv work with more than 64 cpus
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        David Miller <davem@davemloft.net>, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org,
-        intel-wired-lan@lists.osuosl.org, netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, bpf@vger.kernel.org,
-        Jason Xing <xingwanli@kuaishou.com>,
-        Shujin Li <lishujin@kuaishou.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 26, 2021 at 5:07 PM Maciej Fijalkowski
-<maciej.fijalkowski@intel.com> wrote:
->
-> On Wed, Aug 25, 2021 at 08:02:41PM +0800, kerneljasonxing@gmail.com wrote:
-> > From: Jason Xing <xingwanli@kuaishou.com>
-> >
-> > Originally, ixgbe driver doesn't allow the mounting of xdpdrv if the
-> > server is equipped with more than 64 cpus online. So it turns out that
-> > the loading of xdpdrv causes the "NOMEM" failure.
-> >
-> > Actually, we can adjust the algorithm and then make it work through
-> > mapping the current cpu to some xdp ring with the protect of @tx_lock.
-> >
-> > Considering the performance of xdpdrv mode, I add another limit like ice
-> > driver where the number of cpus should be within the twice of
-> > MAX_XDP_QUEUES.
->
-> Have you measured the impact on perf that this patch yields? On ice XDP
-> ring pointers are propagated to Rx ring on setup path whereas you
-> currently retrieve it per each xmitted frame.
->
+As multiple places EOPNOTSUPP and EINVAL is returned from driver
+it becomes difficult to understand the reason only with error code.
+With the netlink extack message exact reason will be known and will
+aid in debugging.
 
-Not yet. I have not found the proper environment to test the real
-performance with different cases. At first, I thought this patch could
-map different cpus to the same queues with the @tx_lock which would do
-harm to the performance to some extent.
+Signed-off-by: Abhiram R N <abhiramrn@gmail.com>
+---
+ .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 121 +++++++++++++-----
+ 1 file changed, 87 insertions(+), 34 deletions(-)
 
-I decided to get rid of this description.
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index d273758255c3..87faffda388d 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -1894,8 +1894,10 @@ static int parse_tunnel_attr(struct mlx5e_priv *priv,
+ 	bool needs_mapping, sets_mapping;
+ 	int err;
+ 
+-	if (!mlx5e_is_eswitch_flow(flow))
++	if (!mlx5e_is_eswitch_flow(flow)) {
++		NL_SET_ERR_MSG_MOD(extack, "Not an eswitch Flow");
+ 		return -EOPNOTSUPP;
++	}
+ 
+ 	needs_mapping = !!flow->attr->chain;
+ 	sets_mapping = !flow->attr->chain && flow_has_tc_fwd_action(f);
+@@ -2267,8 +2269,10 @@ static int __parse_cls_flower(struct mlx5e_priv *priv,
+ 		addr_type = match.key->addr_type;
+ 
+ 		/* the HW doesn't support frag first/later */
+-		if (match.mask->flags & FLOW_DIS_FIRST_FRAG)
++		if (match.mask->flags & FLOW_DIS_FIRST_FRAG) {
++			NL_SET_ERR_MSG_MOD(extack, "HW doesn't support frag first/later");
+ 			return -EOPNOTSUPP;
++		}
+ 
+ 		if (match.mask->flags & FLOW_DIS_IS_FRAGMENT) {
+ 			MLX5_SET(fte_match_set_lyr_2_4, headers_c, frag, 1);
+@@ -2435,8 +2439,11 @@ static int __parse_cls_flower(struct mlx5e_priv *priv,
+ 		switch (ip_proto) {
+ 		case IPPROTO_ICMP:
+ 			if (!(MLX5_CAP_GEN(priv->mdev, flex_parser_protocols) &
+-			      MLX5_FLEX_PROTO_ICMP))
++			      MLX5_FLEX_PROTO_ICMP)) {
++				NL_SET_ERR_MSG_MOD(extack,
++						   "Match on Flex protocols for ICMP not supported");
+ 				return -EOPNOTSUPP;
++			}
+ 			MLX5_SET(fte_match_set_misc3, misc_c_3, icmp_type,
+ 				 match.mask->type);
+ 			MLX5_SET(fte_match_set_misc3, misc_v_3, icmp_type,
+@@ -2448,8 +2455,11 @@ static int __parse_cls_flower(struct mlx5e_priv *priv,
+ 			break;
+ 		case IPPROTO_ICMPV6:
+ 			if (!(MLX5_CAP_GEN(priv->mdev, flex_parser_protocols) &
+-			      MLX5_FLEX_PROTO_ICMPV6))
++			      MLX5_FLEX_PROTO_ICMPV6)) {
++				NL_SET_ERR_MSG_MOD(extack,
++						   "Match on Flex protocols for ICMPV6 not supported");
+ 				return -EOPNOTSUPP;
++			}
+ 			MLX5_SET(fte_match_set_misc3, misc_c_3, icmpv6_type,
+ 				 match.mask->type);
+ 			MLX5_SET(fte_match_set_misc3, misc_v_3, icmpv6_type,
+@@ -2555,15 +2565,19 @@ static int pedit_header_offsets[] = {
+ #define pedit_header(_ph, _htype) ((void *)(_ph) + pedit_header_offsets[_htype])
+ 
+ static int set_pedit_val(u8 hdr_type, u32 mask, u32 val, u32 offset,
+-			 struct pedit_headers_action *hdrs)
++			 struct pedit_headers_action *hdrs,
++			 struct netlink_ext_ack *extack)
+ {
+ 	u32 *curr_pmask, *curr_pval;
+ 
+ 	curr_pmask = (u32 *)(pedit_header(&hdrs->masks, hdr_type) + offset);
+ 	curr_pval  = (u32 *)(pedit_header(&hdrs->vals, hdr_type) + offset);
+ 
+-	if (*curr_pmask & mask)  /* disallow acting twice on the same location */
++	if (*curr_pmask & mask) {  /* disallow acting twice on the same location */
++		NL_SET_ERR_MSG_MOD(extack,
++				   "curr_pmask and new mask same. Acting twice on same location");
+ 		goto out_err;
++	}
+ 
+ 	*curr_pmask |= mask;
+ 	*curr_pval  |= (val & mask);
+@@ -2893,7 +2907,7 @@ parse_pedit_to_modify_hdr(struct mlx5e_priv *priv,
+ 	val = act->mangle.val;
+ 	offset = act->mangle.offset;
+ 
+-	err = set_pedit_val(htype, ~mask, val, offset, &hdrs[cmd]);
++	err = set_pedit_val(htype, ~mask, val, offset, &hdrs[cmd], extack);
+ 	if (err)
+ 		goto out_err;
+ 
+@@ -2913,8 +2927,10 @@ parse_pedit_to_reformat(struct mlx5e_priv *priv,
+ 	u32 mask, val, offset;
+ 	u32 *p;
+ 
+-	if (act->id != FLOW_ACTION_MANGLE)
++	if (act->id != FLOW_ACTION_MANGLE) {
++		NL_SET_ERR_MSG_MOD(extack, "Unsupported action id");
+ 		return -EOPNOTSUPP;
++	}
+ 
+ 	if (act->mangle.htype != FLOW_ACT_MANGLE_HDR_TYPE_ETH) {
+ 		NL_SET_ERR_MSG_MOD(extack, "Only Ethernet modification is supported");
+@@ -3363,12 +3379,16 @@ static int parse_tc_nic_actions(struct mlx5e_priv *priv,
+ 	u32 action = 0;
+ 	int err, i;
+ 
+-	if (!flow_action_has_entries(flow_action))
++	if (!flow_action_has_entries(flow_action)) {
++		NL_SET_ERR_MSG_MOD(extack, "Flow Action doesn't have any entries");
+ 		return -EINVAL;
++	}
+ 
+ 	if (!flow_action_hw_stats_check(flow_action, extack,
+-					FLOW_ACTION_HW_STATS_DELAYED_BIT))
++					FLOW_ACTION_HW_STATS_DELAYED_BIT)) {
++		NL_SET_ERR_MSG_MOD(extack, "Flow Action HW stats check not supported");
+ 		return -EOPNOTSUPP;
++	}
+ 
+ 	nic_attr = attr->nic_attr;
+ 
+@@ -3409,7 +3429,8 @@ static int parse_tc_nic_actions(struct mlx5e_priv *priv,
+ 						   act->csum_flags,
+ 						   extack))
+ 				break;
+-
++			NL_SET_ERR_MSG_MOD(extack,
++					   "Flow Action CSUM offload not supported in NIC actions");
+ 			return -EOPNOTSUPP;
+ 		case FLOW_ACTION_REDIRECT: {
+ 			struct net_device *peer_dev = act->dev;
+@@ -3459,7 +3480,8 @@ static int parse_tc_nic_actions(struct mlx5e_priv *priv,
+ 			flow_flag_set(flow, CT);
+ 			break;
+ 		default:
+-			NL_SET_ERR_MSG_MOD(extack, "The offload action is not supported");
++			NL_SET_ERR_MSG_MOD(extack,
++					   "The offload action is not supported in NIC actions");
+ 			return -EOPNOTSUPP;
+ 		}
+ 	}
+@@ -3492,8 +3514,11 @@ static int parse_tc_nic_actions(struct mlx5e_priv *priv,
+ 	if (attr->action & MLX5_FLOW_CONTEXT_ACTION_MOD_HDR)
+ 		attr->action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST;
+ 
+-	if (!actions_match_supported(priv, flow_action, parse_attr, flow, extack))
++	if (!actions_match_supported(priv, flow_action, parse_attr, flow, extack)) {
++		NL_SET_ERR_MSG_MOD(extack,
++				   "Action Match not supported for the flow in NIC actions");
+ 		return -EOPNOTSUPP;
++	}
+ 
+ 	return 0;
+ }
+@@ -3514,19 +3539,25 @@ static bool is_merged_eswitch_vfs(struct mlx5e_priv *priv,
+ static int parse_tc_vlan_action(struct mlx5e_priv *priv,
+ 				const struct flow_action_entry *act,
+ 				struct mlx5_esw_flow_attr *attr,
+-				u32 *action)
++				u32 *action,
++				struct netlink_ext_ack *extack)
+ {
+ 	u8 vlan_idx = attr->total_vlan;
+ 
+-	if (vlan_idx >= MLX5_FS_VLAN_DEPTH)
++	if (vlan_idx >= MLX5_FS_VLAN_DEPTH) {
++		NL_SET_ERR_MSG_MOD(extack, "VLAN IDs greater than supported");
+ 		return -EOPNOTSUPP;
++	}
+ 
+ 	switch (act->id) {
+ 	case FLOW_ACTION_VLAN_POP:
+ 		if (vlan_idx) {
+ 			if (!mlx5_eswitch_vlan_actions_supported(priv->mdev,
+-								 MLX5_FS_VLAN_DEPTH))
++								 MLX5_FS_VLAN_DEPTH)) {
++				NL_SET_ERR_MSG_MOD(extack,
++						   "ESWITCH VLAN POP action requested is not supported");
+ 				return -EOPNOTSUPP;
++			}
+ 
+ 			*action |= MLX5_FLOW_CONTEXT_ACTION_VLAN_POP_2;
+ 		} else {
+@@ -3542,20 +3573,27 @@ static int parse_tc_vlan_action(struct mlx5e_priv *priv,
+ 
+ 		if (vlan_idx) {
+ 			if (!mlx5_eswitch_vlan_actions_supported(priv->mdev,
+-								 MLX5_FS_VLAN_DEPTH))
++								 MLX5_FS_VLAN_DEPTH)) {
++				NL_SET_ERR_MSG_MOD(extack,
++						   "ESWITCH VLAN PUSH action requested is not supported");
+ 				return -EOPNOTSUPP;
++			}
+ 
+ 			*action |= MLX5_FLOW_CONTEXT_ACTION_VLAN_PUSH_2;
+ 		} else {
+ 			if (!mlx5_eswitch_vlan_actions_supported(priv->mdev, 1) &&
+ 			    (act->vlan.proto != htons(ETH_P_8021Q) ||
+-			     act->vlan.prio))
++			     act->vlan.prio)) {
++				NL_SET_ERR_MSG_MOD(extack,
++						   "ESWITCH VLAN PUSH act for vlan proto requested is not supported");
+ 				return -EOPNOTSUPP;
++			}
+ 
+ 			*action |= MLX5_FLOW_CONTEXT_ACTION_VLAN_PUSH;
+ 		}
+ 		break;
+ 	default:
++		NL_SET_ERR_MSG_MOD(extack, "Unexpected action id for VLAN");
+ 		return -EINVAL;
+ 	}
+ 
+@@ -3589,7 +3627,8 @@ static struct net_device *get_fdb_out_dev(struct net_device *uplink_dev,
+ static int add_vlan_push_action(struct mlx5e_priv *priv,
+ 				struct mlx5_flow_attr *attr,
+ 				struct net_device **out_dev,
+-				u32 *action)
++				u32 *action,
++				struct netlink_ext_ack *extack)
+ {
+ 	struct net_device *vlan_dev = *out_dev;
+ 	struct flow_action_entry vlan_act = {
+@@ -3600,7 +3639,7 @@ static int add_vlan_push_action(struct mlx5e_priv *priv,
+ 	};
+ 	int err;
+ 
+-	err = parse_tc_vlan_action(priv, &vlan_act, attr->esw_attr, action);
++	err = parse_tc_vlan_action(priv, &vlan_act, attr->esw_attr, action, extack);
+ 	if (err)
+ 		return err;
+ 
+@@ -3611,14 +3650,15 @@ static int add_vlan_push_action(struct mlx5e_priv *priv,
+ 		return -ENODEV;
+ 
+ 	if (is_vlan_dev(*out_dev))
+-		err = add_vlan_push_action(priv, attr, out_dev, action);
++		err = add_vlan_push_action(priv, attr, out_dev, action, extack);
+ 
+ 	return err;
+ }
+ 
+ static int add_vlan_pop_action(struct mlx5e_priv *priv,
+ 			       struct mlx5_flow_attr *attr,
+-			       u32 *action)
++			       u32 *action,
++			       struct netlink_ext_ack *extack)
+ {
+ 	struct flow_action_entry vlan_act = {
+ 		.id = FLOW_ACTION_VLAN_POP,
+@@ -3628,7 +3668,7 @@ static int add_vlan_pop_action(struct mlx5e_priv *priv,
+ 	nest_level = attr->parse_attr->filter_dev->lower_level -
+ 						priv->netdev->lower_level;
+ 	while (nest_level--) {
+-		err = parse_tc_vlan_action(priv, &vlan_act, attr->esw_attr, action);
++		err = parse_tc_vlan_action(priv, &vlan_act, attr->esw_attr, action, extack);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -3751,12 +3791,16 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
+ 	int err, i, if_count = 0;
+ 	bool mpls_push = false;
+ 
+-	if (!flow_action_has_entries(flow_action))
++	if (!flow_action_has_entries(flow_action)) {
++		NL_SET_ERR_MSG_MOD(extack, "Flow action doesn't have any entries");
+ 		return -EINVAL;
++	}
+ 
+ 	if (!flow_action_hw_stats_check(flow_action, extack,
+-					FLOW_ACTION_HW_STATS_DELAYED_BIT))
++					FLOW_ACTION_HW_STATS_DELAYED_BIT)) {
++		NL_SET_ERR_MSG_MOD(extack, "Flow Action HW stats check is not supported");
+ 		return -EOPNOTSUPP;
++	}
+ 
+ 	esw_attr = attr->esw_attr;
+ 	parse_attr = attr->parse_attr;
+@@ -3824,7 +3868,8 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
+ 			if (csum_offload_supported(priv, action,
+ 						   act->csum_flags, extack))
+ 				break;
+-
++			NL_SET_ERR_MSG_MOD(extack,
++					   "Flow Action CSUM Offload not supported in FDB action");
+ 			return -EOPNOTSUPP;
+ 		case FLOW_ACTION_REDIRECT:
+ 		case FLOW_ACTION_MIRRED: {
+@@ -3887,8 +3932,11 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
+ 								out_dev,
+ 								ifindexes,
+ 								if_count,
+-								extack))
++								extack)) {
++					NL_SET_ERR_MSG_MOD(extack,
++							   "Duplicated output device not supported");
+ 					return -EOPNOTSUPP;
++				}
+ 
+ 				ifindexes[if_count] = out_dev->ifindex;
+ 				if_count++;
+@@ -3900,14 +3948,14 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
+ 				if (is_vlan_dev(out_dev)) {
+ 					err = add_vlan_push_action(priv, attr,
+ 								   &out_dev,
+-								   &action);
++								   &action, extack);
+ 					if (err)
+ 						return err;
+ 				}
+ 
+ 				if (is_vlan_dev(parse_attr->filter_dev)) {
+ 					err = add_vlan_pop_action(priv, attr,
+-								  &action);
++								  &action, extack);
+ 					if (err)
+ 						return err;
+ 				}
+@@ -3953,10 +4001,12 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
+ 			break;
+ 		case FLOW_ACTION_TUNNEL_ENCAP:
+ 			info = act->tunnel;
+-			if (info)
++			if (info) {
+ 				encap = true;
+-			else
++			} else {
++				NL_SET_ERR_MSG_MOD(extack, "Non-zero tunnel value not set");
+ 				return -EOPNOTSUPP;
++			}
+ 
+ 			break;
+ 		case FLOW_ACTION_VLAN_PUSH:
+@@ -3970,7 +4020,7 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
+ 							      act, parse_attr, hdrs,
+ 							      &action, extack);
+ 			} else {
+-				err = parse_tc_vlan_action(priv, act, esw_attr, &action);
++				err = parse_tc_vlan_action(priv, act, esw_attr, &action, extack);
+ 			}
+ 			if (err)
+ 				return err;
+@@ -4023,7 +4073,8 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
+ 			flow_flag_set(flow, SAMPLE);
+ 			break;
+ 		default:
+-			NL_SET_ERR_MSG_MOD(extack, "The offload action is not supported");
++			NL_SET_ERR_MSG_MOD(extack,
++					   "The offload action is not supported in FDB action");
+ 			return -EOPNOTSUPP;
+ 		}
+ 	}
+@@ -4731,8 +4782,10 @@ static int scan_tc_matchall_fdb_actions(struct mlx5e_priv *priv,
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+-	if (!flow_action_basic_hw_stats_check(flow_action, extack))
++	if (!flow_action_basic_hw_stats_check(flow_action, extack)) {
++		NL_SET_ERR_MSG_MOD(extack, "Flow Action HW stats check is not supported");
+ 		return -EOPNOTSUPP;
++	}
+ 
+ 	flow_action_for_each(i, act, flow_action) {
+ 		switch (act->id) {
+-- 
+2.27.0
 
-> >
-> > v2:
-> > - Adjust cpu id in ixgbe_xdp_xmit(). (Jesper)
-> > - Add a fallback path. (Maciej)
-> > - Adjust other parts related to xdp ring.
-> >
-> > Fixes: 33fdc82f08 ("ixgbe: add support for XDP_TX action")
-> > Co-developed-by: Shujin Li <lishujin@kuaishou.com>
-> > Signed-off-by: Shujin Li <lishujin@kuaishou.com>
-> > Signed-off-by: Jason Xing <xingwanli@kuaishou.com>
-> > ---
-> >  drivers/net/ethernet/intel/ixgbe/ixgbe.h      | 11 +++++
-> >  drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c  |  6 ++-
-> >  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 63 ++++++++++++++++++++-------
-> >  drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c  | 15 ++++---
-> >  4 files changed, 72 insertions(+), 23 deletions(-)
-> >
-> > diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe.h b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-> > index a604552..466b2b0 100644
-> > --- a/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-> > +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-> > @@ -82,6 +82,8 @@
-> >  #define IXGBE_2K_TOO_SMALL_WITH_PADDING \
-> >  ((NET_SKB_PAD + IXGBE_RXBUFFER_1536) > SKB_WITH_OVERHEAD(IXGBE_RXBUFFER_2K))
-> >
-> > +DECLARE_STATIC_KEY_FALSE(ixgbe_xdp_locking_key);
-> > +
-> >  static inline int ixgbe_compute_pad(int rx_buf_len)
-> >  {
-> >       int page_size, pad_size;
-> > @@ -351,6 +353,7 @@ struct ixgbe_ring {
-> >       };
-> >       u16 rx_offset;
-> >       struct xdp_rxq_info xdp_rxq;
-> > +     spinlock_t tx_lock;     /* used in XDP mode */
-> >       struct xsk_buff_pool *xsk_pool;
-> >       u16 ring_idx;           /* {rx,tx,xdp}_ring back reference idx */
-> >       u16 rx_buf_len;
-> > @@ -772,6 +775,14 @@ struct ixgbe_adapter {
-> >  #endif /* CONFIG_IXGBE_IPSEC */
-> >  };
-> >
-> > +static inline int ixgbe_determine_xdp_cpu(int cpu)
-> > +{
-> > +     if (static_key_enabled(&ixgbe_xdp_locking_key))
-> > +             return cpu % MAX_XDP_QUEUES;
-> > +     else
-> > +             return cpu;
-> > +}
-> > +
-> >  static inline u8 ixgbe_max_rss_indices(struct ixgbe_adapter *adapter)
-> >  {
-> >       switch (adapter->hw.mac.type) {
-> > diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
-> > index 0218f6c..d6b58e1 100644
-> > --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
-> > +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
-> > @@ -299,7 +299,7 @@ static void ixgbe_cache_ring_register(struct ixgbe_adapter *adapter)
-> >
-> >  static int ixgbe_xdp_queues(struct ixgbe_adapter *adapter)
-> >  {
-> > -     return adapter->xdp_prog ? nr_cpu_ids : 0;
-> > +     return adapter->xdp_prog ? min_t(int, MAX_XDP_QUEUES, nr_cpu_ids) : 0;
->
-> AFAIK nr_cpu_ids will give you the max possible cpus on the underlying
-> system, maybe we should stick to num_online_cpus() instead?
->
-
-Sure, I'll do that change. Maybe we should also stick to
-num_online_cpus() in the function ixgbe_xdp_setup()?
-
-> >  }
-> >
-> >  #define IXGBE_RSS_64Q_MASK   0x3F
-> > @@ -947,6 +947,7 @@ static int ixgbe_alloc_q_vector(struct ixgbe_adapter *adapter,
-> >               ring->count = adapter->tx_ring_count;
-> >               ring->queue_index = xdp_idx;
-> >               set_ring_xdp(ring);
-> > +             spin_lock_init(&ring->tx_lock);
-> >
-> >               /* assign ring to adapter */
-> >               WRITE_ONCE(adapter->xdp_ring[xdp_idx], ring);
-> > @@ -1032,6 +1033,9 @@ static void ixgbe_free_q_vector(struct ixgbe_adapter *adapter, int v_idx)
-> >       adapter->q_vector[v_idx] = NULL;
-> >       __netif_napi_del(&q_vector->napi);
-> >
-> > +     if (static_key_enabled(&ixgbe_xdp_locking_key))
-> > +             static_branch_dec(&ixgbe_xdp_locking_key);
-> > +
-> >       /*
-> >        * after a call to __netif_napi_del() napi may still be used and
-> >        * ixgbe_get_stats64() might access the rings on this vector,
-> > diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> > index 14aea40..4c94577 100644
-> > --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> > +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> > @@ -165,6 +165,9 @@ static int ixgbe_notify_dca(struct notifier_block *, unsigned long event,
-> >  MODULE_DESCRIPTION("Intel(R) 10 Gigabit PCI Express Network Driver");
-> >  MODULE_LICENSE("GPL v2");
-> >
-> > +DEFINE_STATIC_KEY_FALSE(ixgbe_xdp_locking_key);
-> > +EXPORT_SYMBOL(ixgbe_xdp_locking_key);
-> > +
-> >  static struct workqueue_struct *ixgbe_wq;
-> >
-> >  static bool ixgbe_check_cfg_remove(struct ixgbe_hw *hw, struct pci_dev *pdev);
-> > @@ -2422,13 +2425,14 @@ static int ixgbe_clean_rx_irq(struct ixgbe_q_vector *q_vector,
-> >               xdp_do_flush_map();
-> >
-> >       if (xdp_xmit & IXGBE_XDP_TX) {
-> > -             struct ixgbe_ring *ring = adapter->xdp_ring[smp_processor_id()];
-> > +             int cpu = ixgbe_determine_xdp_cpu(smp_processor_id());
-> > +             struct ixgbe_ring *ring = adapter->xdp_ring[cpu];
-> >
-> > -             /* Force memory writes to complete before letting h/w
-> > -              * know there are new descriptors to fetch.
-> > -              */
-> > -             wmb();
-> > -             writel(ring->next_to_use, ring->tail);
-> > +             if (static_branch_unlikely(&ixgbe_xdp_locking_key))
-> > +                     spin_lock(&ring->tx_lock);
-> > +             ixgbe_xdp_ring_update_tail(ring);
-> > +             if (static_branch_unlikely(&ixgbe_xdp_locking_key))
-> > +                     spin_unlock(&ring->tx_lock);
-> >       }
-> >
-> >       u64_stats_update_begin(&rx_ring->syncp);
-> > @@ -8539,21 +8543,33 @@ static u16 ixgbe_select_queue(struct net_device *dev, struct sk_buff *skb,
-> >  int ixgbe_xmit_xdp_ring(struct ixgbe_adapter *adapter,
-> >                       struct xdp_frame *xdpf)
-> >  {
-> > -     struct ixgbe_ring *ring = adapter->xdp_ring[smp_processor_id()];
-> > +     struct ixgbe_ring *ring;
->
-> RCT is being broken in here
-
-Sorry, I have no idea about what the RCT is. Is that kind of format?
-Does that mean I should change the position of those lines to make it
-look better?
-
->
-> >       struct ixgbe_tx_buffer *tx_buffer;
-> >       union ixgbe_adv_tx_desc *tx_desc;
-> >       u32 len, cmd_type;
-> >       dma_addr_t dma;
-> >       u16 i;
-> > +     int cpu;
-> > +     int ret;
->
-> Ditto
->
-> >
-> >       len = xdpf->len;
-> >
-> > -     if (unlikely(!ixgbe_desc_unused(ring)))
-> > -             return IXGBE_XDP_CONSUMED;
-> > +     cpu = ixgbe_determine_xdp_cpu(smp_processor_id());
-> > +     ring = adapter->xdp_ring[cpu];
-> > +
-> > +     if (static_branch_unlikely(&ixgbe_xdp_locking_key))
-> > +             spin_lock(&ring->tx_lock);
-> > +
-> > +     if (unlikely(!ixgbe_desc_unused(ring))) {
-> > +             ret = IXGBE_XDP_CONSUMED;
-> > +             goto out;
-> > +     }
-> >
-> >       dma = dma_map_single(ring->dev, xdpf->data, len, DMA_TO_DEVICE);
-> > -     if (dma_mapping_error(ring->dev, dma))
-> > -             return IXGBE_XDP_CONSUMED;
-> > +     if (dma_mapping_error(ring->dev, dma)) {
-> > +             ret = IXGBE_XDP_CONSUMED;
-> > +             goto out;
-> > +     }
-> >
-> >       /* record the location of the first descriptor for this packet */
-> >       tx_buffer = &ring->tx_buffer_info[ring->next_to_use];
-> > @@ -8590,7 +8606,11 @@ int ixgbe_xmit_xdp_ring(struct ixgbe_adapter *adapter,
-> >       tx_buffer->next_to_watch = tx_desc;
-> >       ring->next_to_use = i;
-> >
-> > -     return IXGBE_XDP_TX;
-> > +     ret = IXGBE_XDP_TX;
-> > +out:
-> > +     if (static_branch_unlikely(&ixgbe_xdp_locking_key))
-> > +             spin_unlock(&ring->tx_lock);
-> > +     return ret;
-> >  }
-> >
-> >  netdev_tx_t ixgbe_xmit_frame_ring(struct sk_buff *skb,
-> > @@ -10130,8 +10150,13 @@ static int ixgbe_xdp_setup(struct net_device *dev, struct bpf_prog *prog)
-> >                       return -EINVAL;
-> >       }
-> >
-> > -     if (nr_cpu_ids > MAX_XDP_QUEUES)
-> > +     /* if the number of cpus is much larger than the maximum of queues,
-> > +      * we should stop it and then return with NOMEM like before!
-> > +      */
-> > +     if (nr_cpu_ids > MAX_XDP_QUEUES * 2)
->
-> I realized this macro is a bit confusing, maybe it would be better to
-> prefix it with the driver name, so IXGBE_MAX_XDP_QS would make it clear
-> what's the scope of it.
->
-
-You're right. It would be much clearer.
-
-> >               return -ENOMEM;
-> > +     else if (nr_cpu_ids > MAX_XDP_QUEUES)
-> > +             static_branch_inc(&ixgbe_xdp_locking_key);
-> >
-> >       old_prog = xchg(&adapter->xdp_prog, prog);
-> >       need_reset = (!!prog != !!old_prog);
-> > @@ -10201,6 +10226,7 @@ static int ixgbe_xdp_xmit(struct net_device *dev, int n,
-> >       struct ixgbe_adapter *adapter = netdev_priv(dev);
-> >       struct ixgbe_ring *ring;
-> >       int nxmit = 0;
-> > +     int cpu;
-> >       int i;
-> >
-> >       if (unlikely(test_bit(__IXGBE_DOWN, &adapter->state)))
-> > @@ -10209,10 +10235,12 @@ static int ixgbe_xdp_xmit(struct net_device *dev, int n,
-> >       if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK))
-> >               return -EINVAL;
-> >
-> > +     cpu = ixgbe_determine_xdp_cpu(smp_processor_id());
->
-> Actually it's not the cpu that you're determining, just a queue index in
-> the xdp_rings array.
->
-> Say that your running napi on cpu 72, so your function above will return
-> you the 8 probably and that's the queue number you will pick and share
-> with cpu 8.
->
-> Can you rename this to ixgbe_determine_xdp_q_idx ?
->
-
-Thanks. I'll do that.
-
-> > +
-> >       /* During program transitions its possible adapter->xdp_prog is assigned
-> >        * but ring has not been configured yet. In this case simply abort xmit.
-> >        */
-> > -     ring = adapter->xdp_prog ? adapter->xdp_ring[smp_processor_id()] : NULL;
-> > +     ring = adapter->xdp_prog ? adapter->xdp_ring[cpu] : NULL;
-> >       if (unlikely(!ring))
-> >               return -ENXIO;
-> >
-> > @@ -10229,8 +10257,13 @@ static int ixgbe_xdp_xmit(struct net_device *dev, int n,
-> >               nxmit++;
-> >       }
-> >
-> > -     if (unlikely(flags & XDP_XMIT_FLUSH))
-> > +     if (unlikely(flags & XDP_XMIT_FLUSH)) {
-> > +             if (static_branch_unlikely(&ixgbe_xdp_locking_key))
-> > +                     spin_lock(&ring->tx_lock);
-> >               ixgbe_xdp_ring_update_tail(ring);
-> > +             if (static_branch_unlikely(&ixgbe_xdp_locking_key))
-> > +                     spin_unlock(&ring->tx_lock);
-> > +     }
-> >
-> >       return nxmit;
-> >  }
-> > diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-> > index b1d22e4..e9ce6c1 100644
-> > --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-> > +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-> > @@ -334,13 +334,14 @@ int ixgbe_clean_rx_irq_zc(struct ixgbe_q_vector *q_vector,
-> >               xdp_do_flush_map();
-> >
-> >       if (xdp_xmit & IXGBE_XDP_TX) {
-> > -             struct ixgbe_ring *ring = adapter->xdp_ring[smp_processor_id()];
-> > -
-> > -             /* Force memory writes to complete before letting h/w
-> > -              * know there are new descriptors to fetch.
-> > -              */
-> > -             wmb();
-> > -             writel(ring->next_to_use, ring->tail);
-> > +             int cpu = ixgbe_determine_xdp_cpu(smp_processor_id());
-> > +             struct ixgbe_ring *ring = adapter->xdp_ring[cpu];
-> > +
-> > +             if (static_branch_unlikely(&ixgbe_xdp_locking_key))
-> > +                     spin_lock(&ring->tx_lock);
-> > +             ixgbe_xdp_ring_update_tail(ring);
->
-> Good that ixgbe_xdp_ring_update_tail is reused, but probably this could be
-> a common inlined function that is called on both normal and zc variants of
-> clean rx irq routine.
->
-
-Fine. I'll wrap them all together into one inline function.
-
-> > +             if (static_branch_unlikely(&ixgbe_xdp_locking_key))
-> > +                     spin_unlock(&ring->tx_lock);
-> >       }
-> >
-> >       u64_stats_update_begin(&rx_ring->syncp);
-> > --
-> > 1.8.3.1
-> >
