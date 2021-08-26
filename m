@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0DD33F8860
-	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 15:10:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44DA43F8861
+	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 15:10:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242663AbhHZNKd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 09:10:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41168 "EHLO
+        id S237377AbhHZNKe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 09:10:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242505AbhHZNKR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 09:10:17 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BDBBC0613D9
-        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 06:09:30 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id q17so4619976edv.2
-        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 06:09:30 -0700 (PDT)
+        with ESMTP id S242564AbhHZNKT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 09:10:19 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A59EC0617A8
+        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 06:09:31 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id bt14so6190595ejb.3
+        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 06:09:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=blackwall-org.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=LXoTQjT690UTi85KZOBEPTBy3nlvqPY2wCUxhhXWuoA=;
-        b=TH2GLBq9ijzPCJO+Nk7BH2DkXgsoKLBJZoJ0y7/bobujYjrryzJzlTPDfTpaABX+Fq
-         5Qg0RTU2bRGFwtI4sdkjDzEwkgcHN6WIvFxgvb1iwVEqX4V8O1rKQ3KDH1/7SjlERXPW
-         pcYW6bJD97ht33wtHAnKPACCZflSQVYJq5MGLcySEbFtHKd1Xpf1lXgSir2pW5pCdn3l
-         W2ovXC8aEtLWrNhIX5NJP9rRx4nqZfRFMSJEFuQebnIJv/YyjAh3zTwlcbGdqFB1nsZ6
-         VURN6T9UAH+CHTlliSyHzSfKmpDGqqZLTAHImQjTyIiOfFFf7P7usvZSaQAQ0ThVnEoB
-         d5Sw==
+        bh=Sjd0EUn1Nz66aOXuJU4ejq3SwyE3zJni8Naxa0nEgqI=;
+        b=Pl4NIj+Y0G4g2PJJTvpFUzJ5ETuNvULzaiiqtDS75T9R/t90cEfKkIFpVv75Ev8K0u
+         iZBUU8BtnLzvHqWyll54+owJ7/ERBVo/WFdEoCSSnKNGYWuhieM41A1cirsgOcHCsYFy
+         mTt5iud3Ssuq/hy8n3h7zXYMS4DreIHXlX6c3XyqOhmxremFdaqZgHh3s/OUw8F/TLUS
+         QHvvIudyYN+dAtRBrv4qVhVM5/yjgr6hqq7SIF3p4D2BWlZYDZA8UjOAX2UepzPAXz+3
+         fhSbK3i1Bzy1CNUQ++ttwFmUfl4pVUtTMWm9Ms2d9NCYCgxH6Z+lTun6nyJ0Td4SucW2
+         /NhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=LXoTQjT690UTi85KZOBEPTBy3nlvqPY2wCUxhhXWuoA=;
-        b=NfwdERNx6sJSVCoYOC8Avhdjc7PDtZK90jia1WX/V1woFOU21nWyvV385of6KtGzov
-         VVTUSgsIKgohm2M5n5b7E6WSLA2EeBIgrNqtP1Cix46u1H4Ogz3MtvsXw9EuJdS5LxOu
-         8Z1kUxM4EXWzn8QCYgRDm4L89Pfnp+DoxcDCr5GgnnQHTQUchWqL0nnGoBe1YI+lDLyg
-         Wxx46YySAV3mIiaLW0js17/Sgi63PKNMX+VphW/Zic4tsIbwG5vT/7z/THSjPcadhRPw
-         yKzlTBnxwK6jZ/dnNBYR5uuQbPlnUdLQQNh9TE80QOaikogonX8fvOoUH2MfAgO3M6Nr
-         9uhw==
-X-Gm-Message-State: AOAM530/ui2Ow1TWdCArLqm/lpxMIi8Vqi8x7fb63G+ARYWs3Y2G4PnW
-        roMp/VeF6Aq0LVH+BdD+y4jxBBmzgvkz2DmG
-X-Google-Smtp-Source: ABdhPJxEO0U+KfLBpqHFmakXAm2TO8K1qPTBI6baEi82MB4Op27FvczBwIEkxsQrxzz9X5tFdDxSwQ==
-X-Received: by 2002:aa7:dd12:: with SMTP id i18mr4146889edv.368.1629983368701;
-        Thu, 26 Aug 2021 06:09:28 -0700 (PDT)
+        bh=Sjd0EUn1Nz66aOXuJU4ejq3SwyE3zJni8Naxa0nEgqI=;
+        b=azPiqfwnsd/pIfLyvx3MeMGg6le+pB8XO8mT007+1Idx00YZ3QZ3VNqIlfjQQ+9+qG
+         DoPy94vB8IhCmWb1Dn+Jb77+2kjC6GZkgqm/eYWoREMrJ0cQQ/n89exWjrORtkQoIMEq
+         dBZmxgj6XhCSSb5mefsHk8ss3cmhULlLGFvBdjZKMR1LD0euasViuWl+WxtDdzp5zZ1T
+         EK4OtAybQg5eB2oP6QX7HFNo8kmhnUkIgU4FcB1+ouEGMbvv1O0UU/SsH7YuDIAdgo0P
+         i9zKBoRUZ5hqaiCIxfDZHznIfwHcIANR/hCgP6J8Weake289b2lz6WrKQ1IfveF1YbpE
+         vnPw==
+X-Gm-Message-State: AOAM531dSTSmTBp8ww2yGJVqh8hCB/xP4TDCF+Fab0tj+0HsOl172poI
+        oluNuguIXuxDZmOmBUVpivm2lSu0NbYEp1hr
+X-Google-Smtp-Source: ABdhPJy6gdJHTZXhfTymSiVSiaEct/H91INF9Os4djFbUeINItCGjN/q220vTr3t3lueFk/AnVE48g==
+X-Received: by 2002:a17:906:30d8:: with SMTP id b24mr4162771ejb.358.1629983369637;
+        Thu, 26 Aug 2021 06:09:29 -0700 (PDT)
 Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id bl16sm1378303ejb.37.2021.08.26.06.09.27
+        by smtp.gmail.com with ESMTPSA id bl16sm1378303ejb.37.2021.08.26.06.09.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Aug 2021 06:09:28 -0700 (PDT)
+        Thu, 26 Aug 2021 06:09:29 -0700 (PDT)
 From:   Nikolay Aleksandrov <razor@blackwall.org>
 To:     netdev@vger.kernel.org
 Cc:     roopa@nvidia.com, Joachim Wiberg <troglobit@gmail.com>,
         dsahern@gmail.com, Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: [PATCH iproute2-next 11/17] bridge: vlan: add global mcast_membership_interval option
-Date:   Thu, 26 Aug 2021 16:05:27 +0300
-Message-Id: <20210826130533.149111-12-razor@blackwall.org>
+Subject: [PATCH iproute2-next 12/17] bridge: vlan: add global mcast_querier_interval option
+Date:   Thu, 26 Aug 2021 16:05:28 +0300
+Message-Id: <20210826130533.149111-13-razor@blackwall.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210826130533.149111-1-razor@blackwall.org>
 References: <20210826130533.149111-1-razor@blackwall.org>
@@ -65,84 +65,87 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-Add control and dump support for the global mcast_membership_interval
-option which controls the interval after which the bridge will leave a
-group if no reports have been received for it. To be consistent with the
-same bridge-wide option the value is reported with USER_HZ granularity and
-the same granularity is expected when setting it.
-The default is 26000 (260 seconds).
+Add control and dump support for the global mcast_querier_interval
+option which controls the interval after which if no other router
+queries are seen the bridge will start sending its own queries.
+To be consistent with the same bridge-wide option the value is reported
+with USER_HZ granularity and the same granularity is expected when
+setting it.
 Syntax:
- $ bridge vlan global set dev bridge vid 1 mcast_membership_interval 13000
+ $ bridge vlan global set dev bridge vid 1 mcast_querier_interval 13000
 
 Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
 ---
  bridge/vlan.c     | 15 +++++++++++++++
- man/man8/bridge.8 |  9 ++++++++-
- 2 files changed, 23 insertions(+), 1 deletion(-)
+ man/man8/bridge.8 | 12 +++++++++++-
+ 2 files changed, 26 insertions(+), 1 deletion(-)
 
 diff --git a/bridge/vlan.c b/bridge/vlan.c
-index c3234a90b4fa..757c34c6497b 100644
+index 757c34c6497b..c7cd069c29a4 100644
 --- a/bridge/vlan.c
 +++ b/bridge/vlan.c
-@@ -44,6 +44,7 @@ static void usage(void)
- 		"                                                      [ mcast_last_member_count LAST_MEMBER_COUNT ]\n"
+@@ -45,6 +45,7 @@ static void usage(void)
  		"                                                      [ mcast_last_member_interval LAST_MEMBER_INTERVAL ]\n"
  		"                                                      [ mcast_startup_query_count STARTUP_QUERY_COUNT ]\n"
-+		"                                                      [ mcast_membership_interval MEMBERSHIP_INTERVAL ]\n"
+ 		"                                                      [ mcast_membership_interval MEMBERSHIP_INTERVAL ]\n"
++		"                                                      [ mcast_querier_interval QUERIER_INTERVAL ]\n"
  		"       bridge vlan global { show } [ dev DEV ] [ vid VLAN_ID ]\n");
  	exit(-1);
  }
-@@ -447,6 +448,14 @@ static int vlan_global_option_set(int argc, char **argv)
+@@ -456,6 +457,14 @@ static int vlan_global_option_set(int argc, char **argv)
  			addattr64(&req.n, 1024,
- 				  BRIDGE_VLANDB_GOPTS_MCAST_LAST_MEMBER_INTVL,
+ 				  BRIDGE_VLANDB_GOPTS_MCAST_MEMBERSHIP_INTVL,
  				  val64);
-+		} else if (strcmp(*argv, "mcast_membership_interval") == 0) {
++		} else if (strcmp(*argv, "mcast_querier_interval") == 0) {
 +			NEXT_ARG();
 +			if (get_u64(&val64, *argv, 0))
-+				invarg("invalid mcast_membership_interval",
++				invarg("invalid mcast_querier_interval",
 +				       *argv);
 +			addattr64(&req.n, 1024,
-+				  BRIDGE_VLANDB_GOPTS_MCAST_MEMBERSHIP_INTVL,
++				  BRIDGE_VLANDB_GOPTS_MCAST_QUERIER_INTVL,
 +				  val64);
  		} else {
  			if (matches(*argv, "help") == 0)
  				NEXT_ARG();
-@@ -813,6 +822,12 @@ static void print_vlan_global_opts(struct rtattr *a, int ifindex)
- 			   "mcast_startup_query_count %u ",
- 			   rta_getattr_u32(vattr));
+@@ -828,6 +837,12 @@ static void print_vlan_global_opts(struct rtattr *a, int ifindex)
+ 			     "mcast_membership_interval %llu ",
+ 			     rta_getattr_u64(vattr));
  	}
-+	if (vtb[BRIDGE_VLANDB_GOPTS_MCAST_MEMBERSHIP_INTVL]) {
-+		vattr = vtb[BRIDGE_VLANDB_GOPTS_MCAST_MEMBERSHIP_INTVL];
-+		print_lluint(PRINT_ANY, "mcast_membership_interval",
-+			     "mcast_membership_interval %llu ",
++	if (vtb[BRIDGE_VLANDB_GOPTS_MCAST_QUERIER_INTVL]) {
++		vattr = vtb[BRIDGE_VLANDB_GOPTS_MCAST_QUERIER_INTVL];
++		print_lluint(PRINT_ANY, "mcast_querier_interval",
++			     "mcast_querier_interval %llu ",
 +			     rta_getattr_u64(vattr));
 +	}
  	print_nl();
  	close_json_object();
  }
 diff --git a/man/man8/bridge.8 b/man/man8/bridge.8
-index 0d973a9db0e0..a026ca16f89a 100644
+index a026ca16f89a..f5c72ec83f93 100644
 --- a/man/man8/bridge.8
 +++ b/man/man8/bridge.8
-@@ -169,7 +169,9 @@ bridge \- show / manipulate bridge addresses and devices
- .B mcast_last_member_interval
- .IR LAST_MEMBER_INTERVAL " ] [ "
+@@ -171,7 +171,9 @@ bridge \- show / manipulate bridge addresses and devices
  .B mcast_startup_query_count
--.IR STARTUP_QUERY_COUNT " ]"
-+.IR STARTUP_QUERY_COUNT " ] [ "
-+.B mcast_membership_interval
-+.IR MEMBERSHIP_INTERVAL " ]"
+ .IR STARTUP_QUERY_COUNT " ] [ "
+ .B mcast_membership_interval
+-.IR MEMBERSHIP_INTERVAL " ]"
++.IR MEMBERSHIP_INTERVAL " ] [ "
++.B mcast_querier_interval
++.IR QUERIER_INTERVAL " ]"
  
  .ti -8
  .BR "bridge vlan global" " [ " show " ] [ "
-@@ -964,6 +966,11 @@ after a "leave" message is received.
- .BI mcast_startup_query_count " STARTUP_QUERY_COUNT "
- set the number of queries to send during startup phase. Default is 2.
+@@ -971,6 +973,14 @@ set the number of queries to send during startup phase. Default is 2.
+ delay after which the bridge will leave a group,
+ if no membership reports for this group are received.
  
 +.TP
-+.BI mcast_membership_interval " MEMBERSHIP_INTERVAL "
-+delay after which the bridge will leave a group,
-+if no membership reports for this group are received.
++.BI mcast_querier_interval " QUERIER_INTERVAL "
++interval between queries sent by other routers. If no queries are seen
++after this delay has passed, the bridge will start to send its own queries
++(as if
++.BI mcast_querier
++was enabled).
 +
  .SS bridge vlan global show - list global vlan options.
  
