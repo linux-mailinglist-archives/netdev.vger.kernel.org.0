@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EDCB33F909A
-	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 01:00:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 426BE3F909B
+	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 01:00:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243747AbhHZWTC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 18:19:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59230 "EHLO mail.kernel.org"
+        id S243758AbhHZWTI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 18:19:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59252 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243733AbhHZWTB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 26 Aug 2021 18:19:01 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 78F1360FE7;
+        id S243740AbhHZWTC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Aug 2021 18:19:02 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E971360FDC;
         Thu, 26 Aug 2021 22:18:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1630016293;
-        bh=gENWGUiHHk55X47jo5NYPEZkCzpOeQham4eDl9xtzVg=;
+        s=k20201202; t=1630016294;
+        bh=BXDBQ5Xmh0h89MtDRS1zimlogZqjs2z3uEhtQOOZQf8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RdYgsTHb/1EtCVFfS2CKOSQqkD3SBy27xhlxEVRe3Db0qcPSYi3jYbGbMVEEoAk1C
-         jJVybZUOyDDKKGjszZOC7ViOxsToFwMo++B4TblRzE69UHAueDk0qElEdnqj3r65Iq
-         zyikVYeoAEboTrrGJ2SvdfcRYmeD2N0uPs6YDoFiQOPDVDEOiDuCNsubcG/sZx047l
-         75iSJmQv9KBgQ2cl133W5kg0QaSRTIujpPBWKqKCoXmsO6Vvlmd26WQzJmMANgLSps
-         thuKPTTRxuLZPkiyfvE0cO63igNEfdOXhJ3R9MXbW2grp0vUlRXpp+HgnDFY8ZKMyR
-         Y0bN0wIrbsRMw==
+        b=jOjZGaCiqrwAS+R+74Trb0JZqcqqbv/ZdyM0ML/DsfmUt73u57UmBkBwCq3ekruEd
+         Et9+O0bM9epiv74s55EvEe5+7D3Gd6U3dS3PcSz1G+LKSEs0UH3rlq8vzGsj6dA05I
+         gX+oJaKLYldbisPPw7BxhqVNgH6N2Elt0KmYTzMm8c+udVFu0YczG0PrCVNPnm8ma1
+         DLuPUOjZjdKGx1AKQMlCV4wFVtVr7ajsTreVILy0Stf1diCHyXR7IgLoopJsGbPD09
+         TEAa8jpVgau3t/4gebRHf/soRJH6X5rfZMti4hNC17vbyQH0t5iDup8aJZZmMhIHl/
+         q5a5fnE6l5SnQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Roi Dayan <roid@nvidia.com>,
-        Paul Blakey <paulb@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 3/6] net/mlx5e: Fix possible use-after-free deleting fdb rule
-Date:   Thu, 26 Aug 2021 15:18:07 -0700
-Message-Id: <20210826221810.215968-4-saeed@kernel.org>
+Cc:     netdev@vger.kernel.org, Maor Dickman <maord@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net 4/6] net/mlx5: E-Switch, Set vhca id valid flag when creating indir fwd group
+Date:   Thu, 26 Aug 2021 15:18:08 -0700
+Message-Id: <20210826221810.215968-5-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210826221810.215968-1-saeed@kernel.org>
 References: <20210826221810.215968-1-saeed@kernel.org>
@@ -41,43 +40,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Roi Dayan <roid@nvidia.com>
+From: Maor Dickman <maord@nvidia.com>
 
-After neigh-update-add failure we are still with a slow path rule but
-the driver always assume the rule is an fdb rule.
-Fix neigh-update-del by checking slow path tc flag on the flow.
-Also fix neigh-update-add for when neigh-update-del fails the same.
+When indirect forward group is created, flow is added with vhca id but
+without setting vhca id valid flag which violates the PRM.
 
-Fixes: 5dbe906ff1d5 ("net/mlx5e: Use a slow path rule instead if vxlan neighbour isn't available")
-Signed-off-by: Roi Dayan <roid@nvidia.com>
-Reviewed-by: Paul Blakey <paulb@nvidia.com>
+Fix by setting the missing flag, vhca id valid.
+
+Fixes: 34ca65352ddf ("net/mlx5: E-Switch, Indirect table infrastructure")
+Signed-off-by: Maor Dickman <maord@nvidia.com>
+Reviewed-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/esw/indir_table.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
-index 2e846b741280..1c44c6c345f5 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
-@@ -147,7 +147,7 @@ void mlx5e_tc_encap_flows_add(struct mlx5e_priv *priv,
- 	mlx5e_rep_queue_neigh_stats_work(priv);
- 
- 	list_for_each_entry(flow, flow_list, tmp_list) {
--		if (!mlx5e_is_offloaded_flow(flow))
-+		if (!mlx5e_is_offloaded_flow(flow) || !flow_flag_test(flow, SLOW))
- 			continue;
- 		attr = flow->attr;
- 		esw_attr = attr->esw_attr;
-@@ -188,7 +188,7 @@ void mlx5e_tc_encap_flows_del(struct mlx5e_priv *priv,
- 	int err;
- 
- 	list_for_each_entry(flow, flow_list, tmp_list) {
--		if (!mlx5e_is_offloaded_flow(flow))
-+		if (!mlx5e_is_offloaded_flow(flow) || flow_flag_test(flow, SLOW))
- 			continue;
- 		attr = flow->attr;
- 		esw_attr = attr->esw_attr;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/indir_table.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/indir_table.c
+index 3da7becc1069..425c91814b34 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/esw/indir_table.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/indir_table.c
+@@ -364,6 +364,7 @@ static int mlx5_create_indir_fwd_group(struct mlx5_eswitch *esw,
+ 	dest.type = MLX5_FLOW_DESTINATION_TYPE_VPORT;
+ 	dest.vport.num = e->vport;
+ 	dest.vport.vhca_id = MLX5_CAP_GEN(esw->dev, vhca_id);
++	dest.vport.flags = MLX5_FLOW_DEST_VPORT_VHCA_ID;
+ 	e->fwd_rule = mlx5_add_flow_rules(e->ft, spec, &flow_act, &dest, 1);
+ 	if (IS_ERR(e->fwd_rule)) {
+ 		mlx5_destroy_flow_group(e->fwd_grp);
 -- 
 2.31.1
 
