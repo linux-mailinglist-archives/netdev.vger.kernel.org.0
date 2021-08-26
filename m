@@ -2,97 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CFD53F8E46
-	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 20:55:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 944043F8E57
+	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 20:58:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243449AbhHZSzs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 14:55:48 -0400
-Received: from mxout04.lancloud.ru ([45.84.86.114]:47268 "EHLO
-        mxout04.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243300AbhHZSzr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 14:55:47 -0400
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout04.lancloud.ru 0C5DA208AB6E
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-Subject: Re: [PATCH net-next 06/13] ravb: Factorise ravb_ring_format function
-To:     Biju Das <biju.das.jz@bp.renesas.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        "Geert Uytterhoeven" <geert+renesas@glider.be>,
-        Adam Ford <aford173@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>
-References: <20210825070154.14336-1-biju.das.jz@bp.renesas.com>
- <20210825070154.14336-7-biju.das.jz@bp.renesas.com>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <2ba347ab-ff1a-68c3-a577-2ce1b4a35392@omp.ru>
-Date:   Thu, 26 Aug 2021 21:54:52 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        id S243494AbhHZS7Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 14:59:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37818 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243488AbhHZS7X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 14:59:23 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4684FC0613CF;
+        Thu, 26 Aug 2021 11:58:35 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id g138so2405674wmg.4;
+        Thu, 26 Aug 2021 11:58:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=A+DG0W5+2eklf4TtXNvnExlRa/zaKSRLzk5O/0U5K0w=;
+        b=NhIehY5x0I1crqrN8X/OvkFkmhiGAEGNPVzzb1TTCJsZpj/NCdbuz4dtjGwo7BFF0U
+         01ogskY0N4lf5MraG/rPsWF6o81Iujt9KOiYkFTVFlgTnp9ifMUa1hA4/c88NxwLfmn/
+         W2bW7L6xgV9ojPXzbLvHSXEXZU/pPJrAtQmpU41pYRauvIQWxmyzM1rYHqWNUKLnA6fp
+         0oXHCMjL9bpWEujJ1R0fiv/ZI97YtJw5xPZ/gkLrL+HWmdJzJ7iLJWBSX7vxkbY/0cjP
+         UPrmiktgPwz4/ZXRsje/jcCAs/NmXNMfYQ0O/9jZ53ASQZMcHSvq9i3ZjeznqdexJEkx
+         2nsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=A+DG0W5+2eklf4TtXNvnExlRa/zaKSRLzk5O/0U5K0w=;
+        b=ntxjUS//jsX2GlJA6Y/T3yZfcTgxULDV6kcG2n13OzpiuBckcKV9NT1+AmntroV0Uo
+         74w2vuZEesYXP8tCoPsZfYhn1Ae6aC8nLaJoY97J3MamrHbsZ1A4cr3IMEvtlNVW5ubh
+         UF7yiFIoT1cOkHkU1pxcJVXnK2/6gEYVg92MJNj654nOK6y8KZLbFo8mnspdzkIwdoM0
+         8YGX5pxiZ+ueodVTjKAMpELL8k9At4/sOwdgvlps336AVdUyUO4rWU9nND1KtXuPRnAd
+         QYJ04DQ2VBisI2J6XoYc6hUi0Q8EZeiORE4m7doSOvqHNAlyxy2qTtKnfQf1vGzHHIdU
+         VgVw==
+X-Gm-Message-State: AOAM5338H4q/hMfsGR9YaxbIpBc4/v+ZOR1Oy1oGMbO1BYtHbztyzBhA
+        2+e+IFg1kkJ5awtzbk1YqmVHoLx9Y3HeNQ==
+X-Google-Smtp-Source: ABdhPJyzhanBtGemLIKksbfa5mBbVLTxY1yOPby8E/bgSyo4RyYV8xu0zGQ5ruG7kD9PVI7DLA6+Jw==
+X-Received: by 2002:a7b:c927:: with SMTP id h7mr5124646wml.154.1630004313599;
+        Thu, 26 Aug 2021 11:58:33 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f08:4500:b5d8:a3dc:f88f:cae2? (p200300ea8f084500b5d8a3dcf88fcae2.dip0.t-ipconnect.de. [2003:ea:8f08:4500:b5d8:a3dc:f88f:cae2])
+        by smtp.googlemail.com with ESMTPSA id b15sm4506476wru.1.2021.08.26.11.58.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 26 Aug 2021 11:58:33 -0700 (PDT)
+Subject: [PATCH 5/7] cxgb4: Use pci_vpd_find_id_string() to find VPD id string
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Raju Rangoju <rajur@chelsio.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>
+Cc:     "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <5fa6578d-1515-20d3-be5f-9e7dc7db4424@gmail.com>
+Message-ID: <19ea2e9b-6e94-288a-6612-88db01b1b417@gmail.com>
+Date:   Thu, 26 Aug 2021 20:56:22 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-In-Reply-To: <20210825070154.14336-7-biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <5fa6578d-1515-20d3-be5f-9e7dc7db4424@gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
- LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/25/21 10:01 AM, Biju Das wrote:
+Use new VPD API function pci_vpd_find_id_string() for finding the VPD
+id string. This simplifies the code and avoids using VPD low-level
+function pci_vpd_lrdt_size().
 
-> The ravb_ring_format function uses an extended descriptor in RX
-> for R-Car compared to the normal descriptor for RZ/G2L. Factorise
-> RX ring buffer buildup to extend the support for later SoC.
-> 
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-[...]
-> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-> index dc388a32496a..e52e36ccd1c6 100644
-> --- a/drivers/net/ethernet/renesas/ravb_main.c
-> +++ b/drivers/net/ethernet/renesas/ravb_main.c
-[...]
-> @@ -321,6 +310,26 @@ static void ravb_ring_format(struct net_device *ndev, int q)
->  	rx_desc = &priv->rx_ring[q][i];
->  	rx_desc->dptr = cpu_to_le32((u32)priv->rx_desc_dma[q]);
->  	rx_desc->die_dt = DT_LINKFIX; /* type */
-> +}
-> +
-> +/* Format skb and descriptor buffer for Ethernet AVB */
-> +static void ravb_ring_format(struct net_device *ndev, int q)
-> +{
-> +	struct ravb_private *priv = netdev_priv(ndev);
-> +	const struct ravb_hw_info *info = priv->info;
-> +	unsigned int num_tx_desc = priv->num_tx_desc;
-> +	struct ravb_tx_desc *tx_desc;
-> +	struct ravb_desc *desc;
-> +	unsigned int tx_ring_size = sizeof(*tx_desc) * priv->num_tx_ring[q] *
-> +				    num_tx_desc;
-> +	unsigned int i;
-> +
-> +	priv->cur_rx[q] = 0;
-> +	priv->cur_tx[q] = 0;
-> +	priv->dirty_rx[q] = 0;
-> +	priv->dirty_tx[q] = 0;
-> +
-> +	info->rx_ring_format(ndev, q);
->  
->  	memset(priv->tx_ring[q], 0, tx_ring_size);
->  	/* Build TX ring buffer */
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/ethernet/chelsio/cxgb4/t4_hw.c | 13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
 
-   That's all fine but the fragment that sets up TX descriptor ring base address was left in ravb_rx_ring_formet()...
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
+index 5e8ac42ac..64144b617 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
+@@ -2744,7 +2744,7 @@ int t4_seeprom_wp(struct adapter *adapter, bool enable)
+ int t4_get_raw_vpd_params(struct adapter *adapter, struct vpd_params *p)
+ {
+ 	unsigned int id_len, pn_len, sn_len, na_len;
+-	int sn, pn, na, addr, ret = 0;
++	int id, sn, pn, na, addr, ret = 0;
+ 	u8 *vpd, base_val = 0;
+ 
+ 	vpd = vmalloc(VPD_LEN);
+@@ -2764,13 +2764,10 @@ int t4_get_raw_vpd_params(struct adapter *adapter, struct vpd_params *p)
+ 	if (ret < 0)
+ 		goto out;
+ 
+-	if (vpd[0] != PCI_VPD_LRDT_ID_STRING) {
+-		dev_err(adapter->pdev_dev, "missing VPD ID string\n");
+-		ret = -EINVAL;
++	ret = pci_vpd_find_id_string(vpd, VPD_LEN, &id_len);
++	if (ret < 0)
+ 		goto out;
+-	}
+-
+-	id_len = pci_vpd_lrdt_size(vpd);
++	id = ret;
+ 
+ 	ret = pci_vpd_check_csum(vpd, VPD_LEN);
+ 	if (ret) {
+@@ -2796,7 +2793,7 @@ int t4_get_raw_vpd_params(struct adapter *adapter, struct vpd_params *p)
+ 		goto out;
+ 	na = ret;
+ 
+-	memcpy(p->id, vpd + PCI_VPD_LRDT_TAG_SIZE, min_t(int, id_len, ID_LEN));
++	memcpy(p->id, vpd + id, min_t(int, id_len, ID_LEN));
+ 	strim(p->id);
+ 	memcpy(p->sn, vpd + sn, min_t(int, sn_len, SERNUM_LEN));
+ 	strim(p->sn);
+-- 
+2.33.0
 
-[...]
 
-MBR, Sergey
