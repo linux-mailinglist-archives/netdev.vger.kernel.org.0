@@ -2,71 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 835EA3F83C3
-	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 10:31:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA2F93F83DD
+	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 10:40:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240498AbhHZIbv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 04:31:51 -0400
-Received: from mx433.baidu.com ([119.249.100.169]:26219 "EHLO mx423.baidu.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S236028AbhHZIbv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 26 Aug 2021 04:31:51 -0400
-X-Greylist: delayed 566 seconds by postgrey-1.27 at vger.kernel.org; Thu, 26 Aug 2021 04:31:50 EDT
-Received: from bjhw-sys-rpm015653cc5.bjhw.baidu.com (bjhw-sys-rpm015653cc5.bjhw.baidu.com [10.227.53.39])
-        by mx423.baidu.com (Postfix) with ESMTP id 575F216E0100E;
-        Thu, 26 Aug 2021 16:21:35 +0800 (CST)
-Received: from localhost (localhost [127.0.0.1])
-        by bjhw-sys-rpm015653cc5.bjhw.baidu.com (Postfix) with ESMTP id 4E9C1D9932;
-        Thu, 26 Aug 2021 16:21:35 +0800 (CST)
-From:   Li RongQing <lirongqing@baidu.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        virtualization@lists.linux-foundation.org
-Subject: [PATCH] virtio_net: reduce raw_smp_processor_id() calling in virtnet_xdp_get_sq
-Date:   Thu, 26 Aug 2021 16:21:35 +0800
-Message-Id: <1629966095-16341-1-git-send-email-lirongqing@baidu.com>
-X-Mailer: git-send-email 1.7.1
+        id S240560AbhHZIky (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 04:40:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47354 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229652AbhHZIkx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Aug 2021 04:40:53 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id AC8576103A;
+        Thu, 26 Aug 2021 08:40:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1629967206;
+        bh=l4DOtfW8WE92nEO04GuUSBNgGVf0wzpGNjg9AArKnkE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=EEfD35ddLrrVxfjVuMu2X+sbMYvTdo6xYgCQindmGGRCRa6JdeQptY7azEmgehj3x
+         oLbuNQQtJ71Yh+9p16c1XBX/fcqrz4lpl0tL/S5kC5B6IhGdDguccP5cjKHlrYGcBZ
+         zJ8l6vQ/FkkcBRzdmAEfnMuaKysNQayILQkNr6X2FVjICbheARgnXe2BpUXVsOgvux
+         IyFW8RFLtm3Iobk5Cyzc6aIivPCVYDEU+fS9jmums0eDpCgtdw9SRdoNbrc0VKZdRU
+         AFF6Fu/fswfyrRq9sxm2e/YBLF76O7+l2Uz+HIK1roHWZTrz1JaT19cVWk4ONpdI9M
+         EHm9GVWGNzl2Q==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A07D260A14;
+        Thu, 26 Aug 2021 08:40:06 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 1/6] nfc: microread: remove unused header includes
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162996720665.19943.14666053219399203179.git-patchwork-notify@kernel.org>
+Date:   Thu, 26 Aug 2021 08:40:06 +0000
+References: <20210825142459.226168-1-krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20210825142459.226168-1-krzysztof.kozlowski@canonical.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-nfc@lists.01.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-smp_processor_id()/raw* will be called once each when not
-more queues in virtnet_xdp_get_sq() which is called in
-non-preemptible context, so it's safe to call the function
-smp_processor_id() once.
+Hello:
 
-Signed-off-by: Li RongQing <lirongqing@baidu.com>
----
- drivers/net/virtio_net.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 2e42210a6503..2a7b368c1da2 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -528,19 +528,20 @@ static int __virtnet_xdp_xmit_one(struct virtnet_info *vi,
-  * functions to perfectly solve these three problems at the same time.
-  */
- #define virtnet_xdp_get_sq(vi) ({                                       \
-+	int cpu = smp_processor_id();                                   \
- 	struct netdev_queue *txq;                                       \
- 	typeof(vi) v = (vi);                                            \
- 	unsigned int qp;                                                \
- 									\
- 	if (v->curr_queue_pairs > nr_cpu_ids) {                         \
- 		qp = v->curr_queue_pairs - v->xdp_queue_pairs;          \
--		qp += smp_processor_id();                               \
-+		qp += cpu;                                              \
- 		txq = netdev_get_tx_queue(v->dev, qp);                  \
- 		__netif_tx_acquire(txq);                                \
- 	} else {                                                        \
--		qp = smp_processor_id() % v->curr_queue_pairs;          \
-+		qp = cpu % v->curr_queue_pairs;                         \
- 		txq = netdev_get_tx_queue(v->dev, qp);                  \
--		__netif_tx_lock(txq, raw_smp_processor_id());           \
-+		__netif_tx_lock(txq, cpu);                              \
- 	}                                                               \
- 	v->sq + qp;                                                     \
- })
--- 
-2.33.0.69.gc420321.dirty
+On Wed, 25 Aug 2021 16:24:54 +0200 you wrote:
+> Do not include unnecessary headers.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> ---
+>  drivers/nfc/microread/mei.c       | 1 -
+>  drivers/nfc/microread/microread.c | 1 -
+>  2 files changed, 2 deletions(-)
+
+Here is the summary with links:
+  - [1/6] nfc: microread: remove unused header includes
+    https://git.kernel.org/netdev/net-next/c/ffb239e29518
+  - [2/6] nfc: mrvl: remove unused header includes
+    https://git.kernel.org/netdev/net-next/c/d8eb4eb0ef1d
+  - [3/6] nfc: pn544: remove unused header includes
+    https://git.kernel.org/netdev/net-next/c/9b3f66bc0eca
+  - [4/6] nfc: st-nci: remove unused header includes
+    https://git.kernel.org/netdev/net-next/c/2603ca872040
+  - [5/6] nfc: st21nfca: remove unused header includes
+    https://git.kernel.org/netdev/net-next/c/994a63434133
+  - [6/6] nfc: st95hf: remove unused header includes
+    https://git.kernel.org/netdev/net-next/c/7fe2f1bc15be
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
