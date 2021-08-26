@@ -2,88 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F25013F8E37
-	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 20:53:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CFD53F8E46
+	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 20:55:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243319AbhHZSxe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 14:53:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36424 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243350AbhHZSxd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 14:53:33 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D07FC061757;
-        Thu, 26 Aug 2021 11:52:45 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id g135so2385998wme.5;
-        Thu, 26 Aug 2021 11:52:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=nhTcmbI7mRHDQlXLUbdU7oSZOkATHD42lq4wKqjaJs4=;
-        b=cNLHcdGZdQe3JZnNy8yr3yC7jg+I+4RssX8j6e6bhzPE5Endi0H5nru+Xx9Eiz5/+y
-         qoQ//Gn6egXSeKQx2bcttXidzr5DTi5Wt1l5owENISuSz8RCVuUgreBK1nxFqnR/JnRy
-         tRkVfI2hCZO+zZDWL2dfqeMCiXmLn7AeCob4Nu1j+FMLckBmduGfFFllIGCTkGPpBzEe
-         NIFNzP4QPOfCeRfVt+VmqeCCSSzLcxUaNQJxV0gYj56ActazE051ILx3NnKPun2LX+xn
-         qGn3gq63yxMU4F5vuzlK52W+OhFUcGYUOO9eSylbtL2RtD+vml1n/6GkkJIGWYNN0rPz
-         ClhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=nhTcmbI7mRHDQlXLUbdU7oSZOkATHD42lq4wKqjaJs4=;
-        b=skq2dQb8Bz7YKfW/nq77N6yHoVxs2G+J/1uhQhGRSDC5WNST7KObUR0jOjuhBoU2To
-         miEngnDKaRzzxRZZxPb98Xfc48bX2VutkiKhO/yy/yYj9PbNvFiHu50UDHjFlwj+75lk
-         sRRbhNTe1bq1qCMIC9Ry+huZM5SnOaFwaSwRFEJRj6LTS2iXB0hukGd3kTFeykZ/CbxO
-         KYBp6pC4j5q9E/WS+076rh2vsRLk2R9GP3JPFRzpYETvGtgF65SdKZXGTH5t9eMv9OI5
-         uTBzB8smRfMgXdmuqiLWV8k2ccqANA7gso20kAV2dkiD5FDuGIqRojOP3C7OxQZ6vUG6
-         mHkw==
-X-Gm-Message-State: AOAM532OYLt1aiCiDKkHNzyXAe10Ft/5Y2c6RJAFjeixwv+UNvhSYwxg
-        nHiEAJxMkgFFH5ZjfyrC0VRrBUuf0/T+/A==
-X-Google-Smtp-Source: ABdhPJzDs78+UYJHa/kCufATtkr/hl2yoBvnzoJHQoGWEmxtyDSt3CADxh/6/rtsvrlY/WBC6Tj8TQ==
-X-Received: by 2002:a1c:f314:: with SMTP id q20mr15995961wmq.154.1630003963573;
-        Thu, 26 Aug 2021 11:52:43 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f08:4500:b5d8:a3dc:f88f:cae2? (p200300ea8f084500b5d8a3dcf88fcae2.dip0.t-ipconnect.de. [2003:ea:8f08:4500:b5d8:a3dc:f88f:cae2])
-        by smtp.googlemail.com with ESMTPSA id k14sm3886409wri.46.2021.08.26.11.52.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 26 Aug 2021 11:52:43 -0700 (PDT)
-To:     Raju Rangoju <rajur@chelsio.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>
-Cc:     "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH 0/7] PCI/VPD: Final extensions and cleanups
-Message-ID: <5fa6578d-1515-20d3-be5f-9e7dc7db4424@gmail.com>
-Date:   Thu, 26 Aug 2021 20:52:32 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S243449AbhHZSzs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 14:55:48 -0400
+Received: from mxout04.lancloud.ru ([45.84.86.114]:47268 "EHLO
+        mxout04.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243300AbhHZSzr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 14:55:47 -0400
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout04.lancloud.ru 0C5DA208AB6E
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [PATCH net-next 06/13] ravb: Factorise ravb_ring_format function
+To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        "Geert Uytterhoeven" <geert+renesas@glider.be>,
+        Adam Ford <aford173@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>
+References: <20210825070154.14336-1-biju.das.jz@bp.renesas.com>
+ <20210825070154.14336-7-biju.das.jz@bp.renesas.com>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <2ba347ab-ff1a-68c3-a577-2ce1b4a35392@omp.ru>
+Date:   Thu, 26 Aug 2021 21:54:52 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20210825070154.14336-7-biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series finalizes the VPD extensions and cleanups.
-It should be applied via the PCI tree.
+On 8/25/21 10:01 AM, Biju Das wrote:
 
-Heiner Kallweit (7):
-  PCI/VPD: Stop exporting pci_vpd_find_tag()
-  PCI/VPD: Stop exporting pci_vpd_find_info_keyword()
-  PCI/VPD: Include post-processing in pci_vpd_find_tag()
-  PCI/VPD: Add pci_vpd_find_id_string()
-  cxgb4: Use pci_vpd_find_id_string() to find VPD id string
-  PCI/VPD: Clean up public VPD defines and inline functions
-  PCI/VPD: Use unaligned access helpers
+> The ravb_ring_format function uses an extended descriptor in RX
+> for R-Car compared to the normal descriptor for RZ/G2L. Factorise
+> RX ring buffer buildup to extend the support for later SoC.
+> 
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+[...]
+> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+> index dc388a32496a..e52e36ccd1c6 100644
+> --- a/drivers/net/ethernet/renesas/ravb_main.c
+> +++ b/drivers/net/ethernet/renesas/ravb_main.c
+[...]
+> @@ -321,6 +310,26 @@ static void ravb_ring_format(struct net_device *ndev, int q)
+>  	rx_desc = &priv->rx_ring[q][i];
+>  	rx_desc->dptr = cpu_to_le32((u32)priv->rx_desc_dma[q]);
+>  	rx_desc->die_dt = DT_LINKFIX; /* type */
+> +}
+> +
+> +/* Format skb and descriptor buffer for Ethernet AVB */
+> +static void ravb_ring_format(struct net_device *ndev, int q)
+> +{
+> +	struct ravb_private *priv = netdev_priv(ndev);
+> +	const struct ravb_hw_info *info = priv->info;
+> +	unsigned int num_tx_desc = priv->num_tx_desc;
+> +	struct ravb_tx_desc *tx_desc;
+> +	struct ravb_desc *desc;
+> +	unsigned int tx_ring_size = sizeof(*tx_desc) * priv->num_tx_ring[q] *
+> +				    num_tx_desc;
+> +	unsigned int i;
+> +
+> +	priv->cur_rx[q] = 0;
+> +	priv->cur_tx[q] = 0;
+> +	priv->dirty_rx[q] = 0;
+> +	priv->dirty_tx[q] = 0;
+> +
+> +	info->rx_ring_format(ndev, q);
+>  
+>  	memset(priv->tx_ring[q], 0, tx_ring_size);
+>  	/* Build TX ring buffer */
 
- drivers/net/ethernet/chelsio/cxgb4/t4_hw.c | 13 ++-
- drivers/pci/vpd.c                          | 71 +++++++++++-----
- include/linux/pci.h                        | 95 ++--------------------
- 3 files changed, 61 insertions(+), 118 deletions(-)
+   That's all fine but the fragment that sets up TX descriptor ring base address was left in ravb_rx_ring_formet()...
 
--- 
-2.33.0
+[...]
 
+MBR, Sergey
