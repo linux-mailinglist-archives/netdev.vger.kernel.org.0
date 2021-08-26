@@ -2,396 +2,372 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E97D3F89A0
-	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 16:02:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 097973F89B6
+	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 16:05:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242822AbhHZODN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 10:03:13 -0400
-Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:39641 "EHLO
-        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229793AbhHZODJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 10:03:09 -0400
-Received: from localhost.localdomain (148.24-240-81.adsl-dyn.isp.belgacom.be [81.240.24.148])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id A9334200C25B;
-        Thu, 26 Aug 2021 16:02:17 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be A9334200C25B
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
-        s=ulg20190529; t=1629986537;
-        bh=tVHOUYKC6Bqb16kik+Pl3YtqCENndJJ03Hj5Zk6Om+I=;
-        h=From:To:Cc:Subject:Date:From;
-        b=opxpfxKctbIlI47poy0bwmrkaiiIuPhSEFrncu2fS5A64yBM+JJuq7s6pGqPB3I3I
-         6meOcpoXdxthMEuuGT+RDF+Bg/K2WqHap7ChWii89icTVS3o8RtYRTZS69ubzKxwWg
-         OiMjBrRdBD66Y9LpTH1YwtHOmxTwHHqEIPqzxdk6Bp3zya8S2now4nHX+Co+Xs6oAb
-         TIjTa8EA38B5RG6rwogyxrlXZqSXw5nVFwWDLfvVXv4W7q6QsuCvF8DDIuesnqcPpJ
-         079yxRxLwjL63QtTNgqF9Yba2OYDaX6vVFx87CiScHGximIr25gwbtHDl9pNUMWkRT
-         eekVHvl/dAScA==
-From:   Justin Iurman <justin.iurman@uliege.be>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, tom@herbertland.com, edumazet@google.com,
-        justin.iurman@uliege.be
-Subject: [RFC net-next] ipv6: Support for anonymous tunnel decapsulation
-Date:   Thu, 26 Aug 2021 16:01:50 +0200
-Message-Id: <20210826140150.19920-1-justin.iurman@uliege.be>
-X-Mailer: git-send-email 2.25.1
+        id S242811AbhHZOGT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 10:06:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54596 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242803AbhHZOGR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 10:06:17 -0400
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A19ADC0613C1;
+        Thu, 26 Aug 2021 07:05:29 -0700 (PDT)
+Received: by mail-oi1-x22e.google.com with SMTP id r26so4999633oij.2;
+        Thu, 26 Aug 2021 07:05:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mFI6g9juc0kBnIDemV7lQ2adsjifo5ttPrJfgHBwY/4=;
+        b=CEwiFq1Y3hA/QNNa+AKsCqfRFQyUImhYuADjDk9CHgUEKfukwvzr0C/EL2u3FEvRlq
+         ICosjARFLY2NSnDDvcWxKiA6NwyPFe1IrUwauDUhsLCHNu4rFChuxULWgw+vzFOUCLXD
+         K+mH0CZ1pw0Z0ZhsBlo9knkjhf/h67FXTVcgk1HgtKv/YVEwV0761ly8cU/H0/I6LuqV
+         FQ5KYp3z0R5MVwsKcyLQ0BkZ9eHZAVXdPW2Xgu5cvRsW6ge0CoNFOlbY2r5qMlKBDRg4
+         BQ1ztAABzF3c9Q3MAqo1nmZkaTe/xbcE35i26Fz94vOGsbbKCXH96/J1ZCagvElVO5jk
+         gp4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mFI6g9juc0kBnIDemV7lQ2adsjifo5ttPrJfgHBwY/4=;
+        b=jnVhHglIzHPggzBOTVgAFy71Ij71zXYikOD9j8Ofayu7xbY6fsnOsC7s8SKJWRFSvq
+         tyf0q6+gHKmsUJZhkICF/k1yBim0RTAoitdMM+PMkOcbagYUxUk8Iycz9QWsYPPQYTiB
+         PM1lhSdMA6jrDRlw+R/7aZvsDpvf8P00E7uYURv7Lnw9mgCPoyBKnodr/mnVZsQIcWiL
+         ftmqlFd4wlGGwozsbPZx/UEv64z8JITbB0WJ9fMSxL8XgcDIZQE4PZpzutf9b28JjdLa
+         k5YKQO7ZZHnu+0INfBXfoHisiru73Qao0fFdffxS6dFrvsnSwNs+fhyr8UXPh6J3iBhj
+         COBA==
+X-Gm-Message-State: AOAM532r7WGE7Dx4Kt5Kcsyl0eSCZFINpR2Azu3l2PCPtRGFy0K/Fop4
+        oatKFlhbEy+Mm4eTDVYcKdGs99mtK6Fhd68PLIE=
+X-Google-Smtp-Source: ABdhPJwTbhHgqTom3MhN0DTcJCapRPfMYmj3RfFsie1JUHe65ba7hVxSF9BMnHyJI4N2QyKYFqC3H5F8/WCefkqDEwo=
+X-Received: by 2002:aca:c2c6:: with SMTP id s189mr10993033oif.123.1629986728756;
+ Thu, 26 Aug 2021 07:05:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAL+tcoCrOc1L+Y_SeScYJXjn542GYvu9n7EMhN_75h-P4FQFoQ@mail.gmail.com>
+ <20210826140101.7944-1-kerneljasonxing@gmail.com>
+In-Reply-To: <20210826140101.7944-1-kerneljasonxing@gmail.com>
+From:   Jason Xing <kerneljasonxing@gmail.com>
+Date:   Thu, 26 Aug 2021 22:04:52 +0800
+Message-ID: <CAL+tcoBgb18JwqFTTva0eWBEM2U38222OCbdKQxFmLOpiAm+eA@mail.gmail.com>
+Subject: Re: [PATCH v3] ixgbe: let the xdpdrv work with more than 64 cpus
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        David Miller <davem@davemloft.net>, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
+        john.fastabend@gmail.com, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org
+Cc:     intel-wired-lan@lists.osuosl.org, netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf@vger.kernel.org,
+        Jason Xing <xingwanli@kuaishou.com>,
+        Shujin Li <lishujin@kuaishou.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Nowadays, there are more and more private domains where a lot of ingresses and
-egresses must be linked altogether. Configuring each possible tunnel explicitly
-could quickly become a nightmare in such use case. Therefore, introducing
-support for ip6ip6 decapsulation without an explicit tunnel configuration looks
-like the best solution (e.g., for IOAM). For now, this patch only adds support
-for ip6ip6 decap, but ip6ip4 could probably be added too if needed.
+On Thu, Aug 26, 2021 at 10:01 PM <kerneljasonxing@gmail.com> wrote:
+>
+> From: Jason Xing <xingwanli@kuaishou.com>
+>
+> Originally, ixgbe driver doesn't allow the mounting of xdpdrv if the
+> server is equipped with more than 64 cpus online. So it turns out that
+> the loading of xdpdrv causes the "NOMEM" failure.
+>
+> Actually, we can adjust the algorithm and then make it work, which has
+> no harm at all, only if we set the maxmium number of xdp queues.
+>
 
-Last year, we had an interesting discussion [1] with Tom about this topic, and
-especially on how such solution could be implemented in a more generic way. Here
-is the summary of the thread.
+Sorry about the wrong v3 patch. I forgot to update the commit message.
+So I'm going to send the v4 patch.
 
-Tom said:
-"This is just IP in IP encapsulation that happens to be terminated at
-an egress node of the IOAM domain. The fact that it's IOAM isn't
-germaine, this IP in IP is done in a variety of ways. We should be
-using the normal protocol handler for NEXTHDR_IPV6  instead of special
-case code."
+Jason
 
-He also said:
-"The current implementation might not be what you're looking for since
-ip6ip6 wants a tunnel configured. What we really want is more like
-anonymous decapsulation, that is just decap the ip6ip6 packet and
-resubmit the packet into the stack (this is what you patch is doing).
-The idea has been kicked around before, especially in the use case
-where we're tunneling across a domain and there could be hundreds of
-such tunnels to some device. I think it's generally okay to do this,
-although someone might raise security concerns since it sort of
-obfuscates the "real packet". Probably makes sense to have a sysctl to
-enable this and probably could default to on. Of course, if we do this
-the next question is should we also implement anonymous decapsulation
-for 44,64,46 tunnels."
-
-Based on the above, here is a generic solution to introduce anonymous tunnels
-for IPv6. We know that the tunnel6 module is, when loaded, already responsible
-for handling IPPROTO_IPV6 from an IPv6 context (= ip6ip6). Therefore, when
-tunnel6 is loaded, it handles ip6ip6 with its tunnel6_rcv handler. Inside the
-handler, we add a check for anonymous tunnel decapsulation and, if enabled,
-perform the decap. When tunnel6 is unloaded, it gives the responsability back to
-tunnel6_anonymous and its own handler. Note that the introduced sysctl to
-enable anonymous decapsulation is equal to 0 (= disabled) by default. Indeed,
-as opposed to what Tom suggested, I think it should be disabled by default in
-order to make sure that users won't have it enabled without knowing it (for
-security reasons, obviously).
-
-Thoughts?
-
-Some feedback would be really appreciated, specifically on these points:
- - Should the anonymous decapsulation happen before (as it is right now) or
-   after tunnel6 handlers? "Before" looks like the most logical solution as,
-   even if you configure a tunnel and enable anonymous decap, the latter will
-   take precedence.
- - Any comments on the choice of the sysctl name ("tunnel66_decap_enabled")?
- - Any comments on the patch in general?
-
-[1] https://lore.kernel.org/netdev/CALx6S374PQ7GGA_ey6wCwc55hUzOx+2kWT=96TzyF0=g=8T=WA@mail.gmail.com
-
-Signed-off-by: Justin Iurman <justin.iurman@uliege.be>
----
- include/linux/ipv6.h            |  1 +
- include/net/tunnel6_anonymous.h | 23 +++++++++
- include/uapi/linux/ipv6.h       |  1 +
- net/ipv6/Makefile               |  3 +-
- net/ipv6/addrconf.c             | 12 +++++
- net/ipv6/af_inet6.c             |  7 +++
- net/ipv6/tunnel6.c              | 16 ++++++-
- net/ipv6/tunnel6_anonymous.c    | 83 +++++++++++++++++++++++++++++++++
- 8 files changed, 143 insertions(+), 3 deletions(-)
- create mode 100644 include/net/tunnel6_anonymous.h
- create mode 100644 net/ipv6/tunnel6_anonymous.c
-
-diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
-index ef4a69865737..119bce49b254 100644
---- a/include/linux/ipv6.h
-+++ b/include/linux/ipv6.h
-@@ -79,6 +79,7 @@ struct ipv6_devconf {
- 	__u32		ioam6_id;
- 	__u32		ioam6_id_wide;
- 	__u8		ioam6_enabled;
-+	__u8		tunnel66_decap_enabled;
- 
- 	struct ctl_table_header *sysctl_header;
- };
-diff --git a/include/net/tunnel6_anonymous.h b/include/net/tunnel6_anonymous.h
-new file mode 100644
-index 000000000000..990a0ca63edf
---- /dev/null
-+++ b/include/net/tunnel6_anonymous.h
-@@ -0,0 +1,23 @@
-+/* SPDX-License-Identifier: GPL-2.0+ */
-+/*
-+ *  Anonymous tunnels for IPv6
-+ *
-+ *  Author:
-+ *  Justin Iurman <justin.iurman@uliege.be>
-+ */
-+
-+#ifndef _NET_TUNNEL6_ANONYMOUS_H
-+#define _NET_TUNNEL6_ANONYMOUS_H
-+
-+#include <linux/skbuff.h>
-+
-+int tunnel6_anonymous_init(void);
-+void tunnel6_anonymous_exit(void);
-+
-+int tunnel6_anonymous_register(void);
-+int tunnel6_anonymous_unregister(void);
-+
-+bool anonymous66_enabled(struct sk_buff *skb);
-+int anonymous66_decap(struct sk_buff *skb);
-+
-+#endif /* _NET_TUNNEL6_ANONYMOUS_H */
-diff --git a/include/uapi/linux/ipv6.h b/include/uapi/linux/ipv6.h
-index b243a53fa985..8b17a26ab661 100644
---- a/include/uapi/linux/ipv6.h
-+++ b/include/uapi/linux/ipv6.h
-@@ -193,6 +193,7 @@ enum {
- 	DEVCONF_IOAM6_ENABLED,
- 	DEVCONF_IOAM6_ID,
- 	DEVCONF_IOAM6_ID_WIDE,
-+	DEVCONF_TUNNEL66_DECAP_ENABLED,
- 	DEVCONF_MAX
- };
- 
-diff --git a/net/ipv6/Makefile b/net/ipv6/Makefile
-index 1bc7e143217b..efeaeced17db 100644
---- a/net/ipv6/Makefile
-+++ b/net/ipv6/Makefile
-@@ -10,7 +10,8 @@ ipv6-objs :=	af_inet6.o anycast.o ip6_output.o ip6_input.o addrconf.o \
- 		route.o ip6_fib.o ipv6_sockglue.o ndisc.o udp.o udplite.o \
- 		raw.o icmp.o mcast.o reassembly.o tcp_ipv6.o ping.o \
- 		exthdrs.o datagram.o ip6_flowlabel.o inet6_connection_sock.o \
--		udp_offload.o seg6.o fib6_notifier.o rpl.o ioam6.o
-+		udp_offload.o seg6.o fib6_notifier.o rpl.o ioam6.o \
-+		tunnel6_anonymous.o
- 
- ipv6-offload :=	ip6_offload.o tcpv6_offload.o exthdrs_offload.o
- 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 8381288a0d6e..22e14f84b12e 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -241,6 +241,7 @@ static struct ipv6_devconf ipv6_devconf __read_mostly = {
- 	.ioam6_enabled		= 0,
- 	.ioam6_id               = IOAM6_DEFAULT_IF_ID,
- 	.ioam6_id_wide		= IOAM6_DEFAULT_IF_ID_WIDE,
-+	.tunnel66_decap_enabled = 0,
- };
- 
- static struct ipv6_devconf ipv6_devconf_dflt __read_mostly = {
-@@ -300,6 +301,7 @@ static struct ipv6_devconf ipv6_devconf_dflt __read_mostly = {
- 	.ioam6_enabled		= 0,
- 	.ioam6_id               = IOAM6_DEFAULT_IF_ID,
- 	.ioam6_id_wide		= IOAM6_DEFAULT_IF_ID_WIDE,
-+	.tunnel66_decap_enabled = 0,
- };
- 
- /* Check if link is ready: is it up and is a valid qdisc available */
-@@ -5532,6 +5534,7 @@ static inline void ipv6_store_devconf(struct ipv6_devconf *cnf,
- 	array[DEVCONF_IOAM6_ENABLED] = cnf->ioam6_enabled;
- 	array[DEVCONF_IOAM6_ID] = cnf->ioam6_id;
- 	array[DEVCONF_IOAM6_ID_WIDE] = cnf->ioam6_id_wide;
-+	array[DEVCONF_TUNNEL66_DECAP_ENABLED] = cnf->tunnel66_decap_enabled;
- }
- 
- static inline size_t inet6_ifla6_size(void)
-@@ -6965,6 +6968,15 @@ static const struct ctl_table addrconf_sysctl[] = {
- 		.mode		= 0644,
- 		.proc_handler	= proc_douintvec,
- 	},
-+	{
-+		.procname	= "tunnel66_decap_enabled",
-+		.data		= &ipv6_devconf.tunnel66_decap_enabled,
-+		.maxlen	= sizeof(u8),
-+		.mode		= 0644,
-+		.proc_handler	= proc_dou8vec_minmax,
-+		.extra1	= (void *)SYSCTL_ZERO,
-+		.extra2	= (void *)SYSCTL_ONE,
-+	},
- 	{
- 		/* sentinel */
- 	}
-diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
-index d92c90d97763..abb2e504b15e 100644
---- a/net/ipv6/af_inet6.c
-+++ b/net/ipv6/af_inet6.c
-@@ -63,6 +63,7 @@
- #include <net/compat.h>
- #include <net/xfrm.h>
- #include <net/ioam6.h>
-+#include <net/tunnel6_anonymous.h>
- 
- #include <linux/uaccess.h>
- #include <linux/mroute6.h>
-@@ -1199,6 +1200,10 @@ static int __init inet6_init(void)
- 	if (err)
- 		goto ioam6_fail;
- 
-+	err = tunnel6_anonymous_init();
-+	if (err)
-+		goto tunnel6_anonymous_fail;
-+
- 	err = igmp6_late_init();
- 	if (err)
- 		goto igmp6_late_err;
-@@ -1221,6 +1226,8 @@ static int __init inet6_init(void)
- 	igmp6_late_cleanup();
- #endif
- igmp6_late_err:
-+	tunnel6_anonymous_exit();
-+tunnel6_anonymous_fail:
- 	ioam6_exit();
- ioam6_fail:
- 	rpl_exit();
-diff --git a/net/ipv6/tunnel6.c b/net/ipv6/tunnel6.c
-index 00e8d8b1c9a7..b1a1cfd1e7f1 100644
---- a/net/ipv6/tunnel6.c
-+++ b/net/ipv6/tunnel6.c
-@@ -17,6 +17,7 @@
- #include <linux/slab.h>
- #include <net/ipv6.h>
- #include <net/protocol.h>
-+#include <net/tunnel6_anonymous.h>
- #include <net/xfrm.h>
- 
- static struct xfrm6_tunnel __rcu *tunnel6_handlers __read_mostly;
-@@ -144,6 +145,12 @@ static int tunnel6_rcv(struct sk_buff *skb)
- 	if (!pskb_may_pull(skb, sizeof(struct ipv6hdr)))
- 		goto drop;
- 
-+	/* Anonymous tunnel decapsulation
-+	 * has a higher priority (if enabled)
-+	 */
-+	if (anonymous66_enabled(skb))
-+		return anonymous66_decap(skb);
-+
- 	for_each_tunnel_rcu(tunnel6_handlers, handler)
- 		if (!handler->handler(skb))
- 			return 0;
-@@ -257,8 +264,11 @@ static const struct inet6_protocol tunnelmpls6_protocol = {
- static int __init tunnel6_init(void)
- {
- 	if (inet6_add_protocol(&tunnel6_protocol, IPPROTO_IPV6)) {
--		pr_err("%s: can't add protocol\n", __func__);
--		return -EAGAIN;
-+		if (tunnel6_anonymous_unregister() ||
-+		    inet6_add_protocol(&tunnel6_protocol, IPPROTO_IPV6)) {
-+			pr_err("%s: can't add protocol\n", __func__);
-+			return -EAGAIN;
-+		}
- 	}
- 	if (inet6_add_protocol(&tunnel46_protocol, IPPROTO_IPIP)) {
- 		pr_err("%s: can't add protocol\n", __func__);
-@@ -295,6 +305,8 @@ static void __exit tunnel6_fini(void)
- 		pr_err("%s: can't remove protocol\n", __func__);
- 	if (inet6_del_protocol(&tunnel6_protocol, IPPROTO_IPV6))
- 		pr_err("%s: can't remove protocol\n", __func__);
-+	else
-+		tunnel6_anonymous_register();
- 	if (xfrm6_tunnel_mpls_supported() &&
- 	    inet6_del_protocol(&tunnelmpls6_protocol, IPPROTO_MPLS))
- 		pr_err("%s: can't remove protocol\n", __func__);
-diff --git a/net/ipv6/tunnel6_anonymous.c b/net/ipv6/tunnel6_anonymous.c
-new file mode 100644
-index 000000000000..c28cfb090ef0
---- /dev/null
-+++ b/net/ipv6/tunnel6_anonymous.c
-@@ -0,0 +1,83 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ *  Anonymous tunnels for IPv6
-+ *
-+ *  Handle the decapsulation process of anonymous tunnels (i.e., not
-+ *  explicitly configured). This behavior is needed for architectures
-+ *  where a lot of ingresses and egresses must be linked altogether,
-+ *  leading to a solution to avoid configuring all possible tunnels.
-+ *
-+ *  Author:
-+ *  Justin Iurman <justin.iurman@uliege.be>
-+ */
-+
-+#include <linux/export.h>
-+#include <linux/icmpv6.h>
-+#include <linux/init.h>
-+#include <linux/netdevice.h>
-+#include <net/addrconf.h>
-+#include <net/protocol.h>
-+#include <net/tunnel6_anonymous.h>
-+#include <uapi/linux/in.h>
-+
-+/* called with rcu_read_lock() */
-+int anonymous66_rcv(struct sk_buff *skb)
-+{
-+	if (!pskb_may_pull(skb, sizeof(struct ipv6hdr)))
-+		goto drop;
-+
-+	if (anonymous66_enabled(skb))
-+		return anonymous66_decap(skb);
-+
-+	icmpv6_send(skb, ICMPV6_PARAMPROB, ICMPV6_UNK_NEXTHDR, 0);
-+drop:
-+	kfree_skb(skb);
-+	return 0;
-+}
-+
-+static const struct inet6_protocol anonymous66_protocol = {
-+	.handler	=	anonymous66_rcv,
-+	.flags		=	INET6_PROTO_NOPOLICY|INET6_PROTO_FINAL,
-+};
-+
-+bool anonymous66_enabled(struct sk_buff *skb)
-+{
-+	return __in6_dev_get(skb->dev)->cnf.tunnel66_decap_enabled;
-+}
-+EXPORT_SYMBOL(anonymous66_enabled);
-+
-+int anonymous66_decap(struct sk_buff *skb)
-+{
-+	skb_reset_network_header(skb);
-+	skb_reset_transport_header(skb);
-+	skb->encapsulation = 0;
-+
-+	__skb_tunnel_rx(skb, skb->dev, dev_net(skb->dev));
-+	netif_rx(skb);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(anonymous66_decap);
-+
-+int tunnel6_anonymous_register(void)
-+{
-+	return inet6_add_protocol(&anonymous66_protocol, IPPROTO_IPV6);
-+}
-+EXPORT_SYMBOL(tunnel6_anonymous_register);
-+
-+int tunnel6_anonymous_unregister(void)
-+{
-+	return inet6_del_protocol(&anonymous66_protocol, IPPROTO_IPV6);
-+}
-+EXPORT_SYMBOL(tunnel6_anonymous_unregister);
-+
-+int __init tunnel6_anonymous_init(void)
-+{
-+	tunnel6_anonymous_register();
-+	return 0;
-+}
-+
-+void tunnel6_anonymous_exit(void)
-+{
-+	tunnel6_anonymous_unregister();
-+}
--- 
-2.25.1
-
+> Fixes: 33fdc82f08 ("ixgbe: add support for XDP_TX action")
+> Co-developed-by: Shujin Li <lishujin@kuaishou.com>
+> Signed-off-by: Shujin Li <lishujin@kuaishou.com>
+> Signed-off-by: Jason Xing <xingwanli@kuaishou.com>
+> ---
+>  drivers/net/ethernet/intel/ixgbe/ixgbe.h           | 15 ++++-
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c       |  9 ++-
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c      | 64 ++++++++++++++++------
+>  .../net/ethernet/intel/ixgbe/ixgbe_txrx_common.h   |  1 +
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c       |  9 +--
+>  5 files changed, 73 insertions(+), 25 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe.h b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
+> index a604552..5f7f181 100644
+> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe.h
+> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
+> @@ -82,6 +82,8 @@
+>  #define IXGBE_2K_TOO_SMALL_WITH_PADDING \
+>  ((NET_SKB_PAD + IXGBE_RXBUFFER_1536) > SKB_WITH_OVERHEAD(IXGBE_RXBUFFER_2K))
+>
+> +DECLARE_STATIC_KEY_FALSE(ixgbe_xdp_locking_key);
+> +
+>  static inline int ixgbe_compute_pad(int rx_buf_len)
+>  {
+>         int page_size, pad_size;
+> @@ -351,6 +353,7 @@ struct ixgbe_ring {
+>         };
+>         u16 rx_offset;
+>         struct xdp_rxq_info xdp_rxq;
+> +       spinlock_t tx_lock;     /* used in XDP mode */
+>         struct xsk_buff_pool *xsk_pool;
+>         u16 ring_idx;           /* {rx,tx,xdp}_ring back reference idx */
+>         u16 rx_buf_len;
+> @@ -375,7 +378,7 @@ enum ixgbe_ring_f_enum {
+>  #define IXGBE_MAX_FCOE_INDICES         8
+>  #define MAX_RX_QUEUES                  (IXGBE_MAX_FDIR_INDICES + 1)
+>  #define MAX_TX_QUEUES                  (IXGBE_MAX_FDIR_INDICES + 1)
+> -#define MAX_XDP_QUEUES                 (IXGBE_MAX_FDIR_INDICES + 1)
+> +#define IXGBE_MAX_XDP_QS               (IXGBE_MAX_FDIR_INDICES + 1)
+>  #define IXGBE_MAX_L2A_QUEUES           4
+>  #define IXGBE_BAD_L2A_QUEUE            3
+>  #define IXGBE_MAX_MACVLANS             63
+> @@ -629,7 +632,7 @@ struct ixgbe_adapter {
+>
+>         /* XDP */
+>         int num_xdp_queues;
+> -       struct ixgbe_ring *xdp_ring[MAX_XDP_QUEUES];
+> +       struct ixgbe_ring *xdp_ring[IXGBE_MAX_XDP_QS];
+>         unsigned long *af_xdp_zc_qps; /* tracks AF_XDP ZC enabled rings */
+>
+>         /* TX */
+> @@ -772,6 +775,14 @@ struct ixgbe_adapter {
+>  #endif /* CONFIG_IXGBE_IPSEC */
+>  };
+>
+> +static inline int ixgbe_determine_xdp_q_idx(int cpu)
+> +{
+> +       if (static_key_enabled(&ixgbe_xdp_locking_key))
+> +               return cpu % IXGBE_MAX_XDP_QS;
+> +       else
+> +               return cpu;
+> +}
+> +
+>  static inline u8 ixgbe_max_rss_indices(struct ixgbe_adapter *adapter)
+>  {
+>         switch (adapter->hw.mac.type) {
+> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
+> index 0218f6c..884bf99 100644
+> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
+> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
+> @@ -299,7 +299,10 @@ static void ixgbe_cache_ring_register(struct ixgbe_adapter *adapter)
+>
+>  static int ixgbe_xdp_queues(struct ixgbe_adapter *adapter)
+>  {
+> -       return adapter->xdp_prog ? nr_cpu_ids : 0;
+> +       int queues;
+> +
+> +       queues = min_t(int, IXGBE_MAX_XDP_QS, num_online_cpus());
+> +       return adapter->xdp_prog ? queues : 0;
+>  }
+>
+>  #define IXGBE_RSS_64Q_MASK     0x3F
+> @@ -947,6 +950,7 @@ static int ixgbe_alloc_q_vector(struct ixgbe_adapter *adapter,
+>                 ring->count = adapter->tx_ring_count;
+>                 ring->queue_index = xdp_idx;
+>                 set_ring_xdp(ring);
+> +               spin_lock_init(&ring->tx_lock);
+>
+>                 /* assign ring to adapter */
+>                 WRITE_ONCE(adapter->xdp_ring[xdp_idx], ring);
+> @@ -1032,6 +1036,9 @@ static void ixgbe_free_q_vector(struct ixgbe_adapter *adapter, int v_idx)
+>         adapter->q_vector[v_idx] = NULL;
+>         __netif_napi_del(&q_vector->napi);
+>
+> +       if (static_key_enabled(&ixgbe_xdp_locking_key))
+> +               static_branch_dec(&ixgbe_xdp_locking_key);
+> +
+>         /*
+>          * after a call to __netif_napi_del() napi may still be used and
+>          * ixgbe_get_stats64() might access the rings on this vector,
+> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> index 14aea40..a878f40 100644
+> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> @@ -165,6 +165,9 @@ static int ixgbe_notify_dca(struct notifier_block *, unsigned long event,
+>  MODULE_DESCRIPTION("Intel(R) 10 Gigabit PCI Express Network Driver");
+>  MODULE_LICENSE("GPL v2");
+>
+> +DEFINE_STATIC_KEY_FALSE(ixgbe_xdp_locking_key);
+> +EXPORT_SYMBOL(ixgbe_xdp_locking_key);
+> +
+>  static struct workqueue_struct *ixgbe_wq;
+>
+>  static bool ixgbe_check_cfg_remove(struct ixgbe_hw *hw, struct pci_dev *pdev);
+> @@ -2422,13 +2425,10 @@ static int ixgbe_clean_rx_irq(struct ixgbe_q_vector *q_vector,
+>                 xdp_do_flush_map();
+>
+>         if (xdp_xmit & IXGBE_XDP_TX) {
+> -               struct ixgbe_ring *ring = adapter->xdp_ring[smp_processor_id()];
+> +               int index = ixgbe_determine_xdp_q_idx(smp_processor_id());
+> +               struct ixgbe_ring *ring = adapter->xdp_ring[index];
+>
+> -               /* Force memory writes to complete before letting h/w
+> -                * know there are new descriptors to fetch.
+> -                */
+> -               wmb();
+> -               writel(ring->next_to_use, ring->tail);
+> +               ixgbe_xdp_ring_update_tail_locked(ring);
+>         }
+>
+>         u64_stats_update_begin(&rx_ring->syncp);
+> @@ -6320,7 +6320,7 @@ static int ixgbe_sw_init(struct ixgbe_adapter *adapter,
+>         if (ixgbe_init_rss_key(adapter))
+>                 return -ENOMEM;
+>
+> -       adapter->af_xdp_zc_qps = bitmap_zalloc(MAX_XDP_QUEUES, GFP_KERNEL);
+> +       adapter->af_xdp_zc_qps = bitmap_zalloc(IXGBE_MAX_XDP_QS, GFP_KERNEL);
+>         if (!adapter->af_xdp_zc_qps)
+>                 return -ENOMEM;
+>
+> @@ -8539,21 +8539,32 @@ static u16 ixgbe_select_queue(struct net_device *dev, struct sk_buff *skb,
+>  int ixgbe_xmit_xdp_ring(struct ixgbe_adapter *adapter,
+>                         struct xdp_frame *xdpf)
+>  {
+> -       struct ixgbe_ring *ring = adapter->xdp_ring[smp_processor_id()];
+>         struct ixgbe_tx_buffer *tx_buffer;
+>         union ixgbe_adv_tx_desc *tx_desc;
+> +       struct ixgbe_ring *ring;
+>         u32 len, cmd_type;
+>         dma_addr_t dma;
+> +       int index, ret;
+>         u16 i;
+>
+>         len = xdpf->len;
+>
+> -       if (unlikely(!ixgbe_desc_unused(ring)))
+> -               return IXGBE_XDP_CONSUMED;
+> +       index = ixgbe_determine_xdp_q_idx(smp_processor_id());
+> +       ring = adapter->xdp_ring[index];
+> +
+> +       if (static_branch_unlikely(&ixgbe_xdp_locking_key))
+> +               spin_lock(&ring->tx_lock);
+> +
+> +       if (unlikely(!ixgbe_desc_unused(ring))) {
+> +               ret = IXGBE_XDP_CONSUMED;
+> +               goto out;
+> +       }
+>
+>         dma = dma_map_single(ring->dev, xdpf->data, len, DMA_TO_DEVICE);
+> -       if (dma_mapping_error(ring->dev, dma))
+> -               return IXGBE_XDP_CONSUMED;
+> +       if (dma_mapping_error(ring->dev, dma)) {
+> +               ret = IXGBE_XDP_CONSUMED;
+> +               goto out;
+> +       }
+>
+>         /* record the location of the first descriptor for this packet */
+>         tx_buffer = &ring->tx_buffer_info[ring->next_to_use];
+> @@ -8590,7 +8601,11 @@ int ixgbe_xmit_xdp_ring(struct ixgbe_adapter *adapter,
+>         tx_buffer->next_to_watch = tx_desc;
+>         ring->next_to_use = i;
+>
+> -       return IXGBE_XDP_TX;
+> +       ret = IXGBE_XDP_TX;
+> +out:
+> +       if (static_branch_unlikely(&ixgbe_xdp_locking_key))
+> +               spin_unlock(&ring->tx_lock);
+> +       return ret;
+>  }
+>
+>  netdev_tx_t ixgbe_xmit_frame_ring(struct sk_buff *skb,
+> @@ -10130,8 +10145,13 @@ static int ixgbe_xdp_setup(struct net_device *dev, struct bpf_prog *prog)
+>                         return -EINVAL;
+>         }
+>
+> -       if (nr_cpu_ids > MAX_XDP_QUEUES)
+> +       /* if the number of cpus is much larger than the maximum of queues,
+> +        * we should stop it and then return with NOMEM like before.
+> +        */
+> +       if (num_online_cpus() > IXGBE_MAX_XDP_QS * 2)
+>                 return -ENOMEM;
+> +       else if (num_online_cpus() > IXGBE_MAX_XDP_QS)
+> +               static_branch_inc(&ixgbe_xdp_locking_key);
+>
+>         old_prog = xchg(&adapter->xdp_prog, prog);
+>         need_reset = (!!prog != !!old_prog);
+> @@ -10195,12 +10215,22 @@ void ixgbe_xdp_ring_update_tail(struct ixgbe_ring *ring)
+>         writel(ring->next_to_use, ring->tail);
+>  }
+>
+> +void ixgbe_xdp_ring_update_tail_locked(struct ixgbe_ring *ring)
+> +{
+> +       if (static_branch_unlikely(&ixgbe_xdp_locking_key))
+> +               spin_lock(&ring->tx_lock);
+> +       ixgbe_xdp_ring_update_tail(ring);
+> +       if (static_branch_unlikely(&ixgbe_xdp_locking_key))
+> +               spin_unlock(&ring->tx_lock);
+> +}
+> +
+>  static int ixgbe_xdp_xmit(struct net_device *dev, int n,
+>                           struct xdp_frame **frames, u32 flags)
+>  {
+>         struct ixgbe_adapter *adapter = netdev_priv(dev);
+>         struct ixgbe_ring *ring;
+>         int nxmit = 0;
+> +       int index;
+>         int i;
+>
+>         if (unlikely(test_bit(__IXGBE_DOWN, &adapter->state)))
+> @@ -10209,10 +10239,12 @@ static int ixgbe_xdp_xmit(struct net_device *dev, int n,
+>         if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK))
+>                 return -EINVAL;
+>
+> +       index = ixgbe_determine_xdp_q_idx(smp_processor_id());
+> +
+>         /* During program transitions its possible adapter->xdp_prog is assigned
+>          * but ring has not been configured yet. In this case simply abort xmit.
+>          */
+> -       ring = adapter->xdp_prog ? adapter->xdp_ring[smp_processor_id()] : NULL;
+> +       ring = adapter->xdp_prog ? adapter->xdp_ring[index] : NULL;
+>         if (unlikely(!ring))
+>                 return -ENXIO;
+>
+> @@ -10230,7 +10262,7 @@ static int ixgbe_xdp_xmit(struct net_device *dev, int n,
+>         }
+>
+>         if (unlikely(flags & XDP_XMIT_FLUSH))
+> -               ixgbe_xdp_ring_update_tail(ring);
+> +               ixgbe_xdp_ring_update_tail_locked(ring);
+>
+>         return nxmit;
+>  }
+> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_txrx_common.h b/drivers/net/ethernet/intel/ixgbe/ixgbe_txrx_common.h
+> index 2aeec78..f6426d9 100644
+> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_txrx_common.h
+> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_txrx_common.h
+> @@ -23,6 +23,7 @@ void ixgbe_process_skb_fields(struct ixgbe_ring *rx_ring,
+>  void ixgbe_rx_skb(struct ixgbe_q_vector *q_vector,
+>                   struct sk_buff *skb);
+>  void ixgbe_xdp_ring_update_tail(struct ixgbe_ring *ring);
+> +void ixgbe_xdp_ring_update_tail_locked(struct ixgbe_ring *ring);
+>  void ixgbe_irq_rearm_queues(struct ixgbe_adapter *adapter, u64 qmask);
+>
+>  void ixgbe_txrx_ring_disable(struct ixgbe_adapter *adapter, int ring);
+> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+> index b1d22e4..82d00e4 100644
+> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+> @@ -334,13 +334,10 @@ int ixgbe_clean_rx_irq_zc(struct ixgbe_q_vector *q_vector,
+>                 xdp_do_flush_map();
+>
+>         if (xdp_xmit & IXGBE_XDP_TX) {
+> -               struct ixgbe_ring *ring = adapter->xdp_ring[smp_processor_id()];
+> +               int index = ixgbe_determine_xdp_q_idx(smp_processor_id());
+> +               struct ixgbe_ring *ring = adapter->xdp_ring[index];
+>
+> -               /* Force memory writes to complete before letting h/w
+> -                * know there are new descriptors to fetch.
+> -                */
+> -               wmb();
+> -               writel(ring->next_to_use, ring->tail);
+> +               ixgbe_xdp_ring_update_tail_locked(ring);
+>         }
+>
+>         u64_stats_update_begin(&rx_ring->syncp);
+> --
+> 1.8.3.1
+>
