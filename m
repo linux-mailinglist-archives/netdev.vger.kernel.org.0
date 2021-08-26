@@ -2,72 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B39233F8A6A
-	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 16:50:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D2333F8AA2
+	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 17:02:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242886AbhHZOvJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 10:51:09 -0400
-Received: from smtprelay0034.hostedemail.com ([216.40.44.34]:43974 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S234773AbhHZOvJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 10:51:09 -0400
-Received: from omf12.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay07.hostedemail.com (Postfix) with ESMTP id 9051618404103;
-        Thu, 26 Aug 2021 14:50:20 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf12.hostedemail.com (Postfix) with ESMTPA id 7BC6C240235;
-        Thu, 26 Aug 2021 14:50:19 +0000 (UTC)
-Message-ID: <6d8179f45f7139ecc8172c2d2c4988b943393c1e.camel@perches.com>
-Subject: Re: [PATCH] cxgb4: clip_tbl: Fix spelling mistake "wont" -> "won't"
-From:   Joe Perches <joe@perches.com>
-To:     Colin King <colin.king@canonical.com>,
-        Raju Rangoju <rajur@chelsio.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Thu, 26 Aug 2021 07:50:17 -0700
-In-Reply-To: <20210826120108.12185-1-colin.king@canonical.com>
-References: <20210826120108.12185-1-colin.king@canonical.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.0-1 
+        id S242882AbhHZPDJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 11:03:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39442 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231458AbhHZPDJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 11:03:09 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94309C061757
+        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 08:02:21 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id g22so5085818edy.12
+        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 08:02:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=iPXO2WxOI4kfZyDAE7w7JXdDG7n4qC4bl0bnuoZa+ws=;
+        b=nhyou2dXrPvySW+K2COMmR6FUHRRY5olZJVbJm42YHZRiCsh6v88ibmdalu8nkXKvx
+         gVz+RDg0zvY34/Mcefm70DKpa43gVni6rBG5smc//5CgO5CWcos5tXBvz3gnw7IveiTg
+         wsw7cMUejWgwCZEIZESI3fazpZmUsbGJYGde6pDRlqMIGb7301Dl5Edpn4dAAj+F474q
+         wEdFz942Pq98oY8pGrwlWmEKibe0QLGu7ogA9W9+G4m4zy8bY9nGAYv/ZIGBialKT+h5
+         hOZ56RTeI3LT/XYZQ3Scpg/t2ENgOgy8/SqzEfe6tke4hbHJ4Vt7xiu6mA+BO6KTD+3t
+         XpLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=iPXO2WxOI4kfZyDAE7w7JXdDG7n4qC4bl0bnuoZa+ws=;
+        b=qtn8uAsCJXiSJcycnEo8W1GAvkDK5kxjv0CIJ54GPw+TLYh0VFwT7eBGyk9RO73H1O
+         G0kOgqBRmmUjiWkQik5bCttBLU/yW8R0U//LJzIvy/9cdJcL7b7wmIDqUXUrTeyVvvLj
+         4Yc0q3hfbqHVDJ6mq2SRJ4BzZtrGofDJIg6MKwwtxTY7XZdx8CJXeE5+WOAaT/h9nIkv
+         RO/azrn9erbk5MMaVuoqWciDsuF0dDVDjDpW0t+i9UWd7MVEMXsRDOscF3obnJZfefXd
+         qpDRA/0iIv9KIzdOnV/69hexbKtTU8J1GXqHQTSA74My6++Qpnf6P2YmpcG+eSYQy+Og
+         cAFQ==
+X-Gm-Message-State: AOAM530u3GqoLRPGwgubTj+txkVInh9afhsFAB0GH0NNhglAbeBWKI0T
+        4xBuFpu+bx2UWQNFc1x6GhddpKpkN3iS64XVAjY=
+X-Google-Smtp-Source: ABdhPJzTAbj+EB149A1MGmuC4EaxzkMVyrc4ZQ3v5rbn4HbAS45XJdGeFVNTCW3c5lM+LRyQEPMqSwbWxSynnEISDn0=
+X-Received: by 2002:a05:6402:10d7:: with SMTP id p23mr4750427edu.74.1629990140211;
+ Thu, 26 Aug 2021 08:02:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Stat-Signature: 5ptjmk6diszyt9z5pqmgpgwus9pnkghq
-X-Rspamd-Server: rspamout03
-X-Rspamd-Queue-Id: 7BC6C240235
-X-Spam-Status: No, score=0.10
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX18UPfb51wV8xQD+e1IM8UtNepePynaPDYc=
-X-HE-Tag: 1629989419-260293
+Received: by 2002:a54:2292:0:0:0:0:0 with HTTP; Thu, 26 Aug 2021 08:02:19
+ -0700 (PDT)
+Reply-To: chevronoilcorporation@engineer.com
+From:   Chevronoil Corporation <chrisdickson200@gmail.com>
+Date:   Thu, 26 Aug 2021 16:02:19 +0100
+Message-ID: <CAHw_d8ZgXNm0bJDJqeTJbayPwjUwuDYqg+oqtuCvL-Z1akLJdA@mail.gmail.com>
+Subject: are you interested
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2021-08-26 at 13:01 +0100, Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
-> 
-> There are spelling mistakes in dev_err and dev_info messages. Fix them.
-[]
-> diff --git a/drivers/net/ethernet/chelsio/cxgb4/clip_tbl.c b/drivers/net/ethernet/chelsio/cxgb4/clip_tbl.c
-[]
-> @@ -120,7 +120,7 @@ int cxgb4_clip_get(const struct net_device *dev, const u32 *lip, u8 v6)
->  				write_unlock_bh(&ctbl->lock);
->  1 file changed, 2 insertions(+), 2 deletions(-)
->  				dev_err(adap->pdev_dev,
->  					"CLIP FW cmd failed with error %d, "
-> -					"Connections using %pI6c wont be "
-> +					"Connections using %pI6c won't be "
->  					"offloaded",
->  					ret, ce->addr6.sin6_addr.s6_addr);
->  				return ret;
-> @@ -133,7 +133,7 @@ int cxgb4_clip_get(const struct net_device *dev, const u32 *lip, u8 v6)
->  	} else {
->  		write_unlock_bh(&ctbl->lock);
->  		dev_info(adap->pdev_dev, "CLIP table overflow, "
-> -			 "Connections using %pI6c wont be offloaded",
-> +			 "Connections using %pI6c won't be offloaded",
->  			 (void *)lip);
+BEWARE, Real company doesn't ask for money, Chevron Oil and Gas United
+States is employing now free flight ticket, if you are interested
+reply with your Resume/CV.
 
-This is an unnecessary cast.
-And these could coalesce the format fragments and add newlines too.
-
-
+Regards,
+H.R.M. Chevron.
