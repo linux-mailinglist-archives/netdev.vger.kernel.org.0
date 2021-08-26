@@ -2,120 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E90693F82E1
-	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 09:12:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6693E3F8319
+	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 09:26:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239629AbhHZHNc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 03:13:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43124 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234415AbhHZHN3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 03:13:29 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F153C061757
-        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 00:12:43 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id a21so1979617pfh.5
-        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 00:12:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=nathanrossi.com; s=google;
-        h=date:message-id:from:to:cc:subject:content-transfer-encoding
-         :mime-version;
-        bh=N7Wu0fTst5Tg8Gior6jQw3tN/xcoTwJWRyRF0xvIvA0=;
-        b=FUHPte9X/yRqAnNyqQhez7LWUnwctWArSJqjoiNHr5Dh/pDhESz4FxgPG7trNpX76t
-         ga0xd0wHUZ6xo7o4lKU16WDsXJjNqtVe1VcfOXYJxonTd93uknNdY7HaMh02Vg61Ybl+
-         TgdG1WiqFVWRCsogv7kdfwR+rBDiKsDjBTGBPTZ2Z8zIkvVHCkit4TL0dxB1Zmv1WMTg
-         zl6sXzqGrXifRiEJx5xD3j1gjfFsQLKlBCww0YBhGoLJNju2eNzA6t52N0R5YUSqE3sG
-         o3ka2jLrplws7PnIuIJzTQYB7ctM3NlbnWa9Zf6pCraRd9q5YfmLwn5E/FYh7G6kbIvg
-         D4sQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject
-         :content-transfer-encoding:mime-version;
-        bh=N7Wu0fTst5Tg8Gior6jQw3tN/xcoTwJWRyRF0xvIvA0=;
-        b=dVAXTVXsnM700PAMYUqCp3LjbQWAyXTqYsavkOOmqriO5uuBNv5zvJp/v2SSnTkriz
-         VgLMvxLjzrpI90fxNfZzhlt8xSsXVuSmO6Tx+btirCnoVo69z634E5vnkjRckQB/F7oN
-         mdXkBOBScenCpOYeuBKp4+2nJpXQhmuT2P+agt22FV8uumPimU3bpniMDozVIRkNsWq2
-         0Z4uqqRKrI4Jqu1kGCN6Uhn4r0aqck4XmsG6bq9PWHmyjxJd9qVu9GSseL3DqVsBNu/1
-         9N89MPD27sAgfuvm9EvgZ87XGCCq5Wn7e0aolnclcm14cqasOTGJdm80dWF6hiwrdjRJ
-         DmDQ==
-X-Gm-Message-State: AOAM533R80tRpfzqeGCCctLr1f3vTZIADOB/3pvKp645MyjSwm0ukGVO
-        rpBnOAXMFHlhceXayWVN6jUF/w==
-X-Google-Smtp-Source: ABdhPJyQ03P0W4TG4qZxeKIb+um+uJ+D/q/YadlJEv0y7+M+3tj/KnXsM6fO//zutFjP2aAXRKnfmA==
-X-Received: by 2002:a63:3c5d:: with SMTP id i29mr2113313pgn.147.1629961962413;
-        Thu, 26 Aug 2021 00:12:42 -0700 (PDT)
-Received: from [127.0.1.1] (117-20-69-24.751445.bne.nbn.aussiebb.net. [117.20.69.24])
-        by smtp.gmail.com with UTF8SMTPSA id x14sm1788557pfa.127.2021.08.26.00.12.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Aug 2021 00:12:42 -0700 (PDT)
-Date:   Thu, 26 Aug 2021 07:12:30 +0000
-Message-Id: <20210826071230.11296-1-nathan@nathanrossi.com>
-From:   Nathan Rossi <nathan@nathanrossi.com>
-To:     netdev@vger.kernel.org
-Cc:     Nathan Rossi <nathan@nathanrossi.com>,
-        Nathan Rossi <nathan.rossi@digi.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH] net: phylink: Update SFP selected interface on advertising changes
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+        id S240087AbhHZH1K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 03:27:10 -0400
+Received: from smtp-out2.suse.de ([195.135.220.29]:59498 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238975AbhHZH1J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 03:27:09 -0400
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 564CC2016B;
+        Thu, 26 Aug 2021 07:26:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1629962782; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2tHgLhrt84gRdZjfUEE7NiZfbx+Qebm4AzYlsWwxbBU=;
+        b=z3IqUen/t8j08JAyK0jU90NXoJznle9uwfVVdYaqQjd4ApVMhe4Sr/d7XzYNgcoxm1hh4t
+        li7sRMDu6rNxJ5Y2dLcid2YNR+WY598gYQoHauIT5/NNW6CnJONBJzony0UbIPWbZf5VHI
+        9qRHR5my4b4NzmTo8MQYmNpv8wj49ko=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1629962782;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2tHgLhrt84gRdZjfUEE7NiZfbx+Qebm4AzYlsWwxbBU=;
+        b=aCrsre8VDMkwclnL0DU+mHLI5KqX1NQe5WoS/ay9qjvcUHf8+KUPF2fccGvbG+Tf7QQ/Yf
+        milihvdB5V1FphDg==
+Received: from lion.mk-sys.cz (mkubecek.udp.ovpn2.prg.suse.de [10.100.200.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id D30F6A3B89;
+        Thu, 26 Aug 2021 07:26:20 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 1BB56603F6; Thu, 26 Aug 2021 09:26:18 +0200 (CEST)
+Date:   Thu, 26 Aug 2021 09:26:18 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Guangbin Huang <huangguangbin2@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        amitc@mellanox.com, idosch@idosch.org, danieller@nvidia.com,
+        netdev@vger.kernel.org, lipeng321@huawei.com,
+        chenhao288@hisilicon.com
+Subject: Re: [PATCH net-next 1/5] ethtool: add support to set/get tx spare
+ buf size
+Message-ID: <20210826072618.2lu6spapkzdcuhyv@lion.mk-sys.cz>
+References: <1629873655-51539-1-git-send-email-huangguangbin2@huawei.com>
+ <1629873655-51539-2-git-send-email-huangguangbin2@huawei.com>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="h7lueuhy5quh57zt"
+Content-Disposition: inline
+In-Reply-To: <1629873655-51539-2-git-send-email-huangguangbin2@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nathan Rossi <nathan.rossi@digi.com>
 
-Currently changes to the advertising state via ethtool do not cause any
-reselection of the configured interface mode after the SFP is already
-inserted and initially configured.
+--h7lueuhy5quh57zt
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-While it is not typical to change the advertised link modes for an
-interface using an SFP in certain use cases it is desirable. In the case
-of a SFP port that is capable of handling both SFP and SFP+ modules it
-will automatically select between 1G and 10G modes depending on the
-supported mode of the SFP. However if the SFP module is capable of
-working in multiple modes (e.g. a SFP+ DAC that can operate at 1G or
-10G), one end of the cable may be attached to a SFP 1000base-x port thus
-the SFP+ end must be manually configured to the 1000base-x mode in order
-for the link to be established.
+On Wed, Aug 25, 2021 at 02:40:51PM +0800, Guangbin Huang wrote:
+> From: Hao Chen <chenhao288@hisilicon.com>
+>=20
+> Add support for ethtool to set/get tx spare buf size.
+>=20
+> Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
+> Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+> ---
+>  include/uapi/linux/ethtool.h | 1 +
+>  net/ethtool/ioctl.c          | 1 +
+>  2 files changed, 2 insertions(+)
+>=20
+> diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
+> index b6db6590baf0..266e95e4fb33 100644
+> --- a/include/uapi/linux/ethtool.h
+> +++ b/include/uapi/linux/ethtool.h
+> @@ -231,6 +231,7 @@ enum tunable_id {
+>  	ETHTOOL_RX_COPYBREAK,
+>  	ETHTOOL_TX_COPYBREAK,
+>  	ETHTOOL_PFC_PREVENTION_TOUT, /* timeout in msecs */
+> +	ETHTOOL_TX_COPYBREAK_BUF_SIZE,
+>  	/*
+>  	 * Add your fresh new tunable attribute above and remember to update
+>  	 * tunable_strings[] in net/ethtool/common.c
+> diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+> index f2abc3152888..9fc801298fde 100644
+> --- a/net/ethtool/ioctl.c
+> +++ b/net/ethtool/ioctl.c
+> @@ -2377,6 +2377,7 @@ static int ethtool_tunable_valid(const struct ethto=
+ol_tunable *tuna)
+>  	switch (tuna->id) {
+>  	case ETHTOOL_RX_COPYBREAK:
+>  	case ETHTOOL_TX_COPYBREAK:
+> +	case ETHTOOL_TX_COPYBREAK_BUF_SIZE:
+>  		if (tuna->len !=3D sizeof(u32) ||
+>  		    tuna->type_id !=3D ETHTOOL_TUNABLE_U32)
+>  			return -EINVAL;
+> --=20
+> 2.8.1
+>=20
 
-This change causes the ethtool setting of advertised mode changes to
-reselect the interface mode so that the link can be established.
+IMHO this illustrates quite well what I had in mind some time ago when
+I expressed my doubts if the concept of tunables in this form still
+makes sense as the main benefit - workaround for lack of extensibility
+of the ioctl interface - is gone. With this patch, 3 out of 4 tunables
+are related to copybreak and it would IMHO make sense to group them
+together as attributes of a new message and ethtool subcommand.
+Configuration of header split could also belong there when/if
+implemented.
 
-Signed-off-by: Nathan Rossi <nathan.rossi@digi.com>
----
- drivers/net/phy/phylink.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+Michal
 
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 2cdf9f989d..8986c7a0c5 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -1525,6 +1525,22 @@ int phylink_ethtool_ksettings_set(struct phylink *pl,
- 	if (config.an_enabled && phylink_is_empty_linkmode(config.advertising))
- 		return -EINVAL;
- 
-+	/* If this link is with an SFP, ensure that changes to advertised modes
-+	 * also cause the associated interface to be selected such that the
-+	 * link can be configured correctly.
-+	 */
-+	if (pl->sfp_port && pl->sfp_bus) {
-+		config.interface = sfp_select_interface(pl->sfp_bus,
-+							config.advertising);
-+		if (config.interface == PHY_INTERFACE_MODE_NA) {
-+			phylink_err(pl,
-+				    "selection of interface failed, advertisement %*pb\n",
-+				    __ETHTOOL_LINK_MODE_MASK_NBITS,
-+				    config.advertising);
-+			return -EINVAL;
-+		}
-+	}
-+
- 	mutex_lock(&pl->state_mutex);
- 	pl->link_config.speed = config.speed;
- 	pl->link_config.duplex = config.duplex;
----
-2.33.0
+--h7lueuhy5quh57zt
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmEnQhMACgkQ538sG/LR
+dpWGmwf/VTga2fgR96S/MytJOhH1y4G9cHncJ8CWBTsE1+CltSo6kXXbR9PrHqw8
+sWr+Gk5E7vbHDPgR+xu6KvIAO/DpyHc2wboeBsCUPmLmaiel1KhID0Nb2hyOcVgZ
+gdrBnaNftcIWGcUmu3WrV8szoVzUSuq/wXSEaLjrn2ikw4rDvel/8Ugdf6CBCn6a
+n1COjehiXjrta3vDNAjSDlTXgn8knxsSLGh87mxddafFr2KvpNab+ARL6YxOwHfy
+EnDuzLhlmhY3+WiYgwuDzrepypJvoAj0t8dxsgvoDkc2G7lBgMYcdL05sIiSChfL
+uVohLQWbWXBLdnyguBaxEf/IlkHTyA==
+=UYjg
+-----END PGP SIGNATURE-----
+
+--h7lueuhy5quh57zt--
