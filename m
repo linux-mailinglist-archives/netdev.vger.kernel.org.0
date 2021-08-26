@@ -2,106 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0718F3F8397
-	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 10:12:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 835EA3F83C3
+	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 10:31:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240434AbhHZINW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 04:13:22 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:28293 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240156AbhHZINS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 04:13:18 -0400
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-81-EKLme1GqN6OZhnD0jFxktg-1; Thu, 26 Aug 2021 09:12:29 +0100
-X-MC-Unique: EKLme1GqN6OZhnD0jFxktg-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.23; Thu, 26 Aug 2021 09:12:27 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.023; Thu, 26 Aug 2021 09:12:27 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Peter Collingbourne' <pcc@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Colin Ian King <colin.king@canonical.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Al Viro <viro@zeniv.linux.org.uk>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: RE: [PATCH] net: don't unconditionally copy_from_user a struct ifreq
- for socket ioctls
-Thread-Topic: [PATCH] net: don't unconditionally copy_from_user a struct ifreq
- for socket ioctls
-Thread-Index: AQHXmhmeusqat7DUPUKEZ8XxUHnOHquFbtgQ
-Date:   Thu, 26 Aug 2021 08:12:27 +0000
-Message-ID: <11f72b27c12f46eb8bef1d1773980c54@AcuMS.aculab.com>
-References: <20210826012722.3210359-1-pcc@google.com>
-In-Reply-To: <20210826012722.3210359-1-pcc@google.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
-MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+        id S240498AbhHZIbv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 04:31:51 -0400
+Received: from mx433.baidu.com ([119.249.100.169]:26219 "EHLO mx423.baidu.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S236028AbhHZIbv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Aug 2021 04:31:51 -0400
+X-Greylist: delayed 566 seconds by postgrey-1.27 at vger.kernel.org; Thu, 26 Aug 2021 04:31:50 EDT
+Received: from bjhw-sys-rpm015653cc5.bjhw.baidu.com (bjhw-sys-rpm015653cc5.bjhw.baidu.com [10.227.53.39])
+        by mx423.baidu.com (Postfix) with ESMTP id 575F216E0100E;
+        Thu, 26 Aug 2021 16:21:35 +0800 (CST)
+Received: from localhost (localhost [127.0.0.1])
+        by bjhw-sys-rpm015653cc5.bjhw.baidu.com (Postfix) with ESMTP id 4E9C1D9932;
+        Thu, 26 Aug 2021 16:21:35 +0800 (CST)
+From:   Li RongQing <lirongqing@baidu.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        virtualization@lists.linux-foundation.org
+Subject: [PATCH] virtio_net: reduce raw_smp_processor_id() calling in virtnet_xdp_get_sq
+Date:   Thu, 26 Aug 2021 16:21:35 +0800
+Message-Id: <1629966095-16341-1-git-send-email-lirongqing@baidu.com>
+X-Mailer: git-send-email 1.7.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogUGV0ZXIgQ29sbGluZ2JvdXJuZQ0KPiBTZW50OiAyNiBBdWd1c3QgMjAyMSAwMjoyNw0K
-PiANCj4gQSBjb21tb24gaW1wbGVtZW50YXRpb24gb2YgaXNhdHR5KDMpIGludm9sdmVzIGNhbGxp
-bmcgYSBpb2N0bCBwYXNzaW5nDQo+IGEgZHVtbXkgc3RydWN0IGFyZ3VtZW50IGFuZCBjaGVja2lu
-ZyB3aGV0aGVyIHRoZSBzeXNjYWxsIGZhaWxlZCAtLQ0KPiBiaW9uaWMgYW5kIGdsaWJjIHVzZSBU
-Q0dFVFMgKHBhc3NpbmcgYSBzdHJ1Y3QgdGVybWlvcyksIGFuZCBtdXNsIHVzZXMNCj4gVElPQ0dX
-SU5TWiAocGFzc2luZyBhIHN0cnVjdCB3aW5zaXplKS4gSWYgdGhlIEZEIGlzIGEgc29ja2V0LCB3
-ZSB3aWxsDQo+IGNvcHkgc2l6ZW9mKHN0cnVjdCBpZnJlcSkgYnl0ZXMgb2YgZGF0YSBmcm9tIHRo
-ZSBhcmd1bWVudCBhbmQgcmV0dXJuDQo+IC1FRkFVTFQgaWYgdGhhdCBmYWlscy4gVGhlIHJlc3Vs
-dCBpcyB0aGF0IHRoZSBpc2F0dHkgaW1wbGVtZW50YXRpb25zDQo+IG1heSByZXR1cm4gYSBub24t
-UE9TSVgtY29tcGxpYW50IHZhbHVlIGluIGVycm5vIGluIHRoZSBjYXNlIHdoZXJlIHBhcnQNCj4g
-b2YgdGhlIGR1bW15IHN0cnVjdCBhcmd1bWVudCBpcyBpbmFjY2Vzc2libGUsIGFzIGJvdGggc3Ry
-dWN0IHRlcm1pb3MNCj4gYW5kIHN0cnVjdCB3aW5zaXplIGFyZSBzbWFsbGVyIHRoYW4gc3RydWN0
-IGlmcmVxIChhdCBsZWFzdCBvbiBhcm02NCkuDQo+IA0KPiBBbHRob3VnaCB0aGVyZSBpcyB1c3Vh
-bGx5IGVub3VnaCBzdGFjayBzcGFjZSBmb2xsb3dpbmcgdGhlIGFyZ3VtZW50DQo+IG9uIHRoZSBz
-dGFjayB0aGF0IHRoaXMgZGlkIG5vdCBwcmVzZW50IGEgcHJhY3RpY2FsIHByb2JsZW0gdXAgdG8g
-bm93LA0KPiB3aXRoIE1URSBzdGFjayBpbnN0cnVtZW50YXRpb24gaXQncyBtb3JlIGxpa2VseSBm
-b3IgdGhlIGNvcHkgdG8gZmFpbCwNCj4gYXMgdGhlIG1lbW9yeSBmb2xsb3dpbmcgdGhlIHN0cnVj
-dCBtYXkgaGF2ZSBhIGRpZmZlcmVudCB0YWcuDQo+IA0KPiBGaXggdGhlIHByb2JsZW0gYnkgYWRk
-aW5nIGFuIGVhcmx5IGNoZWNrIGZvciB3aGV0aGVyIHRoZSBpb2N0bCBpcyBhDQo+IHZhbGlkIHNv
-Y2tldCBpb2N0bCwgYW5kIHJldHVybiAtRU5PVFRZIGlmIGl0IGlzbid0Lg0KLi4NCj4gK2Jvb2wg
-aXNfZGV2X2lvY3RsX2NtZCh1bnNpZ25lZCBpbnQgY21kKQ0KPiArew0KPiArCXN3aXRjaCAoY21k
-KSB7DQo+ICsJY2FzZSBTSU9DR0lGTkFNRToNCj4gKwljYXNlIFNJT0NHSUZIV0FERFI6DQo+ICsJ
-Y2FzZSBTSU9DR0lGRkxBR1M6DQo+ICsJY2FzZSBTSU9DR0lGTUVUUklDOg0KPiArCWNhc2UgU0lP
-Q0dJRk1UVToNCj4gKwljYXNlIFNJT0NHSUZTTEFWRToNCj4gKwljYXNlIFNJT0NHSUZNQVA6DQo+
-ICsJY2FzZSBTSU9DR0lGSU5ERVg6DQo+ICsJY2FzZSBTSU9DR0lGVFhRTEVOOg0KPiArCWNhc2Ug
-U0lPQ0VUSFRPT0w6DQo+ICsJY2FzZSBTSU9DR01JSVBIWToNCj4gKwljYXNlIFNJT0NHTUlJUkVH
-Og0KPiArCWNhc2UgU0lPQ1NJRk5BTUU6DQo+ICsJY2FzZSBTSU9DU0lGTUFQOg0KPiArCWNhc2Ug
-U0lPQ1NJRlRYUUxFTjoNCj4gKwljYXNlIFNJT0NTSUZGTEFHUzoNCj4gKwljYXNlIFNJT0NTSUZN
-RVRSSUM6DQo+ICsJY2FzZSBTSU9DU0lGTVRVOg0KPiArCWNhc2UgU0lPQ1NJRkhXQUREUjoNCj4g
-KwljYXNlIFNJT0NTSUZTTEFWRToNCj4gKwljYXNlIFNJT0NBRERNVUxUSToNCj4gKwljYXNlIFNJ
-T0NERUxNVUxUSToNCj4gKwljYXNlIFNJT0NTSUZIV0JST0FEQ0FTVDoNCj4gKwljYXNlIFNJT0NT
-TUlJUkVHOg0KPiArCWNhc2UgU0lPQ0JPTkRFTlNMQVZFOg0KPiArCWNhc2UgU0lPQ0JPTkRSRUxF
-QVNFOg0KPiArCWNhc2UgU0lPQ0JPTkRTRVRIV0FERFI6DQo+ICsJY2FzZSBTSU9DQk9ORENIQU5H
-RUFDVElWRToNCj4gKwljYXNlIFNJT0NCUkFERElGOg0KPiArCWNhc2UgU0lPQ0JSREVMSUY6DQo+
-ICsJY2FzZSBTSU9DU0hXVFNUQU1QOg0KPiArCWNhc2UgU0lPQ0JPTkRTTEFWRUlORk9RVUVSWToN
-Cj4gKwljYXNlIFNJT0NCT05ESU5GT1FVRVJZOg0KPiArCWNhc2UgU0lPQ0dJRk1FTToNCj4gKwlj
-YXNlIFNJT0NTSUZNRU06DQo+ICsJY2FzZSBTSU9DU0lGTElOSzoNCj4gKwljYXNlIFNJT0NXQU5E
-RVY6DQo+ICsJY2FzZSBTSU9DR0hXVFNUQU1QOg0KPiArCQlyZXR1cm4gdHJ1ZTsNCg0KVGhhdCBp
-cyBob3JyaWQuDQpDYW4ndCB5b3UgYXQgbGVhc3QgdXNlIF9JT0NfVFlQRSgpIHRvIGNoZWNrIGZv
-ciBzb2NrZXQgaW9jdGxzLg0KQ2xlYXJseSBpdCBjYW4gc3VjY2VlZCBmb3IgJ3JhbmRvbScgZHJp
-dmVyIGlvY3RscywgYnV0IHdpbGwgZmFpbA0KZm9yIHRoZSB0dHkgb25lcy4NCg0KVGhlIG90aGVy
-IHNhbmUgdGhpbmcgaXMgdG8gY2hlY2sgX0lPQ19TSVpFKCkuDQpTaW5jZSBhbGwgdGhlIFNJT0N4
-eHh4IGhhdmUgYSBjb3JyZWN0IF9JT0NfU0laRSgpIHRoYXQgY2FuIGJlDQp1c2VkIHRvIGNoZWNr
-IHRoZSB1c2VyIGNvcHkgbGVuZ3RoLg0KKFVubGlrZSBzb2NrZXQgb3B0aW9ucyB0aGUgY29ycmVj
-dCBsZW5ndGggaXMgYWx3YXlzIHN1cHBsaWVkLg0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBB
-ZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMs
-IE1LMSAxUFQsIFVLDQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
+smp_processor_id()/raw* will be called once each when not
+more queues in virtnet_xdp_get_sq() which is called in
+non-preemptible context, so it's safe to call the function
+smp_processor_id() once.
+
+Signed-off-by: Li RongQing <lirongqing@baidu.com>
+---
+ drivers/net/virtio_net.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 2e42210a6503..2a7b368c1da2 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -528,19 +528,20 @@ static int __virtnet_xdp_xmit_one(struct virtnet_info *vi,
+  * functions to perfectly solve these three problems at the same time.
+  */
+ #define virtnet_xdp_get_sq(vi) ({                                       \
++	int cpu = smp_processor_id();                                   \
+ 	struct netdev_queue *txq;                                       \
+ 	typeof(vi) v = (vi);                                            \
+ 	unsigned int qp;                                                \
+ 									\
+ 	if (v->curr_queue_pairs > nr_cpu_ids) {                         \
+ 		qp = v->curr_queue_pairs - v->xdp_queue_pairs;          \
+-		qp += smp_processor_id();                               \
++		qp += cpu;                                              \
+ 		txq = netdev_get_tx_queue(v->dev, qp);                  \
+ 		__netif_tx_acquire(txq);                                \
+ 	} else {                                                        \
+-		qp = smp_processor_id() % v->curr_queue_pairs;          \
++		qp = cpu % v->curr_queue_pairs;                         \
+ 		txq = netdev_get_tx_queue(v->dev, qp);                  \
+-		__netif_tx_lock(txq, raw_smp_processor_id());           \
++		__netif_tx_lock(txq, cpu);                              \
+ 	}                                                               \
+ 	v->sq + qp;                                                     \
+ })
+-- 
+2.33.0.69.gc420321.dirty
 
