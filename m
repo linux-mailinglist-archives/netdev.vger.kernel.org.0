@@ -2,108 +2,285 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA0923F871A
-	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 14:16:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BE9C3F878F
+	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 14:33:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242493AbhHZMRD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 08:17:03 -0400
-Received: from codesynthesis.com ([188.40.148.39]:49622 "EHLO
-        codesynthesis.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242415AbhHZMRC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 08:17:02 -0400
-Received: from brak.codesynthesis.com (197-255-152-207.static.adept.co.za [197.255.152.207])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by codesynthesis.com (Postfix) with ESMTPSA id 4760D5F7CB;
-        Thu, 26 Aug 2021 12:16:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codesynthesis.com;
-        s=mail1; t=1629980173;
-        bh=Wcp+spva27SDUMn5lh3p20Ss4YEIqbN0awnBME542Vc=;
-        h=Date:From:To:Subject:Message-ID:MIME-Version:From;
-        b=eaN58FnQWvzkHM296c9v+VrbfZQ49nAoJFz9UJX992sl6ORTlxe4hFsAr3kmjn3+t
-         t5lEvmW+IVk4jEzoiuoeNBve+Q7EZho2ZKqCc+YHWky+7OHD4gqhxts5aFcXdUu8m7
-         Dt/Fa1lmZldSU/4Yqq4NDO/p7NvA9IWQyisNDs0bNN4ANOx074wGDTokR0YA4ACnu2
-         LKLauFGA+Ax0Q5OAJ+yYB1fC8Ogp1vvo1YbNQpSHPEcDPcn3XCwUbCSe3FIFj2lsGJ
-         EeW5BL4FEolSf6EvSnLdd3szd8mf6pUEYEDBdaA+hzAiN9600nM1WcfKnNZT+FiZuc
-         hfcHt8oR5T2cw==
-Received: by brak.codesynthesis.com (Postfix, from userid 1000)
-        id F0E911A800C4; Thu, 26 Aug 2021 14:16:09 +0200 (SAST)
-Date:   Thu, 26 Aug 2021 14:16:09 +0200
-From:   Boris Kolpackov <boris@codesynthesis.com>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-wireless@vger.kernel.org, Networking <netdev@vger.kernel.org>
-Subject: Re: [PATCH] kconfig: forbid symbols that end with '_MODULE'
-Message-ID: <boris.20210826140701@codesynthesis.com>
-References: <20210825041637.365171-1-masahiroy@kernel.org>
- <boris.20210825172545@codesynthesis.com>
- <CAK7LNAS-NhR=94uHYcZUhRkdUEm=dYZSRbGKkB5zJJGNRw0z2A@mail.gmail.com>
+        id S241232AbhHZMel (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 08:34:41 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:64066 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233929AbhHZMek (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 08:34:40 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.0.43) with SMTP id 17QAHJ5i005584;
+        Thu, 26 Aug 2021 05:33:49 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=uf+RaaX0dIczhny93UDheiCjRXWnKZF0msWwVcd/mLc=;
+ b=eD7DKmesThEqbMJEEeRfSaECMZDGinh207TIDe1daukn4jJF161KdADl2iyyL92gq25Z
+ vurm6nQjat0w91azm0zGqSYe3wSpO9d8ffgagVsNx4RkIWrGEfUZ9Ri00dOU5uf4okmd
+ p3gvuplCob8+PIZoh8wp5CtjTNeqXhjuH32SLvix3L+AiwfflSaoheKOH0q0hG7Fpt1T
+ dvCgXwfoCDRocghizVSoGHqyI6zOWFnx4K4Tt4r+LpSMmw27ayReBp+BrItU0iHFSwbC
+ pa3e0LF1Gosn+LrE/2yWENdAGaIZVkTPUFZU6JdZnobYl/aaymtf3Efy0M2TTWLMkkXn NA== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 3ap92mrfab-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 26 Aug 2021 05:33:48 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 26 Aug
+ 2021 05:33:46 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Thu, 26 Aug 2021 05:33:46 -0700
+Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
+        by maili.marvell.com (Postfix) with ESMTP id 8E9D13F7057;
+        Thu, 26 Aug 2021 05:33:42 -0700 (PDT)
+From:   Geetha sowjanya <gakula@marvell.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <kuba@kernel.org>, <davem@davemloft.net>, <sgoutham@marvell.com>,
+        <lcherian@marvell.com>, <gakula@marvell.com>, <jerinj@marvell.com>,
+        <sbhatta@marvell.com>, <hkelam@marvell.com>, <hkalra@marvell.com>
+Subject: [net-next PATCH] octeontx2-af: cn10K: support for sched lmtst and other features
+Date:   Thu, 26 Aug 2021 18:03:40 +0530
+Message-ID: <20210826123340.14507-1-gakula@marvell.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAK7LNAS-NhR=94uHYcZUhRkdUEm=dYZSRbGKkB5zJJGNRw0z2A@mail.gmail.com>
-Organization: Code Synthesis
-User-Agent: Mutt/1.5.24 (2015-08-30)
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: sZ8GxKDpwu4xzLFYkKRKzmBu3yzzJiX1
+X-Proofpoint-GUID: sZ8GxKDpwu4xzLFYkKRKzmBu3yzzJiX1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
+ definitions=2021-08-26_03,2021-08-26_01,2020-04-07_01
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Masahiro Yamada <masahiroy@kernel.org> writes:
+From: Harman Kalra <hkalra@marvell.com>
 
-> On Thu, Aug 26, 2021 at 12:42 AM Boris Kolpackov
-> <boris@codesynthesis.com> wrote:
-> >
-> > Masahiro Yamada <masahiroy@kernel.org> writes:
-> >
-> > > Kconfig (syncconfig) generates include/generated/autoconf.h to make
-> > > CONFIG options available to the pre-processor.
-> > >
-> > > The macros are suffixed with '_MODULE' for symbols with the value 'm'.
-> > >
-> > > Here is a conflict; CONFIG_FOO=m results in '#define CONFIG_FOO_MODULE 1',
-> > > but CONFIG_FOO_MODULE=y also results in the same define.
-> > >
-> > > fixdep always assumes CONFIG_FOO_MODULE comes from CONFIG_FOO=m, so the
-> > > dependency is not properly tracked for symbols that end with '_MODULE'.
-> >
-> > It seem to me the problem is in autoconf.h/fixdep, not in the Kconfig
-> > language.
-> 
-> So, what is your suggestion for doing this correctly?
-> (of course without breaking the compatibility
-> because this is how the kernel is configured/built
-> for more than 20 years)
+Enhancing the mailbox scope to support important configurations
+like enabling scheduled LMTST, disable LMTLINE prefetch, disable
+early completion for ordered LMTST, as per request from the
+application. On FLR these configurations will be reset to default.
+This patch also adds the 95XXO silicon version to octeontx2 silicon
+list.
 
-Yes, I appreciate that fixing this properly may not be an option
-due to backwards-compatibility. How about then moving the check
-from the language closer to the place where it will actually be
-an issue. Specifically, can the error be triggered when we are
-about to write #define to autoconf.h and see that the name ends
-with _MODULE?
+Signed-off-by: Harman Kalra <hkalra@marvell.com>
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+Signed-off-by: Geetha sowjanya <gakula@marvell.com>
+---
+ .../net/ethernet/marvell/octeontx2/af/mbox.h  |  6 +-
+ .../net/ethernet/marvell/octeontx2/af/rvu.h   |  8 +-
+ .../ethernet/marvell/octeontx2/af/rvu_cn10k.c | 90 ++++++++++++++++---
+ .../ethernet/marvell/octeontx2/af/rvu_reg.h   |  3 +
+ 4 files changed, 91 insertions(+), 16 deletions(-)
 
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+index ef3c41cf3413..3720cf48837b 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+@@ -273,7 +273,7 @@ M(NIX_BP_ENABLE,	0x8016, nix_bp_enable, nix_bp_cfg_req,	\
+ 				nix_bp_cfg_rsp)	\
+ M(NIX_BP_DISABLE,	0x8017, nix_bp_disable, nix_bp_cfg_req, msg_rsp) \
+ M(NIX_GET_MAC_ADDR, 0x8018, nix_get_mac_addr, msg_req, nix_get_mac_addr_rsp) \
+-M(NIX_CN10K_AQ_ENQ,	0x8019, nix_cn10k_aq_enq, nix_cn10k_aq_enq_req, \
++M(NIX_CN10K_AQ_ENQ,	0x801b, nix_cn10k_aq_enq, nix_cn10k_aq_enq_req, \
+ 				nix_cn10k_aq_enq_rsp)			\
+ M(NIX_GET_HW_INFO,	0x801c, nix_get_hw_info, msg_req, nix_hw_info)	\
+ M(NIX_BANDPROF_ALLOC,	0x801d, nix_bandprof_alloc, nix_bandprof_alloc_req, \
+@@ -1383,6 +1383,10 @@ struct set_vf_perm  {
+ 
+ struct lmtst_tbl_setup_req {
+ 	struct mbox_msghdr hdr;
++	u64 dis_sched_early_comp :1;
++	u64 sch_ena		 :1;
++	u64 dis_line_pref	 :1;
++	u64 ssow_pf_func	 :13;
+ 	u16 base_pcifunc;
+ 	u8  use_local_lmt_region;
+ 	u64 lmt_iova;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+index a85d7eb1ef77..31c20c917a0b 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+@@ -245,6 +245,7 @@ struct rvu_pfvf {
+ 	u8	nix_tx_intf; /* NIX0_TX/NIX1_TX interface to NPC */
+ 	u8	lbkid;	     /* NIX0/1 lbk link ID */
+ 	u64     lmt_base_addr; /* Preseving the pcifunc's lmtst base addr*/
++	u64     lmt_map_ent_w1; /* Preseving the word1 of lmtst map table entry*/
+ 	unsigned long flags;
+ 	struct  sdp_node_info *sdp_info;
+ };
+@@ -556,9 +557,10 @@ static inline bool is_rvu_95xx_A0(struct rvu *rvu)
+  */
+ #define PCI_REVISION_ID_96XX		0x00
+ #define PCI_REVISION_ID_95XX		0x10
+-#define PCI_REVISION_ID_LOKI		0x20
++#define PCI_REVISION_ID_95XXN		0x20
+ #define PCI_REVISION_ID_98XX		0x30
+ #define PCI_REVISION_ID_95XXMM		0x40
++#define PCI_REVISION_ID_95XXO		0xE0
+ 
+ static inline bool is_rvu_otx2(struct rvu *rvu)
+ {
+@@ -567,8 +569,8 @@ static inline bool is_rvu_otx2(struct rvu *rvu)
+ 	u8 midr = pdev->revision & 0xF0;
+ 
+ 	return (midr == PCI_REVISION_ID_96XX || midr == PCI_REVISION_ID_95XX ||
+-		midr == PCI_REVISION_ID_LOKI || midr == PCI_REVISION_ID_98XX ||
+-		midr == PCI_REVISION_ID_95XXMM);
++		midr == PCI_REVISION_ID_95XXN || midr == PCI_REVISION_ID_98XX ||
++		midr == PCI_REVISION_ID_95XXMM || midr == PCI_REVISION_ID_95XXO);
+ }
+ 
+ static inline u16 rvu_nix_chan_cgx(struct rvu *rvu, u8 cgxid,
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cn10k.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cn10k.c
+index dbe9149a215e..87395927a489 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cn10k.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cn10k.c
+@@ -49,6 +49,7 @@ static int lmtst_map_table_ops(struct rvu *rvu, u32 index, u64 *val,
+ 	return 0;
+ }
+ 
++#define LMT_MAP_TBL_W1_OFF  8
+ static u32 rvu_get_lmtst_tbl_index(struct rvu *rvu, u16 pcifunc)
+ {
+ 	return ((rvu_get_pf(pcifunc) * rvu->hw->total_vfs) +
+@@ -131,9 +132,11 @@ int rvu_mbox_handler_lmtst_tbl_setup(struct rvu *rvu,
+ 				     struct lmtst_tbl_setup_req *req,
+ 				     struct msg_rsp *rsp)
+ {
+-	u64 lmt_addr, val;
+-	u32 pri_tbl_idx;
++	struct rvu_pfvf *pfvf = rvu_get_pfvf(rvu, req->hdr.pcifunc);
++	u32 pri_tbl_idx, tbl_idx;
++	u64 lmt_addr;
+ 	int err = 0;
++	u64 val;
+ 
+ 	/* Check if PF_FUNC wants to use it's own local memory as LMTLINE
+ 	 * region, if so, convert that IOVA to physical address and
+@@ -170,7 +173,7 @@ int rvu_mbox_handler_lmtst_tbl_setup(struct rvu *rvu,
+ 			dev_err(rvu->dev,
+ 				"Failed to read LMT map table: index 0x%x err %d\n",
+ 				pri_tbl_idx, err);
+-			return err;
++			goto error;
+ 		}
+ 
+ 		/* Update the base lmt addr of secondary with primary's base
+@@ -181,7 +184,53 @@ int rvu_mbox_handler_lmtst_tbl_setup(struct rvu *rvu,
+ 			return err;
+ 	}
+ 
+-	return 0;
++	/* This mailbox can also be used to update word1 of APR_LMT_MAP_ENTRY_S
++	 * like enabling scheduled LMTST, disable LMTLINE prefetch, disable
++	 * early completion for ordered LMTST.
++	 */
++	if (req->sch_ena || req->dis_sched_early_comp || req->dis_line_pref) {
++		tbl_idx = rvu_get_lmtst_tbl_index(rvu, req->hdr.pcifunc);
++		err = lmtst_map_table_ops(rvu, tbl_idx + LMT_MAP_TBL_W1_OFF,
++					  &val, LMT_TBL_OP_READ);
++		if (err) {
++			dev_err(rvu->dev,
++				"Failed to read LMT map table: index 0x%x err %d\n",
++				tbl_idx + LMT_MAP_TBL_W1_OFF, err);
++			goto error;
++		}
++
++		/* Storing lmt map table entry word1 default value as this needs
++		 * to be reverted in FLR. Also making sure this default value
++		 * doesn't get overwritten on multiple calls to this mailbox.
++		 */
++		if (!pfvf->lmt_map_ent_w1)
++			pfvf->lmt_map_ent_w1 = val;
++
++		/* Disable early completion for Ordered LMTSTs. */
++		if (req->dis_sched_early_comp)
++			val |= (req->dis_sched_early_comp <<
++				APR_LMT_MAP_ENT_DIS_SCH_CMP_SHIFT);
++		/* Enable scheduled LMTST */
++		if (req->sch_ena)
++			val |= (req->sch_ena << APR_LMT_MAP_ENT_SCH_ENA_SHIFT) |
++				req->ssow_pf_func;
++		/* Disables LMTLINE prefetch before receiving store data. */
++		if (req->dis_line_pref)
++			val |= (req->dis_line_pref <<
++				APR_LMT_MAP_ENT_DIS_LINE_PREF_SHIFT);
++
++		err = lmtst_map_table_ops(rvu, tbl_idx + LMT_MAP_TBL_W1_OFF,
++					  &val, LMT_TBL_OP_WRITE);
++		if (err) {
++			dev_err(rvu->dev,
++				"Failed to update LMT map table: index 0x%x err %d\n",
++				tbl_idx + LMT_MAP_TBL_W1_OFF, err);
++			goto error;
++		}
++	}
++
++error:
++	return err;
+ }
+ 
+ /* Resetting the lmtst map table to original base addresses */
+@@ -194,19 +243,36 @@ void rvu_reset_lmt_map_tbl(struct rvu *rvu, u16 pcifunc)
+ 	if (is_rvu_otx2(rvu))
+ 		return;
+ 
+-	if (pfvf->lmt_base_addr) {
++	if (pfvf->lmt_base_addr || pfvf->lmt_map_ent_w1) {
+ 		/* This corresponds to lmt map table index */
+ 		tbl_idx = rvu_get_lmtst_tbl_index(rvu, pcifunc);
+ 		/* Reverting back original lmt base addr for respective
+ 		 * pcifunc.
+ 		 */
+-		err = lmtst_map_table_ops(rvu, tbl_idx, &pfvf->lmt_base_addr,
+-					  LMT_TBL_OP_WRITE);
+-		if (err)
+-			dev_err(rvu->dev,
+-				"Failed to update LMT map table: index 0x%x err %d\n",
+-				tbl_idx, err);
+-		pfvf->lmt_base_addr = 0;
++		if (pfvf->lmt_base_addr) {
++			err = lmtst_map_table_ops(rvu, tbl_idx,
++						  &pfvf->lmt_base_addr,
++						  LMT_TBL_OP_WRITE);
++			if (err)
++				dev_err(rvu->dev,
++					"Failed to update LMT map table: index 0x%x err %d\n",
++					tbl_idx, err);
++			pfvf->lmt_base_addr = 0;
++		}
++		/* Reverting back to orginal word1 val of lmtst map table entry
++		 * which underwent changes.
++		 */
++		if (pfvf->lmt_map_ent_w1) {
++			err = lmtst_map_table_ops(rvu,
++						  tbl_idx + LMT_MAP_TBL_W1_OFF,
++						  &pfvf->lmt_map_ent_w1,
++						  LMT_TBL_OP_WRITE);
++			if (err)
++				dev_err(rvu->dev,
++					"Failed to update LMT map table: index 0x%x err %d\n",
++					tbl_idx + LMT_MAP_TBL_W1_OFF, err);
++			pfvf->lmt_map_ent_w1 = 0;
++		}
+ 	}
+ }
+ 
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
+index 4600c31b336b..a40aeaec423c 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
+@@ -704,5 +704,8 @@
+ #define	APR_AF_LMT_CFG			(0x000ull)
+ #define	APR_AF_LMT_MAP_BASE		(0x008ull)
+ #define	APR_AF_LMT_CTL			(0x010ull)
++#define APR_LMT_MAP_ENT_DIS_SCH_CMP_SHIFT	23
++#define APR_LMT_MAP_ENT_SCH_ENA_SHIFT		22
++#define APR_LMT_MAP_ENT_DIS_LINE_PREF_SHIFT	21
+ 
+ #endif /* RVU_REG_H */
+-- 
+2.17.1
 
-> > I know you don't care, but I will voice my objection, for the record:
-> > Kconfig is used by projects other than the Linux kernel and some of
-> > them do not use the autoconf.h functionality. For such projects this
-> > restriction seems arbitrary and potentially backwards-incompatible.
-> 
-> I am not sure what your worry is, but this check resides in
-> "if (modules_sym)" conditional, so projects using Kconfig but
-> not module functionality (e.g. buildroot) will not be  affected.
-
-The Kconfig module semantics is actually general enough that a
-project other than the Linux kernel could reuse it. (I've written
-more on this possibility here[1]).
-
-[1] https://build2.org/libbuild2-kconfig/doc/build2-kconfig-manual.xhtml#lang-mod
