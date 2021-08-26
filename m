@@ -2,90 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC4DF3F8B23
-	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 17:35:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 377473F8B55
+	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 17:50:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242970AbhHZPgG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 11:36:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47036 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237807AbhHZPgF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 11:36:05 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5404BC061757
-        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 08:35:18 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id x12so5708761wrr.11
-        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 08:35:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=TaK24+8gH53dYWBrBRg64lij3FSBe4N9yadD4P1UUuU=;
-        b=nqxp7aNA2YFI86iFQqlTb8aAJarFLYJyjLq9tjqOgYQjle/y/kqUGpanPFyaG2V/ha
-         rGWgMsvszI7GNJDYdYDaAv3VryGdwcWmErLTdZ778olOb9rlm54q2lu7mVJLq4ehXDrD
-         DmlvDd5/ZA2t1xHZKHdjjMcnVGdy/DxI1L+PkpEzohBaUNFEXL60WhnFPulJ8bdcL2LI
-         2hIry2CRH8VaOscmYwYnBV61UPPHkmKa8DZ+mjIt/9hQ3ODMmH/nBEbHmCLF/AQM5lfK
-         +qNWCAdRiRCmcGDQj9LXYyJ9kIutkZE/becoZEc834dylfEO8pzrM1TKvqwg9dTC4Oqd
-         MHEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=TaK24+8gH53dYWBrBRg64lij3FSBe4N9yadD4P1UUuU=;
-        b=JoDB+BdZyAqf251Ye3riIXdSyKQqqpYdS2YNW8773EWnozhQvd8A9VAVXKpze9ilT7
-         tOodKGV0YYM/uLEXnMqyaJh2EU7Kadz0bQPi+w8RAl8qUIYwmUQmb8aRr9e1ZRKpFkcH
-         KkhlmTNBaANiAikFLR0u5ts6MUUULdW7q4DVrsdlLE/iO+fjCtnt3fr80wFC5hQsmZfa
-         fMjitsBrHBCWW2rW42S/b7I5ZBzO+DhAjvlP3YyKAByqJDXHET8nlXLuXSACUVCIJ23F
-         UjI676CIN4Zd6CZyhnWK9NH+Wxih4L234UbAW6f4R6ulAnFx5BNaYuDtMl8plYSx0mkq
-         lP7g==
-X-Gm-Message-State: AOAM533eyCblXuCWITGeCugedCEXJSsYkh9WqHACgBTaXH8mLhwwfwO3
-        ++ckAh81vZxWhDBu+RpGXncYTg==
-X-Google-Smtp-Source: ABdhPJwWtlpoyiq3Tf1o4x6ydu6b9X8evjT9i7XPAHO9VE5CQrgelXfYq0cINvAnpCy8MxPMTk5TVA==
-X-Received: by 2002:a5d:4dc3:: with SMTP id f3mr4917851wru.302.1629992116860;
-        Thu, 26 Aug 2021 08:35:16 -0700 (PDT)
-Received: from localhost.localdomain ([2a01:e0a:82c:5f0:edf4:979b:2385:1df8])
-        by smtp.gmail.com with ESMTPSA id a12sm7598553wmm.42.2021.08.26.08.35.15
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 26 Aug 2021 08:35:16 -0700 (PDT)
-From:   Loic Poulain <loic.poulain@linaro.org>
-To:     kvalo@codeaurora.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Loic Poulain <loic.poulain@linaro.org>
-Subject: [PATCH] wcn36xx: Fix missing frame timestamp for beacon/probe-resp
-Date:   Thu, 26 Aug 2021 17:46:08 +0200
-Message-Id: <1629992768-23785-1-git-send-email-loic.poulain@linaro.org>
-X-Mailer: git-send-email 2.7.4
+        id S242981AbhHZPuz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 11:50:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39338 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230203AbhHZPuz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Aug 2021 11:50:55 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id B58336101A;
+        Thu, 26 Aug 2021 15:50:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1629993007;
+        bh=0zM90CvcDSH6UFy9c0wnLu9bNk+B4Qha+Kf+kRBIj+Q=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=tGtb3FErX/2LiBcuWjotgVCE1UWTTD6GJlDiwjT3X3O+OpZP5ciNtGs4JeKpJMp38
+         REaxdVuTKTQhXulkw+ZbV2rOZOqPtLFV0la1GsZXyKioFy79NZFd2+2g9+2EYsffTd
+         c9xLAbovx7CRZ3mpDEuO39sZwlBf2UWxX6CBksMHtDgdvaxgha9tdo+w+IEjhApTJR
+         oWghdQydkP8HrvHnaU08TbqEv5C/Zn/en+SEdzICkfgZXHF56d+w5gT39P6+ZNXPQo
+         aFuIUnQjLSpntsihGI8yPUqyue09sxWlPn4YlArYdU9w62Kp6sowF0sP2NfdGsIT5f
+         aazCv5kXUjIfQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A70F160A14;
+        Thu, 26 Aug 2021 15:50:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 0/7] net: hns3: add some fixes for -net
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162999300767.24975.1201669661390166290.git-patchwork-notify@kernel.org>
+Date:   Thu, 26 Aug 2021 15:50:07 +0000
+References: <1629976921-43438-1-git-send-email-huangguangbin2@huawei.com>
+In-Reply-To: <1629976921-43438-1-git-send-email-huangguangbin2@huawei.com>
+To:     Guangbin Huang <huangguangbin2@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lipeng321@huawei.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When receiving a beacon or probe response, we should update the
-boottime_ns field which is the timestamp the frame was received at.
-(cf mac80211.h)
+Hello:
 
-This fixes a scanning issue with Android since it relies on this
-timestamp to determine when the AP has been seen for the last time
-(via the nl80211 BSS_LAST_SEEN_BOOTTIME parameter).
+This series was applied to netdev/net.git (refs/heads/master):
 
-Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
-Reviewed-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
----
- drivers/net/wireless/ath/wcn36xx/txrx.c | 4 ++++
- 1 file changed, 4 insertions(+)
+On Thu, 26 Aug 2021 19:21:54 +0800 you wrote:
+> This series adds some fixes for the HNS3 ethernet driver.
+> 
+> Guangbin Huang (1):
+>   net: hns3: fix get wrong pfc_en when query PFC configuration
+> 
+> Guojia Liao (1):
+>   net: hns3: fix duplicate node in VLAN list
+> 
+> [...]
 
-diff --git a/drivers/net/wireless/ath/wcn36xx/txrx.c b/drivers/net/wireless/ath/wcn36xx/txrx.c
-index 1b83115..cab196b 100644
---- a/drivers/net/wireless/ath/wcn36xx/txrx.c
-+++ b/drivers/net/wireless/ath/wcn36xx/txrx.c
-@@ -287,6 +287,10 @@ int wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb)
- 		status.rate_idx = 0;
- 	}
- 
-+	if (ieee80211_is_beacon(hdr->frame_control) ||
-+	    ieee80211_is_probe_resp(hdr->frame_control))
-+		status.boottime_ns = ktime_get_boottime_ns();
-+
- 	memcpy(IEEE80211_SKB_RXCB(skb), &status, sizeof(status));
- 
- 	if (ieee80211_is_beacon(hdr->frame_control)) {
--- 
-2.7.4
+Here is the summary with links:
+  - [net,1/7] net: hns3: clear hardware resource when loading driver
+    https://git.kernel.org/netdev/net/c/1a6d281946c3
+  - [net,2/7] net: hns3: add waiting time before cmdq memory is released
+    https://git.kernel.org/netdev/net/c/a96d9330b02a
+  - [net,3/7] net: hns3: fix speed unknown issue in bond 4
+    https://git.kernel.org/netdev/net/c/b15c072a9f4a
+  - [net,4/7] net: hns3: fix duplicate node in VLAN list
+    https://git.kernel.org/netdev/net/c/94391fae82f7
+  - [net,5/7] net: hns3: change the method of getting cmd index in debugfs
+    https://git.kernel.org/netdev/net/c/55649d56541b
+  - [net,6/7] net: hns3: fix GRO configuration error after reset
+    https://git.kernel.org/netdev/net/c/3462207d2d68
+  - [net,7/7] net: hns3: fix get wrong pfc_en when query PFC configuration
+    https://git.kernel.org/netdev/net/c/8c1671e0d13d
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
