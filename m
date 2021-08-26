@@ -2,71 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CAC43F848F
-	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 11:30:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E7DB3F84A1
+	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 11:34:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241093AbhHZJbj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 05:31:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35474 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241123AbhHZJa7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 26 Aug 2021 05:30:59 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id AA0FF610CB;
-        Thu, 26 Aug 2021 09:30:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1629970206;
-        bh=U32UKk9AEK+bW9H734oQ7GcAnOH8zai/E1TYLGDW+pA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=sV3Hh6Bag9gdu795wLaBpMZxKBs6o6uZJshlagSt3bZ7MqCMo1JySm01dkqAQqfP2
-         PUu6l9FKtgNT+vZb6Vzy8F36t2s9bvucV+K0Gp+YsWXADBx60/u4v61V+/sWstHQPE
-         a9aWcu4UgW6/BMvodC8RgYLCRUdckDm1aWp4MPaxBXzK4Lj+WngCb0lmPeqUOlMmkf
-         LjYT2Uw8B3olvKe5sK41PeS/uK9fgfXARm4oWTcQE6ScYbcrKPW+DDGWMoxnlxAED2
-         XfmNywC9rPd9sVExSCeUC1mIw4+6vTFEamWVPlzrUPh4yIUrTm2LoQ0lpOZruZRNe7
-         l11lGVVy4fypA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9ED8A60A27;
-        Thu, 26 Aug 2021 09:30:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S234425AbhHZJfG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 05:35:06 -0400
+Received: from smtp-out1.suse.de ([195.135.220.28]:58474 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233721AbhHZJfF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 05:35:05 -0400
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 67071222AF;
+        Thu, 26 Aug 2021 09:34:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1629970457; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=SJUUJzTKtratpLRRjwuwrEqhYsk2ZjSfpPlLvFc1gQk=;
+        b=Cu3OtdagMJLTMHXi5U37bwEj0uFPgYuXSjPfa1BE5pbwI4Zy+4GBp6XXa6PFCyficGF9kv
+        Zvr8bjic8Hcu08pVXhUjNhf8wGLrEgdrNPUDevYajTY7lUSveR1CJkqiAX6T6Ttq4gOi/E
+        iI7JZKVV+xufVkzBp9ErBPwvKmLqUs8=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1629970457;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=SJUUJzTKtratpLRRjwuwrEqhYsk2ZjSfpPlLvFc1gQk=;
+        b=hjgO3He3dNt0UHBNgeUts1zkJMAJ/qemmx7SOfA+Di3GSKX5UO8bwhDXnk/9IRnvFoski3
+        YJwljxpdPnKL5XCw==
+Received: from lion.mk-sys.cz (unknown [10.100.200.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 70D6AA3B97;
+        Thu, 26 Aug 2021 09:34:13 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id B21A3603F6; Thu, 26 Aug 2021 11:34:14 +0200 (CEST)
+Date:   Thu, 26 Aug 2021 11:34:14 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Guangbin Huang <huangguangbin2@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, amitc@mellanox.com,
+        idosch@idosch.org, andrew@lunn.ch, o.rempel@pengutronix.de,
+        f.fainelli@gmail.com, jacob.e.keller@intel.com, mlxsw@mellanox.com,
+        netdev@vger.kernel.org, lipeng321@huawei.com
+Subject: Re: [PATCH V2 ethtool-next 2/2] netlink: settings: add two link
+ extended substates of bad signal integrity
+Message-ID: <20210826093414.e5ok2nihbuhe7zzt@lion.mk-sys.cz>
+References: <1629877513-23501-1-git-send-email-huangguangbin2@huawei.com>
+ <1629877513-23501-3-git-send-email-huangguangbin2@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/2] net: dsa: hellcreek: 802.1Qbv Fixes
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162997020664.28182.6520317976223307326.git-patchwork-notify@kernel.org>
-Date:   Thu, 26 Aug 2021 09:30:06 +0000
-References: <20210825135813.73436-1-kurt@linutronix.de>
-In-Reply-To: <20210825135813.73436-1-kurt@linutronix.de>
-To:     Kurt Kanzenbach <kurt@linutronix.de>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        netdev@vger.kernel.org, bigeasy@linutronix.de
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1629877513-23501-3-git-send-email-huangguangbin2@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net.git (refs/heads/master):
-
-On Wed, 25 Aug 2021 15:58:11 +0200 you wrote:
-> Hi,
+On Wed, Aug 25, 2021 at 03:45:13PM +0800, Guangbin Huang wrote:
+> Add two link extended substates of bad signal integrity available in the
+> kernel.
 > 
-> while using TAPRIO offloading on the Hirschmann hellcreek switch, I've noticed
-> two issues in the current implementation:
+> ETHTOOL_LINK_EXT_SUBSTATE_BSI_SERDES_REFERENCE_CLOCK_LOST means the input
+> external clock signal for SerDes is too weak or lost.
 > 
-> 1. The gate control list is incorrectly programmed
-> 2. The admin base time is not set properly
+> ETHTOOL_LINK_EXT_SUBSTATE_BSI_SERDES_ALOS means the received signal for
+> SerDes is too weak because analog loss of signal.
 > 
-> [...]
+> Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 
-Here is the summary with links:
-  - [net,1/2] net: dsa: hellcreek: Fix incorrect setting of GCL
-    https://git.kernel.org/netdev/net/c/a7db5ed8632c
-  - [net,2/2] net: dsa: hellcreek: Adjust schedule look ahead window
-    https://git.kernel.org/netdev/net/c/b7658ed35a5f
+Applied, thank you.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Michal
