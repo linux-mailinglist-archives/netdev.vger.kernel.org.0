@@ -2,105 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17ED23F8026
-	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 04:01:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AABD83F8071
+	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 04:25:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236468AbhHZCCE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 22:02:04 -0400
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:39617 "EHLO
-        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235823AbhHZCCD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 22:02:03 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id B7188580CE0;
-        Wed, 25 Aug 2021 22:01:14 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Wed, 25 Aug 2021 22:01:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm1; bh=9Lblrn2BT0Jd/icnrpR5neglPUt
-        Iw7/fSLXohtJXh1g=; b=PI3hNXIvkeIqgigp6+UIPp142t1bolz3NgpIuYUchYk
-        rU63wxKi6dvvtlvGGJsEwXT0uLVMOjb/QMnTKg5Km3zXvX4XH4MYCePbGdm4GXrJ
-        dQjZMsxb6N1RJYZO8OKB4IcRR2emVEclmVf60o3DUUpgTPgabomyr7AibwwRdJPv
-        PkEK9gLDmbcCwDpQIwp55vQ3O02sv+PSJdenzmAuToG6ahhVpv9zfGmA5rdeqhVg
-        ArcHA1DoB5zegEfUtih23n5BqANqdEZB1Srb8HrwYrnU9gqQgzhvvX3VxMthJmQc
-        H6zTIipJe/BJ0CMnnMn585+GQ7eEnqz+EqY5VoZWk9A==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=9Lblrn
-        2BT0Jd/icnrpR5neglPUtIw7/fSLXohtJXh1g=; b=rpVHmLPbA8uXLrib1Z2ogs
-        fV+Ha9VYsk8AKRR2z6Xa3qP4T/RPY4EYcR9JKR417uhxMifwpeDdiRes9ImEwfCQ
-        9tSlBA80+UuLSbJE7Um3niIG551qmy04r3Psi8dVLyERoY0OIf4t5+lMQu8QCAeM
-        CaoytN8wPGSr0ijOO03W6TxBHQxJeRvPV/cbtPpklkwMxlrBoj3/FTr4CI7VWYg7
-        i33yWfG1/7FXNiN09G4fJaqfvCDaW8+yGAlLyq0XNr3/O+xCYZVuiUG/geh8PWCW
-        utmg6hCf8kA9uGovRnLqCIcY2iQ/fbdBKCsypTqCkE80hgphPm3HEyfaQVtP1thA
-        ==
-X-ME-Sender: <xms:6fUmYfHYe8-xDtMP4be3d5vczvNoAWYjW3yDjFYiB_RLIZn-OXuuXg>
-    <xme:6fUmYcUAxuBPLrVngV15paqtOFS7PJSnjl1sS8jiEdJpCnyABMctH9cG1PIcwrfnx
-    qYSJqLo2FzUUJwrQw>
-X-ME-Received: <xmr:6fUmYRKq-xsPXjydqmt24Ffg_Wp_e3XWclRPgafcg64HbW3gjyXlOO8wan068lNUEzb1ZFB8Rxel_k8MLkXao32dYrfkuqaIC3IIuScRxu6LVw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddruddutddgheefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    gfrhhlucfvnfffucdlfeehmdenogfvvgigthfqnhhlhidqqdgigeduledqvdekudculdef
-    tddtmdenucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepff
-    grnhhivghlucgiuhcuoegugihusegugihuuhhurdighiiiqeenucggtffrrghtthgvrhhn
-    peeutdduheffteejjeeuleeluddvfeetueelhfejgfehtdetvdevfeffgeektdejudenuc
-    ffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivgeptdenucfr
-    rghrrghmpehmrghilhhfrhhomhepugiguhesugiguhhuuhdrgiihii
-X-ME-Proxy: <xmx:6vUmYdEBb64m4iWu6DuvL5cDhp7eRkOhdwz9eConPs2IVvU3ODAGmA>
-    <xmx:6vUmYVVQ1SdUsAEkUHqLXihr3gIGpItpkJmbJSFbqSXlO0DGB98lWA>
-    <xmx:6vUmYYMuQuHPnGGq0aB1T0vRbeslfZkPO5fqLrEq8ths3Io3u2_LKA>
-    <xmx:6vUmYbycTNH5qnWD5b6P8TXva5jA95zQQGKSkR_3lXqPwsSgwg0AbQ>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 25 Aug 2021 22:01:13 -0400 (EDT)
-Date:   Wed, 25 Aug 2021 19:01:11 -0700
-From:   Daniel Xu <dxu@dxuuu.xyz>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build failure after merge of the bpf-next tree
-Message-ID: <20210826020111.l5v3dsr2onbz6zte@kashmir.localdomain>
-References: <20210826115050.7612b9cc@canb.auug.org.au>
+        id S237700AbhHZC0J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 22:26:09 -0400
+Received: from conssluserg-05.nifty.com ([210.131.2.90]:27592 "EHLO
+        conssluserg-05.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237584AbhHZC0I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 22:26:08 -0400
+X-Greylist: delayed 79598 seconds by postgrey-1.27 at vger.kernel.org; Wed, 25 Aug 2021 22:26:07 EDT
+Received: from mail-pj1-f53.google.com (mail-pj1-f53.google.com [209.85.216.53]) (authenticated)
+        by conssluserg-05.nifty.com with ESMTP id 17Q2OrdX005266;
+        Thu, 26 Aug 2021 11:24:53 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-05.nifty.com 17Q2OrdX005266
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1629944693;
+        bh=d+AhyAERcvxh7BiYq2ElJkN7iLAXCwUv6UgSMsPKu74=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=CNgzwNhGDlLum2EBrBPzXzIdyjpIas0Y+NGmekx/BDBP1E7B39hjx6NP8GxxzN8dc
+         jxUGzqsab/nL5UXGq7eyHvnQLst1jqoH2G5HU2Z7uAqahoIiumWZL60vtzOA84ybQm
+         Uh7MHhofTbhUAgfPNROwLJsKcUGdea4vVad0tZRjN1wBEMlJHjnF7WTcEiuktq5eyk
+         ft80RzSYGRxTEeKtazr9OBbZ7buOkh/CMexm490CU+0JiQlxbZBTsQ1i5EUXbwZroa
+         Q6NEhp6o1PtbnyOkcLONBqoQt2z6Lwr84DxJcnqTUiL2jjBcNXTLAyupBjah3P3tan
+         Njey37RG80jsw==
+X-Nifty-SrcIP: [209.85.216.53]
+Received: by mail-pj1-f53.google.com with SMTP id j1so1137976pjv.3;
+        Wed, 25 Aug 2021 19:24:53 -0700 (PDT)
+X-Gm-Message-State: AOAM532MFFhPHKVuJzSVjf2J14BZSXa/b725jm2lCSagUYgRP6ywpB1E
+        jUjnsS8RlcWMZwzygyEsr4Gn3LjyIpfPLh7veQI=
+X-Google-Smtp-Source: ABdhPJw2EzwVb2S7fExRdpLksQsCs6YsBhQqntXqcomXVhX20PH/b2rdtnGXTKMbAl7GvXo5xuFBUf00afHREEkilBQ=
+X-Received: by 2002:a17:90a:a581:: with SMTP id b1mr1441813pjq.153.1629944692537;
+ Wed, 25 Aug 2021 19:24:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210826115050.7612b9cc@canb.auug.org.au>
+References: <20210825041637.365171-1-masahiroy@kernel.org> <boris.20210825172545@codesynthesis.com>
+In-Reply-To: <boris.20210825172545@codesynthesis.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Thu, 26 Aug 2021 11:24:15 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAS-NhR=94uHYcZUhRkdUEm=dYZSRbGKkB5zJJGNRw0z2A@mail.gmail.com>
+Message-ID: <CAK7LNAS-NhR=94uHYcZUhRkdUEm=dYZSRbGKkB5zJJGNRw0z2A@mail.gmail.com>
+Subject: Re: [PATCH] kconfig: forbid symbols that end with '_MODULE'
+To:     Boris Kolpackov <boris@codesynthesis.com>
+Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-wireless@vger.kernel.org, Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Stephen,
+On Thu, Aug 26, 2021 at 12:42 AM Boris Kolpackov
+<boris@codesynthesis.com> wrote:
+>
+> Masahiro Yamada <masahiroy@kernel.org> writes:
+>
+> > Kconfig (syncconfig) generates include/generated/autoconf.h to make
+> > CONFIG options available to the pre-processor.
+> >
+> > The macros are suffixed with '_MODULE' for symbols with the value 'm'.
+> >
+> > Here is a conflict; CONFIG_FOO=m results in '#define CONFIG_FOO_MODULE 1',
+> > but CONFIG_FOO_MODULE=y also results in the same define.
+> >
+> > fixdep always assumes CONFIG_FOO_MODULE comes from CONFIG_FOO=m, so the
+> > dependency is not properly tracked for symbols that end with '_MODULE'.
+>
+> It seem to me the problem is in autoconf.h/fixdep, not in the Kconfig
+> language.
 
-On Thu, Aug 26, 2021 at 11:50:50AM +1000, Stephen Rothwell wrote:
-> Hi all,
-> 
-> After merging the bpf-next tree, today's linux-next build (powerpc
-> ppc64_defconfig) failed like this:
-> 
-> kernel/trace/bpf_trace.c:717:47: error: expected ')' before 'struct'
->   717 | BTF_ID_LIST_GLOBAL_SINGLE(btf_task_struct_ids, struct, task_struct)
->       |                                               ^~~~~~~
->       |                                               )
-> kernel/trace/bpf_trace.c: In function 'bpf_tracing_func_proto':
-> kernel/trace/bpf_trace.c:1051:11: error: 'bpf_get_current_task_btf_proto' undeclared (first use in this function); did you mean 'bpf_get_current_task_proto'?
->  1051 |   return &bpf_get_current_task_btf_proto;
->       |           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->       |           bpf_get_current_task_proto
-> 
-> Caused by commit
-> 
->   33c5cb36015a ("bpf: Consolidate task_struct BTF_ID declarations")
-> 
-> I have used the bpf-next tree from next-20210825 for today.
 
-Sorry about the breakage. I've put up
-https://lore.kernel.org/bpf/05d94748d9f4b3eecedc4fddd6875418a396e23c.1629942444.git.dxu@dxuuu.xyz/T/#u
-which I think should fix it. Can you give that patch a try?
+Partly a Kconfig problem since autoconf.h is generated by Kconfig.
 
-Thanks,
-Daniel
+So, what is your suggestion for doing this correctly?
+(of course without breaking the compatibility
+because this is how the kernel is configured/built
+for more than 20 years)
+
+
+
+
+>
+> > This commit makes Kconfig error out if it finds a symbol suffixed with
+> > '_MODULE'.
+>
+> I know you don't care, but I will voice my objection, for the record:
+> Kconfig is used by projects other than the Linux kernel and some of
+> them do not use the autoconf.h functionality. For such projects this
+> restriction seems arbitrary and potentially backwards-incompatible.
+
+I am not sure what your worry is, but this check resides in
+"if (modules_sym)" conditional, so projects using Kconfig but
+not module functionality (e.g. buildroot) will not be  affected.
+
+
+
+-- 
+Best Regards
+Masahiro Yamada
