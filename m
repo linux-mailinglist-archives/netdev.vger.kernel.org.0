@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A5153F8349
-	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 09:45:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B84FC3F834E
+	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 09:46:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240407AbhHZHqW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 03:46:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50488 "EHLO
+        id S240543AbhHZHq2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 03:46:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240380AbhHZHqU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 03:46:20 -0400
-Received: from mail-qv1-xf4a.google.com (mail-qv1-xf4a.google.com [IPv6:2607:f8b0:4864:20::f4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5697FC061757
-        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 00:45:33 -0700 (PDT)
-Received: by mail-qv1-xf4a.google.com with SMTP id b8-20020a0562141148b02902f1474ce8b7so765982qvt.20
-        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 00:45:33 -0700 (PDT)
+        with ESMTP id S240429AbhHZHqW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 03:46:22 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E62DAC0613CF
+        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 00:45:35 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id c63-20020a25e5420000b0290580b26e708aso2220192ybh.12
+        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 00:45:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=HUmRAcDzztnKxy5pKmKq2USl0q0kZIBvrwBQCQ/1nmI=;
-        b=vDlQeB9eZYhyuhJvkRFprhHgmhlUTNG2gZKTMjlE54agavbX1YsG5j9ANDcfF8tIrR
-         2yJ325FKUobUIG5oQf+fSzgJr9ekX8rjpE9/alg92dqk0oLArE0ggZw4PJoWQ89NFohX
-         Wvd9fPSlfuRnyOdW55RWCJZGrmK0QHkyLHUBbv0PKp0QcDAFNLpPf7TmpEywTVikFfXg
-         t38VgqnNeNb6aJRxixZ957vrt+QQhQPHMHSg8QGj7N7X0LXw6lYBknVpJOjh7KPEPC/3
-         L5r2q8QExtUbq5+CW9L9VchBsPwUHAe8TVegAv/NcKz9OlpzlTKzV4eSJcTb8QOkkzfM
-         giDg==
+        bh=YHIgrK6tAkKZGZR6Q2TwdOpVzreK8GCVzLPUG55+FFA=;
+        b=rhStSsGxbaIR0MHB9CmSlbRSYrPUet7tGgyJ+OcOlMCUMLgbNQjDUbORc7FcHe1ros
+         eyJjNPIteE6dcBbFrVV4sAG1CfkyctKtYXFUFJFjILiWA67roZgtqUY+kW//6sWFQBuL
+         XJneAy7Kdqhg2gB58jMjQkZIStv8T7VXpY87t6vptrNXwrmktfKWgyxFIcrm88KDaTC2
+         aAKaQZvxNsln4iUtVENNv4blcCIXXIYkyPCXiSrYsxpAC6a0evyoY0kjbsFKYs3rbNcx
+         1GFyICXzmkbexbA2W7BfkCml5A0a+cfdXbMtdQMvqkdvurKKGhfD2RUL/jmX5CZ73WBN
+         TKEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=HUmRAcDzztnKxy5pKmKq2USl0q0kZIBvrwBQCQ/1nmI=;
-        b=Sw74HeJdAGJV6ZnnLyNmr/dQzE8lwoaZCx1PJov2Y3DFwjBokVduj5oIUw4T+HVq1c
-         Ur/G3fCKKIZvx7CS923MOhifKJ5kiyPwhoE9fdsUtDvf/OYNhQZtydXSyf16Kf8oC6DA
-         +/Z3ni6AXN915ZI/mnqQFlXdvB2bUA6h2VGYCUQKjQgc/eLkIExQyWNH+9Qv5nPKKLPI
-         iuaFZYiCMAmExIaD5LkkEn4uCo+XE/wqSqqWUfCGK+5CwA9m7ZTdxGIftAFp26D14vea
-         r3YtXxw820OckHg57ApuGffMsVUIvCfXd7nlt/CLRGu2jxlwWNsTl3MerJZRyCDdpMW7
-         SiIw==
-X-Gm-Message-State: AOAM531eYp6XV9SiWUE3ubVkUtxwviI/gQBlRIwe4dnzk6NtpVm1W2c8
-        lvMYfa9LSK3SDAtjMPVJzSgE6HZcl4REjrg=
-X-Google-Smtp-Source: ABdhPJzKB6i+ELJ3azTpl11cp1xEPfOcbGw0rbi8n8hgqYrxPUdbTqF9de4PcodRrCpKwahzktUBHsrmwcwk3Co=
+        bh=YHIgrK6tAkKZGZR6Q2TwdOpVzreK8GCVzLPUG55+FFA=;
+        b=kC/0qQJ6OMA8j/2YPABN8Lkh3X0zCCZCnnIaDUIag4mHBZ1TX0NLUhr5UHisSm9gDo
+         5MP0/80lD1Via9rM5rmktMmXx9GhFRU2tDHecbyCtkpqaVjTK5KLhmbmrTo9Kowhg5at
+         tipQ1DWMwvALT8jx5vlIwts3b8XYXJd+oBr9vTf0V29QTbhELBrXNKdajQvyJiOdwVUh
+         H2ALwMMkcRWnm/fCAvk6896BOox3oyrNnCp6mC2PBK5Ydof3nXB3YsBvBFQD6O69e1F5
+         5NKA9bJib0G4EgFBYWMuKKYaR4/2zdHEMiQbbjipaHbS+HYYwxD1syfZx5YK+n4NM5BY
+         0uVg==
+X-Gm-Message-State: AOAM532oYqij88OvkhrQFjNSjQiLMHWylARnKX91lMFHbuka8M4KtdrW
+        7Hgakqx6+GI9/elg2TpR855Ji7e+7XwFmGE=
+X-Google-Smtp-Source: ABdhPJycNYDqto2n3MH4BgrRVXIGSmkVWlpLM27lpYHQFpoOpL13Ca6ZU3KzJ3Auys6ImZMCuoSNk0Dqns2CdFc=
 X-Received: from saravanak.san.corp.google.com ([2620:15c:2d:3:5b7b:56e7:63bf:9b3c])
- (user=saravanak job=sendgmr) by 2002:a05:6214:d83:: with SMTP id
- e3mr2611023qve.23.1629963932578; Thu, 26 Aug 2021 00:45:32 -0700 (PDT)
-Date:   Thu, 26 Aug 2021 00:45:24 -0700
+ (user=saravanak job=sendgmr) by 2002:a25:5ed7:: with SMTP id
+ s206mr3728540ybb.387.1629963935137; Thu, 26 Aug 2021 00:45:35 -0700 (PDT)
+Date:   Thu, 26 Aug 2021 00:45:25 -0700
 In-Reply-To: <20210826074526.825517-1-saravanak@google.com>
-Message-Id: <20210826074526.825517-2-saravanak@google.com>
+Message-Id: <20210826074526.825517-3-saravanak@google.com>
 Mime-Version: 1.0
 References: <20210826074526.825517-1-saravanak@google.com>
 X-Mailer: git-send-email 2.33.0.rc2.250.ged5fa647cd-goog
-Subject: [PATCH v1 1/2] driver core: fw_devlink: Add support for FWNODE_FLAG_BROKEN_PARENT
+Subject: [PATCH v1 2/2] net: dsa: rtl8366rb: Quick fix to work with fw_devlink=on
 From:   Saravana Kannan <saravanak@google.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Rafael J. Wysocki" <rafael@kernel.org>,
@@ -70,82 +70,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If a parent device is also a supplier to a child device, fw_devlink=on
-(correctly) delays the probe() of the child device until the probe() of
-the parent finishes successfully.
+This is just a quick fix to make this driver work with fw_devlink=on.
+The proper fix might need a significant amount of rework of the driver
+of the framework to use a component device model.
 
-However, some drivers of such parent devices (where parent is also a
-supplier) incorrectly expect the child device to finish probing
-successfully as soon as they are added using device_add() and before the
-probe() of the parent device has completed successfully. While this
-might have worked before, this is not guaranteed by driver core.
-fw_devlink=on catches/breaks such drivers. One example of such a case is
-discussed in the link mentioned below.
-
-Add a flag to make fw_devlink=on not enforce these supplier-consumer
-relationships, so these drivers can continue working. The flag is
-intentionally called BROKEN_PARENT so it's clear that this flag
-shouldn't be used in the normal case and that there's a problem with the
-driver.
-
-Link: https://lore.kernel.org/netdev/CAGETcx_uj0V4DChME-gy5HGKTYnxLBX=TH2rag29f_p=UcG+Tg@mail.gmail.com/
 Signed-off-by: Saravana Kannan <saravanak@google.com>
 ---
- drivers/base/core.c    | 22 ++++++++++++++++++++++
- include/linux/fwnode.h |  3 +++
- 2 files changed, 25 insertions(+)
+ drivers/net/dsa/realtek-smi-core.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/base/core.c b/drivers/base/core.c
-index f6360490a4a3..2cc34f8ff051 100644
---- a/drivers/base/core.c
-+++ b/drivers/base/core.c
-@@ -1719,6 +1719,28 @@ static int fw_devlink_create_devlink(struct device *con,
- 	struct device *sup_dev;
- 	int ret = 0;
+diff --git a/drivers/net/dsa/realtek-smi-core.c b/drivers/net/dsa/realtek-smi-core.c
+index 8e49d4f85d48..f79c174f4954 100644
+--- a/drivers/net/dsa/realtek-smi-core.c
++++ b/drivers/net/dsa/realtek-smi-core.c
+@@ -394,6 +394,13 @@ static int realtek_smi_probe(struct platform_device *pdev)
+ 	var = of_device_get_match_data(dev);
+ 	np = dev->of_node;
  
-+	/*
-+	 * In some cases, a device P might also be a supplier to its child node
-+	 * C. However, this would defer the probe of C until the probe of P
-+	 * completes successfully. This is perfectly fine in the device driver
-+	 * model. device_add() doesn't guarantee probe completion of the device
-+	 * by the time it returns.
-+	 *
-+	 * However, there are a few drivers that assume C will finish probing
-+	 * as soon as it's added and before P finishes probing. While this is a
-+	 * broken assumption that needs the driver to be fixed, we don't want
-+	 * to block fw_devlink improvements because of these drivers.
-+	 *
-+	 * So, we provide a flag to let fw_devlink know not to delay the probe
-+	 * of C until the probe of P completes successfully.
-+	 *
-+	 * When such a flag is set, we can't create device links with P as the
-+	 * supplier of C as that would delay the probe of C.
++	/* This driver assumes the child PHYs would be probed successfully
++	 * before this functions returns. That's not a valid assumption, but
++	 * let fw_devlink know so that this driver continues to function with
++	 * fw_devlink=on.
 +	 */
-+	if (sup_handle->flags & FWNODE_FLAG_BROKEN_PARENT &&
-+	    fwnode_is_ancestor_of(sup_handle, con->fwnode))
-+		return -EINVAL;
++	np->fwnode.flags |= FWNODE_FLAG_BROKEN_PARENT;
 +
- 	sup_dev = get_dev_from_fwnode(sup_handle);
- 	if (sup_dev) {
- 		/*
-diff --git a/include/linux/fwnode.h b/include/linux/fwnode.h
-index 59828516ebaf..9382065e6ff8 100644
---- a/include/linux/fwnode.h
-+++ b/include/linux/fwnode.h
-@@ -22,10 +22,13 @@ struct device;
-  * LINKS_ADDED:	The fwnode has already be parsed to add fwnode links.
-  * NOT_DEVICE:	The fwnode will never be populated as a struct device.
-  * INITIALIZED: The hardware corresponding to fwnode has been initialized.
-+ * BROKEN_PARENT: The driver of this fwnode/device expects the child devices to
-+ *		  probe as soon as they are added.
-  */
- #define FWNODE_FLAG_LINKS_ADDED		BIT(0)
- #define FWNODE_FLAG_NOT_DEVICE		BIT(1)
- #define FWNODE_FLAG_INITIALIZED		BIT(2)
-+#define FWNODE_FLAG_BROKEN_PARENT	BIT(3)
- 
- struct fwnode_handle {
- 	struct fwnode_handle *secondary;
+ 	smi = devm_kzalloc(dev, sizeof(*smi) + var->chip_data_sz, GFP_KERNEL);
+ 	if (!smi)
+ 		return -ENOMEM;
 -- 
 2.33.0.rc2.250.ged5fa647cd-goog
 
