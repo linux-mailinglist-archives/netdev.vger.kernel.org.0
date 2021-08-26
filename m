@@ -2,103 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD11E3F7F45
-	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 02:25:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20DAD3F7F48
+	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 02:29:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234396AbhHZAXs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 20:23:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36300 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231210AbhHZAXr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 20:23:47 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91E07C061757
-        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 17:23:00 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id b6so2046588wrh.10
-        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 17:23:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=KFGTrRCEScVGRu9bAhd1hMEqbGXFI/ZZXNtPcRgXfzM=;
-        b=m11w3m/Mki1NRHPb4Q+5dQ+8M48lGEkAKbWII+ZYY8q9nrE0yBJ1x/LLxMcgOGI0RS
-         TC/FndlIg2w+qJUz9alKE3A7TIMd82rVv4HvNx19+1Q3TphfpuMzfFZS7MMS3ymQ2YFQ
-         U0xY4tVoBbm13GaNHxzPOGyabXLLc3GkEsjYnBHT6pLh49s1M0Z6d2rnJQNfSm9/6sOo
-         dNyDKX99UD6xQjsqF0dRCBZzOxaMY5LLL5ccE30/z/bYd/NDwF1J5qbr+i2XrtuHM73f
-         kN42sCRqBmCEpHv/3WS+CsvsTmIWOZbpNJMACSFSyZXteZSRR3TtTdaXLPVWr2o3yibs
-         ghsg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=KFGTrRCEScVGRu9bAhd1hMEqbGXFI/ZZXNtPcRgXfzM=;
-        b=t9+PbZudGk3ucUoTWUnp/oBGYZ5MsitFIGxnAWe8efe/YJAK3JbLWsPmItjrhqyHv9
-         YuVi0AhAK1oMa9vfdLISh95uHGVm2G+hv7oayR8uWSzkIr1TgwDzxd8l9PUFhhHSjhJE
-         Yh7HV3HLNaFb+NGojAhSHLLtSny9EIUxt6NJv8ZOGzqKf1UDW5v/gZbMkJnHbzQP39K+
-         KMFw4tVumH1TSZBVCnZQb9V5A2eEuyv2OsIVXX7Iqp1NFdQheiOyRfogGIX6x/4jeDcW
-         oPtrxc0cBjkaN6m9NF5W5PlIEZ5J5fOOFvsRq/3H2LLHK3fVeiUSld2M/TFfpE8MWaBs
-         wpzw==
-X-Gm-Message-State: AOAM531TZVu56fc4+3OfefuLM9zdQJXJ8mBFP4K4iKjPbibdYzCodBL3
-        AbKatNlQCbWlAW0EuaFFDwM=
-X-Google-Smtp-Source: ABdhPJwNAFo6yc7IsQC4iMNsNsDtgDFMVmlxEtc2pajdw0FOlm4z0AgqB3CYaX+6I+rNtEkb6QkjZg==
-X-Received: by 2002:adf:f884:: with SMTP id u4mr678444wrp.411.1629937379215;
-        Wed, 25 Aug 2021 17:22:59 -0700 (PDT)
-Received: from skbuf ([82.78.148.104])
-        by smtp.gmail.com with ESMTPSA id q11sm1319289wrx.85.2021.08.25.17.22.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Aug 2021 17:22:58 -0700 (PDT)
-Date:   Thu, 26 Aug 2021 03:22:57 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     michael.chan@broadcom.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 3/3] bnxt: count discards due to memory
- allocation errors
-Message-ID: <20210826002257.yffn4cf2dtyr23q3@skbuf>
-References: <20210825231830.2748915-1-kuba@kernel.org>
- <20210825231830.2748915-4-kuba@kernel.org>
+        id S234589AbhHZA12 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 20:27:28 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:40338 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231210AbhHZA11 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 20:27:27 -0400
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 17Q0A8EU020811
+        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 17:26:40 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=XaA05mxXysbDMsRfC49IeooU5yjQQc8SDkCFvLTLyiU=;
+ b=bhq0eQhgvEBoYA5Vt3W8P+MR4OAnDfz82wUTBw//4oKaceeD5OW3eH3xcpHwcm9LdsDb
+ 3vWfH8D39brplGj6j2nku/fcZvEPY9ijNjpswfHZDuNvDFYTlr8NLoivsh/tvVwDv4FW
+ GwdgB16L/fFeLyPIqdfqdmj+Ej5/qa/c4Dg= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 3an6d41h7p-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 17:26:40 -0700
+Received: from intmgw001.06.ash9.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Wed, 25 Aug 2021 17:26:39 -0700
+Received: by devbig139.ftw2.facebook.com (Postfix, from userid 572249)
+        id 171621A94518; Wed, 25 Aug 2021 17:26:35 -0700 (PDT)
+From:   Andrey Ignatov <rdna@fb.com>
+To:     <netdev@vger.kernel.org>
+CC:     Andrey Ignatov <rdna@fb.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <ebiederm@xmission.com>, <kernel-team@fb.com>
+Subject: [PATCH net] rtnetlink: Return correct error on changing device netns
+Date:   Wed, 25 Aug 2021 17:25:40 -0700
+Message-ID: <20210826002540.11306-1-rdna@fb.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210825231830.2748915-4-kuba@kernel.org>
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-FB-Source: Intern
+X-Proofpoint-ORIG-GUID: Iuj5a2nxjBmUszm265LEiUeUjZUI16tk
+X-Proofpoint-GUID: Iuj5a2nxjBmUszm265LEiUeUjZUI16tk
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-08-25_09:2021-08-25,2021-08-25 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
+ suspectscore=0 impostorscore=0 clxscore=1011 mlxscore=0 priorityscore=1501
+ lowpriorityscore=0 mlxlogscore=999 adultscore=0 bulkscore=0 spamscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2107140000 definitions=main-2108260000
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
+Currently when device is moved between network namespaces using
+RTM_NEWLINK message type and one of netns attributes (FLA_NET_NS_PID,
+IFLA_NET_NS_FD, IFLA_TARGET_NETNSID) but w/o specifying IFLA_IFNAME, and
+target namespace already has device with same name, userspace will get
+EINVAL what is confusing and makes debugging harder.
 
-On Wed, Aug 25, 2021 at 04:18:30PM -0700, Jakub Kicinski wrote:
-> Count packets dropped due to buffer or skb allocation errors.
-> Report as part of rx_dropped, and per-queue in ethtool
-> (retaining only the former across down/up cycles).
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
->  drivers/net/ethernet/broadcom/bnxt/bnxt.c         | 14 +++++++++++++-
->  drivers/net/ethernet/broadcom/bnxt/bnxt.h         |  1 +
->  drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c |  1 +
->  3 files changed, 15 insertions(+), 1 deletion(-)
-> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-> index 25f1327aedb6..f8a28021389b 100644
-> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-> @@ -188,6 +188,7 @@ static const char * const bnxt_rx_sw_stats_str[] = {
->  	"rx_l4_csum_errors",
->  	"rx_resets",
->  	"rx_buf_errors",
-> +	"rx_oom_discards",
+Fix it so that userspace gets more appropriate EEXIST instead what makes
+debugging much easier.
 
-'Could you consider adding "driver" stats under RTM_GETSTATS,
-or a similar new structured interface over ethtool?
+Before:
 
-Looks like the statistic in question has pretty clear semantics,
-and may be more broadly useful.'
+  # ./ifname.sh
+  + ip netns add ns0
+  + ip netns exec ns0 ip link add l0 type dummy
+  + ip netns exec ns0 ip link show l0
+  8: l0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT gr=
+oup default qlen 1000
+      link/ether 66:90:b5:d5:78:69 brd ff:ff:ff:ff:ff:ff
+  + ip link add l0 type dummy
+  + ip link show l0
+  10: l0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT g=
+roup default qlen 1000
+      link/ether 6e:c6:1f:15:20:8d brd ff:ff:ff:ff:ff:ff
+  + ip link set l0 netns ns0
+  RTNETLINK answers: Invalid argument
 
-https://patchwork.ozlabs.org/project/netdev/patch/20201017213611.2557565-2-vladimir.oltean@nxp.com/
+After:
 
->  };
->  
->  static const char * const bnxt_cmn_sw_stats_str[] = {
-> -- 
-> 2.31.1
-> 
+  # ./ifname.sh
+  + ip netns add ns0
+  + ip netns exec ns0 ip link add l0 type dummy
+  + ip netns exec ns0 ip link show l0
+  8: l0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT gr=
+oup default qlen 1000
+      link/ether 1e:4a:72:e3:e3:8f brd ff:ff:ff:ff:ff:ff
+  + ip link add l0 type dummy
+  + ip link show l0
+  10: l0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT g=
+roup default qlen 1000
+      link/ether f2:fc:fe:2b:7d:a6 brd ff:ff:ff:ff:ff:ff
+  + ip link set l0 netns ns0
+  RTNETLINK answers: File exists
+
+The problem is that do_setlink() passes its `char *ifname` argument,
+that it gets from a caller, to __dev_change_net_namespace() as is (as
+`const char *pat`), but semantics of ifname and pat can be different.
+
+For example, __rtnl_newlink() does this:
+
+net/core/rtnetlink.c
+    3270	char ifname[IFNAMSIZ];
+     ...
+    3286	if (tb[IFLA_IFNAME])
+    3287		nla_strscpy(ifname, tb[IFLA_IFNAME], IFNAMSIZ);
+    3288	else
+    3289		ifname[0] =3D '\0';
+     ...
+    3364	if (dev) {
+     ...
+    3394		return do_setlink(skb, dev, ifm, extack, tb, ifname, status);
+    3395	}
+
+, i.e. do_setlink() gets ifname pointer that is always valid no matter
+if user specified IFLA_IFNAME or not and then do_setlink() passes this
+ifname pointer as is to __dev_change_net_namespace() as pat argument.
+
+But the pat (pattern) in __dev_change_net_namespace() is used as:
+
+net/core/dev.c
+   11198	err =3D -EEXIST;
+   11199	if (__dev_get_by_name(net, dev->name)) {
+   11200		/* We get here if we can't use the current device name */
+   11201		if (!pat)
+   11202			goto out;
+   11203		err =3D dev_get_valid_name(net, dev, pat);
+   11204		if (err < 0)
+   11205			goto out;
+   11206	}
+
+As the result the `goto out` path on line 11202 is neven taken and
+instead of returning EEXIST defined on line 11198,
+__dev_change_net_namespace() returns an error from dev_get_valid_name()
+and this, in turn, will be EINVAL for ifname[0] =3D '\0' set earlier.
+
+Fixes: d8a5ec672768 ("[NET]: netlink support for moving devices between n=
+etwork namespaces.")
+Signed-off-by: Andrey Ignatov <rdna@fb.com>
+---
+ net/core/rtnetlink.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index f6af3e74fc44..662eb1c37f47 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -2608,6 +2608,7 @@ static int do_setlink(const struct sk_buff *skb,
+ 		return err;
+=20
+ 	if (tb[IFLA_NET_NS_PID] || tb[IFLA_NET_NS_FD] || tb[IFLA_TARGET_NETNSID=
+]) {
++		const char *pat =3D ifname && ifname[0] ? ifname : NULL;
+ 		struct net *net;
+ 		int new_ifindex;
+=20
+@@ -2623,7 +2624,7 @@ static int do_setlink(const struct sk_buff *skb,
+ 		else
+ 			new_ifindex =3D 0;
+=20
+-		err =3D __dev_change_net_namespace(dev, net, ifname, new_ifindex);
++		err =3D __dev_change_net_namespace(dev, net, pat, new_ifindex);
+ 		put_net(net);
+ 		if (err)
+ 			goto errout;
+--=20
+2.30.2
 
