@@ -2,116 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBA093F8B3F
-	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 17:40:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83EE63F8B49
+	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 17:44:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242936AbhHZPkm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 11:40:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48184 "EHLO
+        id S242986AbhHZPpR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 11:45:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242972AbhHZPkl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 11:40:41 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D59B5C061757
-        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 08:39:53 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id fz10so2513154pjb.0
-        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 08:39:53 -0700 (PDT)
+        with ESMTP id S231732AbhHZPpP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 11:45:15 -0400
+Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DDADC061757;
+        Thu, 26 Aug 2021 08:44:28 -0700 (PDT)
+Received: by mail-ot1-x330.google.com with SMTP id x10-20020a056830408a00b004f26cead745so4045151ott.10;
+        Thu, 26 Aug 2021 08:44:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:user-agent:in-reply-to:references
-         :message-id:mime-version:content-transfer-encoding;
-        bh=0x3JVYJjoPp3mCHZGSPU/br7LvYDmK0AvhxHSp9lei4=;
-        b=BR2UH4Z+GTbgEsYwtzFTbhdGQ/ifkZOkcR9teV+AYwQ3uF+6UE2vX9k0M4WOgNrNWf
-         raCkiFOMfrY6FzZdgajczRJJIDJCdW9kwHCG5G2CE9JrNoSypm+HxXGIIAQstL4hFcZ9
-         m1iWfYepYFxbr1A5juP/ftBYb8BjyINYS3TVo=
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9CilpbCdLqDwsRtt52+ILqW2aW6JejKoBnd1mtCylR0=;
+        b=FzcNQfkt2j/C971eRKpM7lreK0cVnpf03VZZyUn8by0ZpPEHahykL6h1fH3x9UGIIv
+         dxU5si8y5ZtwT4ev6J0R9H2Bhd2/VC5Kkb4f4Li0HRpK8Oj8IIivjTslvIlh+U/5UGs5
+         J+kDLhBNLWaELdIn4PG7CFD0WJDa8ps+8v5vE8ArumqvosLCzIGkHPGSq6EOxrGd3HA6
+         TEWBOLZms2f5Z1O0laRm1x/scq0FtfnsZXXxvL+FSyvtT5X8dgOi/v1i5G78TWI4ZP9b
+         qDwJa71vDPnB8n+WQ/fXJdIUWGqDoWPQy0/i/eOW9EdZJ5r60e9yK5nDx5q7RmI1DDie
+         Wz6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:user-agent:in-reply-to
-         :references:message-id:mime-version:content-transfer-encoding;
-        bh=0x3JVYJjoPp3mCHZGSPU/br7LvYDmK0AvhxHSp9lei4=;
-        b=Qv6tynAPSAM6cOKIVTW04DtqPz2nw7TzHh0Lwb3xQGMTdq/9H7q/vG2tFyJboEN8/W
-         sVk8UQVh/q4s42EDur6cBTDrLeADDsaTZFcud6MIRBl5XYxletti5YTsTgvSVkKV+cuf
-         +2QQyS2kL7MRiPD01OIl8HWqQtsouALTfvSA116qXDKPjznBYz82xvaIaFeen8xSB0F1
-         1pESxnvLJHblaQTwL/qvkHZZVjtGHDP5XnGvDUXVlFm2TnXMKF7skbFI2wGLpdWnVoyk
-         DAWODdnG3ZL9gtJ34SrqyB8Qv9OW0uEObeXR5K8qcA0dkwXPK9B+U0OMU+MVrck03F5z
-         Uqqg==
-X-Gm-Message-State: AOAM531qgVv3yF7DA1CEBminm6uAmTmrxvPxeu5iJahLxl35NJmU0dgk
-        h3LlRIz6qLG+yk7rmxhXscl69Q==
-X-Google-Smtp-Source: ABdhPJyT1qPGkMrZWNyo9SQCMwAQb4rxdWH8bunPfFQd6Ss5tMxVMpPCzWceJSepz+bPci6A3ddt0g==
-X-Received: by 2002:a17:90a:14e4:: with SMTP id k91mr17431519pja.3.1629992392852;
-        Thu, 26 Aug 2021 08:39:52 -0700 (PDT)
-Received: from ?IPv6:::1? ([2600:6c55:4b00:c768:1835:a5a0:2702:1052])
-        by smtp.gmail.com with ESMTPSA id z131sm3466093pfc.159.2021.08.26.08.39.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 26 Aug 2021 08:39:52 -0700 (PDT)
-Date:   Thu, 26 Aug 2021 08:39:47 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-CC:     open list <linux-kernel@vger.kernel.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Ayush Sawal <ayush.sawal@chelsio.com>,
-        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
-        Rohit Maheshwari <rohitm@chelsio.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Stanislaw Gruszka <stf_xl@wp.pl>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Mordechay Goodstein <mordechay.goodstein@intel.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>,
-        Mikulas Patocka <mikulas@artax.karlin.mff.cuni.cz>,
-        linux-crypto@vger.kernel.org, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        linux-scsi@vger.kernel.org, linux-can <linux-can@vger.kernel.org>,
-        bpf@vger.kernel.org, Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Keith Packard <keithp@keithp.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        clang-built-linux@googlegroups.com, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH v2 2/5] treewide: Replace open-coded flex arrays in unions
-User-Agent: K-9 Mail for Android
-In-Reply-To: <CAMZ6RqJMWaRCB3sZa-it804Sv6aFyZ9J3aQyAStMY-1GAwR1Jg@mail.gmail.com>
-References: <20210826050458.1540622-1-keescook@chromium.org> <20210826050458.1540622-3-keescook@chromium.org> <CAMZ6RqJMWaRCB3sZa-it804Sv6aFyZ9J3aQyAStMY-1GAwR1Jg@mail.gmail.com>
-Message-ID: <AD5C7E3B-6984-49D9-8666-B3BE90588F1F@chromium.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9CilpbCdLqDwsRtt52+ILqW2aW6JejKoBnd1mtCylR0=;
+        b=Mcov0fni1NqRRI7ix0aSkP6PHQYj5qqnErDPe1nbtqXUThrrlq+DP90z83e5g1774h
+         fN5tySgmdMg2FaUnpkDSZt6Z++kknzSL2mtpjlB8iFwOPLyf2+NALxa7Fw+TPYzEprPp
+         IeqM3jabcT4Cys9dhpoQiO/24cf90+DLCRzpLso3n1h6fooG/RabbCGp5GAJbl7IKUB2
+         ucDdjR1MqxpGQuvP9h8TwJTzX0jvh3okdV0kq8WstJ2q6MgN/9v20tGGORsIA3C+f7tb
+         Ti99Dqil3uX3P9SJgs1DC6YgNUbkWkcDtRb902ITOt+wChzvXWhIRI1/OpVHZtxxWcOb
+         TaZg==
+X-Gm-Message-State: AOAM533wICgdZSfbsvITzIqAIfo61PUl0En+O518Qy6jhw8S7hbj6DPX
+        toAWP71MBH2DdhkDFdIhz8CCJlowou9Ms64k394=
+X-Google-Smtp-Source: ABdhPJz/CxqQQL7rgljSQCbYHVEkoWFgXyV0AO4VSuiXWMZSGM7Oe4gfDuKMnPS3XBk2GbuyFnklFOViI6DPsR3pLK0=
+X-Received: by 2002:a9d:75d5:: with SMTP id c21mr3739175otl.118.1629992667943;
+ Thu, 26 Aug 2021 08:44:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+References: <20210826141623.8151-1-kerneljasonxing@gmail.com> <d15a1f43-3fea-b798-7848-61faf3ca1e8c@intel.com>
+In-Reply-To: <d15a1f43-3fea-b798-7848-61faf3ca1e8c@intel.com>
+From:   Jason Xing <kerneljasonxing@gmail.com>
+Date:   Thu, 26 Aug 2021 23:43:52 +0800
+Message-ID: <CAL+tcoDfz3un9fvQ7c-TF=eEiFrEXQBEWV9TvgcjbyNVopMJvg@mail.gmail.com>
+Subject: Re: [PATCH v4] ixgbe: let the xdpdrv work with more than 64 cpus
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>
+Cc:     "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        David Miller <davem@davemloft.net>, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
+        john.fastabend@gmail.com, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org,
+        intel-wired-lan@lists.osuosl.org, netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf@vger.kernel.org,
+        Jason Xing <xingwanli@kuaishou.com>,
+        Shujin Li <lishujin@kuaishou.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On August 26, 2021 12:36:27 AM PDT, Vincent MAILHOL <mailhol=2Evincent@wan=
-adoo=2Efr> wrote:
->On Thu=2E 26 Aug 2021 at 14:04, Kees Cook <keescook@chromium=2Eorg> wrote=
-:
->> In support of enabling -Warray-bounds and -Wzero-length-bounds and
->> correctly handling run-time memcpy() bounds checking, replace all
->> open-coded flexible arrays (i=2Ee=2E 0-element arrays) in unions with t=
-he
->> flex_array() helper macro=2E
+On Thu, Aug 26, 2021 at 11:23 PM Jesse Brandeburg
+<jesse.brandeburg@intel.com> wrote:
 >
->Nitpick: the commit description says flex_array() but the code is
->actually DECLARE_FLEX_ARRAY() or __DECLARE_FLEX_ARRAY()=2E
+> On 8/26/2021 7:16 AM, kerneljasonxing@gmail.com wrote:
+> > From: Jason Xing <xingwanli@kuaishou.com>
+> >
+> > Originally, ixgbe driver doesn't allow the mounting of xdpdrv if the
+> > server is equipped with more than 64 cpus online. So it turns out that
+> > the loading of xdpdrv causes the "NOMEM" failure.
+> >
+> > Actually, we can adjust the algorithm and then make it work through
+> > mapping the current cpu to some xdp ring with the protect of @tx_lock.
+>
+> Thank you very much for working on this!
+>
+> you should put your sign off block here, and then end with a triple-dash
+> "---"
+>
+> then have your vN: updates below that, so they will be dropped from
+> final git apply. It's ok to have more than one triple-dash.
+>
 
-Ah yes, thanks! I had renamed the macro but missed these references=2E Now=
- fixed!
+Thanks. Now I know much more about the submission.
 
--Kees
+> >
+> > v4:
+> > - Update the wrong commit messages. (Jason)
+> >
+> > v3:
+> > - Change nr_cpu_ids to num_online_cpus() (Maciej)
+> > - Rename MAX_XDP_QUEUES to IXGBE_MAX_XDP_QS (Maciej)
+> > - Rename ixgbe_determine_xdp_cpu() to ixgbe_determine_xdp_q_idx() (Maciej)
+> > - Wrap ixgbe_xdp_ring_update_tail() with lock into one function (Maciej)
+> >
+> > v2:
+> > - Adjust cpu id in ixgbe_xdp_xmit(). (Jesper)
+> > - Add a fallback path. (Maciej)
+> > - Adjust other parts related to xdp ring.
+> >
+> > Fixes: 33fdc82f08 ("ixgbe: add support for XDP_TX action")
+> > Co-developed-by: Shujin Li <lishujin@kuaishou.com>
+> > Signed-off-by: Shujin Li <lishujin@kuaishou.com>
+> > Signed-off-by: Jason Xing <xingwanli@kuaishou.com>
+> > ---
+> >  drivers/net/ethernet/intel/ixgbe/ixgbe.h           | 15 ++++-
+> >  drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c       |  9 ++-
+> >  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c      | 64 ++++++++++++++++------
+> >  .../net/ethernet/intel/ixgbe/ixgbe_txrx_common.h   |  1 +
+> >  drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c       |  9 +--
+> >  5 files changed, 73 insertions(+), 25 deletions(-)
+>
+> ...
+>
+> > @@ -8539,21 +8539,32 @@ static u16 ixgbe_select_queue(struct net_device *dev, struct sk_buff *skb,
+> >  int ixgbe_xmit_xdp_ring(struct ixgbe_adapter *adapter,
+> >                       struct xdp_frame *xdpf)
+> >  {
+> > -     struct ixgbe_ring *ring = adapter->xdp_ring[smp_processor_id()];
+> >       struct ixgbe_tx_buffer *tx_buffer;
+> >       union ixgbe_adv_tx_desc *tx_desc;
+> > +     struct ixgbe_ring *ring;
+> >       u32 len, cmd_type;
+> >       dma_addr_t dma;
+> > +     int index, ret;
+> >       u16 i;
+> >
+> >       len = xdpf->len;
+> >
+> > -     if (unlikely(!ixgbe_desc_unused(ring)))
+> > -             return IXGBE_XDP_CONSUMED;
+> > +     index = ixgbe_determine_xdp_q_idx(smp_processor_id());
+> > +     ring = adapter->xdp_ring[index];
+> > +
+> > +     if (static_branch_unlikely(&ixgbe_xdp_locking_key))
+> > +             spin_lock(&ring->tx_lock);
+> > +
+> > +     if (unlikely(!ixgbe_desc_unused(ring))) {
+> > +             ret = IXGBE_XDP_CONSUMED;
+> > +             goto out;
+> > +     }
+>
+> This static key stuff is tricky code, but I guess if it works, then it's
+> better than nothing.
+>
+> As Maciej also commented, I'd like to see some before/after numbers for
+> some of the xdp sample programs to make sure this doesn't cause a huge
+> regression on the xdp transmit path. A small regression would be ok,
+> since this *is* adding overhead.
+>
+
+Fine. It will take me some time. BTW, I'm wondering that, after I'm
+done with the analysis, should I just reply to this email directly or
+send the v5 patch including those numbers?
+
+Thanks,
+Jason
+
+> Jesse
+>
