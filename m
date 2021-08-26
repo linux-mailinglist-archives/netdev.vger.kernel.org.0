@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AF123F9115
-	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 01:46:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32D683F910F
+	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 01:46:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243879AbhHZXrC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 19:47:02 -0400
-Received: from mga02.intel.com ([134.134.136.20]:34918 "EHLO mga02.intel.com"
+        id S243840AbhHZXqx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 19:46:53 -0400
+Received: from mga18.intel.com ([134.134.136.126]:63668 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243832AbhHZXrA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 26 Aug 2021 19:47:00 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10088"; a="205068833"
+        id S229710AbhHZXqv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Aug 2021 19:46:51 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10088"; a="204999940"
 X-IronPort-AV: E=Sophos;i="5.84,354,1620716400"; 
-   d="scan'208";a="205068833"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2021 16:45:57 -0700
+   d="scan'208";a="204999940"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2021 16:46:02 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.84,354,1620716400"; 
-   d="scan'208";a="426956294"
+   d="scan'208";a="474386775"
 Received: from linux.intel.com ([10.54.29.200])
-  by orsmga003.jf.intel.com with ESMTP; 26 Aug 2021 16:45:57 -0700
+  by orsmga008.jf.intel.com with ESMTP; 26 Aug 2021 16:46:02 -0700
 Received: from glass.png.intel.com (glass.png.intel.com [10.158.65.69])
-        by linux.intel.com (Postfix) with ESMTP id 5BA635808BB;
-        Thu, 26 Aug 2021 16:45:53 -0700 (PDT)
+        by linux.intel.com (Postfix) with ESMTP id 03EE45808BB;
+        Thu, 26 Aug 2021 16:45:57 -0700 (PDT)
 From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
 To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Alexandre Torgue <alexandre.torgue@foss.st.com>,
@@ -43,9 +43,11 @@ Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
         Voon Weifeng <weifeng.voon@intel.com>,
         Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
 Subject: [PATCH net-next v2 1/2] net: pcs: xpcs: enable skip xPCS soft reset
-Date:   Fri, 27 Aug 2021 07:51:32 +0800
-Message-Id: <20210826235134.4051310-1-vee.khee.wong@linux.intel.com>
+Date:   Fri, 27 Aug 2021 07:51:33 +0800
+Message-Id: <20210826235134.4051310-2-vee.khee.wong@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210826235134.4051310-1-vee.khee.wong@linux.intel.com>
+References: <20210826235134.4051310-1-vee.khee.wong@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
