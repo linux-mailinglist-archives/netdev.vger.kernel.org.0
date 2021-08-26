@@ -2,117 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91F9C3F80E9
-	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 05:22:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E81B13F812D
+	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 05:30:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236891AbhHZDXW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Aug 2021 23:23:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48446 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231720AbhHZDXV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 23:23:21 -0400
-Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 787B0C061757;
-        Wed, 25 Aug 2021 20:22:34 -0700 (PDT)
-Received: by mail-ot1-x32d.google.com with SMTP id c19-20020a9d6153000000b0051829acbfc7so1681302otk.9;
-        Wed, 25 Aug 2021 20:22:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bUeZZcRUwgsVKTg9hbUOFpXsEAgjIJCFQuo9JR/6uzc=;
-        b=Cd+PYR/CcyaKB2Dv5SB33p47LhOGWZXNOHn1EdmwVk1xcpzdrlZ6xHmaxnv2H1iPGf
-         RWtP8SHbN3xokld1eM/pm5ttcqP5oEVT3y2TUXHs9mzHYDOL5ViUCwYYIhEstqF70Xfp
-         WJuv/0dJdP/tOW4nFPoUoYJVY8ksZK6uTBcL2dfkCvEqvr9MPxqLKenyIHOEOED7k9fP
-         mE1OcurZBALiFsM6WDqfM97C0n+lhT/e6Q4pbTF5SCAfMxtOP/qx8KGfQiJ1ujkQVkgf
-         7i9VtdHZ42y7O9CHoQnhHn5VTuFgre5r3KC01v84y3Q2g+/0/OiXLFD9PY+X/ZGfUQCJ
-         TbtA==
+        id S237722AbhHZDbK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Aug 2021 23:31:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:57867 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229533AbhHZDbI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Aug 2021 23:31:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1629948620;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=eEAbeV6QhPu84KG5CC307zTKXbX2UdBwPkKc0p1KhSE=;
+        b=G9aAHO3qBliltCFQA5BSZpizX/RxIZ1jkDGhVmlf2+DfOjwRmUUgGkwe4Jm+2NMcVS+Pop
+        Rl7zyPl8Rapke5PvlBI//IhJZYz5bmUIfy+eypnqcFkisIEEJ7FHjDzJmzn+WvXzwG9DG3
+        cQpy5zutsS/qKhYks4KseRn/lYl9wZU=
+Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
+ [209.85.167.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-151-TKPibaglPPuW-MFRGl7HCQ-1; Wed, 25 Aug 2021 23:30:19 -0400
+X-MC-Unique: TKPibaglPPuW-MFRGl7HCQ-1
+Received: by mail-lf1-f70.google.com with SMTP id d16-20020ac25ed00000b02903c66605a591so472081lfq.15
+        for <netdev@vger.kernel.org>; Wed, 25 Aug 2021 20:30:19 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=bUeZZcRUwgsVKTg9hbUOFpXsEAgjIJCFQuo9JR/6uzc=;
-        b=SRU+e5ThTLTMXDX4pKMR7WK33IC2oQIhNX84Ez8lTRZLi6mx6iGfRdgGSoo+MOFPBs
-         RyEnlE4e5XZr+jNQhNSKJ9NIy2bnlWtAOOC5TB0TWOZKZ+fkCjdfp391nj6ZVpmATuwb
-         dr8q+VufwfYc2IkO/HJoYTmeTWYhAtSmailOWtjjR1cS17hS8hqGvH+EAxBib9z6U1BZ
-         OnMZnHX7Ty38mJvlNAYzmUdvzWyNQSjfDU72mKjEQdapMFsNIW2VWqJdhnuTIG2TVuxc
-         J/H+75arsNBhEBPSFXscEK9PzibGU/NSJkMJpdOVXacXRQ0NgggeCs2mNH09beK6jKhC
-         936w==
-X-Gm-Message-State: AOAM530MPrf5WSBKNrF55IJnGJEvqqwsImurjUU3BHIAQIpvlC5UrAzT
-        HtClxLCYPOFGnmh+KuMpvYM711kdOTaVaC3Wj8g=
-X-Google-Smtp-Source: ABdhPJxgk1EqPZK7qA7ih/uquKPxaLzFqjR5sZ54uxK1N75LUQxoav/lMAWNN1uN0WKcEyzI+s06wNoInRxtLucaEAY=
-X-Received: by 2002:a05:6830:20d0:: with SMTP id z16mr1331201otq.330.1629948153918;
- Wed, 25 Aug 2021 20:22:33 -0700 (PDT)
+        bh=eEAbeV6QhPu84KG5CC307zTKXbX2UdBwPkKc0p1KhSE=;
+        b=Lm9XkVOl8F+u8yOz2rHQbgUZlOAOzUnhydVcDU6RFMFYf37z/kNAPtNyOYbk9XpFPE
+         HUMBwMB2uTHjNLHhTZv90HdljfpcuM6Iw8cBKQaBm1Xnchnsz64aKFK2IVBr01iuhZ/p
+         ydC6Nx7mwIY5g72YEkx+ZkIktFv1TZAX/pASI0SVVK9HXq8N+rrrUoglmQMOMusLkT60
+         NzgYEAUyu+PKbeD5lZwgCQGr3s9QEq1vA8TuLGJbAMxjrJlT9iDfKN4vYdCTWRhsihUX
+         b7Jvy29hfK9zfdo9BQOhp7IkGQ1MARllM6P3REu/MaDZoD5nGiTdkw1CsvbKWCOF4Gch
+         c4SQ==
+X-Gm-Message-State: AOAM531SqsuVBeih4zmwqlAdkf9TlY+2lrpHdZA80GOpX4yh9QhZP62u
+        vX7BSD25bfVRlNXWuWLBSoWN/+tbqR7HQjtsXcJpW8NxkIt32qVJjfwoCQinuL2tKNsHfv8dJzx
+        h0n57Ze+f3/IVkHgO+sT8gIPqCbMxKYBS
+X-Received: by 2002:a05:651c:10a3:: with SMTP id k3mr1143753ljn.471.1629948617806;
+        Wed, 25 Aug 2021 20:30:17 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyovJ4/uCaZXr4m33mK988gFYVkr+C8ARZKldn+ftKy6xj/3lgAQDoaX2wc7igzKNKlWI3wDnMsLWgS4jENFjA=
+X-Received: by 2002:a05:651c:10a3:: with SMTP id k3mr1143728ljn.471.1629948617641;
+ Wed, 25 Aug 2021 20:30:17 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210824071926.68019-1-benbjiang@gmail.com> <fe512c8b-6f5a-0210-3f23-2c1fc75cd6e5@tessares.net>
- <CAPJCdBmTPW5gcO6DO5i=T+R2TNypzbaA666krk=7Duf2mt1yBw@mail.gmail.com> <f9b97b7f-cb48-f0bf-2dfb-a13bf1296b19@linux.intel.com>
-In-Reply-To: <f9b97b7f-cb48-f0bf-2dfb-a13bf1296b19@linux.intel.com>
-From:   Jiang Biao <benbjiang@gmail.com>
-Date:   Thu, 26 Aug 2021 11:22:23 +0800
-Message-ID: <CAPJCdB=MF=PY0R+a1Ka9ymDvp9EXf2HbzosAC1sUh547EcAjOA@mail.gmail.com>
-Subject: Re: [PATCH] ipv4/mptcp: fix divide error
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
-Cc:     Matthieu Baerts <matthieu.baerts@tessares.net>,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        mptcp@lists.linux.dev, linux-kernel <linux-kernel@vger.kernel.org>,
-        Jiang Biao <benbjiang@tencent.com>,
-        Jiang Biao <tcs_robot@tencent.com>,
-        Paolo Abeni <pabeni@redhat.com>
+References: <1629946187-60536-1-git-send-email-linyunsheng@huawei.com>
+In-Reply-To: <1629946187-60536-1-git-send-email-linyunsheng@huawei.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Thu, 26 Aug 2021 11:30:06 +0800
+Message-ID: <CACGkMEsphZkkRv5AnXUE_86FUKHMgTXpyVVgDUb+tNdATKQsWA@mail.gmail.com>
+Subject: Re: [PATCH net-next] sock: remove one redundant SKB_FRAG_PAGE_ORDER macro
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     davem <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
+        linuxarm@openeuler.org, mst <mst@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, pabeni@redhat.com,
+        fw@strlen.de, aahringo@redhat.com,
+        Tonghao Zhang <xiangxia.m.yue@gmail.com>, yangbo.lu@nxp.com,
+        kvm <kvm@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 26 Aug 2021 at 01:56, Mat Martineau
-<mathew.j.martineau@linux.intel.com> wrote:
+On Thu, Aug 26, 2021 at 10:51 AM Yunsheng Lin <linyunsheng@huawei.com> wrote:
 >
+> Both SKB_FRAG_PAGE_ORDER are defined to the same value in
+> net/core/sock.c and drivers/vhost/net.c.
 >
-> On Tue, 24 Aug 2021, Jiang Biao wrote:
+> Move the SKB_FRAG_PAGE_ORDER definition to net/core/sock.h,
+> as both net/core/sock.c and drivers/vhost/net.c include it,
+> and it seems a reasonable file to put the macro.
 >
-> > Hi,
-> >
-> > On Tue, 24 Aug 2021 at 15:36, Matthieu Baerts
-> > <matthieu.baerts@tessares.net> wrote:
-> >>
-> >> Hi Jiang,
-> >>
-> >> On 24/08/2021 09:19, Jiang Biao wrote:
-> >>
-> >> (...)
-> >>
-> >>> There is a fix divide error reported,
-> >>> divide error: 0000 [#1] PREEMPT SMP KASAN
-> >>> RIP: 0010:tcp_tso_autosize build/../net/ipv4/tcp_output.c:1975 [inline]
-> >>> RIP: 0010:tcp_tso_segs+0x14f/0x250 build/../net/ipv4/tcp_output.c:1992
-> >>
-> >> Thank you for this patch and validating MPTCP on your side!
-> >>
-> >> This issue is actively tracked on our Github project [1] and a patch is
-> >> already in our tree [2] but still under validation.
-> >>> It's introduced by non-initialized info->mss_now in __mptcp_push_pending.
-> >>> Fix it by adding protection in mptcp_push_release.
-> >>
-> >> Indeed, you are right, info->mss_now can be set to 0 in some cases but
-> >> that's not normal.
-> >>
-> >> Instead of adding a protection here, we preferred fixing the root cause,
-> >> see [2]. Do not hesitate to have a look at the other patch and comment
-> >> there if you don't agree with this version.
-> >> Except if [2] is difficult to backport, I think we don't need your extra
-> >> protection. WDYT?
-> >>
-> > Agreed, fixing the root cause is much better.
-> > Thanks for the reply.
-> >
->
-> Hi Jiang -
->
-> Could you try cherry-picking this commit to see if it eliminates the error
-> in your system?
->
-> https://github.com/multipath-tcp/mptcp_net-next/commit/9ef5aea5a794f4a369e26ed816e9c80cdc5a5f86
->
-ok, I'll try and give you feedback.
+> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+> ---
 
-Regards,
-Jiang
+Acked-by: Jason Wang <jasowang@redhat.com>
+
+>  drivers/vhost/net.c | 2 --
+>  include/net/sock.h  | 1 +
+>  net/core/sock.c     | 1 -
+>  3 files changed, 1 insertion(+), 3 deletions(-)
+>
+> diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
+> index 6414bd5..3a249ee 100644
+> --- a/drivers/vhost/net.c
+> +++ b/drivers/vhost/net.c
+> @@ -643,8 +643,6 @@ static bool tx_can_batch(struct vhost_virtqueue *vq, size_t total_len)
+>                !vhost_vq_avail_empty(vq->dev, vq);
+>  }
+>
+> -#define SKB_FRAG_PAGE_ORDER     get_order(32768)
+> -
+>  static bool vhost_net_page_frag_refill(struct vhost_net *net, unsigned int sz,
+>                                        struct page_frag *pfrag, gfp_t gfp)
+>  {
+> diff --git a/include/net/sock.h b/include/net/sock.h
+> index 95b2577..66a9a90 100644
+> --- a/include/net/sock.h
+> +++ b/include/net/sock.h
+> @@ -2717,6 +2717,7 @@ extern int sysctl_optmem_max;
+>  extern __u32 sysctl_wmem_default;
+>  extern __u32 sysctl_rmem_default;
+>
+> +#define SKB_FRAG_PAGE_ORDER    get_order(32768)
+>  DECLARE_STATIC_KEY_FALSE(net_high_order_alloc_disable_key);
+>
+>  static inline int sk_get_wmem0(const struct sock *sk, const struct proto *proto)
+> diff --git a/net/core/sock.c b/net/core/sock.c
+> index 950f1e7..62627e8 100644
+> --- a/net/core/sock.c
+> +++ b/net/core/sock.c
+> @@ -2574,7 +2574,6 @@ static void sk_leave_memory_pressure(struct sock *sk)
+>         }
+>  }
+>
+> -#define SKB_FRAG_PAGE_ORDER    get_order(32768)
+>  DEFINE_STATIC_KEY_FALSE(net_high_order_alloc_disable_key);
+>
+>  /**
+> --
+> 2.7.4
+>
+
