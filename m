@@ -2,107 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26C6A3F8D0D
-	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 19:30:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74B263F8D5D
+	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 19:53:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243220AbhHZRbL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 13:31:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45712 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243168AbhHZRa6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 13:30:58 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF529C0613CF
-        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 10:30:10 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id x140so7506058ybe.0
-        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 10:30:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=H1pLhNC6KYj6xtSbCEQcYzGpmuVWT9FKhX5+K+Ucayk=;
-        b=t6pmA5rCyKM9N2sknfWDZ4LbPR1e1amqTFZLvR6wK2Zc1weiFrqMrE4a8FfVI45LMb
-         mrRrMdXpdgPYNWX10KTSA4PYeOSwrf2mtDR/+nPOYBV+tuN0fyu8Q/5COhoXGcfrPNKG
-         RQ+CzuANiF9QrnkL21ISoXWdp+OF2WAaJ1Uz4e8UvbaL6M28M6/a197Bc4G5HwZCJa2P
-         flsIOQ/0EJlaOIjsgnyN4xf/ow74S0OPdRp1W/Bn1lAJRqEVpGAVKQx3xViMLm55xSCx
-         ySRl2dmdnWh3PckyE2or7bxfNbFmfARLFQFJofDJWE8Nx4uz40rI4JAn0wGGco3ZH32O
-         ODJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=H1pLhNC6KYj6xtSbCEQcYzGpmuVWT9FKhX5+K+Ucayk=;
-        b=HoNWrQ4I0R7jZ/C3+jExC+WgYaUrcPUe11lYTpoHY2mtrRZrtbjBNcavDPqlDDTD9a
-         fmeMhNljEHbyz14k3Cpo0H0rPfozRBWMKOgD7h/x76BaSPu7XaUCMHWKfXJHQWvh6GCI
-         iGQs+YqVHJ+Q59VuBx1HMcJdQgmJVzLfnbNPeCTMCuCUXJVCi+Bem+kwr6VwoQn1n8HD
-         /KGGyOBNoNjsEGFjoy4w2EzNcSJVFXQ8kxi1vyQ5BwcQtpAAUavxUPBhyyzvZU+Ahivz
-         +Iwpc1pMsWfUh2Uu3f122jkiTGY2trIG08ZH6T+urj0BXyiVtsFcT7K+vRnnbasxqeIB
-         WAZA==
-X-Gm-Message-State: AOAM5330+tJCQeQlt42IA3O/TbP5NCsOt3PCsguIGCfxzi1j+axac1z/
-        YDxLAya+63GbNvqR8ByBhBCCIOow/6HyoI8ox3FL5w==
-X-Google-Smtp-Source: ABdhPJwofSmgGzYxpPFeSD3kewypH8C/hs/fMe8d3LyZt0QJ0QMPeZWUM6rZY0aBZXiBWIlwZRZEEVkixK7Uqv47zeY=
-X-Received: by 2002:a25:d213:: with SMTP id j19mr4915512ybg.20.1629999009793;
- Thu, 26 Aug 2021 10:30:09 -0700 (PDT)
+        id S243258AbhHZRy2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 13:54:28 -0400
+Received: from mga04.intel.com ([192.55.52.120]:51076 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S243252AbhHZRyX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Aug 2021 13:54:23 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10088"; a="215955240"
+X-IronPort-AV: E=Sophos;i="5.84,354,1620716400"; 
+   d="scan'208";a="215955240"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2021 10:53:36 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,354,1620716400"; 
+   d="scan'208";a="685018525"
+Received: from ranger.igk.intel.com ([10.102.21.164])
+  by fmsmga006.fm.intel.com with ESMTP; 26 Aug 2021 10:53:32 -0700
+Date:   Thu, 26 Aug 2021 19:37:33 +0200
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Jason Xing <kerneljasonxing@gmail.com>
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        songliubraving@fb.com, kafai@fb.com,
+        Eric Dumazet <eric.dumazet@gmail.com>, daniel@iogearbox.net,
+        Jason Xing <xingwanli@kuaishou.com>,
+        netdev <netdev@vger.kernel.org>, ast@kernel.org,
+        andrii@kernel.org, Shujin Li <lishujin@kuaishou.com>, yhs@fb.com,
+        kpsingh@kernel.org, kuba@kernel.org, bpf@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org,
+        David Miller <davem@davemloft.net>,
+        LKML <linux-kernel@vger.kernel.org>, hawk@kernel.org
+Subject: Re: [Intel-wired-lan] [PATCH v4] ixgbe: let the xdpdrv work with
+ more than 64 cpus
+Message-ID: <20210826173733.GA35972@ranger.igk.intel.com>
+References: <20210826141623.8151-1-kerneljasonxing@gmail.com>
+ <00890ff4-3264-337a-19cc-521a6434d1d0@gmail.com>
+ <860ead37-87f4-22fa-e4f3-5cadd0f2c85c@intel.com>
+ <CAL+tcoCovfAQmN_c43ScmjpO9D54CKP5XFTpx6VQpwJVxZhAdg@mail.gmail.com>
 MIME-Version: 1.0
-References: <20210826074526.825517-1-saravanak@google.com> <20210826074526.825517-3-saravanak@google.com>
- <96014c79-44f6-dea2-2b53-6cbfebac9351@gmail.com>
-In-Reply-To: <96014c79-44f6-dea2-2b53-6cbfebac9351@gmail.com>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Thu, 26 Aug 2021 10:29:33 -0700
-Message-ID: <CAGETcx96kS=Tfb3DeaBjETsNZHz+EKu8j7VpJfKpnVoQp_QgKw@mail.gmail.com>
-Subject: Re: [PATCH v1 2/2] net: dsa: rtl8366rb: Quick fix to work with fw_devlink=on
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
-        Alvin Sipraga <ALSI@bang-olufsen.dk>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-acpi@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAL+tcoCovfAQmN_c43ScmjpO9D54CKP5XFTpx6VQpwJVxZhAdg@mail.gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 26, 2021 at 4:25 AM Florian Fainelli <f.fainelli@gmail.com> wrote:
->
->
->
-> On 8/26/2021 9:45 AM, Saravana Kannan wrote:
-> > This is just a quick fix to make this driver work with fw_devlink=on.
-> > The proper fix might need a significant amount of rework of the driver
-> > of the framework to use a component device model.
+On Fri, Aug 27, 2021 at 01:03:16AM +0800, Jason Xing wrote:
+> On Fri, Aug 27, 2021 at 12:41 AM Jesse Brandeburg
+> <jesse.brandeburg@intel.com> wrote:
 > >
-> > Signed-off-by: Saravana Kannan <saravanak@google.com>
-> > ---
-> >   drivers/net/dsa/realtek-smi-core.c | 7 +++++++
-> >   1 file changed, 7 insertions(+)
+> > On 8/26/2021 9:18 AM, Eric Dumazet wrote:
 > >
-> > diff --git a/drivers/net/dsa/realtek-smi-core.c b/drivers/net/dsa/realtek-smi-core.c
-> > index 8e49d4f85d48..f79c174f4954 100644
-> > --- a/drivers/net/dsa/realtek-smi-core.c
-> > +++ b/drivers/net/dsa/realtek-smi-core.c
-> > @@ -394,6 +394,13 @@ static int realtek_smi_probe(struct platform_device *pdev)
-> >       var = of_device_get_match_data(dev);
-> >       np = dev->of_node;
+> > >> +static inline int ixgbe_determine_xdp_q_idx(int cpu)
+> > >> +{
+> > >> +    if (static_key_enabled(&ixgbe_xdp_locking_key))
+> > >> +            return cpu % IXGBE_MAX_XDP_QS;
+> > >> +    else
+> > >> +            return cpu;
+> > >
+> > > Even if num_online_cpus() is 8, the returned cpu here could be
+> > >
+> > > 0, 32, 64, 96, 128, 161, 197, 224
+> > >
+> > > Are we sure this will still be ok ?
 > >
-> > +     /* This driver assumes the child PHYs would be probed successfully
-> > +      * before this functions returns. That's not a valid assumption, but
-> > +      * let fw_devlink know so that this driver continues to function with
-> > +      * fw_devlink=on.
-> > +      */
-> > +     np->fwnode.flags |= FWNODE_FLAG_BROKEN_PARENT;
->
-> Are we positive this is not an issue that applies generally to all DSA
-> drivers?
+> > I'm not sure about that one myself. Jason?
 
-Possibly, but I don't know enough about that framework. Let me respond
-to the email from Andrew[1] and give a summary there. We can go from
-there.
+I meant num_possible_cpus(), Jason should have yelled at me in the first
+place, sorry. Lack of coffee probably. We use num_possible_cpus() on ice
+side.
 
-[1] - https://lore.kernel.org/lkml/YSeTdb6DbHbBYabN@lunn.ch/#t
--Saravana
+> >
+> > >
+> > >> +}
+> > >> +
+> > >>  static inline u8 ixgbe_max_rss_indices(struct ixgbe_adapter *adapter)
+> > >>  {
+> > >>      switch (adapter->hw.mac.type) {
+> > >> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
+> > >> index 0218f6c..884bf99 100644
+> > >> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
+> > >> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
+> > >> @@ -299,7 +299,10 @@ static void ixgbe_cache_ring_register(struct ixgbe_adapter *adapter)
+> > >>
+> > >>  static int ixgbe_xdp_queues(struct ixgbe_adapter *adapter)
+> > >>  {
+> > >> -    return adapter->xdp_prog ? nr_cpu_ids : 0;
+> > >> +    int queues;
+> > >> +
+> > >> +    queues = min_t(int, IXGBE_MAX_XDP_QS, num_online_cpus());
+> > >
+> > > num_online_cpus() might change later...
+> >
+> > I saw that too, but I wonder if it doesn't matter to the driver. If a
+> > CPU goes offline or comes online after the driver loads, we will use
+> > this logic to try to pick an available TX queue. But this is a
+> > complicated thing that is easy to get wrong, is there a common example
+> > of how to get it right?
+> >
+> 
+> Honestly, I'm a little confused right now. @nr_cpu_ids is the fixed
+> number which means the total number of cpus the machine has.
+> I think, using @nr_cpu_ids is safe one way or the other regardless of
+> whether the cpu goes offline or not. What do you think?
+> 
+> > A possible problem I guess is that if the "static_key_enabled" check
+> > returned false in the past, we would need to update that if the number
+> > of CPUs changes, do we need a notifier?
+> >
+> 
+> Things get complicated. If the number decreases down to
+> @IXGBE_MAX_XDP_QS (which is 64), the notifier could be useful because
+> we wouldn't need to use the @tx_lock. I'm wondering if we really need
+> to implement one notifier for this kind of change?
+> 
+> > Also, now that I'm asking it, I dislike the global as it would apply to
+> > all ixgbe ports and each PF would increment and decrement it
+> > independently. Showing my ignorance here, but I haven't seen this
+> > utility in the kernel before in detail. Not sure if this is "OK" from
+> > multiple device (with the same driver / global namespace) perspective.
+
+I'm not sure if there's a flawless solution to that. static key approach
+won't have an impact for < 64 cpus systems but if you trigger this on one
+PF then rest of the PFs that this driver is serving will be affected.
+
+OTOH see the discussion I had with Toke on a different approach:
+https://lore.kernel.org/bpf/20210601113236.42651-3-maciej.fijalkowski@intel.com/
+
+
+> >
+> _______________________________________________
+> Intel-wired-lan mailing list
+> Intel-wired-lan@osuosl.org
+> https://lists.osuosl.org/mailman/listinfo/intel-wired-lan
