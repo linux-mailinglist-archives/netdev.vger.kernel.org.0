@@ -2,207 +2,397 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 769653F85E2
-	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 12:52:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBDCB3F85F3
+	for <lists+netdev@lfdr.de>; Thu, 26 Aug 2021 12:57:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241775AbhHZKxZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 06:53:25 -0400
-Received: from mail-eopbgr1410123.outbound.protection.outlook.com ([40.107.141.123]:32198
-        "EHLO JPN01-OS2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234296AbhHZKxY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 26 Aug 2021 06:53:24 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RHO0Hfm4NMnwNpZPF7FmbOaO/rT/pOImrzctsGtjrkbIcF8fJnHy+Zs4vqIrn8PPgf3MGJfHJmWhCAyH0RfTmvnkN6gTfKAgjI860f2tIyOc0eLT9oFYQ8QkyR/TDPrHlPxtWGK6Lgg60CbBs5rZ17q8aRlU+DmAI+Vi7sTkZZplbdGI1o9nO3oRh83aEReZK+lf1IhT+bq7Z161p5yxxKCX6/i+OpdsjjaXLTB83gyB4UIofraNVVbAUt1uYc6SjfvQq9KLisGE/PJxwDJGDGGeIi7+/vWqfE4v8EXa/FYHFpTn3oEvtQtQbOxx78Oh4H73/jYjad/z6Ewo3wEwfQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=S4mjpWZbRhacf3RcFj8mFqbAFogGMcUC5CXTBynVn3U=;
- b=knrfgOG+M7A0gZNrZgWeIvDZRvwzv4TT8Z21SzYr3qwpR6sJTyVRPbe2ZbXKajmgacq6+9EDJgEPRXBubq36EuGB8UNU7RPYcrhTlwEE/wfDADIDcNGR9VWH9vCGZ6PP8lvW3vVMt52mqG5rDKXmZYHa8FVZw2eU1OJd3dwRGIy0tzLHmJQUnKyo+yWoZRrIgMz5v/URi9TQ7Oqmad/pYHqXhrF/mB/el6wXa4m1EGLjbDj0NNRW9VlFS/4R9J3hJLK1Dmcgu42b7P0/e0fwwmEx8J/YPxHgURD0ToORVjjeB/ltahgtdFEDjQPdLa7mEQauafehkW4o9EEXKJm6Ww==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
- header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
+        id S241861AbhHZK6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 06:58:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38042 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241491AbhHZK6I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 06:58:08 -0400
+Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BDF6C061757;
+        Thu, 26 Aug 2021 03:57:21 -0700 (PDT)
+Received: by mail-ot1-x333.google.com with SMTP id 61-20020a9d0d430000b02903eabfc221a9so2982409oti.0;
+        Thu, 26 Aug 2021 03:57:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=S4mjpWZbRhacf3RcFj8mFqbAFogGMcUC5CXTBynVn3U=;
- b=neOGvS+WImhhCrP/KGeTbAwphT/mVsmDWuwqA3FijY55QI8/24cqvwNqVMAUWvH/DWb1wS57u12WMTTBa6xykRJD8Miqgm31AjdyQQClkGtyq5kCRkO4EiFG1YXNrQsMJQXrNOtMsYKXlby472iVmr8pxtjfLOL3ndwZwF3Qy1A=
-Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com (2603:1096:604:bb::5)
- by OSAPR01MB2708.jpnprd01.prod.outlook.com (2603:1096:603:38::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.23; Thu, 26 Aug
- 2021 10:52:35 +0000
-Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com
- ([fe80::e111:61:43af:3b98]) by OS0PR01MB5922.jpnprd01.prod.outlook.com
- ([fe80::e111:61:43af:3b98%3]) with mapi id 15.20.4436.025; Thu, 26 Aug 2021
- 10:52:34 +0000
-From:   Biju Das <biju.das.jz@bp.renesas.com>
-To:     Sergey Shtylyov <s.shtylyov@omp.ru>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Adam Ford <aford173@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>
-Subject: RE: [PATCH net-next 04/13] ravb: Add ptp_cfg_active to struct
- ravb_hw_info
-Thread-Topic: [PATCH net-next 04/13] ravb: Add ptp_cfg_active to struct
- ravb_hw_info
-Thread-Index: AQHXmX8jVvjbtjTRLEe2lQMMRo0BcquEr1UAgAChqBCAAEagAIAAAOMggAACgwCAAAEbsA==
-Date:   Thu, 26 Aug 2021 10:52:34 +0000
-Message-ID: <OS0PR01MB5922F8114A505A33F7A47EB586C79@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-References: <20210825070154.14336-1-biju.das.jz@bp.renesas.com>
- <20210825070154.14336-5-biju.das.jz@bp.renesas.com>
- <777c30b1-e94e-e241-b10c-ecd4d557bc06@omp.ru>
- <OS0PR01MB59220BCAE40B6C8226E4177986C79@OS0PR01MB5922.jpnprd01.prod.outlook.com>
- <78ff279d-03f1-6932-88d8-1eac83d087ec@omp.ru>
- <OS0PR01MB59223F0F03CC9F5957268D2086C79@OS0PR01MB5922.jpnprd01.prod.outlook.com>
- <9b0d5bab-e9a2-d9f6-69f7-049bfb072eba@omp.ru>
-In-Reply-To: <9b0d5bab-e9a2-d9f6-69f7-049bfb072eba@omp.ru>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: omp.ru; dkim=none (message not signed)
- header.d=none;omp.ru; dmarc=none action=none header.from=bp.renesas.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: dabcb6f9-48dd-476c-8cea-08d9687f9cbd
-x-ms-traffictypediagnostic: OSAPR01MB2708:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <OSAPR01MB270857FE3850FBED1D3B4E2E86C79@OSAPR01MB2708.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: hV6MKvD01flrn7zrGngq2Aoo1CyUnXaFlbCTtjvTwpc1oceJwrdGbVDjQge0HaHwBty4HzwvfMekNPCoxPxwcXcp6FjXyUWryXirg5Sr9pMJBttLh0k36EcoMsgs1TonarUcXOxvDEmwE6fxAQRn5l1U7c/su8PHPZk/dHx5fxtOSPqp+mmDxm839u7X0AC6zW//3liJ3QgD5udp0nM6SXwcqZmuPNvzH96lkZPkAF5dywY5+bBvpYJi6hiQfKv69pB8J0ATWE14QwAl01UcETDHz1a2N+nJMFGNEgwPyW0ueJIiDI+D+MEPgXL1nZATCZZZS81Uk0KmJ2Wh2h6O3W0mlT6hRzko7l32WYgEktQarE4+WbwRzIcbeKfMPwtJLVQk8yJjrXXlyDUtj3U9QGZf1z/DJqsSvL4KddhIZ6EMuG+uKcHoG1MSvE7VuYul51Wa0+hXBKnqeXQgROAmMQsMD/NpeD3sdBBwjzxDk4u3cT99F0dyHxy6/d0gRixERzxLSk9vxoaYg7veejsOrfCK4WOQRFpdhtpUqtnla5h0gYETnsy9rTIB5jo1mEObtxnKEmD79I6kM8wSzv0GKd0HnUxAtuKaK5g5YroYjvcvHDjIeX2M64oDvIcO6T9KMMF2/byu/Y64Pb4ySzIs9xTM90DCNygOcJYPjQPcaHMw6qa0xfbEZPGCw4McoyJYbZcDbCwIMW6Od6qLeFlj9Dm2x+2pCTbPQjfmhJvhGulbWNi6ShgG1dFLc+5ldi0mq4NevB2eWtd0A6Uy8Myyb3BNaEHQasIcHdqFhKLRMA0=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS0PR01MB5922.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(366004)(396003)(376002)(39860400002)(136003)(76116006)(33656002)(316002)(71200400001)(9686003)(66946007)(107886003)(478600001)(83380400001)(55016002)(66556008)(66446008)(64756008)(66476007)(186003)(4326008)(2906002)(8936002)(38070700005)(5660300002)(86362001)(52536014)(8676002)(6506007)(26005)(53546011)(7696005)(38100700002)(110136005)(122000001)(54906003)(966005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?anltdEQ4U0gvbFBjR1I5NUhKV0VoSk0rR3Y4NU03dzRiS3BVYWlwQ1AxZzB4?=
- =?utf-8?B?cS9Md21ZR3NQcnR4QmF1djNkS1ZkejZKcDM5NEZ2d1FnYlNHdUtsNG1Fczdw?=
- =?utf-8?B?a0Z2UFYwckhnUERzY3NjdG5OcDhac1ZGQlRycjI1VU10eFRhOHdYTEhPNHNp?=
- =?utf-8?B?RW9kL25YakVPYUt4clhwSlZ2b3l4QjlaLzBEYkhtVEVIMWNBdDI3R0ZRNGJh?=
- =?utf-8?B?cFBUM0VyZ1kxNktiMTFnOG1Sbi84K1ZoZGxwQUhtbnZIRm90WkdMaWtwenhj?=
- =?utf-8?B?elFYcXJ4dnlwY2E2Nnl4TUg4SVh2VCtnaldmVjlmcy8xVzQwaTJONlhneHBz?=
- =?utf-8?B?eVQ3SkZNaDR4Y1IvV0t4aEY1VjBYaGNqTGlpdGZuR0VnbEtnNWhTdjRlOGVs?=
- =?utf-8?B?VWh6TzNSTzFYcGozWDlCaklmczJjZldaK2NDd2xYK2pkeDBNTldXSUQzeXhB?=
- =?utf-8?B?WkNoNU4zdjQrdkNiaDdoSnI0cWRmWUpVbFZNZ1RQa1RmR2tST0t6eUtOejAv?=
- =?utf-8?B?c0d6NkU5YkFVRmZzR3I4UnQ4TGZ6VXZaRGdsdVFnV0prdHEvYU9FOFB3OXV0?=
- =?utf-8?B?dWJXQXN4U3VYbG5oWDhYTVhiR05FMVdqQ0dpUUp0NVdBVi9RcW5DRWswdFM0?=
- =?utf-8?B?RVJtQ0RlMzBlWXU0WXdlUmZwdDRzZkl4cndtblNHQWNLNTltdVorZ3FyMEFm?=
- =?utf-8?B?ZmJXV2pnaGZpQjFtN1dBZUhUUmtTSTZZWitxY0hRSG5FMmpXQVUyV3BjaHR0?=
- =?utf-8?B?dDNTTlRmcmxDTURBY1ZjL0ZLeE1Id3FPbHV2VmxJODVEbmVvRENsTGM3d2xY?=
- =?utf-8?B?N2pjdGpicDBBd2JoMmNqcXA3elhwYzVoMUJjWlVRWE8vNit2Q3lPc0NlMU41?=
- =?utf-8?B?WGExa1U1V2FFYllPM1JkRXR2UGZzMnh1VFJMTUpJQi9TbTF1NTFvam1UQTBx?=
- =?utf-8?B?Z1FQeFh2NFhXZmM1M0lxcFozYWQrSWZLN042YmMwaEpnbnR2WmFHb1BrQjZM?=
- =?utf-8?B?TTlHSys3bXBHNlk1ZmxsUjQvd1VLWUlZMDB5TjhkZXMzNlV4Q2Y3cGhCdXNn?=
- =?utf-8?B?b3dnbFN4OVdmTWhBTkE1OUZvQjRvTW5XREFZdWdlMXk2UjRaektHejc5RlZD?=
- =?utf-8?B?Tkl6dWRRT09WUzJ3WTdXNFRoekxDWEhBbitaeklUMS9rSHNHMDlNUC9Wei9P?=
- =?utf-8?B?WFdVWlpwRHlWbis5NitqYjllOFlMT0gzNDZjb2FuaVNmUTNLb3NSR1FEd2t6?=
- =?utf-8?B?WnhnT01lVkNmczdNR2E0b2ZSZjNXMVFzTnJiS3FZSTZjcWZlYkh3bm5PbVhn?=
- =?utf-8?B?WHpSNGhlL3U3K09iczFOckVYbERjQWN0a0lFRnU5Q01NUjJZQUpvM2o2Qjl0?=
- =?utf-8?B?bjU1NjhVU3ZKa0dOVzZSZ3NEdWVXakNFbHc4N3dtK0ppWEM2ZXRVdDcwVFd1?=
- =?utf-8?B?cDhHaDZkenNOaVI4MjVpa09ub21OcWlEa1p5eVBTL1RwZGYxaUxhRGMzRzhM?=
- =?utf-8?B?UUVIY0Noc2E1TnBicmdSTG12VjR1SzdFTGtWejBPMk43T1dhMVJOTjBjbEhm?=
- =?utf-8?B?azZhcEo0cVQ4L09NejJadExiZnliOVg5YXJJbHg5Z0RPWjdpczg0a0YzODln?=
- =?utf-8?B?Z0tqWHZKcHZLSFBUZEI0bzVYbzF6TFh1R3FPMzZtUXRLSi9mcW85Vk9JYU80?=
- =?utf-8?B?bEFuRW9TUktIcmRNRWJoNnFzUEpRSzdEQWFiYldGcGtoNGNhWFlUdnE1amlP?=
- =?utf-8?Q?eaAIh4x2AuhR5d+d31MM/g4bXf3JwVG+WW2d0Tk?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BpVfgPJQqu1T2BNyWHG4aZ/UYKO1p3kvDq2Q9ndPgME=;
+        b=XDJ18b5ZVJB2beq6iBiNjw3ggE5o88SBOKTMhYWM1AZKABXMwKaHFBk14eohc6/CF1
+         apkQ4+sL5ND8iU2qX2I2AJVeZkjcrm1ovl90+iJUqtkrwipsIsMl+CDxPuMv3y0K9Tpy
+         r1ta24VdFuYn+cEhgNiFgRz3LTjOjIrXDV5JbWD0OvAm6rgAGJ8mOiw7JMDa4I2bAYPl
+         +r0AoiPNTEqiTnLMcn1w1K0GCX3yBmiqWZdWEeUePj0NsqRREBzZsTHMyi1aOOHN7W/q
+         FFzTTdHAg8xdX9bhX78m66qMz0hjx3jNi7Ox1BcxmWTYuLR1jZIdIqsoBehyVJXKbq6u
+         bjPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BpVfgPJQqu1T2BNyWHG4aZ/UYKO1p3kvDq2Q9ndPgME=;
+        b=J2VjJBlza0YyGy6tFN0vU5u6OMlH/QDsUyVsauLSmKS++S9DfzY98prMmoDihoA5vE
+         kIz3VrKV287+PqXyEz7P9maPVYW7KD4PA3kId1atCuh9VBahYGW0b35e5kZTJ2TvrB9y
+         E84mRodk1jUCtPFRMOvSAEmD9k0PLDGOF0iJi9DNx0ZCoG4qpzGd2Yr1vvg+tUeoWqpW
+         cr+Aj0gR/3XlA+Hk3rgKX6KbzSrUw4bVcgYmYzdVLO8QTnVcbWQOcZjTcJVs3FJjDIBM
+         MezJW0825kUiQN620BUx2WoMDyltf/Kdw2dFx9mx/Y16cnQo5YoKNXHVlJ7MUPdgwlx4
+         1wLA==
+X-Gm-Message-State: AOAM530OWbwLSGcLbQ5pLn/EAkzrSKIcptpFPNQ0ZgSaUnLw/Gmm2w0/
+        rNFNApt63xjcdVuozMiA2OWegBdHG0sLlkS7tmeSFiY9QjqVJhLxUp0=
+X-Google-Smtp-Source: ABdhPJxYXHa5/Xu+/ZaqXVrsg7/WZWWxRj1w+vKFhJO3lD7AgYRCU3hMtNmmVotEo9kaAw9NlrR2ZipbdgPSTOvDymY=
+X-Received: by 2002:a9d:4e96:: with SMTP id v22mr2432942otk.110.1629975440633;
+ Thu, 26 Aug 2021 03:57:20 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: bp.renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: OS0PR01MB5922.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dabcb6f9-48dd-476c-8cea-08d9687f9cbd
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Aug 2021 10:52:34.7537
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: fMenV8Rw9DP4tCobJPGdgYvoOaEqFOAkeY8nXL26fkhJWkHG97+O3AmvL1vaDx3020V+t0oNpUhuyNIAbasKgwoillsVxu0DwB9i2s17L1Y=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSAPR01MB2708
+References: <CAL+tcoDUhZfy3NTx4TOv3wa1f8SMkNhzNpVS5qyySaVOm6L-qQ@mail.gmail.com>
+ <20210825120241.7389-1-kerneljasonxing@gmail.com> <20210826085148.GB26792@ranger.igk.intel.com>
+In-Reply-To: <20210826085148.GB26792@ranger.igk.intel.com>
+From:   Jason Xing <kerneljasonxing@gmail.com>
+Date:   Thu, 26 Aug 2021 18:56:44 +0800
+Message-ID: <CAL+tcoCrOc1L+Y_SeScYJXjn542GYvu9n7EMhN_75h-P4FQFoQ@mail.gmail.com>
+Subject: Re: [PATCH v2] ixgbe: let the xdpdrv work with more than 64 cpus
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        David Miller <davem@davemloft.net>, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
+        john.fastabend@gmail.com, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org,
+        intel-wired-lan@lists.osuosl.org, netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf@vger.kernel.org,
+        Jason Xing <xingwanli@kuaishou.com>,
+        Shujin Li <lishujin@kuaishou.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgU2VyZ2VpLA0KDQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggbmV0LW5leHQgMDQvMTNdIHJhdmI6
-IEFkZCBwdHBfY2ZnX2FjdGl2ZSB0byBzdHJ1Y3QNCj4gcmF2Yl9od19pbmZvDQo+IA0KPiBPbiAy
-Ni4wOC4yMDIxIDEzOjM0LCBCaWp1IERhcyB3cm90ZToNCj4gDQo+IFsuLi5dDQo+ID4+Pj4+IFRo
-ZXJlIGFyZSBzb21lIEgvVyBkaWZmZXJlbmNlcyBmb3IgdGhlIGdQVFAgZmVhdHVyZSBiZXR3ZWVu
-IFItQ2FyDQo+ID4+Pj4+IEdlbjMsIFItQ2FyIEdlbjIsIGFuZCBSWi9HMkwgYXMgYmVsb3cuDQo+
-ID4+Pj4+DQo+ID4+Pj4+IDEpIE9uIFItQ2FyIEdlbjMsIGdQVFAgc3VwcG9ydCBpcyBhY3RpdmUg
-aW4gY29uZmlnIG1vZGUuDQo+ID4+Pj4+IDIpIE9uIFItQ2FyIEdlbjIsIGdQVFAgc3VwcG9ydCBp
-cyBub3QgYWN0aXZlIGluIGNvbmZpZyBtb2RlLg0KPiA+Pj4+PiAzKSBSWi9HMkwgZG9lcyBub3Qg
-c3VwcG9ydCB0aGUgZ1BUUCBmZWF0dXJlLg0KPiA+Pj4+Pg0KPiA+Pj4+PiBBZGQgYSBwdHBfY2Zn
-X2FjdGl2ZSBodyBmZWF0dXJlIGJpdCB0byBzdHJ1Y3QgcmF2Yl9od19pbmZvIGZvcg0KPiA+Pj4+
-PiBzdXBwb3J0aW5nIGdQVFAgYWN0aXZlIGluIGNvbmZpZyBtb2RlIGZvciBSLUNhciBHZW4zLg0K
-PiA+Pj4+DQo+ID4+Pj4gICAgICBXYWl0LCB3ZSd2ZSBqdXN0IGRvbmUgdGhpcyBpb24gdGhlIHBy
-ZXZpb3VzIHBhdGNoIQ0KPiA+Pj4+DQo+ID4+Pj4+IFRoaXMgcGF0Y2ggYWxzbyByZW1vdmVzIGVu
-dW0gcmF2Yl9jaGlwX2lkLCBjaGlwX2lkIGZyb20gYm90aA0KPiA+Pj4+PiBzdHJ1Y3QgcmF2Yl9o
-d19pbmZvIGFuZCBzdHJ1Y3QgcmF2Yl9wcml2YXRlLCBhcyBpdCBpcyB1bnVzZWQuDQo+ID4+Pj4+
-DQo+ID4+Pj4+IFNpZ25lZC1vZmYtYnk6IEJpanUgRGFzIDxiaWp1LmRhcy5qekBicC5yZW5lc2Fz
-LmNvbT4NCj4gPj4+Pj4gUmV2aWV3ZWQtYnk6IExhZCBQcmFiaGFrYXINCj4gPj4+Pj4gPHByYWJo
-YWthci5tYWhhZGV2LWxhZC5yakBicC5yZW5lc2FzLmNvbT4NCj4gPj4+Pj4gLS0tDQo+ID4+Pj4+
-ICAgIGRyaXZlcnMvbmV0L2V0aGVybmV0L3JlbmVzYXMvcmF2Yi5oICAgICAgfCAgOCArLS0tLS0t
-LQ0KPiA+Pj4+PiAgICBkcml2ZXJzL25ldC9ldGhlcm5ldC9yZW5lc2FzL3JhdmJfbWFpbi5jIHwg
-MTIgKysrKystLS0tLS0tDQo+ID4+Pj4+ICAgIDIgZmlsZXMgY2hhbmdlZCwgNiBpbnNlcnRpb25z
-KCspLCAxNCBkZWxldGlvbnMoLSkNCj4gPj4+Pj4NCj4gPj4+Pj4gZGlmZiAtLWdpdCBhL2RyaXZl
-cnMvbmV0L2V0aGVybmV0L3JlbmVzYXMvcmF2Yi5oDQo+ID4+Pj4+IGIvZHJpdmVycy9uZXQvZXRo
-ZXJuZXQvcmVuZXNhcy9yYXZiLmgNCj4gPj4+Pj4gaW5kZXggOWVjZjFhOGMzY2E4Li4yMDllMDMw
-OTM1YWEgMTAwNjQ0DQo+ID4+Pj4+IC0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L3JlbmVzYXMv
-cmF2Yi5oDQo+ID4+Pj4+ICsrKyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L3JlbmVzYXMvcmF2Yi5o
-DQo+ID4+Pj4+IEBAIC05NzksMTcgKzk3OSwxMSBAQCBzdHJ1Y3QgcmF2Yl9wdHAgew0KPiA+Pj4+
-PiAgICAJc3RydWN0IHJhdmJfcHRwX3Blcm91dCBwZXJvdXRbTl9QRVJfT1VUXTsgIH07DQo+ID4+
-Pj4+DQo+ID4+Pj4+IC1lbnVtIHJhdmJfY2hpcF9pZCB7DQo+ID4+Pj4+IC0JUkNBUl9HRU4yLA0K
-PiA+Pj4+PiAtCVJDQVJfR0VOMywNCj4gPj4+Pj4gLX07DQo+ID4+Pj4+IC0NCj4gPj4+Pj4gICAg
-c3RydWN0IHJhdmJfaHdfaW5mbyB7DQo+ID4+Pj4+ICAgIAljb25zdCBjaGFyICgqZ3N0cmluZ3Nf
-c3RhdHMpW0VUSF9HU1RSSU5HX0xFTl07DQo+ID4+Pj4+ICAgIAlzaXplX3QgZ3N0cmluZ3Nfc2l6
-ZTsNCj4gPj4+Pj4gICAgCW5ldGRldl9mZWF0dXJlc190IG5ldF9od19mZWF0dXJlczsNCj4gPj4+
-Pj4gICAgCW5ldGRldl9mZWF0dXJlc190IG5ldF9mZWF0dXJlczsNCj4gPj4+Pj4gLQllbnVtIHJh
-dmJfY2hpcF9pZCBjaGlwX2lkOw0KPiA+Pj4+PiAgICAJaW50IHN0YXRzX2xlbjsNCj4gPj4+Pj4g
-ICAgCXNpemVfdCBtYXhfcnhfbGVuOw0KPiA+Pj4+DQo+ID4+Pj4gICAgICBJIHdvdWxkIHB1dCB0
-aGUgYWJvdmUgaW4gYSBzcGVhcnRlIHBhdGNoLi4uDQo+ID4+DQo+ID4+ICAgICAgU2VwYXJhdGUu
-IDotKQ0KPiA+Pg0KPiA+Pj4+PiAgICAJdW5zaWduZWQgYWxpZ25lZF90eDogMTsNCj4gPj4+Pj4g
-QEAgLTk5OSw2ICs5OTMsNyBAQCBzdHJ1Y3QgcmF2Yl9od19pbmZvIHsNCj4gPj4+Pj4gICAgCXVu
-c2lnbmVkIHR4X2NvdW50ZXJzOjE7CQkvKiBFLU1BQyBoYXMgVFggY291bnRlcnMgKi8NCj4gPj4+
-Pj4gICAgCXVuc2lnbmVkIG11bHRpX2lycXM6MTsJCS8qIEFWQi1ETUFDIGFuZCBFLU1BQyBoYXMN
-Cj4gPj4gbXVsdGlwbGUNCj4gPj4+PiBpcnFzICovDQo+ID4+Pj4+ICAgIAl1bnNpZ25lZCBub19w
-dHBfY2ZnX2FjdGl2ZToxOwkvKiBBVkItRE1BQyBkb2VzIG5vdCBzdXBwb3J0DQo+ID4+IGdQVFAN
-Cj4gPj4+PiBhY3RpdmUgaW4gY29uZmlnIG1vZGUgKi8NCj4gPj4+Pj4gKwl1bnNpZ25lZCBwdHBf
-Y2ZnX2FjdGl2ZToxOwkvKiBBVkItRE1BQyBoYXMgZ1BUUCBzdXBwb3J0DQo+IGFjdGl2ZSBpbg0K
-PiA+Pj4+IGNvbmZpZyBtb2RlICovDQo+ID4+Pj4NCj4gPj4+PiAgICAgIEh1aD8NCj4gPj4+Pg0K
-PiA+Pj4+PiAgICB9Ow0KPiA+Pj4+Pg0KPiA+Pj4+PiAgICBzdHJ1Y3QgcmF2Yl9wcml2YXRlIHsN
-Cj4gPj4+PiBbLi4uXQ0KPiA+Pj4+PiBAQCAtMjIxNiw3ICsyMjEzLDcgQEAgc3RhdGljIGludCBy
-YXZiX3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UNCj4gPj4+PiAqcGRldikNCj4gPj4+Pj4g
-ICAgCUlOSVRfTElTVF9IRUFEKCZwcml2LT50c19za2JfbGlzdCk7DQo+ID4+Pj4+DQo+ID4+Pj4+
-ICAgIAkvKiBJbml0aWFsaXNlIFBUUCBDbG9jayBkcml2ZXIgKi8NCj4gPj4+Pj4gLQlpZiAoaW5m
-by0+Y2hpcF9pZCAhPSBSQ0FSX0dFTjIpDQo+ID4+Pj4+ICsJaWYgKGluZm8tPnB0cF9jZmdfYWN0
-aXZlKQ0KPiA+Pj4+PiAgICAJCXJhdmJfcHRwX2luaXQobmRldiwgcGRldik7DQo+ID4+Pj4NCj4g
-Pj4+PiAgICAgIFdoYXQncyB0aGF0PyBEaWRuJ3QgeW91IHRvdWNoIHRoaXMgbGllIGluIHBhdGNo
-ICMzPw0KPiA+Pj4+DQo+ID4+Pj4gICAgICBUaGlzIHNlZW1zIGxpZSBhIE5BSyBiYWl0Li4uIDot
-KA0KPiA+Pj4NCj4gPj4+IFBsZWFzZSByZWZlciB0aGUgb3JpZ2luYWwgcGF0Y2hbMV0gd2hpY2gg
-aW50cm9kdWNlZCBnUFRQIHN1cHBvcnQNCj4gPj4+IGFjdGl2ZQ0KPiA+PiBpbiBjb25maWcgbW9k
-ZS4NCj4gPj4+IEkgYW0gc3VyZSB0aGlzIHdpbGwgY2xlYXIgYWxsIHlvdXIgZG91YnRzLg0KPiA+
-Pg0KPiA+PiAgICAgIEl0IGhhc24ndC4gV2h5IGRvIHdlIG5lZWQgMiBiaXQgZmllbGRzICgxICJw
-b3NpdGl2ZSIgYW5kIDENCj4gPj4gIm5lZ2F0aXZlIikgZm9yIHRoZSBzYW1lIGZlYXR1cmUgaXMg
-YmV5b25kIG1lLg0KPiA+DQo+ID4gVGhlIHJlYXNvbiBpcyBtZW50aW9uZWQgaW4gY29tbWl0IGRl
-c2NyaXB0aW9uLCBEbyB5b3UgYWdyZWUgMSwgMiBhbmQgMw0KPiBtdXR1YWxseSBleGNsdXNpdmU/
-DQo+ID4NCj4gPiAxKSBPbiBSLUNhciBHZW4zLCBnUFRQIHN1cHBvcnQgaXMgYWN0aXZlIGluIGNv
-bmZpZyBtb2RlLg0KPiA+IDIpIE9uIFItQ2FyIEdlbjIsIGdQVFAgc3VwcG9ydCBpcyBub3QgYWN0
-aXZlIGluIGNvbmZpZyBtb2RlLg0KPiA+IDMpIFJaL0cyTCBkb2VzIG5vdCBzdXBwb3J0IHRoZSBn
-UFRQIGZlYXR1cmUuDQo+IA0KPiAgICAgTm8sICgxKSBpbmNsdWRlcyAoMikuDQoNCnBhdGNoWzFd
-IGlzIGZvciBzdXBwb3J0aW5nIGdQVFAgc3VwcG9ydCBhY3RpdmUgaW4gY29uZmlnIG1vZGUuDQoN
-CkRvIHlvdSBhZ3JlZSBHQUMgcmVnaXN0ZXIoZ1BUUCBhY3RpdmUgaW4gQ29uZmlnKSBiaXQgaW4g
-QVZCLURNQUMgbW9kZSByZWdpc3RlcihDQ0MpIHByZXNlbnQgb25seSBpbiBSLUNhciBHZW4zPw0K
-DQpbMV0gaHR0cHM6Ly9naXQua2VybmVsLm9yZy9wdWIvc2NtL2xpbnV4L2tlcm5lbC9naXQvbmV4
-dC9saW51eC1uZXh0LmdpdC9jb21taXQvZHJpdmVycy9uZXQvZXRoZXJuZXQvcmVuZXNhcy9yYXZi
-X21haW4uYz9oPW5leHQtMjAyMTA4MjUmaWQ9ZjVkNzgzN2Y5NmU1M2E4YzliNmM0OWUxYmM5NWNm
-MGFlODhiOTllOA0KDQpSZWdhcmRzLA0KQmlqdQ0KDQo+IA0KPiBbLi4uXQ0KPiANCj4gPiBSZWdh
-cmRzLA0KPiA+IEJpanUNCj4gDQo+IFsuLi5dDQo+IA0KPiBNQlIsIFNlcmdleQ0K
+On Thu, Aug 26, 2021 at 5:07 PM Maciej Fijalkowski
+<maciej.fijalkowski@intel.com> wrote:
+>
+> On Wed, Aug 25, 2021 at 08:02:41PM +0800, kerneljasonxing@gmail.com wrote:
+> > From: Jason Xing <xingwanli@kuaishou.com>
+> >
+> > Originally, ixgbe driver doesn't allow the mounting of xdpdrv if the
+> > server is equipped with more than 64 cpus online. So it turns out that
+> > the loading of xdpdrv causes the "NOMEM" failure.
+> >
+> > Actually, we can adjust the algorithm and then make it work through
+> > mapping the current cpu to some xdp ring with the protect of @tx_lock.
+> >
+> > Considering the performance of xdpdrv mode, I add another limit like ice
+> > driver where the number of cpus should be within the twice of
+> > MAX_XDP_QUEUES.
+>
+> Have you measured the impact on perf that this patch yields? On ice XDP
+> ring pointers are propagated to Rx ring on setup path whereas you
+> currently retrieve it per each xmitted frame.
+>
+
+Not yet. I have not found the proper environment to test the real
+performance with different cases. At first, I thought this patch could
+map different cpus to the same queues with the @tx_lock which would do
+harm to the performance to some extent.
+
+I decided to get rid of this description.
+
+> >
+> > v2:
+> > - Adjust cpu id in ixgbe_xdp_xmit(). (Jesper)
+> > - Add a fallback path. (Maciej)
+> > - Adjust other parts related to xdp ring.
+> >
+> > Fixes: 33fdc82f08 ("ixgbe: add support for XDP_TX action")
+> > Co-developed-by: Shujin Li <lishujin@kuaishou.com>
+> > Signed-off-by: Shujin Li <lishujin@kuaishou.com>
+> > Signed-off-by: Jason Xing <xingwanli@kuaishou.com>
+> > ---
+> >  drivers/net/ethernet/intel/ixgbe/ixgbe.h      | 11 +++++
+> >  drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c  |  6 ++-
+> >  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 63 ++++++++++++++++++++-------
+> >  drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c  | 15 ++++---
+> >  4 files changed, 72 insertions(+), 23 deletions(-)
+> >
+> > diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe.h b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
+> > index a604552..466b2b0 100644
+> > --- a/drivers/net/ethernet/intel/ixgbe/ixgbe.h
+> > +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
+> > @@ -82,6 +82,8 @@
+> >  #define IXGBE_2K_TOO_SMALL_WITH_PADDING \
+> >  ((NET_SKB_PAD + IXGBE_RXBUFFER_1536) > SKB_WITH_OVERHEAD(IXGBE_RXBUFFER_2K))
+> >
+> > +DECLARE_STATIC_KEY_FALSE(ixgbe_xdp_locking_key);
+> > +
+> >  static inline int ixgbe_compute_pad(int rx_buf_len)
+> >  {
+> >       int page_size, pad_size;
+> > @@ -351,6 +353,7 @@ struct ixgbe_ring {
+> >       };
+> >       u16 rx_offset;
+> >       struct xdp_rxq_info xdp_rxq;
+> > +     spinlock_t tx_lock;     /* used in XDP mode */
+> >       struct xsk_buff_pool *xsk_pool;
+> >       u16 ring_idx;           /* {rx,tx,xdp}_ring back reference idx */
+> >       u16 rx_buf_len;
+> > @@ -772,6 +775,14 @@ struct ixgbe_adapter {
+> >  #endif /* CONFIG_IXGBE_IPSEC */
+> >  };
+> >
+> > +static inline int ixgbe_determine_xdp_cpu(int cpu)
+> > +{
+> > +     if (static_key_enabled(&ixgbe_xdp_locking_key))
+> > +             return cpu % MAX_XDP_QUEUES;
+> > +     else
+> > +             return cpu;
+> > +}
+> > +
+> >  static inline u8 ixgbe_max_rss_indices(struct ixgbe_adapter *adapter)
+> >  {
+> >       switch (adapter->hw.mac.type) {
+> > diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
+> > index 0218f6c..d6b58e1 100644
+> > --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
+> > +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
+> > @@ -299,7 +299,7 @@ static void ixgbe_cache_ring_register(struct ixgbe_adapter *adapter)
+> >
+> >  static int ixgbe_xdp_queues(struct ixgbe_adapter *adapter)
+> >  {
+> > -     return adapter->xdp_prog ? nr_cpu_ids : 0;
+> > +     return adapter->xdp_prog ? min_t(int, MAX_XDP_QUEUES, nr_cpu_ids) : 0;
+>
+> AFAIK nr_cpu_ids will give you the max possible cpus on the underlying
+> system, maybe we should stick to num_online_cpus() instead?
+>
+
+Sure, I'll do that change. Maybe we should also stick to
+num_online_cpus() in the function ixgbe_xdp_setup()?
+
+> >  }
+> >
+> >  #define IXGBE_RSS_64Q_MASK   0x3F
+> > @@ -947,6 +947,7 @@ static int ixgbe_alloc_q_vector(struct ixgbe_adapter *adapter,
+> >               ring->count = adapter->tx_ring_count;
+> >               ring->queue_index = xdp_idx;
+> >               set_ring_xdp(ring);
+> > +             spin_lock_init(&ring->tx_lock);
+> >
+> >               /* assign ring to adapter */
+> >               WRITE_ONCE(adapter->xdp_ring[xdp_idx], ring);
+> > @@ -1032,6 +1033,9 @@ static void ixgbe_free_q_vector(struct ixgbe_adapter *adapter, int v_idx)
+> >       adapter->q_vector[v_idx] = NULL;
+> >       __netif_napi_del(&q_vector->napi);
+> >
+> > +     if (static_key_enabled(&ixgbe_xdp_locking_key))
+> > +             static_branch_dec(&ixgbe_xdp_locking_key);
+> > +
+> >       /*
+> >        * after a call to __netif_napi_del() napi may still be used and
+> >        * ixgbe_get_stats64() might access the rings on this vector,
+> > diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> > index 14aea40..4c94577 100644
+> > --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> > +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> > @@ -165,6 +165,9 @@ static int ixgbe_notify_dca(struct notifier_block *, unsigned long event,
+> >  MODULE_DESCRIPTION("Intel(R) 10 Gigabit PCI Express Network Driver");
+> >  MODULE_LICENSE("GPL v2");
+> >
+> > +DEFINE_STATIC_KEY_FALSE(ixgbe_xdp_locking_key);
+> > +EXPORT_SYMBOL(ixgbe_xdp_locking_key);
+> > +
+> >  static struct workqueue_struct *ixgbe_wq;
+> >
+> >  static bool ixgbe_check_cfg_remove(struct ixgbe_hw *hw, struct pci_dev *pdev);
+> > @@ -2422,13 +2425,14 @@ static int ixgbe_clean_rx_irq(struct ixgbe_q_vector *q_vector,
+> >               xdp_do_flush_map();
+> >
+> >       if (xdp_xmit & IXGBE_XDP_TX) {
+> > -             struct ixgbe_ring *ring = adapter->xdp_ring[smp_processor_id()];
+> > +             int cpu = ixgbe_determine_xdp_cpu(smp_processor_id());
+> > +             struct ixgbe_ring *ring = adapter->xdp_ring[cpu];
+> >
+> > -             /* Force memory writes to complete before letting h/w
+> > -              * know there are new descriptors to fetch.
+> > -              */
+> > -             wmb();
+> > -             writel(ring->next_to_use, ring->tail);
+> > +             if (static_branch_unlikely(&ixgbe_xdp_locking_key))
+> > +                     spin_lock(&ring->tx_lock);
+> > +             ixgbe_xdp_ring_update_tail(ring);
+> > +             if (static_branch_unlikely(&ixgbe_xdp_locking_key))
+> > +                     spin_unlock(&ring->tx_lock);
+> >       }
+> >
+> >       u64_stats_update_begin(&rx_ring->syncp);
+> > @@ -8539,21 +8543,33 @@ static u16 ixgbe_select_queue(struct net_device *dev, struct sk_buff *skb,
+> >  int ixgbe_xmit_xdp_ring(struct ixgbe_adapter *adapter,
+> >                       struct xdp_frame *xdpf)
+> >  {
+> > -     struct ixgbe_ring *ring = adapter->xdp_ring[smp_processor_id()];
+> > +     struct ixgbe_ring *ring;
+>
+> RCT is being broken in here
+
+Sorry, I have no idea about what the RCT is. Is that kind of format?
+Does that mean I should change the position of those lines to make it
+look better?
+
+>
+> >       struct ixgbe_tx_buffer *tx_buffer;
+> >       union ixgbe_adv_tx_desc *tx_desc;
+> >       u32 len, cmd_type;
+> >       dma_addr_t dma;
+> >       u16 i;
+> > +     int cpu;
+> > +     int ret;
+>
+> Ditto
+>
+> >
+> >       len = xdpf->len;
+> >
+> > -     if (unlikely(!ixgbe_desc_unused(ring)))
+> > -             return IXGBE_XDP_CONSUMED;
+> > +     cpu = ixgbe_determine_xdp_cpu(smp_processor_id());
+> > +     ring = adapter->xdp_ring[cpu];
+> > +
+> > +     if (static_branch_unlikely(&ixgbe_xdp_locking_key))
+> > +             spin_lock(&ring->tx_lock);
+> > +
+> > +     if (unlikely(!ixgbe_desc_unused(ring))) {
+> > +             ret = IXGBE_XDP_CONSUMED;
+> > +             goto out;
+> > +     }
+> >
+> >       dma = dma_map_single(ring->dev, xdpf->data, len, DMA_TO_DEVICE);
+> > -     if (dma_mapping_error(ring->dev, dma))
+> > -             return IXGBE_XDP_CONSUMED;
+> > +     if (dma_mapping_error(ring->dev, dma)) {
+> > +             ret = IXGBE_XDP_CONSUMED;
+> > +             goto out;
+> > +     }
+> >
+> >       /* record the location of the first descriptor for this packet */
+> >       tx_buffer = &ring->tx_buffer_info[ring->next_to_use];
+> > @@ -8590,7 +8606,11 @@ int ixgbe_xmit_xdp_ring(struct ixgbe_adapter *adapter,
+> >       tx_buffer->next_to_watch = tx_desc;
+> >       ring->next_to_use = i;
+> >
+> > -     return IXGBE_XDP_TX;
+> > +     ret = IXGBE_XDP_TX;
+> > +out:
+> > +     if (static_branch_unlikely(&ixgbe_xdp_locking_key))
+> > +             spin_unlock(&ring->tx_lock);
+> > +     return ret;
+> >  }
+> >
+> >  netdev_tx_t ixgbe_xmit_frame_ring(struct sk_buff *skb,
+> > @@ -10130,8 +10150,13 @@ static int ixgbe_xdp_setup(struct net_device *dev, struct bpf_prog *prog)
+> >                       return -EINVAL;
+> >       }
+> >
+> > -     if (nr_cpu_ids > MAX_XDP_QUEUES)
+> > +     /* if the number of cpus is much larger than the maximum of queues,
+> > +      * we should stop it and then return with NOMEM like before!
+> > +      */
+> > +     if (nr_cpu_ids > MAX_XDP_QUEUES * 2)
+>
+> I realized this macro is a bit confusing, maybe it would be better to
+> prefix it with the driver name, so IXGBE_MAX_XDP_QS would make it clear
+> what's the scope of it.
+>
+
+You're right. It would be much clearer.
+
+> >               return -ENOMEM;
+> > +     else if (nr_cpu_ids > MAX_XDP_QUEUES)
+> > +             static_branch_inc(&ixgbe_xdp_locking_key);
+> >
+> >       old_prog = xchg(&adapter->xdp_prog, prog);
+> >       need_reset = (!!prog != !!old_prog);
+> > @@ -10201,6 +10226,7 @@ static int ixgbe_xdp_xmit(struct net_device *dev, int n,
+> >       struct ixgbe_adapter *adapter = netdev_priv(dev);
+> >       struct ixgbe_ring *ring;
+> >       int nxmit = 0;
+> > +     int cpu;
+> >       int i;
+> >
+> >       if (unlikely(test_bit(__IXGBE_DOWN, &adapter->state)))
+> > @@ -10209,10 +10235,12 @@ static int ixgbe_xdp_xmit(struct net_device *dev, int n,
+> >       if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK))
+> >               return -EINVAL;
+> >
+> > +     cpu = ixgbe_determine_xdp_cpu(smp_processor_id());
+>
+> Actually it's not the cpu that you're determining, just a queue index in
+> the xdp_rings array.
+>
+> Say that your running napi on cpu 72, so your function above will return
+> you the 8 probably and that's the queue number you will pick and share
+> with cpu 8.
+>
+> Can you rename this to ixgbe_determine_xdp_q_idx ?
+>
+
+Thanks. I'll do that.
+
+> > +
+> >       /* During program transitions its possible adapter->xdp_prog is assigned
+> >        * but ring has not been configured yet. In this case simply abort xmit.
+> >        */
+> > -     ring = adapter->xdp_prog ? adapter->xdp_ring[smp_processor_id()] : NULL;
+> > +     ring = adapter->xdp_prog ? adapter->xdp_ring[cpu] : NULL;
+> >       if (unlikely(!ring))
+> >               return -ENXIO;
+> >
+> > @@ -10229,8 +10257,13 @@ static int ixgbe_xdp_xmit(struct net_device *dev, int n,
+> >               nxmit++;
+> >       }
+> >
+> > -     if (unlikely(flags & XDP_XMIT_FLUSH))
+> > +     if (unlikely(flags & XDP_XMIT_FLUSH)) {
+> > +             if (static_branch_unlikely(&ixgbe_xdp_locking_key))
+> > +                     spin_lock(&ring->tx_lock);
+> >               ixgbe_xdp_ring_update_tail(ring);
+> > +             if (static_branch_unlikely(&ixgbe_xdp_locking_key))
+> > +                     spin_unlock(&ring->tx_lock);
+> > +     }
+> >
+> >       return nxmit;
+> >  }
+> > diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+> > index b1d22e4..e9ce6c1 100644
+> > --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+> > +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+> > @@ -334,13 +334,14 @@ int ixgbe_clean_rx_irq_zc(struct ixgbe_q_vector *q_vector,
+> >               xdp_do_flush_map();
+> >
+> >       if (xdp_xmit & IXGBE_XDP_TX) {
+> > -             struct ixgbe_ring *ring = adapter->xdp_ring[smp_processor_id()];
+> > -
+> > -             /* Force memory writes to complete before letting h/w
+> > -              * know there are new descriptors to fetch.
+> > -              */
+> > -             wmb();
+> > -             writel(ring->next_to_use, ring->tail);
+> > +             int cpu = ixgbe_determine_xdp_cpu(smp_processor_id());
+> > +             struct ixgbe_ring *ring = adapter->xdp_ring[cpu];
+> > +
+> > +             if (static_branch_unlikely(&ixgbe_xdp_locking_key))
+> > +                     spin_lock(&ring->tx_lock);
+> > +             ixgbe_xdp_ring_update_tail(ring);
+>
+> Good that ixgbe_xdp_ring_update_tail is reused, but probably this could be
+> a common inlined function that is called on both normal and zc variants of
+> clean rx irq routine.
+>
+
+Fine. I'll wrap them all together into one inline function.
+
+> > +             if (static_branch_unlikely(&ixgbe_xdp_locking_key))
+> > +                     spin_unlock(&ring->tx_lock);
+> >       }
+> >
+> >       u64_stats_update_begin(&rx_ring->syncp);
+> > --
+> > 1.8.3.1
+> >
