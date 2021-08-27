@@ -2,96 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90C413F96C9
-	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 11:23:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B48493F96D0
+	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 11:25:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244579AbhH0JYS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Aug 2021 05:24:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35408 "EHLO
+        id S244695AbhH0J0E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Aug 2021 05:26:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244690AbhH0JYO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Aug 2021 05:24:14 -0400
-Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FE95C061757
-        for <netdev@vger.kernel.org>; Fri, 27 Aug 2021 02:23:25 -0700 (PDT)
+        with ESMTP id S232817AbhH0J0D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Aug 2021 05:26:03 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC714C0613D9
+        for <netdev@vger.kernel.org>; Fri, 27 Aug 2021 02:25:14 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id t19so12430313ejr.8
+        for <netdev@vger.kernel.org>; Fri, 27 Aug 2021 02:25:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CQZSVnOjQTaOC4XZpSSeU/UltZMxftQtIHXd0FC9LUY=;
+        b=Eiyqj+g5ZX6aj2srxpZtcC1FQBOndljXdzjzQhW3jQfg0AKnowg66sDkXhGEBa7ROp
+         +53SIt2MmLtIoE8yXSbpYJx4I/VEj5rzSssq48dyRj2K9LTMGIxWpkX+rBd7bgLzzewm
+         H7LTLql0SrRgfWYFJmh/kVwAwOxH4PN1xEh8cDnMjmoUUMNdlPpdKQKSpqobDjvAldfC
+         cXn76T6Mu1zSuEcmMGjIeXjOf1VizyeMqiQ0WOFK5MjuDVZ5/RoACxnjGi7LF45nwgrQ
+         Nfv9gXViN5n0dobPAoA9idt9BLeLe79P5wpff7nWT0kBWd8juzoAhi6J/RJ88ud8v62V
+         8eEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CQZSVnOjQTaOC4XZpSSeU/UltZMxftQtIHXd0FC9LUY=;
+        b=YD+Pd3Stzo5EjxsxHZIYF11qEJ7RRyWPQcOqD9yqF9KqliKdCyuk3EQhP5gMmTvRu8
+         le9Sd9ymKx7UKpvyo+NtpQAR4nr8gjkPC0dl24cFrq9gEvYAM1PazTwsGKfm101haIbG
+         S+jFqTysNs1eYlSGV/3zOaxoPmzfMd3VegAHiaIKrc47kH9EXE+n4PQgP5i6oCvxu3fO
+         xr6W6r8TXRaTSv9Ub1ONXPlx1D9Kf3OX/tkqmBG8k1phfFuWq1i6DfT+KxuwVrEQ3F4h
+         EkJ10jPvWENyKNTj1MVb/wdDhJMiZGs+UQ3X72uZ8vGq8AgoPehS1ObgwjB6nP/SeYKk
+         IIsQ==
+X-Gm-Message-State: AOAM531jiYB2GrjYYYWbENjn0g+j8zbKV6gv8w8wBdYIn5CEWlwLLlzN
+        9Xb/DzWqmnquuMtvOJnvDWGVse1x+bGrQuUYEh7+
+X-Google-Smtp-Source: ABdhPJwgcugxvkltcJohlXGHniUZmyhYLawWLaSxMYUiHXpZPra5boRHFyGEQTo7QNVw0MBfE++H/HV9ev3Dyf8sBpg=
+X-Received: by 2002:a17:906:659:: with SMTP id t25mr8879799ejb.372.1630056313220;
+ Fri, 27 Aug 2021 02:25:13 -0700 (PDT)
 MIME-Version: 1.0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1630056202;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZjGDeknw/3ILzprtEq7lQ0hX/3XfvsLMjbmHv5R6MRY=;
-        b=lI4ZtF2xssyy24zu5J16SFR2YTi1yJPxFnFAf1OJEQK1rMn0pwvFuMBES74kwoNR4WGHh/
-        gHu09Zszpinxi/T30OvdeAUT08v4joq8XyZXlK1qgxeCL0/mmTcJ3F0zNHbJKaHNRsmDbo
-        iwvqbcjS7/5lsSON3eloqTClmn/W5dY=
-Date:   Fri, 27 Aug 2021 09:23:22 +0000
-Content-Type: multipart/mixed;
- boundary="--=_RainLoop_589_241367367.1630056202"
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   yajun.deng@linux.dev
-Message-ID: <31823d969f554ffd04e5f9b3b459ecf4@linux.dev>
-Subject: Re: [bug report] net: ipv4: Move ip_options_fragment() out of
- loop
-To:     "Dan Carpenter" <dan.carpenter@oracle.com>
-Cc:     netdev@vger.kernel.org
-In-Reply-To: <20210827084915.GA8737@kili>
-References: <20210827084915.GA8737@kili>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: yajun.deng@linux.dev
+References: <20210818120642.165-1-xieyongji@bytedance.com> <20210818120642.165-11-xieyongji@bytedance.com>
+ <2d807de3-e245-c2fb-ae5d-7cacbe35dfcb@huawei.com>
+In-Reply-To: <2d807de3-e245-c2fb-ae5d-7cacbe35dfcb@huawei.com>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Fri, 27 Aug 2021 17:25:02 +0800
+Message-ID: <CACycT3uRvB2K7LeVpdv+DkGJGjdORMa2uk5T_PYswtddNOjV4A@mail.gmail.com>
+Subject: Re: [PATCH v11 10/12] vduse: Implement an MMU-based software IOTLB
+To:     John Garry <john.garry@huawei.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christian Brauner <christian.brauner@canonical.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
+        Greg KH <gregkh@linuxfoundation.org>,
+        He Zhe <zhe.he@windriver.com>,
+        Liu Xiaodong <xiaodong.liu@intel.com>,
+        Joe Perches <joe@perches.com>,
+        Robin Murphy <robin.murphy@arm.com>, kvm <kvm@vger.kernel.org>,
+        netdev@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        iommu@lists.linux-foundation.org, songmuchun@bytedance.com,
+        linux-fsdevel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Aug 27, 2021 at 4:53 PM John Garry <john.garry@huawei.com> wrote:
+>
+> On 18/08/2021 13:06, Xie Yongji wrote:
+> > +
+> > +static dma_addr_t
+> > +vduse_domain_alloc_iova(struct iova_domain *iovad,
+> > +                     unsigned long size, unsigned long limit)
+> > +{
+> > +     unsigned long shift = iova_shift(iovad);
+> > +     unsigned long iova_len = iova_align(iovad, size) >> shift;
+> > +     unsigned long iova_pfn;
+> > +
+> > +     /*
+> > +      * Freeing non-power-of-two-sized allocations back into the IOVA caches
+> > +      * will come back to bite us badly, so we have to waste a bit of space
+> > +      * rounding up anything cacheable to make sure that can't happen. The
+> > +      * order of the unadjusted size will still match upon freeing.
+> > +      */
+> > +     if (iova_len < (1 << (IOVA_RANGE_CACHE_MAX_SIZE - 1)))
+> > +             iova_len = roundup_pow_of_two(iova_len);
+>
+> Whether it's proper to use this "fast" API or not here, this seems to be
+> copied verbatim from dma-iommu.c, which tells me that something should
+> be factored out.
+>
 
-----=_RainLoop_589_241367367.1630056202
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Agreed.
 
-August 27, 2021 4:49 PM, "Dan Carpenter" <dan.carpenter@oracle.com> wrote=
-:=0A=0A> Hello Yajun Deng,=0A> =0A> This is a semi-automatic email about =
-new static checker warnings.=0A=0ACan you test the attached?=0A=0AThanks.=
-=0A> =0A> The patch faf482ca196a: "net: ipv4: Move ip_options_fragment() =
-out of =0A> loop" from Aug 23, 2021, leads to the following Smatch compla=
-int:=0A> =0A> net/ipv4/ip_output.c:833 ip_do_fragment()=0A> warn: variabl=
-e dereferenced before check 'iter.frag' (see line 828)=0A> =0A> net/ipv4/=
-ip_output.c=0A> 827 ip_fraglist_init(skb, iph, hlen, &iter);=0A> ^^^^^=0A=
-> iter.frag is set here.=0A> =0A> 828 ip_options_fragment(iter.frag);=0A>=
- ^^^^^^^^^=0A> The patch introduces a new dereference here=0A> =0A> 829 =
-=0A> 830 for (;;) {=0A> 831 /* Prepare header of the next frame,=0A> 832 =
-* before previous one went down. */=0A> 833 if (iter.frag) {=0A> ^^^^^^^^=
-^=0A> But the old code assumed that "iter.frag" could be NULL.=0A> =0A> 8=
-34 IPCB(iter.frag)->flags =3D IPCB(skb)->flags;=0A> 835 ip_fraglist_prepa=
-re(skb, &iter);=0A> =0A> regards,=0A> dan carpenter
+> Indeed, this rounding up seems a requirement of the rcache, so not sure
+> why this is not done there.
+>
 
-----=_RainLoop_589_241367367.1630056202
-Content-Type: application/octet-stream;
- name="0001-net-ipv4-Fix-the-warning-for-dereference.patch"
-Content-Disposition: attachment;
- filename="0001-net-ipv4-Fix-the-warning-for-dereference.patch"
-Content-Transfer-Encoding: base64
+Me too. I guess it is to let users know that space is wasted.
 
-RnJvbSAxOWZkYTcxOTY2NDAzNjA4YzNiMmRjOTgxYjIzOGExYzI1ODY1YjgzIE1vbiBTZXAg
-MTcgMDA6MDA6MDAgMjAwMQpGcm9tOiBZYWp1biBEZW5nIDx5YWp1bi5kZW5nQGxpbnV4LmRl
-dj4KRGF0ZTogRnJpLCAyNyBBdWcgMjAyMSAxNzoxNDo0MyArMDgwMApTdWJqZWN0OiBbUEFU
-Q0ggbmV0LW5leHRdIG5ldDogaXB2NDogRml4IHRoZSB3YXJuaW5nIGZvciBkZXJlZmVyZW5j
-ZQoKRGFuIENhcnBlbnRlciByZXBvcnQ6ClRoZSBwYXRjaCBmYWY0ODJjYTE5NmE6ICJuZXQ6
-IGlwdjQ6IE1vdmUgaXBfb3B0aW9uc19mcmFnbWVudCgpIG91dCBvZgpsb29wIiBmcm9tIEF1
-ZyAyMywgMjAyMSwgbGVhZHMgdG8gdGhlIGZvbGxvd2luZyBTbWF0Y2ggY29tcGxhaW50OgoK
-ICAgIG5ldC9pcHY0L2lwX291dHB1dC5jOjgzMyBpcF9kb19mcmFnbWVudCgpCiAgICB3YXJu
-OiB2YXJpYWJsZSBkZXJlZmVyZW5jZWQgYmVmb3JlIGNoZWNrICdpdGVyLmZyYWcnIChzZWUg
-bGluZSA4MjgpCgpBZGQgYSBpZiBzdGF0ZW1lbnRzIHRvIGF2b2lkIHRoZSB3YXJuaW5nLgoK
-Rml4ZXM6IGZhZjQ4MmNhMTk2YSAoIm5ldDogaXB2NDogTW92ZSBpcF9vcHRpb25zX2ZyYWdt
-ZW50KCkgb3V0IG9mIGxvb3AiKQpTaWduZWQtb2ZmLWJ5OiBZYWp1biBEZW5nIDx5YWp1bi5k
-ZW5nQGxpbnV4LmRldj4KLS0tCiBuZXQvaXB2NC9pcF9vdXRwdXQuYyB8IDQgKysrLQogMSBm
-aWxlIGNoYW5nZWQsIDMgaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQoKZGlmZiAtLWdp
-dCBhL25ldC9pcHY0L2lwX291dHB1dC5jIGIvbmV0L2lwdjQvaXBfb3V0cHV0LmMKaW5kZXgg
-OWE4ZjA1ZDU0NzZlLi45YmNhNTdlZjhiODMgMTAwNjQ0Ci0tLSBhL25ldC9pcHY0L2lwX291
-dHB1dC5jCisrKyBiL25ldC9pcHY0L2lwX291dHB1dC5jCkBAIC04MjUsNyArODI1LDkgQEAg
-aW50IGlwX2RvX2ZyYWdtZW50KHN0cnVjdCBuZXQgKm5ldCwgc3RydWN0IHNvY2sgKnNrLCBz
-dHJ1Y3Qgc2tfYnVmZiAqc2tiLAogCiAJCS8qIEV2ZXJ5dGhpbmcgaXMgT0suIEdlbmVyYXRl
-ISAqLwogCQlpcF9mcmFnbGlzdF9pbml0KHNrYiwgaXBoLCBobGVuLCAmaXRlcik7Ci0JCWlw
-X29wdGlvbnNfZnJhZ21lbnQoaXRlci5mcmFnKTsKKworCQlpZiAoaXRlci5mcmFnKQorCQkJ
-aXBfb3B0aW9uc19mcmFnbWVudChpdGVyLmZyYWcpOwogCiAJCWZvciAoOzspIHsKIAkJCS8q
-IFByZXBhcmUgaGVhZGVyIG9mIHRoZSBuZXh0IGZyYW1lLAotLSAKMi4zMi4wCgo=
-
-----=_RainLoop_589_241367367.1630056202--
+Thanks,
+Yongji
