@@ -2,34 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 008B83FA0BA
+	by mail.lfdr.de (Postfix) with ESMTP id B65DC3FA0BC
 	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 22:40:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231745AbhH0UlZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Aug 2021 16:41:25 -0400
-Received: from mga12.intel.com ([192.55.52.136]:60752 "EHLO mga12.intel.com"
+        id S231752AbhH0Ul1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Aug 2021 16:41:27 -0400
+Received: from mga12.intel.com ([192.55.52.136]:60747 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231589AbhH0UlP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Aug 2021 16:41:15 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10089"; a="197589405"
+        id S231533AbhH0UlR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Aug 2021 16:41:17 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10089"; a="197589406"
 X-IronPort-AV: E=Sophos;i="5.84,357,1620716400"; 
-   d="scan'208";a="197589405"
+   d="scan'208";a="197589406"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
   by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Aug 2021 13:40:20 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.84,357,1620716400"; 
-   d="scan'208";a="685587311"
+   d="scan'208";a="685587313"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by fmsmga006.fm.intel.com with ESMTP; 27 Aug 2021 13:40:20 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
+Cc:     Brett Creeley <brett.creeley@intel.com>, netdev@vger.kernel.org,
         anthony.l.nguyen@intel.com, richardcochran@gmail.com,
-        maciej.machnikowski@intel.com,
-        Sunitha D Mekala <sunithax.d.mekala@intel.com>
-Subject: [PATCH net 4/5] ice: restart periodic outputs around time changes
-Date:   Fri, 27 Aug 2021 13:43:57 -0700
-Message-Id: <20210827204358.792803-5-anthony.l.nguyen@intel.com>
+        Gurucharan G <gurucharanx.g@intel.com>
+Subject: [PATCH net 5/5] ice: Only lock to update netdev dev_addr
+Date:   Fri, 27 Aug 2021 13:43:58 -0700
+Message-Id: <20210827204358.792803-6-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210827204358.792803-1-anthony.l.nguyen@intel.com>
 References: <20210827204358.792803-1-anthony.l.nguyen@intel.com>
@@ -39,117 +38,124 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jacob Keller <jacob.e.keller@intel.com>
+From: Brett Creeley <brett.creeley@intel.com>
 
-When we enabled auxiliary input/output support for the E810 device, we
-forgot to add logic to restart the output when we change time. This is
-important as the periodic output will be incorrect after a time change
-otherwise.
+commit 3ba7f53f8bf1 ("ice: don't remove netdev->dev_addr from uc sync
+list") introduced calls to netif_addr_lock_bh() and
+netif_addr_unlock_bh() in the driver's ndo_set_mac() callback. This is
+fine since the driver is updated the netdev's dev_addr, but since this
+is a spinlock, the driver cannot sleep when the lock is held.
+Unfortunately the functions to add/delete MAC filters depend on a mutex.
+This was causing a trace with the lock debug kernel config options
+enabled when changing the mac address via iproute.
 
-This unfortunately includes the adjust time function, even though it
-uses an atomic hardware interface. The atomic adjustment can still cause
-the pin output to stall permanently, so we need to stop and restart it.
+[  203.273059] BUG: sleeping function called from invalid context at kernel/locking/mutex.c:281
+[  203.273065] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 6698, name: ip
+[  203.273068] Preemption disabled at:
+[  203.273068] [<ffffffffc04aaeab>] ice_set_mac_address+0x8b/0x1c0 [ice]
+[  203.273097] CPU: 31 PID: 6698 Comm: ip Tainted: G S      W I       5.14.0-rc4 #2
+[  203.273100] Hardware name: Intel Corporation S2600WFT/S2600WFT, BIOS SE5C620.86B.02.01.0010.010620200716 01/06/2020
+[  203.273102] Call Trace:
+[  203.273107]  dump_stack_lvl+0x33/0x42
+[  203.273113]  ? ice_set_mac_address+0x8b/0x1c0 [ice]
+[  203.273124]  ___might_sleep.cold.150+0xda/0xea
+[  203.273131]  mutex_lock+0x1c/0x40
+[  203.273136]  ice_remove_mac+0xe3/0x180 [ice]
+[  203.273155]  ? ice_fltr_add_mac_list+0x20/0x20 [ice]
+[  203.273175]  ice_fltr_prepare_mac+0x43/0xa0 [ice]
+[  203.273194]  ice_set_mac_address+0xab/0x1c0 [ice]
+[  203.273206]  dev_set_mac_address+0xb8/0x120
+[  203.273210]  dev_set_mac_address_user+0x2c/0x50
+[  203.273212]  do_setlink+0x1dd/0x10e0
+[  203.273217]  ? __nla_validate_parse+0x12d/0x1a0
+[  203.273221]  __rtnl_newlink+0x530/0x910
+[  203.273224]  ? __kmalloc_node_track_caller+0x17f/0x380
+[  203.273230]  ? preempt_count_add+0x68/0xa0
+[  203.273236]  ? _raw_spin_lock_irqsave+0x1f/0x30
+[  203.273241]  ? kmem_cache_alloc_trace+0x4d/0x440
+[  203.273244]  rtnl_newlink+0x43/0x60
+[  203.273245]  rtnetlink_rcv_msg+0x13a/0x380
+[  203.273248]  ? rtnl_calcit.isra.40+0x130/0x130
+[  203.273250]  netlink_rcv_skb+0x4e/0x100
+[  203.273256]  netlink_unicast+0x1a2/0x280
+[  203.273258]  netlink_sendmsg+0x242/0x490
+[  203.273260]  sock_sendmsg+0x58/0x60
+[  203.273263]  ____sys_sendmsg+0x1ef/0x260
+[  203.273265]  ? copy_msghdr_from_user+0x5c/0x90
+[  203.273268]  ? ____sys_recvmsg+0xe6/0x170
+[  203.273270]  ___sys_sendmsg+0x7c/0xc0
+[  203.273272]  ? copy_msghdr_from_user+0x5c/0x90
+[  203.273274]  ? ___sys_recvmsg+0x89/0xc0
+[  203.273276]  ? __netlink_sendskb+0x50/0x50
+[  203.273278]  ? mod_objcg_state+0xee/0x310
+[  203.273282]  ? __dentry_kill+0x114/0x170
+[  203.273286]  ? get_max_files+0x10/0x10
+[  203.273288]  __sys_sendmsg+0x57/0xa0
+[  203.273290]  do_syscall_64+0x37/0x80
+[  203.273295]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[  203.273296] RIP: 0033:0x7f8edf96e278
+[  203.273298] Code: 89 02 48 c7 c0 ff ff ff ff eb b5 0f 1f 80 00 00 00 00 f3 0f 1e fa 48 8d 05 25 63 2c 00 8b 00 85 c0 75 17 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 58 c3 0f 1f 80 00 00 00 00 41 54 41 89 d4 55
+[  203.273300] RSP: 002b:00007ffcb8bdac08 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+[  203.273303] RAX: ffffffffffffffda RBX: 000000006115e0ae RCX: 00007f8edf96e278
+[  203.273304] RDX: 0000000000000000 RSI: 00007ffcb8bdac70 RDI: 0000000000000003
+[  203.273305] RBP: 0000000000000000 R08: 0000000000000001 R09: 00007ffcb8bda5b0
+[  203.273306] R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000001
+[  203.273306] R13: 0000555e10092020 R14: 0000000000000000 R15: 0000000000000005
 
-Introduce wrapper functions to temporarily disable and then re-enable
-the clock outputs.
+Fix this by only locking when changing the netdev->dev_addr. Also, make
+sure to restore the old netdev->dev_addr on any failures.
 
-Fixes: 172db5f91d5f ("ice: add support for auxiliary input/output pins")
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Tested-by: Sunitha D Mekala <sunithax.d.mekala@intel.com>
+Fixes: 3ba7f53f8bf1 ("ice: don't remove netdev->dev_addr from uc sync list")
+Signed-off-by: Brett Creeley <brett.creeley@intel.com>
+Tested-by: Gurucharan G <gurucharanx.g@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_ptp.c | 49 ++++++++++++++++++++++++
- 1 file changed, 49 insertions(+)
+ drivers/net/ethernet/intel/ice/ice_main.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.c b/drivers/net/ethernet/intel/ice/ice_ptp.c
-index ae0980f14c80..05cc5870e4ef 100644
---- a/drivers/net/ethernet/intel/ice/ice_ptp.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ptp.c
-@@ -688,6 +688,41 @@ static int ice_ptp_cfg_clkout(struct ice_pf *pf, unsigned int chan,
- 	return -EFAULT;
- }
- 
-+/**
-+ * ice_ptp_disable_all_clkout - Disable all currently configured outputs
-+ * @pf: pointer to the PF structure
-+ *
-+ * Disable all currently configured clock outputs. This is necessary before
-+ * certain changes to the PTP hardware clock. Use ice_ptp_enable_all_clkout to
-+ * re-enable the clocks again.
-+ */
-+static void ice_ptp_disable_all_clkout(struct ice_pf *pf)
-+{
-+	uint i;
-+
-+	for (i = 0; i < pf->ptp.info.n_per_out; i++)
-+		if (pf->ptp.perout_channels[i].ena)
-+			ice_ptp_cfg_clkout(pf, i, NULL, false);
-+}
-+
-+/**
-+ * ice_ptp_enable_all_clkout - Enable all configured periodic clock outputs
-+ * @pf: pointer to the PF structure
-+ *
-+ * Enable all currently configured clock outputs. Use this after
-+ * ice_ptp_disable_all_clkout to reconfigure the output signals according to
-+ * their configuration.
-+ */
-+static void ice_ptp_enable_all_clkout(struct ice_pf *pf)
-+{
-+	uint i;
-+
-+	for (i = 0; i < pf->ptp.info.n_per_out; i++)
-+		if (pf->ptp.perout_channels[i].ena)
-+			ice_ptp_cfg_clkout(pf, i, &pf->ptp.perout_channels[i],
-+					   false);
-+}
-+
- /**
-  * ice_ptp_gpio_enable_e810 - Enable/disable ancillary features of PHC
-  * @info: the driver's PTP info structure
-@@ -783,12 +818,17 @@ ice_ptp_settime64(struct ptp_clock_info *info, const struct timespec64 *ts)
- 		goto exit;
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index fe2ded775f25..a8bd512d5b45 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -5122,6 +5122,7 @@ static int ice_set_mac_address(struct net_device *netdev, void *pi)
+ 	struct ice_hw *hw = &pf->hw;
+ 	struct sockaddr *addr = pi;
+ 	enum ice_status status;
++	u8 old_mac[ETH_ALEN];
+ 	u8 flags = 0;
+ 	int err = 0;
+ 	u8 *mac;
+@@ -5144,8 +5145,13 @@ static int ice_set_mac_address(struct net_device *netdev, void *pi)
  	}
  
-+	/* Disable periodic outputs */
-+	ice_ptp_disable_all_clkout(pf);
+ 	netif_addr_lock_bh(netdev);
++	ether_addr_copy(old_mac, netdev->dev_addr);
++	/* change the netdev's MAC address */
++	memcpy(netdev->dev_addr, mac, netdev->addr_len);
++	netif_addr_unlock_bh(netdev);
 +
- 	err = ice_ptp_write_init(pf, &ts64);
- 	ice_ptp_unlock(hw);
- 
- 	if (!err)
- 		ice_ptp_update_cached_phctime(pf);
- 
-+	/* Reenable periodic outputs */
-+	ice_ptp_enable_all_clkout(pf);
- exit:
+ 	/* Clean up old MAC filter. Not an error if old filter doesn't exist */
+-	status = ice_fltr_remove_mac(vsi, netdev->dev_addr, ICE_FWD_TO_VSI);
++	status = ice_fltr_remove_mac(vsi, old_mac, ICE_FWD_TO_VSI);
+ 	if (status && status != ICE_ERR_DOES_NOT_EXIST) {
+ 		err = -EADDRNOTAVAIL;
+ 		goto err_update_filters;
+@@ -5168,13 +5174,12 @@ static int ice_set_mac_address(struct net_device *netdev, void *pi)
  	if (err) {
- 		dev_err(ice_pf_to_dev(pf), "PTP failed to set time %d\n", err);
-@@ -842,8 +882,14 @@ static int ice_ptp_adjtime(struct ptp_clock_info *info, s64 delta)
- 		return -EBUSY;
+ 		netdev_err(netdev, "can't set MAC %pM. filter update failed\n",
+ 			   mac);
++		netif_addr_lock_bh(netdev);
++		ether_addr_copy(netdev->dev_addr, old_mac);
+ 		netif_addr_unlock_bh(netdev);
+ 		return err;
  	}
  
-+	/* Disable periodic outputs */
-+	ice_ptp_disable_all_clkout(pf);
-+
- 	err = ice_ptp_write_adj(pf, delta);
+-	/* change the netdev's MAC address */
+-	memcpy(netdev->dev_addr, mac, netdev->addr_len);
+-	netif_addr_unlock_bh(netdev);
+ 	netdev_dbg(vsi->netdev, "updated MAC address to %pM\n",
+ 		   netdev->dev_addr);
  
-+	/* Reenable periodic outputs */
-+	ice_ptp_enable_all_clkout(pf);
-+
- 	ice_ptp_unlock(hw);
- 
- 	if (err) {
-@@ -1543,6 +1589,9 @@ void ice_ptp_release(struct ice_pf *pf)
- 	if (!pf->ptp.clock)
- 		return;
- 
-+	/* Disable periodic outputs */
-+	ice_ptp_disable_all_clkout(pf);
-+
- 	ice_clear_ptp_clock_index(pf);
- 	ptp_clock_unregister(pf->ptp.clock);
- 	pf->ptp.clock = NULL;
 -- 
 2.26.2
 
