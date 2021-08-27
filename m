@@ -2,123 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BD693F9F6E
-	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 21:03:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD05F3F9FB9
+	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 21:16:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230446AbhH0TD1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Aug 2021 15:03:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49350 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230365AbhH0TD0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Aug 2021 15:03:26 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BAAAC60F25;
-        Fri, 27 Aug 2021 19:02:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1630090957;
-        bh=NzSwgKgn3cMFs00vJFkDHQ4CGur+xCzPrHqpLXwNq4o=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=XaduGQD9sUqmYwfR9FRRI5gYz2UeMk7rlL/66/M2L09pd1RjBvvFuOoftfkX2awGS
-         UW9JYvEo4s7cvNfDoxTEUok7iBPpUu2tGGZL/qDwmkESXc+1WP9ftdjf6IRdPx5d9r
-         0bWQIgm5l3m+eaMiji+qgk6eCdYZU3PuKXkC+zwPbzSvHmJOsYFa0z6WT93MnCh3a2
-         VllCKm9W3471ibsSB00fb7wExZ9UIWTtbZ8TUlOr3oyA6L2HD8fkXLKbc+8l7fdW/g
-         IrCpVDUCDW4de9oxj4BO7cZw5NnJdIDkOloDTmofJKJbNJ6drE3IYXQQwKdDQA9JX9
-         k/Uqp9bA18uKQ==
-Received: by pali.im (Postfix)
-        id 63999617; Fri, 27 Aug 2021 21:02:34 +0200 (CEST)
-Date:   Fri, 27 Aug 2021 21:02:34 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Rob Herring <robh@kernel.org>, linux-phy@lists.infradead.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] phy: marvell: phy-mvebu-a3700-comphy: Remove
- unsupported modes
-Message-ID: <20210827190234.72eakdvbgojscpkm@pali>
-References: <20210827092753.2359-1-pali@kernel.org>
- <20210827092753.2359-3-pali@kernel.org>
- <20210827132713.61ef86f0@thinkpad>
- <20210827182502.vdapjcqimq4ulkg2@pali>
- <20210827183355.GV22278@shell.armlinux.org.uk>
+        id S230371AbhH0TRp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Aug 2021 15:17:45 -0400
+Received: from mxout04.lancloud.ru ([45.84.86.114]:45112 "EHLO
+        mxout04.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229691AbhH0TRo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Aug 2021 15:17:44 -0400
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout04.lancloud.ru 739E12094596
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [PATCH net-next 10/13] ravb: Factorise ravb_set_features
+To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        "Geert Uytterhoeven" <geert+renesas@glider.be>,
+        Adam Ford <aford173@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>
+References: <20210825070154.14336-1-biju.das.jz@bp.renesas.com>
+ <20210825070154.14336-11-biju.das.jz@bp.renesas.com>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <e08a1cf0-aac6-3ae2-fead-9b1f916fc27b@omp.ru>
+Date:   Fri, 27 Aug 2021 22:16:48 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210827183355.GV22278@shell.armlinux.org.uk>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <20210825070154.14336-11-biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Friday 27 August 2021 19:33:55 Russell King (Oracle) wrote:
-> On Fri, Aug 27, 2021 at 08:25:02PM +0200, Pali Rohár wrote:
-> > cp110-comphy and a3700-comphy are just RPC drivers which calls SMC and
-> > relay on firmware support which implements real work. And both uses same
-> > RPC / SMC API. So merging drivers into one is possible.
-> > 
-> > But I do not think that it is a good idea that Linux kernel depends on
-> > some external firmware which implements RPC API for configuring HW.
-> > 
-> > Rather kernel should implements its native drivers without dependency on
-> > external firmware.
-> > 
-> > We know from history that kernel tried to avoid using x86 BIOS/firmware
-> > due to bugs and all functionality (re)-implemented itself without using
-> > firmware RPC functionality.
+On 8/25/21 10:01 AM, Biju Das wrote:
+
+> RZ/G2L supports HW checksum on RX and TX whereas R-Car supports on RX.
+> Factorise ravb_set_features to support this feature.
 > 
-> Not really an argument in this case. We're not talking about closed
-> source firmware.
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> ---
+>  drivers/net/ethernet/renesas/ravb.h      |  1 +
+>  drivers/net/ethernet/renesas/ravb_main.c | 15 +++++++++++++--
+>  2 files changed, 14 insertions(+), 2 deletions(-)
 > 
-> > Kernel has already "hacks" in other drivers which are using these comphy
-> > drivers, just because older versions of firmware do not support all
-> > necessary functionality and upgrading this firmware is not easy step
-> > (and sometimes even not possible; e.g. when is cryptographically
-> > signed).
-> 
-> The kernel used to (and probably still does) contain code to configure
-> the comphys.
+[...]
+> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+> index 1f9d9f54bf1b..1789309c4c03 100644
+> --- a/drivers/net/ethernet/renesas/ravb_main.c
+> +++ b/drivers/net/ethernet/renesas/ravb_main.c
+> @@ -1901,8 +1901,8 @@ static void ravb_set_rx_csum(struct net_device *ndev, bool enable)
+>  	spin_unlock_irqrestore(&priv->lock, flags);
+>  }
+>  
+> -static int ravb_set_features(struct net_device *ndev,
+> -			     netdev_features_t features)
+> +static int ravb_set_features_rx_csum(struct net_device *ndev,
+> +				     netdev_features_t features)
 
-Kernel does not have code for A3700. Hence reason why there are hacks in
-other drivers, like libata/ahci or usb/xhci.
+   How about ravb_set_features_rcar() or s/th alike?
 
-> Having worked on trying to get the 10G lanes stable on
-> Macchiatobin, I much prefer the existing solution where it's in the
-> ATF firmware. I've rebuilt the firmware several times during the course
-> of that.
+[...]
 
-In some cases rebuilt of firmware does not have to be possible (e.g.
-when it it signed).
+   Other than that:
 
-> The advantage is that fixing the setup of the COMPHY is done in one
-> place, and it fixes it not only for the kernel, but also for u-boot
+Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+   Let's see the TOC code now...
 
-U-Boot for A3720 has its own implementation and does not use firmware
-implementation (yet). So currently the only consumer of firmware
-implementation is just Linux kernel.
-
-> and UEFI too. So rather than having to maintain three different
-> places for a particular board, we can maintain the parameters in one
-> place - in the ATF firmware.
-
-Same argument can be used for any other driver which is implemented in
-both bootloader and kernel... But I understand also your argument.
-
-> The problem with the past has been that stuff gets accepted into the
-> kernel without the "full system" view and without regard for "should
-> this actually be done in the firmware". Then, when it's decided that
-> it really should be done in the firmware, we end up needing to keep
-> the old stuff in the kernel for compatibility with older firmware,
-> which incidentally may not be up to date.
-> 
-> If we were to drop the comphy setup from firmware, then we will need
-> a lot of additional properties in the kernel's DT and u-boot DT for
-> the comphy to configure it appropriately. And ACPI. I don't think
-> that scales very well, and is a recipe for things getting out of
-> step.
-
-I think that whatever is used (firmware code, kernel code, ...), DT
-should always contains full HW description with all nodes, and not only
-some "subset". DT should be independent of current driver / firmware
-implementation.
+MBR, Sergey
