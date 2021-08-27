@@ -2,72 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E7CD3F9CAD
-	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 18:42:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6360D3F9CB8
+	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 18:46:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231445AbhH0Qmp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Aug 2021 12:42:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51158 "EHLO
+        id S230021AbhH0QrA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Aug 2021 12:47:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229562AbhH0Qmp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Aug 2021 12:42:45 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BCA3C061757;
-        Fri, 27 Aug 2021 09:41:56 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id e15so4271786plh.8;
-        Fri, 27 Aug 2021 09:41:56 -0700 (PDT)
+        with ESMTP id S229560AbhH0QrA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Aug 2021 12:47:00 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 283E2C061757
+        for <netdev@vger.kernel.org>; Fri, 27 Aug 2021 09:46:11 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id mw10-20020a17090b4d0a00b0017b59213831so9306151pjb.0
+        for <netdev@vger.kernel.org>; Fri, 27 Aug 2021 09:46:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=3V2CZy6dmdkD9GfcdkbWhhKFYcBdzsCBJHlbGNHPDlM=;
-        b=iDLnafUOq6WqYT+CV5zlg1K1jj8RSH2+gL+TL710pxFogi71WDp11udZQMWz4G3Cje
-         vZHbGQaHIzbIE4hmLZg9PuXRq9gvFMiZ6jA4ywMVdC4BHI1Thda/mGewhWsFd8TviI6V
-         6/tflR2Tq2yu8Ky8mi+M7YOFy2NfW2qmlp72ygpg9s7mpgkT/L3IJtlCxsnUx6iYDH3L
-         TMYGvQ2IbMKFYWKUCYZidE4G5GtJ2cjLJHDqSQ2ZuEQsqa8rjmNo8WCjQqGg+mEVOXmC
-         SQ3tjoR1OAKFPDBUEBzA4YHVJDEdztAalrSnyphgY4y3dDTm7QPA+bpTZoXyoPJs1qFl
-         dRAg==
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=8nyUWAY8h2lt3quRbyMoSQT9EQw5lQjRhXZv9fOjBSQ=;
+        b=uerK6a/kU+rw0q/JgXgoTco9vvVhEmo/nyVTIyeyQpmmEy5TPSMkbjBm5skspP7pVP
+         +17jpbE+MYc6TYZtudu0NqxelIv7Fvv5qTlowN1l7IQx/d3ghOTpsrE8cDfc1HCCLdGv
+         ZtrNKA/2iS7q+9lwsFBK7Iw/S9B5t8yB6Qwsib3UEHjlB8nDrt7VO9n4MDqaSZWU1AMq
+         VvbfWP6uFUNuT+4YlN2w8Ogcfe7oQpANTKIzWP4JKFE+PIBJILbAnoGqcY2HdPhxvJL9
+         KLxlIPKsd36QXcUOChGTSrgdmHDi0oF2/aER45hHOq0WRcBb0wux0xgLgtaoebE45Var
+         nf3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+        h=x-gm-message-state:subject:to:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=3V2CZy6dmdkD9GfcdkbWhhKFYcBdzsCBJHlbGNHPDlM=;
-        b=tUhOCLNuK88Fi2yjllA8Nm69ssLgfVIQA7ic85BVa9RjNqU1P79QGa4cctpnc82XIV
-         Zr1AbHz5fWCVoBXP42hXQS6anLczma6XWiY4iztz5Wgvl3Plfq/wFHEOAgau+lH2y+1J
-         mB5YxcPHdAXP6nMh8Ccd+S5z26gIszWX8ChEFcmMrYK9Fl4XJBqIaqtfCiG5zr0AEi4M
-         84LcXwuLVtpXd2l6kfA/AmEC0hfZLuBsIQHaO9uEJNHOFZpfdkrPTbLZHtmb0ScDrjpE
-         w+8LExMKFlrcykIDfGz78PNNQz/s4SLeq+rN36TmKqTQgANLHlVckrKJbHwD4obVWn97
-         E43A==
-X-Gm-Message-State: AOAM530KvwIm089UIcXoJ2T8YUsgl2R542F/BEfcLRVP4yoOTLnYqsO0
-        L0wjPL/CMM27Fe0gLtUXPsM=
-X-Google-Smtp-Source: ABdhPJwASjddcM9h65Sw+qmPBLmmgOUuenDeBxxNvZDAFoEs6Kzmn2wHc4GYH3puhZGsXvYeSqAiKw==
-X-Received: by 2002:a17:90a:9511:: with SMTP id t17mr24495129pjo.194.1630082515636;
-        Fri, 27 Aug 2021 09:41:55 -0700 (PDT)
+        bh=8nyUWAY8h2lt3quRbyMoSQT9EQw5lQjRhXZv9fOjBSQ=;
+        b=dsFx2APlN8cDL8svMKa2iJ1Uxc0yrrqFBMR5ttuPqUn2dOaWufXfwWFUobr/K8UEz1
+         PQS0VXCIbDFqXvXHAtMiz+9gUH1m2TTDzEwA0eoJ8UMGKdMuGjM3m7WxAqPBfv1MNPa9
+         K9MALW4yyMAYs20PAYLTJikBLkHSphKp+vMMqQvkt4edPbWV6JUcal/7d0JlWOKlJCY6
+         96A5fyjglxsjv7a1xCEsitP6Cn7PaoZl/sm4ThQ/6XqgDnRrFX2iwVCOD5WqjLy8cbep
+         ZDR5ofmU7jty7E+ABarpnwO65beRINhH3Px0giDcBxCQAtiJ679bZOWwPi5b7JW7TRk/
+         QHnA==
+X-Gm-Message-State: AOAM531EyRnRZFV9hat7LirwpjL/T9tBH6ir3XX5hwvlk7tL+y1afpYb
+        pi0bULp0L74p4Pjow7rvw/c=
+X-Google-Smtp-Source: ABdhPJy/6BWYycBukvfahVhEHDVYkKBTTQspvapbqSgAI65o/dge9+ExeCIG5lVaCfbbs65GrhFRiQ==
+X-Received: by 2002:a17:90a:8005:: with SMTP id b5mr24260893pjn.190.1630082770713;
+        Fri, 27 Aug 2021 09:46:10 -0700 (PDT)
 Received: from Davids-MacBook-Pro.local ([72.164.175.30])
-        by smtp.googlemail.com with ESMTPSA id cq8sm6511133pjb.31.2021.08.27.09.41.54
+        by smtp.googlemail.com with ESMTPSA id t12sm8078108pgo.56.2021.08.27.09.46.09
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 27 Aug 2021 09:41:55 -0700 (PDT)
-Subject: Re: [PATCH net-next v6] ipv6: add IFLA_INET6_RA_MTU to expose mtu
- value
-To:     Rocco Yue <rocco.yue@mediatek.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, rocco.yue@gmail.com,
-        chao.song@mediatek.com, zhuoliang.zhang@mediatek.com
-References: <20210827150412.9267-1-rocco.yue@mediatek.com>
+        Fri, 27 Aug 2021 09:46:10 -0700 (PDT)
+Subject: Re: Question about inet_rtm_getroute_build_skb()
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Networking <netdev@vger.kernel.org>,
+        Roopa Prabhu <roopa@nvidia.com>
+References: <4a0ef868-f4ea-3ec1-52b9-4d987362be20@gmail.com>
+ <d02bd384-526f-7b87-4c73-137f26cf8519@gmail.com>
+ <7bdb1675-7520-8d97-4386-20e2235368df@gmail.com>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <88523c38-f0b4-8a63-6ca6-68a3122bef79@gmail.com>
-Date:   Fri, 27 Aug 2021 09:41:53 -0700
+Message-ID: <c9655e53-b605-6ebb-53ce-8adbc6ffbec3@gmail.com>
+Date:   Fri, 27 Aug 2021 09:46:08 -0700
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.13.0
 MIME-Version: 1.0
-In-Reply-To: <20210827150412.9267-1-rocco.yue@mediatek.com>
+In-Reply-To: <7bdb1675-7520-8d97-4386-20e2235368df@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -75,45 +69,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/27/21 8:04 AM, Rocco Yue wrote:
-> The kernel provides a "/proc/sys/net/ipv6/conf/<iface>/mtu"
-> file, which can temporarily record the mtu value of the last
-> received RA message when the RA mtu value is lower than the
-> interface mtu, but this proc has following limitations:
+On 8/27/21 8:09 AM, Eric Dumazet wrote:
 > 
-> (1) when the interface mtu (/sys/class/net/<iface>/mtu) is
-> updeated, mtu6 (/proc/sys/net/ipv6/conf/<iface>/mtu) will
-> be updated to the value of interface mtu;
-> (2) mtu6 (/proc/sys/net/ipv6/conf/<iface>/mtu) only affect
-> ipv6 connection, and not affect ipv4.
 > 
-> Therefore, when the mtu option is carried in the RA message,
-> there will be a problem that the user sometimes cannot obtain
-> RA mtu value correctly by reading mtu6.
+> On 8/26/21 9:37 PM, David Ahern wrote:
+>> On 8/26/21 6:16 PM, Eric Dumazet wrote:
+>>> Hi Roopa
+>>>
+>>> I noticed inet_rtm_getroute_build_skb() has this endian issue 
+>>> when building an UDP header.
+>>>
+>>> Would the following fix break user space ?
+>>
+>> I do not see how. As I recall this is only for going through
+>> ip_route_input_rcu and ip_route_output_key_hash_rcu and a call to
+>> fib4_rules_early_flow_dissect.
+>>
 > 
-> After this patch set, if a RA message carries the mtu option,
-> you can send a netlink msg which nlmsg_type is RTM_GETLINK,
-> and then by parsing the attribute of IFLA_INET6_RA_MTU to
-> get the mtu value carried in the RA message received on the
-> inet6 device. In addition, you can also get a link notification
-> when ra_mtu is updated so it doesn't have to poll.
+> Ah, nice !
 > 
-> In this way, if the MTU values that the device receives from
-> the network in the PCO IPv4 and the RA IPv6 procedures are
-> different, the user can obtain the correct ipv6 ra_mtu value
-> and compare the value of ra_mtu and ipv4 mtu, then the device
-> can use the lower MTU value for both IPv4 and IPv6.
-> 
-> Signed-off-by: Rocco Yue <rocco.yue@mediatek.com>
-> ---
->  include/net/if_inet6.h             |  2 ++
->  include/uapi/linux/if_link.h       |  1 +
->  net/ipv6/addrconf.c                | 10 ++++++++++
->  net/ipv6/ndisc.c                   | 17 +++++++++++------
->  tools/include/uapi/linux/if_link.h |  1 +
->  5 files changed, 25 insertions(+), 6 deletions(-)
+> Could we add a test for this feature ?
+> I could not really figure out reading the commit changelog how this stuff was used.
 > 
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
+tools/testing/selftests/net/fib_rule_tests.sh
 
-
+I do not see the udp variant, so yes, those should be added.
