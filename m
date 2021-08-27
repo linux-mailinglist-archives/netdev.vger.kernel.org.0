@@ -2,118 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B48493F96D0
-	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 11:25:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57F4A3F96FC
+	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 11:30:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244695AbhH0J0E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Aug 2021 05:26:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35864 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232817AbhH0J0D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Aug 2021 05:26:03 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC714C0613D9
-        for <netdev@vger.kernel.org>; Fri, 27 Aug 2021 02:25:14 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id t19so12430313ejr.8
-        for <netdev@vger.kernel.org>; Fri, 27 Aug 2021 02:25:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CQZSVnOjQTaOC4XZpSSeU/UltZMxftQtIHXd0FC9LUY=;
-        b=Eiyqj+g5ZX6aj2srxpZtcC1FQBOndljXdzjzQhW3jQfg0AKnowg66sDkXhGEBa7ROp
-         +53SIt2MmLtIoE8yXSbpYJx4I/VEj5rzSssq48dyRj2K9LTMGIxWpkX+rBd7bgLzzewm
-         H7LTLql0SrRgfWYFJmh/kVwAwOxH4PN1xEh8cDnMjmoUUMNdlPpdKQKSpqobDjvAldfC
-         cXn76T6Mu1zSuEcmMGjIeXjOf1VizyeMqiQ0WOFK5MjuDVZ5/RoACxnjGi7LF45nwgrQ
-         Nfv9gXViN5n0dobPAoA9idt9BLeLe79P5wpff7nWT0kBWd8juzoAhi6J/RJ88ud8v62V
-         8eEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CQZSVnOjQTaOC4XZpSSeU/UltZMxftQtIHXd0FC9LUY=;
-        b=YD+Pd3Stzo5EjxsxHZIYF11qEJ7RRyWPQcOqD9yqF9KqliKdCyuk3EQhP5gMmTvRu8
-         le9Sd9ymKx7UKpvyo+NtpQAR4nr8gjkPC0dl24cFrq9gEvYAM1PazTwsGKfm101haIbG
-         S+jFqTysNs1eYlSGV/3zOaxoPmzfMd3VegAHiaIKrc47kH9EXE+n4PQgP5i6oCvxu3fO
-         xr6W6r8TXRaTSv9Ub1ONXPlx1D9Kf3OX/tkqmBG8k1phfFuWq1i6DfT+KxuwVrEQ3F4h
-         EkJ10jPvWENyKNTj1MVb/wdDhJMiZGs+UQ3X72uZ8vGq8AgoPehS1ObgwjB6nP/SeYKk
-         IIsQ==
-X-Gm-Message-State: AOAM531jiYB2GrjYYYWbENjn0g+j8zbKV6gv8w8wBdYIn5CEWlwLLlzN
-        9Xb/DzWqmnquuMtvOJnvDWGVse1x+bGrQuUYEh7+
-X-Google-Smtp-Source: ABdhPJwgcugxvkltcJohlXGHniUZmyhYLawWLaSxMYUiHXpZPra5boRHFyGEQTo7QNVw0MBfE++H/HV9ev3Dyf8sBpg=
-X-Received: by 2002:a17:906:659:: with SMTP id t25mr8879799ejb.372.1630056313220;
- Fri, 27 Aug 2021 02:25:13 -0700 (PDT)
+        id S244881AbhH0Jau (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Aug 2021 05:30:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57146 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S244657AbhH0Jag (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Aug 2021 05:30:36 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3C7C360F6C;
+        Fri, 27 Aug 2021 09:29:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1630056587;
+        bh=Qa+Xvz2tEkd6ZojFgLnzj3Z4HtfYDVECO06IQ4IQZ0Q=;
+        h=From:To:Cc:Subject:Date:From;
+        b=hVzrnmwCr/1zatmWPlatKubAC95B3qTU0VHVJRMws0BZ5bbBC+8HZ/VbPVb7i8ZGS
+         7yOZ6xiGQYnjXAkyW6SoJncbfvOFjp3gNoTLUfYHun6JkcRnM54S5XOCKS/+R/ukkp
+         Q3h8FM1wvWF1Qm9moZ9ZVTeMivFPZKpRMGvsWKpStQm4vjmyEX+TF3hSgk6g3nS10l
+         FzQ/dQxacUa8WSEXJ0GZ0k6eXI6/Pait4peCFOKZgfDDqZFZObB4cMSCk7b/BEIOu5
+         zCucdbExI4/k74T41mRYbBgYb9rhgIHtLqLUOr/4Fj5VdqdR35ztYtNm5eMdG0U09Q
+         695D9m8JGC9iw==
+Received: by pali.im (Postfix)
+        id 1F2E1617; Fri, 27 Aug 2021 11:29:45 +0200 (CEST)
+From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>
+Cc:     Russell King <rmk+kernel@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        Rob Herring <robh@kernel.org>, linux-phy@lists.infradead.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/3] phy: marvell: phy-mvebu-cp110-comphy: Rename HS-SGMMI to 2500Base-X
+Date:   Fri, 27 Aug 2021 11:27:51 +0200
+Message-Id: <20210827092753.2359-1-pali@kernel.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20210818120642.165-1-xieyongji@bytedance.com> <20210818120642.165-11-xieyongji@bytedance.com>
- <2d807de3-e245-c2fb-ae5d-7cacbe35dfcb@huawei.com>
-In-Reply-To: <2d807de3-e245-c2fb-ae5d-7cacbe35dfcb@huawei.com>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Fri, 27 Aug 2021 17:25:02 +0800
-Message-ID: <CACycT3uRvB2K7LeVpdv+DkGJGjdORMa2uk5T_PYswtddNOjV4A@mail.gmail.com>
-Subject: Re: [PATCH v11 10/12] vduse: Implement an MMU-based software IOTLB
-To:     John Garry <john.garry@huawei.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Christian Brauner <christian.brauner@canonical.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
-        Greg KH <gregkh@linuxfoundation.org>,
-        He Zhe <zhe.he@windriver.com>,
-        Liu Xiaodong <xiaodong.liu@intel.com>,
-        Joe Perches <joe@perches.com>,
-        Robin Murphy <robin.murphy@arm.com>, kvm <kvm@vger.kernel.org>,
-        netdev@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        iommu@lists.linux-foundation.org, songmuchun@bytedance.com,
-        linux-fsdevel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 27, 2021 at 4:53 PM John Garry <john.garry@huawei.com> wrote:
->
-> On 18/08/2021 13:06, Xie Yongji wrote:
-> > +
-> > +static dma_addr_t
-> > +vduse_domain_alloc_iova(struct iova_domain *iovad,
-> > +                     unsigned long size, unsigned long limit)
-> > +{
-> > +     unsigned long shift = iova_shift(iovad);
-> > +     unsigned long iova_len = iova_align(iovad, size) >> shift;
-> > +     unsigned long iova_pfn;
-> > +
-> > +     /*
-> > +      * Freeing non-power-of-two-sized allocations back into the IOVA caches
-> > +      * will come back to bite us badly, so we have to waste a bit of space
-> > +      * rounding up anything cacheable to make sure that can't happen. The
-> > +      * order of the unadjusted size will still match upon freeing.
-> > +      */
-> > +     if (iova_len < (1 << (IOVA_RANGE_CACHE_MAX_SIZE - 1)))
-> > +             iova_len = roundup_pow_of_two(iova_len);
->
-> Whether it's proper to use this "fast" API or not here, this seems to be
-> copied verbatim from dma-iommu.c, which tells me that something should
-> be factored out.
->
+Comphy phy mode 0x3 is incorrectly named. It is not SGMII but rather
+2500Base-X mode which runs at 3.125 Gbps speed.
 
-Agreed.
+Rename macro names and comments to 2500Base-X.
 
-> Indeed, this rounding up seems a requirement of the rcache, so not sure
-> why this is not done there.
->
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Fixes: eb6a1fcb53e2 ("phy: mvebu-cp110-comphy: Add SMC call support")
+Fixes: c2afb2fef595 ("phy: mvebu-cp110-comphy: Rename the macro handling only Ethernet modes")
+---
+ drivers/phy/marvell/phy-mvebu-cp110-comphy.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-Me too. I guess it is to let users know that space is wasted.
+diff --git a/drivers/phy/marvell/phy-mvebu-cp110-comphy.c b/drivers/phy/marvell/phy-mvebu-cp110-comphy.c
+index 53ad127b100f..bbd6f2ad6f24 100644
+--- a/drivers/phy/marvell/phy-mvebu-cp110-comphy.c
++++ b/drivers/phy/marvell/phy-mvebu-cp110-comphy.c
+@@ -167,7 +167,7 @@
+ 
+ #define COMPHY_FW_MODE_SATA		0x1
+ #define COMPHY_FW_MODE_SGMII		0x2 /* SGMII 1G */
+-#define COMPHY_FW_MODE_HS_SGMII		0x3 /* SGMII 2.5G */
++#define COMPHY_FW_MODE_2500BASEX	0x3 /* 2500BASE-X */
+ #define COMPHY_FW_MODE_USB3H		0x4
+ #define COMPHY_FW_MODE_USB3D		0x5
+ #define COMPHY_FW_MODE_PCIE		0x6
+@@ -207,7 +207,7 @@ static const struct mvebu_comphy_conf mvebu_comphy_cp110_modes[] = {
+ 	/* lane 0 */
+ 	GEN_CONF(0, 0, PHY_MODE_PCIE, COMPHY_FW_MODE_PCIE),
+ 	ETH_CONF(0, 1, PHY_INTERFACE_MODE_SGMII, 0x1, COMPHY_FW_MODE_SGMII),
+-	ETH_CONF(0, 1, PHY_INTERFACE_MODE_2500BASEX, 0x1, COMPHY_FW_MODE_HS_SGMII),
++	ETH_CONF(0, 1, PHY_INTERFACE_MODE_2500BASEX, 0x1, COMPHY_FW_MODE_2500BASEX),
+ 	GEN_CONF(0, 1, PHY_MODE_SATA, COMPHY_FW_MODE_SATA),
+ 	/* lane 1 */
+ 	GEN_CONF(1, 0, PHY_MODE_USB_HOST_SS, COMPHY_FW_MODE_USB3H),
+@@ -215,10 +215,10 @@ static const struct mvebu_comphy_conf mvebu_comphy_cp110_modes[] = {
+ 	GEN_CONF(1, 0, PHY_MODE_SATA, COMPHY_FW_MODE_SATA),
+ 	GEN_CONF(1, 0, PHY_MODE_PCIE, COMPHY_FW_MODE_PCIE),
+ 	ETH_CONF(1, 2, PHY_INTERFACE_MODE_SGMII, 0x1, COMPHY_FW_MODE_SGMII),
+-	ETH_CONF(1, 2, PHY_INTERFACE_MODE_2500BASEX, 0x1, COMPHY_FW_MODE_HS_SGMII),
++	ETH_CONF(1, 2, PHY_INTERFACE_MODE_2500BASEX, 0x1, COMPHY_FW_MODE_2500BASEX),
+ 	/* lane 2 */
+ 	ETH_CONF(2, 0, PHY_INTERFACE_MODE_SGMII, 0x1, COMPHY_FW_MODE_SGMII),
+-	ETH_CONF(2, 0, PHY_INTERFACE_MODE_2500BASEX, 0x1, COMPHY_FW_MODE_HS_SGMII),
++	ETH_CONF(2, 0, PHY_INTERFACE_MODE_2500BASEX, 0x1, COMPHY_FW_MODE_2500BASEX),
+ 	ETH_CONF(2, 0, PHY_INTERFACE_MODE_RXAUI, 0x1, COMPHY_FW_MODE_RXAUI),
+ 	ETH_CONF(2, 0, PHY_INTERFACE_MODE_10GBASER, 0x1, COMPHY_FW_MODE_XFI),
+ 	GEN_CONF(2, 0, PHY_MODE_USB_HOST_SS, COMPHY_FW_MODE_USB3H),
+@@ -227,26 +227,26 @@ static const struct mvebu_comphy_conf mvebu_comphy_cp110_modes[] = {
+ 	/* lane 3 */
+ 	GEN_CONF(3, 0, PHY_MODE_PCIE, COMPHY_FW_MODE_PCIE),
+ 	ETH_CONF(3, 1, PHY_INTERFACE_MODE_SGMII, 0x2, COMPHY_FW_MODE_SGMII),
+-	ETH_CONF(3, 1, PHY_INTERFACE_MODE_2500BASEX, 0x2, COMPHY_FW_MODE_HS_SGMII),
++	ETH_CONF(3, 1, PHY_INTERFACE_MODE_2500BASEX, 0x2, COMPHY_FW_MODE_2500BASEX),
+ 	ETH_CONF(3, 1, PHY_INTERFACE_MODE_RXAUI, 0x1, COMPHY_FW_MODE_RXAUI),
+ 	GEN_CONF(3, 1, PHY_MODE_USB_HOST_SS, COMPHY_FW_MODE_USB3H),
+ 	GEN_CONF(3, 1, PHY_MODE_SATA, COMPHY_FW_MODE_SATA),
+ 	/* lane 4 */
+ 	ETH_CONF(4, 0, PHY_INTERFACE_MODE_SGMII, 0x2, COMPHY_FW_MODE_SGMII),
+-	ETH_CONF(4, 0, PHY_INTERFACE_MODE_2500BASEX, 0x2, COMPHY_FW_MODE_HS_SGMII),
++	ETH_CONF(4, 0, PHY_INTERFACE_MODE_2500BASEX, 0x2, COMPHY_FW_MODE_2500BASEX),
+ 	ETH_CONF(4, 0, PHY_INTERFACE_MODE_10GBASER, 0x2, COMPHY_FW_MODE_XFI),
+ 	ETH_CONF(4, 0, PHY_INTERFACE_MODE_RXAUI, 0x2, COMPHY_FW_MODE_RXAUI),
+ 	GEN_CONF(4, 0, PHY_MODE_USB_DEVICE_SS, COMPHY_FW_MODE_USB3D),
+ 	GEN_CONF(4, 1, PHY_MODE_USB_HOST_SS, COMPHY_FW_MODE_USB3H),
+ 	GEN_CONF(4, 1, PHY_MODE_PCIE, COMPHY_FW_MODE_PCIE),
+ 	ETH_CONF(4, 1, PHY_INTERFACE_MODE_SGMII, 0x1, COMPHY_FW_MODE_SGMII),
+-	ETH_CONF(4, 1, PHY_INTERFACE_MODE_2500BASEX, -1, COMPHY_FW_MODE_HS_SGMII),
++	ETH_CONF(4, 1, PHY_INTERFACE_MODE_2500BASEX, -1, COMPHY_FW_MODE_2500BASEX),
+ 	ETH_CONF(4, 1, PHY_INTERFACE_MODE_10GBASER, -1, COMPHY_FW_MODE_XFI),
+ 	/* lane 5 */
+ 	ETH_CONF(5, 1, PHY_INTERFACE_MODE_RXAUI, 0x2, COMPHY_FW_MODE_RXAUI),
+ 	GEN_CONF(5, 1, PHY_MODE_SATA, COMPHY_FW_MODE_SATA),
+ 	ETH_CONF(5, 2, PHY_INTERFACE_MODE_SGMII, 0x1, COMPHY_FW_MODE_SGMII),
+-	ETH_CONF(5, 2, PHY_INTERFACE_MODE_2500BASEX, 0x1, COMPHY_FW_MODE_HS_SGMII),
++	ETH_CONF(5, 2, PHY_INTERFACE_MODE_2500BASEX, 0x1, COMPHY_FW_MODE_2500BASEX),
+ 	GEN_CONF(5, 2, PHY_MODE_PCIE, COMPHY_FW_MODE_PCIE),
+ };
+ 
+-- 
+2.20.1
 
-Thanks,
-Yongji
