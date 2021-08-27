@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B36763F9E34
-	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 19:44:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 096553F9E45
+	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 19:47:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238454AbhH0RpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Aug 2021 13:45:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37786 "EHLO
+        id S239707AbhH0Rrw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Aug 2021 13:47:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231878AbhH0RpK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Aug 2021 13:45:10 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2D9DC061757;
-        Fri, 27 Aug 2021 10:44:20 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id n13-20020a17090a4e0d00b0017946980d8dso9364133pjh.5;
-        Fri, 27 Aug 2021 10:44:20 -0700 (PDT)
+        with ESMTP id S239233AbhH0Rru (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Aug 2021 13:47:50 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B913C061796;
+        Fri, 27 Aug 2021 10:47:01 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id mq3so5025218pjb.5;
+        Fri, 27 Aug 2021 10:47:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=LPKfuH70y/vowO9PogQlJQs9AemsPOeU5ZCyLaISG1Y=;
-        b=HwSSFNicSK0d8SJfbUpGx09hgwlFzVWra5FZoqLpsFB/x+51WvKuctBr6nLXMbO6cf
-         M1YA50WBdM0sWHzlp8j5U7XFU84mU13uWGJrK8+pOLzbMDCsX1Sb/xNi2BmSDxbbcXza
-         R18ghXowDtCyeUc0qDEp5lcHL3m3iI8G2JsyOod/a4nBKBGxuBgrXX8PcOrPD7xp9VuO
-         /+6ym70TQrPMXo7VYAa03ZCcmf5mxE8qkNCNyybf9pWzAIB3F4pHZ8tqL8sUNkUxGXH3
-         q5CzVfUu6vNAAN98cQcEw1tC7x5O4qdEugSSAeEekjMP6TLGMepEq4/gpZFscPhnAz0o
-         9ETQ==
+        bh=i9TmDZ+esw/3ZLUDMU0ftSn23gEkgnQwCRuas4CrT3U=;
+        b=IHtobvTQGY1nPT3/rK9A1D4px0mz9BbFo22Zema5+9nth1Iz8xRjEgbud3ecsrTACs
+         Vi0LRfmP6pC0DYOfU30m5IkT0RTdx1CV7IJxATteIxw8CIRTVVgLMm1G9RvSeC8txy3w
+         3vkVe4JLgdQHuErnQrEWdxOE6rP0ErL9md4E0hh+apLDdJ7WZ48WHolfWdjVexGKS4Fg
+         64VkrIaGeWHwfHBR7pDlwiNy9s7exrN3vRd0AJl72z/zDyU7wj7/6rHEM1CVLs3fMsSi
+         383OW19VKOeS1sl5t8aORjPeFCc0nn+WtBx09yLwfzvn3x+xousu5jOLlDzZAsqMezkN
+         xg2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=LPKfuH70y/vowO9PogQlJQs9AemsPOeU5ZCyLaISG1Y=;
-        b=pMm5EIsBr5YlgIEWKS7Q9r/u0hvDwaJmUZYHLZhHb7Fdp60WVpD17jISe4jGXwTlCM
-         4duWZqjYnJoXDg8rXAluBeebHHZK2rB7yhWs/65wDsKLWp3Z1lkwmKGlHaaRo7iw6Wpn
-         GkWZ3TRS9kaF91RZ7svMRC5iiEyvyH9GnrF64PdHoaNKzuq1Rh4JzFiz+gGZqxfIbPfh
-         DvA8khLP62O6y81BxbbmIDTg3jbCiYhd9ueS8qjUqFz2pNP1rK7X1WOni7YvUEsStKTE
-         9tpWazZoowwAjN9k9ZVYyNxOTIWmm/qvG+z1BUgSodOt9pX23je6kmettWWPsNFhJOnX
-         RjcA==
-X-Gm-Message-State: AOAM531D2iwZIl5AomAHA9rIiKHgxeDR8f/ZAyl9S04fZaStWNkqQhEX
-        S9P2K9K2OkP39Kw+FHkv3+M=
-X-Google-Smtp-Source: ABdhPJwvLuJzWOILGWQdJGs2DQihxg3sZ7HLxdKN9J7wFpGmDHFz6cyOnG8qdErrHdAKkfy0VbG6/g==
-X-Received: by 2002:a17:902:c9d5:b0:138:9a20:4bd9 with SMTP id q21-20020a170902c9d500b001389a204bd9mr4222493pld.34.1630086260299;
-        Fri, 27 Aug 2021 10:44:20 -0700 (PDT)
-Received: from ?IPv6:2404:f801:0:5:8000::50b? ([2404:f801:9000:18:efec::50b])
-        by smtp.gmail.com with ESMTPSA id t186sm7124382pfb.53.2021.08.27.10.44.06
+        bh=i9TmDZ+esw/3ZLUDMU0ftSn23gEkgnQwCRuas4CrT3U=;
+        b=oE2ZQenaDRWQUJQMIVWV7feGz1IMBvbertvTqa56S+gMq31dI8/KPLINGuyjBIXXF1
+         vtU5cj1tpmgb9q9jKpQFPYoqWa71ejAFwIUcM06resiVPfXIBCkwMsKeSsM19nxPGQs5
+         1PoiSKSc1e7yrYTyq0Qjd6dlDCuvvV+3dj9QuPUwz3ZWmDiwJi5Qn0wHL+Ap6uRaNsy+
+         PcDaF2kdxh/RweQIRpdwiaisfIXm9gEjqD3jVwwXltN+cOf+/BYCDZZewR3zba/+s/FG
+         PEdQ0oK4Qjr3Ffu+Yl03SXuw+5CtpQ+0t0qIR/3U0Qgqy4zoy3O0ST+SNZ7bHiZpGVEj
+         qsQw==
+X-Gm-Message-State: AOAM531ncWA0IGdPr0nB2VNUxTTykBEohR6+c/ajLEY/OuGYfNEaJb+n
+        vP6ipoko8iD9IyW7SBG164Y=
+X-Google-Smtp-Source: ABdhPJwCpp1CTTpUQk7qWKnIh/yFBudGLOgzTmHXJL1o6YBu8x2FX5yDDzUTnumdUgFfk3BNuYTWSw==
+X-Received: by 2002:a17:902:8d8a:b029:12d:3774:3630 with SMTP id v10-20020a1709028d8ab029012d37743630mr9735558plo.65.1630086421011;
+        Fri, 27 Aug 2021 10:47:01 -0700 (PDT)
+Received: from ?IPv6:2404:f801:0:5:8000::50b? ([2404:f801:9000:1a:efea::50b])
+        by smtp.gmail.com with ESMTPSA id h13sm6970553pgh.93.2021.08.27.10.46.46
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 27 Aug 2021 10:44:19 -0700 (PDT)
-Subject: Re: [PATCH V4 04/13] hyperv: Mark vmbus ring buffer visible to host
- in Isolation VM
+        Fri, 27 Aug 2021 10:47:00 -0700 (PDT)
+Subject: Re: [PATCH V4 05/13] hyperv: Add Write/Read MSR registers via ghcb
+ page
 To:     Greg KH <gregkh@linuxfoundation.org>
 Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
         wei.liu@kernel.org, decui@microsoft.com, catalin.marinas@arm.com,
@@ -75,14 +75,14 @@ Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
         linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
         vkuznets@redhat.com, parri.andrea@gmail.com, dave.hansen@intel.com
 References: <20210827172114.414281-1-ltykernel@gmail.com>
- <20210827172114.414281-5-ltykernel@gmail.com> <YSkjsapeNj+2j//o@kroah.com>
+ <20210827172114.414281-6-ltykernel@gmail.com> <YSkj2kvYoYW8kDiF@kroah.com>
 From:   Tianyu Lan <ltykernel@gmail.com>
-Message-ID: <5d665aff-f200-3b1d-7b9b-2f080cf59a59@gmail.com>
-Date:   Sat, 28 Aug 2021 01:44:05 +0800
+Message-ID: <aed9409f-8708-2599-e441-c6a0c92b737b@gmail.com>
+Date:   Sat, 28 Aug 2021 01:46:44 +0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.13.0
 MIME-Version: 1.0
-In-Reply-To: <YSkjsapeNj+2j//o@kroah.com>
+In-Reply-To: <YSkj2kvYoYW8kDiF@kroah.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -90,55 +90,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Greg:
-      Thanks for your review.
-
 On 8/28/2021 1:41 AM, Greg KH wrote:
-> On Fri, Aug 27, 2021 at 01:21:02PM -0400, Tianyu Lan wrote:
+> On Fri, Aug 27, 2021 at 01:21:03PM -0400, Tianyu Lan wrote:
 >> From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 >>
->> Mark vmbus ring buffer visible with set_memory_decrypted() when
->> establish gpadl handle.
+>> Hyperv provides GHCB protocol to write Synthetic Interrupt
+>> Controller MSR registers in Isolation VM with AMD SEV SNP
+>> and these registers are emulated by hypervisor directly.
+>> Hyperv requires to write SINTx MSR registers twice. First
+>> writes MSR via GHCB page to communicate with hypervisor
+>> and then writes wrmsr instruction to talk with paravisor
+>> which runs in VMPL0. Guest OS ID MSR also needs to be set
+>> via GHCB page.
 >>
 >> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
 >> ---
+>> Change since v1:
+>>           * Introduce sev_es_ghcb_hv_call_simple() and share code
+>>             between SEV and Hyper-V code.
 >> Change since v3:
->>         * Change vmbus_teardown_gpadl() parameter and put gpadl handle,
->>         buffer and buffer size in the struct vmbus_gpadl.
+>>           * Pass old_msg_type to hv_signal_eom() as parameter.
+>> 	 * Use HV_REGISTER_* marcro instead of HV_X64_MSR_*
+>> 	 * Add hv_isolation_type_snp() weak function.
+>> 	 * Add maros to set syinc register in ARM code.
 >> ---
->>   drivers/hv/channel.c            | 36 ++++++++++++++++++++++++++++-----
->>   drivers/net/hyperv/hyperv_net.h |  1 +
->>   drivers/net/hyperv/netvsc.c     | 16 +++++++++++----
->>   drivers/uio/uio_hv_generic.c    | 14 +++++++++++--
->>   include/linux/hyperv.h          |  8 +++++++-
->>   5 files changed, 63 insertions(+), 12 deletions(-)
+>>   arch/arm64/include/asm/mshyperv.h |  23 ++++++
+>>   arch/x86/hyperv/hv_init.c         |  36 ++--------
+>>   arch/x86/hyperv/ivm.c             | 112 ++++++++++++++++++++++++++++++
+>>   arch/x86/include/asm/mshyperv.h   |  80 ++++++++++++++++++++-
+>>   arch/x86/include/asm/sev.h        |   3 +
+>>   arch/x86/kernel/sev-shared.c      |  63 ++++++++++-------
+>>   drivers/hv/hv.c                   | 112 ++++++++++++++++++++----------
+>>   drivers/hv/hv_common.c            |   6 ++
+>>   include/asm-generic/mshyperv.h    |   4 +-
+>>   9 files changed, 345 insertions(+), 94 deletions(-)
 >>
->> diff --git a/drivers/hv/channel.c b/drivers/hv/channel.c
->> index f3761c73b074..82650beb3af0 100644
->> --- a/drivers/hv/channel.c
->> +++ b/drivers/hv/channel.c
->> @@ -17,6 +17,7 @@
->>   #include <linux/hyperv.h>
->>   #include <linux/uio.h>
->>   #include <linux/interrupt.h>
->> +#include <linux/set_memory.h>
->>   #include <asm/page.h>
->>   #include <asm/mshyperv.h>
+>> diff --git a/arch/arm64/include/asm/mshyperv.h b/arch/arm64/include/asm/mshyperv.h
+>> index 20070a847304..ced83297e009 100644
+>> --- a/arch/arm64/include/asm/mshyperv.h
+>> +++ b/arch/arm64/include/asm/mshyperv.h
+>> @@ -41,6 +41,29 @@ static inline u64 hv_get_register(unsigned int reg)
+>>   	return hv_get_vpreg(reg);
+>>   }
 >>   
->> @@ -474,6 +475,13 @@ static int __vmbus_establish_gpadl(struct vmbus_channel *channel,
->>   	if (ret)
->>   		return ret;
->>   
->> +	ret = set_memory_decrypted((unsigned long)kbuffer,
->> +				   HVPFN_UP(size));
->> +	if (ret) {
->> +		pr_warn("Failed to set host visibility for new GPADL %d.\n", ret);
+>> +#define hv_get_simp(val)	{ val = hv_get_register(HV_REGISTER_SIMP); }
+>> +#define hv_set_simp(val)	hv_set_register(HV_REGISTER_SIMP, val)
+>> +
+>> +#define hv_get_siefp(val)	{ val = hv_get_register(HV_REGISTER_SIEFP); }
+>> +#define hv_set_siefp(val)	hv_set_register(HV_REGISTER_SIEFP, val)
+>> +
+>> +#define hv_get_synint_state(int_num, val) {			\
+>> +	val = hv_get_register(HV_REGISTER_SINT0 + int_num);	\
+>> +	}
+>> +
+>> +#define hv_set_synint_state(int_num, val)			\
+>> +	hv_set_register(HV_REGISTER_SINT0 + int_num, val)
+>> +
+>> +#define hv_get_synic_state(val) {			\
+>> +	val = hv_get_register(HV_REGISTER_SCONTROL);	\
+>> +	}
+>> +
+>> +#define hv_set_synic_state(val)			\
+>> +	hv_set_register(HV_REGISTER_SCONTROL, val)
+>> +
+>> +#define hv_signal_eom(old_msg_type)		 \
+>> +	hv_set_register(HV_REGISTER_EOM, 0)
 > 
-> dev_warn()?  You have access to a struct device, why not use it?
+> Please just use real inline functions and not #defines if you really
+> need it.
 > 
-> same for all other instances here.
-> 
->
 
-Yes, dav_warn() is better. Will update in the next version. Thanks.
-
+OK. Will update. Thanks.
