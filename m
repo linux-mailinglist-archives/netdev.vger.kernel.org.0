@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 190863F9DE1
-	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 19:27:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A3F43F9DDF
+	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 19:27:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245608AbhH0RWx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Aug 2021 13:22:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60698 "EHLO
+        id S245600AbhH0RWu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Aug 2021 13:22:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240285AbhH0RW0 (ORCPT
+        with ESMTP id S240369AbhH0RW0 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 27 Aug 2021 13:22:26 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8986EC061757;
-        Fri, 27 Aug 2021 10:21:31 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id n13-20020a17090a4e0d00b0017946980d8dso9323738pjh.5;
-        Fri, 27 Aug 2021 10:21:31 -0700 (PDT)
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D228C0613CF;
+        Fri, 27 Aug 2021 10:21:34 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id u1so557288plq.5;
+        Fri, 27 Aug 2021 10:21:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=UK8KBR+AM7nXV01E8dM+g65JtfRzps5r9CU0KnjqW2k=;
-        b=ve2IfOkuhZeXLPaSsOefBWJQVXO7Fomi79JA3NKf6cjuWsN5c+xuKhGp6k5cwyvODG
-         MgKfbmKZTA0KXcVCK5yPL/O5HsV8TQL/bb6H5AsGJb13MU7dBNds2kT/0U9rREbkrtQn
-         Py1dhGunkXUOG21ZS9K3POXFabiwDwy6lJAsxchzkqMtBFVJxMOMTSre4zEjVuV+DP1p
-         9rTsiYsX7bf/ct8pFPCUhXJ5wCAIf0/eA+pUwDLZtnWvqmgWm+/ho47HQDBIPynrlYPC
-         9hwMu2l/qm/RurhAlO11gAom0hxKB/X0pLIdC+3F2rnpmEksmoCPjzV6lngObwAxNYwz
-         OzJQ==
+        bh=NMiinD0nrj/EF3wgWQrIIkzlaXeB4tTcwG2tHfq+6xA=;
+        b=HEMUb+m3PpeyyOUVvXxqrhCKc8yNo0qk6PhsQs+IJBPiTP6RP0arkruBZb43WdICFI
+         Opt0KQO05G/P+dvT3/I2EtVoIj2z/t0Onlp8WMG8/SDfpZ4HsuWD8pLq+FRSm5hnmv98
+         kTr99DM48/h8mox3SbNbKGQV848ahDDQX6aLPPLgsA0r2CqGr2e7jjWJPb9IsNx0+bZi
+         pCQNofp5g9EwyyoP0FRQwSKLyr5wwS9+nYS1BQCL0La8qA4WkZNeUBaczLjfBKK63WO0
+         /Z8ImFpLV2BFTmLWM0JExERaQT0cf0JM8895jzqTvQFHwSV30HV6bxSVbnMng9gfq7ev
+         sPRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=UK8KBR+AM7nXV01E8dM+g65JtfRzps5r9CU0KnjqW2k=;
-        b=PT1wBKtLnoMxZ6DEWvP31E5Uit/Z1VH6fOtOcNu9qDav9IT+/09KFpdlsrxAT9lT1I
-         4IjIY3yVT0Szu3P0zlfMQSyj/VO5E5mRhXJosoMMvcOaQSvLw2NNhAx7rtgW+reAfL0b
-         1HLb88use9a/1O8jG2H8dSvrKBkaTIz1JkDgQWlOb2ZKrkrufRih/6x07x2dGMXmDcov
-         oEW3H7zKYkrBtnrlMH2NkrraKd5clN6BiRbFb3Q5SCCgDT1Xe66EtkrnpITDwEXC7gkU
-         tQzxqBmI7Zf1DtNTXVc7NFsNFD0S7Jr9TdcZmtjZ8QMsEnPDvCnsvsfHGHezTZOfIOOV
-         Rvng==
-X-Gm-Message-State: AOAM532RHNXxDGUa3rwckNmjJXpjh/NDmXWDWKm7TIJ6iOtE7X2g7lNH
-        vSUi/vhfrTGrjhgDgDzntmI=
-X-Google-Smtp-Source: ABdhPJyqfQQ5fRrI7GmAJTDqX9bqPYgY3SObBdBo5YLycH2A2XdhXK90T0PqgMjyjAgWsPbPHwEsOQ==
-X-Received: by 2002:a17:902:82c1:b0:135:b97d:8e84 with SMTP id u1-20020a17090282c100b00135b97d8e84mr9559224plz.85.1630084891091;
-        Fri, 27 Aug 2021 10:21:31 -0700 (PDT)
+        bh=NMiinD0nrj/EF3wgWQrIIkzlaXeB4tTcwG2tHfq+6xA=;
+        b=Pm1X4YsH6sufZG/D5dp/C8blqFfr4XFcgNrLYADf5cd6XdUbKQx3IXPvEYBb8TLZ+t
+         lUj8Hf9NZdK3dR34PbPJ1Ajmob8yYudTm8KwCoeKUPeHCAY8c+3izijgcslkQZQWLfZm
+         aKs+McjfpUGhQIcmdO61Bby1EMZKpfYwc2Y4tuakVRMuA1Skv3mqqbTwPsxTA/7gKez1
+         YKw5wurywWgAH9dM03IPdro2PmCqgbxDyXo1LQ2EAIKfojyQ9Qu4/FPqE9aC6wr4ugQv
+         jRbh8J8v4J81kMjNExF9FBJlYrjKr2Apws4RNa5H04pPEHkFrXCNosrAv2qYmEctFZj8
+         XiTA==
+X-Gm-Message-State: AOAM533vjoIZZCTWdgdd/f6lKaDElQYK5xM2xrNas2EobKGnc21FOFzG
+        IqpIK4QmmVQnT6Ll2fERjNU=
+X-Google-Smtp-Source: ABdhPJzcsGWVF3pnUTc6cPdQZbAUQkeXvTpHWigo9Q+d4201ZV50lMmSLv171RQVlz5hiqe27/lyMw==
+X-Received: by 2002:a17:90a:ad7:: with SMTP id r23mr9357066pje.184.1630084893483;
+        Fri, 27 Aug 2021 10:21:33 -0700 (PDT)
 Received: from ubuntu-Virtual-Machine.corp.microsoft.com ([2001:4898:80e8:36:ef50:8fcd:44d1:eb17])
-        by smtp.gmail.com with ESMTPSA id f5sm7155015pjo.23.2021.08.27.10.21.30
+        by smtp.gmail.com with ESMTPSA id f5sm7155015pjo.23.2021.08.27.10.21.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Aug 2021 10:21:30 -0700 (PDT)
+        Fri, 27 Aug 2021 10:21:32 -0700 (PDT)
 From:   Tianyu Lan <ltykernel@gmail.com>
 To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
         wei.liu@kernel.org, decui@microsoft.com, catalin.marinas@arm.com,
@@ -71,9 +71,9 @@ Cc:     iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
         linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
         vkuznets@redhat.com, parri.andrea@gmail.com, dave.hansen@intel.com
-Subject: [PATCH V4 04/13] hyperv: Mark vmbus ring buffer visible to host in Isolation VM
-Date:   Fri, 27 Aug 2021 13:21:02 -0400
-Message-Id: <20210827172114.414281-5-ltykernel@gmail.com>
+Subject: [PATCH V4 05/13] hyperv: Add Write/Read MSR registers via ghcb page
+Date:   Fri, 27 Aug 2021 13:21:03 -0400
+Message-Id: <20210827172114.414281-6-ltykernel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210827172114.414281-1-ltykernel@gmail.com>
 References: <20210827172114.414281-1-ltykernel@gmail.com>
@@ -85,247 +85,727 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
-Mark vmbus ring buffer visible with set_memory_decrypted() when
-establish gpadl handle.
+Hyperv provides GHCB protocol to write Synthetic Interrupt
+Controller MSR registers in Isolation VM with AMD SEV SNP
+and these registers are emulated by hypervisor directly.
+Hyperv requires to write SINTx MSR registers twice. First
+writes MSR via GHCB page to communicate with hypervisor
+and then writes wrmsr instruction to talk with paravisor
+which runs in VMPL0. Guest OS ID MSR also needs to be set
+via GHCB page.
 
 Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
 ---
+Change since v1:
+         * Introduce sev_es_ghcb_hv_call_simple() and share code
+           between SEV and Hyper-V code.
 Change since v3:
-       * Change vmbus_teardown_gpadl() parameter and put gpadl handle,
-       buffer and buffer size in the struct vmbus_gpadl.
+         * Pass old_msg_type to hv_signal_eom() as parameter.
+	 * Use HV_REGISTER_* marcro instead of HV_X64_MSR_*
+	 * Add hv_isolation_type_snp() weak function.
+	 * Add maros to set syinc register in ARM code.
 ---
- drivers/hv/channel.c            | 36 ++++++++++++++++++++++++++++-----
- drivers/net/hyperv/hyperv_net.h |  1 +
- drivers/net/hyperv/netvsc.c     | 16 +++++++++++----
- drivers/uio/uio_hv_generic.c    | 14 +++++++++++--
- include/linux/hyperv.h          |  8 +++++++-
- 5 files changed, 63 insertions(+), 12 deletions(-)
+ arch/arm64/include/asm/mshyperv.h |  23 ++++++
+ arch/x86/hyperv/hv_init.c         |  36 ++--------
+ arch/x86/hyperv/ivm.c             | 112 ++++++++++++++++++++++++++++++
+ arch/x86/include/asm/mshyperv.h   |  80 ++++++++++++++++++++-
+ arch/x86/include/asm/sev.h        |   3 +
+ arch/x86/kernel/sev-shared.c      |  63 ++++++++++-------
+ drivers/hv/hv.c                   | 112 ++++++++++++++++++++----------
+ drivers/hv/hv_common.c            |   6 ++
+ include/asm-generic/mshyperv.h    |   4 +-
+ 9 files changed, 345 insertions(+), 94 deletions(-)
 
-diff --git a/drivers/hv/channel.c b/drivers/hv/channel.c
-index f3761c73b074..82650beb3af0 100644
---- a/drivers/hv/channel.c
-+++ b/drivers/hv/channel.c
-@@ -17,6 +17,7 @@
- #include <linux/hyperv.h>
- #include <linux/uio.h>
- #include <linux/interrupt.h>
-+#include <linux/set_memory.h>
- #include <asm/page.h>
- #include <asm/mshyperv.h>
+diff --git a/arch/arm64/include/asm/mshyperv.h b/arch/arm64/include/asm/mshyperv.h
+index 20070a847304..ced83297e009 100644
+--- a/arch/arm64/include/asm/mshyperv.h
++++ b/arch/arm64/include/asm/mshyperv.h
+@@ -41,6 +41,29 @@ static inline u64 hv_get_register(unsigned int reg)
+ 	return hv_get_vpreg(reg);
+ }
  
-@@ -474,6 +475,13 @@ static int __vmbus_establish_gpadl(struct vmbus_channel *channel,
- 	if (ret)
- 		return ret;
- 
-+	ret = set_memory_decrypted((unsigned long)kbuffer,
-+				   HVPFN_UP(size));
-+	if (ret) {
-+		pr_warn("Failed to set host visibility for new GPADL %d.\n", ret);
-+		return ret;
++#define hv_get_simp(val)	{ val = hv_get_register(HV_REGISTER_SIMP); }
++#define hv_set_simp(val)	hv_set_register(HV_REGISTER_SIMP, val)
++
++#define hv_get_siefp(val)	{ val = hv_get_register(HV_REGISTER_SIEFP); }
++#define hv_set_siefp(val)	hv_set_register(HV_REGISTER_SIEFP, val)
++
++#define hv_get_synint_state(int_num, val) {			\
++	val = hv_get_register(HV_REGISTER_SINT0 + int_num);	\
 +	}
 +
- 	init_completion(&msginfo->waitevent);
- 	msginfo->waiting_channel = channel;
++#define hv_set_synint_state(int_num, val)			\
++	hv_set_register(HV_REGISTER_SINT0 + int_num, val)
++
++#define hv_get_synic_state(val) {			\
++	val = hv_get_register(HV_REGISTER_SCONTROL);	\
++	}
++
++#define hv_set_synic_state(val)			\
++	hv_set_register(HV_REGISTER_SCONTROL, val)
++
++#define hv_signal_eom(old_msg_type)		 \
++	hv_set_register(HV_REGISTER_EOM, 0)
++
+ /* SMCCC hypercall parameters */
+ #define HV_SMCCC_FUNC_NUMBER	1
+ #define HV_FUNC_ID	ARM_SMCCC_CALL_VAL(			\
+diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
+index b1aa42f60faa..be6210a3fd2f 100644
+--- a/arch/x86/hyperv/hv_init.c
++++ b/arch/x86/hyperv/hv_init.c
+@@ -37,7 +37,7 @@ EXPORT_SYMBOL_GPL(hv_current_partition_id);
+ void *hv_hypercall_pg;
+ EXPORT_SYMBOL_GPL(hv_hypercall_pg);
  
-@@ -549,6 +557,11 @@ static int __vmbus_establish_gpadl(struct vmbus_channel *channel,
+-void __percpu **hv_ghcb_pg;
++union hv_ghcb __percpu **hv_ghcb_pg;
+ 
+ /* Storage to save the hypercall page temporarily for hibernation */
+ static void *hv_hypercall_pg_saved;
+@@ -406,7 +406,7 @@ void __init hyperv_init(void)
  	}
  
- 	kfree(msginfo);
-+
-+	if (ret)
-+		set_memory_encrypted((unsigned long)kbuffer,
-+				     HVPFN_UP(size));
-+
- 	return ret;
- }
+ 	if (hv_isolation_type_snp()) {
+-		hv_ghcb_pg = alloc_percpu(void *);
++		hv_ghcb_pg = alloc_percpu(union hv_ghcb *);
+ 		if (!hv_ghcb_pg)
+ 			goto free_vp_assist_page;
+ 	}
+@@ -424,6 +424,9 @@ void __init hyperv_init(void)
+ 	guest_id = generate_guest_id(0, LINUX_VERSION_CODE, 0);
+ 	wrmsrl(HV_X64_MSR_GUEST_OS_ID, guest_id);
  
-@@ -639,6 +652,7 @@ static int __vmbus_open(struct vmbus_channel *newchannel,
- 	struct vmbus_channel_open_channel *open_msg;
- 	struct vmbus_channel_msginfo *open_info = NULL;
- 	struct page *page = newchannel->ringbuffer_page;
-+	struct vmbus_gpadl gpadl;
- 	u32 send_pages, recv_pages;
- 	unsigned long flags;
- 	int err;
-@@ -759,7 +773,10 @@ static int __vmbus_open(struct vmbus_channel *newchannel,
- error_free_info:
- 	kfree(open_info);
- error_free_gpadl:
--	vmbus_teardown_gpadl(newchannel, newchannel->ringbuffer_gpadlhandle);
-+	gpadl.gpadl_handle = newchannel->ringbuffer_gpadlhandle;
-+	gpadl.buffer = page_address(newchannel->ringbuffer_page);
-+	gpadl.size = (send_pages + recv_pages) << PAGE_SHIFT;
-+	vmbus_teardown_gpadl(newchannel, &gpadl);
- 	newchannel->ringbuffer_gpadlhandle = 0;
- error_clean_ring:
- 	hv_ringbuffer_cleanup(&newchannel->outbound);
-@@ -806,7 +823,7 @@ EXPORT_SYMBOL_GPL(vmbus_open);
- /*
-  * vmbus_teardown_gpadl -Teardown the specified GPADL handle
++	/* Hyper-V requires to write guest os id via ghcb in SNP IVM. */
++	hv_ghcb_msr_write(HV_X64_MSR_GUEST_OS_ID, guest_id);
++
+ 	hv_hypercall_pg = __vmalloc_node_range(PAGE_SIZE, 1, VMALLOC_START,
+ 			VMALLOC_END, GFP_KERNEL, PAGE_KERNEL_ROX,
+ 			VM_FLUSH_RESET_PERMS, NUMA_NO_NODE,
+@@ -501,6 +504,7 @@ void __init hyperv_init(void)
+ 
+ clean_guest_os_id:
+ 	wrmsrl(HV_X64_MSR_GUEST_OS_ID, 0);
++	hv_ghcb_msr_write(HV_X64_MSR_GUEST_OS_ID, 0);
+ 	cpuhp_remove_state(cpuhp);
+ free_ghcb_page:
+ 	free_percpu(hv_ghcb_pg);
+@@ -522,6 +526,7 @@ void hyperv_cleanup(void)
+ 
+ 	/* Reset our OS id */
+ 	wrmsrl(HV_X64_MSR_GUEST_OS_ID, 0);
++	hv_ghcb_msr_write(HV_X64_MSR_GUEST_OS_ID, 0);
+ 
+ 	/*
+ 	 * Reset hypercall page reference before reset the page,
+@@ -592,30 +597,3 @@ bool hv_is_hyperv_initialized(void)
+ 	return hypercall_msr.enable;
+ }
+ EXPORT_SYMBOL_GPL(hv_is_hyperv_initialized);
+-
+-enum hv_isolation_type hv_get_isolation_type(void)
+-{
+-	if (!(ms_hyperv.priv_high & HV_ISOLATION))
+-		return HV_ISOLATION_TYPE_NONE;
+-	return FIELD_GET(HV_ISOLATION_TYPE, ms_hyperv.isolation_config_b);
+-}
+-EXPORT_SYMBOL_GPL(hv_get_isolation_type);
+-
+-bool hv_is_isolation_supported(void)
+-{
+-	if (!cpu_feature_enabled(X86_FEATURE_HYPERVISOR))
+-		return 0;
+-
+-	if (!hypervisor_is_type(X86_HYPER_MS_HYPERV))
+-		return 0;
+-
+-	return hv_get_isolation_type() != HV_ISOLATION_TYPE_NONE;
+-}
+-
+-DEFINE_STATIC_KEY_FALSE(isolation_type_snp);
+-
+-bool hv_isolation_type_snp(void)
+-{
+-	return static_branch_unlikely(&isolation_type_snp);
+-}
+-EXPORT_SYMBOL_GPL(hv_isolation_type_snp);
+diff --git a/arch/x86/hyperv/ivm.c b/arch/x86/hyperv/ivm.c
+index a069c788ce3c..f56fe4f73000 100644
+--- a/arch/x86/hyperv/ivm.c
++++ b/arch/x86/hyperv/ivm.c
+@@ -6,13 +6,125 @@
+  *  Tianyu Lan <Tianyu.Lan@microsoft.com>
   */
--int vmbus_teardown_gpadl(struct vmbus_channel *channel, u32 gpadl_handle)
-+int vmbus_teardown_gpadl(struct vmbus_channel *channel, struct vmbus_gpadl *gpadl)
- {
- 	struct vmbus_channel_gpadl_teardown *msg;
- 	struct vmbus_channel_msginfo *info;
-@@ -825,7 +842,7 @@ int vmbus_teardown_gpadl(struct vmbus_channel *channel, u32 gpadl_handle)
  
- 	msg->header.msgtype = CHANNELMSG_GPADL_TEARDOWN;
- 	msg->child_relid = channel->offermsg.child_relid;
--	msg->gpadl = gpadl_handle;
-+	msg->gpadl = gpadl->gpadl_handle;
++#include <linux/types.h>
++#include <linux/bitfield.h>
+ #include <linux/hyperv.h>
+ #include <linux/types.h>
+ #include <linux/bitfield.h>
+ #include <linux/slab.h>
++#include <asm/svm.h>
++#include <asm/sev.h>
+ #include <asm/io.h>
+ #include <asm/mshyperv.h>
  
- 	spin_lock_irqsave(&vmbus_connection.channelmsg_lock, flags);
- 	list_add_tail(&info->msglistentry,
-@@ -859,6 +876,12 @@ int vmbus_teardown_gpadl(struct vmbus_channel *channel, u32 gpadl_handle)
- 	spin_unlock_irqrestore(&vmbus_connection.channelmsg_lock, flags);
- 
- 	kfree(info);
++union hv_ghcb {
++	struct ghcb ghcb;
++} __packed __aligned(HV_HYP_PAGE_SIZE);
 +
-+	ret = set_memory_encrypted((unsigned long)gpadl->buffer,
-+				   HVPFN_UP(gpadl->size));
-+	if (ret)
-+		pr_warn("Fail to set mem host visibility in GPADL teardown %d.\n", ret);
++void hv_ghcb_msr_write(u64 msr, u64 value)
++{
++	union hv_ghcb *hv_ghcb;
++	void **ghcb_base;
++	unsigned long flags;
 +
- 	return ret;
++	if (!hv_ghcb_pg)
++		return;
++
++	WARN_ON(in_nmi());
++
++	local_irq_save(flags);
++	ghcb_base = (void **)this_cpu_ptr(hv_ghcb_pg);
++	hv_ghcb = (union hv_ghcb *)*ghcb_base;
++	if (!hv_ghcb) {
++		local_irq_restore(flags);
++		return;
++	}
++
++	ghcb_set_rcx(&hv_ghcb->ghcb, msr);
++	ghcb_set_rax(&hv_ghcb->ghcb, lower_32_bits(value));
++	ghcb_set_rdx(&hv_ghcb->ghcb, upper_32_bits(value));
++
++	if (sev_es_ghcb_hv_call_simple(&hv_ghcb->ghcb, SVM_EXIT_MSR, 1, 0))
++		pr_warn("Fail to write msr via ghcb %llx.\n", msr);
++
++	local_irq_restore(flags);
++}
++
++void hv_ghcb_msr_read(u64 msr, u64 *value)
++{
++	union hv_ghcb *hv_ghcb;
++	void **ghcb_base;
++	unsigned long flags;
++
++	/* Check size of union hv_ghcb here. */
++	BUILD_BUG_ON(sizeof(union hv_ghcb) != HV_HYP_PAGE_SIZE);
++
++	if (!hv_ghcb_pg)
++		return;
++
++	WARN_ON(in_nmi());
++
++	local_irq_save(flags);
++	ghcb_base = (void **)this_cpu_ptr(hv_ghcb_pg);
++	hv_ghcb = (union hv_ghcb *)*ghcb_base;
++	if (!hv_ghcb) {
++		local_irq_restore(flags);
++		return;
++	}
++
++	ghcb_set_rcx(&hv_ghcb->ghcb, msr);
++	if (sev_es_ghcb_hv_call_simple(&hv_ghcb->ghcb, SVM_EXIT_MSR, 0, 0))
++		pr_warn("Fail to read msr via ghcb %llx.\n", msr);
++	else
++		*value = (u64)lower_32_bits(hv_ghcb->ghcb.save.rax)
++			| ((u64)lower_32_bits(hv_ghcb->ghcb.save.rdx) << 32);
++	local_irq_restore(flags);
++}
++
++void hv_sint_rdmsrl_ghcb(u64 msr, u64 *value)
++{
++	hv_ghcb_msr_read(msr, value);
++}
++EXPORT_SYMBOL_GPL(hv_sint_rdmsrl_ghcb);
++
++void hv_sint_wrmsrl_ghcb(u64 msr, u64 value)
++{
++	hv_ghcb_msr_write(msr, value);
++
++	/* Write proxy bit vua wrmsrl instruction. */
++	if (msr >= HV_X64_MSR_SINT0 && msr <= HV_X64_MSR_SINT15)
++		wrmsrl(msr, value | 1 << 20);
++}
++EXPORT_SYMBOL_GPL(hv_sint_wrmsrl_ghcb);
++
++enum hv_isolation_type hv_get_isolation_type(void)
++{
++	if (!(ms_hyperv.priv_high & HV_ISOLATION))
++		return HV_ISOLATION_TYPE_NONE;
++	return FIELD_GET(HV_ISOLATION_TYPE, ms_hyperv.isolation_config_b);
++}
++EXPORT_SYMBOL_GPL(hv_get_isolation_type);
++
++/*
++ * hv_is_isolation_supported - Check system runs in the Hyper-V
++ * isolation VM.
++ */
++bool hv_is_isolation_supported(void)
++{
++	return hv_get_isolation_type() != HV_ISOLATION_TYPE_NONE;
++}
++
++DEFINE_STATIC_KEY_FALSE(isolation_type_snp);
++
++/*
++ * hv_isolation_type_snp - Check system runs in the AMD SEV-SNP based
++ * isolation VM.
++ */
++bool hv_isolation_type_snp(void)
++{
++	return static_branch_unlikely(&isolation_type_snp);
++}
++
+ /*
+  * hv_mark_gpa_visibility - Set pages visible to host via hvcall.
+  *
+diff --git a/arch/x86/include/asm/mshyperv.h b/arch/x86/include/asm/mshyperv.h
+index ffb2af079c6b..b77f4caee3ee 100644
+--- a/arch/x86/include/asm/mshyperv.h
++++ b/arch/x86/include/asm/mshyperv.h
+@@ -11,6 +11,8 @@
+ #include <asm/paravirt.h>
+ #include <asm/mshyperv.h>
+ 
++union hv_ghcb;
++
+ DECLARE_STATIC_KEY_FALSE(isolation_type_snp);
+ 
+ typedef int (*hyperv_fill_flush_list_func)(
+@@ -30,6 +32,61 @@ static inline u64 hv_get_register(unsigned int reg)
+ 	return value;
  }
- EXPORT_SYMBOL_GPL(vmbus_teardown_gpadl);
-@@ -896,6 +919,7 @@ void vmbus_reset_channel_cb(struct vmbus_channel *channel)
- static int vmbus_close_internal(struct vmbus_channel *channel)
- {
- 	struct vmbus_channel_close_channel *msg;
-+	struct vmbus_gpadl gpadl;
- 	int ret;
  
- 	vmbus_reset_channel_cb(channel);
-@@ -934,8 +958,10 @@ static int vmbus_close_internal(struct vmbus_channel *channel)
- 
- 	/* Tear down the gpadl for the channel's ring buffer */
- 	else if (channel->ringbuffer_gpadlhandle) {
--		ret = vmbus_teardown_gpadl(channel,
--					   channel->ringbuffer_gpadlhandle);
-+		gpadl.gpadl_handle = channel->ringbuffer_gpadlhandle;
-+		gpadl.buffer = page_address(channel->ringbuffer_page);
-+		gpadl.size = channel->ringbuffer_pagecount;
-+		ret = vmbus_teardown_gpadl(channel, &gpadl);
- 		if (ret) {
- 			pr_err("Close failed: teardown gpadl return %d\n", ret);
- 			/*
-diff --git a/drivers/net/hyperv/hyperv_net.h b/drivers/net/hyperv/hyperv_net.h
-index bc48855dff10..aa7c9962dbd8 100644
---- a/drivers/net/hyperv/hyperv_net.h
-+++ b/drivers/net/hyperv/hyperv_net.h
-@@ -1082,6 +1082,7 @@ struct netvsc_device {
- 
- 	/* Send buffer allocated by us */
- 	void *send_buf;
-+	u32 send_buf_size;
- 	u32 send_buf_gpadl_handle;
- 	u32 send_section_cnt;
- 	u32 send_section_size;
-diff --git a/drivers/net/hyperv/netvsc.c b/drivers/net/hyperv/netvsc.c
-index 7bd935412853..f19bffff6a63 100644
---- a/drivers/net/hyperv/netvsc.c
-+++ b/drivers/net/hyperv/netvsc.c
-@@ -276,11 +276,14 @@ static void netvsc_teardown_recv_gpadl(struct hv_device *device,
- 				       struct netvsc_device *net_device,
- 				       struct net_device *ndev)
- {
-+	struct vmbus_gpadl gpadl;
- 	int ret;
- 
- 	if (net_device->recv_buf_gpadl_handle) {
--		ret = vmbus_teardown_gpadl(device->channel,
--					   net_device->recv_buf_gpadl_handle);
-+		gpadl.gpadl_handle = net_device->recv_buf_gpadl_handle;
-+		gpadl.buffer = net_device->recv_buf;
-+		gpadl.size = net_device->recv_buf_size;
-+		ret = vmbus_teardown_gpadl(device->channel, &gpadl);
- 
- 		/* If we failed here, we might as well return and have a leak
- 		 * rather than continue and a bugchk
-@@ -298,11 +301,15 @@ static void netvsc_teardown_send_gpadl(struct hv_device *device,
- 				       struct netvsc_device *net_device,
- 				       struct net_device *ndev)
- {
-+	struct vmbus_gpadl gpadl;
- 	int ret;
- 
- 	if (net_device->send_buf_gpadl_handle) {
--		ret = vmbus_teardown_gpadl(device->channel,
--					   net_device->send_buf_gpadl_handle);
-+		gpadl.gpadl_handle = net_device->send_buf_gpadl_handle;
-+		gpadl.buffer = net_device->send_buf;
-+		gpadl.size = net_device->send_buf_size;
++#define hv_get_sint_reg(val, reg) {		\
++	if (hv_isolation_type_snp())		\
++		hv_get_##reg##_ghcb(&val);	\
++	else					\
++		rdmsrl(HV_REGISTER_##reg, val);	\
++	}
 +
-+		ret = vmbus_teardown_gpadl(device->channel, &gpadl);
++#define hv_set_sint_reg(val, reg) {		\
++	if (hv_isolation_type_snp())		\
++		hv_set_##reg##_ghcb(val);	\
++	else					\
++		wrmsrl(HV_REGISTER_##reg, val);	\
++	}
++
++
++#define hv_get_simp(val) hv_get_sint_reg(val, SIMP)
++#define hv_get_siefp(val) hv_get_sint_reg(val, SIEFP)
++
++#define hv_set_simp(val) hv_set_sint_reg(val, SIMP)
++#define hv_set_siefp(val) hv_set_sint_reg(val, SIEFP)
++
++#define hv_get_synic_state(val) {			\
++	if (hv_isolation_type_snp())			\
++		hv_get_synic_state_ghcb(&val);		\
++	else						\
++		rdmsrl(HV_REGISTER_SCONTROL, val);	\
++	}
++#define hv_set_synic_state(val) {			\
++	if (hv_isolation_type_snp())			\
++		hv_set_synic_state_ghcb(val);		\
++	else						\
++		wrmsrl(HV_REGISTER_SCONTROL, val);	\
++	}
++
++#define hv_signal_eom(old_msg_type) {		 \
++	if (hv_isolation_type_snp() &&		 \
++	    old_msg_type != HVMSG_TIMER_EXPIRED) \
++		hv_sint_wrmsrl_ghcb(HV_REGISTER_EOM, 0); \
++	else						\
++		wrmsrl(HV_REGISTER_EOM, 0);		\
++	}
++
++#define hv_get_synint_state(int_num, val) {		\
++	if (hv_isolation_type_snp())			\
++		hv_get_synint_state_ghcb(int_num, &val);\
++	else						\
++		rdmsrl(HV_REGISTER_SINT0 + int_num, val);\
++	}
++#define hv_set_synint_state(int_num, val) {		\
++	if (hv_isolation_type_snp())			\
++		hv_set_synint_state_ghcb(int_num, val);	\
++	else						\
++		wrmsrl(HV_REGISTER_SINT0 + int_num, val);\
++	}
++
+ #define hv_get_raw_timer() rdtsc_ordered()
  
- 		/* If we failed here, we might as well return and have a leak
- 		 * rather than continue and a bugchk
-@@ -463,6 +470,7 @@ static int netvsc_init_buf(struct hv_device *device,
- 		ret = -ENOMEM;
- 		goto cleanup;
+ void hyperv_vector_handler(struct pt_regs *regs);
+@@ -41,7 +98,7 @@ extern void *hv_hypercall_pg;
+ 
+ extern u64 hv_current_partition_id;
+ 
+-extern void __percpu **hv_ghcb_pg;
++extern union hv_ghcb  __percpu **hv_ghcb_pg;
+ 
+ int hv_call_deposit_pages(int node, u64 partition_id, u32 num_pages);
+ int hv_call_add_logical_proc(int node, u32 lp_index, u32 acpi_id);
+@@ -195,6 +252,25 @@ int hv_unmap_ioapic_interrupt(int ioapic_id, struct hv_interrupt_entry *entry);
+ int hv_mark_gpa_visibility(u16 count, const u64 pfn[],
+ 			   enum hv_mem_host_visibility visibility);
+ int hv_set_mem_host_visibility(unsigned long addr, int numpages, bool visible);
++void hv_sint_wrmsrl_ghcb(u64 msr, u64 value);
++void hv_sint_rdmsrl_ghcb(u64 msr, u64 *value);
++void hv_signal_eom_ghcb(void);
++void hv_ghcb_msr_write(u64 msr, u64 value);
++void hv_ghcb_msr_read(u64 msr, u64 *value);
++
++#define hv_get_synint_state_ghcb(int_num, val)			\
++	hv_sint_rdmsrl_ghcb(HV_X64_MSR_SINT0 + int_num, val)
++#define hv_set_synint_state_ghcb(int_num, val) \
++	hv_sint_wrmsrl_ghcb(HV_X64_MSR_SINT0 + int_num, val)
++
++#define hv_get_SIMP_ghcb(val) hv_sint_rdmsrl_ghcb(HV_X64_MSR_SIMP, val)
++#define hv_set_SIMP_ghcb(val) hv_sint_wrmsrl_ghcb(HV_X64_MSR_SIMP, val)
++
++#define hv_get_SIEFP_ghcb(val) hv_sint_rdmsrl_ghcb(HV_X64_MSR_SIEFP, val)
++#define hv_set_SIEFP_ghcb(val) hv_sint_wrmsrl_ghcb(HV_X64_MSR_SIEFP, val)
++
++#define hv_get_synic_state_ghcb(val) hv_sint_rdmsrl_ghcb(HV_X64_MSR_SCONTROL, val)
++#define hv_set_synic_state_ghcb(val) hv_sint_wrmsrl_ghcb(HV_X64_MSR_SCONTROL, val)
+ #else /* CONFIG_HYPERV */
+ static inline void hyperv_init(void) {}
+ static inline void hyperv_setup_mmu_ops(void) {}
+@@ -211,9 +287,9 @@ static inline int hyperv_flush_guest_mapping_range(u64 as,
+ {
+ 	return -1;
+ }
++static inline void hv_signal_eom_ghcb(void) { };
+ #endif /* CONFIG_HYPERV */
+ 
+-
+ #include <asm-generic/mshyperv.h>
+ 
+ #endif
+diff --git a/arch/x86/include/asm/sev.h b/arch/x86/include/asm/sev.h
+index fa5cd05d3b5b..81beb2a8031b 100644
+--- a/arch/x86/include/asm/sev.h
++++ b/arch/x86/include/asm/sev.h
+@@ -81,6 +81,9 @@ static __always_inline void sev_es_nmi_complete(void)
+ 		__sev_es_nmi_complete();
+ }
+ extern int __init sev_es_efi_map_ghcbs(pgd_t *pgd);
++extern enum es_result sev_es_ghcb_hv_call_simple(struct ghcb *ghcb,
++				   u64 exit_code, u64 exit_info_1,
++				   u64 exit_info_2);
+ #else
+ static inline void sev_es_ist_enter(struct pt_regs *regs) { }
+ static inline void sev_es_ist_exit(void) { }
+diff --git a/arch/x86/kernel/sev-shared.c b/arch/x86/kernel/sev-shared.c
+index 9f90f460a28c..dd7f37de640b 100644
+--- a/arch/x86/kernel/sev-shared.c
++++ b/arch/x86/kernel/sev-shared.c
+@@ -94,10 +94,9 @@ static void vc_finish_insn(struct es_em_ctxt *ctxt)
+ 	ctxt->regs->ip += ctxt->insn.length;
+ }
+ 
+-static enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb,
+-					  struct es_em_ctxt *ctxt,
+-					  u64 exit_code, u64 exit_info_1,
+-					  u64 exit_info_2)
++enum es_result sev_es_ghcb_hv_call_simple(struct ghcb *ghcb,
++				   u64 exit_code, u64 exit_info_1,
++				   u64 exit_info_2)
+ {
+ 	enum es_result ret;
+ 
+@@ -109,29 +108,45 @@ static enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb,
+ 	ghcb_set_sw_exit_info_1(ghcb, exit_info_1);
+ 	ghcb_set_sw_exit_info_2(ghcb, exit_info_2);
+ 
+-	sev_es_wr_ghcb_msr(__pa(ghcb));
+ 	VMGEXIT();
+ 
+-	if ((ghcb->save.sw_exit_info_1 & 0xffffffff) == 1) {
+-		u64 info = ghcb->save.sw_exit_info_2;
+-		unsigned long v;
+-
+-		info = ghcb->save.sw_exit_info_2;
+-		v = info & SVM_EVTINJ_VEC_MASK;
+-
+-		/* Check if exception information from hypervisor is sane. */
+-		if ((info & SVM_EVTINJ_VALID) &&
+-		    ((v == X86_TRAP_GP) || (v == X86_TRAP_UD)) &&
+-		    ((info & SVM_EVTINJ_TYPE_MASK) == SVM_EVTINJ_TYPE_EXEPT)) {
+-			ctxt->fi.vector = v;
+-			if (info & SVM_EVTINJ_VALID_ERR)
+-				ctxt->fi.error_code = info >> 32;
+-			ret = ES_EXCEPTION;
+-		} else {
+-			ret = ES_VMM_ERROR;
+-		}
+-	} else {
++	if ((ghcb->save.sw_exit_info_1 & 0xffffffff) == 1)
++		ret = ES_VMM_ERROR;
++	else
+ 		ret = ES_OK;
++
++	return ret;
++}
++
++static enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb,
++				   struct es_em_ctxt *ctxt,
++				   u64 exit_code, u64 exit_info_1,
++				   u64 exit_info_2)
++{
++	unsigned long v;
++	enum es_result ret;
++	u64 info;
++
++	sev_es_wr_ghcb_msr(__pa(ghcb));
++
++	ret = sev_es_ghcb_hv_call_simple(ghcb, exit_code, exit_info_1,
++					 exit_info_2);
++	if (ret == ES_OK)
++		return ret;
++
++	info = ghcb->save.sw_exit_info_2;
++	v = info & SVM_EVTINJ_VEC_MASK;
++
++	/* Check if exception information from hypervisor is sane. */
++	if ((info & SVM_EVTINJ_VALID) &&
++	    ((v == X86_TRAP_GP) || (v == X86_TRAP_UD)) &&
++	    ((info & SVM_EVTINJ_TYPE_MASK) == SVM_EVTINJ_TYPE_EXEPT)) {
++		ctxt->fi.vector = v;
++		if (info & SVM_EVTINJ_VALID_ERR)
++			ctxt->fi.error_code = info >> 32;
++		ret = ES_EXCEPTION;
++	} else {
++		ret = ES_VMM_ERROR;
  	}
-+	net_device->send_buf_size = buf_size;
  
- 	/* Establish the gpadl handle for this buffer on this
- 	 * channel.  Note: This call uses the vmbus connection rather
-diff --git a/drivers/uio/uio_hv_generic.c b/drivers/uio/uio_hv_generic.c
-index 652fe2547587..13c5df8dd11d 100644
---- a/drivers/uio/uio_hv_generic.c
-+++ b/drivers/uio/uio_hv_generic.c
-@@ -179,14 +179,24 @@ hv_uio_new_channel(struct vmbus_channel *new_sc)
- static void
- hv_uio_cleanup(struct hv_device *dev, struct hv_uio_private_data *pdata)
+ 	return ret;
+diff --git a/drivers/hv/hv.c b/drivers/hv/hv.c
+index e83507f49676..97b21256a9db 100644
+--- a/drivers/hv/hv.c
++++ b/drivers/hv/hv.c
+@@ -8,6 +8,7 @@
+  */
+ #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+ 
++#include <linux/io.h>
+ #include <linux/kernel.h>
+ #include <linux/mm.h>
+ #include <linux/slab.h>
+@@ -136,17 +137,24 @@ int hv_synic_alloc(void)
+ 		tasklet_init(&hv_cpu->msg_dpc,
+ 			     vmbus_on_msg_dpc, (unsigned long) hv_cpu);
+ 
+-		hv_cpu->synic_message_page =
+-			(void *)get_zeroed_page(GFP_ATOMIC);
+-		if (hv_cpu->synic_message_page == NULL) {
+-			pr_err("Unable to allocate SYNIC message page\n");
+-			goto err;
+-		}
++		/*
++		 * Synic message and event pages are allocated by paravisor.
++		 * Skip these pages allocation here.
++		 */
++		if (!hv_isolation_type_snp()) {
++			hv_cpu->synic_message_page =
++				(void *)get_zeroed_page(GFP_ATOMIC);
++			if (hv_cpu->synic_message_page == NULL) {
++				pr_err("Unable to allocate SYNIC message page\n");
++				goto err;
++			}
+ 
+-		hv_cpu->synic_event_page = (void *)get_zeroed_page(GFP_ATOMIC);
+-		if (hv_cpu->synic_event_page == NULL) {
+-			pr_err("Unable to allocate SYNIC event page\n");
+-			goto err;
++			hv_cpu->synic_event_page =
++				(void *)get_zeroed_page(GFP_ATOMIC);
++			if (hv_cpu->synic_event_page == NULL) {
++				pr_err("Unable to allocate SYNIC event page\n");
++				goto err;
++			}
+ 		}
+ 
+ 		hv_cpu->post_msg_page = (void *)get_zeroed_page(GFP_ATOMIC);
+@@ -199,26 +207,43 @@ void hv_synic_enable_regs(unsigned int cpu)
+ 	union hv_synic_scontrol sctrl;
+ 
+ 	/* Setup the Synic's message page */
+-	simp.as_uint64 = hv_get_register(HV_REGISTER_SIMP);
++	hv_get_simp(simp.as_uint64);
+ 	simp.simp_enabled = 1;
+-	simp.base_simp_gpa = virt_to_phys(hv_cpu->synic_message_page)
+-		>> HV_HYP_PAGE_SHIFT;
+ 
+-	hv_set_register(HV_REGISTER_SIMP, simp.as_uint64);
++	if (hv_isolation_type_snp()) {
++		hv_cpu->synic_message_page
++			= memremap(simp.base_simp_gpa << HV_HYP_PAGE_SHIFT,
++				   HV_HYP_PAGE_SIZE, MEMREMAP_WB);
++		if (!hv_cpu->synic_message_page)
++			pr_err("Fail to map syinc message page.\n");
++	} else {
++		simp.base_simp_gpa = virt_to_phys(hv_cpu->synic_message_page)
++			>> HV_HYP_PAGE_SHIFT;
++	}
++
++	hv_set_simp(simp.as_uint64);
+ 
+ 	/* Setup the Synic's event page */
+-	siefp.as_uint64 = hv_get_register(HV_REGISTER_SIEFP);
++	hv_get_siefp(siefp.as_uint64);
+ 	siefp.siefp_enabled = 1;
+-	siefp.base_siefp_gpa = virt_to_phys(hv_cpu->synic_event_page)
+-		>> HV_HYP_PAGE_SHIFT;
+ 
+-	hv_set_register(HV_REGISTER_SIEFP, siefp.as_uint64);
++	if (hv_isolation_type_snp()) {
++		hv_cpu->synic_event_page =
++			memremap(siefp.base_siefp_gpa << HV_HYP_PAGE_SHIFT,
++				 HV_HYP_PAGE_SIZE, MEMREMAP_WB);
++
++		if (!hv_cpu->synic_event_page)
++			pr_err("Fail to map syinc event page.\n");
++	} else {
++		siefp.base_siefp_gpa = virt_to_phys(hv_cpu->synic_event_page)
++			>> HV_HYP_PAGE_SHIFT;
++	}
++	hv_set_siefp(siefp.as_uint64);
+ 
+ 	/* Setup the shared SINT. */
+ 	if (vmbus_irq != -1)
+ 		enable_percpu_irq(vmbus_irq, 0);
+-	shared_sint.as_uint64 = hv_get_register(HV_REGISTER_SINT0 +
+-					VMBUS_MESSAGE_SINT);
++	hv_get_synint_state(VMBUS_MESSAGE_SINT, shared_sint.as_uint64);
+ 
+ 	shared_sint.vector = vmbus_interrupt;
+ 	shared_sint.masked = false;
+@@ -233,14 +258,12 @@ void hv_synic_enable_regs(unsigned int cpu)
+ #else
+ 	shared_sint.auto_eoi = 0;
+ #endif
+-	hv_set_register(HV_REGISTER_SINT0 + VMBUS_MESSAGE_SINT,
+-				shared_sint.as_uint64);
++	hv_set_synint_state(VMBUS_MESSAGE_SINT, shared_sint.as_uint64);
+ 
+ 	/* Enable the global synic bit */
+-	sctrl.as_uint64 = hv_get_register(HV_REGISTER_SCONTROL);
++	hv_get_synic_state(sctrl.as_uint64);
+ 	sctrl.enable = 1;
+-
+-	hv_set_register(HV_REGISTER_SCONTROL, sctrl.as_uint64);
++	hv_set_synic_state(sctrl.as_uint64);
+ }
+ 
+ int hv_synic_init(unsigned int cpu)
+@@ -257,37 +280,50 @@ int hv_synic_init(unsigned int cpu)
+  */
+ void hv_synic_disable_regs(unsigned int cpu)
  {
-+	struct vmbus_gpadl gpadl;
++	struct hv_per_cpu_context *hv_cpu
++		= per_cpu_ptr(hv_context.cpu_context, cpu);
+ 	union hv_synic_sint shared_sint;
+ 	union hv_synic_simp simp;
+ 	union hv_synic_siefp siefp;
+ 	union hv_synic_scontrol sctrl;
+ 
+-	shared_sint.as_uint64 = hv_get_register(HV_REGISTER_SINT0 +
+-					VMBUS_MESSAGE_SINT);
+-
++	hv_get_synint_state(VMBUS_MESSAGE_SINT, shared_sint.as_uint64);
+ 	shared_sint.masked = 1;
++	hv_set_synint_state(VMBUS_MESSAGE_SINT, shared_sint.as_uint64);
 +
- 	if (pdata->send_gpadl) {
--		vmbus_teardown_gpadl(dev->channel, pdata->send_gpadl);
-+		gpadl.gpadl_handle = pdata->send_gpadl;
-+		gpadl.buffer = pdata->send_buf;
-+		gpadl.size = SEND_BUFFER_SIZE;
+ 
+ 	/* Need to correctly cleanup in the case of SMP!!! */
+ 	/* Disable the interrupt */
+-	hv_set_register(HV_REGISTER_SINT0 + VMBUS_MESSAGE_SINT,
+-				shared_sint.as_uint64);
++	hv_get_simp(simp.as_uint64);
+ 
+-	simp.as_uint64 = hv_get_register(HV_REGISTER_SIMP);
++	/*
++	 * In Isolation VM, sim and sief pages are allocated by
++	 * paravisor. These pages also will be used by kdump
++	 * kernel. So just reset enable bit here and keep page
++	 * addresses.
++	 */
+ 	simp.simp_enabled = 0;
+-	simp.base_simp_gpa = 0;
++	if (hv_isolation_type_snp())
++		memunmap(hv_cpu->synic_message_page);
++	else
++		simp.base_simp_gpa = 0;
+ 
+-	hv_set_register(HV_REGISTER_SIMP, simp.as_uint64);
++	hv_set_simp(simp.as_uint64);
+ 
+-	siefp.as_uint64 = hv_get_register(HV_REGISTER_SIEFP);
++	hv_get_siefp(siefp.as_uint64);
+ 	siefp.siefp_enabled = 0;
+-	siefp.base_siefp_gpa = 0;
+ 
+-	hv_set_register(HV_REGISTER_SIEFP, siefp.as_uint64);
++	if (hv_isolation_type_snp())
++		memunmap(hv_cpu->synic_event_page);
++	else
++		siefp.base_siefp_gpa = 0;
 +
-+		vmbus_teardown_gpadl(dev->channel, &gpadl);
- 		pdata->send_gpadl = 0;
- 		vfree(pdata->send_buf);
++	hv_set_siefp(siefp.as_uint64);
+ 
+ 	/* Disable the global synic bit */
+-	sctrl.as_uint64 = hv_get_register(HV_REGISTER_SCONTROL);
++	hv_get_synic_state(sctrl.as_uint64);
+ 	sctrl.enable = 0;
+-	hv_set_register(HV_REGISTER_SCONTROL, sctrl.as_uint64);
++	hv_set_synic_state(sctrl.as_uint64);
+ 
+ 	if (vmbus_irq != -1)
+ 		disable_percpu_irq(vmbus_irq);
+diff --git a/drivers/hv/hv_common.c b/drivers/hv/hv_common.c
+index c0d9048a4112..1fc82d237161 100644
+--- a/drivers/hv/hv_common.c
++++ b/drivers/hv/hv_common.c
+@@ -249,6 +249,12 @@ bool __weak hv_is_isolation_supported(void)
+ }
+ EXPORT_SYMBOL_GPL(hv_is_isolation_supported);
+ 
++bool __weak hv_isolation_type_snp(void)
++{
++	return false;
++}
++EXPORT_SYMBOL_GPL(hv_isolation_type_snp);
++
+ void __weak hv_setup_vmbus_handler(void (*handler)(void))
+ {
+ }
+diff --git a/include/asm-generic/mshyperv.h b/include/asm-generic/mshyperv.h
+index aa55447b9700..04a687d95eac 100644
+--- a/include/asm-generic/mshyperv.h
++++ b/include/asm-generic/mshyperv.h
+@@ -24,6 +24,7 @@
+ #include <linux/cpumask.h>
+ #include <linux/nmi.h>
+ #include <asm/ptrace.h>
++#include <asm/mshyperv.h>
+ #include <asm/hyperv-tlfs.h>
+ 
+ struct ms_hyperv_info {
+@@ -54,6 +55,7 @@ extern void  __percpu  **hyperv_pcpu_output_arg;
+ 
+ extern u64 hv_do_hypercall(u64 control, void *inputaddr, void *outputaddr);
+ extern u64 hv_do_fast_hypercall8(u16 control, u64 input8);
++extern bool hv_isolation_type_snp(void);
+ 
+ /* Helper functions that provide a consistent pattern for checking Hyper-V hypercall status. */
+ static inline int hv_result(u64 status)
+@@ -148,7 +150,7 @@ static inline void vmbus_signal_eom(struct hv_message *msg, u32 old_msg_type)
+ 		 * possibly deliver another msg from the
+ 		 * hypervisor
+ 		 */
+-		hv_set_register(HV_REGISTER_EOM, 0);
++		hv_signal_eom(old_msg_type);
  	}
- 
- 	if (pdata->recv_gpadl) {
--		vmbus_teardown_gpadl(dev->channel, pdata->recv_gpadl);
-+		gpadl.gpadl_handle = pdata->recv_gpadl;
-+		gpadl.buffer = pdata->recv_buf;
-+		gpadl.size = RECV_BUFFER_SIZE;
-+
-+		vmbus_teardown_gpadl(dev->channel, &gpadl);
- 		pdata->recv_gpadl = 0;
- 		vfree(pdata->recv_buf);
- 	}
-diff --git a/include/linux/hyperv.h b/include/linux/hyperv.h
-index ddc8713ce57b..757e09606fd3 100644
---- a/include/linux/hyperv.h
-+++ b/include/linux/hyperv.h
-@@ -803,6 +803,12 @@ struct vmbus_device {
- 
- #define VMBUS_DEFAULT_MAX_PKT_SIZE 4096
- 
-+struct vmbus_gpadl {
-+	u32 gpadl_handle;
-+	u32 size;
-+	void *buffer;
-+};
-+
- struct vmbus_channel {
- 	struct list_head listentry;
- 
-@@ -1195,7 +1201,7 @@ extern int vmbus_establish_gpadl(struct vmbus_channel *channel,
- 				      u32 *gpadl_handle);
- 
- extern int vmbus_teardown_gpadl(struct vmbus_channel *channel,
--				     u32 gpadl_handle);
-+				     struct vmbus_gpadl *gpadl);
- 
- void vmbus_reset_channel_cb(struct vmbus_channel *channel);
+ }
  
 -- 
 2.25.1
