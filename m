@@ -2,96 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BBF83FA133
-	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 23:33:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A1803FA164
+	for <lists+netdev@lfdr.de>; Sat, 28 Aug 2021 00:07:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231998AbhH0Ve3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Aug 2021 17:34:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33850 "EHLO
+        id S232145AbhH0WIC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Aug 2021 18:08:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231807AbhH0Ve2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Aug 2021 17:34:28 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FC3EC06179A
-        for <netdev@vger.kernel.org>; Fri, 27 Aug 2021 14:33:39 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id x140so15169922ybe.0
-        for <netdev@vger.kernel.org>; Fri, 27 Aug 2021 14:33:39 -0700 (PDT)
+        with ESMTP id S232032AbhH0WIB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Aug 2021 18:08:01 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8A38C0613D9
+        for <netdev@vger.kernel.org>; Fri, 27 Aug 2021 15:07:11 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id q21so13898191ljj.6
+        for <netdev@vger.kernel.org>; Fri, 27 Aug 2021 15:07:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=RZNyHeDVs2mzNxDgTuglWtbJQudBi+AgMRN4SZ0C/nY=;
-        b=jVqEIc455Wtcw8ODTyXfnO/FQsEQDMK/It9z9OeJqHqx8p3YH0rnsTE3JppBBQ71ic
-         hFAjlj8BEwrMpHu5dY26GEJrq9XNElRyt2SaSTsQQPeNiGInacBfUIwM47yAwiv52Cx6
-         cb5GcXIKp71l+SHcuTn0XmplTlgeszW/UdUC5gCMt1xJKxkcd9fGDlAao5HTZ6N1Xrka
-         x1jACeUhmZYPrTZV4Sdl2PwtBWU2wCwz958GvC5DQjFa8/08MAVUxdRtI1csFaIvGlK+
-         lC13HteG3Oka7xoTpaaAHoKgIUm8l7vHSWN0P6G5nVDvLsPsESrPFwGNXA+XnpKiANxH
-         gLzQ==
+        bh=J1gUDdbXfLZQpW8+uzYCzKrHt4z7fUbpEHpLEh39n0k=;
+        b=cPJpkzESORon1J7DZsXS+x0HfFUxEhUBlymkGrVP1vP/KnD3XkF/wSMn4Juhiq0LaV
+         clxLhjJca3YMk/QoW74bsWwKFKF+TIaZeX9jHb+895y62/c4QrNGBGEmRfcC/QszVUqa
+         03P4Vr5P8rlKs/XZR3v0ZCEoNv24qQNbaLmVOPhiM3xHmMtoF1VfppstS+wVRZywn5DF
+         m0A6wo5aA3t22sl1sc3u+gQptxjJ+kBxU5TvdXN54zkaAhga56NMJta+4S4fqpHTMP8f
+         QDmFIVspsSp4mwJgjgXrNcwOY5tz1twUpNzv/0msqU7HR2GW5zDmXe0TNpObGFHJU1li
+         v2+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=RZNyHeDVs2mzNxDgTuglWtbJQudBi+AgMRN4SZ0C/nY=;
-        b=GSsSImN7N4btIxcGHFkVIglPtG8hL/ftwSegErjIteuyqr13BUMQqap4xx7sJWOcgU
-         agvCDBdFzXs1ziUpXJu/XKuEsjIhNPdgJp7HoP2RtTh0MZZM23TmaO/hCqTcIdKebuVo
-         aEHcGHalm5D7Dfvp4d0gMvdf1KVwo+q5ul9GItATbSnBffQhQ9AMZCOMSL7bOhxlpPyt
-         rQUXd4BdAuyMFmCNSrBP9WBe9HUDaOKBzErttcQhCpa6m+iS0pN2M9AqVz9K7P8Yc1PM
-         b6a+F9W+5ZpjHUmm0tuJnPorxEw4bOzBIMKgJ4pc2RvXfSBkLg4kVOXEtUJwGhaO6D1b
-         /0fQ==
-X-Gm-Message-State: AOAM5332iwxq2aHh0CEnMQNW9TPgtExgzfsssA3JnzrmY4pZf/Gy+/9o
-        MITWWBbDngXzklezQ6cKUT/JWYuuA2Y8R/SYcAAbSg==
-X-Google-Smtp-Source: ABdhPJz5+dNvgc2ixHXOwcDeo8jDfMW8Ql6QvMwMVQ6iLfDyfXrrjgP9Mg+KHQk+aYDhygWXhbGhxIhyAShRq9e5qmw=
-X-Received: by 2002:a25:d2c8:: with SMTP id j191mr8213434ybg.412.1630100018502;
- Fri, 27 Aug 2021 14:33:38 -0700 (PDT)
+        bh=J1gUDdbXfLZQpW8+uzYCzKrHt4z7fUbpEHpLEh39n0k=;
+        b=U/Jc3i0d1SihlTbeEHl2GHpoFD85ERBEyrJFjwYeSFjFyihv6H0ksqpZtrZWfJqfIu
+         htfsKAe8hVpGWcFoedL5iU8O4XjiA2nRcopDMGaMkibiuzJyCp60Q9rVtfZFJ4Va4IMb
+         q9vWNY9N5cDY0Wj837vsiUojZoNw+kL2+Z2mSTL2U+BuCu8MHmgGQbWFHvuIOLXqCyzD
+         hlSkWkGnzOH5PHXbmtKTVWLogzn0i9Qq9iu1JGZkWJM3NpZnlz7WDh2fa7/H6a3twDmM
+         7DmoRUTfBupGAwuN/sQGCL0zvHqIAP4n5Yutqc9aLhkXXTR1Js1zHL1+fg6EqPN00kbr
+         O2wg==
+X-Gm-Message-State: AOAM531gQ1PBOJduYAyBWH1aNXpt2+ZOaE6mZIM+ORleBQtvtDLTZWFJ
+        Spa0b0XpRAn12w9H8QBAxnHcsTMckBwqJrZX5zfZ+w==
+X-Google-Smtp-Source: ABdhPJxnOT+HvC9sFmVTbh+a5YPsytU3QCe1h24AMto3pAWQUC0hVyPRy+77bydlOPd3Lns0bs1oiZXw65gdbw60jwQ=
+X-Received: by 2002:a2e:9d88:: with SMTP id c8mr9360420ljj.467.1630102030256;
+ Fri, 27 Aug 2021 15:07:10 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210826074526.825517-1-saravanak@google.com> <20210826074526.825517-2-saravanak@google.com>
- <YSeTdb6DbHbBYabN@lunn.ch> <CAGETcx-pSi60NtMM=59cve8kN9ff9fgepQ5R=uJ3Gynzh=0_BA@mail.gmail.com>
- <YSf/Mps9E77/6kZX@lunn.ch> <CAGETcx_h6moWbS7m4hPm6Ub3T0tWayUQkppjevkYyiA=8AmACw@mail.gmail.com>
- <YSg+dRPSX9/ph6tb@lunn.ch> <CAGETcx_r8LSxV5=GQ-1qPjh7qGbCqTsSoSkQfxAKL5q+znRoWg@mail.gmail.com>
- <YSjsQmx8l4MXNvP+@lunn.ch> <CAGETcx_vMNZbT-5vCAvvpQNMMHy-19oR-mSfrg6=eSO49vLScQ@mail.gmail.com>
- <YSlG4XRGrq5D1/WU@lunn.ch>
-In-Reply-To: <YSlG4XRGrq5D1/WU@lunn.ch>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Fri, 27 Aug 2021 14:33:02 -0700
-Message-ID: <CAGETcx-ZvENq8tFZ9wb_BCPZabpZcqPrguY5rsg4fSNdOAB+Kw@mail.gmail.com>
-Subject: Re: [PATCH v1 1/2] driver core: fw_devlink: Add support for FWNODE_FLAG_BROKEN_PARENT
+References: <20210822193145.1312668-1-alvin@pqrs.dk> <20210822193145.1312668-2-alvin@pqrs.dk>
+ <YSLEZmuWlD5kUOlx@lunn.ch> <cb38f340-a410-26a4-43be-5f549c980ff3@bang-olufsen.dk>
+ <YSLazK4TbG5wjHbu@lunn.ch>
+In-Reply-To: <YSLazK4TbG5wjHbu@lunn.ch>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Sat, 28 Aug 2021 00:06:59 +0200
+Message-ID: <CACRpkdbUMSJxv+Gmbu2rpsWRMJyTy=ftQqhRuF_4FGb0CV+hqw@mail.gmail.com>
+Subject: Re: [RFC PATCH net-next 1/5] net: dsa: realtek-smi: fix mdio_free bug
+ on module unload
 To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
+Cc:     =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>,
+        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alvin@pqrs.dk>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
-        Alvin Sipraga <ALSI@bang-olufsen.dk>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-acpi@vger.kernel.org
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Michael Rasmussen <MIR@bang-olufsen.dk>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 27, 2021 at 1:11 PM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> > > I've not yet looked at plain Ethernet drivers. This pattern could also
-> > > exist there. And i wonder about other complex structures, i2c bus
-> > > multiplexors, you can have interrupt controllers as i2c devices,
-> > > etc. So the general case could exist in other places.
-> >
-> > I haven't seen any generic issues like this reported so far. It's only
-> > after adding phy-handle that we are hitting these issues with DSA
-> > switches.
->
-> Can you run your parser over the 2250 DTB blobs and see how many
-> children have dependencies on a parent? That could give us an idea how
-> many moles need whacking. And maybe, where in the tree they are
-> hiding?
+On Mon, Aug 23, 2021 at 1:16 AM Andrew Lunn <andrew@lunn.ch> wrote:
 
-You are only responding to part of my email. As I said in my previous
-email: "There are plenty of cases where it's better to delay the child
-device's probe until the parent finishes. You even gave an example[7]
-where it would help avoid unnecessary deferred probes." Can you please
-give your thoughts on the rest of the points I made too?
+> > No, there isn't. I neglected to mention in the rtl8365mb patch that I
+> > reworked the IRQ setup (compared with rtl8366rb) so that it could be
+> > torn down in a neat way. So you will see that the new driver does it
+> > properly, but I did not touch rtl8366rb because I am not using it. I am
+> > happy to do the same to rtl8366rb but I don't think I should make it
+> > part of this series. What do you think?
+>
+> Lets see if Linus has time. He can probably model the change based on
+> what you have done here.
 
--Saravana
+I have limited bandwidth as I am effectively on parental leave, so
+I can't do much of writing code, but I can certainly test a patch or
+two.
+
+Yours,
+Linus Walleij
