@@ -2,160 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B65DC3FA0BC
-	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 22:40:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5149B3FA0FC
+	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 23:11:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231752AbhH0Ul1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Aug 2021 16:41:27 -0400
-Received: from mga12.intel.com ([192.55.52.136]:60747 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231533AbhH0UlR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Aug 2021 16:41:17 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10089"; a="197589406"
-X-IronPort-AV: E=Sophos;i="5.84,357,1620716400"; 
-   d="scan'208";a="197589406"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Aug 2021 13:40:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.84,357,1620716400"; 
-   d="scan'208";a="685587313"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga006.fm.intel.com with ESMTP; 27 Aug 2021 13:40:20 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Brett Creeley <brett.creeley@intel.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com, richardcochran@gmail.com,
-        Gurucharan G <gurucharanx.g@intel.com>
-Subject: [PATCH net 5/5] ice: Only lock to update netdev dev_addr
-Date:   Fri, 27 Aug 2021 13:43:58 -0700
-Message-Id: <20210827204358.792803-6-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210827204358.792803-1-anthony.l.nguyen@intel.com>
-References: <20210827204358.792803-1-anthony.l.nguyen@intel.com>
+        id S231823AbhH0VLr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Aug 2021 17:11:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56858 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231570AbhH0VLr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Aug 2021 17:11:47 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3283C0613D9;
+        Fri, 27 Aug 2021 14:10:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=B04VA3ebYV41oXsvZWYgfVt4MtdWqlQMYtCEpPXnEN0=; b=my5E3FKOHcAhTmIywwAYQ6HiO
+        CPM9UbbBRO8QztETw9Hb7bkmOxDj7r7c1YSl3c2uXOkrT/0KX/EM4uw2LBSkIjGStsTDs8XSOL7bv
+        p1Cz07n+barJ8d7NOPFWl/mv6LDnBN3k1htqRVRT+Em6XypZLWuJ+FOJJycGtLaP1L/E9tTOuZp48
+        oK2UaaenBGl1dF8Ae0Tw2YdaRBLpewEGkIBL1x9klgUAAHonr+CUCO5C1UIzdxBas0dH6yq9Zmv2S
+        R0rb0BN1LIIJ+Psp5M+GdJmN+Yvdcgd+jhhGN3lD/IlzhB0aF+m3xLCA7SM8v8+eC/6s6YttvIncK
+        C7oPleX3g==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:47764)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mJj7k-0001dB-6j; Fri, 27 Aug 2021 22:10:52 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mJj7j-00027g-L3; Fri, 27 Aug 2021 22:10:51 +0100
+Date:   Fri, 27 Aug 2021 22:10:51 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Rob Herring <robh@kernel.org>, linux-phy@lists.infradead.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/3] phy: marvell: phy-mvebu-a3700-comphy: Remove
+ unsupported modes
+Message-ID: <20210827211051.GW22278@shell.armlinux.org.uk>
+References: <20210827092753.2359-1-pali@kernel.org>
+ <20210827092753.2359-3-pali@kernel.org>
+ <20210827132713.61ef86f0@thinkpad>
+ <20210827182502.vdapjcqimq4ulkg2@pali>
+ <20210827183355.GV22278@shell.armlinux.org.uk>
+ <20210827190234.72eakdvbgojscpkm@pali>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210827190234.72eakdvbgojscpkm@pali>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Brett Creeley <brett.creeley@intel.com>
+On Fri, Aug 27, 2021 at 09:02:34PM +0200, Pali Rohár wrote:
+> I think that whatever is used (firmware code, kernel code, ...), DT
+> should always contains full HW description with all nodes, and not only
+> some "subset". DT should be independent of current driver / firmware
+> implementation.
 
-commit 3ba7f53f8bf1 ("ice: don't remove netdev->dev_addr from uc sync
-list") introduced calls to netif_addr_lock_bh() and
-netif_addr_unlock_bh() in the driver's ndo_set_mac() callback. This is
-fine since the driver is updated the netdev's dev_addr, but since this
-is a spinlock, the driver cannot sleep when the lock is held.
-Unfortunately the functions to add/delete MAC filters depend on a mutex.
-This was causing a trace with the lock debug kernel config options
-enabled when changing the mac address via iproute.
+A "full" description of the hardware settings for the comphy on Armada
+8040 would be very big if we included every single setting. There are
+about a thousand settings - and that is likely an under-estimate. I
+know, I've a shell script that decodes around a thousand settings from
+the registers for a _single_ lane, and that's incomplete.
 
-[  203.273059] BUG: sleeping function called from invalid context at kernel/locking/mutex.c:281
-[  203.273065] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 6698, name: ip
-[  203.273068] Preemption disabled at:
-[  203.273068] [<ffffffffc04aaeab>] ice_set_mac_address+0x8b/0x1c0 [ice]
-[  203.273097] CPU: 31 PID: 6698 Comm: ip Tainted: G S      W I       5.14.0-rc4 #2
-[  203.273100] Hardware name: Intel Corporation S2600WFT/S2600WFT, BIOS SE5C620.86B.02.01.0010.010620200716 01/06/2020
-[  203.273102] Call Trace:
-[  203.273107]  dump_stack_lvl+0x33/0x42
-[  203.273113]  ? ice_set_mac_address+0x8b/0x1c0 [ice]
-[  203.273124]  ___might_sleep.cold.150+0xda/0xea
-[  203.273131]  mutex_lock+0x1c/0x40
-[  203.273136]  ice_remove_mac+0xe3/0x180 [ice]
-[  203.273155]  ? ice_fltr_add_mac_list+0x20/0x20 [ice]
-[  203.273175]  ice_fltr_prepare_mac+0x43/0xa0 [ice]
-[  203.273194]  ice_set_mac_address+0xab/0x1c0 [ice]
-[  203.273206]  dev_set_mac_address+0xb8/0x120
-[  203.273210]  dev_set_mac_address_user+0x2c/0x50
-[  203.273212]  do_setlink+0x1dd/0x10e0
-[  203.273217]  ? __nla_validate_parse+0x12d/0x1a0
-[  203.273221]  __rtnl_newlink+0x530/0x910
-[  203.273224]  ? __kmalloc_node_track_caller+0x17f/0x380
-[  203.273230]  ? preempt_count_add+0x68/0xa0
-[  203.273236]  ? _raw_spin_lock_irqsave+0x1f/0x30
-[  203.273241]  ? kmem_cache_alloc_trace+0x4d/0x440
-[  203.273244]  rtnl_newlink+0x43/0x60
-[  203.273245]  rtnetlink_rcv_msg+0x13a/0x380
-[  203.273248]  ? rtnl_calcit.isra.40+0x130/0x130
-[  203.273250]  netlink_rcv_skb+0x4e/0x100
-[  203.273256]  netlink_unicast+0x1a2/0x280
-[  203.273258]  netlink_sendmsg+0x242/0x490
-[  203.273260]  sock_sendmsg+0x58/0x60
-[  203.273263]  ____sys_sendmsg+0x1ef/0x260
-[  203.273265]  ? copy_msghdr_from_user+0x5c/0x90
-[  203.273268]  ? ____sys_recvmsg+0xe6/0x170
-[  203.273270]  ___sys_sendmsg+0x7c/0xc0
-[  203.273272]  ? copy_msghdr_from_user+0x5c/0x90
-[  203.273274]  ? ___sys_recvmsg+0x89/0xc0
-[  203.273276]  ? __netlink_sendskb+0x50/0x50
-[  203.273278]  ? mod_objcg_state+0xee/0x310
-[  203.273282]  ? __dentry_kill+0x114/0x170
-[  203.273286]  ? get_max_files+0x10/0x10
-[  203.273288]  __sys_sendmsg+0x57/0xa0
-[  203.273290]  do_syscall_64+0x37/0x80
-[  203.273295]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  203.273296] RIP: 0033:0x7f8edf96e278
-[  203.273298] Code: 89 02 48 c7 c0 ff ff ff ff eb b5 0f 1f 80 00 00 00 00 f3 0f 1e fa 48 8d 05 25 63 2c 00 8b 00 85 c0 75 17 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 58 c3 0f 1f 80 00 00 00 00 41 54 41 89 d4 55
-[  203.273300] RSP: 002b:00007ffcb8bdac08 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-[  203.273303] RAX: ffffffffffffffda RBX: 000000006115e0ae RCX: 00007f8edf96e278
-[  203.273304] RDX: 0000000000000000 RSI: 00007ffcb8bdac70 RDI: 0000000000000003
-[  203.273305] RBP: 0000000000000000 R08: 0000000000000001 R09: 00007ffcb8bda5b0
-[  203.273306] R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000001
-[  203.273306] R13: 0000555e10092020 R14: 0000000000000000 R15: 0000000000000005
+With many of the settings not very well documented in the manual, we
+would struggle to describe it sufficiently well to get it past the DT
+maintainers.
 
-Fix this by only locking when changing the netdev->dev_addr. Also, make
-sure to restore the old netdev->dev_addr on any failures.
+So, "full hardware description" is impractical. Sorry.
 
-Fixes: 3ba7f53f8bf1 ("ice: don't remove netdev->dev_addr from uc sync list")
-Signed-off-by: Brett Creeley <brett.creeley@intel.com>
-Tested-by: Gurucharan G <gurucharanx.g@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_main.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index fe2ded775f25..a8bd512d5b45 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -5122,6 +5122,7 @@ static int ice_set_mac_address(struct net_device *netdev, void *pi)
- 	struct ice_hw *hw = &pf->hw;
- 	struct sockaddr *addr = pi;
- 	enum ice_status status;
-+	u8 old_mac[ETH_ALEN];
- 	u8 flags = 0;
- 	int err = 0;
- 	u8 *mac;
-@@ -5144,8 +5145,13 @@ static int ice_set_mac_address(struct net_device *netdev, void *pi)
- 	}
- 
- 	netif_addr_lock_bh(netdev);
-+	ether_addr_copy(old_mac, netdev->dev_addr);
-+	/* change the netdev's MAC address */
-+	memcpy(netdev->dev_addr, mac, netdev->addr_len);
-+	netif_addr_unlock_bh(netdev);
-+
- 	/* Clean up old MAC filter. Not an error if old filter doesn't exist */
--	status = ice_fltr_remove_mac(vsi, netdev->dev_addr, ICE_FWD_TO_VSI);
-+	status = ice_fltr_remove_mac(vsi, old_mac, ICE_FWD_TO_VSI);
- 	if (status && status != ICE_ERR_DOES_NOT_EXIST) {
- 		err = -EADDRNOTAVAIL;
- 		goto err_update_filters;
-@@ -5168,13 +5174,12 @@ static int ice_set_mac_address(struct net_device *netdev, void *pi)
- 	if (err) {
- 		netdev_err(netdev, "can't set MAC %pM. filter update failed\n",
- 			   mac);
-+		netif_addr_lock_bh(netdev);
-+		ether_addr_copy(netdev->dev_addr, old_mac);
- 		netif_addr_unlock_bh(netdev);
- 		return err;
- 	}
- 
--	/* change the netdev's MAC address */
--	memcpy(netdev->dev_addr, mac, netdev->addr_len);
--	netif_addr_unlock_bh(netdev);
- 	netdev_dbg(vsi->netdev, "updated MAC address to %pM\n",
- 		   netdev->dev_addr);
- 
 -- 
-2.26.2
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
