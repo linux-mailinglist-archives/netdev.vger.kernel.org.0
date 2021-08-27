@@ -2,72 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 091E83F9270
-	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 04:42:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 153083F9309
+	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 05:47:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244015AbhH0CmM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 22:42:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57396 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243997AbhH0CmK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 22:42:10 -0400
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A073C0617AF
-        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 19:41:22 -0700 (PDT)
-Received: by mail-io1-xd44.google.com with SMTP id n24so6588070ion.10
-        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 19:41:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=JcCnNkxtHweN6ApEPCItRB3oqJyAr4ORMY/4f0Zly6Y=;
-        b=hePZR6l3xkStPPzaZuEEI5aAsDiq5dQtzNWNyjWzrepGL3zDg5RRM5jmzv3hA8Qe8s
-         U5eUSbP2BQ7A45zN3gKzMQbxc2I7TBQ+WGjJw07Ca+N4SD7OgsCT4ZKEmx6x2fsD6OqX
-         sDvMxBGlSNKZbvz0OZuVA0WFxvTs+J+u862pdllDKBdFdGgib9ZiPj9FP+K5yMejz9W4
-         OuAlWF0fiIbSrR3GjuzqKB/+JO2AcrVVCdco4KgUAztF/I1ojRBAGLgKYgf3zRYK3mCq
-         atYBVOANeHK8VXipDb5RywYKh0b5pA6B9IAIIuUon7ytDHQT/+sb7hMNDgkjIhtqobzS
-         9yGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=JcCnNkxtHweN6ApEPCItRB3oqJyAr4ORMY/4f0Zly6Y=;
-        b=Gbs0TvG27z6Jc04O22HO124go/E4LvxSs04cAMXdRB+yqcgJDj3B6XKDtARmhe68Fj
-         sJpBFZ60+Ii3T0JljaEL90sRREDoUilN4NbZm15WFyp4ACqhgO0bHVhQzz8TU9yUl3Qz
-         Fx6RMDZV1cG0x8/z7ANVavgfLHNIf867Pk/8Ce5JylSpzot793508kpQcFz0SLXhTqfy
-         kGjRxZCBKn9B99/wDIUnj3CM5x6X+B572bHalQErF6VFWL8iVm+x2jQQ/vuMRIR6daBS
-         n+K9lE8jfBxse6UD1Ul+SvRV4RNF/uYlNH1vGHkeGWrwwRekPFvwsDkm9zvGTF47BJgd
-         N19g==
-X-Gm-Message-State: AOAM531V4qcXf/pXoXe1BOYUJMgRtKSzUVdSLNZPV2tTfssd1/Yi4CYR
-        xkIcp0vURIMtHZS3c++un3GBNuwCbPVAqJtO2Z0=
-X-Google-Smtp-Source: ABdhPJy2KvQ1y9lDWFCt4tUkVLyCqygzMboFgevi6gaXvHUugKzDyPWXP8Dr7Y84OXabbw7jN7/E9JfzCpuZS4GffJY=
-X-Received: by 2002:a05:6602:26cb:: with SMTP id g11mr5610199ioo.110.1630032081852;
- Thu, 26 Aug 2021 19:41:21 -0700 (PDT)
+        id S244177AbhH0Drs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 23:47:48 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:9368 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244162AbhH0Drs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 23:47:48 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Gwlsg3PqNz8tKb;
+        Fri, 27 Aug 2021 11:42:47 +0800 (CST)
+Received: from dggpeml500024.china.huawei.com (7.185.36.10) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 27 Aug 2021 11:46:56 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ dggpeml500024.china.huawei.com (7.185.36.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 27 Aug 2021 11:46:56 +0800
+From:   Yufeng Mo <moyufeng@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <mkubecek@suse.cz>,
+        <amitc@mellanox.com>, <idosch@idosch.org>, <andrew@lunn.ch>,
+        <o.rempel@pengutronix.de>, <f.fainelli@gmail.com>,
+        <jacob.e.keller@intel.com>, <mlxsw@mellanox.com>
+CC:     <netdev@vger.kernel.org>, <lipeng321@huawei.com>,
+        <moyufeng@huawei.com>, <linuxarm@huawei.com>,
+        <linuxarm@openeuler.org>
+Subject: [PATCH kernel] netlink: settings: add netlink support for coalesce cqe mode parameter
+Date:   Fri, 27 Aug 2021 11:43:04 +0800
+Message-ID: <1630035784-15926-1-git-send-email-moyufeng@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Received: by 2002:a02:c6bc:0:0:0:0:0 with HTTP; Thu, 26 Aug 2021 19:41:21
- -0700 (PDT)
-From:   john williams <jw626521@gmail.com>
-Date:   Thu, 26 Aug 2021 14:41:21 -1200
-Message-ID: <CAA3cKDMLeZp=ywZ5d2MXfHebbUuYzsTJ67QeWGpBio58+vGPUA@mail.gmail.com>
-Subject: CONFIRM YOUR DETAILS TO ENABLE US START,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpeml500024.china.huawei.com (7.185.36.10)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Beneficiary,
+Add support for "ethtool -c <dev> cqe-mode-rx/cqe-mode-tx on/off"
+for setting coalesce cqe mode.
 
-Following your pending fund for years and the delay you imposed in
-receiving it,We have called back your fund to this office as directed
-by the Finance Office and we will be paying you directly through the
-BANK OF AMERICA.(BOA) NEW YORK BRANCH AND ALL YOU NEED NOW IS TO
-RE-CONFIRM YOUR BANKING DETAILS FOR THE TRANSFER IMMEDIATELY WITHOUT
-ANY FURTHER DELAY.
+Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
+---
+ ethtool.c          |  2 ++
+ netlink/coalesce.c | 15 +++++++++++++++
+ 2 files changed, 17 insertions(+)
 
-NOTE THAT WE WILL PAY ALL THE EXPENSES INVOLVED FOR YOU TO RECEIVE
-THIS FUND AND ALL WE NEED FROM YOU IS YOUR CO-OPERATION.
+diff --git a/ethtool.c b/ethtool.c
+index 2486caa..a6826e9 100644
+--- a/ethtool.c
++++ b/ethtool.c
+@@ -5703,6 +5703,8 @@ static const struct option args[] = {
+ 			  "		[tx-usecs-high N]\n"
+ 			  "		[tx-frames-high N]\n"
+ 			  "		[sample-interval N]\n"
++			  "		[cqe-mode-rx on|off]\n"
++			  "		[cqe-mode-tx on|off]\n"
+ 	},
+ 	{
+ 		.opts	= "-g|--show-ring",
+diff --git a/netlink/coalesce.c b/netlink/coalesce.c
+index 75922a9..762d0e3 100644
+--- a/netlink/coalesce.c
++++ b/netlink/coalesce.c
+@@ -66,6 +66,9 @@ int coalesce_reply_cb(const struct nlmsghdr *nlhdr, void *data)
+ 	show_u32(tb[ETHTOOL_A_COALESCE_TX_USECS_HIGH], "tx-usecs-high: ");
+ 	show_u32(tb[ETHTOOL_A_COALESCE_TX_MAX_FRAMES_HIGH], "tx-frame-high: ");
+ 	putchar('\n');
++	show_bool("rx", "CQE mode RX: %s  ",
++		  tb[ETHTOOL_A_COALESCE_USE_CQE_MODE_RX]);
++	show_bool("tx", "TX: %s\n", tb[ETHTOOL_A_COALESCE_USE_CQE_MODE_TX]);
+ 
+ 	return MNL_CB_OK;
+ }
+@@ -226,6 +229,18 @@ static const struct param_parser scoalesce_params[] = {
+ 		.handler	= nl_parse_direct_u32,
+ 		.min_argc	= 1,
+ 	},
++	{
++		.arg		= "cqe-mode-rx",
++		.type		= ETHTOOL_A_COALESCE_USE_CQE_MODE_RX,
++		.handler	= nl_parse_u8bool,
++		.min_argc	= 1,
++	},
++	{
++		.arg		= "cqe-mode-tx",
++		.type		= ETHTOOL_A_COALESCE_USE_CQE_MODE_TX,
++		.handler	= nl_parse_u8bool,
++		.min_argc	= 1,
++	},
+ 	{}
+ };
+ 
+-- 
+2.8.1
 
-Send your full details with Banking details to enable us commence the
-transfer process immediately through the BOA BANK IN NEW YORK,USA OR
-DO YOU WANT TO RECEIVE THIS FUND VIA ATM CARD ????????.
-
-John O.Williams.
