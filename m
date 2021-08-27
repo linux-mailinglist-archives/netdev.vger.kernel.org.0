@@ -2,86 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 543FF3F91DF
-	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 03:20:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E95243F91E2
+	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 03:23:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243898AbhH0BRt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 21:17:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38386 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231434AbhH0BRs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 21:17:48 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 409EDC061757
-        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 18:17:00 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id q3so2893168plx.4
-        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 18:17:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=r1nYTq1DhC3Ti9UeEfkaAD7cQ4K/vppa7D4lE9B8SuI=;
-        b=jn9y1ilXuQiyaxNNPHVD9fCujUqdXrGeVNxbSyqcF4ceCgNTFuHQEJtQ03XkPHUQkv
-         K94P+K9eUAmbGoLpXLiFVNNylHQDk46sA/TD6I8+FIuMIcA4LED18CcHb0v7nrYamGXz
-         S+BGc5/WuWbKo0Dp6otdMEfLIayBuvaYpEzHnWXIWYWTpNRCcX6+ff3eHlNKyUlFkGEY
-         DYffPWDuZFYZOiZBG8u4afdc9ATkcf0pD1ckGnMhab9hiFQJTOXdapufCg8RIeqlu7Dm
-         4RNrIxgUAiUeFbmTAbUXbbVT79EHDXqK2gbLpC1QefwhqZUt1XXZ8DB2W1jG85e8tyke
-         p3/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=r1nYTq1DhC3Ti9UeEfkaAD7cQ4K/vppa7D4lE9B8SuI=;
-        b=ZTTl2Ecs/44U5z4VLtorTkJmQuinfEdaRY92/VvmLbPxEVEP4Qb/mhPL/JZvPCiCv7
-         BSbHyn/qk19N7eGQ4Th1i8OGSdJAqvCtObiMwOGNcYtIVr+TPTepn+m8ip9+u4nKUPfc
-         LKb0MQDFSCF67z/ZwHs/Dbj9jr7ycQg5w2FMOB9FIellMnBGLP87D0Yrc9POPiVp1TPd
-         pfypv2CD/+l+mCbjdTRm9SF1dFu1oEwoKVa3dlexwuqhO+zUQX5SThPPAzkRBiVV3MGV
-         3JrDkbPF6jP0p/5S8+JMEGtH72Of3zLJEvwkI5GhkZMyCqnz8uM172WRr7reNQhci85/
-         B72g==
-X-Gm-Message-State: AOAM530qtpnP4NPM2vRCNZSHPZfrNntQD+AeMbOw9aIOjuyrmxz0goet
-        X+avTYiICIe/VXWXZExOnsTpN3qf3nU=
-X-Google-Smtp-Source: ABdhPJySdsHKic9UsrwUzswUvHtVrWY1R2EdOCakTqWq8H0k+/8SrgcwH6qM30MJR2+ZIS9YHksKiQ==
-X-Received: by 2002:a17:90a:168f:: with SMTP id o15mr7771682pja.158.1630027019538;
-        Thu, 26 Aug 2021 18:16:59 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id z131sm4184422pfc.159.2021.08.26.18.16.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 26 Aug 2021 18:16:58 -0700 (PDT)
-To:     Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Networking <netdev@vger.kernel.org>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Subject: Question about inet_rtm_getroute_build_skb()
-Message-ID: <4a0ef868-f4ea-3ec1-52b9-4d987362be20@gmail.com>
-Date:   Thu, 26 Aug 2021 18:16:56 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        id S243906AbhH0BYD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 21:24:03 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:44086 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S243862AbhH0BX7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Aug 2021 21:23:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=UmvqQeRBC3Htg34LwucXA+7+d+VtbtPSDFbdpOgvHz0=; b=XwuOLQcCT/+U9R021tGLTEiB+O
+        I0649jMhBb6YJ5tEC5OlvyUNjyQoTx1x2o8NiMeozcwB60PQo2HBpfdvelY9GTvM4H+W5cZ70b9pp
+        o8i7+p4KLpRZP2Xq6dmTPmargZcybzwbbE5qP3ID02K5aNynmUUSGq9OhP0Sm3N/DYko=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mJQaD-0042Pg-4e; Fri, 27 Aug 2021 03:23:01 +0200
+Date:   Fri, 27 Aug 2021 03:23:01 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
+        Alvin Sipraga <ALSI@bang-olufsen.dk>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-acpi@vger.kernel.org
+Subject: Re: [PATCH v1 1/2] driver core: fw_devlink: Add support for
+ FWNODE_FLAG_BROKEN_PARENT
+Message-ID: <YSg+dRPSX9/ph6tb@lunn.ch>
+References: <20210826074526.825517-1-saravanak@google.com>
+ <20210826074526.825517-2-saravanak@google.com>
+ <YSeTdb6DbHbBYabN@lunn.ch>
+ <CAGETcx-pSi60NtMM=59cve8kN9ff9fgepQ5R=uJ3Gynzh=0_BA@mail.gmail.com>
+ <YSf/Mps9E77/6kZX@lunn.ch>
+ <CAGETcx_h6moWbS7m4hPm6Ub3T0tWayUQkppjevkYyiA=8AmACw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGETcx_h6moWbS7m4hPm6Ub3T0tWayUQkppjevkYyiA=8AmACw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Roopa
+> Doesn't add much to the discussion. In the example I gave, the driver
+> already does synchronous probing. If the device can't probe
+> successfully because a supplier isn't ready, it doesn't matter if it's
+> a synchronous probe. The probe would still be deferred and we'll hit
+> the same issue. Even in the situation the commit [5] describes, if
+> parallelized probing is done and the PHY depended on something (say a
+> clock), you'd still end up not probing the PHY even if the driver is
+> present and the generic PHY would end up force probing it.
 
-I noticed inet_rtm_getroute_build_skb() has this endian issue 
-when building an UDP header.
 
-Would the following fix break user space ?
+genphy is meant to be used when there is no other driver available.
+It is a best effort, better than nothing, might work. And quite a few
+boards rely on it. However, it should not be used when there is a
+specific driver.
 
-Thanks.
+So if the PHY device has been probed, and -EPROBE_DEFER was returned,
+we also need to return -EPROBE_DEFER here when deciding if genphy
+should be used. It should then all unwind and try again later.
 
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index a6f20ee3533554b210d27c4ab6637ca7a05b148b..50133b935f868c2ae9474eea027a0ad864a43936 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -3170,7 +3170,7 @@ static struct sk_buff *inet_rtm_getroute_build_skb(__be32 src, __be32 dst,
-                udph = skb_put_zero(skb, sizeof(struct udphdr));
-                udph->source = sport;
-                udph->dest = dport;
--               udph->len = sizeof(struct udphdr);
-+               udph->len = htons(sizeof(struct udphdr));
-                udph->check = 0;
-                break;
-        }
+I don't know the device core, but it looks like dev->can_match tells
+us what we need to know. If true, we know there is a driver for this
+device. But i'm hesitant to make use of this outside of driver/base.
+
+	Andrew
+
