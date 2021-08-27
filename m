@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93B323F9DDC
-	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 19:27:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65BF33F9DCE
+	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 19:27:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245565AbhH0RWo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Aug 2021 13:22:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60752 "EHLO
+        id S245474AbhH0RWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Aug 2021 13:22:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238575AbhH0RW0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Aug 2021 13:22:26 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 296C7C06129D;
-        Fri, 27 Aug 2021 10:21:36 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id j10-20020a17090a94ca00b00181f17b7ef7so9340747pjw.2;
-        Fri, 27 Aug 2021 10:21:36 -0700 (PDT)
+        with ESMTP id S237387AbhH0RW2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Aug 2021 13:22:28 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34013C0613CF;
+        Fri, 27 Aug 2021 10:21:39 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id j187so6252151pfg.4;
+        Fri, 27 Aug 2021 10:21:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ob17ye6fnB7930R2FL8arcDHdt3yZk08j/bIRN4xoKw=;
-        b=Acq1bVUvmaPyZlZjmDtywazFIpInMJ5l50PEA2Nt3bFOezzfV0cJXj0UCstXCzAMBj
-         KfGQXE6kdqUIrk3FKEI4LK3MOaU/qt2lKq1m9PTltB806b7/cSj9E7RSKQ2auAqcybd+
-         9wAlDTj81JPxOqaCrr18me0IQCBb6qT7513xzCPfvIdPqnk2WNtVKQlv/AudOf4dMoYS
-         U3cOSF+ygSE19w5mBvsH5pTBBooic+JayU5NnWQ9mvd5PKbJuY22vk3nxxSot8AvIOSg
-         udI302S3dgA4YRY4l76sBeRQT1mqw0wR1intt/aaKxosHTOVgz1TrwlP2iTngJ8FsGBk
-         FBoQ==
+        bh=IDv52uhOHnM52YSplOEizgvrMcaCG52xTZqX8PjRtjY=;
+        b=W3A72vwZ3Ghwpp2o31CalwDckdSlHrw8StpK5AyjpmRfd7CoTWRdKx9qXGzOjb4pj3
+         NCSk+7IZAD3LedbDJg025YQV6OI40vLBcSKr0wrsGn6eizyE2OTRY7/X40qbI132Q8la
+         icbgRcIxFmG914HjGbujHrewWgk176VEDV+x/QdzOvheP0TwfLTweIzL9uBVd3yVDUn2
+         vSmaSU6KUJ257VBVrC46n3gE5fJnAmuxOXfrkO29VPSz5UDjxNj5n6hNF3QnSI8ZIMvx
+         LPiBV+UQ4WTAkCIT/6Qzy9PhNFbXgoU18387LZmAfrNkr5IiukCeXLXFomvnet7ilIBD
+         6Tkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ob17ye6fnB7930R2FL8arcDHdt3yZk08j/bIRN4xoKw=;
-        b=lk4H//DpnMnfsYm9gpdE8rfyYGwdJjLXrjMPwPko2Fr6kZbI0JoRc59IktyrTK+scN
-         FaxbD54LF9CWgc9U1Zd5RFaBoM+y2RXfNgqoX9/WkPLxFABWoCcv10SbJGx/upeVJuU7
-         VYK2h/YOwLBoWIVAWn/JjWR/xdsX1NmCKqF7n4vWIlwYDNVHH/z0CHtQXKesv2ifOhps
-         C04m1EYzdpMj0ht7aIRFyiOcCmQC5960z+WqU7RmW7+SpwZ/jHRBpwe7lgEBfbJ8uvAk
-         r2YY/kn2Df1MXyC7fSdX87IlNODhotkf+NyaLlK6Iks0hVvEH7E3TJNEKj6Of7eRmxO4
-         zWBA==
-X-Gm-Message-State: AOAM531saGw3AgdU73cB1JPR/C8Q0iDsDfYAj6gjlMpxP4MHr1wuY2WU
-        7E/hYbbrAhNHIYJFu+pEjN8=
-X-Google-Smtp-Source: ABdhPJwGMkg3bSRTf7M6vFTQbDZzjMqErLrtp6BhB2Bjhure2g65PdQZullrEVECsMos6PPHsE5QZg==
-X-Received: by 2002:a17:902:7203:b0:133:ec6b:6c16 with SMTP id ba3-20020a170902720300b00133ec6b6c16mr9550118plb.67.1630084895682;
-        Fri, 27 Aug 2021 10:21:35 -0700 (PDT)
+        bh=IDv52uhOHnM52YSplOEizgvrMcaCG52xTZqX8PjRtjY=;
+        b=BZyCEUAXsXVsuqoEnojXLugBQAYopwO/uFRg+cgA52WTI543dbWjUDUdQO1uhQbF3G
+         c5Dx1fb3bUbw5sxk6quvhJyIq8Q6N+BjmHp1lyBBsUyFqAo2p+bpiMbtBVhFT58U9xj6
+         wWSAZcpFWnsuffV1DzfIGEbs96OwK6Kso/YQcYCIbz67YzY3areGJIk8UI3nwU49B6Je
+         IWEyAUrmGr1hbckxVwJnaNOm5nYvzbH4nXdQJ8rgq8sKaZTLAQpP2hX6/RX1FHJK1Twx
+         8FDmkGqHkEcgneHs5MlgdeMZtuzVi2B0pIxtcY+HMMngHBesg6pqapDtKdSj0jNuVLE2
+         xfxQ==
+X-Gm-Message-State: AOAM530EEiGdm+wp0x/RVduD9MHJjNCQg9GqH287xgMZcV2ERacLuW8c
+        UeQgfbS9lqjsSG/KMkVp2kw=
+X-Google-Smtp-Source: ABdhPJzz68J2ef2NxKZvaNs5SyHPyYKCGSvy1fUWoS56/s8IKaqxW9MfFpxUlMb01fo8vSumjFMHoQ==
+X-Received: by 2002:aa7:864a:0:b0:3ee:a4f6:af02 with SMTP id a10-20020aa7864a000000b003eea4f6af02mr10062820pfo.23.1630084898734;
+        Fri, 27 Aug 2021 10:21:38 -0700 (PDT)
 Received: from ubuntu-Virtual-Machine.corp.microsoft.com ([2001:4898:80e8:36:ef50:8fcd:44d1:eb17])
-        by smtp.gmail.com with ESMTPSA id f5sm7155015pjo.23.2021.08.27.10.21.34
+        by smtp.gmail.com with ESMTPSA id f5sm7155015pjo.23.2021.08.27.10.21.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Aug 2021 10:21:35 -0700 (PDT)
+        Fri, 27 Aug 2021 10:21:38 -0700 (PDT)
 From:   Tianyu Lan <ltykernel@gmail.com>
 To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
         wei.liu@kernel.org, decui@microsoft.com, catalin.marinas@arm.com,
@@ -71,9 +71,9 @@ Cc:     iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
         linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
         vkuznets@redhat.com, parri.andrea@gmail.com, dave.hansen@intel.com
-Subject: [PATCH V4 06/13] hyperv: Add ghcb hvcall support for SNP VM
-Date:   Fri, 27 Aug 2021 13:21:04 -0400
-Message-Id: <20210827172114.414281-7-ltykernel@gmail.com>
+Subject: [PATCH V4 07/13] hyperv/Vmbus: Add SNP support for VMbus channel initiate  message
+Date:   Fri, 27 Aug 2021 13:21:05 -0400
+Message-Id: <20210827172114.414281-8-ltykernel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210827172114.414281-1-ltykernel@gmail.com>
 References: <20210827172114.414281-1-ltykernel@gmail.com>
@@ -85,170 +85,175 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
-hyperv provides ghcb hvcall to handle VMBus
-HVCALL_SIGNAL_EVENT and HVCALL_POST_MESSAGE
-msg in SNP Isolation VM. Add such support.
+The monitor pages in the CHANNELMSG_INITIATE_CONTACT msg are shared
+with host in Isolation VM and so it's necessary to use hvcall to set
+them visible to host. In Isolation VM with AMD SEV SNP, the access
+address should be in the extra space which is above shared gpa
+boundary. So remap these pages into the extra address(pa +
+shared_gpa_boundary).
+
+Introduce monitor_pages_original[] in the struct vmbus_connection
+to store monitor page virtual address returned by hv_alloc_hyperv_
+zeroed_page() and free monitor page via monitor_pages_original in
+the vmbus_disconnect(). The monitor_pages[] is to used to access
+monitor page and it is initialized to be equal with monitor_pages_
+original. The monitor_pages[] will be overridden in the isolation VM
+with va of extra address.
 
 Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
 ---
 Change since v3:
-	* Add hv_ghcb_hypercall() stub function to avoid
-	  compile error for ARM.
----
- arch/x86/hyperv/ivm.c          | 71 ++++++++++++++++++++++++++++++++++
- drivers/hv/connection.c        |  6 ++-
- drivers/hv/hv.c                |  8 +++-
- drivers/hv/hv_common.c         |  6 +++
- include/asm-generic/mshyperv.h |  1 +
- 5 files changed, 90 insertions(+), 2 deletions(-)
+	* Rename monitor_pages_va with monitor_pages_original
+	* free monitor page via monitor_pages_original and
+	  monitor_pages is used to access monitor page.
 
-diff --git a/arch/x86/hyperv/ivm.c b/arch/x86/hyperv/ivm.c
-index f56fe4f73000..e761c67e2218 100644
---- a/arch/x86/hyperv/ivm.c
-+++ b/arch/x86/hyperv/ivm.c
-@@ -17,10 +17,81 @@
- #include <asm/io.h>
- #include <asm/mshyperv.h>
- 
-+#define GHCB_USAGE_HYPERV_CALL	1
-+
- union hv_ghcb {
- 	struct ghcb ghcb;
-+	struct {
-+		u64 hypercalldata[509];
-+		u64 outputgpa;
-+		union {
-+			union {
-+				struct {
-+					u32 callcode        : 16;
-+					u32 isfast          : 1;
-+					u32 reserved1       : 14;
-+					u32 isnested        : 1;
-+					u32 countofelements : 12;
-+					u32 reserved2       : 4;
-+					u32 repstartindex   : 12;
-+					u32 reserved3       : 4;
-+				};
-+				u64 asuint64;
-+			} hypercallinput;
-+			union {
-+				struct {
-+					u16 callstatus;
-+					u16 reserved1;
-+					u32 elementsprocessed : 12;
-+					u32 reserved2         : 20;
-+				};
-+				u64 asunit64;
-+			} hypercalloutput;
-+		};
-+		u64 reserved2;
-+	} hypercall;
- } __packed __aligned(HV_HYP_PAGE_SIZE);
- 
-+u64 hv_ghcb_hypercall(u64 control, void *input, void *output, u32 input_size)
-+{
-+	union hv_ghcb *hv_ghcb;
-+	void **ghcb_base;
-+	unsigned long flags;
-+
-+	if (!hv_ghcb_pg)
-+		return -EFAULT;
-+
-+	WARN_ON(in_nmi());
-+
-+	local_irq_save(flags);
-+	ghcb_base = (void **)this_cpu_ptr(hv_ghcb_pg);
-+	hv_ghcb = (union hv_ghcb *)*ghcb_base;
-+	if (!hv_ghcb) {
-+		local_irq_restore(flags);
-+		return -EFAULT;
-+	}
-+
-+	hv_ghcb->ghcb.protocol_version = GHCB_PROTOCOL_MAX;
-+	hv_ghcb->ghcb.ghcb_usage = GHCB_USAGE_HYPERV_CALL;
-+
-+	hv_ghcb->hypercall.outputgpa = (u64)output;
-+	hv_ghcb->hypercall.hypercallinput.asuint64 = 0;
-+	hv_ghcb->hypercall.hypercallinput.callcode = control;
-+
-+	if (input_size)
-+		memcpy(hv_ghcb->hypercall.hypercalldata, input, input_size);
-+
-+	VMGEXIT();
-+
-+	hv_ghcb->ghcb.ghcb_usage = 0xffffffff;
-+	memset(hv_ghcb->ghcb.save.valid_bitmap, 0,
-+	       sizeof(hv_ghcb->ghcb.save.valid_bitmap));
-+
-+	local_irq_restore(flags);
-+
-+	return hv_ghcb->hypercall.hypercalloutput.callstatus;
-+}
-+
- void hv_ghcb_msr_write(u64 msr, u64 value)
- {
- 	union hv_ghcb *hv_ghcb;
+Change since v1:
+        * Not remap monitor pages in the non-SNP isolation VM.
+---
+ drivers/hv/connection.c   | 75 ++++++++++++++++++++++++++++++++++++---
+ drivers/hv/hyperv_vmbus.h |  1 +
+ 2 files changed, 72 insertions(+), 4 deletions(-)
+
 diff --git a/drivers/hv/connection.c b/drivers/hv/connection.c
-index 5e479d54918c..6d315c1465e0 100644
+index 6d315c1465e0..9a48d8115c87 100644
 --- a/drivers/hv/connection.c
 +++ b/drivers/hv/connection.c
-@@ -447,6 +447,10 @@ void vmbus_set_event(struct vmbus_channel *channel)
+@@ -19,6 +19,7 @@
+ #include <linux/vmalloc.h>
+ #include <linux/hyperv.h>
+ #include <linux/export.h>
++#include <linux/io.h>
+ #include <asm/mshyperv.h>
  
- 	++channel->sig_events;
+ #include "hyperv_vmbus.h"
+@@ -104,6 +105,12 @@ int vmbus_negotiate_version(struct vmbus_channel_msginfo *msginfo, u32 version)
  
--	hv_do_fast_hypercall8(HVCALL_SIGNAL_EVENT, channel->sig_event);
-+	if (hv_isolation_type_snp())
-+		hv_ghcb_hypercall(HVCALL_SIGNAL_EVENT, &channel->sig_event,
-+				NULL, sizeof(u64));
-+	else
-+		hv_do_fast_hypercall8(HVCALL_SIGNAL_EVENT, channel->sig_event);
- }
- EXPORT_SYMBOL_GPL(vmbus_set_event);
-diff --git a/drivers/hv/hv.c b/drivers/hv/hv.c
-index 97b21256a9db..d4531c64d9d3 100644
---- a/drivers/hv/hv.c
-+++ b/drivers/hv/hv.c
-@@ -98,7 +98,13 @@ int hv_post_message(union hv_connection_id connection_id,
- 	aligned_msg->payload_size = payload_size;
- 	memcpy((void *)aligned_msg->payload, payload, payload_size);
- 
--	status = hv_do_hypercall(HVCALL_POST_MESSAGE, aligned_msg, NULL);
-+	if (hv_isolation_type_snp())
-+		status = hv_ghcb_hypercall(HVCALL_POST_MESSAGE,
-+				(void *)aligned_msg, NULL,
-+				sizeof(struct hv_input_post_message));
-+	else
-+		status = hv_do_hypercall(HVCALL_POST_MESSAGE,
-+				aligned_msg, NULL);
- 
- 	/* Preemption must remain disabled until after the hypercall
- 	 * so some other thread can't get scheduled onto this cpu and
-diff --git a/drivers/hv/hv_common.c b/drivers/hv/hv_common.c
-index 1fc82d237161..7be173a99f27 100644
---- a/drivers/hv/hv_common.c
-+++ b/drivers/hv/hv_common.c
-@@ -289,3 +289,9 @@ void __weak hyperv_cleanup(void)
- {
- }
- EXPORT_SYMBOL_GPL(hyperv_cleanup);
+ 	msg->monitor_page1 = virt_to_phys(vmbus_connection.monitor_pages[0]);
+ 	msg->monitor_page2 = virt_to_phys(vmbus_connection.monitor_pages[1]);
 +
-+u64 __weak hv_ghcb_hypercall(u64 control, void *input, void *output, u32 input_size)
-+{
-+	return HV_STATUS_INVALID_PARAMETER;
-+}
-+EXPORT_SYMBOL_GPL(hv_ghcb_hypercall);
-diff --git a/include/asm-generic/mshyperv.h b/include/asm-generic/mshyperv.h
-index 04a687d95eac..0da45807c36a 100644
---- a/include/asm-generic/mshyperv.h
-+++ b/include/asm-generic/mshyperv.h
-@@ -250,6 +250,7 @@ bool hv_is_hibernation_supported(void);
- enum hv_isolation_type hv_get_isolation_type(void);
- bool hv_is_isolation_supported(void);
- bool hv_isolation_type_snp(void);
-+u64 hv_ghcb_hypercall(u64 control, void *input, void *output, u32 input_size);
- void hyperv_cleanup(void);
- bool hv_query_ext_cap(u64 cap_query);
- #else /* CONFIG_HYPERV */
++	if (hv_isolation_type_snp()) {
++		msg->monitor_page1 += ms_hyperv.shared_gpa_boundary;
++		msg->monitor_page2 += ms_hyperv.shared_gpa_boundary;
++	}
++
+ 	msg->target_vcpu = hv_cpu_number_to_vp_number(VMBUS_CONNECT_CPU);
+ 
+ 	/*
+@@ -148,6 +155,35 @@ int vmbus_negotiate_version(struct vmbus_channel_msginfo *msginfo, u32 version)
+ 		return -ECONNREFUSED;
+ 	}
+ 
++
++	if (hv_is_isolation_supported()) {
++		if (hv_isolation_type_snp()) {
++			vmbus_connection.monitor_pages[0]
++				= memremap(msg->monitor_page1, HV_HYP_PAGE_SIZE,
++					   MEMREMAP_WB);
++			if (!vmbus_connection.monitor_pages[0])
++				return -ENOMEM;
++
++			vmbus_connection.monitor_pages[1]
++				= memremap(msg->monitor_page2, HV_HYP_PAGE_SIZE,
++					   MEMREMAP_WB);
++			if (!vmbus_connection.monitor_pages[1]) {
++				memunmap(vmbus_connection.monitor_pages[0]);
++				return -ENOMEM;
++			}
++		}
++
++		/*
++		 * Set memory host visibility hvcall smears memory
++		 * and so zero monitor pages here.
++		 */
++		memset(vmbus_connection.monitor_pages[0], 0x00,
++		       HV_HYP_PAGE_SIZE);
++		memset(vmbus_connection.monitor_pages[1], 0x00,
++		       HV_HYP_PAGE_SIZE);
++
++	}
++
+ 	return ret;
+ }
+ 
+@@ -159,6 +195,7 @@ int vmbus_connect(void)
+ 	struct vmbus_channel_msginfo *msginfo = NULL;
+ 	int i, ret = 0;
+ 	__u32 version;
++	u64 pfn[2];
+ 
+ 	/* Initialize the vmbus connection */
+ 	vmbus_connection.conn_state = CONNECTING;
+@@ -216,6 +253,21 @@ int vmbus_connect(void)
+ 		goto cleanup;
+ 	}
+ 
++	vmbus_connection.monitor_pages_original[0]
++		= vmbus_connection.monitor_pages[0];
++	vmbus_connection.monitor_pages_original[1]
++		= vmbus_connection.monitor_pages[1];
++
++	if (hv_is_isolation_supported()) {
++		pfn[0] = virt_to_hvpfn(vmbus_connection.monitor_pages[0]);
++		pfn[1] = virt_to_hvpfn(vmbus_connection.monitor_pages[1]);
++		if (hv_mark_gpa_visibility(2, pfn,
++				VMBUS_PAGE_VISIBLE_READ_WRITE)) {
++			ret = -EFAULT;
++			goto cleanup;
++		}
++	}
++
+ 	msginfo = kzalloc(sizeof(*msginfo) +
+ 			  sizeof(struct vmbus_channel_initiate_contact),
+ 			  GFP_KERNEL);
+@@ -284,6 +336,8 @@ int vmbus_connect(void)
+ 
+ void vmbus_disconnect(void)
+ {
++	u64 pfn[2];
++
+ 	/*
+ 	 * First send the unload request to the host.
+ 	 */
+@@ -303,10 +357,23 @@ void vmbus_disconnect(void)
+ 		vmbus_connection.int_page = NULL;
+ 	}
+ 
+-	hv_free_hyperv_page((unsigned long)vmbus_connection.monitor_pages[0]);
+-	hv_free_hyperv_page((unsigned long)vmbus_connection.monitor_pages[1]);
+-	vmbus_connection.monitor_pages[0] = NULL;
+-	vmbus_connection.monitor_pages[1] = NULL;
++	if (hv_is_isolation_supported()) {
++		memunmap(vmbus_connection.monitor_pages[0]);
++		memunmap(vmbus_connection.monitor_pages[1]);
++
++		pfn[0] = virt_to_hvpfn(vmbus_connection.monitor_pages[0]);
++		pfn[1] = virt_to_hvpfn(vmbus_connection.monitor_pages[1]);
++		hv_mark_gpa_visibility(2, pfn, VMBUS_PAGE_NOT_VISIBLE);
++	}
++
++	hv_free_hyperv_page((unsigned long)
++		vmbus_connection.monitor_pages_original[0]);
++	hv_free_hyperv_page((unsigned long)
++		vmbus_connection.monitor_pages_original[1]);
++	vmbus_connection.monitor_pages_original[0] =
++		vmbus_connection.monitor_pages[0] = NULL;
++	vmbus_connection.monitor_pages_original[1] =
++		vmbus_connection.monitor_pages[1] = NULL;
+ }
+ 
+ /*
+diff --git a/drivers/hv/hyperv_vmbus.h b/drivers/hv/hyperv_vmbus.h
+index 42f3d9d123a1..7cb11ef694da 100644
+--- a/drivers/hv/hyperv_vmbus.h
++++ b/drivers/hv/hyperv_vmbus.h
+@@ -240,6 +240,7 @@ struct vmbus_connection {
+ 	 * is child->parent notification
+ 	 */
+ 	struct hv_monitor_page *monitor_pages[2];
++	void *monitor_pages_original[2];
+ 	struct list_head chn_msg_list;
+ 	spinlock_t channelmsg_lock;
+ 
 -- 
 2.25.1
 
