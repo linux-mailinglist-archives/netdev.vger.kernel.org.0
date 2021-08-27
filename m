@@ -2,81 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A6883F980D
-	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 12:19:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A4243F980F
+	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 12:23:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244959AbhH0KUQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Aug 2021 06:20:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43440 "EHLO mail.kernel.org"
+        id S244724AbhH0KU4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Aug 2021 06:20:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43630 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244708AbhH0KUP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Aug 2021 06:20:15 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2510060F4F;
-        Fri, 27 Aug 2021 10:19:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1630059567;
-        bh=EOO6pKRRm3/g0M0RTzHPyA5sIKLS/eIq5VJThmOrCEw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=tSWxtIl/NPkTQ+WN8KhkK2/CGY68e9SPzcz96GYq8DQDLZj+lR6JyJOm5lERl4GRf
-         jAfeQbjuo/OQ/PZWP8pPTuxkcUqcArquIRHzcRRhB95mtj9pphex7YpebmAVaIvN4Z
-         NQVgSZvHUzrTPuPHX/PExgvqfsFYW+73WX1C4eSE=
-Date:   Fri, 27 Aug 2021 12:19:23 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     DENG Qingfang <dqfext@gmail.com>
-Cc:     Sasha Levin <sashal@kernel.org>, stable@vger.kernel.org,
-        Sean Wang <sean.wang@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@savoirfairelinux.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "open list:MEDIATEK SWITCH DRIVER" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>
-Subject: Re: [PATCH 4.19.y] net: dsa: mt7530: disable learning on standalone
- ports
-Message-ID: <YSi8Ky3GqBjnxbhC@kroah.com>
-References: <20210824055509.1316124-1-dqfext@gmail.com>
- <YSUQV3jhfbhbf5Ct@sashalap>
- <CALW65ja3hYGmEqcWZzifP2-0WsJOnxcUXsey2ZH5vDbD0-nDeQ@mail.gmail.com>
+        id S233204AbhH0KUz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Aug 2021 06:20:55 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 02A8060FE6;
+        Fri, 27 Aug 2021 10:20:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1630059607;
+        bh=/l5d8juEeqiYK/KEiSZ5FKobIhaxog4kQirW3hionhQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=jWqCwkZY7rsxM8AlgXb5EH1GVlfWJLgC6yI9WJUkhCXX4jTK6wryYv5u/voQSgbiE
+         9nOWJ2lYuG/apyICHaJ5nDbLT9E6MqDpnjYS4PBhF/GIcqBzOmc29ZyjXRzpDOzQ+S
+         AZEC67Y8cGPtWBA87+urGUDwLWgeo5piAuYFDiBNhZghTC71M38kzt8CUr2IzqRITB
+         pf1yTGbb0BkwCqY00doagq2CwHkS6SI0p/txo4mnkCEwvj/D8ZN0ApSsRrkMZst881
+         IfzkbKzToUbxSc69+5eagVXzsuUhbNFQlve4Ma7w5y5arWB5Lg9/k87hBTbrZCrsx9
+         UF1lh6JMPxgPA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id EB7B0609D2;
+        Fri, 27 Aug 2021 10:20:06 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CALW65ja3hYGmEqcWZzifP2-0WsJOnxcUXsey2ZH5vDbD0-nDeQ@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: pull request (net-next): ipsec-next 2021-08-27
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163005960695.4453.11461822658020938423.git-patchwork-notify@kernel.org>
+Date:   Fri, 27 Aug 2021 10:20:06 +0000
+References: <20210827075015.2584560-1-steffen.klassert@secunet.com>
+In-Reply-To: <20210827075015.2584560-1-steffen.klassert@secunet.com>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, herbert@gondor.apana.org.au,
+        netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 24, 2021 at 11:57:53PM +0800, DENG Qingfang wrote:
-> Hi Sasha,
+Hello:
+
+This pull request was applied to netdev/net-next.git (refs/heads/master):
+
+On Fri, 27 Aug 2021 09:50:12 +0200 you wrote:
+> 1) Remove an unneeded extra variable in esp4 esp_ssg_unref.
+>    From Corey Minyard.
 > 
-> On Tue, Aug 24, 2021 at 11:29 PM Sasha Levin <sashal@kernel.org> wrote:
-> > What's the reasoning behind:
-> >
-> > 1. Backporting this patch?
+> 2) Add a configuration option to change the default behaviour
+>    to block traffic if there is no matching policy.
+>    Joint work with Christian Langrock and Antony Antony.
 > 
-> Standalone ports should have address learning disabled, according to
-> the documentation:
-> https://www.kernel.org/doc/html/v5.14-rc7/networking/dsa/dsa.html#bridge-layer
-> dsa_switch_ops on 5.10 or earlier does not have .port_bridge_flags
-> function so it has to be done differently.
-> 
-> I've identified an issue related to this.
+> [...]
 
-What issue is that?  Where was it reported?
+Here is the summary with links:
+  - pull request (net-next): ipsec-next 2021-08-27
+    https://git.kernel.org/netdev/net-next/c/fe50893aa86e
+  - [2/3] xfrm: Add possibility to set the default to block if we have no policy
+    https://git.kernel.org/netdev/net-next/c/2d151d39073a
+  - [3/3] net: xfrm: fix shift-out-of-bounce
+    https://git.kernel.org/netdev/net-next/c/5d8dbb7fb82b
 
-> > 2. A partial backport of this patch?
-> 
-> The other part does not actually fix anything.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Then why is it not ok to just take the whole thing?
 
-When backporting not-identical-patches, something almost always goes
-wrong, so we prefer to take the original commit when ever possible.
-
-thanks,
-
-greg k-h
