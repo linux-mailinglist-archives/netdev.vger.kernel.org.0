@@ -2,125 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 578AA3F9BC9
-	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 17:36:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0C123F9BEB
+	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 17:49:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245152AbhH0Pgc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Aug 2021 11:36:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35752 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244608AbhH0Pgb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Aug 2021 11:36:31 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCF72C061757;
-        Fri, 27 Aug 2021 08:35:42 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id e129so13270012yba.5;
-        Fri, 27 Aug 2021 08:35:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=elurosbJYKf8PNk7F8ORCf7uCyleyo4sWJRx+2DCXTA=;
-        b=jHxv2iqkEBjOUNyq3zgyb3HRUO6LBwSeIjXl5VENEALmj3ipi3z9SxgpXXz5ziSfoE
-         RYkYReDmKZGDNisVDj6zn5Wy/o/eu4+SuGM16UGw8On0ykD+6maCzQ+0z14mpXCCPlYl
-         eMgGiBCwIEh3R7qrWKDC6gh29uno61759VtABLto1aFukRT9CCWLPvlMU4hxjNa0nb2i
-         zJibeIaW26/KnWvU3RjUXsg+G0NF05kJmvP6PH6tUNKrtUTWg5o56BxCwAkGJOekX7pZ
-         +QaHojHmYJfrNuw0xfDtq6/8nucLViPScaMxUWwWVApS8W+3ptHlqG+HNdfvvV9K2tgN
-         rhJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=elurosbJYKf8PNk7F8ORCf7uCyleyo4sWJRx+2DCXTA=;
-        b=BDYTLMJEM9HmYxPoepKOn/+HLR21dLgcSkvlUr7DlmOOgV/g+zK2EHog2lJorUikCx
-         DxltMptkW1t+/O4/r24VIkpfnL2iN79Zzr94iDzeg6cHE8bjbKKacAO5V+Qbdvp+e0Xq
-         1g1g9heuepoJKVjuJ+yPP2nbtl7+zOx4ob8xHH/yS9vHMh6D/ZbeW/oaYVAWliurTzUd
-         aI2bNW9i6b4JxecxDeX88ObmmFyhHlWhUydAyEc8NHtuLioMCzOd+noLucwTZJ/x9KsS
-         mjz9zfWH4Q3vDsmm+y3+0iYxzNUdWL0uIascBShEB+VXjGSqyceB0GuGb+daZ6bwHn2m
-         QOmw==
-X-Gm-Message-State: AOAM532m3KLtuVC7X1h7XWLHP5b5sEJoUFF1uv3kbJ46kkA4cVA9M+9/
-        Ug3rK/0wUjOOgd0WNezb5Ml+Hhdn8MOUunOsLPI=
-X-Google-Smtp-Source: ABdhPJyhpBHyNr/gDmxLWVfhEtXpRDHMwnDoCOtYOlKrhtC+HzJZ8UZPWf8BVplz6v2mMAitFGLcRhWvkGN1nD8+0DQ=
-X-Received: by 2002:a25:810c:: with SMTP id o12mr6482926ybk.250.1630078541973;
- Fri, 27 Aug 2021 08:35:41 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210827132428.GA8934@kili>
-In-Reply-To: <20210827132428.GA8934@kili>
-From:   butt3rflyh4ck <butterflyhuangxx@gmail.com>
-Date:   Fri, 27 Aug 2021 23:35:31 +0800
-Message-ID: <CAFcO6XMo2rFJqb1zZyPgEDtChLHNq26WfhAd5WC+9NMnRNM8uw@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: qrtr: make checks in qrtr_endpoint_post() stricter
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Manivannan Sadhasivam <mani@kernel.org>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S244176AbhH0Ptw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Aug 2021 11:49:52 -0400
+Received: from mxout01.lancloud.ru ([45.84.86.81]:48724 "EHLO
+        mxout01.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245459AbhH0Ptr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Aug 2021 11:49:47 -0400
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout01.lancloud.ru CD4D620D318D
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [PATCH net-next 04/13] ravb: Add ptp_cfg_active to struct
+ ravb_hw_info
+To:     Biju Das <biju.das.jz@bp.renesas.com>, Andrew Lunn <andrew@lunn.ch>
+CC:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        "Geert Uytterhoeven" <geert+renesas@glider.be>,
+        Adam Ford <aford173@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>
+References: <20210825070154.14336-5-biju.das.jz@bp.renesas.com>
+ <777c30b1-e94e-e241-b10c-ecd4d557bc06@omp.ru>
+ <OS0PR01MB59220BCAE40B6C8226E4177986C79@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <78ff279d-03f1-6932-88d8-1eac83d087ec@omp.ru>
+ <OS0PR01MB59223F0F03CC9F5957268D2086C79@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <9b0d5bab-e9a2-d9f6-69f7-049bfb072eba@omp.ru>
+ <OS0PR01MB5922F8114A505A33F7A47EB586C79@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <93dab08c-4b0b-091d-bd47-6e55bce96f8a@gmail.com> <YSfkHtWLyVpCoG7C@lunn.ch>
+ <cc3f0ae7-c1c5-12b3-46b4-0c7d1857a615@omp.ru> <YSfm7zKz5BTNUXDz@lunn.ch>
+ <OS0PR01MB5922871679124DA36EAEF31F86C79@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <0916b09c-e656-fa2a-54d9-ca0c1301a278@omp.ru>
+ <OS0PR01MB59220DB4277F4414D5779E6A86C89@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <8c8d95e7-790f-382f-bf8c-21c45bdb257e@omp.ru>
+Date:   Fri, 27 Aug 2021 18:48:54 +0300
+User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
+MIME-Version: 1.0
+In-Reply-To: <OS0PR01MB59220DB4277F4414D5779E6A86C89@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 27, 2021 at 9:24 PM Dan Carpenter <dan.carpenter@oracle.com> wrote:
->
-> These checks are still not strict enough.  The main problem is that if
-> "cb->type == QRTR_TYPE_NEW_SERVER" is true then "len - hdrlen" is
-> guaranteed to be 4 but we need to be at least 16 bytes.  In fact, we
-> can reject everything smaller than sizeof(*pkt) which is 20 bytes.
->
-> Also I don't like the ALIGN(size, 4).  It's better to just insist that
-> data is needs to be aligned at the start.
->
-> Fixes: 0baa99ee353c ("net: qrtr: Allow non-immediate node routing")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> ---
-> This was from review.  Not tested.
->
->  net/qrtr/qrtr.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
->
-> diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
-> index b8508e35d20e..dbb647f5481b 100644
-> --- a/net/qrtr/qrtr.c
-> +++ b/net/qrtr/qrtr.c
-> @@ -493,7 +493,7 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
->                 goto err;
->         }
->
+On 27.08.2021 9:36, Biju Das wrote:
 
-> -       if (!size || len != ALIGN(size, 4) + hdrlen)
-> +       if (!size || size % 3 || len != size + hdrlen)
+[...]
 
-Hi, (size % 3)  is wrong, is it (size & 3), right ?
+>>>>>>>> Do you agree GAC register(gPTP active in Config) bit in AVB-DMAC
+>>>> mode register(CCC) present only in R-Car Gen3?
+>>>>>>>
+>>>>>>>     Yes.
+>>>>>>>     But you feature naming is totally misguiding, nevertheless...
+>>>>>>
+>>>>>> It can still be changed.
+>>>>>
+>>>>>      Thank goodness, yea!
+>>>>
+>>>> We have to live with the first version of this in the git history,
+>>>> but we can add more patches fixing up whatever is broken in the
+>>>> unreviewed code which got merged.
+>>>>
+>>>>>> Just suggest a new name.
+>>>>>
+>>>>>      I'd prolly go with 'gptp' for the gPTP support and 'ccc_gac' for
+>>>>> the gPTP working also in CONFIG mode (CCC.GAC controls this feature).
+>>>>
+>>>> Biju, please could you work on a couple of patches to change the names.
+>>>
+>>> Yes. Will work on the patches to change the names as suggested.
+>>
+>>     TIA!
+>>     After some more thinking, 'no_gptp' seems to suit better for the 1st
+>> case Might need to invert the checks tho...
+> 
+> OK, Will do with invert checks.
+> 
+> So just to conclude,
+> 
+> 'no_gptp' and 'ccc_gac' are the suggested names changes for the previous patch
+> and current patch.
 
->                 goto err;
->
->         if (cb->dst_port != QRTR_PORT_CTRL && cb->type != QRTR_TYPE_DATA &&
-> @@ -506,8 +506,12 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
->
->         if (cb->type == QRTR_TYPE_NEW_SERVER) {
->                 /* Remote node endpoint can bridge other distant nodes */
-> -               const struct qrtr_ctrl_pkt *pkt = data + hdrlen;
-> +               const struct qrtr_ctrl_pkt *pkt;
->
-> +               if (size < sizeof(*pkt))
+     Your patches have been merged already. Might try to encompass all gPTP 
+features with one patch (just a thought)...
 
-Yes, the size should not be smaller than sizeof(*pkt).
+> Cheers,
+> Biju
 
-> +                       goto err;
-> +
-> +               pkt = data + hdrlen;
->                 qrtr_node_assign(node, le32_to_cpu(pkt->server.node));
->         }
->
-> --
-> 2.20.1
->
-
-
-Regards,
-  butt3rflyh4ck
-
--- 
-Active Defense Lab of Venustech
+MBR, Sergey
