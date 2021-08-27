@@ -2,117 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFE513F91C8
-	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 03:01:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB3833F91DE
+	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 03:20:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244261AbhH0BAg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 21:00:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53726 "EHLO mail.kernel.org"
+        id S243923AbhH0BQA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 21:16:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58090 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243950AbhH0A7r (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 26 Aug 2021 20:59:47 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 91185610E8;
-        Fri, 27 Aug 2021 00:58:26 +0000 (UTC)
+        id S243862AbhH0BP7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Aug 2021 21:15:59 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6213F60ED3;
+        Fri, 27 Aug 2021 01:15:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1630025907;
-        bh=5FpvOq1FHnl5p3V8uf4CGZam01w3aPsvsa5fseEIzyU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BMA6LhEWOk6mjvS5rqBSbfrmOmEvsNEYpbtf+nqrwU7p/xvjBz0Oxk3TJDTf9hFeX
-         EruNOyB9CoAFQ2H/CMGTjG9YDNh1VYyvZTv9fL1y6AX7GGzQqM0xXHRY54VsOHKd/a
-         AEFWQd+atdD9utEMofGjI4tOQkfHZQtrROjZd6AwE5D3hc6qkXYSXn3COK8fXARvAg
-         20C0ZazFlkjVPBb44N41quxsH9jAREetMINcnI2p+anLxO2LpHcN5JoTY6Jvnr2kR3
-         ikJ/a47jIQFKsxxK+vQxlk8ACKKj0NXzl0sG2XO92WzjQPPl6T02fyF6MKVvTb3QYo
-         pd7tBl8M4zdBg==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Yevgeny Kliteynik <kliteyn@nvidia.com>,
-        Alex Vesker <valex@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 17/17] net/mlx5: DR, Add support for update FTE
-Date:   Thu, 26 Aug 2021 17:58:02 -0700
-Message-Id: <20210827005802.236119-18-saeed@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210827005802.236119-1-saeed@kernel.org>
-References: <20210827005802.236119-1-saeed@kernel.org>
+        s=k20201202; t=1630026911;
+        bh=5V3N2iRhRdBhh/AWiibSHvpnZuZb9GjIIiEMPznnPIE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Cvr+ejjpjuDxs++5KGKo70jXE6jeLJwQomRQpQ2r8MlQN4pbjjvWwJ8I56mBKE9NG
+         4k9O5PztzotcICDvjXEIDHNYzuBZHT4aX1MJirYx63XkuKaG8ox5tfwdNrC+q8/I0n
+         +6LyRVsxuahkrkdUJqY7lRct6+rAUSt0qdJmpliXdHC6GB83BdjTENTVOqigZ/VyIz
+         gzT7j30D292TuIlviQjptYBe+qwUFQEO70uW6zEiNP00+HpUEh4LTqw6kdtrbAt711
+         dgJ3S4Rp5lWaPWuncBxDBuQYRbf8L/j6P5k4hrUm90/s0EFpWhpYl2/UzeS0j8522G
+         B/xZcJa93K4jw==
+Date:   Thu, 26 Aug 2021 18:15:10 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Michael Chan <michael.chan@broadcom.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>, olteanv@gmail.com
+Subject: Re: [PATCH net-next v3 2/3] bnxt: count packets discarded because
+ of netpoll
+Message-ID: <20210826181510.3f71e103@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CACKFLimgBca1mFLp05uLQ3-8N8m12=hVOGU7rk8WJFeYnfK13w@mail.gmail.com>
+References: <20210826131224.2770403-1-kuba@kernel.org>
+        <20210826131224.2770403-3-kuba@kernel.org>
+        <CACKFLimh-oLG7zNBgSCYqS1aJh5ivBJJK+5kkL1kqJU5NOHctA@mail.gmail.com>
+        <20210826121821.2c926745@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CACKFLimgBca1mFLp05uLQ3-8N8m12=hVOGU7rk8WJFeYnfK13w@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yevgeny Kliteynik <kliteyn@nvidia.com>
+On Thu, 26 Aug 2021 14:17:45 -0700 Michael Chan wrote:
+> On Thu, Aug 26, 2021 at 12:18 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> > On Thu, 26 Aug 2021 11:43:58 -0700 Michael Chan wrote:  
+> > > Can we just add these rx_netpoll_discards counters directly to
+> > > stats->rx_dropped?  It looks simpler if we do it that way, right?  
+> >
+> > To make sure - are you saying that instead of adding
+> >
+> >         struct bnxt_sw_stats    sw_stats_prev;
+> >
+> > we should accumulate in net_stats_prev->rx_dropped, and have
+> > the ethtool counter only report the discards since last down/up?
+> >
+> > Or to use the atomic counter on the netdev and never report
+> > in ethtool (since after patch 3 rx_dropped is a mix of reasons)?  
+> 
+> OK.  I've reviewed the patch again and you need to keep the previous
+> netpoll discard counter so that you can report the total current and
+> previous netpoll discard counter under ethtool -S.
+> 
+> My suggestion would lump the previous netpoll discard counter into the
+> previous rx_dropped counter and you can only report the current
+> netpoll discard counter under ethtool -S.  But note that all the ring
+> related counters we currently report are current counters and do not
+> include old counters before the last reset.
 
-Add the support for update FTE, which is needed for cases where there are
-multiple rules with the same match. In such case fs_core will merge the
-actions and call update FTE to update current FTE. Since we don't want to
-disrupt the traffic, we will add the new duplicate rule, and only then
-remove the old duplicate rule.
-
-Signed-off-by: Alex Vesker <valex@nvidia.com>
-Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- .../mellanox/mlx5/core/steering/fs_dr.c       | 39 ++++++++++++++-----
- 1 file changed, 30 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
-index 633c9ec4c84e..7e58f4e594b7 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
-@@ -625,15 +625,6 @@ static void mlx5_cmd_dr_modify_header_dealloc(struct mlx5_flow_root_namespace *n
- 	mlx5dr_action_destroy(modify_hdr->action.dr_action);
- }
- 
--static int mlx5_cmd_dr_update_fte(struct mlx5_flow_root_namespace *ns,
--				  struct mlx5_flow_table *ft,
--				  struct mlx5_flow_group *group,
--				  int modify_mask,
--				  struct fs_fte *fte)
--{
--	return -EOPNOTSUPP;
--}
--
- static int mlx5_cmd_dr_delete_fte(struct mlx5_flow_root_namespace *ns,
- 				  struct mlx5_flow_table *ft,
- 				  struct fs_fte *fte)
-@@ -658,6 +649,36 @@ static int mlx5_cmd_dr_delete_fte(struct mlx5_flow_root_namespace *ns,
- 	return 0;
- }
- 
-+static int mlx5_cmd_dr_update_fte(struct mlx5_flow_root_namespace *ns,
-+				  struct mlx5_flow_table *ft,
-+				  struct mlx5_flow_group *group,
-+				  int modify_mask,
-+				  struct fs_fte *fte)
-+{
-+	struct fs_fte fte_tmp = {};
-+	int ret;
-+
-+	if (mlx5_dr_is_fw_table(ft->flags))
-+		return mlx5_fs_cmd_get_fw_cmds()->update_fte(ns, ft, group, modify_mask, fte);
-+
-+	/* Backup current dr rule details */
-+	fte_tmp.fs_dr_rule = fte->fs_dr_rule;
-+	memset(&fte->fs_dr_rule, 0, sizeof(struct mlx5_fs_dr_rule));
-+
-+	/* First add the new updated rule, then delete the old rule */
-+	ret = mlx5_cmd_dr_create_fte(ns, ft, group, fte);
-+	if (ret)
-+		goto restore_fte;
-+
-+	ret = mlx5_cmd_dr_delete_fte(ns, ft, &fte_tmp);
-+	WARN_ONCE(ret, "dr update fte duplicate rule deletion failed\n");
-+	return ret;
-+
-+restore_fte:
-+	fte->fs_dr_rule = fte_tmp.fs_dr_rule;
-+	return ret;
-+}
-+
- static int mlx5_cmd_dr_set_peer(struct mlx5_flow_root_namespace *ns,
- 				struct mlx5_flow_root_namespace *peer_ns)
- {
--- 
-2.31.1
-
+Oh, [rt]x_total_discard_pkts are also just a sum of current counters?
+I missed that. In that case if netpoll discards reset it's not a big
+deal, I'll respin the patch tomorrow. Let me also rename from
+rx_netpoll_discards to rx_total_netpoll_discards, adding the "total_"
+will hopefully signal the similarity of semantics?
