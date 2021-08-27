@@ -2,60 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A1803FA164
-	for <lists+netdev@lfdr.de>; Sat, 28 Aug 2021 00:07:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6C883FA168
+	for <lists+netdev@lfdr.de>; Sat, 28 Aug 2021 00:09:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232145AbhH0WIC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Aug 2021 18:08:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41386 "EHLO
+        id S232173AbhH0WJj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Aug 2021 18:09:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232032AbhH0WIB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Aug 2021 18:08:01 -0400
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8A38C0613D9
-        for <netdev@vger.kernel.org>; Fri, 27 Aug 2021 15:07:11 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id q21so13898191ljj.6
-        for <netdev@vger.kernel.org>; Fri, 27 Aug 2021 15:07:11 -0700 (PDT)
+        with ESMTP id S232094AbhH0WJi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Aug 2021 18:09:38 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4A57C06179A
+        for <netdev@vger.kernel.org>; Fri, 27 Aug 2021 15:08:48 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id s3so13910622ljp.11
+        for <netdev@vger.kernel.org>; Fri, 27 Aug 2021 15:08:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=J1gUDdbXfLZQpW8+uzYCzKrHt4z7fUbpEHpLEh39n0k=;
-        b=cPJpkzESORon1J7DZsXS+x0HfFUxEhUBlymkGrVP1vP/KnD3XkF/wSMn4Juhiq0LaV
-         clxLhjJca3YMk/QoW74bsWwKFKF+TIaZeX9jHb+895y62/c4QrNGBGEmRfcC/QszVUqa
-         03P4Vr5P8rlKs/XZR3v0ZCEoNv24qQNbaLmVOPhiM3xHmMtoF1VfppstS+wVRZywn5DF
-         m0A6wo5aA3t22sl1sc3u+gQptxjJ+kBxU5TvdXN54zkaAhga56NMJta+4S4fqpHTMP8f
-         QDmFIVspsSp4mwJgjgXrNcwOY5tz1twUpNzv/0msqU7HR2GW5zDmXe0TNpObGFHJU1li
-         v2+Q==
+         :cc:content-transfer-encoding;
+        bh=XEW/384IhA3CWobFmryrUkVSFy3c72GULjkkLbVUYLY=;
+        b=A3mbyj/cG7WKe4cw5mSHMR8rRWmvhJyRZWFUZ0mE/51CiMEO/LlRYgWE71a+HWr8bV
+         OyxRD5LQh7Ej6OgjZBWIh3RAZWEd326/EZbjXi0YpvNLW/pW/ZennlFaHFL8bOnt/wRo
+         GQhhhHaiA+vW87vec59eHp4wPCj0BN+36vUFIfONABw+psCSWsMWA/wzorKVAhs+CzJt
+         WA/28Q81/gpK4BulcpMt9n/qkCwNTOWLfar5Vty+YXG3zCUfiQkBe1lfSgzOWfeCiAnj
+         HurySp905xaUm3ttocom19BtQI0ea+k209pjaTAuMmGHb0UeA35FFARqo9MWy1vAyqap
+         ZX1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=J1gUDdbXfLZQpW8+uzYCzKrHt4z7fUbpEHpLEh39n0k=;
-        b=U/Jc3i0d1SihlTbeEHl2GHpoFD85ERBEyrJFjwYeSFjFyihv6H0ksqpZtrZWfJqfIu
-         htfsKAe8hVpGWcFoedL5iU8O4XjiA2nRcopDMGaMkibiuzJyCp60Q9rVtfZFJ4Va4IMb
-         q9vWNY9N5cDY0Wj837vsiUojZoNw+kL2+Z2mSTL2U+BuCu8MHmgGQbWFHvuIOLXqCyzD
-         hlSkWkGnzOH5PHXbmtKTVWLogzn0i9Qq9iu1JGZkWJM3NpZnlz7WDh2fa7/H6a3twDmM
-         7DmoRUTfBupGAwuN/sQGCL0zvHqIAP4n5Yutqc9aLhkXXTR1Js1zHL1+fg6EqPN00kbr
-         O2wg==
-X-Gm-Message-State: AOAM531gQ1PBOJduYAyBWH1aNXpt2+ZOaE6mZIM+ORleBQtvtDLTZWFJ
-        Spa0b0XpRAn12w9H8QBAxnHcsTMckBwqJrZX5zfZ+w==
-X-Google-Smtp-Source: ABdhPJxnOT+HvC9sFmVTbh+a5YPsytU3QCe1h24AMto3pAWQUC0hVyPRy+77bydlOPd3Lns0bs1oiZXw65gdbw60jwQ=
-X-Received: by 2002:a2e:9d88:: with SMTP id c8mr9360420ljj.467.1630102030256;
- Fri, 27 Aug 2021 15:07:10 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=XEW/384IhA3CWobFmryrUkVSFy3c72GULjkkLbVUYLY=;
+        b=aPdEqSQQ0wzXExvvE5T9L93zqXzEdbCtU/ksmKwq0vaWvNY+9Bxok65EICcByJrIW5
+         NW/4/bSbAK9P66shxQtyfm1SM/W+rpXN5jaydX0MMoUFrz+RgZnAV2QmVtEHvor27Mhz
+         weRL4OnBt4m9lNSukqGFF8e0Vuf05yLxaOH/Q1J/JpxlTlnErPHMg7Hh5QKgZY6eBhWD
+         ISQrN9pm6HBPqOtrVSbeI19oBYtpk3/Wiu58mUqauKoQhMhGL9SMYUoUZhxe7W2P8M3m
+         3ioWz8lRNYv4F9Yz50Eup30HpYM4gfCdjrzJ8rTxUr7EMk8pHCj66x9makMgGfJRZ2qt
+         QdSA==
+X-Gm-Message-State: AOAM532VHI9EDRq+MssLsHC2cy3vrWXcBe4unt26TzotmjhV2xicMtkM
+        4to5RghkwD8t7Jvmsu2vqjiXU5WQQ6Yso6lMT5+kNg==
+X-Google-Smtp-Source: ABdhPJx+GjMU78jt9HpKF2cTvfIk8z7bme8HTXNjK7t4lPfwdf6bERas4GQV7V7o36Nhr6Yr28VUc3MmTSywSSMhcDo=
+X-Received: by 2002:a05:651c:1064:: with SMTP id y4mr9753570ljm.74.1630102127263;
+ Fri, 27 Aug 2021 15:08:47 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210822193145.1312668-1-alvin@pqrs.dk> <20210822193145.1312668-2-alvin@pqrs.dk>
- <YSLEZmuWlD5kUOlx@lunn.ch> <cb38f340-a410-26a4-43be-5f549c980ff3@bang-olufsen.dk>
- <YSLazK4TbG5wjHbu@lunn.ch>
-In-Reply-To: <YSLazK4TbG5wjHbu@lunn.ch>
+References: <20210822193145.1312668-1-alvin@pqrs.dk> <20210822193145.1312668-3-alvin@pqrs.dk>
+In-Reply-To: <20210822193145.1312668-3-alvin@pqrs.dk>
 From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Sat, 28 Aug 2021 00:06:59 +0200
-Message-ID: <CACRpkdbUMSJxv+Gmbu2rpsWRMJyTy=ftQqhRuF_4FGb0CV+hqw@mail.gmail.com>
-Subject: Re: [RFC PATCH net-next 1/5] net: dsa: realtek-smi: fix mdio_free bug
- on module unload
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>,
-        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alvin@pqrs.dk>,
+Date:   Sat, 28 Aug 2021 00:08:36 +0200
+Message-ID: <CACRpkdYEg0-B6UBRhMFwOKV+1++ZMMH2tczuqZ_WhuRzd6n=zg@mail.gmail.com>
+Subject: Re: [RFC PATCH net-next 2/5] dt-bindings: net: dsa: realtek-smi:
+ document new compatible rtl8365mb
+To:     =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alvin@pqrs.dk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
@@ -64,30 +61,31 @@ Cc:     =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>,
         Rob Herring <robh+dt@kernel.org>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>,
-        Michael Rasmussen <MIR@bang-olufsen.dk>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+        Michael Rasmussen <mir@bang-olufsen.dk>,
+        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 23, 2021 at 1:16 AM Andrew Lunn <andrew@lunn.ch> wrote:
+On Sun, Aug 22, 2021 at 9:32 PM Alvin =C5=A0ipraga <alvin@pqrs.dk> wrote:
 
-> > No, there isn't. I neglected to mention in the rtl8365mb patch that I
-> > reworked the IRQ setup (compared with rtl8366rb) so that it could be
-> > torn down in a neat way. So you will see that the new driver does it
-> > properly, but I did not touch rtl8366rb because I am not using it. I am
-> > happy to do the same to rtl8366rb but I don't think I should make it
-> > part of this series. What do you think?
+> From: Alvin =C5=A0ipraga <alsi@bang-olufsen.dk>
 >
-> Lets see if Linus has time. He can probably model the change based on
-> what you have done here.
+> rtl8365mb is a new realtek-smi subdriver for the RTL8365MB-VC 4+1 port
+> 10/100/1000M Ethernet switch controller. Its compatible string is
+> "realtek,rtl8365mb".
+>
+> Signed-off-by: Alvin =C5=A0ipraga <alsi@bang-olufsen.dk>
 
-I have limited bandwidth as I am effectively on parental leave, so
-I can't do much of writing code, but I can certainly test a patch or
-two.
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+
+And BTW: really happy to see kernel contributions from B&O!
 
 Yours,
 Linus Walleij
