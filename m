@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95CAC3F91B5
-	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 03:01:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C2A73F91B8
+	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 03:01:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244177AbhH0A7v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 20:59:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53778 "EHLO mail.kernel.org"
+        id S244193AbhH0A7y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 20:59:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53780 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243991AbhH0A71 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S243992AbhH0A71 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 26 Aug 2021 20:59:27 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7E99C610C8;
-        Fri, 27 Aug 2021 00:58:18 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3D05B6102A;
+        Fri, 27 Aug 2021 00:58:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1630025899;
-        bh=HNJ4V37GBwCAYB6hh4GN8M2vEkAoQ0bFsJ4iHAuxdlM=;
+        bh=f5WwyApS2Mj25Yni4WGYEHqfpybXnPNhN739z6qxO6I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aZ3z9vvhB1pfZ5Wj7s4uiKIK7zVHOxk0qsYivo3dfUU1vLZZokce1Fh7tcSkdn4dC
-         jnWseqdOd0ZVfw5bJYn0F/zhpHoAtgTJ6BHsayaKulss69wu8iOehDrsvKx1W5NqRN
-         dKs/yzwO4F7K/YhdJRmKl4Wh/N5EXGFrtzRqkKmgT4xHXjNedST+6oeJW47gf/ELRX
-         u9CsAHGDrHfUmqbju+s9nj7j3/MxsXei5p+Td3PGS4oqEwnCIXC8xppYwbJPu91jpo
-         AY6C/Af3JxGZPMgA75Ls7/fUeQJ5AmlP8TLDoJ8hVgnR77IFEm4o/t7cOBKxnCGs+i
-         r+6otTbZQdqMA==
+        b=LPVnpKFWCJbq8GOo+Iz16A7ACET/WGDFXIUrSB3JyxLPc6KzNbCvdaiYaTmcUZ/R+
+         Lg2Rd+GqgaMxbHszorduSafbclpuA+qngW4uBwO94/jStZi8Zdw5yLlGR1FjzJVtbF
+         11+xep7qd3bKngPZil/23sBXLnnyJelCYSyyRlOrYOPQf0BfoCgqWlfH3ljIwnNOS8
+         J6kKUrorQZ1juCGrEDvdQQOuVLRUKuQ2FZNJ6pZtU6XW+gduI11/5F6IxibJ0OEMEZ
+         5oPvvB5g7nR3zIKPfCyGllAk4P3jKRrMYW6oojZhcvIrGfahdKHrN4NSY2b3pLHVRZ
+         BybVX87wOHZSw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Bodong Wang <bodong@mellanox.com>,
-        Yevgeny Kliteynik <kliteyn@nvidia.com>,
+Cc:     netdev@vger.kernel.org, Yevgeny Kliteynik <kliteyn@nvidia.com>,
         Alex Vesker <valex@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 07/17] net/mlx5: DR, Reduce print level for FT chaining level check
-Date:   Thu, 26 Aug 2021 17:57:52 -0700
-Message-Id: <20210827005802.236119-8-saeed@kernel.org>
+Subject: [net-next 08/17] net/mlx5: DR, Support IPv6 matching on flow label for STEv0
+Date:   Thu, 26 Aug 2021 17:57:53 -0700
+Message-Id: <20210827005802.236119-9-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210827005802.236119-1-saeed@kernel.org>
 References: <20210827005802.236119-1-saeed@kernel.org>
@@ -42,34 +41,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Bodong Wang <bodong@mellanox.com>
+From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-There are usecases with Connection Tracking that have such connection
-as default, printing this warning in dmesg confuses the user.
+Add missing support for matching on IPv6 flow label for STEv0.
 
-Signed-off-by: Bodong Wang <bodong@mellanox.com>
 Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
 Reviewed-by: Alex Vesker <valex@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/steering/dr_ste_v0.c    | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
-index e311faa78f9e..dcaf0bb94d2a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
-@@ -590,8 +590,8 @@ int mlx5dr_actions_build_ste_arr(struct mlx5dr_matcher *matcher,
- 					return -EINVAL;
- 				}
- 				if (dest_tbl->tbl->level <= matcher->tbl->level) {
--					mlx5_core_warn_once(dmn->mdev,
--							    "Connecting table to a lower/same level destination table\n");
-+					mlx5_core_dbg_once(dmn->mdev,
-+							   "Connecting table to a lower/same level destination table\n");
- 					mlx5dr_dbg(dmn,
- 						   "Connecting table at level %d to a destination table at level %d\n",
- 						   matcher->tbl->level,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v0.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v0.c
+index e4dd4eed5aee..22902c32002c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v0.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v0.c
+@@ -1157,6 +1157,7 @@ dr_ste_v0_build_eth_ipv6_l3_l4_tag(struct mlx5dr_match_param *value,
+ 				   u8 *tag)
+ {
+ 	struct mlx5dr_match_spec *spec = sb->inner ? &value->inner : &value->outer;
++	struct mlx5dr_match_misc *misc = &value->misc;
+ 
+ 	DR_STE_SET_TAG(eth_l4, tag, dst_port, spec, tcp_dport);
+ 	DR_STE_SET_TAG(eth_l4, tag, src_port, spec, tcp_sport);
+@@ -1168,6 +1169,11 @@ dr_ste_v0_build_eth_ipv6_l3_l4_tag(struct mlx5dr_match_param *value,
+ 	DR_STE_SET_TAG(eth_l4, tag, ecn, spec, ip_ecn);
+ 	DR_STE_SET_TAG(eth_l4, tag, ipv6_hop_limit, spec, ttl_hoplimit);
+ 
++	if (sb->inner)
++		DR_STE_SET_TAG(eth_l4, tag, flow_label, misc, inner_ipv6_flow_label);
++	else
++		DR_STE_SET_TAG(eth_l4, tag, flow_label, misc, outer_ipv6_flow_label);
++
+ 	if (spec->tcp_flags) {
+ 		DR_STE_SET_TCP_FLAGS(eth_l4, tag, spec);
+ 		spec->tcp_flags = 0;
 -- 
 2.31.1
 
