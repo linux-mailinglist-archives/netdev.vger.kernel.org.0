@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 046233F96AB
-	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 11:11:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF0F53F96AA
+	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 11:11:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244591AbhH0JLS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Aug 2021 05:11:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53282 "EHLO mail.kernel.org"
+        id S244573AbhH0JLR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Aug 2021 05:11:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53290 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232048AbhH0JLQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S233099AbhH0JLQ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 27 Aug 2021 05:11:16 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id CF63F60F92;
+Received: by mail.kernel.org (Postfix) with ESMTPS id E4BDA60FF2;
         Fri, 27 Aug 2021 09:10:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1630055427;
-        bh=WxwnX9IVXDE1fFnvmWDfRHsn2fD28WEi+ksrXzYwg4w=;
+        bh=DN8SIhnC2OBFgSTBBAck+YIIlkBIE+R7YpdeCAGBxew=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=VxkVUYbu1zHSvwCacwNliptO4kDDMcdnGGXMwBRHrr3iRjO0fTO8+teLqkKkCTN8l
-         FLqauOvtf8f1kURS2TrrEtlyaEwZtzjPluFeWXMlyawg2l2az/qBRv2gaQD9rXPZqy
-         oLfre2pbJ+k8muePj4B3U+p0HLj7iB4HO7ANiP5CpW3Y7aeFHO90UdP4WMIr/p1Sri
-         5FBtlGLtwouWFhJfZ65lxsJH7RIdSD1uWSzOqGq2yos1gqxVyVFbTqaQd3pLdTbag+
-         1JpAqynA/0zMUEVkRWacHhZSujtYNqVmBMKsMCOLAOmPFqyFO7OX7dOkeVxtOtUh7j
-         BjzKKql0kufrQ==
+        b=D2S6+5npob4kv0D/t4Wts6b34+ZgePD8zFLMhmTIh7BgQO4ZN7vxl1f4Nww3tKRzE
+         GWcM5UtzxAjVQ8LLCiGSDW50JPH3I4i49+l2857+Sk4nV4ZZh49TknjJKKxv5cKoBF
+         9w2LGp48Js74mJyyYNTxwh3g5sW7P5eMFXUQxgRUWsKQFdUrxVBiHM3b8EtmOBg6Ab
+         em7JOUfwOOTyoLz3C7ZeXe8XKzRAVjxPkcJbABEpOJ7GCrdQ72YGFjP7fDmV+LoeMe
+         Wd13faGgdevqc2OWUT9FB1oAh8Xmb/meugWtBcwXZv8gdjtzUlhHlwj+xKWFvQ4WsG
+         tn/lK6QQBQPlg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C98EF60972;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id DF7EC60A27;
         Fri, 27 Aug 2021 09:10:27 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [net-next 01/17] net/mlx5: DR,
- Added support for REMOVE_HEADER packet reformat
+Subject: Re: [PATCH net-next 0/5] mptcp: Optimize received options handling
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163005542782.19735.394321879807219573.git-patchwork-notify@kernel.org>
+Message-Id: <163005542791.19735.1536175440276667634.git-patchwork-notify@kernel.org>
 Date:   Fri, 27 Aug 2021 09:10:27 +0000
-References: <20210827005802.236119-2-saeed@kernel.org>
-In-Reply-To: <20210827005802.236119-2-saeed@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        kliteyn@nvidia.com, valex@nvidia.com, saeedm@nvidia.com
+References: <20210827004455.286754-1-mathew.j.martineau@linux.intel.com>
+In-Reply-To: <20210827004455.286754-1-mathew.j.martineau@linux.intel.com>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        matthieu.baerts@tessares.net, mptcp@lists.linux.dev,
+        pabeni@redhat.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -47,51 +47,27 @@ Hello:
 
 This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Thu, 26 Aug 2021 17:57:46 -0700 you wrote:
-> From: Yevgeny Kliteynik <kliteyn@nvidia.com>
+On Thu, 26 Aug 2021 17:44:49 -0700 you wrote:
+> These patches optimize received MPTCP option handling in terms of both
+> storage and fewer conditionals to evaluate in common cases, and also add
+> a couple of cleanup patches.
 > 
-> ConnectX supports offloading of various encapsulations and decapsulations
-> (e.g. VXLAN), which are performed by 'Packet Reformat' action. Starting
-> with ConnectX-6 DX, a new reformat type is supported - REMOVE_HEADER, which
-> allows deleting an arbitrary size chunk at the selected position in the packet.
+> Patches 1 and 5 do some cleanup in checksum option parsing and
+> clarification of lock handling.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,01/17] net/mlx5: DR, Added support for REMOVE_HEADER packet reformat
-    https://git.kernel.org/netdev/net-next/c/0139145fb8d8
-  - [net-next,02/17] net/mlx5: DR, Split modify VLAN state to separate pop/push states
-    https://git.kernel.org/netdev/net-next/c/f5e22be534e0
-  - [net-next,03/17] net/mlx5: DR, Enable VLAN pop on TX and VLAN push on RX
-    https://git.kernel.org/netdev/net-next/c/2de40f68cf76
-  - [net-next,04/17] net/mlx5: DR, Enable QP retransmission
-    https://git.kernel.org/netdev/net-next/c/ec449ed8230c
-  - [net-next,05/17] net/mlx5: DR, Improve error flow in actions_build_ste_arr
-    https://git.kernel.org/netdev/net-next/c/f35715a65747
-  - [net-next,06/17] net/mlx5: DR, Warn and ignore SW steering rule insertion on QP err
-    https://git.kernel.org/netdev/net-next/c/d5a84e968f3d
-  - [net-next,07/17] net/mlx5: DR, Reduce print level for FT chaining level check
-    https://git.kernel.org/netdev/net-next/c/d7d0b2450e93
-  - [net-next,08/17] net/mlx5: DR, Support IPv6 matching on flow label for STEv0
-    https://git.kernel.org/netdev/net-next/c/0733535d59e1
-  - [net-next,09/17] net/mlx5: DR, replace uintN_t with kernel-style types
-    https://git.kernel.org/netdev/net-next/c/ae3eddcff7aa
-  - [net-next,10/17] net/mlx5: DR, Use FW API when updating FW-owned flow table
-    https://git.kernel.org/netdev/net-next/c/a01a43fa16e1
-  - [net-next,11/17] net/mlx5: DR, Add ignore_flow_level support for multi-dest flow tables
-    https://git.kernel.org/netdev/net-next/c/63b85f49c05a
-  - [net-next,12/17] net/mlx5: DR, Skip source port matching on FDB RX domain
-    https://git.kernel.org/netdev/net-next/c/990467f8afde
-  - [net-next,13/17] net/mlx5: DR, Merge DR_STE_SIZE enums
-    https://git.kernel.org/netdev/net-next/c/ab9d1f96120b
-  - [net-next,14/17] net/mlx5: DR, Remove HW specific STE type from nic domain
-    https://git.kernel.org/netdev/net-next/c/46f2a8ae8a70
-  - [net-next,15/17] net/mlx5: DR, Remove rehash ctrl struct from dr_htbl
-    https://git.kernel.org/netdev/net-next/c/32c8e3b23020
-  - [net-next,16/17] net/mlx5: DR, Improve rule tracking memory consumption
-    https://git.kernel.org/netdev/net-next/c/8a015baef50a
-  - [net-next,17/17] net/mlx5: DR, Add support for update FTE
-    https://git.kernel.org/netdev/net-next/c/a2ebfbb7b181
+  - [net-next,1/5] mptcp: do not set unconditionally csum_reqd on incoming opt
+    https://git.kernel.org/netdev/net-next/c/8d548ea1dd15
+  - [net-next,2/5] mptcp: better binary layout for mptcp_options_received
+    https://git.kernel.org/netdev/net-next/c/a086aebae0eb
+  - [net-next,3/5] mptcp: consolidate in_opt sub-options fields in a bitmask
+    https://git.kernel.org/netdev/net-next/c/74c7dfbee3e1
+  - [net-next,4/5] mptcp: optimize the input options processing
+    https://git.kernel.org/netdev/net-next/c/f6c2ef59bcc7
+  - [net-next,5/5] mptcp: make the locking tx schema more readable
+    https://git.kernel.org/netdev/net-next/c/9758f40e90f7
 
 You are awesome, thank you!
 --
