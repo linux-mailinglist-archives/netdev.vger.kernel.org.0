@@ -2,193 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFFBF3F9A0E
-	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 15:28:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 245A73F9A0F
+	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 15:28:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245263AbhH0NZn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Aug 2021 09:25:43 -0400
-Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:50968 "EHLO
-        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S245285AbhH0NZj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Aug 2021 09:25:39 -0400
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.0.43) with SMTP id 17RA9fsc025577;
-        Fri, 27 Aug 2021 13:24:44 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : content-type : mime-version; s=corp-2021-07-09;
- bh=VUoCVmcTtVBuG/NtFy8NfN54CEFBPcn+o9dRM8mY81o=;
- b=cxd6pN5bj6RkMYRSKIX2rwDscs7kbl7bZUlSE8H4PS1seZiStCX5YD//NZWvKrxrkASK
- if7LDMKdT5iRxvtaP/BeRfp+n+N3tzgcmqf6Vy7RJFdetoxo5PD8QzlgFI5lWDvXGyUQ
- LK1Yh3oHBUm5YX5kURI9zmeWVsJwDtK+zVWb1X8bcqwK1kiS4V68v5gMUa09EMjxKT5X
- oPkz/PCUSC90YKTCcpMDWpt0OpAXnwX2sqUnwb1ECbahlqXbcIbaFa5YmQqJiSs8or4I
- GWag5/rMaG5bL3XeFm2Ctma84fP+yTNZHH3F5QRtMBwhvfqwI5Iji68d/vFfs4YjIzrW kA== 
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : content-type : mime-version; s=corp-2020-01-29;
- bh=VUoCVmcTtVBuG/NtFy8NfN54CEFBPcn+o9dRM8mY81o=;
- b=HDqGA57CeZj4a+wwpEbb4rPkZTZNJ1NcDIufclyUDefhGMRdz0us7DFm4HlQ0LG4D6AC
- 266JKPu+UV3CM8mb1pU+Xuw4zhFATdPR5++jSngR0IHXOU0KZGazduKvTlW7GXVOx4iT
- OB+cXWy7fenDXximADNbgY4zkUslu49fraT7S83FsHVRuEPw34ZLXYjGrq1DWn+t3H5g
- UF+b5t25DJn54k8oL0GAlUv+lGWdgyRsE3R3mLwNoy37HLUXVr/1G6bNjJNNa/VNIaTt
- tIyjjQuwKkcsUe5HXIqt4jVlFvoaayMmW6SM96n41zRN0UBUNqTI//EG3VDBnaZRMKVB zQ== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3ap3eauqxm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 27 Aug 2021 13:24:44 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 17RD9oBb076997;
-        Fri, 27 Aug 2021 13:24:43 GMT
-Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2047.outbound.protection.outlook.com [104.47.66.47])
-        by userp3030.oracle.com with ESMTP id 3ajpm4pucv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 27 Aug 2021 13:24:43 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bNJwri2hWlqqgcKSbPN3Paazj7uc0S/lVD+nRWXFgqNX3b1q49eBY+SnAVwyrmOx/Zdkm+E5jQZiz3Kt0Z0dy4wDJnBZ0Kw110N6s+GlE3bmj/5biG3Dxzqqb+Wxs9Iw9kSI7xj4NVBjVJxKGIAk1OsTQtvr/yZevAWMtWjHWNRCoK4qKzozuiKbmrm+D6MJG9uDPw1rKX/l0s6pwFQfEDkZSXvO7Id0pwqHjjWOhfhjy7wcwHj4YUyJMFAb/cCHJL9ROYzyLH2zeUqycDCrhSq/eQfcIV883oyWaBr8LeZG4KOoR7UNZqN9XDjpS4V5Dyqw20GT/PgA/Pu+MpX93A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VUoCVmcTtVBuG/NtFy8NfN54CEFBPcn+o9dRM8mY81o=;
- b=haqQxODMV33MD4wtlbonjRURuvr+M9Kvdri5LCyQgZj24cnreN86wyp+1gSIrZ78sJnuLT/zK5FSChD23id0hvwWJ5l4Bze0O9C4BbT4VZaCdBZ97lyX6I0HVSZi/faOnx4SCOsM82fS7l1GcF6M2O/KvpzEVIkne4Qxm4GOUKSGduIonyADKVEs631MwuauaaDzOzMgBpDaBgBr6QHwaYI346FEn7fBoZ1DRF4hvEBJ2wM4oDEmo1j3KE5H7trVC2H/U4DE6+UcgRzu8GzD95hraT5Fi+gE9Lu+5iOt5pq4Ce7o17C7n/1+82pTX0qopbSiluAlu0ouM1yv68eTwg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VUoCVmcTtVBuG/NtFy8NfN54CEFBPcn+o9dRM8mY81o=;
- b=y4safj4NZa0t+aSt6fkYiE55x3giHX1SmZXIk+tiO8RqmWr4OJe9rIGSyLk6I9on+Nuo0QfeskXN2g2HuhQWZSdbTU4XAARQHrfsDBwg0axiqcxgbAK6SXIstMBrPSlrDDWPDuVzl5Znx8B5DWSUmmFQmRClpKhsRqSI+RGkuS0=
-Authentication-Results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=oracle.com;
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by CO6PR10MB5476.namprd10.prod.outlook.com
- (2603:10b6:5:35b::19) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4457.21; Fri, 27 Aug
- 2021 13:24:41 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::5820:e42b:73d7:4268]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::5820:e42b:73d7:4268%7]) with mapi id 15.20.4457.019; Fri, 27 Aug 2021
- 13:24:41 +0000
-Date:   Fri, 27 Aug 2021 16:24:28 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Manivannan Sadhasivam <mani@kernel.org>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        Xiaolong Huang <butterflyhuangxx@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next] net: qrtr: make checks in qrtr_endpoint_post()
- stricter
-Message-ID: <20210827132428.GA8934@kili>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-ClientProxiedBy: ZR0P278CA0103.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:23::18) To MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28)
+        id S245203AbhH0N0f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Aug 2021 09:26:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33148 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231964AbhH0N0e (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Aug 2021 09:26:34 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 722D46056C;
+        Fri, 27 Aug 2021 13:25:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1630070745;
+        bh=rgZ5AmNpnNIG4N8OVX8YKxJ6H7NII1WMmiFg28QcutA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=dHNgpugVVW5/OXBFCxTddgJ/F4nFvKjoXxbyVGESYK/tiBupfSE91PxGa8qjAC4UN
+         Bh7KuWtNfEvinvQLMqSwayivy/Pn3u07vAp3BI5D6z+w5aUhS3ymuG6pKQcoUDm+aI
+         SEW6lK6k888LEuDcveWZQ0kWNnvbeXJnaPwTctCcz6G/du/Loyd+PY/adGmiBLXlF3
+         AuXZNqSKeLgECqJOfaverwcwing2pmX6W1xm6yHqZytVSkMjMC+lDaWOYx0MDnWWZd
+         jxcCQpngqG950bmgkdEBKWyeZl5oJh3+K+HoruZeMnhZEuKEL8Gcr0illf1hjOmGJ5
+         37BP5CcyjNmCQ==
+From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Subject: [PATCH net v2] net: phy: marvell10g: fix broken PHY interrupts for anyone after us in the driver probe list
+Date:   Fri, 27 Aug 2021 15:25:41 +0200
+Message-Id: <20210827132541.28953-1-kabel@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from kili (62.8.83.99) by ZR0P278CA0103.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:23::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4457.17 via Frontend Transport; Fri, 27 Aug 2021 13:24:37 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f5b84ae1-ebd6-4df3-45d8-08d9695e06b6
-X-MS-TrafficTypeDiagnostic: CO6PR10MB5476:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <CO6PR10MB54768D478F2DE3C82C30F97E8EC89@CO6PR10MB5476.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: wfk5sddx9xlMKaqJh1GhiUZS4seex/k73hTI0pKcLKn0ZODNhIFnThvK7elFUoUoMS+JE6HlGZgA00ZYeB6SQuCF/AqNiaV+Pfg5i7jc3G/Qa/YSlk34HEyMTBFgajRKx4uNPKPpJqKNjXW/xlKtvB2n33pPc4q+UoqQj8RPYZgklNkkys+iTCwndtmpMVvGXE50OYn9p41sBaRKgHvkF/uOSjQa0LuYSJCSn+k75pX+eek2EbF+AkKY73cQ4HZ7Y3R3A1wXx6trbvo1XTTg8YadrBa7d5uPosHITauf+36rPHwnGLUYbfcyd9jD5w+Nr8zY/v4+LkBbZ40W/CnNq2lTB9of2jQUeSpF5a5grdgRpnB6xLbMcKvFk7QC1SoeuXk3pHlN1MvfLgYm4tkGxjxG5sZc33J8pkRIQikR30+XWsVa6UrrIF1OaRIN2D8hV7AFH2Oct7S5DW74Uq5lmSgRoKOYXBzFXSnKjlxdfYvRNpcUanv5kW1uDnnmGKJXcfj9jRHFpnnhTtKdr3HDZtoSm4WJFCBm6jacjlc4jQYcnZTt0e3zt+5mTqlxGdnrrUCRX61zTPa8LcvFVNx4rKm+YQkAkyxISC04nMNAJgk7jwmDm2YEQ89znMcg35HXhm1eeUUK+YW3q2gfVb19/toxjPTRd/Lnan/oNvAjHVj9rGqKycbxRs4IZdTmS5wjFG9BHI8vA2KP9ifSzex5nA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(376002)(366004)(136003)(39860400002)(396003)(956004)(66476007)(66556008)(9576002)(478600001)(44832011)(66946007)(6666004)(8676002)(86362001)(110136005)(2906002)(54906003)(316002)(8936002)(55016002)(9686003)(33716001)(186003)(6496006)(52116002)(1076003)(83380400001)(5660300002)(4326008)(33656002)(38100700002)(26005)(38350700002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?bAjkRtI6W+Tp90DkwR3t39CP7VhTIQHGnGa55Jjr13Nii9MsN0yaTYjnxrqb?=
- =?us-ascii?Q?LaQm+wVPN4iw5377k+riEdcG7GPSV9tgixQxCTDKOCMNLgCZkgSxxLjN6yKc?=
- =?us-ascii?Q?TNwSKkWXMcxenDsj7ZlWt9VTXdrnspHfvGk28KMdLX+d3C/T/YSvzGRrmZyT?=
- =?us-ascii?Q?d5kcUjJhQG7QiMfwG2b6udHOwClz4rxKWA2OQNb1CQu2JUpZolT9wffCBbv6?=
- =?us-ascii?Q?PaesV7CZlcydxxX1ekStIEErDHkREn6OiLqPLBF1/+w1ycZapbQZthdyNyRG?=
- =?us-ascii?Q?w/lWSJVSCuytNH2Q2LuhZ3Iy4WTIi0qQVJeNq5mnnouwOhDepyJd71WwzI9Q?=
- =?us-ascii?Q?HVr8MuDNoQJ1H2bS1qysmQ9vKyVglxhAqgnUFqa4CB/jqaLn14ZADj2+Nv4w?=
- =?us-ascii?Q?fLKH80g867SEcTwNsI39+rCGZ4t0L5iQCAeVggiK/iz+CMlLIgRJcO08iBtx?=
- =?us-ascii?Q?r51URzr5KMeM6ROvV0o5K6Mes03+Vp/LgC02gh9cJX2QG5cLJp7Kogr5BrRQ?=
- =?us-ascii?Q?C1gzYjK7E3Zm1CFmNLvZ07wgKnkw2ujsZiPlhkod6ISwEf25QTeaEoq7sGoG?=
- =?us-ascii?Q?dFInxJpppTRVoAVYgbeP3ozDFii6OOJgJhc+Z2I6yYXaJQXPsYNphwzME7H6?=
- =?us-ascii?Q?t3GHt1tDN+cbY3qR9U4KW/R1T7q8WnXFF7C7FZUpfv80KgTCRPdBz/EkYy4U?=
- =?us-ascii?Q?B9G7kxYswHQiNUa91HCl2I4ErW3/l1hwuXBQh40ENZhWcIGnjkTAl5F2gJTg?=
- =?us-ascii?Q?JI4f3IDOtPJ/arFZ1rMmQDqfEXQ2Bp9C3Jn1p/sHvNgIgWdIH5Vtlz7CJmnG?=
- =?us-ascii?Q?fs9/U6OPO1mEe40ArJvA/6Dr+k19pUBVv/4hdIM/MLYWUxpxbZCMMPhyAY0M?=
- =?us-ascii?Q?BVDzicYfvIA2FKqeHDqt6Auy+Pjwhvj2DofbxxcLM6IVeeoAcD4pb+xc4Wtl?=
- =?us-ascii?Q?cVxyYnuB/COihnDoy89NCIS1GvWgUafA2+Wu8biDheR8Uw3B9WVv+pF8zORr?=
- =?us-ascii?Q?e9i+hBsqWcnP4t39RcWMiWwY9si1rMeZZMvZGQRnND/zELLd8W9TMwB2dx3q?=
- =?us-ascii?Q?MA6xeQYb8U9lpJRBPwJAd/+vf8QXTssqz+Z/wOyfCjMSkOQsWQyGGuvsXnct?=
- =?us-ascii?Q?iWpnNYjEFfDPF0S5oqMb5tnf5eyfxJrmuTbO0NgWb2goJECCZ3quSO0ZQWaH?=
- =?us-ascii?Q?oZOJ5YODHDVeRUq2GoAg+VhIQ+926QjqNwJ9apyf6lz9aH6iUggv65/QftYl?=
- =?us-ascii?Q?0DJuXE3gqK5aktbxoq3TzuDB5XvRGRwSXO1OtOn7t8cPvkgaYdHKmCoHk9Sl?=
- =?us-ascii?Q?0KIkNYHwMg8p47651RHdrhIY?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f5b84ae1-ebd6-4df3-45d8-08d9695e06b6
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Aug 2021 13:24:41.3325
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: RWMFIIXTu7qawX8tpuWsgoZFdzRMWZHIwM6XkKS2O9ZyTPGEg8GfKyAEENpGzfEKxd9qdgo/YpsrLUSv/IjPzipjk3ZBlxrilYocL/x/v5w=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR10MB5476
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10088 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 phishscore=0 malwarescore=0
- mlxscore=0 bulkscore=0 mlxlogscore=999 suspectscore=0 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2107140000
- definitions=main-2108270086
-X-Proofpoint-ORIG-GUID: ClF2jluAY0VJreYuAY3LsjZLejTiVRcq
-X-Proofpoint-GUID: ClF2jluAY0VJreYuAY3LsjZLejTiVRcq
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These checks are still not strict enough.  The main problem is that if
-"cb->type == QRTR_TYPE_NEW_SERVER" is true then "len - hdrlen" is
-guaranteed to be 4 but we need to be at least 16 bytes.  In fact, we
-can reject everything smaller than sizeof(*pkt) which is 20 bytes.
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Also I don't like the ALIGN(size, 4).  It's better to just insist that
-data is needs to be aligned at the start.
+Enabling interrupts via device tree for the internal PHYs on the
+mv88e6390 DSA switch does not work. The driver insists to use poll mode.
 
-Fixes: 0baa99ee353c ("net: qrtr: Allow non-immediate node routing")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Stage one debugging shows that the fwnode_mdiobus_phy_device_register
+function calls fwnode_irq_get properly, and phy->irq is set to a valid
+interrupt line initially.
+
+But it is then cleared.
+
+Stage two debugging shows that it is cleared here:
+
+phy_probe:
+
+  /* Disable the interrupt if the PHY doesn't support it
+   * but the interrupt is still a valid one
+   */
+  if (!phy_drv_supports_irq(phydrv) && phy_interrupt_is_valid(phydev))
+	phydev->irq = PHY_POLL;
+
+Okay, so does the "Marvell 88E6390 Family" PHY driver not have the
+.config_intr and .handle_interrupt function pointers? Yes it does.
+
+Stage three debugging shows that the PHY device does not attempt a probe
+against the "Marvell 88E6390 Family" driver, but against the "mv88x3310"
+driver.
+
+Okay, so why does the "mv88x3310" driver match on a mv88x6390 internal
+PHY? The PHY IDs (MARVELL_PHY_ID_88E6390_FAMILY vs
+MARVELL_PHY_ID_88X3310) are way different.
+
+Stage four debugging has us looking through:
+
+phy_device_register
+-> device_add
+   -> bus_probe_device
+      -> device_initial_probe
+         -> __device_attach
+            -> bus_for_each_drv
+               -> driver_match_device
+                  -> drv->bus->match
+                     -> phy_bus_match
+
+Okay, so as we said, the MII_PHYSID1 of mv88e6390 does not match the
+mv88x3310 driver's PHY mask & ID, so why would phy_bus_match return...
+
+Ahh, phy_bus_match calls a shortcircuit method,
+phydrv->match_phy_device, and does not even bother to compare the PHY ID
+if that is implemented.
+
+So of course, we go inside the marvell10g.c driver and sure enough, it
+implements .match_phy_device and does not bother to check the PHY ID.
+
+What's interesting though is that at the end of the device_add() from
+phy_device_register(), the driver for the internal PHYs _is_ the proper
+"Marvell 88E6390 Family". This is because "mv88x3310" ends up failing to
+probe after all, and __device_attach_driver(), to quote:
+
+  /*
+   * Ignore errors returned by ->probe so that the next driver can try
+   * its luck.
+   */
+
+The next (and only other) driver that matches is the 6390 driver. For
+this one, phy_probe doesn't fail, and everything expects to work as
+normal, EXCEPT phydev->irq has already been cleared by the previous
+unsuccessful probe of a driver which did not implement PHY interrupts,
+and therefore cleared that IRQ.
+
+Okay, so it is not just Marvell 6390 that has PHY interrupts broken.
+Stuff like Atheros, Aquantia, Broadcom, Qualcomm work because they are
+lexicographically before Marvell, and stuff like NXP, Realtek, Vitesse
+are broken.
+
+This goes to show how fragile it is to reset phydev->irq = PHY_POLL from
+the actual beginning of phy_probe itself. That seems like an actual bug
+of its own too, since phy_probe has side effects which are not restored
+on probe failure, but the line of thought probably was, the same driver
+will attempt probe again, so it doesn't matter. Well, looks like it
+does.
+
+Maybe it would make more sense to move the phydev->irq clearing after
+the actual device_add() in phy_device_register() completes, and the
+bound driver is the actual final one.
+
+(also, a bit frightening that drivers are permitted to bypass the MDIO
+bus matching in such a trivial way and perform PHY reads and writes from
+the .match_phy_device method, on devices that do not even belong to
+them. In the general case it might not be guaranteed that the MDIO
+accesses one driver needs to make to figure out whether to match on a
+device is safe for all other PHY devices)
+
+Fixes: a5de4be0aaaa ("net: phy: marvell10g: fix differentiation of 88X3310 from 88X3340")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Tested-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Marek Behún <kabel@kernel.org>
 ---
-This was from review.  Not tested.
+ drivers/net/phy/marvell10g.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
- net/qrtr/qrtr.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
-
-diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
-index b8508e35d20e..dbb647f5481b 100644
---- a/net/qrtr/qrtr.c
-+++ b/net/qrtr/qrtr.c
-@@ -493,7 +493,7 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
- 		goto err;
- 	}
+diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
+index 53a433442803..f4d758f8a1ee 100644
+--- a/drivers/net/phy/marvell10g.c
++++ b/drivers/net/phy/marvell10g.c
+@@ -987,11 +987,19 @@ static int mv3310_get_number_of_ports(struct phy_device *phydev)
  
--	if (!size || len != ALIGN(size, 4) + hdrlen)
-+	if (!size || size % 3 || len != size + hdrlen)
- 		goto err;
- 
- 	if (cb->dst_port != QRTR_PORT_CTRL && cb->type != QRTR_TYPE_DATA &&
-@@ -506,8 +506,12 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
- 
- 	if (cb->type == QRTR_TYPE_NEW_SERVER) {
- 		/* Remote node endpoint can bridge other distant nodes */
--		const struct qrtr_ctrl_pkt *pkt = data + hdrlen;
-+		const struct qrtr_ctrl_pkt *pkt;
- 
-+		if (size < sizeof(*pkt))
-+			goto err;
+ static int mv3310_match_phy_device(struct phy_device *phydev)
+ {
++	if ((phydev->c45_ids.device_ids[MDIO_MMD_PMAPMD] &
++	     MARVELL_PHY_ID_MASK) != MARVELL_PHY_ID_88X3310)
++		return 0;
 +
-+		pkt = data + hdrlen;
- 		qrtr_node_assign(node, le32_to_cpu(pkt->server.node));
- 	}
+ 	return mv3310_get_number_of_ports(phydev) == 1;
+ }
+ 
+ static int mv3340_match_phy_device(struct phy_device *phydev)
+ {
++	if ((phydev->c45_ids.device_ids[MDIO_MMD_PMAPMD] &
++	     MARVELL_PHY_ID_MASK) != MARVELL_PHY_ID_88X3310)
++		return 0;
++
+ 	return mv3310_get_number_of_ports(phydev) == 4;
+ }
  
 -- 
-2.20.1
+2.31.1
 
