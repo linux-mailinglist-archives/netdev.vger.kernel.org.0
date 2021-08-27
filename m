@@ -2,88 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 276343F9239
-	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 04:11:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EE4B3F923B
+	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 04:15:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244018AbhH0CMH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 22:12:07 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:44202 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241128AbhH0CMG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 26 Aug 2021 22:12:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=CZAl2d77Ht15SARXwtHBnTj5q6I65Bl6hgGHiA77reA=; b=yWuP8aKLExX1fnPAlpWZ99iSk4
-        Vc2zyl1uK02K/oiZeuNM2Dh7XomQZQhnF8DZCWtWU4irRB2YduWXHefVEucdTPzzM7/usSbvh/4sn
-        gbcBWiC/zAPKgG3vEHeSAB0XZ3DGRN6Jdb/5elDwTH3sFnTGNtt8iGcbp7+l0sRgPmwo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mJRKp-0042gK-Do; Fri, 27 Aug 2021 04:11:11 +0200
-Date:   Fri, 27 Aug 2021 04:11:11 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Joel Stanley <joel@jms.id.au>
-Cc:     "Gabriel L. Somlo" <gsomlo@gmail.com>,
-        Florent Kermarrec <florent@enjoy-digital.fr>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        David Shah <dave@ds0.me>, Stafford Horne <shorne@gmail.com>
-Subject: Re: [PATCH v2 2/2] net: Add driver for LiteX's LiteEth network
- interface
-Message-ID: <YShJv2XRud7pSseZ@lunn.ch>
-References: <20210820074726.2860425-3-joel@jms.id.au>
- <YSVLz0Se+hTVr0DA@errol.ini.cmu.edu>
- <CACPK8Xf9LGQBUHmS9sQ4zG1akk5SoQ-31MD-GMWVSRuByAT7KQ@mail.gmail.com>
+        id S244034AbhH0CMY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 22:12:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50602 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231613AbhH0CMX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 22:12:23 -0400
+Received: from mail-vs1-xe2d.google.com (mail-vs1-xe2d.google.com [IPv6:2607:f8b0:4864:20::e2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56754C061757
+        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 19:11:35 -0700 (PDT)
+Received: by mail-vs1-xe2d.google.com with SMTP id h29so3504769vsr.7
+        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 19:11:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=nathanrossi.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/pTXWfBzPoSBuLIXB3TTD+KInYhfRFajXWqEQUhDSB0=;
+        b=YMtKSLqHaU2d3mlQxjjvfR6Nn6dyXwD/JX0hS6bagBm+KG4jzawY3um+fjkhRallDV
+         /RQgf5zLQ+QLBI/Nymi13cHiFpJSmXNqup5sJJD0ZVwXOQpzlGd+Z2+i8j+zd2QywGZG
+         vOiOhiOWAoxi9w4LWXESAQUASiU+zAT4JnAwKGMi0RcVQw0euqGxpMfmaSuA+9UW9gkw
+         rLKfRcouzYMqPVaXHK9ionGunpmm0u5seSLYZzB4LXvHIOdtJHbjs4KJYENxVNiP+OOX
+         Y3p15ZLatWYfbhaW0gQuZmZl4s+oSN+HeXPFUJZS18MBLsHW/43uCFnwu7TCvuUuaJl8
+         sEuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/pTXWfBzPoSBuLIXB3TTD+KInYhfRFajXWqEQUhDSB0=;
+        b=Btve+ylv8X850molUR1OiIz7nJmH+9d/c08qvhisyQ+kb0sm+JbMxAxH1bEhCXKp78
+         98VHwtn+Pkze/HbqL9N4iPVi4qJT5Q7Q7Zvi270mFjCgk5qSFYZzYxLVKdyE4i+zrQCl
+         crdag24PhsrmZyrVEiZEyWWnthgLaVetknYn/5mUYO5iSRS9vvHXTW+IFeAow6VgqtKm
+         jWBMR1h/dLRnqoVtj+bwdCL60D3fqgwi1zykTXC0xEbkbKE1M/wvEZ+SmH8jEoS9+YLn
+         FwG5JOv+G9xfd+V4WGhfxOznx2ikvO/f5MDohtjPmog76Fw9ZPHrZmaEXiZWo8dXougV
+         7TQg==
+X-Gm-Message-State: AOAM533i/Q6oVx5dFpVzhEGA+cCG6L9MwqWu9tguYNOPTEhtq2JaNfI3
+        1wdiTJ2RB5dgiUx+m5t2XaSUPSuAa67luPU1Wn+4i1ngejzMFs1ZtsU=
+X-Google-Smtp-Source: ABdhPJxGMsEpvzBBA2y8FKwIHztIu1I4WI5uOGwMq2IiAuMagOF6b3vr9NALjSdE2PiZibGSTBDNRNj7EQJX+YBZoXA=
+X-Received: by 2002:a67:a24f:: with SMTP id t15mr5378238vsh.25.1630030294396;
+ Thu, 26 Aug 2021 19:11:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACPK8Xf9LGQBUHmS9sQ4zG1akk5SoQ-31MD-GMWVSRuByAT7KQ@mail.gmail.com>
+References: <20210826071230.11296-1-nathan@nathanrossi.com> <20210826092511.GQ22278@shell.armlinux.org.uk>
+In-Reply-To: <20210826092511.GQ22278@shell.armlinux.org.uk>
+From:   Nathan Rossi <nathan@nathanrossi.com>
+Date:   Fri, 27 Aug 2021 12:11:23 +1000
+Message-ID: <CA+aJhH2mQFbF6nRPi5SCT4Nw3kb0JhxtFzthJC4TubFUsb_F4g@mail.gmail.com>
+Subject: Re: [PATCH] net: phylink: Update SFP selected interface on
+ advertising changes
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, Nathan Rossi <nathan.rossi@digi.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 25, 2021 at 06:35:17AM +0000, Joel Stanley wrote:
-> On Tue, 24 Aug 2021 at 19:43, Gabriel L. Somlo <gsomlo@gmail.com> wrote:
+On Thu, 26 Aug 2021 at 19:25, Russell King (Oracle)
+<linux@armlinux.org.uk> wrote:
+>
+> On Thu, Aug 26, 2021 at 07:12:30AM +0000, Nathan Rossi wrote:
+> > From: Nathan Rossi <nathan.rossi@digi.com>
 > >
-> > Hi Joel,
+> > Currently changes to the advertising state via ethtool do not cause any
+> > reselection of the configured interface mode after the SFP is already
+> > inserted and initially configured.
 > >
-> > Couple of comments below:
+> > While it is not typical to change the advertised link modes for an
+> > interface using an SFP in certain use cases it is desirable. In the case
+> > of a SFP port that is capable of handling both SFP and SFP+ modules it
+> > will automatically select between 1G and 10G modes depending on the
+> > supported mode of the SFP. However if the SFP module is capable of
+> > working in multiple modes (e.g. a SFP+ DAC that can operate at 1G or
+> > 10G), one end of the cable may be attached to a SFP 1000base-x port thus
+> > the SFP+ end must be manually configured to the 1000base-x mode in order
+> > for the link to be established.
 > >
-> > On Fri, Aug 20, 2021 at 05:17:26PM +0930, Joel Stanley wrote:
-> 
-> > > diff --git a/drivers/net/ethernet/litex/Kconfig b/drivers/net/ethernet/litex/Kconfig
-> > > new file mode 100644
-> > > index 000000000000..265dba414b41
-> > > --- /dev/null
-> > > +++ b/drivers/net/ethernet/litex/Kconfig
-> 
-> > > +
-> > > +config LITEX_LITEETH
-> > > +     tristate "LiteX Ethernet support"
-> >
-> > Mostly cosmetic, but should there be a "depends on LITEX" statement in here?
-> 
-> No, there's as there is no dependency on the litex soc driver.
+> > This change causes the ethtool setting of advertised mode changes to
+> > reselect the interface mode so that the link can be established.
+>
+> This may be a better solution than the phylink_helper_basex_speed()
+> approach used to select between 2500 and 1000 base-X, but the config
+> needs to be validated after selecting a different interface mode, as
+> per what phylink_sfp_config() does.
 
-Which is good, you will get more build coverage that way, it will be
-built of x86, arm, mips, etc...
+I will add this in a v2. But will wait to get your feedback on the below before
+sending that out.
 
-> 
-> > Maybe also "select MII" and "select PHYLIB"?
-> 
-> Again, there is no mii or phy code so the driver doesn't need these.
+>
+> I also suspect that this will allow you to select e.g. 1000base-X but
+> there will be no way back to 10G modes as they will be masked out of
+> the advertising mask from that point on, as the 1000base-X interface
+> mode does not allow them.
 
-Yet.
+Because only the advertising bitmap is changed it is possible to revert any
+changes because the supported bitmap is not affected. Although I may be
+misunderstanding the exact details of the issue you are describing?
 
-At some point i expect you will need these, but you don't need them
-now.
+Note, the phylink_sfp_config phylink_validate call after sfp_select_interface
+does not modify the supported bitmap so adding that validate call in this change
+will not affect the ability to reselect changed advertised bits.
 
-	Andrew
+I did some additional testing and noticed that the advertising mask is not
+updated in phylink_sfp_config if supported does not change (e.g. SFP reinsert),
+which leads to the advertising state mismatching (e.g. advertising at 1G, but
+actually operating at 10G). This just needs to check if the advertising also
+mismatches in phylink_sfp_config.
+
+Thanks,
+Nathan
+
+>
+> So, I think the suggested code is problematical as it stands.
+>
+> phylink_sfp_config() uses a multi-step approach to selecting the
+> interface mode for a reason - first step is to discover what the MAC
+> is capable of in _any_ interface mode using _NA to reduce the supported
+> and advertised mask down, and then to select the interface from that.
+> I'm not entirely convinced that is a good idea here yet though.
+>
+> --
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
