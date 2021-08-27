@@ -2,129 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EE4B3F923B
-	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 04:15:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C87833F924D
+	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 04:23:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244034AbhH0CMY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Aug 2021 22:12:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50602 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231613AbhH0CMX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Aug 2021 22:12:23 -0400
-Received: from mail-vs1-xe2d.google.com (mail-vs1-xe2d.google.com [IPv6:2607:f8b0:4864:20::e2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56754C061757
-        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 19:11:35 -0700 (PDT)
-Received: by mail-vs1-xe2d.google.com with SMTP id h29so3504769vsr.7
-        for <netdev@vger.kernel.org>; Thu, 26 Aug 2021 19:11:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=nathanrossi.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/pTXWfBzPoSBuLIXB3TTD+KInYhfRFajXWqEQUhDSB0=;
-        b=YMtKSLqHaU2d3mlQxjjvfR6Nn6dyXwD/JX0hS6bagBm+KG4jzawY3um+fjkhRallDV
-         /RQgf5zLQ+QLBI/Nymi13cHiFpJSmXNqup5sJJD0ZVwXOQpzlGd+Z2+i8j+zd2QywGZG
-         vOiOhiOWAoxi9w4LWXESAQUASiU+zAT4JnAwKGMi0RcVQw0euqGxpMfmaSuA+9UW9gkw
-         rLKfRcouzYMqPVaXHK9ionGunpmm0u5seSLYZzB4LXvHIOdtJHbjs4KJYENxVNiP+OOX
-         Y3p15ZLatWYfbhaW0gQuZmZl4s+oSN+HeXPFUJZS18MBLsHW/43uCFnwu7TCvuUuaJl8
-         sEuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/pTXWfBzPoSBuLIXB3TTD+KInYhfRFajXWqEQUhDSB0=;
-        b=Btve+ylv8X850molUR1OiIz7nJmH+9d/c08qvhisyQ+kb0sm+JbMxAxH1bEhCXKp78
-         98VHwtn+Pkze/HbqL9N4iPVi4qJT5Q7Q7Zvi270mFjCgk5qSFYZzYxLVKdyE4i+zrQCl
-         crdag24PhsrmZyrVEiZEyWWnthgLaVetknYn/5mUYO5iSRS9vvHXTW+IFeAow6VgqtKm
-         jWBMR1h/dLRnqoVtj+bwdCL60D3fqgwi1zykTXC0xEbkbKE1M/wvEZ+SmH8jEoS9+YLn
-         FwG5JOv+G9xfd+V4WGhfxOznx2ikvO/f5MDohtjPmog76Fw9ZPHrZmaEXiZWo8dXougV
-         7TQg==
-X-Gm-Message-State: AOAM533i/Q6oVx5dFpVzhEGA+cCG6L9MwqWu9tguYNOPTEhtq2JaNfI3
-        1wdiTJ2RB5dgiUx+m5t2XaSUPSuAa67luPU1Wn+4i1ngejzMFs1ZtsU=
-X-Google-Smtp-Source: ABdhPJxGMsEpvzBBA2y8FKwIHztIu1I4WI5uOGwMq2IiAuMagOF6b3vr9NALjSdE2PiZibGSTBDNRNj7EQJX+YBZoXA=
-X-Received: by 2002:a67:a24f:: with SMTP id t15mr5378238vsh.25.1630030294396;
- Thu, 26 Aug 2021 19:11:34 -0700 (PDT)
+        id S244034AbhH0CXp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Aug 2021 22:23:45 -0400
+Received: from bilbo.ozlabs.org ([203.11.71.1]:36781 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231613AbhH0CXo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Aug 2021 22:23:44 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Gwk5V1JX3z9sPf;
+        Fri, 27 Aug 2021 12:22:53 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1630030974;
+        bh=5OKZbg1/z7zbffHv9CDZilC29dWz0b3Vl0KH7ueFMi4=;
+        h=Date:From:To:Cc:Subject:From;
+        b=pTKMbFJ4Af62VbdkHiwrTvTh9SRTTbg9+Q1hmnVurSUUq9ce9ZfeN4XsB5hCbVHJl
+         J+x4947BxyEJ7PFtgumvcsLSW0IxjDJmeXDuzqT4KGOqxQY8svIWJ1kAbOkfULyCXR
+         evWDNbUUgRBOblU/pmCs83lWTLD22OEhja1akd9hbKuat7GQSNIUa9VlC+D93cVDEb
+         5ysALepnsfLbNRZA/dbfkaCmIV6CmM/de+wotD0t2GzrS4SAY68pHXN6GlVH7+SGvm
+         ky67y/KT0VTDG8+oamN1sx4U0O5mJQCXMAYyC4GovgPHnaH6Oe2fZ97pJs8ls1nNIW
+         mpTFeExxNb5oQ==
+Date:   Fri, 27 Aug 2021 12:22:52 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Loic Poulain <loic.poulain@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the net-next tree
+Message-ID: <20210827122252.3d310dca@canb.auug.org.au>
 MIME-Version: 1.0
-References: <20210826071230.11296-1-nathan@nathanrossi.com> <20210826092511.GQ22278@shell.armlinux.org.uk>
-In-Reply-To: <20210826092511.GQ22278@shell.armlinux.org.uk>
-From:   Nathan Rossi <nathan@nathanrossi.com>
-Date:   Fri, 27 Aug 2021 12:11:23 +1000
-Message-ID: <CA+aJhH2mQFbF6nRPi5SCT4Nw3kb0JhxtFzthJC4TubFUsb_F4g@mail.gmail.com>
-Subject: Re: [PATCH] net: phylink: Update SFP selected interface on
- advertising changes
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, Nathan Rossi <nathan.rossi@digi.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="Sig_/EQLn5xMvkGnCKxYXAb2gN3x";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 26 Aug 2021 at 19:25, Russell King (Oracle)
-<linux@armlinux.org.uk> wrote:
->
-> On Thu, Aug 26, 2021 at 07:12:30AM +0000, Nathan Rossi wrote:
-> > From: Nathan Rossi <nathan.rossi@digi.com>
-> >
-> > Currently changes to the advertising state via ethtool do not cause any
-> > reselection of the configured interface mode after the SFP is already
-> > inserted and initially configured.
-> >
-> > While it is not typical to change the advertised link modes for an
-> > interface using an SFP in certain use cases it is desirable. In the case
-> > of a SFP port that is capable of handling both SFP and SFP+ modules it
-> > will automatically select between 1G and 10G modes depending on the
-> > supported mode of the SFP. However if the SFP module is capable of
-> > working in multiple modes (e.g. a SFP+ DAC that can operate at 1G or
-> > 10G), one end of the cable may be attached to a SFP 1000base-x port thus
-> > the SFP+ end must be manually configured to the 1000base-x mode in order
-> > for the link to be established.
-> >
-> > This change causes the ethtool setting of advertised mode changes to
-> > reselect the interface mode so that the link can be established.
->
-> This may be a better solution than the phylink_helper_basex_speed()
-> approach used to select between 2500 and 1000 base-X, but the config
-> needs to be validated after selecting a different interface mode, as
-> per what phylink_sfp_config() does.
+--Sig_/EQLn5xMvkGnCKxYXAb2gN3x
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-I will add this in a v2. But will wait to get your feedback on the below before
-sending that out.
+Hi all,
 
->
-> I also suspect that this will allow you to select e.g. 1000base-X but
-> there will be no way back to 10G modes as they will be masked out of
-> the advertising mask from that point on, as the 1000base-X interface
-> mode does not allow them.
+After merging the net-next tree, today's linux-next build (x86_64
+allmodconfig) failed like this:
 
-Because only the advertising bitmap is changed it is possible to revert any
-changes because the supported bitmap is not affected. Although I may be
-misunderstanding the exact details of the issue you are describing?
+drivers/net/wwan/mhi_wwan_mbim.c: In function 'mhi_mbim_probe':
+drivers/net/wwan/mhi_wwan_mbim.c:612:8: error: too many arguments to functi=
+on 'mhi_prepare_for_transfer'
+  612 |  err =3D mhi_prepare_for_transfer(mhi_dev, 0);
+      |        ^~~~~~~~~~~~~~~~~~~~~~~~
+In file included from drivers/net/wwan/mhi_wwan_mbim.c:18:
+include/linux/mhi.h:725:5: note: declared here
+  725 | int mhi_prepare_for_transfer(struct mhi_device *mhi_dev);
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~
 
-Note, the phylink_sfp_config phylink_validate call after sfp_select_interface
-does not modify the supported bitmap so adding that validate call in this change
-will not affect the ability to reselect changed advertised bits.
+Caused by commits
 
-I did some additional testing and noticed that the advertising mask is not
-updated in phylink_sfp_config if supported does not change (e.g. SFP reinsert),
-which leads to the advertising state mismatching (e.g. advertising at 1G, but
-actually operating at 10G). This just needs to check if the advertising also
-mismatches in phylink_sfp_config.
+  aa730a9905b7 ("net: wwan: Add MHI MBIM network driver")
+  ab996c420508 ("wwan: mhi: Fix build.")
+  a85b99ab6abb ("Revert "wwan: mhi: Fix build."")
+  0ca8d3ca4561 ("Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev=
+/net")
 
-Thanks,
-Nathan
+interacting with commit
 
->
-> So, I think the suggested code is problematical as it stands.
->
-> phylink_sfp_config() uses a multi-step approach to selecting the
-> interface mode for a reason - first step is to discover what the MAC
-> is capable of in _any_ interface mode using _NA to reduce the supported
-> and advertised mask down, and then to select the interface from that.
-> I'm not entirely convinced that is a good idea here yet though.
->
-> --
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+  9ebc2758d0bb ("Revert "net: really fix the build..."")
+
+from Linus' tree.
+
+I have applied the following merge fix patch for today.
+
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+Date: Fri, 27 Aug 2021 12:02:29 +1000
+Subject: [PATCH] fix for commit 9ebc2758d0bb "Revert "net: really fix the b=
+uild...""
+
+Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+---
+ drivers/net/wwan/mhi_wwan_mbim.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/wwan/mhi_wwan_mbim.c b/drivers/net/wwan/mhi_wwan_m=
+bim.c
+index 377529bbf124..71bf9b4f769f 100644
+--- a/drivers/net/wwan/mhi_wwan_mbim.c
++++ b/drivers/net/wwan/mhi_wwan_mbim.c
+@@ -609,7 +609,7 @@ static int mhi_mbim_probe(struct mhi_device *mhi_dev, c=
+onst struct mhi_device_id
+ 	INIT_DELAYED_WORK(&mbim->rx_refill, mhi_net_rx_refill_work);
+=20
+ 	/* Start MHI channels */
+-	err =3D mhi_prepare_for_transfer(mhi_dev, 0);
++	err =3D mhi_prepare_for_transfer(mhi_dev);
+ 	if (err)
+ 		return err;
+=20
+--=20
+2.32.0
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/EQLn5xMvkGnCKxYXAb2gN3x
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmEoTHwACgkQAVBC80lX
+0Gx5bQf/cKqHRFJmPeU3iAS7ttQmIIWKeTCihN35XPyBlZuJmK04BLTgfbISNIFF
+PeH2dTzqyi1olhsWCCJDB5QguuD1pzyA9O1FYlGofZGso6iU3EcpgEosJKXxU92J
+dI6SuOLYciOzbli4tdpZSzmhF+AEW5oy6wz/300WF3MeSq6GLxHmryI3X4ro2kzv
+Y7A7XNstTHi1erolZPKYqZ7uz5BWhn8H1xdoXJtaVaRLeOkLazfKzD/8Qu7fJRga
+Ng4XPLrkXwNGHBdyfPMC5KLvfYddllL7g3tOBa6JsDWYhWCDSV9Ze8Esb9eYgV8P
+3vHiIrSHcuqFT9O46GnWMJu/v0deYw==
+=DxBy
+-----END PGP SIGNATURE-----
+
+--Sig_/EQLn5xMvkGnCKxYXAb2gN3x--
