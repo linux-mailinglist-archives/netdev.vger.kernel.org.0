@@ -2,214 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC15D3F9E81
-	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 20:06:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D1D83F9EA8
+	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 20:21:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229638AbhH0SHe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Aug 2021 14:07:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42874 "EHLO
+        id S229837AbhH0SVy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Aug 2021 14:21:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229454AbhH0SHd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Aug 2021 14:07:33 -0400
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 205FDC061757
-        for <netdev@vger.kernel.org>; Fri, 27 Aug 2021 11:06:43 -0700 (PDT)
-Received: by mail-yb1-xb34.google.com with SMTP id k78so10866611ybf.10
-        for <netdev@vger.kernel.org>; Fri, 27 Aug 2021 11:06:43 -0700 (PDT)
+        with ESMTP id S229669AbhH0SVx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Aug 2021 14:21:53 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76D9EC061757
+        for <netdev@vger.kernel.org>; Fri, 27 Aug 2021 11:21:04 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id w6so4441019plg.9
+        for <netdev@vger.kernel.org>; Fri, 27 Aug 2021 11:21:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=O3s9f2E13tixtnr2/bSCIqrGke2AT2NqpZMSk6hvRH4=;
-        b=iuYQyFkQ5/TL5cX/RcHE6ZJmiwGbWZOTcby02j5+FDFOpAACobkcqWsDgAQ7tN+f8D
-         6aRyKMt2ni6tx77v9wCE1vdEYmTnaErgw7VkZkQbwI0upEDvlH5rL8ZQG4t+oCYG6n7Q
-         el48MNbJC9GRrvaG7fasRjdlNOmR6VkLbusayWLOiR2xhTkBOV+RG67F+C1QvcsU/mxS
-         Wud9BnYML+OwIFs9Ocol/fyDnW3vc1j51BKg3tjXO9g/ayDj8HoyNNMvt0bHQkjdFV0z
-         PaNy4akTzhgelUE3DUaD0nH88K2a8KH0620tunULdaMbUu+fkWCkDzg/m27KBduBXcpM
-         eu8A==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=mZRXrDZomYa0wfGCOr+a90hGcgVfWjc0XjLcLy4laKI=;
+        b=Mrs8YKiN9ja578460NQwTHrUUBYWCmkU+xCOFNSt/g/fVNXHiAzbyrZXuOdmBrqZHz
+         YG59V8Yivw9YsPgFvtufZwBRrBLR4DGNz0Xq0rlaa5LVXxD+kIEE60vBCLM8ooPghX+5
+         zdTiUwxXyaImWamhMFl+vSv0xxBwXErZhR6HLUOpFVlVNJMaRU5oXGUXHfUckMzLLn1h
+         lSBRDPbMJ/zdsaAm6yrBrBDwBtguM8YjgJlMY0qp8Elhp9osc291bK7GttGhmsBs7YC3
+         PgWC8ZEeYRys8cnmzzIDg1yKyloDgACHSyHB78DXIUS0IaCzy8thgSCCDXe/82hIZnLB
+         IDqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=O3s9f2E13tixtnr2/bSCIqrGke2AT2NqpZMSk6hvRH4=;
-        b=pCSjaV2nwCyQDxzSOhBmw/kpyZvIokPNoQVo0zdPAcwmbKbHcHR+r1uV3q582Zaqe+
-         b6H7aJ3M44jKfRHl5YuPqCHUyc2nFjgp1PpXqm5bhzo8QwflLtStHEIzZ2nvEeMQYFpZ
-         RXL27CuRlfzJYzUOye+bapuNTSKvfIdEnm3L2xLWAxMHtle/XgyRZ6DLu+/xvcT4yThU
-         pIbVwF0HiOjT3a9ul6Qis4utH5C0s+3vHOjeHiQWs4/n9x2de3P4OnwAiuwzO7pDWjng
-         IpY6Yuleyk8DYnVQtPGmUS0NO6em+Owp6VFuEC0WX6NnKl7sei+DOosG3uo2USVhJydO
-         Bpkg==
-X-Gm-Message-State: AOAM533hruKhATcQk6XWFHtgr1MQ9ho3/Qoaqvs1CCU/zMNkeyuofH6p
-        6qhpqzag2+n45zbRoOiza1uF83FPJACB3VayXkPlVA==
-X-Google-Smtp-Source: ABdhPJw4/QH4Iv/xsSGLNMlZDjMdvel/IZrlut9sCt20+4zJjDhDXplBmcxT9YWjQWNStv1ojMkU3KS4MPKveBIYXys=
-X-Received: by 2002:a5b:50b:: with SMTP id o11mr6910997ybp.466.1630087602090;
- Fri, 27 Aug 2021 11:06:42 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=mZRXrDZomYa0wfGCOr+a90hGcgVfWjc0XjLcLy4laKI=;
+        b=B6Eum5BTGNgUVQlTZZq9LpxL555SLy4TzLvZWQC6q6J2/T7TVB6V7mIU1Kgx+MgZzL
+         7faBSJ7xR/yJne8+uuPqINWVW6RjJeOlasYpSW8rICgZuYF+FwSdc3JBQjEOY5vS7Qrv
+         +oaJkaExput0sdmW0eROUoTulacZSDoffh7cH2PYtHh6EuvkpTjI5X95avcMHhPw3K2D
+         3IiYVggr5AlvztBS9dR342GfyJo+bcD2yv6w7io2qaosLODJ3blNH67N2dER8+N4nJtB
+         gc+UZCe1Ob1k2KwgRyAN6mqpolLeH3687ufjrAC4QJEWPtVA4PiQVGdOFQp6S47Hd9hV
+         VIKw==
+X-Gm-Message-State: AOAM533vg2iLWCAkWvrbZFeU6BphStWlkF5yNjK/ZNbWMl2+2wthX1BO
+        TR5INyd6GDba5jqF58p2n4s=
+X-Google-Smtp-Source: ABdhPJxEaaYvBsDcByHBp52gPlIZo7GXIteFg41jpXWDvuct9TiW28ze/YeW4MTvf7LJRHjzdZWSyQ==
+X-Received: by 2002:a17:902:b288:b0:132:36f5:72c3 with SMTP id u8-20020a170902b28800b0013236f572c3mr9978458plr.52.1630088463995;
+        Fri, 27 Aug 2021 11:21:03 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([72.164.175.30])
+        by smtp.googlemail.com with ESMTPSA id 11sm7779511pgh.52.2021.08.27.11.21.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 27 Aug 2021 11:21:03 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next 10/17] bridge: vlan: add global
+ mcast_last_member_interval option
+To:     Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     Roopa Prabhu <roopa@nvidia.com>,
+        Joachim Wiberg <troglobit@gmail.com>
+References: <20210826130533.149111-1-razor@blackwall.org>
+ <20210826130533.149111-11-razor@blackwall.org>
+ <bbcd47f3-f1a9-5167-0007-ed91802e8a46@gmail.com>
+ <DM4PR12MB5278D58FD0768A3005F95804DFC89@DM4PR12MB5278.namprd12.prod.outlook.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <254468ad-0170-5ef3-2266-35f2beaf1f2f@gmail.com>
+Date:   Fri, 27 Aug 2021 11:21:02 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.13.0
 MIME-Version: 1.0
-References: <20210826074526.825517-1-saravanak@google.com> <20210826074526.825517-2-saravanak@google.com>
- <YSeTdb6DbHbBYabN@lunn.ch> <CAGETcx-pSi60NtMM=59cve8kN9ff9fgepQ5R=uJ3Gynzh=0_BA@mail.gmail.com>
- <YSf/Mps9E77/6kZX@lunn.ch> <CAGETcx_h6moWbS7m4hPm6Ub3T0tWayUQkppjevkYyiA=8AmACw@mail.gmail.com>
- <YSg+dRPSX9/ph6tb@lunn.ch> <CAGETcx_r8LSxV5=GQ-1qPjh7qGbCqTsSoSkQfxAKL5q+znRoWg@mail.gmail.com>
- <YSjsQmx8l4MXNvP+@lunn.ch>
-In-Reply-To: <YSjsQmx8l4MXNvP+@lunn.ch>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Fri, 27 Aug 2021 11:06:06 -0700
-Message-ID: <CAGETcx_vMNZbT-5vCAvvpQNMMHy-19oR-mSfrg6=eSO49vLScQ@mail.gmail.com>
-Subject: Re: [PATCH v1 1/2] driver core: fw_devlink: Add support for FWNODE_FLAG_BROKEN_PARENT
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
-        Alvin Sipraga <ALSI@bang-olufsen.dk>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-acpi@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <DM4PR12MB5278D58FD0768A3005F95804DFC89@DM4PR12MB5278.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 27, 2021 at 6:44 AM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> > fw_devlink=on/device links short circuits the probe() call of a
-> > consumer (in this case the PHY) and returns -EPROBE_DEFER if the
-> > supplier's (in this case switch) probe hasn't finished without an
-> > error. fw_devlink/device links effectively does the probe in graph
-> > topological order and there's a ton of good reasons to do it that way
-> > -- what's why fw_devlink=on was implemented.
-> >
-> > In this specific case though, since the PHY depends on the parent
-> > device, if we fail the parent's probe realtek_smi_probe() because the
-> > PHYs failed to probe, we'll get into a catch-22/chicken-n-egg
-> > situation and the switch/PHYs will never probe.
->
-> So lets look at:
->
-> arch/arm/boot/dts/vf610-zii-dev-rev-b.dts
->
->        mdio-mux {
->                 compatible = "mdio-mux-gpio";
->                 pinctrl-0 = <&pinctrl_mdio_mux>;
->                 pinctrl-names = "default";
->                 gpios = <&gpio0 8  GPIO_ACTIVE_HIGH
->                          &gpio0 9  GPIO_ACTIVE_HIGH
->                          &gpio0 24 GPIO_ACTIVE_HIGH
->                          &gpio0 25 GPIO_ACTIVE_HIGH>;
->                 mdio-parent-bus = <&mdio1>;
->                 #address-cells = <1>;
->                 #size-cells = <0>;
->
->
-> We have an MDIO multiplexor
->
->
->                 mdio_mux_1: mdio@1 {
->                         reg = <1>;
->                         #address-cells = <1>;
->                         #size-cells = <0>;
->
->                         switch0: switch@0 {
->                                 compatible = "marvell,mv88e6085";
->                                 pinctrl-0 = <&pinctrl_gpio_switch0>;
->                                 pinctrl-names = "default";
->                                 reg = <0>;
->                                 dsa,member = <0 0>;
->                                 interrupt-parent = <&gpio0>;
->                                 interrupts = <27 IRQ_TYPE_LEVEL_LOW>;
->
-> On the first bus, we have a Ethernet switch.
->
->                                 interrupt-controller;
->                                 #interrupt-cells = <2>;
->                                 eeprom-length = <512>;
->
->                                 ports {
->                                         #address-cells = <1>;
->                                         #size-cells = <0>;
->
->                                         port@0 {
->                                                 reg = <0>;
->                                                 label = "lan0";
->                                                 phy-handle = <&switch0phy0>;
->                                         };
->
-> The first port of that switch has a pointer to a PHY.
->
->                                mdio {
->                                         #address-cells = <1>;
->                                         #size-cells = <0>;
->
-> That Ethernet switch also has an MDIO bus,
->
->                                         switch0phy0: switch0phy0@0 {
->                                                 reg = <0>;
->
-> On that bus is the PHY.
->
->                                                 interrupt-parent = <&switch0>;
->                                                 interrupts = <0 IRQ_TYPE_LEVEL_HIGH>;
->
-> And that PHY has an interrupt. And that interrupt is provided by the switch.
->
-> Given your description, it sounds like this is also go to break.
+On 8/27/21 10:39 AM, Nikolay Aleksandrov wrote:
+> 
+> 
+> ------------------------------------------------------------------------
+> *From:* David Ahern <dsahern@gmail.com>
+> *Sent:* Friday, 27 August 2021, 20:15
+> *To:* Nikolay Aleksandrov; netdev@vger.kernel.org
+> *Cc:* Roopa Prabhu; Joachim Wiberg; Nikolay Aleksandrov
+> *Subject:* Re: [PATCH iproute2-next 10/17] bridge: vlan: add global
+> mcast_last_member_interval option
+> 
+> On 8/26/21 6:05 AM, Nikolay Aleksandrov wrote:
+>> @@ -42,6 +42,7 @@ static void usage(void)
+>>                "                                                      [ mcast_igmp_version IGMP_VERSION ]\n"
+>>                "                                                      [ mcast_mld_version MLD_VERSION ]\n"
+>>                "                                                      [ mcast_last_member_count LAST_MEMBER_COUNT ]\n"
+>> +             "                                                      [ mcast_last_member_interval LAST_MEMBER_INTERVAL ]\n"
+>>                "                                                      [ mcast_startup_query_count STARTUP_QUERY_COUNT ]\n"
+>>                "       bridge vlan global { show } [ dev DEV ] [ vid VLAN_ID ]\n");
+>>        exit(-1);
+> 
+> line lengths are too long. The LAST_MEMBER_INTERVAL is at 107 characters
+> wide just in what is displayed to the user. Let's keep those under 100.
+> 
+>>>
+> 
+> To be clear do you want me to break the help line or use a format string
+> to print it?
+> 
+> 
+> 
 
-Based on what you pasted here (I didn't look any closer), I think it
-will break too.
+Something like this:
 
->
-> vf610-zii-dev-rev-c.dts is the same pattern, and there are more
-> examples for mv88e6xxx.
->
-> It is a common pattern, e.g. the mips ar9331.dtsi follows it.
+"       bridge vlan global { set } vid VLAN_ID dev DEV\n"
+"                      [ mcast_snooping MULTICAST_SNOOPING ]\n"
+"                      [ mcast_igmp_version IGMP_VERSION ]\n"
+"                      [ mcast_mld_version MLD_VERSION ]\n"
+"                      [ mcast_last_member_count LAST_MEMBER_COUNT ]\n"
 
-Then I think this should be solved at the DSA framework level. Make a
-component-master/aggregate device made up of the switches and
-ports/PHYs. Then wait for all of them to not -EPROBE_DEFER and then
-initialize the DSA?
-
-> I've not yet looked at plain Ethernet drivers. This pattern could also
-> exist there. And i wonder about other complex structures, i2c bus
-> multiplexors, you can have interrupt controllers as i2c devices,
-> etc. So the general case could exist in other places.
-
-I haven't seen any generic issues like this reported so far. It's only
-after adding phy-handle that we are hitting these issues with DSA
-switches.
-
-> I don't think we should be playing whack-a-mole by changing drivers as
-> we find they regress and break. We need a generic fix. I think the
-> solution is pretty clear. As you said the device depends on its
-> parent. DT is a tree, so it is easy to walk up the tree to detect this
-> relationship, and not fail the probe.
-
-It's easy to do, but it is the wrong behavior for fw_devlink=on. There
-are plenty of cases where it's better to delay the child device's
-probe until the parent finishes. You even gave an example[7] where it
-would help avoid unnecessary deferred probes. There are plenty of
-other cases like this too -- there's actually a USB driver that had an
-infinite deferred probe loop that fw_devlink=on fixes. Also, the whole
-point of fw_devlink=on is to enforce ordering like this -- so just
-blanket ignoring dependencies on parent devices doesn't make sense.
-
-But a parent device's probe depending on a child device's probe to
-succeed as soon as it's added is never right though. So I think that's
-what needs to be addresses.
-
-So we have a couple of options:
-1. Use a component driver model to initialize switches. I think it
-could be doable at the DSA framework level.
-2. Ask fw_devlink=on to ignore it for all switch devices -- it might
-be possible to move my "quick fix" to the DSA framework.
-3. Remove fw_devlink support for phy-handle.
-
-I honestly think (1) is the best option and makes sense logically too.
-Not saying it's a trivial work or a one liner, but it actually makes
-sense. (2) might not be possible -- I need to take a closer look. I'd
-prefer not doing (3), but I'd take that over breaking the whole point
-of fw_devlink=on.
-
--Saravana
-
-[7] - https://lore.kernel.org/netdev/YR5eMeKzcuYtB6Tk@lunn.ch/
+(email line lengths are too short forcing wrapping too early, but that
+is the intent with line lengths in the 80-90 range
