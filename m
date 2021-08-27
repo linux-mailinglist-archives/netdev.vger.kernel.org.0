@@ -2,169 +2,259 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 245A73F9A0F
-	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 15:28:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 641D63F9A32
+	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 15:32:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245203AbhH0N0f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Aug 2021 09:26:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33148 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231964AbhH0N0e (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Aug 2021 09:26:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 722D46056C;
-        Fri, 27 Aug 2021 13:25:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1630070745;
-        bh=rgZ5AmNpnNIG4N8OVX8YKxJ6H7NII1WMmiFg28QcutA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=dHNgpugVVW5/OXBFCxTddgJ/F4nFvKjoXxbyVGESYK/tiBupfSE91PxGa8qjAC4UN
-         Bh7KuWtNfEvinvQLMqSwayivy/Pn3u07vAp3BI5D6z+w5aUhS3ymuG6pKQcoUDm+aI
-         SEW6lK6k888LEuDcveWZQ0kWNnvbeXJnaPwTctCcz6G/du/Loyd+PY/adGmiBLXlF3
-         AuXZNqSKeLgECqJOfaverwcwing2pmX6W1xm6yHqZytVSkMjMC+lDaWOYx0MDnWWZd
-         jxcCQpngqG950bmgkdEBKWyeZl5oJh3+K+HoruZeMnhZEuKEL8Gcr0illf1hjOmGJ5
-         37BP5CcyjNmCQ==
-From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [PATCH net v2] net: phy: marvell10g: fix broken PHY interrupts for anyone after us in the driver probe list
-Date:   Fri, 27 Aug 2021 15:25:41 +0200
-Message-Id: <20210827132541.28953-1-kabel@kernel.org>
-X-Mailer: git-send-email 2.31.1
+        id S245172AbhH0NcC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Aug 2021 09:32:02 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:60862 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232220AbhH0NcB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Aug 2021 09:32:01 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.0.43) with SMTP id 17RBHnH1013337;
+        Fri, 27 Aug 2021 06:31:10 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=0DGP62UaafHXuK5tBjfc/8l3WN6z5Np1bz44e6FubLc=;
+ b=eRRX71daiEvwZgSO4MtknirrLT4iZrgVhL1GOM1YqK3YiRePPHfmX3hcZyQ2NZyuLF5f
+ /ZVonZGNpdZ7AgYH8RwQedqRaC92c+O2ZTLgyIXf3BfcZechqHxT36DNnfTCK+E/4kKp
+ 5F2Gae515wG23gQJUk8tqzrBohj7RfmkGojP83//FE7ke0DMDfLpOq6WjUUMCPegBcCk
+ Uh6gJP6p4lM7WVIq2R8855W+J9e3El1G2JvPsmVadfnETyQf+OH6ggymcyREgrIJGbWI
+ 8ITWtSZffNBYAK5qm32fut/qitdX+FH5ea/J/XAWfpcSGdbEhv7wT3us0WMo0I6VBXSA gA== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 3apwgp0qx1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Fri, 27 Aug 2021 06:31:10 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Fri, 27 Aug
+ 2021 06:31:08 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Fri, 27 Aug 2021 06:31:08 -0700
+Received: from hyd1358.marvell.com (unknown [10.29.37.11])
+        by maili.marvell.com (Postfix) with ESMTP id E86603F705E;
+        Fri, 27 Aug 2021 06:31:05 -0700 (PDT)
+From:   Subbaraya Sundeep <sbhatta@marvell.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>
+CC:     <sgoutham@marvell.com>, <hkelam@marvell.com>, <gakula@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>
+Subject: [net-next v2 PATCH] octeontx2-pf: Add vlan-etype to ntuple filters
+Date:   Fri, 27 Aug 2021 19:00:55 +0530
+Message-ID: <1630071055-6672-1-git-send-email-sbhatta@marvell.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-GUID: wGpNTRGElsOHHvsXto-rBjQ_MelkEAZ9
+X-Proofpoint-ORIG-GUID: wGpNTRGElsOHHvsXto-rBjQ_MelkEAZ9
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
+ definitions=2021-08-27_04,2021-08-26_02,2020-04-07_01
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+NPC extraction profile marks layer types
+NPC_LT_LB_CTAG for CTAG and NPC_LT_LB_STAG_QINQ for
+STAG after parsing input packet. Those layer types
+can be used to install ntuple filters using
+vlan-etype option. Below are the commands and
+corresponding behavior with this patch in place.
 
-Enabling interrupts via device tree for the internal PHYs on the
-mv88e6390 DSA switch does not work. The driver insists to use poll mode.
+> alias nt "ethtool -U eth0 flow-type ether"
 
-Stage one debugging shows that the fwnode_mdiobus_phy_device_register
-function calls fwnode_irq_get properly, and phy->irq is set to a valid
-interrupt line initially.
+> nt vlan 5 m 0xf000 action 0
+Input packets with outer VLAN id as 5 i.e,
+stag packets with VLAN id 5 and ctag packets with
+VLAN id as 5 are hit.
 
-But it is then cleared.
+> nt vlan-etype 0x8100 action 0
+All input ctag packets with any VLAN id are hit.
 
-Stage two debugging shows that it is cleared here:
+> nt vlan-etype 0x88A8 action 0
+All input stag packets with any VLAN id are hit.
 
-phy_probe:
+> nt vlan-etype 0x8100 vlan 5 m 0xf000 action 0
+All input ctag packets with VLAN id 5 are hit.
 
-  /* Disable the interrupt if the PHY doesn't support it
-   * but the interrupt is still a valid one
-   */
-  if (!phy_drv_supports_irq(phydrv) && phy_interrupt_is_valid(phydev))
-	phydev->irq = PHY_POLL;
+> nt vlan-etype 0x88A8 vlan 5 m 0xf000 action 0
+All input stag packets with VLAN id 5 are hit.
 
-Okay, so does the "Marvell 88E6390 Family" PHY driver not have the
-.config_intr and .handle_interrupt function pointers? Yes it does.
-
-Stage three debugging shows that the PHY device does not attempt a probe
-against the "Marvell 88E6390 Family" driver, but against the "mv88x3310"
-driver.
-
-Okay, so why does the "mv88x3310" driver match on a mv88x6390 internal
-PHY? The PHY IDs (MARVELL_PHY_ID_88E6390_FAMILY vs
-MARVELL_PHY_ID_88X3310) are way different.
-
-Stage four debugging has us looking through:
-
-phy_device_register
--> device_add
-   -> bus_probe_device
-      -> device_initial_probe
-         -> __device_attach
-            -> bus_for_each_drv
-               -> driver_match_device
-                  -> drv->bus->match
-                     -> phy_bus_match
-
-Okay, so as we said, the MII_PHYSID1 of mv88e6390 does not match the
-mv88x3310 driver's PHY mask & ID, so why would phy_bus_match return...
-
-Ahh, phy_bus_match calls a shortcircuit method,
-phydrv->match_phy_device, and does not even bother to compare the PHY ID
-if that is implemented.
-
-So of course, we go inside the marvell10g.c driver and sure enough, it
-implements .match_phy_device and does not bother to check the PHY ID.
-
-What's interesting though is that at the end of the device_add() from
-phy_device_register(), the driver for the internal PHYs _is_ the proper
-"Marvell 88E6390 Family". This is because "mv88x3310" ends up failing to
-probe after all, and __device_attach_driver(), to quote:
-
-  /*
-   * Ignore errors returned by ->probe so that the next driver can try
-   * its luck.
-   */
-
-The next (and only other) driver that matches is the 6390 driver. For
-this one, phy_probe doesn't fail, and everything expects to work as
-normal, EXCEPT phydev->irq has already been cleared by the previous
-unsuccessful probe of a driver which did not implement PHY interrupts,
-and therefore cleared that IRQ.
-
-Okay, so it is not just Marvell 6390 that has PHY interrupts broken.
-Stuff like Atheros, Aquantia, Broadcom, Qualcomm work because they are
-lexicographically before Marvell, and stuff like NXP, Realtek, Vitesse
-are broken.
-
-This goes to show how fragile it is to reset phydev->irq = PHY_POLL from
-the actual beginning of phy_probe itself. That seems like an actual bug
-of its own too, since phy_probe has side effects which are not restored
-on probe failure, but the line of thought probably was, the same driver
-will attempt probe again, so it doesn't matter. Well, looks like it
-does.
-
-Maybe it would make more sense to move the phydev->irq clearing after
-the actual device_add() in phy_device_register() completes, and the
-bound driver is the actual final one.
-
-(also, a bit frightening that drivers are permitted to bypass the MDIO
-bus matching in such a trivial way and perform PHY reads and writes from
-the .match_phy_device method, on devices that do not even belong to
-them. In the general case it might not be guaranteed that the MDIO
-accesses one driver needs to make to figure out whether to match on a
-device is safe for all other PHY devices)
-
-Fixes: a5de4be0aaaa ("net: phy: marvell10g: fix differentiation of 88X3310 from 88X3340")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Tested-by: Marek Behún <kabel@kernel.org>
-Signed-off-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 ---
- drivers/net/phy/marvell10g.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
-index 53a433442803..f4d758f8a1ee 100644
---- a/drivers/net/phy/marvell10g.c
-+++ b/drivers/net/phy/marvell10g.c
-@@ -987,11 +987,19 @@ static int mv3310_get_number_of_ports(struct phy_device *phydev)
- 
- static int mv3310_match_phy_device(struct phy_device *phydev)
- {
-+	if ((phydev->c45_ids.device_ids[MDIO_MMD_PMAPMD] &
-+	     MARVELL_PHY_ID_MASK) != MARVELL_PHY_ID_88X3310)
-+		return 0;
+v2 changes:
+  Misc change, converted otx2_prepare_flow_request to static function
+
+ drivers/net/ethernet/marvell/octeontx2/af/npc.h    |  2 ++
+ .../net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c | 35 ++++++++++++++++++----
+ .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  2 --
+ .../ethernet/marvell/octeontx2/nic/otx2_flows.c    | 30 ++++++++++++++++---
+ 4 files changed, 58 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/npc.h b/drivers/net/ethernet/marvell/octeontx2/af/npc.h
+index 243cf80..b426fd5 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/npc.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/npc.h
+@@ -172,6 +172,8 @@ enum key_fields {
+ 	NPC_DMAC,
+ 	NPC_SMAC,
+ 	NPC_ETYPE,
++	NPC_VLAN_ETYPE_CTAG, /* 0x8100 */
++	NPC_VLAN_ETYPE_STAG, /* 0x88A8 */
+ 	NPC_OUTER_VID,
+ 	NPC_TOS,
+ 	NPC_SIP_IPV4,
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
+index 43874d3..e0634ef 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
+@@ -20,6 +20,8 @@ static const char * const npc_flow_names[] = {
+ 	[NPC_DMAC]	= "dmac",
+ 	[NPC_SMAC]	= "smac",
+ 	[NPC_ETYPE]	= "ether type",
++	[NPC_VLAN_ETYPE_CTAG] = "vlan ether type ctag",
++	[NPC_VLAN_ETYPE_STAG] = "vlan ether type stag",
+ 	[NPC_OUTER_VID]	= "outer vlan id",
+ 	[NPC_TOS]	= "tos",
+ 	[NPC_SIP_IPV4]	= "ipv4 source ip",
+@@ -492,6 +494,11 @@ static void npc_set_features(struct rvu *rvu, int blkaddr, u8 intf)
+ 	if (*features & BIT_ULL(NPC_OUTER_VID))
+ 		if (!npc_check_field(rvu, blkaddr, NPC_LB, intf))
+ 			*features &= ~BIT_ULL(NPC_OUTER_VID);
 +
- 	return mv3310_get_number_of_ports(phydev) == 1;
++	/* for vlan ethertypes corresponding layer type should be in the key */
++	if (npc_check_field(rvu, blkaddr, NPC_LB, intf))
++		*features |= BIT_ULL(NPC_VLAN_ETYPE_CTAG) |
++			     BIT_ULL(NPC_VLAN_ETYPE_STAG);
  }
  
- static int mv3340_match_phy_device(struct phy_device *phydev)
- {
-+	if ((phydev->c45_ids.device_ids[MDIO_MMD_PMAPMD] &
-+	     MARVELL_PHY_ID_MASK) != MARVELL_PHY_ID_88X3310)
-+		return 0;
-+
- 	return mv3310_get_number_of_ports(phydev) == 4;
+ /* Scan key extraction profile and record how fields of our interest
+@@ -747,6 +754,28 @@ static void npc_update_ipv6_flow(struct rvu *rvu, struct mcam_entry *entry,
+ 	}
  }
  
++static void npc_update_vlan_features(struct rvu *rvu, struct mcam_entry *entry,
++				     u64 features, u8 intf)
++{
++	bool ctag = !!(features & BIT_ULL(NPC_VLAN_ETYPE_CTAG));
++	bool stag = !!(features & BIT_ULL(NPC_VLAN_ETYPE_STAG));
++	bool vid = !!(features & BIT_ULL(NPC_OUTER_VID));
++
++	/* If only VLAN id is given then always match outer VLAN id */
++	if (vid && !ctag && !stag) {
++		npc_update_entry(rvu, NPC_LB, entry,
++				 NPC_LT_LB_STAG_QINQ | NPC_LT_LB_CTAG, 0,
++				 NPC_LT_LB_STAG_QINQ & NPC_LT_LB_CTAG, 0, intf);
++		return;
++	}
++	if (ctag)
++		npc_update_entry(rvu, NPC_LB, entry, NPC_LT_LB_CTAG, 0,
++				 ~0ULL, 0, intf);
++	if (stag)
++		npc_update_entry(rvu, NPC_LB, entry, NPC_LT_LB_STAG_QINQ, 0,
++				 ~0ULL, 0, intf);
++}
++
+ static void npc_update_flow(struct rvu *rvu, struct mcam_entry *entry,
+ 			    u64 features, struct flow_msg *pkt,
+ 			    struct flow_msg *mask,
+@@ -779,11 +808,6 @@ static void npc_update_flow(struct rvu *rvu, struct mcam_entry *entry,
+ 		npc_update_entry(rvu, NPC_LD, entry, NPC_LT_LD_ICMP6,
+ 				 0, ~0ULL, 0, intf);
+ 
+-	if (features & BIT_ULL(NPC_OUTER_VID))
+-		npc_update_entry(rvu, NPC_LB, entry,
+-				 NPC_LT_LB_STAG_QINQ | NPC_LT_LB_CTAG, 0,
+-				 NPC_LT_LB_STAG_QINQ & NPC_LT_LB_CTAG, 0, intf);
+-
+ 	/* For AH, LTYPE should be present in entry */
+ 	if (features & BIT_ULL(NPC_IPPROTO_AH))
+ 		npc_update_entry(rvu, NPC_LD, entry, NPC_LT_LD_AH,
+@@ -829,6 +853,7 @@ do {									      \
+ 		       ntohs(mask->vlan_tci), 0);
+ 
+ 	npc_update_ipv6_flow(rvu, entry, features, pkt, mask, output, intf);
++	npc_update_vlan_features(rvu, entry, features, intf);
+ }
+ 
+ static struct rvu_npc_mcam_rule *rvu_mcam_find_rule(struct npc_mcam *mcam,
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+index 96eddd0..521c388 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+@@ -838,8 +838,6 @@ int otx2_get_all_flows(struct otx2_nic *pfvf,
+ int otx2_add_flow(struct otx2_nic *pfvf,
+ 		  struct ethtool_rxnfc *nfc);
+ int otx2_remove_flow(struct otx2_nic *pfvf, u32 location);
+-int otx2_prepare_flow_request(struct ethtool_rx_flow_spec *fsp,
+-			      struct npc_install_flow_req *req);
+ int otx2_get_maxflows(struct otx2_flow_config *flow_cfg);
+ void otx2_rss_ctx_flow_del(struct otx2_nic *pfvf, int ctx_id);
+ int otx2_del_macfilter(struct net_device *netdev, const u8 *mac);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
+index e949001..0d10efba 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
+@@ -762,7 +762,7 @@ static int otx2_prepare_ipv6_flow(struct ethtool_rx_flow_spec *fsp,
+ 	return 0;
+ }
+ 
+-int otx2_prepare_flow_request(struct ethtool_rx_flow_spec *fsp,
++static int otx2_prepare_flow_request(struct ethtool_rx_flow_spec *fsp,
+ 			      struct npc_install_flow_req *req)
+ {
+ 	struct ethhdr *eth_mask = &fsp->m_u.ether_spec;
+@@ -818,8 +818,30 @@ int otx2_prepare_flow_request(struct ethtool_rx_flow_spec *fsp,
+ 		return -EOPNOTSUPP;
+ 	}
+ 	if (fsp->flow_type & FLOW_EXT) {
+-		if (fsp->m_ext.vlan_etype)
+-			return -EINVAL;
++		u16 vlan_etype;
++
++		if (fsp->m_ext.vlan_etype) {
++			/* Partial masks not supported */
++			if (be16_to_cpu(fsp->m_ext.vlan_etype) != 0xFFFF)
++				return -EINVAL;
++
++			vlan_etype = be16_to_cpu(fsp->h_ext.vlan_etype);
++			/* Only ETH_P_8021Q and ETH_P_802AD types supported */
++			if (vlan_etype != ETH_P_8021Q &&
++			    vlan_etype != ETH_P_8021AD)
++				return -EINVAL;
++
++			memcpy(&pkt->vlan_etype, &fsp->h_ext.vlan_etype,
++			       sizeof(pkt->vlan_etype));
++			memcpy(&pmask->vlan_etype, &fsp->m_ext.vlan_etype,
++			       sizeof(pmask->vlan_etype));
++
++			if (vlan_etype == ETH_P_8021Q)
++				req->features |= BIT_ULL(NPC_VLAN_ETYPE_CTAG);
++			else
++				req->features |= BIT_ULL(NPC_VLAN_ETYPE_STAG);
++		}
++
+ 		if (fsp->m_ext.vlan_tci) {
+ 			memcpy(&pkt->vlan_tci, &fsp->h_ext.vlan_tci,
+ 			       sizeof(pkt->vlan_tci));
+@@ -995,6 +1017,7 @@ int otx2_add_flow(struct otx2_nic *pfvf, struct ethtool_rxnfc *nfc)
+ 		if (!flow)
+ 			return -ENOMEM;
+ 		flow->location = fsp->location;
++		flow->entry = flow_cfg->flow_ent[flow->location];
+ 		new = true;
+ 	}
+ 	/* struct copy */
+@@ -1046,7 +1069,6 @@ int otx2_add_flow(struct otx2_nic *pfvf, struct ethtool_rxnfc *nfc)
+ 				    flow_cfg->max_flows - 1);
+ 			err = -EINVAL;
+ 		} else {
+-			flow->entry = flow_cfg->flow_ent[flow->location];
+ 			err = otx2_add_flow_msg(pfvf, flow);
+ 		}
+ 	}
 -- 
-2.31.1
+2.7.4
 
