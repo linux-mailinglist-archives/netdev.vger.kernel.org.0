@@ -2,362 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8ED633F9DC8
-	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 19:27:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 631AC3F9E22
+	for <lists+netdev@lfdr.de>; Fri, 27 Aug 2021 19:41:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242200AbhH0RWe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Aug 2021 13:22:34 -0400
-Received: from mga11.intel.com ([192.55.52.93]:33004 "EHLO mga11.intel.com"
+        id S236497AbhH0RmD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Aug 2021 13:42:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53434 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240189AbhH0RW2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Aug 2021 13:22:28 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10089"; a="214870016"
-X-IronPort-AV: E=Sophos;i="5.84,357,1620716400"; 
-   d="scan'208";a="214870016"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Aug 2021 10:21:31 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.84,357,1620716400"; 
-   d="scan'208";a="427178973"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga003.jf.intel.com with ESMTP; 27 Aug 2021 10:21:30 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Aravindhan Gunasekaran <aravindhan.gunasekaran@intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        sasha.neftin@intel.com, vitaly.lifshits@intel.com,
-        Mallikarjuna Chilakala <mallikarjuna.chilakala@intel.com>,
-        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
-Subject: [PATCH net-next 3/3] igc: Add support for CBS offloading
-Date:   Fri, 27 Aug 2021 10:25:13 -0700
-Message-Id: <20210827172513.224045-4-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210827172513.224045-1-anthony.l.nguyen@intel.com>
-References: <20210827172513.224045-1-anthony.l.nguyen@intel.com>
+        id S230367AbhH0RmC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Aug 2021 13:42:02 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4AF44600D4;
+        Fri, 27 Aug 2021 17:41:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1630086073;
+        bh=DgYmO5lLiHXNPE+bTt0kpJLEduGmJ62HuY9b2S4IhUQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=v5CFy4Y53ir/ekEqVrb37yJbS7N+GnhiX8a5ZHkAkLqCFMO+1hlQLEMIYoOQg78lQ
+         BE0uo/vHpfBxnyaR1kBG5sGR4fAWwgEKlv5Kw30ypy6hcugZI89kTJRWxmKPE0vFHA
+         aVk8PgyzjF1S9xogR6CSjmPtpDC0A1llmdWuC6mA=
+Date:   Fri, 27 Aug 2021 19:41:05 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Tianyu Lan <ltykernel@gmail.com>
+Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, catalin.marinas@arm.com,
+        will@kernel.org, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de, x86@kernel.org, hpa@zytor.com,
+        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
+        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com,
+        jgross@suse.com, sstabellini@kernel.org, joro@8bytes.org,
+        davem@davemloft.net, kuba@kernel.org, jejb@linux.ibm.com,
+        martin.petersen@oracle.com, arnd@arndb.de, hch@lst.de,
+        m.szyprowski@samsung.com, robin.murphy@arm.com,
+        brijesh.singh@amd.com, thomas.lendacky@amd.com,
+        Tianyu.Lan@microsoft.com, pgonda@google.com,
+        martin.b.radev@gmail.com, akpm@linux-foundation.org,
+        kirill.shutemov@linux.intel.com, rppt@kernel.org,
+        hannes@cmpxchg.org, aneesh.kumar@linux.ibm.com,
+        krish.sadhukhan@oracle.com, saravanand@fb.com,
+        linux-arm-kernel@lists.infradead.org,
+        xen-devel@lists.xenproject.org, rientjes@google.com,
+        ardb@kernel.org, michael.h.kelley@microsoft.com,
+        iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
+        vkuznets@redhat.com, parri.andrea@gmail.com, dave.hansen@intel.com
+Subject: Re: [PATCH V4 04/13] hyperv: Mark vmbus ring buffer visible to host
+ in Isolation VM
+Message-ID: <YSkjsapeNj+2j//o@kroah.com>
+References: <20210827172114.414281-1-ltykernel@gmail.com>
+ <20210827172114.414281-5-ltykernel@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210827172114.414281-5-ltykernel@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Aravindhan Gunasekaran <aravindhan.gunasekaran@intel.com>
+On Fri, Aug 27, 2021 at 01:21:02PM -0400, Tianyu Lan wrote:
+> From: Tianyu Lan <Tianyu.Lan@microsoft.com>
+> 
+> Mark vmbus ring buffer visible with set_memory_decrypted() when
+> establish gpadl handle.
+> 
+> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+> ---
+> Change since v3:
+>        * Change vmbus_teardown_gpadl() parameter and put gpadl handle,
+>        buffer and buffer size in the struct vmbus_gpadl.
+> ---
+>  drivers/hv/channel.c            | 36 ++++++++++++++++++++++++++++-----
+>  drivers/net/hyperv/hyperv_net.h |  1 +
+>  drivers/net/hyperv/netvsc.c     | 16 +++++++++++----
+>  drivers/uio/uio_hv_generic.c    | 14 +++++++++++--
+>  include/linux/hyperv.h          |  8 +++++++-
+>  5 files changed, 63 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/hv/channel.c b/drivers/hv/channel.c
+> index f3761c73b074..82650beb3af0 100644
+> --- a/drivers/hv/channel.c
+> +++ b/drivers/hv/channel.c
+> @@ -17,6 +17,7 @@
+>  #include <linux/hyperv.h>
+>  #include <linux/uio.h>
+>  #include <linux/interrupt.h>
+> +#include <linux/set_memory.h>
+>  #include <asm/page.h>
+>  #include <asm/mshyperv.h>
+>  
+> @@ -474,6 +475,13 @@ static int __vmbus_establish_gpadl(struct vmbus_channel *channel,
+>  	if (ret)
+>  		return ret;
+>  
+> +	ret = set_memory_decrypted((unsigned long)kbuffer,
+> +				   HVPFN_UP(size));
+> +	if (ret) {
+> +		pr_warn("Failed to set host visibility for new GPADL %d.\n", ret);
 
-Implement support for Credit-based shaper(CBS) Qdisc hardware
-offload mode in the driver. There are two sets of IEEE802.1Qav
-(CBS) HW logic in i225 controller and this patch supports
-enabling them in the top two priority TX queues.
+dev_warn()?  You have access to a struct device, why not use it?
 
-Driver implemented as recommended by Foxville External
-Architecture Specification v0.993. Idleslope and Hi-credit are
-the CBS tunable parameters for i225 NIC, programmed in TQAVCC
-and TQAVHC registers respectively.
+same for all other instances here.
 
-In-order for IEEE802.1Qav (CBS) algorithm to work as intended
-and provide BW reservation CBS should be enabled in highest
-priority queue first. If we enable CBS on any of low priority
-queues, the traffic in high priority queue does not allow low
-priority queue to be selected for transmission and bandwidth
-reservation is not guaranteed.
+thanks,
 
-Signed-off-by: Aravindhan Gunasekaran <aravindhan.gunasekaran@intel.com>
-Signed-off-by: Mallikarjuna Chilakala <mallikarjuna.chilakala@intel.com>
-Tested-by: Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/igc/igc.h         |  11 +-
- drivers/net/ethernet/intel/igc/igc_defines.h |   8 ++
- drivers/net/ethernet/intel/igc/igc_main.c    |  71 +++++++++++++
- drivers/net/ethernet/intel/igc/igc_regs.h    |   3 +
- drivers/net/ethernet/intel/igc/igc_tsn.c     | 103 +++++++++++++++++++
- 5 files changed, 195 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/intel/igc/igc.h b/drivers/net/ethernet/intel/igc/igc.h
-index b561beb1e623..3e386c38d016 100644
---- a/drivers/net/ethernet/intel/igc/igc.h
-+++ b/drivers/net/ethernet/intel/igc/igc.h
-@@ -98,6 +98,13 @@ struct igc_ring {
- 	u32 start_time;
- 	u32 end_time;
- 
-+	/* CBS parameters */
-+	bool cbs_enable;                /* indicates if CBS is enabled */
-+	s32 idleslope;                  /* idleSlope in kbps */
-+	s32 sendslope;                  /* sendSlope in kbps */
-+	s32 hicredit;                   /* hiCredit in bytes */
-+	s32 locredit;                   /* loCredit in bytes */
-+
- 	/* everything past this point are written often */
- 	u16 next_to_clean;
- 	u16 next_to_use;
-@@ -290,8 +297,10 @@ extern char igc_driver_name[];
- #define IGC_FLAG_VLAN_PROMISC		BIT(15)
- #define IGC_FLAG_RX_LEGACY		BIT(16)
- #define IGC_FLAG_TSN_QBV_ENABLED	BIT(17)
-+#define IGC_FLAG_TSN_QAV_ENABLED	BIT(18)
- 
--#define IGC_FLAG_TSN_ANY_ENABLED	IGC_FLAG_TSN_QBV_ENABLED
-+#define IGC_FLAG_TSN_ANY_ENABLED \
-+	(IGC_FLAG_TSN_QBV_ENABLED | IGC_FLAG_TSN_QAV_ENABLED)
- 
- #define IGC_FLAG_RSS_FIELD_IPV4_UDP	BIT(6)
- #define IGC_FLAG_RSS_FIELD_IPV6_UDP	BIT(7)
-diff --git a/drivers/net/ethernet/intel/igc/igc_defines.h b/drivers/net/ethernet/intel/igc/igc_defines.h
-index c40563350a5e..a4bbee748798 100644
---- a/drivers/net/ethernet/intel/igc/igc_defines.h
-+++ b/drivers/net/ethernet/intel/igc/igc_defines.h
-@@ -518,6 +518,14 @@
- #define IGC_TXQCTL_QUEUE_MODE_LAUNCHT	0x00000001
- #define IGC_TXQCTL_STRICT_CYCLE		0x00000002
- #define IGC_TXQCTL_STRICT_END		0x00000004
-+#define IGC_TXQCTL_QAV_SEL_MASK		0x000000C0
-+#define IGC_TXQCTL_QAV_SEL_CBS0		0x00000080
-+#define IGC_TXQCTL_QAV_SEL_CBS1		0x000000C0
-+
-+#define IGC_TQAVCC_IDLESLOPE_MASK	0xFFFF
-+#define IGC_TQAVCC_KEEP_CREDITS		BIT(30)
-+
-+#define IGC_MAX_SR_QUEUES		2
- 
- /* Receive Checksum Control */
- #define IGC_RXCSUM_CRCOFL	0x00000800   /* CRC32 offload enable */
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index 2e5c9b5a57d1..b877efae61df 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -5904,6 +5904,74 @@ static int igc_tsn_enable_qbv_scheduling(struct igc_adapter *adapter,
- 	return igc_tsn_offload_apply(adapter);
- }
- 
-+static int igc_save_cbs_params(struct igc_adapter *adapter, int queue,
-+			       bool enable, int idleslope, int sendslope,
-+			       int hicredit, int locredit)
-+{
-+	bool cbs_status[IGC_MAX_SR_QUEUES] = { false };
-+	struct net_device *netdev = adapter->netdev;
-+	struct igc_ring *ring;
-+	int i;
-+
-+	/* i225 has two sets of credit-based shaper logic.
-+	 * Supporting it only on the top two priority queues
-+	 */
-+	if (queue < 0 || queue > 1)
-+		return -EINVAL;
-+
-+	ring = adapter->tx_ring[queue];
-+
-+	for (i = 0; i < IGC_MAX_SR_QUEUES; i++)
-+		if (adapter->tx_ring[i])
-+			cbs_status[i] = adapter->tx_ring[i]->cbs_enable;
-+
-+	/* CBS should be enabled on the highest priority queue first in order
-+	 * for the CBS algorithm to operate as intended.
-+	 */
-+	if (enable) {
-+		if (queue == 1 && !cbs_status[0]) {
-+			netdev_err(netdev,
-+				   "Enabling CBS on queue1 before queue0\n");
-+			return -EINVAL;
-+		}
-+	} else {
-+		if (queue == 0 && cbs_status[1]) {
-+			netdev_err(netdev,
-+				   "Disabling CBS on queue0 before queue1\n");
-+			return -EINVAL;
-+		}
-+	}
-+
-+	ring->cbs_enable = enable;
-+	ring->idleslope = idleslope;
-+	ring->sendslope = sendslope;
-+	ring->hicredit = hicredit;
-+	ring->locredit = locredit;
-+
-+	return 0;
-+}
-+
-+static int igc_tsn_enable_cbs(struct igc_adapter *adapter,
-+			      struct tc_cbs_qopt_offload *qopt)
-+{
-+	struct igc_hw *hw = &adapter->hw;
-+	int err;
-+
-+	if (hw->mac.type != igc_i225)
-+		return -EOPNOTSUPP;
-+
-+	if (qopt->queue < 0 || qopt->queue > 1)
-+		return -EINVAL;
-+
-+	err = igc_save_cbs_params(adapter, qopt->queue, qopt->enable,
-+				  qopt->idleslope, qopt->sendslope,
-+				  qopt->hicredit, qopt->locredit);
-+	if (err)
-+		return err;
-+
-+	return igc_tsn_offload_apply(adapter);
-+}
-+
- static int igc_setup_tc(struct net_device *dev, enum tc_setup_type type,
- 			void *type_data)
- {
-@@ -5916,6 +5984,9 @@ static int igc_setup_tc(struct net_device *dev, enum tc_setup_type type,
- 	case TC_SETUP_QDISC_ETF:
- 		return igc_tsn_enable_launchtime(adapter, type_data);
- 
-+	case TC_SETUP_QDISC_CBS:
-+		return igc_tsn_enable_cbs(adapter, type_data);
-+
- 	default:
- 		return -EOPNOTSUPP;
- 	}
-diff --git a/drivers/net/ethernet/intel/igc/igc_regs.h b/drivers/net/ethernet/intel/igc/igc_regs.h
-index dbba2eb2a247..e197a33d93a0 100644
---- a/drivers/net/ethernet/intel/igc/igc_regs.h
-+++ b/drivers/net/ethernet/intel/igc/igc_regs.h
-@@ -236,6 +236,9 @@
- #define IGC_ENDQT(_n)		(0x3334 + 0x4 * (_n))
- #define IGC_DTXMXPKTSZ		0x355C
- 
-+#define IGC_TQAVCC(_n)		(0x3004 + ((_n) * 0x40))
-+#define IGC_TQAVHC(_n)		(0x300C + ((_n) * 0x40))
-+
- /* System Time Registers */
- #define IGC_SYSTIML	0x0B600  /* System time register Low - RO */
- #define IGC_SYSTIMH	0x0B604  /* System time register High - RO */
-diff --git a/drivers/net/ethernet/intel/igc/igc_tsn.c b/drivers/net/ethernet/intel/igc/igc_tsn.c
-index 2935d57c593d..0fce22de2ab8 100644
---- a/drivers/net/ethernet/intel/igc/igc_tsn.c
-+++ b/drivers/net/ethernet/intel/igc/igc_tsn.c
-@@ -18,6 +18,20 @@ static bool is_any_launchtime(struct igc_adapter *adapter)
- 	return false;
- }
- 
-+static bool is_cbs_enabled(struct igc_adapter *adapter)
-+{
-+	int i;
-+
-+	for (i = 0; i < adapter->num_tx_queues; i++) {
-+		struct igc_ring *ring = adapter->tx_ring[i];
-+
-+		if (ring->cbs_enable)
-+			return true;
-+	}
-+
-+	return false;
-+}
-+
- static unsigned int igc_tsn_new_flags(struct igc_adapter *adapter)
- {
- 	unsigned int new_flags = adapter->flags & ~IGC_FLAG_TSN_ANY_ENABLED;
-@@ -28,6 +42,9 @@ static unsigned int igc_tsn_new_flags(struct igc_adapter *adapter)
- 	if (is_any_launchtime(adapter))
- 		new_flags |= IGC_FLAG_TSN_QBV_ENABLED;
- 
-+	if (is_cbs_enabled(adapter))
-+		new_flags |= IGC_FLAG_TSN_QAV_ENABLED;
-+
- 	return new_flags;
- }
- 
-@@ -87,6 +104,8 @@ static int igc_tsn_enable_offload(struct igc_adapter *adapter)
- 	for (i = 0; i < adapter->num_tx_queues; i++) {
- 		struct igc_ring *ring = adapter->tx_ring[i];
- 		u32 txqctl = 0;
-+		u16 cbs_value;
-+		u32 tqavcc;
- 
- 		wr32(IGC_STQT(i), ring->start_time);
- 		wr32(IGC_ENDQT(i), ring->end_time);
-@@ -104,6 +123,90 @@ static int igc_tsn_enable_offload(struct igc_adapter *adapter)
- 		if (ring->launchtime_enable)
- 			txqctl |= IGC_TXQCTL_QUEUE_MODE_LAUNCHT;
- 
-+		/* Skip configuring CBS for Q2 and Q3 */
-+		if (i > 1)
-+			goto skip_cbs;
-+
-+		if (ring->cbs_enable) {
-+			if (i == 0)
-+				txqctl |= IGC_TXQCTL_QAV_SEL_CBS0;
-+			else
-+				txqctl |= IGC_TXQCTL_QAV_SEL_CBS1;
-+
-+			/* According to i225 datasheet section 7.5.2.7, we
-+			 * should set the 'idleSlope' field from TQAVCC
-+			 * register following the equation:
-+			 *
-+			 * value = link-speed   0x7736 * BW * 0.2
-+			 *         ---------- *  -----------------         (E1)
-+			 *          100Mbps            2.5
-+			 *
-+			 * Note that 'link-speed' is in Mbps.
-+			 *
-+			 * 'BW' is the percentage bandwidth out of full
-+			 * link speed which can be found with the
-+			 * following equation. Note that idleSlope here
-+			 * is the parameter from this function
-+			 * which is in kbps.
-+			 *
-+			 *     BW =     idleSlope
-+			 *          -----------------                      (E2)
-+			 *          link-speed * 1000
-+			 *
-+			 * That said, we can come up with a generic
-+			 * equation to calculate the value we should set
-+			 * it TQAVCC register by replacing 'BW' in E1 by E2.
-+			 * The resulting equation is:
-+			 *
-+			 * value = link-speed * 0x7736 * idleSlope * 0.2
-+			 *         -------------------------------------   (E3)
-+			 *             100 * 2.5 * link-speed * 1000
-+			 *
-+			 * 'link-speed' is present in both sides of the
-+			 * fraction so it is canceled out. The final
-+			 * equation is the following:
-+			 *
-+			 *     value = idleSlope * 61036
-+			 *             -----------------                   (E4)
-+			 *                  2500000
-+			 *
-+			 * NOTE: For i225, given the above, we can see
-+			 *       that idleslope is represented in
-+			 *       40.959433 kbps units by the value at
-+			 *       the TQAVCC register (2.5Gbps / 61036),
-+			 *       which reduces the granularity for
-+			 *       idleslope increments.
-+			 *
-+			 * In i225 controller, the sendSlope and loCredit
-+			 * parameters from CBS are not configurable
-+			 * by software so we don't do any
-+			 * 'controller configuration' in respect to
-+			 * these parameters.
-+			 */
-+			cbs_value = DIV_ROUND_UP_ULL(ring->idleslope
-+						     * 61036ULL, 2500000);
-+
-+			tqavcc = rd32(IGC_TQAVCC(i));
-+			tqavcc &= ~IGC_TQAVCC_IDLESLOPE_MASK;
-+			tqavcc |= cbs_value | IGC_TQAVCC_KEEP_CREDITS;
-+			wr32(IGC_TQAVCC(i), tqavcc);
-+
-+			wr32(IGC_TQAVHC(i),
-+			     0x80000000 + ring->hicredit * 0x7735);
-+		} else {
-+			/* Disable any CBS for the queue */
-+			txqctl &= ~(IGC_TXQCTL_QAV_SEL_MASK);
-+
-+			/* Set idleSlope to zero. */
-+			tqavcc = rd32(IGC_TQAVCC(i));
-+			tqavcc &= ~(IGC_TQAVCC_IDLESLOPE_MASK |
-+				    IGC_TQAVCC_KEEP_CREDITS);
-+			wr32(IGC_TQAVCC(i), tqavcc);
-+
-+			/* Set hiCredit to zero. */
-+			wr32(IGC_TQAVHC(i), 0);
-+		}
-+skip_cbs:
- 		wr32(IGC_TXQCTL(i), txqctl);
- 	}
- 
--- 
-2.26.2
-
+greg k-h
