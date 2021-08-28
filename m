@@ -2,75 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC5C83FA312
-	for <lists+netdev@lfdr.de>; Sat, 28 Aug 2021 04:11:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 503303FA376
+	for <lists+netdev@lfdr.de>; Sat, 28 Aug 2021 06:07:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233113AbhH1CMJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Aug 2021 22:12:09 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:53860 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233035AbhH1CMI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Aug 2021 22:12:08 -0400
-Received: by mail-io1-f71.google.com with SMTP id n189-20020a6b8bc6000000b005b92c64b625so5130741iod.20
-        for <netdev@vger.kernel.org>; Fri, 27 Aug 2021 19:11:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=76HdtwbOVuUSM0zGrd3e0OmR58hv5g+WaLxPr1hL0E4=;
-        b=BEVI16aYSyFA4LxADRwe29OjcKy9aogoa1qsjSMpblWxzoVoOa2NRLaEla4JHDagQX
-         kKzY8pSEWZetGov2s6lqwWPZrrRAfT3nOq8wHsBzgXqVRC3Q/vracbTY5WgSMpu6sadF
-         ykVKUSptfaJ4PvqlNLCiG5nqK+AYA5VhXTGFp/mZwzRQXuBj4EQyh8Ticdb4F6Wz+LA0
-         vw31wPaa/hINigX3EJaaMCihL2xw0Td6a4w1QRDy8Kpk2GkMrgwVRRkuDK1jku9810cw
-         6snGfUP1YH08rkSXCx3Ij/dJqRE/BiwOGfzSkawW+n0/qBatSLmvYI96qP1z+Klz1bth
-         UfEg==
-X-Gm-Message-State: AOAM5326KMaAlKaIf7aAiq1iM5mVk7d/zhQDlLqLazjbfQ45pX3csrW1
-        8I5aSzn44Tyj8X6ePM9vAE6aspvrNWJkpDlRa0/b7ia09haU
-X-Google-Smtp-Source: ABdhPJwxHKu7FuMPwsV3/K93KbzrQVZacplDFFF1AqhALknBpGVJrTL9S9TggZdWzsPWSAJamrYeqbYL7FXnvQQ5smEHI6uIWlTf
+        id S229992AbhH1EHX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Aug 2021 00:07:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35000 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229450AbhH1EHV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 28 Aug 2021 00:07:21 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E1DDD60F44;
+        Sat, 28 Aug 2021 04:06:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1630123591;
+        bh=dIBeOi1GGKjlDfEsJVaGO8duIxg15L1z3VVcvy4vXzE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SmW4tzyXz+NvXu1cKRLsrojCzh5PwOcGfKfayoE2RN80DPEOehNEQ8jG4NgBJgK+w
+         ZO7+DiLMd/KKcbniBeJkHNR5qXZhvE/KZ2owroHZfpa3wvWBOen6YGgMbUJ1Pg5Dyp
+         BxxbTNK0Zl8CPmw7rL9ME50i0AvM/RlxdnrNQx6+Alx+xjH93FkVsNshG4KEFFJCZT
+         twmxXgk9P5FVx87iPyLmqm+PbpcSwUaGhPmDWYDz1Y9b9b3g9KWnNME4BAnxfuK9iR
+         1wpoyZx3yuy7ishYDCN4eYb2MQg/xRXQThgw+b3/OE/hGWyTNndNQK5jGY0bVO9u+S
+         rUM413WD/8bhA==
+Date:   Fri, 27 Aug 2021 21:06:29 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     David Ahern <dsahern@gmail.com>, Rocco Yue <rocco.yue@mediatek.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, rocco.yue@gmail.com,
+        chao.song@mediatek.com, zhuoliang.zhang@mediatek.com
+Subject: Re: [PATCH net-next v6] ipv6: add IFLA_INET6_RA_MTU to expose mtu
+ value
+Message-ID: <20210827210629.6858ceb9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <88523c38-f0b4-8a63-6ca6-68a3122bef79@gmail.com>
+References: <20210827150412.9267-1-rocco.yue@mediatek.com>
+        <88523c38-f0b4-8a63-6ca6-68a3122bef79@gmail.com>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1d9e:: with SMTP id h30mr8559944ila.195.1630116678280;
- Fri, 27 Aug 2021 19:11:18 -0700 (PDT)
-Date:   Fri, 27 Aug 2021 19:11:18 -0700
-In-Reply-To: <0000000000004e5ec705c6318557@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000008d2a0005ca951d94@google.com>
-Subject: Re: [syzbot] general protection fault in legacy_parse_param
-From:   syzbot <syzbot+d1e3b1d92d25abf97943@syzkaller.appspotmail.com>
-To:     andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
-        casey@schaufler-ca.com, christian.brauner@ubuntu.com,
-        daniel@iogearbox.net, dhowells@redhat.com, dvyukov@google.com,
-        jmorris@namei.org, kafai@fb.com, kpsingh@google.com,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        paul@paul-moore.com, selinux@vger.kernel.org,
-        songliubraving@fb.com, stephen.smalley.work@gmail.com,
-        syzkaller-bugs@googlegroups.com, tonymarislogistics@yandex.com,
-        viro@zeniv.linux.org.uk, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this issue to:
+On Fri, 27 Aug 2021 09:41:53 -0700 David Ahern wrote:
+> On 8/27/21 8:04 AM, Rocco Yue wrote:
+> > The kernel provides a "/proc/sys/net/ipv6/conf/<iface>/mtu"
+> > file, which can temporarily record the mtu value of the last
+> > received RA message when the RA mtu value is lower than the
+> > interface mtu, but this proc has following limitations:
+> > 
+> > (1) when the interface mtu (/sys/class/net/<iface>/mtu) is
+> > updeated, mtu6 (/proc/sys/net/ipv6/conf/<iface>/mtu) will
+> > be updated to the value of interface mtu;
+> > (2) mtu6 (/proc/sys/net/ipv6/conf/<iface>/mtu) only affect
+> > ipv6 connection, and not affect ipv4.
+> > 
+> > Therefore, when the mtu option is carried in the RA message,
+> > there will be a problem that the user sometimes cannot obtain
+> > RA mtu value correctly by reading mtu6.
+> > 
+> > After this patch set, if a RA message carries the mtu option,
+> > you can send a netlink msg which nlmsg_type is RTM_GETLINK,
+> > and then by parsing the attribute of IFLA_INET6_RA_MTU to
+> > get the mtu value carried in the RA message received on the
+> > inet6 device. In addition, you can also get a link notification
+> > when ra_mtu is updated so it doesn't have to poll.
+> > 
+> > In this way, if the MTU values that the device receives from
+> > the network in the PCO IPv4 and the RA IPv6 procedures are
+> > different, the user can obtain the correct ipv6 ra_mtu value
+> > and compare the value of ra_mtu and ipv4 mtu, then the device
+> > can use the lower MTU value for both IPv4 and IPv6.
+> > 
+> > Signed-off-by: Rocco Yue <rocco.yue@mediatek.com>
+>
+> Reviewed-by: David Ahern <dsahern@kernel.org>
 
-commit 54261af473be4c5481f6196064445d2945f2bdab
-Author: KP Singh <kpsingh@google.com>
-Date:   Thu Apr 30 15:52:40 2020 +0000
-
-    security: Fix the default value of fs_context_parse_param hook
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=160c5d75300000
-start commit:   77dd11439b86 Merge tag 'drm-fixes-2021-08-27' of git://ano..
-git tree:       upstream
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=150c5d75300000
-console output: https://syzkaller.appspot.com/x/log.txt?x=110c5d75300000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=2fd902af77ff1e56
-dashboard link: https://syzkaller.appspot.com/bug?extid=d1e3b1d92d25abf97943
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=126d084d300000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16216eb1300000
-
-Reported-by: syzbot+d1e3b1d92d25abf97943@syzkaller.appspotmail.com
-Fixes: 54261af473be ("security: Fix the default value of fs_context_parse_param hook")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+Applied, thank you!
