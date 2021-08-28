@@ -2,72 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 319363FA72B
-	for <lists+netdev@lfdr.de>; Sat, 28 Aug 2021 20:33:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 948403FA78A
+	for <lists+netdev@lfdr.de>; Sat, 28 Aug 2021 22:44:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230516AbhH1SdC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Aug 2021 14:33:02 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:37782 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230137AbhH1SdB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Aug 2021 14:33:01 -0400
-Received: by mail-io1-f71.google.com with SMTP id h3-20020a056602008300b005b7c0e23e11so6119429iob.4
-        for <netdev@vger.kernel.org>; Sat, 28 Aug 2021 11:32:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=up8sbinmdfW5FEk6l6npSbM0ylrChylbR3vjt8i49Xs=;
-        b=dtrFbLmgT8hgBZ2kfdxH3kMwrhdW7t9DStFlZra9KDDXiqIn7TI/jgstKdaJr9vPbQ
-         aVaH4sqCEREqItx1mxtlvVdQ9pBusTJVl4ZfcMSFyTKpnOm4V5tQ90p4zhAiUtwypZui
-         4xQnDYpwjh40o7qyC+fO+Whvr3TCYs9W1Jc1IvQpYhhReoZ5c/MgGGkqr1mUMQBrQt9z
-         VSerKZqV7KuXvyDPC0L6C6ESCeePIrghxhJqyfE8i8sOYza/kKoIdcJtPGjiC73dssA2
-         L7C6cDpXwvkXLthcqZowG0wc8Wpq9A0n0d9yGRh/55p6GrgKFqzZD+exxFkehJ/K4YGP
-         66Sg==
-X-Gm-Message-State: AOAM531esvw5jydgm2gCuZ+gzIccyu1FJv9ginvN2YyBgl89pL9CBdjl
-        w3LHf39X+/BNscO1dsULLm0qVPjXmyYJrHn+jZSRevNrFqWO
-X-Google-Smtp-Source: ABdhPJz+Yyr5HRroDxrfkjQQ5ziL5gBeIlEZ7KitgTECC5WrydwZTAne5hlTp3U9EC17zAoYBcRj22iKM9omVjv0Oo7cv7/OiVjq
+        id S232242AbhH1UpI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Aug 2021 16:45:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56794 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230253AbhH1UpH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Aug 2021 16:45:07 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29249C061756;
+        Sat, 28 Aug 2021 13:44:12 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1630183450;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=jqn7wYgtWLIqZ9aye1ornYrsbRPpzBUqOlOGcb6SmI8=;
+        b=mqKN5AWhujtiGKZ6L81ViYtYwQZi+xkoocav2zijsXbog4utBtunya7RVvX83UM298WNU0
+        g6b4QTbT6X2D/Uxjb06CtP0EKazlp+YTAyDYgoBOOcdeT7XUEUfMPxo2B7bgda1BhRXo21
+        AZE5GrHgCMvNhfjGefKyXHemYvVxU8/PxkTF52lDqFLQoe9LgtmqcekJaGLc74ZOzZe+sz
+        KGP1In38tJbTvDk7FoNPwAsrM6I01dg1bgBWAU9jddoa2YuKRb8JaluRwun7nAZXcWBm1f
+        DAmPlfPDvhlKtwTNLFyxMdvDoH6M7EYHeohvn4MVVwk1vf0fNOyLfXDI4zifZg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1630183450;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=jqn7wYgtWLIqZ9aye1ornYrsbRPpzBUqOlOGcb6SmI8=;
+        b=ez+HiTr9a13KmBngRjTOOnKKW3JeJJIguEpv3Zlr6LZei7W2GH62vHq5OMOZAn3KN3JGx0
+        oEVaZ7hY/QX9bODA==
+To:     Dexuan Cui <decui@microsoft.com>,
+        'Saeed Mahameed' <saeed@kernel.org>,
+        'Leon Romanovsky' <leon@kernel.org>
+Cc:     "'linux-pci@vger.kernel.org'" <linux-pci@vger.kernel.org>,
+        "'netdev@vger.kernel.org'" <netdev@vger.kernel.org>,
+        "'x86@kernel.org'" <x86@kernel.org>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        "'linux-kernel@vger.kernel.org'" <linux-kernel@vger.kernel.org>
+Subject: RE: [5.14-rc1] mlx5_core receives no interrupts with maxcpus=8
+In-Reply-To: <draft-87h7fa1m37.ffs@tglx>
+References: <draft-87h7fa1m37.ffs@tglx>
+Date:   Sat, 28 Aug 2021 22:44:09 +0200
+Message-ID: <87tuj9guzq.ffs@tglx>
 MIME-Version: 1.0
-X-Received: by 2002:a92:280d:: with SMTP id l13mr10827952ilf.99.1630175530430;
- Sat, 28 Aug 2021 11:32:10 -0700 (PDT)
-Date:   Sat, 28 Aug 2021 11:32:10 -0700
-In-Reply-To: <000000000000b575ab05aebfc192@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000069bb3e05caa2d1f8@google.com>
-Subject: Re: [syzbot] WARNING: refcount bug in qrtr_node_lookup
-From:   syzbot <syzbot+c613e88b3093ebf3686e@syzkaller.appspotmail.com>
-To:     anant.thazhemadam@gmail.com, bjorn.andersson@linaro.org,
-        butterflyhuangxx@gmail.com, davem@davemloft.net,
-        dragonjetli@gmail.com, hdanton@sina.com, kuba@kernel.org,
-        linux-arm-msm@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-kernel@vger.kernel.org, mani@kernel.org,
-        manivannan.sadhasivam@linaro.org, masahiroy@kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot suspects this issue was fixed by commit:
+Dexuan,
 
-commit 7e78c597c3ebfd0cb329aa09a838734147e4f117
-Author: Xiaolong Huang <butterflyhuangxx@gmail.com>
-Date:   Thu Aug 19 19:50:34 2021 +0000
+On Sat, Aug 28 2021 at 01:53, Thomas Gleixner wrote:
+> On Thu, Aug 19 2021 at 20:41, Dexuan Cui wrote:
+>>> Sorry for the late response! I checked the below sys file, and the output is
+>>> exactly the same in the good/bad cases -- in both cases, I use maxcpus=8;
+>>> the only difference in the good case is that I online and then offline CPU 8~31:
+>>> for i in `seq 8 31`;  do echo 1 >  /sys/devices/system/cpu/cpu$i/online; done
+>>> for i in `seq 8 31`;  do echo 0 >  /sys/devices/system/cpu/cpu$i/online; done
+>>> 
+>>> # cat /sys/kernel/debug/irq/irqs/209
 
-    net: qrtr: fix another OOB Read in qrtr_endpoint_post
+Yes, that looks correct.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11279a4d300000
-start commit:   ba4f184e126b Linux 5.9-rc6
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=af502ec9a451c9fc
-dashboard link: https://syzkaller.appspot.com/bug?extid=c613e88b3093ebf3686e
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12263dd9900000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13d77603900000
+>>
+>> I tried the kernel parameter "intremap=nosid,no_x2apic_optout,nopost" but
+>> it didn't help. Only "intremap=off" can work round the no interrupt issue.
+>>
+>> When the no interrupt issue happens, irq 209's effective_affinity_list is 5.
+>> I modified modify_irte() to print the irte->low, irte->high, and I also printed
+>> the irte_index for irq 209, and they were all normal to me, and they were
+>> exactly the same in the bad case and the good case -- it looks like, with
+>> "intremap=on maxcpus=8", MSI-X on CPU5 can't work for the NIC device
+>> (MSI-X on CPU5 works for other devices like a NVMe controller) , and somehow
+>> "onlining and then offlining CPU 8~31" can "fix" the issue, which is really weird.
 
-If the result looks correct, please mark the issue as fixed by replying with:
+Just for the record: maxcpus=N is a dangerous boot option as it leaves
+the non brought up CPUs in a state where they can be hit by MCE
+broadcasting without being able to act on it. Which means you're
+operating the system out of spec.
 
-#syz fix: net: qrtr: fix another OOB Read in qrtr_endpoint_post
+According to your debug output the interrupt in question belongs to the
+INTEL-IR-3 interrupt domain, which means it hangs of IOMMU3, aka DMAR
+unit 3.
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+To which DMAR/remap unit are the other unaffected devices connected to?
+
+Thanks,
+
+        tglx
+
