@@ -2,128 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 867AA3FA7C2
+	by mail.lfdr.de (Postfix) with ESMTP id CFAEF3FA7C3
 	for <lists+netdev@lfdr.de>; Sat, 28 Aug 2021 23:59:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233763AbhH1V7y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Aug 2021 17:59:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44882 "EHLO
+        id S232932AbhH1V76 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Aug 2021 17:59:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232609AbhH1V7t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Aug 2021 17:59:49 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98C2EC061756
-        for <netdev@vger.kernel.org>; Sat, 28 Aug 2021 14:58:58 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id q3so15430242edt.5
-        for <netdev@vger.kernel.org>; Sat, 28 Aug 2021 14:58:58 -0700 (PDT)
+        with ESMTP id S232831AbhH1V7v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Aug 2021 17:59:51 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7BF7C061756
+        for <netdev@vger.kernel.org>; Sat, 28 Aug 2021 14:59:00 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id ia27so22009322ejc.10
+        for <netdev@vger.kernel.org>; Sat, 28 Aug 2021 14:59:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Ia5muHIo9iuUXZID9UkO1+fdS6rwyNsmxsu9KHZ7iBs=;
-        b=O/Ldp82tNFZl1cayNwz+ZbqGqDPXXCgW0cPDIYJ3y5NEtXBuc1OeCzgxodVmzV33hw
-         FK0FzmXneD94UBwMNIXULdwogj+Ct1gKrOv7c7NQEVgUGnCyOchxO5aCDqRwPgOqRqyX
-         WO4p/lk34hftYrk3qovM8lExDKaFjurmpomyM=
+        bh=EOd9rQ8MkK+OSHCSk2RBXbRJMn2Q1ym5UvhYAVPnJzw=;
+        b=QiyB47xdAlBos3ppIXELLQMgMRinn2C+My4Ue9KBC9jnMT/e5stD/K80oxbBa3PKVT
+         eZVf4OnAuLGkL4Hcofzv5H36fXkUu17iWz8Rm7TYWiQTrtgKxcnZgtJ5gsWC3gKluDla
+         BkAVkqIJcgelBEmHAk+J/zcBAekCDX1h9bZkk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=Ia5muHIo9iuUXZID9UkO1+fdS6rwyNsmxsu9KHZ7iBs=;
-        b=P6s5U9F5ByHJ28JWb7gzb6p+sD0WoQBF9oYbbv5laqdewbl8C5+2jdafCqQIrpFn4m
-         dicFAbXhcA4G+2dX2M/LPocjemCTwxrlKot2CPNQdbFdYyfQ4jxeLlOy9uUtVK97XiFO
-         S8CdLKhcFp/tqFNke2Vj20WaZ6Jb0xlzGqJjuM4c5K3TTlT0BHyd6krDI260KgA2ISru
-         RmLcS4QbeSqv7tE2OKSDdVPcxNhbndrvrE/hogEOX2A/WhWyShR2ulHYdkP1555AEF0A
-         5j7HVOI6CPsHHzDOZvWlTycQwgwHgNoBGScjpWoBAHTxmOy8XTq5YHZeBorUxhcjGmCC
-         V6aw==
-X-Gm-Message-State: AOAM530Bf/khl7KaFPQzZ5L/GocTBaEpdG/FQuEtDBZztAaJsTbcwtiI
-        esiD+94rukrf9OMtIDNm181/fLwtd7V9fw==
-X-Google-Smtp-Source: ABdhPJyF3FCrZy4NC9cTlXungHGl0oxq5JWG8hApZEPPwiMopHjhu0q5pCPC/dBxAj2zGTWiuAK5IQ==
-X-Received: by 2002:a05:6402:5188:: with SMTP id q8mr17087374edd.138.1630187936933;
-        Sat, 28 Aug 2021 14:58:56 -0700 (PDT)
+        bh=EOd9rQ8MkK+OSHCSk2RBXbRJMn2Q1ym5UvhYAVPnJzw=;
+        b=LKdxldAUpbjcOkfALfvtJoVu+gJMT21VRgsCv+VcFiSOIxAqmuIjbbu0oOQky0u+Pv
+         yRU1nvCGexFABNBkV13hg3MMpluwMfsbWKx74TY2fNVGFOWvQ1CE5fXpIodJlY0zhd+x
+         1OeFpGjcaxKyhPfHaCGgz35UavcMDH8Pv5rudnKVfqK7aX2DqV5wVrYSF4e4qvwBOaJD
+         TlgblUs4niJSCButNccXaO9IVO3kL6eby/C9OkA9kqlzeUS67CixJAclNRDLrNwA4N8v
+         iKiIfLadc0mvc6ITGZmeOhHAlyOFaiK9FYMl0u3CYx31eYxZznGKRYRoXulYSy2A10at
+         f1sQ==
+X-Gm-Message-State: AOAM5337Pi2wEwtTsSK9RQcsn6TbwxSNN111rXs8BXqN2GJnKT6GIdi2
+        81h8HDCNFHSirUv+FSK53wdjft84Y6FO2w==
+X-Google-Smtp-Source: ABdhPJxcR5QqwsYBtvbbDYt8BvVe0Dosunk06Ggr9GUnBV+hckWF5x+WHZUfVpj28WvHs/Ek24c1Bw==
+X-Received: by 2002:a17:906:a012:: with SMTP id p18mr16980549ejy.331.1630187938996;
+        Sat, 28 Aug 2021 14:58:58 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id cf11sm5361239edb.65.2021.08.28.14.58.55
+        by smtp.gmail.com with ESMTPSA id cf11sm5361239edb.65.2021.08.28.14.58.57
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 28 Aug 2021 14:58:56 -0700 (PDT)
+        Sat, 28 Aug 2021 14:58:58 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, edwin.peer@broadcom.com,
         gospo@broadcom.com
-Subject: [PATCH net-next 05/11] bnxt_en: discard out of sequence HWRM responses
-Date:   Sat, 28 Aug 2021 17:58:24 -0400
-Message-Id: <1630187910-22252-6-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 06/11] bnxt_en: add HWRM request assignment API
+Date:   Sat, 28 Aug 2021 17:58:25 -0400
+Message-Id: <1630187910-22252-7-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1630187910-22252-1-git-send-email-michael.chan@broadcom.com>
 References: <1630187910-22252-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000ec982105caa5b48f"
+        boundary="0000000000000e4b6005caa5b51c"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000ec982105caa5b48f
+--0000000000000e4b6005caa5b51c
 
 From: Edwin Peer <edwin.peer@broadcom.com>
 
-During firmware crash recovery, it is possible for firmware to respond
-to stale HWRM commands that have already timed out. Because response
-buffers may be reused, any out of sequence responses need to be ignored
-and only the matching seq_id should be accepted.
+hwrm_req_replace() provides an assignment like operation to replace a
+managed HWRM request object with data from a pre-built source. This is
+useful for handling request data provided by higher layer HWRM clients.
 
-Also, READ_ONCE should be used for the reads from the DMA buffer to
-ensure that the necessary loads are scheduled.
-
-Reviewed-by: Scott Branden <scott.branden@broadcom.com>
 Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- .../net/ethernet/broadcom/bnxt/bnxt_hwrm.c    | 21 +++++++++++++++----
- 1 file changed, 17 insertions(+), 4 deletions(-)
+ .../net/ethernet/broadcom/bnxt/bnxt_hwrm.c    | 55 +++++++++++++++++++
+ .../net/ethernet/broadcom/bnxt/bnxt_hwrm.h    |  1 +
+ 2 files changed, 56 insertions(+)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
-index 91c4d3aac0b6..917d617afa87 100644
+index 917d617afa87..7d3cee8bdf7a 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
-@@ -399,9 +399,10 @@ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
- 					   le16_to_cpu(ctx->req->req_type));
- 			goto exit;
- 		}
--		len = le16_to_cpu(ctx->resp->resp_len);
-+		len = le16_to_cpu(READ_ONCE(ctx->resp->resp_len));
- 		valid = ((u8 *)ctx->resp) + len - 1;
- 	} else {
-+		__le16 seen_out_of_seq = ctx->req->seq_id; /* will never see */
- 		int j;
+@@ -147,6 +147,61 @@ void hwrm_req_timeout(struct bnxt *bp, void *req, unsigned int timeout)
+ 		ctx->timeout = timeout;
+ }
  
- 		/* Check if response len is updated */
-@@ -411,9 +412,21 @@ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
- 			 */
- 			if (test_bit(BNXT_STATE_FW_FATAL_COND, &bp->state))
- 				goto exit;
--			len = le16_to_cpu(ctx->resp->resp_len);
--			if (len)
--				break;
-+			len = le16_to_cpu(READ_ONCE(ctx->resp->resp_len));
-+			if (len) {
-+				__le16 resp_seq = READ_ONCE(ctx->resp->seq_id);
++/**
++ * hwrm_req_replace() - Replace request data.
++ * @bp: The driver context.
++ * @req: The request to modify. A call to hwrm_req_replace() is conceptually
++ *	an assignment of new_req to req. Subsequent calls to HWRM API functions,
++ *	such as hwrm_req_send(), should thus use req and not new_req (in fact,
++ *	calls to HWRM API functions will fail if non-managed request objects
++ *	are passed).
++ * @len: The length of new_req.
++ * @new_req: The pre-built request to copy or reference.
++ *
++ * Replaces the request data in req with that of new_req. This is useful in
++ * scenarios where a request object has already been constructed by a third
++ * party prior to creating a resource managed request using hwrm_req_init().
++ * Depending on the length, hwrm_req_replace() will either copy the new
++ * request data into the DMA memory allocated for req, or it will simply
++ * reference the new request and use it in lieu of req during subsequent
++ * calls to hwrm_req_send(). The resource management is associated with
++ * req and is independent of and does not apply to new_req. The caller must
++ * ensure that the lifetime of new_req is least as long as req.
++ *
++ * Return: zero on success, negative error code otherwise:
++ *     E2BIG: Request is too large.
++ *     EINVAL: Invalid request to modify.
++ */
++int hwrm_req_replace(struct bnxt *bp, void *req, void *new_req, u32 len)
++{
++	struct bnxt_hwrm_ctx *ctx = __hwrm_ctx(bp, req);
++	struct input *internal_req = req;
++	u16 req_type;
 +
-+				if (resp_seq == ctx->req->seq_id)
-+					break;
-+				if (resp_seq != seen_out_of_seq) {
-+					netdev_warn(bp->dev, "Discarding out of seq response: 0x%x for msg {0x%x 0x%x}\n",
-+						    le16_to_cpu(resp_seq),
-+						    le16_to_cpu(ctx->req->req_type),
-+						    le16_to_cpu(ctx->req->seq_id));
-+					seen_out_of_seq = resp_seq;
-+				}
-+			}
++	if (!ctx)
++		return -EINVAL;
 +
- 			/* on first few passes, just barely sleep */
- 			if (i < HWRM_SHORT_TIMEOUT_COUNTER) {
- 				usleep_range(HWRM_SHORT_MIN_TIMEOUT,
++	if (len > BNXT_HWRM_CTX_OFFSET)
++		return -E2BIG;
++
++	if ((bp->fw_cap & BNXT_FW_CAP_SHORT_CMD) || len > BNXT_HWRM_MAX_REQ_LEN) {
++		memcpy(internal_req, new_req, len);
++	} else {
++		internal_req->req_type = ((struct input *)new_req)->req_type;
++		ctx->req = new_req;
++	}
++
++	ctx->req_len = len;
++	ctx->req->resp_addr = cpu_to_le64(ctx->dma_handle +
++					  BNXT_HWRM_RESP_OFFSET);
++
++	/* update sentinel for potentially new request type */
++	req_type = le16_to_cpu(internal_req->req_type);
++	ctx->sentinel = hwrm_calc_sentinel(ctx, req_type);
++
++	return 0;
++}
++
+ /**
+  * hwrm_req_flags() - Set non internal flags of the ctx
+  * @bp: The driver context.
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h
+index 199c646f5e71..c58d84cc692a 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h
+@@ -139,4 +139,5 @@ void hwrm_req_flags(struct bnxt *bp, void *req, enum bnxt_hwrm_ctx_flags flags);
+ void hwrm_req_timeout(struct bnxt *bp, void *req, unsigned int timeout);
+ int hwrm_req_send(struct bnxt *bp, void *req);
+ int hwrm_req_send_silent(struct bnxt *bp, void *req);
++int hwrm_req_replace(struct bnxt *bp, void *req, void *new_req, u32 len);
+ #endif
 -- 
 2.18.1
 
 
---000000000000ec982105caa5b48f
+--0000000000000e4b6005caa5b51c
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -194,13 +225,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIETaRKAVyN5QptqUimpxhFgXR//gvlc8
-Yw0rb5sAvnd2MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDgy
-ODIxNTg1N1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIAYimu6XI5lhYq6bHhetYzR3C+pXU1at
+XkmzkRI9/s/EMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDgy
+ODIxNTg1OVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQDSRTHB94JGiUjU4UtDmsFEwldcFVLI78grFFHoDhM4fr9U3ara
-usFVwZAOrhE8b6XpQWkmAbNOf2qJMYqUIaEI0mhb+Ru2g9ZQ6nHQ90oCX8ipI2g4VXS42ZJztYiD
-QbXjv+1AB2CywFaVFrJQYUb4uu/dAwTKx8c109EksiuHzcQQWrlocwm+rsYc4+A0zhVyO4m9Zuo9
-+8/2XD11Cs4Oqg09wYTuZsaUFy/Jtz/nT/mK+k8Zn0QliL60MFInUSD8AB8VgnnKnKezA0r8fiyt
-HHx2ogLoG2nGnusKj5TKeGp8czQeIJkMzEiO2iaY1y6qwvFGVFzXTYi/i/zwqtDf
---000000000000ec982105caa5b48f--
+ATANBgkqhkiG9w0BAQEFAASCAQANUIYoKi6NeAe+UpdF1/KCIvC3kwGbmmw8XNKoRioitZB5lxVH
+LeHE+xwtwZxfwArEDm/clVc9bXr2jbYmw+t069deCP9oa1mEgLliStLHoYs9JuIaXDTFYMAYh+j9
+AJ4VN+V72N1OPwHo3fG2AV7Uyrp6l4R93fxcyNwhjU84C9WWwBF0DlcvzMqY3lKcrxnXz291/tSr
+Pk+NPmitHQ0sucnvfslLEhJvduH0WcP4kziS9REj5G1XjfQdt2O66oFEG83p2eUV1lMEDCjd7vEv
+kU7USIHKLMsN/HsMNPOeWZaJ9bMGAb7nxFavK7PHcLCudfGsvxLAeZtaZSztvrjB
+--0000000000000e4b6005caa5b51c--
