@@ -2,91 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 228EB3FA3C9
-	for <lists+netdev@lfdr.de>; Sat, 28 Aug 2021 07:18:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95EFA3FA3CC
+	for <lists+netdev@lfdr.de>; Sat, 28 Aug 2021 07:20:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231277AbhH1FNc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Aug 2021 01:13:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50442 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229555AbhH1FNb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Aug 2021 01:13:31 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AB67C0613D9
-        for <netdev@vger.kernel.org>; Fri, 27 Aug 2021 22:12:41 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id q21so5379916plq.3
-        for <netdev@vger.kernel.org>; Fri, 27 Aug 2021 22:12:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=rVvxeEVCsXFicSfJIRLpRFG3vekhRsrTn7arSwLaap4=;
-        b=laB32cGX0y8P1u6lIMAlAWtHD57bo02TorPJ4ZhT8eNGfxR8riSrayFSgj/lJlhYTx
-         yG98MrKGPRotHRvVTpxLjzayFmijlAuD5roAqaKEyOL+GJn09JRXiRAV8mtuSpAKhPKT
-         jzRqgdAjYHQhi+ahyUe4niB/CGqL72B3/eBI+eenz1Z4yu4w2oIiyersb93mor8H5lL9
-         VY8ai0ULBQTzInfzoPZb3hnET6/jQ8Re3FShCHjOjZxPu+L7FqoQ3vOsG3kzRpGiPkwp
-         EjpV0rlEck4TBedfjZFUndgA47SUpyGJ3H82rlBTHCTn0HKSWZuxj494wZLKTA4Rs3FA
-         O64w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=rVvxeEVCsXFicSfJIRLpRFG3vekhRsrTn7arSwLaap4=;
-        b=Z2a4oSRFW0FCWrHgafYftfLRLo8qMCtAAZGVU+l4fY+UlQPrJiNcf7FtjatwYrRYra
-         UxeKu8OWOM7WeFsX5cXR+/5IMJTv1Wa17hfGYEq8lCuKQpBwSP0oKTzY49mMTXZGEJIK
-         iAgXbRhZ/yAVpqSaISa3+zTYpoNRXxLpKORVoAHQL4tuk7o7PK11Q2sicfBoAvFs8Tl2
-         SP0Da0hhf0H+Ng/MPqkDVsxdOLY1I/gJo9hbI6/peM1rgLYQ0I8GmBx+N4xXIzp5MISO
-         bFnownQIQmEogPK6X0stZHfZAMKxFtNYQfWJ0UYo/UIG4FzRkrn9XYCTNW1nWWC8Zq9L
-         0oyw==
-X-Gm-Message-State: AOAM533lcn+l4xapKCd1cA3f73tJ5XV+LpKNPFgjOX9WB2fxmNdWQO6R
-        V0VSta9eOjwVcJUw4y5MzoOJ0g==
-X-Google-Smtp-Source: ABdhPJyOnykS0HU/yFI/wiU556fV84vFwc60DbMJx83ARcdZW6RHWQjfccHRQo+666q++O6mz6MKWg==
-X-Received: by 2002:a17:90a:5405:: with SMTP id z5mr14610136pjh.229.1630127560896;
-        Fri, 27 Aug 2021 22:12:40 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local ([137.118.203.204])
-        by smtp.gmail.com with ESMTPSA id i11sm7815402pjj.19.2021.08.27.22.12.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 27 Aug 2021 22:12:40 -0700 (PDT)
-Subject: Re: [PATCH net-next 4/6] ionic: add queue lock around open and stop
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, drivers@pensando.io,
-        jtoppins@redhat.com
-References: <20210827185512.50206-1-snelson@pensando.io>
- <20210827185512.50206-5-snelson@pensando.io>
- <20210827173906.1aa14274@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <3a9d6011-7199-69b1-0365-6bec38d1dae6@pensando.io>
-Date:   Fri, 27 Aug 2021 22:12:36 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.13.0
+        id S231633AbhH1FVI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Aug 2021 01:21:08 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:60256 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231423AbhH1FVH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Aug 2021 01:21:07 -0400
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 17S5DkBC029564
+        for <netdev@vger.kernel.org>; Fri, 27 Aug 2021 22:20:16 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : content-type : content-transfer-encoding :
+ mime-version; s=facebook; bh=4zvGpW/+CcRKYQ0ujJoY+jtdQUnrFfYZk0drmY+X7J4=;
+ b=UPJWw77zQ+R6itueR2VEG6DS16O4SXrg7opB5oWxyok7YhVTg3/LS7Wa1/vHo9zZTpMK
+ i0ORW0yTQUiEPrKwv8CrbtRi4v8H+Tu11Yc7+pYCkGAI5YGYd6YV/l6IEXDnpVSVyqXF
+ Jvjkq9Ed5cFeESgr8lcCSvhIG0hsgcjcX9E= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 3aq70jt4cv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 27 Aug 2021 22:20:16 -0700
+Received: from intmgw002.25.frc3.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 27 Aug 2021 22:20:15 -0700
+Received: by devbig030.frc3.facebook.com (Postfix, from userid 158236)
+        id D00AF5BF0DF1; Fri, 27 Aug 2021 22:20:10 -0700 (PDT)
+From:   Dave Marchevsky <davemarchevsky@fb.com>
+To:     <bpf@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Yonghong Song <yhs@fb.com>, <netdev@vger.kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>
+Subject: [PATCH v3 bpf-next 0/7] bpf: implement variadic printk helper
+Date:   Fri, 27 Aug 2021 22:19:59 -0700
+Message-ID: <20210828052006.1313788-1-davemarchevsky@fb.com>
+X-Mailer: git-send-email 2.30.2
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-FB-Source: Intern
+X-Proofpoint-ORIG-GUID: 4g8uTKU8RFxdncATGOxt16ygjmLb6DT-
+X-Proofpoint-GUID: 4g8uTKU8RFxdncATGOxt16ygjmLb6DT-
+Content-Transfer-Encoding: quoted-printable
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-In-Reply-To: <20210827173906.1aa14274@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-08-28_01:2021-08-27,2021-08-28 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ malwarescore=0 mlxscore=0 mlxlogscore=999 suspectscore=0 spamscore=0
+ adultscore=0 phishscore=0 bulkscore=0 impostorscore=0 priorityscore=1501
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2107140000 definitions=main-2108280031
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/27/21 5:39 PM, Jakub Kicinski wrote:
-> On Fri, 27 Aug 2021 11:55:10 -0700 Shannon Nelson wrote:
->> Add the queue configuration lock to ionic_open() and
->> ionic_stop() so that they don't collide with other in parallel
->> queue configuration actions such as MTU changes as can be
->> demonstrated with a tight loop of ifup/change-mtu/ifdown.
-> Say more? how are up/down/change mtu not under rtnl_lock?
-Sorry, that commit message didn't get updated as it should have. The MTU 
-change played with the timing of actions just right, but wasn't the 
-culprit.  The actual issue was that the watchdog and the ionic_stop 
-collided: ionic_stop had started taking the queues down but without 
-grabbing the mutex, and the watchdog timer went off and ran the 
-link_check which grabbed the mutex and tried to bring them back up 
-again.  This didn't break anything in the driver, but confused the NIC 
-firmware and left the interface non-operational. This was cleared with 
-another ifdown/ifup cycle.
+This series introduces a new helper, bpf_trace_vprintk, which functions
+like bpf_trace_printk but supports > 3 arguments via a pseudo-vararg u64
+array. The bpf_printk libbpf convenience macro is modified to use
+bpf_trace_vprintk when > 3 varargs are passed, otherwise the previous
+behavior - using bpf_trace_printk - is retained.
 
-I can repost with a better commit description.
+Helper functions and macros added during the implementation of
+bpf_seq_printf and bpf_snprintf do most of the heavy lifting for
+bpf_trace_vprintk. There's no novel format string wrangling here.
 
-sln
+Usecase here is straightforward: Giving BPF program writers a more
+powerful printk will ease development of BPF programs, particularly
+during debugging and testing, where printk tends to be used.
+
+This feature was proposed by Andrii in libbpf mirror's issue tracker
+[1].
+
+[1] https://github.com/libbpf/libbpf/issues/315
+
+v2 -> v3:
+* Clean up patch 3's commit message [Alexei]
+* Add patch 4, which modifies __bpf_printk to use 'static const char' to
+  store fmt string with fallback for older kernels [Andrii]
+* rebase
+
+v1 -> v2:
+
+* Naming conversation seems to have gone in favor of keeping
+  bpf_trace_vprintk, names are unchanged
+
+* Patch 3 now modifies bpf_printk convenience macro to choose between
+  __bpf_printk and __bpf_vprintk 'implementation' macros based on arg
+  count. __bpf_vprintk is a renaming of bpf_vprintk convenience macro
+  from v1, __bpf_printk is the existing bpf_printk implementation.
+
+  This patch could use some scrutiny as I think current implementation
+  may regress developer experience in a specific case, turning a
+  compile-time error into a load-time error. Unclear to me how
+  common the case is, or whether the macro magic I chose is ideal.
+
+* char ___fmt[] to static const char ___fmt[] change was not done,
+  wanted to leave __bpf_printk 'implementation' macro unchanged for v2
+  to ease discussion of above point
+
+* Removed __always_inline from __set_printk_clr_event [Andrii]
+* Simplified bpf_trace_printk docstring to refer to other functions
+  instead of copy/pasting and avoid specifying 12 vararg limit [Andrii]
+* Migrated trace_printk selftest to use ASSERT_ instead of CHECK
+  * Adds new patch 5, previous patch 5 is now 6
+* Migrated trace_vprintk selftest to use ASSERT_ instead of CHECK,
+  open_and_load instead of separate open, load [Andrii]
+* Patch 2's commit message now correctly mentions trace_pipe instead of
+  dmesg [Andrii]
+
+Dave Marchevsky (7):
+  bpf: merge printk and seq_printf VARARG max macros
+  bpf: add bpf_trace_vprintk helper
+  libbpf: Modify bpf_printk to choose helper based on arg count
+  libbpf: use static const fmt string in __bpf_printk
+  bpftool: only probe trace_vprintk feature in 'full' mode
+  selftests/bpf: Migrate prog_tests/trace_printk CHECKs to ASSERTs
+  selftests/bpf: add trace_vprintk test prog
+
+ include/linux/bpf.h                           |  3 +
+ include/uapi/linux/bpf.h                      |  9 +++
+ kernel/bpf/core.c                             |  5 ++
+ kernel/bpf/helpers.c                          |  6 +-
+ kernel/trace/bpf_trace.c                      | 54 ++++++++++++++-
+ tools/bpf/bpftool/feature.c                   |  1 +
+ tools/include/uapi/linux/bpf.h                |  9 +++
+ tools/lib/bpf/bpf_helpers.h                   | 51 ++++++++++++---
+ tools/testing/selftests/bpf/Makefile          |  3 +-
+ .../selftests/bpf/prog_tests/trace_printk.c   | 24 +++----
+ .../selftests/bpf/prog_tests/trace_vprintk.c  | 65 +++++++++++++++++++
+ .../selftests/bpf/progs/trace_vprintk.c       | 25 +++++++
+ tools/testing/selftests/bpf/test_bpftool.py   | 22 +++----
+ 13 files changed, 234 insertions(+), 43 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/trace_vprintk.c
+ create mode 100644 tools/testing/selftests/bpf/progs/trace_vprintk.c
+
+--=20
+2.30.2
 
