@@ -2,55 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AB1D3FA213
-	for <lists+netdev@lfdr.de>; Sat, 28 Aug 2021 02:16:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E4363FA215
+	for <lists+netdev@lfdr.de>; Sat, 28 Aug 2021 02:17:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232733AbhH1ARF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Aug 2021 20:17:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53158 "EHLO mail.kernel.org"
+        id S232741AbhH1ASg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Aug 2021 20:18:36 -0400
+Received: from mga02.intel.com ([134.134.136.20]:60799 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232616AbhH1ARE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Aug 2021 20:17:04 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BFE6B60E8B;
-        Sat, 28 Aug 2021 00:16:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1630109774;
-        bh=ZivaSMoXKo0ylOmfyd9EPClyYJ05Y4UMr8ry4ONkTAU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=QfE47VBF/ZCq8eIZWAEyzKy6cIikPY1j0hFYIsgMs8kifjw9CEg2d/glVWwm1psJR
-         h3l0AbMWZsUEfp7/z0AXCdaybq0ILjlyCsMJDRmoPjcra0dKaAKaEDEm6qbH6st2d6
-         aeCqQNl8+LdRO1IMdSCEknp/zzWdrImrSPUFv0p5WwybNIeDgKPrOIq1n9jSmbsrBS
-         qYmZmKLQBgVkDhxT0xvzW7H+j0ReZ2b6D25bHYVeER9vcrrepiULYGCWVvswSBDIDf
-         WgVoeX6cGifr7Cp89/+w9h9PYW/5puDxE9mfP1ytB6mjleUSwZgPdNXiZTIn3dwue9
-         yZLbYp7GjU10g==
-Date:   Fri, 27 Aug 2021 17:16:13 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Michael Chan <michael.chan@broadcom.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
-        Edwin Peer <edwin.peer@broadcom.com>
-Subject: Re: [PATCH net-next v4 0/2] bnxt: add rx discards stats for oom and
- netpool
-Message-ID: <20210827171613.48cae8b8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CACKFLinT15_9wZuzv2pH66PXr34y5HSdx9DBsXY6nA6Cqdoz+Q@mail.gmail.com>
-References: <20210827152745.68812-1-kuba@kernel.org>
-        <CACKFLinT15_9wZuzv2pH66PXr34y5HSdx9DBsXY6nA6Cqdoz+Q@mail.gmail.com>
+        id S232503AbhH1ASf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Aug 2021 20:18:35 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10089"; a="205257939"
+X-IronPort-AV: E=Sophos;i="5.84,358,1620716400"; 
+   d="scan'208";a="205257939"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Aug 2021 17:17:45 -0700
+X-IronPort-AV: E=Sophos;i="5.84,358,1620716400"; 
+   d="scan'208";a="528512880"
+Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.251.16.51])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Aug 2021 17:17:45 -0700
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        davem@davemloft.net, kuba@kernel.org, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev, pabeni@redhat.com
+Subject: [PATCH net 0/2] mptcp: Prevent tcp_push() crash and selftest temp file buildup
+Date:   Fri, 27 Aug 2021 17:17:29 -0700
+Message-Id: <20210828001731.67757-1-mathew.j.martineau@linux.intel.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 27 Aug 2021 11:23:47 -0700 Michael Chan wrote:
-> On Fri, Aug 27, 2021 at 8:27 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> > Drivers should avoid silently dropping frames. This set adds two
-> > stats for previously unaccounted events to bnxt - packets dropped
-> > due to allocation failures and packets dropped during emergency
-> > ring polling.
-> >
-> > v4: drop patch 1, not needed after simplifications  
-> 
-> Reviewed-by: Michael Chan <michael.chan@broadcom.com>
+These are two fixes for the net tree, addressing separate issues.
 
-Thank you for the reviews, applied!
+Patch 1 addresses a divide-by-zero crash seen in syzkaller and also
+reported by a user on the netdev list. This changes MPTCP code so
+tcp_push() cannot be called with an invalid (0) mss_now value.
+
+Patch 2 fixes a selftest temp file cleanup issue that consumes excessive
+disk space when running repeated tests.
+
+
+Matthieu Baerts (1):
+  selftests: mptcp: clean tmp files in simult_flows
+
+Paolo Abeni (1):
+  mptcp: fix possible divide by zero
+
+ net/mptcp/protocol.c                          | 78 +++++++++----------
+ .../selftests/net/mptcp/simult_flows.sh       |  4 +-
+ 2 files changed, 39 insertions(+), 43 deletions(-)
+
+
+base-commit: 5fe2a6b4344cbb2120d6d81e371b7ec8e75f03e2
+-- 
+2.33.0
+
