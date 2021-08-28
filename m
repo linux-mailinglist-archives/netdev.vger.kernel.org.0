@@ -2,246 +2,391 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D80E3FA7C8
+	by mail.lfdr.de (Postfix) with ESMTP id 86A7D3FA7C9
 	for <lists+netdev@lfdr.de>; Sat, 28 Aug 2021 23:59:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234689AbhH1WAK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Aug 2021 18:00:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44956 "EHLO
+        id S234733AbhH1WAU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Aug 2021 18:00:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232544AbhH1WAB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Aug 2021 18:00:01 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FC8DC061756
-        for <netdev@vger.kernel.org>; Sat, 28 Aug 2021 14:59:10 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id ia27so22009792ejc.10
-        for <netdev@vger.kernel.org>; Sat, 28 Aug 2021 14:59:10 -0700 (PDT)
+        with ESMTP id S234621AbhH1WAD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Aug 2021 18:00:03 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8D03C061756
+        for <netdev@vger.kernel.org>; Sat, 28 Aug 2021 14:59:12 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id n27so22057538eja.5
+        for <netdev@vger.kernel.org>; Sat, 28 Aug 2021 14:59:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=VGnmtlcjHUezYqG96iu1zumTRfdJVY6I+SlOl6TspFc=;
-        b=b9C9DZe/Gr7J38HXGyE+4Q4WNiJZQ2DuAGzYAq+F/6l1BpHVG61iOVm2RDaxwfVz51
-         cy+8UO03ngvmVDKtkxblxhmbWoPBxo81GMuJ2Mhey0XVJMtkepEUMCYu2t8VigG8S00F
-         BKptRpHIAAO+nwvMQFWQYLnu/FQTOb6UXEK1o=
+        bh=wUDk0NPpDdTCZwZ7Iif9eufFAQyNTl1VHJEATpm69yQ=;
+        b=R+8I04O+fZCRs2HTsh+FoLUhWAeoZFrzZ6Kq5IfIrOTO6rvi8QTZolFU3fODXd4SQh
+         +VqKRWIXdi/epfoFON2Hzs2XexzrLTGnCs3N3odpKo4vDxDUjHmBcZ/2VzKyvaf+V/sg
+         /qBruEni/y33dSiDYKvGviCz8qxgb0AQjjc4E=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=VGnmtlcjHUezYqG96iu1zumTRfdJVY6I+SlOl6TspFc=;
-        b=hTogaYAwuSP/AjKqYqSw6LkCu86ZPezCx4Kt0lFUXLSfO400su65xkvb3LNkEffli1
-         9IKm1qXdGPv+YqRx2dnoYbF+OGKt4J1jdHXWdkNoQ5v5zNYNPZ1sd13GgdIRCpqIdxmu
-         OWEBrKWCGiksyvkFTnc+P52FN0NgxzmLdSQzXfZfenhkEJqjpYDJ8k7O4U760X7MQaEb
-         mbV/+EspBI178LHIjgeVO/Nrume4B7pVHAY0A+Pg5iRimuErETIR+y6IyJkmcefnJj5F
-         U5qX8GR2t8sGWf3Dhxsg0fdT78tqvHW3lcscqtYfQSkInu9gZglF0nBnWYA1+yCJQaPL
-         Mvkg==
-X-Gm-Message-State: AOAM533BIOFC0wX7y5GE4OKzjR5/skPZ4CTB1fijXRStkrfjOrEumDP3
-        tTx/B4bWE9NoQOQayFif4ONG9Q==
-X-Google-Smtp-Source: ABdhPJxJ/xzXitYNU0BJWFn2zkqnov3w7ZXSB70b04AEnaAZU0tM24kx5Lubj+mRL/BSzytvP8OW/Q==
-X-Received: by 2002:a17:907:10cc:: with SMTP id rv12mr16822955ejb.423.1630187948500;
-        Sat, 28 Aug 2021 14:59:08 -0700 (PDT)
+        bh=wUDk0NPpDdTCZwZ7Iif9eufFAQyNTl1VHJEATpm69yQ=;
+        b=WzwLBxlvNkIH1rHsWziPBneW/Y9e3wLAE3C3LWiItwWJMDMLlFLqX3VEXrbLx+UO+m
+         oxK7LTNRNgvakbw8IPi/PhGiiqws6akAR4TLJvYPgDlma5Cke5C0FIJu1fiseuGe0OrI
+         w7GhE64QvhY7aRDDmEx7H7DD/8kCijaBHByK1FiR+sH5sRD7BPvvjQsbetLMjBtSF2ea
+         rHLY4r5WnBjnlC8WwhWytAH0FK3UHbRDwiZigIoSn0F4yoSivRW9n8OZvL1XgNrJ9eB7
+         oO6FbU8nCZMUrZjjM1VexpN6975sizW6skUwsYuzqaxyXLief/pAZFcUE4YGRhVWT6jH
+         0NqQ==
+X-Gm-Message-State: AOAM530mIzPIF2LcsCr5KAqio/+3CZ5QWplj7vcsKIbcPdro75AIFRqF
+        LFrDcHZ4+ZnyqCi0H0B3MOz6jD7KQrJlNQ==
+X-Google-Smtp-Source: ABdhPJwGoAEg3/rPK7hph+F8P1O3bL4aq/5rRAO+lbdM7pfGWUu8VfPu1KsdbGvi1Lp7ewPZPrSj6Q==
+X-Received: by 2002:a17:907:1108:: with SMTP id qu8mr17398010ejb.58.1630187950615;
+        Sat, 28 Aug 2021 14:59:10 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id cf11sm5361239edb.65.2021.08.28.14.59.06
+        by smtp.gmail.com with ESMTPSA id cf11sm5361239edb.65.2021.08.28.14.59.08
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 28 Aug 2021 14:59:07 -0700 (PDT)
+        Sat, 28 Aug 2021 14:59:10 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, edwin.peer@broadcom.com,
         gospo@broadcom.com
-Subject: [PATCH net-next 10/11] bnxt_en: remove legacy HWRM interface
-Date:   Sat, 28 Aug 2021 17:58:29 -0400
-Message-Id: <1630187910-22252-11-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 11/11] bnxt_en: support multiple HWRM commands in flight
+Date:   Sat, 28 Aug 2021 17:58:30 -0400
+Message-Id: <1630187910-22252-12-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1630187910-22252-1-git-send-email-michael.chan@broadcom.com>
 References: <1630187910-22252-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000a063c105caa5b5e8"
+        boundary="000000000000c368c205caa5b5f4"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000a063c105caa5b5e8
+--000000000000c368c205caa5b5f4
 
 From: Edwin Peer <edwin.peer@broadcom.com>
 
-There are no longer any callers relying on the old API.
+Add infrastructure to maintain a pending list of HWRM commands awaiting
+completion and reduce the scope of the hwrm_cmd_lock mutex so that it
+protects only the request mailbox. The mailbox is free to use for one
+or more concurrent commands after receiving deferred response events.
+
+For uniformity and completeness, use the same pending list for
+collecting completions for commands that respond via a completion ring.
+These commands are only used for freeing rings and for IRQ test and
+we only support one such command in flight.
+
+Note deferred responses are also only supported on the main channel.
+The secondary channel (KONG) does not support deferred responses.
 
 Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 18 +----
- drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  2 -
- .../net/ethernet/broadcom/bnxt/bnxt_hwrm.c    | 77 -------------------
- .../net/ethernet/broadcom/bnxt/bnxt_hwrm.h    | 10 ---
- 4 files changed, 1 insertion(+), 106 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 21 +++-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  2 +-
+ .../net/ethernet/broadcom/bnxt/bnxt_hwrm.c    | 96 +++++++++++++++----
+ .../net/ethernet/broadcom/bnxt/bnxt_hwrm.h    | 33 ++++---
+ 4 files changed, 113 insertions(+), 39 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index f5175f53f39b..3e0edd04a071 100644
+index 3e0edd04a071..f65b00eeee01 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -3956,29 +3956,13 @@ static int bnxt_alloc_vnic_attributes(struct bnxt *bp)
+@@ -277,6 +277,7 @@ static const u16 bnxt_async_events_arr[] = {
+ 	ASYNC_EVENT_CMPL_EVENT_ID_RESET_NOTIFY,
+ 	ASYNC_EVENT_CMPL_EVENT_ID_ERROR_RECOVERY,
+ 	ASYNC_EVENT_CMPL_EVENT_ID_DEBUG_NOTIFICATION,
++	ASYNC_EVENT_CMPL_EVENT_ID_DEFERRED_RESPONSE,
+ 	ASYNC_EVENT_CMPL_EVENT_ID_RING_MONITOR_MSG,
+ 	ASYNC_EVENT_CMPL_EVENT_ID_ECHO_REQUEST,
+ 	ASYNC_EVENT_CMPL_EVENT_ID_PPS_TIMESTAMP,
+@@ -2269,6 +2270,12 @@ static int bnxt_async_event_process(struct bnxt *bp,
+ 		bnxt_event_error_report(bp, data1, data2);
+ 		goto async_event_process_exit;
+ 	}
++	case ASYNC_EVENT_CMPL_EVENT_ID_DEFERRED_RESPONSE: {
++		u16 seq_id = le32_to_cpu(cmpl->event_data2) & 0xffff;
++
++		hwrm_update_token(bp, seq_id, BNXT_HWRM_DEFERRED);
++		goto async_event_process_exit;
++	}
+ 	default:
+ 		goto async_event_process_exit;
+ 	}
+@@ -2288,10 +2295,7 @@ static int bnxt_hwrm_handler(struct bnxt *bp, struct tx_cmp *txcmp)
+ 	switch (cmpl_type) {
+ 	case CMPL_BASE_TYPE_HWRM_DONE:
+ 		seq_id = le16_to_cpu(h_cmpl->sequence_id);
+-		if (seq_id == bp->hwrm_intr_seq_id)
+-			bp->hwrm_intr_seq_id = (u16)~bp->hwrm_intr_seq_id;
+-		else
+-			netdev_err(bp->dev, "Invalid hwrm seq id %d\n", seq_id);
++		hwrm_update_token(bp, seq_id, BNXT_HWRM_COMPLETE);
+ 		break;
+ 
+ 	case CMPL_BASE_TYPE_HWRM_FWD_REQ:
+@@ -3956,8 +3960,15 @@ static int bnxt_alloc_vnic_attributes(struct bnxt *bp)
  
  static void bnxt_free_hwrm_resources(struct bnxt *bp)
  {
--	struct pci_dev *pdev = bp->pdev;
--
--	if (bp->hwrm_cmd_resp_addr) {
--		dma_free_coherent(&pdev->dev, PAGE_SIZE, bp->hwrm_cmd_resp_addr,
--				  bp->hwrm_cmd_resp_dma_addr);
--		bp->hwrm_cmd_resp_addr = NULL;
--	}
--
++	struct bnxt_hwrm_wait_token *token;
++
  	dma_pool_destroy(bp->hwrm_dma_pool);
  	bp->hwrm_dma_pool = NULL;
++
++	rcu_read_lock();
++	hlist_for_each_entry_rcu(token, &bp->hwrm_pending_list, node)
++		WRITE_ONCE(token->state, BNXT_HWRM_CANCELLED);
++	rcu_read_unlock();
  }
  
  static int bnxt_alloc_hwrm_resources(struct bnxt *bp)
- {
--	struct pci_dev *pdev = bp->pdev;
--
--	bp->hwrm_cmd_resp_addr = dma_alloc_coherent(&pdev->dev, PAGE_SIZE,
--						   &bp->hwrm_cmd_resp_dma_addr,
--						   GFP_KERNEL);
--	if (!bp->hwrm_cmd_resp_addr)
--		return -ENOMEM;
--
--	bp->hwrm_dma_pool = dma_pool_create("bnxt_hwrm", &pdev->dev,
-+	bp->hwrm_dma_pool = dma_pool_create("bnxt_hwrm", &bp->pdev->dev,
- 					    BNXT_HWRM_DMA_SIZE,
- 					    BNXT_HWRM_DMA_ALIGN, 0);
+@@ -3968,6 +3979,8 @@ static int bnxt_alloc_hwrm_resources(struct bnxt *bp)
  	if (!bp->hwrm_dma_pool)
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index abad4c4774f8..8414182fe953 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1881,8 +1881,6 @@ struct bnxt {
- 	u16			hwrm_cmd_seq;
- 	u16                     hwrm_cmd_kong_seq;
- 	u16			hwrm_intr_seq_id;
--	void			*hwrm_cmd_resp_addr;
--	dma_addr_t		hwrm_cmd_resp_dma_addr;
- 	struct dma_pool		*hwrm_dma_pool;
+ 		return -ENOMEM;
  
- 	struct rtnl_link_stats64	net_stats_prev;
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
-index b246a0dd3011..92529b466127 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
-@@ -24,17 +24,6 @@
- #include "bnxt.h"
- #include "bnxt_hwrm.h"
- 
--void bnxt_hwrm_cmd_hdr_init(struct bnxt *bp, void *request, u16 req_type,
--			    u16 cmpl_ring, u16 target_id)
--{
--	struct input *req = request;
--
--	req->req_type = cpu_to_le16(req_type);
--	req->cmpl_ring = cpu_to_le16(cmpl_ring);
--	req->target_id = cpu_to_le16(target_id);
--	req->resp_addr = cpu_to_le64(bp->hwrm_cmd_resp_dma_addr);
--}
--
- static u64 hwrm_calc_sentinel(struct bnxt_hwrm_ctx *ctx, u16 req_type)
- {
- 	return (((u64)ctx) + req_type) ^ BNXT_HWRM_SENTINEL;
-@@ -587,72 +576,6 @@ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
- 	return rc;
++	INIT_HLIST_HEAD(&bp->hwrm_pending_list);
++
+ 	return 0;
  }
  
--static int bnxt_hwrm_do_send_msg(struct bnxt *bp, void *msg, u32 msg_len,
--				 int timeout, bool silent)
--{
--	struct bnxt_hwrm_ctx default_ctx = {0};
--	struct bnxt_hwrm_ctx *ctx = &default_ctx;
--	struct input *req = msg;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index 8414182fe953..a4eae757d94d 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -1880,8 +1880,8 @@ struct bnxt {
+ 	u32			hwrm_spec_code;
+ 	u16			hwrm_cmd_seq;
+ 	u16                     hwrm_cmd_kong_seq;
+-	u16			hwrm_intr_seq_id;
+ 	struct dma_pool		*hwrm_dma_pool;
++	struct hlist_head	hwrm_pending_list;
+ 
+ 	struct rtnl_link_stats64	net_stats_prev;
+ 	struct bnxt_stats_mem	port_stats;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
+index 92529b466127..4be07b746053 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
+@@ -16,6 +16,7 @@
+ #include <linux/io.h>
+ #include <linux/irq.h>
+ #include <linux/kernel.h>
++#include <linux/list.h>
+ #include <linux/netdevice.h>
+ #include <linux/pci.h>
+ #include <linux/skbuff.h>
+@@ -363,19 +364,72 @@ static int __hwrm_to_stderr(u32 hwrm_err)
+ 	}
+ }
+ 
++static struct bnxt_hwrm_wait_token *
++__hwrm_acquire_token(struct bnxt *bp, enum bnxt_hwrm_chnl dst)
++{
++	struct bnxt_hwrm_wait_token *token;
++
++	token = kzalloc(sizeof(*token), GFP_KERNEL);
++	if (!token)
++		return NULL;
++
++	mutex_lock(&bp->hwrm_cmd_lock);
++
++	token->dst = dst;
++	token->state = BNXT_HWRM_PENDING;
++	if (dst == BNXT_HWRM_CHNL_CHIMP) {
++		token->seq_id = bp->hwrm_cmd_seq++;
++		hlist_add_head_rcu(&token->node, &bp->hwrm_pending_list);
++	} else {
++		token->seq_id = bp->hwrm_cmd_kong_seq++;
++	}
++
++	return token;
++}
++
++static void
++__hwrm_release_token(struct bnxt *bp, struct bnxt_hwrm_wait_token *token)
++{
++	if (token->dst == BNXT_HWRM_CHNL_CHIMP) {
++		hlist_del_rcu(&token->node);
++		kfree_rcu(token, rcu);
++	} else {
++		kfree(token);
++	}
++	mutex_unlock(&bp->hwrm_cmd_lock);
++}
++
++void
++hwrm_update_token(struct bnxt *bp, u16 seq_id, enum bnxt_hwrm_wait_state state)
++{
++	struct bnxt_hwrm_wait_token *token;
++
++	rcu_read_lock();
++	hlist_for_each_entry_rcu(token, &bp->hwrm_pending_list, node) {
++		if (token->seq_id == seq_id) {
++			WRITE_ONCE(token->state, state);
++			rcu_read_unlock();
++			return;
++		}
++	}
++	rcu_read_unlock();
++	netdev_err(bp->dev, "Invalid hwrm seq id %d\n", seq_id);
++}
++
+ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
+ {
+ 	u32 doorbell_offset = BNXT_GRCPF_REG_CHIMP_COMM_TRIGGER;
++	enum bnxt_hwrm_chnl dst = BNXT_HWRM_CHNL_CHIMP;
+ 	u32 bar_offset = BNXT_GRCPF_REG_CHIMP_COMM;
++	struct bnxt_hwrm_wait_token *token = NULL;
+ 	struct hwrm_short_input short_input = {0};
+ 	u16 max_req_len = BNXT_HWRM_MAX_REQ_LEN;
+ 	unsigned int i, timeout, tmo_count;
+-	u16 dst = BNXT_HWRM_CHNL_CHIMP;
+-	int intr_process, rc = -EBUSY;
+ 	u32 *data = (u32 *)ctx->req;
+ 	u32 msg_len = ctx->req_len;
+-	u16 cp_ring_id, len = 0;
++	int rc = -EBUSY;
+ 	u32 req_type;
++	u16 len = 0;
+ 	u8 *valid;
+ 
+ 	if (ctx->flags & BNXT_HWRM_INTERNAL_RESP_DIRTY)
+@@ -403,13 +457,12 @@ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
+ 		}
+ 	}
+ 
+-	cp_ring_id = le16_to_cpu(ctx->req->cmpl_ring);
+-	intr_process = (cp_ring_id == INVALID_HW_RING_ID) ? 0 : 1;
+-
+-	ctx->req->seq_id = cpu_to_le16(bnxt_get_hwrm_seq_id(bp, dst));
+-	/* currently supports only one outstanding message */
+-	if (intr_process)
+-		bp->hwrm_intr_seq_id = le16_to_cpu(ctx->req->seq_id);
++	token = __hwrm_acquire_token(bp, dst);
++	if (!token) {
++		rc = -ENOMEM;
++		goto exit;
++	}
++	ctx->req->seq_id = cpu_to_le16(token->seq_id);
+ 
+ 	if ((bp->fw_cap & BNXT_FW_CAP_SHORT_CMD) ||
+ 	    msg_len > BNXT_HWRM_MAX_REQ_LEN) {
+@@ -456,11 +509,9 @@ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
+ 	timeout = timeout - HWRM_SHORT_MIN_TIMEOUT * HWRM_SHORT_TIMEOUT_COUNTER;
+ 	tmo_count += DIV_ROUND_UP(timeout, HWRM_MIN_TIMEOUT);
+ 
+-	if (intr_process) {
+-		u16 seq_id = bp->hwrm_intr_seq_id;
+-
++	if (le16_to_cpu(ctx->req->cmpl_ring) != INVALID_HW_RING_ID) {
+ 		/* Wait until hwrm response cmpl interrupt is processed */
+-		while (bp->hwrm_intr_seq_id != (u16)~seq_id &&
++		while (READ_ONCE(token->state) < BNXT_HWRM_COMPLETE &&
+ 		       i++ < tmo_count) {
+ 			/* Abort the wait for completion if the FW health
+ 			 * check has failed.
+@@ -479,7 +530,7 @@ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
+ 			}
+ 		}
+ 
+-		if (bp->hwrm_intr_seq_id != (u16)~seq_id) {
++		if (READ_ONCE(token->state) != BNXT_HWRM_COMPLETE) {
+ 			if (!(ctx->flags & BNXT_HWRM_CTX_SILENT))
+ 				netdev_err(bp->dev, "Resp cmpl intr err msg: 0x%x\n",
+ 					   le16_to_cpu(ctx->req->req_type));
+@@ -498,6 +549,13 @@ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
+ 			 */
+ 			if (test_bit(BNXT_STATE_FW_FATAL_COND, &bp->state))
+ 				goto exit;
++
++			if (token &&
++			    READ_ONCE(token->state) == BNXT_HWRM_DEFERRED) {
++				__hwrm_release_token(bp, token);
++				token = NULL;
++			}
++
+ 			len = le16_to_cpu(READ_ONCE(ctx->resp->resp_len));
+ 			if (len) {
+ 				__le16 resp_seq = READ_ONCE(ctx->resp->seq_id);
+@@ -569,6 +627,8 @@ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
+ 	}
+ 	rc = __hwrm_to_stderr(rc);
+ exit:
++	if (token)
++		__hwrm_release_token(bp, token);
+ 	if (ctx->flags & BNXT_HWRM_INTERNAL_CTX_OWNED)
+ 		ctx->flags |= BNXT_HWRM_INTERNAL_RESP_DIRTY;
+ 	else
+@@ -609,15 +669,11 @@ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
+ int hwrm_req_send(struct bnxt *bp, void *req)
+ {
+ 	struct bnxt_hwrm_ctx *ctx = __hwrm_ctx(bp, req);
 -	int rc;
--
--	if ((bp->fw_cap & BNXT_FW_CAP_SHORT_CMD) ||
--	    msg_len > BNXT_HWRM_MAX_REQ_LEN) {
--		rc = __hwrm_req_init(bp, (void **)&req,
--				     le16_to_cpu(req->req_type), msg_len);
--		if (rc)
--			return rc;
--		memcpy(req, msg, msg_len); /* also copies resp_addr */
--		ctx = __hwrm_ctx(bp, (u8 *)req);
--		/* belts and brances, NULL ctx shouldn't be possible here */
--		if (!ctx)
--			return -ENOMEM;
--	}
--
--	ctx->req = req;
--	ctx->req_len = msg_len;
--	ctx->resp = bp->hwrm_cmd_resp_addr;
--	/* global response is not reallocated __GFP_ZERO between requests */
--	ctx->flags = BNXT_HWRM_INTERNAL_RESP_DIRTY;
--	ctx->timeout = timeout ?: DFLT_HWRM_CMD_TIMEOUT;
--	if (silent)
--		ctx->flags |= BNXT_HWRM_CTX_SILENT;
--
--	/* will consume req if allocated with __hwrm_req_init() */
--	return __hwrm_send(bp, ctx);
--}
--
--int _hwrm_send_message(struct bnxt *bp, void *msg, u32 msg_len, int timeout)
--{
--	return bnxt_hwrm_do_send_msg(bp, msg, msg_len, timeout, false);
--}
--
--int _hwrm_send_message_silent(struct bnxt *bp, void *msg, u32 msg_len,
--			      int timeout)
--{
--	return bnxt_hwrm_do_send_msg(bp, msg, msg_len, timeout, true);
--}
--
--int hwrm_send_message(struct bnxt *bp, void *msg, u32 msg_len, int timeout)
--{
--	int rc;
--
+ 
+ 	if (!ctx)
+ 		return -EINVAL;
+ 
 -	mutex_lock(&bp->hwrm_cmd_lock);
--	rc = _hwrm_send_message(bp, msg, msg_len, timeout);
+-	rc = __hwrm_send(bp, ctx);
 -	mutex_unlock(&bp->hwrm_cmd_lock);
 -	return rc;
--}
--
--int hwrm_send_message_silent(struct bnxt *bp, void *msg, u32 msg_len,
--			     int timeout)
--{
--	int rc;
--
--	mutex_lock(&bp->hwrm_cmd_lock);
--	rc = bnxt_hwrm_do_send_msg(bp, msg, msg_len, timeout, true);
--	mutex_unlock(&bp->hwrm_cmd_lock);
--	return rc;
--}
--
++	return __hwrm_send(bp, ctx);
+ }
+ 
  /**
-  * hwrm_req_send() - Execute an HWRM command.
-  * @bp: The driver context.
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h
-index b3af7a88e2c7..39032cf66258 100644
+index 39032cf66258..4d17f0d5363b 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h
-@@ -114,11 +114,6 @@ static inline bool bnxt_kong_hwrm_message(struct bnxt *bp, struct input *req)
+@@ -37,6 +37,25 @@ struct bnxt_hwrm_ctx {
+ 	gfp_t gfp;
+ };
+ 
++enum bnxt_hwrm_wait_state {
++	BNXT_HWRM_PENDING,
++	BNXT_HWRM_DEFERRED,
++	BNXT_HWRM_COMPLETE,
++	BNXT_HWRM_CANCELLED,
++};
++
++enum bnxt_hwrm_chnl { BNXT_HWRM_CHNL_CHIMP, BNXT_HWRM_CHNL_KONG };
++
++struct bnxt_hwrm_wait_token {
++	struct rcu_head rcu;
++	struct hlist_node node;
++	enum bnxt_hwrm_wait_state state;
++	enum bnxt_hwrm_chnl dst;
++	u16 seq_id;
++};
++
++void hwrm_update_token(struct bnxt *bp, u16 seq, enum bnxt_hwrm_wait_state s);
++
+ #define BNXT_HWRM_MAX_REQ_LEN		(bp->hwrm_max_req_len)
+ #define BNXT_HWRM_SHORT_REQ_LEN		sizeof(struct hwrm_short_input)
+ #define HWRM_CMD_MAX_TIMEOUT		40000
+@@ -78,9 +97,6 @@ static inline unsigned int hwrm_total_timeout(unsigned int n)
+ 
+ #define HWRM_VALID_BIT_DELAY_USEC	150
+ 
+-#define BNXT_HWRM_CHNL_CHIMP	0
+-#define BNXT_HWRM_CHNL_KONG	1
+-
+ static inline bool bnxt_cfa_hwrm_message(u16 req_type)
+ {
+ 	switch (req_type) {
+@@ -114,17 +130,6 @@ static inline bool bnxt_kong_hwrm_message(struct bnxt *bp, struct input *req)
  		 le16_to_cpu(req->target_id) == HWRM_TARGET_ID_KONG));
  }
  
--static inline void *bnxt_get_hwrm_resp_addr(struct bnxt *bp, void *req)
+-static inline u16 bnxt_get_hwrm_seq_id(struct bnxt *bp, u16 dst)
 -{
--	return bp->hwrm_cmd_resp_addr;
+-	u16 seq_id;
+-
+-	if (dst == BNXT_HWRM_CHNL_CHIMP)
+-		seq_id = bp->hwrm_cmd_seq++;
+-	else
+-		seq_id = bp->hwrm_cmd_kong_seq++;
+-	return seq_id;
 -}
 -
- static inline u16 bnxt_get_hwrm_seq_id(struct bnxt *bp, u16 dst)
- {
- 	u16 seq_id;
-@@ -130,11 +125,6 @@ static inline u16 bnxt_get_hwrm_seq_id(struct bnxt *bp, u16 dst)
- 	return seq_id;
- }
- 
--void bnxt_hwrm_cmd_hdr_init(struct bnxt *, void *, u16, u16, u16);
--int _hwrm_send_message(struct bnxt *bp, void *msg, u32 len, int timeout);
--int _hwrm_send_message_silent(struct bnxt *bp, void *msg, u32 len, int timeout);
--int hwrm_send_message(struct bnxt *bp, void *msg, u32 len, int timeout);
--int hwrm_send_message_silent(struct bnxt *bp, void *msg, u32 len, int timeout);
  int __hwrm_req_init(struct bnxt *bp, void **req, u16 req_type, u32 req_len);
  #define hwrm_req_init(bp, req, req_type) \
  	__hwrm_req_init((bp), (void **)&(req), (req_type), sizeof(*(req)))
@@ -249,7 +394,7 @@ index b3af7a88e2c7..39032cf66258 100644
 2.18.1
 
 
---000000000000a063c105caa5b5e8
+--000000000000c368c205caa5b5f4
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -320,13 +465,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIKxNjSmEGfb6yjvBwtP09dG/HROl2QZg
-iphNuHKnrp7hMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDgy
-ODIxNTkwOVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIKGVLySBERtIgNJSg5fE8eeNDGJlL0sx
+6LD0tSHoi9gDMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDgy
+ODIxNTkxMVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQALh/MhmEhn4gIEX5AQ8b/Xt/1282LIlgae+yZ9UDDW8U54veLC
-sH+EoyKkJCZ56GTJCa1X1QqxcExLWIreHhjgLzUPDvh3MW/06UMQGt/w/ezw+ZMpcIkzJkdsA+vT
-3hmAKzcqKVZ7tJSiwvrk6xrfiDjt6rfBSWZ6jD8yr/CsMSjYNYGike7DV8fcRvXYhdWZqOxtuq6R
-pWwJ3ZcYZs2BuJuoHe8bOTIOpVOP2AzGZWBpvPEEWNJMtSO/ycK16NeOYRwfJTqOaR3AJHmHCxfe
-PR87Iw5LwW4GICQSJOiAAru7UyXncFmhya3Vr1JNpMf6ehuXQJTxEd7r/egA9vVN
---000000000000a063c105caa5b5e8--
+ATANBgkqhkiG9w0BAQEFAASCAQAdbJsvSgzTZPg6BdUPDsTKv37e8qMWwz2yeVaQfuJGyVtYO3Ad
+tqPeVNUAHmQRD/yrrR5sQy3vHBk5CND1cBhnR1PY6UvPKtV4WaXzyb1A4n6IMDynAdBP+x16Nt6R
+2jPsDRN+aRmVQbmENWlaXCz62szJ/+OvNCnkqLO+lad0P3VScvXG8RllDA1mKe1qdYf1VFONltwV
+fttOLruPSZ2//Z+n+5HLXZQzGy+xzfmvn7xgVUsOkX5HZOQLx6riwYI4iXU0ajKYYodHc2oeTdMc
+vvQAx9cgvAhpzhkYUHCMkHMjbB9pEwwSt0pyGuuBipWFLBDLm/MbkuuXYnbkSe4M
+--000000000000c368c205caa5b5f4--
