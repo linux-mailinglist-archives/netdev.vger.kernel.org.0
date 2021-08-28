@@ -2,59 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 433243FA28E
-	for <lists+netdev@lfdr.de>; Sat, 28 Aug 2021 02:44:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F2943FA298
+	for <lists+netdev@lfdr.de>; Sat, 28 Aug 2021 02:54:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232861AbhH1Aoa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Aug 2021 20:44:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58276 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232682AbhH1Ao3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Aug 2021 20:44:29 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0F59060ED5;
-        Sat, 28 Aug 2021 00:43:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1630111420;
-        bh=BDY2+Yx3tWW4yHY4p0X7NCyWDftZPOrupXysv7YhqN0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=S4qs1tAo5tkN2nOk14PC+H2DV0xcqluNSs5qslqKAF0/OyV9Co2aQrwUd/Um8KcvU
-         OsQfpKmN31kRZ3DjOUY84hwvIAxZhJLXD10oe1Y+01JDm4H+t23WGujA0isT9IHKsT
-         9QS/aqRcY7q5ULbLDIE9fcA1hIa8z7l7YUyiu22sT0aKZBqKPxSw0AyrleJiqJfK86
-         1TI4MDTzRsDetrgjuzNSnFEAi/Auti+GQ+pfpYK/iB3PS7dO+FQqXb9GzbhjtJ96+J
-         AfwDWSVV8S/VZ5cFFRTOUcN2G63f78PmcL4M+ZguFodF8hf+/Qz09UbN2fuxvUn+6u
-         zI46MhXtjpIrw==
-Date:   Fri, 27 Aug 2021 17:43:39 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, Jacob Keller <jacob.e.keller@intel.com>,
-        netdev@vger.kernel.org, richardcochran@gmail.com,
-        maciej.machnikowski@intel.com,
-        Gurucharan G <gurucharanx.g@intel.com>
-Subject: Re: [PATCH net 2/5] ice: remove dead code for allocating pin_config
-Message-ID: <20210827174339.5db00f54@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210827204358.792803-3-anthony.l.nguyen@intel.com>
-References: <20210827204358.792803-1-anthony.l.nguyen@intel.com>
-        <20210827204358.792803-3-anthony.l.nguyen@intel.com>
+        id S232799AbhH1Ayn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Aug 2021 20:54:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50398 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232682AbhH1Aym (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Aug 2021 20:54:42 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA95AC0613D9
+        for <netdev@vger.kernel.org>; Fri, 27 Aug 2021 17:53:52 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id c8so5347499lfi.3
+        for <netdev@vger.kernel.org>; Fri, 27 Aug 2021 17:53:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=ZPY5Wu02xo+nIWvtdbzlI0KzOfMlkej+e9YKu/LeahM=;
+        b=lPFu0NjuB3tUTLFwNI3+Lo2sj9uRowCesTCG0xYlOei1l7k+RD0xLsUMOIC2BjNL50
+         lYbLFYfR+4ZWUypZw7jKVq0CPjeug60+gr7vPAKYRwxGYM5HOPNLOLR6vnQh+W+ySCRw
+         2cxNllyJhwQJuy0OXs/nsFB40Mfu2J1z4A/UT0Ae6qgjirgpwIJUDQoPzDm9NWM45tMY
+         UN7e1k32PzgR8uFYPd+0PSlp3CUPvFjlPddR1nb/RgpUbCM/x3dy58AoWS1lynztvtb0
+         VW9G2JkIfP540JoNgkHGppV/rbZKfGALv3GDZk2+dU7uIIJnb8NdH76tK2LpBugaY/Gg
+         hEIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=ZPY5Wu02xo+nIWvtdbzlI0KzOfMlkej+e9YKu/LeahM=;
+        b=iq9zlAFU7o0xclUAMLQQW6vDWCzHJKShO1rJEs/yTDZbLSOG2tc1+zl1AtAiu8gdkK
+         tb4Z2XpfLUgdBrlQtYeW5Lhh6sKrrGuNS3GlsycyiGKsPWhUigy2vEUuuO27PnzV7qdP
+         O6aIG3ZD0XQfrNk/oDcbF5hDHi2uAcOA3urMrvUOTNer/uSommoncMYY4nu4VA0gBze9
+         NX7Y9WpMThnsViFhVY0+nBEz5wmw1Ke7meavj6w2VcfQEq7y9gCKMVogibyqNAsxkQmN
+         Let1ZSWf96S1FX6S5tfQRyAAIqQDa5LukwHjRBIetTeqE0H02AEwBhkm9ZShpC8yfwRQ
+         LAoA==
+X-Gm-Message-State: AOAM531q1u5UUZv+wh0xm77nrNdL3PfYFDPfWAFX3gl0+vZ0zVYqjGvV
+        H8L4/ofVmhsAMyZzEvxJ7zRUZ/9xpqL51TK34Lg=
+X-Google-Smtp-Source: ABdhPJwJ965zH+qUbPaTaFqy9DDLN/UYp11JrqwoiU0yvAirlKYj3YtGUKRAGeU6OPkYvZrpdYUxS0zTziq5zikZ2Ww=
+X-Received: by 2002:ac2:5e76:: with SMTP id a22mr8587340lfr.275.1630112031047;
+ Fri, 27 Aug 2021 17:53:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Sender: mrsisabellam@gmail.com
+Received: by 2002:a05:6512:a90:0:0:0:0 with HTTP; Fri, 27 Aug 2021 17:53:50
+ -0700 (PDT)
+From:   Mrs Isabella William <mrsisabella101@gmail.com>
+Date:   Sat, 28 Aug 2021 00:53:50 +0000
+X-Google-Sender-Auth: 6KpJC0984Drv0We1hw_6vQTMAMY
+Message-ID: <CAGoPReNpWJD85-O2n1m1zwf61y+VLzKqNiqX4JPr0SaO2VRkAw@mail.gmail.com>
+Subject: Hello Dear
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 27 Aug 2021 13:43:55 -0700 Tony Nguyen wrote:
-> From: Jacob Keller <jacob.e.keller@intel.com>
-> 
-> We have code in the ice driver which allocates the pin_config structure
-> if n_pins is > 0, but we never set n_pins to be greater than zero.
-> There's no reason to keep this code until we actually have pin_config
-> support. Remove this. We can re-add it properly when we implement
-> support for pin_config for E810-T devices.
-> 
-> Fixes: 172db5f91d5f ("ice: add support for auxiliary input/output pins")
-> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-> Tested-by: Gurucharan G <gurucharanx.g@intel.com>
-> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+How are you ?
 
-Removing dead code is not really a fix. Let's see if Linus cuts 5.14
-this weekend, in which case it won't matter.
+I hope you will not be embarrassed to read from me for the first time
+considering how the world is today? I am for good. Let me introduce
+myself to you first.
+
+ My name is (Mrs. Isabella William Helmreich) from the United States
+of America, I married an American successful businessman Late Dr.
+William Helmreich.
+
+ I would like to have a talk with you regarding the business level in
+your country & investors relation.  My plan is to invest some money in
+your country under your control as a citizen.
+
+Contact me back through ( mrsisabella101@gmail.com  )
+
+Thanks & have a great day.
+Mrs. Isabella William
