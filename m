@@ -2,54 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 081B23FA236
-	for <lists+netdev@lfdr.de>; Sat, 28 Aug 2021 02:31:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDFA13FA276
+	for <lists+netdev@lfdr.de>; Sat, 28 Aug 2021 02:41:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232693AbhH1Ab0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Aug 2021 20:31:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54760 "EHLO mail.kernel.org"
+        id S232693AbhH1Aj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Aug 2021 20:39:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57438 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232503AbhH1Ab0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Aug 2021 20:31:26 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 59FAA60EE5;
-        Sat, 28 Aug 2021 00:30:36 +0000 (UTC)
+        id S232503AbhH1Aj5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Aug 2021 20:39:57 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6A88A60ED5;
+        Sat, 28 Aug 2021 00:39:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1630110636;
-        bh=IE6fE60I4wqU0WZzJB2/nvNBGTSxgP4C2DTHPO6NW9o=;
+        s=k20201202; t=1630111147;
+        bh=hUyKc9PjsOxHbH/8M6ZTuunVCFg2yyTx+KxHb0zOhRo=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=oFSomHYqlIHTvJOvqkROmIgh/S+PoJQHZ5CFV0rh/ACgcT3dfYpa0ft/0oo2bLKXa
-         /EneaTl73WFvzTHjvaqi6IAdx40vcgvHOxcnn0oQm+0awSOTnuTYIpA5IKqDqRJKPO
-         4o9QDkUufJDi7uuGPUZpPXBRJjSlnvZ07AuGzh+AHK/pDhK82BwfF2TuAOV/euEl2o
-         rHHf6Rt1xlO9HgsqDooaA4otOasINNYedWwGjnGmnAW/aKFKx8UOFfMLA7Cudnlw9Y
-         L2eTPHTiaUQMcBah9P0bSoYg0gjnQJ2ZhF7xpBpLU0Eo87jXgN2R/APo4H4suqNSep
-         JYcoSlu3KMiWw==
-Date:   Fri, 27 Aug 2021 17:30:35 -0700
+        b=hPMJm9Z5asUgL8RcxmiLgcWqs7pHFajABK0IRvvyvx+hV6JaEdwcGx1QrwDEMFnXF
+         45V+wa6VsBOoartgtpDgAqpEh29xPPi01SmKy0jfStZp9i0eYY3E0Gca5EJID0qaKi
+         G8l3ZIffnd+ORlLUmnYWJTOoSQySQNMtSiZGZMjtB6tLLwBN2LVX9hya9zQGoVdGFn
+         9r6w8HZz2MeajOYMmX75JlcdvUtinkvXV5ybXQjr2p+e9AtK0wwkwGrRiuo4hXC0wm
+         OiISbqDOeYVmOOrt1vaPnJUh8y7CaoJb1SCYFUrNPwj3xo+ce/AUNCqmRrWrJ1d9Sv
+         kJTNTXT5/+hew==
+Date:   Fri, 27 Aug 2021 17:39:06 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net v2] net: phy: marvell10g: fix broken PHY interrupts
- for anyone after us in the driver probe list
-Message-ID: <20210827173035.283f2e12@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <YSj1o8hrcsPHDrVX@lunn.ch>
-References: <20210827132541.28953-1-kabel@kernel.org>
-        <YSj1o8hrcsPHDrVX@lunn.ch>
+To:     Shannon Nelson <snelson@pensando.io>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, drivers@pensando.io,
+        jtoppins@redhat.com
+Subject: Re: [PATCH net-next 4/6] ionic: add queue lock around open and stop
+Message-ID: <20210827173906.1aa14274@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210827185512.50206-5-snelson@pensando.io>
+References: <20210827185512.50206-1-snelson@pensando.io>
+        <20210827185512.50206-5-snelson@pensando.io>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 27 Aug 2021 16:24:35 +0200 Andrew Lunn wrote:
-> > Fixes: a5de4be0aaaa ("net: phy: marvell10g: fix differentiation of 88X3=
-310 from 88X3340")
-> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > Tested-by: Marek Beh=C3=BAn <kabel@kernel.org>
-> > Signed-off-by: Marek Beh=C3=BAn <kabel@kernel.org> =20
->=20
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+On Fri, 27 Aug 2021 11:55:10 -0700 Shannon Nelson wrote:
+> Add the queue configuration lock to ionic_open() and
+> ionic_stop() so that they don't collide with other in parallel
+> queue configuration actions such as MTU changes as can be
+> demonstrated with a tight loop of ifup/change-mtu/ifdown.
 
-Applied, thanks everyone.
+Say more? how are up/down/change mtu not under rtnl_lock?
