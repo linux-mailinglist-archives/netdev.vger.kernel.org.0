@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 322923FA54F
+	by mail.lfdr.de (Postfix) with ESMTP id 7B4C43FA550
 	for <lists+netdev@lfdr.de>; Sat, 28 Aug 2021 13:12:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234239AbhH1LJ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Aug 2021 07:09:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43674 "EHLO
+        id S234211AbhH1LJ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Aug 2021 07:09:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234081AbhH1LJZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Aug 2021 07:09:25 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B56EC061756
-        for <netdev@vger.kernel.org>; Sat, 28 Aug 2021 04:08:35 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id n11so13787768edv.11
-        for <netdev@vger.kernel.org>; Sat, 28 Aug 2021 04:08:35 -0700 (PDT)
+        with ESMTP id S234097AbhH1LJ1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Aug 2021 07:09:27 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76FCBC061756
+        for <netdev@vger.kernel.org>; Sat, 28 Aug 2021 04:08:36 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id a25so19651681ejv.6
+        for <netdev@vger.kernel.org>; Sat, 28 Aug 2021 04:08:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=blackwall-org.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=7ljWNNrdCEzdiywEueBd0MEyhVSwrG0MAfkPuz2/DW0=;
-        b=giMnTdOl287ZWSxXtNkkVDemzxuHtWBIHv0lwUtf/l+FJ6JikKxfv0ULB65oNNkdv5
-         aGBLXp3LHcMKNNkwszdBFSyLqFYRa84GaLyAAQTYEOS0lol+WqQnQiWZqzNdODExZxGi
-         cqRo25qRFs24Y4oi3CNtR00NhzAJo//OEZq5nfnYWAkagqzj9Cwx6jTM4LIJ9tf6Yr9S
-         I0Dn8+Sl9YPk6S/NUJdDqOCvqabi9NV2lGmSAh+uM3x78zcYWlI0ODASfN/Qb//OejXd
-         fSXhwLENMAQ2BJovRmaXTi5xSPJnvZifUBdnLoqWSuuQbIei7v0F7nF277x1Or5U716Q
-         mheg==
+        bh=0qYKgnCLen4cBBm6S3pdRBThWsOr6RKmftJwo6Di15U=;
+        b=xDcszBl7xxM60u/49fMgWq+GqKozQxyYq/qAHhBhnVqFcENhnpw5JIb1qI4hm7vR9T
+         QyAQBxhgPf+20poudhcwn74AaO/uvujHJcibdWjxqKheFuKpAk69v10By25yCZJo74j0
+         knzQwdJW1bJB48sBUabX/Xt5ag8J8iXqGKS+w4vRVtkFHUZ9uhOUmOKfyApRcqKexC0s
+         XgF6xa1PTiBVJt5eHBQU35nIAPZM3MDG2jN1YRp1npca3UkrH6c0aDYv+hr0mT8MF3ZQ
+         jwsuqqIiNwLzjvls5Wm3AtfEM9Bf+tEwPi+6gjF0XSeGUj1dp3dWpz8do8Duh7LxJYFZ
+         k9nQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=7ljWNNrdCEzdiywEueBd0MEyhVSwrG0MAfkPuz2/DW0=;
-        b=KU8ewKt3ctAdA3oJjscGKQcgAiOT/XMgXy0OwR+IBrWILk+2Nqi+cZ8ViEyb5yi8lZ
-         QmgVoGcrSEenCiODrUycx6+1AhMBelCvX1xppXm4xpTnpj2xQQYUTwBQTB3HMw5g/1aw
-         /C4BgyX8mHoFzjAL+Mp036Eewb8bycyTIXYevf7R6SeiIjqRexkKLUtzt5ug31sibB7r
-         SLCVi79t3ER1MB3Fm1PvPin/Hz3OUD3rnBgRowGJ1NFz52NzgYVSY37fZyFzOJfa1GMl
-         SVNsFAJrv7czH8wpY/S2gVTPY0k1ulNxnzsRRiLK7qJcmXj+0qpjXgYbpT1YGl7XplWw
-         tuFg==
-X-Gm-Message-State: AOAM531JzNqr3AU/Reoi/ov3dRndavO8IABOrrhK/T32fQdwyFROP5q/
-        Mb1zCiahHyDIk7wS8eiabgipkEb3pBAG8hEB
-X-Google-Smtp-Source: ABdhPJxuUr28rtpMPmGh1hdmsiD8MnRjM6kVdP0FGG9m39sX6wLW9dTUrD2zUHeUz0IxEroyXZNY5w==
-X-Received: by 2002:a05:6402:214:: with SMTP id t20mr14304031edv.386.1630148913554;
-        Sat, 28 Aug 2021 04:08:33 -0700 (PDT)
+        bh=0qYKgnCLen4cBBm6S3pdRBThWsOr6RKmftJwo6Di15U=;
+        b=DSjNBuL3uNJTG/D7ZgvPR2NvskPbEnFRtsAxauQSI3Hw7TFQqgMz+AzdOTdNpA7C7t
+         PjgXOvzJJxJpi03NPoCba75N7GWdHARvJOIzA36Y0+fGk9V5l6wK5mpEs/MCB+rVBja8
+         Fs5IcUx6WZhVByGxMgMq7rCyHe3sLAtPqY/m+VQBG8AxhQ8yM8br8iH5JQEAm/P+h69M
+         OifKin+JL+82wr/mNMYTzzsy2IfwQlIZHbnAEDf95L59SKFrRd4Em/BL+5xRvulnH2EB
+         i8mHtrZCx8IEsVRG3SVnxbwp56QhzYGeArvIesDwMO2sNTmQOsb6IHLoNeQPPleMsQOd
+         CxDQ==
+X-Gm-Message-State: AOAM533RkdXE7ghNaY9yIsBqrfqPUT1gFnt99Pr/jGXzBsmmJOuoh1yP
+        kG90FfrQ58aNf6dM962Mwa6XB/yTrH1oiJoC
+X-Google-Smtp-Source: ABdhPJwpED+pg+wFuQT8ICrIo4SdtV009s9lbTjMYRdB67HBLjpAIneQz0IQ9146jLni7zCkaMlspA==
+X-Received: by 2002:a17:906:1dd6:: with SMTP id v22mr14796984ejh.226.1630148914810;
+        Sat, 28 Aug 2021 04:08:34 -0700 (PDT)
 Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id i19sm4710429edx.54.2021.08.28.04.08.32
+        by smtp.gmail.com with ESMTPSA id i19sm4710429edx.54.2021.08.28.04.08.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 28 Aug 2021 04:08:33 -0700 (PDT)
+        Sat, 28 Aug 2021 04:08:34 -0700 (PDT)
 From:   Nikolay Aleksandrov <razor@blackwall.org>
 To:     netdev@vger.kernel.org
 Cc:     roopa@nvidia.com, dsahern@gmail.com, stephen@networkplumber.org,
         Joachim Wiberg <troglobit@gmail.com>,
         Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: [PATCH iproute2-next v2 18/19] bridge: vlan: add global mcast_querier option
-Date:   Sat, 28 Aug 2021 14:08:04 +0300
-Message-Id: <20210828110805.463429-19-razor@blackwall.org>
+Subject: [PATCH iproute2-next v2 19/19] bridge: vlan: add support for dumping router ports
+Date:   Sat, 28 Aug 2021 14:08:05 +0300
+Message-Id: <20210828110805.463429-20-razor@blackwall.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210828110805.463429-1-razor@blackwall.org>
 References: <20210828110805.463429-1-razor@blackwall.org>
@@ -66,83 +66,126 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-Add control and dump support for the global mcast_querier option which
-controls if the bridge will act as a multicast querier for that vlan.
-Syntax: $ bridge vlan global set dev bridge vid 1 mcast_querier 1
+Add dump support for vlan multicast router ports and their details if
+requested. If details are requested we print 1 entry per line, otherwise
+we print all router ports on a single line similar to how mdb prints
+them.
+
+Looks like:
+$ bridge vlan global show vid 100
+ port              vlan-id
+ bridge            100
+                     mcast_snooping 1 mcast_querier 0 mcast_igmp_version 2 mcast_mld_version 1 mcast_last_member_count 2 mcast_last_member_interval 100 mcast_startup_query_count 2 mcast_startup_query_interval 3125 mcast_membership_interval 26000 mcast_querier_interval 25500 mcast_query_interval 12500 mcast_query_response_interval 1000
+                     router ports: ens20 ens16
+
+Looks like (with -s):
+ $ bridge -s vlan global show vid 100
+ port              vlan-id
+ bridge            100
+                     mcast_snooping 1 mcast_querier 0 mcast_igmp_version 2 mcast_mld_version 1 mcast_last_member_count 2 mcast_last_member_interval 100 mcast_startup_query_count 2 mcast_startup_query_interval 3125 mcast_membership_interval 26000 mcast_querier_interval 25500 mcast_query_interval 12500 mcast_query_response_interval 1000
+                     router ports: ens20   187.57 temp
+                                   ens16   118.27 temp
 
 Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
 ---
-v2: adjust help msg alignment to fit in 100 columns
+ bridge/br_common.h |  1 +
+ bridge/mdb.c       |  6 +++---
+ bridge/vlan.c      | 34 ++++++++++++++++++++++++++++++++++
+ 3 files changed, 38 insertions(+), 3 deletions(-)
 
- bridge/vlan.c     | 12 ++++++++++++
- man/man8/bridge.8 | 10 ++++++++++
- 2 files changed, 22 insertions(+)
-
+diff --git a/bridge/br_common.h b/bridge/br_common.h
+index 09f42c814918..610e83f65603 100644
+--- a/bridge/br_common.h
++++ b/bridge/br_common.h
+@@ -14,6 +14,7 @@ void print_stp_state(__u8 state);
+ int parse_stp_state(const char *arg);
+ int print_vlan_rtm(struct nlmsghdr *n, void *arg, bool monitor,
+ 		   bool global_only);
++void br_print_router_port_stats(struct rtattr *pattr);
+ 
+ int do_fdb(int argc, char **argv);
+ int do_mdb(int argc, char **argv);
+diff --git a/bridge/mdb.c b/bridge/mdb.c
+index b427d878677f..7b5863d31c46 100644
+--- a/bridge/mdb.c
++++ b/bridge/mdb.c
+@@ -59,7 +59,7 @@ static const char *format_timer(__u32 ticks, int align)
+ 	return tbuf;
+ }
+ 
+-static void __print_router_port_stats(FILE *f, struct rtattr *pattr)
++void br_print_router_port_stats(struct rtattr *pattr)
+ {
+ 	struct rtattr *tb[MDBA_ROUTER_PATTR_MAX + 1];
+ 
+@@ -101,13 +101,13 @@ static void br_print_router_ports(FILE *f, struct rtattr *attr,
+ 			print_string(PRINT_JSON, "port", NULL, port_ifname);
+ 
+ 			if (show_stats)
+-				__print_router_port_stats(f, i);
++				br_print_router_port_stats(i);
+ 			close_json_object();
+ 		} else if (show_stats) {
+ 			fprintf(f, "router ports on %s: %s",
+ 				brifname, port_ifname);
+ 
+-			__print_router_port_stats(f, i);
++			br_print_router_port_stats(i);
+ 			fprintf(f, "\n");
+ 		} else {
+ 			fprintf(f, "%s ", port_ifname);
 diff --git a/bridge/vlan.c b/bridge/vlan.c
-index e8043f8574fd..afb5186d36de 100644
+index afb5186d36de..bf3b440fa1b4 100644
 --- a/bridge/vlan.c
 +++ b/bridge/vlan.c
-@@ -40,6 +40,7 @@ static void usage(void)
- 		"       bridge vlan { tunnelshow } [ dev DEV ] [ vid VLAN_ID ]\n"
- 		"       bridge vlan global { set } vid VLAN_ID dev DEV\n"
- 		"                      [ mcast_snooping MULTICAST_SNOOPING ]\n"
-+		"                      [ mcast_querier MULTICAST_QUERIER ]\n"
- 		"                      [ mcast_igmp_version IGMP_VERSION ]\n"
- 		"                      [ mcast_mld_version MLD_VERSION ]\n"
- 		"                      [ mcast_last_member_count LAST_MEMBER_COUNT ]\n"
-@@ -418,6 +419,12 @@ static int vlan_global_option_set(int argc, char **argv)
- 				invarg("invalid mcast_snooping", *argv);
- 			addattr8(&req.n, 1024,
- 				 BRIDGE_VLANDB_GOPTS_MCAST_SNOOPING, val8);
-+		} else if (strcmp(*argv, "mcast_querier") == 0) {
-+			NEXT_ARG();
-+			if (get_u8(&val8, *argv, 0))
-+				invarg("invalid mcast_querier", *argv);
-+			addattr8(&req.n, 1024,
-+				 BRIDGE_VLANDB_GOPTS_MCAST_QUERIER, val8);
- 		} else if (strcmp(*argv, "mcast_igmp_version") == 0) {
- 			NEXT_ARG();
- 			if (get_u8(&val8, *argv, 0))
-@@ -831,6 +838,11 @@ static void print_vlan_global_opts(struct rtattr *a, int ifindex)
- 		print_uint(PRINT_ANY, "mcast_snooping", "mcast_snooping %u ",
- 			   rta_getattr_u8(vattr));
- 	}
-+	if (vtb[BRIDGE_VLANDB_GOPTS_MCAST_QUERIER]) {
-+		vattr = vtb[BRIDGE_VLANDB_GOPTS_MCAST_QUERIER];
-+		print_uint(PRINT_ANY, "mcast_querier", "mcast_querier %u ",
-+			   rta_getattr_u8(vattr));
-+	}
- 	if (vtb[BRIDGE_VLANDB_GOPTS_MCAST_IGMP_VERSION]) {
- 		vattr = vtb[BRIDGE_VLANDB_GOPTS_MCAST_IGMP_VERSION];
- 		print_uint(PRINT_ANY, "mcast_igmp_version",
-diff --git a/man/man8/bridge.8 b/man/man8/bridge.8
-index eeceb309d219..76d2fa09d5bc 100644
---- a/man/man8/bridge.8
-+++ b/man/man8/bridge.8
-@@ -160,6 +160,8 @@ bridge \- show / manipulate bridge addresses and devices
- .IR VID " [ "
- .B mcast_snooping
- .IR MULTICAST_SNOOPING " ] [ "
-+.B mcast_querier
-+.IR MULTICAST_QUERIER " ] [ "
- .B mcast_igmp_version
- .IR IGMP_VERSION " ] [ "
- .B mcast_mld_version
-@@ -951,6 +953,14 @@ turn multicast snooping for VLAN entry with VLAN ID on
- or off
- .RI ( MULTICAST_SNOOPING " == 0). Default is on. "
+@@ -803,6 +803,36 @@ static int print_vlan_stats(struct nlmsghdr *n, void *arg)
+ 	return 0;
+ }
  
-+.TP
-+.BI mcast_querier " MULTICAST_QUERIER "
-+enable
-+.RI ( MULTICAST_QUERIER " > 0) "
-+or disable
-+.RI ( MULTICAST_QUERIER " == 0) "
-+IGMP/MLD querier, ie sending of multicast queries by the bridge. Default is disabled.
++static void print_vlan_router_ports(struct rtattr *rattr)
++{
++	int rem = RTA_PAYLOAD(rattr);
++	struct rtattr *i;
 +
- .TP
- .BI mcast_igmp_version " IGMP_VERSION "
- set the IGMP version. Default is 2.
++	print_string(PRINT_FP, NULL, "%-" __stringify(IFNAMSIZ) "s    ", "");
++	open_json_array(PRINT_ANY, is_json_context() ? "router_ports" :
++						       "router ports: ");
++	for (i = RTA_DATA(rattr); RTA_OK(i, rem); i = RTA_NEXT(i, rem)) {
++		uint32_t *port_ifindex = RTA_DATA(i);
++		const char *port_ifname = ll_index_to_name(*port_ifindex);
++
++		open_json_object(NULL);
++		if (show_stats && i != RTA_DATA(rattr)) {
++			print_nl();
++			/* start: IFNAMSIZ + 4 + strlen("router ports: ") */
++			print_string(PRINT_FP, NULL,
++				     "%-" __stringify(IFNAMSIZ) "s    "
++				     "              ",
++				     "");
++		}
++		print_string(PRINT_ANY, "port", "%s ", port_ifname);
++		if (show_stats)
++			br_print_router_port_stats(i);
++		close_json_object();
++	}
++	close_json_array(PRINT_JSON, NULL);
++	print_nl();
++}
++
+ static void print_vlan_global_opts(struct rtattr *a, int ifindex)
+ {
+ 	struct rtattr *vtb[BRIDGE_VLANDB_GOPTS_MAX + 1], *vattr;
+@@ -902,6 +932,10 @@ static void print_vlan_global_opts(struct rtattr *a, int ifindex)
+ 			     rta_getattr_u64(vattr));
+ 	}
+ 	print_nl();
++	if (vtb[BRIDGE_VLANDB_GOPTS_MCAST_ROUTER_PORTS]) {
++		vattr = RTA_DATA(vtb[BRIDGE_VLANDB_GOPTS_MCAST_ROUTER_PORTS]);
++		print_vlan_router_ports(vattr);
++	}
+ 	close_json_object();
+ }
+ 
 -- 
 2.31.1
 
