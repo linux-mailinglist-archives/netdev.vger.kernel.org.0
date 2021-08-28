@@ -2,145 +2,1015 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC56D3FA7BF
-	for <lists+netdev@lfdr.de>; Sat, 28 Aug 2021 23:58:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C37843FA7C0
+	for <lists+netdev@lfdr.de>; Sat, 28 Aug 2021 23:59:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232475AbhH1V7o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Aug 2021 17:59:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44834 "EHLO
+        id S232684AbhH1V7t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Aug 2021 17:59:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230253AbhH1V7n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Aug 2021 17:59:43 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3627CC061756
-        for <netdev@vger.kernel.org>; Sat, 28 Aug 2021 14:58:52 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id lc21so22028927ejc.7
-        for <netdev@vger.kernel.org>; Sat, 28 Aug 2021 14:58:52 -0700 (PDT)
+        with ESMTP id S230253AbhH1V7q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Aug 2021 17:59:46 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89672C061756
+        for <netdev@vger.kernel.org>; Sat, 28 Aug 2021 14:58:54 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id ia27so22008826ejc.10
+        for <netdev@vger.kernel.org>; Sat, 28 Aug 2021 14:58:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=96I0CbkrLQTttbpdacRS+/paMaw4hDYa0xqYSbHwxYM=;
-        b=Bb8ZwTsJGa9gdORSLAq9R8Dzs/Q7pD+m2yk4LWbilr0GoWRZWGUYPtqrtttbanIoA7
-         RHXqfB/nS1OCspe8W5DyZbYi4LXwcaZ/6HtGidpuJn+KfOtCHYI0aMzsSH5m7DGK50ux
-         IjBNc8en5ft0QOSKsJWLmVtx5+0Tz2mWB+8Q4=
+        bh=rG5+V2T8QRwyEqVtmTZHKDYUvURQbc0vRtEJVug+4K4=;
+        b=eY0wJxHxO7LJAQO0Usf+6fzdjLsgi4B5NssMFVcKtM1qVF2gcgWLKfH3wYkr34xszX
+         hDYcfDYESiDFzQh6o5Eac+KPmQqeKOoXenb+aGH4WkGjGWOPQZ0XWAiyLbSVp7ZXThiX
+         S+/rfl0L8yc8rgnzC7R1BYqd6bVCfz+VnG9TI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=96I0CbkrLQTttbpdacRS+/paMaw4hDYa0xqYSbHwxYM=;
-        b=VB9+WnOZBBsxLUIA53MQJx58Q4i+Cbxe17/W2uiCw0DczKfweV3akrN8YNrCkw9sB0
-         ao7G9EH9uiT2BwqPIvcG3F+N3hK2yx79Pg6uB68XQ63aEJLgXLdeV9I8nu/vFhOi0y2q
-         2fns0jegRtkMPQSmwitJX2XGRjSJbWinXC2UbjFJk+s1bDn8LHb2HEPu2dup+DzpBbte
-         MZK2yaqQaeLK/8cKnaw/cR8bKMlCFLEUqwVcD600C0X3u1vmHp5tXHtHmA+NIzoE36i5
-         ixzvPfmpNaYLpkPfUQaV84VkXzxzOXXYBNzsQGlEhyIeBFo7IAGG+TuXIhX6Cpsi9iaO
-         v1lw==
-X-Gm-Message-State: AOAM533BsWevVpQ2VhZKOQjXbidoK0zM5kSLYan5LjiDHgWwvFHOwXYx
-        aZQ6HNpPp8x0x8jz4q+STO3uBA==
-X-Google-Smtp-Source: ABdhPJw1p4PXRYcnhpOCVcDKDpmiBl0hbYB/S3jfFFd84WLhWbpEH85eYU4gyitJC9shiHtwb6S5Yg==
-X-Received: by 2002:a17:906:af9a:: with SMTP id mj26mr16711441ejb.96.1630187930258;
-        Sat, 28 Aug 2021 14:58:50 -0700 (PDT)
+        bh=rG5+V2T8QRwyEqVtmTZHKDYUvURQbc0vRtEJVug+4K4=;
+        b=JEtkukwl6GN9McuERx9tqT+o4xBBl4zaywWOkm308DYxvhAni5fPZ5CMkh/Jn4IL3C
+         863H1a8J2ap5xw3xskOZr8bfRj0WAtYKrYqs+s98+6cu3oJvb3jSXSDx009w/krmZj1t
+         gIYSSWVFxrTxKZNOeyqcuKaqGpKn/MMnIUVm5Ay8jSBcU2R+sGmQFGgETm6FT1N0SSp9
+         RJkKgmaf3/lexvcbRsaRE5Fes1vrrq8dcu8rF0HAOS4E7jgCsXdu/O5FyD/SEeg6S+29
+         qy4oq7HHJUp7P6sgoNb8Rx8+G8WistdxVYEAgAIByO4xsMcRik1dUKiGL5jeDDks4ELh
+         VFiA==
+X-Gm-Message-State: AOAM532cl9M6UeTk/F9S6cRS3kkzWaj397r4j6XOiSO/DTXO8y6hPqL3
+        Ks8yakD1FDDSiNSaarx9PpLWOg==
+X-Google-Smtp-Source: ABdhPJw3iqUs0LkfdYqWFTR0VFE56l+W7lzMSdFMedOgtDegrsVIxsPoqPZfAUs2d9Q/RlJuAWQ0WA==
+X-Received: by 2002:a17:906:3699:: with SMTP id a25mr16624005ejc.452.1630187932577;
+        Sat, 28 Aug 2021 14:58:52 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id cf11sm5361239edb.65.2021.08.28.14.58.48
+        by smtp.gmail.com with ESMTPSA id cf11sm5361239edb.65.2021.08.28.14.58.50
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 28 Aug 2021 14:58:49 -0700 (PDT)
+        Sat, 28 Aug 2021 14:58:52 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, edwin.peer@broadcom.com,
         gospo@broadcom.com
-Subject: [PATCH net-next 02/11] bnxt_en: Refactor the HWRM_VER_GET firmware calls
-Date:   Sat, 28 Aug 2021 17:58:21 -0400
-Message-Id: <1630187910-22252-3-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 03/11] bnxt_en: move HWRM API implementation into separate file
+Date:   Sat, 28 Aug 2021 17:58:22 -0400
+Message-Id: <1630187910-22252-4-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1630187910-22252-1-git-send-email-michael.chan@broadcom.com>
 References: <1630187910-22252-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000008a9dd205caa5b4de"
+        boundary="000000000000aee2e205caa5b4c7"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000008a9dd205caa5b4de
+--000000000000aee2e205caa5b4c7
 
 From: Edwin Peer <edwin.peer@broadcom.com>
 
-Refactor the code so that __bnxt_hwrm_ver_get() does not call
-bnxt_hwrm_do_send_msg() directly.  The new APIs will not expose this
-internal call.  Add a new bnxt_hwrm_poll() to poll the HWRM_VER_GET
-firmware call silently.  The other bnxt_hwrm_ver_get() function will
-send the HWRM_VER_GET message directly with error logs enabled.
+Move all firmware messaging functions and definitions to new
+bnxt_hwrm.[ch].  The follow-on patches will make major modifications
+to these APIs.
 
 Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/Makefile   |   2 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 273 +---------------
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  84 -----
+ drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c |   1 +
+ .../net/ethernet/broadcom/bnxt/bnxt_devlink.c |   1 +
+ .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c |   1 +
+ .../net/ethernet/broadcom/bnxt/bnxt_hwrm.c    | 298 ++++++++++++++++++
+ .../net/ethernet/broadcom/bnxt/bnxt_hwrm.h    | 100 ++++++
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c |   1 +
+ .../net/ethernet/broadcom/bnxt/bnxt_sriov.c   |   1 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c  |   1 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c |   1 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c |   1 +
+ 13 files changed, 408 insertions(+), 357 deletions(-)
+ create mode 100644 drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
+ create mode 100644 drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h
 
+diff --git a/drivers/net/ethernet/broadcom/bnxt/Makefile b/drivers/net/ethernet/broadcom/bnxt/Makefile
+index 2b8ae687b3c1..c6ef7ec2c115 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/Makefile
++++ b/drivers/net/ethernet/broadcom/bnxt/Makefile
+@@ -1,6 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ obj-$(CONFIG_BNXT) += bnxt_en.o
+ 
+-bnxt_en-y := bnxt.o bnxt_sriov.o bnxt_ethtool.o bnxt_dcb.o bnxt_ulp.o bnxt_xdp.o bnxt_ptp.o bnxt_vfr.o bnxt_devlink.o bnxt_dim.o
++bnxt_en-y := bnxt.o bnxt_hwrm.o bnxt_sriov.o bnxt_ethtool.o bnxt_dcb.o bnxt_ulp.o bnxt_xdp.o bnxt_ptp.o bnxt_vfr.o bnxt_devlink.o bnxt_dim.o
+ bnxt_en-$(CONFIG_BNXT_FLOWER_OFFLOAD) += bnxt_tc.o
+ bnxt_en-$(CONFIG_DEBUG_FS) += bnxt_debugfs.o
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index fb75fa9614c5..dd2f80c394f5 100644
+index dd2f80c394f5..10c39801ad5f 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -8036,7 +8036,7 @@ static int bnxt_hwrm_queue_qportcfg(struct bnxt *bp)
- 	return rc;
+@@ -60,6 +60,7 @@
+ 
+ #include "bnxt_hsi.h"
+ #include "bnxt.h"
++#include "bnxt_hwrm.h"
+ #include "bnxt_ulp.h"
+ #include "bnxt_sriov.h"
+ #include "bnxt_ethtool.h"
+@@ -4549,278 +4550,6 @@ static void bnxt_enable_int(struct bnxt *bp)
+ 	}
  }
  
--static int __bnxt_hwrm_ver_get(struct bnxt *bp, bool silent)
-+static int bnxt_hwrm_poll(struct bnxt *bp)
+-void bnxt_hwrm_cmd_hdr_init(struct bnxt *bp, void *request, u16 req_type,
+-			    u16 cmpl_ring, u16 target_id)
+-{
+-	struct input *req = request;
+-
+-	req->req_type = cpu_to_le16(req_type);
+-	req->cmpl_ring = cpu_to_le16(cmpl_ring);
+-	req->target_id = cpu_to_le16(target_id);
+-	req->resp_addr = cpu_to_le64(bp->hwrm_cmd_resp_dma_addr);
+-}
+-
+-static int bnxt_hwrm_to_stderr(u32 hwrm_err)
+-{
+-	switch (hwrm_err) {
+-	case HWRM_ERR_CODE_SUCCESS:
+-		return 0;
+-	case HWRM_ERR_CODE_RESOURCE_LOCKED:
+-		return -EROFS;
+-	case HWRM_ERR_CODE_RESOURCE_ACCESS_DENIED:
+-		return -EACCES;
+-	case HWRM_ERR_CODE_RESOURCE_ALLOC_ERROR:
+-		return -ENOSPC;
+-	case HWRM_ERR_CODE_INVALID_PARAMS:
+-	case HWRM_ERR_CODE_INVALID_FLAGS:
+-	case HWRM_ERR_CODE_INVALID_ENABLES:
+-	case HWRM_ERR_CODE_UNSUPPORTED_TLV:
+-	case HWRM_ERR_CODE_UNSUPPORTED_OPTION_ERR:
+-		return -EINVAL;
+-	case HWRM_ERR_CODE_NO_BUFFER:
+-		return -ENOMEM;
+-	case HWRM_ERR_CODE_HOT_RESET_PROGRESS:
+-	case HWRM_ERR_CODE_BUSY:
+-		return -EAGAIN;
+-	case HWRM_ERR_CODE_CMD_NOT_SUPPORTED:
+-		return -EOPNOTSUPP;
+-	default:
+-		return -EIO;
+-	}
+-}
+-
+-static int bnxt_hwrm_do_send_msg(struct bnxt *bp, void *msg, u32 msg_len,
+-				 int timeout, bool silent)
+-{
+-	int i, intr_process, rc, tmo_count;
+-	struct input *req = msg;
+-	u32 *data = msg;
+-	u8 *valid;
+-	u16 cp_ring_id, len = 0;
+-	struct hwrm_err_output *resp = bp->hwrm_cmd_resp_addr;
+-	u16 max_req_len = BNXT_HWRM_MAX_REQ_LEN;
+-	struct hwrm_short_input short_input = {0};
+-	u32 doorbell_offset = BNXT_GRCPF_REG_CHIMP_COMM_TRIGGER;
+-	u32 bar_offset = BNXT_GRCPF_REG_CHIMP_COMM;
+-	u16 dst = BNXT_HWRM_CHNL_CHIMP;
+-
+-	if (BNXT_NO_FW_ACCESS(bp) &&
+-	    le16_to_cpu(req->req_type) != HWRM_FUNC_RESET)
+-		return -EBUSY;
+-
+-	if (msg_len > BNXT_HWRM_MAX_REQ_LEN) {
+-		if (msg_len > bp->hwrm_max_ext_req_len ||
+-		    !bp->hwrm_short_cmd_req_addr)
+-			return -EINVAL;
+-	}
+-
+-	if (bnxt_kong_hwrm_message(bp, req)) {
+-		dst = BNXT_HWRM_CHNL_KONG;
+-		bar_offset = BNXT_GRCPF_REG_KONG_COMM;
+-		doorbell_offset = BNXT_GRCPF_REG_KONG_COMM_TRIGGER;
+-	}
+-
+-	memset(resp, 0, PAGE_SIZE);
+-	cp_ring_id = le16_to_cpu(req->cmpl_ring);
+-	intr_process = (cp_ring_id == INVALID_HW_RING_ID) ? 0 : 1;
+-
+-	req->seq_id = cpu_to_le16(bnxt_get_hwrm_seq_id(bp, dst));
+-	/* currently supports only one outstanding message */
+-	if (intr_process)
+-		bp->hwrm_intr_seq_id = le16_to_cpu(req->seq_id);
+-
+-	if ((bp->fw_cap & BNXT_FW_CAP_SHORT_CMD) ||
+-	    msg_len > BNXT_HWRM_MAX_REQ_LEN) {
+-		void *short_cmd_req = bp->hwrm_short_cmd_req_addr;
+-		u16 max_msg_len;
+-
+-		/* Set boundary for maximum extended request length for short
+-		 * cmd format. If passed up from device use the max supported
+-		 * internal req length.
+-		 */
+-		max_msg_len = bp->hwrm_max_ext_req_len;
+-
+-		memcpy(short_cmd_req, req, msg_len);
+-		if (msg_len < max_msg_len)
+-			memset(short_cmd_req + msg_len, 0,
+-			       max_msg_len - msg_len);
+-
+-		short_input.req_type = req->req_type;
+-		short_input.signature =
+-				cpu_to_le16(SHORT_REQ_SIGNATURE_SHORT_CMD);
+-		short_input.size = cpu_to_le16(msg_len);
+-		short_input.req_addr =
+-			cpu_to_le64(bp->hwrm_short_cmd_req_dma_addr);
+-
+-		data = (u32 *)&short_input;
+-		msg_len = sizeof(short_input);
+-
+-		/* Sync memory write before updating doorbell */
+-		wmb();
+-
+-		max_req_len = BNXT_HWRM_SHORT_REQ_LEN;
+-	}
+-
+-	/* Write request msg to hwrm channel */
+-	__iowrite32_copy(bp->bar0 + bar_offset, data, msg_len / 4);
+-
+-	for (i = msg_len; i < max_req_len; i += 4)
+-		writel(0, bp->bar0 + bar_offset + i);
+-
+-	/* Ring channel doorbell */
+-	writel(1, bp->bar0 + doorbell_offset);
+-
+-	if (!pci_is_enabled(bp->pdev))
+-		return -ENODEV;
+-
+-	if (!timeout)
+-		timeout = DFLT_HWRM_CMD_TIMEOUT;
+-	/* Limit timeout to an upper limit */
+-	timeout = min(timeout, HWRM_CMD_MAX_TIMEOUT);
+-	/* convert timeout to usec */
+-	timeout *= 1000;
+-
+-	i = 0;
+-	/* Short timeout for the first few iterations:
+-	 * number of loops = number of loops for short timeout +
+-	 * number of loops for standard timeout.
+-	 */
+-	tmo_count = HWRM_SHORT_TIMEOUT_COUNTER;
+-	timeout = timeout - HWRM_SHORT_MIN_TIMEOUT * HWRM_SHORT_TIMEOUT_COUNTER;
+-	tmo_count += DIV_ROUND_UP(timeout, HWRM_MIN_TIMEOUT);
+-
+-	if (intr_process) {
+-		u16 seq_id = bp->hwrm_intr_seq_id;
+-
+-		/* Wait until hwrm response cmpl interrupt is processed */
+-		while (bp->hwrm_intr_seq_id != (u16)~seq_id &&
+-		       i++ < tmo_count) {
+-			/* Abort the wait for completion if the FW health
+-			 * check has failed.
+-			 */
+-			if (test_bit(BNXT_STATE_FW_FATAL_COND, &bp->state))
+-				return -EBUSY;
+-			/* on first few passes, just barely sleep */
+-			if (i < HWRM_SHORT_TIMEOUT_COUNTER) {
+-				usleep_range(HWRM_SHORT_MIN_TIMEOUT,
+-					     HWRM_SHORT_MAX_TIMEOUT);
+-			} else {
+-				if (HWRM_WAIT_MUST_ABORT(bp, req))
+-					break;
+-				usleep_range(HWRM_MIN_TIMEOUT,
+-					     HWRM_MAX_TIMEOUT);
+-			}
+-		}
+-
+-		if (bp->hwrm_intr_seq_id != (u16)~seq_id) {
+-			if (!silent)
+-				netdev_err(bp->dev, "Resp cmpl intr err msg: 0x%x\n",
+-					   le16_to_cpu(req->req_type));
+-			return -EBUSY;
+-		}
+-		len = le16_to_cpu(resp->resp_len);
+-		valid = ((u8 *)resp) + len - 1;
+-	} else {
+-		int j;
+-
+-		/* Check if response len is updated */
+-		for (i = 0; i < tmo_count; i++) {
+-			/* Abort the wait for completion if the FW health
+-			 * check has failed.
+-			 */
+-			if (test_bit(BNXT_STATE_FW_FATAL_COND, &bp->state))
+-				return -EBUSY;
+-			len = le16_to_cpu(resp->resp_len);
+-			if (len)
+-				break;
+-			/* on first few passes, just barely sleep */
+-			if (i < HWRM_SHORT_TIMEOUT_COUNTER) {
+-				usleep_range(HWRM_SHORT_MIN_TIMEOUT,
+-					     HWRM_SHORT_MAX_TIMEOUT);
+-			} else {
+-				if (HWRM_WAIT_MUST_ABORT(bp, req))
+-					goto timeout_abort;
+-				usleep_range(HWRM_MIN_TIMEOUT,
+-					     HWRM_MAX_TIMEOUT);
+-			}
+-		}
+-
+-		if (i >= tmo_count) {
+-timeout_abort:
+-			if (!silent)
+-				netdev_err(bp->dev, "Error (timeout: %d) msg {0x%x 0x%x} len:%d\n",
+-					   HWRM_TOTAL_TIMEOUT(i),
+-					   le16_to_cpu(req->req_type),
+-					   le16_to_cpu(req->seq_id), len);
+-			return -EBUSY;
+-		}
+-
+-		/* Last byte of resp contains valid bit */
+-		valid = ((u8 *)resp) + len - 1;
+-		for (j = 0; j < HWRM_VALID_BIT_DELAY_USEC; j++) {
+-			/* make sure we read from updated DMA memory */
+-			dma_rmb();
+-			if (*valid)
+-				break;
+-			usleep_range(1, 5);
+-		}
+-
+-		if (j >= HWRM_VALID_BIT_DELAY_USEC) {
+-			if (!silent)
+-				netdev_err(bp->dev, "Error (timeout: %d) msg {0x%x 0x%x} len:%d v:%d\n",
+-					   HWRM_TOTAL_TIMEOUT(i),
+-					   le16_to_cpu(req->req_type),
+-					   le16_to_cpu(req->seq_id), len,
+-					   *valid);
+-			return -EBUSY;
+-		}
+-	}
+-
+-	/* Zero valid bit for compatibility.  Valid bit in an older spec
+-	 * may become a new field in a newer spec.  We must make sure that
+-	 * a new field not implemented by old spec will read zero.
+-	 */
+-	*valid = 0;
+-	rc = le16_to_cpu(resp->error_code);
+-	if (rc && !silent)
+-		netdev_err(bp->dev, "hwrm req_type 0x%x seq id 0x%x error 0x%x\n",
+-			   le16_to_cpu(resp->req_type),
+-			   le16_to_cpu(resp->seq_id), rc);
+-	return bnxt_hwrm_to_stderr(rc);
+-}
+-
+-int _hwrm_send_message(struct bnxt *bp, void *msg, u32 msg_len, int timeout)
+-{
+-	return bnxt_hwrm_do_send_msg(bp, msg, msg_len, timeout, false);
+-}
+-
+-int _hwrm_send_message_silent(struct bnxt *bp, void *msg, u32 msg_len,
+-			      int timeout)
+-{
+-	return bnxt_hwrm_do_send_msg(bp, msg, msg_len, timeout, true);
+-}
+-
+-int hwrm_send_message(struct bnxt *bp, void *msg, u32 msg_len, int timeout)
+-{
+-	int rc;
+-
+-	mutex_lock(&bp->hwrm_cmd_lock);
+-	rc = _hwrm_send_message(bp, msg, msg_len, timeout);
+-	mutex_unlock(&bp->hwrm_cmd_lock);
+-	return rc;
+-}
+-
+-int hwrm_send_message_silent(struct bnxt *bp, void *msg, u32 msg_len,
+-			     int timeout)
+-{
+-	int rc;
+-
+-	mutex_lock(&bp->hwrm_cmd_lock);
+-	rc = bnxt_hwrm_do_send_msg(bp, msg, msg_len, timeout, true);
+-	mutex_unlock(&bp->hwrm_cmd_lock);
+-	return rc;
+-}
+-
+ int bnxt_hwrm_func_drv_rgtr(struct bnxt *bp, unsigned long *bmap, int bmap_size,
+ 			    bool async_only)
  {
- 	struct hwrm_ver_get_input req = {0};
- 	int rc;
-@@ -8046,21 +8046,26 @@ static int __bnxt_hwrm_ver_get(struct bnxt *bp, bool silent)
- 	req.hwrm_intf_min = HWRM_VERSION_MINOR;
- 	req.hwrm_intf_upd = HWRM_VERSION_UPDATE;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index a4fb1aa12b24..5ff71eeffdd8 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -669,37 +669,7 @@ struct nqe_cn {
+ #define RING_CMP(idx)		((idx) & bp->cp_ring_mask)
+ #define NEXT_CMP(idx)		RING_CMP(ADV_RAW_CMP(idx, 1))
  
--	rc = bnxt_hwrm_do_send_msg(bp, &req, sizeof(req), HWRM_CMD_TIMEOUT,
--				   silent);
-+	rc = _hwrm_send_message_silent(bp, &req, sizeof(req), HWRM_CMD_TIMEOUT);
- 	return rc;
+-#define BNXT_HWRM_MAX_REQ_LEN		(bp->hwrm_max_req_len)
+-#define BNXT_HWRM_SHORT_REQ_LEN		sizeof(struct hwrm_short_input)
+ #define DFLT_HWRM_CMD_TIMEOUT		500
+-#define HWRM_CMD_MAX_TIMEOUT		40000
+-#define SHORT_HWRM_CMD_TIMEOUT		20
+-#define HWRM_CMD_TIMEOUT		(bp->hwrm_cmd_timeout)
+-#define HWRM_RESET_TIMEOUT		((HWRM_CMD_TIMEOUT) * 4)
+-#define HWRM_COREDUMP_TIMEOUT		((HWRM_CMD_TIMEOUT) * 12)
+-#define BNXT_HWRM_REQ_MAX_SIZE		128
+-#define BNXT_HWRM_REQS_PER_PAGE		(BNXT_PAGE_SIZE /	\
+-					 BNXT_HWRM_REQ_MAX_SIZE)
+-#define HWRM_SHORT_MIN_TIMEOUT		3
+-#define HWRM_SHORT_MAX_TIMEOUT		10
+-#define HWRM_SHORT_TIMEOUT_COUNTER	5
+-
+-#define HWRM_MIN_TIMEOUT		25
+-#define HWRM_MAX_TIMEOUT		40
+-
+-#define HWRM_WAIT_MUST_ABORT(bp, req)					\
+-	(le16_to_cpu((req)->req_type) != HWRM_VER_GET &&		\
+-	 !bnxt_is_fw_healthy(bp))
+-
+-#define HWRM_TOTAL_TIMEOUT(n)	(((n) <= HWRM_SHORT_TIMEOUT_COUNTER) ?	\
+-	((n) * HWRM_SHORT_MIN_TIMEOUT) :				\
+-	(HWRM_SHORT_TIMEOUT_COUNTER * HWRM_SHORT_MIN_TIMEOUT +		\
+-	 ((n) - HWRM_SHORT_TIMEOUT_COUNTER) * HWRM_MIN_TIMEOUT))
+-
+-#define HWRM_VALID_BIT_DELAY_USEC	150
+-
+-#define BNXT_HWRM_CHNL_CHIMP	0
+-#define BNXT_HWRM_CHNL_KONG	1
+ 
+ #define BNXT_RX_EVENT		1
+ #define BNXT_AGG_EVENT		2
+@@ -2185,55 +2155,6 @@ static inline void bnxt_db_write(struct bnxt *bp, struct bnxt_db_info *db,
+ 	}
  }
  
- static int bnxt_hwrm_ver_get(struct bnxt *bp)
- {
- 	struct hwrm_ver_get_output *resp = bp->hwrm_cmd_resp_addr;
-+	struct hwrm_ver_get_input req = {0};
- 	u16 fw_maj, fw_min, fw_bld, fw_rsv;
- 	u32 dev_caps_cfg, hwrm_ver;
- 	int rc, len;
+-static inline bool bnxt_cfa_hwrm_message(u16 req_type)
+-{
+-	switch (req_type) {
+-	case HWRM_CFA_ENCAP_RECORD_ALLOC:
+-	case HWRM_CFA_ENCAP_RECORD_FREE:
+-	case HWRM_CFA_DECAP_FILTER_ALLOC:
+-	case HWRM_CFA_DECAP_FILTER_FREE:
+-	case HWRM_CFA_EM_FLOW_ALLOC:
+-	case HWRM_CFA_EM_FLOW_FREE:
+-	case HWRM_CFA_EM_FLOW_CFG:
+-	case HWRM_CFA_FLOW_ALLOC:
+-	case HWRM_CFA_FLOW_FREE:
+-	case HWRM_CFA_FLOW_INFO:
+-	case HWRM_CFA_FLOW_FLUSH:
+-	case HWRM_CFA_FLOW_STATS:
+-	case HWRM_CFA_METER_PROFILE_ALLOC:
+-	case HWRM_CFA_METER_PROFILE_FREE:
+-	case HWRM_CFA_METER_PROFILE_CFG:
+-	case HWRM_CFA_METER_INSTANCE_ALLOC:
+-	case HWRM_CFA_METER_INSTANCE_FREE:
+-		return true;
+-	default:
+-		return false;
+-	}
+-}
+-
+-static inline bool bnxt_kong_hwrm_message(struct bnxt *bp, struct input *req)
+-{
+-	return (bp->fw_cap & BNXT_FW_CAP_KONG_MB_CHNL &&
+-		(bnxt_cfa_hwrm_message(le16_to_cpu(req->req_type)) ||
+-		 le16_to_cpu(req->target_id) == HWRM_TARGET_ID_KONG));
+-}
+-
+-static inline void *bnxt_get_hwrm_resp_addr(struct bnxt *bp, void *req)
+-{
+-	return bp->hwrm_cmd_resp_addr;
+-}
+-
+-static inline u16 bnxt_get_hwrm_seq_id(struct bnxt *bp, u16 dst)
+-{
+-	u16 seq_id;
+-
+-	if (dst == BNXT_HWRM_CHNL_CHIMP)
+-		seq_id = bp->hwrm_cmd_seq++;
+-	else
+-		seq_id = bp->hwrm_cmd_kong_seq++;
+-	return seq_id;
+-}
+-
+ extern const u16 bnxt_lhint_arr[];
  
-+	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_VER_GET, -1, -1);
- 	bp->hwrm_max_req_len = HWRM_MAX_REQ_LEN;
-+	req.hwrm_intf_maj = HWRM_VERSION_MAJOR;
-+	req.hwrm_intf_min = HWRM_VERSION_MINOR;
-+	req.hwrm_intf_upd = HWRM_VERSION_UPDATE;
+ int bnxt_alloc_rx_data(struct bnxt *bp, struct bnxt_rx_ring_info *rxr,
+@@ -2243,11 +2164,6 @@ u32 bnxt_fw_health_readl(struct bnxt *bp, int reg_idx);
+ void bnxt_set_tpa_flags(struct bnxt *bp);
+ void bnxt_set_ring_params(struct bnxt *);
+ int bnxt_set_rx_skb_mode(struct bnxt *bp, bool page_mode);
+-void bnxt_hwrm_cmd_hdr_init(struct bnxt *, void *, u16, u16, u16);
+-int _hwrm_send_message(struct bnxt *, void *, u32, int);
+-int _hwrm_send_message_silent(struct bnxt *bp, void *msg, u32 len, int timeout);
+-int hwrm_send_message(struct bnxt *, void *, u32, int);
+-int hwrm_send_message_silent(struct bnxt *, void *, u32, int);
+ int bnxt_hwrm_func_drv_rgtr(struct bnxt *bp, unsigned long *bmap,
+ 			    int bmap_size, bool async_only);
+ int bnxt_get_nr_rss_ctxs(struct bnxt *bp, int rx_rings);
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c
+index 8a68df4d9e59..df898665763a 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c
+@@ -18,6 +18,7 @@
+ #include <rdma/ib_verbs.h>
+ #include "bnxt_hsi.h"
+ #include "bnxt.h"
++#include "bnxt_hwrm.h"
+ #include "bnxt_dcb.h"
+ 
+ #ifdef CONFIG_BNXT_DCB
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+index 2cd8bb37e641..00b284a028c5 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+@@ -12,6 +12,7 @@
+ #include <net/devlink.h>
+ #include "bnxt_hsi.h"
+ #include "bnxt.h"
++#include "bnxt_hwrm.h"
+ #include "bnxt_vfr.h"
+ #include "bnxt_devlink.h"
+ #include "bnxt_ethtool.h"
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index 5852ae3b26a2..b6aaf14bd7fd 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -24,6 +24,7 @@
+ #include <linux/timecounter.h>
+ #include "bnxt_hsi.h"
+ #include "bnxt.h"
++#include "bnxt_hwrm.h"
+ #include "bnxt_xdp.h"
+ #include "bnxt_ptp.h"
+ #include "bnxt_ethtool.h"
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
+new file mode 100644
+index 000000000000..6a1d8d619397
+--- /dev/null
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
+@@ -0,0 +1,298 @@
++/* Broadcom NetXtreme-C/E network driver.
++ *
++ * Copyright (c) 2020 Broadcom Limited
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation.
++ */
 +
- 	mutex_lock(&bp->hwrm_cmd_lock);
--	rc = __bnxt_hwrm_ver_get(bp, false);
-+	rc = _hwrm_send_message(bp, &req, sizeof(req), HWRM_CMD_TIMEOUT);
- 	if (rc)
- 		goto hwrm_ver_get_exit;
++#include <asm/byteorder.h>
++#include <linux/dma-mapping.h>
++#include <linux/dmapool.h>
++#include <linux/errno.h>
++#include <linux/ethtool.h>
++#include <linux/if_ether.h>
++#include <linux/io.h>
++#include <linux/irq.h>
++#include <linux/kernel.h>
++#include <linux/netdevice.h>
++#include <linux/pci.h>
++#include <linux/skbuff.h>
++
++#include "bnxt_hsi.h"
++#include "bnxt.h"
++#include "bnxt_hwrm.h"
++
++void bnxt_hwrm_cmd_hdr_init(struct bnxt *bp, void *request, u16 req_type,
++			    u16 cmpl_ring, u16 target_id)
++{
++	struct input *req = request;
++
++	req->req_type = cpu_to_le16(req_type);
++	req->cmpl_ring = cpu_to_le16(cmpl_ring);
++	req->target_id = cpu_to_le16(target_id);
++	req->resp_addr = cpu_to_le64(bp->hwrm_cmd_resp_dma_addr);
++}
++
++static int bnxt_hwrm_to_stderr(u32 hwrm_err)
++{
++	switch (hwrm_err) {
++	case HWRM_ERR_CODE_SUCCESS:
++		return 0;
++	case HWRM_ERR_CODE_RESOURCE_LOCKED:
++		return -EROFS;
++	case HWRM_ERR_CODE_RESOURCE_ACCESS_DENIED:
++		return -EACCES;
++	case HWRM_ERR_CODE_RESOURCE_ALLOC_ERROR:
++		return -ENOSPC;
++	case HWRM_ERR_CODE_INVALID_PARAMS:
++	case HWRM_ERR_CODE_INVALID_FLAGS:
++	case HWRM_ERR_CODE_INVALID_ENABLES:
++	case HWRM_ERR_CODE_UNSUPPORTED_TLV:
++	case HWRM_ERR_CODE_UNSUPPORTED_OPTION_ERR:
++		return -EINVAL;
++	case HWRM_ERR_CODE_NO_BUFFER:
++		return -ENOMEM;
++	case HWRM_ERR_CODE_HOT_RESET_PROGRESS:
++	case HWRM_ERR_CODE_BUSY:
++		return -EAGAIN;
++	case HWRM_ERR_CODE_CMD_NOT_SUPPORTED:
++		return -EOPNOTSUPP;
++	default:
++		return -EIO;
++	}
++}
++
++static int bnxt_hwrm_do_send_msg(struct bnxt *bp, void *msg, u32 msg_len,
++				 int timeout, bool silent)
++{
++	int i, intr_process, rc, tmo_count;
++	struct input *req = msg;
++	u32 *data = msg;
++	u8 *valid;
++	u16 cp_ring_id, len = 0;
++	struct hwrm_err_output *resp = bp->hwrm_cmd_resp_addr;
++	u16 max_req_len = BNXT_HWRM_MAX_REQ_LEN;
++	struct hwrm_short_input short_input = {0};
++	u32 doorbell_offset = BNXT_GRCPF_REG_CHIMP_COMM_TRIGGER;
++	u32 bar_offset = BNXT_GRCPF_REG_CHIMP_COMM;
++	u16 dst = BNXT_HWRM_CHNL_CHIMP;
++
++	if (BNXT_NO_FW_ACCESS(bp) &&
++	    le16_to_cpu(req->req_type) != HWRM_FUNC_RESET)
++		return -EBUSY;
++
++	if (msg_len > BNXT_HWRM_MAX_REQ_LEN) {
++		if (msg_len > bp->hwrm_max_ext_req_len ||
++		    !bp->hwrm_short_cmd_req_addr)
++			return -EINVAL;
++	}
++
++	if (bnxt_kong_hwrm_message(bp, req)) {
++		dst = BNXT_HWRM_CHNL_KONG;
++		bar_offset = BNXT_GRCPF_REG_KONG_COMM;
++		doorbell_offset = BNXT_GRCPF_REG_KONG_COMM_TRIGGER;
++	}
++
++	memset(resp, 0, PAGE_SIZE);
++	cp_ring_id = le16_to_cpu(req->cmpl_ring);
++	intr_process = (cp_ring_id == INVALID_HW_RING_ID) ? 0 : 1;
++
++	req->seq_id = cpu_to_le16(bnxt_get_hwrm_seq_id(bp, dst));
++	/* currently supports only one outstanding message */
++	if (intr_process)
++		bp->hwrm_intr_seq_id = le16_to_cpu(req->seq_id);
++
++	if ((bp->fw_cap & BNXT_FW_CAP_SHORT_CMD) ||
++	    msg_len > BNXT_HWRM_MAX_REQ_LEN) {
++		void *short_cmd_req = bp->hwrm_short_cmd_req_addr;
++		u16 max_msg_len;
++
++		/* Set boundary for maximum extended request length for short
++		 * cmd format. If passed up from device use the max supported
++		 * internal req length.
++		 */
++		max_msg_len = bp->hwrm_max_ext_req_len;
++
++		memcpy(short_cmd_req, req, msg_len);
++		if (msg_len < max_msg_len)
++			memset(short_cmd_req + msg_len, 0,
++			       max_msg_len - msg_len);
++
++		short_input.req_type = req->req_type;
++		short_input.signature =
++				cpu_to_le16(SHORT_REQ_SIGNATURE_SHORT_CMD);
++		short_input.size = cpu_to_le16(msg_len);
++		short_input.req_addr =
++			cpu_to_le64(bp->hwrm_short_cmd_req_dma_addr);
++
++		data = (u32 *)&short_input;
++		msg_len = sizeof(short_input);
++
++		/* Sync memory write before updating doorbell */
++		wmb();
++
++		max_req_len = BNXT_HWRM_SHORT_REQ_LEN;
++	}
++
++	/* Write request msg to hwrm channel */
++	__iowrite32_copy(bp->bar0 + bar_offset, data, msg_len / 4);
++
++	for (i = msg_len; i < max_req_len; i += 4)
++		writel(0, bp->bar0 + bar_offset + i);
++
++	/* Ring channel doorbell */
++	writel(1, bp->bar0 + doorbell_offset);
++
++	if (!pci_is_enabled(bp->pdev))
++		return -ENODEV;
++
++	if (!timeout)
++		timeout = DFLT_HWRM_CMD_TIMEOUT;
++	/* Limit timeout to an upper limit */
++	timeout = min(timeout, HWRM_CMD_MAX_TIMEOUT);
++	/* convert timeout to usec */
++	timeout *= 1000;
++
++	i = 0;
++	/* Short timeout for the first few iterations:
++	 * number of loops = number of loops for short timeout +
++	 * number of loops for standard timeout.
++	 */
++	tmo_count = HWRM_SHORT_TIMEOUT_COUNTER;
++	timeout = timeout - HWRM_SHORT_MIN_TIMEOUT * HWRM_SHORT_TIMEOUT_COUNTER;
++	tmo_count += DIV_ROUND_UP(timeout, HWRM_MIN_TIMEOUT);
++
++	if (intr_process) {
++		u16 seq_id = bp->hwrm_intr_seq_id;
++
++		/* Wait until hwrm response cmpl interrupt is processed */
++		while (bp->hwrm_intr_seq_id != (u16)~seq_id &&
++		       i++ < tmo_count) {
++			/* Abort the wait for completion if the FW health
++			 * check has failed.
++			 */
++			if (test_bit(BNXT_STATE_FW_FATAL_COND, &bp->state))
++				return -EBUSY;
++			/* on first few passes, just barely sleep */
++			if (i < HWRM_SHORT_TIMEOUT_COUNTER) {
++				usleep_range(HWRM_SHORT_MIN_TIMEOUT,
++					     HWRM_SHORT_MAX_TIMEOUT);
++			} else {
++				if (HWRM_WAIT_MUST_ABORT(bp, req))
++					break;
++				usleep_range(HWRM_MIN_TIMEOUT,
++					     HWRM_MAX_TIMEOUT);
++			}
++		}
++
++		if (bp->hwrm_intr_seq_id != (u16)~seq_id) {
++			if (!silent)
++				netdev_err(bp->dev, "Resp cmpl intr err msg: 0x%x\n",
++					   le16_to_cpu(req->req_type));
++			return -EBUSY;
++		}
++		len = le16_to_cpu(resp->resp_len);
++		valid = ((u8 *)resp) + len - 1;
++	} else {
++		int j;
++
++		/* Check if response len is updated */
++		for (i = 0; i < tmo_count; i++) {
++			/* Abort the wait for completion if the FW health
++			 * check has failed.
++			 */
++			if (test_bit(BNXT_STATE_FW_FATAL_COND, &bp->state))
++				return -EBUSY;
++			len = le16_to_cpu(resp->resp_len);
++			if (len)
++				break;
++			/* on first few passes, just barely sleep */
++			if (i < HWRM_SHORT_TIMEOUT_COUNTER) {
++				usleep_range(HWRM_SHORT_MIN_TIMEOUT,
++					     HWRM_SHORT_MAX_TIMEOUT);
++			} else {
++				if (HWRM_WAIT_MUST_ABORT(bp, req))
++					goto timeout_abort;
++				usleep_range(HWRM_MIN_TIMEOUT,
++					     HWRM_MAX_TIMEOUT);
++			}
++		}
++
++		if (i >= tmo_count) {
++timeout_abort:
++			if (!silent)
++				netdev_err(bp->dev, "Error (timeout: %d) msg {0x%x 0x%x} len:%d\n",
++					   HWRM_TOTAL_TIMEOUT(i),
++					   le16_to_cpu(req->req_type),
++					   le16_to_cpu(req->seq_id), len);
++			return -EBUSY;
++		}
++
++		/* Last byte of resp contains valid bit */
++		valid = ((u8 *)resp) + len - 1;
++		for (j = 0; j < HWRM_VALID_BIT_DELAY_USEC; j++) {
++			/* make sure we read from updated DMA memory */
++			dma_rmb();
++			if (*valid)
++				break;
++			usleep_range(1, 5);
++		}
++
++		if (j >= HWRM_VALID_BIT_DELAY_USEC) {
++			if (!silent)
++				netdev_err(bp->dev, "Error (timeout: %d) msg {0x%x 0x%x} len:%d v:%d\n",
++					   HWRM_TOTAL_TIMEOUT(i),
++					   le16_to_cpu(req->req_type),
++					   le16_to_cpu(req->seq_id), len,
++					   *valid);
++			return -EBUSY;
++		}
++	}
++
++	/* Zero valid bit for compatibility.  Valid bit in an older spec
++	 * may become a new field in a newer spec.  We must make sure that
++	 * a new field not implemented by old spec will read zero.
++	 */
++	*valid = 0;
++	rc = le16_to_cpu(resp->error_code);
++	if (rc && !silent)
++		netdev_err(bp->dev, "hwrm req_type 0x%x seq id 0x%x error 0x%x\n",
++			   le16_to_cpu(resp->req_type),
++			   le16_to_cpu(resp->seq_id), rc);
++	return bnxt_hwrm_to_stderr(rc);
++}
++
++int _hwrm_send_message(struct bnxt *bp, void *msg, u32 msg_len, int timeout)
++{
++	return bnxt_hwrm_do_send_msg(bp, msg, msg_len, timeout, false);
++}
++
++int _hwrm_send_message_silent(struct bnxt *bp, void *msg, u32 msg_len,
++			      int timeout)
++{
++	return bnxt_hwrm_do_send_msg(bp, msg, msg_len, timeout, true);
++}
++
++int hwrm_send_message(struct bnxt *bp, void *msg, u32 msg_len, int timeout)
++{
++	int rc;
++
++	mutex_lock(&bp->hwrm_cmd_lock);
++	rc = _hwrm_send_message(bp, msg, msg_len, timeout);
++	mutex_unlock(&bp->hwrm_cmd_lock);
++	return rc;
++}
++
++int hwrm_send_message_silent(struct bnxt *bp, void *msg, u32 msg_len,
++			     int timeout)
++{
++	int rc;
++
++	mutex_lock(&bp->hwrm_cmd_lock);
++	rc = bnxt_hwrm_do_send_msg(bp, msg, msg_len, timeout, true);
++	mutex_unlock(&bp->hwrm_cmd_lock);
++	return rc;
++}
++
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h
+new file mode 100644
+index 000000000000..940c792b54c7
+--- /dev/null
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h
+@@ -0,0 +1,100 @@
++/* Broadcom NetXtreme-C/E network driver.
++ *
++ * Copyright (c) 2020 Broadcom Limited
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation.
++ */
++
++#ifndef BNXT_HWRM_H
++#define BNXT_HWRM_H
++
++#include "bnxt_hsi.h"
++
++#define BNXT_HWRM_MAX_REQ_LEN		(bp->hwrm_max_req_len)
++#define BNXT_HWRM_SHORT_REQ_LEN		sizeof(struct hwrm_short_input)
++#define HWRM_CMD_MAX_TIMEOUT		40000
++#define SHORT_HWRM_CMD_TIMEOUT		20
++#define HWRM_CMD_TIMEOUT		(bp->hwrm_cmd_timeout)
++#define HWRM_RESET_TIMEOUT		((HWRM_CMD_TIMEOUT) * 4)
++#define HWRM_COREDUMP_TIMEOUT		((HWRM_CMD_TIMEOUT) * 12)
++#define BNXT_HWRM_REQ_MAX_SIZE		128
++#define BNXT_HWRM_REQS_PER_PAGE		(BNXT_PAGE_SIZE /	\
++					 BNXT_HWRM_REQ_MAX_SIZE)
++#define HWRM_SHORT_MIN_TIMEOUT		3
++#define HWRM_SHORT_MAX_TIMEOUT		10
++#define HWRM_SHORT_TIMEOUT_COUNTER	5
++
++#define HWRM_MIN_TIMEOUT		25
++#define HWRM_MAX_TIMEOUT		40
++
++#define HWRM_WAIT_MUST_ABORT(bp, req)					\
++	(le16_to_cpu((req)->req_type) != HWRM_VER_GET &&		\
++	 !bnxt_is_fw_healthy(bp))
++
++#define HWRM_TOTAL_TIMEOUT(n)	(((n) <= HWRM_SHORT_TIMEOUT_COUNTER) ?	\
++	((n) * HWRM_SHORT_MIN_TIMEOUT) :				\
++	(HWRM_SHORT_TIMEOUT_COUNTER * HWRM_SHORT_MIN_TIMEOUT +		\
++	 ((n) - HWRM_SHORT_TIMEOUT_COUNTER) * HWRM_MIN_TIMEOUT))
++
++#define HWRM_VALID_BIT_DELAY_USEC	150
++
++#define BNXT_HWRM_CHNL_CHIMP	0
++#define BNXT_HWRM_CHNL_KONG	1
++
++static inline bool bnxt_cfa_hwrm_message(u16 req_type)
++{
++	switch (req_type) {
++	case HWRM_CFA_ENCAP_RECORD_ALLOC:
++	case HWRM_CFA_ENCAP_RECORD_FREE:
++	case HWRM_CFA_DECAP_FILTER_ALLOC:
++	case HWRM_CFA_DECAP_FILTER_FREE:
++	case HWRM_CFA_EM_FLOW_ALLOC:
++	case HWRM_CFA_EM_FLOW_FREE:
++	case HWRM_CFA_EM_FLOW_CFG:
++	case HWRM_CFA_FLOW_ALLOC:
++	case HWRM_CFA_FLOW_FREE:
++	case HWRM_CFA_FLOW_INFO:
++	case HWRM_CFA_FLOW_FLUSH:
++	case HWRM_CFA_FLOW_STATS:
++	case HWRM_CFA_METER_PROFILE_ALLOC:
++	case HWRM_CFA_METER_PROFILE_FREE:
++	case HWRM_CFA_METER_PROFILE_CFG:
++	case HWRM_CFA_METER_INSTANCE_ALLOC:
++	case HWRM_CFA_METER_INSTANCE_FREE:
++		return true;
++	default:
++		return false;
++	}
++}
++
++static inline bool bnxt_kong_hwrm_message(struct bnxt *bp, struct input *req)
++{
++	return (bp->fw_cap & BNXT_FW_CAP_KONG_MB_CHNL &&
++		(bnxt_cfa_hwrm_message(le16_to_cpu(req->req_type)) ||
++		 le16_to_cpu(req->target_id) == HWRM_TARGET_ID_KONG));
++}
++
++static inline void *bnxt_get_hwrm_resp_addr(struct bnxt *bp, void *req)
++{
++	return bp->hwrm_cmd_resp_addr;
++}
++
++static inline u16 bnxt_get_hwrm_seq_id(struct bnxt *bp, u16 dst)
++{
++	u16 seq_id;
++
++	if (dst == BNXT_HWRM_CHNL_CHIMP)
++		seq_id = bp->hwrm_cmd_seq++;
++	else
++		seq_id = bp->hwrm_cmd_kong_seq++;
++	return seq_id;
++}
++
++void bnxt_hwrm_cmd_hdr_init(struct bnxt *, void *, u16, u16, u16);
++int _hwrm_send_message(struct bnxt *bp, void *msg, u32 len, int timeout);
++int _hwrm_send_message_silent(struct bnxt *bp, void *msg, u32 len, int timeout);
++int hwrm_send_message(struct bnxt *bp, void *msg, u32 len, int timeout);
++int hwrm_send_message_silent(struct bnxt *bp, void *msg, u32 len, int timeout);
++#endif
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+index 2fe3c9081f8d..4cc2379027cf 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+@@ -18,6 +18,7 @@
+ #include <linux/ptp_classify.h>
+ #include "bnxt_hsi.h"
+ #include "bnxt.h"
++#include "bnxt_hwrm.h"
+ #include "bnxt_ptp.h"
  
-@@ -9791,7 +9796,7 @@ static int bnxt_try_recover_fw(struct bnxt *bp)
- 		mutex_lock(&bp->hwrm_cmd_lock);
- 		do {
- 			sts = bnxt_fw_health_readl(bp, BNXT_FW_HEALTH_REG);
--			rc = __bnxt_hwrm_ver_get(bp, true);
-+			rc = bnxt_hwrm_poll(bp);
- 			if (!BNXT_FW_IS_BOOTING(sts) &&
- 			    !BNXT_FW_IS_RECOVERING(sts))
- 				break;
-@@ -12234,7 +12239,7 @@ static void bnxt_fw_reset_task(struct work_struct *work)
- 		fallthrough;
- 	case BNXT_FW_RESET_STATE_POLL_FW:
- 		bp->hwrm_cmd_timeout = SHORT_HWRM_CMD_TIMEOUT;
--		rc = __bnxt_hwrm_ver_get(bp, true);
-+		rc = bnxt_hwrm_poll(bp);
- 		if (rc) {
- 			if (bnxt_fw_reset_timeout(bp)) {
- 				netdev_err(bp->dev, "Firmware reset aborted\n");
+ int bnxt_ptp_parse(struct sk_buff *skb, u16 *seq_id, u16 *hdr_off)
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
+index 7fa881e1cd80..7b0e308e44c2 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
+@@ -17,6 +17,7 @@
+ #include <linux/etherdevice.h>
+ #include "bnxt_hsi.h"
+ #include "bnxt.h"
++#include "bnxt_hwrm.h"
+ #include "bnxt_ulp.h"
+ #include "bnxt_sriov.h"
+ #include "bnxt_vfr.h"
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
+index 5e4429b14b8c..c0c3cc426f7b 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
+@@ -22,6 +22,7 @@
+ 
+ #include "bnxt_hsi.h"
+ #include "bnxt.h"
++#include "bnxt_hwrm.h"
+ #include "bnxt_sriov.h"
+ #include "bnxt_tc.h"
+ #include "bnxt_vfr.h"
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
+index 187ff643ad2a..f621cffccd3a 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
+@@ -22,6 +22,7 @@
+ 
+ #include "bnxt_hsi.h"
+ #include "bnxt.h"
++#include "bnxt_hwrm.h"
+ #include "bnxt_ulp.h"
+ 
+ static int bnxt_register_dev(struct bnxt_en_dev *edev, int ulp_id,
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c
+index dd66302343a2..3ed712a08207 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c
+@@ -15,6 +15,7 @@
+ 
+ #include "bnxt_hsi.h"
+ #include "bnxt.h"
++#include "bnxt_hwrm.h"
+ #include "bnxt_vfr.h"
+ #include "bnxt_devlink.h"
+ #include "bnxt_tc.h"
 -- 
 2.18.1
 
 
---0000000000008a9dd205caa5b4de
+--000000000000aee2e205caa5b4c7
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -211,13 +1081,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEINEP878kJmLg/sCAa3TRyKuhwbcs7NOR
-+bmkkuzyiV25MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDgy
-ODIxNTg1MFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIO3opDEuFPZoRSuIoYCK83uTgECtr01W
+n2l8Vg2h736iMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDgy
+ODIxNTg1M1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQAb4IboH6xYP1JLcg4LvpVSRB5d4Kg3hRYo74P0wapBiNRRcYCx
-oMc462RakiFQ1JodyHcUbINGhvLjEP+oUXBshucK8ZN081bhV0V2OURtIs8r57NuzIVpkVzvk/VW
-MIbcph6tzqkFoRYJ+fe7LT0Nb8WllqpfhGcI5slyF9NfA6VqPX1xVR4SY6AOoStR6Z0UiKpBAaa5
-FdUBg64LTcwJhWwAGc+mu8UmBc6ilZ0J08VMeA89sS3nbo2CBeOi0xGWkv1R481M1ywx7guYGe1f
-5MFK2Cesu+QHs5PAy2PscR6vrl5tZCf6cEe+wUHJQBu1A/JpJPpTu53Ctw5mLBF1
---0000000000008a9dd205caa5b4de--
+ATANBgkqhkiG9w0BAQEFAASCAQBuD6hI48TxdD0lBwa7nOb00udBAlIDTUwqs8uHSvJAC7go26eN
+JPxdXiNNDbsFOjXQ+0KYqk+qsfYoITKts09qOLtRXjsRRYn0PpTw3DEhkj1BM6cXxah6YgrrS9m7
+QeLYlTHGtyrnKLsPm1CWK/HcqGKKRnfXcal5X3lXGD7Cm84Odg2MBba1zor+wxCHqstIYz0F3aso
+qi3TNIRRletdWyur5oC2NQiUESAYdRxY3YuErLqzRNPoBlC2fx4zIcw6ljRaa+kb9dHlkaWz2Hxu
+s/KSXjBD04Xyh/yo18dWNvvHhN4Ub0qZmQCsh7SFALzoyEUQvlWzosbtqtXWxfpD
+--000000000000aee2e205caa5b4c7--
