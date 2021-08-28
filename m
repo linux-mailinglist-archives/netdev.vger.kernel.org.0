@@ -2,206 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF99E3FA3DA
-	for <lists+netdev@lfdr.de>; Sat, 28 Aug 2021 07:22:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44EBF3FA418
+	for <lists+netdev@lfdr.de>; Sat, 28 Aug 2021 09:01:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233344AbhH1FVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Aug 2021 01:21:38 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:37996 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232702AbhH1FV1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Aug 2021 01:21:27 -0400
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 17S5AdtK017695
-        for <netdev@vger.kernel.org>; Fri, 27 Aug 2021 22:20:37 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=8S9gZBnDcBQ1pCquTXlS/il6zMXDUMExSTT3aibAoII=;
- b=WSGHT8R5ImwkXGGjF7ksXkP897dzuVmk8+jhuZ5jgWF9VkAKiKA9Lm9+n94cYs5Ru6UX
- uP93PVEFeXS5uVqfc0Gt0ZNOy8c+7MKvTR5HcMAqY3/v4BlPmDHIrMWkl+s8Y1C133wG
- LwT/fLyH1iW3x2mgiEUI5+HjpmtVetPWKSg= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 3apfpfterv-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 27 Aug 2021 22:20:37 -0700
-Received: from intmgw001.25.frc3.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 27 Aug 2021 22:20:34 -0700
-Received: by devbig030.frc3.facebook.com (Postfix, from userid 158236)
-        id 288235BF0E50; Fri, 27 Aug 2021 22:20:28 -0700 (PDT)
-From:   Dave Marchevsky <davemarchevsky@fb.com>
-To:     <bpf@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Yonghong Song <yhs@fb.com>, <netdev@vger.kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>
-Subject: [PATCH v3 bpf-next 7/7] selftests/bpf: add trace_vprintk test prog
-Date:   Fri, 27 Aug 2021 22:20:06 -0700
-Message-ID: <20210828052006.1313788-8-davemarchevsky@fb.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210828052006.1313788-1-davemarchevsky@fb.com>
-References: <20210828052006.1313788-1-davemarchevsky@fb.com>
+        id S233393AbhH1HAQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Aug 2021 03:00:16 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:8794 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233088AbhH1HAG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Aug 2021 03:00:06 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GxS982xTGzYvJS;
+        Sat, 28 Aug 2021 14:58:36 +0800 (CST)
+Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2176.2; Sat, 28 Aug 2021 14:59:13 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ dggemi759-chm.china.huawei.com (10.1.198.145) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Sat, 28 Aug 2021 14:59:13 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>
+Subject: [PATCH net-next 0/7] net: hns3: updates for -next
+Date:   Sat, 28 Aug 2021 14:55:14 +0800
+Message-ID: <1630133721-9260-1-git-send-email-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
 Content-Type: text/plain
-X-FB-Source: Intern
-X-Proofpoint-ORIG-GUID: uJdJOMnmxSnLMW-t5NMwXZb8sbZjUuOf
-X-Proofpoint-GUID: uJdJOMnmxSnLMW-t5NMwXZb8sbZjUuOf
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-08-28_01:2021-08-27,2021-08-28 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
- suspectscore=0 clxscore=1015 bulkscore=0 mlxlogscore=999
- priorityscore=1501 impostorscore=0 adultscore=0 lowpriorityscore=0
- spamscore=0 mlxscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2107140000 definitions=main-2108280031
-X-FB-Internal: deliver
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggemi759-chm.china.huawei.com (10.1.198.145)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit adds a test prog for vprintk which confirms that:
-  * bpf_trace_vprintk is writing to dmesg
-  * __bpf_vprintk macro works as expected
-  * >3 args are printed
+This series includes some updates for the HNS3 ethernet driver.
 
-Approach and code are borrowed from trace_printk test.
+#1 add a trace in  hclge_gen_resp_to_vf().
+#2~#4 refactor some functions.
+#5~#7 add some cleanups.
 
-Signed-off-by: Dave Marchevsky <davemarchevsky@fb.com>
----
- tools/testing/selftests/bpf/Makefile          |  3 +-
- .../selftests/bpf/prog_tests/trace_vprintk.c  | 65 +++++++++++++++++++
- .../selftests/bpf/progs/trace_vprintk.c       | 25 +++++++
- 3 files changed, 92 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/trace_vprintk.=
-c
- create mode 100644 tools/testing/selftests/bpf/progs/trace_vprintk.c
+This series includes some optimizations, cleanups and one 
 
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftes=
-ts/bpf/Makefile
-index 866531c08e4f..0a4cdac7ea02 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -315,7 +315,8 @@ LINKED_SKELS :=3D test_static_linked.skel.h linked_fu=
-ncs.skel.h		\
- 		linked_vars.skel.h linked_maps.skel.h
-=20
- LSKELS :=3D kfunc_call_test.c fentry_test.c fexit_test.c fexit_sleep.c \
--	test_ksyms_module.c test_ringbuf.c atomics.c trace_printk.c
-+	test_ksyms_module.c test_ringbuf.c atomics.c trace_printk.c \
-+	trace_vprintk.c
- SKEL_BLACKLIST +=3D $$(LSKELS)
-=20
- test_static_linked.skel.h-deps :=3D test_static_linked1.o test_static_li=
-nked2.o
-diff --git a/tools/testing/selftests/bpf/prog_tests/trace_vprintk.c b/too=
-ls/testing/selftests/bpf/prog_tests/trace_vprintk.c
-new file mode 100644
-index 000000000000..9fc1d279b673
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/trace_vprintk.c
-@@ -0,0 +1,65 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2021 Facebook */
-+
-+#include <test_progs.h>
-+
-+#include "trace_vprintk.lskel.h"
-+
-+#define TRACEBUF	"/sys/kernel/debug/tracing/trace_pipe"
-+#define SEARCHMSG	"1,2,3,4,5,6,7,8,9,10"
-+
-+void test_trace_vprintk(void)
-+{
-+	int err =3D 0, iter =3D 0, found =3D 0;
-+	struct trace_vprintk__bss *bss;
-+	struct trace_vprintk *skel;
-+	char *buf =3D NULL;
-+	FILE *fp =3D NULL;
-+	size_t buflen;
-+
-+	skel =3D trace_vprintk__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "trace_vprintk__open_and_load"))
-+		goto cleanup;
-+
-+	bss =3D skel->bss;
-+
-+	err =3D trace_vprintk__attach(skel);
-+	if (!ASSERT_OK(err, "trace_vprintk__attach"))
-+		goto cleanup;
-+
-+	fp =3D fopen(TRACEBUF, "r");
-+	if (!ASSERT_OK_PTR(fp, "fopen(TRACEBUF)"))
-+		goto cleanup;
-+
-+	/* We do not want to wait forever if this test fails... */
-+	fcntl(fileno(fp), F_SETFL, O_NONBLOCK);
-+
-+	/* wait for tracepoint to trigger */
-+	usleep(1);
-+	trace_vprintk__detach(skel);
-+
-+	if (!ASSERT_GT(bss->trace_vprintk_ran, 0, "bss->trace_vprintk_ran"))
-+		goto cleanup;
-+
-+	if (!ASSERT_GT(bss->trace_vprintk_ret, 0, "bss->trace_vprintk_ret"))
-+		goto cleanup;
-+
-+	/* verify our search string is in the trace buffer */
-+	while (getline(&buf, &buflen, fp) >=3D 0 || errno =3D=3D EAGAIN) {
-+		if (strstr(buf, SEARCHMSG) !=3D NULL)
-+			found++;
-+		if (found =3D=3D bss->trace_vprintk_ran)
-+			break;
-+		if (++iter > 1000)
-+			break;
-+	}
-+
-+	if (!ASSERT_EQ(found, bss->trace_vprintk_ran, "found"))
-+		goto cleanup;
-+
-+cleanup:
-+	trace_vprintk__destroy(skel);
-+	free(buf);
-+	if (fp)
-+		fclose(fp);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/trace_vprintk.c b/tools/te=
-sting/selftests/bpf/progs/trace_vprintk.c
-new file mode 100644
-index 000000000000..255e2f018efe
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/trace_vprintk.c
-@@ -0,0 +1,25 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2021 Facebook */
-+
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+char _license[] SEC("license") =3D "GPL";
-+
-+int trace_vprintk_ret =3D 0;
-+int trace_vprintk_ran =3D 0;
-+
-+SEC("fentry/__x64_sys_nanosleep")
-+int sys_enter(void *ctx)
-+{
-+	static const char one[] =3D "1";
-+	static const char three[] =3D "3";
-+	static const char five[] =3D "5";
-+	static const char seven[] =3D "7";
-+	static const char nine[] =3D "9";
-+
-+	trace_vprintk_ret =3D __bpf_vprintk("%s,%d,%s,%d,%s,%d,%s,%d,%s,%d %d\n=
-",
-+		one, 2, three, 4, five, 6, seven, 8, nine, 10, ++trace_vprintk_ran);
-+	return 0;
-+}
---=20
-2.30.2
+Guangbin Huang (4):
+  net: hns3: refactor function hclge_parse_capability()
+  net: hns3: refactor function hclgevf_parse_capability()
+  net: hns3: add new function hclge_get_speed_bit()
+  net: hns3: don't config TM DWRR twice when set ETS
+
+Hao Chen (2):
+  net: hns3: remove unnecessary "static" of local variables in function
+  net: hns3: add required space in comment
+
+Yufeng Mo (1):
+  net: hns3: add trace event in hclge_gen_resp_to_vf()
+
+ drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h    |  2 +-
+ drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c |  2 +-
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |  2 +-
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c | 51 ++++++++----------
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h |  8 ++-
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c |  4 +-
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 63 +++++++++++-----------
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |  5 ++
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c |  2 +
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c   | 29 +++++-----
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h   |  6 +++
+ 11 files changed, 92 insertions(+), 82 deletions(-)
+
+-- 
+2.8.1
 
