@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C03A33FA6F6
-	for <lists+netdev@lfdr.de>; Sat, 28 Aug 2021 19:18:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E07D3FA6F8
+	for <lists+netdev@lfdr.de>; Sat, 28 Aug 2021 19:18:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229888AbhH1RS7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Aug 2021 13:18:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40176 "EHLO
+        id S234645AbhH1RTG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Aug 2021 13:19:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234399AbhH1RS6 (ORCPT
+        with ESMTP id S229574AbhH1RS6 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 28 Aug 2021 13:18:58 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F006C061756
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4E20C0613D9
         for <netdev@vger.kernel.org>; Sat, 28 Aug 2021 10:18:07 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id b4so21395107lfo.13
+Received: by mail-lj1-x22e.google.com with SMTP id h1so17442226ljl.9
         for <netdev@vger.kernel.org>; Sat, 28 Aug 2021 10:18:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=D7ibt3Lae3RXcE7WOmyu3z09/xMR6Le2PSBAAAdLFdU=;
-        b=Xy3dcuzbdiBOLN5ietr0FsbbNMLw2Qtg/Fck+UX9W4lNQ/TiYz4ttJCIvYuOBgRmxc
-         45i953isJt7pjmCJssrOQNeEpyTqI/5Y8VcYT32nGrUiVmKRwXdNxor7k2LQvKRlUK8m
-         4En5oqbmt1qDarXvQJ/4JIu8/yoJhA6Vz3DHJmuCLf8wwStgTdTbcci7O/BXKQorgcy2
-         ukPdex/7hWM1bmJDuY5M6BBPb63RdRwqTSCjG811LDk+a0mZNLBYBqHXaSQgUgf4pWXw
-         R/NAoXwLSxJM6cDnGrReAMfPo25JKzr/KpVrDpDY2Afrxpm+5I8brr/Fuf3YXRDH+AnZ
-         JKrg==
+        bh=ZXI2en2FpO56VmbTeLm1+JipCE8ULCAYjbhwip5qLZ0=;
+        b=hvWE2eXExRvPfs7okKuf18YhH/yeTHDrP0yKn3lNm/w+5+sUDpMVoKON2Gd4Nl9dzt
+         antEJyF5qB2Pj/Jmu9wQbHIAgVt/NDfs7dTHY7ghZ5mvUbi5uSjvPIRk3trNrxoozfhF
+         GjiXm0oc+1lRyaXCfVOX/enoCNponcZVRRCErDJcnyAJ+gYQaA+AQ3DiHarg1gFcVUab
+         oK3IaWBqjrJ8UKT7MfmTMYlTnVX5AA36MZPXRi5atQYKHoXwFoTEOpUq3nhBSkNW+75b
+         bMGdW8pn5N3p+fT6iOHLA/w8PUSMGbN9kWUzRf3hQdvlC4apy5TPL6ib0wCm9o6f/TxP
+         yGYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=D7ibt3Lae3RXcE7WOmyu3z09/xMR6Le2PSBAAAdLFdU=;
-        b=UJ0uCK1dbr0jX76uhklXIFFhOTgARqZmVradOBnHz7afNSbNyOx4a/mMwgj1JcCf74
-         grTfSkgaETo87ey7K+2Nlz2fXfwenPW1ZG8p5oPI93uEBIV4tjpcOc8WR+0bllGUlKtd
-         D6dX2vm3TSLU4AYhfIq1OgjG7WWTMe+q4K6v4lupabagkaRs/FV8ylWyaozumcVrW9Lb
-         Cj8OgJhgF0lb8iANosX1+S2C5/K2hsKWdKoX/8spCwg5YwaTGUeXJTvc3GUrcRe46msr
-         tIAJ8GxSB0wka4tS8W7qvl01bwGxDnNtKEsn2aN0nxpkcIpSUUVnudxBWCPZyUgui2o8
-         NSXQ==
-X-Gm-Message-State: AOAM5303OLXCsaW482ZzpNRno/id09s28AI9LeBDV2oZDxo/V1rhl2CH
-        n7G+YVv5UMos/N54emko2Zy5ERUpNKY7/A==
-X-Google-Smtp-Source: ABdhPJz7DXZYwiONcRzfkHSzxgnCCBYdrG7OdbopeJ+ATykiqBFUB+d5xM55rcLhe4IeGFha91YkTQ==
-X-Received: by 2002:ac2:5f99:: with SMTP id r25mr11038202lfe.119.1630171084963;
-        Sat, 28 Aug 2021 10:18:04 -0700 (PDT)
+        bh=ZXI2en2FpO56VmbTeLm1+JipCE8ULCAYjbhwip5qLZ0=;
+        b=ZZ3EAAQ66WnqVhHfpRU7VHXhzTxuETkMBpLBBuLzX8lnaaxQACKWUnY2vWo/kp9rV/
+         iItwLsCx8DrooiISKPCaqMKH2GH50oA3B+XQNs7Z8XFQ3cThdxrn5JgQPO5weHByTgYv
+         0iWDfIiGZTCslzbDo9j837l8C9YQXEs/TjGIlYp9PS1BqGmY/KC4tGPQys9bzxXzvxbU
+         oDvOg8TtsfdkkO9MGSvlIfcpDrDEwlp4WeXw1fAUIEgnUoRYrSWvcn/oMCyNAghSqsIt
+         FFRi6PtdUNNzYFEkh7zckBunkDjdtzHmutcBhJKLsIt7fN8pMKhfQK4DWooHsCkdB/EQ
+         KYUg==
+X-Gm-Message-State: AOAM532+ZThwNfhXF88qkFSm4BiFDaekrgYTJf5vhHLQUqJnRi4g+jgU
+        DBjLB9f7pSAF4ZS7UW7O0nXCWHJYVGhQ4g==
+X-Google-Smtp-Source: ABdhPJwAy/1JHB0hi5rrNcH+rcpqpxqH0/u2hlxKxQ49hnnmsXVO3XGCTLu+I6rcheIFMlmQ1S7ZpA==
+X-Received: by 2002:a2e:99c8:: with SMTP id l8mr13133242ljj.178.1630171086161;
+        Sat, 28 Aug 2021 10:18:06 -0700 (PDT)
 Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
-        by smtp.gmail.com with ESMTPSA id p1sm202195lfo.255.2021.08.28.10.18.04
+        by smtp.gmail.com with ESMTPSA id p1sm202195lfo.255.2021.08.28.10.18.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 28 Aug 2021 10:18:04 -0700 (PDT)
+        Sat, 28 Aug 2021 10:18:05 -0700 (PDT)
 From:   Linus Walleij <linus.walleij@linaro.org>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     Imre Kaloz <kaloz@openwrt.org>, Krzysztof Halasa <khalasa@piap.pl>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH net-next 2/5 v3] ixp4xx_eth: fix compile-testing
-Date:   Sat, 28 Aug 2021 19:15:45 +0200
-Message-Id: <20210828171548.143057-3-linus.walleij@linaro.org>
+        Linus Walleij <linus.walleij@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH net-next 3/5 v3] ixp4xx_eth: Stop referring to GPIOs
+Date:   Sat, 28 Aug 2021 19:15:46 +0200
+Message-Id: <20210828171548.143057-4-linus.walleij@linaro.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210828171548.143057-1-linus.walleij@linaro.org>
 References: <20210828171548.143057-1-linus.walleij@linaro.org>
@@ -65,65 +65,167 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+The driver is being passed interrupts, then looking up the
+same interrupts as GPIOs a second time to convert them into
+interrupts and set properties on them.
 
-Change the driver to use portable integer types to avoid warnings
-during compile testing, including:
+This is pointless: the GPIO and irqchip APIs of a GPIO chip
+are orthogonal. Just request the interrupts and be done
+with it, drop reliance on any GPIO functions or definitions.
 
-drivers/net/ethernet/xscale/ixp4xx_eth.c:721:21: error: cast to 'u32 *' (aka 'unsigned int *') from smaller integer type 'int' [-Werror,-Wint-to-pointer-cast]
-        memcpy_swab32(mem, (u32 *)((int)skb->data & ~3), bytes / 4);
-                           ^
-drivers/net/ethernet/xscale/ixp4xx_eth.c:963:12: error: incompatible pointer types passing 'u32 *' (aka 'unsigned int *') to parameter of type 'dma_addr_t *' (aka 'unsigned long long *') [-Werror,-Wincompatible-pointer-types]
-                                              &port->desc_tab_phys)))
-                                              ^~~~~~~~~~~~~~~~~~~~
-include/linux/dmapool.h:27:20: note: passing argument to parameter 'handle' here
-                     dma_addr_t *handle);
-                                 ^
+Use devres-managed functions and add a small devress quirk
+to unregister the clock as well and we can rely on devres
+to handle all the resources and cut down a bunch of
+boilerplate in the process.
 
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- drivers/net/ethernet/xscale/ixp4xx_eth.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/xscale/ptp_ixp46x.c | 84 ++++++++----------------
+ 1 file changed, 28 insertions(+), 56 deletions(-)
 
-diff --git a/drivers/net/ethernet/xscale/ixp4xx_eth.c b/drivers/net/ethernet/xscale/ixp4xx_eth.c
-index 0bd22beb83ed..931494cc1c39 100644
---- a/drivers/net/ethernet/xscale/ixp4xx_eth.c
-+++ b/drivers/net/ethernet/xscale/ixp4xx_eth.c
-@@ -37,7 +37,6 @@
+diff --git a/drivers/net/ethernet/xscale/ptp_ixp46x.c b/drivers/net/ethernet/xscale/ptp_ixp46x.c
+index 466f233edd21..c7ff150bf23f 100644
+--- a/drivers/net/ethernet/xscale/ptp_ixp46x.c
++++ b/drivers/net/ethernet/xscale/ptp_ixp46x.c
+@@ -7,7 +7,6 @@
+ #include <linux/device.h>
  #include <linux/module.h>
- #include <linux/soc/ixp4xx/npe.h>
- #include <linux/soc/ixp4xx/qmgr.h>
--#include <mach/hardware.h>
- #include <linux/soc/ixp4xx/cpu.h>
+ #include <linux/err.h>
+-#include <linux/gpio.h>
+ #include <linux/init.h>
+ #include <linux/interrupt.h>
+ #include <linux/io.h>
+@@ -23,8 +22,6 @@
  
- #include "ixp46x_ts.h"
-@@ -177,7 +176,7 @@ struct port {
- 	struct eth_plat_info *plat;
- 	buffer_t *rx_buff_tab[RX_DESCS], *tx_buff_tab[TX_DESCS];
- 	struct desc *desc_tab;	/* coherent */
--	u32 desc_tab_phys;
-+	dma_addr_t desc_tab_phys;
- 	int id;			/* logical port ID */
- 	int speed, duplex;
- 	u8 firmware[4];
-@@ -857,14 +856,14 @@ static int eth_xmit(struct sk_buff *skb, struct net_device *dev)
- 	bytes = len;
- 	mem = skb->data;
- #else
--	offset = (int)skb->data & 3; /* keep 32-bit alignment */
-+	offset = (uintptr_t)skb->data & 3; /* keep 32-bit alignment */
- 	bytes = ALIGN(offset + len, 4);
- 	if (!(mem = kmalloc(bytes, GFP_ATOMIC))) {
- 		dev_kfree_skb(skb);
- 		dev->stats.tx_dropped++;
- 		return NETDEV_TX_OK;
- 	}
--	memcpy_swab32(mem, (u32 *)((int)skb->data & ~3), bytes / 4);
-+	memcpy_swab32(mem, (u32 *)((uintptr_t)skb->data & ~3), bytes / 4);
- #endif
+ #define DRIVER		"ptp_ixp46x"
+ #define N_EXT_TS	2
+-#define MASTER_GPIO	8
+-#define SLAVE_GPIO	7
  
- 	phys = dma_map_single(&dev->dev, mem, bytes, DMA_TO_DEVICE);
+ struct ixp_clock {
+ 	struct ixp46x_ts_regs *regs;
+@@ -245,38 +242,6 @@ static const struct ptp_clock_info ptp_ixp_caps = {
+ 
+ static struct ixp_clock ixp_clock;
+ 
+-static int setup_interrupt(int gpio)
+-{
+-	int irq;
+-	int err;
+-
+-	err = gpio_request(gpio, "ixp4-ptp");
+-	if (err)
+-		return err;
+-
+-	err = gpio_direction_input(gpio);
+-	if (err)
+-		return err;
+-
+-	irq = gpio_to_irq(gpio);
+-	if (irq < 0)
+-		return irq;
+-
+-	err = irq_set_irq_type(irq, IRQF_TRIGGER_FALLING);
+-	if (err) {
+-		pr_err("cannot set trigger type for irq %d\n", irq);
+-		return err;
+-	}
+-
+-	err = request_irq(irq, isr, 0, DRIVER, &ixp_clock);
+-	if (err) {
+-		pr_err("request_irq failed for irq %d\n", irq);
+-		return err;
+-	}
+-
+-	return irq;
+-}
+-
+ int ixp46x_ptp_find(struct ixp46x_ts_regs *__iomem *regs, int *phc_index)
+ {
+ 	*regs = ixp_clock.regs;
+@@ -289,18 +254,20 @@ int ixp46x_ptp_find(struct ixp46x_ts_regs *__iomem *regs, int *phc_index)
+ }
+ EXPORT_SYMBOL_GPL(ixp46x_ptp_find);
+ 
+-static int ptp_ixp_remove(struct platform_device *pdev)
++/* Called from the registered devm action */
++static void ptp_ixp_unregister_action(void *d)
+ {
+-	free_irq(ixp_clock.master_irq, &ixp_clock);
+-	free_irq(ixp_clock.slave_irq, &ixp_clock);
+-	ptp_clock_unregister(ixp_clock.ptp_clock);
+-	ixp_clock.ptp_clock = NULL;
++	struct ptp_clock *ptp_clock = d;
+ 
+-	return 0;
++	ptp_clock_unregister(ptp_clock);
++	ixp_clock.ptp_clock = NULL;
+ }
+ 
+ static int ptp_ixp_probe(struct platform_device *pdev)
+ {
++	struct device *dev = &pdev->dev;
++	int ret;
++
+ 	ixp_clock.regs = devm_platform_ioremap_resource(pdev, 0);
+ 	ixp_clock.master_irq = platform_get_irq(pdev, 0);
+ 	ixp_clock.slave_irq = platform_get_irq(pdev, 1);
+@@ -315,34 +282,39 @@ static int ptp_ixp_probe(struct platform_device *pdev)
+ 	if (IS_ERR(ixp_clock.ptp_clock))
+ 		return PTR_ERR(ixp_clock.ptp_clock);
+ 
++	ret = devm_add_action_or_reset(dev, ptp_ixp_unregister_action,
++				       ixp_clock.ptp_clock);
++	if (ret) {
++		dev_err(dev, "failed to install clock removal handler\n");
++		return ret;
++	}
++
+ 	__raw_writel(DEFAULT_ADDEND, &ixp_clock.regs->addend);
+ 	__raw_writel(1, &ixp_clock.regs->trgt_lo);
+ 	__raw_writel(0, &ixp_clock.regs->trgt_hi);
+ 	__raw_writel(TTIPEND, &ixp_clock.regs->event);
+ 
+-	if (ixp_clock.master_irq != setup_interrupt(MASTER_GPIO)) {
+-		pr_err("failed to setup gpio %d as irq\n", MASTER_GPIO);
+-		goto no_master;
+-	}
+-	if (ixp_clock.slave_irq != setup_interrupt(SLAVE_GPIO)) {
+-		pr_err("failed to setup gpio %d as irq\n", SLAVE_GPIO);
+-		goto no_slave;
+-	}
++	ret = devm_request_irq(dev, ixp_clock.master_irq, isr,
++			       0, DRIVER, &ixp_clock);
++	if (ret)
++		return dev_err_probe(dev, ret,
++				     "request_irq failed for irq %d\n",
++				     ixp_clock.master_irq);
++
++	ret = devm_request_irq(dev, ixp_clock.slave_irq, isr,
++			       0, DRIVER, &ixp_clock);
++	if (ret)
++		return dev_err_probe(dev, ret,
++				     "request_irq failed for irq %d\n",
++				     ixp_clock.slave_irq);
+ 
+ 	return 0;
+-no_slave:
+-	free_irq(ixp_clock.master_irq, &ixp_clock);
+-no_master:
+-	ptp_clock_unregister(ixp_clock.ptp_clock);
+-	ixp_clock.ptp_clock = NULL;
+-	return -ENODEV;
+ }
+ 
+ static struct platform_driver ptp_ixp_driver = {
+ 	.driver.name = "ptp-ixp46x",
+ 	.driver.suppress_bind_attrs = true,
+ 	.probe = ptp_ixp_probe,
+-	.remove = ptp_ixp_remove,
+ };
+ module_platform_driver(ptp_ixp_driver);
+ 
 -- 
 2.31.1
 
