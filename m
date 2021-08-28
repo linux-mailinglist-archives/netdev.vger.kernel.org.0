@@ -2,190 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B4C43FA550
-	for <lists+netdev@lfdr.de>; Sat, 28 Aug 2021 13:12:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 631073FA564
+	for <lists+netdev@lfdr.de>; Sat, 28 Aug 2021 13:26:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234211AbhH1LJ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Aug 2021 07:09:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43680 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234097AbhH1LJ1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Aug 2021 07:09:27 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76FCBC061756
-        for <netdev@vger.kernel.org>; Sat, 28 Aug 2021 04:08:36 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id a25so19651681ejv.6
-        for <netdev@vger.kernel.org>; Sat, 28 Aug 2021 04:08:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=0qYKgnCLen4cBBm6S3pdRBThWsOr6RKmftJwo6Di15U=;
-        b=xDcszBl7xxM60u/49fMgWq+GqKozQxyYq/qAHhBhnVqFcENhnpw5JIb1qI4hm7vR9T
-         QyAQBxhgPf+20poudhcwn74AaO/uvujHJcibdWjxqKheFuKpAk69v10By25yCZJo74j0
-         knzQwdJW1bJB48sBUabX/Xt5ag8J8iXqGKS+w4vRVtkFHUZ9uhOUmOKfyApRcqKexC0s
-         XgF6xa1PTiBVJt5eHBQU35nIAPZM3MDG2jN1YRp1npca3UkrH6c0aDYv+hr0mT8MF3ZQ
-         jwsuqqIiNwLzjvls5Wm3AtfEM9Bf+tEwPi+6gjF0XSeGUj1dp3dWpz8do8Duh7LxJYFZ
-         k9nQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=0qYKgnCLen4cBBm6S3pdRBThWsOr6RKmftJwo6Di15U=;
-        b=DSjNBuL3uNJTG/D7ZgvPR2NvskPbEnFRtsAxauQSI3Hw7TFQqgMz+AzdOTdNpA7C7t
-         PjgXOvzJJxJpi03NPoCba75N7GWdHARvJOIzA36Y0+fGk9V5l6wK5mpEs/MCB+rVBja8
-         Fs5IcUx6WZhVByGxMgMq7rCyHe3sLAtPqY/m+VQBG8AxhQ8yM8br8iH5JQEAm/P+h69M
-         OifKin+JL+82wr/mNMYTzzsy2IfwQlIZHbnAEDf95L59SKFrRd4Em/BL+5xRvulnH2EB
-         i8mHtrZCx8IEsVRG3SVnxbwp56QhzYGeArvIesDwMO2sNTmQOsb6IHLoNeQPPleMsQOd
-         CxDQ==
-X-Gm-Message-State: AOAM533RkdXE7ghNaY9yIsBqrfqPUT1gFnt99Pr/jGXzBsmmJOuoh1yP
-        kG90FfrQ58aNf6dM962Mwa6XB/yTrH1oiJoC
-X-Google-Smtp-Source: ABdhPJwpED+pg+wFuQT8ICrIo4SdtV009s9lbTjMYRdB67HBLjpAIneQz0IQ9146jLni7zCkaMlspA==
-X-Received: by 2002:a17:906:1dd6:: with SMTP id v22mr14796984ejh.226.1630148914810;
-        Sat, 28 Aug 2021 04:08:34 -0700 (PDT)
-Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id i19sm4710429edx.54.2021.08.28.04.08.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 28 Aug 2021 04:08:34 -0700 (PDT)
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-To:     netdev@vger.kernel.org
-Cc:     roopa@nvidia.com, dsahern@gmail.com, stephen@networkplumber.org,
-        Joachim Wiberg <troglobit@gmail.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: [PATCH iproute2-next v2 19/19] bridge: vlan: add support for dumping router ports
-Date:   Sat, 28 Aug 2021 14:08:05 +0300
-Message-Id: <20210828110805.463429-20-razor@blackwall.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210828110805.463429-1-razor@blackwall.org>
-References: <20210828110805.463429-1-razor@blackwall.org>
+        id S234003AbhH1L1Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Aug 2021 07:27:25 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:14432 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233861AbhH1L1Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Aug 2021 07:27:24 -0400
+Received: from dggeme766-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GxZ1p73FnzbdN7;
+        Sat, 28 Aug 2021 19:22:38 +0800 (CST)
+Received: from [10.174.176.245] (10.174.176.245) by
+ dggeme766-chm.china.huawei.com (10.3.19.112) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.8; Sat, 28 Aug 2021 19:26:30 +0800
+Subject: Re: Re: [PATCH v3 0/3] auth_gss: netns refcount leaks when
+ use-gss-proxy==1
+To:     "J. Bruce Fields" <bfields@fieldses.org>,
+        Wenbin Zeng <wenbin.zeng@gmail.com>
+CC:     <davem@davemloft.net>, <viro@zeniv.linux.org.uk>,
+        <jlayton@kernel.org>, <trond.myklebust@hammerspace.com>,
+        <anna.schumaker@netapp.com>, <wenbinzeng@tencent.com>,
+        <dsahern@gmail.com>, <nicolas.dichtel@6wind.com>,
+        <willy@infradead.org>, <edumazet@google.com>,
+        <jakub.kicinski@netronome.com>, <tyhicks@canonical.com>,
+        <chuck.lever@oracle.com>, <neilb@suse.com>,
+        <linux-fsdevel@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-nfs@vger.kernel.org>
+References: <1556692945-3996-1-git-send-email-wenbinzeng@tencent.com>
+ <1560341370-24197-1-git-send-email-wenbinzeng@tencent.com>
+ <20190801195346.GA21527@fieldses.org>
+From:   "wanghai (M)" <wanghai38@huawei.com>
+Message-ID: <9cfbd851-81ce-e272-8693-d3430c381c7a@huawei.com>
+Date:   Sat, 28 Aug 2021 19:26:30 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
+In-Reply-To: <20190801195346.GA21527@fieldses.org>
+Content-Type: text/plain; charset="gbk"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.245]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggeme766-chm.china.huawei.com (10.3.19.112)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-Add dump support for vlan multicast router ports and their details if
-requested. If details are requested we print 1 entry per line, otherwise
-we print all router ports on a single line similar to how mdb prints
-them.
-
-Looks like:
-$ bridge vlan global show vid 100
- port              vlan-id
- bridge            100
-                     mcast_snooping 1 mcast_querier 0 mcast_igmp_version 2 mcast_mld_version 1 mcast_last_member_count 2 mcast_last_member_interval 100 mcast_startup_query_count 2 mcast_startup_query_interval 3125 mcast_membership_interval 26000 mcast_querier_interval 25500 mcast_query_interval 12500 mcast_query_response_interval 1000
-                     router ports: ens20 ens16
-
-Looks like (with -s):
- $ bridge -s vlan global show vid 100
- port              vlan-id
- bridge            100
-                     mcast_snooping 1 mcast_querier 0 mcast_igmp_version 2 mcast_mld_version 1 mcast_last_member_count 2 mcast_last_member_interval 100 mcast_startup_query_count 2 mcast_startup_query_interval 3125 mcast_membership_interval 26000 mcast_querier_interval 25500 mcast_query_interval 12500 mcast_query_response_interval 1000
-                     router ports: ens20   187.57 temp
-                                   ens16   118.27 temp
-
-Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
----
- bridge/br_common.h |  1 +
- bridge/mdb.c       |  6 +++---
- bridge/vlan.c      | 34 ++++++++++++++++++++++++++++++++++
- 3 files changed, 38 insertions(+), 3 deletions(-)
-
-diff --git a/bridge/br_common.h b/bridge/br_common.h
-index 09f42c814918..610e83f65603 100644
---- a/bridge/br_common.h
-+++ b/bridge/br_common.h
-@@ -14,6 +14,7 @@ void print_stp_state(__u8 state);
- int parse_stp_state(const char *arg);
- int print_vlan_rtm(struct nlmsghdr *n, void *arg, bool monitor,
- 		   bool global_only);
-+void br_print_router_port_stats(struct rtattr *pattr);
- 
- int do_fdb(int argc, char **argv);
- int do_mdb(int argc, char **argv);
-diff --git a/bridge/mdb.c b/bridge/mdb.c
-index b427d878677f..7b5863d31c46 100644
---- a/bridge/mdb.c
-+++ b/bridge/mdb.c
-@@ -59,7 +59,7 @@ static const char *format_timer(__u32 ticks, int align)
- 	return tbuf;
- }
- 
--static void __print_router_port_stats(FILE *f, struct rtattr *pattr)
-+void br_print_router_port_stats(struct rtattr *pattr)
- {
- 	struct rtattr *tb[MDBA_ROUTER_PATTR_MAX + 1];
- 
-@@ -101,13 +101,13 @@ static void br_print_router_ports(FILE *f, struct rtattr *attr,
- 			print_string(PRINT_JSON, "port", NULL, port_ifname);
- 
- 			if (show_stats)
--				__print_router_port_stats(f, i);
-+				br_print_router_port_stats(i);
- 			close_json_object();
- 		} else if (show_stats) {
- 			fprintf(f, "router ports on %s: %s",
- 				brifname, port_ifname);
- 
--			__print_router_port_stats(f, i);
-+			br_print_router_port_stats(i);
- 			fprintf(f, "\n");
- 		} else {
- 			fprintf(f, "%s ", port_ifname);
-diff --git a/bridge/vlan.c b/bridge/vlan.c
-index afb5186d36de..bf3b440fa1b4 100644
---- a/bridge/vlan.c
-+++ b/bridge/vlan.c
-@@ -803,6 +803,36 @@ static int print_vlan_stats(struct nlmsghdr *n, void *arg)
- 	return 0;
- }
- 
-+static void print_vlan_router_ports(struct rtattr *rattr)
-+{
-+	int rem = RTA_PAYLOAD(rattr);
-+	struct rtattr *i;
-+
-+	print_string(PRINT_FP, NULL, "%-" __stringify(IFNAMSIZ) "s    ", "");
-+	open_json_array(PRINT_ANY, is_json_context() ? "router_ports" :
-+						       "router ports: ");
-+	for (i = RTA_DATA(rattr); RTA_OK(i, rem); i = RTA_NEXT(i, rem)) {
-+		uint32_t *port_ifindex = RTA_DATA(i);
-+		const char *port_ifname = ll_index_to_name(*port_ifindex);
-+
-+		open_json_object(NULL);
-+		if (show_stats && i != RTA_DATA(rattr)) {
-+			print_nl();
-+			/* start: IFNAMSIZ + 4 + strlen("router ports: ") */
-+			print_string(PRINT_FP, NULL,
-+				     "%-" __stringify(IFNAMSIZ) "s    "
-+				     "              ",
-+				     "");
-+		}
-+		print_string(PRINT_ANY, "port", "%s ", port_ifname);
-+		if (show_stats)
-+			br_print_router_port_stats(i);
-+		close_json_object();
-+	}
-+	close_json_array(PRINT_JSON, NULL);
-+	print_nl();
-+}
-+
- static void print_vlan_global_opts(struct rtattr *a, int ifindex)
- {
- 	struct rtattr *vtb[BRIDGE_VLANDB_GOPTS_MAX + 1], *vattr;
-@@ -902,6 +932,10 @@ static void print_vlan_global_opts(struct rtattr *a, int ifindex)
- 			     rta_getattr_u64(vattr));
- 	}
- 	print_nl();
-+	if (vtb[BRIDGE_VLANDB_GOPTS_MCAST_ROUTER_PORTS]) {
-+		vattr = RTA_DATA(vtb[BRIDGE_VLANDB_GOPTS_MCAST_ROUTER_PORTS]);
-+		print_vlan_router_ports(vattr);
-+	}
- 	close_json_object();
- }
- 
--- 
-2.31.1
-
+ÔÚ 2019/8/2 3:53, J. Bruce Fields Ð´µÀ:
+> I lost track, what happened to these patches?
+>
+> --b.
+>
+> On Wed, Jun 12, 2019 at 08:09:27PM +0800, Wenbin Zeng wrote:
+>> This patch series fixes an auth_gss bug that results in netns refcount
+>> leaks when use-gss-proxy is set to 1.
+>>
+>> The problem was found in privileged docker containers with gssproxy service
+>> enabled and /proc/net/rpc/use-gss-proxy set to 1, the corresponding
+>> struct net->count ends up at 2 after container gets killed, the consequence
+>> is that the struct net cannot be freed.
+>>
+>> It turns out that write_gssp() called gssp_rpc_create() to create a rpc
+>> client, this increases net->count by 2; rpcsec_gss_exit_net() is supposed
+>> to decrease net->count but it never gets called because its call-path is:
+>>          net->count==0 -> cleanup_net -> ops_exit_list -> rpcsec_gss_exit_net
+>> Before rpcsec_gss_exit_net() gets called, net->count cannot reach 0, this
+>> is a deadlock situation.
+>>
+>> To fix the problem, we must break the deadlock, rpcsec_gss_exit_net()
+>> should move out of the put() path and find another chance to get called,
+>> I think nsfs_evict() is a good place to go, when netns inode gets evicted
+>> we call rpcsec_gss_exit_net() to free the rpc client, this requires a new
+>> callback i.e. evict to be added in struct proc_ns_operations, and add
+>> netns_evict() as one of netns_operations as well.
+>>
+>> v1->v2:
+>>   * in nsfs_evict(), move ->evict() in front of ->put()
+>> v2->v3:
+>>   * rpcsec_gss_evict_net() directly call gss_svc_shutdown_net() regardless
+>>     if gssp_clnt is null, this is exactly same to what rpcsec_gss_exit_net()
+>>     previously did
+>>
+>> Wenbin Zeng (3):
+>>    nsfs: add evict callback into struct proc_ns_operations
+>>    netns: add netns_evict into netns_operations
+>>    auth_gss: fix deadlock that blocks rpcsec_gss_exit_net when
+>>      use-gss-proxy==1
+>>
+>>   fs/nsfs.c                      |  2 ++
+>>   include/linux/proc_ns.h        |  1 +
+>>   include/net/net_namespace.h    |  1 +
+>>   net/core/net_namespace.c       | 12 ++++++++++++
+>>   net/sunrpc/auth_gss/auth_gss.c |  4 ++--
+>>   5 files changed, 18 insertions(+), 2 deletions(-)
+>>
+>> -- 
+>> 1.8.3.1
+These patchsets don't seem to merge into the mainline, are there any 
+other patches that fix this bug?
