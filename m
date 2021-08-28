@@ -2,184 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05A9E3FA578
-	for <lists+netdev@lfdr.de>; Sat, 28 Aug 2021 13:29:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 566DD3FA57A
+	for <lists+netdev@lfdr.de>; Sat, 28 Aug 2021 13:30:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234289AbhH1L3t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Aug 2021 07:29:49 -0400
-Received: from smtp05.smtpout.orange.fr ([80.12.242.127]:17998 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234250AbhH1L3n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Aug 2021 07:29:43 -0400
-Received: from pop-os.home ([90.126.253.178])
-        by mwinf5d25 with ME
-        id mzUp2500J3riaq203zUqo8; Sat, 28 Aug 2021 13:28:51 +0200
-X-ME-Helo: pop-os.home
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Sat, 28 Aug 2021 13:28:51 +0200
-X-ME-IP: 90.126.253.178
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] net: pasemi: Remove usage of the deprecated "pci-dma-compat.h" API
-Date:   Sat, 28 Aug 2021 13:28:48 +0200
-Message-Id: <bc6cd281eae024b26fd9c7ef6678d2d1dc9d74fd.1630150008.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.30.2
+        id S234012AbhH1La6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Aug 2021 07:30:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45174 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233917AbhH1La5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 28 Aug 2021 07:30:57 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 9FB9360EB5;
+        Sat, 28 Aug 2021 11:30:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1630150207;
+        bh=wmCydiTt0vZ8cbsJDl6IW9QIpk2wUuBKqrV52yRlU7w=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ajEWHm+LSTon1mrKBmAWMx93TB7u4J5ZUqv5nNv4AcEQfOHdHa5W5y78XGjRn+A+M
+         6/hQxmn/iSl6ldKkYcHJvtXNOvGXjSkERID92ZrQt5Ne+5PosxlM+rhLrXHQi3OZsG
+         djVwKuVGBwHzwk898Yxy7TnJI7RAQXQI8AhW6INsRHHVbd0yT2krH/05hLjA4D/N8l
+         TFDF9115BEXhhkJlMY/rxdXYBLMnz+8KZJnL+Gh3fNHZzjPFeOVMgqRq/OaKnFWcl3
+         LrLzEMvS+ed8GAYSuXO/vKK8JZZOIlBN0skPh+rByFICO1/ODc2bnmtf8uPwsc1Ere
+         vX2HaNOQIPyNQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9206160A44;
+        Sat, 28 Aug 2021 11:30:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/6] ionic: queue mgmt updates
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163015020759.6002.148977781720312776.git-patchwork-notify@kernel.org>
+Date:   Sat, 28 Aug 2021 11:30:07 +0000
+References: <20210827185512.50206-1-snelson@pensando.io>
+In-Reply-To: <20210827185512.50206-1-snelson@pensando.io>
+To:     Shannon Nelson <snelson@pensando.io>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
+        drivers@pensando.io, jtoppins@redhat.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In [1], Christoph Hellwig has proposed to remove the wrappers in
-include/linux/pci-dma-compat.h.
+Hello:
 
-Some reasons why this API should be removed have been given by Julia
-Lawall in [2].
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-A coccinelle script has been used to perform the needed transformation
-Only relevant parts are given below.
+On Fri, 27 Aug 2021 11:55:06 -0700 you wrote:
+> The first pair of patches help smooth the driver's response when
+> the firmware has gone through a recovery/reboot cycle.
+> 
+> The next four patches take care of a couple things seen when
+> changing the interface status.
+> 
+> Shannon Nelson (6):
+>   ionic: fire watchdog again after fw_down
+>   ionic: squelch unnecessary fw halted message
+>   ionic: fill mac addr earlier in add_addr
+>   ionic: add queue lock around open and stop
+>   ionic: pull hwstamp queue_lock up a level
+>   ionic: recreate hwstamp queues on ifup
+> 
+> [...]
 
-An 'unlikely()' has been removed when calling 'dma_mapping_error()' because
-this function, which is inlined, already has such an annotation.
+Here is the summary with links:
+  - [net-next,1/6] ionic: fire watchdog again after fw_down
+    https://git.kernel.org/netdev/net-next/c/d3e2dcdb6853
+  - [net-next,2/6] ionic: squelch unnecessary fw halted message
+    https://git.kernel.org/netdev/net-next/c/970dfbf428c4
+  - [net-next,3/6] ionic: fill mac addr earlier in add_addr
+    https://git.kernel.org/netdev/net-next/c/92c90dff687f
+  - [net-next,4/6] ionic: add queue lock around open and stop
+    https://git.kernel.org/netdev/net-next/c/af3d2ae11443
+  - [net-next,5/6] ionic: pull hwstamp queue_lock up a level
+    https://git.kernel.org/netdev/net-next/c/7ee99fc5ed2e
+  - [net-next,6/6] ionic: recreate hwstamp queues on ifup
+    https://git.kernel.org/netdev/net-next/c/ccbbd002a419
 
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-@@ @@
--    PCI_DMA_TODEVICE
-+    DMA_TO_DEVICE
-
-@@ @@
--    PCI_DMA_FROMDEVICE
-+    DMA_FROM_DEVICE
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_single(e1, e2, e3, e4)
-+    dma_map_single(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_single(e1, e2, e3, e4)
-+    dma_unmap_single(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4, e5;
-@@
--    pci_map_page(e1, e2, e3, e4, e5)
-+    dma_map_page(&e1->dev, e2, e3, e4, e5)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_page(e1, e2, e3, e4)
-+    dma_unmap_page(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2;
-@@
--    pci_dma_mapping_error(e1, e2)
-+    dma_mapping_error(&e1->dev, e2)
-
-
-[1]: https://lore.kernel.org/kernel-janitors/20200421081257.GA131897@infradead.org/
-[2]: https://lore.kernel.org/kernel-janitors/alpine.DEB.2.22.394.2007120902170.2424@hadrien/
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-It has been compile tested.
----
- drivers/net/ethernet/pasemi/pasemi_mac.c | 32 ++++++++++++------------
- 1 file changed, 16 insertions(+), 16 deletions(-)
-
-diff --git a/drivers/net/ethernet/pasemi/pasemi_mac.c b/drivers/net/ethernet/pasemi/pasemi_mac.c
-index 040a15a828b4..04a27ba26cc7 100644
---- a/drivers/net/ethernet/pasemi/pasemi_mac.c
-+++ b/drivers/net/ethernet/pasemi/pasemi_mac.c
-@@ -247,12 +247,13 @@ static int pasemi_mac_unmap_tx_skb(struct pasemi_mac *mac,
- 	int f;
- 	struct pci_dev *pdev = mac->dma_pdev;
- 
--	pci_unmap_single(pdev, dmas[0], skb_headlen(skb), PCI_DMA_TODEVICE);
-+	dma_unmap_single(&pdev->dev, dmas[0], skb_headlen(skb), DMA_TO_DEVICE);
- 
- 	for (f = 0; f < nfrags; f++) {
- 		const skb_frag_t *frag = &skb_shinfo(skb)->frags[f];
- 
--		pci_unmap_page(pdev, dmas[f+1], skb_frag_size(frag), PCI_DMA_TODEVICE);
-+		dma_unmap_page(&pdev->dev, dmas[f + 1], skb_frag_size(frag),
-+			       DMA_TO_DEVICE);
- 	}
- 	dev_kfree_skb_irq(skb);
- 
-@@ -548,10 +549,8 @@ static void pasemi_mac_free_rx_buffers(struct pasemi_mac *mac)
- 	for (i = 0; i < RX_RING_SIZE; i++) {
- 		info = &RX_DESC_INFO(rx, i);
- 		if (info->skb && info->dma) {
--			pci_unmap_single(mac->dma_pdev,
--					 info->dma,
--					 info->skb->len,
--					 PCI_DMA_FROMDEVICE);
-+			dma_unmap_single(&mac->dma_pdev->dev, info->dma,
-+					 info->skb->len, DMA_FROM_DEVICE);
- 			dev_kfree_skb_any(info->skb);
- 		}
- 		info->dma = 0;
-@@ -600,11 +599,11 @@ static void pasemi_mac_replenish_rx_ring(struct net_device *dev,
- 		if (unlikely(!skb))
- 			break;
- 
--		dma = pci_map_single(mac->dma_pdev, skb->data,
-+		dma = dma_map_single(&mac->dma_pdev->dev, skb->data,
- 				     mac->bufsz - LOCAL_SKB_ALIGN,
--				     PCI_DMA_FROMDEVICE);
-+				     DMA_FROM_DEVICE);
- 
--		if (unlikely(pci_dma_mapping_error(mac->dma_pdev, dma))) {
-+		if (dma_mapping_error(&mac->dma_pdev->dev, dma)) {
- 			dev_kfree_skb_irq(info->skb);
- 			break;
- 		}
-@@ -741,8 +740,9 @@ static int pasemi_mac_clean_rx(struct pasemi_mac_rxring *rx,
- 
- 		len = (macrx & XCT_MACRX_LLEN_M) >> XCT_MACRX_LLEN_S;
- 
--		pci_unmap_single(pdev, dma, mac->bufsz - LOCAL_SKB_ALIGN,
--				 PCI_DMA_FROMDEVICE);
-+		dma_unmap_single(&pdev->dev, dma,
-+				 mac->bufsz - LOCAL_SKB_ALIGN,
-+				 DMA_FROM_DEVICE);
- 
- 		if (macrx & XCT_MACRX_CRC) {
- 			/* CRC error flagged */
-@@ -1444,10 +1444,10 @@ static int pasemi_mac_start_tx(struct sk_buff *skb, struct net_device *dev)
- 
- 	nfrags = skb_shinfo(skb)->nr_frags;
- 
--	map[0] = pci_map_single(mac->dma_pdev, skb->data, skb_headlen(skb),
--				PCI_DMA_TODEVICE);
-+	map[0] = dma_map_single(&mac->dma_pdev->dev, skb->data,
-+				skb_headlen(skb), DMA_TO_DEVICE);
- 	map_size[0] = skb_headlen(skb);
--	if (pci_dma_mapping_error(mac->dma_pdev, map[0]))
-+	if (dma_mapping_error(&mac->dma_pdev->dev, map[0]))
- 		goto out_err_nolock;
- 
- 	for (i = 0; i < nfrags; i++) {
-@@ -1534,8 +1534,8 @@ static int pasemi_mac_start_tx(struct sk_buff *skb, struct net_device *dev)
- 	spin_unlock_irqrestore(&txring->lock, flags);
- out_err_nolock:
- 	while (nfrags--)
--		pci_unmap_single(mac->dma_pdev, map[nfrags], map_size[nfrags],
--				 PCI_DMA_TODEVICE);
-+		dma_unmap_single(&mac->dma_pdev->dev, map[nfrags],
-+				 map_size[nfrags], DMA_TO_DEVICE);
- 
- 	return NETDEV_TX_BUSY;
- }
--- 
-2.30.2
 
