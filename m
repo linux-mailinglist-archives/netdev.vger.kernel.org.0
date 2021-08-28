@@ -2,86 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E8F93FA638
-	for <lists+netdev@lfdr.de>; Sat, 28 Aug 2021 16:23:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C7B93FA639
+	for <lists+netdev@lfdr.de>; Sat, 28 Aug 2021 16:27:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229911AbhH1OY2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Aug 2021 10:24:28 -0400
-Received: from mout.kundenserver.de ([212.227.126.187]:47353 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229525AbhH1OY2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Aug 2021 10:24:28 -0400
-Received: from localhost.localdomain ([37.4.249.97]) by
- mrelayeu.kundenserver.de (mreue012 [212.227.15.167]) with ESMTPSA (Nemesis)
- id 1MjgfT-1mi5ae3ePL-00lF7L; Sat, 28 Aug 2021 16:23:27 +0200
-From:   Stefan Wahren <stefan.wahren@i2se.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Michael Heimpold <michael.heimpold@in-tech.com>,
-        netdev@vger.kernel.org, Stefan Wahren <stefan.wahren@i2se.com>
-Subject: [PATCH net] net: qualcomm: fix QCA7000 checksum handling
-Date:   Sat, 28 Aug 2021 16:23:15 +0200
-Message-Id: <20210828142315.7971-1-stefan.wahren@i2se.com>
-X-Mailer: git-send-email 2.17.1
-X-Provags-ID: V03:K1:t99F4Kem/3fgJ7Z22us0H2MugnPBvjfohIjoJBoYg0Nfifm2r3p
- 7fWSU8qAyecGuhr6MXmf/iME0Vb3OXXw5ER/WF+6doDRqVGEPlIkgWRtgNgsmC4sz+9uIJE
- z9BFhIqVQceWv5VNfm5soK0g8ZRJMjYDRzUxhD7ChMouy7izZsD+sGI5OipzIr7+qFMZGCm
- 5JDjPrLR/PM60Rih4bzrQ==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:rjzky3zIXWQ=:dqV1qkWmp2n0h6WcYlNx6g
- SdTWTeE2U2r2FBcTCKS+CSH7+DkTQF5NI0wBl6OkCOWs8JB0tUlaSzUpDAgK9chRgLwyOciNQ
- +TLFYHT+vNpU3xkArIM00CX0qBz4CA44DXDRjiYJrB9RovRxf/+lxPj5ZVcm4NnD40p6qGHO3
- N9gc1wOwGccEYBnXSOiNlgwBlrIgBc+lvBk7axU9mHhl4NNXNc+Ts+xEHoudM6MRY+p2OavPW
- GsANLlDnG47xU2gy7pFw+St+rD3z+hNp5rPp1biEuivDi2c58xYM0ums6rYjXEw0L1G0ok//O
- mcX7ptWhIElgnfP1E9E0givQ3yuVZibGhLL+ZeDcv0ENoWrwBLZJLx7oKpGtfjqfts7R1LQ9A
- /QoMBoQIh2ujrmPsYUV+mKNkpPLgBfeyut9WkDQss4qNthFILun+GSpiUVU/POgvpneZmnZ2T
- cY8gkKgbYNCrwRTy3CuN4k85wBwlxWy42aKopVDf2l8Lue2jfrTLF/FnjeWlO/h55EaVxN1q9
- hUpLXQNtIlwT2Hr28VhdVVPQIExXPa/xq9uXDf2csGEph3Jj4Y/vQmI18qhmmfyIUiNLKs2x+
- 6FM+4c1XqfNh0YjvaDmVUUgb6pwjA4lQoMIhmQntjSd0mSEWdBuVCi2HIq8Ui48UXn/p7xa+1
- HmE1uPDIArSQUTCv4xuQVGG1d1BGrMXIeWwr2TRKkxCiolqFmy/IMa4nwQ2Lz9bC+2u1Ud+0J
- X5dJqqR5/AhI8FYApCsSDCByVoQKYovibtr+Wg==
+        id S229941AbhH1O2S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Aug 2021 10:28:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59318 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229525AbhH1O2R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Aug 2021 10:28:17 -0400
+Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04AF7C061756
+        for <netdev@vger.kernel.org>; Sat, 28 Aug 2021 07:27:26 -0700 (PDT)
+Received: by mail-yb1-xb41.google.com with SMTP id z5so18417996ybj.2
+        for <netdev@vger.kernel.org>; Sat, 28 Aug 2021 07:27:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=Q3qCSeMB8tAtR3KCGXFGK+PYTIwdPQVDmqeoHpkIy64=;
+        b=YBXru26+h6L8sbGg/H+FUI2K72ayueb6MFh2p4+RdDleL7YutAp45d6Nf5mqq7qgxC
+         dmkTyLtHWiNOaiQlXNpdH5CWNjmrdnJS5W5q7LDF+nwMOoAOd5LUMa8n3jWC6Rzmogxo
+         8ZehKiPXb2FnYA+ogo81s/VR6d9THGyGcGEdDxrulJ9oahilGJA0zjSs9AeOmskdlTsq
+         nWNteHEPMeAKXvqRHKB2yGCU2zY7M3TT+vpt1OhlHzm9UCyBKBp/oNa6X9Sh/fIJFp67
+         3ZTfOWLbJT/jHhXM7B373X1cdSxn7ONmuhsoK8F4CiG9iZJAtRNuY/2hvkVwlfR707kh
+         liGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=Q3qCSeMB8tAtR3KCGXFGK+PYTIwdPQVDmqeoHpkIy64=;
+        b=IN0N83CKhylk4yB1Xz5G4rt5wiR46Uh1wp2MJZPz2xPH+Y/ZI5F6sy19WLYMf2ZR5m
+         4Q+PawqAewd8r8hetaI1BVJwfUKkc3CqNNe7dZ9zgb9GGnBD4P0lc80Vi3BbJvo7Ltk8
+         ErNxjiEwRvYekjriVog7dmdfEVwUklPK9dJQRkyCXK62mpIE3WkE9FurWmZBIZ8B0G2V
+         OBtcH21kUumhcuDyC21yGQGDQO+4pv5VxfD13QJdakeppKGNn08P9Myf74p2PcKlwOXK
+         YhIuyu+lVSgYC3+bC+UpwwZpN8FDBKS6ZlqMfh1BFOnh7zSHhI4jFKpdhXUJIDMpqqEt
+         Hw1g==
+X-Gm-Message-State: AOAM5327rkLy3Std5M5tplneXkTwoUq7h6Q5gHA0aSLDl/W/pJW+t/bK
+        DvjIGQY3cFgpB7v+svpG8fgjramRc/WLfKtXnrc=
+X-Google-Smtp-Source: ABdhPJwujRxdJc5kB/rJlu6mcYdV344+DJEAVHs6i/gJzHg58SOiuqGkQnySy346P1CUMPgmDXJcqAaSOUsiIK2ag5w=
+X-Received: by 2002:a25:2f0e:: with SMTP id v14mr397577ybv.279.1630160843794;
+ Sat, 28 Aug 2021 07:27:23 -0700 (PDT)
+MIME-Version: 1.0
+Received: by 2002:a05:7108:9146:0:0:0:0 with HTTP; Sat, 28 Aug 2021 07:27:23
+ -0700 (PDT)
+From:   UN Strategic Coordination <sonlinda37@gmail.com>
+Date:   Sat, 28 Aug 2021 15:27:23 +0100
+Message-ID: <CAKVXtxQPbx9b2KOK31JtL74pG28NP7AtXfhqGu6rJkcywTK+MA@mail.gmail.com>
+Subject: Hello
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Based on tests the QCA7000 doesn't support checksum offloading. So assume
-ip_summed is CHECKSUM_NONE and let the kernel take care of the checksum
-handling. This fixes data transfer issues in noisy environments.
+United Nations Assistant Secretary-General for Development
+Coordination, In Affiliation with World Bank.
 
-Reported-by: Michael Heimpold <michael.heimpold@in-tech.com>
-Fixes: 291ab06ecf67 ("net: qualcomm: new Ethernet over SPI driver for QCA7000")
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
----
- drivers/net/ethernet/qualcomm/qca_spi.c  | 2 +-
- drivers/net/ethernet/qualcomm/qca_uart.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+Dear Beneficiary,
 
-diff --git a/drivers/net/ethernet/qualcomm/qca_spi.c b/drivers/net/ethernet/qualcomm/qca_spi.c
-index b64c254e00ba..8427fe1b8fd1 100644
---- a/drivers/net/ethernet/qualcomm/qca_spi.c
-+++ b/drivers/net/ethernet/qualcomm/qca_spi.c
-@@ -434,7 +434,7 @@ qcaspi_receive(struct qcaspi *qca)
- 				skb_put(qca->rx_skb, retcode);
- 				qca->rx_skb->protocol = eth_type_trans(
- 					qca->rx_skb, qca->rx_skb->dev);
--				qca->rx_skb->ip_summed = CHECKSUM_UNNECESSARY;
-+				skb_checksum_none_assert(qca->rx_skb);
- 				netif_rx_ni(qca->rx_skb);
- 				qca->rx_skb = netdev_alloc_skb_ip_align(net_dev,
- 					net_dev->mtu + VLAN_ETH_HLEN);
-diff --git a/drivers/net/ethernet/qualcomm/qca_uart.c b/drivers/net/ethernet/qualcomm/qca_uart.c
-index bcdeca7b3366..ce3f7ce31adc 100644
---- a/drivers/net/ethernet/qualcomm/qca_uart.c
-+++ b/drivers/net/ethernet/qualcomm/qca_uart.c
-@@ -107,7 +107,7 @@ qca_tty_receive(struct serdev_device *serdev, const unsigned char *data,
- 			skb_put(qca->rx_skb, retcode);
- 			qca->rx_skb->protocol = eth_type_trans(
- 						qca->rx_skb, qca->rx_skb->dev);
--			qca->rx_skb->ip_summed = CHECKSUM_UNNECESSARY;
-+			skb_checksum_none_assert(qca->rx_skb);
- 			netif_rx_ni(qca->rx_skb);
- 			qca->rx_skb = netdev_alloc_skb_ip_align(netdev,
- 								netdev->mtu +
--- 
-2.17.1
+We have previously sent you emails in respect of your outstanding
+compensation payment which has since been assigned to you. We were
+going through your payment portfolio and came to a logical conclusion
+that you are yet to receive your 2021 Covid-19 compensation payment.
+We must get you informed that your email was listed among those that
+are yet to receive their compensation payment. The United Nations in
+Affiliation with World Bank have agreed to compensate each with the
+sum of USD1,500, 000.00 (One Million Five Hundred Thousand United
+States Dollars) only.
 
+For this reason, you are to receive your payment through a certified
+ATM CARD PAYMENT. Note, with this ATM Card you can withdraw money and
+also make payment anywhere in the World without any problem and please
+for no reason should you disclose your account information as your
+account information is not and can never be needed before you receive
+your card payment.
+
+Contact Name: Mrs. Mariam Almeer
+Email: malmeer966@gmail.com
+
+Please ensure that you follow the directives and instructions of Mrs.
+Mariam Almeer so that within 24-72 hours you would have received your
+card payment and your secret pin code issued directly to you for
+security reasons. We apologize on behalf of the United Nations
+Development Coordination for any delay you might have encountered in
+the past.
+
+Yours Faithfully,
+
+Assistant Secretary General-General- Volker Turk
+United Nations for Strategic Coordination
