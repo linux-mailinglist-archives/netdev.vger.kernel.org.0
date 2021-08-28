@@ -2,49 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B09353FA6FB
-	for <lists+netdev@lfdr.de>; Sat, 28 Aug 2021 19:21:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 319363FA72B
+	for <lists+netdev@lfdr.de>; Sat, 28 Aug 2021 20:33:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229732AbhH1RW2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Aug 2021 13:22:28 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:46170 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229518AbhH1RW1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 28 Aug 2021 13:22:27 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=h5lKgS/NcVoyPDzovo8eWrWUMUPw6tKFiyp5C9nPI/s=; b=tjjqGNTTMM7NFgBxI8Cexm4Xdt
-        W8q1S0HrEVm/OpheldRpgESNNeMD6sHIGbVW6L4Qcl3kBhHBiDyRigZ84Xahk/po3JvfUOOS14Tok
-        ByuHxdQnAq4SwHXEr3Vrc8TtGMV9yqw4gX0mBXtdxxAIMUbZ2U79sxPfVr/RHXmU0L7w=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mK21N-004J4k-7t; Sat, 28 Aug 2021 19:21:33 +0200
-Date:   Sat, 28 Aug 2021 19:21:33 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     shjy180909@gmail.com
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        roopa@nvidia.com, nikolay@nvidia.com
-Subject: Re: [PATCH net-next] net: bridge: use mld2r_ngrec instead of
- icmpv6_dataun
-Message-ID: <YSpwnTf/fzUwcKxV@lunn.ch>
-References: <20210828084307.70316-1-shjy180909@gmail.com>
+        id S230516AbhH1SdC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Aug 2021 14:33:02 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:37782 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230137AbhH1SdB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Aug 2021 14:33:01 -0400
+Received: by mail-io1-f71.google.com with SMTP id h3-20020a056602008300b005b7c0e23e11so6119429iob.4
+        for <netdev@vger.kernel.org>; Sat, 28 Aug 2021 11:32:10 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=up8sbinmdfW5FEk6l6npSbM0ylrChylbR3vjt8i49Xs=;
+        b=dtrFbLmgT8hgBZ2kfdxH3kMwrhdW7t9DStFlZra9KDDXiqIn7TI/jgstKdaJr9vPbQ
+         aVaH4sqCEREqItx1mxtlvVdQ9pBusTJVl4ZfcMSFyTKpnOm4V5tQ90p4zhAiUtwypZui
+         4xQnDYpwjh40o7qyC+fO+Whvr3TCYs9W1Jc1IvQpYhhReoZ5c/MgGGkqr1mUMQBrQt9z
+         VSerKZqV7KuXvyDPC0L6C6ESCeePIrghxhJqyfE8i8sOYza/kKoIdcJtPGjiC73dssA2
+         L7C6cDpXwvkXLthcqZowG0wc8Wpq9A0n0d9yGRh/55p6GrgKFqzZD+exxFkehJ/K4YGP
+         66Sg==
+X-Gm-Message-State: AOAM531esvw5jydgm2gCuZ+gzIccyu1FJv9ginvN2YyBgl89pL9CBdjl
+        w3LHf39X+/BNscO1dsULLm0qVPjXmyYJrHn+jZSRevNrFqWO
+X-Google-Smtp-Source: ABdhPJz+Yyr5HRroDxrfkjQQ5ziL5gBeIlEZ7KitgTECC5WrydwZTAne5hlTp3U9EC17zAoYBcRj22iKM9omVjv0Oo7cv7/OiVjq
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210828084307.70316-1-shjy180909@gmail.com>
+X-Received: by 2002:a92:280d:: with SMTP id l13mr10827952ilf.99.1630175530430;
+ Sat, 28 Aug 2021 11:32:10 -0700 (PDT)
+Date:   Sat, 28 Aug 2021 11:32:10 -0700
+In-Reply-To: <000000000000b575ab05aebfc192@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000069bb3e05caa2d1f8@google.com>
+Subject: Re: [syzbot] WARNING: refcount bug in qrtr_node_lookup
+From:   syzbot <syzbot+c613e88b3093ebf3686e@syzkaller.appspotmail.com>
+To:     anant.thazhemadam@gmail.com, bjorn.andersson@linaro.org,
+        butterflyhuangxx@gmail.com, davem@davemloft.net,
+        dragonjetli@gmail.com, hdanton@sina.com, kuba@kernel.org,
+        linux-arm-msm@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        linux-kernel@vger.kernel.org, mani@kernel.org,
+        manivannan.sadhasivam@linaro.org, masahiroy@kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Aug 28, 2021 at 08:43:07AM +0000, shjy180909@gmail.com wrote:
-> From: MichelleJin <shjy180909@gmail.com>
-> 
-> using icmp6h->mld2r_ngrec instead of icmp6h->icmp6_dataun.un_data16[1].
+syzbot suspects this issue was fixed by commit:
 
-Please could you expand the commit message to explain why?  I can see
-what the patch does by reading it, but i have no idea why?
+commit 7e78c597c3ebfd0cb329aa09a838734147e4f117
+Author: Xiaolong Huang <butterflyhuangxx@gmail.com>
+Date:   Thu Aug 19 19:50:34 2021 +0000
 
-     Andrew
+    net: qrtr: fix another OOB Read in qrtr_endpoint_post
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11279a4d300000
+start commit:   ba4f184e126b Linux 5.9-rc6
+git tree:       upstream
+kernel config:  https://syzkaller.appspot.com/x/.config?x=af502ec9a451c9fc
+dashboard link: https://syzkaller.appspot.com/bug?extid=c613e88b3093ebf3686e
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12263dd9900000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13d77603900000
+
+If the result looks correct, please mark the issue as fixed by replying with:
+
+#syz fix: net: qrtr: fix another OOB Read in qrtr_endpoint_post
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
