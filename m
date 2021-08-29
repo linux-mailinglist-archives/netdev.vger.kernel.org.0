@@ -2,69 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 949A33FAA83
-	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 11:50:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 327A23FAA85
+	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 11:50:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235011AbhH2Ju7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Aug 2021 05:50:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56976 "EHLO mail.kernel.org"
+        id S235033AbhH2JvC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Aug 2021 05:51:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57006 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234981AbhH2Ju6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S234984AbhH2Ju6 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sun, 29 Aug 2021 05:50:58 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id CF94760F39;
-        Sun, 29 Aug 2021 09:50:06 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPS id 0449F60F45;
+        Sun, 29 Aug 2021 09:50:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1630230606;
-        bh=gJ3ari2FChJSHC1zxF0US0T5Ilqb1fpHecvMUahAWnQ=;
+        s=k20201202; t=1630230607;
+        bh=ODkDrwb1ycfq4Uhnm1jokyYbjL0JHwQ9WuXLfsuwiRo=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=FCb7kkDmM2Ux4eiAA1jm5Lbn4gj5t5ZZ+d9WRkY/Uzj0L60rixAaGCxwpSfPYbTLb
-         vjRcivx3gEHQiY+erjf8JA3yWos/tJ527zOVvvsAK6IznPcMFzlboaDF4E1CMjK8zR
-         ZQZFk0+GuH5u5V0VkevkCHTkWNQPXQtQ4JaoGNxgDUTpy8pKDARgcoyWwct6QJAlEQ
-         DBVxlvgggZxRHL6UnQ8O5yZBiTOuMpEs9aksr4zJlwU4nzXsIQOdlX9ROg4M12XFvy
-         4Raocgh4d5PkCUoeRXYAGFQQb2pUEbQ/n63/Q5WA0/JaI1BzJdJx7ySCdYkPclsRxJ
-         nRzGDp61WPq+Q==
+        b=nXmXNAqjn95mOeDKGMnimsLToRUVIapHoCTDnUgDXNiyO+oTb2GfM3UmsKG3NVJ/p
+         3OTqKW9oFxN9XtQPErWB2urmxSaCNZvFcxdKFu1fpJtFNG/8p0mDxNIqqK3mtTe4Ae
+         tJY7msr47esgcDn8T36YWhfksrAUwll4UqUYSCh7JE6K4qxM7zKYxaLRBJcu61SaE6
+         ystwbBkE6Qi8iyHCJu2xt3fd6maK3hvz8SrTLDes3muIF3b2Xq/ZQ/WlBleJC+ULCw
+         s9fwDSDSfml910R62Qlzfl9fUeFwiQzJgAh2GFjAaTGpkKGWB6+3Qn0qE68gMKl2rd
+         1dLSZQnSm5gYg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C9B3360A3C;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id F2ECD60A14;
         Sun, 29 Aug 2021 09:50:06 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/3][pull request] 1GbE Intel Wired LAN Driver
- Updates 2021-08-27
+Subject: Re: [PATCH] octeontx2-af: Fix inconsistent license text
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163023060682.19070.7690744992833338059.git-patchwork-notify@kernel.org>
+Message-Id: <163023060699.19070.8717517572158736874.git-patchwork-notify@kernel.org>
 Date:   Sun, 29 Aug 2021 09:50:06 +0000
-References: <20210827172513.224045-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20210827172513.224045-1-anthony.l.nguyen@intel.com>
-To:     Nguyen@ci.codeaurora.org, Anthony L <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        sasha.neftin@intel.com, vitaly.lifshits@intel.com,
-        aravindhan.gunasekaran@intel.com
+References: <1630064804-1368-1-git-send-email-sgoutham@marvell.com>
+In-Reply-To: <1630064804-1368-1-git-send-email-sgoutham@marvell.com>
+To:     Sunil Goutham <sgoutham@marvell.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Fri, 27 Aug 2021 10:25:10 -0700 you wrote:
-> Aravindhan Gunasekaran says:
+On Fri, 27 Aug 2021 17:16:44 +0530 you wrote:
+> Fixed inconsistent license text across the RVU admin
+> function driver.
 > 
-> This adds support for Credit-based shaper qdisc offload from
-> Traffic Control system. It enables traffic prioritization and
-> bandwidth reservation via the Credit-Based Shaper which is
-> implemented in hardware by i225 controller.
-> 
-> [...]
+> Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+> ---
+>  drivers/net/ethernet/marvell/octeontx2/af/Makefile      | 2 +-
+>  drivers/net/ethernet/marvell/octeontx2/af/cgx.c         | 5 +----
+>  drivers/net/ethernet/marvell/octeontx2/af/cgx.h         | 7 ++-----
+>  drivers/net/ethernet/marvell/octeontx2/af/cgx_fw_if.h   | 7 ++-----
+>  drivers/net/ethernet/marvell/octeontx2/af/common.h      | 8 ++------
+>  drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h | 3 ++-
+>  drivers/net/ethernet/marvell/octeontx2/af/mbox.c        | 9 +++------
+>  drivers/net/ethernet/marvell/octeontx2/af/mbox.h        | 7 ++-----
+>  drivers/net/ethernet/marvell/octeontx2/af/npc.h         | 7 ++-----
+>  drivers/net/ethernet/marvell/octeontx2/af/npc_profile.h | 7 ++-----
+>  drivers/net/ethernet/marvell/octeontx2/af/ptp.c         | 3 ++-
+>  drivers/net/ethernet/marvell/octeontx2/af/ptp.h         | 3 ++-
+>  drivers/net/ethernet/marvell/octeontx2/af/rpm.c         | 2 +-
+>  drivers/net/ethernet/marvell/octeontx2/af/rpm.h         | 2 +-
+>  drivers/net/ethernet/marvell/octeontx2/af/rvu.c         | 7 ++-----
+>  drivers/net/ethernet/marvell/octeontx2/af/rvu.h         | 7 ++-----
+>  drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c     | 7 ++-----
+>  drivers/net/ethernet/marvell/octeontx2/af/rvu_cn10k.c   | 2 +-
+>  drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c     | 6 +++++-
+>  drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c | 7 ++-----
+>  drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c | 2 +-
+>  drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.h | 2 +-
+>  drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c     | 7 ++-----
+>  drivers/net/ethernet/marvell/octeontx2/af/rvu_npa.c     | 7 ++-----
+>  drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c     | 7 ++-----
+>  drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c  | 2 +-
+>  drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.c     | 7 ++-----
+>  drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h     | 7 ++-----
+>  drivers/net/ethernet/marvell/octeontx2/af/rvu_sdp.c     | 2 +-
+>  drivers/net/ethernet/marvell/octeontx2/af/rvu_struct.h  | 7 ++-----
+>  drivers/net/ethernet/marvell/octeontx2/af/rvu_switch.c  | 3 ++-
+>  drivers/net/ethernet/marvell/octeontx2/af/rvu_trace.c   | 5 +++--
+>  drivers/net/ethernet/marvell/octeontx2/af/rvu_trace.h   | 5 +++--
+>  33 files changed, 63 insertions(+), 108 deletions(-)
 
 Here is the summary with links:
-  - [net-next,1/3] igc: Use default cycle 'start' and 'end' values for queues
-    https://git.kernel.org/netdev/net-next/c/c814a2d2d48f
-  - [net-next,2/3] igc: Simplify TSN flags handling
-    https://git.kernel.org/netdev/net-next/c/61572d5f8f91
-  - [net-next,3/3] igc: Add support for CBS offloading
-    https://git.kernel.org/netdev/net-next/c/1ab011b0bf07
+  - octeontx2-af: Fix inconsistent license text
+    https://git.kernel.org/netdev/net-next/c/c7cd6c5a460c
 
 You are awesome, thank you!
 --
