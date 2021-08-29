@@ -2,95 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 598C63FABAE
-	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 15:14:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FCAB3FAC0D
+	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 15:49:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235632AbhH2NOZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Aug 2021 09:14:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47032 "EHLO
+        id S232139AbhH2NuA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Aug 2021 09:50:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235573AbhH2NOO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Aug 2021 09:14:14 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2297C06129E
-        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 06:13:21 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id s3so20719468ljp.11
-        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 06:13:21 -0700 (PDT)
+        with ESMTP id S231199AbhH2Nt7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Aug 2021 09:49:59 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65242C061575
+        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 06:49:07 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id t1so10784390pgv.3
+        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 06:49:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=DZOpdA3eYjpudg4OpQFFkH8jLHw3BxsNdxzTMff7kgw=;
-        b=JYgvhRh/XMbWSmh2hHQ6low2HT/EK5Db15j4xEn196MVYAmhicQUPTkqK33Ygf5yJV
-         rIzHsKI+Z3ckWJRnIUe8dzDewGj8MNiCcN3JIyjVk8xGm0jTD/fexByf4nfLDCRojILy
-         /oSMgUZwtgSQTDfCyHKl3j2WvWHGMsledNkCtgxqqMzm9IvPQvg4CFrG2Jlfglgj36iX
-         PooxcxfGHTuPO6c6gyEHfNmzBVsimJZLJTGHu6co+MuRlWDTVLxi4vVmD0a2oxg5N+8h
-         2NOSABtA1NVG0Xv+u7omjq/8kK4obaak3LZh0U+Pdzi6pCOqwezV15LMpV08KYXIqDFE
-         T49A==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=pU39ntma6piHWGZ2URADFIQ83rV3TBoNVUvbHvvIBME=;
+        b=l21UcXp4dvhjZg8Mg+goDcJFV+l5MwunZMb+2rOAT56HsDQNjK25Rt5MOr52bjmi/L
+         h/V6du2vQUU7Jd6GcBZaIG8eMgTap6pjYBD3uBswDRSL68RJgbWRd+YSNYhG34WfSG7P
+         kGk6t7ol4Y/vbAfr0mw7gYEe4XFFc5Vt1atngqpTbeQRRhmxx6+J8dLsLk7wxp1oT5dO
+         zc/hFh+eHztNlij7q20/bMwV7Y49HgOss/oDuld4f6Pm7kbEOhrsXLMNopSpD7Sf44mv
+         lIofPi/iuSDgwIfyNP9ssXM0CSVAxxNJgLUkHjK4px0hiGcEGWzQmlSAwqwdk8w+g81H
+         C0Jg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=DZOpdA3eYjpudg4OpQFFkH8jLHw3BxsNdxzTMff7kgw=;
-        b=abMthJVIK5YTZSEBrCVwCiRUG3rwlUznK+ploXk9H+lMv2Yv54EUrG2Gdmyl6mdk4G
-         dwD/OqY+zIdfmpc+HhgGJqf5YMHPdB3Vpj9r0yOLLqDFbS9+VcKmxPwPVsIYaUtylj7y
-         jIlLnQFSN19YIpsH5Gj210o5U/NNpfiokS4Pb9J47scKkoMAYARCP86nItCWnWJvmfp+
-         t5dOj2/aQ5v8zXOCyC4OV3v/tZcaPCiwmrbzYqYF3yQkX+MoIOegh154WSSsBClBMDG1
-         re2Iv25sVO0sHdh7bT2stL+bulaFwLWzfdlyvrEDkcFms1axmqPP1kJ41ziBz5ceLGyy
-         xZ3A==
-X-Gm-Message-State: AOAM532nZcym6B6nH3WqyHmzvfN6ckoemrrv1z40PudZD1YJDZ9CIbCk
-        7m1S5EAaUk8Y+A2gaNFI2LEDFQ==
-X-Google-Smtp-Source: ABdhPJwN0RnHneAiBvwIuepF2POuNFYC+7soqzPBkiEXgB5t1sLpCiFezga+nEjbYoWJ71ExIPe4Iw==
-X-Received: by 2002:a2e:b605:: with SMTP id r5mr16548450ljn.283.1630242800140;
-        Sun, 29 Aug 2021 06:13:20 -0700 (PDT)
-Received: from eriador.lan ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id x13sm712503lfq.262.2021.08.29.06.13.19
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=pU39ntma6piHWGZ2URADFIQ83rV3TBoNVUvbHvvIBME=;
+        b=YF7y+F/rBWbVdolNSPJvgYPea8kpQErZdummHXEFHM3pj3vSn2a/AP1nQHTxv0AEaD
+         PzdjESiD0l1PFUNRZ4M6ZT2QkUDJshrzwlt3mun9CbampwUTXuJHEg2NY7Tc8HizKgtJ
+         +dSJhQLTw4gz91oU72c0eZ3F03HZRFlIdCrQ9DrZmwZWfbQuyPNjAqkH8YvkHeZHF4bD
+         ykmFWWia8YeqSpIcrqWqX49SxjPZlFkFXu18BohuQ6xb5yQV26pSKtQXgUKVBkSlYLPy
+         HMt2BAwtWcZ5eF8Ii0Id1C3xgjnZtPfnKKJw0FwO7dk5FAEPOdW/E7XntfswHqIMW4m2
+         2Ptw==
+X-Gm-Message-State: AOAM532Lfr8ioVjb+O0dg4nfVsJTGwqS1oPNLFeZQ/mD0VLL2epqWcB3
+        24FOM88AWEPY9VFF8F6hI/4u7O36q4KN
+X-Google-Smtp-Source: ABdhPJwvHWQQtjwEPKuFfX+qUNq3Lg4CsOnLh85SZXkCldfSqdtyp28OPzlGWtVbQDoDgl88/q8tLQ==
+X-Received: by 2002:a63:350:: with SMTP id 77mr17050462pgd.441.1630244946550;
+        Sun, 29 Aug 2021 06:49:06 -0700 (PDT)
+Received: from thinkpad ([120.138.13.162])
+        by smtp.gmail.com with ESMTPSA id s192sm12427523pgc.23.2021.08.29.06.49.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 29 Aug 2021 06:13:19 -0700 (PDT)
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Stanimir Varbanov <svarbanov@mm-sol.com>
-Cc:     linux-arm-msm@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [RFC v2 13/13] WIP: arm64: dts: qcom: qrb5165-rb5: add bus-pwrseq property to pcie0
-Date:   Sun, 29 Aug 2021 16:13:05 +0300
-Message-Id: <20210829131305.534417-14-dmitry.baryshkov@linaro.org>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20210829131305.534417-1-dmitry.baryshkov@linaro.org>
-References: <20210829131305.534417-1-dmitry.baryshkov@linaro.org>
+        Sun, 29 Aug 2021 06:49:05 -0700 (PDT)
+Date:   Sun, 29 Aug 2021 19:19:01 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] net: qrtr: mhi: make it work again
+Message-ID: <20210829134901.GA8243@thinkpad>
+References: <20210829124528.507457-1-dmitry.baryshkov@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210829124528.507457-1-dmitry.baryshkov@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
----
- arch/arm64/boot/dts/qcom/qrb5165-rb5.dts | 1 +
- 1 file changed, 1 insertion(+)
+Hi Dmitry,
 
-diff --git a/arch/arm64/boot/dts/qcom/qrb5165-rb5.dts b/arch/arm64/boot/dts/qcom/qrb5165-rb5.dts
-index 326330f528fc..0c347cb6f8e0 100644
---- a/arch/arm64/boot/dts/qcom/qrb5165-rb5.dts
-+++ b/arch/arm64/boot/dts/qcom/qrb5165-rb5.dts
-@@ -689,6 +689,7 @@ wifi-therm@1 {
- 
- &pcie0 {
- 	status = "okay";
-+	bus-pwrseq = <&qca_pwrseq 0>;
- };
- 
- &pcie0_phy {
--- 
-2.33.0
+On Sun, Aug 29, 2021 at 03:45:28PM +0300, Dmitry Baryshkov wrote:
+> The commit ce78ffa3ef16 ("net: really fix the build...") introduced two
+> issues into the mhi.c driver:
+>  - use of initialized completion
+>  - calling mhi_prepare_for_transfer twice
+> 
 
+ce78ffa3ef16 got reverted in net-next:
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/net/qrtr?id=9ebc2758d0bbed951511d1709be0717178ec2660
+
+And you also need the below commit:
+https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git/commit/?h=char-misc-next&id=0dc3ad3f859d3a65b335c861ec342d31d91e8bc8
+
+Both commits are in linux-next so the issue should be fixed there and also in
+the mainline soon.
+
+Thanks,
+Mani
+
+> While the first one is pretty obvious, the second one makes all devices
+> using mhi.c to return -EINVAL during probe. Fist
+> mhi_prepare_for_transfer() would change both channels state to ENABLED.
+> Then when second mhi_prepare_for_transfer() would be called it would
+> also try switching them to ENABLED again, which is forbidden by the
+> state machine in the mhi_update_channel_state() function (see
+> drivers/bus/mhi/core/main.c).
+> These two issues make all drivers using qcom_mhi_qrtr (e.g. ath11k) to
+> fail with -EINVAL.
+> 
+> Fix them by removing first mhi_prepare_for_transfer() call and by adding
+> the init_completion() call.
+> 
+> Fixes: ce78ffa3ef16 ("net: really fix the build...")
+> Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> ---
+>  net/qrtr/mhi.c | 7 ++-----
+>  1 file changed, 2 insertions(+), 5 deletions(-)
+> 
+> diff --git a/net/qrtr/mhi.c b/net/qrtr/mhi.c
+> index 1dc955ca57d3..f3f4a5fdeaf3 100644
+> --- a/net/qrtr/mhi.c
+> +++ b/net/qrtr/mhi.c
+> @@ -83,15 +83,12 @@ static int qcom_mhi_qrtr_probe(struct mhi_device *mhi_dev,
+>  	struct qrtr_mhi_dev *qdev;
+>  	int rc;
+>  
+> -	/* start channels */
+> -	rc = mhi_prepare_for_transfer(mhi_dev, 0);
+> -	if (rc)
+> -		return rc;
+> -
+>  	qdev = devm_kzalloc(&mhi_dev->dev, sizeof(*qdev), GFP_KERNEL);
+>  	if (!qdev)
+>  		return -ENOMEM;
+>  
+> +	init_completion(&qdev->ready);
+> +
+>  	qdev->mhi_dev = mhi_dev;
+>  	qdev->dev = &mhi_dev->dev;
+>  	qdev->ep.xmit = qcom_mhi_qrtr_send;
+> -- 
+> 2.33.0
+> 
