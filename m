@@ -2,484 +2,412 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12D123FAD8D
-	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 19:56:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A2233FAD7B
+	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 19:40:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235664AbhH2R4J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Aug 2021 13:56:09 -0400
-Received: from mga03.intel.com ([134.134.136.65]:38294 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229904AbhH2R4F (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 29 Aug 2021 13:56:05 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10091"; a="218210870"
-X-IronPort-AV: E=Sophos;i="5.84,361,1620716400"; 
-   d="scan'208";a="218210870"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2021 10:55:12 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.84,361,1620716400"; 
-   d="scan'208";a="458779337"
-Received: from unknown (HELO localhost.igk.intel.com) ([10.102.22.231])
-  by fmsmga007.fm.intel.com with ESMTP; 29 Aug 2021 10:55:10 -0700
-From:   Maciej Machnikowski <maciej.machnikowski@intel.com>
-To:     maciej.machnikowski@intel.com, netdev@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org
-Cc:     richardcochran@gmail.com, abyagowi@fb.com,
-        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: [RFC v3 net-next 2/2] ice: add support for reading SyncE DPLL state
-Date:   Sun, 29 Aug 2021 19:39:34 +0200
-Message-Id: <20210829173934.3683561-3-maciej.machnikowski@intel.com>
-X-Mailer: git-send-email 2.26.3
-In-Reply-To: <20210829173934.3683561-1-maciej.machnikowski@intel.com>
-References: <20210829173934.3683561-1-maciej.machnikowski@intel.com>
+        id S230330AbhH2Rll (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Aug 2021 13:41:41 -0400
+Received: from smtprelay0131.hostedemail.com ([216.40.44.131]:38060 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S229665AbhH2Rlk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Aug 2021 13:41:40 -0400
+Received: from omf19.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay04.hostedemail.com (Postfix) with ESMTP id B923A18027C9F;
+        Sun, 29 Aug 2021 17:40:46 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf19.hostedemail.com (Postfix) with ESMTPA id 66BFF20D75C;
+        Sun, 29 Aug 2021 17:40:45 +0000 (UTC)
+Message-ID: <26dc72d60681346bf6db245a649b7e049e125d74.camel@perches.com>
+Subject: Re: [PATCH][next] igc: remove redundant continue statement
+From:   Joe Perches <joe@perches.com>
+To:     Colin King <colin.king@canonical.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Sun, 29 Aug 2021 10:40:44 -0700
+In-Reply-To: <20210829165150.531678-1-colin.king@canonical.com>
+References: <20210829165150.531678-1-colin.king@canonical.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.0-1 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Rspamd-Server: rspamout04
+X-Rspamd-Queue-Id: 66BFF20D75C
+X-Stat-Signature: j6to1aadtpf6rbmut9wqbdy98ukofpuf
+X-Spam-Status: No, score=-2.88
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1+PkvHXoZZ9biqHpZEZ8UQ0r++6zlQvJLM=
+X-HE-Tag: 1630258845-918920
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement SyncE DPLL monitoring for E810-T devices.
-Poll loop will periodically check the state of the DPLL and cache it
-in the pf structure. State changes will be logged in the system log.
+On Sun, 2021-08-29 at 17:51 +0100, Colin King wrote:
+> From: Colin Ian King <colin.king@canonical.com>
+> 
+> The continue statement at the end of a for-loop has no effect,
+> remove it.
 
-Cached state can be read using the RTM_GETEECSTATE rtnetlink
-message.
+There seem to be a few of this type of use in the kernel.
 
-Different SyncE EEC sources will be reported depending on the pin
-driving the DPLL:
- - pins 0-1: can be driven by PTP clock
- - pins 2-5: are used by SyncE recovered clocks
- - pins 6-7: can be used to connect external frequency sources
- - pin 8: is connected to the optional GNSS receiver
+Many are in switch {} default: continue uses inside loops where there
+is no additional statement after the switch statement ends.
 
-Signed-off-by: Maciej Machnikowski <maciej.machnikowski@intel.com>
----
- drivers/net/ethernet/intel/ice/ice.h          |  5 ++
- .../net/ethernet/intel/ice/ice_adminq_cmd.h   | 34 ++++++++++
- drivers/net/ethernet/intel/ice/ice_common.c   | 62 +++++++++++++++++++
- drivers/net/ethernet/intel/ice/ice_common.h   |  4 ++
- drivers/net/ethernet/intel/ice/ice_devids.h   |  3 +
- drivers/net/ethernet/intel/ice/ice_main.c     | 55 ++++++++++++++++
- drivers/net/ethernet/intel/ice/ice_ptp.c      | 35 +++++++++++
- drivers/net/ethernet/intel/ice/ice_ptp_hw.c   | 44 +++++++++++++
- drivers/net/ethernet/intel/ice/ice_ptp_hw.h   | 22 +++++++
- 9 files changed, 264 insertions(+)
+The continue is obviously safe and even perhaps preferred as statements
+_might_ be added after the switch end or test/continue use.
 
-diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index eadcb9958346..6fb7e07e8a62 100644
---- a/drivers/net/ethernet/intel/ice/ice.h
-+++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -508,6 +508,11 @@ struct ice_pf {
- #define ICE_VF_AGG_NODE_ID_START	65
- #define ICE_MAX_VF_AGG_NODES		32
- 	struct ice_agg_node vf_agg_node[ICE_MAX_VF_AGG_NODES];
-+
-+	enum if_eec_state synce_dpll_state;
-+	u8 synce_dpll_pin;
-+	enum if_eec_state ptp_dpll_state;
-+	u8 ptp_dpll_pin;
- };
- 
- struct ice_netdev_priv {
-diff --git a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-index 21b4c7cd6f05..b84da5e9d025 100644
---- a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-+++ b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-@@ -1727,6 +1727,36 @@ struct ice_aqc_add_rdma_qset_data {
- 	struct ice_aqc_add_tx_rdma_qset_entry rdma_qsets[];
- };
- 
-+/* Get CGU DPLL status (direct 0x0C66) */
-+struct ice_aqc_get_cgu_dpll_status {
-+	u8 dpll_num;
-+	u8 ref_state;
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_REF_SW_LOS		BIT(0)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_REF_SW_SCM		BIT(1)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_REF_SW_CFM		BIT(2)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_REF_SW_GST		BIT(3)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_REF_SW_PFM		BIT(4)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_REF_SW_ESYNC	BIT(6)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_FAST_LOCK_EN	BIT(7)
-+	__le16 dpll_state;
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_STATE_LOCK		BIT(0)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_STATE_HO		BIT(1)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_STATE_HO_READY	BIT(2)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_STATE_FLHIT		BIT(5)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_STATE_PSLHIT	BIT(7)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_STATE_CLK_REF_SHIFT	8
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_STATE_CLK_REF_SEL	\
-+	ICE_M(0x1F, ICE_AQC_GET_CGU_DPLL_STATUS_STATE_CLK_REF_SHIFT)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_STATE_MODE_SHIFT	13
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_STATE_MODE \
-+	ICE_M(0x7, ICE_AQC_GET_CGU_DPLL_STATUS_STATE_MODE_SHIFT)
-+	__le32 phase_offset_h;
-+	__le32 phase_offset_l;
-+	u8 eec_mode;
-+	u8 rsvd[1];
-+	__le16 node_handle;
-+};
-+
- /* Configure Firmware Logging Command (indirect 0xFF09)
-  * Logging Information Read Response (indirect 0xFF10)
-  * Note: The 0xFF10 command has no input parameters.
-@@ -1954,6 +1984,7 @@ struct ice_aq_desc {
- 		struct ice_aqc_fw_logging fw_logging;
- 		struct ice_aqc_get_clear_fw_log get_clear_fw_log;
- 		struct ice_aqc_download_pkg download_pkg;
-+		struct ice_aqc_get_cgu_dpll_status get_cgu_dpll_status;
- 		struct ice_aqc_driver_shared_params drv_shared_params;
- 		struct ice_aqc_set_mac_lb set_mac_lb;
- 		struct ice_aqc_alloc_free_res_cmd sw_res_ctrl;
-@@ -2108,6 +2139,9 @@ enum ice_adminq_opc {
- 	ice_aqc_opc_update_pkg				= 0x0C42,
- 	ice_aqc_opc_get_pkg_info_list			= 0x0C43,
- 
-+	/* 1588/SyncE commands/events */
-+	ice_aqc_opc_get_cgu_dpll_status			= 0x0C66,
-+
- 	ice_aqc_opc_driver_shared_params		= 0x0C90,
- 
- 	/* Standalone Commands/Events */
-diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
-index 2fb81e359cdf..e7474643a421 100644
---- a/drivers/net/ethernet/intel/ice/ice_common.c
-+++ b/drivers/net/ethernet/intel/ice/ice_common.c
-@@ -69,6 +69,31 @@ bool ice_is_e810(struct ice_hw *hw)
- 	return hw->mac_type == ICE_MAC_E810;
- }
- 
-+/**
-+ * ice_is_e810t
-+ * @hw: pointer to the hardware structure
-+ *
-+ * returns true if the device is E810T based, false if not.
-+ */
-+bool ice_is_e810t(struct ice_hw *hw)
-+{
-+	switch (hw->device_id) {
-+	case ICE_DEV_ID_E810C_SFP:
-+		if (hw->subsystem_device_id == ICE_SUBDEV_ID_E810T ||
-+		    hw->subsystem_device_id == ICE_SUBDEV_ID_E810T2)
-+			return true;
-+		break;
-+	case ICE_DEV_ID_E810C_QSFP:
-+		if (hw->subsystem_device_id == ICE_SUBDEV_ID_E810T2)
-+			return true;
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	return false;
-+}
-+
- /**
-  * ice_clear_pf_cfg - Clear PF configuration
-  * @hw: pointer to the hardware structure
-@@ -4520,6 +4545,42 @@ ice_dis_vsi_rdma_qset(struct ice_port_info *pi, u16 count, u32 *qset_teid,
- 	return ice_status_to_errno(status);
- }
- 
-+/**
-+ * ice_aq_get_cgu_dpll_status
-+ * @hw: pointer to the HW struct
-+ * @dpll_num: DPLL index
-+ * @ref_state: Reference clock state
-+ * @dpll_state: DPLL state
-+ * @phase_offset: Phase offset in ps
-+ * @eec_mode: EEC_mode
-+ *
-+ * Get CGU DPLL status (0x0C66)
-+ */
-+enum ice_status
-+ice_aq_get_cgu_dpll_status(struct ice_hw *hw, u8 dpll_num, u8 *ref_state,
-+			   u16 *dpll_state, u64 *phase_offset, u8 *eec_mode)
-+{
-+	struct ice_aqc_get_cgu_dpll_status *cmd;
-+	struct ice_aq_desc desc;
-+	enum ice_status status;
-+
-+	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_get_cgu_dpll_status);
-+	cmd = &desc.params.get_cgu_dpll_status;
-+	cmd->dpll_num = dpll_num;
-+
-+	status = ice_aq_send_cmd(hw, &desc, NULL, 0, NULL);
-+	if (!status) {
-+		*ref_state = cmd->ref_state;
-+		*dpll_state = le16_to_cpu(cmd->dpll_state);
-+		*phase_offset = le32_to_cpu(cmd->phase_offset_h);
-+		*phase_offset <<= 32;
-+		*phase_offset += le32_to_cpu(cmd->phase_offset_l);
-+		*eec_mode = cmd->eec_mode;
-+	}
-+
-+	return status;
-+}
-+
- /**
-  * ice_replay_pre_init - replay pre initialization
-  * @hw: pointer to the HW struct
-@@ -4974,3 +5035,4 @@ bool ice_fw_supports_report_dflt_cfg(struct ice_hw *hw)
- 	}
- 	return false;
- }
-+
-diff --git a/drivers/net/ethernet/intel/ice/ice_common.h b/drivers/net/ethernet/intel/ice/ice_common.h
-index fb16070f02e2..ccd76c0cbf2c 100644
---- a/drivers/net/ethernet/intel/ice/ice_common.h
-+++ b/drivers/net/ethernet/intel/ice/ice_common.h
-@@ -100,6 +100,7 @@ enum ice_status
- ice_aq_manage_mac_write(struct ice_hw *hw, const u8 *mac_addr, u8 flags,
- 			struct ice_sq_cd *cd);
- bool ice_is_e810(struct ice_hw *hw);
-+bool ice_is_e810t(struct ice_hw *hw);
- enum ice_status ice_clear_pf_cfg(struct ice_hw *hw);
- enum ice_status
- ice_aq_set_phy_cfg(struct ice_hw *hw, struct ice_port_info *pi,
-@@ -156,6 +157,9 @@ ice_cfg_vsi_rdma(struct ice_port_info *pi, u16 vsi_handle, u16 tc_bitmap,
- int
- ice_ena_vsi_rdma_qset(struct ice_port_info *pi, u16 vsi_handle, u8 tc,
- 		      u16 *rdma_qset, u16 num_qsets, u32 *qset_teid);
-+enum ice_status
-+ice_aq_get_cgu_dpll_status(struct ice_hw *hw, u8 dpll_num, u8 *ref_state,
-+			   u16 *dpll_state, u64 *phase_offset, u8 *eec_mode);
- int
- ice_dis_vsi_rdma_qset(struct ice_port_info *pi, u16 count, u32 *qset_teid,
- 		      u16 *q_id);
-diff --git a/drivers/net/ethernet/intel/ice/ice_devids.h b/drivers/net/ethernet/intel/ice/ice_devids.h
-index 9d8194671f6a..e52dbeddb783 100644
---- a/drivers/net/ethernet/intel/ice/ice_devids.h
-+++ b/drivers/net/ethernet/intel/ice/ice_devids.h
-@@ -52,4 +52,7 @@
- /* Intel(R) Ethernet Connection E822-L 1GbE */
- #define ICE_DEV_ID_E822L_SGMII		0x189A
- 
-+#define ICE_SUBDEV_ID_E810T		0x000E
-+#define ICE_SUBDEV_ID_E810T2		0x000F
-+
- #endif /* _ICE_DEVIDS_H_ */
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 60d55d043a94..26ba437d24f3 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -5973,6 +5973,60 @@ static void ice_napi_disable_all(struct ice_vsi *vsi)
- 	}
- }
- 
-+/**
-+ * ice_get_eec_state - get state of SyncE DPLL
-+ * @netdev: network interface device structure
-+ * @state: state of SyncE DPLL
-+ * @src: source type driving SyncE DPLL
-+ * @pin_idx: index of pin driving SyncE DPLL
-+ */
-+static int
-+ice_get_eec_state(struct net_device *netdev, enum if_eec_state *state,
-+		  enum if_eec_src *src, u8 *pin_idx)
-+{
-+	struct ice_netdev_priv *np = netdev_priv(netdev);
-+	struct ice_vsi *vsi = np->vsi;
-+	struct ice_pf *pf = vsi->back;
-+
-+	if (!ice_is_e810t(&pf->hw))
-+		return -EOPNOTSUPP;
-+
-+	if (state)
-+		*state = pf->synce_dpll_state;
-+	if (pin_idx)
-+		*pin_idx = pf->synce_dpll_pin;
-+	if (src) {
-+		switch (pf->synce_dpll_pin) {
-+		case REF0P:
-+		case REF0N:
-+			*src = IF_EEC_SRC_PTP;
-+			break;
-+		case REF1P:
-+		case REF1N:
-+		case REF2P:
-+		case REF2N:
-+			*src = IF_EEC_SRC_SYNCE;
-+			break;
-+		case REF3P:
-+		case REF3N:
-+			*src = IF_EEC_SRC_EXT;
-+			break;
-+		case REF4P:
-+			*src = IF_EEC_SRC_GNSS;
-+			break;
-+		default:
-+			*src = IF_EEC_SRC_INVALID;
-+			break;
-+		}
-+
-+		/* Always report invalid source if state is not Locked */
-+		if (pf->synce_dpll_state != IF_EEC_STATE_LOCKED)
-+			*src = IF_EEC_SRC_INVALID;
-+	}
-+
-+	return 0;
-+}
-+
- /**
-  * ice_down - Shutdown the connection
-  * @vsi: The VSI being stopped
-@@ -7263,4 +7317,5 @@ static const struct net_device_ops ice_netdev_ops = {
- 	.ndo_bpf = ice_xdp,
- 	.ndo_xdp_xmit = ice_xdp_xmit,
- 	.ndo_xsk_wakeup = ice_xsk_wakeup,
-+	.ndo_get_eec_state = ice_get_eec_state,
- };
-diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.c b/drivers/net/ethernet/intel/ice/ice_ptp.c
-index 9e3ddb9b8b51..24dde2d31e2a 100644
---- a/drivers/net/ethernet/intel/ice/ice_ptp.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ptp.c
-@@ -1370,6 +1370,36 @@ static void ice_ptp_tx_tstamp_cleanup(struct ice_ptp_tx *tx)
- 	}
- }
- 
-+static void ice_handle_cgu_state(struct ice_pf *pf)
-+{
-+	enum if_eec_state cgu_state;
-+	u8 pin;
-+
-+	cgu_state = ice_get_dpll_state(&pf->hw, ICE_CGU_DPLL_SYNCE, &pin);
-+	if (pf->synce_dpll_state != cgu_state) {
-+		pf->synce_dpll_state = cgu_state;
-+		pf->synce_dpll_pin = pin;
-+
-+		dev_warn(ice_pf_to_dev(pf),
-+			 "<DPLL%i> state changed to: %d, pin %d",
-+			 ICE_CGU_DPLL_SYNCE,
-+			 pf->synce_dpll_state,
-+			 pin);
-+	}
-+
-+	cgu_state = ice_get_dpll_state(&pf->hw, ICE_CGU_DPLL_PTP, &pin);
-+	if (pf->ptp_dpll_state != cgu_state) {
-+		pf->ptp_dpll_state = cgu_state;
-+		pf->ptp_dpll_pin = pin;
-+
-+		dev_warn(ice_pf_to_dev(pf),
-+			 "<DPLL%i> state changed to: %d, pin %d",
-+			 ICE_CGU_DPLL_PTP,
-+			 pf->ptp_dpll_state,
-+			 pin);
-+	}
-+}
-+
- static void ice_ptp_periodic_work(struct kthread_work *work)
- {
- 	struct ice_ptp *ptp = container_of(work, struct ice_ptp, work.work);
-@@ -1378,6 +1408,10 @@ static void ice_ptp_periodic_work(struct kthread_work *work)
- 	if (!test_bit(ICE_FLAG_PTP, pf->flags))
- 		return;
- 
-+	if (ice_is_e810t(&pf->hw) &&
-+	    &pf->hw.func_caps.ts_func_info.src_tmr_owned)
-+		ice_handle_cgu_state(pf);
-+
- 	ice_ptp_update_cached_phctime(pf);
- 
- 	ice_ptp_tx_tstamp_cleanup(&pf->ptp.port.tx);
-@@ -1556,3 +1590,4 @@ void ice_ptp_release(struct ice_pf *pf)
- 
- 	dev_info(ice_pf_to_dev(pf), "Removed PTP clock\n");
- }
-+
-diff --git a/drivers/net/ethernet/intel/ice/ice_ptp_hw.c b/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
-index 3eca0e4eab0b..df09f176512b 100644
---- a/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
-@@ -375,6 +375,50 @@ static int ice_ptp_port_cmd_e810(struct ice_hw *hw, enum ice_ptp_tmr_cmd cmd)
- 	return 0;
- }
- 
-+/**
-+ * ice_get_dpll_state - get the state of the DPLL
-+ * @hw: pointer to the hw struct
-+ * @dpll_idx: Index of internal DPLL unit
-+ * @pin: pointer to a buffer for returning currently active pin
-+ *
-+ * This function will read the state of the DPLL(dpll_idx). If optional
-+ * parameter pin is given it'll be used to retrieve currently active pin.
-+ *
-+ * Return: state of the DPLL
-+ */
-+enum if_eec_state
-+ice_get_dpll_state(struct ice_hw *hw, u8 dpll_idx, u8 *pin)
-+{
-+	enum ice_status status;
-+	u64 phase_offset;
-+	u16 dpll_state;
-+	u8 ref_state;
-+	u8 eec_mode;
-+
-+	if (dpll_idx >= ICE_CGU_DPLL_MAX)
-+		return IF_EEC_STATE_INVALID;
-+
-+	status = ice_aq_get_cgu_dpll_status(hw, dpll_idx, &ref_state,
-+					    &dpll_state, &phase_offset,
-+					    &eec_mode);
-+	if (status)
-+		return IF_EEC_STATE_INVALID;
-+
-+	if (pin) {
-+		/* current ref pin in dpll_state_refsel_status_X register */
-+		*pin = (dpll_state &
-+			ICE_AQC_GET_CGU_DPLL_STATUS_STATE_CLK_REF_SEL) >>
-+		       ICE_AQC_GET_CGU_DPLL_STATUS_STATE_CLK_REF_SHIFT;
-+	}
-+
-+	if (dpll_state & ICE_AQC_GET_CGU_DPLL_STATUS_STATE_LOCK)
-+		return IF_EEC_STATE_LOCKED;
-+	else if (dpll_state & ICE_AQC_GET_CGU_DPLL_STATUS_STATE_HO)
-+		return IF_EEC_STATE_HOLDOVER;
-+
-+	return IF_EEC_STATE_FREERUN;
-+}
-+
- /* Device agnostic functions
-  *
-  * The following functions implement useful behavior to hide the differences
-diff --git a/drivers/net/ethernet/intel/ice/ice_ptp_hw.h b/drivers/net/ethernet/intel/ice/ice_ptp_hw.h
-index 55a414e87018..cc5dc79fc926 100644
---- a/drivers/net/ethernet/intel/ice/ice_ptp_hw.h
-+++ b/drivers/net/ethernet/intel/ice/ice_ptp_hw.h
-@@ -30,6 +30,8 @@ int ice_clear_phy_tstamp(struct ice_hw *hw, u8 block, u8 idx);
- 
- /* E810 family functions */
- int ice_ptp_init_phy_e810(struct ice_hw *hw);
-+enum if_eec_state
-+ice_get_dpll_state(struct ice_hw *hw, u8 dpll_idx, u8 *pin);
- 
- #define PFTSYN_SEM_BYTES	4
- 
-@@ -76,4 +78,24 @@ int ice_ptp_init_phy_e810(struct ice_hw *hw);
- #define LOW_TX_MEMORY_BANK_START	0x03090000
- #define HIGH_TX_MEMORY_BANK_START	0x03090004
- 
-+enum ice_e810t_cgu_dpll {
-+	ICE_CGU_DPLL_SYNCE,
-+	ICE_CGU_DPLL_PTP,
-+	ICE_CGU_DPLL_MAX
-+};
-+
-+enum ice_e810t_cgu_pins {
-+	REF0P,
-+	REF0N,
-+	REF1P,
-+	REF1N,
-+	REF2P,
-+	REF2N,
-+	REF3P,
-+	REF3N,
-+	REF4P,
-+	REF4N,
-+	NUM_E810T_CGU_PINS
-+};
-+
- #endif /* _ICE_PTP_HW_H_ */
--- 
-2.26.3
+But perhaps those should be converted to break;
+
+For instance: drivers/gpu/drm/zte/zx_vou.c
+
+static void zx_overlay_init(struct drm_device *drm, struct zx_vou_hw *vou)
+{
+	struct device *dev = vou->dev;
+	struct zx_plane *zplane;
+	int i;
+	int ret;
+
+	/*
+	 * VL0 has some quirks on scaling support which need special handling.
+	 * Let's leave it out for now.
+	 */
+	for (i = 1; i < VL_NUM; i++) {
+		zplane = devm_kzalloc(dev, sizeof(*zplane), GFP_KERNEL);
+		if (!zplane) {
+			DRM_DEV_ERROR(dev, "failed to allocate zplane %d\n", i);
+			return;
+		}
+
+		zplane->layer = vou->osd + OSD_VL_OFFSET(i);
+		zplane->hbsc = vou->osd + HBSC_VL_OFFSET(i);
+		zplane->rsz = vou->otfppu + RSZ_VL_OFFSET(i);
+		zplane->bits = &zx_vl_bits[i];
+
+		ret = zx_plane_init(drm, zplane, DRM_PLANE_TYPE_OVERLAY);
+		if (ret) {
+			DRM_DEV_ERROR(dev, "failed to init overlay %d\n", i);
+			continue;
+		}
+	}
+}
+
+Here's a grep using grep version 2.5.4 that finds these
+(with some false positives)
+
+$ grep-2.5.4 -rP --include=*.[ch] -n '\t{3,3}continue;\n\t{2,2}\}\n\t{1,1}\}' *
+arch/x86/events/intel/core.c:3408:			continue;
+		}
+	}
+arch/arm/mach-at91/pm.c:801:			continue;
+		}
+	}
+arch/powerpc/xmon/xmon.c:973:			continue;
+		}
+	}
+arch/powerpc/platforms/ps3/mm.c:450:			continue;
+		}
+	}
+arch/powerpc/platforms/powernv/opal-irqchip.c:286:			continue;
+		}
+	}
+drivers/net/vxlan.c:807:			continue;
+		}
+	}
+drivers/net/hamradio/6pack.c:450:			continue;
+		}
+	}
+drivers/net/wireless/ath/ath11k/mac.c:5369:			continue;
+		}
+	}
+drivers/net/wireless/ath/ath11k/mac.c:5403:			continue;
+		}
+	}
+drivers/net/wireless/ath/ath10k/mac.c:8646:			continue;
+		}
+	}
+drivers/net/wireless/ath/ath10k/mac.c:8687:			continue;
+		}
+	}
+drivers/net/geneve.c:513:			continue;
+		}
+	}
+drivers/net/ethernet/ti/netcp_core.c:331:			continue;
+		}
+	}
+drivers/net/ethernet/neterion/s2io.c:1392:			continue;
+		}
+	}
+drivers/net/ethernet/toshiba/ps3_gelic_wireless.c:1722:				continue;
+		}
+	}
+drivers/net/ethernet/mellanox/mlx5/core/en_tc.c:1633:			continue;
+		}
+	}
+drivers/net/ethernet/intel/ixgbe/ixgbe_main.c:9386:				continue;
+		}
+	}
+drivers/target/iscsi/iscsi_target_erl1.c:341:			continue;
+		}
+	}
+drivers/cpufreq/powernow-k8.c:848:			continue;
+		}
+	}
+drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:3179:			continue;
+		}
+	}
+drivers/iommu/intel/iommu.c:3082:			continue;
+		}
+	}
+drivers/soc/ti/knav_qmss_queue.c:724:			continue;
+		}
+	}
+drivers/mmc/host/vub300.c:561:			continue;
+		}
+	}
+drivers/mmc/host/vub300.c:1885:			continue;
+		}
+	}
+drivers/staging/rtl8188eu/core/rtw_efuse.c:552:			continue;
+		}
+	}
+drivers/staging/greybus/audio_helper.c:184:			continue;
+		}
+	}
+drivers/block/rbd.c:2443:			continue;
+		}
+	}
+drivers/clk/sunxi/clk-sun8i-bus-gates.c:89:			continue;
+		}
+	}
+drivers/clk/sunxi/clk-mod0.c:348:			continue;
+		}
+	}
+drivers/pci/controller/pci-hyperv.c:2056:			continue;
+		}
+	}
+drivers/scsi/mvumi.c:1595:				continue;
+		}
+	}
+drivers/scsi/fnic/fnic_fcs.c:654:			continue;
+		}
+	}
+drivers/scsi/qla4xxx/ql4_os.c:2795:			continue;
+		}
+	}
+drivers/scsi/megaraid/megaraid_mm.c:545:			continue;
+		}
+	}
+drivers/scsi/libsas/sas_expander.c:1202:			continue;
+		}
+	}
+drivers/usb/typec/tcpm/tcpm.c:3236:			continue;
+		}
+	}
+drivers/usb/host/fotg210-hcd.c:504:			continue;
+		}
+	}
+drivers/usb/host/ehci-dbg.c:610:			continue;
+		}
+	}
+drivers/usb/host/ohci-at91.c:549:			continue;
+		}
+	}
+drivers/usb/serial/mos7840.c:539:			continue;
+		}
+	}
+drivers/zorro/zorro.c:212:			continue;
+		}
+	}
+drivers/iio/dac/ad5592r-base.c:561:			continue;
+		}
+	}
+drivers/infiniband/hw/hfi1/init.c:1023:				continue;
+		}
+	}
+drivers/char/agp/isoch.c:377:				continue;
+		}
+	}
+drivers/gpu/drm/zte/zx_vou.c:666:			continue;
+		}
+	}
+drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c:10133:			continue;
+		}
+	}
+drivers/gpu/drm/nouveau/nvkm/subdev/i2c/base.c:360:			continue;
+		}
+	}
+drivers/tty/serial/jsm/jsm_neo.c:1227:			continue;
+		}
+	}
+drivers/platform/x86/sony-laptop.c:1413:			continue;
+		}
+	}
+drivers/platform/x86/sony-laptop.c:1494:			continue;
+		}
+	}
+drivers/platform/x86/sony-laptop.c:1532:			continue;
+		}
+	}
+drivers/spi/spi-fsi.c:438:			continue;
+		}
+	} while (seq_state && (seq_state != SPI_FSI_STATUS_SEQ_STATE_IDLE));
+drivers/comedi/drivers/ni_usb6501.c:497:			continue;
+		}
+	}
+drivers/comedi/drivers/vmk80xx.c:663:			continue;
+		}
+	}
+drivers/video/fbdev/core/fbcon.c:508:			continue;
+		}
+	}
+drivers/mtd/ubi/block.c:640:			continue;
+		}
+	}
+drivers/mtd/nand/raw/davinci_nand.c:337:			continue;
+		}
+	}
+drivers/mtd/parsers/bcm47xxpart.c:248:			continue;
+		}
+	}
+drivers/nvdimm/badrange.c:158:			continue;
+		}
+	}
+drivers/isdn/hardware/mISDN/hfcsusb.c:1927:			continue;
+		}
+	}
+drivers/input/joystick/grip.c:316:			continue;
+		}
+	}
+drivers/greybus/interface.c:1148:			continue;
+		}
+	}
+drivers/i2c/busses/i2c-powermac.c:366:			continue;
+		}
+	}
+drivers/pinctrl/pinctrl-zynq.c:1101:			continue;
+		}
+	}
+drivers/pinctrl/pinctrl-at91-pio4.c:895:			continue;
+		}
+	}
+drivers/bluetooth/btusb.c:1658:			continue;
+		}
+	}
+drivers/bluetooth/btusb.c:4302:			continue;
+		}
+	}
+drivers/bluetooth/btusb.c:4519:			continue;
+		}
+	}
+drivers/acpi/processor_perflib.c:617:			continue;
+		}
+	}
+drivers/leds/leds-da9052.c:139:			continue;
+		}
+	}
+fs/xfs/libxfs/xfs_sb.c:906:			continue;
+		}
+	}
+fs/9p/v9fs.c:369:			continue;
+		}
+	}
+fs/unicode/mkutf8data.c:1972:			continue;
+		}
+	}
+fs/unicode/mkutf8data.c:2032:			continue;
+		}
+	}
+fs/unicode/mkutf8data.c:2087:			continue;
+		}
+	}
+fs/unicode/mkutf8data.c:2285:			continue;
+		}
+	}
+fs/ocfs2/buffer_head_io.c:332:			continue;
+		}
+	}
+kernel/bpf/syscall.c:3432:			continue;
+		}
+	}
+kernel/range.c:109:			continue;
+		}
+	}
+kernel/trace/trace_events.c:2626:			continue;
+		}
+	}
+lib/test_rhashtable.c:437:				continue;
+		}
+	}
+net/dsa/dsa2.c:831:			continue;
+		}
+	}
+net/wireless/util.c:942:			continue;
+		}
+	}
+net/9p/client.c:214:			continue;
+		}
+	}
+net/9p/trans_fd.c:805:			continue;
+		}
+	}
+net/9p/trans_rdma.c:232:			continue;
+		}
+	}
+net/ipv4/fou.c:422:			continue;
+		}
+	}
+net/ipv4/udp_offload.c:557:			continue;
+		}
+	}
+net/ethernet/eth.c:438:			continue;
+		}
+	}
+net/tipc/name_distr.c:358:			continue;
+		}
+	}
+samples/seccomp/bpf-helper.c:57:			continue;
+		}
+	}
+tools/perf/builtin-script.c:3106:			continue;
+		}
+	}
+tools/perf/util/parse-events.c:505:				continue;
+		}
+	}
+tools/perf/util/jitdump.c:708:			continue;
+		}
+	}
+tools/perf/ui/browsers/hists.c:3543:			continue;
+		}
+	}
+tools/testing/radix-tree/regression3.c:54:			continue;
+		}
+	}
+tools/testing/radix-tree/regression3.c:67:			continue;
+		}
+	}
+tools/testing/selftests/net/mptcp/mptcp_connect.c:371:			continue;
+		}
+	}
+tools/testing/selftests/net/timestamping.c:546:			continue;
+		}
+	}
+tools/testing/selftests/powerpc/nx-gzip/gzip_vas.c:252:			continue;
+		}
+	}
+tools/power/cpupower/lib/cpupower.c:177:			continue;
+		}
+	}
+tools/lib/bpf/libbpf.c:7417:			continue;
+		}
+	}
+tools/lib/bpf/btf.c:928:			continue;
+		}
+	}
+tools/lib/bpf/linker.c:835:			continue;
+		}
+	}
+
 
