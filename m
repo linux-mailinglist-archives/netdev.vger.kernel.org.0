@@ -2,95 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A5913FAA2B
-	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 10:32:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E96F13FAA87
+	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 11:50:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234802AbhH2IdM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Aug 2021 04:33:12 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:31805 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234820AbhH2IdI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Aug 2021 04:33:08 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1630225936; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=sDPTy8KAE9CIK5/hJskuePHV4t04MtL3PTjzg1WFFFE=;
- b=GI0IXmTbiwBWUI4jsB8jZHX0Yfj43sLQ347ZT0POU9iVM+HW5Zam/qow9SjtVXflX92p5bm8
- Uef6o9ngb1Sxb8N/O0yXECs7aA23U7cBd8mAoANxzszyMT+TAcUdQSAGf2hNndzVQwvzYdLP
- DA2Htq8lMthLAz6dq9QH4v71v9U=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n05.prod.us-west-2.postgun.com with SMTP id
- 612b460f40d2129ac1b87139 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 29 Aug 2021 08:32:15
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 90630C43617; Sun, 29 Aug 2021 08:32:15 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 9F7DFC4338F;
-        Sun, 29 Aug 2021 08:32:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 9F7DFC4338F
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S235082AbhH2JvE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Aug 2021 05:51:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58550 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235020AbhH2JvA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Aug 2021 05:51:00 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 254D3C061575
+        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 02:50:09 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id y23so10394337pgi.7
+        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 02:50:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=ovcAeZ13ZHOu6BcywDUrdBUHduRlUxTit4mA+T3Nydk=;
+        b=Az1ufBXEhAWw3YwcGn017qmTNJA9d9pRSC/0AQaFazhLo5Es4uaWVesKAYHoabRoAa
+         Tx1LESwOC+WpUCPEUu03uxAd5tfeQKMHsgrI1+7NXuaoCkxOAmYJBy1Jz6biJXDDauOX
+         NEYtERoGPllymub0bLN1+JhEzYm6zdieUHU9ilBbmBXLip/AkOEz1cCP+uo1lTn6nSre
+         ak95g4AAOpQ6rc51hPBIJkvrw3eMCgXZu4SLV8R4lIyOyT6OqthadvUvSpKllbN+X62o
+         jp3enaOgiL+Sqme/yY++3hElemOhCgoxw72CgCKgnQglOeLxOIRA0IIWHEwV3nMwBQN1
+         /vQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=ovcAeZ13ZHOu6BcywDUrdBUHduRlUxTit4mA+T3Nydk=;
+        b=iPrgo7yCZ4YUIHOumAoGclDRY8Vy7X2bSYgyIdwc738/KPXDgBQaYJnl9zT8gbQumV
+         Dj0JPt4gdx4sBZgEP5i7Wa5E+J4KcKB3gPVPxD7qhx4GA3mBTJ1oQsJoQWx+ePw+klzy
+         D43PcZbTggKeliI4kPwTH2QJEdNDp7ACK2bUmNkZBbfahzlLabQfjc9XoaaogABltgdm
+         8Zn1iNG56Ws4l4dBdTsmz8b6VqAwOQN92HjfZDrBGwTnSK1KFbhehEvNdBSDTbR6zi/Q
+         oPTERT/XVsdG9z0LG6jj7W22n3z3+tIWxIWaMGmhjbumkjHUqE1Lmv0CarpO6dTl3U6E
+         2uvA==
+X-Gm-Message-State: AOAM5337/4NM8U4RNjyQ5BUTj63ypxgJr7yEnCQmT13Itz0GgW0iVlQx
+        Vz7Wm6Rv6DcH/0EZtyeMIfuCRgvTN9jHYA==
+X-Google-Smtp-Source: ABdhPJx15mAbX8uyVuiRM3St6je6KdpiXVH3lv+AhSfEI0bJO2bXSwlJ6uqQKKiMw1vUlco9wrG2jw==
+X-Received: by 2002:a63:b1a:: with SMTP id 26mr15962502pgl.12.1630230608575;
+        Sun, 29 Aug 2021 02:50:08 -0700 (PDT)
+Received: from lattitude ([49.206.114.245])
+        by smtp.gmail.com with ESMTPSA id me10sm16885729pjb.51.2021.08.29.02.50.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 29 Aug 2021 02:50:08 -0700 (PDT)
+Date:   Sun, 29 Aug 2021 15:19:53 +0530
+From:   Gokul Sivakumar <gokulkumar792@gmail.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>,
+        David Ahern <dsahern@kernel.org>
+Cc:     netdev@vger.kernel.org
+Subject: [iproute2] concern regarding the color option usage in "bridge" &
+ "tc" cmd
+Message-ID: <20210829094953.GA59211@lattitude>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] rsi: make array fsm_state static const,
- makes object smaller
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20210819125018.8577-1-colin.king@canonical.com>
-References: <20210819125018.8577-1-colin.king@canonical.com>
-To:     Colin King <colin.king@canonical.com>
-Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Siva Rebbagondla <siva8118@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-Id: <20210829083215.90630C43617@smtp.codeaurora.org>
-Date:   Sun, 29 Aug 2021 08:32:15 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Colin King <colin.king@canonical.com> wrote:
+Hi Stephen, David,
 
-> From: Colin Ian King <colin.king@canonical.com>
-> 
-> Don't populate the array fsm_state on the stack but instead it
-> static const. Makes the object code smaller by 154 bytes:
-> 
-> Before:
->    text	   data	    bss	    dec	    hex	filename
->    9213	   3904	      0	  13117	   333d	.../wireless/rsi/rsi_91x_debugfs.o
-> 
-> After:
->    text	   data	    bss	    dec	    hex	filename
->    8995	   3968	      0	  12963	   32a3	.../wireless/rsi/rsi_91x_debugfs.o
-> 
-> (gcc version 10.3.0)
-> 
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+Recently I have added a commit 82149efee9 ("bridge: reorder cmd line arg parsing
+to let "-c" detected as "color" option") in iproute2 tree bridge.c which aligns
+the behaviour of the "bridge" cmd with the "bridge" man page description w.r.t
+the color option usage. Now I have stumbled upon a commit f38e278b8446 ("bridge:
+make -c match -compressvlans first instead of -color") that was added back in
+2018 which says that "there are apps and network interface managers out there
+that are already using -c to prepresent compressed vlans".
 
-Patch applied to wireless-drivers-next.git, thanks.
+So after finding the commit f38e278b8446, now I think the man page should have
+fixed instead of changing the bridge.c to align the behaviour of the "bridge" cmd
+with the man page. Do you think we can revert the bridge.c changes 82149efee9,
+so that the "bridge" cmd detects "-c" as "-compressedvlans" instead of "-color"?
 
-f4c813641897 rsi: make array fsm_state static const, makes object smaller
+If we are reverting the commit 82149efee9, then "-c" will be detected as
+"-compressedvlans" and I will send out a patch to change the "bridge" man page
+to reflect the new "bridge" cmd behaviour. If we are not reverting the commit
+82149efee9, then "-c" will be detected as "-color" and I will send a out a patch
+to change the "bridge" cmd help menu to reflect the current "bridge" cmd behaviour.
+Please share your thoughts.
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20210819125018.8577-1-colin.king@canonical.com/
+And also regarding the "tc" cmd, in the man/man8/tc.8 man page, the "-c" option
+is mentioned to be used as a shorthand option for "-color", but instead it is
+detected as "-conf". So here also, we need to decide between fixing the man page
+and fixing the "tc" cmd behaviour w.r.t to color option usage.
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+I understand that "matches()" gives a lot of trouble and I see that you both are
+now preferring full "strcmp()" over "matches()" for newly added cmd line options.
 
+Thanks
+Gokul
