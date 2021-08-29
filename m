@@ -2,111 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FF163FAB79
-	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 14:45:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AF4A3FAB8B
+	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 15:00:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235335AbhH2Mq0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Aug 2021 08:46:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40884 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235124AbhH2MqY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Aug 2021 08:46:24 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B2A0C061575
-        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 05:45:32 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id y34so25141524lfa.8
-        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 05:45:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6mw0MT3om93i5T+rGS/7Y5NL2nNyWToax69yy3f04aM=;
-        b=bbJRPC4WvwENh4cdNzVpQ3+lWBYIkqVdfB+jrIzMw7BKMIsjcLPYwjNYUveBUL1Vjn
-         w5aoml1VEB3Lz3WtbGW0LdDR0Wqf8eS+a2e4SJiLQENm3acEwboKO71O74bx6EtGam4e
-         5sUC6X0Z11zdlzIiIA5Km7KF2YsuL6lWvMMB5kKrDdOPKb02coqn0AqvL9/Z8mFph/mh
-         MWJz9uV6A233n4UMZLvFIKUJGmHYO2WKy+vZXy12oOHvQTNnbCzy+Ja1m3OafH6KCJnY
-         s41Cs0HuhJml7W+439/cf3EYsFrycR1KWEelkh4YaCSNrr8i5IoR+RmVbddGjcNekYHl
-         BUCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6mw0MT3om93i5T+rGS/7Y5NL2nNyWToax69yy3f04aM=;
-        b=EVSu5grgaPidIC6jh68lMUJUgaZWXXNgicb1qc4Vg5Z4N17lv6Q40cCdWXb6rz/9LA
-         AxStrIsInqi3bDgl9RtUvJ4fVnNKs4x+i7VKLPCDs41sRv+k4V0t2yfd3BLqWS6++UzE
-         iZ2d04Jwscqs20ogowO5ESrHsIQVdJFrRfVfH7Di6a/WBWNf3NKDQqqdmSTzkKBcqI9J
-         82WAv9L83WthYocDHICtcyCj20s6hF+sm2rKpLkZ9Wvr0xfYIYS6FOL0947SSoIHxrbG
-         9RvBuTwEZDiybSM6NLF3f60WfchZ+EIn6iKwpBu4XUrVAFKO8O4etN8GWs/C/V80IO6e
-         EYXw==
-X-Gm-Message-State: AOAM532MEU0WacsJtybptj0q0guCexqcquWCv/N1sFYBBDzapkPA/zpn
-        06lBmaNUPwIpEoMPmpkxNfAxog==
-X-Google-Smtp-Source: ABdhPJwvZt+qSrAe/ddF7Uokkg8l4wE7+stitGJl43IJ0+g9jRh6Q+poAK9+8+LdfFclvgltR1Qhmg==
-X-Received: by 2002:a05:6512:3339:: with SMTP id l25mr13968860lfe.496.1630241130940;
-        Sun, 29 Aug 2021 05:45:30 -0700 (PDT)
-Received: from eriador.lan ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id g20sm522746lfh.159.2021.08.29.05.45.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 29 Aug 2021 05:45:30 -0700 (PDT)
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        id S235335AbhH2NA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Aug 2021 09:00:56 -0400
+Received: from relay.sw.ru ([185.231.240.75]:49042 "EHLO relay.sw.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235271AbhH2NAz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 29 Aug 2021 09:00:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:Subject
+        :From; bh=8K7FRhFmUut9BDtM0WSDlvm2R6R2V2gQI8Js6NhL0YA=; b=PivL+U5CpIgSawX8jJX
+        U+bbFpFJebnNS+4GLt/FQuWxz7Iw3p+ZqFhBh6HWGDPRb8a4bw/U8sdW3m/OOjwgg2ztSy+vEHy5V
+        dBPK7wn1jcoVw03Fryd9neeX3G0/xmLNOoPFFNdzqdB5RtNZhwVinlbwEFoMtchqAvho2+eipQc=;
+Received: from [10.93.0.56]
+        by relay.sw.ru with esmtp (Exim 4.94.2)
+        (envelope-from <vvs@virtuozzo.com>)
+        id 1mKKPl-0007Us-2K; Sun, 29 Aug 2021 15:59:57 +0300
+From:   Vasily Averin <vvs@virtuozzo.com>
+Subject: [PATCH v2] skb_expand_head() adjust skb->truesize incorrectly
+To:     Christoph Paasch <christoph.paasch@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
         "David S. Miller" <davem@davemloft.net>
-Cc:     linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH] net: qrtr: mhi: make it work again
-Date:   Sun, 29 Aug 2021 15:45:28 +0300
-Message-Id: <20210829124528.507457-1-dmitry.baryshkov@linaro.org>
-X-Mailer: git-send-email 2.33.0
+Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org,
+        kernel@openvz.org, Julian Wiedmann <jwi@linux.ibm.com>
+References: <CALMXkpZYGC5HNkJAi4wCuawC-9CVNjN1LqO073YJvUF5ONwupA@mail.gmail.com>
+Message-ID: <860513d5-fd02-832b-1c4c-ea2b17477d76@virtuozzo.com>
+Date:   Sun, 29 Aug 2021 15:59:56 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CALMXkpZYGC5HNkJAi4wCuawC-9CVNjN1LqO073YJvUF5ONwupA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The commit ce78ffa3ef16 ("net: really fix the build...") introduced two
-issues into the mhi.c driver:
- - use of initialized completion
- - calling mhi_prepare_for_transfer twice
+Christoph Paasch reports [1] about incorrect skb->truesize
+after skb_expand_head() call in ip6_xmit.
+This may happen because of two reasons:
+- skb_set_owner_w() for newly cloned skb is called too early,
+before pskb_expand_head() where truesize is adjusted for (!skb-sk) case.
+- pskb_expand_head() does not adjust truesize in (skb->sk) case.
+In this case sk->sk_wmem_alloc should be adjusted too.
 
-While the first one is pretty obvious, the second one makes all devices
-using mhi.c to return -EINVAL during probe. Fist
-mhi_prepare_for_transfer() would change both channels state to ENABLED.
-Then when second mhi_prepare_for_transfer() would be called it would
-also try switching them to ENABLED again, which is forbidden by the
-state machine in the mhi_update_channel_state() function (see
-drivers/bus/mhi/core/main.c).
-These two issues make all drivers using qcom_mhi_qrtr (e.g. ath11k) to
-fail with -EINVAL.
+[1] https://lkml.org/lkml/2021/8/20/1082
 
-Fix them by removing first mhi_prepare_for_transfer() call and by adding
-the init_completion() call.
-
-Fixes: ce78ffa3ef16 ("net: really fix the build...")
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Reported-by: Christoph Paasch <christoph.paasch@gmail.com>
+Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
 ---
- net/qrtr/mhi.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+v2: based on patch version from Eric Dumazet,
+    added __pskb_expand_head() function, which can be forced
+    to adjust skb->truesize and sk->sk_wmem_alloc.
+---
+ net/core/skbuff.c | 43 +++++++++++++++++++++++++++++--------------
+ 1 file changed, 29 insertions(+), 14 deletions(-)
 
-diff --git a/net/qrtr/mhi.c b/net/qrtr/mhi.c
-index 1dc955ca57d3..f3f4a5fdeaf3 100644
---- a/net/qrtr/mhi.c
-+++ b/net/qrtr/mhi.c
-@@ -83,15 +83,12 @@ static int qcom_mhi_qrtr_probe(struct mhi_device *mhi_dev,
- 	struct qrtr_mhi_dev *qdev;
- 	int rc;
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index f931176..4691023 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -1681,10 +1681,10 @@ struct sk_buff *__pskb_copy_fclone(struct sk_buff *skb, int headroom,
+  *	reloaded after call to this function.
+  */
  
--	/* start channels */
--	rc = mhi_prepare_for_transfer(mhi_dev, 0);
--	if (rc)
--		return rc;
+-int pskb_expand_head(struct sk_buff *skb, int nhead, int ntail,
+-		     gfp_t gfp_mask)
++static int __pskb_expand_head(struct sk_buff *skb, int nhead, int ntail,
++			      gfp_t gfp_mask, bool update_truesize)
+ {
+-	int i, osize = skb_end_offset(skb);
++	int delta, i, osize = skb_end_offset(skb);
+ 	int size = osize + nhead + ntail;
+ 	long off;
+ 	u8 *data;
+@@ -1756,9 +1756,13 @@ int pskb_expand_head(struct sk_buff *skb, int nhead, int ntail,
+ 	 * For the moment, we really care of rx path, or
+ 	 * when skb is orphaned (not attached to a socket).
+ 	 */
+-	if (!skb->sk || skb->destructor == sock_edemux)
+-		skb->truesize += size - osize;
 -
- 	qdev = devm_kzalloc(&mhi_dev->dev, sizeof(*qdev), GFP_KERNEL);
- 	if (!qdev)
- 		return -ENOMEM;
++	delta = size - osize;
++	if (!skb->sk || skb->destructor == sock_edemux) {
++		skb->truesize += delta;
++	} else if (update_truesize) {
++		refcount_add(delta, &skb->sk->sk_wmem_alloc);
++		skb->truesize += delta;
++	}
+ 	return 0;
  
-+	init_completion(&qdev->ready);
+ nofrags:
+@@ -1766,6 +1770,12 @@ int pskb_expand_head(struct sk_buff *skb, int nhead, int ntail,
+ nodata:
+ 	return -ENOMEM;
+ }
 +
- 	qdev->mhi_dev = mhi_dev;
- 	qdev->dev = &mhi_dev->dev;
- 	qdev->ep.xmit = qcom_mhi_qrtr_send;
++int pskb_expand_head(struct sk_buff *skb, int nhead, int ntail,
++		     gfp_t gfp_mask)
++{
++	return __pskb_expand_head(skb, nhead, ntail, gfp_mask, false);
++}
+ EXPORT_SYMBOL(pskb_expand_head);
+ 
+ /* Make private copy of skb with writable head and some headroom */
+@@ -1804,28 +1814,33 @@ struct sk_buff *skb_realloc_headroom(struct sk_buff *skb, unsigned int headroom)
+ struct sk_buff *skb_expand_head(struct sk_buff *skb, unsigned int headroom)
+ {
+ 	int delta = headroom - skb_headroom(skb);
++	struct sk_buff *oskb = NULL;
+ 
+ 	if (WARN_ONCE(delta <= 0,
+ 		      "%s is expecting an increase in the headroom", __func__))
+ 		return skb;
+ 
++	delta = SKB_DATA_ALIGN(delta);
+ 	/* pskb_expand_head() might crash, if skb is shared */
+ 	if (skb_shared(skb)) {
+ 		struct sk_buff *nskb = skb_clone(skb, GFP_ATOMIC);
+ 
+-		if (likely(nskb)) {
+-			if (skb->sk)
+-				skb_set_owner_w(nskb, skb->sk);
+-			consume_skb(skb);
+-		} else {
++		if (unlikely(!nskb)) {
+ 			kfree_skb(skb);
++			return NULL;
+ 		}
++		oskb = skb;
+ 		skb = nskb;
+ 	}
+-	if (skb &&
+-	    pskb_expand_head(skb, SKB_DATA_ALIGN(delta), 0, GFP_ATOMIC)) {
++	if (__pskb_expand_head(skb, delta, 0, GFP_ATOMIC, true)) {
+ 		kfree_skb(skb);
+-		skb = NULL;
++		kfree_skb(oskb);
++		return NULL;
++	}
++	if (oskb) {
++		if (oskb->sk)
++			skb_set_owner_w(skb, oskb->sk);
++		consume_skb(oskb);
+ 	}
+ 	return skb;
+ }
 -- 
-2.33.0
+1.8.3.1
 
