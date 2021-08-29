@@ -2,151 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 080273FAB92
-	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 15:12:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E1953FABD8
+	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 15:22:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235334AbhH2NNm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Aug 2021 09:13:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46856 "EHLO
+        id S235399AbhH2NOF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Aug 2021 09:14:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235271AbhH2NNl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Aug 2021 09:13:41 -0400
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BDE5C061575
-        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 06:12:49 -0700 (PDT)
-Received: by mail-lj1-x22b.google.com with SMTP id s3so20717640ljp.11
-        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 06:12:48 -0700 (PDT)
+        with ESMTP id S235373AbhH2NOD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Aug 2021 09:14:03 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2F18C061796
+        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 06:13:11 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id k5so25303484lfu.4
+        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 06:13:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=qk+BeOLzgsCodysyhanIGqG+JmDcZKcPbja0+FGRw/Q=;
-        b=vR0WFtZiuUCjmXDf1W7raSvAwB8KDsFWZ2e8JBSV1BgbVi8Ts30DQbStz7sdk2hbzM
-         TbNotbZ68sRQzN+KU/sG1af8G/mLSNDQ7C9RLsoB6eZjL2O8Jqqt/F3HiA4QqKAGuDnW
-         WnzNik5zELazf7CjaqeGF/tsBgo0JyaCO0gb87ldMBiyZNw7LhDmZRKrnGm8fr0PAdCP
-         wifld706EGTYXBwKlgqkmoENcdUfJaDhaVLZTKLga75imXSqR6c1kS9KPUNYcR9fidXR
-         gaeSpmFiDwuAc8tDDwiWzICoTCFQ3R42YzHgcqsszVmvfCB7hVORnu+gEIjq9jwUwpRN
-         dvqw==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VaIELk3aejG928b4attVmLHeHooVAXSsVOw7u++6ic8=;
+        b=NBuVmcUEZj+2izFzWo7km7GIur/VKIWIdCygLu4Gtd5j+RVmNsWMrgh04N2TZuSMfU
+         qOCfcwDEjE8ZtdKrslnPtXszndze+62w2XWwb6xGVsH1q3jBWtuTLCb9KuSLNbPPRhlK
+         IbpDOICgqNbLc24No+PMG8DhLUM2mN/elJS0GRGV4rFr6iSEdeGZxaI/ykar8IBYY9uy
+         Mctoi0prxcBGI+UT9DvbqIAUUP2Iz4yWSGuhWEeXcrakwQ1fy45teTG3uj0aqnye2YP6
+         lXtLTZX24wvaqQuWHyNbc/msMLpxxBuORKzKEUoSATLWOgQ2fAAvsiPWesmAzPXBNpqI
+         WsVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=qk+BeOLzgsCodysyhanIGqG+JmDcZKcPbja0+FGRw/Q=;
-        b=RuxFDQiRNWhWKVUomVzavFbhLUXLvuHrXY9ZZOoIJWGPl98QANrnKLmlxcKcbfChP0
-         pHj/WKbcU+4lrLKE+j+JpcBekAxjVi6+sZZKCLuoN3qe6eNb65luchlaEHa1BG8O9jBF
-         8aNbrrr5rZ47pGqFwaYOtuCUe2Tv7qByPjKhsK3DHIau8UrEbw+B1Xjdgf+Ly0w1Sv1e
-         AQp6uQmiAUckWUsl+eyJXHhAfzwMDqi9ch7CRTDkF+73YuPgTTjIRSMfeyDMJT7I4p0/
-         m7NalZZf155IDivkFAJQRd4cvm2fOPYSyYnFnSlg1IIHrQEyy1p5nFwIe8Dq9NjOZPhj
-         uzZQ==
-X-Gm-Message-State: AOAM533n/ALZ/xDvJXQ0GIpBC3CZXu3zLmUVEiw07civSmLZ34qYq9rs
-        KS7UNFY46VjUNIZKSXogvpwTsBvi5AWyJUuDlLtUe7lJMJk=
-X-Google-Smtp-Source: ABdhPJxjlpa2rSHeZ+VwvTpDhlNVkGPDJv+Pu+WHphI0cpbGPdMTQMXBUzraXoT2kWQC6HhyxX7Ap4IIBsfDGLPUNdU=
-X-Received: by 2002:a05:651c:11c7:: with SMTP id z7mr16298814ljo.87.1630242766519;
- Sun, 29 Aug 2021 06:12:46 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VaIELk3aejG928b4attVmLHeHooVAXSsVOw7u++6ic8=;
+        b=fae6B9U7df+lenVrtI/h6l7mMb6illqmI72jGq6oxdKW4A7TMAkZY10EMat8SP8n20
+         kfE+vaXE/6xpQHOkKDEg2o2Qgqs3HfysLNdPUclbryclrYOxspxhBcW+L3iHWPEcnHeX
+         Hi20vB8ZsnDH1fnzJ8JAMBt7HkLSwsuF9Eji6Td/VkE1f9oORexLWcT+W6vEoibIYYVK
+         tfJqkHfek+0eZ+8MLLmPqUvdlYuGi6srMT1UfmzFdX31NtTAfRNxR5wDmFbB62Ls4dEN
+         E/BNfkI6Z00fykfXV6L5KNwz2Q/zz93Pb2WjH50jncgSO/WDz5BYDntZ7KzuxHz1dOpH
+         ONIQ==
+X-Gm-Message-State: AOAM532ET0Ac+kKCtRzZG24jPYHZ5V57REA6XSqD6j/yHyBScSdAQhKf
+        ugDeSBacZ/SGAGRJC/OIy/xokg==
+X-Google-Smtp-Source: ABdhPJxoTTCTULxN0AI0ux6Ox/vGsWyAWulCZNHRsyc3AM9WfbWCnshA9YjeDZK67Cxvk0WaVZLaHA==
+X-Received: by 2002:a05:6512:6cd:: with SMTP id u13mr13935373lff.184.1630242789821;
+        Sun, 29 Aug 2021 06:13:09 -0700 (PDT)
+Received: from eriador.lan ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id x13sm712503lfq.262.2021.08.29.06.13.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 29 Aug 2021 06:13:09 -0700 (PDT)
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stanimir Varbanov <svarbanov@mm-sol.com>
+Cc:     linux-arm-msm@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [RFC v2 00/13] create power sequencing subsystem
+Date:   Sun, 29 Aug 2021 16:12:52 +0300
+Message-Id: <20210829131305.534417-1-dmitry.baryshkov@linaro.org>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-References: <CAGnHSEk-gxY3jr-2k8+NSB0uf9H94SDQyxJFVM1LH3A+Bs+5MA@mail.gmail.com>
- <CAGnHSEmeLTq6FsG18QDBmD_cHcNfTk2N6t7Nwrc53p9Ejnd5kg@mail.gmail.com>
- <CAGnHSEkBiJdLFb88U2d7EhgxvfwbE7DtOxp115SzoP8Cv_Jq4A@mail.gmail.com> <CAGnHSEnBVGy3aj==RkYR2MCLdSZm3uy62esS-K8bD8pi1fqgCA@mail.gmail.com>
-In-Reply-To: <CAGnHSEnBVGy3aj==RkYR2MCLdSZm3uy62esS-K8bD8pi1fqgCA@mail.gmail.com>
-From:   Tom Yan <tom.ty89@gmail.com>
-Date:   Sun, 29 Aug 2021 21:12:35 +0800
-Message-ID: <CAGnHSEmu2iYnRzFfKA9iT585M1GnCHCxY3Riztu+oDZyb0whUA@mail.gmail.com>
-Subject: Re: Bridged passthru MACVLAN breaks IPv6 multicast?
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hmm, interestingly, the problem occurs only when I am using the
-permanent MAC address of the wireless NIC. If I change/randomize the
-address (and of course, make the bridge use the result as its own
-address as well), Neighbor Solicitations can come in without needing
-the NIC and the MACVLAN to have IPv6LL.
+This is the second RFC on the proposed power sequencer subsystem. This
+is a generification of the MMC pwrseq code. The subsystem tries to
+abstract the idea of complex power-up/power-down/reset of the devices.
 
-On Tue, 24 Aug 2021 at 15:41, Tom Yan <tom.ty89@gmail.com> wrote:
->
-> To be more precise, when the passthru MACVLAN is not bridged, I can see:
->
-> # tcpdump -eni any icmp6
-> tcpdump: data link type LINUX_SLL2
-> tcpdump: verbose output suppressed, use -v[v]... for full protocol decode
-> listening on any, link-type LINUX_SLL2 (Linux cooked v2), snapshot
-> length 262144 bytes
-> 15:30:50.865328 wlan0 M   ifindex 5 LAN_HOST_MAC ethertype IPv6
-> (0x86dd), length 92: LAN_HOST_LL > ff02::1:MEH:MEH: ICMP6, neighbor
-> solicitation, who has THIS_HOST_LL, length 32
-> 15:30:50.865547 macvl0 M   ifindex 6 LAN_HOST_MAC ethertype IPv6
-> (0x86dd), length 92: LAN_HOST_LL > ff02::1:MEH:MEH: ICMP6, neighbor
-> solicitation, who has THIS_HOST_LL, length 32
->
-> followed by unicast neighbor advertisement "OUTs" from this host to
-> the LAN host.
->
-> But when the MACVLAN is bridged, I cannot see a similar capture at all
-> (i.e. it doesn't just "stop" before "walking across" the MACVLAN,
-> rather they appear to be blocked at "the outside" or so.)
->
-> On Tue, 24 Aug 2021 at 12:57, Tom Yan <tom.ty89@gmail.com> wrote:
-> >
-> > Never mind. I made a mistake. Turns out only Neighbor Solicitation
-> > from a LAN host does not "walk across" the MACVLAN. ping
-> > ff02::1%some_dev and Neighbor Solicitation from a bridge tap host
-> > actually do. (I forgot to change the ether saddr for them: the
-> > underlying link is a wireless NIC)
-> >
-> > Btw Neighbor Advertisement from a LAN host "walks across" the MACVLAN
-> > as well. I can see it on this host.
-> >
-> > I guess I can workaround the problem by re-enabling IPv6LL on the
-> > MACVLAN. Still wonder why that is broken though.
-> >
-> > On Tue, 24 Aug 2021 at 12:12, Tom Yan <tom.ty89@gmail.com> wrote:
-> > >
-> > > Hi,
-> > >
-> > > I've further investigated the problem:
-> > >
-> > > What "walk across":
-> > > ping ff02::1%bridge and Neighbor Solicitation from this host (tcpdump
-> > > multicast on a LAN host can see them)
-> > > ping ff02::1%some_dev from a LAN host (tcpdump multicast on this host
-> > > or a bridge tap host can see them)
-> > >
-> > > What do not "walk across":
-> > > Neighbor Solicitation from a LAN host (both tcpdump multicast on this
-> > > host and on a bridge tap host cannot see them)
-> > > ping ff02::1%some_dev and Neighbor Solicitation from a bridge tap host
-> > > (tcpdump multicast on this host can see them, but that on a LAN host
-> > > cannot)
-> > >
-> > > There is no problem with ARP (or IPv4 multicast, apparently).
-> > >
-> > > P.S. I've filed a bug report on:
-> > > https://bugzilla.kernel.org/show_bug.cgi?id=214153
-> > >
-> > > Regards,
-> > > Tom
-> > >
-> > > On Mon, 23 Aug 2021 at 02:07, Tom Yan <tom.ty89@gmail.com> wrote:
-> > > >
-> > > > Hi,
-> > > >
-> > > > Normally when a NIC is (directly) enslaved as a bridge port, the NIC
-> > > > itself does not need to have a IPv6 link-local address configured on
-> > > > it for IPv6 multicast / NDP to work properly (instead the address can
-> > > > simply be configured on the bridge like IPv4 addresses).
-> > > >
-> > > > Yet it appears that if the bridge port is instead a passthru mode
-> > > > MACVLAN, IPv6 multicast traffics from (the link/"side" of) it cannot
-> > > > reach the host (as in, cannot even be captured with tcpdump) unless
-> > > > either the MACVLAN or its underlying link has a/the[1] IPv6 link-local
-> > > > address configured.
-> > > >
-> > > > Is it an expected behavior? Or is it a bug?
-> > > >
-> > > > [1]: In my configuration, the bridge, the bridged passthru MACVLAN and
-> > > > its underlying link have the same MAC address and hence (at least by
-> > > > default) their IPv6 link-local addresses are identical.
-> > > >
-> > > > Regards,
-> > > > Tom
+To ease migration to pwrseq and to provide compatibility with older
+device trees, while keeping drivers simple, this iteration of RFC
+introduces pwrseq fallback support: pwrseq driver can register fallback
+providers. If another device driver requests pwrseq instance and none
+was declared, the pwrseq fallback code would go through the list of
+fallback providers and if the match is found, driver would return a
+crafted pwrseq instance. For now this mechanism is limited to the OF
+device matching, but it can be extended further to use any combination
+of device IDs.
+
+The primary set of devices that promted me to create this patchset is
+the Qualcomm BT+WiFi family of chips. They reside on serial+platform or
+serial + SDIO interfaces (older generations) or on serial+PCIe (newer
+generations).  They require a set of external voltage regulators to be
+powered on and (some of them) have separate WiFi and Bluetooth enable
+GPIOs.
+
+This patchset being an RFC tries to demonstrate the approach, design and
+usage of the pwrseq subsystem. Following issues are present in the RFC
+at this moment but will be fixed later if the overall approach would be
+viewed as acceptable:
+
+ - No documentation
+   While the code tries to be self-documenting proper documentation
+   would be required.
+
+ - Minimal device tree bindings changes
+   There are no proper updates for the DT bindings (thus neither Rob
+   Herring nor devicetree are included in the To/Cc lists). The dt
+   schema changes would be a part of v1.
+
+ - Lack of proper PCIe integration
+   At this moment support for PCIe is hacked up to be able to test the
+   PCIe part of qca6390. Proper PCIe support would require automatically
+   powering up the devices before the bus scan depending on the proper
+   device structure in the device tree.
+
+Changes since RFC v1:
+ - Provider pwrseq fallback support
+ - Implement fallback support in pwrseq_qca.
+ - Mmove susclk handling to pwrseq_qca.
+ - Significantly simplify hci_qca.c changes, by dropping all legacy
+   code. Now hci_qca uses only pwrseq calls to power up/down bluetooth
+   parts of the chip.
+
+
