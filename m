@@ -2,116 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCA943FA802
-	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 01:58:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7295D3FA808
+	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 02:10:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233061AbhH1X7V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Aug 2021 19:59:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42606 "EHLO
+        id S234628AbhH2AKs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Aug 2021 20:10:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232475AbhH1X7U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Aug 2021 19:59:20 -0400
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37926C061756
-        for <netdev@vger.kernel.org>; Sat, 28 Aug 2021 16:58:29 -0700 (PDT)
-Received: by mail-lj1-x22b.google.com with SMTP id f2so18682762ljn.1
-        for <netdev@vger.kernel.org>; Sat, 28 Aug 2021 16:58:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Vaw7+EGtDVmvakBZapwviClraNwR4N7ABgcvGSn1w7I=;
-        b=RfL+F9xAaxNhIEILZAxYGxY10fRYs4McHJ5Wr8A5vB9GfSUpWCVAy979+M2sztxvut
-         2RXjxaR5g242aVy/nRMZbdWzHsGerOYqo+inRir6QRIqGt3P8b0rsbL9YXbaFH6OqwYk
-         okZuOWFg7jUQ7S/b6Lbjg+WfUoQZMKUIvJ3HqUlAq4jaabrW0tLFDkYpAnDVv0cI7Izm
-         uHNnoS0pyejmaz4p1w1cdWmExE1aAUp48vgEIx8YGhoPujY4i+t2GnQscKBaxiqLFbeG
-         EdyoyVIWsqok+j7Npr3XDdMSYF/LuES+2FMHFjXXsxA6Uy+L54WqoajUpUTTiploKfxt
-         HCKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Vaw7+EGtDVmvakBZapwviClraNwR4N7ABgcvGSn1w7I=;
-        b=cGDj0ujKzGoONmmAL9ysOu1Vr5HGlX0rj4ArR2wrq9nmq6GhcdyC170VyQ4A/cCcBs
-         i9J/bpnwTVBpXzck907/XeBIEznsRtwlrco5isTprSNuXODrupiyBrzeMegjll3erBou
-         UIdRKPQqGFsPgRqdQtDoZTq+KzA4JGYsrqjzQF2YbHnfcNyYa4VV2GChmCdiURLbdoQS
-         HRJh/K+Q6XmHXIaQ8tzCGGYIzYv90u9mvbZlO8daWEsguoeOIBeAshzotMcgIdK+7zB0
-         3Jutzjc9JbmS5vff1HL0CjjPIbp9b3+Z4aAhRsp5MScmptHpgYU6atOHfco806Mh9mIj
-         /VRw==
-X-Gm-Message-State: AOAM533Ed0GSBR/Ap2rhJr6J3YtFo/KcL1gNa1A43g6JjXHhBDxO2EfA
-        84XVLfxkV29k7j5ajvF5Ed2jbg==
-X-Google-Smtp-Source: ABdhPJyBYG9jMxRzG2edNvc4c8NNizK9EV3RvlHcIUXhDg3Xv63F7qGuSo1hVO/SXeVlV9by2WUlyg==
-X-Received: by 2002:a2e:a413:: with SMTP id p19mr13736150ljn.412.1630195106793;
-        Sat, 28 Aug 2021 16:58:26 -0700 (PDT)
-Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
-        by smtp.gmail.com with ESMTPSA id w16sm986914lfd.295.2021.08.28.16.58.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 28 Aug 2021 16:58:26 -0700 (PDT)
-From:   Linus Walleij <linus.walleij@linaro.org>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Mauri Sandberg <sandberg@mailfence.com>
-Subject: [PATCH net] net: dsa: tag_rtl4_a: Fix egress tags
-Date:   Sun, 29 Aug 2021 01:56:19 +0200
-Message-Id: <20210828235619.249757-1-linus.walleij@linaro.org>
-X-Mailer: git-send-email 2.31.1
+        with ESMTP id S232561AbhH2AKr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Aug 2021 20:10:47 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DBD1C061756;
+        Sat, 28 Aug 2021 17:09:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
+        :In-Reply-To:MIME-Version:Date:Message-ID:References:Cc:To:From:Subject:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=EaN8NsPelxHrvU9ofAOrjRtk0WsMGCySofzS1ta0LL8=; b=rFQSsr9R9EiuFOn4iq4RDbszO7
+        fyAMZk8WbJPtAI5zR8nO3a/p5REX476tl9mC/UH8580CwSQfLkMSlgN2ofiTAfvpvHYLvVGLgNj3q
+        fUyByVWWnobgsvT/b1BFUsbw30727eWMcT0TBqpNfsEmY+hd40IqiJZDZfeqD9qtMgTgHDb69Y40j
+        PrDWB2Eckw+rxIiKParyR5aKp5+phAvcgnQkT15EfsMUnEEuiu1iKO5MC0TqLhWbs5x1BV3m7nn3/
+        h41FF2qzwS1rRMm9wVruv/GESqJVJBuSuenrOFDSvNiell4ywVuotbiUnt+wQTXcL7mHgmGGlSwUu
+        24a09n6Q==;
+Received: from [2602:306:c5a2:a380:1dfb:b2e0:5ace:2d5]
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1mK8OU-00DzjX-2F; Sun, 29 Aug 2021 00:09:50 +0000
+Subject: Re: [PATCH] net: spider_net: switch from 'pci_' to 'dma_' API
+From:   Geoff Levand <geoff@infradead.org>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        kou.ishizaki@toshiba.co.jp, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+References: <60abc3d0c8b4ef8368a4d63326a25a5cb3cd218c.1630094078.git.christophe.jaillet@wanadoo.fr>
+ <4f3113d1-b76e-a085-df2d-fd97d4b45faf@infradead.org>
+Message-ID: <2b1a0085-de94-dc41-9b9d-3ba1fcdbb6f4@infradead.org>
+Date:   Sat, 28 Aug 2021 17:09:45 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <4f3113d1-b76e-a085-df2d-fd97d4b45faf@infradead.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I noticed that only port 0 worked on the RTL8366RB since we
-started to use custom tags.
+Hi Christophe,
 
-It turns out that the format of egress custom tags is actually
-different from ingress custom tags. While the lower bits just
-contain the port number in ingress tags, egress tags need to
-indicate destination port by setting the bit for the
-corresponding port.
+On 8/27/21 6:34 PM, Geoff Levand wrote:
+> On 8/27/21 12:56 PM, Christophe JAILLET wrote:
+>> It has *not* been compile tested because I don't have the needed
+>> configuration or cross-compiler.
+> 
+> The powerpc ppc64_defconfig has CONFIG_SPIDER_NET set. My
+> tdd-builder Docker image has the needed gcc-powerpc-linux-gnu
+> cross compiler to build ppc64_defconfig:
+> 
+>   https://hub.docker.com/r/glevand/tdd-builder
 
-It was working on port 0 because port 0 added 0x00 as port
-number in the lower bits, and if you do this the packet gets
-broadcasted to all ports, including the intended port.
-Ooops.
+Just to follow up, I applied your patch to v5.14-rc7 and built
+ppc64_defconfig. No warnings or errors were seen.
 
-Fix this and all ports work again.
+Thanks for your contribution.
 
-Tested on the D-Link DIR-685 by sending traffic to each of
-the ports in turn. It works.
-
-Fixes: 86dd9868b878 ("net: dsa: tag_rtl4_a: Support also egress tags")
-Cc: DENG Qingfang <dqfext@gmail.com>
-Cc: Mauri Sandberg <sandberg@mailfence.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
- net/dsa/tag_rtl4_a.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/net/dsa/tag_rtl4_a.c b/net/dsa/tag_rtl4_a.c
-index 57c46b4ab2b3..042a6cb7704a 100644
---- a/net/dsa/tag_rtl4_a.c
-+++ b/net/dsa/tag_rtl4_a.c
-@@ -54,9 +54,10 @@ static struct sk_buff *rtl4a_tag_xmit(struct sk_buff *skb,
- 	p = (__be16 *)tag;
- 	*p = htons(RTL4_A_ETHERTYPE);
- 
--	out = (RTL4_A_PROTOCOL_RTL8366RB << 12) | (2 << 8);
--	/* The lower bits is the port number */
--	out |= (u8)dp->index;
-+	out = (RTL4_A_PROTOCOL_RTL8366RB << RTL4_A_PROTOCOL_SHIFT);
-+	/* The lower bits indicate the port number */
-+	out |= BIT(dp->index);
-+
- 	p = (__be16 *)(tag + 2);
- 	*p = htons(out);
- 
--- 
-2.31.1
+Acked-by: Geoff Levand <geoff@infradead.org>
 
