@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E3B23FAB2A
-	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 13:47:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C05843FAB2E
+	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 13:47:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235261AbhH2LrF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Aug 2021 07:47:05 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:29295 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235233AbhH2LrD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 29 Aug 2021 07:47:03 -0400
+        id S235291AbhH2Lr7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Aug 2021 07:47:59 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:41395 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235273AbhH2Lrx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Aug 2021 07:47:53 -0400
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1630237572; h=Date: Message-Id: Cc: To: References:
+ s=smtp; t=1630237621; h=Date: Message-Id: Cc: To: References:
  In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=GfsV9Ojb7BBcgW10iYMoWARqBmNOVkCSIs35OVYOwgE=;
- b=u+21O7MHlVRFM0PtnMgxO9kF7UECSZ+22c1a6YdBaOrIYj56zky/jN4TAOX1v1q7mmlJvE1d
- JdDA4EPLyyih2kxFHc/1LCzKJfMw+3mudCyPNXG+IKuUdxtgxFx6PyRgBbMoQAE5VmKfMAKC
- 9biEXIJEyx+lVZIGLBd5lL4qTz8=
-X-Mailgun-Sending-Ip: 69.72.43.7
+ Content-Type: Sender; bh=FrcsjeYEV4aD3jrH0YZK+LgW/bik9E8xvwieK0EEtzY=;
+ b=m8PzL64UCzg8HozLNkKYVtOWE82rT/8KSYznRtTuI1iydhVPsNON3fJw0w6azYiYl6zxBNtA
+ MjihDgHByyQBoBBj76gI9G2V7pex0Gpif8w/DgEiur9pg42UiZ0d1AIYOGIN0E2wnRgE22GO
+ /ICjX95NgPGgwMOW3rfdxZXguJA=
+X-Mailgun-Sending-Ip: 198.61.254.9
 X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-east-1.postgun.com with SMTP id
- 612b736c6fc2cf7ad978d22b (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 29 Aug 2021 11:45:48
+ smtp-out-n04.prod.us-east-1.postgun.com with SMTP id
+ 612b73b4825e13c54a3674b8 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 29 Aug 2021 11:47:00
  GMT
 Sender: kvalo=codeaurora.org@mg.codeaurora.org
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 76F0BC4361B; Sun, 29 Aug 2021 11:45:47 +0000 (UTC)
+        id 250C0C4338F; Sun, 29 Aug 2021 11:47:00 +0000 (UTC)
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
@@ -39,55 +39,62 @@ Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id A4F5CC43460;
-        Sun, 29 Aug 2021 11:45:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org A4F5CC43460
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 3DF9AC4338F;
+        Sun, 29 Aug 2021 11:46:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 3DF9AC4338F
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: brcmfmac: pcie: fix oops on failure to resume and reprobe
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v3 1/2] mwifiex: pcie: add DMI-based quirk implementation
+ for
+ Surface devices
 From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20210817063521.22450-1-a.fatoum@pengutronix.de>
-References: <20210817063521.22450-1-a.fatoum@pengutronix.de>
-To:     Ahmad Fatoum <a.fatoum@pengutronix.de>
-Cc:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
-        kernel@pengutronix.de, Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        SHA-cyfmac-dev-list@infineon.com,
-        brcm80211-dev-list.pdl@broadcom.com, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+In-Reply-To: <20210820142050.35741-2-verdre@v0yd.nl>
+References: <20210820142050.35741-2-verdre@v0yd.nl>
+To:     =?utf-8?q?Jonas_Dre=C3=9Fler?= <verdre@v0yd.nl>
+Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org
+        Jakub Kicinski <kuba@kernel.org>,
+        =?utf-8?q?Jonas_Dre=C3=9Fler?= <verdre@v0yd.nl>,
+        Tsuchiya Yuto <kitakar@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        =?utf-8?q?Pali_Roh=C3=A1r?= <pali@kernel.org>
 User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-Id: <20210829114547.76F0BC4361B@smtp.codeaurora.org>
-Date:   Sun, 29 Aug 2021 11:45:47 +0000 (UTC)
+Message-Id: <20210829114700.250C0C4338F@smtp.codeaurora.org>
+Date:   Sun, 29 Aug 2021 11:47:00 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ahmad Fatoum <a.fatoum@pengutronix.de> wrote:
+Jonas Dreßler <verdre@v0yd.nl> wrote:
 
-> When resuming from suspend, brcmf_pcie_pm_leave_D3 will first attempt a
-> hot resume and then fall back to removing the PCI device and then
-> reprobing. If this probe fails, the kernel will oops, because brcmf_err,
-> which is called to report the failure will dereference the stale bus
-> pointer. Open code and use the default bus-less brcmf_err to avoid this.
+> This commit adds the ability to apply device-specific quirks to the
+> mwifiex driver. It uses DMI matching similar to the quirks brcmfmac uses
+> with dmi.c. We'll add identifiers to match various MS Surface devices,
+> which this is primarily meant for, later.
 > 
-> Fixes: 8602e62441ab ("brcmfmac: pass bus to the __brcmf_err() in pcie.c")
-> Signed-off-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
+> This commit is a slightly modified version of a previous patch sent in
+> by Tsuchiya Yuto.
+> 
+> Co-developed-by: Tsuchiya Yuto <kitakar@gmail.com>
+> Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
+> Signed-off-by: Jonas Dreßler <verdre@v0yd.nl>
 
-Patch applied to wireless-drivers-next.git, thanks.
+2 patches applied to wireless-drivers-next.git, thanks.
 
-d745ca4f2c4a brcmfmac: pcie: fix oops on failure to resume and reprobe
+5448bc2a426c mwifiex: pcie: add DMI-based quirk implementation for Surface devices
+a847666accf2 mwifiex: pcie: add reset_d3cold quirk for Surface gen4+ devices
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20210817063521.22450-1-a.fatoum@pengutronix.de/
+https://patchwork.kernel.org/project/linux-wireless/patch/20210820142050.35741-2-verdre@v0yd.nl/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
