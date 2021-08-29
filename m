@@ -2,159 +2,282 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BBD33FA9F9
+	by mail.lfdr.de (Postfix) with ESMTP id C476E3FA9FA
 	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 09:36:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234898AbhH2Hgb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Aug 2021 03:36:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57294 "EHLO
+        id S234905AbhH2Hgd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Aug 2021 03:36:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234850AbhH2HgZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Aug 2021 03:36:25 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B857C061756
-        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 00:35:33 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id g22so16560630edy.12
-        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 00:35:33 -0700 (PDT)
+        with ESMTP id S234895AbhH2Hga (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Aug 2021 03:36:30 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59DEEC0617AD
+        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 00:35:35 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id x11so23886160ejv.0
+        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 00:35:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=VxWKnh1dLp0dZoH9sLUrmEv+ZgBnJFbTlVC89TwKsWc=;
-        b=Y8fvcb5WrhwN3PTKVQdNaB/88QEkrQrcQuoC6wmfCBoFqdbMVqlRqcGQp+oFNWndxW
-         NeHYJhLR2CJL8Ypc1Co1Z0EjHzveGjXSuvZNbzazqSdMaAH/Ez/UeNm8JGLVEf+SADtc
-         QwozHuHm35cok+y8c4RTeCs1T3SOits6vLFnE=
+        bh=oWi76QYSy1K70uImbTtU+7+1q0goew4LyoCAVWjVW0w=;
+        b=XUw+uqsWryiR6zN+15ystT9Sf5ZKzLF5qtnzSOfPGV/+I4jpVU1oScn/6hTjECJwC6
+         7VtkdlVNQvL2VP4OHIxRT3zvwI7l1W5omTE5b48hMGZ/DrzjtE9/qpz2epDkuPT1oDmZ
+         47hlHtaxGg8PV00/OEZrH724zWPpt3lh7Fi2I=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=VxWKnh1dLp0dZoH9sLUrmEv+ZgBnJFbTlVC89TwKsWc=;
-        b=uiY8BE9BDvdagR/MCl9f7gLRF4uqeQJYjIUXzavMUwXVCzmHMK37evZLKfh4olX2hI
-         UbUQLotdPQbAbXI+/GvjSpMLs7ZV4vSNs8czNNt4iEbDFeYb0akZlEM9DKQK6j9IiODn
-         0XY6jJD8VSNyYtQVMRPCLUZL27lltmoZrJHLuzBypd/zPrX2X2Ni18LBUrAWEGWDghf9
-         A5R5VTlMOumQb4tzB+SCjsBtGJijMTO6uKNaPGmA7c4CxqTD6D5UcCSEigL58P5P6nMF
-         spBTFqDiIK0hVazPwN5XqNsJX30NsnyEEJaXlhuiDTMFjYhs0KohSys7m/a4KU+5iaQh
-         g5Bw==
-X-Gm-Message-State: AOAM5323+J4B7XorEaw7Dv5hOeUHyxibQgP0RVyapuPIxi6EMwn9GZrQ
-        0jBqZFs4fIYC9PYUU5hzwOhpnAopVfhGbw==
-X-Google-Smtp-Source: ABdhPJxkFeG1w9Ywu25bDn59W363fCczVq5ssiNWjhN1oZ2fgZ/HizDugYSkai5GmnrvTLW0LV9MXQ==
-X-Received: by 2002:a05:6402:2751:: with SMTP id z17mr18054443edd.290.1630222531541;
-        Sun, 29 Aug 2021 00:35:31 -0700 (PDT)
+        bh=oWi76QYSy1K70uImbTtU+7+1q0goew4LyoCAVWjVW0w=;
+        b=WPYMGazfgawyPtXS86a0o/7QWZPq6szFkF5Yr+YvKP+9i36RTO6TxwUDargU7yDqvL
+         ynTLNS70I7P9Kg3dhj3yYLkKxMLs6ilSCFCaFl68W3sR/a1e5O4tFKxQFy4SVTNmK6X5
+         i2KHEmUBIho7QyaHbAqcNmhSv0+L0aiRR62ie5eek3jN+KPYtlBhoR9G/JQlsTD4KcZN
+         PsdnrDO02hkDjGlrYmef8KkRejp3LtihIGPza4g6mzT4XBfkVXBo+PE/cbcOESCjD+H8
+         NKJapkiRPBPYT/PMb8uKWofknyXaqqFjMbmPTzTGygGp2QT6fDJBDPumWtb4U07IU/On
+         k8Rg==
+X-Gm-Message-State: AOAM530KN9dOGXu8dQkgkYAexTbXb7UfHpk8Sr7aJ0CoHUec49OIknVy
+        C3Qgvd4GQ49W1hUvW5FqT7cOlA==
+X-Google-Smtp-Source: ABdhPJzXyFPAXN3pPdnCoyMDw2h0P5Ry/vmqp5dcvqbAUoWlF72DuYPIzoK2Wj7BOjqF5KqVJ/A+RQ==
+X-Received: by 2002:a17:907:d8c:: with SMTP id go12mr19049607ejc.140.1630222533582;
+        Sun, 29 Aug 2021 00:35:33 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id dy7sm984007edb.38.2021.08.29.00.35.29
+        by smtp.gmail.com with ESMTPSA id dy7sm984007edb.38.2021.08.29.00.35.31
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 29 Aug 2021 00:35:31 -0700 (PDT)
+        Sun, 29 Aug 2021 00:35:33 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, edwin.peer@broadcom.com,
         gospo@broadcom.com
-Subject: [PATCH net-next v2 06/11] bnxt_en: add HWRM request assignment API
-Date:   Sun, 29 Aug 2021 03:35:01 -0400
-Message-Id: <1630222506-19532-7-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next v2 07/11] bnxt_en: add support for HWRM request slices
+Date:   Sun, 29 Aug 2021 03:35:02 -0400
+Message-Id: <1630222506-19532-8-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1630222506-19532-1-git-send-email-michael.chan@broadcom.com>
 References: <1630222506-19532-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000edd3c405caadc264"
+        boundary="0000000000000c94f605caadc3f0"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000edd3c405caadc264
+--0000000000000c94f605caadc3f0
 
 From: Edwin Peer <edwin.peer@broadcom.com>
 
-hwrm_req_replace() provides an assignment like operation to replace a
-managed HWRM request object with data from a pre-built source. This is
-useful for handling request data provided by higher layer HWRM clients.
+Slices are a mechanism for suballocating DMA mapped regions from the
+request buffer. Such regions can be used for indirect command data
+instead of creating new mappings with dma_alloc_coherent().
+
+The advantage of using a slice is that the lifetime of the slice is
+bound to the request and will be automatically unmapped when the
+request is consumed.
+
+A single external region is also supported. This allows for regions
+that will not fit inside the spare request buffer space such that
+the same API can be used consistently even for larger mappings.
 
 Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- .../net/ethernet/broadcom/bnxt/bnxt_hwrm.c    | 55 +++++++++++++++++++
- .../net/ethernet/broadcom/bnxt/bnxt_hwrm.h    |  1 +
- 2 files changed, 56 insertions(+)
+ .../net/ethernet/broadcom/bnxt/bnxt_hwrm.c    | 115 +++++++++++++++++-
+ .../net/ethernet/broadcom/bnxt/bnxt_hwrm.h    |   7 ++
+ 2 files changed, 120 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
-index 621daf687a00..39ef65025e17 100644
+index 39ef65025e17..6609a86d5226 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
-@@ -147,6 +147,61 @@ void hwrm_req_timeout(struct bnxt *bp, void *req, unsigned int timeout)
+@@ -91,6 +91,9 @@ int __hwrm_req_init(struct bnxt *bp, void **req, u16 req_type, u32 req_len)
+ 	ctx->dma_handle = dma_handle;
+ 	ctx->flags = 0; /* __GFP_ZERO, but be explicit regarding ownership */
+ 	ctx->timeout = bp->hwrm_cmd_timeout ?: DFLT_HWRM_CMD_TIMEOUT;
++	ctx->allocated = BNXT_HWRM_DMA_SIZE - BNXT_HWRM_CTX_OFFSET;
++	ctx->gfp = GFP_KERNEL;
++	ctx->slice_addr = NULL;
+ 
+ 	/* initialize common request fields */
+ 	ctx->req->req_type = cpu_to_le16(req_type);
+@@ -147,6 +150,29 @@ void hwrm_req_timeout(struct bnxt *bp, void *req, unsigned int timeout)
  		ctx->timeout = timeout;
  }
  
 +/**
-+ * hwrm_req_replace() - Replace request data.
++ * hwrm_req_alloc_flags() - Sets GFP allocation flags for slices.
 + * @bp: The driver context.
-+ * @req: The request to modify. A call to hwrm_req_replace() is conceptually
-+ *	an assignment of new_req to req. Subsequent calls to HWRM API functions,
-+ *	such as hwrm_req_send(), should thus use req and not new_req (in fact,
-+ *	calls to HWRM API functions will fail if non-managed request objects
-+ *	are passed).
-+ * @len: The length of new_req.
-+ * @new_req: The pre-built request to copy or reference.
++ * @req: The request for which calls to hwrm_req_dma_slice() will have altered
++ *	allocation flags.
++ * @flags: A bitmask of GFP flags. These flags are passed to
++ *	dma_alloc_coherent() whenever it is used to allocate backing memory
++ *	for slices. Note that calls to hwrm_req_dma_slice() will not always
++ *	result in new allocations, however, memory suballocated from the
++ *	request buffer is already __GFP_ZERO.
 + *
-+ * Replaces the request data in req with that of new_req. This is useful in
-+ * scenarios where a request object has already been constructed by a third
-+ * party prior to creating a resource managed request using hwrm_req_init().
-+ * Depending on the length, hwrm_req_replace() will either copy the new
-+ * request data into the DMA memory allocated for req, or it will simply
-+ * reference the new request and use it in lieu of req during subsequent
-+ * calls to hwrm_req_send(). The resource management is associated with
-+ * req and is independent of and does not apply to new_req. The caller must
-+ * ensure that the lifetime of new_req is least as long as req.
-+ *
-+ * Return: zero on success, negative error code otherwise:
-+ *     E2BIG: Request is too large.
-+ *     EINVAL: Invalid request to modify.
++ * Sets the GFP allocation flags associated with the request for subsequent
++ * calls to hwrm_req_dma_slice(). This can be useful for specifying __GFP_ZERO
++ * for slice allocations.
 + */
-+int hwrm_req_replace(struct bnxt *bp, void *req, void *new_req, u32 len)
++void hwrm_req_alloc_flags(struct bnxt *bp, void *req, gfp_t gfp)
 +{
 +	struct bnxt_hwrm_ctx *ctx = __hwrm_ctx(bp, req);
-+	struct input *internal_req = req;
-+	u16 req_type;
 +
-+	if (!ctx)
-+		return -EINVAL;
-+
-+	if (len > BNXT_HWRM_CTX_OFFSET)
-+		return -E2BIG;
-+
-+	if ((bp->fw_cap & BNXT_FW_CAP_SHORT_CMD) || len > BNXT_HWRM_MAX_REQ_LEN) {
-+		memcpy(internal_req, new_req, len);
-+	} else {
-+		internal_req->req_type = ((struct input *)new_req)->req_type;
-+		ctx->req = new_req;
-+	}
-+
-+	ctx->req_len = len;
-+	ctx->req->resp_addr = cpu_to_le64(ctx->dma_handle +
-+					  BNXT_HWRM_RESP_OFFSET);
-+
-+	/* update sentinel for potentially new request type */
-+	req_type = le16_to_cpu(internal_req->req_type);
-+	ctx->sentinel = hwrm_calc_sentinel(ctx, req_type);
-+
-+	return 0;
++	if (ctx)
++		ctx->gfp = gfp;
 +}
 +
  /**
-  * hwrm_req_flags() - Set non internal flags of the ctx
+  * hwrm_req_replace() - Replace request data.
   * @bp: The driver context.
+@@ -166,7 +192,8 @@ void hwrm_req_timeout(struct bnxt *bp, void *req, unsigned int timeout)
+  * reference the new request and use it in lieu of req during subsequent
+  * calls to hwrm_req_send(). The resource management is associated with
+  * req and is independent of and does not apply to new_req. The caller must
+- * ensure that the lifetime of new_req is least as long as req.
++ * ensure that the lifetime of new_req is least as long as req. Any slices
++ * that may have been associated with the original request are released.
+  *
+  * Return: zero on success, negative error code otherwise:
+  *     E2BIG: Request is too large.
+@@ -184,6 +211,15 @@ int hwrm_req_replace(struct bnxt *bp, void *req, void *new_req, u32 len)
+ 	if (len > BNXT_HWRM_CTX_OFFSET)
+ 		return -E2BIG;
+ 
++	/* free any existing slices */
++	ctx->allocated = BNXT_HWRM_DMA_SIZE - BNXT_HWRM_CTX_OFFSET;
++	if (ctx->slice_addr) {
++		dma_free_coherent(&bp->pdev->dev, ctx->slice_size,
++				  ctx->slice_addr, ctx->slice_handle);
++		ctx->slice_addr = NULL;
++	}
++	ctx->gfp = GFP_KERNEL;
++
+ 	if ((bp->fw_cap & BNXT_FW_CAP_SHORT_CMD) || len > BNXT_HWRM_MAX_REQ_LEN) {
+ 		memcpy(internal_req, new_req, len);
+ 	} else {
+@@ -274,6 +310,11 @@ static void __hwrm_ctx_drop(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
+ 	void *addr = ((u8 *)ctx) - BNXT_HWRM_CTX_OFFSET;
+ 	dma_addr_t dma_handle = ctx->dma_handle; /* save before invalidate */
+ 
++	/* unmap any auxiliary DMA slice */
++	if (ctx->slice_addr)
++		dma_free_coherent(&bp->pdev->dev, ctx->slice_size,
++				  ctx->slice_addr, ctx->slice_handle);
++
+ 	/* invalidate, ensure ownership, sentinel and dma_handle are cleared */
+ 	memset(ctx, 0, sizeof(struct bnxt_hwrm_ctx));
+ 
+@@ -286,7 +327,8 @@ static void __hwrm_ctx_drop(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
+  * hwrm_req_drop() - Release all resources associated with the request.
+  * @bp: The driver context.
+  * @req: The request to consume, releasing the associated resources. The
+- *	request object and its associated response are no longer valid.
++ *	request object, any slices, and its associated response are no
++ *	longer valid.
+  *
+  * It is legal to call hwrm_req_drop() on an unowned request, provided it
+  * has not already been consumed by hwrm_req_send() (for example, to release
+@@ -671,3 +713,72 @@ int hwrm_req_send_silent(struct bnxt *bp, void *req)
+ 	hwrm_req_flags(bp, req, BNXT_HWRM_CTX_SILENT);
+ 	return hwrm_req_send(bp, req);
+ }
++
++/**
++ * hwrm_req_dma_slice() - Allocate a slice of DMA mapped memory.
++ * @bp: The driver context.
++ * @req: The request for which indirect data will be associated.
++ * @size: The size of the allocation.
++ * @dma: The bus address associated with the allocation. The HWRM API has no
++ *	knowledge about the type of the request and so cannot infer how the
++ *	caller intends to use the indirect data. Thus, the caller is
++ *	responsible for configuring the request object appropriately to
++ *	point to the associated indirect memory. Note, DMA handle has the
++ *	same definition as it does in dma_alloc_coherent(), the caller is
++ *	responsible for endian conversions via cpu_to_le64() before assigning
++ *	this address.
++ *
++ * Allocates DMA mapped memory for indirect data related to a request. The
++ * lifetime of the DMA resources will be bound to that of the request (ie.
++ * they will be automatically released when the request is either consumed by
++ * hwrm_req_send() or dropped by hwrm_req_drop()). Small allocations are
++ * efficiently suballocated out of the request buffer space, hence the name
++ * slice, while larger requests are satisfied via an underlying call to
++ * dma_alloc_coherent(). Multiple suballocations are supported, however, only
++ * one externally mapped region is.
++ *
++ * Return: The kernel virtual address of the DMA mapping.
++ */
++void *
++hwrm_req_dma_slice(struct bnxt *bp, void *req, u32 size, dma_addr_t *dma_handle)
++{
++	struct bnxt_hwrm_ctx *ctx = __hwrm_ctx(bp, req);
++	u8 *end = ((u8 *)req) + BNXT_HWRM_DMA_SIZE;
++	struct input *input = req;
++	u8 *addr, *req_addr = req;
++	u32 max_offset, offset;
++
++	if (!ctx)
++		return NULL;
++
++	max_offset = BNXT_HWRM_DMA_SIZE - ctx->allocated;
++	offset = max_offset - size;
++	offset = ALIGN_DOWN(offset, BNXT_HWRM_DMA_ALIGN);
++	addr = req_addr + offset;
++
++	if (addr < req_addr + max_offset && req_addr + ctx->req_len <= addr) {
++		ctx->allocated = end - addr;
++		*dma_handle = ctx->dma_handle + offset;
++		return addr;
++	}
++
++	/* could not suballocate from ctx buffer, try create a new mapping */
++	if (ctx->slice_addr) {
++		/* if one exists, can only be due to software bug, be loud */
++		netdev_err(bp->dev, "HWRM refusing to reallocate DMA slice, req_type = %u\n",
++			   (u32)le16_to_cpu(input->req_type));
++		dump_stack();
++		return NULL;
++	}
++
++	addr = dma_alloc_coherent(&bp->pdev->dev, size, dma_handle, ctx->gfp);
++
++	if (!addr)
++		return NULL;
++
++	ctx->slice_addr = addr;
++	ctx->slice_size = size;
++	ctx->slice_handle = *dma_handle;
++
++	return addr;
++}
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h
-index 199c646f5e71..c58d84cc692a 100644
+index c58d84cc692a..b3af7a88e2c7 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h
-@@ -139,4 +139,5 @@ void hwrm_req_flags(struct bnxt *bp, void *req, enum bnxt_hwrm_ctx_flags flags);
- void hwrm_req_timeout(struct bnxt *bp, void *req, unsigned int timeout);
+@@ -27,9 +27,14 @@ struct bnxt_hwrm_ctx {
+ 	dma_addr_t dma_handle;
+ 	struct output *resp;
+ 	struct input *req;
++	dma_addr_t slice_handle;
++	void *slice_addr;
++	u32 slice_size;
+ 	u32 req_len;
+ 	enum bnxt_hwrm_ctx_flags flags;
+ 	unsigned int timeout;
++	u32 allocated;
++	gfp_t gfp;
+ };
+ 
+ #define BNXT_HWRM_MAX_REQ_LEN		(bp->hwrm_max_req_len)
+@@ -140,4 +145,6 @@ void hwrm_req_timeout(struct bnxt *bp, void *req, unsigned int timeout);
  int hwrm_req_send(struct bnxt *bp, void *req);
  int hwrm_req_send_silent(struct bnxt *bp, void *req);
-+int hwrm_req_replace(struct bnxt *bp, void *req, void *new_req, u32 len);
+ int hwrm_req_replace(struct bnxt *bp, void *req, void *new_req, u32 len);
++void hwrm_req_alloc_flags(struct bnxt *bp, void *req, gfp_t flags);
++void *hwrm_req_dma_slice(struct bnxt *bp, void *req, u32 size, dma_addr_t *dma);
  #endif
 -- 
 2.18.1
 
 
---000000000000edd3c405caadc264
+--0000000000000c94f605caadc3f0
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -225,13 +348,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIJn0HunH8xW52eg9go2fPTzqLLxLdzS+
-Xox8Ie7T1Ic6MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDgy
-OTA3MzUzMlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIB74hYUoqK8TDiWosgQQepa3eiTWx01L
+v9jLdFmEVuruMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDgy
+OTA3MzUzNFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQCLPumsOK8wuJXKyVoqXHTm2iIPqKX3wTgA3hBJiFq39wT/OWT+
-4mq4i94I134BFCjupqcmbs9DOi93nVZctmliqf5itUhaczIs5I2Kaofk6+Ju9qlTK2Mvo4r+Fu0j
-ornvScvYdhLC3XovDdLbtS0pNf7zx5oGgiX0fPIhUk41USadprFZDOkyktEedb2FutjC8Kt/FnWw
-9lu7ulvl42xe2rng+L4fmDQV2x9aIwPu8/lhWONAOZ1Z/MeAsPQtJWt+VktSdFGYdvd0sSwD/Nh9
-5oxpQfFQqNyEkzhQAMqDVCht5Psz9YWcmWDlHt+BMvwBGWnYantr1TQ+flqgnNsv
---000000000000edd3c405caadc264--
+ATANBgkqhkiG9w0BAQEFAASCAQCniiHDt8+ZGArRu8IdeqZhiQFFlHOQ/KQc+goIYKZDYQ6j8bEp
+MgWLUd8i2zVYGcCBNAw+zqPW4kVYZ7ns5083kyYIMNYa13c6w+wFf9dURxtk+zRJwwRYpSDZjzof
+K2vsg+NI/5jSIY78Fv6BY/JuFA6EHrcj7ZgcsBfyaW0ZyWafpy7e//lO94Gm0MOJ9QkGEE9AfncW
+UVCQ6lvpfddb63M4xkAwmydw8mqrBx0ARxSgu7uU7OnW9BDRutH3d7Tz9X4aSequ4pLnfxrnBF9p
+yy+wDYbe1C9RcDPH1vBHtZwaokDaa/RUbwypMgXHh+BQ0nvd2OEBsDp922Z4+Lrb
+--0000000000000c94f605caadc3f0--
