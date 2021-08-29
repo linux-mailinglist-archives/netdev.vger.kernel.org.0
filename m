@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C05843FAB2E
-	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 13:47:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABAF03FAB32
+	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 13:49:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235291AbhH2Lr7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Aug 2021 07:47:59 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:41395 "EHLO
+        id S235314AbhH2Lsi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Aug 2021 07:48:38 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:61299 "EHLO
         so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235273AbhH2Lrx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Aug 2021 07:47:53 -0400
+        with ESMTP id S235273AbhH2Lsh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Aug 2021 07:48:37 -0400
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1630237621; h=Date: Message-Id: Cc: To: References:
+ s=smtp; t=1630237665; h=Date: Message-Id: Cc: To: References:
  In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=FrcsjeYEV4aD3jrH0YZK+LgW/bik9E8xvwieK0EEtzY=;
- b=m8PzL64UCzg8HozLNkKYVtOWE82rT/8KSYznRtTuI1iydhVPsNON3fJw0w6azYiYl6zxBNtA
- MjihDgHByyQBoBBj76gI9G2V7pex0Gpif8w/DgEiur9pg42UiZ0d1AIYOGIN0E2wnRgE22GO
- /ICjX95NgPGgwMOW3rfdxZXguJA=
+ Content-Type: Sender; bh=wiNv/bL6XeE4L6+OaqStsterPHowAAdviE3eH7NnQ/w=;
+ b=M7yYzzeMQqtqnqJIWjrI+rbAnfTMx6iSrnGAdN7UADJiYncV0/7HFo0lUsj/t2nag2Is4Q5C
+ 3OsSvPGR8YLdQArwhzN1L5fL3odrgLqxfRQ3APIGQsM8v+kO3VoG6+0XGhekdfzH8YfHL3Vu
+ 6k1g1BxKimK0E6/t2ngDQq0tXyE=
 X-Mailgun-Sending-Ip: 198.61.254.9
 X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n04.prod.us-east-1.postgun.com with SMTP id
- 612b73b4825e13c54a3674b8 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 29 Aug 2021 11:47:00
+ smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
+ 612b73d5f61b2f864bde2b90 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 29 Aug 2021 11:47:33
  GMT
 Sender: kvalo=codeaurora.org@mg.codeaurora.org
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 250C0C4338F; Sun, 29 Aug 2021 11:47:00 +0000 (UTC)
+        id BA9E2C43617; Sun, 29 Aug 2021 11:47:32 +0000 (UTC)
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
@@ -39,62 +39,168 @@ Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 3DF9AC4338F;
-        Sun, 29 Aug 2021 11:46:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 3DF9AC4338F
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id CEBB2C4338F;
+        Sun, 29 Aug 2021 11:47:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org CEBB2C4338F
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3 1/2] mwifiex: pcie: add DMI-based quirk implementation
- for
- Surface devices
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] intel: switch from 'pci_' to 'dma_' API
 From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20210820142050.35741-2-verdre@v0yd.nl>
-References: <20210820142050.35741-2-verdre@v0yd.nl>
-To:     =?utf-8?q?Jonas_Dre=C3=9Fler?= <verdre@v0yd.nl>
-Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        =?utf-8?q?Jonas_Dre=C3=9Fler?= <verdre@v0yd.nl>,
-        Tsuchiya Yuto <kitakar@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?utf-8?q?Pali_Roh=C3=A1r?= <pali@kernel.org>
+In-Reply-To: <f55043d0c847bfae60087707778563cf732a7bf9.1629619229.git.christophe.jaillet@wanadoo.fr>
+References: <f55043d0c847bfae60087707778563cf732a7bf9.1629619229.git.christophe.jaillet@wanadoo.fr>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     stf_xl@wp.pl, davem@davemloft.net, kuba@kernel.org,
+        luciano.coelho@intel.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-Id: <20210829114700.250C0C4338F@smtp.codeaurora.org>
-Date:   Sun, 29 Aug 2021 11:47:00 +0000 (UTC)
+Message-Id: <20210829114732.BA9E2C43617@smtp.codeaurora.org>
+Date:   Sun, 29 Aug 2021 11:47:32 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jonas Dreßler <verdre@v0yd.nl> wrote:
+Christophe JAILLET <christophe.jaillet@wanadoo.fr> wrote:
 
-> This commit adds the ability to apply device-specific quirks to the
-> mwifiex driver. It uses DMI matching similar to the quirks brcmfmac uses
-> with dmi.c. We'll add identifiers to match various MS Surface devices,
-> which this is primarily meant for, later.
+> The wrappers in include/linux/pci-dma-compat.h should go away.
 > 
-> This commit is a slightly modified version of a previous patch sent in
-> by Tsuchiya Yuto.
+> The patch has been generated with the coccinelle script below.
 > 
-> Co-developed-by: Tsuchiya Yuto <kitakar@gmail.com>
-> Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
-> Signed-off-by: Jonas Dreßler <verdre@v0yd.nl>
+> It has been hand modified to use 'dma_set_mask_and_coherent()' instead of
+> 'pci_set_dma_mask()/pci_set_consistent_dma_mask()' when applicable.
+> This is less verbose.
+> 
+> It has been compile tested.
+> 
+> 
+> @@
+> @@
+> -    PCI_DMA_BIDIRECTIONAL
+> +    DMA_BIDIRECTIONAL
+> 
+> @@
+> @@
+> -    PCI_DMA_TODEVICE
+> +    DMA_TO_DEVICE
+> 
+> @@
+> @@
+> -    PCI_DMA_FROMDEVICE
+> +    DMA_FROM_DEVICE
+> 
+> @@
+> @@
+> -    PCI_DMA_NONE
+> +    DMA_NONE
+> 
+> @@
+> expression e1, e2, e3;
+> @@
+> -    pci_alloc_consistent(e1, e2, e3)
+> +    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+> 
+> @@
+> expression e1, e2, e3;
+> @@
+> -    pci_zalloc_consistent(e1, e2, e3)
+> +    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+> 
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_free_consistent(e1, e2, e3, e4)
+> +    dma_free_coherent(&e1->dev, e2, e3, e4)
+> 
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_map_single(e1, e2, e3, e4)
+> +    dma_map_single(&e1->dev, e2, e3, e4)
+> 
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_unmap_single(e1, e2, e3, e4)
+> +    dma_unmap_single(&e1->dev, e2, e3, e4)
+> 
+> @@
+> expression e1, e2, e3, e4, e5;
+> @@
+> -    pci_map_page(e1, e2, e3, e4, e5)
+> +    dma_map_page(&e1->dev, e2, e3, e4, e5)
+> 
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_unmap_page(e1, e2, e3, e4)
+> +    dma_unmap_page(&e1->dev, e2, e3, e4)
+> 
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_map_sg(e1, e2, e3, e4)
+> +    dma_map_sg(&e1->dev, e2, e3, e4)
+> 
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_unmap_sg(e1, e2, e3, e4)
+> +    dma_unmap_sg(&e1->dev, e2, e3, e4)
+> 
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
+> +    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
+> 
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_dma_sync_single_for_device(e1, e2, e3, e4)
+> +    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
+> 
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
+> +    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
+> 
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
+> +    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
+> 
+> @@
+> expression e1, e2;
+> @@
+> -    pci_dma_mapping_error(e1, e2)
+> +    dma_mapping_error(&e1->dev, e2)
+> 
+> @@
+> expression e1, e2;
+> @@
+> -    pci_set_dma_mask(e1, e2)
+> +    dma_set_mask(&e1->dev, e2)
+> 
+> @@
+> expression e1, e2;
+> @@
+> -    pci_set_consistent_dma_mask(e1, e2)
+> +    dma_set_coherent_mask(&e1->dev, e2)
+> 
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-2 patches applied to wireless-drivers-next.git, thanks.
+Patch applied to wireless-drivers-next.git, thanks.
 
-5448bc2a426c mwifiex: pcie: add DMI-based quirk implementation for Surface devices
-a847666accf2 mwifiex: pcie: add reset_d3cold quirk for Surface gen4+ devices
+ebe9e6514b40 intel: switch from 'pci_' to 'dma_' API
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20210820142050.35741-2-verdre@v0yd.nl/
+https://patchwork.kernel.org/project/linux-wireless/patch/f55043d0c847bfae60087707778563cf732a7bf9.1629619229.git.christophe.jaillet@wanadoo.fr/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
