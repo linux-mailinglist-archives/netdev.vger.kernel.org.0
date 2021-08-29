@@ -2,97 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D87003FACED
-	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 17:58:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C40D3FACF7
+	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 18:02:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235795AbhH2Pyp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Aug 2021 11:54:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:20923 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235764AbhH2Pyo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Aug 2021 11:54:44 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1630252431;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=/jaF7jZC8q/DpP5yyhldi4uUkfv/Q/aJYUDR7M+5EQ4=;
-        b=KQ5pApz2n835EnrAHbjDNq7xPjwus8ZD101vYJNGvXRMLvulWiaf8mVeuPZMHq6+AQO5ch
-        c9xoLFKy3bVcxgSodg644ttoFoCrDgdoJ1fNwMfRW9zJeJEJAiVxPv4Z6lcIcyxbfl1iwH
-        mSghjA0MFslE7+6mWMMF7+gOQopzx6A=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-263-Lgxn7rEKMOGTEXmMi3WgLg-1; Sun, 29 Aug 2021 11:53:50 -0400
-X-MC-Unique: Lgxn7rEKMOGTEXmMi3WgLg-1
-Received: by mail-ed1-f70.google.com with SMTP id g4-20020a056402180400b003c2e8da869bso5355586edy.13
-        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 08:53:50 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=/jaF7jZC8q/DpP5yyhldi4uUkfv/Q/aJYUDR7M+5EQ4=;
-        b=fZqPYnfIDL7ES4QmOmDMGLmndwZYRpCytTUpHEVQpPpjVzgjGzKZMeRGUyjsW/Mh/Y
-         vrH8r0arG+zkTpl8M6UrZ3DF7Vx3V+JFEay9sv/VgLrEjAyYJ26BEYVKDx6NTO/A33m4
-         9dZKUFJWpTEbA4JnHvpNBst9UQk+EFuxJPvVKkauDUu9coeYRqIzg848YICKsn7A/Oee
-         wZfxEdfb+nKeh1JOQIJGaxhtpvXyNkpQc4ccqjPE3ImzxkzUQBcKSBpDPCW7NaIFNPrz
-         JIXa1n6dK1bvMCK2OnSE00upGIskLZF3ExUbJ6XoslaFMjRORWB7mEF4DEGDWcfyONFD
-         shVg==
-X-Gm-Message-State: AOAM533aiG9sPzypELieZFHqbBzt6VT/0Dz/KLnw14cnNagM7jfS7AVJ
-        XsmuMxyY2UttO6etXIE3XhApmSW+EwpTtYg31tVkuivauwnXv0uT6zMolGCVvOklNlVcH+6HV0b
-        ibCYhN/f6k22R3shv
-X-Received: by 2002:a17:907:212e:: with SMTP id qo14mr19145561ejb.501.1630252427533;
-        Sun, 29 Aug 2021 08:53:47 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzobXz3Ef1GROPF3oUnWQrRnebrjXnwnoH6TBBe6U6SyFAGgXQrD00rBwtykUugZTIDZOQ8Lw==
-X-Received: by 2002:a17:907:212e:: with SMTP id qo14mr19145554ejb.501.1630252427363;
-        Sun, 29 Aug 2021 08:53:47 -0700 (PDT)
-Received: from redhat.com ([2.55.137.4])
-        by smtp.gmail.com with ESMTPSA id s3sm5652608ejm.49.2021.08.29.08.53.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 29 Aug 2021 08:53:46 -0700 (PDT)
-Date:   Sun, 29 Aug 2021 11:53:43 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        akpm@linux-foundation.org, dan.carpenter@oracle.com,
-        david@redhat.com, jasowang@redhat.com, mst@redhat.com,
-        torvalds@linux-foundation.org
-Subject: [GIT PULL] virtio: a last minute fix
-Message-ID: <20210829115343-mutt-send-email-mst@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mutt-Fcc: =sent
+        id S235651AbhH2P7a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Aug 2021 11:59:30 -0400
+Received: from zg8tmty1ljiyny4xntqumjca.icoremail.net ([165.227.154.27]:58818
+        "HELO zg8tmty1ljiyny4xntqumjca.icoremail.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with SMTP id S235548AbhH2P73 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Aug 2021 11:59:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fudan.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
+        Message-Id; bh=rgUZgbBBtTunyYwAzXQPQn5I+ZYWQlJxRslZk4bBoZ4=; b=q
+        64EEFqLW+jM6DDmDr0CupQEoRgSnoYb4dgLsfRwUmmbJyOe16kEPfWHwRkt8PvPd
+        97Wp12Gi5m9+Y/G6IRjqBpeBhyooIg3tsiMspYJiUKL9CECpAZ+OVwY4iYE9s//d
+        aMv5rkVN3yBeCpSrLRVunNcjSs0dpXQYYWMwt+pIv8=
+Received: from localhost.localdomain (unknown [223.104.213.4])
+        by app2 (Coremail) with SMTP id XQUFCgBH_j+PrithQNdfAQ--.10733S3;
+        Sun, 29 Aug 2021 23:58:07 +0800 (CST)
+From:   Xiyu Yang <xiyuyang19@fudan.edu.cn>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Xiyu Yang <xiyuyang19@fudan.edu.cn>
+Subject: [PATCH] net: sched: Fix qdisc_rate_table refcount leak when get tcf_block failed
+Date:   Sun, 29 Aug 2021 23:58:01 +0800
+Message-Id: <1630252681-71588-1-git-send-email-xiyuyang19@fudan.edu.cn>
+X-Mailer: git-send-email 2.7.4
+X-CM-TRANSID: XQUFCgBH_j+PrithQNdfAQ--.10733S3
+X-Coremail-Antispam: 1UD129KBjvdXoW7GF1UWw1Dtw1fGrW7Kw4rKrg_yoWfXFb_Gw
+        n5WF1xZr10qr1UAwsrta95GryS9F1Ivws5ArWDKrWDX3yFyF98JFZYgry8XryfGF42k3s8
+        Jr9Ig3s8Aw4I9jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbsAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
+        6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAac4AC62xK8xCEY4vEwIxC4wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC
+        0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr
+        1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IE
+        rcIFxwCY02Avz4vE14v_XrWl42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr
+        1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE
+        14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7
+        IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvE
+        x4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnU
+        UI43ZEXa7VUjf-BJUUUUU==
+X-CM-SenderInfo: irzsiiysuqikmy6i3vldqovvfxof0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Donnu if it's too late - was on vacation and this only arrived
-Wednesday. Seems to be necessary to avoid introducing a regression
-in virtio-mem.
+The reference counting issue happens in one exception handling path of
+cbq_change_class(). When failing to get tcf_block, the function forgets
+to decrease the refcount of "rtab" increased by qdisc_put_rtab(),
+causing a refcount leak.
 
-The following changes since commit e22ce8eb631bdc47a4a4ea7ecf4e4ba499db4f93:
+Fix this issue by jumping to "failure" label when get tcf_block failed.
 
-  Linux 5.14-rc7 (2021-08-22 14:24:56 -0700)
+Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
+---
+ net/sched/sch_cbq.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
-
-for you to fetch changes up to 816ff7595135948efde558221c8551bdd1869243:
-
-  virtio-mem: fix sleeping in RCU read side section in virtio_mem_online_page_cb() (2021-08-29 11:50:04 -0400)
-
-----------------------------------------------------------------
-virtio: a last minute fix
-
-Fix a regression in virtio-mem.
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-----------------------------------------------------------------
-David Hildenbrand (1):
-      virtio-mem: fix sleeping in RCU read side section in virtio_mem_online_page_cb()
-
- drivers/virtio/virtio_mem.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+diff --git a/net/sched/sch_cbq.c b/net/sched/sch_cbq.c
+index b79a7e27bb31..38a3a8394bbd 100644
+--- a/net/sched/sch_cbq.c
++++ b/net/sched/sch_cbq.c
+@@ -1614,7 +1614,7 @@ cbq_change_class(struct Qdisc *sch, u32 classid, u32 parentid, struct nlattr **t
+ 	err = tcf_block_get(&cl->block, &cl->filter_list, sch, extack);
+ 	if (err) {
+ 		kfree(cl);
+-		return err;
++		goto failure;
+ 	}
+ 
+ 	if (tca[TCA_RATE]) {
+-- 
+2.7.4
 
