@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0D123FADD6
-	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 20:39:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F45F3FADD8
+	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 20:39:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235948AbhH2Shg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Aug 2021 14:37:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34132 "EHLO
+        id S235944AbhH2Shh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Aug 2021 14:37:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235882AbhH2Sh3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Aug 2021 14:37:29 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80BA8C061575
-        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 11:36:36 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id u3so26108528ejz.1
-        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 11:36:36 -0700 (PDT)
+        with ESMTP id S235913AbhH2Sha (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Aug 2021 14:37:30 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30C82C061575
+        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 11:36:38 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id lc21so26228672ejc.7
+        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 11:36:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=ubique-spb-ru.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=1GGWQS2F8TIkjkfRjAwlg/olnvQAdF9KhtCTM+aLY1E=;
-        b=mY9VHMDkf10DOfWWJ9LPFz58W+fOhT0WiNNGEz0oY4yy+QF9rVODBM3wOPrAZUkL/a
-         VfOpjHe4oNSDj/2Dqyuk2SxYIDyZEz8QqzKaGuoj7IIfxJxxN/4hgViFf/V1OFZhgzdZ
-         wnsSZ3Kjlej/9V/FUCzlKd31Tedkl6og7j7QMBtQC8ieNqYBr19rKy+nKMpLZmLst+c4
-         dA+1Feor3dzyReBq1IVuFjsZTzTwgBtsEQUQrJAoFGfRLa3YslDmTck/PhLKtOswkzlE
-         ycvJxl72ojmhJlIKLrMkczo0l6AEt82gLa/LgmvC83xg9muK61kX80qZRH4QuTZOHsdg
-         jYhg==
+        bh=JbdpS3iQ6KiN2gh8SfHUOgj5LSHnQ7i3+q+wV3LTBnY=;
+        b=K7aowS0rUV8Bevg3ZJSywXVbB9lu9HcGAz+Jr6tXaARXv5dhcEFbghrz9/2To0sEzk
+         Zr6Mr6h9D4udVASXriQGZNkSuL/EzRHwyrdSMbWBL7oWE47Rxm3/PvL2BBaeoKvFUOti
+         dNABxq9NMmHb1dU6IMBE5qw2dH5uO3Q3kdRPB3YcuCoH6LDN33HraXgaxnFRHbHWcPWm
+         nX7V7kUswJTICvxOUW+cmoAlOmj0lZQsA8Wude3bEoQgU8hVO06e50zey7YuRJcKXPY+
+         Knu2avAfYH5WSTnpIoYczZRKvaMztlwA7VbAtv7kOTAsRXeWpsS7mDg7Nf+QNa7b00k7
+         NDoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=1GGWQS2F8TIkjkfRjAwlg/olnvQAdF9KhtCTM+aLY1E=;
-        b=hZPMn/vY2FTviQfFZHNbbtuqlzulNqgtsbBjax3bYBLbdLzSXBGWi3p0qCo5mY1ebS
-         oBYyl3eyvmmyahM8Rqo5plMd/lyF3pX7qH6CeIoMwc8cr8p6noEWfHmxrsocnGhZmh9M
-         qim7NTQ+8SrWL6hQ3avbAmcmsff2Efa8PtlOi0QSYh4r32KorzHhFfQyhKzg061qNaNO
-         9RP9UwSo2lDiUmVB5PRNTYKWcU4Gx7EpHZLWnc2jRJ2ktgRBwQC5F6qkQtHWQS+chqN7
-         4WKb9CPzuXyvwZi3SWxBbDIqUU2v/EqMnse5w6Tu7q842s0hU6PHUg6jOKCVuxfKVIcO
-         r17Q==
-X-Gm-Message-State: AOAM532OmXZq1CmE/KD6r6lOIBQtJ9sgblKEuEqrMJOBAA/vJJ+YD5mn
-        Ft0mTdTPKrOTjR8blgrWHCCa4w==
-X-Google-Smtp-Source: ABdhPJztWwzHfOlq6NTBL4sR80p+q/yo0f34c2gZbNUrjyvbkWbad3VsG/8KPpe90Rot8ntsglMrAw==
-X-Received: by 2002:a17:906:7256:: with SMTP id n22mr21093771ejk.173.1630262194958;
-        Sun, 29 Aug 2021 11:36:34 -0700 (PDT)
+        bh=JbdpS3iQ6KiN2gh8SfHUOgj5LSHnQ7i3+q+wV3LTBnY=;
+        b=C+D7GGZhEH1XqbNrJ2pj7cIbd5N9uF/HAdnWOWpWB0HTSEBygbr0LOr2BGFpDpHtwf
+         anqu3rjuCxIEj5Ap4Zze69Q4Cbax0oF4ZBLoDj1Q8Y2ysipoQEjbioFzbME0/Evl4z26
+         3i5DPyxE4QCvwrE6AdlRv1HqNUh22k2F+UGhlUFjOAXgrMrGes4Nqw9BsswZZRkXHYsa
+         xBFHYUnBet4t5w6dDeSQQVCEhyxMpIGYXAkmFm+i9md5B0ilvJO0GkO1Q8I7pJR6mMTP
+         QtuXKjihy0pZivkm4zFUTnMsXfE0ZdBrK+Xp16SdLnUbKCxid3QmVH09rEk1U/THNpj1
+         oUeQ==
+X-Gm-Message-State: AOAM530OuGIE4rIw+l2CCN3YdVQ2Bl7W7A5SXG9IIsLNjAz82U8sQXjA
+        AnJ1StRR0AwdPrT9H9L7qjt2kQ==
+X-Google-Smtp-Source: ABdhPJwXOQSx8z9ZqxbsIpz864cfOQ0Zpp7MqklXSEECFEtaiVX9qtdFLxuc/PYsQtbIGx4dsutzGQ==
+X-Received: by 2002:a17:907:2137:: with SMTP id qo23mr19042687ejb.508.1630262196722;
+        Sun, 29 Aug 2021 11:36:36 -0700 (PDT)
 Received: from localhost ([154.21.15.43])
-        by smtp.gmail.com with ESMTPSA id cr9sm6427992edb.17.2021.08.29.11.36.34
+        by smtp.gmail.com with ESMTPSA id y23sm5594539ejp.115.2021.08.29.11.36.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 29 Aug 2021 11:36:34 -0700 (PDT)
+        Sun, 29 Aug 2021 11:36:36 -0700 (PDT)
 From:   Dmitrii Banshchikov <me@ubique.spb.ru>
 To:     bpf@vger.kernel.org
 Cc:     Dmitrii Banshchikov <me@ubique.spb.ru>, ast@kernel.org,
@@ -54,9 +54,9 @@ Cc:     Dmitrii Banshchikov <me@ubique.spb.ru>, ast@kernel.org,
         kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
         john.fastabend@gmail.com, kpsingh@kernel.org,
         netdev@vger.kernel.org, rdna@fb.com
-Subject: [PATCH bpf-next v2 05/13] bpfilter: Add codegen infrastructure
-Date:   Sun, 29 Aug 2021 22:36:00 +0400
-Message-Id: <20210829183608.2297877-6-me@ubique.spb.ru>
+Subject: [PATCH bpf-next v2 06/13] bpfilter: Add struct match
+Date:   Sun, 29 Aug 2021 22:36:01 +0400
+Message-Id: <20210829183608.2297877-7-me@ubique.spb.ru>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210829183608.2297877-1-me@ubique.spb.ru>
 References: <20210829183608.2297877-1-me@ubique.spb.ru>
@@ -66,90 +66,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Prepare codegen infrastructure to be used by matches, targets, rules and
-tables.
+struct match_ops defines polymorphic interface for matches. A match
+consists of pointers to struct match_ops and struct xt_entry_match which
+contains a payload for the match's type.
 
-The resulting BPF program is stored as an array of bpf_insn structs.
+The set of operations of a match's interface consists of:
+ * check: is used to check a rule's match
+ * gen_inline: is used to emit an inline version of a match
 
-There are multiple flavours of BPF programs needed for bpfilter: TC and
-XDP. While most of the logic is same for the both flavours there are
-multiple points where the logic is slightly different. To support such
-points there is a codegen_ops struct which provides a polymorphic
-interface to emit a specific set of instructions for each individual
-flavour.
-
-An emitted instruction may need to be fixed up later - as some data
-isn't known at the moment of emitting. To support such cases there are
-fixups and relocations. The difference between them is point of time
-when data becomes known. For fixups such time point is end of code
-generation and for relocations it is a time just before loading the
-program. Fixups and relocations are performed during code
-generation/preparation for program loading when required data becomes
-known and instructions might be adjusted.
-
-Subprogs are required to support user defined chains and helper
-subprograms. All already generated subprogs are stored in subprogs
-array. This sorted array acts as an index. All subprogs awaiting
-generation phase are stored in awaiting_subprogs lists.
-
-To support a shared state between multiple BPF programs there is
-shared_codegen struct. Currently it may be used to have a single
-counters map both for TC and XDP BPF programs.
-
-Beside that there is a runtime_context struct that might be used to
-store frequently required data such as size of the packet and pointer to
-L3/L4 headers. This context is stored on the stack and there are macros
-to access individual fields of this struct.  Immediately after
-runtime_context on stack there is a scratchpad area.
-
-The calling convention follows the BPF calling convention with a couple
-of additions:
- * CODEGEN_REG_CTX(BPF_REG_9) is a pointer to program context
- * CODEGEN_REG_RUNTIME_CTX(BPF_REG_8) is a pointer to runtime context
+All match_ops are kept in a map by their name.
 
 Signed-off-by: Dmitrii Banshchikov <me@ubique.spb.ru>
 ---
- net/bpfilter/Makefile                         |  14 +-
- net/bpfilter/codegen.c                        | 732 ++++++++++++++++++
- net/bpfilter/codegen.h                        | 188 +++++
- .../testing/selftests/bpf/bpfilter/.gitignore |   1 +
- tools/testing/selftests/bpf/bpfilter/Makefile |  22 +-
- 5 files changed, 954 insertions(+), 3 deletions(-)
- create mode 100644 net/bpfilter/codegen.c
- create mode 100644 net/bpfilter/codegen.h
+ net/bpfilter/Makefile                         |  3 +-
+ net/bpfilter/context.c                        | 44 +++++++++
+ net/bpfilter/context.h                        |  5 +
+ net/bpfilter/match.c                          | 49 ++++++++++
+ net/bpfilter/match.h                          | 36 +++++++
+ net/bpfilter/xt_udp.c                         | 96 +++++++++++++++++++
+ .../testing/selftests/bpf/bpfilter/.gitignore |  2 +
+ tools/testing/selftests/bpf/bpfilter/Makefile |  8 ++
+ .../selftests/bpf/bpfilter/bpfilter_util.h    | 20 ++++
+ .../selftests/bpf/bpfilter/test_match.c       | 61 ++++++++++++
+ .../selftests/bpf/bpfilter/test_xt_udp.c      | 41 ++++++++
+ 11 files changed, 364 insertions(+), 1 deletion(-)
+ create mode 100644 net/bpfilter/context.c
+ create mode 100644 net/bpfilter/match.c
+ create mode 100644 net/bpfilter/match.h
+ create mode 100644 net/bpfilter/xt_udp.c
+ create mode 100644 tools/testing/selftests/bpf/bpfilter/bpfilter_util.h
+ create mode 100644 tools/testing/selftests/bpf/bpfilter/test_match.c
+ create mode 100644 tools/testing/selftests/bpf/bpfilter/test_xt_udp.c
 
 diff --git a/net/bpfilter/Makefile b/net/bpfilter/Makefile
-index 1809759d08c4..f3838368ba08 100644
+index f3838368ba08..ffad25b41aad 100644
 --- a/net/bpfilter/Makefile
 +++ b/net/bpfilter/Makefile
-@@ -3,9 +3,19 @@
- # Makefile for the Linux BPFILTER layer.
- #
+@@ -11,7 +11,8 @@ $(LIBBPF_A):
+ 	$(Q)$(MAKE) -C $(LIBBPF_SRCS) O=$(LIBBPF_OUT)/ OUTPUT=$(LIBBPF_OUT)/ $(LIBBPF_OUT)/libbpf.a
  
-+LIBBPF_SRCS = $(srctree)/tools/lib/bpf/
-+LIBBPF_A = $(obj)/libbpf.a
-+LIBBPF_OUT = $(abspath $(obj))
-+
-+$(LIBBPF_A):
-+	$(Q)$(MAKE) -C $(LIBBPF_SRCS) O=$(LIBBPF_OUT)/ OUTPUT=$(LIBBPF_OUT)/ $(LIBBPF_OUT)/libbpf.a
-+
  userprogs := bpfilter_umh
--bpfilter_umh-objs := main.o map-common.o
--userccflags += -I $(srctree)/tools/include/ -I $(srctree)/tools/include/uapi
-+bpfilter_umh-objs := main.o map-common.o codegen.o
-+bpfilter_umh-userldlibs := $(LIBBPF_A) -lelf -lz
-+userccflags += -I $(srctree)/tools/include/ -I $(srctree)/tools/include/uapi -I $(srctree)/tools/lib
-+
-+$(obj)/bpfilter_umh: $(LIBBPF_A)
+-bpfilter_umh-objs := main.o map-common.o codegen.o
++bpfilter_umh-objs := main.o map-common.o codegen.o match.o context.o
++bpfilter_umh-objs += xt_udp.o
+ bpfilter_umh-userldlibs := $(LIBBPF_A) -lelf -lz
+ userccflags += -I $(srctree)/tools/include/ -I $(srctree)/tools/include/uapi -I $(srctree)/tools/lib
  
- ifeq ($(CONFIG_BPFILTER_UMH), y)
- # builtin bpfilter_umh should be linked with -static
-diff --git a/net/bpfilter/codegen.c b/net/bpfilter/codegen.c
+diff --git a/net/bpfilter/context.c b/net/bpfilter/context.c
 new file mode 100644
-index 000000000000..0fa84d03af63
+index 000000000000..b377f5f73f69
 --- /dev/null
-+++ b/net/bpfilter/codegen.c
-@@ -0,0 +1,732 @@
++++ b/net/bpfilter/context.c
+@@ -0,0 +1,44 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (c) 2021 Telegram FZ-LLC
@@ -157,975 +125,443 @@ index 000000000000..0fa84d03af63
 +
 +#define _GNU_SOURCE
 +
-+#include "codegen.h"
-+
-+#include "../../include/uapi/linux/bpfilter.h"
-+
-+#include <linux/if_ether.h>
-+#include <linux/kernel.h>
-+#include <linux/list.h>
-+#include <linux/pkt_cls.h>
-+
-+#include <unistd.h>
-+#include <sys/syscall.h>
-+
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <string.h>
-+
-+#include <bpf/libbpf.h>
-+
 +#include "context.h"
 +
-+enum fixup_insn_type { FIXUP_INSN_OFF, FIXUP_INSN_IMM, __MAX_FIXUP_INSN_TYPE };
++#include <linux/err.h>
++#include <linux/list.h>
 +
-+static int sys_bpf(int cmd, union bpf_attr *attr, unsigned int size)
++#include "map-common.h"
++#include "match.h"
++
++static int init_match_ops_map(struct context *ctx)
 +{
-+	return syscall(SYS_bpf, cmd, attr, size);
-+}
++	const struct match_ops *match_ops[] = { &xt_udp };
++	int i, err;
 +
-+static __u64 bpf_ptr_to_u64(const void *ptr)
-+{
-+	return (__u64)(unsigned long)ptr;
-+}
++	err = create_map(&ctx->match_ops_map, ARRAY_SIZE(match_ops));
++	if (err)
++		return err;
 +
-+static int subprog_desc_comparator(const void *x, const void *y)
-+{
-+	const struct codegen_subprog_desc *subprog_x = *(const struct codegen_subprog_desc **)x;
-+	const struct codegen_subprog_desc *subprog_y = *(const struct codegen_subprog_desc **)y;
++	for (i = 0; i < ARRAY_SIZE(match_ops); ++i) {
++		const struct match_ops *m = match_ops[i];
 +
-+	if (subprog_x->type != subprog_y->type)
-+		return subprog_x->type - subprog_y->type;
-+
-+	if (subprog_x->type == CODEGEN_SUBPROG_USER_CHAIN)
-+		return subprog_x->offset - subprog_y->offset;
-+
-+	BUG_ON(1);
-+
-+	return -1;
-+}
-+
-+static const struct codegen_subprog_desc *
-+codegen_find_subprog(struct codegen *codegen, const struct codegen_subprog_desc **subprog)
-+{
-+	const struct codegen_subprog_desc **found;
-+
-+	found = bsearch(subprog, codegen->subprogs, codegen->subprogs_cur,
-+			sizeof(codegen->subprogs[0]), subprog_desc_comparator);
-+
-+	return found ? *found : NULL;
-+}
-+
-+static const struct codegen_subprog_desc *codegen_find_user_chain_subprog(struct codegen *codegen,
-+									  uint32_t offset)
-+{
-+	const struct codegen_subprog_desc subprog = { .type = CODEGEN_SUBPROG_USER_CHAIN,
-+						      .offset = offset };
-+	const struct codegen_subprog_desc *subprog_ptr = &subprog;
-+
-+	return codegen_find_subprog(codegen, &subprog_ptr);
-+}
-+
-+int codegen_push_awaiting_subprog(struct codegen *codegen, struct codegen_subprog_desc *subprog)
-+{
-+	struct list_head *t, *n;
-+
-+	if (codegen_find_subprog(codegen, (const struct codegen_subprog_desc **)&subprog)) {
-+		free(subprog);
-+		return 0;
-+	}
-+
-+	list_for_each_safe(t, n, &codegen->awaiting_subprogs) {
-+		struct codegen_subprog_desc *awaiting_subprog;
-+
-+		awaiting_subprog = list_entry(t, struct codegen_subprog_desc, list);
-+		if (!subprog_desc_comparator(&awaiting_subprog, &subprog)) {
-+			free(subprog);
-+			return 0;
-+		}
-+	}
-+
-+	list_add_tail(&subprog->list, &codegen->awaiting_subprogs);
-+
-+	return 0;
-+}
-+
-+static int codegen_fixup_insn(struct bpf_insn *insn, enum fixup_insn_type type, __s32 v)
-+{
-+	if (type == FIXUP_INSN_OFF) {
-+		if (insn->off)
-+			return -EINVAL;
-+
-+		insn->off = v;
-+
-+		return 0;
-+	}
-+
-+	if (type == FIXUP_INSN_IMM) {
-+		if (insn->imm)
-+			return -EINVAL;
-+
-+		insn->imm = v;
-+
-+		return 0;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+int codegen_fixup(struct codegen *codegen, enum codegen_fixup_type fixup_type)
-+{
-+	struct list_head *t, *n;
-+
-+	list_for_each_safe(t, n, &codegen->fixup) {
-+		enum fixup_insn_type type = __MAX_FIXUP_INSN_TYPE;
-+		struct codegen_fixup_desc *fixup;
-+		struct bpf_insn *insn;
-+		int err;
-+		__s32 v;
-+
-+		fixup = list_entry(t, struct codegen_fixup_desc, list);
-+		if (fixup->type != fixup_type)
-+			continue;
-+
-+		if (fixup->type >= __MAX_CODEGEN_FIXUP_TYPE)
-+			return -EINVAL;
-+
-+		if (fixup->insn > codegen->len_cur)
-+			return -EINVAL;
-+
-+		insn = &codegen->img[fixup->insn];
-+
-+		if (fixup_type == CODEGEN_FIXUP_NEXT_RULE ||
-+		    fixup_type == CODEGEN_FIXUP_END_OF_CHAIN) {
-+			type = FIXUP_INSN_OFF;
-+			v = codegen->len_cur - fixup->insn - 1;
-+		}
-+
-+		if (fixup_type == CODEGEN_FIXUP_JUMP_TO_CHAIN) {
-+			const struct codegen_subprog_desc *subprog;
-+
-+			subprog = codegen_find_user_chain_subprog(codegen, fixup->offset);
-+			if (!subprog)
-+				return -EINVAL;
-+
-+			type = FIXUP_INSN_OFF;
-+			v = subprog->insn - fixup->insn - 1;
-+		}
-+
-+		if (fixup_type == CODEGEN_FIXUP_COUNTERS_INDEX) {
-+			type = FIXUP_INSN_IMM;
-+			v = codegen->rule_index;
-+		}
-+
-+		err = codegen_fixup_insn(insn, type, v);
++		err = map_upsert(&ctx->match_ops_map, m->name, (void *)m);
 +		if (err)
 +			return err;
-+
-+		list_del(t);
-+		free(fixup);
 +	}
 +
 +	return 0;
 +}
 +
-+int emit_fixup(struct codegen *codegen, enum codegen_fixup_type fixup_type, struct bpf_insn insn)
++int create_context(struct context *ctx)
 +{
-+	struct codegen_fixup_desc *fixup;
-+
-+	fixup = malloc(sizeof(*fixup));
-+	if (!fixup)
-+		return -ENOMEM;
-+
-+	INIT_LIST_HEAD(&fixup->list);
-+	fixup->type = fixup_type;
-+	fixup->insn = codegen->len_cur;
-+	list_add_tail(&fixup->list, &codegen->fixup);
-+
-+	EMIT(codegen, insn);
-+
-+	return 0;
++	return init_match_ops_map(ctx);
 +}
 +
-+int emit_add_counter(struct codegen *codegen)
++void free_context(struct context *ctx)
 +{
-+	struct bpf_insn insns[2] = { BPF_LD_MAP_FD(BPF_REG_ARG1, 0) };
-+	struct codegen_reloc_desc *reloc;
-+
-+	reloc = malloc(sizeof(*reloc));
-+	if (!reloc)
-+		return -ENOMEM;
-+	EMIT(codegen, BPF_LDX_MEM(BPF_W, CODEGEN_REG_SCRATCH3, CODEGEN_REG_RUNTIME_CTX,
-+				  STACK_RUNTIME_CONTEXT_OFFSET(data_size)));
-+
-+	INIT_LIST_HEAD(&reloc->list);
-+	reloc->type = CODEGEN_RELOC_MAP;
-+	reloc->map = CODEGEN_MAP_COUNTERS;
-+	reloc->insn = codegen->len_cur;
-+	list_add_tail(&reloc->list, &codegen->relocs);
-+
-+	EMIT(codegen, insns[0]);
-+	EMIT(codegen, insns[1]);
-+	EMIT_FIXUP(codegen, CODEGEN_FIXUP_COUNTERS_INDEX,
-+		   BPF_ST_MEM(BPF_W, BPF_REG_10, STACK_SCRATCHPAD_OFFSET - 4, 0));
-+	EMIT(codegen, BPF_MOV64_REG(BPF_REG_ARG2, BPF_REG_10));
-+	EMIT(codegen, BPF_ALU64_IMM(BPF_ADD, BPF_REG_ARG2, STACK_SCRATCHPAD_OFFSET - 4));
-+	EMIT(codegen, BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem));
-+	EMIT(codegen, BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 14));
-+
-+	reloc = malloc(sizeof(*reloc));
-+	if (!reloc)
-+		return -ENOMEM;
-+	INIT_LIST_HEAD(&reloc->list);
-+	reloc->type = CODEGEN_RELOC_MAP;
-+	reloc->map = CODEGEN_MAP_COUNTERS;
-+	reloc->insn = codegen->len_cur;
-+	list_add_tail(&reloc->list, &codegen->relocs);
-+
-+	EMIT(codegen, insns[0]);
-+	EMIT(codegen, insns[1]);
-+	EMIT(codegen, BPF_LDX_MEM(BPF_DW, CODEGEN_REG_SCRATCH5, BPF_REG_0, 0));
-+	EMIT(codegen, BPF_LDX_MEM(BPF_DW, CODEGEN_REG_SCRATCH4, BPF_REG_0, 8));
-+	EMIT(codegen, BPF_LDX_MEM(BPF_W, CODEGEN_REG_SCRATCH3, CODEGEN_REG_RUNTIME_CTX,
-+				  STACK_RUNTIME_CONTEXT_OFFSET(data_size)));
-+	EMIT(codegen, BPF_ALU64_IMM(BPF_ADD, CODEGEN_REG_SCRATCH5, 1));
-+	EMIT(codegen, BPF_ALU64_REG(BPF_ADD, CODEGEN_REG_SCRATCH4, CODEGEN_REG_SCRATCH3));
-+	EMIT(codegen, BPF_STX_MEM(BPF_DW, BPF_REG_0, CODEGEN_REG_SCRATCH5, 0));
-+	EMIT(codegen, BPF_STX_MEM(BPF_DW, BPF_REG_0, CODEGEN_REG_SCRATCH4, 8));
-+	EMIT(codegen, BPF_MOV64_REG(BPF_REG_ARG2, BPF_REG_10));
-+	EMIT(codegen, BPF_ALU64_IMM(BPF_ADD, BPF_REG_ARG2, STACK_SCRATCHPAD_OFFSET - 4));
-+	EMIT(codegen, BPF_MOV64_REG(BPF_REG_ARG3, BPF_REG_0));
-+	EMIT(codegen, BPF_MOV32_IMM(BPF_REG_ARG4, BPF_EXIST));
-+	EMIT(codegen, BPF_EMIT_CALL(BPF_FUNC_map_update_elem));
-+
-+	return 0;
++	free_map(&ctx->match_ops_map);
 +}
-+
-+static int codegen_reloc(struct codegen *codegen)
-+{
-+	struct shared_codegen *shared_codegen;
-+	struct list_head *t;
-+
-+	shared_codegen = codegen->shared_codegen;
-+
-+	list_for_each(t, &codegen->relocs) {
-+		struct codegen_reloc_desc *reloc;
-+		struct bpf_insn *insn;
-+
-+		reloc = list_entry(t, struct codegen_reloc_desc, list);
-+
-+		if (reloc->insn >= codegen->len_cur)
-+			return -EINVAL;
-+
-+		insn = &codegen->img[reloc->insn];
-+
-+		if (reloc->type == CODEGEN_RELOC_MAP) {
-+			enum codegen_map_type map_type;
-+
-+			if (codegen->len_cur <= reloc->insn + 1)
-+				return -EINVAL;
-+
-+			if (insn->code != (BPF_LD | BPF_DW | BPF_IMM))
-+				return -EINVAL;
-+
-+			map_type = insn->imm;
-+			if (map_type < 0 || map_type >= __MAX_CODEGEN_MAP_TYPE)
-+				return -EINVAL;
-+
-+			BUG_ON(shared_codegen->maps_fd[map_type] < 0);
-+			insn->imm = shared_codegen->maps_fd[map_type];
-+
-+			continue;
-+		}
-+
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static int load_maps(struct codegen *codegen)
-+{
-+	struct shared_codegen *shared_codegen;
-+	int i;
-+
-+	shared_codegen = codegen->shared_codegen;
-+
-+	if (shared_codegen->maps_refcnt++)
-+		return 0;
-+
-+	for (i = 0; i < __MAX_CODEGEN_MAP_TYPE; ++i) {
-+		int j, fd, saved_errno;
-+		union bpf_attr *map;
-+
-+		BUG_ON(shared_codegen->maps_fd[i] > -1);
-+
-+		map = &shared_codegen->maps[i];
-+		fd = sys_bpf(BPF_MAP_CREATE, map, sizeof(*map));
-+
-+		if (fd > -1) {
-+			shared_codegen->maps_fd[i] = fd;
-+			continue;
-+		}
-+
-+		saved_errno = errno;
-+
-+		for (j = 0; j < i; ++j) {
-+			close(shared_codegen->maps_fd[j]);
-+			shared_codegen->maps_fd[j] = -1;
-+		}
-+
-+		return saved_errno;
-+	}
-+
-+	return 0;
-+}
-+
-+static void unload_maps(struct codegen *codegen)
-+{
-+	struct shared_codegen *shared_codegen;
-+	int i;
-+
-+	shared_codegen = codegen->shared_codegen;
-+
-+	if (--shared_codegen->maps_refcnt)
-+		return;
-+
-+	for (i = 0; i < __MAX_CODEGEN_MAP_TYPE; ++i) {
-+		if (shared_codegen->maps_fd[i] > -1) {
-+			close(shared_codegen->maps_fd[i]);
-+			shared_codegen->maps_fd[i] = -1;
-+		}
-+	}
-+}
-+
-+static int xdp_gen_inline_prologue(struct codegen *codegen)
-+{
-+	EMIT(codegen, BPF_MOV64_REG(CODEGEN_REG_CTX, BPF_REG_ARG1));
-+	EMIT(codegen, BPF_MOV64_REG(CODEGEN_REG_RUNTIME_CTX, BPF_REG_FP));
-+	EMIT(codegen, BPF_MOV32_IMM(CODEGEN_REG_RETVAL, XDP_ABORTED));
-+
-+	return 0;
-+}
-+
-+static int xdp_load_packet_data(struct codegen *codegen, int dst_reg)
-+{
-+	EMIT(codegen, BPF_LDX_MEM(BPF_W, dst_reg, CODEGEN_REG_CTX, offsetof(struct xdp_md, data)));
-+
-+	return 0;
-+}
-+
-+static int xdp_load_packet_data_end(struct codegen *codegen, int dst_reg)
-+{
-+	EMIT(codegen,
-+	     BPF_LDX_MEM(BPF_W, dst_reg, CODEGEN_REG_CTX, offsetof(struct xdp_md, data_end)));
-+
-+	return 0;
-+}
-+
-+static int xdp_emit_ret_code(struct codegen *codegen, int ret_code)
-+{
-+	int xdp_ret_code;
-+
-+	if (ret_code == BPFILTER_NF_ACCEPT)
-+		xdp_ret_code = XDP_PASS;
-+	else if (ret_code == BPFILTER_NF_DROP)
-+		xdp_ret_code = XDP_DROP;
-+	else
-+		return -EINVAL;
-+
-+	EMIT(codegen, BPF_MOV32_IMM(BPF_REG_0, xdp_ret_code));
-+
-+	return 0;
-+}
-+
-+static int xdp_gen_inline_epilogue(struct codegen *codegen)
-+{
-+	EMIT(codegen, BPF_EXIT_INSN());
-+
-+	return 0;
-+}
-+
-+struct xdp_img_ctx {
-+	int fd;
-+};
-+
-+static int xdp_load_img(struct codegen *codegen)
-+{
-+	struct xdp_img_ctx *img_ctx;
-+	int fd, err;
-+
-+	if (codegen->img_ctx)
-+		return -EINVAL;
-+
-+	img_ctx = malloc(sizeof(*img_ctx));
-+	if (!img_ctx)
-+		return -ENOMEM;
-+
-+	fd = load_img(codegen);
-+	if (fd < 0) {
-+		err = fd;
-+		goto err_free;
-+	}
-+
-+	// TODO: device id
-+	err = bpf_set_link_xdp_fd(2, fd, 0);
-+	if (err)
-+		goto err_free;
-+
-+	img_ctx->fd = fd;
-+	codegen->img_ctx = img_ctx;
-+
-+	return fd;
-+
-+err_free:
-+	if (fd > -1)
-+		close(fd);
-+	free(img_ctx);
-+
-+	return err;
-+}
-+
-+static void xdp_unload_img(struct codegen *codegen)
-+{
-+	struct xdp_img_ctx *img_ctx;
-+
-+	BUG_ON(!codegen->img_ctx);
-+
-+	img_ctx = (struct xdp_img_ctx *)codegen->img_ctx;
-+
-+	BUG_ON(img_ctx->fd < 0);
-+
-+	close(img_ctx->fd);
-+	free(img_ctx);
-+
-+	codegen->img_ctx = NULL;
-+
-+	unload_img(codegen);
-+}
-+
-+static const struct codegen_ops xdp_codegen_ops = {
-+	.gen_inline_prologue = xdp_gen_inline_prologue,
-+	.load_packet_data = xdp_load_packet_data,
-+	.load_packet_data_end = xdp_load_packet_data_end,
-+	.emit_ret_code = xdp_emit_ret_code,
-+	.gen_inline_epilogue = xdp_gen_inline_epilogue,
-+	.load_img = xdp_load_img,
-+	.unload_img = xdp_unload_img,
-+};
-+
-+static int tc_gen_inline_prologue(struct codegen *codegen)
-+{
-+	EMIT(codegen, BPF_MOV64_REG(CODEGEN_REG_CTX, BPF_REG_ARG1));
-+	EMIT(codegen, BPF_MOV64_REG(CODEGEN_REG_RUNTIME_CTX, BPF_REG_FP));
-+	EMIT(codegen, BPF_MOV32_IMM(CODEGEN_REG_RETVAL, TC_ACT_OK));
-+
-+	return 0;
-+}
-+
-+static int tc_load_packet_data(struct codegen *codegen, int dst_reg)
-+{
-+	EMIT(codegen,
-+	     BPF_LDX_MEM(BPF_W, dst_reg, CODEGEN_REG_CTX, offsetof(struct __sk_buff, data)));
-+
-+	return 0;
-+}
-+
-+static int tc_load_packet_data_end(struct codegen *codegen, int dst_reg)
-+{
-+	EMIT(codegen, BPF_LDX_MEM(BPF_W, CODEGEN_REG_DATA_END, CODEGEN_REG_CTX,
-+				  offsetof(struct __sk_buff, data_end)));
-+
-+	return 0;
-+}
-+
-+static int tc_emit_ret_code(struct codegen *codegen, int ret_code)
-+{
-+	int tc_ret_code;
-+
-+	if (ret_code == BPFILTER_NF_ACCEPT)
-+		tc_ret_code = BPF_OK;
-+	else if (ret_code == BPFILTER_NF_DROP)
-+		tc_ret_code = BPF_DROP;
-+	else
-+		return -EINVAL;
-+
-+	EMIT(codegen, BPF_MOV32_IMM(BPF_REG_0, tc_ret_code));
-+
-+	return 0;
-+}
-+
-+static int tc_gen_inline_epilogue(struct codegen *codegen)
-+{
-+	EMIT(codegen, BPF_EXIT_INSN());
-+
-+	return 0;
-+}
-+
-+struct tc_img_ctx {
-+	int fd;
-+	struct bpf_tc_hook hook;
-+	struct bpf_tc_opts opts;
-+};
-+
-+static int tc_load_img(struct codegen *codegen)
-+{
-+	struct tc_img_ctx *img_ctx;
-+	int fd, err;
-+
-+	if (codegen->img_ctx)
-+		return -EINVAL;
-+
-+	img_ctx = calloc(1, sizeof(*img_ctx));
-+	if (!img_ctx)
-+		return -ENOMEM;
-+
-+	img_ctx->hook.sz = sizeof(img_ctx->hook);
-+	img_ctx->hook.ifindex = 2;
-+	img_ctx->hook.attach_point = BPF_TC_EGRESS;
-+
-+	fd = load_img(codegen);
-+	if (fd < 0) {
-+		err = fd;
-+		goto err_free;
-+	}
-+
-+	err = bpf_tc_hook_create(&img_ctx->hook);
-+	if (err == -EEXIST)
-+		err = 0;
-+	if (err)
-+		goto err_free;
-+
-+	img_ctx->opts.sz = sizeof(img_ctx->opts);
-+	img_ctx->opts.handle = 1;
-+	img_ctx->opts.priority = 1;
-+	img_ctx->opts.prog_fd = fd;
-+	err = bpf_tc_attach(&img_ctx->hook, &img_ctx->opts);
-+	if (err)
-+		goto err_free;
-+
-+	img_ctx->fd = fd;
-+	codegen->img_ctx = img_ctx;
-+
-+	return fd;
-+
-+err_free:
-+	if (fd > -1)
-+		close(fd);
-+	free(img_ctx);
-+	return err;
-+}
-+
-+static void tc_unload_img(struct codegen *codegen)
-+{
-+	struct tc_img_ctx *img_ctx;
-+	int err;
-+
-+	BUG_ON(!codegen->img_ctx);
-+
-+	img_ctx = (struct tc_img_ctx *)codegen->img_ctx;
-+	img_ctx->opts.flags = 0;
-+	img_ctx->opts.prog_fd = 0;
-+	img_ctx->opts.prog_id = 0;
-+	err = bpf_tc_detach(&img_ctx->hook, &img_ctx->opts);
-+	if (err)
-+		BFLOG_EMERG(codegen->ctx, "cannot detach tc program: %s\n", strerror(-err));
-+
-+	err = bpf_tc_hook_destroy(&img_ctx->hook);
-+	if (err)
-+		BFLOG_EMERG(codegen->ctx, "cannot destroy tc hook: %s\n", strerror(-err));
-+
-+	BUG_ON(img_ctx->fd < 0);
-+	close(img_ctx->fd);
-+	free(img_ctx);
-+
-+	codegen->img_ctx = NULL;
-+
-+	unload_img(codegen);
-+}
-+
-+static const struct codegen_ops tc_codegen_ops = {
-+	.gen_inline_prologue = tc_gen_inline_prologue,
-+	.load_packet_data = tc_load_packet_data,
-+	.load_packet_data_end = tc_load_packet_data_end,
-+	.emit_ret_code = tc_emit_ret_code,
-+	.gen_inline_epilogue = tc_gen_inline_epilogue,
-+	.load_img = tc_load_img,
-+	.unload_img = tc_unload_img,
-+};
-+
-+void create_shared_codegen(struct shared_codegen *shared_codegen)
-+{
-+	shared_codegen->maps_refcnt = 0;
-+
-+	shared_codegen->maps[CODEGEN_MAP_COUNTERS].map_type = BPF_MAP_TYPE_PERCPU_ARRAY;
-+	shared_codegen->maps[CODEGEN_MAP_COUNTERS].key_size = 4;
-+	shared_codegen->maps[CODEGEN_MAP_COUNTERS].value_size =
-+		sizeof(struct bpfilter_ipt_counters);
-+	shared_codegen->maps[CODEGEN_MAP_COUNTERS].max_entries = 0;
-+	snprintf(shared_codegen->maps[CODEGEN_MAP_COUNTERS].map_name,
-+		 sizeof(shared_codegen->maps[CODEGEN_MAP_COUNTERS].map_name), "bpfilter_cntrs");
-+	shared_codegen->maps_fd[CODEGEN_MAP_COUNTERS] = -1;
-+}
-+
-+int create_codegen(struct codegen *codegen, enum bpf_prog_type type)
-+{
-+	int err;
-+
-+	memset(codegen, 0, sizeof(*codegen));
-+
-+	if (type == BPF_PROG_TYPE_XDP)
-+		codegen->codegen_ops = &xdp_codegen_ops;
-+	else if (type == BPF_PROG_TYPE_SCHED_CLS)
-+		codegen->codegen_ops = &tc_codegen_ops;
-+	else
-+		return -EINVAL;
-+	codegen->prog_type = type;
-+
-+	codegen->log_buf_size = 1 << 20;
-+	codegen->log_buf = malloc(codegen->log_buf_size);
-+	if (!codegen->log_buf) {
-+		err = -ENOMEM;
-+		goto err_free;
-+	}
-+
-+	codegen->len_max = BPF_MAXINSNS;
-+	codegen->img = malloc(codegen->len_max * sizeof(codegen->img[0]));
-+	if (!codegen->img) {
-+		err = -ENOMEM;
-+		goto err_free;
-+	}
-+
-+	INIT_LIST_HEAD(&codegen->fixup);
-+	INIT_LIST_HEAD(&codegen->relocs);
-+	INIT_LIST_HEAD(&codegen->awaiting_subprogs);
-+
-+	return 0;
-+
-+err_free:
-+	free(codegen->img);
-+
-+	return err;
-+}
-+
-+int load_img(struct codegen *codegen)
-+{
-+	union bpf_attr attr = {};
-+	int err, fd;
-+
-+	err = load_maps(codegen);
-+	if (err)
-+		return err;
-+
-+	err = codegen_reloc(codegen);
-+	if (err)
-+		return err;
-+
-+	attr.prog_type = codegen->prog_type;
-+	attr.insns = bpf_ptr_to_u64(codegen->img);
-+	attr.insn_cnt = codegen->len_cur;
-+	attr.license = bpf_ptr_to_u64("GPL");
-+	attr.prog_ifindex = 0;
-+	snprintf(attr.prog_name, sizeof(attr.prog_name), "bpfilter");
-+
-+	if (codegen->log_buf && codegen->log_buf_size) {
-+		attr.log_buf = bpf_ptr_to_u64(codegen->log_buf);
-+		attr.log_size = codegen->log_buf_size;
-+		attr.log_level = 1;
-+	}
-+
-+	fd = sys_bpf(BPF_PROG_LOAD, &attr, sizeof(attr));
-+	if (fd == -1) {
-+		BFLOG_DEBUG(codegen->ctx, "Cannot load BPF program: %s\n", codegen->log_buf);
-+		return -errno;
-+	}
-+
-+	return fd;
-+}
-+
-+
-+void unload_img(struct codegen *codegen)
-+{
-+	unload_maps(codegen);
-+}
-+
-+void free_codegen(struct codegen *codegen)
-+{
-+	struct list_head *t, *n;
-+	int i;
-+
-+	list_for_each_safe(t, n, &codegen->fixup) {
-+		struct codegen_fixup_desc *fixup;
-+
-+		fixup = list_entry(t, struct codegen_fixup_desc, list);
-+		free(fixup);
-+	}
-+
-+	list_for_each_safe(t, n, &codegen->relocs) {
-+		struct codegen_reloc_desc *reloc;
-+
-+		reloc = list_entry(t, struct codegen_reloc_desc, list);
-+		free(reloc);
-+	}
-+
-+	list_for_each_safe(t, n, &codegen->awaiting_subprogs) {
-+		struct codegen_subprog_desc *subprog;
-+
-+		subprog = list_entry(t, struct codegen_subprog_desc, list);
-+		free(subprog);
-+	}
-+
-+	for (i = 0; i < codegen->subprogs_cur; ++i)
-+		free(codegen->subprogs[i]);
-+	free(codegen->subprogs);
-+
-+	free(codegen->log_buf);
-+	free(codegen->img);
-+}
-diff --git a/net/bpfilter/codegen.h b/net/bpfilter/codegen.h
+diff --git a/net/bpfilter/context.h b/net/bpfilter/context.h
+index 6503eda27809..da248ae254e5 100644
+--- a/net/bpfilter/context.h
++++ b/net/bpfilter/context.h
+@@ -8,11 +8,13 @@
+ 
+ #include <sys/syslog.h>
+ 
++#include <search.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+ 
+ struct context {
+ 	FILE *log_file;
++	struct hsearch_data match_ops_map;
+ };
+ 
+ #define BFLOG_IMPL(ctx, level, fmt, ...)                                                           \
+@@ -34,4 +36,7 @@ struct context {
+ #define BFLOG_DEBUG(ctx, fmt, ...)
+ #endif
+ 
++int create_context(struct context *ctx);
++void free_context(struct context *ctx);
++
+ #endif // NET_BPFILTER_CONTEXT_H
+diff --git a/net/bpfilter/match.c b/net/bpfilter/match.c
 new file mode 100644
-index 000000000000..7953f6938dcc
+index 000000000000..3b49196efabf
 --- /dev/null
-+++ b/net/bpfilter/codegen.h
-@@ -0,0 +1,188 @@
++++ b/net/bpfilter/match.c
+@@ -0,0 +1,49 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (c) 2021 Telegram FZ-LLC
++ */
++
++#define _GNU_SOURCE
++
++#include "match.h"
++
++#include <linux/err.h>
++
++#include <errno.h>
++#include <string.h>
++
++#include "context.h"
++#include "map-common.h"
++
++int init_match(struct context *ctx, const struct bpfilter_ipt_match *ipt_match, struct match *match)
++{
++	const size_t maxlen = sizeof(ipt_match->u.user.name);
++	const struct match_ops *found;
++	int err;
++
++	if (strnlen(ipt_match->u.user.name, maxlen) == maxlen) {
++		BFLOG_DEBUG(ctx, "cannot init match: too long match name\n");
++		return -EINVAL;
++	}
++
++	found = map_find(&ctx->match_ops_map, ipt_match->u.user.name);
++	if (IS_ERR(found)) {
++		BFLOG_DEBUG(ctx, "cannot find match by name: '%s'\n", ipt_match->u.user.name);
++		return PTR_ERR(found);
++	}
++
++	if (found->size + sizeof(*ipt_match) != ipt_match->u.match_size ||
++	    found->revision != ipt_match->u.user.revision) {
++		BFLOG_DEBUG(ctx, "invalid match: '%s'\n", ipt_match->u.user.name);
++		return -EINVAL;
++	}
++
++	err = found->check(ctx, ipt_match);
++	if (err)
++		return err;
++
++	match->match_ops = found;
++	match->ipt_match = ipt_match;
++
++	return 0;
++}
+diff --git a/net/bpfilter/match.h b/net/bpfilter/match.h
+new file mode 100644
+index 000000000000..107b69eb3664
+--- /dev/null
++++ b/net/bpfilter/match.h
+@@ -0,0 +1,36 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/*
 + * Copyright (c) 2021 Telegram FZ-LLC
 + */
 +
-+#ifndef NET_BPFILTER_CODEGEN_H
-+#define NET_BPFILTER_CODEGEN_H
++#ifndef NET_BPFILTER_MATCH_H
++#define NET_BPFILTER_MATCH_H
 +
-+#include <linux/bpf.h>
-+#include <linux/filter.h>
-+#include <linux/ip.h>
-+#include <linux/types.h>
-+#include <linux/udp.h>
++#include "../../include/uapi/linux/bpfilter.h"
 +
-+#include <bpf/bpf_endian.h>
++#include <stdint.h>
 +
++struct bpfilter_ipt_match;
++struct codegen;
++struct context;
++struct match;
++
++struct match_ops {
++	char name[BPFILTER_EXTENSION_MAXNAMELEN];
++	uint8_t revision;
++	uint16_t size;
++	int (*check)(struct context *ctx, const struct bpfilter_ipt_match *ipt_match);
++	int (*gen_inline)(struct codegen *ctx, const struct match *match);
++};
++
++struct match {
++	const struct match_ops *match_ops;
++	const struct bpfilter_ipt_match *ipt_match;
++};
++
++extern const struct match_ops xt_udp;
++
++int init_match(struct context *ctx, const struct bpfilter_ipt_match *ipt_match,
++	       struct match *match);
++
++#endif // NET_BPFILTER_MATCH_H
+diff --git a/net/bpfilter/xt_udp.c b/net/bpfilter/xt_udp.c
+new file mode 100644
+index 000000000000..53e6305bc208
+--- /dev/null
++++ b/net/bpfilter/xt_udp.c
+@@ -0,0 +1,96 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (c) 2021 Telegram FZ-LLC
++ */
++
++#define _GNU_SOURCE
++
++#include <linux/netfilter/x_tables.h>
++#include <linux/netfilter/xt_tcpudp.h>
++
++#include <arpa/inet.h>
 +#include <errno.h>
 +#include <stddef.h>
-+#include <stdint.h>
-+#include <stdlib.h>
-+#include <string.h>
 +
-+struct context;
-+struct table;
-+struct rule;
++#include "codegen.h"
++#include "context.h"
++#include "match.h"
 +
-+#define CODEGEN_REG_RETVAL BPF_REG_0
-+#define CODEGEN_REG_SCRATCH1 BPF_REG_1
-+#define CODEGEN_REG_SCRATCH2 BPF_REG_2
-+#define CODEGEN_REG_SCRATCH3 BPF_REG_3
-+#define CODEGEN_REG_SCRATCH4 BPF_REG_4
-+#define CODEGEN_REG_SCRATCH5 BPF_REG_5
-+#define CODEGEN_REG_DATA_END CODEGEN_REG_SCRATCH5
-+#define CODEGEN_REG_L3 BPF_REG_6
-+#define CODEGEN_REG_L4 BPF_REG_7
-+#define CODEGEN_REG_RUNTIME_CTX BPF_REG_8
-+#define CODEGEN_REG_CTX BPF_REG_9
++static int xt_udp_check(struct context *ctx, const struct bpfilter_ipt_match *ipt_match)
++{
++	const struct xt_udp *udp;
 +
-+#define EMIT(codegen, x)                                                                           \
-+	do {                                                                                       \
-+		if (codegen->len_cur + 1 > codegen->len_max)                                       \
-+			return -ENOMEM;                                                            \
-+		codegen->img[codegen->len_cur++] = x;                                              \
-+	} while (0)
++	udp = (const struct xt_udp *)&ipt_match->data;
 +
-+#define EMIT_FIXUP(codegen, fixup_type, x)                                                         \
-+	do {                                                                                       \
-+		const int __err = emit_fixup(codegen, fixup_type, x);                              \
-+		if (__err)                                                                         \
-+			return __err;                                                              \
-+	} while (0)
++	if (udp->invflags & XT_UDP_INV_MASK) {
++		BFLOG_DEBUG(ctx, "cannot check match 'udp': invalid flags\n");
++		return -EINVAL;
++	}
 +
-+#define EMIT_ADD_COUNTER(codegen)                                                                  \
-+	do {                                                                                       \
-+		const int __err = emit_add_counter(codegen);                                       \
-+		if (__err)                                                                         \
-+			return __err;                                                              \
-+	} while (0)
++	return 0;
++}
 +
-+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-+#define EMIT_LITTLE_ENDIAN(codegen, x) EMIT(codegen, x)
-+#else
-+#define EMIT_LITTLE_ENDIAN(codegen, x)
-+#endif
++static int xt_udp_gen_inline_ports(struct codegen *ctx, int regno, bool inv, const u16 (*ports)[2])
++{
++	if ((*ports)[0] == 0 && (*ports)[1] == 65535) {
++		if (inv)
++			EMIT_FIXUP(ctx, CODEGEN_FIXUP_NEXT_RULE, BPF_JMP_IMM(BPF_JA, 0, 0, 0));
++	} else if ((*ports)[0] == (*ports)[1]) {
++		const u16 port = htons((*ports)[0]);
 +
-+#define EMIT_DEBUG(codegen, reg)                                                                   \
-+	do {                                                                                       \
-+		EMIT(codegen, BPF_ST_MEM(BPF_W, BPF_REG_10, STACK_SCRATCHPAD_OFFSET - 44,          \
-+					 __bpf_constant_ntohl(0x6c750000)));                       \
-+		EMIT(codegen, BPF_ST_MEM(BPF_W, BPF_REG_10, STACK_SCRATCHPAD_OFFSET - 48,          \
-+					 __bpf_constant_ntohl(0x4720256c)));                       \
-+		EMIT(codegen, BPF_ST_MEM(BPF_W, BPF_REG_10, STACK_SCRATCHPAD_OFFSET - 52,          \
-+					 __bpf_constant_ntohl(0x42464442)));                       \
-+		EMIT(codegen, BPF_MOV64_REG(BPF_REG_1, BPF_REG_10));                               \
-+		EMIT(codegen, BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, STACK_SCRATCHPAD_OFFSET - 52));    \
-+		EMIT(codegen, BPF_MOV32_IMM(BPF_REG_2, 12));                                       \
-+		EMIT(codegen, BPF_MOV64_REG(BPF_REG_3, reg));                                      \
-+		EMIT(codegen, BPF_EMIT_CALL(BPF_FUNC_trace_printk));                               \
-+	} while (0)
++		EMIT_FIXUP(ctx, CODEGEN_FIXUP_NEXT_RULE,
++			   BPF_JMP_IMM((inv ? BPF_JEQ : BPF_JNE), regno, port, 0));
++	} else {
++		EMIT_LITTLE_ENDIAN(ctx, BPF_ENDIAN(BPF_TO_BE, regno, 16));
++		EMIT_FIXUP(ctx, CODEGEN_FIXUP_NEXT_RULE,
++			   BPF_JMP_IMM(inv ? BPF_JGT : BPF_JLT, regno, (*ports)[0], 0));
++		EMIT_FIXUP(ctx, CODEGEN_FIXUP_NEXT_RULE,
++			   BPF_JMP_IMM(inv ? BPF_JLT : BPF_JGT, regno, (*ports)[1], 0));
++	}
 +
-+struct runtime_context {
-+	uint32_t data_size;
-+	void *l3;
-+	void *l4;
-+};
++	return 0;
++}
 +
-+#define STACK_RUNTIME_CONTEXT_OFFSET(field)                                                        \
-+	(-(short)(offsetof(struct runtime_context, field) +                                        \
-+		  sizeof(((struct runtime_context *)NULL)->field)))
++static int xt_udp_gen_inline(struct codegen *ctx, const struct match *match)
++{
++	const struct xt_udp *udp;
++	int err;
 +
-+#define STACK_SCRATCHPAD_OFFSET (-(short)sizeof(struct runtime_context))
++	udp = (const struct xt_udp *)&match->ipt_match->data;
 +
-+enum codegen_map_type { CODEGEN_MAP_COUNTERS, __MAX_CODEGEN_MAP_TYPE };
++	EMIT(ctx, BPF_MOV64_REG(CODEGEN_REG_SCRATCH1, CODEGEN_REG_L4));
++	EMIT(ctx, BPF_ALU64_IMM(BPF_ADD, CODEGEN_REG_SCRATCH1, sizeof(struct udphdr)));
++	err = ctx->codegen_ops->load_packet_data_end(ctx, CODEGEN_REG_DATA_END);
++	if (err)
++		return err;
++	EMIT_FIXUP(ctx, CODEGEN_FIXUP_NEXT_RULE,
++		   BPF_JMP_REG(BPF_JGT, CODEGEN_REG_SCRATCH1, CODEGEN_REG_DATA_END, 0));
 +
-+enum codegen_fixup_type {
-+	CODEGEN_FIXUP_NEXT_RULE,
-+	CODEGEN_FIXUP_END_OF_CHAIN,
-+	CODEGEN_FIXUP_JUMP_TO_CHAIN,
-+	CODEGEN_FIXUP_COUNTERS_INDEX,
-+	__MAX_CODEGEN_FIXUP_TYPE
-+};
++	EMIT(ctx, BPF_LDX_MEM(BPF_H, CODEGEN_REG_SCRATCH4, CODEGEN_REG_L4,
++			      offsetof(struct udphdr, source)));
++	EMIT(ctx, BPF_LDX_MEM(BPF_H, CODEGEN_REG_SCRATCH5, CODEGEN_REG_L4,
++			      offsetof(struct udphdr, dest)));
 +
-+struct codegen_fixup_desc {
-+	struct list_head list;
-+	enum codegen_fixup_type type;
-+	uint32_t insn;
-+	union {
-+		uint32_t offset;
-+	};
-+};
++	EMIT(ctx, BPF_LDX_MEM(BPF_H, CODEGEN_REG_SCRATCH4, CODEGEN_REG_L4,
++			      offsetof(struct udphdr, source)));
++	EMIT(ctx, BPF_LDX_MEM(BPF_H, CODEGEN_REG_SCRATCH5, CODEGEN_REG_L4,
++			      offsetof(struct udphdr, dest)));
 +
-+enum codegen_reloc_type { CODEGEN_RELOC_MAP, __MAX_CODEGEN_RELOC_TYPE };
++	err = xt_udp_gen_inline_ports(ctx, CODEGEN_REG_SCRATCH4, udp->invflags & XT_UDP_INV_SRCPT,
++				      &udp->spts);
++	if (err)
++		return err;
 +
-+struct codegen_reloc_desc {
-+	struct list_head list;
-+	enum codegen_reloc_type type;
-+	uint32_t insn;
-+	union {
-+		struct {
-+			enum codegen_map_type map;
-+			// TODO: add BTF
-+		};
-+	};
-+};
++	err = xt_udp_gen_inline_ports(ctx, CODEGEN_REG_SCRATCH5, udp->invflags & XT_UDP_INV_DSTPT,
++				      &udp->dpts);
++	if (err)
++		return err;
 +
-+enum codegen_subprog_type {
-+	CODEGEN_SUBPROG_USER_CHAIN,
-+};
++	return 0;
++}
 +
-+struct codegen_subprog_desc {
-+	struct list_head list;
-+	enum codegen_subprog_type type;
-+	uint32_t insn;
-+	union {
-+		uint32_t offset;
-+	};
-+};
-+
-+struct codegen_ops;
-+struct shared_codegen;
-+
-+struct codegen {
-+	struct context *ctx;
-+	struct bpf_insn *img;
-+	char *log_buf;
-+	size_t log_buf_size;
-+	enum bpf_prog_type prog_type;
-+	uint32_t len_cur;
-+	uint32_t len_max;
-+	uint32_t rule_index;
-+	const struct codegen_ops *codegen_ops;
-+	struct shared_codegen *shared_codegen;
-+	struct list_head fixup;
-+	struct list_head relocs;
-+	struct list_head awaiting_subprogs;
-+	uint16_t subprogs_cur;
-+	uint16_t subprogs_max;
-+	struct codegen_subprog_desc **subprogs;
-+	void *img_ctx;
-+};
-+
-+struct shared_codegen {
-+	int maps_refcnt;
-+	union bpf_attr maps[__MAX_CODEGEN_MAP_TYPE];
-+	int maps_fd[__MAX_CODEGEN_MAP_TYPE];
-+};
-+
-+struct codegen_ops {
-+	int (*gen_inline_prologue)(struct codegen *codegen);
-+	int (*load_packet_data)(struct codegen *codegen, int dst_reg);
-+	int (*load_packet_data_end)(struct codegen *codegen, int dst_reg);
-+	int (*emit_ret_code)(struct codegen *codegen, int ret_code);
-+	int (*gen_inline_epilogue)(struct codegen *codegen);
-+	int (*load_img)(struct codegen *codegen);
-+	void (*unload_img)(struct codegen *codegen);
-+};
-+
-+void create_shared_codegen(struct shared_codegen *shared_codegen);
-+int create_codegen(struct codegen *codegen, enum bpf_prog_type type);
-+int codegen_push_awaiting_subprog(struct codegen *codegen, struct codegen_subprog_desc *subprog);
-+int codegen_fixup(struct codegen *codegen, enum codegen_fixup_type fixup_type);
-+int emit_fixup(struct codegen *codegen, enum codegen_fixup_type fixup_type, struct bpf_insn insn);
-+int emit_add_counter(struct codegen *codegen);
-+int load_img(struct codegen *codegen);
-+void unload_img(struct codegen *codegen);
-+void free_codegen(struct codegen *codegen);
-+
-+#endif // NET_BPFILTER_CODEGEN_H
++const struct match_ops xt_udp = { .name = "udp",
++				  .size = XT_ALIGN(sizeof(struct xt_udp)),
++				  .revision = 0,
++				  .check = xt_udp_check,
++				  .gen_inline = xt_udp_gen_inline };
 diff --git a/tools/testing/selftests/bpf/bpfilter/.gitignore b/tools/testing/selftests/bpf/bpfilter/.gitignore
-index 983fd06cbefa..39ec0c09dff4 100644
+index 39ec0c09dff4..f84cc86493df 100644
 --- a/tools/testing/selftests/bpf/bpfilter/.gitignore
 +++ b/tools/testing/selftests/bpf/bpfilter/.gitignore
-@@ -1,2 +1,3 @@
+@@ -1,3 +1,5 @@
  # SPDX-License-Identifier: GPL-2.0-only
-+tools/**
+ tools/**
  test_map
++test_match
++test_xt_udp
 diff --git a/tools/testing/selftests/bpf/bpfilter/Makefile b/tools/testing/selftests/bpf/bpfilter/Makefile
-index c262aad8c2a4..48dc696e0f09 100644
+index 48dc696e0f09..281107f5ad88 100644
 --- a/tools/testing/selftests/bpf/bpfilter/Makefile
 +++ b/tools/testing/selftests/bpf/bpfilter/Makefile
-@@ -4,9 +4,11 @@ top_srcdir = ../../../../..
- TOOLSDIR := $(abspath ../../../../)
- TOOLSINCDIR := $(TOOLSDIR)/include
- APIDIR := $(TOOLSINCDIR)/uapi
-+LIBDIR := $(TOOLSDIR)/lib
-+BPFDIR := $(LIBDIR)/bpf
- BPFILTERSRCDIR := $(top_srcdir)/net/bpfilter
- 
--CFLAGS += -Wall -g -pthread -I$(TOOLSINCDIR) -I$(APIDIR) -I$(BPFILTERSRCDIR)
-+CFLAGS += -Wall -g -pthread -I$(TOOLSINCDIR) -I$(APIDIR) -I$(BPFILTERSRCDIR) -I$(LIBDIR)
+@@ -11,6 +11,8 @@ BPFILTERSRCDIR := $(top_srcdir)/net/bpfilter
+ CFLAGS += -Wall -g -pthread -I$(TOOLSINCDIR) -I$(APIDIR) -I$(BPFILTERSRCDIR) -I$(LIBDIR)
  
  TEST_GEN_PROGS += test_map
++TEST_GEN_PROGS += test_match
++TEST_GEN_PROGS += test_xt_udp
  
-@@ -14,6 +16,24 @@ KSFT_KHDR_INSTALL := 1
+ KSFT_KHDR_INSTALL := 1
  
- include ../../lib.mk
+@@ -35,5 +37,11 @@ $(BPFOBJ): $(wildcard $(BPFDIR)/*.[ch] $(BPFDIR)/Makefile)		       		\
  
-+SCRATCH_DIR := $(OUTPUT)/tools
-+BUILD_DIR := $(SCRATCH_DIR)/build
-+BPFOBJ_DIR := $(BUILD_DIR)/libbpf
-+BPFOBJ := $(BPFOBJ_DIR)/libbpf.a
-+
-+MAKE_DIRS := $(BPFOBJ_DIR)
-+
-+$(MAKE_DIRS):
-+	$(call msg,MKDIR,,$@)
-+	$(Q)mkdir -p $@
-+
-+$(BPFOBJ): $(wildcard $(BPFDIR)/*.[ch] $(BPFDIR)/Makefile)		       		\
-+	   ../../../../include/uapi/linux/bpf.h                                 \
-+	   | $(INCLUDE_DIR) $(BUILD_DIR)/libbpf
-+	$(Q)$(MAKE) $(submake_extras) -C $(BPFDIR) OUTPUT=$(BUILD_DIR)/libbpf/ 	\
-+		    DESTDIR=$(SCRATCH_DIR) prefix= all install_headers
-+
  BPFILTER_MAP_SRCS := $(BPFILTERSRCDIR)/map-common.c
-+BPFILTER_CODEGEN_SRCS := $(BPFILTERSRCDIR)/codegen.c $(BPFOBJ) -lelf -lz
+ BPFILTER_CODEGEN_SRCS := $(BPFILTERSRCDIR)/codegen.c $(BPFOBJ) -lelf -lz
++BPFILTER_MATCH_SRCS := $(BPFILTERSRCDIR)/match.c $(BPFILTERSRCDIR)/xt_udp.c
++
++BPFILTER_COMMON_SRCS := $(BPFILTERSRCDIR)/context.c
++BPFILTER_COMMON_SRCS += $(BPFILTER_MAP_SRCS) $(BPFILTER_CODEGEN_SRCS) $(BPFILTER_MATCH_SRCS)
  
  $(OUTPUT)/test_map: test_map.c $(BPFILTER_MAP_SRCS)
++$(OUTPUT)/test_match: test_match.c $(BPFILTER_COMMON_SRCS)
++$(OUTPUT)/test_xt_udp: test_xt_udp.c $(BPFILTER_COMMON_SRCS)
+diff --git a/tools/testing/selftests/bpf/bpfilter/bpfilter_util.h b/tools/testing/selftests/bpf/bpfilter/bpfilter_util.h
+new file mode 100644
+index 000000000000..e4188c56f690
+--- /dev/null
++++ b/tools/testing/selftests/bpf/bpfilter/bpfilter_util.h
+@@ -0,0 +1,20 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++#ifndef BPFILTER_UTIL_H
++#define BPFILTER_UTIL_H
++
++#include <linux/netfilter/x_tables.h>
++
++#include <stdint.h>
++#include <stdio.h>
++#include <string.h>
++
++static inline void init_entry_match(struct xt_entry_match *match, uint16_t size, uint8_t revision,
++				    const char *name)
++{
++	memset(match, 0, sizeof(*match));
++	snprintf(match->u.user.name, sizeof(match->u.user.name), "%s", name);
++	match->u.user.match_size = size;
++	match->u.user.revision = revision;
++}
++#endif // BPFILTER_UTIL_H
+diff --git a/tools/testing/selftests/bpf/bpfilter/test_match.c b/tools/testing/selftests/bpf/bpfilter/test_match.c
+new file mode 100644
+index 000000000000..583490397aef
+--- /dev/null
++++ b/tools/testing/selftests/bpf/bpfilter/test_match.c
+@@ -0,0 +1,61 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#define _GNU_SOURCE
++
++#include "context.h"
++#include "match.h"
++
++#include <linux/bpfilter.h>
++#include <linux/err.h>
++
++#include <linux/netfilter_ipv4/ip_tables.h>
++#include <linux/netfilter/x_tables.h>
++#include <linux/netfilter/xt_tcpudp.h>
++
++#include <stdio.h>
++
++#include "../../kselftest_harness.h"
++
++#include "bpfilter_util.h"
++
++struct udp_match {
++	struct xt_entry_match ipt_match;
++	struct xt_udp udp;
++};
++
++FIXTURE(test_udp_match)
++{
++	struct context ctx;
++	struct udp_match udp_match;
++	struct match match;
++};
++
++FIXTURE_SETUP(test_udp_match)
++{
++	ASSERT_EQ(0, create_context(&self->ctx));
++	self->ctx.log_file = stderr;
++
++	init_entry_match(&self->udp_match.ipt_match, sizeof(self->udp_match), 0, "udp");
++};
++
++FIXTURE_TEARDOWN(test_udp_match)
++{
++	free_context(&self->ctx);
++}
++
++TEST_F(test_udp_match, init)
++{
++	self->udp_match.udp.spts[0] = 1;
++	self->udp_match.udp.spts[1] = 2;
++	self->udp_match.udp.dpts[0] = 3;
++	self->udp_match.udp.dpts[1] = 4;
++	self->udp_match.udp.invflags = 0;
++
++	ASSERT_EQ(init_match(&self->ctx,
++			     (const struct bpfilter_ipt_match *)&self->udp_match
++				     .ipt_match,
++			     &self->match),
++		  0);
++}
++
++TEST_HARNESS_MAIN
+diff --git a/tools/testing/selftests/bpf/bpfilter/test_xt_udp.c b/tools/testing/selftests/bpf/bpfilter/test_xt_udp.c
+new file mode 100644
+index 000000000000..c6c0f7ac16b7
+--- /dev/null
++++ b/tools/testing/selftests/bpf/bpfilter/test_xt_udp.c
+@@ -0,0 +1,41 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#define _GNU_SOURCE
++
++#include <linux/netfilter/xt_tcpudp.h>
++
++#include "../../kselftest_harness.h"
++
++#include "context.h"
++#include "match.h"
++
++#include "bpfilter_util.h"
++
++FIXTURE(test_xt_udp)
++{
++	struct context ctx;
++	struct {
++		struct xt_entry_match match;
++		struct xt_udp udp;
++
++	} ipt_match;
++	struct match match;
++};
++
++FIXTURE_SETUP(test_xt_udp)
++{
++	ASSERT_EQ(0, create_context(&self->ctx));
++	self->ctx.log_file = stderr;
++
++	init_entry_match((struct xt_entry_match *)&self->ipt_match, sizeof(self->ipt_match),
++			 0, "udp");
++	ASSERT_EQ(0, init_match(&self->ctx, (const struct bpfilter_ipt_match *)&self->ipt_match,
++				&self->match));
++};
++
++FIXTURE_TEARDOWN(test_xt_udp)
++{
++	free_context(&self->ctx);
++};
++
++TEST_HARNESS_MAIN
 -- 
 2.25.1
 
