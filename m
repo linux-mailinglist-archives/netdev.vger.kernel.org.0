@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D2D93FABBB
-	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 15:14:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB01A3FABAD
+	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 15:14:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235702AbhH2NOw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Aug 2021 09:14:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47034 "EHLO
+        id S235553AbhH2NOX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Aug 2021 09:14:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235530AbhH2NOM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Aug 2021 09:14:12 -0400
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10C40C061760
+        with ESMTP id S235550AbhH2NON (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Aug 2021 09:14:13 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02FA5C0612E7
+        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 06:13:21 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id g13so25234921lfj.12
         for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 06:13:20 -0700 (PDT)
-Received: by mail-lj1-x231.google.com with SMTP id d16so20717625ljq.4
-        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 06:13:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=lOnAyrBq8epXVQrN/WDXQeiKNCDBNkNLvVnOhj3ua+A=;
-        b=ZaYf18QxWsVMzWG6CBkVw0XXu3t/zMW2pUixPk0LjE+/IImlkDEj+POpEj7Ng2IXM8
-         V/WLT4pI1wuBXyxaq4fDgRA1q1Bb8oej7fbyHQc4UNqw9wldkBcALlLPedB0TMuFNCla
-         PQ+41+z4pNq/TjQbXGdKGeIaXHVsMBRydZXyncyioXfW2os6kVbRcMqXaWCQDBQZNTTW
-         yxmrIvNlWnX4aYvLJFVLdr/GqoK0rxsDRPi43f0JSH5oqTsuiIYO8btd4DmGwXfCY8od
-         FyUqbFQaPOd/euLOnbc81Yb9s9ttn9pVDjnOryP4XjSMVQZnB2Xspaca5gM+gBQ9N2sB
-         9/Pg==
+        bh=V1qCDwrnxZyyxD18n557PC/vv86td/OsZqjd5RQRW8E=;
+        b=jdppaH2W155GXBSpK9HAC3zcOJOHlIf4pWlevT2rBJaK2K4RL+tfztI/UYo+hW4cPu
+         0zCBlJzfpZvZj5m49gAwW6XfSPo+3ZkEpXYllog2PoKxHmBFWhLtG8Dn9SbQIwAHybEc
+         veVLg9MOR1ETsT8FRVvJsnXX3ycN6piz2/RRZPfzd7VtITuX8/MCDHPs4EWcU8GKlDcV
+         s0kPsKiT32JfX+QUOuxxOqCGgHG13Oe/BqgWg6sR611svTU2nBGGnU8oZFHMfpblERBX
+         gM/UYdNj5mANmoAj5JXOMPo4p4426dnQEYXtW3pOafe0PvMn5iNnRorLXgzf56ZUBPJ0
+         WJSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=lOnAyrBq8epXVQrN/WDXQeiKNCDBNkNLvVnOhj3ua+A=;
-        b=cgSN/fwgqgZqBemY5VWaQ9hGasZRGc9myYrYTRM86f+oK+i5aR3wde3ii7dRexBLcy
-         7ifjeW8mS/ArA2p0MGdIVGliRN75lXWQ29nKE8qMcRGtGH8FlCjI+/3yalEGCBnbfEzb
-         Ljg0MZfkRtwc/5hqSOmq5FHOQYwmCgKXmtDNxYw9b2W6norPo+rFDKN0JMDIuU6/pbvL
-         hLHAfn59HIPEvaWnBR90l7/8NF9KLfEnNSuBRFduO8xYzQ5WMuqBPRqTIqC84Srzkc3t
-         P43WnpPUDFXZG+jYHWr2gVk1f1JzLtCOQYJYh0Bvyq9GTwg0K6XLSTSqtlZcKGLvfbNm
-         6kKw==
-X-Gm-Message-State: AOAM531Uh8uoCiSR941uUwLcRdPInhN1ZwVJykEsVUibwfSb/AvpVTBM
-        XqW4tur9K4Sbx6TJI8PN9g6wLg==
-X-Google-Smtp-Source: ABdhPJwas5GqFJEx+SlL+QSRjML4RgZLzDgGX5TZOlcGfqMo26MQAh+FrRI4va8PzqE1egGh7L2xMw==
-X-Received: by 2002:a2e:7616:: with SMTP id r22mr16054186ljc.387.1630242798487;
-        Sun, 29 Aug 2021 06:13:18 -0700 (PDT)
+        bh=V1qCDwrnxZyyxD18n557PC/vv86td/OsZqjd5RQRW8E=;
+        b=fFd8zuN08beyRGhVtRg1NRf7jyM/+E4ReloxqtYCF5vrlmZIlx5BTF7xWZh7nzEpso
+         NOaMKTgLdA2T636Ous1kdrI/AzKaNs2DVS7lrHz8o9ezSorlYkaatkNLSvF9dxcI5U+6
+         oFSHx0DFMJ5WfGoG3uBtIP37lNJpogtRIchMj41S54efaqdlzC84OkH3Qq0M0Kzj48eD
+         TyBhW1II5XvyOxekjwB8kS3s/0/HxYlpzPpybuflVW4/oI7C74JtSTvFhFzBV9xPnbYU
+         ljjnz8/KwlcVlrWZD3LdBqA1WX+KAQVdgnyKEeEJP6me975x5R7e2lYRBLNnmHTLXFJz
+         SoBg==
+X-Gm-Message-State: AOAM532Pt2TnrQDQv48OQJ6orn6pgJWD/BEmvjg4jlmGFyQm8XD5ste0
+        4x3C8QXjewSyqXo0dfCVG2AydA==
+X-Google-Smtp-Source: ABdhPJyKjcg8TLay1deazFXUMwoYdOraqQvWUGRZSJPo25xL40sIUpHM/gyv+ASdRt7Jol3tqtKlQQ==
+X-Received: by 2002:a05:6512:e99:: with SMTP id bi25mr13658144lfb.486.1630242799230;
+        Sun, 29 Aug 2021 06:13:19 -0700 (PDT)
 Received: from eriador.lan ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id x13sm712503lfq.262.2021.08.29.06.13.17
+        by smtp.gmail.com with ESMTPSA id x13sm712503lfq.262.2021.08.29.06.13.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Sun, 29 Aug 2021 06:13:18 -0700 (PDT)
 From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
@@ -62,9 +62,9 @@ Cc:     linux-arm-msm@vger.kernel.org, linux-mmc@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
         ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [RFC v2 11/13] arm64: dts: qcom: sdm845-db845c: add second channel to qca power sequencer
-Date:   Sun, 29 Aug 2021 16:13:03 +0300
-Message-Id: <20210829131305.534417-12-dmitry.baryshkov@linaro.org>
+Subject: [RFC v2 12/13] WIP: PCI: qcom: use pwrseq to power up bus devices
+Date:   Sun, 29 Aug 2021 16:13:04 +0300
+Message-Id: <20210829131305.534417-13-dmitry.baryshkov@linaro.org>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20210829131305.534417-1-dmitry.baryshkov@linaro.org>
 References: <20210829131305.534417-1-dmitry.baryshkov@linaro.org>
@@ -74,39 +74,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On DB845c board WiFi/BT chip can use both RF channels/antennas, so add
-vddch1-supply property.
+Use bus-pwrseq device tree node to power up the devices on the bus. This
+is to be rewritten with the proper code parsing the device tree and
+powering up individual devices.
 
 Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 ---
- arch/arm64/boot/dts/qcom/sdm845-db845c.dts | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/pci/controller/dwc/pcie-qcom.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm845-db845c.dts b/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
-index a6a34a959a91..0f3214c60980 100644
---- a/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
-+++ b/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
-@@ -342,6 +342,12 @@ vreg_l21a_2p95: ldo21 {
- 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
- 		};
+diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
+index 8a7a300163e5..a60d41fbcd6f 100644
+--- a/drivers/pci/controller/dwc/pcie-qcom.c
++++ b/drivers/pci/controller/dwc/pcie-qcom.c
+@@ -23,6 +23,7 @@
+ #include <linux/pm_runtime.h>
+ #include <linux/platform_device.h>
+ #include <linux/phy/phy.h>
++#include <linux/pwrseq/consumer.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/reset.h>
+ #include <linux/slab.h>
+@@ -1467,6 +1468,7 @@ static int qcom_pcie_probe(struct platform_device *pdev)
+ 	struct pcie_port *pp;
+ 	struct dw_pcie *pci;
+ 	struct qcom_pcie *pcie;
++	struct pwrseq *pwrseq;
+ 	int ret;
  
-+		vreg_l23a_3p3: ldo23 {
-+			regulator-min-microvolt = <3300000>;
-+			regulator-max-microvolt = <3312000>;
-+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-+		};
+ 	pcie = devm_kzalloc(dev, sizeof(*pcie), GFP_KERNEL);
+@@ -1520,6 +1522,17 @@ static int qcom_pcie_probe(struct platform_device *pdev)
+ 
+ 	pp->ops = &qcom_pcie_dw_ops;
+ 
++	pwrseq = devm_pwrseq_get_optional(dev, "bus");
++	if (IS_ERR(pwrseq)) {
++		ret = PTR_ERR(pwrseq);
++		goto err_pm_runtime_put;
++	}
++	if (pwrseq) {
++		ret = pwrseq_full_power_on(pwrseq);
++		if (ret)
++			goto err_pm_runtime_put;
++	}
 +
- 		vreg_l24a_3p075: ldo24 {
- 			regulator-min-microvolt = <3088000>;
- 			regulator-max-microvolt = <3088000>;
-@@ -637,6 +643,7 @@ &qca_pwrseq {
- 	vddxo-supply = <&vreg_l7a_1p8>;
- 	vddrf-supply = <&vreg_l17a_1p3>;
- 	vddch0-supply = <&vreg_l25a_3p3>;
-+	vddch1-supply = <&vreg_l23a_3p3>;
- };
- 
- &sdhc_2 {
+ 	ret = phy_init(pcie->phy);
+ 	if (ret) {
+ 		pm_runtime_disable(&pdev->dev);
 -- 
 2.33.0
 
