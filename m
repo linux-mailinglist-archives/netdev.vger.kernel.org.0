@@ -2,412 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A2233FAD7B
-	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 19:40:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 123AF3FAD7D
+	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 19:49:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230330AbhH2Rll (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Aug 2021 13:41:41 -0400
-Received: from smtprelay0131.hostedemail.com ([216.40.44.131]:38060 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S229665AbhH2Rlk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Aug 2021 13:41:40 -0400
-Received: from omf19.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay04.hostedemail.com (Postfix) with ESMTP id B923A18027C9F;
-        Sun, 29 Aug 2021 17:40:46 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf19.hostedemail.com (Postfix) with ESMTPA id 66BFF20D75C;
-        Sun, 29 Aug 2021 17:40:45 +0000 (UTC)
-Message-ID: <26dc72d60681346bf6db245a649b7e049e125d74.camel@perches.com>
-Subject: Re: [PATCH][next] igc: remove redundant continue statement
-From:   Joe Perches <joe@perches.com>
-To:     Colin King <colin.king@canonical.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        id S230116AbhH2Rt0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Aug 2021 13:49:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38874 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229665AbhH2RtZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 29 Aug 2021 13:49:25 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5921360E97;
+        Sun, 29 Aug 2021 17:48:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1630259313;
+        bh=Ng8Nc7RPjC5XZnL4EXuDtogqZsofQfD04ok2tzTdyg0=;
+        h=References:In-Reply-To:Reply-To:From:Date:Subject:To:Cc:From;
+        b=WfLgDYhad3SWUz1Q4kjSXblwrfvtrwvQKrBBbqTsJgc9VEDQ7j0W46HWUbQGj6Q+K
+         DZDilVD4HVaFbbPrRc8sjLPWJaCJC4+o6+hqJ5NSmlfeSgwh6w+Lyl0XGSun/MyOYS
+         /kMm/O4VXOV2YzUvKbT/dhKfQ09ka2cwsUosXz3fBa7njXBw8QLnsVNX0+CVascDjS
+         mzuavtotaNgLVb7fG/UEOXwC0XMAyhu8HtoU84+2E+RG7f9L53p2auRsy+l4OtyvGp
+         al8f3KENJLJHQGaLVbQg3LBtb9vQdUIG7d2YiDYqdV/OB4oJVvFSk4n/agQFy6pSKd
+         LBScUxJf9dl/A==
+Received: by mail-lf1-f42.google.com with SMTP id m28so26330194lfj.6;
+        Sun, 29 Aug 2021 10:48:33 -0700 (PDT)
+X-Gm-Message-State: AOAM531+JW2guyzl/BpLcsrmyMz1azd4agHBm+iLivdlj3RueZpLlw5g
+        M0wDuuWILenAgQpUh2s1g0HRtyQhUA7TzyWSIgg=
+X-Google-Smtp-Source: ABdhPJyB1nMr9MC5DfmQcKkSm3lO+DjPQnAw0j9giP2Ell6A/NFUpcvTKa18StEugRVNKMxhup/rEojB0Viq1QaPQ5w=
+X-Received: by 2002:a05:6512:3f89:: with SMTP id x9mr14794257lfa.233.1630259311683;
+ Sun, 29 Aug 2021 10:48:31 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210823143754.14294-1-michael.riesch@wolfvision.net>
+In-Reply-To: <20210823143754.14294-1-michael.riesch@wolfvision.net>
+Reply-To: wens@kernel.org
+From:   Chen-Yu Tsai <wens@kernel.org>
+Date:   Mon, 30 Aug 2021 01:48:19 +0800
+X-Gmail-Original-Message-ID: <CAGb2v67Duk_56fOKVwZsYn2HKJ99o8WJ+d4jetD2UjDsAt9BcA@mail.gmail.com>
+Message-ID: <CAGb2v67Duk_56fOKVwZsYn2HKJ99o8WJ+d4jetD2UjDsAt9BcA@mail.gmail.com>
+Subject: Re: [PATCH] net: stmmac: dwmac-rk: fix unbalanced pm_runtime_enable warnings
+To:     Michael Riesch <michael.riesch@wolfvision.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        "moderated list:ARM/STM32 ARCHITECTURE" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Sun, 29 Aug 2021 10:40:44 -0700
-In-Reply-To: <20210829165150.531678-1-colin.king@canonical.com>
-References: <20210829165150.531678-1-colin.king@canonical.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.0-1 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Rspamd-Server: rspamout04
-X-Rspamd-Queue-Id: 66BFF20D75C
-X-Stat-Signature: j6to1aadtpf6rbmut9wqbdy98ukofpuf
-X-Spam-Status: No, score=-2.88
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX1+PkvHXoZZ9biqHpZEZ8UQ0r++6zlQvJLM=
-X-HE-Tag: 1630258845-918920
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 2021-08-29 at 17:51 +0100, Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
-> 
-> The continue statement at the end of a for-loop has no effect,
-> remove it.
+Hi,
 
-There seem to be a few of this type of use in the kernel.
+On Mon, Aug 23, 2021 at 10:39 PM Michael Riesch
+<michael.riesch@wolfvision.net> wrote:
+>
+> This reverts commit 2c896fb02e7f65299646f295a007bda043e0f382
+> "net: stmmac: dwmac-rk: add pd_gmac support for rk3399" and fixes
+> unbalanced pm_runtime_enable warnings.
+>
+> In the commit to be reverted, support for power management was
+> introduced to the Rockchip glue code. Later, power management support
+> was introduced to the stmmac core code, resulting in multiple
+> invocations of pm_runtime_{enable,disable,get_sync,put_sync}.
+>
+> The multiple invocations happen in rk_gmac_powerup and
+> stmmac_{dvr_probe, resume} as well as in rk_gmac_powerdown and
+> stmmac_{dvr_remove, suspend}, respectively, which are always called
+> in conjunction.
+>
+> Signed-off-by: Michael Riesch <michael.riesch@wolfvision.net>
 
-Many are in switch {} default: continue uses inside loops where there
-is no additional statement after the switch statement ends.
+I just found that Ethernet stopped working on my RK3399 devices,
+and I bisected it down to this patch.
 
-The continue is obviously safe and even perhaps preferred as statements
-_might_ be added after the switch end or test/continue use.
-
-But perhaps those should be converted to break;
-
-For instance: drivers/gpu/drm/zte/zx_vou.c
-
-static void zx_overlay_init(struct drm_device *drm, struct zx_vou_hw *vou)
-{
-	struct device *dev = vou->dev;
-	struct zx_plane *zplane;
-	int i;
-	int ret;
-
-	/*
-	 * VL0 has some quirks on scaling support which need special handling.
-	 * Let's leave it out for now.
-	 */
-	for (i = 1; i < VL_NUM; i++) {
-		zplane = devm_kzalloc(dev, sizeof(*zplane), GFP_KERNEL);
-		if (!zplane) {
-			DRM_DEV_ERROR(dev, "failed to allocate zplane %d\n", i);
-			return;
-		}
-
-		zplane->layer = vou->osd + OSD_VL_OFFSET(i);
-		zplane->hbsc = vou->osd + HBSC_VL_OFFSET(i);
-		zplane->rsz = vou->otfppu + RSZ_VL_OFFSET(i);
-		zplane->bits = &zx_vl_bits[i];
-
-		ret = zx_plane_init(drm, zplane, DRM_PLANE_TYPE_OVERLAY);
-		if (ret) {
-			DRM_DEV_ERROR(dev, "failed to init overlay %d\n", i);
-			continue;
-		}
-	}
-}
-
-Here's a grep using grep version 2.5.4 that finds these
-(with some false positives)
-
-$ grep-2.5.4 -rP --include=*.[ch] -n '\t{3,3}continue;\n\t{2,2}\}\n\t{1,1}\}' *
-arch/x86/events/intel/core.c:3408:			continue;
-		}
-	}
-arch/arm/mach-at91/pm.c:801:			continue;
-		}
-	}
-arch/powerpc/xmon/xmon.c:973:			continue;
-		}
-	}
-arch/powerpc/platforms/ps3/mm.c:450:			continue;
-		}
-	}
-arch/powerpc/platforms/powernv/opal-irqchip.c:286:			continue;
-		}
-	}
-drivers/net/vxlan.c:807:			continue;
-		}
-	}
-drivers/net/hamradio/6pack.c:450:			continue;
-		}
-	}
-drivers/net/wireless/ath/ath11k/mac.c:5369:			continue;
-		}
-	}
-drivers/net/wireless/ath/ath11k/mac.c:5403:			continue;
-		}
-	}
-drivers/net/wireless/ath/ath10k/mac.c:8646:			continue;
-		}
-	}
-drivers/net/wireless/ath/ath10k/mac.c:8687:			continue;
-		}
-	}
-drivers/net/geneve.c:513:			continue;
-		}
-	}
-drivers/net/ethernet/ti/netcp_core.c:331:			continue;
-		}
-	}
-drivers/net/ethernet/neterion/s2io.c:1392:			continue;
-		}
-	}
-drivers/net/ethernet/toshiba/ps3_gelic_wireless.c:1722:				continue;
-		}
-	}
-drivers/net/ethernet/mellanox/mlx5/core/en_tc.c:1633:			continue;
-		}
-	}
-drivers/net/ethernet/intel/ixgbe/ixgbe_main.c:9386:				continue;
-		}
-	}
-drivers/target/iscsi/iscsi_target_erl1.c:341:			continue;
-		}
-	}
-drivers/cpufreq/powernow-k8.c:848:			continue;
-		}
-	}
-drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:3179:			continue;
-		}
-	}
-drivers/iommu/intel/iommu.c:3082:			continue;
-		}
-	}
-drivers/soc/ti/knav_qmss_queue.c:724:			continue;
-		}
-	}
-drivers/mmc/host/vub300.c:561:			continue;
-		}
-	}
-drivers/mmc/host/vub300.c:1885:			continue;
-		}
-	}
-drivers/staging/rtl8188eu/core/rtw_efuse.c:552:			continue;
-		}
-	}
-drivers/staging/greybus/audio_helper.c:184:			continue;
-		}
-	}
-drivers/block/rbd.c:2443:			continue;
-		}
-	}
-drivers/clk/sunxi/clk-sun8i-bus-gates.c:89:			continue;
-		}
-	}
-drivers/clk/sunxi/clk-mod0.c:348:			continue;
-		}
-	}
-drivers/pci/controller/pci-hyperv.c:2056:			continue;
-		}
-	}
-drivers/scsi/mvumi.c:1595:				continue;
-		}
-	}
-drivers/scsi/fnic/fnic_fcs.c:654:			continue;
-		}
-	}
-drivers/scsi/qla4xxx/ql4_os.c:2795:			continue;
-		}
-	}
-drivers/scsi/megaraid/megaraid_mm.c:545:			continue;
-		}
-	}
-drivers/scsi/libsas/sas_expander.c:1202:			continue;
-		}
-	}
-drivers/usb/typec/tcpm/tcpm.c:3236:			continue;
-		}
-	}
-drivers/usb/host/fotg210-hcd.c:504:			continue;
-		}
-	}
-drivers/usb/host/ehci-dbg.c:610:			continue;
-		}
-	}
-drivers/usb/host/ohci-at91.c:549:			continue;
-		}
-	}
-drivers/usb/serial/mos7840.c:539:			continue;
-		}
-	}
-drivers/zorro/zorro.c:212:			continue;
-		}
-	}
-drivers/iio/dac/ad5592r-base.c:561:			continue;
-		}
-	}
-drivers/infiniband/hw/hfi1/init.c:1023:				continue;
-		}
-	}
-drivers/char/agp/isoch.c:377:				continue;
-		}
-	}
-drivers/gpu/drm/zte/zx_vou.c:666:			continue;
-		}
-	}
-drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c:10133:			continue;
-		}
-	}
-drivers/gpu/drm/nouveau/nvkm/subdev/i2c/base.c:360:			continue;
-		}
-	}
-drivers/tty/serial/jsm/jsm_neo.c:1227:			continue;
-		}
-	}
-drivers/platform/x86/sony-laptop.c:1413:			continue;
-		}
-	}
-drivers/platform/x86/sony-laptop.c:1494:			continue;
-		}
-	}
-drivers/platform/x86/sony-laptop.c:1532:			continue;
-		}
-	}
-drivers/spi/spi-fsi.c:438:			continue;
-		}
-	} while (seq_state && (seq_state != SPI_FSI_STATUS_SEQ_STATE_IDLE));
-drivers/comedi/drivers/ni_usb6501.c:497:			continue;
-		}
-	}
-drivers/comedi/drivers/vmk80xx.c:663:			continue;
-		}
-	}
-drivers/video/fbdev/core/fbcon.c:508:			continue;
-		}
-	}
-drivers/mtd/ubi/block.c:640:			continue;
-		}
-	}
-drivers/mtd/nand/raw/davinci_nand.c:337:			continue;
-		}
-	}
-drivers/mtd/parsers/bcm47xxpart.c:248:			continue;
-		}
-	}
-drivers/nvdimm/badrange.c:158:			continue;
-		}
-	}
-drivers/isdn/hardware/mISDN/hfcsusb.c:1927:			continue;
-		}
-	}
-drivers/input/joystick/grip.c:316:			continue;
-		}
-	}
-drivers/greybus/interface.c:1148:			continue;
-		}
-	}
-drivers/i2c/busses/i2c-powermac.c:366:			continue;
-		}
-	}
-drivers/pinctrl/pinctrl-zynq.c:1101:			continue;
-		}
-	}
-drivers/pinctrl/pinctrl-at91-pio4.c:895:			continue;
-		}
-	}
-drivers/bluetooth/btusb.c:1658:			continue;
-		}
-	}
-drivers/bluetooth/btusb.c:4302:			continue;
-		}
-	}
-drivers/bluetooth/btusb.c:4519:			continue;
-		}
-	}
-drivers/acpi/processor_perflib.c:617:			continue;
-		}
-	}
-drivers/leds/leds-da9052.c:139:			continue;
-		}
-	}
-fs/xfs/libxfs/xfs_sb.c:906:			continue;
-		}
-	}
-fs/9p/v9fs.c:369:			continue;
-		}
-	}
-fs/unicode/mkutf8data.c:1972:			continue;
-		}
-	}
-fs/unicode/mkutf8data.c:2032:			continue;
-		}
-	}
-fs/unicode/mkutf8data.c:2087:			continue;
-		}
-	}
-fs/unicode/mkutf8data.c:2285:			continue;
-		}
-	}
-fs/ocfs2/buffer_head_io.c:332:			continue;
-		}
-	}
-kernel/bpf/syscall.c:3432:			continue;
-		}
-	}
-kernel/range.c:109:			continue;
-		}
-	}
-kernel/trace/trace_events.c:2626:			continue;
-		}
-	}
-lib/test_rhashtable.c:437:				continue;
-		}
-	}
-net/dsa/dsa2.c:831:			continue;
-		}
-	}
-net/wireless/util.c:942:			continue;
-		}
-	}
-net/9p/client.c:214:			continue;
-		}
-	}
-net/9p/trans_fd.c:805:			continue;
-		}
-	}
-net/9p/trans_rdma.c:232:			continue;
-		}
-	}
-net/ipv4/fou.c:422:			continue;
-		}
-	}
-net/ipv4/udp_offload.c:557:			continue;
-		}
-	}
-net/ethernet/eth.c:438:			continue;
-		}
-	}
-net/tipc/name_distr.c:358:			continue;
-		}
-	}
-samples/seccomp/bpf-helper.c:57:			continue;
-		}
-	}
-tools/perf/builtin-script.c:3106:			continue;
-		}
-	}
-tools/perf/util/parse-events.c:505:				continue;
-		}
-	}
-tools/perf/util/jitdump.c:708:			continue;
-		}
-	}
-tools/perf/ui/browsers/hists.c:3543:			continue;
-		}
-	}
-tools/testing/radix-tree/regression3.c:54:			continue;
-		}
-	}
-tools/testing/radix-tree/regression3.c:67:			continue;
-		}
-	}
-tools/testing/selftests/net/mptcp/mptcp_connect.c:371:			continue;
-		}
-	}
-tools/testing/selftests/net/timestamping.c:546:			continue;
-		}
-	}
-tools/testing/selftests/powerpc/nx-gzip/gzip_vas.c:252:			continue;
-		}
-	}
-tools/power/cpupower/lib/cpupower.c:177:			continue;
-		}
-	}
-tools/lib/bpf/libbpf.c:7417:			continue;
-		}
-	}
-tools/lib/bpf/btf.c:928:			continue;
-		}
-	}
-tools/lib/bpf/linker.c:835:			continue;
-		}
-	}
+The symptom I see is no DHCP responses, either because the request
+isn't getting sent over the wire, or the response isn't getting
+received. The PHY seems to be working correctly.
 
 
+ChenYu
