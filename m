@@ -2,101 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3DEE3FA961
-	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 07:37:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB5E33FA9D9
+	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 09:11:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234265AbhH2Fhz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Aug 2021 01:37:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59536 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229634AbhH2Fhx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Aug 2021 01:37:53 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98A80C061756;
-        Sat, 28 Aug 2021 22:37:01 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id mw10-20020a17090b4d0a00b0017b59213831so11656914pjb.0;
-        Sat, 28 Aug 2021 22:37:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GigqQr4jZpg3pAe2RkzgaB2tw0Rbe327aEgOEyUQSVY=;
-        b=tLNSisQ2Jiq2EL833cIUewmZ4de6YK51SLEz0zcgz5IRCdmFaCSKpXFkyciuGZ6E9x
-         FuVYJ0wTN90qxXW20aGqxgnY0JE254CKeqaJY+9RbULwkPVMtnnOzBU3YGiyJgc/8Hed
-         n80PwPOG7JUnjlSA/1IrI8uyw/FAI1fZLCS4limgypRE0sKo4KMvOgeSVzgOT5NVUQXV
-         cPfzsZXG3LVFCUfUUZi2eL6MRXyZMLDyDkkfkmzNKHBoYgZY4xwLJpmuVnr3yvFBmza4
-         QfgWMG3jULOpLPEj/+tI22873WMIvHoqi/G3lQUvPMzzxdGXXD2aiqz3HSaFHkmHJKFB
-         d7tQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GigqQr4jZpg3pAe2RkzgaB2tw0Rbe327aEgOEyUQSVY=;
-        b=O1rI56mwAUcy1qTXf9k7+10PBJCV0rAr9JskFt2BZ4YZhK+7c2A5oyjKT7+l6fbXf5
-         LEY64SiCA7ffVsatHCHW0hHYwOww3fa/TXhcPC6ZuIusIIYBJ6HtsnM9Ot6Sq0zTY7RP
-         a9MZTSCNnENQNmXm4MEhC+KHh/1JD+2ZNoGH4THJ/MD/K7Bm78DbWkPbpFmTi3Fihlve
-         plxNLI+xtVMND2F5x+1JKLdCAG0rTl87CrF6olHaHLkHnVDuB+Vpl5q6rzUPdQueowcO
-         D60bDCp1X2iIeRgoiB33dE7+8cA8OyFPH7mtErkUzCQKKDVfaWptJpJULldbB2O4fG4+
-         cadw==
-X-Gm-Message-State: AOAM530qB/yTMePgI3oKyrICRJk3JGjoabt82F8MrGfXAjN1MWyB+F7b
-        K9726ymPU3pfuqmm8emrQuU=
-X-Google-Smtp-Source: ABdhPJwIZQ+Uz9V6ByG8VZSXVtIBZ7i8VBr0WYrGDxdsq1kDrSUWcCazfHjN0Vmmn8z9rm4epief3A==
-X-Received: by 2002:a17:90a:680c:: with SMTP id p12mr20110337pjj.33.1630215421132;
-        Sat, 28 Aug 2021 22:37:01 -0700 (PDT)
-Received: from localhost.localdomain ([222.238.85.219])
-        by smtp.gmail.com with ESMTPSA id s16sm10517252pfu.108.2021.08.28.22.36.58
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 28 Aug 2021 22:37:00 -0700 (PDT)
-From:   jiwonaid0@gmail.com
-To:     davem@davemloft.net
-Cc:     yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, Jiwon Kim <jiwonaid0@gmail.com>
-Subject: [PATCH] ipv6: add spaces for accept_ra_min_hop_limit
-Date:   Sun, 29 Aug 2021 14:35:44 +0900
-Message-Id: <20210829053544.51149-1-jiwonaid0@gmail.com>
-X-Mailer: git-send-email 2.24.3 (Apple Git-128)
+        id S234785AbhH2HMU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Aug 2021 03:12:20 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:26068 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234786AbhH2HMR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Aug 2021 03:12:17 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1630221084; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=GC6e2n/NXwo6S5mQY/R3X6Vs5DlKo2BD30jx+kOMJDw=;
+ b=OVSdds/YJtYUJAIoQ++iDpzOvKKYc2Ka69iZUjmBCkSKatVutMmy9A80BPIFA0Pi3weOE20O
+ WVbUDDmFiVZYmUN+tTRP+H9OPV9q4PsEKYwMQn41/LQXcY3P1k+K3CvG5Jj8CZ+FdAJ/dCk5
+ LA2YrW5cd/Z/3ua8R9m43uoA4P4=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n04.prod.us-east-1.postgun.com with SMTP id
+ 612b331c825e13c54ab7de58 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 29 Aug 2021 07:11:24
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 45FA9C4360C; Sun, 29 Aug 2021 07:11:23 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 48DDDC43617;
+        Sun, 29 Aug 2021 07:11:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 48DDDC43617
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [RESEND PATCH] wcn36xx: Allow firmware name to be overridden by
+ DT
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20210824171225.686683-1-bjorn.andersson@linaro.org>
+References: <20210824171225.686683-1-bjorn.andersson@linaro.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, wcn36xx@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Stephan Gerhold <stephan@gerhold.net>,
+        Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
+        =?utf-8?b?QW7DrWJhbCBMaW0=?= =?utf-8?b?w7Nu?= 
+        <anibal.limon@linaro.org>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-Id: <20210829071123.45FA9C4360C@smtp.codeaurora.org>
+Date:   Sun, 29 Aug 2021 07:11:23 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiwon Kim <jiwonaid0@gmail.com>
+Bjorn Andersson <bjorn.andersson@linaro.org> wrote:
 
-The checkpatch reported
-ERROR: spaces required around that '=' (ctx:VxW)
-from the net/ipv6/addrconf.c.
+> The WLAN NV firmware blob differs between platforms, and possibly
+> devices, so add support in the wcn36xx driver for reading the path of
+> this file from DT in order to allow these files to live in a generic
+> file system (or linux-firmware).
+> 
+> For some reason the parent (wcnss_ctrl) also needs to upload this blob,
+> so rather than specifying the same information in both nodes wcn36xx
+> reads the string from the parent's of_node.
+> 
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Tested-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+> Tested-by: Aníbal Limón <anibal.limon@linaro.org>
+> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 
-So, spaces are added for accept_ra_min_hop_limit.
+Patch applied to ath-next branch of ath.git, thanks.
 
-Signed-off-by: Jiwon Kim <jiwonaid0@gmail.com>
----
- net/ipv6/addrconf.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+b7f96d5c79cd wcn36xx: Allow firmware name to be overridden by DT
 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 17756f3ed33b..ce71480a92d9 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -208,7 +208,7 @@ static struct ipv6_devconf ipv6_devconf __read_mostly = {
- 	.accept_ra_defrtr	= 1,
- 	.ra_defrtr_metric	= IP6_RT_PRIO_USER,
- 	.accept_ra_from_local	= 0,
--	.accept_ra_min_hop_limit= 1,
-+	.accept_ra_min_hop_limit = 1,
- 	.accept_ra_pinfo	= 1,
- #ifdef CONFIG_IPV6_ROUTER_PREF
- 	.accept_ra_rtr_pref	= 1,
-@@ -267,7 +267,7 @@ static struct ipv6_devconf ipv6_devconf_dflt __read_mostly = {
- 	.accept_ra_defrtr	= 1,
- 	.ra_defrtr_metric	= IP6_RT_PRIO_USER,
- 	.accept_ra_from_local	= 0,
--	.accept_ra_min_hop_limit= 1,
-+	.accept_ra_min_hop_limit = 1,
- 	.accept_ra_pinfo	= 1,
- #ifdef CONFIG_IPV6_ROUTER_PREF
- 	.accept_ra_rtr_pref	= 1,
---
-2.25.1
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20210824171225.686683-1-bjorn.andersson@linaro.org/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
