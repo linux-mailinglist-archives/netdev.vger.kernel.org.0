@@ -2,94 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5449A3FAC6D
-	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 17:12:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D87003FACED
+	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 17:58:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235548AbhH2PLP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Aug 2021 11:11:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44772 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235546AbhH2PLO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Aug 2021 11:11:14 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF4CCC061575;
-        Sun, 29 Aug 2021 08:10:22 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id oa17so7810694pjb.1;
-        Sun, 29 Aug 2021 08:10:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=N93QZNcq51tQSZUdO0Kv070YOACn4Rc3RLQDyDXZG54=;
-        b=HEiWLJHmG5fkIj5xHsycepzBG3dFCxiwDMjEejtdQRbiV4Sa0XVwf7qrS7d1xdNdOE
-         Dvpe9irPsJWyJMcsbeEavTvi68Nk4MUAD5nkyDV8usILKHTcfj9HutHi+RQmQVjrYk6W
-         uN4npgE2PzBZD44Txw/wFq6ycJ/wAFWCPzO6NUMqFGlMoTt68Irg6N0OnTzvPaXpzi/T
-         1mL+ZuPDx96NgBftj8ScDZtH18GlIno+zLlq6FZBcr6854VE0At/bIy7atCbI6pUnoVs
-         /799Byw+YPyBhA8A4aINJc03lYVu68ogEGyRun7CcFuXD+l2QJiYJpWEQ7/UE6OH4aVW
-         oz5g==
+        id S235795AbhH2Pyp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Aug 2021 11:54:45 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:20923 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235764AbhH2Pyo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Aug 2021 11:54:44 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1630252431;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=/jaF7jZC8q/DpP5yyhldi4uUkfv/Q/aJYUDR7M+5EQ4=;
+        b=KQ5pApz2n835EnrAHbjDNq7xPjwus8ZD101vYJNGvXRMLvulWiaf8mVeuPZMHq6+AQO5ch
+        c9xoLFKy3bVcxgSodg644ttoFoCrDgdoJ1fNwMfRW9zJeJEJAiVxPv4Z6lcIcyxbfl1iwH
+        mSghjA0MFslE7+6mWMMF7+gOQopzx6A=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-263-Lgxn7rEKMOGTEXmMi3WgLg-1; Sun, 29 Aug 2021 11:53:50 -0400
+X-MC-Unique: Lgxn7rEKMOGTEXmMi3WgLg-1
+Received: by mail-ed1-f70.google.com with SMTP id g4-20020a056402180400b003c2e8da869bso5355586edy.13
+        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 08:53:50 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=N93QZNcq51tQSZUdO0Kv070YOACn4Rc3RLQDyDXZG54=;
-        b=KR80QrHGspZGkpuVKVtyh+qX+/BC2dZzcERjd8nn+XwT+MAEKAfV4Io9+qIYX+omQd
-         PqiJzDm2JLToDM6pWyc02jUIfF/LdLY+uSg7UXrx9EdPPh6/Wf+BY4QS+f8XxsS/RW2f
-         BZvJNyRLN0NBVpEi753u1T+V1tHdK1IPlNP5av00Zvf+tlsQQBS49d3Etv0wOh3uWIdx
-         aW7CRU/bYvmybIqTPL3XEcKYBCtTytJGWvkwWAu/wTme7ioKK4aqZL91NjpyoUmSRibt
-         gU+C4KqLyF1DMUuhDe1IKlSDzDsC/NSIg3EQF/968AO8nDPB6OTdNnwuXeoJ6NlJ4VJ4
-         hIpw==
-X-Gm-Message-State: AOAM533PtLMYjcbPZG7ix6KolgNQArsW2JplzcnHu0fOiN6It1h50Kck
-        aIgsdNT/5yXm8f6P3zhLxBQ=
-X-Google-Smtp-Source: ABdhPJzBSWrvZ5LmOrzlTLefpc08UQ1K0h4khJQBKanqWU+YIS6xHJxjxHwh7fvTKyhFM18YPMlqTA==
-X-Received: by 2002:a17:90a:86cc:: with SMTP id y12mr34607022pjv.127.1630249820771;
-        Sun, 29 Aug 2021 08:10:20 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:645:c000:2163:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id k4sm10378125pga.92.2021.08.29.08.10.19
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=/jaF7jZC8q/DpP5yyhldi4uUkfv/Q/aJYUDR7M+5EQ4=;
+        b=fZqPYnfIDL7ES4QmOmDMGLmndwZYRpCytTUpHEVQpPpjVzgjGzKZMeRGUyjsW/Mh/Y
+         vrH8r0arG+zkTpl8M6UrZ3DF7Vx3V+JFEay9sv/VgLrEjAyYJ26BEYVKDx6NTO/A33m4
+         9dZKUFJWpTEbA4JnHvpNBst9UQk+EFuxJPvVKkauDUu9coeYRqIzg848YICKsn7A/Oee
+         wZfxEdfb+nKeh1JOQIJGaxhtpvXyNkpQc4ccqjPE3ImzxkzUQBcKSBpDPCW7NaIFNPrz
+         JIXa1n6dK1bvMCK2OnSE00upGIskLZF3ExUbJ6XoslaFMjRORWB7mEF4DEGDWcfyONFD
+         shVg==
+X-Gm-Message-State: AOAM533aiG9sPzypELieZFHqbBzt6VT/0Dz/KLnw14cnNagM7jfS7AVJ
+        XsmuMxyY2UttO6etXIE3XhApmSW+EwpTtYg31tVkuivauwnXv0uT6zMolGCVvOklNlVcH+6HV0b
+        ibCYhN/f6k22R3shv
+X-Received: by 2002:a17:907:212e:: with SMTP id qo14mr19145561ejb.501.1630252427533;
+        Sun, 29 Aug 2021 08:53:47 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzobXz3Ef1GROPF3oUnWQrRnebrjXnwnoH6TBBe6U6SyFAGgXQrD00rBwtykUugZTIDZOQ8Lw==
+X-Received: by 2002:a17:907:212e:: with SMTP id qo14mr19145554ejb.501.1630252427363;
+        Sun, 29 Aug 2021 08:53:47 -0700 (PDT)
+Received: from redhat.com ([2.55.137.4])
+        by smtp.gmail.com with ESMTPSA id s3sm5652608ejm.49.2021.08.29.08.53.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 29 Aug 2021 08:10:20 -0700 (PDT)
-Date:   Sun, 29 Aug 2021 08:10:17 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Maciej Machnikowski <maciej.machnikowski@intel.com>
-Cc:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        abyagowi@fb.com, anthony.l.nguyen@intel.com, davem@davemloft.net,
-        kuba@kernel.org, linux-kselftest@vger.kernel.org
-Subject: Re: [RFC v2 net-next 1/2] rtnetlink: Add new RTM_GETSYNCESTATE
- message to get SyncE status
-Message-ID: <20210829151017.GA6016@hoboy.vegasvil.org>
-References: <20210829080512.3573627-1-maciej.machnikowski@intel.com>
- <20210829080512.3573627-2-maciej.machnikowski@intel.com>
+        Sun, 29 Aug 2021 08:53:46 -0700 (PDT)
+Date:   Sun, 29 Aug 2021 11:53:43 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        akpm@linux-foundation.org, dan.carpenter@oracle.com,
+        david@redhat.com, jasowang@redhat.com, mst@redhat.com,
+        torvalds@linux-foundation.org
+Subject: [GIT PULL] virtio: a last minute fix
+Message-ID: <20210829115343-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210829080512.3573627-2-maciej.machnikowski@intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Mutt-Fcc: =sent
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 29, 2021 at 10:05:11AM +0200, Maciej Machnikowski wrote:
-> This patch adds the new RTM_GETSYNCESTATE message to query the status
-> of SyncE syntonization on the device.
-> 
-> Initial implementation returns:
->  - SyncE DPLL state
->  - Source of signal driving SyncE DPLL (SyncE, GNSS, PTP or External)
->  - Current index of Pin driving the DPLL
-> 
-> SyncE state read needs to be implemented as ndo_get_synce_state function.
-> 
-> This patch is SyncE-oriented. Future implementation can add additional
-> functionality for reading different DPLL states using the same structure.
+Donnu if it's too late - was on vacation and this only arrived
+Wednesday. Seems to be necessary to avoid introducing a regression
+in virtio-mem.
 
-I would call this more "ice oriented" than SyncE oriented.  I'm not
-sure there is even such a thing as "SyncE DPLL".  Does that term come
-from 802.3?  To my understanding, that is one just way of implementing
-it that works on super-Gigabit speed devices.
+The following changes since commit e22ce8eb631bdc47a4a4ea7ecf4e4ba499db4f93:
 
-I have nothing against exposing the DPLL if you need to, however I'd
-like to have an interface that support plain Gigabit as well.  This
-could be done in a generic way by offering Control Register 9 as
-described in 802.3.
+  Linux 5.14-rc7 (2021-08-22 14:24:56 -0700)
 
-Thanks,
-Richard
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
+
+for you to fetch changes up to 816ff7595135948efde558221c8551bdd1869243:
+
+  virtio-mem: fix sleeping in RCU read side section in virtio_mem_online_page_cb() (2021-08-29 11:50:04 -0400)
+
+----------------------------------------------------------------
+virtio: a last minute fix
+
+Fix a regression in virtio-mem.
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+----------------------------------------------------------------
+David Hildenbrand (1):
+      virtio-mem: fix sleeping in RCU read side section in virtio_mem_online_page_cb()
+
+ drivers/virtio/virtio_mem.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
