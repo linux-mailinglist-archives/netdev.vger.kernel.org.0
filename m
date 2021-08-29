@@ -2,484 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58C343FAA21
-	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 10:21:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B81463FAA17
+	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 10:20:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234873AbhH2IWC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Aug 2021 04:22:02 -0400
-Received: from mga06.intel.com ([134.134.136.31]:5926 "EHLO mga06.intel.com"
+        id S234802AbhH2IUt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Aug 2021 04:20:49 -0400
+Received: from mga09.intel.com ([134.134.136.24]:2748 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234820AbhH2IVn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 29 Aug 2021 04:21:43 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10090"; a="279156563"
+        id S232155AbhH2IUs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 29 Aug 2021 04:20:48 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10090"; a="218151546"
 X-IronPort-AV: E=Sophos;i="5.84,361,1620716400"; 
-   d="scan'208";a="279156563"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2021 01:20:51 -0700
+   d="scan'208";a="218151546"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2021 01:19:56 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.84,361,1620716400"; 
-   d="scan'208";a="518329747"
-Received: from unknown (HELO localhost.igk.intel.com) ([10.102.22.231])
-  by fmsmga004.fm.intel.com with ESMTP; 29 Aug 2021 01:20:49 -0700
-From:   Maciej Machnikowski <maciej.machnikowski@intel.com>
-To:     maciej.machnikowski@intel.com, netdev@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org
-Cc:     richardcochran@gmail.com, abyagowi@fb.com,
-        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: [RFC v2 net-next 2/2] ice: add support for reading SyncE DPLL state
-Date:   Sun, 29 Aug 2021 10:05:12 +0200
-Message-Id: <20210829080512.3573627-3-maciej.machnikowski@intel.com>
-X-Mailer: git-send-email 2.26.3
-In-Reply-To: <20210829080512.3573627-1-maciej.machnikowski@intel.com>
-References: <20210829080512.3573627-1-maciej.machnikowski@intel.com>
+   d="scan'208";a="445422431"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by orsmga002.jf.intel.com with ESMTP; 29 Aug 2021 01:19:56 -0700
+Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.10; Sun, 29 Aug 2021 01:19:56 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.10; Sun, 29 Aug 2021 01:19:55 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.10 via Frontend Transport; Sun, 29 Aug 2021 01:19:55 -0700
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.44) by
+ edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2242.10; Sun, 29 Aug 2021 01:19:55 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=obWafYgBmZK8uV8y2/uKP/UVnhE1eCEGXxgVbwh+PWD9XqaYq4LmieQU4M7isvxwpEA3LTI0WDzay+bHbE4c6WJt1MthfFQGF2snpqVeGCYp4AfDfX54pAvre0IDp11rhqVIaAIxUcCcT1dHHns4Xj2xf8v2P4ZO6U918rkV6p4GdR2l7ap5pc58cQrw8oG5TRkbj8xdD13jgc0ubtBzxcQAsJJ3RKC/LrFJ0ClMX9B71ansjlVZGXyKfJrCzaq+KwStqz/h9OS0TexDNtGKk14Y/dqx1U0+wzzvFgpgpltsb3c9sWSgklrfqxiCj6DNQRVEQtvcjQAcaWs/7h5OjQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DYyiFEgxq9nhU5rV24H+Cp3sIb0wtv5fdd9MNnzdQYA=;
+ b=BynbFuU3DGgRXLOqAYHtSp6rqq0EVps5EQxkIGCbuk7WxaQfIDU5DwC0AfJ1Gg1vSoDcW4ZKztdbRVPAQLf8/xq56XOxgcrAxkFjWoaVOsVnbdlUY+mT/fTZEUhRJftGkULAlxSAA9peYu35RS2uPUl2LkKc5hldBPGjAzFMIJe4VWXTvehxtZY47PsdPN3rG0uJc9B+L2GtsdGRSQxlSCWEYpSlBou9Vb59V2mW2rFWM/w7xIXifctzjxI7684E3Qq/GeyZzm5QdiktzoIuBMRPBuKyQV1pS3noPLEQCCTcmIvq6vwy7DQPXqQutQkrNg++J8bJ6NpmDRNSmH6pEg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DYyiFEgxq9nhU5rV24H+Cp3sIb0wtv5fdd9MNnzdQYA=;
+ b=Y8/sCTGLUc4J90KLoLUo28qtLBQzo4IXEfBalAt8fj1wycBSooa/g7E1XVsplrDfomjeED87H5YfstQxZddAdHBxma5ElPdkXj0hW8YXamR7oAu+2Aa7Fs65kDhQBg4FQZzrCYMjLmgQCsQRWhE6+6OtbK6JBO6ppWipJJQILIM=
+Received: from PH0PR11MB4951.namprd11.prod.outlook.com (2603:10b6:510:43::5)
+ by PH0PR11MB5077.namprd11.prod.outlook.com (2603:10b6:510:3b::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4457.24; Sun, 29 Aug
+ 2021 08:19:55 +0000
+Received: from PH0PR11MB4951.namprd11.prod.outlook.com
+ ([fe80::58cd:3e24:745c:e221]) by PH0PR11MB4951.namprd11.prod.outlook.com
+ ([fe80::58cd:3e24:745c:e221%7]) with mapi id 15.20.4415.019; Sun, 29 Aug 2021
+ 08:19:54 +0000
+From:   "Machnikowski, Maciej" <maciej.machnikowski@intel.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        "abyagowi@fb.com" <abyagowi@fb.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>
+Subject: RE: [RFC net-next 1/2] rtnetlink: Add new RTM_GETSYNCESTATE message
+ to get SyncE status
+Thread-Topic: [RFC net-next 1/2] rtnetlink: Add new RTM_GETSYNCESTATE message
+ to get SyncE status
+Thread-Index: AQHXnFOlNiJqrlgpHEi9FSqEd11DO6uJdkmAgACtSBA=
+Date:   Sun, 29 Aug 2021 08:19:54 +0000
+Message-ID: <PH0PR11MB49514899CD7CE514E792CE40EACA9@PH0PR11MB4951.namprd11.prod.outlook.com>
+References: <20210828211248.3337476-1-maciej.machnikowski@intel.com>
+ <20210828211248.3337476-2-maciej.machnikowski@intel.com>
+ <YSqw6aJRrWbxRaas@lunn.ch>
+In-Reply-To: <YSqw6aJRrWbxRaas@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+dlp-product: dlpe-windows
+authentication-results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 4714004a-868a-4973-5aec-08d96ac5c832
+x-ms-traffictypediagnostic: PH0PR11MB5077:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <PH0PR11MB5077E110C63240D21643761CEACA9@PH0PR11MB5077.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Ro0wz8+y+Ge+yR+y/KNzoxYVweiw1qDJIqzgkJxhneKKJz8WIvfTOmh23YKIVINw/BL0KpZEkHq4j440mbIPgd6d0bgyQjJQKDCOR8M/TJhmILdRzSaq2dw+TJLYm/8C9Ow/e2jdKJ6MtFKLLXspSJpoZ/dvUTWjkw2gNjcRD757dZ6Bxa9jf3DcmJ+ThxIwwrlMT3VVA1YPNyV6ethjHX3JyAJQtnW/cFtDOO2I/lWpW6LsBTagT0YySmOYDo4iwQtdx9Ct2pZ1RPAVYvzFNb9j1SuSnP0Dxi2ymBpyol98vF1o1zlmpXz9hl4ak8OMmmj5EbE3vq+8H9fnzr5stgchUYyAImQ9k09AQvpLNxoAXNFN5gu5g2Snvo3T3QNW6fDKFUzNh5qD8aY63H0IzvvTOSJBw6oaldD2JC4OVD+EnGBNZMo03UCzRBbtB5hL89sfZHYfhab6CkT9kC2xEqMKpgotfkDYnquYvzlI4/9XgPotI/9EwLvIA1AMYHq07S/XYLS6mN87b1OmQzp6LmTcz0PAcsBE3ddMCz/aizMyR0ig4Y08wEKwUP1VmCLicCSe/0Vuy1jaaHszs29VI35AQk3J9MetGtD8u6rA+haNH+0j6qPcbizyMiukCzjICgMQvpC7zvcvtEP8ud6kH/EBEtT91GiShPtW3gg62yEtOB458PR87/rx+jFCRSea/GjZJxkI5cTLnKn30eVpMw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB4951.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(366004)(136003)(39860400002)(346002)(376002)(9686003)(7696005)(33656002)(4326008)(86362001)(186003)(26005)(6916009)(55016002)(66476007)(53546011)(76116006)(54906003)(66556008)(6506007)(71200400001)(478600001)(64756008)(8936002)(66446008)(2906002)(52536014)(15650500001)(38070700005)(83380400001)(38100700002)(122000001)(316002)(8676002)(5660300002)(66946007);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?G31NZ2kcvBbhM1wick61ys3nMIZdFbbqcyNePE7N6l+zaI5yDs+/oHvmU60o?=
+ =?us-ascii?Q?maTTsuR1IfddvFQSy2fkPKniBMm/UtQbAV0C9bCdswnWyQcqeyI04uwyCdSK?=
+ =?us-ascii?Q?Su/kJjEpgAWrAR3OETkqs0mpxgyXA+nwVJx1S7NWxlLuowUzNF35OQcYxdbg?=
+ =?us-ascii?Q?7nFq0DYJ2zDesJ3Jf+cZSWRIRlEeabWv2dZDziGC1cQek7A3HXgRKIhqf8rI?=
+ =?us-ascii?Q?tRQS9GoSDyrqX2npe7i+tfVa4erDux88AFIU3/b068zUBgXYda1V830b55yc?=
+ =?us-ascii?Q?8xNYDUqSFY7Bsl3Gxcaub2XP7r7ic7u9ja+iA7JczBSS8M9Oxt8DZP6zPua+?=
+ =?us-ascii?Q?0p1LMyYeDdYp6Uh1/tOcOlwd0mT4awS9T/z1jnAjxw8b+3/8Mr++pojnLqah?=
+ =?us-ascii?Q?xH8ewoNPp8VhAR9Jrs+gohCwGnlAFYX+p9SW6UpIe1RzgCz8EzWjvBzKOtbz?=
+ =?us-ascii?Q?shlnCGBsfubfvH88+ov2B0x9RT/ySNqTRkYrOcT1DcfL1+7azRcXSfKXQkML?=
+ =?us-ascii?Q?fkjYlT8KbK18gCwY94ZGIV0WdI5pgSCBejsY2/SyS5Ibg4fkbBNXMqL3NpHU?=
+ =?us-ascii?Q?WP+ySnAEsXaNqk722oBwv+32pRmL8vRupcG8f2P1SpnGgcsXdirtbxZUN95k?=
+ =?us-ascii?Q?Dgjq7B4F0WkedoBgMI8P4CjNv5TJSWXRgDMC7XHPoCe1viIxFkIjxueWX5cj?=
+ =?us-ascii?Q?Dscxo9z20/KqX7RYCJrh2I/frHmp5FDwvjMTiFDfFKGNP3HoVOfVaxv03+Jk?=
+ =?us-ascii?Q?xyeMmdOW/bIrjtdvdV4wQ4Nn3mnapoRikMfLGO/hBFvc/RmYDowNkIGcl6Qt?=
+ =?us-ascii?Q?eNK8q2TBWHQ0bqMO9qh+21tGCNG4LZSA63IWkPefALCAtj7j6Lu/fnTy0x8s?=
+ =?us-ascii?Q?GelbAXOOU92ESOH92he5dVf5CiwI35y2zWsIVzAbh9R8BrZIAC+5QtEIH66c?=
+ =?us-ascii?Q?5uxQcU51siMM723qVWSaKOKZm6mWaDE+UimLMEfnz6yZBCVGpypNFPhSJop4?=
+ =?us-ascii?Q?wvV58k6za9RRzeLOYMECaUy2tOJq/+fjKTRcLsDaQ6Z0POOPVnRF7dseBq7G?=
+ =?us-ascii?Q?RfISYZw9UST+hCEYAsQN5VeIFzAEdgpWRv9ET+AqAzqF5muek594C+DOMKgb?=
+ =?us-ascii?Q?DNJfxGQo3i5eA8kDdyq1i38szGawOiGuS+ez90w6UdqL7k3RdnT3rj7E5lyj?=
+ =?us-ascii?Q?eNkYAeLQ88fK8+NX937A6Z9gJqTgehSYnuimqwkmNi9RhpHRZn5DDyL/QSeV?=
+ =?us-ascii?Q?e7ObNP/mJXasD7jR+jr7hXJ0pMhNOf5kTisPFPKWPqy81bXj1UIv8yqYuptZ?=
+ =?us-ascii?Q?V0g=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB4951.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4714004a-868a-4973-5aec-08d96ac5c832
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Aug 2021 08:19:54.8534
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: rNgVZsFlI3eDZgffXV4Eo0eqDvTe9FF3FRN2gNfz52ANctx+X8IUy7VHoyE6ew+3t0eZrfjdbdEnNdb7aPl19nwiph8xmkR/rt4HcOvUTKw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB5077
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement SyncE DPLL monitoring for E810-T devices.
-Poll loop will periodically check the state of the DPLL and cache it
-in the pf structure. State change will be logged in the system log.
+> From: Andrew Lunn <andrew@lunn.ch>
+> Sent: Saturday, August 28, 2021 11:56 PM
+> To: Machnikowski, Maciej <maciej.machnikowski@intel.com>
+> Cc: netdev@vger.kernel.org; intel-wired-lan@lists.osuosl.org;
+> richardcochran@gmail.com; abyagowi@fb.com; Nguyen, Anthony L
+> <anthony.l.nguyen@intel.com>; davem@davemloft.net; kuba@kernel.org;
+> linux-kselftest@vger.kernel.org
+> Subject: Re: [RFC net-next 1/2] rtnetlink: Add new RTM_GETSYNCESTATE
+> message to get SyncE status
+>=20
+> On Sat, Aug 28, 2021 at 11:12:47PM +0200, Maciej Machnikowski wrote:
+> > This patch adds the new RTM_GETSYNCESTATE message to query the
+> status
+> > of SyncE syntonization on the device.
+>=20
+> Hi Maciej
+>=20
+> You use syntonization a few times. Is this a miss spelling for synchronis=
+ation,
+> or a SyncE terms?
 
-Cached state can be read using the RTM_GETSYNCESTATE rtnetlink
-message.
+Hi! Thanks for your comments!
 
-Different SyncE sources will be reported depending on the pin driving
-the DPLL:
- - pins 0-1: can be driven by PTP clock
- - pins 2-5: are used by SyncE recovered clocks
- - pins 6-7: can be used to connect external frequency sources
- - pin 8: is connected to the optional GNSS receiver
+Syntonization is a specific term for frequency synchronization.
 
-Signed-off-by: Maciej Machnikowski <maciej.machnikowski@intel.com>
----
- drivers/net/ethernet/intel/ice/ice.h          |  5 ++
- .../net/ethernet/intel/ice/ice_adminq_cmd.h   | 34 ++++++++++
- drivers/net/ethernet/intel/ice/ice_common.c   | 62 +++++++++++++++++++
- drivers/net/ethernet/intel/ice/ice_common.h   |  4 ++
- drivers/net/ethernet/intel/ice/ice_devids.h   |  3 +
- drivers/net/ethernet/intel/ice/ice_main.c     | 55 ++++++++++++++++
- drivers/net/ethernet/intel/ice/ice_ptp.c      | 35 +++++++++++
- drivers/net/ethernet/intel/ice/ice_ptp_hw.c   | 44 +++++++++++++
- drivers/net/ethernet/intel/ice/ice_ptp_hw.h   | 22 +++++++
- 9 files changed, 264 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index eadcb9958346..c10ff638cddb 100644
---- a/drivers/net/ethernet/intel/ice/ice.h
-+++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -508,6 +508,11 @@ struct ice_pf {
- #define ICE_VF_AGG_NODE_ID_START	65
- #define ICE_MAX_VF_AGG_NODES		32
- 	struct ice_agg_node vf_agg_node[ICE_MAX_VF_AGG_NODES];
-+
-+	enum if_synce_state synce_dpll_state;
-+	u8 synce_dpll_pin;
-+	enum if_synce_state ptp_dpll_state;
-+	u8 ptp_dpll_pin;
- };
- 
- struct ice_netdev_priv {
-diff --git a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-index 21b4c7cd6f05..b84da5e9d025 100644
---- a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-+++ b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-@@ -1727,6 +1727,36 @@ struct ice_aqc_add_rdma_qset_data {
- 	struct ice_aqc_add_tx_rdma_qset_entry rdma_qsets[];
- };
- 
-+/* Get CGU DPLL status (direct 0x0C66) */
-+struct ice_aqc_get_cgu_dpll_status {
-+	u8 dpll_num;
-+	u8 ref_state;
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_REF_SW_LOS		BIT(0)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_REF_SW_SCM		BIT(1)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_REF_SW_CFM		BIT(2)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_REF_SW_GST		BIT(3)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_REF_SW_PFM		BIT(4)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_REF_SW_ESYNC	BIT(6)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_FAST_LOCK_EN	BIT(7)
-+	__le16 dpll_state;
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_STATE_LOCK		BIT(0)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_STATE_HO		BIT(1)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_STATE_HO_READY	BIT(2)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_STATE_FLHIT		BIT(5)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_STATE_PSLHIT	BIT(7)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_STATE_CLK_REF_SHIFT	8
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_STATE_CLK_REF_SEL	\
-+	ICE_M(0x1F, ICE_AQC_GET_CGU_DPLL_STATUS_STATE_CLK_REF_SHIFT)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_STATE_MODE_SHIFT	13
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_STATE_MODE \
-+	ICE_M(0x7, ICE_AQC_GET_CGU_DPLL_STATUS_STATE_MODE_SHIFT)
-+	__le32 phase_offset_h;
-+	__le32 phase_offset_l;
-+	u8 eec_mode;
-+	u8 rsvd[1];
-+	__le16 node_handle;
-+};
-+
- /* Configure Firmware Logging Command (indirect 0xFF09)
-  * Logging Information Read Response (indirect 0xFF10)
-  * Note: The 0xFF10 command has no input parameters.
-@@ -1954,6 +1984,7 @@ struct ice_aq_desc {
- 		struct ice_aqc_fw_logging fw_logging;
- 		struct ice_aqc_get_clear_fw_log get_clear_fw_log;
- 		struct ice_aqc_download_pkg download_pkg;
-+		struct ice_aqc_get_cgu_dpll_status get_cgu_dpll_status;
- 		struct ice_aqc_driver_shared_params drv_shared_params;
- 		struct ice_aqc_set_mac_lb set_mac_lb;
- 		struct ice_aqc_alloc_free_res_cmd sw_res_ctrl;
-@@ -2108,6 +2139,9 @@ enum ice_adminq_opc {
- 	ice_aqc_opc_update_pkg				= 0x0C42,
- 	ice_aqc_opc_get_pkg_info_list			= 0x0C43,
- 
-+	/* 1588/SyncE commands/events */
-+	ice_aqc_opc_get_cgu_dpll_status			= 0x0C66,
-+
- 	ice_aqc_opc_driver_shared_params		= 0x0C90,
- 
- 	/* Standalone Commands/Events */
-diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
-index 2fb81e359cdf..e7474643a421 100644
---- a/drivers/net/ethernet/intel/ice/ice_common.c
-+++ b/drivers/net/ethernet/intel/ice/ice_common.c
-@@ -69,6 +69,31 @@ bool ice_is_e810(struct ice_hw *hw)
- 	return hw->mac_type == ICE_MAC_E810;
- }
- 
-+/**
-+ * ice_is_e810t
-+ * @hw: pointer to the hardware structure
-+ *
-+ * returns true if the device is E810T based, false if not.
-+ */
-+bool ice_is_e810t(struct ice_hw *hw)
-+{
-+	switch (hw->device_id) {
-+	case ICE_DEV_ID_E810C_SFP:
-+		if (hw->subsystem_device_id == ICE_SUBDEV_ID_E810T ||
-+		    hw->subsystem_device_id == ICE_SUBDEV_ID_E810T2)
-+			return true;
-+		break;
-+	case ICE_DEV_ID_E810C_QSFP:
-+		if (hw->subsystem_device_id == ICE_SUBDEV_ID_E810T2)
-+			return true;
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	return false;
-+}
-+
- /**
-  * ice_clear_pf_cfg - Clear PF configuration
-  * @hw: pointer to the hardware structure
-@@ -4520,6 +4545,42 @@ ice_dis_vsi_rdma_qset(struct ice_port_info *pi, u16 count, u32 *qset_teid,
- 	return ice_status_to_errno(status);
- }
- 
-+/**
-+ * ice_aq_get_cgu_dpll_status
-+ * @hw: pointer to the HW struct
-+ * @dpll_num: DPLL index
-+ * @ref_state: Reference clock state
-+ * @dpll_state: DPLL state
-+ * @phase_offset: Phase offset in ps
-+ * @eec_mode: EEC_mode
-+ *
-+ * Get CGU DPLL status (0x0C66)
-+ */
-+enum ice_status
-+ice_aq_get_cgu_dpll_status(struct ice_hw *hw, u8 dpll_num, u8 *ref_state,
-+			   u16 *dpll_state, u64 *phase_offset, u8 *eec_mode)
-+{
-+	struct ice_aqc_get_cgu_dpll_status *cmd;
-+	struct ice_aq_desc desc;
-+	enum ice_status status;
-+
-+	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_get_cgu_dpll_status);
-+	cmd = &desc.params.get_cgu_dpll_status;
-+	cmd->dpll_num = dpll_num;
-+
-+	status = ice_aq_send_cmd(hw, &desc, NULL, 0, NULL);
-+	if (!status) {
-+		*ref_state = cmd->ref_state;
-+		*dpll_state = le16_to_cpu(cmd->dpll_state);
-+		*phase_offset = le32_to_cpu(cmd->phase_offset_h);
-+		*phase_offset <<= 32;
-+		*phase_offset += le32_to_cpu(cmd->phase_offset_l);
-+		*eec_mode = cmd->eec_mode;
-+	}
-+
-+	return status;
-+}
-+
- /**
-  * ice_replay_pre_init - replay pre initialization
-  * @hw: pointer to the HW struct
-@@ -4974,3 +5035,4 @@ bool ice_fw_supports_report_dflt_cfg(struct ice_hw *hw)
- 	}
- 	return false;
- }
-+
-diff --git a/drivers/net/ethernet/intel/ice/ice_common.h b/drivers/net/ethernet/intel/ice/ice_common.h
-index fb16070f02e2..ccd76c0cbf2c 100644
---- a/drivers/net/ethernet/intel/ice/ice_common.h
-+++ b/drivers/net/ethernet/intel/ice/ice_common.h
-@@ -100,6 +100,7 @@ enum ice_status
- ice_aq_manage_mac_write(struct ice_hw *hw, const u8 *mac_addr, u8 flags,
- 			struct ice_sq_cd *cd);
- bool ice_is_e810(struct ice_hw *hw);
-+bool ice_is_e810t(struct ice_hw *hw);
- enum ice_status ice_clear_pf_cfg(struct ice_hw *hw);
- enum ice_status
- ice_aq_set_phy_cfg(struct ice_hw *hw, struct ice_port_info *pi,
-@@ -156,6 +157,9 @@ ice_cfg_vsi_rdma(struct ice_port_info *pi, u16 vsi_handle, u16 tc_bitmap,
- int
- ice_ena_vsi_rdma_qset(struct ice_port_info *pi, u16 vsi_handle, u8 tc,
- 		      u16 *rdma_qset, u16 num_qsets, u32 *qset_teid);
-+enum ice_status
-+ice_aq_get_cgu_dpll_status(struct ice_hw *hw, u8 dpll_num, u8 *ref_state,
-+			   u16 *dpll_state, u64 *phase_offset, u8 *eec_mode);
- int
- ice_dis_vsi_rdma_qset(struct ice_port_info *pi, u16 count, u32 *qset_teid,
- 		      u16 *q_id);
-diff --git a/drivers/net/ethernet/intel/ice/ice_devids.h b/drivers/net/ethernet/intel/ice/ice_devids.h
-index 9d8194671f6a..e52dbeddb783 100644
---- a/drivers/net/ethernet/intel/ice/ice_devids.h
-+++ b/drivers/net/ethernet/intel/ice/ice_devids.h
-@@ -52,4 +52,7 @@
- /* Intel(R) Ethernet Connection E822-L 1GbE */
- #define ICE_DEV_ID_E822L_SGMII		0x189A
- 
-+#define ICE_SUBDEV_ID_E810T		0x000E
-+#define ICE_SUBDEV_ID_E810T2		0x000F
-+
- #endif /* _ICE_DEVIDS_H_ */
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 60d55d043a94..a0f4c200394f 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -5973,6 +5973,60 @@ static void ice_napi_disable_all(struct ice_vsi *vsi)
- 	}
- }
- 
-+/**
-+ * ice_get_synce_state - get state of SyncE DPLL
-+ * @netdev: network interface device structure
-+ * @state: state of SyncE DPLL
-+ * @src: source type driving SyncE DPLL
-+ * @pin_idx: index of pin driving SyncE DPLL
-+ */
-+static int
-+ice_get_synce_state(struct net_device *netdev, enum if_synce_state *state,
-+		    enum if_synce_src *src, u8 *pin_idx)
-+{
-+	struct ice_netdev_priv *np = netdev_priv(netdev);
-+	struct ice_vsi *vsi = np->vsi;
-+	struct ice_pf *pf = vsi->back;
-+
-+	if (!ice_is_e810t(&pf->hw))
-+		return -EOPNOTSUPP;
-+
-+	if (state)
-+		*state = pf->synce_dpll_state;
-+	if (pin_idx) {
-+		*pin_idx = pf->synce_dpll_pin;
-+	if (src)
-+		switch (pf->synce_dpll_pin) {
-+		case REF0P:
-+		case REF0N:
-+			*src = IF_SYNCE_SRC_PTP;
-+			break;
-+		case REF1P:
-+		case REF1N:
-+		case REF2P:
-+		case REF2N:
-+			*src = IF_SYNCE_SRC_SYNCE;
-+			break;
-+		case REF3P:
-+		case REF3N:
-+			*src = IF_SYNCE_SRC_EXT;
-+			break;
-+		case REF4P:
-+			*src = IF_SYNCE_SRC_GNSS;
-+			break;
-+		default:
-+			*src = IF_SYNCE_SRC_INVALID;
-+			break;
-+		}
-+
-+		/* Always report invalid source if state is not Locked */
-+		if (pf->synce_dpll_state != IF_SYNCE_STATE_LOCKED)
-+			*src = IF_SYNCE_SRC_INVALID;
-+	}
-+
-+	return 0;
-+}
-+
- /**
-  * ice_down - Shutdown the connection
-  * @vsi: The VSI being stopped
-@@ -7263,4 +7317,5 @@ static const struct net_device_ops ice_netdev_ops = {
- 	.ndo_bpf = ice_xdp,
- 	.ndo_xdp_xmit = ice_xdp_xmit,
- 	.ndo_xsk_wakeup = ice_xsk_wakeup,
-+	.ndo_get_synce_state = ice_get_synce_state,
- };
-diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.c b/drivers/net/ethernet/intel/ice/ice_ptp.c
-index 9e3ddb9b8b51..8a133ffb70c5 100644
---- a/drivers/net/ethernet/intel/ice/ice_ptp.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ptp.c
-@@ -1370,6 +1370,36 @@ static void ice_ptp_tx_tstamp_cleanup(struct ice_ptp_tx *tx)
- 	}
- }
- 
-+static void ice_handle_cgu_state(struct ice_pf *pf)
-+{
-+	enum if_synce_state cgu_state;
-+	u8 pin;
-+
-+	cgu_state = ice_get_zl_state_e810t(&pf->hw, ICE_CGU_DPLL_SYNCE, &pin);
-+	if (pf->synce_dpll_state != cgu_state) {
-+		pf->synce_dpll_state = cgu_state;
-+		pf->synce_dpll_pin = pin;
-+
-+		dev_warn(ice_pf_to_dev(pf),
-+			 "<DPLL%i> state changed to: %d, pin %d",
-+			 ICE_CGU_DPLL_SYNCE,
-+			 pf->synce_dpll_state,
-+			 pin);
-+	}
-+
-+	cgu_state = ice_get_zl_state_e810t(&pf->hw, ICE_CGU_DPLL_PTP, &pin);
-+	if (pf->ptp_dpll_state != cgu_state) {
-+		pf->ptp_dpll_state = cgu_state;
-+		pf->ptp_dpll_pin = pin;
-+
-+		dev_warn(ice_pf_to_dev(pf),
-+			 "<DPLL%i> state changed to: %d, pin %d",
-+			 ICE_CGU_DPLL_PTP,
-+			 pf->ptp_dpll_state,
-+			 pin);
-+	}
-+}
-+
- static void ice_ptp_periodic_work(struct kthread_work *work)
- {
- 	struct ice_ptp *ptp = container_of(work, struct ice_ptp, work.work);
-@@ -1378,6 +1408,10 @@ static void ice_ptp_periodic_work(struct kthread_work *work)
- 	if (!test_bit(ICE_FLAG_PTP, pf->flags))
- 		return;
- 
-+	if (ice_is_e810t(&pf->hw) &&
-+	    &pf->hw.func_caps.ts_func_info.src_tmr_owned)
-+		ice_handle_cgu_state(pf);
-+
- 	ice_ptp_update_cached_phctime(pf);
- 
- 	ice_ptp_tx_tstamp_cleanup(&pf->ptp.port.tx);
-@@ -1556,3 +1590,4 @@ void ice_ptp_release(struct ice_pf *pf)
- 
- 	dev_info(ice_pf_to_dev(pf), "Removed PTP clock\n");
- }
-+
-diff --git a/drivers/net/ethernet/intel/ice/ice_ptp_hw.c b/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
-index 3eca0e4eab0b..4bd7bc10c237 100644
---- a/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
-@@ -375,6 +375,50 @@ static int ice_ptp_port_cmd_e810(struct ice_hw *hw, enum ice_ptp_tmr_cmd cmd)
- 	return 0;
- }
- 
-+/**
-+ * ice_get_zl_state_e810t - get the state of the DPLL
-+ * @hw: pointer to the hw struct
-+ * @dpll_idx: Index of internal DPLL unit
-+ * @pin: pointer to a buffer for returning currently active pin
-+ *
-+ * This function will read the state of the DPLL(dpll_idx). If optional
-+ * parameter pin is given it'll be used to retrieve currently active pin.
-+ *
-+ * Return: state of the DPLL
-+ */
-+enum if_synce_state
-+ice_get_zl_state_e810t(struct ice_hw *hw, u8 dpll_idx, u8 *pin)
-+{
-+	enum ice_status status;
-+	u64 phase_offset;
-+	u16 dpll_state;
-+	u8 ref_state;
-+	u8 eec_mode;
-+
-+	if (dpll_idx >= ICE_CGU_DPLL_MAX)
-+		return IF_SYNCE_STATE_INVALID;
-+
-+	status = ice_aq_get_cgu_dpll_status(hw, dpll_idx, &ref_state,
-+					    &dpll_state, &phase_offset,
-+					    &eec_mode);
-+	if (status)
-+		return IF_SYNCE_STATE_INVALID;
-+
-+	if (pin) {
-+		/* current ref pin in dpll_state_refsel_status_X register */
-+		*pin = (dpll_state &
-+			ICE_AQC_GET_CGU_DPLL_STATUS_STATE_CLK_REF_SEL) >>
-+		       ICE_AQC_GET_CGU_DPLL_STATUS_STATE_CLK_REF_SHIFT;
-+	}
-+
-+	if (dpll_state & ICE_AQC_GET_CGU_DPLL_STATUS_STATE_LOCK)
-+		return IF_SYNCE_STATE_LOCKED;
-+	else if (dpll_state & ICE_AQC_GET_CGU_DPLL_STATUS_STATE_HO)
-+		return IF_SYNCE_STATE_HOLDOVER;
-+
-+	return IF_SYNCE_STATE_FREERUN;
-+}
-+
- /* Device agnostic functions
-  *
-  * The following functions implement useful behavior to hide the differences
-diff --git a/drivers/net/ethernet/intel/ice/ice_ptp_hw.h b/drivers/net/ethernet/intel/ice/ice_ptp_hw.h
-index 55a414e87018..a46f634db68c 100644
---- a/drivers/net/ethernet/intel/ice/ice_ptp_hw.h
-+++ b/drivers/net/ethernet/intel/ice/ice_ptp_hw.h
-@@ -30,6 +30,8 @@ int ice_clear_phy_tstamp(struct ice_hw *hw, u8 block, u8 idx);
- 
- /* E810 family functions */
- int ice_ptp_init_phy_e810(struct ice_hw *hw);
-+enum if_synce_state
-+ice_get_zl_state_e810t(struct ice_hw *hw, u8 dpll_idx, u8 *pin);
- 
- #define PFTSYN_SEM_BYTES	4
- 
-@@ -76,4 +78,24 @@ int ice_ptp_init_phy_e810(struct ice_hw *hw);
- #define LOW_TX_MEMORY_BANK_START	0x03090000
- #define HIGH_TX_MEMORY_BANK_START	0x03090004
- 
-+enum ice_e810t_cgu_dpll {
-+	ICE_CGU_DPLL_SYNCE,
-+	ICE_CGU_DPLL_PTP,
-+	ICE_CGU_DPLL_MAX
-+};
-+
-+enum ice_e810t_cgu_pins {
-+	REF0P,
-+	REF0N,
-+	REF1P,
-+	REF1N,
-+	REF2P,
-+	REF2N,
-+	REF3P,
-+	REF3N,
-+	REF4P,
-+	REF4N,
-+	NUM_E810T_CGU_PINS
-+};
-+
- #endif /* _ICE_PTP_HW_H_ */
--- 
-2.26.3
+> >
+> >  struct prefixmsg {
+> > @@ -569,7 +572,7 @@ struct prefixmsg {
+> >  	unsigned char	prefix_pad3;
+> >  };
+> >
+> > -enum
+> > +enum
+> >  {
+> >  	PREFIX_UNSPEC,
+> >  	PREFIX_ADDRESS,
+>=20
+> You appear to have a number of white space changes here. Please put them
+> into a separate patch, or drop them.
 
+Will fix and resubmit along with the fix for issues found by the robot
+
+Thanks!
+Maciek
+
+>=20
+>      Andrew
