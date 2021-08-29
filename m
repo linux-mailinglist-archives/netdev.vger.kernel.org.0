@@ -2,189 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68F423FA80E
-	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 02:28:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27DA73FA84A
+	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 05:12:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233916AbhH2A30 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Aug 2021 20:29:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49128 "EHLO
+        id S233384AbhH2DNQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Aug 2021 23:13:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229725AbhH2A3Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Aug 2021 20:29:25 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 421FDC061756
-        for <netdev@vger.kernel.org>; Sat, 28 Aug 2021 17:28:34 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id l2so14810729lfp.2
-        for <netdev@vger.kernel.org>; Sat, 28 Aug 2021 17:28:34 -0700 (PDT)
+        with ESMTP id S233061AbhH2DNP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Aug 2021 23:13:15 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EDCFC0613D9;
+        Sat, 28 Aug 2021 20:12:24 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id r2so9862351pgl.10;
+        Sat, 28 Aug 2021 20:12:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=uM0R/cBCnrgZPVD3L0/mTUcz7T2d55t/hwaN/NXkFKI=;
-        b=cyDTrbXNw/FYoho+wCpMLr8ClTC+Ho9s0H3rzjc+w/ZCZmLx1JloCoRrIbLAe1zp5l
-         d07RizKTkiLQfIsyNn+mBX2ivBclYo1yMgCOiKO4vCiB7wM76wjTF49n8Uhjeg9OJlGC
-         tpacsyF8FGPPcWjHpeUAbpV/GI06fLUW+L4klISCBfLOPgZyssykd/bRtBYByOgR287c
-         n5gYm9icTVdyGEVjod1W6TY2huS4OQpesx0JgSk1fW+pd8TKhKsb2+heHDUcFPfPTDec
-         XXwxNXg+F4dWX+zbwHNrlNY6x9a658AJonxervvwZ7O1Qw1eK1f/ew7QPdA2FStdh8PW
-         QoeA==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=d71jISmGCCIVKCzFqHTHchQvoA2vzoLtxdLeqOiM5fQ=;
+        b=Xq+flMaguv35xN6MNO+zimEQYNw3992mFP4bmgT3nGMet9ae9oGALYwueLTJyifU7C
+         4GQfG3noRx6m2AszauY558M4nt3fVSI6qVrD5zP2jXaq4o0rfUVyFvQYglIWZd8GEojo
+         j73KoHuvnJnqHokc3YlK9qC7aWVlZjwX/myI7CJtLDVNxPcrPFvxiAAVRTcenNedCTTJ
+         rX1ucGqxaeAKXZ6CsFqnp7mbVyiCUlfREAK/0l92EXZccQD0udoG21rl1OV8q6YLPbUW
+         8WL5/JqwLdGq6SEiA7Ljfq1vNZai3W58749q1CcPuJU/HIjTBfY3DwJ95ODY4bNWA3we
+         VKhg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=uM0R/cBCnrgZPVD3L0/mTUcz7T2d55t/hwaN/NXkFKI=;
-        b=DewvE0B4KynwDnrekWxNk7RMkVaegm/GJPPGiHXlbP1yyhvgoXyqZhVxHiTwtKr7WP
-         O4YNEC/K/Ry56L//Whc6tuDedAiJ9IDvQrAEyNuj7UiS3apTzKFjbgpmG99tMVX1yx4o
-         BAnnN4dkP/PDmzuKX8CNBHfNkDWf7+jiRCgtCnUJMflOt+P2zxqrtaRUenKVLjDEIAXQ
-         DODYwGOT4H5P7eAIWif9WkSgfCF0dSIKhqnqfV824vlRGMTG5OTBTxmLH/rqQdR9BxVu
-         tXz/ZLTqHusC3KG0ZBSciRBv1zPU4eJvNAntbB8MwpkKznLxV9DYGYuSXTqwIvfOzu/u
-         1MYw==
-X-Gm-Message-State: AOAM533gwBCrm+fG4EPLE8j1DP719eOI26+tYxbcZ16UkWX8daCvfhm0
-        OylQfWmVpOLx74E7E3yGJ1z1ig==
-X-Google-Smtp-Source: ABdhPJwORCWvJzAXItETvmJOlNn8jCX8fA4teQe4G34uopMYqbYy02akP1F2f3xXrtHjuaMNsQGT+w==
-X-Received: by 2002:a05:6512:2091:: with SMTP id t17mr12061566lfr.253.1630196912638;
-        Sat, 28 Aug 2021 17:28:32 -0700 (PDT)
-Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
-        by smtp.gmail.com with ESMTPSA id m14sm995522lfo.196.2021.08.28.17.28.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 28 Aug 2021 17:28:32 -0700 (PDT)
-From:   Linus Walleij <linus.walleij@linaro.org>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Mauri Sandberg <sandberg@mailfence.com>,
-        DENG Qingfang <dqfext@gmail.com>
-Subject: [PATCH net-next 2/2] net: dsa: rtl8366: Drop custom VLAN set-up
-Date:   Sun, 29 Aug 2021 02:26:01 +0200
-Message-Id: <20210829002601.282521-2-linus.walleij@linaro.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210829002601.282521-1-linus.walleij@linaro.org>
-References: <20210829002601.282521-1-linus.walleij@linaro.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+         :references;
+        bh=d71jISmGCCIVKCzFqHTHchQvoA2vzoLtxdLeqOiM5fQ=;
+        b=J6pKH8pHhCKvGc0Q7t4WoN2YiJi2GIDrwVayBdMqdU+Nn59PgATxpLeDj7+qL7dFGu
+         DDoPKX2tcKcAyWna+8oXPoy4aV0XVLkpM9/+F0CYyhTGOu7kiIngcE1cAzC3iaSTiEky
+         82UDFUUrLQUURhs3awyRzjiJmylzAs9/4PhQr8j8dA2XqPqYUVcCxOyDi8PWic2CGIi3
+         f02HkvPmZ9S1skZkf2IE634lDxDp/IV4OZ0/h+ZdzbbWvjTp/aEnNbE8QKVL56tZpxU0
+         pDRo7BeRZ2DUO4QyAz1ywiBx25Lfv2zMt7MGWdbL0c2pVK7k2chRsq5wo/clSDyyP9kz
+         6vKw==
+X-Gm-Message-State: AOAM533r70+eB+aRDZqt8dKV3V+CiDgPjDprn5I8DvyklSJIvlBtGDgo
+        ND6vcsJwlTf3U0HdTJOLFzWK/2FQFA8=
+X-Google-Smtp-Source: ABdhPJyi1CA67ZXmfV7C3AKWpYpLDGMG2CToFVxzuHeSoxLWheCRL62O9TzlO5IxM1vhjdZwjbrM/g==
+X-Received: by 2002:a63:2d07:: with SMTP id t7mr1928365pgt.101.1630206744013;
+        Sat, 28 Aug 2021 20:12:24 -0700 (PDT)
+Received: from xplor.waratah.dyndns.org (222-155-6-212-adsl.sparkbb.co.nz. [222.155.6.212])
+        by smtp.gmail.com with ESMTPSA id 141sm11827922pgg.16.2021.08.28.20.12.23
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 28 Aug 2021 20:12:23 -0700 (PDT)
+Received: by xplor.waratah.dyndns.org (Postfix, from userid 1000)
+        id 4DCA73603E5; Sun, 29 Aug 2021 15:12:20 +1200 (NZST)
+From:   Michael Schmitz <schmitzmic@gmail.com>
+To:     linux-m68k@vger.kernel.org, geert@linux-m68k.org
+Cc:     alex@kazik.de, Michael Schmitz <schmitzmic@gmail.com>,
+        netdev@vger.kernel.org
+Subject: [PATCH net v7 4/4] net/8390: apne.c - add 100 Mbit support to apne.c driver
+Date:   Sun, 29 Aug 2021 15:11:50 +1200
+Message-Id: <1630206710-5954-5-git-send-email-schmitzmic@gmail.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1630206710-5954-1-git-send-email-schmitzmic@gmail.com>
+References: <1630206710-5954-1-git-send-email-schmitzmic@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This hacky default VLAN setup was done in order to direct
-packets to the right ports and provide port isolation, both
-which we now support properly using custom tags and proper
-bridge port isolation.
+Add module parameter, IO mode autoprobe and PCMCIA reset code
+required to support 100 Mbit PCMCIA ethernet cards on Amiga.
 
-We can drop the custom VLAN code and leave all VLAN handling
-alone, as users expect things to be. We can also drop
-ds->configure_vlan_while_not_filtering = false; and let
-the core deal with any VLANs it wants.
+10 Mbit and 100 Mbit mode are supported by the same module.
+Use the PCMCIA cftable parser to detect 16 bit cards,
+and automatically enable 16 bit ISA IO access for those cards
+by changing isa_type at runtime.
 
-Cc: Vladimir Oltean <olteanv@gmail.com>
-Cc: Alvin Šipraga <alsi@bang-olufsen.dk>
-Cc: Mauri Sandberg <sandberg@mailfence.com>
-Cc: DENG Qingfang <dqfext@gmail.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+An optional module parameter switches Amiga ISA IO accessors
+to 16 bit access in case autoprobe fails. Code to reset the
+PCMCIA hardware required for 16 bit cards is also added to
+the driver probe.
+
+Patch modified after patch "[PATCH RFC net-next] Amiga PCMCIA
+100 MBit card support" submitted to netdev 2018/09/16 by Alex
+Kazik <alex@kazik.de>.
+
+CC: netdev@vger.kernel.org
+Link: https://lore.kernel.org/r/1622958877-2026-1-git-send-email-schmitzmic@gmail.com
+Tested-by: Alex Kazik <alex@kazik.de>
+Signed-off-by: Michael Schmitz <schmitzmic@gmail.com>
+
+--
+Changes from v6:
+
+- use 16 bit mode autoprobe based on PCMCIA config table data
+
+Changes from v5:
+
+- move autoprobe code to new patch in this series
+
+Geert Uytterhoeven:
+- reword Kconfig help text
+
+Finn Thain:
+- style fixes, use msec_to_jiffies in timeout calc
+
+Alex Kazik:
+- revert module parameter permission change
+
+Changes from v4:
+
+Geert Uytterhoeven:
+- remove APNE100MBIT config option, always include 16 bit support
+- change module parameter permissions
+- try autoprobing for 16 bit mode early on in device probe
+
+Changes from v3:
+
+- change module parameter name to match Kconfig help
+
+Finn Thain:
+- fix coding style in new card reset code block
+- allow reset of isa_type by module parameter
+
+Changes from v1:
+
+- fix module parameter name in Kconfig help text
+
+Alex Kazik:
+- change module parameter type to bool, fix module parameter
+  permission
+
+Changes from RFC:
+
+Geert Uytterhoeven:
+- change APNE_100MBIT to depend on APNE
+- change '---help---' to 'help' (former no longer supported)
+- fix whitespace errors
+- fix module_param_named() arg count
+- protect all added code by #ifdef CONFIG_APNE_100MBIT
 ---
- drivers/net/dsa/realtek-smi-core.h |  1 -
- drivers/net/dsa/rtl8366.c          | 48 ------------------------------
- drivers/net/dsa/rtl8366rb.c        |  4 +--
- 3 files changed, 1 insertion(+), 52 deletions(-)
+ drivers/net/ethernet/8390/Kconfig |  6 ++++++
+ drivers/net/ethernet/8390/apne.c  | 26 ++++++++++++++++++++++++++
+ 2 files changed, 32 insertions(+)
 
-diff --git a/drivers/net/dsa/realtek-smi-core.h b/drivers/net/dsa/realtek-smi-core.h
-index fcf465f7f922..c8fbd7b9fd0b 100644
---- a/drivers/net/dsa/realtek-smi-core.h
-+++ b/drivers/net/dsa/realtek-smi-core.h
-@@ -129,7 +129,6 @@ int rtl8366_set_pvid(struct realtek_smi *smi, unsigned int port,
- int rtl8366_enable_vlan4k(struct realtek_smi *smi, bool enable);
- int rtl8366_enable_vlan(struct realtek_smi *smi, bool enable);
- int rtl8366_reset_vlan(struct realtek_smi *smi);
--int rtl8366_init_vlan(struct realtek_smi *smi);
- int rtl8366_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering,
- 			   struct netlink_ext_ack *extack);
- int rtl8366_vlan_add(struct dsa_switch *ds, int port,
-diff --git a/drivers/net/dsa/rtl8366.c b/drivers/net/dsa/rtl8366.c
-index 75897a369096..59c5bc4f7b71 100644
---- a/drivers/net/dsa/rtl8366.c
-+++ b/drivers/net/dsa/rtl8366.c
-@@ -292,54 +292,6 @@ int rtl8366_reset_vlan(struct realtek_smi *smi)
- }
- EXPORT_SYMBOL_GPL(rtl8366_reset_vlan);
+diff --git a/drivers/net/ethernet/8390/Kconfig b/drivers/net/ethernet/8390/Kconfig
+index 9f4b302..270323e 100644
+--- a/drivers/net/ethernet/8390/Kconfig
++++ b/drivers/net/ethernet/8390/Kconfig
+@@ -143,6 +143,12 @@ config APNE
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called apne.
  
--int rtl8366_init_vlan(struct realtek_smi *smi)
--{
--	int port;
--	int ret;
--
--	ret = rtl8366_reset_vlan(smi);
--	if (ret)
--		return ret;
--
--	/* Loop over the available ports, for each port, associate
--	 * it with the VLAN (port+1)
--	 */
--	for (port = 0; port < smi->num_ports; port++) {
--		u32 mask;
--
--		if (port == smi->cpu_port)
--			/* For the CPU port, make all ports members of this
--			 * VLAN.
--			 */
--			mask = GENMASK((int)smi->num_ports - 1, 0);
--		else
--			/* For all other ports, enable itself plus the
--			 * CPU port.
--			 */
--			mask = BIT(port) | BIT(smi->cpu_port);
--
--		/* For each port, set the port as member of VLAN (port+1)
--		 * and untagged, except for the CPU port: the CPU port (5) is
--		 * member of VLAN 6 and so are ALL the other ports as well.
--		 * Use filter 0 (no filter).
--		 */
--		dev_info(smi->dev, "VLAN%d port mask for port %d, %08x\n",
--			 (port + 1), port, mask);
--		ret = rtl8366_set_vlan(smi, (port + 1), mask, mask, 0);
--		if (ret)
--			return ret;
--
--		dev_info(smi->dev, "VLAN%d port %d, PVID set to %d\n",
--			 (port + 1), port, (port + 1));
--		ret = rtl8366_set_pvid(smi, port, (port + 1));
--		if (ret)
--			return ret;
--	}
--
--	return rtl8366_enable_vlan(smi, true);
--}
--EXPORT_SYMBOL_GPL(rtl8366_init_vlan);
--
- int rtl8366_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering,
- 			   struct netlink_ext_ack *extack)
++	  The driver also supports 10/100Mbit cards (e.g. Netgear FA411,
++	  CNet Singlepoint). To activate 100 Mbit support, use the kernel
++	  option apne.100mbit=1 (builtin) at boot time, or the apne.100mbit
++	  module parameter. The driver will attempt to autoprobe 100 Mbit
++	  mode. so this option may not be necessary.
++
+ config PCMCIA_PCNET
+ 	tristate "NE2000 compatible PCMCIA support"
+ 	depends on PCMCIA
+diff --git a/drivers/net/ethernet/8390/apne.c b/drivers/net/ethernet/8390/apne.c
+index fe6c834..cf93b65 100644
+--- a/drivers/net/ethernet/8390/apne.c
++++ b/drivers/net/ethernet/8390/apne.c
+@@ -38,6 +38,7 @@
+ #include <linux/etherdevice.h>
+ #include <linux/interrupt.h>
+ #include <linux/jiffies.h>
++#include <pcmcia/cistpl.h>
+ 
+ #include <asm/io.h>
+ #include <asm/setup.h>
+@@ -120,6 +121,10 @@ static u32 apne_msg_enable;
+ module_param_named(msg_enable, apne_msg_enable, uint, 0444);
+ MODULE_PARM_DESC(msg_enable, "Debug message level (see linux/netdevice.h for bitmap)");
+ 
++static bool apne_100_mbit;
++module_param_named(100_mbit, apne_100_mbit, bool, 0444);
++MODULE_PARM_DESC(100_mbit, "Enable 100 Mbit support");
++
+ struct net_device * __init apne_probe(int unit)
  {
-diff --git a/drivers/net/dsa/rtl8366rb.c b/drivers/net/dsa/rtl8366rb.c
-index 14939188c108..17bf8f3ecc7d 100644
---- a/drivers/net/dsa/rtl8366rb.c
-+++ b/drivers/net/dsa/rtl8366rb.c
-@@ -984,7 +984,7 @@ static int rtl8366rb_setup(struct dsa_switch *ds)
- 			return ret;
- 	}
+ 	struct net_device *dev;
+@@ -139,6 +144,11 @@ struct net_device * __init apne_probe(int unit)
+ 	if ( !(AMIGAHW_PRESENT(PCMCIA)) )
+ 		return ERR_PTR(-ENODEV);
  
--	ret = rtl8366_init_vlan(smi);
-+	ret = rtl8366_reset_vlan(smi);
- 	if (ret)
- 		return ret;
++	if (apne_100_mbit)
++		isa_type = ISA_TYPE_AG16;
++	else
++		isa_type = ISA_TYPE_AG;
++
+ 	pr_info("Looking for PCMCIA ethernet card : ");
  
-@@ -998,8 +998,6 @@ static int rtl8366rb_setup(struct dsa_switch *ds)
- 		return -ENODEV;
- 	}
+ 	/* check if a card is inserted */
+@@ -172,6 +182,12 @@ struct net_device * __init apne_probe(int unit)
  
--	ds->configure_vlan_while_not_filtering = false;
--
- 	return 0;
- }
+ 	pr_cont("ethernet PCMCIA card inserted\n");
  
++	if (pcmcia_is_16bit()) {
++		pr_info("16-bit PCMCIA card detected!\n");
++		isa_type = ISA_TYPE_AG16;
++		apne_100_mbit = 1;
++	}
++
+ 	if (!init_pcmcia()) {
+ 		/* XXX: shouldn't we re-enable irq here? */
+ 		free_netdev(dev);
+@@ -590,6 +606,16 @@ static int init_pcmcia(void)
+ #endif
+ 	u_long offset;
+ 
++	/* reset card (idea taken from CardReset by Artur Pogoda) */
++	if (isa_type == ISA_TYPE_AG16) {
++		u_char tmp = gayle.intreq;
++
++		gayle.intreq = 0xff;
++		mdelay(1);
++		gayle.intreq = tmp;
++		mdelay(300);
++	}
++
+ 	pcmcia_reset();
+ 	pcmcia_program_voltage(PCMCIA_0V);
+ 	pcmcia_access_speed(PCMCIA_SPEED_250NS);
 -- 
-2.31.1
+2.7.4
 
