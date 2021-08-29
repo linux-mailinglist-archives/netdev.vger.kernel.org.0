@@ -2,65 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E99793FAB54
-	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 14:31:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FF163FAB79
+	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 14:45:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235261AbhH2M0Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Aug 2021 08:26:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36434 "EHLO
+        id S235335AbhH2Mq0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Aug 2021 08:46:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234988AbhH2M0Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Aug 2021 08:26:24 -0400
-Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1137DC061575;
-        Sun, 29 Aug 2021 05:25:32 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4GyCMn077Bz9sW5;
-        Sun, 29 Aug 2021 22:25:24 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-        s=201909; t=1630239927;
-        bh=iBAjFvolmNyY2XZ92vAE2fPLtdbfMKz7ggBJnDVP5XY=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=mkjRa/NB8vHgxfdu3l/F8pbrud+Fo5BKagyM0uRxjeTOdt8OWy59q2UNYjRakpxqa
-         dtZGfZqT5BFbFBdansxFhWr6CYpmbCfg6wsQJWj3sdUWBf2lGB0Jr/5AX/ZSSiiw5m
-         E8e9/0clEWAiKoSw2m9J5glNTV70KW+bMPOKzgHqPLF/Fn1tcxgHQ8ZWEUJBCMugAW
-         zuJ6BQyAw7JV3eF3B2QYbjxsyWhCYKpq3PA46OB7Y4ciO4LOiSypNuZMzfFVycKrEI
-         vFw9FGhvXCkDKyqpR5DaCNMwcR0hMTHNWrUvJCHXtGDxlNR+yig+pDPIe50oc/8Y5m
-         3xYOxVFdfehsg==
-From:   Michael Ellerman <mpe@ellerman.id.au>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        kou.ishizaki@toshiba.co.jp, geoff@infradead.org,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: spider_net: switch from 'pci_' to 'dma_' API
-In-Reply-To: <90220a35-bd0a-ccf3-91b1-c2a459c447e7@csgroup.eu>
-References: <60abc3d0c8b4ef8368a4d63326a25a5cb3cd218c.1630094078.git.christophe.jaillet@wanadoo.fr>
- <90220a35-bd0a-ccf3-91b1-c2a459c447e7@csgroup.eu>
-Date:   Sun, 29 Aug 2021 22:25:19 +1000
-Message-ID: <871r6cfnf4.fsf@mpe.ellerman.id.au>
+        with ESMTP id S235124AbhH2MqY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Aug 2021 08:46:24 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B2A0C061575
+        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 05:45:32 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id y34so25141524lfa.8
+        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 05:45:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6mw0MT3om93i5T+rGS/7Y5NL2nNyWToax69yy3f04aM=;
+        b=bbJRPC4WvwENh4cdNzVpQ3+lWBYIkqVdfB+jrIzMw7BKMIsjcLPYwjNYUveBUL1Vjn
+         w5aoml1VEB3Lz3WtbGW0LdDR0Wqf8eS+a2e4SJiLQENm3acEwboKO71O74bx6EtGam4e
+         5sUC6X0Z11zdlzIiIA5Km7KF2YsuL6lWvMMB5kKrDdOPKb02coqn0AqvL9/Z8mFph/mh
+         MWJz9uV6A233n4UMZLvFIKUJGmHYO2WKy+vZXy12oOHvQTNnbCzy+Ja1m3OafH6KCJnY
+         s41Cs0HuhJml7W+439/cf3EYsFrycR1KWEelkh4YaCSNrr8i5IoR+RmVbddGjcNekYHl
+         BUCg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6mw0MT3om93i5T+rGS/7Y5NL2nNyWToax69yy3f04aM=;
+        b=EVSu5grgaPidIC6jh68lMUJUgaZWXXNgicb1qc4Vg5Z4N17lv6Q40cCdWXb6rz/9LA
+         AxStrIsInqi3bDgl9RtUvJ4fVnNKs4x+i7VKLPCDs41sRv+k4V0t2yfd3BLqWS6++UzE
+         iZ2d04Jwscqs20ogowO5ESrHsIQVdJFrRfVfH7Di6a/WBWNf3NKDQqqdmSTzkKBcqI9J
+         82WAv9L83WthYocDHICtcyCj20s6hF+sm2rKpLkZ9Wvr0xfYIYS6FOL0947SSoIHxrbG
+         9RvBuTwEZDiybSM6NLF3f60WfchZ+EIn6iKwpBu4XUrVAFKO8O4etN8GWs/C/V80IO6e
+         EYXw==
+X-Gm-Message-State: AOAM532MEU0WacsJtybptj0q0guCexqcquWCv/N1sFYBBDzapkPA/zpn
+        06lBmaNUPwIpEoMPmpkxNfAxog==
+X-Google-Smtp-Source: ABdhPJwvZt+qSrAe/ddF7Uokkg8l4wE7+stitGJl43IJ0+g9jRh6Q+poAK9+8+LdfFclvgltR1Qhmg==
+X-Received: by 2002:a05:6512:3339:: with SMTP id l25mr13968860lfe.496.1630241130940;
+        Sun, 29 Aug 2021 05:45:30 -0700 (PDT)
+Received: from eriador.lan ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id g20sm522746lfh.159.2021.08.29.05.45.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 29 Aug 2021 05:45:30 -0700 (PDT)
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH] net: qrtr: mhi: make it work again
+Date:   Sun, 29 Aug 2021 15:45:28 +0300
+Message-Id: <20210829124528.507457-1-dmitry.baryshkov@linaro.org>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Christophe Leroy <christophe.leroy@csgroup.eu> writes:
-> Le 27/08/2021 =C3=A0 21:56, Christophe JAILLET a =C3=A9crit=C2=A0:
->> ---
->> It has *not* been compile tested because I don't have the needed
->> configuration or cross-compiler. However, the modification is completely
->> mechanical and done by coccinelle.
->
-> All you need is at https://mirrors.edge.kernel.org/pub/tools/crosstool/
+The commit ce78ffa3ef16 ("net: really fix the build...") introduced two
+issues into the mhi.c driver:
+ - use of initialized completion
+ - calling mhi_prepare_for_transfer twice
 
-There's also some instructions here for using distro toolchains:
+While the first one is pretty obvious, the second one makes all devices
+using mhi.c to return -EINVAL during probe. Fist
+mhi_prepare_for_transfer() would change both channels state to ENABLED.
+Then when second mhi_prepare_for_transfer() would be called it would
+also try switching them to ENABLED again, which is forbidden by the
+state machine in the mhi_update_channel_state() function (see
+drivers/bus/mhi/core/main.c).
+These two issues make all drivers using qcom_mhi_qrtr (e.g. ath11k) to
+fail with -EINVAL.
 
-https://github.com/linuxppc/wiki/wiki/Building-powerpc-kernels
+Fix them by removing first mhi_prepare_for_transfer() call and by adding
+the init_completion() call.
 
-cheers
+Fixes: ce78ffa3ef16 ("net: really fix the build...")
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+---
+ net/qrtr/mhi.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
+
+diff --git a/net/qrtr/mhi.c b/net/qrtr/mhi.c
+index 1dc955ca57d3..f3f4a5fdeaf3 100644
+--- a/net/qrtr/mhi.c
++++ b/net/qrtr/mhi.c
+@@ -83,15 +83,12 @@ static int qcom_mhi_qrtr_probe(struct mhi_device *mhi_dev,
+ 	struct qrtr_mhi_dev *qdev;
+ 	int rc;
+ 
+-	/* start channels */
+-	rc = mhi_prepare_for_transfer(mhi_dev, 0);
+-	if (rc)
+-		return rc;
+-
+ 	qdev = devm_kzalloc(&mhi_dev->dev, sizeof(*qdev), GFP_KERNEL);
+ 	if (!qdev)
+ 		return -ENOMEM;
+ 
++	init_completion(&qdev->ready);
++
+ 	qdev->mhi_dev = mhi_dev;
+ 	qdev->dev = &mhi_dev->dev;
+ 	qdev->ep.xmit = qcom_mhi_qrtr_send;
+-- 
+2.33.0
+
