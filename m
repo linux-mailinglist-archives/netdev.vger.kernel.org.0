@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA1743FADCF
-	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 20:36:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8BBE3FADD3
+	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 20:39:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235920AbhH2Shb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Aug 2021 14:37:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34110 "EHLO
+        id S235891AbhH2She (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Aug 2021 14:37:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230010AbhH2ShZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Aug 2021 14:37:25 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFD53C061575
-        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 11:36:32 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id g22so18183102edy.12
-        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 11:36:32 -0700 (PDT)
+        with ESMTP id S235844AbhH2Sh1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Aug 2021 14:37:27 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88EE3C06175F
+        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 11:36:34 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id t19so26184286ejr.8
+        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 11:36:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=ubique-spb-ru.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=lgPBX8DJcpzG1tNIR4pZXKeW3o+9OosjfV8Ncn2PRCA=;
-        b=yBMcWkkURGU1+zM6TKPAId8lLIb7LvZXif5bChzOAuS6T4pz1q98iBg5gjWPpsdgUi
-         KcbGIo3IzWliStRs0iqnUMOXHq3ZWAmrERvY1L0yXWWYPb4tQ/wiotbc7QNgnm0IHx5d
-         1jvQcetfum8Fmahzw+Dz7yrYW7u/anj8TNWTibaNG+aG0iIfMSMpH6wcXp0U7TqqEH20
-         oop4TlUh8ErCSt3sxSLiWER7Rx9lNvgTut0xW8Mu7pQFJmxsNuZ6ELkmOjCD0429+aBq
-         YTy5aFOMjc6i/fUJ6NYGw9XlSTQ67AOSUGrWA10s8A0rm1CcozbKx/6rk+6udNBqFYxM
-         /HAA==
+        bh=yjMwzlzJCsJ2K95uZCEDXsotI3JR8EQAiCrEaLA40kc=;
+        b=vP1uOWqYdK6vBWvlt/QAyX/lNgefEeCuV9l0mIfrScvL51v6Rg8YgGUXIx6SWDcIEL
+         X1/QXBZK26dRj9mCfGJ1O9fqI1++8y7BnA4R4tGpcrfrLp/mznJjJUoQoc+Pr0jQhcGQ
+         ppOmISsWcs3nhQUoXKuaL9JgyII6d+PC1e16Hm5Pvg/bCv1n7WYmmCCZk/SK10k+1Om6
+         nT1HSRCGfXcjqMr8+n0cl/lademJvI6RO3AjSWUM6mylV5ztP6/aCclMqp9TwR0fAczZ
+         fOJ6aRjJkzDETVV2FGBL/DkpaG9yoD8fSGoWXE5kUPfGDGKBBNEAvTJ8z7Bk5HS4Gag7
+         XGYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=lgPBX8DJcpzG1tNIR4pZXKeW3o+9OosjfV8Ncn2PRCA=;
-        b=YUg2NdYKIQt/hQI7nL1TPxbSAsJqJkA13zb7v52uGsaprC11khIUWrl/q8mWhSbqT5
-         cznUj7pT8HGiqfhb2aA2SqObwPzMPdjGH2cPO4OC88GjxBKnHf4tAhrE8gfYJARtCRUr
-         x1KP9TIDvWlMeggpmloDMFPL6Xiagy36C5/uiFJwnZLVBxO75wRBz360YNSRdRbEx1II
-         hUmPqmwU+9Q3Bsx0Zx7fZZXm7HCDLo+Z1IpHTAC80itPD4cMB4sayVlJTSlUAdoDEqF1
-         6xGLvm15M9lGsYOQS+0J3irHp6pnBgbIds+UkS2bZx+0PSqqVnCiIw7X/0sgsb9toN7m
-         5ziw==
-X-Gm-Message-State: AOAM530ApHeCDUizlpJaYCHXed9vEa5wzfIjIEK6CUpppg6o3eifMQ8i
-        sYGeSuvzzoSPjraFhuozTmsGee2SeLCzOYzGL6s=
-X-Google-Smtp-Source: ABdhPJzAmGn/fpoAPtln59mJMBHa9thCYwwpV1i3El6h9F4TmNFPSTUqMye7XLNBnk+iDj0w4nHNLg==
-X-Received: by 2002:a05:6402:2792:: with SMTP id b18mr5445400ede.173.1630262191415;
-        Sun, 29 Aug 2021 11:36:31 -0700 (PDT)
+        bh=yjMwzlzJCsJ2K95uZCEDXsotI3JR8EQAiCrEaLA40kc=;
+        b=fk3QggDQkVwtiXmOVjiaBY06HUzbXZHh9D+7xKEDqAfB3fX8X8bh9GtFgVZu7y9VJf
+         bJ2dbFgbpHyzwsBBsOkZid8ZaZKDsYiAVi+woeiK0lKhWna59iRdByYfDh+MZVxPyOMA
+         mpIndoIomcEFBAQCiN0ytafecG7VSnFpGzE8U3sCtlm3/5BpSPvMSQndi655uJ3T76Pa
+         JvPgkRe61IW4Woy5GOJdLGiug05jGCDg+ccix0oV4h3NtS3710IVs9k69Jr2i+dv4DpE
+         YXKWzopZH3lQFN43yTqAS/1UyngyFJp1IUKQ7TU83G/tNu4iYikJNt0+m1tEBXb3pd7/
+         uZuw==
+X-Gm-Message-State: AOAM533wYF93wMtEdf8zsfRKuSVjs+nnIstTPZM70pPyH8rkEJHrSfFu
+        ZQcs93v+rQ65HA3MFtnBiOdMLQ==
+X-Google-Smtp-Source: ABdhPJwPtLUG1xuQn5zeWY2m07B2NnXNA6nY1TnNsXYMCrIL25NH6tHMnRasLCl6mg0878Eh8xUHBQ==
+X-Received: by 2002:a17:906:d183:: with SMTP id c3mr21211752ejz.283.1630262193127;
+        Sun, 29 Aug 2021 11:36:33 -0700 (PDT)
 Received: from localhost ([154.21.15.43])
-        by smtp.gmail.com with ESMTPSA id p8sm5710384ejo.2.2021.08.29.11.36.31
+        by smtp.gmail.com with ESMTPSA id lu4sm5440475ejb.103.2021.08.29.11.36.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 29 Aug 2021 11:36:31 -0700 (PDT)
+        Sun, 29 Aug 2021 11:36:32 -0700 (PDT)
 From:   Dmitrii Banshchikov <me@ubique.spb.ru>
 To:     bpf@vger.kernel.org
 Cc:     Dmitrii Banshchikov <me@ubique.spb.ru>, ast@kernel.org,
@@ -54,9 +54,9 @@ Cc:     Dmitrii Banshchikov <me@ubique.spb.ru>, ast@kernel.org,
         kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
         john.fastabend@gmail.com, kpsingh@kernel.org,
         netdev@vger.kernel.org, rdna@fb.com
-Subject: [PATCH bpf-next v2 03/13] tools: Add bpfilter usermode helper header
-Date:   Sun, 29 Aug 2021 22:35:58 +0400
-Message-Id: <20210829183608.2297877-4-me@ubique.spb.ru>
+Subject: [PATCH bpf-next v2 04/13] bpfilter: Add map container
+Date:   Sun, 29 Aug 2021 22:35:59 +0400
+Message-Id: <20210829183608.2297877-5-me@ubique.spb.ru>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210829183608.2297877-1-me@ubique.spb.ru>
 References: <20210829183608.2297877-1-me@ubique.spb.ru>
@@ -66,198 +66,221 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The header will be used in bpfilter usermode helper test infrastructure.
+Introduce common code for an associative container. This common code
+will be used for maps of matches, targets and tables. Hash search tables
+from libc are used as an index. The supported set of operations is:
+find and upsert.
 
 Signed-off-by: Dmitrii Banshchikov <me@ubique.spb.ru>
 ---
- tools/include/uapi/linux/bpfilter.h | 178 ++++++++++++++++++++++++++++
- 1 file changed, 178 insertions(+)
- create mode 100644 tools/include/uapi/linux/bpfilter.h
+ net/bpfilter/Makefile                         |  2 +-
+ net/bpfilter/map-common.c                     | 50 +++++++++++++++
+ net/bpfilter/map-common.h                     | 18 ++++++
+ .../testing/selftests/bpf/bpfilter/.gitignore |  2 +
+ tools/testing/selftests/bpf/bpfilter/Makefile | 19 ++++++
+ .../testing/selftests/bpf/bpfilter/test_map.c | 63 +++++++++++++++++++
+ 6 files changed, 153 insertions(+), 1 deletion(-)
+ create mode 100644 net/bpfilter/map-common.c
+ create mode 100644 net/bpfilter/map-common.h
+ create mode 100644 tools/testing/selftests/bpf/bpfilter/.gitignore
+ create mode 100644 tools/testing/selftests/bpf/bpfilter/Makefile
+ create mode 100644 tools/testing/selftests/bpf/bpfilter/test_map.c
 
-diff --git a/tools/include/uapi/linux/bpfilter.h b/tools/include/uapi/linux/bpfilter.h
+diff --git a/net/bpfilter/Makefile b/net/bpfilter/Makefile
+index cdac82b8c53a..1809759d08c4 100644
+--- a/net/bpfilter/Makefile
++++ b/net/bpfilter/Makefile
+@@ -4,7 +4,7 @@
+ #
+ 
+ userprogs := bpfilter_umh
+-bpfilter_umh-objs := main.o
++bpfilter_umh-objs := main.o map-common.o
+ userccflags += -I $(srctree)/tools/include/ -I $(srctree)/tools/include/uapi
+ 
+ ifeq ($(CONFIG_BPFILTER_UMH), y)
+diff --git a/net/bpfilter/map-common.c b/net/bpfilter/map-common.c
 new file mode 100644
-index 000000000000..31a24264c224
+index 000000000000..f933929a3909
 --- /dev/null
-+++ b/tools/include/uapi/linux/bpfilter.h
-@@ -0,0 +1,178 @@
-+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-+#ifndef _UAPI_LINUX_BPFILTER_H
-+#define _UAPI_LINUX_BPFILTER_H
++++ b/net/bpfilter/map-common.c
+@@ -0,0 +1,50 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (c) 2021 Telegram FZ-LLC
++ */
 +
-+#include <linux/if.h>
-+#include <linux/const.h>
++#include "map-common.h"
 +
-+#define BPFILTER_STANDARD_TARGET        ""
-+#define BPFILTER_ERROR_TARGET           "ERROR"
++#include <linux/err.h>
 +
++#include <errno.h>
++#include <string.h>
 +
-+#define BPFILTER_ALIGN(__X) __ALIGN_KERNEL(__X, __alignof__(__u64))
++int create_map(struct hsearch_data *htab, size_t nelem)
++{
++	memset(htab, 0, sizeof(*htab));
++	if (!hcreate_r(nelem, htab))
++		return -errno;
 +
-+enum {
-+	BPFILTER_IPT_SO_SET_REPLACE = 64,
-+	BPFILTER_IPT_SO_SET_ADD_COUNTERS = 65,
-+	BPFILTER_IPT_SET_MAX,
++	return 0;
++}
++
++void *map_find(struct hsearch_data *htab, const char *key)
++{
++	const ENTRY needle = { .key = (char *)key };
++	ENTRY *found;
++
++	if (!hsearch_r(needle, FIND, &found, htab))
++		return ERR_PTR(-ENOENT);
++
++	return found->data;
++}
++
++int map_upsert(struct hsearch_data *htab, const char *key, void *value)
++{
++	const ENTRY needle = { .key = (char *)key, .data = value };
++	ENTRY *found;
++
++	if (!hsearch_r(needle, ENTER, &found, htab))
++		return -errno;
++
++	found->key = (char *)key;
++	found->data = value;
++
++	return 0;
++}
++
++void free_map(struct hsearch_data *htab)
++{
++	hdestroy_r(htab);
++}
+diff --git a/net/bpfilter/map-common.h b/net/bpfilter/map-common.h
+new file mode 100644
+index 000000000000..236ba906828e
+--- /dev/null
++++ b/net/bpfilter/map-common.h
+@@ -0,0 +1,18 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Copyright (c) 2021 Telegram FZ-LLC
++ */
++
++#ifndef NET_BPFILTER_MAP_COMMON_H
++#define NET_BPFILTER_MAP_COMMON_H
++
++#define _GNU_SOURCE
++
++#include <search.h>
++
++int create_map(struct hsearch_data *htab, size_t nelem);
++void *map_find(struct hsearch_data *htab, const char *key);
++int map_upsert(struct hsearch_data *htab, const char *key, void *value);
++void free_map(struct hsearch_data *htab);
++
++#endif // NET_BPFILTER_MAP_COMMON_H
+diff --git a/tools/testing/selftests/bpf/bpfilter/.gitignore b/tools/testing/selftests/bpf/bpfilter/.gitignore
+new file mode 100644
+index 000000000000..983fd06cbefa
+--- /dev/null
++++ b/tools/testing/selftests/bpf/bpfilter/.gitignore
+@@ -0,0 +1,2 @@
++# SPDX-License-Identifier: GPL-2.0-only
++test_map
+diff --git a/tools/testing/selftests/bpf/bpfilter/Makefile b/tools/testing/selftests/bpf/bpfilter/Makefile
+new file mode 100644
+index 000000000000..c262aad8c2a4
+--- /dev/null
++++ b/tools/testing/selftests/bpf/bpfilter/Makefile
+@@ -0,0 +1,19 @@
++# SPDX-License-Identifier: GPL-2.0
++
++top_srcdir = ../../../../..
++TOOLSDIR := $(abspath ../../../../)
++TOOLSINCDIR := $(TOOLSDIR)/include
++APIDIR := $(TOOLSINCDIR)/uapi
++BPFILTERSRCDIR := $(top_srcdir)/net/bpfilter
++
++CFLAGS += -Wall -g -pthread -I$(TOOLSINCDIR) -I$(APIDIR) -I$(BPFILTERSRCDIR)
++
++TEST_GEN_PROGS += test_map
++
++KSFT_KHDR_INSTALL := 1
++
++include ../../lib.mk
++
++BPFILTER_MAP_SRCS := $(BPFILTERSRCDIR)/map-common.c
++
++$(OUTPUT)/test_map: test_map.c $(BPFILTER_MAP_SRCS)
+diff --git a/tools/testing/selftests/bpf/bpfilter/test_map.c b/tools/testing/selftests/bpf/bpfilter/test_map.c
+new file mode 100644
+index 000000000000..7ed737b78816
+--- /dev/null
++++ b/tools/testing/selftests/bpf/bpfilter/test_map.c
+@@ -0,0 +1,63 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include "map-common.h"
++
++#include <linux/err.h>
++
++#include "../../kselftest_harness.h"
++
++FIXTURE(test_map)
++{
++	struct hsearch_data map;
++	const char *key;
++	void *expected;
++	void *actual;
 +};
 +
-+enum {
-+	BPFILTER_IPT_SO_GET_INFO = 64,
-+	BPFILTER_IPT_SO_GET_ENTRIES = 65,
-+	BPFILTER_IPT_SO_GET_REVISION_MATCH = 66,
-+	BPFILTER_IPT_SO_GET_REVISION_TARGET = 67,
-+	BPFILTER_IPT_GET_MAX,
-+};
++FIXTURE_SETUP(test_map)
++{
++	const int max_nelements = 100;
 +
-+enum {
-+	BPFILTER_XT_TABLE_MAXNAMELEN = 32,
-+	BPFILTER_FUNCTION_MAXNAMELEN = 30,
-+	BPFILTER_EXTENSION_MAXNAMELEN = 29,
-+};
++	create_map(&self->map, max_nelements);
++	self->key = "key";
++	self->expected = "expected";
++	self->actual = "actual";
++}
 +
-+enum {
-+	BPFILTER_NF_DROP = 0,
-+	BPFILTER_NF_ACCEPT = 1,
-+	BPFILTER_NF_STOLEN = 2,
-+	BPFILTER_NF_QUEUE = 3,
-+	BPFILTER_NF_REPEAT = 4,
-+	BPFILTER_NF_STOP = 5,
-+	BPFILTER_NF_MAX_VERDICT = BPFILTER_NF_STOP,
-+	BPFILTER_RETURN = (-BPFILTER_NF_REPEAT - 1),
-+};
++FIXTURE_TEARDOWN(test_map)
++{
++	free_map(&self->map);
++}
 +
-+enum {
-+	BPFILTER_INET_HOOK_PRE_ROUTING = 0,
-+	BPFILTER_INET_HOOK_LOCAL_IN = 1,
-+	BPFILTER_INET_HOOK_FORWARD = 2,
-+	BPFILTER_INET_HOOK_LOCAL_OUT = 3,
-+	BPFILTER_INET_HOOK_POST_ROUTING = 4,
-+	BPFILTER_INET_HOOK_MAX,
-+};
++TEST_F(test_map, upsert_and_find)
++{
++	void *found;
 +
-+enum {
-+	BPFILTER_IPT_F_MASK = 0x03,
-+	BPFILTER_IPT_INV_MASK = 0x7f
-+};
++	found = map_find(&self->map, self->key);
++	ASSERT_TRUE(IS_ERR(found))
++	ASSERT_EQ(-ENOENT, PTR_ERR(found))
 +
-+struct bpfilter_ipt_match {
-+	union {
-+		struct {
-+			__u16 match_size;
-+			char name[BPFILTER_EXTENSION_MAXNAMELEN];
-+			__u8 revision;
-+		} user;
-+		struct {
-+			__u16 match_size;
-+			void *match;
-+		} kernel;
-+		__u16 match_size;
-+	} u;
-+	unsigned char data[0];
-+};
++	ASSERT_EQ(0, map_upsert(&self->map, self->key, self->expected));
++	ASSERT_EQ(0, map_upsert(&self->map, self->key, self->expected));
++	ASSERT_EQ(0, map_upsert(&self->map, self->key, self->actual));
 +
-+struct bpfilter_ipt_target {
-+	union {
-+		struct {
-+			__u16 target_size;
-+			char name[BPFILTER_EXTENSION_MAXNAMELEN];
-+			__u8 revision;
-+		} user;
-+		struct {
-+			__u16 target_size;
-+			void *target;
-+		} kernel;
-+		__u16 target_size;
-+	} u;
-+	unsigned char data[0];
-+};
++	found = map_find(&self->map, self->key);
 +
-+struct bpfilter_ipt_standard_target {
-+	struct bpfilter_ipt_target target;
-+	int verdict;
-+};
++	ASSERT_FALSE(IS_ERR(found));
++	ASSERT_STREQ(self->actual, found);
++}
 +
-+struct bpfilter_ipt_error_target {
-+	struct bpfilter_ipt_target target;
-+	char error_name[BPFILTER_FUNCTION_MAXNAMELEN];
-+};
++TEST_F(test_map, update)
++{
++	void *found;
 +
-+struct bpfilter_ipt_get_info {
-+	char name[BPFILTER_XT_TABLE_MAXNAMELEN];
-+	__u32 valid_hooks;
-+	__u32 hook_entry[BPFILTER_INET_HOOK_MAX];
-+	__u32 underflow[BPFILTER_INET_HOOK_MAX];
-+	__u32 num_entries;
-+	__u32 size;
-+};
++	ASSERT_EQ(0, map_upsert(&self->map, self->key, self->actual));
++	ASSERT_EQ(0, map_upsert(&self->map, self->key, self->expected));
 +
-+struct bpfilter_ipt_counters {
-+	__u64 packet_cnt;
-+	__u64 byte_cnt;
-+};
++	found = map_find(&self->map, self->key);
 +
-+struct bpfilter_ipt_counters_info {
-+	char name[BPFILTER_XT_TABLE_MAXNAMELEN];
-+	__u32 num_counters;
-+	struct bpfilter_ipt_counters counters[0];
-+};
++	ASSERT_FALSE(IS_ERR(found));
++	ASSERT_STREQ(self->expected, found);
++}
 +
-+struct bpfilter_ipt_get_revision {
-+	char name[BPFILTER_EXTENSION_MAXNAMELEN];
-+	__u8 revision;
-+};
-+
-+struct bpfilter_ipt_ip {
-+	__u32 src;
-+	__u32 dst;
-+	__u32 src_mask;
-+	__u32 dst_mask;
-+	char in_iface[IFNAMSIZ];
-+	char out_iface[IFNAMSIZ];
-+	__u8 in_iface_mask[IFNAMSIZ];
-+	__u8 out_iface_mask[IFNAMSIZ];
-+	__u16 protocol;
-+	__u8 flags;
-+	__u8 invflags;
-+};
-+
-+struct bpfilter_ipt_entry {
-+	struct bpfilter_ipt_ip ip;
-+	__u32 bfcache;
-+	__u16 target_offset;
-+	__u16 next_offset;
-+	__u32 comefrom;
-+	struct bpfilter_ipt_counters counters;
-+	__u8 elems[0];
-+};
-+
-+struct bpfilter_ipt_standard_entry {
-+	struct bpfilter_ipt_entry entry;
-+	struct bpfilter_ipt_standard_target target;
-+};
-+
-+struct bpfilter_ipt_error_entry {
-+	struct bpfilter_ipt_entry entry;
-+	struct bpfilter_ipt_error_target target;
-+};
-+
-+struct bpfilter_ipt_get_entries {
-+	char name[BPFILTER_XT_TABLE_MAXNAMELEN];
-+	__u32 size;
-+	struct bpfilter_ipt_entry entries[0];
-+};
-+
-+struct bpfilter_ipt_replace {
-+	char name[BPFILTER_XT_TABLE_MAXNAMELEN];
-+	__u32 valid_hooks;
-+	__u32 num_entries;
-+	__u32 size;
-+	__u32 hook_entry[BPFILTER_INET_HOOK_MAX];
-+	__u32 underflow[BPFILTER_INET_HOOK_MAX];
-+	__u32 num_counters;
-+	struct bpfilter_ipt_counters *cntrs;
-+	struct bpfilter_ipt_entry entries[0];
-+};
-+
-+#endif /* _UAPI_LINUX_BPFILTER_H */
++TEST_HARNESS_MAIN
 -- 
 2.25.1
 
