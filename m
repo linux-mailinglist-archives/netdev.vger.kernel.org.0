@@ -2,115 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E8843FA9F3
+	by mail.lfdr.de (Postfix) with ESMTP id A7AB03FA9F4
 	for <lists+netdev@lfdr.de>; Sun, 29 Aug 2021 09:36:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234802AbhH2HgO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Aug 2021 03:36:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57218 "EHLO
+        id S234812AbhH2HgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Aug 2021 03:36:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230378AbhH2HgM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Aug 2021 03:36:12 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 035C4C061756
-        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 00:35:21 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id lc21so23751229ejc.7
-        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 00:35:20 -0700 (PDT)
+        with ESMTP id S230378AbhH2HgO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Aug 2021 03:36:14 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0840CC061756
+        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 00:35:23 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id lc21so23751331ejc.7
+        for <netdev@vger.kernel.org>; Sun, 29 Aug 2021 00:35:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=zbpdcRPANqwsAPhkJ8+VSKBsECabICTeyv1uEHsvzIc=;
-        b=PSOCzuC6h436tZZpQDScFdzvrFxMDILjLU/Qz9jCOTPZJqWT0H25Tj82c82jmrcvKE
-         Tfl+jJT840jDNAvqso3Pcd8gkvYuraap4hFyV2+rkuyqnr/38zyeW9EcIHECFMbtEten
-         RORd2M+d5ONtpyR0mE0yNaiI4r0vXE8RS+Yn8=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=zKSfEjWbgza5dW75Y24HkAlQgDAyB19zoMa55nFHqPY=;
+        b=AiZCBSRKfIO1P13J7MxnwprJ3CfRIsI1AQLeuhkU73zEdfkifjfrDl2kWgb60Y+Fjx
+         XgUIu1FAZx8A1f5o9FSqR4dzxSiUaHi9Qk4TjoDmQwS7rADMG7MTqsoTUo1o4JkYZVEo
+         WUhysIsGcVjxP34h0fnpbeX+xHoh1f5KD7A9M=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=zbpdcRPANqwsAPhkJ8+VSKBsECabICTeyv1uEHsvzIc=;
-        b=VC+IBE+GLEtwqrNhxuZmiaAMxqO9deScMV/sKGBMeZsYyQ8W1oP9miQZzihT0uF9fj
-         nEoTH5Of1tqp9Tcvmxiog9TRsHgJw/uXWbUxlXWm9V5Rp98HHp9DT2C35eha/QQ5Nw3X
-         ooa9EuXVlMPc7FVleEU+kVtdgbAQOKwj947WxI+Ea2kTDcnLZalGIZcTZtPKoAMRvy7h
-         PxwDLtLRyTUyGqxC/Lo5gBuN7djQbnnLPX3whiTt/HK/h/IWH8cLN6NJ6ORpsReY3UVP
-         csJJn5j2Ae77zj2Ljk8hHl0phum3E0zK5NC53KqatDdwqrPcxla6d/w5kr6Pfzu8+khh
-         p67g==
-X-Gm-Message-State: AOAM533uEx16w1cuzAwlplLh/NeZHsM3WmEn+616RgIHdnGtghgQeuwq
-        si/vSoawipbXHp3vy3ZdXaMiGw==
-X-Google-Smtp-Source: ABdhPJzbzRakea2Y5g3Xt6YHBiDi8pB6eMO1Bu3UwZp9EX+rPghwyneNAcbCXQD2yqBUZRtxOQyn6Q==
-X-Received: by 2002:a17:906:585a:: with SMTP id h26mr19291997ejs.31.1630222518918;
-        Sun, 29 Aug 2021 00:35:18 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=zKSfEjWbgza5dW75Y24HkAlQgDAyB19zoMa55nFHqPY=;
+        b=GwgLw/PeWeRLqy1PZfXGc26b3G46eZ8K+SVk2xdD3AbqtzpEAq/Zxo27nlVbZi8bmQ
+         xGUlSsj7BkQ5t+r3pGATBuh+SF0JRu216Y7GMnWmLFEZTN0DTcOVyPbRxYGVXs4ijply
+         AgCsNw7ongDkt8BFQrHgkEQku5hrq0uLX/hPqc+QsGx+ZCoMkXLNVR/VJUh8tOlKySPb
+         3QzprB0zxbNOBtUC4JyDSLKP5FpU4XlqMM9+sxyWK6ia4ep5Y3U19owSQq6SLiCld684
+         tqfZBL29EK9pT/aQis+l0LT4j0xxiKeof7TQGVrBrRlwwtffoDaU2ui536RMLOYHLXFl
+         fhtQ==
+X-Gm-Message-State: AOAM5319d8W6hyBcwt6dNFImm6Q3M/7mDf/BHDGOiS0cqYh89psRHWkR
+        JvtJnRki4bAUh9C2wIxoVyZ+yA==
+X-Google-Smtp-Source: ABdhPJy3SlY01vu0e4TBVumh5i8h/20zAMjnJkkExhvV3ublO0tJcbAEpA4urZK3OKv9l0Fl+ORGzw==
+X-Received: by 2002:a17:906:3e1b:: with SMTP id k27mr18895364eji.284.1630222521232;
+        Sun, 29 Aug 2021 00:35:21 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id dy7sm984007edb.38.2021.08.29.00.35.16
+        by smtp.gmail.com with ESMTPSA id dy7sm984007edb.38.2021.08.29.00.35.19
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 29 Aug 2021 00:35:18 -0700 (PDT)
+        Sun, 29 Aug 2021 00:35:20 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, edwin.peer@broadcom.com,
         gospo@broadcom.com
-Subject: [PATCH net-next v2 00/11] bnxt_en: Implement new driver APIs to send FW messages
-Date:   Sun, 29 Aug 2021 03:34:55 -0400
-Message-Id: <1630222506-19532-1-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next v2 01/11] bnxt_en: remove DMA mapping for KONG response
+Date:   Sun, 29 Aug 2021 03:34:56 -0400
+Message-Id: <1630222506-19532-2-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1630222506-19532-1-git-send-email-michael.chan@broadcom.com>
+References: <1630222506-19532-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000032475805caadc245"
+        boundary="000000000000512d4a05caadc28b"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000032475805caadc245
+--000000000000512d4a05caadc28b
 
-The current driver APIs to send messages to the firmware allow only one
-outstanding message in flight.  There is only one buffer for the firmware
-response for each firmware channel.  To send a firmware message, all
-callers must take a mutex and it is released after the firmware response
-has been read.  This scheme does not allow multiple firmware messages
-in flight.  Firmware may take a long time to respond to some messages
-(e.g. NVRAM related ones) and this causes the mutex to be held for
-a long time, blocking other callers.
+From: Edwin Peer <edwin.peer@broadcom.com>
 
-This patchset intoduces the new driver APIs to address the above
-shortcomings.  The new APIs are compatible with new and old firmware.
-But the new deferred firmware response mechanism will require newer
-firmware in order to allow multiple outstanding firmware commands.
+The additional response buffer serves no useful purpose. There can
+be only one firmware command in flight due to the hwrm_cmd_lock mutex,
+which is taken for the entire duration of any command completion,
+KONG or otherwise. It is thus safe to share a single DMA buffer.
 
-All callers are updated to use the new APIs.
+Removing the code associated with the additional mapping will simplify
+matters in the next patch, which allocates response buffers from DMA
+pools on a per request basis.
 
-v2: Patch 4 and patch 9 updated to fix issues reported by test robot
+Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 42 +++--------------------
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h | 16 ++-------
+ 2 files changed, 7 insertions(+), 51 deletions(-)
 
-Edwin Peer (11):
-  bnxt_en: remove DMA mapping for KONG response
-  bnxt_en: Refactor the HWRM_VER_GET firmware calls
-  bnxt_en: move HWRM API implementation into separate file
-  bnxt_en: introduce new firmware message API based on DMA pools
-  bnxt_en: discard out of sequence HWRM responses
-  bnxt_en: add HWRM request assignment API
-  bnxt_en: add support for HWRM request slices
-  bnxt_en: use link_lock instead of hwrm_cmd_lock to protect link_info
-  bnxt_en: update all firmware calls to use the new APIs
-  bnxt_en: remove legacy HWRM interface
-  bnxt_en: support multiple HWRM commands in flight
-
- drivers/net/ethernet/broadcom/bnxt/Makefile   |    2 +-
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 2133 ++++++++---------
- drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  105 +-
- drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c |  185 +-
- .../net/ethernet/broadcom/bnxt/bnxt_devlink.c |   81 +-
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c |  548 +++--
- .../net/ethernet/broadcom/bnxt/bnxt_hwrm.c    |  763 ++++++
- .../net/ethernet/broadcom/bnxt/bnxt_hwrm.h    |  145 ++
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c |  130 +-
- .../net/ethernet/broadcom/bnxt/bnxt_sriov.c   |  455 ++--
- drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c  |  264 +-
- drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c |   31 +-
- drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c |   62 +-
- 13 files changed, 2906 insertions(+), 1998 deletions(-)
- create mode 100644 drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
- create mode 100644 drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h
-
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index ccf1e47d9e92..fb75fa9614c5 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -3962,30 +3962,6 @@ static void bnxt_free_hwrm_resources(struct bnxt *bp)
+ 				  bp->hwrm_cmd_resp_dma_addr);
+ 		bp->hwrm_cmd_resp_addr = NULL;
+ 	}
+-
+-	if (bp->hwrm_cmd_kong_resp_addr) {
+-		dma_free_coherent(&pdev->dev, PAGE_SIZE,
+-				  bp->hwrm_cmd_kong_resp_addr,
+-				  bp->hwrm_cmd_kong_resp_dma_addr);
+-		bp->hwrm_cmd_kong_resp_addr = NULL;
+-	}
+-}
+-
+-static int bnxt_alloc_kong_hwrm_resources(struct bnxt *bp)
+-{
+-	struct pci_dev *pdev = bp->pdev;
+-
+-	if (bp->hwrm_cmd_kong_resp_addr)
+-		return 0;
+-
+-	bp->hwrm_cmd_kong_resp_addr =
+-		dma_alloc_coherent(&pdev->dev, PAGE_SIZE,
+-				   &bp->hwrm_cmd_kong_resp_dma_addr,
+-				   GFP_KERNEL);
+-	if (!bp->hwrm_cmd_kong_resp_addr)
+-		return -ENOMEM;
+-
+-	return 0;
+ }
+ 
+ static int bnxt_alloc_hwrm_resources(struct bnxt *bp)
+@@ -4581,10 +4557,7 @@ void bnxt_hwrm_cmd_hdr_init(struct bnxt *bp, void *request, u16 req_type,
+ 	req->req_type = cpu_to_le16(req_type);
+ 	req->cmpl_ring = cpu_to_le16(cmpl_ring);
+ 	req->target_id = cpu_to_le16(target_id);
+-	if (bnxt_kong_hwrm_message(bp, req))
+-		req->resp_addr = cpu_to_le64(bp->hwrm_cmd_kong_resp_dma_addr);
+-	else
+-		req->resp_addr = cpu_to_le64(bp->hwrm_cmd_resp_dma_addr);
++	req->resp_addr = cpu_to_le64(bp->hwrm_cmd_resp_dma_addr);
+ }
+ 
+ static int bnxt_hwrm_to_stderr(u32 hwrm_err)
+@@ -4641,11 +4614,10 @@ static int bnxt_hwrm_do_send_msg(struct bnxt *bp, void *msg, u32 msg_len,
+ 			return -EINVAL;
+ 	}
+ 
+-	if (bnxt_hwrm_kong_chnl(bp, req)) {
++	if (bnxt_kong_hwrm_message(bp, req)) {
+ 		dst = BNXT_HWRM_CHNL_KONG;
+ 		bar_offset = BNXT_GRCPF_REG_KONG_COMM;
+ 		doorbell_offset = BNXT_GRCPF_REG_KONG_COMM_TRIGGER;
+-		resp = bp->hwrm_cmd_kong_resp_addr;
+ 	}
+ 
+ 	memset(resp, 0, PAGE_SIZE);
+@@ -11948,12 +11920,6 @@ static int bnxt_fw_init_one_p1(struct bnxt *bp)
+ 			return rc;
+ 	}
+ 
+-	if (bp->fw_cap & BNXT_FW_CAP_KONG_MB_CHNL) {
+-		rc = bnxt_alloc_kong_hwrm_resources(bp);
+-		if (rc)
+-			bp->fw_cap &= ~BNXT_FW_CAP_KONG_MB_CHNL;
+-	}
+-
+ 	if ((bp->fw_cap & BNXT_FW_CAP_SHORT_CMD) ||
+ 	    bp->hwrm_max_ext_req_len > BNXT_HWRM_MAX_REQ_LEN) {
+ 		rc = bnxt_alloc_hwrm_short_cmd_req(bp);
+@@ -12136,8 +12102,8 @@ static void bnxt_reset_all(struct bnxt *bp)
+ 	} else if (fw_health->flags & ERROR_RECOVERY_QCFG_RESP_FLAGS_CO_CPU) {
+ 		struct hwrm_fw_reset_input req = {0};
+ 
+-		bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_FW_RESET, -1, -1);
+-		req.resp_addr = cpu_to_le64(bp->hwrm_cmd_kong_resp_dma_addr);
++		bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_FW_RESET, -1,
++				       HWRM_TARGET_ID_KONG);
+ 		req.embedded_proc_type = FW_RESET_REQ_EMBEDDED_PROC_TYPE_CHIP;
+ 		req.selfrst_status = FW_RESET_REQ_SELFRST_STATUS_SELFRSTASAP;
+ 		req.flags = FW_RESET_REQ_FLAGS_RESET_GRACEFUL;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index dc96dd6957c9..a4fb1aa12b24 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -1915,8 +1915,6 @@ struct bnxt {
+ 	dma_addr_t		hwrm_short_cmd_req_dma_addr;
+ 	void			*hwrm_cmd_resp_addr;
+ 	dma_addr_t		hwrm_cmd_resp_dma_addr;
+-	void			*hwrm_cmd_kong_resp_addr;
+-	dma_addr_t		hwrm_cmd_kong_resp_dma_addr;
+ 
+ 	struct rtnl_link_stats64	net_stats_prev;
+ 	struct bnxt_stats_mem	port_stats;
+@@ -2216,21 +2214,13 @@ static inline bool bnxt_cfa_hwrm_message(u16 req_type)
+ static inline bool bnxt_kong_hwrm_message(struct bnxt *bp, struct input *req)
+ {
+ 	return (bp->fw_cap & BNXT_FW_CAP_KONG_MB_CHNL &&
+-		bnxt_cfa_hwrm_message(le16_to_cpu(req->req_type)));
+-}
+-
+-static inline bool bnxt_hwrm_kong_chnl(struct bnxt *bp, struct input *req)
+-{
+-	return (bp->fw_cap & BNXT_FW_CAP_KONG_MB_CHNL &&
+-		req->resp_addr == cpu_to_le64(bp->hwrm_cmd_kong_resp_dma_addr));
++		(bnxt_cfa_hwrm_message(le16_to_cpu(req->req_type)) ||
++		 le16_to_cpu(req->target_id) == HWRM_TARGET_ID_KONG));
+ }
+ 
+ static inline void *bnxt_get_hwrm_resp_addr(struct bnxt *bp, void *req)
+ {
+-	if (bnxt_hwrm_kong_chnl(bp, (struct input *)req))
+-		return bp->hwrm_cmd_kong_resp_addr;
+-	else
+-		return bp->hwrm_cmd_resp_addr;
++	return bp->hwrm_cmd_resp_addr;
+ }
+ 
+ static inline u16 bnxt_get_hwrm_seq_id(struct bnxt *bp, u16 dst)
 -- 
 2.18.1
 
 
---00000000000032475805caadc245
+--000000000000512d4a05caadc28b
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -181,13 +276,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIKhyKVwY7V3n/O/LRrBQTteNyTffD+h/
-75sxIZLcOuZsMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDgy
-OTA3MzUxOVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIEPgBqcFGFtzNPRMZPCm4G1QJvlGVomR
+onH+xREAyxGdMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDgy
+OTA3MzUyMVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQCmkFqNV8+ISUm9MBVgdIhaYllWql6PmMJR2eKsWWxMtS5V5kw9
-KaHzikJcTzHm/usdNWCHICCc3Demxl4TAUxZNAEhr0F/hZI9CyprAxrO1aDKOARRFlgA0RJ6z/un
-UVC4wLvtHf9tbUvxEINGK+wgUcqQ+yvAXNYhWXeufhBpJLP2eO7cviqhiUOSIw/MjRTlUW3Mt8oQ
-vjNqTvtI/shVM985PJCo9emCCc3+yf+3qGrv7Ar955lw1cqoh8sRRbH0majbVKbSf3N21+8AfjA3
-LmdC7Zda8WaVFUMzMsMrEh9K72SPbnmjNzbe5jNFLjuOeuK5TdZzawVIB7BhVG7u
---00000000000032475805caadc245--
+ATANBgkqhkiG9w0BAQEFAASCAQAUY3qFtSprLIFje8i8XqIOsDGr45iKdsYGi40AKQhOZ+02rsvJ
+jY7tXadpABAZtVUHBg+fTXxEb4Am0F1KK9Fj75RNxlSGYciNjmJOy9/OtVxAsTJohmTDoT4+zF//
+6ALm5Jke51FaBmN3pCIgBqPRy0t8NAXRBH+dJWkqJrr1M9qcTrXWWf/IYuAtIYox3AZ9gZgWL3hp
+NxFWmEEWmMws8V3TViCNbVOwOoM3tkp82ODNdZXdRvEyStL5B3uqIQqriP2bU17HqDLNv7O/RPw7
+spTwKJvASwyeXeEmSqfhpwte3TZPG3Hv57sh1rAuXXXL4RsBylnCrhUFnmpUHAFb
+--000000000000512d4a05caadc28b--
