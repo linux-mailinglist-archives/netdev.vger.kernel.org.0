@@ -2,153 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC7323FBF86
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 01:45:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 010E33FBF89
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 01:48:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239115AbhH3XqQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Aug 2021 19:46:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36480 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238942AbhH3XqN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 19:46:13 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B03F0C061575;
-        Mon, 30 Aug 2021 16:45:19 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id 2so13476329pfo.8;
-        Mon, 30 Aug 2021 16:45:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=Re3gLeBwRRmX24qUL4EVhAgHhmV7cQmrH8Bx6j8kmLc=;
-        b=NiRgDFwr2Kh9DI01Qm/COtylyO38wSbFMmIW6JB4w338bFIhZSjQj9Qd7PFmS3FqP2
-         X5VoLChPy15DvUmWQBUt5gLj/ngVEWIatuvQFcKGTu4KKg+bxU0haFBwEifBA2UV4pEG
-         /8vd8DWbwmcyjP9k7MTrdVtYYjHjPDWLQOo8uY9+VRfAnEa/ytGL4JHEJpisWWCaB9+j
-         hLuMt9FqwJljhD3lOCfz2Jlv7I7cFJacPQJ5mmnXk1vt3g1CZFS6d9jZk3o6DjOyYfDi
-         3xbKagFF2C9J41cjsJfREHdca8cVuo34ayppOrtu9LF1fqbIbEwGoL6t8C6pkqqDwymm
-         JNsQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=Re3gLeBwRRmX24qUL4EVhAgHhmV7cQmrH8Bx6j8kmLc=;
-        b=f7Wd7SOZaG6mq5UqBskMqDF9n8dL2s1ZKAKSyj/+QlGqRWeSJR2MAwILjCBcsuGiNx
-         JYW3PqCDVjWhwNmkNt+7m4jOfKarDNE0w5eUGuIS3LZphCkccxwnuqgehxEUyR2vpw3O
-         vRAkDieBzW2Flyk/d8rJ/6Qp3BiXN0HbHLCGf5/xEtyUzBLSYqE97kC5V57u8wUDRFyU
-         1suGW8xcNqSRiDICbcuvco7GQd+r1GBluLOnRfRe09D+Yh1Ie0ot8pLWgSYZUM5guEsB
-         ooywaLP4L2vVEqXMN9WPfTciqoCmpQ30ACA1ZYVihmI/VMxsaebo+LsF1pb3UWG7bfUa
-         M+dQ==
-X-Gm-Message-State: AOAM531Zn4V1uFFmeVbPO2vnxbfnzmkwA1VLSPIaAV7WiqSl7RbablJF
-        xAOgQjKbjb9o6ryYHKxMKiQ=
-X-Google-Smtp-Source: ABdhPJzh2aL6BvmA9zDXU2sY1zgZYcjTlbtlewt9B18GdUAExmqB3Bj6GVQBwGurg+qY1YB9fupXeg==
-X-Received: by 2002:a65:47c6:: with SMTP id f6mr24068702pgs.450.1630367119080;
-        Mon, 30 Aug 2021 16:45:19 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:4106])
-        by smtp.gmail.com with ESMTPSA id f18sm5558203pfc.161.2021.08.30.16.45.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Aug 2021 16:45:18 -0700 (PDT)
-Date:   Mon, 30 Aug 2021 16:45:15 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Dmitrii Banshchikov <me@ubique.spb.ru>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, davem@davemloft.net,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, netdev@vger.kernel.org, rdna@fb.com
-Subject: Re: [PATCH bpf-next v2 12/13] bpfilter: Add filter table
-Message-ID: <20210830234515.ncvsdswj4lalgpo3@ast-mbp.dhcp.thefacebook.com>
-References: <20210829183608.2297877-1-me@ubique.spb.ru>
- <20210829183608.2297877-13-me@ubique.spb.ru>
- <20210830194545.rgwg3ks3alikeyzx@ast-mbp.dhcp.thefacebook.com>
- <20210830205443.wx3n2bhw44pji2hn@amnesia>
+        id S239121AbhH3Xsv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Aug 2021 19:48:51 -0400
+Received: from mail-oln040093003013.outbound.protection.outlook.com ([40.93.3.13]:33667
+        "EHLO outbound.mail.eo.outlook.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S238942AbhH3Xst (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 19:48:49 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SkU8R2QtzExxrr8wZiVFQfkzl76KzYVHcYSotfRQkFRDn/0R1nazCEPjaGPAHzGxVcuS23yaHl8AQpmjHOxfZQWEdCRWB1mO8jAE3irt8QNSP9aHKVmijj/85ROvll9WVdfNf83aW5ws8ZCHcvjjlSAoaAVisjKnc678X2Shr8DIL9AFoZYdSLshbMYHUQ7Gp4kztfWIQLIhKwS6Vk1tWy8CGUJKzd2Whomt/lJn3MowiF/PT99gQkS3biSU4jDsvIie3foudYDua9yMAUpE2Vwjf0ogqS13ixDLUNHqMRahafXVGgB1RjrI/e6xpkJ77iltCJVcs/E0FyzC3g4glw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
+ bh=KcLJqGoJ1EUDlt8AShrB8g/aH/PbSXSPhuGS81ka2BA=;
+ b=cznRmg6KQQ5V08tYP8KUm0YLts2baeKTQmwAQgpoJr8fzRnlF+73V4wH3cynJVBGejsAM+PB2CecUoVppXPx+DIL27GD+w7YWz1/9BBVmDEuxr+tq/MPepL4wASJQ9IHCfNGzXcL67FNA4gj8NQwwlY1hydVdYSSD6XxidBXfcCHDnAErXJXnOKgfuwoBtNlhS9EkkAP6Sv58ex1bq+DU5iN0zP18TGC0d2retc8kseIBtHdnhhejklSkzk7uuKwjoAQ4oC0NVmVFG1UDPCLpjTb6HHeQdMhpZXT1p3ATlqrN3/YYk1sWdE1WX4ssYwYYLlHm6WPj8F9veOX6GgXHA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KcLJqGoJ1EUDlt8AShrB8g/aH/PbSXSPhuGS81ka2BA=;
+ b=cLdg/5FznnM/EwK3OmftsTiwD9Leku201/Wr0+9UanRsXznEpc6rRLu2IFVxaGDNPl4PP2fs88dy4vXLMWvH70sjxXm/F18a3+fuEG0x8qEdNT2lWivPl70uibtnc0u1nCnOQ7Pr5uOeh79eQ3YkrkcLBczPRu5KEDe87UR4tCc=
+Received: from BL0PR2101MB1316.namprd21.prod.outlook.com
+ (2603:10b6:208:92::10) by BL0PR2101MB0996.namprd21.prod.outlook.com
+ (2603:10b6:207:36::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.3; Mon, 30 Aug
+ 2021 23:47:53 +0000
+Received: from BL0PR2101MB1316.namprd21.prod.outlook.com
+ ([fe80::64b6:4ca2:22ed:9808]) by BL0PR2101MB1316.namprd21.prod.outlook.com
+ ([fe80::64b6:4ca2:22ed:9808%7]) with mapi id 15.20.4500.003; Mon, 30 Aug 2021
+ 23:47:53 +0000
+From:   Saikrishna Arcot <sarcot@microsoft.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Change in behavior for bound vs unbound sockets
+Thread-Topic: Change in behavior for bound vs unbound sockets
+Thread-Index: Aded9liCI+QX/nn6SXqyC7ZHygI2fw==
+Date:   Mon, 30 Aug 2021 23:47:53 +0000
+Message-ID: <BL0PR2101MB13167E456C5E839426BCDBE6D9CB9@BL0PR2101MB1316.namprd21.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=08e59ce1-de4d-4c4b-aba9-368567f4be77;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-08-30T21:50:57Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 7dcd6fdc-b6e8-4571-3a1e-08d96c1095bd
+x-ms-traffictypediagnostic: BL0PR2101MB0996:
+x-microsoft-antispam-prvs: <BL0PR2101MB0996D1C95A9D86A9B33FBD16D9CB9@BL0PR2101MB0996.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5797;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 1SbDTFWNZm3abJacfkHZ4BDeET+mhQ7YL8gLl5Z1IdjXzgLe1wejoGBVPEm94VEDCmOqK1T/knPKeIhKbvAuEAb2hsPV326osPCsFoJK17I3Gp+UP/mMlub7IbPh6/7igGA2PW4l4hSKJO3Ffp70jghfIkpU4pNMULJsooNZZW0ipH02hUkr53TnyYGnxKKF5BKNepw4T8KzOf3Himai0l7zQgflu1zVbrPYnF9xr/l4qbks4ZNRYeeNlWg8pCRk+zD2KnpymQQk/VE8wLJ7IAZyOnHV2te4luZaE9Rry1t1DalHkvbx/NDOaI5WiA6ESH4+pJ7gazQYCIbOIQXXWRLkEGWktWcrbRA0xrTfiASuW9iSiScf8WWzGtdqfHVAX5Wfn0TxozmJmaH7bcpL/9O3BUvRXrhvtiKHDRHmvS24aINUo8L7P6nt0iYcPjX7q7CaSiTkaQcBvJyABbBUQMAsiCVagVRNXT1O4CRzOW1f3hW3px+NIQX1V0Tauga7qWkzMoD6JBRrI1GklDd38m6JwWbRIIBwDu0cLvikcUXSphMT7MWN01DSE5MaJtfxF/aEg6F0DMOimxjR0is8blfzKwmaWH7auisXf66URrm1gLNka8yvHvL0z94dn+alU2IT1LeUo+o8qaT/A3e5NUPscME61tPUgONzl2EBu7Vcapkz5k2PznxCw8hJbA2nrG4ctPJI38zsDkAsG6HflQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR2101MB1316.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(66556008)(83380400001)(64756008)(9686003)(55016002)(66446008)(316002)(76116006)(10290500003)(86362001)(66476007)(82960400001)(38070700005)(2906002)(8990500004)(82950400001)(38100700002)(122000001)(66946007)(508600001)(186003)(8936002)(7696005)(33656002)(5660300002)(6916009)(6506007)(71200400001)(8676002)(52536014);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?wL3ejTK4GBaql2HURIzh2Rpk1fonyyO3eGlJqBrJC1DQq2/8TFv8HV7VNVB9?=
+ =?us-ascii?Q?M0CPzE58mWxNRj8jiloDVHAAziGORxQbwdIxuZzTjRiz5s9Fy5bhDRLGBraH?=
+ =?us-ascii?Q?3/Fz/Y2zH5kyMnwreq5DtbnaS++7vf5FMEHgDQVOMBEq2tDmmflzOfbg9GGk?=
+ =?us-ascii?Q?K3ZAZNK6Vmq4x9R6EyCc6mrsfcnHkH8zAFe8ClXeKSQVhwPgPLgYU/GSFiSV?=
+ =?us-ascii?Q?WnaLN9229Cz1CFggetki4WPIL0DDeatx3PlSEIoimhJ7iJWMqGY+BqGLfCiE?=
+ =?us-ascii?Q?exRAS4S/YreQRI7b0kIEUvJq82xzp2xNC/XBjjCK4CcfXhQuoCxUb31RuD4y?=
+ =?us-ascii?Q?jZ+QA7050eBAzinDAgtvddha1evq98isihGGZgajLY61dygrGRrop+VLwRsI?=
+ =?us-ascii?Q?Ajlt0yOvrsK+5dh8x3Qe7bOwuZxO0Tycd2L45srZ0by/AvlOKAW4cj8Whpok?=
+ =?us-ascii?Q?wqiGOiwk3Wlt//xtGVcw986Y3xgmsbs1GZ27KAUxx2X6WI7wtvbHw3t7ITpO?=
+ =?us-ascii?Q?qwQ0d1MACyPWIKfGP7E4SMAPGWteut14+l1pX9ktvJs55OhHgnyTxs70YZR4?=
+ =?us-ascii?Q?D3mU52OiCe//hIxQ8hUoVSRM4hlp67MV6kHIa6MajMqwF9gONcXH9voy5I/Z?=
+ =?us-ascii?Q?zZFZ6bAEw7XJqbUyPUJzAqClqRQMCCuSY4C/Uv5HOaR+LTfZL06N6KkquWYz?=
+ =?us-ascii?Q?YsYzzjeZUdiW1LTjUqYKmJdxPcxonmeVS+wm2Gcpzunh4nOFYcYwSNC/ttgp?=
+ =?us-ascii?Q?j62eY6ofZBVQJltrTwyxgahN5IJGYVt2kBhUVGzRROo95FB1RZw5CZ02IHgZ?=
+ =?us-ascii?Q?bYiX5Xc9ZHmp81CyDGdfngr6sEaR1VfyHBKVFCtyVH0tB7tZWwQiXYJ10psX?=
+ =?us-ascii?Q?s9sNS9ZotNYkqpsDo4CwSjaKgNklkhCFNpKjkxpiSjImPrAXk1osOUCQK/o2?=
+ =?us-ascii?Q?O5ntAe6oI3rxI3sWCIWu35RmThHzLsqAmpJe7fnXqv+b+gXPjrj4bPXfrKPI?=
+ =?us-ascii?Q?tm6LVbspaaPpLODe2RyhrWTOB7BBSoxSPrkRBStQG81hcTIbeM0Sb7ujwhgu?=
+ =?us-ascii?Q?G7eKM/siayf6blOE96ET7+/TsOVAVfh5xObdbCkMXx2OKyUd06lwt+DnAmnu?=
+ =?us-ascii?Q?ynZuhnl1dvfSuSnBNz/NzSeZ4uw5Zk+yEm9fxNvwsLxevR/3ke40lv/FXPfl?=
+ =?us-ascii?Q?/is9Kw/9Pb3QLwOA0utqHEqfUbLa9bJs46nnk9dHao9HApFA66G11QIR6zHz?=
+ =?us-ascii?Q?fuLhQXezbea6lCmNBSJxTPxnQIjFwdS8MdI66LwXOv2NmdTdxCpq7kLT1+Ue?=
+ =?us-ascii?Q?T8M=3D?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210830205443.wx3n2bhw44pji2hn@amnesia>
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR2101MB1316.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7dcd6fdc-b6e8-4571-3a1e-08d96c1095bd
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Aug 2021 23:47:53.5625
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: wGu1PQP3ToZr06gFMQX+JIkEKO0lcWcKbFsPzrPcXiZt3AzEI9b6eMCntuPZQ61GtMrJ8jsB3KN1mk24AgzAjg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR2101MB0996
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 31, 2021 at 12:54:43AM +0400, Dmitrii Banshchikov wrote:
-> On Mon, Aug 30, 2021 at 12:45:45PM -0700, Alexei Starovoitov wrote:
-> > On Sun, Aug 29, 2021 at 10:36:07PM +0400, Dmitrii Banshchikov wrote:
-> > >  /*
-> > > - * # Generated by iptables-save v1.8.2 on Sat May  8 05:22:41 2021
-> > > + *  Generated by iptables-save v1.8.2 on Sat May  8 05:22:41 2021
-> > >   * *filter
-> > ...
-> > > - * -A LOCAL -s 10.32.0.0/11 -j FROMDC
-> > > - * -A LOCAL -s 10.144.0.0/12 -j FROMDC
-> > > - * -A LOCAL -s 10.160.0.0/12 -j FROMDC
-> > > - * -A LOCAL -s 10.0.0.0/12 -j FROMDC
-> > > - * -A LOCAL -s 10.248.0.0/24 -j FROMDC
-> > > - * -A LOCAL -s 10.232.0.0/16 -j FROMDC
-> > > - * -A LOCAL -s 10.1.146.131/32 -p udp -m udp --dport 161 -j ACCEPT
-> > > - * -A LOCAL -s 10.149.118.14/32 -p udp -m udp --dport 161 -j ACCEPT
-> > > - * -A LOCAL -p icmp -j ACCEPT
-> > > + * :INPUT ACCEPT [0:0]
-> > > + * :FORWARD ACCEPT [0:0]
-> > > + * :OUTPUT ACCEPT [0:0]
-> > > + * -A INPUT -s 1.1.1.1/32 -d 2.2.2.2/32 -j DROP
-> > > + * -A INPUT -s 2.2.0.0/16 -d 3.0.0.0/8 -j DROP
-> > > + * -A INPUT -p udp -m udp --sport 100 --dport 500 -j DROP
-> > >   * COMMIT
-> > >   */
-> > 
-> > Patch 10 adds this test, but then patch 12 removes most of it?
-> > Keep both?
-> 
-> Sorry, I missed it.
-> I decided that the large blob looks really ugly and switched to
-> the smaller one and forgot to cleanup the patchset.
-> 
-> > 
-> > Also hit this on my system with older glibc:
-> > 
-> > ../net/bpfilter/codegen.c: In function ‘codegen_push_subprog’:
-> > ../net/bpfilter/codegen.c:67:4: warning: implicit declaration of function ‘reallocarray’ [-Wimplicit-function-declaration]
-> >    67 |    reallocarray(codegen->subprogs, subprogs_max, sizeof(codegen->subprogs[0]));
-> >       |    ^~~~~~~~~~~~
-> > ../net/bpfilter/codegen.c:66:12: warning: assignment to ‘struct codegen_subprog_desc **’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
-> >    66 |   subprogs =
-> >       |            ^
-> > 
-> > In libbpf we have libbpf_reallocarray() for this reason.
-> > 
-> > Could you provide an example of generated bpf program?
-> > And maybe add Documentation/bpf/bpfilter_design.rst ?
-> 
-> I will add documentation in the next iteration when
-> bpf_map_for_each() subprog will be introduced.
-> 
-> > 
-> > The tests don't build for me:
-> > $ cd selftests/bpf/bpfilter; make
-> > make: *** No rule to make target '-lelf', needed by '.../selftests/bpf/bpfilter/test_match'.  Stop.
-> 
-> libelf was added because libbpf depends on it.
-> Are you able to build libbpf?
+Hi all,
 
-make proceeds to build libbpf just fine, but then it stops with above message.
-I manually removed -lelf from Makefile. Then run make to see it fail linking
-and then manually copy pasted gcc command to build it with additional -lelf
-command line.
-fwiw make -v
-GNU Make 4.2.1
+When upgrading from 4.19.152 to 5.10.40, I noticed a change in behavior in =
+how incoming UDP packets are assigned to sockets that are bound to an inter=
+face and a socket that is not bound to any interface. This affects the dhcr=
+elay program in isc-dhcp, when it is compiled to use regular UDP sockets an=
+d not raw sockets.
 
-> > 
-> > The unit tests are great, btw. test_codegen is not end-to-end, right?
-> > Could you add a full test with iptable command line?
-> > or netns support is a prerequisite for it?
-> 
-> Yeah, as net namespaces aren't supported using iptables binary
-> will modify the root namespace. That is the reason why codegen
-> tests aren't implemented in the end-to-end fashion and rules are
-> represented by blobs.
+For each interface it finds on the system (or is passed in via command-line=
+), dhcrelay opens a UDP socket listening on port 67 and bound to that inter=
+face. Then, at the end, it opens a UDP socket also listening on port 67, bu=
+t not bound to any interface (this socket is used for sending, mainly). It =
+expects that for packets that arrived on an interface for which a bound soc=
+ket is opened, it will arrive on that bound socket. This was true for 4.19.=
+152, but on 5.10.40, packets arrive on the unbound socket only, and never o=
+n the bound socket. dhcrelay discards any packets that it sees on the unbou=
+nd socket. Because of this, this application breaks.
 
-I think when ifindex is no longer hardcoded the netns support
-doesn't have to be gating. The generic xdp attached to veth in netns
-should work to do end-to-end test. bpftiler would need to do a bit of magic
-to figure out the right ifindex. Or we can extend kernel with ifindex-less
-generic XDP.
+I made a test application that creates two UDP sockets, binds one of them t=
+o the loopback interface, and has them both listen on 0.0.0.0 with some ran=
+dom port. Then, it waits for a message on those two sockets, and prints out=
+ which socket it received a message on. With another application (such as n=
+c) sending some UDP message, I can see that on 4.19.152, the test applicati=
+on gets the message on the bound socket consistently, whereas on 5.10.40, i=
+t gets the message on the unbound socket consistently. I have a dev machine=
+ running 5.4.0, and it gets the message on the unbound socket consistently =
+as well.
+
+I traced it to one commit (6da5b0f027a8 "net: ensure unbound datagram socke=
+t to be chosen when not in a VRF") that makes sure that when not in a VRF, =
+the unbound socket is chosen over the bound socket, if both are available. =
+If I revert this commit and two other commits that made changes on top of t=
+his, I can see that packets get sent to the bound socket instead. There's s=
+imilar commits made for TCP and raw sockets as well, as part of that patch =
+series.
+
+Is the intention of those commits also meant to affect sockets that are bou=
+nd to just regular interfaces (and not only VRFs)? If so, since this change=
+ breaks a userspace application, is it possible to add a config that revert=
+s to the old behavior, where bound sockets are preferred over unbound socke=
+ts?
+
+--
+Saikrishna Arcot
+
