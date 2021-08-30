@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3D423FB674
-	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 14:51:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA3963FB67C
+	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 14:52:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236780AbhH3Mul (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Aug 2021 08:50:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53478 "EHLO
+        id S236780AbhH3MxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Aug 2021 08:53:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236764AbhH3Muk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 08:50:40 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CA78C061575;
-        Mon, 30 Aug 2021 05:49:46 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id fs6so9402412pjb.4;
-        Mon, 30 Aug 2021 05:49:46 -0700 (PDT)
+        with ESMTP id S232248AbhH3MxN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 08:53:13 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB81CC061575;
+        Mon, 30 Aug 2021 05:52:19 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id d5so3630762pjx.2;
+        Mon, 30 Aug 2021 05:52:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=RBa6XNcbe4ciTI3q+7e6ZHUg6UZgMEgwHfZfyY6RHE8=;
-        b=RbuuaXgZdVejw9R0ZYT7ymT15yDRi0AGA3s6fyI/6kZV+oAQ5NIOS7osvI7TeKHxx2
-         orHBDXE02J34qEA8uONT22Ih2Wuw7WP83FzCzvVvtSR+VtK0gLF4HWotGc2e75YaPAXb
-         0IvzYM4O0dmo+ZyCWmxWrggr+QS+a0V3ZMPvuyzjFzrdI3TFz8c4D78t9SjFiygc33st
-         IsDu3aCe3lJtrIqQY0ozF3zZ+ilLOOl+QjMFA83CBXhsXRYSARAy15gngtW+ArwdK/KW
-         PbqJjpE86Pv7UuR/KPput7vAOV08LYOvvp1adXx1vTwzMgNMu8O7/QNZQk6RCR0TmzG5
-         BnYw==
+        bh=sdDllw5G7qeL7kIot/RD3R2XhOAWjGkmvfZfITDTPks=;
+        b=oMXbfiWNgIUtEjxM5hCIObiZIWupovBeVJOEE9wCpju7EFPyE1zFINImGGI/X0Evze
+         nkO5xU8vW5mjjuLhSq5BjTDU6FOU4VedjiQcBf/QjsfCPq5fWzwz5MSCGTIlymVOLfUb
+         yA7jF9WNVe8TRIh+fGEK+iKLtzawb/rnST7DZbJJw7nHScnd1zDh4ryX8X/81xW/Bira
+         xLgHFCOvQo25RMz9loJxdxCQ2pW5+/sj+A/MaiSPAa1kd69xPQGcLBxxE1ud06E4to8j
+         Ll/kC1I2iY/gNHM0+STESxC2a2O65/Ytc60ZoGn0IcIQFmQ3tu0+LmGQFtQNDSQ3sQMB
+         8mjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=RBa6XNcbe4ciTI3q+7e6ZHUg6UZgMEgwHfZfyY6RHE8=;
-        b=K2GxL9Mw9jf8oFV5NOv68t4tXodSavVV6kv7ofEH0uoN2w4w02qiuhZuWe7heK3M7Z
-         tBxZp6Ghqupdp/RzSTVtJcY/enPaLjX33aj7JdUiFVjwpQSMdDjmHmINFqD/UlOyqhCx
-         HU7Tqp+YSizIr74WZ9D6NEkHx0iLh2QxcjkSxWG1fytDp0rq9KOSGPJp+69bu7bBWX/e
-         H8NwqaLIqh7edN8+422Mq9NZwgMyFtL3GeOuMdE/VI9iHVJLWkxwtcvX81XF1sTlFAqq
-         KpomV0XC+6EOZH4LuC5K4kRwn90hhx+ek1hrbdpu8pAqQRMRqN1yiq6nEUAh/gW4pGVf
-         fzog==
-X-Gm-Message-State: AOAM530ZWkbKF5qCtmWpK6KBkuLWFzuQkpYy4pshGYa5xDNJ3D+G+4rb
-        CqN7a5vNAatreTXuSDYLdeCr5/2JJGeNaTfem0g=
-X-Google-Smtp-Source: ABdhPJzlagPfk+4rGPg3hrq6YFcqGyr6ThU2PHxTPXyomt5BdcUT47bJylEVd8JAum6mmpkmJxqDL70MUp3Sgt4KLMg=
-X-Received: by 2002:a17:90a:6502:: with SMTP id i2mr39415492pjj.129.1630327786006;
- Mon, 30 Aug 2021 05:49:46 -0700 (PDT)
+        bh=sdDllw5G7qeL7kIot/RD3R2XhOAWjGkmvfZfITDTPks=;
+        b=kXQfRLrXZNgxc4mVjKeY1F+pUxJDoJeoh19lFwEI6yiyFTZ1SmDytPuSVSac8kGunF
+         dYNIoJD47E4LDFjKTLBdTvMD1a71h3AC5N3FrrYpHP/g+O9AOhpZiLod7yB22m3BuGwj
+         u5P8gkU3KU6RxNG1HfE3O3faKzFsZT2gUfYi8GjtiX3+IW1p+Qf/E1puZS7Pwvo8mX4h
+         D5dbfyRQp5UHE5xKrVc12VFN2q8sVGV/5vL0JYXyWRRBBMRrFoFRvMUdyXBtqxmKIzjU
+         ptKZos/8iRNcOoVpVECf/ZQX8//V6xfTG8xWkrJ/qQW3S24dTVDIz54Z9FEsXcg4OQDB
+         LK7Q==
+X-Gm-Message-State: AOAM530rTH2Gfm1O/6MlbA0UZ+xzE3gVwSxkZt5e7zeM9/kHDVIuP/+Q
+        OjxaCazzFIUFWyTar/IMfV8kB/5q62cj4ReFjP4=
+X-Google-Smtp-Source: ABdhPJx2vf7b1GYktJIKteBWEeunAFfeaVKyb1TvSafjojn1ApQ9WmAoYf7tReLfHNxwFje34LE25SB/fAEOQoN6a3U=
+X-Received: by 2002:a17:90a:d78d:: with SMTP id z13mr25490712pju.228.1630327939410;
+ Mon, 30 Aug 2021 05:52:19 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210830123704.221494-1-verdre@v0yd.nl> <20210830123704.221494-2-verdre@v0yd.nl>
-In-Reply-To: <20210830123704.221494-2-verdre@v0yd.nl>
+References: <20210830123704.221494-1-verdre@v0yd.nl> <20210830123704.221494-3-verdre@v0yd.nl>
+In-Reply-To: <20210830123704.221494-3-verdre@v0yd.nl>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 30 Aug 2021 15:49:09 +0300
-Message-ID: <CAHp75VeAKs=nFw4E20etKc3C_Cszyz9AqN=mLsum7F-BdVK5Rg@mail.gmail.com>
-Subject: Re: [PATCH 1/2] mwifiex: Use non-posted PCI register writes
+Date:   Mon, 30 Aug 2021 15:51:43 +0300
+Message-ID: <CAHp75Vf-ekdTh=86nR7wqufFPmEb5bve0hf1Oq_k_OAJCkNvWg@mail.gmail.com>
+Subject: Re: [PATCH 2/2] mwifiex: Try waking the firmware until we get an interrupt
 To:     =?UTF-8?Q?Jonas_Dre=C3=9Fler?= <verdre@v0yd.nl>
 Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
         Ganapathi Bhat <ganapathi017@gmail.com>,
@@ -72,70 +72,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 30, 2021 at 3:38 PM Jonas Dre=C3=9Fler <verdre@v0yd.nl> wrote:
+On Mon, Aug 30, 2021 at 3:39 PM Jonas Dre=C3=9Fler <verdre@v0yd.nl> wrote:
 >
-> On the 88W8897 card it's very important the TX ring write pointer is
-> updated correctly to its new value before setting the TX ready
-> interrupt, otherwise the firmware appears to crash (probably because
-> it's trying to DMA-read from the wrong place).
+> It seems that the firmware of the 88W8897 card sometimes ignores or
+> misses when we try to wake it up by reading the firmware status
+> register. This leads to the firmware wakeup timeout expiring and the
+> driver resetting the card because we assume the firmware has hung up or
+> crashed (unfortunately that's not unlikely with this card).
 >
-> Since PCI uses "posted writes" when writing to a register, it's not
-> guaranteed that a write will happen immediately. That means the pointer
-> might be outdated when setting the TX ready interrupt, leading to
-> firmware crashes especially when ASPM L1 and L1 substates are enabled
-> (because of the higher link latency, the write will probably take
-> longer).
->
-> So fix those firmware crashes by always forcing non-posted writes. We do
-> that by simply reading back the register after writing it, just as a lot
-> of other drivers do.
->
-> There are two reproducers that are fixed with this patch:
->
-> 1) During rx/tx traffic and with ASPM L1 substates enabled (the enabled
-> substates are platform dependent), the firmware crashes and eventually a
-> command timeout appears in the logs. That crash is fixed by using a
-> non-posted write in mwifiex_pcie_send_data().
->
-> 2) When sending lots of commands to the card, waking it up from sleep in
-> very quick intervals, the firmware eventually crashes. That crash
-> appears to be fixed by some other non-posted write included here.
+> Turns out that most of the time the firmware actually didn't hang up,
+> but simply "missed" our wakeup request and doesn't send us an AWAKE
 
-Thanks for all this work!
+didn't
 
-Nevertheless, do we have any commits that may be a good candidate to
-be in the Fixes tag here?
-
-> Signed-off-by: Jonas Dre=C3=9Fler <verdre@v0yd.nl>
-> ---
->  drivers/net/wireless/marvell/mwifiex/pcie.c | 6 ++++++
->  1 file changed, 6 insertions(+)
+> event.
 >
-> diff --git a/drivers/net/wireless/marvell/mwifiex/pcie.c b/drivers/net/wi=
-reless/marvell/mwifiex/pcie.c
-> index c6ccce426b49..bfd6e135ed99 100644
-> --- a/drivers/net/wireless/marvell/mwifiex/pcie.c
-> +++ b/drivers/net/wireless/marvell/mwifiex/pcie.c
-> @@ -237,6 +237,12 @@ static int mwifiex_write_reg(struct mwifiex_adapter =
-*adapter, int reg, u32 data)
+> Trying again to read the firmware status register after a short timeout
+> usually makes the firmware wake we up as expected, so add a small retry
+
+wake up
+
+> loop to mwifiex_pm_wakeup_card() that looks at the interrupt status to
+> check whether the card woke up.
 >
->         iowrite32(data, card->pci_mmap1 + reg);
+> The number of tries and timeout lengths for this were determined
+> experimentally: The firmware usually takes about 500 us to wake up
+> after we attempt to read the status register. In some cases where the
+> firmware is very busy (for example while doing a bluetooth scan) it
+> might even miss our requests for multiple milliseconds, which is why
+> after 15 tries the waiting time gets increased to 10 ms. The maximum
+> number of tries it took to wake the firmware when testing this was
+> around 20, so a maximum number of 50 tries should give us plenty of
+> safety margin.
 >
-> +       /* Do a read-back, which makes the write non-posted, ensuring the
-> +        * completion before returning.
+> A good reproducer for this issue is letting the firmware sleep and wake
+> up in very short intervals, for example by pinging an device on the
 
-> +        * The firmware of the 88W8897 card is buggy and this avoids cras=
-hes.
+a device
 
-Any firmware version reference? Would be nice to have just for the
-sake of record.
+> network every 0.1 seconds.
 
+...
+
+> +       /* Access the fw_status register to wake up the device.
+> +        * Since the 88W8897 firmware sometimes appears to ignore or miss
+> +        * that wakeup request, we continue trying until we receive an
+> +        * interrupt from the card.
 > +        */
-> +       ioread32(card->pci_mmap1 + reg);
+> +       do {
+> +               if (mwifiex_write_reg(adapter, reg->fw_status, FIRMWARE_R=
+EADY_PCIE)) {
+> +                       mwifiex_dbg(adapter, ERROR,
+> +                                   "Writing fw_status register failed\n"=
+);
+> +                       return -1;
+> +               }
 > +
->         return 0;
->  }
+> +               n_tries++;
+> +
+> +               if (n_tries <=3D 15)
+> +                       usleep_range(400, 700);
+> +               else
+> +                       msleep(10);
+> +       } while (n_tries <=3D 50 && READ_ONCE(adapter->int_status) =3D=3D=
+ 0);
 
+NIH read_poll_timeout() from iopoll.h.
 
 --=20
 With Best Regards,
