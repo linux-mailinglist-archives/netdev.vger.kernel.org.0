@@ -2,166 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E5DA3FBCBE
-	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 21:03:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F6BE3FBCD1
+	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 21:19:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232823AbhH3TEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Aug 2021 15:04:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56934 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231661AbhH3TEq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 15:04:46 -0400
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9A69C06175F
-        for <netdev@vger.kernel.org>; Mon, 30 Aug 2021 12:03:52 -0700 (PDT)
-Received: by mail-yb1-xb34.google.com with SMTP id r4so30192793ybp.4
-        for <netdev@vger.kernel.org>; Mon, 30 Aug 2021 12:03:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=z2bxnmb0ihpOea9bKFBJwN2QiE7nKKp/Kf8m8WRCLmQ=;
-        b=CNXv9uQY/btGpuGZCGIeiwDkbadXPvVPJGX8i+eMZ94MOA1GM1y93ZATn5Ei0ThY+i
-         JTjfMEaijan7LRBtEtM5It2Yg9iQ5piQQycZRmmHt+mIfxP8D9saNFiGT+F6FaI2mnN1
-         LnCl45iXefqt9y4KBuDEFRCmohy3sNSy1hsaRqjNAcY3XBhkC/aCTPy7kun43JxxXbUF
-         ZiZhgvGhYNK+g9yIztL2E04zfwdkMgBpMRTBngU0KkgHBmqMJtqvDX4lbzZvz4iLVO3Y
-         Lu1pEj2hQ4LRYAsuo6jGb617+9fd0pcLfd/EWU8aZvpFFKvcMZrYsVkpo5VpUeG5F5gK
-         zKUw==
+        id S233342AbhH3TUY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Aug 2021 15:20:24 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:54925 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229950AbhH3TUT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 15:20:19 -0400
+Received: by mail-io1-f69.google.com with SMTP id o5-20020a6bf8050000b02905b026202a6fso9089451ioh.21
+        for <netdev@vger.kernel.org>; Mon, 30 Aug 2021 12:19:26 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=z2bxnmb0ihpOea9bKFBJwN2QiE7nKKp/Kf8m8WRCLmQ=;
-        b=s4tOE8dqcBehznU3I0GPxd0WoKRTafG0V8Fm9SWMw1mbOtIKNlMNf1MObB/3DEOZIt
-         xaGuJAzKOpw4UpushagQOK/dKSzVQPtvznPdsGTioTiVGYDYQxdaE93fBu1MK4+3sfE2
-         jDP5uKMLHmV2+u7bP4GfDF3dIGpFMQBX5V/BVSjQ+qV5tS/dmd2wG073uiCYgjDIfeyd
-         SsSfDHyNud6s9xBeT0G4uoiQF1FcMHAap8q0jwxEL/IPlUE6IdaVC/C3AST9U7+rtzyB
-         szxYPn7woFWb7AlAK7DhSkkczK5rgBHuz+Un4GipFBT3h0UINA2LMZ437cdP+GuFMb6u
-         hifQ==
-X-Gm-Message-State: AOAM530rNpLwEiWBonG7qXgNw/hprb5puzcCP0lCt9ykQ6jLE9cG3U6c
-        aOd56wpJurfzqu5MwN4R2hyb3SQ7/Bs/ZTatcbiq4g==
-X-Google-Smtp-Source: ABdhPJz9aD6FzTGpzWANYNoSRWYbWlVX4WNltzALVRrIK1we8xo3YfH38PlE1sT1b+6yUjbcDmqzWkoGLExhUMGBhIE=
-X-Received: by 2002:a25:804:: with SMTP id 4mr24050887ybi.346.1630350231696;
- Mon, 30 Aug 2021 12:03:51 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=6RP0xIpJkpUpuQ8zTmp1h0IIspFRUFwWbe3VrI5AA/Y=;
+        b=FW2yyaJFdhA1H1OC9Fif2YHQzeX1ho9IiUgU2ApTYyKzjaKzdrh/PTVFgwHD14fIU5
+         HZnZ2zInnKKCWn6b6QfflEvpFM4YNENZ3JDhSdMtQ3DdafDpL5+IOMNcbktjI/JeWCcK
+         n3Jfm2JAqO11FV8iYvUHQty6AL5PVUL1dia5DkvLnpn8+WqX+GFMVQlJXV9tIMvdQDLq
+         5Tbs+b0QrGW6AVYRqW4hOmQVFnAe0td2lp3QYLa2QVzeIqgQJyvFkDAyCnxXxRAUm9ks
+         yr5lpiZaW6z4FD876Dhx65EsY7dZZmb5WI1udB50WOFlf0gjXvhOLB2BjEv7m1GWH6s1
+         I4LA==
+X-Gm-Message-State: AOAM532aooaJiglb4Gga/agKk52tPQq4jfRmMFEASsodO/a8AQB15YzR
+        uuK7csXKpCCyn/SrEcyPBNj+BWThe4wbZxBv6wssfp4WeU0H
+X-Google-Smtp-Source: ABdhPJx9PNyCiIwofl/EjJEnTQxN70bccUaoPeDBna3+HVxh4tXJERAy00pVfGmF6Z3oOTCYzu5NCG57qd17hSEshDZPaf4ooI4H
 MIME-Version: 1.0
-References: <YSeTdb6DbHbBYabN@lunn.ch> <CAGETcx-pSi60NtMM=59cve8kN9ff9fgepQ5R=uJ3Gynzh=0_BA@mail.gmail.com>
- <YSf/Mps9E77/6kZX@lunn.ch> <CAGETcx_h6moWbS7m4hPm6Ub3T0tWayUQkppjevkYyiA=8AmACw@mail.gmail.com>
- <YSg+dRPSX9/ph6tb@lunn.ch> <CAGETcx_r8LSxV5=GQ-1qPjh7qGbCqTsSoSkQfxAKL5q+znRoWg@mail.gmail.com>
- <YSjsQmx8l4MXNvP+@lunn.ch> <CAGETcx_vMNZbT-5vCAvvpQNMMHy-19oR-mSfrg6=eSO49vLScQ@mail.gmail.com>
- <YSlG4XRGrq5D1/WU@lunn.ch> <CAGETcx-ZvENq8tFZ9wb_BCPZabpZcqPrguY5rsg4fSNdOAB+Kw@mail.gmail.com>
- <YSpr/BOZj2PKoC8B@lunn.ch>
-In-Reply-To: <YSpr/BOZj2PKoC8B@lunn.ch>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Mon, 30 Aug 2021 12:03:15 -0700
-Message-ID: <CAGETcx_mjY10WzaOvb=vuojbodK7pvY1srvKmimu4h6xWkeQuQ@mail.gmail.com>
-Subject: Re: [PATCH v1 1/2] driver core: fw_devlink: Add support for FWNODE_FLAG_BROKEN_PARENT
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
-        Alvin Sipraga <ALSI@bang-olufsen.dk>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-acpi@vger.kernel.org
+X-Received: by 2002:a92:cb0f:: with SMTP id s15mr17264650ilo.59.1630351165304;
+ Mon, 30 Aug 2021 12:19:25 -0700 (PDT)
+Date:   Mon, 30 Aug 2021 12:19:25 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000011360d05cacbb622@google.com>
+Subject: [syzbot] general protection fault in sock_from_file
+From:   syzbot <syzbot+f9704d1878e290eddf73@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Aug 28, 2021 at 10:01 AM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> On Fri, Aug 27, 2021 at 02:33:02PM -0700, Saravana Kannan wrote:
-> > On Fri, Aug 27, 2021 at 1:11 PM Andrew Lunn <andrew@lunn.ch> wrote:
-> > >
-> > > > > I've not yet looked at plain Ethernet drivers. This pattern could also
-> > > > > exist there. And i wonder about other complex structures, i2c bus
-> > > > > multiplexors, you can have interrupt controllers as i2c devices,
-> > > > > etc. So the general case could exist in other places.
-> > > >
-> > > > I haven't seen any generic issues like this reported so far. It's only
-> > > > after adding phy-handle that we are hitting these issues with DSA
-> > > > switches.
-> > >
-> > > Can you run your parser over the 2250 DTB blobs and see how many
-> > > children have dependencies on a parent? That could give us an idea how
-> > > many moles need whacking. And maybe, where in the tree they are
-> > > hiding?
-> >
-> > You are only responding to part of my email. As I said in my previous
-> > email: "There are plenty of cases where it's better to delay the child
-> > device's probe until the parent finishes. You even gave an example[7]
-> > where it would help avoid unnecessary deferred probes." Can you please
-> > give your thoughts on the rest of the points I made too?
->
-> I must admit, my main problem at the moment is -rc1 in two weeks
-> time. It seems like a number of board with Ethernet switches will be
-> broken, that worked before. phy-handle is not limited to switch
-> drivers, it is also used for Ethernet drivers. So it could be, a
-> number of Ethernet drivers are also going to be broken in -rc1?
+Hello,
 
-Again, in those cases, based on your FEC example, fw_devlink=on
-actually improves things.
+syzbot found the following issue on:
 
-> But the issues sounds not to be specific to phy-handle, but any
-> phandle that points back to a parent.
+HEAD commit:    93717cde744f Add linux-next specific files for 20210830
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=15b851fe300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=c643ef5289990dd1
+dashboard link: https://syzkaller.appspot.com/bug?extid=f9704d1878e290eddf73
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
 
-I feel like I'm going in circles here. This statement is not true.
-Please read my previous explanations.
+Unfortunately, I don't have any reproducer for this issue yet.
 
-> So it could be drivers outside
-> of networking are also going to be broken with -rc1?
-> You have been very focused on one or two drivers. I would much rather
-> see you getting an idea of how wide spread this problem is, and what
-> should we do for -rc1?
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+f9704d1878e290eddf73@syzkaller.appspotmail.com
 
-Again, it's not a widespread problem as I explained before.
-fw_devlink=on has been the default for 2 kernel versions now. With no
-unfixed reported issues.
+general protection fault, probably for non-canonical address 0xdffffc0000000005: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000028-0x000000000000002f]
+CPU: 1 PID: 6072 Comm: syz-executor.0 Not tainted 5.14.0-next-20210830-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:sock_from_file+0x20/0x90 net/socket.c:505
+Code: f5 ff ff ff c3 0f 1f 44 00 00 41 54 53 48 89 fb e8 85 e9 62 fa 48 8d 7b 28 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 75 4f 45 31 e4 48 81 7b 28 80 f1 8a 8a 74 0c e8 58 e9
+RSP: 0018:ffffc9000a2df8e8 EFLAGS: 00010206
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffc90002f91000
+RDX: 0000000000000005 RSI: ffffffff8713203b RDI: 0000000000000028
+RBP: ffff8880983c2c80 R08: ffffffff899aee40 R09: ffffffff81e21978
+R10: 0000000000000027 R11: 0000000000000009 R12: dffffc0000000000
+R13: 1ffff11013078599 R14: 0000000000000003 R15: ffff8880983c2c80
+FS:  00007fe7b0454700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00005591dffa5180 CR3: 00000000974cb000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ io_sendmsg+0x98/0x640 fs/io_uring.c:4681
+ io_issue_sqe+0x14de/0x6ba0 fs/io_uring.c:6578
+ __io_queue_sqe+0x90/0xb50 fs/io_uring.c:6864
+ io_req_task_submit+0xbf/0x1b0 fs/io_uring.c:2218
+ tctx_task_work+0x166/0x610 fs/io_uring.c:2143
+ task_work_run+0xdd/0x1a0 kernel/task_work.c:164
+ tracehook_notify_signal include/linux/tracehook.h:212 [inline]
+ handle_signal_work kernel/entry/common.c:146 [inline]
+ exit_to_user_mode_loop kernel/entry/common.c:172 [inline]
+ exit_to_user_mode_prepare+0x256/0x290 kernel/entry/common.c:209
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:291 [inline]
+ syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:302
+ do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x4665f9
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fe7b0454188 EFLAGS: 00000246 ORIG_RAX: 00000000000001aa
+RAX: 0000000000001000 RBX: 000000000056bf80 RCX: 00000000004665f9
+RDX: 0000000000000000 RSI: 000000000000688c RDI: 0000000000000003
+RBP: 00000000004bfcc4 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 000000000056bf80
+R13: 00007fffeee6585f R14: 00007fe7b0454300 R15: 0000000000022000
+Modules linked in:
+---[ end trace 6f9e359dd487b8fa ]---
+RIP: 0010:sock_from_file+0x20/0x90 net/socket.c:505
+Code: f5 ff ff ff c3 0f 1f 44 00 00 41 54 53 48 89 fb e8 85 e9 62 fa 48 8d 7b 28 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 75 4f 45 31 e4 48 81 7b 28 80 f1 8a 8a 74 0c e8 58 e9
+RSP: 0018:ffffc9000a2df8e8 EFLAGS: 00010206
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffc90002f91000
+RDX: 0000000000000005 RSI: ffffffff8713203b RDI: 0000000000000028
+RBP: ffff8880983c2c80 R08: ffffffff899aee40 R09: ffffffff81e21978
+R10: 0000000000000027 R11: 0000000000000009 R12: dffffc0000000000
+R13: 1ffff11013078599 R14: 0000000000000003 R15: ffff8880983c2c80
+FS:  00007fe7b0454700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fb81002c710 CR3: 00000000974cb000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+----------------
+Code disassembly (best guess), 3 bytes skipped:
+   0:	ff c3                	inc    %ebx
+   2:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+   7:	41 54                	push   %r12
+   9:	53                   	push   %rbx
+   a:	48 89 fb             	mov    %rdi,%rbx
+   d:	e8 85 e9 62 fa       	callq  0xfa62e997
+  12:	48 8d 7b 28          	lea    0x28(%rbx),%rdi
+  16:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
+  1d:	fc ff df
+  20:	48 89 fa             	mov    %rdi,%rdx
+  23:	48 c1 ea 03          	shr    $0x3,%rdx
+* 27:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1) <-- trapping instruction
+  2b:	75 4f                	jne    0x7c
+  2d:	45 31 e4             	xor    %r12d,%r12d
+  30:	48 81 7b 28 80 f1 8a 	cmpq   $0xffffffff8a8af180,0x28(%rbx)
+  37:	8a
+  38:	74 0c                	je     0x46
+  3a:	e8                   	.byte 0xe8
+  3b:	58                   	pop    %rax
+  3c:	e9                   	.byte 0xe9
 
-> Even if modifying DSA drivers to component drivers is possible, while
-> not breaking backwards compatibility with DT,
 
-It should be possible without needing any DT changes.
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-> it is not going to
-> happen over night. That is something for the next merge window, not
-> this merge window.
-
-Right, I wasn't suggesting the component driver option be implemented
-right away. We were talking about what the longer term proper fix
-would be for DSA (and Ethernet if we actually find issues there) and
-who would do it. That's what I hope this discussion could be.
-
-Also, if we replace Patch 2/2 in this series with the patch below, it
-will work as a generic quick fix for DSA that we could use for -rc1.
-And if we still have issues reported on the phy-handle patch by -rc5
-or so, we could revert the phy-handle patch then so that v5.15 isn't
-broken.
-
--Saravana
-
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -1286,6 +1286,17 @@ static int dsa_switch_parse_of(struct
-dsa_switch *ds, struct device_node *dn)
- {
-        int err;
-
-+       /* A lot of switch devices have their PHYs as child devices and have
-+        * the PHYs depend on the switch as a supplier (Eg: interrupt
-+        * controller). With fw_devlink=on, that means the PHYs will defer
-+        * probe until the probe() of the switch completes. However, the way
-+        * the DSA framework is designed, the PHYs are expected to be probed
-+        * successfully before the probe() of the switch completes.
-+        *
-+        * So, mark the switch devices as a "broken parent" so that fw_devlink
-+        * knows not to create device links between PHYs and the parent switch.
-+        */
-+       np->fwnode.flags |= FWNODE_FLAG_BROKEN_PARENT;
-        err = dsa_switch_parse_member_of(ds, dn);
-        if (err)
-                return err;
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
