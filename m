@@ -2,114 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ABEB33FB5F8
-	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 14:27:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1922D3FB632
+	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 14:38:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236843AbhH3MYv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Aug 2021 08:24:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33414 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231165AbhH3MYu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Aug 2021 08:24:50 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2B1B5610E6;
-        Mon, 30 Aug 2021 12:23:51 +0000 (UTC)
-Date:   Mon, 30 Aug 2021 14:23:48 +0200
-From:   Christian Brauner <christian.brauner@ubuntu.com>
-To:     syzbot <syzbot+d1e3b1d92d25abf97943@syzkaller.appspotmail.com>
-Cc:     andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
-        casey@schaufler-ca.com, daniel@iogearbox.net, dhowells@redhat.com,
-        dvyukov@google.com, jmorris@namei.org, kafai@fb.com,
-        kpsingh@google.com, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        paul@paul-moore.com, selinux@vger.kernel.org,
-        songliubraving@fb.com, stephen.smalley.work@gmail.com,
-        syzkaller-bugs@googlegroups.com, tonymarislogistics@yandex.com,
-        viro@zeniv.linux.org.uk, yhs@fb.com
-Subject: Re: [syzbot] general protection fault in legacy_parse_param
-Message-ID: <20210830122348.jffs5dmq6z25qzw5@wittgenstein>
-References: <0000000000004e5ec705c6318557@google.com>
- <0000000000008d2a0005ca951d94@google.com>
+        id S236527AbhH3Mid (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Aug 2021 08:38:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50564 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233703AbhH3Mia (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 08:38:30 -0400
+Received: from mout-p-202.mailbox.org (mout-p-202.mailbox.org [IPv6:2001:67c:2050::465:202])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4BEEC06175F;
+        Mon, 30 Aug 2021 05:37:36 -0700 (PDT)
+Received: from smtp202.mailbox.org (smtp202.mailbox.org [IPv6:2001:67c:2050:105:465:1:4:0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4GyqbL1XCbzQkHL;
+        Mon, 30 Aug 2021 14:37:34 +0200 (CEST)
+Received: from spamfilter06.heinlein-hosting.de (spamfilter06.heinlein-hosting.de [80.241.56.125])
+        by smtp202.mailbox.org (Postfix) with ESMTP id 279A2271;
+        Mon, 30 Aug 2021 14:37:32 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+Received: from smtp202.mailbox.org ([80.241.60.245])
+        by spamfilter06.heinlein-hosting.de (spamfilter06.heinlein-hosting.de [80.241.56.125]) (amavisd-new, port 10030)
+        with ESMTP id wikO-nnhKAt4; Mon, 30 Aug 2021 14:37:31 +0200 (CEST)
+Received: from suagaze.. (unknown [46.183.103.17])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp202.mailbox.org (Postfix) with ESMTPSA id 4CEE626F;
+        Mon, 30 Aug 2021 14:37:25 +0200 (CEST)
+From:   =?UTF-8?q?Jonas=20Dre=C3=9Fler?= <verdre@v0yd.nl>
+To:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi017@gmail.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     =?UTF-8?q?Jonas=20Dre=C3=9Fler?= <verdre@v0yd.nl>,
+        Tsuchiya Yuto <kitakar@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+Subject: [PATCH 0/2] mwifiex: Work around firmware bugs on 88W8897 chip
+Date:   Mon, 30 Aug 2021 14:37:02 +0200
+Message-Id: <20210830123704.221494-1-verdre@v0yd.nl>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <0000000000008d2a0005ca951d94@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Rspamd-Queue-Id: 279A2271
+X-Rspamd-UID: 3d0be0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 27, 2021 at 07:11:18PM -0700, syzbot wrote:
-> syzbot has bisected this issue to:
-> 
-> commit 54261af473be4c5481f6196064445d2945f2bdab
-> Author: KP Singh <kpsingh@google.com>
-> Date:   Thu Apr 30 15:52:40 2020 +0000
-> 
->     security: Fix the default value of fs_context_parse_param hook
-> 
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=160c5d75300000
-> start commit:   77dd11439b86 Merge tag 'drm-fixes-2021-08-27' of git://ano..
-> git tree:       upstream
-> final oops:     https://syzkaller.appspot.com/x/report.txt?x=150c5d75300000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=110c5d75300000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=2fd902af77ff1e56
-> dashboard link: https://syzkaller.appspot.com/bug?extid=d1e3b1d92d25abf97943
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=126d084d300000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16216eb1300000
-> 
-> Reported-by: syzbot+d1e3b1d92d25abf97943@syzkaller.appspotmail.com
-> Fixes: 54261af473be ("security: Fix the default value of fs_context_parse_param hook")
-> 
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+Two patches which should fix all the random resets of the Marvell 88W8897 PCIe chip.
+The first one works around a bug in the firmware that causes it to crash, the second
+one makes us try harder to wake up the firmware before we consider it non-responsive.
+More explanations in the commit messages.
 
-So ok, this seems somewhat clear now. When smack and 
-CONFIG_BPF_LSM=y
-is selected the bpf LSM will register NOP handlers including
+Jonas Dreßler (2):
+  mwifiex: Use non-posted PCI register writes
+  mwifiex: Try waking the firmware until we get an interrupt
 
-bpf_lsm_fs_context_fs_param()
+ drivers/net/wireless/marvell/mwifiex/pcie.c | 35 +++++++++++++++++----
+ 1 file changed, 29 insertions(+), 6 deletions(-)
 
-for the
+-- 
+2.31.1
 
-fs_context_fs_param
-
-LSM hook. The bpf LSM runs last, i.e. after smack according to:
-
-CONFIG_LSM="landlock,lockdown,yama,safesetid,integrity,tomoyo,smack,bpf"
-
-in the appended config. The smack hook runs and sets
-
-param->string = NULL
-
-then the bpf NOP handler runs returning -ENOPARM indicating to the vfs
-parameter parser that this is not a security module option so it should
-proceed processing the parameter subsequently causing the crash because
-param->string is not allowed to be NULL (Which the vfs parameter parser
-verifies early in fsconfig().).
-
-If you take the appended syzkaller config and additionally select
-kprobes you can observe this by registering bpf kretprobes for:
-security_fs_context_parse_param()
-smack_fs_context_parse_param()
-bpf_lsm_fs_context_parse_param()
-in different terminal windows and then running the syzkaller provided
-reproducer:
-
-root@f2-vm:~# bpftrace -e 'kretprobe:smack_fs_context_parse_param { printf("returned: %d\n", retval); }'
-Attaching 1 probe...
-returned: 0
-
-root@f2-vm:~# bpftrace -e 'kretprobe:bpf_lsm_fs_context_parse_param { printf("returned: %d\n", retval); }'
-Attaching 1 probe...
-returned: -519
-
-root@f2-vm:~# bpftrace -e 'kretprobe:security_fs_context_parse_param { printf("returned: %d\n", retval); }'
-Attaching 1 probe...
-returned: -519
-
-^^^^^
-This will ultimately tell the vfs to move on causing the crash because
-param->string is null at that point.
-
-Unless I missed something why that can't happen.
-
-Christian
