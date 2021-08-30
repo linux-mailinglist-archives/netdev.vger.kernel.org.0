@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 094813FBF11
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 00:40:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A9A93FBF14
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 00:43:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239253AbhH3WlV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Aug 2021 18:41:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50270 "EHLO
+        id S238941AbhH3Wop (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Aug 2021 18:44:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239254AbhH3WlQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 18:41:16 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6123C061764
-        for <netdev@vger.kernel.org>; Mon, 30 Aug 2021 15:40:21 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id m2so9832176wmm.0
-        for <netdev@vger.kernel.org>; Mon, 30 Aug 2021 15:40:21 -0700 (PDT)
+        with ESMTP id S230140AbhH3Wop (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 18:44:45 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A4AEC061575
+        for <netdev@vger.kernel.org>; Mon, 30 Aug 2021 15:43:50 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id b6so24535177wrh.10
+        for <netdev@vger.kernel.org>; Mon, 30 Aug 2021 15:43:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=KEnDASVTvyavT1N9HkLdH51Nd7qd6AyiFQvfkXk+zPI=;
-        b=TKFGPwlEYNaRoEmJV9ptIhar/pU08C6jJ3dePq7uBnyK+6n5taRmWUf7MmVuAseYzt
-         a8MeZ32ebEDGhPXOe9ZVtA4SJ2nNSSMmlY/m09IoWzIB1mROhMeHK9fGzQFRbj8ye6wO
-         0gXpD4/NH084amuoRmcwekhiAExHhRzapxkxNOd8gV/vHODuLUXZVksRlrNP2CwABd7v
-         iO6bMYQxtSitOtJ5LyjWPXQA9382ddpl0BeqeFOenGSXyICaxMUzjSU++AE1R8yJmKHm
-         cikO/SxkMGnqb5xTCcK4C3HARdtwdG6BRXGqMVQ4QvEJo688oHutc0TCrnUrVITIPdUu
-         zlhA==
+        bh=icDw/9BeG4AjgaRuj4Vr/S4hCHv51JQFMxFQ6y59uac=;
+        b=I7txyrcbS/ul1e6uH/Xl6JjW+t2CWkeVknDuVQIqLJODXDMB+kpeRndMoTpiniDtPT
+         hYGK22cCgPE4l1MU5gGY9a+yX+XH4xFQ6Dr2k56sJ35loayCCV8uf+DPktKfx4oWJ059
+         xpV9/JhmMbJxCuJkGG1QpkqbqgK51eeitT9h//SrzXMSn14wJSclR/5Ox05SKkUWTJ/a
+         uygdirN+bRHMUNQQJDnUUigBLGsyLpFi4GRCQkqNBG1li6TBQ+gsziFe1tfjUlAsl4vH
+         IqvrNfwToFHPlalsGh2njTDuyjnop7wGOvpAtU/AguVHk3pLm/AP/2WDyySGL3JE+gRA
+         ELyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:content-transfer-encoding
          :in-reply-to;
-        bh=KEnDASVTvyavT1N9HkLdH51Nd7qd6AyiFQvfkXk+zPI=;
-        b=Yh1I4/l6yiFqtMcY8GHj+400rJmfBJQMbq1xmyc9dzAUyCoWzTqSX0eMipuw4Lb8ey
-         xxFfq/vOD1r/pA+iFtqXShRSdGOODoSh/a6bNru8dPv+eancccuP18gP7OPB/32Myi54
-         AqUeFn9bdTyBu6G72t+aMs181NgaFxsyCL007+LTymYUYePTHWsoJlvBcIsnaGEM29il
-         1tSzwUfPIveVr+/f7CWAVfxRkWWBQPZqaNvdUf/3i5CqzrV7pUrSphu5eRR/SxHP61Ui
-         QWecyB6AC8bHzkEXePfrJyaQQSvtKDsx6ztVqttQp9nIK0eB591KM6xSQBeftoy7SPF2
-         P8SA==
-X-Gm-Message-State: AOAM531n0F+CVe9R5fDwbduxkbjlnybg8OzwF4jMoR3DkVO7ZmbAlPCH
-        2KatHAbPWW8j9bL4e4AXgBvCzYENaLw=
-X-Google-Smtp-Source: ABdhPJz5DNH9MzDTLjNDc8y3QXN6TImudWcjqlLjW38oCdwyebVw8gCyxQon8Ks7AoQiNcxHQkcF8Q==
-X-Received: by 2002:a05:600c:230a:: with SMTP id 10mr1127082wmo.79.1630363220573;
-        Mon, 30 Aug 2021 15:40:20 -0700 (PDT)
+        bh=icDw/9BeG4AjgaRuj4Vr/S4hCHv51JQFMxFQ6y59uac=;
+        b=X8x8Sa7gXAQwcvjuGY0AdWF0ZsFh+hhKsCybVzfeTXnIYTb0/Fy3QSIayTs1Ci0Ix+
+         Y9kV3vSYPdJDkBXE9PZ4N/Pkk3QimFKcqjzKFf1UPdw3Zz+Q9FFMESR2e0owiEA653Sd
+         nUSonO1eockj/Jk6MtlHje+yANGLc6gs9PFB1vvYlGH0Ls+ct2JWpId/PVZ3dy91aJtB
+         tF2DWRWxTPPetM03Q9PRARPkfld0C9Wo8ULHifuOrB4zRj05tCduBJmde6/H66JpvZKA
+         yMA5fj71x6avB0qn93KtOcwm7HrgN3YlfICKnMfLTfZyHNw41EDqH6UaOxboCG5yr0Up
+         wnpQ==
+X-Gm-Message-State: AOAM532ChVtuu0b99+Kf0euBjAeQkICnboBfRWpcnLnk31N96IsR+8Ye
+        tZ+oRR6JeCN5xq9UlZ+5dXk=
+X-Google-Smtp-Source: ABdhPJw5lBQIwJ8qG6YlpOYuwjKo4j/T4uMK1bl0HIOB1Mm3u6w8EINBj5V83J7+pAfPa4SGJh1a8g==
+X-Received: by 2002:adf:9003:: with SMTP id h3mr10821841wrh.75.1630363429067;
+        Mon, 30 Aug 2021 15:43:49 -0700 (PDT)
 Received: from skbuf ([82.78.148.104])
-        by smtp.gmail.com with ESMTPSA id c14sm736864wme.6.2021.08.30.15.40.19
+        by smtp.gmail.com with ESMTPSA id v5sm16206389wrw.44.2021.08.30.15.43.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Aug 2021 15:40:20 -0700 (PDT)
-Date:   Tue, 31 Aug 2021 01:40:19 +0300
+        Mon, 30 Aug 2021 15:43:48 -0700 (PDT)
+Date:   Tue, 31 Aug 2021 01:43:47 +0300
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Linus Walleij <linus.walleij@linaro.org>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -59,131 +59,105 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
         Mauri Sandberg <sandberg@mailfence.com>,
         DENG Qingfang <dqfext@gmail.com>
-Subject: Re: [PATCH net-next 3/5 v2] net: dsa: rtl8366rb: Support disabling
- learning
-Message-ID: <20210830224019.d7lzral6zejdfl5t@skbuf>
+Subject: Re: [PATCH net-next 4/5 v2] net: dsa: rtl8366rb: Support flood
+ control
+Message-ID: <20210830224347.3ihtdgs56enz2ju3@skbuf>
 References: <20210830214859.403100-1-linus.walleij@linaro.org>
- <20210830214859.403100-4-linus.walleij@linaro.org>
+ <20210830214859.403100-5-linus.walleij@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210830214859.403100-4-linus.walleij@linaro.org>
+In-Reply-To: <20210830214859.403100-5-linus.walleij@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 30, 2021 at 11:48:57PM +0200, Linus Walleij wrote:
-> The RTL8366RB hardware supports disabling learning per-port
-> so let's make use of this feature. Rename some unfortunately
-> named registers in the process.
+On Mon, Aug 30, 2021 at 11:48:58PM +0200, Linus Walleij wrote:
+> Now that we have implemented bridge flag handling we can easily
+> support flood (storm) control as well so let's do it.
 > 
-> Suggested-by: Vladimir Oltean <olteanv@gmail.com>
+> Cc: Vladimir Oltean <olteanv@gmail.com>
 > Cc: Alvin Šipraga <alsi@bang-olufsen.dk>
 > Cc: Mauri Sandberg <sandberg@mailfence.com>
 > Cc: DENG Qingfang <dqfext@gmail.com>
 > Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 > ---
 > ChangeLog v1->v2:
-> - New patch suggested by Vladimir.
+> - New patch
 > ---
->  drivers/net/dsa/rtl8366rb.c | 47 +++++++++++++++++++++++++++++++++----
->  1 file changed, 42 insertions(+), 5 deletions(-)
+>  drivers/net/dsa/rtl8366rb.c | 38 ++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 37 insertions(+), 1 deletion(-)
 > 
 > diff --git a/drivers/net/dsa/rtl8366rb.c b/drivers/net/dsa/rtl8366rb.c
-> index 8b040440d2d4..2cadd3e57e8b 100644
+> index 2cadd3e57e8b..4cb0e336ce6b 100644
 > --- a/drivers/net/dsa/rtl8366rb.c
 > +++ b/drivers/net/dsa/rtl8366rb.c
-> @@ -14,6 +14,7 @@
+> @@ -149,6 +149,11 @@
 >  
->  #include <linux/bitops.h>
->  #include <linux/etherdevice.h>
-> +#include <linux/if_bridge.h>
->  #include <linux/interrupt.h>
->  #include <linux/irqdomain.h>
->  #include <linux/irqchip/chained_irq.h>
-> @@ -42,9 +43,12 @@
->  /* Port Enable Control register */
->  #define RTL8366RB_PECR				0x0001
+>  #define RTL8366RB_VLAN_INGRESS_CTRL2_REG	0x037f
 >  
-> -/* Switch Security Control registers */
-> -#define RTL8366RB_SSCR0				0x0002
-> -#define RTL8366RB_SSCR1				0x0003
-> +/* Switch per-port learning disablement register */
-> +#define RTL8366RB_PORT_LEARNDIS_CTRL		0x0002
+> +#define RTL8366RB_STORM_BC_CTRL			0x03e0
+> +#define RTL8366RB_STORM_MC_CTRL			0x03e1
+> +#define RTL8366RB_STORM_UNDA_CTRL		0x03e2
+> +#define RTL8366RB_STORM_UNMC_CTRL		0x03e3
 > +
-> +/* Security control, actually aging register */
-> +#define RTL8366RB_SECURITY_CTRL			0x0003
-> +
->  #define RTL8366RB_SSCR2				0x0004
->  #define RTL8366RB_SSCR2_DROP_UNKNOWN_DA		BIT(0)
->  
-> @@ -912,12 +916,12 @@ static int rtl8366rb_setup(struct dsa_switch *ds)
->  		rb->max_mtu[i] = 1532;
->  
->  	/* Enable learning for all ports */
-> -	ret = regmap_write(smi->map, RTL8366RB_SSCR0, 0);
-> +	ret = regmap_write(smi->map, RTL8366RB_PORT_LEARNDIS_CTRL, 0);
+>  /* LED control registers */
+>  #define RTL8366RB_LED_BLINKRATE_REG		0x0430
+>  #define RTL8366RB_LED_BLINKRATE_MASK		0x0007
+> @@ -1158,7 +1163,8 @@ rtl8366rb_port_pre_bridge_flags(struct dsa_switch *ds, int port,
+>  				struct netlink_ext_ack *extack)
+>  {
+>  	/* We support enabling/disabling learning */
+> -	if (flags.mask & ~(BR_LEARNING))
+> +	if (flags.mask & ~(BR_LEARNING | BR_BCAST_FLOOD |
+> +                           BR_MCAST_FLOOD | BR_FLOOD))
 
-So the expected behavior for standalone ports would be to _disable_
-learning. In rtl8366rb_setup, they are standalone.
+Spaces instead of tabs here?
 
->  	if (ret)
->  		return ret;
+>  		return -EINVAL;
 >  
->  	/* Enable auto ageing for all ports */
-> -	ret = regmap_write(smi->map, RTL8366RB_SSCR1, 0);
-> +	ret = regmap_write(smi->map, RTL8366RB_SECURITY_CTRL, 0);
->  	if (ret)
->  		return ret;
+>  	return 0;
+> @@ -1180,6 +1186,36 @@ rtl8366rb_port_bridge_flags(struct dsa_switch *ds, int port,
+>  			return ret;
+>  	}
 >  
-> @@ -1148,6 +1152,37 @@ rtl8366rb_port_disable(struct dsa_switch *ds, int port)
->  	rb8366rb_set_port_led(smi, port, false);
->  }
->  
-> +static int
-> +rtl8366rb_port_pre_bridge_flags(struct dsa_switch *ds, int port,
-> +				struct switchdev_brport_flags flags,
-> +				struct netlink_ext_ack *extack)
-> +{
-> +	/* We support enabling/disabling learning */
-> +	if (flags.mask & ~(BR_LEARNING))
-> +		return -EINVAL;
-> +
-> +	return 0;
-> +}
-> +
-> +static int
-> +rtl8366rb_port_bridge_flags(struct dsa_switch *ds, int port,
-> +			    struct switchdev_brport_flags flags,
-> +			    struct netlink_ext_ack *extack)
-> +{
-> +	struct realtek_smi *smi = ds->priv;
-> +	int ret;
-> +
-> +	if (flags.mask & BR_LEARNING) {
-> +		ret = regmap_update_bits(smi->map, RTL8366RB_PORT_LEARNDIS_CTRL,
+> +	if (flags.mask & BR_BCAST_FLOOD) {
+> +		ret = regmap_update_bits(smi->map, RTL8366RB_STORM_BC_CTRL,
 > +					 BIT(port),
-> +					 (flags.val & BR_LEARNING) ? 0 : BIT(port));
+> +					 (flags.val & BR_BCAST_FLOOD) ? BIT(port) : 0);
 > +		if (ret)
 > +			return ret;
 > +	}
 > +
-> +	return 0;
-> +}
+> +	if (flags.mask & BR_MCAST_FLOOD) {
+> +		ret = regmap_update_bits(smi->map, RTL8366RB_STORM_MC_CTRL,
+> +					 BIT(port),
+> +					 (flags.val & BR_MCAST_FLOOD) ? BIT(port) : 0);
+> +		if (ret)
+> +			return ret;
+> +	}
 > +
->  static int
->  rtl8366rb_port_bridge_join(struct dsa_switch *ds, int port,
->  			   struct net_device *bridge)
-> @@ -1600,6 +1635,8 @@ static const struct dsa_switch_ops rtl8366rb_switch_ops = {
->  	.port_vlan_del = rtl8366_vlan_del,
->  	.port_enable = rtl8366rb_port_enable,
->  	.port_disable = rtl8366rb_port_disable,
-> +	.port_pre_bridge_flags = rtl8366rb_port_pre_bridge_flags,
-> +	.port_bridge_flags = rtl8366rb_port_bridge_flags,
->  	.port_change_mtu = rtl8366rb_change_mtu,
->  	.port_max_mtu = rtl8366rb_max_mtu,
->  };
+> +	/* Enable/disable both types of unicast floods */
+> +	if (flags.mask & BR_FLOOD) {
+> +		ret = regmap_update_bits(smi->map, RTL8366RB_STORM_UNDA_CTRL,
+> +					 BIT(port),
+> +					 (flags.val & BR_FLOOD) ? BIT(port) : 0);
+> +		if (ret)
+> +			return ret;
+> +		ret = regmap_update_bits(smi->map, RTL8366RB_STORM_UNMC_CTRL,
+> +					 BIT(port),
+> +					 (flags.val & BR_FLOOD) ? BIT(port) : 0);
+> +		if (ret)
+> +			return ret;
+
+UNDA and UNMC?
+
+> +	}
+> +
+>  	return 0;
+>  }
+>  
 > -- 
 > 2.31.1
 > 
