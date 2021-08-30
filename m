@@ -2,189 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8ABAC3FBF9E
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 01:59:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3AA63FBFA1
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 01:59:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239241AbhH3Xxx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Aug 2021 19:53:53 -0400
-Received: from smtp3.emailarray.com ([65.39.216.17]:39663 "EHLO
-        smtp3.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239212AbhH3Xxp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 19:53:45 -0400
-Received: (qmail 77105 invoked by uid 89); 30 Aug 2021 23:52:50 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21ANzEuMjEyLjEzOC4zOQ==) (POLARISLOCAL)  
-  by smtp3.emailarray.com with SMTP; 30 Aug 2021 23:52:50 -0000
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, richardcochran@gmail.com
-Cc:     netdev@vger.kernel.org, kernel-team@fb.com, abyagowi@fb.com
-Subject: [PATCH net-next 11/11] docs: ABI: Add sysfs documentation for timecard
-Date:   Mon, 30 Aug 2021 16:52:36 -0700
-Message-Id: <20210830235236.309993-12-jonathan.lemon@gmail.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210830235236.309993-1-jonathan.lemon@gmail.com>
-References: <20210830235236.309993-1-jonathan.lemon@gmail.com>
+        id S239129AbhH3X4Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Aug 2021 19:56:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38786 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233668AbhH3X4P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 19:56:15 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04768C061575;
+        Mon, 30 Aug 2021 16:55:21 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id z18so31489176ybg.8;
+        Mon, 30 Aug 2021 16:55:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=osaHZsvC6GXD6W3Yy9wZgX7DMF08yB4vlQ7sjrfCqUk=;
+        b=naQViWRWvuh/C+pCLh3fUahwLOVxtJ1O3NePHN0ih0WhxOiKetMUXEguFhh3SUMEGY
+         pNVqIXEdKwfoaK+vL30Z1n+8i0wNamVpjJ1B6XgSc4V0Rhoxldm10/uTctrkzidQUFqo
+         wDTX7lgRd3n63H4YxlNNOcIWR4wpQImsgok5FyjBYTvf5U2+DKMsGaY08dyGOJ/1jWoC
+         E5rrIIV4oMd0CCfZc0q3xHwYjVX7pqZ1gF9/mbdwP4lLPhBYGmip27cjCYj61Zqm9fJC
+         KHDAERCDFthNFSmqXvGsZsfWjUAY4Z5bprpRrGbktrnydpYDsCYYfqo5COCmYRhU9CD3
+         zPFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=osaHZsvC6GXD6W3Yy9wZgX7DMF08yB4vlQ7sjrfCqUk=;
+        b=A+5NFyoxRMrk6GfURXdmbwYJl0Lssuv8VENQuuuiYpbPhK7FgR4m8Z0BBhvHDVe2Ns
+         6FbO7y0O2QEULf9+U5O3UXB2f1si/UK199iq8HCmVNWK1FHEqbUVGNlF0aU4AtdY386x
+         Fh4hjFTdnP/UEakNO5cuFgiyfLRPOtucQ1t0s7tQZGvAFAi95Y31j5zqbSRhcXnKVWc+
+         1s6SjlOkTIuW0RNYwiLkEzk0sPuKST2HI8kQoqNgkRot9Tx0ejj7c9l7p9Gf2tf/uvOm
+         8jvkDqhcKDZ/XdAOBJuAWzimIklwC4LJq38CyBq+xtPkVF6i64XtK0KOgPGa9sihk+nl
+         VtOw==
+X-Gm-Message-State: AOAM531D3/wfWKAqBcwvHo9olipff+tYoaZrGP3uPZs8TTz0mTAI/0Pc
+        z4pSiRYeI8KPpijT4TourLAi5ShX5emUHudOzdI=
+X-Google-Smtp-Source: ABdhPJyzq2UjMhGJJUlz4e9HhnH0du8C8/unmhgvND6mtwtk64xDXG8ep8cy9SlIlluC6H3m2C/HPn8iTA9lYSB3v1I=
+X-Received: by 2002:a25:16c6:: with SMTP id 189mr26785803ybw.27.1630367720120;
+ Mon, 30 Aug 2021 16:55:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210825195823.381016-1-davemarchevsky@fb.com> <20210825195823.381016-4-davemarchevsky@fb.com>
+In-Reply-To: <20210825195823.381016-4-davemarchevsky@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 30 Aug 2021 16:55:09 -0700
+Message-ID: <CAEf4BzaNH1vRQr5jZO_m3haUaV5rXKiH5AJLFrM5iwbkEja=VQ@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 3/6] libbpf: Modify bpf_printk to choose
+ helper based on arg count
+To:     Dave Marchevsky <davemarchevsky@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Yonghong Song <yhs@fb.com>, Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch describes the sysfs interface implemented by the
-ptp_ocp driver, under /sys/class/timecard.
+On Wed, Aug 25, 2021 at 12:58 PM Dave Marchevsky <davemarchevsky@fb.com> wrote:
+>
+> Instead of being a thin wrapper which calls into bpf_trace_printk,
+> libbpf's bpf_printk convenience macro now chooses between
+> bpf_trace_printk and bpf_trace_vprintk. If the arg count (excluding
+> format string) is >3, use bpf_trace_vprintk, otherwise use the older
+> helper.
+>
+> The motivation behind this added complexity - instead of migrating
+> entirely to bpf_trace_vprintk - is to maintain good developer experience
+> for users compiling against new libbpf but running on older kernels.
+> Users who are passing <=3 args to bpf_printk will see no change in their
+> bytecode.
+>
+> __bpf_vprintk functions similarly to BPF_SEQ_PRINTF and BPF_SNPRINTF
+> macros elsewhere in the file - it allows use of bpf_trace_vprintk
+> without manual conversion of varargs to u64 array. Previous
+> implementation of bpf_printk macro is moved to __bpf_printk for use by
+> the new implementation.
+>
+> This does change behavior of bpf_printk calls with >3 args in the "new
+> libbpf, old kernels" scenario. On my system, using a clang built from
+> recent upstream sources (14.0.0 https://github.com/llvm/llvm-project.git
+> 50b62731452cb83979bbf3c06e828d26a4698dca), attempting to use 4 args to
+> __bpf_printk (old impl) results in a compile-time error:
+>
+>   progs/trace_printk.c:21:21: error: too many args to 0x6cdf4b8: i64 = Constant<6>
+>         trace_printk_ret = __bpf_printk("testing,testing %d %d %d %d\n",
+>
+> I was able to replicate this behavior with an older clang as well. When
+> the format string has >3 format specifiers, there is no output to the
+> trace_pipe in either case.
+>
+> After this patch, using bpf_printk with 4 args would result in a
+> trace_vprintk helper call being emitted and a load-time failure on older
+> kernels.
+>
+> Signed-off-by: Dave Marchevsky <davemarchevsky@fb.com>
+> ---
+>  tools/lib/bpf/bpf_helpers.h | 45 ++++++++++++++++++++++++++++++-------
+>  1 file changed, 37 insertions(+), 8 deletions(-)
+>
+> diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
+> index b9987c3efa3c..5f087306cdfe 100644
+> --- a/tools/lib/bpf/bpf_helpers.h
+> +++ b/tools/lib/bpf/bpf_helpers.h
+> @@ -14,14 +14,6 @@
+>  #define __type(name, val) typeof(val) *name
+>  #define __array(name, val) typeof(val) *name[]
+>
+> -/* Helper macro to print out debug messages */
+> -#define bpf_printk(fmt, ...)                           \
+> -({                                                     \
+> -       char ____fmt[] = fmt;                           \
+> -       bpf_trace_printk(____fmt, sizeof(____fmt),      \
+> -                        ##__VA_ARGS__);                \
+> -})
+> -
+>  /*
+>   * Helper macro to place programs, maps, license in
+>   * different sections in elf_bpf file. Section names
+> @@ -224,4 +216,41 @@ enum libbpf_tristate {
+>                      ___param, sizeof(___param));               \
+>  })
+>
+> +/* Helper macro to print out debug messages */
+> +#define __bpf_printk(fmt, ...)                         \
+> +({                                                     \
+> +       char ____fmt[] = fmt;                           \
+> +       bpf_trace_printk(____fmt, sizeof(____fmt),      \
+> +                        ##__VA_ARGS__);                \
+> +})
+> +
+> +/*
+> + * __bpf_vprintk wraps the bpf_trace_vprintk helper with variadic arguments
+> + * instead of an array of u64.
+> + */
+> +#define __bpf_vprintk(fmt, args...)                            \
+> +({                                                             \
+> +       static const char ___fmt[] = fmt;                       \
+> +       unsigned long long ___param[___bpf_narg(args)];         \
+> +                                                               \
+> +       _Pragma("GCC diagnostic push")                          \
+> +       _Pragma("GCC diagnostic ignored \"-Wint-conversion\"")  \
+> +       ___bpf_fill(___param, args);                            \
+> +       _Pragma("GCC diagnostic pop")                           \
+> +                                                               \
+> +       bpf_trace_vprintk(___fmt, sizeof(___fmt),               \
+> +                    ___param, sizeof(___param));               \
 
-Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
----
- Documentation/ABI/testing/sysfs-timecard | 141 +++++++++++++++++++++++
- 1 file changed, 141 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-timecard
+nit: is this really misaligned or it's just Gmail's rendering?
 
-diff --git a/Documentation/ABI/testing/sysfs-timecard b/Documentation/ABI/testing/sysfs-timecard
-new file mode 100644
-index 000000000000..a473b953b4d3
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-timecard
-@@ -0,0 +1,141 @@
-+What:		/sys/class/timecard/
-+Date:		September 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	This directory contains files and directories
-+		providing a standardized interface to the ancillary
-+		features of the OpenCompute timecard.
-+
-+What:		/sys/class/timecard/ocpN/
-+Date:		September 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	This directory contains the attributes of the Nth timecard
-+		registered.
-+
-+What:		/sys/class/timecard/ocpN/available_clock_sources
-+Date:		September 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	(RO) The list of available time sources that the PHC
-+		uses for clock adjustments.
-+
-+		====  =================================================
-+                NONE  no adjustments
-+                PPS   adjustments come from the PPS1 selector (default)
-+                TOD   adjustments from the GNSS/TOD module
-+                IRIG  adjustments from external IRIG-B signal
-+                DCF   adjustments from external DCF signal
-+                ====  =================================================
-+
-+What:		/sys/class/timecard/ocpN/available_sma_inputs
-+Date:		September 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	(RO) Set of available destinations (sinks) for a SMA
-+		input signal.
-+
-+                =====  ================================================
-+                10Mhz  signal is used as the 10Mhz reference clock
-+                PPS1   signal is sent to the PPS1 selector
-+                PPS2   signal is sent to the PPS2 selector
-+                TS1    signal is sent to timestamper 1
-+                TS2    signal is sent to timestamper 2
-+                IRIG   signal is sent to the IRIG-B module
-+                DCF    signal is sent to the DCF module
-+                =====  ================================================
-+
-+What:		/sys/class/timecard/ocpN/available_sma_outputs
-+Date:		May 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	(RO) Set of available sources for a SMA output signal.
-+
-+                =====  ================================================
-+                10Mhz  output is from the 10Mhz reference clock
-+                PHC    output PPS is from the PHC clock
-+                MAC    output PPS is from the Miniature Atomic Clock
-+                GNSS   output PPS is from the GNSS module
-+                GNSS2  output PPS is from the second GNSS module
-+                IRIG   output is from the PHC, in IRIG-B format
-+                DCF    output is from the PHC, in DCF format
-+                =====  ================================================
-+
-+What:		/sys/class/timecard/ocpN/clock_source
-+Date:		September 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	(RW) Contains the current synchronization source used by
-+		the PHC.  May be changed by writing one of the listed
-+		values from the available_clock_sources attribute set.
-+
-+What:		/sys/class/timecard/ocpN/gnss_sync
-+Date:		September 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	(RO) Indicates whether a valid GNSS signal is received,
-+		or when the signal was lost.
-+
-+What:		/sys/class/timecard/ocpN/i2c
-+Date:		September 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	This optional attribute links to the associated i2c device.
-+
-+What:		/sys/class/timecard/ocpN/irig_b_mode
-+Date:		September 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	(RW) An integer from 0-7 indicating the timecode format
-+		of the IRIG-B output signal: B00<n>
-+
-+What:		/sys/class/timecard/ocpN/pps
-+Date:		September 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	This optional attribute links to the associated PPS device.
-+
-+What:		/sys/class/timecard/ocpN/ptp
-+Date:		September 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	This attribute links to the associated PTP device.
-+
-+What:		/sys/class/timecard/ocpN/serialnum
-+Date:		September 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	(RO) Provides the serial number of the timecard.
-+
-+What:		/sys/class/timecard/ocpN/sma1_out
-+What:		/sys/class/timecard/ocpN/sma2_out
-+Date:		September 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	(RW) These attributes specify the signal present on the
-+		associated SMA connectors.  May be changed by writing one of
-+		the listed values from the available_sma_outputs attribute set.
-+
-+What:		/sys/class/timecard/ocpN/sma3_in
-+What:		/sys/class/timecard/ocpN/sma4_in
-+Date:		September 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	(RW) These attributes specify where the input signal on the
-+		associated connector should be sent.  May be changed by writing
-+		multiple values from the available_sma_outputs attribute set,
-+		separated by spaces.  If there are duplicated destinations
-+		between the two connectors, SMA4 is given priority.
-+
-+		Note that not all combinations may make sense.
-+
-+		The 10Mhz reference clock is only valid on SMA4 and may not
-+		be combined with other destination sinks.
-+
-+What:		/sys/class/timecard/ocpN/ttyGNSS
-+Date:		September 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	This optional attribute links to the TTY serial port
-+		associated with the GNSS device.
-+
-+What:		/sys/class/timecard/ocpN/ttyMAC
-+Date:		September 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	This optional attribute links to the TTY serial port
-+		associated with the Miniature Atomic Clock.
-+
-+What:		/sys/class/timecard/ocpN/utc_tai_offset
-+Date:		September 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	(RW) The DCF and IRIG output signals are in UTC, while the
-+		TimeCard operates on TAI.  This attribute allows setting the
-+		offset in seconds, which is added to the TAI timebase for
-+		these formats.
-+
-+		The offset may be changed by writing a signed integer.
--- 
-2.31.1
+> +})
+> +
+> +#define ___bpf_pick_printk(...) \
+> +       ___bpf_nth(_, ##__VA_ARGS__, __bpf_vprintk, __bpf_vprintk, __bpf_vprintk,       \
+> +               __bpf_vprintk, __bpf_vprintk, __bpf_vprintk, __bpf_vprintk,             \
+> +               __bpf_vprintk, __bpf_vprintk, __bpf_printk, __bpf_printk,               \
+> +               __bpf_printk, __bpf_printk)
 
+There is no best solution with macros, but I think this one is
+extremely error prone because __bpf_nth invocation is very long and
+it's hard to even see where printk turns into vprintk.
+
+How about doing it similarly to ___empty in bpf_core_read.h? It will
+be something like this (untested and not even compiled, just a demo)
+
+#define __bpf_printk_kind(...) ___bpf_nth(_, ##__VA_ARGS__, new, new,
+new, new, new, <however many>, new, old /*3*/, old /*2*/, old /*1*/,
+old /*0*/)
+
+#define bpf_printk(fmt, args...) ___bpf_apply(___bpf_printk_,
+___bpf_narg(args))(fmt, args)
+
+
+And you'll have s/__bpf_printk/__bpf_printk_old/ (using
+bpf_trace_printk) and s/__bpf_printk_new/__bpf_vprintk/ (using
+bpf_trace_vprintk).
+
+This new/old distinction makes it a bit clearer to me. I find
+__bpf_nth so counterintuitive that I try not to use it directly
+anywhere at all.
+
+
+> +
+> +#define bpf_printk(fmt, args...)               \
+> +({                                             \
+> +       ___bpf_pick_printk(args)(fmt, args);    \
+> +})
+
+not sure ({ }) buys you anything?...
+
+> +
+>  #endif
+> --
+> 2.30.2
+>
