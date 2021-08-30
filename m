@@ -2,97 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF18D3FB8EE
-	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 17:21:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B75943FB919
+	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 17:38:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237311AbhH3PWY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Aug 2021 11:22:24 -0400
-Received: from laubervilliers-656-1-228-164.w92-154.abo.wanadoo.fr ([92.154.28.164]:54006
-        "EHLO ssq0.pkh.me" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237182AbhH3PWW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 11:22:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pkh.me; s=selector1;
-        t=1630336887;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=YK4qPOhWmLT1hYTuvDdXQfjVOeFl8wkKnd5qbg6cdoM=;
-        b=nDyVbaLKsjNjh5KuA5jT1xdD8naZvJbQZiBmaILQHSRHfEfrY3J2QEIHUqBXRYDIFlhfXT
-        fqjpCBAkz63gjlEamTrvdjfo5BiQx9425S6zanrxD5M9oQUSRCfb8Hjj0lFbhuG+lj+rmJ
-        i7lP8OvF6he1mxtz7czdRxbDbOb/s1E=
-Received: from localhost (ssq0.pkh.me [local])
-        by ssq0.pkh.me (OpenSMTPD) with ESMTPA id 9ffe0c3f;
-        Mon, 30 Aug 2021 15:21:27 +0000 (UTC)
-Date:   Mon, 30 Aug 2021 17:21:26 +0200
-From:   =?utf-8?B?Q2zDqW1lbnQgQsWTc2No?= <u@pkh.me>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Willy Liu <willy.liu@realtek.com>, netdev@vger.kernel.org,
-        linux-sunxi@lists.linux.dev, devicetree@vger.kernel.org
-Subject: Re: sunxi H5 DTB fix for realtek regression
-Message-ID: <YSz3diNr9+awHuSW@ssq0.pkh.me>
-References: <YSwr6YZXjNrdKoBZ@ssq0.pkh.me>
- <YSziXfll/p/5OrOv@lunn.ch>
- <YSzsmy1f2//NNzXm@ssq0.pkh.me>
- <YSzzuDvd1fWXxcAb@lunn.ch>
+        id S237615AbhH3Piw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Aug 2021 11:38:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36746 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237508AbhH3Piv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 11:38:51 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A64FC06175F
+        for <netdev@vger.kernel.org>; Mon, 30 Aug 2021 08:37:57 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id u14so31933339ejf.13
+        for <netdev@vger.kernel.org>; Mon, 30 Aug 2021 08:37:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=JF+4zb8krwFIQgHdb2rsSw9vpfFyX0Z9uMAVD3JOUR8=;
+        b=benhsRsBQmeGZ+fHrfklv0g928jJc7KDc8Du9QPaURO95Krmn8bl8o7yVzVh82o9wz
+         ZcJk6ULBlbNclcYxcEK+JtPibAEexCipSooB/ZSJBD2ESHvjss48TTiLkmtoJOgNmGSX
+         gHGY+AKKl//JNEfXbLpSopgQmRhtI/vYVexgouETePULEOyuOpJho3dDmac2+UTFLBHO
+         8/WBvIla2AmWQLYuoGxObfgzlvkDMxKOCbhSgC93X1UNNhRWYycjYM7S5BQ1zJTTROUt
+         LQ2AQgaT+tjNDNP+bKbULrML/iUAli9FMPwIQ5KP6LMhcVgeOMROY6wn9mfM/iZZCWLI
+         I/6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=JF+4zb8krwFIQgHdb2rsSw9vpfFyX0Z9uMAVD3JOUR8=;
+        b=U6frzRBWnqCtIhvTNcREEEvdNxEc+pdTBDRxK1JaZu61Ao10BBgMoEcFlX4gpcBhpo
+         PTuvB16Nt6Y2kLYUC9ZhqXwCU0wfp/0RxSRJIlJXDLMC5/Px76oGMvU4+v3KSjNe8Yg3
+         +L3ZfSIpudAnnEVIn7wcJwzQZeA16tGFt9s1e5+4bOQElK+FeXM5pIHfBnJohTbc92nl
+         Q1uKS/8rCgKAZDzFzTBtgOyL2QZqXOFTojZRrngV7rQbQZZTqtHGqp4ni43dAZVld/O9
+         P9GCvfgCQlA9uXmom0joPX62XDn3IhjWSonj0K6H3/L/g0do5lx8CfxYaA6By0+xJdJq
+         r8FA==
+X-Gm-Message-State: AOAM533OURAboLITItIOYXSyZs7LlMecuGLg2RNFxcZQYIpbQtYHx5Lb
+        gFygc9q5z9Q1m0XrATWFru5hiY6y3fZfoZ2ftplQNYzLd9egFg==
+X-Google-Smtp-Source: ABdhPJyB9RgLqt8Ni09atTiUMN4PE86RO13DJCxxjYHhi6RFwyEzaMjpBi2OJXAbe0eC3ZClqh+Iwa38CM+q4h1ekUU=
+X-Received: by 2002:a17:906:6b96:: with SMTP id l22mr16057071ejr.430.1630337875823;
+ Mon, 30 Aug 2021 08:37:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YSzzuDvd1fWXxcAb@lunn.ch>
+From:   Michael Johnson <mjohnson459@gmail.com>
+Date:   Mon, 30 Aug 2021 16:37:45 +0100
+Message-ID: <CACsRnHVGatk0YrV1ayrGqK0S3G1xTJYatgY07h86bRZ5BFA6Ug@mail.gmail.com>
+Subject: Delay sending packets after a wireless roam
+To:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 30, 2021 at 05:05:28PM +0200, Andrew Lunn wrote:
-[...]
-> You need to add a Signed-off-by: See
-> 
-> https://www.kernel.org/doc/html/latest/process/submitting-patches.html#sign-your-work-the-developer-s-certificate-of-origin
-> 
+Hi all,
 
-Done.
+I posted this on linux-wireless last week but didn't receive much
+response, I hope it is ok to repeat it here.
 
-> Patches need to be in the body of the email, not attachments.
-> 
+I'm having an odd issue with wireless roaming whereby any time I roam
+from one access point to another (same SSID) I start receiving packets
+instantly after the roam is successful but experience a delay of
+roughly 1 second before I can send packets out. I have seen this with
+multiple configurations but haven't been able to test with the
+mainline kernel yet (working on it now). Listening to the netlink
+traffic I can see the roam is successful with the interface going down
+and then back up but nothing seems to be logged or sent that hints at
+what the delay might be.
 
-Sent through git-send-email this time (sorry about the hiccup I messed up
-the first call).
+I started seeing this delay after upgrading from Ubuntu 16.04 to 20.04
+but because so much of the wireless stack changed between those
+releases I'm not sure if it's possible to bisect the change?
 
-> You can use scripts/get_maintainers.pl to get a list of people to send
-> it to. I would use To: for
-> Maxime Ripard <mripard@kernel.org> (maintainer:ARM/Allwinner sunXi SoC support)
-> Chen-Yu Tsai <wens@csie.org> (maintainer:ARM/Allwinner sunXi SoC support)
-> Jernej Skrabec <jernej.skrabec@gmail.com> (reviewer:ARM/Allwinner sunXi SoC support)
-> 
-> and Cc: for the rest.
-> 
-> > Note: running `git grep 'phy-mode\s*=\s*"rgmii"' arch` shows that it might
-> > affect other hardware as well.
-> 
-> "rgmii" can be correct. So you need to narrow your search.
-> 
+Configurations I've tested that show this behaviour:
+  Distro(kernel) version - 20.04 (5.4, 5.8 and 5.11), Kali 2021.2 (5.10)
+  Hardware(driver): intel (iwlwifi), qualcomm (ath10k), realtek.
+  Supplicant: iwd and wpa_supplicant
+  Manager: iwd, systemd-networkd, NetworkManager
+  Data: ping, iperf3 (tcp and udp), custom python udp script
+  APs:  Meraki MR46, tp-link decos
 
-Yeah I understand that, but I don't know if that can be deduced from the
-code only, or if someone needs to look at the hardware specs. As said
-initially, I don't have much clue about what's going on here.
+Here is the output of the simplest test that still shows the issue
+(ping + tcpdump + iwd + 5.11.0-27-generic):
+https://pastebin.com/92TKKktb
 
-> > I don't know how one is supposed to check
-> > that, but I would guess at least sun50i-a64-nanopi-a64.dts is affected (a
-> > quick internet search shows that it's using a RTL8211E¹)
-> 
-> This seems reasonable. You could provide a second patch for this.
+My naive tl;dr of that data is:
+  30.322638 - we start to roam which falls between icmp_seq=121 and
+icmp_seq=122.
+  30.415411 - roam is complete
+  30.424277 - iwd is sending and receiving neighbor reports over the link
+  31.358491 - an ARP request is sent out (why is the ARP cache cleared?)
+  31.367930 - ARP response
+  31.368009 - packets start being sent again as soon as we get the ARP response
 
-I'll leave that to the other maintainers; I don't have the hardware to
-test and I'm uncomfortable patching something I don't understand.
+Can anyone help me understand what might be happening between the
+interface going "up" at 30.415411 and the ARP request at 31.358491
+please? I don't think the ARP is the problem given I can clear the arp
+cache without any delay but I hope it hints at what the underlying
+issue might be.
+I'm also curious if anyone else sees the same delay in their environment?
 
-Regards,
+I'm not that familiar with networking in Linux so I apologise if any
+of my description/question didn't make sense.
 
--- 
-Clément B.
+Kind Regards,
+Michael
