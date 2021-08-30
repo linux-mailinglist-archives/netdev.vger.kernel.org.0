@@ -2,79 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82B333FB8C0
-	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 17:07:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9982D3FB8E0
+	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 17:15:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237506AbhH3PGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Aug 2021 11:06:38 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:48672 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237471AbhH3PGh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Aug 2021 11:06:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=bL28JptUtAL4Jouyvz4ajT1BB84wg50lUMYs9+7LAQ8=; b=P5
-        LbcUcU0pSZph2xB8UOOyvAk+j1U+gMY+is0vQHHJG79odnEogPiUJCWiamoPuaOqQzSNzCnIYdmQo
-        J5XyPUKkepBoCS6OJVjyd75TcIQ/tLeUUWArIfi1EI99mTlupPENa9AoFO7M8qZStIX96B+MyXJL9
-        VW8SyMx8CLV8s3E=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mKiqm-004aHV-6G; Mon, 30 Aug 2021 17:05:28 +0200
-Date:   Mon, 30 Aug 2021 17:05:28 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     =?utf-8?B?Q2zDqW1lbnQgQsWTc2No?= <u@pkh.me>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Willy Liu <willy.liu@realtek.com>, netdev@vger.kernel.org,
-        linux-sunxi@lists.linux.dev, devicetree@vger.kernel.org
-Subject: Re: sunxi H5 DTB fix for realtek regression
-Message-ID: <YSzzuDvd1fWXxcAb@lunn.ch>
-References: <YSwr6YZXjNrdKoBZ@ssq0.pkh.me>
- <YSziXfll/p/5OrOv@lunn.ch>
- <YSzsmy1f2//NNzXm@ssq0.pkh.me>
+        id S237508AbhH3PPw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Aug 2021 11:15:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59652 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237203AbhH3PPv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 11:15:51 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2946BC061575;
+        Mon, 30 Aug 2021 08:14:57 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id i6so22204192edu.1;
+        Mon, 30 Aug 2021 08:14:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bpyvzhLmSHmRSMIpQj5jbzqpJ3n4albotiHOuJXPyF8=;
+        b=p46xWdqYzCpdOOYaYHI6M6WUnZuZFVv4u1Huh823CGOE9djdsGq1+On56VbOanGNp+
+         egSEhAJP48473wspkuJG3EE4NM3nlTXC4BoNlI24Vb5XFdN32DuKnYN9ghwc/uTUMItg
+         7JLA8f9u4REqVQ7aUNN3ZEwZXIYYwtWeBBA8gufE2ERGc0lMfpM8hNoOdVzGJXyzgZZ1
+         JLKhopDjhmQnonzOFP6q2ppPezrwjgZUd5vRHQ6koAy+mp3x7GAjKyxwGaVjjB1uIxm0
+         tstN/rAJBFZCjmTWn6v9qKOOhQpV2nTPzcrUTzSKNjYYVe3u1qzXUHFVcFA4iMibrOTX
+         cnkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bpyvzhLmSHmRSMIpQj5jbzqpJ3n4albotiHOuJXPyF8=;
+        b=S5yPJxXk0hUTXfFL+9ROxeWvW2gLjTJ1xqY5otDZFQluJZInhGAKiFP2mXlK0/aKOw
+         uvdKR7mtoApX4958hxecrRjlAlUrKA+Ln+S2/kxGi4LI4oAB6snOJZsgmSTQoVMA8371
+         leTUHJnvNo8VP7lMpsLdifp0FtgYsyj639y0jlvb5psOQWiC6CBWMSB3jBlJVq5sBhuw
+         iaBpHw3Mzp5QS2a+Rfk2afKIOD39zuiSPBDHAt4R6fIOTciPBXC/pIGxPJoemUFsUvss
+         8wWfVf/SepFk+mt/tE4zGidFcC7MOOGnblsW+cOtQ6VntCZ5ybIv1dTXdqlh4ShzcpW4
+         n3Hw==
+X-Gm-Message-State: AOAM532F7jOIBtgNp3dVlmM0rA+CPAiu//ugblh8Gpz2hk5yERB/jBgp
+        1a+jrHK7DAswN9aOh+r1pRuDy47nONPHuPMMt7P+cBxh
+X-Google-Smtp-Source: ABdhPJzP3VtuLbSuA67KHhVlcNUFji6PTTdpvcCAPIhQ5+fMGlevfHRnihSPJubexw+iVjPSPUl9eTSC53+q8XBT5g4=
+X-Received: by 2002:a05:6402:1d56:: with SMTP id dz22mr24717889edb.69.1630336495677;
+ Mon, 30 Aug 2021 08:14:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YSzsmy1f2//NNzXm@ssq0.pkh.me>
+References: <1630286290-43714-1-git-send-email-linyunsheng@huawei.com> <1630286290-43714-3-git-send-email-linyunsheng@huawei.com>
+In-Reply-To: <1630286290-43714-3-git-send-email-linyunsheng@huawei.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Mon, 30 Aug 2021 08:14:44 -0700
+Message-ID: <CAKgT0UfmcB93Hn1AS_o2a_h98xxZMouTiGzJfG09qsWf+O6L1Q@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/2] skbuff: keep track of pp page when
+ __skb_frag_ref() is called
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, linuxarm@openeuler.org,
+        hawk@kernel.org, Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Willem de Bruijn <willemb@google.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kevin Hao <haokexin@gmail.com>, nogikh@google.com,
+        Marco Elver <elver@google.com>, memxor@gmail.com,
+        Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> See attached patch, heavily based on other commits.
+On Sun, Aug 29, 2021 at 6:19 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>
+> As the skb->pp_recycle and page->pp_magic may not be enough
+> to track if a frag page is from page pool after the calling
+> of __skb_frag_ref(), mostly because of a data race, see:
+> commit 2cc3aeb5eccc ("skbuff: Fix a potential race while
+> recycling page_pool packets").
+>
+> There may be clone and expand head case that might lose the
+> track if a frag page is from page pool or not.
+>
+> So increment the frag count when __skb_frag_ref() is called,
+> and only use page->pp_magic to indicate if a frag page is from
+> page pool, to avoid the above data race.
+>
+> For 32 bit systems with 64 bit dma, we preserve the orginial
+> behavior as frag count is used to trace how many time does a
+> frag page is called with __skb_frag_ref().
+>
+> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 
-Looks good.
+Is this really a common enough case to justify adding this extra overhead?
 
-You need to add a Signed-off-by: See
+> ---
+>  include/linux/skbuff.h  | 13 ++++++++++++-
+>  include/net/page_pool.h | 17 +++++++++++++++++
+>  net/core/page_pool.c    | 12 ++----------
+>  3 files changed, 31 insertions(+), 11 deletions(-)
+>
+> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> index 6bdb0db..8311482 100644
+> --- a/include/linux/skbuff.h
+> +++ b/include/linux/skbuff.h
+> @@ -3073,6 +3073,16 @@ static inline struct page *skb_frag_page(const skb_frag_t *frag)
+>   */
+>  static inline void __skb_frag_ref(skb_frag_t *frag)
+>  {
+> +       struct page *page = skb_frag_page(frag);
+> +
+> +#ifdef CONFIG_PAGE_POOL
+> +       if (!PAGE_POOL_DMA_USE_PP_FRAG_COUNT &&
+> +           page_pool_is_pp_page(page)) {
+> +               page_pool_atomic_inc_frag_count(page);
+> +               return;
+> +       }
+> +#endif
+> +
+>         get_page(skb_frag_page(frag));
+>  }
+>
 
-https://www.kernel.org/doc/html/latest/process/submitting-patches.html#sign-your-work-the-developer-s-certificate-of-origin
+This just seems like a bad idea in general. We are likely increasing
+the potential for issues with this patch instead of avoiding them. I
+really feel it would be better for us to just give up on the page and
+kick it out of the page pool if we are cloning frames and multiple
+references are being taken on the pages.
 
-Patches need to be in the body of the email, not attachments.
+> @@ -3101,7 +3111,8 @@ static inline void __skb_frag_unref(skb_frag_t *frag, bool recycle)
+>         struct page *page = skb_frag_page(frag);
+>
+>  #ifdef CONFIG_PAGE_POOL
+> -       if (recycle && page_pool_return_skb_page(page))
+> +       if ((!PAGE_POOL_DMA_USE_PP_FRAG_COUNT || recycle) &&
+> +           page_pool_return_skb_page(page))
+>                 return;
+>  #endif
+>         put_page(page);
+> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+> index 2ad0706..8b43e3d9 100644
+> --- a/include/net/page_pool.h
+> +++ b/include/net/page_pool.h
+> @@ -244,6 +244,23 @@ static inline void page_pool_set_frag_count(struct page *page, long nr)
+>         atomic_long_set(&page->pp_frag_count, nr);
+>  }
+>
+> +static inline void page_pool_atomic_inc_frag_count(struct page *page)
+> +{
+> +       atomic_long_inc(&page->pp_frag_count);
+> +}
+> +
+> +static inline bool page_pool_is_pp_page(struct page *page)
+> +{
+> +       /* page->pp_magic is OR'ed with PP_SIGNATURE after the allocation
+> +        * in order to preserve any existing bits, such as bit 0 for the
+> +        * head page of compound page and bit 1 for pfmemalloc page, so
+> +        * mask those bits for freeing side when doing below checking,
+> +        * and page_is_pfmemalloc() is checked in __page_pool_put_page()
+> +        * to avoid recycling the pfmemalloc page.
+> +        */
+> +       return (page->pp_magic & ~0x3UL) == PP_SIGNATURE;
+> +}
+> +
+>  static inline long page_pool_atomic_sub_frag_count_return(struct page *page,
+>                                                           long nr)
+>  {
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index ba9f14d..442d37b 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -24,7 +24,7 @@
+>  #define DEFER_TIME (msecs_to_jiffies(1000))
+>  #define DEFER_WARN_INTERVAL (60 * HZ)
+>
+> -#define BIAS_MAX       LONG_MAX
+> +#define BIAS_MAX       (LONG_MAX / 2)
 
-You can use scripts/get_maintainers.pl to get a list of people to send
-it to. I would use To: for
-Maxime Ripard <mripard@kernel.org> (maintainer:ARM/Allwinner sunXi SoC support)
-Chen-Yu Tsai <wens@csie.org> (maintainer:ARM/Allwinner sunXi SoC support)
-Jernej Skrabec <jernej.skrabec@gmail.com> (reviewer:ARM/Allwinner sunXi SoC support)
+This piece needs some explaining in the patch. Why are you changing
+the BIAS_MAX?
 
-and Cc: for the rest.
-
-> Note: running `git grep 'phy-mode\s*=\s*"rgmii"' arch` shows that it might
-> affect other hardware as well.
-
-"rgmii" can be correct. So you need to narrow your search.
-
-> I don't know how one is supposed to check
-> that, but I would guess at least sun50i-a64-nanopi-a64.dts is affected (a
-> quick internet search shows that it's using a RTL8211E¹)
-
-This seems reasonable. You could provide a second patch for this.
-
-     Andrew
+>  static int page_pool_init(struct page_pool *pool,
+>                           const struct page_pool_params *params)
+> @@ -741,15 +741,7 @@ bool page_pool_return_skb_page(struct page *page)
+>         struct page_pool *pp;
+>
+>         page = compound_head(page);
+> -
+> -       /* page->pp_magic is OR'ed with PP_SIGNATURE after the allocation
+> -        * in order to preserve any existing bits, such as bit 0 for the
+> -        * head page of compound page and bit 1 for pfmemalloc page, so
+> -        * mask those bits for freeing side when doing below checking,
+> -        * and page_is_pfmemalloc() is checked in __page_pool_put_page()
+> -        * to avoid recycling the pfmemalloc page.
+> -        */
+> -       if (unlikely((page->pp_magic & ~0x3UL) != PP_SIGNATURE))
+> +       if (!page_pool_is_pp_page(page))
+>                 return false;
+>
+>         pp = page->pp;
+> --
+> 2.7.4
+>
