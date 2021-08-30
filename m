@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 29CB53FBB15
-	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 19:35:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55AA93FBB17
+	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 19:35:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238269AbhH3Rf7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Aug 2021 13:35:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36244 "EHLO
+        id S238311AbhH3RgC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Aug 2021 13:36:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238246AbhH3Rfp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 13:35:45 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CABE6C06175F;
-        Mon, 30 Aug 2021 10:34:51 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id j1so9990655pjv.3;
-        Mon, 30 Aug 2021 10:34:51 -0700 (PDT)
+        with ESMTP id S238261AbhH3Rfs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 13:35:48 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A59A7C0617AD;
+        Mon, 30 Aug 2021 10:34:54 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id mw10-20020a17090b4d0a00b0017b59213831so10693pjb.0;
+        Mon, 30 Aug 2021 10:34:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=bJX0AyGbd9hRRY146ZMmI0dinbkaM5zuyV0rfjoDisU=;
-        b=Qq+CnHyv5m4HjssH1RgPO4TujobZBA1MM1tvwHto6xYnnJMncTeF7B5N6q5oxyqHNg
-         19n0gQAbAlaZauXZsRS6Jib6MbIv/EV5qjoNJ/GRC9kgA2bACVtnG2EVAN1T6YcFF8Wc
-         Z3IQK7nVdWg5uUhOcC6S388gqpPFGIVv/3vcWR+PyAgPsaQJVcL6yAvSuSyoS7rdlNxA
-         H4j12VeBUjrLeuJ1+u0FAEslnbhesE5jODhNXxUaKfMtnbjGhonUmiY9b6iFkQsFb6XD
-         tXRMzG817PUezbRQByoGrmpXcsqHlYkgr8+hiswlOTAj475KcCqZ4okRhtEgPTRjIppV
-         TwXw==
+        bh=Uq3gikbj9ewA7OoQZE5RrbQJ4kDybRdWpRwwwDYF+Bc=;
+        b=btAijSkwjyJ0gPbL855v79Ydv9rUshd+tb+9yz6/E3eSubHKK67VeXmkGB6Wxxfijc
+         4X22oOzDFERfXELni5lmQ9sHcsiL9sMMEHgBXLTQtWljyQAODLmUXuCXENstx7lP7YW5
+         kSQLAHlZ57BcABRukgpyTMru+E3yvahSjv+UcvTY00CFPoRrwiLaR5Fb2rL0+RmCAiL0
+         rErAkjteQ+H8wxWwDdG9duJFwTLNS8XS4dCQzFW4PH7GeQEMrb2ChN5tDlC6aQh541/Z
+         D0VuTaA0gGeKkY7ysC6WlJ5iJ2nzX8Ttv01VMuGVJhvgOM7bv4nLzfK11srFiG3jQ/0g
+         rO0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=bJX0AyGbd9hRRY146ZMmI0dinbkaM5zuyV0rfjoDisU=;
-        b=MpuMUoHhynj9RVJXqPYNxPMFtZpuRR+513q1sUfVFp/AIwsguGJ474Q6Lw2gUqF+SI
-         kAN1REa1i2BxHvFcJOiozFb/K/3CzQ5Qn4ay7naZMtI9sgy7t6J84yUl7u5r33cRIyf7
-         IfTk3XtNCy+SFXiTSu/+K7115uUBn31n3aciL6nJjnh67UnXOc9mfh3hCJI1K7IFDcWU
-         6pb7fYngGrTj9zPaSAnOM2/r/nqnvTAXpCVL7FjTOQ/KHEayD44gyJgCZNXi1WDzZlkj
-         ++1Zdo4y8PUiZuX+F/a2E+CHDlRnWCeL1/tCEr2uf2VJGoIqMKXgFz8gjEkAX6Qe3FaO
-         N4IQ==
-X-Gm-Message-State: AOAM533nAedHtJSy8SbvtsL0+As28cPQyafp6io2/hKnuPbzdNJsAsR+
-        I/N12EazQ53bshsyDkMMFp2ejdn5k9vk7Q==
-X-Google-Smtp-Source: ABdhPJz/HTeG8P9fK1cv0kRx0EaFE8jdd16Xk43wqj3v72r26cg1mLqqGjFCG6dfzzwk8ypJTc4IeQ==
-X-Received: by 2002:a17:90a:bd81:: with SMTP id z1mr176824pjr.207.1630344891137;
-        Mon, 30 Aug 2021 10:34:51 -0700 (PDT)
+        bh=Uq3gikbj9ewA7OoQZE5RrbQJ4kDybRdWpRwwwDYF+Bc=;
+        b=M6CBdyRyNk7zWuPpuXm5C0+2C5+5kOk65gNlwEotnNPGgbPw2fD0ggY1aK5xfp9jfT
+         USMfONvkQWXMvg/J8BEspPJ3tZDpjqOdOFZVznbRk+PeSfMY1ZCcMK1/OXta4LCWEb+8
+         s7/IoMLCl8uQ7bZOS2uZeyl0QuCymbZCO0ol7gBAG/ARwMj51T3W9V5o12guRD3UzfYN
+         otWlOyVIi1sPXVqc6uQmz0w1KwHai7J8DK5USXGoa4EvgubocDC6rreEzGkuPjwz8yIs
+         RHRuHF0i7Xvibc/PZxkFQvSRx4321OMTtV1b2ylA3SdI7nJ9VdE2vX9wMxrGThqasLG0
+         h+cg==
+X-Gm-Message-State: AOAM532vqxHp/lI+ku1zrrdGVtgBsNn3pyiaXiO9yjdsGTN8dK8SvtsX
+        zX5O/Wgbz5g958fhb+DiJFXhkoh5mc3LSw==
+X-Google-Smtp-Source: ABdhPJzNIeyp1JUinKPigV19IybaOhqPTuSwVcbi/RUyZRXSJliVfPQCjua+qy8xmKIiRR7WrjgAoA==
+X-Received: by 2002:a17:90a:5b0d:: with SMTP id o13mr187126pji.117.1630344893974;
+        Mon, 30 Aug 2021 10:34:53 -0700 (PDT)
 Received: from localhost ([2405:201:6014:d820:9cc6:d37f:c2fd:dc6])
-        by smtp.gmail.com with ESMTPSA id fh2sm106158pjb.12.2021.08.30.10.34.50
+        by smtp.gmail.com with ESMTPSA id e6sm15392863pfj.183.2021.08.30.10.34.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Aug 2021 10:34:50 -0700 (PDT)
+        Mon, 30 Aug 2021 10:34:53 -0700 (PDT)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
@@ -58,292 +58,203 @@ Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         netdev@vger.kernel.org
-Subject: [PATCH bpf-next RFC v1 7/8] bpf: enable TCP congestion control kfunc from modules
-Date:   Mon, 30 Aug 2021 23:04:23 +0530
-Message-Id: <20210830173424.1385796-8-memxor@gmail.com>
+Subject: [PATCH bpf-next RFC v1 8/8] bpf, selftests: Add basic test for module kfunc call
+Date:   Mon, 30 Aug 2021 23:04:24 +0530
+Message-Id: <20210830173424.1385796-9-memxor@gmail.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20210830173424.1385796-1-memxor@gmail.com>
 References: <20210830173424.1385796-1-memxor@gmail.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=8888; h=from:subject; bh=+wtSmbpHsLJhBkA9+XpBdzDEaE4kFWY7r1NXIZIdqpA=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBhLRX9ZywhGY9TnA5oV1T2mVNV2NjEuhC+tXxzaki0 NE2MmwmJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYS0V/QAKCRBM4MiGSL8Rym8IEA CbKSm7lCT4wFhp1hkv/DIm8aHSzaj7l9r/KH5pcSbulg5NakptpCwOM9Z3j6H8EWfwjKV/NwYRqhaJ UXL4U/VD7f8b0MRokY82d0FWGu9iDy21kc3+c7ssIs4vd7yNQYDXWpnoq1A1ltxVvshsy1FRRSsM4G 84q8YpvXJHEqOUJkH2swbsRQs6mU65iS2U8OaA1HjnXAZojTEjIB3+IYZ2wRYKSD/eCBBtGUxSSDtu jsWY1tJaGSpFcV7PVmSiFNNdXYOkzWhlApg+8QvT1GJ6Jp/9isZhR+8badRvmjgTY3DS55lMqE+/c2 8iSeLMxRQxfnfqjBEzi+1z3yvf4AteH827uRXBNy1jGF4kjQspOnmlBSl5jN7gvWlTsFEernI692C2 F0x2GIY6VFfY7YxfiJmbIamvqRUhrISe63a2oE3eNY3lJIt7uqQ/rdprLlRyqSCVrh4w30t3CzEyQi ln8DejTFHDD9aeccglaBN4iX8wCKWVzscTG3937kVbpGFRlG2z3lhDzVH988a1WTuIQ+atYgEuV5vc 3TM3Qk0uf/nEeT9k7afitbwWqGIOppElZgDX0A/Gx3/sfeWGMiJvGsyeMyX0NAPZUTYfEHczPuAIf2 M0rFGckyl94WT9mConWlndDjA9ntwOO8Xx9p7S69K8UL4L9j4Am7TDSbZNuQ==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=6892; h=from:subject; bh=pt2B+/aXob7wuPacjobW7v2Tj5tIhSAys1tDGS5ZFl4=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBhLRX92HznMYm4y07Gr1+Syu02aaDGgf3KGSfNbyCg 0HwoIbOJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYS0V/QAKCRBM4MiGSL8RytU1EA C3uOwMCtuhQFHSjAVW8nHFzS5/MiWbgOcd0w8ER9oJBaCBBNXrFiVxJJMh2SlHx9BiiXcfuIKfJnFa n+KvE5qNLGG9vxzLKS9Gv8syxfUDOUlQlG61hYdmkSHGCz5g7K1wcIjH4xqhh5r/48ptYoz1buQR8H t95FogpTrZY5sIacanC68oBRukgf1FEwyEVCAdIS2NsY8r5j6V5slch1zfL9dxaEFFDf8fIT5aVLwf anNcUG/9BCkyknaPm9O3vYuBg8PzTx+TDE3mDXoIa4kQB8V4Bm+gIysrIJblOFL3QM3rejTpfW+Ug6 tzzWyGc/ho82ZGG3Tn787t4Avdh6Xk/uI99tD+0nHD7711L/WA9IPC1gE87GhK+f0RXxqO8hjDZoWH ET6jTt9aAMfkgOoZoSmrg4wYF6bfW6HBq3vCTg1Vc+4mehMgFuEgyS3M6xmeEX4OotuQ/A+Yq9tnSV 36IUSIRX5WeZhkqLfpA0pUep5u/TU/pheuDwWOZROz6UWsHBpEE/xfzGIvbVo+JomCcYQjsp1BTTo7 CZHv4ddwJM4g3gQLudHbuC+h4+KkUXfTXarAl6phKZ0mopq9AaDy+zjJA8jaPL8nY3ZIrbkdF/MeSu 4FojsrNHEn3bXlvEkV8a7IBkkwdYQGy8wfATa2ozHHQyxEWiayJgxYDnfvxA==
 X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit moves BTF ID lookup into the newly added registration
-helper, in a way that the bbr, cubic, and dctcp implementation set up
-their sets in the bpf_tcp_ca kfunc_btf_set list, while the ones not
-dependent on modules are looked up from the wrapper function.
-
-This lifts the restriction for them to be compiled as built in objects,
-and can be loaded as modules if required. Also modify link-vmlinux.sh to
-resolve_btfids in TCP congestion control modules if the config option is
-set, using the base BTF support added in the previous commit.
-
-See following commits for background on use of:
-
- CONFIG_X86 ifdef:
- 569c484f9995 (bpf: Limit static tcp-cc functions in the .BTF_ids list to x86)
-
- CONFIG_DYNAMIC_FTRACE ifdef:
- 7aae231ac93b (bpf: tcp: Limit calling some tcp cc functions to CONFIG_DYNAMIC_FTRACE)
+This has to drop light skeleton generation and instead use libbpf
+skeleton support, as loader program does not support kfunc module calls,
+yet. This also tests support for invalid kfunc calls we added in prior
+changes, such that verifier handles invalid call as long as it is
+removed by code elimination pass (before fixup_kfunc_call).
 
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- include/linux/btf.h       |  2 ++
- kernel/bpf/btf.c          |  2 ++
- net/ipv4/bpf_tcp_ca.c     | 34 +++-------------------------------
- net/ipv4/tcp_bbr.c        | 28 +++++++++++++++++++++++++++-
- net/ipv4/tcp_cubic.c      | 26 +++++++++++++++++++++++++-
- net/ipv4/tcp_dctcp.c      | 26 +++++++++++++++++++++++++-
- scripts/Makefile.modfinal |  1 +
- 7 files changed, 85 insertions(+), 34 deletions(-)
+ include/linux/btf.h                           |  1 +
+ kernel/bpf/btf.c                              |  1 +
+ kernel/trace/bpf_trace.c                      |  1 +
+ tools/testing/selftests/bpf/Makefile          |  3 ++-
+ .../selftests/bpf/bpf_testmod/bpf_testmod.c   | 23 ++++++++++++++++++-
+ .../selftests/bpf/prog_tests/ksyms_module.c   | 10 ++++----
+ .../selftests/bpf/progs/test_ksyms_module.c   |  9 ++++++++
+ 7 files changed, 40 insertions(+), 8 deletions(-)
 
 diff --git a/include/linux/btf.h b/include/linux/btf.h
-index d024b0eb43f9..8c0f29ed2af9 100644
+index 8c0f29ed2af9..6e704981c475 100644
 --- a/include/linux/btf.h
 +++ b/include/linux/btf.h
-@@ -253,4 +253,6 @@ struct kfunc_btf_set {
- #define DEFINE_KFUNC_BTF_SET(set, name)                                        \
+@@ -254,5 +254,6 @@ struct kfunc_btf_set {
  	struct kfunc_btf_set name = { LIST_HEAD_INIT(name.list), (set) }
  
-+DECLARE_KFUNC_BTF_SET_REG(bpf_tcp_ca);
-+
+ DECLARE_KFUNC_BTF_SET_REG(bpf_tcp_ca);
++DECLARE_KFUNC_BTF_SET_REG(raw_tp);
+ 
  #endif
 diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index 35873495761d..cc12470a55f9 100644
+index cc12470a55f9..85a0c2737ea1 100644
 --- a/kernel/bpf/btf.c
 +++ b/kernel/bpf/btf.c
-@@ -6249,3 +6249,5 @@ BTF_ID_LIST_GLOBAL_SINGLE(btf_task_struct_ids, struct, task_struct)
- 		mutex_unlock(&type##_kfunc_btf_set_mutex);                     \
- 	}                                                                      \
+@@ -6251,3 +6251,4 @@ BTF_ID_LIST_GLOBAL_SINGLE(btf_task_struct_ids, struct, task_struct)
  	EXPORT_SYMBOL_GPL(unregister_##type##_kfunc_btf_set)
-+
-+DEFINE_KFUNC_BTF_SET_REG(bpf_tcp_ca);
-diff --git a/net/ipv4/bpf_tcp_ca.c b/net/ipv4/bpf_tcp_ca.c
-index 0dcee9df1326..804f2f912fe9 100644
---- a/net/ipv4/bpf_tcp_ca.c
-+++ b/net/ipv4/bpf_tcp_ca.c
-@@ -223,41 +223,13 @@ BTF_ID(func, tcp_reno_cong_avoid)
- BTF_ID(func, tcp_reno_undo_cwnd)
- BTF_ID(func, tcp_slow_start)
- BTF_ID(func, tcp_cong_avoid_ai)
--#ifdef CONFIG_X86
--#ifdef CONFIG_DYNAMIC_FTRACE
--#if IS_BUILTIN(CONFIG_TCP_CONG_CUBIC)
--BTF_ID(func, cubictcp_init)
--BTF_ID(func, cubictcp_recalc_ssthresh)
--BTF_ID(func, cubictcp_cong_avoid)
--BTF_ID(func, cubictcp_state)
--BTF_ID(func, cubictcp_cwnd_event)
--BTF_ID(func, cubictcp_acked)
--#endif
--#if IS_BUILTIN(CONFIG_TCP_CONG_DCTCP)
--BTF_ID(func, dctcp_init)
--BTF_ID(func, dctcp_update_alpha)
--BTF_ID(func, dctcp_cwnd_event)
--BTF_ID(func, dctcp_ssthresh)
--BTF_ID(func, dctcp_cwnd_undo)
--BTF_ID(func, dctcp_state)
--#endif
--#if IS_BUILTIN(CONFIG_TCP_CONG_BBR)
--BTF_ID(func, bbr_init)
--BTF_ID(func, bbr_main)
--BTF_ID(func, bbr_sndbuf_expand)
--BTF_ID(func, bbr_undo_cwnd)
--BTF_ID(func, bbr_cwnd_event)
--BTF_ID(func, bbr_ssthresh)
--BTF_ID(func, bbr_min_tso_segs)
--BTF_ID(func, bbr_set_state)
--#endif
--#endif  /* CONFIG_DYNAMIC_FTRACE */
--#endif	/* CONFIG_X86 */
- BTF_SET_END(bpf_tcp_ca_kfunc_ids)
  
- static bool bpf_tcp_ca_check_kfunc_call(u32 kfunc_btf_id)
- {
--	return btf_id_set_contains(&bpf_tcp_ca_kfunc_ids, kfunc_btf_id);
-+	if (btf_id_set_contains(&bpf_tcp_ca_kfunc_ids, kfunc_btf_id))
-+		return true;
-+	return __bpf_check_bpf_tcp_ca_kfunc_call(kfunc_btf_id);
- }
- 
- static const struct bpf_verifier_ops bpf_tcp_ca_verifier_ops = {
-diff --git a/net/ipv4/tcp_bbr.c b/net/ipv4/tcp_bbr.c
-index 6274462b86b4..1fea15dd0e05 100644
---- a/net/ipv4/tcp_bbr.c
-+++ b/net/ipv4/tcp_bbr.c
-@@ -56,6 +56,8 @@
-  * otherwise TCP stack falls back to an internal pacing using one high
-  * resolution timer per TCP socket and may use more resources.
-  */
-+#include <linux/btf.h>
-+#include <linux/btf_ids.h>
- #include <linux/module.h>
- #include <net/tcp.h>
- #include <linux/inet_diag.h>
-@@ -1152,14 +1154,38 @@ static struct tcp_congestion_ops tcp_bbr_cong_ops __read_mostly = {
- 	.set_state	= bbr_set_state,
+ DEFINE_KFUNC_BTF_SET_REG(bpf_tcp_ca);
++DEFINE_KFUNC_BTF_SET_REG(raw_tp);
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index 8e2eb950aa82..02fe14b5d005 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -1599,6 +1599,7 @@ int __weak bpf_prog_test_run_tracing(struct bpf_prog *prog,
+ const struct bpf_verifier_ops raw_tracepoint_verifier_ops = {
+ 	.get_func_proto  = raw_tp_prog_func_proto,
+ 	.is_valid_access = raw_tp_prog_is_valid_access,
++	.check_kfunc_call = __bpf_check_raw_tp_kfunc_call,
  };
  
-+BTF_SET_START(tcp_bbr_kfunc_ids)
-+#ifdef CONFIG_X86
-+#ifdef CONFIG_DYNAMIC_FTRACE
-+BTF_ID(func, bbr_init)
-+BTF_ID(func, bbr_main)
-+BTF_ID(func, bbr_sndbuf_expand)
-+BTF_ID(func, bbr_undo_cwnd)
-+BTF_ID(func, bbr_cwnd_event)
-+BTF_ID(func, bbr_ssthresh)
-+BTF_ID(func, bbr_min_tso_segs)
-+BTF_ID(func, bbr_set_state)
-+#endif
-+#endif
-+BTF_SET_END(tcp_bbr_kfunc_ids)
+ const struct bpf_prog_ops raw_tracepoint_prog_ops = {
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index 866531c08e4f..1a4aa71e88f4 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -174,6 +174,7 @@ $(OUTPUT)/bpf_testmod.ko: $(VMLINUX_BTF) $(wildcard bpf_testmod/Makefile bpf_tes
+ 	$(Q)$(RM) bpf_testmod/bpf_testmod.ko # force re-compilation
+ 	$(Q)$(MAKE) $(submake_extras) -C bpf_testmod
+ 	$(Q)cp bpf_testmod/bpf_testmod.ko $@
++	$(Q)$(RESOLVE_BTFIDS) -s ../../../../vmlinux bpf_testmod.ko
+ 
+ $(OUTPUT)/test_stub.o: test_stub.c $(BPFOBJ)
+ 	$(call msg,CC,,$@)
+@@ -315,7 +316,7 @@ LINKED_SKELS := test_static_linked.skel.h linked_funcs.skel.h		\
+ 		linked_vars.skel.h linked_maps.skel.h
+ 
+ LSKELS := kfunc_call_test.c fentry_test.c fexit_test.c fexit_sleep.c \
+-	test_ksyms_module.c test_ringbuf.c atomics.c trace_printk.c
++	  test_ringbuf.c atomics.c trace_printk.c
+ SKEL_BLACKLIST += $$(LSKELS)
+ 
+ test_static_linked.skel.h-deps := test_static_linked1.o test_static_linked2.o
+diff --git a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
+index 141d8da687d2..8242f2bb50b4 100644
+--- a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
++++ b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
+@@ -1,6 +1,8 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /* Copyright (c) 2020 Facebook */
+ #include <linux/error-injection.h>
++#include <linux/btf.h>
++#include <linux/btf_ids.h>
+ #include <linux/init.h>
+ #include <linux/module.h>
+ #include <linux/percpu-defs.h>
+@@ -13,6 +15,12 @@
+ 
+ DEFINE_PER_CPU(int, bpf_testmod_ksym_percpu) = 123;
+ 
++noinline void
++bpf_testmod_test_mod_kfunc(int i)
++{
++	pr_info("mod kfunc i=%d\n", i);
++}
 +
-+static DEFINE_KFUNC_BTF_SET(&tcp_bbr_kfunc_ids, tcp_bbr_kfunc_btf_set);
+ noinline ssize_t
+ bpf_testmod_test_read(struct file *file, struct kobject *kobj,
+ 		      struct bin_attribute *bin_attr,
+@@ -55,13 +63,26 @@ static struct bin_attribute bin_attr_bpf_testmod_file __ro_after_init = {
+ 	.write = bpf_testmod_test_write,
+ };
+ 
++BTF_SET_START(bpf_testmod_kfunc_ids)
++BTF_ID(func, bpf_testmod_test_mod_kfunc)
++BTF_SET_END(bpf_testmod_kfunc_ids)
 +
- static int __init bbr_register(void)
++static DEFINE_KFUNC_BTF_SET(&bpf_testmod_kfunc_ids, bpf_testmod_kfunc_btf_set);
++
+ static int bpf_testmod_init(void)
  {
+-	return sysfs_create_bin_file(kernel_kobj, &bin_attr_bpf_testmod_file);
 +	int ret;
 +
- 	BUILD_BUG_ON(sizeof(struct bbr) > ICSK_CA_PRIV_SIZE);
--	return tcp_register_congestion_control(&tcp_bbr_cong_ops);
-+	ret = tcp_register_congestion_control(&tcp_bbr_cong_ops);
++	ret = sysfs_create_bin_file(kernel_kobj, &bin_attr_bpf_testmod_file);
 +	if (ret)
 +		return ret;
-+	register_bpf_tcp_ca_kfunc_btf_set(&tcp_bbr_kfunc_btf_set);
++	register_raw_tp_kfunc_btf_set(&bpf_testmod_kfunc_btf_set);
 +	return 0;
  }
  
- static void __exit bbr_unregister(void)
+ static void bpf_testmod_exit(void)
  {
-+	unregister_bpf_tcp_ca_kfunc_btf_set(&tcp_bbr_kfunc_btf_set);
- 	tcp_unregister_congestion_control(&tcp_bbr_cong_ops);
++	unregister_raw_tp_kfunc_btf_set(&bpf_testmod_kfunc_btf_set);
+ 	return sysfs_remove_bin_file(kernel_kobj, &bin_attr_bpf_testmod_file);
  }
  
-diff --git a/net/ipv4/tcp_cubic.c b/net/ipv4/tcp_cubic.c
-index 4a30deaa9a37..5b36b9442797 100644
---- a/net/ipv4/tcp_cubic.c
-+++ b/net/ipv4/tcp_cubic.c
-@@ -25,6 +25,8 @@
-  */
+diff --git a/tools/testing/selftests/bpf/prog_tests/ksyms_module.c b/tools/testing/selftests/bpf/prog_tests/ksyms_module.c
+index 2cd5cded543f..d3b0adc2a495 100644
+--- a/tools/testing/selftests/bpf/prog_tests/ksyms_module.c
++++ b/tools/testing/selftests/bpf/prog_tests/ksyms_module.c
+@@ -4,21 +4,19 @@
+ #include <test_progs.h>
+ #include <bpf/libbpf.h>
+ #include <bpf/btf.h>
+-#include "test_ksyms_module.lskel.h"
+-
+-static int duration;
++#include "test_ksyms_module.skel.h"
  
- #include <linux/mm.h>
-+#include <linux/btf.h>
-+#include <linux/btf_ids.h>
- #include <linux/module.h>
- #include <linux/math64.h>
- #include <net/tcp.h>
-@@ -482,8 +484,25 @@ static struct tcp_congestion_ops cubictcp __read_mostly = {
- 	.name		= "cubic",
- };
- 
-+BTF_SET_START(tcp_cubic_kfunc_ids)
-+#ifdef CONFIG_X86
-+#ifdef CONFIG_DYNAMIC_FTRACE
-+BTF_ID(func, cubictcp_init)
-+BTF_ID(func, cubictcp_recalc_ssthresh)
-+BTF_ID(func, cubictcp_cong_avoid)
-+BTF_ID(func, cubictcp_state)
-+BTF_ID(func, cubictcp_cwnd_event)
-+BTF_ID(func, cubictcp_acked)
-+#endif
-+#endif
-+BTF_SET_END(tcp_cubic_kfunc_ids)
-+
-+static DEFINE_KFUNC_BTF_SET(&tcp_cubic_kfunc_ids, tcp_cubic_kfunc_btf_set);
-+
- static int __init cubictcp_register(void)
+ void test_ksyms_module(void)
  {
-+	int ret;
-+
- 	BUILD_BUG_ON(sizeof(struct bictcp) > ICSK_CA_PRIV_SIZE);
+-	struct test_ksyms_module* skel;
++	struct test_ksyms_module *skel;
+ 	int err;
  
- 	/* Precompute a bunch of the scaling factors that are used per-packet
-@@ -514,11 +533,16 @@ static int __init cubictcp_register(void)
- 	/* divide by bic_scale and by constant Srtt (100ms) */
- 	do_div(cube_factor, bic_scale * 10);
+ 	skel = test_ksyms_module__open_and_load();
+-	if (CHECK(!skel, "skel_open", "failed to open skeleton\n"))
++	if (!ASSERT_OK_PTR(skel, "test_ksyms_module__open_and_load"))
+ 		return;
  
--	return tcp_register_congestion_control(&cubictcp);
-+	ret = tcp_register_congestion_control(&cubictcp);
-+	if (ret)
-+		return ret;
-+	register_bpf_tcp_ca_kfunc_btf_set(&tcp_cubic_kfunc_btf_set);
-+	return 0;
- }
+ 	err = test_ksyms_module__attach(skel);
+-	if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
++	if (!ASSERT_OK(err, "test_ksyms_module__attach"))
+ 		goto cleanup;
  
- static void __exit cubictcp_unregister(void)
- {
-+	unregister_bpf_tcp_ca_kfunc_btf_set(&tcp_cubic_kfunc_btf_set);
- 	tcp_unregister_congestion_control(&cubictcp);
- }
+ 	usleep(1);
+diff --git a/tools/testing/selftests/bpf/progs/test_ksyms_module.c b/tools/testing/selftests/bpf/progs/test_ksyms_module.c
+index d6a0b3086b90..81f8790cb99d 100644
+--- a/tools/testing/selftests/bpf/progs/test_ksyms_module.c
++++ b/tools/testing/selftests/bpf/progs/test_ksyms_module.c
+@@ -6,8 +6,11 @@
+ #include <bpf/bpf_helpers.h>
  
-diff --git a/net/ipv4/tcp_dctcp.c b/net/ipv4/tcp_dctcp.c
-index 79f705450c16..efc47b4c7a11 100644
---- a/net/ipv4/tcp_dctcp.c
-+++ b/net/ipv4/tcp_dctcp.c
-@@ -36,6 +36,8 @@
-  *	Glenn Judd <glenn.judd@morganstanley.com>
-  */
+ extern const int bpf_testmod_ksym_percpu __ksym;
++extern void bpf_testmod_test_mod_kfunc(int i) __ksym;
++extern void bpf_testmod_invalid_mod_kfunc(void) __ksym;
  
-+#include <linux/btf.h>
-+#include <linux/btf_ids.h>
- #include <linux/module.h>
- #include <linux/mm.h>
- #include <net/tcp.h>
-@@ -236,14 +238,36 @@ static struct tcp_congestion_ops dctcp_reno __read_mostly = {
- 	.name		= "dctcp-reno",
- };
+ int out_mod_ksym_global = 0;
++const volatile int x = 0;
+ bool triggered = false;
  
-+BTF_SET_START(tcp_dctcp_kfunc_ids)
-+#ifdef CONFIG_X86
-+#ifdef CONFIG_DYNAMIC_FTRACE
-+BTF_ID(func, dctcp_init)
-+BTF_ID(func, dctcp_update_alpha)
-+BTF_ID(func, dctcp_cwnd_event)
-+BTF_ID(func, dctcp_ssthresh)
-+BTF_ID(func, dctcp_cwnd_undo)
-+BTF_ID(func, dctcp_state)
-+#endif
-+#endif
-+BTF_SET_END(tcp_dctcp_kfunc_ids)
-+
-+static DEFINE_KFUNC_BTF_SET(&tcp_dctcp_kfunc_ids, tcp_dctcp_kfunc_btf_set);
-+
- static int __init dctcp_register(void)
- {
-+	int ret;
-+
- 	BUILD_BUG_ON(sizeof(struct dctcp) > ICSK_CA_PRIV_SIZE);
--	return tcp_register_congestion_control(&dctcp);
-+	ret = tcp_register_congestion_control(&dctcp);
-+	if (ret)
-+		return ret;
-+	register_bpf_tcp_ca_kfunc_btf_set(&tcp_dctcp_kfunc_btf_set);
-+	return 0;
- }
+ SEC("raw_tp/sys_enter")
+@@ -16,6 +19,12 @@ int handler(const void *ctx)
+ 	int *val;
+ 	__u32 cpu;
  
- static void __exit dctcp_unregister(void)
- {
-+	unregister_bpf_tcp_ca_kfunc_btf_set(&tcp_dctcp_kfunc_btf_set);
- 	tcp_unregister_congestion_control(&dctcp);
- }
- 
-diff --git a/scripts/Makefile.modfinal b/scripts/Makefile.modfinal
-index 5e9b8057fb24..0755d4b8b74a 100644
---- a/scripts/Makefile.modfinal
-+++ b/scripts/Makefile.modfinal
-@@ -58,6 +58,7 @@ quiet_cmd_btf_ko = BTF [M] $@
-       cmd_btf_ko = 							\
- 	if [ -f vmlinux ]; then						\
- 		LLVM_OBJCOPY="$(OBJCOPY)" $(PAHOLE) -J --btf_base vmlinux $@; \
-+		$(RESOLVE_BTFIDS) --no-fail -s vmlinux $@; 		\
- 	else								\
- 		printf "Skipping BTF generation for %s due to unavailability of vmlinux\n" $@ 1>&2; \
- 	fi;
++	/* This should be preserved by clang, but DCE'd by verifier, and still
++	 * allow loading the raw_tp prog
++	 */
++	if (x)
++		bpf_testmod_invalid_mod_kfunc();
++	bpf_testmod_test_mod_kfunc(42);
+ 	val = (int *)bpf_this_cpu_ptr(&bpf_testmod_ksym_percpu);
+ 	out_mod_ksym_global = *val;
+ 	triggered = true;
 -- 
 2.33.0
 
