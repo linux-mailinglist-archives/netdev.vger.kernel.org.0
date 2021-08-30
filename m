@@ -2,86 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4E343FBF6F
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 01:34:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B7E83FBF7B
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 01:38:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238988AbhH3XaG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Aug 2021 19:30:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60086 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237832AbhH3XaF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Aug 2021 19:30:05 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 803B260FC0;
-        Mon, 30 Aug 2021 23:29:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1630366150;
-        bh=xq8XScnmTK4fr9P3i7S760aCutNMN+7LDzGhcmVTh4s=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=aprqEKThxV+fIq/CmJneljvgQ33CjmgOaY7cZuBQkpsGCkoENprHmGElGAfxTWEQq
-         CRWRsd1Pjyqdh+3a9EtrIA94B7Slf0p2QkFhkDUYiVsvTIe4sueBas55hGulzNscmb
-         DM7d8pAIL630qA2N3o8QN/vsWQntuZUIWxayfp9Q8GT342bxUE5u8aDitg10EYF1ey
-         cUIcR2zkOJQiGK3QgB8Q1sqhkmYNyB3BYKnB+xlFU9oD3ohYBLCcjOUJRydYfMGOxG
-         9mfzbPSyPXTFoeMtuZ30jYzKikRxJjhfS7nZrPPZtqmnhYLINFHuZh2xmJbYF4ZW0p
-         3R0j2vPi4KehQ==
-Date:   Mon, 30 Aug 2021 16:29:09 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     "Machnikowski, Maciej" <maciej.machnikowski@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "abyagowi@fb.com" <abyagowi@fb.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        bsd@fb.com
-Subject: Re: [RFC v2 net-next 1/2] rtnetlink: Add new RTM_GETSYNCESTATE
- message to get SyncE status
-Message-ID: <20210830162909.110753ec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210830205758.GA26230@hoboy.vegasvil.org>
-References: <20210829080512.3573627-1-maciej.machnikowski@intel.com>
-        <20210829080512.3573627-2-maciej.machnikowski@intel.com>
-        <20210829151017.GA6016@hoboy.vegasvil.org>
-        <PH0PR11MB495126A63998DABA5B5DE184EACA9@PH0PR11MB4951.namprd11.prod.outlook.com>
-        <20210830205758.GA26230@hoboy.vegasvil.org>
+        id S239062AbhH3Xge (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Aug 2021 19:36:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34308 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239019AbhH3Xgd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 19:36:33 -0400
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B528CC06175F;
+        Mon, 30 Aug 2021 16:35:39 -0700 (PDT)
+Received: by mail-yb1-xb33.google.com with SMTP id e133so15889806ybh.0;
+        Mon, 30 Aug 2021 16:35:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OKDoD/QJcgWewLIDPnJSVzAb1whguIQ8y+ADq+LbV5o=;
+        b=PgdqsoEACZQ4zkZOcXcJGsv3AWG0I3NT0tpoohhjMydl9XgLTyebqr8jjb77VaYXMV
+         n4AEwRHmPXokVY4SFqLi7cnI4sive6mDjULHdeA+gcg/AOXfEYIXm0HC+8R6hS+RcTrC
+         P6d1HJl9SPAXnQAWU/uRLOFFqhLd6IG5F/QRSGjWXlG4SPEgOvfALJcZ74YU5rtaSwCp
+         zevUnkrrKfBQZBxtSuQ4bE4IiMAgoIxP+uEvx8f4nFK0ppxA/hPh+hiMaenGmmRiFuoF
+         yRYNarDUXEU81bLkdnzHyfJ0hX/osjLEUtsgjHFUhVb/IYEq3yYFQm2d7ca0+TXfNUIL
+         akkw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OKDoD/QJcgWewLIDPnJSVzAb1whguIQ8y+ADq+LbV5o=;
+        b=T9fkU8FOIOKwUSiEEl/hyAk3Vy9wbV3bCq+8Zw+YFSQTt5MJtIjoH5mg7e1ejn7aNi
+         tUI2CS5TQ1dQgzSSJYtIJvp/VuCzNaowQ715dsSUicT6QsobkC6XUMgTcJ5J4d0AcJWm
+         KTHXPGLfKzoZhXn6d1TNWdPo6tu+9XJASwthtfKtvbO0JNe3md0n4CxB0JYOPESX+i+g
+         qtAWLiiTdYUyKDCFCx7aDcznMOCsl38SW3ngU5FRGgm2X/Ilp/tjoGkCeUyYLaXBfcIa
+         w8v0dGsi950KH3FjsxN+GBKLLx/Z8mAocRsM+UqJ6sc+IssTleOJXc5A8L7FEsNlO4Ff
+         pzzw==
+X-Gm-Message-State: AOAM533gyLzXEbZqUJpaQyBDdfUYgUhxphXkjcYg5MxvYvr2ESPAg+FS
+        a5ZYCZz1ZmH4VdiscGXZk8FLODwNbt0iEHK+JmM=
+X-Google-Smtp-Source: ABdhPJxiq31z+O5aWt+rIvznO+n+gRYLb6CXP0HIYIsJL3yU55+eK3EuFN1Bq/341z2fajs7i9wzTvhG2ZV2EdFhRpY=
+X-Received: by 2002:a25:5e8a:: with SMTP id s132mr26833403ybb.510.1630366538960;
+ Mon, 30 Aug 2021 16:35:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20210828052006.1313788-1-davemarchevsky@fb.com> <20210828052006.1313788-3-davemarchevsky@fb.com>
+In-Reply-To: <20210828052006.1313788-3-davemarchevsky@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 30 Aug 2021 16:35:28 -0700
+Message-ID: <CAEf4BzaGgyCpVLDc5g96+hze-HXfduERQMHDev0O0Ea6NdhGdQ@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 2/7] bpf: add bpf_trace_vprintk helper
+To:     Dave Marchevsky <davemarchevsky@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Yonghong Song <yhs@fb.com>, Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 30 Aug 2021 13:57:58 -0700 Richard Cochran wrote:
-> > Please take a look at the 10.2 Operation modes of the G.8264 and at the Figure A.1
-> > which depicts the EEC. This interface is to report the status of the EEC.  
-> 
-> Well, I read it, and it is still fairly high level with no mention at
-> all of "DPLL".  I hope that the new RTNL states will cover other
-> possible EEC implementations, too.
-> 
-> The "Reference source selection mechanism" is also quite vague.  Your
-> patch is more specific:
-> 
-> +enum if_eec_src {
-> +       IF_EEC_SRC_INVALID = 0,
-> +       IF_EEC_SRC_UNKNOWN,
-> +       IF_EEC_SRC_SYNCE,
-> +       IF_EEC_SRC_GNSS,
+On Fri, Aug 27, 2021 at 10:20 PM Dave Marchevsky <davemarchevsky@fb.com> wrote:
+>
+> This helper is meant to be "bpf_trace_printk, but with proper vararg
+> support". Follow bpf_snprintf's example and take a u64 pseudo-vararg
+> array. Write to /sys/kernel/debug/tracing/trace_pipe using the same
+> mechanism as bpf_trace_printk.
+>
+> Signed-off-by: Dave Marchevsky <davemarchevsky@fb.com>
+> ---
 
-Hmm, IDK if this really belongs in RTNL. The OCP time card that
-Jonathan works on also wants to report signal lock, and it locks
-to GNSS. It doesn't have any networking functionality whatsoever.
+LGTM.
 
-Can we add a genetlink family for clock info/configuration? From 
-what I understood discussing this with Jonathan it sounded like most
-clocks today have a vendor-specific character device for configuration
-and reading status.
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
 
-I'm happy to write the plumbing if this seems like an okay idea 
-but too much work for anyone to commit.
+>  include/linux/bpf.h            |  1 +
+>  include/uapi/linux/bpf.h       |  9 ++++++
+>  kernel/bpf/core.c              |  5 ++++
+>  kernel/bpf/helpers.c           |  2 ++
+>  kernel/trace/bpf_trace.c       | 52 +++++++++++++++++++++++++++++++++-
+>  tools/include/uapi/linux/bpf.h |  9 ++++++
+>  6 files changed, 77 insertions(+), 1 deletion(-)
+>
 
-> +       IF_EEC_SRC_PTP,
-> +       IF_EEC_SRC_EXT,
-> +       __IF_EEC_SRC_MAX,
-> +};
-> 
-> But I guess your list is reasonable.  It can always be expanded, right?
+[...]
