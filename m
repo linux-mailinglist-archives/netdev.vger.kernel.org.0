@@ -2,174 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CB9A3FBE0C
-	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 23:22:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E6283FBE60
+	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 23:35:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237258AbhH3VXW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Aug 2021 17:23:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60440 "EHLO
+        id S238438AbhH3Vge (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Aug 2021 17:36:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230025AbhH3VXS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 17:23:18 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AF06C061575
-        for <netdev@vger.kernel.org>; Mon, 30 Aug 2021 14:22:24 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id g14so74784ljk.5
-        for <netdev@vger.kernel.org>; Mon, 30 Aug 2021 14:22:24 -0700 (PDT)
+        with ESMTP id S237612AbhH3Vgd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 17:36:33 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6730C061575;
+        Mon, 30 Aug 2021 14:35:39 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id z5so30997569ybj.2;
+        Mon, 30 Aug 2021 14:35:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=FZrNJ6h5hmI27C2Xkk2J51RyITJq+u6Df453g84lcy4=;
-        b=I2V60Z/MEZgf9DNBZx37Apl2tFIwHEK0hXY+doGJcyGAUmhIxmnLKLYifiRfLamJnb
-         lBoaJSngqZI21Q9LOq4cMlYgypo1LgBsBb6JMP25eruRirrfTMWNVIrtSbjEusVtMQBv
-         Hp/NUhYwoiHKsODDTmha4oGbQDRW1xxTUrct9mx1L/lnrQj6Keh6Ii/2en7VlgNfutYb
-         zC87wOpnpX64bn/izWxYcOSC6G/FuZ7Amv5IN/1AE4J/mDWGDZtTS8CGEZd3wxo9sB1B
-         bCMkZbh+BU6/U9bQw0dswQbGgnb8QmfIueWFGbBzbdRU216EyO211Pmo96ezjTEffUIj
-         o2Tg==
+        bh=gf34JnV1lSM1Cbi+GL89F2UQCzx/0cv4oSjkGUIGpRE=;
+        b=rIfwrzYvLmYLOQXE7nQ7h33IQEgQKgY+u1I6bSTi2vnfz/NzZSF82oh0NRpncwjBmd
+         BIOXs8UhtPJNMz/ygXJf+GvS3hH1Zig2IIo+qVjBBYHWggMw7mEPQqOYeehFP/vR0tLr
+         FYD+N0Yrn4WSlvgB6Qu63t2BnWRzt++VW/+c+1GUxajZgfn8KVA2MJb5pDIZDOSVc3wF
+         3GwtY2rEhRLzYo+PQxJTRvt1TjJ7eCz8QXArqHMKN3RWlR9qvh3bSF63g/gw2lmXaWsX
+         sDZQc9dHbjBgQEpr3p4EhmCQxAbej4d4HNXTDgypXFmJIvea1uxsvB4Bnhbf9Erwq1d7
+         mHQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=FZrNJ6h5hmI27C2Xkk2J51RyITJq+u6Df453g84lcy4=;
-        b=iQ2+1DchqAioJqgtdXuZxENeC1Omvm+JtUOrYh1zVKzNo/OPw+cCPbUyf0hdEm4k0f
-         f2EulZ4+juwDB+8la20e9F12jMOnaD7LaCejqqqq8q8gIOVQLETBAlcDyek6ikHI4hs6
-         k7eVvRPbl1GFdcB2KVQ3ZU4X0i6mEL8J635/0R/ENtGHotX+RYr2dS01PIhZa3sEDWki
-         Hj+X5k0LPD2JDt6pGQvYrUl1XGaHx2I/UFo9kLySy05rMfucANWyQb76wNd21VK4m8B5
-         Yw1aYo4qkx/kp+adz5HT2UaEtwUGKoLOfTauz+NmzKL44yl/BrOv5ujos8jgpYCpYCFI
-         AfHg==
-X-Gm-Message-State: AOAM533GKT8PiOBoCCt7jeohEeo52X4KmGtmiFtjR9ZDbouOcfu1WSrr
-        +MaaTESxfgPbXI1a711r0rNMWTxKF9CPDU1TRjw8Og==
-X-Google-Smtp-Source: ABdhPJxz8mPf8m22TkAWlMVUBbjeRUoQJf+JRGL8AgxbKurvXcbMf8b7R1Tzhqlcd5AP/kqAi/4ZaRTn/wWyEObbPdc=
-X-Received: by 2002:a2e:89c1:: with SMTP id c1mr22379557ljk.273.1630358542612;
- Mon, 30 Aug 2021 14:22:22 -0700 (PDT)
+        bh=gf34JnV1lSM1Cbi+GL89F2UQCzx/0cv4oSjkGUIGpRE=;
+        b=Onu05vF0DS4HxQ3jnv7OPohBQkSkXrTEnG9Q1uKzeKICbZvhztjOnmBMyhzuHw6HIg
+         BPYNNjKOSV045C6sLNXd5id8ZxlSWeJODhRdU2DX8oJvjoDgQcjUT7ZRIS30eTvD/pya
+         O3a5vUdmymJ4IUtfnmZ4w0qjpxX4sJi+mgtlmcVZJWg1X6WUZ7RhKoZ/Z7MqlFjIiVaw
+         Abd8eQEM6fA/X3dB0gs4mkesP5BwEBybUf870eHNdYVjtxJxAeiZ4AMGFipW3ctQhZMz
+         aGjVjH6I0+TOXxxv+tERixOXblqL9hEYxjzhwzSXTg0cYB6WrPHvA345bNoXjotLIxmp
+         V4Pw==
+X-Gm-Message-State: AOAM533ET3j1qKemykxTsGimm8N1rcz2Gm7DLtNvuzhYQc0XWt3ukY9V
+        d9m0OHUIxOMeTazgP5oCL6VsYRweh2WzFZecvC0=
+X-Google-Smtp-Source: ABdhPJw3up6v1OrLUwUjBJPy5FhqtSclWkUuy0H89JieOlpg+lHkihbS7AN112XNlWcEjmrB7nh0Ms8bUCSeOBOON0I=
+X-Received: by 2002:a25:4941:: with SMTP id w62mr26204913yba.230.1630359338981;
+ Mon, 30 Aug 2021 14:35:38 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210829002601.282521-1-linus.walleij@linaro.org> <20210830081254.osqvwld7w7jk7jap@skbuf>
-In-Reply-To: <20210830081254.osqvwld7w7jk7jap@skbuf>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Mon, 30 Aug 2021 23:22:11 +0200
-Message-ID: <CACRpkdZE7i1h1vPTJz+QwkDdBiVg1tF+uxhaOATZGZctkWy+Ag@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/2] net: dsa: rtl8366rb: support bridge offloading
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        DENG Qingfang <dqfext@gmail.com>,
-        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Mauri Sandberg <sandberg@mailfence.com>
+References: <20210827072539.3399-1-msuchanek@suse.de>
+In-Reply-To: <20210827072539.3399-1-msuchanek@suse.de>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 30 Aug 2021 14:35:28 -0700
+Message-ID: <CAEf4BzbwX792higEDr_O+mqdqkZDoD67GuGvE7gEr1tO=U46Og@mail.gmail.com>
+Subject: Re: [PATCH] libbpf: Fix build with latest gcc/binutils with LTO
+To:     Michal Suchanek <msuchanek@suse.de>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Patrick McCarty <patrick.mccarty@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Networking <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 30, 2021 at 10:12 AM Vladimir Oltean <olteanv@gmail.com> wrote:
-
-> > +/* Port isolation registers */
-> > +#define RTL8366RB_PORT_ISO_BASE              0x0F08
-> > +#define RTL8366RB_PORT_ISO(pnum)     (RTL8366RB_PORT_ISO_BASE + (pnum))
-> > +#define RTL8366RB_PORT_ISO_EN                BIT(0)
-> > +#define RTL8366RB_PORT_ISO_PORTS_MASK        GENMASK(7, 1)
+On Fri, Aug 27, 2021 at 12:25 AM Michal Suchanek <msuchanek@suse.de> wrote:
 >
-> If RTL8366RB_NUM_PORTS is 6, then why is RTL8366RB_PORT_ISO_PORTS_MASK a
-> 7-bit field?
-
-It's a 6 bit field actually from bit 1 to bit 7 just shifted up one
-bit because bit 0 is "enable".
-
-> > +     /* Isolate all user ports so only the CPU port can access them */
-> > +     for (i = 0; i < RTL8366RB_PORT_NUM_CPU; i++) {
-> > +             ret = regmap_write(smi->map, RTL8366RB_PORT_ISO(i),
-> > +                                RTL8366RB_PORT_ISO_EN |
-> > +                                BIT(RTL8366RB_PORT_NUM_CPU + 1));
+> From: Patrick McCarty <patrick.mccarty@intel.com>
 >
-> The shifting due to RTL8366RB_PORT_ISO_EN looks weird, I can see it
-> being mishandled in the future, with code moved around, copied and
-> pasted between realtek drivers and such. How about making a macro
+> After updating to binutils 2.35, the build began to fail with an
+> assembler error. A bug was opened on the Red Hat Bugzilla a few days
+> later for the same issue.
 >
-> #define RTL8366RB_PORT_ISO_PORTS(x)     ((x) << 1)
-
-OK
-
-> > +     /* CPU port can access all ports */
+> Work around the problem by using the new `symver` attribute (introduced
+> in GCC 10) as needed, instead of the `COMPAT_VERSION` and
+> `DEFAULT_VERSION` macros, which expand to assembler directives.
 >
-> Except itself maybe? RTL8366RB_PORT_NUM_CPU is 5, so maybe use something
-> like
+> Fixes: https://github.com/libbpf/libbpf/issues/338
+
+This is not a proper tag. We used the following form before:
+
+  [0] Closes: https://github.com/libbpf/libbpf/issues/280
+
+So it's a reference. And then mention in commit message that this was
+initiated by the issue on Github ([0]), or something along those
+lines.
+
+
+> Fixes: https://bugzilla.redhat.com/show_bug.cgi?id=1863059
+> Fixes: https://bugzilla.opensuse.org/show_bug.cgi?id=1188749
+
+These are also not proper Fixes: tags for kernel. It's fine if you
+mention that this change fixes those bugs, but maybe use the reference
+([1], [2]) style for that?
+
+> Signed-off-by: Patrick McCarty <patrick.mccarty@intel.com>
+> Make the change conditional on GCC version
+
+This is not a tag, maybe remove this or make it part of the commit
+message properly?
+
+> Signed-off-by: Michal Suchanek <msuchanek@suse.de>
+> ---
+>  tools/lib/bpf/libbpf_internal.h | 23 +++++++++++++++++------
+>  tools/lib/bpf/xsk.c             |  4 ++--
+>  2 files changed, 19 insertions(+), 8 deletions(-)
 >
-> RTL8366RB_PORT_ISO_PORTS(dsa_user_ports(ds))
-
-Tested this and it appears to work just fine!
-
-> Looks okay for the most part. It is to be expected for a new driver that
-> introduces bridging offload to also handle .port_pre_bridge_flags,
-> .port_bridge_flags and .port_fast_age, for two reasons:
-> (a) it is expected that a port which does not offload the bridge, and
->     performs forwarding in software, to not perform address learning in
->     hardware
-> (b) it is expected that the addresses learned while the port was under a
->     bridge are not carried over into its life as a standalone port, when
->     it leaves that bridge
-
-I studied the vendor code drop and register file and implemented
-the BR_LEARNING flag, and I also managed to implement fast aging.
-Each as a separate patch. Thanks for pointing this out!
-
-> Also, it would be nice if you could do some minimal isolation at the
-> level of the FDB lookup. Currently, if I am not mistaken, a port will
-> perform FDB lookup even if it is standalone, and it might find an FDB
-> entry for a given {MAC DA, VLAN ID} pair that belongs to a port outside
-> of its isolation mask, so forwarding will be blocked and that packet
-> will be dropped (instead of the expected behavior which is for that
-> packet to be forwarded to the CPU).
+> diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
+> index 016ca7cb4f8a..af0f3fb102c0 100644
+> --- a/tools/lib/bpf/libbpf_internal.h
+> +++ b/tools/lib/bpf/libbpf_internal.h
+> @@ -86,20 +86,31 @@
+>         (offsetof(TYPE, FIELD) + sizeof(((TYPE *)0)->FIELD))
+>  #endif
 >
-> Normally the expectation is that this FDB-level isolation can be achieved
-> by configuring the VLANs of one bridge to use a filter ID that is
-> different from the VLANs of another bridge, and the port-based default
-> VLAN of standalone ports to use yet another filter ID. This is yet
-> another reason to disable learning on standalone ports, so that their
-> filter ID never contains any FDB entry, and packets are always flooded
-> to their only possible destination, the CPU port.
->
-> Currently in DSA we do not offer a streamlined way for you to determine
-> what filter ID to use for a certain VLAN belonging to a certain bridge,
-> but at the very least you can test FDB isolation between standalone
-> ports and bridged ports. The simplest way to do that, assuming you
-> already have a forwarding setup with 2 switch ports swp0 and swp1, is to
-> enable CONFIG_BONDING=y, and then:
->
-> ip link add br0 type bridge
-> ip link set bond0 master br0
-> ip link set swp1 master bond0
-> ip link set swp0 master br0
->
-> Then ping between station A attached to swp0 and station B attached to
-> swp1.
->
-> Because swp1 cannot offload bond0, it will fall back to software
-> forwarding and act as standalone, i.e. what you had up till now.
-> With hardware address learning enabled on swp0 (a port that offloads
-> br0), it will learn station A's source MAC address. Then when swp1 needs
-> to send a packet to station A's destination MAC address, it would be
-> tempted to look up the FDB, find that address, and forward to swp0. But
-> swp0 is isolated from swp1. If you use a filter ID for standalone ports
-> and another filter ID for bridged ports you will avoid that problem, and
-> you will also lay the groundwork for the full FDB isolation even between
-> bridges that will be coming during the next development cycle.
->
-> If you feel that the second part is too much for now, you can just add
-> the extra callbacks for address learning and flushing (although I do
-> have some genuine concerns about how reliable was the software forwarding
-> with this driver, seeing that right now it enables hardware learning
-> unconditionally). Is there something that isolates FDB lookups already?
+> +#ifdef __GNUC__
+> +# if __GNUC__ >= 10
+> +#  define DEFAULT_VERSION(internal_name, api_name, version) \
+> +__attribute__((__symver__(#api_name "@@" #version)))
+> +#  define COMPAT_VERSION(internal_name, api_name, version) \
+> +__attribute__((__symver__(#api_name "@" #version)))
+> +# endif
+> +#endif
+> +
+> +#if !defined(COMPAT_VERSION) || !defined(DEFAULT_VERSION)
 
-Ugh that was massive, I'm not that smart ;)
+This seems wrong. If __GNUC__ && __GNUC__ >= 10 we'll define
+DEFAULT_VERSION and COMPAT_VERSION as if we are linking in shared
+library mode. This will be wrong on new GCC *and* static linking mode.
+I think the above declarations should be inside #ifdef SHARED section.
 
-I kinda understand it but have no idea how to achieve this with
-the current hardware, driver and vendor code mess.
+Also, can you please write it out as #if defined(__GNUC__) && __GNUC__
+>= 10, instead of doubly nested #if/#ifdef condition?
 
-I prefer to fix the first part for now.
 
-Yours,
-Linus Walleij
+>  /* Symbol versioning is different between static and shared library.
+>   * Properly versioned symbols are needed for shared library, but
+>   * only the symbol of the new version is needed for static library.
+>   */
+> -#ifdef SHARED
+> -# define COMPAT_VERSION(internal_name, api_name, version) \
+> +# ifdef SHARED
+> +#  define COMPAT_VERSION(internal_name, api_name, version) \
+>         asm(".symver " #internal_name "," #api_name "@" #version);
+> -# define DEFAULT_VERSION(internal_name, api_name, version) \
+> +#  define DEFAULT_VERSION(internal_name, api_name, version) \
+>         asm(".symver " #internal_name "," #api_name "@@" #version);
+> -#else
+> -# define COMPAT_VERSION(internal_name, api_name, version)
+> -# define DEFAULT_VERSION(internal_name, api_name, version) \
+> +# else
+> +#  define COMPAT_VERSION(internal_name, api_name, version)
+> +#  define DEFAULT_VERSION(internal_name, api_name, version) \
+>         extern typeof(internal_name) api_name \
+>         __attribute__((alias(#internal_name)));
+> +# endif
+>  #endif
+>
+>  extern void libbpf_print(enum libbpf_print_level level,
+> diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+> index e9b619aa0cdf..a2111696ba91 100644
+> --- a/tools/lib/bpf/xsk.c
+> +++ b/tools/lib/bpf/xsk.c
+> @@ -281,6 +281,7 @@ static int xsk_create_umem_rings(struct xsk_umem *umem, int fd,
+>         return err;
+>  }
+>
+> +DEFAULT_VERSION(xsk_umem__create_v0_0_4, xsk_umem__create, LIBBPF_0.0.4)
+>  int xsk_umem__create_v0_0_4(struct xsk_umem **umem_ptr, void *umem_area,
+>                             __u64 size, struct xsk_ring_prod *fill,
+>                             struct xsk_ring_cons *comp,
+> @@ -345,6 +346,7 @@ struct xsk_umem_config_v1 {
+>         __u32 frame_headroom;
+>  };
+>
+> +COMPAT_VERSION(xsk_umem__create_v0_0_2, xsk_umem__create, LIBBPF_0.0.2)
+>  int xsk_umem__create_v0_0_2(struct xsk_umem **umem_ptr, void *umem_area,
+>                             __u64 size, struct xsk_ring_prod *fill,
+>                             struct xsk_ring_cons *comp,
+> @@ -358,8 +360,6 @@ int xsk_umem__create_v0_0_2(struct xsk_umem **umem_ptr, void *umem_area,
+>         return xsk_umem__create_v0_0_4(umem_ptr, umem_area, size, fill, comp,
+>                                         &config);
+>  }
+> -COMPAT_VERSION(xsk_umem__create_v0_0_2, xsk_umem__create, LIBBPF_0.0.2)
+> -DEFAULT_VERSION(xsk_umem__create_v0_0_4, xsk_umem__create, LIBBPF_0.0.4)
+>
+>  static enum xsk_prog get_xsk_prog(void)
+>  {
+> --
+> 2.31.1
+>
