@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF8843FB51B
-	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 14:08:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B25A23FB518
+	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 14:08:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236906AbhH3MBf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Aug 2021 08:01:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49316 "EHLO mail.kernel.org"
+        id S236896AbhH3MBe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Aug 2021 08:01:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49318 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236839AbhH3MB3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Aug 2021 08:01:29 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 71BAC61163;
-        Mon, 30 Aug 2021 12:00:21 +0000 (UTC)
+        id S236837AbhH3MB2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Aug 2021 08:01:28 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B443861183;
+        Mon, 30 Aug 2021 12:00:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1630324822;
-        bh=UtKDepxJnKD6aep966SvPGD5FdpgoSt7hPXJeZYRJj4=;
+        s=k20201202; t=1630324823;
+        bh=c0WEBuiPz2p8ttwkQK1F06igktYLP0NxAjk2vTzCpo4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Js/woudnHpe+aauZRGPtZS6e+nbyNSebT4D4LBDRnqSvAecSdncPJKYww9blONq5f
-         ZuZb4+Wcm6ggvpoZwTUhkdUf5VgE3A1mwFZ1O7FyPnC5tN975hyQD/k4NSYoRrEbLn
-         VunVhxUkWtGsOP9Fc+I7QKVzyma3zyHvae93zKdjHz5P3NFKW55+Vfa5umFBwGbxVn
-         PYB++lFUmPtyhwU9Tfxf4DAcUzlTH1M0yQz/EAcij0qJp1RI7//9HY5/DIq+ovB2tp
-         j75cp0sXrQhfIrSpYKoNfjc5ss4QfyVXDUWtip8gscFWaAHt7vijuRzBSr2oc7lQOB
-         WtVyxA3V0jLEw==
+        b=UH4KMP9wy8hB/DDOuRE/iWtjycloaunwn9h88plbutf+1eCTDDDu5UAyOyZbPIooD
+         z2pGxWWmtnnaB0buKUqx3WZ0ztj97GpU74A27J6iRLOjB1oCLQYN/5EXMh7rzS4o1j
+         Q3L6BsKznlogp6Oa6R3CLwKYOUfHPoR1htDYJ81MqTDnrqT93+7BKpnSj37nRhO+CR
+         XQVbQsodPi9wO/Qn70zOrSuBij61Xz2+9T+egOIxnWnrvxBZBtkLpfSzqai5XX2HYR
+         YroQ6Puac2GK8iWG71Iu125RbwNAyKmAUZb8Nvv4veS2vQ7lWzqP/P9OpFhGP4btBd
+         HtOcBmzxD/XRQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Shai Malin <smalin@marvell.com>,
-        Prabhakar Kushwaha <pkushwaha@marvell.com>,
-        Ariel Elior <aelior@marvell.com>,
+Cc:     Harini Katakam <harini.katakam@xilinx.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        Michal Simek <michal.simek@xilinx.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 03/10] qed: Fix the VF msix vectors flow
-Date:   Mon, 30 Aug 2021 08:00:10 -0400
-Message-Id: <20210830120018.1017841-3-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 04/10] net: macb: Add a NULL check on desc_ptp
+Date:   Mon, 30 Aug 2021 08:00:11 -0400
+Message-Id: <20210830120018.1017841-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210830120018.1017841-1-sashal@kernel.org>
 References: <20210830120018.1017841-1-sashal@kernel.org>
@@ -44,41 +44,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shai Malin <smalin@marvell.com>
+From: Harini Katakam <harini.katakam@xilinx.com>
 
-[ Upstream commit b0cd08537db8d2fbb227cdb2e5835209db295a24 ]
+[ Upstream commit 85520079afce885b80647fbd0d13d8f03d057167 ]
 
-For VFs we should return with an error in case we didn't get the exact
-number of msix vectors as we requested.
-Not doing that will lead to a crash when starting queues for this VF.
+macb_ptp_desc will not return NULL under most circumstances with correct
+Kconfig and IP design config register. But for the sake of the extreme
+corner case, check for NULL when using the helper. In case of rx_tstamp,
+no action is necessary except to return (similar to timestamp disabled)
+and warn. In case of TX, return -EINVAL to let the skb be free. Perform
+this check before marking skb in progress.
+Fixes coverity warning:
+(4) Event dereference:
+Dereferencing a null pointer "desc_ptp"
 
-Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
-Signed-off-by: Ariel Elior <aelior@marvell.com>
-Signed-off-by: Shai Malin <smalin@marvell.com>
+Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
+Reviewed-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+Signed-off-by: Michal Simek <michal.simek@xilinx.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/qlogic/qed/qed_main.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/cadence/macb_ptp.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_main.c b/drivers/net/ethernet/qlogic/qed/qed_main.c
-index bc1f5b36b5bf..1db49424aa43 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_main.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_main.c
-@@ -559,7 +559,12 @@ static int qed_enable_msix(struct qed_dev *cdev,
- 			rc = cnt;
- 	}
+diff --git a/drivers/net/ethernet/cadence/macb_ptp.c b/drivers/net/ethernet/cadence/macb_ptp.c
+index 43a3f0dbf857..f5aec28c7730 100644
+--- a/drivers/net/ethernet/cadence/macb_ptp.c
++++ b/drivers/net/ethernet/cadence/macb_ptp.c
+@@ -275,6 +275,12 @@ void gem_ptp_rxstamp(struct macb *bp, struct sk_buff *skb,
  
--	if (rc > 0) {
-+	/* For VFs, we should return with an error in case we didn't get the
-+	 * exact number of msix vectors as we requested.
-+	 * Not doing that will lead to a crash when starting queues for
-+	 * this VF.
-+	 */
-+	if ((IS_PF(cdev) && rc > 0) || (IS_VF(cdev) && rc == cnt)) {
- 		/* MSI-x configuration was achieved */
- 		int_params->out.int_mode = QED_INT_MODE_MSIX;
- 		int_params->out.num_vectors = rc;
+ 	if (GEM_BFEXT(DMA_RXVALID, desc->addr)) {
+ 		desc_ptp = macb_ptp_desc(bp, desc);
++		/* Unlikely but check */
++		if (!desc_ptp) {
++			dev_warn_ratelimited(&bp->pdev->dev,
++					     "Timestamp not supported in BD\n");
++			return;
++		}
+ 		gem_hw_timestamp(bp, desc_ptp->ts_1, desc_ptp->ts_2, &ts);
+ 		memset(shhwtstamps, 0, sizeof(struct skb_shared_hwtstamps));
+ 		shhwtstamps->hwtstamp = ktime_set(ts.tv_sec, ts.tv_nsec);
+@@ -307,8 +313,11 @@ int gem_ptp_txstamp(struct macb_queue *queue, struct sk_buff *skb,
+ 	if (CIRC_SPACE(head, tail, PTP_TS_BUFFER_SIZE) == 0)
+ 		return -ENOMEM;
+ 
+-	skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
+ 	desc_ptp = macb_ptp_desc(queue->bp, desc);
++	/* Unlikely but check */
++	if (!desc_ptp)
++		return -EINVAL;
++	skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
+ 	tx_timestamp = &queue->tx_timestamps[head];
+ 	tx_timestamp->skb = skb;
+ 	/* ensure ts_1/ts_2 is loaded after ctrl (TX_USED check) */
 -- 
 2.30.2
 
