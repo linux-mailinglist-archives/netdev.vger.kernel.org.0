@@ -2,106 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF3593FBA4A
-	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 18:43:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AD2E3FBA4E
+	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 18:45:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237860AbhH3Qn5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Aug 2021 12:43:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59710 "EHLO mail.kernel.org"
+        id S237808AbhH3QqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Aug 2021 12:46:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:32838 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237049AbhH3Qn4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Aug 2021 12:43:56 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9CCFD60E90;
-        Mon, 30 Aug 2021 16:43:02 +0000 (UTC)
+        id S233446AbhH3QqU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Aug 2021 12:46:20 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E234060E90;
+        Mon, 30 Aug 2021 16:45:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1630341782;
-        bh=3jELwyqjZM5q7lHZjWyEBaPFAJtZedb/iuwBoo03j5w=;
+        s=k20201202; t=1630341926;
+        bh=1qZTcEvIsAXBUStNE8UgF9NAfGDDOJr5XumUMJdnFBY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=JSafe2vbeIQAAm6u+KUHiYDyZhlRLlKukqGcvu03wgXNVAYlntz2Fb69i8fzI4ReC
-         FUGK3RJdf1REn6a6mkphnTHNo/CRTs5YUV9xTBPCLRvrWF4vxBFcCXQEn10PyrQPKX
-         yAKQ6Q6ZEQaovt3gCKlK8vGvDDMiRv3IicE9I5FoJQYivq9/oCK2wrmkANNVcp/6+f
-         buZ73+YhpUngOyVqiFpC9ZwQGIcEBND9QFtyi3KrLWtJ+R4WV3wMFgHZzeHPyeaV5r
-         VFaiwSz6ZB8nrDfermOdKHWMSW/zIcU2yf24qhQHzSh1bmwLQIibDLn4ubk3aZuBNt
-         cLSZ6wBYEKkXg==
-Date:   Mon, 30 Aug 2021 09:43:01 -0700
+        b=hs71tLE/RxlvQj0tMheczqyzM4fDjXgScgYeTuHGXOdVOGdPDbfiIP9KF1dHstL9h
+         OBa6vxnPLnJrvd/x+BNRN4vCL+eokWpBIO7eAn0xej6wdvFXg2+p3DPSZdPUUplypi
+         IweUDAd2Hvb3pBlQW29I3cgXHLEBAGUmNwzHWbau7SLJhCtxEmzdIkQNxvkQk+6GDZ
+         2VWxLW2fYSD7B8gpNb6xhr9eSQJ519bsuTUhT9Cg0NW/eQHTVID9IQYRu21/hK/nXe
+         ng6+jNQsBxVg1Dm7RRW1BWtDWjervsuWQkwSDRXff99BMyXHVLlXT5JSpV/VMwKEkU
+         3WEB4rO7Nr5ZA==
+Date:   Mon, 30 Aug 2021 09:45:25 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     ebiederm@xmission.com (Eric W. Biederman),
-        Andrey Ignatov <rdna@fb.com>, <netdev@vger.kernel.org>,
-        <davem@davemloft.net>, <kernel-team@fb.com>
-Subject: Re: [PATCH net] rtnetlink: Return correct error on changing device
- netns
-Message-ID: <20210830094301.4f6ada72@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210830075948.73fda029@hermes.local>
-References: <20210826002540.11306-1-rdna@fb.com>
-        <8735qwi3mt.fsf@disp2133>
-        <20210830075948.73fda029@hermes.local>
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] net: fix NULL pointer reference in cipso_v4_doi_free
+Message-ID: <20210830094525.3c97e460@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAHC9VhTEs9E+ZeGGp96NnOhmr-6MZLXf6ckHeG8w5jh3AfgKiQ@mail.gmail.com>
+References: <c6864908-d093-1705-76ce-94d6af85e092@linux.alibaba.com>
+        <18f0171e-0cc8-6ae6-d04a-a69a2a3c1a39@linux.alibaba.com>
+        <CAHC9VhTEs9E+ZeGGp96NnOhmr-6MZLXf6ckHeG8w5jh3AfgKiQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 30 Aug 2021 07:59:48 -0700 Stephen Hemminger wrote:
-> On Thu, 26 Aug 2021 11:15:22 -0500
-> ebiederm@xmission.com (Eric W. Biederman) wrote:
-> 
-> > The analysis and the fix looks good to me.
-> > 
-> > The code calling do_setlink is inconsistent.  One caller of do_setlink
-> > passes a NULL to indicate not name has been specified.  Other callers
-> > pass a string of zero bytes to indicate no name has been specified.
-> > 
-> > I wonder if we might want to fix the callers to uniformly pass NULL,
-> > instead of a string of length zero.
-> > 
-> > There is a slight chance this will trigger a regression somewhere
-> > because we are changing the error code but this change looks easy enough
-> > to revert in the unlikely event this breaks existing userspace.
-> > 
-> > Reviewed-by: "Eric W. Biederman" <ebiederm@xmission.com>  
-> 
-> This patch causes a new warning from Coverity:
-> ________________________________________________________________________________________________________
-> *** CID 1490867:  Null pointer dereferences  (FORWARD_NULL)
-> /net/core/rtnetlink.c: 2701 in do_setlink()
-> 2695     
-> 2696     	/*
-> 2697     	 * Interface selected by interface index but interface
-> 2698     	 * name provided implies that a name change has been
-> 2699     	 * requested.
-> 2700     	 */
->  [...]  
-> 2701     	if (ifm->ifi_index > 0 && ifname[0]) {
-> 2702     		err = dev_change_name(dev, ifname);
-> 2703     		if (err < 0)
-> 2704     			goto errout;
-> 2705     		status |= DO_SETLINK_MODIFIED;
-> 2706     
-> 
-> Originally, the code was not accepting ifname == NULL and would
-> crash. Somewhere along the way some new callers seem to have gotten
-> confused.
-> 
-> What code is call do_setlink() with NULL as ifname, that should be fixed.
+On Mon, 30 Aug 2021 10:17:05 -0400 Paul Moore wrote:
+> On Mon, Aug 30, 2021 at 6:28 AM =E7=8E=8B=E8=B4=87 <yun.wang@linux.alibab=
+a.com> wrote:
+> >
+> > In netlbl_cipsov4_add_std() when 'doi_def->map.std' alloc
+> > failed, we sometime observe panic:
+> >
+> >   BUG: kernel NULL pointer dereference, address:
+> >   ...
+> >   RIP: 0010:cipso_v4_doi_free+0x3a/0x80
+> >   ...
+> >   Call Trace:
+> >    netlbl_cipsov4_add_std+0xf4/0x8c0
+> >    netlbl_cipsov4_add+0x13f/0x1b0
+> >    genl_family_rcv_msg_doit.isra.15+0x132/0x170
+> >    genl_rcv_msg+0x125/0x240
+> >
+> > This is because in cipso_v4_doi_free() there is no check
+> > on 'doi_def->map.std' when doi_def->type got value 1, which
+> > is possibe, since netlbl_cipsov4_add_std() haven't initialize
+> > it before alloc 'doi_def->map.std'.
+> >
+> > This patch just add the check to prevent panic happen in similar
+> > cases.
+> >
+> > Reported-by: Abaci <abaci@linux.alibaba.com>
+> > Signed-off-by: Michael Wang <yun.wang@linux.alibaba.com>
+> > ---
+> >  net/netlabel/netlabel_cipso_v4.c | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-) =20
+>=20
+> I see this was already merged, but it looks good to me, thanks for
+> making those changes.
 
-It's a false positive. There's only one caller with ifname=NULL:
+FWIW it looks like v1 was also merged:
 
-static int rtnl_group_changelink(const struct sk_buff *skb,
-...
-			err = do_setlink(skb, dev, ifm, extack, tb, NULL, 0);
-			if (err < 0)
-				return err;
-
-Which has one caller, under this condition:
-
-		if (ifm->ifi_index == 0 && tb[IFLA_GROUP])
-			return rtnl_group_changelink(skb, net, ...
-
-condition which excludes evaluating the check in question:
-
-	if (ifm->ifi_index > 0 && ifname[0]) {
-		err = dev_change_name(dev, ifname);
-
-Proving ifm->ifi_index has to be 0 for ifname to be NULL.
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=
+=3D733c99ee8b
