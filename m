@@ -2,122 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B78803FBE96
-	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 23:53:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E498B3FBE9F
+	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 23:56:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238835AbhH3Vxz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Aug 2021 17:53:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39488 "EHLO
+        id S238756AbhH3V5a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Aug 2021 17:57:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237167AbhH3Vxv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 17:53:51 -0400
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBBA1C06175F
-        for <netdev@vger.kernel.org>; Mon, 30 Aug 2021 14:52:56 -0700 (PDT)
-Received: by mail-lj1-x232.google.com with SMTP id f2so28418607ljn.1
-        for <netdev@vger.kernel.org>; Mon, 30 Aug 2021 14:52:56 -0700 (PDT)
+        with ESMTP id S238674AbhH3V53 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 17:57:29 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13566C061575
+        for <netdev@vger.kernel.org>; Mon, 30 Aug 2021 14:56:35 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id x27so34262004lfu.5
+        for <netdev@vger.kernel.org>; Mon, 30 Aug 2021 14:56:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=90s4wpKUIcwIEvdTTZxL4JGPoTprkT4Ft/euRw6mn8k=;
-        b=MHlrErK7NQ3Ky/kK8DzH2Px7FATj7UAsOrCRLH5vTGWa0V2LXb3UhFmH1dLEX+rLui
-         Mk/RDykwIN4Ccv7AkL5GsZCcer4+Hyb3VEv+Zyiqb3awJrofWwFkehOl78NmuJEsQ4OJ
-         gufmSopoedLkVhkY3mxB+WTt7GYKNUxSedxxJk2eX2kIreEonBBYXnb8OgJHi4QDov7n
-         AeRfq4zhmuHdCX2N3VXqy8NDi8W9Dh2ks63DK6kCaAOt/5bBLPvDCkg1D2f3IPK+VcIf
-         faUBZS4JppGIvKQe4BdhxXHE24idvqsogttT80Qxk0QjlAdRc1Xg7H8nVjtNGdTk6J42
-         4nzQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=C6YE7H5bkUAOn/FCZ5PtJHi+huiBz7klA5IL6wSh/pk=;
+        b=Nxui/i+1+Cfa2tsydC8tKp3dxhqlW9kLtZpi2kFdgOT52PR+2tJdrJloi2qaADD/bX
+         NhKYx/NsmISPo1XbRpBpJ6tEH9HM3/38//OU6EP4ri2KIabCqA8SukOI5EIFeUMpSZuv
+         SvS4QyLRqlnQZc4cSNf3nVi/kjQjv6prthNhY8EnXTcgSI6gFwlk77013IY74kdpGIzQ
+         oo3qCNxsdB2bkb90R4J+JjJL0KQvDC5tnnTLfpXcmUxvzIzQtL3JQBlvTChXBjWHKnC1
+         K0dt7Hjjw2/ptyo75za0a15my9L20XvtciiFWH8Hf0UeKxJeNj6U6S42m4VziYhOqGEG
+         aQ/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=90s4wpKUIcwIEvdTTZxL4JGPoTprkT4Ft/euRw6mn8k=;
-        b=fGcUkS2mvy85rqVJ1IR6ig/mhLMB/j4OM4dIq+HnngUycr//SQtPyH9ka9kfjjBTna
-         ZbmJeVemUiOkN81HQ8HpO9im/6s58pL0XfmVf603Cb8FAE2bHYjJJuH4icm3xxZdWUVx
-         Mo52iU3eJgF/6jDMabGh0Fy1UvLtOWdao0d6C55Z49LXYcOXbTTsptJ9ttx+637C1VJt
-         7XFHnJdibSCD9Ygdy/e8OsseqM/vUtGLprFRher6XgEm5bNP2rkd4BnMlwivqtN8v5oi
-         fV+Z7J7YgxOH70oUFP8QsnRiWdLGRnkbMJqQV7Kr5zRTXumsCB6s4DhQAe+QIBvF3asu
-         eABg==
-X-Gm-Message-State: AOAM532uldLLYgUPPhzPXlwidrhop6T80ZsrhLrgnHIdRCXWGBDE2Y5I
-        S7kGBMO1LahJIviisEN+AvexDg==
-X-Google-Smtp-Source: ABdhPJzPxORbmoU7WVlv4KC9wL2YIshT3p+5xKnZ/bx7GEKfXoofQesNnV/sAgd899mewd3L4YpUbQ==
-X-Received: by 2002:a2e:6808:: with SMTP id c8mr22729019lja.70.1630360375088;
-        Mon, 30 Aug 2021 14:52:55 -0700 (PDT)
-Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
-        by smtp.gmail.com with ESMTPSA id h4sm1514049lft.184.2021.08.30.14.52.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Aug 2021 14:52:54 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=C6YE7H5bkUAOn/FCZ5PtJHi+huiBz7klA5IL6wSh/pk=;
+        b=TntHJGH4y8y0gzOeTfc3+99/EkPwhMNsoPDDM83FtuYqZXRLi5+Nsoc9+9dsq44Gvr
+         kn9F81KOPmtpnZaEf3E6t2kg0wxQQhfk17KKPTu5cCRUJlobXirfs3JFbKHVxyBB8RLE
+         dzdWS10tq/q1VmcKGLIlz/Wj63q4bwHHxX+RUcqg99SFL6Mw75FqsoEMw6C2oY9xvosw
+         OgVFbnCTBB2xzOrJcB44I4bcnQ7wzgTV0gJv1iliN1i7CaUbHZjWRiY6LsvQyqy3yRBd
+         wt/wRPVPsOuYTxGCtg1snLf83rjDLSdliy6oIXOU/axU/gu9knxZUYQeOOCKttIDtrZq
+         HsWw==
+X-Gm-Message-State: AOAM530YTYrKUUWo23WBxGlheSZ7ZhUAegc7Sj03MhiRIL3OjR4V+kn1
+        pk9Xgi32iAgdjoqAjI7yMdmycvAVVDWX8UI0hD4GWA==
+X-Google-Smtp-Source: ABdhPJw+D390c7yOUfkvqeG1Jfiud30GS26CibkKL1kqUN3DdBK676NnbU49rd15oENlkXWZKXaLSZ/8WtoC48vDj/s=
+X-Received: by 2002:ac2:5d4a:: with SMTP id w10mr19281206lfd.529.1630360593400;
+ Mon, 30 Aug 2021 14:56:33 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210828235619.249757-1-linus.walleij@linaro.org> <20210830072913.fqq6n5rn3nkbpm3q@skbuf>
+In-Reply-To: <20210830072913.fqq6n5rn3nkbpm3q@skbuf>
 From:   Linus Walleij <linus.walleij@linaro.org>
-To:     Andrew Lunn <andrew@lunn.ch>,
+Date:   Mon, 30 Aug 2021 23:56:22 +0200
+Message-ID: <CACRpkdbVs9H8CPYV9Fgwje40qqS=wxXqVkDc=Du=c82eqeKCAw@mail.gmail.com>
+Subject: Re: [PATCH net] net: dsa: tag_rtl4_a: Fix egress tags
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Mauri Sandberg <sandberg@mailfence.com>,
-        DENG Qingfang <dqfext@gmail.com>
-Subject: [PATCH net-next 5/5 v2] net: dsa: rtl8366rb: Support fast aging
-Date:   Mon, 30 Aug 2021 23:48:59 +0200
-Message-Id: <20210830214859.403100-6-linus.walleij@linaro.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210830214859.403100-1-linus.walleij@linaro.org>
-References: <20210830214859.403100-1-linus.walleij@linaro.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Mauri Sandberg <sandberg@mailfence.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This implements fast aging per-port using the special "security"
-register, which will flush any L2 LUTs on a port.
+On Mon, Aug 30, 2021 at 9:29 AM Vladimir Oltean <olteanv@gmail.com> wrote:
+> On Sun, Aug 29, 2021 at 01:56:19AM +0200, Linus Walleij wrote:
+> > I noticed that only port 0 worked on the RTL8366RB since we
+> > started to use custom tags.
+> >
+> > It turns out that the format of egress custom tags is actually
+> > different from ingress custom tags. While the lower bits just
+> > contain the port number in ingress tags, egress tags need to
+> > indicate destination port by setting the bit for the
+> > corresponding port.
+> >
+> > It was working on port 0 because port 0 added 0x00 as port
+> > number in the lower bits, and if you do this the packet gets
+> > broadcasted to all ports, including the intended port.
+> > Ooops.
+>
+> Does it get broadcast, or forwarded by MAC DA/VLAN ID as you'd expect
+> for a regular data packet?
 
-Suggested-by: Vladimir Oltean <olteanv@gmail.com>
-Cc: Alvin Šipraga <alsi@bang-olufsen.dk>
-Cc: Mauri Sandberg <sandberg@mailfence.com>
-Cc: DENG Qingfang <dqfext@gmail.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
-ChangeLog v1->v2:
-- New patch suggested by Vladimir.
----
- drivers/net/dsa/rtl8366rb.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+It gets broadcast :/
 
-diff --git a/drivers/net/dsa/rtl8366rb.c b/drivers/net/dsa/rtl8366rb.c
-index 4cb0e336ce6b..548282119cc4 100644
---- a/drivers/net/dsa/rtl8366rb.c
-+++ b/drivers/net/dsa/rtl8366rb.c
-@@ -1219,6 +1219,19 @@ rtl8366rb_port_bridge_flags(struct dsa_switch *ds, int port,
- 	return 0;
- }
- 
-+static void
-+rtl8366rb_port_fast_age(struct dsa_switch *ds, int port)
-+{
-+	struct realtek_smi *smi = ds->priv;
-+
-+	/* This will age out any L2 entries */
-+	regmap_update_bits(smi->map, RTL8366RB_SECURITY_CTRL,
-+			   BIT(port), BIT(port));
-+	/* Restore the normal state of things */
-+	regmap_update_bits(smi->map, RTL8366RB_SECURITY_CTRL,
-+			   BIT(port), 0);
-+}
-+
- static int
- rtl8366rb_port_bridge_join(struct dsa_switch *ds, int port,
- 			   struct net_device *bridge)
-@@ -1673,6 +1686,7 @@ static const struct dsa_switch_ops rtl8366rb_switch_ops = {
- 	.port_disable = rtl8366rb_port_disable,
- 	.port_pre_bridge_flags = rtl8366rb_port_pre_bridge_flags,
- 	.port_bridge_flags = rtl8366rb_port_bridge_flags,
-+	.port_fast_age = rtl8366rb_port_fast_age,
- 	.port_change_mtu = rtl8366rb_change_mtu,
- 	.port_max_mtu = rtl8366rb_max_mtu,
- };
--- 
-2.31.1
+> > -     out = (RTL4_A_PROTOCOL_RTL8366RB << 12) | (2 << 8);
+>
+> What was 2 << 8? This patch changes that part.
 
+It was a bit set in the ingress packets, we don't really know
+what egress tag bits there are so first I just copied this
+and since it turns out the bits in the lower order are not
+correct I dropped this too and it works fine.
+
+Do you want me to clarify in the commit message and
+resend?
+
+Yours,
+Linus Walleij
