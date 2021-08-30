@@ -2,140 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A1173FBD35
-	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 21:58:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D57A3FBD40
+	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 22:01:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231499AbhH3T7O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Aug 2021 15:59:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40926 "EHLO
+        id S234517AbhH3UCY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Aug 2021 16:02:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234367AbhH3T7M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 15:59:12 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15065C061575;
-        Mon, 30 Aug 2021 12:58:18 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id u6so12454828pfi.0;
-        Mon, 30 Aug 2021 12:58:18 -0700 (PDT)
+        with ESMTP id S233986AbhH3UCX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 16:02:23 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A667AC061575;
+        Mon, 30 Aug 2021 13:01:29 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id k24so14481125pgh.8;
+        Mon, 30 Aug 2021 13:01:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=jgTOuXMR/8EnbPDTCQwJ0RRzX/vDc1Edyp+hQN8fq8M=;
-        b=GE3yFLkIPB+s8YZXQ2LPa5Qu3WWtDrRETTrgAWg++/liigUnwF8L9dxj+99IICp9wc
-         8x7mpBzeyIfBtl7FZcrjnM6rWvU3WLgEgumsGxM+wwkNnC94RLVXmmVS4UnhSNF1rR1m
-         25VfddLIfe+OpFWH32dgppjngT6WrAIJtQQuLj8pW2Hui+rHgzKMNsy07NB/l+kkeNdQ
-         k7/g8qEKLIZUUNZ+1onhTmYNwY31lsqC9cD/HGZa6ZcKrdmfxx8izJupU3WPTkWXb4fD
-         xtxtWRhobJOxm61qllj9LyGlKN104LvaIeGbFE3qbca081W9acEge2sqkIPwC4Diy+3K
-         Jrpg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=5pL2hO5916vdEq3jqoZPUnBxJADCo06t1E/K7umqVws=;
+        b=UPOEJXDdY3EpsVIBNLIhj1apE0Ae85EdOHJTaQ56uLSkATAsnzGbemHnsHsOYiulhK
+         m4NpGYF0eah5+MXoaJmfWIYAs1dENJCP2SOTcqXzZuH2fL/mKNWgkcqb4YVzCvzJxb60
+         hSoEDgDNZtN8CWu03sacZdNjQM4gI7PnMxgUlEGJ9/5pvhMcmUQAjN1aAVQ25Tg0Ocue
+         Zn4PBUIm+ZpqTrdo/28iQ7+C96Cwer2k+YMhMrsuW7MOpKkAaZee1TiBs3e9qLG7nyA0
+         AVPLSEynvExiURXDv3hhaBGUNhjeyvR8F9ajVVWRigr3B69kQkkWDh0zA0Z6ddEmXy3w
+         zhwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=jgTOuXMR/8EnbPDTCQwJ0RRzX/vDc1Edyp+hQN8fq8M=;
-        b=gNVVIa/RLdgNgdQpM75Lby9tqWqS6xE31KawQxbJBx3IwaJgaOGfgRWOEaIekChNOj
-         tUQs1U0p5hWJr3hPevYQi7XEMSmX9rYRwwdnSwnmWQ0VvyITO3xd83az8mdNELHBaoxl
-         osV+R1nZ4TPgpitWdsep43m4ukUIX98k4G81gtouBLu1aB2kWgKK3Qvj9xfTc6DgbLum
-         qyqWWOz+miEwguI4nqP7aMRmlztVhI64Rp4NUy7VMHyg1IUTy8WNy5OrFHL0bMa94QAF
-         YsaFJjXJEHRRqxFAbe4R9v6R1ySHsNwehHdf3/sksJfGXXOc5SjMzr50ixJkz7sh6TSJ
-         w1Wg==
-X-Gm-Message-State: AOAM530CSBbWrgyIJxRS8KG602+AFD9fMlZyV8obeJWRqWPLikiyHp5g
-        TPWcz0PB/p03npUqr8+cOCg=
-X-Google-Smtp-Source: ABdhPJxv1n3rCdjGUIp+DNLSzGfp6bd3uUtrqxHP+yDYD1n8+38aKkq3yHBFjiuLmLADPtx5ScegXg==
-X-Received: by 2002:a62:8287:0:b0:3ec:f6dc:9672 with SMTP id w129-20020a628287000000b003ecf6dc9672mr24581701pfd.65.1630353497619;
-        Mon, 30 Aug 2021 12:58:17 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id l75sm11841926pga.19.2021.08.30.12.58.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 30 Aug 2021 12:58:17 -0700 (PDT)
-Subject: Re: [PATCH v2] skb_expand_head() adjust skb->truesize incorrectly
-To:     Vasily Averin <vvs@virtuozzo.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Christoph Paasch <christoph.paasch@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org,
-        kernel@openvz.org, Julian Wiedmann <jwi@linux.ibm.com>
-References: <CALMXkpZYGC5HNkJAi4wCuawC-9CVNjN1LqO073YJvUF5ONwupA@mail.gmail.com>
- <860513d5-fd02-832b-1c4c-ea2b17477d76@virtuozzo.com>
- <9f0c5e45-ad79-a9ea-dab1-aeb3bc3730ae@gmail.com>
- <c4373bb7-bb4f-2895-c692-e61a1a89e21f@virtuozzo.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <8fd56805-2ac8-dcbe-1337-b20f91f759d6@gmail.com>
-Date:   Mon, 30 Aug 2021 12:58:09 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=5pL2hO5916vdEq3jqoZPUnBxJADCo06t1E/K7umqVws=;
+        b=jIJU1L2yme0QRpVuDZQrlPZENAi4J8eKrj05qoJu92tLu+heo9QDddiXviswypPdQI
+         eNlpSJ+XmQWVah0kzD9GUoCGxW4uOCwki3ZIBlfHzSV+ebZxXyYKjva0xjw5Gq4s28j1
+         J7lYlZdJYhShf3qxN59kcPtR/L3T+o7dMDXhYKoVFnv88YPbsK6BgnA9xjJephjcGgkM
+         1nzdB3O5SQ4kDIJxNH4ah0AFF3C32kNBgeIK55e2uV4fEf1u5o0EQozKk01NxB3LqlzV
+         8GB1mzEfQVLXuf8scAW/oQpVTZaoBH5VWnYG51Q32ctJgpKuAQdp06CS+sNUWPkpWprX
+         5y1w==
+X-Gm-Message-State: AOAM532UaqqFLxwMgAIqZedMokqBfU7wBSTja/ZudPtN67VqIVA7fAKS
+        d9KBBW9iuf7O8My6A1C3PtI=
+X-Google-Smtp-Source: ABdhPJzhMp0b9OASVIDSdBcdPIONqOMkTXCEaphpcVA6geoeHNCofTJTl9d3ckawTEsr8YfJUFb9wA==
+X-Received: by 2002:aa7:8c17:0:b0:3fe:bb5c:4556 with SMTP id c23-20020aa78c17000000b003febb5c4556mr7864219pfd.48.1630353689088;
+        Mon, 30 Aug 2021 13:01:29 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:4106])
+        by smtp.gmail.com with ESMTPSA id f18sm5331195pfc.161.2021.08.30.13.01.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Aug 2021 13:01:28 -0700 (PDT)
+Date:   Mon, 30 Aug 2021 13:01:23 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH bpf-next RFC v1 1/8] bpf: Introduce BPF support for
+ kernel module function calls
+Message-ID: <20210830200123.lsdkoa5rfmfj3xts@ast-mbp.dhcp.thefacebook.com>
+References: <20210830173424.1385796-1-memxor@gmail.com>
+ <20210830173424.1385796-2-memxor@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <c4373bb7-bb4f-2895-c692-e61a1a89e21f@virtuozzo.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210830173424.1385796-2-memxor@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 8/30/21 11:09 AM, Vasily Averin wrote:
-> On 8/30/21 7:01 PM, Eric Dumazet wrote:
->> On 8/29/21 5:59 AM, Vasily Averin wrote:
->>> Christoph Paasch reports [1] about incorrect skb->truesize
->>> after skb_expand_head() call in ip6_xmit.
->>> This may happen because of two reasons:
->>> - skb_set_owner_w() for newly cloned skb is called too early,
->>> before pskb_expand_head() where truesize is adjusted for (!skb-sk) case.
->>> - pskb_expand_head() does not adjust truesize in (skb->sk) case.
->>> In this case sk->sk_wmem_alloc should be adjusted too.
->>>
->>> [1] https://lkml.org/lkml/2021/8/20/1082
->>> @@ -1756,9 +1756,13 @@ int pskb_expand_head(struct sk_buff *skb, int nhead, int ntail,
->>>  	 * For the moment, we really care of rx path, or
->>>  	 * when skb is orphaned (not attached to a socket).
->>>  	 */
->>> -	if (!skb->sk || skb->destructor == sock_edemux)
->>> -		skb->truesize += size - osize;
->>> -
->>> +	delta = size - osize;
->>> +	if (!skb->sk || skb->destructor == sock_edemux) {
->>> +		skb->truesize += delta;
->>> +	} else if (update_truesize) {
->>
->> Unfortunately we can not always do this sk_wmem_alloc change here.
->>
->> Some skb have skb->sk set, but the 'reference on socket' is not through sk_wmem_alloc
+On Mon, Aug 30, 2021 at 11:04:17PM +0530, Kumar Kartikeya Dwivedi wrote:
+> This change adds support on the kernel side to allow for BPF programs to
+> call kernel module functions. Userspace will prepare an array of module
+> BTF fds that is passed in during BPF_PROG_LOAD. In the kernel, the
+> module BTF array is placed in the auxilliary struct for bpf_prog.
 > 
-> Could you please provide some example?
-> In past in all handeled cases we have cloned original skb and then unconditionally assigned skb sock_wfree destructor.
-
-In the past we ignored old value of skb->destructor,
-since the clone got a NULL destructor.
-
-In your patch you assumes it is sock_wfree, or other destructors changing sk_wmem_alloc
-
-
-You need to make sure skb->destructor is one of the known destructors which 
-will basically remove skb->truesize from sk->sk_wmem_alloc.
-
-This will also make sure skb->sk is a 'full socket'
-
-If not, you should not change sk->sk_wmem_alloc
-
-> Do you want to say that it worked correctly somehow?
-
-I am simply saying your patch adds a wrong assumption.
-
+> The verifier then uses insn->off to index into this table. insn->off is
+> used by subtracting one from it, as userspace has to set the index of
+> array in insn->off incremented by 1. This lets us denote vmlinux btf by
+> insn->off == 0, and the prog->aux->kfunc_btf_tab[insn->off - 1] for
+> module BTFs.
 > 
-> I expected if we set sock_wfree, we have guarantee that old skb adjusted sk_wmem_alloc.
-> Am I wrong?
-> Could you please point on such case?
+> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> ---
+>  include/linux/bpf.h            |  1 +
+>  include/linux/filter.h         |  9 ++++
+>  include/uapi/linux/bpf.h       |  3 +-
+>  kernel/bpf/core.c              | 14 ++++++
+>  kernel/bpf/syscall.c           | 55 +++++++++++++++++++++-
+>  kernel/bpf/verifier.c          | 85 ++++++++++++++++++++++++++--------
+>  tools/include/uapi/linux/bpf.h |  3 +-
+>  7 files changed, 147 insertions(+), 23 deletions(-)
 > 
->> It seems you need a helper to make sure skb->destructor is one of
->> the destructors that use skb->truesize and sk->sk_wmem_alloc
->>
->> For instance, skb_orphan_partial() could have been used.
-> 
-> Thank you, will investigate.
-> 	Vasily Averin
-> 
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index f4c16f19f83e..39f59e5f3a26 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -874,6 +874,7 @@ struct bpf_prog_aux {
+>  	void *jit_data; /* JIT specific data. arch dependent */
+>  	struct bpf_jit_poke_descriptor *poke_tab;
+>  	struct bpf_kfunc_desc_tab *kfunc_tab;
+> +	struct bpf_kfunc_btf_tab *kfunc_btf_tab;
+>  	u32 size_poke_tab;
+>  	struct bpf_ksym ksym;
+>  	const struct bpf_prog_ops *ops;
+> diff --git a/include/linux/filter.h b/include/linux/filter.h
+> index 7d248941ecea..46451891633d 100644
+> --- a/include/linux/filter.h
+> +++ b/include/linux/filter.h
+> @@ -592,6 +592,15 @@ struct bpf_prog {
+>  	struct bpf_insn		insnsi[];
+>  };
+>  
+> +#define MAX_KFUNC_DESCS 256
+> +/* There can only be at most MAX_KFUNC_DESCS module BTFs for kernel module
+> + * function calls.
+> + */
+> +struct bpf_kfunc_btf_tab {
+> +	u32 nr_btfs;
+> +	struct btf_mod_pair btfs[];
+> +};
+> +
+>  struct sk_filter {
+>  	refcount_t	refcnt;
+>  	struct rcu_head	rcu;
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 791f31dd0abe..4cbb2082a553 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -1334,8 +1334,9 @@ union bpf_attr {
+>  			/* or valid module BTF object fd or 0 to attach to vmlinux */
+>  			__u32		attach_btf_obj_fd;
+>  		};
+> -		__u32		:32;		/* pad */
+> +		__u32		kfunc_btf_fds_cnt; /* reuse hole for count of BTF fds below */
+
+No need for size.
+
+>  		__aligned_u64	fd_array;	/* array of FDs */
+> +		__aligned_u64   kfunc_btf_fds;  /* array of BTF FDs for module kfunc support */
+
+Just reuse fd_array. No need for another array of FDs.
+
+> +		tab = prog->aux->kfunc_btf_tab;
+> +		for (i = 0; i < n; i++) {
+> +			struct btf_mod_pair *p;
+> +			struct btf *mod_btf;
+> +
+> +			mod_btf = btf_get_by_fd(fds[i]);
+> +			if (IS_ERR(mod_btf)) {
+> +				err = PTR_ERR(mod_btf);
+> +				goto free_prog;
+> +			}
+> +			if (!btf_is_module(mod_btf)) {
+> +				err = -EINVAL;
+> +				btf_put(mod_btf);
+> +				goto free_prog;
+> +			}
+
+just do that dynamically like access to fd_array is handled in other places.
+no need to preload.
