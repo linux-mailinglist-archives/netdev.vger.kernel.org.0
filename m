@@ -2,112 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E4BB63FBC70
+	by mail.lfdr.de (Postfix) with ESMTP id 9B04F3FBC6F
 	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 20:30:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238809AbhH3SbW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Aug 2021 14:31:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49318 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238803AbhH3SbT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 14:31:19 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2BC9C0613D9
-        for <netdev@vger.kernel.org>; Mon, 30 Aug 2021 11:30:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=PuBw3HNhofc4619eaZTfae2vuvIs3qvYJ/JZs0AF3Uo=; b=Z/xU+vNIJj9nK30xFO0NXVPSO
-        5aPxFkLoy6CX4r6JzI0tz5YWo4LztYN42Xs5WJfcsdM6QmnRVNg+V7tP4aX0IulwG2NOCdoGPc6PN
-        pjt6cUtpubj3LPRKcgP8+D9eRsPZJA4FG3sQH4F1s2ALIxLRsbqwsiSY05WBs0bvoVpirfrY5BtTa
-        qOFlWEu9a0U/i5tNJKDjG8sP0g7hwK8O+MgMJP6tj9UirlxhpyS/gymVo68ucqUBGqh40OOWTNid9
-        GgLtl+Wfemgf+d23fUMX+kH/wyuCpQZIk8gMtk4vfv4Wp3+QCauYvG/7PLjdl1omyXN1QwCBCaRYn
-        CBThSxovg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:47886)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mKm33-0005Sg-1r; Mon, 30 Aug 2021 19:30:21 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mKm2x-00056a-VK; Mon, 30 Aug 2021 19:30:15 +0100
-Date:   Mon, 30 Aug 2021 19:30:15 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, Antoine Tenart <atenart@kernel.org>,
-        Quentin Schulz <quentin.schulz@bootlin.com>,
-        Michael Walle <michael@walle.cc>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com, bcm-kernel-feedback-list@broadcom.com
-Subject: Re: [RFC PATCH v2 net-next 0/5] Let phylink manage in-band AN for
- the PHY
-Message-ID: <20210830183015.GY22278@shell.armlinux.org.uk>
-References: <20210830155250.4029923-1-vladimir.oltean@nxp.com>
+        id S238718AbhH3SbQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Aug 2021 14:31:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49118 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229839AbhH3SbP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Aug 2021 14:31:15 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2496560E98;
+        Mon, 30 Aug 2021 18:30:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1630348221;
+        bh=iGr981xcSnijXF8G9kE3OksIBLXLhE2eR5tL5v52HjI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=l1ZiIQeR7nvunSoOQ4SXApPYwqDnc72r9/FdvCmYTj7KFqgjQGKoe0nBXqP/7wrJm
+         T2vR9JOyUYu1yWPVpBq43A87FDgWNr4Qs/o57VMVl5qiFcn8fiDk9+3rvA1XkJ5oNa
+         qbyOmTewCYKeZ6nRrbPoQ1E1xticbSXc5o1/zWlRx9s8WYfiF1olW9oITP5RBsBPbo
+         Lpf7Z8nSDSP9WeOFPE7R6x+TxxT5E+98jOi+OewB2hWeJBQbPfleuHzD3YqPtpseE+
+         OUi/llEcmM03U3WsuCagLGEm7T3Y2IzFmis9g4HU08aFmT6rCzDd6cX6lzAuuwIf6I
+         8YMkhETsaUg6Q==
+Date:   Mon, 30 Aug 2021 11:30:20 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Qing Zhang <zhangqing@loongson.cn>
+Cc:     zhaoxiao <zhaoxiao@uniontech.com>, davem@davemloft.net,
+        mcoquelin.stm32@gmail.com, peppe.cavallaro@st.com,
+        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] stmmac: dwmac-loongson:add the return value
+Message-ID: <20210830113020.3ea992a2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210830052913.12793-1-zhaoxiao@uniontech.com>
+References: <20210830052913.12793-1-zhaoxiao@uniontech.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210830155250.4029923-1-vladimir.oltean@nxp.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Can we postpone this after this merge window please, so I've got time
-to properly review this. Thanks.
+On Mon, 30 Aug 2021 13:29:13 +0800 zhaoxiao wrote:
+> Add the return value when phy_mode < 0.
+> 
+> Signed-off-by: zhaoxiao <zhaoxiao@uniontech.com>
+> ---
+>  drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c
+> index 4c9a37dd0d3f..ecf759ee1c9f 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c
+> @@ -109,8 +109,10 @@ static int loongson_dwmac_probe(struct pci_dev *pdev, const struct pci_device_id
+>  		plat->bus_id = pci_dev_id(pdev);
+>  
+>  	phy_mode = device_get_phy_mode(&pdev->dev);
+> -	if (phy_mode < 0)
+> +	if (phy_mode < 0) {
+>  		dev_err(&pdev->dev, "phy_mode not found\n");
+> +		return phy_mode;
+> +	}
+>  
+>  	plat->phy_interface = phy_mode;
+>  	plat->interface = PHY_INTERFACE_MODE_GMII;
 
-On Mon, Aug 30, 2021 at 06:52:45PM +0300, Vladimir Oltean wrote:
-> This small series creates a configuration knob for PHY drivers which use
-> serial MII-side interfaces and support clause 37 in-band auto-negotiation
-> there.
-> 
-> Changes in v2:
-> Incorporated feedback from Russell, which was to consider PHYs on SFP
-> modules too, and unify phylink's detection of PHYs with broken in-band
-> autoneg with the newly introduced PHY driver methods.
-> https://patchwork.kernel.org/project/netdevbpf/cover/20210212172341.3489046-1-olteanv@gmail.com/
-> 
-> This change set is only superficially tested, hence the RFC tag. It does
-> what I need on the NXP boards with on-board PHYs that I have, and also
-> seems to behave the same as before when I use a 1G SGMII SFP module with
-> the Marvell 88E1111 PHY (the only thing I have). I do not have the
-> ability to test the Methode DM7052 SFP module for the bcm84881.c driver
-> change, since I don't have that.
-> 
-> Posting the patch series mostly to figure out whether I understood the
-> change request correctly.
-> 
-> Vladimir Oltean (5):
->   net: phylink: pass the phy argument to phylink_sfp_config
->   net: phylink: introduce a generic method for querying PHY in-band
->     autoneg capability
->   net: phy: bcm84881: move the in-band capability check where it belongs
->   net: phylink: explicitly configure in-band autoneg for PHYs that
->     support it
->   net: phy: mscc: configure in-band auto-negotiation for VSC8514
-> 
->  drivers/net/phy/bcm84881.c       | 10 ++++
->  drivers/net/phy/mscc/mscc.h      |  2 +
->  drivers/net/phy/mscc/mscc_main.c | 20 +++++++
->  drivers/net/phy/phy.c            | 25 +++++++++
->  drivers/net/phy/phylink.c        | 93 +++++++++++++++++++++++++-------
->  include/linux/phy.h              | 24 +++++++++
->  6 files changed, 154 insertions(+), 20 deletions(-)
-> 
-> -- 
-> 2.25.1
-> 
-> 
+Qing Zhang, does the change look correct to you?
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Is it better to assume GMII and continue like the code is currently
+doing?
