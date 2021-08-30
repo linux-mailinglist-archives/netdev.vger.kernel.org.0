@@ -2,90 +2,264 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D7443FBB7D
-	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 20:09:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C90F3FBB81
+	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 20:09:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238469AbhH3SKP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Aug 2021 14:10:15 -0400
-Received: from relay.sw.ru ([185.231.240.75]:47086 "EHLO relay.sw.ru"
+        id S238489AbhH3SKg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Aug 2021 14:10:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37370 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238150AbhH3SKJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Aug 2021 14:10:09 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:From:
-        Subject; bh=Il7nX1EGN2KP4aDwDr8T1kqFJjr1jC/4sMGzTkyhikk=; b=IbboYbIZyTqcfruYl
-        oaXd0tv/HedgYMeF20PHNiYZww/CwYvu3MCxiDk9rL+0hyQ6RnWuRc9nlwDylx4Wn64bPMOQVY44h
-        dXQ3HtcRyeHwtqHhorzEkej4IxPCf0YvMVsyFkSyvWx+/s3xR/Nn9W6/ia0xn9iN8ghWwIrX7e7X4
-        =;
-Received: from [10.93.0.56]
-        by relay.sw.ru with esmtp (Exim 4.94.2)
-        (envelope-from <vvs@virtuozzo.com>)
-        id 1mKliX-000Fbh-Lk; Mon, 30 Aug 2021 21:09:09 +0300
-Subject: Re: [PATCH v2] skb_expand_head() adjust skb->truesize incorrectly
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Christoph Paasch <christoph.paasch@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org,
-        kernel@openvz.org, Julian Wiedmann <jwi@linux.ibm.com>
-References: <CALMXkpZYGC5HNkJAi4wCuawC-9CVNjN1LqO073YJvUF5ONwupA@mail.gmail.com>
- <860513d5-fd02-832b-1c4c-ea2b17477d76@virtuozzo.com>
- <9f0c5e45-ad79-a9ea-dab1-aeb3bc3730ae@gmail.com>
-From:   Vasily Averin <vvs@virtuozzo.com>
-Message-ID: <c4373bb7-bb4f-2895-c692-e61a1a89e21f@virtuozzo.com>
-Date:   Mon, 30 Aug 2021 21:09:08 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S238150AbhH3SKf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Aug 2021 14:10:35 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9080660F92;
+        Mon, 30 Aug 2021 18:09:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1630346981;
+        bh=rDSGvuqVmtXFi7lKhzBU2WdstwpoxEJzkSUzSJNHfek=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=oI+Y/+o8rEOW0VkHvEjnrKdjqyw43DrcKiC3ntX3slLm78rQZnBGsc3mVGjFs/Wvv
+         +Hev1Ynz8/GOLHoiVfbMo8V3HwRnatPqbWpxaq0Qa3szfG1o8tha3Lp/VfndJN/upt
+         /504wegVRz+/14EuQFXKjNQQF316isZ7PbSMRKlhiGWdGSgqfNvQqwXMTXvUvXaxuw
+         jzyMqRbA4Rfe8fWpCoGVjYORZixtckj+/xBIHIwllc9bf0mVTT9zt/QbmvZLP8906q
+         91/m3ted6WY8ID6z01byvBszYhvpl+i6B6j4/HmG1jVj7+cuS+C9hMREA87kKTkm2/
+         kmJSlVy66+F3Q==
+Date:   Mon, 30 Aug 2021 13:09:40 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     hkallweit1@gmail.com, nic_swsd@realtek.com, bhelgaas@google.com,
+        davem@davemloft.net, kuba@kernel.org, anthony.wong@canonical.com,
+        netdev@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC] [PATCH net-next v4] [PATCH 2/2] r8169: Implement dynamic
+ ASPM mechanism
+Message-ID: <20210830180940.GA4209@bjorn-Precision-5520>
 MIME-Version: 1.0
-In-Reply-To: <9f0c5e45-ad79-a9ea-dab1-aeb3bc3730ae@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210827171452.217123-3-kai.heng.feng@canonical.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/30/21 7:01 PM, Eric Dumazet wrote:
-> On 8/29/21 5:59 AM, Vasily Averin wrote:
->> Christoph Paasch reports [1] about incorrect skb->truesize
->> after skb_expand_head() call in ip6_xmit.
->> This may happen because of two reasons:
->> - skb_set_owner_w() for newly cloned skb is called too early,
->> before pskb_expand_head() where truesize is adjusted for (!skb-sk) case.
->> - pskb_expand_head() does not adjust truesize in (skb->sk) case.
->> In this case sk->sk_wmem_alloc should be adjusted too.
->>
->> [1] https://lkml.org/lkml/2021/8/20/1082
->> @@ -1756,9 +1756,13 @@ int pskb_expand_head(struct sk_buff *skb, int nhead, int ntail,
->>  	 * For the moment, we really care of rx path, or
->>  	 * when skb is orphaned (not attached to a socket).
->>  	 */
->> -	if (!skb->sk || skb->destructor == sock_edemux)
->> -		skb->truesize += size - osize;
->> -
->> +	delta = size - osize;
->> +	if (!skb->sk || skb->destructor == sock_edemux) {
->> +		skb->truesize += delta;
->> +	} else if (update_truesize) {
+On Sat, Aug 28, 2021 at 01:14:52AM +0800, Kai-Heng Feng wrote:
+> r8169 NICs on some platforms have abysmal speed when ASPM is enabled.
+> Same issue can be observed with older vendor drivers.
 > 
-> Unfortunately we can not always do this sk_wmem_alloc change here.
+> The issue is however solved by the latest vendor driver. There's a new
+> mechanism, which disables r8169's internal ASPM when the NIC traffic has
+> more than 10 packets, and vice versa. The possible reason for this is
+> likely because the buffer on the chip is too small for its ASPM exit
+> latency.
+
+This sounds like good speculation, but of course, it would be better
+to have the supporting data.
+
+You say above that this problem affects r8169 on "some platforms."  I
+infer that ASPM works fine on other platforms.  It would be extremely
+interesting to have some data on both classes, e.g., "lspci -vv"
+output for the entire system.
+
+If r8169 ASPM works well on some systems, we *should* be able to make
+it work well on *all* systems, because the device can't tell what
+system it's in.  All the device can see are the latencies for entry
+and exit for link states.
+
+IIUC this patch makes the driver wake up every 1000ms.  If the NIC has
+sent or received more than 10 packets in the last 1000ms, it disables
+ASPM; otherwise it enables ASPM.
+
+I asked these same questions earlier, but nothing changed, so I won't
+raise them again if you don't think they're pertinent.  Some patch
+splitting comments below.
+
+> Realtek confirmed that all their PCIe LAN NICs, r8106, r8168 and r8125
+> use dynamic ASPM under Windows. So implement the same mechanism here to
+> resolve the issue.
 > 
-> Some skb have skb->sk set, but the 'reference on socket' is not through sk_wmem_alloc
-
-Could you please provide some example?
-In past in all handeled cases we have cloned original skb and then unconditionally assigned skb sock_wfree destructor.
-Do you want to say that it worked correctly somehow?
-
-I expected if we set sock_wfree, we have guarantee that old skb adjusted sk_wmem_alloc.
-Am I wrong?
-Could you please point on such case?
-
-> It seems you need a helper to make sure skb->destructor is one of
-> the destructors that use skb->truesize and sk->sk_wmem_alloc
+> Because ASPM control may not be granted by BIOS while ASPM is enabled,
+> remove aspm_manageable and use pcie_aspm_capable() instead. If BIOS
+> enables ASPM for the device, we want to enable dynamic ASPM on it.
 > 
-> For instance, skb_orphan_partial() could have been used.
+> In addition, since PCIe ASPM can be switched via sysfs, enable/disable
+> dynamic ASPM accordingly by checking pcie_aspm_enabled().
+> 
+> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+> ---
+> v4:
+>  - Squash two patches
+>  - Remove aspm_manageable and use pcie_aspm_capable()
+>    pcie_aspm_enabled() accordingly
+> 
+> v3:
+>  - Use msecs_to_jiffies() for delay time
+>  - Use atomic_t instead of mutex for bh
+>  - Mention the buffer size and ASPM exit latency in commit message
+> 
+> v2: 
+>  - Use delayed_work instead of timer_list to avoid interrupt context
+>  - Use mutex to serialize packet counter read/write
+>  - Wording change
+>  drivers/net/ethernet/realtek/r8169_main.c | 77 ++++++++++++++++++++---
+>  1 file changed, 69 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+> index 46a6ff9a782d7..97dba8f437b78 100644
+> --- a/drivers/net/ethernet/realtek/r8169_main.c
+> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+> @@ -623,7 +623,10 @@ struct rtl8169_private {
+>  	} wk;
+>  
+>  	unsigned supports_gmii:1;
+> -	unsigned aspm_manageable:1;
+> +	unsigned rtl_aspm_enabled:1;
+> +	struct delayed_work aspm_toggle;
+> +	atomic_t aspm_packet_count;
+> +
+>  	dma_addr_t counters_phys_addr;
+>  	struct rtl8169_counters *counters;
+>  	struct rtl8169_tc_offsets tc_offset;
+> @@ -698,6 +701,20 @@ static bool rtl_is_8168evl_up(struct rtl8169_private *tp)
+>  	       tp->mac_version <= RTL_GIGA_MAC_VER_53;
+>  }
+>  
+> +static int rtl_supports_aspm(struct rtl8169_private *tp)
+> +{
+> +	switch (tp->mac_version) {
+> +	case RTL_GIGA_MAC_VER_02 ... RTL_GIGA_MAC_VER_31:
+> +	case RTL_GIGA_MAC_VER_37:
+> +	case RTL_GIGA_MAC_VER_39:
+> +	case RTL_GIGA_MAC_VER_43:
+> +	case RTL_GIGA_MAC_VER_47:
+> +		return 0;
+> +	default:
+> +		return 1;
+> +	}
 
-Thank you, will investigate.
-	Vasily Averin
+This part looks like it should be a separate patch.  I would think
+rtl_init_one() could call this once and set a bit in rtl8169_private.
+Then rtl_hw_aspm_clkreq_enable() could just return without doing
+anything if the bit is not set.
+
+> +}
+> +
+>  static bool rtl_supports_eee(struct rtl8169_private *tp)
+>  {
+>  	return tp->mac_version >= RTL_GIGA_MAC_VER_34 &&
+> @@ -2699,8 +2716,15 @@ static void rtl_enable_exit_l1(struct rtl8169_private *tp)
+>  
+>  static void rtl_hw_aspm_clkreq_enable(struct rtl8169_private *tp, bool enable)
+>  {
+> +	struct pci_dev *pdev = tp->pci_dev;
+> +
+> +	if (!pcie_aspm_enabled(pdev) && enable)
+> +		return;
+> +
+> +	tp->rtl_aspm_enabled = enable;
+> +
+>  	/* Don't enable ASPM in the chip if OS can't control ASPM */
+> -	if (enable && tp->aspm_manageable) {
+> +	if (enable) {
+
+This part also looks like it should be a separate patch, since it is
+strictly concerned with whether the OS can control ASPM and doesn't
+seem related to dynamic ASPM.
+
+>  		RTL_W8(tp, Config5, RTL_R8(tp, Config5) | ASPM_en);
+>  		RTL_W8(tp, Config2, RTL_R8(tp, Config2) | ClkReqEn);
+>  	} else {
+> @@ -4440,6 +4464,7 @@ static void rtl_tx(struct net_device *dev, struct rtl8169_private *tp,
+>  
+>  	dirty_tx = tp->dirty_tx;
+>  
+> +	atomic_add(tp->cur_tx - dirty_tx, &tp->aspm_packet_count);
+>  	while (READ_ONCE(tp->cur_tx) != dirty_tx) {
+>  		unsigned int entry = dirty_tx % NUM_TX_DESC;
+>  		u32 status;
+> @@ -4584,6 +4609,8 @@ static int rtl_rx(struct net_device *dev, struct rtl8169_private *tp, int budget
+>  		rtl8169_mark_to_asic(desc);
+>  	}
+>  
+> +	atomic_add(count, &tp->aspm_packet_count);
+> +
+>  	return count;
+>  }
+>  
+> @@ -4691,8 +4718,39 @@ static int r8169_phy_connect(struct rtl8169_private *tp)
+>  	return 0;
+>  }
+>  
+> +#define ASPM_PACKET_THRESHOLD 10
+> +#define ASPM_TOGGLE_INTERVAL 1000
+> +
+> +static void rtl8169_aspm_toggle(struct work_struct *work)
+> +{
+> +	struct rtl8169_private *tp = container_of(work, struct rtl8169_private,
+> +						  aspm_toggle.work);
+> +	int packet_count;
+> +	bool enable;
+> +
+> +	packet_count = atomic_xchg(&tp->aspm_packet_count, 0);
+> +
+> +	if (pcie_aspm_enabled(tp->pci_dev)) {
+> +		enable = packet_count <= ASPM_PACKET_THRESHOLD;
+> +
+> +		if (tp->rtl_aspm_enabled != enable) {
+> +			rtl_unlock_config_regs(tp);
+> +			rtl_hw_aspm_clkreq_enable(tp, enable);
+> +			rtl_lock_config_regs(tp);
+> +		}
+> +	} else if (tp->rtl_aspm_enabled) {
+> +		rtl_unlock_config_regs(tp);
+> +		rtl_hw_aspm_clkreq_enable(tp, false);
+> +		rtl_lock_config_regs(tp);
+> +	}
+> +
+> +	schedule_delayed_work(&tp->aspm_toggle, msecs_to_jiffies(ASPM_TOGGLE_INTERVAL));
+> +}
+> +
+>  static void rtl8169_down(struct rtl8169_private *tp)
+>  {
+> +	cancel_delayed_work_sync(&tp->aspm_toggle);
+> +
+>  	/* Clear all task flags */
+>  	bitmap_zero(tp->wk.flags, RTL_FLAG_MAX);
+>  
+> @@ -4719,6 +4777,11 @@ static void rtl8169_up(struct rtl8169_private *tp)
+>  	rtl_reset_work(tp);
+>  
+>  	phy_start(tp->phydev);
+> +
+> +	/* pcie_aspm_capable may change after system resume */
+> +	if (pcie_aspm_support_enabled() && pcie_aspm_capable(tp->pci_dev) &&
+> +	    rtl_supports_aspm(tp))
+> +		schedule_delayed_work(&tp->aspm_toggle, 0);
+>  }
+>  
+>  static int rtl8169_close(struct net_device *dev)
+> @@ -5306,12 +5369,6 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  	if (rc)
+>  		return rc;
+>  
+> -	/* Disable ASPM L1 as that cause random device stop working
+> -	 * problems as well as full system hangs for some PCIe devices users.
+> -	 */
+> -	rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1);
+> -	tp->aspm_manageable = !rc;
+> -
+>  	/* enable device (incl. PCI PM wakeup and hotplug setup) */
+>  	rc = pcim_enable_device(pdev);
+>  	if (rc < 0) {
+> @@ -5378,6 +5435,10 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  
+>  	INIT_WORK(&tp->wk.work, rtl_task);
+>  
+> +	INIT_DELAYED_WORK(&tp->aspm_toggle, rtl8169_aspm_toggle);
+> +
+> +	atomic_set(&tp->aspm_packet_count, 0);
+> +
+>  	rtl_init_mac_address(tp);
+>  
+>  	dev->ethtool_ops = &rtl8169_ethtool_ops;
+> -- 
+> 2.32.0
+> 
