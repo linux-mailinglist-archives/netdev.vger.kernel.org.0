@@ -2,118 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E6E83FBD19
-	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 21:45:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A1173FBD35
+	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 21:58:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233414AbhH3Tqp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Aug 2021 15:46:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38066 "EHLO
+        id S231499AbhH3T7O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Aug 2021 15:59:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230114AbhH3Tqo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 15:46:44 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DACDEC061575;
-        Mon, 30 Aug 2021 12:45:50 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id u13-20020a17090abb0db0290177e1d9b3f7so246537pjr.1;
-        Mon, 30 Aug 2021 12:45:50 -0700 (PDT)
+        with ESMTP id S234367AbhH3T7M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 15:59:12 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15065C061575;
+        Mon, 30 Aug 2021 12:58:18 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id u6so12454828pfi.0;
+        Mon, 30 Aug 2021 12:58:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=LKn8+yIzuQ85BsuOLPUdRV4iuBPgHQ6G99cL+fnYQKE=;
-        b=DOCzSaIKS4fvKHdNqX26/r1vraRxc0k/WzeoYCfV+OR8jnX+Bs3gx2C+AYVGfj7mEq
-         4QGIKoPa2Whu4esUfw8lafn3SzkGRMvA9cl8Lrtw6hwXcIDCphkiqcn5xPDG78HyokdV
-         TaeBsVAU/dE6ZSEhP/b6uoi7yea7o3B7nW71UblYFdcNsY6/d2O2EMibyx7sWYOyO1pU
-         m8S1289lnyeYaEbWga7fDZIRl5yKGiBl530DICN2XjYzF4bXb1TD6Ma4foxM5pSKNqPn
-         yHQ7OR68GdgqWKsNVHNE9wjUERhx+N4lM31HoocHPoTioUtQ6hQCgT6oW27CtUpSDTEg
-         zcUg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=jgTOuXMR/8EnbPDTCQwJ0RRzX/vDc1Edyp+hQN8fq8M=;
+        b=GE3yFLkIPB+s8YZXQ2LPa5Qu3WWtDrRETTrgAWg++/liigUnwF8L9dxj+99IICp9wc
+         8x7mpBzeyIfBtl7FZcrjnM6rWvU3WLgEgumsGxM+wwkNnC94RLVXmmVS4UnhSNF1rR1m
+         25VfddLIfe+OpFWH32dgppjngT6WrAIJtQQuLj8pW2Hui+rHgzKMNsy07NB/l+kkeNdQ
+         k7/g8qEKLIZUUNZ+1onhTmYNwY31lsqC9cD/HGZa6ZcKrdmfxx8izJupU3WPTkWXb4fD
+         xtxtWRhobJOxm61qllj9LyGlKN104LvaIeGbFE3qbca081W9acEge2sqkIPwC4Diy+3K
+         Jrpg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=LKn8+yIzuQ85BsuOLPUdRV4iuBPgHQ6G99cL+fnYQKE=;
-        b=qvk4moxwmPw8+AUGVk5AHlOfn9HqGN6kzN1XBgDr/cLDG2V9c3y7iR/zIVlY/pJm4E
-         8yZFdNE3pCGQv5H9DgiKTFq5LpOW38CdQHplMzGWEg2qlR36Oh2cavZxUbKqbghhP8dq
-         vVHkG20ceKnH4Ft3NV08CTEcVAlkVEz8XDQM9RAMTWttKxZ5OflrzktQ61N189bTUDP5
-         TY2cH47iFFSisIOPIe9rDwpPKohoglD5BBOgX0UsFU+06hkRlyUIFTm56bH2wgV6aiFx
-         FFItvt/+CtmiIZc1ASi08aL3iGIkJ825wX1/+ZdAJtryTDqI/gaOpNR/zVkoVQvrNBuR
-         JLsw==
-X-Gm-Message-State: AOAM531fKCxXPxaxfrJMI7w3G1G9S+LMk/nXttFHTAx08zilFy08BX1E
-        aeoSVW8KOwWvFALsD1gVFyo=
-X-Google-Smtp-Source: ABdhPJxLizShsSnhzCXPVv+NkcDLGA39cD8XsF3mmQUZQr4+S/y5rWSNZt4wD7bfGyqlroB3U5oriQ==
-X-Received: by 2002:a17:902:a705:b029:12b:71be:d24e with SMTP id w5-20020a170902a705b029012b71bed24emr1149572plq.29.1630352750279;
-        Mon, 30 Aug 2021 12:45:50 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:4106])
-        by smtp.gmail.com with ESMTPSA id c123sm15553524pfc.50.2021.08.30.12.45.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Aug 2021 12:45:49 -0700 (PDT)
-Date:   Mon, 30 Aug 2021 12:45:45 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Dmitrii Banshchikov <me@ubique.spb.ru>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, davem@davemloft.net,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, netdev@vger.kernel.org, rdna@fb.com
-Subject: Re: [PATCH bpf-next v2 12/13] bpfilter: Add filter table
-Message-ID: <20210830194545.rgwg3ks3alikeyzx@ast-mbp.dhcp.thefacebook.com>
-References: <20210829183608.2297877-1-me@ubique.spb.ru>
- <20210829183608.2297877-13-me@ubique.spb.ru>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=jgTOuXMR/8EnbPDTCQwJ0RRzX/vDc1Edyp+hQN8fq8M=;
+        b=gNVVIa/RLdgNgdQpM75Lby9tqWqS6xE31KawQxbJBx3IwaJgaOGfgRWOEaIekChNOj
+         tUQs1U0p5hWJr3hPevYQi7XEMSmX9rYRwwdnSwnmWQ0VvyITO3xd83az8mdNELHBaoxl
+         osV+R1nZ4TPgpitWdsep43m4ukUIX98k4G81gtouBLu1aB2kWgKK3Qvj9xfTc6DgbLum
+         qyqWWOz+miEwguI4nqP7aMRmlztVhI64Rp4NUy7VMHyg1IUTy8WNy5OrFHL0bMa94QAF
+         YsaFJjXJEHRRqxFAbe4R9v6R1ySHsNwehHdf3/sksJfGXXOc5SjMzr50ixJkz7sh6TSJ
+         w1Wg==
+X-Gm-Message-State: AOAM530CSBbWrgyIJxRS8KG602+AFD9fMlZyV8obeJWRqWPLikiyHp5g
+        TPWcz0PB/p03npUqr8+cOCg=
+X-Google-Smtp-Source: ABdhPJxv1n3rCdjGUIp+DNLSzGfp6bd3uUtrqxHP+yDYD1n8+38aKkq3yHBFjiuLmLADPtx5ScegXg==
+X-Received: by 2002:a62:8287:0:b0:3ec:f6dc:9672 with SMTP id w129-20020a628287000000b003ecf6dc9672mr24581701pfd.65.1630353497619;
+        Mon, 30 Aug 2021 12:58:17 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id l75sm11841926pga.19.2021.08.30.12.58.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 30 Aug 2021 12:58:17 -0700 (PDT)
+Subject: Re: [PATCH v2] skb_expand_head() adjust skb->truesize incorrectly
+To:     Vasily Averin <vvs@virtuozzo.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Christoph Paasch <christoph.paasch@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org,
+        kernel@openvz.org, Julian Wiedmann <jwi@linux.ibm.com>
+References: <CALMXkpZYGC5HNkJAi4wCuawC-9CVNjN1LqO073YJvUF5ONwupA@mail.gmail.com>
+ <860513d5-fd02-832b-1c4c-ea2b17477d76@virtuozzo.com>
+ <9f0c5e45-ad79-a9ea-dab1-aeb3bc3730ae@gmail.com>
+ <c4373bb7-bb4f-2895-c692-e61a1a89e21f@virtuozzo.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <8fd56805-2ac8-dcbe-1337-b20f91f759d6@gmail.com>
+Date:   Mon, 30 Aug 2021 12:58:09 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
+In-Reply-To: <c4373bb7-bb4f-2895-c692-e61a1a89e21f@virtuozzo.com>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210829183608.2297877-13-me@ubique.spb.ru>
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 29, 2021 at 10:36:07PM +0400, Dmitrii Banshchikov wrote:
->  /*
-> - * # Generated by iptables-save v1.8.2 on Sat May  8 05:22:41 2021
-> + *  Generated by iptables-save v1.8.2 on Sat May  8 05:22:41 2021
->   * *filter
-...
-> - * -A LOCAL -s 10.32.0.0/11 -j FROMDC
-> - * -A LOCAL -s 10.144.0.0/12 -j FROMDC
-> - * -A LOCAL -s 10.160.0.0/12 -j FROMDC
-> - * -A LOCAL -s 10.0.0.0/12 -j FROMDC
-> - * -A LOCAL -s 10.248.0.0/24 -j FROMDC
-> - * -A LOCAL -s 10.232.0.0/16 -j FROMDC
-> - * -A LOCAL -s 10.1.146.131/32 -p udp -m udp --dport 161 -j ACCEPT
-> - * -A LOCAL -s 10.149.118.14/32 -p udp -m udp --dport 161 -j ACCEPT
-> - * -A LOCAL -p icmp -j ACCEPT
-> + * :INPUT ACCEPT [0:0]
-> + * :FORWARD ACCEPT [0:0]
-> + * :OUTPUT ACCEPT [0:0]
-> + * -A INPUT -s 1.1.1.1/32 -d 2.2.2.2/32 -j DROP
-> + * -A INPUT -s 2.2.0.0/16 -d 3.0.0.0/8 -j DROP
-> + * -A INPUT -p udp -m udp --sport 100 --dport 500 -j DROP
->   * COMMIT
->   */
 
-Patch 10 adds this test, but then patch 12 removes most of it?
-Keep both?
 
-Also hit this on my system with older glibc:
+On 8/30/21 11:09 AM, Vasily Averin wrote:
+> On 8/30/21 7:01 PM, Eric Dumazet wrote:
+>> On 8/29/21 5:59 AM, Vasily Averin wrote:
+>>> Christoph Paasch reports [1] about incorrect skb->truesize
+>>> after skb_expand_head() call in ip6_xmit.
+>>> This may happen because of two reasons:
+>>> - skb_set_owner_w() for newly cloned skb is called too early,
+>>> before pskb_expand_head() where truesize is adjusted for (!skb-sk) case.
+>>> - pskb_expand_head() does not adjust truesize in (skb->sk) case.
+>>> In this case sk->sk_wmem_alloc should be adjusted too.
+>>>
+>>> [1] https://lkml.org/lkml/2021/8/20/1082
+>>> @@ -1756,9 +1756,13 @@ int pskb_expand_head(struct sk_buff *skb, int nhead, int ntail,
+>>>  	 * For the moment, we really care of rx path, or
+>>>  	 * when skb is orphaned (not attached to a socket).
+>>>  	 */
+>>> -	if (!skb->sk || skb->destructor == sock_edemux)
+>>> -		skb->truesize += size - osize;
+>>> -
+>>> +	delta = size - osize;
+>>> +	if (!skb->sk || skb->destructor == sock_edemux) {
+>>> +		skb->truesize += delta;
+>>> +	} else if (update_truesize) {
+>>
+>> Unfortunately we can not always do this sk_wmem_alloc change here.
+>>
+>> Some skb have skb->sk set, but the 'reference on socket' is not through sk_wmem_alloc
+> 
+> Could you please provide some example?
+> In past in all handeled cases we have cloned original skb and then unconditionally assigned skb sock_wfree destructor.
 
-../net/bpfilter/codegen.c: In function ‘codegen_push_subprog’:
-../net/bpfilter/codegen.c:67:4: warning: implicit declaration of function ‘reallocarray’ [-Wimplicit-function-declaration]
-   67 |    reallocarray(codegen->subprogs, subprogs_max, sizeof(codegen->subprogs[0]));
-      |    ^~~~~~~~~~~~
-../net/bpfilter/codegen.c:66:12: warning: assignment to ‘struct codegen_subprog_desc **’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
-   66 |   subprogs =
-      |            ^
+In the past we ignored old value of skb->destructor,
+since the clone got a NULL destructor.
 
-In libbpf we have libbpf_reallocarray() for this reason.
+In your patch you assumes it is sock_wfree, or other destructors changing sk_wmem_alloc
 
-Could you provide an example of generated bpf program?
-And maybe add Documentation/bpf/bpfilter_design.rst ?
 
-The tests don't build for me:
-$ cd selftests/bpf/bpfilter; make
-make: *** No rule to make target '-lelf', needed by '.../selftests/bpf/bpfilter/test_match'.  Stop.
+You need to make sure skb->destructor is one of the known destructors which 
+will basically remove skb->truesize from sk->sk_wmem_alloc.
 
-The unit tests are great, btw. test_codegen is not end-to-end, right?
-Could you add a full test with iptable command line?
-or netns support is a prerequisite for it?
+This will also make sure skb->sk is a 'full socket'
+
+If not, you should not change sk->sk_wmem_alloc
+
+> Do you want to say that it worked correctly somehow?
+
+I am simply saying your patch adds a wrong assumption.
+
+> 
+> I expected if we set sock_wfree, we have guarantee that old skb adjusted sk_wmem_alloc.
+> Am I wrong?
+> Could you please point on such case?
+> 
+>> It seems you need a helper to make sure skb->destructor is one of
+>> the destructors that use skb->truesize and sk->sk_wmem_alloc
+>>
+>> For instance, skb_orphan_partial() could have been used.
+> 
+> Thank you, will investigate.
+> 	Vasily Averin
+> 
