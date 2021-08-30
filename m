@@ -2,82 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65FB43FAF5C
-	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 02:59:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80FF53FAF7F
+	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 03:19:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234794AbhH3BAc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Aug 2021 21:00:32 -0400
-Received: from laubervilliers-656-1-228-164.w92-154.abo.wanadoo.fr ([92.154.28.164]:40058
-        "EHLO ssq0.pkh.me" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230047AbhH3BAb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Aug 2021 21:00:31 -0400
-X-Greylist: delayed 398 seconds by postgrey-1.27 at vger.kernel.org; Sun, 29 Aug 2021 21:00:31 EDT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pkh.me; s=selector1;
-        t=1630284778;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=npBp7WbmtiPU0EE4g71XUbLHJkGWHeertqZ8nJ2kRIE=;
-        b=Lrs7RFgCixbAMl3bNXhHrXkNCs53EwjDnTAsK7arnbLjXrvUQAVMWuWHASRwVBw91FwiPD
-        o6mlQmbv/bbXOpnIzf0LbM5u/amPkVNW0nP8T0NOGfnn3F/FJilvo+24XC9EVwlbXkG/z8
-        zT2ie4/WhlLblWtZ+Wsgg9nsQdmgh/g=
-Received: from localhost (ssq0.pkh.me [local])
-        by ssq0.pkh.me (OpenSMTPD) with ESMTPA id 9b1de0ac;
-        Mon, 30 Aug 2021 00:52:57 +0000 (UTC)
-Date:   Mon, 30 Aug 2021 02:52:57 +0200
-From:   =?utf-8?B?Q2zDqW1lbnQgQsWTc2No?= <u@pkh.me>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>, Willy Liu <willy.liu@realtek.com>
-Cc:     netdev@vger.kernel.org, linux-sunxi@lists.linux.dev,
-        devicetree@vger.kernel.org
-Subject: sunxi H5 DTB fix for realtek regression
-Message-ID: <YSwr6YZXjNrdKoBZ@ssq0.pkh.me>
+        id S236172AbhH3BUT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Aug 2021 21:20:19 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:8797 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235570AbhH3BUS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Aug 2021 21:20:18 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GyXX45P8PzYvp9;
+        Mon, 30 Aug 2021 09:18:44 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Mon, 30 Aug 2021 09:19:24 +0800
+Received: from localhost.localdomain (10.69.192.56) by
+ dggpemm500005.china.huawei.com (7.185.36.74) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.8; Mon, 30 Aug 2021 09:19:23 +0800
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linuxarm@openeuler.org>, <hawk@kernel.org>,
+        <ilias.apalodimas@linaro.org>, <jonathan.lemon@gmail.com>,
+        <alobakin@pm.me>, <willemb@google.com>, <cong.wang@bytedance.com>,
+        <pabeni@redhat.com>, <haokexin@gmail.com>, <nogikh@google.com>,
+        <elver@google.com>, <memxor@gmail.com>, <edumazet@google.com>,
+        <alexander.duyck@gmail.com>, <dsahern@gmail.com>
+Subject: [PATCH net-next 0/2] some optimization for page pool
+Date:   Mon, 30 Aug 2021 09:18:08 +0800
+Message-ID: <1630286290-43714-1-git-send-email-linyunsheng@huawei.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.56]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Patch 1: support non-split page when PP_FLAG_PAGE_FRAG is set.
+Patch 1: keep track of pp page when __skb_frag_ref() is called.
 
-Commit bbc4d71d63549bcd003a430de18a72a742d8c91e ("net: phy: realtek: fix
-rtl8211e rx/tx delay config") broke the network on the NanoPI NEO 2 board
-(RTL8211E chip).
+Yunshene Lin (2):
+  page_pool: support non-split page with PP_FLAG_PAGE_FRAG
+  skbuff: keep track of pp page when __skb_frag_ref() is called
 
-Following what was suggested by Andrew Lunn for another hardware¹, I tried
-the following diff:
-
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-neo2.dts b/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-neo2.dts
-index 02f8e72f0cad..05486cccee1c 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-neo2.dts
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-neo2.dts
-@@ -75,7 +75,7 @@ &emac {
-        pinctrl-0 = <&emac_rgmii_pins>;
-        phy-supply = <&reg_gmac_3v3>;
-        phy-handle = <&ext_rgmii_phy>;
--       phy-mode = "rgmii";
-+       phy-mode = "rgmii-id";
-        status = "okay";
- };
-
-
-...which fixed the issue. This was tested on v5.11.4 but the patch applies
-cleanly on stable so far.
-
-I'm sorry for not sending a proper patch: I unfortunately have very little
-clue about what I'm doing here so it's very hard for me to elaborate a
-proper commit description.
-
-Best regards,
-
-[1]: https://www.spinics.net/lists/netdev/msg692731.html
+ include/linux/skbuff.h  | 13 ++++++++++++-
+ include/net/page_pool.h | 23 +++++++++++++++++++++++
+ net/core/page_pool.c    | 24 +++++++++---------------
+ 3 files changed, 44 insertions(+), 16 deletions(-)
 
 -- 
-Clément B.
+2.7.4
+
