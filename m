@@ -2,44 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8689C3FB498
+	by mail.lfdr.de (Postfix) with ESMTP id CEF1F3FB499
 	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 13:30:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232579AbhH3LbC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Aug 2021 07:31:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60104 "EHLO mail.kernel.org"
+        id S236438AbhH3LbD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Aug 2021 07:31:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60098 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236438AbhH3LbA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S236397AbhH3LbA (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 30 Aug 2021 07:31:00 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 015ED61153;
-        Mon, 30 Aug 2021 11:30:07 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPS id E978061139;
+        Mon, 30 Aug 2021 11:30:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1630323007;
-        bh=TsaQJl8TkP79rrhNEFGVTvNok8L1PgiOds4htHDGOxY=;
+        bh=4tXTk/7KNC+gT+6ButRi4wIIyra4WmcdLPO4LXO3XQU=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=dC/Cjr3IJiZOO7uY7bH8tsgfCU2hxTIqOZ7ZSo8oHTJpfHfJthil6le+zmMQULjLx
-         XnIpvcdUdD2Vt8TjycQWfRlx2E+oTz5IulsmK3hXdcpXXMZF8547JVpQ7Iyvq/Mz6o
-         xScmeN/orotR0IMScjUg+bWMc48UlRN5/MRlgz90gVP0uz7CjAOaiUSYiVNc7oMGh8
-         s1RJixT0qs4Yfuhlm0qxArDzjjGYxOhDWUdbNnCVmKhZXVvE3nuzyuc6pM79BKr87y
-         5uzLYsM9hPT2cbk9FrblMkaLnCFrmlXZVErVpHAxGlRxQZrt5fPvg7sfV4+bDpdWYX
-         C33+THD6sjTMA==
+        b=ridLiZOTVJloHtE+lGqdGk6hc86ff2UKyawWxwFwCK4QSHKZnfeb2iMZZXwIUMUPY
+         8Q/Q8+kpdfJmfxZ9zepYspzsEupC98yTkh1dTXse/1arlNmrISkbRur7wowMvauww2
+         UiuXU7IYX+0JTtpLdwuGORRRkcV2LHU2dbjuVZ1PPN1z2Oyp7mVrqqm9TfneuY9iby
+         EEHKRmlbc3Jueq8QT7p+CtD9xakhza4NMV7/IoMDZ1RZDkvbXtv6Hzpp6IOrxqHCHg
+         +zFBs2T216Bq8+jqVHGd47yjFQP0XRkZXWp86wccTPGKkEqjlPXrk9xjLtGaIQxG5f
+         oEcd7yUfk/UDQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id EB2A860A6C;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id DDC7060A6F;
         Mon, 30 Aug 2021 11:30:06 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH V2] fix array-index-out-of-bounds in taprio_change
+Subject: Re: [PATCH v2 net] net: qrtr: make checks in qrtr_endpoint_post()
+ stricter
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163032300695.3135.11373235819151215482.git-patchwork-notify@kernel.org>
+Message-Id: <163032300690.3135.17165027106916962159.git-patchwork-notify@kernel.org>
 Date:   Mon, 30 Aug 2021 11:30:06 +0000
-References: <1630295221-9859-1-git-send-email-tcs_kernel@tencent.com>
-In-Reply-To: <1630295221-9859-1-git-send-email-tcs_kernel@tencent.com>
-To:     Haimin Zhang <tcs.kernel@gmail.com>
-Cc:     vinicius.gomes@intel.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, tcs_kernel@tencent.com
+References: <20210830083717.GU7722@kadam>
+In-Reply-To: <20210830083717.GU7722@kadam>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     mani@kernel.org, loic.poulain@linaro.org,
+        butterflyhuangxx@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        bjorn.andersson@linaro.org, linux-arm-msm@vger.kernel.org,
+        netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -48,19 +49,20 @@ Hello:
 
 This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Mon, 30 Aug 2021 11:47:01 +0800 you wrote:
-> From: Haimin Zhang <tcs_kernel@tencent.com>
+On Mon, 30 Aug 2021 11:37:17 +0300 you wrote:
+> These checks are still not strict enough.  The main problem is that if
+> "cb->type == QRTR_TYPE_NEW_SERVER" is true then "len - hdrlen" is
+> guaranteed to be 4 but we need to be at least 16 bytes.  In fact, we
+> can reject everything smaller than sizeof(*pkt) which is 20 bytes.
 > 
-> syzbot report an array-index-out-of-bounds in taprio_change
-> index 16 is out of range for type '__u16 [16]'
-> that's because mqprio->num_tc is lager than TC_MAX_QUEUE,so we check
-> the return value of netdev_set_num_tc.
+> Also I don't like the ALIGN(size, 4).  It's better to just insist that
+> data is needs to be aligned at the start.
 > 
 > [...]
 
 Here is the summary with links:
-  - [V2] fix array-index-out-of-bounds in taprio_change
-    https://git.kernel.org/netdev/net-next/c/efe487fce306
+  - [v2,net] net: qrtr: make checks in qrtr_endpoint_post() stricter
+    https://git.kernel.org/netdev/net-next/c/aaa8e4922c88
 
 You are awesome, thank you!
 --
