@@ -2,191 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D86D83FB297
-	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 10:37:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A62E73FB2A0
+	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 10:39:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235086AbhH3Iio (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Aug 2021 04:38:44 -0400
-Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:18914 "EHLO
-        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233318AbhH3Iif (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 04:38:35 -0400
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 17U6whMP020589;
-        Mon, 30 Aug 2021 08:37:38 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : content-type : in-reply-to : mime-version;
- s=corp-2021-07-09; bh=AYMUViLKibZwfDXkhtzbOoW9exaxIuLM2HbCYVj5Cgk=;
- b=T3iYPkz/QAshS99TO4k/+bbkQZQXqaKW3Ndz+AAR/Bt7I2wTcvwAPM/cVbZ22Cruqyf8
- F1DBcgoTdeT+AZeP1HzadqKC4ZWXWScbZLCoSXeG0XCz0uRUAn+F+hn/OZbAWtt0izl0
- VvECPiJm5g11PHJjZnw+vjK8gMyl7fUIUjMJEAgJqBc5+9EbeIeXcBMvBpB8peRBVDKN
- 3hk5ye7In4oji1fT32JtyONjyyWC2UvHGsAGDQekzRYa/lAx/tG9GVR39ppyXWQFC2YI
- Q8xbrXSCs6Aix/gOmRTmWdtdJRzYC3Sz6nNTzmn5KOhly92P529aoeTROR/owexh5zRa ng== 
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : content-type : in-reply-to : mime-version;
- s=corp-2020-01-29; bh=AYMUViLKibZwfDXkhtzbOoW9exaxIuLM2HbCYVj5Cgk=;
- b=FCuqUWpWnv2qTQjNdKpqwBLXWgjhfJKeBVZ5JKdbNok3Fz6w9+XL3CgXPHBhVzpqx4n0
- E65FBNKEzHx8So/5O2TJrgiJ5d9uRc1gPUlaogqM5vuyZ6m7d2930XqA5Xd7MAqyPGvc
- 0B0o+I2WB6ZflxVo9GyKmdsV/RBAEmZUsTg1+WiWo6FZYNrtpwoPKYtahQbcY93QP1xl
- Z5INGLoiyh+gAV6z0TpE9CBgy4+CaA3bHW7n1PdJ2KfSe78vGUXGRWNYpLaFZDPCk4rq
- WFdYDkQOxT6oYaFQmt4nCoit2KLNDG3irpJpRzldNH3PLi/MrFDCxUZe3LF4MIbQtmRH Lw== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3arbxwgy17-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 30 Aug 2021 08:37:37 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 17U8Tghs153730;
-        Mon, 30 Aug 2021 08:37:37 GMT
-Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2177.outbound.protection.outlook.com [104.47.57.177])
-        by aserp3030.oracle.com with ESMTP id 3aqb6bjvb4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 30 Aug 2021 08:37:36 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=V/NZl6P/Avv/aPFqpOArzEb1K7r2HK+JBjGSIrwDkQOD2zV5ObuNQNSq9uA/zVImpaRBCzMNtVBblut29eqyrPxQJZ9R+eytPF0X6N4sWhWS52jUUTsPfcw0Jd1DVdygZM01ViwH/Dt8sKgwbyqo06xXTC/7lM4xFC77tI/igqkhCgSPVeZH+OIPzEPgQB+qGuBy7v0XqQ0qYKWZ9qufCanZXVjPf3kYt+IctJfbEuIi7UyV/DiGBrxBMw5Zp/mKJVqNt51M4VXi+m6vSDTcAAQY2MOY/CanSsj+Ceo9JmPIKYLkjYGiYtQUS3doEEQKuH0OQi3rOsTLR0hVcK/JEw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AYMUViLKibZwfDXkhtzbOoW9exaxIuLM2HbCYVj5Cgk=;
- b=dzCRh74O+V6qzBD2YOhUi+ChQxojDivGHHmaNsoUkCcdMYZgczJELq+IDM6LJo4hSQd2f/FHd5waNjT6DhTDPUw8TYWq8BxrTOGzW8Etvklw+9QT4tyHEy2PM5oeb68jXvf84ziaWzOGobKSrnBlGtKjsxUEmRsObhsagLLkTIakV4qYNJFWeY4NuqA3oAeYCwRkyWcvON6ZgE5n8g8Q7Tm0fVMKLYcus31yNhsJvpaFB1IVwRxreLI6P++VorJ/9mopZ7B615ucWqfovDFDPz2tF/wjjWW2xEyon6ShTRx0Dna/9Cw831UMDlygYYN3wMar5uLfrBGFopEXH9iEBQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        id S235013AbhH3IkZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Aug 2021 04:40:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51614 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233318AbhH3IkY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 04:40:24 -0400
+Received: from mail-oo1-xc2c.google.com (mail-oo1-xc2c.google.com [IPv6:2607:f8b0:4864:20::c2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16E6DC061575
+        for <netdev@vger.kernel.org>; Mon, 30 Aug 2021 01:39:31 -0700 (PDT)
+Received: by mail-oo1-xc2c.google.com with SMTP id b5-20020a4ac285000000b0029038344c3dso4316728ooq.8
+        for <netdev@vger.kernel.org>; Mon, 30 Aug 2021 01:39:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AYMUViLKibZwfDXkhtzbOoW9exaxIuLM2HbCYVj5Cgk=;
- b=tqIMNJyhH16Fck4R5gcAvC5gu4sd7dRFKxDmYRYjqimLrzkYHhssDmC9jdBsd3nAA1Y2RjcCkJGB6qaNkRr8ojPGcTNGA49xm/rAVlGijTL4neJpCwEz+2VkQe/lUKlKw+nQ5hMcKGcUjkJrXMJRgBk/id0itJVNEpLZxVC5UAk=
-Authentication-Results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=oracle.com;
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by MWHPR10MB1776.namprd10.prod.outlook.com
- (2603:10b6:301:4::7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4457.23; Mon, 30 Aug
- 2021 08:37:35 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::5820:e42b:73d7:4268]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::5820:e42b:73d7:4268%7]) with mapi id 15.20.4457.024; Mon, 30 Aug 2021
- 08:37:34 +0000
-Date:   Mon, 30 Aug 2021 11:37:17 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Manivannan Sadhasivam <mani@kernel.org>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        Xiaolong Huang <butterflyhuangxx@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v2 net] net: qrtr: make checks in qrtr_endpoint_post()
- stricter
-Message-ID: <20210830083717.GU7722@kadam>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAFcO6XMo2rFJqb1zZyPgEDtChLHNq26WfhAd5WC+9NMnRNM8uw@mail.gmail.com>
-X-Mailer: git-send-email haha only kidding
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: JNXP275CA0029.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:18::17)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=J/hEM3tcQmv5h0aNBtAnL55U1gjZ76bS+5hiezChL/c=;
+        b=pHxOO3OtuhjHfPdiacDEiq974c4w7Vh0NHRop798z7zGNHDfuF1sR08sANF9BP1KDz
+         RJvEBhsc/I0/7mffxPctm5EiB2CtfnHf9wLJP5pA0hyTIN6/veZ22aB1PIomG9i5xY2w
+         dUF8Cvjtbdt6Ya07ORcnNNlsvcBJ7BelF7kRI+L9CC8hgG9b+pPWtdSmQJR2/p7j751q
+         41nhL7VkjW41HWWxB8F6vnfLbkBWHzMGVejHkACWRapSu7UbOqFcISZKBzXtjRxaHV36
+         S4OuBK3n5+at21KBRC2SrQjGlnL8sy+hX+h+A8iBMKb2NtuxhDdgeXcQigzaBAFaOg8r
+         V59Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=J/hEM3tcQmv5h0aNBtAnL55U1gjZ76bS+5hiezChL/c=;
+        b=YSW6PQ4/YdhK5sWjvu/MiTFO7EY+fP+AUz49COYAiLE/1uReMazIPL4/K2lHoyllOt
+         Ri71kO970yIOU0lzJAu1sENJLEHmuCYp1VyU62QTGS/UirFZLYUT189re6klBy1+LooN
+         Eg4VIgciNrL9Y0Au11OUvsEjzsRz9VO2dLeZtHcBIVRAXLfcTigwa2TVJyLiKfb2tMBm
+         v1YWmRL9xZk1lsKGhniwjT8Q888EaNDPEstw6bpx4covuBCYeA53Hjf2/i60QW1cALX6
+         FPzViWhj7YXxVbX5nYMnEGgfGP9HK53qwSYQ9OXTI4TjzG0zrmiSdzHHjUTi1VnXPK0p
+         5G9Q==
+X-Gm-Message-State: AOAM532HyURWc2OyLN2RYl/LWjmZSDFfAJXx48VuWAG5xFdcoN7eFSAS
+        /P3x+ojninHS+TPqnmCpWYw586HJLdxdJfYjlBM2TQ==
+X-Google-Smtp-Source: ABdhPJx3lro/NLWpABSvjIvK+fiTNntJeWbovYfVkE68ffqFkYVdlWs5TT/jlT2VXeU+rZtIPm7MpbkCFo3UD4S+9jc=
+X-Received: by 2002:a4a:de90:: with SMTP id v16mr9192504oou.42.1630312770009;
+ Mon, 30 Aug 2021 01:39:30 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from kadam (62.8.83.99) by JNXP275CA0029.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:18::17) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4457.18 via Frontend Transport; Mon, 30 Aug 2021 08:37:30 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4850b538-66a7-4667-b5b3-08d96b916a20
-X-MS-TrafficTypeDiagnostic: MWHPR10MB1776:
-X-Microsoft-Antispam-PRVS: <MWHPR10MB177612A6A051806F2EE22E788ECB9@MWHPR10MB1776.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: WJSuIy33iCp6dcXHyFAESYApvfEUoiv3frrvjDtqkLoaUOb+/As53j1jByyxbwuNEnxYAWbI8y3FFZJuPPrroLQDHOcORIQSY9yHStaJc2HY3dL2RVd4252w2EhQ4xYgm5wx77HMmLJHa+n5krNaP9MxUUphEpze4nGYldi6x9bCh5lSNB3Ui3URBheEufBknSfM9V+D0OV3et5vtr3W/yrTOlEfgr3ZeYqXmsXzyQtIOvdJziSrtfTjTl6X64//ZZGe1N67JGngieCmQSNtUOxudUpyqpJVi67YVRM0SxheoyDh3zrVlA8PbofKlaxx3y3NuaTT17FNTFx2dZG9LVLuPq3UgIdqjzaU5v0asOH8d2IYpoM0QbU7rcZws04bqFKLXv5RKb1tlUmrvgaprQoR8x+WURh0B7aYhglsdeWx3VEihSX2Gzy30SWuxDtGBA9GH/57UKZbtLNHs7kxOw4JEMqJKiRBT724PnMEbG5WD5QXN1x9+Gjm/a3G2Jt1tKm3Qp+U9ustwWYY9Csv9eYNlwFS6/lATZpaNIzN45O5X1A9h4NOq770XiAES6PUWnpknwlIbufOSKNVmYo5lC1lQrpyS4M5S3UbtcDyPsPX7Zl1SPuhMXWZjeGKS3yJyEEC+2BMZeSEi/xBBtxwuyyVv2hhb7TAM0fHeKdfRuflFroI3oYIMNMQHrw+iFRnT6tBwyDWXviNErXiN1z04Q==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(33716001)(9686003)(8676002)(508600001)(83380400001)(44832011)(26005)(55016002)(6666004)(316002)(2906002)(186003)(110136005)(5660300002)(38100700002)(52116002)(4326008)(54906003)(1076003)(86362001)(66556008)(9576002)(66946007)(38350700002)(8936002)(33656002)(6496006)(956004)(66476007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?1NmvGdTwDnvXB2z9jrS13jrQzNfMzGJneV4ko7/30VHG9htJT4Tk6Dl20eS8?=
- =?us-ascii?Q?xU1YifsbPiEMdcIKzD+uqjQkYd8qG7m4CKRFpAhXTr112c4lWxqcBMXE5Xdh?=
- =?us-ascii?Q?f9+HK8OxElL+m9goIUejJLZhBw0dyCcVMGRYORk+HdvmWu7x5DEXjwdj4VlP?=
- =?us-ascii?Q?LCsDPrOfRPdJlmCChYQ018uKbJPAych2ioQEe6Q23qvLxdrQRMEyxT82deNv?=
- =?us-ascii?Q?OgRQKYTWElw/MBlV+I+UXc4GLIoAU3wUPKubBbKlYPQZigJKf1fjSClgj1Xa?=
- =?us-ascii?Q?9nxgolhO8ZZRB5BCOMQYC5RLOdK3ycUJdolA36UThxb0W1GN9mN5gId77ero?=
- =?us-ascii?Q?iLgH2GZeTcmBpskymhYU051ua9Mdxmi3JerrDpq3TvOE1Zv+i2reVXjM5NUf?=
- =?us-ascii?Q?QpxzfJ9PmcZgiFhrIhblD26pigYI5ktZCHJEZGnc8HnYeShCZuqjtWccWmc+?=
- =?us-ascii?Q?WodpAfnAVJl2BCM6MSt8gbrTTzrvos9kGVWmcedE493wTWxn0KtynUn7ICG7?=
- =?us-ascii?Q?A/y/d2+nXzTqgVr17hebtEV1xmg1qCgb9eUTY2PDCFnQsFZnVFU5uDgd1ZWs?=
- =?us-ascii?Q?FC/y/AEOhNqcJRdHUmKrF4JyEA1nWABl0qWr7uc0qvPtx5bN4oVSruyPSicT?=
- =?us-ascii?Q?W5sSIX9XR3S7SOt2WoseABzJlZK0HS2KUzofahFx3cOTD2YQNus+edtIEQWw?=
- =?us-ascii?Q?rbJXsJvCHPLbQMw7y+kwNsQnpZnYEE7/nzzdBDhf/YlYPowl/RzzuvvusjbD?=
- =?us-ascii?Q?+0aPLDsD4RWx8qrEXgT/xta2oMq6ceFC2G+AgbNi7dvOmxqHIJebDU4JYAch?=
- =?us-ascii?Q?yzzygSJ0jNwkaCR6tJ4PzjpnkSlbS420glOgDaTdcwKEAk2Qkp7+VyYN516K?=
- =?us-ascii?Q?6ZzC3Jdo/baYhVATLJLNThRZwnDW0QVoX88+jdhuQn2eA3054wz8VtiUauGG?=
- =?us-ascii?Q?37S95uR53Psnrfx5vhB/Reouz19xU9tn79lvOO8x9hpgkKqFDJtyzjptOl/B?=
- =?us-ascii?Q?qGpTmffiLHCuu0dodwk61nFXYktRlb7Td/OaT9SWhOTCy/1MeJGOG10jDDHH?=
- =?us-ascii?Q?1KUEf6poWFE9WUVbsCWqalswmgeGnq7utf+SOsIQC9dpbBauSGsrMfSmZIcx?=
- =?us-ascii?Q?CpGSCS88yPwQ0vri2Yt48Eohop4GWv4iRYdeObJbYsn+9FGlhRg6WEi3D5FJ?=
- =?us-ascii?Q?mm7u/A0lZIooiVAUnFYSFU+BGqQi1pepobTdchrr4OARMRkFu6+yEPAZfI8f?=
- =?us-ascii?Q?X5IbVwArMKMCRXjbD84+wGYuBimzUZGMD2AEAIjmQTZuvok2xjVb/rgyXjX3?=
- =?us-ascii?Q?HMwlc+hSJnB+HGafqR+lvFiE?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4850b538-66a7-4667-b5b3-08d96b916a20
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Aug 2021 08:37:34.9205
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: PpAzdip2NfjWscHechQK61/7VaXzqDOxFF9NkEabf53caGYGjxrtRd8/Kg9InxOEs14v6KDFg4vS46k3733omgbHcEixy/XrM8jCxuy+0wg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR10MB1776
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10091 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 phishscore=0 suspectscore=0
- adultscore=0 mlxscore=0 mlxlogscore=999 malwarescore=0 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2107140000
- definitions=main-2108300063
-X-Proofpoint-ORIG-GUID: iewNlhx1JRvsSTe2zqYGeczJlhGTf_f4
-X-Proofpoint-GUID: iewNlhx1JRvsSTe2zqYGeczJlhGTf_f4
+References: <000000000000b575ab05aebfc192@google.com> <00000000000069bb3e05caa2d1f8@google.com>
+In-Reply-To: <00000000000069bb3e05caa2d1f8@google.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Mon, 30 Aug 2021 10:39:18 +0200
+Message-ID: <CACT4Y+Z1OG0bPB-bfMRS6vN4Ogx8n3_8v+e+WCshLwz7apvnHg@mail.gmail.com>
+Subject: Re: [syzbot] WARNING: refcount bug in qrtr_node_lookup
+To:     syzbot <syzbot+c613e88b3093ebf3686e@syzkaller.appspotmail.com>
+Cc:     anant.thazhemadam@gmail.com, bjorn.andersson@linaro.org,
+        butterflyhuangxx@gmail.com, davem@davemloft.net,
+        dragonjetli@gmail.com, hdanton@sina.com, kuba@kernel.org,
+        linux-arm-msm@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        linux-kernel@vger.kernel.org, mani@kernel.org,
+        manivannan.sadhasivam@linaro.org, masahiroy@kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These checks are still not strict enough.  The main problem is that if
-"cb->type == QRTR_TYPE_NEW_SERVER" is true then "len - hdrlen" is
-guaranteed to be 4 but we need to be at least 16 bytes.  In fact, we
-can reject everything smaller than sizeof(*pkt) which is 20 bytes.
+On Sat, 28 Aug 2021 at 20:32, syzbot
+<syzbot+c613e88b3093ebf3686e@syzkaller.appspotmail.com> wrote:
+>
+> syzbot suspects this issue was fixed by commit:
+>
+> commit 7e78c597c3ebfd0cb329aa09a838734147e4f117
+> Author: Xiaolong Huang <butterflyhuangxx@gmail.com>
+> Date:   Thu Aug 19 19:50:34 2021 +0000
+>
+>     net: qrtr: fix another OOB Read in qrtr_endpoint_post
+>
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11279a4d300000
+> start commit:   ba4f184e126b Linux 5.9-rc6
+> git tree:       upstream
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=af502ec9a451c9fc
+> dashboard link: https://syzkaller.appspot.com/bug?extid=c613e88b3093ebf3686e
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12263dd9900000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13d77603900000
+>
+> If the result looks correct, please mark the issue as fixed by replying with:
+>
+> #syz fix: net: qrtr: fix another OOB Read in qrtr_endpoint_post
+>
+> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
 
-Also I don't like the ALIGN(size, 4).  It's better to just insist that
-data is needs to be aligned at the start.
+Hi Hillf,
 
-Fixes: 0baa99ee353c ("net: qrtr: Allow non-immediate node routing")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
-v2: Fix a % vs & bug.  Thanks, butt3rflyh4ck!
-
- net/qrtr/qrtr.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
-
-diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
-index b8508e35d20e..dbb647f5481b 100644
---- a/net/qrtr/qrtr.c
-+++ b/net/qrtr/qrtr.c
-@@ -493,7 +493,7 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
- 		goto err;
- 	}
- 
--	if (!size || len != ALIGN(size, 4) + hdrlen)
-+	if (!size || size & 3 || len != size + hdrlen)
- 		goto err;
- 
- 	if (cb->dst_port != QRTR_PORT_CTRL && cb->type != QRTR_TYPE_DATA &&
-@@ -506,8 +506,12 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
- 
- 	if (cb->type == QRTR_TYPE_NEW_SERVER) {
- 		/* Remote node endpoint can bridge other distant nodes */
--		const struct qrtr_ctrl_pkt *pkt = data + hdrlen;
-+		const struct qrtr_ctrl_pkt *pkt;
- 
-+		if (size < sizeof(*pkt))
-+			goto err;
-+
-+		pkt = data + hdrlen;
- 		qrtr_node_assign(node, le32_to_cpu(pkt->server.node));
- 	}
- 
--- 
-2.20.1
+You posted some patch related to refcounts. Do you think "net: qrtr:
+fix another OOB Read in qrtr_endpoint_post" is a plausible fix? Or is
+there still something wrong with refcounts?
