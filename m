@@ -2,121 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2038C3FB858
-	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 16:38:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82C7B3FB8A3
+	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 17:00:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231757AbhH3OgG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Aug 2021 10:36:06 -0400
-Received: from laubervilliers-656-1-228-164.w92-154.abo.wanadoo.fr ([92.154.28.164]:53938
-        "EHLO ssq0.pkh.me" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237084AbhH3OgD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 10:36:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pkh.me; s=selector1;
-        t=1630334107;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Kgxy1yAh7dMUGFIGxX89+EstgFdP9XB/Xv6c2oPXvCw=;
-        b=F7Eq76EXP+tRVI3tVHAQ9/JIeWcuVUHmCGaV/DjpG5D8KhXnVfpLbeM9bALMOyX8moBUyk
-        QQauk4tiRdyliOgNe9k/O0iwVgJN/vYlACOFy+yalLb1eaLfksTnU4TgT++Phdh+TzQ7cw
-        zvnbYXKdWu91zrTEiQyfFs6CxZsw/es=
-Received: from localhost (ssq0.pkh.me [local])
-        by ssq0.pkh.me (OpenSMTPD) with ESMTPA id 680a0b7d;
-        Mon, 30 Aug 2021 14:35:07 +0000 (UTC)
-Date:   Mon, 30 Aug 2021 16:35:07 +0200
-From:   =?utf-8?B?Q2zDqW1lbnQgQsWTc2No?= <u@pkh.me>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Willy Liu <willy.liu@realtek.com>, netdev@vger.kernel.org,
-        linux-sunxi@lists.linux.dev, devicetree@vger.kernel.org
-Subject: Re: sunxi H5 DTB fix for realtek regression
-Message-ID: <YSzsmy1f2//NNzXm@ssq0.pkh.me>
-References: <YSwr6YZXjNrdKoBZ@ssq0.pkh.me>
- <YSziXfll/p/5OrOv@lunn.ch>
+        id S237489AbhH3PA7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Aug 2021 11:00:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56052 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237251AbhH3PAq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 11:00:46 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 329E5C061575
+        for <netdev@vger.kernel.org>; Mon, 30 Aug 2021 07:59:53 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id d5so3891886pjx.2
+        for <netdev@vger.kernel.org>; Mon, 30 Aug 2021 07:59:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=2c9VQdN0RHnrAkMcvDlTkPtl2CCpI8pZmnib4CuptTQ=;
+        b=UwPQfPanVnASPC7FguEG3o3FzsQU5Fd1lpo8lCEKig4/4CJ+rJT3NqU0q0+qGGHQjM
+         DRP40UuObggA3+eNyajtH6oRxnnhxcuYvq/c846WdFhkvCWr0ghaZdi7ba4xKhs0gWAl
+         QVBmfnt/2NH3/2tXLjZ9JDje5+FtQD8gNOdHa+1hw7SPu1bht3vFYgyyXuJKl++DeZ5m
+         LPDtAI0Qe6ti+j9zYSX6U4xjrOoI56NfjXBBCCzpT0Vkk2a2fVHPu9vQ1/o5fXecb7iG
+         Uq8VavCUsKOkDb7YPaKZVTk3/PY1x9vO9tmT/YPN2NFcEQIQ8SFgAlM8p+eXEnFs2QP9
+         5rLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=2c9VQdN0RHnrAkMcvDlTkPtl2CCpI8pZmnib4CuptTQ=;
+        b=e0a8MxRKS+/iGY2mXGXBE5DvFE9IxL1Eyoqq0igoF+cxMqJnQSRNzmWr5tJijF8vHd
+         oc0aFfEJg9/hgRQsUo1Q8xyY2d0q7KAzmeq2QqQQPRTZodZdZTWmrOoMi8J/M6p3VZA/
+         zoGaZVf4ikvH1hMl6N1BiJaJHJWeC4SDpVyvOpyFxam8y55DYTH4SHwyiEBrcSY6QCEg
+         oM1MRwF2g4qt+UPOuSJ7hY6S4UA+AB88xJ1H9fGrLldsuYCPfKXIe55ipTMUM8TbvGT4
+         yLmYIOVKtDcu17+BlVQCwtiuDm1u9KXjwuabgRAPTc9YsJCAxoyc1O6ZWZA77c5PrIYv
+         IidQ==
+X-Gm-Message-State: AOAM5337q6yGo68ndhLyvInDIBzLfKdo3PTjWvJZcPM0Ss7Mvy4VmyoV
+        27MDrt9qgw78Tf+D7Ae0nFt5Z1Z7eDqDkA==
+X-Google-Smtp-Source: ABdhPJxf8/4qyluPcnhjOJy6cz8bh6+PU8dTq84aN6dB/Qm6/TP6RDCBsiWH4Hk1YEpgYTGJbUZCAg==
+X-Received: by 2002:a17:902:ee93:b0:133:f9fa:f3c1 with SMTP id a19-20020a170902ee9300b00133f9faf3c1mr97998pld.82.1630335592711;
+        Mon, 30 Aug 2021 07:59:52 -0700 (PDT)
+Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
+        by smtp.gmail.com with ESMTPSA id d22sm16688158pgi.73.2021.08.30.07.59.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Aug 2021 07:59:52 -0700 (PDT)
+Date:   Mon, 30 Aug 2021 07:59:48 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     ebiederm@xmission.com (Eric W. Biederman)
+Cc:     Andrey Ignatov <rdna@fb.com>, <netdev@vger.kernel.org>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <kernel-team@fb.com>
+Subject: Re: [PATCH net] rtnetlink: Return correct error on changing device
+ netns
+Message-ID: <20210830075948.73fda029@hermes.local>
+In-Reply-To: <8735qwi3mt.fsf@disp2133>
+References: <20210826002540.11306-1-rdna@fb.com>
+ <8735qwi3mt.fsf@disp2133>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="yBy1AuXrmCsyj5+w"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YSziXfll/p/5OrOv@lunn.ch>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, 26 Aug 2021 11:15:22 -0500
+ebiederm@xmission.com (Eric W. Biederman) wrote:
 
---yBy1AuXrmCsyj5+w
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-
-On Mon, Aug 30, 2021 at 03:51:25PM +0200, Andrew Lunn wrote:
-[...]
-> > I'm sorry for not sending a proper patch: I unfortunately have very little
-> > clue about what I'm doing here so it's very hard for me to elaborate a
-> > proper commit description.
+> The analysis and the fix looks good to me.
 > 
-> Hi Clément
+> The code calling do_setlink is inconsistent.  One caller of do_setlink
+> passes a NULL to indicate not name has been specified.  Other callers
+> pass a string of zero bytes to indicate no name has been specified.
 > 
-> You are not too far away from a proper patch. I can either guide you,
-> if you want to learn, or the allwinner maintainer can probably take
-> your work and finish it off.
+> I wonder if we might want to fix the callers to uniformly pass NULL,
+> instead of a string of length zero.
+> 
+> There is a slight chance this will trigger a regression somewhere
+> because we are changing the error code but this change looks easy enough
+> to revert in the unlikely event this breaks existing userspace.
+> 
+> Reviewed-by: "Eric W. Biederman" <ebiederm@xmission.com>
 
-See attached patch, heavily based on other commits.
+This patch causes a new warning from Coverity:
+________________________________________________________________________________________________________
+*** CID 1490867:  Null pointer dereferences  (FORWARD_NULL)
+/net/core/rtnetlink.c: 2701 in do_setlink()
+2695     
+2696     	/*
+2697     	 * Interface selected by interface index but interface
+2698     	 * name provided implies that a name change has been
+2699     	 * requested.
+2700     	 */
+>>>     CID 1490867:  Null pointer dereferences  (FORWARD_NULL)
+>>>     Dereferencing null pointer "ifname".  
+2701     	if (ifm->ifi_index > 0 && ifname[0]) {
+2702     		err = dev_change_name(dev, ifname);
+2703     		if (err < 0)
+2704     			goto errout;
+2705     		status |= DO_SETLINK_MODIFIED;
+2706     
 
-Note: running `git grep 'phy-mode\s*=\s*"rgmii"' arch` shows that it might
-affect other hardware as well. I don't know how one is supposed to check
-that, but I would guess at least sun50i-a64-nanopi-a64.dts is affected (a
-quick internet search shows that it's using a RTL8211E¹)
+Originally, the code was not accepting ifname == NULL and would
+crash. Somewhere along the way some new callers seem to have gotten
+confused.
 
-The grep returns 231 occurences... A lot of other boards might have a
-broken network right now.
-
-[1]: http://nanopi.io/nanopi-a64.html
-
--- 
-Clément B.
-
---yBy1AuXrmCsyj5+w
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: attachment;
-	filename="0001-arm64-dts-sun50i-h5-NanoPI-Neo-2-phy-mode-rgmii-id.patch"
-
-From 771f3ad9f8749dd29039a623b25feb818f182104 Mon Sep 17 00:00:00 2001
-From: =?UTF-8?q?Cl=C3=A9ment=20B=C5=93sch?= <u@pkh.me>
-Date: Mon, 30 Aug 2021 16:28:08 +0200
-Subject: [PATCH] arm64: dts: sun50i: h5: NanoPI Neo 2: phy-mode rgmii-id
-
-Since commit bbc4d71d6354 ("net: phy: realtek: fix rtl8211e rx/tx delay
-config") network is broken on the NanoPi Neo 2.
-
-This patch changes the phy-mode to use internal delays both for RX and
-TX as has been done for other boards affected by the same commit.
-
-Fixes: bbc4d71d6354 ("net: phy: realtek: fix rtl8211e rx/tx delay config")
----
- arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-neo2.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-neo2.dts b/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-neo2.dts
-index 02f8e72f0cad..05486cccee1c 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-neo2.dts
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-neo2.dts
-@@ -75,7 +75,7 @@ &emac {
- 	pinctrl-0 = <&emac_rgmii_pins>;
- 	phy-supply = <&reg_gmac_3v3>;
- 	phy-handle = <&ext_rgmii_phy>;
--	phy-mode = "rgmii";
-+	phy-mode = "rgmii-id";
- 	status = "okay";
- };
- 
--- 
-2.33.0
-
-
---yBy1AuXrmCsyj5+w--
+What code is call do_setlink() with NULL as ifname, that should be fixed.
