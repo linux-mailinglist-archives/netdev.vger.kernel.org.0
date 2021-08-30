@@ -2,87 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C778B3FB544
-	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 14:08:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F37E3FB53F
+	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 14:08:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236907AbhH3MCq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Aug 2021 08:02:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51216 "EHLO mail.kernel.org"
+        id S237236AbhH3MCg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Aug 2021 08:02:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51298 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237084AbhH3MB4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Aug 2021 08:01:56 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5BF2C60525;
-        Mon, 30 Aug 2021 12:01:02 +0000 (UTC)
+        id S237093AbhH3MB6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Aug 2021 08:01:58 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C1B9760E73;
+        Mon, 30 Aug 2021 12:01:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1630324863;
-        bh=rtIVkDCTJch9eRFY0drIgdPfVahsP3zGcz9F12ZAvFc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=DiK7LA33gDDy1R+uUiUTmHexubGEwi1VYjl1IecL9QJxqwUiQZmnTsqhGP5ZbVpYz
-         8m+QAAcUlOT32fpiwSkqjpRJLauNyGR2KkA4Dw/pScRkuY3gW2L2dhsBUJeZKFx6RV
-         D9eeXPLt72lvCsVMjDbbLVhvA1+bsLlHXK8cvWLJ+cS2gLxlrKFPG3LopUPIZYg3A6
-         WgOiAxXJv1bMKJyyx6nhotXMAOrZbJeBu1XYMc3nQ2JtX2UfZXifWbaMy+xwhP2QXg
-         v02CCzaWKq+0OeRcapdg/OJ8049ScNCVpqPnhOdj8ATy1HDqHr3y3ntgIC5DNubWRs
-         r3Sg8nuCivycg==
+        s=k20201202; t=1630324864;
+        bh=VJQlSAja63olDGOXvCp1iTN5hhfErRVWcbFQbXqP+1s=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=eNtmbsfC4sZUQBnV9UZrMKmRUuro3XTWuMGCDc0jXvilpRz9fEslPvNzZsaqf1LuX
+         8JEojBNJN1GSyLuLqpQY6aT1xc+N1cAtGoBzOBiFZOY8zh5vPIe2aR4LjQlSd5zo2d
+         /Q2Ia1R6D5t0t/bU9Wyk6QxSftQJZmFq7nmuD/z5baQeA9T65gt6gEcHA8gE+kt3fF
+         1CXZzRzDzsZ1MrrOuyn765bot7KBixGyuG4Bcv+zp2Ix/19mZPVFK8DQh56oEDrQkI
+         s66sWreY2LU0xGo0Yg3bhAQNDKz4EVGqJ4a/5/ipsWFHwIR+HQohIQP1GC1U+tvgnn
+         YYlYkHkJvOAMg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Shai Malin <smalin@marvell.com>,
-        Prabhakar Kushwaha <pkushwaha@marvell.com>,
-        Ariel Elior <aelior@marvell.com>,
-        Kees Cook <keescook@chromium.org>,
+Cc:     =?UTF-8?q?=E7=8E=8B=E8=B4=87?= <yun.wang@linux.alibaba.com>,
+        Abaci <abaci@linux.alibaba.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 1/3] qede: Fix memset corruption
-Date:   Mon, 30 Aug 2021 08:00:59 -0400
-Message-Id: <20210830120101.1018298-1-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-security-module@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 2/3] net: fix NULL pointer reference in cipso_v4_doi_free
+Date:   Mon, 30 Aug 2021 08:01:00 -0400
+Message-Id: <20210830120101.1018298-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210830120101.1018298-1-sashal@kernel.org>
+References: <20210830120101.1018298-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shai Malin <smalin@marvell.com>
+From: 王贇 <yun.wang@linux.alibaba.com>
 
-[ Upstream commit e543468869e2532f5d7926e8f417782b48eca3dc ]
+[ Upstream commit 733c99ee8be9a1410287cdbb943887365e83b2d6 ]
 
-Thanks to Kees Cook who detected the problem of memset that starting
-from not the first member, but sized for the whole struct.
-The better change will be to remove the redundant memset and to clear
-only the msix_cnt member.
+In netlbl_cipsov4_add_std() when 'doi_def->map.std' alloc
+failed, we sometime observe panic:
 
-Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
-Signed-off-by: Ariel Elior <aelior@marvell.com>
-Signed-off-by: Shai Malin <smalin@marvell.com>
-Reported-by: Kees Cook <keescook@chromium.org>
-Reviewed-by: Kees Cook <keescook@chromium.org>
+  BUG: kernel NULL pointer dereference, address:
+  ...
+  RIP: 0010:cipso_v4_doi_free+0x3a/0x80
+  ...
+  Call Trace:
+   netlbl_cipsov4_add_std+0xf4/0x8c0
+   netlbl_cipsov4_add+0x13f/0x1b0
+   genl_family_rcv_msg_doit.isra.15+0x132/0x170
+   genl_rcv_msg+0x125/0x240
+
+This is because in cipso_v4_doi_free() there is no check
+on 'doi_def->map.std' when 'doi_def->type' equal 1, which
+is possibe, since netlbl_cipsov4_add_std() haven't initialize
+it before alloc 'doi_def->map.std'.
+
+This patch just add the check to prevent panic happen for similar
+cases.
+
+Reported-by: Abaci <abaci@linux.alibaba.com>
+Signed-off-by: Michael Wang <yun.wang@linux.alibaba.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/qlogic/qede/qede_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv4/cipso_ipv4.c | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_main.c b/drivers/net/ethernet/qlogic/qede/qede_main.c
-index c677b69bbb0b..22c6eaaf3d9f 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_main.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_main.c
-@@ -1918,6 +1918,7 @@ static void qede_sync_free_irqs(struct qede_dev *edev)
+diff --git a/net/ipv4/cipso_ipv4.c b/net/ipv4/cipso_ipv4.c
+index e798e27b3c7d..918fd4bc5534 100644
+--- a/net/ipv4/cipso_ipv4.c
++++ b/net/ipv4/cipso_ipv4.c
+@@ -551,14 +551,16 @@ void cipso_v4_doi_free(struct cipso_v4_doi *doi_def)
+ 	if (!doi_def)
+ 		return;
+ 
+-	switch (doi_def->type) {
+-	case CIPSO_V4_MAP_TRANS:
+-		kfree(doi_def->map.std->lvl.cipso);
+-		kfree(doi_def->map.std->lvl.local);
+-		kfree(doi_def->map.std->cat.cipso);
+-		kfree(doi_def->map.std->cat.local);
+-		kfree(doi_def->map.std);
+-		break;
++	if (doi_def->map.std) {
++		switch (doi_def->type) {
++		case CIPSO_V4_MAP_TRANS:
++			kfree(doi_def->map.std->lvl.cipso);
++			kfree(doi_def->map.std->lvl.local);
++			kfree(doi_def->map.std->cat.cipso);
++			kfree(doi_def->map.std->cat.local);
++			kfree(doi_def->map.std);
++			break;
++		}
  	}
- 
- 	edev->int_info.used_cnt = 0;
-+	edev->int_info.msix_cnt = 0;
+ 	kfree(doi_def);
  }
- 
- static int qede_req_msix_irqs(struct qede_dev *edev)
-@@ -2341,7 +2342,6 @@ static int qede_load(struct qede_dev *edev, enum qede_load_mode mode)
- 
- err4:
- 	qede_sync_free_irqs(edev);
--	memset(&edev->int_info.msix_cnt, 0, sizeof(struct qed_int_info));
- err3:
- 	qede_napi_disable_remove(edev);
- err2:
 -- 
 2.30.2
 
