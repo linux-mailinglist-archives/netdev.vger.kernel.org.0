@@ -2,84 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33E113FB756
-	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 15:55:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B29D3FB74B
+	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 15:52:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236967AbhH3Nz7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Aug 2021 09:55:59 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:8798 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231314AbhH3Nz6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 09:55:58 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GysHz1mBrzYvwN;
-        Mon, 30 Aug 2021 21:54:23 +0800 (CST)
-Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Mon, 30 Aug 2021 21:55:03 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- dggemi759-chm.china.huawei.com (10.1.198.145) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.8; Mon, 30 Aug 2021 21:55:02 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lipeng321@huawei.com>, <chenhao288@hisilicon.com>,
-        <huangguangbin2@huawei.com>
-Subject: [PATCH net-next 4/4] net: hns3: remove unnecessary spaces
-Date:   Mon, 30 Aug 2021 21:51:09 +0800
-Message-ID: <1630331469-13707-5-git-send-email-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1630331469-13707-1-git-send-email-huangguangbin2@huawei.com>
-References: <1630331469-13707-1-git-send-email-huangguangbin2@huawei.com>
+        id S236934AbhH3Nwo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Aug 2021 09:52:44 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:48492 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236858AbhH3Nwn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Aug 2021 09:52:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=9DGgUo2ugpU41hWzsW/N+Nu2joYqP2tCgM60Nh03GC4=; b=5s
+        k1rHmyE1QQyrq2xcPMU4SNSmqh6fo9dEbWF93Jp0v7TVuONsN3mymtZ5402qJJqOA6wYl+dU3rF4b
+        7fZNkMa8OnIljxahEh2iQgv86oEdlcNqO4qXrZf6bHsAgh6fGJKPX1/WIXUmLRm5W/hgRmCiGbHtw
+        66SIBCBvyOzFur8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mKhh7-004ZKf-EG; Mon, 30 Aug 2021 15:51:25 +0200
+Date:   Mon, 30 Aug 2021 15:51:25 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     =?utf-8?B?Q2zDqW1lbnQgQsWTc2No?= <u@pkh.me>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Willy Liu <willy.liu@realtek.com>, netdev@vger.kernel.org,
+        linux-sunxi@lists.linux.dev, devicetree@vger.kernel.org
+Subject: Re: sunxi H5 DTB fix for realtek regression
+Message-ID: <YSziXfll/p/5OrOv@lunn.ch>
+References: <YSwr6YZXjNrdKoBZ@ssq0.pkh.me>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggemi759-chm.china.huawei.com (10.1.198.145)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YSwr6YZXjNrdKoBZ@ssq0.pkh.me>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hao Chen <chenhao288@hisilicon.com>
+On Mon, Aug 30, 2021 at 02:52:57AM +0200, Clément Bœsch wrote:
+> Hi,
+> 
+> Commit bbc4d71d63549bcd003a430de18a72a742d8c91e ("net: phy: realtek: fix
+> rtl8211e rx/tx delay config") broke the network on the NanoPI NEO 2 board
+> (RTL8211E chip).
+> 
+> Following what was suggested by Andrew Lunn for another hardware¹, I tried
+> the following diff:
+> 
+> diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-neo2.dts b/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-neo2.dts
+> index 02f8e72f0cad..05486cccee1c 100644
+> --- a/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-neo2.dts
+> +++ b/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-neo2.dts
+> @@ -75,7 +75,7 @@ &emac {
+>         pinctrl-0 = <&emac_rgmii_pins>;
+>         phy-supply = <&reg_gmac_3v3>;
+>         phy-handle = <&ext_rgmii_phy>;
+> -       phy-mode = "rgmii";
+> +       phy-mode = "rgmii-id";
+>         status = "okay";
+>  };
+> 
+> 
+> ...which fixed the issue. This was tested on v5.11.4 but the patch applies
+> cleanly on stable so far.
+> 
+> I'm sorry for not sending a proper patch: I unfortunately have very little
+> clue about what I'm doing here so it's very hard for me to elaborate a
+> proper commit description.
 
-This patch removes some unnecessary spaces for cleanup.
+Hi Clément
 
-Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
----
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c         | 2 +-
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+You are not too far away from a proper patch. I can either guide you,
+if you want to learn, or the allwinner maintainer can probably take
+your work and finish it off.
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index ffd92332893d..22af3d6ce178 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -100,7 +100,7 @@ static const struct pci_device_id hns3_pci_tbl[] = {
- 	{PCI_VDEVICE(HUAWEI, HNAE3_DEV_ID_RDMA_DCB_PFC_VF),
- 	 HNAE3_DEV_SUPPORT_ROCE_DCB_BITS},
- 	/* required last entry */
--	{0, }
-+	{0,}
- };
- MODULE_DEVICE_TABLE(pci, hns3_pci_tbl);
- 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index e11afb6f3843..e55ba2e511b1 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -5944,7 +5944,7 @@ static int hclge_config_key(struct hclge_dev *hdev, u8 stage,
- 	cur_key_x = key_x;
- 	cur_key_y = key_y;
- 
--	for (i = 0 ; i < MAX_TUPLE; i++) {
-+	for (i = 0; i < MAX_TUPLE; i++) {
- 		bool tuple_valid;
- 
- 		tuple_size = tuple_key_info[i].key_length / 8;
--- 
-2.8.1
-
+     Andrew
