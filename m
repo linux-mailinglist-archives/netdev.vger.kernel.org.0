@@ -2,143 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 027D93FBDA7
-	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 22:54:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A49513FBDB4
+	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 22:58:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235412AbhH3Uzn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Aug 2021 16:55:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53860 "EHLO
+        id S229923AbhH3U7L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Aug 2021 16:59:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229923AbhH3Uzm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 16:55:42 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18375C06175F
-        for <netdev@vger.kernel.org>; Mon, 30 Aug 2021 13:54:47 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id w4so28092278ljh.13
-        for <netdev@vger.kernel.org>; Mon, 30 Aug 2021 13:54:46 -0700 (PDT)
+        with ESMTP id S236135AbhH3U6z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 16:58:55 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86085C061575;
+        Mon, 30 Aug 2021 13:58:01 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id g13-20020a17090a3c8d00b00196286963b9so374197pjc.3;
+        Mon, 30 Aug 2021 13:58:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ubique-spb-ru.20150623.gappssmtp.com; s=20150623;
+        d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=FiAgtnoVZFVs9eMFVkpCY9ZoVzAD5IMfBshsg/59NmY=;
-        b=daEluc4Zxdi1PDEvOhU47J9P/lRYqX97S60ubZ446kLOUxa29p4wqVCx2K3ZHaINut
-         GL/X0tVGtyw9O0MgBck84vFLMrF3AQRcTSoV03YBC/phABAcjF+mAW7Sxl9ZuPT+3EXC
-         k8Sz9eDLgC6m4uPWlRTfOKRCTdEkzCfs7ne1mlE/u/KIL8Qo3oHbbNhX1js5EkfFZ9Am
-         RqsYLnWIiJisQmkJZnZ1bpm3x452A79kLA5cbFWBhucIdcHa900CRYei3KGPTFGoEsXe
-         Yl8hIR1mAPez6Idn5cUippiWE4FZTqHbPoGFqTCHVjK+dyEycbzjhe99uobAGwi5JO78
-         3UzA==
+         :content-disposition:in-reply-to:user-agent;
+        bh=wCOTcT4aDgkVs5iOttnpiCbbWmKqiOCvsGsS29KMnVI=;
+        b=nSjWBAyABcIj/Tcr9MQ1eq6PF0/JE7WIdQCH1KM/kA4xbkJKohX9oIaipsNgnloCIA
+         l72wmfq89Cv0YfR3otP8/WFajqtZEVUg3XJd3fyy8W1abaxjDmE8c4WErs0d+PttQR0X
+         ytPMEy8TYpGTg8OE7xEp+lRYTHdd3UKF1u9e427kiEzEKTl26HTNmv9ieVwpXcKm0Rig
+         f0FY1y0WPhe2jyYxwY0LqFZeqIpm3lV1U8/Q2fhXUEhC4y56E5IPv39zN/mE6mpHKGmR
+         P+itEElqo+rea05iwMoNiYi22t7OVLfJFU13ry91z4lELoaWnoHTccYKhUxoTdwp+jO1
+         ZfBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=FiAgtnoVZFVs9eMFVkpCY9ZoVzAD5IMfBshsg/59NmY=;
-        b=MakyGEaJLi0CJHbMeyarGArv8ytUIIUwlZUrc5J7aW8WgzlZqPIf7OUQB6StpLz0Sz
-         P8aOW4T34bUXwrNVL36VjAm2wIxNA7AbV1I3vQfR556f9ta/YcRNn4Zq1nTzEf7x5ldk
-         gtO+DU6vmYK/AkP6LDQ6MXW0tJ/RAaDGf4nzdhLoZBqdtoBz5iW+RRkPB1in7GTgpC7g
-         /xQ46wNREN9pNoETpaPfzEM6wHq4rPM4hVkvcCx0yOj7qudPoNx3MVxJ+GBAFZAxOWgk
-         0jjPKR8dd2KBQb6M+Vsn/xql9QXd6+ki8NZUgQOIoSdR8ODDOCIOSauWx0rthC0+V6cu
-         zTVw==
-X-Gm-Message-State: AOAM532jc5f0AWHm1cwlJ5cSr2IUlYY8pqNzoe0dMI3/Lkfy6aXqSQHU
-        Boz1BieocJmQv4mGyUCPmTrNWg==
-X-Google-Smtp-Source: ABdhPJwZkyqI0FXZeSDpL1cTq1feSl1H+2uDcaH7l45R/AXUZTFFu+LqYKesUJjaPnaDnnWUseZpBA==
-X-Received: by 2002:a2e:bc1d:: with SMTP id b29mr23222717ljf.2.1630356885361;
-        Mon, 30 Aug 2021 13:54:45 -0700 (PDT)
-Received: from localhost ([5.18.150.171])
-        by smtp.gmail.com with ESMTPSA id c10sm1496527lfv.246.2021.08.30.13.54.44
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=wCOTcT4aDgkVs5iOttnpiCbbWmKqiOCvsGsS29KMnVI=;
+        b=C42GM6Orz5pRauCN7mcliTS971G+atGs1US1571CJps1GJZFU7OaT799y4ZNzSdF+a
+         XybCNFRJ0pJRZ3bdn7Xnxp4d5iuqNTxSFm3s+dmqyoyewCmczFSo25UoTUFRutkLoV7z
+         sJjOAGBinW7RTT7s6ouMsCypb24WwdYH2HK2AN+RQF1SNNF+B42NIN0x+CFdNDRO/0FL
+         50isbcQ2++GGE9dVDRf/De4wXJ5VdOGUQoBx7bMLj8c+CslM3Fou7E6wJgP+z2nZ0V0g
+         RxzNDcdnLCJA9UsfELdB9uHh2eCDGFMTDxtUcFd+JRAk5m4ORKY9lbV7vSZEtOJSGOza
+         dK/Q==
+X-Gm-Message-State: AOAM5309LK5RLgAYUXwRkJWF3/N5zPzQM3GwW3J1UFaNZmHyN5tCbyOq
+        8wdW8oTrqyu+HeGt34B3J3cvvlEW33Q=
+X-Google-Smtp-Source: ABdhPJyyB7uhFyxEIgMP2A0oPDvmFLCM+SX00jvt+VPSQuUIlCuXEpFmk1yczmsJq4+EoZxuDG62+Q==
+X-Received: by 2002:a17:90a:9cd:: with SMTP id 71mr1123018pjo.62.1630357081078;
+        Mon, 30 Aug 2021 13:58:01 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:645:c000:2163:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id t4sm14962859pfe.166.2021.08.30.13.57.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Aug 2021 13:54:44 -0700 (PDT)
-Date:   Tue, 31 Aug 2021 00:54:43 +0400
-From:   Dmitrii Banshchikov <me@ubique.spb.ru>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, davem@davemloft.net,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, netdev@vger.kernel.org, rdna@fb.com
-Subject: Re: [PATCH bpf-next v2 12/13] bpfilter: Add filter table
-Message-ID: <20210830205443.wx3n2bhw44pji2hn@amnesia>
-References: <20210829183608.2297877-1-me@ubique.spb.ru>
- <20210829183608.2297877-13-me@ubique.spb.ru>
- <20210830194545.rgwg3ks3alikeyzx@ast-mbp.dhcp.thefacebook.com>
+        Mon, 30 Aug 2021 13:58:00 -0700 (PDT)
+Date:   Mon, 30 Aug 2021 13:57:58 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     "Machnikowski, Maciej" <maciej.machnikowski@intel.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "abyagowi@fb.com" <abyagowi@fb.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>
+Subject: Re: [RFC v2 net-next 1/2] rtnetlink: Add new RTM_GETSYNCESTATE
+ message to get SyncE status
+Message-ID: <20210830205758.GA26230@hoboy.vegasvil.org>
+References: <20210829080512.3573627-1-maciej.machnikowski@intel.com>
+ <20210829080512.3573627-2-maciej.machnikowski@intel.com>
+ <20210829151017.GA6016@hoboy.vegasvil.org>
+ <PH0PR11MB495126A63998DABA5B5DE184EACA9@PH0PR11MB4951.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210830194545.rgwg3ks3alikeyzx@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <PH0PR11MB495126A63998DABA5B5DE184EACA9@PH0PR11MB4951.namprd11.prod.outlook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 30, 2021 at 12:45:45PM -0700, Alexei Starovoitov wrote:
-> On Sun, Aug 29, 2021 at 10:36:07PM +0400, Dmitrii Banshchikov wrote:
-> >  /*
-> > - * # Generated by iptables-save v1.8.2 on Sat May  8 05:22:41 2021
-> > + *  Generated by iptables-save v1.8.2 on Sat May  8 05:22:41 2021
-> >   * *filter
-> ...
-> > - * -A LOCAL -s 10.32.0.0/11 -j FROMDC
-> > - * -A LOCAL -s 10.144.0.0/12 -j FROMDC
-> > - * -A LOCAL -s 10.160.0.0/12 -j FROMDC
-> > - * -A LOCAL -s 10.0.0.0/12 -j FROMDC
-> > - * -A LOCAL -s 10.248.0.0/24 -j FROMDC
-> > - * -A LOCAL -s 10.232.0.0/16 -j FROMDC
-> > - * -A LOCAL -s 10.1.146.131/32 -p udp -m udp --dport 161 -j ACCEPT
-> > - * -A LOCAL -s 10.149.118.14/32 -p udp -m udp --dport 161 -j ACCEPT
-> > - * -A LOCAL -p icmp -j ACCEPT
-> > + * :INPUT ACCEPT [0:0]
-> > + * :FORWARD ACCEPT [0:0]
-> > + * :OUTPUT ACCEPT [0:0]
-> > + * -A INPUT -s 1.1.1.1/32 -d 2.2.2.2/32 -j DROP
-> > + * -A INPUT -s 2.2.0.0/16 -d 3.0.0.0/8 -j DROP
-> > + * -A INPUT -p udp -m udp --sport 100 --dport 500 -j DROP
-> >   * COMMIT
-> >   */
-> 
-> Patch 10 adds this test, but then patch 12 removes most of it?
-> Keep both?
+On Sun, Aug 29, 2021 at 04:42:55PM +0000, Machnikowski, Maciej wrote:
 
-Sorry, I missed it.
-I decided that the large blob looks really ugly and switched to
-the smaller one and forgot to cleanup the patchset.
+> Please take a look at the 10.2 Operation modes of the G.8264 and at the Figure A.1
+> which depicts the EEC. This interface is to report the status of the EEC.
 
-> 
-> Also hit this on my system with older glibc:
-> 
-> ../net/bpfilter/codegen.c: In function ‘codegen_push_subprog’:
-> ../net/bpfilter/codegen.c:67:4: warning: implicit declaration of function ‘reallocarray’ [-Wimplicit-function-declaration]
->    67 |    reallocarray(codegen->subprogs, subprogs_max, sizeof(codegen->subprogs[0]));
->       |    ^~~~~~~~~~~~
-> ../net/bpfilter/codegen.c:66:12: warning: assignment to ‘struct codegen_subprog_desc **’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
->    66 |   subprogs =
->       |            ^
-> 
-> In libbpf we have libbpf_reallocarray() for this reason.
-> 
-> Could you provide an example of generated bpf program?
-> And maybe add Documentation/bpf/bpfilter_design.rst ?
+Well, I read it, and it is still fairly high level with no mention at
+all of "DPLL".  I hope that the new RTNL states will cover other
+possible EEC implementations, too.
 
-I will add documentation in the next iteration when
-bpf_map_for_each() subprog will be introduced.
+The "Reference source selection mechanism" is also quite vague.  Your
+patch is more specific:
 
-> 
-> The tests don't build for me:
-> $ cd selftests/bpf/bpfilter; make
-> make: *** No rule to make target '-lelf', needed by '.../selftests/bpf/bpfilter/test_match'.  Stop.
++enum if_eec_src {
++       IF_EEC_SRC_INVALID = 0,
++       IF_EEC_SRC_UNKNOWN,
++       IF_EEC_SRC_SYNCE,
++       IF_EEC_SRC_GNSS,
++       IF_EEC_SRC_PTP,
++       IF_EEC_SRC_EXT,
++       __IF_EEC_SRC_MAX,
++};
 
-libelf was added because libbpf depends on it.
-Are you able to build libbpf?
-
-> 
-> The unit tests are great, btw. test_codegen is not end-to-end, right?
-> Could you add a full test with iptable command line?
-> or netns support is a prerequisite for it?
-
-Yeah, as net namespaces aren't supported using iptables binary
-will modify the root namespace. That is the reason why codegen
-tests aren't implemented in the end-to-end fashion and rules are
-represented by blobs.
+But I guess your list is reasonable.  It can always be expanded, right?
 
 
--- 
+> If you prefer EEC over DPLL I'm fine with the name change. I think it will be less confusing.
 
-Dmitrii Banshchikov
+Yes, thanks for doing that.
+
+Thanks,
+Richard
