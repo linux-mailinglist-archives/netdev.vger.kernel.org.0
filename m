@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB4913FB10B
-	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 08:14:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E55863FB111
+	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 08:14:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233350AbhH3GLi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Aug 2021 02:11:38 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:15269 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232778AbhH3GLd (ORCPT
+        id S233839AbhH3GLs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Aug 2021 02:11:48 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:18985 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232715AbhH3GLd (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 02:11:33 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Gyg0S2qlTz8CQq;
-        Mon, 30 Aug 2021 14:10:16 +0800 (CST)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GyfwL6bGXzbkWM;
+        Mon, 30 Aug 2021 14:06:42 +0800 (CST)
 Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
  dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
@@ -21,15 +21,15 @@ Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
 Received: from localhost.localdomain (10.67.165.24) by
  dggemi759-chm.china.huawei.com (10.1.198.145) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.8; Mon, 30 Aug 2021 14:10:35 +0800
+ 15.1.2308.8; Mon, 30 Aug 2021 14:10:36 +0800
 From:   Guangbin Huang <huangguangbin2@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <chenhao288@hisilicon.com>,
         <huangguangbin2@huawei.com>
-Subject: [PATCH net-next 2/7] net: hns3: reconstruct function hns3_self_test
-Date:   Mon, 30 Aug 2021 14:06:37 +0800
-Message-ID: <1630303602-44870-3-git-send-email-huangguangbin2@huawei.com>
+Subject: [PATCH net-next 3/7] net: hns3: reconstruct function hclge_ets_validate()
+Date:   Mon, 30 Aug 2021 14:06:38 +0800
+Message-ID: <1630303602-44870-4-git-send-email-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1630303602-44870-1-git-send-email-huangguangbin2@huawei.com>
 References: <1630303602-44870-1-git-send-email-huangguangbin2@huawei.com>
@@ -43,155 +43,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Peng Li <lipeng321@huawei.com>
-
-This patch reconstructs function hns3_self_test to reduce the code
+This patch reconstructs function hclge_ets_validate() to reduce the code
 cycle complexity and make code more concise.
 
-Signed-off-by: Peng Li <lipeng321@huawei.com>
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 101 +++++++++++++--------
- 1 file changed, 64 insertions(+), 37 deletions(-)
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c | 47 ++++++++++++++++------
+ 1 file changed, 35 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-index b8d9851aefc5..7ea511d59e91 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-@@ -298,33 +298,8 @@ static int hns3_lp_run_test(struct net_device *ndev, enum hnae3_loop mode)
- 	return ret_val;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c
+index 127160416ca6..4a619e5d3f35 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c
+@@ -104,26 +104,30 @@ static int hclge_dcb_common_validate(struct hclge_dev *hdev, u8 num_tc,
+ 	return 0;
  }
  
--/**
-- * hns3_self_test - self test
-- * @ndev: net device
-- * @eth_test: test cmd
-- * @data: test result
-- */
--static void hns3_self_test(struct net_device *ndev,
--			   struct ethtool_test *eth_test, u64 *data)
-+static void hns3_set_selftest_param(struct hnae3_handle *h, int (*st_param)[2])
+-static int hclge_ets_validate(struct hclge_dev *hdev, struct ieee_ets *ets,
+-			      u8 *tc, bool *changed)
++static u8 hclge_ets_tc_changed(struct hclge_dev *hdev, struct ieee_ets *ets,
++			       bool *changed)
  {
--	struct hns3_nic_priv *priv = netdev_priv(ndev);
--	struct hnae3_handle *h = priv->ae_handle;
--	int st_param[HNS3_SELF_TEST_TYPE_NUM][2];
--	bool if_running = netif_running(ndev);
--	int test_index = 0;
--	u32 i;
--
--	if (hns3_nic_resetting(ndev)) {
--		netdev_err(ndev, "dev resetting!");
--		return;
--	}
--
--	/* Only do offline selftest, or pass by default */
--	if (eth_test->flags != ETH_TEST_FL_OFFLINE)
--		return;
--
--	netif_dbg(h, drv, ndev, "self test start");
--
- 	st_param[HNAE3_LOOP_APP][0] = HNAE3_LOOP_APP;
- 	st_param[HNAE3_LOOP_APP][1] =
- 			h->flags & HNAE3_SUPPORT_APP_LOOPBACK;
-@@ -341,6 +316,18 @@ static void hns3_self_test(struct net_device *ndev,
- 	st_param[HNAE3_LOOP_PHY][0] = HNAE3_LOOP_PHY;
- 	st_param[HNAE3_LOOP_PHY][1] =
- 			h->flags & HNAE3_SUPPORT_PHY_LOOPBACK;
-+}
-+
-+static void hns3_selftest_prepare(struct net_device *ndev,
-+				  bool if_running, int (*st_param)[2])
-+{
-+	struct hns3_nic_priv *priv = netdev_priv(ndev);
-+	struct hnae3_handle *h = priv->ae_handle;
-+
-+	if (netif_msg_ifdown(h))
-+		netdev_info(ndev, "self test start\n");
-+
-+	hns3_set_selftest_param(h, st_param);
+-	bool has_ets_tc = false;
+-	u32 total_ets_bw = 0;
+-	u8 max_tc = 0;
+-	int ret;
++	u8 max_tc_id = 0;
+ 	u8 i;
  
- 	if (if_running)
- 		ndev->netdev_ops->ndo_stop(ndev);
-@@ -359,6 +346,35 @@ static void hns3_self_test(struct net_device *ndev,
- 		h->ae_algo->ops->halt_autoneg(h, true);
+ 	for (i = 0; i < HNAE3_MAX_USER_PRIO; i++) {
+ 		if (ets->prio_tc[i] != hdev->tm_info.prio_tc[i])
+ 			*changed = true;
  
- 	set_bit(HNS3_NIC_STATE_TESTING, &priv->state);
-+}
-+
-+static void hns3_selftest_restore(struct net_device *ndev, bool if_running)
-+{
-+	struct hns3_nic_priv *priv = netdev_priv(ndev);
-+	struct hnae3_handle *h = priv->ae_handle;
-+
-+	clear_bit(HNS3_NIC_STATE_TESTING, &priv->state);
-+
-+	if (h->ae_algo->ops->halt_autoneg)
-+		h->ae_algo->ops->halt_autoneg(h, false);
-+
-+#if IS_ENABLED(CONFIG_VLAN_8021Q)
-+	if (h->ae_algo->ops->enable_vlan_filter)
-+		h->ae_algo->ops->enable_vlan_filter(h, true);
-+#endif
-+
-+	if (if_running)
-+		ndev->netdev_ops->ndo_open(ndev);
-+
-+	if (netif_msg_ifdown(h))
-+		netdev_info(ndev, "self test end\n");
-+}
-+
-+static void hns3_do_selftest(struct net_device *ndev, int (*st_param)[2],
-+			     struct ethtool_test *eth_test, u64 *data)
-+{
-+	int test_index = 0;
-+	u32 i;
- 
- 	for (i = 0; i < HNS3_SELF_TEST_TYPE_NUM; i++) {
- 		enum hnae3_loop loop_type = (enum hnae3_loop)st_param[i][0];
-@@ -377,21 +393,32 @@ static void hns3_self_test(struct net_device *ndev,
- 
- 		test_index++;
+-		if (ets->prio_tc[i] > max_tc)
+-			max_tc = ets->prio_tc[i];
++		if (ets->prio_tc[i] > max_tc_id)
++			max_tc_id = ets->prio_tc[i];
  	}
+ 
+-	ret = hclge_dcb_common_validate(hdev, max_tc + 1, ets->prio_tc);
+-	if (ret)
+-		return ret;
++	/* return max tc number, max tc id need to plus 1 */
++	return max_tc_id + 1;
 +}
- 
--	clear_bit(HNS3_NIC_STATE_TESTING, &priv->state);
--
--	if (h->ae_algo->ops->halt_autoneg)
--		h->ae_algo->ops->halt_autoneg(h, false);
-+/**
-+ * hns3_nic_self_test - self test
-+ * @ndev: net device
-+ * @eth_test: test cmd
-+ * @data: test result
-+ */
-+static void hns3_self_test(struct net_device *ndev,
-+			   struct ethtool_test *eth_test, u64 *data)
++
++static int hclge_ets_sch_mode_validate(struct hclge_dev *hdev,
++				       struct ieee_ets *ets, bool *changed)
 +{
-+	int st_param[HNS3_SELF_TEST_TYPE_NUM][2];
-+	bool if_running = netif_running(ndev);
++	bool has_ets_tc = false;
++	u32 total_ets_bw = 0;
++	u8 i;
  
--#if IS_ENABLED(CONFIG_VLAN_8021Q)
--	if (h->ae_algo->ops->enable_vlan_filter)
--		h->ae_algo->ops->enable_vlan_filter(h, true);
--#endif
-+	if (hns3_nic_resetting(ndev)) {
-+		netdev_err(ndev, "dev resetting!");
-+		return;
-+	}
+ 	for (i = 0; i < hdev->tc_max; i++) {
+ 		switch (ets->tc_tsa[i]) {
+@@ -148,7 +152,26 @@ static int hclge_ets_validate(struct hclge_dev *hdev, struct ieee_ets *ets,
+ 	if (has_ets_tc && total_ets_bw != BW_PERCENT)
+ 		return -EINVAL;
  
--	if (if_running)
--		ndev->netdev_ops->ndo_open(ndev);
-+	/* Only do offline selftest, or pass by default */
-+	if (eth_test->flags != ETH_TEST_FL_OFFLINE)
-+		return;
+-	*tc = max_tc + 1;
++	return 0;
++}
++
++static int hclge_ets_validate(struct hclge_dev *hdev, struct ieee_ets *ets,
++			      u8 *tc, bool *changed)
++{
++	u8 tc_num;
++	int ret;
++
++	tc_num = hclge_ets_tc_changed(hdev, ets, changed);
++
++	ret = hclge_dcb_common_validate(hdev, tc_num, ets->prio_tc);
++	if (ret)
++		return ret;
++
++	ret = hclge_ets_sch_mode_validate(hdev, ets, changed);
++	if (ret)
++		return ret;
++
++	*tc = tc_num;
+ 	if (*tc != hdev->tm_info.num_tc)
+ 		*changed = true;
  
--	netif_dbg(h, drv, ndev, "self test end\n");
-+	hns3_selftest_prepare(ndev, if_running, st_param);
-+	hns3_do_selftest(ndev, st_param, eth_test, data);
-+	hns3_selftest_restore(ndev, if_running);
- }
- 
- static void hns3_update_limit_promisc_mode(struct net_device *netdev,
 -- 
 2.8.1
 
