@@ -2,284 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 796053FB244
-	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 10:13:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D86D83FB297
+	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 10:37:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234532AbhH3INv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Aug 2021 04:13:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45658 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234166AbhH3INu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 04:13:50 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57479C061575
-        for <netdev@vger.kernel.org>; Mon, 30 Aug 2021 01:12:57 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id t15so14950694wrg.7
-        for <netdev@vger.kernel.org>; Mon, 30 Aug 2021 01:12:57 -0700 (PDT)
+        id S235086AbhH3Iio (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Aug 2021 04:38:44 -0400
+Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:18914 "EHLO
+        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233318AbhH3Iif (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 04:38:35 -0400
+Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 17U6whMP020589;
+        Mon, 30 Aug 2021 08:37:38 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : content-type : in-reply-to : mime-version;
+ s=corp-2021-07-09; bh=AYMUViLKibZwfDXkhtzbOoW9exaxIuLM2HbCYVj5Cgk=;
+ b=T3iYPkz/QAshS99TO4k/+bbkQZQXqaKW3Ndz+AAR/Bt7I2wTcvwAPM/cVbZ22Cruqyf8
+ F1DBcgoTdeT+AZeP1HzadqKC4ZWXWScbZLCoSXeG0XCz0uRUAn+F+hn/OZbAWtt0izl0
+ VvECPiJm5g11PHJjZnw+vjK8gMyl7fUIUjMJEAgJqBc5+9EbeIeXcBMvBpB8peRBVDKN
+ 3hk5ye7In4oji1fT32JtyONjyyWC2UvHGsAGDQekzRYa/lAx/tG9GVR39ppyXWQFC2YI
+ Q8xbrXSCs6Aix/gOmRTmWdtdJRzYC3Sz6nNTzmn5KOhly92P529aoeTROR/owexh5zRa ng== 
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : content-type : in-reply-to : mime-version;
+ s=corp-2020-01-29; bh=AYMUViLKibZwfDXkhtzbOoW9exaxIuLM2HbCYVj5Cgk=;
+ b=FCuqUWpWnv2qTQjNdKpqwBLXWgjhfJKeBVZ5JKdbNok3Fz6w9+XL3CgXPHBhVzpqx4n0
+ E65FBNKEzHx8So/5O2TJrgiJ5d9uRc1gPUlaogqM5vuyZ6m7d2930XqA5Xd7MAqyPGvc
+ 0B0o+I2WB6ZflxVo9GyKmdsV/RBAEmZUsTg1+WiWo6FZYNrtpwoPKYtahQbcY93QP1xl
+ Z5INGLoiyh+gAV6z0TpE9CBgy4+CaA3bHW7n1PdJ2KfSe78vGUXGRWNYpLaFZDPCk4rq
+ WFdYDkQOxT6oYaFQmt4nCoit2KLNDG3irpJpRzldNH3PLi/MrFDCxUZe3LF4MIbQtmRH Lw== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3arbxwgy17-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 30 Aug 2021 08:37:37 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 17U8Tghs153730;
+        Mon, 30 Aug 2021 08:37:37 GMT
+Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2177.outbound.protection.outlook.com [104.47.57.177])
+        by aserp3030.oracle.com with ESMTP id 3aqb6bjvb4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 30 Aug 2021 08:37:36 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=V/NZl6P/Avv/aPFqpOArzEb1K7r2HK+JBjGSIrwDkQOD2zV5ObuNQNSq9uA/zVImpaRBCzMNtVBblut29eqyrPxQJZ9R+eytPF0X6N4sWhWS52jUUTsPfcw0Jd1DVdygZM01ViwH/Dt8sKgwbyqo06xXTC/7lM4xFC77tI/igqkhCgSPVeZH+OIPzEPgQB+qGuBy7v0XqQ0qYKWZ9qufCanZXVjPf3kYt+IctJfbEuIi7UyV/DiGBrxBMw5Zp/mKJVqNt51M4VXi+m6vSDTcAAQY2MOY/CanSsj+Ceo9JmPIKYLkjYGiYtQUS3doEEQKuH0OQi3rOsTLR0hVcK/JEw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AYMUViLKibZwfDXkhtzbOoW9exaxIuLM2HbCYVj5Cgk=;
+ b=dzCRh74O+V6qzBD2YOhUi+ChQxojDivGHHmaNsoUkCcdMYZgczJELq+IDM6LJo4hSQd2f/FHd5waNjT6DhTDPUw8TYWq8BxrTOGzW8Etvklw+9QT4tyHEy2PM5oeb68jXvf84ziaWzOGobKSrnBlGtKjsxUEmRsObhsagLLkTIakV4qYNJFWeY4NuqA3oAeYCwRkyWcvON6ZgE5n8g8Q7Tm0fVMKLYcus31yNhsJvpaFB1IVwRxreLI6P++VorJ/9mopZ7B615ucWqfovDFDPz2tF/wjjWW2xEyon6ShTRx0Dna/9Cw831UMDlygYYN3wMar5uLfrBGFopEXH9iEBQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=dYnI2gh4nOhoIOI0t1b+ysthv5drQUzE+EIShYXpAYk=;
-        b=dGPpCkSN/LFk4uuHEpMN7MP7Fw++w4ehZzUoaDprB7oDBW6f/AoooV6hboYH1dgoAC
-         F+Gh1L+yEduVYlg217PdhxcLONh+8Qnlc1ev8aODfWX/HV0IwUk8jRw85fXhWzCR4UQ1
-         cAogm0QmpMslQYFHhK5MUSvfK8ZiKSMkRa75ea/npaiF1TeJ/0JhLXk3kI1ZOqn0GFSV
-         qv3RKuTkKVz/zVjgAjCjEWh/LEsWxV29nBbhGwVDZpZRXqDIRYjiDBng7Oy6QcICMdx0
-         bXGQkx1FggAE+4kaUtGsD9hsw2Ex79rLOdKXeakr1y8Z1CA8wAHEIFJdViiWJwRWUxwk
-         r3aw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=dYnI2gh4nOhoIOI0t1b+ysthv5drQUzE+EIShYXpAYk=;
-        b=gVOsx9phdvlQ2J9E+6gErFifh8DLdz18dMUuxHO2FFE+LiqaX7mSsDhYEvPO2qhjXH
-         KA9PqMGMbtMRNvcysclpA+l63Mge08WCEPWjG3AN0dQvNLbfYy0ODj/aaOJgDabkEuEQ
-         GBmo01bwTPAZfKYWkXi9gITYmRBqMYAL0LISV8rtvclXODtY7L9qec+IUYrkPjH8g5tK
-         7J7R4Ap4oLLSJl2+rqRMyee9JkV00mmTHkU6nnlgiKVRL+fYLymIwtevjqQo4ucHAUj2
-         iuPCZVXMr1nv8SaCEfpgKkCQcDIkI+ApF4193l4yPFGf4Lq3Az/7NifQM1sQwStstHqz
-         R/Hg==
-X-Gm-Message-State: AOAM531eKZN7AkeeA3K1u3qsDS3oBUSQg//IvYqgPdtG5uxDPfPO4Vcd
-        kiUh90Iw/F4WXVJx8CIFpk4=
-X-Google-Smtp-Source: ABdhPJz7VFsvLcIH2rzft8IwetzHrh9MtoeJ228B2yanq00mTLcL5W68QcekOb9GAE4ATHUeUxC1fQ==
-X-Received: by 2002:a05:6000:1244:: with SMTP id j4mr9622657wrx.335.1630311175876;
-        Mon, 30 Aug 2021 01:12:55 -0700 (PDT)
-Received: from skbuf ([82.78.148.104])
-        by smtp.gmail.com with ESMTPSA id q11sm19121026wmc.41.2021.08.30.01.12.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Aug 2021 01:12:55 -0700 (PDT)
-Date:   Mon, 30 Aug 2021 11:12:54 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        DENG Qingfang <dqfext@gmail.com>,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Mauri Sandberg <sandberg@mailfence.com>
-Subject: Re: [PATCH net-next 1/2] net: dsa: rtl8366rb: support bridge
- offloading
-Message-ID: <20210830081254.osqvwld7w7jk7jap@skbuf>
-References: <20210829002601.282521-1-linus.walleij@linaro.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AYMUViLKibZwfDXkhtzbOoW9exaxIuLM2HbCYVj5Cgk=;
+ b=tqIMNJyhH16Fck4R5gcAvC5gu4sd7dRFKxDmYRYjqimLrzkYHhssDmC9jdBsd3nAA1Y2RjcCkJGB6qaNkRr8ojPGcTNGA49xm/rAVlGijTL4neJpCwEz+2VkQe/lUKlKw+nQ5hMcKGcUjkJrXMJRgBk/id0itJVNEpLZxVC5UAk=
+Authentication-Results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=oracle.com;
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by MWHPR10MB1776.namprd10.prod.outlook.com
+ (2603:10b6:301:4::7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4457.23; Mon, 30 Aug
+ 2021 08:37:35 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::5820:e42b:73d7:4268]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::5820:e42b:73d7:4268%7]) with mapi id 15.20.4457.024; Mon, 30 Aug 2021
+ 08:37:34 +0000
+Date:   Mon, 30 Aug 2021 11:37:17 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Manivannan Sadhasivam <mani@kernel.org>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Xiaolong Huang <butterflyhuangxx@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH v2 net] net: qrtr: make checks in qrtr_endpoint_post()
+ stricter
+Message-ID: <20210830083717.GU7722@kadam>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210829002601.282521-1-linus.walleij@linaro.org>
+In-Reply-To: <CAFcO6XMo2rFJqb1zZyPgEDtChLHNq26WfhAd5WC+9NMnRNM8uw@mail.gmail.com>
+X-Mailer: git-send-email haha only kidding
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: JNXP275CA0029.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:18::17)
+ To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kadam (62.8.83.99) by JNXP275CA0029.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:18::17) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4457.18 via Frontend Transport; Mon, 30 Aug 2021 08:37:30 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4850b538-66a7-4667-b5b3-08d96b916a20
+X-MS-TrafficTypeDiagnostic: MWHPR10MB1776:
+X-Microsoft-Antispam-PRVS: <MWHPR10MB177612A6A051806F2EE22E788ECB9@MWHPR10MB1776.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: WJSuIy33iCp6dcXHyFAESYApvfEUoiv3frrvjDtqkLoaUOb+/As53j1jByyxbwuNEnxYAWbI8y3FFZJuPPrroLQDHOcORIQSY9yHStaJc2HY3dL2RVd4252w2EhQ4xYgm5wx77HMmLJHa+n5krNaP9MxUUphEpze4nGYldi6x9bCh5lSNB3Ui3URBheEufBknSfM9V+D0OV3et5vtr3W/yrTOlEfgr3ZeYqXmsXzyQtIOvdJziSrtfTjTl6X64//ZZGe1N67JGngieCmQSNtUOxudUpyqpJVi67YVRM0SxheoyDh3zrVlA8PbofKlaxx3y3NuaTT17FNTFx2dZG9LVLuPq3UgIdqjzaU5v0asOH8d2IYpoM0QbU7rcZws04bqFKLXv5RKb1tlUmrvgaprQoR8x+WURh0B7aYhglsdeWx3VEihSX2Gzy30SWuxDtGBA9GH/57UKZbtLNHs7kxOw4JEMqJKiRBT724PnMEbG5WD5QXN1x9+Gjm/a3G2Jt1tKm3Qp+U9ustwWYY9Csv9eYNlwFS6/lATZpaNIzN45O5X1A9h4NOq770XiAES6PUWnpknwlIbufOSKNVmYo5lC1lQrpyS4M5S3UbtcDyPsPX7Zl1SPuhMXWZjeGKS3yJyEEC+2BMZeSEi/xBBtxwuyyVv2hhb7TAM0fHeKdfRuflFroI3oYIMNMQHrw+iFRnT6tBwyDWXviNErXiN1z04Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(33716001)(9686003)(8676002)(508600001)(83380400001)(44832011)(26005)(55016002)(6666004)(316002)(2906002)(186003)(110136005)(5660300002)(38100700002)(52116002)(4326008)(54906003)(1076003)(86362001)(66556008)(9576002)(66946007)(38350700002)(8936002)(33656002)(6496006)(956004)(66476007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?1NmvGdTwDnvXB2z9jrS13jrQzNfMzGJneV4ko7/30VHG9htJT4Tk6Dl20eS8?=
+ =?us-ascii?Q?xU1YifsbPiEMdcIKzD+uqjQkYd8qG7m4CKRFpAhXTr112c4lWxqcBMXE5Xdh?=
+ =?us-ascii?Q?f9+HK8OxElL+m9goIUejJLZhBw0dyCcVMGRYORk+HdvmWu7x5DEXjwdj4VlP?=
+ =?us-ascii?Q?LCsDPrOfRPdJlmCChYQ018uKbJPAych2ioQEe6Q23qvLxdrQRMEyxT82deNv?=
+ =?us-ascii?Q?OgRQKYTWElw/MBlV+I+UXc4GLIoAU3wUPKubBbKlYPQZigJKf1fjSClgj1Xa?=
+ =?us-ascii?Q?9nxgolhO8ZZRB5BCOMQYC5RLOdK3ycUJdolA36UThxb0W1GN9mN5gId77ero?=
+ =?us-ascii?Q?iLgH2GZeTcmBpskymhYU051ua9Mdxmi3JerrDpq3TvOE1Zv+i2reVXjM5NUf?=
+ =?us-ascii?Q?QpxzfJ9PmcZgiFhrIhblD26pigYI5ktZCHJEZGnc8HnYeShCZuqjtWccWmc+?=
+ =?us-ascii?Q?WodpAfnAVJl2BCM6MSt8gbrTTzrvos9kGVWmcedE493wTWxn0KtynUn7ICG7?=
+ =?us-ascii?Q?A/y/d2+nXzTqgVr17hebtEV1xmg1qCgb9eUTY2PDCFnQsFZnVFU5uDgd1ZWs?=
+ =?us-ascii?Q?FC/y/AEOhNqcJRdHUmKrF4JyEA1nWABl0qWr7uc0qvPtx5bN4oVSruyPSicT?=
+ =?us-ascii?Q?W5sSIX9XR3S7SOt2WoseABzJlZK0HS2KUzofahFx3cOTD2YQNus+edtIEQWw?=
+ =?us-ascii?Q?rbJXsJvCHPLbQMw7y+kwNsQnpZnYEE7/nzzdBDhf/YlYPowl/RzzuvvusjbD?=
+ =?us-ascii?Q?+0aPLDsD4RWx8qrEXgT/xta2oMq6ceFC2G+AgbNi7dvOmxqHIJebDU4JYAch?=
+ =?us-ascii?Q?yzzygSJ0jNwkaCR6tJ4PzjpnkSlbS420glOgDaTdcwKEAk2Qkp7+VyYN516K?=
+ =?us-ascii?Q?6ZzC3Jdo/baYhVATLJLNThRZwnDW0QVoX88+jdhuQn2eA3054wz8VtiUauGG?=
+ =?us-ascii?Q?37S95uR53Psnrfx5vhB/Reouz19xU9tn79lvOO8x9hpgkKqFDJtyzjptOl/B?=
+ =?us-ascii?Q?qGpTmffiLHCuu0dodwk61nFXYktRlb7Td/OaT9SWhOTCy/1MeJGOG10jDDHH?=
+ =?us-ascii?Q?1KUEf6poWFE9WUVbsCWqalswmgeGnq7utf+SOsIQC9dpbBauSGsrMfSmZIcx?=
+ =?us-ascii?Q?CpGSCS88yPwQ0vri2Yt48Eohop4GWv4iRYdeObJbYsn+9FGlhRg6WEi3D5FJ?=
+ =?us-ascii?Q?mm7u/A0lZIooiVAUnFYSFU+BGqQi1pepobTdchrr4OARMRkFu6+yEPAZfI8f?=
+ =?us-ascii?Q?X5IbVwArMKMCRXjbD84+wGYuBimzUZGMD2AEAIjmQTZuvok2xjVb/rgyXjX3?=
+ =?us-ascii?Q?HMwlc+hSJnB+HGafqR+lvFiE?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4850b538-66a7-4667-b5b3-08d96b916a20
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Aug 2021 08:37:34.9205
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: PpAzdip2NfjWscHechQK61/7VaXzqDOxFF9NkEabf53caGYGjxrtRd8/Kg9InxOEs14v6KDFg4vS46k3733omgbHcEixy/XrM8jCxuy+0wg=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR10MB1776
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10091 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 phishscore=0 suspectscore=0
+ adultscore=0 mlxscore=0 mlxlogscore=999 malwarescore=0 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2107140000
+ definitions=main-2108300063
+X-Proofpoint-ORIG-GUID: iewNlhx1JRvsSTe2zqYGeczJlhGTf_f4
+X-Proofpoint-GUID: iewNlhx1JRvsSTe2zqYGeczJlhGTf_f4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 29, 2021 at 02:26:00AM +0200, Linus Walleij wrote:
-> From: DENG Qingfang <dqfext@gmail.com>
-> 
-> Use port isolation registers to configure bridge offloading.
-> 
-> Tested on the D-Link DIR-685, switching between ports and
-> sniffing ports to make sure no packets leak.
-> 
-> Cc: Vladimir Oltean <olteanv@gmail.com>
-> Cc: Alvin Šipraga <alsi@bang-olufsen.dk>
-> Cc: Mauri Sandberg <sandberg@mailfence.com>
-> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> ---
->  drivers/net/dsa/rtl8366rb.c | 84 +++++++++++++++++++++++++++++++++++++
->  1 file changed, 84 insertions(+)
-> 
-> diff --git a/drivers/net/dsa/rtl8366rb.c b/drivers/net/dsa/rtl8366rb.c
-> index a89093bc6c6a..14939188c108 100644
-> --- a/drivers/net/dsa/rtl8366rb.c
-> +++ b/drivers/net/dsa/rtl8366rb.c
-> @@ -300,6 +300,12 @@
->  #define RTL8366RB_INTERRUPT_STATUS_REG	0x0442
->  #define RTL8366RB_NUM_INTERRUPT		14 /* 0..13 */
->  
-> +/* Port isolation registers */
-> +#define RTL8366RB_PORT_ISO_BASE		0x0F08
-> +#define RTL8366RB_PORT_ISO(pnum)	(RTL8366RB_PORT_ISO_BASE + (pnum))
-> +#define RTL8366RB_PORT_ISO_EN		BIT(0)
-> +#define RTL8366RB_PORT_ISO_PORTS_MASK	GENMASK(7, 1)
+These checks are still not strict enough.  The main problem is that if
+"cb->type == QRTR_TYPE_NEW_SERVER" is true then "len - hdrlen" is
+guaranteed to be 4 but we need to be at least 16 bytes.  In fact, we
+can reject everything smaller than sizeof(*pkt) which is 20 bytes.
 
-If RTL8366RB_NUM_PORTS is 6, then why is RTL8366RB_PORT_ISO_PORTS_MASK a
-7-bit field?
+Also I don't like the ALIGN(size, 4).  It's better to just insist that
+data is needs to be aligned at the start.
 
-> +
->  /* bits 0..5 enable force when cleared */
->  #define RTL8366RB_MAC_FORCE_CTRL_REG	0x0F11
->  
-> @@ -835,6 +841,21 @@ static int rtl8366rb_setup(struct dsa_switch *ds)
->  	if (ret)
->  		return ret;
->  
-> +	/* Isolate all user ports so only the CPU port can access them */
-> +	for (i = 0; i < RTL8366RB_PORT_NUM_CPU; i++) {
-> +		ret = regmap_write(smi->map, RTL8366RB_PORT_ISO(i),
-> +				   RTL8366RB_PORT_ISO_EN |
-> +				   BIT(RTL8366RB_PORT_NUM_CPU + 1));
+Fixes: 0baa99ee353c ("net: qrtr: Allow non-immediate node routing")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+v2: Fix a % vs & bug.  Thanks, butt3rflyh4ck!
 
-The shifting due to RTL8366RB_PORT_ISO_EN looks weird, I can see it
-being mishandled in the future, with code moved around, copied and
-pasted between realtek drivers and such. How about making a macro
+ net/qrtr/qrtr.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-#define RTL8366RB_PORT_ISO_PORTS(x)	((x) << 1)
-
-> +		if (ret)
-> +			return ret;
-> +	}
-> +	/* CPU port can access all ports */
-
-Except itself maybe? RTL8366RB_PORT_NUM_CPU is 5, so maybe use something
-like
-
-RTL8366RB_PORT_ISO_PORTS(dsa_user_ports(ds))
-
-> +	ret = regmap_write(smi->map, RTL8366RB_PORT_ISO(RTL8366RB_PORT_NUM_CPU),
-> +			   RTL8366RB_PORT_ISO_PORTS_MASK |
-> +			   RTL8366RB_PORT_ISO_EN);
-> +	if (ret)
-> +		return ret;
-> +
->  	/* Set up the "green ethernet" feature */
->  	ret = rtl8366rb_jam_table(rtl8366rb_green_jam,
->  				  ARRAY_SIZE(rtl8366rb_green_jam), smi, false);
-> @@ -1127,6 +1148,67 @@ rtl8366rb_port_disable(struct dsa_switch *ds, int port)
->  	rb8366rb_set_port_led(smi, port, false);
->  }
->  
-> +static int
-> +rtl8366rb_port_bridge_join(struct dsa_switch *ds, int port,
-> +			   struct net_device *bridge)
-> +{
-> +	struct realtek_smi *smi = ds->priv;
-> +	unsigned int port_bitmap = 0;
-> +	int ret, i;
-> +
-> +	/* Loop over all other ports than this one */
-> +	for (i = 0; i < RTL8366RB_PORT_NUM_CPU; i++) {
-> +		/* Handled last */
-> +		if (i == port)
-> +			continue;
-> +		/* Not on this bridge */
-> +		if (dsa_to_port(ds, i)->bridge_dev != bridge)
-> +			continue;
-> +		/* Join this port to each other port on the bridge */
-> +		ret = regmap_update_bits(smi->map, RTL8366RB_PORT_ISO(i),
-> +					 BIT(port + 1), BIT(port + 1));
-> +		if (ret)
-> +			return ret;
-> +
-> +		port_bitmap |= BIT(i);
-> +	}
-> +
-> +	/* Set the bits for the ports we can access */
-> +	return regmap_update_bits(smi->map, RTL8366RB_PORT_ISO(port),
-> +				  RTL8366RB_PORT_ISO_PORTS_MASK,
-> +				  port_bitmap << 1);
-> +}
-> +
-> +static void
-> +rtl8366rb_port_bridge_leave(struct dsa_switch *ds, int port,
-> +			    struct net_device *bridge)
-> +{
-> +	struct realtek_smi *smi = ds->priv;
-> +	unsigned int port_bitmap = 0;
-> +	int ret, i;
-> +
-> +	/* Loop over all other ports than this one */
-> +	for (i = 0; i < RTL8366RB_PORT_NUM_CPU; i++) {
-> +		/* Handled last */
-> +		if (i == port)
-> +			continue;
-> +		/* Not on this bridge */
-> +		if (dsa_to_port(ds, i)->bridge_dev != bridge)
-> +			continue;
-> +		/* Remove this port from any other port on the bridge */
-> +		ret = regmap_update_bits(smi->map, RTL8366RB_PORT_ISO(i),
-> +					 BIT(port + 1), 0);
-> +		if (ret)
-> +			return;
-> +
-> +		port_bitmap |= BIT(i);
-> +	}
-> +
-> +	/* Clear the bits for the ports we can access */
-> +	regmap_update_bits(smi->map, RTL8366RB_PORT_ISO(port),
-> +			   port_bitmap << 1, 0);
-> +}
-> +
->  static int rtl8366rb_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
->  {
->  	struct realtek_smi *smi = ds->priv;
-> @@ -1510,6 +1592,8 @@ static const struct dsa_switch_ops rtl8366rb_switch_ops = {
->  	.get_strings = rtl8366_get_strings,
->  	.get_ethtool_stats = rtl8366_get_ethtool_stats,
->  	.get_sset_count = rtl8366_get_sset_count,
-> +	.port_bridge_join = rtl8366rb_port_bridge_join,
-> +	.port_bridge_leave = rtl8366rb_port_bridge_leave,
->  	.port_vlan_filtering = rtl8366_vlan_filtering,
->  	.port_vlan_add = rtl8366_vlan_add,
->  	.port_vlan_del = rtl8366_vlan_del,
-> -- 
-> 2.31.1
-> 
-
-Looks okay for the most part. It is to be expected for a new driver that
-introduces bridging offload to also handle .port_pre_bridge_flags,
-.port_bridge_flags and .port_fast_age, for two reasons:
-(a) it is expected that a port which does not offload the bridge, and
-    performs forwarding in software, to not perform address learning in
-    hardware
-(b) it is expected that the addresses learned while the port was under a
-    bridge are not carried over into its life as a standalone port, when
-    it leaves that bridge
-
-Also, it would be nice if you could do some minimal isolation at the
-level of the FDB lookup. Currently, if I am not mistaken, a port will
-perform FDB lookup even if it is standalone, and it might find an FDB
-entry for a given {MAC DA, VLAN ID} pair that belongs to a port outside
-of its isolation mask, so forwarding will be blocked and that packet
-will be dropped (instead of the expected behavior which is for that
-packet to be forwarded to the CPU).
-
-Normally the expectation is that this FDB-level isolation can be achieved
-by configuring the VLANs of one bridge to use a filter ID that is
-different from the VLANs of another bridge, and the port-based default
-VLAN of standalone ports to use yet another filter ID. This is yet
-another reason to disable learning on standalone ports, so that their
-filter ID never contains any FDB entry, and packets are always flooded
-to their only possible destination, the CPU port.
-
-Currently in DSA we do not offer a streamlined way for you to determine
-what filter ID to use for a certain VLAN belonging to a certain bridge,
-but at the very least you can test FDB isolation between standalone
-ports and bridged ports. The simplest way to do that, assuming you
-already have a forwarding setup with 2 switch ports swp0 and swp1, is to
-enable CONFIG_BONDING=y, and then:
-
-ip link add br0 type bridge
-ip link set bond0 master br0
-ip link set swp1 master bond0
-ip link set swp0 master br0
-
-Then ping between station A attached to swp0 and station B attached to
-swp1.
-
-Because swp1 cannot offload bond0, it will fall back to software
-forwarding and act as standalone, i.e. what you had up till now.
-With hardware address learning enabled on swp0 (a port that offloads
-br0), it will learn station A's source MAC address. Then when swp1 needs
-to send a packet to station A's destination MAC address, it would be
-tempted to look up the FDB, find that address, and forward to swp0. But
-swp0 is isolated from swp1. If you use a filter ID for standalone ports
-and another filter ID for bridged ports you will avoid that problem, and
-you will also lay the groundwork for the full FDB isolation even between
-bridges that will be coming during the next development cycle.
-
-If you feel that the second part is too much for now, you can just add
-the extra callbacks for address learning and flushing (although I do
-have some genuine concerns about how reliable was the software forwarding
-with this driver, seeing that right now it enables hardware learning
-unconditionally). Is there something that isolates FDB lookups already?
+diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
+index b8508e35d20e..dbb647f5481b 100644
+--- a/net/qrtr/qrtr.c
++++ b/net/qrtr/qrtr.c
+@@ -493,7 +493,7 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
+ 		goto err;
+ 	}
+ 
+-	if (!size || len != ALIGN(size, 4) + hdrlen)
++	if (!size || size & 3 || len != size + hdrlen)
+ 		goto err;
+ 
+ 	if (cb->dst_port != QRTR_PORT_CTRL && cb->type != QRTR_TYPE_DATA &&
+@@ -506,8 +506,12 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
+ 
+ 	if (cb->type == QRTR_TYPE_NEW_SERVER) {
+ 		/* Remote node endpoint can bridge other distant nodes */
+-		const struct qrtr_ctrl_pkt *pkt = data + hdrlen;
++		const struct qrtr_ctrl_pkt *pkt;
+ 
++		if (size < sizeof(*pkt))
++			goto err;
++
++		pkt = data + hdrlen;
+ 		qrtr_node_assign(node, le32_to_cpu(pkt->server.node));
+ 	}
+ 
+-- 
+2.20.1
