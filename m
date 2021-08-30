@@ -2,184 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB2123FB739
-	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 15:49:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17C1C3FB742
+	for <lists+netdev@lfdr.de>; Mon, 30 Aug 2021 15:51:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236874AbhH3Ntf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Aug 2021 09:49:35 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:48468 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231669AbhH3Nte (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Aug 2021 09:49:34 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=gwsqDIyUPGoW35EKdagrZcdQpj/fqCOhxMvG1ube/jk=; b=cKMkwGcCNLqgTbwlr9esjk0K28
-        LhkM4Kq2MjEwpjdn2rBqOR4vgX4FnAyUPA59As4dYi/oeFL5fqf3irksvK6QHcLdG5yNBSoFvrGSy
-        gOUsNSWf+hUwkvSMQjg2me/UZr4qSHrYOqObL7PASft69NfVH3/IqqzajDPGfXmiPDMg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mKheO-004ZIE-9J; Mon, 30 Aug 2021 15:48:36 +0200
-Date:   Mon, 30 Aug 2021 15:48:36 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Luo Jie <luoj@codeaurora.org>
-Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, sricharan@codeaurora.org
-Subject: Re: [PATCH v1 2/3] net: phy: add qca8081 ethernet phy driver
-Message-ID: <YSzhtF8g42Ccv2h0@lunn.ch>
-References: <20210830110733.8964-1-luoj@codeaurora.org>
- <20210830110733.8964-3-luoj@codeaurora.org>
+        id S236945AbhH3Nub (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Aug 2021 09:50:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39204 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231669AbhH3Nua (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 09:50:30 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FBADC061575;
+        Mon, 30 Aug 2021 06:49:36 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id d5so3741367pjx.2;
+        Mon, 30 Aug 2021 06:49:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:references:date:in-reply-to:message-id
+         :user-agent:mime-version;
+        bh=sEL6//skpXK4Qyqc8Jdde129w8xF3Lu6qgCZPjdrGcQ=;
+        b=smBI4VAxUel1TB4Wlp0QPxXgQboRnJKcEpl4OcOuGH6xZJbVE2lKRCc966PDCx1U+C
+         5YImx8GxcydtlVg9a2PYyYmgTHqgHOWYJnvYvPMbzmw0KPBubmblPmwmZRZAQcDG7F6u
+         qSnaBQ3yvDyt7fpMxbSiIYeN/q+WP4403Sn5v5eJo4C/i8r/0dh2PZPcbXgtQ08dwdia
+         jaCHA8HR6W1cD4kuqgtdMObTvy5KG/odhgkhaDaTGTzm7NyTl/U6L6zDRRsIGNUvOgSD
+         WSdWEt4Mr2BxHINBk4U4RzXhuZEPR3FaZyqj0k8ZoX7re2eGwbN82w8XulFV/mR//e0/
+         2rRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
+         :message-id:user-agent:mime-version;
+        bh=sEL6//skpXK4Qyqc8Jdde129w8xF3Lu6qgCZPjdrGcQ=;
+        b=TAojoJnBsFqxT2eVvQF37sMw+YabrgLIXm1lJnIFiKB7kHsFFSUZWJtWStr6Nmv+vD
+         96v34Ta5cb60c7QtjDObDLse0BxwW+ESw7fHEma6W9bJMTrPjEGN5+/7dwfgEbgysG0u
+         lXEyDVnrjfbPH/BMp+L+9sQzBdZg+graGzwdgg3QqZy+8XQ5X4gzKb9s5l8FgRNLdQmQ
+         HAkOxVm0ulcQd1GvPW5aSRqHh3P+gQEHal6GJTj7ZU/qj3QuU1ofM9ALjCdM1hzgLjfG
+         tTXU1mbiRu774OGr1QILN1PSJPq8nrF7T0mYGuzWqaGF6IzUUC1boLoVHNJdBo5Mh4KK
+         xBsg==
+X-Gm-Message-State: AOAM532idiCGc/pe5tHGxHU7ETw6vU7byf8gP4DlXeeJgQRHdxycMKt0
+        YzYEyEPAV0i0Xdi0wI65hxg=
+X-Google-Smtp-Source: ABdhPJxr+a34jajETUtu8a+GSDU1I2IxnoOCr/ht7tNQDe29mKMxkdj59W4xIpvU5RL6/AtyL+FKXA==
+X-Received: by 2002:a17:902:6a81:b0:12d:c933:6330 with SMTP id n1-20020a1709026a8100b0012dc9336330mr21632098plk.69.1630331376009;
+        Mon, 30 Aug 2021 06:49:36 -0700 (PDT)
+Received: from localhost (122x211x248x161.ap122.ftth.ucom.ne.jp. [122.211.248.161])
+        by smtp.gmail.com with ESMTPSA id j6sm16585933pgh.17.2021.08.30.06.49.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Aug 2021 06:49:35 -0700 (PDT)
+From:   Punit Agrawal <punitagrawal@gmail.com>
+To:     Michael Riesch <michael.riesch@wolfvision.net>
+Cc:     wens@kernel.org, netdev <netdev@vger.kernel.org>,
+        "moderated list:ARM/STM32 ARCHITECTURE" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>, sashal@kernel.org
+Subject: Re: [PATCH] net: stmmac: dwmac-rk: fix unbalanced pm_runtime_enable
+ warnings
+References: <20210823143754.14294-1-michael.riesch@wolfvision.net>
+        <CAGb2v67Duk_56fOKVwZsYn2HKJ99o8WJ+d4jetD2UjDsAt9BcA@mail.gmail.com>
+        <568a0825-ed65-58d7-9c9c-cecb481cf9d9@wolfvision.net>
+Date:   Mon, 30 Aug 2021 22:49:32 +0900
+In-Reply-To: <568a0825-ed65-58d7-9c9c-cecb481cf9d9@wolfvision.net> (Michael
+        Riesch's message of "Mon, 30 Aug 2021 09:57:51 +0200")
+Message-ID: <87czpvcaab.fsf@stealth>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210830110733.8964-3-luoj@codeaurora.org>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 30, 2021 at 07:07:32PM +0800, Luo Jie wrote:
-> qca8081 is a single port ethernet phy chip that supports
-> 10/100/1000/2500 Mbps mode.
-> 
-> Signed-off-by: Luo Jie <luoj@codeaurora.org>
-> ---
->  drivers/net/phy/at803x.c | 389 ++++++++++++++++++++++++++++++++++-----
->  1 file changed, 338 insertions(+), 51 deletions(-)
-> 
-> diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-> index ecae26f11aa4..2b3563ae152f 100644
-> --- a/drivers/net/phy/at803x.c
-> +++ b/drivers/net/phy/at803x.c
-> @@ -33,10 +33,10 @@
->  #define AT803X_SFC_DISABLE_JABBER		BIT(0)
->  
->  #define AT803X_SPECIFIC_STATUS			0x11
-> -#define AT803X_SS_SPEED_MASK			(3 << 14)
-> -#define AT803X_SS_SPEED_1000			(2 << 14)
-> -#define AT803X_SS_SPEED_100			(1 << 14)
-> -#define AT803X_SS_SPEED_10			(0 << 14)
-> +#define AT803X_SS_SPEED_MASK			GENMASK(15, 14)
-> +#define AT803X_SS_SPEED_1000			2
-> +#define AT803X_SS_SPEED_100			1
-> +#define AT803X_SS_SPEED_10			0
+Hi Michael,
 
-This looks like an improvement, and nothing to do with qca8081. Please
-make it an separate patch.
+Michael Riesch <michael.riesch@wolfvision.net> writes:
 
->  #define AT803X_SS_DUPLEX			BIT(13)
->  #define AT803X_SS_SPEED_DUPLEX_RESOLVED		BIT(11)
->  #define AT803X_SS_MDIX				BIT(6)
-> @@ -158,6 +158,8 @@
->  #define QCA8337_PHY_ID				0x004dd036
->  #define QCA8K_PHY_ID_MASK			0xffffffff
->  
-> +#define QCA8081_PHY_ID				0x004dd101
-> +
+> Hi ChenYu,
+>
+> On 8/29/21 7:48 PM, Chen-Yu Tsai wrote:
+>> Hi,
+>> 
+>> On Mon, Aug 23, 2021 at 10:39 PM Michael Riesch
+>> <michael.riesch@wolfvision.net> wrote:
+>>>
+>>> This reverts commit 2c896fb02e7f65299646f295a007bda043e0f382
+>>> "net: stmmac: dwmac-rk: add pd_gmac support for rk3399" and fixes
+>>> unbalanced pm_runtime_enable warnings.
+>>>
+>>> In the commit to be reverted, support for power management was
+>>> introduced to the Rockchip glue code. Later, power management support
+>>> was introduced to the stmmac core code, resulting in multiple
+>>> invocations of pm_runtime_{enable,disable,get_sync,put_sync}.
+>>>
+>>> The multiple invocations happen in rk_gmac_powerup and
+>>> stmmac_{dvr_probe, resume} as well as in rk_gmac_powerdown and
+>>> stmmac_{dvr_remove, suspend}, respectively, which are always called
+>>> in conjunction.
+>>>
+>>> Signed-off-by: Michael Riesch <michael.riesch@wolfvision.net>
+>> 
+>> I just found that Ethernet stopped working on my RK3399 devices,
+>> and I bisected it down to this patch.
+>
+> Oh dear. First patch in a kernel release for a while and I already break
+> things.
 
-Maybe keep all the PHY_ID together?
+I am seeing the same failure symptoms reported by ChenYu on my RockPro64
+with v5.14. Reverting the revert i.e., 2d26f6e39afb ("net: stmmac:
+dwmac-rk: fix unbalanced pm_runtime_enable warnings") brings back the
+network.
 
->  #define QCA8K_DEVFLAGS_REVISION_MASK		GENMASK(2, 0)
->  
->  #define AT803X_PAGE_FIBER			0
-> @@ -167,7 +169,73 @@
->  #define AT803X_KEEP_PLL_ENABLED			BIT(0)
->  #define AT803X_DISABLE_SMARTEEE			BIT(1)
->  
-> @@ -711,11 +779,18 @@ static void at803x_remove(struct phy_device *phydev)
->  
->  static int at803x_get_features(struct phy_device *phydev)
->  {
-> -	int err;
-> +	int val;
+> Cc: Sasha as this patch has just been applied to 5.13-stable.
+>
+>> The symptom I see is no DHCP responses, either because the request
+>> isn't getting sent over the wire, or the response isn't getting
+>> received. The PHY seems to be working correctly.
+>
+> Unfortunately I don't have any RK3399 hardware. Is this a custom
+> board/special hardware or something that is readily available in the
+> shops? Maybe this is a good reason to buy a RK3399 based single-board
+> computer :-)
 
-Why? The driver pretty consistently uses err for return values which
-are errors.
+Not sure about the other RK3399 boards but RockPro64 is easily
+available.
 
->  
-> -	err = genphy_read_abilities(phydev);
-> -	if (err)
-> -		return err;
-> +	val = genphy_read_abilities(phydev);
-> +	if (val)
-> +		return val;
-> +
-> +	if (at803x_match_phy_id(phydev, QCA8081_PHY_ID)) {
-> +		val = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_NG_EXTABLE);
+> I am working on the RK3568 EVB1 and have not encountered faulty
+> behavior. DHCP works fine and I can boot via NFS. Therefore, not sure
+> whether I can be much of help in this matter, but in case you want to
+> discuss this further please do not hesitate to contact me off-list.
 
-You don't check if val indicates if there was an error.
+I tried to look for the differences between RK3568 and RK3399 but the
+upstream device tree doesn't seem to carry a gmac node in the device
+tree for EK3568 EVB1. Do you have a pointer for the dts you're using?
 
-> +
-> +		linkmode_mod_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT, phydev->supported,
-> +				val & MDIO_PMA_NG_EXTABLE_2_5GBT);
-> +	}
->  
->  	if (!at803x_match_phy_id(phydev, ATH8031_PHY_ID))
->  		return 0;
-> @@ -935,44 +1010,44 @@ static void at803x_link_change_notify(struct phy_device *phydev)
->  	}
->  }
->  
-> -static int at803x_read_status(struct phy_device *phydev)
-> +static int at803x_read_specific_status(struct phy_device *phydev)
->  {
-> -	int ss, err, old_link = phydev->link;
-> -
-> -	/* Update the link, but return if there was an error */
-> -	err = genphy_update_link(phydev);
-> -	if (err)
-> -		return err;
-> -
-> -	/* why bother the PHY if nothing can have changed */
-> -	if (phydev->autoneg == AUTONEG_ENABLE && old_link && phydev->link)
-> -		return 0;
-> +	int val;
->  
-> -	phydev->speed = SPEED_UNKNOWN;
-> -	phydev->duplex = DUPLEX_UNKNOWN;
-> -	phydev->pause = 0;
-> -	phydev->asym_pause = 0;
-> +	val = phy_read(phydev, AT803X_SPECIFIC_FUNCTION_CONTROL);
-> +	if (val < 0)
-> +		return val;
->  
-> -	err = genphy_read_lpa(phydev);
-> -	if (err < 0)
-> -		return err;
-> +	switch (FIELD_GET(AT803X_SFC_MDI_CROSSOVER_MODE_M, val)) {
-> +	case AT803X_SFC_MANUAL_MDI:
-> +		phydev->mdix_ctrl = ETH_TP_MDI;
-> +		break;
-> +	case AT803X_SFC_MANUAL_MDIX:
-> +		phydev->mdix_ctrl = ETH_TP_MDI_X;
-> +		break;
-> +	case AT803X_SFC_AUTOMATIC_CROSSOVER:
-> +		phydev->mdix_ctrl = ETH_TP_MDI_AUTO;
-> +		break;
-> +	}
->  
->  	/* Read the AT8035 PHY-Specific Status register, which indicates the
->  	 * speed and duplex that the PHY is actually using, irrespective of
->  	 * whether we are in autoneg mode or not.
->  	 */
-> -	ss = phy_read(phydev, AT803X_SPECIFIC_STATUS);
-> -	if (ss < 0)
-> -		return ss;
-> +	val = phy_read(phydev, AT803X_SPECIFIC_STATUS);
-> +	if (val < 0)
-> +		return val;
+Also, other than the warning "Unbalanced pm_runtime_enable!" do you
+notice any other ill-effects without your patch?
 
-What was actually wrong with ss?
+If this affects all RK3399 boards as ChenYu suggests quite a few users
+are going to miss the network once they upgrade.
 
-Is this another case of just copying code from your other driver,
-rather than cleanly extending the existing driver?
+Punit
 
-There are two many changes here all at once. Please break this patch
-up. You are aiming for lots of small patches which are obviously
-correct. Part of being obviously correct is having a good commit
-message, and that gets much easier when a patch is small.
-
-	 Andrew
+[...]
 
