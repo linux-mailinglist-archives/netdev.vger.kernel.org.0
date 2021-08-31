@@ -2,157 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1AF03FC286
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 08:16:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13B2A3FC2B7
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 08:37:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230382AbhHaGPf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 02:15:35 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:8801 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbhHaGPd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 02:15:33 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GzH294r93zYwCN;
-        Tue, 31 Aug 2021 14:13:53 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 31 Aug 2021 14:14:34 +0800
-Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.8; Tue, 31 Aug
- 2021 14:14:34 +0800
-Subject: Re: [PATCH net-next 1/2] page_pool: support non-split page with
- PP_FLAG_PAGE_FRAG
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-CC:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, <linuxarm@openeuler.org>,
-        <hawk@kernel.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Willem de Bruijn <willemb@google.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Kevin Hao" <haokexin@gmail.com>, <nogikh@google.com>,
-        Marco Elver <elver@google.com>, <memxor@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@gmail.com>
-References: <1630286290-43714-1-git-send-email-linyunsheng@huawei.com>
- <1630286290-43714-2-git-send-email-linyunsheng@huawei.com>
- <CAKgT0UfNFw+jwoDr_xx6kX_OoCVgrq2rCSc4zdXRMSZLBmbA8Q@mail.gmail.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <e0f927bb-7a03-de00-d62a-d2235a0f4d8c@huawei.com>
-Date:   Tue, 31 Aug 2021 14:14:33 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S232171AbhHaGT2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 02:19:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38916 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231847AbhHaGT1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 02:19:27 -0400
+Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 700F8C06175F
+        for <netdev@vger.kernel.org>; Mon, 30 Aug 2021 23:18:32 -0700 (PDT)
+Received: by mail-lf1-x143.google.com with SMTP id c8so23628879lfi.3
+        for <netdev@vger.kernel.org>; Mon, 30 Aug 2021 23:18:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
+        bh=RzIkdEm5aJl66a3p0t6hmEQ+Qv+8MFJLxj5JlLxnEbs=;
+        b=kS74wE2T1WndU0C9yewIILwqzwXLl+zyYvuGKjmG3LbLnedFOmgoeS3CuLsolOuV4D
+         WPkGsdkgde4lkwtMR+Bn/R9zL4eud1Q6vu2GZV6MXsv1Ye0dZMAbGWHvuqAG3fFTzi4V
+         EUGSc5itVstByKb9dUPkMYUISZCJWPH5zXOdvo3/Z5c3daiv4J2dmx/yo4rziEbS6n+4
+         Q91KwK/1V+YREhCBAWZG5l47Uvp6PWPcUrC501EyctlHNuOvsVaPI2UnxPo8oykiNm0u
+         j7J6oeF1t1Lk00v49p0wEgKBkiPlheB7AS5R5tIyvM9yuRqJrwztk+a3wjMooFlwqxnv
+         U2Cg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to;
+        bh=RzIkdEm5aJl66a3p0t6hmEQ+Qv+8MFJLxj5JlLxnEbs=;
+        b=rpuyHETjsQ0KZibqaD2Rbt+3KlsedcBxslZrsqufMjunNCFu9+/dlzxmqF/P3tnKtL
+         YktblUmyG2BkoPHOOFLxP/u+T8WSr25ZZEjZElMPRHJnHDWJK3+BmYHHMRLI6p1bibmo
+         3iHmlR9QqnOjZ+IVJMNxXcx1wg173hfx1+cXOtGe7tHKeQXF/JXoY8Vf0pzuoosgviLd
+         tsAz8m8zlJHhOCAM6LApM0sFFNzGh5E88SFFtO0QU1NQ4VHJ2akYVl0a2WC9T7Q2ZiiP
+         B7diK7wom0KsI8N17qUtUDz1FvWqALGhDBluf5gWNsubtwpjsYqkgsp5q58psm5S8sak
+         85Fw==
+X-Gm-Message-State: AOAM533nLba5dTOqKyF8LR2VlZI7Iy+UubnO2xKTjucEB65DuaWGENXD
+        qFOiSU1yfIkJPi1V5bhs+YWVRPK36Y8LmEqPizk=
+X-Google-Smtp-Source: ABdhPJx0kXHhL+PfwBzh5WGLj5HKrJglzjhz3MHVEIOXHT4LT4fothK22uMk4Iyk1FhNDj/FpFxr421maFI0iypXYXw=
+X-Received: by 2002:a05:6512:10d3:: with SMTP id k19mr20097936lfg.481.1630390710452;
+ Mon, 30 Aug 2021 23:18:30 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CAKgT0UfNFw+jwoDr_xx6kX_OoCVgrq2rCSc4zdXRMSZLBmbA8Q@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme718-chm.china.huawei.com (10.1.199.114) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+Reply-To: godwinppter@gmail.com
+Sender: anitaholdings1860@gmail.com
+Received: by 2002:a9a:7407:0:b029:c8:dbb9:6b13 with HTTP; Mon, 30 Aug 2021
+ 23:18:29 -0700 (PDT)
+From:   Godwin Pete <godwinnpeter@gmail.com>
+Date:   Tue, 31 Aug 2021 08:18:29 +0200
+X-Google-Sender-Auth: _WdLxXfqSUHaYsKywBP9wd2AZ9Y
+Message-ID: <CAJ9gDnchdqV_3wp2DehMMJUgdHBV6DdxrO_=EbwWo+xDerKcLg@mail.gmail.com>
+Subject: I just want to furnish you with this good news
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/8/30 23:05, Alexander Duyck wrote:
-> On Sun, Aug 29, 2021 at 6:19 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
->>
->> Currently when PP_FLAG_PAGE_FRAG is set, the caller is not
->> expected to call page_pool_alloc_pages() directly because of
->> the PP_FLAG_PAGE_FRAG checking in __page_pool_put_page().
->>
->> The patch removes the above checking to enable non-split page
->> support when PP_FLAG_PAGE_FRAG is set.
->>
->> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
->> ---
->>  include/net/page_pool.h |  6 ++++++
->>  net/core/page_pool.c    | 12 +++++++-----
->>  2 files changed, 13 insertions(+), 5 deletions(-)
->>
->> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
->> index a408240..2ad0706 100644
->> --- a/include/net/page_pool.h
->> +++ b/include/net/page_pool.h
->> @@ -238,6 +238,9 @@ static inline void page_pool_set_dma_addr(struct page *page, dma_addr_t addr)
->>
->>  static inline void page_pool_set_frag_count(struct page *page, long nr)
->>  {
->> +       if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT)
->> +               return;
->> +
->>         atomic_long_set(&page->pp_frag_count, nr);
->>  }
->>
->> @@ -246,6 +249,9 @@ static inline long page_pool_atomic_sub_frag_count_return(struct page *page,
->>  {
->>         long ret;
->>
->> +       if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT)
->> +               return 0;
->> +
->>         /* As suggested by Alexander, atomic_long_read() may cover up the
->>          * reference count errors, so avoid calling atomic_long_read() in
->>          * the cases of freeing or draining the page_frags, where we would
->> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
->> index 1a69784..ba9f14d 100644
->> --- a/net/core/page_pool.c
->> +++ b/net/core/page_pool.c
->> @@ -313,11 +313,14 @@ struct page *page_pool_alloc_pages(struct page_pool *pool, gfp_t gfp)
->>
->>         /* Fast-path: Get a page from cache */
->>         page = __page_pool_get_cached(pool);
->> -       if (page)
->> -               return page;
->>
->>         /* Slow-path: cache empty, do real allocation */
->> -       page = __page_pool_alloc_pages_slow(pool, gfp);
->> +       if (!page)
->> +               page = __page_pool_alloc_pages_slow(pool, gfp);
->> +
->> +       if (likely(page))
->> +               page_pool_set_frag_count(page, 1);
->> +
->>         return page;
->>  }
->>  EXPORT_SYMBOL(page_pool_alloc_pages);
->> @@ -426,8 +429,7 @@ __page_pool_put_page(struct page_pool *pool, struct page *page,
->>                      unsigned int dma_sync_size, bool allow_direct)
->>  {
->>         /* It is not the last user for the page frag case */
->> -       if (pool->p.flags & PP_FLAG_PAGE_FRAG &&
->> -           page_pool_atomic_sub_frag_count_return(page, 1))
->> +       if (page_pool_atomic_sub_frag_count_return(page, 1))
->>                 return NULL;
-> 
-> Isn't this going to have a negative performance impact on page pool
-> pages in general? Essentially you are adding an extra atomic operation
-> for all the non-frag pages.
-> 
-> It would work better if this was doing a check against 1 to determine
-> if it is okay for this page to be freed here and only if the check
-> fails then you perform the atomic sub_return.
+Hi,
 
-The page_pool_atomic_sub_frag_count_return() has added the optimization
-to not do the atomic sub_return when the caller is the last user of the
-page, see page_pool_atomic_sub_frag_count_return():
+I just want to use this little opportunity to inform you about my
+success towards the transfer. I'm currently out of the country for an
+investment with part of my share, after completing the transfer with
+an Indian business man. But i will visit your country, next year.
+After the completion of my project. Please, contact my secretary to
+send you the (ATM) card which I've already credited with the sum of
+($500,000.00). Just contact her to help you in receiving the (ATM)
+card. I've explained everything to her before my trip. This is what I
+can do for you because, you couldn't help in the transfer, but for the
+fact that you're the person whom I've contacted initially, for the
+transfer. I decided to give this ($500,000.00) as a compensation for
+being contacted initially for the transfer. I always try to make the
+difference, in dealing with people any time I come in contact with
+them. I'm also trying to show that I'm quite a different person from
+others whose may have a different purpose within them. I believe that
+you will render some help to me when I, will visit your country, for
+another investment there. So contact my secretary for the card, Her
+contact are as follows,
 
-	/* As suggested by Alexander, atomic_long_read() may cover up the
-	 * reference count errors, so avoid calling atomic_long_read() in
-	 * the cases of freeing or draining the page_frags, where we would
-	 * not expect it to match or that are slowpath anyway.
-	 */
-        if (__builtin_constant_p(nr) &&
-            atomic_long_read(&page->pp_frag_count) == nr)
-                return 0;
+Full name: Mrs, Jovita Dumuije,
+Country: Burkina Faso
+Email: jovitadumuije@gmail.com
 
-So the check against 1 is not needed here?
+Thanks, and hope for a good corporation with you in future.
 
-> .
-> 
+Godwin Peter,
