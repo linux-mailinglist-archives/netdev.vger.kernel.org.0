@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5554B3FCFD3
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 01:13:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BF9E3FCFD6
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 01:15:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240694AbhHaXO2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 19:14:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45406 "EHLO
+        id S240762AbhHaXQp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 19:16:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240043AbhHaXO1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 19:14:27 -0400
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B02FDC061575;
-        Tue, 31 Aug 2021 16:13:31 -0700 (PDT)
-Received: by mail-io1-xd2d.google.com with SMTP id a13so1542601iol.5;
-        Tue, 31 Aug 2021 16:13:31 -0700 (PDT)
+        with ESMTP id S233866AbhHaXQo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 19:16:44 -0400
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECE4AC061575;
+        Tue, 31 Aug 2021 16:15:48 -0700 (PDT)
+Received: by mail-io1-xd34.google.com with SMTP id z1so1534967ioh.7;
+        Tue, 31 Aug 2021 16:15:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:message-id:in-reply-to:references:subject
          :mime-version:content-transfer-encoding;
-        bh=3B4L8yeK1tSAPJP2FCIzPA6vRdgudqf09e09EGD5q1g=;
-        b=tKcF5Yzf1JKmtN+ccr1+tQjzkqXXN7Nr0h9rk5KKNOPbX11ou4TF9mPSQKsHr0fG//
-         kotUhxlJyjo6XSbuZPIY5BjuDUH21LOVVy8V6D85Vmd9JmQSGiDAmkPtH0k3JzAuVnJT
-         DcwAZ84F5jWtfkYdqmOQAKs9IFkZsVW9GTeak7BJFvHXn32W9A46JFVAmBnqMcN9sHNv
-         lXlOm1VVfYDyp1PZWRcMoCiOPIqfj+X7+R3Hq8WeRqIuOmRlt+cF80gKYPepIRAl2EpB
-         9ddbzuLs6Ry9lKxsBs6+KaTs6REa7/7e0NKwbC4VYSQieDBSJVpaOn1ASbxb2rY814mr
-         PCfA==
+        bh=/Yzl5/BMo8mwjKU50+yBzRi98rqy/lPpaWE1eJAfHeQ=;
+        b=RwkEf8EcaRfF/awyn7J+u+YVk12Z22YJEeNPWbFpmdvnhfZN4mvMQdTjVUNVVfTcZ6
+         QlOJEgvGp6pjkQTB23DHQ/EpPonxsRSsSWLG2rU/7k6xhOnTfTtkWc6aIk+RboON5Cty
+         bHfSl0BPBgiFLkLoYWQAN+WKm0W86Sbu2ECeL8DoJt4mUI0zXJgQUKG+bG9HyfUll1As
+         dhbGS7xXNfTfLWLrkpSs7dhJqsGoc9rUzkGyzFZ6vxQ8dRChczUx/mudt5+3d3VPN1JZ
+         Pa1SlAhN6Dy31NsaWUB1s/B5Xk/IWSTLx95EpYpIkIuoJtXCO9wpLJcTcswXvZwZT5a0
+         6YQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
          :references:subject:mime-version:content-transfer-encoding;
-        bh=3B4L8yeK1tSAPJP2FCIzPA6vRdgudqf09e09EGD5q1g=;
-        b=gMib4m0yvQwTApB1AagrCA/0hb2SSYmLlTHECXiOTdbp7svMD/1JZm1drqztqIxDMi
-         skzfpVfGb52nFHD3QUcZwzmHJ0/MFw0ydLUjYzpwiQtuSgqnTxw1CoiI3B5/Q/7TLUiu
-         40biBOrNSH8o8hflhlA1u/kNP33xbtqOywurvHERlkIW2VwIKy7KcmcJf7/RSWJqqaJ9
-         gZAnMtvqttRIT9fIjapJtpiwFcdm+j6MxwJ5B5eRmSxnF7XjrBQQ22YRoth9ZlGvkXxr
-         PRG2DJVjvwVyRV2Wg0e995EdYk0LNWimgKznZmzYckZ89tbBQwVAULoGddVm58MUrK6/
-         f31w==
-X-Gm-Message-State: AOAM532We0OALhVq7laNrAovAPYuPFraKS8I0FOis5tlC491BLSvfSe3
-        bPtMlcSlWvdrfOoBVeHGITw=
-X-Google-Smtp-Source: ABdhPJzrv+tsecmvdUAL/8Xby9Rm62GQ1zqDa/yP+N90Pu+c8on3AHEAnFio1RUdeS2Nrx8nquy1jw==
-X-Received: by 2002:a02:ba1a:: with SMTP id z26mr4998897jan.98.1630451611063;
-        Tue, 31 Aug 2021 16:13:31 -0700 (PDT)
+        bh=/Yzl5/BMo8mwjKU50+yBzRi98rqy/lPpaWE1eJAfHeQ=;
+        b=jz/XlLGgxtmIUG2slOBWNwg9ieNxKsKEGDWTKQBIcUkThUEoGB/2kKOlUYIKPskDZz
+         KYK2yxQNglk0G8MADu6o0e4G4Qp65edwcIw4pPLVDxHlsq9722RjWbhA1voEgRvzf/eG
+         7VMqKWagQmo8jff/T6G6w46gWLe0ugbuslg/KOWX2MjtS5YgX618jFOWI2aeuW+lIBuN
+         bTX4XGHRXBwjlFhZES0EcvKssRvJA/EBpDJhSCJ9Bu6N/ZdYFv5do0BwbztZ0RbpwO27
+         3sM4gcLD3uyTu8bgjkjEt1gNi9o7azW9AgCLaAzYk9AcrDxJp6d1xItdTD53bXvHbjnr
+         5ysA==
+X-Gm-Message-State: AOAM5328M0AeCWKqsDRzL7jp+oFNM3Xc3h9O0+g1rvMKC/CJH+fa73Sx
+        84qBx/CtxacpZPTYN6E3wMfs9TqJhgg=
+X-Google-Smtp-Source: ABdhPJxzApBl6auHk4Bl+bGGc6rMbJCQWCGhVoUB7XQYLfXHHxJawCNHLI1jdFlsFGsIawz0Hx7c/w==
+X-Received: by 2002:a5d:96da:: with SMTP id r26mr24790828iol.47.1630451748394;
+        Tue, 31 Aug 2021 16:15:48 -0700 (PDT)
 Received: from localhost ([172.243.157.240])
-        by smtp.gmail.com with ESMTPSA id s9sm10186603iob.10.2021.08.31.16.13.28
+        by smtp.gmail.com with ESMTPSA id x10sm10979441ila.4.2021.08.31.16.15.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Aug 2021 16:13:30 -0700 (PDT)
-Date:   Tue, 31 Aug 2021 16:13:23 -0700
+        Tue, 31 Aug 2021 16:15:47 -0700 (PDT)
+Date:   Tue, 31 Aug 2021 16:15:41 -0700
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
         netdev@vger.kernel.org
@@ -58,12 +58,12 @@ Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
         alexander.duyck@gmail.com, saeed@kernel.org,
         maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
         tirthendu.sarkar@intel.com, toke@redhat.com
-Message-ID: <612eb79343225_6b872087a@john-XPS-13-9370.notmuch>
-In-Reply-To: <ab0c64f1543239256ef63ec9b40f35a7491812c6.1629473233.git.lorenzo@kernel.org>
+Message-ID: <612eb81dcccfb_6b8720859@john-XPS-13-9370.notmuch>
+In-Reply-To: <db0f23d369ba488c0ebd1f43dd283221be801fea.1629473233.git.lorenzo@kernel.org>
 References: <cover.1629473233.git.lorenzo@kernel.org>
- <ab0c64f1543239256ef63ec9b40f35a7491812c6.1629473233.git.lorenzo@kernel.org>
-Subject: RE: [PATCH v12 bpf-next 01/18] net: skbuff: add size metadata to
- skb_shared_info for xdp
+ <db0f23d369ba488c0ebd1f43dd283221be801fea.1629473233.git.lorenzo@kernel.org>
+Subject: RE: [PATCH v12 bpf-next 02/18] xdp: introduce flags field in
+ xdp_buff/xdp_frame
 Mime-Version: 1.0
 Content-Type: text/plain;
  charset=utf-8
@@ -73,50 +73,15 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Lorenzo Bianconi wrote:
-> Introduce xdp_frags_tsize field in skb_shared_info data structure
-> to store xdp_buff/xdp_frame truesize (xdp_frags_tsize will be used
-> in xdp multi-buff support). In order to not increase skb_shared_info
-> size we will use a hole due to skb_shared_info alignment.
-> Introduce xdp_frags_size field in skb_shared_info data structure
-> reusing gso_type field in order to store xdp_buff/xdp_frame paged size.
-> xdp_frags_size will be used in xdp multi-buff support.
+> Introduce flags field in xdp_frame and xdp_buffer data structures
+> to define additional buffer features. At the moment the only
+> supported buffer feature is multi-buffer bit (mb). Multi-buffer bit
+> is used to specify if this is a linear buffer (mb = 0) or a multi-buffer
+> frame (mb = 1). In the latter case the driver is expected to initialize
+> the skb_shared_info structure at the end of the first buffer to link
+> together subsequent buffers belonging to the same frame.
 > 
 > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-
-I assume we can use xdp_frags_tsize for anything else above XDP later?
-Other than simple question looks OK to me.
+> ---
 
 Acked-by: John Fastabend <john.fastabend@gmail.com>
-
-> ---
->  include/linux/skbuff.h | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
-> 
-> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> index 6bdb0db3e825..1abeba7ef82e 100644
-> --- a/include/linux/skbuff.h
-> +++ b/include/linux/skbuff.h
-> @@ -522,13 +522,17 @@ struct skb_shared_info {
->  	unsigned short	gso_segs;
->  	struct sk_buff	*frag_list;
->  	struct skb_shared_hwtstamps hwtstamps;
-> -	unsigned int	gso_type;
-> +	union {
-> +		unsigned int	gso_type;
-> +		unsigned int	xdp_frags_size;
-> +	};
->  	u32		tskey;
->  
->  	/*
->  	 * Warning : all fields before dataref are cleared in __alloc_skb()
->  	 */
->  	atomic_t	dataref;
-> +	unsigned int	xdp_frags_tsize;
->  
->  	/* Intermediate layers must ensure that destructor_arg
->  	 * remains valid until skb destructor */
-> -- 
-> 2.31.1
-> 
-
-
