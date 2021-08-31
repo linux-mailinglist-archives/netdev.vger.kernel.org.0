@@ -2,168 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78E683FCDCE
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 22:01:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47BDF3FCDE2
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 22:01:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240776AbhHaT2D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 15:28:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50498 "EHLO
+        id S240827AbhHaTfi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 15:35:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240674AbhHaT2C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 15:28:02 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29F50C061760
-        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 12:27:07 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id e131so431582ybb.7
-        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 12:27:07 -0700 (PDT)
+        with ESMTP id S239210AbhHaTfh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 15:35:37 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EC60C061760
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 12:34:41 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id c129-20020a1c35870000b02902e6b6135279so300510wma.0
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 12:34:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MiOmjNUrQTixfmxuIIBr9b2mal/6TnKrZ2hUhLBArdA=;
-        b=LQ5DfuisFfwLylONTNqaEbGbMDFUlrFBwbH7uzQmaiairk1VdXureNF3ast1bdtiHJ
-         1OhdNZOseCGceTZIndqQ3bkMer4XSld2e7dnAd9uMTEiA7PS8GaXCTdO3IDSicU2Sopy
-         pPjQFl+IV7DnIZbTdxmgiujRlcFdDgQnyqd0HafORlQfaUcKzeJM+rtI6EvQcmE9wSPe
-         toKIFSnBzzG7JSG3KcpCza54fQ+OUPbOrF9BJ/H9MuW3cKGhLbtDSLThszd042O+RdCn
-         EMxVbcUSYa78NwDnBcDw/h4mGE0H0xlIhxDKiCa6UwAdwH/aWI6HM1IWE+Uv/Z3fLQx9
-         QWDg==
+        d=engleder-embedded-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gCKmSK8tJyGyjy1KDjrNXNc5xFC9cf88E1v15sSABiw=;
+        b=kk8mMUnBToKUgloCDsKsDHAmxDrzaPoeyu5MBvvdc2mX30tR53u5VmfGuvM95N1BHi
+         ER9lsdhneD93owQMUCvSeK76ZjndN14qNCYAwMJk0smutQ2s2d5AmVMLH3nVzV0+1Oog
+         8Ecp+nU0NAExC3qNXTFuRJux6XtWCJMfDiobRr465/kCvCyD4l9JxORdP6UjTE1gBNZb
+         tHvtlpGvdelOHiVJ3LdCSPQYUQ0gRKuL+uEsdujZ5it82y2klIblC9hMnGyNeivgWxE+
+         2Yom4VA/FQksUtapPlQExcLRkte9hBklyHJ6hyUIfrSpzL8pg7+1YOCHtRRTX+NWlPZp
+         oydQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MiOmjNUrQTixfmxuIIBr9b2mal/6TnKrZ2hUhLBArdA=;
-        b=U6IGJJ5MiG97BLt2S4RpKG22KW3ZE8YCOg/lZavzezxTDPugdEe+PJ4b/HJOsSMwxh
-         dZjqMjEI8yz/4RBC5tqg8P6f2vp+rXNzUM5P3tYT3sngoqD2pNgLaN8qZlmIrSuQsgT6
-         94XxgZtCDoKvQyJ5/h0Di/AbHChkf7mQiOd1LZC+lL7dTYNcRbZJz0LEn8Xs70MaWNBM
-         r4+gielZW3qYEwwNyXAhfUQ092GV7F+xHgM5DFrrXcqnaeEYG2Eely9e/yJ5vLhcN/wb
-         VbjdcQPVF5k1/ZRojjihojl/a219n0plk2VACUrHRaqjzi8TsvWsru1kKJmec3WxVNLI
-         TJnA==
-X-Gm-Message-State: AOAM533O9FybViTga4M0rECtpjl1ZjrhNHnc+YU4qie8M9Cb/GJ0eIgL
-        1n9kIbEL96CKTfWTtbnB6Pe9tAuehARQyS8ZScbkSwBSH4Q=
-X-Google-Smtp-Source: ABdhPJzbL1ke9geoFZR/f+VEBhnoIaAb/U4CLoY6acRJ2ip3Tlo8GdKSCEA0zQzpPM8yo2/DFDO0RlBa+uEN/mbu/fY=
-X-Received: by 2002:a25:d213:: with SMTP id j19mr33717553ybg.20.1630438026156;
- Tue, 31 Aug 2021 12:27:06 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gCKmSK8tJyGyjy1KDjrNXNc5xFC9cf88E1v15sSABiw=;
+        b=bZ7kRISTfAmz8VqiXcNoW8Zygt7eAqJ9eq7pBzu50m1BVuBPxkVhbslUPwkTtjmB+g
+         9AUlCBBLedjedyjKl8BfaaEWeV3dhm8KZ6ySSQksp2iY3Nb0nxA2wZ34NYWQAOAZWG4p
+         DN4PCqRbm0zQzPqlvLRvm2bAqVIpssL/4NFIveev60rOe1qRBYPtGiMa5NpILu0JTewk
+         c4TXMczOja25h7BPh96S0RA+6XMK64dTdAEn4adXwvX4yg/WUwtWpZ5BF44h2ZFnv7/f
+         S2uOlOGxw+u1XGw7PSCSuwMj+vfCBdy2rwUh1BocqIs0TL4TDF/S8I6Z2FCVdM+afKuF
+         byQA==
+X-Gm-Message-State: AOAM531uT+lgadSo4mWUrj/uK/3+fEKacQq27ge6Md4SoeBVal4S/9yN
+        J43lsM1Q9hcQ4YGmoW1pQfOsWJkvysS51/mH2C8qbw==
+X-Google-Smtp-Source: ABdhPJxAWbZiz9taMTujZGFGlmjyd+VIxuOVPHSFR8nRrYJ3u2Tvqhb+ABuQ2aQc/+zNRZYLFEExYw==
+X-Received: by 2002:a05:600c:206:: with SMTP id 6mr5913703wmi.178.1630438480223;
+        Tue, 31 Aug 2021 12:34:40 -0700 (PDT)
+Received: from hornet.engleder.at (dynamic-2el0lv6sxxeorz8a81-pd01.res.v6.highway.a1.net. [2001:871:23a:b9:6e3b:e5ff:fe2c:34c1])
+        by smtp.gmail.com with ESMTPSA id n4sm18708324wri.78.2021.08.31.12.34.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 Aug 2021 12:34:39 -0700 (PDT)
+From:   Gerhard Engleder <gerhard@engleder-embedded.com>
+To:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        robh+dt@kernel.org, michal.simek@xilinx.com
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        Gerhard Engleder <gerhard@engleder-embedded.com>
+Subject: [PATCH net-next v2 0/3] TSN endpoint Ethernet MAC driver
+Date:   Tue, 31 Aug 2021 21:34:22 +0200
+Message-Id: <20210831193425.26193-1-gerhard@engleder-embedded.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <YSf/Mps9E77/6kZX@lunn.ch> <CAGETcx_h6moWbS7m4hPm6Ub3T0tWayUQkppjevkYyiA=8AmACw@mail.gmail.com>
- <YSg+dRPSX9/ph6tb@lunn.ch> <CAGETcx_r8LSxV5=GQ-1qPjh7qGbCqTsSoSkQfxAKL5q+znRoWg@mail.gmail.com>
- <YSjsQmx8l4MXNvP+@lunn.ch> <CAGETcx_vMNZbT-5vCAvvpQNMMHy-19oR-mSfrg6=eSO49vLScQ@mail.gmail.com>
- <YSlG4XRGrq5D1/WU@lunn.ch> <CAGETcx-ZvENq8tFZ9wb_BCPZabpZcqPrguY5rsg4fSNdOAB+Kw@mail.gmail.com>
- <YSpr/BOZj2PKoC8B@lunn.ch> <CAGETcx_mjY10WzaOvb=vuojbodK7pvY1srvKmimu4h6xWkeQuQ@mail.gmail.com>
- <YS4rw7NQcpRmkO/K@lunn.ch>
-In-Reply-To: <YS4rw7NQcpRmkO/K@lunn.ch>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Tue, 31 Aug 2021 12:26:30 -0700
-Message-ID: <CAGETcx_QPh=ppHzBdM2_TYZz3o+O7Ab9-JSY52Yz1--iLnykxA@mail.gmail.com>
-Subject: Re: [PATCH v1 1/2] driver core: fw_devlink: Add support for FWNODE_FLAG_BROKEN_PARENT
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
-        Alvin Sipraga <ALSI@bang-olufsen.dk>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-acpi@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 31, 2021 at 6:16 AM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> > > I must admit, my main problem at the moment is -rc1 in two weeks
-> > > time. It seems like a number of board with Ethernet switches will be
-> > > broken, that worked before. phy-handle is not limited to switch
-> > > drivers, it is also used for Ethernet drivers. So it could be, a
-> > > number of Ethernet drivers are also going to be broken in -rc1?
-> >
-> > Again, in those cases, based on your FEC example, fw_devlink=on
-> > actually improves things.
->
-> Debatable. I did some testing. As expected some boards with Ethernet
-> switches are now broken.
+This series adds a driver for my FPGA based TSN endpoint Ethernet MAC.
+It also includes the device tree binding.
 
-To clarify myself, I'm saying the patch to parse "ethernet" [8] will
-make things better with fw_devlink=on for FEC. Not sure if you tested
-that patch or not.
+The device is designed as Ethernet MAC for TSN networks. It will be used
+in PLCs with real-time requirements up to isochronous communication with
+protocols like OPC UA Pub/Sub.
 
-And yes, "phy-handle" will make things worse for switches because it
-has two issues that need to be fixed. One is this deferred probe thing
-for which I gave a patch in the previous email and the other is what
-Marek reported (fix in the works). So can you revert "phy-handle"
-support and test with [8] and you should see things be better with
-fw_devlink=on.
+I'm looking forward to your comments!
 
-[8] - https://lore.kernel.org/netdev/CAGETcx9=AyEfjX_-adgRuX=8a0MkLnj8sy2KJGhxpNCinJu4yA@mail.gmail.com/
+v2:
+ - add C45 check (Andrew Lunn)
+ - forward phy_connect_direct() return value (Andrew Lunn)
+ - use phy_remove_link_mode() (Andrew Lunn)
+ - do not touch PHY directly, use PHY subsystem (Andrew Lunn)
+ - remove management data lock (Andrew Lunn)
+ - use phy_loopback (Andrew Lunn)
+ - remove GMII2RGMII handling, use xgmiitorgmii (Andrew Lunn)
+ - remove char device for direct TX/RX queue access (Andrew Lunn)
+ - mdio node for mdiobus (Rob Herring)
+ - simplify compatible node (Rob Herring)
+ - limit number of items of reg and interrupts nodes (Rob Herring)
+ - restrict phy-connection-type node (Rob Herring)
+ - reference to mdio.yaml under mdio node (Rob Herring)
+ - remove device tree (Michal Simek)
+ - fix %llx warning (kernel test robot)
+ - fix unused tmp variable warning (kernel test robot)
+ - add missing of_node_put() for of_parse_phandle()
+ - use devm_mdiobus_alloc()
+ - simplify mdiobus read/write
+ - reduce required nodes
+ - ethtool priv flags interface for loopback
+ - add missing static for some functions
+ - remove obsolete hardware defines
 
-> Without fw_devlink=on, some boards are not
-> optimal, but they actually work. With it, they are broken.
->
-> I did a bisect, and they have been broken since:
->
-> ea718c699055c8566eb64432388a04974c43b2ea is the first bad commit
-> commit ea718c699055c8566eb64432388a04974c43b2ea
-> Author: Saravana Kannan <saravanak@google.com>
-> Date:   Tue Mar 2 13:11:32 2021 -0800
->
->     Revert "Revert "driver core: Set fw_devlink=on by default""
->
->     This reverts commit 3e4c982f1ce75faf5314477b8da296d2d00919df.
->
->     Since all reported issues due to fw_devlink=on should be addressed by
->     this series, revert the revert. fw_devlink=on Take II.
->
->     Signed-off-by: Saravana Kannan <saravanak@google.com>
->     Link: https://lore.kernel.org/r/20210302211133.2244281-4-saravanak@google.com
->     Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->
->  drivers/base/core.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> So however it is fixed, it needs to go into stable, not just -rc1.
+Gerhard Engleder (3):
+  dt-bindings: Add vendor prefix for Engleder
+  dt-bindings: net: Add tsnep Ethernet controller
+  tsnep: Add TSN endpoint Ethernet MAC driver
 
-Not sure what was the tip of the tree with which you bisected. For
-example, if phy-handle broke things, bisect could still point at this
-patch above depending on whether the first bisect is good/bad. Because
-reverting this patch effectively disabled phy-handle parsing too.
+ .../bindings/net/engleder,tsnep.yaml          |   78 ++
+ .../devicetree/bindings/vendor-prefixes.yaml  |    2 +
+ drivers/net/ethernet/Kconfig                  |    1 +
+ drivers/net/ethernet/Makefile                 |    1 +
+ drivers/net/ethernet/engleder/Kconfig         |   28 +
+ drivers/net/ethernet/engleder/Makefile        |    9 +
+ drivers/net/ethernet/engleder/tsnep.h         |  166 +++
+ drivers/net/ethernet/engleder/tsnep_ethtool.c |  382 +++++
+ drivers/net/ethernet/engleder/tsnep_hw.h      |  236 ++++
+ drivers/net/ethernet/engleder/tsnep_main.c    | 1227 +++++++++++++++++
+ drivers/net/ethernet/engleder/tsnep_ptp.c     |  221 +++
+ drivers/net/ethernet/engleder/tsnep_tc.c      |  442 ++++++
+ drivers/net/ethernet/engleder/tsnep_test.c    |  811 +++++++++++
+ 13 files changed, 3604 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/engleder,tsnep.yaml
+ create mode 100644 drivers/net/ethernet/engleder/Kconfig
+ create mode 100644 drivers/net/ethernet/engleder/Makefile
+ create mode 100644 drivers/net/ethernet/engleder/tsnep.h
+ create mode 100644 drivers/net/ethernet/engleder/tsnep_ethtool.c
+ create mode 100644 drivers/net/ethernet/engleder/tsnep_hw.h
+ create mode 100644 drivers/net/ethernet/engleder/tsnep_main.c
+ create mode 100644 drivers/net/ethernet/engleder/tsnep_ptp.c
+ create mode 100644 drivers/net/ethernet/engleder/tsnep_tc.c
+ create mode 100644 drivers/net/ethernet/engleder/tsnep_test.c
 
-To be clear, I'm not saying things aren't broken. I'm just pointing
-out some nuances with the bisect that we need to be aware of.
+-- 
+2.20.1
 
-> > Again, it's not a widespread problem as I explained before.
-> > fw_devlink=on has been the default for 2 kernel versions now. With no
-> > unfixed reported issues.
->
-> Given that some Ethernet switches have been broken all that time, i
-> wonder what else has been broken? Normally, the kernel which is
-> release in December becomes the next LTS. It then gets picked up by
-> the distros and more wide spread tested. So it could be, you get a
-> flood of reports in January and February about things which are
-> broken. This is why i don't think you should be relying on bug
-> reports, you should be taking a more proactive stance and trying to
-> analyse the DTB blobs.
-
-As I mentioned earlier, just looking at DTB doesn't tell me much
-because the driver could still be fine depending on how it's written.
-Also, I don't have an easy way to do this. If I find a way, I'll do
-it.
-
-Btw, most bug reports that have been raised have been fixed with
-generic fixes that address general DT patterns. For example,
-fw_devlink has cycle detection built in, has support for devices that
-never get probed, etc. Enabling fw_devlink=on and handling bug reports
-with generic fixes has worked well so far to get fw_devlink to where
-it is today. I've tried to be very quick in responding to fw_devlink
-issues -- and that has worked out so far and hopefully it'll continue
-to work out.
-
-> I will spend some time trying out your proposed fix. See if they are a
-> quick fix for stable.
-
-Thanks for testing it out. And worst case, we'll revert phy-handle support.
-
-
--Saravana
