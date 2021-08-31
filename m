@@ -2,102 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BA843FCFA4
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 00:46:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC9B63FCFC4
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 01:06:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233859AbhHaWrD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 18:47:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39316 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229602AbhHaWrC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 18:47:02 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0642DC061575;
-        Tue, 31 Aug 2021 15:46:07 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id z5so1493541ybj.2;
-        Tue, 31 Aug 2021 15:46:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=otZ3oCMw/n5h1EAwm8NZDtbkroLUykkNJKE+BB/u/0I=;
-        b=fA9jt2LcIWExthUTiv6lZj2Aevt6EGWd+pXWWnWQtYzz+uCDS7oIsGFwPxrNtU/Zmo
-         clUysZminLenj7HzV2SGVU/mafgDOBPa6VPSsEkxJocWkgKJ/I2op32fxQa9/U78X5En
-         McmwCVFB32wDRxiG1WwWjTY+cbykVZS3zE2aNKft9g6v+U7dbDs4Bfuge608zUytgurp
-         eNzkJiBcqwrRVhEJyZlIj0BdrEPRb8aeUvGC0Bh3cBrdd81XqueQcSH/+8Mzjg/4revv
-         nS7GyVPecsSJThwhTZyYe3pm5kjNGFRl0s7CyTTRUCB//wH0WJ6XjBoxPIh8hxZsXUHA
-         6tvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=otZ3oCMw/n5h1EAwm8NZDtbkroLUykkNJKE+BB/u/0I=;
-        b=J2s0HQxOIDdubLjo1+Hy0hyx6Y0Bx5EJ+82OoVXNLRIvLhm4fQlmOaiVXIovD1oCWm
-         BBsoRRbPu3WYj1KEOz2/39IjPs81+Uf4ecPyVt1OxXBTCb3wRLOxpH9WZbJdYmVDnPT8
-         Nr923Dmudx921kAVo/tKYWL51n1ccAj68KyAIX0ODPENeQUQcrHYe53RqdMUjocB2fjs
-         K/pSmAip/1vdGxu7s1o7SryBP+Fpo9UN3eXzP5OUz8MLH1Uu/ZL6rSqaRiHR+qzJQjGd
-         zZwfXk7LRzk1xXAqPurwFPRZe4DUUVxKUyarxJ974RcNanyWGMX+5txuHrHFItsDucuG
-         2fnQ==
-X-Gm-Message-State: AOAM533ebgCHHWnqY2g9Mj1rlooKGbnYe+GZ40PUrvA5nSWtV7HFt3Yc
-        /p+Ogg7TukPzadroBubWIry0Y4W5ulxlsw8jwWiF/mrw
-X-Google-Smtp-Source: ABdhPJzJz0oXKu32c+3Pm4TcoAwyGygVbmatGEzZDBddE0FxseU0nIuUKdylKqIiKSS9QgkAlHF8OhcoC7m2oaOkZyE=
-X-Received: by 2002:a5b:142:: with SMTP id c2mr31867012ybp.425.1630449966235;
- Tue, 31 Aug 2021 15:46:06 -0700 (PDT)
+        id S241078AbhHaXDQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 19:03:16 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:50882 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235659AbhHaXDP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 31 Aug 2021 19:03:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=enbFY4AVKjJRnyljEbP4rqvuKLOuy7w4dhctW4G9+Pc=; b=TbneM/9NQEoaUp0zOG3XRre1XH
+        UxI+alXoL6qsrMUqaE1U188kI4iGhU3jWtF6ZXvd2iQHmVinWsmOlSihU/RwtfWSfk4qcj3kvuFga
+        KWTDDdRqWoVtzhmhvFNDVvnJxTR3TyIcBZvo1R7L3UoGGwrlmTQsWysnG2IGqF7pUsE4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mLCld-004m4d-Tn; Wed, 01 Sep 2021 01:02:09 +0200
+Date:   Wed, 1 Sep 2021 01:02:09 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
+        Alvin Sipraga <ALSI@bang-olufsen.dk>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-acpi@vger.kernel.org
+Subject: Re: [PATCH v1 1/2] driver core: fw_devlink: Add support for
+ FWNODE_FLAG_BROKEN_PARENT
+Message-ID: <YS608fdIhH4+qJsn@lunn.ch>
+References: <YSjsQmx8l4MXNvP+@lunn.ch>
+ <CAGETcx_vMNZbT-5vCAvvpQNMMHy-19oR-mSfrg6=eSO49vLScQ@mail.gmail.com>
+ <YSlG4XRGrq5D1/WU@lunn.ch>
+ <CAGETcx-ZvENq8tFZ9wb_BCPZabpZcqPrguY5rsg4fSNdOAB+Kw@mail.gmail.com>
+ <YSpr/BOZj2PKoC8B@lunn.ch>
+ <CAGETcx_mjY10WzaOvb=vuojbodK7pvY1srvKmimu4h6xWkeQuQ@mail.gmail.com>
+ <YS4rw7NQcpRmkO/K@lunn.ch>
+ <CAGETcx_QPh=ppHzBdM2_TYZz3o+O7Ab9-JSY52Yz1--iLnykxA@mail.gmail.com>
+ <YS6nxLp5TYCK+mJP@lunn.ch>
+ <CAGETcx90dOkw+Yp5ZRNqQq2Ny_ToOKvGJNpvyRohaRQi=SQxhw@mail.gmail.com>
 MIME-Version: 1.0
-References: <20210831165802.168776-1-toke@redhat.com>
-In-Reply-To: <20210831165802.168776-1-toke@redhat.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 31 Aug 2021 15:45:54 -0700
-Message-ID: <CAEf4BzaCukRbk=wBY=jobyCKDpQma-41gH34D=iigpj_AO6Hiw@mail.gmail.com>
-Subject: Re: [PATCH bpf] libbpf: don't crash on object files with no symbol tables
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGETcx90dOkw+Yp5ZRNqQq2Ny_ToOKvGJNpvyRohaRQi=SQxhw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 31, 2021 at 9:58 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
->
-> If libbpf encounters an ELF file that has been stripped of its symbol
-> table, it will crash in bpf_object__add_programs() when trying to
-> dereference the obj->efile.symbols pointer. Add a check and return to avo=
-id
-> this.
->
-> Fixes: 6245947c1b3c ("libbpf: Allow gaps in BPF program sections to suppo=
-rt overriden weak functions")
-> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> ---
->  tools/lib/bpf/libbpf.c | 3 +++
->  1 file changed, 3 insertions(+)
->
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 6f5e2757bb3c..4cd102affeef 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -668,6 +668,9 @@ bpf_object__add_programs(struct bpf_object *obj, Elf_=
-Data *sec_data,
->         const char *name;
->         GElf_Sym sym;
->
-> +       if (!symbols)
-> +               return -ENOENT;
-> +
+> If the switches are broken without the phy-handle or ethernet change,
+> I'm not sure if the "BROKEN_PARENT" patch would help.
 
-The more logical place to do this check is in
-bpf_object__elf_collect(). Can you add this there? We can also include
-helpful error message.
+> > Which is not enough to fix these Ethernet switches.
+> 
+> Ok, if you can give more specifics on this, I'll look into it.
 
-But I'm also curious which Clang version is being used to cause no ELF
-symbols being generated?
+The switches probe, but get the wrong PHY driver, genphy, not the
+Marvell PHY driver. And genphy is not sufficient for this hardware.
 
->         progs =3D obj->programs;
->         nr_progs =3D obj->nr_programs;
->         nr_syms =3D symbols->d_size / sizeof(GElf_Sym);
-> --
-> 2.33.0
->
+I'd need:
+> 1) The DTS file that you see the issue on.
+
+I did the bisect on arch/arm/boot/dts/vf610-zii-dev-rev-c.dts but i
+also tested arch/arm/boot/dts/vf610-zii-dev-rev-b.dts.
+
+Rev B is interesting because switch0 and switch1 got genphy, while
+switch2 got the correct Marvell PHY driver. switch2 PHYs don't have
+interrupt properties, so don't loop back to their parent device.
+
+Here is Rev B. I trimmed out other devices probing in parallel:
+
+[    1.029100] fec 400d1000.ethernet: Invalid MAC address: 00:00:00:00:00:00
+[    1.034735] fec 400d1000.ethernet: Using random MAC address: 42:f2:14:33:78:f5
+[    1.042272] libphy: fec_enet_mii_bus: probed
+[    1.455932] libphy: mdio_mux: probed
+[    1.459432] mv88e6085 0.1:00: switch 0x3520 detected: Marvell 88E6352, revision 1
+[    1.494076] libphy: mdio: probed
+[    1.518958] libphy: mdio_mux: probed
+[    1.522553] mv88e6085 0.2:00: switch 0x3520 detected: Marvell 88E6352, revision 1
+[    1.537295] libphy: mdio: probed
+[    1.556571] libphy: mdio_mux: probed
+[    1.559719] mv88e6085 0.4:00: switch 0x1a70 detected: Marvell 88E6185, revision 2
+[    1.574614] libphy: mdio: probed
+[    1.733104] mv88e6085 0.1:00 lan0 (uninitialized): PHY [!mdio-mux!mdio@1!switch@0!mdio:00] driver [Generic PHY] (irq=POLL)
+[    1.750737] mv88e6085 0.1:00 lan1 (uninitialized): PHY [!mdio-mux!mdio@1!switch@0!mdio:01] driver [Generic PHY] (irq=POLL)
+[    1.768273] mv88e6085 0.1:00 lan2 (uninitialized): PHY [!mdio-mux!mdio@1!switch@0!mdio:02] driver [Generic PHY] (irq=POLL)
+[    1.806561] mv88e6085 0.2:00 lan3 (uninitialized): PHY [!mdio-mux!mdio@2!switch@0!mdio:00] driver [Generic PHY] (irq=POLL)
+[    1.824033] mv88e6085 0.2:00 lan4 (uninitialized): PHY [!mdio-mux!mdio@2!switch@0!mdio:01] driver [Generic PHY] (irq=POLL)
+[    1.841496] mv88e6085 0.2:00 lan5 (uninitialized): PHY [!mdio-mux!mdio@2!switch@0!mdio:02] driver [Generic PHY] (irq=POLL)
+[    1.943535] mv88e6085 0.4:00 lan6 (uninitialized): PHY [!mdio-mux!mdio@4!switch@0!mdio:00] driver [Marvell 88E1545] (irq=POLL)
+[    2.003529] mv88e6085 0.4:00 lan7 (uninitialized): PHY [!mdio-mux!mdio@4!switch@0!mdio:01] driver [Marvell 88E1545] (irq=POLL)
+[    2.063535] mv88e6085 0.4:00 lan8 (uninitialized): PHY [!mdio-mux!mdio@4!switch@0!mdio:02] driver [Marvell 88E1545] (irq=POLL)
+[    2.084768] DSA: tree 0 setup
+[    2.087791] libphy: mdio_mux: probed
+[    2.265477] Micrel KSZ8041 400d0000.ethernet-1:00: attached PHY driver (mii_bus:phy_addr=400d0000.ethernet-1:00, irq=POLL)
+
+root@zii-devel-b:~# cat /sys/kernel/debug/devices_deferred
+root@zii-devel-b:~# 
+
+For Rev C we see:
+
+[    1.244417] fec 400d1000.ethernet: Invalid MAC address: 00:00:00:00:00:00
+[    1.250081] fec 400d1000.ethernet: Using random MAC address: c6:42:89:ed:5f:dd
+[    1.257507] libphy: fec_enet_mii_bus: probed
+[    1.570725] libphy: mdio_mux: probed
+[    1.574208] mv88e6085 0.1:00: switch 0xa10 detected: Marvell 88E6390X, revision 1
+[    1.590272] libphy: mdio: probed
+[    1.627721] libphy: mdio_mux: probed
+[    1.631222] mv88e6085 0.2:00: switch 0xa10 detected: Marvell 88E6390X, revision 1
+[    1.659643] libphy: mdio: probed
+[    1.811665] mv88e6085 0.1:00 lan1 (uninitialized): PHY [!mdio-mux!mdio@1!switch@0!mdio:01] driver [Generic PHY] (irq=POLL)
+[    1.829230] mv88e6085 0.1:00 lan2 (uninitialized): PHY [!mdio-mux!mdio@1!switch@0!mdio:02] driver [Generic PHY] (irq=POLL)
+[    1.845884] mv88e6085 0.1:00 lan3 (uninitialized): PHY [!mdio-mux!mdio@1!switch@0!mdio:03] driver [Generic PHY] (irq=POLL)
+[    1.863237] mv88e6085 0.1:00 lan4 (uninitialized): PHY [!mdio-mux!mdio@1!switch@0!mdio:04] driver [Generic PHY] (irq=POLL)
+[    1.884078] mv88e6085 0.2:00 lan5 (uninitialized): PHY [!mdio-mux!mdio@2!switch@0!mdio:01] driver [Generic PHY] (irq=POLL)
+[    1.901630] mv88e6085 0.2:00 lan6 (uninitialized): PHY [!mdio-mux!mdio@2!switch@0!mdio:02] driver [Generic PHY] (irq=POLL)
+[    1.918287] mv88e6085 0.2:00 lan7 (uninitialized): PHY [!mdio-mux!mdio@2!switch@0!mdio:03] driver [Generic PHY] (irq=POLL)
+[    1.933721] mv88e6085 0.2:00 lan8 (uninitialized): PHY [!mdio-mux!mdio@2!switch@0!mdio:04] driver [Generic PHY] (irq=POLL)
+[    1.948722] DSA: tree 0 setup
+[    1.951599] libphy: mdio_mux: probed
+
+[   21.565550] Micrel KSZ8041 400d0000.ethernet-1:00: attached PHY driver (mii_bus:phy_addr=400d0000.ethernet-1:00, irq=48)
+
+I have Rev B using NFS root, so the interfaces are configured up by
+the kernel during boot. Rev C has a local root filesystem, so user
+space brings the interfaces up, and it is only when the FEC is opened
+does it attach to the Micrel PHY. That explains the difference between
+2.265 and 21.565 seconds for the last line.
+
+Again, nothing deferred.
+
+       Andrew
