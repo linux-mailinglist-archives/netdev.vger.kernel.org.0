@@ -2,44 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4998F3FC670
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 13:34:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 533013FC673
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 13:34:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241466AbhHaLLM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 07:11:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58690 "EHLO mail.kernel.org"
+        id S241484AbhHaLLR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 07:11:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58694 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241413AbhHaLLD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S241420AbhHaLLD (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 31 Aug 2021 07:11:03 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 4A3E161041;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 5F2FA61058;
         Tue, 31 Aug 2021 11:10:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1630408208;
-        bh=KpGv2quDoLVdaX43kOv7Z1379XKKaRvB6/GLJ7iIgfw=;
+        bh=6XTiFVpAOU/U5QiTGxTmalseSswMAbrKt9dCYpd7zDE=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=n5GRC+nXFWqp0NA1qRsdG7mbb1AabyvAlfhsHLBuSfrOuKOMOCVRuKM6t/FBWhOJy
-         xgrIOfyya/tWTssbhSDB0MC9wN+Vw01YMo8ZV0Xf3RsnGaceMCsQKmSqWZkMwNh+c9
-         +EsnfAmBLRmOCJduTaJB8DDms1cXRWKHxduG8ThxX8k28KyAaORMHNuASRrwMukGhO
-         crKQVFhW+MkqHRzQXpPimh0MOgeEfETJPnb85PBNwKY5adBvgsu5bGekUJrGjWlOa2
-         nWqzmYRSZwag8D6Rg1qrxdyU/jo0ArXyYwDnsYQliVjSepJm8x/OWbvqt2pX3daNEm
-         j4xVCD34AFzGA==
+        b=taQzhgpbYHMJ8UjsN5eR+CHkGMC0IxXRWA/+EHoGSqprf1pEknB75XRbho5E4snZ7
+         mb5IVZhwkDmRJo9PFq+mxMolvJZmwP/UkFJLF0DwTC31rkjNscy0Shc6AZs0Tvcowt
+         6H+nBTwmjo2ge8brzDHojEwOWOJGW0VZbinmrGMlrkHDe+RGhCBUVvG5bSrV2XBWAM
+         x9n5CHiNsyGg5ePEuxpSPSp5s7IWOE+r2d3lFnBYR3oAvarFA+KQfEmtsPQ2+84nd+
+         0x8Ej4PnpSpJR6F/94NL470xh8HV2/33/dpGkjn3LohGPnu1b1SkUoAOQNdlF/imxO
+         3a3DAFuSnC4YA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 450976097A;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5A33060A9D;
         Tue, 31 Aug 2021 11:10:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net/mlxbf_gige: Make use of
- devm_platform_ioremap_resourcexxx()
+Subject: Re: [PATCH] dpaa2-eth: Replace strlcpy with strscpy
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163040820827.5377.9489080405038587654.git-patchwork-notify@kernel.org>
+Message-Id: <163040820836.5377.14060243264259649124.git-patchwork-notify@kernel.org>
 Date:   Tue, 31 Aug 2021 11:10:08 +0000
-References: <20210831080231.878-1-caihuoqing@baidu.com>
-In-Reply-To: <20210831080231.878-1-caihuoqing@baidu.com>
-To:     Cai Huoqing <caihuoqing@baidu.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, gsomlo@gmail.com,
-        asmaa@nvidia.com, limings@nvidia.com, jgg@ziepe.ca,
-        davthompson@nvidia.com, netdev@vger.kernel.org
+References: <20210830130531.12429-1-wangborong@cdjrlc.com>
+In-Reply-To: <20210830130531.12429-1-wangborong@cdjrlc.com>
+To:     Jason Wang <wangborong@cdjrlc.com>
+Cc:     davem@davemloft.net, ioana.ciornei@nxp.com, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -48,20 +46,24 @@ Hello:
 
 This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue, 31 Aug 2021 16:02:31 +0800 you wrote:
-> Use the devm_platform_ioremap_resource_byname() helper instead of
-> calling platform_get_resource_byname() and devm_ioremap_resource()
-> separately
+On Mon, 30 Aug 2021 21:05:31 +0800 you wrote:
+> The strlcpy should not be used because it doesn't limit the source
+> length. As linus says, it's a completely useless function if you
+> can't implicitly trust the source string - but that is almost always
+> why people think they should use it! All in all the BSD function
+> will lead some potential bugs.
 > 
-> Use the devm_platform_ioremap_resource() helper instead of
-> calling platform_get_resource() and devm_ioremap_resource()
-> separately
+> But the strscpy doesn't require reading memory from the src string
+> beyond the specified "count" bytes, and since the return value is
+> easier to error-check than strlcpy()'s. In addition, the implementation
+> is robust to the string changing out from underneath it, unlike the
+> current strlcpy() implementation.
 > 
 > [...]
 
 Here is the summary with links:
-  - net/mlxbf_gige: Make use of devm_platform_ioremap_resourcexxx()
-    https://git.kernel.org/netdev/net-next/c/464a57281f29
+  - dpaa2-eth: Replace strlcpy with strscpy
+    https://git.kernel.org/netdev/net-next/c/995786ba0dab
 
 You are awesome, thank you!
 --
