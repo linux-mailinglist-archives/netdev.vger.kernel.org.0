@@ -2,275 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 650EA3FCF92
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 00:29:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BA843FCFA4
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 00:46:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240853AbhHaW3x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 18:29:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35546 "EHLO
+        id S233859AbhHaWrD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 18:47:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240709AbhHaW3v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 18:29:51 -0400
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03FE9C061575
-        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 15:28:56 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id v123so470414pfb.11
-        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 15:28:55 -0700 (PDT)
+        with ESMTP id S229602AbhHaWrC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 18:47:02 -0400
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0642DC061575;
+        Tue, 31 Aug 2021 15:46:07 -0700 (PDT)
+Received: by mail-yb1-xb35.google.com with SMTP id z5so1493541ybj.2;
+        Tue, 31 Aug 2021 15:46:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=MnvGxc/CR7fCGHnBUg5qo1ALqMcu4PDho01xtGLuzJ0=;
-        b=ZZON06ScwmSBRIS/m16oWSF8ep8mWvFG7sMCD9GKcGMWjvcAqUFyG70maRoCSU4ff6
-         Oe+gLaDm28GXtCpL6/mOlgLgBZ3pyOU0S98B+Fsi0y/BxBtFxX+QRabX+YDd/RTQnVK8
-         UaykOCdPIxI/UrmlaKjXHO2LsC8D8+T/wlu7w=
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=otZ3oCMw/n5h1EAwm8NZDtbkroLUykkNJKE+BB/u/0I=;
+        b=fA9jt2LcIWExthUTiv6lZj2Aevt6EGWd+pXWWnWQtYzz+uCDS7oIsGFwPxrNtU/Zmo
+         clUysZminLenj7HzV2SGVU/mafgDOBPa6VPSsEkxJocWkgKJ/I2op32fxQa9/U78X5En
+         McmwCVFB32wDRxiG1WwWjTY+cbykVZS3zE2aNKft9g6v+U7dbDs4Bfuge608zUytgurp
+         eNzkJiBcqwrRVhEJyZlIj0BdrEPRb8aeUvGC0Bh3cBrdd81XqueQcSH/+8Mzjg/4revv
+         nS7GyVPecsSJThwhTZyYe3pm5kjNGFRl0s7CyTTRUCB//wH0WJ6XjBoxPIh8hxZsXUHA
+         6tvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=MnvGxc/CR7fCGHnBUg5qo1ALqMcu4PDho01xtGLuzJ0=;
-        b=LD2UVqdSA0Bl5/5bTLpAW3oNAVetUSWb+Lc3xWmAzw9AZr7SLI3i5Hx6h1mGJJldYJ
-         I1BL2cgcwOlipbuU5AgGS5aQVKEs0krLWwNNJyIwXlZp6oF+VaXFmL2Ph1qJxIJ37sWc
-         pDpsrZEQ3sIURJw5VFL4wzYXWT33pBo9flgzhvqmGVMwToSHHU0M7j8oXFqI0dZ4S/XT
-         6pyXjyS2HYBR+AUBKGOglt9LoELoinApNBZ9W4v5c402GUZui94YVj4JiIcxnD3iP2aE
-         KlGOInKSmPFX9HxmoVbR24Yqin3ocSdXKxAUtVdh3gRTAxuTPIKAMZy22NOhSoV2zqWs
-         sGUA==
-X-Gm-Message-State: AOAM532VjvfwEXRhc23Bi86N5KAkIHHZNM0vCX7PJTG5a0gf3vNtERQN
-        /Jg2NUZ9o/0q+j/mowE7S7GpTUH1gOoQOA==
-X-Google-Smtp-Source: ABdhPJwEaepSezdFBd/6I60sv5zzl5OiroOMHToa8dGFg7PV8a9ckU/Yi4ushxkz/yQK3Zw1/5Hs9w==
-X-Received: by 2002:a63:f501:: with SMTP id w1mr28822203pgh.57.1630448934858;
-        Tue, 31 Aug 2021 15:28:54 -0700 (PDT)
-Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id w2sm3707617pjq.5.2021.08.31.15.28.53
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 31 Aug 2021 15:28:54 -0700 (PDT)
-From:   Michael Chan <michael.chan@broadcom.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, edwin.peer@broadcom.com,
-        gospo@broadcom.com
-Subject: [PATCH net-next] bnxt_en: Fix 64-bit doorbell operation on 32-bit kernels
-Date:   Tue, 31 Aug 2021 18:28:45 -0400
-Message-Id: <1630448925-6740-1-git-send-email-michael.chan@broadcom.com>
-X-Mailer: git-send-email 1.8.3.1
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000a476ac05cae279b0"
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=otZ3oCMw/n5h1EAwm8NZDtbkroLUykkNJKE+BB/u/0I=;
+        b=J2s0HQxOIDdubLjo1+Hy0hyx6Y0Bx5EJ+82OoVXNLRIvLhm4fQlmOaiVXIovD1oCWm
+         BBsoRRbPu3WYj1KEOz2/39IjPs81+Uf4ecPyVt1OxXBTCb3wRLOxpH9WZbJdYmVDnPT8
+         Nr923Dmudx921kAVo/tKYWL51n1ccAj68KyAIX0ODPENeQUQcrHYe53RqdMUjocB2fjs
+         K/pSmAip/1vdGxu7s1o7SryBP+Fpo9UN3eXzP5OUz8MLH1Uu/ZL6rSqaRiHR+qzJQjGd
+         zZwfXk7LRzk1xXAqPurwFPRZe4DUUVxKUyarxJ974RcNanyWGMX+5txuHrHFItsDucuG
+         2fnQ==
+X-Gm-Message-State: AOAM533ebgCHHWnqY2g9Mj1rlooKGbnYe+GZ40PUrvA5nSWtV7HFt3Yc
+        /p+Ogg7TukPzadroBubWIry0Y4W5ulxlsw8jwWiF/mrw
+X-Google-Smtp-Source: ABdhPJzJz0oXKu32c+3Pm4TcoAwyGygVbmatGEzZDBddE0FxseU0nIuUKdylKqIiKSS9QgkAlHF8OhcoC7m2oaOkZyE=
+X-Received: by 2002:a5b:142:: with SMTP id c2mr31867012ybp.425.1630449966235;
+ Tue, 31 Aug 2021 15:46:06 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210831165802.168776-1-toke@redhat.com>
+In-Reply-To: <20210831165802.168776-1-toke@redhat.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 31 Aug 2021 15:45:54 -0700
+Message-ID: <CAEf4BzaCukRbk=wBY=jobyCKDpQma-41gH34D=iigpj_AO6Hiw@mail.gmail.com>
+Subject: Re: [PATCH bpf] libbpf: don't crash on object files with no symbol tables
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000a476ac05cae279b0
+On Tue, Aug 31, 2021 at 9:58 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
+>
+> If libbpf encounters an ELF file that has been stripped of its symbol
+> table, it will crash in bpf_object__add_programs() when trying to
+> dereference the obj->efile.symbols pointer. Add a check and return to avo=
+id
+> this.
+>
+> Fixes: 6245947c1b3c ("libbpf: Allow gaps in BPF program sections to suppo=
+rt overriden weak functions")
+> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> ---
+>  tools/lib/bpf/libbpf.c | 3 +++
+>  1 file changed, 3 insertions(+)
+>
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index 6f5e2757bb3c..4cd102affeef 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -668,6 +668,9 @@ bpf_object__add_programs(struct bpf_object *obj, Elf_=
+Data *sec_data,
+>         const char *name;
+>         GElf_Sym sym;
+>
+> +       if (!symbols)
+> +               return -ENOENT;
+> +
 
-The driver requires 64-bit doorbell writes to be atomic on 32-bit
-architectures.  So we redefined writeq as a new macro with spinlock
-protection on 32-bit architectures.  This created a new warning when
-we added a new file in a recent patchset.  writeq is defined on many
-32-bit architectures to do the memory write non-atomically and it
-generated a new macro redefined warning.  This warning was fixed
-incorrectly in the recent patch.
+The more logical place to do this check is in
+bpf_object__elf_collect(). Can you add this there? We can also include
+helpful error message.
 
-Fix this properly by adding a new bnxt_writeq() function that will
-do the non-atomic write under spinlock on 32-bit systems.  All callers
-in the driver will now call bnxt_writeq() instead.
+But I'm also curious which Clang version is being used to cause no ELF
+symbols being generated?
 
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: f9ff578251dc ("bnxt_en: introduce new firmware message API based on DMA pools")
-Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
----
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 14 +++++-----
- drivers/net/ethernet/broadcom/bnxt/bnxt.h | 33 ++++++++++++++---------
- 2 files changed, 29 insertions(+), 18 deletions(-)
-
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 627f85ee3922..5b145077d21a 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -305,13 +305,15 @@ static bool bnxt_vf_pciid(enum board_idx idx)
- 	writel(DB_CP_FLAGS | RING_CMP(idx), (db)->doorbell)
- 
- #define BNXT_DB_NQ_P5(db, idx)						\
--	writeq((db)->db_key64 | DBR_TYPE_NQ | RING_CMP(idx), (db)->doorbell)
-+	bnxt_writeq((db)->db_key64 | DBR_TYPE_NQ | RING_CMP(idx),	\
-+		    (db)->doorbell)
- 
- #define BNXT_DB_CQ_ARM(db, idx)						\
- 	writel(DB_CP_REARM_FLAGS | RING_CMP(idx), (db)->doorbell)
- 
- #define BNXT_DB_NQ_ARM_P5(db, idx)					\
--	writeq((db)->db_key64 | DBR_TYPE_NQ_ARM | RING_CMP(idx), (db)->doorbell)
-+	bnxt_writeq((db)->db_key64 | DBR_TYPE_NQ_ARM | RING_CMP(idx),	\
-+		    (db)->doorbell)
- 
- static void bnxt_db_nq(struct bnxt *bp, struct bnxt_db_info *db, u32 idx)
- {
-@@ -332,8 +334,8 @@ static void bnxt_db_nq_arm(struct bnxt *bp, struct bnxt_db_info *db, u32 idx)
- static void bnxt_db_cq(struct bnxt *bp, struct bnxt_db_info *db, u32 idx)
- {
- 	if (bp->flags & BNXT_FLAG_CHIP_P5)
--		writeq(db->db_key64 | DBR_TYPE_CQ_ARMALL | RING_CMP(idx),
--		       db->doorbell);
-+		bnxt_writeq(db->db_key64 | DBR_TYPE_CQ_ARMALL | RING_CMP(idx),
-+			    db->doorbell);
- 	else
- 		BNXT_DB_CQ(db, idx);
- }
-@@ -2638,8 +2640,8 @@ static void __bnxt_poll_cqs_done(struct bnxt *bp, struct bnxt_napi *bnapi,
- 
- 		if (cpr2 && cpr2->had_work_done) {
- 			db = &cpr2->cp_db;
--			writeq(db->db_key64 | dbr_type |
--			       RING_CMP(cpr2->cp_raw_cons), db->doorbell);
-+			bnxt_writeq(db->db_key64 | dbr_type |
-+				    RING_CMP(cpr2->cp_raw_cons), db->doorbell);
- 			cpr2->had_work_done = 0;
- 		}
- 	}
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index a8212dcdad5f..e69d4a1d0c63 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1981,7 +1981,7 @@ struct bnxt {
- 	struct mutex		sriov_lock;
- #endif
- 
--#ifndef writeq
-+#if BITS_PER_LONG == 32
- 	/* ensure atomic 64-bit doorbell writes on 32-bit systems. */
- 	spinlock_t		db_lock;
- #endif
-@@ -2110,24 +2110,33 @@ static inline u32 bnxt_tx_avail(struct bnxt *bp, struct bnxt_tx_ring_info *txr)
- 		((txr->tx_prod - txr->tx_cons) & bp->tx_ring_mask);
- }
- 
--#ifndef writeq
--#define writeq(val64, db)			\
--do {						\
--	spin_lock(&bp->db_lock);		\
--	writel((val64) & 0xffffffff, db);	\
--	writel((val64) >> 32, (db) + 4);	\
--	spin_unlock(&bp->db_lock);		\
--} while (0)
-+static inline void bnxt_writeq(u64 val, volatile void __iomem *addr)
-+{
-+#if BITS_PER_LONG == 32
-+	spin_lock(&bp->db_lock);
-+	writel(val & 0xffffffff, addr);
-+	writel(val >> 32, addr + 4);
-+	spin_unlock(&bp->db_lock);
-+#else
-+	writeq(val, addr);
-+#endif
-+}
- 
--#define writeq_relaxed writeq
-+static inline void bnxt_writeq_relaxed(u64 val, volatile void __iomem *addr)
-+{
-+#if BITS_PER_LONG == 32
-+	bnxt_writeq(val, addr);
-+#else
-+	writeq_relaxed(val, addr);
- #endif
-+}
- 
- /* For TX and RX ring doorbells with no ordering guarantee*/
- static inline void bnxt_db_write_relaxed(struct bnxt *bp,
- 					 struct bnxt_db_info *db, u32 idx)
- {
- 	if (bp->flags & BNXT_FLAG_CHIP_P5) {
--		writeq_relaxed(db->db_key64 | idx, db->doorbell);
-+		bnxt_writeq_relaxed(db->db_key64 | idx, db->doorbell);
- 	} else {
- 		u32 db_val = db->db_key32 | idx;
- 
-@@ -2142,7 +2151,7 @@ static inline void bnxt_db_write(struct bnxt *bp, struct bnxt_db_info *db,
- 				 u32 idx)
- {
- 	if (bp->flags & BNXT_FLAG_CHIP_P5) {
--		writeq(db->db_key64 | idx, db->doorbell);
-+		bnxt_writeq(db->db_key64 | idx, db->doorbell);
- 	} else {
- 		u32 db_val = db->db_key32 | idx;
- 
--- 
-2.18.1
-
-
---000000000000a476ac05cae279b0
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-xV4Em+0wQoEIR2kPG6yiZNtUK0tNCaZejYU/Mf/bzdKSwud3pLgHV8ls83y2OU/ha9xgJMLpRswv
-xucFCxMsPmk0yoVmpbr92kIpLm+TomNZsL++LcDRa2ECAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
-AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
-c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
-AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
-TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
-bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
-L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
-BB0wG4EZbWljaGFlbC5jaGFuQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
-HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUz2bMvqtXpXM0u3vAvRkalz60
-CjswDQYJKoZIhvcNAQELBQADggEBAGUgeqqI/q2pkETeLr6oS7nnm1bkeNmtnJ2bnybNO/RdrbPj
-DHVSiDCCrWr6xrc+q6OiZDKm0Ieq6BN+Wfr8h5mCkZMUdJikI85WcQTRk6EEF2lzIiaULmFD7U15
-FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
-1CHkODrS2JGwDQxXKmyF64MhJiOutWHmqoGmLJVz1jnDvClsYtgT4zcNtoqKtjpWDYAefncWDPIQ
-DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
-aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
-EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIBUFYgMfS6+uW3Q7H9ONR4ZtmjtZej36
-nTlx1bMeG84qMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDgz
-MTIyMjg1NVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
-SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQAXGkTExKVnxUtQqKykDFnWtbSua2SARMyCfn3ND7R1sZnq/4jA
-Eh6SjDWmiePEUS/eb6Sxc/Fkoqy1xvwyNjK75XWhVw6fSoHW94QXlLiG0rgx4UkUN4su7UEpeV+u
-91Mz6hXcWm+yFY9cNZEgixWym1MbImFWl3f1zGpbVNA+cn97WKKQjXw0NEVi8gUx/hb4YMAj9ovT
-qz8I+g41KRQUTwY5aNtT2Tdn6BkL/u6mHwmwAlly3aqkSGmVKoea/uog+wvD6lxRgHrBySTqVXPm
-h2XdaULcRr7DfHFeSKjyQQLkobQfw7RaN0z5cOT7edGUKNiz9kJWUbnHSXkjPNQh
---000000000000a476ac05cae279b0--
+>         progs =3D obj->programs;
+>         nr_progs =3D obj->nr_programs;
+>         nr_syms =3D symbols->d_size / sizeof(GElf_Sym);
+> --
+> 2.33.0
+>
