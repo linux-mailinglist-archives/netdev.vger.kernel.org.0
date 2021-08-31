@@ -2,172 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1A0A3FC4E9
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 11:52:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 267453FC4EA
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 11:52:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240603AbhHaJKl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 05:10:41 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:56260 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240609AbhHaJKh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 05:10:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1630400982;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=KqIomsJD8qkvJRmtf6AOcHNJotQV38aV9t/Y65DfWRs=;
-        b=LxeTv/7ttnAXoIUrv1ZolVKo2n7VM5GwGdLLbSyK4qohl1T3uPogKI+XdYYnG/UjWcRKHX
-        BG/Ee/tZDGyg3Wz92TpFWxOW7j1IO2yzUUp7UrxCJkwLPaDqE6un2HANXZRqBSFSbsik5H
-        VjRUYjzyf+h45xCxcuI5Ds88+ti0jcg=
-Received: from mail-yb1-f197.google.com (mail-yb1-f197.google.com
- [209.85.219.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-504-Z2Xc88TuMiWP6jaJYDX00g-1; Tue, 31 Aug 2021 05:09:40 -0400
-X-MC-Unique: Z2Xc88TuMiWP6jaJYDX00g-1
-Received: by mail-yb1-f197.google.com with SMTP id q13-20020a25820d000000b0059a84a55d89so17781339ybk.23
-        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 02:09:40 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KqIomsJD8qkvJRmtf6AOcHNJotQV38aV9t/Y65DfWRs=;
-        b=fPkYQiQEL5r9LdBhIKL6j7htzDfQU7fHq3Fzj3PlF25e1Z/iXbYxvV1PDVau1ZkTAb
-         BJCQc3O301AHHSsgt9NjxjE2GcccXYQdvFUdwjfHwiPJKZFlG3RwpjePX09MJIYmVKRz
-         QFI63MOZ1i7iBM2hQ1yZv0vfHrgojW79fe0ZYRUyjaITHn4OXQxLlwxnQYQ1rlJ3AQLg
-         HkW/EQDFslWLe4QWFRA1++g/kZnWSyhVyOQHteheiZx2X2SCunA8BbCzayvAcOyEcxJO
-         VyeRecZOwr09AGmIbukgYTnUDvIcoGkEGPBFZBe3Mer1X7SpnFhwSOpgQUJCdWtVmRSC
-         cyyQ==
-X-Gm-Message-State: AOAM530mzSRXwzPPZiblAQ9+yjalfO0LAcLpf+l9LVh0Kz5O175MCb5r
-        epj+MWkK6UTu1jz8/nPSj10+YSThge0mVqV4rU96EkV+gs75roncJlcnorr4bLXdt8M4H8nFRs3
-        bp1Ja9NYDnuit+obxHvtd/Q3I7bfbLgSG
-X-Received: by 2002:a25:1d08:: with SMTP id d8mr29534400ybd.377.1630400980466;
-        Tue, 31 Aug 2021 02:09:40 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzoUYVGjsHQ1mAV96NVBWIdFVB3TZpqWc7BWtvr/Mg648rQQ+7P7WYMOAhTFTS/Li+BMqOUSleNc4ReksuZGrg=
-X-Received: by 2002:a25:1d08:: with SMTP id d8mr29534365ybd.377.1630400980209;
- Tue, 31 Aug 2021 02:09:40 -0700 (PDT)
+        id S240609AbhHaJLt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 05:11:49 -0400
+Received: from mail-co1nam11on2075.outbound.protection.outlook.com ([40.107.220.75]:58688
+        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S240548AbhHaJLr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 31 Aug 2021 05:11:47 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oaNrPLpWTIOfW45uXGGH5U2NlvcV0bFJ/1x4yxXM3+j84ZA8MbEnSL8vpNGdNqGVKyE8EXsuLYNW84M2XIxnyjKSJtIdp9Wdgq+yYrFQAUFZS/ZZH+cyXQ2FIqHjrl1R5Xrlcwda2Vmq75jWIQmZpeknZ7izkg/Z4UAZzZ3hsGvT6W2uG5k2AsDEt2cxn+FFcgGVyKD1QS8P72nGvq7FFZ1AhpbykUE3oAkdnSqfRoZa43MIKca64jj8wIobuuK6nXPfxUaaXrtb4QEJurER0axAcl9Ls2afjB5gCiFlkFF2FFg3j4DhgUxNuy9+0qDRizJlmiaxhWjzBzT8EHmueA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JeSN+zn+tlKt0xVnLibu+Dba/L377KxzbQS9AUSJzH4=;
+ b=moRDdI97XvRPKnVmFGaNeVPGp5++HnYC4yFlZaSQe1JZtTHGKoSKPevn9b9tKEs5OepqukOoI98OXX3Q7U1Tt9/UYAnewYhVHht5tJRp4itDs3Sjoiw8DoWElzvJ/uDcXuGHb9ktIWnn/hXEoyZQMxnhuWvUeXNxPWRmGZOsNXZUBHZrgDDfCn3c1Fd3RH2EfPcHC/7o3qvDMKWO8VwApxEC3A8XvSO4yl3xJwzJZZo/WmuPp0JlChTezgWGEUCbcDXaLNS2FqY2S4B9jqdtMpxJETQjba6KgG4xaurXX41ovZhyPQhtGhw/bUWeStWPGdKwXpYTRbeha5ZJ6Uum9g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JeSN+zn+tlKt0xVnLibu+Dba/L377KxzbQS9AUSJzH4=;
+ b=ndoMpwA1P3bIJwCyXpvmebSBzPy73u1DmaWLZ7jX7p+U/DnCVMBFO5coATkI36EGJLoi17338JI3RCrAPqJsTWub+2pbAwci7hWHXtdtuy3+ezWU2dMp1aiRsI/XcN1JgPVe2q0hOt55DsB8m8gkMgdNzUsIgPmwXyjDP3D64TwMrrMrFgPu2d3+PPMfFBg7bfWOeXIcFuBjUxbjC2iigPqN4JU0cjUd2inXGhNgeso+EQEJnabS9PYWzcpvuhmJwagMo5sYmidVeNNaX31U7pLFWf8ckrm77Jpi1/iacQb67Fj2kxpzKMrhhT2spXl+ia0lFLsvUkQ9TZFvO2xp/A==
+Authentication-Results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=nvidia.com;
+Received: from DM4PR12MB5278.namprd12.prod.outlook.com (2603:10b6:5:39e::17)
+ by DM4PR12MB5184.namprd12.prod.outlook.com (2603:10b6:5:397::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4457.23; Tue, 31 Aug
+ 2021 09:10:51 +0000
+Received: from DM4PR12MB5278.namprd12.prod.outlook.com
+ ([fe80::c170:83a0:720d:6287]) by DM4PR12MB5278.namprd12.prod.outlook.com
+ ([fe80::c170:83a0:720d:6287%7]) with mapi id 15.20.4478.017; Tue, 31 Aug 2021
+ 09:10:51 +0000
+Subject: Re: [PATCH iproute2-next 06/17] bridge: vlan: add global
+ mcast_igmp_version option
+To:     Joachim Wiberg <troglobit@gmail.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        netdev@vger.kernel.org
+Cc:     roopa@nvidia.com, dsahern@gmail.com
+References: <20210826130533.149111-1-razor@blackwall.org>
+ <20210826130533.149111-7-razor@blackwall.org> <87pmtuoulz.fsf@gmail.com>
+ <b14e6b19-96d8-71ce-7e7f-3318356ed7cc@nvidia.com>
+From:   Nikolay Aleksandrov <nikolay@nvidia.com>
+Message-ID: <4b9ae5bf-27fa-c6ac-6de2-0c8d0c3e6ab0@nvidia.com>
+Date:   Tue, 31 Aug 2021 12:10:43 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
+In-Reply-To: <b14e6b19-96d8-71ce-7e7f-3318356ed7cc@nvidia.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: ZR0P278CA0061.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:21::12) To DM4PR12MB5278.namprd12.prod.outlook.com
+ (2603:10b6:5:39e::17)
 MIME-Version: 1.0
-References: <20210616085118.1141101-1-omosnace@redhat.com> <CAPcyv4jvR8CT4rYODR5KUHNdiqMwQSwJZ+OkVf61kLT3JfjC_Q@mail.gmail.com>
-In-Reply-To: <CAPcyv4jvR8CT4rYODR5KUHNdiqMwQSwJZ+OkVf61kLT3JfjC_Q@mail.gmail.com>
-From:   Ondrej Mosnacek <omosnace@redhat.com>
-Date:   Tue, 31 Aug 2021 11:09:29 +0200
-Message-ID: <CAFqZXNtuH0329Xvcb415Kar-=o6wwrkFuiP8BZ_2OQhHLqkkAg@mail.gmail.com>
-Subject: Re: [PATCH v3] lockdown,selinux: fix wrong subject in some SELinux
- lockdown checks
-To:     Dan Williams <dan.j.williams@intel.com>
-Cc:     Linux Security Module list 
-        <linux-security-module@vger.kernel.org>,
-        James Morris <jmorris@namei.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        Paul Moore <paul@paul-moore.com>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        SElinux list <selinux@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        X86 ML <x86@kernel.org>,
-        Linux ACPI <linux-acpi@vger.kernel.org>,
-        linux-cxl@vger.kernel.org, linux-efi <linux-efi@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Linux PCI <linux-pci@vger.kernel.org>,
-        Linux-pm mailing list <linux-pm@vger.kernel.org>,
-        linux-serial@vger.kernel.org, bpf <bpf@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Kexec Mailing List <kexec@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Casey Schaufler <casey@schaufler-ca.com>
-Content-Type: text/plain; charset="UTF-8"
+Received: from [10.21.240.175] (213.179.129.39) by ZR0P278CA0061.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:21::12) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4457.19 via Frontend Transport; Tue, 31 Aug 2021 09:10:49 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: be485fef-4ece-4522-255f-08d96c5f3a9d
+X-MS-TrafficTypeDiagnostic: DM4PR12MB5184:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DM4PR12MB5184F3F4BD67E0CF6B9D00E0DFCC9@DM4PR12MB5184.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: IEvoCvVeOgjP2jMzBWqDrn3Sm09Mtgtu6PVensvQrKliX3nOqVsEAMFKrjwrATT4WAh+gvMs5pb//bODtuN7r/bfbG/wowIwL8Mmh3jioUdiCX7pbR7JuVIfBmrSADHsIrLiAEw6j363b8RPTAdY+bKzhzOgyFFS0eVLOhkgjCgaVc5zstuC71RZiyKIjAVxV4ezyPKa4xumZL3G/qPa8bzSOmGJ0XW+Ed5NimZVYQoGThD1JDonDoHEuXGXqumX50l4+OOn7U5fFKD8vxNF2CoCpRXwZuRMg3a2ce0mkpLRllj0ygx2IzD3cK/qce5i7cEQJ5FYETxU2qZME9KRtzyvTSsyp8kV0P4p7ga0h4UnZHusdrSttEeg2uBhHWL6opReRw03NgYpk8VJ02+BinNxfILw6iaLnOVi04NLZ2QWDHEb1gRZLtn857pV6PKhiWDGrWOdAiT5To7s6z4JX6WkgSO+lyiYto0gyNMokvFPtHGx1HwQFeVt68u4bSmTXEyeVVdXauFjfr66lEjPasllkRRqqoHjdygAqUC/QF3dOHb2z66bmX1on7UmnKkEw4ySIlCc6CCPKHoXs4EKYreImKBSSNd3bjdAEqxN8tUaGzeqkwCe01wtDX28ZHV4vCkt78acFIPfWFQlQT3y/xuAUij/adTW0E+94ERAhDEo6ZaACi/lONTgnQSjnjsrBc4gG4PYE4sLzS4uL+Ybnk4klx0Oqa//mBOUQgj20/lT1ZHlRZ68sQJRGxEjorfaKDNn7EK8JdtenJKN53AP7+dLr/sYfbaLkL6eXfIvexP9yHbEL/Frtj3PfXgAO4x9
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5278.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(136003)(366004)(346002)(396003)(376002)(86362001)(956004)(2906002)(316002)(83380400001)(66946007)(36756003)(31686004)(66556008)(966005)(5660300002)(2616005)(4326008)(16576012)(6486002)(38100700002)(53546011)(478600001)(8676002)(31696002)(6666004)(26005)(110136005)(186003)(66476007)(8936002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ZEh6MEwyM3ZxWk5DWGxXZjVzYkFKVGREMXZFc0NGaEJ1aDB1ZVE1aUdQN3FX?=
+ =?utf-8?B?aUpja1EzVkdGdTFvRThmbEpOcnorWWNhL0lnZDNuNlY3Uzk5QnVjMUZ1OW1s?=
+ =?utf-8?B?RUNIK2dFc2NibWJ2SkpBMjV5bS9VTGxIUFY0SlZLc1AxcGo4eGhQUWtzYUls?=
+ =?utf-8?B?S3licFljUmVEckJDRUJVeUt6WVVCc093OHNQTW5KU3NqVUQ2bHg2cTJQOWgw?=
+ =?utf-8?B?bkc2ZSs3dEMrZThQbHF2Tkloa2owcnBteDlsK20ydGtJeTl6ZkcrblRTVzRG?=
+ =?utf-8?B?NDNCS1JmZ2I5Q3NydHdIUk45bUJpbXBNZEpUNlhFdGMzS2EwRHBsRlgvdkRM?=
+ =?utf-8?B?ekRyNzNvN2JXeWk3QnY0N3M1dHdyVm82U2ZxRFpYdXUxcVVweVcvd0NLdWlS?=
+ =?utf-8?B?U080SCtVSzJMUDczWVhQZENPajE0UXVIanNKOTA0V1FGazArVERuajdlZjh6?=
+ =?utf-8?B?dVg5d0VNdXRQRDdDQ2dDZEdqTVB1SzVrOUQ3cmxONnFhSkZ0VEEwNnlidTJu?=
+ =?utf-8?B?UFNIZ3JRdk10eXRldDhETTNrUWM2SDVyaXFyeUMxMUxCdTB4dUlsbWFaVWRv?=
+ =?utf-8?B?VW1HbG5MM0xsRnlGTHpUVFhveXVjUStvOWdETDJpZFNJOTJxRGMwdkdVdkli?=
+ =?utf-8?B?aldjODhMY1QrNXNHd2dMV2tiazh2OFZkN3FXbzZEUnptSVkxbEdyeklMVXFt?=
+ =?utf-8?B?SFdpQzFTRnZlVUZ5M09LMkFJblZvODZXbHdOZ3B1NkZBS01Kejhkc3VZUm5h?=
+ =?utf-8?B?WEoxMzVydWdacXMrZGg0VEtVT2NwalB0YzQ0V3dubHdrcEJ1MldzeFpyRXVM?=
+ =?utf-8?B?Y3c4NS9Ka0dZVTM0UTF3WDBMRmo3MytHRzdOYTNDVG52WmZ4OWVxMDVxVkRq?=
+ =?utf-8?B?SS9laVA1UlFWK01YbTB4eEg3RWQwM2JTY1o5ZlVjbGVWdTYvSXJ2cFozUVE0?=
+ =?utf-8?B?U3JZOUFBcGpVL016c3FSemZ1UGhab1ZoTmZmT3R0U0xPY054MDJla2YvQ2Vo?=
+ =?utf-8?B?bXRkTHRGTmdIRGVFZ0s4YnhUUlpIbFE5R3dsTnlGaTBPRFZBeTBpOW9oQ0R0?=
+ =?utf-8?B?cnJYS003OEtjR3JKYTMxc0Z0dlhDc3BKMWFMQk5Vc1JmdEhjaTNmRjZYMUkz?=
+ =?utf-8?B?S3V3RmNDYTVoVXlyVkE1V3lKMUE1Qis3RXc4dVdTMGpnc0dlUk5ZakRjbWYr?=
+ =?utf-8?B?YkxCcEt4dXJINExmZzBuK01OTGVPWnlvWUpySHBqVG9pWmkvdnRtUWNPZWs2?=
+ =?utf-8?B?dmNlMkRPV0hnZjQ3VEtOZ1hSWmhzL2ZtRlBCaUkzRHExNXF2a2tZQlFqUlhx?=
+ =?utf-8?B?bGlwZU96d0lJbU9yMWxhbDFyd0FFZVN0alZvZjlJazZ5TUl6bkhoZk5ubk8x?=
+ =?utf-8?B?Smp3cGd1QnBVYzlMd1NnYWJuSkxKdHRTelFVdE4zMVNwc1pGMjB2Wi92dUdP?=
+ =?utf-8?B?NU1GUndOSXR0QkoreGNEemRKbGJ5M3pJM0dLM3Q5clltVXZyUXloL09EbkdJ?=
+ =?utf-8?B?ZjJZbm1IMktnejVQV3VnWTdmSk1FQWgrOVkraE9zb0dVMUZxcmxsb0xZb3Rq?=
+ =?utf-8?B?dnFrLzZoUkp0MTlrdE1jTDNiNStuaDdhcWNxQzY1YVRkNWcwZDY5dUEweXhT?=
+ =?utf-8?B?Y3k3ajgwWExDMnNNaVhFd1ZjOXE0aENxRGN4VzZEMmJFaUNFektwKy9OTE5Y?=
+ =?utf-8?B?enZXM3JaQjU3Q1krZDFhVEJMcG9zTWhYSjZTRW13V2lHTVpjY0pyZ0ZlSnFk?=
+ =?utf-8?Q?palU2UgfUXsZJAMHGY5FLy9SqHdM0+eHnNEOGCD?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: be485fef-4ece-4522-255f-08d96c5f3a9d
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5278.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Aug 2021 09:10:51.1681
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: NHjfxNISXJl2GIicXHec7QZMP3361R+1ipgs9CJFtAGo0XNhr6iBwC9l+6QugR3H28ielprevrs2pyT1/mIqVw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5184
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jun 19, 2021 at 12:18 AM Dan Williams <dan.j.williams@intel.com> wrote:
-> On Wed, Jun 16, 2021 at 1:51 AM Ondrej Mosnacek <omosnace@redhat.com> wrote:
-> >
-> > Commit 59438b46471a ("security,lockdown,selinux: implement SELinux
-> > lockdown") added an implementation of the locked_down LSM hook to
-> > SELinux, with the aim to restrict which domains are allowed to perform
-> > operations that would breach lockdown.
-> >
-> > However, in several places the security_locked_down() hook is called in
-> > situations where the current task isn't doing any action that would
-> > directly breach lockdown, leading to SELinux checks that are basically
-> > bogus.
-> >
-> > To fix this, add an explicit struct cred pointer argument to
-> > security_lockdown() and define NULL as a special value to pass instead
-> > of current_cred() in such situations. LSMs that take the subject
-> > credentials into account can then fall back to some default or ignore
-> > such calls altogether. In the SELinux lockdown hook implementation, use
-> > SECINITSID_KERNEL in case the cred argument is NULL.
-> >
-> > Most of the callers are updated to pass current_cred() as the cred
-> > pointer, thus maintaining the same behavior. The following callers are
-> > modified to pass NULL as the cred pointer instead:
-> > 1. arch/powerpc/xmon/xmon.c
-> >      Seems to be some interactive debugging facility. It appears that
-> >      the lockdown hook is called from interrupt context here, so it
-> >      should be more appropriate to request a global lockdown decision.
-> > 2. fs/tracefs/inode.c:tracefs_create_file()
-> >      Here the call is used to prevent creating new tracefs entries when
-> >      the kernel is locked down. Assumes that locking down is one-way -
-> >      i.e. if the hook returns non-zero once, it will never return zero
-> >      again, thus no point in creating these files. Also, the hook is
-> >      often called by a module's init function when it is loaded by
-> >      userspace, where it doesn't make much sense to do a check against
-> >      the current task's creds, since the task itself doesn't actually
-> >      use the tracing functionality (i.e. doesn't breach lockdown), just
-> >      indirectly makes some new tracepoints available to whoever is
-> >      authorized to use them.
-> > 3. net/xfrm/xfrm_user.c:copy_to_user_*()
-> >      Here a cryptographic secret is redacted based on the value returned
-> >      from the hook. There are two possible actions that may lead here:
-> >      a) A netlink message XFRM_MSG_GETSA with NLM_F_DUMP set - here the
-> >         task context is relevant, since the dumped data is sent back to
-> >         the current task.
-> >      b) When adding/deleting/updating an SA via XFRM_MSG_xxxSA, the
-> >         dumped SA is broadcasted to tasks subscribed to XFRM events -
-> >         here the current task context is not relevant as it doesn't
-> >         represent the tasks that could potentially see the secret.
-> >      It doesn't seem worth it to try to keep using the current task's
-> >      context in the a) case, since the eventual data leak can be
-> >      circumvented anyway via b), plus there is no way for the task to
-> >      indicate that it doesn't care about the actual key value, so the
-> >      check could generate a lot of "false alert" denials with SELinux.
-> >      Thus, let's pass NULL instead of current_cred() here faute de
-> >      mieux.
-> >
-> > Improvements-suggested-by: Casey Schaufler <casey@schaufler-ca.com>
-> > Improvements-suggested-by: Paul Moore <paul@paul-moore.com>
-> > Fixes: 59438b46471a ("security,lockdown,selinux: implement SELinux lockdown")
-> > Signed-off-by: Ondrej Mosnacek <omosnace@redhat.com>
-> [..]
-> > diff --git a/drivers/cxl/mem.c b/drivers/cxl/mem.c
-> > index 2acc6173da36..c1747b6555c7 100644
-> > --- a/drivers/cxl/mem.c
-> > +++ b/drivers/cxl/mem.c
-> > @@ -568,7 +568,7 @@ static bool cxl_mem_raw_command_allowed(u16 opcode)
-> >         if (!IS_ENABLED(CONFIG_CXL_MEM_RAW_COMMANDS))
-> >                 return false;
-> >
-> > -       if (security_locked_down(LOCKDOWN_NONE))
-> > +       if (security_locked_down(current_cred(), LOCKDOWN_NONE))
->
-> Acked-by: Dan Williams <dan.j.williams@intel.com>
->
-> ...however that usage looks wrong. The expectation is that if kernel
-> integrity protections are enabled then raw command access should be
-> disabled. So I think that should be equivalent to LOCKDOWN_PCI_ACCESS
-> in terms of the command capabilities to filter.
+On 31/08/2021 12:04, Nikolay Aleksandrov wrote:
+> On 31/08/2021 12:02, Joachim Wiberg wrote:
+>>
+>> Hi Nik,
+>>
+>> awesome to see this patchset! :-)  I've begun setting things up here
+>> for testing.  Just have a question about this:
+>>
+>> On Thu, Aug 26, 2021 at 16:05, Nikolay Aleksandrov <razor@blackwall.org> wrote:
+>>> Add control and dump support for the global mcast_igmp_version option
+>>> which controls the IGMP version on the vlan (default 2).
+>>
+>> Why is the default IGMPv2?  Since we support IGMPv3, surely that should
+>> be the default, with fallback to IGMPv2 when we detect end devices that
+>> don't support v3?
+>>
+>> The snooping RFC refers back to the IGMPv3 RFC
+>>
+>>   https://datatracker.ietf.org/doc/html/rfc3376#section-7
+>>
+>> I noticed the default for MLD is also set to the older version v1, and
+>> I'm guessing there's a reasoning behind both that I haven't yet grasped.
+>>
+>> Best regards
+>>  /Joachim
+>>
+> 
+> Hi,
+> The reason is to be consistent with the bridge config. It already has IGMPv2 as default.
+> I added IGMPv3 support much later and we couldn't change the default.
+> I'd prefer not to surprise users and have different behaviour when they switch snooping
+> from bridge-wide to per-vlan. It is a config option after all, distributions can choose
+> to change their default when they create devices. :)
+> 
+> Cheers,
+>  Nik
+> 
 
-Yes, the LOCKDOWN_NONE seems wrong here... but it's a pre-existing bug
-and I didn't want to go down yet another rabbit hole trying to fix it.
-I'll look at this again once this patch is settled - it may indeed be
-as simple as replacing LOCKDOWN_NONE with LOCKDOWN_PCI_ACCESS.
-
---
-Ondrej Mosnacek
-Software Engineer, Linux Security - SELinux kernel
-Red Hat, Inc.
+Forgot to mention - the RFC fallback and compatibility logic is not implemented yet, so if
+we set v3 we'll be stuck with it even if there are v2 participants. In fact it's a bit of
+a mess when mixing v2 and v3 right now, their interop needs more work.
 
