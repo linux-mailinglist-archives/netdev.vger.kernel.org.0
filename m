@@ -2,120 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C58343FCD3C
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 21:20:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A65313FCD45
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 21:20:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234400AbhHaSxu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 14:53:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42332 "EHLO
+        id S234316AbhHaS5T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 14:57:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229946AbhHaSxt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 14:53:49 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45830C061575
-        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 11:52:54 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id s10so854399lfr.11
-        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 11:52:54 -0700 (PDT)
+        with ESMTP id S231514AbhHaS5T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 14:57:19 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B628DC061575
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 11:56:23 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id q3so12950plx.4
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 11:56:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:mime-version
          :content-transfer-encoding;
-        bh=vgf472b2g1DolTkwcFzFHbrCtJ8S8RAubSBTuQ4ufTc=;
-        b=BZvZRD26QqpnFRWqwKtezgZIuqV602Iv7JexZlFu/yiZnvEwPGXM3pqx6JgcurJtxW
-         TuVBTkStCjexGRclFU9Y7eUApjHgy7swnJScAbOkFl4WMKHqnzqp0gV5tOeBWkqNow+A
-         DALJSZwa4Fmja+aHH9grEMkcRR5dVcLwosoQ+e6skZcyEisiGQhfWR/r/wblSRQcyFAr
-         NvdcrcFp9qt5yYu+NUKeBMxdXbKWfrSUrbiYIEVMHJB9NQxZiAMkbS09oifpeNM+vKhJ
-         ptjUm512JVQbVsSPkaz6GaEdCTfgen8+LOQEmcmAufBr1w5Hh7etdGv/AbQr71pGx4Fj
-         xGDQ==
+        bh=neBaH7/0larvqiBeio9tFuFjX9Lg73dBxL1DNUSIdj0=;
+        b=LKSJOC7/q1kMFKZTO5QUL69mnMZHSsOg1eBbilmDesXXfiIyyHrzyaYOKzng0xZOEk
+         TUiVavtxq13WQgbwZDrhvRU/qeZeVWexpiRlDiYw7D++cVviE0vaRSFNkqIIHrEEDhMi
+         nHaP6tfBEQQaVcCfwkLgc2aY6qk4rEyUK5ciyttLGo/N3npNMplW+7wA2kEdM3asNmro
+         8fDDlNIpBNnPdUMqQuniIuNDYN6Rt6696P0emQx6qCn84XGdKstRa8QMvMiOfpq9z0x0
+         MPh0in7QX9wq3gCa289F6h1vLuvu3mCDCQqmLaUqTjckfdAjbo1o7Echjai6fcMsqYhf
+         tZ/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
          :content-transfer-encoding;
-        bh=vgf472b2g1DolTkwcFzFHbrCtJ8S8RAubSBTuQ4ufTc=;
-        b=qHdCA7Pqy29bSPFbaB5oHK7e0yfj3Pm6Iv0hEFlr+tY3FLFx8B+OKwqwQOvZ8rmz8Q
-         gYJjeut2ThxtgbLjz71vdR3AiLO7V/Z2TFDQnBeB8/GJA0+U2mw/5wQtX6nbKGEb/Kh3
-         wAmkqPnmAEdxH55R45Dm1/R/zgBJwrtBXvWM4WqW/WwAIGeLNU4KQu4LBSpcbrZkHNYv
-         /lhCUx5jn3/eYeNFCeCYIqVAFzgJJD1T2at1sns8S4TrfIswvv3/zF1aiZxaPpu/tzK9
-         rDRdWiB35xM5RJ0RSdZQTs16xWOSIN/50Y2uHYqS3k2DzkFBYFscY/d4kzJ6Ejf0j5f+
-         4Qcg==
-X-Gm-Message-State: AOAM531WAQ4MtCU2yYAcNDRJzYeTVyFxHUYuoNyRq9+qLPXQiVgjY639
-        fstcyRJFiGPsWqF6y0Dp4gYictJY1vWNDA==
-X-Google-Smtp-Source: ABdhPJxOVa+EEDEiCquyhSO8Lp76YuT31DRqTn0Mu8tfJNUgPXgKL9YoJT03NVpfhTWotc5mgXcERA==
-X-Received: by 2002:ac2:4294:: with SMTP id m20mr22877171lfh.6.1630435972587;
-        Tue, 31 Aug 2021 11:52:52 -0700 (PDT)
-Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
-        by smtp.gmail.com with ESMTPSA id b2sm1799739lfi.283.2021.08.31.11.52.51
+        bh=neBaH7/0larvqiBeio9tFuFjX9Lg73dBxL1DNUSIdj0=;
+        b=GQiNMgnbXfePIeC9hT236Ixs+TmaD+7xNL59x7bnfOTwAjjZguYmfVSTrRWcKbAvdx
+         z2g9IJy6TsbV4wKcnuD/PoDRYrVCwVHCybriw0L1R3upioY68bCuwxtCILiyTq+OAIZ9
+         81MmC+Ati1gsmKOIzsIaTPa6VDpDk+zGm8oKusScAThdHWcPfWdLuwXmJlDnwF20UYP7
+         bI0Cu3OTuAcicIz7I74xrNeLA4k5zkWTZi6mqg6vYVRQF32bHOr0jry5j1Y5U1O6r1Ms
+         PGWir4BVGCq7TYJFvI3zI72NFNq/6u9zOVhN0Ce6STh5Xaqk4JyUwXKaCalgZyCmYugW
+         9yLg==
+X-Gm-Message-State: AOAM532kuBfn8EjYvhzdXLenTQAmQUyuNR0jXKPcShsBScW6hFziws47
+        tM4zNAk3utjIsVHOieWF0CWI6C2GfVSviQ==
+X-Google-Smtp-Source: ABdhPJwj9CpHkj7646R0/9egBD6s9iRuc1aNVyavaYlhUwWb9IMjXZCrQyXb4cwMYGQQd5rFXDt8jw==
+X-Received: by 2002:a17:90b:390d:: with SMTP id ob13mr7118401pjb.129.1630436183172;
+        Tue, 31 Aug 2021 11:56:23 -0700 (PDT)
+Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
+        by smtp.gmail.com with ESMTPSA id q7sm3564320pja.11.2021.08.31.11.56.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Aug 2021 11:52:52 -0700 (PDT)
-From:   Linus Walleij <linus.walleij@linaro.org>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Mauri Sandberg <sandberg@mailfence.com>
-Subject: [PATCH net v2] net: dsa: tag_rtl4_a: Fix egress tags
-Date:   Tue, 31 Aug 2021 20:50:50 +0200
-Message-Id: <20210831185050.435767-1-linus.walleij@linaro.org>
-X-Mailer: git-send-email 2.31.1
+        Tue, 31 Aug 2021 11:56:22 -0700 (PDT)
+Date:   Tue, 31 Aug 2021 11:56:19 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org
+Subject: [iproute2] Time to retire ifcfg script?
+Message-ID: <20210831115619.294cf192@hermes.local>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I noticed that only port 0 worked on the RTL8366RB since we
-started to use custom tags.
+The ifcfg script in iproute2 is quite limited (no IPv6) and
+doesn't really fit into any of the management frameworks.
 
-It turns out that the format of egress custom tags is actually
-different from ingress custom tags. While the lower bits just
-contain the port number in ingress tags, egress tags need to
-indicate destination port by setting the bit for the
-corresponding port.
-
-It was working on port 0 because port 0 added 0x00 as port
-number in the lower bits, and if you do this the packet appears
-at all ports, including the intended port. Ooops.
-
-Fix this and all ports work again. Use the define for shifting
-the "type A" into place while we're at it.
-
-Tested on the D-Link DIR-685 by sending traffic to each of
-the ports in turn. It works.
-
-Fixes: 86dd9868b878 ("net: dsa: tag_rtl4_a: Support also egress tags")
-Cc: DENG Qingfang <dqfext@gmail.com>
-Cc: Mauri Sandberg <sandberg@mailfence.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
-ChangeLog v1->v2:
-- Drop the removal of bit 9 (2 << 8) so as to not stir up unwanted
-  side effects.
----
- net/dsa/tag_rtl4_a.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/net/dsa/tag_rtl4_a.c b/net/dsa/tag_rtl4_a.c
-index 57c46b4ab2b3..e34b80fa52e1 100644
---- a/net/dsa/tag_rtl4_a.c
-+++ b/net/dsa/tag_rtl4_a.c
-@@ -54,9 +54,10 @@ static struct sk_buff *rtl4a_tag_xmit(struct sk_buff *skb,
- 	p = (__be16 *)tag;
- 	*p = htons(RTL4_A_ETHERTYPE);
- 
--	out = (RTL4_A_PROTOCOL_RTL8366RB << 12) | (2 << 8);
--	/* The lower bits is the port number */
--	out |= (u8)dp->index;
-+	out = (RTL4_A_PROTOCOL_RTL8366RB << RTL4_A_PROTOCOL_SHIFT) | (2 << 8);
-+	/* The lower bits indicate the port number */
-+	out |= BIT(dp->index);
-+
- 	p = (__be16 *)(tag + 2);
- 	*p = htons(out);
- 
--- 
-2.31.1
-
+At this point, it looks like a dusty old script that needs
+to be retired.
