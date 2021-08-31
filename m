@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A41DD3FC734
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 14:29:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2E0A3FC737
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 14:29:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232209AbhHaMTH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 08:19:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33854 "EHLO
+        id S237531AbhHaMUH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 08:20:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229652AbhHaMTG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 08:19:06 -0400
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56C9EC061575
-        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 05:18:11 -0700 (PDT)
-Received: by mail-qt1-x82b.google.com with SMTP id l24so14378972qtj.4
-        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 05:18:11 -0700 (PDT)
+        with ESMTP id S233251AbhHaMUE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 08:20:04 -0400
+Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D1ADC061575
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 05:19:09 -0700 (PDT)
+Received: by mail-qv1-xf2c.google.com with SMTP id a5so10246082qvq.0
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 05:19:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
         h=from:subject:to:cc:message-id:date:user-agent:mime-version
          :content-language:content-transfer-encoding;
         bh=Tu4+uxp4XyX6aEhdHL/PmBEnSH2qrVBxKdrE8vdWq/o=;
-        b=xK+DfoI9N93Yh6XrQT8RzbaSazNDgeIEY2V59Sm0StmIQ6wo4l+OfOJtAdCjXV+uCa
-         kDqe3tmZi/EeyD9ZAvEhb0OUAGRe6jQkD79LsyqV+ZBnHojErQckiKe2ztJvLSLTA/aE
-         MufAaQIR3Fb5UggnHfIyWEGqDrQ/vQbO6lGNIlDy6LN7LG6RdlkRQfdt0ImO41W3kcpT
-         M4IjCsWN1kBVyrn/q/NswcIJUX9HVbgTYyWut6J/8DPJrRJ8GJCqbqpQnLEWqiLZ8SoL
-         Uoi7FvyMlJtbvN8PI9CxQIgb1jkVxBQngEeu1aJHbmijZZ+i9NUJVyYQ4Ob8L0SC1gyO
-         V4+Q==
+        b=dy8HB4lzJSL52K/wsljPKtLha6ge0BpgmR9KcByNe0gN9jMRWNfopow7HgKIYKdqFt
+         iCDyMJWv4CSdJPEI3na5JnWZ733ZKtN2B9KF6hN/UXEbCa9YkXYlciDSZEbMtda0Bojs
+         hzjqmURkWWZ1etGCombRRoGT1cb3y2CefKHtr4dGaiN9o0aEnF8w8ueO8HflKxMzwT7z
+         YY/4Z9ktssn5m4q2WFU1F1MSGlkC8einyb5qEo6/gmws6gqFOe+BUt5NBZHB3sVxbGbM
+         Bgz4UO0nxlrVFP814kpaEeJ/50W4eIvJqvTtyCkIFjsOnOuYJnh0yOrQzRRNBXE2h7Ks
+         wsew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:subject:to:cc:message-id:date:user-agent
          :mime-version:content-language:content-transfer-encoding;
         bh=Tu4+uxp4XyX6aEhdHL/PmBEnSH2qrVBxKdrE8vdWq/o=;
-        b=fmKw+ZDeRBt0oLUSosOJGxZPrwMf+X9QAe8z7gehVroLXkEPsRTp+zldeSe79t3W5s
-         9cQSCpQktexvSHvc0gx92nslcowRB0O8SrwZMqq984wGHymoGmWn0UT0lscOJ6x0Bi5S
-         oBySrOQCoHmRSRfojZnVe8FzGhPR23h/p+aGbclhh1NWoPBw6h4AJoRMZg18kGAi0QXI
-         7ZDCV6VnPMrXMc15tpsexmLFaJqNO2LHrsqjFtSCKoxsdrFafHHn0RbnRcNtHfSUR6L8
-         LCXQnRDBuBR9L2Z9xSSFRg+ey0CpCZ1LHLK4729gmc+1WuIwQcYZfeAIgYUgjKs0dpr9
-         ev/w==
-X-Gm-Message-State: AOAM5319X4TCYDghHBmoW/ChvCrO124z0QMEALv4mLlKWRNl/7WjaO/O
-        nLaEC2yr2k5qHzafugoSK/GyVw==
-X-Google-Smtp-Source: ABdhPJxr3llu+9b2eKzBDY/xfPMRJ0ZbGzZ7C6K2RqOfFd67Bnw2BlSLl/LjjUfJdI2KBswVm1iv9g==
-X-Received: by 2002:a05:622a:1908:: with SMTP id w8mr2407784qtc.269.1630412290585;
-        Tue, 31 Aug 2021 05:18:10 -0700 (PDT)
+        b=TAkxDPzLO8aKOu9i2HFK9SFyaz9rKXC6z8I8QajuaEBhITfayzou77rV0tRUwyythC
+         e86gGyaIn1JlNyjEkTwhfARsgHEsFDnQ7JzI/0aHb+o2BeobacDmRuKSaXQu1LWP3l7S
+         oq15qvRzGW7lAdqx9ymPP/u7o45wk72wNCQa/XaxtKDvMPLwY70Zcfl1jErZFuqwXbMq
+         yyMlVM/+0ZQHouwtTjYd7JGOT67UlP4JVZJtPEBxce+hCZ9ovLeU3Cpvp82G9J2eUWEY
+         ZC88QM3M8W1xpN5a3IDH881sc719ONa3tyazBUfAyWCGkjuoULq6nX4VgRHKlcpoSTA+
+         THOQ==
+X-Gm-Message-State: AOAM530rlTjdI83GH+urv7aTJHu2FnYzmh5HhcfUy6tzpEkAfpj6Onxl
+        wJ/BDnMgbTiTmwApFjCPnq4SvA==
+X-Google-Smtp-Source: ABdhPJwkgwmWfLtqZzAkBzK+oIstAvzkmI9KLmkiZ+WpWW303JdtMGdUZLWacSUVEt7A6h7gzc81cQ==
+X-Received: by 2002:a0c:f382:: with SMTP id i2mr28575024qvk.43.1630412348785;
+        Tue, 31 Aug 2021 05:19:08 -0700 (PDT)
 Received: from [192.168.1.79] (bras-base-kntaon1617w-grc-28-184-148-47-47.dsl.bell.ca. [184.148.47.47])
-        by smtp.googlemail.com with ESMTPSA id p1sm13822151qkh.115.2021.08.31.05.18.09
+        by smtp.googlemail.com with ESMTPSA id p12sm9883818qtw.54.2021.08.31.05.19.08
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 31 Aug 2021 05:18:10 -0700 (PDT)
+        Tue, 31 Aug 2021 05:19:08 -0700 (PDT)
 From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Subject: Netdevconf 0x15 slides and papers up
+Subject: Netdevconf 0x15 videos, slides and papers up
 To:     people <people@netdevconf.org>
 Cc:     lwn@lwn.net, "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         netfilter-devel@vger.kernel.org,
         linux-wireless <linux-wireless@vger.kernel.org>,
         lartc@vger.kernel.org
-Message-ID: <12a6899a-3d65-86c9-8610-c1b171d45cb6@mojatatu.com>
-Date:   Tue, 31 Aug 2021 08:18:09 -0400
+Message-ID: <6ee8f309-d8c6-1938-ad7d-477949a59d3c@mojatatu.com>
+Date:   Tue, 31 Aug 2021 08:19:07 -0400
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.13.0
 MIME-Version: 1.0
