@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 294EB3FC619
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 13:33:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14D883FC5FA
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 13:33:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241101AbhHaKjv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 06:39:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39072 "EHLO
+        id S241161AbhHaKie (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 06:38:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241110AbhHaKi3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 06:38:29 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F61FC0613A3
-        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 03:37:15 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id x19so7601929pfu.4
-        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 03:37:15 -0700 (PDT)
+        with ESMTP id S241089AbhHaKib (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 06:38:31 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D5FAC06129E
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 03:37:19 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id c6so1239165pjv.1
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 03:37:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bytedance-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=CkhRtVDUgb41zlq5OfgVAHJFRMwL0PptQO/kVg6fccA=;
-        b=wb1QmOQoMFVShBMn9y6KTytH5q1BZ0H1hJ3YO5uXgTFjLoGaoSepJJ5OlbhccHu/AJ
-         wAiGO67xMVtU0t2LrJWcMBK/NhTSX6ZkR3DOqmyntbAg6jf+Cr1K9Cw8Xhb1KbRfFq5f
-         0PiM2QpjLxqt7Y8TQAgsTNp6GYrUDvE9Lh/oajmuWt89WT4dDtxIROjBFBxpqguUKBU7
-         LLMz+DXMsZEm4Eg593FHxtTTvCsA6fIWSzAN4+6DPx7X3FPKVNWqVAX/Kck7QYFDzzcC
-         d2NfPV00YlGSbPc1qoUeYTZUD6zpXTRPBo7PsZ9aFWAnnS/G89GxBIlH9Z/mgTPMxFx/
-         rbnA==
+        bh=bOb5vmojDqQCbnIcWiSlBRwm7/pGzlrCLVRi/6lo5DU=;
+        b=IyT/NoploiLL1m73R8JnOX8d0hJVoSoHJLHHsR0hVN4P3tyO//LrM1hHo9MZ9I7dJm
+         tbYpBKj4x1li4TYGN1YxbeFtkIngXwdO5YUG0b0t/Ly/YLJV55OII0nScsA9ToHRAER6
+         jzCZdTL7N+kRIr1SSlMfn5zmQWZsKKENdbS4gC6iZ3LOfjt6+T5HwZe2PN0PEBUoDMSK
+         BEh4YBpcIWrqSSFEOSHzOzRlYEuzu4eEh+nXX7FGJRE1xLCkS5isJSdLfXKOJpC+JCPY
+         8LTEwKM15Y1SJh4NtNOZ8eD9nQ3tvkn0ZhHqzIExgXiyEhr/mkdIU47uFDSf0kk1uFD+
+         nIUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=CkhRtVDUgb41zlq5OfgVAHJFRMwL0PptQO/kVg6fccA=;
-        b=cdBDqB7M6lJ1MmrhvASzDv7TnCXG3uZyi6D4HQYcSBr6VPNwsAR0D0Fd//pj0uIrJo
-         0BrbRAtFWStpsoA0+yLVdlrXvpdhTbrPrOpXIPcIuaHPotuiz4Gtp3GUAv8s3y28vy1C
-         zXEhzjS5BUosB+geTXfglF1eit1UsVzGw6May/U3fDgDh3v0exWJCasizJWCHEIuyXo7
-         9MbQC1hejgtcJ7fT/q/RJ2ZIlmMrGA4kFunleqsGGj598nIntuXvJOWJD6IQLuhBWno2
-         JkTdPlSw/T/WFU6VmNglWYBNP9Rs0HFkAHIT2df0Ij3OtUjCUuScgq0D9RoyG+NW30tj
-         N3vw==
-X-Gm-Message-State: AOAM53196hpkydVa5WF0bigWrO8tjHnxU5ixJAzrVnSsC+RitDkPD5U5
-        N5qwoOPs1MtTFcRvKhBpci7X
-X-Google-Smtp-Source: ABdhPJzBeHb26ioOoBceC1KZUNqQKw0qJ8cn0b2Nhenwq0dSjkYw4fqu/cKwDwROR4HestxrtqNmDQ==
-X-Received: by 2002:aa7:999c:0:b0:3f2:8100:79c2 with SMTP id k28-20020aa7999c000000b003f2810079c2mr22685875pfh.80.1630406235060;
-        Tue, 31 Aug 2021 03:37:15 -0700 (PDT)
+        bh=bOb5vmojDqQCbnIcWiSlBRwm7/pGzlrCLVRi/6lo5DU=;
+        b=HCy/7PP3BmufqJ1joW8yeCwAgh4RwqaedzvgmJqzSVs2WJSDSSIIpY0RX3CzH7h7Lo
+         dKcIdJzxS04DKh4gsFGPyxNBgir4YAezrvZ5bz4cR17NCg5gz3/0SptWFb8P58eQSp+t
+         ylGozBOHCmucBfmW2DyuajJX2fiujlkx6NBdxsqvrFZxTJBPCusXQQ9kOMBQ6OLxE3Gb
+         6Fg5/8iha1H37ARFSZy5VPmwUwreF9SsuZ53jSfTiUWP8KGkUoAflTZaXAp3KX+hN0YF
+         9IMQFZwAm0+ei5Q9E60mQtL0K+nK143ETixX6SG2L1x01mhNhdy6zsmM2C5Ly0wZJwvy
+         A5jw==
+X-Gm-Message-State: AOAM532dCgFaRTWaF5rjluYeh40kmHl5z1ktdDtJ5RDF8JKJa6ARhLS6
+        iEpmE1tGrLb3PpXPWll4crLV
+X-Google-Smtp-Source: ABdhPJwsEb0F2LDGXnZMhPPIEKLwUW/eoF35j5kV7o83UkOC/ix7knMX7fPB6WYft1GoDjlF8pdFCA==
+X-Received: by 2002:a17:902:ba81:b0:132:3a70:c16 with SMTP id k1-20020a170902ba8100b001323a700c16mr4051866pls.60.1630406238599;
+        Tue, 31 Aug 2021 03:37:18 -0700 (PDT)
 Received: from localhost ([139.177.225.253])
-        by smtp.gmail.com with ESMTPSA id 15sm2641504pjw.39.2021.08.31.03.37.14
+        by smtp.gmail.com with ESMTPSA id m18sm2555499pjq.32.2021.08.31.03.37.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Aug 2021 03:37:14 -0700 (PDT)
+        Tue, 31 Aug 2021 03:37:18 -0700 (PDT)
 From:   Xie Yongji <xieyongji@bytedance.com>
 To:     mst@redhat.com, jasowang@redhat.com, stefanha@redhat.com,
         sgarzare@redhat.com, parav@nvidia.com, hch@infradead.org,
@@ -61,9 +61,9 @@ Cc:     songmuchun@bytedance.com,
         virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
         kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org,
         iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v13 03/13] file: Export receive_fd() to modules
-Date:   Tue, 31 Aug 2021 18:36:24 +0800
-Message-Id: <20210831103634.33-4-xieyongji@bytedance.com>
+Subject: [PATCH v13 04/13] vdpa: Fix some coding style issues
+Date:   Tue, 31 Aug 2021 18:36:25 +0800
+Message-Id: <20210831103634.33-5-xieyongji@bytedance.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210831103634.33-1-xieyongji@bytedance.com>
 References: <20210831103634.33-1-xieyongji@bytedance.com>
@@ -73,59 +73,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Export receive_fd() so that some modules can use
-it to pass file descriptor between processes without
-missing any security stuffs.
+Fix some code indent issues and following checkpatch warning:
+
+WARNING: Prefer 'unsigned int' to bare use of 'unsigned'
+371: FILE: include/linux/vdpa.h:371:
++static inline void vdpa_get_config(struct vdpa_device *vdev, unsigned offset,
 
 Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
 Acked-by: Jason Wang <jasowang@redhat.com>
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 ---
- fs/file.c            | 6 ++++++
- include/linux/file.h | 7 +++----
- 2 files changed, 9 insertions(+), 4 deletions(-)
+ include/linux/vdpa.h | 34 +++++++++++++++++-----------------
+ 1 file changed, 17 insertions(+), 17 deletions(-)
 
-diff --git a/fs/file.c b/fs/file.c
-index 86dc9956af32..210e540672aa 100644
---- a/fs/file.c
-+++ b/fs/file.c
-@@ -1134,6 +1134,12 @@ int receive_fd_replace(int new_fd, struct file *file, unsigned int o_flags)
- 	return new_fd;
+diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
+index 8cfe49d201dd..8ae1134070eb 100644
+--- a/include/linux/vdpa.h
++++ b/include/linux/vdpa.h
+@@ -43,17 +43,17 @@ struct vdpa_vq_state_split {
+  * @last_used_idx: used index
+  */
+ struct vdpa_vq_state_packed {
+-        u16	last_avail_counter:1;
+-        u16	last_avail_idx:15;
+-        u16	last_used_counter:1;
+-        u16	last_used_idx:15;
++	u16	last_avail_counter:1;
++	u16	last_avail_idx:15;
++	u16	last_used_counter:1;
++	u16	last_used_idx:15;
+ };
+ 
+ struct vdpa_vq_state {
+-     union {
+-          struct vdpa_vq_state_split split;
+-          struct vdpa_vq_state_packed packed;
+-     };
++	union {
++		struct vdpa_vq_state_split split;
++		struct vdpa_vq_state_packed packed;
++	};
+ };
+ 
+ struct vdpa_mgmt_dev;
+@@ -131,7 +131,7 @@ struct vdpa_iova_range {
+  *				@vdev: vdpa device
+  *				@idx: virtqueue index
+  *				@state: pointer to returned state (last_avail_idx)
+- * @get_vq_notification: 	Get the notification area for a virtqueue
++ * @get_vq_notification:	Get the notification area for a virtqueue
+  *				@vdev: vdpa device
+  *				@idx: virtqueue index
+  *				Returns the notifcation area
+@@ -350,25 +350,25 @@ static inline struct device *vdpa_get_dma_dev(struct vdpa_device *vdev)
+ 
+ static inline void vdpa_reset(struct vdpa_device *vdev)
+ {
+-        const struct vdpa_config_ops *ops = vdev->config;
++	const struct vdpa_config_ops *ops = vdev->config;
+ 
+ 	vdev->features_valid = false;
+-        ops->set_status(vdev, 0);
++	ops->set_status(vdev, 0);
  }
  
-+int receive_fd(struct file *file, unsigned int o_flags)
-+{
-+	return __receive_fd(file, NULL, o_flags);
-+}
-+EXPORT_SYMBOL_GPL(receive_fd);
-+
- static int ksys_dup3(unsigned int oldfd, unsigned int newfd, int flags)
+ static inline int vdpa_set_features(struct vdpa_device *vdev, u64 features)
  {
- 	int err = -EBADF;
-diff --git a/include/linux/file.h b/include/linux/file.h
-index 2de2e4613d7b..51e830b4fe3a 100644
---- a/include/linux/file.h
-+++ b/include/linux/file.h
-@@ -94,6 +94,9 @@ extern void fd_install(unsigned int fd, struct file *file);
+-        const struct vdpa_config_ops *ops = vdev->config;
++	const struct vdpa_config_ops *ops = vdev->config;
  
- extern int __receive_fd(struct file *file, int __user *ufd,
- 			unsigned int o_flags);
-+
-+extern int receive_fd(struct file *file, unsigned int o_flags);
-+
- static inline int receive_fd_user(struct file *file, int __user *ufd,
- 				  unsigned int o_flags)
- {
-@@ -101,10 +104,6 @@ static inline int receive_fd_user(struct file *file, int __user *ufd,
- 		return -EFAULT;
- 	return __receive_fd(file, ufd, o_flags);
+ 	vdev->features_valid = true;
+-        return ops->set_features(vdev, features);
++	return ops->set_features(vdev, features);
  }
--static inline int receive_fd(struct file *file, unsigned int o_flags)
--{
--	return __receive_fd(file, NULL, o_flags);
--}
- int receive_fd_replace(int new_fd, struct file *file, unsigned int o_flags);
  
- extern void flush_delayed_fput(void);
+-
+-static inline void vdpa_get_config(struct vdpa_device *vdev, unsigned offset,
+-				   void *buf, unsigned int len)
++static inline void vdpa_get_config(struct vdpa_device *vdev,
++				   unsigned int offset, void *buf,
++				   unsigned int len)
+ {
+-        const struct vdpa_config_ops *ops = vdev->config;
++	const struct vdpa_config_ops *ops = vdev->config;
+ 
+ 	/*
+ 	 * Config accesses aren't supposed to trigger before features are set.
 -- 
 2.11.0
 
