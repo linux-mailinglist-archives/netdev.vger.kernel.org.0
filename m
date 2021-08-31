@@ -2,166 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C5513FC79E
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 14:52:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7E393FC806
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 15:17:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232209AbhHaMxk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 08:53:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42620 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231917AbhHaMxj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 08:53:39 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCAD5C06175F
-        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 05:52:43 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id e21so38365747ejz.12
-        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 05:52:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ubique-spb-ru.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=zNiC6TUjESHnzWkXmeRHVbBslUBHXHDX5iAWQhEE+RA=;
-        b=MVLBgY2hFR0wS3O06Z58t48AcJjFUDQ37nKvhjeUf0NaH9btWiNoDue9QLGA45evQO
-         Y+P1M2XPTttFBfu91KO4lF8fN+oDUay3NceRXf0dpGHn88wda65qZLBm/m/oNMu1Z0dt
-         I4jmfc+bNMjE3mO21StR09L7cuoGxHzYhzWuD3Nr88G9i6Hc9TiAOTW5vccV6ycGd5ji
-         QfFiU1DJlLnmsugSVOiddld3jv9BxU1vMsDMeQekdpCN70eOENwh3odkgTw6gVshal4m
-         BOUVO8At/FDqLBub/vIHpKQ34+AVuHjMQQWkiGCHF1r+dYtWZJmMQtZer04GFw1RSLQf
-         goKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=zNiC6TUjESHnzWkXmeRHVbBslUBHXHDX5iAWQhEE+RA=;
-        b=GZpbHNQStKp7m8/6iZj+SwzeSW+mC4EqorbHeqPuNwJhOp/WUi30HYZJy3D6hS3cso
-         dCOs4jCDOht8k/v3uzRM3+gmtr9YokqbDNsnG5fYvUM4KnrLS0dacHuoCByTygzXiHub
-         bYo008IgLiqk+Euxz/QNVX5CIdK9AFx2lfHek5Yri4orUj0MoU/QobgP8Ia2H9VzDng1
-         ew2QXUO90NjHl8JqSquptGxaAk1T5vdZEY5Y5vUUEeQb9Ik1ahUufF5umNw5aQR4T9Cy
-         /luINIWfyHQnuOoQn2xqAn/1dQK5YOR6uv21Whe9jn+oM9KsQvzFEQ1+7m6R+oKNiaG7
-         F67g==
-X-Gm-Message-State: AOAM533EpDGIXugwzbqXO5pWSiy4Xz6R2+BVpXQO1g+nT2EGuziE/AuN
-        twC/QzChRJ8EmaE0XpQltryFd0RxPL3y8FDBDrs=
-X-Google-Smtp-Source: ABdhPJyZWGtVv8jKLifUVMy+cAFbd23QtYctx/VwFVYgZt8iHjVuD9qxVe9l0NRp7cKJqvIPAXWZ4g==
-X-Received: by 2002:a17:906:8258:: with SMTP id f24mr30763776ejx.375.1630414362090;
-        Tue, 31 Aug 2021 05:52:42 -0700 (PDT)
-Received: from localhost ([154.21.15.43])
-        by smtp.gmail.com with ESMTPSA id q18sm8249671ejc.84.2021.08.31.05.52.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Aug 2021 05:52:41 -0700 (PDT)
-Date:   Tue, 31 Aug 2021 16:52:40 +0400
-From:   Dmitrii Banshchikov <me@ubique.spb.ru>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, davem@davemloft.net,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, netdev@vger.kernel.org, rdna@fb.com
-Subject: Re: [PATCH bpf-next v2 12/13] bpfilter: Add filter table
-Message-ID: <20210831125240.sm3ouie6hxur5cyb@amnesia>
-References: <20210829183608.2297877-1-me@ubique.spb.ru>
- <20210829183608.2297877-13-me@ubique.spb.ru>
- <20210830194545.rgwg3ks3alikeyzx@ast-mbp.dhcp.thefacebook.com>
- <20210830205443.wx3n2bhw44pji2hn@amnesia>
- <20210830234515.ncvsdswj4lalgpo3@ast-mbp.dhcp.thefacebook.com>
+        id S234263AbhHaNSD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 09:18:03 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:50210 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230175AbhHaNSC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 31 Aug 2021 09:18:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=O0tbD+MhxYcxlWeFJDcgfYosGr5RiD+IdZLr5hwd1OI=; b=cVzPwALFENJsChIX2055ZXy1JL
+        qt4lmrRBX8oXBiWXmBjYXg7ompSsfXwCclG/zP8Jcftu96My4+xefEuCxy+bpNoIfLKBCcClC9KEE
+        2cXda4H4jA/Mxx+Ec6LONitWbtADK7mBLX0J99LaWXTT0KfqIiTB7sUIXRbayR4NLQKE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mL3dD-004ilj-3l; Tue, 31 Aug 2021 15:16:51 +0200
+Date:   Tue, 31 Aug 2021 15:16:51 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
+        Alvin Sipraga <ALSI@bang-olufsen.dk>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-acpi@vger.kernel.org
+Subject: Re: [PATCH v1 1/2] driver core: fw_devlink: Add support for
+ FWNODE_FLAG_BROKEN_PARENT
+Message-ID: <YS4rw7NQcpRmkO/K@lunn.ch>
+References: <YSf/Mps9E77/6kZX@lunn.ch>
+ <CAGETcx_h6moWbS7m4hPm6Ub3T0tWayUQkppjevkYyiA=8AmACw@mail.gmail.com>
+ <YSg+dRPSX9/ph6tb@lunn.ch>
+ <CAGETcx_r8LSxV5=GQ-1qPjh7qGbCqTsSoSkQfxAKL5q+znRoWg@mail.gmail.com>
+ <YSjsQmx8l4MXNvP+@lunn.ch>
+ <CAGETcx_vMNZbT-5vCAvvpQNMMHy-19oR-mSfrg6=eSO49vLScQ@mail.gmail.com>
+ <YSlG4XRGrq5D1/WU@lunn.ch>
+ <CAGETcx-ZvENq8tFZ9wb_BCPZabpZcqPrguY5rsg4fSNdOAB+Kw@mail.gmail.com>
+ <YSpr/BOZj2PKoC8B@lunn.ch>
+ <CAGETcx_mjY10WzaOvb=vuojbodK7pvY1srvKmimu4h6xWkeQuQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210830234515.ncvsdswj4lalgpo3@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <CAGETcx_mjY10WzaOvb=vuojbodK7pvY1srvKmimu4h6xWkeQuQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 30, 2021 at 04:45:15PM -0700, Alexei Starovoitov wrote:
-> On Tue, Aug 31, 2021 at 12:54:43AM +0400, Dmitrii Banshchikov wrote:
-> > On Mon, Aug 30, 2021 at 12:45:45PM -0700, Alexei Starovoitov wrote:
-> > > On Sun, Aug 29, 2021 at 10:36:07PM +0400, Dmitrii Banshchikov wrote:
-> > > >  /*
-> > > > - * # Generated by iptables-save v1.8.2 on Sat May  8 05:22:41 2021
-> > > > + *  Generated by iptables-save v1.8.2 on Sat May  8 05:22:41 2021
-> > > >   * *filter
-> > > ...
-> > > > - * -A LOCAL -s 10.32.0.0/11 -j FROMDC
-> > > > - * -A LOCAL -s 10.144.0.0/12 -j FROMDC
-> > > > - * -A LOCAL -s 10.160.0.0/12 -j FROMDC
-> > > > - * -A LOCAL -s 10.0.0.0/12 -j FROMDC
-> > > > - * -A LOCAL -s 10.248.0.0/24 -j FROMDC
-> > > > - * -A LOCAL -s 10.232.0.0/16 -j FROMDC
-> > > > - * -A LOCAL -s 10.1.146.131/32 -p udp -m udp --dport 161 -j ACCEPT
-> > > > - * -A LOCAL -s 10.149.118.14/32 -p udp -m udp --dport 161 -j ACCEPT
-> > > > - * -A LOCAL -p icmp -j ACCEPT
-> > > > + * :INPUT ACCEPT [0:0]
-> > > > + * :FORWARD ACCEPT [0:0]
-> > > > + * :OUTPUT ACCEPT [0:0]
-> > > > + * -A INPUT -s 1.1.1.1/32 -d 2.2.2.2/32 -j DROP
-> > > > + * -A INPUT -s 2.2.0.0/16 -d 3.0.0.0/8 -j DROP
-> > > > + * -A INPUT -p udp -m udp --sport 100 --dport 500 -j DROP
-> > > >   * COMMIT
-> > > >   */
-> > > 
-> > > Patch 10 adds this test, but then patch 12 removes most of it?
-> > > Keep both?
-> > 
-> > Sorry, I missed it.
-> > I decided that the large blob looks really ugly and switched to
-> > the smaller one and forgot to cleanup the patchset.
-> > 
-> > > 
-> > > Also hit this on my system with older glibc:
-> > > 
-> > > ../net/bpfilter/codegen.c: In function ‘codegen_push_subprog’:
-> > > ../net/bpfilter/codegen.c:67:4: warning: implicit declaration of function ‘reallocarray’ [-Wimplicit-function-declaration]
-> > >    67 |    reallocarray(codegen->subprogs, subprogs_max, sizeof(codegen->subprogs[0]));
-> > >       |    ^~~~~~~~~~~~
-> > > ../net/bpfilter/codegen.c:66:12: warning: assignment to ‘struct codegen_subprog_desc **’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
-> > >    66 |   subprogs =
-> > >       |            ^
-> > > 
-> > > In libbpf we have libbpf_reallocarray() for this reason.
-> > > 
-> > > Could you provide an example of generated bpf program?
-> > > And maybe add Documentation/bpf/bpfilter_design.rst ?
-> > 
-> > I will add documentation in the next iteration when
-> > bpf_map_for_each() subprog will be introduced.
-> > 
-> > > 
-> > > The tests don't build for me:
-> > > $ cd selftests/bpf/bpfilter; make
-> > > make: *** No rule to make target '-lelf', needed by '.../selftests/bpf/bpfilter/test_match'.  Stop.
-> > 
-> > libelf was added because libbpf depends on it.
-> > Are you able to build libbpf?
+> > I must admit, my main problem at the moment is -rc1 in two weeks
+> > time. It seems like a number of board with Ethernet switches will be
+> > broken, that worked before. phy-handle is not limited to switch
+> > drivers, it is also used for Ethernet drivers. So it could be, a
+> > number of Ethernet drivers are also going to be broken in -rc1?
 > 
-> make proceeds to build libbpf just fine, but then it stops with above message.
-> I manually removed -lelf from Makefile. Then run make to see it fail linking
-> and then manually copy pasted gcc command to build it with additional -lelf
-> command line.
-> fwiw make -v
-> GNU Make 4.2.1
+> Again, in those cases, based on your FEC example, fw_devlink=on
+> actually improves things.
 
-Will take a look on it. Thanks.
+Debatable. I did some testing. As expected some boards with Ethernet
+switches are now broken. Without fw_devlink=on, some boards are not
+optimal, but they actually work. With it, they are broken.
 
-> 
-> > > 
-> > > The unit tests are great, btw. test_codegen is not end-to-end, right?
-> > > Could you add a full test with iptable command line?
-> > > or netns support is a prerequisite for it?
-> > 
-> > Yeah, as net namespaces aren't supported using iptables binary
-> > will modify the root namespace. That is the reason why codegen
-> > tests aren't implemented in the end-to-end fashion and rules are
-> > represented by blobs.
-> 
-> I think when ifindex is no longer hardcoded the netns support
-> doesn't have to be gating. The generic xdp attached to veth in netns
-> should work to do end-to-end test. bpftiler would need to do a bit of magic
-> to figure out the right ifindex. Or we can extend kernel with ifindex-less
-> generic XDP.
+I did a bisect, and they have been broken since:
 
-Is it ok to add an external dependency to tests? The unit test
-will need to execute iptables binary.
+ea718c699055c8566eb64432388a04974c43b2ea is the first bad commit
+commit ea718c699055c8566eb64432388a04974c43b2ea
+Author: Saravana Kannan <saravanak@google.com>
+Date:   Tue Mar 2 13:11:32 2021 -0800
 
+    Revert "Revert "driver core: Set fw_devlink=on by default""
+    
+    This reverts commit 3e4c982f1ce75faf5314477b8da296d2d00919df.
+    
+    Since all reported issues due to fw_devlink=on should be addressed by
+    this series, revert the revert. fw_devlink=on Take II.
+    
+    Signed-off-by: Saravana Kannan <saravanak@google.com>
+    Link: https://lore.kernel.org/r/20210302211133.2244281-4-saravanak@google.com
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
--- 
+ drivers/base/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Dmitrii Banshchikov
+So however it is fixed, it needs to go into stable, not just -rc1.
+
+> Again, it's not a widespread problem as I explained before.
+> fw_devlink=on has been the default for 2 kernel versions now. With no
+> unfixed reported issues.
+
+Given that some Ethernet switches have been broken all that time, i
+wonder what else has been broken? Normally, the kernel which is
+release in December becomes the next LTS. It then gets picked up by
+the distros and more wide spread tested. So it could be, you get a
+flood of reports in January and February about things which are
+broken. This is why i don't think you should be relying on bug
+reports, you should be taking a more proactive stance and trying to
+analyse the DTB blobs.
+
+I will spend some time trying out your proposed fix. See if they are a
+quick fix for stable.
+
+      Andrew
+
