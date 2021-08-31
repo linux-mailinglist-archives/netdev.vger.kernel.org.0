@@ -2,65 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DAC0A3FCAF7
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 17:37:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 682DD3FCAFF
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 17:46:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239535AbhHaPio (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 11:38:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57982 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232421AbhHaPio (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 31 Aug 2021 11:38:44 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7CFAC60F56;
-        Tue, 31 Aug 2021 15:37:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1630424268;
-        bh=VDHFOreIvzI+zKNvjOPC35mt06/2Doj19pp6QxlLypw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hY1NRDWjPO9vYlTGLPp3WxAvzAe3I4QokVij31H3tNSEwcHUF6mn1FBM1VjalHY0e
-         hvHImetYGb/L/hXh/lT5Wfi3BeLdqav8EYMEGXIf/qKrayaY/EaARO89z9UraTw2dz
-         6etDNfkRxrooSimezmdZlVugOS1QugLYPP/J0ab6OhCknJMEIRUjaT14EB01bIkN+Z
-         Gud0Nl5aSNtmk1hAh8+FSEDw44NS4VdLi3FilgjX4twTDC4FBlJ8CaibBMbQwSQSmV
-         HGWd4/3U1Oy36maDiq6hQlU2VbZIA09ecZ5yqg/qwl2YgH0ScIIoZcKwu3bj+WsZ0U
-         xQfhw3e3l8XAA==
-Date:   Tue, 31 Aug 2021 08:37:47 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Slark Xiao <slark_xiao@163.com>
-Cc:     davem@davemloft.net, joel@jms.id.au, gsomlo@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: Add depends on OF_NET for LiteX's LiteETH
-Message-ID: <20210831083747.4c958890@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210831024025.355748-1-slark_xiao@163.com>
-References: <20210831024025.355748-1-slark_xiao@163.com>
+        id S239540AbhHaPq6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 11:46:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55698 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232421AbhHaPq5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 11:46:57 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FEC1C061575;
+        Tue, 31 Aug 2021 08:46:02 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id e7so1474942plh.8;
+        Tue, 31 Aug 2021 08:46:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pJp0Oav4zdeje01ztEu8Mt47FJ5/8125TD17CR+t0zs=;
+        b=I4sctsiUNkfFQXsd9vZZ/PUhOlM6hlWE4xhk5Tt1nfcnTY/z8ub+0q1U6/oNOiz3Lf
+         MULTVa4uWHkRjoJUP39zGVmnPTmH2CNj4Ffd7d59aqMnuJbsCIK/3a07eqaka06fnRh9
+         3p9mIMujTL98BxZyrplmODV2OixV0x9ov2cXJVZ1XO2tQ+LooZ3Wg0I20Hg4u0L7AK4n
+         z5O40uSzTBPzAiD3PtFUktSHTIlJL9fFR81hBNE/OC0OfN5w3VcK3qSYAXOoH4x82f3b
+         yvC7HYPPxynHzAJ5Ctj9bGReL1ud6EvCH4xWLwU7rmFJqbgeu/mJ6KJqoxrKnXQ4MmmY
+         K6Og==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pJp0Oav4zdeje01ztEu8Mt47FJ5/8125TD17CR+t0zs=;
+        b=IBaH7qHm5ewFXr/4P2VU6EgEHTUuLSmEp4HXt641anoOn6qy+ExrlLydQEizYNxRMn
+         RHR9P7GHYey7dQKN5nv0I58wrF8vCLPwNNb0Ki6nU5vyVHESOS9fca5cSHHwIZrXwpsy
+         zFsJVkaFCfvOwtafKgp8+EJMDWhjp6/AOZF6yHnHh4ym3RKyq5g2EQMlBSF/3HEiDcsC
+         5rXZeQr80dWdjp3YXJU/fC6IhRBsdAebqSBayBFNdDabxJMWH85kxYx8eNatNx/7hZg6
+         76xoOABvBQqeugVWKdlD7CDqgVtGT4qL5F51aSq2ybKwfU1RJSgTuD9/SctBbDUmZQqE
+         autA==
+X-Gm-Message-State: AOAM532BW2BcDxwn9eWMwlyCLDQeDtfHxQAmRp9Hj20RHw/Dzh2VFiRn
+        ktPwO04CvXqVE3CZNQ7gh2AzerKrh0aU0T5dKPU=
+X-Google-Smtp-Source: ABdhPJyTc8RbhdDDoPKnMNUxPw7c5JshvE+P9nkrG5wBy1/eJKipC794XyC5x4YZkzf3svfpRqLYbOvyeEhPZlyLI/8=
+X-Received: by 2002:a17:90a:cf08:: with SMTP id h8mr6170695pju.1.1630424761902;
+ Tue, 31 Aug 2021 08:46:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20210829183608.2297877-1-me@ubique.spb.ru> <20210829183608.2297877-13-me@ubique.spb.ru>
+ <20210830194545.rgwg3ks3alikeyzx@ast-mbp.dhcp.thefacebook.com>
+ <20210830205443.wx3n2bhw44pji2hn@amnesia> <20210830234515.ncvsdswj4lalgpo3@ast-mbp.dhcp.thefacebook.com>
+ <20210831125240.sm3ouie6hxur5cyb@amnesia>
+In-Reply-To: <20210831125240.sm3ouie6hxur5cyb@amnesia>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 31 Aug 2021 08:45:50 -0700
+Message-ID: <CAADnVQ+H091MfKC724K7FzMXtHdb5HdUK3EigqMbzEvR0YVS+w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 12/13] bpfilter: Add filter table
+To:     Dmitrii Banshchikov <me@ubique.spb.ru>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Andrey Ignatov <rdna@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 31 Aug 2021 10:40:25 +0800 Slark Xiao wrote:
-> Current settings may produce a build error when
-> CONFIG_OF_NET is disabled. The CONFIG_OF_NET controls
-> a headfile <linux/of.h> and some functions
->  in <linux/of_net.h>.
-> 
-> Signed-off-by: Slark Xiao <slark_xiao@163.com>
-> ---
->  drivers/net/ethernet/litex/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/net/ethernet/litex/Kconfig b/drivers/net/ethernet/litex/Kconfig
-> index 265dba414b41..63bf01d28f0c 100644
-> --- a/drivers/net/ethernet/litex/Kconfig
-> +++ b/drivers/net/ethernet/litex/Kconfig
-> @@ -17,6 +17,7 @@ if NET_VENDOR_LITEX
->  
->  config LITEX_LITEETH
->  	tristate "LiteX Ethernet support"
-> +	depends on OF_NET
->  	help
->  	  If you wish to compile a kernel for hardware with a LiteX LiteEth
->  	  device then you should answer Y to this.
+On Tue, Aug 31, 2021 at 5:52 AM Dmitrii Banshchikov <me@ubique.spb.ru> wrote:
+>
+> Is it ok to add an external dependency to tests? The unit test
+> will need to execute iptables binary.
 
-Applied, thanks!
+Ideally not, but sometimes it's unavoidable.
+iptables cmd is generally available.
+selftests/bpf already have few tests that shell out to it.
+They're not part of test_progs though.
