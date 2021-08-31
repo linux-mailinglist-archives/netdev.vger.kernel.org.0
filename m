@@ -2,42 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 533013FC673
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 13:34:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 924E43FC671
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 13:34:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241484AbhHaLLR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 07:11:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58694 "EHLO mail.kernel.org"
+        id S241471AbhHaLLN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 07:11:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58692 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241420AbhHaLLD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S241418AbhHaLLD (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 31 Aug 2021 07:11:03 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 5F2FA61058;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 557C861051;
         Tue, 31 Aug 2021 11:10:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1630408208;
-        bh=6XTiFVpAOU/U5QiTGxTmalseSswMAbrKt9dCYpd7zDE=;
+        bh=Y+6H2U6arzL4lpsLD1gSJ8x8hm7obJC/W7vvwDDsiDI=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=taQzhgpbYHMJ8UjsN5eR+CHkGMC0IxXRWA/+EHoGSqprf1pEknB75XRbho5E4snZ7
-         mb5IVZhwkDmRJo9PFq+mxMolvJZmwP/UkFJLF0DwTC31rkjNscy0Shc6AZs0Tvcowt
-         6H+nBTwmjo2ge8brzDHojEwOWOJGW0VZbinmrGMlrkHDe+RGhCBUVvG5bSrV2XBWAM
-         x9n5CHiNsyGg5ePEuxpSPSp5s7IWOE+r2d3lFnBYR3oAvarFA+KQfEmtsPQ2+84nd+
-         0x8Ej4PnpSpJR6F/94NL470xh8HV2/33/dpGkjn3LohGPnu1b1SkUoAOQNdlF/imxO
-         3a3DAFuSnC4YA==
+        b=DVVp6X6Mdy3+vO0cPc1xAS6g0tLyKTzJAprhx3H22UcEgqmVgj4KnhpLGfuvDPcgM
+         ao2Q+Z6m4K4hN2EKRi+PCkoxqCrxn5rrwsJI2fjMkb4hWANcr1VHlgn4Ncgm+7yNEx
+         9C1ROJb580pQVXSzX6iTQSPBtGacxElsxvfxtMuiEvej8uypqll44turZJdxnNVZMp
+         8dsdCYDUKScysf3H7VSHMUqrERnTpex4J5TmPFRiGrOTEhQj+PDcfPy4mERoo6B15t
+         VPAslEKCO9y51iV5WYZ+Lynv0C4wQYH/T1GXrd27MTmuzfJTpkaAWTxhMzrw7GVElJ
+         A5KoX2+rfDlMg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5A33060A9D;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 4F77C60A6C;
         Tue, 31 Aug 2021 11:10:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] dpaa2-eth: Replace strlcpy with strscpy
+Subject: Re: [net-next PATCH] octeontx2-af: Use NDC TX for transmit packet data
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163040820836.5377.14060243264259649124.git-patchwork-notify@kernel.org>
+Message-Id: <163040820832.5377.15835836242101929765.git-patchwork-notify@kernel.org>
 Date:   Tue, 31 Aug 2021 11:10:08 +0000
-References: <20210830130531.12429-1-wangborong@cdjrlc.com>
-In-Reply-To: <20210830130531.12429-1-wangborong@cdjrlc.com>
-To:     Jason Wang <wangborong@cdjrlc.com>
-Cc:     davem@davemloft.net, ioana.ciornei@nxp.com, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210830125518.20419-1-gakula@marvell.com>
+In-Reply-To: <20210830125518.20419-1-gakula@marvell.com>
+To:     Geetha sowjanya <gakula@marvell.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net, sgoutham@marvell.com,
+        lcherian@marvell.com, jerinj@marvell.com, sbhatta@marvell.com,
+        hkelam@marvell.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -46,24 +48,20 @@ Hello:
 
 This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Mon, 30 Aug 2021 21:05:31 +0800 you wrote:
-> The strlcpy should not be used because it doesn't limit the source
-> length. As linus says, it's a completely useless function if you
-> can't implicitly trust the source string - but that is almost always
-> why people think they should use it! All in all the BSD function
-> will lead some potential bugs.
+On Mon, 30 Aug 2021 18:25:18 +0530 you wrote:
+> For better performance set hardware to use NDC TX for reading packet
+> data specified NIX_SEND_SG_S.
 > 
-> But the strscpy doesn't require reading memory from the src string
-> beyond the specified "count" bytes, and since the return value is
-> easier to error-check than strlcpy()'s. In addition, the implementation
-> is robust to the string changing out from underneath it, unlike the
-> current strlcpy() implementation.
-> 
-> [...]
+> Signed-off-by: Geetha sowjanya <gakula@marvell.com>
+> Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+> ---
+>  drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c | 3 +++
+>  drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h | 1 +
+>  2 files changed, 4 insertions(+)
 
 Here is the summary with links:
-  - dpaa2-eth: Replace strlcpy with strscpy
-    https://git.kernel.org/netdev/net-next/c/995786ba0dab
+  - [net-next] octeontx2-af: Use NDC TX for transmit packet data
+    https://git.kernel.org/netdev/net-next/c/a7314371b3f3
 
 You are awesome, thank you!
 --
