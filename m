@@ -2,121 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12FA23FCB7D
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 18:24:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AC2F3FCB84
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 18:30:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239979AbhHaQZJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 12:25:09 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:38548 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239920AbhHaQZI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 12:25:08 -0400
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-219-EAaACDsrNwyqelc-V36bMw-1; Tue, 31 Aug 2021 17:24:10 +0100
-X-MC-Unique: EAaACDsrNwyqelc-V36bMw-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.23; Tue, 31 Aug 2021 17:24:09 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.023; Tue, 31 Aug 2021 17:24:09 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'David Ahern' <dsahern@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: IP routing sending local packet to gateway.
-Thread-Topic: IP routing sending local packet to gateway.
-Thread-Index: AdebRgbMhfPTX4NbSQqr56kVCuK30gAGAC7A///6eoD/+bbC8A==
-Date:   Tue, 31 Aug 2021 16:24:09 +0000
-Message-ID: <b1ca6c99cd684a4a83059a0156761d75@AcuMS.aculab.com>
-References: <15a53d9cc54d42dca565247363b5c205@AcuMS.aculab.com>
- <adaaf38562be4c0ba3e8fe13b90f2178@AcuMS.aculab.com>
- <532f9e8f-5e48-9e2e-c346-e2522f788a40@gmail.com>
-In-Reply-To: <532f9e8f-5e48-9e2e-c346-e2522f788a40@gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S240044AbhHaQbD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 12:31:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49534 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232154AbhHaQbC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 31 Aug 2021 12:31:02 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id F346161059;
+        Tue, 31 Aug 2021 16:30:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1630427407;
+        bh=oS6FPhfGA9uHONj8JonlYpU1cjtCApQRJpGyzgauwhU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=WLfASnLau17NvNBWuflwQHWHajfCbILPqOro93Ch+gCamwOMa2WrNWPnrBa2RPkE0
+         NxRJLmcN5RK+2mDmT+pFYJPqSvCRnncQjpOIpDNTGBsSCijdecCSl7bXwBWF1Tqi9F
+         nV4/6a51lkKiIOXGFj/fbxxYqutVeGX58nF7sCbVstaYobEGv0jtAse6C7ZCjcucrQ
+         nTooisKp9R4uG0agQQ1wSY/OpgilVkO9q38EpEUooxTFfSllgpEzG2e2fl5N1m20/L
+         bE7VRDPVYjqQutzxucQFP50NYzQsHgNAPVNGRI6dxRPOdzfU1iPhqo7Z2NOiRBBHk1
+         BMxKyhfzoi/HA==
+Date:   Tue, 31 Aug 2021 09:30:06 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Peter Collingbourne <pcc@google.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Colin Ian King <colin.king@canonical.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        David Laight <David.Laight@aculab.com>,
+        Arnd Bergmann <arnd@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH v2] net: don't unconditionally copy_from_user a struct
+ ifreq for socket ioctls
+Message-ID: <20210831093006.6db30672@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210826194601.3509717-1-pcc@google.com>
+References: <20210826194601.3509717-1-pcc@google.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogRGF2aWQgQWhlcm4NCj4gU2VudDogMjcgQXVndXN0IDIwMjEgMTc6NTENCj4gDQo+IE9u
-IDgvMjcvMjEgOTozOSBBTSwgRGF2aWQgTGFpZ2h0IHdyb3RlOg0KPiA+IEZyb206IERhdmlkIExh
-aWdodA0KPiA+PiBTZW50OiAyNyBBdWd1c3QgMjAyMSAxNToxMg0KPiA+Pg0KPiA+PiBJJ3ZlIGFu
-IG9kZCBJUCByb3V0aW5nIGlzc3VlLg0KPiA+PiBBIHBhY2tldCB0aGF0IHNob3VsZCBiZSBzZW50
-IG9uIHRoZSBsb2NhbCBzdWJuZXQgKHRvIGFuIEFSUGVkIGFkZHJlc3MpDQo+ID4+IGlzIGJlaW5n
-IHNlbmQgdG8gdGhlIGRlZmF1bHQgZ2F0ZXdheSBpbnN0ZWFkLg0KPiA+DQo+ID4gSSd2ZSBkb25l
-IHNvbWUgdGVzdHMgb24gYSBkaWZmZXJlbnQgbmV0d29yayB3aGVyZSBpdCBhbGwgYXBwZWFycyB0
-byB3b3JrLg0KPiA+DQo+ID4gQnV0IHJ1bm5pbmcgJ3RjcGR1bXAgLXBlbicgc2hvd3MgdGhhdCBh
-bGwgdGhlIG91dGJvdW5kIHBhY2tldHMgZm9yIHRoZQ0KPiA+IFRDUCBjb25uZWN0aW9ucyBhcmUg
-YmVpbmcgc2VudCB0byB0aGUgZGVmYXVsdCBnYXRld2F5Lg0KPiA+DQo+ID4gNS4xMC4zMCwgNS4x
-MC42MSBhbmQgNS4xNC4wLXJjNyBhbGwgYmVoYXZlIHRoZSBzYW1lIHdheS4NCj4gPg0KPiA+IElm
-IGRvIGEgcGluZyAoaW4gZWl0aGVyIGRpcmVjdGlvbikgSSBnZXQgYW4gQVJQIHRhYmxlIGVudHJ5
-Lg0KPiA+IEJ1dCBUQ1AgY29ubmVjdGlvbnMgKGluIG9yIG91dCkgYWx3YXlzIHVzZSB0aGUgZGVm
-YXVsdCBnYXRld2F5Lg0KPiA+DQo+ID4gSSdtIG5vdyBnZXR0aW5nIG1vcmUgY29uZnVzZWQuDQo+
-ID4gSSBub3RpY2VkIHRoYXQgdGhlICdkZWZhdWx0IHJvdXRlJyB3YXMgbWlzc2luZyB0aGUgJ21l
-dHJpYyAxMDAnIGJpdC4NCj4gPiBUaGF0IG1pZ2h0IGdpdmUgdGhlIGJlaGF2aW91ciBJJ20gc2Vl
-aW5nIGlmIHRoZSBuZXRtYXNrIHdpZHRoIGlzIGlnbm9yZWQuDQoNClNldHRpbmcgdGhlIG1ldHJp
-Yy9wcmlvcml0eSB0byAxMDAgbWFrZXMgbm8gZGlmZmVyZW5jZS4NCkkgYWN0dWFsbHkgcGF0Y2hl
-ZCB0aGUga2VybmVsIGNvZGUgdGhhdCBwcm9jZXNzZXMgdGhlIG5ldGxpbmsNCnNvY2tldCByZXF1
-ZXN0IHJhdGhlciB0aGFuIHRoZSBhcHBsaWNhdGlvbiB0aGF0IGdlbmVyYXRlZCB0aGUgcmVxdWVz
-dC4NCk5vdGUgdGhhdCB0aGUgYXBwbGljYXRpb24gaGFzbid0IHJlYWxseSBiZWVuIGNoYW5nZWQg
-Zm9yIDEwIHllYXJzLg0KDQo+ID4gQnV0IGlmIEkgZGVsZXRlIHRoZSBkZWZhdWx0IHJvdXRlIChu
-ZWl0aGVyIG5ldHN0YXQgLXIgb3IgaXAgcm91dGUgc2hvdw0KPiA+IGl0KSB0aGVuIHBhY2tldHMg
-YXJlIHN0aWxsIGJlaW5nIHNlbnQgdG8gdGhlIGRlbGV0ZWQgZ2F0ZXdheS4NCj4gPiBJZiBJIGRl
-bGV0ZSB0aGUgYXJwL25laWdoIGVudHJ5IGZvciB0aGUgZGVsZXRlZCBkZWZhdWx0IGdhdGV3YXkg
-YW4NCj4gPiBvdXR3YXJkIGNvbm5lY3Rpb24gcmVjcmVhdGVzIHRoZSBlbnRyeSAtIGxlYXZpbmcg
-dGhlIG9uZSBmb3IgdGhlIGFjdHVhbA0KPiA+IGFkZHJlc3MgJ1NUQUxFJy4NCj4gPg0KPiA+IFNv
-bWV0aGluZyB2ZXJ5IG9kZCBpcyBnb2luZyBvbi4NCj4gDQo+IHBlcmYgcmVjb3JkIC1lIGZpYjoq
-IC1hIC1nIC0tIDxydW4gdGVzdHM+DQo+IGN0cmwtYw0KPiBwZXJmIHNjcmlwdA0KPiANCj4gSXQg
-c2hvdWxkIHRlbGwgeW91IGNvZGUgcGF0aHMgYW5kIHJvdXRlIGxvb2t1cCByZXN1bHRzLiBTaG91
-bGQgc2hlZCBzb21lDQo+IGxpZ2h0IG9uIHdoeSB0aGUgZ3cgdnMgbG9jYWwuDQoNCkhvdyBkbyBJ
-IGNyb3NzLWNvbXBpbGUgJ3BlcmYnLCB0aGVyZSBkb24ndCBzZWVtIHRvIGJlIGFueSBvYnZpb3Vz
-DQpoaW50cyBpbiB0aGUgTWFrZWZpbGUuDQoNCkJ1dCBJJ20gbm90IHRvbyBzdXJlIHRoYXQgd291
-bGQgaGVscC4NClRoZSByZXNwb25zZSB0byBhbiBpbmNvbWluZyBUQ1AgU1lOIHNlZW1zIHRvIGNy
-ZWF0ZSBhIGNhY2hlZCBlbnRyeSB0aGF0DQpldmVyeXRoaW5nIGVsc2UgdGhlbiB1c2VzLg0KSSd2
-ZSB0cmllZCB0byB1bnRhbmdsZSB0byBjb2RlIHRoYXQgY2FjaGVzIGEgJ2RzdCcgZW50cnkgb24g
-dGhlIHNvY2tldA0KYnV0IGl0IGlzIGFsbCByYXRoZXIgY29tcGxpY2F0ZWQuDQoNCkknbSBzdXJl
-IGl0IGhhcyBzb21ldGhpbmcgdG8gZG8gd2l0aCB0aGUgJ2ZpYl90cmllJyBkYXRhLg0KV2hlbiBp
-dCBmYWlscyBJIGdldDoNCiMgY2F0IC9wcm9jL25ldC9maWJfdHJpZQ0KSWQgMjAwOg0KICB8LS0g
-MC4wLjAuMA0KICAgICAvMCB1bml2ZXJzZSBVTklDQVNUDQpNYWluOg0KICArLS0gMC4wLjAuMC8w
-IDMgMCA2DQogICAgIHwtLSAwLjAuMC4wDQogICAgICAgIC8wIHVuaXZlcnNlIFVOSUNBU1QNCiAg
-ICAgfC0tIDE5Mi4xNjguMS4wDQogICAgICAgIC8yNCBsaW5rIFVOSUNBU1QNCkxvY2FsOg0KICAr
-LS0gMC4wLjAuMC8wIDIgMCAyDQogICAgICstLSAxMjcuMC4wLjAvOCAyIDAgMg0KICAgICAgICAr
-LS0gMTI3LjAuMC4wLzMxIDEgMCAwDQogICAgICAgICAgIHwtLSAxMjcuMC4wLjANCiAgICAgICAg
-ICAgICAgLzMyIGxpbmsgQlJPQURDQVNUDQogICAgICAgICAgICAgIC84IGhvc3QgTE9DQUwNCiAg
-ICAgICAgICAgfC0tIDEyNy4wLjAuMQ0KICAgICAgICAgICAgICAvMzIgaG9zdCBMT0NBTA0KICAg
-ICAgICB8LS0gMTI3LjI1NS4yNTUuMjU1DQogICAgICAgICAgIC8zMiBsaW5rIEJST0FEQ0FTVA0K
-ICAgICArLS0gMTkyLjE2OC4xLjAvMjQgMiAwIDENCiAgICAgICAgfC0tIDE5Mi4xNjguMS4wDQog
-ICAgICAgICAgIC8zMiBsaW5rIEJST0FEQ0FTVA0KICAgICAgICB8LS0gMTkyLjE2OC4xLjk5DQog
-ICAgICAgICAgIC8zMiBob3N0IExPQ0FMDQogICAgICAgIHwtLSAxOTIuMTY4LjEuMjU1DQogICAg
-ICAgICAgIC8zMiBsaW5rIEJST0FEQ0FTVA0KDQoxLjk5IGlzIGxvY2FsaG9zdCwgZ3cgaXMgMS4x
-IGFuZCB0aGUgb25seSByZW1vdGUgMS41My4NCkFwYXJ0IGZyb20gdGhlICdJZCAyMDAnIGJpdCAo
-d2hpY2ggSSBhc3N1bWUgaXMgc29tZXRoaW5nDQp0byBkbyB3aXRoIG15IGJvbmRzKSBpdCBsb29r
-cyBtdWNoIGxpa2UgYSB3b3JraW5nIHN5c3RlbS4NCg0KSSBjYW4ndCBmaW5kIGFueXRoaW5nIHRo
-YXQgbGlzdHMgdGhlIGNhY2hlZCBydC9kc3QgZW50cmllcw0KdGhhdCBhcmUgY2FjaGVkIGJ5IHRo
-ZSBzb2NrZXQuDQoNCkkgcmVtZW1iZXIgZnJvbSBsb29raW5nIHVwIHRoZSByYXdpcCBzZW5kIHBh
-dGggdGhhdCB0aGUgaW5pdGlhbA0KbG9va3VwIGZvciBvdXRib3VuZCBtZXNzYWdlcyBqdXN0IGZp
-bmRzIHRoZSAncm91dGUnIGVudHJ5IGFuZA0KYSBzZWNvbmQgbG9va3VwIChyZWYtY291bnRpbmcg
-YW5vdGhlciBzdHJ1Y3R1cmUpIGlzIGRvbmUgdG8NCmdldCB0aGUgcnQvZHN0IHRvIHNhdmUgb24g
-dGhlIHNvY2tldC4NCihUaGUgcmF3aXAgc2VuZCBlbmRlZCB1cCBjcmVhdGluZyBvbmUgZm9yIGV2
-ZXJ5IHBhY2tldCBhbmQgdGhlbg0KZGVsZXRpbmcgdGhlbSBpbiBtYXNzaXZlIGJhdGNoZXMgZnJv
-bSBhbiByY3UgdGltZW91dC4pDQoNCkknbSBndWVzc2luZyB0aGF0IHNvbWV0aGluZyBnb3QgYnJv
-a2VuIHdoZW4gdGhhdCBjaGFuZ2UgdG8gdGhlDQpyb3V0aW5nIGNvZGUgd2FzIG1hZGUuDQpJdCB3
-YXMgdGhlIGNoYW5nZSB0aGF0IGJyb2tlIHJhd2lwIHNlbmRzIHdoZXJlIHRoZSBpcCBhZGRyZXNz
-DQppbiB0aGUgSVAtaGVhZGVyIGRpZG4ndCBtYXRjaCB0aGF0IGluIHRoZSBkZXN0YWRkciBmaWVs
-ZC4NCldhcyBhIGxvbmcgdGltZSBhZ28uDQpJIHdvbmRlciBpZiBJIGNhbiB0ZXN0IHRoZSBvbGRl
-ciBrZXJuZWwuDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNpZGUsIEJy
-YW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsNClJlZ2lz
-dHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
+On Thu, 26 Aug 2021 12:46:01 -0700 Peter Collingbourne wrote:
+> @@ -3306,6 +3308,8 @@ static int compat_ifr_data_ioctl(struct net *net, unsigned int cmd,
+>  	struct ifreq ifreq;
+>  	u32 data32;
+>  
+> +	if (!is_socket_ioctl_cmd(cmd))
+> +		return -ENOTTY;
+>  	if (copy_from_user(ifreq.ifr_name, u_ifreq32->ifr_name, IFNAMSIZ))
+>  		return -EFAULT;
+>  	if (get_user(data32, &u_ifreq32->ifr_data))
 
+Hi Peter, when resolving the net -> net-next merge conflict I couldn't
+figure out why this chunk is needed. It seems all callers of
+compat_ifr_data_ioctl() already made sure it's a socket IOCTL.
+Please double check my resolution (tip of net-next) and if this is
+indeed unnecessary perhaps send a cleanup? Thanks!
