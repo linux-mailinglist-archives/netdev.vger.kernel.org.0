@@ -2,182 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E80B3FC414
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 10:22:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 787BE3FC41C
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 10:22:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240169AbhHaIDg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 04:03:36 -0400
-Received: from mx21.baidu.com ([220.181.3.85]:59688 "EHLO baidu.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S240095AbhHaIDf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 31 Aug 2021 04:03:35 -0400
-Received: from BC-Mail-Ex05.internal.baidu.com (unknown [172.31.51.45])
-        by Forcepoint Email with ESMTPS id 0468D693D23B642341E5;
-        Tue, 31 Aug 2021 16:02:38 +0800 (CST)
-Received: from BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) by
- BC-Mail-Ex05.internal.baidu.com (172.31.51.45) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2242.12; Tue, 31 Aug 2021 16:02:37 +0800
-Received: from LAPTOP-UKSR4ENP.internal.baidu.com (172.31.63.8) by
- BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.14; Tue, 31 Aug 2021 16:02:37 +0800
-From:   Cai Huoqing <caihuoqing@baidu.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <gsomlo@gmail.com>,
-        <asmaa@nvidia.com>, <limings@nvidia.com>, <jgg@ziepe.ca>,
-        <davthompson@nvidia.com>
-CC:     <netdev@vger.kernel.org>, Cai Huoqing <caihuoqing@baidu.com>
-Subject: [PATCH] net/mlxbf_gige: Make use of devm_platform_ioremap_resourcexxx()
-Date:   Tue, 31 Aug 2021 16:02:31 +0800
-Message-ID: <20210831080231.878-1-caihuoqing@baidu.com>
-X-Mailer: git-send-email 2.17.1
+        id S240207AbhHaII6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 04:08:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34764 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240195AbhHaIIy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 04:08:54 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0A12C061575;
+        Tue, 31 Aug 2021 01:07:58 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id d22-20020a1c1d16000000b002e7777970f0so1351951wmd.3;
+        Tue, 31 Aug 2021 01:07:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=MnhSLTH8eLra+aU3jtPLmoRBRTI1Oo6K9jHTpVGmJYg=;
+        b=caogiY8rcJNBgStQAg1BdfbIHwoVbocbGp49VEZ0hBckAp8JqoBZ5C6XHmKroAyDjO
+         xG+chLdbfBcmhGESMy3eoJVR0DwzUQwYiRss+PYoN/A4gUSybfRhvahXW73xAsOgBffz
+         3yufojTJdktVIecXKhIiZArtxNpz6pYj72Xf1sM0zFfoPkRXdCTiyLyog0drM45qCTGE
+         cnCoY3nxdNNglEa79n5ZrjJPHFVjlihmkTa8Q2+uwJWF6OxKdZDxdRZhSlcCC4XNbCNF
+         m6wp9RDx1xWp12WgxJezx/wbMZcb81U3Qsx9Xl3Xh5P/S0htIfztmNB/94Z0o+fvgbfh
+         aHCg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=MnhSLTH8eLra+aU3jtPLmoRBRTI1Oo6K9jHTpVGmJYg=;
+        b=fn7heXVY3MzPJQeNOQhLdVB9YcpCLP6+F9beq7nqI3uSeZc/V3yJ5j1p1zeTUsUdbo
+         L9kVFOF7CQtg5P3xs7jwemhnLm9L38JFnn2+Q1WzOemgfFVqWOQbFQzAK6ThwWHqOIKb
+         cparSvV+JILpb76wdVj2F3nFB3HcI7Cd1JvJD2LeslPAjqs/jvAUFkWgrcDMVRwDHPNa
+         HRTygEDrB8aLV56YXQe61lTJxHwaHs0BADPhwXeKerPuOlY8zm/c9JqjqrPatvhS6fwf
+         ha4mvo7A+d5PABqHM0A1cPvvktu+H+AwmZtF7NNj4rTPFGC1A5lTtdykmRfR7uYRQWiZ
+         42ag==
+X-Gm-Message-State: AOAM530UogoioLT9yb0G2AuKH+89Ynd7tGoptf5CbzTxhMWoh3/tH7R9
+        aHtk0AAW/OymGMqc3u7HI6OXbphV5OU=
+X-Google-Smtp-Source: ABdhPJyNV/Bln0OqLvVo6nX9QT0XaKxNR879yM2JzHyRsi11M8JoBlW5x5Vr6s7/ZvdH+s/rfgJw+A==
+X-Received: by 2002:a7b:c5d8:: with SMTP id n24mr2915784wmk.51.1630397277492;
+        Tue, 31 Aug 2021 01:07:57 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f08:4500:7054:c5a4:5c4c:e530? (p200300ea8f0845007054c5a45c4ce530.dip0.t-ipconnect.de. [2003:ea:8f08:4500:7054:c5a4:5c4c:e530])
+        by smtp.googlemail.com with ESMTPSA id k25sm18571391wrd.42.2021.08.31.01.07.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 31 Aug 2021 01:07:56 -0700 (PDT)
+To:     cgel.zte@gmail.com, rajur@chelsio.com
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Chi Minghao <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+References: <20210831062255.13113-1-chi.minghao@zte.com.cn>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH] cxgb4: remove unneeded variable
+Message-ID: <90c48d79-29e5-ec9e-273d-5598fc4f5fab@gmail.com>
+Date:   Tue, 31 Aug 2021 10:07:46 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.31.63.8]
-X-ClientProxiedBy: BJHW-Mail-Ex05.internal.baidu.com (10.127.64.15) To
- BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42)
+In-Reply-To: <20210831062255.13113-1-chi.minghao@zte.com.cn>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the devm_platform_ioremap_resource_byname() helper instead of
-calling platform_get_resource_byname() and devm_ioremap_resource()
-separately
+On 31.08.2021 08:22, cgel.zte@gmail.com wrote:
+> From: Chi Minghao <chi.minghao@zte.com.cn>
+> 
+> Fix the following coccicheck REVIEW:
+> ./drivers/net/ethernet/chelsio/cxgb4/t4_hw.c:3266:5-8 REVIEW Unneeded
+> variable
+> 
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Chi Minghao <chi.minghao@zte.com.cn>
 
-Use the devm_platform_ioremap_resource() helper instead of
-calling platform_get_resource() and devm_ioremap_resource()
-separately
+This patch is simply wrong and obviously not even compile-tested.
+You would have found out by looking 5s at the code of the function.
+Look at what the FIRST_RET macro is doing.
+Please don't blindly trust tools and check patches proposed by tools.
 
-Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
----
- drivers/net/ethernet/litex/litex_liteeth.c    |  7 ++-----
- .../mellanox/mlxbf_gige/mlxbf_gige_main.c     | 21 +++----------------
- .../mellanox/mlxbf_gige/mlxbf_gige_mdio.c     |  7 +------
- drivers/net/ethernet/ni/nixge.c               | 10 +++------
- 4 files changed, 9 insertions(+), 36 deletions(-)
-
-diff --git a/drivers/net/ethernet/litex/litex_liteeth.c b/drivers/net/ethernet/litex/litex_liteeth.c
-index 10e6f2dedfad..a9bdbf0dcfe1 100644
---- a/drivers/net/ethernet/litex/litex_liteeth.c
-+++ b/drivers/net/ethernet/litex/litex_liteeth.c
-@@ -227,7 +227,6 @@ static int liteeth_probe(struct platform_device *pdev)
- {
- 	struct net_device *netdev;
- 	void __iomem *buf_base;
--	struct resource *res;
- 	struct liteeth *priv;
- 	int irq, err;
- 
-@@ -249,13 +248,11 @@ static int liteeth_probe(struct platform_device *pdev)
- 	}
- 	netdev->irq = irq;
- 
--	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "mac");
--	priv->base = devm_ioremap_resource(&pdev->dev, res);
-+	priv->base = devm_platform_ioremap_resource_byname(pdev, "mac");
- 	if (IS_ERR(priv->base))
- 		return PTR_ERR(priv->base);
- 
--	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "buffer");
--	buf_base = devm_ioremap_resource(&pdev->dev, res);
-+	buf_base = devm_platform_ioremap_resource_byname(pdev, "buffer");
- 	if (IS_ERR(buf_base))
- 		return PTR_ERR(buf_base);
- 
-diff --git a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c
-index d22219613719..3e85b17f5857 100644
---- a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c
-+++ b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c
-@@ -269,9 +269,6 @@ static int mlxbf_gige_probe(struct platform_device *pdev)
- {
- 	struct phy_device *phydev;
- 	struct net_device *netdev;
--	struct resource *mac_res;
--	struct resource *llu_res;
--	struct resource *plu_res;
- 	struct mlxbf_gige *priv;
- 	void __iomem *llu_base;
- 	void __iomem *plu_base;
-@@ -280,27 +277,15 @@ static int mlxbf_gige_probe(struct platform_device *pdev)
- 	int addr;
- 	int err;
- 
--	mac_res = platform_get_resource(pdev, IORESOURCE_MEM, MLXBF_GIGE_RES_MAC);
--	if (!mac_res)
--		return -ENXIO;
--
--	base = devm_ioremap_resource(&pdev->dev, mac_res);
-+	base = devm_platform_ioremap_resource(pdev, MLXBF_GIGE_RES_MAC);
- 	if (IS_ERR(base))
- 		return PTR_ERR(base);
- 
--	llu_res = platform_get_resource(pdev, IORESOURCE_MEM, MLXBF_GIGE_RES_LLU);
--	if (!llu_res)
--		return -ENXIO;
--
--	llu_base = devm_ioremap_resource(&pdev->dev, llu_res);
-+	llu_base = devm_platform_ioremap_resource(pdev, MLXBF_GIGE_RES_LLU);
- 	if (IS_ERR(llu_base))
- 		return PTR_ERR(llu_base);
- 
--	plu_res = platform_get_resource(pdev, IORESOURCE_MEM, MLXBF_GIGE_RES_PLU);
--	if (!plu_res)
--		return -ENXIO;
--
--	plu_base = devm_ioremap_resource(&pdev->dev, plu_res);
-+	plu_base = devm_platform_ioremap_resource(pdev, MLXBF_GIGE_RES_PLU);
- 	if (IS_ERR(plu_base))
- 		return PTR_ERR(plu_base);
- 
-diff --git a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_mdio.c b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_mdio.c
-index e32dd34fdcc0..7905179a9575 100644
---- a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_mdio.c
-+++ b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_mdio.c
-@@ -145,14 +145,9 @@ static int mlxbf_gige_mdio_write(struct mii_bus *bus, int phy_add,
- int mlxbf_gige_mdio_probe(struct platform_device *pdev, struct mlxbf_gige *priv)
- {
- 	struct device *dev = &pdev->dev;
--	struct resource *res;
- 	int ret;
- 
--	res = platform_get_resource(pdev, IORESOURCE_MEM, MLXBF_GIGE_RES_MDIO9);
--	if (!res)
--		return -ENODEV;
--
--	priv->mdio_io = devm_ioremap_resource(dev, res);
-+	priv->mdio_io = devm_platform_ioremap_resource(pdev, MLXBF_GIGE_RES_MDIO9);
- 	if (IS_ERR(priv->mdio_io))
- 		return PTR_ERR(priv->mdio_io);
- 
-diff --git a/drivers/net/ethernet/ni/nixge.c b/drivers/net/ethernet/ni/nixge.c
-index 36fe2c0f31ff..346145d3180e 100644
---- a/drivers/net/ethernet/ni/nixge.c
-+++ b/drivers/net/ethernet/ni/nixge.c
-@@ -1229,7 +1229,6 @@ static int nixge_of_get_resources(struct platform_device *pdev)
- {
- 	const struct of_device_id *of_id;
- 	enum nixge_version version;
--	struct resource *ctrlres;
- 	struct net_device *ndev;
- 	struct nixge_priv *priv;
- 
-@@ -1248,13 +1247,10 @@ static int nixge_of_get_resources(struct platform_device *pdev)
- 		netdev_err(ndev, "failed to map dma regs\n");
- 		return PTR_ERR(priv->dma_regs);
- 	}
--	if (version <= NIXGE_V2) {
-+	if (version <= NIXGE_V2)
- 		priv->ctrl_regs = priv->dma_regs + NIXGE_REG_CTRL_OFFSET;
--	} else {
--		ctrlres = platform_get_resource_byname(pdev, IORESOURCE_MEM,
--						       "ctrl");
--		priv->ctrl_regs = devm_ioremap_resource(&pdev->dev, ctrlres);
--	}
-+	else
-+		priv->ctrl_regs = devm_platform_ioremap_resource_byname(pdev, "ctrl");
- 	if (IS_ERR(priv->ctrl_regs)) {
- 		netdev_err(ndev, "failed to map ctrl regs\n");
- 		return PTR_ERR(priv->ctrl_regs);
--- 
-2.25.1
+> ---
+>  drivers/net/ethernet/chelsio/cxgb4/t4_hw.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
+> index 5e8ac42ac6ab..c986a414414b 100644
+> --- a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
+> +++ b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
+> @@ -3263,8 +3263,6 @@ int t4_get_scfg_version(struct adapter *adapter, u32 *vers)
+>   */
+>  int t4_get_version_info(struct adapter *adapter)
+>  {
+> -	int ret = 0;
+> -
+>  	#define FIRST_RET(__getvinfo) \
+>  	do { \
+>  		int __ret = __getvinfo; \
+> @@ -3280,7 +3278,7 @@ int t4_get_version_info(struct adapter *adapter)
+>  	FIRST_RET(t4_get_vpd_version(adapter, &adapter->params.vpd_vers));
+>  
+>  	#undef FIRST_RET
+> -	return ret;
+> +	return 0;
+>  }
+>  
+>  /**
+> 
 
