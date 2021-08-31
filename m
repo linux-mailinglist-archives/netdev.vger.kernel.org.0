@@ -2,223 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 824E93FC368
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 09:22:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A2AF3FC3C7
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 10:22:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239737AbhHaHVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 03:21:30 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:8803 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239538AbhHaHVa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 03:21:30 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GzJVH1QyyzYw6X;
-        Tue, 31 Aug 2021 15:19:51 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 31 Aug 2021 15:20:21 +0800
-Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.8; Tue, 31 Aug
- 2021 15:20:20 +0800
-Subject: Re: [PATCH net-next 2/2] skbuff: keep track of pp page when
- __skb_frag_ref() is called
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-CC:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, <linuxarm@openeuler.org>,
-        <hawk@kernel.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Willem de Bruijn <willemb@google.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Kevin Hao" <haokexin@gmail.com>, <nogikh@google.com>,
-        Marco Elver <elver@google.com>, <memxor@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@gmail.com>
-References: <1630286290-43714-1-git-send-email-linyunsheng@huawei.com>
- <1630286290-43714-3-git-send-email-linyunsheng@huawei.com>
- <CAKgT0UfmcB93Hn1AS_o2a_h98xxZMouTiGzJfG09qsWf+O6L1Q@mail.gmail.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <9cf28179-0cd5-a8c5-2bfd-bd844315ad1a@huawei.com>
-Date:   Tue, 31 Aug 2021 15:20:20 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S239901AbhHaHj1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 03:39:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47766 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239830AbhHaHjU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 31 Aug 2021 03:39:20 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E09B560ED4;
+        Tue, 31 Aug 2021 07:38:20 +0000 (UTC)
+Date:   Tue, 31 Aug 2021 09:38:18 +0200
+From:   Christian Brauner <christian.brauner@ubuntu.com>
+To:     Casey Schaufler <casey@schaufler-ca.com>
+Cc:     David Howells <dhowells@redhat.com>,
+        syzbot <syzbot+d1e3b1d92d25abf97943@syzkaller.appspotmail.com>,
+        andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, dvyukov@google.com, jmorris@namei.org,
+        kafai@fb.com, kpsingh@google.com, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        paul@paul-moore.com, selinux@vger.kernel.org,
+        songliubraving@fb.com, stephen.smalley.work@gmail.com,
+        syzkaller-bugs@googlegroups.com, tonymarislogistics@yandex.com,
+        viro@zeniv.linux.org.uk, yhs@fb.com
+Subject: Re: [syzbot] general protection fault in legacy_parse_param
+Message-ID: <20210831073818.oojyjqyiogel7hll@wittgenstein>
+References: <0000000000004e5ec705c6318557@google.com>
+ <0000000000008d2a0005ca951d94@google.com>
+ <20210830122348.jffs5dmq6z25qzw5@wittgenstein>
+ <61bf6b11-80f8-839e-4ae7-54c2c6021ed5@schaufler-ca.com>
+ <89d0e012-4caf-4cda-3c4e-803a2c6ebc2b@schaufler-ca.com>
+ <20210830165733.emqlg3orflaqqfio@wittgenstein>
+ <3354839e-5e7a-08c7-277a-9bbebfbfc0bc@schaufler-ca.com>
 MIME-Version: 1.0
-In-Reply-To: <CAKgT0UfmcB93Hn1AS_o2a_h98xxZMouTiGzJfG09qsWf+O6L1Q@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme716-chm.china.huawei.com (10.1.199.112) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <3354839e-5e7a-08c7-277a-9bbebfbfc0bc@schaufler-ca.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/8/30 23:14, Alexander Duyck wrote:
-> On Sun, Aug 29, 2021 at 6:19 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
->>
->> As the skb->pp_recycle and page->pp_magic may not be enough
->> to track if a frag page is from page pool after the calling
->> of __skb_frag_ref(), mostly because of a data race, see:
->> commit 2cc3aeb5eccc ("skbuff: Fix a potential race while
->> recycling page_pool packets").
->>
->> There may be clone and expand head case that might lose the
->> track if a frag page is from page pool or not.
->>
->> So increment the frag count when __skb_frag_ref() is called,
->> and only use page->pp_magic to indicate if a frag page is from
->> page pool, to avoid the above data race.
->>
->> For 32 bit systems with 64 bit dma, we preserve the orginial
->> behavior as frag count is used to trace how many time does a
->> frag page is called with __skb_frag_ref().
->>
->> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+On Mon, Aug 30, 2021 at 10:41:29AM -0700, Casey Schaufler wrote:
+> On 8/30/2021 9:57 AM, Christian Brauner wrote:
+> > On Mon, Aug 30, 2021 at 09:40:57AM -0700, Casey Schaufler wrote:
+> >> On 8/30/2021 7:25 AM, Casey Schaufler wrote:
+> >>> On 8/30/2021 5:23 AM, Christian Brauner wrote:
+> >>>> On Fri, Aug 27, 2021 at 07:11:18PM -0700, syzbot wrote:
+> >>>>> syzbot has bisected this issue to:
+> >>>>>
+> >>>>> commit 54261af473be4c5481f6196064445d2945f2bdab
+> >>>>> Author: KP Singh <kpsingh@google.com>
+> >>>>> Date:   Thu Apr 30 15:52:40 2020 +0000
+> >>>>>
+> >>>>>     security: Fix the default value of fs_context_parse_param hook
+> >>>>>
+> >>>>> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=160c5d75300000
+> >>>>> start commit:   77dd11439b86 Merge tag 'drm-fixes-2021-08-27' of git://ano..
+> >>>>> git tree:       upstream
+> >>>>> final oops:     https://syzkaller.appspot.com/x/report.txt?x=150c5d75300000
+> >>>>> console output: https://syzkaller.appspot.com/x/log.txt?x=110c5d75300000
+> >>>>> kernel config:  https://syzkaller.appspot.com/x/.config?x=2fd902af77ff1e56
+> >>>>> dashboard link: https://syzkaller.appspot.com/bug?extid=d1e3b1d92d25abf97943
+> >>>>> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=126d084d300000
+> >>>>> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16216eb1300000
+> >>>>>
+> >>>>> Reported-by: syzbot+d1e3b1d92d25abf97943@syzkaller.appspotmail.com
+> >>>>> Fixes: 54261af473be ("security: Fix the default value of fs_context_parse_param hook")
+> >>>>>
+> >>>>> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+> >>>> So ok, this seems somewhat clear now. When smack and 
+> >>>> CONFIG_BPF_LSM=y
+> >>>> is selected the bpf LSM will register NOP handlers including
+> >>>>
+> >>>> bpf_lsm_fs_context_fs_param()
+> >>>>
+> >>>> for the
+> >>>>
+> >>>> fs_context_fs_param
+> >>>>
+> >>>> LSM hook. The bpf LSM runs last, i.e. after smack according to:
+> >>>>
+> >>>> CONFIG_LSM="landlock,lockdown,yama,safesetid,integrity,tomoyo,smack,bpf"
+> >>>>
+> >>>> in the appended config. The smack hook runs and sets
+> >>>>
+> >>>> param->string = NULL
+> >>>>
+> >>>> then the bpf NOP handler runs returning -ENOPARM indicating to the vfs
+> >>>> parameter parser that this is not a security module option so it should
+> >>>> proceed processing the parameter subsequently causing the crash because
+> >>>> param->string is not allowed to be NULL (Which the vfs parameter parser
+> >>>> verifies early in fsconfig().).
+> >>> The security_fs_context_parse_param() function is incorrectly
+> >>> implemented using the call_int_hook() macro. It should return
+> >>> zero if any of the modules return zero. It does not follow the
+> >>> usual failure model of LSM hooks. It could be argued that the
+> >>> code was fine before the addition of the BPF hook, but it was
+> >>> going to fail as soon as any two security modules provided
+> >>> mount options.
+> >>>
+> >>> Regardless, I will have a patch later today. Thank you for
+> >>> tracking this down.
+> >> Here's my proposed patch. I'll tidy it up with a proper
+> >> commit message if it looks alright to y'all. I've tested
+> >> with Smack and with and without BPF.
+> > Looks good to me.
+> > On question, in contrast to smack, selinux returns 1 instead of 0 on
+> > success. So selinux would cause an early return preventing other hooks
+> > from running. Just making sure that this is intentional.
+> >
+> > Iirc, this would mean that selinux causes fsconfig() to return a
+> > positive value to userspace which I think is a bug; likely in selinux.
+> > So I think selinux should either return 0 or the security hook itself
+> > needs to overwrite a positive value with a sensible errno that can be
+> > seen by userspace.
 > 
-> Is this really a common enough case to justify adding this extra overhead?
+> I think that I agree. The SELinux and Smack versions of the
+> hook are almost identical except for setting rc to 1 in the
+> SELinux case. And returning 1 makes no sense if you follow
+> the callers back. David Howells wrote both the SELinux and
+> Smack versions. David - why are they different? which is correct?
 
-I am not sure I understand what does extra overhead mean here.
-But it seems this patch does not add any explicit overhead?
-As the added page_pool_is_pp_page() checking in __skb_frag_ref() is
-neutralized by avoiding the recycle checking in __skb_frag_unref(),
-and the atomic operation is with either pp_frag_count or _refcount?
+The documentation for fs_context_parse_param notes:
 
-> 
->> ---
->>  include/linux/skbuff.h  | 13 ++++++++++++-
->>  include/net/page_pool.h | 17 +++++++++++++++++
->>  net/core/page_pool.c    | 12 ++----------
->>  3 files changed, 31 insertions(+), 11 deletions(-)
->>
->> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
->> index 6bdb0db..8311482 100644
->> --- a/include/linux/skbuff.h
->> +++ b/include/linux/skbuff.h
->> @@ -3073,6 +3073,16 @@ static inline struct page *skb_frag_page(const skb_frag_t *frag)
->>   */
->>  static inline void __skb_frag_ref(skb_frag_t *frag)
->>  {
->> +       struct page *page = skb_frag_page(frag);
->> +
->> +#ifdef CONFIG_PAGE_POOL
->> +       if (!PAGE_POOL_DMA_USE_PP_FRAG_COUNT &&
->> +           page_pool_is_pp_page(page)) {
->> +               page_pool_atomic_inc_frag_count(page);
->> +               return;
->> +       }
->> +#endif
->> +
->>         get_page(skb_frag_page(frag));
->>  }
->>
-> 
-> This just seems like a bad idea in general. We are likely increasing
-> the potential for issues with this patch instead of avoiding them. I
+ * @fs_context_parse_param:
+ *	Userspace provided a parameter to configure a superblock.  The LSM may
+ *	reject it with an error and may use it for itself, in which case it
+ *	should return 0; otherwise it should return -ENOPARAM to pass it on to
+ *	the filesystem.
+ *	@fc indicates the filesystem context.
+ *	@param The parameter
 
-Yes, I am agreed that calling the __skb_frag_ref() without calling the
-__skb_frag_unref() for the same page might be more likely to cause problem
-for this patch. But we are already depending on the calling of
-__skb_frag_unref() to free the pp page, making it more likely just enable
-us to catch the bug more quickly?
-
-Or is there other situation that I am not awared of, which might cause
-issues?
-
-> really feel it would be better for us to just give up on the page and
-> kick it out of the page pool if we are cloning frames and multiple
-> references are being taken on the pages.
-
-For Rx, it seems fine for normal case.
-For Tx, it seems the cloning and multiple references happens when
-tso_fragment() is called in tcp_write_xmit(), and the driver need to
-reliable way to tell if a page is from the page pool, so that the
-dma mapping can be avoided for Tx too.
-
-> 
->> @@ -3101,7 +3111,8 @@ static inline void __skb_frag_unref(skb_frag_t *frag, bool recycle)
->>         struct page *page = skb_frag_page(frag);
->>
->>  #ifdef CONFIG_PAGE_POOL
->> -       if (recycle && page_pool_return_skb_page(page))
->> +       if ((!PAGE_POOL_DMA_USE_PP_FRAG_COUNT || recycle) &&
->> +           page_pool_return_skb_page(page))
->>                 return;
->>  #endif
->>         put_page(page);
->> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
->> index 2ad0706..8b43e3d9 100644
->> --- a/include/net/page_pool.h
->> +++ b/include/net/page_pool.h
->> @@ -244,6 +244,23 @@ static inline void page_pool_set_frag_count(struct page *page, long nr)
->>         atomic_long_set(&page->pp_frag_count, nr);
->>  }
->>
->> +static inline void page_pool_atomic_inc_frag_count(struct page *page)
->> +{
->> +       atomic_long_inc(&page->pp_frag_count);
->> +}
->> +
->> +static inline bool page_pool_is_pp_page(struct page *page)
->> +{
->> +       /* page->pp_magic is OR'ed with PP_SIGNATURE after the allocation
->> +        * in order to preserve any existing bits, such as bit 0 for the
->> +        * head page of compound page and bit 1 for pfmemalloc page, so
->> +        * mask those bits for freeing side when doing below checking,
->> +        * and page_is_pfmemalloc() is checked in __page_pool_put_page()
->> +        * to avoid recycling the pfmemalloc page.
->> +        */
->> +       return (page->pp_magic & ~0x3UL) == PP_SIGNATURE;
->> +}
->> +
->>  static inline long page_pool_atomic_sub_frag_count_return(struct page *page,
->>                                                           long nr)
->>  {
->> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
->> index ba9f14d..442d37b 100644
->> --- a/net/core/page_pool.c
->> +++ b/net/core/page_pool.c
->> @@ -24,7 +24,7 @@
->>  #define DEFER_TIME (msecs_to_jiffies(1000))
->>  #define DEFER_WARN_INTERVAL (60 * HZ)
->>
->> -#define BIAS_MAX       LONG_MAX
->> +#define BIAS_MAX       (LONG_MAX / 2)
-> 
-> This piece needs some explaining in the patch. Why are you changing
-> the BIAS_MAX?
-
-When __skb_frag_ref() is called for the pp page that is not drained yet,
-the pp_frag_count could be overflowed if the BIAS is too big.
-
-> 
->>  static int page_pool_init(struct page_pool *pool,
->>                           const struct page_pool_params *params)
->> @@ -741,15 +741,7 @@ bool page_pool_return_skb_page(struct page *page)
->>         struct page_pool *pp;
->>
->>         page = compound_head(page);
->> -
->> -       /* page->pp_magic is OR'ed with PP_SIGNATURE after the allocation
->> -        * in order to preserve any existing bits, such as bit 0 for the
->> -        * head page of compound page and bit 1 for pfmemalloc page, so
->> -        * mask those bits for freeing side when doing below checking,
->> -        * and page_is_pfmemalloc() is checked in __page_pool_put_page()
->> -        * to avoid recycling the pfmemalloc page.
->> -        */
->> -       if (unlikely((page->pp_magic & ~0x3UL) != PP_SIGNATURE))
->> +       if (!page_pool_is_pp_page(page))
->>                 return false;
->>
->>         pp = page->pp;
->> --
->> 2.7.4
->>
-> .
-> 
+So we should simply make selinux return 0 on top of your patch when it
+has consumed the option.
