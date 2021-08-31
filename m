@@ -2,92 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 800B13FC846
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 15:32:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2FB03FC848
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 15:33:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233409AbhHaNdu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 09:33:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51984 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234273AbhHaNdq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 09:33:46 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E930C061575
-        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 06:32:51 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1mL3sY-0000xs-Fm; Tue, 31 Aug 2021 15:32:42 +0200
-Received: from pengutronix.de (2a03-f580-87bc-d400-251e-7a0a-4ec6-bf9c.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:251e:7a0a:4ec6:bf9c])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id BD320674096;
-        Tue, 31 Aug 2021 13:32:39 +0000 (UTC)
-Date:   Tue, 31 Aug 2021 15:32:38 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org
-Subject: Re: [PATCH] can: rcar: Drop unneeded ARM dependency
-Message-ID: <20210831133238.75us5ipf25wzqkuq@pengutronix.de>
-References: <362d9ced19f3524ee8917df5681b3880c13cac85.1630416373.git.geert+renesas@glider.be>
+        id S236771AbhHaNeB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 09:34:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38430 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233928AbhHaNeB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 31 Aug 2021 09:34:01 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B69DE60F92;
+        Tue, 31 Aug 2021 13:33:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1630416786;
+        bh=7asLBEppjKvCHlRz/27vlUr1zsPezKtAWtq/AdxJjqY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=E456l2bmaqgN50NcK+i5AQJeEJqF0GQ9neavXpe4T7xetTaZFD3vOKAgSkhiDwmDw
+         kgAMgMBNuaOcEdy943xS1/3RsSNp9ILhMvrOi3YothuEilb+nySWWOUD40khr3UgNq
+         T9aAuZWbjJHGcPh7TnVC6LNLqJHxW6T27ChDRRO3q/P3w7sX85OWcajHGtgNFTG6n7
+         nDO5BFINjlM3Of4DJSsMu151keR4a+FBY2e3eykFFOiZNs9unLbuFSX8jXU33S/kp9
+         /CSflRAG4AuSKEHOV26EL5CvdX4SZE6GpOy+Tad0lIUKsMjOd6FmRmsAehWUDRExMY
+         E0f0dauRVOIAQ==
+Date:   Tue, 31 Aug 2021 06:33:04 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Machnikowski, Maciej" <maciej.machnikowski@intel.com>
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "abyagowi@fb.com" <abyagowi@fb.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "Jonathan Lemon" <bsd@fb.com>
+Subject: Re: [RFC v2 net-next 1/2] rtnetlink: Add new RTM_GETSYNCESTATE
+ message to get SyncE status
+Message-ID: <20210831063304.4bcacbe3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <SJ0PR11MB4958029CF18F93846B29F685EACC9@SJ0PR11MB4958.namprd11.prod.outlook.com>
+References: <20210829080512.3573627-1-maciej.machnikowski@intel.com>
+        <20210829080512.3573627-2-maciej.machnikowski@intel.com>
+        <20210829151017.GA6016@hoboy.vegasvil.org>
+        <PH0PR11MB495126A63998DABA5B5DE184EACA9@PH0PR11MB4951.namprd11.prod.outlook.com>
+        <20210830205758.GA26230@hoboy.vegasvil.org>
+        <20210830162909.110753ec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <SJ0PR11MB4958029CF18F93846B29F685EACC9@SJ0PR11MB4958.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="srzl6ahi5ee46qdy"
-Content-Disposition: inline
-In-Reply-To: <362d9ced19f3524ee8917df5681b3880c13cac85.1630416373.git.geert+renesas@glider.be>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 31 Aug 2021 10:20:18 +0000 Machnikowski, Maciej wrote:
+> > Hmm, IDK if this really belongs in RTNL. The OCP time card that
+> > Jonathan works on also wants to report signal lock, and it locks
+> > to GNSS. It doesn't have any networking functionality whatsoever.
+> > 
+> > Can we add a genetlink family for clock info/configuration? From
+> > what I understood discussing this with Jonathan it sounded like most
+> > clocks today have a vendor-specific character device for configuration
+> > and reading status.
+> > 
+> > I'm happy to write the plumbing if this seems like an okay idea
+> > but too much work for anyone to commit.
+> >   
+> 
+> I agree that this also is useful for Time card, yet it's also useful here.
+> PTP subsystem should implement a similar logic to this one for
+> DPLL-driven timers which can lock its frequency to external sources.
 
---srzl6ahi5ee46qdy
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Why would we have two APIs for doing the same thing? IIUC Richard does
+not want this in the PTP ioctls which is fair, but we need to cater to
+devices which do not have netdevs.
 
-On 31.08.2021 15:27:40, Geert Uytterhoeven wrote:
-> The dependency on ARM predates the dependency on ARCH_RENESAS.
-> The latter was introduced for Renesas arm64 SoCs first, and later
-> extended to cover Renesas ARM SoCs, too.
->=20
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-Applied to linux-can-next/testing.
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---srzl6ahi5ee46qdy
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmEuL3MACgkQqclaivrt
-76miCQgAnAZxW8kG/d0p+m5teLbGjtg/Ay3Paa1gufGRAaoufrQq7DqQ/gmrEKjW
-Izq+CNSzSQnd2SqYHOdeTQgn6gCMRCNiNnpPqo+ERvgm+veU8u1FiTHQYZCx+jjX
-v3IH4xCtZcIaRmATo2qWxFttVE1rZlVT6Pvkv+UJAPlkTBxTPr/LtswE7lrYa5WV
-baHtesfrkI6dy72vnZWL3SN7YzysHTw/k6Z3fDGX0TUgkhjvhFApcnj9JppVBCyj
-1irSai1oL3RP2xblXo0W51Xi+MKwJA85LNorc/yV3JHmrJRunh+nDvqC3ZhouKHI
-hIuPU2KhM1nGMixGJkPVJu1nFyaZUw==
-=xBj4
------END PGP SIGNATURE-----
-
---srzl6ahi5ee46qdy--
+> The reasoning behind putting it here is to enable returning the lock
+> to the GNSS receiver embedded on the NIC as a source for the
+> SyncE frequency. It helps distinguishing the embedded GNSS
+> from the external sources. As a result - the upper layer can report
+> GNSS lock based only on this message without the need to put the
+> embedded  GNSS receiver in the config file. On the other hand - if
+> sync to External source is reported such SW would need to read
+> the source of external sync from the config file.
+> 
+> And the list is expandable - if we need to define more embedded
+> sync source types we can always add more to it.
