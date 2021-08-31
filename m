@@ -2,102 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F7053FC255
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 08:05:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1AF03FC286
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 08:16:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239539AbhHaF52 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 01:57:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34048 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239066AbhHaF50 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 01:57:26 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2208BC061575;
-        Mon, 30 Aug 2021 22:56:32 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id n18so544014plp.7;
-        Mon, 30 Aug 2021 22:56:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=aIXBIIIoz+rnxmyGhqnZFJeXHpwd+gU8Q68x3m93PVQ=;
-        b=qDY2Ej/r5UzI10iwQI83HXn/Jw4eofnIFvyMHcKbw4KLOWi+nlrsApoxiSRR62WBEG
-         vUGxAU9OyB6dEZxlSKYgsBFAvERCGVtXiYAhzMLxO2Iu0po61VCf/ncpwBsYN9VPA26v
-         OUCGloe7CnhgYOrQmC9jXkhHI551M72FdEEN6fj9xPYlDjPLi7KDBCOGcyTXb4jhxAmH
-         wCEZL+jqLXTtXPCmDeHvD/axS3jdJmQLuL/WTUMhMLxKOJxTVqofa/7YZaEPJqpY0TJd
-         7sVFeiNe9o8WtM1DRizH52tFi73w9+4fIzCxNHfgvgMd7OzuoLAjDOu3sk/2QVRyG2gz
-         hTSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=aIXBIIIoz+rnxmyGhqnZFJeXHpwd+gU8Q68x3m93PVQ=;
-        b=izwY/Q74bLNtkajK0BnFRSM3OgR22simr4O5lmAvs/l0R9Hwf1lfmA7jLt1RoYjvGq
-         +NT4vgkwWQM3Ms2iwQFDuPoVNEWnQixu/HU/xdNTzZegU8qIqGC/t6iUNRaKukleSYcX
-         GH0i5xPk4uq3G3qgEQ4ybJhVOEK+dF/tNSHCKMO01+f8EFYQCwyA2EXhQy5/Sb0U5QO9
-         /iO89xzvFDHAZOqukk4m4sYpBcjam5Li2bqqxE4bw89NpDjp2QI+itzXI1SSqxIRDnyE
-         TmlSl06hPPOZwuR7qYam5BieaaYlShS+G0SxhaMPYVaUl2ZHCeEw8wV+9BY6iHzjd1J2
-         dDUQ==
-X-Gm-Message-State: AOAM532Q9kY+/dAC9nKNN12FyDdNaD4vKr2TVScKEyGwwhyzS5ATP/Ht
-        Bsrf6mo68m7N8hTaIgNF3tiio5c7PWfKHONzGlo=
-X-Google-Smtp-Source: ABdhPJwhByb5Jufu27BCB2wa52/aJ3dGafnYRXjfMoZnLI+Y4Dr9MSWTIzNPzbGq2t6j52uasgFquGwoSRpuO0XsXek=
-X-Received: by 2002:a17:90a:a0a:: with SMTP id o10mr3367812pjo.231.1630389391641;
- Mon, 30 Aug 2021 22:56:31 -0700 (PDT)
+        id S230382AbhHaGPf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 02:15:35 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:8801 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229457AbhHaGPd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 02:15:33 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GzH294r93zYwCN;
+        Tue, 31 Aug 2021 14:13:53 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Tue, 31 Aug 2021 14:14:34 +0800
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.8; Tue, 31 Aug
+ 2021 14:14:34 +0800
+Subject: Re: [PATCH net-next 1/2] page_pool: support non-split page with
+ PP_FLAG_PAGE_FRAG
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+CC:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, <linuxarm@openeuler.org>,
+        <hawk@kernel.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Willem de Bruijn <willemb@google.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Kevin Hao" <haokexin@gmail.com>, <nogikh@google.com>,
+        Marco Elver <elver@google.com>, <memxor@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@gmail.com>
+References: <1630286290-43714-1-git-send-email-linyunsheng@huawei.com>
+ <1630286290-43714-2-git-send-email-linyunsheng@huawei.com>
+ <CAKgT0UfNFw+jwoDr_xx6kX_OoCVgrq2rCSc4zdXRMSZLBmbA8Q@mail.gmail.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <e0f927bb-7a03-de00-d62a-d2235a0f4d8c@huawei.com>
+Date:   Tue, 31 Aug 2021 14:14:33 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-References: <1630295221-9859-1-git-send-email-tcs_kernel@tencent.com>
- <163032300695.3135.11373235819151215482.git-patchwork-notify@kernel.org> <20210830101456.21944dfe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210830101456.21944dfe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 30 Aug 2021 22:56:20 -0700
-Message-ID: <CAM_iQpWi083uZ5wMYA+coWtME=xQMy3pb-__9jaFqe9piFRSaQ@mail.gmail.com>
-Subject: Re: [PATCH V2] fix array-index-out-of-bounds in taprio_change
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Haimin Zhang <tcs.kernel@gmail.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        David Miller <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, tcs_kernel@tencent.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAKgT0UfNFw+jwoDr_xx6kX_OoCVgrq2rCSc4zdXRMSZLBmbA8Q@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme718-chm.china.huawei.com (10.1.199.114) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 30, 2021 at 10:14 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Mon, 30 Aug 2021 11:30:06 +0000 patchwork-bot+netdevbpf@kernel.org
-> wrote:
-> > Hello:
-> >
-> > This patch was applied to netdev/net-next.git (refs/heads/master):
-> >
-> > On Mon, 30 Aug 2021 11:47:01 +0800 you wrote:
-> > > From: Haimin Zhang <tcs_kernel@tencent.com>
-> > >
-> > > syzbot report an array-index-out-of-bounds in taprio_change
-> > > index 16 is out of range for type '__u16 [16]'
-> > > that's because mqprio->num_tc is lager than TC_MAX_QUEUE,so we check
-> > > the return value of netdev_set_num_tc.
-> > >
-> > > [...]
-> >
-> > Here is the summary with links:
-> >   - [V2] fix array-index-out-of-bounds in taprio_change
-> >     https://git.kernel.org/netdev/net-next/c/efe487fce306
-> >
-> > You are awesome, thank you!
->
-> https://lore.kernel.org/netdev/20210830091046.610ceb1b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/
->
-> Oh, well...
+On 2021/8/30 23:05, Alexander Duyck wrote:
+> On Sun, Aug 29, 2021 at 6:19 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>>
+>> Currently when PP_FLAG_PAGE_FRAG is set, the caller is not
+>> expected to call page_pool_alloc_pages() directly because of
+>> the PP_FLAG_PAGE_FRAG checking in __page_pool_put_page().
+>>
+>> The patch removes the above checking to enable non-split page
+>> support when PP_FLAG_PAGE_FRAG is set.
+>>
+>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+>> ---
+>>  include/net/page_pool.h |  6 ++++++
+>>  net/core/page_pool.c    | 12 +++++++-----
+>>  2 files changed, 13 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+>> index a408240..2ad0706 100644
+>> --- a/include/net/page_pool.h
+>> +++ b/include/net/page_pool.h
+>> @@ -238,6 +238,9 @@ static inline void page_pool_set_dma_addr(struct page *page, dma_addr_t addr)
+>>
+>>  static inline void page_pool_set_frag_count(struct page *page, long nr)
+>>  {
+>> +       if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT)
+>> +               return;
+>> +
+>>         atomic_long_set(&page->pp_frag_count, nr);
+>>  }
+>>
+>> @@ -246,6 +249,9 @@ static inline long page_pool_atomic_sub_frag_count_return(struct page *page,
+>>  {
+>>         long ret;
+>>
+>> +       if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT)
+>> +               return 0;
+>> +
+>>         /* As suggested by Alexander, atomic_long_read() may cover up the
+>>          * reference count errors, so avoid calling atomic_long_read() in
+>>          * the cases of freeing or draining the page_frags, where we would
+>> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+>> index 1a69784..ba9f14d 100644
+>> --- a/net/core/page_pool.c
+>> +++ b/net/core/page_pool.c
+>> @@ -313,11 +313,14 @@ struct page *page_pool_alloc_pages(struct page_pool *pool, gfp_t gfp)
+>>
+>>         /* Fast-path: Get a page from cache */
+>>         page = __page_pool_get_cached(pool);
+>> -       if (page)
+>> -               return page;
+>>
+>>         /* Slow-path: cache empty, do real allocation */
+>> -       page = __page_pool_alloc_pages_slow(pool, gfp);
+>> +       if (!page)
+>> +               page = __page_pool_alloc_pages_slow(pool, gfp);
+>> +
+>> +       if (likely(page))
+>> +               page_pool_set_frag_count(page, 1);
+>> +
+>>         return page;
+>>  }
+>>  EXPORT_SYMBOL(page_pool_alloc_pages);
+>> @@ -426,8 +429,7 @@ __page_pool_put_page(struct page_pool *pool, struct page *page,
+>>                      unsigned int dma_sync_size, bool allow_direct)
+>>  {
+>>         /* It is not the last user for the page frag case */
+>> -       if (pool->p.flags & PP_FLAG_PAGE_FRAG &&
+>> -           page_pool_atomic_sub_frag_count_return(page, 1))
+>> +       if (page_pool_atomic_sub_frag_count_return(page, 1))
+>>                 return NULL;
+> 
+> Isn't this going to have a negative performance impact on page pool
+> pages in general? Essentially you are adding an extra atomic operation
+> for all the non-frag pages.
+> 
+> It would work better if this was doing a check against 1 to determine
+> if it is okay for this page to be freed here and only if the check
+> fails then you perform the atomic sub_return.
 
-I agree it is slightly better to make the check work in
-taprio_parse_mqprio_opt(), but this patch is not bad either, we
-need to check the return value of netdev_set_num_tc() for
-completeness at least.
+The page_pool_atomic_sub_frag_count_return() has added the optimization
+to not do the atomic sub_return when the caller is the last user of the
+page, see page_pool_atomic_sub_frag_count_return():
 
-BTW, this patch should be landed in -net, not -net-next, as it
-fixes a real bug reported by syzbot.
+	/* As suggested by Alexander, atomic_long_read() may cover up the
+	 * reference count errors, so avoid calling atomic_long_read() in
+	 * the cases of freeing or draining the page_frags, where we would
+	 * not expect it to match or that are slowpath anyway.
+	 */
+        if (__builtin_constant_p(nr) &&
+            atomic_long_read(&page->pp_frag_count) == nr)
+                return 0;
 
-Thanks.
+So the check against 1 is not needed here?
+
+> .
+> 
