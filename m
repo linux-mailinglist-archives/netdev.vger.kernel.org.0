@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12C573FC603
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 13:33:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DD4E3FC600
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 13:33:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241226AbhHaKi4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 06:38:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39060 "EHLO
+        id S241200AbhHaKir (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 06:38:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241157AbhHaKic (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 06:38:32 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B895C061764
-        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 03:37:36 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id v123so14576351pfb.11
-        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 03:37:36 -0700 (PDT)
+        with ESMTP id S241163AbhHaKif (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 06:38:35 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AF64C06179A
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 03:37:40 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id n18so942495plp.7
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 03:37:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bytedance-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=uxUw2hcVSEAQgQhUPN5uVVCi3T7zx/tOCVC+l2FlBb0=;
-        b=uaj+s5apkgC8JkyW1PxXsLPPQrCKOxks7K9IIyYQf1D7vM56ajxP+XRXxTgRq+5H3T
-         pI8FajKMdX47pxI9raCceZt1nGT4BhJuwenDw2JwBgNFTx82NeYVqWNzp2jm/gWccyum
-         oc+AbdNsDSpNWgjCoQtLg1dA+eu1HJ2XdDxCA3KNaLa2S+BJcedkhtAEIjxCmofG/5kg
-         ODDwK39I8r99LvgVYki0xx3aghkcsiiimEx9bBuitK2fwP9o71BjIm0viQ+oqdNy1I5d
-         dVqifftjAhSUiNdKNiJUjwixdb4Mx8m3e34Aj6QW1H4HEJS88VwEDGP9XWbEChgsuW4F
-         Ladg==
+        bh=03Nd7u7okYdu6gFT64ik5NaZ4PZ8j5m+esOMp2eCUlA=;
+        b=EFplu0Nv5ZvVC7+F6A4FAox8fzDvjooAOVa4CHdZHqn8LeHH7KuNYZOwQ7HbExBaRI
+         Hi74HKwwJXl7DAp0gNwzUG5IX0dbVTCWTxZG/izY/1CzGtuQo7MvDxr6oztleO2z4COy
+         hciuMHDRC3D4s58A6bs7kpPAZ1/Lr5qrHuxG/W8ZOuxeaz7im7kmTmVDwT3faeHrFJmD
+         k0o1QYatwqi1RtqbZvlitzWQSWAdTj5JXuB4C41Aw18FKZhqnahYgElsypr0Scs77ThM
+         kX0zcSSRIUipSPL/thkps0n/Yyv+xqBVCficA70kFh/g0YyT5ysTZ0AymT/KW7JT28Ci
+         37GA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=uxUw2hcVSEAQgQhUPN5uVVCi3T7zx/tOCVC+l2FlBb0=;
-        b=FAUkwZVuvExA2DCZuYideTu6gFxVQh/S/+44msq4aOiFuDxz/x//D/x8GeXkQgpkcX
-         maion7gAJk+VtYk+0TGdLF00S4TWbe1YqojXWOxpBX7/5TLvgoPEZQbKsIFLeyARBIYV
-         zHi0csQrQzhFsow5PtQdeCU8N/OGoIYYLHxrZbYKhUw9xm22G/qSNDwzaAI8GQld8FRe
-         kK5BSMwltAb6iSfGw/IrSS0/KMKCQKnTr3XLvMZN0b0jWn7n0woSAJ7ZHzXtEYiyqchx
-         7reEQcC4yrl4EMt+S816ylGZmqSi9+mGIFsaUlBjwFDJmT/B4+Ze31n360pURVGLnc1m
-         dTsw==
-X-Gm-Message-State: AOAM533T5UnsBohiVGvyj1jGpA3NfJvm22zDfgsM9+7LFcU6Jb7whnUL
-        LHHchVbl/ONdL7Cz+DuqI87G
-X-Google-Smtp-Source: ABdhPJxjxR4iWN2Xnq/G5G1OSYO70CubX1NZM1LhejCfcBC/02J6PY1OHR37Wanf6g+bWH4Mj+ayUw==
-X-Received: by 2002:a05:6a00:10ca:b0:3fe:3a9b:2100 with SMTP id d10-20020a056a0010ca00b003fe3a9b2100mr11529844pfu.59.1630406256094;
-        Tue, 31 Aug 2021 03:37:36 -0700 (PDT)
+        bh=03Nd7u7okYdu6gFT64ik5NaZ4PZ8j5m+esOMp2eCUlA=;
+        b=rWON7xX+S69pkLpi0lYi7bbRquikQCVXDwtwnZdwJlajD9MT1KlGM3nLHiV9dWolQf
+         aMF1uc81MwD648gfSKV6IPHDgSh5/sYRvqEYV7DYkDr9NvpDiU3uGtTYnKJy+yG1hCju
+         CFeJtdEqRvtjajHNt6A3R6cgPUBLNCchthEWV9eHRaIzZ4vwwQlcBeQxZdXNbIUNtFUf
+         y2BzOH6TLRZbgpTym2l5aVjlV6XbsnFbd+U+CX8A5Q7U6iLoki/sV/gT5mCbENMt5BaG
+         T4nXZMxE+ABRgXyytRxzeASQbQKeSuZX2PeTKS4n4whERA+mh+Twi8SqRKPPxxD8M6dZ
+         QbRw==
+X-Gm-Message-State: AOAM531S7WzCZYdX0A9esnFpUnQaV+94FL93ON8Ts4201v6zlmTz03a1
+        AvF7im6l6fM0kyxPeC1EJE7E
+X-Google-Smtp-Source: ABdhPJySEijLsBATU5VtgDOxkvIujEDgS/kjkjZUXgzX7bM/ioNbDcShciw0Xjb9ZaDp4pnhRewwBA==
+X-Received: by 2002:a17:902:7202:b029:12c:dc6b:928f with SMTP id ba2-20020a1709027202b029012cdc6b928fmr4068412plb.55.1630406259582;
+        Tue, 31 Aug 2021 03:37:39 -0700 (PDT)
 Received: from localhost ([139.177.225.253])
-        by smtp.gmail.com with ESMTPSA id t4sm16885664pfe.166.2021.08.31.03.37.35
+        by smtp.gmail.com with ESMTPSA id h20sm17985717pfn.173.2021.08.31.03.37.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Aug 2021 03:37:35 -0700 (PDT)
+        Tue, 31 Aug 2021 03:37:39 -0700 (PDT)
 From:   Xie Yongji <xieyongji@bytedance.com>
 To:     mst@redhat.com, jasowang@redhat.com, stefanha@redhat.com,
         sgarzare@redhat.com, parav@nvidia.com, hch@infradead.org,
@@ -61,9 +61,9 @@ Cc:     songmuchun@bytedance.com,
         virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
         kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org,
         iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v13 09/13] vdpa: factor out vhost_vdpa_pa_map() and vhost_vdpa_pa_unmap()
-Date:   Tue, 31 Aug 2021 18:36:30 +0800
-Message-Id: <20210831103634.33-10-xieyongji@bytedance.com>
+Subject: [PATCH v13 10/13] vdpa: Support transferring virtual addressing during DMA mapping
+Date:   Tue, 31 Aug 2021 18:36:31 +0800
+Message-Id: <20210831103634.33-11-xieyongji@bytedance.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210831103634.33-1-xieyongji@bytedance.com>
 References: <20210831103634.33-1-xieyongji@bytedance.com>
@@ -73,148 +73,359 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The upcoming patch is going to support VA mapping/unmapping.
-So let's factor out the logic of PA mapping/unmapping firstly
-to make the code more readable.
+This patch introduces an attribute for vDPA device to indicate
+whether virtual address can be used. If vDPA device driver set
+it, vhost-vdpa bus driver will not pin user page and transfer
+userspace virtual address instead of physical address during
+DMA mapping. And corresponding vma->vm_file and offset will be
+also passed as an opaque pointer.
 
 Suggested-by: Jason Wang <jasowang@redhat.com>
 Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
 Acked-by: Jason Wang <jasowang@redhat.com>
 ---
- drivers/vhost/vdpa.c | 55 +++++++++++++++++++++++++++++++++-------------------
- 1 file changed, 35 insertions(+), 20 deletions(-)
+ drivers/vdpa/ifcvf/ifcvf_main.c   |  2 +-
+ drivers/vdpa/mlx5/net/mlx5_vnet.c |  2 +-
+ drivers/vdpa/vdpa.c               |  9 +++-
+ drivers/vdpa/vdpa_sim/vdpa_sim.c  |  2 +-
+ drivers/vdpa/virtio_pci/vp_vdpa.c |  2 +-
+ drivers/vhost/vdpa.c              | 99 ++++++++++++++++++++++++++++++++++-----
+ include/linux/vdpa.h              | 20 ++++++--
+ 7 files changed, 117 insertions(+), 19 deletions(-)
 
+diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
+index 4293481ce910..dcd648e1f7e7 100644
+--- a/drivers/vdpa/ifcvf/ifcvf_main.c
++++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+@@ -515,7 +515,7 @@ static int ifcvf_vdpa_dev_add(struct vdpa_mgmt_dev *mdev, const char *name)
+ 	pdev = ifcvf_mgmt_dev->pdev;
+ 	dev = &pdev->dev;
+ 	adapter = vdpa_alloc_device(struct ifcvf_adapter, vdpa,
+-				    dev, &ifc_vdpa_ops, name);
++				    dev, &ifc_vdpa_ops, name, false);
+ 	if (IS_ERR(adapter)) {
+ 		IFCVF_ERR(pdev, "Failed to allocate vDPA structure");
+ 		return PTR_ERR(adapter);
+diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+index 608f6b900cd9..08f39952fa6a 100644
+--- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
++++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+@@ -2425,7 +2425,7 @@ static int mlx5_vdpa_dev_add(struct vdpa_mgmt_dev *v_mdev, const char *name)
+ 	max_vqs = min_t(u32, max_vqs, MLX5_MAX_SUPPORTED_VQS);
+ 
+ 	ndev = vdpa_alloc_device(struct mlx5_vdpa_net, mvdev.vdev, mdev->device, &mlx5_vdpa_ops,
+-				 name);
++				 name, false);
+ 	if (IS_ERR(ndev))
+ 		return PTR_ERR(ndev);
+ 
+diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
+index bb3f1d1f0422..8f01d6a7ecc5 100644
+--- a/drivers/vdpa/vdpa.c
++++ b/drivers/vdpa/vdpa.c
+@@ -71,6 +71,7 @@ static void vdpa_release_dev(struct device *d)
+  * @config: the bus operations that is supported by this device
+  * @size: size of the parent structure that contains private data
+  * @name: name of the vdpa device; optional.
++ * @use_va: indicate whether virtual address must be used by this device
+  *
+  * Driver should use vdpa_alloc_device() wrapper macro instead of
+  * using this directly.
+@@ -80,7 +81,8 @@ static void vdpa_release_dev(struct device *d)
+  */
+ struct vdpa_device *__vdpa_alloc_device(struct device *parent,
+ 					const struct vdpa_config_ops *config,
+-					size_t size, const char *name)
++					size_t size, const char *name,
++					bool use_va)
+ {
+ 	struct vdpa_device *vdev;
+ 	int err = -EINVAL;
+@@ -91,6 +93,10 @@ struct vdpa_device *__vdpa_alloc_device(struct device *parent,
+ 	if (!!config->dma_map != !!config->dma_unmap)
+ 		goto err;
+ 
++	/* It should only work for the device that use on-chip IOMMU */
++	if (use_va && !(config->dma_map || config->set_map))
++		goto err;
++
+ 	err = -ENOMEM;
+ 	vdev = kzalloc(size, GFP_KERNEL);
+ 	if (!vdev)
+@@ -106,6 +112,7 @@ struct vdpa_device *__vdpa_alloc_device(struct device *parent,
+ 	vdev->index = err;
+ 	vdev->config = config;
+ 	vdev->features_valid = false;
++	vdev->use_va = use_va;
+ 
+ 	if (name)
+ 		err = dev_set_name(&vdev->dev, "%s", name);
+diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/vdpa_sim.c
+index a70fd2a08ff1..5f484fff8dbe 100644
+--- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
++++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
+@@ -251,7 +251,7 @@ struct vdpasim *vdpasim_create(struct vdpasim_dev_attr *dev_attr)
+ 		ops = &vdpasim_config_ops;
+ 
+ 	vdpasim = vdpa_alloc_device(struct vdpasim, vdpa, NULL, ops,
+-				    dev_attr->name);
++				    dev_attr->name, false);
+ 	if (IS_ERR(vdpasim)) {
+ 		ret = PTR_ERR(vdpasim);
+ 		goto err_alloc;
+diff --git a/drivers/vdpa/virtio_pci/vp_vdpa.c b/drivers/vdpa/virtio_pci/vp_vdpa.c
+index cd7718b43a6e..5bcd00246d2e 100644
+--- a/drivers/vdpa/virtio_pci/vp_vdpa.c
++++ b/drivers/vdpa/virtio_pci/vp_vdpa.c
+@@ -446,7 +446,7 @@ static int vp_vdpa_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 		return ret;
+ 
+ 	vp_vdpa = vdpa_alloc_device(struct vp_vdpa, vdpa,
+-				    dev, &vp_vdpa_ops, NULL);
++				    dev, &vp_vdpa_ops, NULL, false);
+ 	if (IS_ERR(vp_vdpa)) {
+ 		dev_err(dev, "vp_vdpa: Failed to allocate vDPA structure\n");
+ 		return PTR_ERR(vp_vdpa);
 diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-index ba030150b4b6..49a1f45ccef8 100644
+index 49a1f45ccef8..e7b75f49f668 100644
 --- a/drivers/vhost/vdpa.c
 +++ b/drivers/vhost/vdpa.c
-@@ -504,7 +504,7 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
- 	return r;
- }
- 
--static void vhost_vdpa_iotlb_unmap(struct vhost_vdpa *v, u64 start, u64 last)
-+static void vhost_vdpa_pa_unmap(struct vhost_vdpa *v, u64 start, u64 last)
- {
- 	struct vhost_dev *dev = &v->vdev;
- 	struct vhost_iotlb *iotlb = dev->iotlb;
-@@ -526,6 +526,11 @@ static void vhost_vdpa_iotlb_unmap(struct vhost_vdpa *v, u64 start, u64 last)
+@@ -526,8 +526,28 @@ static void vhost_vdpa_pa_unmap(struct vhost_vdpa *v, u64 start, u64 last)
  	}
  }
  
-+static void vhost_vdpa_iotlb_unmap(struct vhost_vdpa *v, u64 start, u64 last)
-+{
-+	return vhost_vdpa_pa_unmap(v, start, last);
-+}
-+
- static void vhost_vdpa_iotlb_free(struct vhost_vdpa *v)
- {
- 	struct vhost_dev *dev = &v->vdev;
-@@ -606,38 +611,28 @@ static void vhost_vdpa_unmap(struct vhost_vdpa *v, u64 iova, u64 size)
- 	}
- }
- 
--static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
--					   struct vhost_iotlb_msg *msg)
-+static int vhost_vdpa_pa_map(struct vhost_vdpa *v,
-+			     u64 iova, u64 size, u64 uaddr, u32 perm)
- {
- 	struct vhost_dev *dev = &v->vdev;
--	struct vhost_iotlb *iotlb = dev->iotlb;
- 	struct page **page_list;
- 	unsigned long list_size = PAGE_SIZE / sizeof(struct page *);
- 	unsigned int gup_flags = FOLL_LONGTERM;
- 	unsigned long npages, cur_base, map_pfn, last_pfn = 0;
- 	unsigned long lock_limit, sz2pin, nchunks, i;
--	u64 iova = msg->iova;
-+	u64 start = iova;
- 	long pinned;
- 	int ret = 0;
- 
--	if (msg->iova < v->range.first || !msg->size ||
--	    msg->iova > U64_MAX - msg->size + 1 ||
--	    msg->iova + msg->size - 1 > v->range.last)
--		return -EINVAL;
--
--	if (vhost_iotlb_itree_first(iotlb, msg->iova,
--				    msg->iova + msg->size - 1))
--		return -EEXIST;
--
- 	/* Limit the use of memory for bookkeeping */
- 	page_list = (struct page **) __get_free_page(GFP_KERNEL);
- 	if (!page_list)
- 		return -ENOMEM;
- 
--	if (msg->perm & VHOST_ACCESS_WO)
-+	if (perm & VHOST_ACCESS_WO)
- 		gup_flags |= FOLL_WRITE;
- 
--	npages = PAGE_ALIGN(msg->size + (iova & ~PAGE_MASK)) >> PAGE_SHIFT;
-+	npages = PAGE_ALIGN(size + (iova & ~PAGE_MASK)) >> PAGE_SHIFT;
- 	if (!npages) {
- 		ret = -EINVAL;
- 		goto free;
-@@ -651,7 +646,7 @@ static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
- 		goto unlock;
- 	}
- 
--	cur_base = msg->uaddr & PAGE_MASK;
-+	cur_base = uaddr & PAGE_MASK;
- 	iova &= PAGE_MASK;
- 	nchunks = 0;
- 
-@@ -682,7 +677,7 @@ static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
- 				csize = (last_pfn - map_pfn + 1) << PAGE_SHIFT;
- 				ret = vhost_vdpa_map(v, iova, csize,
- 						     map_pfn << PAGE_SHIFT,
--						     msg->perm);
-+						     perm);
- 				if (ret) {
- 					/*
- 					 * Unpin the pages that are left unmapped
-@@ -711,7 +706,7 @@ static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
- 
- 	/* Pin the rest chunk */
- 	ret = vhost_vdpa_map(v, iova, (last_pfn - map_pfn + 1) << PAGE_SHIFT,
--			     map_pfn << PAGE_SHIFT, msg->perm);
-+			     map_pfn << PAGE_SHIFT, perm);
- out:
- 	if (ret) {
- 		if (nchunks) {
-@@ -730,13 +725,33 @@ static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
- 			for (pfn = map_pfn; pfn <= last_pfn; pfn++)
- 				unpin_user_page(pfn_to_page(pfn));
- 		}
--		vhost_vdpa_unmap(v, msg->iova, msg->size);
-+		vhost_vdpa_unmap(v, start, size);
- 	}
- unlock:
- 	mmap_read_unlock(dev->mm);
- free:
- 	free_page((unsigned long)page_list);
- 	return ret;
-+
-+}
-+
-+static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
-+					   struct vhost_iotlb_msg *msg)
++static void vhost_vdpa_va_unmap(struct vhost_vdpa *v, u64 start, u64 last)
 +{
 +	struct vhost_dev *dev = &v->vdev;
 +	struct vhost_iotlb *iotlb = dev->iotlb;
++	struct vhost_iotlb_map *map;
++	struct vdpa_map_file *map_file;
 +
-+	if (msg->iova < v->range.first || !msg->size ||
-+	    msg->iova > U64_MAX - msg->size + 1 ||
-+	    msg->iova + msg->size - 1 > v->range.last)
-+		return -EINVAL;
++	while ((map = vhost_iotlb_itree_first(iotlb, start, last)) != NULL) {
++		map_file = (struct vdpa_map_file *)map->opaque;
++		fput(map_file->file);
++		kfree(map_file);
++		vhost_iotlb_map_free(iotlb, map);
++	}
++}
 +
-+	if (vhost_iotlb_itree_first(iotlb, msg->iova,
-+				    msg->iova + msg->size - 1))
-+		return -EEXIST;
+ static void vhost_vdpa_iotlb_unmap(struct vhost_vdpa *v, u64 start, u64 last)
+ {
++	struct vdpa_device *vdpa = v->vdpa;
 +
-+	return vhost_vdpa_pa_map(v, msg->iova, msg->size, msg->uaddr,
-+				 msg->perm);
++	if (vdpa->use_va)
++		return vhost_vdpa_va_unmap(v, start, last);
++
+ 	return vhost_vdpa_pa_unmap(v, start, last);
  }
  
- static int vhost_vdpa_process_iotlb_msg(struct vhost_dev *dev,
+@@ -562,21 +582,21 @@ static int perm_to_iommu_flags(u32 perm)
+ 	return flags | IOMMU_CACHE;
+ }
+ 
+-static int vhost_vdpa_map(struct vhost_vdpa *v,
+-			  u64 iova, u64 size, u64 pa, u32 perm)
++static int vhost_vdpa_map(struct vhost_vdpa *v, u64 iova,
++			  u64 size, u64 pa, u32 perm, void *opaque)
+ {
+ 	struct vhost_dev *dev = &v->vdev;
+ 	struct vdpa_device *vdpa = v->vdpa;
+ 	const struct vdpa_config_ops *ops = vdpa->config;
+ 	int r = 0;
+ 
+-	r = vhost_iotlb_add_range(dev->iotlb, iova, iova + size - 1,
+-				  pa, perm);
++	r = vhost_iotlb_add_range_ctx(dev->iotlb, iova, iova + size - 1,
++				      pa, perm, opaque);
+ 	if (r)
+ 		return r;
+ 
+ 	if (ops->dma_map) {
+-		r = ops->dma_map(vdpa, iova, size, pa, perm, NULL);
++		r = ops->dma_map(vdpa, iova, size, pa, perm, opaque);
+ 	} else if (ops->set_map) {
+ 		if (!v->in_batch)
+ 			r = ops->set_map(vdpa, dev->iotlb);
+@@ -584,13 +604,15 @@ static int vhost_vdpa_map(struct vhost_vdpa *v,
+ 		r = iommu_map(v->domain, iova, pa, size,
+ 			      perm_to_iommu_flags(perm));
+ 	}
+-
+-	if (r)
++	if (r) {
+ 		vhost_iotlb_del_range(dev->iotlb, iova, iova + size - 1);
+-	else
++		return r;
++	}
++
++	if (!vdpa->use_va)
+ 		atomic64_add(size >> PAGE_SHIFT, &dev->mm->pinned_vm);
+ 
+-	return r;
++	return 0;
+ }
+ 
+ static void vhost_vdpa_unmap(struct vhost_vdpa *v, u64 iova, u64 size)
+@@ -611,6 +633,56 @@ static void vhost_vdpa_unmap(struct vhost_vdpa *v, u64 iova, u64 size)
+ 	}
+ }
+ 
++static int vhost_vdpa_va_map(struct vhost_vdpa *v,
++			     u64 iova, u64 size, u64 uaddr, u32 perm)
++{
++	struct vhost_dev *dev = &v->vdev;
++	u64 offset, map_size, map_iova = iova;
++	struct vdpa_map_file *map_file;
++	struct vm_area_struct *vma;
++	int ret;
++
++	mmap_read_lock(dev->mm);
++
++	while (size) {
++		vma = find_vma(dev->mm, uaddr);
++		if (!vma) {
++			ret = -EINVAL;
++			break;
++		}
++		map_size = min(size, vma->vm_end - uaddr);
++		if (!(vma->vm_file && (vma->vm_flags & VM_SHARED) &&
++			!(vma->vm_flags & (VM_IO | VM_PFNMAP))))
++			goto next;
++
++		map_file = kzalloc(sizeof(*map_file), GFP_KERNEL);
++		if (!map_file) {
++			ret = -ENOMEM;
++			break;
++		}
++		offset = (vma->vm_pgoff << PAGE_SHIFT) + uaddr - vma->vm_start;
++		map_file->offset = offset;
++		map_file->file = get_file(vma->vm_file);
++		ret = vhost_vdpa_map(v, map_iova, map_size, uaddr,
++				     perm, map_file);
++		if (ret) {
++			fput(map_file->file);
++			kfree(map_file);
++			break;
++		}
++next:
++		size -= map_size;
++		uaddr += map_size;
++		map_iova += map_size;
++	}
++	if (ret)
++		vhost_vdpa_unmap(v, iova, map_iova - iova);
++
++	mmap_read_unlock(dev->mm);
++
++	return ret;
++}
++
+ static int vhost_vdpa_pa_map(struct vhost_vdpa *v,
+ 			     u64 iova, u64 size, u64 uaddr, u32 perm)
+ {
+@@ -677,7 +749,7 @@ static int vhost_vdpa_pa_map(struct vhost_vdpa *v,
+ 				csize = (last_pfn - map_pfn + 1) << PAGE_SHIFT;
+ 				ret = vhost_vdpa_map(v, iova, csize,
+ 						     map_pfn << PAGE_SHIFT,
+-						     perm);
++						     perm, NULL);
+ 				if (ret) {
+ 					/*
+ 					 * Unpin the pages that are left unmapped
+@@ -706,7 +778,7 @@ static int vhost_vdpa_pa_map(struct vhost_vdpa *v,
+ 
+ 	/* Pin the rest chunk */
+ 	ret = vhost_vdpa_map(v, iova, (last_pfn - map_pfn + 1) << PAGE_SHIFT,
+-			     map_pfn << PAGE_SHIFT, perm);
++			     map_pfn << PAGE_SHIFT, perm, NULL);
+ out:
+ 	if (ret) {
+ 		if (nchunks) {
+@@ -739,6 +811,7 @@ static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
+ 					   struct vhost_iotlb_msg *msg)
+ {
+ 	struct vhost_dev *dev = &v->vdev;
++	struct vdpa_device *vdpa = v->vdpa;
+ 	struct vhost_iotlb *iotlb = dev->iotlb;
+ 
+ 	if (msg->iova < v->range.first || !msg->size ||
+@@ -750,6 +823,10 @@ static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
+ 				    msg->iova + msg->size - 1))
+ 		return -EEXIST;
+ 
++	if (vdpa->use_va)
++		return vhost_vdpa_va_map(v, msg->iova, msg->size,
++					 msg->uaddr, msg->perm);
++
+ 	return vhost_vdpa_pa_map(v, msg->iova, msg->size, msg->uaddr,
+ 				 msg->perm);
+ }
+diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
+index f3014aaca47e..3972ab765de1 100644
+--- a/include/linux/vdpa.h
++++ b/include/linux/vdpa.h
+@@ -65,6 +65,7 @@ struct vdpa_mgmt_dev;
+  * @config: the configuration ops for this device.
+  * @index: device index
+  * @features_valid: were features initialized? for legacy guests
++ * @use_va: indicate whether virtual address must be used by this device
+  * @nvqs: maximum number of supported virtqueues
+  * @mdev: management device pointer; caller must setup when registering device as part
+  *	  of dev_add() mgmtdev ops callback before invoking _vdpa_register_device().
+@@ -75,6 +76,7 @@ struct vdpa_device {
+ 	const struct vdpa_config_ops *config;
+ 	unsigned int index;
+ 	bool features_valid;
++	bool use_va;
+ 	int nvqs;
+ 	struct vdpa_mgmt_dev *mdev;
+ };
+@@ -90,6 +92,16 @@ struct vdpa_iova_range {
+ };
+ 
+ /**
++ * Corresponding file area for device memory mapping
++ * @file: vma->vm_file for the mapping
++ * @offset: mapping offset in the vm_file
++ */
++struct vdpa_map_file {
++	struct file *file;
++	u64 offset;
++};
++
++/**
+  * struct vdpa_config_ops - operations for configuring a vDPA device.
+  * Note: vDPA device drivers are required to implement all of the
+  * operations unless it is mentioned to be optional in the following
+@@ -279,7 +291,8 @@ struct vdpa_config_ops {
+ 
+ struct vdpa_device *__vdpa_alloc_device(struct device *parent,
+ 					const struct vdpa_config_ops *config,
+-					size_t size, const char *name);
++					size_t size, const char *name,
++					bool use_va);
+ 
+ /**
+  * vdpa_alloc_device - allocate and initilaize a vDPA device
+@@ -289,15 +302,16 @@ struct vdpa_device *__vdpa_alloc_device(struct device *parent,
+  * @parent: the parent device
+  * @config: the bus operations that is supported by this device
+  * @name: name of the vdpa device
++ * @use_va: indicate whether virtual address must be used by this device
+  *
+  * Return allocated data structure or ERR_PTR upon error
+  */
+-#define vdpa_alloc_device(dev_struct, member, parent, config, name)   \
++#define vdpa_alloc_device(dev_struct, member, parent, config, name, use_va)   \
+ 			  container_of(__vdpa_alloc_device( \
+ 				       parent, config, \
+ 				       sizeof(dev_struct) + \
+ 				       BUILD_BUG_ON_ZERO(offsetof( \
+-				       dev_struct, member)), name), \
++				       dev_struct, member)), name, use_va), \
+ 				       dev_struct, member)
+ 
+ int vdpa_register_device(struct vdpa_device *vdev, int nvqs);
 -- 
 2.11.0
 
