@@ -2,86 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2E0A3FC737
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 14:29:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 837983FC784
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 14:45:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237531AbhHaMUH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 08:20:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34124 "EHLO
+        id S232838AbhHaMpw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 08:45:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233251AbhHaMUE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 08:20:04 -0400
-Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D1ADC061575
-        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 05:19:09 -0700 (PDT)
-Received: by mail-qv1-xf2c.google.com with SMTP id a5so10246082qvq.0
-        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 05:19:09 -0700 (PDT)
+        with ESMTP id S230154AbhHaMpu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 08:45:50 -0400
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 541F6C061575
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 05:44:55 -0700 (PDT)
+Received: by mail-io1-xd2c.google.com with SMTP id g9so24531316ioq.11
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 05:44:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=from:subject:to:cc:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=Tu4+uxp4XyX6aEhdHL/PmBEnSH2qrVBxKdrE8vdWq/o=;
-        b=dy8HB4lzJSL52K/wsljPKtLha6ge0BpgmR9KcByNe0gN9jMRWNfopow7HgKIYKdqFt
-         iCDyMJWv4CSdJPEI3na5JnWZ733ZKtN2B9KF6hN/UXEbCa9YkXYlciDSZEbMtda0Bojs
-         hzjqmURkWWZ1etGCombRRoGT1cb3y2CefKHtr4dGaiN9o0aEnF8w8ueO8HflKxMzwT7z
-         YY/4Z9ktssn5m4q2WFU1F1MSGlkC8einyb5qEo6/gmws6gqFOe+BUt5NBZHB3sVxbGbM
-         Bgz4UO0nxlrVFP814kpaEeJ/50W4eIvJqvTtyCkIFjsOnOuYJnh0yOrQzRRNBXE2h7Ks
-         wsew==
+        d=gmail.com; s=20161025;
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=nsH4CrKT3J6+fs9dWVy3c039Y9wb3g5ZuRIL9UvGmwA=;
+        b=Qt1iJP/++17VnO9ByX6k7ys+2Qy0NoQhSPj2ZdcjY8fo7vg22Ehdj1r9WxYMBl+fuE
+         urvgxVOPssnNQhVj8eHP9pNRrq76pcJJXryVVkQhcCeZdV1iW7UuYuz6mtLkRNhM0qRB
+         fkjCFxc1SFtqLJgCAZAKeGmBDWPojeN89/tS/n+udT0OaAv1yoRBlmw1Xl9mOKqAy17C
+         V104Dn9zlNrBhJSy+58fpWicLjFg1K6D11dGkL7yFrDRGHSXScMz7UiQjns46dSYKSyu
+         hXWUQyN9PIeeznR0r1jKmjY9RU6nKINkKpNBsrjFsAfflhkZ73+9tXhx8H4T43OrTRCK
+         9bjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=Tu4+uxp4XyX6aEhdHL/PmBEnSH2qrVBxKdrE8vdWq/o=;
-        b=TAkxDPzLO8aKOu9i2HFK9SFyaz9rKXC6z8I8QajuaEBhITfayzou77rV0tRUwyythC
-         e86gGyaIn1JlNyjEkTwhfARsgHEsFDnQ7JzI/0aHb+o2BeobacDmRuKSaXQu1LWP3l7S
-         oq15qvRzGW7lAdqx9ymPP/u7o45wk72wNCQa/XaxtKDvMPLwY70Zcfl1jErZFuqwXbMq
-         yyMlVM/+0ZQHouwtTjYd7JGOT67UlP4JVZJtPEBxce+hCZ9ovLeU3Cpvp82G9J2eUWEY
-         ZC88QM3M8W1xpN5a3IDH881sc719ONa3tyazBUfAyWCGkjuoULq6nX4VgRHKlcpoSTA+
-         THOQ==
-X-Gm-Message-State: AOAM530rlTjdI83GH+urv7aTJHu2FnYzmh5HhcfUy6tzpEkAfpj6Onxl
-        wJ/BDnMgbTiTmwApFjCPnq4SvA==
-X-Google-Smtp-Source: ABdhPJwkgwmWfLtqZzAkBzK+oIstAvzkmI9KLmkiZ+WpWW303JdtMGdUZLWacSUVEt7A6h7gzc81cQ==
-X-Received: by 2002:a0c:f382:: with SMTP id i2mr28575024qvk.43.1630412348785;
-        Tue, 31 Aug 2021 05:19:08 -0700 (PDT)
-Received: from [192.168.1.79] (bras-base-kntaon1617w-grc-28-184-148-47-47.dsl.bell.ca. [184.148.47.47])
-        by smtp.googlemail.com with ESMTPSA id p12sm9883818qtw.54.2021.08.31.05.19.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 31 Aug 2021 05:19:08 -0700 (PDT)
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Subject: Netdevconf 0x15 videos, slides and papers up
-To:     people <people@netdevconf.org>
-Cc:     lwn@lwn.net, "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        netfilter-devel@vger.kernel.org,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        lartc@vger.kernel.org
-Message-ID: <6ee8f309-d8c6-1938-ad7d-477949a59d3c@mojatatu.com>
-Date:   Tue, 31 Aug 2021 08:19:07 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=nsH4CrKT3J6+fs9dWVy3c039Y9wb3g5ZuRIL9UvGmwA=;
+        b=r5/Wc2mOWmc3QJOZjYe6cvkiA0SoZ/lhXg2tXix7AJdflq1PglsIb6YUZj8JoqlpYD
+         E8Mrra254oPoKfzjcXqxbHRq4uBZOMqetMTJv8+lSF/4Y9yaJbcWvNUJkv+RFrosS4t/
+         XdfS8pHJKO7mjmt/VsRnoPgdY7cX0QtCD9f9H5+zD2culmubI6DirCQ2xnvFhFQNoASA
+         C7WtQ/dQsCMgQh92s9g4s4V4wpHOjNIQuK2zEeVukKxe9GwXtgMJr2zY0c3mpKGz2iZC
+         6aYV2ioqVb17LeK09iFUrsXpssFsWBj8MWqW8ei1zCt/sNuF34wBG3uAxd73MMp12eYc
+         dUrA==
+X-Gm-Message-State: AOAM533z26Wg5Eo5ki9cqU+FExCw3rH9r58fGfeOnWJ0TBoBgyOBdW4t
+        45oqeA4jMP2qOq8zXhkCKOfg31gRiLlFMj56sUk=
+X-Google-Smtp-Source: ABdhPJzKBQQC+/NpzLSlaV0TxVynaA/I9vtwiN8yjm5R9IwpHTCrgAHoPRsjKrrnZU2rxs+eGX7loZvw2GzoU5H/HAo=
+X-Received: by 2002:a5d:8b51:: with SMTP id c17mr22344411iot.119.1630413894775;
+ Tue, 31 Aug 2021 05:44:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Sender: weirmichael05@gmail.com
+Received: by 2002:a05:6638:5a3:0:0:0:0 with HTTP; Tue, 31 Aug 2021 05:44:54
+ -0700 (PDT)
+From:   Jemy Ross <jrs61644@gmail.com>
+Date:   Tue, 31 Aug 2021 12:44:54 +0000
+X-Google-Sender-Auth: AcRQEIHJZMbRcfLjq7AnAGzOIf4
+Message-ID: <CANKk-niXaqRgv50mayyNaXedKRjFKR3NGDkyP=rAwu3+hZ-x4g@mail.gmail.com>
+Subject: Hi
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi folks,
-
-We are pleased to announce that the videos for 0x15 are now up.
-
-All the slides, papers and videos are now up. Visit:
-https://www.netdevconf.info/0x15/accepted-sessions.html
-
-The videos can be viewed directly on the 0x15 playlist here:
-https://bit.ly/netdev-0x15
-
-Unfortunately we couldnt capture within the videos the full
-textual chat sessions that were ongoing during the session
-(platform should have it next time we do this).
-For access to the text, registered users can still login
-into the airmeet platform and replay any session. The content
-will stay up for another 11 months.
-
-cheers,
-jamal
+Hello, my name is Jenny Ross, please your attention is needed, i have
+something to share with you.
