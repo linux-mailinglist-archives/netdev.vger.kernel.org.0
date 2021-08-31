@@ -2,86 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BF9E3FCFD6
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 01:15:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 52F1C3FCFDA
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 01:17:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240762AbhHaXQp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 19:16:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45912 "EHLO
+        id S240828AbhHaXSl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 19:18:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233866AbhHaXQo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 19:16:44 -0400
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECE4AC061575;
-        Tue, 31 Aug 2021 16:15:48 -0700 (PDT)
-Received: by mail-io1-xd34.google.com with SMTP id z1so1534967ioh.7;
-        Tue, 31 Aug 2021 16:15:48 -0700 (PDT)
+        with ESMTP id S233866AbhHaXSk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 19:18:40 -0400
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAEC6C061575;
+        Tue, 31 Aug 2021 16:17:44 -0700 (PDT)
+Received: by mail-yb1-xb34.google.com with SMTP id e133so1711865ybh.0;
+        Tue, 31 Aug 2021 16:17:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=/Yzl5/BMo8mwjKU50+yBzRi98rqy/lPpaWE1eJAfHeQ=;
-        b=RwkEf8EcaRfF/awyn7J+u+YVk12Z22YJEeNPWbFpmdvnhfZN4mvMQdTjVUNVVfTcZ6
-         QlOJEgvGp6pjkQTB23DHQ/EpPonxsRSsSWLG2rU/7k6xhOnTfTtkWc6aIk+RboON5Cty
-         bHfSl0BPBgiFLkLoYWQAN+WKm0W86Sbu2ECeL8DoJt4mUI0zXJgQUKG+bG9HyfUll1As
-         dhbGS7xXNfTfLWLrkpSs7dhJqsGoc9rUzkGyzFZ6vxQ8dRChczUx/mudt5+3d3VPN1JZ
-         Pa1SlAhN6Dy31NsaWUB1s/B5Xk/IWSTLx95EpYpIkIuoJtXCO9wpLJcTcswXvZwZT5a0
-         6YQA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BzuwlS5WFy8PUucxd6vatuT5n4c/2pnCLxcWNLj50gQ=;
+        b=PPpr/vq6x8hmTBp/Z96zc9RtPx0F1giyCI9BcJFKNTFXhQ2OhNG8AGDPwBvJga+ywH
+         dty93dj5z7IOBO4739rSZm+1PuAD0/8A80extNv8/+bNAcG8y1XYAaxxJOgzSdNTEA6q
+         cAD9cHPK3wipO2AeSi5HzeRsG8sVHlU6omvZJrh9fdHAA39U6UKIw2DyKl3Nc/oQPLc1
+         UeMdEXaHjcjQZ4grfIIe+bwN1/Q3o9Qz274iXn0bqhy35p0ZNYi7JnIuToUlyuug6foD
+         1QkZbr3e+eBDw/A0wGewkbGka/PVu2ftkFz6UHcamEnnbdrgKmvbIE+4bSmHiQexwnIn
+         mcXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=/Yzl5/BMo8mwjKU50+yBzRi98rqy/lPpaWE1eJAfHeQ=;
-        b=jz/XlLGgxtmIUG2slOBWNwg9ieNxKsKEGDWTKQBIcUkThUEoGB/2kKOlUYIKPskDZz
-         KYK2yxQNglk0G8MADu6o0e4G4Qp65edwcIw4pPLVDxHlsq9722RjWbhA1voEgRvzf/eG
-         7VMqKWagQmo8jff/T6G6w46gWLe0ugbuslg/KOWX2MjtS5YgX618jFOWI2aeuW+lIBuN
-         bTX4XGHRXBwjlFhZES0EcvKssRvJA/EBpDJhSCJ9Bu6N/ZdYFv5do0BwbztZ0RbpwO27
-         3sM4gcLD3uyTu8bgjkjEt1gNi9o7azW9AgCLaAzYk9AcrDxJp6d1xItdTD53bXvHbjnr
-         5ysA==
-X-Gm-Message-State: AOAM5328M0AeCWKqsDRzL7jp+oFNM3Xc3h9O0+g1rvMKC/CJH+fa73Sx
-        84qBx/CtxacpZPTYN6E3wMfs9TqJhgg=
-X-Google-Smtp-Source: ABdhPJxzApBl6auHk4Bl+bGGc6rMbJCQWCGhVoUB7XQYLfXHHxJawCNHLI1jdFlsFGsIawz0Hx7c/w==
-X-Received: by 2002:a5d:96da:: with SMTP id r26mr24790828iol.47.1630451748394;
-        Tue, 31 Aug 2021 16:15:48 -0700 (PDT)
-Received: from localhost ([172.243.157.240])
-        by smtp.gmail.com with ESMTPSA id x10sm10979441ila.4.2021.08.31.16.15.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Aug 2021 16:15:47 -0700 (PDT)
-Date:   Tue, 31 Aug 2021 16:15:41 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
-        john.fastabend@gmail.com, dsahern@kernel.org, brouer@redhat.com,
-        echaudro@redhat.com, jasowang@redhat.com,
-        alexander.duyck@gmail.com, saeed@kernel.org,
-        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
-        tirthendu.sarkar@intel.com, toke@redhat.com
-Message-ID: <612eb81dcccfb_6b8720859@john-XPS-13-9370.notmuch>
-In-Reply-To: <db0f23d369ba488c0ebd1f43dd283221be801fea.1629473233.git.lorenzo@kernel.org>
-References: <cover.1629473233.git.lorenzo@kernel.org>
- <db0f23d369ba488c0ebd1f43dd283221be801fea.1629473233.git.lorenzo@kernel.org>
-Subject: RE: [PATCH v12 bpf-next 02/18] xdp: introduce flags field in
- xdp_buff/xdp_frame
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BzuwlS5WFy8PUucxd6vatuT5n4c/2pnCLxcWNLj50gQ=;
+        b=cayoNYcGSkKEtRKdYQY7eF8zvMcDnn6My2ygQUXGctl9mtXVLoc5I2/5Uq2fpK5zNm
+         YzhisJvFKGWoiQ9Ar9mi+yYtcUV7li5TOacyLZLNnXkiAx6PqDd4qfbZiFjY2Ob9zXDI
+         BF7JPX00BUZIB2hDP9FfOIb0q2azmo3t2TfdkDL2ezai9itGcitIefbYXI+SO+5sav3E
+         cAyzQ1sLyAtlITtIeMcLpV3N5AIGdhsWDgs94qjsd/vxibI2oH8Q7hiCiwgnNvQrEcUi
+         6fjo2fnufnCMEfO3cmzfK7v7Kl4VABOEEtorbGfWPyqSxlMXMKe/GXTMEuPANpGjrZv0
+         qXTQ==
+X-Gm-Message-State: AOAM532CwODev/IJYqc8tRwSKwMxywwDDkv10OSwE7biPdkv7416352V
+        npMqZfhL63hIYFSw9n9PitWprR0B8xr/Hxzsqh0=
+X-Google-Smtp-Source: ABdhPJxTOEdduooSFe6dY7eYrzRqKysPkoslVw5rkB0uwnK+bdH2Mvf5IVPpok7dCnFDvxhqrgp90A+IJTYBMieZZGA=
+X-Received: by 2002:a25:bdc5:: with SMTP id g5mr33479248ybk.403.1630451864054;
+ Tue, 31 Aug 2021 16:17:44 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210826193922.66204-1-jolsa@kernel.org> <20210826193922.66204-10-jolsa@kernel.org>
+In-Reply-To: <20210826193922.66204-10-jolsa@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 31 Aug 2021 16:17:33 -0700
+Message-ID: <CAEf4BzYJXJbquSKdc_iEfFGXuA3eYMgwvAbOWEkBo7BW4faZww@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 09/27] bpf: Add support to load multi func
+ tracing program
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
+        Viktor Malik <vmalik@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lorenzo Bianconi wrote:
-> Introduce flags field in xdp_frame and xdp_buffer data structures
-> to define additional buffer features. At the moment the only
-> supported buffer feature is multi-buffer bit (mb). Multi-buffer bit
-> is used to specify if this is a linear buffer (mb = 0) or a multi-buffer
-> frame (mb = 1). In the latter case the driver is expected to initialize
-> the skb_shared_info structure at the end of the first buffer to link
-> together subsequent buffers belonging to the same frame.
-> 
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> ---
+On Thu, Aug 26, 2021 at 12:40 PM Jiri Olsa <jolsa@redhat.com> wrote:
+>
+> Adding support to load tracing program with new BPF_F_MULTI_FUNC flag,
+> that allows the program to be loaded without specific function to be
+> attached to.
 
-Acked-by: John Fastabend <john.fastabend@gmail.com>
+Are there any benefits to using a new load flag vs having separate
+expected attach types like FENTRY_MULTI/FEXIT_MULTI? I find load flags
+a bigger pain to work with compared to expected attach type (and
+expected attach type should be more apparent in BPF link info, bpftool
+output, etc).
+
+>
+> Such program will be allowed to be attached to multiple functions
+> in following patches.
+>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>  include/linux/bpf.h            |  1 +
+>  include/uapi/linux/bpf.h       |  7 +++++++
+>  kernel/bpf/syscall.c           | 35 +++++++++++++++++++++++++++++-----
+>  kernel/bpf/verifier.c          |  3 ++-
+>  tools/include/uapi/linux/bpf.h |  7 +++++++
+>  5 files changed, 47 insertions(+), 6 deletions(-)
+>
+
+[...]
