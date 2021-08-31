@@ -2,114 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6A923FCB62
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 18:19:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12FA23FCB7D
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 18:24:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239919AbhHaQU3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 12:20:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35114 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239136AbhHaQU0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 12:20:26 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6ABFC061575;
-        Tue, 31 Aug 2021 09:19:31 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id 17so17268860pgp.4;
-        Tue, 31 Aug 2021 09:19:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=wKtFFLPlbriGAMxk9vE8E7Hel3Bz+VZdqkGX4LaIKZo=;
-        b=DJjxlImbK5bY/hBlQZOfAxHgMznwgb498a5fU4vuIGNEVAoV89x/jypVLZ0THwg8xL
-         pkv4K2CNqqa9Nvudz3NR2M0gANhyx9+BHXuyoudKugzeXhojuMJHnFY/PIy4h5Rc4a35
-         myjZxH+KP7c+QxhoO4xOlHFwz4HaIU9WxRi42AKeh0KD7QYZmEAtgLoihVYI6SKC2eIF
-         qbA6iKbBKWfs65Q2juWBpB5nS6Dyw0hZeeGQkMs+e/8XeHK30WTu55oHkdXMf/0A4HK6
-         99eGjSLcwzmVi+38oBqOHwxgAhc4tHsgGTZXNU8orRtAWnDT/N9u0UAS4aoPEhfswSH6
-         68pg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=wKtFFLPlbriGAMxk9vE8E7Hel3Bz+VZdqkGX4LaIKZo=;
-        b=hwsv7MK+VI3kMTkftFW4/JM0ofSTdBNVnPYDfa3VBmGuxka1/AKOaPJwxmIvI9AKGT
-         RaqVyEWpWdjQb/vnggf7nCBzD18D2N/VlDB2k+FXVDNt8pbT1zbgM6mbKS4amCTkihi7
-         E0juMOE/O/fpIQcey+YsvQ3Rd0MvXpouvoz3uKoK/EDcbn+qtHsXUDlPfSdNNOqyPkZp
-         5t8eo1QmR3+pm4xYnqVexLAC2VnhRKX6Nk9sEytF5yP+wvuWfjymanfdq9c4NAmf0SEb
-         F3xX8nBuJVT0KNmVH0oeBL+NYvmFubuxEhlfTKaaeh3JrgL9rhhdiAGFAR/5IEEsbNl4
-         cdfA==
-X-Gm-Message-State: AOAM5328k4tFujPqFaXnhA1Z2ZYtGB1qadp/3GnLwNHanG1Wa3lDkEI1
-        6BpMvHzt6OaXpnOtvv2bdJM=
-X-Google-Smtp-Source: ABdhPJzBpDuzBDRFHhJzk6xqE+MOP5/gu24LM6f1luLCTnLqOi9XIxRbrbuGV5N9lU4MCo7M1Pnu0A==
-X-Received: by 2002:a62:8415:0:b0:407:8998:7c84 with SMTP id k21-20020a628415000000b0040789987c84mr673075pfd.71.1630426771124;
-        Tue, 31 Aug 2021 09:19:31 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:645:c000:2163:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id n24sm20904404pgv.60.2021.08.31.09.19.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Aug 2021 09:19:30 -0700 (PDT)
-Date:   Tue, 31 Aug 2021 09:19:27 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "Machnikowski, Maciej" <maciej.machnikowski@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "abyagowi@fb.com" <abyagowi@fb.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        bsd@fb.com
-Subject: Re: [RFC v2 net-next 1/2] rtnetlink: Add new RTM_GETSYNCESTATE
- message to get SyncE status
-Message-ID: <20210831161927.GA10747@hoboy.vegasvil.org>
-References: <20210829080512.3573627-1-maciej.machnikowski@intel.com>
- <20210829080512.3573627-2-maciej.machnikowski@intel.com>
- <20210829151017.GA6016@hoboy.vegasvil.org>
- <PH0PR11MB495126A63998DABA5B5DE184EACA9@PH0PR11MB4951.namprd11.prod.outlook.com>
- <20210830205758.GA26230@hoboy.vegasvil.org>
- <20210830162909.110753ec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S239979AbhHaQZJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 12:25:09 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:38548 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239920AbhHaQZI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 12:25:08 -0400
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-219-EAaACDsrNwyqelc-V36bMw-1; Tue, 31 Aug 2021 17:24:10 +0100
+X-MC-Unique: EAaACDsrNwyqelc-V36bMw-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.23; Tue, 31 Aug 2021 17:24:09 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.023; Tue, 31 Aug 2021 17:24:09 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'David Ahern' <dsahern@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: IP routing sending local packet to gateway.
+Thread-Topic: IP routing sending local packet to gateway.
+Thread-Index: AdebRgbMhfPTX4NbSQqr56kVCuK30gAGAC7A///6eoD/+bbC8A==
+Date:   Tue, 31 Aug 2021 16:24:09 +0000
+Message-ID: <b1ca6c99cd684a4a83059a0156761d75@AcuMS.aculab.com>
+References: <15a53d9cc54d42dca565247363b5c205@AcuMS.aculab.com>
+ <adaaf38562be4c0ba3e8fe13b90f2178@AcuMS.aculab.com>
+ <532f9e8f-5e48-9e2e-c346-e2522f788a40@gmail.com>
+In-Reply-To: <532f9e8f-5e48-9e2e-c346-e2522f788a40@gmail.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210830162909.110753ec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 30, 2021 at 04:29:09PM -0700, Jakub Kicinski wrote:
-> Hmm, IDK if this really belongs in RTNL. The OCP time card that
-> Jonathan works on also wants to report signal lock, and it locks
-> to GNSS. It doesn't have any networking functionality whatsoever.
-> 
-> Can we add a genetlink family for clock info/configuration? From 
-> what I understood discussing this with Jonathan it sounded like most
-> clocks today have a vendor-specific character device for configuration
-> and reading status.
-> 
-> I'm happy to write the plumbing if this seems like an okay idea 
-> but too much work for anyone to commit.
-
-This sounds nice.
-
-As you said later on in this thread, any API we merge now will have to
-last.  That is why I'm being so picky here.  We want new APIs to cover
-current HW _and_ be reasonable for the future.
-
-I don't see a DPLL as either a PTP Hardware Clock or a Network
-Device.  It is a PLL.
-
-The kernel can and should have a way to represent the relationship
-between these three different kind of IP block.  We already have a
-way to get from PHC to netdev interface.
-
-I understand that Maciej and team want to get support for their card
-ASAP.  However, proper kernel/user API takes time.  For example, the
-PHC stuff took one year and fourteen revisions.  But it was worth the
-wait, because the API has help up pretty well all these years since
-the v3.0 kernel.
-
-There is no need to quickly merge some poorly designed interfaces.
-
-Thanks,
-Richard
+RnJvbTogRGF2aWQgQWhlcm4NCj4gU2VudDogMjcgQXVndXN0IDIwMjEgMTc6NTENCj4gDQo+IE9u
+IDgvMjcvMjEgOTozOSBBTSwgRGF2aWQgTGFpZ2h0IHdyb3RlOg0KPiA+IEZyb206IERhdmlkIExh
+aWdodA0KPiA+PiBTZW50OiAyNyBBdWd1c3QgMjAyMSAxNToxMg0KPiA+Pg0KPiA+PiBJJ3ZlIGFu
+IG9kZCBJUCByb3V0aW5nIGlzc3VlLg0KPiA+PiBBIHBhY2tldCB0aGF0IHNob3VsZCBiZSBzZW50
+IG9uIHRoZSBsb2NhbCBzdWJuZXQgKHRvIGFuIEFSUGVkIGFkZHJlc3MpDQo+ID4+IGlzIGJlaW5n
+IHNlbmQgdG8gdGhlIGRlZmF1bHQgZ2F0ZXdheSBpbnN0ZWFkLg0KPiA+DQo+ID4gSSd2ZSBkb25l
+IHNvbWUgdGVzdHMgb24gYSBkaWZmZXJlbnQgbmV0d29yayB3aGVyZSBpdCBhbGwgYXBwZWFycyB0
+byB3b3JrLg0KPiA+DQo+ID4gQnV0IHJ1bm5pbmcgJ3RjcGR1bXAgLXBlbicgc2hvd3MgdGhhdCBh
+bGwgdGhlIG91dGJvdW5kIHBhY2tldHMgZm9yIHRoZQ0KPiA+IFRDUCBjb25uZWN0aW9ucyBhcmUg
+YmVpbmcgc2VudCB0byB0aGUgZGVmYXVsdCBnYXRld2F5Lg0KPiA+DQo+ID4gNS4xMC4zMCwgNS4x
+MC42MSBhbmQgNS4xNC4wLXJjNyBhbGwgYmVoYXZlIHRoZSBzYW1lIHdheS4NCj4gPg0KPiA+IElm
+IGRvIGEgcGluZyAoaW4gZWl0aGVyIGRpcmVjdGlvbikgSSBnZXQgYW4gQVJQIHRhYmxlIGVudHJ5
+Lg0KPiA+IEJ1dCBUQ1AgY29ubmVjdGlvbnMgKGluIG9yIG91dCkgYWx3YXlzIHVzZSB0aGUgZGVm
+YXVsdCBnYXRld2F5Lg0KPiA+DQo+ID4gSSdtIG5vdyBnZXR0aW5nIG1vcmUgY29uZnVzZWQuDQo+
+ID4gSSBub3RpY2VkIHRoYXQgdGhlICdkZWZhdWx0IHJvdXRlJyB3YXMgbWlzc2luZyB0aGUgJ21l
+dHJpYyAxMDAnIGJpdC4NCj4gPiBUaGF0IG1pZ2h0IGdpdmUgdGhlIGJlaGF2aW91ciBJJ20gc2Vl
+aW5nIGlmIHRoZSBuZXRtYXNrIHdpZHRoIGlzIGlnbm9yZWQuDQoNClNldHRpbmcgdGhlIG1ldHJp
+Yy9wcmlvcml0eSB0byAxMDAgbWFrZXMgbm8gZGlmZmVyZW5jZS4NCkkgYWN0dWFsbHkgcGF0Y2hl
+ZCB0aGUga2VybmVsIGNvZGUgdGhhdCBwcm9jZXNzZXMgdGhlIG5ldGxpbmsNCnNvY2tldCByZXF1
+ZXN0IHJhdGhlciB0aGFuIHRoZSBhcHBsaWNhdGlvbiB0aGF0IGdlbmVyYXRlZCB0aGUgcmVxdWVz
+dC4NCk5vdGUgdGhhdCB0aGUgYXBwbGljYXRpb24gaGFzbid0IHJlYWxseSBiZWVuIGNoYW5nZWQg
+Zm9yIDEwIHllYXJzLg0KDQo+ID4gQnV0IGlmIEkgZGVsZXRlIHRoZSBkZWZhdWx0IHJvdXRlIChu
+ZWl0aGVyIG5ldHN0YXQgLXIgb3IgaXAgcm91dGUgc2hvdw0KPiA+IGl0KSB0aGVuIHBhY2tldHMg
+YXJlIHN0aWxsIGJlaW5nIHNlbnQgdG8gdGhlIGRlbGV0ZWQgZ2F0ZXdheS4NCj4gPiBJZiBJIGRl
+bGV0ZSB0aGUgYXJwL25laWdoIGVudHJ5IGZvciB0aGUgZGVsZXRlZCBkZWZhdWx0IGdhdGV3YXkg
+YW4NCj4gPiBvdXR3YXJkIGNvbm5lY3Rpb24gcmVjcmVhdGVzIHRoZSBlbnRyeSAtIGxlYXZpbmcg
+dGhlIG9uZSBmb3IgdGhlIGFjdHVhbA0KPiA+IGFkZHJlc3MgJ1NUQUxFJy4NCj4gPg0KPiA+IFNv
+bWV0aGluZyB2ZXJ5IG9kZCBpcyBnb2luZyBvbi4NCj4gDQo+IHBlcmYgcmVjb3JkIC1lIGZpYjoq
+IC1hIC1nIC0tIDxydW4gdGVzdHM+DQo+IGN0cmwtYw0KPiBwZXJmIHNjcmlwdA0KPiANCj4gSXQg
+c2hvdWxkIHRlbGwgeW91IGNvZGUgcGF0aHMgYW5kIHJvdXRlIGxvb2t1cCByZXN1bHRzLiBTaG91
+bGQgc2hlZCBzb21lDQo+IGxpZ2h0IG9uIHdoeSB0aGUgZ3cgdnMgbG9jYWwuDQoNCkhvdyBkbyBJ
+IGNyb3NzLWNvbXBpbGUgJ3BlcmYnLCB0aGVyZSBkb24ndCBzZWVtIHRvIGJlIGFueSBvYnZpb3Vz
+DQpoaW50cyBpbiB0aGUgTWFrZWZpbGUuDQoNCkJ1dCBJJ20gbm90IHRvbyBzdXJlIHRoYXQgd291
+bGQgaGVscC4NClRoZSByZXNwb25zZSB0byBhbiBpbmNvbWluZyBUQ1AgU1lOIHNlZW1zIHRvIGNy
+ZWF0ZSBhIGNhY2hlZCBlbnRyeSB0aGF0DQpldmVyeXRoaW5nIGVsc2UgdGhlbiB1c2VzLg0KSSd2
+ZSB0cmllZCB0byB1bnRhbmdsZSB0byBjb2RlIHRoYXQgY2FjaGVzIGEgJ2RzdCcgZW50cnkgb24g
+dGhlIHNvY2tldA0KYnV0IGl0IGlzIGFsbCByYXRoZXIgY29tcGxpY2F0ZWQuDQoNCkknbSBzdXJl
+IGl0IGhhcyBzb21ldGhpbmcgdG8gZG8gd2l0aCB0aGUgJ2ZpYl90cmllJyBkYXRhLg0KV2hlbiBp
+dCBmYWlscyBJIGdldDoNCiMgY2F0IC9wcm9jL25ldC9maWJfdHJpZQ0KSWQgMjAwOg0KICB8LS0g
+MC4wLjAuMA0KICAgICAvMCB1bml2ZXJzZSBVTklDQVNUDQpNYWluOg0KICArLS0gMC4wLjAuMC8w
+IDMgMCA2DQogICAgIHwtLSAwLjAuMC4wDQogICAgICAgIC8wIHVuaXZlcnNlIFVOSUNBU1QNCiAg
+ICAgfC0tIDE5Mi4xNjguMS4wDQogICAgICAgIC8yNCBsaW5rIFVOSUNBU1QNCkxvY2FsOg0KICAr
+LS0gMC4wLjAuMC8wIDIgMCAyDQogICAgICstLSAxMjcuMC4wLjAvOCAyIDAgMg0KICAgICAgICAr
+LS0gMTI3LjAuMC4wLzMxIDEgMCAwDQogICAgICAgICAgIHwtLSAxMjcuMC4wLjANCiAgICAgICAg
+ICAgICAgLzMyIGxpbmsgQlJPQURDQVNUDQogICAgICAgICAgICAgIC84IGhvc3QgTE9DQUwNCiAg
+ICAgICAgICAgfC0tIDEyNy4wLjAuMQ0KICAgICAgICAgICAgICAvMzIgaG9zdCBMT0NBTA0KICAg
+ICAgICB8LS0gMTI3LjI1NS4yNTUuMjU1DQogICAgICAgICAgIC8zMiBsaW5rIEJST0FEQ0FTVA0K
+ICAgICArLS0gMTkyLjE2OC4xLjAvMjQgMiAwIDENCiAgICAgICAgfC0tIDE5Mi4xNjguMS4wDQog
+ICAgICAgICAgIC8zMiBsaW5rIEJST0FEQ0FTVA0KICAgICAgICB8LS0gMTkyLjE2OC4xLjk5DQog
+ICAgICAgICAgIC8zMiBob3N0IExPQ0FMDQogICAgICAgIHwtLSAxOTIuMTY4LjEuMjU1DQogICAg
+ICAgICAgIC8zMiBsaW5rIEJST0FEQ0FTVA0KDQoxLjk5IGlzIGxvY2FsaG9zdCwgZ3cgaXMgMS4x
+IGFuZCB0aGUgb25seSByZW1vdGUgMS41My4NCkFwYXJ0IGZyb20gdGhlICdJZCAyMDAnIGJpdCAo
+d2hpY2ggSSBhc3N1bWUgaXMgc29tZXRoaW5nDQp0byBkbyB3aXRoIG15IGJvbmRzKSBpdCBsb29r
+cyBtdWNoIGxpa2UgYSB3b3JraW5nIHN5c3RlbS4NCg0KSSBjYW4ndCBmaW5kIGFueXRoaW5nIHRo
+YXQgbGlzdHMgdGhlIGNhY2hlZCBydC9kc3QgZW50cmllcw0KdGhhdCBhcmUgY2FjaGVkIGJ5IHRo
+ZSBzb2NrZXQuDQoNCkkgcmVtZW1iZXIgZnJvbSBsb29raW5nIHVwIHRoZSByYXdpcCBzZW5kIHBh
+dGggdGhhdCB0aGUgaW5pdGlhbA0KbG9va3VwIGZvciBvdXRib3VuZCBtZXNzYWdlcyBqdXN0IGZp
+bmRzIHRoZSAncm91dGUnIGVudHJ5IGFuZA0KYSBzZWNvbmQgbG9va3VwIChyZWYtY291bnRpbmcg
+YW5vdGhlciBzdHJ1Y3R1cmUpIGlzIGRvbmUgdG8NCmdldCB0aGUgcnQvZHN0IHRvIHNhdmUgb24g
+dGhlIHNvY2tldC4NCihUaGUgcmF3aXAgc2VuZCBlbmRlZCB1cCBjcmVhdGluZyBvbmUgZm9yIGV2
+ZXJ5IHBhY2tldCBhbmQgdGhlbg0KZGVsZXRpbmcgdGhlbSBpbiBtYXNzaXZlIGJhdGNoZXMgZnJv
+bSBhbiByY3UgdGltZW91dC4pDQoNCkknbSBndWVzc2luZyB0aGF0IHNvbWV0aGluZyBnb3QgYnJv
+a2VuIHdoZW4gdGhhdCBjaGFuZ2UgdG8gdGhlDQpyb3V0aW5nIGNvZGUgd2FzIG1hZGUuDQpJdCB3
+YXMgdGhlIGNoYW5nZSB0aGF0IGJyb2tlIHJhd2lwIHNlbmRzIHdoZXJlIHRoZSBpcCBhZGRyZXNz
+DQppbiB0aGUgSVAtaGVhZGVyIGRpZG4ndCBtYXRjaCB0aGF0IGluIHRoZSBkZXN0YWRkciBmaWVs
+ZC4NCldhcyBhIGxvbmcgdGltZSBhZ28uDQpJIHdvbmRlciBpZiBJIGNhbiB0ZXN0IHRoZSBvbGRl
+ciBrZXJuZWwuDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNpZGUsIEJy
+YW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsNClJlZ2lz
+dHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
 
