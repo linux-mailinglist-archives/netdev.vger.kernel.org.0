@@ -2,136 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49F763FCD06
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 20:47:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 486253FCCFF
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 20:35:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234400AbhHaSmZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 14:42:25 -0400
-Received: from frotz.zork.net ([69.164.197.204]:53162 "EHLO frotz.zork.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229602AbhHaSmZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 31 Aug 2021 14:42:25 -0400
-X-Greylist: delayed 440 seconds by postgrey-1.27 at vger.kernel.org; Tue, 31 Aug 2021 14:42:25 EDT
-Received: by frotz.zork.net (Postfix, from userid 1008)
-        id E45DC11999; Tue, 31 Aug 2021 18:34:08 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 frotz.zork.net E45DC11999
-Date:   Tue, 31 Aug 2021 11:34:08 -0700
-From:   Seth David Schoen <schoen@loyalty.org>
-To:     linux-man@vger.kernel.org
-Cc:     netdev@vger.kernel.org, John Gilmore <gnu@toad.com>
-Subject: [PATCH v3] ip.7: Add "Special and reserved addresses" section
-Message-ID: <20210831183408.GI1796634@frotz.zork.net>
-Mail-Followup-To: Seth David Schoen <schoen@loyalty.org>,
-        linux-man@vger.kernel.org, netdev@vger.kernel.org,
-        John Gilmore <gnu@toad.com>
+        id S234270AbhHaSgU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 14:36:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38310 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231680AbhHaSgS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 14:36:18 -0400
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB200C061575
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 11:35:18 -0700 (PDT)
+Received: by mail-lj1-x22e.google.com with SMTP id s3so290833ljp.11
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 11:35:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QV218J3T9eJ8kIUA8zvGkWzAmy7P7pzqsDTRqvc5QCA=;
+        b=UOx1eaAY/fmUSXcdzH1SoVTKTRpKjOyzrt+lkWqZM5ajH9LEGuzOc6w64GS6PEUq1t
+         8WLpORQIwdoIzJlOsWwTnZwYt9d1itzG8W4gGzCWT0E9GW63P1nZgLsFVNLlz2/siEK9
+         3UsM5XirbmBxGD49UbY+bKJyR3tccV0l+AFPzaX4uRhNZL5DfLHX8ftkvH1p3018zU+D
+         nFSLV6ofV5luevHY84nf7SIUhbr/tpfW2NfaHbxQkOn8jcTYmImWmkCvV+fyrhlb9YYT
+         AF6rp74EsdJDg8D4d6QV9mVfgecdrje+XM94S4FldwDoUA7FH2vhK2FBw1cU71UWqC66
+         20xA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QV218J3T9eJ8kIUA8zvGkWzAmy7P7pzqsDTRqvc5QCA=;
+        b=L/kUNS4pB9XkAroyh/D0myMLRL0OpyhVn5oNnfr6ownFmUCL1jq4Mbq+4FagTlr4pQ
+         3MyCw316/P1nk5jtkkagANRuDcI4MgaEEzycfKBcFU2Vcm9ZcPlxa0Nyrz0GWctFcDPa
+         LHFe99KSLRuih8Ib3V3d/uacmU+YfSDAqVT4beicE59tEbTBL5IyUHG743ltae/Y8vng
+         ZtlR/rW2TiiuOr3Rb8P3bLrK9UQnJD3+mwHTPOhWNBIJX6brfNhmkc89EeONtHdhuTBs
+         34biv8zMcUd2pvUBE+TfMfyFvHu4mFwPc5JkuPO4XrujptEJmykR6j7BoWbwH9MS3ys6
+         QkcA==
+X-Gm-Message-State: AOAM532jI0XqICM9VCslRy9I5x+SNbjHyvQ9LCknNAlehs6F3TilaDlW
+        y7QZazkkD/b6/N5ZatdpnRC9YhuYSS7c5k2aD1TTgQ==
+X-Google-Smtp-Source: ABdhPJyatgkcydlVdMajBj6cbP38rDPB7M3MVj8aNy6nu4XyGfjDCrZtNvtQR9euL8mOlNjejN+jQGnEfDzN8dx7xzo=
+X-Received: by 2002:a2e:9d88:: with SMTP id c8mr25947200ljj.467.1630434917097;
+ Tue, 31 Aug 2021 11:35:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20210828235619.249757-1-linus.walleij@linaro.org>
+ <20210830072913.fqq6n5rn3nkbpm3q@skbuf> <CACRpkdbVs9H8CPYV9Fgwje40qqS=wxXqVkDc=Du=c82eqeKCAw@mail.gmail.com>
+ <20210830222007.2i6k7pg72yuoygwh@skbuf>
+In-Reply-To: <20210830222007.2i6k7pg72yuoygwh@skbuf>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Tue, 31 Aug 2021 20:35:05 +0200
+Message-ID: <CACRpkdbX4XErV-7UCezobF4jLX-HvjMHE=dnYYLqD5Sb8LkCpw@mail.gmail.com>
+Subject: Re: [PATCH net] net: dsa: tag_rtl4_a: Fix egress tags
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Mauri Sandberg <sandberg@mailfence.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a new section with a more detailed description of the IPv4 addresses
-that have a special meaning in Internet standards, and how these affect
-Linux.
+On Tue, Aug 31, 2021 at 12:20 AM Vladimir Oltean <olteanv@gmail.com> wrote:
 
-The occasion for this update is the inclusion of our patch in Linux 5.14,
-which changes Linux's subnet broadcast address behavior.
+> > > Does it get broadcast, or forwarded by MAC DA/VLAN ID as you'd expect
+> > > for a regular data packet?
+> >
+> > It gets broadcast :/
+>
+> Okay, so a packet sent to a port mask of zero behaves just the same as a
+> packet sent to a port mask of all ones is what you're saying?
+> Sounds a bit... implausible?
+>
+> When I phrased the question whether it gets "forwarded by MAC DA/VLAN ID",
+> obviously this includes the possibility of _flooding_, if the MAC
+> DA/VLAN ID is unknown to the FDB. The behavior of flooding a packet due
+> to unknown destination can be practically indistinguishable from a
+> "broadcast" (the latter having the sense that "you've told the switch to
+> broadcast this packet to all ports", at least this is what is implied by
+> the context of your commit message).
+>
+> The point is that if the destination is not unknown, the packet is not
+> flooded (or "broadcast" as you say). So "broadcast" would be effectively
+> a mischaracterization of the behavior.
 
-The divergences in Linux's behavior mentioned in this patch were
-introduced at
+Oh OK sorry what I mean is that the packet appears on all ports of
+the switch. Not sent to the broadcast address.
 
-unicast 240/4 (since 2.6.25):
-  commit 1e637c74b0f84eaca02b914c0b8c6f67276e9697
-  Author: Jan Engelhardt <jengelh@computergmbh.de>
-  Date:   Mon Jan 21 03:18:08 2008 -0800
+> Just want to make sure that the switch does indeed "broadcast" packets
+> with a destination port mask of zero. Also curious if by "all ports",
+> the CPU port itself is also included (effectively looping back the packet)?
 
-unicast 0/8 (since 5.3):
-  commit 96125bf9985a75db00496dd2bc9249b777d2b19b
-  Author: Dave Taht <dave.taht@gmail.com>
-  Date:   Sat Jun 22 10:07:34 2019 -0700
+It does not seem to appear at the CPU port. It appear on ports
+0..4.
 
-unicast subnet lowest address (since 5.14):
-  commit 58fee5fc83658aaacf60246aeab738946a9ba516
-  Merge: 77091933e453 6101ca0384e3
-  Author: David S. Miller <davem@davemloft.net>
-  Date:   Mon May 17 13:47:58 2021 -0700
+> > > > -     out = (RTL4_A_PROTOCOL_RTL8366RB << 12) | (2 << 8);
+> > >
+> > > What was 2 << 8? This patch changes that part.
+> >
+> > It was a bit set in the ingress packets, we don't really know
+> > what egress tag bits there are so first I just copied this
+> > and since it turns out the bits in the lower order are not
+> > correct I dropped this too and it works fine.
+> >
+> > Do you want me to clarify in the commit message and
+> > resend?
+>
+> Well, it is definitely not a logical part of the change. Also, a bug fix
+> patch that goes to stable kernels seems like the last place to me where
+> you'd want to change something that you don't really know what it does...
+> In net-next, this extra change is more than welcome. Possibly has
+> something to do with hardware address learning on the CPU port, but this
+> is just a very wild guess based on some other Realtek tagging protocol
+> drivers I've looked at recently. Anyway, more than likely not just a
+> random number with no effect.
 
-Signed-off-by: Seth David Schoen <schoen@loyalty.org>
-Suggested-by: John Gilmore <gnu@toad.com>
----
- man7/ip.7 | 48 +++++++++++++++++++++++++++++++++++++++++++++---
- 1 file changed, 45 insertions(+), 3 deletions(-)
+Yeah but I don't know anything else about it than that it appear
+in the ingress packets which are known to have a different
+format than the egress packets, the assumption that they were
+the same format was wrong ... so it seems best to drop it as well.
+But if you insist I can defer that to a separate patch for next.
+I just can't see that it has any effect at all.
 
-diff --git a/man7/ip.7 b/man7/ip.7
-index 7eee2811e..0c228a9c2 100644
---- a/man7/ip.7
-+++ b/man7/ip.7
-@@ -232,6 +232,7 @@ In particular, this means that you need to call
- on the number that is assigned to a port.
- All address/port manipulation
- functions in the standard library work in network byte order.
-+.SS Special and reserved addresses
- .PP
- There are several special addresses:
- .B INADDR_LOOPBACK
-@@ -239,12 +240,53 @@ There are several special addresses:
- always refers to the local host via the loopback device;
- .B INADDR_ANY
- (0.0.0.0)
--means any address for binding;
-+means any address for socket binding;
- .B INADDR_BROADCAST
- (255.255.255.255)
--means any host and has the same effect on bind as
-+has the same effect on socket binding as
- .B INADDR_ANY
--for historical reasons.
-+for historical reasons. A packet addressed to
-+.B INADDR_BROADCAST
-+through a socket which has
-+.B SO_BROADCAST
-+set will be broadcast to all hosts on the local network segment, as
-+long as the link is broadcast-capable.
-+.PP
-+Internet standards have also traditionally reserved various
-+addresses for particular uses. (Some reserved addresses are no longer
-+treated specially by Linux kernels, as described below.) The addresses
-+in the ranges 0.0.0.1 through 0.255.255.255 and 240.0.0.0 through
-+255.255.255.254 (0/8 and 240/4, in CIDR notation) are reserved globally.
-+All addresses from 127.0.0.1 through 127.255.255.254
-+are treated as loopback addresses akin to the standardized
-+local loopback address 127.0.0.1, while addresses in 224.0.0.0 through
-+239.255.255.255 (224/4) are dedicated to multicast use.
-+.PP
-+On any locally-attached IP subnet with a link type that supports
-+broadcasts, the highest-numbered address (e.g., the .255 address on a
-+subnet with netmask 255.255.255.0) is designated as a broadcast address.
-+This "broadcast address" cannot usefully be assigned to an interface, and
-+can only be addressed
-+with a socket on which the
-+.B SO_BROADCAST
-+option has been set.
-+Internet standards have historically also reserved the lowest-numbered
-+address (e.g., the .0 address on a subnet with netmask 255.255.255.0)
-+for broadcast, though they call it "obsolete" for this purpose.
-+.IP \(bu 2
-+Since Linux 2.6.25, 240/4 addresses (except 255.255.255.255) are treated
-+as ordinary unicast addresses, and can therefore be assigned to an interface.
-+.IP \(bu
-+Since Linux 5.3, this is also true for 0/8 addresses (except 0.0.0.0).
-+.IP \(bu
-+Since Linux 5.14, this is also true for the lowest address on a subnet
-+(e.g., the .0 address in a /24 network).
-+.PP
-+Operating systems that follow the traditional behaviors may not
-+interoperate with a system using these historically reserved addresses.
-+However, distant hosts will interoperate with the lowest address on a
-+subnet, as long as the local router and the host to which it is assigned
-+both treat it as a unicast address.
- .SS Socket options
- IP supports some protocol-specific socket options that can be set with
- .BR setsockopt (2)
--- 
-2.25.1
-
+Yours,
+Linus Walleij
