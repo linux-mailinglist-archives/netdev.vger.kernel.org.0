@@ -2,149 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F0553FC5ED
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 13:33:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 294EB3FC619
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 13:33:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241051AbhHaKhf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 06:37:35 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:38906 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234041AbhHaKhS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 06:37:18 -0400
-Received: by mail-io1-f71.google.com with SMTP id n8-20020a6b7708000000b005bd491bdb6aso303423iom.5
-        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 03:36:23 -0700 (PDT)
+        id S241101AbhHaKjv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 06:39:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39072 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241110AbhHaKi3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 06:38:29 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F61FC0613A3
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 03:37:15 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id x19so7601929pfu.4
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 03:37:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=CkhRtVDUgb41zlq5OfgVAHJFRMwL0PptQO/kVg6fccA=;
+        b=wb1QmOQoMFVShBMn9y6KTytH5q1BZ0H1hJ3YO5uXgTFjLoGaoSepJJ5OlbhccHu/AJ
+         wAiGO67xMVtU0t2LrJWcMBK/NhTSX6ZkR3DOqmyntbAg6jf+Cr1K9Cw8Xhb1KbRfFq5f
+         0PiM2QpjLxqt7Y8TQAgsTNp6GYrUDvE9Lh/oajmuWt89WT4dDtxIROjBFBxpqguUKBU7
+         LLMz+DXMsZEm4Eg593FHxtTTvCsA6fIWSzAN4+6DPx7X3FPKVNWqVAX/Kck7QYFDzzcC
+         d2NfPV00YlGSbPc1qoUeYTZUD6zpXTRPBo7PsZ9aFWAnnS/G89GxBIlH9Z/mgTPMxFx/
+         rbnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=C7KJHTkk1c0zJenAnvPa15dENwUnMi0hsUVHukHuBPg=;
-        b=jpLtVwz8OcmO7Qq8le7ywy1SkMLfNVcfW/WoNcpP1TryhDyJ1Iv7/uhoyysNp3FA2M
-         FXesdITVM7pOIgPB/5JNDlJ9JRgwk3njuFyaXWQj/+zu6OtusMH3sZDKkNvo4FgTe4S+
-         tNrVLdJbC1I4LN51YXw3b7ev/GeWmWtiniVDMziO2+82eHpGE2yd9N2uo9Jrr5+C+BD3
-         DVHOTqQ6Wyexbl8W4dKWHehE6qHB2QQZKUrUUFN/oIeBGzRjSNcn3pLIa3PXhigtbXKb
-         8IGaJHDlXuvSfc2ztWlCs/tgaOedhwZAah4g3gQ3Cwve9+mniBGODwoB01ktuEfhORE1
-         jBsQ==
-X-Gm-Message-State: AOAM5334IBCF/L/AziAclKu33EDiTB2Qhw88H7qe8hMl0R40IyK1YLtH
-        0LdHr66gwGa6AdrreHqX5g0Mz/Ckn4SZ5F6/1MvufB3C/ySX
-X-Google-Smtp-Source: ABdhPJwPMhVubij/wMLaajXgQa0Pywx7cTmBuLR4tb2OIWWWNKeEPkoY0pICaC3/QBL0ks9YjgX1H/B0Eo7NX4GBKncageVP74FJ
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=CkhRtVDUgb41zlq5OfgVAHJFRMwL0PptQO/kVg6fccA=;
+        b=cdBDqB7M6lJ1MmrhvASzDv7TnCXG3uZyi6D4HQYcSBr6VPNwsAR0D0Fd//pj0uIrJo
+         0BrbRAtFWStpsoA0+yLVdlrXvpdhTbrPrOpXIPcIuaHPotuiz4Gtp3GUAv8s3y28vy1C
+         zXEhzjS5BUosB+geTXfglF1eit1UsVzGw6May/U3fDgDh3v0exWJCasizJWCHEIuyXo7
+         9MbQC1hejgtcJ7fT/q/RJ2ZIlmMrGA4kFunleqsGGj598nIntuXvJOWJD6IQLuhBWno2
+         JkTdPlSw/T/WFU6VmNglWYBNP9Rs0HFkAHIT2df0Ij3OtUjCUuScgq0D9RoyG+NW30tj
+         N3vw==
+X-Gm-Message-State: AOAM53196hpkydVa5WF0bigWrO8tjHnxU5ixJAzrVnSsC+RitDkPD5U5
+        N5qwoOPs1MtTFcRvKhBpci7X
+X-Google-Smtp-Source: ABdhPJzBeHb26ioOoBceC1KZUNqQKw0qJ8cn0b2Nhenwq0dSjkYw4fqu/cKwDwROR4HestxrtqNmDQ==
+X-Received: by 2002:aa7:999c:0:b0:3f2:8100:79c2 with SMTP id k28-20020aa7999c000000b003f2810079c2mr22685875pfh.80.1630406235060;
+        Tue, 31 Aug 2021 03:37:15 -0700 (PDT)
+Received: from localhost ([139.177.225.253])
+        by smtp.gmail.com with ESMTPSA id 15sm2641504pjw.39.2021.08.31.03.37.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 Aug 2021 03:37:14 -0700 (PDT)
+From:   Xie Yongji <xieyongji@bytedance.com>
+To:     mst@redhat.com, jasowang@redhat.com, stefanha@redhat.com,
+        sgarzare@redhat.com, parav@nvidia.com, hch@infradead.org,
+        christian.brauner@canonical.com, rdunlap@infradead.org,
+        willy@infradead.org, viro@zeniv.linux.org.uk, axboe@kernel.dk,
+        bcrl@kvack.org, corbet@lwn.net, mika.penttila@nextfour.com,
+        dan.carpenter@oracle.com, joro@8bytes.org,
+        gregkh@linuxfoundation.org, zhe.he@windriver.com,
+        xiaodong.liu@intel.com, joe@perches.com, robin.murphy@arm.com,
+        will@kernel.org, john.garry@huawei.com
+Cc:     songmuchun@bytedance.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v13 03/13] file: Export receive_fd() to modules
+Date:   Tue, 31 Aug 2021 18:36:24 +0800
+Message-Id: <20210831103634.33-4-xieyongji@bytedance.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210831103634.33-1-xieyongji@bytedance.com>
+References: <20210831103634.33-1-xieyongji@bytedance.com>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:2436:: with SMTP id g22mr22469045iob.109.1630406183621;
- Tue, 31 Aug 2021 03:36:23 -0700 (PDT)
-Date:   Tue, 31 Aug 2021 03:36:23 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000006a17f905cad88525@google.com>
-Subject: [syzbot] KASAN: null-ptr-deref Read in phy_disconnect
-From:   syzbot <syzbot+6a916267d9bc5fa2d9a6@syzkaller.appspotmail.com>
-To:     andrew@lunn.ch, davem@davemloft.net, hkallweit1@gmail.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux@armlinux.org.uk,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Export receive_fd() so that some modules can use
+it to pass file descriptor between processes without
+missing any security stuffs.
 
-syzbot found the following issue on:
-
-HEAD commit:    9c1587d99f93 usb: isp1760: otg control register access
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git usb-testing
-console output: https://syzkaller.appspot.com/x/log.txt?x=16907291300000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=24756feea212a6b0
-dashboard link: https://syzkaller.appspot.com/bug?extid=6a916267d9bc5fa2d9a6
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=166de449300000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12c5ddce300000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+6a916267d9bc5fa2d9a6@syzkaller.appspotmail.com
-
-asix 1-1:0.0 eth1: register 'asix' at usb-dummy_hcd.0-1, ASIX AX88178 USB 2.0 Ethernet, 8a:c0:d1:1e:27:4c
-usb 1-1: USB disconnect, device number 2
-asix 1-1:0.0 eth1: unregister 'asix' usb-dummy_hcd.0-1, ASIX AX88178 USB 2.0 Ethernet
-general protection fault, probably for non-canonical address 0xdffffc00000000c3: 0000 [#1] SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000618-0x000000000000061f]
-CPU: 1 PID: 32 Comm: kworker/1:1 Not tainted 5.14.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: usb_hub_wq hub_event
-RIP: 0010:phy_is_started include/linux/phy.h:947 [inline]
-RIP: 0010:phy_disconnect+0x22/0x110 drivers/net/phy/phy_device.c:1097
-Code: 0f 1f 84 00 00 00 00 00 55 48 89 fd 53 e8 46 33 68 fe 48 8d bd 18 06 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 04 02 84 c0 74 08 3c 03 0f 8e c5 00 00 00 8b 9d 18 06 00 00
-RSP: 0018:ffffc900001a7780 EFLAGS: 00010206
-RAX: dffffc0000000000 RBX: ffff88811a410bc0 RCX: 0000000000000000
-RDX: 00000000000000c3 RSI: ffffffff82d9305a RDI: 0000000000000618
-RBP: 0000000000000000 R08: 0000000000000055 R09: 0000000000000000
-R10: ffffffff814c05fb R11: 0000000000000000 R12: ffff8881063cc300
-R13: ffffffff83870d90 R14: ffffffff86805a20 R15: ffffffff868059e0
-FS:  0000000000000000(0000) GS:ffff8881f6900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fb4c30b3008 CR3: 00000001021e1000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- ax88772_unbind+0x51/0x90 drivers/net/usb/asix_devices.c:816
- usbnet_disconnect+0x103/0x270 drivers/net/usb/usbnet.c:1618
- usb_unbind_interface+0x1d8/0x8d0 drivers/usb/core/driver.c:458
- __device_release_driver+0x3bd/0x6f0 drivers/base/dd.c:1201
- device_release_driver_internal drivers/base/dd.c:1232 [inline]
- device_release_driver+0x26/0x40 drivers/base/dd.c:1255
- bus_remove_device+0x2eb/0x5a0 drivers/base/bus.c:529
- device_del+0x502/0xd40 drivers/base/core.c:3543
- usb_disable_device+0x35b/0x7b0 drivers/usb/core/message.c:1419
- usb_disconnect.cold+0x27a/0x78e drivers/usb/core/hub.c:2225
- hub_port_connect drivers/usb/core/hub.c:5199 [inline]
- hub_port_connect_change drivers/usb/core/hub.c:5488 [inline]
- port_event drivers/usb/core/hub.c:5634 [inline]
- hub_event+0x1c9c/0x4330 drivers/usb/core/hub.c:5716
- process_one_work+0x98d/0x15b0 kernel/workqueue.c:2276
- process_scheduled_works kernel/workqueue.c:2338 [inline]
- worker_thread+0x85c/0x11f0 kernel/workqueue.c:2424
- kthread+0x3c0/0x4a0 kernel/kthread.c:319
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
-Modules linked in:
----[ end trace d08c08ba92f8f06f ]---
-RIP: 0010:phy_is_started include/linux/phy.h:947 [inline]
-RIP: 0010:phy_disconnect+0x22/0x110 drivers/net/phy/phy_device.c:1097
-Code: 0f 1f 84 00 00 00 00 00 55 48 89 fd 53 e8 46 33 68 fe 48 8d bd 18 06 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 04 02 84 c0 74 08 3c 03 0f 8e c5 00 00 00 8b 9d 18 06 00 00
-RSP: 0018:ffffc900001a7780 EFLAGS: 00010206
-RAX: dffffc0000000000 RBX: ffff88811a410bc0 RCX: 0000000000000000
-RDX: 00000000000000c3 RSI: ffffffff82d9305a RDI: 0000000000000618
-RBP: 0000000000000000 R08: 0000000000000055 R09: 0000000000000000
-R10: ffffffff814c05fb R11: 0000000000000000 R12: ffff8881063cc300
-R13: ffffffff83870d90 R14: ffffffff86805a20 R15: ffffffff868059e0
-FS:  0000000000000000(0000) GS:ffff8881f6900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fb4c30b3008 CR3: 00000001021e1000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-----------------
-Code disassembly (best guess):
-   0:	0f 1f 84 00 00 00 00 	nopl   0x0(%rax,%rax,1)
-   7:	00
-   8:	55                   	push   %rbp
-   9:	48 89 fd             	mov    %rdi,%rbp
-   c:	53                   	push   %rbx
-   d:	e8 46 33 68 fe       	callq  0xfe683358
-  12:	48 8d bd 18 06 00 00 	lea    0x618(%rbp),%rdi
-  19:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
-  20:	fc ff df
-  23:	48 89 fa             	mov    %rdi,%rdx
-  26:	48 c1 ea 03          	shr    $0x3,%rdx
-* 2a:	0f b6 04 02          	movzbl (%rdx,%rax,1),%eax <-- trapping instruction
-  2e:	84 c0                	test   %al,%al
-  30:	74 08                	je     0x3a
-  32:	3c 03                	cmp    $0x3,%al
-  34:	0f 8e c5 00 00 00    	jle    0xff
-  3a:	8b 9d 18 06 00 00    	mov    0x618(%rbp),%ebx
-
-
+Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ fs/file.c            | 6 ++++++
+ include/linux/file.h | 7 +++----
+ 2 files changed, 9 insertions(+), 4 deletions(-)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+diff --git a/fs/file.c b/fs/file.c
+index 86dc9956af32..210e540672aa 100644
+--- a/fs/file.c
++++ b/fs/file.c
+@@ -1134,6 +1134,12 @@ int receive_fd_replace(int new_fd, struct file *file, unsigned int o_flags)
+ 	return new_fd;
+ }
+ 
++int receive_fd(struct file *file, unsigned int o_flags)
++{
++	return __receive_fd(file, NULL, o_flags);
++}
++EXPORT_SYMBOL_GPL(receive_fd);
++
+ static int ksys_dup3(unsigned int oldfd, unsigned int newfd, int flags)
+ {
+ 	int err = -EBADF;
+diff --git a/include/linux/file.h b/include/linux/file.h
+index 2de2e4613d7b..51e830b4fe3a 100644
+--- a/include/linux/file.h
++++ b/include/linux/file.h
+@@ -94,6 +94,9 @@ extern void fd_install(unsigned int fd, struct file *file);
+ 
+ extern int __receive_fd(struct file *file, int __user *ufd,
+ 			unsigned int o_flags);
++
++extern int receive_fd(struct file *file, unsigned int o_flags);
++
+ static inline int receive_fd_user(struct file *file, int __user *ufd,
+ 				  unsigned int o_flags)
+ {
+@@ -101,10 +104,6 @@ static inline int receive_fd_user(struct file *file, int __user *ufd,
+ 		return -EFAULT;
+ 	return __receive_fd(file, ufd, o_flags);
+ }
+-static inline int receive_fd(struct file *file, unsigned int o_flags)
+-{
+-	return __receive_fd(file, NULL, o_flags);
+-}
+ int receive_fd_replace(int new_fd, struct file *file, unsigned int o_flags);
+ 
+ extern void flush_delayed_fput(void);
+-- 
+2.11.0
+
