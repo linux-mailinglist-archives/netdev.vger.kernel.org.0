@@ -2,87 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13B2A3FC2B7
+	by mail.lfdr.de (Postfix) with ESMTP id BE4E83FC2B9
 	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 08:37:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232171AbhHaGT2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 02:19:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38916 "EHLO
+        id S232838AbhHaGZe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 02:25:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231847AbhHaGT1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 02:19:27 -0400
-Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 700F8C06175F
-        for <netdev@vger.kernel.org>; Mon, 30 Aug 2021 23:18:32 -0700 (PDT)
-Received: by mail-lf1-x143.google.com with SMTP id c8so23628879lfi.3
-        for <netdev@vger.kernel.org>; Mon, 30 Aug 2021 23:18:32 -0700 (PDT)
+        with ESMTP id S231235AbhHaGZe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 02:25:34 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72719C061575;
+        Mon, 30 Aug 2021 23:24:39 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id c6so837145pjv.1;
+        Mon, 30 Aug 2021 23:24:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
-        bh=RzIkdEm5aJl66a3p0t6hmEQ+Qv+8MFJLxj5JlLxnEbs=;
-        b=kS74wE2T1WndU0C9yewIILwqzwXLl+zyYvuGKjmG3LbLnedFOmgoeS3CuLsolOuV4D
-         WPkGsdkgde4lkwtMR+Bn/R9zL4eud1Q6vu2GZV6MXsv1Ye0dZMAbGWHvuqAG3fFTzi4V
-         EUGSc5itVstByKb9dUPkMYUISZCJWPH5zXOdvo3/Z5c3daiv4J2dmx/yo4rziEbS6n+4
-         Q91KwK/1V+YREhCBAWZG5l47Uvp6PWPcUrC501EyctlHNuOvsVaPI2UnxPo8oykiNm0u
-         j7J6oeF1t1Lk00v49p0wEgKBkiPlheB7AS5R5tIyvM9yuRqJrwztk+a3wjMooFlwqxnv
-         U2Cg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sj6jAE8z2I5y47qYO4qFv6Ruox2LdAIrHUhiT++ikm4=;
+        b=s8Zrf78dcjdFv3hci9c/uqAlSVFsFuBzOxyHG0zKit21DBphcGWvdXtg8beDzyb5gp
+         4QtNGwOROoE3DadIiVc7s3Y6TVfe+od0OnOuG/0Jitake7KGVbGF7gxvRekGhKwhKv+E
+         vNUvI4+UWASDHVpxDQ2TA5Yx6w0YFF5l9gESyjiLBav/QffYU95eshlrIgMkoUM3Bpme
+         YyWo+UQg6KDpWj9xP3hXKD+myuzxO+qycNycwMvFumHcolHZImO+7uX2QUekqfse47pe
+         PqNl0lSZDmRvi8cSfkzHEH1tILiZ9ucYcUhURav2rvneiQC6SMTJnLfunIRa9QUoBQk9
+         XX/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to;
-        bh=RzIkdEm5aJl66a3p0t6hmEQ+Qv+8MFJLxj5JlLxnEbs=;
-        b=rpuyHETjsQ0KZibqaD2Rbt+3KlsedcBxslZrsqufMjunNCFu9+/dlzxmqF/P3tnKtL
-         YktblUmyG2BkoPHOOFLxP/u+T8WSr25ZZEjZElMPRHJnHDWJK3+BmYHHMRLI6p1bibmo
-         3iHmlR9QqnOjZ+IVJMNxXcx1wg173hfx1+cXOtGe7tHKeQXF/JXoY8Vf0pzuoosgviLd
-         tsAz8m8zlJHhOCAM6LApM0sFFNzGh5E88SFFtO0QU1NQ4VHJ2akYVl0a2WC9T7Q2ZiiP
-         B7diK7wom0KsI8N17qUtUDz1FvWqALGhDBluf5gWNsubtwpjsYqkgsp5q58psm5S8sak
-         85Fw==
-X-Gm-Message-State: AOAM533nLba5dTOqKyF8LR2VlZI7Iy+UubnO2xKTjucEB65DuaWGENXD
-        qFOiSU1yfIkJPi1V5bhs+YWVRPK36Y8LmEqPizk=
-X-Google-Smtp-Source: ABdhPJx0kXHhL+PfwBzh5WGLj5HKrJglzjhz3MHVEIOXHT4LT4fothK22uMk4Iyk1FhNDj/FpFxr421maFI0iypXYXw=
-X-Received: by 2002:a05:6512:10d3:: with SMTP id k19mr20097936lfg.481.1630390710452;
- Mon, 30 Aug 2021 23:18:30 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sj6jAE8z2I5y47qYO4qFv6Ruox2LdAIrHUhiT++ikm4=;
+        b=iGG1ITAtuT1jBWlx8NsHolM8R+c+Ny79kghQc0PB4pXeICuAJvvwWd/iZVcPRySveq
+         55GS6saxxqeSuDc4KhQku+vWGoEmRhQfovY7jRADUkmQMHc8SWZ2j7SbW+WSEdUWhCdx
+         1jk3a7C1RikFgpRN2T/ggIqIycgeH0YGdLbtwQmHm+RlZkZie1gIye+Vh+48KAKtAq77
+         Y2oWZO+Jf415ompra3f9Np7xJlaQQg2FJnnUVSbw9bw7K2tIQVo0Pt8Q6BtFdf7z7cYn
+         13EzcIpMCB9W/mJanSJqDFxQ3A42+D9VeVuk3zBwQ4EcwrqgI7+2IiZUyUY4/txMuE9E
+         CxKQ==
+X-Gm-Message-State: AOAM533AzLNyp5N0ifK4ZB1DLz9zrumRRcP3cxnmtg/edYJz73yaSBii
+        czeLxKWpz0uX1V/lY+0TKco=
+X-Google-Smtp-Source: ABdhPJxbfOiRrt6366HpAMk/MuSv4bgCbU7WBtfmkaifBi19s+87lOdLNrMkJH7euV8ZqXFkoYCtDg==
+X-Received: by 2002:a17:902:b48b:b029:12c:59b:dc44 with SMTP id y11-20020a170902b48bb029012c059bdc44mr3183701plr.47.1630391078988;
+        Mon, 30 Aug 2021 23:24:38 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id n22sm16585841pff.57.2021.08.30.23.24.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Aug 2021 23:24:38 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     rajur@chelsio.com
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Chi Minghao <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] cxgb4: remove unneeded variable
+Date:   Mon, 30 Aug 2021 23:22:54 -0700
+Message-Id: <20210831062255.13113-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Reply-To: godwinppter@gmail.com
-Sender: anitaholdings1860@gmail.com
-Received: by 2002:a9a:7407:0:b029:c8:dbb9:6b13 with HTTP; Mon, 30 Aug 2021
- 23:18:29 -0700 (PDT)
-From:   Godwin Pete <godwinnpeter@gmail.com>
-Date:   Tue, 31 Aug 2021 08:18:29 +0200
-X-Google-Sender-Auth: _WdLxXfqSUHaYsKywBP9wd2AZ9Y
-Message-ID: <CAJ9gDnchdqV_3wp2DehMMJUgdHBV6DdxrO_=EbwWo+xDerKcLg@mail.gmail.com>
-Subject: I just want to furnish you with this good news
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Chi Minghao <chi.minghao@zte.com.cn>
 
-I just want to use this little opportunity to inform you about my
-success towards the transfer. I'm currently out of the country for an
-investment with part of my share, after completing the transfer with
-an Indian business man. But i will visit your country, next year.
-After the completion of my project. Please, contact my secretary to
-send you the (ATM) card which I've already credited with the sum of
-($500,000.00). Just contact her to help you in receiving the (ATM)
-card. I've explained everything to her before my trip. This is what I
-can do for you because, you couldn't help in the transfer, but for the
-fact that you're the person whom I've contacted initially, for the
-transfer. I decided to give this ($500,000.00) as a compensation for
-being contacted initially for the transfer. I always try to make the
-difference, in dealing with people any time I come in contact with
-them. I'm also trying to show that I'm quite a different person from
-others whose may have a different purpose within them. I believe that
-you will render some help to me when I, will visit your country, for
-another investment there. So contact my secretary for the card, Her
-contact are as follows,
+Fix the following coccicheck REVIEW:
+./drivers/net/ethernet/chelsio/cxgb4/t4_hw.c:3266:5-8 REVIEW Unneeded
+variable
 
-Full name: Mrs, Jovita Dumuije,
-Country: Burkina Faso
-Email: jovitadumuije@gmail.com
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Chi Minghao <chi.minghao@zte.com.cn>
+---
+ drivers/net/ethernet/chelsio/cxgb4/t4_hw.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-Thanks, and hope for a good corporation with you in future.
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
+index 5e8ac42ac6ab..c986a414414b 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
+@@ -3263,8 +3263,6 @@ int t4_get_scfg_version(struct adapter *adapter, u32 *vers)
+  */
+ int t4_get_version_info(struct adapter *adapter)
+ {
+-	int ret = 0;
+-
+ 	#define FIRST_RET(__getvinfo) \
+ 	do { \
+ 		int __ret = __getvinfo; \
+@@ -3280,7 +3278,7 @@ int t4_get_version_info(struct adapter *adapter)
+ 	FIRST_RET(t4_get_vpd_version(adapter, &adapter->params.vpd_vers));
+ 
+ 	#undef FIRST_RET
+-	return ret;
++	return 0;
+ }
+ 
+ /**
+-- 
+2.25.1
 
-Godwin Peter,
