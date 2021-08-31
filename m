@@ -2,144 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A25DB3FC514
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 11:53:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8AFE3FC551
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 12:28:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240519AbhHaJnk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 05:43:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55214 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233015AbhHaJnh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 05:43:37 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABFADC061575;
-        Tue, 31 Aug 2021 02:42:42 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id v10so26658594wrd.4;
-        Tue, 31 Aug 2021 02:42:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=Ojwl8/djIVLrJT34N5n/ZmuYzmO6v/z2g4THD9il8B8=;
-        b=rV10iB4cww2liOe6PvrelTOApV3cUrlSL+9ucNmAC80Aj8rgUeXHG+JEG3w4nVaWlx
-         LKkuBoGmM57JqtvKPkV69KOC/VwsVjUsHibSfdofrsvW5LhgHjle680rrV0Z7Inmreq9
-         sI8Mhv8kQwgLYthylYPB01+AISczfqRe+7Ktp4NnufhgVctyVGqzl3JDGZZkiUP7BLud
-         +gSTtmylcA/KgvKF0SdkBsZjEU1pqXvdX0wtybStmbXkrdTZFkLP+V36YX7fhMiWbca8
-         JQ1bNTL2AvfQedt4xV/X5Mq5D1TISjGjSByRHrMbGsw4pLU4vas6cHDK3nJA8eQsj6PJ
-         DspQ==
+        id S240785AbhHaJzl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 05:55:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:38737 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240676AbhHaJzl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 05:55:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1630403685;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=sSiG1T10K5QaNICdBn+fQ2XcRsLKJ5lbf7eHXoqa2lw=;
+        b=Q5NAl3Jit4fuTCkeYSYapFIJ2Tx8wk8ja9kdv7YxeeUetDsHRN8wFXPbP6UIxS2oiTANJQ
+        CRrLy9clAYuPPJEJYLhj1eqRmk6iVqaVC1nLAFm9jLO1GEyUSUDMQL3CT3lV+Z1dv1uZ3i
+        wMDr/om8mndFaXRs+SZWQRe7nXZNGlM=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-164-TuPfFEqgNa2QMv1y1KF2jg-1; Tue, 31 Aug 2021 05:54:44 -0400
+X-MC-Unique: TuPfFEqgNa2QMv1y1KF2jg-1
+Received: by mail-ej1-f72.google.com with SMTP id x21-20020a170906135500b005d8d4900c5eso350969ejb.4
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 02:54:44 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Ojwl8/djIVLrJT34N5n/ZmuYzmO6v/z2g4THD9il8B8=;
-        b=Bu6kGAIyY3V6S3+lzczbwBZ5lsVlbDt3vEFQoDLvhLw/tDpMCrpVnd+UQWL1NYOS2/
-         CIszCSD9cJD182V/kXDR7O4PmsdKS85/TsVo0Tv3v+pgdX8Tyhlp2Ev91KBV8IvA4PUg
-         HiX6PsXe4tCetIuGGAXpdA3Gklc6hmluaFufu7VjDiw/MESsjYFwQBzJZFFgKwe46SSw
-         DNMsuVZy+CS9GliVgtw2tLnGX/cD/UQ5u5Xo8REHYE5gcuUh8JKnO7Orpwbn3lwhr5JB
-         N3RaesjDCCHTr8ZJdBZHKKybZGd54WdMEsmLRBwnMEIyIuhd6ffEGsHOaPIXdRVMsUwl
-         Qiuw==
-X-Gm-Message-State: AOAM531yeuz/9l4dpFZtpXhKg3BFYfej2mY/M4FvFuSJHHdwxSrfNEyv
-        Dp4slTB4Qg1n2bJkPOyr2P2K4wel5T0=
-X-Google-Smtp-Source: ABdhPJzTRFWA+GSUAhv11f0Ebl+HeBVZGJs7eZrydcbA4LIuDeqfyV9Q3jUGdWxnK+VGAnTAnbPPwA==
-X-Received: by 2002:a5d:4591:: with SMTP id p17mr30349623wrq.57.1630402961186;
-        Tue, 31 Aug 2021 02:42:41 -0700 (PDT)
-Received: from [192.168.8.197] ([148.252.133.138])
-        by smtp.gmail.com with ESMTPSA id j207sm2100809wmj.40.2021.08.31.02.42.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 31 Aug 2021 02:42:40 -0700 (PDT)
-Subject: Re: [syzbot] general protection fault in sock_from_file
-To:     Hao Xu <haoxu@linux.alibaba.com>, Jens Axboe <axboe@kernel.dk>,
-        syzbot <syzbot+f9704d1878e290eddf73@syzkaller.appspotmail.com>,
-        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, dvyukov@google.com,
-        io-uring@vger.kernel.org, john.fastabend@gmail.com, kafai@fb.com,
-        kpsingh@kernel.org, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
-References: <00000000000059117905cacce99e@google.com>
- <7949b7a0-fec1-34a7-aaf5-cbe07c6127ed@kernel.dk>
- <d881d3fa-4df5-1862-bc2b-9420649ba3c8@linux.alibaba.com>
-From:   Pavel Begunkov <asml.silence@gmail.com>
-Message-ID: <407ce02f-7a0a-4eb2-b242-188fc605012c@gmail.com>
-Date:   Tue, 31 Aug 2021 10:42:07 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=sSiG1T10K5QaNICdBn+fQ2XcRsLKJ5lbf7eHXoqa2lw=;
+        b=lN/8ZK3A6v6xYFPBv2EaSCp046yWmYcDTOiDLNZOOZIzBqPloQgyiFm7CHxpYBp2Jh
+         XIdf2XRsLDz6GpbLOCWIoSceTwZTw5FfoZ8ldlNvBha4VBnd48Tr7sY9Vuh256Ynx0wD
+         tvg+qmnAwGLzWz6s5qmC+J3pq+KFA8FgDRtpFr0/BAyx0pe5KNOQuh4+5EpmZCTdDjfF
+         seORnzQTZStIViJ+1wVVEBtsJKkEmDzsAr3CL9ZvdTmtLFTatWKwzyuBq4pWMyQ3ricq
+         XNa1499dqCoalosmxuETnDDCCZbUO78FRpVBNGMW7yriw4eS/sJe4RHQBsEBPpum3sqX
+         w+tw==
+X-Gm-Message-State: AOAM532UH6TFsXYCIuC6aGSWpWQV7PyKbj/wFyzDg5I1cM9linLYha9T
+        5iJ/fcP0WYLkHiUEfc2o1gaS3BrKgmfJfwW4/hvN8ehbnE0TCLBv52zaxhPD4ds7K9aK5AhMDjt
+        uBdl16PGqM+U668/6vjQVvSl7oOsLId5PwbyYRYDORcsPb2qbdG3Y1yi1IK/Bu4B1Y9iG
+X-Received: by 2002:a17:907:1de1:: with SMTP id og33mr29950360ejc.278.1630403682716;
+        Tue, 31 Aug 2021 02:54:42 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwYeLEmgIbCsy3e7GZK2RW70u9rFHLj8LQGTbstaU/7lj9JeND1/RrXQFn8ICZwviZXdC1Fdg==
+X-Received: by 2002:a17:907:1de1:: with SMTP id og33mr29950333ejc.278.1630403682325;
+        Tue, 31 Aug 2021 02:54:42 -0700 (PDT)
+Received: from localhost (net-188-218-11-235.cust.vodafonedsl.it. [188.218.11.235])
+        by smtp.gmail.com with ESMTPSA id j22sm8141860ejt.11.2021.08.31.02.54.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 Aug 2021 02:54:41 -0700 (PDT)
+Date:   Tue, 31 Aug 2021 11:54:40 +0200
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+Cc:     xiyou.wangcong@gmail.com, davem@davemloft.net, jhs@mojatatu.com,
+        jiri@resnulli.us, kuba@kernel.org, liuhangbin@gmail.com,
+        petrm@mellanox.com
+Subject: Re: [PATH net] net/sched: ets: fix crash when flipping from 'strict'
+ to 'quantum'
+Message-ID: <YS38YB9JTSHeYgJG@dcaratti.users.ipa.redhat.com>
+References: <2fdc7b4e11c3283cd65c7cf77c81bd6687a32c20.1629844159.git.dcaratti@redhat.com>
+ <CAM_iQpUryQ8Q9cd9Oiv=hxAgpqfCz=j4E=c=hskbPE2+VB-ZvQ@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <d881d3fa-4df5-1862-bc2b-9420649ba3c8@linux.alibaba.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAM_iQpUryQ8Q9cd9Oiv=hxAgpqfCz=j4E=c=hskbPE2+VB-ZvQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/31/21 10:19 AM, Hao Xu wrote:
-> 在 2021/8/31 上午10:14, Jens Axboe 写道:
->> On 8/30/21 2:45 PM, syzbot wrote:
->>> syzbot has found a reproducer for the following issue on:
->>>
->>> HEAD commit:    93717cde744f Add linux-next specific files for 20210830
->>> git tree:       linux-next
->>> console output: https://syzkaller.appspot.com/x/log.txt?x=15200fad300000
->>> kernel config:  https://syzkaller.appspot.com/x/.config?x=c643ef5289990dd1
->>> dashboard link: https://syzkaller.appspot.com/bug?extid=f9704d1878e290eddf73
->>> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
->>> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=111f5f9d300000
->>> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1651a415300000
->>>
->>> IMPORTANT: if you fix the issue, please add the following tag to the commit:
->>> Reported-by: syzbot+f9704d1878e290eddf73@syzkaller.appspotmail.com
->>>
->>> general protection fault, probably for non-canonical address 0xdffffc0000000005: 0000 [#1] PREEMPT SMP KASAN
->>> KASAN: null-ptr-deref in range [0x0000000000000028-0x000000000000002f]
->>> CPU: 0 PID: 6548 Comm: syz-executor433 Not tainted 5.14.0-next-20210830-syzkaller #0
->>> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
->>> RIP: 0010:sock_from_file+0x20/0x90 net/socket.c:505
->>> Code: f5 ff ff ff c3 0f 1f 44 00 00 41 54 53 48 89 fb e8 85 e9 62 fa 48 8d 7b 28 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 75 4f 45 31 e4 48 81 7b 28 80 f1 8a 8a 74 0c e8 58 e9
->>> RSP: 0018:ffffc90002caf8e8 EFLAGS: 00010206
->>> RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
->>> RDX: 0000000000000005 RSI: ffffffff8713203b RDI: 0000000000000028
->>> RBP: ffff888019fc0780 R08: ffffffff899aee40 R09: ffffffff81e21978
->>> R10: 0000000000000027 R11: 0000000000000009 R12: dffffc0000000000
->>> R13: 1ffff110033f80f9 R14: 0000000000000003 R15: ffff888019fc0780
->>> FS:  00000000013b5300(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
->>> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->>> CR2: 00000000004ae0f0 CR3: 000000001d355000 CR4: 00000000001506f0
->>> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
->>> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
->>> Call Trace:
->>>   io_sendmsg+0x98/0x640 fs/io_uring.c:4681
->>>   io_issue_sqe+0x14de/0x6ba0 fs/io_uring.c:6578
->>>   __io_queue_sqe+0x90/0xb50 fs/io_uring.c:6864
->>>   io_req_task_submit+0xbf/0x1b0 fs/io_uring.c:2218
->>>   tctx_task_work+0x166/0x610 fs/io_uring.c:2143
->>>   task_work_run+0xdd/0x1a0 kernel/task_work.c:164
->>>   tracehook_notify_signal include/linux/tracehook.h:212 [inline]
->>>   handle_signal_work kernel/entry/common.c:146 [inline]
->>>   exit_to_user_mode_loop kernel/entry/common.c:172 [inline]
->>>   exit_to_user_mode_prepare+0x256/0x290 kernel/entry/common.c:209
->>>   __syscall_exit_to_user_mode_work kernel/entry/common.c:291 [inline]
->>>   syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:302
->>>   do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
->>>   entry_SYSCALL_64_after_hwframe+0x44/0xae
->>> RIP: 0033:0x43fd49
->>
->> Hao, this is due to:
->>
->> commit a8295b982c46d4a7c259a4cdd58a2681929068a9
->> Author: Hao Xu <haoxu@linux.alibaba.com>
->> Date:   Fri Aug 27 17:46:09 2021 +0800
->>
->>      io_uring: fix failed linkchain code logic
->>
->> which causes some weirdly super long chains from that single sqe.
->> Can you take a look, please?
-> Sure, I'm working on this.
+hello Cong, thanks a lot for looking at this!
 
-Ah, saw it after sending a patch. It's nothing too curious, just
-a small error in logic. More interesting that we don't have a
-test case covering it, we should definitely add something.
+On Mon, Aug 30, 2021 at 05:43:09PM -0700, Cong Wang wrote:
+> On Tue, Aug 24, 2021 at 3:34 PM Davide Caratti <dcaratti@redhat.com> wrote:
+> > When the change() function decreases the value of 'nstrict', we must take
+> > into account that packets might be already enqueued on a class that flips
+> > from 'strict' to 'quantum': otherwise that class will not be added to the
+> > bandwidth-sharing list. Then, a call to ets_qdisc_reset() will attempt to
+> > do list_del(&alist) with 'alist' filled with zero, hence the NULL pointer
+> > dereference.
+> 
+> I am confused about how we end up having NULL in list head.
+> 
+> From your changelog, you imply it happens when we change an existing
+> Qdisc, but I don't see any place that could set this list head to NULL.
+> list_del() clearly doesn't set NULL.
+
+right, the problem happens when we try to *decrease* the value of 'nstrict'
+while traffic is being loaded.
+
+ETS classes from 0 to nstrict - 1 don't initialize this list at all, nor they
+use it. The initialization happens when the first packet is enqueued to one of
+the bandwidth-sharing classes (from nstrict to nbands - 1), see [1]).
+
+However, if we modify the value of 'nstrict' while q->classes[i].qdisc->q.len is
+greater than zero, the list initialization is probably not going to happen, so
+the struct
+
+q->classes[i].alist
+
+remains filled with zero even since the first allocation, like you mentioned below:
+
+> But if it is a new Qdisc, Qdisc is allocated with zero's hence having NULL
+> as list head. However, in this case, q->nstrict should be 0 before the loop,
+
+^^ this. But you are wrong, q->nstrict can be any value from 0 to 16 (inclusive)
+before the loop. As the value of 'nstrict' is reduced (e.g. from 4 to 0), the code
+can reach the loop in ets_qdisc_change() with the following 4 conditions
+simultaneously true:
+
+1) nstrict = 0
+2) q->nstrict = 4
+3) q->classes[2].qdisc->q.qlen  greater than zero
+4) q->classes[2].alist filled with 0
+
+then, the value of q->nstrict is updated to 0. After that, ets_qdisc_reset() can be
+called on unpatched Linux with the following 3 conditions simultaneously true:
+
+a) q->nstrict = 0
+b) q->classes[2].qdisc->q.qlen greater than zero
+c) q->classes[2].alist filled with 0
+
+that leads to the reported crash.
+
+> so I don't think your code helps at all as the for loop can't even be entered?
+
+The first code I tried was just doing INIT_LIST_HEAD(&q->classes[i].alist), with 
+i ranging from nstrict to q->nstrict - 1: it fixed the crash in ets_qdisc_reset().
+
+But then I observed that classes changing from strict to quantum were not sharing
+any bandwidth at all, and they had a non-empty backlog even after I stopped all
+the traffic: so, I added the 
+
+	if (q->classes[i].qdisc->q.qlen) {
+		list_add_tail(&q->classes[i].alist, &q->active);
+		q->classes[i].deficit = quanta[i];
+	}
+
+part, that updates the DRR list with non-empty classes that are changing from
+strict to DRR. After that, I verified that all classes were depleted correctly.
+
+On a second thought, this INIT_LIST_HEAD(&q->classes[i].alist) line is no more
+useful. If q->classes[i].qdisc->q.qlen is 0, either it remains 0 until the call
+to ets_qdisc_reset(), or some packet is enqueued after q->nstrict is updated,
+and the enqueueing of a 'first' packet [1] will fix the value of
+q->classes[i].alist.
+Finally, if q->classes[i].qdisc->q.qlen is bigger than zero, the list_add_tail()
+part of my patch covers the missing update of the DRR list. In all these cases,
+the NULL dereference in ets_qdisc_reset() is prevented.
+
+So, I can probably send a patch (for net-next, when it reopens) that removes
+this INIT_LIST_HEAD() line; anyway, its presence is harmless IMO. WDYT?
+
+> 
+> Thanks.
+
+BTW, please find below a reproducer that's more efficient than kselftests in
+seeing the problem:
+
+    1   #!/bin/bash
+    2   ip link del dev ddd0 >/dev/null 2>&1
+    3   ip link add dev ddd0 type dummy
+    4   ip link set dev ddd0 up
+    5   tc qdisc add dev ddd0 handle 1: root tbf rate 100kbit latency 1000ms burst 1Mbit
+    6   tc qdisc add dev ddd0 handle 10: parent 1: ets bands 4 strict 4 priomap  2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+    7   tc qdisc show dev ddd0
+    8   mausezahn ddd0 -A 10.10.10.1 -B 10.10.10.2 -c 0 -a own -b 00:c1:a0:c1:a0:00 -t udp &
+    9   mpid=$!
+   10   sleep 5
+   11   tc qdisc change dev ddd0 handle 10: ets bands 8 quanta 2500 2500 2500 2500 2500 2500 2500 2500  priomap 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+   12   tc qdisc del dev ddd0 root
+   13   sleep 1
+   14   tc qdisc show dev ddd0
+   15   kill $mpid
+   16   rmmod sch_ets
+
+Line 11 changes the ets qdisc from 4 prio to 8 DRR, so the value of q->nstrict
+changes from 4 to 0. The crash in ets_qdisc_reset() happens with band number #2
+(that's the only class being loaded with traffic during the test).
+
+thanks!
 
 -- 
-Pavel Begunkov
+davide
+
+[1] https://elixir.bootlin.com/linux/v5.14/source/net/sched/sch_ets.c#L445
+
