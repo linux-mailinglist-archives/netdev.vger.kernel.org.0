@@ -2,177 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EB0F3FC952
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 16:03:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADE953FC95E
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 16:07:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233543AbhHaOEo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 10:04:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59930 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235908AbhHaOEY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 10:04:24 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E71CC061575
-        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 07:03:29 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id q68so16776064pga.9
-        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 07:03:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :in-reply-to;
-        bh=QxVx3ZWDk5MbwTcA/+9g68nqJa31wbnJPrkGXaZjsSc=;
-        b=Plv33tJ8V36wHeQImZH7+9tFdAkHpszRx1W4hpIbFWLvneZickmt5FrSx6NqnLhPmm
-         3rsw1dHJ4GrIz6ZZyIVTfvyGdzAKkfqbL550yX326yKV1HeSPMb/x9/0lfHTb5Aczhca
-         xCf8pJcYltH2QwENhjtioiSyqL5f4AzlfjWOw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:in-reply-to;
-        bh=QxVx3ZWDk5MbwTcA/+9g68nqJa31wbnJPrkGXaZjsSc=;
-        b=SE0Q4/dE8SJcDuJfwPgcZTOZSvNKe7HfZQNeraYq4qdInayrLROWcDJsCcaLB/Ky/W
-         bcZQNtT0bqRVF9sNn4Kq+cxLo9pXXKb9CI0XWXi/zXP39yWfDYmRrx7loeHT+ALKOrfC
-         E0wdNc4g923JGZuiGM4JC6kG0ZEiJpYvJpMh1nLxG0quNTlGy8iraZeqqjnVP+sZn7rJ
-         XUJtOfGzC12G40e7zQuzBSdRcIS91CtF8vhW3FxHsdsQRA5cO9kCkU0ujW2EPq9M5CA1
-         pzG4D3QoTE7AP9jB1exnz/V61oXniT48B6i8sGLqYfwBckYw+iduDOiBrfRzQkBiTMLU
-         D69Q==
-X-Gm-Message-State: AOAM532SMVFGofGtPoxEEly1sV6xSQOGDwkg2Caq+yU55AtXx2qPWjhU
-        WDpdKTIwnXQbnPV4hw3/8u6KgA==
-X-Google-Smtp-Source: ABdhPJzFx1dGH6COEiy6vqFijumb/UwdB5jefWtFS/UoEUIka/kiJ7Uz4UWyw3dkkgkF6EzYpWJcrg==
-X-Received: by 2002:a63:2bc5:: with SMTP id r188mr26803118pgr.179.1630418609021;
-        Tue, 31 Aug 2021 07:03:29 -0700 (PDT)
-Received: from noodle ([192.19.250.250])
-        by smtp.gmail.com with ESMTPSA id b5sm3029986pjq.2.2021.08.31.07.03.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Aug 2021 07:03:28 -0700 (PDT)
-Date:   Tue, 31 Aug 2021 17:03:14 +0300
-From:   Boris Sukholitko <boris.sukholitko@broadcom.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>
-Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@resnulli.us>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Vadym Kochan <vadym.kochan@plvision.eu>,
-        Ilya Lifshits <ilya.lifshits@broadcom.com>,
-        tom Herbert <tom@sipanda.io>,
-        Felipe Magno de Almeida <felipe@expertise.dev>,
-        Pedro Tammela <pctammela@mojatatu.com>
-Subject: Re: [PATCH net-next] net/sched: cls_flower: Add orig_ethtype
-Message-ID: <20210831140314.GA13140@noodle>
-References: <20210830080800.18591-1-boris.sukholitko@broadcom.com>
- <b05f2736-fa76-4071-3d52-92ac765ca405@mojatatu.com>
- <20210831120440.GA4641@noodle>
- <b400f8c6-8bd8-2617-0a4f-7c707809da7d@mojatatu.com>
+        id S234441AbhHaOIc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 10:08:32 -0400
+Received: from mga09.intel.com ([134.134.136.24]:7534 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229668AbhHaOIb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 31 Aug 2021 10:08:31 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10093"; a="218488483"
+X-IronPort-AV: E=Sophos;i="5.84,366,1620716400"; 
+   d="scan'208";a="218488483"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2021 07:07:36 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,366,1620716400"; 
+   d="scan'208";a="519697201"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by fmsmga004.fm.intel.com with ESMTP; 31 Aug 2021 07:07:35 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12; Tue, 31 Aug 2021 07:07:35 -0700
+Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
+ ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.10; Tue, 31 Aug 2021 07:07:35 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12 via Frontend Transport; Tue, 31 Aug 2021 07:07:35 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.107)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2242.10; Tue, 31 Aug 2021 07:07:33 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UcMxGrmmPazta7BE0fIE1rKNaFIy0PltUVfaZQ2BGS34+pbq/msIIL75bkHg1jOzbpEH2gRrul/uiELGkBQivvin5A4qykWsCq0/fC/nCJQ56Nu4MiZKfqaU11ksH8XXqbilzGDC6pb/HCdVJmrps5XgL91vviE0fziw9yjjh4f8v0Pner1IksjPR+bCQyNirQ0Y3o2cwFo7vgNBR9uHKTiIJYOLP86Sj1fbZj1JSYxBR4ZbMhoom6FFq08sI8PqYmdgXyV02jo4TFIeLXPcvPWP5UjfMmbUKkVac/pg5rqAUijYufcVjI1qR53NMnxWIBf7TKRw9aKNinBEe8LAJw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
+ bh=OTOghWyawvFhVndMldnt183wHAtDJXBqmRIaCR37+20=;
+ b=iu9SAdzTLWRCojBuWDCO7Z3qvMSzKRmIZAX0tdDai0h6rt8STYX2qZSPd9f+eBYgJFjfET9un/suVNNNxm2EpjDwwJUg9FOgBwwvB76wvcT6PMxcTeLOgC/ROhKapzD8+uGLhfVmiSgyx6W4li6teKrBtRv6kqGF04wZxvfxfrlckChrcv+pYHRWYJIJW/rVgN2PlQ2IiFhdrXYgkGsjjanpEZx3GVXZHW2ccvw1iX+7mHVOKAaIjB6J1fnd4exei/y5mtImvxYaGDl1iy6nAE6QgPE667MA1tBtoWcXjidXW9in3JdoYSWCLkeXMLpLr2ApmYzGM3gyL4ZQ8UjjYQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=OTOghWyawvFhVndMldnt183wHAtDJXBqmRIaCR37+20=;
+ b=l2OZWqtHLGNOGQEDd9DlG26FTvYZJWTACV6r2fvHWayfQvnFzxRh11iTNHVzNXL8VMO3b1Ps9RSqTUofPaCJkVc+V2e/Tirrx7cGXpgNWDykVDIZERiwThZXiv6Ub69Mzd90cknUxF7sG+W8GzmdVkmm4AG9/LYQyK9m0keLF/8=
+Received: from SJ0PR11MB4958.namprd11.prod.outlook.com (2603:10b6:a03:2ae::24)
+ by BYAPR11MB3173.namprd11.prod.outlook.com (2603:10b6:a03:1d::29) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4478.17; Tue, 31 Aug
+ 2021 14:07:32 +0000
+Received: from SJ0PR11MB4958.namprd11.prod.outlook.com
+ ([fe80::7865:f66:4ed9:5062]) by SJ0PR11MB4958.namprd11.prod.outlook.com
+ ([fe80::7865:f66:4ed9:5062%7]) with mapi id 15.20.4373.031; Tue, 31 Aug 2021
+ 14:07:32 +0000
+From:   "Machnikowski, Maciej" <maciej.machnikowski@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     Richard Cochran <richardcochran@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "abyagowi@fb.com" <abyagowi@fb.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        Jonathan Lemon <bsd@fb.com>
+Subject: RE: [RFC v2 net-next 1/2] rtnetlink: Add new RTM_GETSYNCESTATE
+ message to get SyncE status
+Thread-Topic: [RFC v2 net-next 1/2] rtnetlink: Add new RTM_GETSYNCESTATE
+ message to get SyncE status
+Thread-Index: AQHXnK7K1rkxJTKXbUG0z9L1S2fbo6uKlpWAgAANa/CAAeYOAIAAKj6AgAC0GNCAADexAIAABHUw
+Date:   Tue, 31 Aug 2021 14:07:32 +0000
+Message-ID: <SJ0PR11MB49583C74616AC7E715C6E3A9EACC9@SJ0PR11MB4958.namprd11.prod.outlook.com>
+References: <20210829080512.3573627-1-maciej.machnikowski@intel.com>
+        <20210829080512.3573627-2-maciej.machnikowski@intel.com>
+        <20210829151017.GA6016@hoboy.vegasvil.org>
+        <PH0PR11MB495126A63998DABA5B5DE184EACA9@PH0PR11MB4951.namprd11.prod.outlook.com>
+        <20210830205758.GA26230@hoboy.vegasvil.org>
+        <20210830162909.110753ec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <SJ0PR11MB4958029CF18F93846B29F685EACC9@SJ0PR11MB4958.namprd11.prod.outlook.com>
+ <20210831063304.4bcacbe3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210831063304.4bcacbe3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+dlp-product: dlpe-windows
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c90ddd04-1118-4c5d-19cd-08d96c88ad0f
+x-ms-traffictypediagnostic: BYAPR11MB3173:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR11MB3173B069E7A7B8AFB5005120EACC9@BYAPR11MB3173.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: ZZRHMNP1eIdnyv8uXEgxOTBi4N47nCzbjv5Gokp8B7ln6NLZsWHupInBQ55sCs+MQ0tyw2Ms7jfbj4PVE5KqLYOSsguZxzUAfT4+RBVpNZr6zbJPIyp70HP9ap29VMTwWo7tEsQ9AaMKIKPGGmeiE5ttPWQWjS5nPoplPs8vgHTSM3JTeAhYMVBMMAKZY44jiGShfRV2lu/lCs5FIaNouOqRX3jGvudu6AeQmTC5hbdBxkErsYVGVdx1cuAd+FzTx9OXa/N/PjmOroCngdW4dTh2J2mF48Fiv/6syPBh63cc0o2vLWbgmlom9GSMrMVux9nxJfsLacjUpBhei3z1h2iC+W2Si3KCZgIi831poIuPyDE5uP9laxHouuo0wenIwnV/rWun0Bhq7XEFcRWLus3sXa3mHuRwEyjtyL7ug8jnVcyTMvJzR+qmSxVDnosyNWkKTxMD/OHDMBY6gGxQ9EgWI0oH8YODG9UrslgRAkC0pDWyPmsP9QdpP/eVrMFqhLuVwoPgysdfWish0wtKR9bwCfFF2m+xx48hB7KRzjdz2tzVxOEDBMe+KYcKcArlUWWuGWMeO67+KJMRN0bvsvM6kh9YqWX1ncbMtHLMyn0UXIo7XKMpHdUJrGdhPjRKHQ+BUhafX2OsDl7z6iwEM73eYA7W5hppdGx6k5fGdkKpCp2H6ClM46OB45gO32pjj73xm8LnRslmKQ1WPOPLgQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR11MB4958.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(396003)(376002)(136003)(366004)(39860400002)(6506007)(66946007)(71200400001)(66446008)(76116006)(53546011)(4326008)(66476007)(64756008)(66556008)(15650500001)(186003)(6916009)(26005)(33656002)(55016002)(9686003)(478600001)(5660300002)(86362001)(83380400001)(2906002)(54906003)(7696005)(8936002)(8676002)(122000001)(316002)(38070700005)(52536014)(38100700002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?mtAa8PhoFX+FrH46W0br8aiQ+MsamgNdkj9SC7FdYu2gFaPpmriiAUo6zsTf?=
+ =?us-ascii?Q?E3Mi/nr/qwVyBYwwjYoBkNspJu5mD97liljSKhbuvj/2MG+AY5VfbC1ZQbmx?=
+ =?us-ascii?Q?q8QttcgCQw+pzk10VPh4tTXmc8TGOiQ5TSbDiY2kW2QpjjwQC6fckGQ6N9SA?=
+ =?us-ascii?Q?kk5COLU3HO/C5vu1JcyQrzlpLgGVyuBrTBn8hCY7OHIK8dqP66G3ifTm122r?=
+ =?us-ascii?Q?3bepnSBamWoAp7RWeKbvp5e5P4ooTsOPbuTyCKEjTBHbqOHfKPOI9pHHkAjr?=
+ =?us-ascii?Q?vL98SJ3ggYSMfjsmKCpAIWM0zCfo7eSzwtlZjXZYLw8pJ4TYFvM5wPXeCYNi?=
+ =?us-ascii?Q?RAiDDUtgjeocqOdy1BtbMFotR9GaB2W3BnZzDr0al50p58ZELVw35uIl7JkW?=
+ =?us-ascii?Q?OBxjRqoc5xUyl69hwc3Ch/Lqk13G2HTPfC5K6kEYvQdByn4Kukh818+/JzZ5?=
+ =?us-ascii?Q?pGtCDEEfXc+ahZJ7Tv0nXWtLNPsSNqGZVPjQlFHd7tXHwmVQdpSiu3LGMho+?=
+ =?us-ascii?Q?IPlsqa2eelqRK5MO96j1OSUuD8kbNgtsYYCsmis1b53nRJlvcb9Fmp5D5lxc?=
+ =?us-ascii?Q?20KgA3A+UtAZ1Gp3N5LVdUdgsTfxxAu6tvR42zafWHINXnLul4f+BjEvRHKX?=
+ =?us-ascii?Q?ioc58geRZVNWKMUYzQu3yMpxFHoeYwq7bHi8NA9Uhg5NtGa9uucVUVJO26Xq?=
+ =?us-ascii?Q?sGAm6F8lAC7qKhDsBI2ki0oNugRJs/eCUyhI3XtvWaBJOt4h+pGE/BLrGdYf?=
+ =?us-ascii?Q?SWrWdFrm1d6kQFQO52EbTdcBrxWSinVY1jDzScJ/lBfK7qoqQBEYyRQoAh29?=
+ =?us-ascii?Q?LWa7AExo2xa6CA1bnQ2OCriZclQEphLKdFWaFI7SkY+nSRGjg+9Uzrkc+UZz?=
+ =?us-ascii?Q?E2jxVxDcZmnnjE+4CGrmhd68T+Ga5Fe0JXqnpO3DoD/rwBWcdt8lZmoHpOF5?=
+ =?us-ascii?Q?m9Jr8lw7hdehndgqsQiTGWmsvMKVzaM8f6CVw5I8qYzR0gM6yN1JZnauCjT7?=
+ =?us-ascii?Q?nsV6ZXL+9jzHIT9LDur2H9sOxp6CWYSkpK31OxRhdsphstTGvdiYltwin/Di?=
+ =?us-ascii?Q?tD/QBoI8P5fniUaKJF07P7qwngZEUYcmzLNLqxC6hrqXMxlYp/I1aY15jA3d?=
+ =?us-ascii?Q?9Kcy7s0D4xHkBicvFb8kHixM8xWJE8tbmd3i2bTwZNzazbDR5I0Eg34GFcUr?=
+ =?us-ascii?Q?9cfZIZh6KCVU7viAhpVvMXeedTwdDbk6N+c09kbNtR+cBqYxOtD19ANH3fCe?=
+ =?us-ascii?Q?uGNTOFh1sxwzskb4YsJdhgOA3ukPiOBstcj/lJDtNaMjP0NJfXyFfC+0I1BQ?=
+ =?us-ascii?Q?iVw=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <b400f8c6-8bd8-2617-0a4f-7c707809da7d@mojatatu.com>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000000ca74605cadb6ace"
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR11MB4958.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c90ddd04-1118-4c5d-19cd-08d96c88ad0f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Aug 2021 14:07:32.1259
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: OPI6/n4KBhiTQtgqTOKxDGE+L1Od/QY745qcgQTEGqtD3ME+LgLx+i5853+k4Cy9T4zlcBh0//pOp1Ihsdx3+UDNHPI0WYGKAIPGUwDeY7k=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR11MB3173
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000000ca74605cadb6ace
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+> -----Original Message-----
+> From: Jakub Kicinski <kuba@kernel.org>
+> Sent: Tuesday, August 31, 2021 3:33 PM
+> Subject: Re: [RFC v2 net-next 1/2] rtnetlink: Add new RTM_GETSYNCESTATE
+> message to get SyncE status
+>=20
+> On Tue, 31 Aug 2021 10:20:18 +0000 Machnikowski, Maciej wrote:
+> > > Hmm, IDK if this really belongs in RTNL. The OCP time card that
+> > > Jonathan works on also wants to report signal lock, and it locks to
+> > > GNSS. It doesn't have any networking functionality whatsoever.
+> > >
+> > > Can we add a genetlink family for clock info/configuration? From
+> > > what I understood discussing this with Jonathan it sounded like most
+> > > clocks today have a vendor-specific character device for
+> > > configuration and reading status.
+> > >
+> > > I'm happy to write the plumbing if this seems like an okay idea but
+> > > too much work for anyone to commit.
+> > >
+> >
+> > I agree that this also is useful for Time card, yet it's also useful he=
+re.
+> > PTP subsystem should implement a similar logic to this one for
+> > DPLL-driven timers which can lock its frequency to external sources.
+>=20
+> Why would we have two APIs for doing the same thing? IIUC Richard does
+> not want this in the PTP ioctls which is fair, but we need to cater to de=
+vices
+> which do not have netdevs.
 
-On Tue, Aug 31, 2021 at 09:18:16AM -0400, Jamal Hadi Salim wrote:
-[snip convincing points, to get to the solution]
-> I think you need something like:
-> tc filter add dev eth0 ingress protocol 0x8864 flower \
-> ...
-> ppp_proto ip \
-> dst_ip ...\
-> src_ip ....
-> 
-> This will require you introduce new attributes for ppp encaped
-> inside pppoe; i dont think there will be namespace collision in
-> the case of ip src/dst because it will be tied to ppp_proto
-> 
+From technical point of view - it can be explained by the fact that the DPL=
+L
+driving the SyncE logic can be separate from the one driving PTP.  Also
+SyncE is frequency-only oriented and doesn't care about phase and
+Time of Day that PTP also needs. The GNSS lock on the PTP side will be
+multi-layered, as the full lock would mean that our PTP clock is not only
+syntonized, but also has its time and phase set correctly.
 
-I like this ppp_proto approach and going to implement it.
+A PTP can reuse the "physical" part of this interface later on, but it also=
+ needs
+to solve more SW-specific challenges, like reporting the PTP lock on a SW l=
+evel.
 
-Thanks,
-Boris.
+I agree that having such API for PTP subsystem will be very useful,
+but let's address SyncE in netdev first and build the PTP netlink on top of=
+ what
+we learn here. We can always move the structures defined here to the layer
+above without affecting any APIs.
 
---0000000000000ca74605cadb6ace
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
-QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
-UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
-M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
-Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
-14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
-a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
-XzCCBVgwggRAoAMCAQICDDSzinKpvcPTN4ZIJTANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
-RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
-UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMTAyMjIwNzMwMDRaFw0yMjA5MDUwNzM3NTVaMIGW
-MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
-BgNVBAoTDUJyb2FkY29tIEluYy4xGTAXBgNVBAMTEEJvcmlzIFN1a2hvbGl0a28xLDAqBgkqhkiG
-9w0BCQEWHWJvcmlzLnN1a2hvbGl0a29AYnJvYWRjb20uY29tMIIBIjANBgkqhkiG9w0BAQEFAAOC
-AQ8AMIIBCgKCAQEAy/C7bjpxs+95egWV8sWrK9KO0SQi6Nxu14tJBgP+MOK5tvokizPFHoiXTymZ
-7ClfnmbcqT4PzWgI3thyfk64bgUo1nQkCTApn7ov3IRsWjmHExLSNoJ/siUHagO6BPAk4JSycrj5
-9tC9sL4FnIAbAHmOSILCyGyyaBAcmiyH/3toYqXyjJkK+vbWQSTxk2NlqJLIN/ypLJ1pYffVZGUs
-52g1hlQtHhgLIznB1Qx3Fop3nOUk8nNpQLON/aM8K5sl18964c7aXh7YZnalUQv3md4p2rAQQqIR
-rZ8HBc7YjlZynwOnZl1NrK4cP5aM9lMkbfRGIUitHTIhoDYp8IZ1dwIDAQABo4IB3jCCAdowDgYD
-VR0PAQH/BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3Vy
-ZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEG
-CCsGAQUFBzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWdu
-MmNhMjAyMDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93
-d3cuZ2xvYmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6
-hjhodHRwOi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNy
-bDAoBgNVHREEITAfgR1ib3Jpcy5zdWtob2xpdGtvQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggr
-BgEFBQcDBDAfBgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUtBmGs9S4
-t1FcFSfkrP2LKQQwBKMwDQYJKoZIhvcNAQELBQADggEBAJMAjVBkRmr1lvVvEjMaLfvMhwGpUfh6
-CMZsKICyz/ZZmvTmIZNwy+7b9r6gjLCV4tP63tz4U72X9qJwfzldAlYLYWIq9e/DKDjwJRYlzN8H
-979QJ0DHPSJ9EpvSKXob7Ci/FMkTfq1eOLjkPRF72mn8KPbHjeN3VVcn7oTe5IdIXaaZTryjM5Ud
-bR7s0ZZh6mOhJtqk3k1L1DbDTVB4tOZXZHRDghEGaQSnwU/qxCNlvQ52fImLFVwXKPnw6+9dUvFR
-ORaZ1pZbapCGbs/4QLplv8UaBmpFfK6MW/44zcsDbtCFfgIP3fEJBByIREhvRC5mtlRtdM+SSjgS
-ZiNfUggxggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
-LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgw0
-s4pyqb3D0zeGSCUwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIDIWZyIwfXJ+We+5
-yRAxHDLMGcZ6IdnUf3e1bMy6L2LCMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
-AQkFMQ8XDTIxMDgzMTE0MDMyOVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
-AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
-MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQBMMELpuL8BNncgVgNOzSHytJo1pyI5AkCp
-GS0vmzCFG5IQ86mUrrb+unn+x8KBFuEtcp2rpI5hu9U1Un9nygJcaAYhkp2YBJh2L1BMRQ9Wamwk
-K1MSSHgPtWfXTM33XYaLLlUJLL67KBYZsj0FWcSVArV+hDiaEbhrfEkpl6joaSt2fkT0xbex63tI
-NZX6DyNqZUzJ9hECBnUfsL2G2gTXjPQGcDR+IbGTak7j9dOZUy0wCKdhaMw8ByD8Ks6H08T9K0ck
-taRvJHX8U3fSJW6CNd8DVIMQYIQXvG6k50UqHRN8AfPjT0NM/oxG6SBByuLd+mosT0Gtncv/YWyK
-0eCV
---0000000000000ca74605cadb6ace--
+>=20
+> > The reasoning behind putting it here is to enable returning the lock
+> > to the GNSS receiver embedded on the NIC as a source for the SyncE
+> > frequency. It helps distinguishing the embedded GNSS from the external
+> > sources. As a result - the upper layer can report GNSS lock based only
+> > on this message without the need to put the embedded  GNSS receiver in
+> > the config file. On the other hand - if sync to External source is
+> > reported such SW would need to read the source of external sync from
+> > the config file.
+> >
+> > And the list is expandable - if we need to define more embedded sync
+> > source types we can always add more to it.
