@@ -2,100 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A50CE3FC85A
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 15:37:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15E143FC867
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 15:39:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237646AbhHaNiG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 09:38:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53088 "EHLO
+        id S238236AbhHaNjr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 09:39:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238028AbhHaNiE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 09:38:04 -0400
-Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AFB3C0617A8;
-        Tue, 31 Aug 2021 06:37:09 -0700 (PDT)
-Received: by mail-qv1-xf2c.google.com with SMTP id l4so10287459qvl.12;
-        Tue, 31 Aug 2021 06:37:09 -0700 (PDT)
+        with ESMTP id S235838AbhHaNjq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 09:39:46 -0400
+Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44D7FC061575
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 06:38:51 -0700 (PDT)
+Received: by mail-qv1-xf34.google.com with SMTP id hu2so115411qvb.7
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 06:38:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=jms.id.au; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=e5Gx+da6dDuqX2X2jy+iLAiI++WqiH4CLbDqLcJwtDQ=;
-        b=cVdZJDOpln5dQl57gPBfEnbyS7ELywYok6JW3P+5tQEog8VKZ2aoFr3Gr/HvgwtY6x
-         QIvRMRlMhbiKcIrmDJrUuYvp9psCiVn/lujbgONFFT7VNSOvktVqZ6gpbNCRC6xcEfX1
-         gQ1/Zgh63u/s9YvRo8wFZs4YHiP0kjFjuZ6x8=
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=4cVWPMLdDwe2dW8rgQ4O5ZdeEA9NF5jDi3TG/HjqIHs=;
+        b=cbXk1iCt+OXs5GDhDkA23MEwInwGCBR9cNS96bqLK03L+Po0HLdBG1DUreWEh7GxFg
+         EBvcXQvzgnSPD9hEUBJx2x/A4XrAAv8dIH7rxISBxUSHCbqJcBe9KTHURb2wNNIGkgvO
+         kdcOmbarUx95IwcaHf2flxxK7gojU7+tuoAClZF5Sq0wlCZQi7mJqIKr2X1h/82q7A5A
+         u7oCQPyff1dYPnyjb/H0/PBseZPjxh3Xi+EBwdygP86NymVgeF7HJOS5XtDW4W/0QDd/
+         OURqKfoHKJ4SicHl36z6FkoArJmtdJ1CXgae9Ba9Ktr/uoBgC6ZBjNk/fop7NjqDZgs8
+         nPDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=e5Gx+da6dDuqX2X2jy+iLAiI++WqiH4CLbDqLcJwtDQ=;
-        b=sI31kJDj0wnuxb5y38Mf+odd+49/x16+X7Z/war6cyEy/sZkGdEADgPG0YPZzwLlml
-         9zKb4cUzeGWQclJ9SlnpmRoASCX3szv5v8KikhW3NAEAG9CQ4uCykoV6tcg/6yYFeur1
-         RlotsnPIpeajbAQcoVKZxeBz7IVPx5dx7X6uDghqyM1jFbUTTUIyQ77Xf+w2KVzvC4wv
-         idiOGVsH/9fTQAf0aYs9Mo8FnIBCOgx2cfFbLYvmdvKmd2nXH/aNikQbbW0n7uWk4u2i
-         DtnHGxrFnPufALGuOQrKCDk7/iVwC7q3K0ZOOrl2YZBQ9VAzXqSEpXJ1U3DNnnqXLXdD
-         FbXw==
-X-Gm-Message-State: AOAM533l+guIzPWZU8+A2kIWx/hhNuRo93tABQG/+yPJCt8o72f2lvnC
-        z7qkjJYAko0FiNf02o+81W9olNB/sOm4ujCpSb4=
-X-Google-Smtp-Source: ABdhPJyScrXRyrJucburp3ZoxrFjwrIrrdvFzIXMmhkX9NmsV8jV9/P/A+kY5G7tuYvEBRRZToG+xZCF7k3jXen68j8=
-X-Received: by 2002:a0c:a709:: with SMTP id u9mr11019420qva.3.1630417028407;
- Tue, 31 Aug 2021 06:37:08 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=4cVWPMLdDwe2dW8rgQ4O5ZdeEA9NF5jDi3TG/HjqIHs=;
+        b=lBd2kMv/hOxpXU773XQwQo6t6FD2nlO1w86tk37kB9T2kwoB01n+eX9tghxzwNtJns
+         +emMFBv6LzgOiKoaqTudcSXKORYQ6zC5wG4ab5AZqJkXb/ikR6v8IKGmq3eFtNWYFiNW
+         qyQC6Bs1l6Jq7RUskClgrE1tE8MK2tbs3LviT3JZ6IhsJqIhT2jsSIBfgZG8kXSJyO27
+         nSLSmjHrNzAnJ7tyTgaDWobvLQYJJx8EX9Yz//MHwWXXdtzqzYgkc3MZY3QG1Mt0larS
+         STXfD/Efle5jv6PZkpPUVTJRPXeDnkD1Nmgtc5DQJKZ5CjfQ4qgvHpz461Nu6DYRQMex
+         OUUg==
+X-Gm-Message-State: AOAM5323f/n7S7J+aSs2xclQbnusQo/AFhCxIvEdf2e/Fd3lp1BK8p9O
+        hZBALNrIgFI0xUHD1SogjokxwA==
+X-Google-Smtp-Source: ABdhPJzW8Kv2XuLtrO1TP3JccBuX8ufuM05Cdx1pHoNxDG7KA6am7XjWWxGWv/IHTPiHCJjJ9yGviA==
+X-Received: by 2002:ad4:5651:: with SMTP id bl17mr21719930qvb.49.1630417130490;
+        Tue, 31 Aug 2021 06:38:50 -0700 (PDT)
+Received: from [192.168.1.79] (bras-base-kntaon1617w-grc-28-184-148-47-47.dsl.bell.ca. [184.148.47.47])
+        by smtp.googlemail.com with ESMTPSA id v3sm14063899qkd.20.2021.08.31.06.38.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 31 Aug 2021 06:38:50 -0700 (PDT)
+Subject: Re: [PATCH bpf-next v2 00/13] bpfilter
+To:     Dmitrii Banshchikov <me@ubique.spb.ru>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, davem@davemloft.net,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, netdev@vger.kernel.org, rdna@fb.com
+References: <20210829183608.2297877-1-me@ubique.spb.ru>
+ <a4039e82-9184-45bf-6aee-e663766d655a@mojatatu.com>
+ <20210831124856.fucr676zd365va7c@amnesia>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <ae2b3a81-acc2-39d1-2a89-ffea169e8230@mojatatu.com>
+Date:   Tue, 31 Aug 2021 09:38:48 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-References: <72bc8926dcfc471ce385494f2c8c23398f8761d2.1630415944.git.geert+renesas@glider.be>
-In-Reply-To: <72bc8926dcfc471ce385494f2c8c23398f8761d2.1630415944.git.geert+renesas@glider.be>
-From:   Joel Stanley <joel@jms.id.au>
-Date:   Tue, 31 Aug 2021 13:36:55 +0000
-Message-ID: <CACPK8XfyYpWTmaASuG7Jkyp06fRrg_zXvg93JB7igZgVDWjumw@mail.gmail.com>
-Subject: Re: [PATCH] net: NET_VENDOR_LITEX should depend on LITEX
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Gabriel Somlo <gsomlo@gmail.com>, David Shah <dave@ds0.me>,
-        Stafford Horne <shorne@gmail.com>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210831124856.fucr676zd365va7c@amnesia>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 31 Aug 2021 at 13:21, Geert Uytterhoeven
-<geert+renesas@glider.be> wrote:
->
-> LiteX Ethernet devices are only present on LiteX SoCs.  Hence add a
-> dependency on LITEX, to prevent asking the user about drivers for these
-> devices when configuring a kernel without LiteX SoC Builder support.
+On 2021-08-31 8:48 a.m., Dmitrii Banshchikov wrote:
+> On Mon, Aug 30, 2021 at 09:56:18PM -0400, Jamal Hadi Salim wrote:
+>> On 2021-08-29 2:35 p.m., Dmitrii Banshchikov wrote:
 
-nak.
 
-They can be present on any soc that uses them. We have an example in
-mainline already; microwatt uses liteeth but is not a litex soc.
+>>
+>> Something is not clear from your email:
+>> You seem to indicate that no traffic was running in test 1.
+>> If so, why would 32 rulesets give different results than 1?
+> 
+> I mentioned the lower and upper bound values for bogo-ops on the
+> machine. The lower bound is when there is traffic and no firewall
+> at all. The upper bound is when there is no firewall and no
+> traffic. Then the first test measures bogo-ops for two rule sets
+> when there is traffic for either iptables, nft or bpfilter.
+> 
 
-Cheers,
+Thanks, I totally misread that. I did look at stress-ng initially
+to use it to stress the system and emulate some real world
+setup (polluting cache etc) while testing but the variability of
+the results was bad - so dropped it earlier. Maybe we should look
+at it again.
 
-Joel
-
->
-> Fixes: ee7da21ac4c3be1f ("net: Add driver for LiteX's LiteETH network interface")
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
->  drivers/net/ethernet/litex/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/net/ethernet/litex/Kconfig b/drivers/net/ethernet/litex/Kconfig
-> index 265dba414b41ec22..bfad1df1368866d3 100644
-> --- a/drivers/net/ethernet/litex/Kconfig
-> +++ b/drivers/net/ethernet/litex/Kconfig
-> @@ -5,6 +5,7 @@
->  config NET_VENDOR_LITEX
->         bool "LiteX devices"
->         default y
-> +       depends on LITEX || COMPILE_TEST
->         help
->           If you have a network (Ethernet) card belonging to this class, say Y.
->
-> --
-> 2.25.1
->
+cheers,
+jamal
