@@ -2,107 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A549B3FC8B3
+	by mail.lfdr.de (Postfix) with ESMTP id 031253FC8B5
 	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 15:49:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239919AbhHaNta (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 09:49:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55944 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237809AbhHaNtI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 09:49:08 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2FB4C061764
-        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 06:48:12 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id g21so26904135edw.4
-        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 06:48:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=mmFZqBTqVe/Ey7uTSUFYWtRV0draZMGsqhEcHMQAYl4=;
-        b=DdIdN2gVK1lhYyHe9hvYZT5TMv5NHj5+ItxjlgKrSVaAXZCjU6xPVeogpX7UJLGATp
-         kQeKhPtI+bgTwQCPI9q/kyMQyOx0IukRHNuooqwbZLjkQy6D3+nMkFhixYNO9fI2BxaE
-         Rx7O4fISi1KVsLfY5D4AMv1K4+UUTw4SXKLG+Nh1lClmozc4n8m5wSr3rbVfQdONdj14
-         YikvRa/VwJ3rfZU0Ke3sjg+NKsEPurQuGLFa5qzhYihC9Zx8jNICDOizu1lCoa7KlWK9
-         +uU72zv9FEQzhavJmCNm1O92El/fdUer2w0BFoQ6DaxSnq3i/I6e8qkzMW0K/aKAM15U
-         P5fw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=mmFZqBTqVe/Ey7uTSUFYWtRV0draZMGsqhEcHMQAYl4=;
-        b=SUsa4511UTOBlIzinMBYx0VULaxhF0Kftrp/mqI7WaHHQzVGvF+P6irQGcF6MvRDRv
-         6suKhv1zOgK/yswn1CdEmqKS6HYbhfqGc+PUiEMyyipagLainLLG38jBxpMTKnDmH0u5
-         BoK7fZrRvhUTTlTHEw0oiPYKD3twuZYpFX7qFEmBqZg0KU2Y5kgYPAV/odccfBk1EYp2
-         /082yJPpwhlSEN6iblf4fTGlO8N2jHD1dXQDVHd+HZ8nteuekUrti7IVpHGACq5KxRFq
-         ikxYINJBCGLq6fD7qaJ6LNJwA29BnfySiH18oZkz7YK7I9B5xDGnUd4gRWanptqdEu4I
-         QzHQ==
-X-Gm-Message-State: AOAM533Je4zsioBGVyiRYPLCw0DT0zmT8N78lEBOOMkQpxQum6dkvVEO
-        Ata3CO+NVslL2tcac8Fv9BR9jvrv62TlaAsbNH9N
-X-Google-Smtp-Source: ABdhPJyBmci35BWRh85c9NvhHKnkLvl+JlF07VCIPxOUECowRZwFI8fl3IYxjDZDqSUZJuzv+0oCDWdGUH3TKpXgEnU=
-X-Received: by 2002:aa7:d04a:: with SMTP id n10mr27898033edo.12.1630417691192;
- Tue, 31 Aug 2021 06:48:11 -0700 (PDT)
+        id S239259AbhHaNuK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 09:50:10 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:19644 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238236AbhHaNtN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 31 Aug 2021 09:49:13 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1630417697; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
+ Subject: Sender; bh=HeUHkfUk/Hs2C59A6/TUUJIsZA1M5PNUO7ZWX+hYyNo=; b=ABNU6t0RiexPnZLCP2pePQGwMNaJIKBaJTiq0gRAjKoP3rLAYE+StwFPpSFw8Kkey12bSAGT
+ Sc1A64rU5Q48Mhmq3jqvzefKfLNWVUMxQWJr9nE1Cphxc96P7krhwsrAuUjnHanPU6sJFPdO
+ Yxb5YCssrhNFQvoFybMrcUhFVXo=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
+ 612e331e4cd90150378c566a (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 31 Aug 2021 13:48:14
+ GMT
+Sender: luoj=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 422AAC43460; Tue, 31 Aug 2021 13:48:14 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-3.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        NICE_REPLY_A,SPF_FAIL autolearn=ham autolearn_force=no version=3.4.0
+Received: from [192.168.10.117] (unknown [183.192.232.105])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: luoj)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id E4500C4338F;
+        Tue, 31 Aug 2021 13:48:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org E4500C4338F
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+Subject: Re: [PATCH v1 2/3] net: phy: add qca8081 ethernet phy driver
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, sricharan@codeaurora.org
+References: <20210830110733.8964-1-luoj@codeaurora.org>
+ <20210830110733.8964-3-luoj@codeaurora.org>
+ <20210830113950.GX22278@shell.armlinux.org.uk>
+From:   Jie Luo <luoj@codeaurora.org>
+Message-ID: <cea89489-fd38-c6c7-cae9-c9b9a198c662@codeaurora.org>
+Date:   Tue, 31 Aug 2021 21:48:09 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-References: <c6864908-d093-1705-76ce-94d6af85e092@linux.alibaba.com>
- <18f0171e-0cc8-6ae6-d04a-a69a2a3c1a39@linux.alibaba.com> <CAHC9VhTEs9E+ZeGGp96NnOhmr-6MZLXf6ckHeG8w5jh3AfgKiQ@mail.gmail.com>
- <20210830094525.3c97e460@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAHC9VhRHx=+Fek7W4oyZWVBUENQ8VnD+mWXUytKPKg+9p-J4LQ@mail.gmail.com> <84262e7b-fda6-9d7d-b0bd-1bb0e945e6f9@linux.alibaba.com>
-In-Reply-To: <84262e7b-fda6-9d7d-b0bd-1bb0e945e6f9@linux.alibaba.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Tue, 31 Aug 2021 09:48:00 -0400
-Message-ID: <CAHC9VhRPUa-oD_85j6RcAVvp7sLZQEAGGapYYP1fEt7Ax5LMfA@mail.gmail.com>
-Subject: Re: [PATCH v2] net: fix NULL pointer reference in cipso_v4_doi_free
-To:     =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20210830113950.GX22278@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 30, 2021 at 10:42 PM =E7=8E=8B=E8=B4=87 <yun.wang@linux.alibaba=
-.com> wrote:
-> On 2021/8/31 =E4=B8=8A=E5=8D=8812:50, Paul Moore wrote:
-> [SNIP]
-> >>>> Reported-by: Abaci <abaci@linux.alibaba.com>
-> >>>> Signed-off-by: Michael Wang <yun.wang@linux.alibaba.com>
-> >>>> ---
-> >>>>  net/netlabel/netlabel_cipso_v4.c | 4 ++--
-> >>>>  1 file changed, 2 insertions(+), 2 deletions(-)
-> >>>
-> >>> I see this was already merged, but it looks good to me, thanks for
-> >>> making those changes.
-> >>
-> >> FWIW it looks like v1 was also merged:
-> >>
-> >> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/=
-?id=3D733c99ee8b
-> >
-> > Yeah, that is unfortunate, there was a brief discussion about that
-> > over on one of the -stable patches for the v1 patch (odd that I never
-> > saw a patchbot post for the v1 patch?).  Having both merged should be
-> > harmless, but we want to revert the v1 patch as soon as we can.
-> > Michael, can you take care of this?
+
+On 8/30/2021 7:39 PM, Russell King (Oracle) wrote:
+> On Mon, Aug 30, 2021 at 07:07:32PM +0800, Luo Jie wrote:
+>> +/* AN 2.5G */
+>> +#define QCA808X_FAST_RETRAIN_2500BT		BIT(5)
+>> +#define QCA808X_ADV_LOOP_TIMING			BIT(0)
+>>
+>> +/* Fast retrain related registers */
+>> +#define QCA808X_PHY_MMD1_FAST_RETRAIN_CTL	0x93
+>> +#define QCA808X_FAST_RETRAIN_CTRL_VALUE		0x1
+> These are standard 802.3 defined registers bits - please add
+> definitions for them to uapi/linux/mdio.h.
 >
-> As v1 already merged, may be we could just goon with it?
->
-> Actually both working to fix the problem, v1 will cover all the
-> cases, v2 take care one case since that's currently the only one,
-> but maybe there will be more in future.
-
-No.  Please revert v1 and stick with the v2 patch.  The v1 patch is in
-my opinion a rather ugly hack that addresses the symptom of the
-problem and not the root cause.
-
-It isn't your fault that both v1 and v2 were merged, but I'm asking
-you to help cleanup the mess.  If you aren't able to do that please
-let us know so that others can fix this properly.
-
---=20
-paul moore
-www.paul-moore.com
+> Thanks.
+will add definitions for the standard registers in the next patch set, 
+thanks Russell for the comments.
