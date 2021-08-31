@@ -2,180 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A7CC3FC792
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 14:49:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C5513FC79E
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 14:52:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233635AbhHaMuH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 08:50:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41814 "EHLO
+        id S232209AbhHaMxk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 08:53:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233098AbhHaMuA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 08:50:00 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78BFEC06175F
-        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 05:49:04 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id q17so26659262edv.2
-        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 05:49:04 -0700 (PDT)
+        with ESMTP id S231917AbhHaMxj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 08:53:39 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCAD5C06175F
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 05:52:43 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id e21so38365747ejz.12
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 05:52:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=ubique-spb-ru.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=1cbiRqCKbbnjFPMuqxU9pzl3is1JghiOlnA5OtFXB2U=;
-        b=G5/uLfdB5e/PNccmx/EDnnInPUdnlVRsoxsU5g9EoDxhwzm/cNTEX0vNDcDlmqjou7
-         vDCKgSikjbUwjRJfoFu+EQ5L+NdlmpanOYqUD04T3UtFZC9HkRJZ9y5L+sdXgdvm67fC
-         gUQP0VtmHkTZ1I6170BMo+5N0XuM0ZBePGuvB6h7nUKOB6rCkyPjXJr+MpRh9vis3GEV
-         5FOafRyYQXazX26tsfp7u8mJWs+teJq+NwGisMf5509t0YGubbXn2ydZf+c3q5l0roXT
-         scNYJMgFkEEfetsNIsEHKZCebviA5ofNmjbd/PZNHWzLnKPnDgLoTkZxFLgWUPcrH3n+
-         KQtw==
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=zNiC6TUjESHnzWkXmeRHVbBslUBHXHDX5iAWQhEE+RA=;
+        b=MVLBgY2hFR0wS3O06Z58t48AcJjFUDQ37nKvhjeUf0NaH9btWiNoDue9QLGA45evQO
+         Y+P1M2XPTttFBfu91KO4lF8fN+oDUay3NceRXf0dpGHn88wda65qZLBm/m/oNMu1Z0dt
+         I4jmfc+bNMjE3mO21StR09L7cuoGxHzYhzWuD3Nr88G9i6Hc9TiAOTW5vccV6ycGd5ji
+         QfFiU1DJlLnmsugSVOiddld3jv9BxU1vMsDMeQekdpCN70eOENwh3odkgTw6gVshal4m
+         BOUVO8At/FDqLBub/vIHpKQ34+AVuHjMQQWkiGCHF1r+dYtWZJmMQtZer04GFw1RSLQf
+         goKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1cbiRqCKbbnjFPMuqxU9pzl3is1JghiOlnA5OtFXB2U=;
-        b=pJ/Q39JZFQcf7WgGuEHOrCJiXeYLE6PmmSd0I83RSG1F5t6gPfBvnzu1nAMf3qIXkU
-         lTaf7yheJhDvGoz/hHeuVZdpFdrGVjHiO41g+3CRhYplxIvUyoPZwjGurnGUno3FSn8g
-         KmJsN8W4olfaWDmLKROGiAws9IXT72+XXaJgk0ZN/8xyW8pSpfoKHQvpjosIijlRWscS
-         PCSrIKIV5njPyYji9Aq6DrQJKLDYnllllmq1McRIvw4U8sM8D1FIyYYQxDWales1KW0k
-         fAPjLFDaXodSM/2JpaJMCYI3E1dxsaW3abK27iKd/g28y2FHdpwDQEcljguRYGRjshD8
-         iJ2A==
-X-Gm-Message-State: AOAM5335BOp7RVUsWKJGtFrYfY7H1ZmWloLF+JZ1Rsaq8m8ZzwubieHK
-        NcOkt0sv/VaQ2KObivs6VhBsFw==
-X-Google-Smtp-Source: ABdhPJw4Dfa1IhTO5pkue+ot8FcJfqr3PwHLb/S74lA41FgwgBoM0F5FJRVS/FeI/mD4rz24TnURJQ==
-X-Received: by 2002:a05:6402:2691:: with SMTP id w17mr18584907edd.339.1630414142902;
-        Tue, 31 Aug 2021 05:49:02 -0700 (PDT)
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=zNiC6TUjESHnzWkXmeRHVbBslUBHXHDX5iAWQhEE+RA=;
+        b=GZpbHNQStKp7m8/6iZj+SwzeSW+mC4EqorbHeqPuNwJhOp/WUi30HYZJy3D6hS3cso
+         dCOs4jCDOht8k/v3uzRM3+gmtr9YokqbDNsnG5fYvUM4KnrLS0dacHuoCByTygzXiHub
+         bYo008IgLiqk+Euxz/QNVX5CIdK9AFx2lfHek5Yri4orUj0MoU/QobgP8Ia2H9VzDng1
+         ew2QXUO90NjHl8JqSquptGxaAk1T5vdZEY5Y5vUUEeQb9Ik1ahUufF5umNw5aQR4T9Cy
+         /luINIWfyHQnuOoQn2xqAn/1dQK5YOR6uv21Whe9jn+oM9KsQvzFEQ1+7m6R+oKNiaG7
+         F67g==
+X-Gm-Message-State: AOAM533EpDGIXugwzbqXO5pWSiy4Xz6R2+BVpXQO1g+nT2EGuziE/AuN
+        twC/QzChRJ8EmaE0XpQltryFd0RxPL3y8FDBDrs=
+X-Google-Smtp-Source: ABdhPJyZWGtVv8jKLifUVMy+cAFbd23QtYctx/VwFVYgZt8iHjVuD9qxVe9l0NRp7cKJqvIPAXWZ4g==
+X-Received: by 2002:a17:906:8258:: with SMTP id f24mr30763776ejx.375.1630414362090;
+        Tue, 31 Aug 2021 05:52:42 -0700 (PDT)
 Received: from localhost ([154.21.15.43])
-        by smtp.gmail.com with ESMTPSA id d16sm9358989edu.8.2021.08.31.05.49.01
+        by smtp.gmail.com with ESMTPSA id q18sm8249671ejc.84.2021.08.31.05.52.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Aug 2021 05:49:02 -0700 (PDT)
-Date:   Tue, 31 Aug 2021 16:48:56 +0400
+        Tue, 31 Aug 2021 05:52:41 -0700 (PDT)
+Date:   Tue, 31 Aug 2021 16:52:40 +0400
 From:   Dmitrii Banshchikov <me@ubique.spb.ru>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
 Cc:     bpf@vger.kernel.org, ast@kernel.org, davem@davemloft.net,
         daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
         songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
         kpsingh@kernel.org, netdev@vger.kernel.org, rdna@fb.com
-Subject: Re: [PATCH bpf-next v2 00/13] bpfilter
-Message-ID: <20210831124856.fucr676zd365va7c@amnesia>
+Subject: Re: [PATCH bpf-next v2 12/13] bpfilter: Add filter table
+Message-ID: <20210831125240.sm3ouie6hxur5cyb@amnesia>
 References: <20210829183608.2297877-1-me@ubique.spb.ru>
- <a4039e82-9184-45bf-6aee-e663766d655a@mojatatu.com>
+ <20210829183608.2297877-13-me@ubique.spb.ru>
+ <20210830194545.rgwg3ks3alikeyzx@ast-mbp.dhcp.thefacebook.com>
+ <20210830205443.wx3n2bhw44pji2hn@amnesia>
+ <20210830234515.ncvsdswj4lalgpo3@ast-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <a4039e82-9184-45bf-6aee-e663766d655a@mojatatu.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210830234515.ncvsdswj4lalgpo3@ast-mbp.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 30, 2021 at 09:56:18PM -0400, Jamal Hadi Salim wrote:
-> On 2021-08-29 2:35 p.m., Dmitrii Banshchikov wrote:
+On Mon, Aug 30, 2021 at 04:45:15PM -0700, Alexei Starovoitov wrote:
+> On Tue, Aug 31, 2021 at 12:54:43AM +0400, Dmitrii Banshchikov wrote:
+> > On Mon, Aug 30, 2021 at 12:45:45PM -0700, Alexei Starovoitov wrote:
+> > > On Sun, Aug 29, 2021 at 10:36:07PM +0400, Dmitrii Banshchikov wrote:
+> > > >  /*
+> > > > - * # Generated by iptables-save v1.8.2 on Sat May  8 05:22:41 2021
+> > > > + *  Generated by iptables-save v1.8.2 on Sat May  8 05:22:41 2021
+> > > >   * *filter
+> > > ...
+> > > > - * -A LOCAL -s 10.32.0.0/11 -j FROMDC
+> > > > - * -A LOCAL -s 10.144.0.0/12 -j FROMDC
+> > > > - * -A LOCAL -s 10.160.0.0/12 -j FROMDC
+> > > > - * -A LOCAL -s 10.0.0.0/12 -j FROMDC
+> > > > - * -A LOCAL -s 10.248.0.0/24 -j FROMDC
+> > > > - * -A LOCAL -s 10.232.0.0/16 -j FROMDC
+> > > > - * -A LOCAL -s 10.1.146.131/32 -p udp -m udp --dport 161 -j ACCEPT
+> > > > - * -A LOCAL -s 10.149.118.14/32 -p udp -m udp --dport 161 -j ACCEPT
+> > > > - * -A LOCAL -p icmp -j ACCEPT
+> > > > + * :INPUT ACCEPT [0:0]
+> > > > + * :FORWARD ACCEPT [0:0]
+> > > > + * :OUTPUT ACCEPT [0:0]
+> > > > + * -A INPUT -s 1.1.1.1/32 -d 2.2.2.2/32 -j DROP
+> > > > + * -A INPUT -s 2.2.0.0/16 -d 3.0.0.0/8 -j DROP
+> > > > + * -A INPUT -p udp -m udp --sport 100 --dport 500 -j DROP
+> > > >   * COMMIT
+> > > >   */
+> > > 
+> > > Patch 10 adds this test, but then patch 12 removes most of it?
+> > > Keep both?
+> > 
+> > Sorry, I missed it.
+> > I decided that the large blob looks really ugly and switched to
+> > the smaller one and forgot to cleanup the patchset.
+> > 
+> > > 
+> > > Also hit this on my system with older glibc:
+> > > 
+> > > ../net/bpfilter/codegen.c: In function ‘codegen_push_subprog’:
+> > > ../net/bpfilter/codegen.c:67:4: warning: implicit declaration of function ‘reallocarray’ [-Wimplicit-function-declaration]
+> > >    67 |    reallocarray(codegen->subprogs, subprogs_max, sizeof(codegen->subprogs[0]));
+> > >       |    ^~~~~~~~~~~~
+> > > ../net/bpfilter/codegen.c:66:12: warning: assignment to ‘struct codegen_subprog_desc **’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+> > >    66 |   subprogs =
+> > >       |            ^
+> > > 
+> > > In libbpf we have libbpf_reallocarray() for this reason.
+> > > 
+> > > Could you provide an example of generated bpf program?
+> > > And maybe add Documentation/bpf/bpfilter_design.rst ?
+> > 
+> > I will add documentation in the next iteration when
+> > bpf_map_for_each() subprog will be introduced.
+> > 
+> > > 
+> > > The tests don't build for me:
+> > > $ cd selftests/bpf/bpfilter; make
+> > > make: *** No rule to make target '-lelf', needed by '.../selftests/bpf/bpfilter/test_match'.  Stop.
+> > 
+> > libelf was added because libbpf depends on it.
+> > Are you able to build libbpf?
 > 
-> [..]
-> 
-> > And here are some performance tests.
-> > 
-> > The environment consists of two machines(sender and receiver)
-> > connected with 10Gbps link via switch.  The sender uses DPDK to
-> > simulate QUIC packets(89 bytes long) from random IP. The switch
-> > measures the generated traffic to be about 7066377568 bits/sec,
-> > 9706553 packets/sec.
-> > 
-> > The receiver is a 2 socket 2680v3 + HT and uses either iptables,
-> > nft or bpfilter to filter out UDP traffic.
-> > 
-> > Two tests were made. Two rulesets(default policy was to ACCEPT)
-> > were used in each test:
-> > 
-> > ```
-> > iptables -A INPUT -p udp -m udp --dport 1500 -j DROP
-> > ```
-> > and
-> > ```
-> > iptables -A INPUT -s 1.1.1.1/32 -p udp -m udp --dport 1000 -j DROP
-> > iptables -A INPUT -s 2.2.2.2/32 -p udp -m udp --dport 2000 -j DROP
-> > ...
-> > iptables -A INPUT -s 31.31.31.31/32 -p udp -m udp --dport 31000 -j DROP
-> > iptables -A INPUT -p udp -m udp --dport 1500 -j DROP
-> > ```
-> > 
-> > The first test measures performance of the receiver via stress-ng
-> > [3] in bogo-ops. The upper-bound(there are no firewall and no
-> > traffic) value for bogo-ops is 8148-8210. The lower bound value
-> > (there is traffic but no firewall) is 6567-6643.
-> > The stress-ng command used: stress-ng -t60 -c48 --metrics-brief.
-> > 
-> > The second test measures the number the of dropped packets. The
-> > receiver keeps only 1 CPU online and disables all
-> > others(maxcpus=1 and set number of cores per socket to 1 in
-> > BIOS). The number of the dropped packets is collected via
-> > iptables-legacy -nvL, iptables -nvL and bpftool map dump id.
-> > 
-> > Test 1: bogo-ops(the more the better)
-> >              iptables            nft        bpfilter
-> >    1 rule:  6474-6554      6483-6515       7996-8008
-> > 32 rules:  6374-6433      5761-5804       7997-8042
-> > 
-> > 
-> > Test 2: number of dropped packets(the more the better)
-> >              iptables            nft         bpfilter
-> >    1 rule:  234M-241M           220M            900M+
-> > 32 rules:  186M-196M        97M-98M            900M+
-> > 
-> > 
-> > Please let me know if you see a gap in the testing environment.
-> 
-> General perf testing will depend on the nature of the use case
-> you are trying to target.
-> What is the nature of the app? Is it just receiving packets and
-> counting? Does it exemplify something something real in your
-> network or is just purely benchmarking? Both are valid.
-> What else can it do (eg are you interested in latency accounting etc)?
-> What i have seen in practise for iptables deployments is a default
-> drop and in general an accept list. Per ruleset IP address aggregation
-> is typically achieved via ipset. So your mileage may vary...
+> make proceeds to build libbpf just fine, but then it stops with above message.
+> I manually removed -lelf from Makefile. Then run make to see it fail linking
+> and then manually copy pasted gcc command to build it with additional -lelf
+> command line.
+> fwiw make -v
+> GNU Make 4.2.1
 
-This was a pure benchmarking with the single goal - show that
-there might exist scenarios when using bpfilter may provide some
-performance benefits.
-
-> 
-> Having said that:
-> Our testing[1] approach is typically for a worst case scenario.
-> i.e we make sure you structure the rulesets such that all of the
-> linear rulesets will be iterated and we eventually hit the default
-> ruleset.
-> We also try to reduce variability in the results. A lot of small
-> things could affect your reproducibility, so we try to avoid them.
-> For example, from what you described:
-> You are sending from a random IP - that means each packet will hit
-> a random ruleset (for the case of 32 rulesets). And some rules will
-> likely be hit more often than others. The likelihood of reproducing the
-> same results for multiple runs gets lower as you increase the number
-> of rulesets.
-> From a collection perspective:
-> Looking at the nature of the CPU utilization is important
-> Softirq vs system calls vs user app.
-> Your test workload seems to be very specific to ingress host.
-> So in reality you are more constrained by kernel->user syscalls
-> (which will be hidden if you are mostly dropping in the kernel
-> as opposed to letting packets go to user space).
-
+Will take a look on it. Thanks.
 
 > 
-> Something is not clear from your email:
-> You seem to indicate that no traffic was running in test 1.
-> If so, why would 32 rulesets give different results than 1?
-
-I mentioned the lower and upper bound values for bogo-ops on the
-machine. The lower bound is when there is traffic and no firewall
-at all. The upper bound is when there is no firewall and no
-traffic. Then the first test measures bogo-ops for two rule sets
-when there is traffic for either iptables, nft or bpfilter.
-
+> > > 
+> > > The unit tests are great, btw. test_codegen is not end-to-end, right?
+> > > Could you add a full test with iptable command line?
+> > > or netns support is a prerequisite for it?
+> > 
+> > Yeah, as net namespaces aren't supported using iptables binary
+> > will modify the root namespace. That is the reason why codegen
+> > tests aren't implemented in the end-to-end fashion and rules are
+> > represented by blobs.
 > 
-> cheers,
-> jamal
-> 
-> [1] https://netdevconf.info/0x15/session.html?Linux-ACL-Performance-Analysis
+> I think when ifindex is no longer hardcoded the netns support
+> doesn't have to be gating. The generic xdp attached to veth in netns
+> should work to do end-to-end test. bpftiler would need to do a bit of magic
+> to figure out the right ifindex. Or we can extend kernel with ifindex-less
+> generic XDP.
+
+Is it ok to add an external dependency to tests? The unit test
+will need to execute iptables binary.
+
 
 -- 
 
