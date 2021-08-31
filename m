@@ -2,67 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE8693FCF11
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 23:23:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A56A93FCF60
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 23:55:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239316AbhHaVX7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 17:23:59 -0400
-Received: from mail-ot1-f44.google.com ([209.85.210.44]:45863 "EHLO
-        mail-ot1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230125AbhHaVX6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 17:23:58 -0400
-Received: by mail-ot1-f44.google.com with SMTP id l7-20020a0568302b0700b0051c0181deebso858929otv.12;
-        Tue, 31 Aug 2021 14:23:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=wUx9V4VMzp/B15LcV0R/B+k8WpG+YIR/wnvRb9JZesY=;
-        b=eM6Q3lUDaVWfsf+F7fCEO8gNjsEO9C+r8Hn5dLnrtI/ZT4au4nfowQA1zBlNC7CNrt
-         7Y0j/FLGE2XndfTSo8oFg7qZdm2sKR9vkICW/KfiquQu5EJKTnCWNLESWxvaGvQlo5zH
-         p1d+I1E4VBuazNu7iwP4kRp+jvvmuhAcCX+Mosc3ElAhCpudEyiceVn2qybhqI74q2Zf
-         QsDp3ep9AKcYKJhKx5VmssrUBSBvHvf+OKYk4gutDDXMlXmDaeH/aQE9I3wYk2uaMWYq
-         aPCrpuMf5/GaFhdiVDc5rEkrz2d2ZE39dmxq5DiHxECqPbS0CFffGaku5OA37Ty1Ly2B
-         Uwpg==
-X-Gm-Message-State: AOAM533V9H3VrVRGRORNneBdwPAJ8+vWr4AlppHc6eHTwXEsHmzSB4LJ
-        a4eCvN/0/kj8jg3yKuBOy6MS8ceJow==
-X-Google-Smtp-Source: ABdhPJx68CiltMvlQWW7XQDzxPXrlYNB0M+lz+RG3htfHDCPSgm6oi8Kyx/DfROlwDgq4po4zNOXKg==
-X-Received: by 2002:a9d:d35:: with SMTP id 50mr25379100oti.22.1630444982315;
-        Tue, 31 Aug 2021 14:23:02 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id z7sm4232632oti.65.2021.08.31.14.23.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Aug 2021 14:23:01 -0700 (PDT)
-Received: (nullmailer pid 669145 invoked by uid 1000);
-        Tue, 31 Aug 2021 21:23:00 -0000
-Date:   Tue, 31 Aug 2021 16:23:00 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org, Li Yang <leoyang.li@nxp.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Shawn Guo <shawnguo@kernel.org>
-Subject: Re: [PATCH devicetree 1/2] dt-bindings: arm: fsl: document the
- LX2160A BlueBox 3 boards
-Message-ID: <YS6dtKYnwle++wA6@robh.at.kernel.org>
-References: <20210827202722.2567687-1-vladimir.oltean@nxp.com>
+        id S238269AbhHaV4R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 17:56:17 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:50806 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232930AbhHaV4Q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 31 Aug 2021 17:56:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=k1/rSYg6WsYp4LWCuQniMNUeD6v5qygPUI6I9l4QrGM=; b=JrbwPy+2/mT2R5088LS59W7Z+6
+        1YACKFtvXaWUnFYKnh+uFXt8BweVQ6+ZCmEJ7TeLpMR4FYUqQcGQ06NPiZybre76s2TfunuXEqaTI
+        dBmwL5yKE2vKkpibPRqRQNQ/CEYqC9QIfAdIshq73mqffLNc0y6JTGFdWl/Thb+6eZzw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mLBir-004lSX-AX; Tue, 31 Aug 2021 23:55:13 +0200
+Date:   Tue, 31 Aug 2021 23:55:13 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Gerhard Engleder <gerhard@engleder-embedded.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        michal.simek@xilinx.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next v2 3/3] tsnep: Add TSN endpoint Ethernet MAC
+ driver
+Message-ID: <YS6lQejOJJCATMCp@lunn.ch>
+References: <20210831193425.26193-1-gerhard@engleder-embedded.com>
+ <20210831193425.26193-4-gerhard@engleder-embedded.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210827202722.2567687-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20210831193425.26193-4-gerhard@engleder-embedded.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 27 Aug 2021 23:27:21 +0300, Vladimir Oltean wrote:
-> Document the compatible string for the LX2160A system that is part of
-> the BlueBox 3. Also add a separate compatible string for Rev A, since
-> technically it uses a different device tree.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
->  Documentation/devicetree/bindings/arm/fsl.yaml | 2 ++
->  1 file changed, 2 insertions(+)
-> 
+> +static int tsnep_ethtool_set_priv_flags(struct net_device *netdev,
+> +					u32 priv_flags)
+> +{
+> +	struct tsnep_adapter *adapter = netdev_priv(netdev);
+> +	int retval;
+> +
+> +	if (priv_flags & ~TSNEP_PRIV_FLAGS)
+> +		return -EINVAL;
+> +
+> +	if ((priv_flags & TSNEP_PRIV_FLAGS_LOOPBACK_100) &&
+> +	    (priv_flags & TSNEP_PRIV_FLAGS_LOOPBACK_1000))
+> +		return -EINVAL;
+> +
+> +	if ((priv_flags & TSNEP_PRIV_FLAGS_LOOPBACK_100) &&
+> +	    adapter->loopback != SPEED_100) {
+> +		if (adapter->loopback != SPEED_UNKNOWN)
+> +			retval = phy_loopback(adapter->phydev, false);
+> +		else
+> +			retval = 0;
+> +
+> +		if (!retval) {
+> +			adapter->phydev->speed = SPEED_100;
+> +			adapter->phydev->duplex = DUPLEX_FULL;
+> +			retval = phy_loopback(adapter->phydev, true);
 
-Acked-by: Rob Herring <robh@kernel.org>
+This is a pretty unusual use of private flags, changing loopback at
+runtime. ethtool --test generally does that.
+
+What is your use case which requires loopback in normal operation, not
+during testing?
+
+> +static irqreturn_t tsnep_irq(int irq, void *arg)
+> +{
+> +	struct tsnep_adapter *adapter = arg;
+> +	u32 active = ioread32(adapter->addr + ECM_INT_ACTIVE);
+> +
+> +	/* acknowledge interrupt */
+> +	if (active != 0)
+> +		iowrite32(active, adapter->addr + ECM_INT_ACKNOWLEDGE);
+> +
+> +	/* handle management data interrupt */
+> +	if ((active & ECM_INT_MD) != 0) {
+> +		adapter->md_active = false;
+> +		wake_up_interruptible(&adapter->md_wait);
+> +	}
+> +
+> +	/* handle link interrupt */
+> +	if ((active & ECM_INT_LINK) != 0) {
+> +		if (adapter->netdev->phydev) {
+> +			struct phy_device *phydev = adapter->netdev->phydev;
+> +			u32 status = ioread32(adapter->addr + ECM_STATUS);
+> +			int link = (status & ECM_NO_LINK) ? 0 : 1;
+> +			u32 speed = status & ECM_SPEED_MASK;
+
+How does PHY link and speed get into this MAC register? Is the MAC
+polling the PHY over the MDIO bus? Is the PHY internal to the MAC and
+it has backdoor access to the PHY status?
+
+> +static int tsnep_mdiobus_read(struct mii_bus *bus, int addr, int regnum)
+> +{
+> +	struct tsnep_adapter *adapter = bus->priv;
+> +	u32 md;
+> +	int retval;
+> +
+> +	if (regnum & MII_ADDR_C45)
+> +		return -EOPNOTSUPP;
+> +
+> +	/* management data frame without preamble */
+> +	md = ECM_MD_READ;
+
+I know some PHYs are happy to work without a preamble. But as far as i
+know, 802.3 c22 does not say it is optional. So this needs to be an
+opt-in feature, for when you know all the devices on the bus support
+it. We have a standard DT property for this. See mdio.yaml,
+suppress-preamble. Please look for this in the DT blob, and only
+suppress the pre-amble if it is present.
+
+> +	md |= (regnum << ECM_MD_ADDR_SHIFT) & ECM_MD_ADDR_MASK;
+> +	md |= ECM_MD_PHY_ADDR_FLAG;
+> +	md |= (addr << ECM_MD_PHY_ADDR_SHIFT) & ECM_MD_PHY_ADDR_MASK;
+> +	adapter->md_active = true;
+> +	iowrite32(md, adapter->addr + ECM_MD_CONTROL);
+> +	retval = wait_event_interruptible(adapter->md_wait,
+> +					  !adapter->md_active);
+
+It is pretty normal to have some sort of timeout here. So maybe use
+wait_event_interruptible_timeout()?
+
+> +static void tsnep_phy_link_status_change(struct net_device *netdev)
+> +{
+> +	phy_print_status(netdev->phydev);
+> +}
+
+There is normally something here, like telling the MAC what speed it
+should run at.
+
+
+>  +static int tsnep_phy_open(struct tsnep_adapter *adapter)
+> +{
+> +	struct phy_device *phydev;
+> +	struct ethtool_eee ethtool_eee;
+> +	int retval;
+> +
+> +	retval = phy_connect_direct(adapter->netdev, adapter->phydev,
+> +				    tsnep_phy_link_status_change,
+> +				    adapter->phy_mode);
+> +	if (retval)
+> +		return retval;
+> +	phydev = adapter->netdev->phydev;
+> +
+> +	/* MAC supports only 100Mbps|1000Mbps full duplex
+> +	 * SPE (Single Pair Ethernet) is also an option but not implemented yet
+> +	 */
+> +	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_10baseT_Half_BIT);
+> +	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_10baseT_Full_BIT);
+> +	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_100baseT_Half_BIT);
+> +	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_1000baseT_Half_BIT);
+> +
+> +	/* disable EEE autoneg, EEE not supported by TSNEP */
+> +	memset(&ethtool_eee, 0, sizeof(ethtool_eee));
+> +	phy_ethtool_set_eee(adapter->phydev, &ethtool_eee);
+> +
+> +	adapter->phydev->irq = PHY_MAC_INTERRUPT;
+> +	phy_start(adapter->phydev);
+> +	phy_start_aneg(adapter->phydev);
+
+No need to call phy_start_aneg(). 
+
+> +static int tsnep_phy_init(struct tsnep_adapter *adapter)
+> +{
+> +	struct device_node *dn;
+> +	int retval;
+> +
+> +	retval = of_get_phy_mode(adapter->pdev->dev.of_node,
+> +				 &adapter->phy_mode);
+> +	if (retval)
+> +		adapter->phy_mode = PHY_INTERFACE_MODE_GMII;
+> +
+> +	dn = of_parse_phandle(adapter->pdev->dev.of_node, "phy-handle", 0);
+> +	adapter->phydev = of_phy_find_device(dn);
+> +	of_node_put(dn);
+> +	if (!adapter->phydev && adapter->mdiobus)
+> +		adapter->phydev = phy_find_first(adapter->mdiobus);
+
+Do you actually need phy_find_first()? It is better to have it in DT.
+
+> +	if (!adapter->phydev)
+> +		return -EIO;
+> +
+> +	return 0;
+> +}
+> +
+> +static int tsnep_probe(struct platform_device *pdev)
+> +{
+
+...
+
+> +	dev_info(&adapter->pdev->dev, "device version %d.%02d\n", version,
+> +		 revision);
+> +	if (adapter->gate_control)
+> +		dev_info(&adapter->pdev->dev, "gate control detected\n");
+> +
+> +	return 0;
+> +
+> +	unregister_netdev(adapter->netdev);
+
+How do you get here? Is gcc is warning about unreachable code?
+
+> +register_failed:
+> +	tsnep_tc_cleanup(adapter);
+> +tc_init_failed:
+> +	tsnep_ptp_cleanup(adapter);
+> +ptp_init_failed:
+> +phy_init_failed:
+> +	if (adapter->mdiobus)
+> +		mdiobus_unregister(adapter->mdiobus);
+> +mdio_init_failed:
+> +mac_init_failed:
+> +	return retval;
+> +}
+
+  Andrew
