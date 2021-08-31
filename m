@@ -2,208 +2,306 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 560A23FC58C
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 12:28:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FA0E3FC5F2
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 13:33:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240964AbhHaKVT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 06:21:19 -0400
-Received: from mga02.intel.com ([134.134.136.20]:31731 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240953AbhHaKVR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 31 Aug 2021 06:21:17 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10092"; a="205663317"
-X-IronPort-AV: E=Sophos;i="5.84,366,1620716400"; 
-   d="scan'208";a="205663317"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2021 03:20:21 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.84,366,1620716400"; 
-   d="scan'208";a="460038959"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by fmsmga007.fm.intel.com with ESMTP; 31 Aug 2021 03:20:21 -0700
-Received: from fmsmsx604.amr.corp.intel.com (10.18.126.84) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.12; Tue, 31 Aug 2021 03:20:20 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.10 via Frontend Transport; Tue, 31 Aug 2021 03:20:20 -0700
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.107)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2242.10; Tue, 31 Aug 2021 03:20:20 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YWAc/iLcmWOsMeDY7/103QYuO/xbJd3x04tUswsIrM8+5yu/zAsYyATX27EQ48Ow9SCFUmAIoL0jjX1tnTexSR6R2quIG4rmhYj/II9UKZbQjelQbPjMr31NVi6/zAPHxwubqX6LyvA0oikCCgGDRtqMgvUzDMcMiqz/eUN6MyBFm2kzvog+uD2JtqoPeaDQQYl4jPoAiTs9IxFwIpQKdbmzDDOYQpiYNZrK6HvmQuDLaOOrYkGHXr/9gGpVYGGcVR4ZNp8CyXrSWS69jBWtoZv6zmJr0g9avHOAjfFRP/B8WjhUNjh+dY/Q5nQyeh5pzleLST2raLb8DlWqXSEMNw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Q0JRJMSOEuUJiUyTS4KB0KvOzXg7HnNM52OR90xnvuE=;
- b=mmaIQoUBS/5aNokcdEjKdWhDTEshbd9/cAeYUVvAmvEhG7fjVdJS3M6AUVV1iNSXjfwMsELG9CNLk4lhAhVDV1lYufO31VppeGXS0XMwJD7FzozqrIi+yZi7YIWPrCJbPvZa6WL50hmmp/GIHYc/ynMADLGS0ow4umhM9Y+49zRaioNZ3dpzlgJl6AxcFij5vossbclsXkg6M2xZ/0sq9luCTuxZBNnrtbEGRti/h+C2mmlijFZGdFh0QdyPcc8RFGORovRByTZ/uQtS74MpXBNYqP7LXCnagNu6GqIhb2kbW/vNk29LKUhq+nARjZkyWUTmKxamxv2IFN+77ujrUw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Q0JRJMSOEuUJiUyTS4KB0KvOzXg7HnNM52OR90xnvuE=;
- b=nIT7tbQkTnHpAGRVs0G9TrwKWNUtDmNq1/o9vwINYxbQKccVlRRzLzjAW6DVcfK2JVzSMnYb/Sw3pKl7wPjOUGmA3MFSoPmCY1OAGPBnSM3t9W+FjALjpeR1fWu29tfqI+vrE+wNTs9HK1umeK/m+seUfXbvaU11XJUtgxY6w/w=
-Received: from SJ0PR11MB4958.namprd11.prod.outlook.com (2603:10b6:a03:2ae::24)
- by BY5PR11MB4118.namprd11.prod.outlook.com (2603:10b6:a03:191::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4457.23; Tue, 31 Aug
- 2021 10:20:19 +0000
-Received: from SJ0PR11MB4958.namprd11.prod.outlook.com
- ([fe80::7865:f66:4ed9:5062]) by SJ0PR11MB4958.namprd11.prod.outlook.com
- ([fe80::7865:f66:4ed9:5062%7]) with mapi id 15.20.4373.031; Tue, 31 Aug 2021
- 10:20:18 +0000
-From:   "Machnikowski, Maciej" <maciej.machnikowski@intel.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "abyagowi@fb.com" <abyagowi@fb.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "bsd@fb.com" <bsd@fb.com>
-Subject: RE: [RFC v2 net-next 1/2] rtnetlink: Add new RTM_GETSYNCESTATE
- message to get SyncE status
-Thread-Topic: [RFC v2 net-next 1/2] rtnetlink: Add new RTM_GETSYNCESTATE
- message to get SyncE status
-Thread-Index: AQHXnK7K1rkxJTKXbUG0z9L1S2fbo6uKlpWAgAANa/CAAeYOAIAAKj6AgAC0GNA=
-Date:   Tue, 31 Aug 2021 10:20:18 +0000
-Message-ID: <SJ0PR11MB4958029CF18F93846B29F685EACC9@SJ0PR11MB4958.namprd11.prod.outlook.com>
-References: <20210829080512.3573627-1-maciej.machnikowski@intel.com>
-        <20210829080512.3573627-2-maciej.machnikowski@intel.com>
-        <20210829151017.GA6016@hoboy.vegasvil.org>
-        <PH0PR11MB495126A63998DABA5B5DE184EACA9@PH0PR11MB4951.namprd11.prod.outlook.com>
-        <20210830205758.GA26230@hoboy.vegasvil.org>
- <20210830162909.110753ec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210830162909.110753ec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-reaction: no-action
-dlp-version: 11.5.1.3
-dlp-product: dlpe-windows
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5a076ed7-852f-4d19-46e9-08d96c68eedf
-x-ms-traffictypediagnostic: BY5PR11MB4118:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BY5PR11MB411848DC97DF06607B84180BEACC9@BY5PR11MB4118.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: MG5VAaeEyh4za/h6Cd66NFKG/Qh+MjG29tb8Jm/+UQdZylAN89aPL0E40rWBZu//ZrtL83kwp/9W8f55oCj4OkJklSoxIEFmgsMzOgSvUbhHpvjJ5o/SY9IRJLJVC9Udb7L6OehbjvnvV4enlCf2/xzi+n2YTLbUb26JIVwL4iVS/iP6WQZ0w1Zdw/SW2FxjblzYCQMFcNw4ZiJO/it1FOvUQEmC6h2do2vzcfW6q95/ku598TPoVLZCbZiOWC4eLCSrF2CR3bl5flvfZcTHKTbZbtgkHs84zDbkPTr3f33qCs9cXoeTkNWw/UaV2WBv0A8dEVEnV6WZMFW1v1zve2YMmIa7PUzJ9eZ0YqeJvFBO0Zc2Ffqdp5Zr3JnWY8+l2DIPXi5/tsERA6fJ4t9NusvjX4jHLUV4kmm9GY16KwimOKVhFk/TwPy5jOsifp/98ryRi/EWO0W3XcCeSrCxXTgO1J/Fe/Y65/+wDMcUwXEXimERnvRQlC03etD2Mq1neUzUJWDcJ/GhYwUQfwfaet99kTeepi+wT/Gq/d74OouWDSawk8TcuhIluY7FkdxxEP5g60cf2hFEAFbQM/dIwpGX94ewt+WRO7Ah8MsO3onc3gdoMpaYTnM4qJ5DPUMetwrH5jtBZFjFLGac+fiZQbw+zwDz100nCb14mdF+uIdoHEP9vShy6jLp+2b5nwnP4+UV05uHEx5g5AezC2m9fQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR11MB4958.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(136003)(366004)(376002)(39860400002)(396003)(478600001)(15650500001)(38100700002)(110136005)(122000001)(76116006)(83380400001)(55016002)(7696005)(316002)(52536014)(9686003)(53546011)(66946007)(38070700005)(66446008)(186003)(26005)(86362001)(66556008)(54906003)(2906002)(8676002)(5660300002)(6506007)(71200400001)(66476007)(8936002)(64756008)(4326008)(33656002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?tqaC5cfJC8jCIfPiIvhk2CFTciYxSZaBU3fL+zNU51/sTrE1Ucci7XdmcOVl?=
- =?us-ascii?Q?5HV5oB1azXibFqLOioRSOQb16z7w4dulvuKE7+FpXoJEW5tpo/pLslOOQngR?=
- =?us-ascii?Q?K45JD3u5nMqL0j1E/iz7tDhvbp8ODU5pG58HHCNFIMvqLvs3merEH40AC1He?=
- =?us-ascii?Q?Zzl3rvxnZMD5s3l3VAlT48u2hbJ4tiXR9DTSmMr2VFmUFoYkzHGIwwwd89i+?=
- =?us-ascii?Q?qxXdkT+Gu3869BWefPe5RBGHbdE2iNibJuBBevS3PU5Cx4gB9Lg+E+R72Voa?=
- =?us-ascii?Q?aFmXfdeItlIUgUWzmGTwzt1vEEGi9Qh+z0F7arKQZJ07SwYH+FMOakHR7Ky8?=
- =?us-ascii?Q?3EHZpCtFGidcOq7cEquH5J57ucuR0N2F35+KQMdf8K2jNmrhkiPKI/0wbviT?=
- =?us-ascii?Q?dQIcKcviFw0L52MKBSpAdLcd0JNO0Ot8QiPhMvsNj4wepUakMMs/Oj87Hvv7?=
- =?us-ascii?Q?wEu+zT1nJhKpb+xHoEukj6FHHnN7n4sK6XDUjBNB0uzJc78MS2LUrDM/jY5l?=
- =?us-ascii?Q?tsQUmeA3Qzqw8HP1cOWkB099kw6Ws9L8jQzpfaWy4M9ijtzHapchVi1mQk8l?=
- =?us-ascii?Q?9kBgd7TpNlAy8YYY9o5DrckLSaqrw/xwZRfDP5+D9J1h61BqoK9O4kWvwevy?=
- =?us-ascii?Q?Buqq+gJoMU79h31ceaz4+wpFTp2KWUlfdqguSZaxmsFSC56HfCm/c/gYf6io?=
- =?us-ascii?Q?L5NnU0uksTREoOkbzpzrWblhvpP44Zu0gvw5Wh5kmcKu4wQ9sXpgj2EGdj6u?=
- =?us-ascii?Q?AoQ8Cyv0cZU3vTxwzi5fmdhOrxwnZyAEEr83nZ2Rr/czSTTGbuiWkcn463Fc?=
- =?us-ascii?Q?g2KZhS/G9mkOgzimXiUg8giB1h49MyttmxaOB4ULKlcVKNI18VGqUNJ0SdAn?=
- =?us-ascii?Q?SX6MHU60IYNILKrQr+wmr/QF8pWmFyqn8aasE6u2ghnwPOPmLsEDgLpMWgtF?=
- =?us-ascii?Q?z2YmwuuvBtPDsy7qfwSihLrB6CJiilm75/FKtZ+FadIL+WgrOc51/tXcbSdV?=
- =?us-ascii?Q?sTrXPnrGYUClnxT4hmIGKhB5XIsz08AkvAnf6dhK2vIIc4eD4i8sGTd86OhO?=
- =?us-ascii?Q?hflpDdckmy6ky797PKzFS9YlaVlftibmaAAXsM+Mv2hN47r5GgThfXjwxmXs?=
- =?us-ascii?Q?RKDQYpKhPZK4gy2ROccFIc6lpPhvIlQzTcNGJusZ8BxEr1q1rvZxaAR8YnfJ?=
- =?us-ascii?Q?URWDCo68pl+NgX2CBMcUOIuS+XWwYxul1jyEEpJEyE8hXJU2PGEMcKGjEk8h?=
- =?us-ascii?Q?OWYQCovtoTxR1cqbVSRsmzyrEr/co8oNHWxn7fIgxvPfvYvC0dU+O+uHUmot?=
- =?us-ascii?Q?PMY=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S241084AbhHaKiC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 06:38:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38942 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241063AbhHaKiA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 06:38:00 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33D08C061760
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 03:37:05 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id q3so10341610plx.4
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 03:37:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8dQdwJ6iC5itnTtMlKSyQHwu/Qk1rv1msQ0z62kLU9M=;
+        b=Fzi+Lgss3ZurgkLBW2ayaOGUUrnL4WOcNoEEk18yA41A53K5j4I8OKpwahC4+JhMr6
+         xg/BFE0hxXXPtZn1arWCFiOzmgcreBz/OztVMJAxuW1AN+RXQWaidM8LFRtVsBi7eK/q
+         H3pUkVcsRPamTuuKa3sC329vYRY/x8iXJS2Zwl1zBKexRjJ0bYM/6NdNaWYk8kIE3gNs
+         +koI9rBrDpcnHO9RKHRt3QLeF0y2LocSE8i7p0CvWMjsAlVwcnWNGY0HDvoRAzo2K7/t
+         vh3A2vt2qQJqixjfBtOxjX5IIJ6OZFPIWu0uW577Gv/ibTMr7fo+9Tx/DUix5n/Mn1xY
+         f73w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8dQdwJ6iC5itnTtMlKSyQHwu/Qk1rv1msQ0z62kLU9M=;
+        b=UgQNhA06sSHLpLr5MUDvwFXN4dPdkYwDBrk1qXICdh++SYDr88+SWCLwZF4hPOSc6w
+         5m4Zo29oK1LlToPDo3z+YwcOKX3UngHYONg05r9HV/3EjX2oQ29ixbnDRul6xHM8k28Y
+         necE255F+TyVQYjaPxdmxfP5PViQ2Bgcyx+Tix+x994+44mP97d0DLyMYX9kfFQdVgWp
+         yZ/zwyTCgKKZckehWN9Rd4MZoRxkT3bVIqgLyljSh4iLtrEheCEh29Z0YkoCv2OPnuRb
+         +hH/aozQFZsXBi9jNkh9DTpydEsvPWGfVqNGnwmrjJ0nxGki0wD4FlJgAL66d5OhJaTz
+         trJg==
+X-Gm-Message-State: AOAM5308pKZvOqwqdAzEKGcJ97zFS7jpJc+7ZykxuFfNqCvu1p57MZZC
+        pLryt9yC9euAVL6lN1X86A/8
+X-Google-Smtp-Source: ABdhPJw4oNnCOMs5Y9HR/D63FbL9urL6s8bSvkyCRjyqy4l8W/bJ9JvEOLec5yDa66G2lv5YAOzxaA==
+X-Received: by 2002:a17:902:6b8a:b029:12d:3f99:9e5e with SMTP id p10-20020a1709026b8ab029012d3f999e5emr4123749plk.66.1630406224521;
+        Tue, 31 Aug 2021 03:37:04 -0700 (PDT)
+Received: from localhost ([139.177.225.253])
+        by smtp.gmail.com with ESMTPSA id r13sm21083888pgl.90.2021.08.31.03.37.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 Aug 2021 03:37:03 -0700 (PDT)
+From:   Xie Yongji <xieyongji@bytedance.com>
+To:     mst@redhat.com, jasowang@redhat.com, stefanha@redhat.com,
+        sgarzare@redhat.com, parav@nvidia.com, hch@infradead.org,
+        christian.brauner@canonical.com, rdunlap@infradead.org,
+        willy@infradead.org, viro@zeniv.linux.org.uk, axboe@kernel.dk,
+        bcrl@kvack.org, corbet@lwn.net, mika.penttila@nextfour.com,
+        dan.carpenter@oracle.com, joro@8bytes.org,
+        gregkh@linuxfoundation.org, zhe.he@windriver.com,
+        xiaodong.liu@intel.com, joe@perches.com, robin.murphy@arm.com,
+        will@kernel.org, john.garry@huawei.com
+Cc:     songmuchun@bytedance.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v13 00/13] Introduce VDUSE - vDPA Device in Userspace
+Date:   Tue, 31 Aug 2021 18:36:21 +0800
+Message-Id: <20210831103634.33-1-xieyongji@bytedance.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SJ0PR11MB4958.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5a076ed7-852f-4d19-46e9-08d96c68eedf
-X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Aug 2021 10:20:18.7991
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: o3qqAKjOWZOUU2PDq24FHayS32KXD2diezP1KdvKKrpEkc1LDJlhWiKAy8qGFDOO/qwr/DN+XPv0+s1SLfOOqTDV33WCd8MVbP82M/TMOYg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR11MB4118
-X-OriginatorOrg: intel.com
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This series introduces a framework that makes it possible to implement
+software-emulated vDPA devices in userspace. And to make the device
+emulation more secure, the emulated vDPA device's control path is handled
+in the kernel and only the data path is implemented in the userspace.
 
+Since the emuldated vDPA device's control path is handled in the kernel,
+a message mechnism is introduced to make userspace be aware of the data
+path related changes. Userspace can use read()/write() to receive/reply
+the control messages.
 
-> -----Original Message-----
-> From: Jakub Kicinski <kuba@kernel.org>
-> Sent: Tuesday, August 31, 2021 1:29 AM
-> To: Richard Cochran <richardcochran@gmail.com>
-> Cc: Machnikowski, Maciej <maciej.machnikowski@intel.com>;
-> netdev@vger.kernel.org; intel-wired-lan@lists.osuosl.org;
-> abyagowi@fb.com; Nguyen, Anthony L <anthony.l.nguyen@intel.com>;
-> davem@davemloft.net; linux-kselftest@vger.kernel.org; bsd@fb.com
-> Subject: Re: [RFC v2 net-next 1/2] rtnetlink: Add new RTM_GETSYNCESTATE
-> message to get SyncE status
->=20
-> On Mon, 30 Aug 2021 13:57:58 -0700 Richard Cochran wrote:
-> > > Please take a look at the 10.2 Operation modes of the G.8264 and at t=
-he
-> Figure A.1
-> > > which depicts the EEC. This interface is to report the status of the =
-EEC.
-> >
-> > Well, I read it, and it is still fairly high level with no mention at
-> > all of "DPLL".  I hope that the new RTNL states will cover other
-> > possible EEC implementations, too.
-> >
-> > The "Reference source selection mechanism" is also quite vague.  Your
-> > patch is more specific:
-> >
-> > +enum if_eec_src {
-> > +       IF_EEC_SRC_INVALID =3D 0,
-> > +       IF_EEC_SRC_UNKNOWN,
-> > +       IF_EEC_SRC_SYNCE,
-> > +       IF_EEC_SRC_GNSS,
->=20
-> Hmm, IDK if this really belongs in RTNL. The OCP time card that
-> Jonathan works on also wants to report signal lock, and it locks
-> to GNSS. It doesn't have any networking functionality whatsoever.
->=20
-> Can we add a genetlink family for clock info/configuration? From
-> what I understood discussing this with Jonathan it sounded like most
-> clocks today have a vendor-specific character device for configuration
-> and reading status.
->=20
-> I'm happy to write the plumbing if this seems like an okay idea
-> but too much work for anyone to commit.
->=20
+In the data path, the core is mapping dma buffer into VDUSE daemon's
+address space, which can be implemented in different ways depending on
+the vdpa bus to which the vDPA device is attached.
 
-I agree that this also is useful for Time card, yet it's also useful here.
-PTP subsystem should implement a similar logic to this one for
-DPLL-driven timers which can lock its frequency to external sources.
+In virtio-vdpa case, we implements a MMU-based software IOTLB with
+bounce-buffering mechanism to achieve that. And in vhost-vdpa case, the dma
+buffer is reside in a userspace memory region which can be shared to the
+VDUSE userspace processs via transferring the shmfd.
 
-The reasoning behind putting it here is to enable returning the lock
-to the GNSS receiver embedded on the NIC as a source for the
-SyncE frequency. It helps distinguishing the embedded GNSS
-from the external sources. As a result - the upper layer can report
-GNSS lock based only on this message without the need to put the
-embedded  GNSS receiver in the config file. On the other hand - if
-sync to External source is reported such SW would need to read
-the source of external sync from the config file.
+The details and our user case is shown below:
 
-And the list is expandable - if we need to define more embedded
-sync source types we can always add more to it.
+------------------------    -------------------------   ----------------------------------------------
+|            Container |    |              QEMU(VM) |   |                               VDUSE daemon |
+|       ---------      |    |  -------------------  |   | ------------------------- ---------------- |
+|       |dev/vdx|      |    |  |/dev/vhost-vdpa-x|  |   | | vDPA device emulation | | block driver | |
+------------+-----------     -----------+------------   -------------+----------------------+---------
+            |                           |                            |                      |
+            |                           |                            |                      |
+------------+---------------------------+----------------------------+----------------------+---------
+|    | block device |           |  vhost device |            | vduse driver |          | TCP/IP |    |
+|    -------+--------           --------+--------            -------+--------          -----+----    |
+|           |                           |                           |                       |        |
+| ----------+----------       ----------+-----------         -------+-------                |        |
+| | virtio-blk driver |       |  vhost-vdpa driver |         | vdpa device |                |        |
+| ----------+----------       ----------+-----------         -------+-------                |        |
+|           |      virtio bus           |                           |                       |        |
+|   --------+----+-----------           |                           |                       |        |
+|                |                      |                           |                       |        |
+|      ----------+----------            |                           |                       |        |
+|      | virtio-blk device |            |                           |                       |        |
+|      ----------+----------            |                           |                       |        |
+|                |                      |                           |                       |        |
+|     -----------+-----------           |                           |                       |        |
+|     |  virtio-vdpa driver |           |                           |                       |        |
+|     -----------+-----------           |                           |                       |        |
+|                |                      |                           |    vdpa bus           |        |
+|     -----------+----------------------+---------------------------+------------           |        |
+|                                                                                        ---+---     |
+-----------------------------------------------------------------------------------------| NIC |------
+                                                                                         ---+---
+                                                                                            |
+                                                                                   ---------+---------
+                                                                                   | Remote Storages |
+                                                                                   -------------------
 
-Regards
-Maciek
+We make use of it to implement a block device connecting to
+our distributed storage, which can be used both in containers and
+VMs. Thus, we can have an unified technology stack in this two cases.
+
+To test it with null-blk:
+
+  $ qemu-storage-daemon \
+      --chardev socket,id=charmonitor,path=/tmp/qmp.sock,server,nowait \
+      --monitor chardev=charmonitor \
+      --blockdev driver=host_device,cache.direct=on,aio=native,filename=/dev/nullb0,node-name=disk0 \
+      --export type=vduse-blk,id=test,node-name=disk0,writable=on,name=vduse-null,num-queues=16,queue-size=128
+
+The qemu-storage-daemon can be found at https://github.com/bytedance/qemu/tree/vduse
+
+To make the userspace VDUSE processes such as qemu-storage-daemon able
+to be run by an unprivileged user. We limit the supported device type
+to virtio block device currently. The support for other device types
+can be added after the security issue of corresponding device driver
+is clarified or fixed in the future.
+
+Future work:
+  - Improve performance
+  - Userspace library (find a way to reuse device emulation code in qemu/rust-vmm)
+  - Support more device types
+
+V12 to V13:
+- Fix building error
+
+V11 to V12:
+- Rebased to vhost.git
+- Add reset support for all vdpa drivers
+- Remove the dependency on other patches
+- Export eventfd_wake_count
+- Use workqueue for virtqueue kicking in some cases
+
+V10 to V11:
+- Rebased to newest kernel tree
+- Add a device attribute for message timeout
+- Add check for the reserved field of some structures
+- Add a reset callback in vdpa_config_ops and handle it in VDUSE case
+- Remove the patches that handle virtio-vdpa reset failure
+- Document the structures in include/uapi/linux/vduse.h using kernel doc
+- Add the reserved field for struct vduse_vq_config
+
+V9 to V10:
+- Forbid some userspace operations after a timeout
+- Rename VDUSE_DEV_INJECT_IRQ to VDUSE_DEV_INJECT_CONFIG_IRQ
+- Use fixed bounce buffer size
+- Fix more code indentation issues in include/linux/vdpa.h
+- Remove the section describing bounce-buffer mechanism in documentation
+- Fix some commit logs and documentation
+
+V8 to V9:
+- Add VDUSE_SET_STATUS message to replace VDUSE_START/STOP_DATAPLANE messages
+- Support packed virtqueue state
+- Handle the reset failure in both virtio-vdpa and vhost-vdpa cases
+- Add more details in documentation
+- Remove VDUSE_REQ_FLAGS_NO_REPLY flag
+- Add VDUSE_VQ_SETUP ioctl to support per-vq configuration
+- Separate config interrupt injecting out of config update
+- Flush kworker for interrupt inject during resetting
+- Validate the config_size in .get_config()
+
+V7 to V8:
+- Rebased to newest kernel tree
+- Rework VDUSE driver to handle the device's control path in kernel
+- Limit the supported device type to virtio block device
+- Export free_iova_fast()
+- Remove the virtio-blk and virtio-scsi patches (will send them alone)
+- Remove all module parameters
+- Use the same MAJOR for both control device and VDUSE devices
+- Avoid eventfd cleanup in vduse_dev_release()
+
+V6 to V7:
+- Export alloc_iova_fast()
+- Add get_config_size() callback
+- Add some patches to avoid trusting virtio devices
+- Add limited device emulation
+- Add some documents
+- Use workqueue to inject config irq
+- Add parameter on vq irq injecting
+- Rename vduse_domain_get_mapping_page() to vduse_domain_get_coherent_page()
+- Add WARN_ON() to catch message failure
+- Add some padding/reserved fields to uAPI structure
+- Fix some bugs
+- Rebase to vhost.git
+
+V5 to V6:
+- Export receive_fd() instead of __receive_fd()
+- Factor out the unmapping logic of pa and va separatedly
+- Remove the logic of bounce page allocation in page fault handler
+- Use PAGE_SIZE as IOVA allocation granule
+- Add EPOLLOUT support
+- Enable setting API version in userspace
+- Fix some bugs
+
+V4 to V5:
+- Remove the patch for irq binding
+- Use a single IOTLB for all types of mapping
+- Factor out vhost_vdpa_pa_map()
+- Add some sample codes in document
+- Use receice_fd_user() to pass file descriptor
+- Fix some bugs
+
+V3 to V4:
+- Rebase to vhost.git
+- Split some patches
+- Add some documents
+- Use ioctl to inject interrupt rather than eventfd
+- Enable config interrupt support
+- Support binding irq to the specified cpu
+- Add two module parameter to limit bounce/iova size
+- Create char device rather than anon inode per vduse
+- Reuse vhost IOTLB for iova domain
+- Rework the message mechnism in control path
+
+V2 to V3:
+- Rework the MMU-based IOMMU driver
+- Use the iova domain as iova allocator instead of genpool
+- Support transferring vma->vm_file in vhost-vdpa
+- Add SVA support in vhost-vdpa
+- Remove the patches on bounce pages reclaim
+
+V1 to V2:
+- Add vhost-vdpa support
+- Add some documents
+- Based on the vdpa management tool
+- Introduce a workqueue for irq injection
+- Replace interval tree with array map to store the iova_map
+
+Xie Yongji (13):
+  iova: Export alloc_iova_fast() and free_iova_fast()
+  eventfd: Export eventfd_wake_count to modules
+  file: Export receive_fd() to modules
+  vdpa: Fix some coding style issues
+  vdpa: Add reset callback in vdpa_config_ops
+  vhost-vdpa: Handle the failure of vdpa_reset()
+  vhost-iotlb: Add an opaque pointer for vhost IOTLB
+  vdpa: Add an opaque pointer for vdpa_config_ops.dma_map()
+  vdpa: factor out vhost_vdpa_pa_map() and vhost_vdpa_pa_unmap()
+  vdpa: Support transferring virtual addressing during DMA mapping
+  vduse: Implement an MMU-based software IOTLB
+  vduse: Introduce VDUSE - vDPA Device in Userspace
+  Documentation: Add documentation for VDUSE
+
+ Documentation/userspace-api/index.rst              |    1 +
+ Documentation/userspace-api/ioctl/ioctl-number.rst |    1 +
+ Documentation/userspace-api/vduse.rst              |  233 +++
+ drivers/iommu/iova.c                               |    2 +
+ drivers/vdpa/Kconfig                               |   10 +
+ drivers/vdpa/Makefile                              |    1 +
+ drivers/vdpa/ifcvf/ifcvf_main.c                    |   37 +-
+ drivers/vdpa/mlx5/net/mlx5_vnet.c                  |   42 +-
+ drivers/vdpa/vdpa.c                                |    9 +-
+ drivers/vdpa/vdpa_sim/vdpa_sim.c                   |   26 +-
+ drivers/vdpa/vdpa_user/Makefile                    |    5 +
+ drivers/vdpa/vdpa_user/iova_domain.c               |  545 +++++++
+ drivers/vdpa/vdpa_user/iova_domain.h               |   73 +
+ drivers/vdpa/vdpa_user/vduse_dev.c                 | 1641 ++++++++++++++++++++
+ drivers/vdpa/virtio_pci/vp_vdpa.c                  |   17 +-
+ drivers/vhost/iotlb.c                              |   20 +-
+ drivers/vhost/vdpa.c                               |  168 +-
+ fs/eventfd.c                                       |    1 +
+ fs/file.c                                          |    6 +
+ include/linux/file.h                               |    7 +-
+ include/linux/vdpa.h                               |   62 +-
+ include/linux/vhost_iotlb.h                        |    3 +
+ include/uapi/linux/vduse.h                         |  306 ++++
+ 23 files changed, 3112 insertions(+), 104 deletions(-)
+ create mode 100644 Documentation/userspace-api/vduse.rst
+ create mode 100644 drivers/vdpa/vdpa_user/Makefile
+ create mode 100644 drivers/vdpa/vdpa_user/iova_domain.c
+ create mode 100644 drivers/vdpa/vdpa_user/iova_domain.h
+ create mode 100644 drivers/vdpa/vdpa_user/vduse_dev.c
+ create mode 100644 include/uapi/linux/vduse.h
+
+-- 
+2.11.0
+
