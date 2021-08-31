@@ -2,102 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA5643FBFA4
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 01:59:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 620A33FBFD7
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 02:28:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239154AbhH3X6C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Aug 2021 19:58:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50604 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239135AbhH3X6B (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Aug 2021 19:58:01 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 69F6E60E98;
-        Mon, 30 Aug 2021 23:57:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1630367826;
-        bh=i8kLKOhMKzI8tWgGkpH1gw+IEQdRjLKrS3VLggTNIrY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ivhdxNHjLA/3BkE1gQtM5WG0DbqGHRHG7rHCeY2igCCUjdGfjEh0YzzPvtBg6HVVO
-         UMBE+0Rb/HBtHCUAXs4AD6mKtIf8Me5yZQNun3nUP6E1PxqGiVytWj5Sm1KN7i6UjG
-         Mjq+QGaAE9bs2CJnwo+E6tdMGgjcagXW5pr7FgBREZRkw5ZrTqMGSrjWOEI61rNEnS
-         mRXsL1fe3E/UJCvImHxkwzfZy9TQpX8NbSk1o7PngSq12N0zV6dlJn93ouiBtys8Zv
-         GgtPYlSJc498puwpwllhN+/dJz/IusqvMUVIk9tMpjYT982DeRdv0miqziIVs8Dixl
-         r+4mbHYBZbxQw==
-Date:   Mon, 30 Aug 2021 16:57:05 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
-Cc:     netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        davem@davemloft.net, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev, Florian Westphal <fw@strlen.de>
-Subject: Re: [PATCH net 1/2] mptcp: fix possible divide by zero
-Message-ID: <20210830165705.1f0dbafc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210828001731.67757-2-mathew.j.martineau@linux.intel.com>
-References: <20210828001731.67757-1-mathew.j.martineau@linux.intel.com>
-        <20210828001731.67757-2-mathew.j.martineau@linux.intel.com>
+        id S239197AbhHaAEX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Aug 2021 20:04:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40630 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233270AbhHaAEO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Aug 2021 20:04:14 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4CE4C061575;
+        Mon, 30 Aug 2021 17:03:19 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id k78so28323188ybf.10;
+        Mon, 30 Aug 2021 17:03:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lglQ3JxOUp4IZye4xSji78qLqmdUdPj3wxm8G2VOvkE=;
+        b=UiqKSheXumgrI5tnQNS+k+ty5ojnYBNKjOYwOsOf7ND4TQwx4l/JKiafYvKIp4/0iw
+         tRt8AC1de7wX+oRi5feG2cXXnCKl92tWRUYdHiEMIdvCIGsm2E/DdXNNAEl8RIzAuPN+
+         eLtuGOxsJHA4UOi3OH4+Fggxeb6AXQYU9Z4KnIvXInqOQiOnraBu6zGQx1rHUsEkB0ph
+         8DFT4SMC4J4N/bWVCGLpWdYJcfbqyZBiDnj9q7ZHCUWRbLHecXJeb9096ZeaL4aJp2jo
+         5he+x7k0XqWMfZi8MQWx94zxcrarci+MtbhBgaIboT5a7ecIG4YAvcNCdAFox/7t1Sp2
+         Rb/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lglQ3JxOUp4IZye4xSji78qLqmdUdPj3wxm8G2VOvkE=;
+        b=nxX5As65UezaI95sMAhpPszS33bwcVuCesce08DAXdU4RtbzNRVwi3EgHsdhyZpnTZ
+         A6qXq7nFVkxx5uMYsbV2vHgD5lXRXYi5Ht7QRLaxO27yih/XKugy5yVd1N8Iuwnoa20w
+         4QxaxPI59Srs9vQwFlxe27HyQgYxJRgCY8vXcnk7qQW2Upssrmk5j77AW7uH243na6sp
+         PlP8maQVg+BlsW+a0wMnaQONz7shwUaqbt/Y4NVYSbWIgkxzAElIwjq7OSREmnJAkotH
+         WqtohdfSIQtgVVixxjBEdLqxgqYTFd2kh2EIdsvfTBirwwRrgI70kRV+AqlzJuSu6S5V
+         vRBw==
+X-Gm-Message-State: AOAM530IcvPC1vW05UouapsALN2wGu/WK1D+9F1Ui102p/0e+FdkL4Tx
+        GYq07v4wkdIEK2Fys/kI4OZs2HVKT9YcGVtSbLMXjmG48AQ=
+X-Google-Smtp-Source: ABdhPJznp92dCOB3vB2YFaUTt0/v/C6oe41rbnqR1SwbcKI3n4IfOnGeaFH6wmd674khXQPd4iw7F8oT3i9W1CSYtmA=
+X-Received: by 2002:a25:bb13:: with SMTP id z19mr28067365ybg.347.1630368199063;
+ Mon, 30 Aug 2021 17:03:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20210828052006.1313788-1-davemarchevsky@fb.com> <20210828052006.1313788-7-davemarchevsky@fb.com>
+In-Reply-To: <20210828052006.1313788-7-davemarchevsky@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 30 Aug 2021 17:03:08 -0700
+Message-ID: <CAEf4BzbNh-dXYjkxKPq576w3YeqpKfufWToPAR_bq8+hnbzOzA@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 6/7] selftests/bpf: Migrate
+ prog_tests/trace_printk CHECKs to ASSERTs
+To:     Dave Marchevsky <davemarchevsky@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Yonghong Song <yhs@fb.com>, Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 27 Aug 2021 17:17:30 -0700 Mat Martineau wrote:
-> From: Paolo Abeni <pabeni@redhat.com>
-> 
-> Florian noted that if mptcp_alloc_tx_skb() allocation fails
-> in __mptcp_push_pending(), we can end-up invoking
-> mptcp_push_release()/tcp_push() with a zero mss, causing
-> a divide by 0 error.
-> 
-> This change addresses the issue refactoring the skb allocation
-> code checking if skb collapsing will happen for sure and doing
-> the skb allocation only after such check. Skb allocation will
-> now happen only after the call to tcp_send_mss() which
-> correctly initializes mss_now.
-> 
-> As side bonuses we now fill the skb tx cache only when needed,
-> and this also clean-up a bit the output path.
-> 
-> Reported-by: Florian Westphal <fw@strlen.de>
-> Fixes: 724cfd2ee8aa ("mptcp: allocate TX skbs in msk context")
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+On Fri, Aug 27, 2021 at 10:20 PM Dave Marchevsky <davemarchevsky@fb.com> wrote:
+>
+> Guidance for new tests is to use ASSERT macros instead of CHECK. Since
+> trace_vprintk test will borrow heavily from trace_printk's, migrate its
+> CHECKs so it remains obvious that the two are closely related.
+>
+> Signed-off-by: Dave Marchevsky <davemarchevsky@fb.com>
 > ---
->  net/mptcp/protocol.c | 78 +++++++++++++++++++++-----------------------
->  1 file changed, 37 insertions(+), 41 deletions(-)
-> 
-> diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-> index a88924947815..0d5c1ec28508 100644
-> --- a/net/mptcp/protocol.c
-> +++ b/net/mptcp/protocol.c
-> @@ -994,6 +994,15 @@ static void mptcp_wmem_uncharge(struct sock *sk, int size)
->  	msk->wmem_reserved += size;
->  }
->  
-> +static void __mptcp_mem_reclaim_partial(struct sock *sk)
-> +{
-> +#ifdef CONFIG_LOCKDEP
-> +	WARN_ON_ONCE(!lockdep_is_held(&sk->sk_lock.slock));
-> +#endif
 
-lockdep_assert_held_once() ? No ifdef should be needed?
+Great, thanks!
 
-> +	__mptcp_update_wmem(sk);
-> +	sk_mem_reclaim_partial(sk);
-> +}
-> +
->  static void mptcp_mem_reclaim_partial(struct sock *sk)
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
+
+>  .../selftests/bpf/prog_tests/trace_printk.c   | 24 +++++++------------
+>  1 file changed, 9 insertions(+), 15 deletions(-)
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/trace_printk.c b/tools/testing/selftests/bpf/prog_tests/trace_printk.c
+> index d39bc00feb45..e47835f0a674 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/trace_printk.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/trace_printk.c
+> @@ -10,7 +10,7 @@
+>
+>  void test_trace_printk(void)
 >  {
->  	struct mptcp_sock *msk = mptcp_sk(sk);
-
-> @@ -1512,7 +1516,9 @@ static void __mptcp_push_pending(struct sock *sk, unsigned int flags)
->  static void __mptcp_subflow_push_pending(struct sock *sk, struct sock *ssk)
->  {
->  	struct mptcp_sock *msk = mptcp_sk(sk);
-> -	struct mptcp_sendmsg_info info;
-> +	struct mptcp_sendmsg_info info = {
-> +				 .data_lock_held = true,
-
-indentation looks off
-
-> +	};
+> -       int err, iter = 0, duration = 0, found = 0;
+> +       int err = 0, iter = 0, found = 0;
+>         struct trace_printk__bss *bss;
+>         struct trace_printk *skel;
+>         char *buf = NULL;
+> @@ -18,25 +18,24 @@ void test_trace_printk(void)
+>         size_t buflen;
+>
+>         skel = trace_printk__open();
+> -       if (CHECK(!skel, "skel_open", "failed to open skeleton\n"))
+> +       if (!ASSERT_OK_PTR(skel, "trace_printk__open"))
+>                 return;
+>
+> -       ASSERT_EQ(skel->rodata->fmt[0], 'T', "invalid printk fmt string");
+> +       ASSERT_EQ(skel->rodata->fmt[0], 'T', "skel->rodata->fmt[0]");
+>         skel->rodata->fmt[0] = 't';
+>
+>         err = trace_printk__load(skel);
+> -       if (CHECK(err, "skel_load", "failed to load skeleton: %d\n", err))
+> +       if (!ASSERT_OK(err, "trace_printk__load"))
+>                 goto cleanup;
+>
+>         bss = skel->bss;
+>
+>         err = trace_printk__attach(skel);
+> -       if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
+> +       if (!ASSERT_OK(err, "trace_printk__attach"))
+>                 goto cleanup;
+>
+>         fp = fopen(TRACEBUF, "r");
+> -       if (CHECK(fp == NULL, "could not open trace buffer",
+> -                 "error %d opening %s", errno, TRACEBUF))
+> +       if (!ASSERT_OK_PTR(fp, "fopen(TRACEBUF)"))
+>                 goto cleanup;
+>
+>         /* We do not want to wait forever if this test fails... */
+> @@ -46,14 +45,10 @@ void test_trace_printk(void)
+>         usleep(1);
+>         trace_printk__detach(skel);
+>
+> -       if (CHECK(bss->trace_printk_ran == 0,
+> -                 "bpf_trace_printk never ran",
+> -                 "ran == %d", bss->trace_printk_ran))
+> +       if (!ASSERT_GT(bss->trace_printk_ran, 0, "bss->trace_printk_ran"))
+>                 goto cleanup;
+>
+> -       if (CHECK(bss->trace_printk_ret <= 0,
+> -                 "bpf_trace_printk returned <= 0 value",
+> -                 "got %d", bss->trace_printk_ret))
+> +       if (!ASSERT_GT(bss->trace_printk_ret, 0, "bss->trace_printk_ret"))
+>                 goto cleanup;
+>
+>         /* verify our search string is in the trace buffer */
+> @@ -66,8 +61,7 @@ void test_trace_printk(void)
+>                         break;
+>         }
+>
+> -       if (CHECK(!found, "message from bpf_trace_printk not found",
+> -                 "no instance of %s in %s", SEARCHMSG, TRACEBUF))
+> +       if (!ASSERT_EQ(found, bss->trace_printk_ran, "found"))
+>                 goto cleanup;
+>
+>  cleanup:
+> --
+> 2.30.2
+>
