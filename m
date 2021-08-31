@@ -2,137 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43C4D3FC196
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 05:38:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F7053FC255
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 08:05:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239577AbhHaDgj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Aug 2021 23:36:39 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:41716 "EHLO inva020.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239605AbhHaDgP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Aug 2021 23:36:15 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 7BECD1A256F;
-        Tue, 31 Aug 2021 05:35:19 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 43E601A0B75;
-        Tue, 31 Aug 2021 05:35:19 +0200 (CEST)
-Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 81A52183AC4C;
-        Tue, 31 Aug 2021 11:35:17 +0800 (+08)
-From:   Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
-To:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     allan.nielsen@microchip.com, joergen.andreasen@microchip.com,
-        UNGLinuxDriver@microchip.com, vinicius.gomes@intel.com,
-        michael.chan@broadcom.com, vishal@chelsio.com, saeedm@mellanox.com,
-        jiri@mellanox.com, idosch@mellanox.com,
-        alexandre.belloni@bootlin.com, kuba@kernel.org,
-        xiaoliang.yang_1@nxp.com, po.liu@nxp.com, vladimir.oltean@nxp.com,
-        leoyang.li@nxp.com
-Subject: [PATCH v3 net-next 8/8] net: dsa: felix: use vcap policer to set flow meter for psfp
-Date:   Tue, 31 Aug 2021 11:45:36 +0800
-Message-Id: <20210831034536.17497-9-xiaoliang.yang_1@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210831034536.17497-1-xiaoliang.yang_1@nxp.com>
-References: <20210831034536.17497-1-xiaoliang.yang_1@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S239539AbhHaF52 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 01:57:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34048 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239066AbhHaF50 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 01:57:26 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2208BC061575;
+        Mon, 30 Aug 2021 22:56:32 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id n18so544014plp.7;
+        Mon, 30 Aug 2021 22:56:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aIXBIIIoz+rnxmyGhqnZFJeXHpwd+gU8Q68x3m93PVQ=;
+        b=qDY2Ej/r5UzI10iwQI83HXn/Jw4eofnIFvyMHcKbw4KLOWi+nlrsApoxiSRR62WBEG
+         vUGxAU9OyB6dEZxlSKYgsBFAvERCGVtXiYAhzMLxO2Iu0po61VCf/ncpwBsYN9VPA26v
+         OUCGloe7CnhgYOrQmC9jXkhHI551M72FdEEN6fj9xPYlDjPLi7KDBCOGcyTXb4jhxAmH
+         wCEZL+jqLXTtXPCmDeHvD/axS3jdJmQLuL/WTUMhMLxKOJxTVqofa/7YZaEPJqpY0TJd
+         7sVFeiNe9o8WtM1DRizH52tFi73w9+4fIzCxNHfgvgMd7OzuoLAjDOu3sk/2QVRyG2gz
+         hTSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aIXBIIIoz+rnxmyGhqnZFJeXHpwd+gU8Q68x3m93PVQ=;
+        b=izwY/Q74bLNtkajK0BnFRSM3OgR22simr4O5lmAvs/l0R9Hwf1lfmA7jLt1RoYjvGq
+         +NT4vgkwWQM3Ms2iwQFDuPoVNEWnQixu/HU/xdNTzZegU8qIqGC/t6iUNRaKukleSYcX
+         GH0i5xPk4uq3G3qgEQ4ybJhVOEK+dF/tNSHCKMO01+f8EFYQCwyA2EXhQy5/Sb0U5QO9
+         /iO89xzvFDHAZOqukk4m4sYpBcjam5Li2bqqxE4bw89NpDjp2QI+itzXI1SSqxIRDnyE
+         TmlSl06hPPOZwuR7qYam5BieaaYlShS+G0SxhaMPYVaUl2ZHCeEw8wV+9BY6iHzjd1J2
+         dDUQ==
+X-Gm-Message-State: AOAM532Q9kY+/dAC9nKNN12FyDdNaD4vKr2TVScKEyGwwhyzS5ATP/Ht
+        Bsrf6mo68m7N8hTaIgNF3tiio5c7PWfKHONzGlo=
+X-Google-Smtp-Source: ABdhPJwhByb5Jufu27BCB2wa52/aJ3dGafnYRXjfMoZnLI+Y4Dr9MSWTIzNPzbGq2t6j52uasgFquGwoSRpuO0XsXek=
+X-Received: by 2002:a17:90a:a0a:: with SMTP id o10mr3367812pjo.231.1630389391641;
+ Mon, 30 Aug 2021 22:56:31 -0700 (PDT)
+MIME-Version: 1.0
+References: <1630295221-9859-1-git-send-email-tcs_kernel@tencent.com>
+ <163032300695.3135.11373235819151215482.git-patchwork-notify@kernel.org> <20210830101456.21944dfe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210830101456.21944dfe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 30 Aug 2021 22:56:20 -0700
+Message-ID: <CAM_iQpWi083uZ5wMYA+coWtME=xQMy3pb-__9jaFqe9piFRSaQ@mail.gmail.com>
+Subject: Re: [PATCH V2] fix array-index-out-of-bounds in taprio_change
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Haimin Zhang <tcs.kernel@gmail.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        David Miller <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, tcs_kernel@tencent.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch add police action to set flow meter table which is defined
-in IEEE802.1Qci. Flow metering is two rates two buckets and three color
-marker to policing the frames, we only enable one rate one bucket in
-this patch.
+On Mon, Aug 30, 2021 at 10:14 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Mon, 30 Aug 2021 11:30:06 +0000 patchwork-bot+netdevbpf@kernel.org
+> wrote:
+> > Hello:
+> >
+> > This patch was applied to netdev/net-next.git (refs/heads/master):
+> >
+> > On Mon, 30 Aug 2021 11:47:01 +0800 you wrote:
+> > > From: Haimin Zhang <tcs_kernel@tencent.com>
+> > >
+> > > syzbot report an array-index-out-of-bounds in taprio_change
+> > > index 16 is out of range for type '__u16 [16]'
+> > > that's because mqprio->num_tc is lager than TC_MAX_QUEUE,so we check
+> > > the return value of netdev_set_num_tc.
+> > >
+> > > [...]
+> >
+> > Here is the summary with links:
+> >   - [V2] fix array-index-out-of-bounds in taprio_change
+> >     https://git.kernel.org/netdev/net-next/c/efe487fce306
+> >
+> > You are awesome, thank you!
+>
+> https://lore.kernel.org/netdev/20210830091046.610ceb1b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/
+>
+> Oh, well...
 
-Flow metering shares a same policer pool with VCAP policers, so the PSFP
-policer calls ocelot_vcap_policer_add() and ocelot_vcap_policer_del() to
-set flow meter police.
+I agree it is slightly better to make the check work in
+taprio_parse_mqprio_opt(), but this patch is not bad either, we
+need to check the return value of netdev_set_num_tc() for
+completeness at least.
 
-Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
----
- drivers/net/dsa/ocelot/felix_vsc9959.c | 32 +++++++++++++++++++++++++-
- 1 file changed, 31 insertions(+), 1 deletion(-)
+BTW, this patch should be landed in -net, not -net-next, as it
+fixes a real bug reported by syzbot.
 
-diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index c409f0860f92..db08e6748296 100644
---- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-+++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -1343,6 +1343,7 @@ static int vsc9959_port_setup_tc(struct dsa_switch *ds, int port,
- 
- #define VSC9959_PSFP_SFID_MAX			175
- #define VSC9959_PSFP_GATE_ID_MAX		183
-+#define VSC9959_PSFP_POLICER_BASE		63
- #define VSC9959_PSFP_POLICER_MAX		383
- #define VSC9959_PSFP_GATE_LIST_NUM		4
- #define VSC9959_PSFP_GATE_CYCLETIME_MIN		5000
-@@ -1843,7 +1844,10 @@ static int vsc9959_psfp_filter_add(struct ocelot *ocelot,
- 	struct felix_stream stream = {0};
- 	struct felix_stream_gate *sgi;
- 	struct ocelot_psfp_list *psfp;
-+	struct ocelot_policer pol;
- 	int ret, i, size;
-+	u64 rate, burst;
-+	u32 index;
- 
- 	psfp = &ocelot->psfp;
- 
-@@ -1862,13 +1866,33 @@ static int vsc9959_psfp_filter_add(struct ocelot *ocelot,
- 			ret = vsc9959_psfp_sgi_table_add(ocelot, sgi);
- 			if (ret) {
- 				kfree(sgi);
--				return ret;
-+				goto err;
- 			}
- 			sfi.sg_valid = 1;
- 			sfi.sgid = sgi->index;
- 			kfree(sgi);
- 			break;
- 		case FLOW_ACTION_POLICE:
-+			index = a->police.index + VSC9959_PSFP_POLICER_BASE;
-+			if (index > VSC9959_PSFP_POLICER_MAX) {
-+				ret = -EINVAL;
-+				goto err;
-+			}
-+
-+			rate = a->police.rate_bytes_ps;
-+			burst = rate * PSCHED_NS2TICKS(a->police.burst);
-+			pol = (struct ocelot_policer) {
-+				.burst = div_u64(burst, PSCHED_TICKS_PER_SEC),
-+				.rate = div_u64(rate, 1000) * 8,
-+			};
-+			ret = ocelot_vcap_policer_add(ocelot, index, &pol);
-+			if (ret)
-+				goto err;
-+
-+			sfi.fm_valid = 1;
-+			sfi.fmid = index;
-+			sfi.maxsdu = a->police.mtu;
-+			break;
- 		default:
- 			return -EOPNOTSUPP;
- 		}
-@@ -1905,6 +1929,9 @@ static int vsc9959_psfp_filter_add(struct ocelot *ocelot,
- 	if (sfi.sg_valid)
- 		vsc9959_psfp_sgi_table_del(ocelot, sfi.sgid);
- 
-+	if (sfi.fm_valid)
-+		ocelot_vcap_policer_del(ocelot, sfi.fmid);
-+
- 	return ret;
- }
- 
-@@ -1928,6 +1955,9 @@ static int vsc9959_psfp_filter_del(struct ocelot *ocelot,
- 	if (sfi->sg_valid)
- 		vsc9959_psfp_sgi_table_del(ocelot, sfi->sgid);
- 
-+	if (sfi->fm_valid)
-+		ocelot_vcap_policer_del(ocelot, sfi->fmid);
-+
- 	vsc9959_psfp_sfi_table_del(ocelot, stream->sfid);
- 
- 	stream->sfid_valid = 0;
--- 
-2.17.1
-
+Thanks.
