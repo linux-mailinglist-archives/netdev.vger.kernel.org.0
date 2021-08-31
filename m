@@ -2,222 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D388C3FC96A
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 16:11:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 959463FC98E
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 16:18:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234270AbhHaOMG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 10:12:06 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:37905 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229514AbhHaOME (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 10:12:04 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1630419068; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=7S0kRQ1abQwwZF4U3vdKpHJgesRzC60yL/nDP3TMnX0=; b=jg2kRGO9hZK+RsW6mMHyEPN9jk2Ns4eDwUb7SLrfDDIbCooyztHhVwzjGhiGD4HoHdDZLUIP
- ThvPb4XR3UzhvNthIc+5dTCSyyYCtRd4LNWNwRuniOnBvUj6nkUEoS1skHOgFDF6qJ+Lcl+Q
- tUJ/KYqur5xitpTjiCuspd0vkJ0=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
- 612e38684cd9015037a70268 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 31 Aug 2021 14:10:48
- GMT
-Sender: luoj=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 9694BC43619; Tue, 31 Aug 2021 14:10:48 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        NICE_REPLY_A,SPF_FAIL autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from [192.168.10.117] (unknown [183.192.232.105])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: luoj)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 5B8E6C4338F;
-        Tue, 31 Aug 2021 14:10:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 5B8E6C4338F
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
-Subject: Re: [PATCH v1 2/3] net: phy: add qca8081 ethernet phy driver
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, sricharan@codeaurora.org
-References: <20210830110733.8964-1-luoj@codeaurora.org>
- <20210830110733.8964-3-luoj@codeaurora.org> <YSzhtF8g42Ccv2h0@lunn.ch>
-From:   Jie Luo <luoj@codeaurora.org>
-Message-ID: <af224018-1190-ac78-2035-c9763c1d46ae@codeaurora.org>
-Date:   Tue, 31 Aug 2021 22:10:43 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S232186AbhHaOS7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 10:18:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52666 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229760AbhHaOS6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 31 Aug 2021 10:18:58 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CF5A060E98;
+        Tue, 31 Aug 2021 14:18:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1630419483;
+        bh=16No4/WXmYSaZayhxCmNxyBwKKmbtjKVe/w00sxst3w=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KrIm+5/4nhCnMKoj/FNgR8NyXM0zfJXxBfQw3OKmzvRafWpRv/2zahLTLGJBvhE05
+         UMx0dftI/94QEQYxrwPj8t1d60EQ+3lr6nzpEaemTea6NvvdJItbEkPKK8z6/YXd/r
+         CsFs4JeS2gl6Wyic4DEJ1xFU4aAzs3aP05YjteEi252H9EgXS4Rb8B2EkxX6NQesXa
+         4M1WX8NcAKe6fW6Vu+9dEmPDo6f+1UiG2HTWELgyKB2cCVYbG43+kh44QHKAoz9qSE
+         XxxALhqau8DAHfGf8mEtEObU4Ilt8dZbK8ruqjZCo8yiOZC8aaXcIatqAtLCNLiWhN
+         bYcFBn87gmVKA==
+Date:   Tue, 31 Aug 2021 07:18:01 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Machnikowski, Maciej" <maciej.machnikowski@intel.com>
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "abyagowi@fb.com" <abyagowi@fb.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        Jonathan Lemon <bsd@fb.com>
+Subject: Re: [RFC v2 net-next 1/2] rtnetlink: Add new RTM_GETSYNCESTATE
+ message to get SyncE status
+Message-ID: <20210831071801.0535c0cf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <SJ0PR11MB49583C74616AC7E715C6E3A9EACC9@SJ0PR11MB4958.namprd11.prod.outlook.com>
+References: <20210829080512.3573627-1-maciej.machnikowski@intel.com>
+        <20210829080512.3573627-2-maciej.machnikowski@intel.com>
+        <20210829151017.GA6016@hoboy.vegasvil.org>
+        <PH0PR11MB495126A63998DABA5B5DE184EACA9@PH0PR11MB4951.namprd11.prod.outlook.com>
+        <20210830205758.GA26230@hoboy.vegasvil.org>
+        <20210830162909.110753ec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <SJ0PR11MB4958029CF18F93846B29F685EACC9@SJ0PR11MB4958.namprd11.prod.outlook.com>
+        <20210831063304.4bcacbe3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <SJ0PR11MB49583C74616AC7E715C6E3A9EACC9@SJ0PR11MB4958.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-In-Reply-To: <YSzhtF8g42Ccv2h0@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 31 Aug 2021 14:07:32 +0000 Machnikowski, Maciej wrote:
+> > > I agree that this also is useful for Time card, yet it's also useful here.
+> > > PTP subsystem should implement a similar logic to this one for
+> > > DPLL-driven timers which can lock its frequency to external sources.  
+> > 
+> > Why would we have two APIs for doing the same thing? IIUC Richard does
+> > not want this in the PTP ioctls which is fair, but we need to cater to devices
+> > which do not have netdevs.  
+> 
+> From technical point of view - it can be explained by the fact that the DPLL
+> driving the SyncE logic can be separate from the one driving PTP.  Also
+> SyncE is frequency-only oriented and doesn't care about phase and
+> Time of Day that PTP also needs. The GNSS lock on the PTP side will be
+> multi-layered, as the full lock would mean that our PTP clock is not only
+> syntonized, but also has its time and phase set correctly.
 
-On 8/30/2021 9:48 PM, Andrew Lunn wrote:
-> On Mon, Aug 30, 2021 at 07:07:32PM +0800, Luo Jie wrote:
->> qca8081 is a single port ethernet phy chip that supports
->> 10/100/1000/2500 Mbps mode.
->>
->> Signed-off-by: Luo Jie <luoj@codeaurora.org>
->> ---
->>   drivers/net/phy/at803x.c | 389 ++++++++++++++++++++++++++++++++++-----
->>   1 file changed, 338 insertions(+), 51 deletions(-)
->>
->> diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
->> index ecae26f11aa4..2b3563ae152f 100644
->> --- a/drivers/net/phy/at803x.c
->> +++ b/drivers/net/phy/at803x.c
->> @@ -33,10 +33,10 @@
->>   #define AT803X_SFC_DISABLE_JABBER		BIT(0)
->>   
->>   #define AT803X_SPECIFIC_STATUS			0x11
->> -#define AT803X_SS_SPEED_MASK			(3 << 14)
->> -#define AT803X_SS_SPEED_1000			(2 << 14)
->> -#define AT803X_SS_SPEED_100			(1 << 14)
->> -#define AT803X_SS_SPEED_10			(0 << 14)
->> +#define AT803X_SS_SPEED_MASK			GENMASK(15, 14)
->> +#define AT803X_SS_SPEED_1000			2
->> +#define AT803X_SS_SPEED_100			1
->> +#define AT803X_SS_SPEED_10			0
-> This looks like an improvement, and nothing to do with qca8081. Please
-> make it an separate patch.
-will make it an separate patch in the next patch series.
->>   #define AT803X_SS_DUPLEX			BIT(13)
->>   #define AT803X_SS_SPEED_DUPLEX_RESOLVED		BIT(11)
->>   #define AT803X_SS_MDIX				BIT(6)
->> @@ -158,6 +158,8 @@
->>   #define QCA8337_PHY_ID				0x004dd036
->>   #define QCA8K_PHY_ID_MASK			0xffffffff
->>   
->> +#define QCA8081_PHY_ID				0x004dd101
->> +
-> Maybe keep all the PHY_ID together?
-will move it to make PHY_ID together in the next patch series.
->
->>   #define QCA8K_DEVFLAGS_REVISION_MASK		GENMASK(2, 0)
->>   
->>   #define AT803X_PAGE_FIBER			0
->> @@ -167,7 +169,73 @@
->>   #define AT803X_KEEP_PLL_ENABLED			BIT(0)
->>   #define AT803X_DISABLE_SMARTEEE			BIT(1)
->>   
->> @@ -711,11 +779,18 @@ static void at803x_remove(struct phy_device *phydev)
->>   
->>   static int at803x_get_features(struct phy_device *phydev)
->>   {
->> -	int err;
->> +	int val;
-> Why? The driver pretty consistently uses err for return values which
-> are errors.
-will keep err unchanged in the next patch set.
->
->>   
->> -	err = genphy_read_abilities(phydev);
->> -	if (err)
->> -		return err;
->> +	val = genphy_read_abilities(phydev);
->> +	if (val)
->> +		return val;
->> +
->> +	if (at803x_match_phy_id(phydev, QCA8081_PHY_ID)) {
->> +		val = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_NG_EXTABLE);
-> You don't check if val indicates if there was an error.
-thanks Andrew for the comment, will add the check here.
->
->> +
->> +		linkmode_mod_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT, phydev->supported,
->> +				val & MDIO_PMA_NG_EXTABLE_2_5GBT);
->> +	}
->>   
->>   	if (!at803x_match_phy_id(phydev, ATH8031_PHY_ID))
->>   		return 0;
->> @@ -935,44 +1010,44 @@ static void at803x_link_change_notify(struct phy_device *phydev)
->>   	}
->>   }
->>   
->> -static int at803x_read_status(struct phy_device *phydev)
->> +static int at803x_read_specific_status(struct phy_device *phydev)
->>   {
->> -	int ss, err, old_link = phydev->link;
->> -
->> -	/* Update the link, but return if there was an error */
->> -	err = genphy_update_link(phydev);
->> -	if (err)
->> -		return err;
->> -
->> -	/* why bother the PHY if nothing can have changed */
->> -	if (phydev->autoneg == AUTONEG_ENABLE && old_link && phydev->link)
->> -		return 0;
->> +	int val;
->>   
->> -	phydev->speed = SPEED_UNKNOWN;
->> -	phydev->duplex = DUPLEX_UNKNOWN;
->> -	phydev->pause = 0;
->> -	phydev->asym_pause = 0;
->> +	val = phy_read(phydev, AT803X_SPECIFIC_FUNCTION_CONTROL);
->> +	if (val < 0)
->> +		return val;
->>   
->> -	err = genphy_read_lpa(phydev);
->> -	if (err < 0)
->> -		return err;
->> +	switch (FIELD_GET(AT803X_SFC_MDI_CROSSOVER_MODE_M, val)) {
->> +	case AT803X_SFC_MANUAL_MDI:
->> +		phydev->mdix_ctrl = ETH_TP_MDI;
->> +		break;
->> +	case AT803X_SFC_MANUAL_MDIX:
->> +		phydev->mdix_ctrl = ETH_TP_MDI_X;
->> +		break;
->> +	case AT803X_SFC_AUTOMATIC_CROSSOVER:
->> +		phydev->mdix_ctrl = ETH_TP_MDI_AUTO;
->> +		break;
->> +	}
->>   
->>   	/* Read the AT8035 PHY-Specific Status register, which indicates the
->>   	 * speed and duplex that the PHY is actually using, irrespective of
->>   	 * whether we are in autoneg mode or not.
->>   	 */
->> -	ss = phy_read(phydev, AT803X_SPECIFIC_STATUS);
->> -	if (ss < 0)
->> -		return ss;
->> +	val = phy_read(phydev, AT803X_SPECIFIC_STATUS);
->> +	if (val < 0)
->> +		return val;
-> What was actually wrong with ss?
->
-> Is this another case of just copying code from your other driver,
-> rather than cleanly extending the existing driver?
->
-> There are two many changes here all at once. Please break this patch
-> up. You are aiming for lots of small patches which are obviously
-> correct. Part of being obviously correct is having a good commit
-> message, and that gets much easier when a patch is small.
->
-> 	 Andrew
+Just because GNSS lock addresses more parameters (potentially) doesn't
+mean the syntonization part shouldn't be addressed by the same API.
 
-Hi Andrew,
+> A PTP can reuse the "physical" part of this interface later on, but it also needs
+> to solve more SW-specific challenges, like reporting the PTP lock on a SW level.
+> 
+> I agree that having such API for PTP subsystem will be very useful,
+> but let's address SyncE in netdev first and build the PTP netlink on top of what
+> we learn here. We can always move the structures defined here to the layer
+> above without affecting any APIs.
 
-i separate the phy specific status into a new function 
-at803x_read_specific_status, since this function
+It's a reasonable SW design strategy to start simple. Unfortunately, 
+it doesn't apply to stable uAPI design. You're adding a RTNL op, which
+will have to be supported for ever. If we add anything "later" it will
+be a strict addition, and will have to be backward compatible. Which
+I'm not sure how to do when the object we'd operate on would be
+completely different (clock vs netdev).
 
-need to be used for both at803x phy driver and qca8081 phy driver.
+As I said I can write the boilerplate code for you if you prefer, the
+code implementing the command and the driver interface will be almost
+identical.
 
-i will break the patch into the minimal changes and provide the commit 
-message in detail in the next
-
-patch series.
-
-thanks for your helpful comments.
-
-
+Is there a reason why RTNL is better?
