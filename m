@@ -2,189 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33CF63FC68B
-	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 13:34:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C6C83FC696
+	for <lists+netdev@lfdr.de>; Tue, 31 Aug 2021 13:34:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241456AbhHaL1x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 07:27:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50482 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241421AbhHaL1w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 07:27:52 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 741F1C061575;
-        Tue, 31 Aug 2021 04:26:57 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id m9so2694823wrb.1;
-        Tue, 31 Aug 2021 04:26:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:references:from:subject:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=YcgZqItZmzj1WtOfFfaQ8Qttwhk3+ja41xq6aWhCuIk=;
-        b=iz3XxAwyMs+UW2Q1ayzMNLsbiXEhiKegaYWufcldVPv0IW4xiI23VfDzqsGjIlNOb8
-         46noeVsHdjqgynqWBDWm3C7M3lOZR/EzUTrIwuSZGbprCNUcyyBi05pBWiJNEZugZmad
-         7mRivpMdjFUwyuInpgpERZ/D7gcoT2nqha7PlSZCz9DAuhQGQ22aNiblLgSQ5i3Lf1aI
-         e4pjGnHe9vDkoHPtpW5CZyO897yAK2X4I6rYA51QdFvmG6KFTIIEflijOp0pNtNRSl++
-         082SU5kKHOdqebSUuZfiO+ENL15V1cWYkpx6Xer+kTBRj1Xv6YGGlRzdTVnjFXbJ201T
-         JS5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:references:from:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=YcgZqItZmzj1WtOfFfaQ8Qttwhk3+ja41xq6aWhCuIk=;
-        b=r8TSEZIqAGRNwcHFS+YMeLTJpp0GeNiPH+XErC/5A3CWc4k5UbQxZvQOq3xXWYebma
-         oiY50RTKlkmAErJOuxoe9YYHksgxL1mUVped4sOFLxwRTXax0Rnr80N3mRFL3cpBYgcf
-         ibOdc2qcsejbIY2fS+Twp23gu0nnbilBpJIKoAkSj9+rrrLDll/LWTvG2RNhnpeOk6V+
-         sYZi+FLhPkQfQ583czEmgRQMaqC/I2KWSd1hkWYjKLajk7LBBU4hZbFIG8CpJrxRL5y9
-         uol7VUurd/NUOkkLz5fingk5AApIqhmMfnrjRRidusthQs5+xPgLXUImkotMiAdXQCvz
-         CtJg==
-X-Gm-Message-State: AOAM531F/YPaM9gosPat8YXSJtje+aMKP+SQahOSOC/VynuV+dKnKZ7R
-        V+aGwj+DYtz8lzFTX7VM8pU=
-X-Google-Smtp-Source: ABdhPJxmGd+GvI9ohnTeJUlgdQ12DdXwK/m37yiYxbPpGFtGI7VZAolSjPhsmWpE29sK0gSQHZ9OKw==
-X-Received: by 2002:a5d:4591:: with SMTP id p17mr30865100wrq.57.1630409216077;
-        Tue, 31 Aug 2021 04:26:56 -0700 (PDT)
-Received: from [192.168.8.197] ([148.252.133.138])
-        by smtp.gmail.com with ESMTPSA id v62sm1624151wme.21.2021.08.31.04.26.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 31 Aug 2021 04:26:55 -0700 (PDT)
-To:     Hao Xu <haoxu@linux.alibaba.com>, Jens Axboe <axboe@kernel.dk>,
-        syzbot <syzbot+f9704d1878e290eddf73@syzkaller.appspotmail.com>,
-        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, dvyukov@google.com,
-        io-uring@vger.kernel.org, john.fastabend@gmail.com, kafai@fb.com,
-        kpsingh@kernel.org, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
-References: <00000000000059117905cacce99e@google.com>
- <7949b7a0-fec1-34a7-aaf5-cbe07c6127ed@kernel.dk>
- <d881d3fa-4df5-1862-bc2b-9420649ba3c8@linux.alibaba.com>
- <407ce02f-7a0a-4eb2-b242-188fc605012c@gmail.com>
- <6df81737-38d8-4c91-358a-79bc5d5f9074@linux.alibaba.com>
-From:   Pavel Begunkov <asml.silence@gmail.com>
-Subject: Re: [syzbot] general protection fault in sock_from_file
-Message-ID: <fb5821b5-3bb2-4c1a-acdb-816e639cb210@gmail.com>
-Date:   Tue, 31 Aug 2021 12:26:23 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
-MIME-Version: 1.0
-In-Reply-To: <6df81737-38d8-4c91-358a-79bc5d5f9074@linux.alibaba.com>
-Content-Type: text/plain; charset=utf-8
+        id S240000AbhHaLe3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 07:34:29 -0400
+Received: from mga05.intel.com ([192.55.52.43]:45803 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229566AbhHaLe2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 31 Aug 2021 07:34:28 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10092"; a="304028737"
+X-IronPort-AV: E=Sophos;i="5.84,366,1620716400"; 
+   d="scan'208";a="304028737"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2021 04:33:27 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,366,1620716400"; 
+   d="scan'208";a="531061833"
+Received: from fmsmsx605.amr.corp.intel.com ([10.18.126.85])
+  by FMSMGA003.fm.intel.com with ESMTP; 31 Aug 2021 04:33:27 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx605.amr.corp.intel.com (10.18.126.85) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.4; Tue, 31 Aug 2021 04:33:26 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.10 via Frontend Transport; Tue, 31 Aug 2021 04:33:26 -0700
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.168)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2242.10; Tue, 31 Aug 2021 04:33:26 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jLMVz4wy+nU8mvFJTPD6hk0cm0dlNE+3AeUTv7M2Hxo41++KJEM9ZVn1e65tb4pI+Vos6F2JfwXTUdA1KRsLiFvhnSc3Jj319Bw8I2mwkqCy5iF6IeL6mg/tjrejCBQp6na70Oaw0pDO93TSBAi3xNWrkvo/XtSQeRbajnWbHFyOedHOxyHGAOcyR2sOA0LjD/2uQc7Jix9ArlREgbcFA1G7E6ofp+gnP0s0esGVdZTEeDDks80W5cuGdK0lvzfLcvZI6+eFVQmBMWmBtIsrZZFAiqryyORO7LwFcAu/o32WcaFaPD2RnbrNeSobUQIlTH+FE657HwOocbvCLQzyaA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5aUoZ7vgJ8jKF+1dw+X/wTqdLiVmZFsVi7URc1LUYSs=;
+ b=dtbd+KyTkZSI/Q7Lqpy3su3Sr/+Z54PouHj8GXtknFAW7IrKTM4gLECdRexjWm3jfCBl4BGnCaWSAeTlC/2RRGtgeHXYqdsmvF+dOgMPwv/u+/592gm7pWcYC/9SYoxw79Zb7dQHl0XUGjL4rpx7Z/oIWeqFST4QvTxajTf9yTJiyNeCwYf7lYcEeLh/CJ3yOawpFl+filntFJLp5rpK9PL8FBdfColdgw1xN41ps50vIcKV4e5LtBiouQj7QuyBK0/66nWja/NuGAa6eWyK+UVCFwZyBVb2yR2uaTCKDUM3cMB6M7QzUIihylb4ki09Aybh6/Wr3FStytnuh1MCzQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5aUoZ7vgJ8jKF+1dw+X/wTqdLiVmZFsVi7URc1LUYSs=;
+ b=CEohaXzlsnpHmPlVsM9q2dzrOUL2vKqLxzamKdZvImNoqO8G8QthdsaDO+sXx2KQfQmtQLdsWAryNKdiUcsxCDku9Kpt4KvpLnwk/81SONpjvgXfJOLHsUlB/nwW4AYodQKdzgxi4qywvit+mrToPwHgCcbkXGex+LVWdPXUo1M=
+Received: from SJ0PR11MB4958.namprd11.prod.outlook.com (2603:10b6:a03:2ae::24)
+ by BYAPR11MB3045.namprd11.prod.outlook.com (2603:10b6:a03:88::33) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4457.23; Tue, 31 Aug
+ 2021 11:33:25 +0000
+Received: from SJ0PR11MB4958.namprd11.prod.outlook.com
+ ([fe80::7865:f66:4ed9:5062]) by SJ0PR11MB4958.namprd11.prod.outlook.com
+ ([fe80::7865:f66:4ed9:5062%7]) with mapi id 15.20.4373.031; Tue, 31 Aug 2021
+ 11:33:25 +0000
+From:   "Machnikowski, Maciej" <maciej.machnikowski@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        "abyagowi@fb.com" <abyagowi@fb.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>
+Subject: RE: [RFC v3 net-next 1/2] rtnetlink: Add new RTM_GETEECSTATE message
+ to get SyncE status
+Thread-Topic: [RFC v3 net-next 1/2] rtnetlink: Add new RTM_GETEECSTATE message
+ to get SyncE status
+Thread-Index: AQHXnP8G0rXtbOmRxkCrNLlOsBrAhKuMW7EAgAEBqeA=
+Date:   Tue, 31 Aug 2021 11:33:25 +0000
+Message-ID: <SJ0PR11MB495871A89632732B0028404EEACC9@SJ0PR11MB4958.namprd11.prod.outlook.com>
+References: <20210829173934.3683561-1-maciej.machnikowski@intel.com>
+        <20210829173934.3683561-2-maciej.machnikowski@intel.com>
+ <20210830111416.34a8362d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210830111416.34a8362d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+dlp-product: dlpe-windows
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 0d980634-9030-4a76-6bb3-08d96c732549
+x-ms-traffictypediagnostic: BYAPR11MB3045:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR11MB304554FFDD1FCD19225DDC1CEACC9@BYAPR11MB3045.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: J7sIqF0fA0ND6Zk/szC1nSTsEfDR1blOwz6PYj0nTwKsZ6b1BXuZ4vs4Zd2QCYfR7erEE8rg17RoFkzbTd1dM+W7MekE1hbWq+4FaKuNjiTR/gD2+IIOfkeJmCTuFLgoLKc+doAw+szeVNm6lhqdemKZbrUP5/2zf2wcblrVdkYay43v6RuLMAIguBsf6pv4fbc5NNjfJWQ9K88oPFCuOgGpgHalylvRslylSLMAztwaiNuhLX4lQw5fuFWQbVQg4kM7D+2WBDLiXaEvWXvFRBsTW4tcBrC2hS3HV4M8XXciyHqZlH6Mx8R4kPzMuihvKfPpoPT1eHyX32fHpxaiX98HACbKcB542nfqM15n/Zb0z2tmecD7XcLPuv56KscbX/saXYF+ah7/6jG3WPrF1O+9Sft+nfvr+tqINSkf2q2N5QIKi6PZ22Fr7hO5Pg0RqkbeU0wcaiHJMYcj1echv0obB56edylC36pB2kg8HQF02pkwZjkEcIiR+9TvKc1USpcTL5qyXPvs7SipLZECAEl45uef2uCJWrl+PBkOcs5wBteqHbwJKaprGLmMl+KPL1Y6LSvJburP4GdLC1FOBJRuvB3IvTwdvFkkdp9GhNCkxKzQs0oSgWJkM8IWqD99LtS+aABPZhuvjcPngxBsDoZsYvVc8NHJ0XxH5TeYYvzUfWy8mIh7a4lZQYo+jEIzVyP2FQ/zQP5DOGrVFaOegw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR11MB4958.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(39860400002)(366004)(396003)(376002)(136003)(7696005)(4744005)(6506007)(66946007)(66556008)(83380400001)(8676002)(186003)(76116006)(8936002)(2906002)(38070700005)(64756008)(478600001)(5660300002)(9686003)(6916009)(53546011)(15650500001)(66476007)(54906003)(55016002)(38100700002)(26005)(52536014)(122000001)(4326008)(71200400001)(33656002)(316002)(86362001)(66446008);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?0ddnniKkhDHkhElkq7hTLNLBag//vrrTT1js3hO3Jkf+J2Zrr0WCvb1jhVKe?=
+ =?us-ascii?Q?7J+V3jHjvZ7hP8TWyStFIPV7hamBhp3xMFWqW1AunpG1F1mUijetx0+tSdDw?=
+ =?us-ascii?Q?TbEkgab2NM/LnrP6LJDknwXK2C7jkQTM3mQovqo87OpgFRq39+N5apHJQvuZ?=
+ =?us-ascii?Q?ECKOb2twvTYlKoMXEnjSCArr0n3bpX1k9HnRVQ2InauyGTD8PTnvDiTuN2Ii?=
+ =?us-ascii?Q?MSEOrv/0G5GpsKFixW5U3Wnf6Rvtj3b4yU3k9Bt6HMyfyk0PTFD9XIg4YZpR?=
+ =?us-ascii?Q?0yOuVZ+nkmnA+E1Tv+XSKKJpI+AL7uLn8ocgqpI6Ejb14OvyLYxueMRQPYvU?=
+ =?us-ascii?Q?JdiyX3TEKP5Qd9HYX6nePHl3jv80RGa9bf5gRU4+lJ7wu8ORs9QKKElAkuRS?=
+ =?us-ascii?Q?gfSBl1Q1HnvkD0lUr0DiXJo85uSp3STjlXa0hfgnBMWEqZTYhlT+jttMHHjV?=
+ =?us-ascii?Q?hL+fdsFkcc9f9Xl8hHvGtme/tm8nitpfHfuxOsJu+1MdJ2FdCki0HfABFlub?=
+ =?us-ascii?Q?xcwWxB2fPe21pMh7RvTGo6EQGP3db5VL7LQNHx2zt4Lulgue3shbZJTOKvoW?=
+ =?us-ascii?Q?kvKiHX/fxzlRQ+6PFVtEKH0kGk6Dul8M7D3wvge//Yt7WYwp77N+qSBd4L5U?=
+ =?us-ascii?Q?4epbDHrZMyMUg1fRaFsg7Ak7ChdOnl2HnGHZLGhC9orXIRd7lCOfv5P0RpFX?=
+ =?us-ascii?Q?dmv00j1VnzirE4BgAPYeflF0rj7ZW+yODff6zsjb+B0H6GvZypdK7u7t03d1?=
+ =?us-ascii?Q?X/lfFPu4/0YW3GkjplyPcTwSoY+YL1zIKZZ1XEarTCx5h7ggOF2UsasI9zZV?=
+ =?us-ascii?Q?UGPf337dIzAeT52pb4oCvwA9Ec2cHe5AdhGpy1lFaeW/oYLbFPHL4mNSqfc0?=
+ =?us-ascii?Q?cyW8dqp+EogYJ1iJ85pwQrc4G1S559+IRaWvbxMwPAOceNA1XbP5Y9F6JxJT?=
+ =?us-ascii?Q?GW9xYKfQAEmWUMz9wrz7X61LZcxutAdIa2aKuR+gZZNL9eXsIqT5zPKO+Ptj?=
+ =?us-ascii?Q?TcDm+zmc9RsOH2RcasPLkVUe16cHhJ+v6WDkfaxTG6mQ40GgPGsvsqeJLrdL?=
+ =?us-ascii?Q?ywtQfya6MJqCfELCdghKnHD9Ovh9Z+bNKm6B6IyOqN65AuL80JtYILNvMReH?=
+ =?us-ascii?Q?aGceSxrE/2wrBJ3lzgS/rq9+sypDwpwdd5cWJtBymwnkytiu/jLP11xpWqzX?=
+ =?us-ascii?Q?8gWfaKZd+on6wPgcDdybm9syKZZh015zZ/9qn2DnZkQ/38jYblCB2Y6ylZjJ?=
+ =?us-ascii?Q?dlkR/55mNNP8DQz9tHgavLhqBB5gk00U7kha6NT/HZWZrdlPOJDHx8syXL2h?=
+ =?us-ascii?Q?h30=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR11MB4958.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0d980634-9030-4a76-6bb3-08d96c732549
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Aug 2021 11:33:25.1267
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: KvoOL9O/p34XkjnC7j8LYQtg+M4EiMvpBmIw3kHxlUWBtw0shk3PEOCF2lH0He6hxKPDIpz2XrMXMg8o6I6EP0SIjvJjf0deaX6+AAY2MkM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR11MB3045
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/31/21 12:05 PM, Hao Xu wrote:
-> 在 2021/8/31 下午5:42, Pavel Begunkov 写道:
->> On 8/31/21 10:19 AM, Hao Xu wrote:
->>> 在 2021/8/31 上午10:14, Jens Axboe 写道:
->>>> On 8/30/21 2:45 PM, syzbot wrote:
->>>>> syzbot has found a reproducer for the following issue on:
->>>>>
->>>>> HEAD commit:    93717cde744f Add linux-next specific files for 20210830
->>>>> git tree:       linux-next
->>>>> console output: https://syzkaller.appspot.com/x/log.txt?x=15200fad300000
->>>>> kernel config:  https://syzkaller.appspot.com/x/.config?x=c643ef5289990dd1
->>>>> dashboard link: https://syzkaller.appspot.com/bug?extid=f9704d1878e290eddf73
->>>>> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
->>>>> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=111f5f9d300000
->>>>> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1651a415300000
->>>>>
->>>>> IMPORTANT: if you fix the issue, please add the following tag to the commit:
->>>>> Reported-by: syzbot+f9704d1878e290eddf73@syzkaller.appspotmail.com
->>>>>
->>>>> general protection fault, probably for non-canonical address 0xdffffc0000000005: 0000 [#1] PREEMPT SMP KASAN
->>>>> KASAN: null-ptr-deref in range [0x0000000000000028-0x000000000000002f]
->>>>> CPU: 0 PID: 6548 Comm: syz-executor433 Not tainted 5.14.0-next-20210830-syzkaller #0
->>>>> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
->>>>> RIP: 0010:sock_from_file+0x20/0x90 net/socket.c:505
->>>>> Code: f5 ff ff ff c3 0f 1f 44 00 00 41 54 53 48 89 fb e8 85 e9 62 fa 48 8d 7b 28 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 75 4f 45 31 e4 48 81 7b 28 80 f1 8a 8a 74 0c e8 58 e9
->>>>> RSP: 0018:ffffc90002caf8e8 EFLAGS: 00010206
->>>>> RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
->>>>> RDX: 0000000000000005 RSI: ffffffff8713203b RDI: 0000000000000028
->>>>> RBP: ffff888019fc0780 R08: ffffffff899aee40 R09: ffffffff81e21978
->>>>> R10: 0000000000000027 R11: 0000000000000009 R12: dffffc0000000000
->>>>> R13: 1ffff110033f80f9 R14: 0000000000000003 R15: ffff888019fc0780
->>>>> FS:  00000000013b5300(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
->>>>> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->>>>> CR2: 00000000004ae0f0 CR3: 000000001d355000 CR4: 00000000001506f0
->>>>> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
->>>>> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
->>>>> Call Trace:
->>>>>    io_sendmsg+0x98/0x640 fs/io_uring.c:4681
->>>>>    io_issue_sqe+0x14de/0x6ba0 fs/io_uring.c:6578
->>>>>    __io_queue_sqe+0x90/0xb50 fs/io_uring.c:6864
->>>>>    io_req_task_submit+0xbf/0x1b0 fs/io_uring.c:2218
->>>>>    tctx_task_work+0x166/0x610 fs/io_uring.c:2143
->>>>>    task_work_run+0xdd/0x1a0 kernel/task_work.c:164
->>>>>    tracehook_notify_signal include/linux/tracehook.h:212 [inline]
->>>>>    handle_signal_work kernel/entry/common.c:146 [inline]
->>>>>    exit_to_user_mode_loop kernel/entry/common.c:172 [inline]
->>>>>    exit_to_user_mode_prepare+0x256/0x290 kernel/entry/common.c:209
->>>>>    __syscall_exit_to_user_mode_work kernel/entry/common.c:291 [inline]
->>>>>    syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:302
->>>>>    do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
->>>>>    entry_SYSCALL_64_after_hwframe+0x44/0xae
->>>>> RIP: 0033:0x43fd49
->>>>
->>>> Hao, this is due to:
->>>>
->>>> commit a8295b982c46d4a7c259a4cdd58a2681929068a9
->>>> Author: Hao Xu <haoxu@linux.alibaba.com>
->>>> Date:   Fri Aug 27 17:46:09 2021 +0800
->>>>
->>>>       io_uring: fix failed linkchain code logic
->>>>
->>>> which causes some weirdly super long chains from that single sqe.
->>>> Can you take a look, please?
->>> Sure, I'm working on this.
->>
->> Ah, saw it after sending a patch. It's nothing too curious, just
->> a small error in logic. More interesting that we don't have a
->> test case covering it, we should definitely add something.
->>
-> Saw your patch after coding my fix..😂
-> Since my email client doesn't receive your patch(only saw it in
-> webpage https://lore.kernel.org/), I put my comment here:
+> -----Original Message-----
+> From: Jakub Kicinski <kuba@kernel.org>
+> Sent: Monday, August 30, 2021 8:14 PM
+> To: Machnikowski, Maciej <maciej.machnikowski@intel.com>
+> Subject: Re: [RFC v3 net-next 1/2] rtnetlink: Add new RTM_GETEECSTATE
 
-Hmm, does it happen often? I'll CC you
+> > +#define IF_EEC_PIN_UNKNOWN	0xFF
+> > +
+> > +struct if_eec_state_msg {
+> > +	__u32 ifindex;
+> > +	__u8 state;
+> > +	__u8 src;
+> > +	__u8 pin;
+> > +	__u8 pad;
+> > +};
+>=20
+> Please break this structure up into individual attributes.
+>=20
+> This way you won't have to expose the special PIN_UNKNOWN value to user
+> space (skip the invalid attrs instead).
 
+Addressed all other comments.=20
+For this one - I'll add flags which will indicate validity of all values. S=
+ince=20
+this structure is self-contained and addresses the generic need for state=20
+report.
 
->>  fs/io_uring.c | 2 ++
->>  1 file changed, 2 insertions(+)
->>
->> diff --git a/fs/io_uring.c b/fs/io_uring.c
->> index 473a977c7979..a531c7324ea8 100644
->> --- a/fs/io_uring.c
->> +++ b/fs/io_uring.c
->> @@ -6717,6 +6717,8 @@ static inline void io_queue_sqe(struct io_kiocb *req)
->>      if (likely(!(req->flags & (REQ_F_FORCE_ASYNC | REQ_F_FAIL)))) {
->>          __io_queue_sqe(req);
->>      } else if (req->flags & REQ_F_FAIL) {
->> +        /* fail all, we don't submit */
->> +        req->flags &= ~REQ_F_HARDLINK;
-> maybe set REQ_F_LINK here?
+Will resubmit as a patch.
 
-if (unlikely((req->flags & REQ_F_FAIL) &&
-	     !(req->flags & REQ_F_HARDLINK))) {
-	posted |= (req->link != NULL);
-	io_fail_links(req);
-}
+Thanks!
+Maciek
 
-The problem is hardlink, normal will be failed. But there is indeed
-a problem with both patches, 
-
-if (req->flags & (REQ_F_LINK | REQ_F_HARDLINK))
-	// kill linked
-
-Will resend with some tests on top
-
-
->>          io_req_complete_failed(req, req->result);
->>      } else {
->>          int ret = io_req_prep_async(req);
-
--- 
-Pavel Begunkov
