@@ -2,74 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A67073FD1B3
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 05:20:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C54723FD1DB
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 05:39:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241529AbhIADUi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 23:20:38 -0400
-Received: from mail-m17644.qiye.163.com ([59.111.176.44]:9478 "EHLO
-        mail-m17644.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231660AbhIADUh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 23:20:37 -0400
-Received: from wanjb-virtual-machine.localdomain (unknown [58.213.83.158])
-        by mail-m17644.qiye.163.com (Hmail) with ESMTPA id 74E483201D0;
-        Wed,  1 Sep 2021 11:19:38 +0800 (CST)
-From:   Wan Jiabing <wanjiabing@vivo.com>
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        mptcp@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc:     kael_w@yeah.net, Wan Jiabing <wanjiabing@vivo.com>
-Subject: [PATCH] [v3] mptcp: Fix duplicated argument in protocol.h
-Date:   Wed,  1 Sep 2021 11:19:32 +0800
-Message-Id: <20210901031932.7734-1-wanjiabing@vivo.com>
-X-Mailer: git-send-email 2.25.1
+        id S241783AbhIADhj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 23:37:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47538 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241772AbhIADhi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 23:37:38 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A88C2C061575
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 20:36:41 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id g14so992842pfm.1
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 20:36:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=AruAYqXi8gav6JhXWlfazOuSDB0qGQ4MeVGH3pBInAQ=;
+        b=MBTUPtOAKEVnZHcVMX8P0o4dkip44D72HvEJ26PjwAuxbrNs+Qww2Cn77nocEURYNq
+         MibOH4cMa+lJkMvqkaWEAX1VLReeIOxWrc3tLt7gdWyjz0TJOKt3yZkPG/6R7s2EO1j/
+         wvZYSagcQJejwt+BizLfriJdk6gMwz5JBId3tSEaD+qUHlvdzURqFoyIZut4uqZaK7Iq
+         ZfXpcu7o7aFkQyjJ4ZQIPkCpqI0YY+UvW0HsgBPHMcukwIw6+gBkRFS7NhorcLYCQUkQ
+         8I9GO7Dl7B8mMk8Qr12qZ8rVi/OMN3r5kKE1HTAKSFCjo6iMo/f5i2tNL5810W7cfXGs
+         5B2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=AruAYqXi8gav6JhXWlfazOuSDB0qGQ4MeVGH3pBInAQ=;
+        b=SILbBFnoSeDs5Rr6twI7A/gQjHGwvakHJxlp+llm53EsBmfAOghhLF+JP2L4uxZ7Ng
+         ffmrZpYPDUN36LVzB6rp/6POogcD4Kd4BnE/9mUREM6riwo9cxq/v/4ycROs7RD3S/za
+         PG6RzPNIyRrcJbol2EaYAAUs2uSuNrKC+8jS2nRKnMJhG5HgHD/q+n8ppdnwKoVDFAYA
+         TjlNwU3SGyHNrJEzINruAkfgPPZ2EzdDizK16XyMzhY0gc5ysTqOSf9jkXOLF053MDCf
+         VarKex7Lor+AttlU02MJD+RtLAXDg1suAoMEo75lX/VP8pKgeyjn92MDYgCCfk78ouBn
+         V4qA==
+X-Gm-Message-State: AOAM532MuD97JWfAfyBD6R54n6JTAMJi6Cno7/p+lnFXp6Wn/B9NNWhD
+        TdPVKA5kvBmYfO9Jmd90UCM=
+X-Google-Smtp-Source: ABdhPJzYQbiB9vO2ehxCRlCfwPM1eegxUsnYXHktkocpCIaf8gMDpkTIRoIcmvu4Ntw3abFU63n3Lg==
+X-Received: by 2002:a63:ed47:: with SMTP id m7mr30139582pgk.194.1630467401278;
+        Tue, 31 Aug 2021 20:36:41 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.45.42.119])
+        by smtp.googlemail.com with ESMTPSA id c68sm3550925pfc.150.2021.08.31.20.36.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 31 Aug 2021 20:36:40 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next v2 07/19] bridge: vlan: add global
+ mcast_snooping option
+To:     Nikolay Aleksandrov <razor@blackwall.org>, netdev@vger.kernel.org
+Cc:     roopa@nvidia.com, stephen@networkplumber.org,
+        Joachim Wiberg <troglobit@gmail.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>
+References: <20210828110805.463429-1-razor@blackwall.org>
+ <20210828110805.463429-8-razor@blackwall.org>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <52857ec7-48fc-b22c-de20-e751d51e612e@gmail.com>
+Date:   Tue, 31 Aug 2021 20:36:37 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZCBgUCR5ZQVlLVUtZV1
-        kWDxoPAgseWUFZKDYvK1lXWShZQUhPN1dZLVlBSVdZDwkaFQgSH1lBWUIdGU5WQ0MaSkkaSRgaHU
-        JLVRMBExYaEhckFA4PWVdZFhoPEhUdFFlBWU9LSFVKSktISkNVS1kG
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Kzo6OCo5Pj8BKUgjTQIeQxQu
-        FhIwCyJVSlVKTUhLT01NSExCS0tNVTMWGhIXVQwaFRESGhkSFRw7DRINFFUYFBZFWVdZEgtZQVlO
-        Q1VJSkhVQ0hVSk5DWVdZCAFZQUlKQ0s3Bg++
-X-HM-Tid: 0a7b9f5e8b96d99akuws74e483201d0
+In-Reply-To: <20210828110805.463429-8-razor@blackwall.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the following coccicheck warning:
-./net/mptcp/protocol.h:36:50-73: duplicated argument to & or |
+On 8/28/21 4:07 AM, Nikolay Aleksandrov wrote:
+> @@ -397,6 +400,12 @@ static int vlan_global_option_set(int argc, char **argv)
+>  			if (vid_end != -1)
+>  				addattr16(&req.n, sizeof(req),
+>  					  BRIDGE_VLANDB_GOPTS_RANGE, vid_end);
+> +		} else if (strcmp(*argv, "mcast_snooping") == 0) {
+> +			NEXT_ARG();
+> +			if (get_u8(&val8, *argv, 0))
+> +				invarg("invalid mcast_snooping", *argv);
+> +			addattr8(&req.n, 1024,
+> +				 BRIDGE_VLANDB_GOPTS_MCAST_SNOOPING, val8);
+>  		} else {
+>  			if (matches(*argv, "help") == 0)
+>  				NEXT_ARG();
 
-The OPTION_MPTCP_MPJ_SYNACK here is duplicate.
-Here should be OPTION_MPTCP_MPJ_ACK.
+How did you redo this patch set where 06 uses strcmp for the help line
+and yet patches 7-17 all have matches?
 
-Fixes: 74c7dfbee3e18 ("mptcp: consolidate in_opt sub-options fields in a bitmask")
-Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
----
-Changelog:
-v2:
-- Add a Fixes-tag.
-v3:
-- Make Fixes-tag to be a single line.
----
- net/mptcp/protocol.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index d7aba1c4dc48..64c9a30e0871 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -34,7 +34,7 @@
- #define OPTIONS_MPTCP_MPC	(OPTION_MPTCP_MPC_SYN | OPTION_MPTCP_MPC_SYNACK | \
- 				 OPTION_MPTCP_MPC_ACK)
- #define OPTIONS_MPTCP_MPJ	(OPTION_MPTCP_MPJ_SYN | OPTION_MPTCP_MPJ_SYNACK | \
--				 OPTION_MPTCP_MPJ_SYNACK)
-+				 OPTION_MPTCP_MPJ_ACK)
- 
- /* MPTCP option subtypes */
- #define MPTCPOPT_MP_CAPABLE	0
--- 
-2.25.1
-
+Fixed those up given where we are with 5.14 cycle and applied to
+iproute2-next.
