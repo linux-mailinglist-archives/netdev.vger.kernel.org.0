@@ -2,79 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CABC3FE103
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 19:15:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40EBC3FE106
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 19:16:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344594AbhIARQm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 13:16:42 -0400
-Received: from mga17.intel.com ([192.55.52.151]:59129 "EHLO mga17.intel.com"
+        id S1344667AbhIARRN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 13:17:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56888 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232491AbhIARQl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Sep 2021 13:16:41 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10094"; a="199048271"
-X-IronPort-AV: E=Sophos;i="5.84,370,1620716400"; 
-   d="scan'208";a="199048271"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2021 10:15:43 -0700
-X-IronPort-AV: E=Sophos;i="5.84,370,1620716400"; 
-   d="scan'208";a="645852936"
-Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.212.226.118])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2021 10:15:42 -0700
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Matthieu Baerts <matthieu.baerts@tessares.net>,
-        davem@davemloft.net, kuba@kernel.org, mptcp@lists.linux.dev,
-        pabeni@redhat.com,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net v3 2/2] selftests: mptcp: clean tmp files in simult_flows
-Date:   Wed,  1 Sep 2021 10:15:37 -0700
-Message-Id: <20210901171537.121255-3-mathew.j.martineau@linux.intel.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20210901171537.121255-1-mathew.j.martineau@linux.intel.com>
-References: <20210901171537.121255-1-mathew.j.martineau@linux.intel.com>
+        id S232491AbhIARRL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 Sep 2021 13:17:11 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 91C66600CD;
+        Wed,  1 Sep 2021 17:16:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1630516574;
+        bh=/IkrxD0NyHwEqcn1/UCISCByn4ljPsspczHZ7KyNNsg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Oc4itryjPY/CdbnT4I71YjX59TNZpw2ugLEa6YrarpShfofb0K/m8AWcXtTOp5zft
+         oJw0BhsUDl3xzmklW4UpslthQx15swe3hqOxKu3KCqKmKnmEOTZld99GerfSf6Dhe7
+         AQtyAnNIoivqLGX1FIy8PklAw+ud8wp4/YwcMkbfDBc+WdET2JhH/w/Evg37yyTh0C
+         1/qqafyWZ/ahTDTre37oAm+okUFIRFmQgV35klpPTh5swTXkB7J351k0cEDPKfNt57
+         rvmFXCxHvLPPbSXmEtoCMiYij2sn2WYfj9/g5hUs+10JwG3oppj2CljSpy+zU483/P
+         RR2GEx74Yzsdw==
+Date:   Wed, 1 Sep 2021 10:16:13 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Matthieu Baerts <matthieu.baerts@tessares.net>
+Cc:     "David S. Miller" <davem@davemloft.net>, mptcp@lists.linux.dev,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net v2 0/2] mptcp: Prevent tcp_push() crash and selftest
+ temp file buildup
+Message-ID: <20210901101613.50a11581@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <b9fa6f74-e0b6-0f61-fc5a-954137db1314@tessares.net>
+References: <20210831171926.80920-1-mathew.j.martineau@linux.intel.com>
+        <b9fa6f74-e0b6-0f61-fc5a-954137db1314@tessares.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Matthieu Baerts <matthieu.baerts@tessares.net>
+On Wed, 1 Sep 2021 18:09:52 +0200 Matthieu Baerts wrote:
+> Hi David, Jakub,
+> 
+> On 31/08/2021 19:19, Mat Martineau wrote:
+> > These are two fixes for the net tree, addressing separate issues.
+> > 
+> > Patch 1 addresses a divide-by-zero crash seen in syzkaller and also
+> > reported by a user on the netdev list. This changes MPTCP code so
+> > tcp_push() cannot be called with an invalid (0) mss_now value.
+> > 
+> > Patch 2 fixes a selftest temp file cleanup issue that consumes excessive
+> > disk space when running repeated tests.
+> > 
+> > 
+> > v2: Make suggested changes to lockdep check and indentation in patch 1  
+> 
+> We recently noticed this series has been marked as "Not Applicable" on
+> Patchwork.
+> 
+> It looks like we can apply these patches:
+> 
+>   $ git checkout netdev-net/master # 780aa1209f88
+>   $ git-pw series apply 539963
+>   Applying: mptcp: fix possible divide by zero
+>   Using index info to reconstruct a base tree...
+>   M       net/mptcp/protocol.c
+> 
+>   Falling back to patching base and 3-way merge...
+>   Auto-merging net/mptcp/protocol.c
+> 
+>   Applying: selftests: mptcp: clean tmp files in simult_flows
+> 
+> Git auto-resolves conflicts. Is it why it is considered as "Not
+> Applicable" or did we miss something else?
 
-'$cin' and '$sin' variables are local to a function: they are then not
-available from the cleanup trap.
+We don't enable 3-way merges for patches applied from the list, usually.
 
-Instead, we need to use '$large' and '$small' that are not local and
-defined just before setting the trap.
+> Do we just need to resend these patches after a rebase?
 
-Without this patch, running this script in a loop might cause a:
-
-  write: No space left on device
-
-issue.
-
-Fixes: 1a418cb8e888 ("mptcp: simult flow self-tests")
-Acked-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
----
- tools/testing/selftests/net/mptcp/simult_flows.sh | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/tools/testing/selftests/net/mptcp/simult_flows.sh b/tools/testing/selftests/net/mptcp/simult_flows.sh
-index fd63ebfe9a2b..910d8126af8f 100755
---- a/tools/testing/selftests/net/mptcp/simult_flows.sh
-+++ b/tools/testing/selftests/net/mptcp/simult_flows.sh
-@@ -22,8 +22,8 @@ usage() {
- 
- cleanup()
- {
--	rm -f "$cin" "$cout"
--	rm -f "$sin" "$sout"
-+	rm -f "$cout" "$sout"
-+	rm -f "$large" "$small"
- 	rm -f "$capout"
- 
- 	local netns
--- 
-2.33.0
-
+Yes please.
