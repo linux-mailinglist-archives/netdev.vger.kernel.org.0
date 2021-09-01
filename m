@@ -2,141 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FB0E3FD3E0
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 08:38:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A1B83FD3D5
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 08:31:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242255AbhIAGjY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 02:39:24 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:44667 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231501AbhIAGjX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Sep 2021 02:39:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1630478305;
-        bh=+P+jRAAoHJInhbNG/oriIYBjdXcWSMHExv29E1M8JbM=;
-        h=Date:From:To:Cc:Subject:From;
-        b=so2jUWO366M+SYsYAI/+T49i8RtNG/CQD6qHtUcqP+lLn/kfZ8omEQRL2xNzLvY5n
-         pLVCd4djNA4Jh1rOLg7i2F/pj+Lkg+10QswjxWaB4kZjohbHIlSQ+TOBmwXzPLsTFD
-         XWPwvbeddQ8DPK2IMXA/lxVuuxvG1fDzAhUj5fC8hkqT/D4C6sba5drbTi7L8JkDUb
-         F8zkz8ZzKU6wdIQCZkzAwEoNBCwd8DjWuCACCqWCJJ+zhqEJOtpp6mtHgBZ4CI4SqI
-         nB/YhWhj4AS7t5oghlknaOjZ/lVTKU3ZFgfEptO893FvMaF5TnthAChIlYFFd1WuJl
-         NQwkZZJZPtiTg==
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4GzvX06Bwxz9sXk;
-        Wed,  1 Sep 2021 16:38:24 +1000 (AEST)
-Date:   Wed, 1 Sep 2021 16:38:22 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Konrad Rzeszutek Wilk <konrad@kernel.org>,
-        Maurizio Lombardi <mlombard@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build failure after merge of the net-next tree
-Message-ID: <20210901163822.65beb208@canb.auug.org.au>
+        id S242120AbhIAGcX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 02:32:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58942 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242137AbhIAGcW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 02:32:22 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00498C061764
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 23:31:25 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id mj9-20020a17090b368900b001965618d019so3846417pjb.4
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 23:31:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Bpafk1X41xGK7MXDbJ4VMxRCE4Mzuv5uYTag/1eQibs=;
+        b=E4pSGWJ/pCQWOPy/QHPIVscmiPk7GDQnP8Ckbq4SEJS3kYCdoDp/GzKpzTwPQP/lse
+         LrpKqoqSyM2OpkcoSxmvISKxyhKrbt9a0eIF+jrjgtqFSgKnYySy6qjpxb64ufkvhSXo
+         WLaCLbuQC0EQQq/Lb84kToLsnPRw+32XzUuuhJgzo+x9ho7MBAfFY8shcFqa0S53cuF/
+         7+6lNDZ03P0VuQh4BNtQKq/sLsPhUkzytxcudzH//w8Lx6xbleCcHtS+5g6SfJcikmhF
+         2rlGg5vKWfepZK39qtS+oVNaDr/HlYYwnXrXY9s2s4LTx1zBrI+vX5vmB6rFhOa2XgP+
+         GbfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Bpafk1X41xGK7MXDbJ4VMxRCE4Mzuv5uYTag/1eQibs=;
+        b=HFfEcm45sHKCV4faYT8vCH0/D+v1d3MlegrVtHl2f6lxN2PFM/MvA6YXMZ74kIH01g
+         +tg/h8MwG4xTLxiVhb+ci67OZezGtuPBhgdsTYtp9Hq6JTTmooTphZUUa0PBFLkn6uZT
+         sv3BCmX8P3nmph+xfrwA67VDdI3PgDQFXrsl+MOXOvW9Y/rLwnGZ30h6Ko9qumyazzL9
+         THcDjhmPiwMvi0rReQRBprs5cQm/GVcm2w34InHjTfbydDVvKxlOMdkTMeT1wkQ19oAg
+         NreKWB7nYqpoweQWbXpTB2aloAl9jzyYj6X1AaWQ7cKz1xzX9+BAcwl2s/82AszDQjcM
+         AZNA==
+X-Gm-Message-State: AOAM530Ripxiv+I7Bq7r2I+JdRQHHeeUp2PRphfBzEqDnYW7ohg5n8d1
+        qbbAid5b6KBc6uw0BsHQnKun6yzY8GKyI+CO3if5Bw==
+X-Google-Smtp-Source: ABdhPJxprnOJMY4UIu5n1XDKPKNGr9RV+zGkMFTEI22fw+hJGHUzBjxZ7RvaQyjWpEoorsORfRskSTs3bbt3V9WssXA=
+X-Received: by 2002:a17:90b:238b:: with SMTP id mr11mr10076478pjb.18.1630477885388;
+ Tue, 31 Aug 2021 23:31:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/41EVaJjowJ1ijmM/dv3QE1G";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+References: <20210901030542.17257-1-benl@squareup.com>
+In-Reply-To: <20210901030542.17257-1-benl@squareup.com>
+From:   Loic Poulain <loic.poulain@linaro.org>
+Date:   Wed, 1 Sep 2021 08:41:48 +0200
+Message-ID: <CAMZdPi8QdLwrWM5ghDNYTT2nxNJm=NgNkZGxYvbRGsYQFHGxXA@mail.gmail.com>
+Subject: Re: [PATCH] wcn36xx: handle connection loss indication
+To:     Benjamin Li <benl@squareup.com>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        "Bryan O'Donoghue" <bryan.odonoghue@linaro.org>,
+        stable@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, wcn36xx@lists.infradead.org,
+        linux-wireless@vger.kernel.org,
+        Network Development <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/41EVaJjowJ1ijmM/dv3QE1G
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Hi Benjamin,
 
-Hi all,
+On Wed, 1 Sept 2021 at 05:05, Benjamin Li <benl@squareup.com> wrote:
+>
+> Firmware sends delete_sta_context_ind when it detects the AP has gone
+> away in STA mode. Right now the handler for that indication only handles
+> AP mode; fix it to also handle STA mode.
+>
+> Cc: stable@vger.kernel.org
+> Fixes: 8def9ec46a5f ("wcn36xx: Enable firmware link monitoring")
 
-After merging the net-next tree, today's linux-next build (X86_64
-allnoconfig) failed like this:
+I think it's good to have but does it really fix the link monitoring issue?
+Is the connection loss detected in this scenario:
+- Connect to AP
+- Force active mode (iw wlan0 set power_save off)
+- Wait for no data activity
+- HW shutdown the AP (AP leave)
 
-arch/x86/kernel/setup.c: In function 'setup_arch':
-arch/x86/kernel/setup.c:916:6: error: implicit declaration of function 'acp=
-i_mps_check' [-Werror=3Dimplicit-function-declaration]
-  916 |  if (acpi_mps_check()) {
-      |      ^~~~~~~~~~~~~~
-arch/x86/kernel/setup.c:1110:2: error: implicit declaration of function 'ac=
-pi_table_upgrade' [-Werror=3Dimplicit-function-declaration]
- 1110 |  acpi_table_upgrade();
-      |  ^~~~~~~~~~~~~~~~~~
-arch/x86/kernel/setup.c:1112:2: error: implicit declaration of function 'ac=
-pi_boot_table_init' [-Werror=3Dimplicit-function-declaration]
- 1112 |  acpi_boot_table_init();
-      |  ^~~~~~~~~~~~~~~~~~~~
-arch/x86/kernel/setup.c:1120:2: error: implicit declaration of function 'ea=
-rly_acpi_boot_init'; did you mean 'early_cpu_init'? [-Werror=3Dimplicit-fun=
-ction-declaration]
- 1120 |  early_acpi_boot_init();
-      |  ^~~~~~~~~~~~~~~~~~~~
-      |  early_cpu_init
-arch/x86/kernel/setup.c:1162:2: error: implicit declaration of function 'ac=
-pi_boot_init' [-Werror=3Dimplicit-function-declaration]
- 1162 |  acpi_boot_init();
-      |  ^~~~~~~~~~~~~~
+Do you get any indication?
 
-Caused by commit
+In this scenario, DB410C (wcn3620) does not report anything.
 
-  342f43af70db ("iscsi_ibft: fix crash due to KASLR physical memory remappi=
-ng")
-
-Unfortunately that commit has now been merged into Linus' tree as well.
-
-I have added the following fix patch for today.
-
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Wed, 1 Sep 2021 16:31:32 +1000
-Subject: [PATCH] x86: include acpi.h when using acpi functions
-
-The removal of the include of linux/acpi.h from include/linux/iscsi_ibft.h
-by commit
-
-  342f43af70db ("iscsi_ibft: fix crash due to KASLR physical memory remappi=
-ng")
-
-exposed this build failure.
-
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
----
- arch/x86/kernel/setup.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 63b20536c8d2..da0a4b64880f 100644
---- a/arch/x86/kernel/setup.c
-+++ b/arch/x86/kernel/setup.c
-@@ -13,6 +13,7 @@
- #include <linux/init_ohci1394_dma.h>
- #include <linux/initrd.h>
- #include <linux/iscsi_ibft.h>
-+#include <linux/acpi.h>
- #include <linux/memblock.h>
- #include <linux/panic_notifier.h>
- #include <linux/pci.h>
---=20
-2.32.0
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/41EVaJjowJ1ijmM/dv3QE1G
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmEvH94ACgkQAVBC80lX
-0GxOQwf/T8m8+Tqc33+IK3OjriQHCNRR+al8xPZWweHJfTouB/OJyV21zPck4uxn
-D4FaDhDFVIgGXAaf22euc4zH/IbEetBszV8WoXH04hexQMxiTV/oiE6ZAEPMZiyw
-baiwKYD03KN5XcD+rFG2rOMRbQiAi28sXLEUQiGClrqk9s+owixf6Qup01+EDofv
-19Qt6JCOAprU6SBOHpDOHT6L022dWytGtXd8je195cL56JZVephSlZDXmUBI5zrd
-hkC4HtW7OT7AwKlWgAQmj7Kx8zm2b9DMd+eNUMGJ8JJ4o4xPg2nRc9YY3z3JhFnT
-1j7XgmsPaawcMu9lbieWxKmX8dVqTw==
-=jFds
------END PGP SIGNATURE-----
-
---Sig_/41EVaJjowJ1ijmM/dv3QE1G--
+Regards,
+Loic
