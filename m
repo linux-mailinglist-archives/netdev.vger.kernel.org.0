@@ -2,389 +2,443 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DBDBC3FD745
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 11:56:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BA113FD768
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 12:12:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230235AbhIAJ45 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 05:56:57 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:53466 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229662AbhIAJ44 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 05:56:56 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1819Ka4F015561;
-        Wed, 1 Sep 2021 02:55:56 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=WG8iau4MeAgXUeFzLGLTgaMraP7LyJZJPRbd0CbG/K8=;
- b=Oowlyz8B4VxnFb+mLppfIowWnfwzRpWrrOqleqCTX+YqaGvjYIeNJK2b3MCmnj9cvfA4
- DgIrD7c6Qo5jh7+XxRy1fTi52wFj1LlvBl3Z5h5hw6DXBzD6J+7pNVd1G0O13JVxz1Ui
- rJSfNL5YoGuXjrFsTq8LvWcbFOPt6ZjdVrgedbwf3LJmjpUUgdkLDViCXKWm/MQhh5j1
- xuYxydI1+VVpuIaHOZgobK9URJOCp7EQzL7EtICKonkVhcwlCUuQdr4yEXDEfWoFez6q
- fIOFZA/gnV5/h3rSCSoQAFHTU5qdu6HyGFYJpHv8/oq3BacCbLD8WPRgXPKNsaQNbYY7 rQ== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com with ESMTP id 3at0ax9js7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 01 Sep 2021 02:55:56 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 1 Sep
- 2021 02:55:53 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Wed, 1 Sep 2021 02:55:54 -0700
-Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
-        by maili.marvell.com (Postfix) with ESMTP id 9889B3F7088;
-        Wed,  1 Sep 2021 02:55:51 -0700 (PDT)
-From:   Geetha sowjanya <gakula@marvell.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <kuba@kernel.org>, <davem@davemloft.net>, <sgoutham@marvell.com>,
-        <gakula@marvell.com>, <sbhatta@marvell.com>, <hkelam@marvell.com>
-Subject: [net-next PATCH] octeontx2-pf: cn10K: Reserve LMTST lines per core
-Date:   Wed, 1 Sep 2021 15:25:50 +0530
-Message-ID: <20210901095550.10590-1-gakula@marvell.com>
-X-Mailer: git-send-email 2.17.1
+        id S233186AbhIAKNd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 06:13:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54076 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232258AbhIAKNb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 06:13:31 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83508C061575;
+        Wed,  1 Sep 2021 03:12:34 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id r13so1637849pff.7;
+        Wed, 01 Sep 2021 03:12:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Blh2sCCWmLbhLSQpe3+Jm96zIa4flfmEN7PrfkdI5v4=;
+        b=Q2EgLASQd2uJSXQumfXWCrXyPH8dvnuzjWnOS9Qr6E1Xyw+KQ97MQq8SPrG6ZpgJag
+         20Su6W1ASZiTcFz4oljVwA/e4CEupIG57pEkVRnatI/h56QYeoYoMREjcxmPhBa5kD7p
+         5FKREXC+WpxuV/EnIbbIht5dyYczPONSVm15wli3yBdIP1Xw8iFnW2hMkNsTXF40ZDw0
+         9wJdUx/6sBXFlpKYomE1PCBSqDfL5/YW9fjOEmJbScYVgIyPr6FlP5nZTaVworzYtBKH
+         MzyZeot5i2rDezsLXba15f5MQOGltTDJ4XR/TxCa/7DHhkK/S357aSa1MiO88Z5tIsGZ
+         IAsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Blh2sCCWmLbhLSQpe3+Jm96zIa4flfmEN7PrfkdI5v4=;
+        b=EhBECsI3JJaAP6Jcd7ogEfCYa0bLrnch4yP/+pP9daF7OWlTz635/TmJjDhNTQtVUI
+         9cMq/+U1DtYcTcdQKSyIyHmxG/pgZbIu3t4vlGQzPaGqBsHv68+uSTkPOFcK0Ioe4wsT
+         bx7XPLMyHqUq6GE5TYQi2WhKmK0FPoKQS+ibJyFZGe6/0X92t1850lblEAqlcyLveaC+
+         3OFMg76SF51zxbo7J6sSO+m1hT5RdAkpPFICq4YKUYg89Wlq/2w1iTZkezaHoqEBh0nC
+         E7bI+qBRPCs24Oc3dSv/PCSqF/JMioawj6zD8Xp+x/eXEql8WLGnJWPG/dfOWuT5f1rH
+         EB+A==
+X-Gm-Message-State: AOAM531Mz5RwDFsMzAnp+uWXYA9z0JRbcrR2a17KO7rT/E3kUF7qRC45
+        NYI4AI97xz3gEtnNYdDeQt0V9YQalvAw0qKcgQQ=
+X-Google-Smtp-Source: ABdhPJzAJUV8QGS+RJb0NCebYyBMWY9FvzSXiEZ7iJivAxx1WOzwmIyZwRN+3iQp84ep7MhjOqMHqA==
+X-Received: by 2002:a62:2fc1:0:b0:3f5:176f:67c8 with SMTP id v184-20020a622fc1000000b003f5176f67c8mr25775375pfv.17.1630491153965;
+        Wed, 01 Sep 2021 03:12:33 -0700 (PDT)
+Received: from localhost.localdomain ([162.219.34.246])
+        by smtp.gmail.com with ESMTPSA id j6sm19966718pfn.107.2021.09.01.03.12.29
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 01 Sep 2021 03:12:33 -0700 (PDT)
+From:   kerneljasonxing@gmail.com
+To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        kpsingh@kernel.org
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        kerneljasonxing@gmail.com, Jason Xing <xingwanli@kuaishou.com>,
+        kernel test robot <lkp@intel.com>,
+        Shujin Li <lishujin@kuaishou.com>
+Subject: [PATCH v7] ixgbe: let the xdpdrv work with more than 64 cpus
+Date:   Wed,  1 Sep 2021 18:12:06 +0800
+Message-Id: <20210901101206.50274-1-kerneljasonxing@gmail.com>
+X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-GUID: kelO55a73pnwk93Dr2SYkT8ewHikBmrB
-X-Proofpoint-ORIG-GUID: kelO55a73pnwk93Dr2SYkT8ewHikBmrB
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
- definitions=2021-09-01_03,2021-08-31_01,2020-04-07_01
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch reserves the LMTST lines per cpu instead
-of separate LMTST lines for NPA(buffer free) and NIX(sqe flush).
-LMTST line of the core on which SQ or RQ is processed is used
-for LMTST operation.
+From: Jason Xing <xingwanli@kuaishou.com>
 
-This patch also replace STEOR with STEORL release semantics and
-updates driver name in ethtool file.
+Originally, ixgbe driver doesn't allow the mounting of xdpdrv if the
+server is equipped with more than 64 cpus online. So it turns out that
+the loading of xdpdrv causes the "NOMEM" failure.
 
-Signed-off-by: Geetha sowjanya <gakula@marvell.com>
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+Actually, we can adjust the algorithm and then make it work through
+mapping the current cpu to some xdp ring with the protect of @tx_lock.
+
+Here're some numbers before/after applying this patch with xdp-example
+loaded on the eth0X:
+
+As client (tx path):
+                     Before    After
+TCP_STREAM send-64   734.14    714.20
+TCP_STREAM send-128  1401.91   1395.05
+TCP_STREAM send-512  5311.67   5292.84
+TCP_STREAM send-1k   9277.40   9356.22 (not stable)
+TCP_RR     send-1    22559.75  21844.22
+TCP_RR     send-128  23169.54  22725.13
+TCP_RR     send-512  21670.91  21412.56
+
+As server (rx path):
+                     Before    After
+TCP_STREAM send-64   1416.49   1383.12
+TCP_STREAM send-128  3141.49   3055.50
+TCP_STREAM send-512  9488.73   9487.44
+TCP_STREAM send-1k   9491.17   9356.22 (not stable)
+TCP_RR     send-1    23617.74  23601.60
+...
+
+Notice: the TCP_RR mode is unstable as the official document explaines.
+
+I tested many times with different parameters combined through netperf.
+Though the result is not that accurate, I cannot see much influence on
+this patch. The static key is places on the hot path, but it actually
+shouldn't cause a huge regression theoretically.
+
+Fixes: 33fdc82f08 ("ixgbe: add support for XDP_TX action")
+Reported-by: kernel test robot <lkp@intel.com>
+Co-developed-by: Shujin Li <lishujin@kuaishou.com>
+Signed-off-by: Shujin Li <lishujin@kuaishou.com>
+Signed-off-by: Jason Xing <xingwanli@kuaishou.com>
 ---
- .../ethernet/marvell/octeontx2/nic/cn10k.c    | 42 +++++++++----------
- .../marvell/octeontx2/nic/otx2_common.c       |  5 ---
- .../marvell/octeontx2/nic/otx2_common.h       | 28 +++++++------
- .../marvell/octeontx2/nic/otx2_ethtool.c      |  4 +-
- .../ethernet/marvell/octeontx2/nic/otx2_pf.c  | 12 ++----
- .../marvell/octeontx2/nic/otx2_txrx.h         |  2 -
- include/linux/soc/marvell/octeontx2/asm.h     | 11 +++--
- 7 files changed, 49 insertions(+), 55 deletions(-)
+v7:
+- Factorized to a single spin_lock/unlock in ixgbe_xdp_xmit() (Eric)
+- Handle other parts of lock/unlock in ixgbe_run_xdp()/_zc() (Jason)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c b/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c
-index 3cc76f14d2fd..95f21dfdba48 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c
-@@ -27,7 +27,8 @@ int cn10k_lmtst_init(struct otx2_nic *pfvf)
- {
+v6:
+- Move the declaration of static-key to the proper position (Test Robot)
+- Add reported-by tag (Jason)
+- Add more detailed performance test results (Jason)
+
+v5:
+- Change back to nr_cpu_ids (Eric)
+
+v4:
+- Update the wrong commit messages. (Jason)
+
+v3:
+- Change nr_cpu_ids to num_online_cpus() (Maciej)
+- Rename MAX_XDP_QUEUES to IXGBE_MAX_XDP_QS (Maciej)
+- Rename ixgbe_determine_xdp_cpu() to ixgbe_determine_xdp_q_idx() (Maciej)
+- Wrap ixgbe_xdp_ring_update_tail() with lock into one function (Maciej)
+
+v2:
+- Adjust cpu id in ixgbe_xdp_xmit(). (Jesper)
+- Add a fallback path. (Maciej)
+- Adjust other parts related to xdp ring.
+---
+ drivers/net/ethernet/intel/ixgbe/ixgbe.h           | 23 +++++++++-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c       |  9 +++-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c      | 50 ++++++++++++++++------
+ .../net/ethernet/intel/ixgbe/ixgbe_txrx_common.h   |  3 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c       | 16 ++++---
+ 5 files changed, 77 insertions(+), 24 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe.h b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
+index a604552..4a69823 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe.h
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
+@@ -351,6 +351,7 @@ struct ixgbe_ring {
+ 	};
+ 	u16 rx_offset;
+ 	struct xdp_rxq_info xdp_rxq;
++	spinlock_t tx_lock;	/* used in XDP mode */
+ 	struct xsk_buff_pool *xsk_pool;
+ 	u16 ring_idx;		/* {rx,tx,xdp}_ring back reference idx */
+ 	u16 rx_buf_len;
+@@ -375,11 +376,13 @@ enum ixgbe_ring_f_enum {
+ #define IXGBE_MAX_FCOE_INDICES		8
+ #define MAX_RX_QUEUES			(IXGBE_MAX_FDIR_INDICES + 1)
+ #define MAX_TX_QUEUES			(IXGBE_MAX_FDIR_INDICES + 1)
+-#define MAX_XDP_QUEUES			(IXGBE_MAX_FDIR_INDICES + 1)
++#define IXGBE_MAX_XDP_QS		(IXGBE_MAX_FDIR_INDICES + 1)
+ #define IXGBE_MAX_L2A_QUEUES		4
+ #define IXGBE_BAD_L2A_QUEUE		3
+ #define IXGBE_MAX_MACVLANS		63
  
- 	struct lmtst_tbl_setup_req *req;
--	int qcount, err;
-+	struct otx2_lmt_info *lmt_info;
-+	int err, cpu;
- 
- 	if (!test_bit(CN10K_LMTST, &pfvf->hw.cap_flag)) {
- 		pfvf->hw_ops = &otx2_hw_ops;
-@@ -35,15 +36,9 @@ int cn10k_lmtst_init(struct otx2_nic *pfvf)
- 	}
- 
- 	pfvf->hw_ops = &cn10k_hw_ops;
--	qcount = pfvf->hw.max_queues;
--	/* LMTST lines allocation
--	 * qcount = num_online_cpus();
--	 * NPA = TX + RX + XDP.
--	 * NIX = TX * 32 (For Burst SQE flush).
--	 */
--	pfvf->tot_lmt_lines = (qcount * 3) + (qcount * 32);
--	pfvf->npa_lmt_lines = qcount * 3;
--	pfvf->nix_lmt_size =  LMT_BURST_SIZE * LMT_LINE_SIZE;
-+	/* Total LMTLINES = num_online_cpus() * 32 (For Burst flush).*/
-+	pfvf->tot_lmt_lines = (num_online_cpus() * LMT_BURST_SIZE);
-+	pfvf->hw.lmt_info = alloc_percpu(struct otx2_lmt_info);
- 
- 	mutex_lock(&pfvf->mbox.lock);
- 	req = otx2_mbox_alloc_msg_lmtst_tbl_setup(&pfvf->mbox);
-@@ -66,6 +61,13 @@ int cn10k_lmtst_init(struct otx2_nic *pfvf)
- 	err = otx2_sync_mbox_msg(&pfvf->mbox);
- 	mutex_unlock(&pfvf->mbox.lock);
- 
-+	for_each_possible_cpu(cpu) {
-+		lmt_info = per_cpu_ptr(pfvf->hw.lmt_info, cpu);
-+		lmt_info->lmt_addr = ((u64)pfvf->hw.lmt_base +
-+				      (cpu * LMT_BURST_SIZE * LMT_LINE_SIZE));
-+		lmt_info->lmt_id = cpu * LMT_BURST_SIZE;
-+	}
++DECLARE_STATIC_KEY_FALSE(ixgbe_xdp_locking_key);
 +
- 	return 0;
- }
- EXPORT_SYMBOL(cn10k_lmtst_init);
-@@ -74,13 +76,6 @@ int cn10k_sq_aq_init(void *dev, u16 qidx, u16 sqb_aura)
- {
- 	struct nix_cn10k_aq_enq_req *aq;
- 	struct otx2_nic *pfvf = dev;
--	struct otx2_snd_queue *sq;
--
--	sq = &pfvf->qset.sq[qidx];
--	sq->lmt_addr = (u64 *)((u64)pfvf->hw.nix_lmt_base +
--			       (qidx * pfvf->nix_lmt_size));
--
--	sq->lmt_id = pfvf->npa_lmt_lines + (qidx * LMT_BURST_SIZE);
+ struct ixgbe_ring_feature {
+ 	u16 limit;	/* upper limit on feature indices */
+ 	u16 indices;	/* current value of indices */
+@@ -629,7 +632,7 @@ struct ixgbe_adapter {
  
- 	/* Get memory to put this msg */
- 	aq = otx2_mbox_alloc_msg_nix_cn10k_aq_enq(&pfvf->mbox);
-@@ -125,8 +120,7 @@ void cn10k_refill_pool_ptrs(void *dev, struct otx2_cq_queue *cq)
- 		if (otx2_alloc_buffer(pfvf, cq, &bufptr)) {
- 			if (num_ptrs--)
- 				__cn10k_aura_freeptr(pfvf, cq->cq_idx, ptrs,
--						     num_ptrs,
--						     cq->rbpool->lmt_addr);
-+						     num_ptrs);
- 			break;
- 		}
- 		cq->pool_ptrs--;
-@@ -134,8 +128,7 @@ void cn10k_refill_pool_ptrs(void *dev, struct otx2_cq_queue *cq)
- 		num_ptrs++;
- 		if (num_ptrs == NPA_MAX_BURST || cq->pool_ptrs == 0) {
- 			__cn10k_aura_freeptr(pfvf, cq->cq_idx, ptrs,
--					     num_ptrs,
--					     cq->rbpool->lmt_addr);
-+					     num_ptrs);
- 			num_ptrs = 1;
- 		}
- 	}
-@@ -143,20 +136,23 @@ void cn10k_refill_pool_ptrs(void *dev, struct otx2_cq_queue *cq)
+ 	/* XDP */
+ 	int num_xdp_queues;
+-	struct ixgbe_ring *xdp_ring[MAX_XDP_QUEUES];
++	struct ixgbe_ring *xdp_ring[IXGBE_MAX_XDP_QS];
+ 	unsigned long *af_xdp_zc_qps; /* tracks AF_XDP ZC enabled rings */
  
- void cn10k_sqe_flush(void *dev, struct otx2_snd_queue *sq, int size, int qidx)
- {
-+	struct otx2_lmt_info *lmt_info;
-+	struct otx2_nic *pfvf = dev;
- 	u64 val = 0, tar_addr = 0;
- 
-+	lmt_info = per_cpu_ptr(pfvf->hw.lmt_info, smp_processor_id());
- 	/* FIXME: val[0:10] LMT_ID.
- 	 * [12:15] no of LMTST - 1 in the burst.
- 	 * [19:63] data size of each LMTST in the burst except first.
- 	 */
--	val = (sq->lmt_id & 0x7FF);
-+	val = (lmt_info->lmt_id & 0x7FF);
- 	/* Target address for LMTST flush tells HW how many 128bit
- 	 * words are present.
- 	 * tar_addr[6:4] size of first LMTST - 1 in units of 128b.
- 	 */
- 	tar_addr |= sq->io_addr | (((size / 16) - 1) & 0x7) << 4;
- 	dma_wmb();
--	memcpy(sq->lmt_addr, sq->sqe_base, size);
-+	memcpy((u64 *)lmt_info->lmt_addr, sq->sqe_base, size);
- 	cn10k_lmt_flush(val, tar_addr);
- 
- 	sq->head++;
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-index ce25c2744435..78df173e6df2 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-@@ -1230,11 +1230,6 @@ static int otx2_pool_init(struct otx2_nic *pfvf, u16 pool_id,
- 
- 	pool->rbsize = buf_size;
- 
--	/* Set LMTST addr for NPA batch free */
--	if (test_bit(CN10K_LMTST, &pfvf->hw.cap_flag))
--		pool->lmt_addr = (__force u64 *)((u64)pfvf->hw.npa_lmt_base +
--						 (pool_id * LMT_LINE_SIZE));
--
- 	/* Initialize this pool's context via AF */
- 	aq = otx2_mbox_alloc_msg_npa_aq_enq(&pfvf->mbox);
- 	if (!aq) {
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-index 48227cec06ee..a51ecd771d07 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-@@ -53,6 +53,10 @@ enum arua_mapped_qtypes {
- /* Send skid of 2000 packets required for CQ size of 4K CQEs. */
- #define SEND_CQ_SKID	2000
- 
-+struct otx2_lmt_info {
-+	u64 lmt_addr;
-+	u16 lmt_id;
-+};
- /* RSS configuration */
- struct otx2_rss_ctx {
- 	u8  ind_tbl[MAX_RSS_INDIR_TBL_SIZE];
-@@ -224,8 +228,7 @@ struct otx2_hw {
- #define LMT_LINE_SIZE		128
- #define LMT_BURST_SIZE		32 /* 32 LMTST lines for burst SQE flush */
- 	u64			*lmt_base;
--	u64			*npa_lmt_base;
--	u64			*nix_lmt_base;
-+	struct otx2_lmt_info	__percpu *lmt_info;
+ 	/* TX */
+@@ -772,6 +775,22 @@ struct ixgbe_adapter {
+ #endif /* CONFIG_IXGBE_IPSEC */
  };
  
- enum vfperm {
-@@ -407,17 +410,18 @@ static inline bool is_96xx_B0(struct pci_dev *pdev)
-  */
- #define PCI_REVISION_ID_96XX		0x00
- #define PCI_REVISION_ID_95XX		0x10
--#define PCI_REVISION_ID_LOKI		0x20
-+#define PCI_REVISION_ID_95XXN		0x20
- #define PCI_REVISION_ID_98XX		0x30
- #define PCI_REVISION_ID_95XXMM		0x40
-+#define PCI_REVISION_ID_95XXO		0xE0
- 
- static inline bool is_dev_otx2(struct pci_dev *pdev)
++static inline int ixgbe_determine_xdp_q_idx(int cpu)
++{
++	if (static_key_enabled(&ixgbe_xdp_locking_key))
++		return cpu % IXGBE_MAX_XDP_QS;
++	else
++		return cpu;
++}
++
++static inline
++struct ixgbe_ring *ixgbe_determine_xdp_ring(struct ixgbe_adapter *adapter)
++{
++	int index = ixgbe_determine_xdp_q_idx(smp_processor_id());
++
++	return adapter->xdp_ring[index];
++}
++
+ static inline u8 ixgbe_max_rss_indices(struct ixgbe_adapter *adapter)
  {
- 	u8 midr = pdev->revision & 0xF0;
+ 	switch (adapter->hw.mac.type) {
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
+index 0218f6c..86b1116 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
+@@ -299,7 +299,10 @@ static void ixgbe_cache_ring_register(struct ixgbe_adapter *adapter)
  
- 	return (midr == PCI_REVISION_ID_96XX || midr == PCI_REVISION_ID_95XX ||
--		midr == PCI_REVISION_ID_LOKI || midr == PCI_REVISION_ID_98XX ||
--		midr == PCI_REVISION_ID_95XXMM);
-+		midr == PCI_REVISION_ID_95XXN || midr == PCI_REVISION_ID_98XX ||
-+		midr == PCI_REVISION_ID_95XXMM || midr == PCI_REVISION_ID_95XXO);
+ static int ixgbe_xdp_queues(struct ixgbe_adapter *adapter)
+ {
+-	return adapter->xdp_prog ? nr_cpu_ids : 0;
++	int queues;
++
++	queues = min_t(int, IXGBE_MAX_XDP_QS, nr_cpu_ids);
++	return adapter->xdp_prog ? queues : 0;
  }
  
- static inline void otx2_setup_dev_hw_settings(struct otx2_nic *pfvf)
-@@ -562,15 +566,16 @@ static inline u64 otx2_atomic64_add(u64 incr, u64 *ptr)
+ #define IXGBE_RSS_64Q_MASK	0x3F
+@@ -947,6 +950,7 @@ static int ixgbe_alloc_q_vector(struct ixgbe_adapter *adapter,
+ 		ring->count = adapter->tx_ring_count;
+ 		ring->queue_index = xdp_idx;
+ 		set_ring_xdp(ring);
++		spin_lock_init(&ring->tx_lock);
+ 
+ 		/* assign ring to adapter */
+ 		WRITE_ONCE(adapter->xdp_ring[xdp_idx], ring);
+@@ -1032,6 +1036,9 @@ static void ixgbe_free_q_vector(struct ixgbe_adapter *adapter, int v_idx)
+ 	adapter->q_vector[v_idx] = NULL;
+ 	__netif_napi_del(&q_vector->napi);
+ 
++	if (static_key_enabled(&ixgbe_xdp_locking_key))
++		static_branch_dec(&ixgbe_xdp_locking_key);
++
+ 	/*
+ 	 * after a call to __netif_napi_del() napi may still be used and
+ 	 * ixgbe_get_stats64() might access the rings on this vector,
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+index 14aea40..8b9e21b 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+@@ -165,6 +165,9 @@ static int ixgbe_notify_dca(struct notifier_block *, unsigned long event,
+ MODULE_DESCRIPTION("Intel(R) 10 Gigabit PCI Express Network Driver");
+ MODULE_LICENSE("GPL v2");
+ 
++DEFINE_STATIC_KEY_FALSE(ixgbe_xdp_locking_key);
++EXPORT_SYMBOL(ixgbe_xdp_locking_key);
++
+ static struct workqueue_struct *ixgbe_wq;
+ 
+ static bool ixgbe_check_cfg_remove(struct ixgbe_hw *hw, struct pci_dev *pdev);
+@@ -2197,6 +2200,7 @@ static struct sk_buff *ixgbe_run_xdp(struct ixgbe_adapter *adapter,
+ {
+ 	int err, result = IXGBE_XDP_PASS;
+ 	struct bpf_prog *xdp_prog;
++	struct ixgbe_ring *ring;
+ 	struct xdp_frame *xdpf;
+ 	u32 act;
+ 
+@@ -2215,7 +2219,12 @@ static struct sk_buff *ixgbe_run_xdp(struct ixgbe_adapter *adapter,
+ 		xdpf = xdp_convert_buff_to_frame(xdp);
+ 		if (unlikely(!xdpf))
+ 			goto out_failure;
+-		result = ixgbe_xmit_xdp_ring(adapter, xdpf);
++		ring = ixgbe_determine_xdp_ring(adapter);
++		if (static_branch_unlikely(&ixgbe_xdp_locking_key))
++			spin_lock(&ring->tx_lock);
++		result = ixgbe_xmit_xdp_ring(ring, xdpf);
++		if (static_branch_unlikely(&ixgbe_xdp_locking_key))
++			spin_unlock(&ring->tx_lock);
+ 		if (result == IXGBE_XDP_CONSUMED)
+ 			goto out_failure;
+ 		break;
+@@ -2422,13 +2431,9 @@ static int ixgbe_clean_rx_irq(struct ixgbe_q_vector *q_vector,
+ 		xdp_do_flush_map();
+ 
+ 	if (xdp_xmit & IXGBE_XDP_TX) {
+-		struct ixgbe_ring *ring = adapter->xdp_ring[smp_processor_id()];
++		struct ixgbe_ring *ring = ixgbe_determine_xdp_ring(adapter);
+ 
+-		/* Force memory writes to complete before letting h/w
+-		 * know there are new descriptors to fetch.
+-		 */
+-		wmb();
+-		writel(ring->next_to_use, ring->tail);
++		ixgbe_xdp_ring_update_tail_locked(ring);
+ 	}
+ 
+ 	u64_stats_update_begin(&rx_ring->syncp);
+@@ -6320,7 +6325,7 @@ static int ixgbe_sw_init(struct ixgbe_adapter *adapter,
+ 	if (ixgbe_init_rss_key(adapter))
+ 		return -ENOMEM;
+ 
+-	adapter->af_xdp_zc_qps = bitmap_zalloc(MAX_XDP_QUEUES, GFP_KERNEL);
++	adapter->af_xdp_zc_qps = bitmap_zalloc(IXGBE_MAX_XDP_QS, GFP_KERNEL);
+ 	if (!adapter->af_xdp_zc_qps)
+ 		return -ENOMEM;
+ 
+@@ -8536,10 +8541,9 @@ static u16 ixgbe_select_queue(struct net_device *dev, struct sk_buff *skb,
+ }
+ 
  #endif
- 
- static inline void __cn10k_aura_freeptr(struct otx2_nic *pfvf, u64 aura,
--					u64 *ptrs, u64 num_ptrs,
--					u64 *lmt_addr)
-+					u64 *ptrs, u64 num_ptrs)
+-int ixgbe_xmit_xdp_ring(struct ixgbe_adapter *adapter,
++int ixgbe_xmit_xdp_ring(struct ixgbe_ring *ring,
+ 			struct xdp_frame *xdpf)
  {
-+	struct otx2_lmt_info *lmt_info;
- 	u64 size = 0, count_eot = 0;
- 	u64 tar_addr, val = 0;
- 
-+	lmt_info = per_cpu_ptr(pfvf->hw.lmt_info, smp_processor_id());
- 	tar_addr = (__force u64)otx2_get_regaddr(pfvf, NPA_LF_AURA_BATCH_FREE0);
- 	/* LMTID is same as AURA Id */
--	val = (aura & 0x7FF) | BIT_ULL(63);
-+	val = (lmt_info->lmt_id & 0x7FF) | BIT_ULL(63);
- 	/* Set if [127:64] of last 128bit word has a valid pointer */
- 	count_eot = (num_ptrs % 2) ? 0ULL : 1ULL;
- 	/* Set AURA ID to free pointer */
-@@ -586,7 +591,7 @@ static inline void __cn10k_aura_freeptr(struct otx2_nic *pfvf, u64 aura,
- 			size++;
- 		tar_addr |=  ((size - 1) & 0x7) << 4;
+-	struct ixgbe_ring *ring = adapter->xdp_ring[smp_processor_id()];
+ 	struct ixgbe_tx_buffer *tx_buffer;
+ 	union ixgbe_adv_tx_desc *tx_desc;
+ 	u32 len, cmd_type;
+@@ -10130,8 +10134,13 @@ static int ixgbe_xdp_setup(struct net_device *dev, struct bpf_prog *prog)
+ 			return -EINVAL;
  	}
--	memcpy(lmt_addr, ptrs, sizeof(u64) * num_ptrs);
-+	memcpy((u64 *)lmt_info->lmt_addr, ptrs, sizeof(u64) * num_ptrs);
- 	/* Perform LMTST flush */
- 	cn10k_lmt_flush(val, tar_addr);
+ 
+-	if (nr_cpu_ids > MAX_XDP_QUEUES)
++	/* if the number of cpus is much larger than the maximum of queues,
++	 * we should stop it and then return with NOMEM like before.
++	 */
++	if (nr_cpu_ids > IXGBE_MAX_XDP_QS * 2)
+ 		return -ENOMEM;
++	else if (nr_cpu_ids > IXGBE_MAX_XDP_QS)
++		static_branch_inc(&ixgbe_xdp_locking_key);
+ 
+ 	old_prog = xchg(&adapter->xdp_prog, prog);
+ 	need_reset = (!!prog != !!old_prog);
+@@ -10195,6 +10204,15 @@ void ixgbe_xdp_ring_update_tail(struct ixgbe_ring *ring)
+ 	writel(ring->next_to_use, ring->tail);
  }
-@@ -594,12 +599,11 @@ static inline void __cn10k_aura_freeptr(struct otx2_nic *pfvf, u64 aura,
- static inline void cn10k_aura_freeptr(void *dev, int aura, u64 buf)
+ 
++void ixgbe_xdp_ring_update_tail_locked(struct ixgbe_ring *ring)
++{
++	if (static_branch_unlikely(&ixgbe_xdp_locking_key))
++		spin_lock(&ring->tx_lock);
++	ixgbe_xdp_ring_update_tail(ring);
++	if (static_branch_unlikely(&ixgbe_xdp_locking_key))
++		spin_unlock(&ring->tx_lock);
++}
++
+ static int ixgbe_xdp_xmit(struct net_device *dev, int n,
+ 			  struct xdp_frame **frames, u32 flags)
  {
- 	struct otx2_nic *pfvf = dev;
--	struct otx2_pool *pool;
- 	u64 ptrs[2];
+@@ -10212,18 +10230,21 @@ static int ixgbe_xdp_xmit(struct net_device *dev, int n,
+ 	/* During program transitions its possible adapter->xdp_prog is assigned
+ 	 * but ring has not been configured yet. In this case simply abort xmit.
+ 	 */
+-	ring = adapter->xdp_prog ? adapter->xdp_ring[smp_processor_id()] : NULL;
++	ring = adapter->xdp_prog ? ixgbe_determine_xdp_ring(adapter) : NULL;
+ 	if (unlikely(!ring))
+ 		return -ENXIO;
  
--	pool = &pfvf->qset.pool[aura];
- 	ptrs[1] = buf;
--	__cn10k_aura_freeptr(pfvf, aura, ptrs, 2, pool->lmt_addr);
-+	/* Free only one buffer at time during init and teardown */
-+	__cn10k_aura_freeptr(pfvf, aura, ptrs, 2);
+ 	if (unlikely(test_bit(__IXGBE_TX_DISABLED, &ring->state)))
+ 		return -ENXIO;
+ 
++	if (static_branch_unlikely(&ixgbe_xdp_locking_key))
++		spin_lock(&ring->tx_lock);
++
+ 	for (i = 0; i < n; i++) {
+ 		struct xdp_frame *xdpf = frames[i];
+ 		int err;
+ 
+-		err = ixgbe_xmit_xdp_ring(adapter, xdpf);
++		err = ixgbe_xmit_xdp_ring(ring, xdpf);
+ 		if (err != IXGBE_XDP_TX)
+ 			break;
+ 		nxmit++;
+@@ -10232,6 +10253,9 @@ static int ixgbe_xdp_xmit(struct net_device *dev, int n,
+ 	if (unlikely(flags & XDP_XMIT_FLUSH))
+ 		ixgbe_xdp_ring_update_tail(ring);
+ 
++	if (static_branch_unlikely(&ixgbe_xdp_locking_key))
++		spin_unlock(&ring->tx_lock);
++
+ 	return nxmit;
  }
  
- /* Alloc pointer from pool/aura */
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-index 799486c72177..dbfa3bc39e34 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-@@ -16,8 +16,8 @@
- #include "otx2_common.h"
- #include "otx2_ptp.h"
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_txrx_common.h b/drivers/net/ethernet/intel/ixgbe/ixgbe_txrx_common.h
+index 2aeec78..a82533f 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_txrx_common.h
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_txrx_common.h
+@@ -12,7 +12,7 @@
+ #define IXGBE_TXD_CMD (IXGBE_TXD_CMD_EOP | \
+ 		       IXGBE_TXD_CMD_RS)
  
--#define DRV_NAME	"octeontx2-nicpf"
--#define DRV_VF_NAME	"octeontx2-nicvf"
-+#define DRV_NAME	"rvu-nicpf"
-+#define DRV_VF_NAME	"rvu-nicvf"
+-int ixgbe_xmit_xdp_ring(struct ixgbe_adapter *adapter,
++int ixgbe_xmit_xdp_ring(struct ixgbe_ring *ring,
+ 			struct xdp_frame *xdpf);
+ bool ixgbe_cleanup_headers(struct ixgbe_ring *rx_ring,
+ 			   union ixgbe_adv_rx_desc *rx_desc,
+@@ -23,6 +23,7 @@ void ixgbe_process_skb_fields(struct ixgbe_ring *rx_ring,
+ void ixgbe_rx_skb(struct ixgbe_q_vector *q_vector,
+ 		  struct sk_buff *skb);
+ void ixgbe_xdp_ring_update_tail(struct ixgbe_ring *ring);
++void ixgbe_xdp_ring_update_tail_locked(struct ixgbe_ring *ring);
+ void ixgbe_irq_rearm_queues(struct ixgbe_adapter *adapter, u64 qmask);
  
- struct otx2_stat {
- 	char name[ETH_GSTRING_LEN];
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-index 2f2e8a3d7924..53df7fff92c4 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-@@ -1533,14 +1533,6 @@ int otx2_open(struct net_device *netdev)
- 	if (!qset->rq)
- 		goto err_free_mem;
+ void ixgbe_txrx_ring_disable(struct ixgbe_adapter *adapter, int ring);
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+index b1d22e4..db2bc58 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+@@ -100,6 +100,7 @@ static int ixgbe_run_xdp_zc(struct ixgbe_adapter *adapter,
+ {
+ 	int err, result = IXGBE_XDP_PASS;
+ 	struct bpf_prog *xdp_prog;
++	struct ixgbe_ring *ring;
+ 	struct xdp_frame *xdpf;
+ 	u32 act;
  
--	if (test_bit(CN10K_LMTST, &pf->hw.cap_flag)) {
--		/* Reserve LMT lines for NPA AURA batch free */
--		pf->hw.npa_lmt_base = pf->hw.lmt_base;
--		/* Reserve LMT lines for NIX TX */
--		pf->hw.nix_lmt_base = (u64 *)((u64)pf->hw.npa_lmt_base +
--				      (pf->npa_lmt_lines * LMT_LINE_SIZE));
--	}
--
- 	err = otx2_init_hw_resources(pf);
- 	if (err)
- 		goto err_free_mem;
-@@ -2668,6 +2660,8 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- err_ptp_destroy:
- 	otx2_ptp_destroy(pf);
- err_detach_rsrc:
-+	if (pf->hw.lmt_info)
-+		free_percpu(pf->hw.lmt_info);
- 	if (test_bit(CN10K_LMTST, &pf->hw.cap_flag))
- 		qmem_free(pf->dev, pf->dync_lmt);
- 	otx2_detach_resources(&pf->mbox);
-@@ -2811,6 +2805,8 @@ static void otx2_remove(struct pci_dev *pdev)
- 	otx2_mcam_flow_del(pf);
- 	otx2_shutdown_tc(pf);
- 	otx2_detach_resources(&pf->mbox);
-+	if (pf->hw.lmt_info)
-+		free_percpu(pf->hw.lmt_info);
- 	if (test_bit(CN10K_LMTST, &pf->hw.cap_flag))
- 		qmem_free(pf->dev, pf->dync_lmt);
- 	otx2_disable_mbox_intr(pf);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
-index 869de5f59e73..3ff1ad79c001 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
-@@ -80,7 +80,6 @@ struct otx2_snd_queue {
- 	u16			num_sqbs;
- 	u16			sqe_thresh;
- 	u8			sqe_per_sqb;
--	u32			lmt_id;
- 	u64			 io_addr;
- 	u64			*aura_fc_addr;
- 	u64			*lmt_addr;
-@@ -111,7 +110,6 @@ struct otx2_cq_poll {
- struct otx2_pool {
- 	struct qmem		*stack;
- 	struct qmem		*fc_addr;
--	u64			*lmt_addr;
- 	u16			rbsize;
- };
+@@ -120,7 +121,12 @@ static int ixgbe_run_xdp_zc(struct ixgbe_adapter *adapter,
+ 		xdpf = xdp_convert_buff_to_frame(xdp);
+ 		if (unlikely(!xdpf))
+ 			goto out_failure;
+-		result = ixgbe_xmit_xdp_ring(adapter, xdpf);
++		ring = ixgbe_determine_xdp_ring(adapter);
++		if (static_branch_unlikely(&ixgbe_xdp_locking_key))
++			spin_lock(&ring->tx_lock);
++		result = ixgbe_xmit_xdp_ring(ring, xdpf);
++		if (static_branch_unlikely(&ixgbe_xdp_locking_key))
++			spin_unlock(&ring->tx_lock);
+ 		if (result == IXGBE_XDP_CONSUMED)
+ 			goto out_failure;
+ 		break;
+@@ -334,13 +340,9 @@ int ixgbe_clean_rx_irq_zc(struct ixgbe_q_vector *q_vector,
+ 		xdp_do_flush_map();
  
-diff --git a/include/linux/soc/marvell/octeontx2/asm.h b/include/linux/soc/marvell/octeontx2/asm.h
-index 28c04d918f0f..fa1d6af0164e 100644
---- a/include/linux/soc/marvell/octeontx2/asm.h
-+++ b/include/linux/soc/marvell/octeontx2/asm.h
-@@ -22,12 +22,17 @@
- 			 : [rs]"r" (ioaddr));           \
- 	(result);                                       \
- })
-+/*
-+ * STEORL store to memory with release semantics.
-+ * This will avoid using DMB barrier after each LMTST
-+ * operation.
-+ */
- #define cn10k_lmt_flush(val, addr)			\
- ({							\
- 	__asm__ volatile(".cpu  generic+lse\n"		\
--			 "steor %x[rf],[%[rs]]"		\
--			 : [rf]"+r"(val)		\
--			 : [rs]"r"(addr));		\
-+			 "steorl %x[rf],[%[rs]]"		\
-+			 : [rf] "+r"(val)		\
-+			 : [rs] "r"(addr));		\
- })
- #else
- #define otx2_lmt_flush(ioaddr)          ({ 0; })
+ 	if (xdp_xmit & IXGBE_XDP_TX) {
+-		struct ixgbe_ring *ring = adapter->xdp_ring[smp_processor_id()];
++		struct ixgbe_ring *ring = ixgbe_determine_xdp_ring(adapter);
+ 
+-		/* Force memory writes to complete before letting h/w
+-		 * know there are new descriptors to fetch.
+-		 */
+-		wmb();
+-		writel(ring->next_to_use, ring->tail);
++		ixgbe_xdp_ring_update_tail_locked(ring);
+ 	}
+ 
+ 	u64_stats_update_begin(&rx_ring->syncp);
 -- 
-2.17.1
+1.8.3.1
 
