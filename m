@@ -2,137 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96B073FE3EC
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 22:22:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 915103FE42F
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 22:41:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345150AbhIAUW7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 16:22:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55450 "EHLO
+        id S231659AbhIAUmP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 16:42:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344607AbhIAUWR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 16:22:17 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84A21C0617A8;
-        Wed,  1 Sep 2021 13:21:03 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id j4so1559052lfg.9;
-        Wed, 01 Sep 2021 13:21:03 -0700 (PDT)
+        with ESMTP id S231398AbhIAUmO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 16:42:14 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C512C061575;
+        Wed,  1 Sep 2021 13:41:17 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id m17so409591plc.6;
+        Wed, 01 Sep 2021 13:41:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to;
-        bh=pJPyEbgDyxweejpYMD0yQbh+6nlqZ4ZcT25PJQyPPOk=;
-        b=pmj0972aM1frEH65nbRcoB7jrY8gTCr7sumnzbQp5BgL/Dmc9vL4c5KZUFMpPAcccC
-         Li+YdWnRsQ4VABSzrLxnLwHKwYqxv8AAndz8wLdiHOj4eKkvmZRzms73sljrszxXvqji
-         DPbCjbu92vI7yCMh0GjX1FngiayfstVEowP8QkKIIfVrLSvJ85NvE5KgPDsLLatBlj5K
-         cQipi3UD5wig3j09mM1AUR7/qOaOxp8XKZYxPTBw65HfLw7+uaL4jGm55u9B4kHH9KXC
-         mB7JKG3UQVFTQYKWZAdW1jKN/668PZkFWR+NO2ddEapUlbA6LIU8k0/+cMjNPItl667u
-         PMgA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=NO/zd5PEh4sGso5loCQniKnDMB+CL8oSBEUV4F7LrXw=;
+        b=IP0mTBtq6mlacOZ39e0lYeKPTk+VrJ0ZQqRlm1T1+QNDaOlvcqYRPV8jm+803qYDl7
+         LY4ZXJsWOq+hbIlsbXpy6iNRIGf2Q1TF7o68nDz9wP41a0Qi2vHBy+eWiI8u6Hx0ifHk
+         ixOXbYG9jzZTr7QFpGbJ/H7QmmaWWFgbtHh3B8Wh6leVIAHm8+dsbahllR3BJHiFEPlY
+         pk+VVnObLh2Tq/ChZWHPsg8sGfqTHuVvRPzv/zTs+czN7mrfONq8O0n7skB9RzkYyXjU
+         CkM+Z1XN0DZVxaW89t+e1m2jWWMZME8O76qbDN2EaSMVIfmYoPo2wThKC6gPSkMERMaC
+         bSaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to;
-        bh=pJPyEbgDyxweejpYMD0yQbh+6nlqZ4ZcT25PJQyPPOk=;
-        b=NTIvCduWCgXyzjM2E1r2gnjuUrrYMFIrRy4OmlVXa+5D0Uivc6chagnuECSuaOp+IT
-         VkGsKNXGw/1crE3WNQX6uw/Rz7bPRa0WgMtIDzJDgbPkHJD9fDNxT1iIW7WDi+3zC8TW
-         5X+nqiymmTo3hUGCBbzoSy43rbdouWdiPtab0+i4mRNFN2CQAn+2MVxzeSSY8rFEguEF
-         G/XGKmTDFDfJ4Tm0nlHw+Rf0qIf/JYhYNYq4BatSx8c/5Q0WrdkM3sSfmNOAXZMPARIx
-         ELhimMefUpwTXkeMnUzEHHCE3+jb6cJQXSfoxcPowJ3wpssMectxVmkZbeOhgLF/hWDi
-         u0EQ==
-X-Gm-Message-State: AOAM530dt3wohcspKOamMItyAd2sQ7tGBZJDa4jvtrg60RYQLQVrFsad
-        BkPSuYyPqcEm7BYcsJzqCO4=
-X-Google-Smtp-Source: ABdhPJx3WkDXZWFAcAsSQ2LvjNhW6y9+inRcy8YF161mA7fjHvamtzs7D/xQjJ2r0wx+PH24K+epWw==
-X-Received: by 2002:a05:6512:2148:: with SMTP id s8mr900047lfr.317.1630527661817;
-        Wed, 01 Sep 2021 13:21:01 -0700 (PDT)
-Received: from [192.168.1.11] ([94.103.229.213])
-        by smtp.gmail.com with UTF8SMTPSA id j1sm71761lji.124.2021.09.01.13.21.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Sep 2021 13:21:01 -0700 (PDT)
-Content-Type: multipart/mixed; boundary="------------dKn190a6SKK3cd0KsH6Gjlpw"
-Message-ID: <983049ea-3023-8dbe-cbb4-51fb5661d2cb@gmail.com>
-Date:   Wed, 1 Sep 2021 23:21:00 +0300
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=NO/zd5PEh4sGso5loCQniKnDMB+CL8oSBEUV4F7LrXw=;
+        b=GWqqbfDvmE0c5TTLJ7Ue12iU09sx1xZLu/49uLd7uxwZURFtS8vcOTUx1SWaOvpdM9
+         ukGJzx2ZXXbciFsG2qpOArKUJ6bNq2FS0QcO4tgPjFUlXs62RPLVcILW7jDD93rZfbM0
+         2kQmQlEzf0nSq/2ZpOY5AqXvqjqqZyyLTq4uC4leKHZD0NzHgIZ9JJpHEgdOeAs0z53/
+         c86vfDq9kJCfnl8KFyLYlFdA1VsSyRU5JUEVDu85ulUAFUBiu6OwmaOWDfhqlL+ZCn0N
+         kKb8dUzaqETOqpTLb8vlKjLqEmKpM/1CaWeXLNSnZW1V8nmEHe+pV7S/zGVebuqJUQEy
+         VAzA==
+X-Gm-Message-State: AOAM531mceOYJGVf5pYlb59+So0aO6h4wOTnajSyoKyx75dis5jFBTeb
+        a9Xth/dNwem4m/e/5faVikBHnwMxDhS1B2ddfxQ=
+X-Google-Smtp-Source: ABdhPJyokH7tzWOv52uIscrHN+41KOxxtDBm9KGPkir22Mv0bLlWOv/nJud3iY+etysezBR/VQTmiUQ9iCOMiMV7vB4=
+X-Received: by 2002:a17:903:120e:b0:138:d732:3b01 with SMTP id
+ l14-20020a170903120e00b00138d7323b01mr877939plh.21.1630528876524; Wed, 01 Sep
+ 2021 13:41:16 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.0.1
-Subject: Re: [syzbot] UBSAN: shift-out-of-bounds in xfrm_get_default
-Content-Language: en-US
-To:     syzbot <syzbot+b2be9dd8ca6f6c73ee2d@syzkaller.appspotmail.com>,
-        antony.antony@secunet.com, christian.langrock@secunet.com,
-        davem@davemloft.net, herbert@gondor.apana.org.au, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        steffen.klassert@secunet.com, syzkaller-bugs@googlegroups.com
-References: <0000000000005a8dc805caf4b92e@google.com>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <0000000000005a8dc805caf4b92e@google.com>
+References: <20210830123704.221494-1-verdre@v0yd.nl> <20210830123704.221494-2-verdre@v0yd.nl>
+ <CA+ASDXPKZ0i5Bi11Q=qqppY8OCgw=7m0dnPn0s+y+GAvvQodog@mail.gmail.com>
+In-Reply-To: <CA+ASDXPKZ0i5Bi11Q=qqppY8OCgw=7m0dnPn0s+y+GAvvQodog@mail.gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 1 Sep 2021 23:40:40 +0300
+Message-ID: <CAHp75VdR4VC+Ojy9NjAtewAaPAgowq-3rffrr3uAdOeiN8gN-A@mail.gmail.com>
+Subject: Re: [PATCH 1/2] mwifiex: Use non-posted PCI register writes
+To:     Brian Norris <briannorris@chromium.org>
+Cc:     =?UTF-8?Q?Jonas_Dre=C3=9Fler?= <verdre@v0yd.nl>,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi017@gmail.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tsuchiya Yuto <kitakar@gmail.com>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------dKn190a6SKK3cd0KsH6Gjlpw
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+On Wed, Sep 1, 2021 at 11:25 PM Brian Norris <briannorris@chromium.org> wro=
+te:
+> On Mon, Aug 30, 2021 at 5:37 AM Jonas Dre=C3=9Fler <verdre@v0yd.nl> wrote=
+:
 
-On 9/1/21 23:15, syzbot wrote:
-> Hello,
-> 
-> syzbot tried to test the proposed patch but the build/boot failed:
-> 
-> arch/x86/kernel/setup.c:916:6: error: implicit declaration of function 'acpi_mps_check' [-Werror=implicit-function-declaration]
-> arch/x86/kernel/setup.c:1110:2: error: implicit declaration of function 'acpi_table_upgrade' [-Werror=implicit-function-declaration]
-> arch/x86/kernel/setup.c:1112:2: error: implicit declaration of function 'acpi_boot_table_init' [-Werror=implicit-function-declaration]
-> arch/x86/kernel/setup.c:1120:2: error: implicit declaration of function 'early_acpi_boot_init'; did you mean 'early_cpu_init'? [-Werror=implicit-function-declaration]
-> arch/x86/kernel/setup.c:1162:2: error: implicit declaration of function 'acpi_boot_init' [-Werror=implicit-function-declaration]
-> 
-> 
-> Tested on:
-> 
-> commit:         9e9fb765 Merge tag 'net-next-5.15' of git://git.kernel..
-> git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git master
-> dashboard link: https://syzkaller.appspot.com/bug?extid=b2be9dd8ca6f6c73ee2d
-> compiler:
-> patch:          https://syzkaller.appspot.com/x/patch.diff?x=14a2a34d300000
-> 
+...
 
-Ok, net-next is also broken....
+> This might be good for many cases, but please read this commit:
+>
+> https://git.kernel.org/linus/062e008a6e83e7c4da7df0a9c6aefdbc849e2bb3
+> mwifiex: pcie: use posted write to wake up firmware
+>
+> It's very much intentional that this is a posted write in some cases.
+>
+> Without ensuring this doesn't regress, NAK from me.
 
-#syz test:
-git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git master
+Can you ensure that from Chrome / Google perspective, please?
 
-
-
-
-With regards,
-Pavel Skripkin
---------------dKn190a6SKK3cd0KsH6Gjlpw
-Content-Type: text/x-patch; charset=UTF-8;
- name="0001-net-xfrm-fix-shift-out-of-bounds-in-xfrm_get_default.patch"
-Content-Disposition: attachment;
- filename*0="0001-net-xfrm-fix-shift-out-of-bounds-in-xfrm_get_default.pa";
- filename*1="tch"
-Content-Transfer-Encoding: base64
-
-RnJvbSAxNzJjMzUxODY5ZTU5MjA2MzBmMjdkMjA5NzZiMDc5ZmNhMzA2NTBjIE1vbiBTZXAg
-MTcgMDA6MDA6MDAgMjAwMQpGcm9tOiBQYXZlbCBTa3JpcGtpbiA8cGFza3JpcGtpbkBnbWFp
-bC5jb20+CkRhdGU6IFdlZCwgMSBTZXAgMjAyMSAyMTo1NToyNSArMDMwMApTdWJqZWN0OiBb
-UEFUQ0hdIG5ldDogeGZybTogZml4IHNoaWZ0LW91dC1vZi1ib3VuZHMgaW4geGZybV9nZXRf
-ZGVmYXVsdAoKLyogLi4uICovCgpTaWduZWQtb2ZmLWJ5OiBQYXZlbCBTa3JpcGtpbiA8cGFz
-a3JpcGtpbkBnbWFpbC5jb20+Ci0tLQogYXJjaC94ODYva2VybmVsL3NldHVwLmMgfCAxICsK
-IG5ldC94ZnJtL3hmcm1fdXNlci5jICAgIHwgMyArKysKIDIgZmlsZXMgY2hhbmdlZCwgNCBp
-bnNlcnRpb25zKCspCgpkaWZmIC0tZ2l0IGEvYXJjaC94ODYva2VybmVsL3NldHVwLmMgYi9h
-cmNoL3g4Ni9rZXJuZWwvc2V0dXAuYwppbmRleCBkYTBhNGI2NDg4MGYuLmM5ZTNhMTdiOTRm
-OSAxMDA2NDQKLS0tIGEvYXJjaC94ODYva2VybmVsL3NldHVwLmMKKysrIGIvYXJjaC94ODYv
-a2VybmVsL3NldHVwLmMKQEAgLTIzLDYgKzIzLDcgQEAKICNpbmNsdWRlIDxsaW51eC91c2Iv
-eGhjaS1kYmdwLmg+CiAjaW5jbHVkZSA8bGludXgvc3RhdGljX2NhbGwuaD4KICNpbmNsdWRl
-IDxsaW51eC9zd2lvdGxiLmg+CisjaW5jbHVkZSA8bGludXgvYWNwaS5oPgogCiAjaW5jbHVk
-ZSA8dWFwaS9saW51eC9tb3VudC5oPgogCmRpZmYgLS1naXQgYS9uZXQveGZybS94ZnJtX3Vz
-ZXIuYyBiL25ldC94ZnJtL3hmcm1fdXNlci5jCmluZGV4IGI3Yjk4NjUyMGRjNy4uYTFkZDM4
-NTI1OTU3IDEwMDY0NAotLS0gYS9uZXQveGZybS94ZnJtX3VzZXIuYworKysgYi9uZXQveGZy
-bS94ZnJtX3VzZXIuYwpAQCAtMjAwNyw2ICsyMDA3LDkgQEAgc3RhdGljIGludCB4ZnJtX2dl
-dF9kZWZhdWx0KHN0cnVjdCBza19idWZmICpza2IsIHN0cnVjdCBubG1zZ2hkciAqbmxoLAog
-CiAJcl91cCA9IG5sbXNnX2RhdGEocl9ubGgpOwogCisJaWYgKHVwLT5kaXJtYXNrID49IFhG
-Uk1fVVNFUlBPTElDWV9ESVJNQVNLX01BWCkKKwkJcmV0dXJuIC1FSU5WQUw7CisKIAlyX3Vw
-LT5hY3Rpb24gPSAoKG5ldC0+eGZybS5wb2xpY3lfZGVmYXVsdCAmICgxIDw8IHVwLT5kaXJt
-YXNrKSkgPj4gdXAtPmRpcm1hc2spOwogCXJfdXAtPmRpcm1hc2sgPSB1cC0+ZGlybWFzazsK
-IAlubG1zZ19lbmQocl9za2IsIHJfbmxoKTsKLS0gCjIuMzMuMAoK
---------------dKn190a6SKK3cd0KsH6Gjlpw--
-
+--=20
+With Best Regards,
+Andy Shevchenko
