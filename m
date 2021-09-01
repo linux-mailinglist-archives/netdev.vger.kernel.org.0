@@ -2,103 +2,389 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EBC233FD701
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 11:41:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBDBC3FD745
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 11:56:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243712AbhIAJmA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 05:42:00 -0400
-Received: from out30-42.freemail.mail.aliyun.com ([115.124.30.42]:34273 "EHLO
-        out30-42.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232817AbhIAJmA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 05:42:00 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R791e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04420;MF=yun.wang@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0Umv2hQ-_1630489260;
-Received: from testdeMacBook-Pro.local(mailfrom:yun.wang@linux.alibaba.com fp:SMTPD_---0Umv2hQ-_1630489260)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 01 Sep 2021 17:41:01 +0800
-Subject: Re: [PATCH v2] net: fix NULL pointer reference in cipso_v4_doi_free
-To:     David Miller <davem@davemloft.net>
-Cc:     paul@paul-moore.com, kuba@kernel.org, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, netdev@vger.kernel.org,
-        linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <84262e7b-fda6-9d7d-b0bd-1bb0e945e6f9@linux.alibaba.com>
- <CAHC9VhRPUa-oD_85j6RcAVvp7sLZQEAGGapYYP1fEt7Ax5LMfA@mail.gmail.com>
- <1ed31e79-809b-7ac9-2760-869570ac22ea@linux.alibaba.com>
- <20210901.103033.925382819044968737.davem@davemloft.net>
-From:   =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
-Message-ID: <6ca4a2d5-9a9c-1b14-85b4-1f4a0f743104@linux.alibaba.com>
-Date:   Wed, 1 Sep 2021 17:41:00 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:78.0)
- Gecko/20100101 Thunderbird/78.13.0
+        id S230235AbhIAJ45 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 05:56:57 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:53466 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229662AbhIAJ44 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 05:56:56 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1819Ka4F015561;
+        Wed, 1 Sep 2021 02:55:56 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=WG8iau4MeAgXUeFzLGLTgaMraP7LyJZJPRbd0CbG/K8=;
+ b=Oowlyz8B4VxnFb+mLppfIowWnfwzRpWrrOqleqCTX+YqaGvjYIeNJK2b3MCmnj9cvfA4
+ DgIrD7c6Qo5jh7+XxRy1fTi52wFj1LlvBl3Z5h5hw6DXBzD6J+7pNVd1G0O13JVxz1Ui
+ rJSfNL5YoGuXjrFsTq8LvWcbFOPt6ZjdVrgedbwf3LJmjpUUgdkLDViCXKWm/MQhh5j1
+ xuYxydI1+VVpuIaHOZgobK9URJOCp7EQzL7EtICKonkVhcwlCUuQdr4yEXDEfWoFez6q
+ fIOFZA/gnV5/h3rSCSoQAFHTU5qdu6HyGFYJpHv8/oq3BacCbLD8WPRgXPKNsaQNbYY7 rQ== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 3at0ax9js7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 01 Sep 2021 02:55:56 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 1 Sep
+ 2021 02:55:53 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Wed, 1 Sep 2021 02:55:54 -0700
+Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
+        by maili.marvell.com (Postfix) with ESMTP id 9889B3F7088;
+        Wed,  1 Sep 2021 02:55:51 -0700 (PDT)
+From:   Geetha sowjanya <gakula@marvell.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <kuba@kernel.org>, <davem@davemloft.net>, <sgoutham@marvell.com>,
+        <gakula@marvell.com>, <sbhatta@marvell.com>, <hkelam@marvell.com>
+Subject: [net-next PATCH] octeontx2-pf: cn10K: Reserve LMTST lines per core
+Date:   Wed, 1 Sep 2021 15:25:50 +0530
+Message-ID: <20210901095550.10590-1-gakula@marvell.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-In-Reply-To: <20210901.103033.925382819044968737.davem@davemloft.net>
-Content-Type: text/plain; charset=iso-2022-jp
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Proofpoint-GUID: kelO55a73pnwk93Dr2SYkT8ewHikBmrB
+X-Proofpoint-ORIG-GUID: kelO55a73pnwk93Dr2SYkT8ewHikBmrB
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
+ definitions=2021-09-01_03,2021-08-31_01,2020-04-07_01
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patch reserves the LMTST lines per cpu instead
+of separate LMTST lines for NPA(buffer free) and NIX(sqe flush).
+LMTST line of the core on which SQ or RQ is processed is used
+for LMTST operation.
 
+This patch also replace STEOR with STEORL release semantics and
+updates driver name in ethtool file.
 
-On 2021/9/1 下午5:30, David Miller wrote:
-> From: 王贇 <yun.wang@linux.alibaba.com>
-> Date: Wed, 1 Sep 2021 09:51:28 +0800
-> 
->>
->>
->> On 2021/8/31 下午9:48, Paul Moore wrote:
->>> On Mon, Aug 30, 2021 at 10:42 PM 王贇 <yun.wang@linux.alibaba.com> wrote:
->>>> On 2021/8/31 上午12:50, Paul Moore wrote:
->>>> [SNIP]
->>>>>>>> Reported-by: Abaci <abaci@linux.alibaba.com>
->>>>>>>> Signed-off-by: Michael Wang <yun.wang@linux.alibaba.com>
->>>>>>>> ---
->>>>>>>>  net/netlabel/netlabel_cipso_v4.c | 4 ++--
->>>>>>>>  1 file changed, 2 insertions(+), 2 deletions(-)
->>>>>>>
->>>>>>> I see this was already merged, but it looks good to me, thanks for
->>>>>>> making those changes.
->>>>>>
->>>>>> FWIW it looks like v1 was also merged:
->>>>>>
->>>>>> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=733c99ee8b
->>>>>
->>>>> Yeah, that is unfortunate, there was a brief discussion about that
->>>>> over on one of the -stable patches for the v1 patch (odd that I never
->>>>> saw a patchbot post for the v1 patch?).  Having both merged should be
->>>>> harmless, but we want to revert the v1 patch as soon as we can.
->>>>> Michael, can you take care of this?
->>>>
->>>> As v1 already merged, may be we could just goon with it?
->>>>
->>>> Actually both working to fix the problem, v1 will cover all the
->>>> cases, v2 take care one case since that's currently the only one,
->>>> but maybe there will be more in future.
->>>
->>> No.  Please revert v1 and stick with the v2 patch.  The v1 patch is in
->>> my opinion a rather ugly hack that addresses the symptom of the
->>> problem and not the root cause.
->>>
->>> It isn't your fault that both v1 and v2 were merged, but I'm asking
->>> you to help cleanup the mess.  If you aren't able to do that please
->>> let us know so that others can fix this properly.
->>
->> No problem I can help on that, just try to make sure it's not a
->> meaningless work.
->>
->> So would it be fine to send out a v3 which revert v1 and apply v2?
-> 
-> Please don't do things this way just send the relative change.
+Signed-off-by: Geetha sowjanya <gakula@marvell.com>
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+---
+ .../ethernet/marvell/octeontx2/nic/cn10k.c    | 42 +++++++++----------
+ .../marvell/octeontx2/nic/otx2_common.c       |  5 ---
+ .../marvell/octeontx2/nic/otx2_common.h       | 28 +++++++------
+ .../marvell/octeontx2/nic/otx2_ethtool.c      |  4 +-
+ .../ethernet/marvell/octeontx2/nic/otx2_pf.c  | 12 ++----
+ .../marvell/octeontx2/nic/otx2_txrx.h         |  2 -
+ include/linux/soc/marvell/octeontx2/asm.h     | 11 +++--
+ 7 files changed, 49 insertions(+), 55 deletions(-)
 
-Could you please check the patch:
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c b/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c
+index 3cc76f14d2fd..95f21dfdba48 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c
+@@ -27,7 +27,8 @@ int cn10k_lmtst_init(struct otx2_nic *pfvf)
+ {
+ 
+ 	struct lmtst_tbl_setup_req *req;
+-	int qcount, err;
++	struct otx2_lmt_info *lmt_info;
++	int err, cpu;
+ 
+ 	if (!test_bit(CN10K_LMTST, &pfvf->hw.cap_flag)) {
+ 		pfvf->hw_ops = &otx2_hw_ops;
+@@ -35,15 +36,9 @@ int cn10k_lmtst_init(struct otx2_nic *pfvf)
+ 	}
+ 
+ 	pfvf->hw_ops = &cn10k_hw_ops;
+-	qcount = pfvf->hw.max_queues;
+-	/* LMTST lines allocation
+-	 * qcount = num_online_cpus();
+-	 * NPA = TX + RX + XDP.
+-	 * NIX = TX * 32 (For Burst SQE flush).
+-	 */
+-	pfvf->tot_lmt_lines = (qcount * 3) + (qcount * 32);
+-	pfvf->npa_lmt_lines = qcount * 3;
+-	pfvf->nix_lmt_size =  LMT_BURST_SIZE * LMT_LINE_SIZE;
++	/* Total LMTLINES = num_online_cpus() * 32 (For Burst flush).*/
++	pfvf->tot_lmt_lines = (num_online_cpus() * LMT_BURST_SIZE);
++	pfvf->hw.lmt_info = alloc_percpu(struct otx2_lmt_info);
+ 
+ 	mutex_lock(&pfvf->mbox.lock);
+ 	req = otx2_mbox_alloc_msg_lmtst_tbl_setup(&pfvf->mbox);
+@@ -66,6 +61,13 @@ int cn10k_lmtst_init(struct otx2_nic *pfvf)
+ 	err = otx2_sync_mbox_msg(&pfvf->mbox);
+ 	mutex_unlock(&pfvf->mbox.lock);
+ 
++	for_each_possible_cpu(cpu) {
++		lmt_info = per_cpu_ptr(pfvf->hw.lmt_info, cpu);
++		lmt_info->lmt_addr = ((u64)pfvf->hw.lmt_base +
++				      (cpu * LMT_BURST_SIZE * LMT_LINE_SIZE));
++		lmt_info->lmt_id = cpu * LMT_BURST_SIZE;
++	}
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL(cn10k_lmtst_init);
+@@ -74,13 +76,6 @@ int cn10k_sq_aq_init(void *dev, u16 qidx, u16 sqb_aura)
+ {
+ 	struct nix_cn10k_aq_enq_req *aq;
+ 	struct otx2_nic *pfvf = dev;
+-	struct otx2_snd_queue *sq;
+-
+-	sq = &pfvf->qset.sq[qidx];
+-	sq->lmt_addr = (u64 *)((u64)pfvf->hw.nix_lmt_base +
+-			       (qidx * pfvf->nix_lmt_size));
+-
+-	sq->lmt_id = pfvf->npa_lmt_lines + (qidx * LMT_BURST_SIZE);
+ 
+ 	/* Get memory to put this msg */
+ 	aq = otx2_mbox_alloc_msg_nix_cn10k_aq_enq(&pfvf->mbox);
+@@ -125,8 +120,7 @@ void cn10k_refill_pool_ptrs(void *dev, struct otx2_cq_queue *cq)
+ 		if (otx2_alloc_buffer(pfvf, cq, &bufptr)) {
+ 			if (num_ptrs--)
+ 				__cn10k_aura_freeptr(pfvf, cq->cq_idx, ptrs,
+-						     num_ptrs,
+-						     cq->rbpool->lmt_addr);
++						     num_ptrs);
+ 			break;
+ 		}
+ 		cq->pool_ptrs--;
+@@ -134,8 +128,7 @@ void cn10k_refill_pool_ptrs(void *dev, struct otx2_cq_queue *cq)
+ 		num_ptrs++;
+ 		if (num_ptrs == NPA_MAX_BURST || cq->pool_ptrs == 0) {
+ 			__cn10k_aura_freeptr(pfvf, cq->cq_idx, ptrs,
+-					     num_ptrs,
+-					     cq->rbpool->lmt_addr);
++					     num_ptrs);
+ 			num_ptrs = 1;
+ 		}
+ 	}
+@@ -143,20 +136,23 @@ void cn10k_refill_pool_ptrs(void *dev, struct otx2_cq_queue *cq)
+ 
+ void cn10k_sqe_flush(void *dev, struct otx2_snd_queue *sq, int size, int qidx)
+ {
++	struct otx2_lmt_info *lmt_info;
++	struct otx2_nic *pfvf = dev;
+ 	u64 val = 0, tar_addr = 0;
+ 
++	lmt_info = per_cpu_ptr(pfvf->hw.lmt_info, smp_processor_id());
+ 	/* FIXME: val[0:10] LMT_ID.
+ 	 * [12:15] no of LMTST - 1 in the burst.
+ 	 * [19:63] data size of each LMTST in the burst except first.
+ 	 */
+-	val = (sq->lmt_id & 0x7FF);
++	val = (lmt_info->lmt_id & 0x7FF);
+ 	/* Target address for LMTST flush tells HW how many 128bit
+ 	 * words are present.
+ 	 * tar_addr[6:4] size of first LMTST - 1 in units of 128b.
+ 	 */
+ 	tar_addr |= sq->io_addr | (((size / 16) - 1) & 0x7) << 4;
+ 	dma_wmb();
+-	memcpy(sq->lmt_addr, sq->sqe_base, size);
++	memcpy((u64 *)lmt_info->lmt_addr, sq->sqe_base, size);
+ 	cn10k_lmt_flush(val, tar_addr);
+ 
+ 	sq->head++;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+index ce25c2744435..78df173e6df2 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+@@ -1230,11 +1230,6 @@ static int otx2_pool_init(struct otx2_nic *pfvf, u16 pool_id,
+ 
+ 	pool->rbsize = buf_size;
+ 
+-	/* Set LMTST addr for NPA batch free */
+-	if (test_bit(CN10K_LMTST, &pfvf->hw.cap_flag))
+-		pool->lmt_addr = (__force u64 *)((u64)pfvf->hw.npa_lmt_base +
+-						 (pool_id * LMT_LINE_SIZE));
+-
+ 	/* Initialize this pool's context via AF */
+ 	aq = otx2_mbox_alloc_msg_npa_aq_enq(&pfvf->mbox);
+ 	if (!aq) {
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+index 48227cec06ee..a51ecd771d07 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+@@ -53,6 +53,10 @@ enum arua_mapped_qtypes {
+ /* Send skid of 2000 packets required for CQ size of 4K CQEs. */
+ #define SEND_CQ_SKID	2000
+ 
++struct otx2_lmt_info {
++	u64 lmt_addr;
++	u16 lmt_id;
++};
+ /* RSS configuration */
+ struct otx2_rss_ctx {
+ 	u8  ind_tbl[MAX_RSS_INDIR_TBL_SIZE];
+@@ -224,8 +228,7 @@ struct otx2_hw {
+ #define LMT_LINE_SIZE		128
+ #define LMT_BURST_SIZE		32 /* 32 LMTST lines for burst SQE flush */
+ 	u64			*lmt_base;
+-	u64			*npa_lmt_base;
+-	u64			*nix_lmt_base;
++	struct otx2_lmt_info	__percpu *lmt_info;
+ };
+ 
+ enum vfperm {
+@@ -407,17 +410,18 @@ static inline bool is_96xx_B0(struct pci_dev *pdev)
+  */
+ #define PCI_REVISION_ID_96XX		0x00
+ #define PCI_REVISION_ID_95XX		0x10
+-#define PCI_REVISION_ID_LOKI		0x20
++#define PCI_REVISION_ID_95XXN		0x20
+ #define PCI_REVISION_ID_98XX		0x30
+ #define PCI_REVISION_ID_95XXMM		0x40
++#define PCI_REVISION_ID_95XXO		0xE0
+ 
+ static inline bool is_dev_otx2(struct pci_dev *pdev)
+ {
+ 	u8 midr = pdev->revision & 0xF0;
+ 
+ 	return (midr == PCI_REVISION_ID_96XX || midr == PCI_REVISION_ID_95XX ||
+-		midr == PCI_REVISION_ID_LOKI || midr == PCI_REVISION_ID_98XX ||
+-		midr == PCI_REVISION_ID_95XXMM);
++		midr == PCI_REVISION_ID_95XXN || midr == PCI_REVISION_ID_98XX ||
++		midr == PCI_REVISION_ID_95XXMM || midr == PCI_REVISION_ID_95XXO);
+ }
+ 
+ static inline void otx2_setup_dev_hw_settings(struct otx2_nic *pfvf)
+@@ -562,15 +566,16 @@ static inline u64 otx2_atomic64_add(u64 incr, u64 *ptr)
+ #endif
+ 
+ static inline void __cn10k_aura_freeptr(struct otx2_nic *pfvf, u64 aura,
+-					u64 *ptrs, u64 num_ptrs,
+-					u64 *lmt_addr)
++					u64 *ptrs, u64 num_ptrs)
+ {
++	struct otx2_lmt_info *lmt_info;
+ 	u64 size = 0, count_eot = 0;
+ 	u64 tar_addr, val = 0;
+ 
++	lmt_info = per_cpu_ptr(pfvf->hw.lmt_info, smp_processor_id());
+ 	tar_addr = (__force u64)otx2_get_regaddr(pfvf, NPA_LF_AURA_BATCH_FREE0);
+ 	/* LMTID is same as AURA Id */
+-	val = (aura & 0x7FF) | BIT_ULL(63);
++	val = (lmt_info->lmt_id & 0x7FF) | BIT_ULL(63);
+ 	/* Set if [127:64] of last 128bit word has a valid pointer */
+ 	count_eot = (num_ptrs % 2) ? 0ULL : 1ULL;
+ 	/* Set AURA ID to free pointer */
+@@ -586,7 +591,7 @@ static inline void __cn10k_aura_freeptr(struct otx2_nic *pfvf, u64 aura,
+ 			size++;
+ 		tar_addr |=  ((size - 1) & 0x7) << 4;
+ 	}
+-	memcpy(lmt_addr, ptrs, sizeof(u64) * num_ptrs);
++	memcpy((u64 *)lmt_info->lmt_addr, ptrs, sizeof(u64) * num_ptrs);
+ 	/* Perform LMTST flush */
+ 	cn10k_lmt_flush(val, tar_addr);
+ }
+@@ -594,12 +599,11 @@ static inline void __cn10k_aura_freeptr(struct otx2_nic *pfvf, u64 aura,
+ static inline void cn10k_aura_freeptr(void *dev, int aura, u64 buf)
+ {
+ 	struct otx2_nic *pfvf = dev;
+-	struct otx2_pool *pool;
+ 	u64 ptrs[2];
+ 
+-	pool = &pfvf->qset.pool[aura];
+ 	ptrs[1] = buf;
+-	__cn10k_aura_freeptr(pfvf, aura, ptrs, 2, pool->lmt_addr);
++	/* Free only one buffer at time during init and teardown */
++	__cn10k_aura_freeptr(pfvf, aura, ptrs, 2);
+ }
+ 
+ /* Alloc pointer from pool/aura */
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
+index 799486c72177..dbfa3bc39e34 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
+@@ -16,8 +16,8 @@
+ #include "otx2_common.h"
+ #include "otx2_ptp.h"
+ 
+-#define DRV_NAME	"octeontx2-nicpf"
+-#define DRV_VF_NAME	"octeontx2-nicvf"
++#define DRV_NAME	"rvu-nicpf"
++#define DRV_VF_NAME	"rvu-nicvf"
+ 
+ struct otx2_stat {
+ 	char name[ETH_GSTRING_LEN];
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+index 2f2e8a3d7924..53df7fff92c4 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+@@ -1533,14 +1533,6 @@ int otx2_open(struct net_device *netdev)
+ 	if (!qset->rq)
+ 		goto err_free_mem;
+ 
+-	if (test_bit(CN10K_LMTST, &pf->hw.cap_flag)) {
+-		/* Reserve LMT lines for NPA AURA batch free */
+-		pf->hw.npa_lmt_base = pf->hw.lmt_base;
+-		/* Reserve LMT lines for NIX TX */
+-		pf->hw.nix_lmt_base = (u64 *)((u64)pf->hw.npa_lmt_base +
+-				      (pf->npa_lmt_lines * LMT_LINE_SIZE));
+-	}
+-
+ 	err = otx2_init_hw_resources(pf);
+ 	if (err)
+ 		goto err_free_mem;
+@@ -2668,6 +2660,8 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ err_ptp_destroy:
+ 	otx2_ptp_destroy(pf);
+ err_detach_rsrc:
++	if (pf->hw.lmt_info)
++		free_percpu(pf->hw.lmt_info);
+ 	if (test_bit(CN10K_LMTST, &pf->hw.cap_flag))
+ 		qmem_free(pf->dev, pf->dync_lmt);
+ 	otx2_detach_resources(&pf->mbox);
+@@ -2811,6 +2805,8 @@ static void otx2_remove(struct pci_dev *pdev)
+ 	otx2_mcam_flow_del(pf);
+ 	otx2_shutdown_tc(pf);
+ 	otx2_detach_resources(&pf->mbox);
++	if (pf->hw.lmt_info)
++		free_percpu(pf->hw.lmt_info);
+ 	if (test_bit(CN10K_LMTST, &pf->hw.cap_flag))
+ 		qmem_free(pf->dev, pf->dync_lmt);
+ 	otx2_disable_mbox_intr(pf);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
+index 869de5f59e73..3ff1ad79c001 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
+@@ -80,7 +80,6 @@ struct otx2_snd_queue {
+ 	u16			num_sqbs;
+ 	u16			sqe_thresh;
+ 	u8			sqe_per_sqb;
+-	u32			lmt_id;
+ 	u64			 io_addr;
+ 	u64			*aura_fc_addr;
+ 	u64			*lmt_addr;
+@@ -111,7 +110,6 @@ struct otx2_cq_poll {
+ struct otx2_pool {
+ 	struct qmem		*stack;
+ 	struct qmem		*fc_addr;
+-	u64			*lmt_addr;
+ 	u16			rbsize;
+ };
+ 
+diff --git a/include/linux/soc/marvell/octeontx2/asm.h b/include/linux/soc/marvell/octeontx2/asm.h
+index 28c04d918f0f..fa1d6af0164e 100644
+--- a/include/linux/soc/marvell/octeontx2/asm.h
++++ b/include/linux/soc/marvell/octeontx2/asm.h
+@@ -22,12 +22,17 @@
+ 			 : [rs]"r" (ioaddr));           \
+ 	(result);                                       \
+ })
++/*
++ * STEORL store to memory with release semantics.
++ * This will avoid using DMB barrier after each LMTST
++ * operation.
++ */
+ #define cn10k_lmt_flush(val, addr)			\
+ ({							\
+ 	__asm__ volatile(".cpu  generic+lse\n"		\
+-			 "steor %x[rf],[%[rs]]"		\
+-			 : [rf]"+r"(val)		\
+-			 : [rs]"r"(addr));		\
++			 "steorl %x[rf],[%[rs]]"		\
++			 : [rf] "+r"(val)		\
++			 : [rs] "r"(addr));		\
+ })
+ #else
+ #define otx2_lmt_flush(ioaddr)          ({ 0; })
+-- 
+2.17.1
 
-Revert "net: fix NULL pointer reference in cipso_v4_doi_free"
-
-see if that's the right way?
-
-Regards,
-Michael Wang
-
-> 
-> Thanks.
-> 
