@@ -2,71 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F8293FD91D
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 14:00:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D72B53FD96B
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 14:18:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243888AbhIAMBD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 08:01:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49958 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241703AbhIAMBC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Sep 2021 08:01:02 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id ACD6A60F92;
-        Wed,  1 Sep 2021 12:00:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1630497605;
-        bh=TJFWF6O/M89tOe5peR6syhL+AxR3eCH5u5/tmbONARo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=MeUibz2+NACwzj+yYImBUDj7lXfryqKpsaSlTQD0i509zUUYu8alDFycFfxt1iR1P
-         LaW4l79kFUPZ2/kOs6ORWyA/UUXDc/Hyao50RLQkZtmcGUPqZaHxQ+nMWzUMnpl0WT
-         SQmdODUe1wu6fzpMfZ+IWVrbDUoau5NHwgkKslA8D9M6jQJnK5W8vXFWqb+xbm3Oz4
-         QhkRCOZh27rSUHooyz5HjEfOTL5hFWytuw8Yoh0fqwzaLt+96Qn60b2DWsCkIRN8Lr
-         rNL1YzdKjUOLcBbw6D8PDjNLFQ5zbMiT9E7EfqLeWsrq4wlG3vzitYn1n9ECysfzeJ
-         Vz/UgK4uCSCxg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 989FF609CF;
-        Wed,  1 Sep 2021 12:00:05 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S244059AbhIAMSh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 08:18:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54992 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244051AbhIAMSg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 08:18:36 -0400
+Received: from laurent.telenet-ops.be (laurent.telenet-ops.be [IPv6:2a02:1800:110:4::f00:19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1858C061760
+        for <netdev@vger.kernel.org>; Wed,  1 Sep 2021 05:17:39 -0700 (PDT)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed20:2193:279a:893d:20ae])
+        by laurent.telenet-ops.be with bizsmtp
+        id ocHd250011ZidPp01cHd0y; Wed, 01 Sep 2021 14:17:37 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1mLPBQ-0017AR-Ls; Wed, 01 Sep 2021 14:17:36 +0200
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1mLPBQ-00AOXs-6t; Wed, 01 Sep 2021 14:17:36 +0200
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+To:     Arnd Bergmann <arnd@arndb.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Sam Creasey <sammy@sammy.net>, netdev@vger.kernel.org,
+        linux-m68k@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH] net/sun3_82586: Fix return value of sun3_82586_probe()
+Date:   Wed,  1 Sep 2021 14:17:35 +0200
+Message-Id: <20210901121735.2477588-1-geert@linux-m68k.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] [v3] mptcp: Fix duplicated argument in protocol.h
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163049760562.5493.836304668668785008.git-patchwork-notify@kernel.org>
-Date:   Wed, 01 Sep 2021 12:00:05 +0000
-References: <20210901031932.7734-1-wanjiabing@vivo.com>
-In-Reply-To: <20210901031932.7734-1-wanjiabing@vivo.com>
-To:     Wan Jiabing <wanjiabing@vivo.com>
-Cc:     mathew.j.martineau@linux.intel.com, matthieu.baerts@tessares.net,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, mptcp@lists.linux.dev,
-        linux-kernel@vger.kernel.org, kael_w@yeah.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+drivers/net/ethernet/i825xx/sun3_82586.c: In function ‘sun3_82586_probe’:
+drivers/net/ethernet/i825xx/sun3_82586.c:317:9: warning: returning ‘struct net_device *’ from a function with return type ‘int’ makes integer from pointer without a cast [-Wint-conversion]
+  317 |  return dev;
+      |         ^~~
 
-This patch was applied to netdev/net.git (refs/heads/master):
+The return type of sun3_82586_probe() was changed, but one return value
+was forgotten to be updated.
 
-On Wed,  1 Sep 2021 11:19:32 +0800 you wrote:
-> Fix the following coccicheck warning:
-> ./net/mptcp/protocol.h:36:50-73: duplicated argument to & or |
-> 
-> The OPTION_MPTCP_MPJ_SYNACK here is duplicate.
-> Here should be OPTION_MPTCP_MPJ_ACK.
-> 
-> Fixes: 74c7dfbee3e18 ("mptcp: consolidate in_opt sub-options fields in a bitmask")
-> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
-> 
-> [...]
+Fixes: e179d78ee11a70e2 ("m68k: remove legacy probing")
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+---
+ drivers/net/ethernet/i825xx/sun3_82586.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Here is the summary with links:
-  - [v3] mptcp: Fix duplicated argument in protocol.h
-    https://git.kernel.org/netdev/net/c/780aa1209f88
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+diff --git a/drivers/net/ethernet/i825xx/sun3_82586.c b/drivers/net/ethernet/i825xx/sun3_82586.c
+index 8c57e6e36647e9d3..ec4c5cfe2d68e8ed 100644
+--- a/drivers/net/ethernet/i825xx/sun3_82586.c
++++ b/drivers/net/ethernet/i825xx/sun3_82586.c
+@@ -314,7 +314,7 @@ static int __init sun3_82586_probe(void)
+ 	err = register_netdev(dev);
+ 	if (err)
+ 		goto out2;
+-	return dev;
++	return 0;
+ 
+ out2:
+ 	release_region(ioaddr, SUN3_82586_TOTAL_SIZE);
+-- 
+2.25.1
 
