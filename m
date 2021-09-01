@@ -2,178 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 887163FD017
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 02:02:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8774A3FD01A
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 02:10:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242522AbhIAADJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 20:03:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56134 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241638AbhIAADH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 20:03:07 -0400
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3858C061575;
-        Tue, 31 Aug 2021 17:02:11 -0700 (PDT)
-Received: by mail-yb1-xb34.google.com with SMTP id e133so1881102ybh.0;
-        Tue, 31 Aug 2021 17:02:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rJROg9nKYeDHsPA+zUJoTFsTIZiswC6JkF6rV7YqPh4=;
-        b=TmbhOH6QnaYA8KwUtrcoqZwnHztDiSm3QboMYBB7XlBGLmjiJV+REGCTrIVLkkZPm/
-         DNh43A8ZKhWyRrtQ7/Lzd4s9/L24ha+9FyoCpaENiLsrxBRFbaTSZqv5I9pIDDMnt8af
-         eVBvlFuUhFgKw9budzyVoLjcZVHrVNIJ9mWBEu54KkbM5QefQGd+6wuhDuoP5Truob6K
-         64BFx1d2GWLkIV/+IDYXXqzRkowcB/ZLKlKgStZcnoxgfD76adv1SraAJmQ6LiwblB/5
-         EJrZfU5fUJ2tmDs+huuKkJQLdrbWDMFkEds1WmJer4BWpxSah0OFr5/TeIcOIEQ+w7RD
-         60Cg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rJROg9nKYeDHsPA+zUJoTFsTIZiswC6JkF6rV7YqPh4=;
-        b=nDDEtZSljW/9FLL3Kh+3lJL19AQQt1t8mi3caZ0DztDVTB3TNJnJgnFWsNK5GQwnTu
-         hfszdr2jhg8q6TpCA9KHaXnHtXNFaVrjmHk11neDq23P5QkPgmZO6mPXwJmcQ/LQsHTv
-         pLDs4vPYz+swLhrrO0EcvbSX8RdT7b2SdPsfV9QZxq8XVCnmhtNUAzmI88ZjDcx6ehHp
-         AjdxyHrsi5T3oexkvneOgvL3bIgkAgQKlAc8cROlQaM92UUmufeXBeHJ6cpcyfq39hRk
-         x0loOLNAnHeI1TcJwtk6ZBmP4iytxG1dfiY6hTUFqVjKAUUFy4ojW4g+Visl7a7Z+xp8
-         SqMA==
-X-Gm-Message-State: AOAM531P7aFlrC78Ilxguhp8csR7K84XBhwJoOBPBMk/8LbnIp5Be85F
-        0XnCbZss0Cg3kl8n4OzMx1ayshfQD61prSE+Xn8FlFxR
-X-Google-Smtp-Source: ABdhPJxVp5giCBTW8ND2KTzbfXQ1BtZI8EgREuyQunWcRnzXUngma0wLPfhQCK108Vh4FWwOivPl5ZRKB6rB9Ti1EaE=
-X-Received: by 2002:a25:bb13:: with SMTP id z19mr35589933ybg.347.1630454531213;
- Tue, 31 Aug 2021 17:02:11 -0700 (PDT)
+        id S245248AbhIAAKv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 20:10:51 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:3166 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S243304AbhIAAJN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 20:09:13 -0400
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 18104OF7160689
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 20:08:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=AHv6sVqRAYmxLti/u194BDmBrG5u+VZ56qtGbA30CIE=;
+ b=DwynicHmbCHpz3AudL4oHgv62l3gzXJGnNr5fK4rhUV4f2JnJT3D7d05IKEribU7tW3M
+ GQe4axNlP5ExqLyRyyyOabb65lLQgqX7Uka2MB+LuGyd1dn8Ew1Wg3s8Q6P7ahfYai+8
+ IhKToD0+uTgfRTq7/+ZTV968wK2HNQ0aSMhIx3E0VIOVbuStY9y3KPsqePyDEywOdch2
+ csaM5LRSwZ0Vul5UCf76gyzmgotIt2nthhvG0nLxOxrL+GpRSSRuPxXbURMds5or+v71
+ sSh+w66qKS4diKJ2JGJfXSOd+D/IyPLRYQF6H+fyEJA1DxMIXPIgrED4wFZJxHvcO/yJ yw== 
+Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3asuk9v3cj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 20:08:17 -0400
+Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
+        by ppma02wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 17VNue5M022830
+        for <netdev@vger.kernel.org>; Wed, 1 Sep 2021 00:08:16 GMT
+Received: from b03cxnp07028.gho.boulder.ibm.com (b03cxnp07028.gho.boulder.ibm.com [9.17.130.15])
+        by ppma02wdc.us.ibm.com with ESMTP id 3aqcscj36n-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 00:08:16 +0000
+Received: from b03ledav004.gho.boulder.ibm.com (b03ledav004.gho.boulder.ibm.com [9.17.130.235])
+        by b03cxnp07028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 18108Fg147513992
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 1 Sep 2021 00:08:15 GMT
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 40ECD7806B;
+        Wed,  1 Sep 2021 00:08:15 +0000 (GMT)
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E321B78067;
+        Wed,  1 Sep 2021 00:08:13 +0000 (GMT)
+Received: from suka-w540.ibmuc.com (unknown [9.65.237.107])
+        by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Wed,  1 Sep 2021 00:08:13 +0000 (GMT)
+From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     Brian King <brking@linux.ibm.com>, cforno12@linux.ibm.com,
+        Dany Madden <drt@linux.ibm.com>,
+        Rick Lindsley <ricklind@linux.ibm.com>
+Subject: [PATCH net-next 0/9] ibmvnic: Reuse ltb, rx, tx pools
+Date:   Tue, 31 Aug 2021 17:08:03 -0700
+Message-Id: <20210901000812.120968-1-sukadev@linux.ibm.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20210826193922.66204-1-jolsa@kernel.org> <20210826193922.66204-18-jolsa@kernel.org>
- <CAEf4BzbvhgG8uLtkWHYmTBzKnPSJOLAmqDum0tZn1LNVi-8-nw@mail.gmail.com>
-In-Reply-To: <CAEf4BzbvhgG8uLtkWHYmTBzKnPSJOLAmqDum0tZn1LNVi-8-nw@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 31 Aug 2021 17:02:00 -0700
-Message-ID: <CAEf4Bza5wz49r0QfuJ8d_3bxw9Cy3D_vGtFPkQ1OUJDQn6XKbQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 17/27] bpf: Add multi trampoline attach support
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
-        Viktor Malik <vmalik@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: h7pbN1VTS7VrOa1b3JgMtttT9to3X5Gh
+X-Proofpoint-ORIG-GUID: h7pbN1VTS7VrOa1b3JgMtttT9to3X5Gh
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-08-31_10:2021-08-31,2021-08-31 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxlogscore=999
+ impostorscore=0 mlxscore=0 phishscore=0 lowpriorityscore=5 malwarescore=0
+ bulkscore=5 suspectscore=0 clxscore=1011 spamscore=0 priorityscore=1501
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2107140000
+ definitions=main-2108310133
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 31, 2021 at 4:36 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Thu, Aug 26, 2021 at 12:41 PM Jiri Olsa <jolsa@redhat.com> wrote:
-> >
-> > Adding new multi trampoline link (BPF_LINK_TYPE_TRACING_MULTI)
-> > as an interface to attach program to multiple functions.
-> >
-> > The link_create bpf_attr interface already has 'bpf_prog' file
-> > descriptor, that defines the program to be attached. It must be
-> > loaded with BPF_F_MULTI_FUNC flag.
-> >
-> > Adding new multi_btf_ids/multi_btf_ids_cnt link_create bpf_attr
-> > fields that provides BTF ids.
-> >
-> > The new link gets multi trampoline (via bpf_trampoline_multi_get)
-> > and links the provided program with embedded trampolines and the
-> > 'main' trampoline with new multi link/unlink functions:
-> >
-> >   int bpf_trampoline_multi_link_prog(struct bpf_prog *prog,
-> >                                      struct bpf_trampoline_multi *tr);
-> >   int bpf_trampoline_multi_unlink_prog(struct bpf_prog *prog,
-> >                                        struct bpf_trampoline_multi *tr);
-> >
-> > If embedded trampoline contains fexit programs, we need to switch
-> > its model to the multi trampoline model (because of the final 'ret'
-> > argument). We keep the count of attached multi func programs for each
-> > trampoline, so we can tell when to switch the model.
+It can take a long time to free and reallocate rx and tx pools and long
+term buffer (LTB) during each reset of the VNIC. This is specially true
+when the partition (LPAR) is heavily loaded and going through a Logical
+Partition Migration (LPM). The long drawn reset causes the LPAR to lose
+connectivity for extended periods of time and results in "RMC connection"
+errors and the LPM failing.
 
-Related to my comments on the next patch, if we switch the order of
-return value and always reserve 6 slots for input args, regardless of
-the actual number of function input args, that should make this
-upgrade logic unnecessary, right?
+What is worse is that during the LPM we could get a failover because
+of the lost connectivity. At that point, the vnic driver releases
+even the resources it has already allocated and starts over.
 
-> >
-> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > ---
-> >  include/linux/bpf.h            |   5 ++
-> >  include/uapi/linux/bpf.h       |   5 ++
-> >  kernel/bpf/core.c              |   1 +
-> >  kernel/bpf/syscall.c           | 120 +++++++++++++++++++++++++++++++++
-> >  kernel/bpf/trampoline.c        |  87 ++++++++++++++++++++++--
-> >  tools/include/uapi/linux/bpf.h |   5 ++
-> >  6 files changed, 219 insertions(+), 4 deletions(-)
-> >
->
-> [...]
->
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > index 1f9d336861f0..9533200ffadf 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -1008,6 +1008,7 @@ enum bpf_link_type {
-> >         BPF_LINK_TYPE_NETNS = 5,
-> >         BPF_LINK_TYPE_XDP = 6,
-> >         BPF_LINK_TYPE_PERF_EVENT = 7,
-> > +       BPF_LINK_TYPE_TRACING_MULTI = 8,
-> >
-> >         MAX_BPF_LINK_TYPE,
-> >  };
-> > @@ -1462,6 +1463,10 @@ union bpf_attr {
-> >                                  */
-> >                                 __u64           bpf_cookie;
-> >                         } perf_event;
-> > +                       struct {
-> > +                               __aligned_u64   multi_btf_ids;          /* addresses to attach */
-> > +                               __u32           multi_btf_ids_cnt;      /* addresses count */
-> > +                       };
->
-> Please follow the pattern of perf_event, name this struct "multi".
->
-> >                 };
-> >         } link_create;
-> >
-> > diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-> > index bad03dde97a2..6c16ac43dd91 100644
-> > --- a/kernel/bpf/core.c
-> > +++ b/kernel/bpf/core.c
->
-> [...]
->
-> > +
-> > +       bpf_link_init(&link->link, BPF_LINK_TYPE_TRACING_MULTI,
-> > +                     &bpf_tracing_multi_link_lops, prog);
-> > +       link->attach_type = prog->expected_attach_type;
-> > +       link->multi = multi;
-> > +
-> > +       err = bpf_link_prime(&link->link, &link_primer);
-> > +       if (err)
-> > +               goto out_free;
-> > +       err = bpf_trampoline_multi_link_prog(prog, multi);
-> > +       if (err)
-> > +               goto out_free;
->
-> bpf_link_cleanup(), can't free link after priming. Look at other
-> places using bpf_link.
->
->
-> > +       return bpf_link_settle(&link_primer);
-> > +
-> > +out_free:
-> > +       bpf_trampoline_multi_put(multi);
-> > +       kfree(link);
-> > +out_free_ids:
-> > +       kfree(btf_ids);
-> > +       return err;
-> > +}
-> > +
->
-> [...]
+As long as the resources we have already allocated are valid/applicable,
+we might as well hold on to them while trying to allocate the remaining
+resources. This patch set attempts to reuse the resources previously
+allocated as long as they are valid. It seems to vastly improve the
+time taken for the vnic reset. We have also not seen any RMC connection
+issues during our testing with this patch set.
+
+If the backing devices for a vnic adapter are not "matched" (see "pool
+parameters" in patches 8 and 9) it is possible that we will still free
+all the resources and allocate them. If that becomes a common problem,
+we have to address it separately.
+
+Thanks to input and extensive testing from Brian King, Cris Forno,
+Dany Madden, Rick Lindsley.
+
+Sukadev Bhattiprolu (9):
+  ibmvnic: consolidate related code in replenish_rx_pool()
+  ibmvnic: Fix up some comments and messages
+  ibmvnic: Use/rename local vars in init_rx_pools
+  ibmvnic: Use/rename local vars in init_tx_pools
+  ibmvnic: init_tx_pools move loop-invariant code out
+  ibmvnic: use bitmap for LTB map_ids
+  ibmvnic: Reuse LTB when possible
+  ibmvnic: Reuse rx pools when possible
+  ibmvnic: Reuse tx pools when possible
+
+ drivers/net/ethernet/ibm/ibmvnic.c | 592 ++++++++++++++++++-----------
+ drivers/net/ethernet/ibm/ibmvnic.h |  10 +-
+ 2 files changed, 379 insertions(+), 223 deletions(-)
+
+-- 
+2.31.1
+
