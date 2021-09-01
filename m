@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC6243FE43F
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 22:47:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4982F3FE440
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 22:47:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238307AbhIAUsL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 16:48:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33280 "EHLO
+        id S238758AbhIAUsM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 16:48:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233905AbhIAUsF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 16:48:05 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C4C3C061764
-        for <netdev@vger.kernel.org>; Wed,  1 Sep 2021 13:47:08 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id x16so799242pfh.2
-        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 13:47:08 -0700 (PDT)
+        with ESMTP id S233327AbhIAUsI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 16:48:08 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4473DC061575
+        for <netdev@vger.kernel.org>; Wed,  1 Sep 2021 13:47:09 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id 8so724705pga.7
+        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 13:47:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=0WJ+KTbtxL5NhEb3PLLI/YCaMbaL5oHeHgo83ZaRNSU=;
-        b=d2Vt+IYj0gjOjykYd/5TUPMQ3QnbWFFhYchD8hBemCfeSsGoO3r67u0QxszNLEEGJ5
-         L1RbVETlxD9KXUmBhsBLKzDivWCS2wBHEfeH2NPUr4+3MW0gV0UyvdZCGVV5q281qMLx
-         +oYF/noRyJbbsfSCfe+R1VnvGoDqQXtXAZ0DisI7NE20/P1tket5XASyYjTmf0YvYWN1
-         CdJqmbKiAicU1L1C/pWzp7SMN2zmPXX5f6nmAuh0wgoBZT9ddU+++7ikIBkEr7ih2j2O
-         jHyAXZ3PvMxtY4D6xVHvg3U/wwjMH3A6myPywLoloqI/MuWWV6Fq3v8jmJCn9IAqEAX9
-         eE2Q==
+        bh=FubUooDS2WKMSYk2DOHk3EgWqp53DYzfL986g15sWe4=;
+        b=G25M0gwUD74aqihsxJCooO/Id/T+ZQ79GNmWjRK2WZjTFAEmoYVEt81Ubv+GATYUnl
+         pZB0nlmY6NEP7tzQANsVcERDn4o2dBnXzAdM1NUL0EEJLi7udT11hJ/nwks+IdT5LoK7
+         sqmgyvJQPSTUO9lbMzX2j4l8nOV1HQKKC7U3m1yN3Tx3upcZokMJklZxWEtSt9nnLgNL
+         aaqCwyIF3k1owPVrWW+q5/uYC5A9qryezAom+uYAQhZsYxdcaPT2IMzWqX73OOHKXdm8
+         tAKf9NyZ3rzyPMkHfnfgYX4Y7ok74jtPip8Gqm3pVCWO8Fg4VtcUr7zKyTSnp/3IT7n1
+         DfOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=0WJ+KTbtxL5NhEb3PLLI/YCaMbaL5oHeHgo83ZaRNSU=;
-        b=rISnTv8/Yasw0zmzvnw2WjHWwLva1tJIRhgVyd/ShxNU8Gl0ki80g6t1DCIbZxdTZZ
-         123wPI6BW4Fwbo2cFJjRGx2v/aEtCzw4h1ooiCrKC6k4iXKnPouANU3NHHa14Yn0dfjY
-         VtqQIKDC9hEWPvbTtoClm23rNCOrdyVgEjVsuM/f6KQFcAV/RBSjlS3tHX541BJNCiw2
-         Uu+5SA6x73mF06Tmy1au5co5tAWI1khGObaRn0b4bokgLQmfdlLk3T2xquFLWXMOzY7A
-         fLaJ9H/RAwgQitIE47um94IwpdRG6e/RoJdovrVsUUz8yJq8oJ4/JeNFFGCkw5KcG4Yb
-         UBKQ==
-X-Gm-Message-State: AOAM531bsa+7dfxdXz40ZgxsdCoqlPVJtxSESqWwX0IA+fxY2BTj77tv
-        itRt1CNGrtjvtTgnf5x+xrhMhAuPSiv8EA==
-X-Google-Smtp-Source: ABdhPJz1N8/pTPuuQvqJKdukxWu0WVCTBNRLidVf/xlXR8fkGwdpUNfA+fx3+SFUPkUfdo2a06Amhw==
-X-Received: by 2002:a63:1247:: with SMTP id 7mr867925pgs.366.1630529227221;
-        Wed, 01 Sep 2021 13:47:07 -0700 (PDT)
+        bh=FubUooDS2WKMSYk2DOHk3EgWqp53DYzfL986g15sWe4=;
+        b=EjLx6DS2UA9oSvNhrxTQq2bbv0gB0nAjPm4CanlrnVYSWaBMAwgCpqKXscBc+8msq8
+         F+MuuPTDOi/u2nx74G+0a3XyFky42G5dlWX8ipnuYNCb+U+U56E6zgdo5Ry6ydFzEQuD
+         N/YU59u/x7BhLJeoLkn5JyrgfeRIXdXvb+L6X6q7WO8Q8WysGruCJlub+kOfv/eqlQzo
+         uFrLRy+xcm7TbsXCHlNVDUwnNoeEE/Orjw1x1sJluKSRIKucHpayh5DeB1rRk4+tNLiZ
+         qHnDbQvjsdLX1Ue0hsMVKYMh4c+4+hJzn07OUY0bZ9cfyP6Qkxni/cNwPHCAOqqqSPn1
+         OFTw==
+X-Gm-Message-State: AOAM532JHoPFJBgAXiZPl+HQ4ja2sFS3nmWaRC7VrdOE/9is2ZiybbTc
+        BD+SSdF5IUEW8hE7ABMIH9gF+A/+2XtVbw==
+X-Google-Smtp-Source: ABdhPJxm5XH/JYseoOdaSfSKFZeana8XTW5b4KHzfwIMjPtf0arhEAeDTLupj+fL2azoAAXllYaD0A==
+X-Received: by 2002:a65:47c6:: with SMTP id f6mr876471pgs.450.1630529228306;
+        Wed, 01 Sep 2021 13:47:08 -0700 (PDT)
 Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
-        by smtp.gmail.com with ESMTPSA id g26sm565073pgb.45.2021.09.01.13.47.06
+        by smtp.gmail.com with ESMTPSA id g26sm565073pgb.45.2021.09.01.13.47.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Sep 2021 13:47:06 -0700 (PDT)
+        Wed, 01 Sep 2021 13:47:07 -0700 (PDT)
 From:   Stephen Hemminger <stephen@networkplumber.org>
 X-Google-Original-From: Stephen Hemminger <sthemmin@microsoft.com>
 To:     netdev@vger.kernel.org
 Cc:     Stephen Hemminger <stephen@networkplumber.org>
-Subject: [PATCH iproute2-next 3/4] ip: remove routef script
-Date:   Wed,  1 Sep 2021 13:47:00 -0700
-Message-Id: <20210901204701.19646-4-sthemmin@microsoft.com>
+Subject: [PATCH iproute2-next 4/4] ip: rewrite routel in python
+Date:   Wed,  1 Sep 2021 13:47:01 -0700
+Message-Id: <20210901204701.19646-5-sthemmin@microsoft.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210901204701.19646-1-sthemmin@microsoft.com>
 References: <20210901204701.19646-1-sthemmin@microsoft.com>
@@ -65,83 +65,201 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Stephen Hemminger <stephen@networkplumber.org>
 
-This script is old and limited to IPv4.
-Using ip route command directly is better option.
+Not sure if anyone uses the routel script. The script was
+a combination of ip route, shell and awk doing command scraping.
+It is now possible to do this much better using the JSON
+output formats and python.
+
+Rewriting also fixes the bug where the old script could not parse
+the current output format.  At the end was getting:
+/usr/bin/routel: 48: shift: can't shift that many
+
+The new script also has IPv6 as option.
 
 Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
 ---
- ip/Makefile       |  2 +-
- ip/routef         | 10 ----------
- man/man8/routef.8 |  1 -
- man/man8/routel.8 | 12 ++----------
- 4 files changed, 3 insertions(+), 22 deletions(-)
- delete mode 100755 ip/routef
- delete mode 100644 man/man8/routef.8
+ ip/routel         | 124 +++++++++++++++++++++-------------------------
+ man/man8/routel.8 |  30 ++++++++---
+ 2 files changed, 79 insertions(+), 75 deletions(-)
 
-diff --git a/ip/Makefile b/ip/Makefile
-index e27dfa097877..bcc5f816b319 100644
---- a/ip/Makefile
-+++ b/ip/Makefile
-@@ -18,7 +18,7 @@ RTMONOBJ=rtmon.o
- include ../config.mk
- 
- ALLOBJ=$(IPOBJ) $(RTMONOBJ)
--SCRIPTS=routel routef
-+SCRIPTS=routel
- TARGETS=ip rtmon
- 
- all: $(TARGETS) $(SCRIPTS)
-diff --git a/ip/routef b/ip/routef
-deleted file mode 100755
-index c251e7b87efd..000000000000
---- a/ip/routef
-+++ /dev/null
-@@ -1,10 +0,0 @@
--#! /bin/sh
--# SPDX-License-Identifier: GPL-2.0
+diff --git a/ip/routel b/ip/routel
+index 7056886d0f94..09a901267fb3 100755
+--- a/ip/routel
++++ b/ip/routel
+@@ -1,72 +1,62 @@
+-#!/bin/sh
++#! /usr/bin/env python3
+ # SPDX-License-Identifier: GPL-2.0
 -
--if [ -z "$*" ] ; then
--	exec ip -4 ro flush  scope global  type unicast
--else
--	echo "Usage: routef"
--	echo
--	echo "This script will flush the IPv4 routing table"
--fi
-diff --git a/man/man8/routef.8 b/man/man8/routef.8
-deleted file mode 100644
-index c2a70598923f..000000000000
---- a/man/man8/routef.8
-+++ /dev/null
-@@ -1 +0,0 @@
--.so man8/routel.8
+-#
+-# Script created by: Stephen R. van den Berg <srb@cuci.nl>, 1999/04/18
+-# Donated to the public domain.
+-#
+-# This script transforms the output of "ip" into more readable text.
+-# "ip" is the Linux-advanced-routing configuration tool part of the
+-# iproute package.
+ #
++# This is simple script to process JSON output from ip route
++# command and format it.  Based on earlier shell script version.
++"""Script to parse ip route output into more readable text."""
++
++import sys
++import json
++import getopt
++import subprocess
++
++
++def usage():
++    '''Print usage and exit'''
++    print("Usage: {} [tablenr [raw ip args...]]".format(sys.argv[0]))
++    sys.exit(64)
++
++
++def main():
++    '''Process the arguments'''
++    family = 'inet'
++    try:
++        opts, args = getopt.getopt(sys.argv[1:], "h46f:", ["help", "family="])
++    except getopt.GetoptError as err:
++        print(err)
++        usage()
++
++    for opt, arg in opts:
++        if opt in ["-h", "--help"]:
++            usage()
++        elif opt == '-6':
++            family = 'inet6'
++        elif opt == "-4":
++            family = 'inet'
++        elif opt in ["-f", "--family"]:
++            family = arg
++        else:
++            assert False, "unhandled option"
++
++    if not args:
++        args = ['0']
++
++    cmd = ['ip', '-f', family, '-j', 'route', 'list', 'table'] + args
++    process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
++    tbl = json.load(process.stdout)
++    if family == 'inet':
++        fmt = '{:15} {:15} {:15} {:8} {:8}{:<16} {}'
++    else:
++        fmt = '{:32} {:32} {:32} {:8} {:8}{:<16} {}'
++
++    # ip route json keys
++    keys = ['dst', 'gateway', 'prefsrc', 'protocol', 'scope', 'dev', 'table']
++    print(fmt.format(*map(lambda x: x.capitalize(), keys)))
+ 
+-test "X-h" = "X$1" && echo "Usage: $0 [tablenr [raw ip args...]]" && exit 64
++    for record in tbl:
++        fields = [record[k] if k in record else '' for k in keys]
++        print(fmt.format(*fields))
+ 
+-test -z "$*" && set 0
+ 
+-ip route list table "$@" |
+- while read network rest
+- do set xx $rest
+-    shift
+-    proto=""
+-    via=""
+-    dev=""
+-    scope=""
+-    src=""
+-    table=""
+-    case $network in
+-       broadcast|local|unreachable) via=$network
+-          network=$1
+-          shift
+-          ;;
+-    esac
+-    while test $# != 0
+-    do
+-       case "$1" in
+-          proto|via|dev|scope|src|table)
+-             key=$1
+-             val=$2
+-             eval "$key='$val'"
+-             shift 2
+-             ;;
+-          dead|onlink|pervasive|offload|notify|linkdown|unresolved)
+-             shift
+-             ;;
+-          *)
+-             # avoid infinite loop on unknown keyword without value at line end
+-             shift
+-             shift
+-             ;;
+-       esac
+-    done
+-    echo "$network	$via	$src	$proto	$scope	$dev	$table"
+- done | awk -F '	' '
+-BEGIN {
+-   format="%15s%-3s %15s %15s %8s %8s%7s %s\n";
+-   printf(format,"target","","gateway","source","proto","scope","dev","tbl");
+- }
+- { network=$1;
+-   mask="";
+-   if(match(network,"/"))
+-    { mask=" "substr(network,RSTART+1);
+-      network=substr(network,0,RSTART);
+-    }
+-   via=$2;
+-   src=$3;
+-   proto=$4;
+-   scope=$5;
+-   dev=$6;
+-   table=$7;
+-   printf(format,network,mask,via,src,proto,scope,dev,table);
+- }
+-'
++if __name__ == "__main__":
++    main()
 diff --git a/man/man8/routel.8 b/man/man8/routel.8
-index 2270eacb51fb..b32eeafcf69d 100644
+index b32eeafcf69d..b1668e73615a 100644
 --- a/man/man8/routel.8
 +++ b/man/man8/routel.8
-@@ -2,21 +2,13 @@
+@@ -1,17 +1,31 @@
+-.TH "ROUTEL" "8" "3 Jan, 2008" "iproute2" "Linux"
++.TH ROUTEL 8 "1 Sept, 2021" "iproute2" "Linux"
  .SH "NAME"
- .LP
+-.LP
  routel \- list routes with pretty output format
--.br
--routef \- flush routes
- .SH "SYNTAX"
- .LP
- routel [\fItablenr\fP [\fIraw ip args...\fP]]
--.br
--routef
+-.SH "SYNTAX"
+-.LP
+-routel [\fItablenr\fP [\fIraw ip args...\fP]]
++.SH SYNOPSIS
++.B routel
++.RI "[ " OPTIONS " ]"
++.RI "[ " tablenr
++[ \fIip route options...\fR ] ]
++.P
++.ti 8
++.IR OPTIONS " := {"
++\fB-h\fR | \fB--help\fR |
++[{\fB-f\fR | \fB--family\fR }
++{\fBinet\fR | \fBinet6\fR } |
++\fB-4\fR | \fB-6\fR }
++
  .SH "DESCRIPTION"
  .LP
--These programs are a set of helper scripts you can use instead of raw iproute2 commands.
--.br
--The routel script will list routes in a format that some might consider easier to interpret then the ip route list equivalent.
--.br
--The routef script does not take any arguments and will simply flush the routing table down the drain. Beware! This means deleting all routes which will make your network unusable!
--
-+The routel script will list routes in a format that some might consider easier to interpret
-+then the ip route list equivalent.
+-The routel script will list routes in a format that some might consider easier to interpret
+-then the ip route list equivalent.
++The routel script will list routes in a format that some might consider
++easier to interpret then the
++.B ip
++route list equivalent.
++
  .SH "AUTHORS"
  .LP
- The routel script was written by Stephen R. van den Berg <srb@cuci.nl>, 1999/04/18 and donated to the public domain.
+-The routel script was written by Stephen R. van den Berg <srb@cuci.nl>, 1999/04/18 and donated to the public domain.
++Rewritten by Stephen Hemminger <stephen@networkplumber.org>.
++.br
++Original script by Stephen R. van den Berg <srb@cuci.nl>.
+ .br
+ This manual page was written by Andreas Henriksson  <andreas@fatal.se>, for the Debian GNU/Linux system.
+ .SH "SEE ALSO"
 -- 
 2.30.2
 
