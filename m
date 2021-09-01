@@ -2,119 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F2A43FD433
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 09:07:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBF983FD443
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 09:11:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242493AbhIAHIj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 03:08:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38964 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242472AbhIAHIh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 03:08:37 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B446C061575;
-        Wed,  1 Sep 2021 00:07:40 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id s12so3274671ljg.0;
-        Wed, 01 Sep 2021 00:07:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=tkBnSZ8tPceYf/KAGSxnZEdY1ZtMechZKaYpAIYU2LU=;
-        b=JpZndJyO+xZ+tPnCYMD2xifEVddZnLPmd+brJFxJkwgMGOki8Lmrj1E5wmSr96IMF2
-         S2Apqee7gU620BrjYj372ooKP+8t9+eOpanhgTbBXxuyW1S1QJdek8diuRmJnZWBSHP0
-         f8x73VwBsyNvw8onW+48c7JbZjT/DCDNyA0vsq7xZocBUOVHgMuHajEYEwa4rQrzualO
-         pFJGL87zIX0WAtdWO9FdmeIubO/opQkioRArXx5apfDvDl7UbupTCfjwlIOa/IS1hozI
-         YIiI68VsoRZf5cZRnVcWpLbvJcpgHr+p8mRnRd7DYMOuMqGgRGDcpwiNgsUOa00/uAss
-         1fDw==
+        id S242539AbhIAHLq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 03:11:46 -0400
+Received: from mail-vk1-f170.google.com ([209.85.221.170]:45849 "EHLO
+        mail-vk1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242480AbhIAHLp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 03:11:45 -0400
+Received: by mail-vk1-f170.google.com with SMTP id h13so629708vkc.12;
+        Wed, 01 Sep 2021 00:10:48 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=tkBnSZ8tPceYf/KAGSxnZEdY1ZtMechZKaYpAIYU2LU=;
-        b=WDOpA3ktNUIuYvIMCmmwZ4okXhrY8s0+LBZIuRAROXJzYNpaox0oMdedmmvfQDMB0j
-         vStLcM9v19o3JtqstDUZtmPT0jnmVNdjrB+vfnBiV0/egQsFIc6YUlN6QVIkVCD0TYPh
-         b9kIN0k0cfj1dmemCNMYO/8CoybEGclGwCkgLgnDQ+5o1r5cNAaeZDnsIuAPBiENXGEU
-         81InCLsqZE7+70WLa2sc8fzUDYPhp8D1gNv/C1OPInDc28+ezdg03ALWtEooH8hW6tyR
-         QD4J250Veggd3hxNu2C6Pf1B6ED174BjPwWkimp/C7IxYVVMmbN/n57p545FdPS2oQjz
-         sQ+Q==
-X-Gm-Message-State: AOAM533hbgdBmZy6E7VDGzenOBmZVhuv26VvQ9ldcUX3BVi4buDnJAsr
-        s4YIRLHZbxtdp/z+BdeV4ObIB/673vur9E5l
-X-Google-Smtp-Source: ABdhPJzBtCI4VowD9Iwme8UWUOdfX0tOvBmQwSrdCZKL4TslD81zSa8XW6GbUD12UflGAFZbRun0ew==
-X-Received: by 2002:a05:651c:2120:: with SMTP id a32mr28497251ljq.252.1630480058455;
-        Wed, 01 Sep 2021 00:07:38 -0700 (PDT)
-Received: from [10.0.0.40] (91-155-111-71.elisa-laajakaista.fi. [91.155.111.71])
-        by smtp.gmail.com with ESMTPSA id j5sm1942288lfu.1.2021.09.01.00.07.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Sep 2021 00:07:37 -0700 (PDT)
-Subject: Re: [PATCH] kconfig: forbid symbols that end with '_MODULE'
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Mark Brown <broonie@kernel.org>, Takashi Iwai <tiwai@suse.com>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-wireless@vger.kernel.org, Networking <netdev@vger.kernel.org>
-References: <20210825041637.365171-1-masahiroy@kernel.org>
- <9df591f6-53fc-4567-8758-0eb1be4eade5@gmail.com>
- <CAK7LNATDMzR1DnwwAcQFHaKZeGVYDZ1oDKL-QOe_7DaB_yByAA@mail.gmail.com>
-From:   =?UTF-8?Q?P=c3=a9ter_Ujfalusi?= <peter.ujfalusi@gmail.com>
-Message-ID: <d9e777dc-d274-92ee-4d77-711bfd553611@gmail.com>
-Date:   Wed, 1 Sep 2021 10:07:57 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VwS8bS/jaMLnv7P85/rClwUPFipS5eQCb4wP/1pXcmQ=;
+        b=E7Ors/70QI/73qTTGFu2HuLsxWtu31pBVPSK9gWgWqUd+oRlOJniXtaA2AfOldtR7j
+         FrP4DS0hLWMnE/U0VnOcpt4q1oaDCJLYcsL5DzgX3Q9fMoMKu7ueE8vqUyosKKDVUKSi
+         6LAQQd3WgPWtxW/ZQ/wU53qPmsf2RNL3iOqV19UTmb15S+cbRoeOZoSEMxEc6GdiFg7C
+         cmA1ZaSunBZ5fvC06IX/uz5wElzf2ouPjUVsQOeEyDSvhnUshyEiENzz3C8Xm1MzuVt+
+         sq81aEa6IYoWJpM4fU4CvRsOTy/QuUdDz/M+qB2Jr6qpwQqQ5TWajKkCZDB4w0m4UmFI
+         gh3g==
+X-Gm-Message-State: AOAM530hg0dNwUBLM0L6zSvKwHuAsD+aSGd8T0WVNE8Ebn+7jzhVyX23
+        UKzdSyCt7Cnmf1IbNT4h5+h8hNAuLEXQgdBAowU=
+X-Google-Smtp-Source: ABdhPJwamdo6jRb6gCXNB6sxLoVgJxLZXKS/sqoEp9LBmoFfow75VlXPYyPc0Y4XP/Fe1E/vMHdWFX30ydbtAx28nCA=
+X-Received: by 2002:a1f:bd0a:: with SMTP id n10mr20322833vkf.5.1630480248316;
+ Wed, 01 Sep 2021 00:10:48 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CAK7LNATDMzR1DnwwAcQFHaKZeGVYDZ1oDKL-QOe_7DaB_yByAA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20210803114051.2112986-1-arnd@kernel.org> <20210803114051.2112986-9-arnd@kernel.org>
+In-Reply-To: <20210803114051.2112986-9-arnd@kernel.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 1 Sep 2021 09:10:37 +0200
+Message-ID: <CAMuHMdUippGJmU2GrYpFQG0MYkD4K7g9DpA07t4609uKJzaJtQ@mail.gmail.com>
+Subject: Re: [PATCH v2 08/14] [net-next] xsurf100: drop include of lib8390.c
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>, Andrii Nakryiko <andriin@fb.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Doug Berger <opendmb@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Finn Thain <fthain@telegraphics.com.au>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, Jessica Yu <jeyu@kernel.org>,
+        Michael Schmitz <schmitzmic@gmail.com>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Sam Creasey <sammy@sammy.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Arnd,
 
-On 26/08/2021 05:28, Masahiro Yamada wrote:
-> On Wed, Aug 25, 2021 at 8:59 PM Péter Ujfalusi <peter.ujfalusi@gmail.com> wrote:
+On Tue, Aug 3, 2021 at 1:41 PM Arnd Bergmann <arnd@kernel.org> wrote:
+> From: Michael Schmitz <schmitzmic@gmail.com>
+>
+> Now that ax88796.c exports the ax_NS8390_reinit() symbol, we can
+> include 8390.h instead of lib8390.c, avoiding duplication of that
+> function and killing a few compile warnings in the bargain.
+>
+> Fixes: 861928f4e60e826c ("net-next: New ax88796 platform
+> driver for Amiga X-Surf 100 Zorro board (m68k)")
+>
+> Signed-off-by: Michael Schmitz <schmitzmic@gmail.com>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+>  drivers/net/ethernet/8390/xsurf100.c | 9 ++-------
+>  init/main.c                          | 6 +++---
 
-...
+Obviously the second change shouldn't have been part of this patch,
+and no one noticed.  Patch sent.
 
->>> diff --git a/sound/soc/ti/Kconfig b/sound/soc/ti/Kconfig
->>> index 698d7bc84dcf..c56a5789056f 100644
->>> --- a/sound/soc/ti/Kconfig
->>> +++ b/sound/soc/ti/Kconfig
->>> @@ -211,7 +211,7 @@ config SND_SOC_DM365_VOICE_CODEC
->>>         Say Y if you want to add support for SoC On-chip voice codec
->>>  endchoice
->>>
->>> -config SND_SOC_DM365_VOICE_CODEC_MODULE
->>> +config SND_SOC_DM365_VOICE_CODEC_MODULAR
->>
->> This Kconfig option is only used to select the codecs needed for the
->> voice mode, I think it would be better to use something like
->>
->> SND_SOC_DM365_SELECT_VOICE_CODECS ?
-> 
-> I do not have a strong opinion.
-> I am fine with any name unless it ends with _MODULE.
-> 
-> 
-> The sound subsystem maintainers and Arnd,
-> author of 147162f575152db800 are CC'ed.
-> 
-> If they suggest a better name, I'd be happy to adopt it.
-> 
+>  2 files changed, 5 insertions(+), 10 deletions(-)
 
-Can you resend (a separate patch would be even better) with
-SND_SOC_DM365_SELECT_VOICE_CODECS
+Gr{oetje,eeting}s,
 
-for sound/soc/ti/Kconfig ?
+                        Geert
 
-Thank you,
-Péter
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
