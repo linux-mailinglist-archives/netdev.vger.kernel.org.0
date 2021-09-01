@@ -2,92 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A99C3FD0EC
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 03:52:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED1513FD0F4
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 03:58:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241665AbhIABwq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 21:52:46 -0400
-Received: from out30-131.freemail.mail.aliyun.com ([115.124.30.131]:41096 "EHLO
-        out30-131.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231396AbhIABwp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 21:52:45 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=alimailimapcm10staff010182156082;MF=yun.wang@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0UmngFU2_1630461105;
-Received: from testdeMacBook-Pro.local(mailfrom:yun.wang@linux.alibaba.com fp:SMTPD_---0UmngFU2_1630461105)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 01 Sep 2021 09:51:46 +0800
-Subject: Re: [PATCH v2] net: fix NULL pointer reference in cipso_v4_doi_free
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <c6864908-d093-1705-76ce-94d6af85e092@linux.alibaba.com>
- <18f0171e-0cc8-6ae6-d04a-a69a2a3c1a39@linux.alibaba.com>
- <CAHC9VhTEs9E+ZeGGp96NnOhmr-6MZLXf6ckHeG8w5jh3AfgKiQ@mail.gmail.com>
- <20210830094525.3c97e460@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAHC9VhRHx=+Fek7W4oyZWVBUENQ8VnD+mWXUytKPKg+9p-J4LQ@mail.gmail.com>
- <84262e7b-fda6-9d7d-b0bd-1bb0e945e6f9@linux.alibaba.com>
- <CAHC9VhRPUa-oD_85j6RcAVvp7sLZQEAGGapYYP1fEt7Ax5LMfA@mail.gmail.com>
-From:   =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
-Message-ID: <1ed31e79-809b-7ac9-2760-869570ac22ea@linux.alibaba.com>
-Date:   Wed, 1 Sep 2021 09:51:28 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:78.0)
- Gecko/20100101 Thunderbird/78.13.0
+        id S241652AbhIAB7W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 21:59:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54306 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231567AbhIAB7V (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 31 Aug 2021 21:59:21 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1223D61057;
+        Wed,  1 Sep 2021 01:58:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1630461505;
+        bh=TRDfaY62oSVS+E5EgOaLRv1XHlM4Egv+xhPBm6XVKIE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=mNWpQHNO8Kic/1zNCOl2iAcZPzO/KLVdzSXBZNXr3YL2Yor/uSID4/XI9uiutL9ws
+         9QOsou5HaFGu323xq5qZYzTZ+NXimUMcZLvkKF3ndWqqmPrEIVW3kgT4nBODhRzl4x
+         +fGnmDMxHZsnn7+TeoL37KuYpJRRQvLmsueBNzAkGHC1mVjsTyzvJXnD9CTraxGB5v
+         BDVKS9NEHp1edBknIOVfgIAy/7AcVYri6hnvWj9VOOwWAnVny4jWcPkzoKbc8I+/08
+         x8kN6ottCjsfHe1arGtHk0buxDF4X743XiEw+Qf6rSUaXtxpMgPfxk+zvyInL1MyeU
+         QS8bpoDVcA8Uw==
+Date:   Tue, 31 Aug 2021 18:58:24 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     "Machnikowski, Maciej" <maciej.machnikowski@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "abyagowi@fb.com" <abyagowi@fb.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        bsd@fb.com
+Subject: Re: [RFC v2 net-next 1/2] rtnetlink: Add new RTM_GETSYNCESTATE
+ message to get SyncE status
+Message-ID: <20210831185824.5021e847@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210831161927.GA10747@hoboy.vegasvil.org>
+References: <20210829080512.3573627-1-maciej.machnikowski@intel.com>
+        <20210829080512.3573627-2-maciej.machnikowski@intel.com>
+        <20210829151017.GA6016@hoboy.vegasvil.org>
+        <PH0PR11MB495126A63998DABA5B5DE184EACA9@PH0PR11MB4951.namprd11.prod.outlook.com>
+        <20210830205758.GA26230@hoboy.vegasvil.org>
+        <20210830162909.110753ec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20210831161927.GA10747@hoboy.vegasvil.org>
 MIME-Version: 1.0
-In-Reply-To: <CAHC9VhRPUa-oD_85j6RcAVvp7sLZQEAGGapYYP1fEt7Ax5LMfA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2021/8/31 下午9:48, Paul Moore wrote:
-> On Mon, Aug 30, 2021 at 10:42 PM 王贇 <yun.wang@linux.alibaba.com> wrote:
->> On 2021/8/31 上午12:50, Paul Moore wrote:
->> [SNIP]
->>>>>> Reported-by: Abaci <abaci@linux.alibaba.com>
->>>>>> Signed-off-by: Michael Wang <yun.wang@linux.alibaba.com>
->>>>>> ---
->>>>>>  net/netlabel/netlabel_cipso_v4.c | 4 ++--
->>>>>>  1 file changed, 2 insertions(+), 2 deletions(-)
->>>>>
->>>>> I see this was already merged, but it looks good to me, thanks for
->>>>> making those changes.
->>>>
->>>> FWIW it looks like v1 was also merged:
->>>>
->>>> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=733c99ee8b
->>>
->>> Yeah, that is unfortunate, there was a brief discussion about that
->>> over on one of the -stable patches for the v1 patch (odd that I never
->>> saw a patchbot post for the v1 patch?).  Having both merged should be
->>> harmless, but we want to revert the v1 patch as soon as we can.
->>> Michael, can you take care of this?
->>
->> As v1 already merged, may be we could just goon with it?
->>
->> Actually both working to fix the problem, v1 will cover all the
->> cases, v2 take care one case since that's currently the only one,
->> but maybe there will be more in future.
+On Tue, 31 Aug 2021 09:19:27 -0700 Richard Cochran wrote:
+> As you said later on in this thread, any API we merge now will have to
+> last.  That is why I'm being so picky here.  We want new APIs to cover
+> current HW _and_ be reasonable for the future.
 > 
-> No.  Please revert v1 and stick with the v2 patch.  The v1 patch is in
-> my opinion a rather ugly hack that addresses the symptom of the
-> problem and not the root cause.
+> I don't see a DPLL as either a PTP Hardware Clock or a Network
+> Device.  It is a PLL.
 > 
-> It isn't your fault that both v1 and v2 were merged, but I'm asking
-> you to help cleanup the mess.  If you aren't able to do that please
-> let us know so that others can fix this properly.
+> The kernel can and should have a way to represent the relationship
+> between these three different kind of IP block.  We already have a
+> way to get from PHC to netdev interface.
 
-No problem I can help on that, just try to make sure it's not a
-meaningless work.
+Makes sense to me. I was wondering how to split things at high level
+into the areas you mentioned, but TBH the part I'm struggling with is
+the delineation of what falls under PTP. PLL by itself seems like an
+awfully small unit to create a subsystem for, and PTP already has aux
+stuff like PIN control. Then there's the whole bunch of stuff that Jonathan
+is adding via driver specific sysfs interfaces [1]. I was hoping the
+"new API" would cover his need but PLL would be a tiny part of it.
 
-So would it be fine to send out a v3 which revert v1 and apply v2?
+IOW after looking at the code I'm not so sure how to reasonably divide
+things.
 
-Regards,
-Michael Wang
-
-> 
+[1]
+https://lore.kernel.org/netdev/20210830235236.309993-1-jonathan.lemon@gmail.com/
