@@ -2,432 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 870DF3FD459
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 09:20:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E57E43FD463
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 09:22:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242565AbhIAHVh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 03:21:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41954 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242500AbhIAHVg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 03:21:36 -0400
-Received: from mail-oo1-xc2d.google.com (mail-oo1-xc2d.google.com [IPv6:2607:f8b0:4864:20::c2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67AC3C061575;
-        Wed,  1 Sep 2021 00:20:39 -0700 (PDT)
-Received: by mail-oo1-xc2d.google.com with SMTP id j11-20020a4a92cb000000b002902ae8cb10so551323ooh.7;
-        Wed, 01 Sep 2021 00:20:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3IvzHq5Yny970U4/p+nZK1Gm1cRQFIkEdSa1vVhInf4=;
-        b=XadFirG9eNdjPEIsJG5IYzvBe/O8gdJU/GVam4jJ/cjwohDbFxkgkg/+zqtRTPcZdI
-         FurzPOwxcWUQWo6sRos/+UhByw61M8TvLd/7hSw4QZaWVz5+QhzBt9v8mhc+8gwcWoCy
-         1Jbg4WCUOV93N6zQcpD3dM0kmmQgmwx6oEtFMvZbW2vdBgp1+0clMyZR+gEaARb999kl
-         n8VoqaNHjWyVYSuGiUXTbn/B9bCNWwDaUM/sTCYlcfK4e+ulD/d5mAtzRnqXCpVQpP79
-         VoXI56pF2NuqZgzYytJ294vPvWE4g2ZdQsY/JHt5d+yO5T6PQiBbVU5N3mTFMVKN5X6M
-         22Qw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3IvzHq5Yny970U4/p+nZK1Gm1cRQFIkEdSa1vVhInf4=;
-        b=G/mo829JX949Zrxw4+1N1ZdIDJCrEMG9KvN7RrkXr4tt8qwt22iTz0nFfHJzg/r2X0
-         rEhkU0bJOS1Vr/ozETdNve0XkbKoPM0VWG7rTgNDG9fWC8N9/jYdDYlO+sRubblUdEG7
-         6RG5D6aeqvjh3rBStTwAIHDlhGecip16WyzkOiuap0V+DJ76rWraxINCKRiS1SxR5ENk
-         nhFCqL6Vt2RhclkjngY0O6cGJPM5+F61F49qvlKBMotE0kJqQ3KFM+6qKw0TAjhcVw1a
-         /jVfZ3PDAKIUU8zS9xYgL9gqw+RaGuWX8d/rAuGGgFSaUMYCCqsLM/l9ToiklTxVR3Ue
-         reYg==
-X-Gm-Message-State: AOAM533roYQFrjjRRMlQK3yiiTmupBwrBIon3Hl5y81iHcJH+ldg+whA
-        3GsCsZbQAYAFO1RDhuNQ3FXM6Nj5oD2XtXD/ivg=
-X-Google-Smtp-Source: ABdhPJwSuyZXf7PrN0uKFGDSn2mi4veYMn+eTnouqdK53qiYI6j0eJmq80mTIqEWkbF+sF46ABaJThej3NjhJldOX5o=
-X-Received: by 2002:a4a:5742:: with SMTP id u63mr17926821ooa.87.1630480838323;
- Wed, 01 Sep 2021 00:20:38 -0700 (PDT)
+        id S242561AbhIAHXQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 03:23:16 -0400
+Received: from mailout2.w1.samsung.com ([210.118.77.12]:61232 "EHLO
+        mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242582AbhIAHXM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 03:23:12 -0400
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20210901072214euoutp020eb46cf31731a7c34b7b2724d07c9071~gocVbly8u3207732077euoutp02Z
+        for <netdev@vger.kernel.org>; Wed,  1 Sep 2021 07:22:14 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20210901072214euoutp020eb46cf31731a7c34b7b2724d07c9071~gocVbly8u3207732077euoutp02Z
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1630480934;
+        bh=ryqrHQmQcbbdSKaFCDai31okoTqu1dRnNF5WAQkVKk8=;
+        h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
+        b=o6mT9Aswu9tmZ2ZUz0vXCX05qBwaYTqEL/wKzPCesL/z8GiSzz0qnrDJCkTQyRTnh
+         Mm98SUJZ0eqiSPjHbJ7mgLmvyHa6PSRsMEqyHrjozGdAt2iHPcvAEhewmySexdMGLC
+         poi+UuDQ/EWWV6JAXccSZN4uOQwB8/GTJzX6pjPs=
+Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+        20210901072213eucas1p24c002712599e64af3543d690befb98e1~gocVHDiwI3011130111eucas1p2Q;
+        Wed,  1 Sep 2021 07:22:13 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+        eusmges2new.samsung.com (EUCPMTA) with SMTP id 8E.76.42068.52A2F216; Wed,  1
+        Sep 2021 08:22:13 +0100 (BST)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+        20210901072213eucas1p1efe4f900cbd06f27ecf7821d52d66e23~gocUmCxVs0663406634eucas1p1k;
+        Wed,  1 Sep 2021 07:22:13 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20210901072213eusmtrp1c474fd908e2a5ddcbf8d6d9262d30c4e~gocUlMKfE2206322063eusmtrp1x;
+        Wed,  1 Sep 2021 07:22:13 +0000 (GMT)
+X-AuditID: cbfec7f4-c71ff7000002a454-bb-612f2a259fc9
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+        eusmgms2.samsung.com (EUCPMTA) with SMTP id 74.21.20981.52A2F216; Wed,  1
+        Sep 2021 08:22:13 +0100 (BST)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+        eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20210901072212eusmtip286395602945bdb3b13fa594a07116756~gocT4-pi_0779207792eusmtip27;
+        Wed,  1 Sep 2021 07:22:12 +0000 (GMT)
+Subject: Re: [PATCH v2] of: property: fw_devlink: Add support for
+ "phy-handle" property
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        kernel-team@android.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        linux-amlogic@lists.infradead.org
+From:   Marek Szyprowski <m.szyprowski@samsung.com>
+Message-ID: <2023d07e-18bb-e129-760a-18b17ff772cd@samsung.com>
+Date:   Wed, 1 Sep 2021 09:22:11 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0)
+        Gecko/20100101 Thunderbird/78.13.0
 MIME-Version: 1.0
-References: <20210901044933.47230-1-kerneljasonxing@gmail.com> <7ca5bca6-16eb-4102-0b29-504edb80a21b@gmail.com>
-In-Reply-To: <7ca5bca6-16eb-4102-0b29-504edb80a21b@gmail.com>
-From:   Jason Xing <kerneljasonxing@gmail.com>
-Date:   Wed, 1 Sep 2021 15:20:02 +0800
-Message-ID: <CAL+tcoChbdau88Ge2A4DntnNHisEZtg8cBHd6J55LR0ZYCRNWQ@mail.gmail.com>
-Subject: Re: [PATCH v6] ixgbe: let the xdpdrv work with more than 64 cpus
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        David Miller <davem@davemloft.net>, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org,
-        intel-wired-lan@lists.osuosl.org, netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, bpf@vger.kernel.org,
-        Jason Xing <xingwanli@kuaishou.com>,
-        kernel test robot <lkp@intel.com>,
-        Shujin Li <lishujin@kuaishou.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAGETcx-SqTeGdKF=CD9=Ujo2xrWMw3NnimE7zj+d-4HckmaJVQ@mail.gmail.com>
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrGKsWRmVeSWpSXmKPExsWy7djPc7qqWvqJBh+nqlicv3uI2WL+kXOs
+        FjPf/Gez2LFdxGLBbG6Ly7vmsFkc6ou2OLZAzKJ17xF2i65Df9kcuDy27d7G6vH+Riu7x85Z
+        d9k9Fmwq9di0qpPNY/OSeo+dOz4zeXzeJBfAEcVlk5Kak1mWWqRvl8CV8XRiD3PBadWKfVMs
+        GhgXyHcxcnJICJhI9H3ZwtbFyMUhJLCCUWLVkdksEM4XRonGR9cYIZzPjBIrP/1mh2mZ8rQb
+        qmo5o8SpeYegqj4ySlxZ9p0NpEpYIFLi7L69YLaIgJbEpmuPwTqYBVYySdxe/4gFJMEmYCjR
+        9bYLrIhXwE5i6uyXzCA2i4CKxMGDh8DWiQokS0x8MokVokZQ4uTMJ0C9HBycAoESV1dYgYSZ
+        BeQltr+dwwxhi0vcejKfCWSXhMB/DomZnx6yQZztIvGhaScThC0s8er4Fqh3ZCROT+5hgWho
+        ZpR4eG4tO4TTwyhxuWkGI0SVtcSdc7/YQDYzC2hKrN+lDxF2lPjd/pgVJCwhwCdx460gxBF8
+        EpO2TWeGCPNKdLQJQVSrScw6vg5u7cELl5gnMCrNQvLZLCTvzELyziyEvQsYWVYxiqeWFuem
+        pxYb5aWW6xUn5haX5qXrJefnbmIEJq3T/45/2cG4/NVHvUOMTByMhxglOJiVRHhZH+olCvGm
+        JFZWpRblxxeV5qQWH2KU5mBREudN2rImXkggPbEkNTs1tSC1CCbLxMEp1cCksWZJv8WhtndX
+        Ow+cPm7DvUu02J19RUiJu7Widk53aprB9Yp9cUFKj/nZbbPZYpOyTga2ThW5HF2UesyI81fN
+        pKcMgm/X2+47kL2nfbv07Nt/jTTiHz7lfXdsI6fdh3evNmkb1KxvTjDw4nNXeB4/+f+qWwf+
+        cjqcCBSYw/S82e1tqPPSdq1tP+Mdbv98blfiI+N6xjZizrIXJUl6Hwpd/qt21nMoG1W8SQ15
+        clFpXeizn4dszKQD+5NWymnx9dczqF8XuvFC3XdG2Tmf+U84lqoXBm28d6/yCm/u5oCDP1cE
+        npSyEq2p05bXSefUn9618IP+vGd+8wts9EXCDf9v0Zr+Srflje/7ma7MMkosxRmJhlrMRcWJ
+        AGgJ/jrJAwAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrOIsWRmVeSWpSXmKPExsVy+t/xe7qqWvqJBhcaWSzO3z3EbDH/yDlW
+        i5lv/rNZ7NguYrFgNrfF5V1z2CwO9UVbHFsgZtG69wi7Rdehv2wOXB7bdm9j9Xh/o5XdY+es
+        u+weCzaVemxa1cnmsXlJvcfOHZ+ZPD5vkgvgiNKzKcovLUlVyMgvLrFVija0MNIztLTQMzKx
+        1DM0No+1MjJV0rezSUnNySxLLdK3S9DLeDqxh7ngtGrFvikWDYwL5LsYOTkkBEwkpjztZuli
+        5OIQEljKKPHv6y52iISMxMlpDawQtrDEn2tdbBBF7xklZi+ZDVYkLBAp8f3ZSUYQW0RAS2LT
+        tccsIDazwEomiZWPyiEazjFL7O/+DDaJTcBQoustyCRODl4BO4mps18yg9gsAioSBw8eAhsq
+        KpAs8eH0UlaIGkGJkzOfAA3l4OAUCJS4usIKYr6ZxLzND5khbHmJ7W/nQNniEreezGeawCg0
+        C0n3LCQts5C0zELSsoCRZRWjSGppcW56brGRXnFibnFpXrpecn7uJkZgjG479nPLDsaVrz7q
+        HWJk4mA8xCjBwawkwsv6UC9RiDclsbIqtSg/vqg0J7X4EKMp0DsTmaVEk/OBSSKvJN7QzMDU
+        0MTM0sDU0sxYSZzX5MiaeCGB9MSS1OzU1ILUIpg+Jg5OqQYmdk2r/pf2iWei7Wa91p2ikr17
+        ceeR23fiBFe95V1ctMbJuHL2jI9BGaveRTEoR4os8ypld4y6GSK8bMn/xYG+V/8m2eb0zkpg
+        XC/7fJGdKEPR7uQZF7g3Z6/Nn/f458myRw2i/w7mbGe/fuT3SoGnZd1rv2+qCazxOs6ecf5u
+        z/tT/vfySwU5GDqfCIfM6JFIXLLdg69CN36tD/thiQ7JWfOMjnk8MXmeJS6T6ZG3eItqyrnE
+        WuF9ytN3LPzt99Nc8/HkhNbZaR6nDujFbijI/eZ+dd7csiPL4kyinTZZdAlLz5aY4eERdcI3
+        9w+jv+/x/72Xq/YmLzn74G08f8hTqdifCjdsnxen3M+f7GCqxFKckWioxVxUnAgAm5c7uloD
+        AAA=
+X-CMS-MailID: 20210901072213eucas1p1efe4f900cbd06f27ecf7821d52d66e23
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20210823120849eucas1p11d3919886444358472be3edd1c662755
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20210823120849eucas1p11d3919886444358472be3edd1c662755
+References: <CGME20210823120849eucas1p11d3919886444358472be3edd1c662755@eucas1p1.samsung.com>
+        <20210818021717.3268255-1-saravanak@google.com>
+        <0a2c4106-7f48-2bb5-048e-8c001a7c3fda@samsung.com>
+        <CAGETcx_xJCqOWtwZ9Ee2+0sPGNLM5=F=djtbdYENkAYZa0ynqQ@mail.gmail.com>
+        <427ce8cd-977b-03ae-2020-f5ddc7439390@samsung.com>
+        <CAGETcx8cRXDciKiRMSb=ybKo8=SyiNyAv=7oeHU1HUhkZ60qmg@mail.gmail.com>
+        <CAGETcx-SqTeGdKF=CD9=Ujo2xrWMw3NnimE7zj+d-4HckmaJVQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 1, 2021 at 1:13 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
->
->
-> On 8/31/21 9:49 PM, kerneljasonxing@gmail.com wrote:
-> > From: Jason Xing <xingwanli@kuaishou.com>
-> >
-> > Originally, ixgbe driver doesn't allow the mounting of xdpdrv if the
-> > server is equipped with more than 64 cpus online. So it turns out that
-> > the loading of xdpdrv causes the "NOMEM" failure.
-> >
-> > Actually, we can adjust the algorithm and then make it work through
-> > mapping the current cpu to some xdp ring with the protect of @tx_lock.
-> >
-> > Here're some numbers before/after applying this patch with xdp-example
-> > loaded on the eth0X:
-> >
-> > As client (tx path):
-> >                      Before    After
-> > TCP_STREAM send-64   734.14    714.20
-> > TCP_STREAM send-128  1401.91   1395.05
-> > TCP_STREAM send-512  5311.67   5292.84
-> > TCP_STREAM send-1k   9277.40   9356.22 (not stable)
-> > TCP_RR     send-1    22559.75  21844.22
-> > TCP_RR     send-128  23169.54  22725.13
-> > TCP_RR     send-512  21670.91  21412.56
-> >
-> > As server (rx path):
-> >                      Before    After
-> > TCP_STREAM send-64   1416.49   1383.12
-> > TCP_STREAM send-128  3141.49   3055.50
-> > TCP_STREAM send-512  9488.73   9487.44
-> > TCP_STREAM send-1k   9491.17   9356.22 (not stable)
-> > TCP_RR     send-1    23617.74  23601.60
-> > ...
-> >
-> > Notice: the TCP_RR mode is unstable as the official document explaines.
-> >
-> > I tested many times with different parameters combined through netperf.
-> > Though the result is not that accurate, I cannot see much influence on
-> > this patch. The static key is places on the hot path, but it actually
-> > shouldn't cause a huge regression theoretically.
-> >
-> > Fixes: 33fdc82f08 ("ixgbe: add support for XDP_TX action")
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > Co-developed-by: Shujin Li <lishujin@kuaishou.com>
-> > Signed-off-by: Shujin Li <lishujin@kuaishou.com>
-> > Signed-off-by: Jason Xing <xingwanli@kuaishou.com>
-> > ---
-> > v6:
-> > - Move the declaration of static-key to the proper position (Test Robot)
-> > - Add reported-by tag (Jason)
-> > - Add more detailed performance test results (Jason)
-> >
-> > v5:
-> > - Change back to nr_cpu_ids (Eric)
-> >
-> > v4:
-> > - Update the wrong commit messages. (Jason)
-> >
-> > v3:
-> > - Change nr_cpu_ids to num_online_cpus() (Maciej)
-> > - Rename MAX_XDP_QUEUES to IXGBE_MAX_XDP_QS (Maciej)
-> > - Rename ixgbe_determine_xdp_cpu() to ixgbe_determine_xdp_q_idx() (Maciej)
-> > - Wrap ixgbe_xdp_ring_update_tail() with lock into one function (Maciej)
-> >
-> > v2:
-> > - Adjust cpu id in ixgbe_xdp_xmit(). (Jesper)
-> > - Add a fallback path. (Maciej)
-> > - Adjust other parts related to xdp ring.
-> > ---
-> >  drivers/net/ethernet/intel/ixgbe/ixgbe.h           | 15 ++++-
-> >  drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c       |  9 ++-
-> >  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c      | 64 ++++++++++++++++------
-> >  .../net/ethernet/intel/ixgbe/ixgbe_txrx_common.h   |  1 +
-> >  drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c       |  9 +--
-> >  5 files changed, 73 insertions(+), 25 deletions(-)
-> >
-> > diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe.h b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-> > index a604552..1dcddea 100644
-> > --- a/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-> > +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-> > @@ -351,6 +351,7 @@ struct ixgbe_ring {
-> >       };
-> >       u16 rx_offset;
-> >       struct xdp_rxq_info xdp_rxq;
-> > +     spinlock_t tx_lock;     /* used in XDP mode */
-> >       struct xsk_buff_pool *xsk_pool;
-> >       u16 ring_idx;           /* {rx,tx,xdp}_ring back reference idx */
-> >       u16 rx_buf_len;
-> > @@ -375,11 +376,13 @@ enum ixgbe_ring_f_enum {
-> >  #define IXGBE_MAX_FCOE_INDICES               8
-> >  #define MAX_RX_QUEUES                        (IXGBE_MAX_FDIR_INDICES + 1)
-> >  #define MAX_TX_QUEUES                        (IXGBE_MAX_FDIR_INDICES + 1)
-> > -#define MAX_XDP_QUEUES                       (IXGBE_MAX_FDIR_INDICES + 1)
-> > +#define IXGBE_MAX_XDP_QS             (IXGBE_MAX_FDIR_INDICES + 1)
-> >  #define IXGBE_MAX_L2A_QUEUES         4
-> >  #define IXGBE_BAD_L2A_QUEUE          3
-> >  #define IXGBE_MAX_MACVLANS           63
-> >
-> > +DECLARE_STATIC_KEY_FALSE(ixgbe_xdp_locking_key);
-> > +
-> >  struct ixgbe_ring_feature {
-> >       u16 limit;      /* upper limit on feature indices */
-> >       u16 indices;    /* current value of indices */
-> > @@ -629,7 +632,7 @@ struct ixgbe_adapter {
-> >
-> >       /* XDP */
-> >       int num_xdp_queues;
-> > -     struct ixgbe_ring *xdp_ring[MAX_XDP_QUEUES];
-> > +     struct ixgbe_ring *xdp_ring[IXGBE_MAX_XDP_QS];
-> >       unsigned long *af_xdp_zc_qps; /* tracks AF_XDP ZC enabled rings */
-> >
-> >       /* TX */
-> > @@ -772,6 +775,14 @@ struct ixgbe_adapter {
-> >  #endif /* CONFIG_IXGBE_IPSEC */
-> >  };
-> >
-> > +static inline int ixgbe_determine_xdp_q_idx(int cpu)
-> > +{
-> > +     if (static_key_enabled(&ixgbe_xdp_locking_key))
-> > +             return cpu % IXGBE_MAX_XDP_QS;
-> > +     else
-> > +             return cpu;
-> > +}
-> > +
-> >  static inline u8 ixgbe_max_rss_indices(struct ixgbe_adapter *adapter)
-> >  {
-> >       switch (adapter->hw.mac.type) {
-> > diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
-> > index 0218f6c..86b1116 100644
-> > --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
-> > +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
-> > @@ -299,7 +299,10 @@ static void ixgbe_cache_ring_register(struct ixgbe_adapter *adapter)
-> >
-> >  static int ixgbe_xdp_queues(struct ixgbe_adapter *adapter)
-> >  {
-> > -     return adapter->xdp_prog ? nr_cpu_ids : 0;
-> > +     int queues;
-> > +
-> > +     queues = min_t(int, IXGBE_MAX_XDP_QS, nr_cpu_ids);
-> > +     return adapter->xdp_prog ? queues : 0;
-> >  }
-> >
-> >  #define IXGBE_RSS_64Q_MASK   0x3F
-> > @@ -947,6 +950,7 @@ static int ixgbe_alloc_q_vector(struct ixgbe_adapter *adapter,
-> >               ring->count = adapter->tx_ring_count;
-> >               ring->queue_index = xdp_idx;
-> >               set_ring_xdp(ring);
-> > +             spin_lock_init(&ring->tx_lock);
-> >
-> >               /* assign ring to adapter */
-> >               WRITE_ONCE(adapter->xdp_ring[xdp_idx], ring);
-> > @@ -1032,6 +1036,9 @@ static void ixgbe_free_q_vector(struct ixgbe_adapter *adapter, int v_idx)
-> >       adapter->q_vector[v_idx] = NULL;
-> >       __netif_napi_del(&q_vector->napi);
-> >
-> > +     if (static_key_enabled(&ixgbe_xdp_locking_key))
-> > +             static_branch_dec(&ixgbe_xdp_locking_key);
-> > +
-> >       /*
-> >        * after a call to __netif_napi_del() napi may still be used and
-> >        * ixgbe_get_stats64() might access the rings on this vector,
-> > diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> > index 14aea40..bec29f5 100644
-> > --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> > +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> > @@ -165,6 +165,9 @@ static int ixgbe_notify_dca(struct notifier_block *, unsigned long event,
-> >  MODULE_DESCRIPTION("Intel(R) 10 Gigabit PCI Express Network Driver");
-> >  MODULE_LICENSE("GPL v2");
-> >
-> > +DEFINE_STATIC_KEY_FALSE(ixgbe_xdp_locking_key);
-> > +EXPORT_SYMBOL(ixgbe_xdp_locking_key);
-> > +
-> >  static struct workqueue_struct *ixgbe_wq;
-> >
-> >  static bool ixgbe_check_cfg_remove(struct ixgbe_hw *hw, struct pci_dev *pdev);
-> > @@ -2422,13 +2425,10 @@ static int ixgbe_clean_rx_irq(struct ixgbe_q_vector *q_vector,
-> >               xdp_do_flush_map();
-> >
-> >       if (xdp_xmit & IXGBE_XDP_TX) {
-> > -             struct ixgbe_ring *ring = adapter->xdp_ring[smp_processor_id()];
-> > +             int index = ixgbe_determine_xdp_q_idx(smp_processor_id());
-> > +             struct ixgbe_ring *ring = adapter->xdp_ring[index];
-> >
-> > -             /* Force memory writes to complete before letting h/w
-> > -              * know there are new descriptors to fetch.
-> > -              */
-> > -             wmb();
-> > -             writel(ring->next_to_use, ring->tail);
-> > +             ixgbe_xdp_ring_update_tail_locked(ring);
-> >       }
-> >
-> >       u64_stats_update_begin(&rx_ring->syncp);
-> > @@ -6320,7 +6320,7 @@ static int ixgbe_sw_init(struct ixgbe_adapter *adapter,
-> >       if (ixgbe_init_rss_key(adapter))
-> >               return -ENOMEM;
-> >
-> > -     adapter->af_xdp_zc_qps = bitmap_zalloc(MAX_XDP_QUEUES, GFP_KERNEL);
-> > +     adapter->af_xdp_zc_qps = bitmap_zalloc(IXGBE_MAX_XDP_QS, GFP_KERNEL);
-> >       if (!adapter->af_xdp_zc_qps)
-> >               return -ENOMEM;
-> >
-> > @@ -8539,21 +8539,32 @@ static u16 ixgbe_select_queue(struct net_device *dev, struct sk_buff *skb,
-> >  int ixgbe_xmit_xdp_ring(struct ixgbe_adapter *adapter,
-> >                       struct xdp_frame *xdpf)
-> >  {
-> > -     struct ixgbe_ring *ring = adapter->xdp_ring[smp_processor_id()];
-> >       struct ixgbe_tx_buffer *tx_buffer;
-> >       union ixgbe_adv_tx_desc *tx_desc;
-> > +     struct ixgbe_ring *ring;
-> >       u32 len, cmd_type;
-> >       dma_addr_t dma;
-> > +     int index, ret;
-> >       u16 i;
-> >
-> >       len = xdpf->len;
-> >
-> > -     if (unlikely(!ixgbe_desc_unused(ring)))
-> > -             return IXGBE_XDP_CONSUMED;
-> > +     index = ixgbe_determine_xdp_q_idx(smp_processor_id());
-> > +     ring = adapter->xdp_ring[index];
-> > +
-> > +     if (static_branch_unlikely(&ixgbe_xdp_locking_key))
-> > +             spin_lock(&ring->tx_lock);
-> > +
-> > +     if (unlikely(!ixgbe_desc_unused(ring))) {
-> > +             ret = IXGBE_XDP_CONSUMED;
-> > +             goto out;
-> > +     }
-> >
-> >       dma = dma_map_single(ring->dev, xdpf->data, len, DMA_TO_DEVICE);
-> > -     if (dma_mapping_error(ring->dev, dma))
-> > -             return IXGBE_XDP_CONSUMED;
-> > +     if (dma_mapping_error(ring->dev, dma)) {
-> > +             ret = IXGBE_XDP_CONSUMED;
-> > +             goto out;
-> > +     }
-> >
-> >       /* record the location of the first descriptor for this packet */
-> >       tx_buffer = &ring->tx_buffer_info[ring->next_to_use];
-> > @@ -8590,7 +8601,11 @@ int ixgbe_xmit_xdp_ring(struct ixgbe_adapter *adapter,
-> >       tx_buffer->next_to_watch = tx_desc;
-> >       ring->next_to_use = i;
-> >
-> > -     return IXGBE_XDP_TX;
-> > +     ret = IXGBE_XDP_TX;
-> > +out:
-> > +     if (static_branch_unlikely(&ixgbe_xdp_locking_key))
-> > +             spin_unlock(&ring->tx_lock);
-> > +     return ret;
-> >  }
-> >
-> >  netdev_tx_t ixgbe_xmit_frame_ring(struct sk_buff *skb,
-> > @@ -10130,8 +10145,13 @@ static int ixgbe_xdp_setup(struct net_device *dev, struct bpf_prog *prog)
-> >                       return -EINVAL;
-> >       }
-> >
-> > -     if (nr_cpu_ids > MAX_XDP_QUEUES)
-> > +     /* if the number of cpus is much larger than the maximum of queues,
-> > +      * we should stop it and then return with NOMEM like before.
-> > +      */
-> > +     if (nr_cpu_ids > IXGBE_MAX_XDP_QS * 2)
-> >               return -ENOMEM;
-> > +     else if (nr_cpu_ids > IXGBE_MAX_XDP_QS)
-> > +             static_branch_inc(&ixgbe_xdp_locking_key);
-> >
-> >       old_prog = xchg(&adapter->xdp_prog, prog);
-> >       need_reset = (!!prog != !!old_prog);
-> > @@ -10195,12 +10215,22 @@ void ixgbe_xdp_ring_update_tail(struct ixgbe_ring *ring)
-> >       writel(ring->next_to_use, ring->tail);
-> >  }
-> >
-> > +void ixgbe_xdp_ring_update_tail_locked(struct ixgbe_ring *ring)
-> > +{
-> > +     if (static_branch_unlikely(&ixgbe_xdp_locking_key))
-> > +             spin_lock(&ring->tx_lock);
-> > +     ixgbe_xdp_ring_update_tail(ring);
-> > +     if (static_branch_unlikely(&ixgbe_xdp_locking_key))
-> > +             spin_unlock(&ring->tx_lock);
-> > +}
->
-> It is not clear why you use a pair of spin_lock()/unlock for each ixgbe_xmit_xdp_ring()
-> call, plus one other for ixgbe_xdp_ring_update_tail()
->
-> I guess this could be factorized to a single spin lock/unlock in ixgbe_xdp_xmit(),
-> and thus not have this ixgbe_xdp_ring_update_tail_locked() helper ?
->
+Hi Saravana,
 
-I agree with what you said in ixgbe_xdp_xmit(). Two pairs of
-spin_lock/unlock could be factorized to a single one, which could
-decrease the times of calling lock and unlock.
+On 01.09.2021 04:37, Saravana Kannan wrote:
+> On Tue, Aug 24, 2021 at 12:31 AM Saravana Kannan <saravanak@google.com> wrote:
+>> On Tue, Aug 24, 2021 at 12:03 AM Marek Szyprowski
+>> <m.szyprowski@samsung.com> wrote:
+>>> On 23.08.2021 20:22, Saravana Kannan wrote:
+>>>> On Mon, Aug 23, 2021 at 5:08 AM Marek Szyprowski
+>>>> <m.szyprowski@samsung.com> wrote:
+>>>>> On 18.08.2021 04:17, Saravana Kannan wrote:
+>>>>>> Allows tracking dependencies between Ethernet PHYs and their consumers.
+>>>>>>
+>>>>>> Cc: Andrew Lunn <andrew@lunn.ch>
+>>>>>> Cc: netdev@vger.kernel.org
+>>>>>> Signed-off-by: Saravana Kannan <saravanak@google.com>
+>>>>> This patch landed recently in linux-next as commit cf4b94c8530d ("of:
+>>>>> property: fw_devlink: Add support for "phy-handle" property"). It breaks
+>>>>> ethernet operation on my Amlogic-based ARM64 boards: Odroid C4
+>>>>> (arm64/boot/dts/amlogic/meson-sm1-odroid-c4.dts) and N2
+>>>>> (meson-g12b-odroid-n2.dts) as well as Khadas VIM3/VIM3l
+>>>>> (meson-g12b-a311d-khadas-vim3.dts and meson-sm1-khadas-vim3l.dts).
+>>>>>
+>>>>> In case of OdroidC4 I see the following entries in the
+>>>>> /sys/kernel/debug/devices_deferred:
+>>>>>
+>>>>> ff64c000.mdio-multiplexer
+>>>>> ff3f0000.ethernet
+>>>>>
+>>>>> Let me know if there is anything I can check to help debugging this issue.
+>>>> I'm fairly certain you are hitting this issue because the PHY device
+>>>> doesn't have a compatible property. And so the device link dependency
+>>>> is propagated up to the mdio bus. But busses as suppliers aren't good
+>>>> because busses never "probe".
+>>>>
+>>>> PHY seems to be one of those cases where it's okay to have the
+>>>> compatible property but also okay to not have it. You can confirm my
+>>>> theory by checking for the list of suppliers under
+>>>> ff64c000.mdio-multiplexer. You'd see mdio@0 (ext_mdio) and if you look
+>>>> at the "status" file under the folder it should be "dormant". If you
+>>>> add a compatible property that fits the formats a PHY node can have,
+>>>> that should also fix your issue (not the solution though).
+>>> Where should I look for the mentioned device links 'status' file?
+>>>
+>>> # find /sys -name ff64c000.mdio-multiplexer
+>>> /sys/devices/platform/soc/ff600000.bus/ff64c000.mdio-multiplexer
+>>> /sys/bus/platform/devices/ff64c000.mdio-multiplexer
+>>>
+>>> # ls -l /sys/devices/platform/soc/ff600000.bus/ff64c000.mdio-multiplexer
+>>> total 0
+>> This is the folder I wanted you to check.
+>>
+>>> lrwxrwxrwx 1 root root    0 Jan  1 00:04
+>>> consumer:platform:ff3f0000.ethernet ->
+>>> ../../../../virtual/devlink/platform:ff64c000.mdio-multiplexer--platform:ff3f0000.ethernet
+>> But I should have asked to look for the consumer list and not the
+>> supplier list. In any case, we can see that the ethernet is marked as
+>> the consumer of the mdio-multiplexer instead of the PHY device. So my
+>> hunch seems to be right.
+>>
+>>> -rw-r--r-- 1 root root 4096 Jan  1 00:04 driver_override
+>>> -r--r--r-- 1 root root 4096 Jan  1 00:04 modalias
+>>> lrwxrwxrwx 1 root root    0 Jan  1 00:04 of_node ->
+>>> ../../../../../firmware/devicetree/base/soc/bus@ff600000/mdio-multiplexer@4c000
+>>> drwxr-xr-x 2 root root    0 Jan  1 00:02 power
+>>> lrwxrwxrwx 1 root root    0 Jan  1 00:04 subsystem ->
+>>> ../../../../../bus/platform
+>>> lrwxrwxrwx 1 root root    0 Jan  1 00:04
+>>> supplier:platform:ff63c000.system-controller:clock-controller ->
+>>> ../../../../virtual/devlink/platform:ff63c000.system-controller:clock-controller--platform:ff64c000.mdio-multiplexer
+>>> -rw-r--r-- 1 root root 4096 Jan  1 00:04 uevent
+>>> -r--r--r-- 1 root root 4096 Jan  1 00:04 waiting_for_supplier
+>>>
+>>> # cat
+>>> /sys/devices/platform/soc/ff600000.bus/ff64c000.mdio-multiplexer/waiting_for_supplier
+>>> 0
+>>>
+>>> I'm also not sure what compatible string should I add there.
+>> It should have been added to external_phy: ethernet-phy@0. But don't
+>> worry about it (because you need to use a specific format for the
+>> compatible string).
+>>
+> Marek,
+>
+> Can you give this a shot?
+> https://lore.kernel.org/lkml/20210831224510.703253-1-saravanak@google.com/
+>
+> This is not the main fix for the case you brought up, but it should
+> fix your issue as a side effect of fixing another issue.
 
-Thanks,
-Jason
+I've just checked it and it doesn't help in my case. 
+ff64c000.mdio-multiplexer and ff3f0000.ethernet are still not probed 
+after applying this patch.
 
-> > +
-> >  static int ixgbe_xdp_xmit(struct net_device *dev, int n,
-> >                         struct xdp_frame **frames, u32 flags)
-> >  {
-> >       struct ixgbe_adapter *adapter = netdev_priv(dev);
-> >       struct ixgbe_ring *ring;
-> >       int nxmit = 0;
-> > +     int index;
-> >       int i;
-> >
-> >       if (unlikely(test_bit(__IXGBE_DOWN, &adapter->state)))
-> > @@ -10209,10 +10239,12 @@ static int ixgbe_xdp_xmit(struct net_device *dev, int n,
-> >       if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK))
-> >               return -EINVAL;
-> >
-> > +     index = ixgbe_determine_xdp_q_idx(smp_processor_id());
-> > +
-> >       /* During program transitions its possible adapter->xdp_prog is assigned
-> >        * but ring has not been configured yet. In this case simply abort xmit.
-> >        */
-> > -     ring = adapter->xdp_prog ? adapter->xdp_ring[smp_processor_id()] : NULL;
-> > +     ring = adapter->xdp_prog ? adapter->xdp_ring[index] : NULL;
-> >       if (unlikely(!ring))
-> >               return -ENXIO;
-> >
-> > @@ -10230,7 +10262,7 @@ static int ixgbe_xdp_xmit(struct net_device *dev, int n,
-> >       }
-> >
-> >       if (unlikely(flags & XDP_XMIT_FLUSH))
-> > -             ixgbe_xdp_ring_update_tail(ring);
-> > +             ixgbe_xdp_ring_update_tail_locked(ring);
-> >
-> >       return nxmit;
-> >  }
-> > diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_txrx_common.h b/drivers/net/ethernet/intel/ixgbe/ixgbe_txrx_common.h
-> > index 2aeec78..f6426d9 100644
-> > --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_txrx_common.h
-> > +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_txrx_common.h
-> > @@ -23,6 +23,7 @@ void ixgbe_process_skb_fields(struct ixgbe_ring *rx_ring,
-> >  void ixgbe_rx_skb(struct ixgbe_q_vector *q_vector,
-> >                 struct sk_buff *skb);
-> >  void ixgbe_xdp_ring_update_tail(struct ixgbe_ring *ring);
-> > +void ixgbe_xdp_ring_update_tail_locked(struct ixgbe_ring *ring);
-> >  void ixgbe_irq_rearm_queues(struct ixgbe_adapter *adapter, u64 qmask);
-> >
-> >  void ixgbe_txrx_ring_disable(struct ixgbe_adapter *adapter, int ring);
-> > diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-> > index b1d22e4..82d00e4 100644
-> > --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-> > +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-> > @@ -334,13 +334,10 @@ int ixgbe_clean_rx_irq_zc(struct ixgbe_q_vector *q_vector,
-> >               xdp_do_flush_map();
-> >
-> >       if (xdp_xmit & IXGBE_XDP_TX) {
-> > -             struct ixgbe_ring *ring = adapter->xdp_ring[smp_processor_id()];
-> > +             int index = ixgbe_determine_xdp_q_idx(smp_processor_id());
-> > +             struct ixgbe_ring *ring = adapter->xdp_ring[index];
-> >
-> > -             /* Force memory writes to complete before letting h/w
-> > -              * know there are new descriptors to fetch.
-> > -              */
-> > -             wmb();
-> > -             writel(ring->next_to_use, ring->tail);
-> > +             ixgbe_xdp_ring_update_tail_locked(ring);
-> >       }
-> >
-> >       u64_stats_update_begin(&rx_ring->syncp);
-> >
+> The main fix for your issue would be to teach fw_devlink that
+> phy-handle always points to the actual DT node that'll become a device
+> even if it doesn't have a compatible property. I'll send that out
+> later.
+
+I'm waiting for the proper fix then.
+
+Best regards
+
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
