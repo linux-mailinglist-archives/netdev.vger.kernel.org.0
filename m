@@ -2,91 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F8863FD144
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 04:22:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7702E3FD14A
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 04:24:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241574AbhIACWi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 22:22:38 -0400
-Received: from out4436.biz.mail.alibaba.com ([47.88.44.36]:49374 "EHLO
-        out4436.biz.mail.alibaba.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241408AbhIACWh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 22:22:37 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=yun.wang@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0Ump9hix_1630462887;
-Received: from testdeMacBook-Pro.local(mailfrom:yun.wang@linux.alibaba.com fp:SMTPD_---0Ump9hix_1630462887)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 01 Sep 2021 10:21:27 +0800
-Subject: Re: [PATCH] Revert "net: fix NULL pointer reference in
- cipso_v4_doi_free"
-From:   =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
-To:     Paul Moore <paul@paul-moore.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <c6864908-d093-1705-76ce-94d6af85e092@linux.alibaba.com>
- <18f0171e-0cc8-6ae6-d04a-a69a2a3c1a39@linux.alibaba.com>
- <7f239a0e-7a09-3dc0-43ce-27c19c7a309d@linux.alibaba.com>
-Message-ID: <4c000115-4069-5277-ce82-946f2fdb790a@linux.alibaba.com>
-Date:   Wed, 1 Sep 2021 10:21:27 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:78.0)
+        id S241627AbhIACZR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 22:25:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59530 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241613AbhIACZQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 22:25:16 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2E0AC061575
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 19:24:20 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id j1so860078pjv.3
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 19:24:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=mQLrqHw3gxNguOCpiRwK9G7MjTliUb+CD7mPtY4fIYc=;
+        b=nqhNkTATiygEDYegBaHmsO82y5SDtZdswliGzuCr2dtQf7aA2poJYKbTWkJOI2fkM2
+         Brj79KxjX3suDUghO0muYlkGrgLIsQbrRN/3XYXEbUBEWjMG92LTWpgAumlsF9jSBODm
+         kIgFw/lAo6dU5CCigSTBl+p0Z6DrMwDC4S4p01TJhZmOqECWqrzQyBbW4LndAwrgTIhZ
+         NrJDfuKphh0sMZ0VP/zfesFRO2EX7iKMMA5+IkYNu6vZqIAg04JzRbLDpKhiBGLFxaI+
+         0OCA3HodXdTTGnJG62zClirL6ij+4i8krYtJ+4x7DhetOVjmiNaQPxO2V0JDtJzkANf5
+         Cn8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=mQLrqHw3gxNguOCpiRwK9G7MjTliUb+CD7mPtY4fIYc=;
+        b=COW83KGDO0mlvK6HtNIn2/xncQ4+a4St6Iv6cnEwu0TXnvFOUx4BehNoUs5b96hzyt
+         DjR+HqIf2e75tifjw8KX3TOi8ZZ6NNpodJjyzdrwTP3haTexXAW/ZRyZyRhLC/gtjKkM
+         gmzdrNJwlml5fVTViH9pGgexPvw41HsCKOSO8ypRLXHzAgmnzP43bI8q+NifHMk+ZFfH
+         iIE3GOerW3n5E8Yhl4HR4oDl5fIK0pxJhstCM0f2te2UIbSucvQX+iQYFkExWFnQx5vc
+         c4SRGkQqxzGoblQM6iUfKVldDWiPjJKQBlocWw6K6gMSQISdKA23e9d4I7sB6CNXLUlP
+         mLuA==
+X-Gm-Message-State: AOAM5335bp3LUBPh2Lfmz+2kUp10gPm8BqC8F7F0kSSXbWrzriQRDTz9
+        GNxAfz1F77KFGdVu8AehHo6sQyQZ6vE=
+X-Google-Smtp-Source: ABdhPJzcf+ai9dhdnlbzJTaqrAqWX4JFJxRLJbktSFVSF6XyenyrAeSFI8mszUjos4bwX0FFTO2PGQ==
+X-Received: by 2002:a17:903:41cf:b0:138:9b83:b598 with SMTP id u15-20020a17090341cf00b001389b83b598mr7385704ple.37.1630463060003;
+        Tue, 31 Aug 2021 19:24:20 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.45.42.119])
+        by smtp.googlemail.com with ESMTPSA id 143sm18512586pfx.1.2021.08.31.19.24.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 31 Aug 2021 19:24:19 -0700 (PDT)
+Subject: Re: [iproute2] Time to retire ifcfg script?
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org
+References: <20210831115619.294cf192@hermes.local>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <f2a5f2fd-6206-031a-a6c1-54a558e03fe7@gmail.com>
+Date:   Tue, 31 Aug 2021 19:24:16 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.13.0
 MIME-Version: 1.0
-In-Reply-To: <7f239a0e-7a09-3dc0-43ce-27c19c7a309d@linux.alibaba.com>
+In-Reply-To: <20210831115619.294cf192@hermes.local>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Paul, it confused me since it's the first time I face
-such situation, but I just realized what you're asking is
-actually this revert, correct?
+On 8/31/21 11:56 AM, Stephen Hemminger wrote:
+> The ifcfg script in iproute2 is quite limited (no IPv6) and
+> doesn't really fit into any of the management frameworks.
+> 
 
-Regards,
-Michael Wang
+I did not even know that script existed.
 
-On 2021/9/1 上午10:18, 王贇 wrote:
-> This reverts commit 733c99ee8be9a1410287cdbb943887365e83b2d6.
+
+> At this point, it looks like a dusty old script that needs
+> to be retired.
 > 
-> Since commit e842cb60e8ac ("net: fix NULL pointer reference in
-> cipso_v4_doi_free") also applied to fix the root cause, we can
-> just revert the old version now.
-> 
-> Suggested-by: Paul Moore <paul@paul-moore.com>
-> Signed-off-by: Michael Wang <yun.wang@linux.alibaba.com>
-> ---
->  net/ipv4/cipso_ipv4.c | 18 ++++++++----------
->  1 file changed, 8 insertions(+), 10 deletions(-)
-> 
-> diff --git a/net/ipv4/cipso_ipv4.c b/net/ipv4/cipso_ipv4.c
-> index 7fbd0b5..099259f 100644
-> --- a/net/ipv4/cipso_ipv4.c
-> +++ b/net/ipv4/cipso_ipv4.c
-> @@ -465,16 +465,14 @@ void cipso_v4_doi_free(struct cipso_v4_doi *doi_def)
->  	if (!doi_def)
->  		return;
-> 
-> -	if (doi_def->map.std) {
-> -		switch (doi_def->type) {
-> -		case CIPSO_V4_MAP_TRANS:
-> -			kfree(doi_def->map.std->lvl.cipso);
-> -			kfree(doi_def->map.std->lvl.local);
-> -			kfree(doi_def->map.std->cat.cipso);
-> -			kfree(doi_def->map.std->cat.local);
-> -			kfree(doi_def->map.std);
-> -			break;
-> -		}
-> +	switch (doi_def->type) {
-> +	case CIPSO_V4_MAP_TRANS:
-> +		kfree(doi_def->map.std->lvl.cipso);
-> +		kfree(doi_def->map.std->lvl.local);
-> +		kfree(doi_def->map.std->cat.cipso);
-> +		kfree(doi_def->map.std->cat.local);
-> +		kfree(doi_def->map.std);
-> +		break;
->  	}
->  	kfree(doi_def);
->  }
-> 
+
+agreed.
