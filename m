@@ -2,143 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7B3B3FE2B3
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 21:01:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 091933FE2C1
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 21:08:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242301AbhIATCT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 15:02:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37070 "EHLO
+        id S245632AbhIATIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 15:08:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244650AbhIATCN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 15:02:13 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14519C061575
-        for <netdev@vger.kernel.org>; Wed,  1 Sep 2021 12:01:16 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id f18so1048139lfk.12
-        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 12:01:15 -0700 (PDT)
+        with ESMTP id S231137AbhIATIs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 15:08:48 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34997C061575;
+        Wed,  1 Sep 2021 12:07:51 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id m2so551483wmm.0;
+        Wed, 01 Sep 2021 12:07:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=npd1RU7mbNsF3k0GeBkr9d4yP6Ob5CEAADTVG3CYCjw=;
-        b=ErHaIpxZiEMxxjypsttdmUORwYq4vP1VZ+xYSjVl8afEmUE0mZp3Aj9x4LVzPgegFp
-         QxCWY5+Gxwtt2L2qth2RgEkh1nozrNfG4UGJESfbueNOy10Bzrii0P8RVC60ibu3uR99
-         Ri6W/fH6hsL0OtQOBkjpL0U0EcWE6CxP3PMa4=
+        d=gmail.com; s=20210112;
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=VlxpC9lDcNfm5/MrHEbTwt24xdblO89YiUemKXyk9E0=;
+        b=HXzvWAWkwzbfgkwgM/JalnBWgV47/Ad35YKCpSZOHXL1fHob+hWFTdCBbczPz0WUTH
+         pMMHfc6kzxXoxT8dCbbpgN3jhQdoDHnI4e9t9NnYdcm+u7qyhV76x0rcQji3mgq2eSea
+         vn34Io8AkUNtY7nUsi+AfG2uHEVvjKK44MaFf2uoS0qzlLKuQlhMYP95dpApSqEGhrCp
+         YmaBo0QplNTfZzZJOI6ypi3Q4W0zQZE6ZmLW5JhVhtZ+6V7Auh2G/NGbDmSpji5J/nzn
+         p4XrK/7G6sl/J2dg7EheEvU9ImDQfydLuogcyNhoM+lVxGRgYV6UcFoGBfB4byDw5qAH
+         484g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=npd1RU7mbNsF3k0GeBkr9d4yP6Ob5CEAADTVG3CYCjw=;
-        b=dEdrxBiozqF03lJyNJlv12kr8YSB2teDPjWFTiqhc0T5ylqAntZ+pY51pezyqpM1Em
-         ODogfydMiDoZphgKq7mxRivJ073wpBevPKTPkyxAFmDFVG2j3OZaDSZaBX4siyoWoKLG
-         Kuo0CsXhLQ/FUWVdPearTRfJEojIU2NSMCfa2iq8kKNzDY0HBrMUHuRdBH54ES8svUDX
-         A6/hfLlPyHkFSYOPENhvISSSaduRce2sx9et/LPQ5DuaN8Qcv5/jAixupm9zEQiC9XUQ
-         15uw77gQtVU8BDfgMV/zzJ5Y0G+HfzpuZ9HO+Vxq+ce8S3Eq360Obm7Z7Eoeyy5uMv4O
-         tMvw==
-X-Gm-Message-State: AOAM5326ySakZWu/o2EJMdpZ0iOph1yh6vdI/1QA4ajxNsaoITzqBjGE
-        DFZH0qGlkvkinBgzczgitbeaeSLLEzphTZj/
-X-Google-Smtp-Source: ABdhPJykqjCxkqOGq7Uiv3kHhkfC449EwCyKtAPSUHYXH0S0rnV/AEHOvVJLxYdl9TL1VwTFnBq8cA==
-X-Received: by 2002:ac2:5fe9:: with SMTP id s9mr686509lfg.600.1630522874023;
-        Wed, 01 Sep 2021 12:01:14 -0700 (PDT)
-Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com. [209.85.208.177])
-        by smtp.gmail.com with ESMTPSA id w6sm31434lfc.211.2021.09.01.12.01.13
-        for <netdev@vger.kernel.org>
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=VlxpC9lDcNfm5/MrHEbTwt24xdblO89YiUemKXyk9E0=;
+        b=BdILeyNCrZVlk7v+8NchsYdeoivdR6CdCv5jXDKdlmImElYnaiZt+Y4achTr3bOycu
+         MTCfnRYIgyVM2+75gr70+DI/yEXPozeINg7HwtbbEPaJLVluvzv7JoR8qxzuRKnrSkoS
+         N3aGKUS98bGJTtE6JryTaGWVGtW7J9/s4AmhTW+s1p1kCfHxu7I4S6FM3fE5f7rZ2xAo
+         a+hUugrTEctfU0uczKDlA1g5c05dwS3qU/PIRAE0pFxZnb2hTaL4QSdh+OXtG1o6JC5g
+         qJT8WEVxxB1peBG+knE2IXWT4MDLf08zqgRiREofU+R+OdFwZ199ZCvsf0DP89vA7SEy
+         0TEg==
+X-Gm-Message-State: AOAM533pUfIsaUE/U5nHb63QUO5Yts+NPqb4DiFWj/DgHc9F4EyEPJl6
+        Xrn+npPMgzMSdw3lykvMsIRXV1XyV8A=
+X-Google-Smtp-Source: ABdhPJxSZZGUgVWnZkWdhRw0jGWmjP1Uu9GgKWAOMmDEZ1X8omYDe5qEq9dPb23dMFGI19ElKsFt5w==
+X-Received: by 2002:a7b:cc0a:: with SMTP id f10mr957580wmh.32.1630523269835;
+        Wed, 01 Sep 2021 12:07:49 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f08:4500:58da:e5eb:c867:1a2c? (p200300ea8f08450058dae5ebc8671a2c.dip0.t-ipconnect.de. [2003:ea:8f08:4500:58da:e5eb:c867:1a2c])
+        by smtp.googlemail.com with ESMTPSA id x18sm306969wrw.19.2021.09.01.12.07.46
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Sep 2021 12:01:13 -0700 (PDT)
-Received: by mail-lj1-f177.google.com with SMTP id w4so718495ljh.13
-        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 12:01:13 -0700 (PDT)
-X-Received: by 2002:a2e:3004:: with SMTP id w4mr888035ljw.465.1630522873162;
- Wed, 01 Sep 2021 12:01:13 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210831203727.3852294-1-kuba@kernel.org>
-In-Reply-To: <20210831203727.3852294-1-kuba@kernel.org>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 1 Sep 2021 12:00:57 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wjB_zBwZ+WR9LOpvgjvaQn=cqryoKigod8QnZs=iYGEhA@mail.gmail.com>
-Message-ID: <CAHk-=wjB_zBwZ+WR9LOpvgjvaQn=cqryoKigod8QnZs=iYGEhA@mail.gmail.com>
-Subject: Re: [GIT PULL] Networking for v5.15
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
+        Wed, 01 Sep 2021 12:07:49 -0700 (PDT)
+To:     Johannes Berg <johannes@sipsolutions.net>,
+        =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
+        =?UTF-8?Q?Jonas_Dre=c3=9fler?= <verdre@v0yd.nl>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi017@gmail.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tsuchiya Yuto <kitakar@gmail.com>,
+        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        linux-pci <linux-pci@vger.kernel.org>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>
+References: <20210830123704.221494-1-verdre@v0yd.nl>
+ <20210830123704.221494-2-verdre@v0yd.nl>
+ <CAHp75VeAKs=nFw4E20etKc3C_Cszyz9AqN=mLsum7F-BdVK5Rg@mail.gmail.com>
+ <7e38931e-2f1c-066e-088e-b27b56c1245c@v0yd.nl>
+ <20210901155110.xgje2qrtq65loawh@pali>
+ <985049b8-bad7-6f18-c94f-368059dd6f95@gmail.com>
+ <f293c619399ba8bd60240879a20ee34db1248255.camel@sipsolutions.net>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH 1/2] mwifiex: Use non-posted PCI register writes
+Message-ID: <eb555433-ade1-e89e-30e4-f4c1c24c25e7@gmail.com>
+Date:   Wed, 1 Sep 2021 21:07:41 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
+MIME-Version: 1.0
+In-Reply-To: <f293c619399ba8bd60240879a20ee34db1248255.camel@sipsolutions.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 31, 2021 at 1:37 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> No conflicts at the time of writing. There were conflicts with
-> char-misc but I believe Greg dropped the commits in question.
+On 01.09.2021 19:07, Johannes Berg wrote:
+> On Wed, 2021-09-01 at 18:51 +0200, Heiner Kallweit wrote:
+>> On 01.09.2021 17:51, Pali Rohár wrote:
+>>> On Wednesday 01 September 2021 16:01:54 Jonas Dreßler wrote:
+>>>> On 8/30/21 2:49 PM, Andy Shevchenko wrote:
+>>>>> On Mon, Aug 30, 2021 at 3:38 PM Jonas Dreßler <verdre@v0yd.nl> wrote:
+>>>>>>
+>>>>>> On the 88W8897 card it's very important the TX ring write pointer is
+>>>>>> updated correctly to its new value before setting the TX ready
+>>>>>> interrupt, otherwise the firmware appears to crash (probably because
+>>>>>> it's trying to DMA-read from the wrong place).
+>>>>>>
+>>
+>> This sounds somehow like the typical case where you write DMA descriptors
+>> and then ring the doorbell. This normally requires a dma_wmb().
+>> Maybe something like that is missing here?
+> 
+> But it looks like this "TX ring write pointer" is actually the register?
+> 
+> However, I would agree that doing it in mwifiex_write_reg() is possibly
+> too big a hammer - could be done only for reg->tx_wrptr, not all the
+> registers?
+> 
+> Actually, can two writes actually cross on PCI?
+> 
+> johannes
+> 
 
-Hmm. I already merged this earlier, but didn't notice a new warning on
-my desktop:
+In case we're talking about the following piece of code both register
+writes are IOMEM writes that are ordered. Maybe the writes arrive properly
+ordered but some chip-internal delays cause the issue? Then the read-back
+would be something like an ordinary udelay()?
+Instead of always reading back register writes, is it sufficient to read
+an arbitrary register after mwifiex_write_reg(adapter, reg->tx_wrptr ?
 
-  RTNL: assertion failed at net/wireless/reg.c (4025)
-  WARNING: CPU: 60 PID: 1720 at net/wireless/reg.c:4025
-regulatory_set_wiphy_regd_sync+0x7f/0x90 [cfg80211]
-  Call Trace:
-   iwl_mvm_init_mcc+0x170/0x190 [iwlmvm]
-   iwl_op_mode_mvm_start+0x824/0xa60 [iwlmvm]
-   iwl_opmode_register+0xd0/0x130 [iwlwifi]
-   init_module+0x23/0x1000 [iwlmvm]
 
-and
-
-  RTNL: assertion failed at net/wireless/reg.c (3106)
-  WARNING: CPU: 60 PID: 1720 at net/wireless/reg.c:3106
-reg_process_self_managed_hint+0x26c/0x280 [cfg80211]
-  Call Trace:
-   regulatory_set_wiphy_regd_sync+0x3a/0x90 [cfg80211]
-   iwl_mvm_init_mcc+0x170/0x190 [iwlmvm]
-   iwl_op_mode_mvm_start+0x824/0xa60 [iwlmvm]
-   iwl_opmode_register+0xd0/0x130 [iwlwifi]
-   init_module+0x23/0x1000 [iwlmvm]
-
-and
-
-  RTNL: assertion failed at net/wireless/core.c (84)
-  WARNING: CPU: 60 PID: 1720 at net/wireless/core.c:84
-wiphy_idx_to_wiphy+0x97/0xd0 [cfg80211]
-  Call Trace:
-   nl80211_common_reg_change_event+0xf9/0x1e0 [cfg80211]
-   reg_process_self_managed_hint+0x23d/0x280 [cfg80211]
-   regulatory_set_wiphy_regd_sync+0x3a/0x90 [cfg80211]
-   iwl_mvm_init_mcc+0x170/0x190 [iwlmvm]
-   iwl_op_mode_mvm_start+0x824/0xa60 [iwlmvm]
-   iwl_opmode_register+0xd0/0x130 [iwlwifi]
-   init_module+0x23/0x1000 [iwlmvm]
-
-and
-
-  RTNL: assertion failed at net/wireless/core.c (61)
-  WARNING: CPU: 60 PID: 1720 at net/wireless/core.c:61
-wiphy_idx_to_wiphy+0xbf/0xd0 [cfg80211]
-  Call Trace:
-   nl80211_common_reg_change_event+0xf9/0x1e0 [cfg80211]
-   reg_process_self_managed_hint+0x23d/0x280 [cfg80211]
-   regulatory_set_wiphy_regd_sync+0x3a/0x90 [cfg80211]
-   iwl_mvm_init_mcc+0x170/0x190 [iwlmvm]
-   iwl_op_mode_mvm_start+0x824/0xa60 [iwlmvm]
-   iwl_opmode_register+0xd0/0x130 [iwlwifi]
-   init_module+0x23/0x1000 [iwlmvm]
-
-They all seem to have that same issue, and it looks like the fix would
-be to get the RTN lock in iwl_mvm_init_mcc(), but I didn't really look
-into it very much.
-
-This is on my desktop, and I actually don't _use_ the wireless on this
-machine. I assume it still works despite the warnings, but they should
-get fixed.
-
-I *don't* see these warnings on my laptop where I actually use
-wireless, but that one uses ath10k_pci, so it seems this is purely a
-iwlwifi issue.
-
-I can't be the only one that sees this. Hmm?
-
-                 Linus
+		/* Write the TX ring write pointer in to reg->tx_wrptr */
+		if (mwifiex_write_reg(adapter, reg->tx_wrptr,
+				      card->txbd_wrptr | rx_val)) {
+			mwifiex_dbg(adapter, ERROR,
+				    "SEND DATA: failed to write reg->tx_wrptr\n");
+			ret = -1;
+			goto done_unmap;
+		}
+		if ((mwifiex_pcie_txbd_not_full(card)) &&
+		    tx_param->next_pkt_len) {
+			/* have more packets and TxBD still can hold more */
+			mwifiex_dbg(adapter, DATA,
+				    "SEND DATA: delay dnld-rdy interrupt.\n");
+			adapter->data_sent = false;
+		} else {
+			/* Send the TX ready interrupt */
+			if (mwifiex_write_reg(adapter, PCIE_CPU_INT_EVENT,
+					      CPU_INTR_DNLD_RDY)) {
