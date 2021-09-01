@@ -2,107 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AA593FD306
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 07:39:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E64EB3FD32F
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 07:45:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242053AbhIAFkE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 01:40:04 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:47944 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S231289AbhIAFkD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 01:40:03 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18159odg026643;
-        Tue, 31 Aug 2021 22:39:05 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=S5QQLEeGf2BDzZ6+jshRAeCj366WQcLyPRhuwBPPNVw=;
- b=EtwgSfSlOLms6XAjJtigeTruqNo+7PIAEPPBmuFja5TNeLRVlt93lQLZIXKcrBSs8Yi1
- HOK2tJm6j9PW1bN+FAWyof39Qa/S3ArRKNffnP9qLqTCkQW59et/s+YRgioEUWKTYTuh
- jgWZfptBVZIWo3zXmeeh9ZOfzQzA5gIAeSaNCEJh0LdV4WxCny3IIo54wxvMS9KT1lkq
- lHNitvfs3Yy0OFGChZWyaJ/GZvdj5GlhbzKuRO9UwDWeFSqNkeQU3D/5JoNfDMd0TLbB
- RxuCnqzc9yTSKq8zhM2haOxPieZbS9bjQ78TQuQjBNHTUGcdYM0vxI45Dr+QHHyVUm5U 0g== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 3at34pr2us-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 31 Aug 2021 22:39:05 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 31 Aug
- 2021 22:39:03 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Tue, 31 Aug 2021 22:39:03 -0700
-Received: from machine421.marvell.com (unknown [10.29.37.2])
-        by maili.marvell.com (Postfix) with ESMTP id 030A13F708F;
-        Tue, 31 Aug 2021 22:39:01 -0700 (PDT)
-From:   Sunil Goutham <sgoutham@marvell.com>
-To:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>
-CC:     Smadar Fuks <smadarf@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>
-Subject: [net-next PATCH] octeontx2-af: Add additional register check to rvu_poll_reg()
-Date:   Wed, 1 Sep 2021 11:08:59 +0530
-Message-ID: <1630474739-25470-1-git-send-email-sgoutham@marvell.com>
-X-Mailer: git-send-email 2.7.4
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: 1g7dVs152_5e0L4-uVWR6OF-f4y43u8d
-X-Proofpoint-GUID: 1g7dVs152_5e0L4-uVWR6OF-f4y43u8d
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
- definitions=2021-09-01_01,2021-08-31_01,2020-04-07_01
+        id S242125AbhIAFqq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 01:46:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48280 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231195AbhIAFqm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 01:46:42 -0400
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E66A2C061575;
+        Tue, 31 Aug 2021 22:45:45 -0700 (PDT)
+Received: by mail-io1-xd2c.google.com with SMTP id b7so2573264iob.4;
+        Tue, 31 Aug 2021 22:45:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=V5iDUUigs59ZSwSYLJTSBXiR4YJVQbRTp8G58bosNms=;
+        b=FglNKUnE9FZtnjQxZ17b3L/fmM/CTP9Vs0T7nmUTZ1Ve/7o8+cGeqXviDoTpUMEuOo
+         1ZghtDGjhcuIhZd0znq5g8hpjSQgZr3RJBNpc3KlKVStzbm8eVQN1bwHx+o4KRfMf2ED
+         3QQG2/7HkmspR6+x4Gz1PFHhYgmaBfdtgxdw13xGVBhHPaCsk7paRpgfZmNb5NTJ0Akn
+         PeGGsWT3Zi51/LvThPTY427P7+ov8HFbqm4I5QWg4seqqdVYWOReJ5AUH6GgyWSjPk5U
+         s0UkRVmmeFHWtS95pUW2OYWp5QZQ+yTB53+lytX7UxU1Azohf+0c+fvcVcvs0eubee95
+         ltyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=V5iDUUigs59ZSwSYLJTSBXiR4YJVQbRTp8G58bosNms=;
+        b=mgwgMYgUJ6DzQgribvMq0rZuFTLYhyPJ4xzVCH9NjSBXJgN+EfMdVAoLomCPy70mNH
+         ziRr6eoAu8hU4rIfMOJ1DhIQ5E8BZxjBEFtyC1OH/fwwGKj9d6JX7LhTihLWb5lH9RDw
+         SJaIsiaaysW3UhMz9zmOvEWnpXi8a5leT+ksojOgWeJKgyhkxkHt6VeYQG2eL0jIfTiR
+         jIEIpUEBfjXEnYgXap3GE+rhBIWPCebtc2x3a803Jx1O78dYY5X+THQ0fZHyVrpZPqYd
+         Q+todPPUld0cNlwHk+tQVUi7z1/17t0+/LPig8R935vHFH4HhGUL9oVsqm0yPaOf4AJd
+         nnig==
+X-Gm-Message-State: AOAM5309POC9Vo+NDNxlrQI+3xTmgdLxkEWJgGuqK2yUSWB6VHAzYFaa
+        WOy7bX/kz3eaRqkIdPFhkeIL+8VRL+E=
+X-Google-Smtp-Source: ABdhPJwwcNwVMrb4vyUJQumEKmw1MYR2GDOMY0VG+JP7U4+RMtmZ2+bHaEnTEoy4TGThOZ0swKDHUA==
+X-Received: by 2002:a02:cacd:: with SMTP id f13mr6376401jap.94.1630475145345;
+        Tue, 31 Aug 2021 22:45:45 -0700 (PDT)
+Received: from localhost ([172.243.157.240])
+        by smtp.gmail.com with ESMTPSA id s5sm11014315iol.33.2021.08.31.22.45.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 Aug 2021 22:45:44 -0700 (PDT)
+Date:   Tue, 31 Aug 2021 22:45:35 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Message-ID: <612f137f4dc5c_152fe20891@john-XPS-13-9370.notmuch>
+In-Reply-To: <CAM_iQpWP_kvE58Z+363n+miTQYPYLn6U4sxMKVaDvuRvjJo_Tg@mail.gmail.com>
+References: <20210821010240.10373-1-xiyou.wangcong@gmail.com>
+ <20210824234700.qlteie6al3cldcu5@kafai-mbp>
+ <CAM_iQpWP_kvE58Z+363n+miTQYPYLn6U4sxMKVaDvuRvjJo_Tg@mail.gmail.com>
+Subject: Re: [RFC Patch net-next] net_sched: introduce eBPF based Qdisc
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Smadar Fuks <smadarf@marvell.com>
+Cong Wang wrote:
+> On Tue, Aug 24, 2021 at 4:47 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> > Please explain more on this.  What is currently missing
+> > to make qdisc in struct_ops possible?
+> 
+> I think you misunderstand this point. The reason why I avoid it is
+> _not_ anything is missing, quite oppositely, it is because it requires
+> a lot of work to implement a Qdisc with struct_ops approach, literally
+> all those struct Qdisc_ops (not to mention struct Qdisc_class_ops).
+> WIth current approach, programmers only need to implement two
+> eBPF programs (enqueue and dequeue).
+> 
+> Thanks.
 
-Check one more time before exiting the API with an error.
-Fix API to poll at least twice, in case there are other high priority
-tasks and this API doesn't get CPU cycles for multiple jiffies update.
+Another idea. Rather than work with qdisc objects which creates all
+these issues with how to work with existing interfaces, filters, etc.
+Why not create an sk_buff map? Then this can be used from the existing
+egress/ingress hooks independent of the actual qdisc being used.
 
-In addition, increase timeout from usecs_to_jiffies(10000) to
-usecs_to_jiffies(20000), to prevent the case that for CONFIG_100HZ
-timeout will be a single jiffies.
-A single jiffies results actual timeout that can be any time between
-1usec and 10msec. To solve this, a value of usecs_to_jiffies(20000)
-ensures that timeout is 2 jiffies.
+You mention skb should not be exposed to userspace? Why? Whats the
+reason for this? Anyways we can make kernel only maps if we want or
+scrub the data before passing it to userspace. We do this already in
+some cases.
 
-Signed-off-by: Smadar Fuks <smadarf@marvell.com>
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
----
- drivers/net/ethernet/marvell/octeontx2/af/rvu.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+IMO it seems cleaner and more general to allow sk_buffs
+to be stored in maps and pulled back out later for enqueue/dequeue.
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-index ce647e0..72de4ec 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-@@ -92,7 +92,8 @@ static void rvu_setup_hw_capabilities(struct rvu *rvu)
-  */
- int rvu_poll_reg(struct rvu *rvu, u64 block, u64 offset, u64 mask, bool zero)
- {
--	unsigned long timeout = jiffies + usecs_to_jiffies(10000);
-+	unsigned long timeout = jiffies + usecs_to_jiffies(20000);
-+	bool twice = false;
- 	void __iomem *reg;
- 	u64 reg_val;
- 
-@@ -107,6 +108,15 @@ int rvu_poll_reg(struct rvu *rvu, u64 block, u64 offset, u64 mask, bool zero)
- 		usleep_range(1, 5);
- 		goto again;
- 	}
-+	/* In scenarios where CPU is scheduled out before checking
-+	 * 'time_before' (above) and gets scheduled in such that
-+	 * jiffies are beyond timeout value, then check again if HW is
-+	 * done with the operation in the meantime.
-+	 */
-+	if (!twice) {
-+		twice = true;
-+		goto again;
-+	}
- 	return -EBUSY;
- }
- 
--- 
-2.7.4
+I think one trick might be how to trigger the dequeue event on
+transition from stopped to running net_device or other events like
+this, but that could be solved with another program attached to
+those events to kick the dequeue logic.
 
+.John
