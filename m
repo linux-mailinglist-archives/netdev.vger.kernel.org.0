@@ -2,96 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6A6E3FDDE4
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 16:40:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C78213FDE1D
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 16:55:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245384AbhIAOlr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 10:41:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60304 "EHLO
+        id S245279AbhIAO42 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 10:56:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234001AbhIAOlr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 10:41:47 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F33BC061575
-        for <netdev@vger.kernel.org>; Wed,  1 Sep 2021 07:40:50 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id s29so2216975pfw.5
-        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 07:40:50 -0700 (PDT)
+        with ESMTP id S231794AbhIAO4S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 10:56:18 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7C27C0613C1;
+        Wed,  1 Sep 2021 07:55:19 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id s29so2249336pfw.5;
+        Wed, 01 Sep 2021 07:55:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=NWKMZ//AyFWFbpFk6FF66OtPadVuan7a1ybZS8hGNR8=;
-        b=E8+6I1ihMk8j9UqhIAs2dWGlMTdxhYaPeSi/0TLRjpPQ+TFHJ8qzSFBZDg3sd0gGkb
-         7hoA4W5Q85TOgzhDPEb4Oec/lly/mOKiKo+M37x5MdBAVA7qMmtM6vJXOZVsHuSRjqY/
-         xldPxcpbtvxHEx8PKKubTLsbLBxcLbBz3WUvcc1hF+DSjObvexudQKkL+8ydysPs6VBz
-         B1kdFgzQ+HtiqyXq1ssrzEUwRjArR6/F1ssGuZeWy2dtE5LFIhp3BIMjw6mzQ4/weX9J
-         v5PnZnn1pZvBv5ixXyck7dnaxwOUpY78ktsufJh55KXVq2iBXx1eGWGdidJ8dg4HRyZL
-         uNUw==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=OXnaUXnPiLKsNovMhvipaKPWm7GzIVfHvGw3TUPMneE=;
+        b=Zm/PTIWnIJVbqsPPFPtdnI6NMwoq3fuB1mWnUrRjV/eS/prkUlru2+c/p5nS+8ihr3
+         R0LjSU73W3W75fWFV87cWG61Oqy0aHsT9x5A9dl6FzI7D85nb58iVIWsTXCp/SIlOqTs
+         KmFSNvqVAsDFmJ8KruXbBR8CljjgVqs6zcJDk9EMdRBxVyU4qgdScABjw3OeVdg+Qt+a
+         tI2pAZyoudj0VvWk8RfYZKJaPFeMy9Qzi9sOYN5tPhr13qJ4dhTrfeCmf5DyJovsyGBp
+         jfns5QcgWdtudiu8mFyRUqY6WttYDBPUws0L2flAna4pzzXvd6Q0/xPKFUSybLV80Z7M
+         pVZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=NWKMZ//AyFWFbpFk6FF66OtPadVuan7a1ybZS8hGNR8=;
-        b=L7crQsafHD+V0J7FcwLWZ+hUjOfFrjRXocZc7E0eRGKXl3y+Dd/DbPiqJN4x8ZbG1B
-         CvaLSclFCns3ZPx1jdUQVTjVNUPPvdgbU78+UIY88OvZKFF55tUWKubKe0P4J0WS4T/0
-         eb9sn2pSnWQzPYAoXlU7iV7sID/GZ51XNEQ4oJv9HQTwjmXncja+CMyE2xSpZd0LzlTC
-         2fc19IEz4UE1z0nMHUDu8lZzctNlWBAu6x1t6UsS5cPajthxK9kWBX1CVhFPTjUOzTkA
-         CNhzNp62KM6aaeFGadjIwT0hcWRBYwmke1vtMD0VOCYSF7CLY7VGSDQLNRm7wK9XgXoP
-         hMlQ==
-X-Gm-Message-State: AOAM531ZFtjO3gd/Y4px21JJtvwyIjAUeXmjag7Y0Vsu37FbRG1XsT34
-        83k86BRPp7mcb/vhoAj4/4xSzsI8RgwmsZVKYuc=
-X-Google-Smtp-Source: ABdhPJwx1zbJLfBASs0lw6UwYt6mFbvT+IKYvwOKZvX22tjW0wqK4xHXedMc6oZwuq0j8AaRBzKl0CUtlXn3j5UGKYQ=
-X-Received: by 2002:a05:6a00:c91:b0:3ee:9bed:61be with SMTP id
- a17-20020a056a000c9100b003ee9bed61bemr33559157pfv.37.1630507249311; Wed, 01
- Sep 2021 07:40:49 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=OXnaUXnPiLKsNovMhvipaKPWm7GzIVfHvGw3TUPMneE=;
+        b=HOSsVQemRPksQ5EvainBTYtBfWxRoR0KjWgNzxmY4FnSGCrADNshkAs1VZXdjgi3no
+         s91a3//SwLmS/0/0MS87kJ+19nA9INIbsBVXWpU/Pn9512cPh+a6FUOhvxWKXUOD4NmA
+         YqvXoLwQhyIzx93o8GBCAX7TAs11DRH//CmjCQdNqZG0MQieJ5UQNqdV80ik+oG80lb+
+         +kEVI/NCd7LvSBVaU6YeHyRBqD9XqGZ2uOtjqpyAqn0hMjiSLT6xombVr8nU0uz2rXBl
+         cxtKdneFgYMzxGM9EgmRi8TK/fH0EopWYWBYk9AOFlYA99HtTrsr2y82U19rODFmeWP/
+         4+kg==
+X-Gm-Message-State: AOAM531wg6AMHK1u9lFw5p740M8T6RXWI66wCCrNE2XWITffRpHKXZSs
+        ZhJDy0st9rzHdEnjzknjZqNoDjFmM5s=
+X-Google-Smtp-Source: ABdhPJx8yrwHgmL13buQFFNZyJ/WOhAPD1G+uSH1ENzeamWqBHoNEApEFTF5Qt0kCH9uyF4xuXMxbw==
+X-Received: by 2002:a63:d0d:: with SMTP id c13mr32314921pgl.294.1630508119294;
+        Wed, 01 Sep 2021 07:55:19 -0700 (PDT)
+Received: from [192.168.1.121] (99-44-17-11.lightspeed.irvnca.sbcglobal.net. [99.44.17.11])
+        by smtp.gmail.com with ESMTPSA id y2sm171567pjl.6.2021.09.01.07.55.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Sep 2021 07:55:18 -0700 (PDT)
+Message-ID: <6bac579b-5261-f96b-7a26-61cfe5f8ce87@gmail.com>
+Date:   Wed, 1 Sep 2021 07:55:17 -0700
 MIME-Version: 1.0
-Received: by 2002:a05:6a10:ce9c:0:0:0:0 with HTTP; Wed, 1 Sep 2021 07:40:48
- -0700 (PDT)
-From:   ekesine ugwu <ekesineugwu@gmail.com>
-Date:   Wed, 1 Sep 2021 07:40:48 -0700
-Message-ID: <CALCrinTRwk0Z3g-==phv9U5mpreE2+=_jnkhr-FLZjX93bfYnw@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.0.3
+Subject: Re: [PATCH] net: phy: fix autoneg invalid error state of GBSR
+ register.
+Content-Language: en-US
+To:     =?UTF-8?B?6ams5by6?= <maqianga@uniontech.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     davem <davem@davemloft.net>, netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Ming Wang <wangming01@loongson.cn>
+References: <20210901105608.29776-1-maqianga@uniontech.com>
+ <YS91biZov3jE+Lrd@lunn.ch> <tencent_405C539D1A6BA06876B7AC05@qq.com>
+ <YS95wn6kLkM9vHUl@lunn.ch> <tencent_312431A93CE3F240692EF111@qq.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <tencent_312431A93CE3F240692EF111@qq.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Attention Please,
 
-I am Bar. uchenna ilobi ,  How are you, I hope you are fine and
-healthy? This is to inform you that i have concluded the transaction
-successfully with the help of a new partner from Venezuela and now the
-fund has been transferred to Venezuela into the bank account of the
-new partner.
 
-Meanwhile, I have decided to compensate you with the sum of
-US$350,000.00 (thiree Hundred and Fifty Thousand United States
-Dollars) due to your past effort, though you disappointed me along the
-line. But nevertheless I am very happy for the successful ending of
-the transaction without any problem and that is the reason why i have
-decided to compensate you with the sum of US$350,000.00 so that you
-will share the joy with me.
+On 9/1/2021 6:40 AM, 马强 wrote:
+>  > > > It looks like you are using an old tree.
+>  > > Yes, it is linux-4.19.y, since 4.19.y does not have 
+> autoneg_complete flag,，
+>  > > This patch adds the condition before
+>  > > reading GBSR register to fix this error state.
+>  >
+>  > So you first need to fix it in net/master, and then backport it to
+>  > older kernels.
+> 
+> This patch is modified according to the contents of the latest kernels,
+> the following is a reference:
+> [ Upstream commit b6163f194c699ff75fa6aa4565b1eb8946c2c652 ]
+> [ Upstream commit 4950c2ba49cc6f2b38dbedcfa0ff67acf761419a ]
 
-I advise you to contact my secretary for Atm Card of US$350.000.00,
-which I kept for you. Contact him now without any delay.
-
-Name: solomon brandy
-
-Email:solomonbrandyfiveone@gmail.com
-
-Kindly reconfirm to him the following below information:
-
-Your full name_________________________
-Your address__________________________
-Your country___________________________
-Your age______________________________
-Your occupation________________________
-Your cell Phone number______________________
-
-Note that if you did not send him the above information complete, he
-will not release the Atm card to you because he has to be sure that it
-is you. Ask him to send you the total sum of ($350.000.00 ) Atm card,
-which I kept for you.
-
-Best regards,
-
-Mr. uchenna ilobi
+Then you need to be extremely clear in the commit message which specific 
+branch you are targeting, which commits you used as a reference, and how 
+you are fixing the problem. Also, the register is commonly named BMSR 
+(Basic Mode Status Register), no idea what GBSR means.
+-- 
+Florian
