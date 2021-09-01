@@ -2,96 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 261EF3FE138
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 19:37:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF97D3FE14B
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 19:40:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344543AbhIARiB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 13:38:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:32738 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1344504AbhIARiA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 13:38:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1630517822;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xhdpu5W1fJXLeojM24bKC1MSSzMuWR+Cf49l2mlXcbA=;
-        b=JAS88if+Dj9G5e049lqCm8N5LeL24BxdUlyMGgw5I7CluW8m+KETOHPvlgHk148kT7uXWl
-        vPGVcNg5hxh2BJPyQAW3dq4VfoyDnN6bnxdU9aK+T+Ns49Li/gBSnhY0J2buVz1U3voQub
-        hxhx5xWjbekg6yPphDqxDZYC5ajlq3g=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-377-vPtR8mibOjGdW4PL0N-50A-1; Wed, 01 Sep 2021 13:36:59 -0400
-X-MC-Unique: vPtR8mibOjGdW4PL0N-50A-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E2A7C801A92;
-        Wed,  1 Sep 2021 17:36:57 +0000 (UTC)
-Received: from x2.localnet (unknown [10.22.8.210])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 74C9A5C1BB;
-        Wed,  1 Sep 2021 17:36:56 +0000 (UTC)
-From:   Steve Grubb <sgrubb@redhat.com>
-To:     Cai Huoqing <caihuoqing@baidu.com>,
-        Eugene Syromiatnikov <esyr@redhat.com>
-Cc:     linux-audit@redhat.com,
-        strace development discussions <strace-devel@lists.strace.io>,
-        linux-api@vger.kernel.org, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org, ldv@strace.io
-Subject: Re: [PATCH 1/2] net: Remove net/ipx.h and uapi/linux/ipx.h header files
-Date:   Wed, 01 Sep 2021 13:36:54 -0400
-Message-ID: <1797920.tdWV9SEqCh@x2>
-Organization: Red Hat
-In-Reply-To: <20210901165202.GA4518@asgard.redhat.com>
-References: <20210813120803.101-1-caihuoqing@baidu.com> <20210901160244.GA5957@asgard.redhat.com> <20210901165202.GA4518@asgard.redhat.com>
+        id S1345758AbhIARlC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 13:41:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45976 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345543AbhIARlA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 13:41:00 -0400
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9159BC061575;
+        Wed,  1 Sep 2021 10:40:03 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id c8-20020a7bc008000000b002e6e462e95fso245738wmb.2;
+        Wed, 01 Sep 2021 10:40:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=NwiEX4/BmUHjFjLm/pps/RMvagHoU8AMBDUAk6ldmoA=;
+        b=XqttsRYNlYYkM99XNLfcCtTtSZ5/0zYjcvuvVsEJ8NRRrDHdiIsmRx1HmOpglU73Ha
+         TyUch1MzJwDhPjWpjOss5Hm1kzwms3qYBfBlz2h0FSyzwdJhVArezy+quIx7QeFI8r1k
+         Q14ABlDcTc0OQdeVeSb/ZEmJyD/EuuYq8kZmn2IA7Xg3B524PpLcI4mItpEXF8WXmI3b
+         BidUOB03PeFecnHivH6QhzEni1pstRz3qskOjTiTPr79OKOQqWW/J7nBRbrkeeGoLSeq
+         ZpDd/eqCB96rVMPFuVSrdggFiLvuPVI6NdseTFGqf0lK6v4RLCXwazGcgOha55P61L/p
+         LgQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=NwiEX4/BmUHjFjLm/pps/RMvagHoU8AMBDUAk6ldmoA=;
+        b=OwPZmM6Ig3Cu4A1jL/UbrpfkEeQdxdLixLnZjC10zTjO9KvjigZj4Cr3w6UwpEpp4T
+         jz/rHSLbZTS9GQ9SoSmiQnwwBFSHuSW4ZEEaAB3QMOj8TshGGzhS3zkGZht+ndre4OBU
+         Q8V/RNzcr3VxIMYnGv58jUKEwsWp5ZmISddc1lBpy/SLLokbTDOM0RwRq3Tj44NtqKZT
+         tgZACsUhzNSXkW7m/U0jwvKuDcSor+6+jnRQOxRVuyQedb6ocmZTT4+4cv+Iarlov4xE
+         Z9ExEuHB4B+TDtCHIC+yM8mfTt1LmHuakb1qPnE7MnSdqp68/jpBJt2aXr47bE4GgPjl
+         RmPA==
+X-Gm-Message-State: AOAM5315G3VpixgrNSXxWLZE8AlTjuMSbGjg9sE+vlTFNepaWOnFg6a2
+        aIh171c8ZMDh3kwoxTmxsKvPhsOByD8=
+X-Google-Smtp-Source: ABdhPJyanR3u0J1KdpUYbubSEoP0tYiXAY82tfxGC7QyoAaVGAjxr6KWybOhdcy81G006H+UCFJxqA==
+X-Received: by 2002:a05:600c:a05:: with SMTP id z5mr585300wmp.73.1630518002158;
+        Wed, 01 Sep 2021 10:40:02 -0700 (PDT)
+Received: from debian64.daheim (p5b0d7864.dip0.t-ipconnect.de. [91.13.120.100])
+        by smtp.gmail.com with ESMTPSA id k16sm96413wrx.87.2021.09.01.10.40.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Sep 2021 10:40:01 -0700 (PDT)
+Received: from localhost.daheim ([127.0.0.1])
+        by debian64.daheim with esmtp (Exim 4.95-RC2)
+        (envelope-from <chunkeey@gmail.com>)
+        id 1mLSLF-000Jxk-Pl;
+        Wed, 01 Sep 2021 19:40:00 +0200
+Subject: Re: [PATCH] p54: Remove obsolete comment
+To:     Wan Jiabing <wanjiabing@vivo.com>,
+        Christian Lamparter <chunkeey@googlemail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     kael_w@yeah.net
+References: <20210901024744.7013-1-wanjiabing@vivo.com>
+From:   Christian Lamparter <chunkeey@gmail.com>
+Message-ID: <1ac57e49-30e0-3ca1-c324-3aea2aec598b@gmail.com>
+Date:   Wed, 1 Sep 2021 19:40:00 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+In-Reply-To: <20210901024744.7013-1-wanjiabing@vivo.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: de-DE
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-Thanks for the heads up.
-
-On Wednesday, September 1, 2021 12:52:02 PM EDT Eugene Syromiatnikov wrote:
-> Adding linux-audit, strace-devel, and linux-api to CC:.
+On 01/09/2021 04:47, Wan Jiabing wrote:
+> In commit d249ff28b1d8 ("intersil: remove obsolete prism54 wireless driver"),
+> prism54/isl_oid.h is deleted. The comment here is obsolete.
 > 
-> On Wed, Sep 01, 2021 at 06:02:44PM +0200, Eugene Syromiatnikov wrote:
-> > On Fri, Aug 13, 2021 at 08:08:02PM +0800, Cai Huoqing wrote:
-> > > commit <47595e32869f> ("<MAINTAINERS: Mark some staging directories>")
-> > > indicated the ipx network layer as obsolete in Jan 2018,
-> > > updated in the MAINTAINERS file
-> > > 
-> > > now, after being exposed for 3 years to refactoring, so to
-> > > delete uapi/linux/ipx.h and net/ipx.h header files for good.
-> > > additionally, there is no module that depends on ipx.h except
-> > > a broken staging driver(r8188eu)
-> > > 
-> > > Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
-> > 
-> > This removal breaks audit[1] and potentially breaks strace[2][3], at
-> > least.
+Instead of removing said "obsolete" comment, why not copy the
+excellent comment about that "frameburst technology" from the
+prism54/isl_oid.h file there?
 
-I wouldn't say breaks so much as needs coordination with. :-)   If ipx is 
-being dropped in its entirety, I can just make that part of the code 
-conditional to the header existing.
-
--Steve
-
-> > [1]
-> > https://github.com/linux-audit/audit-userspace/blob/ce58837d44b7d9fcb4e1
-> > 40c23f68e0c94d95ab6e/auparse/interpret.c#L48 [2]
-> > https://gitlab.com/strace/strace/-/blob/9fe63f42df8badd22fb7eef9c12fc07e
-> > d7106d6b/src/net.c#L34 [3]
-> > https://gitlab.com/strace/strace/-/blob/9fe63f42df8badd22fb7eef9c12fc07e
-> > d7106d6b/src/sockaddr.c#L30
+Cheers,
+Christian
 
 
-
+> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+> ---
+>   drivers/net/wireless/intersil/p54/fwio.c | 1 -
+>   1 file changed, 1 deletion(-)
+> 
+> diff --git a/drivers/net/wireless/intersil/p54/fwio.c b/drivers/net/wireless/intersil/p54/fwio.c
+> index bece14e4ff0d..1fe072de3e63 100644
+> --- a/drivers/net/wireless/intersil/p54/fwio.c
+> +++ b/drivers/net/wireless/intersil/p54/fwio.c
+> @@ -583,7 +583,6 @@ int p54_set_edcf(struct p54_common *priv)
+>   	rtd = 3 * priv->coverage_class;
+>   	edcf->slottime += rtd;
+>   	edcf->round_trip_delay = cpu_to_le16(rtd);
+> -	/* (see prism54/isl_oid.h for further details) */
+>   	edcf->frameburst = cpu_to_le16(0);
+>   	edcf->flags = 0;
+>   	memset(edcf->mapping, 0, sizeof(edcf->mapping));
+> 
 
