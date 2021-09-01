@@ -2,68 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0F963FE61A
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 02:34:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B6043FE622
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 02:34:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242555AbhIAXbE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 19:31:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39534 "EHLO mail.kernel.org"
+        id S232492AbhIAXh5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 19:37:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40182 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231777AbhIAXbD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Sep 2021 19:31:03 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 8D2D76108B;
-        Wed,  1 Sep 2021 23:30:05 +0000 (UTC)
+        id S229989AbhIAXh4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 Sep 2021 19:37:56 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BF0C761026;
+        Wed,  1 Sep 2021 23:36:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1630539005;
-        bh=/nKDBlGgSg3odaXYMw+tA6joQb3aKEF4Zpg5KPoWemc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=HMY33FANshCRVuEq+UABBNhIAn1xGoPRjC8aTd6XDY8Lk8997n6vzmZTTZDihSYSD
-         jwZgSUfjrvcjcU4QnPVYPW9HRg3WJdsjqyahwAN6lrAr6fz7S4NEqezGnauX0/fnBV
-         j12wnwbBs/PvLVwbcaPoG+7vIJzF2ttYGevVr1Z6IIvouatccUG1rUm9/C1A8AwOvj
-         +4pCo1QHfD8Q93GNZzYMgIdoWZbqHSMFjmhdFxGyUAGY8LSfom8WSL3pQUet8gekKP
-         42FnHmuonLKo9lqhaly+rvYoGQ0F1nAn8vmXTvj1dl/uFxk+0dNmTS3cdWtBlATB0S
-         ku9rwrc/P1c6Q==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 820DB609CF;
-        Wed,  1 Sep 2021 23:30:05 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1630539419;
+        bh=EykNW2FhkEmnRMJz9o70p95envALD1NRfW3x6JldVno=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=qLn/hzTwSp+SM82jsyjhMtnQDzt3cwG3ziFnix+rpXth+629a0ZWnGw7+EWlvgOFL
+         nAhxjvvQBScUFttrJu82AdslNQnrWYrfbm/v/DjTVaQIhxKDGqEtqDSSlymxfyeTly
+         CnjL4tGH4p+JACPh0cxPie7bKnuZDVBnI6tWF6zeAK0G/qxJYOKVsei+kXQ+qAhkk4
+         he4DjmPqMMVH69ieGySuj0CYYe45/xVkHHa1CLIshTm9INNP1KXNOqZmUH9/sVcLEW
+         jTBuVzsY+xI5S+ev6ME5fEFN3IyA1DE8r8Os3i9fU4+WIdR2Hwkz8Aszoa+9dKdBy8
+         2aH35pwxm96Sw==
+Date:   Wed, 1 Sep 2021 16:36:57 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        stable@vger.kernel.org
+Subject: Re: [PATCH net 2/2] net: dsa: b53: Set correct number of ports in
+ the DSA struct
+Message-ID: <20210901163657.74f39079@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <ba35e7b8-4f90-9870-3e9e-f8666f5ebd0f@gmail.com>
+References: <20210901092141.6451-1-zajec5@gmail.com>
+        <20210901092141.6451-2-zajec5@gmail.com>
+        <ba35e7b8-4f90-9870-3e9e-f8666f5ebd0f@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] bnxt_en: fix kernel doc warnings in bnxt_hwrm.c
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163053900552.29321.15666000539403610570.git-patchwork-notify@kernel.org>
-Date:   Wed, 01 Sep 2021 23:30:05 +0000
-References: <20210901185315.57137-1-edwin.peer@broadcom.com>
-In-Reply-To: <20210901185315.57137-1-edwin.peer@broadcom.com>
-To:     Edwin Peer <edwin.peer@broadcom.com>
-Cc:     netdev@vger.kernel.org, michael.chan@broadcom.com,
-        andrew.gospodarek@broadcom.com, davem@davemloft.net,
-        kuba@kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Wed, 1 Sep 2021 10:21:55 -0700 Florian Fainelli wrote:
+> On 9/1/2021 2:21 AM, Rafa=C5=82 Mi=C5=82ecki wrote:
+> > From: Rafa=C5=82 Mi=C5=82ecki <rafal@milecki.pl>
+> >=20
+> > Setting DSA_MAX_PORTS caused DSA to call b53 callbacks (e.g.
+> > b53_disable_port() during dsa_register_switch()) for invalid
+> > (non-existent) ports. That made b53 modify unrelated registers and is
+> > one of reasons for a broken BCM5301x support.
+> >=20
+> > This problem exists for years but DSA_MAX_PORTS usage has changed few
+> > times so it's hard to specify a single commit this change fixes. =20
+>=20
+> You should still try to identify the relevant tags that this is fixing=20
+> such that this gets back ported to the appropriate trees. We could use=20
+> Fixes: 7e99e3470172 ("net: dsa: remove dsa_switch_alloc helper"), to=20
+> minimize the amount of work doing the back port.
 
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Wed,  1 Sep 2021 11:53:15 -0700 you wrote:
-> Parameter names in the comments did not match the function arguments.
-> 
-> Fixes: 213808170840 ("bnxt_en: add support for HWRM request slices")
-> Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
-> Reported-by: Jakub Kicinski <kuba@kernel.org>
-> Reviewed-by: Michael Chan <michael.chan@broadcom.com>
-> 
-> [...]
-
-Here is the summary with links:
-  - [net] bnxt_en: fix kernel doc warnings in bnxt_hwrm.c
-    https://git.kernel.org/netdev/net/c/5240118f08a0
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+To be clear are you okay with the fixes tag you provided or should we
+wait for Rafa=C5=82 to double check?
