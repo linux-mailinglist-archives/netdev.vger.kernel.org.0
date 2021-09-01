@@ -2,178 +2,306 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C5D83FDF10
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 17:53:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73D093FDF12
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 17:53:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343837AbhIAPyk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 11:54:40 -0400
-Received: from wout5-smtp.messagingengine.com ([64.147.123.21]:53927 "EHLO
-        wout5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S244935AbhIAPyj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 11:54:39 -0400
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
-        by mailout.west.internal (Postfix) with ESMTP id 363D232003C0;
-        Wed,  1 Sep 2021 11:53:41 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Wed, 01 Sep 2021 11:53:42 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=UiSTps
-        M3QALh0eXo4eM6pKPHSFI/8X46NXPxLbMcCTM=; b=gT0Bd5jw7ZIO4OqS+okZWf
-        MhSlUmEvjQ6JRYWJkft0Mp/Rr4e0GxuAcjzWIU0TbC4p2i9bSgyHSLsIKpetZ3f0
-        WFftTgXM3DHlwiwryXIJduO1d5W00pRqw8EO5zYPhaTD67IvpnhfpM8CiMCqSQiL
-        Wi3GIJtjmta5yc4rsOaCSshnpL2faSSgZf35SbET2Cmb4vdyY9H++b898NjUm/e2
-        NaA+5MeyOdLc1vkqFgFnq2qzk80qHOrSf8TBxus4VS3iwQwHpxu3jm659gCPxZnh
-        t6Q0faR4ceIJaSpBMTyoE7rgHr10vfawhDKOSEqblCaMG6jRa+2s9D/SMg5Bg1lA
-        ==
-X-ME-Sender: <xms:A6IvYTfQupKB3E1wFLwzpofWBOotVd0ep5yUd4Y8cokAJOGghcuXrg>
-    <xme:A6IvYZMtRj2W1yJIcuhmsTSqte-FXu9XXWWYArMHFoqOt4ScJb_lRr0itOPSUx3bD
-    PRAr7G22XTDNMA>
-X-ME-Received: <xmr:A6IvYcjRt5j_75DNLtyWKatHEkUdP4I0GpUbaE0Zh37_LtALGqE_uEiNtMd205qeF4baehXb0hRE-2s5R7s3S8mKaOitSw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddruddvfedgleefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
-    teenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
-    hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:A6IvYU9uAUbNBQEes4hlmiwKWXklvyhLd3ZPfzGzo_sGJgPvoYaqvg>
-    <xmx:A6IvYfu1zoYqWfvxIbYJ8z77KgQ-8OfIpyCZIHsSajUaMthU13SLfw>
-    <xmx:A6IvYTGazQsFQhvhmrtOqwZ73zkAdVeCSFo65Ib6n3rkBGkpoXXnzQ>
-    <xmx:BKIvYY9CMtRRkpAD6oJ5pgdH03VhCIjD1eHZ4OLiosgFSxwsnGl58g>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 1 Sep 2021 11:53:38 -0400 (EDT)
-Date:   Wed, 1 Sep 2021 18:53:34 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Shreyansh Chouhan <chouhan.shreyansh630@gmail.com>,
-        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org, pshelar@nicira.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+ff8e1b9f2f36481e2efc@syzkaller.appspotmail.com
-Subject: Re: [PATCH 1/2 net] ip_gre: add validation for csum_start
-Message-ID: <YS+h/tqCJJiQei+W@shredder>
-References: <20210819100447.00201b26@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210821071425.512834-1-chouhan.shreyansh630@gmail.com>
- <CA+FuTSeWY-0+VtERqAxNwmHAwmarYh_HQUoF3b0wHiwAaL+h+A@mail.gmail.com>
- <YS9puVgl/exGgrr3@shredder>
- <CA+FuTSfTCufYmJg5Vum1Q-ndUYh+1P1hLecFht9Qd1-AdnHmaQ@mail.gmail.com>
+        id S1343905AbhIAPyo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 11:54:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36056 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S244935AbhIAPym (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 Sep 2021 11:54:42 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 07DDB60F3A;
+        Wed,  1 Sep 2021 15:53:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1630511623;
+        bh=TnmkZKJturhx2YGjyzAABGjXGZxth9p5yS0wysVnQN0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ZDPAcoveVZRdtS1PzZFaBCEwBwu0wDP62yVchSPfg8KjW5+cfpVEd9S2W/RhUL9Au
+         OO9YP+ugKETTX6jNrXBUDjIEIWkd/G81h09AskEVE4qDUvoxlRwUzhkWTEbXMO9T7t
+         MI+cEbwTqBy8mtd9/2QhiintvHvUkHr+vXtxvA55jJgjlcPxlQjWaC83Abr3k4yrso
+         fptvf53l5k/nL534MTND+nWY5uezEUqW08aIh5Y7jfMB91Fpp21NAehLR2j6LxKzNg
+         6niSlj0KzGGtYLoyvn2rJkt8ZdFxy6H+XZlIizDJ+a+cT03uxRPzouWHLqdEY+BM61
+         wYr6u1QV7mJcQ==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     dsahern@gmail.com, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net] selftests: add simple GSO GRE test
+Date:   Wed,  1 Sep 2021 08:53:40 -0700
+Message-Id: <20210901155340.353344-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+FuTSfTCufYmJg5Vum1Q-ndUYh+1P1hLecFht9Qd1-AdnHmaQ@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks for the quick reply, Willem.
+Test case for commit a6e3f2985a80 ("ip6_tunnel: fix GRE6 segmentation").
 
-On Wed, Sep 01, 2021 at 09:46:48AM -0400, Willem de Bruijn wrote:
-> Thanks for the detailed report, Ido.
-> 
-> This is a gre tunnel device with csum/ocsum enabled, correct?
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+Looks like I never sent this out.
+---
+ tools/testing/selftests/net/Makefile   |   1 +
+ tools/testing/selftests/net/gre_gso.sh | 236 +++++++++++++++++++++++++
+ 2 files changed, 237 insertions(+)
+ create mode 100755 tools/testing/selftests/net/gre_gso.sh
 
-Correct.
+diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
+index 378c0aac5a1a..47c644b1ffca 100644
+--- a/tools/testing/selftests/net/Makefile
++++ b/tools/testing/selftests/net/Makefile
+@@ -27,6 +27,7 @@ TEST_PROGS += udpgro_fwd.sh
+ TEST_PROGS += veth.sh
+ TEST_PROGS += ioam6.sh
+ TEST_PROGS += gro.sh
++TEST_PROGS += gre_gro.sh
+ TEST_PROGS_EXTENDED := in_netns.sh
+ TEST_GEN_FILES =  socket nettest
+ TEST_GEN_FILES += psock_fanout psock_tpacket msg_zerocopy reuseport_addr_any
+diff --git a/tools/testing/selftests/net/gre_gso.sh b/tools/testing/selftests/net/gre_gso.sh
+new file mode 100755
+index 000000000000..facbb0c80443
+--- /dev/null
++++ b/tools/testing/selftests/net/gre_gso.sh
+@@ -0,0 +1,236 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++
++# This test is for checking GRE GSO.
++
++ret=0
++# Kselftest framework requirement - SKIP code is 4.
++ksft_skip=4
++
++# all tests in this script. Can be overridden with -t option
++TESTS="gre_gso"
++
++VERBOSE=0
++PAUSE_ON_FAIL=no
++PAUSE=no
++IP="ip -netns ns1"
++NS_EXEC="ip netns exec ns1"
++TMPFILE=`mktemp`
++PID=
++
++log_test()
++{
++	local rc=$1
++	local expected=$2
++	local msg="$3"
++
++	if [ ${rc} -eq ${expected} ]; then
++		printf "    TEST: %-60s  [ OK ]\n" "${msg}"
++		nsuccess=$((nsuccess+1))
++	else
++		ret=1
++		nfail=$((nfail+1))
++		printf "    TEST: %-60s  [FAIL]\n" "${msg}"
++		if [ "${PAUSE_ON_FAIL}" = "yes" ]; then
++		echo
++			echo "hit enter to continue, 'q' to quit"
++			read a
++			[ "$a" = "q" ] && exit 1
++		fi
++	fi
++
++	if [ "${PAUSE}" = "yes" ]; then
++		echo
++		echo "hit enter to continue, 'q' to quit"
++		read a
++		[ "$a" = "q" ] && exit 1
++	fi
++}
++
++setup()
++{
++	set -e
++	ip netns add ns1
++	ip netns set ns1 auto
++	$IP link set dev lo up
++
++	ip link add veth0 type veth peer name veth1
++	ip link set veth0 up
++	ip link set veth1 netns ns1
++	$IP link set veth1 name veth0
++	$IP link set veth0 up
++
++	dd if=/dev/urandom of=$TMPFILE bs=1024 count=2048 &>/dev/null
++	set +e
++}
++
++cleanup()
++{
++	rm -rf $TMPFILE
++	[ -n "$PID" ] && kill $PID
++	ip link del dev gre1 &> /dev/null
++	ip link del dev veth0 &> /dev/null
++	ip netns del ns1
++}
++
++get_linklocal()
++{
++	local dev=$1
++	local ns=$2
++	local addr
++
++	[ -n "$ns" ] && ns="-netns $ns"
++
++	addr=$(ip -6 -br $ns addr show dev ${dev} | \
++	awk '{
++		for (i = 3; i <= NF; ++i) {
++			if ($i ~ /^fe80/)
++				print $i
++		}
++	}'
++	)
++	addr=${addr/\/*}
++
++	[ -z "$addr" ] && return 1
++
++	echo $addr
++
++	return 0
++}
++
++gre_create_tun()
++{
++	local a1=$1
++	local a2=$2
++	local mode
++
++	[[ $a1 =~ ^[0-9.]*$ ]] && mode=gre || mode=ip6gre
++
++	ip tunnel add gre1 mode $mode local $a1 remote $a2 dev veth0
++	ip link set gre1 up
++	$IP tunnel add gre1 mode $mode local $a2 remote $a1 dev veth0
++	$IP link set gre1 up
++}
++
++gre_gst_test_checks()
++{
++	local name=$1
++	local addr=$2
++
++	$NS_EXEC nc -kl $port >/dev/null &
++	PID=$!
++	while ! $NS_EXEC ss -ltn | grep -q $port; do ((i++)); sleep 0.01; done
++
++	cat $TMPFILE | timeout 1 nc $addr $port
++	log_test $? 0 "$name - copy file w/ TSO"
++
++	ethtool -K veth0 tso off
++
++	cat $TMPFILE | timeout 1 nc $addr $port
++	log_test $? 0 "$name - copy file w/ GSO"
++
++	ethtool -K veth0 tso on
++
++	kill $PID
++	PID=
++}
++
++gre6_gso_test()
++{
++	local port=7777
++
++	setup
++
++	a1=$(get_linklocal veth0)
++	a2=$(get_linklocal veth0 ns1)
++
++	gre_create_tun $a1 $a2
++
++	ip  addr add 172.16.2.1/24 dev gre1
++	$IP addr add 172.16.2.2/24 dev gre1
++
++	ip  -6 addr add 2001:db8:1::1/64 dev gre1 nodad
++	$IP -6 addr add 2001:db8:1::2/64 dev gre1 nodad
++
++	sleep 2
++
++	gre_gst_test_checks GREv6/v4 172.16.2.2
++	gre_gst_test_checks GREv6/v6 2001:db8:1::2
++
++	cleanup
++}
++
++gre_gso_test()
++{
++	gre6_gso_test
++}
++
++################################################################################
++# usage
++
++usage()
++{
++	cat <<EOF
++usage: ${0##*/} OPTS
++
++        -t <test>   Test(s) to run (default: all)
++                    (options: $TESTS)
++        -p          Pause on fail
++        -P          Pause after each test before cleanup
++        -v          verbose mode (show commands and output)
++EOF
++}
++
++################################################################################
++# main
++
++while getopts :t:pPhv o
++do
++	case $o in
++		t) TESTS=$OPTARG;;
++		p) PAUSE_ON_FAIL=yes;;
++		P) PAUSE=yes;;
++		v) VERBOSE=$(($VERBOSE + 1));;
++		h) usage; exit 0;;
++		*) usage; exit 1;;
++	esac
++done
++
++PEER_CMD="ip netns exec ${PEER_NS}"
++
++# make sure we don't pause twice
++[ "${PAUSE}" = "yes" ] && PAUSE_ON_FAIL=no
++
++if [ "$(id -u)" -ne 0 ];then
++	echo "SKIP: Need root privileges"
++	exit $ksft_skip;
++fi
++
++if [ ! -x "$(command -v ip)" ]; then
++	echo "SKIP: Could not run test without ip tool"
++	exit $ksft_skip
++fi
++
++if [ ! -x "$(command -v nc)" ]; then
++	echo "SKIP: Could not run test without nc tool"
++	exit $ksft_skip
++fi
++
++# start clean
++cleanup &> /dev/null
++
++for t in $TESTS
++do
++	case $t in
++	gre_gso)		gre_gso_test;;
++
++	help) echo "Test names: $TESTS"; exit 0;;
++	esac
++done
++
++if [ "$TESTS" != "none" ]; then
++	printf "\nTests passed: %3d\n" ${nsuccess}
++	printf "Tests failed: %3d\n"   ${nfail}
++fi
++
++exit $ret
+-- 
+2.31.1
 
-> 
-> How was this packet generated: does it come from the local stack or is
-> it a custom packet injected from userspace, e.g., with a packet socket
-> with vnet_hdr?
-
-The packet is received by a physical port and injected to the kernel's
-Rx path by mlxsw (which does not support checksumming). The IPv4 routing
-code then forwards the packet to the GRE tunnel.
-
-I was able to reproduce the issue using veth pairs and a packet socket
-[1]. Running the reproducer with the debug patch from before, I get the
-following output [2].
-
-[1]
-#!/bin/bash
-
-ip link add name veth0 type veth peer name veth1
-ip link add name veth2 type veth peer name veth3
-ip link add name veth4 type veth peer name veth5
-
-ip netns add h1
-ip netns add r1
-ip netns add r2
-ip netns add h2
-
-# h1
-ip -n h1 link set dev lo up
-ip link set dev veth0 netns h1
-ip -n h1 link set dev veth0 up
-ip -n h1 address add 192.0.2.1/28 dev veth0
-ip -n h1 route add default via 192.0.2.2
-
-# r1
-## underlay
-ip netns exec r1 sysctl -wq net.ipv4.conf.all.forwarding=1
-ip -n r1 link set dev lo up
-ip -n r1 address add 1.1.1.1/32 dev lo
-ip link set dev veth1 netns r1
-ip link set dev veth2 netns r1
-ip -n r1 link set dev veth1 up
-ip -n r1 link set dev veth2 up
-ip -n r1 address add 192.0.2.2/28 dev veth1
-ip -n r1 address add 192.0.2.17/28 dev veth2
-ip -n r1 route add 2.2.2.2/32 via 192.0.2.18
-## overlay
-ip -n r1 tunnel add name gre2 mode gre local 1.1.1.1 remote 2.2.2.2 csum
-ip -n r1 link set dev gre2 up
-ip -n r1 route add 192.0.2.34/32 dev gre2
-
-# r2
-## underlay
-ip netns exec r2 sysctl -wq net.ipv4.conf.all.forwarding=1
-ip -n r2 link set dev lo up
-ip -n r2 address add 2.2.2.2/32 dev lo
-ip link set dev veth3 netns r2
-ip link set dev veth4 netns r2
-ip -n r2 link set dev veth3 up
-ip -n r2 link set dev veth4 up
-ip -n r2 address add 192.0.2.18/28 dev veth3
-ip -n r2 address add 192.0.2.33/28 dev veth4
-ip -n r2 route add 1.1.1.1/32 via 192.0.2.17
-## overlay
-ip -n r2 tunnel add name gre2 mode gre local 2.2.2.2 remote 1.1.1.1 csum
-ip -n r2 link set dev gre2 up
-ip -n r2 route add 192.0.2.1/32 dev gre2
-
-# h2
-ip -n h2 link set dev lo up
-ip link set dev veth5 netns h2
-ip -n h2 link set dev veth5 up
-ip -n h2 address add 192.0.2.34/28 dev veth5
-ip -n h2 route add default via 192.0.2.33
-
-# test
-dmac=$(ip -n r1 -j -p link show dev veth1 | jq -r '.[]["address"]')
-ip netns exec h1 mausezahn -a own -b "$dmac" -A 192.0.2.1 -B 192.0.2.34 \
-	-t udp "sp=12345,dp=54321" -p 100 -c 10 -d 1msec -q
-
-ip -n r1 -s link show dev gre2
-
-ip netns del h2
-ip netns del r2
-ip netns del r1
-ip netns del h1
-
-[2]
-skb len=128 headroom=80 headlen=128 tailroom=496
-mac=(80,0) net=(80,20) trans=100
-shinfo(txflags=0 nr_frags=0 gso(size=0 type=0 segs=0))
-csum(0x0 ip_summed=0 complete_sw=0 valid=0 level=0)
-hash(0x0 sw=0 l4=0) proto=0x0800 pkttype=0 iif=16
-dev name=gre2 feat=0x0x00000006401d5869
-skb linear:   00000000: 45 00 00 80 00 00 00 00 fe 11 38 49 c0 00 02 01
-skb linear:   00000010: c0 00 02 22 30 39 d4 31 00 6c 85 96 42 42 42 42
-skb linear:   00000020: 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42
-skb linear:   00000030: 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42
-skb linear:   00000040: 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42
-skb linear:   00000050: 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42
-skb linear:   00000060: 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42
-skb linear:   00000070: 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42
