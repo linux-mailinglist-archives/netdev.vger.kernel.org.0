@@ -2,224 +2,307 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E23A93FDE56
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 17:15:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7815C3FDE5D
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 17:16:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245479AbhIAPQT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 11:16:19 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:22909 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233929AbhIAPQR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 11:16:17 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1630509319;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=cI3YGKinUAUJ4EIDJFrV5CUhikBFatmsrzCz3MZjYcI=;
-        b=HuYqvpR7JkysFKxsJGdYcAQHhowFMl1p4g0ogTWEUtWS9lgeo0B4BO70meSOMbiaNGmVqp
-        zKORp5ww9tWc8OEvdbm9LK94QLFz/Maq5rex4kaXAKEz4ND+G1IhcpGBU2uXHlM6YUnx2R
-        YT9kq+D7lJ4mTk8JJ/lgQPR6GU4FO/c=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-484-mTf0DlwhMdGrzgedxTHcEQ-1; Wed, 01 Sep 2021 11:15:18 -0400
-X-MC-Unique: mTf0DlwhMdGrzgedxTHcEQ-1
-Received: by mail-wm1-f70.google.com with SMTP id s197-20020a1ca9ce000000b002e72ba822dcso2960662wme.6
-        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 08:15:17 -0700 (PDT)
+        id S1343513AbhIAPRP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 11:17:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40202 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233929AbhIAPRP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 11:17:15 -0400
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A869C061575
+        for <netdev@vger.kernel.org>; Wed,  1 Sep 2021 08:16:18 -0700 (PDT)
+Received: by mail-yb1-xb34.google.com with SMTP id z5so5831030ybj.2
+        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 08:16:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8Nl49q2NDkLMJG1QVFwZHwrmaWGvDxjcvww+Kzjh5Sg=;
+        b=dkJvfz2Thh5TWRlDWepzGsyCT4pB5Vi6GQHz6r/3EQeG0S0PNssP8PRBrrB/jz+Wkc
+         giwE5fLKlRj0GYfDTj1/OYajh5mN1ztpG3LgHVq4d3OJb8orPpBuLI+QKz4+5Prg0jTl
+         i8xJ8tHVpPfJfXXOXZkW5kjgP8/fKCB9gQ0VsKuykQR7xohKD7FZYkVBs5pfbaRAb4Vf
+         ++gipuHfQzcY6nFrbpmp18vbOKZbEAIUc/3WefyeYHHSd0k2rXIBm+wfh5wPeYTwlIHG
+         PvnN4nSflS6b16qc1VpZ7jyKxEbc3bmkpTTNwRNY912WWWg9CT1hj8ye3RChCkIM21nE
+         3bHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=cI3YGKinUAUJ4EIDJFrV5CUhikBFatmsrzCz3MZjYcI=;
-        b=se62OqIBBHKgwIqSDrjbN5u0PIR4HfYWA9nM/AVcidmTvlMPUGVJrmdP1d9yBqyaY3
-         d6j+o1gWjKhUrBu636Zpla5VcyRt1TrzBJ8sud7+g0rvoqBTkPLWBtid5iaMMOoDMK/w
-         aaos4D+IQK51F/6h3tBA4UbdBuoV9TEu3aukUFds5t0tivPwlYbIQtcLtpJspHt4Rfwn
-         pUpsAwNoLel9P4L9BAjKf2XQiRRqHayEjtivxFTPb6soINy7vlXgdU6Ubby3KKUZEw/X
-         2GmR0GK0guaBUE1Jp/UnsYf8Tyd0K+rk+jt/BmkA1GyVl4rAEOSwGPKF/1VyMsHlosSv
-         VBuA==
-X-Gm-Message-State: AOAM532w4OikF6RRPxx936kjPzlGwhItOmW/P3CfAyHj0R1bZr0VT6db
-        kmpI2zNx82txbebtvdSL97qD5vcIxpi1FZsA/PjRHyyynCFhI7VhrBfbf4+CtFzjbzR2J13atJR
-        eHweFWcgfCX94rArh
-X-Received: by 2002:a1c:2209:: with SMTP id i9mr3399wmi.92.1630509316850;
-        Wed, 01 Sep 2021 08:15:16 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzKqj6Zpr84oS5Vukf+XvV1LZYkEqWj63+vl/cyeW1zP6cuDgdGyICCzoFwuFdkiBvi+ZLUYQ==
-X-Received: by 2002:a1c:2209:: with SMTP id i9mr3360wmi.92.1630509316587;
-        Wed, 01 Sep 2021 08:15:16 -0700 (PDT)
-Received: from krava ([94.113.247.3])
-        by smtp.gmail.com with ESMTPSA id v21sm23343257wra.92.2021.09.01.08.15.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Sep 2021 08:15:16 -0700 (PDT)
-Date:   Wed, 1 Sep 2021 17:15:13 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
-        Viktor Malik <vmalik@redhat.com>
-Subject: Re: [PATCH bpf-next v4 18/27] bpf, x64: Store properly return value
- for trampoline with multi func programs
-Message-ID: <YS+ZAbb+h9uAX6EP@krava>
-References: <20210826193922.66204-1-jolsa@kernel.org>
- <20210826193922.66204-19-jolsa@kernel.org>
- <CAEf4BzbFxSVzu1xrUyzrgn1jKyR40RJ3UEEsUCkii3u5nN_8wg@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8Nl49q2NDkLMJG1QVFwZHwrmaWGvDxjcvww+Kzjh5Sg=;
+        b=MhjTphCrthPEWEujTn9TCmWiUFIGIzUI7N9CTM8G+Y7Xo2OK4wyPjXz80QgPq3P+c2
+         lAalcLFBd1r1rMTrvXTYQEg6iijEUX4qqkJIpm36jKAd2KNF6UkXOH58fmgGTScOQ1Mx
+         AoYQtL6iEAgXV8zQJOsWQslTm6UwYQ49pIdvsiQ/I97vlP1HFSbB0sos8rWS+Aqwo9Cu
+         OFzHYWiMgxtmZHqGUyyVALDZs3benygaM23YRSaYNOjn1b3PzTvhJyi3Y+0LEC10n7u2
+         h/GM1jF0Q7esWi5DZ/EKYgra06hVOyz84eFjpNLerzl1ahptV563PaMeTwXryPWIEHXl
+         vSAQ==
+X-Gm-Message-State: AOAM530AnlY2IGkStEth0uI9DpFe5s8+3v61AG/01od0vh+LF7v58W+y
+        LWiXS7kFDPgssZEjUhgAVisHNd+Ac3LrOS7/OvFBjw==
+X-Google-Smtp-Source: ABdhPJwFwltRXLVDlzE9vqTyiYIvwMXZcg66icWV7WMeqGE/IST0BxaEcIQbFuRP9h+3g8xBpDX7Zc2I9TtRcywDctc=
+X-Received: by 2002:a05:6902:150f:: with SMTP id q15mr4304ybu.408.1630509377233;
+ Wed, 01 Sep 2021 08:16:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzbFxSVzu1xrUyzrgn1jKyR40RJ3UEEsUCkii3u5nN_8wg@mail.gmail.com>
+References: <1630492744-60396-1-git-send-email-linyunsheng@huawei.com>
+ <9c9ef2228dfcb950b5c75382bd421c6169e547a0.camel@redhat.com> <CANn89iJFeM=DgcQpDbaE38uhxTEL6REMWPnVFt7Am7Nuf4wpMw@mail.gmail.com>
+In-Reply-To: <CANn89iJFeM=DgcQpDbaE38uhxTEL6REMWPnVFt7Am7Nuf4wpMw@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 1 Sep 2021 08:16:05 -0700
+Message-ID: <CANn89iKbgtb84Lb4UOxUCb_WGrfB6ZoD=bVH2O06-Mm6FBmwpg@mail.gmail.com>
+Subject: Re: [PATCH net-next] tcp: add tcp_tx_skb_cache_key checking in sk_stream_alloc_skb()
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Yunsheng Lin <linyunsheng@huawei.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        MPTCP Upstream <mptcp@lists.linux.dev>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, linuxarm@openeuler.org,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>
+Content-Type: multipart/mixed; boundary="0000000000003c433905caf08c8a"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 31, 2021 at 04:51:18PM -0700, Andrii Nakryiko wrote:
-> On Thu, Aug 26, 2021 at 12:41 PM Jiri Olsa <jolsa@redhat.com> wrote:
+--0000000000003c433905caf08c8a
+Content-Type: text/plain; charset="UTF-8"
+
+On Wed, Sep 1, 2021 at 8:06 AM Eric Dumazet <edumazet@google.com> wrote:
+>
+> On Wed, Sep 1, 2021 at 3:52 AM Paolo Abeni <pabeni@redhat.com> wrote:
 > >
-> > When we have multi func program attached, the trampoline
-> > switched to the function model of the multi func program.
+> > On Wed, 2021-09-01 at 18:39 +0800, Yunsheng Lin wrote:
+> > > Since tcp_tx_skb_cache is disabled by default in:
+> > > commit 0b7d7f6b2208 ("tcp: add tcp_tx_skb_cache sysctl")
+> > >
+> > > Add tcp_tx_skb_cache_key checking in sk_stream_alloc_skb() to
+> > > avoid possible branch-misses.
+> > >
+> > > Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 > >
-> > This breaks already attached standard programs, for example
-> > when we attach following program:
+> > Note that MPTCP is currently exploiting sk->sk_tx_skb_cache. If we get
+> > this patch goes in as-is, it will break mptcp.
 > >
-> >   SEC("fexit/bpf_fentry_test2")
-> >   int BPF_PROG(test1, int a, __u64 b, int ret)
+> > One possible solution would be to let mptcp usage enable sk-
+> > >sk_tx_skb_cache, but that has relevant side effects on plain TCP.
 > >
-> > the trampoline pushes on stack args 'a' and 'b' and return
-> > value 'ret'.
+> > Another options would be re-work once again the mptcp xmit path to
+> > avoid using sk->sk_tx_skb_cache.
 > >
-> > When following multi func program is attached to bpf_fentry_test2:
-> >
-> >   SEC("fexit.multi/bpf_fentry_test*")
-> >   int BPF_PROG(test2, __u64 a, __u64 b, __u64 c, __u64 d,
-> >                        __u64 e, __u64 f, int ret)
-> >
-> > the trampoline takes this program model and pushes all 6 args
-> > and return value on stack.
-> >
-> > But we still have the original 'test1' program attached, that
-> > expects 'ret' value where there's 'c' argument now:
-> >
-> >   test1(a, b, c)
-> >
-> > To fix that we simply overwrite 'c' argument with 'ret' value,
-> > so test1 is called as expected and test2 gets called as:
-> >
-> >   test2(a, b, ret, d, e, f, ret)
-> >
-> > which is ok, because 'c' is not defined for bpf_fentry_test2
-> > anyway.
-> >
-> 
-> What if we change the order on the stack to be the return value first,
-> followed by input arguments. That would get us a bit closer to
-> unifying multi-trampoline and the normal one, right? BPF verifier
-> should be able to rewrite access to the last argument (i.e., return
-> value) for fexit programs to actually be at offset 0, and shift all
-> other arguments by 8 bytes. For fentry, if that helps to keep things
-> more aligned, we'd just skip the first 8 bytes on the stack and store
-> all the input arguments in the same offsets. So BPF verifier rewriting
-> logic stays consistent (except offset 0 will be disallowed).
+>
+> Hmmm, I actually wrote a revert of this feature but forgot to submit
+> it last year.
+>
+> commit c36cfbd791f62c0f7c6b32132af59dfdbe6be21b (HEAD -> listener_scale4)
+> Author: Eric Dumazet <edumazet@google.com>
+> Date:   Wed May 20 06:38:38 2020 -0700
+>
+>     tcp: remove sk_{tr}x_skb_cache
+>
+>     This reverts the following patches :
+>
+>     2e05fcae83c41eb2df10558338dc600dc783af47 ("tcp: fix compile error
+> if !CONFIG_SYSCTL")
+>     4f661542a40217713f2cee0bb6678fbb30d9d367 ("tcp: fix zerocopy and
+> notsent_lowat issues")
+>     472c2e07eef045145bc1493cc94a01c87140780a ("tcp: add one skb cache for tx")
+>     8b27dae5a2e89a61c46c6dbc76c040c0e6d0ed4c ("tcp: add one skb cache for rx")
+>
+>     Having a cache of one skb (in each direction) per TCP socket is fragile,
+>     since it can cause a significant increase of memory needs,
+>     and not good enough for high speed flows anyway where more than one skb
+>     is needed.
+>
+>     We want instead to add a generic infrastructure, with more flexible per-cpu
+>     caches, for alien NUMA nodes.
+>
+>     Signed-off-by: Eric Dumazet <edumazet@google.com>
+>
+> I will update this commit to also remove the part in MPTCP.
+>
+> Let's remove this feature and replace it with something less costly.
 
-nice idea, with this in place we could cut that args re-arranging code
+Paolo, can you work on MPTP side, so that my revert can be then applied ?
 
-> 
-> Basically, I'm thinking how we can make normal and multi trampolines
-> more interoperable to remove those limitations that two
-> multi-trampolines can't be attached to the same function, which seems
-> like a pretty annoying limitation which will be easy to hit in
-> practice. Alexei previously proposed (as an optimization) to group all
-> to-be-attached functions into groups by number of arguments, so that
-> we can have up to 6 different trampolines tailored to actual functions
-> being attached. So that we don't save unnecessary extra input
-> arguments saving, which will be even more important once we allow more
-> than 6 arguments in the future.
-> 
-> With such logic, we should be able to split all the functions into
-> multiple underlying trampolines, so it seems like it should be
-> possible to also allow multiple multi-fentry programs to be attached
-> to the same function by having a separate bpf_trampoline just for
-> those functions. It will be just an extension of the above "just 6
-> trampolines" strategy to "as much as we need trampolines".
+Thanks !
 
-I'm probably missing something here.. say we have 2 functions with single
-argument:
+--0000000000003c433905caf08c8a
+Content-Type: text/x-patch; charset="US-ASCII"; 
+	name="0001-tcp-remove-sk_-tr-x_skb_cache.patch"
+Content-Disposition: attachment; 
+	filename="0001-tcp-remove-sk_-tr-x_skb_cache.patch"
+Content-Transfer-Encoding: base64
+Content-ID: <f_kt1n6bhm0>
+X-Attachment-Id: f_kt1n6bhm0
 
-  foo1(int a)
-  foo2(int b)
-
-then having 2 programs:
-
-  A - attaching to foo1
-  B - attaching to foo2
-
-then you need to have 2 different trampolines instead of single 'generic-1-argument-trampoline'
-
-> 
-> It's just a vague idea, sorry, I don't understand all the code yet.
-> But the limitation outlined in one of the previous patches seems very
-> limiting and unpleasant. I can totally see that some 24/7 running BPF
-> tracing app uses multi-fentry for tracing a small subset of kernel
-> functions non-stop, and then someone is trying to use bpftrace or
-> retsnoop to trace overlapping set of functions. And it immediately
-> fails. Very frustrating.
-
-so the current approach is to some extent driven by the direct ftrace
-batch API:
-
-  you have ftrace_ops object and set it up with functions you want
-  to change with calling:
-
-  ftrace_set_filter_ip(ops, ip1);
-  ftrace_set_filter_ip(ops, ip2);
-  ...
-
-and then register trampoline with those functions:
-
-  register_ftrace_direct_multi(ops, tramp_addr);
-
-and with this call being the expensive one (it does the actual work
-and sync waiting), my objective was to call it just once for update
-
-now with 2 intersecting multi trampolines we end up with 3 functions
-sets:
-
-  A - functions for first multi trampoline
-  B - functions for second multi trampoline
-  C - intersection of them
-
-each set needs different trampoline:
-
-  tramp A - calls program for first multi trampoline
-  tramp B - calls program for second multi trampoline
-  tramp C - calls both programs
-
-so we need to call register_ftrace_direct_multi 3 times
-
-if we allow also standard trampolines being attached, it makes
-it even more complicated and ultimatelly gets broken to
-1-function/1-trampoline pairs, ending up with attach speed
-that we have now
-
-...
-
-I have test code for ftrace direct interface that would
-allow to register/change separate function/addr pairs,
-so in one call you can change multiple ips each to
-different tramp addresss
-
-but even with that, I ended up with lot of new complexity
-on bpf side keeping track of multi trampolines intersections,
-so I thought I'd start with something limited and simpler
-
-perhaps I should move back to that approach and see how bad
-it ends ;-)
-
-or this could be next step on top of current work, that should
-get simpler with the args re-arranging you proposed
-
-jirka
-
+RnJvbSBjMzZjZmJkNzkxZjYyYzBmN2M2YjMyMTMyYWY1OWRmZGJlNmJlMjFiIE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBFcmljIER1bWF6ZXQgPGVkdW1hemV0QGdvb2dsZS5jb20+CkRh
+dGU6IFdlZCwgMjAgTWF5IDIwMjAgMDY6Mzg6MzggLTA3MDAKU3ViamVjdDogW1BBVENIIG5ldC1u
+ZXh0XSB0Y3A6IHJlbW92ZSBza197dHJ9eF9za2JfY2FjaGUKClRoaXMgcmV2ZXJ0cyB0aGUgZm9s
+bG93aW5nIHBhdGNoZXMgOgoKMmUwNWZjYWU4M2M0MWViMmRmMTA1NTgzMzhkYzYwMGRjNzgzYWY0
+NyAoInRjcDogZml4IGNvbXBpbGUgZXJyb3IgaWYgIUNPTkZJR19TWVNDVEwiKQo0ZjY2MTU0MmE0
+MDIxNzcxM2YyY2VlMGJiNjY3OGZiYjMwZDlkMzY3ICgidGNwOiBmaXggemVyb2NvcHkgYW5kIG5v
+dHNlbnRfbG93YXQgaXNzdWVzIikKNDcyYzJlMDdlZWYwNDUxNDViYzE0OTNjYzk0YTAxYzg3MTQw
+NzgwYSAoInRjcDogYWRkIG9uZSBza2IgY2FjaGUgZm9yIHR4IikKOGIyN2RhZTVhMmU4OWE2MWM0
+NmM2ZGJjNzZjMDQwYzBlNmQwZWQ0YyAoInRjcDogYWRkIG9uZSBza2IgY2FjaGUgZm9yIHJ4IikK
+CkhhdmluZyBhIGNhY2hlIG9mIG9uZSBza2IgKGluIGVhY2ggZGlyZWN0aW9uKSBwZXIgVENQIHNv
+Y2tldCBpcyBmcmFnaWxlLApzaW5jZSBpdCBjYW4gY2F1c2UgYSBzaWduaWZpY2FudCBpbmNyZWFz
+ZSBvZiBtZW1vcnkgbmVlZHMsCmFuZCBub3QgZ29vZCBlbm91Z2ggZm9yIGhpZ2ggc3BlZWQgZmxv
+d3MgYW55d2F5IHdoZXJlIG1vcmUgdGhhbiBvbmUgc2tiCmlzIG5lZWRlZC4KCldlIHdhbnQgaW5z
+dGVhZCB0byBhZGQgYSBnZW5lcmljIGluZnJhc3RydWN0dXJlLCB3aXRoIG1vcmUgZmxleGlibGUg
+cGVyLWNwdQpjYWNoZXMsIGZvciBhbGllbiBOVU1BIG5vZGVzLgoKU2lnbmVkLW9mZi1ieTogRXJp
+YyBEdW1hemV0IDxlZHVtYXpldEBnb29nbGUuY29tPgotLS0KIERvY3VtZW50YXRpb24vbmV0d29y
+a2luZy9pcC1zeXNjdGwucnN0IHwgIDggLS0tLS0tLS0KIGluY2x1ZGUvbmV0L3NvY2suaCAgICAg
+ICAgICAgICAgICAgICAgIHwgMTkgLS0tLS0tLS0tLS0tLS0tLS0tLQogbmV0L2lwdjQvYWZfaW5l
+dC5jICAgICAgICAgICAgICAgICAgICAgfCAgNCAtLS0tCiBuZXQvaXB2NC9zeXNjdGxfbmV0X2lw
+djQuYyAgICAgICAgICAgICB8IDEyIC0tLS0tLS0tLS0tLQogbmV0L2lwdjQvdGNwLmMgICAgICAg
+ICAgICAgICAgICAgICAgICAgfCAyNiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQogbmV0L2lw
+djQvdGNwX2lwdjQuYyAgICAgICAgICAgICAgICAgICAgfCAgNiAtLS0tLS0KIG5ldC9pcHY2L3Rj
+cF9pcHY2LmMgICAgICAgICAgICAgICAgICAgIHwgIDYgLS0tLS0tCiA3IGZpbGVzIGNoYW5nZWQs
+IDgxIGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL0RvY3VtZW50YXRpb24vbmV0d29ya2luZy9p
+cC1zeXNjdGwucnN0IGIvRG9jdW1lbnRhdGlvbi9uZXR3b3JraW5nL2lwLXN5c2N0bC5yc3QKaW5k
+ZXggZDkxYWIyODcxOGQ0OTNiZjUxOTZmMmIwOGNiNTllYzJjMTM4ZThlNC4uMTZiOGJmNzJmZWFm
+NDI3NTMxMjFjMzY4NTMwYTRmMmU4NjRhNjU4ZiAxMDA2NDQKLS0tIGEvRG9jdW1lbnRhdGlvbi9u
+ZXR3b3JraW5nL2lwLXN5c2N0bC5yc3QKKysrIGIvRG9jdW1lbnRhdGlvbi9uZXR3b3JraW5nL2lw
+LXN5c2N0bC5yc3QKQEAgLTk4OSwxNCArOTg5LDYgQEAgdGNwX2NoYWxsZW5nZV9hY2tfbGltaXQg
+LSBJTlRFR0VSCiAJaW4gUkZDIDU5NjEgKEltcHJvdmluZyBUQ1AncyBSb2J1c3RuZXNzIHRvIEJs
+aW5kIEluLVdpbmRvdyBBdHRhY2tzKQogCURlZmF1bHQ6IDEwMDAKIAotdGNwX3J4X3NrYl9jYWNo
+ZSAtIEJPT0xFQU4KLQlDb250cm9scyBhIHBlciBUQ1Agc29ja2V0IGNhY2hlIG9mIG9uZSBza2Is
+IHRoYXQgbWlnaHQgaGVscAotCXBlcmZvcm1hbmNlIG9mIHNvbWUgd29ya2xvYWRzLiBUaGlzIG1p
+Z2h0IGJlIGRhbmdlcm91cwotCW9uIHN5c3RlbXMgd2l0aCBhIGxvdCBvZiBUQ1Agc29ja2V0cywg
+c2luY2UgaXQgaW5jcmVhc2VzCi0JbWVtb3J5IHVzYWdlLgotCi0JRGVmYXVsdDogMCAoZGlzYWJs
+ZWQpCi0KIFVEUCB2YXJpYWJsZXMKID09PT09PT09PT09PT0KIApkaWZmIC0tZ2l0IGEvaW5jbHVk
+ZS9uZXQvc29jay5oIGIvaW5jbHVkZS9uZXQvc29jay5oCmluZGV4IDY2YTlhOTBmOTU1OGU0Yzcz
+OWUwMTE5MmIzZjhjZWU5ZmEyNzFhZTkuLjcwOGI5ZGUzY2RiYjExNmViMmQxZTYzZWNiYzg2NzJk
+NTU2ZjA5NTEgMTAwNjQ0Ci0tLSBhL2luY2x1ZGUvbmV0L3NvY2suaAorKysgYi9pbmNsdWRlL25l
+dC9zb2NrLmgKQEAgLTI2Miw3ICsyNjIsNiBAQCBzdHJ1Y3QgYnBmX2xvY2FsX3N0b3JhZ2U7CiAg
+ICoJQHNrX2RzdF9jYWNoZTogZGVzdGluYXRpb24gY2FjaGUKICAgKglAc2tfZHN0X3BlbmRpbmdf
+Y29uZmlybTogbmVlZCB0byBjb25maXJtIG5laWdoYm91cgogICAqCUBza19wb2xpY3k6IGZsb3cg
+cG9saWN5Ci0gICoJQHNrX3J4X3NrYl9jYWNoZTogY2FjaGUgY29weSBvZiByZWNlbnRseSBhY2Nl
+c3NlZCBSWCBza2IKICAgKglAc2tfcmVjZWl2ZV9xdWV1ZTogaW5jb21pbmcgcGFja2V0cwogICAq
+CUBza193bWVtX2FsbG9jOiB0cmFuc21pdCBxdWV1ZSBieXRlcyBjb21taXR0ZWQKICAgKglAc2tf
+dHNxX2ZsYWdzOiBUQ1AgU21hbGwgUXVldWVzIGZsYWdzCkBAIC0zMjgsNyArMzI3LDYgQEAgc3Ry
+dWN0IGJwZl9sb2NhbF9zdG9yYWdlOwogICAqCUBza19wZWVrX29mZjogY3VycmVudCBwZWVrX29m
+ZnNldCB2YWx1ZQogICAqCUBza19zZW5kX2hlYWQ6IGZyb250IG9mIHN0dWZmIHRvIHRyYW5zbWl0
+CiAgICoJQHRjcF9ydHhfcXVldWU6IFRDUCByZS10cmFuc21pdCBxdWV1ZSBbdW5pb24gd2l0aCBA
+c2tfc2VuZF9oZWFkXQotICAqCUBza190eF9za2JfY2FjaGU6IGNhY2hlIGNvcHkgb2YgcmVjZW50
+bHkgYWNjZXNzZWQgVFggc2tiCiAgICoJQHNrX3NlY3VyaXR5OiB1c2VkIGJ5IHNlY3VyaXR5IG1v
+ZHVsZXMKICAgKglAc2tfbWFyazogZ2VuZXJpYyBwYWNrZXQgbWFyawogICAqCUBza19jZ3JwX2Rh
+dGE6IGNncm91cCBkYXRhIGZvciB0aGlzIGNncm91cApAQCAtMzkzLDcgKzM5MSw2IEBAIHN0cnVj
+dCBzb2NrIHsKIAlhdG9taWNfdAkJc2tfZHJvcHM7CiAJaW50CQkJc2tfcmN2bG93YXQ7CiAJc3Ry
+dWN0IHNrX2J1ZmZfaGVhZAlza19lcnJvcl9xdWV1ZTsKLQlzdHJ1Y3Qgc2tfYnVmZgkJKnNrX3J4
+X3NrYl9jYWNoZTsKIAlzdHJ1Y3Qgc2tfYnVmZl9oZWFkCXNrX3JlY2VpdmVfcXVldWU7CiAJLyoK
+IAkgKiBUaGUgYmFja2xvZyBxdWV1ZSBpcyBzcGVjaWFsLCBpdCBpcyBhbHdheXMgdXNlZCB3aXRo
+CkBAIC00NDIsNyArNDM5LDYgQEAgc3RydWN0IHNvY2sgewogCQlzdHJ1Y3Qgc2tfYnVmZgkqc2tf
+c2VuZF9oZWFkOwogCQlzdHJ1Y3QgcmJfcm9vdAl0Y3BfcnR4X3F1ZXVlOwogCX07Ci0Jc3RydWN0
+IHNrX2J1ZmYJCSpza190eF9za2JfY2FjaGU7CiAJc3RydWN0IHNrX2J1ZmZfaGVhZAlza193cml0
+ZV9xdWV1ZTsKIAlfX3MzMgkJCXNrX3BlZWtfb2ZmOwogCWludAkJCXNrX3dyaXRlX3BlbmRpbmc7
+CkBAIC0xNTU1LDE4ICsxNTUxLDEwIEBAIHN0YXRpYyBpbmxpbmUgdm9pZCBza19tZW1fdW5jaGFy
+Z2Uoc3RydWN0IHNvY2sgKnNrLCBpbnQgc2l6ZSkKIAkJX19za19tZW1fcmVjbGFpbShzaywgMSA8
+PCAyMCk7CiB9CiAKLURFQ0xBUkVfU1RBVElDX0tFWV9GQUxTRSh0Y3BfdHhfc2tiX2NhY2hlX2tl
+eSk7CiBzdGF0aWMgaW5saW5lIHZvaWQgc2tfd21lbV9mcmVlX3NrYihzdHJ1Y3Qgc29jayAqc2ss
+IHN0cnVjdCBza19idWZmICpza2IpCiB7CiAJc2tfd21lbV9xdWV1ZWRfYWRkKHNrLCAtc2tiLT50
+cnVlc2l6ZSk7CiAJc2tfbWVtX3VuY2hhcmdlKHNrLCBza2ItPnRydWVzaXplKTsKLQlpZiAoc3Rh
+dGljX2JyYW5jaF91bmxpa2VseSgmdGNwX3R4X3NrYl9jYWNoZV9rZXkpICYmCi0JICAgICFzay0+
+c2tfdHhfc2tiX2NhY2hlICYmICFza2JfY2xvbmVkKHNrYikpIHsKLQkJc2tiX2V4dF9yZXNldChz
+a2IpOwotCQlza2JfemNvcHlfY2xlYXIoc2tiLCB0cnVlKTsKLQkJc2stPnNrX3R4X3NrYl9jYWNo
+ZSA9IHNrYjsKLQkJcmV0dXJuOwotCX0KIAlfX2tmcmVlX3NrYihza2IpOwogfQogCkBAIC0yNTc1
+LDcgKzI1NjMsNiBAQCBzdGF0aWMgaW5saW5lIHZvaWQgc2tiX3NldHVwX3R4X3RpbWVzdGFtcChz
+dHJ1Y3Qgc2tfYnVmZiAqc2tiLCBfX3UxNiB0c2ZsYWdzKQogCQkJICAgJnNrYl9zaGluZm8oc2ti
+KS0+dHNrZXkpOwogfQogCi1ERUNMQVJFX1NUQVRJQ19LRVlfRkFMU0UodGNwX3J4X3NrYl9jYWNo
+ZV9rZXkpOwogLyoqCiAgKiBza19lYXRfc2tiIC0gUmVsZWFzZSBhIHNrYiBpZiBpdCBpcyBubyBs
+b25nZXIgbmVlZGVkCiAgKiBAc2s6IHNvY2tldCB0byBlYXQgdGhpcyBza2IgZnJvbQpAQCAtMjU4
+NywxMiArMjU3NCw2IEBAIERFQ0xBUkVfU1RBVElDX0tFWV9GQUxTRSh0Y3Bfcnhfc2tiX2NhY2hl
+X2tleSk7CiBzdGF0aWMgaW5saW5lIHZvaWQgc2tfZWF0X3NrYihzdHJ1Y3Qgc29jayAqc2ssIHN0
+cnVjdCBza19idWZmICpza2IpCiB7CiAJX19za2JfdW5saW5rKHNrYiwgJnNrLT5za19yZWNlaXZl
+X3F1ZXVlKTsKLQlpZiAoc3RhdGljX2JyYW5jaF91bmxpa2VseSgmdGNwX3J4X3NrYl9jYWNoZV9r
+ZXkpICYmCi0JICAgICFzay0+c2tfcnhfc2tiX2NhY2hlKSB7Ci0JCXNrLT5za19yeF9za2JfY2Fj
+aGUgPSBza2I7Ci0JCXNrYl9vcnBoYW4oc2tiKTsKLQkJcmV0dXJuOwotCX0KIAlfX2tmcmVlX3Nr
+Yihza2IpOwogfQogCmRpZmYgLS1naXQgYS9uZXQvaXB2NC9hZl9pbmV0LmMgYi9uZXQvaXB2NC9h
+Zl9pbmV0LmMKaW5kZXggMWQ4MTZhNWZkM2ViOTE0ZTBlM2EwNzFhN2FlMTU5ZDczMTEwNzNmOC4u
+NDA1NTgwMzNmODU3YzBjYTdkOThiNzc4ZjcwNDg3ZTE5NGYzZDA2NiAxMDA2NDQKLS0tIGEvbmV0
+L2lwdjQvYWZfaW5ldC5jCisrKyBiL25ldC9pcHY0L2FmX2luZXQuYwpAQCAtMTMzLDEwICsxMzMs
+NiBAQCB2b2lkIGluZXRfc29ja19kZXN0cnVjdChzdHJ1Y3Qgc29jayAqc2spCiAJc3RydWN0IGlu
+ZXRfc29jayAqaW5ldCA9IGluZXRfc2soc2spOwogCiAJX19za2JfcXVldWVfcHVyZ2UoJnNrLT5z
+a19yZWNlaXZlX3F1ZXVlKTsKLQlpZiAoc2stPnNrX3J4X3NrYl9jYWNoZSkgewotCQlfX2tmcmVl
+X3NrYihzay0+c2tfcnhfc2tiX2NhY2hlKTsKLQkJc2stPnNrX3J4X3NrYl9jYWNoZSA9IE5VTEw7
+Ci0JfQogCV9fc2tiX3F1ZXVlX3B1cmdlKCZzay0+c2tfZXJyb3JfcXVldWUpOwogCiAJc2tfbWVt
+X3JlY2xhaW0oc2spOwpkaWZmIC0tZ2l0IGEvbmV0L2lwdjQvc3lzY3RsX25ldF9pcHY0LmMgYi9u
+ZXQvaXB2NC9zeXNjdGxfbmV0X2lwdjQuYwppbmRleCA2ZjFlNjRkNDkyMzI4Nzc3YmY4ZjE2N2I1
+NmMwMWJjOTZiMTgyZTk4Li42ZWI0M2RjOTEyMThjZWExNDEzNGI2NmRmZDIyMzJmZjI2NTliYWJi
+IDEwMDY0NAotLS0gYS9uZXQvaXB2NC9zeXNjdGxfbmV0X2lwdjQuYworKysgYi9uZXQvaXB2NC9z
+eXNjdGxfbmV0X2lwdjQuYwpAQCAtNTk0LDE4ICs1OTQsNiBAQCBzdGF0aWMgc3RydWN0IGN0bF90
+YWJsZSBpcHY0X3RhYmxlW10gPSB7CiAJCS5leHRyYTEJCT0gJnN5c2N0bF9maWJfc3luY19tZW1f
+bWluLAogCQkuZXh0cmEyCQk9ICZzeXNjdGxfZmliX3N5bmNfbWVtX21heCwKIAl9LAotCXsKLQkJ
+LnByb2NuYW1lCT0gInRjcF9yeF9za2JfY2FjaGUiLAotCQkuZGF0YQkJPSAmdGNwX3J4X3NrYl9j
+YWNoZV9rZXkua2V5LAotCQkubW9kZQkJPSAwNjQ0LAotCQkucHJvY19oYW5kbGVyCT0gcHJvY19k
+b19zdGF0aWNfa2V5LAotCX0sCi0JewotCQkucHJvY25hbWUJPSAidGNwX3R4X3NrYl9jYWNoZSIs
+Ci0JCS5kYXRhCQk9ICZ0Y3BfdHhfc2tiX2NhY2hlX2tleS5rZXksCi0JCS5tb2RlCQk9IDA2NDQs
+Ci0JCS5wcm9jX2hhbmRsZXIJPSBwcm9jX2RvX3N0YXRpY19rZXksCi0JfSwKIAl7IH0KIH07CiAK
+ZGlmZiAtLWdpdCBhL25ldC9pcHY0L3RjcC5jIGIvbmV0L2lwdjQvdGNwLmMKaW5kZXggZThiNDhk
+ZjczYzg1MmE0OGU1MTc1NGVhOThiMWUwOGJmMDI0YmI5ZS4uNGEzNzUwMGY0YmQ0NDIyYmRhMjYw
+OWRlNTIwYjgzMDU2YzJjYjAxYSAxMDA2NDQKLS0tIGEvbmV0L2lwdjQvdGNwLmMKKysrIGIvbmV0
+L2lwdjQvdGNwLmMKQEAgLTMyNSwxMSArMzI1LDYgQEAgc3RydWN0IHRjcF9zcGxpY2Vfc3RhdGUg
+ewogdW5zaWduZWQgbG9uZyB0Y3BfbWVtb3J5X3ByZXNzdXJlIF9fcmVhZF9tb3N0bHk7CiBFWFBP
+UlRfU1lNQk9MX0dQTCh0Y3BfbWVtb3J5X3ByZXNzdXJlKTsKIAotREVGSU5FX1NUQVRJQ19LRVlf
+RkFMU0UodGNwX3J4X3NrYl9jYWNoZV9rZXkpOwotRVhQT1JUX1NZTUJPTCh0Y3Bfcnhfc2tiX2Nh
+Y2hlX2tleSk7Ci0KLURFRklORV9TVEFUSUNfS0VZX0ZBTFNFKHRjcF90eF9za2JfY2FjaGVfa2V5
+KTsKLQogdm9pZCB0Y3BfZW50ZXJfbWVtb3J5X3ByZXNzdXJlKHN0cnVjdCBzb2NrICpzaykKIHsK
+IAl1bnNpZ25lZCBsb25nIHZhbDsKQEAgLTg2NiwxOCArODYxLDYgQEAgc3RydWN0IHNrX2J1ZmYg
+KnNrX3N0cmVhbV9hbGxvY19za2Ioc3RydWN0IHNvY2sgKnNrLCBpbnQgc2l6ZSwgZ2ZwX3QgZ2Zw
+LAogewogCXN0cnVjdCBza19idWZmICpza2I7CiAKLQlpZiAobGlrZWx5KCFzaXplKSkgewotCQlz
+a2IgPSBzay0+c2tfdHhfc2tiX2NhY2hlOwotCQlpZiAoc2tiKSB7Ci0JCQlza2ItPnRydWVzaXpl
+ID0gU0tCX1RSVUVTSVpFKHNrYl9lbmRfb2Zmc2V0KHNrYikpOwotCQkJc2stPnNrX3R4X3NrYl9j
+YWNoZSA9IE5VTEw7Ci0JCQlwc2tiX3RyaW0oc2tiLCAwKTsKLQkJCUlOSVRfTElTVF9IRUFEKCZz
+a2ItPnRjcF90c29ydGVkX2FuY2hvcik7Ci0JCQlza2Jfc2hpbmZvKHNrYiktPnR4X2ZsYWdzID0g
+MDsKLQkJCW1lbXNldChUQ1BfU0tCX0NCKHNrYiksIDAsIHNpemVvZihzdHJ1Y3QgdGNwX3NrYl9j
+YikpOwotCQkJcmV0dXJuIHNrYjsKLQkJfQotCX0KIAkvKiBUaGUgVENQIGhlYWRlciBtdXN0IGJl
+IGF0IGxlYXN0IDMyLWJpdCBhbGlnbmVkLiAgKi8KIAlzaXplID0gQUxJR04oc2l6ZSwgNCk7CiAK
+QEAgLTI5MjAsMTEgKzI5MDMsNiBAQCB2b2lkIHRjcF93cml0ZV9xdWV1ZV9wdXJnZShzdHJ1Y3Qg
+c29jayAqc2spCiAJCXNrX3dtZW1fZnJlZV9za2Ioc2ssIHNrYik7CiAJfQogCXRjcF9ydHhfcXVl
+dWVfcHVyZ2Uoc2spOwotCXNrYiA9IHNrLT5za190eF9za2JfY2FjaGU7Ci0JaWYgKHNrYikgewot
+CQlfX2tmcmVlX3NrYihza2IpOwotCQlzay0+c2tfdHhfc2tiX2NhY2hlID0gTlVMTDsKLQl9CiAJ
+SU5JVF9MSVNUX0hFQUQoJnRjcF9zayhzayktPnRzb3J0ZWRfc2VudF9xdWV1ZSk7CiAJc2tfbWVt
+X3JlY2xhaW0oc2spOwogCXRjcF9jbGVhcl9hbGxfcmV0cmFuc19oaW50cyh0Y3Bfc2soc2spKTsK
+QEAgLTI5NjEsMTAgKzI5MzksNiBAQCBpbnQgdGNwX2Rpc2Nvbm5lY3Qoc3RydWN0IHNvY2sgKnNr
+LCBpbnQgZmxhZ3MpCiAKIAl0Y3BfY2xlYXJfeG1pdF90aW1lcnMoc2spOwogCV9fc2tiX3F1ZXVl
+X3B1cmdlKCZzay0+c2tfcmVjZWl2ZV9xdWV1ZSk7Ci0JaWYgKHNrLT5za19yeF9za2JfY2FjaGUp
+IHsKLQkJX19rZnJlZV9za2Ioc2stPnNrX3J4X3NrYl9jYWNoZSk7Ci0JCXNrLT5za19yeF9za2Jf
+Y2FjaGUgPSBOVUxMOwotCX0KIAlXUklURV9PTkNFKHRwLT5jb3BpZWRfc2VxLCB0cC0+cmN2X254
+dCk7CiAJdHAtPnVyZ19kYXRhID0gMDsKIAl0Y3Bfd3JpdGVfcXVldWVfcHVyZ2Uoc2spOwpkaWZm
+IC0tZ2l0IGEvbmV0L2lwdjQvdGNwX2lwdjQuYyBiL25ldC9pcHY0L3RjcF9pcHY0LmMKaW5kZXgg
+MmU2MmUwZDYzNzNhNmVlNWQ5ODc1NmZiMTk2N2JmZjk3NDNmZmEwMi4uMjlhNTdiZDE1OWYwYWE5
+OWU4OTJiYWM1NmI3NTk2MWMxMDdmODAzYSAxMDA2NDQKLS0tIGEvbmV0L2lwdjQvdGNwX2lwdjQu
+YworKysgYi9uZXQvaXB2NC90Y3BfaXB2NC5jCkBAIC0xOTQxLDcgKzE5NDEsNiBAQCBzdGF0aWMg
+dm9pZCB0Y3BfdjRfZmlsbF9jYihzdHJ1Y3Qgc2tfYnVmZiAqc2tiLCBjb25zdCBzdHJ1Y3QgaXBo
+ZHIgKmlwaCwKIGludCB0Y3BfdjRfcmN2KHN0cnVjdCBza19idWZmICpza2IpCiB7CiAJc3RydWN0
+IG5ldCAqbmV0ID0gZGV2X25ldChza2ItPmRldik7Ci0Jc3RydWN0IHNrX2J1ZmYgKnNrYl90b19m
+cmVlOwogCWludCBzZGlmID0gaW5ldF9zZGlmKHNrYik7CiAJaW50IGRpZiA9IGluZXRfaWlmKHNr
+Yik7CiAJY29uc3Qgc3RydWN0IGlwaGRyICppcGg7CkBAIC0yMDgyLDE3ICsyMDgxLDEyIEBAIGlu
+dCB0Y3BfdjRfcmN2KHN0cnVjdCBza19idWZmICpza2IpCiAJdGNwX3NlZ3NfaW4odGNwX3NrKHNr
+KSwgc2tiKTsKIAlyZXQgPSAwOwogCWlmICghc29ja19vd25lZF9ieV91c2VyKHNrKSkgewotCQlz
+a2JfdG9fZnJlZSA9IHNrLT5za19yeF9za2JfY2FjaGU7Ci0JCXNrLT5za19yeF9za2JfY2FjaGUg
+PSBOVUxMOwogCQlyZXQgPSB0Y3BfdjRfZG9fcmN2KHNrLCBza2IpOwogCX0gZWxzZSB7CiAJCWlm
+ICh0Y3BfYWRkX2JhY2tsb2coc2ssIHNrYikpCiAJCQlnb3RvIGRpc2NhcmRfYW5kX3JlbHNlOwot
+CQlza2JfdG9fZnJlZSA9IE5VTEw7CiAJfQogCWJoX3VubG9ja19zb2NrKHNrKTsKLQlpZiAoc2ti
+X3RvX2ZyZWUpCi0JCV9fa2ZyZWVfc2tiKHNrYl90b19mcmVlKTsKIAogcHV0X2FuZF9yZXR1cm46
+CiAJaWYgKHJlZmNvdW50ZWQpCmRpZmYgLS1naXQgYS9uZXQvaXB2Ni90Y3BfaXB2Ni5jIGIvbmV0
+L2lwdjYvdGNwX2lwdjYuYwppbmRleCAwY2U1MmQ0NmU0ZjgxYjIyMWE2YWNkNGEwZGQ3YjBkNDYy
+ZGJhYzdhLi44Y2Y1ZmYyZTk1MDQzZWMxYTJiMjc2NjFhYWU4ODRlYjEzZGNmOWViIDEwMDY0NAot
+LS0gYS9uZXQvaXB2Ni90Y3BfaXB2Ni5jCisrKyBiL25ldC9pcHY2L3RjcF9pcHY2LmMKQEAgLTE2
+MTgsNyArMTYxOCw2IEBAIHN0YXRpYyB2b2lkIHRjcF92Nl9maWxsX2NiKHN0cnVjdCBza19idWZm
+ICpza2IsIGNvbnN0IHN0cnVjdCBpcHY2aGRyICpoZHIsCiAKIElORElSRUNUX0NBTExBQkxFX1ND
+T1BFIGludCB0Y3BfdjZfcmN2KHN0cnVjdCBza19idWZmICpza2IpCiB7Ci0Jc3RydWN0IHNrX2J1
+ZmYgKnNrYl90b19mcmVlOwogCWludCBzZGlmID0gaW5ldDZfc2RpZihza2IpOwogCWludCBkaWYg
+PSBpbmV0Nl9paWYoc2tiKTsKIAljb25zdCBzdHJ1Y3QgdGNwaGRyICp0aDsKQEAgLTE3NTQsMTcg
+KzE3NTMsMTIgQEAgSU5ESVJFQ1RfQ0FMTEFCTEVfU0NPUEUgaW50IHRjcF92Nl9yY3Yoc3RydWN0
+IHNrX2J1ZmYgKnNrYikKIAl0Y3Bfc2Vnc19pbih0Y3Bfc2soc2spLCBza2IpOwogCXJldCA9IDA7
+CiAJaWYgKCFzb2NrX293bmVkX2J5X3VzZXIoc2spKSB7Ci0JCXNrYl90b19mcmVlID0gc2stPnNr
+X3J4X3NrYl9jYWNoZTsKLQkJc2stPnNrX3J4X3NrYl9jYWNoZSA9IE5VTEw7CiAJCXJldCA9IHRj
+cF92Nl9kb19yY3Yoc2ssIHNrYik7CiAJfSBlbHNlIHsKIAkJaWYgKHRjcF9hZGRfYmFja2xvZyhz
+aywgc2tiKSkKIAkJCWdvdG8gZGlzY2FyZF9hbmRfcmVsc2U7Ci0JCXNrYl90b19mcmVlID0gTlVM
+TDsKIAl9CiAJYmhfdW5sb2NrX3NvY2soc2spOwotCWlmIChza2JfdG9fZnJlZSkKLQkJX19rZnJl
+ZV9za2Ioc2tiX3RvX2ZyZWUpOwogcHV0X2FuZF9yZXR1cm46CiAJaWYgKHJlZmNvdW50ZWQpCiAJ
+CXNvY2tfcHV0KHNrKTsKLS0gCjIuMzMuMC4xNTMuZ2JhNTBjOGZhMjQtZ29vZwoK
+--0000000000003c433905caf08c8a--
