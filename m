@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78DD63FD6B4
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 11:23:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 163903FD6B6
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 11:23:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243465AbhIAJXm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 05:23:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42558 "EHLO
+        id S243552AbhIAJXs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 05:23:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242789AbhIAJXl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 05:23:41 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97BDDC061575;
-        Wed,  1 Sep 2021 02:22:44 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id j12so3682687ljg.10;
-        Wed, 01 Sep 2021 02:22:44 -0700 (PDT)
+        with ESMTP id S243536AbhIAJXq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 05:23:46 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E570FC061575;
+        Wed,  1 Sep 2021 02:22:49 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id s10so4983277lfr.11;
+        Wed, 01 Sep 2021 02:22:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=AKMjpN2/BtbCv16EaWTjstGR2UORcQiJiYOiz1FEe10=;
-        b=YiURxLIA7wFpM4b0F5gg4DacGxdsm3XThsNOHwtV3vJoaeoYh93YR30mmo1BAktYa+
-         8MtX7pZHbGFMkh3zv9jc4xxDOQoLqoli0tOE1Y4PYSAfUB0T4qfi+fAfuSR1hwBFMSWg
-         R4sxCRIr2u/DWQn2eOQd0uknd+lQVFCUieb1HPHKxznLjb7AodCf6M7rEcxT43kP0+hg
-         JEJ01fTTpwd9J+5bRerUN07s5mCUXaBoCQDGAR46XXGMqJfron1hOHIj7BrPoW29YFt6
-         iDLANhXP4FcORz3gUDJi/OkzBbardzehf+FNoOzfqo1xGiQJZn8thi4TeRjhamTu94pm
-         fgYg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=0QCLzqE4WaxkGI/C/C+CMLvLGK3ujcpZunMWfcty+x0=;
+        b=PQsobL4kUvemesFGEkRG9zDyUVLxh03DU5TJCC6dLKhGRAfUxVSP1nPUW73GI0N68I
+         Yir/LY7pHJqwNp6xLSGUN3q+XgbVvKqRqk4/Vn/5OMCgUVLdUqcxRG0wG/qu6vgh+CxV
+         3LGGzTq/piHoMgF7XxDnAmN6rZDfuGSburV/Wnqun62zjRubC7MOlMwO1+t1FJKNBqRm
+         EWzpwoKsczCC7xHl5TL3iyYHtV31ETjTix6tYKhKt5so36rqgUAcPEBu4a4I75bLn3wa
+         Xtoo0zeqG4b+Ec8ENvcqP3cLWLMGTIk1cnxL6w3OsWD5KgfVWd0g/XGa3jcuhYa/y7ft
+         7/0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=AKMjpN2/BtbCv16EaWTjstGR2UORcQiJiYOiz1FEe10=;
-        b=T8oA4/VleLqCFgqxzJazatfdm/uNq0OqfuR8/+9qCVDreA4uq0qPAiLaZaARIjbSYe
-         1Bn1H7KAN+9yDaJy60FZtxi53ktPxfQv3euMMlUCVjRY3/2JPLKpDgIQem4TH3JOJyfM
-         dnJDRzgooPQYHvQuwv9AddHJndd27bYHpbfJXsmMdCgKPVbdbTKV6jJNLYHR1MCd8MoV
-         Ak8kEm6BEI6rDYEyoVgQfGPn334ar8Si1qWX7566oTuY67zBNqwRUZhOHRChBDuydHlg
-         QO7qi8O4sLBSUN4M/YjEG80KGEjV7jvE885YpSA4LHjqffOTJEq/XEpXuEUefv02rSQe
-         kQmA==
-X-Gm-Message-State: AOAM532cJpZt0i50NTpmPY8fwQkmFUZzm8Fup/LwG2WS6tIcMZvI5Emn
-        kB8cniipz5Sp4/AagC1lMFtqSUY+hwE=
-X-Google-Smtp-Source: ABdhPJw0RYUDTe09wEx5vmivqCT1/uTx9mZ2U0ce0ciKVKGNSbuxAty0CIL3dCtO2RIGlCT8CoT+7g==
-X-Received: by 2002:a2e:8810:: with SMTP id x16mr29470515ljh.410.1630488162989;
-        Wed, 01 Sep 2021 02:22:42 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=0QCLzqE4WaxkGI/C/C+CMLvLGK3ujcpZunMWfcty+x0=;
+        b=mQjwwmgNCt5AF2PNy+cafVpqaBjwNX2Vo32P+uHk75EoGeQSUfhglHcaB7nt15a3Fm
+         MLt7ZXmB9f14mpBqZT6r/ndqG79ReTrZ0tdzBQP3lkgpSYxaISbYzIVy1sIFKwlYuKp/
+         0L+SSRHQZgcEad6OQPQybv9lKSMxaXzVovp0oNuROf2dLqVK042gzKp5ZE101CDi2cL2
+         xG8Nu7g7yfzLLBwJnGGJp/CR8OsqdX3mztWqH/rz6DwgT7dIrMQRq4/NziiwGVyQv/gs
+         dENXtoV1TMl5sqpdDmPcQbM54Qm0mgBcNx11e/Ndq/S/kbmRp4EGXZUOpprJA/XVnuUT
+         3zXg==
+X-Gm-Message-State: AOAM532H8U9V9o0HThT0qgfjrzC0QmLxuqsWmTL0/Ddw55DVRMDmz13j
+        K8lJksP1VZi/lSI5ElcrdT0=
+X-Google-Smtp-Source: ABdhPJzpkc0xnOetBW5TM2eK94UW2SwTadSsKE4mKZqUj1qdvkZj4t/gC2yeVJkJSyblRU84XEba7Q==
+X-Received: by 2002:a19:48d0:: with SMTP id v199mr24216365lfa.620.1630488168265;
+        Wed, 01 Sep 2021 02:22:48 -0700 (PDT)
 Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.gmail.com with ESMTPSA id d24sm2492372ljj.8.2021.09.01.02.22.41
+        by smtp.gmail.com with ESMTPSA id d24sm2492372ljj.8.2021.09.01.02.22.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Sep 2021 02:22:42 -0700 (PDT)
+        Wed, 01 Sep 2021 02:22:47 -0700 (PDT)
 From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -56,10 +56,12 @@ To:     Andrew Lunn <andrew@lunn.ch>,
 Cc:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
         =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
         stable@vger.kernel.org
-Subject: [PATCH net 1/2] net: dsa: b53: Fix calculating number of switch ports
-Date:   Wed,  1 Sep 2021 11:21:40 +0200
-Message-Id: <20210901092141.6451-1-zajec5@gmail.com>
+Subject: [PATCH net 2/2] net: dsa: b53: Set correct number of ports in the DSA struct
+Date:   Wed,  1 Sep 2021 11:21:41 +0200
+Message-Id: <20210901092141.6451-2-zajec5@gmail.com>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20210901092141.6451-1-zajec5@gmail.com>
+References: <20210901092141.6451-1-zajec5@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -69,38 +71,41 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Rafał Miłecki <rafal@milecki.pl>
 
-It isn't true that CPU port is always the last one. Switches BCM5301x
-have 9 ports (port 6 being inactive) and they use port 5 as CPU by
-default (depending on design some other may be CPU ports too).
+Setting DSA_MAX_PORTS caused DSA to call b53 callbacks (e.g.
+b53_disable_port() during dsa_register_switch()) for invalid
+(non-existent) ports. That made b53 modify unrelated registers and is
+one of reasons for a broken BCM5301x support.
 
-A more reliable way of determining number of ports is to check for the
-last set bit in the "enabled_ports" bitfield.
+This problem exists for years but DSA_MAX_PORTS usage has changed few
+times so it's hard to specify a single commit this change fixes.
 
-This fixes b53 internal state, it will allow providing accurate info to
-the DSA and is required to fix BCM5301x support.
-
-Fixes: 967dd82ffc52 ("net: dsa: b53: Add support for Broadcom RoboSwitch")
 Cc: stable@vger.kernel.org
 Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
 ---
- drivers/net/dsa/b53/b53_common.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/dsa/b53/b53_common.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-index bd1417a66cbf..dcf9d7e5ae14 100644
+index dcf9d7e5ae14..5646eb8afe38 100644
 --- a/drivers/net/dsa/b53/b53_common.c
 +++ b/drivers/net/dsa/b53/b53_common.c
-@@ -2612,9 +2612,8 @@ static int b53_switch_init(struct b53_device *dev)
- 			dev->cpu_port = 5;
- 	}
- 
--	/* cpu port is always last */
--	dev->num_ports = dev->cpu_port + 1;
+@@ -2615,6 +2615,8 @@ static int b53_switch_init(struct b53_device *dev)
  	dev->enabled_ports |= BIT(dev->cpu_port);
-+	dev->num_ports = fls(dev->enabled_ports);
+ 	dev->num_ports = fls(dev->enabled_ports);
  
++	dev->ds->num_ports = min_t(unsigned int, dev->num_ports, DSA_MAX_PORTS);
++
  	/* Include non standard CPU port built-in PHYs to be probed */
  	if (is539x(dev) || is531x5(dev)) {
+ 		for (i = 0; i < dev->num_ports; i++) {
+@@ -2659,7 +2661,6 @@ struct b53_device *b53_switch_alloc(struct device *base,
+ 		return NULL;
+ 
+ 	ds->dev = base;
+-	ds->num_ports = DSA_MAX_PORTS;
+ 
+ 	dev = devm_kzalloc(base, sizeof(*dev), GFP_KERNEL);
+ 	if (!dev)
 -- 
 2.26.2
 
