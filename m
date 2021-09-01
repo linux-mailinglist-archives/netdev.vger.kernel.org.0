@@ -2,96 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3011F3FE1AE
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 20:04:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8AC03FE1B2
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 20:06:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236885AbhIASFI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 14:05:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51738 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239445AbhIASFI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 14:05:08 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1D30C061760;
-        Wed,  1 Sep 2021 11:04:10 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id n13-20020a17090a4e0d00b0017946980d8dso281767pjh.5;
-        Wed, 01 Sep 2021 11:04:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DiF3tLB29QW9ENAD317YvoaXV5jLbq8iy3MNLFMDbCo=;
-        b=R0F9AUbHanHEVn9Hqw69rDb1XySAZskfrbtJPJIT4u2jFA1nosVK2AW+kyUPOtpHjf
-         eD/5ucWhw0604AsCz6yaxk3pz3GHzK3xMbKZw+MFk4z45OrLuSllA86gNp5mjKXEw0xM
-         lP0XmtPs8iDxybFw0AxdZmCIlXbj3MLVdk/Z4quZNmlfLt4p9vjmprmPSXmwXYNdV/dm
-         jwzblS5/p7z3fDA/yDWpBdq3nVRcc5nm9e1rA8/Awx+s45DWS++VGt0Qz6qFOuU59nW2
-         dB7VF4pNaDtTWr43Qlo5mKpptvNpwYK+t4NRz5F895UT8yU14jc27U6DruAovGB5uAo2
-         wdmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DiF3tLB29QW9ENAD317YvoaXV5jLbq8iy3MNLFMDbCo=;
-        b=ODTB2Vp6O/33hL8LTIED0B41DCaTVv6Ktx5xIcPUMRFkoHKFYChGRHhY1WopMI1o3R
-         hnGhb9sispeniEYjtpK2XrgJ0zt7uzwqeY0p3cdsgOBdupfS8QDJGHJixl/PzaUyFIRt
-         3FPn7MmBrI207eZ1vh4pu3vIJ4ciEhIj2KJIwQ0as8wqcJCK4w0UBFdLf6dc5JvL+UgB
-         q10wcsIC52bg9WT5e22ZpYMaFRz+F+4TdkGSjKLDOaY0ktsbUEa0HTgKdcR38G07fN2I
-         YaD1+3+bOCHgHk4CwHA3N9fXL85axpr72/JEATyxsLP10W71WQxd9rFWDILp2NRlb1Rz
-         867Q==
-X-Gm-Message-State: AOAM5316Phyv3CdObPYZmmZKlazNWhMH8SPYGTG+k71xqZaH68tiqM8q
-        /Z/9saBwUoQkrMTSaSpGWFCZQsspQfmBXWyx8MU=
-X-Google-Smtp-Source: ABdhPJyEJJPDwIfngREnKVUtzzrLgnLLacQrFH2Zdq8EvoZ9CdRB39/fBVmNX0iKy9rt6ZTiFEHxmXGNWKB/RC1Fbe8=
-X-Received: by 2002:a17:902:8c90:b0:12f:699b:27 with SMTP id
- t16-20020a1709028c9000b0012f699b0027mr655112plo.28.1630519450317; Wed, 01 Sep
- 2021 11:04:10 -0700 (PDT)
+        id S1344779AbhIASGx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 14:06:53 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:3972 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S235904AbhIASGw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 14:06:52 -0400
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 181I2oNj047422
+        for <netdev@vger.kernel.org>; Wed, 1 Sep 2021 14:05:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=Y/CnkgrbyyYikP1BMrKSWzFfqwWzX6/OlGItVHHEohg=;
+ b=tsLKsoL1TfzgGzXMzeGKsn/xrfHqdcTgsdg2dXoIjBsTBUHqMqQbVTxQW/M7rNyPiLEw
+ GyNe707YeNbekRx8dZsflv9U/5VtzFXgxDxsEG0za3o3iUPowrsw2msJUQs3FrGt/xqm
+ 8A6orU4D7JOzdbj8+jPp9Vkwoj8mClLuKf2ecTU3kff3me3/cY2bYuMMB/eFRpxeA7zr
+ hjn/BsC6XxeaY5g8n61IyZgMj9BqvVpxYhbq6ZggOWbomjQNntt0GkSN04+iLlV0PPQt
+ fC1s+xAji06/FqvlvhyRpt1au5ocKQ5YnFeESdg/p4ngfUiis0ejFxm9JIvM2BEWSH2s 5w== 
+Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3ate1brtch-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 14:05:55 -0400
+Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
+        by ppma03wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 181I49og000429
+        for <netdev@vger.kernel.org>; Wed, 1 Sep 2021 18:05:54 GMT
+Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
+        by ppma03wdc.us.ibm.com with ESMTP id 3atdxtrqvf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 18:05:54 +0000
+Received: from b01ledav002.gho.pok.ibm.com (b01ledav002.gho.pok.ibm.com [9.57.199.107])
+        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 181I5rqQ44696000
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 1 Sep 2021 18:05:53 GMT
+Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 1B4B212405C;
+        Wed,  1 Sep 2021 18:05:53 +0000 (GMT)
+Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 1C642124069;
+        Wed,  1 Sep 2021 18:05:52 +0000 (GMT)
+Received: from suka-w540.ibmuc.com (unknown [9.160.152.143])
+        by b01ledav002.gho.pok.ibm.com (Postfix) with ESMTP;
+        Wed,  1 Sep 2021 18:05:51 +0000 (GMT)
+From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     Brian King <brking@linux.ibm.com>, cforno12@linux.ibm.com,
+        Dany Madden <drt@linux.ibm.com>,
+        Rick Lindsley <ricklind@linux.ibm.com>
+Subject: [PATCH net-next v2 0/9] ibmvnic: Reuse ltb, rx, tx pools
+Date:   Wed,  1 Sep 2021 11:05:42 -0700
+Message-Id: <20210901180551.150126-1-sukadev@linux.ibm.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20210821010240.10373-1-xiyou.wangcong@gmail.com>
- <20210824234700.qlteie6al3cldcu5@kafai-mbp> <CAM_iQpWP_kvE58Z+363n+miTQYPYLn6U4sxMKVaDvuRvjJo_Tg@mail.gmail.com>
- <612f137f4dc5c_152fe20891@john-XPS-13-9370.notmuch> <871r68vapw.fsf@toke.dk> <20210901174543.xukawl7ylkqzbuax@kafai-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20210901174543.xukawl7ylkqzbuax@kafai-mbp.dhcp.thefacebook.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 1 Sep 2021 11:03:59 -0700
-Message-ID: <CAADnVQK8Q6C=yq7qLaibwGDV0YuMP2DywjKfJCXr6Z1p17-tHg@mail.gmail.com>
-Subject: Re: [RFC Patch net-next] net_sched: introduce eBPF based Qdisc
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Cong Wang <cong.wang@bytedance.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: -t0uufTWQR_PxhXn7Rqaq73jIYz2XVpG
+X-Proofpoint-ORIG-GUID: -t0uufTWQR_PxhXn7Rqaq73jIYz2XVpG
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-09-01_05:2021-09-01,2021-09-01 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 impostorscore=0
+ malwarescore=0 suspectscore=0 lowpriorityscore=10 mlxscore=0 adultscore=0
+ spamscore=0 mlxlogscore=999 bulkscore=10 priorityscore=1501 clxscore=1015
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2108310000
+ definitions=main-2109010104
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 1, 2021 at 10:46 AM Martin KaFai Lau <kafai@fb.com> wrote:
-> > > Another idea. Rather than work with qdisc objects which creates all
-> > > these issues with how to work with existing interfaces, filters, etc.
-> > > Why not create an sk_buff map? Then this can be used from the existing
-> > > egress/ingress hooks independent of the actual qdisc being used.
-> >
-> > I agree. In fact, I'm working on doing just this for XDP, and I see no
-> > reason why the map type couldn't be reused for skbs as well. Doing it
-> > this way has a couple of benefits:
-> >
-> > - It leaves more flexibility to BPF: want a simple FIFO queue? just
-> >   implement that with a single queue map. Or do you want to build a full
-> >   hierarchical queueing structure? Just instantiate as many queue maps
-> >   as you need to achieve this. Etc.
-> Agree.  Regardless how the interface may look like,
-> I even think being able to queue/dequeue an skb into different bpf maps
-> should be the first thing to do here.  Looking forward to your patches.
->
-> >
-> > - The behaviour is defined entirely by BPF program behaviour, and does
-> >   not require setting up a qdisc hierarchy in addition to writing BPF
-> >   code.
-> Interesting idea.  If it does not need to use the qdisc object/interface
-> and be able to do the qdisc hierarchy setup in a programmable way, it may
-> be nice.  It will be useful for the future patches to come with some
-> bpf prog examples to do that.
+It can take a long time to free and reallocate rx and tx pools and long
+term buffer (LTB) during each reset of the VNIC. This is specially true
+when the partition (LPAR) is heavily loaded and going through a Logical
+Partition Migration (LPM). The long drawn reset causes the LPAR to lose
+connectivity for extended periods of time and results in "RMC connection"
+errors and the LPM failing.
 
-Wow. When core developers think along the same lines and
-build/refine the idea together it's simply awesome.
+What is worse is that during the LPM we could get a failover because
+of the lost connectivity. At that point, the vnic driver releases
+even the resources it has already allocated and starts over.
+
+As long as the resources we have already allocated are valid/applicable,
+we might as well hold on to them while trying to allocate the remaining
+resources. This patch set attempts to reuse the resources previously
+allocated as long as they are valid. It seems to vastly improve the
+time taken for the vnic reset. We have also not seen any RMC connection
+issues during our testing with this patch set.
+
+If the backing devices for a vnic adapter are not "matched" (see "pool
+parameters" in patches 8 and 9) it is possible that we will still free
+all the resources and allocate them. If that becomes a common problem,
+we have to address it separately.
+
+Thanks to input and extensive testing from Brian King, Cris Forno,
+Dany Madden, Rick Lindsley.
+
+Changelog[v2]
+	[Jakub Kicinski] Fix kdoc issues
+
+Sukadev Bhattiprolu (9):
+  ibmvnic: consolidate related code in replenish_rx_pool()
+  ibmvnic: Fix up some comments and messages
+  ibmvnic: Use/rename local vars in init_rx_pools
+  ibmvnic: Use/rename local vars in init_tx_pools
+  ibmvnic: init_tx_pools move loop-invariant code out
+  ibmvnic: use bitmap for LTB map_ids
+  ibmvnic: Reuse LTB when possible
+  ibmvnic: Reuse rx pools when possible
+  ibmvnic: Reuse tx pools when possible
+
+ drivers/net/ethernet/ibm/ibmvnic.c | 640 +++++++++++++++++++----------
+ drivers/net/ethernet/ibm/ibmvnic.h |  10 +-
+ 2 files changed, 427 insertions(+), 223 deletions(-)
+
+-- 
+2.26.2
+
