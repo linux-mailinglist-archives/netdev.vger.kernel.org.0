@@ -2,268 +2,450 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0B573FD021
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 02:10:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 254863FD022
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 02:10:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242517AbhIAALZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 20:11:25 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:18422 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S243454AbhIAAJZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 20:09:25 -0400
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 18104MCj017476
-        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 20:08:29 -0400
+        id S243195AbhIAAL1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 20:11:27 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:8306 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S243477AbhIAAJ1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 20:09:27 -0400
+Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 18104cYJ086450
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 20:08:31 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=pp1;
- bh=rgXlw79O5KWH41cwlhskB8Nx+HLW3z7nqzsBO2UiKLc=;
- b=QUqzMYzqXkKDL6iBvYsAADjHCscmQjhTyQPF4APHw5vhkKH+WRznADqx8BpDSq2DFO4V
- bTH9V/ygdZoHsH+riam10/+5n83NDFRoHFoCtTfCO/cREXdg8W2AmndTgEibNYcpfnCt
- P6P7DybVLGc4+9KsvyhmuCgzdvpAOQMckgk/9belF4WA6XeU6SpPwquHPwnAVJs45e8K
- nssPsHI5V5G6u9JhPHLD+O9sV6S5E1ne8SUhNF3IItm7bh07tV+uKvZoR6YaqgcG4x1h
- fuB27DN1EM9ZrsmN6t38mSx9tQA4wpQG2z/3/KOF0zm+pJoLQs2kn0yBmxcfEQbW4hYf SQ== 
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3aswqgh3x8-1
+ bh=3sUlOQbXW7U2SYRSakzo3f8oK5O4ZFmFLpahAf65+qs=;
+ b=IJrKCSxr9BMnnIm3y4bHzQWe1+aY91f/d/47L2iK8YH/48sPa2+tEQd0ZVXBiru2HnWF
+ han979mD2CGoMWJEDVqa54a7g7oI6VhTPd5jyjmXLFxl4GlGxvT/W3v8I/jtfOS6/OEu
+ O2DUcVUX7Ecd+n0UjEfWFiAr9wSbjqunVhMpygM7sveTjcpmcWnDxjLwRK+E/Rd131jF
+ +qODUzwf1wlVRiR8URBqS/8PteMK4536wnYBgAPkjJOnKjaS/C5r1Q6s61CwEyngXmEr
+ Bmp82MC5vniXTF8fz70QVfNQ7GGAR5i/efhRVdj6BmbQplPQLX/iGd8b85A3Kvy9x5Me Zw== 
+Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3asxnh82s4-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 20:08:29 -0400
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 18107mRS005490
-        for <netdev@vger.kernel.org>; Wed, 1 Sep 2021 00:08:28 GMT
-Received: from b03cxnp08027.gho.boulder.ibm.com (b03cxnp08027.gho.boulder.ibm.com [9.17.130.19])
-        by ppma01dal.us.ibm.com with ESMTP id 3astd0xgxh-1
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 20:08:31 -0400
+Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
+        by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 17VNuesC014321
+        for <netdev@vger.kernel.org>; Wed, 1 Sep 2021 00:08:30 GMT
+Received: from b03cxnp07027.gho.boulder.ibm.com (b03cxnp07027.gho.boulder.ibm.com [9.17.130.14])
+        by ppma03dal.us.ibm.com with ESMTP id 3aqcsd20as-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 00:08:28 +0000
+        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 00:08:30 +0000
 Received: from b03ledav004.gho.boulder.ibm.com (b03ledav004.gho.boulder.ibm.com [9.17.130.235])
-        by b03cxnp08027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 18108Q1p15270590
+        by b03cxnp07027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 18108S1e28443122
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 1 Sep 2021 00:08:26 GMT
+        Wed, 1 Sep 2021 00:08:28 GMT
 Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id CC2FB78066;
-        Wed,  1 Sep 2021 00:08:26 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 8D3DC78067;
+        Wed,  1 Sep 2021 00:08:28 +0000 (GMT)
 Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7AF137805C;
-        Wed,  1 Sep 2021 00:08:25 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 2B2947805C;
+        Wed,  1 Sep 2021 00:08:27 +0000 (GMT)
 Received: from suka-w540.ibmuc.com (unknown [9.65.237.107])
         by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Wed,  1 Sep 2021 00:08:25 +0000 (GMT)
+        Wed,  1 Sep 2021 00:08:26 +0000 (GMT)
 From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 To:     netdev@vger.kernel.org
 Cc:     Brian King <brking@linux.ibm.com>, cforno12@linux.ibm.com,
         Dany Madden <drt@linux.ibm.com>,
         Rick Lindsley <ricklind@linux.ibm.com>
-Subject: [PATCH net-next 7/9] ibmvnic: Reuse LTB when possible
-Date:   Tue, 31 Aug 2021 17:08:10 -0700
-Message-Id: <20210901000812.120968-8-sukadev@linux.ibm.com>
+Subject: [PATCH net-next 8/9] ibmvnic: Reuse rx pools when possible
+Date:   Tue, 31 Aug 2021 17:08:11 -0700
+Message-Id: <20210901000812.120968-9-sukadev@linux.ibm.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210901000812.120968-1-sukadev@linux.ibm.com>
 References: <20210901000812.120968-1-sukadev@linux.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 45mfETdDTHr0fZovSGqzWP0DdbR9I7yl
-X-Proofpoint-ORIG-GUID: 45mfETdDTHr0fZovSGqzWP0DdbR9I7yl
+X-Proofpoint-GUID: 23aTGCJzjCWajZoZq9eo-Dv0eim8LP7o
+X-Proofpoint-ORIG-GUID: 23aTGCJzjCWajZoZq9eo-Dv0eim8LP7o
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
  definitions=2021-08-31_10:2021-08-31,2021-08-31 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 spamscore=0
- mlxlogscore=999 suspectscore=0 priorityscore=1501 impostorscore=0
- adultscore=0 mlxscore=0 clxscore=1015 bulkscore=0 lowpriorityscore=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 spamscore=0 suspectscore=0
+ priorityscore=1501 bulkscore=0 clxscore=1015 adultscore=0 phishscore=0
  malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2107140000 definitions=main-2108310133
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Reuse the long term buffer during a reset as long as its size has
-not changed. If the size has changed, free it and allocate a new
-one of the appropriate size.
+Rather than releasing the rx pools on and reallocating them on every
+reset, reuse the rx pools unless the pool parameters (number of pools,
+size of each pool or size of each buffer in a pool) have changed.
 
-When we do this, alloc_long_term_buff() and reset_long_term_buff()
-become identical. Drop reset_long_term_buff().
+If the pool parameters changed, then release the old pools (if any)
+and allocate new ones.
+
+Specifically release rx pools, if:
+	- adapter is removed,
+	- pool parameters change during reset,
+	- we encounter an error when opening the adapter in response
+	  to a user request (in ibmvnic_open()).
+
+and don't release them:
+	- in __ibmvnic_close() or
+	- on errors in __ibmvnic_open()
+
+in the hope that we can reuse them on the next reset.
+
+With these, reset_rx_pools() can be dropped because its optimzation is
+now included in init_rx_pools() itself.
+
+cleanup_rx_pools() releases all the skbs associated with the pool and
+is called from ibmvnic_cleanup(), which is called on every reset. Since
+we want to reuse skbs across resets, move cleanup_rx_pools() out of
+ibmvnic_cleanup() and call it only when user closes the adapter.
+
+Add two new adapter fields, ->prev_rx_buf_sz, ->prev_rx_pool_size to
+keep track of the previous values and use them to decide whether to
+reuse or realloc the pools.
 
 Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c | 122 ++++++++++++++---------------
- 1 file changed, 59 insertions(+), 63 deletions(-)
+ drivers/net/ethernet/ibm/ibmvnic.c | 183 +++++++++++++++++++----------
+ drivers/net/ethernet/ibm/ibmvnic.h |   3 +
+ 2 files changed, 122 insertions(+), 64 deletions(-)
 
 diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 30153a8bb5ec..1bb5996c4313 100644
+index 1bb5996c4313..ebd525b6fc87 100644
 --- a/drivers/net/ethernet/ibm/ibmvnic.c
 +++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -108,6 +108,8 @@ static int init_crq_queue(struct ibmvnic_adapter *adapter);
- static int send_query_phys_parms(struct ibmvnic_adapter *adapter);
- static void ibmvnic_tx_scrq_clean_buffer(struct ibmvnic_adapter *adapter,
- 					 struct ibmvnic_sub_crq_queue *tx_scrq);
-+static void free_long_term_buff(struct ibmvnic_adapter *adapter,
-+				struct ibmvnic_long_term_buff *ltb);
+@@ -368,20 +368,27 @@ static void replenish_rx_pool(struct ibmvnic_adapter *adapter,
+ 	 * be 0.
+ 	 */
+ 	for (i = ind_bufp->index; i < count; ++i) {
+-		skb = netdev_alloc_skb(adapter->netdev, pool->buff_size);
++		index = pool->free_map[pool->next_free];
++
++		/* We maybe reusing the skb from earlier resets. Allocate
++		 * only if necessary. But since the LTB may have changed
++		 * during reset (see init_rx_pools()), update LTB below
++		 * even if reusing skb.
++		 */
++		skb = pool->rx_buff[index].skb;
+ 		if (!skb) {
+-			dev_err(dev, "Couldn't replenish rx buff\n");
+-			adapter->replenish_no_mem++;
+-			break;
++			skb = netdev_alloc_skb(adapter->netdev,
++					       pool->buff_size);
++			if (!skb) {
++				dev_err(dev, "Couldn't replenish rx buff\n");
++				adapter->replenish_no_mem++;
++				break;
++			}
+ 		}
  
- struct ibmvnic_stat {
- 	char name[ETH_GSTRING_LEN];
-@@ -214,23 +216,62 @@ static int ibmvnic_wait_for_completion(struct ibmvnic_adapter *adapter,
- 	return -ETIMEDOUT;
+-		index = pool->free_map[pool->next_free];
+ 		pool->free_map[pool->next_free] = IBMVNIC_INVALID_MAP;
+ 		pool->next_free = (pool->next_free + 1) % pool->size;
+ 
+-		if (pool->rx_buff[index].skb)
+-			dev_err(dev, "Inconsistent free_map!\n");
+-
+ 		/* Copy the skb to the long term mapped DMA buffer */
+ 		offset = index * pool->buff_size;
+ 		dst = pool->long_term_buff.buff + offset;
+@@ -532,45 +539,6 @@ static int init_stats_token(struct ibmvnic_adapter *adapter)
+ 	return 0;
  }
  
-+/**
-+ * Reuse long term buffer unless size has changed.
-+ */
-+static bool reuse_ltb(struct ibmvnic_long_term_buff *ltb, int size)
-+{
-+	return (ltb->buff && ltb->size == size);
-+}
-+
-+/**
-+ * Allocate a long term buffer of the specified size and notify VIOS.
-+ *
-+ * If the given @ltb already has the correct size, reuse it. Otherwise if
-+ * its non-NULL, free it. Then allocate a new one of the correct size.
-+ * Notify the VIOS either way since we may now be working with a new VIOS.
-+ *
-+ * Allocating larger chunks of memory during resets, specially LPM or under
-+ * low memory situations can cause resets to fail/timeout and for LPAR to
-+ * lose connectivity. So hold onto the LTB even if we fail to communicate
-+ * with the VIOS and reuse it on next open. Free LTB when adapter is closed.
-+ */
- static int alloc_long_term_buff(struct ibmvnic_adapter *adapter,
- 				struct ibmvnic_long_term_buff *ltb, int size)
- {
- 	struct device *dev = &adapter->vdev->dev;
- 	int rc;
- 
--	ltb->size = size;
--	ltb->buff = dma_alloc_coherent(dev, ltb->size, &ltb->addr,
--				       GFP_KERNEL);
-+	if (!reuse_ltb(ltb, size)) {
-+		dev_dbg(dev,
-+			"LTB size changed from 0x%llx to 0x%x, reallocating\n",
-+			 ltb->size, size);
-+		free_long_term_buff(adapter, ltb);
-+	}
- 
--	if (!ltb->buff) {
--		dev_err(dev, "Couldn't alloc long term buffer\n");
--		return -ENOMEM;
-+	if (ltb->buff) {
-+		dev_dbg(dev, "Reusing LTB [map %d, size 0x%llx]\n",
-+			ltb->map_id, ltb->size);
-+	} else {
-+		ltb->buff = dma_alloc_coherent(dev, size, &ltb->addr,
-+					       GFP_KERNEL);
-+		if (!ltb->buff) {
-+			dev_err(dev, "Couldn't alloc long term buffer\n");
-+			return -ENOMEM;
-+		}
-+		ltb->size = size;
-+
-+		ltb->map_id = find_first_zero_bit(adapter->map_ids,
-+						  MAX_MAP_ID);
-+		bitmap_set(adapter->map_ids, ltb->map_id, 1);
-+
-+		dev_dbg(dev,
-+			"Allocated new LTB [map %d, size 0x%llx]\n",
-+			 ltb->map_id, ltb->size);
- 	}
--	ltb->map_id = find_first_zero_bit(adapter->map_ids,
--					  MAX_MAP_ID);
--	bitmap_set(adapter->map_ids, ltb->map_id, 1);
-+
-+	/* Ensure ltb is zeroed - specially when reusing it. */
-+	memset(ltb->buff, 0, ltb->size);
- 
- 	mutex_lock(&adapter->fw_lock);
- 	adapter->fw_done_rc = 0;
-@@ -257,10 +298,7 @@ static int alloc_long_term_buff(struct ibmvnic_adapter *adapter,
- 	}
- 	rc = 0;
- out:
--	if (rc) {
--		dma_free_coherent(dev, ltb->size, ltb->buff, ltb->addr);
--		ltb->buff = NULL;
--	}
-+	/* don't free LTB on communication error - see function header */
- 	mutex_unlock(&adapter->fw_lock);
- 	return rc;
- }
-@@ -290,43 +328,6 @@ static void free_long_term_buff(struct ibmvnic_adapter *adapter,
- 	ltb->map_id = 0;
- }
- 
--static int reset_long_term_buff(struct ibmvnic_adapter *adapter,
--				struct ibmvnic_long_term_buff *ltb)
+-static int reset_rx_pools(struct ibmvnic_adapter *adapter)
 -{
--	struct device *dev = &adapter->vdev->dev;
--	int rc;
+-	struct ibmvnic_rx_pool *rx_pool;
+-	u64 buff_size;
+-	int rx_scrqs;
+-	int i, j, rc;
 -
--	memset(ltb->buff, 0, ltb->size);
+-	if (!adapter->rx_pool)
+-		return -1;
 -
--	mutex_lock(&adapter->fw_lock);
--	adapter->fw_done_rc = 0;
+-	buff_size = adapter->cur_rx_buf_sz;
+-	rx_scrqs = adapter->num_active_rx_pools;
+-	for (i = 0; i < rx_scrqs; i++) {
+-		rx_pool = &adapter->rx_pool[i];
 -
--	reinit_completion(&adapter->fw_done);
--	rc = send_request_map(adapter, ltb->addr, ltb->size, ltb->map_id);
--	if (rc) {
--		mutex_unlock(&adapter->fw_lock);
--		return rc;
+-		netdev_dbg(adapter->netdev, "Re-setting rx_pool[%d]\n", i);
+-
+-		rx_pool->buff_size = ALIGN(buff_size, L1_CACHE_BYTES);
+-		rc = alloc_long_term_buff(adapter,
+-					  &rx_pool->long_term_buff,
+-					  rx_pool->size * rx_pool->buff_size);
+-		if (rc)
+-			return rc;
+-
+-		for (j = 0; j < rx_pool->size; j++)
+-			rx_pool->free_map[j] = j;
+-
+-		memset(rx_pool->rx_buff, 0,
+-		       rx_pool->size * sizeof(struct ibmvnic_rx_buff));
+-
+-		atomic_set(&rx_pool->available, 0);
+-		rx_pool->next_alloc = 0;
+-		rx_pool->next_free = 0;
+-		rx_pool->active = 1;
 -	}
 -
--	rc = ibmvnic_wait_for_completion(adapter, &adapter->fw_done, 10000);
--	if (rc) {
--		dev_info(dev,
--			 "Reset failed, long term map request timed out or aborted\n");
--		mutex_unlock(&adapter->fw_lock);
--		return rc;
--	}
--
--	if (adapter->fw_done_rc) {
--		dev_info(dev,
--			 "Reset failed, attempting to free and reallocate buffer\n");
--		free_long_term_buff(adapter, ltb);
--		mutex_unlock(&adapter->fw_lock);
--		return alloc_long_term_buff(adapter, ltb, ltb->size);
--	}
--	mutex_unlock(&adapter->fw_lock);
 -	return 0;
 -}
 -
- static void deactivate_rx_pools(struct ibmvnic_adapter *adapter)
- {
- 	int i;
-@@ -548,18 +549,10 @@ static int reset_rx_pools(struct ibmvnic_adapter *adapter)
+ /**
+  * Release any rx_pools attached to @adapter.
+  * Safe to call this multiple times - even if no pools are attached.
+@@ -589,6 +557,7 @@ static void release_rx_pools(struct ibmvnic_adapter *adapter)
+ 		netdev_dbg(adapter->netdev, "Releasing rx_pool[%d]\n", i);
  
- 		netdev_dbg(adapter->netdev, "Re-setting rx_pool[%d]\n", i);
- 
--		if (rx_pool->buff_size != buff_size) {
--			free_long_term_buff(adapter, &rx_pool->long_term_buff);
--			rx_pool->buff_size = ALIGN(buff_size, L1_CACHE_BYTES);
--			rc = alloc_long_term_buff(adapter,
--						  &rx_pool->long_term_buff,
--						  rx_pool->size *
--						  rx_pool->buff_size);
--		} else {
--			rc = reset_long_term_buff(adapter,
--						  &rx_pool->long_term_buff);
--		}
--
-+		rx_pool->buff_size = ALIGN(buff_size, L1_CACHE_BYTES);
-+		rc = alloc_long_term_buff(adapter,
-+					  &rx_pool->long_term_buff,
-+					  rx_pool->size * rx_pool->buff_size);
- 		if (rc)
- 			return rc;
- 
-@@ -692,9 +685,12 @@ static int init_rx_pools(struct net_device *netdev)
- static int reset_one_tx_pool(struct ibmvnic_adapter *adapter,
- 			     struct ibmvnic_tx_pool *tx_pool)
- {
-+	struct ibmvnic_long_term_buff *ltb;
- 	int rc, i;
- 
--	rc = reset_long_term_buff(adapter, &tx_pool->long_term_buff);
-+	ltb = &tx_pool->long_term_buff;
+ 		kfree(rx_pool->free_map);
 +
-+	rc = alloc_long_term_buff(adapter, ltb, ltb->size);
- 	if (rc)
- 		return rc;
+ 		free_long_term_buff(adapter, &rx_pool->long_term_buff);
  
+ 		if (!rx_pool->rx_buff)
+@@ -607,8 +576,53 @@ static void release_rx_pools(struct ibmvnic_adapter *adapter)
+ 	kfree(adapter->rx_pool);
+ 	adapter->rx_pool = NULL;
+ 	adapter->num_active_rx_pools = 0;
++	adapter->prev_rx_pool_size = 0;
++}
++
++/**
++ * Return true if we can reuse the existing rx pools.
++ * NOTE: This assumes that all pools have the same number of buffers
++ *       which is the case currently. If that changes, we must fix this.
++ */
++static bool reuse_rx_pools(struct ibmvnic_adapter *adapter)
++{
++	u64 old_num_pools, new_num_pools;
++	u64 old_pool_size, new_pool_size;
++	u64 old_buff_size, new_buff_size;
++
++	if (!adapter->rx_pool)
++		return false;
++
++	old_num_pools = adapter->num_active_rx_pools;
++	new_num_pools = adapter->req_rx_queues;
++
++	old_pool_size = adapter->prev_rx_pool_size;
++	new_pool_size = adapter->req_rx_add_entries_per_subcrq;
++
++	old_buff_size = adapter->prev_rx_buf_sz;
++	new_buff_size = adapter->cur_rx_buf_sz;
++
++	/* Require buff size to be exactly same for now */
++	if (old_buff_size != new_buff_size)
++		return false;
++
++	if (old_num_pools == new_num_pools && old_pool_size == new_pool_size)
++		return true;
++
++	if (old_num_pools < adapter->min_rx_queues ||
++	    old_num_pools > adapter->max_rx_queues ||
++	    old_pool_size < adapter->min_rx_add_entries_per_subcrq ||
++	    old_pool_size > adapter->max_rx_add_entries_per_subcrq)
++		return false;
++
++	return true;
+ }
+ 
++/**
++ * Initialize the set of receiver pools in the adapter. Reuse existing
++ * pools if possible. Otherwise allocate a new set of pools before
++ * initializing them.
++ */
+ static int init_rx_pools(struct net_device *netdev)
+ {
+ 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
+@@ -619,10 +633,18 @@ static int init_rx_pools(struct net_device *netdev)
+ 	u64 buff_size;
+ 	int i, j;
+ 
+-	num_pools = adapter->num_active_rx_scrqs;
+ 	pool_size = adapter->req_rx_add_entries_per_subcrq;
++	num_pools = adapter->req_rx_queues;
+ 	buff_size = adapter->cur_rx_buf_sz;
+ 
++	if (reuse_rx_pools(adapter)) {
++		dev_dbg(dev, "Reusing rx pools\n");
++		goto update_ltb;
++	}
++
++	/* Allocate/populate the pools. */
++	release_rx_pools(adapter);
++
+ 	adapter->rx_pool = kcalloc(num_pools,
+ 				   sizeof(struct ibmvnic_rx_pool),
+ 				   GFP_KERNEL);
+@@ -646,14 +668,12 @@ static int init_rx_pools(struct net_device *netdev)
+ 		rx_pool->size = pool_size;
+ 		rx_pool->index = i;
+ 		rx_pool->buff_size = ALIGN(buff_size, L1_CACHE_BYTES);
+-		rx_pool->active = 1;
+ 
+ 		rx_pool->free_map = kcalloc(rx_pool->size, sizeof(int),
+ 					    GFP_KERNEL);
+ 		if (!rx_pool->free_map) {
+ 			dev_err(dev, "Couldn't alloc free_map %d\n", i);
+-			release_rx_pools(adapter);
+-			return -1;
++			goto out_release;
+ 		}
+ 
+ 		rx_pool->rx_buff = kcalloc(rx_pool->size,
+@@ -661,25 +681,58 @@ static int init_rx_pools(struct net_device *netdev)
+ 					   GFP_KERNEL);
+ 		if (!rx_pool->rx_buff) {
+ 			dev_err(dev, "Couldn't alloc rx buffers\n");
+-			release_rx_pools(adapter);
+-			return -1;
++			goto out_release;
+ 		}
++	}
++
++	adapter->prev_rx_pool_size = pool_size;
++	adapter->prev_rx_buf_sz = adapter->cur_rx_buf_sz;
++
++update_ltb:
++	for (i = 0; i < num_pools; i++) {
++		rx_pool = &adapter->rx_pool[i];
++		dev_dbg(dev, "Updating LTB for rx pool %d [%d, %d]\n",
++			i, rx_pool->size, rx_pool->buff_size);
+ 
+ 		if (alloc_long_term_buff(adapter, &rx_pool->long_term_buff,
+-					 rx_pool->size * rx_pool->buff_size)) {
+-			release_rx_pools(adapter);
+-			return -1;
+-		}
++					 rx_pool->size * rx_pool->buff_size))
++			goto out;
++
++		for (j = 0; j < rx_pool->size; ++j) {
++			struct ibmvnic_rx_buff *rx_buff;
+ 
+-		for (j = 0; j < rx_pool->size; ++j)
+ 			rx_pool->free_map[j] = j;
+ 
++			/* NOTE: Don't clear rx_buff->skb here - will leak
++			 * memory! replenish_rx_pool() will reuse skbs or
++			 * allocate as necessary.
++			 */
++			rx_buff = &rx_pool->rx_buff[j];
++			rx_buff->dma = 0;
++			rx_buff->data = 0;
++			rx_buff->size = 0;
++			rx_buff->pool_index = 0;
++		}
++
++		/* Mark pool "empty" so replenish_rx_pools() will
++		 * update the LTB info for each buffer
++		 */
+ 		atomic_set(&rx_pool->available, 0);
+ 		rx_pool->next_alloc = 0;
+ 		rx_pool->next_free = 0;
++		/* replenish_rx_pool() may have called deactivate_rx_pools()
++		 * on failover. Ensure pool is active now.
++		 */
++		rx_pool->active = 1;
+ 	}
+-
+ 	return 0;
++out_release:
++	release_rx_pools(adapter);
++out:
++	/* We failed to allocate one or more LTBs or map them on the VIOS.
++	 * Hold onto the pools and any LTBs that we did allocate/map.
++	 */
++	return -1;
+ }
+ 
+ static int reset_one_tx_pool(struct ibmvnic_adapter *adapter,
+@@ -1053,7 +1106,6 @@ static void release_resources(struct ibmvnic_adapter *adapter)
+ 	release_vpd_data(adapter);
+ 
+ 	release_tx_pools(adapter);
+-	release_rx_pools(adapter);
+ 
+ 	release_napi(adapter);
+ 	release_login_buffer(adapter);
+@@ -1326,6 +1378,7 @@ static int ibmvnic_open(struct net_device *netdev)
+ 		if (rc) {
+ 			netdev_err(netdev, "failed to initialize resources\n");
+ 			release_resources(adapter);
++			release_rx_pools(adapter);
+ 			goto out;
+ 		}
+ 	}
+@@ -1455,7 +1508,6 @@ static void ibmvnic_cleanup(struct net_device *netdev)
+ 	ibmvnic_napi_disable(adapter);
+ 	ibmvnic_disable_irqs(adapter);
+ 
+-	clean_rx_pools(adapter);
+ 	clean_tx_pools(adapter);
+ }
+ 
+@@ -1490,6 +1542,7 @@ static int ibmvnic_close(struct net_device *netdev)
+ 
+ 	rc = __ibmvnic_close(netdev);
+ 	ibmvnic_cleanup(netdev);
++	clean_rx_pools(adapter);
+ 
+ 	return rc;
+ }
+@@ -2218,7 +2271,6 @@ static int do_reset(struct ibmvnic_adapter *adapter,
+ 		    !adapter->rx_pool ||
+ 		    !adapter->tso_pool ||
+ 		    !adapter->tx_pool) {
+-			release_rx_pools(adapter);
+ 			release_tx_pools(adapter);
+ 			release_napi(adapter);
+ 			release_vpd_data(adapter);
+@@ -2235,9 +2287,10 @@ static int do_reset(struct ibmvnic_adapter *adapter,
+ 				goto out;
+ 			}
+ 
+-			rc = reset_rx_pools(adapter);
++			rc = init_rx_pools(netdev);
+ 			if (rc) {
+-				netdev_dbg(adapter->netdev, "reset rx pools failed (%d)\n",
++				netdev_dbg(netdev,
++					   "init rx pools failed (%d)\n",
+ 					   rc);
+ 				goto out;
+ 			}
+@@ -5573,6 +5626,7 @@ static int ibmvnic_probe(struct vio_dev *dev, const struct vio_device_id *id)
+ 	init_completion(&adapter->reset_done);
+ 	init_completion(&adapter->stats_done);
+ 	clear_bit(0, &adapter->resetting);
++	adapter->prev_rx_buf_sz = 0;
+ 
+ 	init_success = false;
+ 	do {
+@@ -5673,6 +5727,7 @@ static void ibmvnic_remove(struct vio_dev *dev)
+ 	unregister_netdevice(netdev);
+ 
+ 	release_resources(adapter);
++	release_rx_pools(adapter);
+ 	release_sub_crqs(adapter, 1);
+ 	release_crq_queue(adapter);
+ 
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.h b/drivers/net/ethernet/ibm/ibmvnic.h
+index e97f1aa98c05..b73a1b812368 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.h
++++ b/drivers/net/ethernet/ibm/ibmvnic.h
+@@ -986,7 +986,10 @@ struct ibmvnic_adapter {
+ 	u32 num_active_rx_napi;
+ 	u32 num_active_tx_scrqs;
+ 	u32 num_active_tx_pools;
++
++	u32 prev_rx_pool_size;
+ 	u32 cur_rx_buf_sz;
++	u32 prev_rx_buf_sz;
+ 
+ 	struct tasklet_struct tasklet;
+ 	enum vnic_state state;
 -- 
 2.31.1
 
