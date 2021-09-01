@@ -2,160 +2,241 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E15013FDD6E
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 15:50:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20B963FDD88
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 15:57:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244612AbhIANs3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 09:48:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48360 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242520AbhIANs2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 09:48:28 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3AA9C061575
-        for <netdev@vger.kernel.org>; Wed,  1 Sep 2021 06:47:31 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id dm15so3861672edb.10
-        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 06:47:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HL4OFA3MyulAMIPvUGUruLFHSETz0LT5eYnBY3Ay/NM=;
-        b=YGoyvPfWEPkcokSRUq9/Ce2UMqBBVIxzDxm0VYFQlh5lnjxKa88Q9qURiP0cjP++09
-         3gZXusOpVVJKre2GyckEhrjAZRp553y/VbLDiLGdzz5TTvRpgUXPgq0jY9ax6u8vCLlV
-         e+tBudED9RsukU8XE4kG9fPbEbaTKaOE1blMTLQZIE3CYGu2ZMiyk+tmaCF88EkIAAol
-         os0HlbNWchqmFPI32Kmg0A/+/HZiT5H2AqvJAm1q+LJEGIA1oWv00BW3aNYvDcGb3lCN
-         PmNurFVlFpm7obL1RWPFfJ1su8/sPkn7PabA0uaTQi/t0n1w8nWeE4ekVdnWEVJrYs7+
-         9fKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HL4OFA3MyulAMIPvUGUruLFHSETz0LT5eYnBY3Ay/NM=;
-        b=C0Umi8LvaRsFLs6E+6AOmGZ6lBzOKPGJt5pNFCezBfpNRSI9cUNAKIy+Dex6rPu+me
-         UXInZTaUyYwPfQK+gQg2PcYfV50LLcSwsfkNGW57uxAzHFy8skr/2AlRgVtI9PRA9aoi
-         HT1+2FBZ+6qqANpc/NDBdm6N1AVlqGpZ4A2MI3XLG7z8byStTWTw9Jf5v2xGcoxrY44P
-         NA09eBA/yerwGrHvJMeZXVFaLiiodx2yx/kldVsuRV6HtS6nhKWOqtXTZ//KWc6gctwm
-         R9MiitYSd8OwYXeFIIifyFgOyFm2VD7/EF5MARWoxyw6ieN7xiXecQrBG9WikA8oWKQw
-         XJ8Q==
-X-Gm-Message-State: AOAM533KWUgCkqoyzDpfrkGAARuvmKCZsREwjwCVG2Ot296tE8RIN3Ve
-        Myz14yqfYAfb/d1SCf0h+PoL4ALPBmWzAA==
-X-Google-Smtp-Source: ABdhPJysq4HsPmMqz1Iz+wLKPweAwO4fYf3HiPg41EtSdgCrInRjZsglJPD0aOD7EqAsV7g3/hAp7A==
-X-Received: by 2002:a05:6402:5108:: with SMTP id m8mr36064399edd.367.1630504050372;
-        Wed, 01 Sep 2021 06:47:30 -0700 (PDT)
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com. [209.85.221.41])
-        by smtp.gmail.com with ESMTPSA id y23sm721ejp.115.2021.09.01.06.47.26
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Sep 2021 06:47:27 -0700 (PDT)
-Received: by mail-wr1-f41.google.com with SMTP id d26so4734137wrc.0
-        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 06:47:26 -0700 (PDT)
-X-Received: by 2002:a5d:6cae:: with SMTP id a14mr36496238wra.275.1630504045833;
- Wed, 01 Sep 2021 06:47:25 -0700 (PDT)
+        id S244642AbhIAN4v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 09:56:51 -0400
+Received: from mail.zx2c4.com ([104.131.123.232]:34708 "EHLO mail.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232598AbhIAN4u (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 Sep 2021 09:56:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1630504550;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=RxxcCATyAWNsIizcODQvjC43l5pJtie862uQ74GTAAk=;
+        b=dKqXGgELXDenbG9UGYeuetQaJd42/eyEslHVwcRZT1wxB1ryJhcfnQ5papkmqiPNL45PZt
+        +rSYEntwmNDDMqUj0eHsBUgjV3w3ruCMrOggOJ6MhKhxhDRgTwnWLIsMnYkzXJC9Awnq27
+        dwrox118hAVZlvkZSSLIVcWhUexi8Ho=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id bce2ae39 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Wed, 1 Sep 2021 13:55:50 +0000 (UTC)
+Date:   Wed, 1 Sep 2021 15:55:43 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
+        Xiumei Mu <xmu@redhat.com>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>, wireguard@lists.zx2c4.com
+Subject: Re: [PATCH net] wireguard: remove peer cache in netns_pre_exit
+Message-ID: <YS+GX/Y85bch4gMU@zx2c4.com>
+References: <20210901122904.9094-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
-References: <20210819100447.00201b26@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210821071425.512834-1-chouhan.shreyansh630@gmail.com> <CA+FuTSeWY-0+VtERqAxNwmHAwmarYh_HQUoF3b0wHiwAaL+h+A@mail.gmail.com>
- <YS9puVgl/exGgrr3@shredder>
-In-Reply-To: <YS9puVgl/exGgrr3@shredder>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 1 Sep 2021 09:46:48 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSfTCufYmJg5Vum1Q-ndUYh+1P1hLecFht9Qd1-AdnHmaQ@mail.gmail.com>
-Message-ID: <CA+FuTSfTCufYmJg5Vum1Q-ndUYh+1P1hLecFht9Qd1-AdnHmaQ@mail.gmail.com>
-Subject: Re: [PATCH 1/2 net] ip_gre: add validation for csum_start
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Shreyansh Chouhan <chouhan.shreyansh630@gmail.com>,
-        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org, pshelar@nicira.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+ff8e1b9f2f36481e2efc@syzkaller.appspotmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210901122904.9094-1-liuhangbin@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 1, 2021 at 7:53 AM Ido Schimmel <idosch@idosch.org> wrote:
->
-> On Sat, Aug 21, 2021 at 09:41:14AM -0400, Willem de Bruijn wrote:
-> > On Sat, Aug 21, 2021 at 3:14 AM Shreyansh Chouhan
-> > <chouhan.shreyansh630@gmail.com> wrote:
-> > >
-> > > Validate csum_start in gre_handle_offloads before we call _gre_xmit so
-> > > that we do not crash later when the csum_start value is used in the
-> > > lco_csum function call.
-> > >
-> > > This patch deals with ipv4 code.
-> > >
-> > > Fixes: c54419321455 ("GRE: Refactor GRE tunneling code.")
-> > > Reported-by: syzbot+ff8e1b9f2f36481e2efc@syzkaller.appspotmail.com
-> > > Signed-off-by: Shreyansh Chouhan <chouhan.shreyansh630@gmail.com>
-> >
-> > Reviewed-by: Willem de Bruijn <willemb@google.com>
->
-> Hi Shreyansh, Willem,
->
-> I bisected packet drops with a GRE tunnel to this patch. With the
-> following debug patch [1], I'm getting this output [2].
->
-> Tested with IPv4 underlay only, but I assume problem exists with ip6gre
-> as well.
->
-> Thanks
->
-> [1]
-> diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
-> index 177d26d8fb9c..cf4e13db030b 100644
-> --- a/net/ipv4/ip_gre.c
-> +++ b/net/ipv4/ip_gre.c
-> @@ -473,8 +473,11 @@ static void __gre_xmit(struct sk_buff *skb, struct net_device *dev,
->
->  static int gre_handle_offloads(struct sk_buff *skb, bool csum)
->  {
-> -       if (csum && skb_checksum_start(skb) < skb->data)
-> +       if (csum && skb_checksum_start(skb) < skb->data) {
-> +               if (net_ratelimit())
-> +                       skb_dump(KERN_WARNING, skb, false);
->                 return -EINVAL;
-> +       }
->         return iptunnel_handle_offloads(skb, csum ? SKB_GSO_GRE_CSUM : SKB_GSO_GRE);
->  }
->
-> [2]
-> skb len=84 headroom=78 headlen=84 tailroom=15902
-> mac=(78,0) net=(78,20) trans=98
-> shinfo(txflags=0 nr_frags=0 gso(size=0 type=0 segs=0))
-> csum(0x0 ip_summed=0 complete_sw=0 valid=0 level=0)
-> hash(0x0 sw=0 l4=0) proto=0x0800 pkttype=0 iif=32
-> dev name=g1a feat=0x0x00000006401d5869
-> skb linear:   00000000: 45 00 00 54 be 12 40 00 3f 01 f9 82 c0 00 02 01
-> skb linear:   00000010: c0 00 02 12 08 00 fe ad 8c 39 00 01 7c 65 2f 61
-> skb linear:   00000020: 00 00 00 00 f8 7d 0a 00 00 00 00 00 10 11 12 13
-> skb linear:   00000030: 14 15 16 17 18 19 1a 1b 1c 1d 1e 1f 20 21 22 23
-> skb linear:   00000040: 24 25 26 27 28 29 2a 2b 2c 2d 2e 2f 30 31 32 33
-> skb linear:   00000050: 34 35 36 37
+Hi Hangbin,
 
-Thanks for the detailed report, Ido.
+Thanks for the patch and especially for the test. While I see that
+you've pointed to a real problem, I don't think that this particular way
+of fixing it is correct, because it will cause issues for userspace that
+expects to be able to read back the list of peers for, for example,
+keeping track of the latest endpoint addresses or rx/tx transfer
+quantities.
 
-This is a gre tunnel device with csum/ocsum enabled, correct?
+I think the real solution here is to simply clear the endpoint src cache
+and consequently the dst_cache. This is slightly complicated by the fact
+that dst_cache releases dsts lazily, so I needed to add a little utility
+function for that, but that was pretty easy to do.
 
-How was this packet generated: does it come from the local stack or is
-it a custom packet injected from userspace, e.g., with a packet socket
-with vnet_hdr?
+Can you take a look at the below patch and let me know if it works for
+you and passes other testing you and Toke might be doing with it? (Also,
+please CC the wireguard mailing list in addition to netdev next time?)
+If the patch looks good to you and works well, I'll include it in the
+next series of wireguard patches I send back out to netdev. I'm back
+from travels next week and will begin working on the next series then.
 
-The bug that this patch intended to protect against only occurs with
-ip_summed == CHECKSUM_PARTIAL (3):
+Regards,
+Jason
 
-                        if (skb->ip_summed == CHECKSUM_PARTIAL) {
-                                *(__sum16 *)ptr = csum_fold(lco_csum(skb));
-                        } else {
-                                skb->ip_summed = CHECKSUM_PARTIAL;
-                                skb->csum_start =
-skb_transport_header(skb) - skb->head;
-                                skb->csum_offset = sizeof(*greh);
-                        }
+---------8<-------------8<-----------------
 
- So this packet would not hit that code anyway, as it has ip_summed
-CHECKSUM_NONE (0), which computes the offsets manually.
+From f9984a41eeaebfdcef5aba8a71966b77ba0de8c0 Mon Sep 17 00:00:00 2001
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date: Wed, 1 Sep 2021 14:53:39 +0200
+Subject: [PATCH] wireguard: device: reset peer src endpoint when netns exits
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-Perhaps the check needs to be refined. But I'd like to also understand
-how to reproduce this / how common this false positive is.
+Each peer's endpoint contains a dst_cache entry that takes a reference
+to another netdev. When the containing namespace exits, we take down the
+socket and prevent future sockets from being created (by setting
+creating_net to NULL), which removes that potential reference on the
+netns. However, it doesn't release references to the netns that a netdev
+cached in dst_cache might be taking, so the netns still might fail to
+exit. Since the socket is gimped anyway, we can simply clear all the
+dst_caches (by way of clearing the endpoint src), which will release all
+references.
+
+However, the current dst_cache_reset function only releases those
+references lazily. But it turns out that all of our usages of
+wg_socket_clear_peer_endpoint_src are called from contexts that are not
+exactly high-speed or bottle-necked. For example, when there's
+connection difficulty, or when userspace is reconfiguring the interface.
+And in particular for this patch, when the netns is exiting. So for
+those cases, it makes more sense to call dst_release immediately. For
+that, we add a small helper function to dst_cache.
+
+This patch also adds a test to netns.sh from Hangbin Liu to ensure this
+doesn't regress.
+
+Test-by: Hangbin Liu <liuhangbin@gmail.com>
+Reported-by: Xiumei Mu <xmu@redhat.com>
+Cc: Hangbin Liu <liuhangbin@gmail.com>
+Cc: Toke Høiland-Jørgensen <toke@redhat.com>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Fixes: 900575aa33a3 ("wireguard: device: avoid circular netns references")
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+---
+ drivers/net/wireguard/device.c             |  3 +++
+ drivers/net/wireguard/socket.c             |  2 +-
+ include/net/dst_cache.h                    | 11 ++++++++++
+ net/core/dst_cache.c                       | 19 +++++++++++++++++
+ tools/testing/selftests/wireguard/netns.sh | 24 +++++++++++++++++++++-
+ 5 files changed, 57 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/wireguard/device.c b/drivers/net/wireguard/device.c
+index 551ddaaaf540..77e64ea6be67 100644
+--- a/drivers/net/wireguard/device.c
++++ b/drivers/net/wireguard/device.c
+@@ -398,6 +398,7 @@ static struct rtnl_link_ops link_ops __read_mostly = {
+ static void wg_netns_pre_exit(struct net *net)
+ {
+ 	struct wg_device *wg;
++	struct wg_peer *peer;
+ 
+ 	rtnl_lock();
+ 	list_for_each_entry(wg, &device_list, device_list) {
+@@ -407,6 +408,8 @@ static void wg_netns_pre_exit(struct net *net)
+ 			mutex_lock(&wg->device_update_lock);
+ 			rcu_assign_pointer(wg->creating_net, NULL);
+ 			wg_socket_reinit(wg, NULL, NULL);
++			list_for_each_entry(peer, &wg->peer_list, peer_list)
++				wg_socket_clear_peer_endpoint_src(peer);
+ 			mutex_unlock(&wg->device_update_lock);
+ 		}
+ 	}
+diff --git a/drivers/net/wireguard/socket.c b/drivers/net/wireguard/socket.c
+index 8c496b747108..6f07b949cb81 100644
+--- a/drivers/net/wireguard/socket.c
++++ b/drivers/net/wireguard/socket.c
+@@ -308,7 +308,7 @@ void wg_socket_clear_peer_endpoint_src(struct wg_peer *peer)
+ {
+ 	write_lock_bh(&peer->endpoint_lock);
+ 	memset(&peer->endpoint.src6, 0, sizeof(peer->endpoint.src6));
+-	dst_cache_reset(&peer->endpoint_cache);
++	dst_cache_reset_now(&peer->endpoint_cache);
+ 	write_unlock_bh(&peer->endpoint_lock);
+ }
+ 
+diff --git a/include/net/dst_cache.h b/include/net/dst_cache.h
+index 67634675e919..df6622a5fe98 100644
+--- a/include/net/dst_cache.h
++++ b/include/net/dst_cache.h
+@@ -79,6 +79,17 @@ static inline void dst_cache_reset(struct dst_cache *dst_cache)
+ 	dst_cache->reset_ts = jiffies;
+ }
+ 
++/**
++ *	dst_cache_reset_now - invalidate the cache contents immediately
++ *	@dst_cache: the cache
++ *
++ *	The caller must be sure there are no concurrent users, as this frees
++ *	all dst_cache users immediately, rather than waiting for the next
++ *	per-cpu usage like dst_cache_reset does. Most callers should use the
++ *	higher speed lazily-freed dst_cache_reset function instead.
++ */
++void dst_cache_reset_now(struct dst_cache *dst_cache);
++
+ /**
+  *	dst_cache_init - initialize the cache, allocating the required storage
+  *	@dst_cache: the cache
+diff --git a/net/core/dst_cache.c b/net/core/dst_cache.c
+index be74ab4551c2..0ccfd5fa5cb9 100644
+--- a/net/core/dst_cache.c
++++ b/net/core/dst_cache.c
+@@ -162,3 +162,22 @@ void dst_cache_destroy(struct dst_cache *dst_cache)
+ 	free_percpu(dst_cache->cache);
+ }
+ EXPORT_SYMBOL_GPL(dst_cache_destroy);
++
++void dst_cache_reset_now(struct dst_cache *dst_cache)
++{
++	int i;
++
++	if (!dst_cache->cache)
++		return;
++
++	dst_cache->reset_ts = jiffies;
++	for_each_possible_cpu(i) {
++		struct dst_cache_pcpu *idst = per_cpu_ptr(dst_cache->cache, i);
++		struct dst_entry *dst = idst->dst;
++
++		idst->cookie = 0;
++		idst->dst = NULL;
++		dst_release(dst);
++	}
++}
++EXPORT_SYMBOL_GPL(dst_cache_reset_now);
+diff --git a/tools/testing/selftests/wireguard/netns.sh b/tools/testing/selftests/wireguard/netns.sh
+index 2e5c1630885e..8a9461aa0878 100755
+--- a/tools/testing/selftests/wireguard/netns.sh
++++ b/tools/testing/selftests/wireguard/netns.sh
+@@ -613,6 +613,28 @@ ip0 link set wg0 up
+ kill $ncat_pid
+ ip0 link del wg0
+ 
++# Ensure that dst_cache references don't outlive netns lifetime
++ip1 link add dev wg0 type wireguard
++ip2 link add dev wg0 type wireguard
++configure_peers
++ip1 link add veth1 type veth peer name veth2
++ip1 link set veth2 netns $netns2
++ip1 addr add fd00:aa::1/64 dev veth1
++ip2 addr add fd00:aa::2/64 dev veth2
++ip1 link set veth1 up
++ip2 link set veth2 up
++waitiface $netns1 veth1
++waitiface $netns2 veth2
++ip1 -6 route add default dev veth1 via fd00:aa::2
++ip2 -6 route add default dev veth2 via fd00:aa::1
++n1 wg set wg0 peer "$pub2" endpoint [fd00:aa::2]:2
++n2 wg set wg0 peer "$pub1" endpoint [fd00:aa::1]:1
++n1 ping6 -c 1 fd00::2
++pp ip netns delete $netns1
++pp ip netns delete $netns2
++pp ip netns add $netns1
++pp ip netns add $netns2
++
+ # Ensure there aren't circular reference loops
+ ip1 link add wg1 type wireguard
+ ip2 link add wg2 type wireguard
+@@ -631,7 +653,7 @@ while read -t 0.1 -r line 2>/dev/null || [[ $? -ne 142 ]]; do
+ done < /dev/kmsg
+ alldeleted=1
+ for object in "${!objects[@]}"; do
+-	if [[ ${objects["$object"]} != *createddestroyed ]]; then
++	if [[ ${objects["$object"]} != *createddestroyed && ${objects["$object"]} != *createdcreateddestroyeddestroyed ]]; then
+ 		echo "Error: $object: merely ${objects["$object"]}" >&3
+ 		alldeleted=0
+ 	fi
+-- 
+2.32.0
