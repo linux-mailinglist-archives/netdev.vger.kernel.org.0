@@ -2,158 +2,288 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2855F3FE1B8
+	by mail.lfdr.de (Postfix) with ESMTP id 7976C3FE1B9
 	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 20:07:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346618AbhIASHI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 14:07:08 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:64278 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1346629AbhIASHB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 14:07:01 -0400
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 181I2mLN047370
-        for <netdev@vger.kernel.org>; Wed, 1 Sep 2021 14:06:04 -0400
+        id S1346702AbhIASHL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 14:07:11 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:11534 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1346661AbhIASHD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 14:07:03 -0400
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 181I4QCC135911
+        for <netdev@vger.kernel.org>; Wed, 1 Sep 2021 14:06:06 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=pp1;
- bh=Jsk2R6ZUYFJG7D3Xc8Da4lDSV4BiePSMPVBBYZ4hBB4=;
- b=sdnArP3gfkYLKGYo3I5TYoKLt7xc04dqV0VT6uItQ4I1umUWZHvvVG5306rC53k/aJir
- AwQARQ6sLtpjaEShGN1x6+vsKvwJN3jiExzruq/X5u5fzABrRUfdvKizCbJwGMDVw20p
- 63QEb8I3XAxcvBVb39mwiPOhnwZwfNF5bqLBvoBJN6j8BX5L2S3rQKdHltQAzJnxIaxm
- y5Y5kP4IbyVtjsdOa06Ra1fnQsY2TNDCeDovcupM7tIwfigocWlcKNOwyETaiIo3B8gv
- Rnz95t5iCcQVUpkoP2yNLMnJHF49aPsoQIsv0xR5qOlO4vbgDDSphrgJmbRdrNvKoHYz vQ== 
-Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3ate1brtg5-1
+ bh=Ftenm1l+iGD+nmAxRHfECJIdXtjMa7SfDZvMHSNvO60=;
+ b=d5QWWJcgmtCMt96TE9XJWBkTv6zeaRJ0ilQod2tk4fOy06n5l/AEvLV+Iaxtfe0+S3b/
+ 4u5V0XzSLbv+v4sTRajrF6E4vUFgORUX8Z4innnG4NlJ02pGokkUKeTxHIIsxGpv9cZd
+ R/YxcghXtfqzmQ0+qe8ODWzx4fbuhzYt++kGl3fY4cT7LU9faLaWoyZm3dKzxsW7WkzT
+ jSS5JQfwW5SWm1kxkFS8xPKCZ3bkrd3C+0Q/umh2evl7ScSyILAtuP94XDng+fXuITaq
+ ZW31KAbLqC5FnQ15jn4khCfSndo5mDly5gKoUV9ClVLuZerRm40mClXysQ3fPnIp8CuU rg== 
+Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3ate208s2x-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 14:06:03 -0400
-Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
-        by ppma03wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 181I49ob000428
-        for <netdev@vger.kernel.org>; Wed, 1 Sep 2021 18:06:03 GMT
-Received: from b01cxnp22033.gho.pok.ibm.com (b01cxnp22033.gho.pok.ibm.com [9.57.198.23])
-        by ppma03wdc.us.ibm.com with ESMTP id 3atdxtrqy4-1
+        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 14:06:05 -0400
+Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
+        by ppma01wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 181I2jEf029132
+        for <netdev@vger.kernel.org>; Wed, 1 Sep 2021 18:06:04 GMT
+Received: from b01cxnp22035.gho.pok.ibm.com (b01cxnp22035.gho.pok.ibm.com [9.57.198.25])
+        by ppma01wdc.us.ibm.com with ESMTP id 3atdxc8rhh-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 18:06:03 +0000
+        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 18:06:04 +0000
 Received: from b01ledav002.gho.pok.ibm.com (b01ledav002.gho.pok.ibm.com [9.57.199.107])
-        by b01cxnp22033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 181I61uC26608036
+        by b01cxnp22035.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 181I63x340108462
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 1 Sep 2021 18:06:01 GMT
+        Wed, 1 Sep 2021 18:06:03 GMT
 Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 96ECE124062;
+        by IMSVA (Postfix) with ESMTP id 250E512405B;
+        Wed,  1 Sep 2021 18:06:03 +0000 (GMT)
+Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E8B78124052;
         Wed,  1 Sep 2021 18:06:01 +0000 (GMT)
-Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6E237124058;
-        Wed,  1 Sep 2021 18:06:00 +0000 (GMT)
 Received: from suka-w540.ibmuc.com (unknown [9.160.152.143])
         by b01ledav002.gho.pok.ibm.com (Postfix) with ESMTP;
-        Wed,  1 Sep 2021 18:06:00 +0000 (GMT)
+        Wed,  1 Sep 2021 18:06:01 +0000 (GMT)
 From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 To:     netdev@vger.kernel.org
 Cc:     Brian King <brking@linux.ibm.com>, cforno12@linux.ibm.com,
         Dany Madden <drt@linux.ibm.com>,
         Rick Lindsley <ricklind@linux.ibm.com>,
         Rick Lindsley <ricklind@linux.vnet.ibm.com>
-Subject: [PATCH net-next v2 6/9] ibmvnic: Use bitmap for LTB map_ids
-Date:   Wed,  1 Sep 2021 11:05:48 -0700
-Message-Id: <20210901180551.150126-7-sukadev@linux.ibm.com>
+Subject: [PATCH net-next v2 7/9] ibmvnic: Reuse LTB when possible
+Date:   Wed,  1 Sep 2021 11:05:49 -0700
+Message-Id: <20210901180551.150126-8-sukadev@linux.ibm.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210901180551.150126-1-sukadev@linux.ibm.com>
 References: <20210901180551.150126-1-sukadev@linux.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: DeC8MJtlYTnBJ3_dIuD09ZcMuJZcDXan
-X-Proofpoint-ORIG-GUID: DeC8MJtlYTnBJ3_dIuD09ZcMuJZcDXan
+X-Proofpoint-GUID: 2HzeDyX7tZ5qv1RoGjk0lrkoTASwLNdT
+X-Proofpoint-ORIG-GUID: 2HzeDyX7tZ5qv1RoGjk0lrkoTASwLNdT
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
  definitions=2021-09-01_05:2021-09-01,2021-09-01 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 impostorscore=0
- malwarescore=0 suspectscore=0 lowpriorityscore=0 mlxscore=0 adultscore=0
- spamscore=0 mlxlogscore=999 bulkscore=0 priorityscore=1501 clxscore=1015
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2108310000
- definitions=main-2109010104
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 adultscore=0
+ phishscore=0 lowpriorityscore=0 mlxlogscore=999 malwarescore=0
+ suspectscore=0 clxscore=1015 impostorscore=0 bulkscore=0 spamscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2108310000 definitions=main-2109010104
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In a follow-on patch, we will reuse long term buffers when possible.
-When doing so we have to be careful to properly assign map ids. We
-can no longer assign them sequentially because a lower map id may be
-available and we could wrap at 255 and collide with an in-use map id.
+Reuse the long term buffer during a reset as long as its size has
+not changed. If the size has changed, free it and allocate a new
+one of the appropriate size.
 
-Instead, use a bitmap to track active map ids and to find a free map id.
-Don't need to take locks here since the map_id only changes during reset
-and at that time only the reset worker thread should be using the adapter.
+When we do this, alloc_long_term_buff() and reset_long_term_buff()
+become identical. Drop reset_long_term_buff().
 
-Noticed this when analyzing an error Dany Madden ran into with the
-patch set.
-
-Reported-by: Dany Madden <drt@linux.ibm.com>
 Reviewed-by: Rick Lindsley <ricklind@linux.vnet.ibm.com>
 Reviewed-by: Dany Madden <drt@linux.ibm.com>
 Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c | 12 ++++++++----
- drivers/net/ethernet/ibm/ibmvnic.h |  3 ++-
- 2 files changed, 10 insertions(+), 5 deletions(-)
+Changelog[v2]: [Jakub Kicinski] Fix kdoc issues
+---
+ drivers/net/ethernet/ibm/ibmvnic.c | 137 ++++++++++++++++-------------
+ 1 file changed, 74 insertions(+), 63 deletions(-)
 
 diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index bb9b8aec9c9b..4603597a9c10 100644
+index 4603597a9c10..dafb36690fdc 100644
 --- a/drivers/net/ethernet/ibm/ibmvnic.c
 +++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -228,8 +228,9 @@ static int alloc_long_term_buff(struct ibmvnic_adapter *adapter,
- 		dev_err(dev, "Couldn't alloc long term buffer\n");
- 		return -ENOMEM;
+@@ -108,6 +108,8 @@ static int init_crq_queue(struct ibmvnic_adapter *adapter);
+ static int send_query_phys_parms(struct ibmvnic_adapter *adapter);
+ static void ibmvnic_tx_scrq_clean_buffer(struct ibmvnic_adapter *adapter,
+ 					 struct ibmvnic_sub_crq_queue *tx_scrq);
++static void free_long_term_buff(struct ibmvnic_adapter *adapter,
++				struct ibmvnic_long_term_buff *ltb);
+ 
+ struct ibmvnic_stat {
+ 	char name[ETH_GSTRING_LEN];
+@@ -214,23 +216,77 @@ static int ibmvnic_wait_for_completion(struct ibmvnic_adapter *adapter,
+ 	return -ETIMEDOUT;
+ }
+ 
++/**
++ * reuse_ltb() - Check if a long term buffer can be reused
++ * @ltb:  The long term buffer to be checked
++ * @size: The size of the long term buffer.
++ *
++ * An LTB can be reused unless its size has changed.
++ *
++ * Return: Return true if the LTB can be reused, false otherwise.
++ */
++static bool reuse_ltb(struct ibmvnic_long_term_buff *ltb, int size)
++{
++	return (ltb->buff && ltb->size == size);
++}
++
++/**
++ * alloc_long_term_buff() - Allocate a long term buffer (LTB)
++ *
++ * @adapter: ibmvnic adapter associated to the LTB
++ * @ltb:     container object for the LTB
++ * @size:    size of the LTB
++ *
++ * Allocate an LTB of the specified size and notify VIOS.
++ *
++ * If the given @ltb already has the correct size, reuse it. Otherwise if
++ * its non-NULL, free it. Then allocate a new one of the correct size.
++ * Notify the VIOS either way since we may now be working with a new VIOS.
++ *
++ * Allocating larger chunks of memory during resets, specially LPM or under
++ * low memory situations can cause resets to fail/timeout and for LPAR to
++ * lose connectivity. So hold onto the LTB even if we fail to communicate
++ * with the VIOS and reuse it on next open. Free LTB when adapter is closed.
++ *
++ * Return: 0 if we were able to allocate the LTB and notify the VIOS and
++ *	   a negative value otherwise.
++ */
+ static int alloc_long_term_buff(struct ibmvnic_adapter *adapter,
+ 				struct ibmvnic_long_term_buff *ltb, int size)
+ {
+ 	struct device *dev = &adapter->vdev->dev;
+ 	int rc;
+ 
+-	ltb->size = size;
+-	ltb->buff = dma_alloc_coherent(dev, ltb->size, &ltb->addr,
+-				       GFP_KERNEL);
++	if (!reuse_ltb(ltb, size)) {
++		dev_dbg(dev,
++			"LTB size changed from 0x%llx to 0x%x, reallocating\n",
++			 ltb->size, size);
++		free_long_term_buff(adapter, ltb);
++	}
+ 
+-	if (!ltb->buff) {
+-		dev_err(dev, "Couldn't alloc long term buffer\n");
+-		return -ENOMEM;
++	if (ltb->buff) {
++		dev_dbg(dev, "Reusing LTB [map %d, size 0x%llx]\n",
++			ltb->map_id, ltb->size);
++	} else {
++		ltb->buff = dma_alloc_coherent(dev, size, &ltb->addr,
++					       GFP_KERNEL);
++		if (!ltb->buff) {
++			dev_err(dev, "Couldn't alloc long term buffer\n");
++			return -ENOMEM;
++		}
++		ltb->size = size;
++
++		ltb->map_id = find_first_zero_bit(adapter->map_ids,
++						  MAX_MAP_ID);
++		bitmap_set(adapter->map_ids, ltb->map_id, 1);
++
++		dev_dbg(dev,
++			"Allocated new LTB [map %d, size 0x%llx]\n",
++			 ltb->map_id, ltb->size);
  	}
--	ltb->map_id = adapter->map_id;
--	adapter->map_id++;
-+	ltb->map_id = find_first_zero_bit(adapter->map_ids,
-+					  MAX_MAP_ID);
-+	bitmap_set(adapter->map_ids, ltb->map_id, 1);
+-	ltb->map_id = find_first_zero_bit(adapter->map_ids,
+-					  MAX_MAP_ID);
+-	bitmap_set(adapter->map_ids, ltb->map_id, 1);
++
++	/* Ensure ltb is zeroed - specially when reusing it. */
++	memset(ltb->buff, 0, ltb->size);
  
  	mutex_lock(&adapter->fw_lock);
  	adapter->fw_done_rc = 0;
-@@ -284,6 +285,8 @@ static void free_long_term_buff(struct ibmvnic_adapter *adapter,
- 	dma_free_coherent(dev, ltb->size, ltb->buff, ltb->addr);
- 
- 	ltb->buff = NULL;
-+	/* mark this map_id free */
-+	bitmap_clear(adapter->map_ids, ltb->map_id, 1);
+@@ -257,10 +313,7 @@ static int alloc_long_term_buff(struct ibmvnic_adapter *adapter,
+ 	}
+ 	rc = 0;
+ out:
+-	if (rc) {
+-		dma_free_coherent(dev, ltb->size, ltb->buff, ltb->addr);
+-		ltb->buff = NULL;
+-	}
++	/* don't free LTB on communication error - see function header */
+ 	mutex_unlock(&adapter->fw_lock);
+ 	return rc;
+ }
+@@ -290,43 +343,6 @@ static void free_long_term_buff(struct ibmvnic_adapter *adapter,
  	ltb->map_id = 0;
  }
  
-@@ -1235,8 +1238,6 @@ static int init_resources(struct ibmvnic_adapter *adapter)
- 		return rc;
- 	}
- 
--	adapter->map_id = 1;
+-static int reset_long_term_buff(struct ibmvnic_adapter *adapter,
+-				struct ibmvnic_long_term_buff *ltb)
+-{
+-	struct device *dev = &adapter->vdev->dev;
+-	int rc;
 -
- 	rc = init_napi(adapter);
+-	memset(ltb->buff, 0, ltb->size);
+-
+-	mutex_lock(&adapter->fw_lock);
+-	adapter->fw_done_rc = 0;
+-
+-	reinit_completion(&adapter->fw_done);
+-	rc = send_request_map(adapter, ltb->addr, ltb->size, ltb->map_id);
+-	if (rc) {
+-		mutex_unlock(&adapter->fw_lock);
+-		return rc;
+-	}
+-
+-	rc = ibmvnic_wait_for_completion(adapter, &adapter->fw_done, 10000);
+-	if (rc) {
+-		dev_info(dev,
+-			 "Reset failed, long term map request timed out or aborted\n");
+-		mutex_unlock(&adapter->fw_lock);
+-		return rc;
+-	}
+-
+-	if (adapter->fw_done_rc) {
+-		dev_info(dev,
+-			 "Reset failed, attempting to free and reallocate buffer\n");
+-		free_long_term_buff(adapter, ltb);
+-		mutex_unlock(&adapter->fw_lock);
+-		return alloc_long_term_buff(adapter, ltb, ltb->size);
+-	}
+-	mutex_unlock(&adapter->fw_lock);
+-	return 0;
+-}
+-
+ static void deactivate_rx_pools(struct ibmvnic_adapter *adapter)
+ {
+ 	int i;
+@@ -548,18 +564,10 @@ static int reset_rx_pools(struct ibmvnic_adapter *adapter)
+ 
+ 		netdev_dbg(adapter->netdev, "Re-setting rx_pool[%d]\n", i);
+ 
+-		if (rx_pool->buff_size != buff_size) {
+-			free_long_term_buff(adapter, &rx_pool->long_term_buff);
+-			rx_pool->buff_size = ALIGN(buff_size, L1_CACHE_BYTES);
+-			rc = alloc_long_term_buff(adapter,
+-						  &rx_pool->long_term_buff,
+-						  rx_pool->size *
+-						  rx_pool->buff_size);
+-		} else {
+-			rc = reset_long_term_buff(adapter,
+-						  &rx_pool->long_term_buff);
+-		}
+-
++		rx_pool->buff_size = ALIGN(buff_size, L1_CACHE_BYTES);
++		rc = alloc_long_term_buff(adapter,
++					  &rx_pool->long_term_buff,
++					  rx_pool->size * rx_pool->buff_size);
+ 		if (rc)
+ 			return rc;
+ 
+@@ -694,9 +702,12 @@ static int init_rx_pools(struct net_device *netdev)
+ static int reset_one_tx_pool(struct ibmvnic_adapter *adapter,
+ 			     struct ibmvnic_tx_pool *tx_pool)
+ {
++	struct ibmvnic_long_term_buff *ltb;
+ 	int rc, i;
+ 
+-	rc = reset_long_term_buff(adapter, &tx_pool->long_term_buff);
++	ltb = &tx_pool->long_term_buff;
++
++	rc = alloc_long_term_buff(adapter, ltb, ltb->size);
  	if (rc)
  		return rc;
-@@ -5557,6 +5558,9 @@ static int ibmvnic_probe(struct vio_dev *dev, const struct vio_device_id *id)
- 	adapter->vdev = dev;
- 	adapter->netdev = netdev;
- 	adapter->login_pending = false;
-+	memset(&adapter->map_ids, 0, sizeof(adapter->map_ids));
-+	/* map_ids start at 1, so ensure map_id 0 is always "in-use" */
-+	bitmap_set(adapter->map_ids, 0, 1);
  
- 	ether_addr_copy(adapter->mac_addr, mac_addr_p);
- 	ether_addr_copy(netdev->dev_addr, adapter->mac_addr);
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.h b/drivers/net/ethernet/ibm/ibmvnic.h
-index 5652566818fb..e97f1aa98c05 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.h
-+++ b/drivers/net/ethernet/ibm/ibmvnic.h
-@@ -979,7 +979,8 @@ struct ibmvnic_adapter {
- 	u64 opt_tx_entries_per_subcrq;
- 	u64 opt_rxba_entries_per_subcrq;
- 	__be64 tx_rx_desc_req;
--	u8 map_id;
-+#define MAX_MAP_ID	255
-+	DECLARE_BITMAP(map_ids, MAX_MAP_ID);
- 	u32 num_active_rx_scrqs;
- 	u32 num_active_rx_pools;
- 	u32 num_active_rx_napi;
 -- 
 2.26.2
 
