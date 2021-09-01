@@ -2,156 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 788F33FE5DD
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 02:33:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89A2A3FE5E0
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 02:33:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344914AbhIAWwp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 18:52:45 -0400
-Received: from mail-eopbgr00087.outbound.protection.outlook.com ([40.107.0.87]:32899
-        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S245624AbhIAWw0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Sep 2021 18:52:26 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GDbjaI1z8+0pfwGdTUpu0ELtpX4psesNSJdF7AdMfbFrA5+Ej1DasRxg6JNGLPi+PCcpVcKWWGBwN7HdWFWmYPrkJLwSbTOwBNXjGwCKL2swpGHaOQjtuaCs4R1sWVvI4WCywu6DyudM4t5+9Wl1jlwZsIdZzQ2VQekvgJL+1Ynh24mYLfyg6jOxiax5p7s437VOrqtOu4tPWjTrQeVH6cMnOlzkFhiKhR1jidwrleNS+gcRSKa73ef6GYruHzaRSafP0YqVr5P1tjqeSFL/3V6Lq9q/dkTyh5zUXIKaaUSuyEQUxjJPkCsL1uD0FG73clxQJjp5q1miMz2iQqFRQQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=+HgTtnB8nMO1RfbJjwju+iPYZi9GWPjMwGFOVRbuIkk=;
- b=n7BRowV+oyHmEecu7qlBBQl2/bc2Ol3HefMJdNSIpeWAJ3nGrgdxFxF4jlBKfU71vRlUO752gRK6gIR9Go2LFjTA3MTy+XYnDPRiElA7p21g2BKQsy7iTADPk06CKUMD8qAbXk5ZJDmSW0j4wcKeWYQ9veR5dSYZwB3biql+dcQqe/CSk2VpwKQVfBG5vDeS6Cm4nosGGhuJBsPsx+PFpl43bMOHn5XQsm/xAHdLwOXyLe03R6K5FlsFzFPZlw3Lpsa3gyWYcp4OXBelPdBGw1S6r9ccLAE8uUPq3fI9xgIytvPdF+aCM1QhgOvTRueRLh5DdqIFWPO9qY3wYJb/xQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+HgTtnB8nMO1RfbJjwju+iPYZi9GWPjMwGFOVRbuIkk=;
- b=cIhA0QVnh7bkz3+boFOF70Djc/iDaFe0Y/i5R0Qg4Fs8ZGPXv9zVTJBjxUa4bv6ckrwOjA+bl9l7qBOjxlMZXpx6jCYDb1W1AwZ0f4ZDkkrDvWx630Jy8veD2jNEhJ1K2O7ByswQ2yWrDiFjuRbDI0weaB5YozGU+ZK9ohRR30Y=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR04MB6015.eurprd04.prod.outlook.com (2603:10a6:803:d8::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4478.19; Wed, 1 Sep
- 2021 22:51:10 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4457.026; Wed, 1 Sep 2021
- 22:51:10 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        id S1346196AbhIAWzc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 18:55:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34548 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346093AbhIAWzY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 18:55:24 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF24DC061757
+        for <netdev@vger.kernel.org>; Wed,  1 Sep 2021 15:54:26 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id n126so72965ybf.6
+        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 15:54:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4hcsgNE4R+wSEzNZUDcoiFTfxL7X/EpFAbnpFeONnhQ=;
+        b=nzYKN1yHfdGtTNSnK9qy05x8ECkDVabJvtzd+c5QxqYjTICjSxGsc7oP5QHTal5VG0
+         2fiIIHOhx5FzXvMNwSTO443PMJbh1fUcaf5SqNRO9bNrRz5QRkFPFHTkvRSyeXtKD+GT
+         Jz3440JXJN3e4YbmXUAyyplSOxl0JloVkkkVEN/asWzW+B3pJtcgk+IJwXPGjrgAu9m8
+         6jVLRvWvX9VMS5TqtxmJeGsZQVoF3vP9PdHpHJjt1dk2bdbEeRhZAPgLrQU0fI+ldlWq
+         WsHwpfNY2NGLPobNesD/HTEOOCSuMUs+BW03qQtWzYuBsWXvyMMYPibzREajTH1dl7bM
+         9apg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4hcsgNE4R+wSEzNZUDcoiFTfxL7X/EpFAbnpFeONnhQ=;
+        b=XVKJ5HLtHK4v78S31/aki+vp7QXBN4UwaU/vu6h02dNgU+6AkY8DoSXes2sOiRyYA0
+         jUPERWGAazdtzVR0QiL8WvYN4wUZkdsF0GGwO2rl+C3o2YI9YczJaRGOLUJQyMzaFPQv
+         Sc7utYVnbtwEcqZ4rX84LDMxQnzIr/pQ0+CqWO/Kz3W6DQ62pRe4ObqzKROR9Fyz0KJt
+         30ivQOPtygdYsP/jnlFhhkvhD/QDEjAH8epqXqcrhUq9iRQUxRPBDgwSFwZTQHQiPS06
+         S1XyjUtjFznrzRlTML4Q677n28UrGwscSndnqASzK65so4Kz+4885ozjhJmeVMJ6x0Me
+         kk4Q==
+X-Gm-Message-State: AOAM5339+KcMdLEEC5UODEwBRuo9BPTmghp1AqgHd7xqVFAw9XHOrl0c
+        NJcOe/DBaR5DrABmLqLq0seLPXI0mXfm709CH7mZgA==
+X-Google-Smtp-Source: ABdhPJwoOhg36Xui+G7bkyl+uIvJ83xIP0J492cVY6H8q/yrsXWzOzWSj9Jt3PUDWPuxgUiPtUW2N9/wk1Wtaoa43AI=
+X-Received: by 2002:a25:d213:: with SMTP id j19mr431059ybg.20.1630536865855;
+ Wed, 01 Sep 2021 15:54:25 -0700 (PDT)
+MIME-Version: 1.0
+References: <CAGETcx-ZvENq8tFZ9wb_BCPZabpZcqPrguY5rsg4fSNdOAB+Kw@mail.gmail.com>
+ <YSpr/BOZj2PKoC8B@lunn.ch> <CAGETcx_mjY10WzaOvb=vuojbodK7pvY1srvKmimu4h6xWkeQuQ@mail.gmail.com>
+ <YS4rw7NQcpRmkO/K@lunn.ch> <CAGETcx_QPh=ppHzBdM2_TYZz3o+O7Ab9-JSY52Yz1--iLnykxA@mail.gmail.com>
+ <YS6nxLp5TYCK+mJP@lunn.ch> <CAGETcx90dOkw+Yp5ZRNqQq2Ny_ToOKvGJNpvyRohaRQi=SQxhw@mail.gmail.com>
+ <YS608fdIhH4+qJsn@lunn.ch> <20210831231804.zozyenear45ljemd@skbuf>
+ <CAGETcx-ktuU1RqXwj_qV8tCOLAg3DXU-wCAm6+NukyxRencSjw@mail.gmail.com> <20210901084625.sqzh3oacwgdbhc7f@skbuf>
+In-Reply-To: <20210901084625.sqzh3oacwgdbhc7f@skbuf>
+From:   Saravana Kannan <saravanak@google.com>
+Date:   Wed, 1 Sep 2021 15:53:49 -0700
+Message-ID: <CAGETcx9D1pBqMjPgJq7poWxnEO7AbT6yFkXL-3LsNuELLs+PWQ@mail.gmail.com>
+Subject: Re: [PATCH v1 1/2] driver core: fw_devlink: Add support for FWNODE_FLAG_BROKEN_PARENT
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Rafael J. Wysocki" <rafael@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        kernel-team <kernel-team@android.com>,
-        Len Brown <lenb@kernel.org>
-Subject: [RFC PATCH net-next 3/3] net: dsa: allow the phy_connect() call to return -EPROBE_DEFER
-Date:   Thu,  2 Sep 2021 01:50:53 +0300
-Message-Id: <20210901225053.1205571-4-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210901225053.1205571-1-vladimir.oltean@nxp.com>
-References: <20210901225053.1205571-1-vladimir.oltean@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM3PR04CA0130.eurprd04.prod.outlook.com (2603:10a6:207::14)
- To VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (82.78.148.104) by AM3PR04CA0130.eurprd04.prod.outlook.com (2603:10a6:207::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4478.19 via Frontend Transport; Wed, 1 Sep 2021 22:51:08 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 70d707b9-24c7-4346-867a-08d96d9afdc7
-X-MS-TrafficTypeDiagnostic: VI1PR04MB6015:
-X-Microsoft-Antispam-PRVS: <VI1PR04MB60156730901C3CE74FC6C2E0E0CD9@VI1PR04MB6015.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: fZkwuLHjB1kzK/2ZbDKGNhrRvquzw6rXOw5INPIT8UEyhMaU6U/rBpzPuwlQPligjHVa0TBiH3L7KHlfinmGOhNoPF2JH6BN0DjT+N6UB8RRQ1rIO7uAGUMpGsz4ARdpfV8scs/W6bK4C68eCPlke+RN5jHxnYupmZLDh3qfD5hTcf/76ELiFILF5rh1quO/zZOZ327o8tyQ9x3bSOjplnOw6XfRd86gUNEcm4/P30lkvKzviNaf2pyubsjcL5RXFrK0A2nOMbI+GEcW5fl2aSyObXN7TMGmFE7g++8d2aUsL3e7cNCzM6tZ7SDssHaBoiv/JdxpvtiKULrHoQnlDWXVDtTxS1B2iEED/Hr9wft69y8c0Fh1okoR00HYhGA2i0AyH5ypw2cCuL+aN5MO/oAaPRPGY27SImS4MNhjwmwb0KJECa9DYLY61U4rRrtlgT8tB+nejho5CzvoV3qshoaaqKgkVT+a0JXbyNF1U2JHSNvbn15K/eDQg5i17Uzi9LOly/PlsLZ+Z6A1NtiODrhnuwSTSjpDPPFGn9cicxm+yDwCOOq88dRVLYB0HVjbdNzYuC5HKw2KviOKzVmDwtRM8QDmq3FJv6C2XquVi+kGzTwqjLuozFPaO2kRHrV9ax7sI35bKTaNB3tcd3AO6002arrAozjE0QY3M5mv2hwh8/90cip9HDyHTXlanwjYSxsSTXOozbbOAGoU0lsP9g==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(136003)(396003)(39860400002)(376002)(346002)(66556008)(66476007)(186003)(8936002)(66946007)(26005)(6506007)(52116002)(316002)(36756003)(478600001)(5660300002)(6916009)(2906002)(7416002)(4326008)(6666004)(956004)(86362001)(2616005)(6486002)(6512007)(44832011)(1076003)(38100700002)(54906003)(8676002)(38350700002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?KkOoPhiEIntsG9fdVBkZE1/o9kylCb+0AxCniwYl2ZlduGWJS0Tq91MTtzi2?=
- =?us-ascii?Q?uWy4eMHTyUDoKW8DIoQhFopSoAAcgJ0/agTruDvDCumgpiRsXu3iTDSjADQR?=
- =?us-ascii?Q?ANq2gVMiUWl+P2kZZXStWPMOLUT1k7ScgTzqwesx1pp2GcEOx8Yceo5308nK?=
- =?us-ascii?Q?elSJA6/FaIwXMiU9wPKBt3ZFiPxPhQZ+XLW+utBjw+OrqDTNBtznC/r6xEGd?=
- =?us-ascii?Q?AC5PSx47AKhXEvQiwMV06HA7qD5FCABKzatvX8MHzXLAJ4/vWAUR4XLw/pQU?=
- =?us-ascii?Q?3accBrZjFsVqmv9NbIOtU6NlxPzHWKhnY59FZ/ZvCUXA1HezSLMuvVk3sIke?=
- =?us-ascii?Q?9ltKElsr8rxqgnznJWFH6vUqO7NxaCdxesKFG3Ult6vE11gGZ3EC82MAidMN?=
- =?us-ascii?Q?WTvuZBfB2CFlcIEdFEUa/QZsFADXxOPozHGMCI3lSd+L/YECxcLPDf+LkJST?=
- =?us-ascii?Q?sn9uVTH3fHsi42mez9rm+P4OzvfX8QJWIZsoCpSU94GO/TSb7P1B/RAypw+f?=
- =?us-ascii?Q?5aDkERoANOAQdUoIN4HSMEA4vwjWWdYTMFuWKf+ZNuRA3r6lpTRjKHAVYheP?=
- =?us-ascii?Q?KVp2s/0DCnY0sD7zq3i6YSx5xHNDw4q/LZPXM31BzodtHu+Y2c/fnKjdw7XV?=
- =?us-ascii?Q?04sSbWBROBcK97CHy/JQoWJ3aMcMeaYXjkdOpIrCWIQ/HPRXi3cE6Je7Nv1F?=
- =?us-ascii?Q?bGS/gQzp7sglens0FAxnnQxL4jj9VQ7i0/MKWJywGeO174w6ekw9Wy4duw4P?=
- =?us-ascii?Q?ajPTVAcS7E4wtKe3X3DLdNRYwn3IGfIVi72xY8ZKfyz3kc3row2fiZq2xrl8?=
- =?us-ascii?Q?pNMM1fV5e1+h+BJwb+4g/1kSZlfxx4LflR7CM7bHeDPi7pFtsuG+Insw0U8q?=
- =?us-ascii?Q?/PMMVc7lCbvdOkW7EuoWahioNucVz0xTwTAIBXhAllKwntsUcvIilBUmbZQr?=
- =?us-ascii?Q?1fawrNmvxD+1K1XwHJIQwbBvFgQ8Mfbpvh7gZGazRZ/Dh+HruGQR0NvmDjw4?=
- =?us-ascii?Q?75Z0wmRH3/NjDl7tMgxK4fX9ujxc2kruGVIpl7TSyT1F1zVfpUXDVHoqC/kH?=
- =?us-ascii?Q?1xCqgnWJtvAmTap9jCOsELGkzbhNElSY8wcgzvFQflaZz0Cw9krb016udnt3?=
- =?us-ascii?Q?RJoxSESckQobdjo9z5yV8MFMeD1AXoq6KdG1ezB3dkew11kBD6t4YliCYHFi?=
- =?us-ascii?Q?7QTaTshuJO7RMxYH6eHudq2GaYVk0wyWgxnE3M7E1v7nGd0bR5ia/Tgj8513?=
- =?us-ascii?Q?neHuDM62jMP9hXHkqgAwYe/TSdmaQnVeFg2e+2NkgyMkTzRemtIN1Mvo+YQv?=
- =?us-ascii?Q?ikwGEgjSQvpU2H0GoVQtGNgG?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 70d707b9-24c7-4346-867a-08d96d9afdc7
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Sep 2021 22:51:10.1067
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ksqwgnxC2LLGMWJABNAqVvqVVtRfNd5nDFWpgoAefGms7aILFNg9CKRGqRM7eWEY5hBmrl7sDCK9yw/Hcv73bg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6015
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
+        Alvin Sipraga <ALSI@bang-olufsen.dk>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-acpi@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently DSA ignores any errors coming from dsa_port_setup(), and this
-includes:
+On Wed, Sep 1, 2021 at 1:46 AM Vladimir Oltean <olteanv@gmail.com> wrote:
+>
+> On Tue, Aug 31, 2021 at 07:00:58PM -0700, Saravana Kannan wrote:
+> > On Tue, Aug 31, 2021 at 4:18 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+> > >
+> > > On Wed, Sep 01, 2021 at 01:02:09AM +0200, Andrew Lunn wrote:
+> > > > Rev B is interesting because switch0 and switch1 got genphy, while
+> > > > switch2 got the correct Marvell PHY driver. switch2 PHYs don't have
+> > > > interrupt properties, so don't loop back to their parent device.
+> > >
+> > > This is interesting and not what I really expected to happen. It goes to
+> > > show that we really need more time to understand all the subtleties of
+> > > device dependencies before jumping on patching stuff.
+> > >
+> > > In case the DSA tree contains more than one switch, different things
+> > > will happen in dsa_register_switch().
+> > > The tree itself is only initialized when the last switch calls
+> > > dsa_register_switch(). All the other switches just mark themselves as
+> > > present and exit probing early. See this piece of code in dsa_tree_setup:
+> > >
+> > >         complete = dsa_tree_setup_routing_table(dst);
+> > >         if (!complete)
+> > >                 return 0;
+> > >
+> > > So it should be a general property of cross-chip DSA trees that all
+> > > switches except the last one will have the specific PHY driver probed
+> > > properly, and not the genphy.
+> > >
+> > > Because all (N - 1) switches of a tree exit early in dsa_register_switch,
+> > > they have successfully probed by the time the last switch brings up the
+> > > tree, and brings up the PHYs on behalf of every other switch.
+> > >
+> > > The last switch can connect to the PHY on behalf of the other switches
+> > > past their probe ending, and those PHYs should not defer probing because
+> > > their supplier is now probed. It is only that the last switch cannot
+> > > connect to the PHYs of its own ports.
+> >
+> > I'm not saying this with any intention of making things easier for me
+> > (I'm not even sure it does). But your description about how multiple
+> > switches are handled by DSA has me even more convinced than before
+> > that DSA needs to use a component device model. This is like the
+> > textbook example for component devices.
+>
+> In this example, I guess the component master would be the "struct dsa_switch_tree",
 
-dsa_port_setup
--> dsa_slave_create
-   -> dsa_slave_phy_setup
-      -> phylink_of_phy_connect
-         -> ...
-            -> phy_attach_direct
+Right.
 
-This is done such that PHYs present on optional riser cards which are
-missing do not cause the entire switch probing to fail.
+> but there is no struct device associated with it.
 
-Now that phy_attach_direct tries harder to probe the specific PHY driver
-instead of genphy, it can actually return -EPROBE_DEFER. It makes sense
-to treat this error separately, and not just give up. Trigger the normal
-error path, unwind the setup done so far, and come back later.
+We can create one? I don't think it needs to have a DT node. And if it
+does, this is where my "I'm willing to help improve component device"
+offer comes in to help make it a bit more generic.
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- net/dsa/dsa2.c | 2 ++
- 1 file changed, 2 insertions(+)
+>
+> How many "struct dsa_switch_tree" instances there are in a system
+> depends on whether OF is used or not.
+>
+> If we use OF, the device tree needs to be parsed, and every unique first
+> cell (tree-id) of:
+>         dsa,member = <tree-id switch-id>;
+> constitutes a different "struct dsa_switch_tree".
+>
+> If we do not use OF, the number of switch trees in a system is one, see dsa_switch_parse.
+>
+> It seems to me like the compare function for component_match (where each
+> component is a "struct dsa_switch" should look at dev->of_node and parse
+> the "dsa,member" property again, and match on the same tree-id as the
+> component master itself?
 
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index e78901d33a10..282bdebac835 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -912,6 +912,8 @@ static int dsa_tree_setup_switches(struct dsa_switch_tree *dst)
- 
- 	list_for_each_entry(dp, &dst->ports, list) {
- 		err = dsa_port_setup(dp);
-+		if (err == -EPROBE_DEFER)
-+			goto teardown;
- 		if (err) {
- 			dsa_port_devlink_teardown(dp);
- 			dp->type = DSA_PORT_TYPE_UNUSED;
--- 
-2.25.1
+I don't know enough about DSA to give a useful answer here. But I guess so?
 
+>
+> There's also the question of how to do the component_match in a way that
+> also works for the pdata/non-OF based DSA systems (of which I have none to test).
+
+You could always just short circuit it and not create a component
+device if it's just pdata/non-OF. That's one option.
+
+> All of this to move dsa_tree_setup() outside of the probe calling
+> context of any individual struct dsa_switch, and into the "bind" calling
+> context of the component master associated with the struct dsa_switch_tree.
+
+Right.
+
+> This would allow the phy_connect()/phy_attach_direct() calls to find the
+> PHY device already bound to the specific driver, which would avoid
+> binding genphy as a last resort?
+
+Short answer, yes. Long answer: this would fix multiple things:
+1) Remove the parent's probe from depending on the child's probe().
+This is not guaranteed at all, so we'd fix this bad assumption in the
+code.
+2) It would allow the PHYs to probe with fw_devlink because the switch
+would have completed probing.
+3) It'd avoid the bad design of the last switch's probe doing all the
+PHY handling for the previous N-1 switches. What if something fails
+there? Shouldn't it be one of the previous switches that should report
+the failure (either in probe or switch registration or whatever?)? The
+component device model would allow each switch to do all it's own work
+and then the component master can do the "tying up" of all these
+switches and PHYs.
+
+>
+> Two questions:
+>
+> - Why would it now be more guaranteed that the PHY drivers are bound to
+>   the internal PHY devices exactly during the time span between events
+>   (a) Switch driver (a component of the switch tree) finishes probing
+>   (b) Switch tree (the component master) starts binding
+
+Firstly, PHYs won't defer probe due to fw_devlink enforcing their
+dependency on the switch and will actually have their probe() called
+(and possibly succeed -- see more below).
+
+>   I mean in lack of any guarantee, we can still end up in a situation
+>   where the specific PHY driver still is not bound early enough to the
+>   internal PHY to be available by the time we call phylink_of_phy_connect,
+>   and we have all those component device goodies but they don't help.
+>   I'm sure I'm misunderstanding something but I don't know what.
+>
+> - What if the internal PHY has other suppliers beyond the interrupt-parent?
+>   What if, say, it has a reset-gpios = <&gpio1>, where gpio1 is provided
+>   by some other thing on some other slow bus, which is equally slow (or
+>   slower) to probe to the DSA switch itself. So the temporary absence of
+>   this other supplier is causing the specific PHY driver to defer probing,
+>   just enough for a concurrent call to phylink_of_phy_connect -> phy_attach_direct
+>   to say "ok, I've waited enough and there is no driver, genphy it is".
+>   How would this be avoided?
+
+Good question and this is another reason for me suggesting the use of
+component model.
+
+> Or are you thinking of some kind of two-level
+>   component driver system:
+>   - the DSA switch is a component master, with components being its
+>     sub-devices such as internal PHYs etc
+>   - the DSA switch is also a component of the DSA switch tree
+
+I was thinking of one component master with all the devices that make
+up the DSA switch tree. I don't think there's any requirement that all
+the component devices need to be of the same type. That way, the DSA
+switch tree won't even be attempted until all the devices are ready.
+
+One thing that's not clear to me wrt using specific driver vs the
+genphy -- at what point is it okay to give up waiting for a specific
+driver? This is more of a question to the maintainers than what
+happens today. What if the specific driver is a module that's loaded
+after the switch's driver? There's no time bound to this event. Are we
+going to put the restriction that all the PHY's drivers need to be
+registered/loaded before the switch's driver? If that's the decision,
+that's okay by me. But I just want to understand the requirements.
+
+Also see my reply to your other email.
+
+-Saravana
