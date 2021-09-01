@@ -2,230 +2,567 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BDEA3FD79F
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 12:25:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59AB93FD7B8
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 12:31:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234944AbhIAK0O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 06:26:14 -0400
-Received: from mail-db8eur05on2049.outbound.protection.outlook.com ([40.107.20.49]:51680
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233202AbhIAK0O (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Sep 2021 06:26:14 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gk3byfzfXkCIB2a+rdwkvIj2ipD7tKjf1umtXvUJUHaWG2eiPCI9CydUqLu/h33yScu3Wh5FKqLMhZHTM7QS2FrOKHwG/XAK/iBb1xSoXmCCAqYN9zmSIi7zODuLl78w/EmEp5Xu6UEb4UwHyR1XbjENnYbCqQ44msHTL9GritYD3zJyKJtB+dp5LMaDEDoFi2Y6iqeNljauyTjpBD0x2NfplhPDFSF6obD1/lLqscxNGjaRyZetD428yCS26HpwVuYgZ6Cev/L60vgvmZ7T0n961JFVpvh7KpsJrncpfxf4tNv9ucfh+dMLQWNG0EByO1TB+nYBRSC8US1NTfs8IQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=KIz2pAawYVmQ2+s/bSyzwFbiAFXu2vDG9NdbuB15A94=;
- b=Ks6sn1omtLjlwpZ4Sj3nibBb67sc1u1wKCeSMtTyzzt2drJIeH2MwExOUVwjkTjCCC6+2WmlXzKfni+BTqb43sIlHzsEGCmrerMl8AnsJlgDcq5hubRd1RJEYUS00L7Sd4GKZTWUxgMV09NQxUwg63OZl7d9pXgkh6EHFRmsjEdxC++VhkY/gLVGjvms5uGuHv2KORsZ83ghtp/LwA6646D+RFFwam1DZTfaPJtC2SqBLzulByPqyBClj7Wy5AsHhO1bYPR2xIJU2G1mAhfUECRNq8xtYsfMT3cPoIjmo2/pzDWY1eYlpmQddtYsE4BR9iC0X5ib0OGCc8FGQAEKGg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KIz2pAawYVmQ2+s/bSyzwFbiAFXu2vDG9NdbuB15A94=;
- b=PVqngzAWW+Ko1V9tQWFL2w1ijLXwz5V9y6Vo/BKgMWaY1b742nQ0PihBiD4Izy2uUaXcvg10pvUOwY2HDcP51omJdLU6iOZZoUY+ipK9bEounqDI/AyQXw+8fUfJCMXqIcLjQeun0TrECXaLNH/aLUhUq2N4EoB/NzUMz0AZ1eE=
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
- by DB9PR04MB8430.eurprd04.prod.outlook.com (2603:10a6:10:24f::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4478.19; Wed, 1 Sep
- 2021 10:25:15 +0000
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::5d5a:30b0:2bc2:312f]) by DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::5d5a:30b0:2bc2:312f%9]) with mapi id 15.20.4457.024; Wed, 1 Sep 2021
- 10:25:15 +0000
-From:   Joakim Zhang <qiangqing.zhang@nxp.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-CC:     "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
-        "alexandre.torgue@foss.st.com" <alexandre.torgue@foss.st.com>,
-        "joabreu@synopsys.com" <joabreu@synopsys.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: RE: [PATCH] net: stmmac: fix MAC not working when system resume back
- with WoL enabled
-Thread-Topic: [PATCH] net: stmmac: fix MAC not working when system resume back
- with WoL enabled
-Thread-Index: AQHXnxAXiWCMYvQkY0qCXzBIAPLPn6uO53WAgAAPWNA=
-Date:   Wed, 1 Sep 2021 10:25:15 +0000
-Message-ID: <DB8PR04MB6795CCAE06AA7CEB5CCEC521E6CD9@DB8PR04MB6795.eurprd04.prod.outlook.com>
-References: <20210901090228.11308-1-qiangqing.zhang@nxp.com>
- <20210901092149.fmap4ac7jxf754ao@skbuf>
-In-Reply-To: <20210901092149.fmap4ac7jxf754ao@skbuf>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ff88ceda-ed6c-45f5-1a6a-08d96d32c9d5
-x-ms-traffictypediagnostic: DB9PR04MB8430:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB9PR04MB8430D468C2585CD1250DFA47E6CD9@DB9PR04MB8430.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: NRmHRfidwqP5m8V+Eh4KZ8ayJhwXvZ9/Y1rFGPonWjUWj+M3t9ybH8Jy/HZy2+c1nDvYST4NTXlQh6hfiCnZ9tSuzHmAJeclM0SSfHfNL4dupht0aEyt0mA4+4y/qbFjJh9+mTyfeLSgQPoJRqRadX3xo4/cIYdGGrOtl5O4Hv2Z5/9LsyxY6BTOyHyheh50ZqZ7CbHTDGuJoxxjGtL/clhJSzFjBk1wjii96tF+SdPiLBd3JOFQeE+X8bwStPvNG9JdpxFl+4BTRacYH1Jv1pcb21LHZt+vC+TB0SYj4xnDU24q+3GUHkdfXkgSxY5dWmS8WpL3eAo0hfHd8kKrGeMA0Gis3WoMHnpnNPd9Y/FWRZCYru014nXkjI+2fQ3h1AyJuu/opiTlGXKN5wH98dJj6Y50sabnJ2YXY5IrwOtL2+OeOVofoQyiEGwN9bv1smwzIubM3/LMzHHQSCHpe0eWsMbvAM9TP4/HiqsTiE+cEGZFF4o2weEFmQ2RdmaRaUjvpgG6I3Mdsaok7WgpBGWujzsIZlOAIxniLMdkSjA/odInxRKgHMe7gVDSSE80rYnQ3I0/adb+tB0KMNhqSvZulTpZqokqv0OknJTH7EvVnfOnWgS+ZtLXeDlDvgXPuNhfFqHYgp0IfxprB0efXL/6jeE6naIhhL2+AvCpSzDAwFl15wBFTfUtOzOc0ZaGoJPbei+uuthrCMTrHW8qUUOdohKVP5peHnV/CM8sNylCmaiQPpTnswN6VS4nMzkxiQ4qRj4A+HKaXnXCIJX8w8IeIB0S4qPt19xwTX3fPQ8=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(38100700002)(83380400001)(6916009)(52536014)(4326008)(38070700005)(8936002)(76116006)(66946007)(5660300002)(54906003)(33656002)(7416002)(316002)(66446008)(64756008)(66556008)(66476007)(8676002)(71200400001)(122000001)(86362001)(2906002)(6506007)(508600001)(9686003)(53546011)(966005)(186003)(26005)(55016002)(7696005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?gb2312?B?cjZKQ3llSUtpL0Z6d2ZXZUZvNXNXR2k4UEc2VzcvT0IyL2xRNkRjUWNJaHM4?=
- =?gb2312?B?NkUwSG12ZVpVTnl0Qmd1aHNTOW5EWU9CbzFYaml4TG04ZnU4OGtIM0tkOXJy?=
- =?gb2312?B?RXhxK2NaODE5ZjROMlJtTS9pT1pLT2xlK21jTXV3akRuek43aWVoWFIwQzgz?=
- =?gb2312?B?ZENmci8rME9GKzIrcXN6NTgzK0NwOHNjWWxvcFFHVEJXaDlTZlNjcFEva05i?=
- =?gb2312?B?UUxSMXBTaHhHaEMyZy90ME03K2dEckk0aWp4YW1CL1QremhLYmovelo3Zk5D?=
- =?gb2312?B?MGNEaFBjVlJQUE83MEVRcTEzNE5xa1pITkZXVkJLZXFMRmpBRkt5MU9BTHV1?=
- =?gb2312?B?RW02WVQvK1MrVjQvR213QnMreDBXN2t4ZCtJQU9ncExqMkV5dVUyVTlvRXJj?=
- =?gb2312?B?cGxSMGlyMm1oVmJOck1ESFVQWk9lWlU0dnU1aVVBbmkwWEtucW95ekNnR3gy?=
- =?gb2312?B?LytTWElOZk9GTm04WldPclI1dDZ5TlB3NG9VbW9CeFNwUmRzbVBReERTTnhT?=
- =?gb2312?B?MlJlTXVwcTNISmUrRnBXS2dZdnRXSDVPczYxODRsRE83Ym5mbTZGQU14MkVX?=
- =?gb2312?B?cUxHT0tsTjFTYjRnMmFNUnBVd1ErbHpTL2x6cUNHR29aUGVRSytyVjhScldi?=
- =?gb2312?B?ZnBuSmtWMkJGdzJNSVF1YjZJL1R1WUdSVk4yM1A5U0VvYnd6MFZ1ZnNROVFE?=
- =?gb2312?B?UTY0VXJYQ2xCMHhWTE11K0dwNmJQWTBaN3lBSGEyVzY5amsvS0RycytwZDdG?=
- =?gb2312?B?ZWlHc3ZUWnJOM0UyL1pQR3F6aFVZdW1TQWVGNERiZ0ltYTZ1MWZ0VWo0V1pR?=
- =?gb2312?B?blVtYjE4dHBMb3FQSzNTc1hNVW9CVW8vbjZieWVhYWN5MnFBaU5ETUFsVkRI?=
- =?gb2312?B?YnZsUTBTdU5aaEZSdUIrZllYQ05HSkVjalkwVlJxRlEwWElhbVZ0VE5lUWtM?=
- =?gb2312?B?TDJrOFYrSnR1M1YvamU0RWphSVNZMy9oVENnTHZsVzNKVHZPTkRlQ3NGSElG?=
- =?gb2312?B?c3lRR2pXMDNpSzZnTURCWWRwUThoOWY3OTFFSitsUk1udXFnTVZuMkR4OXlC?=
- =?gb2312?B?dTFwbmZteW1sYXFQdWRzT1VOVFJZYjV6U3BIRlhOeW9DdTJxN3I5TmNqSGJN?=
- =?gb2312?B?MGVtR0lOOXZ4bFV0Q2JLYkFsVktEakc4dHVvZGRlcHFBYk9VZDBBUzltbVBS?=
- =?gb2312?B?dkNSTkw5WEgxeDQwbWUzVzl6OHA5ZXpNMHh5SmVnbk9jV0JNWmsyRk5hY3NB?=
- =?gb2312?B?ckRHNE9OSzhyM0FUbUs0anl4a2ROTCtIY05WQlNsMTZ3ZHVNNEZPbE5SQnFt?=
- =?gb2312?B?RkdSZ0d5MWcxNWlFbVl4b3Rqc1prTWZSaDhBUkRVcDlFbmZDYnNRd2sySW9C?=
- =?gb2312?B?NGIydHN4MnN0VGpkUUx1VGlrUUZISkhDSnFlRnJJdGJLT0hOZUZsRS9rZUZQ?=
- =?gb2312?B?Yyt0NUU1VFI1UWxuOHNaalhZUFh1RWpwSllMT3lHRGtQMlBkYmdQeXp2b3ZQ?=
- =?gb2312?B?bVl2V2lSOTlsL08yR2JCZUVkNUU0YjZrTjI5M1V4bnNYL3pvamxyK3FGZjg2?=
- =?gb2312?B?eGxabVd1RHRVVlpGU1hmTWZXWDBSTFdMRjBpSnY3Z1lja1dXckV5Z0xOVWpK?=
- =?gb2312?B?SXNYeWQwWU5SNUk4VUwwalp0NWxPRkZJOTgrUndQRjZYLzRXbFpXWldoUEdS?=
- =?gb2312?B?dW1OSC9TeGl3Y01BK2I4MFY2WWpPSStvMlJPTjJzWlh1QysrL21hRUpNeFNv?=
- =?gb2312?Q?Sq6DELDB+wjbOpdmP5BDarUDhBJoQngDkq97SmF?=
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+        id S234317AbhIAKca (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 06:32:30 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:12876 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S231612AbhIAKc3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 06:32:29 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18159p4C026653;
+        Wed, 1 Sep 2021 03:31:31 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0220; bh=ZLEzC4gy5EBdDfsxtuZ0ML+qDM3/uqw7LG5GYQ4KE2Y=;
+ b=e/KT5SsaZje/f8Qn0z72/iaUYhTUgQOysyi3yJmjgr/NHoB5DSUJsUvgW7ggbrwfrQgk
+ 6aMNz3xNXZdB1DUbPD9mrjoc2Mb1hVtZmMSYmYETL24F7ryrucs0wYtQcuaM2dzyjG1X
+ IxEb5p7qCD/P1nN3wsJo5HC6giZLMhGGu2XEZq+st4xwiA3RRa1O/o5R/S6bxE04FFdm
+ 64G11nj++vFags8Yp3DE9aRRABrXJVyxtE5bStjr7a2lJ9e3tJPmE7TmOXSeJ04eIkmW
+ ++x1Fi5nk7hwrKfVrdRLyTh552i5LY2sAE4pQ95DInc0KW+28qaZa9w8Q1o91D2Rs8Rr jw== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0a-0016f401.pphosted.com with ESMTP id 3at34ps7ju-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 01 Sep 2021 03:31:31 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 1 Sep
+ 2021 03:31:30 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Wed, 1 Sep 2021 03:31:30 -0700
+Received: from localhost.localdomain (unknown [10.28.36.175])
+        by maili.marvell.com (Postfix) with ESMTP id 5B6F13F7088;
+        Wed,  1 Sep 2021 03:31:26 -0700 (PDT)
+From:   Srujana Challa <schalla@marvell.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>
+CC:     <sgoutham@marvell.com>, <lcherian@marvell.com>,
+        <gakula@marvell.com>, <hkelam@marvell.com>, <jerinj@marvell.com>,
+        <sbhatta@marvell.com>, <schalla@marvell.com>,
+        Vidya Sagar Velumuri <vvelumuri@marvell.com>
+Subject: [PATCH] octeontx2-af: Hardware configuration for inline IPsec
+Date:   Wed, 1 Sep 2021 16:01:23 +0530
+Message-ID: <20210901103123.646139-1-schalla@marvell.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ff88ceda-ed6c-45f5-1a6a-08d96d32c9d5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Sep 2021 10:25:15.0579
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: C0OhIavPrsFipg7wE4wpOTrYKcqO44RUjicJFx8cYL1L2eR3W8qgZS1boBte495WHmSeaOAJBq6JN5e/rInakQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR04MB8430
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: VIW2kXVZIpdvk9EEsevEMCssiDhKNlt9
+X-Proofpoint-GUID: VIW2kXVZIpdvk9EEsevEMCssiDhKNlt9
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
+ definitions=2021-09-01_03,2021-09-01_01,2020-04-07_01
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQpIaSBWbGFkaW1pciwNCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBW
-bGFkaW1pciBPbHRlYW4gPG9sdGVhbnZAZ21haWwuY29tPg0KPiBTZW50OiAyMDIxxOo51MIxyNUg
-MTc6MjINCj4gVG86IEpvYWtpbSBaaGFuZyA8cWlhbmdxaW5nLnpoYW5nQG54cC5jb20+DQo+IENj
-OiBwZXBwZS5jYXZhbGxhcm9Ac3QuY29tOyBhbGV4YW5kcmUudG9yZ3VlQGZvc3Muc3QuY29tOw0K
-PiBqb2FicmV1QHN5bm9wc3lzLmNvbTsgZGF2ZW1AZGF2ZW1sb2Z0Lm5ldDsga3ViYUBrZXJuZWwu
-b3JnOw0KPiBtY29xdWVsaW4uc3RtMzJAZ21haWwuY29tOyBsaW51eEBhcm1saW51eC5vcmcudWs7
-DQo+IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IGFuZHJld0BsdW5uLmNoOyBmLmZhaW5lbGxpQGdt
-YWlsLmNvbTsNCj4gaGthbGx3ZWl0MUBnbWFpbC5jb207IGRsLWxpbnV4LWlteCA8bGludXgtaW14
-QG54cC5jb20+DQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0hdIG5ldDogc3RtbWFjOiBmaXggTUFDIG5v
-dCB3b3JraW5nIHdoZW4gc3lzdGVtIHJlc3VtZQ0KPiBiYWNrIHdpdGggV29MIGVuYWJsZWQNCj4g
-DQo+IE9uIFdlZCwgU2VwIDAxLCAyMDIxIGF0IDA1OjAyOjI4UE0gKzA4MDAsIEpvYWtpbSBaaGFu
-ZyB3cm90ZToNCj4gPiBXZSBjYW4gcmVwcm9kdWNlIHRoaXMgaXNzdWUgd2l0aCBiZWxvdyBzdGVw
-czoNCj4gPiAxKSBlbmFibGUgV29MIG9uIHRoZSBob3N0DQo+ID4gMikgaG9zdCBzeXN0ZW0gc3Vz
-cGVuZGVkDQo+ID4gMykgcmVtb3RlIGNsaWVudCBzZW5kIG91dCB3YWtldXAgcGFja2V0cyBXZSBj
-YW4gc2VlIHRoYXQgaG9zdCBzeXN0ZW0NCj4gPiByZXN1bWUgYmFjaywgYnV0IGNhbid0IHdvcmss
-IHN1Y2ggYXMgcGluZyBmYWlsZWQuDQo+ID4NCj4gPiBBZnRlciBhIGJpdCBkaWdnaW5nLCB0aGlz
-IGlzc3VlIGlzIGludHJvZHVjZWQgYnkgdGhlIGNvbW1pdA0KPiA+IDQ2ZjY5ZGVkOTg4ZA0KPiA+
-ICgibmV0OiBzdG1tYWM6IFVzZSByZXNvbHZlZCBsaW5rIGNvbmZpZyBpbiBtYWNfbGlua191cCgp
-IiksIHdoaWNoIHVzZQ0KPiA+IHRoZSBmaW5hbGlzZWQgbGluayBwYXJhbWV0ZXJzIGluIG1hY19s
-aW5rX3VwKCkgcmF0aGVyIHRoYW4gdGhlDQo+ID4gcGFyYW1ldGVycyBpbiBtYWNfY29uZmlnKCku
-DQo+ID4NCj4gPiBUaGVyZSBhcmUgdHdvIHNjZW5hcmlvcyBmb3IgTUFDIHN1c3BlbmQvcmVzdW1l
-Og0KPiA+DQo+ID4gMSkgTUFDIHN1c3BlbmQgd2l0aCBXb0wgZGlzYWJsZWQsIHN0bW1hY19zdXNw
-ZW5kKCkgY2FsbA0KPiA+IHBoeWxpbmtfbWFjX2NoYW5nZSgpIHRvIG5vdGlmeSBwaHlsaW5rIG1h
-Y2hpbmUgdGhhdCBhIGNoYW5nZSBpbiBNQUMNCj4gPiBzdGF0ZSwgdGhlbiAubWFjX2xpbmtfZG93
-biBjYWxsYmFjayB3b3VsZCBiZSBpbnZva2VkLiBGdXJ0aGVyLCBpdCB3aWxsDQo+ID4gY2FsbCBw
-aHlsaW5rX3N0b3AoKSB0byBzdG9wIHRoZSBwaHlsaW5rIGluc3RhbmNlLiBXaGVuIE1BQyByZXN1
-bWUNCj4gPiBiYWNrLCBmaXJzdGx5IHBoeWxpbmtfc3RhcnQoKSBpcyBjYWxsZWQgdG8gc3RhcnQg
-dGhlIHBoeWxpbmsgaW5zdGFuY2UsDQo+ID4gdGhlbiBjYWxsIHBoeWxpbmtfbWFjX2NoYW5nZSgp
-IHdoaWNoIHdpbGwgZmluYWxseSB0cmlnZ2VyIHBoeWxpbmsNCj4gPiBtYWNoaW5lIHRvIGludm9r
-ZSAubWFjX2NvbmZpZyBhbmQgLm1hY19saW5rX3VwIGNhbGxiYWNrLiBBbGwgaXMgZmluZQ0KPiA+
-IHNpbmNlIGNvbmZpZ3VyYXRpb24gaW4gdGhlc2UgdHdvIGNhbGxiYWNrcyB3aWxsIGJlIGluaXRp
-YWxpemVkLg0KPiA+DQo+ID4gMikgTUFDIHN1c3BlbmQgd2l0aCBXb0wgZW5hYmxlZCwgcGh5bGlu
-a19tYWNfY2hhbmdlKCkgd2lsbCBwdXQgbGluaw0KPiA+IGRvd24sIGJ1dCB0aGVyZSBpcyBubyBw
-aHlsaW5rX3N0b3AoKSB0byBzdG9wIHRoZSBwaHlsaW5rIGluc3RhbmNlLCBzbw0KPiA+IGl0IHdp
-bGwgbGluayB1cCBhZ2FpbiwgdGhhdCBtZWFucyAubWFjX2NvbmZpZyBhbmQgLm1hY19saW5rX3Vw
-IHdvdWxkDQo+ID4gYmUgaW52b2tlZCBiZWZvcmUgc3lzdGVtIHN1c3BlbmRlZC4gQWZ0ZXIgc3lz
-dGVtIHJlc3VtZSBiYWNrLCBpdCB3aWxsDQo+ID4gZG8gRE1BIGluaXRpYWxpemF0aW9uIGFuZCBT
-VyByZXNldCB3aGljaCBsZXQgTUFDIGxvc3QgdGhlIGhhcmR3YXJlDQo+ID4gc2V0dGluZyAoaS5l
-IE1BQ19Db25maWd1cmF0aW9uIHJlZ2lzdGVyKG9mZnNldCAweDApIGlzIHJlc2V0KS4gU2luY2UN
-Cj4gPiBsaW5rIGlzIHVwIGJlZm9yZSBzeXN0ZW0gc3VzcGVuZGVkLCBzbyAubWFjX2xpbmtfdXAg
-d291bGQgbm90IGJlDQo+ID4gaW52b2tlZCBhZnRlciBzeXN0ZW0gcmVzdW1lIGJhY2ssIGxlYWQg
-dG8gdGhlcmUgaXMgbm8gY2hhbmNlIHRvDQo+ID4gaW5pdGlhbGl6ZSB0aGUgY29uZmlndXJhdGlv
-biBpbiAubWFjX2xpbmtfdXAgY2FsbGJhY2ssIGFzIGEgcmVzdWx0LA0KPiA+IE1BQyBjYW4ndCB3
-b3JrIGFueSBsb25nZXIuDQo+IA0KPiBIYXZlIHlvdSB0cmllZCBwdXR0aW5nIHBoeWxpbmtfc3Rv
-cCBpbiAuc3VzcGVuZCwgYW5kIHBoeWxpbmtfc3RhcnQgaW4gLnJlc3VtZT8NCg0KWWVzLCBJIHRy
-aWVkLCBidXQgdGhlIHN5c3RlbSBjYW4ndCBiZSB3YWtldXAgd2l0aCByZW1vdGUgcGFja2V0cy4N
-ClBsZWFzZSBzZWUgdGhlIGNvZGUgY2hhbmdlLg0KDQpAQCAtNTM3NCw3ICs1Mzc0LDYgQEAgaW50
-IHN0bW1hY19zdXNwZW5kKHN0cnVjdCBkZXZpY2UgKmRldikNCiAgICAgICAgICAgICAgICBydG5s
-X2xvY2soKTsNCiAgICAgICAgICAgICAgICBpZiAoZGV2aWNlX21heV93YWtldXAocHJpdi0+ZGV2
-aWNlKSkNCiAgICAgICAgICAgICAgICAgICAgICAgIHBoeWxpbmtfc3BlZWRfZG93bihwcml2LT5w
-aHlsaW5rLCBmYWxzZSk7DQotICAgICAgICAgICAgICAgcGh5bGlua19zdG9wKHByaXYtPnBoeWxp
-bmspOw0KICAgICAgICAgICAgICAgIHJ0bmxfdW5sb2NrKCk7DQogICAgICAgICAgICAgICAgbXV0
-ZXhfbG9jaygmcHJpdi0+bG9jayk7DQoNCkBAIC01Mzg1LDYgKzUzODQsMTAgQEAgaW50IHN0bW1h
-Y19zdXNwZW5kKHN0cnVjdCBkZXZpY2UgKmRldikNCiAgICAgICAgfQ0KICAgICAgICBtdXRleF91
-bmxvY2soJnByaXYtPmxvY2spOw0KDQorICAgICAgIHJ0bmxfbG9jaygpOw0KKyAgICAgICBwaHls
-aW5rX3N0b3AocHJpdi0+cGh5bGluayk7DQorICAgICAgIHJ0bmxfdW5sb2NrKCk7DQorDQogICAg
-ICAgIHByaXYtPnNwZWVkID0gU1BFRURfVU5LTk9XTjsNCiAgICAgICAgcmV0dXJuIDA7DQogfQ0K
-QEAgLTU0NDgsNiArNTQ1MSwxMiBAQCBpbnQgc3RtbWFjX3Jlc3VtZShzdHJ1Y3QgZGV2aWNlICpk
-ZXYpDQogICAgICAgICAgICAgICAgcGluY3RybF9wbV9zZWxlY3RfZGVmYXVsdF9zdGF0ZShwcml2
-LT5kZXZpY2UpOw0KICAgICAgICAgICAgICAgIGlmIChwcml2LT5wbGF0LT5jbGtfcHRwX3JlZikN
-CiAgICAgICAgICAgICAgICAgICAgICAgIGNsa19wcmVwYXJlX2VuYWJsZShwcml2LT5wbGF0LT5j
-bGtfcHRwX3JlZik7DQorDQorICAgICAgICAgICAgICAgcnRubF9sb2NrKCk7DQorICAgICAgICAg
-ICAgICAgLyogV2UgbWF5IGhhdmUgY2FsbGVkIHBoeWxpbmtfc3BlZWRfZG93biBiZWZvcmUgKi8N
-CisgICAgICAgICAgICAgICBwaHlsaW5rX3NwZWVkX3VwKHByaXYtPnBoeWxpbmspOw0KKyAgICAg
-ICAgICAgICAgIHJ0bmxfdW5sb2NrKCk7DQorDQogICAgICAgICAgICAgICAgLyogcmVzZXQgdGhl
-IHBoeSBzbyB0aGF0IGl0J3MgcmVhZHkgKi8NCiAgICAgICAgICAgICAgICBpZiAocHJpdi0+bWlp
-ICYmIHByaXYtPm1kaW9fcnN0X2FmdGVyX3Jlc3VtZSkNCiAgICAgICAgICAgICAgICAgICAgICAg
-IHN0bW1hY19tZGlvX3Jlc2V0KHByaXYtPm1paSk7DQpAQCAtNTQ2MSwxMyArNTQ3MCw5IEBAIGlu
-dCBzdG1tYWNfcmVzdW1lKHN0cnVjdCBkZXZpY2UgKmRldikNCiAgICAgICAgICAgICAgICAgICAg
-ICAgIHJldHVybiByZXQ7DQogICAgICAgIH0NCg0KLSAgICAgICBpZiAoIWRldmljZV9tYXlfd2Fr
-ZXVwKHByaXYtPmRldmljZSkgfHwgIXByaXYtPnBsYXQtPnBtdCkgew0KLSAgICAgICAgICAgICAg
-IHJ0bmxfbG9jaygpOw0KLSAgICAgICAgICAgICAgIHBoeWxpbmtfc3RhcnQocHJpdi0+cGh5bGlu
-ayk7DQotICAgICAgICAgICAgICAgLyogV2UgbWF5IGhhdmUgY2FsbGVkIHBoeWxpbmtfc3BlZWRf
-ZG93biBiZWZvcmUgKi8NCi0gICAgICAgICAgICAgICBwaHlsaW5rX3NwZWVkX3VwKHByaXYtPnBo
-eWxpbmspOw0KLSAgICAgICAgICAgICAgIHJ0bmxfdW5sb2NrKCk7DQotICAgICAgIH0NCisgICAg
-ICAgcnRubF9sb2NrKCk7DQorICAgICAgIHBoeWxpbmtfc3RhcnQocHJpdi0+cGh5bGluayk7DQor
-ICAgICAgIHJ0bmxfdW5sb2NrKCk7DQoNCiAgICAgICAgcnRubF9sb2NrKCk7DQogICAgICAgIG11
-dGV4X2xvY2soJnByaXYtPmxvY2spOw0KDQo+ID4NCj4gPiBBYm92ZSBkZXNjcmlwdGlvbiBpcyB3
-aGF0IEkgZm91bmQgd2hlbiBkZWJ1ZyB0aGlzIGlzc3VlLCB0aGlzIHBhdGNoIGlzDQo+ID4ganVz
-dCByZXZlcnQgYnJva2VuIHBhdGNoIHRvIHdvcmthcm91bmQgaXQsIGF0IGxlYXN0IG1ha2UgTUFD
-IHdvcmsgd2hlbg0KPiA+IHN5c3RlbSByZXN1bWUgYmFjayB3aXRoIFdvTCBlbmFibGVkLg0KPiA+
-DQo+ID4gU2FpZCB0aGlzIGlzIGEgd29ya2Fyb3VuZCwgc2luY2UgaXQgaGFzIG5vdCByZXNvbHZl
-IHRoZSBpc3N1ZSBjb21wbGV0ZWx5Lg0KPiA+IEkganVzdCBtb3ZlIHRoZSBzcGVlZC9kdXBsZXgv
-cGF1c2UgZXRjIGludG8gLm1hY19jb25maWcgY2FsbGJhY2ssDQo+ID4gdGhlcmUgYXJlIG90aGVy
-IGNvbmZpZ3VyYXRpb25zIGluIC5tYWNfbGlua191cCBjYWxsYmFjayB3aGljaCBhbHNvDQo+ID4g
-bmVlZCB0byBiZSBpbml0aWFsaXplZCB0byB3b3JrIGZvciBzcGVjaWZpYyBmdW5jdGlvbnMuDQo+
-ID4NCj4gPiBGaXhlczogNDZmNjlkZWQ5ODhkICgibmV0OiBzdG1tYWM6IFVzZSByZXNvbHZlZCBs
-aW5rIGNvbmZpZyBpbg0KPiA+IG1hY19saW5rX3VwKCkiKQ0KPiA+IFNpZ25lZC1vZmYtYnk6IEpv
-YWtpbSBaaGFuZyA8cWlhbmdxaW5nLnpoYW5nQG54cC5jb20+DQo+ID4gLS0tDQo+ID4NCj4gPiBC
-cm9rZW4gcGF0Y2ggY2Fubm90IGJlIHJldmVydGVkIGRpcmVjdGx5LCBzbyBtYW51YWxseSBtb2Rp
-ZmllZCBpdC4NCj4gPg0KPiA+IEkgYWxzbyB0cmllZCB0byBmaXggaW4gb3RoZXIgd2F5cywgYnV0
-IGZhaWxlZCB0byBmaW5kIGEgYmV0dGVyDQo+ID4gc29sdXRpb24sIGFueSBzdWdnZXN0aW9ucyB3
-b3VsZCBiZSBhcHByZWNpYXRlZC4gVGhhbmtzLg0KPiA+DQo+ID4gSm9ha2ltDQo+IA0KPiBEbyB5
-b3Uga25vdyBleGFjdGx5IHdoeSBpdCB1c2VkIHRvIHdvcmsgcHJpb3IgdG8gdGhpcyBwYXRjaD8N
-Cg0KWWVzLCBzaW5jZSBpdCBjb25maWd1cmVzIHRoZSBNQUNfQ1RSTF9SRUcgcmVnaXN0ZXIgaW4g
-Lm1hY19jb25maWcgY2FsbGJhY2ssDQppdCB3aWxsIGJlIGNhbGxlZCB3aGVuIHN5c3RlbSByZXN1
-bWUgYmFjayB3aXRoIFdvTCBlbmFibGVkLiANCmh0dHBzOi8vZWxpeGlyLmJvb3RsaW4uY29tL2xp
-bnV4L3Y1LjQuMTQzL3NvdXJjZS9kcml2ZXJzL25ldC9ldGhlcm5ldC9zdG1pY3JvL3N0bW1hYy9z
-dG1tYWNfbWFpbi5jI0w4NTIgDQoNCklmIGNvbmZpZ3VyZSB0aGUgTUFDX0NUUkxfUkVHIHJlZ2lz
-dGVyIGluIC5tYWNfbGlua191cCBjYWxsYmFjaywgd2hlbiBzeXN0ZW0gcmVzdW1lIGJhY2sgd2l0
-aCBXb0wgYWN0aXZlLA0KLm1hY19saW5rX3VwIHdvdWxkIG5vdCBiZSBjYWxsZWQsIHNvIE1BQyBj
-YW4ndCB3b3JrIGFueSBsb25nZXIuDQpodHRwczovL2VsaXhpci5ib290bGluLmNvbS9saW51eC92
-NS4xNC1yYzcvc291cmNlL2RyaXZlcnMvbmV0L2V0aGVybmV0L3N0bWljcm8vc3RtbWFjL3N0bW1h
-Y19tYWluLmMjTDEwNDQNCg0KVGhhbmtzLg0KIA0KQmVzdCBSZWdhcmRzLA0KSm9ha2ltIFpoYW5n
-DQo=
+On OcteonTX2/CN10K SoC, the admin function (AF) is the only one
+with all priviliges to configure HW and alloc resources, PFs and
+it's VFs have to request AF via mailbox for all their needs.
+This patch adds new mailbox messages for CPT PFs and VFs to configure
+HW resources for inline-IPsec.
+
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
+Signed-off-by: Srujana Challa <schalla@marvell.com>
+Signed-off-by: Vidya Sagar Velumuri <vvelumuri@marvell.com>
+---
+ .../ethernet/marvell/octeontx2/af/common.h    |   1 +
+ .../net/ethernet/marvell/octeontx2/af/mbox.h  |  60 +++++++-
+ .../net/ethernet/marvell/octeontx2/af/rvu.c   |  54 +++++++
+ .../net/ethernet/marvell/octeontx2/af/rvu.h   |   2 +
+ .../ethernet/marvell/octeontx2/af/rvu_cn10k.c |   4 +-
+ .../ethernet/marvell/octeontx2/af/rvu_cpt.c   | 135 ++++++++++++++++++
+ .../ethernet/marvell/octeontx2/af/rvu_nix.c   | 112 +++++++++++++++
+ .../ethernet/marvell/octeontx2/af/rvu_reg.h   |   2 +
+ 8 files changed, 367 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/common.h b/drivers/net/ethernet/marvell/octeontx2/af/common.h
+index d9bea13f15b8..8931864ee110 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/common.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/common.h
+@@ -191,6 +191,7 @@ enum nix_scheduler {
+ #define NIX_CHAN_SDP_CH_START          (0x700ull)
+ #define NIX_CHAN_SDP_CHX(a)            (NIX_CHAN_SDP_CH_START + (a))
+ #define NIX_CHAN_SDP_NUM_CHANS		256
++#define NIX_CHAN_CPT_CH_START          (0x800ull)
+ 
+ /* The mask is to extract lower 10-bits of channel number
+  * which CPT will pass to X2P.
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+index 154877706a0e..f77f745be05b 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+@@ -186,6 +186,8 @@ M(CPT_LF_ALLOC,		0xA00, cpt_lf_alloc, cpt_lf_alloc_req_msg,	\
+ M(CPT_LF_FREE,		0xA01, cpt_lf_free, msg_req, msg_rsp)		\
+ M(CPT_RD_WR_REGISTER,	0xA02, cpt_rd_wr_register,  cpt_rd_wr_reg_msg,	\
+ 			       cpt_rd_wr_reg_msg)			\
++M(CPT_INLINE_IPSEC_CFG,	0xA04, cpt_inline_ipsec_cfg,			\
++			       cpt_inline_ipsec_cfg_msg, msg_rsp)	\
+ M(CPT_STATS,            0xA05, cpt_sts, cpt_sts_req, cpt_sts_rsp)	\
+ M(CPT_RXC_TIME_CFG,     0xA06, cpt_rxc_time_cfg, cpt_rxc_time_cfg_req,  \
+ 			       msg_rsp)                                 \
+@@ -270,6 +272,10 @@ M(NIX_BP_ENABLE,	0x8016, nix_bp_enable, nix_bp_cfg_req,	\
+ 				nix_bp_cfg_rsp)	\
+ M(NIX_BP_DISABLE,	0x8017, nix_bp_disable, nix_bp_cfg_req, msg_rsp) \
+ M(NIX_GET_MAC_ADDR, 0x8018, nix_get_mac_addr, msg_req, nix_get_mac_addr_rsp) \
++M(NIX_INLINE_IPSEC_CFG, 0x8019, nix_inline_ipsec_cfg,			\
++				nix_inline_ipsec_cfg, msg_rsp)		\
++M(NIX_INLINE_IPSEC_LF_CFG, 0x801a, nix_inline_ipsec_lf_cfg,		\
++				nix_inline_ipsec_lf_cfg, msg_rsp)	\
+ M(NIX_CN10K_AQ_ENQ,	0x801b, nix_cn10k_aq_enq, nix_cn10k_aq_enq_req, \
+ 				nix_cn10k_aq_enq_rsp)			\
+ M(NIX_GET_HW_INFO,	0x801c, nix_get_hw_info, msg_req, nix_hw_info)	\
+@@ -1065,6 +1071,40 @@ struct nix_bp_cfg_rsp {
+ 	u8	chan_cnt; /* Number of channel for which bpids are assigned */
+ };
+ 
++/* Global NIX inline IPSec configuration */
++struct nix_inline_ipsec_cfg {
++	struct mbox_msghdr hdr;
++	u32 cpt_credit;
++	struct {
++		u8 egrp;
++		u8 opcode;
++		u16 param1;
++		u16 param2;
++	} gen_cfg;
++	struct {
++		u16 cpt_pf_func;
++		u8 cpt_slot;
++	} inst_qsel;
++	u8 enable;
++};
++
++/* Per NIX LF inline IPSec configuration */
++struct nix_inline_ipsec_lf_cfg {
++	struct mbox_msghdr hdr;
++	u64 sa_base_addr;
++	struct {
++		u32 tag_const;
++		u16 lenm1_max;
++		u8 sa_pow2_size;
++		u8 tt;
++	} ipsec_cfg0;
++	struct {
++		u32 sa_idx_max;
++		u8 sa_idx_w;
++	} ipsec_cfg1;
++	u8 enable;
++};
++
+ struct nix_hw_info {
+ 	struct mbox_msghdr hdr;
+ 	u16 rsvs16;
+@@ -1399,7 +1439,9 @@ enum cpt_af_status {
+ 	CPT_AF_ERR_LF_INVALID		= -903,
+ 	CPT_AF_ERR_ACCESS_DENIED	= -904,
+ 	CPT_AF_ERR_SSO_PF_FUNC_INVALID	= -905,
+-	CPT_AF_ERR_NIX_PF_FUNC_INVALID	= -906
++	CPT_AF_ERR_NIX_PF_FUNC_INVALID	= -906,
++	CPT_AF_ERR_INLINE_IPSEC_INB_ENA	= -907,
++	CPT_AF_ERR_INLINE_IPSEC_OUT_ENA	= -908
+ };
+ 
+ /* CPT mbox message formats */
+@@ -1420,6 +1462,22 @@ struct cpt_lf_alloc_req_msg {
+ 	int blkaddr;
+ };
+ 
++#define CPT_INLINE_INBOUND      0
++#define CPT_INLINE_OUTBOUND     1
++
++/* Mailbox message request format for CPT IPsec
++ * inline inbound and outbound configuration.
++ */
++struct cpt_inline_ipsec_cfg_msg {
++	struct mbox_msghdr hdr;
++	u8 enable;
++	u8 slot;
++	u8 dir;
++	u8 sso_pf_func_ovrd;
++	u16 sso_pf_func; /* inbound path SSO_PF_FUNC */
++	u16 nix_pf_func; /* outbound path NIX_PF_FUNC */
++};
++
+ /* Mailbox message request and response format for CPT stats. */
+ struct cpt_sts_req {
+ 	struct mbox_msghdr hdr;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
+index ce647e037f4d..cf44463135ad 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
+@@ -1272,6 +1272,60 @@ static int rvu_lookup_rsrc(struct rvu *rvu, struct rvu_block *block,
+ 	return (val & 0xFFF);
+ }
+ 
++int rvu_get_blkaddr_from_slot(struct rvu *rvu, int blktype, u16 pcifunc,
++			      u16 global_slot, u16 *slot_in_block)
++{
++	struct rvu_pfvf *pfvf = rvu_get_pfvf(rvu, pcifunc);
++	int numlfs, total_lfs = 0, nr_blocks = 0;
++	int i, num_blkaddr[BLK_COUNT] = { 0 };
++	struct rvu_block *block;
++	int blkaddr = -ENODEV;
++	u16 start_slot;
++
++	if (!is_blktype_attached(pfvf, blktype))
++		return -ENODEV;
++
++	/* Get all the block addresses from which LFs are attached to
++	 * the given pcifunc in num_blkaddr[].
++	 */
++	for (blkaddr = BLKADDR_RVUM; blkaddr < BLK_COUNT; blkaddr++) {
++		block = &rvu->hw->block[blkaddr];
++		if (block->type != blktype)
++			continue;
++		if (!is_block_implemented(rvu->hw, blkaddr))
++			continue;
++
++		numlfs = rvu_get_rsrc_mapcount(pfvf, blkaddr);
++		if (numlfs) {
++			total_lfs += numlfs;
++			num_blkaddr[nr_blocks] = blkaddr;
++			nr_blocks++;
++		}
++	}
++
++	if (global_slot >= total_lfs)
++		return -ENODEV;
++
++	/* Based on the given global slot number retrieve the
++	 * correct block address out of all attached block
++	 * addresses and slot number in that block.
++	 */
++	total_lfs = 0;
++	blkaddr = -ENODEV;
++	for (i = 0; i < nr_blocks; i++) {
++		numlfs = rvu_get_rsrc_mapcount(pfvf, num_blkaddr[i]);
++		total_lfs += numlfs;
++		if (global_slot < total_lfs) {
++			blkaddr = num_blkaddr[i];
++			start_slot = total_lfs - numlfs;
++			*slot_in_block = global_slot - start_slot;
++			break;
++		}
++	}
++
++	return blkaddr;
++}
++
+ static void rvu_detach_block(struct rvu *rvu, int pcifunc, int blktype)
+ {
+ 	struct rvu_pfvf *pfvf = rvu_get_pfvf(rvu, pcifunc);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+index d38e5c980c30..0d0d2f4ad31a 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+@@ -655,6 +655,8 @@ int rvu_lf_reset(struct rvu *rvu, struct rvu_block *block, int lf);
+ int rvu_get_blkaddr(struct rvu *rvu, int blktype, u16 pcifunc);
+ int rvu_poll_reg(struct rvu *rvu, u64 block, u64 offset, u64 mask, bool zero);
+ int rvu_get_num_lbk_chans(void);
++int rvu_get_blkaddr_from_slot(struct rvu *rvu, int blktype, u16 pcifunc,
++			      u16 global_slot, u16 *slot_in_block);
+ 
+ /* RVU HW reg validation */
+ enum regmap_block {
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cn10k.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cn10k.c
+index 46a41cfff575..7dbbc115cde4 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cn10k.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cn10k.c
+@@ -334,8 +334,8 @@ int rvu_set_channels_base(struct rvu *rvu)
+ 	/* Out of 4096 channels start CPT from 2048 so
+ 	 * that MSB for CPT channels is always set
+ 	 */
+-	if (cpt_chan_base <= 0x800) {
+-		hw->cpt_chan_base = 0x800;
++	if (cpt_chan_base <= NIX_CHAN_CPT_CH_START) {
++		hw->cpt_chan_base = NIX_CHAN_CPT_CH_START;
+ 	} else {
+ 		dev_err(rvu->dev,
+ 			"CPT channels could not fit in the range 2048-4095\n");
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
+index 1f90a7403392..267d092b8e97 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
+@@ -197,6 +197,141 @@ int rvu_mbox_handler_cpt_lf_free(struct rvu *rvu, struct msg_req *req,
+ 	return ret;
+ }
+ 
++static int cpt_inline_ipsec_cfg_inbound(struct rvu *rvu, int blkaddr, u8 cptlf,
++					struct cpt_inline_ipsec_cfg_msg *req)
++{
++	u16 sso_pf_func = req->sso_pf_func;
++	u8 nix_sel;
++	u64 val;
++
++	val = rvu_read64(rvu, blkaddr, CPT_AF_LFX_CTL(cptlf));
++	if (req->enable && (val & BIT_ULL(16))) {
++		/* IPSec inline outbound path is already enabled for a given
++		 * CPT LF, HRM states that inline inbound & outbound paths
++		 * must not be enabled at the same time for a given CPT LF
++		 */
++		return CPT_AF_ERR_INLINE_IPSEC_INB_ENA;
++	}
++	/* Check if requested 'CPTLF <=> SSOLF' mapping is valid */
++	if (sso_pf_func && !is_pffunc_map_valid(rvu, sso_pf_func, BLKTYPE_SSO))
++		return CPT_AF_ERR_SSO_PF_FUNC_INVALID;
++
++	nix_sel = (blkaddr == BLKADDR_CPT1) ? 1 : 0;
++	/* Enable CPT LF for IPsec inline inbound operations */
++	if (req->enable)
++		val |= BIT_ULL(9);
++	else
++		val &= ~BIT_ULL(9);
++
++	val |= (u64)nix_sel << 8;
++	rvu_write64(rvu, blkaddr, CPT_AF_LFX_CTL(cptlf), val);
++
++	if (sso_pf_func) {
++		/* Set SSO_PF_FUNC */
++		val = rvu_read64(rvu, blkaddr, CPT_AF_LFX_CTL2(cptlf));
++		val |= (u64)sso_pf_func << 32;
++		val |= (u64)req->nix_pf_func << 48;
++		rvu_write64(rvu, blkaddr, CPT_AF_LFX_CTL2(cptlf), val);
++	}
++	if (req->sso_pf_func_ovrd)
++		/* Set SSO_PF_FUNC_OVRD for inline IPSec */
++		rvu_write64(rvu, blkaddr, CPT_AF_ECO, 0x1);
++
++	/* Configure the X2P Link register with the cpt base channel number and
++	 * range of channels it should propagate to X2P
++	 */
++	if (!is_rvu_otx2(rvu)) {
++		val = (ilog2(NIX_CHAN_CPT_X2P_MASK + 1) << 16);
++		val |= rvu->hw->cpt_chan_base;
++
++		rvu_write64(rvu, blkaddr, CPT_AF_X2PX_LINK_CFG(0), val);
++		rvu_write64(rvu, blkaddr, CPT_AF_X2PX_LINK_CFG(1), val);
++	}
++
++	return 0;
++}
++
++static int cpt_inline_ipsec_cfg_outbound(struct rvu *rvu, int blkaddr, u8 cptlf,
++					 struct cpt_inline_ipsec_cfg_msg *req)
++{
++	u16 nix_pf_func = req->nix_pf_func;
++	int nix_blkaddr;
++	u8 nix_sel;
++	u64 val;
++
++	val = rvu_read64(rvu, blkaddr, CPT_AF_LFX_CTL(cptlf));
++	if (req->enable && (val & BIT_ULL(9))) {
++		/* IPSec inline inbound path is already enabled for a given
++		 * CPT LF, HRM states that inline inbound & outbound paths
++		 * must not be enabled at the same time for a given CPT LF
++		 */
++		return CPT_AF_ERR_INLINE_IPSEC_OUT_ENA;
++	}
++
++	/* Check if requested 'CPTLF <=> NIXLF' mapping is valid */
++	if (nix_pf_func && !is_pffunc_map_valid(rvu, nix_pf_func, BLKTYPE_NIX))
++		return CPT_AF_ERR_NIX_PF_FUNC_INVALID;
++
++	/* Enable CPT LF for IPsec inline outbound operations */
++	if (req->enable)
++		val |= BIT_ULL(16);
++	else
++		val &= ~BIT_ULL(16);
++	rvu_write64(rvu, blkaddr, CPT_AF_LFX_CTL(cptlf), val);
++
++	if (nix_pf_func) {
++		/* Set NIX_PF_FUNC */
++		val = rvu_read64(rvu, blkaddr, CPT_AF_LFX_CTL2(cptlf));
++		val |= (u64)nix_pf_func << 48;
++		rvu_write64(rvu, blkaddr, CPT_AF_LFX_CTL2(cptlf), val);
++
++		nix_blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, nix_pf_func);
++		nix_sel = (nix_blkaddr == BLKADDR_NIX0) ? 0 : 1;
++
++		val = rvu_read64(rvu, blkaddr, CPT_AF_LFX_CTL(cptlf));
++		val |= (u64)nix_sel << 8;
++		rvu_write64(rvu, blkaddr, CPT_AF_LFX_CTL(cptlf), val);
++	}
++
++	return 0;
++}
++
++int rvu_mbox_handler_cpt_inline_ipsec_cfg(struct rvu *rvu,
++					  struct cpt_inline_ipsec_cfg_msg *req,
++					  struct msg_rsp *rsp)
++{
++	u16 pcifunc = req->hdr.pcifunc;
++	struct rvu_block *block;
++	int cptlf, blkaddr, ret;
++	u16 actual_slot;
++
++	blkaddr = rvu_get_blkaddr_from_slot(rvu, BLKTYPE_CPT, pcifunc,
++					    req->slot, &actual_slot);
++	if (blkaddr < 0)
++		return CPT_AF_ERR_LF_INVALID;
++
++	block = &rvu->hw->block[blkaddr];
++
++	cptlf = rvu_get_lf(rvu, block, pcifunc, actual_slot);
++	if (cptlf < 0)
++		return CPT_AF_ERR_LF_INVALID;
++
++	switch (req->dir) {
++	case CPT_INLINE_INBOUND:
++		ret = cpt_inline_ipsec_cfg_inbound(rvu, blkaddr, cptlf, req);
++		break;
++
++	case CPT_INLINE_OUTBOUND:
++		ret = cpt_inline_ipsec_cfg_outbound(rvu, blkaddr, cptlf, req);
++		break;
++
++	default:
++		return CPT_AF_ERR_PARAM;
++	}
++
++	return ret;
++}
++
+ static bool is_valid_offset(struct rvu *rvu, struct cpt_rd_wr_reg_msg *req)
+ {
+ 	u64 offset = req->reg_offset;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
+index 9ef4e942e31e..ea3e03fa55d4 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
+@@ -4579,6 +4579,118 @@ int rvu_mbox_handler_nix_lso_format_cfg(struct rvu *rvu,
+ 	return 0;
+ }
+ 
++#define IPSEC_GEN_CFG_EGRP    GENMASK_ULL(50, 48)
++#define IPSEC_GEN_CFG_OPCODE  GENMASK_ULL(47, 32)
++#define IPSEC_GEN_CFG_PARAM1  GENMASK_ULL(31, 16)
++#define IPSEC_GEN_CFG_PARAM2  GENMASK_ULL(15, 0)
++
++#define CPT_INST_QSEL_BLOCK   GENMASK_ULL(28, 24)
++#define CPT_INST_QSEL_PF_FUNC GENMASK_ULL(23, 8)
++#define CPT_INST_QSEL_SLOT    GENMASK_ULL(7, 0)
++
++static void nix_inline_ipsec_cfg(struct rvu *rvu, struct nix_inline_ipsec_cfg *req,
++				 int blkaddr)
++{
++	u8 cpt_idx, cpt_blkaddr;
++	u64 val;
++
++	cpt_idx = (blkaddr == BLKADDR_NIX0) ? 0 : 1;
++	if (req->enable) {
++		/* Enable context prefetching */
++		if (!is_rvu_otx2(rvu))
++			val = BIT_ULL(51);
++
++		/* Set OPCODE and EGRP */
++		val |= FIELD_PREP(IPSEC_GEN_CFG_EGRP, req->gen_cfg.egrp);
++		val |= FIELD_PREP(IPSEC_GEN_CFG_OPCODE, req->gen_cfg.opcode);
++		val |= FIELD_PREP(IPSEC_GEN_CFG_PARAM1, req->gen_cfg.param1);
++		val |= FIELD_PREP(IPSEC_GEN_CFG_PARAM2, req->gen_cfg.param2);
++
++		rvu_write64(rvu, blkaddr, NIX_AF_RX_IPSEC_GEN_CFG, val);
++
++		/* Set CPT queue for inline IPSec */
++		val = FIELD_PREP(CPT_INST_QSEL_SLOT, req->inst_qsel.cpt_slot);
++		val |= FIELD_PREP(CPT_INST_QSEL_PF_FUNC,
++				  req->inst_qsel.cpt_pf_func);
++
++		if (!is_rvu_otx2(rvu)) {
++			cpt_blkaddr = (cpt_idx == 0) ? BLKADDR_CPT0 :
++						       BLKADDR_CPT1;
++			val |= FIELD_PREP(CPT_INST_QSEL_BLOCK, cpt_blkaddr);
++		}
++
++		rvu_write64(rvu, blkaddr, NIX_AF_RX_CPTX_INST_QSEL(cpt_idx),
++			    val);
++
++		/* Set CPT credit */
++		rvu_write64(rvu, blkaddr, NIX_AF_RX_CPTX_CREDIT(cpt_idx),
++			    req->cpt_credit);
++	} else {
++		rvu_write64(rvu, blkaddr, NIX_AF_RX_IPSEC_GEN_CFG, 0x0);
++		rvu_write64(rvu, blkaddr, NIX_AF_RX_CPTX_INST_QSEL(cpt_idx),
++			    0x0);
++		rvu_write64(rvu, blkaddr, NIX_AF_RX_CPTX_CREDIT(cpt_idx),
++			    0x3FFFFF);
++	}
++}
++
++int rvu_mbox_handler_nix_inline_ipsec_cfg(struct rvu *rvu,
++					  struct nix_inline_ipsec_cfg *req,
++					  struct msg_rsp *rsp)
++{
++	if (!is_block_implemented(rvu->hw, BLKADDR_CPT0))
++		return 0;
++
++	nix_inline_ipsec_cfg(rvu, req, BLKADDR_NIX0);
++	if (is_block_implemented(rvu->hw, BLKADDR_CPT1))
++		nix_inline_ipsec_cfg(rvu, req, BLKADDR_NIX1);
++
++	return 0;
++}
++
++int rvu_mbox_handler_nix_inline_ipsec_lf_cfg(struct rvu *rvu,
++					     struct nix_inline_ipsec_lf_cfg *req,
++					     struct msg_rsp *rsp)
++{
++	int lf, blkaddr, err;
++	u64 val;
++
++	if (!is_block_implemented(rvu->hw, BLKADDR_CPT0))
++		return 0;
++
++	err = nix_get_nixlf(rvu, req->hdr.pcifunc, &lf, &blkaddr);
++	if (err)
++		return err;
++
++	if (req->enable) {
++		/* Set TT, TAG_CONST, SA_POW2_SIZE and LENM1_MAX */
++		val = (u64)req->ipsec_cfg0.tt << 44 |
++		      (u64)req->ipsec_cfg0.tag_const << 20 |
++		      (u64)req->ipsec_cfg0.sa_pow2_size << 16 |
++		      req->ipsec_cfg0.lenm1_max;
++
++		if (blkaddr == BLKADDR_NIX1)
++			val |= BIT_ULL(46);
++
++		rvu_write64(rvu, blkaddr, NIX_AF_LFX_RX_IPSEC_CFG0(lf), val);
++
++		/* Set SA_IDX_W and SA_IDX_MAX */
++		val = (u64)req->ipsec_cfg1.sa_idx_w << 32 |
++		      req->ipsec_cfg1.sa_idx_max;
++		rvu_write64(rvu, blkaddr, NIX_AF_LFX_RX_IPSEC_CFG1(lf), val);
++
++		/* Set SA base address */
++		rvu_write64(rvu, blkaddr, NIX_AF_LFX_RX_IPSEC_SA_BASE(lf),
++			    req->sa_base_addr);
++	} else {
++		rvu_write64(rvu, blkaddr, NIX_AF_LFX_RX_IPSEC_CFG0(lf), 0x0);
++		rvu_write64(rvu, blkaddr, NIX_AF_LFX_RX_IPSEC_CFG1(lf), 0x0);
++		rvu_write64(rvu, blkaddr, NIX_AF_LFX_RX_IPSEC_SA_BASE(lf),
++			    0x0);
++	}
++
++	return 0;
++}
+ void rvu_nix_reset_mac(struct rvu_pfvf *pfvf, int pcifunc)
+ {
+ 	bool from_vf = !!(pcifunc & RVU_PFVF_FUNC_MASK);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
+index 21f1ed4e222f..dbaeb10de7c2 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
+@@ -236,6 +236,8 @@
+ #define NIX_AF_RX_DEF_OIP6_DSCP		(0x02F8)
+ #define NIX_AF_RX_IPSEC_GEN_CFG		(0x0300)
+ #define NIX_AF_RX_CPTX_INST_ADDR	(0x0310)
++#define NIX_AF_RX_CPTX_INST_QSEL(a)	(0x0320ull | (uint64_t)(a) << 3)
++#define NIX_AF_RX_CPTX_CREDIT(a)	(0x0360ull | (uint64_t)(a) << 3)
+ #define NIX_AF_NDC_TX_SYNC		(0x03F0)
+ #define NIX_AF_AQ_CFG			(0x0400)
+ #define NIX_AF_AQ_BASE			(0x0410)
+-- 
+2.25.1
+
