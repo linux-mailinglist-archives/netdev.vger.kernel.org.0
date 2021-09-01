@@ -2,308 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0027F3FDF19
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 17:55:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD7EC3FDF42
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 18:01:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343876AbhIAP4C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 11:56:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37260 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244935AbhIAP4A (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Sep 2021 11:56:00 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C937161075;
-        Wed,  1 Sep 2021 15:55:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1630511704;
-        bh=6Z6K+XSWY4KGjocc/zwOs7KVWe0xhmUGz3v2fh4mNQ4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=qq79HMM+U4/wvmcKU/ivffSOcqEtgeMQahB0mYre1sFnUH4rTCHv68JrQtvedS9vs
-         1MituSk7uSjJkfyjxp/pbb3cGdWKUP6+zRvNHXTwLGscnnUHdD7fukZ5NCfyeON0u1
-         gZ/wiX+b0qpnTOwv2VcPXx1gcCLNzTNiFlQESqAVkK9ZsAHd+Gllxor8TfH+EQ4UT0
-         7j6kFfE06f23kq1bO7+WTKecr/qa9BGAha/oniyI4H775HPJJwnvkNaz4UM54asuCg
-         FrjdmqjZO+//G+ANPa5GkHfXp+V0RRNdA3uvXoFtHJo+TnoS0DZNiA6J1FS0Rq8hJN
-         9X2mHPJEL+F3g==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     dsahern@gmail.com, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net v2] selftests: add simple GSO GRE test
-Date:   Wed,  1 Sep 2021 08:55:01 -0700
-Message-Id: <20210901155501.353635-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.31.1
+        id S245064AbhIAQCG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 12:02:06 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:25041 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233049AbhIAQCF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 12:02:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1630512068;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0ELi0qf4aK3uP7dRRYETNlOTJbJ5D1N+KxdPfGPTw4A=;
+        b=QN2EM4A9Utddz7HFg43nbDoZF5TSox405roo6YHqBXmB1nY3lVlPUBcZ7p67BPlEtWTJYb
+        SECFIPFEFHdNfsgWuKzRG2/oxEQ0agL+YrBa9Lnf6bvhppr0qxPnfnkl/+O/SXc/0Z2/LC
+        lO/Qh+xgwi1kUTRBMnP+4oD8r0eVpUI=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-47-iYbBF9J4ObWrZu5tlmx-MA-1; Wed, 01 Sep 2021 12:01:07 -0400
+X-MC-Unique: iYbBF9J4ObWrZu5tlmx-MA-1
+Received: by mail-wm1-f71.google.com with SMTP id u1-20020a05600c210100b002e74fc5af71so74205wml.1
+        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 09:01:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=0ELi0qf4aK3uP7dRRYETNlOTJbJ5D1N+KxdPfGPTw4A=;
+        b=cCGeFfRRBgVaiXhIdI1pqpx7OibOpibzFh6QaeKT1dv2OVHTOtS3YdCqiN3qbGJuAu
+         f2hYQqLRnYdII64vw1wYiqFe2Sw/Lk/lULXCyB37qpv0+4POUvsUI4OBVy/bDhIUyflH
+         sjAJDdICaLdteH8Bnip3Cai4MQWfh0F68F3XqllrM24KYq7tf82xcPNlH4OzYotjEGEp
+         prRYDFLnh0DWI2px7L+vCo9Zt+TjL9kUBUV7rZDH0IlpqF2MTMl2LRsHSebZq9PnZuE8
+         taJv+hUtbLWpJrzcjPLtNg9sWDUdS6SNIBVEsGn7zTJTaoTeH8LSK/6elpagLNQQb8R2
+         4ESA==
+X-Gm-Message-State: AOAM533xFCP60tuw3H4VcDeP7cuKPaINU13N/Bq70tCNtKiE1bSaSTtH
+        oFt5wwUhPAcMLZP/QHSnM8kJZ75s+t5au99xDW2dn1wG3ZcUPzpXeL7B8NzU3YXSxVjf3tkk+Lx
+        hHSnhTtYJsoCtNqk+
+X-Received: by 2002:a1c:3542:: with SMTP id c63mr148693wma.68.1630512065180;
+        Wed, 01 Sep 2021 09:01:05 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwz//bcO1LgzAECo7e8PoJZgBJq8fM+kTkmrO6ASs7HDmNmYuidKFDlOTnbPgfVTlShl2wHLA==
+X-Received: by 2002:a1c:3542:: with SMTP id c63mr148631wma.68.1630512064673;
+        Wed, 01 Sep 2021 09:01:04 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-233-185.dyn.eolo.it. [146.241.233.185])
+        by smtp.gmail.com with ESMTPSA id d124sm847wmd.2.2021.09.01.09.01.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Sep 2021 09:01:04 -0700 (PDT)
+Message-ID: <59ad13bb312805bb1d183c5817d5f7b6fd6a90dd.camel@redhat.com>
+Subject: Re: [PATCH net-next] tcp: add tcp_tx_skb_cache_key checking in
+ sk_stream_alloc_skb()
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Yunsheng Lin <linyunsheng@huawei.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        MPTCP Upstream <mptcp@lists.linux.dev>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, linuxarm@openeuler.org,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>
+Date:   Wed, 01 Sep 2021 18:01:03 +0200
+In-Reply-To: <c40a178110ee705b2be32272b9b3e512a40a4cae.camel@redhat.com>
+References: <1630492744-60396-1-git-send-email-linyunsheng@huawei.com>
+         <9c9ef2228dfcb950b5c75382bd421c6169e547a0.camel@redhat.com>
+         <CANn89iJFeM=DgcQpDbaE38uhxTEL6REMWPnVFt7Am7Nuf4wpMw@mail.gmail.com>
+         <CANn89iKbgtb84Lb4UOxUCb_WGrfB6ZoD=bVH2O06-Mm6FBmwpg@mail.gmail.com>
+         <c40a178110ee705b2be32272b9b3e512a40a4cae.camel@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Test case for commit a6e3f2985a80 ("ip6_tunnel: fix GRE6 segmentation").
+On Wed, 2021-09-01 at 17:25 +0200, Paolo Abeni wrote:
+> On Wed, 2021-09-01 at 08:16 -0700, Eric Dumazet wrote:
+> > On Wed, Sep 1, 2021 at 8:06 AM Eric Dumazet <edumazet@google.com> wrote:
+> > > On Wed, Sep 1, 2021 at 3:52 AM Paolo Abeni <pabeni@redhat.com> wrote:
+> > > > On Wed, 2021-09-01 at 18:39 +0800, Yunsheng Lin wrote:
+> > > > > Since tcp_tx_skb_cache is disabled by default in:
+> > > > > commit 0b7d7f6b2208 ("tcp: add tcp_tx_skb_cache sysctl")
+> > > > > 
+> > > > > Add tcp_tx_skb_cache_key checking in sk_stream_alloc_skb() to
+> > > > > avoid possible branch-misses.
+> > > > > 
+> > > > > Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+> > > > 
+> > > > Note that MPTCP is currently exploiting sk->sk_tx_skb_cache. If we get
+> > > > this patch goes in as-is, it will break mptcp.
+> > > > 
+> > > > One possible solution would be to let mptcp usage enable sk-
+> > > > > sk_tx_skb_cache, but that has relevant side effects on plain TCP.
+> > > > 
+> > > > Another options would be re-work once again the mptcp xmit path to
+> > > > avoid using sk->sk_tx_skb_cache.
+> > > > 
+> > > 
+> > > Hmmm, I actually wrote a revert of this feature but forgot to submit
+> > > it last year.
+> > > 
+> > > commit c36cfbd791f62c0f7c6b32132af59dfdbe6be21b (HEAD -> listener_scale4)
+> > > Author: Eric Dumazet <edumazet@google.com>
+> > > Date:   Wed May 20 06:38:38 2020 -0700
+> > > 
+> > >     tcp: remove sk_{tr}x_skb_cache
+> > > 
+> > >     This reverts the following patches :
+> > > 
+> > >     2e05fcae83c41eb2df10558338dc600dc783af47 ("tcp: fix compile error
+> > > if !CONFIG_SYSCTL")
+> > >     4f661542a40217713f2cee0bb6678fbb30d9d367 ("tcp: fix zerocopy and
+> > > notsent_lowat issues")
+> > >     472c2e07eef045145bc1493cc94a01c87140780a ("tcp: add one skb cache for tx")
+> > >     8b27dae5a2e89a61c46c6dbc76c040c0e6d0ed4c ("tcp: add one skb cache for rx")
+> > > 
+> > >     Having a cache of one skb (in each direction) per TCP socket is fragile,
+> > >     since it can cause a significant increase of memory needs,
+> > >     and not good enough for high speed flows anyway where more than one skb
+> > >     is needed.
+> > > 
+> > >     We want instead to add a generic infrastructure, with more flexible per-cpu
+> > >     caches, for alien NUMA nodes.
+> > > 
+> > >     Signed-off-by: Eric Dumazet <edumazet@google.com>
+> > > 
+> > > I will update this commit to also remove the part in MPTCP.
+> > > 
+> > > Let's remove this feature and replace it with something less costly.
+> > 
+> > Paolo, can you work on MPTP side, so that my revert can be then applied ?
+> 
+> You are way too fast, I was still replying to your previous email,
+> asking if I could help :)
+> 
+> I'll a look ASAP. Please, allow for some latency: I'm way slower!
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
-Looks like I never sent this out.
+I think the easiest way and the one with less code duplication will
+require accessing the tcp_mark_push() and skb_entail() helpers from the
+MPTCP code, making them not static and exposing them e.g. in net/tcp.h.
+Would that be acceptable or should I look for other options?
 
-v2: correct the script name in the Makefile
----
- tools/testing/selftests/net/Makefile   |   1 +
- tools/testing/selftests/net/gre_gso.sh | 236 +++++++++++++++++++++++++
- 2 files changed, 237 insertions(+)
- create mode 100755 tools/testing/selftests/net/gre_gso.sh
+Thanks!
 
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index 378c0aac5a1a..492b273743b4 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -27,6 +27,7 @@ TEST_PROGS += udpgro_fwd.sh
- TEST_PROGS += veth.sh
- TEST_PROGS += ioam6.sh
- TEST_PROGS += gro.sh
-+TEST_PROGS += gre_gso.sh
- TEST_PROGS_EXTENDED := in_netns.sh
- TEST_GEN_FILES =  socket nettest
- TEST_GEN_FILES += psock_fanout psock_tpacket msg_zerocopy reuseport_addr_any
-diff --git a/tools/testing/selftests/net/gre_gso.sh b/tools/testing/selftests/net/gre_gso.sh
-new file mode 100755
-index 000000000000..facbb0c80443
---- /dev/null
-+++ b/tools/testing/selftests/net/gre_gso.sh
-@@ -0,0 +1,236 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+
-+# This test is for checking GRE GSO.
-+
-+ret=0
-+# Kselftest framework requirement - SKIP code is 4.
-+ksft_skip=4
-+
-+# all tests in this script. Can be overridden with -t option
-+TESTS="gre_gso"
-+
-+VERBOSE=0
-+PAUSE_ON_FAIL=no
-+PAUSE=no
-+IP="ip -netns ns1"
-+NS_EXEC="ip netns exec ns1"
-+TMPFILE=`mktemp`
-+PID=
-+
-+log_test()
-+{
-+	local rc=$1
-+	local expected=$2
-+	local msg="$3"
-+
-+	if [ ${rc} -eq ${expected} ]; then
-+		printf "    TEST: %-60s  [ OK ]\n" "${msg}"
-+		nsuccess=$((nsuccess+1))
-+	else
-+		ret=1
-+		nfail=$((nfail+1))
-+		printf "    TEST: %-60s  [FAIL]\n" "${msg}"
-+		if [ "${PAUSE_ON_FAIL}" = "yes" ]; then
-+		echo
-+			echo "hit enter to continue, 'q' to quit"
-+			read a
-+			[ "$a" = "q" ] && exit 1
-+		fi
-+	fi
-+
-+	if [ "${PAUSE}" = "yes" ]; then
-+		echo
-+		echo "hit enter to continue, 'q' to quit"
-+		read a
-+		[ "$a" = "q" ] && exit 1
-+	fi
-+}
-+
-+setup()
-+{
-+	set -e
-+	ip netns add ns1
-+	ip netns set ns1 auto
-+	$IP link set dev lo up
-+
-+	ip link add veth0 type veth peer name veth1
-+	ip link set veth0 up
-+	ip link set veth1 netns ns1
-+	$IP link set veth1 name veth0
-+	$IP link set veth0 up
-+
-+	dd if=/dev/urandom of=$TMPFILE bs=1024 count=2048 &>/dev/null
-+	set +e
-+}
-+
-+cleanup()
-+{
-+	rm -rf $TMPFILE
-+	[ -n "$PID" ] && kill $PID
-+	ip link del dev gre1 &> /dev/null
-+	ip link del dev veth0 &> /dev/null
-+	ip netns del ns1
-+}
-+
-+get_linklocal()
-+{
-+	local dev=$1
-+	local ns=$2
-+	local addr
-+
-+	[ -n "$ns" ] && ns="-netns $ns"
-+
-+	addr=$(ip -6 -br $ns addr show dev ${dev} | \
-+	awk '{
-+		for (i = 3; i <= NF; ++i) {
-+			if ($i ~ /^fe80/)
-+				print $i
-+		}
-+	}'
-+	)
-+	addr=${addr/\/*}
-+
-+	[ -z "$addr" ] && return 1
-+
-+	echo $addr
-+
-+	return 0
-+}
-+
-+gre_create_tun()
-+{
-+	local a1=$1
-+	local a2=$2
-+	local mode
-+
-+	[[ $a1 =~ ^[0-9.]*$ ]] && mode=gre || mode=ip6gre
-+
-+	ip tunnel add gre1 mode $mode local $a1 remote $a2 dev veth0
-+	ip link set gre1 up
-+	$IP tunnel add gre1 mode $mode local $a2 remote $a1 dev veth0
-+	$IP link set gre1 up
-+}
-+
-+gre_gst_test_checks()
-+{
-+	local name=$1
-+	local addr=$2
-+
-+	$NS_EXEC nc -kl $port >/dev/null &
-+	PID=$!
-+	while ! $NS_EXEC ss -ltn | grep -q $port; do ((i++)); sleep 0.01; done
-+
-+	cat $TMPFILE | timeout 1 nc $addr $port
-+	log_test $? 0 "$name - copy file w/ TSO"
-+
-+	ethtool -K veth0 tso off
-+
-+	cat $TMPFILE | timeout 1 nc $addr $port
-+	log_test $? 0 "$name - copy file w/ GSO"
-+
-+	ethtool -K veth0 tso on
-+
-+	kill $PID
-+	PID=
-+}
-+
-+gre6_gso_test()
-+{
-+	local port=7777
-+
-+	setup
-+
-+	a1=$(get_linklocal veth0)
-+	a2=$(get_linklocal veth0 ns1)
-+
-+	gre_create_tun $a1 $a2
-+
-+	ip  addr add 172.16.2.1/24 dev gre1
-+	$IP addr add 172.16.2.2/24 dev gre1
-+
-+	ip  -6 addr add 2001:db8:1::1/64 dev gre1 nodad
-+	$IP -6 addr add 2001:db8:1::2/64 dev gre1 nodad
-+
-+	sleep 2
-+
-+	gre_gst_test_checks GREv6/v4 172.16.2.2
-+	gre_gst_test_checks GREv6/v6 2001:db8:1::2
-+
-+	cleanup
-+}
-+
-+gre_gso_test()
-+{
-+	gre6_gso_test
-+}
-+
-+################################################################################
-+# usage
-+
-+usage()
-+{
-+	cat <<EOF
-+usage: ${0##*/} OPTS
-+
-+        -t <test>   Test(s) to run (default: all)
-+                    (options: $TESTS)
-+        -p          Pause on fail
-+        -P          Pause after each test before cleanup
-+        -v          verbose mode (show commands and output)
-+EOF
-+}
-+
-+################################################################################
-+# main
-+
-+while getopts :t:pPhv o
-+do
-+	case $o in
-+		t) TESTS=$OPTARG;;
-+		p) PAUSE_ON_FAIL=yes;;
-+		P) PAUSE=yes;;
-+		v) VERBOSE=$(($VERBOSE + 1));;
-+		h) usage; exit 0;;
-+		*) usage; exit 1;;
-+	esac
-+done
-+
-+PEER_CMD="ip netns exec ${PEER_NS}"
-+
-+# make sure we don't pause twice
-+[ "${PAUSE}" = "yes" ] && PAUSE_ON_FAIL=no
-+
-+if [ "$(id -u)" -ne 0 ];then
-+	echo "SKIP: Need root privileges"
-+	exit $ksft_skip;
-+fi
-+
-+if [ ! -x "$(command -v ip)" ]; then
-+	echo "SKIP: Could not run test without ip tool"
-+	exit $ksft_skip
-+fi
-+
-+if [ ! -x "$(command -v nc)" ]; then
-+	echo "SKIP: Could not run test without nc tool"
-+	exit $ksft_skip
-+fi
-+
-+# start clean
-+cleanup &> /dev/null
-+
-+for t in $TESTS
-+do
-+	case $t in
-+	gre_gso)		gre_gso_test;;
-+
-+	help) echo "Test names: $TESTS"; exit 0;;
-+	esac
-+done
-+
-+if [ "$TESTS" != "none" ]; then
-+	printf "\nTests passed: %3d\n" ${nsuccess}
-+	printf "Tests failed: %3d\n"   ${nfail}
-+fi
-+
-+exit $ret
--- 
-2.31.1
+Paolo
 
