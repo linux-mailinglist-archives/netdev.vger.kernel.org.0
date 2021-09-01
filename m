@@ -2,88 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DEC453FE1C8
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 20:08:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35AD83FE226
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 20:12:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346777AbhIASIk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 14:08:40 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:31326 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1346752AbhIASIj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 14:08:39 -0400
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 181I4C9V009785;
-        Wed, 1 Sep 2021 14:07:42 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=BE8TENnMPSb4iD0H9C+s5VzH/Hh3lLCDZFNA2A4/Wzc=;
- b=E6MVr0gHICan/R7DN1mFcwxo0co6g/fyaHfbg2DtmrDOhlBCcGWhZbhAyGdSHelSA0qL
- 3ZzOGUmq7ll/TcayhdU6Gw0C2kJo2x7gDPw5baEO9GbHLIS8K79zQ1tKScLclr8mk9IK
- v+BEZJFokKdK8CIsoRQZ4aPJx0W/MkfK9cg1DWmYG8NdcYm5liPEOlEEqmuDgF7tsH3r
- gxk1Z1TSDj/feH2VNnqB7HJiuo39s+6JoFeRie4IySZHpaDhOVaO3XfyXX1W3rzmWvs4
- 6iM6Fpqfh1dUidiq89A+IIQtgwr0AqHemRa9qkIvUMt646gYBznHTuAleHoXhZa6O3Nc 5w== 
-Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3atbb36493-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 01 Sep 2021 14:07:42 -0400
-Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
-        by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 181I43Rn023181;
-        Wed, 1 Sep 2021 18:07:41 GMT
-Received: from b03cxnp07029.gho.boulder.ibm.com (b03cxnp07029.gho.boulder.ibm.com [9.17.130.16])
-        by ppma03dal.us.ibm.com with ESMTP id 3atdxbgyav-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 01 Sep 2021 18:07:41 +0000
-Received: from b03ledav001.gho.boulder.ibm.com (b03ledav001.gho.boulder.ibm.com [9.17.130.232])
-        by b03cxnp07029.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 181I7ep245875486
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 1 Sep 2021 18:07:40 GMT
-Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1B9006E054;
-        Wed,  1 Sep 2021 18:07:40 +0000 (GMT)
-Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9A9176E052;
-        Wed,  1 Sep 2021 18:07:39 +0000 (GMT)
-Received: from suka-w540.localdomain (unknown [9.160.152.143])
-        by b03ledav001.gho.boulder.ibm.com (Postfix) with SMTP;
-        Wed,  1 Sep 2021 18:07:39 +0000 (GMT)
-Received: by suka-w540.localdomain (Postfix, from userid 1000)
-        id 7AD832E1062; Wed,  1 Sep 2021 11:07:36 -0700 (PDT)
-Date:   Wed, 1 Sep 2021 11:07:36 -0700
-From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Brian King <brking@linux.ibm.com>,
-        cforno12@linux.ibm.com, Dany Madden <drt@linux.ibm.com>,
-        Rick Lindsley <ricklind@linux.ibm.com>
-Subject: Re: [PATCH net-next 0/9] ibmvnic: Reuse ltb, rx, tx pools
-Message-ID: <YS/BaCG0Aq1QQqx5@us.ibm.com>
-References: <20210901000812.120968-1-sukadev@linux.ibm.com>
- <20210831193523.3929a265@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1346845AbhIASMt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 14:12:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53870 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344535AbhIASMq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 14:12:46 -0400
+Received: from mail-vs1-xe2e.google.com (mail-vs1-xe2e.google.com [IPv6:2607:f8b0:4864:20::e2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA594C061575
+        for <netdev@vger.kernel.org>; Wed,  1 Sep 2021 11:11:49 -0700 (PDT)
+Received: by mail-vs1-xe2e.google.com with SMTP id p14so601527vsm.2
+        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 11:11:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=2joGkq8i8C5vglZO1FYNTlWqLyr4vSiCXKQYXBVnv4Q=;
+        b=fC9hcX//9hp1uMHwhUu30uIOkmBqDnqktwjUtt0dMT1OrVEtLfzFOTJN/MOgBc4gbk
+         7M4CRGXeXNvt8B1I9FNxfm05PfQ9ISAYsjGdlo4e6qQhGnFRdgfelCYWKXkz9ry0doZA
+         YkddNcRHMattZSVKsc6cAG5COrJBUCJuVi+fHOjO0JRwsVOeT+/ugHzmD/YkEeLoE9I3
+         W04CWZ1Im+AXPNOr1rlXDUA3pNZZCwKT80LiFMDVPWWR526AkC2X2NoOsFo8kvIJv0je
+         4eNq3vLjj0qJpRaN5vfxZc3DRSFj9grX7L/mFyjCjPTB3WJZEyD78O9+KOQTrfnkR7NE
+         C6Vw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=2joGkq8i8C5vglZO1FYNTlWqLyr4vSiCXKQYXBVnv4Q=;
+        b=YM9w/bkTaTMXikQBYg3AbpQIiVfLhyOXOH8+EFCkllW/pk+Jo4ceIUrRg8KM5Xcsnm
+         F7jVmiCprjMDc8hUQO3MahLq1UApFd93QLNYsFVQ4r5Bfms89DUbbNjtmFTTdHCEDPXZ
+         PP4VmAIRsUC2lrvrR9GlbPWQlSbiFxmv+UoPgnsyF5CLjlv+4ErYCdQGYrhWwRAdgEaJ
+         NOo2MzzXf0KJoM8jtd0NcfEq8w2dz834j4c/WWEtbL1d8QBR8yUCqXavPSPhLGK2ydOB
+         D8mnJKBF/D8wv95J0RCBCfHzSFaUEpv259rkxwmOc0R+Htr50T+W9wTvJeSSYK9hAkPH
+         GfWQ==
+X-Gm-Message-State: AOAM533l9b2UJ+t4KHuoJ5Ulmp+f7zgg6tYT7pSRi9jGBDm7FHTO3lnv
+        MAPt8uIagXqXMNVTLvpmaWw4aZG39/t/OsJn6ic=
+X-Google-Smtp-Source: ABdhPJwiEbnYLv7f2RnKYDK6MZHOqm2sX6mhOBQTqcYKXOfc5SbKfEDHccmM3wJ+zupXFWNQS3aJPYj5WNB/mvlkd0Q=
+X-Received: by 2002:a67:2e46:: with SMTP id u67mr677594vsu.56.1630519908748;
+ Wed, 01 Sep 2021 11:11:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210831193523.3929a265@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-X-Operating-System: Linux 2.0.32 on an i486
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 6tU9xsGYEDmcJ08B8XG_kRWzUVoGQJGS
-X-Proofpoint-ORIG-GUID: 6tU9xsGYEDmcJ08B8XG_kRWzUVoGQJGS
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-09-01_05:2021-09-01,2021-09-01 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
- lowpriorityscore=0 malwarescore=0 mlxscore=0 spamscore=0 impostorscore=0
- mlxlogscore=842 clxscore=1015 phishscore=0 priorityscore=1501
- suspectscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2107140000 definitions=main-2109010104
+Received: by 2002:ab0:740d:0:0:0:0:0 with HTTP; Wed, 1 Sep 2021 11:11:48 -0700 (PDT)
+From:   CorisBank International <corisbankintlbf@gmail.com>
+Date:   Wed, 1 Sep 2021 11:11:48 -0700
+Message-ID: <CA+25hwz0afgYcU9E_j5xKhdmUoGDrSM_ueYzhLyn0TCOP=-Q0A@mail.gmail.com>
+Subject: CORISBANK INTERNATIONAL OFFICIAL NOTIFICATION
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski [kuba@kernel.org] wrote:
-> 
-> Please fix the kdoc issues in this submission. Kdoc script is your
-> friend:
-> 
-> ./scripts/kernel-doc -none <files>
+Att: Client
 
-Yes, Thanks! I fixed them in v2
 
-Sukadev
+CORISBANK INTERNATIONAL URGENT NOTIFICATION
+
+Notification / Notification/ Notification
+
+Note, We are writing to inform you officially that Finally the Central
+Bank Financial Authority have approved to transfer your $8.2Million
+which was signed by late Mrs Rose Banneth the COVID.19 victim to
+transfer to you, Late Mrs Rose Banneth the France Lady contacted us to
+transfer her fund in our bank to you for Orphanage work before she
+died by the COVID.19
+and as it is now, you will receive your fund through our corresponding
+bank in Dubai [Emirate Investment Bank ] for security reason. Please
+you should reconfirm your details to receive the $8.2Million.
+
+Name, Country, Address, occupations, Age, Telephone number, account
+Details so that we can immediately forward to the World Bank to
+transfer the fund.
+You are advised to comply on timely manner to permit this esteem bank
+transfer your fund as scheduled.
+
+We look forward to serving you better
+Your Financial Comfort Is A Priority
+Thank you for choosing Corisbank International.
+
+Sincerely,
+
+----
+
+Mr Diakarya Ouattara
+Managing Director
+Bank Coris
+Burkina Faso
++226 556 163 37
+financial_bf_info@accountant.com
