@@ -2,128 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2B9D3FD14F
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 04:27:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7E3C3FD156
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 04:29:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241528AbhIAC2C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 22:28:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60122 "EHLO
+        id S241567AbhIACaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 22:30:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241128AbhIAC2B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 22:28:01 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9F89C061575;
-        Tue, 31 Aug 2021 19:27:05 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id 17so1244443pgp.4;
-        Tue, 31 Aug 2021 19:27:05 -0700 (PDT)
+        with ESMTP id S241128AbhIACaP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 22:30:15 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BB69C061575
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 19:29:19 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id q68so1217857pga.9
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 19:29:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=l6zBUmZjaaF8MBlLbuRS4Hw7hGtyVs5W6eya6EoO5NM=;
-        b=oxTddWFobnGeD9LakGnfuiqB8UOOWNQWQnsgnvgj9poIqpzlTyl0PDSRQlT4yYnoML
-         FQeh1GNoA4ZF+omc+jIaAQH51XaZz+0t3p6r6cusvKqESznk03TgQiVgaOnV89Pc856w
-         iqpsa3uetBYFET8L0KJRgJTdS/U3TYyDMCbTekhE5LL6Cb8Of0xX2SVdPWdNkYud8WIM
-         1mAtIIdDKvf1yyZQnsOd6tNqxQrSgzi7CJca3QqkdE4feWAc+DwpDZmu6xCSswqhvWzZ
-         0hF/TKow9ABPyBLfvf27YvUfaHknUurfwtK6ot6zhpZKH6AyFB2B2/7uDDOyUh+ABjUT
-         KcJQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=4+iwUAqRJPZFhGI73o3Zv3rff4AudFKJDzrL7OGaY4E=;
+        b=f/FYv4nlGKVV93m9RtKw1dAEY6TWLMrl1gdpTDwIoaZGuTzDYGLpLplJ0nTnFg4z0l
+         qWjPSLFmn0j1FmbPKbnZDbLywcy2IfUGb6BXB411c//Wg6nd7rNObO8L6A9jftLra8En
+         AH/SPFUi4jlun+y0UfuR7JRoM4JwF/uxVyVAQp2qKOwnik71mqxC5Yxyci2YzMCKdWOS
+         Lc4EanRWSzUVGM6VKKAAIlJnMaLEtqHbggDVo970xWnudeS6AR/DNlxxzVniJWIT5Qrw
+         Gvg7+fhnKhY3tp40OLAl99Md/QRi8tXehM/NLDfLSrECGu5lOp3cOCTyk0MeCB/tUioF
+         cmnw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=l6zBUmZjaaF8MBlLbuRS4Hw7hGtyVs5W6eya6EoO5NM=;
-        b=NVlAK4BksGKqzoJYU7cdqq7ZpAaIj1HmaEmQYrGvoOeu6L0zWd2gBoVlGW2yrubHH7
-         ljEzjkIWYImwnCbGhtDfGB+gUWQLgHKujoa8o96UPXefUc+Q/g1H5HMKLnuhHedGtdJU
-         XX75o9AGAw6nD0/RDuXVEhCXU+uFOfb4T7UaCFSflQToTQiOVAch3MlH+nks/WuK9HvG
-         E7FYC96DynOYNlgXW+hilPEYiW7G1zyLjDjT4UZ9aW4GgIu+8vESkaGGCgjw46zmOi2X
-         4lEPW7Wei1dDKZmenTuTcex5lJ7f94tU84a0pyU483wqwHL4CHrDt9wV+2vGHBhhF+X5
-         cukA==
-X-Gm-Message-State: AOAM533r5jywg6h9fJqeLbdSlqqyduBf3U2yE4t0DZU7qC5s0fMC6gge
-        EWSx8EuWwYs1FH+OlW4pDv0=
-X-Google-Smtp-Source: ABdhPJxMb9FiJp7kHy9eF+GXAHCd3jHzKU4Ueh73o+ewkR1nHQ66FzoZM4NRGO7ku5TCLC8iDlgIwQ==
-X-Received: by 2002:a65:5845:: with SMTP id s5mr28836470pgr.227.1630463224993;
-        Tue, 31 Aug 2021 19:27:04 -0700 (PDT)
-Received: from localhost ([2405:201:6014:d820:9cc6:d37f:c2fd:dc6])
-        by smtp.gmail.com with ESMTPSA id y64sm22435936pgy.32.2021.08.31.19.27.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Aug 2021 19:27:04 -0700 (PDT)
-Date:   Wed, 1 Sep 2021 07:57:01 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Networking <netdev@vger.kernel.org>
-Subject: Re: [PATCH bpf-next RFC v1 3/8] libbpf: Support kernel module
- function calls
-Message-ID: <20210901022701.g7nzkmm6lo7jf3wd@apollo.localdomain>
-References: <20210830173424.1385796-1-memxor@gmail.com>
- <20210830173424.1385796-4-memxor@gmail.com>
- <CAEf4Bza11W+NPt1guXj87fy_xcsWLHeFLNK0OkzL9A+TfcYhog@mail.gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=4+iwUAqRJPZFhGI73o3Zv3rff4AudFKJDzrL7OGaY4E=;
+        b=Y5M/wVihwlOKhNjpefivWDOPagYd2jNDfOrpUYwkpIzymESHLlwBM+pP2/irgdc9VW
+         5vNiKj50iNATckCNmyncvfUOPrL8pw8+V52crkj6ULywUWTVB/dC3x2/v/wBQXr25D7q
+         XJD9gG67nDmZ9rMCK/NJnIiTKQa7QlkB8u8VQhiMc4OJq8POcQ7m3P7REjgQTrm+zDu0
+         HdfORGDc0vygeg4we4S5Z2HNuDWOe6pWyqUa1Ah7sfqCJmjFb3yvZuo15Yz4ABF2G0Iz
+         YAdK+DsuDgUm6gmlklQGpwe8YFJEoN7AyeyVE8VjHObpbuG5O+FRiOb/ZrX8yJmNia0w
+         W+4g==
+X-Gm-Message-State: AOAM5329njLMj75MbZAEuYY5Ohd8ZrRA1XPOPiRfd9zEiJwI5MgnLj9N
+        j9HcyuImONrJYIESZu8Hw1g=
+X-Google-Smtp-Source: ABdhPJySz6shuVf4t3xEMCqWs24dszc+b8jf8QFCXAyjmnK9HC6dKXFvDGypo3usRKNNN+ezKdRJrQ==
+X-Received: by 2002:a62:1c4e:0:b0:3ee:7c8e:ce6 with SMTP id c75-20020a621c4e000000b003ee7c8e0ce6mr31193091pfc.60.1630463358716;
+        Tue, 31 Aug 2021 19:29:18 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.45.42.119])
+        by smtp.googlemail.com with ESMTPSA id m64sm22597143pga.55.2021.08.31.19.29.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 31 Aug 2021 19:29:18 -0700 (PDT)
+Subject: Re: Change in behavior for bound vs unbound sockets
+To:     Paul Menzel <pmenzel@molgen.mpg.de>,
+        Saikrishna Arcot <sarcot@microsoft.com>,
+        Mike Manning <mmanning@vyatta.att-mail.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
+References: <BL0PR2101MB13167E456C5E839426BCDBE6D9CB9@BL0PR2101MB1316.namprd21.prod.outlook.com>
+ <06425eb5-906a-5805-d293-70d240a1197b@molgen.mpg.de>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <e8ea879b-7075-e79d-5da8-0483e7da21af@gmail.com>
+Date:   Tue, 31 Aug 2021 19:29:15 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4Bza11W+NPt1guXj87fy_xcsWLHeFLNK0OkzL9A+TfcYhog@mail.gmail.com>
+In-Reply-To: <06425eb5-906a-5805-d293-70d240a1197b@molgen.mpg.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 01, 2021 at 06:25:14AM IST, Andrii Nakryiko wrote:
-> On Mon, Aug 30, 2021 at 10:34 AM Kumar Kartikeya Dwivedi
-> <memxor@gmail.com> wrote:
-> >
->
-> -ENOCOMMITMESSAGE?
->
-> > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> > ---
-> >  tools/lib/bpf/bpf.c             |  3 ++
-> >  tools/lib/bpf/libbpf.c          | 71 +++++++++++++++++++++++++++++++--
-> >  tools/lib/bpf/libbpf_internal.h |  2 +
-> >  3 files changed, 73 insertions(+), 3 deletions(-)
-> >
->
-> [...]
->
-> > @@ -515,6 +521,13 @@ struct bpf_object {
-> >         void *priv;
-> >         bpf_object_clear_priv_t clear_priv;
-> >
-> > +       struct {
-> > +               struct hashmap *map;
-> > +               int *fds;
-> > +               size_t cap_cnt;
-> > +               __u32 n_fds;
-> > +       } kfunc_btf_fds;
-> > +
-> >         char path[];
-> >  };
-> >  #define obj_elf_valid(o)       ((o)->efile.elf)
-> > @@ -5327,6 +5340,7 @@ bpf_object__relocate_data(struct bpf_object *obj, struct bpf_program *prog)
-> >                         ext = &obj->externs[relo->sym_off];
-> >                         insn[0].src_reg = BPF_PSEUDO_KFUNC_CALL;
-> >                         insn[0].imm = ext->ksym.kernel_btf_id;
-> > +                       insn[0].off = ext->ksym.offset;
->
-> Just a few lines above we use insn[1].imm =
-> ext->ksym.kernel_btf_obj_fd; for EXT_KSYM (for variables). Why are you
-> inventing a new form if we already have a pretty consistent pattern?
->
+On 8/31/21 3:12 AM, Paul Menzel wrote:
+>> I traced it to one commit (6da5b0f027a8 "net: ensure unbound datagram
+>> socket to be chosen when not in a VRF") that makes sure that when not
+>> in a VRF, the unbound socket is chosen over the bound socket, if both
+>> are available. If I revert this commit and two other commits that
+>> made changes on top of this, I can see that packets get sent to the
+>> bound socket instead. There's similar commits made for TCP and raw
+>> sockets as well, as part of that patch series.
+> 
+> Commit 6da5b0f027a8 (net: ensure unbound datagram socket to be chosen
+> when not in a VRF) was added to Linux 5.0.
+> 
+>> Is the intention of those commits also meant to affect sockets that
+>> are bound to just regular interfaces (and not only VRFs)? If so,
+>> since this change breaks a userspace application, is it possible to
+>> add a config that reverts to the old behavior, where bound sockets
+>> are preferred over unbound sockets?
+> If it breaks user space, the old behavior needs to be restored according
+> to Linux’ no regression policy. Let’s hope, in the future, there is
+> better testing infrastructure and such issues are noticed earlier.
 
-That makes sense. This is all new to me, so I went with what was described in
-e6ac2450d6de (bpf: Support bpf program calling kernel function), but I'll rework
-it to encode the btf fd like that in the next spin. It also makes the everything
-far simpler.
+5.0 was 2-1/2 years ago.
 
-> >                         break;
-> >                 case RELO_SUBPROG_ADDR:
-> >                         if (insn[0].src_reg != BPF_PSEUDO_FUNC) {
->
-> [...]
+Feel free to add tests to tools/testing/selftests/net/fcnal-test.sh to
+cover any missing permutations, including what you believe is the
+problem here. Both IPv4 and IPv6 should be added for consistency across
+protocols.
 
---
-Kartikeya
+nettest.c has a lot of the networking APIs, supports udp, tcp, raw, ...
