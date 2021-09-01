@@ -2,89 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C30A3FD6C8
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 11:30:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B9923FD6CA
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 11:31:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243623AbhIAJbi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 05:31:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44384 "EHLO
+        id S243634AbhIAJcJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 05:32:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243514AbhIAJbh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 05:31:37 -0400
-Received: from mail.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A3E3C061575;
-        Wed,  1 Sep 2021 02:30:41 -0700 (PDT)
-Received: from localhost (cpc147930-brnt3-2-0-cust60.4-2.cable.virginm.net [86.15.196.61])
-        by mail.monkeyblade.net (Postfix) with ESMTPSA id AE0FA4CE6846B;
-        Wed,  1 Sep 2021 02:30:38 -0700 (PDT)
-Date:   Wed, 01 Sep 2021 10:30:33 +0100 (BST)
-Message-Id: <20210901.103033.925382819044968737.davem@davemloft.net>
-To:     yun.wang@linux.alibaba.com
-Cc:     paul@paul-moore.com, kuba@kernel.org, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, netdev@vger.kernel.org,
-        linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: fix NULL pointer reference in cipso_v4_doi_free
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1ed31e79-809b-7ac9-2760-869570ac22ea@linux.alibaba.com>
-References: <84262e7b-fda6-9d7d-b0bd-1bb0e945e6f9@linux.alibaba.com>
-        <CAHC9VhRPUa-oD_85j6RcAVvp7sLZQEAGGapYYP1fEt7Ax5LMfA@mail.gmail.com>
-        <1ed31e79-809b-7ac9-2760-869570ac22ea@linux.alibaba.com>
-X-Mailer: Mew version 6.8 on Emacs 27.2
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-2022-jp
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Wed, 01 Sep 2021 02:30:40 -0700 (PDT)
+        with ESMTP id S243514AbhIAJcI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 05:32:08 -0400
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B6F9C061575
+        for <netdev@vger.kernel.org>; Wed,  1 Sep 2021 02:31:11 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id h1so3750448ljl.9
+        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 02:31:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=NWKMZ//AyFWFbpFk6FF66OtPadVuan7a1ybZS8hGNR8=;
+        b=Cj8kREpmhYD+TT6riVmR0slmYNw0unDxkSbPir7yPQPDghcaQBgo4uf1RP0EFK0sgy
+         B/vStnhA7M/bS4ijNeEFe3rTMBWelj1HlFCbeP7DysZKh9i8WpE+SV+xFAZPWc5Fi/Q4
+         jHS3GkO+mxrcQxItObFpDAyQ+98xRYujw8hf7cd2qqKwXzJJfjucL/tx1b1vIF4OoHmU
+         f7OUfzvVAhshXEmMCM13+cvZKOsQ3kdlEkEJfLi9gBQ7xHpma3g/0ttcPJJIvTy40/NR
+         l2PPGVnZk3/ug6l8gwL1X4BN4jGUKo/p0s6cIT053vETWhvqSMlG/uiXTnOGobnV3W2f
+         c2xA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=NWKMZ//AyFWFbpFk6FF66OtPadVuan7a1ybZS8hGNR8=;
+        b=c4eM9w/9UTy/HrxvOAiUpsTyAZ0oifwQ5/+6iK0zlRaBDZnAFtvePWpd1HFPzJSnjq
+         80cP5r47QULjXGWGBi50qSz4R8lJI/lMlmXb6u3hvaknMu8UzK9F+hEkBfif8V/E5EwE
+         b/3BAVBQ4ngoc5k0D6UHG/opJHJoXmF59kscRKog3JIQRUbzqRkMTqVBjQWRWNhwdGyj
+         t0L0zm4nkfxzJ7+iKnuND4pBixPmYAiOwvh4elVZe5ZvUkWfrUb/OnwDcIsiL1NKUxkM
+         FMa5I4Za8igEEDB9kMCbaZR+4+hrsHELd9Ib30Fle/xuN5dtYDg14ecY2Q/vUtBUjl9N
+         9sUA==
+X-Gm-Message-State: AOAM530am1gUPaFPRQM71mDshwv43yxzNmj7YFLuEW1jGoZA29tRYf8p
+        gC178M+5TUIscwSvu1UIo0+3WRfUNzdeGAqlwcI=
+X-Google-Smtp-Source: ABdhPJzfpHbimEffW1XlwvxGnBRDiIpgFRQC+0XUue+AwVC7dGGUDOglMDg+LhbiMzCtqhFmYZgBYhuXJ/YsRvHlZes=
+X-Received: by 2002:a05:651c:98c:: with SMTP id b12mr1125220ljq.83.1630488669853;
+ Wed, 01 Sep 2021 02:31:09 -0700 (PDT)
+MIME-Version: 1.0
+Received: by 2002:a05:651c:1193:0:0:0:0 with HTTP; Wed, 1 Sep 2021 02:31:09
+ -0700 (PDT)
+Reply-To: uchennailobitenone@gmail.com
+From:   uchenna <robertandersonhappy2@gmail.com>
+Date:   Wed, 1 Sep 2021 02:31:09 -0700
+Message-ID: <CABzJeR-9QhM8EY-2UFqX0uK8pFqdv8_F6-fdro8CSaiQO2DoWA@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: 王贇 <yun.wang@linux.alibaba.com>
-Date: Wed, 1 Sep 2021 09:51:28 +0800
+Attention Please,
 
-> 
-> 
-> On 2021/8/31 下午9:48, Paul Moore wrote:
->> On Mon, Aug 30, 2021 at 10:42 PM 王贇 <yun.wang@linux.alibaba.com> wrote:
->>> On 2021/8/31 上午12:50, Paul Moore wrote:
->>> [SNIP]
->>>>>>> Reported-by: Abaci <abaci@linux.alibaba.com>
->>>>>>> Signed-off-by: Michael Wang <yun.wang@linux.alibaba.com>
->>>>>>> ---
->>>>>>>  net/netlabel/netlabel_cipso_v4.c | 4 ++--
->>>>>>>  1 file changed, 2 insertions(+), 2 deletions(-)
->>>>>>
->>>>>> I see this was already merged, but it looks good to me, thanks for
->>>>>> making those changes.
->>>>>
->>>>> FWIW it looks like v1 was also merged:
->>>>>
->>>>> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=733c99ee8b
->>>>
->>>> Yeah, that is unfortunate, there was a brief discussion about that
->>>> over on one of the -stable patches for the v1 patch (odd that I never
->>>> saw a patchbot post for the v1 patch?).  Having both merged should be
->>>> harmless, but we want to revert the v1 patch as soon as we can.
->>>> Michael, can you take care of this?
->>>
->>> As v1 already merged, may be we could just goon with it?
->>>
->>> Actually both working to fix the problem, v1 will cover all the
->>> cases, v2 take care one case since that's currently the only one,
->>> but maybe there will be more in future.
->> 
->> No.  Please revert v1 and stick with the v2 patch.  The v1 patch is in
->> my opinion a rather ugly hack that addresses the symptom of the
->> problem and not the root cause.
->> 
->> It isn't your fault that both v1 and v2 were merged, but I'm asking
->> you to help cleanup the mess.  If you aren't able to do that please
->> let us know so that others can fix this properly.
-> 
-> No problem I can help on that, just try to make sure it's not a
-> meaningless work.
-> 
-> So would it be fine to send out a v3 which revert v1 and apply v2?
+I am Bar. uchenna ilobi ,  How are you, I hope you are fine and
+healthy? This is to inform you that i have concluded the transaction
+successfully with the help of a new partner from Venezuela and now the
+fund has been transferred to Venezuela into the bank account of the
+new partner.
 
-Please don't do things this way just send the relative change.
+Meanwhile, I have decided to compensate you with the sum of
+US$350,000.00 (thiree Hundred and Fifty Thousand United States
+Dollars) due to your past effort, though you disappointed me along the
+line. But nevertheless I am very happy for the successful ending of
+the transaction without any problem and that is the reason why i have
+decided to compensate you with the sum of US$350,000.00 so that you
+will share the joy with me.
 
-Thanks.
+I advise you to contact my secretary for Atm Card of US$350.000.00,
+which I kept for you. Contact him now without any delay.
+
+Name: solomon brandy
+
+Email:solomonbrandyfiveone@gmail.com
+
+Kindly reconfirm to him the following below information:
+
+Your full name_________________________
+Your address__________________________
+Your country___________________________
+Your age______________________________
+Your occupation________________________
+Your cell Phone number______________________
+
+Note that if you did not send him the above information complete, he
+will not release the Atm card to you because he has to be sure that it
+is you. Ask him to send you the total sum of ($350.000.00 ) Atm card,
+which I kept for you.
+
+Best regards,
+
+Mr. uchenna ilobi
