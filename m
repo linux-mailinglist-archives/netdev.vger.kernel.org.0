@@ -2,65 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24B973FD15B
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 04:32:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFABD3FD163
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 04:35:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241559AbhIACdb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 22:33:31 -0400
-Received: from mail-m17644.qiye.163.com ([59.111.176.44]:18498 "EHLO
-        mail-m17644.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241128AbhIACda (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 22:33:30 -0400
-Received: from wanjb-virtual-machine.localdomain (unknown [58.213.83.158])
-        by mail-m17644.qiye.163.com (Hmail) with ESMTPA id 84318320106;
-        Wed,  1 Sep 2021 10:32:32 +0800 (CST)
-From:   Wan Jiabing <wanjiabing@vivo.com>
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        mptcp@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc:     kael_w@yeah.net, Wan Jiabing <wanjiabing@vivo.com>
-Subject: [PATCH] mptcp: Fix duplicated argument in protocol.h
-Date:   Wed,  1 Sep 2021 10:32:05 +0800
-Message-Id: <20210901023205.5049-1-wanjiabing@vivo.com>
-X-Mailer: git-send-email 2.25.1
+        id S241677AbhIACgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 22:36:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43658 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241128AbhIACgU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 31 Aug 2021 22:36:20 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E253060FE6;
+        Wed,  1 Sep 2021 02:35:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1630463724;
+        bh=A9CIKTTo3fDD2pTFK9SNRvm3W4vqdwZ1+KiRth/yruI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=BXGK9uIv1VfzqKfuI0+TX6NH6UF3lIenvdlL4b5eUh70uOrftc3jVOxz9DU0ptQ21
+         khBW1Ert2eveJIY9K5Nw1JJLyh0Xt1ORlZUBlzb3cqkeSoZSBlJmTzpEF6xzQ+7Cq9
+         C0gEaFu5a8JeYmqmZbCG1uf9qH54OuMttTFQoycfuNX03amQe+wUZ3VrCVW7ZIM8an
+         eLo/S9j5ZMi3P/G5ZvmblXIDgWacr7b7YunsHTTo1nRVr9U0Ri3tyhuY1mPoVfAysY
+         BMqWTC9E5O0qhs891Q7GN1N9bwg85/GMt4MVHsT3GuRzzKIe+eTDlBwKREAUiMoahB
+         P53y2W64cUe1A==
+Date:   Tue, 31 Aug 2021 19:35:23 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+Cc:     netdev@vger.kernel.org, Brian King <brking@linux.ibm.com>,
+        cforno12@linux.ibm.com, Dany Madden <drt@linux.ibm.com>,
+        Rick Lindsley <ricklind@linux.ibm.com>
+Subject: Re: [PATCH net-next 0/9] ibmvnic: Reuse ltb, rx, tx pools
+Message-ID: <20210831193523.3929a265@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210901000812.120968-1-sukadev@linux.ibm.com>
+References: <20210901000812.120968-1-sukadev@linux.ibm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZCBgUCR5ZQVlLVUtZV1
-        kWDxoPAgseWUFZKDYvK1lXWShZQUhPN1dZLVlBSVdZDwkaFQgSH1lBWRpLSxhWSUJOSRpJTEpMSU
-        sdVRMBExYaEhckFA4PWVdZFhoPEhUdFFlBWU9LSFVKSktISkNVS1kG
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Nj46Ejo*HT9NE0gMMEw8HTwp
-        NwoaCyxVSlVKTUhLT01ITk5IS09CVTMWGhIXVQwaFRESGhkSFRw7DRINFFUYFBZFWVdZEgtZQVlO
-        Q1VJSkhVQ0hVSk5DWVdZCAFZQUpDQkg3Bg++
-X-HM-Tid: 0a7b9f336ca8d99akuws84318320106
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-./net/mptcp/protocol.h:36:50-73: duplicated argument to & or |
+On Tue, 31 Aug 2021 17:08:03 -0700 Sukadev Bhattiprolu wrote:
+> It can take a long time to free and reallocate rx and tx pools and long
+> term buffer (LTB) during each reset of the VNIC. This is specially true
+> when the partition (LPAR) is heavily loaded and going through a Logical
+> Partition Migration (LPM). The long drawn reset causes the LPAR to lose
+> connectivity for extended periods of time and results in "RMC connection"
+> errors and the LPM failing.
+> 
+> What is worse is that during the LPM we could get a failover because
+> of the lost connectivity. At that point, the vnic driver releases
+> even the resources it has already allocated and starts over.
+> 
+> As long as the resources we have already allocated are valid/applicable,
+> we might as well hold on to them while trying to allocate the remaining
+> resources. This patch set attempts to reuse the resources previously
+> allocated as long as they are valid. It seems to vastly improve the
+> time taken for the vnic reset. We have also not seen any RMC connection
+> issues during our testing with this patch set.
+> 
+> If the backing devices for a vnic adapter are not "matched" (see "pool
+> parameters" in patches 8 and 9) it is possible that we will still free
+> all the resources and allocate them. If that becomes a common problem,
+> we have to address it separately.
+> 
+> Thanks to input and extensive testing from Brian King, Cris Forno,
+> Dany Madden, Rick Lindsley.
 
-The OPTION_MPTCP_MPJ_SYNACK here is duplicate.
-Here should be OPTION_MPTCP_MPJ_ACK.
+Please fix the kdoc issues in this submission. Kdoc script is your
+friend:
 
-Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
----
- net/mptcp/protocol.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index d7aba1c4dc48..64c9a30e0871 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -34,7 +34,7 @@
- #define OPTIONS_MPTCP_MPC	(OPTION_MPTCP_MPC_SYN | OPTION_MPTCP_MPC_SYNACK | \
- 				 OPTION_MPTCP_MPC_ACK)
- #define OPTIONS_MPTCP_MPJ	(OPTION_MPTCP_MPJ_SYN | OPTION_MPTCP_MPJ_SYNACK | \
--				 OPTION_MPTCP_MPJ_SYNACK)
-+				 OPTION_MPTCP_MPJ_ACK)
- 
- /* MPTCP option subtypes */
- #define MPTCPOPT_MP_CAPABLE	0
--- 
-2.25.1
+./scripts/kernel-doc -none <files>
 
