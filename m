@@ -2,119 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 841093FE506
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 23:40:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B59D3FE511
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 23:48:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344945AbhIAVlY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 17:41:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45908 "EHLO
+        id S242412AbhIAVtp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 17:49:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231788AbhIAVlX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 17:41:23 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D187DC061575
-        for <netdev@vger.kernel.org>; Wed,  1 Sep 2021 14:40:25 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id j13so958250edv.13
-        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 14:40:25 -0700 (PDT)
+        with ESMTP id S231808AbhIAVto (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 17:49:44 -0400
+Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94AEFC061575;
+        Wed,  1 Sep 2021 14:48:47 -0700 (PDT)
+Received: by mail-ot1-x32e.google.com with SMTP id x10-20020a056830408a00b004f26cead745so1543999ott.10;
+        Wed, 01 Sep 2021 14:48:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=U8R5nb1aeTJ3ns8dBCSRYtGDb21lrE9rr+79sQCQT80=;
-        b=lceJUcTDFESBP3oN2FuTdNO5BP1gJaIGCWNaz9fEMs0L8lMoXCVbTnJyEwEJs6ic57
-         yEJ65qmZXvZHGoFDjHNtcOA1VrcqwVCNg/njVRBwoLmg8yGQtGc6W7e7KgaKuiz87hgj
-         sB7Wce70kR4SmBWKusaLfsjgROIXHWIQKRgSLZYB1kYG6yl0zdYXNydgiVaoLJZk7xXS
-         PrT6bRapPF97P5XNoB//HYGu5A6ciTd3yGusZtL8IyjHVf/Kple/Hy3BgUvcv+a0xH95
-         kThesPR2ygaY3ZRji1F0bfYDFQHnoHX6api6tGy0z5QqwYteeqbctiVcbXxoq0qzqwu/
-         mwrQ==
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=bM/DObiZ9PUO+ooQ6bmBOKRWIQZ3cIe0ybO6KHu8cTQ=;
+        b=foUJrSLb8NoGrGAcbGQtZOC9HiFzsYHciEyZlDitunIZtfznW49Y4/U7lkVY3yVm/G
+         hQDvlegv0nC9pmpowUW/4wuCHT0IOSa+XVE6gF4Rw4id6djAc/CUPSYJgmUC0EQl1AVy
+         EoPn0TZ0TBC1bKZEn/dl7SFqaGAE41K8uc/W+jNQ0agzUmrWSO9DNbyd4pUmX9KRAab1
+         0tm2HCcxN486zLS/3y4JV6lLn0nGu0/Z9pkFBxKbmXuLGAWRHWoPkS9Tz2CDHGvaWHSz
+         BgYhvFKyKR5aAMG1g/h5F79levteWJPKMZ+iDwLyLvKHwiqPx5kjrRodUwXSujTlRBKB
+         lmtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=U8R5nb1aeTJ3ns8dBCSRYtGDb21lrE9rr+79sQCQT80=;
-        b=bFUPBsKMTc1fspXG5AkT3eFY0Yv+oMX9GWO6LW1u6m6xRKwxNsSoRpF08CgjEMYtvX
-         Hhn4IiGVmIzgnA2sBcliRxqrxOAjexMriUKVhnIIYBNuC5p3JvAUsiowoK1lT5sM3A/s
-         ZpScRPSnowEYb0VfxK8JZwHMgMAXTiWGl5qZl/Yoo0e4SPEygXXPQgQ55oQs0hLfvSVc
-         ckD3UGM1FtIcOffcFJRoVC1jAuytEg+b0Y90tILoepLt78AffbewPJMXlYfhPdt+oN2g
-         fIBarxfhRtEN/0msfYTF2OONOG5yErEeYNvjHiWTY0cy6VELFX4KJ4/JWtWeO9ELv7Kd
-         u9AQ==
-X-Gm-Message-State: AOAM533oSHwz65dKgv3cj0H6dwIqczLDQxKpKc4BH1ZTQ4wz+Iev4EkA
-        IK5vCAQ3r05njqaQzO52j9oqaQpxpRE/Zw==
-X-Google-Smtp-Source: ABdhPJyKVndWby6BgAaXZVRcYua0QvaIrTpbleRNhqvLZaSnU8iK1eT2QgSD5gmorycfbm2470z0uA==
-X-Received: by 2002:a05:6402:445:: with SMTP id p5mr19555edw.208.1630532424399;
-        Wed, 01 Sep 2021 14:40:24 -0700 (PDT)
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com. [209.85.128.54])
-        by smtp.gmail.com with ESMTPSA id i23sm448978edr.72.2021.09.01.14.40.23
-        for <netdev@vger.kernel.org>
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=bM/DObiZ9PUO+ooQ6bmBOKRWIQZ3cIe0ybO6KHu8cTQ=;
+        b=qoIfYRfuxE4tSI/xRn9Gd+fM3dG7Mvs7zCrWAnuvRoabzs+LoEerXxi0UwYcT43j2k
+         O+EH4HiEwfwRpFdlZTVCv6bPXKMoNGXGjEpg44pxTxd+U5QiYIvfX8xXFxsNgeNA0AvH
+         7U0BqAVo7StK64b7vWCleu5f7/iY4ErGI387RAF229SS1q8SRwLTwKe09otpPUbTBDWB
+         j6CZORFwd47aKplE+8s+w39dg5oSDMbh+wiVwr2n0ZMYwxN+80/mlKG6E3493fnTlCnQ
+         bRZSPjCKP4ERObUTxSEhQw3RoKhT5XyYi4b+c15NgsUHrhgglWwD1iRoosR2C/z4y4/c
+         YmpA==
+X-Gm-Message-State: AOAM533O7PV6Q88ilwQ+xiTJSMtbQlaktQVNvrMeCVhfOffwuwS+IOaq
+        0fcN2zjgZmsXMEvXaBFVBhk=
+X-Google-Smtp-Source: ABdhPJxSxIeSetO6ZBqwHPOtR8ynpEZFfmXOoDs2IWjEExxm6adHf6GyW0d7soNrcwmU3QMUWszA9w==
+X-Received: by 2002:a05:6830:2443:: with SMTP id x3mr1375906otr.12.1630532926987;
+        Wed, 01 Sep 2021 14:48:46 -0700 (PDT)
+Received: from ?IPV6:2603:8090:2005:39b3::1023? (2603-8090-2005-39b3-0000-0000-0000-1023.res6.spectrum.com. [2603:8090:2005:39b3::1023])
+        by smtp.gmail.com with UTF8SMTPSA id bg38sm5348oib.26.2021.09.01.14.48.45
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Sep 2021 14:40:23 -0700 (PDT)
-Received: by mail-wm1-f54.google.com with SMTP id u15-20020a05600c19cf00b002f6445b8f55so2773wmq.0
-        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 14:40:23 -0700 (PDT)
-X-Received: by 2002:a1c:2bc6:: with SMTP id r189mr1380207wmr.183.1630532422682;
- Wed, 01 Sep 2021 14:40:22 -0700 (PDT)
+        Wed, 01 Sep 2021 14:48:46 -0700 (PDT)
+Sender: Larry Finger <larry.finger@gmail.com>
+Message-ID: <3e1db007-1ffa-6e84-a0f7-a36fa0820768@lwfinger.net>
+Date:   Wed, 1 Sep 2021 16:48:44 -0500
 MIME-Version: 1.0
-References: <20210819100447.00201b26@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210821071425.512834-1-chouhan.shreyansh630@gmail.com> <CA+FuTSeWY-0+VtERqAxNwmHAwmarYh_HQUoF3b0wHiwAaL+h+A@mail.gmail.com>
- <YS9puVgl/exGgrr3@shredder> <CA+FuTSfTCufYmJg5Vum1Q-ndUYh+1P1hLecFht9Qd1-AdnHmaQ@mail.gmail.com>
- <YS+h/tqCJJiQei+W@shredder>
-In-Reply-To: <YS+h/tqCJJiQei+W@shredder>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 1 Sep 2021 17:39:45 -0400
-X-Gmail-Original-Message-ID: <CA+FuTScx8cCQEOqsmj1eazMkRPqfb-EaqrqH+kmS_sKCFfr7kg@mail.gmail.com>
-Message-ID: <CA+FuTScx8cCQEOqsmj1eazMkRPqfb-EaqrqH+kmS_sKCFfr7kg@mail.gmail.com>
-Subject: Re: [PATCH 1/2 net] ip_gre: add validation for csum_start
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Shreyansh Chouhan <chouhan.shreyansh630@gmail.com>,
-        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org, pshelar@nicira.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+ff8e1b9f2f36481e2efc@syzkaller.appspotmail.com,
-        Edward Cree <ecree@solarflare.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.0.1
+Subject: Re: [GIT PULL] Networking for v5.15
+Content-Language: en-US
+To:     Johannes Berg <johannes@sipsolutions.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Luca Coelho <luciano.coelho@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-wireless@vger.kernel.org,
+        Miri Korenblit <miriam.rachel.korenblit@intel.com>
+References: <20210831203727.3852294-1-kuba@kernel.org>
+ <CAHk-=wjB_zBwZ+WR9LOpvgjvaQn=cqryoKigod8QnZs=iYGEhA@mail.gmail.com>
+ <20210901124131.0bc62578@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <4dfae09cd2ea3f5fe4b8fa5097d1e0cc8a34e848.camel@sipsolutions.net>
+From:   Larry Finger <Larry.Finger@lwfinger.net>
+In-Reply-To: <4dfae09cd2ea3f5fe4b8fa5097d1e0cc8a34e848.camel@sipsolutions.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 1, 2021 at 11:53 AM Ido Schimmel <idosch@idosch.org> wrote:
->
-> Thanks for the quick reply, Willem.
->
-> On Wed, Sep 01, 2021 at 09:46:48AM -0400, Willem de Bruijn wrote:
-> > Thanks for the detailed report, Ido.
-> >
-> > This is a gre tunnel device with csum/ocsum enabled, correct?
->
-> Correct.
->
-> >
-> > How was this packet generated: does it come from the local stack or is
-> > it a custom packet injected from userspace, e.g., with a packet socket
-> > with vnet_hdr?
->
-> The packet is received by a physical port and injected to the kernel's
-> Rx path by mlxsw (which does not support checksumming). The IPv4 routing
-> code then forwards the packet to the GRE tunnel.
->
-> I was able to reproduce the issue using veth pairs and a packet socket
-> [1]. Running the reproducer with the debug patch from before, I get the
-> following output [2].
+On 9/1/21 14:49, Johannes Berg wrote:
+> On Wed, 2021-09-01 at 12:41 -0700, Jakub Kicinski wrote:
+>>
+>>>
+>>> They all seem to have that same issue, and it looks like the fix would
+>>> be to get the RTN lock in iwl_mvm_init_mcc(), but I didn't really look
+>>> into it very much.
+>>>
+>>> This is on my desktop, and I actually don't _use_ the wireless on this
+>>> machine. I assume it still works despite the warnings, but they should
+>>> get fixed.
+>>>
+>>> I *don't* see these warnings on my laptop where I actually use
+>>> wireless, but that one uses ath10k_pci, so it seems this is purely a
+>>> iwlwifi issue.
+>>>
+>>> I can't be the only one that sees this. Hmm?
+>>
+>> Mm. Looking thru the recent commits there is a suspicious rtnl_unlock()
+>> in commit eb09ae93dabf ("iwlwifi: mvm: load regdomain at INIT stage").
+> 
+> Huh! That's not the version of the commit I remember - it had an
+> rtnl_lock() in there too (just before the mutex_lock)?! Looks like that
+> should really be there, not sure how/where it got lost along the way.
+> 
+> That unbalanced rtnl_unlock() makes no sense anyway. Wonder why it
+> doesn't cause more assertions/problems at that point, clearly it's
+> unbalanced. Pretty sure it's missing the rtnl_lock() earlier in the
+> function for some reason.
+> 
+> Luca and I will look at it tomorrow, getting late here, sorry.
+> 
+> johannes
+> 
+I am seeing the same problem, and it does happen in lots of places. For example
 
-Thanks for that device independent repro.
+finger@2603-8090-2005-39b3-0000-0000-0000-1023:~/rtl8812au>dmesg | grep 
+assertion\ failed
+[    6.465589] RTNL: assertion failed at net/core/rtnetlink.c (1702)
+[    6.465948] RTNL: assertion failed at net/core/devlink.c (11496)
+[    6.466263] RTNL: assertion failed at net/core/rtnetlink.c (1412)
+[    6.466500] RTNL: assertion failed at net/core/dev.c (1987)
+[    6.466708] RTNL: assertion failed at net/core/fib_rules.c (1227)
+[    6.466902] RTNL: assertion failed at net/ipv4/devinet.c (1526)
+[    6.467097] RTNL: assertion failed at net/ipv4/igmp.c (1779)
+[    6.467291] RTNL: assertion failed at net/ipv4/igmp.c (1432)
 
-As expected, the following fixes it for these packets:
+I am in the process of bisecting the problem, just in case it happens some other 
+place than your suspicion leads you.
 
--       if (csum && skb_checksum_start(skb) < skb->data)
-+       if (csum && skb->ip_summed == CHECKSUM_PARTIAL &&
-+           skb_checksum_start(skb) < skb->data)
+Larry
 
-The question is whether we're doing the right thing when CHECKSUM_PARTIAL
-is set.
-
-Local checksum offload allows for cheap calculation of outer checksums, by
-relying on the fact that the inner packet with the checksum field filled in will
-sum to zero. It relies on checksum offload to compute this inner checksum,
-so expects csum_start and csum_off to point after the GRE header.
-
-If so, then the existing fix won't break correctly configured skbs as it only
-drops packets for which this does not hold.
