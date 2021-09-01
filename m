@@ -2,471 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 979933FD023
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 02:10:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53A413FD025
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 02:11:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242542AbhIAALb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 20:11:31 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:28684 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S243496AbhIAAJ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 20:09:28 -0400
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 18103jwb011734
-        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 20:08:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=XdTvTO8tQV1DuV2WJzJAcyxm82SmfAdlHZe93Yd4kaY=;
- b=TS4THFi3N/TctrhtZMOsKkKYjfLskdlB2IG83RAc/xqY/Yw9LQIrPaTZu8CpJHEAjdQc
- 6LO/gC4IHae48l5CeR/PFZJTj/Hyu2kgry5mITB/E6UlXIrvFUlAYPSPz9An9fCY5vzL
- 8JoRxbqHJKRQ7cM3vAjxak5dBZzCi+itQswU9rE5Nh0XsKSIzvqUPB8QroZ+4Ay0TVKO
- AJjyqIk+yQYE9zf1Ynygi7o2kH9BoCO8K+ciDvNhY5eT4EgpAGAXqu3jHzZDGJpZCAUI
- lpNYKWc1XSiBesNppKxyUa1opeOVXvEN6Q39MQuRjfdFaEU5vHQsga3N6dL8OkG7i5a2 zw== 
-Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3assarypyj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 20:08:32 -0400
-Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
-        by ppma05wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 17VNuf6E021485
-        for <netdev@vger.kernel.org>; Wed, 1 Sep 2021 00:08:31 GMT
-Received: from b03cxnp07029.gho.boulder.ibm.com (b03cxnp07029.gho.boulder.ibm.com [9.17.130.16])
-        by ppma05wdc.us.ibm.com with ESMTP id 3aqcsct29x-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 00:08:31 +0000
-Received: from b03ledav004.gho.boulder.ibm.com (b03ledav004.gho.boulder.ibm.com [9.17.130.235])
-        by b03cxnp07029.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 18108UvK45678854
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 1 Sep 2021 00:08:30 GMT
-Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5723978064;
-        Wed,  1 Sep 2021 00:08:30 +0000 (GMT)
-Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id F096878066;
-        Wed,  1 Sep 2021 00:08:28 +0000 (GMT)
-Received: from suka-w540.ibmuc.com (unknown [9.65.237.107])
-        by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Wed,  1 Sep 2021 00:08:28 +0000 (GMT)
-From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     Brian King <brking@linux.ibm.com>, cforno12@linux.ibm.com,
-        Dany Madden <drt@linux.ibm.com>,
-        Rick Lindsley <ricklind@linux.ibm.com>
-Subject: [PATCH net-next 9/9] ibmvnic: Reuse tx pools when possible
-Date:   Tue, 31 Aug 2021 17:08:12 -0700
-Message-Id: <20210901000812.120968-10-sukadev@linux.ibm.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210901000812.120968-1-sukadev@linux.ibm.com>
-References: <20210901000812.120968-1-sukadev@linux.ibm.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: xWPju9b87GiCazlfgiEsB3Q_gYvnMr5e
-X-Proofpoint-GUID: xWPju9b87GiCazlfgiEsB3Q_gYvnMr5e
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-08-31_10:2021-08-31,2021-08-31 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 impostorscore=0
- malwarescore=0 suspectscore=0 bulkscore=0 adultscore=0 mlxlogscore=999
- mlxscore=0 spamscore=0 phishscore=0 priorityscore=1501 lowpriorityscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2107140000
- definitions=main-2108310133
+        id S242552AbhIAALv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 20:11:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57960 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243254AbhIAALk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 20:11:40 -0400
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 395CCC061224;
+        Tue, 31 Aug 2021 17:10:38 -0700 (PDT)
+Received: by mail-io1-xd2e.google.com with SMTP id n24so1796023ion.10;
+        Tue, 31 Aug 2021 17:10:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=X+xLaI1L2IXkvthgdQq6b99QNFK4+VSFZAb1+U1cFes=;
+        b=jT7xb+2mnbVQBWw0KaZ3i7w2HwCGO4THcCB18zSoPj1XDM2e9hmPlAu6ya1hjo7+Jf
+         DcIKmvgY8Ob3DLU011LedJV0KgMaQwHrh88b6lRzgIokYn9BaGp6PpzaYfbKSAJP/KC8
+         XK6luq/kzfy7sBX09pXWEjoyXj73m0QoOqQRC+G8euMkxu/t3uRlDMCIYoYSm77qTvVU
+         uPnJk4FfUZ1w4kyjr++BC0BpVB4Fl7CoviWdzMQF69aJRGIpbpml9LmnpO/cjgJaQqLo
+         gYnMlS8YkqGTBcTRyrW+o79449oFH7J2/JlY5ei17D2vDmlE2XSMTyjTxDPg1r09n82h
+         Y9Bg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=X+xLaI1L2IXkvthgdQq6b99QNFK4+VSFZAb1+U1cFes=;
+        b=EloYe+vzlJZm7tQV5gYYIOFi6I2hatdxTfxDinxuajP4whJ4sZIJ3as8Jr8tfRlXmX
+         y7iYkIuTlsDdswQgM+G2oGs/VDQFBeGDtkJaMfMv3wUWLl6S/WUCDXPM8CEEPJOzaXDG
+         JMcVpuK1Zx5HPsiGqFNLNz7iw8flIdpowe83dBxF4eqJcJ1Deh+bKKGLB/Mx9b0Bm6G2
+         A+rT7gaE0UhAxVziPllAOlYmbYAFPJrh2Jbgi2IZ9JZgR/7s1A03omNapru7Dy4MOMDl
+         7R8olMDeEDEW1ZxU31rOpOf0+XMSi4oZ3f2j+t8e8Wzt8abf6kG4218J1pTtwxEw4Svj
+         xqqg==
+X-Gm-Message-State: AOAM530J12UVGDaFYLQgBnsLZssKfDLJwJB0VuhFh8jHQcszWI8cS5tD
+        iEnqK9Qg+FMETSqtXK2ynGuQpYQ/qWg=
+X-Google-Smtp-Source: ABdhPJxc8vPg6dOManBNJH7we1+7YL1KXSLNruK0MPRtPevRYxzC8LXVdhBzLyUbwfL4xRsTtp73Kg==
+X-Received: by 2002:a5d:9409:: with SMTP id v9mr10475451ion.170.1630455037694;
+        Tue, 31 Aug 2021 17:10:37 -0700 (PDT)
+Received: from localhost ([172.243.157.240])
+        by smtp.gmail.com with ESMTPSA id m10sm11085997ilg.20.2021.08.31.17.10.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 Aug 2021 17:10:37 -0700 (PDT)
+Date:   Tue, 31 Aug 2021 17:10:30 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
+        john.fastabend@gmail.com, dsahern@kernel.org, brouer@redhat.com,
+        echaudro@redhat.com, jasowang@redhat.com,
+        alexander.duyck@gmail.com, saeed@kernel.org,
+        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
+        tirthendu.sarkar@intel.com, toke@redhat.com
+Message-ID: <612ec4f6a7174_6b87208a1@john-XPS-13-9370.notmuch>
+In-Reply-To: <a86c03ed84a6ca275e65d44aef8abaff890f7e3f.1629473233.git.lorenzo@kernel.org>
+References: <cover.1629473233.git.lorenzo@kernel.org>
+ <a86c03ed84a6ca275e65d44aef8abaff890f7e3f.1629473233.git.lorenzo@kernel.org>
+Subject: RE: [PATCH v12 bpf-next 10/18] bpf: add multi-buff support to the
+ bpf_xdp_adjust_tail() API
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rather than releasing the tx pools on every close and reallocating
-them on open, reuse the tx pools unless the pool parameters (number
-of pools, size of each pool or size of each buffer in a pool) have
-changed.
+Lorenzo Bianconi wrote:
+> From: Eelco Chaudron <echaudro@redhat.com>
+> 
+> This change adds support for tail growing and shrinking for XDP multi-buff.
+> 
+> When called on a multi-buffer packet with a grow request, it will always
+> work on the last fragment of the packet. So the maximum grow size is the
+> last fragments tailroom, i.e. no new buffer will be allocated.
+> 
+> When shrinking, it will work from the last fragment, all the way down to
+> the base buffer depending on the shrinking size. It's important to mention
+> that once you shrink down the fragment(s) are freed, so you can not grow
+> again to the original size.
+> 
+> Co-developed-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+> ---
 
-If the pool parameters changed, then release the old pools (if
-any) and allocate new ones.
+LGTM.
 
-Specifically release tx pools, if:
-	- adapter is removed,
-	- pool parameters change during reset,
-	- we encounter an error when opening the adapter in response
-	  to a user request (in ibmvnic_open()).
-
-and don't release them:
-	- in __ibmvnic_close() or
-	- on errors in __ibmvnic_open()
-
-in the hope that we can reuse them during this or next reset.
-
-With these changes reset_tx_pools() can be dropped because its
-optimization is now included in init_tx_pools() itself.
-
-cleanup_tx_pools() releases all the skbs associated with the pool and
-is called from ibmvnic_cleanup(), which is called on every reset. Since
-we want to reuse skbs across resets, move cleanup_tx_pools() out of
-ibmvnic_cleanup() and call it only when user closes the adapter.
-
-Add two new adapter fields, ->prev_mtu, ->prev_tx_pool_size to track the
-previous values and use them to decide whether to reuse or realloc the
-pools.
-
-Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
----
- drivers/net/ethernet/ibm/ibmvnic.c | 201 +++++++++++++++++++----------
- drivers/net/ethernet/ibm/ibmvnic.h |   2 +
- 2 files changed, 133 insertions(+), 70 deletions(-)
-
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index ebd525b6fc87..8c422a717e88 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -735,53 +735,6 @@ static int init_rx_pools(struct net_device *netdev)
- 	return -1;
- }
- 
--static int reset_one_tx_pool(struct ibmvnic_adapter *adapter,
--			     struct ibmvnic_tx_pool *tx_pool)
--{
--	struct ibmvnic_long_term_buff *ltb;
--	int rc, i;
--
--	ltb = &tx_pool->long_term_buff;
--
--	rc = alloc_long_term_buff(adapter, ltb, ltb->size);
--	if (rc)
--		return rc;
--
--	memset(tx_pool->tx_buff, 0,
--	       tx_pool->num_buffers *
--	       sizeof(struct ibmvnic_tx_buff));
--
--	for (i = 0; i < tx_pool->num_buffers; i++)
--		tx_pool->free_map[i] = i;
--
--	tx_pool->consumer_index = 0;
--	tx_pool->producer_index = 0;
--
--	return 0;
--}
--
--static int reset_tx_pools(struct ibmvnic_adapter *adapter)
--{
--	int tx_scrqs;
--	int i, rc;
--
--	if (!adapter->tx_pool)
--		return -1;
--
--	tx_scrqs = adapter->num_active_tx_pools;
--	for (i = 0; i < tx_scrqs; i++) {
--		ibmvnic_tx_scrq_clean_buffer(adapter, adapter->tx_scrq[i]);
--		rc = reset_one_tx_pool(adapter, &adapter->tso_pool[i]);
--		if (rc)
--			return rc;
--		rc = reset_one_tx_pool(adapter, &adapter->tx_pool[i]);
--		if (rc)
--			return rc;
--	}
--
--	return 0;
--}
--
- static void release_vpd_data(struct ibmvnic_adapter *adapter)
- {
- 	if (!adapter->vpd)
-@@ -825,13 +778,13 @@ static void release_tx_pools(struct ibmvnic_adapter *adapter)
- 	kfree(adapter->tso_pool);
- 	adapter->tso_pool = NULL;
- 	adapter->num_active_tx_pools = 0;
-+	adapter->prev_tx_pool_size = 0;
- }
- 
- static int init_one_tx_pool(struct net_device *netdev,
- 			    struct ibmvnic_tx_pool *tx_pool,
- 			    int pool_size, int buf_size)
- {
--	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
- 	int i;
- 
- 	tx_pool->tx_buff = kcalloc(pool_size,
-@@ -840,13 +793,12 @@ static int init_one_tx_pool(struct net_device *netdev,
- 	if (!tx_pool->tx_buff)
- 		return -1;
- 
--	if (alloc_long_term_buff(adapter, &tx_pool->long_term_buff,
--				 pool_size * buf_size))
--		return -1;
--
- 	tx_pool->free_map = kcalloc(pool_size, sizeof(int), GFP_KERNEL);
--	if (!tx_pool->free_map)
-+	if (!tx_pool->free_map) {
-+		kfree(tx_pool->tx_buff);
-+		tx_pool->tx_buff = NULL;
- 		return -1;
-+	}
- 
- 	for (i = 0; i < pool_size; i++)
- 		tx_pool->free_map[i] = i;
-@@ -859,6 +811,48 @@ static int init_one_tx_pool(struct net_device *netdev,
- 	return 0;
- }
- 
-+/**
-+ * Return true if we can reuse the existing tx pools, false otherwise
-+ * NOTE: This assumes that all pools have the same number of buffers
-+ *       which is the case currently. If that changes, we must fix this.
-+ */
-+static bool reuse_tx_pools(struct ibmvnic_adapter *adapter)
-+{
-+	u64 old_num_pools, new_num_pools;
-+	u64 old_pool_size, new_pool_size;
-+	u64 old_mtu, new_mtu;
-+
-+	if (!adapter->tx_pool)
-+		return false;
-+
-+	old_num_pools = adapter->num_active_tx_pools;
-+	new_num_pools = adapter->num_active_tx_scrqs;
-+	old_pool_size = adapter->prev_tx_pool_size;
-+	new_pool_size = adapter->req_tx_entries_per_subcrq;
-+	old_mtu = adapter->prev_mtu;
-+	new_mtu = adapter->req_mtu;
-+
-+	/* Require MTU to be exactly same to reuse pools for now */
-+	if (old_mtu != new_mtu)
-+		return false;
-+
-+	if (old_num_pools == new_num_pools && old_pool_size == new_pool_size)
-+		return true;
-+
-+	if (old_num_pools < adapter->min_tx_queues ||
-+	    old_num_pools > adapter->max_tx_queues ||
-+	    old_pool_size < adapter->min_tx_entries_per_subcrq ||
-+	    old_pool_size > adapter->max_tx_entries_per_subcrq)
-+		return false;
-+
-+	return true;
-+}
-+
-+/**
-+ * Initialize the set of transmit pools in the adapter. Reuse existing
-+ * pools if possible. Otherwise allocate a new set of pools before
-+ * initializing them.
-+ */
- static int init_tx_pools(struct net_device *netdev)
- {
- 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
-@@ -866,7 +860,21 @@ static int init_tx_pools(struct net_device *netdev)
- 	int num_pools;
- 	u64 pool_size;		/* # of buffers in pool */
- 	u64 buff_size;
--	int i, rc;
-+	int i, j, rc;
-+
-+	num_pools = adapter->req_tx_queues;
-+
-+	/* We must notify the VIOS about the LTB on all resets - but we only
-+	 * need to alloc/populate pools if either the number of buffers or
-+	 * size of each buffer in the pool has changed.
-+	 */
-+	if (reuse_tx_pools(adapter)) {
-+		netdev_dbg(netdev, "Reusing tx pools\n");
-+		goto update_ltb;
-+	}
-+
-+	/* Allocate/populate the pools. */
-+	release_tx_pools(adapter);
- 
- 	pool_size = adapter->req_tx_entries_per_subcrq;
- 	num_pools = adapter->num_active_tx_scrqs;
-@@ -891,6 +899,7 @@ static int init_tx_pools(struct net_device *netdev)
- 	 * allocation, release_tx_pools() will know how many to look for.
- 	 */
- 	adapter->num_active_tx_pools = num_pools;
-+
- 	buff_size = adapter->req_mtu + VLAN_HLEN;
- 	buff_size = ALIGN(buff_size, L1_CACHE_BYTES);
- 
-@@ -900,21 +909,73 @@ static int init_tx_pools(struct net_device *netdev)
- 
- 		rc = init_one_tx_pool(netdev, &adapter->tx_pool[i],
- 				      pool_size, buff_size);
--		if (rc) {
--			release_tx_pools(adapter);
--			return rc;
--		}
-+		if (rc)
-+			goto out_release;
- 
- 		rc = init_one_tx_pool(netdev, &adapter->tso_pool[i],
- 				      IBMVNIC_TSO_BUFS,
- 				      IBMVNIC_TSO_BUF_SZ);
--		if (rc) {
--			release_tx_pools(adapter);
--			return rc;
--		}
-+		if (rc)
-+			goto out_release;
-+	}
-+
-+	adapter->prev_tx_pool_size = pool_size;
-+	adapter->prev_mtu = adapter->req_mtu;
-+
-+update_ltb:
-+	/* NOTE: All tx_pools have the same number of buffers (which is
-+	 *       same as pool_size). All tso_pools have IBMVNIC_TSO_BUFS
-+	 *       buffers (see calls init_one_tx_pool() for these).
-+	 *       For consistency, we use tx_pool->num_buffers and
-+	 *       tso_pool->num_buffers below.
-+	 */
-+	rc = -1;
-+	for (i = 0; i < num_pools; i++) {
-+		struct ibmvnic_tx_pool *tso_pool;
-+		struct ibmvnic_tx_pool *tx_pool;
-+		u32 ltb_size;
-+
-+		tx_pool = &adapter->tx_pool[i];
-+		ltb_size = tx_pool->num_buffers * tx_pool->buf_size;
-+		if (alloc_long_term_buff(adapter, &tx_pool->long_term_buff,
-+					 ltb_size))
-+			goto out;
-+
-+		dev_dbg(dev, "Updated LTB for tx pool %d [%p, %d, %d]\n",
-+			i, tx_pool->long_term_buff.buff,
-+			tx_pool->num_buffers, tx_pool->buf_size);
-+
-+		tx_pool->consumer_index = 0;
-+		tx_pool->producer_index = 0;
-+
-+		for (j = 0; j < tx_pool->num_buffers; j++)
-+			tx_pool->free_map[j] = j;
-+
-+		tso_pool = &adapter->tso_pool[i];
-+		ltb_size = tso_pool->num_buffers * tso_pool->buf_size;
-+		if (alloc_long_term_buff(adapter, &tso_pool->long_term_buff,
-+					 ltb_size))
-+			goto out;
-+
-+		dev_dbg(dev, "Updated LTB for tso pool %d [%p, %d, %d]\n",
-+			i, tso_pool->long_term_buff.buff,
-+			tso_pool->num_buffers, tso_pool->buf_size);
-+
-+		tso_pool->consumer_index = 0;
-+		tso_pool->producer_index = 0;
-+
-+		for (j = 0; j < tso_pool->num_buffers; j++)
-+			tso_pool->free_map[j] = j;
- 	}
- 
- 	return 0;
-+out_release:
-+	release_tx_pools(adapter);
-+out:
-+	/* We failed to allocate one or more LTBs or map them on the VIOS.
-+	 * Hold onto the pools and any LTBs that we did allocate/map.
-+	 */
-+	return rc;
- }
- 
- static void ibmvnic_napi_enable(struct ibmvnic_adapter *adapter)
-@@ -1105,8 +1166,6 @@ static void release_resources(struct ibmvnic_adapter *adapter)
- {
- 	release_vpd_data(adapter);
- 
--	release_tx_pools(adapter);
--
- 	release_napi(adapter);
- 	release_login_buffer(adapter);
- 	release_login_rsp_buffer(adapter);
-@@ -1379,6 +1438,7 @@ static int ibmvnic_open(struct net_device *netdev)
- 			netdev_err(netdev, "failed to initialize resources\n");
- 			release_resources(adapter);
- 			release_rx_pools(adapter);
-+			release_tx_pools(adapter);
- 			goto out;
- 		}
- 	}
-@@ -1507,8 +1567,6 @@ static void ibmvnic_cleanup(struct net_device *netdev)
- 
- 	ibmvnic_napi_disable(adapter);
- 	ibmvnic_disable_irqs(adapter);
--
--	clean_tx_pools(adapter);
- }
- 
- static int __ibmvnic_close(struct net_device *netdev)
-@@ -1543,6 +1601,7 @@ static int ibmvnic_close(struct net_device *netdev)
- 	rc = __ibmvnic_close(netdev);
- 	ibmvnic_cleanup(netdev);
- 	clean_rx_pools(adapter);
-+	clean_tx_pools(adapter);
- 
- 	return rc;
- }
-@@ -2119,9 +2178,9 @@ static const char *reset_reason_to_string(enum ibmvnic_reset_reason reason)
- static int do_reset(struct ibmvnic_adapter *adapter,
- 		    struct ibmvnic_rwi *rwi, u32 reset_state)
- {
-+	struct net_device *netdev = adapter->netdev;
- 	u64 old_num_rx_queues, old_num_tx_queues;
- 	u64 old_num_rx_slots, old_num_tx_slots;
--	struct net_device *netdev = adapter->netdev;
- 	int rc;
- 
- 	netdev_dbg(adapter->netdev,
-@@ -2271,7 +2330,6 @@ static int do_reset(struct ibmvnic_adapter *adapter,
- 		    !adapter->rx_pool ||
- 		    !adapter->tso_pool ||
- 		    !adapter->tx_pool) {
--			release_tx_pools(adapter);
- 			release_napi(adapter);
- 			release_vpd_data(adapter);
- 
-@@ -2280,9 +2338,10 @@ static int do_reset(struct ibmvnic_adapter *adapter,
- 				goto out;
- 
- 		} else {
--			rc = reset_tx_pools(adapter);
-+			rc = init_tx_pools(netdev);
- 			if (rc) {
--				netdev_dbg(adapter->netdev, "reset tx pools failed (%d)\n",
-+				netdev_dbg(netdev,
-+					   "init tx pools failed (%d)\n",
- 					   rc);
- 				goto out;
- 			}
-@@ -5627,6 +5686,7 @@ static int ibmvnic_probe(struct vio_dev *dev, const struct vio_device_id *id)
- 	init_completion(&adapter->stats_done);
- 	clear_bit(0, &adapter->resetting);
- 	adapter->prev_rx_buf_sz = 0;
-+	adapter->prev_mtu = 0;
- 
- 	init_success = false;
- 	do {
-@@ -5728,6 +5788,7 @@ static void ibmvnic_remove(struct vio_dev *dev)
- 
- 	release_resources(adapter);
- 	release_rx_pools(adapter);
-+	release_tx_pools(adapter);
- 	release_sub_crqs(adapter, 1);
- 	release_crq_queue(adapter);
- 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.h b/drivers/net/ethernet/ibm/ibmvnic.h
-index b73a1b812368..b8e42f67d897 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.h
-+++ b/drivers/net/ethernet/ibm/ibmvnic.h
-@@ -967,6 +967,7 @@ struct ibmvnic_adapter {
- 	u64 min_mtu;
- 	u64 max_mtu;
- 	u64 req_mtu;
-+	u64 prev_mtu;
- 	u64 max_multicast_filters;
- 	u64 vlan_header_insertion;
- 	u64 rx_vlan_header_insertion;
-@@ -988,6 +989,7 @@ struct ibmvnic_adapter {
- 	u32 num_active_tx_pools;
- 
- 	u32 prev_rx_pool_size;
-+	u32 prev_tx_pool_size;
- 	u32 cur_rx_buf_sz;
- 	u32 prev_rx_buf_sz;
- 
--- 
-2.26.2
-
+Acked-by: John Fastabend <john.fastabend@gmail.com>
