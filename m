@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FB633FE5D4
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 02:33:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D5B93FE5D8
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 02:33:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244005AbhIAWwL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 18:52:11 -0400
+        id S1343609AbhIAWw1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 18:52:27 -0400
 Received: from mail-eopbgr00087.outbound.protection.outlook.com ([40.107.0.87]:32899
         "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230235AbhIAWwF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Sep 2021 18:52:05 -0400
+        id S236906AbhIAWwJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 Sep 2021 18:52:09 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QB2wVu2gJwdUJ4iCYZkyFGXthJEyKExvVwmLA0VuSTts0VDP9rvyR3UpeAYzDV5swJzqOSg6wzCrF4zGaddnAHxqi/cmP6kXafSoTRqjS7+j31qluCykAmAoSHoFgtOoLhMwMOsiZi6ol3pGkNo80IUAIrF4YgTwlsjJYwzrb867L8iFCKH//tcfkBT6JLyT6t+c2X2Ki8vtjiCRNrTgwuW7VgV5y2TVW3OCixWhhZh1ThBrgAC3EVTljQQhUEWwx6+JlK8WN+7mrUSV1Dq5a/LhAb1Cy747XxPf8xPFMjQEGK5GMCZXigQL/RblF24U+yTvanmNmiPBe47hyPk2Xw==
+ b=j1s5M7gCpJbRHyLo/wJsRfiIZu0bPNBgnZnR1ka0ja1eFxGhudiW9Zbf0TqrPYSsQGipxjBjuWCHL4IsObbiPsVMwQxY+RuWQZmIlUrPlccJRF4xf9OUtzUCRKsRc03wmwGddfxXE9I7frFoh4QWiTD3hhmO5/Ln6B8lhU8CN2/+5yXA7Fr7uqLOu5zz2al1Xa9+QjYOxoMjBZ49z/wXtf3CY6I7DB7xWvXVrwCgnQsmWUHZOjdKHZcob1AskLzDU97z7LntSG1HBazsSbS3AfJ+7gpLXmuykATLDRoytie57HbTpDkmhIdOU+sBXRWk6bAMX/qcI/jhlnG+nyv8dw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=WqMyDyVbI0SpZwM5B8+Eb4M0azRMsbR+wqWo3jPtsIU=;
- b=O1hw90EUYVNbxv6j4GvfRBW7megSZbl3WAX6PfJ+uCvzvHOgawnVJ39z7Ff4GTOcGcqmL0nUBuSisdeFmYTHvPYbzwwOcPKx6tuPfms/c3DJwTv0rTvrJ1uxoBMfBziYFAZ3LGztiRLK9S6w/DmGM1vjVlMPlDQW+Ttv2l1y1edMtaoW6pjeZX3nO8jnX7dKkR5s+ci0/Iaj6vcb4cv2Z0z89mPmpq7g4jYkwcwf3emuBTws+5i1fJxPJfpPKlWk17J6mosigrHFEipsjFdGd60zpz/LO4GqxNiobVe1AElLJu/6/t34DI2nOKvrtwRTWCiRJ00FHP84INLNV9cMLA==
+ bh=pWiPOuEmFZyrTxtIUVeN4fyc4bTX3yYc0vTDGglDUzo=;
+ b=XaNCbXi/wlfTNT73R8Pn3kJWOi+/+35VHotBxSUXz0HW2gyqZhL6u2/De061v7G018Mx20lzdyRYvn/ItUp3210xrVQqKpgo0YrDxRms246i3tOX3MbYtgPcKAf8mkRhw0mJxnz81CLwzhbayhISfujdEOi7uqC7hAU6EJeFHx+Kc7LEsOdYAlrjqMzaUNrh2yXMlKhErd64WHGcAeIxmWBW40ccw2RAU42kyjvBucWRxdnXH+7PHWvv3xKkPl/WkKRDngnx1a5JITyLPkkkZcFaL30/qN26HTv/C6xSrewg2jFKDzmZOrC11C3PuePctgJckCG5hCWTmpRw7uaEDg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WqMyDyVbI0SpZwM5B8+Eb4M0azRMsbR+wqWo3jPtsIU=;
- b=JXGt+rMu9yhAoha2SBEACMlW76L9W/tROWrATtidCAkt2FaqFqyfkFX2TgvfUWyG+7WX0HjrgmZZotQcMIH+H9P9l7kJSJEXOJ1cuKFvdN/5iXY2fNZEeYie2Z52qWYa+0FoXJK8w3vQ5hTARKRlo/u0fdeUhNQSzknAfyRoYP0=
+ bh=pWiPOuEmFZyrTxtIUVeN4fyc4bTX3yYc0vTDGglDUzo=;
+ b=MnYpuEtCCuJws4xigf3E1XlDu3PSY0Ec7eizZdcWhtCwkKw/xUFlVPefaSo9KsbEFl8ZIjx4pXELmcRwfA0KPuMkzYM2isK0ZMSOF8KQD2+nNFnQB5DwYj/xbf977y17nLiceWwSDy+gauK9OwLASTpL2Ws80+9FiyJIK5t5WVQ=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VI1PR04MB6015.eurprd04.prod.outlook.com (2603:10a6:803:d8::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4478.19; Wed, 1 Sep
- 2021 22:51:05 +0000
+ 2021 22:51:06 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4457.026; Wed, 1 Sep 2021
- 22:51:05 +0000
+ 22:51:06 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -54,138 +54,168 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
         kernel-team <kernel-team@android.com>,
         Len Brown <lenb@kernel.org>
-Subject: [RFC PATCH net-next 0/3] Make the PHY library stop being so greedy when binding the generic PHY driver
-Date:   Thu,  2 Sep 2021 01:50:50 +0300
-Message-Id: <20210901225053.1205571-1-vladimir.oltean@nxp.com>
+Subject: [RFC PATCH net-next 1/3] net: phy: don't bind genphy in phy_attach_direct if the specific driver defers probe
+Date:   Thu,  2 Sep 2021 01:50:51 +0300
+Message-Id: <20210901225053.1205571-2-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210901225053.1205571-1-vladimir.oltean@nxp.com>
+References: <20210901225053.1205571-1-vladimir.oltean@nxp.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: AM3PR04CA0130.eurprd04.prod.outlook.com (2603:10a6:207::14)
  To VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (82.78.148.104) by AM3PR04CA0130.eurprd04.prod.outlook.com (2603:10a6:207::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4478.19 via Frontend Transport; Wed, 1 Sep 2021 22:51:03 +0000
+Received: from localhost.localdomain (82.78.148.104) by AM3PR04CA0130.eurprd04.prod.outlook.com (2603:10a6:207::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4478.19 via Frontend Transport; Wed, 1 Sep 2021 22:51:05 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 71ae9655-a08d-425e-28b2-08d96d9afacf
+X-MS-Office365-Filtering-Correlation-Id: 4d5d4052-366b-422b-a641-08d96d9afbc8
 X-MS-TrafficTypeDiagnostic: VI1PR04MB6015:
-X-Microsoft-Antispam-PRVS: <VI1PR04MB601554FC8F36CAFDC7F9CF28E0CD9@VI1PR04MB6015.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2657;
+X-Microsoft-Antispam-PRVS: <VI1PR04MB6015AA911EAC234ACEAB3FD5E0CD9@VI1PR04MB6015.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: uD0rTEC6cJBLsEdmHXETg8oMrZizuI21pXtB9encR6/ePu4HznFUdt703TAFyqqJMUOwXiNNSQO1e8wB5kx72ipLnWoIRw2VoBWWanUascPVIZptddsBUiqpFUW53KRk7hhhO9gakCf50ds4fzICFuwXynS4fL27cAzpQr/Uorv8r8qeE/6Blh4F7pRr+PpJmhIdoKwy79mzt2Ryii0JYLJggelzhlQ08zbtQjPV35LvZBgZiWeZHYQL5MTs7Dm9uHMtvY/MMn0LnTttKKs1sKB11vg2Q+soWEDywtoMqjM5lJ+S3aOvnA9bamd+yP1pSsXOIjFoo2abDLnnhO/b87eg6i373NMKutAW5w/JApRC+fINzlxr4XPDT1piwUU3Ja6HNa6nUAxJfC4FZUBXTFBXVP//f3j47rX8nEmJi5VE1lKEEmAf9ZgHLE+EKZ+Ko0rR6MmD0p3fF1Ce7m01QDn8sjIRPSZZ54YGgS7IpCqW4magZnFOM0/s6tcdO1z9mGzSw4VW0sP9StoKoHAcInJrR82Vv1tmlGYlMJRbLipYm0ps+a1c9DuNaLSn6rrwB2RU5rQKHCjtQ3c5VwkpQzi0a7/FlsN9u8CeUncV99B2hr4eel/hspXUL7Hh4zMU81Xx8UYjxQOrXkwFXsM/sOf8B+c92F5BeKKpNmx5KR2Wgx/NHb4jcWebGLNzA2mpIUhUHROHs5cY3B+vlFAdmUZZ2m+R1T4z7H2WeERqGci5NkMuh+J0NOX20iS4jTdseFnCI04q+Mj79z/D0oMD2AGpuHfvsshxv0Ys2KxeXdCXg2QfTdCYiead9K4EVWJm2EH/uKv5Y+l4XjtagQcC4g==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(136003)(396003)(39860400002)(376002)(346002)(66556008)(66476007)(83380400001)(186003)(8936002)(66946007)(26005)(6506007)(52116002)(316002)(36756003)(478600001)(5660300002)(6916009)(2906002)(966005)(7416002)(4326008)(6666004)(956004)(86362001)(2616005)(6486002)(6512007)(44832011)(1076003)(38100700002)(54906003)(8676002)(38350700002)(41533002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: /1kGNySXgg76QpPjveAl3o01fWS8SysvXRT2y7I3kdrnHuJiKZid5wIIIKgg5O9ihqXg2Vib5eck9fbTg/eoY4aEaX27RbIFUm4reisI2XCCuz/J6TKaEoUx/dVz6fz7ZvGUk56yYgKMph4CWyKrTm+sYbNK1JXbdVBGbjf7+M+KiMq5E1Nzr9OUC3r3aep0rbjXY4tUWh/SAEnvNChJ8NpGqjJRPy+oh177l45ZbHxzx/6sISvPll5kl02rtco5JEpAo9viFOLdLps+NgR+sbkHLEdmRszTHT0/msf0JNLwfMUrGDf3UN4+ZJ1Z8iyvv02/7aQM6nY3/8drsHI9OJhgEIuxCTiU3lSl/zIUEBW7aZ77jmgFhnkyO1BOerlazPNxG8Y1DJ9bPHF5ioj1x03AvQPa7KteQkSpQ/GP0JoN8dsqk3TCZMYAiEcxNMOWq1ElCI/BAMSO5cmk2ExG2UsgLI9kCHxKVZc512QkamCtnahHA3Kg0CYMe+fpj8Jj9vG2VtJvkY7y0ElKBsU+njGpcCYAT0lo+ZuRfzQ/MhuCaWpiMSQH4ovFk/oY61az3eNPHUuLDxBiLsYICTW+7adw+rZNQvnf//jlwVCAPH5dkOMsfX30J3uUeg48Kdim0E44V0hkQVqe4KaYpUqcSoAEmG3PlcOesy8exHSsw30TqYOp6aLoUa/M5bBDZsLie434f0X60BxmIPJWPFHn3w==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(136003)(396003)(39860400002)(376002)(346002)(66556008)(66476007)(83380400001)(186003)(8936002)(66946007)(26005)(6506007)(52116002)(316002)(36756003)(478600001)(5660300002)(6916009)(2906002)(7416002)(4326008)(6666004)(956004)(86362001)(2616005)(6486002)(6512007)(44832011)(1076003)(38100700002)(54906003)(8676002)(38350700002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?DJKHvUc99Rs6pwv8jmzk4WqDDM1Fx8/LtSxcVPOvuH+XZhzLl9wJHh92M1TW?=
- =?us-ascii?Q?JaFn0Q5ocX9bP0FKXVx+gi2Bw7tAuypStpwobCQHPxMr8Y0xeSuL1FsEMpmg?=
- =?us-ascii?Q?KMtVp9kxxXPE2cJ7jE8xjb0fzN6WHkgWOjzEW43QlkmM+kWbaeL/gMy6BS9Y?=
- =?us-ascii?Q?WygYLpj98m2G/M1NAJpnpDb6N8e6zM/s3fAO8uB9bC5U58CH3WtWny14dHcI?=
- =?us-ascii?Q?Ig/Q0pgZ41j6XkpPCgP5AJAFnF4GbEzkKTGhnE79VnOJyD/t8V8vCKOCN3jE?=
- =?us-ascii?Q?conGpGkm1XOxUormeaHrLdTFagfCXfs5kPgbdv2bcZd7RqEoJkP2VgDFGsOg?=
- =?us-ascii?Q?56wju/vyl8954ig3NIjm7KqJwbYGmrFCfwgwGP/DZPOVzK9FmXeJNzpTexjO?=
- =?us-ascii?Q?fRGuYvT4pYPleUfNUarHWWJp5GH8QoHRb44jnb5CLVZ3QD5Ns1e4CM4/+IbH?=
- =?us-ascii?Q?mWhTYRBrIeEphxH0O76U8qiZjju3OrGjjRc9j5Idh9Om+u8RRXFIfwiRZvZe?=
- =?us-ascii?Q?nYHnKFRAtlQ+6dXqbLMu3QWVdDaaZ9tIYaHVVqIdBFXMfojB/Pr7k9963GLr?=
- =?us-ascii?Q?edLDG2k8R8uH4SC4qBlBwVI2D0fWsEQ8CK5XT7aIcNEvLFWOYfYaX9NsJSxl?=
- =?us-ascii?Q?7aSBqBBEZ/Cxw7XlrYfNrSWT7rRH01FgJ5UTT6BlQbGgEQtfvmkFnaxUsmnZ?=
- =?us-ascii?Q?nHzdG3GvOQqcfCkSkZY3rHNZ3RzQYr2g/mLK7OX5V6AQ3hbtXu4Zxjwu5REG?=
- =?us-ascii?Q?3u7mVZB1zeDbnZK6OhizzhfU+pdPclqiY8xssG0A4LuaFkyLXM927xDq97Dz?=
- =?us-ascii?Q?XWE8NoRncBtEZ2KQKJ1cMMrJhqSs6s8O6P57HnT5p+SOqDq4+06t7CVxvyff?=
- =?us-ascii?Q?6QXlVLh6Av5YP3vmkNFu98kA2XOvzQopseHG3EFY2yPAfOdT31Sw+sixv4G0?=
- =?us-ascii?Q?KYXqOUZboc7N6Lon3GMipMqG9MYvmNrRgShoBrVQJoqryDoAIWnu3FqaIcfT?=
- =?us-ascii?Q?vmKE7F403ZqgefK3YoS9urYrjQ9W/b4Ghi4G4dm/K07r7v2xZRvpsxPvQtwh?=
- =?us-ascii?Q?Kkn9EED+wkmazCMRHPUYuRwlCdw9kx2etXRkayDcUJfvRrYPiepVIaCEZWkw?=
- =?us-ascii?Q?7+AFYhos6aE1dlt+utvkCRstQbKasz+Qdc89F8zM2DTNXjK4b2LdR+jCQOXP?=
- =?us-ascii?Q?pCRKMRC9AH5OE7nPx3uBJmHWk2KfPg0vZikVGdcPiYlah4QlyxM+4XY5/6Om?=
- =?us-ascii?Q?eHFMUbDleDg+gDswUVBYbjqrN/XD7ajHJ+YzhlZ/MRKeu2sjU8jBmORCT695?=
- =?us-ascii?Q?9XUuZaq9d3gVT/JvnZ09xtD8?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?muemRvmZsER8ennsqke+yIxR0DgheQjxSCC8AkIrB1LEl18AZFgMn71AKM+q?=
+ =?us-ascii?Q?nuceJW2pgieoIhSH+oBX0O78l+3LG6zKJcKgA8T6oF59eTL2eNEplkuy3HKq?=
+ =?us-ascii?Q?5AwHHDaOs5wLtFdqO99ciXfVk5OggfNGN8htVkMgUPjYgh44RdqL/d6+wv/L?=
+ =?us-ascii?Q?JNC1EddKXGRi73xHGP0DJtBNwdzWDH9GwCEj2xNtXY0EhJhobhuiNsO8rsvM?=
+ =?us-ascii?Q?OEe85w9mhX218G/eeHdR7TzcwmRVxFW6bu0KFsgKSRBCkRRQ7e1Bu5689v5T?=
+ =?us-ascii?Q?mLPPE1BIhxL8hroxEUFK6umFH7IU43kWnatcqiz/pKpOg6ptDjz+eygeDtp/?=
+ =?us-ascii?Q?QMhOBNzXgPN0ICmsT38PBqWsTNCsjCUj2TkR5H3X82LGDTLJqBEEdnTHcOMB?=
+ =?us-ascii?Q?/wGaU9JErQdtLRLYD3KLXrUqvwCtTuMvae/GKrHNrMwCUuD/GAnri2ErePwh?=
+ =?us-ascii?Q?5LfWVuVhSZuTCfMLaw9sLRla13Wo3qKeDYKQURqKOLZnZEB7VBFRG4cAQpVo?=
+ =?us-ascii?Q?P6u8/gzeroNmf/MXcekJ1Pzj+UTmMlDfo6Iz1qS6Wk+kV5pS2jOZInnLHIKl?=
+ =?us-ascii?Q?Y6/E4kzp3OtqCSKA1Hcgg34/OMVLw2lz7UUArOYBeda29+B1EAuODUMGxHGz?=
+ =?us-ascii?Q?KRzOe3vq8f07SJCCrYnAWx/Rbz3JEpagLQ3s+MzBeGqgo4gC/RStXUb4S+3f?=
+ =?us-ascii?Q?fwX2tDGrjZdoeJWEMWU4Yl9sFjOD3SQW9M0KxkuSfQIBxfzhkji6Upk3AxPy?=
+ =?us-ascii?Q?HtTNX2x5dudDdun47M95irOXB+l3iu80RUMUJyjfqrMSGpwe4mY11ad1BsTa?=
+ =?us-ascii?Q?euEf//zy4Oi1vFF09VnrNHSd5sTXD3Qe4tSfwF5Vj8k3sgLNokl7rB9MwGns?=
+ =?us-ascii?Q?ABqDRrvmlBaZQ2UEkTfolOMxSii6fPOpfrl7S/Huiu0dhm5b4tCJR3NBTKoS?=
+ =?us-ascii?Q?+R9x9BOukFpeOa/QMEaA2ru9tfUutCpyM9bRnlRfNL0lExWjih7qYxL+1q+S?=
+ =?us-ascii?Q?kZ7tMrrP9wbJX70nKV/sRLQ9OEeGr3WGg0VrTDHVLRNXBVV6Gr1qCaWiOO5h?=
+ =?us-ascii?Q?VhreqZ9hpi9fcFQJ1+AFTx/wBROmUZ0bdEPTbaRdfDb0z+Os4EGCprrhPwml?=
+ =?us-ascii?Q?ndYIm15yqIPGNYC1D/fxTnNLc5VKHLg79fDr+Bk+mrV4MgFiR3YU6Rq/L/uH?=
+ =?us-ascii?Q?ssTpQOwLeQ2dE/fDA8lVxf+q/z0xjd8huKkVzVtvUsopzULvmqLH5ycclMd5?=
+ =?us-ascii?Q?kpFbdZ5WNTk3vwhOA+H1nNp9Sre0k9ktWj4/XArP4CeGiGgfKrVdKa3NTBlO?=
+ =?us-ascii?Q?lansEr+1nP7YIdAjGAJunhjG?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 71ae9655-a08d-425e-28b2-08d96d9afacf
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4d5d4052-366b-422b-a641-08d96d9afbc8
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Sep 2021 22:51:05.2505
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Sep 2021 22:51:06.7887
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: UzL5PfiiG/YAB3D94hLu7jDjnajmvJ96Fbn8MJtf0SkkKDU+dIJ2XGVuO30oL7cmfcmKgGERQEMJYyoHqCTEHQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: czQ8cnPbkwtV+PbLI4RAaFR5LAuQkgyyceVswUgAr1jj5E6oox8M98ezYmvnPh+IfM1K02Un01PrvMfXIGuRBQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6015
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a continuation of the discussion on patch "[v1,1/2] driver core:
-fw_devlink: Add support for FWNODE_FLAG_BROKEN_PARENT" from here:
-https://patchwork.kernel.org/project/netdevbpf/patch/20210826074526.825517-2-saravanak@google.com/
+There are systems where the PHY driver might get its probe deferred due
+to a missing supplier, like an interrupt-parent, gpio, clock or whatever.
 
-Summary: in a complex combination of device dependencies which is not
-really relevant to what is being proposed here, DSA ends up calling
-phylink_of_phy_connect during a period in which the PHY driver goes
-through a series of probe deferral events.
+If the phy_attach_direct call happens right in between probe attempts,
+the PHY library is greedy and assumes that a specific driver will never
+appear, so it just binds the generic PHY driver.
 
-The central point of that discussion is that DSA seems "broken" for
-expecting the PHY driver to probe immediately on PHYs belonging to the
-internal MDIO buses of switches. A few suggestions were made about what
-to do, but some were not satisfactory and some did not solve the problem.
+In certain cases this is the wrong choice, because some PHYs simply need
+the specific driver. The specific PHY driver was going to probe, given
+enough time, but this doesn't seem to matter to phy_attach_direct.
 
-In fact, fw_devlink, the mechanism that causes the PHY driver to defer
-probing in this particular case, has some significant "issues" too, but
-its "issues" are only in quotes "because at worst it'd allow a few
-unnecessary deferred probes":
-https://patchwork.kernel.org/project/netdevbpf/patch/20210826074526.825517-2-saravanak@google.com/#24418895
+To solve this, make phy_attach_direct check whether a specific PHY
+driver is pending or not, and if it is, just defer the probing of the
+MAC that's connecting to us a bit more too.
 
-So if that's the criterion by which an issue is an issue, maybe we
-should take a step back and look at the bigger picture.
-
-There is nothing about the idea that a PHY might defer probing, or about
-the changes proposed here, that has anything with DSA. Furthermore, the
-changes done by this series solve the problem in the same way: "they
-allow a few unnecessary deferred probes" <- in this case they provoke
-this to the caller of phy_attach_direct.
-
-If we look at commit 16983507742c ("net: phy: probe PHY drivers
-synchronously"), we see that the PHY library expectation is for the PHY
-device to have a PHY driver bound to it as soon as device_add() finishes.
-
-Well, as it turns out, in case the PHY device has any supplier which is
-not ready, this is not possible, but that patch still seems to ensure
-that the process of binding a driver to the device has at least started.
-That process will continue for a while, and will race with
-phy_attach_direct calls, so we need to make the latter observe the fact
-that a driver is struggling to probe, and wait for it a bit more.
-
-What I've not tested is loading the PHY module at runtime, and seeing
-how phy_attach_direct behaves then. I expect that this change set will
-not alter the behavior in that case: the genphy will still bind to a
-device with no driver, and phy_attach_direct will not return -EPROBE_DEFER
-in that case.
-
-I might not be very versed in the device core/internals, but the patches
-make sense to me, and worked as intended from the first try on my system
-(Turris MOX with mv88e6xxx), which was modified to make the same "sins"
-as those called out in the thread above:
-
-- use PHY interrupts provided by the switch itself as an interrupt-controller
-- call of_mdiobus_register from setup() and not from probe(), so as to
-  not circumvent fw_devlink's limitations, and still get to hit the PHY
-  probe deferral conditions.
-
-So feedback and testing on other platforms is very appreciated.
-
-Vladimir Oltean (3):
-  net: phy: don't bind genphy in phy_attach_direct if the specific
-    driver defers probe
-  net: dsa: destroy the phylink instance on any error in
-    dsa_slave_phy_setup
-  net: dsa: allow the phy_connect() call to return -EPROBE_DEFER
-
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
  drivers/base/dd.c            | 21 +++++++++++++++++++--
  drivers/net/phy/phy_device.c |  8 ++++++++
  include/linux/device.h       |  1 +
- net/dsa/dsa2.c               |  2 ++
- net/dsa/slave.c              | 12 +++++-------
- 5 files changed, 35 insertions(+), 9 deletions(-)
+ 3 files changed, 28 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+index 1c379d20812a..b22073b0acd2 100644
+--- a/drivers/base/dd.c
++++ b/drivers/base/dd.c
+@@ -128,13 +128,30 @@ static void deferred_probe_work_func(struct work_struct *work)
+ }
+ static DECLARE_WORK(deferred_probe_work, deferred_probe_work_func);
+ 
++static bool __device_pending_probe(struct device *dev)
++{
++	return !list_empty(&dev->p->deferred_probe);
++}
++
++bool device_pending_probe(struct device *dev)
++{
++	bool pending;
++
++	mutex_lock(&deferred_probe_mutex);
++	pending = __device_pending_probe(dev);
++	mutex_unlock(&deferred_probe_mutex);
++
++	return pending;
++}
++EXPORT_SYMBOL_GPL(device_pending_probe);
++
+ void driver_deferred_probe_add(struct device *dev)
+ {
+ 	if (!dev->can_match)
+ 		return;
+ 
+ 	mutex_lock(&deferred_probe_mutex);
+-	if (list_empty(&dev->p->deferred_probe)) {
++	if (!__device_pending_probe(dev)) {
+ 		dev_dbg(dev, "Added to deferred list\n");
+ 		list_add_tail(&dev->p->deferred_probe, &deferred_probe_pending_list);
+ 	}
+@@ -144,7 +161,7 @@ void driver_deferred_probe_add(struct device *dev)
+ void driver_deferred_probe_del(struct device *dev)
+ {
+ 	mutex_lock(&deferred_probe_mutex);
+-	if (!list_empty(&dev->p->deferred_probe)) {
++	if (__device_pending_probe(dev)) {
+ 		dev_dbg(dev, "Removed from deferred list\n");
+ 		list_del_init(&dev->p->deferred_probe);
+ 		__device_set_deferred_probe_reason(dev, NULL);
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 52310df121de..2c22a32f0a1c 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -1386,8 +1386,16 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
+ 
+ 	/* Assume that if there is no driver, that it doesn't
+ 	 * exist, and we should use the genphy driver.
++	 * The exception is during probing, when the PHY driver might have
++	 * attempted a probe but has requested deferral. Since there might be
++	 * MAC drivers which also attach to the PHY during probe time, try
++	 * harder to bind the specific PHY driver, and defer the MAC driver's
++	 * probing until then.
+ 	 */
+ 	if (!d->driver) {
++		if (device_pending_probe(d))
++			return -EPROBE_DEFER;
++
+ 		if (phydev->is_c45)
+ 			d->driver = &genphy_c45_driver.mdiodrv.driver;
+ 		else
+diff --git a/include/linux/device.h b/include/linux/device.h
+index e270cb740b9e..505e77715789 100644
+--- a/include/linux/device.h
++++ b/include/linux/device.h
+@@ -889,6 +889,7 @@ int __must_check driver_attach(struct device_driver *drv);
+ void device_initial_probe(struct device *dev);
+ int __must_check device_reprobe(struct device *dev);
+ 
++bool device_pending_probe(struct device *dev);
+ bool device_is_bound(struct device *dev);
+ 
+ /*
 -- 
 2.25.1
 
