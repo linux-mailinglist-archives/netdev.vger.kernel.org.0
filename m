@@ -2,116 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8774A3FD01A
+	by mail.lfdr.de (Postfix) with ESMTP id D181E3FD01B
 	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 02:10:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245248AbhIAAKv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 20:10:51 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:3166 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S243304AbhIAAJN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 20:09:13 -0400
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 18104OF7160689
-        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 20:08:17 -0400
+        id S242429AbhIAAKy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 20:10:54 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:57682 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S243347AbhIAAJP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 20:09:15 -0400
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 18103Hu0112134
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 20:08:19 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=AHv6sVqRAYmxLti/u194BDmBrG5u+VZ56qtGbA30CIE=;
- b=DwynicHmbCHpz3AudL4oHgv62l3gzXJGnNr5fK4rhUV4f2JnJT3D7d05IKEribU7tW3M
- GQe4axNlP5ExqLyRyyyOabb65lLQgqX7Uka2MB+LuGyd1dn8Ew1Wg3s8Q6P7ahfYai+8
- IhKToD0+uTgfRTq7/+ZTV968wK2HNQ0aSMhIx3E0VIOVbuStY9y3KPsqePyDEywOdch2
- csaM5LRSwZ0Vul5UCf76gyzmgotIt2nthhvG0nLxOxrL+GpRSSRuPxXbURMds5or+v71
- sSh+w66qKS4diKJ2JGJfXSOd+D/IyPLRYQF6H+fyEJA1DxMIXPIgrED4wFZJxHvcO/yJ yw== 
-Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3asuk9v3cj-1
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=+mOJKw62qtzdHY6xYokt+enZZkNUKw9d3pnZYRY5hGY=;
+ b=HIWIpojFhRMqnACyykFU8TEakCudB6qhnovkg5p/RNnkp8+Wv44J/VG9TLehMwZcY1mp
+ fqZkdZJi6ad9XhOKRBhp0GMeP48vdtwGWqAbl/JyjiDJEbMZrqxngxTbZBbQZsidjFjp
+ ZdeWDCDCvVSOjRJk9sAdPR7YTz8O/oSwrIyS7AwJqdnZcg3XOfwthfS2h2MgA9l8XCIa
+ Zl+XeYNM2X9CMMTvtWZrHgnkDrMFRZvBOQSrYpEY7xV6waEpVz7F7E3B014lHsxpzORn
+ hAaajkvhHrO0lcBYrep5S70zt19EI4xwWOZCGPyMRLoHE/9MVoKogoh3gAgLaS6q4Tlc jw== 
+Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3asx598nk5-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 20:08:17 -0400
-Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
-        by ppma02wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 17VNue5M022830
-        for <netdev@vger.kernel.org>; Wed, 1 Sep 2021 00:08:16 GMT
-Received: from b03cxnp07028.gho.boulder.ibm.com (b03cxnp07028.gho.boulder.ibm.com [9.17.130.15])
-        by ppma02wdc.us.ibm.com with ESMTP id 3aqcscj36n-1
+        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 20:08:19 -0400
+Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
+        by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 17VNudeh014296
+        for <netdev@vger.kernel.org>; Wed, 1 Sep 2021 00:08:18 GMT
+Received: from b03cxnp07029.gho.boulder.ibm.com (b03cxnp07029.gho.boulder.ibm.com [9.17.130.16])
+        by ppma03dal.us.ibm.com with ESMTP id 3aqcsd208g-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 00:08:16 +0000
+        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 00:08:18 +0000
 Received: from b03ledav004.gho.boulder.ibm.com (b03ledav004.gho.boulder.ibm.com [9.17.130.235])
-        by b03cxnp07028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 18108Fg147513992
+        by b03cxnp07029.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 18108GiM42729906
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 1 Sep 2021 00:08:15 GMT
+        Wed, 1 Sep 2021 00:08:17 GMT
 Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 40ECD7806B;
+        by IMSVA (Postfix) with ESMTP id DD64B7806B;
+        Wed,  1 Sep 2021 00:08:16 +0000 (GMT)
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A4DB67805C;
         Wed,  1 Sep 2021 00:08:15 +0000 (GMT)
-Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E321B78067;
-        Wed,  1 Sep 2021 00:08:13 +0000 (GMT)
 Received: from suka-w540.ibmuc.com (unknown [9.65.237.107])
         by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Wed,  1 Sep 2021 00:08:13 +0000 (GMT)
+        Wed,  1 Sep 2021 00:08:15 +0000 (GMT)
 From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 To:     netdev@vger.kernel.org
 Cc:     Brian King <brking@linux.ibm.com>, cforno12@linux.ibm.com,
         Dany Madden <drt@linux.ibm.com>,
         Rick Lindsley <ricklind@linux.ibm.com>
-Subject: [PATCH net-next 0/9] ibmvnic: Reuse ltb, rx, tx pools
-Date:   Tue, 31 Aug 2021 17:08:03 -0700
-Message-Id: <20210901000812.120968-1-sukadev@linux.ibm.com>
+Subject: [PATCH net-next 1/9] ibmvnic: Consolidate code in replenish_rx_pool()
+Date:   Tue, 31 Aug 2021 17:08:04 -0700
+Message-Id: <20210901000812.120968-2-sukadev@linux.ibm.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210901000812.120968-1-sukadev@linux.ibm.com>
+References: <20210901000812.120968-1-sukadev@linux.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: h7pbN1VTS7VrOa1b3JgMtttT9to3X5Gh
-X-Proofpoint-ORIG-GUID: h7pbN1VTS7VrOa1b3JgMtttT9to3X5Gh
+X-Proofpoint-GUID: oQ42lvPVj5kgHGlGPQwUrFrPTA458x3R
+X-Proofpoint-ORIG-GUID: oQ42lvPVj5kgHGlGPQwUrFrPTA458x3R
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
  definitions=2021-08-31_10:2021-08-31,2021-08-31 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxlogscore=999
- impostorscore=0 mlxscore=0 phishscore=0 lowpriorityscore=5 malwarescore=0
- bulkscore=5 suspectscore=0 clxscore=1011 spamscore=0 priorityscore=1501
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2107140000
- definitions=main-2108310133
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
+ priorityscore=1501 phishscore=0 spamscore=0 adultscore=0 impostorscore=0
+ clxscore=1015 mlxscore=0 mlxlogscore=999 suspectscore=0 lowpriorityscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2107140000 definitions=main-2108310133
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It can take a long time to free and reallocate rx and tx pools and long
-term buffer (LTB) during each reset of the VNIC. This is specially true
-when the partition (LPAR) is heavily loaded and going through a Logical
-Partition Migration (LPM). The long drawn reset causes the LPAR to lose
-connectivity for extended periods of time and results in "RMC connection"
-errors and the LPM failing.
+For better readability, consolidate related code in replenish_rx_pool()
+and add some comments.
 
-What is worse is that during the LPM we could get a failover because
-of the lost connectivity. At that point, the vnic driver releases
-even the resources it has already allocated and starts over.
+Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+---
+ drivers/net/ethernet/ibm/ibmvnic.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-As long as the resources we have already allocated are valid/applicable,
-we might as well hold on to them while trying to allocate the remaining
-resources. This patch set attempts to reuse the resources previously
-allocated as long as they are valid. It seems to vastly improve the
-time taken for the vnic reset. We have also not seen any RMC connection
-issues during our testing with this patch set.
-
-If the backing devices for a vnic adapter are not "matched" (see "pool
-parameters" in patches 8 and 9) it is possible that we will still free
-all the resources and allocate them. If that becomes a common problem,
-we have to address it separately.
-
-Thanks to input and extensive testing from Brian King, Cris Forno,
-Dany Madden, Rick Lindsley.
-
-Sukadev Bhattiprolu (9):
-  ibmvnic: consolidate related code in replenish_rx_pool()
-  ibmvnic: Fix up some comments and messages
-  ibmvnic: Use/rename local vars in init_rx_pools
-  ibmvnic: Use/rename local vars in init_tx_pools
-  ibmvnic: init_tx_pools move loop-invariant code out
-  ibmvnic: use bitmap for LTB map_ids
-  ibmvnic: Reuse LTB when possible
-  ibmvnic: Reuse rx pools when possible
-  ibmvnic: Reuse tx pools when possible
-
- drivers/net/ethernet/ibm/ibmvnic.c | 592 ++++++++++++++++++-----------
- drivers/net/ethernet/ibm/ibmvnic.h |  10 +-
- 2 files changed, 379 insertions(+), 223 deletions(-)
-
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index a775c69e4fd7..e8b1231be485 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -371,6 +371,8 @@ static void replenish_rx_pool(struct ibmvnic_adapter *adapter,
+ 		}
+ 
+ 		index = pool->free_map[pool->next_free];
++		pool->free_map[pool->next_free] = IBMVNIC_INVALID_MAP;
++		pool->next_free = (pool->next_free + 1) % pool->size;
+ 
+ 		if (pool->rx_buff[index].skb)
+ 			dev_err(dev, "Inconsistent free_map!\n");
+@@ -380,14 +382,15 @@ static void replenish_rx_pool(struct ibmvnic_adapter *adapter,
+ 		dst = pool->long_term_buff.buff + offset;
+ 		memset(dst, 0, pool->buff_size);
+ 		dma_addr = pool->long_term_buff.addr + offset;
+-		pool->rx_buff[index].data = dst;
+ 
+-		pool->free_map[pool->next_free] = IBMVNIC_INVALID_MAP;
++		/* add the skb to an rx_buff in the pool */
++		pool->rx_buff[index].data = dst;
+ 		pool->rx_buff[index].dma = dma_addr;
+ 		pool->rx_buff[index].skb = skb;
+ 		pool->rx_buff[index].pool_index = pool->index;
+ 		pool->rx_buff[index].size = pool->buff_size;
+ 
++		/* queue the rx_buff for the next send_subcrq_indirect */
+ 		sub_crq = &ind_bufp->indir_arr[ind_bufp->index++];
+ 		memset(sub_crq, 0, sizeof(*sub_crq));
+ 		sub_crq->rx_add.first = IBMVNIC_CRQ_CMD;
+@@ -405,7 +408,8 @@ static void replenish_rx_pool(struct ibmvnic_adapter *adapter,
+ 		shift = 8;
+ #endif
+ 		sub_crq->rx_add.len = cpu_to_be32(pool->buff_size << shift);
+-		pool->next_free = (pool->next_free + 1) % pool->size;
++
++		/* if send_subcrq_indirect queue is full, flush to VIOS */
+ 		if (ind_bufp->index == IBMVNIC_MAX_IND_DESCS ||
+ 		    i == count - 1) {
+ 			lpar_rc =
 -- 
 2.31.1
 
