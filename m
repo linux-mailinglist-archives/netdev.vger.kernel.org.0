@@ -2,107 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B52113FE1A4
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 20:01:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0F3D3FE1A9
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 20:02:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344602AbhIASCn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 14:02:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51130 "EHLO
+        id S1344917AbhIASDf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 14:03:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236877AbhIASCl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 14:02:41 -0400
-Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0E72C061764
-        for <netdev@vger.kernel.org>; Wed,  1 Sep 2021 11:01:44 -0700 (PDT)
-Received: by mail-il1-x12b.google.com with SMTP id v2so101799ilg.12
-        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 11:01:44 -0700 (PDT)
+        with ESMTP id S1344478AbhIASDe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 14:03:34 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAC80C061760
+        for <netdev@vger.kernel.org>; Wed,  1 Sep 2021 11:02:35 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id t42so430286pfg.12
+        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 11:02:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=j7RqTfIlND2syTvjqIu2Q5uS78m15882rXoX/dLksfk=;
-        b=ncSc4RkcmzknHFOy+NFnmoCd7Jjyra6USvWhhitwHBBK6BpCBq9WjKA57EH+7SoN4X
-         VWXPG2Gy8VIuV5RzMDNp/fAEijSL1eu0JEFOidC/OpCXFXMBmLYvmaGb3eiMQ6svaJMb
-         4hfIlaXz/nPF+IhigO8o+/qn9ccp1QxBDLu++FmzW1vH63sand1HoP9T8qoyEHQAAwZt
-         OikQFMvXS6u4io8Jz/0FczYZYKB7DKyD/PcmO3b8zhVQoWsgCDRUsJdp9I+NamHYKqs6
-         8Ic99AdNfkWLJKit8vTm3x3nV66L6Nbn2sDijeici/BlOsc/z1e4m9NH42d0jZ8WPJ4E
-         Ybrw==
+        d=squareup.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=y30if3F3NS1+QkGYwwybS7kbIaoempyrzf9jSIfoY3A=;
+        b=ESredNTJViz+fzZkQ9m1MSPT3f0f154gcIeOGNFX7Q4gaI0pDTE1Gg9QpIhLX/bsIN
+         sqJZ5ZbH7QAo4eMn/tf4BQ0lWmYVvghCuMBoolH58nH9Vx5aewNop+MmfSIff6JTs+Z5
+         jmze25Fq8cVXjxxwX+KqnBae1gP4cflG5UP/w=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=j7RqTfIlND2syTvjqIu2Q5uS78m15882rXoX/dLksfk=;
-        b=JUhS6bB27sL9K8TqYJ8kUoRnObdmugkIsyC3zdg+bbp77uba0vcdQ7h1tjJ54jy0H4
-         zKodwS6Dl8ieyDlzXVt0WvQjBqbxj0jNG3PgqNnYzkSmeRTZgxIqyvapTh4uTb15EFlB
-         SDADYVlH6mht0ToijSy5IzZ/q4AmUL3Zb0K3DH3FnyaWr6EaFJgDEE2QCvb+5fK/ijJ5
-         RB3tt6s0SNw/yAgMP5j5A9Y3MEGlBnwPtLV4/H4nce3PFZNStWTiAzA3Wv1mL6bVxNvE
-         L0KVBzjJDdI5PrysRMskuLI0UCnZJEcK6rEELOhGmSd71AACgdErvxyupZWC//D14y0Y
-         dAzQ==
-X-Gm-Message-State: AOAM530gU6WCT1gQEMrxPEakegQ2aAr6VxIfU8LNlGWRoH4uLAF/PERR
-        VtatG2kqQ0Vo2qMgWnAQM8oPtCLF6gjYSVgSu787ng==
-X-Google-Smtp-Source: ABdhPJxUP05LARgCz56W2isH07n1NS5yhBorGo6KWnEaSil1/HJ8UDdK5HA/ea2y0JLJfdFVjsrvVgUTotv7Pje+6WU=
-X-Received: by 2002:a05:6e02:e53:: with SMTP id l19mr554302ilk.108.1630519303767;
- Wed, 01 Sep 2021 11:01:43 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210826194601.3509717-1-pcc@google.com> <20210831093006.6db30672@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <bf0f47974d7141358d810d512d4b9a00@AcuMS.aculab.com> <20210901070356.750ea996@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210901070356.750ea996@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Peter Collingbourne <pcc@google.com>
-Date:   Wed, 1 Sep 2021 11:01:32 -0700
-Message-ID: <CAMn1gO5OmHg_10s698tNqf4X-hJ_gn17D8afyRhbW1nKpvLzWQ@mail.gmail.com>
-Subject: Re: [PATCH v2] net: don't unconditionally copy_from_user a struct
- ifreq for socket ioctls
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Laight <David.Laight@aculab.com>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=y30if3F3NS1+QkGYwwybS7kbIaoempyrzf9jSIfoY3A=;
+        b=nNC1WCpP7YnCjS5uro7o5smw/4tukjUPvWdFI1nTC7yJuvYAlNmT//D8K+mwIXpqyn
+         3Jf2qnp2qNN4G5QnblaKpqsFNuji3CZMluzc6uvrDfwXNt8igXanuha9W6tRu0kalBt8
+         LP2EuVN+6Sma7ps8xoxS9BHGhZWCa0wUHFWIsknWsLztV3aTGqHXwXRmW2ArrXdtEXA+
+         QL8w+kwXvaKOZ4F0ff4GfEBb4BN4i1iCfWgrfKReAukX7l311vTUromsy5XX8Qq8yGWS
+         uolTCOVIH1MxiswyJGC4r9/pJtoZcksxhx+awHF7h6PRn88/0oGE7+r/Ew9q6Bq/FQ5o
+         i/ZA==
+X-Gm-Message-State: AOAM530pEtbd+T9l6TpAuB/ue3H1XF/uuW3ZWQiWG+3VkM9kypjQt8OD
+        AXb8KTTJjcfapqa9ngyWjeCi0A==
+X-Google-Smtp-Source: ABdhPJzsAsOgDwSLPteGex0dqQAwNeVXY4yZb23xomFOALrmZvS9rc7jQepSJ7jUP15ZkXZ0ai76og==
+X-Received: by 2002:aa7:9ae9:0:b0:3f5:e1a7:db23 with SMTP id y9-20020aa79ae9000000b003f5e1a7db23mr718513pfp.42.1630519355340;
+        Wed, 01 Sep 2021 11:02:35 -0700 (PDT)
+Received: from benl-m5lvdt.local ([2600:6c50:4d00:2376:c5f1:a747:4b09:56ac])
+        by smtp.gmail.com with ESMTPSA id v190sm147942pfv.166.2021.09.01.11.02.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Sep 2021 11:02:34 -0700 (PDT)
+Subject: Re: [PATCH] wcn36xx: handle connection loss indication
+To:     Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
+        Loic Poulain <loic.poulain@linaro.org>
+Cc:     Kalle Valo <kvalo@codeaurora.org>, stable@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
-        Colin Ian King <colin.king@canonical.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Arnd Bergmann <arnd@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Jakub Kicinski <kuba@kernel.org>, wcn36xx@lists.infradead.org,
+        linux-wireless@vger.kernel.org,
+        Network Development <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20210901030542.17257-1-benl@squareup.com>
+ <CAMZdPi_frOfwf+9nfiUw2NJhfuSVgcPj3=Hx2g0d8UsaZza5MA@mail.gmail.com>
+ <b6157d1f-b548-13c0-3683-2d8c35964d1d@linaro.org>
+From:   Benjamin Li <benl@squareup.com>
+Message-ID: <168f96a5-58ec-fea9-c0d3-61f925bd1129@squareup.com>
+Date:   Wed, 1 Sep 2021 11:02:32 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.7.1
+MIME-Version: 1.0
+In-Reply-To: <b6157d1f-b548-13c0-3683-2d8c35964d1d@linaro.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 1, 2021 at 7:04 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Wed, 1 Sep 2021 08:22:42 +0000 David Laight wrote:
-> > From: Jakub Kicinski
-> > > Sent: 31 August 2021 17:30
-> > >
-> > > On Thu, 26 Aug 2021 12:46:01 -0700 Peter Collingbourne wrote:
-> > > > @@ -3306,6 +3308,8 @@ static int compat_ifr_data_ioctl(struct net *net, unsigned int cmd,
-> > > >   struct ifreq ifreq;
-> > > >   u32 data32;
-> > > >
-> > > > + if (!is_socket_ioctl_cmd(cmd))
-> > > > +         return -ENOTTY;
-> > > >   if (copy_from_user(ifreq.ifr_name, u_ifreq32->ifr_name, IFNAMSIZ))
-> > > >           return -EFAULT;
-> > > >   if (get_user(data32, &u_ifreq32->ifr_data))
-> > >
-> > > Hi Peter, when resolving the net -> net-next merge conflict I couldn't
-> > > figure out why this chunk is needed. It seems all callers of
-> > > compat_ifr_data_ioctl() already made sure it's a socket IOCTL.
-> > > Please double check my resolution (tip of net-next) and if this is
-> > > indeed unnecessary perhaps send a cleanup? Thanks!
-> >
-> > To stop the copy_from_user() faulting when the user buffer
-> > isn't long enough.
-> > In particular for iasatty() on arm with tagged pointers.
->
-> Let me rephrase. is_socket_ioctl_cmd() is always true here. There were
-> only two callers, both check cmd is of specific, "sockety" type.
+Thanks for the investigation!
 
-I see, it looks like we don't need the check on the compat path then.
+As discussed offline, I will send v2 with Fixes: removed, and Bryan will test and submit a separate patch to add the additional feat_caps for the power_save off case.
 
-I can send a followup to clean this up but given that I got a comment
-from another reviewer saying that we should try to make the native and
-compat paths as similar as possible, maybe it isn't too bad to leave
-things as is?
+Depending on DB410c testing, these feat_caps may need to be gated for WCN3680 only, in which case Loic's patch to re-enable CONNECTION_MONITOR (but gated for WCN3660/3620) would still be needed.
 
-Peter
+Ben
+
+On 9/1/21 4:56 AM, Bryan O'Donoghue wrote:
+> On 01/09/2021 07:40, Loic Poulain wrote:
+>> iw wlan0 set power_save off
+> 
+> I do this on wcn3680b and get no loss of signal
+> 
+> If I do this though
+> 
+> diff --git a/drivers/net/wireless/ath/wcn36xx/smd.c b/drivers/net/wireless/ath/wcn36xx/smd.c
+> index 03966072f34c..ba613fbb728d 100644
+> --- a/drivers/net/wireless/ath/wcn36xx/smd.c
+> +++ b/drivers/net/wireless/ath/wcn36xx/smd.c
+> @@ -2345,6 +2345,8 @@ int wcn36xx_smd_feature_caps_exchange(struct wcn36xx *wcn)
+>                 set_feat_caps(msg_body.feat_caps, DOT11AC);
+>                 set_feat_caps(msg_body.feat_caps, ANTENNA_DIVERSITY_SELECTION);
+>         }
+> +       set_feat_caps(msg_body.feat_caps, IBSS_HEARTBEAT_OFFLOAD);
+> +       set_feat_caps(msg_body.feat_caps, WLANACTIVE_OFFLOAD);
+> 
+>         PREPARE_HAL_BUF(wcn->hal_buf, msg_body);
+> 
+> @@ -2589,7 +2591,7 @@ static int wcn36xx_smd_missed_beacon_ind(struct wcn36xx *wcn,
+>         struct wcn36xx_hal_missed_beacon_ind_msg *rsp = buf;
+>         struct ieee80211_vif *vif = NULL;
+>         struct wcn36xx_vif *tmp;
+> -
+> +wcn36xx_info("%s/%d\n", __func__, __LINE__);
+>         /* Old FW does not have bss index */
+>         if (wcn36xx_is_fw_version(wcn, 1, 2, 2, 24)) {
+>                 list_for_each_entry(tmp, &wcn->vif_list, list) {
+> @@ -2608,7 +2610,7 @@ static int wcn36xx_smd_missed_beacon_ind(struct wcn36xx *wcn,
+> 
+>         list_for_each_entry(tmp, &wcn->vif_list, list) {
+>                 if (tmp->bss_index == rsp->bss_index) {
+> -                       wcn36xx_dbg(WCN36XX_DBG_HAL, "beacon missed bss_index %d\n",
+> +                       wcn36xx_info("beacon missed bss_index %d\n",
+>                                     rsp->bss_index);
+>                         vif = wcn36xx_priv_to_vif(tmp);
+>                         ieee80211_connection_loss(vif);
+> 
+> 
+> bingo
+> 
+> root@linaro-developer:~# iw wlan0 set power_save off
+> 
+> 
+> # pulls plug on AP
+> 
+> root@linaro-developer:~# [   83.290987] wcn36xx: wcn36xx_smd_missed_beacon_ind/2594
+> [   83.291070] wcn36xx: beacon missed bss_index 0
+> [   83.295403] wlan0: Connection to AP e2:63:da:9c:a4:bd lost
+> 
+> I'm not sure if both flags are required but, this is the behavior we want
+> 
