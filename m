@@ -2,242 +2,274 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 797B03FD7F9
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 12:48:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD0D13FD7FD
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 12:49:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237132AbhIAKs6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 06:48:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34062 "EHLO
+        id S238280AbhIAKtA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 06:49:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231903AbhIAKs5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 06:48:57 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F33DC061575;
-        Wed,  1 Sep 2021 03:48:00 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id z4so3786084wrr.6;
-        Wed, 01 Sep 2021 03:48:00 -0700 (PDT)
+        with ESMTP id S235980AbhIAKs6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 06:48:58 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93738C061575;
+        Wed,  1 Sep 2021 03:48:01 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id i3so1525732wmq.3;
+        Wed, 01 Sep 2021 03:48:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8ZVMMm/7VePbBno+rUu3lisTUfXZQKB7offQjykcbVw=;
-        b=Q10+tV9VtWrF5qDcZ0QrAtn3VL6ZaqjFS48EO6ppUs1CuMr1++kWs2W+FyvEjG1f4N
-         lKjmvYkFA3Wp4cDYKrlbQgEIWloLiNgKVwAq82uLsV2Z9bzgbTgZj0Is8nOb3VFQAXgx
-         44a0Fs6PilSrQ8Kq1AM0rOToqZLEPbexCtEoqIAXy7NUAMIKwSSU1yWoc/XB8IKrZxPk
-         ZRY693QpM8dCLkQ5cezG2V3g6mwuvDvskgI5ELiAYIa7ug2vBfyzfpdLv2cySLgrZanO
-         gqOXeVht/F9p16MJcBn3KgDu45OCWIeix7yjiEDQZ0AR3f/TGxAwRtjF87a14m0czOpS
-         7g0A==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=P+ZLmHK8o50h7H6ArsMpxYYv/GLFJ6igApJFpx/tb64=;
+        b=ggfr1e8usHkjR+62Bm3lYwucrC/klMDW4+K4XvGDb5pc5PzkfvAL3W+ezD+rqVVo7V
+         E6n49l7qGhx8aDdLZtaON88FR8b9HotOBZu1og+YzudtCxoN9z4Cvu/On4NEMwNRGCvx
+         pwpc3xfaC9mfqYnJAtg7LRsU2vqa52iV/xR/AlHHT8oSRYqX+XC7bYb6zQ8thi0qiLyX
+         /+ofRV+1sL7x3AQiW44olGwCRqhm0H+pp+WAclViXAaZ27b8HPe0HRyyk/mwSV4LaCk6
+         XN+1BsEoAgB0zZTRxVA0ooJU1/67qyc9GcqvO1VU3BmSuIWyBtu8m9a9or/Rv8hwZYLf
+         EtZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8ZVMMm/7VePbBno+rUu3lisTUfXZQKB7offQjykcbVw=;
-        b=klgUtGDOPlCPMtL1kyL8uvI3HIrbVckBEUpRa+1u3GZH+K3Qery9W9/3/pmlmVwQqc
-         acagjzsZYnBKwAumkPCfJaVk84D9kotZ9NAB3JOxONt48rW1Kf6ghSt/NyuFhlk5aNL+
-         P7zV5d0XRL4bV3L4aEydpDWWx2NLWGIxg42a+xqBom34/y8ZaezAkIPP3LA8wZQNozKn
-         rfHRriUa5PIInMc5fzoTNiGK+FYYMVwRDww977JjojR5qugFUGx7hdGPLXRaNvicnyJh
-         bibBRNDWytxpotK+JbPSBYmPbRT8be+vAhFIyusP/awi8p/PXyEL8wLvWtsILmEIUy6F
-         LsFw==
-X-Gm-Message-State: AOAM533nPEhfnCtBomFktQOhZalfk+XaT5RNT7GdttJeVZWqNstkuu08
-        X2ECHHa/kY99TZE0/MpFYz1Us5uQ7bHnvMZZ
-X-Google-Smtp-Source: ABdhPJxaXNoPTEFJluW4XJr9g2RYRAYIb9ufYvtEOVmFWK35OJqXQEYJhcvK58GISC9LvJnreLJ8bQ==
-X-Received: by 2002:adf:9084:: with SMTP id i4mr37328158wri.23.1630493278690;
-        Wed, 01 Sep 2021 03:47:58 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=P+ZLmHK8o50h7H6ArsMpxYYv/GLFJ6igApJFpx/tb64=;
+        b=jxS0HHqNQ4IpCgpgzyNKVlEtAIBc/S0poXNwJEDMes1b9H2+8g1Ic0Y/DmfTk3SoRy
+         Dmjy22lBXdlOTi04nP59h5gODc3jvZTbxupZtT17DsaelD8kgT1iQDFl1jhs4VNoUTJ+
+         ja+vpQbQMNHG5pza9QJQnaNoBLqOI3Xha2EM5t2GITTC7px9+LFyYfxf6++LlLtfiZid
+         KYUKHWczs85ekBNUFowqs515T+OhS37VuP3qhdN5fi85B8EMlkuA+ChIeI36HYn3qq6B
+         c12+FEAuzeuHGy00w8RmmmlvIY4aZ3L2mCxNWHA5J8AMtm0kXUieDOdsrj6FZUHSUYIU
+         Rx/Q==
+X-Gm-Message-State: AOAM530FOVBy7B7a82j5jE1P5XplcFcOMAlJLmnCpDjPaWGP5N2Ttr3P
+        /Rxr+ZZXGOTfqosQpnU8ZPc=
+X-Google-Smtp-Source: ABdhPJwjvmIh7uzYYD5KA5JD+GBcZttOdqaF71MnS4FW3Vg9lKDEQebNRhc/a2Jbz+IbohhUp0JGXQ==
+X-Received: by 2002:a1c:4682:: with SMTP id t124mr9164350wma.168.1630493280208;
+        Wed, 01 Sep 2021 03:48:00 -0700 (PDT)
 Received: from localhost.localdomain (h-46-59-47-246.A165.priv.bahnhof.se. [46.59.47.246])
-        by smtp.gmail.com with ESMTPSA id r12sm21530843wrv.96.2021.09.01.03.47.57
+        by smtp.gmail.com with ESMTPSA id r12sm21530843wrv.96.2021.09.01.03.47.58
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 01 Sep 2021 03:47:58 -0700 (PDT)
+        Wed, 01 Sep 2021 03:47:59 -0700 (PDT)
 From:   Magnus Karlsson <magnus.karlsson@gmail.com>
 To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
         daniel@iogearbox.net, netdev@vger.kernel.org,
         maciej.fijalkowski@intel.com
-Cc:     Magnus Karlsson <magnus.karlsson@gmail.com>,
-        jonathan.lemon@gmail.com, ciara.loftus@intel.com,
+Cc:     jonathan.lemon@gmail.com, ciara.loftus@intel.com,
         bpf@vger.kernel.org, yhs@fb.com, andrii@kernel.org
-Subject: [PATCH bpf-next 00/20] selftests: xsk: facilitate adding tests
-Date:   Wed,  1 Sep 2021 12:47:12 +0200
-Message-Id: <20210901104732.10956-1-magnus.karlsson@gmail.com>
+Subject: [PATCH bpf-next 01/20] selftests: xsk: simplify xsk and umem arrays
+Date:   Wed,  1 Sep 2021 12:47:13 +0200
+Message-Id: <20210901104732.10956-2-magnus.karlsson@gmail.com>
 X-Mailer: git-send-email 2.29.0
+In-Reply-To: <20210901104732.10956-1-magnus.karlsson@gmail.com>
+References: <20210901104732.10956-1-magnus.karlsson@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch set facilitates adding new tests as well as describing
-existing ones in the xsk selftests suite and adds 3 new test suites at
-the end. The idea is to isolate the run-time that executes the test
-from the actual implementation of the test. Today, implementing a test
-amounts to adding test specific if-statements all around the run-time,
-which is not scalable or amenable for reuse. This patch set instead
-introduces a test specification that is the only thing that a test
-fills in. The run-time then gets this specification and acts upon it
-completely unaware of what test it is executing. This way, we can get
-rid of all test specific if-statements from the run-time and the
-implementation of the test can be contained in a single function. This
-hopefully makes it easier to add tests and for users to understand
-what the test accomplishes.
+From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-As a recap of what the run-time does: each test is based on the
-run-time launching two threads and connecting a veth link between the
-two threads. Each thread opens an AF_XDP socket on that veth interface
-and one of them sends traffic that the other one receives and
-validates. Each thread has its own umem. Note that this behavior is
-not changed by this patch set.
+Simplify the xsk_info and umem_info allocation by allocating them
+upfront in an array, instead of allocating an array of pointers to
+future creations of these. Allocating them upfront also has the
+advantage that configuration information can be stored in these
+structures instead of relying on global variables. With the previous
+structure, xsk_info and umem_info were created too late to be able to
+store most configuration information. This will be used to eliminate
+most global variables in later patches in this series.
 
-A test specification consists of several items. Most importantly:
+Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+---
+ tools/testing/selftests/bpf/xdpxceiver.c | 78 ++++++++++--------------
+ tools/testing/selftests/bpf/xdpxceiver.h |  5 +-
+ 2 files changed, 34 insertions(+), 49 deletions(-)
 
-* Two packet streams. One for Tx thread that specifies what traffic to
-  send and one for the Rx thread that specifies what that thread
-  should receive. If it receives exactly what is specified, the test
-  passes, otherwise it fails. A packet stream can also specify what
-  buffers in the umem that should be used by the Rx and Tx threads.
-
-* What kind of AF_XDP sockets it should create and bind to what
-  interfaces
-
-* How many times it should repeat the socket creation and destruction
-
-* The name of the test
-
-The interface for the test spec is the following:
-
-void test_spec_init(struct test_spec *test, struct ifobject *ifobj_tx,
-                    struct ifobject *ifobj_rx, enum test_mode mode);
-
-/* Reset everything but the interface specifications and the mode */
-void test_spec_reset(struct test_spec *test);
-
-void test_spec_set_name(struct test_spec *test, const char *name);
-
-
-Packet streams have the following interfaces:
-
-struct pkt *pkt_stream_get_pkt(struct pkt_stream *pkt_stream, u32 pkt_nb)
-
-struct pkt *pkt_stream_get_next_rx_pkt(struct pkt_stream *pkt_stream)
-
-struct pkt_stream *pkt_stream_generate(struct xsk_umem_info *umem,
-                                       u32 nb_pkts, u32 pkt_len);
-
-void pkt_stream_delete(struct pkt_stream *pkt_stream);
-
-struct pkt_stream *pkt_stream_clone(struct xsk_umem_info *umem,
-                                    struct pkt_stream *pkt_stream);
-
-/* Replaces all packets in the stream*/
-void pkt_stream_replace(struct test_spec *test, u32 nb_pkts, u32 pkt_len);
-
-/* Replaces every other packet in the stream */
-void pkt_stream_replace_half(struct test_spec *test, u32 pkt_len, u32 offset);
-
-/* For creating custom made packet streams */
-void pkt_stream_set(struct test_spec *test, struct pkt *pkts, u32 nb_pkts);
-
-/* Restores the default packet stream */
-void pkt_stream_restore_default(struct test_spec *test);
-
-
-A test can then then in the most basic case described like this
-(provided the test specification has been created before calling the
-function):
-
-static bool testapp_aligned(struct test_spec *test)
-{
-        test_spec_set_name(test, "RUN_TO_COMPLETION");
-        testapp_validate_traffic(test);
-}
-
-Running the same test in unaligned mode would then look like this:
-
-static bool testapp_unaligned(struct test_spec *test)
-{
-        if (!hugepages_present(test->ifobj_tx)) {
-                ksft_test_result_skip("No 2M huge pages present.\n");
-                return false;
-        }
-
-        test_spec_set_name(test, "UNALIGNED_MODE");
-        test->ifobj_tx->umem->unaligned_mode = true;
-        test->ifobj_rx->umem->unaligned_mode = true;
-        /* Let half of the packets straddle a buffer boundrary */
-        pkt_stream_replace_half(test, PKT_SIZE,
-                                XSK_UMEM__DEFAULT_FRAME_SIZE - 32);
-	/* Populate fill ring with addresses in the packet stream */
-        test->ifobj_rx->pkt_stream->use_addr_for_fill = true;
-        testapp_validate_traffic(test);
-
-        pkt_stream_restore_default(test);
-	return true;
-}
-
-3 of the last 4 patches in the set add 3 new test suites, one for
-unaligned mode, one for testing the rejection of tricky invalid
-descriptors plus the acceptance of some valid ones in the Tx ring, and
-one for testing 2K frame sizes (the default is 4K).
-
-What is left to do for follow-up patches:
-
-* Convert the statistics tests to the new framework.
-
-* Implement a way of registering new tests without having the enum
-  test_type. Once this has been done (together with the previous
-  bullet), all the test types can be dropped from the header
-  file. This means that we should be able to add tests by just writing
-  a single function with a new test specification, which is one of the
-  goals.
-
-* Introduce functions for manipulating parts of the test or interface
-  spec instead of direct manipulations such as
-  test->ifobj_rx->pkt_stream->use_addr_for_fill = true; which is kind
-  of awkward.
-
-* Move the run-time and its interface to its own .c and .h files. Then
-  we can have all the tests in a separate file.
-
-* Better error reporting if a test fails. Today it does not state what
-  test fails and might not continue execute the rest of the tests due
-  to this failure. Failures are not propagated upwards through the
-  functions so a failed test will also be a passed test, which messes
-  up the stats counting. This needs to be changed.
-
-* Add option to run specific test instead of all of them
-
-* Introduce pacing of sent packets so that they are never dropped by
-  the receiver even if it is stalled for some reason. If you run the
-  current tests on a heavily loaded system, they might fail in SKB
-  mode due to packets being dropped by the driver on Tx. Though I have
-  never seen it, it might happen.
-
-Thanks: Magnus
-
-Magnus Karlsson (20):
-  selftests: xsk: simplify xsk and umem arrays
-  selftests: xsk: introduce type for thread function
-  selftests: xsk: introduce test specifications
-  selftests: xsk: move num_frames and frame_headroom to xsk_umem_info
-  selftests: xsk: move rxqsize into xsk_socket_info
-  selftests: xsk: make frame_size configurable
-  selftests: xsx: introduce test name in test spec
-  selftests: xsk: add use_poll to ifobject
-  selftests: xsk: introduce rx_on and tx_on in ifobject
-  selftests: xsk: replace second_step global variable
-  selftests: xsk: specify number of sockets to create
-  selftests: xsk: make xdp_flags and bind_flags local
-  selftests: xsx: make pthreads local scope
-  selftests: xsk: eliminate MAX_SOCKS define
-  selftests: xsk: allow for invalid packets
-  selftests: xsk: introduce replacing the default packet stream
-  selftests: xsk: add test for unaligned mode
-  selftests: xsk: eliminate test specific if-statement in test runner
-  selftests: xsk: add tests for invalid xsk descriptors
-  selftests: xsk: add tests for 2K frame size
-
- tools/testing/selftests/bpf/xdpxceiver.c | 870 +++++++++++++++--------
- tools/testing/selftests/bpf/xdpxceiver.h |  66 +-
- 2 files changed, 606 insertions(+), 330 deletions(-)
-
-
-base-commit: 9e9fb7655ed585da8f468e29221f0ba194a5f613
---
+diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
+index f53ce2683f8d..9639d8da516d 100644
+--- a/tools/testing/selftests/bpf/xdpxceiver.c
++++ b/tools/testing/selftests/bpf/xdpxceiver.c
+@@ -235,7 +235,7 @@ static void gen_udp_csum(struct udphdr *udp_hdr, struct iphdr *ip_hdr)
+ 	    udp_csum(ip_hdr->saddr, ip_hdr->daddr, UDP_PKT_SIZE, IPPROTO_UDP, (u16 *)udp_hdr);
+ }
+ 
+-static void xsk_configure_umem(struct ifobject *data, void *buffer, u64 size, int idx)
++static int xsk_configure_umem(struct xsk_umem_info *umem, void *buffer, u64 size, int idx)
+ {
+ 	struct xsk_umem_config cfg = {
+ 		.fill_size = XSK_RING_PROD__DEFAULT_NUM_DESCS,
+@@ -244,21 +244,15 @@ static void xsk_configure_umem(struct ifobject *data, void *buffer, u64 size, in
+ 		.frame_headroom = frame_headroom,
+ 		.flags = XSK_UMEM__DEFAULT_FLAGS
+ 	};
+-	struct xsk_umem_info *umem;
+ 	int ret;
+ 
+-	umem = calloc(1, sizeof(struct xsk_umem_info));
+-	if (!umem)
+-		exit_with_error(errno);
+-
+ 	ret = xsk_umem__create(&umem->umem, buffer, size,
+ 			       &umem->fq, &umem->cq, &cfg);
+ 	if (ret)
+-		exit_with_error(-ret);
++		return ret;
+ 
+ 	umem->buffer = buffer;
+-
+-	data->umem_arr[idx] = umem;
++	return 0;
+ }
+ 
+ static void xsk_populate_fill_ring(struct xsk_umem_info *umem)
+@@ -274,19 +268,14 @@ static void xsk_populate_fill_ring(struct xsk_umem_info *umem)
+ 	xsk_ring_prod__submit(&umem->fq, XSK_RING_PROD__DEFAULT_NUM_DESCS);
+ }
+ 
+-static int xsk_configure_socket(struct ifobject *ifobject, int idx)
++static int xsk_configure_socket(struct xsk_socket_info *xsk, struct xsk_umem_info *umem,
++				struct ifobject *ifobject, u32 qid)
+ {
+ 	struct xsk_socket_config cfg;
+-	struct xsk_socket_info *xsk;
+ 	struct xsk_ring_cons *rxr;
+ 	struct xsk_ring_prod *txr;
+-	int ret;
+ 
+-	xsk = calloc(1, sizeof(struct xsk_socket_info));
+-	if (!xsk)
+-		exit_with_error(errno);
+-
+-	xsk->umem = ifobject->umem;
++	xsk->umem = umem;
+ 	cfg.rx_size = rxqsize;
+ 	cfg.tx_size = XSK_RING_PROD__DEFAULT_NUM_DESCS;
+ 	cfg.libbpf_flags = 0;
+@@ -301,14 +290,7 @@ static int xsk_configure_socket(struct ifobject *ifobject, int idx)
+ 		txr = &xsk->tx;
+ 	}
+ 
+-	ret = xsk_socket__create(&xsk->xsk, ifobject->ifname, idx,
+-				 ifobject->umem->umem, rxr, txr, &cfg);
+-	if (ret)
+-		return 1;
+-
+-	ifobject->xsk_arr[idx] = xsk;
+-
+-	return 0;
++	return xsk_socket__create(&xsk->xsk, ifobject->ifname, qid, umem->umem, rxr, txr, &cfg);
+ }
+ 
+ static struct option long_options[] = {
+@@ -756,8 +738,7 @@ static void thread_common_ops(struct ifobject *ifobject, void *bufs)
+ 	u64 umem_sz = num_frames * XSK_UMEM__DEFAULT_FRAME_SIZE;
+ 	int mmap_flags = MAP_PRIVATE | MAP_ANONYMOUS | MAP_NORESERVE;
+ 	size_t mmap_sz = umem_sz;
+-	int ctr = 0;
+-	int ret;
++	int ctr = 0, ret;
+ 
+ 	ifobject->ns_fd = switch_namespace(ifobject->nsname);
+ 
+@@ -769,31 +750,34 @@ static void thread_common_ops(struct ifobject *ifobject, void *bufs)
+ 		exit_with_error(errno);
+ 
+ 	while (ctr++ < SOCK_RECONF_CTR) {
+-		xsk_configure_umem(ifobject, bufs, umem_sz, 0);
+-		ifobject->umem = ifobject->umem_arr[0];
+-		ret = xsk_configure_socket(ifobject, 0);
++		ret = xsk_configure_umem(&ifobject->umem_arr[0], bufs, umem_sz, 0);
++		if (ret)
++			exit_with_error(-ret);
++
++		ret = xsk_configure_socket(&ifobject->xsk_arr[0], &ifobject->umem_arr[0],
++					   ifobject, 0);
+ 		if (!ret)
+ 			break;
+ 
+ 		/* Retry Create Socket if it fails as xsk_socket__create() is asynchronous */
+-		usleep(USLEEP_MAX);
+ 		if (ctr >= SOCK_RECONF_CTR)
+ 			exit_with_error(-ret);
++		usleep(USLEEP_MAX);
+ 	}
+ 
+-	ifobject->umem = ifobject->umem_arr[0];
+-	ifobject->xsk = ifobject->xsk_arr[0];
+-
+ 	if (test_type == TEST_TYPE_BPF_RES) {
+-		xsk_configure_umem(ifobject, (u8 *)bufs + umem_sz, umem_sz, 1);
+-		ifobject->umem = ifobject->umem_arr[1];
+-		ret = xsk_configure_socket(ifobject, 1);
++		ret = xsk_configure_umem(&ifobject->umem_arr[1], (u8 *)bufs + umem_sz, umem_sz, 1);
++		if (ret)
++			exit_with_error(-ret);
++
++		ret = xsk_configure_socket(&ifobject->xsk_arr[1], &ifobject->umem_arr[1],
++					   ifobject, 1);
++		if (ret)
++			exit_with_error(-ret);
+ 	}
+ 
+-	ifobject->umem = ifobject->umem_arr[0];
+-	ifobject->xsk = ifobject->xsk_arr[0];
+-	print_verbose("Interface [%s] vector [%s]\n",
+-		      ifobject->ifname, ifobject->fv.vector == tx ? "Tx" : "Rx");
++	ifobject->umem = &ifobject->umem_arr[0];
++	ifobject->xsk = &ifobject->xsk_arr[0];
+ }
+ 
+ static bool testapp_is_test_two_stepped(void)
+@@ -941,10 +925,10 @@ static void swap_xsk_res(void)
+ 	xsk_umem__delete(ifdict_tx->umem->umem);
+ 	xsk_socket__delete(ifdict_rx->xsk->xsk);
+ 	xsk_umem__delete(ifdict_rx->umem->umem);
+-	ifdict_tx->umem = ifdict_tx->umem_arr[1];
+-	ifdict_tx->xsk = ifdict_tx->xsk_arr[1];
+-	ifdict_rx->umem = ifdict_rx->umem_arr[1];
+-	ifdict_rx->xsk = ifdict_rx->xsk_arr[1];
++	ifdict_tx->umem = &ifdict_tx->umem_arr[1];
++	ifdict_tx->xsk = &ifdict_tx->xsk_arr[1];
++	ifdict_rx->umem = &ifdict_rx->umem_arr[1];
++	ifdict_rx->xsk = &ifdict_rx->xsk_arr[1];
+ }
+ 
+ static void testapp_bpf_res(void)
+@@ -1071,11 +1055,11 @@ static struct ifobject *ifobject_create(void)
+ 	if (!ifobj)
+ 		return NULL;
+ 
+-	ifobj->xsk_arr = calloc(2, sizeof(struct xsk_socket_info *));
++	ifobj->xsk_arr = calloc(MAX_SOCKETS, sizeof(*ifobj->xsk_arr));
+ 	if (!ifobj->xsk_arr)
+ 		goto out_xsk_arr;
+ 
+-	ifobj->umem_arr = calloc(2, sizeof(struct xsk_umem_info *));
++	ifobj->umem_arr = calloc(MAX_SOCKETS, sizeof(*ifobj->umem_arr));
+ 	if (!ifobj->umem_arr)
+ 		goto out_umem_arr;
+ 
+diff --git a/tools/testing/selftests/bpf/xdpxceiver.h b/tools/testing/selftests/bpf/xdpxceiver.h
+index 7e49b9fbe25e..de80516ac6c2 100644
+--- a/tools/testing/selftests/bpf/xdpxceiver.h
++++ b/tools/testing/selftests/bpf/xdpxceiver.h
+@@ -21,6 +21,7 @@
+ #define MAX_INTERFACE_NAME_CHARS 7
+ #define MAX_INTERFACES_NAMESPACE_CHARS 10
+ #define MAX_SOCKS 1
++#define MAX_SOCKETS 2
+ #define MAX_TEARDOWN_ITER 10
+ #define MAX_BIDI_ITER 2
+ #define MAX_BPF_ITER 2
+@@ -119,9 +120,9 @@ struct ifobject {
+ 	char ifname[MAX_INTERFACE_NAME_CHARS];
+ 	char nsname[MAX_INTERFACES_NAMESPACE_CHARS];
+ 	struct xsk_socket_info *xsk;
+-	struct xsk_socket_info **xsk_arr;
+-	struct xsk_umem_info **umem_arr;
++	struct xsk_socket_info *xsk_arr;
+ 	struct xsk_umem_info *umem;
++	struct xsk_umem_info *umem_arr;
+ 	void *(*func_ptr)(void *arg);
+ 	struct flow_vector fv;
+ 	struct pkt_stream *pkt_stream;
+-- 
 2.29.0
+
