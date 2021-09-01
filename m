@@ -2,80 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D68183FDEAC
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 17:29:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9606D3FDEBC
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 17:34:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343698AbhIAPat (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 11:30:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43362 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244284AbhIAPas (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 11:30:48 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79A51C061760
-        for <netdev@vger.kernel.org>; Wed,  1 Sep 2021 08:29:51 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id e131so5862957ybb.7
-        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 08:29:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yEydQnCiiB9iy6pnOk/cAGg/1/rtBHcq3DPIzAFNphY=;
-        b=hSUaQDMK4O8Ut68DmSUoyerIq/HjsCLsDayNQWB1FJynMeNZXln0F3/aUTnbm8y39I
-         rkLW3LfODYhP3/b7uR5g4aNi1am0qJJ1VSfnjaVnJqN2Z7AWTZCmE+WqVDqdwAx903hl
-         Ed5BM1FRToqbl4PX3nY9E1zbR+/f/d5vrspqeSiHkFJFsSTBQPBLtblBZPTevVPdfOdU
-         1etEgYH91SZv7rIC++eZ4aDUo3AprLZt+EStIhc37YenTf4Az7k9ji2PO9JwU5UhOpeg
-         LlnVsEp7rlHJEzbFA8Q+uEBR1GW9ZS02cYBAhhkOrBT8I15H8lGRljTeyIMt6pwSm1EW
-         3gLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yEydQnCiiB9iy6pnOk/cAGg/1/rtBHcq3DPIzAFNphY=;
-        b=txgF57TSPeyS6RCLdVBkD1NilLEV7tFdIOHaKxVtuEQHxPWEvvZVK4vQbZRq69ZODg
-         Hvhr8QTPkk6/+x4jt3T0gJYyd5Lkr2wFUFpklReLhi/PuBrIW7hzBo/AlCaVohjES7MK
-         cDppz8glXdR8yBHybF9r+0XPAfYTOqRW5S6NOu5RZUlrSpaBnaxStYOpUshU6knCA3a0
-         q1V27gdOnn10GiZWVGhpjhSFAzUmlLFqabFCIsPwFqoTXQ5AsoG0EP6cO7n5on7FaaxG
-         SJf4Ov6k7Zq3+NmChmz039W/BZOvmCk0NE6ekZNGb5gP0j62NbHOm3RuicULgzRdRGhi
-         jj+Q==
-X-Gm-Message-State: AOAM530mHM3Ki/WM6whH+Mkjk+/A+Cg7XWdMLbsufS8lA0aX/9H+zFLz
-        Lr9cRMZDhj+oIh2BUaNqugKjFAfBuK3KhxHUk6Fs/w==
-X-Google-Smtp-Source: ABdhPJz5awbgOKC0zlUDSKhgM3uohHZwxW/JsQQkEsstbjQi6yQpMmzZsV8j+DIAJEvOUGFfzNlU80svca6oG4UqIsI=
-X-Received: by 2002:a25:6994:: with SMTP id e142mr88133ybc.364.1630510190355;
- Wed, 01 Sep 2021 08:29:50 -0700 (PDT)
+        id S1343705AbhIAPfQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 11:35:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:44953 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S244357AbhIAPfP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 11:35:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1630510458;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=rluMAfEBU3Ib/ckTr6pbF4a7dng5gyNp2vdu3ZiqU7A=;
+        b=dBlBIwMJ/+pv7hlII0UpM9iJIqxKEo7sGbCHr2ZN0vXeEnNur1+R3CaRuppzau1jP5VHzq
+        QdyTnZQkaUmy7lH40msuDlenTYUAaXXZsk2WeF+Hlx4rXuopfc1fvLc4KzIHVq+cGJfjz4
+        RVDkQ54nOBlJAg0WW0u72OAN54KKDx0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-451--PgNynBqNLqE6PfMSHWrVw-1; Wed, 01 Sep 2021 11:34:15 -0400
+X-MC-Unique: -PgNynBqNLqE6PfMSHWrVw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C5B3187180F;
+        Wed,  1 Sep 2021 15:34:12 +0000 (UTC)
+Received: from asgard.redhat.com (unknown [10.36.110.7])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 0978E5C1BB;
+        Wed,  1 Sep 2021 15:34:09 +0000 (UTC)
+Date:   Wed, 1 Sep 2021 17:34:07 +0200
+From:   Eugene Syromiatnikov <esyr@redhat.com>
+To:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Antony Antony <antony.antony@secunet.com>,
+        Christian Langrock <christian.langrock@secunet.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Dmitry V. Levin" <ldv@strace.io>, linux-api@vger.kernel.org
+Subject: [PATCH] include/uapi/linux/xfrm.h: Fix XFRM_MSG_MAPPING ABI breakage
+Message-ID: <20210901153407.GA20446@asgard.redhat.com>
 MIME-Version: 1.0
-References: <1630492744-60396-1-git-send-email-linyunsheng@huawei.com>
- <9c9ef2228dfcb950b5c75382bd421c6169e547a0.camel@redhat.com>
- <CANn89iJFeM=DgcQpDbaE38uhxTEL6REMWPnVFt7Am7Nuf4wpMw@mail.gmail.com>
- <CANn89iKbgtb84Lb4UOxUCb_WGrfB6ZoD=bVH2O06-Mm6FBmwpg@mail.gmail.com> <c40a178110ee705b2be32272b9b3e512a40a4cae.camel@redhat.com>
-In-Reply-To: <c40a178110ee705b2be32272b9b3e512a40a4cae.camel@redhat.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 1 Sep 2021 08:29:39 -0700
-Message-ID: <CANn89iKxeD0sMe-Qp5dnQ_vX28SGeyW3M857ww4chVsPE-50uw@mail.gmail.com>
-Subject: Re: [PATCH net-next] tcp: add tcp_tx_skb_cache_key checking in sk_stream_alloc_skb()
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Yunsheng Lin <linyunsheng@huawei.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        MPTCP Upstream <mptcp@lists.linux.dev>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, linuxarm@openeuler.org,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.5.23 (2014-03-12)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 1, 2021 at 8:25 AM Paolo Abeni <pabeni@redhat.com> wrote:
->
+Commit 2d151d39073a ("xfrm: Add possibility to set the default to block
+if we have no policy") broke ABI by changing the value of the XFRM_MSG_MAPPING
+enum item.  Fix it by placing XFRM_MSG_SETDEFAULT/XFRM_MSG_GETDEFAULT
+to the end of the enum, right before __XFRM_MSG_MAX.
 
-> You are way too fast, I was still replying to your previous email,
-> asking if I could help :)
+Fixes: 2d151d39073a ("xfrm: Add possibility to set the default to block if we have no policy")
+Signed-off-by: Eugene Syromiatnikov <esyr@redhat.com>
+---
+ include/uapi/linux/xfrm.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-All I did was to resurrect this patch (rebase got no conflict) and send it :)
+diff --git a/include/uapi/linux/xfrm.h b/include/uapi/linux/xfrm.h
+index b96c1ea..26f456b1 100644
+--- a/include/uapi/linux/xfrm.h
++++ b/include/uapi/linux/xfrm.h
+@@ -213,13 +213,13 @@ enum {
+ 	XFRM_MSG_GETSPDINFO,
+ #define XFRM_MSG_GETSPDINFO XFRM_MSG_GETSPDINFO
+ 
++	XFRM_MSG_MAPPING,
++#define XFRM_MSG_MAPPING XFRM_MSG_MAPPING
++
+ 	XFRM_MSG_SETDEFAULT,
+ #define XFRM_MSG_SETDEFAULT XFRM_MSG_SETDEFAULT
+ 	XFRM_MSG_GETDEFAULT,
+ #define XFRM_MSG_GETDEFAULT XFRM_MSG_GETDEFAULT
+-
+-	XFRM_MSG_MAPPING,
+-#define XFRM_MSG_MAPPING XFRM_MSG_MAPPING
+ 	__XFRM_MSG_MAX
+ };
+ #define XFRM_MSG_MAX (__XFRM_MSG_MAX - 1)
+-- 
+2.1.4
 
->
-> I'll a look ASAP. Please, allow for some latency: I'm way slower!
-
-Thanks Paolo !
