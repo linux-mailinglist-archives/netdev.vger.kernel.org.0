@@ -2,114 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79E053FDF6E
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 18:09:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB8E13FDFCD
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 18:25:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244608AbhIAQKy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 12:10:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52888 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241626AbhIAQKw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 12:10:52 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C02C1C061575
-        for <netdev@vger.kernel.org>; Wed,  1 Sep 2021 09:09:55 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id g22so4516337edy.12
-        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 09:09:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares-net.20150623.gappssmtp.com; s=20150623;
-        h=to:cc:references:from:subject:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=GuGPMy9wyhIVf9/M3dZMDi6jnPBAi1kugfgCYTmCxqg=;
-        b=CM78f/PTgP4ZKbukFuCjEabvuwnBjQo3GpzWFfkOCWh3w238Bon2mVby4eBHC/bF/I
-         PrU1fDWukyKuvHP0JSXSRvKvg+JQdfjyJSxKfVebJcyUHZidtBlKvNn6sycI8TgmSHqO
-         mGCz/MNB5krwHNWiw0Gruaxc2AOLnWFk9VhNOgf8RfHbEiHY4URNq4GNwZpECpGC3Rk6
-         ZpunKGPbGhyJFy7x3G2Z2K1XxqPGyppOTG8bGSZ4hbx6zRQPppBUtK78Y7v6Nk72Knpn
-         mos5W/0rprb9tW1cIbo3udFzXi+A+/5ooohB25AfN7fx0JI7EQfLRXchroKTIAdexKJA
-         9n6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=GuGPMy9wyhIVf9/M3dZMDi6jnPBAi1kugfgCYTmCxqg=;
-        b=D0dLd5+r84oEAP5/wXKeyhpN0FJK9On55mXN+Pfz947HEpDUR5FlkXpNzZW1Vo9X6S
-         bRrQLfXADasgfNQ+hlLMDe16qjDlEKdcoF6VEpZmUqRLdh9mOR8Q6O6LTQkZlPqdKik/
-         WRQLn/wktXoxqV48BBah6cgBiDIk+eee0GRsWmRF2J+FfB66v1+4mSw2pfub5BhL9qZt
-         zcmf4oCp3IRAwKVTKW5yU3COUJN5++hRPy99s8XlrbrMXyox0jKhy1KocjSQLQOng7NQ
-         oyalUt9L1NhjYt/2UGOcN91ZiCvuBaok9GecVqClcmSaeRl8e3DdxZov8B+buysBxmu9
-         sr8Q==
-X-Gm-Message-State: AOAM531/hic+qPyiqeq4i5B2fmUzuYAvkEr9TGgLrBIo86ihtS2CwOke
-        sZ1Rq1dnjgZlurEJUZu+PGY7BQ==
-X-Google-Smtp-Source: ABdhPJxKnOr7FugQb1UAr/dFaVLX7+A8XwY/3oSf5fgZqFfHxFEaEs8IGHYSuM+A0vSqBtHjEY50+w==
-X-Received: by 2002:aa7:d710:: with SMTP id t16mr392766edq.42.1630512594199;
-        Wed, 01 Sep 2021 09:09:54 -0700 (PDT)
-Received: from tsr-lap-08.nix.tessares.net (94.105.103.227.dyn.edpnet.net. [94.105.103.227])
-        by smtp.gmail.com with ESMTPSA id n10sm77706ejk.86.2021.09.01.09.09.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Sep 2021 09:09:53 -0700 (PDT)
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     mptcp@lists.linux.dev,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>
-References: <20210831171926.80920-1-mathew.j.martineau@linux.intel.com>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-Subject: Re: [PATCH net v2 0/2] mptcp: Prevent tcp_push() crash and selftest
- temp file buildup
-Message-ID: <b9fa6f74-e0b6-0f61-fc5a-954137db1314@tessares.net>
-Date:   Wed, 1 Sep 2021 18:09:52 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S245218AbhIAQ0A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 12:26:00 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.85.151]:55404 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229820AbhIAQZ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 12:25:59 -0400
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-34-cnJKtEYxPxeP-cHkmxaxZQ-1; Wed, 01 Sep 2021 17:24:57 +0100
+X-MC-Unique: cnJKtEYxPxeP-cHkmxaxZQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.23; Wed, 1 Sep 2021 17:24:50 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.023; Wed, 1 Sep 2021 17:24:50 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'David Ahern' <dsahern@gmail.com>,
+        "'netdev@vger.kernel.org'" <netdev@vger.kernel.org>
+Subject: RE: IP routing sending local packet to gateway.
+Thread-Topic: IP routing sending local packet to gateway.
+Thread-Index: AdebRgbMhfPTX4NbSQqr56kVCuK30gAGAC7A///6eoD/+bbC8P/x1sKw
+Date:   Wed, 1 Sep 2021 16:24:50 +0000
+Message-ID: <b332ecafbd3b4be5949edae050f98882@AcuMS.aculab.com>
+References: <15a53d9cc54d42dca565247363b5c205@AcuMS.aculab.com>
+ <adaaf38562be4c0ba3e8fe13b90f2178@AcuMS.aculab.com>
+ <532f9e8f-5e48-9e2e-c346-e2522f788a40@gmail.com>
+ <b1ca6c99cd684a4a83059a0156761d75@AcuMS.aculab.com>
+In-Reply-To: <b1ca6c99cd684a4a83059a0156761d75@AcuMS.aculab.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-In-Reply-To: <20210831171926.80920-1-mathew.j.martineau@linux.intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David, Jakub,
+RnJvbTogRGF2aWQgTGFpZ2h0DQo+IFNlbnQ6IDMxIEF1Z3VzdCAyMDIxIDE3OjI0DQouLi4NCj4g
+SSdtIHN1cmUgaXQgaGFzIHNvbWV0aGluZyB0byBkbyB3aXRoIHRoZSAnZmliX3RyaWUnIGRhdGEu
+DQo+IFdoZW4gaXQgZmFpbHMgSSBnZXQ6DQo+ICMgY2F0IC9wcm9jL25ldC9maWJfdHJpZQ0KPiBJ
+ZCAyMDA6DQo+ICAgfC0tIDAuMC4wLjANCj4gICAgICAvMCB1bml2ZXJzZSBVTklDQVNUDQo+IE1h
+aW46DQo+ICAgKy0tIDAuMC4wLjAvMCAzIDAgNg0KPiAgICAgIHwtLSAwLjAuMC4wDQo+ICAgICAg
+ICAgLzAgdW5pdmVyc2UgVU5JQ0FTVA0KPiAgICAgIHwtLSAxOTIuMTY4LjEuMA0KPiAgICAgICAg
+IC8yNCBsaW5rIFVOSUNBU1QNCj4gTG9jYWw6DQo+ICAgKy0tIDAuMC4wLjAvMCAyIDAgMg0KPiAg
+ICAgICstLSAxMjcuMC4wLjAvOCAyIDAgMg0KPiAgICAgICAgICstLSAxMjcuMC4wLjAvMzEgMSAw
+IDANCj4gICAgICAgICAgICB8LS0gMTI3LjAuMC4wDQo+ICAgICAgICAgICAgICAgLzMyIGxpbmsg
+QlJPQURDQVNUDQo+ICAgICAgICAgICAgICAgLzggaG9zdCBMT0NBTA0KPiAgICAgICAgICAgIHwt
+LSAxMjcuMC4wLjENCj4gICAgICAgICAgICAgICAvMzIgaG9zdCBMT0NBTA0KPiAgICAgICAgIHwt
+LSAxMjcuMjU1LjI1NS4yNTUNCj4gICAgICAgICAgICAvMzIgbGluayBCUk9BRENBU1QNCj4gICAg
+ICArLS0gMTkyLjE2OC4xLjAvMjQgMiAwIDENCj4gICAgICAgICB8LS0gMTkyLjE2OC4xLjANCj4g
+ICAgICAgICAgICAvMzIgbGluayBCUk9BRENBU1QNCj4gICAgICAgICB8LS0gMTkyLjE2OC4xLjk5
+DQo+ICAgICAgICAgICAgLzMyIGhvc3QgTE9DQUwNCj4gICAgICAgICB8LS0gMTkyLjE2OC4xLjI1
+NQ0KPiAgICAgICAgICAgIC8zMiBsaW5rIEJST0FEQ0FTVA0KDQpJJ3ZlIGZvdW5kIGEgc2NyaXB0
+IHRoYXQgZ2V0cyBydW4gYWZ0ZXIgdGhlIElQIGFkZHJlc3MgYW5kIGRlZmF1bHQgcm91dGUNCmhh
+dmUgYmVlbiBhZGRlZCB0aGF0IGRvZXM6DQoNCglTT1VSQ0U9MTkyLjE2OC4xLjg4DQoJR0FURVdB
+WT0xOTIuMTY4LjEuMQ0KDQoJaXAgcnVsZSBhZGQgZnJvbSAiJFNPVVJDRSIgbG9va3VwIHB4MA0K
+CWlwIHJ1bGUgYWRkIHRvICIkU09VUkNFIiBsb29rdXAgcHgwDQoNCglpcCByb3V0ZSBhZGQgZGVm
+YXVsdCB2aWEgJHtHQVRFV0FZfSBkZXYgcHgwIHNyYyAke1NPVVJDRX0gdGFibGUgcHgwDQoNClRo
+ZSAnaXAgcnVsZScgYXJlIHByb2JhYmx5IG5vdCByZWxhdGVkIChvciBuZWVkZWQpLg0KSSBzdXNw
+ZWN0IHRoZXkgY2F1c2UgdHJhZmZpYyB0byB0aGUgbG9jYWwgSVAgYmUgdHJhbnNtaXR0ZWQgb24g
+cHgwLg0KKFRoZXkgbWF5IGJlIGZyb20gYSBzdHJhbmdlIHNldHVwIHdlIGhhZCB3aGVyZSB0aGF0
+IG1pZ2h0IGhhdmUgYmVlbiBuZWVkZWQsDQpidXQgd2h5IHNvbWV0aGluZyBmcm9tIDEwIHllYXJz
+IGFnbyBhcHBlYXJlZCBpcyBiZXlvbmQgbWUgLSBhbmQgb3VyIHNvdXJjZSBjb250cm9sLikNCg0K
+QW0gSSByaWdodCBpbiB0aGlua2luZyB0aGF0IHRoZSAndGFibGUgcHgwJyBiaXQgaXMgd2hhdCBj
+YXVzZXMgJ0lkIDIwMCcNCmJlIGNyZWF0ZWQgYW5kIHRoYXQgaXQgd291bGQgcmVhbGx5IG5lZWQg
+dGhlIG5vcm1hbCAndXNlIGFycCcgcm91dGUNCmFkZGVkIGFzIHdlbGw/DQoNClRoZXJlIGlzIGFu
+IGF0dGVtcHQgYXQgc29tZSAnY2xldmVyIHJvdXRpbmcnIGluIHRoZSBzY3JpcHQuDQpBIHNlY29u
+ZCBpbnRlcmZhY2UgY2FuIGJlIGNvbmZpZ3VyZWQgdGhhdCBtaWdodCBoYXZlIGl0cyBvd24NCidk
+ZWZhdWx0IHJvdXRlJyAtIGJ1dCBhbGwgdGhhdCB0cmFmZmljIChhbGwgUlRQKSBpcyBzZW50IHVz
+aW5nDQpyYXdpcCBhbmQgY2FuIHNlbGVjdCB0aGUgc3BlY2lmaWMgaW50ZXJmYWNlLg0KSXQgaGFz
+IHRvIGJlIHNhaWQgdGhhdCBzaG91bGQgcmVhbGx5IGp1c3QgdXNlIGEgZGlmZmVyZW50IG5ldHdv
+cmsNCm5hbWVzcGFjZSAtIGFuZCBpdCB3b3VsZCBhbGwgYmUgbXVjaCBzaW1wbGVyLg0KKEFzIHdl
+bGwgYXMgZ2l2aW5nIHRoZSBSVFAgYWNjZXNzIHRvIGFsbCA2NGsgVURQIHBvcnQgbnVtYmVycy4p
+DQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNpZGUsIEJyYW1sZXkgUm9h
+ZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsNClJlZ2lzdHJhdGlvbiBO
+bzogMTM5NzM4NiAoV2FsZXMpDQo=
 
-On 31/08/2021 19:19, Mat Martineau wrote:
-> These are two fixes for the net tree, addressing separate issues.
-> 
-> Patch 1 addresses a divide-by-zero crash seen in syzkaller and also
-> reported by a user on the netdev list. This changes MPTCP code so
-> tcp_push() cannot be called with an invalid (0) mss_now value.
-> 
-> Patch 2 fixes a selftest temp file cleanup issue that consumes excessive
-> disk space when running repeated tests.
-> 
-> 
-> v2: Make suggested changes to lockdep check and indentation in patch 1
-
-We recently noticed this series has been marked as "Not Applicable" on
-Patchwork.
-
-It looks like we can apply these patches:
-
-  $ git checkout netdev-net/master # 780aa1209f88
-  $ git-pw series apply 539963
-  Applying: mptcp: fix possible divide by zero
-  Using index info to reconstruct a base tree...
-  M       net/mptcp/protocol.c
-
-  Falling back to patching base and 3-way merge...
-  Auto-merging net/mptcp/protocol.c
-
-  Applying: selftests: mptcp: clean tmp files in simult_flows
-
-Git auto-resolves conflicts. Is it why it is considered as "Not
-Applicable" or did we miss something else?
-
-Do we just need to resend these patches after a rebase?
-
-Thank you for maintaining net!
-
-Cheers,
-Matt
--- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
