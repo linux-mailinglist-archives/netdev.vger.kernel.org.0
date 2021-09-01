@@ -2,222 +2,438 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E57E43FD463
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 09:22:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B66E3FD47D
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 09:35:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242561AbhIAHXQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 03:23:16 -0400
-Received: from mailout2.w1.samsung.com ([210.118.77.12]:61232 "EHLO
-        mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242582AbhIAHXM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 03:23:12 -0400
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20210901072214euoutp020eb46cf31731a7c34b7b2724d07c9071~gocVbly8u3207732077euoutp02Z
-        for <netdev@vger.kernel.org>; Wed,  1 Sep 2021 07:22:14 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20210901072214euoutp020eb46cf31731a7c34b7b2724d07c9071~gocVbly8u3207732077euoutp02Z
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1630480934;
-        bh=ryqrHQmQcbbdSKaFCDai31okoTqu1dRnNF5WAQkVKk8=;
-        h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
-        b=o6mT9Aswu9tmZ2ZUz0vXCX05qBwaYTqEL/wKzPCesL/z8GiSzz0qnrDJCkTQyRTnh
-         Mm98SUJZ0eqiSPjHbJ7mgLmvyHa6PSRsMEqyHrjozGdAt2iHPcvAEhewmySexdMGLC
-         poi+UuDQ/EWWV6JAXccSZN4uOQwB8/GTJzX6pjPs=
-Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-        20210901072213eucas1p24c002712599e64af3543d690befb98e1~gocVHDiwI3011130111eucas1p2Q;
-        Wed,  1 Sep 2021 07:22:13 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-        eusmges2new.samsung.com (EUCPMTA) with SMTP id 8E.76.42068.52A2F216; Wed,  1
-        Sep 2021 08:22:13 +0100 (BST)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-        20210901072213eucas1p1efe4f900cbd06f27ecf7821d52d66e23~gocUmCxVs0663406634eucas1p1k;
-        Wed,  1 Sep 2021 07:22:13 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20210901072213eusmtrp1c474fd908e2a5ddcbf8d6d9262d30c4e~gocUlMKfE2206322063eusmtrp1x;
-        Wed,  1 Sep 2021 07:22:13 +0000 (GMT)
-X-AuditID: cbfec7f4-c71ff7000002a454-bb-612f2a259fc9
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-        eusmgms2.samsung.com (EUCPMTA) with SMTP id 74.21.20981.52A2F216; Wed,  1
-        Sep 2021 08:22:13 +0100 (BST)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-        eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20210901072212eusmtip286395602945bdb3b13fa594a07116756~gocT4-pi_0779207792eusmtip27;
-        Wed,  1 Sep 2021 07:22:12 +0000 (GMT)
-Subject: Re: [PATCH v2] of: property: fw_devlink: Add support for
- "phy-handle" property
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        kernel-team@android.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        linux-amlogic@lists.infradead.org
-From:   Marek Szyprowski <m.szyprowski@samsung.com>
-Message-ID: <2023d07e-18bb-e129-760a-18b17ff772cd@samsung.com>
-Date:   Wed, 1 Sep 2021 09:22:11 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0)
-        Gecko/20100101 Thunderbird/78.13.0
+        id S242637AbhIAHgY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 03:36:24 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:32140 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S242556AbhIAHgX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 03:36:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1630481726;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=s+ump4GqwhE3Q2452iXIzElbFXvnHKp47scqPabSYj0=;
+        b=Iff8F1AlFrEjEFgg4ffFig3UbwLkUSh649xixIKPnf6L3suKeayDTLeUqXQ+TmrZWzNq1E
+        aizXkJ1DnEKOY95cxeCyFhpIFA+6jl/9jN+xS2dp3h9+z1Axgng/GJFqimAQqkSIY6ZhEK
+        og0W0GxD1KxpZMETfFNPPAzS4diOofc=
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
+ [209.85.167.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-582-ZFIKHPjnOTmAbHE8wYNkYA-1; Wed, 01 Sep 2021 03:35:25 -0400
+X-MC-Unique: ZFIKHPjnOTmAbHE8wYNkYA-1
+Received: by mail-lf1-f69.google.com with SMTP id d10-20020ac24c8a000000b003dce50ea2c4so746563lfl.0
+        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 00:35:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=s+ump4GqwhE3Q2452iXIzElbFXvnHKp47scqPabSYj0=;
+        b=oMrkT0M93hu/tvXhCxo5dpJtdru0kYvH0ubJuXmqnDDFV6tBUA2DmmBdI4xxzWoyt+
+         UGtzecep6Qj8ekQ/Z7ulMRkyLc4tY1dmXWSFAYpwq/eJIWbg+nKNTWo378rIFQW/NLRX
+         zUB1b/2OQpKT8+EhqSdUuM3nmWhU9h8BIM98QairvADM3PHgJO8M9lA/AokOd1RUIeE+
+         XnpGpcEvVKCR3uN+N8wHXRs7lnnAKwxRHJa3tHy/fG9E9PAfmTkrMjOzZAwJnIb/7ltf
+         EJBBe5q/NPFqc6EUfF8cILGPoikYgoNGyrb0I6EMaNnXywYPJIOIWJBErP/08LBDGQEB
+         sqgg==
+X-Gm-Message-State: AOAM530pAAvjoYjPoSBQ5JPRDN2EWakgPwxxM/RGiBkyJ8XygGm2W+7h
+        18fZCC0pVd/rDindlMPmp6lKTUxSfsO0j53RS6VxiLil3rfennx5gPc1HG4k5YdQrT2lBrZ9O8b
+        hvFK3Me8mbn5f4fUgiuYbgGaN1oHyGCdh
+X-Received: by 2002:a05:6512:31d2:: with SMTP id j18mr10993908lfe.436.1630481723410;
+        Wed, 01 Sep 2021 00:35:23 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzZlPHx+kBC2Bfdek6J7tJLLBBmGRceaIcjusutSFYx8YIyPx7BjDlEvhv6tx/wseeWlZqGEQxqHh1324M0WbM=
+X-Received: by 2002:a05:6512:31d2:: with SMTP id j18mr10993895lfe.436.1630481723070;
+ Wed, 01 Sep 2021 00:35:23 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CAGETcx-SqTeGdKF=CD9=Ujo2xrWMw3NnimE7zj+d-4HckmaJVQ@mail.gmail.com>
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrGKsWRmVeSWpSXmKPExsWy7djPc7qqWvqJBh+nqlicv3uI2WL+kXOs
-        FjPf/Gez2LFdxGLBbG6Ly7vmsFkc6ou2OLZAzKJ17xF2i65Df9kcuDy27d7G6vH+Riu7x85Z
-        d9k9Fmwq9di0qpPNY/OSeo+dOz4zeXzeJBfAEcVlk5Kak1mWWqRvl8CV8XRiD3PBadWKfVMs
-        GhgXyHcxcnJICJhI9H3ZwtbFyMUhJLCCUWLVkdksEM4XRonGR9cYIZzPjBIrP/1mh2mZ8rQb
-        qmo5o8SpeYegqj4ySlxZ9p0NpEpYIFLi7L69YLaIgJbEpmuPwTqYBVYySdxe/4gFJMEmYCjR
-        9bYLrIhXwE5i6uyXzCA2i4CKxMGDh8DWiQokS0x8MokVokZQ4uTMJ0C9HBycAoESV1dYgYSZ
-        BeQltr+dwwxhi0vcejKfCWSXhMB/DomZnx6yQZztIvGhaScThC0s8er4Fqh3ZCROT+5hgWho
-        ZpR4eG4tO4TTwyhxuWkGI0SVtcSdc7/YQDYzC2hKrN+lDxF2lPjd/pgVJCwhwCdx460gxBF8
-        EpO2TWeGCPNKdLQJQVSrScw6vg5u7cELl5gnMCrNQvLZLCTvzELyziyEvQsYWVYxiqeWFuem
-        pxYb5aWW6xUn5haX5qXrJefnbmIEJq3T/45/2cG4/NVHvUOMTByMhxglOJiVRHhZH+olCvGm
-        JFZWpRblxxeV5qQWH2KU5mBREudN2rImXkggPbEkNTs1tSC1CCbLxMEp1cCksWZJv8WhtndX
-        Ow+cPm7DvUu02J19RUiJu7Widk53aprB9Yp9cUFKj/nZbbPZYpOyTga2ThW5HF2UesyI81fN
-        pKcMgm/X2+47kL2nfbv07Nt/jTTiHz7lfXdsI6fdh3evNmkb1KxvTjDw4nNXeB4/+f+qWwf+
-        cjqcCBSYw/S82e1tqPPSdq1tP+Mdbv98blfiI+N6xjZizrIXJUl6Hwpd/qt21nMoG1W8SQ15
-        clFpXeizn4dszKQD+5NWymnx9dczqF8XuvFC3XdG2Tmf+U84lqoXBm28d6/yCm/u5oCDP1cE
-        npSyEq2p05bXSefUn9618IP+vGd+8wts9EXCDf9v0Zr+Srflje/7ma7MMkosxRmJhlrMRcWJ
-        AGgJ/jrJAwAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrOIsWRmVeSWpSXmKPExsVy+t/xe7qqWvqJBhcaWSzO3z3EbDH/yDlW
-        i5lv/rNZ7NguYrFgNrfF5V1z2CwO9UVbHFsgZtG69wi7Rdehv2wOXB7bdm9j9Xh/o5XdY+es
-        u+weCzaVemxa1cnmsXlJvcfOHZ+ZPD5vkgvgiNKzKcovLUlVyMgvLrFVija0MNIztLTQMzKx
-        1DM0No+1MjJV0rezSUnNySxLLdK3S9DLeDqxh7ngtGrFvikWDYwL5LsYOTkkBEwkpjztZuli
-        5OIQEljKKPHv6y52iISMxMlpDawQtrDEn2tdbBBF7xklZi+ZDVYkLBAp8f3ZSUYQW0RAS2LT
-        tccsIDazwEomiZWPyiEazjFL7O/+DDaJTcBQoustyCRODl4BO4mps18yg9gsAioSBw8eAhsq
-        KpAs8eH0UlaIGkGJkzOfAA3l4OAUCJS4usIKYr6ZxLzND5khbHmJ7W/nQNniEreezGeawCg0
-        C0n3LCQts5C0zELSsoCRZRWjSGppcW56brGRXnFibnFpXrpecn7uJkZgjG479nPLDsaVrz7q
-        HWJk4mA8xCjBwawkwsv6UC9RiDclsbIqtSg/vqg0J7X4EKMp0DsTmaVEk/OBSSKvJN7QzMDU
-        0MTM0sDU0sxYSZzX5MiaeCGB9MSS1OzU1ILUIpg+Jg5OqQYmdk2r/pf2iWei7Wa91p2ikr17
-        ceeR23fiBFe95V1ctMbJuHL2jI9BGaveRTEoR4os8ypld4y6GSK8bMn/xYG+V/8m2eb0zkpg
-        XC/7fJGdKEPR7uQZF7g3Z6/Nn/f458myRw2i/w7mbGe/fuT3SoGnZd1rv2+qCazxOs6ecf5u
-        z/tT/vfySwU5GDqfCIfM6JFIXLLdg69CN36tD/thiQ7JWfOMjnk8MXmeJS6T6ZG3eItqyrnE
-        WuF9ytN3LPzt99Nc8/HkhNbZaR6nDujFbijI/eZ+dd7csiPL4kyinTZZdAlLz5aY4eERdcI3
-        9w+jv+/x/72Xq/YmLzn74G08f8hTqdifCjdsnxen3M+f7GCqxFKckWioxVxUnAgAm5c7uloD
-        AAA=
-X-CMS-MailID: 20210901072213eucas1p1efe4f900cbd06f27ecf7821d52d66e23
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20210823120849eucas1p11d3919886444358472be3edd1c662755
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20210823120849eucas1p11d3919886444358472be3edd1c662755
-References: <CGME20210823120849eucas1p11d3919886444358472be3edd1c662755@eucas1p1.samsung.com>
-        <20210818021717.3268255-1-saravanak@google.com>
-        <0a2c4106-7f48-2bb5-048e-8c001a7c3fda@samsung.com>
-        <CAGETcx_xJCqOWtwZ9Ee2+0sPGNLM5=F=djtbdYENkAYZa0ynqQ@mail.gmail.com>
-        <427ce8cd-977b-03ae-2020-f5ddc7439390@samsung.com>
-        <CAGETcx8cRXDciKiRMSb=ybKo8=SyiNyAv=7oeHU1HUhkZ60qmg@mail.gmail.com>
-        <CAGETcx-SqTeGdKF=CD9=Ujo2xrWMw3NnimE7zj+d-4HckmaJVQ@mail.gmail.com>
+References: <20210818175440.128691-1-andrew@daynix.com> <20210818175440.128691-3-andrew@daynix.com>
+In-Reply-To: <20210818175440.128691-3-andrew@daynix.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Wed, 1 Sep 2021 15:35:11 +0800
+Message-ID: <CACGkMEuf3La+xsXJTHAJuTMuMU6oKD81vH9tn4YvZ4zzw4irAA@mail.gmail.com>
+Subject: Re: [RFC PATCH 2/3] drivers/net/virtio_net: Added basic RSS support.
+To:     Andrew Melnychenko <andrew@daynix.com>
+Cc:     mst <mst@redhat.com>, davem <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Saravana,
-
-On 01.09.2021 04:37, Saravana Kannan wrote:
-> On Tue, Aug 24, 2021 at 12:31 AM Saravana Kannan <saravanak@google.com> wrote:
->> On Tue, Aug 24, 2021 at 12:03 AM Marek Szyprowski
->> <m.szyprowski@samsung.com> wrote:
->>> On 23.08.2021 20:22, Saravana Kannan wrote:
->>>> On Mon, Aug 23, 2021 at 5:08 AM Marek Szyprowski
->>>> <m.szyprowski@samsung.com> wrote:
->>>>> On 18.08.2021 04:17, Saravana Kannan wrote:
->>>>>> Allows tracking dependencies between Ethernet PHYs and their consumers.
->>>>>>
->>>>>> Cc: Andrew Lunn <andrew@lunn.ch>
->>>>>> Cc: netdev@vger.kernel.org
->>>>>> Signed-off-by: Saravana Kannan <saravanak@google.com>
->>>>> This patch landed recently in linux-next as commit cf4b94c8530d ("of:
->>>>> property: fw_devlink: Add support for "phy-handle" property"). It breaks
->>>>> ethernet operation on my Amlogic-based ARM64 boards: Odroid C4
->>>>> (arm64/boot/dts/amlogic/meson-sm1-odroid-c4.dts) and N2
->>>>> (meson-g12b-odroid-n2.dts) as well as Khadas VIM3/VIM3l
->>>>> (meson-g12b-a311d-khadas-vim3.dts and meson-sm1-khadas-vim3l.dts).
->>>>>
->>>>> In case of OdroidC4 I see the following entries in the
->>>>> /sys/kernel/debug/devices_deferred:
->>>>>
->>>>> ff64c000.mdio-multiplexer
->>>>> ff3f0000.ethernet
->>>>>
->>>>> Let me know if there is anything I can check to help debugging this issue.
->>>> I'm fairly certain you are hitting this issue because the PHY device
->>>> doesn't have a compatible property. And so the device link dependency
->>>> is propagated up to the mdio bus. But busses as suppliers aren't good
->>>> because busses never "probe".
->>>>
->>>> PHY seems to be one of those cases where it's okay to have the
->>>> compatible property but also okay to not have it. You can confirm my
->>>> theory by checking for the list of suppliers under
->>>> ff64c000.mdio-multiplexer. You'd see mdio@0 (ext_mdio) and if you look
->>>> at the "status" file under the folder it should be "dormant". If you
->>>> add a compatible property that fits the formats a PHY node can have,
->>>> that should also fix your issue (not the solution though).
->>> Where should I look for the mentioned device links 'status' file?
->>>
->>> # find /sys -name ff64c000.mdio-multiplexer
->>> /sys/devices/platform/soc/ff600000.bus/ff64c000.mdio-multiplexer
->>> /sys/bus/platform/devices/ff64c000.mdio-multiplexer
->>>
->>> # ls -l /sys/devices/platform/soc/ff600000.bus/ff64c000.mdio-multiplexer
->>> total 0
->> This is the folder I wanted you to check.
->>
->>> lrwxrwxrwx 1 root root    0 Jan  1 00:04
->>> consumer:platform:ff3f0000.ethernet ->
->>> ../../../../virtual/devlink/platform:ff64c000.mdio-multiplexer--platform:ff3f0000.ethernet
->> But I should have asked to look for the consumer list and not the
->> supplier list. In any case, we can see that the ethernet is marked as
->> the consumer of the mdio-multiplexer instead of the PHY device. So my
->> hunch seems to be right.
->>
->>> -rw-r--r-- 1 root root 4096 Jan  1 00:04 driver_override
->>> -r--r--r-- 1 root root 4096 Jan  1 00:04 modalias
->>> lrwxrwxrwx 1 root root    0 Jan  1 00:04 of_node ->
->>> ../../../../../firmware/devicetree/base/soc/bus@ff600000/mdio-multiplexer@4c000
->>> drwxr-xr-x 2 root root    0 Jan  1 00:02 power
->>> lrwxrwxrwx 1 root root    0 Jan  1 00:04 subsystem ->
->>> ../../../../../bus/platform
->>> lrwxrwxrwx 1 root root    0 Jan  1 00:04
->>> supplier:platform:ff63c000.system-controller:clock-controller ->
->>> ../../../../virtual/devlink/platform:ff63c000.system-controller:clock-controller--platform:ff64c000.mdio-multiplexer
->>> -rw-r--r-- 1 root root 4096 Jan  1 00:04 uevent
->>> -r--r--r-- 1 root root 4096 Jan  1 00:04 waiting_for_supplier
->>>
->>> # cat
->>> /sys/devices/platform/soc/ff600000.bus/ff64c000.mdio-multiplexer/waiting_for_supplier
->>> 0
->>>
->>> I'm also not sure what compatible string should I add there.
->> It should have been added to external_phy: ethernet-phy@0. But don't
->> worry about it (because you need to use a specific format for the
->> compatible string).
->>
-> Marek,
+On Thu, Aug 19, 2021 at 1:55 AM Andrew Melnychenko <andrew@daynix.com> wrote:
 >
-> Can you give this a shot?
-> https://lore.kernel.org/lkml/20210831224510.703253-1-saravanak@google.com/
+> Added features for RSS and RSS hash report.
+> Added initialization, RXHASH feature and ethtool ops.
+> By default RSS/RXHASH is disabled.
+> Added ethtools ops to set key and indirection table.
 >
-> This is not the main fix for the case you brought up, but it should
-> fix your issue as a side effect of fixing another issue.
+> Signed-off-by: Andrew Melnychenko <andrew@daynix.com>
+> ---
+>  drivers/net/virtio_net.c | 215 ++++++++++++++++++++++++++++++++++++---
+>  1 file changed, 203 insertions(+), 12 deletions(-)
+>
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 85427b4f51bc..d87bde246305 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -167,6 +167,23 @@ struct receive_queue {
+>         struct xdp_rxq_info xdp_rxq;
+>  };
+>
+> +/* This structure can contain rss message with maximum settings for indirection table and keysize */
+> +#define VIRTIO_NET_RSS_MAX_KEY_SIZE     40
+> +#define VIRTIO_NET_RSS_MAX_TABLE_LEN    128
+> +struct virtio_net_ctrl_rss {
+> +       struct {
+> +               __le32 hash_types;
+> +               __le16 indirection_table_mask;
+> +               __le16 unclassified_queue;
+> +       } __packed table_info;
+> +       u16 indirection_table[VIRTIO_NET_RSS_MAX_TABLE_LEN];
+> +       struct {
+> +               u16 max_tx_vq; /* queues */
+> +               u8 hash_key_length;
+> +       } __packed key_info;
+> +       u8 key[VIRTIO_NET_RSS_MAX_KEY_SIZE];
+> +};
 
-I've just checked it and it doesn't help in my case. 
-ff64c000.mdio-multiplexer and ff3f0000.ethernet are still not probed 
-after applying this patch.
 
-> The main fix for your issue would be to teach fw_devlink that
-> phy-handle always points to the actual DT node that'll become a device
-> even if it doesn't have a compatible property. I'll send that out
-> later.
+Any reason that those doesn't belong to uAPI?
 
-I'm waiting for the proper fix then.
+And spec said:
 
-Best regards
+"
 
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+The device MUST set rss_max_key_size to at least 40, if it offers
+VIRTIO_NET_F_RSS or VIRTIO_NET_F_HASH_REPORT.
+
+The device MUST set rss_max_indirection_table_length to at least 128,
+if it offers VIRTIO_NET_F_RSS.
+
+"
+
+But it looks to me that you define those as maximum size instead of
+minimum size?
+
+> +
+>  /* Control VQ buffers: protected by the rtnl lock */
+>  struct control_buf {
+>         struct virtio_net_ctrl_hdr hdr;
+> @@ -176,6 +193,7 @@ struct control_buf {
+>         u8 allmulti;
+>         __virtio16 vid;
+>         __virtio64 offloads;
+> +       struct virtio_net_ctrl_rss rss;
+>  };
+>
+>  struct virtnet_info {
+> @@ -204,6 +222,14 @@ struct virtnet_info {
+>         /* Host will merge rx buffers for big packets (shake it! shake it!) */
+>         bool mergeable_rx_bufs;
+>
+> +       /* Host supports rss and/or hash report */
+> +       bool has_rss;
+> +       bool has_rss_hash_report;
+> +       u8 rss_key_size;
+> +       u16 rss_indir_table_size;
+> +       u32 rss_hash_types_supported;
+> +       u32 rss_hash_types_saved;
+> +
+>         /* Has control virtqueue */
+>         bool has_cvq;
+>
+> @@ -393,7 +419,9 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
+>         hdr_p = p;
+>
+>         hdr_len = vi->hdr_len;
+> -       if (vi->mergeable_rx_bufs)
+> +       if (vi->has_rss_hash_report)
+> +               hdr_padded_len = sizeof(struct virtio_net_hdr_v1_hash);
+> +       else if (vi->mergeable_rx_bufs)
+>                 hdr_padded_len = sizeof(*hdr);
+>         else
+>                 hdr_padded_len = sizeof(struct padded_vnet_hdr);
+
+I don't get here. You change the padder_vnet_hdr but here it was only
+used for !non-mergeable ?
+
+
+> @@ -2171,6 +2199,56 @@ static void virtnet_get_ringparam(struct net_device *dev,
+>         ring->tx_pending = ring->tx_max_pending;
+>  }
+>
+> +static bool virtnet_commit_rss_command(struct virtnet_info *vi)
+> +{
+> +       struct net_device *dev = vi->dev;
+> +       struct scatterlist sgs[4];
+> +       unsigned int sg_buf_size;
+> +
+> +       /* prepare sgs */
+> +       sg_init_table(sgs, 4);
+> +
+> +       sg_buf_size = sizeof(vi->ctrl->rss.table_info);
+> +       sg_set_buf(&sgs[0], &vi->ctrl->rss.table_info, sg_buf_size);
+> +
+> +       sg_buf_size = sizeof(uint16_t) * vi->rss_indir_table_size;
+> +       sg_set_buf(&sgs[1], vi->ctrl->rss.indirection_table, sg_buf_size);
+> +
+> +       sg_buf_size = sizeof(vi->ctrl->rss.key_info);
+> +       sg_set_buf(&sgs[2], &vi->ctrl->rss.key_info, sg_buf_size);
+> +
+> +       sg_buf_size = vi->rss_key_size;
+> +       sg_set_buf(&sgs[3], vi->ctrl->rss.key, sg_buf_size);
+> +
+> +       if (!virtnet_send_command(vi, VIRTIO_NET_CTRL_MQ,
+> +                                 vi->has_rss ? VIRTIO_NET_CTRL_MQ_RSS_CONFIG
+> +                                 : VIRTIO_NET_CTRL_MQ_HASH_CONFIG, sgs)) {
+> +               dev_warn(&dev->dev, "VIRTIONET issue with committing RSS sgs\n");
+> +               return false;
+> +       }
+> +       return true;
+> +}
+> +
+> +static void virtnet_init_default_rss(struct virtnet_info *vi)
+> +{
+> +       u32 indir_val = 0;
+> +       int i = 0;
+> +
+> +       vi->ctrl->rss.table_info.hash_types = vi->rss_hash_types_supported;
+> +       vi->rss_hash_types_saved = vi->rss_hash_types_supported;
+> +       vi->ctrl->rss.table_info.indirection_table_mask = vi->rss_indir_table_size - 1;
+> +       vi->ctrl->rss.table_info.unclassified_queue = 0;
+> +
+> +       for (; i < vi->rss_indir_table_size; ++i) {
+> +               indir_val = ethtool_rxfh_indir_default(i, vi->max_queue_pairs);
+> +               vi->ctrl->rss.indirection_table[i] = indir_val;
+> +       }
+> +
+> +       vi->ctrl->rss.key_info.max_tx_vq = vi->curr_queue_pairs;
+> +       vi->ctrl->rss.key_info.hash_key_length = vi->rss_key_size;
+> +
+> +       netdev_rss_key_fill(vi->ctrl->rss.key, vi->rss_key_size);
+> +}
+>
+>  static void virtnet_get_drvinfo(struct net_device *dev,
+>                                 struct ethtool_drvinfo *info)
+> @@ -2395,6 +2473,72 @@ static void virtnet_update_settings(struct virtnet_info *vi)
+>                 vi->duplex = duplex;
+>  }
+>
+> +u32 virtnet_get_rxfh_key_size(struct net_device *dev)
+> +{
+> +       return ((struct virtnet_info *)netdev_priv(dev))->rss_key_size;
+> +}
+> +
+> +u32 virtnet_get_rxfh_indir_size(struct net_device *dev)
+> +{
+> +       return ((struct virtnet_info *)netdev_priv(dev))->rss_indir_table_size;
+> +}
+> +
+> +int virtnet_get_rxfh(struct net_device *dev, u32 *indir, u8 *key, u8 *hfunc)
+> +{
+> +       struct virtnet_info *vi = netdev_priv(dev);
+> +       int i;
+> +
+> +       if (indir) {
+> +               for (i = 0; i < vi->rss_indir_table_size; ++i)
+> +                       indir[i] = vi->ctrl->rss.indirection_table[i];
+> +       }
+> +
+> +       if (key)
+> +               memcpy(key, vi->ctrl->rss.key, vi->rss_key_size);
+> +
+> +       if (hfunc)
+> +               *hfunc = ETH_RSS_HASH_TOP;
+> +
+> +       return 0;
+> +}
+> +
+> +int virtnet_set_rxfh(struct net_device *dev, const u32 *indir, const u8 *key, const u8 hfunc)
+> +{
+> +       struct virtnet_info *vi = netdev_priv(dev);
+> +       int i;
+> +
+> +       if (hfunc != ETH_RSS_HASH_NO_CHANGE && hfunc != ETH_RSS_HASH_TOP)
+> +               return -EOPNOTSUPP;
+> +
+> +       if (indir) {
+> +               for (i = 0; i < vi->rss_indir_table_size; ++i)
+> +                       vi->ctrl->rss.indirection_table[i] = indir[i];
+> +       }
+> +       if (key)
+> +               memcpy(vi->ctrl->rss.key, key, vi->rss_key_size);
+> +
+> +       virtnet_commit_rss_command(vi);
+> +
+> +       return 0;
+> +}
+> +
+> +int virtnet_get_rxnfc(struct net_device *dev, struct ethtool_rxnfc *info, u32 *rule_locs)
+> +{
+> +       struct virtnet_info *vi = netdev_priv(dev);
+> +       int rc = 0;
+> +
+> +       switch (info->cmd) {
+> +       case ETHTOOL_GRXRINGS:
+> +               info->data = vi->curr_queue_pairs;
+> +               rc = -EOPNOTSUPP;
+> +       }
+> +       default:
+> +               rc = -EOPNOTSUPP;
+> +       }
+> +
+> +       return rc;
+> +}
+> +
+>  static const struct ethtool_ops virtnet_ethtool_ops = {
+>         .supported_coalesce_params = ETHTOOL_COALESCE_MAX_FRAMES,
+>         .get_drvinfo = virtnet_get_drvinfo,
+> @@ -2410,6 +2554,11 @@ static const struct ethtool_ops virtnet_ethtool_ops = {
+>         .set_link_ksettings = virtnet_set_link_ksettings,
+>         .set_coalesce = virtnet_set_coalesce,
+>         .get_coalesce = virtnet_get_coalesce,
+> +       .get_rxfh_key_size = virtnet_get_rxfh_key_size,
+> +       .get_rxfh_indir_size = virtnet_get_rxfh_indir_size,
+> +       .get_rxfh = virtnet_get_rxfh,
+> +       .set_rxfh = virtnet_set_rxfh,
+> +       .get_rxnfc = virtnet_get_rxnfc,
+>  };
+>
+>  static void virtnet_freeze_down(struct virtio_device *vdev)
+> @@ -2662,6 +2811,16 @@ static int virtnet_set_features(struct net_device *dev,
+>                 vi->guest_offloads = offloads;
+>         }
+>
+> +       if ((dev->features ^ features) & NETIF_F_RXHASH) {
+> +               if (features & NETIF_F_RXHASH)
+> +                       vi->ctrl->rss.table_info.hash_types = vi->rss_hash_types_saved;
+> +               else
+> +                       vi->ctrl->rss.table_info.hash_types = 0;
+> +
+> +               if (!virtnet_commit_rss_command(vi))
+> +                       return -EINVAL;
+> +       }
+> +
+>         return 0;
+>  }
+>
+> @@ -3080,13 +3239,14 @@ static int virtnet_probe(struct virtio_device *vdev)
+>         u16 max_queue_pairs;
+>         int mtu;
+>
+> -       /* Find if host supports multiqueue virtio_net device */
+> -       err = virtio_cread_feature(vdev, VIRTIO_NET_F_MQ,
+> -                                  struct virtio_net_config,
+> -                                  max_virtqueue_pairs, &max_queue_pairs);
+> +       /* Find if host supports multiqueue/rss virtio_net device */
+> +       max_queue_pairs = 0;
+> +       if (virtio_has_feature(vdev, VIRTIO_NET_F_MQ) || virtio_has_feature(vdev, VIRTIO_NET_F_RSS))
+> +               max_queue_pairs =
+> +                    virtio_cread16(vdev, offsetof(struct virtio_net_config, max_virtqueue_pairs));
+
+I think virtio_cread_features() can still work here, or am I missing anything?
+
+>
+>         /* We need at least 2 queue's */
+> -       if (err || max_queue_pairs < VIRTIO_NET_CTRL_MQ_VQ_PAIRS_MIN ||
+> +       if (max_queue_pairs < VIRTIO_NET_CTRL_MQ_VQ_PAIRS_MIN ||
+>             max_queue_pairs > VIRTIO_NET_CTRL_MQ_VQ_PAIRS_MAX ||
+>             !virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_VQ))
+>                 max_queue_pairs = 1;
+> @@ -3160,6 +3320,9 @@ static int virtnet_probe(struct virtio_device *vdev)
+>
+>         INIT_WORK(&vi->config_work, virtnet_config_changed_work);
+>
+> +       if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_VQ))
+> +               vi->has_cvq = true;
+> +
+>         /* If we can receive ANY GSO packets, we must allocate large ones. */
+>         if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
+>             virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6) ||
+> @@ -3170,8 +3333,32 @@ static int virtnet_probe(struct virtio_device *vdev)
+>         if (virtio_has_feature(vdev, VIRTIO_NET_F_MRG_RXBUF))
+>                 vi->mergeable_rx_bufs = true;
+>
+> -       if (virtio_has_feature(vdev, VIRTIO_NET_F_MRG_RXBUF) ||
+> -           virtio_has_feature(vdev, VIRTIO_F_VERSION_1))
+> +       if (vi->has_cvq && virtio_has_feature(vdev, VIRTIO_NET_F_HASH_REPORT)) {
+
+Let's add a new validation in virtnet_validate_features(), then
+there's no need for the check of cvq here (and the moving of the
+has_cvq assignment).
+
+
+> +               vi->has_rss_hash_report = true;
+> +               vi->rss_indir_table_size = 1;
+> +               vi->rss_key_size = VIRTIO_NET_RSS_MAX_KEY_SIZE;
+> +       }
+> +
+> +       if (vi->has_cvq && virtio_has_feature(vdev, VIRTIO_NET_F_RSS)) {
+> +               vi->has_rss = true;
+> +               vi->rss_indir_table_size =
+> +                       virtio_cread16(vdev, offsetof(struct virtio_net_config,
+> +                                                     rss_max_indirection_table_length));
+> +               vi->rss_key_size =
+> +                       virtio_cread8(vdev, offsetof(struct virtio_net_config, rss_max_key_size));
+> +       }
+> +
+> +       if (vi->has_rss || vi->has_rss_hash_report) {
+> +               vi->rss_hash_types_supported =
+> +                   virtio_cread32(vdev, offsetof(struct virtio_net_config, supported_hash_types));
+> +
+> +               dev->hw_features |= NETIF_F_RXHASH;
+> +       }
+> +
+> +       if (vi->has_cvq && vi->has_rss_hash_report)
+> +               vi->hdr_len = sizeof(struct virtio_net_hdr_v1_hash);
+> +       else if (virtio_has_feature(vdev, VIRTIO_NET_F_MRG_RXBUF) ||
+> +                virtio_has_feature(vdev, VIRTIO_F_VERSION_1))
+>                 vi->hdr_len = sizeof(struct virtio_net_hdr_mrg_rxbuf);
+>         else
+>                 vi->hdr_len = sizeof(struct virtio_net_hdr);
+> @@ -3180,9 +3367,6 @@ static int virtnet_probe(struct virtio_device *vdev)
+>             virtio_has_feature(vdev, VIRTIO_F_VERSION_1))
+>                 vi->any_header_sg = true;
+>
+> -       if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_VQ))
+> -               vi->has_cvq = true;
+> -
+>         if (virtio_has_feature(vdev, VIRTIO_NET_F_MTU)) {
+>                 mtu = virtio_cread16(vdev,
+>                                      offsetof(struct virtio_net_config,
+> @@ -3254,6 +3438,12 @@ static int virtnet_probe(struct virtio_device *vdev)
+>
+>         virtnet_set_queues(vi, vi->curr_queue_pairs);
+>
+> +       if (vi->has_rss || vi->has_rss_hash_report) {
+> +               rtnl_lock();
+> +               virtnet_init_default_rss(vi);
+> +               rtnl_unlock();
+> +       }
+
+I wonder what happens if the user sets a new RSS before this?
+
+Thanks
+
+
+> +
+>         /* Assume link up if device can't report link status,
+>            otherwise get link status from config. */
+>         netif_carrier_off(dev);
+> @@ -3369,7 +3559,8 @@ static struct virtio_device_id id_table[] = {
+>         VIRTIO_NET_F_GUEST_ANNOUNCE, VIRTIO_NET_F_MQ, \
+>         VIRTIO_NET_F_CTRL_MAC_ADDR, \
+>         VIRTIO_NET_F_MTU, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS, \
+> -       VIRTIO_NET_F_SPEED_DUPLEX, VIRTIO_NET_F_STANDBY
+> +       VIRTIO_NET_F_SPEED_DUPLEX, VIRTIO_NET_F_STANDBY, \
+> +       VIRTIO_NET_F_RSS, VIRTIO_NET_F_HASH_REPORT
+>
+>  static unsigned int features[] = {
+>         VIRTNET_FEATURES,
+> --
+> 2.31.1
+>
 
