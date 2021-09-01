@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73D093FDF12
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 17:53:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0027F3FDF19
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 17:55:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343905AbhIAPyo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 11:54:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36056 "EHLO mail.kernel.org"
+        id S1343876AbhIAP4C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 11:56:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37260 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244935AbhIAPym (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Sep 2021 11:54:42 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 07DDB60F3A;
-        Wed,  1 Sep 2021 15:53:42 +0000 (UTC)
+        id S244935AbhIAP4A (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 Sep 2021 11:56:00 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C937161075;
+        Wed,  1 Sep 2021 15:55:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1630511623;
-        bh=TnmkZKJturhx2YGjyzAABGjXGZxth9p5yS0wysVnQN0=;
+        s=k20201202; t=1630511704;
+        bh=6Z6K+XSWY4KGjocc/zwOs7KVWe0xhmUGz3v2fh4mNQ4=;
         h=From:To:Cc:Subject:Date:From;
-        b=ZDPAcoveVZRdtS1PzZFaBCEwBwu0wDP62yVchSPfg8KjW5+cfpVEd9S2W/RhUL9Au
-         OO9YP+ugKETTX6jNrXBUDjIEIWkd/G81h09AskEVE4qDUvoxlRwUzhkWTEbXMO9T7t
-         MI+cEbwTqBy8mtd9/2QhiintvHvUkHr+vXtxvA55jJgjlcPxlQjWaC83Abr3k4yrso
-         fptvf53l5k/nL534MTND+nWY5uezEUqW08aIh5Y7jfMB91Fpp21NAehLR2j6LxKzNg
-         6niSlj0KzGGtYLoyvn2rJkt8ZdFxy6H+XZlIizDJ+a+cT03uxRPzouWHLqdEY+BM61
-         wYr6u1QV7mJcQ==
+        b=qq79HMM+U4/wvmcKU/ivffSOcqEtgeMQahB0mYre1sFnUH4rTCHv68JrQtvedS9vs
+         1MituSk7uSjJkfyjxp/pbb3cGdWKUP6+zRvNHXTwLGscnnUHdD7fukZ5NCfyeON0u1
+         gZ/wiX+b0qpnTOwv2VcPXx1gcCLNzTNiFlQESqAVkK9ZsAHd+Gllxor8TfH+EQ4UT0
+         7j6kFfE06f23kq1bO7+WTKecr/qa9BGAha/oniyI4H775HPJJwnvkNaz4UM54asuCg
+         FrjdmqjZO+//G+ANPa5GkHfXp+V0RRNdA3uvXoFtHJo+TnoS0DZNiA6J1FS0Rq8hJN
+         9X2mHPJEL+F3g==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     dsahern@gmail.com, netdev@vger.kernel.org,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net] selftests: add simple GSO GRE test
-Date:   Wed,  1 Sep 2021 08:53:40 -0700
-Message-Id: <20210901155340.353344-1-kuba@kernel.org>
+Subject: [PATCH net v2] selftests: add simple GSO GRE test
+Date:   Wed,  1 Sep 2021 08:55:01 -0700
+Message-Id: <20210901155501.353635-1-kuba@kernel.org>
 X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -42,6 +42,8 @@ Test case for commit a6e3f2985a80 ("ip6_tunnel: fix GRE6 segmentation").
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
 Looks like I never sent this out.
+
+v2: correct the script name in the Makefile
 ---
  tools/testing/selftests/net/Makefile   |   1 +
  tools/testing/selftests/net/gre_gso.sh | 236 +++++++++++++++++++++++++
@@ -49,14 +51,14 @@ Looks like I never sent this out.
  create mode 100755 tools/testing/selftests/net/gre_gso.sh
 
 diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index 378c0aac5a1a..47c644b1ffca 100644
+index 378c0aac5a1a..492b273743b4 100644
 --- a/tools/testing/selftests/net/Makefile
 +++ b/tools/testing/selftests/net/Makefile
 @@ -27,6 +27,7 @@ TEST_PROGS += udpgro_fwd.sh
  TEST_PROGS += veth.sh
  TEST_PROGS += ioam6.sh
  TEST_PROGS += gro.sh
-+TEST_PROGS += gre_gro.sh
++TEST_PROGS += gre_gso.sh
  TEST_PROGS_EXTENDED := in_netns.sh
  TEST_GEN_FILES =  socket nettest
  TEST_GEN_FILES += psock_fanout psock_tpacket msg_zerocopy reuseport_addr_any
