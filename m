@@ -2,104 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E4B53FD3BA
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 08:20:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FB0E3FD3E0
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 08:38:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242263AbhIAGVf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 02:21:35 -0400
-Received: from relay.sw.ru ([185.231.240.75]:41322 "EHLO relay.sw.ru"
+        id S242255AbhIAGjY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 02:39:24 -0400
+Received: from bilbo.ozlabs.org ([203.11.71.1]:44667 "EHLO ozlabs.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242071AbhIAGVe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Sep 2021 02:21:34 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:From:
-        Subject; bh=CMn1n/Dh7ekMa8GdsiwO8//8ZOlUAm/ndqbU97gmQrE=; b=TfISTGvLL9l2i0BUL
-        sWUB5ThmJHilTO/IVkK3C72J4BJVljG2C6JpxX3J7dtHiLut1cG06OgdPHSOTMX5aP3UbPepCHlQe
-        sMYjjZ4sCuf1fQfzQQRA6l9jmAXyAzW5Bvuv/vSL8c0jwcLC6ts+J62x2scs2zP5czjYIzVWqpsS8
-        =;
-Received: from [10.93.0.56]
-        by relay.sw.ru with esmtp (Exim 4.94.2)
-        (envelope-from <vvs@virtuozzo.com>)
-        id 1mLJbo-000R9a-Rw; Wed, 01 Sep 2021 09:20:28 +0300
-Subject: Re: [PATCH net-next v3 RFC] skb_expand_head() adjust skb->truesize
- incorrectly
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Christoph Paasch <christoph.paasch@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org,
-        kernel@openvz.org, Julian Wiedmann <jwi@linux.ibm.com>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
-References: <8fd56805-2ac8-dcbe-1337-b20f91f759d6@gmail.com>
- <b66d9db6-f0ac-48a9-8062-49d6a5249d4b@virtuozzo.com>
- <f4bbce90-f31f-b844-0087-c9d72db06471@gmail.com>
-From:   Vasily Averin <vvs@virtuozzo.com>
-Message-ID: <b653692b-1550-e17a-6c51-894832c56065@virtuozzo.com>
-Date:   Wed, 1 Sep 2021 09:20:27 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S231501AbhIAGjX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 Sep 2021 02:39:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1630478305;
+        bh=+P+jRAAoHJInhbNG/oriIYBjdXcWSMHExv29E1M8JbM=;
+        h=Date:From:To:Cc:Subject:From;
+        b=so2jUWO366M+SYsYAI/+T49i8RtNG/CQD6qHtUcqP+lLn/kfZ8omEQRL2xNzLvY5n
+         pLVCd4djNA4Jh1rOLg7i2F/pj+Lkg+10QswjxWaB4kZjohbHIlSQ+TOBmwXzPLsTFD
+         XWPwvbeddQ8DPK2IMXA/lxVuuxvG1fDzAhUj5fC8hkqT/D4C6sba5drbTi7L8JkDUb
+         F8zkz8ZzKU6wdIQCZkzAwEoNBCwd8DjWuCACCqWCJJ+zhqEJOtpp6mtHgBZ4CI4SqI
+         nB/YhWhj4AS7t5oghlknaOjZ/lVTKU3ZFgfEptO893FvMaF5TnthAChIlYFFd1WuJl
+         NQwkZZJZPtiTg==
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4GzvX06Bwxz9sXk;
+        Wed,  1 Sep 2021 16:38:24 +1000 (AEST)
+Date:   Wed, 1 Sep 2021 16:38:22 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Konrad Rzeszutek Wilk <konrad@kernel.org>,
+        Maurizio Lombardi <mlombard@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the net-next tree
+Message-ID: <20210901163822.65beb208@canb.auug.org.au>
 MIME-Version: 1.0
-In-Reply-To: <f4bbce90-f31f-b844-0087-c9d72db06471@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="Sig_/41EVaJjowJ1ijmM/dv3QE1G";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/31/21 10:38 PM, Eric Dumazet wrote:
-> On 8/31/21 7:34 AM, Vasily Averin wrote:
->> RFC because it have an extra changes:
->> new is_skb_wmem() helper can be called
->>  - either before pskb_expand_head(), to create skb clones 
->>     for skb with destructors that does not change sk->sk_wmem_alloc
->>  - or after pskb_expand_head(), to change owner in skb_set_owner_w()
->>
->> In current patch I've added both these ways,
->> we need to keep one of them.
+--Sig_/41EVaJjowJ1ijmM/dv3QE1G
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-If nobody object I vote for 2nd way:
+Hi all,
 
->> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
->> index f931176..3ce33f2 100644
->> --- a/net/core/skbuff.c
->> +++ b/net/core/skbuff.c
->> @@ -1804,30 +1804,47 @@ struct sk_buff *skb_realloc_headroom(struct sk_buff *skb, unsigned int headroom)
->>  struct sk_buff *skb_expand_head(struct sk_buff *skb, unsigned int headroom)
->>  {
-... skipped ...
->> -	return skb;
->> +	if (oskb) {
->> +		if (sk)
->> +			skb_set_owner_w(skb, sk);
-> 
-> Broken for non full sockets.
-> Calling skb_set_owner_w(skb, sk) for them is a bug.
+After merging the net-next tree, today's linux-next build (X86_64
+allnoconfig) failed like this:
 
-I think you're wrong here.
-It is 100% equivalent of old code, 
-skb_set_owner_w() handles sk_fullsock(sk) inside and does not adjust sk->sk_wmem_alloc.
-Please explain if I'm wrong.
+arch/x86/kernel/setup.c: In function 'setup_arch':
+arch/x86/kernel/setup.c:916:6: error: implicit declaration of function 'acp=
+i_mps_check' [-Werror=3Dimplicit-function-declaration]
+  916 |  if (acpi_mps_check()) {
+      |      ^~~~~~~~~~~~~~
+arch/x86/kernel/setup.c:1110:2: error: implicit declaration of function 'ac=
+pi_table_upgrade' [-Werror=3Dimplicit-function-declaration]
+ 1110 |  acpi_table_upgrade();
+      |  ^~~~~~~~~~~~~~~~~~
+arch/x86/kernel/setup.c:1112:2: error: implicit declaration of function 'ac=
+pi_boot_table_init' [-Werror=3Dimplicit-function-declaration]
+ 1112 |  acpi_boot_table_init();
+      |  ^~~~~~~~~~~~~~~~~~~~
+arch/x86/kernel/setup.c:1120:2: error: implicit declaration of function 'ea=
+rly_acpi_boot_init'; did you mean 'early_cpu_init'? [-Werror=3Dimplicit-fun=
+ction-declaration]
+ 1120 |  early_acpi_boot_init();
+      |  ^~~~~~~~~~~~~~~~~~~~
+      |  early_cpu_init
+arch/x86/kernel/setup.c:1162:2: error: implicit declaration of function 'ac=
+pi_boot_init' [-Werror=3Dimplicit-function-declaration]
+ 1162 |  acpi_boot_init();
+      |  ^~~~~~~~~~~~~~
 
->> +		consume_skb(oskb);
->> +	} else if (sk) {
->> +		delta = osize - skb_end_offset(skb);
->> +		if (!is_skb_wmem(skb))
->> +			skb_set_owner_w(skb, sk);
-> 
-> This would be broken for non full sockets.
-> Calling skb_set_owner_w(skb, sk) for them is a bug.
-See my comment above.
+Caused by commit
 
->> +		skb->truesize += delta;
->> +		if (sk_fullsock(sk))
->> +			refcount_add(delta, &sk->sk_wmem_alloc);
-> 
-> 
->> +	}	return skb;
-Strange line, will fix it.
+  342f43af70db ("iscsi_ibft: fix crash due to KASLR physical memory remappi=
+ng")
 
->>  }
->>  EXPORT_SYMBOL(skb_expand_head);
+Unfortunately that commit has now been merged into Linus' tree as well.
+
+I have added the following fix patch for today.
+
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+Date: Wed, 1 Sep 2021 16:31:32 +1000
+Subject: [PATCH] x86: include acpi.h when using acpi functions
+
+The removal of the include of linux/acpi.h from include/linux/iscsi_ibft.h
+by commit
+
+  342f43af70db ("iscsi_ibft: fix crash due to KASLR physical memory remappi=
+ng")
+
+exposed this build failure.
+
+Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+---
+ arch/x86/kernel/setup.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
+index 63b20536c8d2..da0a4b64880f 100644
+--- a/arch/x86/kernel/setup.c
++++ b/arch/x86/kernel/setup.c
+@@ -13,6 +13,7 @@
+ #include <linux/init_ohci1394_dma.h>
+ #include <linux/initrd.h>
+ #include <linux/iscsi_ibft.h>
++#include <linux/acpi.h>
+ #include <linux/memblock.h>
+ #include <linux/panic_notifier.h>
+ #include <linux/pci.h>
+--=20
+2.32.0
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/41EVaJjowJ1ijmM/dv3QE1G
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmEvH94ACgkQAVBC80lX
+0GxOQwf/T8m8+Tqc33+IK3OjriQHCNRR+al8xPZWweHJfTouB/OJyV21zPck4uxn
+D4FaDhDFVIgGXAaf22euc4zH/IbEetBszV8WoXH04hexQMxiTV/oiE6ZAEPMZiyw
+baiwKYD03KN5XcD+rFG2rOMRbQiAi28sXLEUQiGClrqk9s+owixf6Qup01+EDofv
+19Qt6JCOAprU6SBOHpDOHT6L022dWytGtXd8je195cL56JZVephSlZDXmUBI5zrd
+hkC4HtW7OT7AwKlWgAQmj7Kx8zm2b9DMd+eNUMGJ8JJ4o4xPg2nRc9YY3z3JhFnT
+1j7XgmsPaawcMu9lbieWxKmX8dVqTw==
+=jFds
+-----END PGP SIGNATURE-----
+
+--Sig_/41EVaJjowJ1ijmM/dv3QE1G--
