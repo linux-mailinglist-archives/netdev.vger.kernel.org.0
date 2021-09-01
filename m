@@ -2,107 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 488D33FE112
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 19:20:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F25383FE116
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 19:22:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344968AbhIARU6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 13:20:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41346 "EHLO
+        id S1344533AbhIARXB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 13:23:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234840AbhIARU5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 13:20:57 -0400
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BDEEC061575;
-        Wed,  1 Sep 2021 10:20:00 -0700 (PDT)
-Received: by mail-oi1-x234.google.com with SMTP id 6so211048oiy.8;
-        Wed, 01 Sep 2021 10:20:00 -0700 (PDT)
+        with ESMTP id S232491AbhIARXA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 13:23:00 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81C91C061575;
+        Wed,  1 Sep 2021 10:22:03 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id y17so335020pfl.13;
+        Wed, 01 Sep 2021 10:22:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=MQNYeLOlbF4CU5PfvC1DgnprS8pBMmOc+dOnuh+XI1k=;
-        b=esBUZIktOXnkxH7MHZWuyRuBrt/0OaHxjQAi1ayt+Dl36umGXGmzSQ+Sx/LAPlT3aT
-         LkA+BTaWsdGQJNoWzkP60NEmKvTEj93uAjnGU/HzGPK+Lq92+GaG71MqDk3auyBgEbXE
-         V0mTLqLfn9AXf2+ozir/0KZUzw6vm2Z5+jzgrktMtWhqonWBYO3tAyXT+GzGXKTp52pp
-         gc8r1OZ9z6YQ+uMu+t3hK433OJCkyJgjFxE+xhcYN/UhtHnBOHnk/DRSW/xg3jRAc1ue
-         gd4n/vR26V4WxDaf+KTC2SQU1zEaEBRlEXQmEcV9rj8x6qN+2XeFFhBf7UMagdghgviw
-         821g==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=nfAkk0jXyriy7YDumg63T1rJOPepAna5AhOX1c8OHnQ=;
+        b=dPBqyV9ygf0IfaVod4baG7+G/rSQITh1zx0NaRJCobxojqZw/QUYOijDGZCb5XfuQj
+         8ziD1XxSuntvqgkoIhoMfCCoNGVV9VixMGvQM0M3XF+X3N4SHBYc6VFM3HPmUaVQya14
+         fZvEe3RXE3iMnYn6HTrAfgF1CFZ+340BndMOa9hu65Uoj/tGjkjYcC/tQ+7hoJ4424qc
+         Gocevt2y+kettLMzO3eJuUvMzSWrhvkJdmMDletClAhXdzR/De1XYbJn0uepbVpxxRZT
+         Ma67PjjxBV+lTC+QiioYaG5iwE/5HmF3zDD8f1H4mjeWKQ4/OwQ0G0hkwXu3yf7m3sWO
+         q5+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=MQNYeLOlbF4CU5PfvC1DgnprS8pBMmOc+dOnuh+XI1k=;
-        b=BoxJ/QPNNm48oyfqB1xZ0Hk7nDFCImLbD0a7E9WTlud7dE9CkHFDJ754nlpq3Agjcy
-         ysQvrMdr0HOlQ9oVAfBHCNXA6vPse+Ji4Shm+X3DaKdMK4UT2WujI0LonjM/79RKkIwr
-         fNCUA+RVNhWdrcRyNd89ZgDmaRwx8pNC0VmvEeg1KOahPZaxFXOxwYSjSJa/OMXaGE3X
-         xIjM8Vs2O9RWhQOhM/C5iWN/0/OPe63cN8QkWXKDrTI676pGrbhrZPJSSpR2Kn9owp88
-         NIl7qT8jwBXmXOFNVTkRFyZwSmyEqjSc7sz6KctoWI/yUwUAFQdcuveKJMbOln0RAbnv
-         WUUQ==
-X-Gm-Message-State: AOAM531oQvo0P7U4hNL9QrwC7/U5EgqI0/GhSLbna6J1a23YDSpRv35P
-        N3MXZ1MPBGi7ve89b1xK0rk=
-X-Google-Smtp-Source: ABdhPJzrU8WAkpumxHlHzavN6WMqpEaXk7p+smulDC+w95FmkVcCbDcJYy1r45EYCpTBirX1Gq8XHA==
-X-Received: by 2002:aca:b6d5:: with SMTP id g204mr562584oif.29.1630516799738;
-        Wed, 01 Sep 2021 10:19:59 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id d10sm71231ooj.24.2021.09.01.10.19.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Sep 2021 10:19:59 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Wed, 1 Sep 2021 10:19:57 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     netdev@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>, Andrii Nakryiko <andriin@fb.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Doug Berger <opendmb@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Finn Thain <fthain@telegraphics.com.au>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Jakub Kicinski <kuba@kernel.org>, Jessica Yu <jeyu@kernel.org>,
-        Michael Schmitz <schmitzmic@gmail.com>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Sam Creasey <sammy@sammy.net>, linux-kernel@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com
-Subject: Re: [PATCH v2 05/14] [net-next] cs89x0: rework driver configuration
-Message-ID: <20210901171957.GA2882691@roeck-us.net>
-References: <20210803114051.2112986-1-arnd@kernel.org>
- <20210803114051.2112986-6-arnd@kernel.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nfAkk0jXyriy7YDumg63T1rJOPepAna5AhOX1c8OHnQ=;
+        b=BpWWr36NafM2gLZcbu0q7Q2fyHz+IxZnF0DxO2dvYEuleSgmMzlXgelWIq2BF9g5UU
+         2kjiuVsHlOWa6483PATOU8zyk/6iOem5jRfZKLfK4rb1uMem9YxcyNx+IXH/yEEhfm1j
+         sQNAIoiiyCRtp1ide1ET3Bf+y5uOGN+veoejzO1edWWSNmESL5cP82KoJ4TvRwOa/6Ux
+         50kPfa1ZMjHzJtqcj3rgtPodaSPQ2BNovPkiUhnX+sGEBETEje4wq2LnZ7K+DYT0wJYe
+         EU6H/ssRCup/us37Pbn9O/1RUxrXxuw5tbIgDddlAWpsT5sDmZCI205/6cA6wCQrMubd
+         4L1A==
+X-Gm-Message-State: AOAM5303uIcU94Sd1AhHDDd/Af4Ns9IvW87KD/UHvpyXunS4EsPJ+BAt
+        yUcMr8F6rILuwzM09Y+PMZE=
+X-Google-Smtp-Source: ABdhPJwyVNwraC5WuvjTCVqbv1S8nmODuGucwAgdAL+N9DZK2bR+X6Kr9Do+OYcNYXimMMdFIUBvsA==
+X-Received: by 2002:a05:6a00:1a88:b0:407:1f7c:60b9 with SMTP id e8-20020a056a001a8800b004071f7c60b9mr403178pfv.77.1630516922932;
+        Wed, 01 Sep 2021 10:22:02 -0700 (PDT)
+Received: from [192.168.1.121] (99-44-17-11.lightspeed.irvnca.sbcglobal.net. [99.44.17.11])
+        by smtp.gmail.com with ESMTPSA id d19sm157452pjs.18.2021.09.01.10.21.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Sep 2021 10:22:02 -0700 (PDT)
+Message-ID: <ba35e7b8-4f90-9870-3e9e-f8666f5ebd0f@gmail.com>
+Date:   Wed, 1 Sep 2021 10:21:55 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210803114051.2112986-6-arnd@kernel.org>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.0.3
+Subject: Re: [PATCH net 2/2] net: dsa: b53: Set correct number of ports in the
+ DSA struct
+Content-Language: en-US
+To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        stable@vger.kernel.org
+References: <20210901092141.6451-1-zajec5@gmail.com>
+ <20210901092141.6451-2-zajec5@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20210901092141.6451-2-zajec5@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 03, 2021 at 01:40:42PM +0200, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> There are two drivers in the cs89x0 file, with the CONFIG_CS89x0_PLATFORM
-> symbol deciding which one is getting built. This is somewhat confusing
-> and makes it more likely ton configure a driver that works nowhere.
-> 
-> Split up the Kconfig option into separate ISA and PLATFORM drivers,
-> with the ISA symbol explicitly connecting to the static probing in
-> drivers/net/Space.c
-> 
-> The two drivers are still mutually incompatible at compile time,
-> which could be lifted by splitting them into multiple files,
-> but in practice this will make no difference.
-> 
-> The platform driver can now be enabled for compile-testing on
-> non-ARM machines.
-> 
 
-powerpc:allmodconfig in mainline (I tested v5.14-3756-gd8b4266666c4 and
-v5.14-4526-gebf435d3b51b):
 
-drivers/net/ethernet/cirrus/cs89x0.c: In function 'net_open':
-drivers/net/ethernet/cirrus/cs89x0.c:897:41: error: implicit declaration of function 'isa_virt_to_bus'
+On 9/1/2021 2:21 AM, Rafał Miłecki wrote:
+> From: Rafał Miłecki <rafal@milecki.pl>
+> 
+> Setting DSA_MAX_PORTS caused DSA to call b53 callbacks (e.g.
+> b53_disable_port() during dsa_register_switch()) for invalid
+> (non-existent) ports. That made b53 modify unrelated registers and is
+> one of reasons for a broken BCM5301x support.
+> 
+> This problem exists for years but DSA_MAX_PORTS usage has changed few
+> times so it's hard to specify a single commit this change fixes.
 
-Guenter
+You should still try to identify the relevant tags that this is fixing 
+such that this gets back ported to the appropriate trees. We could use 
+Fixes: 7e99e3470172 ("net: dsa: remove dsa_switch_alloc helper"), to 
+minimize the amount of work doing the back port.
+-- 
+Florian
