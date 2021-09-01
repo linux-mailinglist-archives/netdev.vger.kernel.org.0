@@ -2,264 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4982F3FE440
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 22:47:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D44C83FE448
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 22:54:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238758AbhIAUsM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 16:48:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33286 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233327AbhIAUsI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 16:48:08 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4473DC061575
-        for <netdev@vger.kernel.org>; Wed,  1 Sep 2021 13:47:09 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id 8so724705pga.7
-        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 13:47:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=FubUooDS2WKMSYk2DOHk3EgWqp53DYzfL986g15sWe4=;
-        b=G25M0gwUD74aqihsxJCooO/Id/T+ZQ79GNmWjRK2WZjTFAEmoYVEt81Ubv+GATYUnl
-         pZB0nlmY6NEP7tzQANsVcERDn4o2dBnXzAdM1NUL0EEJLi7udT11hJ/nwks+IdT5LoK7
-         sqmgyvJQPSTUO9lbMzX2j4l8nOV1HQKKC7U3m1yN3Tx3upcZokMJklZxWEtSt9nnLgNL
-         aaqCwyIF3k1owPVrWW+q5/uYC5A9qryezAom+uYAQhZsYxdcaPT2IMzWqX73OOHKXdm8
-         tAKf9NyZ3rzyPMkHfnfgYX4Y7ok74jtPip8Gqm3pVCWO8Fg4VtcUr7zKyTSnp/3IT7n1
-         DfOA==
+        id S231713AbhIAUzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 16:55:03 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:22278 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229653AbhIAUzC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 16:55:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1630529644;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=4uv1tLC03ICF5tGoJs0CQIvipf8IlKazsE3GScxLAjs=;
+        b=JchLRTnnDlvxcFvz0ME+1G9nkY0lI8Yg6P1uBRBJNPCOAf1TWGG3AM3lEc9dOin4mHxLjy
+        zCG/HKBmfqT0KPv7Vguhem6JTpqtpsFrOyIR8/LxLG4VC6Uz8/9oFSvJ0VAdtzgjfG5fpW
+        bchGzdz0XqhrSa6P2btY6jeQOI9Q9bc=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-452-gj5R4LFaNMKOIS9upMMPUA-1; Wed, 01 Sep 2021 16:54:02 -0400
+X-MC-Unique: gj5R4LFaNMKOIS9upMMPUA-1
+Received: by mail-ed1-f70.google.com with SMTP id d25-20020a056402517900b003c7225c36c2so296293ede.3
+        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 13:54:02 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=FubUooDS2WKMSYk2DOHk3EgWqp53DYzfL986g15sWe4=;
-        b=EjLx6DS2UA9oSvNhrxTQq2bbv0gB0nAjPm4CanlrnVYSWaBMAwgCpqKXscBc+8msq8
-         F+MuuPTDOi/u2nx74G+0a3XyFky42G5dlWX8ipnuYNCb+U+U56E6zgdo5Ry6ydFzEQuD
-         N/YU59u/x7BhLJeoLkn5JyrgfeRIXdXvb+L6X6q7WO8Q8WysGruCJlub+kOfv/eqlQzo
-         uFrLRy+xcm7TbsXCHlNVDUwnNoeEE/Orjw1x1sJluKSRIKucHpayh5DeB1rRk4+tNLiZ
-         qHnDbQvjsdLX1Ue0hsMVKYMh4c+4+hJzn07OUY0bZ9cfyP6Qkxni/cNwPHCAOqqqSPn1
-         OFTw==
-X-Gm-Message-State: AOAM532JHoPFJBgAXiZPl+HQ4ja2sFS3nmWaRC7VrdOE/9is2ZiybbTc
-        BD+SSdF5IUEW8hE7ABMIH9gF+A/+2XtVbw==
-X-Google-Smtp-Source: ABdhPJxm5XH/JYseoOdaSfSKFZeana8XTW5b4KHzfwIMjPtf0arhEAeDTLupj+fL2azoAAXllYaD0A==
-X-Received: by 2002:a65:47c6:: with SMTP id f6mr876471pgs.450.1630529228306;
-        Wed, 01 Sep 2021 13:47:08 -0700 (PDT)
-Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
-        by smtp.gmail.com with ESMTPSA id g26sm565073pgb.45.2021.09.01.13.47.07
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=4uv1tLC03ICF5tGoJs0CQIvipf8IlKazsE3GScxLAjs=;
+        b=DWeqLd1S3Lh5hE9pBeoSLMqGaItdzp/YvalnW/CbIirJaAN6rv2+acKyjz5zu65qnF
+         kw6KMQ292apDkfo0yNsGUJFFWtT3tkHg3M2e3fqYW8lbkxQL2btPJpQUw3e5C9Q5ax9p
+         egXoyHhMNqOExosp+mdMAqz0f46jdaihD7hyzsbzzRcgs+H9jywwUU3sTxLgL0RI+t34
+         7X+UOgtRVLj2cpiL/Pcc4T8wEGOxF8sVkyI6zs4yCiEyjmLk2dYF5spCfnI1QsuNCaiG
+         147GD2+uvq6Lv/TQH20ZwFXNip/013GyF7e+HhUltMcnFufNuSchofEhjRA1wNKFdMlR
+         lbnQ==
+X-Gm-Message-State: AOAM530xblxPI+VOgUGQuQSMJKMlq2NK7JDgdSwlw5Xc0kB29tbotWgE
+        LBhqd92mqGpKTeIPsYztPv8i/X17y0+FPGGkXF2yAaTH8X6/9eUog0RpZerh052iCkjRoeN99NI
+        yjK6mXBFToNniYNUk
+X-Received: by 2002:a05:6402:1e8e:: with SMTP id f14mr1529855edf.15.1630529641456;
+        Wed, 01 Sep 2021 13:54:01 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx/FHDA1SHVqPiECNxO14bFUaOkq1FHlhTvk7D/YBTiXwgAOiWkP93OGkZBrNwuSlGlnvb4Xw==
+X-Received: by 2002:a05:6402:1e8e:: with SMTP id f14mr1529842edf.15.1630529641265;
+        Wed, 01 Sep 2021 13:54:01 -0700 (PDT)
+Received: from localhost (net-188-218-11-235.cust.vodafonedsl.it. [188.218.11.235])
+        by smtp.gmail.com with ESMTPSA id n18sm375372ejg.36.2021.09.01.13.53.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Sep 2021 13:47:07 -0700 (PDT)
-From:   Stephen Hemminger <stephen@networkplumber.org>
-X-Google-Original-From: Stephen Hemminger <sthemmin@microsoft.com>
-To:     netdev@vger.kernel.org
-Cc:     Stephen Hemminger <stephen@networkplumber.org>
-Subject: [PATCH iproute2-next 4/4] ip: rewrite routel in python
-Date:   Wed,  1 Sep 2021 13:47:01 -0700
-Message-Id: <20210901204701.19646-5-sthemmin@microsoft.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210901204701.19646-1-sthemmin@microsoft.com>
-References: <20210901204701.19646-1-sthemmin@microsoft.com>
+        Wed, 01 Sep 2021 13:54:00 -0700 (PDT)
+Date:   Wed, 1 Sep 2021 22:53:59 +0200
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Petr Machata <petrm@mellanox.com>
+Subject: Re: [PATH net] net/sched: ets: fix crash when flipping from 'strict'
+ to 'quantum'
+Message-ID: <YS/oZ+f0Nr8eQkzH@dcaratti.users.ipa.redhat.com>
+References: <2fdc7b4e11c3283cd65c7cf77c81bd6687a32c20.1629844159.git.dcaratti@redhat.com>
+ <CAM_iQpUryQ8Q9cd9Oiv=hxAgpqfCz=j4E=c=hskbPE2+VB-ZvQ@mail.gmail.com>
+ <YS38YB9JTSHeYgJG@dcaratti.users.ipa.redhat.com>
+ <CAM_iQpUnR-DvMBSWnagCJg98JMT_nMWNbQ8Ea0kC4yCBcFFRqA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAM_iQpUnR-DvMBSWnagCJg98JMT_nMWNbQ8Ea0kC4yCBcFFRqA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stephen Hemminger <stephen@networkplumber.org>
+On Tue, Aug 31, 2021 at 11:16:44AM -0700, Cong Wang wrote:
+> On Tue, Aug 31, 2021 at 2:54 AM Davide Caratti <dcaratti@redhat.com> wrote:
+> >
+> > hello Cong, thanks a lot for looking at this!
+> >
+> > On Mon, Aug 30, 2021 at 05:43:09PM -0700, Cong Wang wrote:
+> > > On Tue, Aug 24, 2021 at 3:34 PM Davide Caratti <dcaratti@redhat.com> wrote:
 
-Not sure if anyone uses the routel script. The script was
-a combination of ip route, shell and awk doing command scraping.
-It is now possible to do this much better using the JSON
-output formats and python.
+[...]
 
-Rewriting also fixes the bug where the old script could not parse
-the current output format.  At the end was getting:
-/usr/bin/routel: 48: shift: can't shift that many
+> > > > Then, a call to ets_qdisc_reset() will attempt to
+> > > > do list_del(&alist) with 'alist' filled with zero, hence the NULL pointer
+> > > > dereference.
+> > >
+> > > I am confused about how we end up having NULL in list head.
 
-The new script also has IPv6 as option.
+[...]
 
-Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
----
- ip/routel         | 124 +++++++++++++++++++++-------------------------
- man/man8/routel.8 |  30 ++++++++---
- 2 files changed, 79 insertions(+), 75 deletions(-)
+> > So, I can probably send a patch (for net-next, when it reopens) that removes
+> > this INIT_LIST_HEAD() line; anyway, its presence is harmless IMO. WDYT?
+> 
+> Actually I am thinking about the opposite, that is, always initializing the
+> list head. ;) Unless we always use list_add*() before list_del(), initializing
+> it unconditionally is a correct fix.
 
-diff --git a/ip/routel b/ip/routel
-index 7056886d0f94..09a901267fb3 100755
---- a/ip/routel
-+++ b/ip/routel
-@@ -1,72 +1,62 @@
--#!/bin/sh
-+#! /usr/bin/env python3
- # SPDX-License-Identifier: GPL-2.0
--
--#
--# Script created by: Stephen R. van den Berg <srb@cuci.nl>, 1999/04/18
--# Donated to the public domain.
--#
--# This script transforms the output of "ip" into more readable text.
--# "ip" is the Linux-advanced-routing configuration tool part of the
--# iproute package.
- #
-+# This is simple script to process JSON output from ip route
-+# command and format it.  Based on earlier shell script version.
-+"""Script to parse ip route output into more readable text."""
-+
-+import sys
-+import json
-+import getopt
-+import subprocess
-+
-+
-+def usage():
-+    '''Print usage and exit'''
-+    print("Usage: {} [tablenr [raw ip args...]]".format(sys.argv[0]))
-+    sys.exit(64)
-+
-+
-+def main():
-+    '''Process the arguments'''
-+    family = 'inet'
-+    try:
-+        opts, args = getopt.getopt(sys.argv[1:], "h46f:", ["help", "family="])
-+    except getopt.GetoptError as err:
-+        print(err)
-+        usage()
-+
-+    for opt, arg in opts:
-+        if opt in ["-h", "--help"]:
-+            usage()
-+        elif opt == '-6':
-+            family = 'inet6'
-+        elif opt == "-4":
-+            family = 'inet'
-+        elif opt in ["-f", "--family"]:
-+            family = arg
-+        else:
-+            assert False, "unhandled option"
-+
-+    if not args:
-+        args = ['0']
-+
-+    cmd = ['ip', '-f', family, '-j', 'route', 'list', 'table'] + args
-+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-+    tbl = json.load(process.stdout)
-+    if family == 'inet':
-+        fmt = '{:15} {:15} {:15} {:8} {:8}{:<16} {}'
-+    else:
-+        fmt = '{:32} {:32} {:32} {:8} {:8}{:<16} {}'
-+
-+    # ip route json keys
-+    keys = ['dst', 'gateway', 'prefsrc', 'protocol', 'scope', 'dev', 'table']
-+    print(fmt.format(*map(lambda x: x.capitalize(), keys)))
- 
--test "X-h" = "X$1" && echo "Usage: $0 [tablenr [raw ip args...]]" && exit 64
-+    for record in tbl:
-+        fields = [record[k] if k in record else '' for k in keys]
-+        print(fmt.format(*fields))
- 
--test -z "$*" && set 0
- 
--ip route list table "$@" |
-- while read network rest
-- do set xx $rest
--    shift
--    proto=""
--    via=""
--    dev=""
--    scope=""
--    src=""
--    table=""
--    case $network in
--       broadcast|local|unreachable) via=$network
--          network=$1
--          shift
--          ;;
--    esac
--    while test $# != 0
--    do
--       case "$1" in
--          proto|via|dev|scope|src|table)
--             key=$1
--             val=$2
--             eval "$key='$val'"
--             shift 2
--             ;;
--          dead|onlink|pervasive|offload|notify|linkdown|unresolved)
--             shift
--             ;;
--          *)
--             # avoid infinite loop on unknown keyword without value at line end
--             shift
--             shift
--             ;;
--       esac
--    done
--    echo "$network	$via	$src	$proto	$scope	$dev	$table"
-- done | awk -F '	' '
--BEGIN {
--   format="%15s%-3s %15s %15s %8s %8s%7s %s\n";
--   printf(format,"target","","gateway","source","proto","scope","dev","tbl");
-- }
-- { network=$1;
--   mask="";
--   if(match(network,"/"))
--    { mask=" "substr(network,RSTART+1);
--      network=substr(network,0,RSTART);
--    }
--   via=$2;
--   src=$3;
--   proto=$4;
--   scope=$5;
--   dev=$6;
--   table=$7;
--   printf(format,network,mask,via,src,proto,scope,dev,table);
-- }
--'
-+if __name__ == "__main__":
-+    main()
-diff --git a/man/man8/routel.8 b/man/man8/routel.8
-index b32eeafcf69d..b1668e73615a 100644
---- a/man/man8/routel.8
-+++ b/man/man8/routel.8
-@@ -1,17 +1,31 @@
--.TH "ROUTEL" "8" "3 Jan, 2008" "iproute2" "Linux"
-+.TH ROUTEL 8 "1 Sept, 2021" "iproute2" "Linux"
- .SH "NAME"
--.LP
- routel \- list routes with pretty output format
--.SH "SYNTAX"
--.LP
--routel [\fItablenr\fP [\fIraw ip args...\fP]]
-+.SH SYNOPSIS
-+.B routel
-+.RI "[ " OPTIONS " ]"
-+.RI "[ " tablenr
-+[ \fIip route options...\fR ] ]
-+.P
-+.ti 8
-+.IR OPTIONS " := {"
-+\fB-h\fR | \fB--help\fR |
-+[{\fB-f\fR | \fB--family\fR }
-+{\fBinet\fR | \fBinet6\fR } |
-+\fB-4\fR | \fB-6\fR }
-+
- .SH "DESCRIPTION"
- .LP
--The routel script will list routes in a format that some might consider easier to interpret
--then the ip route list equivalent.
-+The routel script will list routes in a format that some might consider
-+easier to interpret then the
-+.B ip
-+route list equivalent.
-+
- .SH "AUTHORS"
- .LP
--The routel script was written by Stephen R. van den Berg <srb@cuci.nl>, 1999/04/18 and donated to the public domain.
-+Rewritten by Stephen Hemminger <stephen@networkplumber.org>.
-+.br
-+Original script by Stephen R. van den Berg <srb@cuci.nl>.
- .br
- This manual page was written by Andreas Henriksson  <andreas@fatal.se>, for the Debian GNU/Linux system.
- .SH "SEE ALSO"
+uh, maybe I get the point.
+
+we can do a INIT_LIST_HEAD(&cl[i].alist) in ets_qdisc_init() with 'i' ranging
+from 0 to TCQ_ETS_MAX_BANDS - 1, then the memset() in [1] needs to be
+replaced with something that clears all members of struct ets_class except
+'alist'. At this point, the INIT_LIST_HEAD() line in ets_qdisc_change() can be
+removed. 
+
+I can re-run the kseltest and eventually send a patch for that (targeting
+net-next, no need to rush), is that ok for you?
+
+thanks,
+
 -- 
-2.30.2
+davide
+
+
+[1] https://elixir.bootlin.com/linux/v5.14/source/net/sched/sch_ets.c#L690
 
