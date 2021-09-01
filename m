@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83AFF3FD05D
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 02:37:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1B3C3FD065
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 02:45:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241473AbhIAAh7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 20:37:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35596 "EHLO
+        id S241498AbhIAAqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 20:46:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241413AbhIAAh6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 20:37:58 -0400
-Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD934C061575;
-        Tue, 31 Aug 2021 17:37:02 -0700 (PDT)
-Received: by mail-il1-x12a.google.com with SMTP id z2so1724513iln.0;
-        Tue, 31 Aug 2021 17:37:02 -0700 (PDT)
+        with ESMTP id S238552AbhIAAqP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 20:46:15 -0400
+Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ABD3C061575;
+        Tue, 31 Aug 2021 17:45:19 -0700 (PDT)
+Received: by mail-il1-x12e.google.com with SMTP id y3so1621939ilm.6;
+        Tue, 31 Aug 2021 17:45:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:message-id:in-reply-to:references:subject
          :mime-version:content-transfer-encoding;
-        bh=uJK4ZZSDEP4YjA8edgfZhxskYILZT/03UHWDnmiGok8=;
-        b=qgZ1YUREXxwMIug9mNQekf+6j3/t58KDMBsc0aU36bZ6wjsAARbIiQEnQOtf9Ovb+q
-         7OTo2aE0v5ob+lUPjUtmlix6Ujdnsr7bPgoqjBsuBrQg0jupiwHLrphsqo/2lbWrHX4X
-         QAFixdaeCpASgxzVhLsNmYCEaAqkLvURjUBwRNm8NpgGzCs5dLIxBKsckYVrAIMWoJ7l
-         aX7A845VzJLFGob96TIraaSPS2/vUjJpeEvYZtvlWW+cMGekwTZ9+nTdglTjqoIJ9MXb
-         koJcTkm/Fkb/EJ1ZsxnSUV5kv+FWHkQM5wCyBwi2rcJ9xjdobxy5tgGUrtksBc9aJ0+D
-         KnKw==
+        bh=h/3ruHK47wGgH29dqx//nD0QIAx1W3jYuGsHHornQ6k=;
+        b=FAy8iImR0vUypj1oQOML7EovULhgEx87lnozkts3Ku5wdCy+cT8eeugfQYHvi3nbp8
+         ET5WyIwpKXX16Yut/gqYtswgVvpCNwKGHbBh3vjTkR3X0aSMSrYgbqV4zCVPoNCsNQ7p
+         ELcJ8HHhvaEpSXtYPzm1T+O0lJ93setV0M32yPldWo5Fn1pwhcJT6nhDw3J93fTndEgR
+         3PMzvfKZBHZQIGWQkLRFWFKVYNCGpV9r2NKV4N2JWomiJN43yNA1SrLG+2d5eBurKByu
+         sh4YHJjhoCFWL5aBDaVTubhQq4/IA8fryS/PPJTiXDI5sYjqC7VCr8LbZtZoklAVpOzo
+         6Zlw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
          :references:subject:mime-version:content-transfer-encoding;
-        bh=uJK4ZZSDEP4YjA8edgfZhxskYILZT/03UHWDnmiGok8=;
-        b=f2AIjfzFPGgb/nBlLOdlnda11+NpQ5jvo+PeAHDSRYGJjQw7DFs80C9Y2Qh9Z2uMf9
-         B6bdM+o8ouuwIsxqWDN5uhX5XXtlCWGW0VOVZyohM06EJICEhOGOnm+e57vsc3lwpaZq
-         yXH84LlDyXFaJMW1MZgDpM7npPEtaEW3UiqPewDRF4utkZ4b28fVPzFQDNrQMyG+c9wk
-         BTgfs0rQnCxT/5WfhQzyTCVmG0cuDoobWK6zm3qnQOZJUqAyFEx6jh7VxeRhD8aNlul6
-         Lq7YOctKCWJoOoAK0dInZGwqfqKTo0mM6jeF8eokj/HciXYtxU2VAmLcBi+e8Y5zjnK8
-         A6MQ==
-X-Gm-Message-State: AOAM533IIyblU+cr+Kbz2AbGMu+02U0+kzFsLvGm8qALeveO26n9sPAp
-        Phna/dC4ouew2AZxtRISobw=
-X-Google-Smtp-Source: ABdhPJxamCjTQZGe34ONPx0Ww+2T1IzT2rGI5cZW8cn2B2kJjzs/VZWfem94zF3x+ykld62tLESNMQ==
-X-Received: by 2002:a92:280d:: with SMTP id l13mr22483031ilf.99.1630456622094;
-        Tue, 31 Aug 2021 17:37:02 -0700 (PDT)
+        bh=h/3ruHK47wGgH29dqx//nD0QIAx1W3jYuGsHHornQ6k=;
+        b=aSJZht0gbUlZ3GE6OSTRyEQTWQ57Cf+dP3+HcdaJx654wVkEC0dw4SbzSjoCAKKYrn
+         6locrn9I2hn7I/IqTn3OA+VjX66GnYQDtLjM/y8kaQ8VDe0OsQpNEUwSO60QKmq993IC
+         fjdvrRfzWIwsPK5xlBGNNZlujpqEA3U9UapWZ1Jf7fBR0o7VQkFKMYErqCNuwIpULneb
+         jQ/1L3t05wvQW1g5OwSPqgY1r7JAFBaXd7Q8WDDqDIXegOI5zp3Lg9+U4VZcVazzE3Sv
+         o7CTIFAOlVeNmRR7dIx/KEC6FmHOL3lTyqhXGdVa6BV4vy5Ssuf+qdEZXoIj/Ll1lZ3h
+         b9kg==
+X-Gm-Message-State: AOAM533X1TpEQtFuni1A2N+gXvO3LFV3Vn3eZN2KGA3zgySTk4tS9+Uc
+        esqyasJNDZfOShE/rHp0hcQ=
+X-Google-Smtp-Source: ABdhPJzhHbfs/Z+9p03bgprO2sAhUTzSBqKMs6TR+4OM/PQ8W9OtGGabtE1wuSKaZGe8j/AVY5pZLA==
+X-Received: by 2002:a92:870f:: with SMTP id m15mr22867161ild.2.1630457118586;
+        Tue, 31 Aug 2021 17:45:18 -0700 (PDT)
 Received: from localhost ([172.243.157.240])
-        by smtp.gmail.com with ESMTPSA id n11sm10879364ilq.21.2021.08.31.17.36.59
+        by smtp.gmail.com with ESMTPSA id z16sm11131312ile.72.2021.08.31.17.45.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Aug 2021 17:37:01 -0700 (PDT)
-Date:   Tue, 31 Aug 2021 17:36:54 -0700
+        Tue, 31 Aug 2021 17:45:17 -0700 (PDT)
+Date:   Tue, 31 Aug 2021 17:45:10 -0700
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
         netdev@vger.kernel.org
@@ -58,254 +58,271 @@ Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
         alexander.duyck@gmail.com, saeed@kernel.org,
         maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
         tirthendu.sarkar@intel.com, toke@redhat.com
-Message-ID: <612ecb262b05_6b87208c0@john-XPS-13-9370.notmuch>
-In-Reply-To: <14b99bc75ce0f8d4968208fb0b420a054e45433e.1629473234.git.lorenzo@kernel.org>
+Message-ID: <612ecd169d9c7_6b87208d7@john-XPS-13-9370.notmuch>
+In-Reply-To: <cover.1629473233.git.lorenzo@kernel.org>
 References: <cover.1629473233.git.lorenzo@kernel.org>
- <14b99bc75ce0f8d4968208fb0b420a054e45433e.1629473234.git.lorenzo@kernel.org>
-Subject: RE: [PATCH v12 bpf-next 17/18] net: xdp: introduce
- bpf_xdp_adjust_data helper
+Subject: RE: [PATCH v12 bpf-next 00/18] mvneta: introduce XDP multi-buffer
+ support
 Mime-Version: 1.0
 Content-Type: text/plain;
  charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Lorenzo Bianconi wrote:
-> For XDP frames split over multiple buffers, the xdp_md->data and
-> xdp_md->data_end pointers will point to the start and end of the first
-> fragment only. bpf_xdp_adjust_data can be used to access subsequent
-> fragments by moving the data pointers. To use, an XDP program can call
-> this helper with the byte offset of the packet payload that
-> it wants to access; the helper will move xdp_md->data and xdp_md ->data_end
-> so they point to the requested payload offset and to the end of the
-> fragment containing this byte offset, and return the byte offset of the
-> start of the fragment.
-> To move back to the beginning of the packet, simply call the
-> helper with an offset of '0'.
-> Note also that the helpers that modify the packet boundaries
-> (bpf_xdp_adjust_head(), bpf_xdp_adjust_tail() and
-> bpf_xdp_adjust_meta()) will fail if the pointers have been
-> moved; it is the responsibility of the BPF program to move them
-> back before using these helpers.
+> This series introduce XDP multi-buffer support. The mvneta driver is
+> the first to support these new "non-linear" xdp_{buff,frame}. Reviewers=
 
-I'm ok with this for a first iteration I guess with more work we
-can make the helpers use the updated pointers though.
+> please focus on how these new types of xdp_{buff,frame} packets
+> traverse the different layers and the layout design. It is on purpose
+> that BPF-helpers are kept simple, as we don't want to expose the
+> internal layout to allow later changes.
+> =
 
-> 
-> Suggested-by: John Fastabend <john.fastabend@gmail.com>
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> The main idea for the new multi-buffer layout is to reuse the same
+> structure used for non-linear SKB. This rely on the "skb_shared_info"
+> struct at the end of the first buffer to link together subsequent
+> buffers. Keeping the layout compatible with SKBs is also done to ease
+> and speedup creating a SKB from an xdp_{buff,frame}.
+> Converting xdp_frame to SKB and deliver it to the network stack is show=
+n
+> in patch 05/18 (e.g. cpumaps).
+> =
 
-Overall looks good couple small nits/questions below. Thanks!
+> A multi-buffer bit (mb) has been introduced in the flags field of xdp_{=
+buff,frame}
+> structure to notify the bpf/network layer if this is a xdp multi-buffer=
+ frame
+> (mb =3D 1) or not (mb =3D 0).
+> The mb bit will be set by a xdp multi-buffer capable driver only for
+> non-linear frames maintaining the capability to receive linear frames
+> without any extra cost since the skb_shared_info structure at the end
+> of the first buffer will be initialized only if mb is set.
+> Moreover the flags field in xdp_{buff,frame} will be reused even for
+> xdp rx csum offloading in future series.
+> =
 
-> ---
->  include/net/xdp.h              |  8 +++++
->  include/uapi/linux/bpf.h       | 32 ++++++++++++++++++
->  net/bpf/test_run.c             |  8 +++++
->  net/core/filter.c              | 62 +++++++++++++++++++++++++++++++++-
->  tools/include/uapi/linux/bpf.h | 32 ++++++++++++++++++
->  5 files changed, 141 insertions(+), 1 deletion(-)
-> 
-> diff --git a/include/net/xdp.h b/include/net/xdp.h
-> index cdaecf8d4d61..ce4764c7cd40 100644
-> --- a/include/net/xdp.h
-> +++ b/include/net/xdp.h
-> @@ -82,6 +82,11 @@ struct xdp_buff {
->  	struct xdp_txq_info *txq;
->  	u32 frame_sz; /* frame size to deduce data_hard_end/reserved tailroom*/
->  	u16 flags; /* supported values defined in xdp_flags */
-> +	/* xdp multi-buff metadata used for frags iteration */
-> +	struct {
-> +		u16 headroom;	/* frame headroom: data - data_hard_start */
-> +		u16 headlen;	/* first buffer length: data_end - data */
-> +	} mb;
->  };
->  
->  static __always_inline bool xdp_buff_is_mb(struct xdp_buff *xdp)
-> @@ -127,6 +132,9 @@ xdp_prepare_buff(struct xdp_buff *xdp, unsigned char *hard_start,
->  	xdp->data = data;
->  	xdp->data_end = data + data_len;
->  	xdp->data_meta = meta_valid ? data : data + 1;
-> +	/* mb metadata for frags iteration */
-> +	xdp->mb.headroom = headroom;
-> +	xdp->mb.headlen = data_len;
->  }
->  
->  /* Reserve memory area at end-of data area.
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index 9e2c3b12ea49..a7b5185a718a 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -4877,6 +4877,37 @@ union bpf_attr {
->   *		Get the total size of a given xdp buff (linear and paged area)
->   *	Return
->   *		The total size of a given xdp buffer.
-> + *
-> + * long bpf_xdp_adjust_data(struct xdp_buff *xdp_md, u32 offset)
-> + *	Description
-> + *		For XDP frames split over multiple buffers, the
-> + *		*xdp_md*\ **->data** and*xdp_md *\ **->data_end** pointers
-                                       ^^^^
-missing space?
 
-> + *		will point to the start and end of the first fragment only.
-> + *		This helper can be used to access subsequent fragments by
-> + *		moving the data pointers. To use, an XDP program can call
-> + *		this helper with the byte offset of the packet payload that
-> + *		it wants to access; the helper will move *xdp_md*\ **->data**
-> + *		and *xdp_md *\ **->data_end** so they point to the requested
-> + *		payload offset and to the end of the fragment containing this
-> + *		byte offset, and return the byte offset of the start of the
-> + *		fragment.
-> + *		To move back to the beginning of the packet, simply call the
-> + *		helper with an offset of '0'.
-> + *		Note also that the helpers that modify the packet boundaries
-> + *		(*bpf_xdp_adjust_head()*, *bpf_xdp_adjust_tail()* and
-> + *		*bpf_xdp_adjust_meta()*) will fail if the pointers have been
-> + *		moved; it is the responsibility of the BPF program to move them
-> + *		back before using these helpers.
-> + *
-> + *		A call to this helper is susceptible to change the underlying
-> + *		packet buffer. Therefore, at load time, all checks on pointers
-> + *		previously done by the verifier are invalidated and must be
-> + *		performed again, if the helper is used in combination with
-> + *		direct packet access.
-> + *	Return
-> + *		offset between the beginning of the current fragment and
-> + *		original *xdp_md*\ **->data** on success, or a negative error
-> + *		in case of failure.
->   */
->  #define __BPF_FUNC_MAPPER(FN)		\
->  	FN(unspec),			\
-> @@ -5055,6 +5086,7 @@ union bpf_attr {
->  	FN(get_func_ip),		\
->  	FN(get_attach_cookie),		\
->  	FN(xdp_get_buff_len),		\
-> +	FN(xdp_adjust_data),		\
->  	/* */
->  
->  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-> diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-> index 869dcf23a1ca..f09c2c8c0d6c 100644
-> --- a/net/bpf/test_run.c
-> +++ b/net/bpf/test_run.c
-> @@ -757,6 +757,8 @@ static int xdp_convert_md_to_buff(struct xdp_md *xdp_md, struct xdp_buff *xdp)
->  	}
->  
->  	xdp->data = xdp->data_meta + xdp_md->data;
-> +	xdp->mb.headroom = xdp->data - xdp->data_hard_start;
-> +	xdp->mb.headlen = xdp->data_end - xdp->data;
->  	return 0;
->  
->  free_dev:
-> @@ -871,6 +873,12 @@ int bpf_prog_test_run_xdp(struct bpf_prog *prog, const union bpf_attr *kattr,
->  	if (ret)
->  		goto out;
->  
-> +	/* data pointers need to be reset after frag iteration */
-> +	if (unlikely(xdp.data_hard_start + xdp.mb.headroom != xdp.data)) {
-> +		ret = -EFAULT;
-> +		goto out;
-> +	}
-> +
->  	size = xdp.data_end - xdp.data_meta + sinfo->xdp_frags_size;
->  	ret = bpf_test_finish(kattr, uattr, xdp.data_meta, sinfo, size,
->  			      retval, duration);
-> diff --git a/net/core/filter.c b/net/core/filter.c
-> index 2122c00c680f..ed2a6632adce 100644
-> --- a/net/core/filter.c
-> +++ b/net/core/filter.c
-> @@ -3827,6 +3827,10 @@ BPF_CALL_2(bpf_xdp_adjust_head, struct xdp_buff *, xdp, int, offset)
->  	void *data_start = xdp_frame_end + metalen;
->  	void *data = xdp->data + offset;
->  
-> +	/* data pointers need to be reset after frag iteration */
-> +	if (unlikely(xdp->data_hard_start + xdp->mb.headroom != xdp->data))
-> +		return -EINVAL;
+The series is looking really close to me. Couple small comments/questions=
 
--EFAULT? It might be nice if error code is different from below
-for debugging?
+inline. Also I think we should call out the potential issues in the cover=
 
-> +
->  	if (unlikely(data < data_start ||
->  		     data > xdp->data_end - ETH_HLEN))
->  		return -EINVAL;
-> @@ -3836,6 +3840,9 @@ BPF_CALL_2(bpf_xdp_adjust_head, struct xdp_buff *, xdp, int, offset)
->  			xdp->data_meta, metalen);
->  	xdp->data_meta += offset;
->  	xdp->data = data;
-> +	/* update metada for multi-buff frag iteration */
-> +	xdp->mb.headroom = xdp->data - xdp->data_hard_start;
-> +	xdp->mb.headlen = xdp->data_end - xdp->data;
->  
->  	return 0;
->  }
-> @@ -3910,6 +3917,10 @@ BPF_CALL_2(bpf_xdp_adjust_tail, struct xdp_buff *, xdp, int, offset)
->  	void *data_hard_end = xdp_data_hard_end(xdp); /* use xdp->frame_sz */
->  	void *data_end = xdp->data_end + offset;
->  
-> +	/* data pointer needs to be reset after frag iteration */
-> +	if (unlikely(xdp->data + xdp->mb.headlen != xdp->data_end))
-> +		return -EINVAL;
+letter with regards to backwards compatibility. Something like, =
 
-EFAULT?
 
-> +
->  	if (unlikely(xdp_buff_is_mb(xdp)))
->  		return bpf_xdp_mb_adjust_tail(xdp, offset);
->  
-> @@ -3949,6 +3960,10 @@ BPF_CALL_2(bpf_xdp_adjust_meta, struct xdp_buff *, xdp, int, offset)
->  	void *meta = xdp->data_meta + offset;
->  	unsigned long metalen = xdp->data - meta;
->  
-> +	/* data pointer needs to be reset after frag iteration */
-> +	if (unlikely(xdp->data_hard_start + xdp->mb.headroom != xdp->data))
-> +		return -EINVAL;
+"
+A multi-buffer enabled NIC may receive XDP frames with multiple frags.
+If a BPF program does not understand mb layouts its possible to contrive
+a BPF program that incorrectly views data_end as the end of data when
+there is more data in the payload. Note helpers will generally due the
+correct thing, for example perf_output will consume entire payload. But,
+it is still possible some programs could do the wrong thing even if in
+an edge case. Although we expect most BPF programs not to be impacted
+we can't rule out, you've been warned.
+"
 
-same comment.
+I can't think of an elegant way around this and it does require at least
+some type of opt-in by increasing the MTU limit so I'm OK with it given
+I think it should impact few (no?) real programs.
 
->  	if (xdp_data_meta_unsupported(xdp))
->  		return -ENOTSUPP;
->  	if (unlikely(meta < xdp_frame_end ||
-> @@ -3970,6 +3985,48 @@ static const struct bpf_func_proto bpf_xdp_adjust_meta_proto = {
->  	.arg2_type	= ARG_ANYTHING,
->  };
->  
-> +BPF_CALL_2(bpf_xdp_adjust_data, struct xdp_buff *, xdp, u32, offset)
-> +{
-> +	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
-> +	u32 base_offset = xdp->mb.headlen;
-> +	int i;
-> +
-> +	if (!xdp_buff_is_mb(xdp) || offset > sinfo->xdp_frags_size)
-> +		return -EINVAL;
+> Typical use cases for this series are:
+> - Jumbo-frames
+> - Packet header split (please see Google=EF=BF=BD=EF=BF=BD=EF=BF=BDs us=
+e-case @ NetDevConf 0x14, [0])
+> - TSO/GRO
+> =
 
-Do we need to error this? If its not mb we can just return the same
-as offset==0?
+> The two following ebpf helpers (and related selftests) has been introdu=
+ced:
+> - bpf_xdp_adjust_data:
+>   Move xdp_md->data and xdp_md->data_end pointers in subsequent fragmen=
+ts
+>   according to the offset provided by the ebpf program. This helper can=
+ be
+>   used to read/write values in frame payload.
+> - bpf_xdp_get_buff_len:
+>   Return the total frame size (linear + paged parts)
+> =
 
-> +
-> +	if (offset < xdp->mb.headlen) {
-> +		/* linear area */
-> +		xdp->data = xdp->data_hard_start + xdp->mb.headroom + offset;
-> +		xdp->data_end = xdp->data_hard_start + xdp->mb.headroom +
-> +				xdp->mb.headlen;
-> +		return 0;
-> +	}
-> +
-> +	for (i = 0; i < sinfo->nr_frags; i++) {
-> +		/* paged area */
-> +		skb_frag_t *frag = &sinfo->frags[i];
-> +		unsigned int size = skb_frag_size(frag);
-> +
-> +		if (offset < base_offset + size) {
-> +			u8 *addr = skb_frag_address(frag);
-> +
-> +			xdp->data = addr + offset - base_offset;
-> +			xdp->data_end = addr + size;
-> +			break;
-> +		}
-> +		base_offset += size;
-> +	}
-> +	return base_offset;
-> +}
+> bpf_xdp_adjust_tail and bpf_xdp_copy helpers have been modified to take=
+ into
+> account xdp multi-buff frames.
+> =
+
+> More info about the main idea behind this approach can be found here [1=
+][2].
+> =
+
+> Changes since v11:
+> - add missing static to bpf_xdp_get_buff_len_proto structure
+> - fix bpf_xdp_adjust_data helper when offset is smaller than linear are=
+a length.
+> =
+
+> Changes since v10:
+> - move xdp->data to the requested payload offset instead of to the begi=
+nning of
+>   the fragment in bpf_xdp_adjust_data()
+> =
+
+> Changes since v9:
+> - introduce bpf_xdp_adjust_data helper and related selftest
+> - add xdp_frags_size and xdp_frags_tsize fields in skb_shared_info
+> - introduce xdp_update_skb_shared_info utility routine in ordere to not=
+ reset
+>   frags array in skb_shared_info converting from a xdp_buff/xdp_frame t=
+o a skb =
+
+> - simplify bpf_xdp_copy routine
+> =
+
+> Changes since v8:
+> - add proper dma unmapping if XDP_TX fails on mvneta for a xdp multi-bu=
+ff
+> - switch back to skb_shared_info implementation from previous xdp_share=
+d_info
+>   one
+> - avoid using a bietfield in xdp_buff/xdp_frame since it introduces per=
+formance
+>   regressions. Tested now on 10G NIC (ixgbe) to verify there are no per=
+formance
+>   penalties for regular codebase
+> - add bpf_xdp_get_buff_len helper and remove frame_length field in xdp =
+ctx
+> - add data_len field in skb_shared_info struct
+> - introduce XDP_FLAGS_FRAGS_PF_MEMALLOC flag
+> =
+
+> Changes since v7:
+> - rebase on top of bpf-next
+> - fix sparse warnings
+> - improve comments for frame_length in include/net/xdp.h
+> =
+
+> Changes since v6:
+> - the main difference respect to previous versions is the new approach =
+proposed
+>   by Eelco to pass full length of the packet to eBPF layer in XDP conte=
+xt
+> - reintroduce multi-buff support to eBPF kself-tests
+> - reintroduce multi-buff support to bpf_xdp_adjust_tail helper
+> - introduce multi-buffer support to bpf_xdp_copy helper
+> - rebase on top of bpf-next
+> =
+
+> Changes since v5:
+> - rebase on top of bpf-next
+> - initialize mb bit in xdp_init_buff() and drop per-driver initializati=
+on
+> - drop xdp->mb initialization in xdp_convert_zc_to_xdp_frame()
+> - postpone introduction of frame_length field in XDP ctx to another ser=
+ies
+> - minor changes
+> =
+
+> Changes since v4:
+> - rebase ontop of bpf-next
+> - introduce xdp_shared_info to build xdp multi-buff instead of using th=
+e
+>   skb_shared_info struct
+> - introduce frame_length in xdp ctx
+> - drop previous bpf helpers
+> - fix bpf_xdp_adjust_tail for xdp multi-buff
+> - introduce xdp multi-buff self-tests for bpf_xdp_adjust_tail
+> - fix xdp_return_frame_bulk for xdp multi-buff
+> =
+
+> Changes since v3:
+> - rebase ontop of bpf-next
+> - add patch 10/13 to copy back paged data from a xdp multi-buff frame t=
+o
+>   userspace buffer for xdp multi-buff selftests
+> =
+
+> Changes since v2:
+> - add throughput measurements
+> - drop bpf_xdp_adjust_mb_header bpf helper
+> - introduce selftest for xdp multibuffer
+> - addressed comments on bpf_xdp_get_frags_count
+> - introduce xdp multi-buff support to cpumaps
+> =
+
+> Changes since v1:
+> - Fix use-after-free in xdp_return_{buff/frame}
+> - Introduce bpf helpers
+> - Introduce xdp_mb sample program
+> - access skb_shared_info->nr_frags only on the last fragment
+> =
+
+> Changes since RFC:
+> - squash multi-buffer bit initialization in a single patch
+> - add mvneta non-linear XDP buff support for tx side
+> =
+
+> [0] https://netdevconf.info/0x14/session.html?talk-the-path-to-tcp-4k-m=
+tu-and-rx-zerocopy
+> [1] https://github.com/xdp-project/xdp-project/blob/master/areas/core/x=
+dp-multi-buffer01-design.org
+> [2] https://netdevconf.info/0x14/session.html?tutorial-add-XDP-support-=
+to-a-NIC-driver (XDPmulti-buffers section)
+> =
+
+> Eelco Chaudron (3):
+>   bpf: add multi-buff support to the bpf_xdp_adjust_tail() API
+>   bpf: add multi-buffer support to xdp copy helpers
+>   bpf: update xdp_adjust_tail selftest to include multi-buffer
+> =
+
+> Lorenzo Bianconi (15):
+>   net: skbuff: add size metadata to skb_shared_info for xdp
+>   xdp: introduce flags field in xdp_buff/xdp_frame
+>   net: mvneta: update mb bit before passing the xdp buffer to eBPF laye=
+r
+>   net: mvneta: simplify mvneta_swbm_add_rx_fragment management
+>   net: xdp: add xdp_update_skb_shared_info utility routine
+>   net: marvell: rely on xdp_update_skb_shared_info utility routine
+>   xdp: add multi-buff support to xdp_return_{buff/frame}
+>   net: mvneta: add multi buffer support to XDP_TX
+>   net: mvneta: enable jumbo frames for XDP
+>   bpf: introduce bpf_xdp_get_buff_len helper
+>   bpf: move user_size out of bpf_test_init
+>   bpf: introduce multibuff support to bpf_prog_test_run_xdp()
+>   bpf: test_run: add xdp_shared_info pointer in bpf_test_finish
+>     signature
+>   net: xdp: introduce bpf_xdp_adjust_data helper
+>   bpf: add bpf_xdp_adjust_data selftest
+> =
+
+>  drivers/net/ethernet/marvell/mvneta.c         | 204 ++++++++++-------
+>  include/linux/skbuff.h                        |   6 +-
+>  include/net/xdp.h                             |  95 +++++++-
+>  include/uapi/linux/bpf.h                      |  39 ++++
+>  kernel/trace/bpf_trace.c                      |   3 +
+>  net/bpf/test_run.c                            | 117 ++++++++--
+>  net/core/filter.c                             | 213 +++++++++++++++++-=
+
+>  net/core/xdp.c                                |  76 ++++++-
+>  tools/include/uapi/linux/bpf.h                |  39 ++++
+>  .../bpf/prog_tests/xdp_adjust_data.c          |  55 +++++
+>  .../bpf/prog_tests/xdp_adjust_tail.c          | 118 ++++++++++
+>  .../selftests/bpf/prog_tests/xdp_bpf2bpf.c    | 151 +++++++++----
+>  .../bpf/progs/test_xdp_adjust_tail_grow.c     |  10 +-
+>  .../bpf/progs/test_xdp_adjust_tail_shrink.c   |  32 ++-
+>  .../selftests/bpf/progs/test_xdp_bpf2bpf.c    |   2 +-
+>  .../bpf/progs/test_xdp_update_frags.c         |  41 ++++
+>  16 files changed, 1036 insertions(+), 165 deletions(-)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_adjust_d=
+ata.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_update_f=
+rags.c
+> =
+
+> -- =
+
+> 2.31.1
+> =
+
+
+
