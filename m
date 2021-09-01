@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 89A2A3FE5E0
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 02:33:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37A863FE5E8
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 02:33:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346196AbhIAWzc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 18:55:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34548 "EHLO
+        id S1344882AbhIAW64 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 18:58:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346093AbhIAWzY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 18:55:24 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF24DC061757
-        for <netdev@vger.kernel.org>; Wed,  1 Sep 2021 15:54:26 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id n126so72965ybf.6
-        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 15:54:26 -0700 (PDT)
+        with ESMTP id S245624AbhIAW6z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 18:58:55 -0400
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80ADFC061757
+        for <netdev@vger.kernel.org>; Wed,  1 Sep 2021 15:57:58 -0700 (PDT)
+Received: by mail-yb1-xb2b.google.com with SMTP id r4so99423ybp.4
+        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 15:57:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=4hcsgNE4R+wSEzNZUDcoiFTfxL7X/EpFAbnpFeONnhQ=;
-        b=nzYKN1yHfdGtTNSnK9qy05x8ECkDVabJvtzd+c5QxqYjTICjSxGsc7oP5QHTal5VG0
-         2fiIIHOhx5FzXvMNwSTO443PMJbh1fUcaf5SqNRO9bNrRz5QRkFPFHTkvRSyeXtKD+GT
-         Jz3440JXJN3e4YbmXUAyyplSOxl0JloVkkkVEN/asWzW+B3pJtcgk+IJwXPGjrgAu9m8
-         6jVLRvWvX9VMS5TqtxmJeGsZQVoF3vP9PdHpHJjt1dk2bdbEeRhZAPgLrQU0fI+ldlWq
-         WsHwpfNY2NGLPobNesD/HTEOOCSuMUs+BW03qQtWzYuBsWXvyMMYPibzREajTH1dl7bM
-         9apg==
+        bh=KrhYn+X8lUGRq+iFyKwQf72STeG8U9iytqMLEgNKYa8=;
+        b=DVZZXp5HpFOtSirMAGB7lvNjUbgAgofUXjlUAPSKX+uLPA2Aqj2tQn+FcfR826Gt40
+         pTogb4R1ebQzBTDXcvnLlIklTF2RfagOfc09k1s7ZY8s3VkotkKXkcBCVezcxoOmdnze
+         v34RFKEbaxjY0XWERUwfaF6HHaD4Hl3e2gbfXoiTSfBJALhp9AfK8UZoi3KC8gOOwHY8
+         575X3MsrgPVYZWy3zJFBw0Ktih0UG63/C89+aGv1OOE6qkbh35fR4TOfpG/i+1Zqf2io
+         fW12FgZBviCMN7BjLUCivk6Gm99qkPVZjiz4lBNro4OM8acJIMSSxaeS4vOykM57ZUAQ
+         LcpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=4hcsgNE4R+wSEzNZUDcoiFTfxL7X/EpFAbnpFeONnhQ=;
-        b=XVKJ5HLtHK4v78S31/aki+vp7QXBN4UwaU/vu6h02dNgU+6AkY8DoSXes2sOiRyYA0
-         jUPERWGAazdtzVR0QiL8WvYN4wUZkdsF0GGwO2rl+C3o2YI9YczJaRGOLUJQyMzaFPQv
-         Sc7utYVnbtwEcqZ4rX84LDMxQnzIr/pQ0+CqWO/Kz3W6DQ62pRe4ObqzKROR9Fyz0KJt
-         30ivQOPtygdYsP/jnlFhhkvhD/QDEjAH8epqXqcrhUq9iRQUxRPBDgwSFwZTQHQiPS06
-         S1XyjUtjFznrzRlTML4Q677n28UrGwscSndnqASzK65so4Kz+4885ozjhJmeVMJ6x0Me
-         kk4Q==
-X-Gm-Message-State: AOAM5339+KcMdLEEC5UODEwBRuo9BPTmghp1AqgHd7xqVFAw9XHOrl0c
-        NJcOe/DBaR5DrABmLqLq0seLPXI0mXfm709CH7mZgA==
-X-Google-Smtp-Source: ABdhPJwoOhg36Xui+G7bkyl+uIvJ83xIP0J492cVY6H8q/yrsXWzOzWSj9Jt3PUDWPuxgUiPtUW2N9/wk1Wtaoa43AI=
-X-Received: by 2002:a25:d213:: with SMTP id j19mr431059ybg.20.1630536865855;
- Wed, 01 Sep 2021 15:54:25 -0700 (PDT)
+        bh=KrhYn+X8lUGRq+iFyKwQf72STeG8U9iytqMLEgNKYa8=;
+        b=kkjHqpuy26moqJHwrCiwz86zdgE0ZNaSoLD2YYX49ZADYqbkf0war54w726xSdCEap
+         X6RWfjGkEiIiXOO6p7hGfpJlg6gC/VPtbzySg2YUM3FAppBJ0J/nIzXkAXQemaqMop5l
+         /fMJAbAvdvl0JnMeTbcU90WfOEXE/qE0o0GqVuhSbR3n5r9PadjuB57BhR+Teb/MwikI
+         Cfbuh84IpFUItFivkI6fw/seeXehoC6bOztjvMoMQ2nZt1TO6xr+3OOXKckroFmHnB9A
+         ZzrIz+baUEJqGEs59LRYloZQAXT5invao715sj+Q1MpqpRq1HgaRrIqbH+AWrlW4k2+u
+         hhYA==
+X-Gm-Message-State: AOAM530T8vbMDGt85UgYowg9jzd4QeMyDt5hKNoIyb/HFHz8RqKDYHCC
+        7y11Wygi7dS090pd7DZHJ3gu2zxpi2g/JrKmg+HF3A==
+X-Google-Smtp-Source: ABdhPJxFzKnj8vtcdNEeb0IebL8mEN4FCcAheTxnRp03vEpZXVIIgkqxW6PxIekdbIXTf+P+qnrHYhhwoOAWNT8DMWU=
+X-Received: by 2002:a25:9c01:: with SMTP id c1mr379474ybo.228.1630537077528;
+ Wed, 01 Sep 2021 15:57:57 -0700 (PDT)
 MIME-Version: 1.0
-References: <CAGETcx-ZvENq8tFZ9wb_BCPZabpZcqPrguY5rsg4fSNdOAB+Kw@mail.gmail.com>
- <YSpr/BOZj2PKoC8B@lunn.ch> <CAGETcx_mjY10WzaOvb=vuojbodK7pvY1srvKmimu4h6xWkeQuQ@mail.gmail.com>
+References: <CAGETcx_mjY10WzaOvb=vuojbodK7pvY1srvKmimu4h6xWkeQuQ@mail.gmail.com>
  <YS4rw7NQcpRmkO/K@lunn.ch> <CAGETcx_QPh=ppHzBdM2_TYZz3o+O7Ab9-JSY52Yz1--iLnykxA@mail.gmail.com>
  <YS6nxLp5TYCK+mJP@lunn.ch> <CAGETcx90dOkw+Yp5ZRNqQq2Ny_ToOKvGJNpvyRohaRQi=SQxhw@mail.gmail.com>
  <YS608fdIhH4+qJsn@lunn.ch> <20210831231804.zozyenear45ljemd@skbuf>
- <CAGETcx-ktuU1RqXwj_qV8tCOLAg3DXU-wCAm6+NukyxRencSjw@mail.gmail.com> <20210901084625.sqzh3oacwgdbhc7f@skbuf>
-In-Reply-To: <20210901084625.sqzh3oacwgdbhc7f@skbuf>
+ <20210901012826.iuy2bhvkrgahhrl7@skbuf> <20210901013830.yst73ubhsrlml54i@skbuf>
+ <CAGETcx8r7o9u9bveQx6TAXG8YLH+aiuz9VZ5pLACm=S6KxNpWQ@mail.gmail.com> <20210901090209.f4na6cwu7lsa57pv@skbuf>
+In-Reply-To: <20210901090209.f4na6cwu7lsa57pv@skbuf>
 From:   Saravana Kannan <saravanak@google.com>
-Date:   Wed, 1 Sep 2021 15:53:49 -0700
-Message-ID: <CAGETcx9D1pBqMjPgJq7poWxnEO7AbT6yFkXL-3LsNuELLs+PWQ@mail.gmail.com>
+Date:   Wed, 1 Sep 2021 15:57:21 -0700
+Message-ID: <CAGETcx_DjaZurud5O1OY62ZKZh5dGw8HFVRC17DM7_j8QG8cuA@mail.gmail.com>
 Subject: Re: [PATCH v1 1/2] driver core: fw_devlink: Add support for FWNODE_FLAG_BROKEN_PARENT
 To:     Vladimir Oltean <olteanv@gmail.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -72,158 +72,173 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 1, 2021 at 1:46 AM Vladimir Oltean <olteanv@gmail.com> wrote:
+On Wed, Sep 1, 2021 at 2:02 AM Vladimir Oltean <olteanv@gmail.com> wrote:
 >
-> On Tue, Aug 31, 2021 at 07:00:58PM -0700, Saravana Kannan wrote:
-> > On Tue, Aug 31, 2021 at 4:18 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+> On Tue, Aug 31, 2021 at 07:19:40PM -0700, Saravana Kannan wrote:
+> > On Tue, Aug 31, 2021 at 6:38 PM Vladimir Oltean <olteanv@gmail.com> wrote:
 > > >
-> > > On Wed, Sep 01, 2021 at 01:02:09AM +0200, Andrew Lunn wrote:
-> > > > Rev B is interesting because switch0 and switch1 got genphy, while
-> > > > switch2 got the correct Marvell PHY driver. switch2 PHYs don't have
-> > > > interrupt properties, so don't loop back to their parent device.
-> > >
-> > > This is interesting and not what I really expected to happen. It goes to
-> > > show that we really need more time to understand all the subtleties of
-> > > device dependencies before jumping on patching stuff.
-> > >
-> > > In case the DSA tree contains more than one switch, different things
-> > > will happen in dsa_register_switch().
-> > > The tree itself is only initialized when the last switch calls
-> > > dsa_register_switch(). All the other switches just mark themselves as
-> > > present and exit probing early. See this piece of code in dsa_tree_setup:
-> > >
-> > >         complete = dsa_tree_setup_routing_table(dst);
-> > >         if (!complete)
-> > >                 return 0;
-> > >
-> > > So it should be a general property of cross-chip DSA trees that all
-> > > switches except the last one will have the specific PHY driver probed
-> > > properly, and not the genphy.
-> > >
-> > > Because all (N - 1) switches of a tree exit early in dsa_register_switch,
-> > > they have successfully probed by the time the last switch brings up the
-> > > tree, and brings up the PHYs on behalf of every other switch.
-> > >
-> > > The last switch can connect to the PHY on behalf of the other switches
-> > > past their probe ending, and those PHYs should not defer probing because
-> > > their supplier is now probed. It is only that the last switch cannot
-> > > connect to the PHYs of its own ports.
+> > > On Wed, Sep 01, 2021 at 04:28:26AM +0300, Vladimir Oltean wrote:
+> > > > On Wed, Sep 01, 2021 at 02:18:04AM +0300, Vladimir Oltean wrote:
+> > > > > On Wed, Sep 01, 2021 at 01:02:09AM +0200, Andrew Lunn wrote:
+> > > > > > Rev B is interesting because switch0 and switch1 got genphy, while
+> > > > > > switch2 got the correct Marvell PHY driver. switch2 PHYs don't have
+> > > > > > interrupt properties, so don't loop back to their parent device.
+> > > > >
+> > > > > This is interesting and not what I really expected to happen. It goes to
+> > > > > show that we really need more time to understand all the subtleties of
+> > > > > device dependencies before jumping on patching stuff.
+> > > >
+> > > > There is an even more interesting variation which I would like to point
+> > > > out. It seems like a very odd loophole in the device links.
+> > > >
+> > > > Take the example of the mv88e6xxx DSA driver. On my board
+> > > > (arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts), even after I
+> > > > had to declare the switches as interrupt controller and add interrupts
+> > > > to their internal PHYs, I still need considerable force to 'break' this
+> > > > board in the way discussed in this thread. The correct PHY driver insists
+> > > > to probe, and not genphy. Let me explain.
+> > > >
+> > > > The automatic device links between the switch (supplier, as interrupt-controller)
+> > > > and PHYs (consumers) are added by fwnode_link_add, called from of_link_to_phandle.
+> > > >
+> > > > Important note: fwnode_link_add does not link devices, it links OF nodes.
+> > > >
+> > > > Even more important node, in the form of a comment:
+> > > >
+> > > >  * The driver core will use the fwnode link to create a device link between the
+> > > >  * two device objects corresponding to @con and @sup when they are created. The
+> > > >  * driver core will automatically delete the fwnode link between @con and @sup
+> > > >  * after doing that.
+> > > >
+> > > > Okay?!
+> > > >
+> > > > What seems to be omitted is that the DSA switch driver's probing itself
+> > > > can be deferred. For example:
+> > > >
+> > > > dsa_register_switch
+> > > > -> dsa_switch_probe
+> > > >    -> dsa_switch_parse_of
+> > > >       -> dsa_switch_parse_ports_of
+> > > >          -> dsa_port_parse_of
+> > > >             -> of_find_net_device_by_node(of_parse_phandle(dn, "ethernet", 0));
+> > > >             -> not found => return -EPROBE_DEFER
+> > > >
+> > > > When dsa_register_switch() returns -EPROBE_DEFER, it is effectively
+> > > > an error path. So the reverse of initialization is performed.
+> > > >
+> > > > The mv88e6xxx driver calls mv88e6xxx_mdios_register() right _before_
+> > > > dsa_register_switch. So when dsa_register_switch returns error code,
+> > > > mv88e6xxx_mdios_unregister() will be called.
+> > > >
+> > > > When mv88e6xxx_mdios_unregister() is called, the MDIO buses with
+> > > > internal PHYs are destroyed. So the PHY devices themselves are destroyed
+> > > > too. And the device links between the DSA switch and the internal PHYs,
+> > > > those created based on the firmware node links created by fwnode_link_add,
+> > > > are dropped too.
+> > > >
+> > > > Now remember the comment that the device links created based on
+> > > > fwnode_link_add are not restored.
+> > > >
+> > > > So probing of the DSA switch finally resumes, and this time
+> > > > device_links_check_suppliers() is effectively bypassed, the PHYs no
+> > > > longer request probe deferral due to their supplier not being ready,
+> > > > because the device link no longer exists.
+> > > >
+> > > > Isn't this self-sabotaging?!
 > >
-> > I'm not saying this with any intention of making things easier for me
-> > (I'm not even sure it does). But your description about how multiple
-> > switches are handled by DSA has me even more convinced than before
-> > that DSA needs to use a component device model. This is like the
-> > textbook example for component devices.
+> > Yeah, this is a known "issue". I'm saying "issue" because at worst
+> > it'd allow a few unnecessary deferred probes. And if you want to break
+> > or get fw_devlink to ignore your child devices or your consumers,
+> > there are simpler APIs to do it without having to intentionally defer
+> > a probe.  Fixing this "issue" would just use up more memory and
+> > increase boot time for no meaningful benefit.
 >
-> In this example, I guess the component master would be the "struct dsa_switch_tree",
-
-Right.
-
-> but there is no struct device associated with it.
-
-We can create one? I don't think it needs to have a DT node. And if it
-does, this is where my "I'm willing to help improve component device"
-offer comes in to help make it a bit more generic.
-
+> But I mean, if the goal of fw_devlink is to infer a probing order based
+> on phandles, and it is faced with a long chain of devices, then any
+> -EPROBE_DEFER of a device on top of the chain will break the probing
+> order for all devices beneath it. It is self-defeating, it is already
+> memory used for nothing.
 >
-> How many "struct dsa_switch_tree" instances there are in a system
-> depends on whether OF is used or not.
+> > > >
+> > > > Now generally, DSA drivers defer probing because they probe in parallel
+> > > > with the DSA master. This is typical if the switch is on a SPI bus, or
+> > > > I2C, or on an MDIO bus provided by a _standalone_ MDIO controller.
+> > > >
+> > > > If the MDIO controller is not standalone, but is provided by Ethernet
+> > > > controller that is the DSA master itself, then things change a lot,
+> > > > because probing can never be parallel. The DSA master probes,
+> > > > initializes its MDIO bus, and this triggers the probing of the MDIO
+> > > > devices on that bus, one of which is the DSA switch. So DSA can no
+> > > > longer defer the probe due to that reason.
+> > > >
+> > > > Secondly, in DSA we even have variation between drivers as to where they
+> > > > register their internal MDIO buses. The mv88e6xxx driver does this in
+> > > > mv88e6xxx_probe (the probe function on the MDIO bus). The rtl8366rb
+> > > > driver calls realtek_smi_setup_mdio() from rtl8366rb_setup(), and this
+> > > > is important. DSA provides drivers with a .setup() callback, which is
+> > > > guaranteed to take place after nothing can defer the switch's probe
+> > > > anymore.
+> > > >
+> > > > So putting two and two together, sure enough, if I move mv88e6xxx_mdios_register
+> > > > from mv88e6xxx_probe to mv88e6xxx_setup, then I can reliably break this
+> > > > setup, because the device links framework isn't sabotaging itself anymore.
+> > > >
+> > > > Conversely, I am pretty sure that if rtl8366rb was to call of_mdiobus_register()
+> > > > from the probe method and not the setup method, the entire design issue
+> > > > with interrupts on internal DSA switch ports would have went absolutely
+> > > > unnoticed for a few more years.
+> > > >
+> > > > I have not tested this, but it also seems plausible that DSA can
+> > > > trivially and reliably bypass any fw_devlink=on restrictions by simply
+> > > > moving all of_mdiobus_register() driver calls from the .setup() method
+> > > > to their respective probe methods (prior to calling dsa_register_switch),
+> > > > then effectively fabricate an -EPROBE_DEFER during the first probe attempt.
+> > > > I mean, who will know whether that probe deferral request was justified
+> > > > or not?
+> > >
+> > > Pushing the thought even further, it is not even necessary to move the
+> > > of_mdiobus_register() call to the probe function. Where it is (in .setup)
+> > > is already good enough. It is sufficient to return -EOPNOTSUPP once
+> > > (the first time) immediately _after_ the call to of_mdiobus_register
+> > > (and have a proper error path, i.e. call mdiobus_unregister too).
+> >
+> > Right, there are plenty of ways to intentionally break fw_devlink. I
+> > hope that's not the point :) And I don't think -EOPNOTSUPP would work
+> > because your device wouldn't be probed again.
 >
-> If we use OF, the device tree needs to be parsed, and every unique first
-> cell (tree-id) of:
->         dsa,member = <tree-id switch-id>;
-> constitutes a different "struct dsa_switch_tree".
+> Yes, -EPROBE_DEFER is what I meant.
 >
-> If we do not use OF, the number of switch trees in a system is one, see dsa_switch_parse.
+> > >
+> > > > Anyway, I'm not sure everyone agrees with this type of "solution" (even
+> > > > though it's worth pointing it out as a fw_devlink limitation). In any
+> > > > case, we need some sort of lightweight "fix" to the chicken-and-egg
+> > > > problem, which will give me enough time to think of something better.
+> >
+> > I think the generic DSA patch I gave would be the lightweight fix to
+> > address this chicken-and-egg issue.
+> >
+> > As for the long term fix, I'd really suggest looking into using the
+> > component device model. I'd even be happy to help make any driver
+> > core/component device improvements you might need.
+> >
+> > I'm also interested in looking into improving the PHY probing so that
+> > the genphy never probes a device that has a driver that could probe
+> > it. Even outside of all this fw_devlink thing, they way PHY is handled
+> > now, if any of the supplier really isn't ready yet (say a clock), then
+> > the genphy gets used -- which isn't good.
 >
-> It seems to me like the compare function for component_match (where each
-> component is a "struct dsa_switch" should look at dev->of_node and parse
-> the "dsa,member" property again, and match on the same tree-id as the
-> component master itself?
+> I think this is the real problem which needs to be addressed.
 
-I don't know enough about DSA to give a useful answer here. But I guess so?
+This is one of the real problems which need to be addresses.
 
->
-> There's also the question of how to do the component_match in a way that
-> also works for the pdata/non-OF based DSA systems (of which I have none to test).
+> The
+> trouble is, I don't know if phy_attach_direct can find out the reason
+> for which d->driver is NULL, i.e. that there was a driver which matched
+> and attempted the probe, but returned -EPROBE_DEFER.
 
-You could always just short circuit it and not create a component
-device if it's just pdata/non-OF. That's one option.
-
-> All of this to move dsa_tree_setup() outside of the probe calling
-> context of any individual struct dsa_switch, and into the "bind" calling
-> context of the component master associated with the struct dsa_switch_tree.
-
-Right.
-
-> This would allow the phy_connect()/phy_attach_direct() calls to find the
-> PHY device already bound to the specific driver, which would avoid
-> binding genphy as a last resort?
-
-Short answer, yes. Long answer: this would fix multiple things:
-1) Remove the parent's probe from depending on the child's probe().
-This is not guaranteed at all, so we'd fix this bad assumption in the
-code.
-2) It would allow the PHYs to probe with fw_devlink because the switch
-would have completed probing.
-3) It'd avoid the bad design of the last switch's probe doing all the
-PHY handling for the previous N-1 switches. What if something fails
-there? Shouldn't it be one of the previous switches that should report
-the failure (either in probe or switch registration or whatever?)? The
-component device model would allow each switch to do all it's own work
-and then the component master can do the "tying up" of all these
-switches and PHYs.
-
->
-> Two questions:
->
-> - Why would it now be more guaranteed that the PHY drivers are bound to
->   the internal PHY devices exactly during the time span between events
->   (a) Switch driver (a component of the switch tree) finishes probing
->   (b) Switch tree (the component master) starts binding
-
-Firstly, PHYs won't defer probe due to fw_devlink enforcing their
-dependency on the switch and will actually have their probe() called
-(and possibly succeed -- see more below).
-
->   I mean in lack of any guarantee, we can still end up in a situation
->   where the specific PHY driver still is not bound early enough to the
->   internal PHY to be available by the time we call phylink_of_phy_connect,
->   and we have all those component device goodies but they don't help.
->   I'm sure I'm misunderstanding something but I don't know what.
->
-> - What if the internal PHY has other suppliers beyond the interrupt-parent?
->   What if, say, it has a reset-gpios = <&gpio1>, where gpio1 is provided
->   by some other thing on some other slow bus, which is equally slow (or
->   slower) to probe to the DSA switch itself. So the temporary absence of
->   this other supplier is causing the specific PHY driver to defer probing,
->   just enough for a concurrent call to phylink_of_phy_connect -> phy_attach_direct
->   to say "ok, I've waited enough and there is no driver, genphy it is".
->   How would this be avoided?
-
-Good question and this is another reason for me suggesting the use of
-component model.
-
-> Or are you thinking of some kind of two-level
->   component driver system:
->   - the DSA switch is a component master, with components being its
->     sub-devices such as internal PHYs etc
->   - the DSA switch is also a component of the DSA switch tree
-
-I was thinking of one component master with all the devices that make
-up the DSA switch tree. I don't think there's any requirement that all
-the component devices need to be of the same type. That way, the DSA
-switch tree won't even be attempted until all the devices are ready.
-
-One thing that's not clear to me wrt using specific driver vs the
-genphy -- at what point is it okay to give up waiting for a specific
-driver? This is more of a question to the maintainers than what
-happens today. What if the specific driver is a module that's loaded
-after the switch's driver? There's no time bound to this event. Are we
-going to put the restriction that all the PHY's drivers need to be
-registered/loaded before the switch's driver? If that's the decision,
-that's okay by me. But I just want to understand the requirements.
-
-Also see my reply to your other email.
+I think if we can set the requirement that the PHY's driver needs to
+be loaded/registered before the switch's driver, this should be
+possible to figure out. Either using dev->can_match or with some
+additional minor changes to driver-core.
 
 -Saravana
