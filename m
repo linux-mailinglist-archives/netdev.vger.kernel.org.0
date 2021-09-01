@@ -2,143 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B90913FE1BF
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 20:07:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DEC453FE1C8
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 20:08:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344967AbhIASHg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 14:07:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52326 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346688AbhIASHW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 14:07:22 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F5A6C061796
-        for <netdev@vger.kernel.org>; Wed,  1 Sep 2021 11:06:23 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id q21so161786plq.3
-        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 11:06:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=squareup.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=H+/Lyfz9TNtbqDe9NxLVaW+b1GlctI9OD0MfTlvmgNc=;
-        b=WTP4TEMkzedv2yNtgJ7iDgcDBULVbrjObJdUgjDn0wOttDyvbplSm9LzhYwaH0ZsdU
-         radkKLHEnURIzLZwbFhTCRpakKcKorkRDX47yml3+6703UxiM2slo7NTCOKkJK/yPvU1
-         nolHGLuFlZacTTrh4OewVEMIQJ/ZLaQriiJcA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=H+/Lyfz9TNtbqDe9NxLVaW+b1GlctI9OD0MfTlvmgNc=;
-        b=lt4d7ByPyh6LhPyUcoikvNeidEHpGeC2/4l02choxA8p5p0jJOiHi2kiS7DhhgV7zf
-         4hhxN7/MIBblnrFzOyd/VR/sUmqk5FTroP8NNFINpyfz/D+Dr8F2tDt731lvCmgl/liR
-         pAeYsPJ4libpRihTA9Na9bd7pX3aNF9MzL+J6Htf5j185vNtonaFosvgsVImH8yeqaFs
-         8kaM7O14GeG/X0Y2ShYs0eePdXw77OXxFGe/G32abC0alNPr2Bo2vnR1aqWbkxFCobeS
-         mYq4asqK62ivZ76kAGDAImaWrDfW0u2zfu3KSvMoYjSxBlyphJeTlccIMV5+ZB9EIn0g
-         yg+A==
-X-Gm-Message-State: AOAM532uf4q27n7JbQMWwP8UzM3wGo0Vq2uSubR7Xcx02tYZAZoRfmEx
-        GDhbHDKJpcRgyAgDUhTdiTuTvg==
-X-Google-Smtp-Source: ABdhPJxYow6k47ju8zaGAxZ3QDUvTl7R69BptJmcg9HIkO/wrTRp5zileffx5LsgJSu/+VcPjnXxvg==
-X-Received: by 2002:a17:90a:6b4d:: with SMTP id x13mr613010pjl.88.1630519582734;
-        Wed, 01 Sep 2021 11:06:22 -0700 (PDT)
-Received: from localhost (138-229-239-060.res.spectrum.com. [138.229.239.60])
-        by smtp.gmail.com with ESMTPSA id i5sm181241pjk.47.2021.09.01.11.06.20
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 01 Sep 2021 11:06:21 -0700 (PDT)
-From:   Benjamin Li <benl@squareup.com>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        Benjamin Li <benl@squareup.com>, stable@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, wcn36xx@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] wcn36xx: handle connection loss indication
-Date:   Wed,  1 Sep 2021 11:06:05 -0700
-Message-Id: <20210901180606.11686-1-benl@squareup.com>
-X-Mailer: git-send-email 2.17.1
+        id S1346777AbhIASIk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 14:08:40 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:31326 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1346752AbhIASIj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 14:08:39 -0400
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 181I4C9V009785;
+        Wed, 1 Sep 2021 14:07:42 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=BE8TENnMPSb4iD0H9C+s5VzH/Hh3lLCDZFNA2A4/Wzc=;
+ b=E6MVr0gHICan/R7DN1mFcwxo0co6g/fyaHfbg2DtmrDOhlBCcGWhZbhAyGdSHelSA0qL
+ 3ZzOGUmq7ll/TcayhdU6Gw0C2kJo2x7gDPw5baEO9GbHLIS8K79zQ1tKScLclr8mk9IK
+ v+BEZJFokKdK8CIsoRQZ4aPJx0W/MkfK9cg1DWmYG8NdcYm5liPEOlEEqmuDgF7tsH3r
+ gxk1Z1TSDj/feH2VNnqB7HJiuo39s+6JoFeRie4IySZHpaDhOVaO3XfyXX1W3rzmWvs4
+ 6iM6Fpqfh1dUidiq89A+IIQtgwr0AqHemRa9qkIvUMt646gYBznHTuAleHoXhZa6O3Nc 5w== 
+Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3atbb36493-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 01 Sep 2021 14:07:42 -0400
+Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
+        by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 181I43Rn023181;
+        Wed, 1 Sep 2021 18:07:41 GMT
+Received: from b03cxnp07029.gho.boulder.ibm.com (b03cxnp07029.gho.boulder.ibm.com [9.17.130.16])
+        by ppma03dal.us.ibm.com with ESMTP id 3atdxbgyav-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 01 Sep 2021 18:07:41 +0000
+Received: from b03ledav001.gho.boulder.ibm.com (b03ledav001.gho.boulder.ibm.com [9.17.130.232])
+        by b03cxnp07029.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 181I7ep245875486
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 1 Sep 2021 18:07:40 GMT
+Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 1B9006E054;
+        Wed,  1 Sep 2021 18:07:40 +0000 (GMT)
+Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9A9176E052;
+        Wed,  1 Sep 2021 18:07:39 +0000 (GMT)
+Received: from suka-w540.localdomain (unknown [9.160.152.143])
+        by b03ledav001.gho.boulder.ibm.com (Postfix) with SMTP;
+        Wed,  1 Sep 2021 18:07:39 +0000 (GMT)
+Received: by suka-w540.localdomain (Postfix, from userid 1000)
+        id 7AD832E1062; Wed,  1 Sep 2021 11:07:36 -0700 (PDT)
+Date:   Wed, 1 Sep 2021 11:07:36 -0700
+From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Brian King <brking@linux.ibm.com>,
+        cforno12@linux.ibm.com, Dany Madden <drt@linux.ibm.com>,
+        Rick Lindsley <ricklind@linux.ibm.com>
+Subject: Re: [PATCH net-next 0/9] ibmvnic: Reuse ltb, rx, tx pools
+Message-ID: <YS/BaCG0Aq1QQqx5@us.ibm.com>
+References: <20210901000812.120968-1-sukadev@linux.ibm.com>
+ <20210831193523.3929a265@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210831193523.3929a265@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+X-Operating-System: Linux 2.0.32 on an i486
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 6tU9xsGYEDmcJ08B8XG_kRWzUVoGQJGS
+X-Proofpoint-ORIG-GUID: 6tU9xsGYEDmcJ08B8XG_kRWzUVoGQJGS
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-09-01_05:2021-09-01,2021-09-01 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
+ lowpriorityscore=0 malwarescore=0 mlxscore=0 spamscore=0 impostorscore=0
+ mlxlogscore=842 clxscore=1015 phishscore=0 priorityscore=1501
+ suspectscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2107140000 definitions=main-2109010104
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Firmware sends delete_sta_context_ind when it detects the AP has gone
-away in STA mode. Right now the handler for that indication only handles
-AP mode; fix it to also handle STA mode.
+Jakub Kicinski [kuba@kernel.org] wrote:
+> 
+> Please fix the kdoc issues in this submission. Kdoc script is your
+> friend:
+> 
+> ./scripts/kernel-doc -none <files>
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Benjamin Li <benl@squareup.com>
-Reviewed-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
----
- drivers/net/wireless/ath/wcn36xx/smd.c | 44 +++++++++++++++++++-------
- 1 file changed, 33 insertions(+), 11 deletions(-)
+Yes, Thanks! I fixed them in v2
 
-diff --git a/drivers/net/wireless/ath/wcn36xx/smd.c b/drivers/net/wireless/ath/wcn36xx/smd.c
-index 57fa857b290b..f6bea896abe8 100644
---- a/drivers/net/wireless/ath/wcn36xx/smd.c
-+++ b/drivers/net/wireless/ath/wcn36xx/smd.c
-@@ -2623,30 +2623,52 @@ static int wcn36xx_smd_delete_sta_context_ind(struct wcn36xx *wcn,
- 					      size_t len)
- {
- 	struct wcn36xx_hal_delete_sta_context_ind_msg *rsp = buf;
--	struct wcn36xx_vif *tmp;
-+	struct wcn36xx_vif *vif_priv;
-+	struct ieee80211_vif *vif;
-+	struct ieee80211_bss_conf *bss_conf;
- 	struct ieee80211_sta *sta;
-+	bool found = false;
- 
- 	if (len != sizeof(*rsp)) {
- 		wcn36xx_warn("Corrupted delete sta indication\n");
- 		return -EIO;
- 	}
- 
--	wcn36xx_dbg(WCN36XX_DBG_HAL, "delete station indication %pM index %d\n",
--		    rsp->addr2, rsp->sta_id);
-+	wcn36xx_dbg(WCN36XX_DBG_HAL,
-+		    "delete station indication %pM index %d reason %d\n",
-+		    rsp->addr2, rsp->sta_id, rsp->reason_code);
- 
--	list_for_each_entry(tmp, &wcn->vif_list, list) {
-+	list_for_each_entry(vif_priv, &wcn->vif_list, list) {
- 		rcu_read_lock();
--		sta = ieee80211_find_sta(wcn36xx_priv_to_vif(tmp), rsp->addr2);
--		if (sta)
--			ieee80211_report_low_ack(sta, 0);
-+		vif = wcn36xx_priv_to_vif(vif_priv);
-+
-+		if (vif->type == NL80211_IFTYPE_STATION) {
-+			/* We could call ieee80211_find_sta too, but checking
-+			 * bss_conf is clearer.
-+			 */
-+			bss_conf = &vif->bss_conf;
-+			if (vif_priv->sta_assoc &&
-+			    !memcmp(bss_conf->bssid, rsp->addr2, ETH_ALEN)) {
-+				found = true;
-+				wcn36xx_dbg(WCN36XX_DBG_HAL,
-+					    "connection loss bss_index %d\n",
-+					    vif_priv->bss_index);
-+				ieee80211_connection_loss(vif);
-+			}
-+		} else {
-+			sta = ieee80211_find_sta(vif, rsp->addr2);
-+			if (sta) {
-+				found = true;
-+				ieee80211_report_low_ack(sta, 0);
-+			}
-+		}
-+
- 		rcu_read_unlock();
--		if (sta)
-+		if (found)
- 			return 0;
- 	}
- 
--	wcn36xx_warn("STA with addr %pM and index %d not found\n",
--		     rsp->addr2,
--		     rsp->sta_id);
-+	wcn36xx_warn("BSS or STA with addr %pM not found\n", rsp->addr2);
- 	return -ENOENT;
- }
- 
--- 
-2.17.1
-
+Sukadev
