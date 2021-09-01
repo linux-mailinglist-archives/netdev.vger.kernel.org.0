@@ -2,133 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B59D3FE511
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 23:48:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A59123FE58D
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 00:42:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242412AbhIAVtp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 17:49:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47794 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231808AbhIAVto (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 17:49:44 -0400
-Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94AEFC061575;
-        Wed,  1 Sep 2021 14:48:47 -0700 (PDT)
-Received: by mail-ot1-x32e.google.com with SMTP id x10-20020a056830408a00b004f26cead745so1543999ott.10;
-        Wed, 01 Sep 2021 14:48:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=bM/DObiZ9PUO+ooQ6bmBOKRWIQZ3cIe0ybO6KHu8cTQ=;
-        b=foUJrSLb8NoGrGAcbGQtZOC9HiFzsYHciEyZlDitunIZtfznW49Y4/U7lkVY3yVm/G
-         hQDvlegv0nC9pmpowUW/4wuCHT0IOSa+XVE6gF4Rw4id6djAc/CUPSYJgmUC0EQl1AVy
-         EoPn0TZ0TBC1bKZEn/dl7SFqaGAE41K8uc/W+jNQ0agzUmrWSO9DNbyd4pUmX9KRAab1
-         0tm2HCcxN486zLS/3y4JV6lLn0nGu0/Z9pkFBxKbmXuLGAWRHWoPkS9Tz2CDHGvaWHSz
-         BgYhvFKyKR5aAMG1g/h5F79levteWJPKMZ+iDwLyLvKHwiqPx5kjrRodUwXSujTlRBKB
-         lmtA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=bM/DObiZ9PUO+ooQ6bmBOKRWIQZ3cIe0ybO6KHu8cTQ=;
-        b=qoIfYRfuxE4tSI/xRn9Gd+fM3dG7Mvs7zCrWAnuvRoabzs+LoEerXxi0UwYcT43j2k
-         O+EH4HiEwfwRpFdlZTVCv6bPXKMoNGXGjEpg44pxTxd+U5QiYIvfX8xXFxsNgeNA0AvH
-         7U0BqAVo7StK64b7vWCleu5f7/iY4ErGI387RAF229SS1q8SRwLTwKe09otpPUbTBDWB
-         j6CZORFwd47aKplE+8s+w39dg5oSDMbh+wiVwr2n0ZMYwxN+80/mlKG6E3493fnTlCnQ
-         bRZSPjCKP4ERObUTxSEhQw3RoKhT5XyYi4b+c15NgsUHrhgglWwD1iRoosR2C/z4y4/c
-         YmpA==
-X-Gm-Message-State: AOAM533O7PV6Q88ilwQ+xiTJSMtbQlaktQVNvrMeCVhfOffwuwS+IOaq
-        0fcN2zjgZmsXMEvXaBFVBhk=
-X-Google-Smtp-Source: ABdhPJxSxIeSetO6ZBqwHPOtR8ynpEZFfmXOoDs2IWjEExxm6adHf6GyW0d7soNrcwmU3QMUWszA9w==
-X-Received: by 2002:a05:6830:2443:: with SMTP id x3mr1375906otr.12.1630532926987;
-        Wed, 01 Sep 2021 14:48:46 -0700 (PDT)
-Received: from ?IPV6:2603:8090:2005:39b3::1023? (2603-8090-2005-39b3-0000-0000-0000-1023.res6.spectrum.com. [2603:8090:2005:39b3::1023])
-        by smtp.gmail.com with UTF8SMTPSA id bg38sm5348oib.26.2021.09.01.14.48.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Sep 2021 14:48:46 -0700 (PDT)
-Sender: Larry Finger <larry.finger@gmail.com>
-Message-ID: <3e1db007-1ffa-6e84-a0f7-a36fa0820768@lwfinger.net>
-Date:   Wed, 1 Sep 2021 16:48:44 -0500
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.0.1
-Subject: Re: [GIT PULL] Networking for v5.15
-Content-Language: en-US
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Luca Coelho <luciano.coelho@intel.com>,
+        id S245269AbhIAWmy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 18:42:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56990 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S244935AbhIAWmx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 Sep 2021 18:42:53 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DEBD961074;
+        Wed,  1 Sep 2021 22:41:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1630536116;
+        bh=77MmJsqsUPuSG3h/bnm06TfCwbXA3EPH83b89+5uW2U=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=dHI0LJk+dZT0xgWylN+Z8LTmxrxVvhsu0AbsTFI7fFAlwazcnAWHy6vN63t6/8G6c
+         6pNDmTea8P8WSmcE6dm4GzpzKaX+YuurwHH3n21y8rpPqjwEoYgryadtOXQ46igxyl
+         vMS6XZbd2QnXfO6fEO/+qFxx+/C17apOvMES3/lEsPvF97YsPcySswuUHM18DYnOJ0
+         klE0Tryzru9qi8FjpcsIzq6SqRcvZ/t8Zs4NyGiICuGcC7X3ZkZXLUzmnxPh1rJcps
+         ET0d6/6X8y6u27fA6zNy/1qCMZ9uiMM6RWQO8xE5CJ1e+rP2cUEMl5sAlBn0iYFNky
+         kvwUDj9VMLUtA==
+Date:   Wed, 1 Sep 2021 17:41:54 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+        Jonas =?iso-8859-1?Q?Dre=DFler?= <verdre@v0yd.nl>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi017@gmail.com>,
+        Xinming Hu <huxinming820@gmail.com>,
         Kalle Valo <kvalo@codeaurora.org>,
-        David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tsuchiya Yuto <kitakar@gmail.com>,
+        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-wireless@vger.kernel.org,
-        Miri Korenblit <miriam.rachel.korenblit@intel.com>
-References: <20210831203727.3852294-1-kuba@kernel.org>
- <CAHk-=wjB_zBwZ+WR9LOpvgjvaQn=cqryoKigod8QnZs=iYGEhA@mail.gmail.com>
- <20210901124131.0bc62578@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <4dfae09cd2ea3f5fe4b8fa5097d1e0cc8a34e848.camel@sipsolutions.net>
-From:   Larry Finger <Larry.Finger@lwfinger.net>
-In-Reply-To: <4dfae09cd2ea3f5fe4b8fa5097d1e0cc8a34e848.camel@sipsolutions.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        linux-pci <linux-pci@vger.kernel.org>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: [PATCH 1/2] mwifiex: Use non-posted PCI register writes
+Message-ID: <20210901224154.GA230445@bjorn-Precision-5520>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <f293c619399ba8bd60240879a20ee34db1248255.camel@sipsolutions.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/1/21 14:49, Johannes Berg wrote:
-> On Wed, 2021-09-01 at 12:41 -0700, Jakub Kicinski wrote:
->>
->>>
->>> They all seem to have that same issue, and it looks like the fix would
->>> be to get the RTN lock in iwl_mvm_init_mcc(), but I didn't really look
->>> into it very much.
->>>
->>> This is on my desktop, and I actually don't _use_ the wireless on this
->>> machine. I assume it still works despite the warnings, but they should
->>> get fixed.
->>>
->>> I *don't* see these warnings on my laptop where I actually use
->>> wireless, but that one uses ath10k_pci, so it seems this is purely a
->>> iwlwifi issue.
->>>
->>> I can't be the only one that sees this. Hmm?
->>
->> Mm. Looking thru the recent commits there is a suspicious rtnl_unlock()
->> in commit eb09ae93dabf ("iwlwifi: mvm: load regdomain at INIT stage").
+On Wed, Sep 01, 2021 at 07:07:58PM +0200, Johannes Berg wrote:
+> On Wed, 2021-09-01 at 18:51 +0200, Heiner Kallweit wrote:
+> > On 01.09.2021 17:51, Pali Roh·r wrote:
+> > > On Wednesday 01 September 2021 16:01:54 Jonas Dreﬂler wrote:
+> > > > On 8/30/21 2:49 PM, Andy Shevchenko wrote:
+> > > > > On Mon, Aug 30, 2021 at 3:38 PM Jonas Dreﬂler <verdre@v0yd.nl> wrote:
+> > > > > > 
+> > > > > > On the 88W8897 card it's very important the TX ring write pointer is
+> > > > > > updated correctly to its new value before setting the TX ready
+> > > > > > interrupt, otherwise the firmware appears to crash (probably because
+> > > > > > it's trying to DMA-read from the wrong place).
+> > > > > > 
+> > 
+> > This sounds somehow like the typical case where you write DMA descriptors
+> > and then ring the doorbell. This normally requires a dma_wmb().
+> > Maybe something like that is missing here?
 > 
-> Huh! That's not the version of the commit I remember - it had an
-> rtnl_lock() in there too (just before the mutex_lock)?! Looks like that
-> should really be there, not sure how/where it got lost along the way.
+> But it looks like this "TX ring write pointer" is actually the register?
 > 
-> That unbalanced rtnl_unlock() makes no sense anyway. Wonder why it
-> doesn't cause more assertions/problems at that point, clearly it's
-> unbalanced. Pretty sure it's missing the rtnl_lock() earlier in the
-> function for some reason.
+> However, I would agree that doing it in mwifiex_write_reg() is possibly
+> too big a hammer - could be done only for reg->tx_wrptr, not all the
+> registers?
 > 
-> Luca and I will look at it tomorrow, getting late here, sorry.
-> 
-> johannes
-> 
-I am seeing the same problem, and it does happen in lots of places. For example
+> Actually, can two writes actually cross on PCI?
 
-finger@2603-8090-2005-39b3-0000-0000-0000-1023:~/rtl8812au>dmesg | grep 
-assertion\ failed
-[    6.465589] RTNL: assertion failed at net/core/rtnetlink.c (1702)
-[    6.465948] RTNL: assertion failed at net/core/devlink.c (11496)
-[    6.466263] RTNL: assertion failed at net/core/rtnetlink.c (1412)
-[    6.466500] RTNL: assertion failed at net/core/dev.c (1987)
-[    6.466708] RTNL: assertion failed at net/core/fib_rules.c (1227)
-[    6.466902] RTNL: assertion failed at net/ipv4/devinet.c (1526)
-[    6.467097] RTNL: assertion failed at net/ipv4/igmp.c (1779)
-[    6.467291] RTNL: assertion failed at net/ipv4/igmp.c (1432)
+Per PCIe r5.0, sec 2.4.1,
 
-I am in the process of bisecting the problem, just in case it happens some other 
-place than your suspicion leads you.
+  A2a  A Posted Request must not pass another Posted Request unless A2b
+       applies.
 
-Larry
+  A2b  A Posted Request with RO Set is permitted to pass another
+       Posted Request.  A Posted Request with IDO Set is permitted to
+       pass another Posted Request if the two Requester IDs are
+       different or if both Requests contain a PASID TLP Prefix and
+       the two PASID values are different.
 
+A few drivers enable RO (Relaxed Ordering) for their devices, which
+means the *device* is permitted to set the RO bit in transactions it
+initiates.
+
+BUt IIUC we're talking about MMIO writes initiated by a CPU, and they
+won't have the RO bit set unless the Root Port has Relaxed Ordering
+enabled, and Linux generally does not enable that.  So A2a should
+apply, and writes should be ordered on PCI.
+
+There are a few wrinkles that I worry about:
+
+  d1e714db8129 ("mtip32xx: Fix ERO and NoSnoop values in PCIe upstream
+  on AMD systems") [1] turns off RO for some AMD Root Ports, which
+  makes me think BIOS might be enabling RO in these Root Ports.
+
+  c56d4450eb68 ("PCI: Turn off Request Attributes to avoid Chelsio T5
+  Completion erratum") [2] turns off RO for all Root Ports leading to
+  Chelsio T5 devices, which again makes me think there's firmware that
+  enables RO in Root Ports.  Follow-up [3].
+
+  77ffc1465cec ("tegra: add PCI Express support") [4] (see
+  tegra_pcie_relax_enable()) enables RO for Tegra Root Ports due to
+  some hardware issue.  I don't whether these Root Ports every
+  actually *set* RO in the PCIe transactions they generate.  Follow-up
+  [5].
+
+These concern me because I don't think we have a way for drivers to
+specify whether their writes should use strong ordering or relaxed
+ordering, and I think they depend on strong ordering.  If Root Ports
+have RO enabled, I think we are at risk, so I suspect Linux should
+actively *disable* RO for Root Ports.
+
+[1] https://git.kernel.org/linus/d1e714db8129
+[2] https://git.kernel.org/linus/c56d4450eb68
+[3] https://lore.kernel.org/r/20210901222353.GA251391@bjorn-Precision-5520
+[4] https://git.kernel.org/linus/77ffc1465cec
+[5] https://lore.kernel.org/r/20210901204045.GA236987@bjorn-Precision-5520
