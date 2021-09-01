@@ -2,70 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A11E3FDAD2
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 15:16:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7D4B3FDC0E
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 15:18:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245556AbhIAMfK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 08:35:10 -0400
-Received: from mail-ot1-f51.google.com ([209.85.210.51]:41701 "EHLO
-        mail-ot1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245170AbhIAMeB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 08:34:01 -0400
-Received: by mail-ot1-f51.google.com with SMTP id o16-20020a9d2210000000b0051b1e56c98fso3215029ota.8;
-        Wed, 01 Sep 2021 05:33:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/u1UTUm6/9J9YNElFXJAQnfOvJ98lHs3dQxW1vvuCNI=;
-        b=q3FUe0ILWKcAgg0QTQ7Ee+O3/bjf+peFc2fFjLFXp0dRCLbakhNGoqtmJsOtRZjrN1
-         Jw62LhADlaOG2zqx/6OzV9qjcW9FJ2yW4jaTWsx80yLSZiIfHJf6zwtzJJp/QSpRwTcu
-         yXQN7sld89AORS2HzWAFs3w2OdSbKQ1YRB4IbGKgwQrcank22unWsn1miDKwRr6suPQ4
-         jmnTyGdax8AWbZQ9t9RDRepZMo+jXfMo6xaY/y4jajUAZ96aMK25klXqGUG9lpovc0Jy
-         F4DuahToGGhVIHVwBAKgR18NWhjqax3Or0y5RcHIvnn2t9JtPxQ/546eV5IK/5Ifj0xF
-         VZxg==
-X-Gm-Message-State: AOAM533U4nu0JHvUnPN7Ndh8dHsEtoNiff8J4hCEYAehiOWEnFHcVvTJ
-        px66yPcXqLO+9Xy65gu7yw==
-X-Google-Smtp-Source: ABdhPJyI4GTYunmwPgcSHkW1JmAd16WpTjBYxwf6KQGfJ44H9KAbB4/7ola2MSMBhJfbrCPbcm4Y5g==
-X-Received: by 2002:a9d:5f07:: with SMTP id f7mr28629161oti.183.1630499584225;
-        Wed, 01 Sep 2021 05:33:04 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id t21sm4504193otl.67.2021.09.01.05.33.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Sep 2021 05:33:03 -0700 (PDT)
-Received: (nullmailer pid 1951229 invoked by uid 1000);
-        Wed, 01 Sep 2021 12:33:02 -0000
-Date:   Wed, 1 Sep 2021 07:33:02 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Gerhard Engleder <gerhard@engleder-embedded.com>
-Cc:     devicetree@vger.kernel.org, robh+dt@kernel.org, kuba@kernel.org,
-        netdev@vger.kernel.org, andrew@lunn.ch, michal.simek@xilinx.com,
-        davem@davemloft.net
-Subject: Re: [PATCH net-next v2 2/3] dt-bindings: net: Add tsnep Ethernet
- controller
-Message-ID: <YS9y/lZU8gMOh5Kn@robh.at.kernel.org>
-References: <20210831193425.26193-1-gerhard@engleder-embedded.com>
- <20210831193425.26193-3-gerhard@engleder-embedded.com>
+        id S1344454AbhIAMqf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 08:46:35 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:52190 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1345564AbhIAMol (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 Sep 2021 08:44:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=lzlOoGsZaqKGx4/IQjVmCXaKxUFWkuXvxDWMiiTurK4=; b=10gJlTCwTYoW9kEia1KCmOzJW+
+        fRO8TgbSpSeq3z3Wi1fiTVfloa4qemd+PwrwgOBrw+ARigvGdISlJO0j/8CJvUnQX+cQgXQ7xWoAD
+        fMrBOVN4q4hLUa7tZbIaE0hgJ7pL/UiHCTAM5xxQzi4wE74i4Hn64KyNGVTDvuWbKVtM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mLPaQ-004rc8-EO; Wed, 01 Sep 2021 14:43:26 +0200
+Date:   Wed, 1 Sep 2021 14:43:26 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Qiang Ma <maqianga@uniontech.com>
+Cc:     f.fainelli@gmail.com, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Ming Wang <wangming01@loongson.cn>
+Subject: Re: [PATCH] net: phy: fix autoneg invalid error state of GBSR
+ register.
+Message-ID: <YS91biZov3jE+Lrd@lunn.ch>
+References: <20210901105608.29776-1-maqianga@uniontech.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210831193425.26193-3-gerhard@engleder-embedded.com>
+In-Reply-To: <20210901105608.29776-1-maqianga@uniontech.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 31 Aug 2021 21:34:24 +0200, Gerhard Engleder wrote:
-> The TSN endpoint Ethernet MAC is a FPGA based network device for
-> real-time communication.
+On Wed, Sep 01, 2021 at 06:56:08PM +0800, Qiang Ma wrote:
+> When the PHY is not link and working in polling mode, PHY state
+> machine will periodically read GBSR register. Normally, the GBSR
+> register value is 0. But as the log show, in very small cases the
+> value is 0x8640. The value 0x8640 means Master/Slave resolution
+> failed. The PHY state machine will enter PHY_HALTED state and the
+> PHY will never be able to link.
 > 
-> It is integrated as normal Ethernet controller with
-> ethernet-controller.yaml and mdio.yaml.
+> [49176.903012] [debug]: lpagb:0x0 adv:0x300
+> [49177.927025] [debug]: lpagb:0x8640 adv:0x300
+> [49177.927034] Generic PHY stmmac-18:00: Master/Slave resolution failed
+> [49177.927241] [debug]: lpagb:0x0 adv:0x300
 > 
-> Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
+> According to the RTL8211E PHY chip datasheet, the contents of GBSR register
+> are valid only when auto negotiation is completed(BMSR[5]: Auto-
+> Negotiation Complete = 1). This patch adds the condition before
+> reading GBSR register to fix this error state.
+> 
+> Signed-off-by: Ming Wang <wangming01@loongson.cn>
+> Signed-off-by: Qiang Ma <maqianga@uniontech.com>
 > ---
->  .../bindings/net/engleder,tsnep.yaml          | 78 +++++++++++++++++++
->  1 file changed, 78 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/engleder,tsnep.yaml
+>  drivers/net/phy/phy_device.c | 10 ++++------
+>  include/linux/phy.h          |  1 +
+>  2 files changed, 5 insertions(+), 6 deletions(-)
 > 
+> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+> index b884b681d5c5..b77ed5ec31c6 100644
+> --- a/drivers/net/phy/phy_device.c
+> +++ b/drivers/net/phy/phy_device.c
+> @@ -1532,10 +1532,8 @@ int genphy_update_link(struct phy_device *phydev)
+>  	if (status < 0)
+>  		return status;
+>  
+> -	if ((status & BMSR_LSTATUS) == 0)
+> -		phydev->link = 0;
+> -	else
+> -		phydev->link = 1;
+> +	phydev->link = status & BMSR_LSTATUS ? 1 : 0;
+> +	phydev->autoneg_complete = status & BMSR_ANEGCOMPLETE ? 1 : 0;
+>  
+>  	return 0;
+>  }
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+What tree is this against? Both net-next/master and net/master have:
+
+        if (status < 0)
+                return status;
+done:
+        phydev->link = status & BMSR_LSTATUS ? 1 : 0;
+        phydev->autoneg_complete = status & BMSR_ANEGCOMPLETE ? 1 : 0;
+
+        /* Consider the case that autoneg was started and "aneg complete"
+         * bit has been reset, but "link up" bit not yet.
+         */
+        if (phydev->autoneg == AUTONEG_ENABLE && !phydev->autoneg_complete)
+                phydev->link = 0;
+
+        return 0;
+}
+
+It looks like you are using an old tree.
+
+	Andrew
