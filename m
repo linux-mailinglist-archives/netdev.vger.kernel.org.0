@@ -2,128 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A612A3FD186
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 04:52:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD4493FD193
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 04:56:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241773AbhIACxB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Aug 2021 22:53:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:37626 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241756AbhIACxA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 22:53:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1630464723;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=22daRUQV9U4yr6Wt0e3afK9IF5RqMvZ3yQMarWKzKaw=;
-        b=JxkWfQ7EGfdRby2Hd9j56rPsXil9S4cm2C3FAZXX5OO7cUDSxFTYinqBbb3iSpD6TdXSJT
-        6PrikPnEDTcBMAOb1V26OPOx1bsNDR+/Rg4qYR1bHBBiYO3xsUrVrBd9lpGTuUWxbipX6o
-        bPgZ3hpHWHlyTA3A+VvZuKPecQT/dm4=
-Received: from mail-pf1-f198.google.com (mail-pf1-f198.google.com
- [209.85.210.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-413-v60ti7wPMrWtJu71fqIiIg-1; Tue, 31 Aug 2021 22:52:02 -0400
-X-MC-Unique: v60ti7wPMrWtJu71fqIiIg-1
-Received: by mail-pf1-f198.google.com with SMTP id o130-20020a62cd88000000b004053c6c1765so656166pfg.6
-        for <netdev@vger.kernel.org>; Tue, 31 Aug 2021 19:52:02 -0700 (PDT)
+        id S241743AbhIAC4v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Aug 2021 22:56:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38386 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241726AbhIAC4u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Aug 2021 22:56:50 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E627C061760;
+        Tue, 31 Aug 2021 19:55:53 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id y23so1280882pgi.7;
+        Tue, 31 Aug 2021 19:55:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=llYzk35WFyxnRcjOXeC5MzMhaQqeb3RL9qYQToUkrs0=;
+        b=SsmztjF2i/COYT4VHYxIR+YJQvaMtkZoolQUhKhvfZWN/N742VdpBU2GAqXBuV+2p6
+         RIAfyoRG+c7L0l80SoC8AbM/WnuwgZULZHEBIeFjbD2KfVz/VPy+WSOPnPllYJYktKlL
+         tANR0DEc1hSydMuusQaLiyZ2tcVFGKjkSMGPqOFUkYTQYqGYZk0aAF+0pzD+9x55AgkW
+         Gbn27SRgCN5zPd2jyQVz+M7No2QA9fwOHNSVaVmTSWgfeWmZbHCSBx+PBVt6G7X0AtBn
+         HrzvFMWia+V3RJHm2XlpJXKGi7CgSZV5o+IN9CzjYnMy87cWRFB5cPUuKpQlPPHu0eeU
+         9IfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=22daRUQV9U4yr6Wt0e3afK9IF5RqMvZ3yQMarWKzKaw=;
-        b=VraBiEX2UhD5vh5Wi5P/fwAWQG4j0hoyePKSVJX45LM2R/DQb2364xMGybeyAIl8Bk
-         jZuX1vWr9R6ayXzGhdSGM6+/WJVs+cB5cOkDvcYnMbZkdaEBNNmXbJyf/a8MLmwxfHZE
-         Z5loHbGaUMKrrm5DHYnbaRcDPaYaFTUQaKfMvFFpx22LxZB2IU6vAwLkFiS0g4P4mDsF
-         mT2zUybmCJZM8nIXeywtohGZ4BgP56GJ12JxVg4PNQ4+adtF1lCfLGn9nDZVm4uhePrt
-         0DecB1Y60LJENzL9ZgkQJ1OfUDMxekZ8E3TBdMkkhNAMeK65trIA1Il2DUAbE6/tQmRF
-         IWig==
-X-Gm-Message-State: AOAM533t+rwWoJ+cwd1Dcan49KJY2FuKxU0Vss3BH9m5DMeZbe3sdEOa
-        4AFbbbveeOtkb3AgoaNbFx8M4W6aEIEHLd2HcYIxt9lsVX3c4/45neO9IsbANx1+9Aw3IIWFmbQ
-        Rf5JahTvS7HjWqryf
-X-Received: by 2002:a17:902:ea89:b0:134:7eb7:b4d7 with SMTP id x9-20020a170902ea8900b001347eb7b4d7mr7633975plb.43.1630464721016;
-        Tue, 31 Aug 2021 19:52:01 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwTWS6gU6vtbRqrdbv/Yqpra3725hn41k3JbwUi9Z5AqTrEe2L3d1WI2eNmIrtm6tnQdkeYWQ==
-X-Received: by 2002:a17:902:ea89:b0:134:7eb7:b4d7 with SMTP id x9-20020a170902ea8900b001347eb7b4d7mr7633932plb.43.1630464720692;
-        Tue, 31 Aug 2021 19:52:00 -0700 (PDT)
-Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id b7sm19703920pgs.64.2021.08.31.19.51.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 31 Aug 2021 19:51:59 -0700 (PDT)
-Subject: Re: [PATCH v13 02/13] eventfd: Export eventfd_wake_count to modules
-To:     Xie Yongji <xieyongji@bytedance.com>, mst@redhat.com,
-        stefanha@redhat.com, sgarzare@redhat.com, parav@nvidia.com,
-        hch@infradead.org, christian.brauner@canonical.com,
-        rdunlap@infradead.org, willy@infradead.org,
-        viro@zeniv.linux.org.uk, axboe@kernel.dk, bcrl@kvack.org,
-        corbet@lwn.net, mika.penttila@nextfour.com,
-        dan.carpenter@oracle.com, joro@8bytes.org,
-        gregkh@linuxfoundation.org, zhe.he@windriver.com,
-        xiaodong.liu@intel.com, joe@perches.com, robin.murphy@arm.com,
-        will@kernel.org, john.garry@huawei.com
-Cc:     songmuchun@bytedance.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-References: <20210831103634.33-1-xieyongji@bytedance.com>
- <20210831103634.33-3-xieyongji@bytedance.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <0e486c0a-0055-e698-ffd2-31c4b75dae5d@redhat.com>
-Date:   Wed, 1 Sep 2021 10:50:40 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.13.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=llYzk35WFyxnRcjOXeC5MzMhaQqeb3RL9qYQToUkrs0=;
+        b=cBNnqsuGmfnDZxLbt4NdvnbBf/dKsPdHgRJ/pISrx+h8ZerVl0Hpce9IOz/xT35dVU
+         ZFG8en6btxM10TIhIJgQhF6y4tbY7hZ+vbKa0TSv8CWdWM7XWYjdnZcXONmtjyE+Eccf
+         ZuiAIlOuEqUCVhlcZ5SbAMIqqleHZbjmNoO76QovRIMagE2ltZlzOEuZBwbyDPpSLGkL
+         o0Yduo8bzC7a4BaRw6dxaZhMpZzndai0HmLXSBukVjbU+CaiLysWd+c2DgahRHaG/X7O
+         X0t+IOXH7YuQegi0Wd0HcOIZ0yjdvMKEbdKCO+lZiM5To/kmkzo90PbFOxPPz1iel+/3
+         G7OQ==
+X-Gm-Message-State: AOAM531uHa0zrlKjyc0rqwNobopXU6MICrUHt45tH8C1+geTft9v73Lz
+        zF3XoCeOI/a2nmAeoRNUWF8=
+X-Google-Smtp-Source: ABdhPJxDlMgVj2bC6+E8FbE6iG2xUI6Pu+alYjfUIGR3u/dlTOt3UugeGOoDufPaWfdvHnkWCWH/YQ==
+X-Received: by 2002:a63:1025:: with SMTP id f37mr22108960pgl.116.1630464952974;
+        Tue, 31 Aug 2021 19:55:52 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:645:c000:2163:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id 126sm1042362pgi.86.2021.08.31.19.55.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 Aug 2021 19:55:52 -0700 (PDT)
+Date:   Tue, 31 Aug 2021 19:55:49 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "Machnikowski, Maciej" <maciej.machnikowski@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "abyagowi@fb.com" <abyagowi@fb.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        bsd@fb.com
+Subject: Re: [RFC v2 net-next 1/2] rtnetlink: Add new RTM_GETSYNCESTATE
+ message to get SyncE status
+Message-ID: <20210901025549.GA18779@hoboy.vegasvil.org>
+References: <20210829080512.3573627-1-maciej.machnikowski@intel.com>
+ <20210829080512.3573627-2-maciej.machnikowski@intel.com>
+ <20210829151017.GA6016@hoboy.vegasvil.org>
+ <PH0PR11MB495126A63998DABA5B5DE184EACA9@PH0PR11MB4951.namprd11.prod.outlook.com>
+ <20210830205758.GA26230@hoboy.vegasvil.org>
+ <20210830162909.110753ec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210831161927.GA10747@hoboy.vegasvil.org>
+ <20210831185824.5021e847@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-In-Reply-To: <20210831103634.33-3-xieyongji@bytedance.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210831185824.5021e847@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Aug 31, 2021 at 06:58:24PM -0700, Jakub Kicinski wrote:
+> On Tue, 31 Aug 2021 09:19:27 -0700 Richard Cochran wrote:
+> > As you said later on in this thread, any API we merge now will have to
+> > last.  That is why I'm being so picky here.  We want new APIs to cover
+> > current HW _and_ be reasonable for the future.
+> > 
+> > I don't see a DPLL as either a PTP Hardware Clock or a Network
+> > Device.  It is a PLL.
+> > 
+> > The kernel can and should have a way to represent the relationship
+> > between these three different kind of IP block.  We already have a
+> > way to get from PHC to netdev interface.
+> 
+> Makes sense to me. I was wondering how to split things at high level
+> into the areas you mentioned, but TBH the part I'm struggling with is
+> the delineation of what falls under PTP. PLL by itself seems like an
+> awfully small unit to create a subsystem for, and PTP already has aux
+> stuff like PIN control.
 
-在 2021/8/31 下午6:36, Xie Yongji 写道:
-> Export eventfd_wake_count so that some modules can use
-> the eventfd_signal_count() to check whether the
-> eventfd_signal() call should be deferred to a safe context.
->
-> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+These pins are a direct HW interface to the posix dynamic clock that
+also generates time stamps on the PTP frames.  They can either
+generate time stamps on external signals, or produce output signals
+from the very same clock.  So the pins are rather tightly coupled to
+the PTP clock itself.
 
+But the pins do NOT cover input clock sources into the IP cores.  This
+kind of thing is already covered by the DTS for many SoCs (for a
+static input clock choice, not changeable at run time)
 
-And this matches the comment inside eventfd_signal():
+> Then there's the whole bunch of stuff that Jonathan
+> is adding via driver specific sysfs interfaces [1]. I was hoping the
+> "new API" would cover his need but PLL would be a tiny part of it.
+> 
+> IOW after looking at the code I'm not so sure how to reasonably divide
+> things.
 
-         /*
-          * Deadlock or stack overflow issues can happen if we recurse here
-          * through waitqueue wakeup handlers. If the caller users 
-potentially
-          * nested waitqueues with custom wakeup handlers, then it should
-          * check eventfd_signal_count() before calling this function. If
-          * it returns true, the eventfd_signal() call should be 
-deferred to a
-          * safe context.
-          */
+Right, me neither.  It is a big topic, and we needn't over engineer it
+now, but I still think this DPLL is not part of the PTP clock.  There
+has to be a better place for it.
 
-
-So:
-
-Acked-by: Jason Wang <jasowang@redhat.com>
-
-
-> ---
->   fs/eventfd.c | 1 +
->   1 file changed, 1 insertion(+)
->
-> diff --git a/fs/eventfd.c b/fs/eventfd.c
-> index e265b6dd4f34..1b3130b8d6c1 100644
-> --- a/fs/eventfd.c
-> +++ b/fs/eventfd.c
-> @@ -26,6 +26,7 @@
->   #include <linux/uio.h>
->   
->   DEFINE_PER_CPU(int, eventfd_wake_count);
-> +EXPORT_PER_CPU_SYMBOL_GPL(eventfd_wake_count);
->   
->   static DEFINE_IDA(eventfd_ida);
->   
-
+Thanks,
+Richard
