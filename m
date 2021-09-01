@@ -2,87 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B69A3FE487
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 23:06:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38C843FE43A
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 22:46:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244224AbhIAVHp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 17:07:45 -0400
-Received: from lb1-smtp-cloud7.xs4all.net ([194.109.24.24]:57747 "EHLO
-        lb1-smtp-cloud7.xs4all.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231340AbhIAVHo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 17:07:44 -0400
-Received: from cust-b66e5d83 ([IPv6:fc0c:c157:b88d:62c6:5e3c:5f07:82d0:1b4])
-        by smtp-cloud7.xs4all.net with ESMTPA
-        id LXRUmN6bF0e6wLXRVmSHIW; Wed, 01 Sep 2021 23:06:45 +0200
-Received: from localhost (localhost [127.0.0.1])
-        by keetweej.vanheusden.com (Postfix) with ESMTP id 4A1151626F0
-        for <netdev@vger.kernel.org>; Wed,  1 Sep 2021 23:06:44 +0200 (CEST)
-Received: from keetweej.vanheusden.com ([127.0.0.1])
-        by localhost (mauer.intranet.vanheusden.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id L8QZl2r2YIWr for <netdev@vger.kernel.org>;
-        Wed,  1 Sep 2021 23:06:39 +0200 (CEST)
-Received: from belle.intranet.vanheusden.com (belle.intranet.vanheusden.com [192.168.64.100])
-        by keetweej.vanheusden.com (Postfix) with ESMTP id 7B3F11622D6
-        for <netdev@vger.kernel.org>; Wed,  1 Sep 2021 22:56:53 +0200 (CEST)
-Received: by belle.intranet.vanheusden.com (Postfix, from userid 1000)
-        id 6804E162F75; Wed,  1 Sep 2021 22:56:53 +0200 (CEST)
-Date:   Wed, 1 Sep 2021 22:42:04 +0200
-From:   folkert <folkert@vanheusden.com>
-To:     netdev@vger.kernel.org
-Subject: masquerading AFTER first packet
-Message-ID: <20210901204204.GB3350910@belle.intranet.vanheusden.com>
+        id S231506AbhIAUrn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 16:47:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33176 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231373AbhIAUrn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 16:47:43 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED1A4C061575
+        for <netdev@vger.kernel.org>; Wed,  1 Sep 2021 13:46:45 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id n18so416699plp.7
+        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 13:46:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=+e3t1QO8rBHZ3DmbXetxlF4TSoQ6ZSKNnDh2xeJZLJY=;
+        b=aEes/O2Qi4a1c/SxHjEPsM+jn5cjZMuqlYrCiArtLGPxsx4c2v1SFRwuP+kJHSRrd/
+         uLD6cd5oDGBjQqli/U2uZHAebxMRmHJ45Hm2k4noKl+PAEgSUOzExfOUY6uBUaP+32oN
+         x8hvesSxx7V0ui6E3sQg3rJ2e2DZPIXnITAN+aCTBMzsq3ba7boxWuLquzvN9JEYNH1G
+         gTrTPRCTfV8l42pTtcfmEnyf6T/gY1aHLIBiMORxDFgnV/Ur/ygUm21luNxJ80i4TCBo
+         IOJrJFnqJnWrDFoTRbzM3bkTRTMz+9xOOq6RV2DXxCzPL9cvlQ2Q4gY+UTrEvHyEU76f
+         vRyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=+e3t1QO8rBHZ3DmbXetxlF4TSoQ6ZSKNnDh2xeJZLJY=;
+        b=CJa9Zu2PBMfEK+4vcl3AtQrAKJ5i3Z7JBLgvPbi6ygsueEL8vUivmeOdzsSvuskkDw
+         znJYNpeUOYF6HNxIuCohNUBuIDm7xXnnK5UYZZtGoNNWsY0k/Ell8WJRuGBsZF6gumY3
+         OtOlUKbnh+NWXaupmuStD+Lkf0mlenFsGdQZAX652fU5tf/cMf+bLtPGrXQS/oiIvPY9
+         6QsHPH47q0aOahl0y/0GwI0BonF7PfPsv19AKyHuUWBE+7qf0/Ie2QIeS3CP27LBRuBp
+         kkt3XULy6bxeNWYoqoXWfe+WHwg6AWWhXOvKuJWU0ENoWtTjRtTe0bX0aZFuInDUGwxx
+         Dwig==
+X-Gm-Message-State: AOAM531iMGTNlDkZHwXhgfjEAPF7lmdHvnM31VrfR03CCzWvURnuQizm
+        c1ZJqugs8E9GBNbwrxyhjW00uAIQSps=
+X-Google-Smtp-Source: ABdhPJzJPI6F8tV9696mvwsvAeV3kzUbPnUG9tza/Py5s3Gl7yi1dGH4z7jUVBS28zg2iFQJ/A5u/A==
+X-Received: by 2002:a17:90a:808b:: with SMTP id c11mr1334528pjn.33.1630529205335;
+        Wed, 01 Sep 2021 13:46:45 -0700 (PDT)
+Received: from [10.230.31.46] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id n8sm322037pjo.45.2021.09.01.13.46.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Sep 2021 13:46:44 -0700 (PDT)
+Message-ID: <9c0c1b99-d3ec-231c-112d-4e279ed0a7c7@gmail.com>
+Date:   Wed, 1 Sep 2021 13:46:42 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Reply-By: Wed 01 Sep 2021 07:11:01 PM CEST
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-CMAE-Envelope: MS4xfOir+K4expEquRu22uxpmlH4sk1oxLgwkcpUZGk1BQ9N/vWAxiaom0xBfg7P06e1i9yzLLXt2bN2CBrrhrzzgGJ2+FmltJ48AExssyyFcI8IQJZUVouS
- RCGJQssfKscK7BhcKSVkb8sO0r51uAy+rpkrX2LfFmBkjOG4ENS68HoCqyeI+N0QOI1I0xg2SyWQPVUc4RZwpylIFV/giGy58JI=
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.0.3
+Subject: Re: [PATCH net] bnxt_en: fix kernel doc warnings in bnxt_hwrm.c
+Content-Language: en-US
+To:     Edwin Peer <edwin.peer@broadcom.com>, netdev@vger.kernel.org
+Cc:     michael.chan@broadcom.com, andrew.gospodarek@broadcom.com,
+        davem@davemloft.net, kuba@kernel.org
+References: <20210901185315.57137-1-edwin.peer@broadcom.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20210901185315.57137-1-edwin.peer@broadcom.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-I'm seeing something strange. I'm doing an snmpwalk on an snmp server of
-mine (behing DNAT) , and after the first response it goes into a timeout.
-I did a tcpdump and saw this:
-
-1630528031.843264 IP 185.243.112.54.38377 > 37.34.63.177.161: GetNextRequest(23)  .1.3.6.1
-1630528031.843924 IP 37.34.63.177.161 > 185.243.112.54.38377: GetResponse(34)  .1.3.6.1.2=0   <-- ok
-1630528031.846950 IP 185.243.112.54.38377 > 37.34.63.177.161: GetNextRequest(24)  .1.3.6.1.2
-1630528031.847415 IP 192.168.4.2.161 > 185.243.112.54.38377: GetResponse(35)  .1.3.6.1.2.1=0  <-- fail
-1630528032.847649 IP 185.243.112.54.38377 > 37.34.63.177.161: GetNextRequest(24)  .1.3.6.1.2
-1630528032.848081 IP 192.168.4.2.161 > 185.243.112.54.38377: GetResponse(35)  .1.3.6.1.2.1=0  <-- fail
-...
-
-What happens here: 192.168.4.2.161 is the snmp-server. It is
-portforwarded by 37.34.63.177 and also masqueraded. All is fine for the
-first request/response, after that as you see the internal ip address
-is outputted (which is incorrect of course).
-
-I thought that maybe I had the nat-connection tracking wrong but
-everywhere on the internet it is written like this:
-
-iptables -t nat -A PREROUTING -i eth0 -p udp --dport 161 -j LOG --log-prefix "DNAT: " --log-level 4                                    
-iptables -t nat -A PREROUTING -i eth0 -p udp --dport 161 -j DNAT --to 192.168.4.2:161                                                  
-iptables -A FORWARD -d 192.168.4.2 -p udp --dport 161 -j LOG --log-prefix "FWD: " --log-level 4                                          
-iptables -A FORWARD -d 192.168.4.2 -p udp --dport 161 -j ACCEPT      
-
-iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
-iptables -A FORWARD -i eth1 -o eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT
-iptables -A FORWARD -i eth1 -o eth0 -j ACCEPT
-
-eth0 is the interface to the world, eth1 to the internal system.
-An example pcap trace file is at: https://vps001.vanheusden.com/~folkert/masq.pcap
-
-Also dmesg says:
-
-[Wed Sep  1 22:40:08 2021] DNAT: IN=eth0 OUT= MAC=52:54:00:65:21:38:0c:86:10:b5:91:e0:08:00 SRC=185.243.112.54 DST=37.34.63.177 LEN=66 TOS=0x00 PREC=0x00 TTL=55 ID=32612 DF PROTO=UDP SPT=39397 DPT=161 LEN=46 
-[Wed Sep  1 22:40:08 2021] FWD: IN=eth0 OUT=eth1 MAC=52:54:00:65:21:38:0c:86:10:b5:91:e0:08:00 SRC=185.243.112.54 DST=192.168.4.2 LEN=66 TOS=0x00 PREC=0x00 TTL=54 ID=32612 DF PROTO=UDP SPT=39397 DPT=161 LEN=46 
-[Wed Sep  1 22:40:08 2021] FWD: IN=eth0 OUT=eth1 MAC=52:54:00:65:21:38:0c:86:10:b5:91:e0:08:00 SRC=185.243.112.54 DST=192.168.4.2 LEN=67 TOS=0x00 PREC=0x00 TTL=54 ID=32613 DF PROTO=UDP SPT=39397 DPT=161 LEN=47 
-...
-Notice that 'DNAT' is logged once while the FWD for each packet.
 
 
-Any suggestions?
+On 9/1/2021 11:53 AM, Edwin Peer wrote:
+> Parameter names in the comments did not match the function arguments.
+> 
+> Fixes: 213808170840 ("bnxt_en: add support for HWRM request slices")
+> Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
+> Reported-by: Jakub Kicinski <kuba@kernel.org>
+> Reviewed-by: Michael Chan <michael.chan@broadcom.com>
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+
+# Just because you copied me internally ;)
+-- 
+Florian
