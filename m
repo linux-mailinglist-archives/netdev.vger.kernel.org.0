@@ -2,115 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 570CA3FDDF3
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 16:46:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A60283FDDDF
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 16:39:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231274AbhIAOrT convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 1 Sep 2021 10:47:19 -0400
-Received: from smtprelay0089.hostedemail.com ([216.40.44.89]:57968 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S229748AbhIAOrS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 10:47:18 -0400
-X-Greylist: delayed 579 seconds by postgrey-1.27 at vger.kernel.org; Wed, 01 Sep 2021 10:47:18 EDT
-Received: from smtprelay.hostedemail.com (10.5.19.251.rfc1918.com [10.5.19.251])
-        by smtpgrave08.hostedemail.com (Postfix) with ESMTP id B2C201801C50A;
-        Wed,  1 Sep 2021 14:36:43 +0000 (UTC)
-Received: from omf11.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay07.hostedemail.com (Postfix) with ESMTP id 3C62918211CD1;
-        Wed,  1 Sep 2021 14:36:41 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: rostedt@goodmis.org) by omf11.hostedemail.com (Postfix) with ESMTPA id 1666920A299;
-        Wed,  1 Sep 2021 14:36:39 +0000 (UTC)
-Date:   Wed, 01 Sep 2021 10:36:36 -0400
-User-Agent: K-9 Mail for Android
-In-Reply-To: <CAE40pdd+yHnh6fyjYV0UDcZ_ZwTCzP019Mf4_tTKWFc_5M6gaw@mail.gmail.com>
-References: <20210825154043.247764-1-yan2228598786@gmail.com> <CANn89iJO8jzjFWvJ610TPmKDE8WKi8ojTr_HWXLz5g=4pdQHEA@mail.gmail.com> <20210825231942.18f9b17e@rorschach.local.home> <CAE40pdd+yHnh6fyjYV0UDcZ_ZwTCzP019Mf4_tTKWFc_5M6gaw@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 8BIT
-Subject: Re: [PATCH] net: tcp_drop adds `reason` parameter for tracing v2
-To:     Brendan Gregg <brendan.d.gregg@gmail.com>
-CC:     Eric Dumazet <edumazet@google.com>,
-        Zhongya Yan <yan2228598786@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        id S245059AbhIAOkJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 10:40:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46352 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235318AbhIAOkI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 Sep 2021 10:40:08 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 71ECC61056;
+        Wed,  1 Sep 2021 14:39:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1630507151;
+        bh=D5wGLYTSwlKQg2nTJCKBweaZjEBj1zDsmWOCbdW3zCo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hKsNdVTX3ib8l/OEsl7klXs/wLHtymQGtB7t5Zn2EjnhtMw9onkA8wY08w3jseE3Z
+         KbOdEGgDL2QtXVqVhR8OyIoz3nMO/emiFNYOioj5riGiScftMX1apxUJMfVOSGIxi4
+         B7dSR+6dORox/A+RrXSBYVTr/DEn+uxBNtwlNwf+CJHjc1SR2HsusNj3zU6uHrzlh5
+         sqYQyIMnG6Fa2p+Wr+5RDN/PIBfM2PGVwor0KnkX87RpfngpyjzMcwuaWt2aZHpkCz
+         wjcNae+985/+6GkdzeTCeqoG7EpXna2ki22BX0bm9h0wb7Kh64gkJxhSYrxUHGyBBH
+         rqh1ltH4v7Wjw==
+Date:   Wed, 1 Sep 2021 07:39:10 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     John 'Warthog9' Hawley <warthog9@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        =?UTF-8?B?6ams5by6?= <maqianga@uniontech.com>,
+        "f.fainelli" <f.fainelli@gmail.com>, davem <davem@davemloft.net>,
         netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, hengqi.chen@gmail.com,
-        Yonghong Song <yhs@fb.com>
-From:   Steven Rostedt <rostedt@goodmis.org>
-Message-ID: <8BA159CD-11AC-425C-9C7F-AA943CE9179F@goodmis.org>
-X-Rspamd-Server: rspamout01
-X-Rspamd-Queue-Id: 1666920A299
-X-Spam-Status: No, score=-1.36
-X-Stat-Signature: jpet5ridbywf63q8syd6xnbg433ik3o5
-X-Session-Marker: 726F737465647440676F6F646D69732E6F7267
-X-Session-ID: U2FsdGVkX1/0p6giWY1Hn7URsSP2OX8RatZ7gAtDwwM=
-X-HE-Tag: 1630506999-675233
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Ming Wang <wangming01@loongson.cn>
+Subject: Re: [PATCH] net: phy: fix autoneg invalid error state of GBSR
+ register.
+Message-ID: <20210901073910.047348b9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YS95wn6kLkM9vHUl@lunn.ch>
+References: <20210901105608.29776-1-maqianga@uniontech.com>
+        <YS91biZov3jE+Lrd@lunn.ch>
+        <tencent_405C539D1A6BA06876B7AC05@qq.com>
+        <YS95wn6kLkM9vHUl@lunn.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 26 Aug 2021 15:13:07 +1000
-Brendan Gregg <brendan.d.gregg@gmail.com> wrote:
+On Wed, 1 Sep 2021 15:01:54 +0200 Andrew Lunn wrote:
+> > > It looks like you are using an old tree. =20
+> > Yes, it is linux-4.19.y, since 4.19.y does not have autoneg_complete fl=
+ag,=EF=BC=8C
+> > This patch adds the condition before
+> > reading GBSR register to fix this error state. =20
+>=20
+> So you first need to fix it in net/master, and then backport it to
+> older kernels.
 
-> On Thu, Aug 26, 2021 at 1:20 PM Steven Rostedt <rostedt@goodmis.org> wrote:
-> >
-> > On Wed, 25 Aug 2021 08:47:46 -0700
-> > Eric Dumazet <edumazet@google.com> wrote:
-> >  
-> > > > @@ -5703,15 +5700,15 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
-> > > >                         TCP_INC_STATS(sock_net(sk), TCP_MIB_INERRS);
-> > > >                 NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPSYNCHALLENGE);
-> > > >                 tcp_send_challenge_ack(sk, skb);
-> > > > -               goto discard;
-> > > > +               tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_VALIDATE_INCOMING));  
-> > >
-> > > I'd rather use a string. So that we can more easily identify _why_ the
-> > > packet was drop, without looking at the source code
-> > > of the exact kernel version to locate line number 1057
-> > >
-> > > You can be sure that we will get reports in the future from users of
-> > > heavily modified kernels.
-> > > Having to download a git tree, or apply semi-private patches is a no go.
-> > >
-> > > If you really want to include __FILE__ and __LINE__, these both can be
-> > > stringified and included in the report, with the help of macros.  
-> >
-> > I agree the __LINE__ is pointless, but if this has a tracepoint
-> > involved, then you can simply enable the stacktrace trigger to it and
-> > it will save a stack trace in the ring buffer for you.
-> >
-> >    echo stacktrace > /sys/kernel/tracing/events/tcp/tcp_drop/trigger
-> >
-> > And when the event triggers it will record a stack trace. You can also
-> > even add a filter to do it only for specific reasons.
-> >
-> >    echo 'stacktrace if reason == 1' > /sys/kernel/tracing/events/tcp/tcp_drop/trigger
-> >
-> > And it even works for flags:
-> >
-> >    echo 'stacktrace if reason & 0xa' > /sys/kernel/tracing/events/tcp/tcp_drop/trigger
-> >
-> > Which gives another reason to use an enum over a string.  
-> 
-> You can't do string comparisons? The more string support Ftrace has,
-> the more convenient they will be. Using bpftrace as an example of
-> convenience and showing drop frequency counted by human-readable
-> reason and stack trace:
+Hm, the list is not seeing the emails you're responding to.
 
-Yes, you can (and pretty much always had this ability), but having
-flags is usually makes it easier (and faster).
+Gotta be something with uniontech's email server.
 
-You can have 'stacktrace if reason ~ "*string*"' which will match
-anything with "string" in it.
-
-My main argument against strings is more of the space they take up in
-the ring buffer than the ability to filter.
-
--- Steve
-
--- 
-Sent from my Android device with K-9 Mail. Please excuse my brevity and top posting.
+Adding John in case he can grok something from vger logs.
