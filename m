@@ -2,119 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D44C83FE448
-	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 22:54:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B40143FE46F
+	for <lists+netdev@lfdr.de>; Wed,  1 Sep 2021 23:02:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231713AbhIAUzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 16:55:03 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:22278 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229653AbhIAUzC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 16:55:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1630529644;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=4uv1tLC03ICF5tGoJs0CQIvipf8IlKazsE3GScxLAjs=;
-        b=JchLRTnnDlvxcFvz0ME+1G9nkY0lI8Yg6P1uBRBJNPCOAf1TWGG3AM3lEc9dOin4mHxLjy
-        zCG/HKBmfqT0KPv7Vguhem6JTpqtpsFrOyIR8/LxLG4VC6Uz8/9oFSvJ0VAdtzgjfG5fpW
-        bchGzdz0XqhrSa6P2btY6jeQOI9Q9bc=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-452-gj5R4LFaNMKOIS9upMMPUA-1; Wed, 01 Sep 2021 16:54:02 -0400
-X-MC-Unique: gj5R4LFaNMKOIS9upMMPUA-1
-Received: by mail-ed1-f70.google.com with SMTP id d25-20020a056402517900b003c7225c36c2so296293ede.3
-        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 13:54:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4uv1tLC03ICF5tGoJs0CQIvipf8IlKazsE3GScxLAjs=;
-        b=DWeqLd1S3Lh5hE9pBeoSLMqGaItdzp/YvalnW/CbIirJaAN6rv2+acKyjz5zu65qnF
-         kw6KMQ292apDkfo0yNsGUJFFWtT3tkHg3M2e3fqYW8lbkxQL2btPJpQUw3e5C9Q5ax9p
-         egXoyHhMNqOExosp+mdMAqz0f46jdaihD7hyzsbzzRcgs+H9jywwUU3sTxLgL0RI+t34
-         7X+UOgtRVLj2cpiL/Pcc4T8wEGOxF8sVkyI6zs4yCiEyjmLk2dYF5spCfnI1QsuNCaiG
-         147GD2+uvq6Lv/TQH20ZwFXNip/013GyF7e+HhUltMcnFufNuSchofEhjRA1wNKFdMlR
-         lbnQ==
-X-Gm-Message-State: AOAM530xblxPI+VOgUGQuQSMJKMlq2NK7JDgdSwlw5Xc0kB29tbotWgE
-        LBhqd92mqGpKTeIPsYztPv8i/X17y0+FPGGkXF2yAaTH8X6/9eUog0RpZerh052iCkjRoeN99NI
-        yjK6mXBFToNniYNUk
-X-Received: by 2002:a05:6402:1e8e:: with SMTP id f14mr1529855edf.15.1630529641456;
-        Wed, 01 Sep 2021 13:54:01 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx/FHDA1SHVqPiECNxO14bFUaOkq1FHlhTvk7D/YBTiXwgAOiWkP93OGkZBrNwuSlGlnvb4Xw==
-X-Received: by 2002:a05:6402:1e8e:: with SMTP id f14mr1529842edf.15.1630529641265;
-        Wed, 01 Sep 2021 13:54:01 -0700 (PDT)
-Received: from localhost (net-188-218-11-235.cust.vodafonedsl.it. [188.218.11.235])
-        by smtp.gmail.com with ESMTPSA id n18sm375372ejg.36.2021.09.01.13.53.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Sep 2021 13:54:00 -0700 (PDT)
-Date:   Wed, 1 Sep 2021 22:53:59 +0200
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
+        id S245715AbhIAVDC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 17:03:02 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:52746 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231742AbhIAVCz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 Sep 2021 17:02:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=YQOjoNe6FO7XqE8+nHNe6fKunB7mITXvGiju7UUdEhk=; b=C7ETk0ZtnnVZcelv/9ZcNf6vac
+        Pzw7mTAHK73VdfgIkiu3tHaQxjoq7FVhN/b3LXzeJDRaKwuGi4i+OCxT3SJ88hWIhqOLhS6ShLzpc
+        FKcS37lYErgXoz89zigpaKajBZTZ0ReOA7F65W1k2VIlZIXzUyYbp7l75l51KtCR46y4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mLXMn-004uRW-1L; Wed, 01 Sep 2021 23:01:53 +0200
+Date:   Wed, 1 Sep 2021 23:01:53 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Gerhard Engleder <gerhard@engleder-embedded.com>
+Cc:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        Petr Machata <petrm@mellanox.com>
-Subject: Re: [PATH net] net/sched: ets: fix crash when flipping from 'strict'
- to 'quantum'
-Message-ID: <YS/oZ+f0Nr8eQkzH@dcaratti.users.ipa.redhat.com>
-References: <2fdc7b4e11c3283cd65c7cf77c81bd6687a32c20.1629844159.git.dcaratti@redhat.com>
- <CAM_iQpUryQ8Q9cd9Oiv=hxAgpqfCz=j4E=c=hskbPE2+VB-ZvQ@mail.gmail.com>
- <YS38YB9JTSHeYgJG@dcaratti.users.ipa.redhat.com>
- <CAM_iQpUnR-DvMBSWnagCJg98JMT_nMWNbQ8Ea0kC4yCBcFFRqA@mail.gmail.com>
+        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next v2 3/3] tsnep: Add TSN endpoint Ethernet MAC
+ driver
+Message-ID: <YS/qQdmjT/X0tiEt@lunn.ch>
+References: <20210831193425.26193-1-gerhard@engleder-embedded.com>
+ <20210831193425.26193-4-gerhard@engleder-embedded.com>
+ <YS6lQejOJJCATMCp@lunn.ch>
+ <CANr-f5zXWrqPxWV81CT6=4O6PoPRB0Qs0T=egJ3q8FMG16f6xw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAM_iQpUnR-DvMBSWnagCJg98JMT_nMWNbQ8Ea0kC4yCBcFFRqA@mail.gmail.com>
+In-Reply-To: <CANr-f5zXWrqPxWV81CT6=4O6PoPRB0Qs0T=egJ3q8FMG16f6xw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 31, 2021 at 11:16:44AM -0700, Cong Wang wrote:
-> On Tue, Aug 31, 2021 at 2:54 AM Davide Caratti <dcaratti@redhat.com> wrote:
+On Wed, Sep 01, 2021 at 10:18:45PM +0200, Gerhard Engleder wrote:
+> > > +static int tsnep_ethtool_set_priv_flags(struct net_device *netdev,
+> > > +                                     u32 priv_flags)
+> > > +{
+> > > +     struct tsnep_adapter *adapter = netdev_priv(netdev);
+> > > +     int retval;
+> > > +
+> > > +     if (priv_flags & ~TSNEP_PRIV_FLAGS)
+> > > +             return -EINVAL;
+> > > +
+> > > +     if ((priv_flags & TSNEP_PRIV_FLAGS_LOOPBACK_100) &&
+> > > +         (priv_flags & TSNEP_PRIV_FLAGS_LOOPBACK_1000))
+> > > +             return -EINVAL;
+> > > +
+> > > +     if ((priv_flags & TSNEP_PRIV_FLAGS_LOOPBACK_100) &&
+> > > +         adapter->loopback != SPEED_100) {
+> > > +             if (adapter->loopback != SPEED_UNKNOWN)
+> > > +                     retval = phy_loopback(adapter->phydev, false);
+> > > +             else
+> > > +                     retval = 0;
+> > > +
+> > > +             if (!retval) {
+> > > +                     adapter->phydev->speed = SPEED_100;
+> > > +                     adapter->phydev->duplex = DUPLEX_FULL;
+> > > +                     retval = phy_loopback(adapter->phydev, true);
 > >
-> > hello Cong, thanks a lot for looking at this!
+> > This is a pretty unusual use of private flags, changing loopback at
+> > runtime. ethtool --test generally does that.
 > >
-> > On Mon, Aug 30, 2021 at 05:43:09PM -0700, Cong Wang wrote:
-> > > On Tue, Aug 24, 2021 at 3:34 PM Davide Caratti <dcaratti@redhat.com> wrote:
-
-[...]
-
-> > > > Then, a call to ets_qdisc_reset() will attempt to
-> > > > do list_del(&alist) with 'alist' filled with zero, hence the NULL pointer
-> > > > dereference.
-> > >
-> > > I am confused about how we end up having NULL in list head.
-
-[...]
-
-> > So, I can probably send a patch (for net-next, when it reopens) that removes
-> > this INIT_LIST_HEAD() line; anyway, its presence is harmless IMO. WDYT?
+> > What is your use case which requires loopback in normal operation, not
+> > during testing?
 > 
-> Actually I am thinking about the opposite, that is, always initializing the
-> list head. ;) Unless we always use list_add*() before list_del(), initializing
-> it unconditionally is a correct fix.
+> Yes it is unusual. I was searching for some user space interface for loopback
+> and found drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c which uses
+> private flags.
 
-uh, maybe I get the point.
+Ah, that passed my by. I would of probably said something about it.
 
-we can do a INIT_LIST_HEAD(&cl[i].alist) in ets_qdisc_init() with 'i' ranging
-from 0 to TCQ_ETS_MAX_BANDS - 1, then the memset() in [1] needs to be
-replaced with something that clears all members of struct ets_class except
-'alist'. At this point, the INIT_LIST_HEAD() line in ets_qdisc_change() can be
-removed. 
+> Use case is still testing and not normal operation. Testing is done mostly with
+> a user space application, because I don't want to overload the driver with test
+> code and test frameworks can be used in user space. With loopback it is
+> possible to execute a lot of tests like stressing the MAC with various frame
+> lengths and checking TX/RX time stamps. These tests are useful for every
+> integration of this IP core into an FPGA and not only for IP core development.
 
-I can re-run the kseltest and eventually send a patch for that (targeting
-net-next, no need to rush), is that ok for you?
+I did a quick search. CAN has something interesting:
 
-thanks,
+https://wiki.rdu.im/_pages/Application-Notes/Software/can-bus-in-linux.html
+$ sudo ip link set can0 down
+$ sudo ip link set can0 type can loopback on
+$ sudo ip link set can0 up type can bitrate 1000000
 
--- 
-davide
+Also
 
+https://www.kernel.org/doc/Documentation/networking/can.txt
 
-[1] https://elixir.bootlin.com/linux/v5.14/source/net/sched/sch_ets.c#L690
+The semantics are maybe slightly different. It appears to loopback can
+messages, but also send out the wire. I think many can transcievers
+can do this in hardware, but this seems to be a software feature for
+when the hardware cannot do it? I have seen Ethernet PHYs which do
+send out the wire when in loopback, so it does seem like a reasonable
+model. Also i like that you need to down the interface before you can
+put it into loopback. Saves a lot of surprises.
 
+Maybe you can look at this, see if it can be made generic, and could
+be used here?
+
+> > > +static irqreturn_t tsnep_irq(int irq, void *arg)
+> > > +{
+> > > +     struct tsnep_adapter *adapter = arg;
+> > > +     u32 active = ioread32(adapter->addr + ECM_INT_ACTIVE);
+> > > +
+> > > +     /* acknowledge interrupt */
+> > > +     if (active != 0)
+> > > +             iowrite32(active, adapter->addr + ECM_INT_ACKNOWLEDGE);
+> > > +
+> > > +     /* handle management data interrupt */
+> > > +     if ((active & ECM_INT_MD) != 0) {
+> > > +             adapter->md_active = false;
+> > > +             wake_up_interruptible(&adapter->md_wait);
+> > > +     }
+> > > +
+> > > +     /* handle link interrupt */
+> > > +     if ((active & ECM_INT_LINK) != 0) {
+> > > +             if (adapter->netdev->phydev) {
+> > > +                     struct phy_device *phydev = adapter->netdev->phydev;
+> > > +                     u32 status = ioread32(adapter->addr + ECM_STATUS);
+> > > +                     int link = (status & ECM_NO_LINK) ? 0 : 1;
+> > > +                     u32 speed = status & ECM_SPEED_MASK;
+> >
+> > How does PHY link and speed get into this MAC register? Is the MAC
+> > polling the PHY over the MDIO bus? Is the PHY internal to the MAC and
+> > it has backdoor access to the PHY status?
+> 
+> PHY is external. The MAC expects additional signals for link status. These
+> signals can be derived from RGMII in band signaling of the link status or by
+> using PHY link and speed LED outputs. The MAC is using the link status for
+> a quick no link reaction to minimize the impact to real time applications.
+> EtherCAT for example also uses the link LED output for a no link reaction
+> within a few microseconds.
+
+O.K. This is not the normal Linux way. You normally have the PHY
+driver tell the PHY core, which then tells the MAC driver. That always
+works. RGMII in band signaling is not supported by all PHY devices,
+and the board design would require the LED output are correctly
+connected, and i guess you need a hacked PHY driver to use the correct
+LED meanings? Plus i guess you have additional changes in the PHY
+driver to do fast link down detection?
+
+I think this needs another DT property to enable using such short
+cuts, and you should use the Linux way by default.
+
+Also, don't you need a property which tells you to either use RGMII
+inband, or LED signals?
+
+> > > +static int tsnep_mdiobus_read(struct mii_bus *bus, int addr, int regnum)
+> > > +{
+> > > +     struct tsnep_adapter *adapter = bus->priv;
+> > > +     u32 md;
+> > > +     int retval;
+> > > +
+> > > +     if (regnum & MII_ADDR_C45)
+> > > +             return -EOPNOTSUPP;
+> > > +
+> > > +     /* management data frame without preamble */
+> > > +     md = ECM_MD_READ;
+> >
+> > I know some PHYs are happy to work without a preamble. But as far as i
+> > know, 802.3 c22 does not say it is optional. So this needs to be an
+> > opt-in feature, for when you know all the devices on the bus support
+> > it. We have a standard DT property for this. See mdio.yaml,
+> > suppress-preamble. Please look for this in the DT blob, and only
+> > suppress the pre-amble if it is present.
+> 
+> You are right, I will improve that.
+
+You might also be interested in clock-frequency, if you can control
+the bus frequency. I've run Marvell PHYs at i think 8Mhz, rather than
+the usual 2.5MHz.
+
+> > > +static int tsnep_phy_init(struct tsnep_adapter *adapter)
+> > > +{
+> > > +     struct device_node *dn;
+> > > +     int retval;
+> > > +
+> > > +     retval = of_get_phy_mode(adapter->pdev->dev.of_node,
+> > > +                              &adapter->phy_mode);
+> > > +     if (retval)
+> > > +             adapter->phy_mode = PHY_INTERFACE_MODE_GMII;
+> > > +
+> > > +     dn = of_parse_phandle(adapter->pdev->dev.of_node, "phy-handle", 0);
+> > > +     adapter->phydev = of_phy_find_device(dn);
+> > > +     of_node_put(dn);
+> > > +     if (!adapter->phydev && adapter->mdiobus)
+> > > +             adapter->phydev = phy_find_first(adapter->mdiobus);
+> >
+> > Do you actually need phy_find_first()? It is better to have it in DT.
+> 
+> I thought it is a reasonable fallback, because then PHY can be ommited in
+> DT (lazy developer, unknown PHY address during development, ...).
+
+It is a reasonable fallback, until it goes wrong, because you have two
+PHYs on the bus etc.
+
+> Driver
+> and IP core will be used also on x86 over PCIe without DT. In this case this
+> fallback also makes sense. But I must confess, the driver is not ready for
+> x86 use case yet.
+
+We recently added ACPI properties. See
+Documentation/firmware-guide/acpi/dsd/phy.rst.
+
+Also, watch out. It might not be ready, but it will get compiled for
+x86, mips, powerpc etc, by the build bots, if you don't prevent it. So
+it needs to at least be warning free.
+
+	Andrew
