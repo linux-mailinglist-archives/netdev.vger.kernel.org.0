@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DDD013FF3D2
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 21:06:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE2283FF3D5
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 21:06:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347382AbhIBTHa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 15:07:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55088 "EHLO mail.kernel.org"
+        id S1347365AbhIBTHg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 15:07:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55070 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1347325AbhIBTHH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1347328AbhIBTHH (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 2 Sep 2021 15:07:07 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5EBE6610A2;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D3E766056B;
         Thu,  2 Sep 2021 19:06:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1630609568;
-        bh=IYv1LROZkffbWLg8h8ZHI6SQTxYmsU4iIAo4wKqY0FI=;
+        s=k20201202; t=1630609569;
+        bh=O6fuoO9fdYrtXo21lihXTBLaLICpzYO0RpkG4bDfk0Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ghU4ZBOigyEP/vwEmWXVMcg/85BMYYb80CfgRfIQMgO4vWE2Kxy1HpqAp7YMgLG6R
-         aoPz/auzgxwNeRpEE16ZUY5aWNhbYsQIHeBIoC91Ia5t2hdAhjk5PmTeEK/4BlsOAS
-         G889Saj+BjgY04ZF+BUDyM6xF8ohCJfFwtBrIN22TgOukkLUHbmGou7m8s3J9sx/oX
-         JS8EE4li85s5TzJ7V9f0B+NKYaMARVkW8DKlkvQmZ6RO2oP4Q5DK9Zet/4V3xn9xmH
-         ikQS2oaVcCQvEBMVfuLYG4CvX8RlVNn6xmbhx2TfvfpHO95AV4iFOMBoRgtULTGVxj
-         aQaPDShCRDn9Q==
+        b=jfeAlLlyz214yjiF+ywozWbxT3cjR6YNZ1e7vMWlg2XxasV7QyEmjcng2L8TAvzMp
+         DuGf0bUhDENGWHgPHwcwel/Zw5J/rsMiuEob+7uZV/4HTy+wpk1T5GdoAlZ7GaOpGs
+         O6jhABPTWlB5M47Srz2LBIXqgBUreuJtAarVRGepI+6QxwXU4KBKMhsFPkmcin19GY
+         b/SdsKXxqoCMKPOxbnyB177lmcaKPp9txEdq47B0i92KFpojcCop9CtzS2acz5T0DD
+         8PNwU4v/i0yI6Fsoq/nANByuzBSrIlJRXglGwVLyQSfmoryveWY73J7CroPQv5r/CU
+         FPZUDOWC+xTLA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Roi Dayan <roid@nvidia.com>,
-        Maor Dickman <maord@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 09/15] net/mlx5e: Use tc sample stubs instead of ifdefs in source file
-Date:   Thu,  2 Sep 2021 12:05:48 -0700
-Message-Id: <20210902190554.211497-10-saeed@kernel.org>
+Subject: [net-next 10/15] net/mlx5e: Use NL_SET_ERR_MSG_MOD() for errors parsing tunnel attributes
+Date:   Thu,  2 Sep 2021 12:05:49 -0700
+Message-Id: <20210902190554.211497-11-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210902190554.211497-1-saeed@kernel.org>
 References: <20210902190554.211497-1-saeed@kernel.org>
@@ -43,150 +42,40 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Roi Dayan <roid@nvidia.com>
 
-Instead of having sparse ifdefs in source files use a single
-ifdef in the tc sample header file and use stubs.
+This to be consistent and adds the module name to the error message.
 
 Signed-off-by: Roi Dayan <roid@nvidia.com>
-Reviewed-by: Maor Dickman <maord@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/en/rep/tc.c   |  2 --
- .../mellanox/mlx5/core/en/tc/sample.h         | 27 +++++++++++++++++++
- .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 12 ---------
- 3 files changed, 27 insertions(+), 14 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
-index 51a4d80f7fa3..405e9da5c7e9 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
-@@ -650,9 +650,7 @@ static void mlx5e_restore_skb_sample(struct mlx5e_priv *priv, struct sk_buff *sk
- 			   "Failed to restore tunnel info for sampled packet\n");
- 		return;
- 	}
--#if IS_ENABLED(CONFIG_MLX5_TC_SAMPLE)
- 	mlx5e_tc_sample_skb(skb, mapped_obj);
--#endif /* CONFIG_MLX5_TC_SAMPLE */
- 	mlx5_rep_tc_post_napi_receive(tc_priv);
- }
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.h
-index db0146df9b30..9ef8a49d7801 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.h
-@@ -19,6 +19,8 @@ struct mlx5e_sample_attr {
- 	struct mlx5e_sample_flow *sample_flow;
- };
- 
-+#if IS_ENABLED(CONFIG_MLX5_TC_SAMPLE)
-+
- void mlx5e_tc_sample_skb(struct sk_buff *skb, struct mlx5_mapped_obj *mapped_obj);
- 
- struct mlx5_flow_handle *
-@@ -38,4 +40,29 @@ mlx5e_tc_sample_init(struct mlx5_eswitch *esw, struct mlx5e_post_act *post_act);
- void
- mlx5e_tc_sample_cleanup(struct mlx5e_tc_psample *tc_psample);
- 
-+#else /* CONFIG_MLX5_TC_SAMPLE */
-+
-+static inline struct mlx5_flow_handle *
-+mlx5e_tc_sample_offload(struct mlx5e_tc_psample *tc_psample,
-+			struct mlx5_flow_spec *spec,
-+			struct mlx5_flow_attr *attr,
-+			u32 tunnel_id)
-+{ return ERR_PTR(-EOPNOTSUPP); }
-+
-+static inline void
-+mlx5e_tc_sample_unoffload(struct mlx5e_tc_psample *tc_psample,
-+			  struct mlx5_flow_handle *rule,
-+			  struct mlx5_flow_attr *attr) {}
-+
-+static inline struct mlx5e_tc_psample *
-+mlx5e_tc_sample_init(struct mlx5_eswitch *esw, struct mlx5e_post_act *post_act)
-+{ return ERR_PTR(-EOPNOTSUPP); }
-+
-+static inline void
-+mlx5e_tc_sample_cleanup(struct mlx5e_tc_psample *tc_psample) {}
-+
-+static inline void
-+mlx5e_tc_sample_skb(struct sk_buff *skb, struct mlx5_mapped_obj *mapped_obj) {}
-+
-+#endif /* CONFIG_MLX5_TC_SAMPLE */
- #endif /* __MLX5_EN_TC_SAMPLE_H__ */
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index 0664ff77c5a1..9ee11715dd6b 100644
+index 9ee11715dd6b..07ab02f7b284 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -246,7 +246,6 @@ get_ct_priv(struct mlx5e_priv *priv)
- 	return priv->fs.tc.ct;
- }
+@@ -1682,8 +1682,8 @@ enc_opts_is_dont_care_or_full_match(struct mlx5e_priv *priv,
  
--#if IS_ENABLED(CONFIG_MLX5_TC_SAMPLE)
- static struct mlx5e_tc_psample *
- get_sample_priv(struct mlx5e_priv *priv)
- {
-@@ -263,7 +262,6 @@ get_sample_priv(struct mlx5e_priv *priv)
+ 			if (opt->opt_class != htons(U16_MAX) ||
+ 			    opt->type != U8_MAX) {
+-				NL_SET_ERR_MSG(extack,
+-					       "Partial match of tunnel options in chain > 0 isn't supported");
++				NL_SET_ERR_MSG_MOD(extack,
++						   "Partial match of tunnel options in chain > 0 isn't supported");
+ 				netdev_warn(priv->netdev,
+ 					    "Partial match of tunnel options in chain > 0 isn't supported");
+ 				return -EOPNOTSUPP;
+@@ -1899,8 +1899,8 @@ static int parse_tunnel_attr(struct mlx5e_priv *priv,
  
- 	return NULL;
- }
--#endif
- 
- struct mlx5_flow_handle *
- mlx5_tc_rule_insert(struct mlx5e_priv *priv,
-@@ -1146,11 +1144,9 @@ mlx5e_tc_offload_fdb_rules(struct mlx5_eswitch *esw,
- 		rule = mlx5_tc_ct_flow_offload(get_ct_priv(flow->priv),
- 					       flow, spec, attr,
- 					       mod_hdr_acts);
--#if IS_ENABLED(CONFIG_MLX5_TC_SAMPLE)
- 	} else if (flow_flag_test(flow, SAMPLE)) {
- 		rule = mlx5e_tc_sample_offload(get_sample_priv(flow->priv), spec, attr,
- 					       mlx5e_tc_get_flow_tun_id(flow));
--#endif
- 	} else {
- 		rule = mlx5_eswitch_add_offloaded_rule(esw, spec, attr);
- 	}
-@@ -1186,12 +1182,10 @@ void mlx5e_tc_unoffload_fdb_rules(struct mlx5_eswitch *esw,
- 		return;
- 	}
- 
--#if IS_ENABLED(CONFIG_MLX5_TC_SAMPLE)
- 	if (flow_flag_test(flow, SAMPLE)) {
- 		mlx5e_tc_sample_unoffload(get_sample_priv(flow->priv), flow->rule[0], attr);
- 		return;
- 	}
--#endif
- 
- 	if (attr->esw_attr->split_count)
- 		mlx5_eswitch_del_fwd_rule(esw, flow->rule[1], attr);
-@@ -4993,9 +4987,7 @@ int mlx5e_tc_esw_init(struct rhashtable *tc_ht)
- 					       MLX5_FLOW_NAMESPACE_FDB,
- 					       uplink_priv->post_act);
- 
--#if IS_ENABLED(CONFIG_MLX5_TC_SAMPLE)
- 	uplink_priv->tc_psample = mlx5e_tc_sample_init(esw, uplink_priv->post_act);
--#endif
- 
- 	mapping_id = mlx5_query_nic_system_image_guid(esw->dev);
- 
-@@ -5039,9 +5031,7 @@ int mlx5e_tc_esw_init(struct rhashtable *tc_ht)
- err_enc_opts_mapping:
- 	mapping_destroy(uplink_priv->tunnel_mapping);
- err_tun_mapping:
--#if IS_ENABLED(CONFIG_MLX5_TC_SAMPLE)
- 	mlx5e_tc_sample_cleanup(uplink_priv->tc_psample);
--#endif
- 	mlx5_tc_ct_clean(uplink_priv->ct_priv);
- 	netdev_warn(priv->netdev,
- 		    "Failed to initialize tc (eswitch), err: %d", err);
-@@ -5061,9 +5051,7 @@ void mlx5e_tc_esw_cleanup(struct rhashtable *tc_ht)
- 	mapping_destroy(uplink_priv->tunnel_enc_opts_mapping);
- 	mapping_destroy(uplink_priv->tunnel_mapping);
- 
--#if IS_ENABLED(CONFIG_MLX5_TC_SAMPLE)
- 	mlx5e_tc_sample_cleanup(uplink_priv->tc_psample);
--#endif
- 	mlx5_tc_ct_clean(uplink_priv->ct_priv);
- 	mlx5e_tc_post_act_destroy(uplink_priv->post_act);
- }
+ 	if ((needs_mapping || sets_mapping) &&
+ 	    !mlx5_eswitch_reg_c1_loopback_enabled(esw)) {
+-		NL_SET_ERR_MSG(extack,
+-			       "Chains on tunnel devices isn't supported without register loopback support");
++		NL_SET_ERR_MSG_MOD(extack,
++				   "Chains on tunnel devices isn't supported without register loopback support");
+ 		netdev_warn(priv->netdev,
+ 			    "Chains on tunnel devices isn't supported without register loopback support");
+ 		return -EOPNOTSUPP;
 -- 
 2.31.1
 
