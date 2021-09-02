@@ -2,44 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08F093FEC49
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 12:40:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 557233FEC47
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 12:40:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245609AbhIBKlN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 06:41:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60460 "EHLO mail.kernel.org"
+        id S245324AbhIBKlJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 06:41:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60446 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244843AbhIBKlE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S244285AbhIBKlE (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 2 Sep 2021 06:41:04 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id CAEAE610E8;
+Received: by mail.kernel.org (Postfix) with ESMTPS id BE033610CF;
         Thu,  2 Sep 2021 10:40:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1630579206;
-        bh=vLUT8VuKiEYyRZnKF0mUnUWMObH5g4KH0xdhR11WtQ8=;
+        bh=nIjdRScGSWuvC1Sigc0EAEUkSB/5w2uQcuG227e7hiw=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=AJiWRxfawpe77Ki9dlBfy7r4DcILsjdfQm3M7UYig6TRxZuola7yj6B0TfVIEsj4+
-         aGNCLx5Lr3zey7PDwkpyN0q3VhsubQEO1W7jS663VO4Q+d1Azh1+n3Vwpk9bto/t53
-         yswM9HfAX7EVF1fP4QY6wR9M5G3w/VdEIm4plGszwB7VeNFNwiUbX/AgAexpjsFbVw
-         ZDHEWOYqX3WrtP6YlH0obVJ/Ye8gSoo6dglJQG/ysoHC5ZO0IsiB6UwQvNB9jUYGbW
-         35M2DBeuAtXBZaf3gZnEIRl47H61idJEIPkmHNQo0fSD8dejiF4+/Mx0srxfQz1hcp
-         MgIIV6SIlbodA==
+        b=Mc9yCsmAIegCag1DBNr5OcDgeg3JM7ATd1P26DlFa6TajKg3zdRr0k7IXDUnXY+Nn
+         FSGCGrD+TIxZXsUX7H7LEVzJ3u27+zRDHYS8pscw3WtlNN2rQyMM+jn5r0yqHBDugJ
+         4dBjmbjNk1PuTbdoTWaNLxW0e9ma/rjCPq1hKgne2ej3scYdaB/FOrccZBCT76GEEz
+         qV7PuY5+alZfPvZhMFFJirnPs2NfvJASz3Yhhd1+656iEsddRyl7oEKZKMTr6dgG7O
+         1QaTZd8Oa4MReKUWprf63knZ9IwuAqjfmEqBoj/a5Q7AwKmVifE+40Rn5OjjvX6bm2
+         Lm5bTqFGY7Ukw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C269E609D9;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id ACFEC60982;
         Thu,  2 Sep 2021 10:40:06 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] ipv6: change return type from int to void for
- mld_process_v2
+Subject: Re: [PATCH net] net: qrtr: revert check in qrtr_endpoint_post()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163057920679.13463.7886360925947769621.git-patchwork-notify@kernel.org>
+Message-Id: <163057920670.13463.6345421030550581694.git-patchwork-notify@kernel.org>
 Date:   Thu, 02 Sep 2021 10:40:06 +0000
-References: <20210901153449.26067-1-jiwonaid0@gmail.com>
-In-Reply-To: <20210901153449.26067-1-jiwonaid0@gmail.com>
-To:     Jiwon Kim <jiwonaid0@gmail.com>
-Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+References: <20210902100851.GD2151@kadam>
+In-Reply-To: <20210902100851.GD2151@kadam>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     john.stultz@linaro.org, kuba@kernel.org,
+        torvalds@linux-foundation.org, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        gregkh@linuxfoundation.org, bjorn.andersson@linaro.org,
+        srinivas.kandagatla@linaro.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -48,19 +49,20 @@ Hello:
 
 This patch was applied to netdev/net.git (refs/heads/master):
 
-On Thu,  2 Sep 2021 00:34:49 +0900 you wrote:
-> The mld_process_v2 only returned 0.
+On Thu, 2 Sep 2021 13:08:51 +0300 you wrote:
+> I tried to make this check stricter as a hardenning measure but it broke
+> audo and wifi on these devices so revert it.
 > 
-> So, the return type is changed to void.
+> Fixes: aaa8e4922c88 ("net: qrtr: make checks in qrtr_endpoint_post() stricter")
+> Reported-by: John Stultz <john.stultz@linaro.org>
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> Tested-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 > 
-> Signed-off-by: Jiwon Kim <jiwonaid0@gmail.com>
-> ---
->  net/ipv6/mcast.c | 10 ++++------
->  1 file changed, 4 insertions(+), 6 deletions(-)
+> [...]
 
 Here is the summary with links:
-  - [net-next] ipv6: change return type from int to void for mld_process_v2
-    https://git.kernel.org/netdev/net/c/3f22bb137eb0
+  - [net] net: qrtr: revert check in qrtr_endpoint_post()
+    https://git.kernel.org/netdev/net/c/d2cabd2dc8da
 
 You are awesome, thank you!
 --
