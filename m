@@ -2,151 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8A533FF7EB
-	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 01:35:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A79393FF7EE
+	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 01:36:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345805AbhIBXg1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 19:36:27 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:9522 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235909AbhIBXg0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 19:36:26 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 182NSxIM012136;
-        Thu, 2 Sep 2021 16:35:22 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type :
- content-transfer-encoding : in-reply-to : mime-version; s=facebook;
- bh=AuFgsyiZcjU/34FUl1epJ/YiTUdZ4A+9bjOLGJSqG/w=;
- b=GjBuu/3ffUvsvyB0sJz1agzrgdiWvwHcKzmEdhDyQwGron+hOKlUnjjcBbX7nmm9g6fo
- SbS4TcyU27WwcB+0mWBPQpDffIMB0/OKWUJoe6GqdW9jMZDY6rvOYQ1lebjoLjO4YqY5
- JMZBnuY2vfZM8aelFwVYmaIlkhfv7mdmDJw= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 3atdyppjc3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 02 Sep 2021 16:35:22 -0700
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.197) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.14; Thu, 2 Sep 2021 16:35:21 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CjskojGmhC9dexYf803lhnDuwQN0v79Zu23JF7pc6YKgOHWxDWI/L0iWopeCF8JaSKWxN0+EkBkOPzEDcIRG+kvRuxXzhD8lknpaz9ngOs4+z1UFutZts0b/ky/DKR/pzjQjfB4BhRXaAFv6QPZIkJVXi3Za4E5CN3ppneymFFYOj2cYXR+JuStSaaXjC+z6/biJ3S2TqYib+Y554vRix01DPybffvGll2Qg5JYjCSn7ZtJbqKQ8gEsec20yaW5zZbTawOLCPliKYeL6Eo5+tqRtc+Tq2UKQhLrwTlRuMO5FbuucguOm89UNBuQR5QYEr+rbZvJuA5U+eoxANcJNug==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=JXHk9zcvDYpmelfZKYCLSns8iNMbpwyU3NB+Z6XUXvU=;
- b=hoyPlUt3FGJoz6EjQyevZi4bSGZJaEVoNuX+xuyWHVxlGpkBChkNzGrFOHegfGby9KKhnwdR5Jzql/+m5ockBGqsg9EljrJp4UWNn59GKutpKjOz4qg73V3udBrR7dVNgCkUFpzncluzwaAADaIq94xoI+GJqFoQaGsgBDda9/YM59xvd2fQ9lgK7E+4eDvJRGet1wtE6QEaewB1h/SbS/GO+5hfCw1B9SmQce/QxRpOjPMoeEgmuVADWDmjc+n1QaOhK8Q+zyI/ulyZzPROjU+QaOaV31XB/fXQINszN6uSq/9dp1sGnmzthTtAv5SH0NjO9KcM5tptitJj5CC6/Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Authentication-Results: redhat.com; dkim=none (message not signed)
- header.d=none;redhat.com; dmarc=none action=none header.from=fb.com;
-Received: from SA1PR15MB5016.namprd15.prod.outlook.com (2603:10b6:806:1db::19)
- by SA1PR15MB4823.namprd15.prod.outlook.com (2603:10b6:806:1e2::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4478.21; Thu, 2 Sep
- 2021 23:35:15 +0000
-Received: from SA1PR15MB5016.namprd15.prod.outlook.com
- ([fe80::3c1b:1a10:9708:7e36]) by SA1PR15MB5016.namprd15.prod.outlook.com
- ([fe80::3c1b:1a10:9708:7e36%9]) with mapi id 15.20.4478.021; Thu, 2 Sep 2021
- 23:35:15 +0000
-Date:   Thu, 2 Sep 2021 16:35:10 -0700
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-CC:     John Fastabend <john.fastabend@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Cong Wang <cong.wang@bytedance.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Subject: Re: [RFC Patch net-next] net_sched: introduce eBPF based Qdisc
-Message-ID: <20210902233510.gnimg2krwwkzv4f2@kafai-mbp.dhcp.thefacebook.com>
-References: <20210821010240.10373-1-xiyou.wangcong@gmail.com>
- <20210824234700.qlteie6al3cldcu5@kafai-mbp>
- <CAM_iQpWP_kvE58Z+363n+miTQYPYLn6U4sxMKVaDvuRvjJo_Tg@mail.gmail.com>
- <612f137f4dc5c_152fe20891@john-XPS-13-9370.notmuch>
- <871r68vapw.fsf@toke.dk>
- <20210901174543.xukawl7ylkqzbuax@kafai-mbp.dhcp.thefacebook.com>
- <871r66ud8y.fsf@toke.dk>
- <613136d0cf411_2c56f2086@john-XPS-13-9370.notmuch>
- <87bl5asjdj.fsf@toke.dk>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87bl5asjdj.fsf@toke.dk>
-X-ClientProxiedBy: BL0PR03CA0036.namprd03.prod.outlook.com
- (2603:10b6:208:2d::49) To SA1PR15MB5016.namprd15.prod.outlook.com
- (2603:10b6:806:1db::19)
+        id S1345950AbhIBXhZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 19:37:25 -0400
+Received: from mail-il1-f200.google.com ([209.85.166.200]:55970 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345889AbhIBXhY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 19:37:24 -0400
+Received: by mail-il1-f200.google.com with SMTP id c16-20020a92cf500000b02902243aec7e27so2313147ilr.22
+        for <netdev@vger.kernel.org>; Thu, 02 Sep 2021 16:36:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=JOY88l9jkqjrk7r59YqYH4McD3EoA2sjEyU/prp079A=;
+        b=lQhFPH93K+0dWV1Is1pdhmQpX/5ZrSOJyy6crWJdZbRaE/0qpD/768zM/cVRqSpN+7
+         F/FcIa7RgMAUsKYek24qBdltguuKJMUr8rQPc+nKb45PplO7kbSGLsPtRh6bdgoC3u1i
+         Z+Iy6dD8ihqeH44oXm55zkRIAbbNCwMtSCQf6sh7yIeeyzJMEyu0dJPJ2kOUnTKLL6WP
+         Y8dDZl0nyWX2apmyQaIDkddzLzJdmdUGQLVUuw+ow0n1sCuxD71gDR2gZwiFsS7aZ7hE
+         K4mcpg3i09TvRxYPekmhgbSnm4F1U83hN9bkmV+nYUBxE10EAW4rHuJ0dL4GA3JRt43I
+         bmYg==
+X-Gm-Message-State: AOAM533gfYhZ8gvDl/EwJhcKsIjas2IOEA1FtfveZpuk+wIlAsiIRRmv
+        ed73dQU9HuQTt88NAmuVdjSNN+QFf9T6M1ASuIj5rC4kkhSE
+X-Google-Smtp-Source: ABdhPJynw0dSR8fm0oeFoXtZmtA9ZBTi0GTjBndFUXc+ukahli/YNsSKuGn5yfApT44UlGuvcOHZZZuxAMk7tn/FQuVt7xI/U0/P
 MIME-Version: 1.0
-Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c091:480::1:4739) by BL0PR03CA0036.namprd03.prod.outlook.com (2603:10b6:208:2d::49) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4457.18 via Frontend Transport; Thu, 2 Sep 2021 23:35:14 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 770231da-cb05-4279-ce38-08d96e6a50f0
-X-MS-TrafficTypeDiagnostic: SA1PR15MB4823:
-X-Microsoft-Antispam-PRVS: <SA1PR15MB482394AB10D434AC5E7508A5D5CE9@SA1PR15MB4823.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: r397Pegyhiyd6uxoF4LQH6Y3iN4iRdpcEbGvqCp/wZgNRfDmyOSzZePcXYGXDQtlT8WttTTaCjMv3VtwQ8lH6myxC+ZS32AdRDRg1lCpitAwIhb0haxT5KBdBmN+l9MVqI4MO83ggDbDMrVFNYT3D9YVogCiYmIY2AWWZLAwSUNim5A9PuvqS889/BUstPN4C8vjJaWmj481oLlWl/Kzwn0Mmx8qZDipWGOfl1ZGoH4cEv7y5Dbpxs2H6narXlBVmeqfcnrbdp6DiVwrAIK6rZtnCO1JrC2LNv4PkIkiAXUedWThz8F7A3h0DkAlC2DKxpAHvUykuEQs95PKDKDmFIFhoz2Bh//mNgTGXtK3gobi/VyDtjgMeGJuSn+0Xo/KEeMc6tMshZHoPHQP0E/fyXKLb6MurKe6SIsbG+jFquaWAeEtfdrHBSJ6TOiSKGHZA840t+WrkfKAwt+qYQB1cemsaGmhLevp7AZeuROcueOZm5yjAK1oKLo8Ffnh0Q0jY4WasJV7UUkwQee7k5uY93OxT4ojgXTLiQt7uLsM1naX6Jukcvci15gMQ0arjteVd4dfaK9vDWC2Jl7CDitFhotvrGMJRF7ZpXWDwUoXzNMUduDE1DsJSyKhfeILaUI4
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5016.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(39860400002)(136003)(396003)(346002)(376002)(54906003)(52116002)(7696005)(83380400001)(316002)(8936002)(5660300002)(66946007)(6916009)(1076003)(9686003)(478600001)(186003)(38100700002)(6666004)(4326008)(4744005)(2906002)(6506007)(66556008)(8676002)(55016002)(66476007)(86362001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?4ZWIL2QE+2foDSJRCj1DMM95H4BN0ZBA6T1G9bN0VbEIVbYfub99xRYH1L?=
- =?iso-8859-1?Q?7brlu5yeApWeox6XsG87FTXtij/c8x8cevwwHe7cpRtblLZi6DLOcSXgCB?=
- =?iso-8859-1?Q?As/6nxjSQYcECdFEp3/eFz5pqsvuwpO5Y08kxJcvms284/icv3ylbOydbc?=
- =?iso-8859-1?Q?vTnYYdDs0sGDTkOvcHxG8tVmQqlg3L5q5BRVjQGrEieE3pfUPPtH9CIWQt?=
- =?iso-8859-1?Q?K6FYH31w0ke/FGu2H170GXUmjT5oc4QK3u4VzdMMTYDvMXPcQGvqUFXOYc?=
- =?iso-8859-1?Q?rCahHWyWOZAqffEaTWflOhzowaZaYdpoEdGB/ufCyiu1IDw501DPfyd0Zu?=
- =?iso-8859-1?Q?HAigZZOilS8c9MRP0lj6ta2VqTaYppl7bTptTCcXS/jakUvRCG8s5WSsqU?=
- =?iso-8859-1?Q?Mg7ybmy1TFWh/k4kkxy3crWiFuATrhFOJvSPqNpHRzT2Dqi64Gm6LCWdn9?=
- =?iso-8859-1?Q?fvlophgCo8CAj/eyZAfWu97ZH8CkBRaiFr6PkQPv4icwp68QlyX5cPtJMl?=
- =?iso-8859-1?Q?2gFT6qPUmzgDxUm1Nr/lDBtYmH0H6wpwsmIBKh2hMqnOs7KvJEOBdLunCo?=
- =?iso-8859-1?Q?Ab/LrDuhVJYXeyt1FEXrrkqONF+943i+46tEDBFiaicT47x8QTeIDIaKJP?=
- =?iso-8859-1?Q?+mX6SGCmR0V4jHoZuq7c0zYj1m0QzIkvGs1Ftq2+YchKVP2Jmse/Joo3ib?=
- =?iso-8859-1?Q?okGdzA01C65j+7+twUBvwrh2xF3ZbJBAtm3vQyfnM844AbWFyqf2I6D1dz?=
- =?iso-8859-1?Q?osTDuf5VY8vZWZQt1VosXg147ajZUdy7Ipgds5yMMRUMDaEQK6OCjmlN1M?=
- =?iso-8859-1?Q?ee9n/PNNH/cD0NE871k5Tk+JqR19GGbgWBjiQL2IKSCiIZglJusogc6PBD?=
- =?iso-8859-1?Q?7Ij8iKuY+SePEFGKJQKs2cnRtvDBnn9xnZfj2nPdeCYq3Pd96h/MLs6yKc?=
- =?iso-8859-1?Q?cQrbsuychHD+EZ+WNv60orNIkTSEDfgoR7CYjxmwz62NNJuJat9S3UjkTa?=
- =?iso-8859-1?Q?q+Hh9qhcP5PV2HTTh/tELomkCyC5EbInAzsCOBpFBJoQW71gF0ghiJ/h+6?=
- =?iso-8859-1?Q?aRTyghM+Hq414vjzhCUOVmEC1DjBEY56R7xXhcTqspikrAJ1kNmirfYbr6?=
- =?iso-8859-1?Q?lWhVE8z8RFRTWjiCAeVbYd1SJ/zaC+/3JG9x0lCUAdiVnCxFQs1lp2oPmi?=
- =?iso-8859-1?Q?//44lCDMNmHrQ+MerdZYQjgVi40Q8mInh3BzA77pAAU2q33oAQrftrX2nX?=
- =?iso-8859-1?Q?YD2YIrv4YmSsxOUAPCYtiLg2svD5ippFN0iC10hT+Qx2i3Yw/Mp3vDHq8P?=
- =?iso-8859-1?Q?/QA46XoJk05tLyhuJLAVJSZ6lr/I4EWhJz4KYRH6o+iFrtwt/MFH2/Vq/u?=
- =?iso-8859-1?Q?UkppRznMixMm0vOFfnY9Vs4JnOsSXjBQ=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 770231da-cb05-4279-ce38-08d96e6a50f0
-X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5016.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Sep 2021 23:35:15.4228
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: +LerkAhiYo7TsHPN72Ebc8Qxei0JrLfJJKZW1ty3qJ4CnrKIAKMhcr+788LCxeNu
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR15MB4823
-X-OriginatorOrg: fb.com
-X-Proofpoint-GUID: Sn-NqlPUEMzcAWct43GooxGzjADw8E8S
-X-Proofpoint-ORIG-GUID: Sn-NqlPUEMzcAWct43GooxGzjADw8E8S
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-09-02_04:2021-09-02,2021-09-02 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 adultscore=0
- priorityscore=1501 suspectscore=0 mlxlogscore=636 phishscore=0
- clxscore=1015 malwarescore=0 mlxscore=0 lowpriorityscore=0 impostorscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2108310000 definitions=main-2109020135
-X-FB-Internal: deliver
+X-Received: by 2002:a5d:8715:: with SMTP id u21mr700462iom.1.1630625785511;
+ Thu, 02 Sep 2021 16:36:25 -0700 (PDT)
+Date:   Thu, 02 Sep 2021 16:36:25 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000b503bc05cb0ba623@google.com>
+Subject: [syzbot] KASAN: use-after-free Read in __crypto_xor
+From:   syzbot <syzbot+b187b77c8474f9648fae@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, daniel.m.jordan@oracle.com,
+        davem@davemloft.net, herbert@gondor.apana.org.au,
+        josh@joshtriplett.org, linux-crypto@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, torvalds@linux-foundation.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 03, 2021 at 12:27:52AM +0200, Toke Høiland-Jørgensen wrote:
-> >> The question is if it's useful to provide the full struct_ops for
-> >> qdiscs? Having it would allow a BPF program to implement that interface
-> >> towards userspace (things like statistics, classes etc), but the
-> >> question is if anyone is going to bother with that given the wealth of
-> >> BPF-specific introspection tools already available?
-Instead of bpftool can only introspect bpf qdisc and the existing tc
-can only introspect kernel qdisc,  it will be nice to have bpf
-qdisc work as other qdisc and showing details together with others
-in tc.  e.g. a bpf qdisc export its data/stats with its btf-id
-to tc and have tc print it out in a generic way?
+Hello,
+
+syzbot found the following issue on:
+
+HEAD commit:    3e12361b6d23 bcm63xx_enet: delete a redundant assignment
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=160cec72300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=63a23a80f42a8989
+dashboard link: https://syzkaller.appspot.com/bug?extid=b187b77c8474f9648fae
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=144d07b6300000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=171b7fca300000
+
+The issue was bisected to:
+
+commit 4611ce22468895acd61fee9ac1da810d60617d9a
+Author: Daniel Jordan <daniel.m.jordan@oracle.com>
+Date:   Wed Jun 3 22:59:39 2020 +0000
+
+    padata: allocate work structures for parallel jobs from a pool
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=118dccae300000
+console output: https://syzkaller.appspot.com/x/log.txt?x=158dccae300000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+b187b77c8474f9648fae@syzkaller.appspotmail.com
+Fixes: 4611ce224688 ("padata: allocate work structures for parallel jobs from a pool")
+
+==================================================================
+BUG: KASAN: use-after-free in __crypto_xor+0x376/0x410 crypto/algapi.c:1001
+Read of size 8 at addr ffff88803691a000 by task kworker/u4:1/10
+
+CPU: 1 PID: 10 Comm: kworker/u4:1 Not tainted 5.14.0-rc2-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: pencrypt_parallel padata_parallel_worker
+Call Trace:
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:105
+ print_address_description.constprop.0.cold+0x6c/0x309 mm/kasan/report.c:233
+ __kasan_report mm/kasan/report.c:419 [inline]
+ kasan_report.cold+0x83/0xdf mm/kasan/report.c:436
+ __crypto_xor+0x376/0x410 crypto/algapi.c:1001
+ crypto_xor include/crypto/algapi.h:160 [inline]
+ crypto_ctr_crypt_segment crypto/ctr.c:60 [inline]
+ crypto_ctr_crypt+0x256/0x550 crypto/ctr.c:114
+ crypto_skcipher_encrypt+0xaa/0xf0 crypto/skcipher.c:630
+ crypto_gcm_encrypt+0x38f/0x4b0 crypto/gcm.c:461
+ crypto_aead_encrypt+0xaa/0xf0 crypto/aead.c:94
+ pcrypt_aead_enc+0x13/0x70 crypto/pcrypt.c:82
+ padata_parallel_worker+0x60/0xb0 kernel/padata.c:157
+ process_one_work+0x98d/0x1630 kernel/workqueue.c:2276
+ worker_thread+0x658/0x11f0 kernel/workqueue.c:2422
+ kthread+0x3e5/0x4d0 kernel/kthread.c:319
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+
+The buggy address belongs to the page:
+page:ffffea0000da4680 refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x3691a
+flags: 0xfff00000000000(node=0|zone=1|lastcpupid=0x7ff)
+raw: 00fff00000000000 ffffea0000dafd48 ffffea0000dad888 0000000000000000
+raw: 0000000000000000 0000000000000000 00000000ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as freed
+page last allocated via order 0, migratetype Unmovable, gfp_mask 0x400dc0(GFP_KERNEL_ACCOUNT|__GFP_ZERO), pid 8358, ts 60335781621, free_ts 60341472040
+ prep_new_page mm/page_alloc.c:2433 [inline]
+ get_page_from_freelist+0xa72/0x2f80 mm/page_alloc.c:4166
+ __alloc_pages+0x1b2/0x500 mm/page_alloc.c:5388
+ alloc_pages+0x18c/0x2a0 mm/mempolicy.c:2244
+ __pte_alloc_one include/asm-generic/pgalloc.h:63 [inline]
+ pte_alloc_one+0x16/0x230 arch/x86/mm/pgtable.c:33
+ do_fault_around mm/memory.c:4136 [inline]
+ do_read_fault mm/memory.c:4157 [inline]
+ do_fault mm/memory.c:4291 [inline]
+ handle_pte_fault mm/memory.c:4549 [inline]
+ __handle_mm_fault+0x49de/0x5320 mm/memory.c:4684
+ handle_mm_fault+0x1c8/0x790 mm/memory.c:4782
+ do_user_addr_fault+0x48b/0x11c0 arch/x86/mm/fault.c:1390
+ handle_page_fault arch/x86/mm/fault.c:1475 [inline]
+ exc_page_fault+0x9e/0x180 arch/x86/mm/fault.c:1531
+ asm_exc_page_fault+0x1e/0x30 arch/x86/include/asm/idtentry.h:568
+page last free stack trace:
+ reset_page_owner include/linux/page_owner.h:24 [inline]
+ free_pages_prepare mm/page_alloc.c:1343 [inline]
+ free_pcp_prepare+0x2c5/0x780 mm/page_alloc.c:1394
+ free_unref_page_prepare mm/page_alloc.c:3329 [inline]
+ free_unref_page_list+0x1a1/0x1050 mm/page_alloc.c:3445
+ release_pages+0x824/0x20b0 mm/swap.c:972
+ tlb_batch_pages_flush mm/mmu_gather.c:49 [inline]
+ tlb_flush_mmu_free mm/mmu_gather.c:242 [inline]
+ tlb_flush_mmu mm/mmu_gather.c:249 [inline]
+ tlb_finish_mmu+0x165/0x8c0 mm/mmu_gather.c:340
+ exit_mmap+0x1ea/0x620 mm/mmap.c:3203
+ __mmput+0x122/0x470 kernel/fork.c:1101
+ mmput+0x58/0x60 kernel/fork.c:1122
+ exit_mm kernel/exit.c:501 [inline]
+ do_exit+0xae2/0x2a60 kernel/exit.c:812
+ do_group_exit+0x125/0x310 kernel/exit.c:922
+ __do_sys_exit_group kernel/exit.c:933 [inline]
+ __se_sys_exit_group kernel/exit.c:931 [inline]
+ __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:931
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Memory state around the buggy address:
+ ffff888036919f00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff888036919f80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>ffff88803691a000: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+                   ^
+ ffff88803691a080: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ ffff88803691a100: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+==================================================================
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
