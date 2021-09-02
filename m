@@ -2,94 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E261A3FEF09
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 15:58:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15E283FEF1C
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 16:05:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345338AbhIBN7n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 09:59:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41282 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235635AbhIBN7m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 09:59:42 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20420C061575
-        for <netdev@vger.kernel.org>; Thu,  2 Sep 2021 06:58:44 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id r7so3049244edd.6
-        for <netdev@vger.kernel.org>; Thu, 02 Sep 2021 06:58:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NXEJdGninkBdVtpXQoG13dqQs8Qs+Jfbydk0oWk896M=;
-        b=Nls/IV4MSQuu3HJFeiLRnplV4yq96ldDKDyz8BGmf/lYykqGly+V3DRC3aYr81i/4N
-         LA8f7+nfAe3DgnlL6YnyXMLM0X2nWRa1jTXj9S7k4HaCGpzBmjzlufRQp7rx14D44QEJ
-         CbD1NjZyH1P70Ts8g1Ss/+n6oGegK5PPgrK3azF9ItKkUSY00LwjPdkrDDHn7JW4vVw6
-         8TfUn0jeZTy1CgPPB2E02YpgD3JfZ+nJaPnxf+C/N/cEoPasKqabw2YB/bch4ytIWFkA
-         I29vWhap8RtKiU/PsrV5ikjOjgrRlWrljWQ0l1YH6JZyv+IPy1xEeZvxiseu+Gm2NNxy
-         gFow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NXEJdGninkBdVtpXQoG13dqQs8Qs+Jfbydk0oWk896M=;
-        b=FgWCASIY7OoP0xOQaPqYYpS3R1+2st2i2T9jAhWCwTDs8Im8eSgO2Z7gY1lVlUZaJ2
-         7kGIicfi5+jN8j0/CcCGXea1ih5cSramOuDFkJ7L077W6U2K0yRiEFkjjZ0k5N173LcQ
-         1Mv8b77s3y5N1JKqWpsDthkD513upOLgry/5txL0dKXBiaZBPrj+oiiboz4O+x05dZ9h
-         9FxFjs5Mq8QrakWeADsBYjpcw3yq0+EHUEK/ccJoiD3b84QYPT1woilF7tA8JtFhQMax
-         NRfORgnZOjiAy4ok+ssXIV4HLtAKaPydGNs1gqNc+viFwFQtsxSK1HaZ4HsCoySieqDm
-         JSdQ==
-X-Gm-Message-State: AOAM532kxIB9NIZEAeDFdmpvpPP8ElmpZouROYDYLzPiGs1Jiguw2f5e
-        3xCnYtnY+uP8FqsWqNxIHahXcCT/vamD1/MW3DCu
-X-Google-Smtp-Source: ABdhPJw6QC4FMVNA86SoALbyyyEG6UMKskge2SDZ8noyZveyOk2NS6c2yrsdp8J/q7V+M4RSUyJzH5IVh/rven6EEo0=
-X-Received: by 2002:aa7:d613:: with SMTP id c19mr3671822edr.196.1630591122604;
- Thu, 02 Sep 2021 06:58:42 -0700 (PDT)
+        id S1345426AbhIBOGE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 10:06:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37766 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1345414AbhIBOGB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Sep 2021 10:06:01 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5B8DD610CE;
+        Thu,  2 Sep 2021 14:05:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1630591502;
+        bh=MdV2rCOMxwsCoWOvmZgOQ8ulnT3VaK/62s5XqGADLbo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=LRA9gDnV3TA3bHXwcVoifBp8P7VENm4N2VHzVs0cSLef9b4kM4ACV8mUCy28i1IyE
+         7R94w7lLIpw4WUXHKSl14mBleuDPwI51s9FfDHPnUY7LrspTbfpvqvWgb8HEHn897z
+         7UAdSvBEwbNBI5rINYmDW6I9S7iJeb5azMzmtC9PWoPVhhqzWj7+f/e39MHFwed8jG
+         TqAwy8VB+PLiygJAvpKb6VP3BxyhuUGRELLlME3jKIzWR0iOqlYqERlern7KfbFL1W
+         YnrGWnYajH7WWEqOKzll+gLsopY681swdP6cX3aHo1Wxe0Tfrdlqh4xXt7luHvhcCe
+         68Wd40Yp/ctUQ==
+Date:   Thu, 2 Sep 2021 09:05:00 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+        Jonas =?iso-8859-1?Q?Dre=DFler?= <verdre@v0yd.nl>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi017@gmail.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tsuchiya Yuto <kitakar@gmail.com>,
+        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Keith Busch <kbusch@kernel.org>
+Subject: Re: [PATCH 1/2] mwifiex: Use non-posted PCI register writes
+Message-ID: <20210902140500.GA321043@bjorn-Precision-5520>
 MIME-Version: 1.0
-References: <20210902005238.2413-1-hdanton@sina.com> <0000000000002d262305caf9fdde@google.com>
- <20210902041238.2559-1-hdanton@sina.com>
-In-Reply-To: <20210902041238.2559-1-hdanton@sina.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Thu, 2 Sep 2021 09:58:33 -0400
-Message-ID: <CAHC9VhQBX8SsKBDHJGSyNC_Ewn3JgWK1_VixK48V8FRi7Tf=pA@mail.gmail.com>
-Subject: Re: [syzbot] WARNING: refcount bug in qrtr_node_lookup
-To:     Hillf Danton <hdanton@sina.com>
-Cc:     syzbot <syzbot+c613e88b3093ebf3686e@syzkaller.appspotmail.com>,
-        bjorn.andersson@linaro.org, dan.carpenter@oracle.com,
-        eric.dumazet@gmail.com, linux-kernel@vger.kernel.org,
-        manivannan.sadhasivam@linaro.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210901224154.GA230445@bjorn-Precision-5520>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 2, 2021 at 12:13 AM Hillf Danton <hdanton@sina.com> wrote:
-> On Wed, 01 Sep 2021 19:32:06 -0700
-> >
-> > syzbot has tested the proposed patch but the reproducer is still triggering an issue:
-> > UBSAN: object-size-mismatch in send4
-> >
-> > ================================================================================
-> > UBSAN: object-size-mismatch in ./include/net/flow.h:197:33
-> > member access within address 000000001597b753 with insufficient space
-> > for an object of type 'struct flowi'
-> > CPU: 1 PID: 231 Comm: kworker/u4:4 Not tainted 5.14.0-syzkaller #0
-> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> > Workqueue: wg-kex-wg0 wg_packet_handshake_send_worker
-> > Call Trace:
-> >  __dump_stack lib/dump_stack.c:88 [inline]
-> >  dump_stack_lvl+0x15e/0x1d3 lib/dump_stack.c:105
-> >  ubsan_epilogue lib/ubsan.c:148 [inline]
-> >  handle_object_size_mismatch lib/ubsan.c:229 [inline]
-> >  ubsan_type_mismatch_common+0x1de/0x390 lib/ubsan.c:242
-> >  __ubsan_handle_type_mismatch_v1+0x41/0x50 lib/ubsan.c:271
-> >  flowi4_to_flowi_common include/net/flow.h:197 [inline]
->
-> This was added in 3df98d79215a ("lsm,selinux: pass flowi_common instead of
-> flowi to the LSM hooks"), could you take a look at the UBSAN report, Paul?
+[+cc Keith]
 
-Sure, although due to some flooding here at home it might take a day
-(two?) before I have any real comments on this.
+On Wed, Sep 01, 2021 at 05:41:56PM -0500, Bjorn Helgaas wrote:
+> On Wed, Sep 01, 2021 at 07:07:58PM +0200, Johannes Berg wrote:
+> > On Wed, 2021-09-01 at 18:51 +0200, Heiner Kallweit wrote:
+> > > On 01.09.2021 17:51, Pali Roh·r wrote:
+> > > > On Wednesday 01 September 2021 16:01:54 Jonas Dreﬂler wrote:
+> > > > > On 8/30/21 2:49 PM, Andy Shevchenko wrote:
+> > > > > > On Mon, Aug 30, 2021 at 3:38 PM Jonas Dreﬂler <verdre@v0yd.nl> wrote:
+> > > > > > > 
+> > > > > > > On the 88W8897 card it's very important the TX ring write pointer is
+> > > > > > > updated correctly to its new value before setting the TX ready
+> > > > > > > interrupt, otherwise the firmware appears to crash (probably because
+> > > > > > > it's trying to DMA-read from the wrong place).
+> > > > > > > 
+> > > 
+> > > This sounds somehow like the typical case where you write DMA descriptors
+> > > and then ring the doorbell. This normally requires a dma_wmb().
+> > > Maybe something like that is missing here?
+> > 
+> > But it looks like this "TX ring write pointer" is actually the register?
+> > 
+> > However, I would agree that doing it in mwifiex_write_reg() is possibly
+> > too big a hammer - could be done only for reg->tx_wrptr, not all the
+> > registers?
+> > 
+> > Actually, can two writes actually cross on PCI?
+> 
+> Per PCIe r5.0, sec 2.4.1,
+> 
+>   A2a  A Posted Request must not pass another Posted Request unless A2b
+>        applies.
+> 
+>   A2b  A Posted Request with RO Set is permitted to pass another
+>        Posted Request.  A Posted Request with IDO Set is permitted to
+>        pass another Posted Request if the two Requester IDs are
+>        different or if both Requests contain a PASID TLP Prefix and
+>        the two PASID values are different.
+> 
+> A few drivers enable RO (Relaxed Ordering) for their devices, which
+> means the *device* is permitted to set the RO bit in transactions it
+> initiates.
+> 
+> BUt IIUC we're talking about MMIO writes initiated by a CPU, and they
+> won't have the RO bit set unless the Root Port has Relaxed Ordering
+> enabled, and Linux generally does not enable that.  So A2a should
+> apply, and writes should be ordered on PCI.
+> 
+> There are a few wrinkles that I worry about:
+> 
+>   d1e714db8129 ("mtip32xx: Fix ERO and NoSnoop values in PCIe upstream
+>   on AMD systems") [1] turns off RO for some AMD Root Ports, which
+>   makes me think BIOS might be enabling RO in these Root Ports.
+> 
+>   c56d4450eb68 ("PCI: Turn off Request Attributes to avoid Chelsio T5
+>   Completion erratum") [2] turns off RO for all Root Ports leading to
+>   Chelsio T5 devices, which again makes me think there's firmware that
+>   enables RO in Root Ports.  Follow-up [3].
+> 
+>   77ffc1465cec ("tegra: add PCI Express support") [4] (see
+>   tegra_pcie_relax_enable()) enables RO for Tegra Root Ports due to
+>   some hardware issue.  I don't whether these Root Ports every
+>   actually *set* RO in the PCIe transactions they generate.  Follow-up
+>   [5].
+> 
+> These concern me because I don't think we have a way for drivers to
+> specify whether their writes should use strong ordering or relaxed
+> ordering, and I think they depend on strong ordering.
 
--- 
-paul moore
-www.paul-moore.com
+Sorry, I was completely wrong about this part.  Keith Busch reminded
+me that writel_relaxed() is an obvious way for drivers to specify that
+they don't need strong ordering.
+
+I apologize for the distraction.
+
+> If Root Ports have RO enabled, I think we are at risk, so I suspect
+> Linux should actively *disable* RO for Root Ports.
+> 
+> [1] https://git.kernel.org/linus/d1e714db8129
+> [2] https://git.kernel.org/linus/c56d4450eb68
+> [3] https://lore.kernel.org/r/20210901222353.GA251391@bjorn-Precision-5520
+> [4] https://git.kernel.org/linus/77ffc1465cec
+> [5] https://lore.kernel.org/r/20210901204045.GA236987@bjorn-Precision-5520
