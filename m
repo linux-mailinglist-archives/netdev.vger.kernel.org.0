@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AADE13FF235
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 19:20:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 446093FF242
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 19:23:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346592AbhIBRVH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 13:21:07 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:45526 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1346572AbhIBRVF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 13:21:05 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.43/8.16.0.43) with SMTP id 182HIvX8028222
-        for <netdev@vger.kernel.org>; Thu, 2 Sep 2021 10:20:06 -0700
+        id S1346619AbhIBRYF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 13:24:05 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:34924 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1346572AbhIBRYB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 13:24:01 -0400
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 182HLiXj010103
+        for <netdev@vger.kernel.org>; Thu, 2 Sep 2021 10:23:02 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=facebook;
- bh=npoIg0hH/PLsSOOKa3cr7jFeeSikgJuTg/witRzt/oE=;
- b=gSw8AUc2OakjwjxyNO1SAauuKUGh7WFE4298DybfwAX01iiwhteM73hCe9b/YSqfjrTV
- rxZcAn0NiysK0mpukcPyzQTxtWE5jQ19aVCTPxrJf9olKYWfIzAWxaDlQLTNXTuEv25m
- dazGNNTklkQKzcDITiNC3c43d+8RDfPee6o= 
+ bh=6gX/wkjz4vtaeulVpgKWOud0DL1t2r0JwoO1QsuOzQY=;
+ b=IrELEnWtvy3EhL6qoeaPei2iws8BARykasAciOWjWn8CtZg+4xnWEuuO3L9bLCVNJTXi
+ L85kSHkFmH69dTqXhxr8iFACt0I37r4nMZWN+l9WXIiTiKVm6xxe1Xkw4Hm62E8IP6r8
+ /nKJXnw/78oi2nEqzNwnlKKTXwbtmcH9OnE= 
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0001303.ppops.net with ESMTP id 3atdyhdkv1-7
+        by mx0a-00082601.pphosted.com with ESMTP id 3atdwu5de1-8
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 02 Sep 2021 10:20:06 -0700
-Received: from intmgw001.37.frc1.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Thu, 02 Sep 2021 10:23:02 -0700
+Received: from intmgw001.38.frc1.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.14; Thu, 2 Sep 2021 10:20:04 -0700
+ 15.1.2308.14; Thu, 2 Sep 2021 10:22:57 -0700
 Received: by devbig030.frc3.facebook.com (Postfix, from userid 158236)
-        id 5FD195FE24A6; Thu,  2 Sep 2021 10:20:03 -0700 (PDT)
+        id 869125FE24AB; Thu,  2 Sep 2021 10:20:04 -0700 (PDT)
 From:   Dave Marchevsky <davemarchevsky@fb.com>
 To:     <bpf@vger.kernel.org>
 CC:     Alexei Starovoitov <ast@kernel.org>,
@@ -38,9 +38,9 @@ CC:     Alexei Starovoitov <ast@kernel.org>,
         Andrii Nakryiko <andrii@kernel.org>,
         Yonghong Song <yhs@fb.com>, <netdev@vger.kernel.org>,
         Dave Marchevsky <davemarchevsky@fb.com>
-Subject: [PATCH v4 bpf-next 6/9] bpftool: only probe trace_vprintk feature in 'full' mode
-Date:   Thu, 2 Sep 2021 10:19:26 -0700
-Message-ID: <20210902171929.3922667-7-davemarchevsky@fb.com>
+Subject: [PATCH v4 bpf-next 7/9] selftests/bpf: Migrate prog_tests/trace_printk CHECKs to ASSERTs
+Date:   Thu, 2 Sep 2021 10:19:27 -0700
+Message-ID: <20210902171929.3922667-8-davemarchevsky@fb.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210902171929.3922667-1-davemarchevsky@fb.com>
 References: <20210902171929.3922667-1-davemarchevsky@fb.com>
@@ -49,13 +49,13 @@ Content-Transfer-Encoding: quoted-printable
 X-FB-Internal: Safe
 Content-Type: text/plain
 X-FB-Source: Intern
-X-Proofpoint-GUID: z8SGWyd04oBuToWUT46a6wmU-PZcyiAZ
-X-Proofpoint-ORIG-GUID: z8SGWyd04oBuToWUT46a6wmU-PZcyiAZ
+X-Proofpoint-GUID: EWLiIcxPC4XA24TXIHV_G2oRNNxNjSj4
+X-Proofpoint-ORIG-GUID: EWLiIcxPC4XA24TXIHV_G2oRNNxNjSj4
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
  definitions=2021-09-02_04:2021-09-02,2021-09-02 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 malwarescore=0
- phishscore=0 mlxlogscore=999 clxscore=1015 suspectscore=0 adultscore=0
- priorityscore=1501 impostorscore=0 bulkscore=0 spamscore=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ mlxlogscore=877 mlxscore=0 spamscore=0 phishscore=0 bulkscore=0
+ malwarescore=0 adultscore=0 clxscore=1015 suspectscore=0 impostorscore=0
  lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2108310000 definitions=main-2109020100
 X-FB-Internal: deliver
@@ -63,95 +63,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since commit 368cb0e7cdb5e ("bpftool: Make probes which emit dmesg
-warnings optional"), some helpers aren't probed by bpftool unless
-`full` arg is added to `bpftool feature probe`.
-
-bpf_trace_vprintk can emit dmesg warnings when probed, so include it.
+Guidance for new tests is to use ASSERT macros instead of CHECK. Since
+trace_vprintk test will borrow heavily from trace_printk's, migrate its
+CHECKs so it remains obvious that the two are closely related.
 
 Signed-off-by: Dave Marchevsky <davemarchevsky@fb.com>
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
 ---
- tools/bpf/bpftool/feature.c                 |  1 +
- tools/testing/selftests/bpf/test_bpftool.py | 22 +++++++++------------
- 2 files changed, 10 insertions(+), 13 deletions(-)
+ .../selftests/bpf/prog_tests/trace_printk.c   | 24 +++++++------------
+ 1 file changed, 9 insertions(+), 15 deletions(-)
 
-diff --git a/tools/bpf/bpftool/feature.c b/tools/bpf/bpftool/feature.c
-index 7f36385aa9e2..ade44577688e 100644
---- a/tools/bpf/bpftool/feature.c
-+++ b/tools/bpf/bpftool/feature.c
-@@ -624,6 +624,7 @@ probe_helpers_for_progtype(enum bpf_prog_type prog_ty=
-pe, bool supported_type,
- 		 */
- 		switch (id) {
- 		case BPF_FUNC_trace_printk:
-+		case BPF_FUNC_trace_vprintk:
- 		case BPF_FUNC_probe_write_user:
- 			if (!full_mode)
- 				continue;
-diff --git a/tools/testing/selftests/bpf/test_bpftool.py b/tools/testing/=
-selftests/bpf/test_bpftool.py
-index 4fed2dc25c0a..1c2408ee1f5d 100644
---- a/tools/testing/selftests/bpf/test_bpftool.py
-+++ b/tools/testing/selftests/bpf/test_bpftool.py
-@@ -57,6 +57,11 @@ def default_iface(f):
-         return f(*args, iface, **kwargs)
-     return wrapper
+diff --git a/tools/testing/selftests/bpf/prog_tests/trace_printk.c b/tool=
+s/testing/selftests/bpf/prog_tests/trace_printk.c
+index d39bc00feb45..e47835f0a674 100644
+--- a/tools/testing/selftests/bpf/prog_tests/trace_printk.c
++++ b/tools/testing/selftests/bpf/prog_tests/trace_printk.c
+@@ -10,7 +10,7 @@
 =20
-+DMESG_EMITTING_HELPERS =3D [
-+        "bpf_probe_write_user",
-+        "bpf_trace_printk",
-+        "bpf_trace_vprintk",
-+    ]
+ void test_trace_printk(void)
+ {
+-	int err, iter =3D 0, duration =3D 0, found =3D 0;
++	int err =3D 0, iter =3D 0, found =3D 0;
+ 	struct trace_printk__bss *bss;
+ 	struct trace_printk *skel;
+ 	char *buf =3D NULL;
+@@ -18,25 +18,24 @@ void test_trace_printk(void)
+ 	size_t buflen;
 =20
- class TestBpftool(unittest.TestCase):
-     @classmethod
-@@ -67,10 +72,7 @@ class TestBpftool(unittest.TestCase):
+ 	skel =3D trace_printk__open();
+-	if (CHECK(!skel, "skel_open", "failed to open skeleton\n"))
++	if (!ASSERT_OK_PTR(skel, "trace_printk__open"))
+ 		return;
 =20
-     @default_iface
-     def test_feature_dev_json(self, iface):
--        unexpected_helpers =3D [
--            "bpf_probe_write_user",
--            "bpf_trace_printk",
--        ]
-+        unexpected_helpers =3D DMESG_EMITTING_HELPERS
-         expected_keys =3D [
-             "syscall_config",
-             "program_types",
-@@ -94,10 +96,7 @@ class TestBpftool(unittest.TestCase):
-             bpftool_json(["feature", "probe"]),
-             bpftool_json(["feature"]),
-         ]
--        unexpected_helpers =3D [
--            "bpf_probe_write_user",
--            "bpf_trace_printk",
--        ]
-+        unexpected_helpers =3D DMESG_EMITTING_HELPERS
-         expected_keys =3D [
-             "syscall_config",
-             "system_config",
-@@ -121,10 +120,7 @@ class TestBpftool(unittest.TestCase):
-             bpftool_json(["feature", "probe", "kernel", "full"]),
-             bpftool_json(["feature", "probe", "full"]),
-         ]
--        expected_helpers =3D [
--            "bpf_probe_write_user",
--            "bpf_trace_printk",
--        ]
-+        expected_helpers =3D DMESG_EMITTING_HELPERS
+-	ASSERT_EQ(skel->rodata->fmt[0], 'T', "invalid printk fmt string");
++	ASSERT_EQ(skel->rodata->fmt[0], 'T', "skel->rodata->fmt[0]");
+ 	skel->rodata->fmt[0] =3D 't';
 =20
-         for tc in test_cases:
-             # Check if expected helpers are included at least once in an=
-y
-@@ -157,7 +153,7 @@ class TestBpftool(unittest.TestCase):
-                 not_full_set.add(helper)
+ 	err =3D trace_printk__load(skel);
+-	if (CHECK(err, "skel_load", "failed to load skeleton: %d\n", err))
++	if (!ASSERT_OK(err, "trace_printk__load"))
+ 		goto cleanup;
 =20
-         self.assertCountEqual(full_set - not_full_set,
--                                {"bpf_probe_write_user", "bpf_trace_prin=
-tk"})
-+                              set(DMESG_EMITTING_HELPERS))
-         self.assertCountEqual(not_full_set - full_set, set())
+ 	bss =3D skel->bss;
 =20
-     def test_feature_macros(self):
+ 	err =3D trace_printk__attach(skel);
+-	if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
++	if (!ASSERT_OK(err, "trace_printk__attach"))
+ 		goto cleanup;
+=20
+ 	fp =3D fopen(TRACEBUF, "r");
+-	if (CHECK(fp =3D=3D NULL, "could not open trace buffer",
+-		  "error %d opening %s", errno, TRACEBUF))
++	if (!ASSERT_OK_PTR(fp, "fopen(TRACEBUF)"))
+ 		goto cleanup;
+=20
+ 	/* We do not want to wait forever if this test fails... */
+@@ -46,14 +45,10 @@ void test_trace_printk(void)
+ 	usleep(1);
+ 	trace_printk__detach(skel);
+=20
+-	if (CHECK(bss->trace_printk_ran =3D=3D 0,
+-		  "bpf_trace_printk never ran",
+-		  "ran =3D=3D %d", bss->trace_printk_ran))
++	if (!ASSERT_GT(bss->trace_printk_ran, 0, "bss->trace_printk_ran"))
+ 		goto cleanup;
+=20
+-	if (CHECK(bss->trace_printk_ret <=3D 0,
+-		  "bpf_trace_printk returned <=3D 0 value",
+-		  "got %d", bss->trace_printk_ret))
++	if (!ASSERT_GT(bss->trace_printk_ret, 0, "bss->trace_printk_ret"))
+ 		goto cleanup;
+=20
+ 	/* verify our search string is in the trace buffer */
+@@ -66,8 +61,7 @@ void test_trace_printk(void)
+ 			break;
+ 	}
+=20
+-	if (CHECK(!found, "message from bpf_trace_printk not found",
+-		  "no instance of %s in %s", SEARCHMSG, TRACEBUF))
++	if (!ASSERT_EQ(found, bss->trace_printk_ran, "found"))
+ 		goto cleanup;
+=20
+ cleanup:
 --=20
 2.30.2
 
