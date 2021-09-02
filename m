@@ -2,188 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 933393FF7DA
-	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 01:30:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8A533FF7EB
+	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 01:35:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235909AbhIBXbC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 19:31:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33596 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230088AbhIBXbB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 19:31:01 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65B34C061575
-        for <netdev@vger.kernel.org>; Thu,  2 Sep 2021 16:30:02 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id e133so7018108ybh.0
-        for <netdev@vger.kernel.org>; Thu, 02 Sep 2021 16:30:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6xTg00PepVPylOtm1J0Y6rkZ7Wc4zH5g0ApsRZq0FUI=;
-        b=n0XEJv7UdxOAcuracft+Xvw5QLLeajqnN5CBStW2IoBqQrqE1Dbq87vM10iYzXFByF
-         kUaZoFC1HUuRs53G3sY8xqoEzzF0znynaeWGk0K4NlkxVzF375NsTwszhwJPQ/fLd5QE
-         wDNFWc4sRuP44bSNwqAWirv21TiIhf/t/RQ4VnwmBrB85MFz4Sd2psvxdmin8UuwQjKV
-         BmuvEzVXD1CJKZiwK/c2LdjhBveXGZZ9u4UEZ8RnKeBLujx7P69Uemzzhc4rWPxaoI4m
-         nksWWTXfCGzbqYSGzFUNuSeq0v30pBFOHG99yWvFShn47nWm5dZS+jHyOZYEfCcbLbxL
-         /daw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6xTg00PepVPylOtm1J0Y6rkZ7Wc4zH5g0ApsRZq0FUI=;
-        b=fZ8ONoVelf3QKegiz2eAqIEaBwR57ksuV4LK7jOWge3mM9TsHRyS81e92n2ngjrzI+
-         smxZ8UPUa483TpC8ow3GW0GRDdCYyaYFbwU01cYcpD/urMcsmDm2cHZWwwYpxa1Bj6pv
-         eoXYiRYlzidMzZmGks0Km5zoqthGPXGXMutB9kLyDEB7UYW1vI6wNBjF2lQz35ZNTX/C
-         7hDmCqXlAmwfm8WiUeKI+rI3U+2Jt6Pyh0M5WyYSsprJWIBUAz2nQiq8F3vnAUYLxvoo
-         FaZwvIWK2ywzLkt6AD5sX9Qf2BDpHRjsues107USd78LZSEtOAHZYPdNOeUOTlVcxGDY
-         UUvA==
-X-Gm-Message-State: AOAM532kQ72KrurqzHotLPXNT2ZbsnIUEo88E1/QwEoJqVHd1MVKeKZp
-        ssAe+NVWN06B/z+plijh2EtNO5tGQgGReXdSOd3/2A==
-X-Google-Smtp-Source: ABdhPJwDEizZwDXmFQo9X/jBsqiugcTqCUwjHAa6hvmWH2Qm4+fQv6S4de/oQBbZ8ps6OnpvyMtT6nU3W/ioGOS3xS4=
-X-Received: by 2002:a25:6746:: with SMTP id b67mr1341051ybc.96.1630625401243;
- Thu, 02 Sep 2021 16:30:01 -0700 (PDT)
+        id S1345805AbhIBXg1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 19:36:27 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:9522 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235909AbhIBXg0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 19:36:26 -0400
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 182NSxIM012136;
+        Thu, 2 Sep 2021 16:35:22 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type :
+ content-transfer-encoding : in-reply-to : mime-version; s=facebook;
+ bh=AuFgsyiZcjU/34FUl1epJ/YiTUdZ4A+9bjOLGJSqG/w=;
+ b=GjBuu/3ffUvsvyB0sJz1agzrgdiWvwHcKzmEdhDyQwGron+hOKlUnjjcBbX7nmm9g6fo
+ SbS4TcyU27WwcB+0mWBPQpDffIMB0/OKWUJoe6GqdW9jMZDY6rvOYQ1lebjoLjO4YqY5
+ JMZBnuY2vfZM8aelFwVYmaIlkhfv7mdmDJw= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 3atdyppjc3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 02 Sep 2021 16:35:22 -0700
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.197) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.14; Thu, 2 Sep 2021 16:35:21 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CjskojGmhC9dexYf803lhnDuwQN0v79Zu23JF7pc6YKgOHWxDWI/L0iWopeCF8JaSKWxN0+EkBkOPzEDcIRG+kvRuxXzhD8lknpaz9ngOs4+z1UFutZts0b/ky/DKR/pzjQjfB4BhRXaAFv6QPZIkJVXi3Za4E5CN3ppneymFFYOj2cYXR+JuStSaaXjC+z6/biJ3S2TqYib+Y554vRix01DPybffvGll2Qg5JYjCSn7ZtJbqKQ8gEsec20yaW5zZbTawOLCPliKYeL6Eo5+tqRtc+Tq2UKQhLrwTlRuMO5FbuucguOm89UNBuQR5QYEr+rbZvJuA5U+eoxANcJNug==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
+ bh=JXHk9zcvDYpmelfZKYCLSns8iNMbpwyU3NB+Z6XUXvU=;
+ b=hoyPlUt3FGJoz6EjQyevZi4bSGZJaEVoNuX+xuyWHVxlGpkBChkNzGrFOHegfGby9KKhnwdR5Jzql/+m5ockBGqsg9EljrJp4UWNn59GKutpKjOz4qg73V3udBrR7dVNgCkUFpzncluzwaAADaIq94xoI+GJqFoQaGsgBDda9/YM59xvd2fQ9lgK7E+4eDvJRGet1wtE6QEaewB1h/SbS/GO+5hfCw1B9SmQce/QxRpOjPMoeEgmuVADWDmjc+n1QaOhK8Q+zyI/ulyZzPROjU+QaOaV31XB/fXQINszN6uSq/9dp1sGnmzthTtAv5SH0NjO9KcM5tptitJj5CC6/Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Authentication-Results: redhat.com; dkim=none (message not signed)
+ header.d=none;redhat.com; dmarc=none action=none header.from=fb.com;
+Received: from SA1PR15MB5016.namprd15.prod.outlook.com (2603:10b6:806:1db::19)
+ by SA1PR15MB4823.namprd15.prod.outlook.com (2603:10b6:806:1e2::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4478.21; Thu, 2 Sep
+ 2021 23:35:15 +0000
+Received: from SA1PR15MB5016.namprd15.prod.outlook.com
+ ([fe80::3c1b:1a10:9708:7e36]) by SA1PR15MB5016.namprd15.prod.outlook.com
+ ([fe80::3c1b:1a10:9708:7e36%9]) with mapi id 15.20.4478.021; Thu, 2 Sep 2021
+ 23:35:15 +0000
+Date:   Thu, 2 Sep 2021 16:35:10 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+CC:     John Fastabend <john.fastabend@gmail.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Cong Wang <cong.wang@bytedance.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Subject: Re: [RFC Patch net-next] net_sched: introduce eBPF based Qdisc
+Message-ID: <20210902233510.gnimg2krwwkzv4f2@kafai-mbp.dhcp.thefacebook.com>
+References: <20210821010240.10373-1-xiyou.wangcong@gmail.com>
+ <20210824234700.qlteie6al3cldcu5@kafai-mbp>
+ <CAM_iQpWP_kvE58Z+363n+miTQYPYLn6U4sxMKVaDvuRvjJo_Tg@mail.gmail.com>
+ <612f137f4dc5c_152fe20891@john-XPS-13-9370.notmuch>
+ <871r68vapw.fsf@toke.dk>
+ <20210901174543.xukawl7ylkqzbuax@kafai-mbp.dhcp.thefacebook.com>
+ <871r66ud8y.fsf@toke.dk>
+ <613136d0cf411_2c56f2086@john-XPS-13-9370.notmuch>
+ <87bl5asjdj.fsf@toke.dk>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <87bl5asjdj.fsf@toke.dk>
+X-ClientProxiedBy: BL0PR03CA0036.namprd03.prod.outlook.com
+ (2603:10b6:208:2d::49) To SA1PR15MB5016.namprd15.prod.outlook.com
+ (2603:10b6:806:1db::19)
 MIME-Version: 1.0
-References: <20210901225053.1205571-1-vladimir.oltean@nxp.com> <20210902220520.hyybu6k3mjzbl7mn@skbuf>
-In-Reply-To: <20210902220520.hyybu6k3mjzbl7mn@skbuf>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Thu, 2 Sep 2021 16:29:25 -0700
-Message-ID: <CAGETcx8i_TSRKmnMAwbh9FbQDFO1ueU5nWTRxQgQpaY3i0v=Jw@mail.gmail.com>
-Subject: Re: [RFC PATCH net-next 0/3] Make the PHY library stop being so
- greedy when binding the generic PHY driver
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        kernel-team <kernel-team@android.com>,
-        Len Brown <lenb@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c091:480::1:4739) by BL0PR03CA0036.namprd03.prod.outlook.com (2603:10b6:208:2d::49) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4457.18 via Frontend Transport; Thu, 2 Sep 2021 23:35:14 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 770231da-cb05-4279-ce38-08d96e6a50f0
+X-MS-TrafficTypeDiagnostic: SA1PR15MB4823:
+X-Microsoft-Antispam-PRVS: <SA1PR15MB482394AB10D434AC5E7508A5D5CE9@SA1PR15MB4823.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: r397Pegyhiyd6uxoF4LQH6Y3iN4iRdpcEbGvqCp/wZgNRfDmyOSzZePcXYGXDQtlT8WttTTaCjMv3VtwQ8lH6myxC+ZS32AdRDRg1lCpitAwIhb0haxT5KBdBmN+l9MVqI4MO83ggDbDMrVFNYT3D9YVogCiYmIY2AWWZLAwSUNim5A9PuvqS889/BUstPN4C8vjJaWmj481oLlWl/Kzwn0Mmx8qZDipWGOfl1ZGoH4cEv7y5Dbpxs2H6narXlBVmeqfcnrbdp6DiVwrAIK6rZtnCO1JrC2LNv4PkIkiAXUedWThz8F7A3h0DkAlC2DKxpAHvUykuEQs95PKDKDmFIFhoz2Bh//mNgTGXtK3gobi/VyDtjgMeGJuSn+0Xo/KEeMc6tMshZHoPHQP0E/fyXKLb6MurKe6SIsbG+jFquaWAeEtfdrHBSJ6TOiSKGHZA840t+WrkfKAwt+qYQB1cemsaGmhLevp7AZeuROcueOZm5yjAK1oKLo8Ffnh0Q0jY4WasJV7UUkwQee7k5uY93OxT4ojgXTLiQt7uLsM1naX6Jukcvci15gMQ0arjteVd4dfaK9vDWC2Jl7CDitFhotvrGMJRF7ZpXWDwUoXzNMUduDE1DsJSyKhfeILaUI4
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5016.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(39860400002)(136003)(396003)(346002)(376002)(54906003)(52116002)(7696005)(83380400001)(316002)(8936002)(5660300002)(66946007)(6916009)(1076003)(9686003)(478600001)(186003)(38100700002)(6666004)(4326008)(4744005)(2906002)(6506007)(66556008)(8676002)(55016002)(66476007)(86362001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?4ZWIL2QE+2foDSJRCj1DMM95H4BN0ZBA6T1G9bN0VbEIVbYfub99xRYH1L?=
+ =?iso-8859-1?Q?7brlu5yeApWeox6XsG87FTXtij/c8x8cevwwHe7cpRtblLZi6DLOcSXgCB?=
+ =?iso-8859-1?Q?As/6nxjSQYcECdFEp3/eFz5pqsvuwpO5Y08kxJcvms284/icv3ylbOydbc?=
+ =?iso-8859-1?Q?vTnYYdDs0sGDTkOvcHxG8tVmQqlg3L5q5BRVjQGrEieE3pfUPPtH9CIWQt?=
+ =?iso-8859-1?Q?K6FYH31w0ke/FGu2H170GXUmjT5oc4QK3u4VzdMMTYDvMXPcQGvqUFXOYc?=
+ =?iso-8859-1?Q?rCahHWyWOZAqffEaTWflOhzowaZaYdpoEdGB/ufCyiu1IDw501DPfyd0Zu?=
+ =?iso-8859-1?Q?HAigZZOilS8c9MRP0lj6ta2VqTaYppl7bTptTCcXS/jakUvRCG8s5WSsqU?=
+ =?iso-8859-1?Q?Mg7ybmy1TFWh/k4kkxy3crWiFuATrhFOJvSPqNpHRzT2Dqi64Gm6LCWdn9?=
+ =?iso-8859-1?Q?fvlophgCo8CAj/eyZAfWu97ZH8CkBRaiFr6PkQPv4icwp68QlyX5cPtJMl?=
+ =?iso-8859-1?Q?2gFT6qPUmzgDxUm1Nr/lDBtYmH0H6wpwsmIBKh2hMqnOs7KvJEOBdLunCo?=
+ =?iso-8859-1?Q?Ab/LrDuhVJYXeyt1FEXrrkqONF+943i+46tEDBFiaicT47x8QTeIDIaKJP?=
+ =?iso-8859-1?Q?+mX6SGCmR0V4jHoZuq7c0zYj1m0QzIkvGs1Ftq2+YchKVP2Jmse/Joo3ib?=
+ =?iso-8859-1?Q?okGdzA01C65j+7+twUBvwrh2xF3ZbJBAtm3vQyfnM844AbWFyqf2I6D1dz?=
+ =?iso-8859-1?Q?osTDuf5VY8vZWZQt1VosXg147ajZUdy7Ipgds5yMMRUMDaEQK6OCjmlN1M?=
+ =?iso-8859-1?Q?ee9n/PNNH/cD0NE871k5Tk+JqR19GGbgWBjiQL2IKSCiIZglJusogc6PBD?=
+ =?iso-8859-1?Q?7Ij8iKuY+SePEFGKJQKs2cnRtvDBnn9xnZfj2nPdeCYq3Pd96h/MLs6yKc?=
+ =?iso-8859-1?Q?cQrbsuychHD+EZ+WNv60orNIkTSEDfgoR7CYjxmwz62NNJuJat9S3UjkTa?=
+ =?iso-8859-1?Q?q+Hh9qhcP5PV2HTTh/tELomkCyC5EbInAzsCOBpFBJoQW71gF0ghiJ/h+6?=
+ =?iso-8859-1?Q?aRTyghM+Hq414vjzhCUOVmEC1DjBEY56R7xXhcTqspikrAJ1kNmirfYbr6?=
+ =?iso-8859-1?Q?lWhVE8z8RFRTWjiCAeVbYd1SJ/zaC+/3JG9x0lCUAdiVnCxFQs1lp2oPmi?=
+ =?iso-8859-1?Q?//44lCDMNmHrQ+MerdZYQjgVi40Q8mInh3BzA77pAAU2q33oAQrftrX2nX?=
+ =?iso-8859-1?Q?YD2YIrv4YmSsxOUAPCYtiLg2svD5ippFN0iC10hT+Qx2i3Yw/Mp3vDHq8P?=
+ =?iso-8859-1?Q?/QA46XoJk05tLyhuJLAVJSZ6lr/I4EWhJz4KYRH6o+iFrtwt/MFH2/Vq/u?=
+ =?iso-8859-1?Q?UkppRznMixMm0vOFfnY9Vs4JnOsSXjBQ=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 770231da-cb05-4279-ce38-08d96e6a50f0
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5016.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Sep 2021 23:35:15.4228
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: +LerkAhiYo7TsHPN72Ebc8Qxei0JrLfJJKZW1ty3qJ4CnrKIAKMhcr+788LCxeNu
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR15MB4823
+X-OriginatorOrg: fb.com
+X-Proofpoint-GUID: Sn-NqlPUEMzcAWct43GooxGzjADw8E8S
+X-Proofpoint-ORIG-GUID: Sn-NqlPUEMzcAWct43GooxGzjADw8E8S
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-09-02_04:2021-09-02,2021-09-02 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 adultscore=0
+ priorityscore=1501 suspectscore=0 mlxlogscore=636 phishscore=0
+ clxscore=1015 malwarescore=0 mlxscore=0 lowpriorityscore=0 impostorscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2108310000 definitions=main-2109020135
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 2, 2021 at 3:05 PM Vladimir Oltean <olteanv@gmail.com> wrote:
->
-> On Thu, Sep 02, 2021 at 01:50:50AM +0300, Vladimir Oltean wrote:
-> > This is a continuation of the discussion on patch "[v1,1/2] driver core:
-> > fw_devlink: Add support for FWNODE_FLAG_BROKEN_PARENT" from here:
-> > https://patchwork.kernel.org/project/netdevbpf/patch/20210826074526.825517-2-saravanak@google.com/
-> >
-> > Summary: in a complex combination of device dependencies which is not
-> > really relevant to what is being proposed here, DSA ends up calling
-> > phylink_of_phy_connect during a period in which the PHY driver goes
-> > through a series of probe deferral events.
-> >
-> > The central point of that discussion is that DSA seems "broken" for
-> > expecting the PHY driver to probe immediately on PHYs belonging to the
-> > internal MDIO buses of switches. A few suggestions were made about what
-> > to do, but some were not satisfactory and some did not solve the problem.
-> >
-> > In fact, fw_devlink, the mechanism that causes the PHY driver to defer
-> > probing in this particular case, has some significant "issues" too, but
-> > its "issues" are only in quotes "because at worst it'd allow a few
-> > unnecessary deferred probes":
-> > https://patchwork.kernel.org/project/netdevbpf/patch/20210826074526.825517-2-saravanak@google.com/#24418895
-> >
-> > So if that's the criterion by which an issue is an issue, maybe we
-> > should take a step back and look at the bigger picture.
-> >
-> > There is nothing about the idea that a PHY might defer probing, or about
-> > the changes proposed here, that has anything with DSA. Furthermore, the
-> > changes done by this series solve the problem in the same way: "they
-> > allow a few unnecessary deferred probes" <- in this case they provoke
-> > this to the caller of phy_attach_direct.
-> >
-> > If we look at commit 16983507742c ("net: phy: probe PHY drivers
-> > synchronously"), we see that the PHY library expectation is for the PHY
-> > device to have a PHY driver bound to it as soon as device_add() finishes.
-> >
-> > Well, as it turns out, in case the PHY device has any supplier which is
-> > not ready, this is not possible, but that patch still seems to ensure
-> > that the process of binding a driver to the device has at least started.
-> > That process will continue for a while, and will race with
-> > phy_attach_direct calls, so we need to make the latter observe the fact
-> > that a driver is struggling to probe, and wait for it a bit more.
-> >
-> > What I've not tested is loading the PHY module at runtime, and seeing
-> > how phy_attach_direct behaves then. I expect that this change set will
-> > not alter the behavior in that case: the genphy will still bind to a
-> > device with no driver, and phy_attach_direct will not return -EPROBE_DEFER
-> > in that case.
-> >
-> > I might not be very versed in the device core/internals, but the patches
-> > make sense to me, and worked as intended from the first try on my system
-> > (Turris MOX with mv88e6xxx), which was modified to make the same "sins"
-> > as those called out in the thread above:
-> >
-> > - use PHY interrupts provided by the switch itself as an interrupt-controller
-> > - call of_mdiobus_register from setup() and not from probe(), so as to
-> >   not circumvent fw_devlink's limitations, and still get to hit the PHY
-> >   probe deferral conditions.
-> >
-> > So feedback and testing on other platforms is very appreciated.
-> >
-> > Vladimir Oltean (3):
-> >   net: phy: don't bind genphy in phy_attach_direct if the specific
-> >     driver defers probe
-> >   net: dsa: destroy the phylink instance on any error in
-> >     dsa_slave_phy_setup
-> >   net: dsa: allow the phy_connect() call to return -EPROBE_DEFER
-> >
-> >  drivers/base/dd.c            | 21 +++++++++++++++++++--
-> >  drivers/net/phy/phy_device.c |  8 ++++++++
-> >  include/linux/device.h       |  1 +
-> >  net/dsa/dsa2.c               |  2 ++
-> >  net/dsa/slave.c              | 12 +++++-------
-> >  5 files changed, 35 insertions(+), 9 deletions(-)
-> >
-> > --
-> > 2.25.1
-> >
->
-> Ouch, I just realized that Saravana, the person whose reaction I've been
-> waiting for the most, is not copied....
->
-> Saravana, you can find the thread here to sync up with what has been
-> discussed:
-> https://patchwork.kernel.org/project/netdevbpf/cover/20210901225053.1205571-1-vladimir.oltean@nxp.com/
-
-Woah! The thread blew up.
-
->
-> Sorry.
-
-No worries.
-
-I'll read through the thread later and maybe provide more responses,
-but one thing I wanted to say right away:
-
-Don't depend on dev->p->deferred_probe. It can be "empty" for a device
-that has returned -EPROBE_DEFER for a bunch of reasons:
-
-1. When the device is in the middle of being reattempted, it would be
-empty. You can't hold any lock that'll ensure correctness either
-because deferred probe locking is a mess (I'm working on cleaning that
-up).
-
-2. I'm working on actually not adding devices to that list if there's
-a known supplier that hasn't been probed yet. No point retrying it
-again and again for every deferred probe trigger when we know it's
-going to fail. And we'll basically get topological probe ordering.
-
-Your closest bet right now is d->can_match. Only caveat is that it's
-not cleared if the actual driver gets unregistered.
-
-
--Saravana
+On Fri, Sep 03, 2021 at 12:27:52AM +0200, Toke Høiland-Jørgensen wrote:
+> >> The question is if it's useful to provide the full struct_ops for
+> >> qdiscs? Having it would allow a BPF program to implement that interface
+> >> towards userspace (things like statistics, classes etc), but the
+> >> question is if anyone is going to bother with that given the wealth of
+> >> BPF-specific introspection tools already available?
+Instead of bpftool can only introspect bpf qdisc and the existing tc
+can only introspect kernel qdisc,  it will be nice to have bpf
+qdisc work as other qdisc and showing details together with others
+in tc.  e.g. a bpf qdisc export its data/stats with its btf-id
+to tc and have tc print it out in a generic way?
