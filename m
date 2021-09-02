@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71EC73FF6F9
-	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 00:16:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBBD63FF6FA
+	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 00:16:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234028AbhIBWRR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 18:17:17 -0400
-Received: from novek.ru ([213.148.174.62]:60350 "EHLO novek.ru"
+        id S231684AbhIBWRa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 18:17:30 -0400
+Received: from novek.ru ([213.148.174.62]:60372 "EHLO novek.ru"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231684AbhIBWRP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Sep 2021 18:17:15 -0400
+        id S243711AbhIBWR0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Sep 2021 18:17:26 -0400
 Received: from nat1.ooonet.ru (gw.zelenaya.net [91.207.137.40])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by novek.ru (Postfix) with ESMTPSA id DDE09504080;
-        Fri,  3 Sep 2021 01:13:02 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru DDE09504080
+        by novek.ru (Postfix) with ESMTPSA id 2492B504081;
+        Fri,  3 Sep 2021 01:13:08 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 2492B504081
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1630620787; bh=htM0bYVvpwMhmEKqwtiX3u6zhNVDYeI3Ra0nrYVVTdw=;
+        t=1630620793; bh=7MLSqTjtEFqhLmhm5Adq1Axljfaq+F24kmWjdVLQU8g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jDxTmyBK8yvpX9BlsHpUSFzOKczFvySlS9592lCToBOI3YUGVRlvPraNlTEY6ne3t
-         wR4kJr8NpJlsnxTOc/2r4PNutToIj/8Bj1zPMa12YM69HGIOBo8kWb76m1LQ7pjJNR
-         tXIFQ8J3ccUoTPDSSmkYx53ZoHK2g9MJpdO5h1jw=
+        b=zy9TFbbQ8C4soThdaRrOT1P4K7CSjxTK+DM6H9hzJ9KxJTrEz9b4TzQXSC60eXC9X
+         nrVQ2AxkwjQszQRYgja0Qw6EGR7MkTtloPjCN+xuFDuOZQG1j63E6KbvLQj+ETeW87
+         gs5TnYPX+1tdBr55f/Ddy52GTrFrmIoyRAcjTW9M=
 From:   Vadim Fedorenko <vfedorenko@novek.ru>
 To:     Martin KaFai Lau <kafai@fb.com>
 Cc:     Vadim Fedorenko <vfedorenko@novek.ru>,
@@ -31,9 +31,9 @@ Cc:     Vadim Fedorenko <vfedorenko@novek.ru>,
         John Fastabend <john.fastabend@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         bpf@vger.kernel.org
-Subject: [PATCH bpf-next 1/2] bpf: add hardware timestamp field to __sk_buff
-Date:   Fri,  3 Sep 2021 01:15:50 +0300
-Message-Id: <20210902221551.15566-2-vfedorenko@novek.ru>
+Subject: [PATCH bpf-next 2/2] selftests/bpf: test new __sk_buff field hwtstamp
+Date:   Fri,  3 Sep 2021 01:15:51 +0300
+Message-Id: <20210902221551.15566-3-vfedorenko@novek.ru>
 X-Mailer: git-send-email 2.18.4
 In-Reply-To: <20210902221551.15566-1-vfedorenko@novek.ru>
 References: <20210902221551.15566-1-vfedorenko@novek.ru>
@@ -44,69 +44,146 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-BPF programs may want to know hardware timestamps if NIC supports
-such timestamping.
-
-Expose this data as hwtstamp field of __sk_buff the same way as
-gso_segs/gso_size.
-
-Also update BPF_PROG_TEST_RUN tests of the feature.
+Analogous to the gso_segs selftests introduced in commit d9ff286a0f59
+("bpf: allow BPF programs access skb_shared_info->gso_segs field")
 
 Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
 ---
- include/uapi/linux/bpf.h       |  2 ++
- net/core/filter.c              | 11 +++++++++++
- tools/include/uapi/linux/bpf.h |  2 ++
- 3 files changed, 15 insertions(+)
+ lib/test_bpf.c                                |  1 +
+ net/bpf/test_run.c                            |  8 ++++
+ .../selftests/bpf/prog_tests/skb_ctx.c        |  1 +
+ .../selftests/bpf/progs/test_skb_ctx.c        |  2 +
+ .../testing/selftests/bpf/verifier/ctx_skb.c  | 47 +++++++++++++++++++
+ 5 files changed, 59 insertions(+)
 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 791f31dd0abe..c7d05b49f557 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -5284,6 +5284,8 @@ struct __sk_buff {
- 	__u32 gso_segs;
- 	__bpf_md_ptr(struct bpf_sock *, sk);
- 	__u32 gso_size;
-+	__u32 padding;		/* Padding, future use. */
-+	__u64 hwtstamp;
- };
+diff --git a/lib/test_bpf.c b/lib/test_bpf.c
+index 830a18ecffc8..0018d51b93b0 100644
+--- a/lib/test_bpf.c
++++ b/lib/test_bpf.c
+@@ -8800,6 +8800,7 @@ static __init struct sk_buff *build_test_skb(void)
+ 	skb_shinfo(skb[0])->gso_type |= SKB_GSO_DODGY;
+ 	skb_shinfo(skb[0])->gso_segs = 0;
+ 	skb_shinfo(skb[0])->frag_list = skb[1];
++	skb_shinfo(skb[0])->hwtstamps.hwtstamp = 1000;
  
- struct bpf_tunnel_key {
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 2e32cee2c469..1d8f8494d325 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -8884,6 +8884,17 @@ static u32 bpf_convert_ctx_access(enum bpf_access_type type,
- 				      si->dst_reg, si->src_reg,
- 				      offsetof(struct sk_buff, sk));
- 		break;
-+	case offsetof(struct __sk_buff, hwtstamp):
-+		BUILD_BUG_ON(sizeof_field(struct skb_shared_hwtstamps, hwtstamp) != 8);
-+		BUILD_BUG_ON(offsetof(struct skb_shared_hwtstamps, hwtstamp) != 0);
+ 	/* adjust skb[0]'s len */
+ 	skb[0]->len += skb[1]->len;
+diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+index 2eb0e55ef54d..1232dd839d7a 100644
+--- a/net/bpf/test_run.c
++++ b/net/bpf/test_run.c
+@@ -511,6 +511,12 @@ static int convert___skb_to_skb(struct sk_buff *skb, struct __sk_buff *__skb)
+ 	/* gso_size is allowed */
+ 
+ 	if (!range_is_zero(__skb, offsetofend(struct __sk_buff, gso_size),
++			   offsetof(struct __sk_buff, hwtstamp)))
++		return -EINVAL;
 +
-+		insn = bpf_convert_shinfo_access(si, insn);
-+		*insn++ = BPF_LDX_MEM(BPF_DW,
-+				      si->dst_reg, si->dst_reg,
-+				      bpf_target_off(struct skb_shared_info,
-+						     hwtstamps, 8,
-+						     target_size));
-+		break;
- 	}
++	/* hwtstamp is allowed */
++
++	if (!range_is_zero(__skb, offsetofend(struct __sk_buff, hwtstamp),
+ 			   sizeof(struct __sk_buff)))
+ 		return -EINVAL;
  
- 	return insn - insn_buf;
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 791f31dd0abe..c7d05b49f557 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -5284,6 +5284,8 @@ struct __sk_buff {
- 	__u32 gso_segs;
- 	__bpf_md_ptr(struct bpf_sock *, sk);
- 	__u32 gso_size;
-+	__u32 padding;		/* Padding, future use. */
-+	__u64 hwtstamp;
- };
+@@ -532,6 +538,7 @@ static int convert___skb_to_skb(struct sk_buff *skb, struct __sk_buff *__skb)
+ 		return -EINVAL;
+ 	skb_shinfo(skb)->gso_segs = __skb->gso_segs;
+ 	skb_shinfo(skb)->gso_size = __skb->gso_size;
++	skb_shinfo(skb)->hwtstamps.hwtstamp = __skb->hwtstamp;
  
- struct bpf_tunnel_key {
+ 	return 0;
+ }
+@@ -550,6 +557,7 @@ static void convert_skb_to___skb(struct sk_buff *skb, struct __sk_buff *__skb)
+ 	memcpy(__skb->cb, &cb->data, QDISC_CB_PRIV_LEN);
+ 	__skb->wire_len = cb->pkt_len;
+ 	__skb->gso_segs = skb_shinfo(skb)->gso_segs;
++	__skb->hwtstamp = skb_shinfo(skb)->hwtstamps.hwtstamp;
+ }
+ 
+ int bpf_prog_test_run_skb(struct bpf_prog *prog, const union bpf_attr *kattr,
+diff --git a/tools/testing/selftests/bpf/prog_tests/skb_ctx.c b/tools/testing/selftests/bpf/prog_tests/skb_ctx.c
+index fafeddaad6a9..87ca95e8442b 100644
+--- a/tools/testing/selftests/bpf/prog_tests/skb_ctx.c
++++ b/tools/testing/selftests/bpf/prog_tests/skb_ctx.c
+@@ -17,6 +17,7 @@ void test_skb_ctx(void)
+ 		.gso_segs = 8,
+ 		.mark = 9,
+ 		.gso_size = 10,
++		.hwtstamp = 11,
+ 	};
+ 	struct bpf_prog_test_run_attr tattr = {
+ 		.data_in = &pkt_v4,
+diff --git a/tools/testing/selftests/bpf/progs/test_skb_ctx.c b/tools/testing/selftests/bpf/progs/test_skb_ctx.c
+index b02ea589ce7e..5cfa91cf0f08 100644
+--- a/tools/testing/selftests/bpf/progs/test_skb_ctx.c
++++ b/tools/testing/selftests/bpf/progs/test_skb_ctx.c
+@@ -25,6 +25,8 @@ int process(struct __sk_buff *skb)
+ 		return 1;
+ 	if (skb->gso_size != 10)
+ 		return 1;
++	if (skb->hwtstamp != 11)
++		return 1;
+ 
+ 	return 0;
+ }
+diff --git a/tools/testing/selftests/bpf/verifier/ctx_skb.c b/tools/testing/selftests/bpf/verifier/ctx_skb.c
+index 2022c0f2cd75..ab3df1aa691d 100644
+--- a/tools/testing/selftests/bpf/verifier/ctx_skb.c
++++ b/tools/testing/selftests/bpf/verifier/ctx_skb.c
+@@ -1057,6 +1057,53 @@
+ 	.result = ACCEPT,
+ 	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
+ },
++{
++	"read hwtstamp from CGROUP_SKB",
++	.insns = {
++	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1,
++		    offsetof(struct __sk_buff, hwtstamp)),
++	BPF_MOV64_IMM(BPF_REG_0, 0),
++	BPF_EXIT_INSN(),
++	},
++	.result = ACCEPT,
++	.prog_type = BPF_PROG_TYPE_CGROUP_SKB,
++},
++{
++	"read hwtstamp from CGROUP_SKB",
++	.insns = {
++	BPF_LDX_MEM(BPF_DW, BPF_REG_1, BPF_REG_1,
++		    offsetof(struct __sk_buff, hwtstamp)),
++	BPF_MOV64_IMM(BPF_REG_0, 0),
++	BPF_EXIT_INSN(),
++	},
++	.result = ACCEPT,
++	.prog_type = BPF_PROG_TYPE_CGROUP_SKB,
++},
++{
++	"write hwtstamp from CGROUP_SKB",
++	.insns = {
++	BPF_MOV64_IMM(BPF_REG_0, 0),
++	BPF_STX_MEM(BPF_DW, BPF_REG_1, BPF_REG_0,
++		    offsetof(struct __sk_buff, hwtstamp)),
++	BPF_MOV64_IMM(BPF_REG_0, 0),
++	BPF_EXIT_INSN(),
++	},
++	.result = REJECT,
++	.result_unpriv = REJECT,
++	.errstr = "invalid bpf_context access off=184 size=8",
++	.prog_type = BPF_PROG_TYPE_CGROUP_SKB,
++},
++{
++	"read hwtstamp from CLS",
++	.insns = {
++	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1,
++		    offsetof(struct __sk_buff, hwtstamp)),
++	BPF_MOV64_IMM(BPF_REG_0, 0),
++	BPF_EXIT_INSN(),
++	},
++	.result = ACCEPT,
++	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
++},
+ {
+ 	"check wire_len is not readable by sockets",
+ 	.insns = {
 -- 
 2.18.4
 
