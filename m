@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3F343FF38D
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 20:53:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C9C03FF38E
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 20:53:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347268AbhIBSyF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 14:54:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53470 "EHLO
+        id S1347286AbhIBSyQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 14:54:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347196AbhIBSxn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 14:53:43 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6211EC061757
-        for <netdev@vger.kernel.org>; Thu,  2 Sep 2021 11:52:44 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id me10so6658011ejb.11
-        for <netdev@vger.kernel.org>; Thu, 02 Sep 2021 11:52:44 -0700 (PDT)
+        with ESMTP id S1347184AbhIBSxo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 14:53:44 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D489C061575
+        for <netdev@vger.kernel.org>; Thu,  2 Sep 2021 11:52:45 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id l6so4401584edb.7
+        for <netdev@vger.kernel.org>; Thu, 02 Sep 2021 11:52:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=anyfinetworks-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=fe4eWb85J6m0QyPRrlErv4OFCOk0vrakV5gQp5QIkgM=;
-        b=qdVRAnJq9V6eW/mmYRf8qhHI3JpYtXNTXznzWBt5eozY0RCrN28DLNsLeCI7v1SWb+
-         sEsoegwLCKDJYiJ+wOYUDSuSvgmK6VdHEbVXzBFPS/vEnpDfTPkrGLDkweVFaATnyauz
-         N6AHcRR33TxfsPQu7lvP2gCJeVZSQ1uN41MHjdfusTDn8vSAJOov/rZlgrowVrk02Neg
-         vmZH9YRrVyQkDk0t31PqH+6jRheo5Vg8CRzM1Adh9ozgXULd6VOeXwoSuUosTJoU2aGC
-         +HK6lVb1P6FINo6QftHmAW2P//iIn6//yNQ/CDFZMi0jIzNkY5ge03iy9bpbbLvTt5K5
-         Eamg==
+        bh=qtoxW4oqoN2Aw187vigaXQogMtSCsJliStJLa5ltCRQ=;
+        b=qIPSnXYAxaxImCqCEQ/touP7x3c0zy+btEPJne/RQh2sr47vPNnZy4flFL1QuvqnlN
+         M/nO1uq7SBKR3k+/haEcPcvFzBP7Z8KTdi/GzCmd4bJij+B1MXurpVQfTZ9lmGdTf67w
+         a8KrpTDVpE64YXGpJAz32LNNfMDdqlVUst6b0+zrDVEqc4+3HYLnZGY67ox3NvsrI7zi
+         /doWcumN79ZTB5TYaRHdZLsUuueDG+b+C4HZAECwwu8fc0Ug+59JFWo0WF0/w+aBTVyz
+         Zg3+eGkKQa2ITEGgwJM1eqvNP90uVu7ruzugD4D4AioKE6ALUEVKuE+Dua/X0XYs7LB0
+         zk3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=fe4eWb85J6m0QyPRrlErv4OFCOk0vrakV5gQp5QIkgM=;
-        b=oI7G6mW6wjndqk9eS3W7QO20sWBl6R19RdbufHvLuzO/oBpBfynDGkxdSuzUROC2F2
-         bPb6K9Nkk4xfL9Gq08Wjpox9z0aMcct6cuiOsGZMC0rGwIAu4Ivrfou7DgmO/9kk/AQt
-         6kTlVkxnAuCly3opYzwf0XyzzlWcxma/EAmKQv/zxtL9L2Tuiv7nj6BMov8HZqWtW+4o
-         d+ZySX2Yrw8JeE2qlpmVkPpofYuD0Cc3oGIMWOQpPeHhe5tSx8bdmcV5udqyp+t3GL6r
-         vSIZwRrmroLzCBH1V0iJsoR6RLYURKPqI6ePgWykUU0iGsOe5yI/+qlDr1T0Pw4P77ZQ
-         qw+A==
-X-Gm-Message-State: AOAM530HkWJgTHgy8yv8Ij3x1GJsXAWgPO5xjQzJwEWTkuGC/RUD/qD9
-        sxsc+Nt8lRnd/n/pRRD77TvmCQ==
-X-Google-Smtp-Source: ABdhPJwaF22Ly50hu37Pob+mcVLbnuhxxUHBoFIASfy2i0O6LtVEDTVQU4tSZv8WjlpGfv8KXUMYCg==
-X-Received: by 2002:a17:906:d1d1:: with SMTP id bs17mr5211008ejb.198.1630608762889;
-        Thu, 02 Sep 2021 11:52:42 -0700 (PDT)
+        bh=qtoxW4oqoN2Aw187vigaXQogMtSCsJliStJLa5ltCRQ=;
+        b=lLwSTuYbBUTVty/Ud83A/N5+rQ1CEtPbd0dOci7YgAbpGV8PJ+ACJVJASu2amXqG4W
+         1+Fqf6BVuBfhPsPAFHVrMvfRV8FIcBHrQkyRC++53ufCNVJ2AiC43CxzKkEwqXMo08hN
+         8bcTauDxB5YqmM1czCX1ZPlPUy/22EzdU15cpVT1NruoHzpmwiNzg9XP1Fe+7uANjGgA
+         NizkuBU4jsujkZ37aVINi3ctF/5/vs4syt/UOYCxvWfOaWB5sMy2/s2dDpWMrL4qh+xe
+         tfJVn4uul/B3z3WfOguXPg/jvj7c27+VHmRjZjijFUlv49Fd6XwyPhtavOFKUlP6uvM6
+         c7ug==
+X-Gm-Message-State: AOAM533g2wAo++DgYsQi92n/EX+xrCWe6zQay62AyCX66jREZNFqBjoY
+        s5h7pWrZ+XT4cDsuokV8RWZusQ==
+X-Google-Smtp-Source: ABdhPJzRmcGDdhz1PBimtinZ//n6icNmaFGF3bHSlYViu5g5OPfUxWlvMHh8PTo0G5BjrPv3pqqvkA==
+X-Received: by 2002:a05:6402:54:: with SMTP id f20mr4887029edu.382.1630608763935;
+        Thu, 02 Sep 2021 11:52:43 -0700 (PDT)
 Received: from anpc2.lan (static-213-115-136-2.sme.telenor.se. [213.115.136.2])
-        by smtp.gmail.com with ESMTPSA id mb14sm1592235ejb.81.2021.09.02.11.52.41
+        by smtp.gmail.com with ESMTPSA id mb14sm1592235ejb.81.2021.09.02.11.52.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Sep 2021 11:52:42 -0700 (PDT)
+        Thu, 02 Sep 2021 11:52:43 -0700 (PDT)
 From:   Johan Almbladh <johan.almbladh@anyfinetworks.com>
 To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
         iii@linux.ibm.com
@@ -54,9 +54,9 @@ Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
         john.fastabend@gmail.com, kpsingh@kernel.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org,
         Johan Almbladh <johan.almbladh@anyfinetworks.com>
-Subject: [PATCH bpf-next 05/13] bpf/tests: Add exhaustive tests of JMP operand magnitudes
-Date:   Thu,  2 Sep 2021 20:52:21 +0200
-Message-Id: <20210902185229.1840281-6-johan.almbladh@anyfinetworks.com>
+Subject: [PATCH bpf-next 06/13] bpf/tests: Add staggered JMP and JMP32 tests
+Date:   Thu,  2 Sep 2021 20:52:22 +0200
+Message-Id: <20210902185229.1840281-7-johan.almbladh@anyfinetworks.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210902185229.1840281-1-johan.almbladh@anyfinetworks.com>
 References: <20210902185229.1840281-1-johan.almbladh@anyfinetworks.com>
@@ -66,815 +66,859 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds a set of tests for conditional JMP and JMP32 operations to
-verify correctness for all possible magnitudes of the immediate and
-register operands. Mainly intended for JIT testing.
+This patch adds a new type of jump test where the program jumps forwards
+and backwards with increasing offset. It mainly tests JITs where a
+relative jump may generate different JITed code depending on the offset
+size, read MIPS.
 
 Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
 ---
- lib/test_bpf.c | 779 +++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 779 insertions(+)
+ lib/test_bpf.c | 829 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 829 insertions(+)
 
 diff --git a/lib/test_bpf.c b/lib/test_bpf.c
-index 7b7f81516c26..431f8d072f78 100644
+index 431f8d072f78..ea29e42418e3 100644
 --- a/lib/test_bpf.c
 +++ b/lib/test_bpf.c
-@@ -1101,6 +1101,384 @@ static int bpf_fill_alu32_mod_reg(struct bpf_test *self)
- 	return __bpf_fill_alu32_reg(self, BPF_MOD);
+@@ -1478,6 +1478,426 @@ static int bpf_fill_jmp32_jsle_reg(struct bpf_test *self)
+ 	return __bpf_fill_jmp32_reg(self, BPF_JSLE);
  }
  
-+
 +/*
-+ * Exhaustive tests of JMP operations for all combinations of power-of-two
-+ * magnitudes of the operands, both for positive and negative values. The
-+ * test is designed to verify e.g. the JMP and JMP32 operations for JITs that
-+ * emit different code depending on the magnitude of the immediate value.
++ * Set up a sequence of staggered jumps, forwards and backwards with
++ * increasing offset. This tests the conversion of relative jumps to
++ * JITed native jumps. On some architectures, for example MIPS, a large
++ * PC-relative jump offset may overflow the immediate field of the native
++ * conditional branch instruction, triggering a conversion to use an
++ * absolute jump instead. Since this changes the jump offsets, another
++ * offset computation pass is necessary, and that may in turn trigger
++ * another branch conversion. This jump sequence is particularly nasty
++ * in that regard.
++ *
++ * The sequence generation is parameterized by size and jump type.
++ * The size must be even, and the expected result is always size + 1.
++ * Below is an example with size=8 and result=9.
++ *
++ *                     ________________________Start
++ *                     R0 = 0
++ *                     R1 = r1
++ *                     R2 = r2
++ *            ,------- JMP +4 * 3______________Preamble: 4 insns
++ * ,----------|-ind 0- if R0 != 7 JMP 8 * 3 + 1 <--------------------.
++ * |          |        R0 = 8                                        |
++ * | ,--------|-----1- JMP +7 * 3               ------------------------.
++ * | |        |        if R0 != 5 JMP 7 * 3 + 1 <--------------.     |  |
++ * | |        |        R0 = 6                                  |     |  |
++ * | | ,------|-----2- JMP +5 * 3               ------------------.  |  |
++ * | | |      |        if R0 != 3 JMP 6 * 3 + 1 <--------.     |  |  |  |
++ * | | |      |        R0 = 4                            |     |  |  |  |
++ * | | | ,----|-----3- JMP +3 * 3               ------------.  |  |  |  |
++ * | | | |    |        if R0 != 1 JMP 5 * 3 + 1 <--.     |  |  |  |  |  |
++ * | | | |    |        R0 = 2                      |     |  |  |  |  |  |
++ * | | | | ,--|-----4- JMP +1 * 3               ------.  |  |  |  |  |  |
++ * | | | | |  `------> if R0 != 0 JMP 4 * 3 + 1    1  2  3  4  5  6  7  8 loc
++ * | | | | |           R0 = 1                     -1 +2 -3 +4 -5 +6 -7 +8 off
++ * | | | | | ,------5- JMP -2 * 3               ---'  |  |  |  |  |  |  |
++ * | | | | | |         if R0 != 2 JMP 3 * 3 + 1 <-----'  |  |  |  |  |  |
++ * | | | | | |         R0 = 3                            |  |  |  |  |  |
++ * | | | | | |         JMP -4 * 3               ---------'  |  |  |  |  |
++ * | | | | | | ,----6- if R0 != 4 JMP 2 * 3 + 1 <-----------'  |  |  |  |
++ * | | | | | | |       R0 = 5                                  |  |  |  |
++ * | | | | | | |       JMP -6 * 3               ---------------'  |  |  |
++ * | | | | | | | ,--7- if R0 != 6 JMP 1 * 3 + 1 <-----------------'  |  |
++ * | | | | | | | |     R0 = 7                                        |  |
++ * | | Error | | |     JMP -8 * 3               ---------------------'  |
++ * | | paths | | | ,8- if R0 != 8 JMP 0 * 3 + 1 <-----------------------'
++ * | | | | | | | | |   R0 = 9__________________Sequence: 3 * size - 1 insns
++ * `-+-+-+-+-+-+-+-+-> EXIT____________________Return: 1 insn
++ *
 + */
 +
-+static bool __bpf_match_jmp_cond(s64 v1, s64 v2, u8 op)
++/* The maximum size parameter */
++#define MAX_STAGGERED_JMP_SIZE ((0x7fff / 3) & ~1)
++
++/* We use a reduced number of iterations to get a reasonable execution time */
++#define NR_STAGGERED_JMP_RUNS 10
++
++static int __bpf_fill_staggered_jumps(struct bpf_test *self,
++				      const struct bpf_insn *jmp,
++				      u64 r1, u64 r2)
 +{
-+	switch (op) {
-+	case BPF_JSET:
-+		return !!(v1 & v2);
-+	case BPF_JEQ:
-+		return v1 == v2;
-+	case BPF_JNE:
-+		return v1 != v2;
-+	case BPF_JGT:
-+		return (u64)v1 > (u64)v2;
-+	case BPF_JGE:
-+		return (u64)v1 >= (u64)v2;
-+	case BPF_JLT:
-+		return (u64)v1 < (u64)v2;
-+	case BPF_JLE:
-+		return (u64)v1 <= (u64)v2;
-+	case BPF_JSGT:
-+		return v1 > v2;
-+	case BPF_JSGE:
-+		return v1 >= v2;
-+	case BPF_JSLT:
-+		return v1 < v2;
-+	case BPF_JSLE:
-+		return v1 <= v2;
-+	}
-+	return false;
-+}
++	int size = self->test[0].result - 1;
++	int len = 4 + 3 * (size + 1);
++	struct bpf_insn *insns;
++	int off, ind;
 +
-+static int __bpf_emit_jmp_imm(struct bpf_test *self, void *arg,
-+			      struct bpf_insn *insns, s64 dst, s64 imm)
-+{
-+	int op = *(int *)arg;
++	insns = kmalloc_array(len, sizeof(*insns), GFP_KERNEL);
++	if (!insns)
++		return -ENOMEM;
 +
-+	if (insns) {
-+		bool match = __bpf_match_jmp_cond(dst, (s32)imm, op);
-+		int i = 0;
++	/* Preamble */
++	insns[0] = BPF_ALU64_IMM(BPF_MOV, R0, 0);
++	insns[1] = BPF_ALU64_IMM(BPF_MOV, R1, r1);
++	insns[2] = BPF_ALU64_IMM(BPF_MOV, R2, r2);
++	insns[3] = BPF_JMP_IMM(BPF_JA, 0, 0, 3 * size / 2);
 +
-+		insns[i++] = BPF_ALU32_IMM(BPF_MOV, R0, match);
++	/* Sequence */
++	for (ind = 0, off = size; ind <= size; ind++, off -= 2) {
++		struct bpf_insn *ins = &insns[4 + 3 * ind];
++		int loc;
 +
-+		i += __bpf_ld_imm64(&insns[i], R1, dst);
-+		insns[i++] = BPF_JMP_IMM(op, R1, imm, 1);
-+		if (!match)
-+			insns[i++] = BPF_JMP_IMM(BPF_JA, 0, 0, 1);
-+		insns[i++] = BPF_EXIT_INSN();
++		if (off == 0)
++			off--;
 +
-+		return i;
++		loc = abs(off);
++		ins[0] = BPF_JMP_IMM(BPF_JNE, R0, loc - 1,
++				     3 * (size - ind) + 1);
++		ins[1] = BPF_ALU64_IMM(BPF_MOV, R0, loc);
++		ins[2] = *jmp;
++		ins[2].off = 3 * (off - 1);
 +	}
 +
-+	return 5 + 1;
++	/* Return */
++	insns[len - 1] = BPF_EXIT_INSN();
++
++	self->u.ptr.insns = insns;
++	self->u.ptr.len = len;
++
++	return 0;
 +}
 +
-+static int __bpf_emit_jmp32_imm(struct bpf_test *self, void *arg,
-+				struct bpf_insn *insns, s64 dst, s64 imm)
++/* 64-bit unconditional jump */
++static int bpf_fill_staggered_ja(struct bpf_test *self)
 +{
-+	int op = *(int *)arg;
++	struct bpf_insn jmp = BPF_JMP_IMM(BPF_JA, 0, 0, 0);
 +
-+	if (insns) {
-+		bool match = __bpf_match_jmp_cond((s32)dst, (s32)imm, op);
-+		int i = 0;
-+
-+		i += __bpf_ld_imm64(&insns[i], R1, dst);
-+		insns[i++] = BPF_JMP32_IMM(op, R1, imm, 1);
-+		if (!match)
-+			insns[i++] = BPF_JMP_IMM(BPF_JA, 0, 0, 1);
-+		insns[i++] = BPF_EXIT_INSN();
-+
-+		return i;
-+	}
-+
-+	return 5;
++	return __bpf_fill_staggered_jumps(self, &jmp, 0, 0);
 +}
 +
-+static int __bpf_emit_jmp_reg(struct bpf_test *self, void *arg,
-+			      struct bpf_insn *insns, s64 dst, s64 src)
++/* 64-bit immediate jumps */
++static int bpf_fill_staggered_jeq_imm(struct bpf_test *self)
 +{
-+	int op = *(int *)arg;
++	struct bpf_insn jmp = BPF_JMP_IMM(BPF_JEQ, R1, 1234, 0);
 +
-+	if (insns) {
-+		bool match = __bpf_match_jmp_cond(dst, src, op);
-+		int i = 0;
-+
-+		i += __bpf_ld_imm64(&insns[i], R1, dst);
-+		i += __bpf_ld_imm64(&insns[i], R2, src);
-+		insns[i++] = BPF_JMP_REG(op, R1, R2, 1);
-+		if (!match)
-+			insns[i++] = BPF_JMP_IMM(BPF_JA, 0, 0, 1);
-+		insns[i++] = BPF_EXIT_INSN();
-+
-+		return i;
-+	}
-+
-+	return 7;
++	return __bpf_fill_staggered_jumps(self, &jmp, 1234, 0);
 +}
 +
-+static int __bpf_emit_jmp32_reg(struct bpf_test *self, void *arg,
-+				struct bpf_insn *insns, s64 dst, s64 src)
++static int bpf_fill_staggered_jne_imm(struct bpf_test *self)
 +{
-+	int op = *(int *)arg;
++	struct bpf_insn jmp = BPF_JMP_IMM(BPF_JNE, R1, 1234, 0);
 +
-+	if (insns) {
-+		bool match = __bpf_match_jmp_cond((s32)dst, (s32)src, op);
-+		int i = 0;
-+
-+		i += __bpf_ld_imm64(&insns[i], R1, dst);
-+		i += __bpf_ld_imm64(&insns[i], R2, src);
-+		insns[i++] = BPF_JMP32_REG(op, R1, R2, 1);
-+		if (!match)
-+			insns[i++] = BPF_JMP_IMM(BPF_JA, 0, 0, 1);
-+		insns[i++] = BPF_EXIT_INSN();
-+
-+		return i;
-+	}
-+
-+	return 7;
++	return __bpf_fill_staggered_jumps(self, &jmp, 4321, 0);
 +}
 +
-+static int __bpf_fill_jmp_imm(struct bpf_test *self, int op)
++static int bpf_fill_staggered_jset_imm(struct bpf_test *self)
 +{
-+	return __bpf_fill_pattern(self, &op, 64, 32,
-+				  PATTERN_BLOCK1, PATTERN_BLOCK2,
-+				  &__bpf_emit_jmp_imm);
++	struct bpf_insn jmp = BPF_JMP_IMM(BPF_JSET, R1, 0x82, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, 0x86, 0);
 +}
 +
-+static int __bpf_fill_jmp32_imm(struct bpf_test *self, int op)
++static int bpf_fill_staggered_jgt_imm(struct bpf_test *self)
 +{
-+	return __bpf_fill_pattern(self, &op, 64, 32,
-+				  PATTERN_BLOCK1, PATTERN_BLOCK2,
-+				  &__bpf_emit_jmp32_imm);
++	struct bpf_insn jmp = BPF_JMP_IMM(BPF_JGT, R1, 1234, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, 0x80000000, 0);
 +}
 +
-+static int __bpf_fill_jmp_reg(struct bpf_test *self, int op)
++static int bpf_fill_staggered_jge_imm(struct bpf_test *self)
 +{
-+	return __bpf_fill_pattern(self, &op, 64, 64,
-+				  PATTERN_BLOCK1, PATTERN_BLOCK2,
-+				  &__bpf_emit_jmp_reg);
++	struct bpf_insn jmp = BPF_JMP_IMM(BPF_JGE, R1, 1234, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, 1234, 0);
 +}
 +
-+static int __bpf_fill_jmp32_reg(struct bpf_test *self, int op)
++static int bpf_fill_staggered_jlt_imm(struct bpf_test *self)
 +{
-+	return __bpf_fill_pattern(self, &op, 64, 64,
-+				  PATTERN_BLOCK1, PATTERN_BLOCK2,
-+				  &__bpf_emit_jmp32_reg);
++	struct bpf_insn jmp = BPF_JMP_IMM(BPF_JLT, R1, 0x80000000, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, 1234, 0);
 +}
 +
-+/* JMP immediate tests */
-+static int bpf_fill_jmp_jset_imm(struct bpf_test *self)
++static int bpf_fill_staggered_jle_imm(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp_imm(self, BPF_JSET);
++	struct bpf_insn jmp = BPF_JMP_IMM(BPF_JLE, R1, 1234, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, 1234, 0);
 +}
 +
-+static int bpf_fill_jmp_jeq_imm(struct bpf_test *self)
++static int bpf_fill_staggered_jsgt_imm(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp_imm(self, BPF_JEQ);
++	struct bpf_insn jmp = BPF_JMP_IMM(BPF_JSGT, R1, -2, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, -1, 0);
 +}
 +
-+static int bpf_fill_jmp_jne_imm(struct bpf_test *self)
++static int bpf_fill_staggered_jsge_imm(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp_imm(self, BPF_JNE);
++	struct bpf_insn jmp = BPF_JMP_IMM(BPF_JSGE, R1, -2, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, -2, 0);
 +}
 +
-+static int bpf_fill_jmp_jgt_imm(struct bpf_test *self)
++static int bpf_fill_staggered_jslt_imm(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp_imm(self, BPF_JGT);
++	struct bpf_insn jmp = BPF_JMP_IMM(BPF_JSLT, R1, -1, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, -2, 0);
 +}
 +
-+static int bpf_fill_jmp_jge_imm(struct bpf_test *self)
++static int bpf_fill_staggered_jsle_imm(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp_imm(self, BPF_JGE);
++	struct bpf_insn jmp = BPF_JMP_IMM(BPF_JSLE, R1, -1, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, -1, 0);
 +}
 +
-+static int bpf_fill_jmp_jlt_imm(struct bpf_test *self)
++/* 64-bit register jumps */
++static int bpf_fill_staggered_jeq_reg(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp_imm(self, BPF_JLT);
++	struct bpf_insn jmp = BPF_JMP_REG(BPF_JEQ, R1, R2, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, 1234, 1234);
 +}
 +
-+static int bpf_fill_jmp_jle_imm(struct bpf_test *self)
++static int bpf_fill_staggered_jne_reg(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp_imm(self, BPF_JLE);
++	struct bpf_insn jmp = BPF_JMP_REG(BPF_JNE, R1, R2, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, 4321, 1234);
 +}
 +
-+static int bpf_fill_jmp_jsgt_imm(struct bpf_test *self)
++static int bpf_fill_staggered_jset_reg(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp_imm(self, BPF_JSGT);
++	struct bpf_insn jmp = BPF_JMP_REG(BPF_JSET, R1, R2, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, 0x86, 0x82);
 +}
 +
-+static int bpf_fill_jmp_jsge_imm(struct bpf_test *self)
++static int bpf_fill_staggered_jgt_reg(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp_imm(self, BPF_JSGE);
++	struct bpf_insn jmp = BPF_JMP_REG(BPF_JGT, R1, R2, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, 0x80000000, 1234);
 +}
 +
-+static int bpf_fill_jmp_jslt_imm(struct bpf_test *self)
++static int bpf_fill_staggered_jge_reg(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp_imm(self, BPF_JSLT);
++	struct bpf_insn jmp = BPF_JMP_REG(BPF_JGE, R1, R2, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, 1234, 1234);
 +}
 +
-+static int bpf_fill_jmp_jsle_imm(struct bpf_test *self)
++static int bpf_fill_staggered_jlt_reg(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp_imm(self, BPF_JSLE);
++	struct bpf_insn jmp = BPF_JMP_REG(BPF_JLT, R1, R2, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, 1234, 0x80000000);
 +}
 +
-+/* JMP32 immediate tests */
-+static int bpf_fill_jmp32_jset_imm(struct bpf_test *self)
++static int bpf_fill_staggered_jle_reg(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp32_imm(self, BPF_JSET);
++	struct bpf_insn jmp = BPF_JMP_REG(BPF_JLE, R1, R2, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, 1234, 1234);
 +}
 +
-+static int bpf_fill_jmp32_jeq_imm(struct bpf_test *self)
++static int bpf_fill_staggered_jsgt_reg(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp32_imm(self, BPF_JEQ);
++	struct bpf_insn jmp = BPF_JMP_REG(BPF_JSGT, R1, R2, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, -1, -2);
 +}
 +
-+static int bpf_fill_jmp32_jne_imm(struct bpf_test *self)
++static int bpf_fill_staggered_jsge_reg(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp32_imm(self, BPF_JNE);
++	struct bpf_insn jmp = BPF_JMP_REG(BPF_JSGE, R1, R2, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, -2, -2);
 +}
 +
-+static int bpf_fill_jmp32_jgt_imm(struct bpf_test *self)
++static int bpf_fill_staggered_jslt_reg(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp32_imm(self, BPF_JGT);
++	struct bpf_insn jmp = BPF_JMP_REG(BPF_JSLT, R1, R2, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, -2, -1);
 +}
 +
-+static int bpf_fill_jmp32_jge_imm(struct bpf_test *self)
++static int bpf_fill_staggered_jsle_reg(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp32_imm(self, BPF_JGE);
++	struct bpf_insn jmp = BPF_JMP_REG(BPF_JSLE, R1, R2, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, -1, -1);
 +}
 +
-+static int bpf_fill_jmp32_jlt_imm(struct bpf_test *self)
++/* 32-bit immediate jumps */
++static int bpf_fill_staggered_jeq32_imm(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp32_imm(self, BPF_JLT);
++	struct bpf_insn jmp = BPF_JMP32_IMM(BPF_JEQ, R1, 1234, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, 1234, 0);
 +}
 +
-+static int bpf_fill_jmp32_jle_imm(struct bpf_test *self)
++static int bpf_fill_staggered_jne32_imm(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp32_imm(self, BPF_JLE);
++	struct bpf_insn jmp = BPF_JMP32_IMM(BPF_JNE, R1, 1234, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, 4321, 0);
 +}
 +
-+static int bpf_fill_jmp32_jsgt_imm(struct bpf_test *self)
++static int bpf_fill_staggered_jset32_imm(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp32_imm(self, BPF_JSGT);
++	struct bpf_insn jmp = BPF_JMP32_IMM(BPF_JSET, R1, 0x82, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, 0x86, 0);
 +}
 +
-+static int bpf_fill_jmp32_jsge_imm(struct bpf_test *self)
++static int bpf_fill_staggered_jgt32_imm(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp32_imm(self, BPF_JSGE);
++	struct bpf_insn jmp = BPF_JMP32_IMM(BPF_JGT, R1, 1234, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, 0x80000000, 0);
 +}
 +
-+static int bpf_fill_jmp32_jslt_imm(struct bpf_test *self)
++static int bpf_fill_staggered_jge32_imm(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp32_imm(self, BPF_JSLT);
++	struct bpf_insn jmp = BPF_JMP32_IMM(BPF_JGE, R1, 1234, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, 1234, 0);
 +}
 +
-+static int bpf_fill_jmp32_jsle_imm(struct bpf_test *self)
++static int bpf_fill_staggered_jlt32_imm(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp32_imm(self, BPF_JSLE);
++	struct bpf_insn jmp = BPF_JMP32_IMM(BPF_JLT, R1, 0x80000000, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, 1234, 0);
 +}
 +
-+/* JMP register tests */
-+static int bpf_fill_jmp_jset_reg(struct bpf_test *self)
++static int bpf_fill_staggered_jle32_imm(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp_reg(self, BPF_JSET);
++	struct bpf_insn jmp = BPF_JMP32_IMM(BPF_JLE, R1, 1234, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, 1234, 0);
 +}
 +
-+static int bpf_fill_jmp_jeq_reg(struct bpf_test *self)
++static int bpf_fill_staggered_jsgt32_imm(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp_reg(self, BPF_JEQ);
++	struct bpf_insn jmp = BPF_JMP32_IMM(BPF_JSGT, R1, -2, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, -1, 0);
 +}
 +
-+static int bpf_fill_jmp_jne_reg(struct bpf_test *self)
++static int bpf_fill_staggered_jsge32_imm(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp_reg(self, BPF_JNE);
++	struct bpf_insn jmp = BPF_JMP32_IMM(BPF_JSGE, R1, -2, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, -2, 0);
 +}
 +
-+static int bpf_fill_jmp_jgt_reg(struct bpf_test *self)
++static int bpf_fill_staggered_jslt32_imm(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp_reg(self, BPF_JGT);
++	struct bpf_insn jmp = BPF_JMP32_IMM(BPF_JSLT, R1, -1, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, -2, 0);
 +}
 +
-+static int bpf_fill_jmp_jge_reg(struct bpf_test *self)
++static int bpf_fill_staggered_jsle32_imm(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp_reg(self, BPF_JGE);
++	struct bpf_insn jmp = BPF_JMP32_IMM(BPF_JSLE, R1, -1, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, -1, 0);
 +}
 +
-+static int bpf_fill_jmp_jlt_reg(struct bpf_test *self)
++/* 32-bit register jumps */
++static int bpf_fill_staggered_jeq32_reg(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp_reg(self, BPF_JLT);
++	struct bpf_insn jmp = BPF_JMP32_REG(BPF_JEQ, R1, R2, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, 1234, 1234);
 +}
 +
-+static int bpf_fill_jmp_jle_reg(struct bpf_test *self)
++static int bpf_fill_staggered_jne32_reg(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp_reg(self, BPF_JLE);
++	struct bpf_insn jmp = BPF_JMP32_REG(BPF_JNE, R1, R2, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, 4321, 1234);
 +}
 +
-+static int bpf_fill_jmp_jsgt_reg(struct bpf_test *self)
++static int bpf_fill_staggered_jset32_reg(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp_reg(self, BPF_JSGT);
++	struct bpf_insn jmp = BPF_JMP32_REG(BPF_JSET, R1, R2, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, 0x86, 0x82);
 +}
 +
-+static int bpf_fill_jmp_jsge_reg(struct bpf_test *self)
++static int bpf_fill_staggered_jgt32_reg(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp_reg(self, BPF_JSGE);
++	struct bpf_insn jmp = BPF_JMP32_REG(BPF_JGT, R1, R2, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, 0x80000000, 1234);
 +}
 +
-+static int bpf_fill_jmp_jslt_reg(struct bpf_test *self)
++static int bpf_fill_staggered_jge32_reg(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp_reg(self, BPF_JSLT);
++	struct bpf_insn jmp = BPF_JMP32_REG(BPF_JGE, R1, R2, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, 1234, 1234);
 +}
 +
-+static int bpf_fill_jmp_jsle_reg(struct bpf_test *self)
++static int bpf_fill_staggered_jlt32_reg(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp_reg(self, BPF_JSLE);
++	struct bpf_insn jmp = BPF_JMP32_REG(BPF_JLT, R1, R2, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, 1234, 0x80000000);
 +}
 +
-+/* JMP32 register tests */
-+static int bpf_fill_jmp32_jset_reg(struct bpf_test *self)
++static int bpf_fill_staggered_jle32_reg(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp32_reg(self, BPF_JSET);
++	struct bpf_insn jmp = BPF_JMP32_REG(BPF_JLE, R1, R2, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, 1234, 1234);
 +}
 +
-+static int bpf_fill_jmp32_jeq_reg(struct bpf_test *self)
++static int bpf_fill_staggered_jsgt32_reg(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp32_reg(self, BPF_JEQ);
++	struct bpf_insn jmp = BPF_JMP32_REG(BPF_JSGT, R1, R2, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, -1, -2);
 +}
 +
-+static int bpf_fill_jmp32_jne_reg(struct bpf_test *self)
++static int bpf_fill_staggered_jsge32_reg(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp32_reg(self, BPF_JNE);
++	struct bpf_insn jmp = BPF_JMP32_REG(BPF_JSGE, R1, R2, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, -2, -2);
 +}
 +
-+static int bpf_fill_jmp32_jgt_reg(struct bpf_test *self)
++static int bpf_fill_staggered_jslt32_reg(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp32_reg(self, BPF_JGT);
++	struct bpf_insn jmp = BPF_JMP32_REG(BPF_JSLT, R1, R2, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, -2, -1);
 +}
 +
-+static int bpf_fill_jmp32_jge_reg(struct bpf_test *self)
++static int bpf_fill_staggered_jsle32_reg(struct bpf_test *self)
 +{
-+	return __bpf_fill_jmp32_reg(self, BPF_JGE);
++	struct bpf_insn jmp = BPF_JMP32_REG(BPF_JSLE, R1, R2, 0);
++
++	return __bpf_fill_staggered_jumps(self, &jmp, -1, -1);
 +}
 +
-+static int bpf_fill_jmp32_jlt_reg(struct bpf_test *self)
-+{
-+	return __bpf_fill_jmp32_reg(self, BPF_JLT);
-+}
-+
-+static int bpf_fill_jmp32_jle_reg(struct bpf_test *self)
-+{
-+	return __bpf_fill_jmp32_reg(self, BPF_JLE);
-+}
-+
-+static int bpf_fill_jmp32_jsgt_reg(struct bpf_test *self)
-+{
-+	return __bpf_fill_jmp32_reg(self, BPF_JSGT);
-+}
-+
-+static int bpf_fill_jmp32_jsge_reg(struct bpf_test *self)
-+{
-+	return __bpf_fill_jmp32_reg(self, BPF_JSGE);
-+}
-+
-+static int bpf_fill_jmp32_jslt_reg(struct bpf_test *self)
-+{
-+	return __bpf_fill_jmp32_reg(self, BPF_JSLT);
-+}
-+
-+static int bpf_fill_jmp32_jsle_reg(struct bpf_test *self)
-+{
-+	return __bpf_fill_jmp32_reg(self, BPF_JSLE);
-+}
-+
-+
+ 
  static struct bpf_test tests[] = {
  	{
- 		"TAX",
-@@ -9278,6 +9656,7 @@ static struct bpf_test tests[] = {
- 		{ },
- 		{ { 0, 1 } },
- 		.fill_helper = bpf_fill_alu32_mod_imm,
-+		.nr_testruns = NR_PATTERN_RUNS,
- 	},
- 	/* ALU64 register magnitudes */
- 	{
-@@ -9443,6 +9822,406 @@ static struct bpf_test tests[] = {
- 		.fill_helper = bpf_fill_alu32_mod_reg,
+@@ -10222,6 +10642,415 @@ static struct bpf_test tests[] = {
+ 		.fill_helper = bpf_fill_jmp32_jsle_reg,
  		.nr_testruns = NR_PATTERN_RUNS,
  	},
-+	/* JMP immediate magnitudes */
++	/* Staggered jump sequences, immediate */
 +	{
-+		"JMP_JSET_K: all immediate value magnitudes",
++		"Staggered jumps: JMP_JA",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp_jset_imm,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_ja,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP_JEQ_K: all immediate value magnitudes",
++		"Staggered jumps: JMP_JEQ_K",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp_jeq_imm,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jeq_imm,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP_JNE_K: all immediate value magnitudes",
++		"Staggered jumps: JMP_JNE_K",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp_jne_imm,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jne_imm,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP_JGT_K: all immediate value magnitudes",
++		"Staggered jumps: JMP_JSET_K",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp_jgt_imm,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jset_imm,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP_JGE_K: all immediate value magnitudes",
++		"Staggered jumps: JMP_JGT_K",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp_jge_imm,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jgt_imm,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP_JLT_K: all immediate value magnitudes",
++		"Staggered jumps: JMP_JGE_K",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp_jlt_imm,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jge_imm,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP_JLE_K: all immediate value magnitudes",
++		"Staggered jumps: JMP_JLT_K",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp_jle_imm,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jlt_imm,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP_JSGT_K: all immediate value magnitudes",
++		"Staggered jumps: JMP_JLE_K",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp_jsgt_imm,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jle_imm,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP_JSGE_K: all immediate value magnitudes",
++		"Staggered jumps: JMP_JSGT_K",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp_jsge_imm,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jsgt_imm,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP_JSLT_K: all immediate value magnitudes",
++		"Staggered jumps: JMP_JSGE_K",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp_jslt_imm,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jsge_imm,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP_JSLE_K: all immediate value magnitudes",
++		"Staggered jumps: JMP_JSLT_K",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp_jsle_imm,
-+		.nr_testruns = NR_PATTERN_RUNS,
-+	},
-+	/* JMP register magnitudes */
-+	{
-+		"JMP_JSET_X: all register value magnitudes",
-+		{ },
-+		INTERNAL | FLAG_NO_DATA,
-+		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp_jset_reg,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jslt_imm,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP_JEQ_X: all register value magnitudes",
++		"Staggered jumps: JMP_JSLE_K",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp_jeq_reg,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jsle_imm,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
++	},
++	/* Staggered jump sequences, register */
++	{
++		"Staggered jumps: JMP_JEQ_X",
++		{ },
++		INTERNAL | FLAG_NO_DATA,
++		{ },
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jeq_reg,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP_JNE_X: all register value magnitudes",
++		"Staggered jumps: JMP_JNE_X",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp_jne_reg,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jne_reg,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP_JGT_X: all register value magnitudes",
++		"Staggered jumps: JMP_JSET_X",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp_jgt_reg,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jset_reg,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP_JGE_X: all register value magnitudes",
++		"Staggered jumps: JMP_JGT_X",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp_jge_reg,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jgt_reg,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP_JLT_X: all register value magnitudes",
++		"Staggered jumps: JMP_JGE_X",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp_jlt_reg,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jge_reg,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP_JLE_X: all register value magnitudes",
++		"Staggered jumps: JMP_JLT_X",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp_jle_reg,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jlt_reg,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP_JSGT_X: all register value magnitudes",
++		"Staggered jumps: JMP_JLE_X",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp_jsgt_reg,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jle_reg,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP_JSGE_X: all register value magnitudes",
++		"Staggered jumps: JMP_JSGT_X",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp_jsge_reg,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jsgt_reg,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP_JSLT_X: all register value magnitudes",
++		"Staggered jumps: JMP_JSGE_X",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp_jslt_reg,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jsge_reg,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP_JSLE_X: all register value magnitudes",
++		"Staggered jumps: JMP_JSLT_X",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp_jsle_reg,
-+		.nr_testruns = NR_PATTERN_RUNS,
-+	},
-+	/* JMP32 immediate magnitudes */
-+	{
-+		"JMP32_JSET_K: all immediate value magnitudes",
-+		{ },
-+		INTERNAL | FLAG_NO_DATA,
-+		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp32_jset_imm,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jslt_reg,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP32_JEQ_K: all immediate value magnitudes",
++		"Staggered jumps: JMP_JSLE_X",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp32_jeq_imm,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jsle_reg,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
++	},
++	/* Staggered jump sequences, JMP32 immediate */
++	{
++		"Staggered jumps: JMP32_JEQ_K",
++		{ },
++		INTERNAL | FLAG_NO_DATA,
++		{ },
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jeq32_imm,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP32_JNE_K: all immediate value magnitudes",
++		"Staggered jumps: JMP32_JNE_K",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp32_jne_imm,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jne32_imm,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP32_JGT_K: all immediate value magnitudes",
++		"Staggered jumps: JMP32_JSET_K",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp32_jgt_imm,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jset32_imm,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP32_JGE_K: all immediate value magnitudes",
++		"Staggered jumps: JMP32_JGT_K",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp32_jge_imm,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jgt32_imm,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP32_JLT_K: all immediate value magnitudes",
++		"Staggered jumps: JMP32_JGE_K",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp32_jlt_imm,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jge32_imm,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP32_JLE_K: all immediate value magnitudes",
++		"Staggered jumps: JMP32_JLT_K",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp32_jle_imm,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jlt32_imm,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP32_JSGT_K: all immediate value magnitudes",
++		"Staggered jumps: JMP32_JLE_K",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp32_jsgt_imm,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jle32_imm,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP32_JSGE_K: all immediate value magnitudes",
++		"Staggered jumps: JMP32_JSGT_K",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp32_jsge_imm,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jsgt32_imm,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP32_JSLT_K: all immediate value magnitudes",
++		"Staggered jumps: JMP32_JSGE_K",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp32_jslt_imm,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jsge32_imm,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP32_JSLE_K: all immediate value magnitudes",
++		"Staggered jumps: JMP32_JSLT_K",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp32_jsle_imm,
-+		.nr_testruns = NR_PATTERN_RUNS,
-+	},
-+	/* JMP32 register magnitudes */
-+	{
-+		"JMP32_JSET_X: all register value magnitudes",
-+		{ },
-+		INTERNAL | FLAG_NO_DATA,
-+		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp32_jset_reg,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jslt32_imm,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP32_JEQ_X: all register value magnitudes",
++		"Staggered jumps: JMP32_JSLE_K",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp32_jeq_reg,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jsle32_imm,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
++	},
++	/* Staggered jump sequences, JMP32 register */
++	{
++		"Staggered jumps: JMP32_JEQ_X",
++		{ },
++		INTERNAL | FLAG_NO_DATA,
++		{ },
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jeq32_reg,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP32_JNE_X: all register value magnitudes",
++		"Staggered jumps: JMP32_JNE_X",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp32_jne_reg,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jne32_reg,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP32_JGT_X: all register value magnitudes",
++		"Staggered jumps: JMP32_JSET_X",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp32_jgt_reg,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jset32_reg,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP32_JGE_X: all register value magnitudes",
++		"Staggered jumps: JMP32_JGT_X",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp32_jge_reg,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jgt32_reg,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP32_JLT_X: all register value magnitudes",
++		"Staggered jumps: JMP32_JGE_X",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp32_jlt_reg,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jge32_reg,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP32_JLE_X: all register value magnitudes",
++		"Staggered jumps: JMP32_JLT_X",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp32_jle_reg,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jlt32_reg,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP32_JSGT_X: all register value magnitudes",
++		"Staggered jumps: JMP32_JLE_X",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp32_jsgt_reg,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jle32_reg,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP32_JSGE_X: all register value magnitudes",
++		"Staggered jumps: JMP32_JSGT_X",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp32_jsge_reg,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jsgt32_reg,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP32_JSLT_X: all register value magnitudes",
++		"Staggered jumps: JMP32_JSGE_X",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp32_jslt_reg,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jsge32_reg,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
 +	{
-+		"JMP32_JSLE_X: all register value magnitudes",
++		"Staggered jumps: JMP32_JSLT_X",
 +		{ },
 +		INTERNAL | FLAG_NO_DATA,
 +		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_jmp32_jsle_reg,
-+		.nr_testruns = NR_PATTERN_RUNS,
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jslt32_reg,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
++	},
++	{
++		"Staggered jumps: JMP32_JSLE_X",
++		{ },
++		INTERNAL | FLAG_NO_DATA,
++		{ },
++		{ { 0, MAX_STAGGERED_JMP_SIZE + 1 } },
++		.fill_helper = bpf_fill_staggered_jsle32_reg,
++		.nr_testruns = NR_STAGGERED_JMP_RUNS,
 +	},
  };
  
