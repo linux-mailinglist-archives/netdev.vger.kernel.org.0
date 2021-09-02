@@ -2,97 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D97313FED11
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 13:39:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAEE93FEDAA
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 14:19:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234244AbhIBLkC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 07:40:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37252 "EHLO
+        id S1344333AbhIBMUe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 08:20:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230256AbhIBLj6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 07:39:58 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78B9EC061575
-        for <netdev@vger.kernel.org>; Thu,  2 Sep 2021 04:39:00 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id m9so2416602wrb.1
-        for <netdev@vger.kernel.org>; Thu, 02 Sep 2021 04:39:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=AfzGsjNhCTc6+kVbJpHYpPyiFOcEp5mM/5LdqAde+oc=;
-        b=lVUS4PhlfKyBsLhecKs9rWXbJRf0dnWTkkJ134QkNlXOEdq8jxf5iFLEbuzrsxZ8kF
-         OuoU7Ovkhbvrq9HWPiEqEbcK94WyeztWpG6R4UNDUwzLNY6t0/yAQKoU2XUIGWS+nKVB
-         1+Jou/eLIzmP5TwQAJ5zYJBcKItwG56NjGvMcnAIMbUpCg5qMd0FufkM8Au6y7fML4lH
-         QoX4vZ8aAbEjQyh/A1hs9yKbzS6G9ZtBq2+jLDaXQO/sXU9mK6Qh17CHMk2NA9AXz9bI
-         8nSe7AWgV9OgN+1Pk3COFT5dGcLlaPC2uMcIbR75X8sWl02XegJsGkxxlHdT6KMMv7nP
-         /Nmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=AfzGsjNhCTc6+kVbJpHYpPyiFOcEp5mM/5LdqAde+oc=;
-        b=tQOAxdjct7rG+GlllCwNpM473AadSbr2+jEtNC77UKoDSIzX/q3ykjFZTNwkAuG0zH
-         7lUIls6e1rCHMbJeZWKceEptqC/zn7HDI8+UVeOHA94uFJD2IE7o9PKvyUgcnAXcRdN7
-         TcUwjv98bGLUsIlE7NW63hsHMJyWTj3Q1mp/EyW3buTJyPtdwMP2DgFK16/T+Pv6ITAY
-         p37xMYpnmZ2mAwdEtIfle4qNO9AAKpudcZuTgHz0kSMgtI5/FPzzX2Ef4zmB5v/kIgig
-         5opuFIPo3wMRGSwBV3dn5thDGS4ccGxfxbTOPQ+mlNR6x3wXhNBOG1jo/Tzfn3Lj/4Lz
-         rxnA==
-X-Gm-Message-State: AOAM533W4JjPZlGU+N+iB187w7GdhPMbjt4sNwjM0NMWl+L894VKHRIG
-        vaedqiBxViYX/TBEmL/cAbXmbo63QKkgJQ==
-X-Google-Smtp-Source: ABdhPJwGvb2qUWO2aq8q6JeiOz9jgsBiSwrrGnpMNIqxz5vkquiElRf5ilTNJH6tAsX4PbZ3qh+TsQ==
-X-Received: by 2002:adf:dcc7:: with SMTP id x7mr3120548wrm.173.1630582738754;
-        Thu, 02 Sep 2021 04:38:58 -0700 (PDT)
-Received: from localhost ([2a01:4b00:f41a:3600:df86:cebc:8870:2184])
-        by smtp.gmail.com with ESMTPSA id z1sm1464176wmi.34.2021.09.02.04.38.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Sep 2021 04:38:58 -0700 (PDT)
-From:   luca.boccassi@gmail.com
-To:     netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, dsahern@kernel.org
-Subject: [PATCH iproute2] configure: restore backward compatibility
-Date:   Thu,  2 Sep 2021 12:38:54 +0100
-Message-Id: <20210902113854.35513-1-luca.boccassi@gmail.com>
-X-Mailer: git-send-email 2.33.0
+        with ESMTP id S234098AbhIBMUd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 08:20:33 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A3FBC061575;
+        Thu,  2 Sep 2021 05:19:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=DVgR33IVft+dCywULf17gDtnqaFtr2ZhHdeB92X8pQg=; b=SQ/AlGBVe6zLycRds30ClI57P
+        18udRYN4eNprD0WBz8wysz1D7bKNOWkoB993pDaTUomTUpCYnt8IVw1zKZ1F1FXNgl9YZSLOkkkYF
+        LpP9IzogxTczsN+01EOkivwMYxZoAMmnwO39qeUxDYVZ2MYBTHPdqQrn58viE+84faBPsOnTk3OW8
+        /Bb+c6PDGtIwPglY+V9dOpNaEKXZBOU2RezAU/ypjFwKdqv8N6VFcZxqbAm6uSvMyx9q26Z9++qov
+        HK4KO71rXWHE+gWOrtanzWbBTWRhcQ7PDN3rQWtdWKK2vSJnvNly3hl+U2A/dkmvQytwpIOiXtSVT
+        CeOWsLDrw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:48086)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mLlgo-0001OF-GP; Thu, 02 Sep 2021 13:19:30 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mLlgl-0007oS-Ul; Thu, 02 Sep 2021 13:19:27 +0100
+Date:   Thu, 2 Sep 2021 13:19:27 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        linux-kernel@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        kernel-team <kernel-team@android.com>,
+        Len Brown <lenb@kernel.org>
+Subject: Re: [RFC PATCH net-next 0/3] Make the PHY library stop being so
+ greedy when binding the generic PHY driver
+Message-ID: <20210902121927.GE22278@shell.armlinux.org.uk>
+References: <20210901225053.1205571-1-vladimir.oltean@nxp.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210901225053.1205571-1-vladimir.oltean@nxp.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Luca Boccassi <bluca@debian.org>
+On Thu, Sep 02, 2021 at 01:50:50AM +0300, Vladimir Oltean wrote:
+> The central point of that discussion is that DSA seems "broken" for
+> expecting the PHY driver to probe immediately on PHYs belonging to the
+> internal MDIO buses of switches. A few suggestions were made about what
+> to do, but some were not satisfactory and some did not solve the problem.
 
-Commit a9c3d70d902a0473ee5c13336317006a52ce8242 broke backward compatibility
-by making 'configure' error out if parameters are passed, instead of
-ignoring them.
-Sometimes packaging systems detect 'configure' and assume it's from
-autotools, and pass a bunch of options. Eg:
+I think you need to describe the mechanism here. Why wouldn't a PHY
+belonging to an internal MDIO bus of a switch not probe immediately?
+What resources may not be available?
 
- dh_auto_configure
-	./configure --build=x86_64-linux-gnu --prefix=/usr --includedir=${prefix}/include --mandir=${prefix}/share/man --infodir=${prefix}/share/info --sysconfdir=/etc --localstatedir=/var --disable-option-checking --disable-silent-rules --libdir=${prefix}/lib/x86_64-linux-gnu --runstatedir=/run --disable-maintainer-mode --disable-dependency-tracking
+If we have a DSA driver that tries to probe the PHYs before e.g. the
+interrupt controller inside the DSA switch has been configured, aren't
+we just making completely unnecessary problems for ourselves? Wouldn't
+it be saner to ensure that the interrupt controller has been setup
+and become available prior to attempting to setup anything that
+relies upon that interrupt controller?
 
-Ignore unknown options again instead of erroring out.
+From what I see of Marvell switches, the internal PHYs only ever rely
+on internal resources of the switch they are embedded in.
 
-Fixes: a9c3d70d902a ("configure: add options ability")
+External PHYs to the switch are a different matter - these can rely on
+external clocks, and in that scenario, it would make sense for a
+deferred probe to cause the entire switch to defer, since we don't
+have all the resources for the switch to be functional (and, because we
+want the PHYs to be present at switch probe time, not when we try to
+bring up the interface, I don't see there's much other choice.)
 
-Signed-off-by: Luca Boccassi <bluca@debian.org>
----
- configure | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Trying to move that to interface-up time /will/ break userspace - for
+example, Debian's interfaces(8) bridge support will become unreliable,
+and probably a whole host of other userspace. It will cause regressions
+and instability to userspace. So that's a big no.
 
-diff --git a/configure b/configure
-index 0a4a0fc9..7f4f3bd9 100755
---- a/configure
-+++ b/configure
-@@ -518,7 +518,7 @@ else
- 			"")
- 				break ;;
- 			*)
--				usage 1 ;;
-+				shift 1 ;;
- 		esac
- 	done
- fi
+Maybe I'm missing exactly what the problem is...
+
 -- 
-2.33.0
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
