@@ -2,92 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 395953FE974
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 08:49:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4823C3FE98E
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 08:55:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241529AbhIBGuD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 02:50:03 -0400
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:54529 "EHLO
-        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239077AbhIBGt4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 02:49:56 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 82F4E580CA8;
-        Thu,  2 Sep 2021 02:48:57 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Thu, 02 Sep 2021 02:48:57 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=wLdsoF
-        jidL1GAMNupKB6KhdOpkiskgoBwwDwzSeYQJg=; b=X5a10OTpqNQL2LtwJEYgun
-        hRNRyZeZ0dvKiM9QNZHSPBOOHGM4X+YdeimS+wIRuxJOSYGfL7xj3Laj4CtaUQqk
-        k0oMoH/2QhK+x/UQm1Gk4+6SQYbLbR1/WiHxkQ5T0OuiFddooGqB9JAFnoqassrx
-        hEEFSQVWSSCkOrAg0w2PCwGO227gKnZx7dB3frRYf7zOa1oSrhrklPFBdwixKFD3
-        rns3/cwAlnqDwqnPlxWqkr/L5OEze2Qvy32Xt3pLqyGx8snvrOpqWwKBEK1qwVw7
-        UrWZkbFwfWqB5l2zOfcCoFwOiRKxXZjFabPj3dXU4OH7Mh6YxjnaSE0SaHKknh/Q
-        ==
-X-ME-Sender: <xms:2HMwYXZ0KBuL5nWEv0k41eEr3UhoxKjvAYEPV9rEOENUc8Hr7NnaJQ>
-    <xme:2HMwYWa2meGQoXxJoHKYDWPflH-dyF1T5CZYdsB7OLPI-wqz5_F4W9WyD3megonzQ
-    gok1b6pJLkBXMo>
-X-ME-Received: <xmr:2HMwYZ-lurm86Md3Ht_7DEnfwHJAr0jWSfnTLI_FNPjdmgjBrMggfU8PH0y-Rb-zxr4M3atFtv41innkF73fYzaVtcX2iw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddruddvgedguddufecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
-    leetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
-    guohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:2HMwYdrKvJrArq93dFKGlBQwEjgDkuqSR-8lHOh8os7NOFmXF4aU1Q>
-    <xmx:2HMwYSr_3ckpcQFTWLD4rOu4QOqX2G17MyNke0wKqR2HqFWQ5Xo-YA>
-    <xmx:2HMwYTT9Y446dxssUWUxI6C85XmXco1EqXhhtBBToU6idfD-9Gc1pA>
-    <xmx:2XMwYfivyuycs8WOM08O9ovi4BdFRmNkeMmrDxYP5h_OLZf2Cs0PJg>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 2 Sep 2021 02:48:55 -0400 (EDT)
-Date:   Thu, 2 Sep 2021 09:48:51 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>
-Cc:     Boris Sukholitko <boris.sukholitko@broadcom.com>,
-        netdev@vger.kernel.org, Jiri Pirko <jiri@resnulli.us>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Vadym Kochan <vadym.kochan@plvision.eu>,
-        Ilya Lifshits <ilya.lifshits@broadcom.com>,
-        tom Herbert <tom@sipanda.io>,
-        Felipe Magno de Almeida <felipe@expertise.dev>,
-        Pedro Tammela <pctammela@mojatatu.com>
-Subject: Re: [PATCH net-next] net/sched: cls_flower: Add orig_ethtype
-Message-ID: <YTBz0zitSUrd0Qd1@shredder>
-References: <20210830080800.18591-1-boris.sukholitko@broadcom.com>
- <b05f2736-fa76-4071-3d52-92ac765ca405@mojatatu.com>
- <20210831120440.GA4641@noodle>
- <b400f8c6-8bd8-2617-0a4f-7c707809da7d@mojatatu.com>
+        id S242286AbhIBG4O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 02:56:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57052 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242126AbhIBG4K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 02:56:10 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B900C061575
+        for <netdev@vger.kernel.org>; Wed,  1 Sep 2021 23:55:12 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id n5so1146338wro.12
+        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 23:55:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=NgNyAxPNwS50XEC2HHvdm2S0mzAInSa28ohhx9elAts=;
+        b=Xr+UBGuskMPu9gA4M2RAEZcKD6BqUnWmJcWyEwunPidEQpHkSMq1VYTvpA0I9bmxDo
+         Yu1exJ2nG55DvCoHhfsUbcYAY1tX3anHopXecbqBm44jXwRMVeG76qtc9ZWr+bJ7cRyX
+         V83bFgZxdzU80R6Jw7XHocfJ2SIotKDGBaL7WjaEUmmILjJPzxpq7MNu8q6a2cDIs/zH
+         pP+c7xXBxJ5DIVjPaCfcz1CMKaRVWtMUyePjJ15AR+fk/cW6XHdWSibGkpqNGUXmHTyv
+         QbJT1MnZ48UyzdqX18eC7KJ5gXFLn3dNCLadkVM2pxx00vz9EZyuqc133HDtfCGAK1hr
+         wJKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=NgNyAxPNwS50XEC2HHvdm2S0mzAInSa28ohhx9elAts=;
+        b=Px8+h/yCQDdPbc+huVNNlZ35hyQ/eFscvC5HJ3PKQ5DejYHCU9rOf2370+D/qVbJp9
+         OBjXZOkDBUA95fnRTpeLrRSy1t+kks0C/KuEJONsdOJHg6CJrxVMI4OB0p9RC0gQMus8
+         Xekt0VH86ltSEcaztL/73Z3mJO8ET3fTdWGt4Aw2U3ddXBD0gKJCOitqZN2wvS8AcJqB
+         fKiYhulGEHqfi4G7xR41dyyRjkay3CzZks4XlcG+0fx4rRomvfjJNHgaJOgt4+JT/RUX
+         7cfi5gZv+u69zarH/4nPd/iHXdwoPkD8g+wqVJBokB3d23p8N4g5GGNNKKHBdtCsih6Z
+         4q9Q==
+X-Gm-Message-State: AOAM532Vbj4WC9YyKVpk/sOkZQROaVkNKyQVouWuDH9BGDToM8LhXFA/
+        63Yqn/Pn4IxyXR0BNgIrPHWI/pU7v4tOUftQX/A=
+X-Google-Smtp-Source: ABdhPJzuKLKpLLJmuGVErVNX8EJdwxoTN23OLKf/SOWw3YqjLVtPKIku+6r9A5oqsD08lrRXJaC6HlN3b2K2QAE+lC4=
+X-Received: by 2002:a5d:440d:: with SMTP id z13mr1799985wrq.216.1630565711171;
+ Wed, 01 Sep 2021 23:55:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b400f8c6-8bd8-2617-0a4f-7c707809da7d@mojatatu.com>
+Sender: mrs.biyufungchi03@gmail.com
+Received: by 2002:a7b:c755:0:0:0:0:0 with HTTP; Wed, 1 Sep 2021 23:55:10 -0700 (PDT)
+From:   Mrs Rita Hassan <ritahassan001@gmail.com>
+Date:   Wed, 1 Sep 2021 23:55:10 -0700
+X-Google-Sender-Auth: tnfId-Dob6uV50lixeSjRPEfO_E
+Message-ID: <CAE7Z2gKMnCuP9=m=pqeUX25harzTEotX_mdysauEoY_+O5qj+A@mail.gmail.com>
+Subject: urgent respond.
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 31, 2021 at 09:18:16AM -0400, Jamal Hadi Salim wrote:
-> You have _not_ been unlucky - it is a design issue with flow dissector
-> and the wrapping around flower. Just waiting to happen for more
-> other use cases..
+Please forgive me for stressing you with my predicaments as I know
+that this letter may come to you as big surprise. Actually, I came
+across your E-mail from my personal search afterward I decided to
+email you directly believing that you will be honest to fulfill my
+final wish before i die.
 
-I agree. I think the fundamental problem is that flower does not set
-'FLOW_DISSECTOR_F_STOP_AT_ENCAP' and simply lets the flow dissector
-parse as deep as possible. For example, 'dst_ip' will match on the
-inner most destination IP which is not intuitive and probably different
-than what most hardware implementations do.
+Meanwhile, I am Mrs. Rita Hassan,  62 years old,I am suffering from a
+long time cancer and from all indication my condition is really
+deteriorating As a matter of fact, registered nurse by profession
+while my husband was dealing on Gold Dust and Gold Dory Bars till his
+sudden death the year 2019 then I took over his business till date. In
+fact,at this moment I have a deposit sum of $5.5million dollars with
+one of the leading bank.
 
-This behavior is also very error prone because it means that if the
-kernel learns to dissect a new tunnel protocol, filters can be suddenly
-broken (match on outer field now matches on inner field).
+Therefore, I want you to receive the money and take 30% to take care
+of yourself and family while 70% should be use basically on
+humanitarian purposes mostly to orphanages home, Motherless babies
+home,please contact me for more details on this email. (
+ritahassan001@gmail.com )
 
-I don't think that changing the default behavior is a solution as it can
-break user space. Maybe adding a 'stop_encap' flag to flower that user
-space will have to set?
+Yours Faithfully
+
+Mrs. Rita Hassan.
