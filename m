@@ -2,110 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 281B83FE8CD
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 07:37:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADA6E3FE8D6
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 07:43:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233269AbhIBFhc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 01:37:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39262 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232994AbhIBFh1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 01:37:27 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4B45C061575;
-        Wed,  1 Sep 2021 22:36:29 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id gp20-20020a17090adf1400b00196b761920aso639423pjb.3;
-        Wed, 01 Sep 2021 22:36:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=AUQQWpdPusKziL81HjIpycnRSPGEY5GISL+U0MCMSmU=;
-        b=JHDFf//yUkiuI37prdgWCjD9R3BX0MF++LeB2tn3JpuX+6C1q9/T+ceQvBcnpO3zhF
-         KqFddP7LZ1WIza6iZtjHkx+HOkhqIrB/Jwe5jYzaAPmoO8PCY0dSbiG7rSs76H6LsE2G
-         2xWEEIiFb0l4UJCSWFol0RNVwEHkXt8RseGH8qmrzmUOot+xJnb2QL7rTfy5sBb8XB83
-         ReDLFc66swXyMR4O4FI20PtOmbYvqeniHo14wvYKBGZWlw7R4FxYc/IXvHakTLtRxjQu
-         u3bn2PgY2puR6lUbYisAHUOxUJg+3sSrmjqmIz8NxNpRS7P0+kgm9SkUEvBdAwYdati8
-         Mb8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=AUQQWpdPusKziL81HjIpycnRSPGEY5GISL+U0MCMSmU=;
-        b=EvlKHtNaNYRmxcgKIv4vpvvihDyjdGeE6PBLYXIq3IzhDdGj0rS8dNaN8nB1YV9KGt
-         /CweHLAh10YsMJs6yZRWGlfN/TX4XrR7J7trxe87n+vWv4ZHsoM5LqQXBQ2PPqZNky3z
-         Fn71jEeJ8Rv8yvzPoGgBU577dOo4jDZnbT7B38NC+ZAXiV7yxUOYxjliQNm4YtGLkiRL
-         79WxaqZc/Mlu9GLK43gjYICN9GHdnZw+pzEwf+OxJwL10FzeImFcWcLucimZuNZ87tX5
-         Bry+q+wYfKiFuXOvqb3PwmAmEiJz0Y+NZcdLqhaok4oF29McXcwO+2Tbiy9hyYPpmMGV
-         9vbw==
-X-Gm-Message-State: AOAM53091xGueyGrITHOxATb7GXp9iDl2zOdJsSCCDN8npskwJGjRYIc
-        YBolGcjyBj/T5YX9/G0fVC8=
-X-Google-Smtp-Source: ABdhPJxJF8LI4M1O2L1/GWavG28s+l1uKa4//ATjWdcEy8H3VklT/CtTQenaVUqvys4DN29witZiTw==
-X-Received: by 2002:a17:902:7806:b0:138:1eee:c010 with SMTP id p6-20020a170902780600b001381eeec010mr1413056pll.20.1630560989012;
-        Wed, 01 Sep 2021 22:36:29 -0700 (PDT)
-Received: from haswell-ubuntu20.lan ([138.197.212.246])
-        by smtp.gmail.com with ESMTPSA id f9sm739690pjq.36.2021.09.01.22.36.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Sep 2021 22:36:28 -0700 (PDT)
-From:   DENG Qingfang <dqfext@gmail.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Sasha Levin <sashal@kernel.org>, stable@vger.kernel.org,
-        Sean Wang <sean.wang@mediatek.com>,
+        id S236226AbhIBFoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 01:44:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48100 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231153AbhIBFoP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Sep 2021 01:44:15 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C426A60238;
+        Thu,  2 Sep 2021 05:43:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1630561394;
+        bh=hjHUyru37UsQhLCqhmVDxmrouYvn6mWq2Wkx5ZFD1lA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LXohJie3Iy3D7O32IvK39+KLuPXHlyeICS20tMns5LF8muNnCdiMWYdQvba9wW7AG
+         xJFzKxyXye2xwRvNxyI5RAxL43Yfk8A1kgd4ABdFT7Uqltu/51irNJS7IqraI7OIlh
+         A+C+jj9IoBkdVa59EhFAboJkK9/jsVzuXt0BWYys=
+Date:   Thu, 2 Sep 2021 07:43:10 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, "Rafael J. Wysocki" <rafael@kernel.org>,
         Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@savoirfairelinux.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "open list:MEDIATEK SWITCH DRIVER" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>
-Subject: Re: [PATCH 4.19.y] net: dsa: mt7530: disable learning on standalone ports
-Date:   Thu,  2 Sep 2021 13:36:19 +0800
-Message-Id: <20210902053619.1824464-1-dqfext@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <YSi8Ky3GqBjnxbhC@kroah.com>
-References: <20210824055509.1316124-1-dqfext@gmail.com> <YSUQV3jhfbhbf5Ct@sashalap> <CALW65ja3hYGmEqcWZzifP2-0WsJOnxcUXsey2ZH5vDbD0-nDeQ@mail.gmail.com> <YSi8Ky3GqBjnxbhC@kroah.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        linux-kernel@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        kernel-team <kernel-team@android.com>,
+        Len Brown <lenb@kernel.org>
+Subject: Re: [RFC PATCH net-next 1/3] net: phy: don't bind genphy in
+ phy_attach_direct if the specific driver defers probe
+Message-ID: <YTBkbvYYy2f/b3r2@kroah.com>
+References: <20210901225053.1205571-1-vladimir.oltean@nxp.com>
+ <20210901225053.1205571-2-vladimir.oltean@nxp.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210901225053.1205571-2-vladimir.oltean@nxp.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 27, 2021 at 12:19:23PM +0200, Greg KH wrote:
-> On Tue, Aug 24, 2021 at 11:57:53PM +0800, DENG Qingfang wrote:
-> > Standalone ports should have address learning disabled, according to
-> > the documentation:
-> > https://www.kernel.org/doc/html/v5.14-rc7/networking/dsa/dsa.html#bridge-layer
-> > dsa_switch_ops on 5.10 or earlier does not have .port_bridge_flags
-> > function so it has to be done differently.
-> > 
-> > I've identified an issue related to this.
+On Thu, Sep 02, 2021 at 01:50:51AM +0300, Vladimir Oltean wrote:
+> There are systems where the PHY driver might get its probe deferred due
+> to a missing supplier, like an interrupt-parent, gpio, clock or whatever.
 > 
-> What issue is that?  Where was it reported?
+> If the phy_attach_direct call happens right in between probe attempts,
+> the PHY library is greedy and assumes that a specific driver will never
+> appear, so it just binds the generic PHY driver.
+> 
+> In certain cases this is the wrong choice, because some PHYs simply need
+> the specific driver. The specific PHY driver was going to probe, given
+> enough time, but this doesn't seem to matter to phy_attach_direct.
+> 
+> To solve this, make phy_attach_direct check whether a specific PHY
+> driver is pending or not, and if it is, just defer the probing of the
+> MAC that's connecting to us a bit more too.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
+>  drivers/base/dd.c            | 21 +++++++++++++++++++--
+>  drivers/net/phy/phy_device.c |  8 ++++++++
+>  include/linux/device.h       |  1 +
+>  3 files changed, 28 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+> index 1c379d20812a..b22073b0acd2 100644
+> --- a/drivers/base/dd.c
+> +++ b/drivers/base/dd.c
+> @@ -128,13 +128,30 @@ static void deferred_probe_work_func(struct work_struct *work)
+>  }
+>  static DECLARE_WORK(deferred_probe_work, deferred_probe_work_func);
+>  
+> +static bool __device_pending_probe(struct device *dev)
+> +{
+> +	return !list_empty(&dev->p->deferred_probe);
+> +}
+> +
+> +bool device_pending_probe(struct device *dev)
+> +{
+> +	bool pending;
+> +
+> +	mutex_lock(&deferred_probe_mutex);
+> +	pending = __device_pending_probe(dev);
+> +	mutex_unlock(&deferred_probe_mutex);
+> +
+> +	return pending;
+> +}
+> +EXPORT_SYMBOL_GPL(device_pending_probe);
+> +
+>  void driver_deferred_probe_add(struct device *dev)
+>  {
+>  	if (!dev->can_match)
+>  		return;
+>  
+>  	mutex_lock(&deferred_probe_mutex);
+> -	if (list_empty(&dev->p->deferred_probe)) {
+> +	if (!__device_pending_probe(dev)) {
+>  		dev_dbg(dev, "Added to deferred list\n");
+>  		list_add_tail(&dev->p->deferred_probe, &deferred_probe_pending_list);
+>  	}
+> @@ -144,7 +161,7 @@ void driver_deferred_probe_add(struct device *dev)
+>  void driver_deferred_probe_del(struct device *dev)
+>  {
+>  	mutex_lock(&deferred_probe_mutex);
+> -	if (!list_empty(&dev->p->deferred_probe)) {
+> +	if (__device_pending_probe(dev)) {
+>  		dev_dbg(dev, "Removed from deferred list\n");
+>  		list_del_init(&dev->p->deferred_probe);
+>  		__device_set_deferred_probe_reason(dev, NULL);
+> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+> index 52310df121de..2c22a32f0a1c 100644
+> --- a/drivers/net/phy/phy_device.c
+> +++ b/drivers/net/phy/phy_device.c
+> @@ -1386,8 +1386,16 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
+>  
+>  	/* Assume that if there is no driver, that it doesn't
+>  	 * exist, and we should use the genphy driver.
+> +	 * The exception is during probing, when the PHY driver might have
+> +	 * attempted a probe but has requested deferral. Since there might be
+> +	 * MAC drivers which also attach to the PHY during probe time, try
+> +	 * harder to bind the specific PHY driver, and defer the MAC driver's
+> +	 * probing until then.
 
-See Florian's message here
-https://lore.kernel.org/stable/20210317003549.3964522-2-f.fainelli@gmail.com/
+Wait, no, this should not be a "special" thing, and why would the list
+of deferred probe show this?
 
-> 
-> > > 2. A partial backport of this patch?
-> > 
-> > The other part does not actually fix anything.
-> 
-> Then why is it not ok to just take the whole thing?
-> 
-> When backporting not-identical-patches, something almost always goes
-> wrong, so we prefer to take the original commit when ever possible.
+If a bus wants to have this type of "generic vs. specific" logic, then
+it needs to handle it in the bus logic itself as that does NOT fit into
+the normal driver model at all.  Don't try to get a "hint" of this by
+messing with the probe function list.
 
-Okay. MDB and tag ops can be backported as is, and broadcast/multicast
-flooding can be implemented in .port_egress_floods. 
+thanks,
 
-> 
-> thanks,
-> 
-> greg k-h
+greg k-h
