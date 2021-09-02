@@ -2,78 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96CAC3FE62F
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 02:34:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 250773FE63D
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 02:34:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241945AbhIAX5l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Sep 2021 19:57:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43340 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230018AbhIAX5l (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Sep 2021 19:57:41 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6F47261026;
-        Wed,  1 Sep 2021 23:56:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1630540603;
-        bh=aaLgi0sEuIAlvtOwl3t+OVxyfbUzjCfeW7sv7I0NF/Q=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=btTJBGngiF1tRaGOuAxydF+DTfs80CE8+ZF94Y2vD5lhcRxZVoCmScLlBU75RIGGb
-         s6x3Rb48fKS0bev0zHXSi1TafvHyL4bL24ZGib5g+uws6zpWKXS5JJZIlgE8UJCICe
-         KeasHNoBDG7OLNBHm7quVAgEDetpnVn4JzDyZGW77MsZ0cXXyTlHsFXBIie62mOktW
-         JsY0eAdawFpjkXkwW6kfFyuNQW90RNYBfV4CekleRbCeXF42JV15wYT4KWhyhTHJyA
-         jhCRQ+kDjrNCV0vn2gfhl1mK3L9Bgeo4IjMRMV0sHLyCkJ+W117dLCSH99Iq+uj7vY
-         sDhKjnuVZ4pnw==
-Date:   Wed, 1 Sep 2021 16:56:42 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     davem@davemloft.net, richardcochran@gmail.com,
-        netdev@vger.kernel.org, kernel-team@fb.com, abyagowi@fb.com
-Subject: Re: [PATCH net-next 08/11] ptp: ocp: Add sysfs attribute
- utc_tai_offset
-Message-ID: <20210901165642.3fab8ec2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210830235236.309993-9-jonathan.lemon@gmail.com>
-References: <20210830235236.309993-1-jonathan.lemon@gmail.com>
-        <20210830235236.309993-9-jonathan.lemon@gmail.com>
+        id S242987AbhIBAEA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Sep 2021 20:04:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50204 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242703AbhIBAD5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Sep 2021 20:03:57 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A02ABC061575;
+        Wed,  1 Sep 2021 17:02:59 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id q70so283249ybg.11;
+        Wed, 01 Sep 2021 17:02:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=j5eS9joUEQxD2OUktUs9JyC6lsbZ0ql447Y8GghkRzc=;
+        b=Xe9EoBAnQSexng2ntYcSbkLT+YZ28oNmzoAcZ9tdeeXYr8eamXz1oaT7RsoKqBuuh+
+         tCAdBWus2CXqTCeaTQU3e4yZe0Rbk8tALkU2JJ8QO7OKSaJkSg3P/WI3KeNdaYAYVSI4
+         Mav7Q5KkUq6KkeSQqpARfxFUdQ4W/u5mW8Brzhek1tcN1A8Y9pdDSywpa3+D6vRCIzV1
+         L8UaCwQ/K/3BgXcH4KjvuC0NxeBGK+kuORp5S9Gx6Xs/gTMMsONwCMHX7wjw+Wy6d5Hi
+         ras9IH3r5taXcI6j0LZSb2cIupb3YUCG2Kt+Kww39+82wdhmY37cLkpdjxsm7pY2XKTS
+         JSJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=j5eS9joUEQxD2OUktUs9JyC6lsbZ0ql447Y8GghkRzc=;
+        b=Du6SIpQmfB19dkdpxK4s8H4YPgUrwVZXrcHZA2DiRlBUTB5JZFQZIxBKp8z446kr/7
+         16JGVOtsmyiHJAjRHnRwdYIbq+6PIVZkZXPH5Yzet4M4/4JDBAawMhh9mEenkbFygzB0
+         uK96IGw6TFAGLKFC1VqdsTzhlECDrkyC2guH6mhjBtdX/1tgflnu/rgxt4e97GWrupZa
+         6whr3jglzCikNJYbZOJc+UaZVUCNKYY6klw1CwNoXa9bviyPM7CRQgvqxTEbvMUzlgCm
+         NjouHD9OzRGBq96jEcjMORJCoEnTd3zz3I7krcb8zP7ioL2mAhuyueUCh8QyOEBwMC7X
+         GtjA==
+X-Gm-Message-State: AOAM531wyNis+EptG1bD79xiWqSSfd0TIqDMFy4C79xr9f2W3gYQXhgj
+        MZZJNVncPUUFv619LCG4Cqe46S4WuG06Vz0ZEIU=
+X-Google-Smtp-Source: ABdhPJw3paOQWUG+WZlV3zarXo6C9quj40RT4qzOvN0ZooEovcpBZ32Gw6TkVPLvldFmZW/OaSGz3IZqECL2VE7gnzQ=
+X-Received: by 2002:a5b:142:: with SMTP id c2mr624932ybp.425.1630540978949;
+ Wed, 01 Sep 2021 17:02:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20210831203727.3852294-1-kuba@kernel.org>
+In-Reply-To: <20210831203727.3852294-1-kuba@kernel.org>
+From:   John Stultz <john.stultz@linaro.org>
+Date:   Wed, 1 Sep 2021 17:02:46 -0700
+Message-ID: <CANcMJZBOymZNNdFZqPypC7r+JFgDWKgiD6c125t3PnP1O309AA@mail.gmail.com>
+Subject: Re: [GIT PULL] Networking for v5.15
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Srini Kandagatla <srinivas.kandagatla@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 30 Aug 2021 16:52:33 -0700 Jonathan Lemon wrote:
-> +static ssize_t
-> +utc_tai_offset_show(struct device *dev,
-> +		    struct device_attribute *attr, char *buf)
-> +{
-> +	struct ptp_ocp *bp = dev_get_drvdata(dev);
-> +
-> +	return sysfs_emit(buf, "%d\n", bp->utc_tai_offset);
-> +}
-> +
-> +static ssize_t
-> +utc_tai_offset_store(struct device *dev,
-> +		     struct device_attribute *attr,
-> +		     const char *buf, size_t count)
-> +{
-> +	struct ptp_ocp *bp = dev_get_drvdata(dev);
-> +	unsigned long flags;
-> +	int err;
-> +	s32 val;
-> +
-> +	err = kstrtos32(buf, 0, &val);
-> +	if (err)
-> +		return err;
-> +
-> +	bp->utc_tai_offset = val;
+On Tue, Aug 31, 2021 at 1:41 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> Hi Linus!
+>
+> No conflicts at the time of writing. There were conflicts with
+> char-misc but I believe Greg dropped the commits in question.
+>
+> The following changes since commit 73367f05b25dbd064061aee780638564d15b01d1:
+>
+>   Merge tag 'nfsd-5.14-1' of git://linux-nfs.org/~bfields/linux (2021-08-26 13:26:40 -0700)
+>
+> are available in the Git repository at:
+>
+>   git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git tags/net-next-5.15
+...
+> Dan Carpenter (7):
+...
+>       net: qrtr: make checks in qrtr_endpoint_post() stricter
 
-This line should probably be under the lock.
+Hey all,
+  Just as a heads up, I've just bisected down this change (commit
+aaa8e4922c88 "net: qrtr: make checks in qrtr_endpoint_post()
+stricter") as breaking audio (and I think wifi as well) on the db845c
+devboard.
 
-> +	spin_lock_irqsave(&bp->lock, flags);
-> +	iowrite32(val, &bp->irig_out->adj_sec);
-> +	iowrite32(val, &bp->dcf_out->adj_sec);
-> +	spin_unlock_irqrestore(&bp->lock, flags);
-> +
-> +	return count;
-> +}
-> +static DEVICE_ATTR_RW(utc_tai_offset);
+Let me know if there is anything you would like me to try. I have to
+run now, but I'll be doing some further debugging on this later
+tonight.
+
+thanks
+-john
