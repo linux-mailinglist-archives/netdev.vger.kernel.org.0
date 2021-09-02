@@ -2,221 +2,230 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15D923FF06D
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 17:45:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A7DF3FF088
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 17:53:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345905AbhIBPqL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 11:46:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37420 "EHLO
+        id S1345948AbhIBPys (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 11:54:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242894AbhIBPqK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 11:46:10 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F07D0C061575
-        for <netdev@vger.kernel.org>; Thu,  2 Sep 2021 08:45:11 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id t15so3676975wrg.7
-        for <netdev@vger.kernel.org>; Thu, 02 Sep 2021 08:45:11 -0700 (PDT)
+        with ESMTP id S234405AbhIBPyo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 11:54:44 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 977A6C061575;
+        Thu,  2 Sep 2021 08:53:45 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id bt14so5499895ejb.3;
+        Thu, 02 Sep 2021 08:53:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=rDNftNGmU54xsGRS67zsRu7m0uNE4X5v/MoeNFVfn7E=;
-        b=sDw++GMRrMyzpeH1bwkM+FYPVg6fxrVV0LN1kGCn4YN+vcSZbmpwOKB4KWRrH4PWzF
-         tplhblDAyL2RdW+Ojd3dMWXFs2O8dskVrgRaQw6rYDu3d21HyGhW2c9qOWLRe4bz8B6i
-         cyaCcddl/Sqvj49yDnQyEXtu/D8DBfXbMOXgd2/IebWbFgSpslUPSbYQtpxBr0flFAg3
-         VoEYbRI5+J/DxzgpC3s2PCyLmjQpPoRg9WVFh9sc1Xm8ZKxAKAe+kUVsnNZTO2l5TLdD
-         EOko/woKE+VkWyg9+PV9wbXM+hb11rL9RZGyx4LMfgz8v5ab/VJ7gXtmNZdSq0bWr1DD
-         +YPA==
+        bh=wjiK60A2GTYsSOEiStHsCNnHBinVI+innS9X3/HkY6A=;
+        b=NraQocpmXy8PTjNMammi7bWOsB3mOCLjofzO5D6yE4j0UEfSXtV9t8eK3MCC06Z4FF
+         gu1h0LxZ9Ta9uNidVz3HwhUTe+zaAtnNZMVo59McGG3eseewVYXxWZg7zJWLpsaSGBaL
+         Xq9kneXtXiLsEBes3e/0t0bFpFCO7Ur7VPjMKtJ8IHUxly3C4NNSTaFM1v3OGwr5qCJk
+         xhmNTZYXmBq2RfffXni52BPeZH0OEYPgBIDXx+QpNFwzSUZ8MIFtTM378YtAzD6wAFJb
+         yP7umI262k0GE9RK/sl5Fg9VLyf1XW3gzkqZ7yTAJYJ3Sk4jik1JF6wDso+gnrJrspod
+         Wrhg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=rDNftNGmU54xsGRS67zsRu7m0uNE4X5v/MoeNFVfn7E=;
-        b=p00UA90kvpHp4HCCefzmBBEVObilrP5TiGJrlwJGJIKhkh9zSPSSIVlLKORlDLkQN4
-         HnE6ATtCh6Gqpi9IuJlRkg1aAZLe3yxEcoKyumrs5nycToIapOej0sHPXTvUumOHNvep
-         6DMq+QJ5qAHtY7B+Nwmx/YnpkPVZzQ2FgaaSXqtuofQRgTmmGBDeuGTvBhSL6rJJQiZT
-         XPCk8XTSRquiV6TuC3u+Nwx603o96+joirC2CKWpVkChHAvhS77Q5xDCFNCkOPuTFSDy
-         KWniLayPU1g1dGzp2XJucQXM8gqXo8f9ujqnekAoEN7eIwJUMZAPea89WlbuaecZRFIF
-         nl3w==
-X-Gm-Message-State: AOAM532MWzPeYP9TmHbZDxWVlxLgTqzMf0pKY8tsYVpHZOKpYcHw2FEM
-        QnoxEoJlNiRKbORVhx+eGJUl2awo4+1VOlIVOfNmpA==
-X-Google-Smtp-Source: ABdhPJzrEuwh9wgaE+IJ9h+uXMRqJBofSl0PNBOp35s9vzEP0/FozcYSj/LHKR3v8LJwVerCjPOjjlIAbzBATeDztN8=
-X-Received: by 2002:adf:e4ce:: with SMTP id v14mr4523745wrm.49.1630597510045;
- Thu, 02 Sep 2021 08:45:10 -0700 (PDT)
+        bh=wjiK60A2GTYsSOEiStHsCNnHBinVI+innS9X3/HkY6A=;
+        b=H2JkYK4BP90eNo8HH+uq4exqxjJtdudPO/FI+cmTfbzb3jHCdqYlqCiyu3hI7s5bQp
+         CqIqXghbjIz8oAosbLBlO9joSuT85w1BYgqMzccpO9R1+8UVlE9GxzqBIBJjQXcJamU9
+         16AagyjnsvMihWFbxZUFB6Vph8TAI5mKHAK/XDvjeUde6iCMoTjX5UdR6kOE3UhubWN3
+         fCk0VDoulXbCt5kghk3ocFWhOHNsUBoc3fKQUb4g13Y0PBitp7vvNaXmO3v5cEn1oyH6
+         3nM7sU6E2yk3M0/WoltJHPYNsHAJXLiOOs8+JFj4mxO1qjaEnOpgXLAxYr1zA9fjabp/
+         0b1g==
+X-Gm-Message-State: AOAM533r/24T663ZK9h4K4NcxhIkqJrJdjHQHDlH90GloR1gq3GIzRtt
+        ZoGQVZaBaQD1aaW7VsQ7yi9M0bEheTkr7qpXMrg=
+X-Google-Smtp-Source: ABdhPJxqKevZRGoNwDtwRU3RcR/gmbyBQ32TVMKZV/NAsJVJwajeYZRoGCJOBrzDnSqzRQwqkvwJvm+zKEt+fjMVNE8=
+X-Received: by 2002:a17:906:774f:: with SMTP id o15mr4594148ejn.200.1630598024011;
+ Thu, 02 Sep 2021 08:53:44 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210902093358.28345-1-yan2228598786@gmail.com>
-In-Reply-To: <20210902093358.28345-1-yan2228598786@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 2 Sep 2021 08:44:57 -0700
-Message-ID: <CANn89iLHg8cjLFKVzO+CkewLs_NkjEjQGetwARVnkuKRS9iUfQ@mail.gmail.com>
-Subject: Re: [PATCH] net: tcp_drop adds `reason` and SNMP parameters for
- tracing v3
-To:     Zhongya Yan <yan2228598786@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        David Miller <davem@davemloft.net>,
+References: <27f87dd8-f6e4-b2b0-2b3a-9378fddf147f@virtuozzo.com> <053307fc-cc3d-68f5-1994-fe447428b1f2@virtuozzo.com>
+In-Reply-To: <053307fc-cc3d-68f5-1994-fe447428b1f2@virtuozzo.com>
+From:   Christoph Paasch <christoph.paasch@gmail.com>
+Date:   Thu, 2 Sep 2021 08:53:32 -0700
+Message-ID: <CALMXkpbZ3R40XVTMOBF5Bhut9Yv_x=a682qg6gEsAMTT5TGhHQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v5] skb_expand_head() adjust skb->truesize incorrectly
+To:     Vasily Averin <vvs@virtuozzo.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, hengqi.chen@gmail.com,
-        Yonghong Song <yhs@fb.com>,
-        Brendan Gregg <brendan.d.gregg@gmail.com>, 2228598786@qq.com
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, kernel@openvz.org,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Julian Wiedmann <jwi@linux.ibm.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 2, 2021 at 2:34 AM Zhongya Yan <yan2228598786@gmail.com> wrote:
+On Thu, Sep 2, 2021 at 4:12 AM Vasily Averin <vvs@virtuozzo.com> wrote:
 >
-> I used the suggestion from `Brendan Gregg`. In addition to the
-> `reason` parameter there is also the `field` parameter pointing
-> to `SNMP` to distinguish the `tcp_drop` cause. I know what I
-> submitted is not accurate, so I am submitting the current
-> patch to get comments and criticism from everyone so that I
-> can submit better code and solutions.And of course to make me
-> more familiar and understand the `linux` kernel network code.
-> Thank you everyone!
+> Christoph Paasch reports [1] about incorrect skb->truesize
+> after skb_expand_head() call in ip6_xmit.
+> This may happen because of two reasons:
+> - skb_set_owner_w() for newly cloned skb is called too early,
+> before pskb_expand_head() where truesize is adjusted for (!skb-sk) case.
+> - pskb_expand_head() does not adjust truesize in (skb->sk) case.
+> In this case sk->sk_wmem_alloc should be adjusted too.
 >
-> Signed-off-by: Zhongya Yan <yan2228598786@gmail.com>
+> [1] https://lkml.org/lkml/2021/8/20/1082
+>
+> Fixes: f1260ff15a71 ("skbuff: introduce skb_expand_head()")
+> Reported-by: Christoph Paasch <christoph.paasch@gmail.com>
+> Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
 > ---
->  include/trace/events/tcp.h |  39 +++---------
->  net/ipv4/tcp_input.c       | 126 ++++++++++++++-----------------------
->  2 files changed, 57 insertions(+), 108 deletions(-)
->
-> diff --git a/include/trace/events/tcp.h b/include/trace/events/tcp.h
-> index 699539702ea9..80892660458e 100644
-> --- a/include/trace/events/tcp.h
-> +++ b/include/trace/events/tcp.h
-> @@ -371,28 +371,10 @@ DEFINE_EVENT(tcp_event_skb, tcp_bad_csum,
->         TP_ARGS(skb)
->  );
->
-> -// from author @{Steven Rostedt}
-> -#define TCP_DROP_REASON                                                        \
-> -       REASON_STRING(TCP_OFO_QUEUE,            ofo_queue)                      \
-> -       REASON_STRING(TCP_DATA_QUEUE_OFO,               data_queue_ofo)                 \
-> -       REASON_STRING(TCP_DATA_QUEUE,           data_queue)                     \
-> -       REASON_STRING(TCP_PRUNE_OFO_QUEUE,              prune_ofo_queue)                \
-> -       REASON_STRING(TCP_VALIDATE_INCOMING,    validate_incoming)              \
-> -       REASON_STRING(TCP_RCV_ESTABLISHED,              rcv_established)                \
-> -       REASON_STRING(TCP_RCV_SYNSENT_STATE_PROCESS, rcv_synsent_state_process) \
-> -       REASON_STRINGe(TCP_RCV_STATE_PROCESS,   rcv_state_proces)
+> v5: fixed else condition, thanks to Eric
+>     reworked update of expanded skb,
+>     added corresponding comments
+> v4: decided to use is_skb_wmem() after pskb_expand_head() call
+>     fixed 'return (EXPRESSION);' in os_skb_wmem according to Eric Dumazet
+> v3: removed __pskb_expand_head(),
+>     added is_skb_wmem() helper for skb with wmem-compatible destructors
+>     there are 2 ways to use it:
+>      - before pskb_expand_head(), to create skb clones
+>      - after successfull pskb_expand_head() to change owner on extended skb.
+> v2: based on patch version from Eric Dumazet,
+>     added __pskb_expand_head() function, which can be forced
+>     to adjust skb->truesize and sk->sk_wmem_alloc.
+> ---
+>  include/net/sock.h |  1 +
+>  net/core/skbuff.c  | 63 ++++++++++++++++++++++++++++++++++++++++++++++--------
+>  net/core/sock.c    |  8 +++++++
+>  3 files changed, 63 insertions(+), 9 deletions(-)
 
-??? On which tree / branch this patch is based on ?
+Still the same issues around refcount as I reported in my other email.
 
-> -
-> -#undef REASON_STRING
-> -#undef REASON_STRINGe
-> -
-> -#define REASON_STRING(code, name) {code , #name},
-> -#define REASON_STRINGe(code, name) {code, #name}
-> -
-> -
->  TRACE_EVENT(tcp_drop,
-> -               TP_PROTO(struct sock *sk, struct sk_buff *skb, __u32 reason),
-> +               TP_PROTO(struct sock *sk, struct sk_buff *skb, int field, const char *reason),
->
-> -               TP_ARGS(sk, skb, reason),
-> +               TP_ARGS(sk, skb, field, reason),
->
->                 TP_STRUCT__entry(
->                         __array(__u8, saddr, sizeof(struct sockaddr_in6))
-> @@ -409,9 +391,8 @@ TRACE_EVENT(tcp_drop,
->                         __field(__u32, srtt)
->                         __field(__u32, rcv_wnd)
->                         __field(__u64, sock_cookie)
-> -                       __field(__u32, reason)
-> -                       __field(__u32, reason_code)
-> -                       __field(__u32, reason_line)
-> +                       __field(int, field)
-> +                       __string(reason, reason)
->                         ),
->
->                 TP_fast_assign(
-> @@ -437,21 +418,19 @@ TRACE_EVENT(tcp_drop,
->                                 __entry->ssthresh = tcp_current_ssthresh(sk);
->                                 __entry->srtt = tp->srtt_us >> 3;
->                                 __entry->sock_cookie = sock_gen_cookie(sk);
-> -                               __entry->reason = reason;
-> -                               __entry->reason_code = TCP_DROP_CODE(reason);
-> -                               __entry->reason_line = TCP_DROP_LINE(reason);
-> +                               __entry->field = field;
-> +
-> +                               __assign_str(reason, reason);
->                 ),
->
->                 TP_printk("src=%pISpc dest=%pISpc mark=%#x data_len=%d snd_nxt=%#x snd_una=%#x \
->                                 snd_cwnd=%u ssthresh=%u snd_wnd=%u srtt=%u rcv_wnd=%u \
-> -                               sock_cookie=%llx reason=%d reason_type=%s reason_line=%d",
-> +                               sock_cookie=%llx field=%d reason=%s",
->                                 __entry->saddr, __entry->daddr, __entry->mark,
->                                 __entry->data_len, __entry->snd_nxt, __entry->snd_una,
->                                 __entry->snd_cwnd, __entry->ssthresh, __entry->snd_wnd,
->                                 __entry->srtt, __entry->rcv_wnd, __entry->sock_cookie,
-> -                               __entry->reason,
-> -                               __print_symbolic(__entry->reason_code, TCP_DROP_REASON),
-> -                               __entry->reason_line)
-> +                               field, __get_str(reason))
->  );
->
->  #endif /* _TRACE_TCP_H */
-> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-> index b2bc49f1f0de..bd33fd466e1e 100644
-> --- a/net/ipv4/tcp_input.c
-> +++ b/net/ipv4/tcp_input.c
-> @@ -100,7 +100,6 @@ int sysctl_tcp_max_orphans __read_mostly = NR_FILE;
->  #define FLAG_UPDATE_TS_RECENT  0x4000 /* tcp_replace_ts_recent() */
->  #define FLAG_NO_CHALLENGE_ACK  0x8000 /* do not call tcp_send_challenge_ack()  */
->  #define FLAG_ACK_MAYBE_DELAYED 0x10000 /* Likely a delayed ACK */
-> -#define FLAG_DSACK_TLP         0x20000 /* DSACK for tail loss probe */
->
->  #define FLAG_ACKED             (FLAG_DATA_ACKED|FLAG_SYN_ACKED)
->  #define FLAG_NOT_DUP           (FLAG_DATA|FLAG_WIN_UPDATE|FLAG_ACKED)
-> @@ -455,12 +454,11 @@ static void tcp_sndbuf_expand(struct sock *sk)
->   */
->
->  /* Slow part of check#2. */
-> -static int __tcp_grow_window(const struct sock *sk, const struct sk_buff *skb,
-> -                            unsigned int skbtruesize)
-> +static int __tcp_grow_window(const struct sock *sk, const struct sk_buff *skb)
+Did you try running the syzkaller reproducer on your setup?
 
-???
 
+Christoph
+
+>
+> diff --git a/include/net/sock.h b/include/net/sock.h
+> index 95b2577..173d58c 100644
+> --- a/include/net/sock.h
+> +++ b/include/net/sock.h
+> @@ -1695,6 +1695,7 @@ struct sk_buff *sock_wmalloc(struct sock *sk, unsigned long size, int force,
+>                              gfp_t priority);
+>  void __sock_wfree(struct sk_buff *skb);
+>  void sock_wfree(struct sk_buff *skb);
+> +bool is_skb_wmem(const struct sk_buff *skb);
+>  struct sk_buff *sock_omalloc(struct sock *sk, unsigned long size,
+>                              gfp_t priority);
+>  void skb_orphan_partial(struct sk_buff *skb);
+> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> index f931176..29bb92e7 100644
+> --- a/net/core/skbuff.c
+> +++ b/net/core/skbuff.c
+> @@ -1804,28 +1804,73 @@ struct sk_buff *skb_realloc_headroom(struct sk_buff *skb, unsigned int headroom)
+>  struct sk_buff *skb_expand_head(struct sk_buff *skb, unsigned int headroom)
 >  {
->         struct tcp_sock *tp = tcp_sk(sk);
->         /* Optimize this! */
-> -       int truesize = tcp_win_from_space(sk, skbtruesize) >> 1;
-> +       int truesize = tcp_win_from_space(sk, skb->truesize) >> 1;
-
-???
-
->         int window = tcp_win_from_space(sk, sock_net(sk)->ipv4.sysctl_tcp_rmem[2]) >> 1;
+>         int delta = headroom - skb_headroom(skb);
+> +       int osize = skb_end_offset(skb);
+> +       struct sk_buff *oskb = NULL;
+> +       struct sock *sk = skb->sk;
 >
->         while (tp->rcv_ssthresh <= window) {
-> @@ -473,27 +471,7 @@ static int __tcp_grow_window(const struct sock *sk, const struct sk_buff *skb,
->         return 0;
+>         if (WARN_ONCE(delta <= 0,
+>                       "%s is expecting an increase in the headroom", __func__))
+>                 return skb;
+>
+> -       /* pskb_expand_head() might crash, if skb is shared */
+> +       delta = SKB_DATA_ALIGN(delta);
+> +       /* pskb_expand_head() might crash, if skb is shared.
+> +        * Also we should clone skb if its destructor does
+> +        * not adjust skb->truesize and sk->sk_wmem_alloc
+> +        */
+>         if (skb_shared(skb)) {
+>                 struct sk_buff *nskb = skb_clone(skb, GFP_ATOMIC);
+>
+> -               if (likely(nskb)) {
+> -                       if (skb->sk)
+> -                               skb_set_owner_w(nskb, skb->sk);
+> -                       consume_skb(skb);
+> -               } else {
+> +               if (unlikely(!nskb)) {
+>                         kfree_skb(skb);
+> +                       return NULL;
+>                 }
+> +               oskb = skb;
+>                 skb = nskb;
+>         }
+> -       if (skb &&
+> -           pskb_expand_head(skb, SKB_DATA_ALIGN(delta), 0, GFP_ATOMIC)) {
+> +       if (pskb_expand_head(skb, delta, 0, GFP_ATOMIC)) {
+>                 kfree_skb(skb);
+> -               skb = NULL;
+> +               kfree_skb(oskb);
+> +               return NULL;
+> +       }
+> +       if (oskb) {
+> +               if (sk)
+> +                       skb_set_owner_w(skb, sk);
+> +               consume_skb(oskb);
+> +       } else if (sk && skb->destructor != sock_edemux) {
+> +               bool ref, set_owner;
+> +
+> +               ref = false; set_owner = false;
+> +               delta = osize - skb_end_offset(skb);
+> +               /* skb_set_owner_w() calls current skb destructor.
+> +                * It can decrease sk_wmem_alloc to 0 and release sk,
+> +                * To prevnt it we increase sk_wmem_alloc earlier.
+> +                * Another kind of destructors can release last sk_refcnt,
+> +                * so it will be impossible to call sock_hold for !fullsock
+> +                * Take extra sk_refcnt to prevent it.
+> +                * Otherwise just increase truesize of expanded skb.
+> +                */
+> +               refcount_add(delta, &sk->sk_wmem_alloc);
+> +               if (!is_skb_wmem(skb)) {
+> +                       set_owner = true;
+> +                       if (!sk_fullsock(sk) && IS_ENABLED(CONFIG_INET)) {
+> +                               /* skb_set_owner_w can set sock_edemux */
+> +                               ref = refcount_inc_not_zero(&sk->sk_refcnt);
+> +                               if (!ref) {
+> +                                       set_owner = false;
+> +                                       WARN_ON(refcount_sub_and_test(delta, &sk->sk_wmem_alloc));
+> +                               }
+> +                       }
+> +               }
+> +               if (set_owner)
+> +                       skb_set_owner_w(skb, sk);
+> +#ifdef CONFIG_INET
+> +               if (skb->destructor == sock_edemux) {
+> +                       WARN_ON(refcount_sub_and_test(delta, &sk->sk_wmem_alloc));
+> +                       if (ref)
+> +                               WARN_ON(refcount_dec_and_test(&sk->sk_refcnt));
+> +               }
+> +#endif
+> +               skb->truesize += delta;
+>         }
+>         return skb;
 >  }
+> diff --git a/net/core/sock.c b/net/core/sock.c
+> index 950f1e7..6cbda43 100644
+> --- a/net/core/sock.c
+> +++ b/net/core/sock.c
+> @@ -2227,6 +2227,14 @@ void skb_set_owner_w(struct sk_buff *skb, struct sock *sk)
+>  }
+>  EXPORT_SYMBOL(skb_set_owner_w);
 >
-> -/* Even if skb appears to have a bad len/truesize ratio, TCP coalescing
-> - * can play nice with us, as sk_buff and skb->head might be either
-> - * freed or shared with up to MAX_SKB_FRAGS segments.
-> - * Only give a boost to drivers using page frag(s) to hold the frame(s),
-> - * and if no payload was pulled in skb->head before reaching us.
-> - */
-> -static u32 truesize_adjust(bool adjust, const struct sk_buff *skb)
-> -{
-> -       u32 truesize = skb->truesize;
-> -
-> -       if (adjust && !skb_headlen(skb)) {
-> -               truesize -= SKB_TRUESIZE(skb_end_offset(skb));
-> -               /* paranoid check, some drivers might be buggy */
-> -               if (unlikely((int)truesize < (int)skb->len))
-> -                       truesize = skb->truesize;
-> -       }
-> -       return truesize;
-> -}
-
-It seems clear you are doing wrong things.
-
-Have you silently reverted a prior patch ?
+> +bool is_skb_wmem(const struct sk_buff *skb)
+> +{
+> +       return skb->destructor == sock_wfree ||
+> +              skb->destructor == __sock_wfree ||
+> +              (IS_ENABLED(CONFIG_INET) && skb->destructor == tcp_wfree);
+> +}
+> +EXPORT_SYMBOL(is_skb_wmem);
+> +
+>  static bool can_skb_orphan_partial(const struct sk_buff *skb)
+>  {
+>  #ifdef CONFIG_TLS_DEVICE
+> --
+> 1.8.3.1
+>
