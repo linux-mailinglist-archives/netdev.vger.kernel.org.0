@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D5813FF259
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 19:34:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC80E3FF257
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 19:34:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346645AbhIBRfj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 13:35:39 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:52178 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346628AbhIBRfT (ORCPT
+        id S1346640AbhIBRff (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 13:35:35 -0400
+Received: from mail-il1-f200.google.com ([209.85.166.200]:38502 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346625AbhIBRfT (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 13:35:19 -0400
-Received: by mail-io1-f71.google.com with SMTP id i11-20020a056602134b00b005be82e3028bso1892774iov.18
-        for <netdev@vger.kernel.org>; Thu, 02 Sep 2021 10:34:21 -0700 (PDT)
+Received: by mail-il1-f200.google.com with SMTP id j6-20020a056e02014600b00224bde51e20so1722693ilr.5
+        for <netdev@vger.kernel.org>; Thu, 02 Sep 2021 10:34:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=I5xSDFd70a+n/QfPqOXG0+g1HPtzpurq1c0Km9VVZzU=;
-        b=UWuCbUNWLKyisO2A1wBm8UPfoKX43N+QA+ooOpsqGQ1wjOHPx2gCb97HpYZN64+J7L
-         NYWEjuVgP0M6pF768lrfQM/PPi9lLKN/2vCxOQOaYlDklhPjDX0NpXy6BX9hDbOUnCrR
-         87Azdy+/aHRXkDzj0YbhtslbtX/jLeerKhy2qLypacZuMbqqQwOwZ5XnKBKF8UjKWHMF
-         UM/zSIbu1/TwlIfuHefC0QsPKqvvP19e36X/sqlHKfN2q1xgcTmLxulY2AOoG+hHgrLL
-         zk3C34Ye3yIaEABkm5wO8t5YJ/tEgw0mThnVnELAtGBnLceLwBWC7/M8T4S4HZLGNlnn
-         vPnw==
-X-Gm-Message-State: AOAM532UiCGo85FUx5tHBLd3BViwdHaoyWmaTvnhggnSVntKqvpxMy2N
-        r/0G/SgMTcMZiGapaqJ9LRxSFT9NhPMuA+dE9w3B/smDJx2c
-X-Google-Smtp-Source: ABdhPJx19EB/6V/WWvRpYeVP/ttEwxrjzFuj416rWxdWImy97z2kBTRAsSmPmQG6jdE2Ur2+msC1VilZYQfhzkquhyXQCgLOxbs0
+        bh=ArHge6ac7mjnuMUhHn+10qtqAyjjhBJrE7s/5MmGQco=;
+        b=PXcoTgC/b1NXudG2VLK4X4O+13PoUgNeRunGFqJzR2kWkwh5Hzedlf0Tch6+XB1j2L
+         PlF+/2oEpuvs5uchzHS+HAOgEXEZNtq2ldbq7sd9TBBgJungUuGRaVg7wJC3OeF9RMgk
+         1JN3iUcIvvW4SRcrRw1z9gTiZ26oG17s+5Pg/XTlR3YuV2147v4+oUNz8u2sn53MquBK
+         +ATCawKuoLnnTS7/yF4jPgd44lcoqts3XD/dtQRI96tkD3wt2/5mnSE/Ynm3dlq7bxYk
+         lOBIRmZRUDSfJYcNOHIUJm04VgXbbmJeRDeBFQia0Kb0oWdpsK7uy9AJlPZqgC/sZDem
+         AsTg==
+X-Gm-Message-State: AOAM5305bnF7JtAOByK3mbGappvINL1bWfzIpfdLdf5jeMzOYJsejXng
+        mzgARP8GAp/+C5NEuLG2wgEg+u9d0vEwsycyLSvlPGxF3lY5
+X-Google-Smtp-Source: ABdhPJz1IntnQAWMjDY1yDR2FJjP5vdmTEQTdey+qOik/r81Bzm4RUhqIZNncch4jJbN6LJNLIUUu5VVWWeQVyUvKbVP0r2By9Ev
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:531:: with SMTP id h17mr3128109ils.288.1630604060842;
+X-Received: by 2002:a05:6e02:1d95:: with SMTP id h21mr3147788ila.231.1630604060634;
  Thu, 02 Sep 2021 10:34:20 -0700 (PDT)
 Date:   Thu, 02 Sep 2021 10:34:20 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000d0dfda05cb0697d7@google.com>
-Subject: [syzbot] bpf build error (3)
-From:   syzbot <syzbot+8a8ba69ec56c60331e1f@syzkaller.appspotmail.com>
-To:     akpm@linux-foundation.org, ast@kernel.org, bp@alien8.de,
-        daniel@iogearbox.net, hpa@zytor.com, linux-kernel@vger.kernel.org,
+Message-ID: <000000000000cdb6a905cb069738@google.com>
+Subject: [syzbot] net build error (3)
+From:   syzbot <syzbot+8322c0f0976fafa0ae88@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, bp@alien8.de, davem@davemloft.net,
+        hpa@zytor.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
         mingo@redhat.com, netdev@vger.kernel.org,
         rafael.j.wysocki@intel.com, rppt@kernel.org,
         syzkaller-bugs@googlegroups.com, tglx@linutronix.de, x86@kernel.org
@@ -49,14 +49,14 @@ Hello,
 
 syzbot found the following issue on:
 
-HEAD commit:    49ca6153208f bpf: Relicense disassembler as GPL-2.0-only O..
-git tree:       bpf
-console output: https://syzkaller.appspot.com/x/log.txt?x=17835513300000
+HEAD commit:    d12e1c464988 net: dsa: b53: Set correct number of ports in..
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=125c2886300000
 kernel config:  https://syzkaller.appspot.com/x/.config?x=bd61edfef9fa14b1
-dashboard link: https://syzkaller.appspot.com/bug?extid=8a8ba69ec56c60331e1f
+dashboard link: https://syzkaller.appspot.com/bug?extid=8322c0f0976fafa0ae88
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+8a8ba69ec56c60331e1f@syzkaller.appspotmail.com
+Reported-by: syzbot+8322c0f0976fafa0ae88@syzkaller.appspotmail.com
 
 arch/x86/kernel/setup.c:916:6: error: implicit declaration of function 'acpi_mps_check' [-Werror=implicit-function-declaration]
 arch/x86/kernel/setup.c:1110:2: error: implicit declaration of function 'acpi_table_upgrade' [-Werror=implicit-function-declaration]
