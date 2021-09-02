@@ -2,174 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87EE43FEF90
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 16:37:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FB2C3FEFF6
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 17:17:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345459AbhIBOif (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 10:38:35 -0400
-Received: from mail-ot1-f41.google.com ([209.85.210.41]:39875 "EHLO
-        mail-ot1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345637AbhIBOib (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 10:38:31 -0400
-Received: by mail-ot1-f41.google.com with SMTP id m7-20020a9d4c87000000b0051875f56b95so2763804otf.6;
-        Thu, 02 Sep 2021 07:37:32 -0700 (PDT)
+        id S1345742AbhIBPSK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 11:18:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59180 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345637AbhIBPSH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 11:18:07 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC414C061575
+        for <netdev@vger.kernel.org>; Thu,  2 Sep 2021 08:17:08 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id j2so1417731pll.1
+        for <netdev@vger.kernel.org>; Thu, 02 Sep 2021 08:17:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+SoPq38RLCGbMt9sndf16eFCMPkPreJHT5ujEqH0Fgc=;
+        b=ngWbloK15iIqj1Vyf5wJeIPLLSfJMR00dMJXRaFPwA6LKBzLA3RA05Alc4mV/Mry19
+         hO9fb2MDtojTLr9molnlD/T26RvVwWEnCDjOegFXrwxwLbo8CSyLeFz1JrzGt7KOl4hr
+         OOKpG1UvR3170pXnYvuz1J1Q4fQcBsxYkSS0d3+faz/aMY9Pue/lZB9Ti5jMB0lfxeNn
+         PP1Jq+eluqbB3UPGFnCR5OX0fi9QloRjTZrOLLm2SknQ+nQiZHiE4t3mh7RoZrAJs8Vf
+         FQ0Q/Q7CfLsIf/DfLIcmi8cOwEfZf3r0TCqqWYaLCp3me183ZC9/KIhOLYPxhUbryAIF
+         K6UQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2rl17F8ZLBnG5Isa+rmWjX2SNqghsw0qlnTGMKBisZ0=;
-        b=h6acscH9YzN7mudrVnga/dMRI8dWQQsLCC0TAEa7y58n4i2u7YbR/ZXP1fymmI/Jd7
-         avMJozazwugwGRkVG498Kj5ope1tnccMWA5DCNADPqatJ1U97R+iNJITVh+ove3Cj86N
-         CjpM9Ah04avjDqfIQvoFoonHKg2+1UPsnylrYhKPnsJkN4mG4PhaGmxK5mZ4YbVfFr6M
-         Mot6RghEKw3resvqqD2+WySdHg8Pdolns3wkiN6Lc+NSSu0OcF5S4A4pWoSpZcGbO2bh
-         uOEI38KeD4QPQgNyKfFLx3ur1sl/0nqav7KN0vTMnKB7ENjLCiqTYYurGdy6vNzD9eDN
-         vuWw==
-X-Gm-Message-State: AOAM533wLQCvzR7sxHm2QQWhZhne1gS+EQVEN/kKu6/DHUgGdUxty9Y3
-        wier6UK7pCk741q0RqRkrD2JGIaX4ozFsmefjtM=
-X-Google-Smtp-Source: ABdhPJyrp2UQgnC/bMjq5FEMaYHKwQw/CGCD4kMAVeIwn6tfTR+Oa80W/Q25Kga3HOIYpu8ch3KhznvFoaPPcUbuTPI=
-X-Received: by 2002:a9d:7115:: with SMTP id n21mr2928384otj.321.1630593452296;
- Thu, 02 Sep 2021 07:37:32 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+SoPq38RLCGbMt9sndf16eFCMPkPreJHT5ujEqH0Fgc=;
+        b=ryaUz+F5EO1sfI5c95TbplXv2l8e4veMVhPJ+saBwhukY5Lhc2PxBhf5uP55M2xT5g
+         AJXWjs2OhTGxv6TIOtrzyGeu6x3bQmoHSx38gJI95gy4F6cIYoRQb8a/3UWqp0wBZRf8
+         kwYf0jx50P+TYtgFzdMhYnf9rJsrEbxERdc60JiIfYhmpkeBEKLljGsAYI/4tIGTd3as
+         2mpSQy4wRIl6yl8CQW/TxkwdARbYKpEGFWgWGPC8jd/8B24YgR/DpuNGWk/ASSfvtcE5
+         Y1OeOWMVZDa6f9XHfB0BOU+U/02EmT3CWMgPs1Ayd4K92zfVZo5DtStJOY9UWr5yC1Gu
+         Rl+A==
+X-Gm-Message-State: AOAM532T6fAvgeEgyR9yepdFfOURd81QS0mAAVxNjzc0Epy7k5Hye8YG
+        Hz8TnXgthcTRqWl75VfirMLGUAQy5az8Lw==
+X-Google-Smtp-Source: ABdhPJwMKjzxWJmVtDN7nQw3ZKoVO7RXRu4YMk3gd5vwtdhNawPfceXcgor6ynP2ZyD+XRYOmAg4Kg==
+X-Received: by 2002:a17:90a:1904:: with SMTP id 4mr4454407pjg.217.1630595828170;
+        Thu, 02 Sep 2021 08:17:08 -0700 (PDT)
+Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
+        by smtp.gmail.com with ESMTPSA id d15sm2765756pfh.34.2021.09.02.08.17.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Sep 2021 08:17:07 -0700 (PDT)
+Date:   Thu, 2 Sep 2021 08:17:04 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Jarod Wilson <jarod@redhat.com>
+Cc:     netdev@vger.kernel.org
+Subject: Fw: [Bug 214277] New: mtu value for geneve interface
+Message-ID: <20210902081704.63761e95@hermes.local>
 MIME-Version: 1.0
-References: <20210901225053.1205571-1-vladimir.oltean@nxp.com>
- <20210901225053.1205571-2-vladimir.oltean@nxp.com> <YTBkbvYYy2f/b3r2@kroah.com>
-In-Reply-To: <YTBkbvYYy2f/b3r2@kroah.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Thu, 2 Sep 2021 16:37:21 +0200
-Message-ID: <CAJZ5v0jfdE4RTR=71a6eGDoOF5jvr0ReM27WME+owmPLkXuU5w@mail.gmail.com>
-Subject: Re: [RFC PATCH net-next 1/3] net: phy: don't bind genphy in
- phy_attach_direct if the specific driver defers probe
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        netdev <netdev@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        kernel-team <kernel-team@android.com>,
-        Len Brown <lenb@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 2, 2021 at 7:43 AM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Thu, Sep 02, 2021 at 01:50:51AM +0300, Vladimir Oltean wrote:
-> > There are systems where the PHY driver might get its probe deferred due
-> > to a missing supplier, like an interrupt-parent, gpio, clock or whatever.
-> >
-> > If the phy_attach_direct call happens right in between probe attempts,
-> > the PHY library is greedy and assumes that a specific driver will never
-> > appear, so it just binds the generic PHY driver.
-> >
-> > In certain cases this is the wrong choice, because some PHYs simply need
-> > the specific driver. The specific PHY driver was going to probe, given
-> > enough time, but this doesn't seem to matter to phy_attach_direct.
-> >
-> > To solve this, make phy_attach_direct check whether a specific PHY
-> > driver is pending or not, and if it is, just defer the probing of the
-> > MAC that's connecting to us a bit more too.
-> >
-> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > ---
-> >  drivers/base/dd.c            | 21 +++++++++++++++++++--
-> >  drivers/net/phy/phy_device.c |  8 ++++++++
-> >  include/linux/device.h       |  1 +
-> >  3 files changed, 28 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/base/dd.c b/drivers/base/dd.c
-> > index 1c379d20812a..b22073b0acd2 100644
-> > --- a/drivers/base/dd.c
-> > +++ b/drivers/base/dd.c
-> > @@ -128,13 +128,30 @@ static void deferred_probe_work_func(struct work_struct *work)
-> >  }
-> >  static DECLARE_WORK(deferred_probe_work, deferred_probe_work_func);
-> >
-> > +static bool __device_pending_probe(struct device *dev)
-> > +{
-> > +     return !list_empty(&dev->p->deferred_probe);
-> > +}
-> > +
-> > +bool device_pending_probe(struct device *dev)
-> > +{
-> > +     bool pending;
-> > +
-> > +     mutex_lock(&deferred_probe_mutex);
-> > +     pending = __device_pending_probe(dev);
-> > +     mutex_unlock(&deferred_probe_mutex);
-> > +
-> > +     return pending;
-> > +}
-> > +EXPORT_SYMBOL_GPL(device_pending_probe);
-> > +
-> >  void driver_deferred_probe_add(struct device *dev)
-> >  {
-> >       if (!dev->can_match)
-> >               return;
-> >
-> >       mutex_lock(&deferred_probe_mutex);
-> > -     if (list_empty(&dev->p->deferred_probe)) {
-> > +     if (!__device_pending_probe(dev)) {
-> >               dev_dbg(dev, "Added to deferred list\n");
-> >               list_add_tail(&dev->p->deferred_probe, &deferred_probe_pending_list);
-> >       }
-> > @@ -144,7 +161,7 @@ void driver_deferred_probe_add(struct device *dev)
-> >  void driver_deferred_probe_del(struct device *dev)
-> >  {
-> >       mutex_lock(&deferred_probe_mutex);
-> > -     if (!list_empty(&dev->p->deferred_probe)) {
-> > +     if (__device_pending_probe(dev)) {
-> >               dev_dbg(dev, "Removed from deferred list\n");
-> >               list_del_init(&dev->p->deferred_probe);
-> >               __device_set_deferred_probe_reason(dev, NULL);
-> > diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-> > index 52310df121de..2c22a32f0a1c 100644
-> > --- a/drivers/net/phy/phy_device.c
-> > +++ b/drivers/net/phy/phy_device.c
-> > @@ -1386,8 +1386,16 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
-> >
-> >       /* Assume that if there is no driver, that it doesn't
-> >        * exist, and we should use the genphy driver.
-> > +      * The exception is during probing, when the PHY driver might have
-> > +      * attempted a probe but has requested deferral. Since there might be
-> > +      * MAC drivers which also attach to the PHY during probe time, try
-> > +      * harder to bind the specific PHY driver, and defer the MAC driver's
-> > +      * probing until then.
->
-> Wait, no, this should not be a "special" thing, and why would the list
-> of deferred probe show this?
->
-> If a bus wants to have this type of "generic vs. specific" logic, then
-> it needs to handle it in the bus logic itself as that does NOT fit into
-> the normal driver model at all.
+It looks like this code in geneve_setup() causes this bug.
 
-Well, I think that this is a general issue and it appears to me to be
-present in the driver core too, at least to some extent.
+	/* The max_mtu calculation does not take account of GENEVE
+	 * options, to avoid excluding potentially valid
+	 * configurations. This will be further reduced by IPvX hdr size.
+	 */
+	dev->max_mtu = IP_MAX_MTU - GENEVE_BASE_HLEN - dev->hard_header_len;
 
-Namely, if there are two drivers matching the same device and the
-first one's ->probe() returns -EPROBE_DEFER, that will be converted to
-EPROBE_DEFER by really_probe(), so driver_probe_device() will pass it
-to __device_attach_driver() which then will return 0.  This
-bus_for_each_drv() will call __device_attach_driver()  for the second
-matching driver even though the first one may still probe successfully
-later.
 
-To me, this really is a variant of "if a driver has failed to probe,
-try another one" which phy_attach_direct() appears to be doing and in
-both cases the probing of the "alternative" is premature if the
-probing of the original driver has been deferred.
+Begin forwarded message:
 
-> Don't try to get a "hint" of this by messing with the probe function list.
+Date: Thu, 02 Sep 2021 10:30:58 +0000
+From: bugzilla-daemon@bugzilla.kernel.org
+To: stephen@networkplumber.org
+Subject: [Bug 214277] New: mtu value for geneve interface
 
-I agree that this doesn't look particularly clean, but then I'm
-wondering how to address this cleanly.
+
+https://bugzilla.kernel.org/show_bug.cgi?id=214277
+
+            Bug ID: 214277
+           Summary: mtu value for geneve interface
+           Product: Networking
+           Version: 2.5
+    Kernel Version: 5.14
+          Hardware: All
+                OS: Linux
+              Tree: Mainline
+            Status: NEW
+          Severity: normal
+          Priority: P1
+         Component: IPV4
+          Assignee: stephen@networkplumber.org
+          Reporter: pupilla@hotmail.com
+        Regression: No
+
+Hello everyone,
+
+I am implementing a L2 connectivity through an ipv4 network,
+via GENEVE protocol.
+
+There are two systems called 'GENgw1' and 'GENgw2' that
+implement a GENEVE tunnel to provide L2 connectivity (a
+bridge is configured on both) between the 'Ovest' and 'Est'
+systems.
+
+This is the diagram:
+
+
+|Ovest eth0=10.1.1.2/24|-----|eth1 GENgw2 eth0=172.19.1.2/24|---+
+                              br0                               |
+                                                                |
+                                                              geneve
+                                                                |
+                                                                |
+|Est eth0=10.1.1.1/24|-------|eth1 GENgw1 eth0=172.19.1.1/24|---+
+                              br0
+
+
+The value of the mtu assigned by default to the geneve
+interface is 1450 bytes, when the mtu of the physical
+interface is 1500 bytes.
+
+I am forced to increase it (from 1450 to 1500) to ensure
+the correct mtu in the L2 virtual network segment.
+
+This is the output from GENgw1 after forcing the mtu
+to 1500 bytes for the geneve device:
+
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group
+default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP
+group default qlen 1000
+    link/ether fc:4d:d4:2e:cd:81 brd ff:ff:ff:ff:ff:ff
+    inet 172.19.1.1/24 brd 172.19.1.255 scope global eth0
+       valid_lft forever preferred_lft forever
+3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast master br0
+state UP group default qlen 1000
+    link/ether 00:15:17:a6:ee:4c brd ff:ff:ff:ff:ff:ff
+8: genevetunnel: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue
+master br0 state UNKNOWN group default qlen 1000
+    link/ether 9e:9a:e7:1a:2d:30 brd ff:ff:ff:ff:ff:ff
+9: br0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group
+default qlen 1000
+    link/ether 00:15:17:a6:ee:4c brd ff:ff:ff:ff:ff:ff
+
+GENgw2 setup is mirrored as GENgw1.
+
+If I start a ping with a 1460 bytes long packet from the
+'Est' system to the 'Ovest' system, the 'GENgw1' gateway
+responds with an icmp message that it is necessary to
+fragment the packet because it is too large because the
+mtu is 1450 bytes.
+
+tcpdump taken on GENgw1/eth1:
+
+11:26:18.189960 IP (tos 0x0, ttl 255, id 17493, offset 0, flags [DF], proto
+ICMP (1), length 1488)
+    192.168.1.1 > 192.168.1.2: ICMP echo request, id 34081, seq 0, length 1468
+
+11:26:18.189983 IP (tos 0x0, ttl 255, id 0, offset 0, flags [DF], proto ICMP
+(1), length 576)
+    192.168.1.2 > 192.168.1.1: ICMP 192.168.1.2 unreachable - need to frag (mtu
+1450), length 556
+        IP (tos 0x0, ttl 255, id 17493, offset 0, flags [DF], proto ICMP (1),
+length 1488)
+    192.168.1.1 > 192.168.1.2: ICMP echo request, id 34081, seq 0, length 1468
+
+Is this what should be expected?
+
+Thank you all for your attention.
+
+Cheers,
+Marco
+
+-- 
+You may reply to this email to add a comment.
+
+You are receiving this mail because:
+You are the assignee for the bug.
