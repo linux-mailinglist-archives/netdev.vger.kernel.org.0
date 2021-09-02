@@ -2,192 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EEA73FF377
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 20:51:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 648A13FF37A
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 20:52:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347156AbhIBSw3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 14:52:29 -0400
-Received: from mga12.intel.com ([192.55.52.136]:36686 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230204AbhIBSw2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Sep 2021 14:52:28 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10095"; a="198762556"
-X-IronPort-AV: E=Sophos;i="5.85,262,1624345200"; 
-   d="scan'208";a="198762556"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2021 11:51:25 -0700
-X-IronPort-AV: E=Sophos;i="5.85,262,1624345200"; 
-   d="scan'208";a="511133992"
-Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.212.161.224])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2021 11:51:25 -0700
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        davem@davemloft.net, kuba@kernel.org, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev, pabeni@redhat.com
-Subject: [PATCH net] mptcp: Only send extra TCP acks in eligible socket states
-Date:   Thu,  2 Sep 2021 11:51:19 -0700
-Message-Id: <20210902185119.283187-1-mathew.j.martineau@linux.intel.com>
-X-Mailer: git-send-email 2.33.0
+        id S1347163AbhIBSxi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 14:53:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53438 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347157AbhIBSxh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 14:53:37 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 197E5C061757
+        for <netdev@vger.kernel.org>; Thu,  2 Sep 2021 11:52:39 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id eb14so4406749edb.8
+        for <netdev@vger.kernel.org>; Thu, 02 Sep 2021 11:52:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=anyfinetworks-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mnqC4aWmj3sHQroe9OPuIw4O7OLX5V8J9/9ogyRu/fw=;
+        b=xN+tvj7RU2uH39R5uLynwY463NpQHxEPhE+mApQSpTp6LUXDmiBq7uQM6qbrSaI3fl
+         tua8mf3jWiN/66fnHpCS3Pljr8/BCzx5ur20Vel1m8XOaoDRDaGupul62oVebfFaZu38
+         QEmjCdyT0QAuOQV+/N2pju5YWzlVslplw8cewoscP4Pi3g/WJwpLODIjMsdEOAhg0Kx+
+         AinDlKkGQUyRv8nljXilhzcaIA3fBoEmOhBs5p1rvJyG1Owq2A+D0v3qn3Bx0LUuwjTc
+         N4tI+bGXxsa69cc4S7U07rBZtDh/3DQ9B1a5/uDN3cOdFxJPZfi3u23msU35NL5KdNfk
+         pM6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mnqC4aWmj3sHQroe9OPuIw4O7OLX5V8J9/9ogyRu/fw=;
+        b=hd9cxm0n3eVwQUhJSolJ/DV8GK5wLD8ttk+HUf3XvZM7X39oY4pTLoq9adjfa3B6lZ
+         7mMIUEkOnNJfw6RuNuINbRGPSwbHkKIbECWbq+uDBnhDDbztYC77XTjHGxA+NGHTQ3vp
+         PGmFYyjDQPD/m8KRhBFbd0RvJCn2Yo91ug+LzFTqTa6homfTAIDlPOCzrG1q+3Yh/p2u
+         2odfkfP8+23D7A2Nfz+ZTIGlVuYBUoMHIa8ddNOZtlZnUQEqCwvyqhUYGUOfk43xR34U
+         AraKxbYIhTQUHIknigiakEv4qV5xm3gQQCCIByTXo+4FHhtVp8U8FuLnq7PfZrXsrsSz
+         Sb2w==
+X-Gm-Message-State: AOAM533RDdbgE3Wuzde+EmxFfvrgTqtLDk/F/oaCoukG/8MrTQq0Sz4E
+        j9aKGAZ85xhZc1YNwsfU2Rj2Cg==
+X-Google-Smtp-Source: ABdhPJzpgAWnYacfRbhe2bffwJWgdFnx0jr0m18sTklLL+TUAhbQEkZzos0HuDjaRwD4c6GKLB67+Q==
+X-Received: by 2002:a05:6402:5107:: with SMTP id m7mr4935361edd.63.1630608757649;
+        Thu, 02 Sep 2021 11:52:37 -0700 (PDT)
+Received: from anpc2.lan (static-213-115-136-2.sme.telenor.se. [213.115.136.2])
+        by smtp.gmail.com with ESMTPSA id mb14sm1592235ejb.81.2021.09.02.11.52.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Sep 2021 11:52:37 -0700 (PDT)
+From:   Johan Almbladh <johan.almbladh@anyfinetworks.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        iii@linux.ibm.com
+Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Johan Almbladh <johan.almbladh@anyfinetworks.com>
+Subject: [PATCH bpf-next 00/13] bpf/tests: Extend JIT test suite coverage
+Date:   Thu,  2 Sep 2021 20:52:16 +0200
+Message-Id: <20210902185229.1840281-1-johan.almbladh@anyfinetworks.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Recent changes exposed a bug where specifically-timed requests to the
-path manager netlink API could trigger a divide-by-zero in
-__tcp_select_window(), as syzkaller does:
+This patch set adds a number of new tests to the test_bpf.ko test suite.
+The tests are intended to verify the correctness of eBPF JITs.
 
-divide error: 0000 [#1] SMP KASAN NOPTI
-CPU: 0 PID: 9667 Comm: syz-executor.0 Not tainted 5.14.0-rc6+ #3
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014
-RIP: 0010:__tcp_select_window+0x509/0xa60 net/ipv4/tcp_output.c:3016
-Code: 44 89 ff e8 c9 29 e9 fd 45 39 e7 0f 8d 20 ff ff ff e8 db 28 e9 fd 44 89 e3 e9 13 ff ff ff e8 ce 28 e9 fd 44 89 e0 44 89 e3 99 <f7> 7c 24 04 29 d3 e9 fc fe ff ff e8 b7 28 e9 fd 44 89 f1 48 89 ea
-RSP: 0018:ffff888031ccf020 EFLAGS: 00010216
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000040000
-RDX: 0000000000000000 RSI: ffff88811532c080 RDI: 0000000000000002
-RBP: 0000000000000000 R08: ffffffff835807c2 R09: 0000000000000000
-R10: 0000000000000004 R11: ffffed1020b92441 R12: 0000000000000000
-R13: 1ffff11006399e08 R14: 0000000000000000 R15: 0000000000000000
-FS:  00007fa4c8344700(0000) GS:ffff88811ae00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000001b2f424000 CR3: 000000003e4e2003 CR4: 0000000000770ef0
-PKRU: 55555554
-Call Trace:
- tcp_select_window net/ipv4/tcp_output.c:264 [inline]
- __tcp_transmit_skb+0xc00/0x37a0 net/ipv4/tcp_output.c:1351
- __tcp_send_ack.part.0+0x3ec/0x760 net/ipv4/tcp_output.c:3972
- __tcp_send_ack net/ipv4/tcp_output.c:3978 [inline]
- tcp_send_ack+0x7d/0xa0 net/ipv4/tcp_output.c:3978
- mptcp_pm_nl_addr_send_ack+0x1ab/0x380 net/mptcp/pm_netlink.c:654
- mptcp_pm_remove_addr+0x161/0x200 net/mptcp/pm.c:58
- mptcp_nl_remove_id_zero_address+0x197/0x460 net/mptcp/pm_netlink.c:1328
- mptcp_nl_cmd_del_addr+0x98b/0xd40 net/mptcp/pm_netlink.c:1359
- genl_family_rcv_msg_doit.isra.0+0x225/0x340 net/netlink/genetlink.c:731
- genl_family_rcv_msg net/netlink/genetlink.c:775 [inline]
- genl_rcv_msg+0x341/0x5b0 net/netlink/genetlink.c:792
- netlink_rcv_skb+0x148/0x430 net/netlink/af_netlink.c:2504
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:803
- netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
- netlink_unicast+0x537/0x750 net/netlink/af_netlink.c:1340
- netlink_sendmsg+0x846/0xd80 net/netlink/af_netlink.c:1929
- sock_sendmsg_nosec net/socket.c:704 [inline]
- sock_sendmsg+0x14e/0x190 net/socket.c:724
- ____sys_sendmsg+0x709/0x870 net/socket.c:2403
- ___sys_sendmsg+0xff/0x170 net/socket.c:2457
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2486
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x38/0x90 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+In cases when it is feasible to test all possible values exhaustively, for
+example every legal ALU shift value, so is done. In other cases, a pattern
+of operand values that are likely to trigger different JIT code paths are
+tested. For example, instructions with two 64-bit operands are tested with
+every power-of-two value combination, with some small pertubations added.
 
-mptcp_pm_nl_addr_send_ack() was attempting to send a TCP ACK on the
-first subflow in the MPTCP socket's connection list without validating
-that the subflow was in a suitable connection state. To address this,
-always validate subflow state when sending extra ACKs on subflows
-for address advertisement or subflow priority change.
+Some tests might seem a bit artificial. However this patch set, as well
+as my other recent additions to test suite, is essentially a bi-product of
+my work implementing a JIT for 32-bit MIPS. The tests exercise mechanisms
+and aspects that I encountered during JIT development, and that I found to
+be non-trivial to implement correctly.
 
-Fixes: 84dfe3677a6f ("mptcp: send out dedicated ADD_ADDR packet")
-Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/229
-Co-developed-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
----
- net/mptcp/pm_netlink.c | 10 ++--------
- net/mptcp/protocol.c   | 21 ++++++++++++---------
- net/mptcp/protocol.h   |  1 +
- 3 files changed, 15 insertions(+), 17 deletions(-)
+Johan
 
-diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
-index 1e4289c507ff..c4f9a5ce3815 100644
---- a/net/mptcp/pm_netlink.c
-+++ b/net/mptcp/pm_netlink.c
-@@ -644,15 +644,12 @@ void mptcp_pm_nl_addr_send_ack(struct mptcp_sock *msk)
- 	subflow = list_first_entry_or_null(&msk->conn_list, typeof(*subflow), node);
- 	if (subflow) {
- 		struct sock *ssk = mptcp_subflow_tcp_sock(subflow);
--		bool slow;
- 
- 		spin_unlock_bh(&msk->pm.lock);
- 		pr_debug("send ack for %s",
- 			 mptcp_pm_should_add_signal(msk) ? "add_addr" : "rm_addr");
- 
--		slow = lock_sock_fast(ssk);
--		tcp_send_ack(ssk);
--		unlock_sock_fast(ssk, slow);
-+		mptcp_subflow_send_ack(ssk);
- 		spin_lock_bh(&msk->pm.lock);
- 	}
- }
-@@ -669,7 +666,6 @@ int mptcp_pm_nl_mp_prio_send_ack(struct mptcp_sock *msk,
- 		struct sock *ssk = mptcp_subflow_tcp_sock(subflow);
- 		struct sock *sk = (struct sock *)msk;
- 		struct mptcp_addr_info local;
--		bool slow;
- 
- 		local_address((struct sock_common *)ssk, &local);
- 		if (!addresses_equal(&local, addr, addr->port))
-@@ -682,9 +678,7 @@ int mptcp_pm_nl_mp_prio_send_ack(struct mptcp_sock *msk,
- 
- 		spin_unlock_bh(&msk->pm.lock);
- 		pr_debug("send ack for mp_prio");
--		slow = lock_sock_fast(ssk);
--		tcp_send_ack(ssk);
--		unlock_sock_fast(ssk, slow);
-+		mptcp_subflow_send_ack(ssk);
- 		spin_lock_bh(&msk->pm.lock);
- 
- 		return 0;
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index a4c6e37e07c9..2602f1386160 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -440,19 +440,22 @@ static bool tcp_can_send_ack(const struct sock *ssk)
- 	       (TCPF_SYN_SENT | TCPF_SYN_RECV | TCPF_TIME_WAIT | TCPF_CLOSE | TCPF_LISTEN));
- }
- 
-+void mptcp_subflow_send_ack(struct sock *ssk)
-+{
-+	bool slow;
-+
-+	slow = lock_sock_fast(ssk);
-+	if (tcp_can_send_ack(ssk))
-+		tcp_send_ack(ssk);
-+	unlock_sock_fast(ssk, slow);
-+}
-+
- static void mptcp_send_ack(struct mptcp_sock *msk)
- {
- 	struct mptcp_subflow_context *subflow;
- 
--	mptcp_for_each_subflow(msk, subflow) {
--		struct sock *ssk = mptcp_subflow_tcp_sock(subflow);
--		bool slow;
--
--		slow = lock_sock_fast(ssk);
--		if (tcp_can_send_ack(ssk))
--			tcp_send_ack(ssk);
--		unlock_sock_fast(ssk, slow);
--	}
-+	mptcp_for_each_subflow(msk, subflow)
-+		mptcp_subflow_send_ack(mptcp_subflow_tcp_sock(subflow));
- }
- 
- static void mptcp_subflow_cleanup_rbuf(struct sock *ssk)
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index 64c9a30e0871..d3e6fd1615f1 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -573,6 +573,7 @@ void __init mptcp_subflow_init(void);
- void mptcp_subflow_shutdown(struct sock *sk, struct sock *ssk, int how);
- void mptcp_close_ssk(struct sock *sk, struct sock *ssk,
- 		     struct mptcp_subflow_context *subflow);
-+void mptcp_subflow_send_ack(struct sock *ssk);
- void mptcp_subflow_reset(struct sock *ssk);
- void mptcp_sock_graft(struct sock *sk, struct socket *parent);
- struct socket *__mptcp_nmpc_socket(const struct mptcp_sock *msk);
+Johan Almbladh (13):
+  bpf/tests: Allow different number of runs per test case
+  bpf/tests: Reduce memory footprint of test suite
+  bpf/tests: Add exhaustive tests of ALU shift values
+  bpf/tests: Add exhaustive tests of ALU operand magnitudes
+  bpf/tests: Add exhaustive tests of JMP operand magnitudes
+  bpf/tests: Add staggered JMP and JMP32 tests
+  bpf/tests: Add exhaustive test of LD_IMM64 immediate magnitudes
+  bpf/tests: Add test case flag for verifier zero-extension
+  bpf/tests: Add JMP tests with small offsets
+  bpf/tests: Add JMP tests with degenerate conditional
+  bpf/tests: Expand branch conversion JIT test
+  bpf/tests: Add more BPF_END byte order conversion tests
+  bpf/tests: Add tail call limit test with external function call
 
-base-commit: d12e1c4649883e8ca5e8ff341e1948b3b6313259
+ lib/test_bpf.c | 3314 +++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 3272 insertions(+), 42 deletions(-)
+
 -- 
-2.33.0
+2.25.1
 
