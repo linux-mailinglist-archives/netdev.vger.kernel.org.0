@@ -2,602 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 601553FEB6B
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 11:41:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 178FD3FEBDD
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 12:09:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343725AbhIBJfY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 05:35:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36948 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343687AbhIBJfU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 05:35:20 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AA28C061575;
-        Thu,  2 Sep 2021 02:34:22 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id e16so1176440pfc.6;
-        Thu, 02 Sep 2021 02:34:22 -0700 (PDT)
+        id S233526AbhIBKK3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 06:10:29 -0400
+Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:62764 "EHLO
+        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232113AbhIBKKV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 06:10:21 -0400
+Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1827ORm6029901;
+        Thu, 2 Sep 2021 10:09:17 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : content-type : in-reply-to : mime-version;
+ s=corp-2021-07-09; bh=vYsOdJb8Clil6Rdy7eeUvoE9Rwzzx6p2/GrvPj5Vec8=;
+ b=yvn+JrXYvMnR7GBO5/6EY7NCIommKaS0ZsbQteUtIw0QRZ5MUQUYfJpWj8j3HxM0zsQb
+ RWyOF9CzVXOADooQCJxIvAEPSVJrIkBxFczK7YW6foMo2/m8SVUwo56gUFyeG0eEm09t
+ ZViY8RkPnQCuYj8hRLGuRtvGpfmpufdBoxc0RUGq+EkxqhSUTYt2QX0XasPUd6SW5I+A
+ mRGbxhexuN2ibfoES47svaXQtVdFSJ068nuLI/RLroRacbQRI83cn0539qIkbqPSiMN2
+ A7TDxM9n+rZJ2GYzTQPAGcvAYdX+OtzpfkKYCzmWyZCwKik0vuTvDklDRw5/NTt5iE+K ng== 
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : content-type : in-reply-to : mime-version;
+ s=corp-2020-01-29; bh=vYsOdJb8Clil6Rdy7eeUvoE9Rwzzx6p2/GrvPj5Vec8=;
+ b=spdc5RPXZde8YibgpXb9t2FfWP9pV0cQmfswHjtjtFrHMw16MnGCK/MhpIQgRtupkUgA
+ HPAoRgJVeYEtLTzs6+3jgUEz1WfnQBa0Cg4ij2G9RwcrwMw1byyMGj5Qb7HCRAHtD0ci
+ xHvjEETQC9/B0Ak9tGsiiWuqn7oJJUsXNuQO18EfbuyDyqkfVQLr8OPbpij4Sdkh5oOj
+ yXjPVbwrMXevyMxcZy+h96gj7+ne0qFX6L7uNPPZ8qBwsE/Tvm0e5/XwqtHxUQXt/ZFf
+ QnGK2kZXBVnh166v42n91cOiZuUepJSTy4ARmquOQsl5DoDzrTmbKR42jQavmUHdYKW2 qA== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3atdw026n1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 02 Sep 2021 10:09:16 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 182A5qlr036219;
+        Thu, 2 Sep 2021 10:09:16 GMT
+Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2168.outbound.protection.outlook.com [104.47.57.168])
+        by aserp3030.oracle.com with ESMTP id 3atdywrj9x-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 02 Sep 2021 10:09:15 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FfHaurVtXu0zTpGDeIuup9TF5HKNzPWcDlnekPeovU0h+08r2ABuFLKrKLRp1yx44xvsOlVyLlJx06Lnrx3kVXG01nNcQ9SXVO/PFxdoEKj9Oz9aRXXnQa8NfB4Xr/Q/fUbAwnt1aoFuWlYDL+mYUGqlny6Oy4WaH7TLweZtOwpEXykGI8BRbXblobkgo2GkhVLECrpqQqE31UFQmo//iZyK8axnyXt4UFLD0YTs32ANEhmbTxkQv/iWL/U0g0c5E1RyCwY4YQk0JMEllcM32fAJEO6UdQzkGHJFxREj6DL6ZqlNomAgDbgDKcs5bXtyMH2a+Ij4MeqjG+mRRHEMJQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vYsOdJb8Clil6Rdy7eeUvoE9Rwzzx6p2/GrvPj5Vec8=;
+ b=jWnHW927HJc0OwZk3V8GpSz2AbtwYaS5Tg/WOi80WOdpbZATiormcvesIGT/5YEFsMC69C8V14o1wc1i908x9Q6DcGkyRDZ0NqOPWhk2KsjbjSDFjzx5oKK2YC7O09uKlDc6R3OJcuvkOQSpNR/AYgwTO2Qp88pKpfOUxlFwIfPKvw/mV2G7tsQ8jm1un7kxoEKQlK+T4dEPcZilY0DtbDIqDS3g2Ul51q1XGBu9/olNUX75cs4HCx4xlUUNfWW1OONgNO5idoC38ZKsMDa9o6NVSRTLtnZqtfAHYmJgsnZsBi4SqLyxZRCpFdqqXQY9gy/+HgdnqPqtROmNGdgO1A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BIrFh4P2PXq0kmyCcxGTXIhBEy39OT8I4o6P4cr2nzg=;
-        b=U7CpizVbKJaWTHmOGAw3EcIlmkC5UYQ7SRHgGUsD8Ycux2WhbM2lJnhJNuvQm1CIjD
-         6CBZVdQ8ktrW0XArj67h6bfQPiIdNTyDDM1nSJKimWsiatbImjdvrQFwi0vZnRDO7kdp
-         0nj9PYUEjPL/736x3Goyt29LcLHDZmbRVa8vPnrWE28QRPHB/7xL/H4Qv+lVHGGEXxty
-         9lYyAZgzoHKadoZCZ83tW4uc72vEMthzXGzrqOodRNTSR0/EvoP5HUov48GcCwerDQDL
-         kEaXBPDLq40Eu055todWVOXDH6JNUmrJBZB0vo+s8Iunf121zgKzn+qvlOSIbys8GPtI
-         302Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BIrFh4P2PXq0kmyCcxGTXIhBEy39OT8I4o6P4cr2nzg=;
-        b=oqI0+H2YWZiWNpltpTeq2JDMU7FKatuWdqM70G49rG/X7NdMVkkw+FDm12AaXKUiEj
-         4WR6Aez39kpoYs6PJ52q/VnHVI+//rq1wgmnbLhcBg+0NWO9ezQHXydE/gUerXsrYE5T
-         jdAjbNI8bUsElub2XINu1thY5FfwoA90+d7Yr1m+p6G7PoZpUBZWJdj6udhgy9GskHXP
-         rsxihUOBtVEAlV21lDQ+Efcdt07ormf4nkvONkoSamc1+2F8QJk5D3MPXMCGcoO4hvWU
-         2HejwvVWE+m0ZXdBJ3TIUDN0V/9+cJ3Tv1FDIklFOA06rZFe7xAY+4mSidAC7+ou5A1a
-         xS+A==
-X-Gm-Message-State: AOAM531kHrrhrXEeu0j/RQlfPF0GktmAqwpXC8ni1iiqDYw2qeZgxXKK
-        80MgwC6QNO3UD/A2FsP1PdM=
-X-Google-Smtp-Source: ABdhPJzrjSpoXaMBEAE2AmmMmbmdLgH4oV0j3o+h2NhKSwT2+9nvR0EKYpq/o8Du+A38L37v3HENew==
-X-Received: by 2002:a63:5947:: with SMTP id j7mr2379012pgm.193.1630575261621;
-        Thu, 02 Sep 2021 02:34:21 -0700 (PDT)
-Received: from localhost.localdomain ([223.106.51.51])
-        by smtp.googlemail.com with ESMTPSA id gn12sm1624961pjb.26.2021.09.02.02.34.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Sep 2021 02:34:21 -0700 (PDT)
-From:   Zhongya Yan <yan2228598786@gmail.com>
-To:     edumazet@google.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kuba@kernel.org, rostedt@goodmis.org, mingo@redhat.com,
-        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        hengqi.chen@gmail.com, yhs@fb.com, brendan.d.gregg@gmail.com,
-        2228598786@qq.com, Zhongya Yan <yan2228598786@gmail.com>
-Subject: [PATCH] net: tcp_drop adds `reason` and SNMP parameters for tracing v3
-Date:   Thu,  2 Sep 2021 02:33:58 -0700
-Message-Id: <20210902093358.28345-1-yan2228598786@gmail.com>
-X-Mailer: git-send-email 2.25.1
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vYsOdJb8Clil6Rdy7eeUvoE9Rwzzx6p2/GrvPj5Vec8=;
+ b=BIYTnUmbFRxcaHjSA9FSTJ0AFAUz49IStpbLYp9BpJQcdxqrHZCKgoq8qYcO2UNSr9P+6jIZHEd73GAuiUJTzOGNYj8KaTz6NJsSVw7HCqEXzfkW8sCAcfQ1duw6MreAGD9oxQU3iBRTEY1nJOgNitiRbAcaWMn9ma6YkIUHjKw=
+Authentication-Results: linaro.org; dkim=none (message not signed)
+ header.d=none;linaro.org; dmarc=none action=none header.from=oracle.com;
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by MWHPR1001MB2368.namprd10.prod.outlook.com
+ (2603:10b6:301:2f::38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4457.17; Thu, 2 Sep
+ 2021 10:09:12 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::5820:e42b:73d7:4268]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::5820:e42b:73d7:4268%7]) with mapi id 15.20.4478.020; Thu, 2 Sep 2021
+ 10:09:12 +0000
+Date:   Thu, 2 Sep 2021 13:08:51 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     John Stultz <john.stultz@linaro.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Srini Kandagatla <srinivas.kandagatla@linaro.org>
+Subject: [PATCH net] net: qrtr: revert check in qrtr_endpoint_post()
+Message-ID: <20210902100851.GD2151@kadam>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <38288aff-71d4-bde2-7547-dff5ca20091c@linaro.org>
+X-Mailer: git-send-email haha only kidding
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: JNAP275CA0037.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4e::7)
+ To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: from kadam (62.8.83.99) by JNAP275CA0037.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4e::7) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.18 via Frontend Transport; Thu, 2 Sep 2021 10:09:07 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 93df9a12-aa1f-4205-4a49-08d96df9b651
+X-MS-TrafficTypeDiagnostic: MWHPR1001MB2368:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <MWHPR1001MB236808009C6529EDB4FFC3D18ECE9@MWHPR1001MB2368.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: neRTHYmV9hV4zyhJnqi42E70f2xRz18QZy45YSPJ0cFrk8t3UoMKXgH0edHHz9JfZUlAcrlhwDntXaTAItQeGrayPSDKeneTk0Igv/pLxI9OLy3dIclKBAp6/G4XImxiGfRFuHIIyIdqSy1X5pC270p5i1Q4DOR7LT4hEU90+xc9UjLBAwVGM1oCd0bBVw9Pmjn18rxRtLbVEYt5uuasibGJTaOhbFcbF+EgxR0Zg6F7K7+Hj78No00vm4pm8A+65v9aY5gsmsdFQo18LLRjvmreQR+0yQ2Y4YryFcHPNWLiUZBnyCx39DnaVCYoRvH1MJ3TzLdH4xaU6xI/W3QLlyNTowd0hMeL2t6UnOcNwMFCN5OrrdvfARYNwyK/7cwO/0xAi1MFMTVsN38EfspE4JlQHV5MAwsAT+e39XkVj6k7b+WiWrPAtdzgaTPed0Fkim9uyMAzb+Yon8jjaSRscoc9XCb9QnOQtwl8xjVyKhGwjdNv2vC27lS14djIKC6c5DL0PJcJpHgTnz0PIFOdk+IylZmWGeJmIPgvJrpJd8CiJUsaxZFQqpGLzDFBUZ6OY8eX2ySaMadM4dZ9zoZYHyuuQdwQWENVcIhgn8XhjP/oZjTxISh7SS5lCd2HmU++9RY8+0ChBx6mYdtjAr3Vj20GewyXYV1NTXKlBQJJY94MWTLYGnlPf7pjorP5a7vWbaNRdJsKMS6oyhXiRGBnNA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(366004)(346002)(396003)(376002)(39860400002)(6916009)(478600001)(66946007)(1076003)(9576002)(52116002)(6666004)(26005)(8936002)(956004)(66476007)(66556008)(4326008)(9686003)(6496006)(44832011)(5660300002)(55016002)(54906003)(2906002)(8676002)(186003)(33716001)(83380400001)(38100700002)(38350700002)(4744005)(33656002)(316002)(86362001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?JbZRJbZ6EmQ+1bHkHZXPj7KqQANq1nghXJrOu+h6G4i099mU+nzZH/iHnpa6?=
+ =?us-ascii?Q?7NoLDWKyKzKgTLxSwOfXkzog1PU278It9v3mpsExlyyiOUdqfxiqhOpeeBuT?=
+ =?us-ascii?Q?++ihtGO/OG6g1HLbDw1fkp11f2feuUZzxgGjbDEsti6E/grQ66Lyz2pTbC12?=
+ =?us-ascii?Q?jfQzPu4UlzVZKqPYueUIlNk1iulya+PLg9EqdSSyN3TZ74wbbQKRWHEOpEyr?=
+ =?us-ascii?Q?+WIIZjx15gBfAlJK6+lHBydQPpsZTiftha5NLTNLQo2psO9Oae96Y6FiH2Dg?=
+ =?us-ascii?Q?xeAjGnMT9Yy3vU5SZMbjcWddgOzG9sVokfDCgSqEefXGC64wfHO79leWCjaM?=
+ =?us-ascii?Q?fJSStVbnO9Xn6allHhP75C+RBleHaKSh6XqtbdN/5GOUtFNkdb+Kr0MgLqzZ?=
+ =?us-ascii?Q?eyyFDGocuxKz27V02P4KjhhPZnAi61QJw8zj2/n0ZBhh74dA8t2JyPROWsCi?=
+ =?us-ascii?Q?Lng073vnAAXmMPxPCEnsJ2M+pXqLTwOMkL11v/URrYd5coO34UBH12CgycWB?=
+ =?us-ascii?Q?dgdiQb82IK2Hjswmrxo5OrRC7JbLheAyfMuofrfPGo2Cn8dgfNruPepiepRL?=
+ =?us-ascii?Q?5s2w5tgFRm0c0+g7DMHh0MjMm8O0DlPHBj6IZa+SNrNDXK74e+cqJ3Ui+VNz?=
+ =?us-ascii?Q?0EgMAh15hSj5AZPbUUPl37l48j/Zmu6CCGO/PbvdJpBC6erdeEPdgxHQS96A?=
+ =?us-ascii?Q?F+9oxBNQ17uNtL29UQ5ni/RZ5tAlxdWTE82PiMNnbfWs3r/FtF/qYdvNu5ni?=
+ =?us-ascii?Q?QGpBlI2xhkg1znLC/Gs7Qlp+eOJyvmqKkMRUuDLGUaQmoReVPGyUOqvpxJsJ?=
+ =?us-ascii?Q?XN1Kd6pswNMqvGnW6jWbmGuJVjC51hUhLabBuJglPCjtFfKEAyLe4flun5pz?=
+ =?us-ascii?Q?qrlRSvxIy+3RcztQZLIeop/CA/K1Z44LEEli0sSnM24VcqGj8kS/QMw+a09b?=
+ =?us-ascii?Q?Wym4VjoUTZxIgvVWuJecT9reY3Ong09H+7gADgeaKfc1zJ+f95XaiNIeFzUr?=
+ =?us-ascii?Q?RgD272J97r6pYX0nxpPR10G5uuVizoNv1RfOLiCybt4i/DJYq2CQ/ZfqRuMJ?=
+ =?us-ascii?Q?usV/KpNAscNuLTL/Mlm/lwbl3O3er6SMTneHM41a4/1jHvyu8f2V/M6HDcwM?=
+ =?us-ascii?Q?q3wHQOMPvOq9JRy/C761CfLLOPTetaUr/hTywhax3f/ZD5usgnxyE6VtIbFR?=
+ =?us-ascii?Q?sYUAb58R/lDyflC1ZBR4Fdb4odLxuhgbi0YwSw/5C2uWkVxd0xsMHvarnsHa?=
+ =?us-ascii?Q?amzQf2K2yHLCim8ai21YkPvl6sZrCTyE587KI5FyxPq/TObFGl+9Zqw/P9St?=
+ =?us-ascii?Q?OwlFp+U3B1kut9+zhqyq2Qr0?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 93df9a12-aa1f-4205-4a49-08d96df9b651
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Sep 2021 10:09:12.4160
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Al0JV+lhx5gIZzkVmy26xS4S2dTtPJlfNRvUfj9fXb0slwVsIIX9xzoIxiKysb2FXbBzNeO/9zktbfsky1Z9mztHLMKJXAPhUzvYVMrpLdE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1001MB2368
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10094 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 bulkscore=0 malwarescore=0
+ mlxlogscore=999 spamscore=0 phishscore=0 mlxscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2108310000
+ definitions=main-2109020063
+X-Proofpoint-GUID: 8FWFZTESGLkwMqIHeuk7eM_WVIjaEmsw
+X-Proofpoint-ORIG-GUID: 8FWFZTESGLkwMqIHeuk7eM_WVIjaEmsw
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I used the suggestion from `Brendan Gregg`. In addition to the
-`reason` parameter there is also the `field` parameter pointing
-to `SNMP` to distinguish the `tcp_drop` cause. I know what I
-submitted is not accurate, so I am submitting the current
-patch to get comments and criticism from everyone so that I
-can submit better code and solutions.And of course to make me
-more familiar and understand the `linux` kernel network code.
-Thank you everyone!
+I tried to make this check stricter as a hardenning measure but it broke
+audo and wifi on these devices so revert it.
 
-Signed-off-by: Zhongya Yan <yan2228598786@gmail.com>
+Fixes: aaa8e4922c88 ("net: qrtr: make checks in qrtr_endpoint_post() stricter")
+Reported-by: John Stultz <john.stultz@linaro.org>
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Tested-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 ---
- include/trace/events/tcp.h |  39 +++---------
- net/ipv4/tcp_input.c       | 126 ++++++++++++++-----------------------
- 2 files changed, 57 insertions(+), 108 deletions(-)
+ net/qrtr/qrtr.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/trace/events/tcp.h b/include/trace/events/tcp.h
-index 699539702ea9..80892660458e 100644
---- a/include/trace/events/tcp.h
-+++ b/include/trace/events/tcp.h
-@@ -371,28 +371,10 @@ DEFINE_EVENT(tcp_event_skb, tcp_bad_csum,
- 	TP_ARGS(skb)
- );
- 
--// from author @{Steven Rostedt}
--#define TCP_DROP_REASON							\
--	REASON_STRING(TCP_OFO_QUEUE,		ofo_queue)			\
--	REASON_STRING(TCP_DATA_QUEUE_OFO,		data_queue_ofo)			\
--	REASON_STRING(TCP_DATA_QUEUE,		data_queue)			\
--	REASON_STRING(TCP_PRUNE_OFO_QUEUE,		prune_ofo_queue)		\
--	REASON_STRING(TCP_VALIDATE_INCOMING,	validate_incoming)		\
--	REASON_STRING(TCP_RCV_ESTABLISHED,		rcv_established)		\
--	REASON_STRING(TCP_RCV_SYNSENT_STATE_PROCESS, rcv_synsent_state_process)	\
--	REASON_STRINGe(TCP_RCV_STATE_PROCESS,	rcv_state_proces)
--
--#undef REASON_STRING
--#undef REASON_STRINGe
--
--#define REASON_STRING(code, name) {code , #name},
--#define REASON_STRINGe(code, name) {code, #name}
--
--
- TRACE_EVENT(tcp_drop,
--		TP_PROTO(struct sock *sk, struct sk_buff *skb, __u32 reason),
-+		TP_PROTO(struct sock *sk, struct sk_buff *skb, int field, const char *reason),
- 
--		TP_ARGS(sk, skb, reason),
-+		TP_ARGS(sk, skb, field, reason),
- 
- 		TP_STRUCT__entry(
- 			__array(__u8, saddr, sizeof(struct sockaddr_in6))
-@@ -409,9 +391,8 @@ TRACE_EVENT(tcp_drop,
- 			__field(__u32, srtt)
- 			__field(__u32, rcv_wnd)
- 			__field(__u64, sock_cookie)
--			__field(__u32, reason)
--			__field(__u32, reason_code)
--			__field(__u32, reason_line)
-+			__field(int, field)
-+			__string(reason, reason)
- 			),
- 
- 		TP_fast_assign(
-@@ -437,21 +418,19 @@ TRACE_EVENT(tcp_drop,
- 				__entry->ssthresh = tcp_current_ssthresh(sk);
- 				__entry->srtt = tp->srtt_us >> 3;
- 				__entry->sock_cookie = sock_gen_cookie(sk);
--				__entry->reason = reason;
--				__entry->reason_code = TCP_DROP_CODE(reason);
--				__entry->reason_line = TCP_DROP_LINE(reason);
-+				__entry->field = field;
-+
-+				__assign_str(reason, reason);
- 		),
- 
- 		TP_printk("src=%pISpc dest=%pISpc mark=%#x data_len=%d snd_nxt=%#x snd_una=%#x \
- 				snd_cwnd=%u ssthresh=%u snd_wnd=%u srtt=%u rcv_wnd=%u \
--				sock_cookie=%llx reason=%d reason_type=%s reason_line=%d",
-+				sock_cookie=%llx field=%d reason=%s",
- 				__entry->saddr, __entry->daddr, __entry->mark,
- 				__entry->data_len, __entry->snd_nxt, __entry->snd_una,
- 				__entry->snd_cwnd, __entry->ssthresh, __entry->snd_wnd,
- 				__entry->srtt, __entry->rcv_wnd, __entry->sock_cookie,
--				__entry->reason,
--				__print_symbolic(__entry->reason_code, TCP_DROP_REASON),
--				__entry->reason_line)
-+				field, __get_str(reason))
- );
- 
- #endif /* _TRACE_TCP_H */
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index b2bc49f1f0de..bd33fd466e1e 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -100,7 +100,6 @@ int sysctl_tcp_max_orphans __read_mostly = NR_FILE;
- #define FLAG_UPDATE_TS_RECENT	0x4000 /* tcp_replace_ts_recent() */
- #define FLAG_NO_CHALLENGE_ACK	0x8000 /* do not call tcp_send_challenge_ack()	*/
- #define FLAG_ACK_MAYBE_DELAYED	0x10000 /* Likely a delayed ACK */
--#define FLAG_DSACK_TLP		0x20000 /* DSACK for tail loss probe */
- 
- #define FLAG_ACKED		(FLAG_DATA_ACKED|FLAG_SYN_ACKED)
- #define FLAG_NOT_DUP		(FLAG_DATA|FLAG_WIN_UPDATE|FLAG_ACKED)
-@@ -455,12 +454,11 @@ static void tcp_sndbuf_expand(struct sock *sk)
-  */
- 
- /* Slow part of check#2. */
--static int __tcp_grow_window(const struct sock *sk, const struct sk_buff *skb,
--			     unsigned int skbtruesize)
-+static int __tcp_grow_window(const struct sock *sk, const struct sk_buff *skb)
- {
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	/* Optimize this! */
--	int truesize = tcp_win_from_space(sk, skbtruesize) >> 1;
-+	int truesize = tcp_win_from_space(sk, skb->truesize) >> 1;
- 	int window = tcp_win_from_space(sk, sock_net(sk)->ipv4.sysctl_tcp_rmem[2]) >> 1;
- 
- 	while (tp->rcv_ssthresh <= window) {
-@@ -473,27 +471,7 @@ static int __tcp_grow_window(const struct sock *sk, const struct sk_buff *skb,
- 	return 0;
- }
- 
--/* Even if skb appears to have a bad len/truesize ratio, TCP coalescing
-- * can play nice with us, as sk_buff and skb->head might be either
-- * freed or shared with up to MAX_SKB_FRAGS segments.
-- * Only give a boost to drivers using page frag(s) to hold the frame(s),
-- * and if no payload was pulled in skb->head before reaching us.
-- */
--static u32 truesize_adjust(bool adjust, const struct sk_buff *skb)
--{
--	u32 truesize = skb->truesize;
--
--	if (adjust && !skb_headlen(skb)) {
--		truesize -= SKB_TRUESIZE(skb_end_offset(skb));
--		/* paranoid check, some drivers might be buggy */
--		if (unlikely((int)truesize < (int)skb->len))
--			truesize = skb->truesize;
--	}
--	return truesize;
--}
--
--static void tcp_grow_window(struct sock *sk, const struct sk_buff *skb,
--			    bool adjust)
-+static void tcp_grow_window(struct sock *sk, const struct sk_buff *skb)
- {
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	int room;
-@@ -502,16 +480,15 @@ static void tcp_grow_window(struct sock *sk, const struct sk_buff *skb,
- 
- 	/* Check #1 */
- 	if (room > 0 && !tcp_under_memory_pressure(sk)) {
--		unsigned int truesize = truesize_adjust(adjust, skb);
- 		int incr;
- 
- 		/* Check #2. Increase window, if skb with such overhead
- 		 * will fit to rcvbuf in future.
- 		 */
--		if (tcp_win_from_space(sk, truesize) <= skb->len)
-+		if (tcp_win_from_space(sk, skb->truesize) <= skb->len)
- 			incr = 2 * tp->advmss;
- 		else
--			incr = __tcp_grow_window(sk, skb, truesize);
-+			incr = __tcp_grow_window(sk, skb);
- 
- 		if (incr) {
- 			incr = max_t(int, incr, 2 * skb->len);
-@@ -805,7 +782,7 @@ static void tcp_event_data_recv(struct sock *sk, struct sk_buff *skb)
- 	tcp_ecn_check_ce(sk, skb);
- 
- 	if (skb->len >= 128)
--		tcp_grow_window(sk, skb, true);
-+		tcp_grow_window(sk, skb);
- }
- 
- /* Called to compute a smoothed rtt estimate. The data fed to this
-@@ -992,8 +969,6 @@ static u32 tcp_dsack_seen(struct tcp_sock *tp, u32 start_seq,
- 		return 0;
- 	if (seq_len > tp->mss_cache)
- 		dup_segs = DIV_ROUND_UP(seq_len, tp->mss_cache);
--	else if (tp->tlp_high_seq && tp->tlp_high_seq == end_seq)
--		state->flag |= FLAG_DSACK_TLP;
- 
- 	tp->dsack_dups += dup_segs;
- 	/* Skip the DSACK if dup segs weren't retransmitted by sender */
-@@ -1001,14 +976,7 @@ static u32 tcp_dsack_seen(struct tcp_sock *tp, u32 start_seq,
- 		return 0;
- 
- 	tp->rx_opt.sack_ok |= TCP_DSACK_SEEN;
--	/* We increase the RACK ordering window in rounds where we receive
--	 * DSACKs that may have been due to reordering causing RACK to trigger
--	 * a spurious fast recovery. Thus RACK ignores DSACKs that happen
--	 * without having seen reordering, or that match TLP probes (TLP
--	 * is timer-driven, not triggered by RACK).
--	 */
--	if (tp->reord_seen && !(state->flag & FLAG_DSACK_TLP))
--		tp->rack.dsack_seen = 1;
-+	tp->rack.dsack_seen = 1;
- 
- 	state->flag |= FLAG_DSACKING_ACK;
- 	/* A spurious retransmission is delivered */
-@@ -3660,7 +3628,7 @@ static void tcp_process_tlp_ack(struct sock *sk, u32 ack, int flag)
- 	if (!tp->tlp_retrans) {
- 		/* TLP of new data has been acknowledged */
- 		tp->tlp_high_seq = 0;
--	} else if (flag & FLAG_DSACK_TLP) {
-+	} else if (flag & FLAG_DSACKING_ACK) {
- 		/* This DSACK means original and TLP probe arrived; no loss */
- 		tp->tlp_high_seq = 0;
- 	} else if (after(ack, tp->tlp_high_seq)) {
-@@ -4679,9 +4647,10 @@ static bool tcp_ooo_try_coalesce(struct sock *sk,
- /* tcp_drop with reason
-  */
- static void tcp_drop(struct sock *sk, struct sk_buff *skb,
--		 __u32 reason)
-+		 int field, char *reason)
- {
--	trace_tcp_drop(sk, skb, reason);
-+	trace_tcp_drop(sk, skb, field, reason);
-+	sk_drops_add(sk, skb);
- 	__kfree_skb(skb);
- }
- 
-@@ -4712,7 +4681,7 @@ static void tcp_ofo_queue(struct sock *sk)
- 		rb_erase(&skb->rbnode, &tp->out_of_order_queue);
- 
- 		if (unlikely(!after(TCP_SKB_CB(skb)->end_seq, tp->rcv_nxt))) {
--			tcp_drop(sk, skb, TCP_OFO_QUEUE);
-+			tcp_drop(sk, skb, LINUX_MIB_TCPOFOQUEUE, "Tcp queue error");
- 			continue;
- 		}
- 
-@@ -4768,7 +4737,7 @@ static void tcp_data_queue_ofo(struct sock *sk, struct sk_buff *skb)
- 	if (unlikely(tcp_try_rmem_schedule(sk, skb, skb->truesize))) {
- 		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPOFODROP);
- 		sk->sk_data_ready(sk);
--		tcp_drop(sk, skb, TCP_DATA_QUEUE_OFO);
-+		tcp_drop(sk, skb, LINUX_MIB_TCPOFODROP, "Tcp rmem failed");
- 		return;
+diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
+index 525e3ea063b1..ec2322529727 100644
+--- a/net/qrtr/qrtr.c
++++ b/net/qrtr/qrtr.c
+@@ -493,7 +493,7 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
+ 		goto err;
  	}
  
-@@ -4805,7 +4774,7 @@ static void tcp_data_queue_ofo(struct sock *sk, struct sk_buff *skb)
- 		 * and trigger fast retransmit.
- 		 */
- 		if (tcp_is_sack(tp))
--			tcp_grow_window(sk, skb, true);
-+			tcp_grow_window(sk, skb);
- 		kfree_skb_partial(skb, fragstolen);
- 		skb = NULL;
- 		goto add_sack;
-@@ -4831,7 +4800,7 @@ static void tcp_data_queue_ofo(struct sock *sk, struct sk_buff *skb)
- 				/* All the bits are present. Drop. */
- 				NET_INC_STATS(sock_net(sk),
- 					      LINUX_MIB_TCPOFOMERGE);
--				tcp_drop(sk, skb, TCP_DATA_QUEUE_OFO);
-+				tcp_drop(sk, skb, LINUX_MIB_TCPOFOMERGE, "Tcp bits are present");
- 				skb = NULL;
- 				tcp_dsack_set(sk, seq, end_seq);
- 				goto add_sack;
-@@ -4850,7 +4819,7 @@ static void tcp_data_queue_ofo(struct sock *sk, struct sk_buff *skb)
- 						 TCP_SKB_CB(skb1)->end_seq);
- 				NET_INC_STATS(sock_net(sk),
- 					      LINUX_MIB_TCPOFOMERGE);
--				tcp_drop(sk, skb1, TCP_DATA_QUEUE_OFO);
-+				tcp_drop(sk, skb1, LINUX_MIB_TCPOFOMERGE, "Tcp replace(skb.seq eq skb1.seq)");
- 				goto merge_right;
- 			}
- 		} else if (tcp_ooo_try_coalesce(sk, skb1,
-@@ -4878,7 +4847,7 @@ static void tcp_data_queue_ofo(struct sock *sk, struct sk_buff *skb)
- 		tcp_dsack_extend(sk, TCP_SKB_CB(skb1)->seq,
- 				 TCP_SKB_CB(skb1)->end_seq);
- 		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPOFOMERGE);
--		tcp_drop(sk, skb1, TCP_DATA_QUEUE_OFO);
-+		tcp_drop(sk, skb1, LINUX_MIB_TCPOFOMERGE, "Tcp useless other segments");
- 	}
- 	/* If there is no skb after us, we are the last_skb ! */
- 	if (!skb1)
-@@ -4893,7 +4862,7 @@ static void tcp_data_queue_ofo(struct sock *sk, struct sk_buff *skb)
- 		 * and trigger fast retransmit.
- 		 */
- 		if (tcp_is_sack(tp))
--			tcp_grow_window(sk, skb, false);
-+			tcp_grow_window(sk, skb);
- 		skb_condense(skb);
- 		skb_set_owner_r(skb, sk);
- 	}
-@@ -5014,7 +4983,8 @@ static void tcp_data_queue(struct sock *sk, struct sk_buff *skb)
- 		else if (tcp_try_rmem_schedule(sk, skb, skb->truesize)) {
- 			NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPRCVQDROP);
- 			sk->sk_data_ready(sk);
--			goto drop;
-+			tcp_drop(sk, skb, LINUX_MIB_TCPRCVQDROP, "Tcp rmem failed");
-+			goto end;
- 		}
+-	if (!size || size & 3 || len != size + hdrlen)
++	if (!size || len != ALIGN(size, 4) + hdrlen)
+ 		goto err;
  
- 		eaten = tcp_queue_rcv(sk, skb, &fragstolen);
-@@ -5054,8 +5024,8 @@ static void tcp_data_queue(struct sock *sk, struct sk_buff *skb)
- out_of_window:
- 		tcp_enter_quickack_mode(sk, TCP_MAX_QUICKACKS);
- 		inet_csk_schedule_ack(sk);
--drop:
--		tcp_drop(sk, skb, TCP_DATA_QUEUE);
-+		tcp_drop(sk, skb, LINUX_MIB_TCPZEROWINDOWDROP, "Tcp out of order or zero window");
-+end:
- 		return;
- 	}
- 
-@@ -5312,7 +5282,7 @@ static bool tcp_prune_ofo_queue(struct sock *sk)
- 		prev = rb_prev(node);
- 		rb_erase(node, &tp->out_of_order_queue);
- 		goal -= rb_to_skb(node)->truesize;
--		tcp_drop(sk, rb_to_skb(node), TCP_PRUNE_OFO_QUEUE);
-+		tcp_drop(sk, rb_to_skb(node), LINUX_MIB_OFOPRUNED, "Tcp drop out-of-order queue");
- 		if (!prev || goal <= 0) {
- 			sk_mem_reclaim(sk);
- 			if (atomic_read(&sk->sk_rmem_alloc) <= sk->sk_rcvbuf &&
-@@ -5419,7 +5389,7 @@ static void tcp_new_space(struct sock *sk)
- 		tp->snd_cwnd_stamp = tcp_jiffies32;
- 	}
- 
--	INDIRECT_CALL_1(sk->sk_write_space, sk_stream_write_space, sk);
-+	sk->sk_write_space(sk);
- }
- 
- static void tcp_check_space(struct sock *sk)
-@@ -5647,7 +5617,7 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
- 						  LINUX_MIB_TCPACKSKIPPEDPAWS,
- 						  &tp->last_oow_ack_time))
- 				tcp_send_dupack(sk, skb);
--			tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_VALIDATE_INCOMING));
-+			tcp_drop(sk, skb, LINUX_MIB_PAWSESTABREJECTED, "Tcp PAWS seq first");
- 			goto end;
- 		}
- 		/* Reset is accepted even if it did not pass PAWS. */
-@@ -5671,7 +5641,7 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
- 		} else if (tcp_reset_check(sk, skb)) {
- 			tcp_reset(sk, skb);
- 		}
--		tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_VALIDATE_INCOMING));
-+		tcp_drop(sk, skb, LINUX_MIB_PAWSESTABREJECTED, "Tcp check sequence number");
- 		goto end;
- 	}
- 
-@@ -5717,7 +5687,7 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
- 				tcp_fastopen_active_disable(sk);
- 			tcp_send_challenge_ack(sk, skb);
- 		}
--		tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_VALIDATE_INCOMING));
-+		tcp_drop(sk, skb, LINUX_MIB_TCPCHALLENGEACK, "Tcp check RST bit ");
- 		goto end;
- 	}
- 
-@@ -5732,7 +5702,7 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
- 			TCP_INC_STATS(sock_net(sk), TCP_MIB_INERRS);
- 		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPSYNCHALLENGE);
- 		tcp_send_challenge_ack(sk, skb);
--		tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_VALIDATE_INCOMING));
-+		tcp_drop(sk, skb, LINUX_MIB_TCPSYNCHALLENGE, "Tcp check for a SYN");
- 		goto end;
- 	}
- 
-@@ -5858,7 +5828,7 @@ void tcp_rcv_established(struct sock *sk, struct sk_buff *skb)
- 				return;
- 			} else { /* Header too small */
- 				TCP_INC_STATS(sock_net(sk), TCP_MIB_INERRS);
--				tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_ESTABLISHED));
-+				tcp_drop(sk, skb, TCP_MIB_INERRS, "Tcp header too small");
- 				goto end;
- 			}
- 		} else {
-@@ -5914,7 +5884,7 @@ void tcp_rcv_established(struct sock *sk, struct sk_buff *skb)
- 		goto csum_error;
- 
- 	if (!th->ack && !th->rst && !th->syn) {
--		tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_ESTABLISHED));
-+		tcp_drop(sk, skb, LINUX_MIB_TCPSLOWSTARTRETRANS, "Tcp state not in ack|rst|syn");
- 		goto end;
- 	}
- 
-@@ -5927,7 +5897,7 @@ void tcp_rcv_established(struct sock *sk, struct sk_buff *skb)
- 
- step5:
- 	if (tcp_ack(sk, skb, FLAG_SLOWPATH | FLAG_UPDATE_TS_RECENT) < 0) {
--		tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_ESTABLISHED));
-+		tcp_drop(sk, skb, LINUX_MIB_TCPSACKDISCARD, "Tcp ack have not sent yet");
- 		goto end;
- 	}
- 
-@@ -5947,7 +5917,7 @@ void tcp_rcv_established(struct sock *sk, struct sk_buff *skb)
- 	trace_tcp_bad_csum(skb);
- 	TCP_INC_STATS(sock_net(sk), TCP_MIB_CSUMERRORS);
- 	TCP_INC_STATS(sock_net(sk), TCP_MIB_INERRS);
--	tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_ESTABLISHED));
-+	tcp_drop(sk, skb, TCP_MIB_CSUMERRORS, "Tcp csum error");
- end:
- 	return;
- }
-@@ -6149,7 +6119,7 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
- 
- 		if (th->rst) {
- 			tcp_reset(sk, skb);
--			tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_SYNSENT_STATE_PROCESS));
-+			tcp_drop(sk, skb, LINUX_MIB_NUM, "Tcp reset");
- 			goto end;
- 		}
- 
-@@ -6239,7 +6209,7 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
- 			tcp_enter_quickack_mode(sk, TCP_MAX_QUICKACKS);
- 			inet_csk_reset_xmit_timer(sk, ICSK_TIME_DACK,
- 						  TCP_DELACK_MAX, TCP_RTO_MAX);
--			tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_SYNSENT_STATE_PROCESS));
-+			tcp_drop(sk, skb, LINUX_MIB_TCPFASTOPENACTIVE, "Tcp fast open ack error");
- 
- end:
- 			return 0;
-@@ -6314,7 +6284,7 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
- 		 */
- 		return -1;
- #else
--		tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_SYNSENT_STATE_PROCESS));
-+		tcp_drop(sk, skb, LINUX_MIB_SYNCOOKIESRECV, "Tcp syn received error");
- 		goto end;
- #endif
- 	}
-@@ -6325,7 +6295,7 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
- discard_and_undo:
- 	tcp_clear_options(&tp->rx_opt);
- 	tp->rx_opt.mss_clamp = saved_clamp;
--	tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_SYNSENT_STATE_PROCESS));
-+	tcp_drop(sk, skb, LINUX_MIB_TCPSACKDISCARD, "Tcp not neither of SYN or RST");
- 	goto end;
- 
- reset_and_undo:
-@@ -6384,7 +6354,7 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
- 
- 	switch (sk->sk_state) {
- 	case TCP_CLOSE:
--		tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_STATE_PROCESS));
-+		tcp_drop(sk, skb, LINUX_MIB_TCPABORTONCLOSE, "Tcp close");
- 		goto end;
- 
- 	case TCP_LISTEN:
-@@ -6392,13 +6362,13 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
- 			return 1;
- 
- 		if (th->rst) {
--			tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_STATE_PROCESS));
-+			tcp_drop(sk, skb, LINUX_MIB_LISTENDROPS, "Tcp rst");
- 			goto end;
- 		}
- 
- 		if (th->syn) {
- 			if (th->fin) {
--				tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_STATE_PROCESS));
-+				tcp_drop(sk, skb, LINUX_MIB_LISTENDROPS, "Tcp fin");
- 				goto end;
- 			}
- 			/* It is possible that we process SYN packets from backlog,
-@@ -6415,7 +6385,7 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
- 			consume_skb(skb);
- 			return 0;
- 		}
--		tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_STATE_PROCESS));
-+		tcp_drop(sk, skb, LINUX_MIB_LISTENDROPS, "Tcp syn");
- 		goto end;
- 
- 	case TCP_SYN_SENT:
-@@ -6443,13 +6413,13 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
- 		    sk->sk_state != TCP_FIN_WAIT1);
- 
- 		if (!tcp_check_req(sk, skb, req, true, &req_stolen)) {
--			tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_STATE_PROCESS));
-+			tcp_drop(sk, skb, LINUX_MIB_LISTENDROPS, "Tcp check req error");
- 			goto end;
- 		}
- 	}
- 
- 	if (!th->ack && !th->rst && !th->syn) {
--		tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_STATE_PROCESS));
-+		tcp_drop(sk, skb, LINUX_MIB_LISTENDROPS, "Tcp not ack|rst|syn");
- 		goto end;
- 	}
- 
-@@ -6465,7 +6435,7 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
- 		if (sk->sk_state == TCP_SYN_RECV)
- 			return 1;	/* send one RST */
- 		tcp_send_challenge_ack(sk, skb);
--		tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_STATE_PROCESS));
-+		tcp_drop(sk, skb, LINUX_MIB_TCPCHALLENGEACK, "Tcp check ack failed");
- 		goto end;
- 	}
- 	switch (sk->sk_state) {
-@@ -6559,7 +6529,7 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
- 			inet_csk_reset_keepalive_timer(sk, tmo);
- 		} else {
- 			tcp_time_wait(sk, TCP_FIN_WAIT2, tmo);
--			tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_STATE_PROCESS));
-+			tcp_drop(sk, skb, LINUX_MIB_TCPABORTONDATA, "Tcp fin wait2");
- 			goto end;
- 		}
- 		break;
-@@ -6568,7 +6538,7 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
- 	case TCP_CLOSING:
- 		if (tp->snd_una == tp->write_seq) {
- 			tcp_time_wait(sk, TCP_TIME_WAIT, 0);
--			tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_STATE_PROCESS));
-+			tcp_drop(sk, skb, LINUX_MIB_TIMEWAITED, "Tcp time wait");
- 			goto end;
- 		}
- 		break;
-@@ -6577,7 +6547,7 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
- 		if (tp->snd_una == tp->write_seq) {
- 			tcp_update_metrics(sk);
- 			tcp_done(sk);
--			tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_STATE_PROCESS));
-+			tcp_drop(sk, skb, LINUX_MIB_TCPPUREACKS, "Tcp last ack");
- 			goto end;
- 		}
- 		break;
-@@ -6596,7 +6566,7 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
- 			 * continue to be processed, drop the packet.
- 			 */
- 			if (sk_is_mptcp(sk) && !mptcp_incoming_options(sk, skb)) {
--				tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_STATE_PROCESS));
-+				tcp_drop(sk, skb, LINUX_MIB_TCPPUREACKS, "Tcp subflow been reset");
- 				goto end;
- 			}
- 			break;
-@@ -6630,7 +6600,7 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
- 	}
- 
- 	if (!queued) {
--		tcp_drop(sk, skb, TCP_DROP_MASK(__LINE__, TCP_RCV_STATE_PROCESS));
-+		tcp_drop(sk, skb, LINUX_MIB_TCPOFOQUEUE, "Tcp rcv synsent state process");
- 	}
- 
- end:
+ 	if (cb->dst_port != QRTR_PORT_CTRL && cb->type != QRTR_TYPE_DATA &&
 -- 
-2.25.1
-
+2.20.1
