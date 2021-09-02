@@ -2,113 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CA963FEAA2
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 10:31:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD44A3FEAA6
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 10:33:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244151AbhIBIcC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 04:32:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50524 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243834AbhIBIcA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 04:32:00 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC2C2C061575
-        for <netdev@vger.kernel.org>; Thu,  2 Sep 2021 01:31:02 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id t19so2534552lfe.13
-        for <netdev@vger.kernel.org>; Thu, 02 Sep 2021 01:31:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=gNqRw10rZHR5ReQJZ4EZPClJnf+Q+1FVfbcd/gZtEok=;
-        b=PLOI+u+7FCVGOYCubex6gMpoAGkd8ZGlvyZ8/+yHl3A0kDRx6IVQw53SunPh+Bfqds
-         qC8uFq4hRxKHJGuABmqdVeaorq7p4qEf0+46oo+m42N3Lap2hVrvJkbmCIZjblRpkBXJ
-         c2dcUm6MkS7LtmTU7Dr7+rBIU42xsC2UAoXP24dL0psmAjg6uX37nVxY4TgQvlNhLpbY
-         zl/sem6iHPBT4B5D45GDYov96zCYJDJSHEoe+3DEbxcpFa7jrP5wr3WngAfV1fTAydtg
-         S8gH6V3+5yusH80+BcVyb/TflybOCxg4vz9ESh8939i1g5hrC28mbjfhM9NYpWuqPseV
-         UJiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=gNqRw10rZHR5ReQJZ4EZPClJnf+Q+1FVfbcd/gZtEok=;
-        b=R+0ot8JPlcIFn0HGkNZssTglp8A0eo+AuaaIiTnqoc6Mf1c+tUJxsr9eQbja9zF2oH
-         w7Ad3Qyq3qfPNsF7B7SGY9EN9CwBUlbQPhX9jkJBDPWIS2ZNYjtr0lIZnoNpgKZlb3H5
-         2LUXM70JpJKzna44xhaC0MHcp62+EkpYVMLfzjoziAH6KwagvFv1RXcJSmodjJvTS+Lz
-         XBQtVgu6uz+8KKBTJWqtb5TLClGB7GrRhRLwCooHFF62j0iAehuiRvkitX77d6gN4IVL
-         E8orZpQtNLnV7/mCyfnhN8gLoc2em3z/nlYR5tn+wB5uQEtiPwtoe9tAB6M/ue8jPwdy
-         SZ1g==
-X-Gm-Message-State: AOAM530POp6gmnRe+ND8SYg0jNj9OJvOKhlPwMQVwVnbDBKso++yn+X+
-        iyuusE30OtMxFaAsPOeItwk=
-X-Google-Smtp-Source: ABdhPJyy0aTxCdokVicJ1N7mtmll8ccC0CTUc1EVe+yoVZRAHit6Jp/dSP4E3MurpeBwIMF9EDjb0Q==
-X-Received: by 2002:a05:6512:10c1:: with SMTP id k1mr576777lfg.329.1630571461230;
-        Thu, 02 Sep 2021 01:31:01 -0700 (PDT)
-Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.gmail.com with ESMTPSA id 131sm137042ljj.52.2021.09.02.01.31.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Sep 2021 01:31:00 -0700 (PDT)
-From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
-Subject: [PATCH V2 net 2/2] net: dsa: b53: Set correct number of ports in the DSA struct
-Date:   Thu,  2 Sep 2021 10:30:51 +0200
-Message-Id: <20210902083051.18206-2-zajec5@gmail.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210902083051.18206-1-zajec5@gmail.com>
-References: <20210901092141.6451-1-zajec5@gmail.com>
- <20210902083051.18206-1-zajec5@gmail.com>
+        id S244407AbhIBIdK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 04:33:10 -0400
+Received: from relay.sw.ru ([185.231.240.75]:49666 "EHLO relay.sw.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S243772AbhIBIdJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Sep 2021 04:33:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:From:
+        Subject; bh=62yNtXAVsWniAwR6yGNwwYjxs676XySY+v+xUYXen5A=; b=EBbScHoXb2TSzfvaV
+        1pU3ncTE20uBKmts+wDKmKqfsoyjQ3NuRqHou4ZROvnVw2q8sNykJK+13p6st9GCSv8zr4GE8yWEO
+        bejNqnb4uFsNk4ObHk+++NnJKB4HnlDedD2BZn9QPJFaTrFBqYJEdI8Q+7MPaCXJusCJ5pOzvKkvU
+        =;
+Received: from [10.93.0.56]
+        by relay.sw.ru with esmtp (Exim 4.94.2)
+        (envelope-from <vvs@virtuozzo.com>)
+        id 1mLi8e-000YeG-G6; Thu, 02 Sep 2021 11:32:00 +0300
+Subject: Re: [PATCH net-next v4] skb_expand_head() adjust skb->truesize
+ incorrectly
+From:   Vasily Averin <vvs@virtuozzo.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Christoph Paasch <christoph.paasch@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org,
+        kernel@openvz.org, Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Julian Wiedmann <jwi@linux.ibm.com>
+References: <b653692b-1550-e17a-6c51-894832c56065@virtuozzo.com>
+ <ee5b763a-c39d-80fd-3dd4-bca159b5f5ac@virtuozzo.com>
+ <ce783b33-c81f-4760-1f9e-90b7d8c51fd7@gmail.com>
+ <b7c2cb05-7307-f04e-530e-89fc466aa83f@virtuozzo.com>
+ <ef7ccff8-700b-79c2-9a82-199b9ed3d95b@gmail.com>
+ <67740366-7f1b-c953-dfe1-d2085297bdf3@gmail.com>
+ <8a183782-f4b9-e12a-55d1-c4a3c4078369@virtuozzo.com>
+ <2984f16b-7f20-e72d-1661-b942fdc4ff9b@virtuozzo.com>
+Message-ID: <27f87dd8-f6e4-b2b0-2b3a-9378fddf147f@virtuozzo.com>
+Date:   Thu, 2 Sep 2021 11:31:59 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <2984f16b-7f20-e72d-1661-b942fdc4ff9b@virtuozzo.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rafał Miłecki <rafal@milecki.pl>
+On 9/2/21 10:33 AM, Vasily Averin wrote:
+> On 9/2/21 10:13 AM, Vasily Averin wrote:
+>> On 9/2/21 7:48 AM, Eric Dumazet wrote:
+>>> On 9/1/21 9:32 PM, Eric Dumazet wrote:
+>>>> I think you missed netem case, in particular
+>>>> skb_orphan_partial() which I already pointed out.
+>>>>
+>>>> You can setup a stack of virtual devices (tunnels),
+>>>> with a qdisc on them, before ip6_xmit() is finally called...
+>>>>
+>>>> Socket might have been closed already.
+>>>>
+>>>> To test your patch, you could force a skb_orphan_partial() at the beginning
+>>>> of skb_expand_head() (extending code coverage)
+>>>
+>>> To clarify :
+>>>
+>>> It is ok to 'downgrade' an skb->destructor having a ref on sk->sk_wmem_alloc to
+>>> something owning a ref on sk->refcnt.
+>>>
+>>> But the opposite operation (ref on sk->sk_refcnt -->  ref on sk->sk_wmem_alloc) is not safe.
+>>
+>> Could you please explain in more details, since I stil have a completely opposite point of view?
+>>
+>> Every sk referenced in skb have sk_wmem_alloc > 9 
+>> It is assigned to 1 in sk_alloc and decremented right before last __sk_free(),
+>> inside  both sk_free() sock_wfree() and __sock_wfree()
+>>
+>> So it is safe to adjust skb->sk->sk_wmem_alloc, 
+>> because alive skb keeps reference to alive sk and last one keeps sk_wmem_alloc > 0
+>>
+>> So any destructor used sk->sk_refcnt will already have sk_wmem_alloc > 0, 
+>> because last sock_put() calls sk_free().
+>>
+>> However now I'm not sure in reversed direction.
+>> skb_set_owner_w() check !sk_fullsock(sk) and call sock_hold(sk);
+>> If sk->sk_refcnt can be 0 here (i.e. after execution of old destructor inside skb_orphan) 
+>> -- it can be trigger pointed problem:
+>> "refcount_add() will trigger a warning (panic under KASAN)".
+>>
+>> Could you please explain where I'm wrong?
+> 
+> To clarify:
+> I'm agree it is unsafe  to call on alive skb:
 
-Setting DSA_MAX_PORTS caused DSA to call b53 callbacks (e.g.
-b53_disable_port() during dsa_register_switch()) for invalid
-(non-existent) ports. That made b53 modify unrelated registers and is
-one of reasons for a broken BCM5301x support.
+I badly explained the problem in previous letter, let me repeat once again:
 
-This problem exists for years but DSA_MAX_PORTS usage has changed few
-times. It seems the most accurate to reference commit dropping
-dsa_switch_alloc() in the Fixes tag.
+I'm told about this piece of code:
++	} else if (sk && skb->destructor != sock_edemux) {
++		delta = osize - skb_end_offset(skb);
++		if (!is_skb_wmem(skb))
++			skb_set_owner_w(skb, sk);
++		skb->truesize += delta;
++		if (sk_fullsock(sk))
++			refcount_add(delta, &sk->sk_wmem_alloc);
+ 	}
 
-Fixes: 7e99e3470172 ("net: dsa: remove dsa_switch_alloc helper")
-Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
----
-V2: Update commit & add Fixes tag
----
- drivers/net/dsa/b53/b53_common.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+it is called on alive expanded skb and it is incorrect because 2 reasons:
 
-diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-index dcf9d7e5ae14..5646eb8afe38 100644
---- a/drivers/net/dsa/b53/b53_common.c
-+++ b/drivers/net/dsa/b53/b53_common.c
-@@ -2615,6 +2615,8 @@ static int b53_switch_init(struct b53_device *dev)
- 	dev->enabled_ports |= BIT(dev->cpu_port);
- 	dev->num_ports = fls(dev->enabled_ports);
+a) if old destructor use ref on sk->sk_wmem_alloc
+   It can decrease to 0 and release sk.
+b) if old descriptor use ref on sk->refcnt and !sk_fullsock(sk)
+    old decriptor can release last reference and release sk.
+
+We can workaround release of sk by move of 
+refcount_add(delta, &sk->sk_wmem_alloc) before skb_set_owner_w()
+
+        } else if (sk && skb->destructor != sock_edemux) {
+                delta = osize - skb_end_offset(skb);
+                refcount_add(delta, &sk->sk_wmem_alloc);
+                if (!is_skb_wmem(skb))
+                        skb_set_owner_w(skb, sk);
+                skb->truesize += delta;
+#ifdef CONFIG_INET
+                if (!sk_fullsock(sk))
+                        refcount_dec(delta, &sk->sk_wmem_alloc);
+#endif
+        }
+
+However it it does not resolve b) completely
  
-+	dev->ds->num_ports = min_t(unsigned int, dev->num_ports, DSA_MAX_PORTS);
-+
- 	/* Include non standard CPU port built-in PHYs to be probed */
- 	if (is539x(dev) || is531x5(dev)) {
- 		for (i = 0; i < dev->num_ports; i++) {
-@@ -2659,7 +2661,6 @@ struct b53_device *b53_switch_alloc(struct device *base,
- 		return NULL;
- 
- 	ds->dev = base;
--	ds->num_ports = DSA_MAX_PORTS;
- 
- 	dev = devm_kzalloc(base, sizeof(*dev), GFP_KERNEL);
- 	if (!dev)
--- 
-2.26.2
+oid skb_set_owner_w(struct sk_buff *skb, struct sock *sk)
+{
+        skb_orphan(skb); <<< old destructor releases last sk->refcnt ...
+        skb->sk = sk;
+...
+        if (unlikely(!sk_fullsock(sk))) {
+                skb->destructor = sock_edemux;
+                sock_hold(sk);   <<<< ...and it trigger wrining/panic 
+                return;
+        }       
 
+Thank you,
+	Vasily Averin
