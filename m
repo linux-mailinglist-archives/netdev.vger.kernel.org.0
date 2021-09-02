@@ -2,169 +2,279 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A79393FF7EE
-	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 01:36:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C63663FF7FC
+	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 01:42:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345950AbhIBXhZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 19:37:25 -0400
-Received: from mail-il1-f200.google.com ([209.85.166.200]:55970 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345889AbhIBXhY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 19:37:24 -0400
-Received: by mail-il1-f200.google.com with SMTP id c16-20020a92cf500000b02902243aec7e27so2313147ilr.22
-        for <netdev@vger.kernel.org>; Thu, 02 Sep 2021 16:36:25 -0700 (PDT)
+        id S1346777AbhIBXnP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 19:43:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36388 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346276AbhIBXnO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 19:43:14 -0400
+Received: from mail-vs1-xe35.google.com (mail-vs1-xe35.google.com [IPv6:2607:f8b0:4864:20::e35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01543C061575;
+        Thu,  2 Sep 2021 16:42:15 -0700 (PDT)
+Received: by mail-vs1-xe35.google.com with SMTP id n63so2997637vsc.11;
+        Thu, 02 Sep 2021 16:42:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=z3Mb5qD63cCUONGM6JVxKhEAn0nMsQDsAtA2oDhp/1U=;
+        b=REJwvePpLQXdALZ9VbfGtyVnTJODDqzaa074uB2ovL1ZxuJLLoHdfFMGKYK0jC3uB8
+         iQHgtr5lnq1NCFZkOUmSpDfMqEjc0UHAI165dKzDvokd5vcyfJzRKdxu0UfHPgugfv1K
+         mCmQjm29w0/DTtsUsf42vwua5U1jgAGueR7SI+cCAb8c8WT2tgTjxuxSyYv6K+wah8LJ
+         IsTc0aWqk471BxvLEn/RxrNnId4LIQE/SCC3CvZoJ4TTXWImxyKYwCH/71KnQWtQGDUt
+         tZ9grHZzw6Gcw9pSSi/w46WXqgv+UcVETdTkqDjPlqeWnu7Ubpv92mWCf2ZBEUSiGobQ
+         O7Ew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=JOY88l9jkqjrk7r59YqYH4McD3EoA2sjEyU/prp079A=;
-        b=lQhFPH93K+0dWV1Is1pdhmQpX/5ZrSOJyy6crWJdZbRaE/0qpD/768zM/cVRqSpN+7
-         F/FcIa7RgMAUsKYek24qBdltguuKJMUr8rQPc+nKb45PplO7kbSGLsPtRh6bdgoC3u1i
-         Z+Iy6dD8ihqeH44oXm55zkRIAbbNCwMtSCQf6sh7yIeeyzJMEyu0dJPJ2kOUnTKLL6WP
-         Y8dDZl0nyWX2apmyQaIDkddzLzJdmdUGQLVUuw+ow0n1sCuxD71gDR2gZwiFsS7aZ7hE
-         K4mcpg3i09TvRxYPekmhgbSnm4F1U83hN9bkmV+nYUBxE10EAW4rHuJ0dL4GA3JRt43I
-         bmYg==
-X-Gm-Message-State: AOAM533gfYhZ8gvDl/EwJhcKsIjas2IOEA1FtfveZpuk+wIlAsiIRRmv
-        ed73dQU9HuQTt88NAmuVdjSNN+QFf9T6M1ASuIj5rC4kkhSE
-X-Google-Smtp-Source: ABdhPJynw0dSR8fm0oeFoXtZmtA9ZBTi0GTjBndFUXc+ukahli/YNsSKuGn5yfApT44UlGuvcOHZZZuxAMk7tn/FQuVt7xI/U0/P
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=z3Mb5qD63cCUONGM6JVxKhEAn0nMsQDsAtA2oDhp/1U=;
+        b=F90QRrOC/fdWTtiZuaBodsgvfkH0QIsaUoOwRKZa2Lj3adWK89Dvwg8TItB67yCD0K
+         lpu7K9alX7Ix/mKHvY5jyMH+N8l4piLbK/jGco8C2Gxp7KIgIiBZFsTVvnJc1WpP8YQY
+         TsXMmMnTU6ypr23o6IWycqZdrqC0sGRvAW0kJa+sUS04unQ/9QcIFnJOXa3L04KZIqNB
+         BGwJ3DdPkRHp0861EuTFV48Spk5dU5vRo/GICX26kEPIiv/mBZ6J9WLYBQvXhqkFEmbs
+         kXrl83jVRcVvJrBRjYEV3SnOH6AkJvXzGANJ1tr0xi381p7lVE8owqAcOSLojJemGUHk
+         n3IQ==
+X-Gm-Message-State: AOAM533a7YVTgHiEg2/PSwFA0xrIRxM686Ym3X3iONSmTiJRy+BCFmpl
+        k8T5NukFUE3yO2wFgZ4iWbo1JB+7+5ImLC4VHp2PNvoJShE=
+X-Google-Smtp-Source: ABdhPJzq7iGdSNz7qy2k/rFUj+qSnHN/MGLFGXZAC3JXnheFVxVDBGh+n9qGYpcc2YlLe4QDHaDa+ln9yzseSXJsySQ=
+X-Received: by 2002:a67:ebcc:: with SMTP id y12mr596151vso.18.1630626132772;
+ Thu, 02 Sep 2021 16:42:12 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a5d:8715:: with SMTP id u21mr700462iom.1.1630625785511;
- Thu, 02 Sep 2021 16:36:25 -0700 (PDT)
-Date:   Thu, 02 Sep 2021 16:36:25 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b503bc05cb0ba623@google.com>
-Subject: [syzbot] KASAN: use-after-free Read in __crypto_xor
-From:   syzbot <syzbot+b187b77c8474f9648fae@syzkaller.appspotmail.com>
-To:     akpm@linux-foundation.org, daniel.m.jordan@oracle.com,
-        davem@davemloft.net, herbert@gondor.apana.org.au,
-        josh@joshtriplett.org, linux-crypto@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, torvalds@linux-foundation.org
+References: <20210810041410.142035-1-desmondcheongzx@gmail.com>
+ <20210810041410.142035-2-desmondcheongzx@gmail.com> <0b33a7fe-4da0-058c-cff3-16bb5cfe8f45@gmail.com>
+ <bad67d05-366b-bebe-cbdb-6555386497de@gmail.com> <94942257-927c-efbc-b3fd-44cc097ad71f@gmail.com>
+ <fa269649-21eb-be76-e552-36a3aa4f3da4@gmail.com> <e54b3c01-6804-4f0d-3e4b-eba49f881039@gmail.com>
+In-Reply-To: <e54b3c01-6804-4f0d-3e4b-eba49f881039@gmail.com>
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Date:   Thu, 2 Sep 2021 16:42:01 -0700
+Message-ID: <CABBYNZJaPFzU-oXcYkuob0zw16tNcVgoVx8N-_GvL8=nT0Kn3Q@mail.gmail.com>
+Subject: Re: [PATCH v6 1/6] Bluetooth: schedule SCO timeouts with delayed_work
+To:     Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, sudipm.mukherjee@gmail.com,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        skhan@linuxfoundation.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        syzbot+2f6d7c28bb4bf7e82060@syzkaller.appspotmail.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi Desmond,
 
-syzbot found the following issue on:
+On Thu, Sep 2, 2021 at 4:05 PM Desmond Cheong Zhi Xi
+<desmondcheongzx@gmail.com> wrote:
+>
+> On 2/9/21 6:53 pm, Desmond Cheong Zhi Xi wrote:
+> > On 2/9/21 5:41 pm, Eric Dumazet wrote:
+> >>
+> >>
+> >> On 9/2/21 12:32 PM, Desmond Cheong Zhi Xi wrote:
+> >>>
+> >>> Hi Eric,
+> >>>
+> >>> This actually seems to be a pre-existing error in sco_sock_connect
+> >>> that we now hit in sco_sock_timeout.
+> >>>
+> >>> Any thoughts on the following patch to address the problem?
+> >>>
+> >>> Link:
+> >>> https://lore.kernel.org/lkml/20210831065601.101185-1-desmondcheongzx@gmail.com/
+> >>>
+> >>
+> >>
+> >> syzbot is still working on finding a repro, this is obviously not
+> >> trivial,
+> >> because this is a race window.
+> >>
+> >> I think this can happen even with a single SCO connection.
+> >>
+> >> This might be triggered more easily forcing a delay in sco_sock_timeout()
+> >>
+> >> diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
+> >> index
+> >> 98a88158651281c9f75c4e0371044251e976e7ef..71ebe0243fab106c676c308724fe3a3f92a62cbd
+> >> 100644
+> >> --- a/net/bluetooth/sco.c
+> >> +++ b/net/bluetooth/sco.c
+> >> @@ -84,8 +84,14 @@ static void sco_sock_timeout(struct work_struct *work)
+> >>          sco_conn_lock(conn);
+> >>          sk = conn->sk;
+> >> -       if (sk)
+> >> +       if (sk) {
+> >> +               // lets pretend cpu has been busy (in interrupts) for
+> >> 100ms
+> >> +               int i;
+> >> +               for (i=0;i<100000;i++)
+> >> +                       udelay(1);
+> >> +
+> >>                  sock_hold(sk);
+> >> +       }>          sco_conn_unlock(conn);
+> >>          if (!sk)
+> >>
+> >>
+> >> Stack trace tells us that sco_sock_timeout() is running after last
+> >> reference
+> >> on socket has been released.
+> >>
+> >> __refcount_add include/linux/refcount.h:199 [inline]
+> >>   __refcount_inc include/linux/refcount.h:250 [inline]
+> >>   refcount_inc include/linux/refcount.h:267 [inline]
+> >>   sock_hold include/net/sock.h:702 [inline]
+> >>   sco_sock_timeout+0x216/0x290 net/bluetooth/sco.c:88
+> >>   process_one_work+0x98d/0x1630 kernel/workqueue.c:2276
+> >>   worker_thread+0x658/0x11f0 kernel/workqueue.c:2422
+> >>   kthread+0x3e5/0x4d0 kernel/kthread.c:319
+> >>   ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+> >>
+> >> This is why I suggested to delay sock_put() to make sure this can not
+> >> happen.
+> >>
+> >> diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
+> >> index
+> >> 98a88158651281c9f75c4e0371044251e976e7ef..bd0222e3f05a6bcb40cffe8405c9dfff98d7afde
+> >> 100644
+> >> --- a/net/bluetooth/sco.c
+> >> +++ b/net/bluetooth/sco.c
+> >> @@ -195,10 +195,11 @@ static void sco_conn_del(struct hci_conn *hcon,
+> >> int err)
+> >>                  sco_sock_clear_timer(sk);
+> >>                  sco_chan_del(sk, err);
+> >>                  release_sock(sk);
+> >> -               sock_put(sk);
+> >>                  /* Ensure no more work items will run before freeing
+> >> conn. */
+> >>                  cancel_delayed_work_sync(&conn->timeout_work);
+> >> +
+> >> +               sock_put(sk);
+> >>          }
+> >>          hcon->sco_data = NULL;
+> >>
+> >
+> > I see where you're going with this, but once sco_chan_del returns, any
+> > instance of sco_sock_timeout that hasn't yet called sock_hold will
+> > simply return, because conn->sk is NULL. Adding a delay to the
+> > sco_conn_lock critical section in sco_sock_timeout would not affect this
+> > because sco_chan_del clears conn->sk while holding onto the lock.
+> >
+> > The main reason that cancel_delayed_work_sync is run there is to make
+> > sure that we don't have a UAF on the SCO connection itself after we free
+> > conn.
+> >
+>
+> Now that I think about this, the init and cleanup isn't quite right
+> either. The delayed work should be initialized when the connection is
+> allocated, and we should always cancel all work before freeing:
+>
+> diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
+> index ea18e5b56343..bba5cdb4cb4a 100644
+> --- a/net/bluetooth/sco.c
+> +++ b/net/bluetooth/sco.c
+> @@ -133,6 +133,7 @@ static struct sco_conn *sco_conn_add(struct hci_conn *hcon)
+>                 return NULL;
+>
+>         spin_lock_init(&conn->lock);
+> +       INIT_DELAYED_WORK(&conn->timeout_work, sco_sock_timeout);
+>
+>         hcon->sco_data = conn;
+>         conn->hcon = hcon;
+> @@ -197,11 +198,11 @@ static void sco_conn_del(struct hci_conn *hcon, int err)
+>                 sco_chan_del(sk, err);
+>                 release_sock(sk);
+>                 sock_put(sk);
+> -
+> -               /* Ensure no more work items will run before freeing conn. */
+> -               cancel_delayed_work_sync(&conn->timeout_work);
+>         }
+>
+> +       /* Ensure no more work items will run before freeing conn. */
+> +       cancel_delayed_work_sync(&conn->timeout_work);
+> +
+>         hcon->sco_data = NULL;
+>         kfree(conn);
+>   }
+> @@ -214,8 +215,6 @@ static void __sco_chan_add(struct sco_conn *conn, struct sock *sk,
+>         sco_pi(sk)->conn = conn;
+>         conn->sk = sk;
+>
+> -       INIT_DELAYED_WORK(&conn->timeout_work, sco_sock_timeout);
+> -
+>         if (parent)
+>                 bt_accept_enqueue(parent, sk, true);
+>   }
 
-HEAD commit:    3e12361b6d23 bcm63xx_enet: delete a redundant assignment
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=160cec72300000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=63a23a80f42a8989
-dashboard link: https://syzkaller.appspot.com/bug?extid=b187b77c8474f9648fae
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=144d07b6300000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=171b7fca300000
+I have come to something similar, do you care to send a proper patch
+so we can get this merged.
 
-The issue was bisected to:
-
-commit 4611ce22468895acd61fee9ac1da810d60617d9a
-Author: Daniel Jordan <daniel.m.jordan@oracle.com>
-Date:   Wed Jun 3 22:59:39 2020 +0000
-
-    padata: allocate work structures for parallel jobs from a pool
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=118dccae300000
-console output: https://syzkaller.appspot.com/x/log.txt?x=158dccae300000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+b187b77c8474f9648fae@syzkaller.appspotmail.com
-Fixes: 4611ce224688 ("padata: allocate work structures for parallel jobs from a pool")
-
-==================================================================
-BUG: KASAN: use-after-free in __crypto_xor+0x376/0x410 crypto/algapi.c:1001
-Read of size 8 at addr ffff88803691a000 by task kworker/u4:1/10
-
-CPU: 1 PID: 10 Comm: kworker/u4:1 Not tainted 5.14.0-rc2-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: pencrypt_parallel padata_parallel_worker
-Call Trace:
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:105
- print_address_description.constprop.0.cold+0x6c/0x309 mm/kasan/report.c:233
- __kasan_report mm/kasan/report.c:419 [inline]
- kasan_report.cold+0x83/0xdf mm/kasan/report.c:436
- __crypto_xor+0x376/0x410 crypto/algapi.c:1001
- crypto_xor include/crypto/algapi.h:160 [inline]
- crypto_ctr_crypt_segment crypto/ctr.c:60 [inline]
- crypto_ctr_crypt+0x256/0x550 crypto/ctr.c:114
- crypto_skcipher_encrypt+0xaa/0xf0 crypto/skcipher.c:630
- crypto_gcm_encrypt+0x38f/0x4b0 crypto/gcm.c:461
- crypto_aead_encrypt+0xaa/0xf0 crypto/aead.c:94
- pcrypt_aead_enc+0x13/0x70 crypto/pcrypt.c:82
- padata_parallel_worker+0x60/0xb0 kernel/padata.c:157
- process_one_work+0x98d/0x1630 kernel/workqueue.c:2276
- worker_thread+0x658/0x11f0 kernel/workqueue.c:2422
- kthread+0x3e5/0x4d0 kernel/kthread.c:319
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
-
-The buggy address belongs to the page:
-page:ffffea0000da4680 refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x3691a
-flags: 0xfff00000000000(node=0|zone=1|lastcpupid=0x7ff)
-raw: 00fff00000000000 ffffea0000dafd48 ffffea0000dad888 0000000000000000
-raw: 0000000000000000 0000000000000000 00000000ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-page_owner tracks the page as freed
-page last allocated via order 0, migratetype Unmovable, gfp_mask 0x400dc0(GFP_KERNEL_ACCOUNT|__GFP_ZERO), pid 8358, ts 60335781621, free_ts 60341472040
- prep_new_page mm/page_alloc.c:2433 [inline]
- get_page_from_freelist+0xa72/0x2f80 mm/page_alloc.c:4166
- __alloc_pages+0x1b2/0x500 mm/page_alloc.c:5388
- alloc_pages+0x18c/0x2a0 mm/mempolicy.c:2244
- __pte_alloc_one include/asm-generic/pgalloc.h:63 [inline]
- pte_alloc_one+0x16/0x230 arch/x86/mm/pgtable.c:33
- do_fault_around mm/memory.c:4136 [inline]
- do_read_fault mm/memory.c:4157 [inline]
- do_fault mm/memory.c:4291 [inline]
- handle_pte_fault mm/memory.c:4549 [inline]
- __handle_mm_fault+0x49de/0x5320 mm/memory.c:4684
- handle_mm_fault+0x1c8/0x790 mm/memory.c:4782
- do_user_addr_fault+0x48b/0x11c0 arch/x86/mm/fault.c:1390
- handle_page_fault arch/x86/mm/fault.c:1475 [inline]
- exc_page_fault+0x9e/0x180 arch/x86/mm/fault.c:1531
- asm_exc_page_fault+0x1e/0x30 arch/x86/include/asm/idtentry.h:568
-page last free stack trace:
- reset_page_owner include/linux/page_owner.h:24 [inline]
- free_pages_prepare mm/page_alloc.c:1343 [inline]
- free_pcp_prepare+0x2c5/0x780 mm/page_alloc.c:1394
- free_unref_page_prepare mm/page_alloc.c:3329 [inline]
- free_unref_page_list+0x1a1/0x1050 mm/page_alloc.c:3445
- release_pages+0x824/0x20b0 mm/swap.c:972
- tlb_batch_pages_flush mm/mmu_gather.c:49 [inline]
- tlb_flush_mmu_free mm/mmu_gather.c:242 [inline]
- tlb_flush_mmu mm/mmu_gather.c:249 [inline]
- tlb_finish_mmu+0x165/0x8c0 mm/mmu_gather.c:340
- exit_mmap+0x1ea/0x620 mm/mmap.c:3203
- __mmput+0x122/0x470 kernel/fork.c:1101
- mmput+0x58/0x60 kernel/fork.c:1122
- exit_mm kernel/exit.c:501 [inline]
- do_exit+0xae2/0x2a60 kernel/exit.c:812
- do_group_exit+0x125/0x310 kernel/exit.c:922
- __do_sys_exit_group kernel/exit.c:933 [inline]
- __se_sys_exit_group kernel/exit.c:931 [inline]
- __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:931
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Memory state around the buggy address:
- ffff888036919f00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffff888036919f80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->ffff88803691a000: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-                   ^
- ffff88803691a080: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
- ffff88803691a100: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-==================================================================
+> > For a single SCO connection with well-formed channel, I think there
+> > can't be a race. Here's the reasoning:
+> >
+> > - For the timeout to be scheduled, a socket must have a channel with a
+> > connection.
+> >
+> > - When a channel between a socket and connection is established, the
+> > socket transitions from BT_OPEN to BT_CONNECTED, BT_CONNECT, or
+> > BT_CONNECT2.
+> >
+> > - For a socket to be released, it has to be zapped. For sockets that
+> > have a state of BT_CONNECTED, BT_CONNECT, or BT_CONNECT2, they are
+> > zapped only when the channel is deleted.
+> >
+> > - If the channel is deleted (which is protected by sco_conn_lock), then
+> > conn->sk is NULL, and sco_sock_timeout simply exits. If we had entered
+> > the critical section in sco_sock_timeout before the channel was deleted,
+> > then we increased the reference count on the socket, so it won't be
+> > freed until sco_sock_timeout is done.
+> >
+> > Hence, sco_sock_timeout doesn't race with the release of a socket that
+> > has a well-formed channel with a connection.
+> >
+> > But if multiple connections are allocated and overwritten in
+> > sco_sock_connect, then none of the above assumptions hold because the
+> > SCO connection can't be cleaned up (i.e. conn->sk cannot be set to NULL)
+> > when the associated socket is released. This scenario happens in the
+> > syzbot reproducer for the crash here:
+> > https://syzkaller.appspot.com/bug?id=bcc246d137428d00ed14b476c2068579515fe2bc
+> >
+> >
+> > That aside, upon taking a closer look, I think there is indeed a race
+> > lurking in sco_conn_del, but it's not the one that syzbot is hitting.
+> > Our sock_hold simply comes too late, and by the time it's called we
+> > might have already have freed the socket.
+> >
+> > So probably something like this needs to happen:
+> >
+> > diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
+> > index fa25b07120c9..ea18e5b56343 100644
+> > --- a/net/bluetooth/sco.c
+> > +++ b/net/bluetooth/sco.c
+> > @@ -187,10 +187,11 @@ static void sco_conn_del(struct hci_conn *hcon,
+> > int err)
+> >       /* Kill socket */
+> >       sco_conn_lock(conn);
+> >       sk = conn->sk;
+> > +    if (sk)
+> > +        sock_hold(sk);
+> >       sco_conn_unlock(conn);
+> >
+> >       if (sk) {
+> > -        sock_hold(sk);
+> >           lock_sock(sk);
+> >           sco_sock_clear_timer(sk);
+> >           sco_chan_del(sk, err);
+>
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+-- 
+Luiz Augusto von Dentz
