@@ -2,109 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30A733FEB35
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 11:30:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D77203FEB3A
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 11:30:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245638AbhIBJ3T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 05:29:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35458 "EHLO
+        id S245663AbhIBJ3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 05:29:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343507AbhIBJ3M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 05:29:12 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBE44C061575
-        for <netdev@vger.kernel.org>; Thu,  2 Sep 2021 02:28:13 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id g18so1808394wrc.11
-        for <netdev@vger.kernel.org>; Thu, 02 Sep 2021 02:28:13 -0700 (PDT)
+        with ESMTP id S245569AbhIBJ3e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 05:29:34 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A9B3C061575
+        for <netdev@vger.kernel.org>; Thu,  2 Sep 2021 02:28:36 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id b6so1815048wrh.10
+        for <netdev@vger.kernel.org>; Thu, 02 Sep 2021 02:28:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=JulsKOOHoUI648OBMneLJD+Pe4T/1GCL07CNgEfZXgk=;
-        b=rvX9zXCID20fIilvSAkjd4Ra9SnD24QjvpUrI6S1ze5XFnydaO4qW+BEsfoFNGCvpe
-         8h+uMZG5ERJA2X+9BfuQxTv//xrju7s2W8HlEl4cwfAWZY83IAf3eh8ab9EoHAUAu1Y+
-         2makvCsDrQd0ggTyLREza3i6Xp2H6YErAiqubL7CS6xjSNRfRMzaFOu04J3MuLBJJTpy
-         KLuHysnpMQ+aQ0QVaF6jci/cCB0dKxq/VaZaT3it9ggFNRbA8L0uTcQUL3zgz4UcgZfI
-         qSFMrogIpYuyzhZ4UxigzMfGAv0DQy+8SKvIRZnTdP1Ngzf1O7cvbopfo+p3P2EOSM6A
-         4Neg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:organization:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=JulsKOOHoUI648OBMneLJD+Pe4T/1GCL07CNgEfZXgk=;
-        b=lEAT17I+fge6jjBSNY2EJT+++GySms/IurRzUwT3LEj0gwLyyKUQTwPonAKYjFky0P
-         uBSihL7lpCAFy4DpAt/rKY6eWnpZ4FDjVUSWxdhh70D3EDnS6HcrJHJVQp7BFwFWicsF
-         nJaz2EBlMutVoCFAmFvUY3BGozIH66vxFB7KRLH2+Jluv/k9Q3ejN7a6qIYAX8HVZlP+
-         R2f9UTpoPuE2FADcnbpP3fkGOf/LlWia3vtZARBBKivHGd7NujPG78qxPgrW/WmARDY7
-         O4DX5H2ySYbO/JJnHIT/TY8JPiKoPgL5PwLoRIzHN4Cad9tr6d0PZ1vut6nmsRiBZdgR
-         NXmg==
-X-Gm-Message-State: AOAM532deOf4n1U6/SnUNxxUICsWqxFz58rD6WllC+cZ6ANouuC/1MRH
-        odjYnHPe6Z2dWPIAmeH5hc5YqoTUVtMp7A==
-X-Google-Smtp-Source: ABdhPJzFyo8/t2ymlfo2L3m7r4EgO6FKW9Ly2eu67gMFWa75yF0K65Cnk4haXpEkH2rlnwViTpCkMA==
-X-Received: by 2002:a5d:534c:: with SMTP id t12mr2494344wrv.219.1630574892606;
-        Thu, 02 Sep 2021 02:28:12 -0700 (PDT)
-Received: from [192.168.86.34] (cpc86377-aztw32-2-0-cust226.18-1.cable.virginm.net. [92.233.226.227])
-        by smtp.googlemail.com with ESMTPSA id z5sm1123749wmp.26.2021.09.02.02.28.11
+        bh=7iuvIPC9bhl1LolffJ5qHRSpgVqBB1R5gXFvaIS5FRg=;
+        b=WQNKLYacQ4cIyYIVZRSotKDLK1414LXzQHMb0w1wiRxd74Wq6UETgkv4F7VOEsWNK7
+         aipp40iW3G9TrZBO0Xo5TkgoELEXT+JE2ammE8cf6KbFpCWb3MGkR9S6zeLSRy33AKAe
+         SjvVu5V6l3dRzn0GrzoNEXFWAPWcVLabg8yaYF/yIyMWb5Fi0DEWW3xOZVBS0yrA5ZD9
+         hh1zPCEIg3HpciJM6VUk0eNvNH9W7FhrOLIbLrioyIHdLU4CIjKd2zsdtD/tHdmUkupV
+         qGO1aeIwk7Fkhu17qca0dl5rjHotoSClnu8IuLVhPJyqa95BCPBYWA+DvsWDjxiIEjGU
+         7G3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:organization
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=7iuvIPC9bhl1LolffJ5qHRSpgVqBB1R5gXFvaIS5FRg=;
+        b=CZdEJVcOhtE7K2S89LRuhWdtd3tm1nHvwg9aVqo0AXYvpiGjvyrmv/E/XY5H8RPKWg
+         1j1hYLTjAMIk0OwMx14o6mrB7tGiqxqaRb44UTiicGnTrsC0fRszOvQFB4oXq7f3D/gR
+         5bEny//RdDY4eU8iTZjveRwfwhI/uaBWSByn5z8nKWaXFSU+F/yYbmW4NUFuNmNmfg3o
+         +l/TxeLIhWBM1980Q6IvC9Og7GZ6JV+puT8ES1bVC1yRwdqa2SbV7iM7GQ1fT5fuqvDK
+         OebpD/VvNtdXQkIB12EqzLjKG25Z+twGp+iCSDNPCK79kIt+YyK2xwz/Lsy7TfGTMbeo
+         a0NA==
+X-Gm-Message-State: AOAM533WSJC9x9ixoRKXBEQq9Ov1UDZzR3aFcJkJ9pjsFrk4zm7kiYIj
+        cF41YPOdS7a2jQufIrfcs01elA==
+X-Google-Smtp-Source: ABdhPJyFFvmQ0LXhQUxzUVktEFAfLypsGuwgbx7ulszxx6AHS1Hg+73IilpVUv5hUAQau5RwPPNtlQ==
+X-Received: by 2002:adf:cd0f:: with SMTP id w15mr2562154wrm.346.1630574914954;
+        Thu, 02 Sep 2021 02:28:34 -0700 (PDT)
+Received: from ?IPv6:2001:861:44c0:66c0:98:6312:3c8:6531? ([2001:861:44c0:66c0:98:6312:3c8:6531])
+        by smtp.gmail.com with ESMTPSA id h11sm1557349wrx.9.2021.09.02.02.28.34
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 Sep 2021 02:28:11 -0700 (PDT)
-Subject: Re: [GIT PULL] Networking for v5.15
-To:     Dan Carpenter <dan.carpenter@oracle.com>,
-        John Stultz <john.stultz@linaro.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Miller <davem@davemloft.net>,
+        Thu, 02 Sep 2021 02:28:34 -0700 (PDT)
+Subject: Re: [PATCH 1/2] irqchip: irq-meson-gpio: make it possible to build as
+ a module
+To:     Marc Zyngier <maz@kernel.org>,
+        Saravana Kannan <saravanak@google.com>,
+        Lee Jones <lee.jones@linaro.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        linux-amlogic@lists.infradead.org,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>,
         netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-References: <20210902092500.GA11020@kili>
-From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Message-ID: <38288aff-71d4-bde2-7547-dff5ca20091c@linaro.org>
-Date:   Thu, 2 Sep 2021 10:28:10 +0100
+        Android Kernel Team <kernel-team@android.com>
+References: <87r1hwwier.wl-maz@kernel.org> <7h7diwgjup.fsf@baylibre.com>
+ <87im0m277h.wl-maz@kernel.org>
+ <CAGETcx9OukoWM_qprMse9aXdzCE=GFUgFEkfhhNjg44YYsOQLw@mail.gmail.com>
+ <87sfzpwq4f.wl-maz@kernel.org>
+ <CAGETcx95kHrv8wA-O+-JtfH7H9biJEGJtijuPVN0V5dUKUAB3A@mail.gmail.com>
+ <CAGETcx8bpWQEnkpJ0YW9GqX8WE0ewT45zqkbWWdZ0ktJBhG4yQ@mail.gmail.com>
+ <YQuZ2cKVE+3Os25Z@google.com> <YRpeVLf18Z+1R7WE@google.com>
+ <CAGETcx-gSJD0Ra=U_55k3Anps11N_3Ev9gEQV6NaXOvqwP0J3g@mail.gmail.com>
+ <YRtkE62O+4EiyzF9@google.com>
+ <CAGETcx-FS_88nQuF=xN4iJJ-nGnaeTnO-iiGpZuNELqE42FtoA@mail.gmail.com>
+ <87o89vroec.wl-maz@kernel.org>
+From:   Neil Armstrong <narmstrong@baylibre.com>
+Organization: Baylibre
+Message-ID: <44e56b25-acbb-ce3c-3f99-53a809309250@baylibre.com>
+Date:   Thu, 2 Sep 2021 11:28:33 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <20210902092500.GA11020@kili>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <87o89vroec.wl-maz@kernel.org>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
-
-On 02/09/2021 10:25, Dan Carpenter wrote:
-> I'm sorry John,
+On 18/08/2021 13:19, Marc Zyngier wrote:
+> On Tue, 17 Aug 2021 19:12:34 +0100,
+> Saravana Kannan <saravanak@google.com> wrote:
+>>
+>> On Tue, Aug 17, 2021 at 12:24 AM Lee Jones <lee.jones@linaro.org> wrote:
+>>>
+>>> On Mon, 16 Aug 2021, Saravana Kannan wrote:
+>>>>>>> I sent out the proper fix as a series:
+>>>>>>> https://lore.kernel.org/lkml/20210804214333.927985-1-saravanak@google.com/T/#t
+>>>>>>>
+>>>>>>> Marc, can you give it a shot please?
+>>>>>>>
+>>>>>>> -Saravana
+>>>>>>
+>>>>>> Superstar!  Thanks for taking the time to rectify this for all of us.
+>>>>>
+>>>>> Just to clarify:
+>>>>>
+>>>>>   Are we waiting on a subsequent patch submission at this point?
+>>>>
+>>>> Not that I'm aware of. Andrew added a "Reviewed-by" to all 3 of my
+>>>> proper fix patches. I didn't think I needed to send any newer patches.
+>>>> Is there some reason you that I needed to?
+>>>
+>>> Actually, I meant *this* patch.
+>>
+>> I think it'll be nice if Neil addresses the stuff Marc mentioned
+>> (ideally) using the macros I suggested. Not sure if Marc is waiting on
+>> that though. Marc also probably wants my mdio-mux series to merge
+>> first before he takes this patch. So that it doesn't break networking
+>> in his device.
 > 
-> Can you try this partial revert?  I'll resend with a commit message if
-> it works.
-I was about to send similar patch.
-
-This should work, I think your original patch introduced a qrtr packet 
-payload alignment constraint which was not there originally.
-
-
-Tested-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-
---srini
+> Yup. Two things need to happen here:
 > 
-> ---
->   net/qrtr/qrtr.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+> - the MDIO fixes must be merged (I think they are queued, from what I
+>   can see)
 > 
-> diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
-> index 525e3ea063b1..ec2322529727 100644
-> --- a/net/qrtr/qrtr.c
-> +++ b/net/qrtr/qrtr.c
-> @@ -493,7 +493,7 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
->   		goto err;
->   	}
->   
-> -	if (!size || size & 3 || len != size + hdrlen)
-> +	if (!size || len != ALIGN(size, 4) + hdrlen)
->   		goto err;
->   
->   	if (cb->dst_port != QRTR_PORT_CTRL && cb->type != QRTR_TYPE_DATA &&
+> - the irqchip patch must be fixed so that the driver cannot be
+>   unloaded (Saravana did explain what needs to be done).
+
+I'll post a re-spin of this serie with the suggested fixes.
+
+Neil
+
 > 
+> Once these two condition are met, I'll happily take this patch.
+> 
+> 	M.
+> 
+
