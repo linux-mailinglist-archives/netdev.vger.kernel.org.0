@@ -2,154 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70B9D3FF58B
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 23:18:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FBF63FF590
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 23:22:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344043AbhIBVSN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 17:18:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59122 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245379AbhIBVSM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 17:18:12 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B379C061575
-        for <netdev@vger.kernel.org>; Thu,  2 Sep 2021 14:17:13 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id a25so7544831ejv.6
-        for <netdev@vger.kernel.org>; Thu, 02 Sep 2021 14:17:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bHUd3W9mfhuvKsKVkBJRuBBshvAOjt/+w796pAZ6mQ4=;
-        b=f/dz9NziCmLnRZEMOviuZDwknj3K3WhM9TBUxhi08mYLDGFMClDi0iASMACANXl7UC
-         qXLoxQAmDxDjbyybvgs5Hg0yc1wqrG3uqsiAwxOwPiYUc++a9YLz+3HRVs0BTg6XGPkv
-         xOgSUrVxaXP+b5anhYd096bOm2H8wCWgna7BCWausotDTKy8yAY4MlCM7LffCVcze4/b
-         zs2LS80gXl8Mbmlc5xYz0988w72iWAo1p8YqDcH2JifuJ8jyIxP23WZ5WFgpam9GBDES
-         AN7vhsL7O8iEtGr6WzI6HNAhVakQQGCXkPxICf3s1CfGjeYBSLhrRfU80c41LaqxnUNJ
-         vymw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bHUd3W9mfhuvKsKVkBJRuBBshvAOjt/+w796pAZ6mQ4=;
-        b=Or9OXUcf00tuPwBt5bXzmzP+SX4yehXcGVjhr9ED9AKWAwomykO4Bfa615k5vtFCV0
-         A8bUoibxNmlz/RRIjdXd4JzTamuMdqLAr8SHHZyoeaT0ph9byywRlKVTopA3W7SNbewo
-         96IIPdq7r37X4cVNFvgIbl+bj9O2oc30sbmYMxkKfbH5eKsZORnAM3V2m9WuCy7Lc4Zo
-         43GPy/8sOkwpiUmhq+QtnB6VWn69tozKo9sRbxmrBoH3nrhU5cBZQ5p7/K6hKoAdoGO+
-         MrQpuQNIJdkBSEn8s1mY8f0fl92iZyskcCTaWwTfk7yYgo/5HgJ04eBzElJ/xJ0MYBvv
-         1IuA==
-X-Gm-Message-State: AOAM530wsTEgfSQ5CYonnq3HrfokLgRHAoJmP0/uDyTYAD30ZYnAZsBx
-        GzWhIEkyq6WZLQ4AQiwQbbm8I/u8SRz5wDRJm2kZhomi
-X-Google-Smtp-Source: ABdhPJxI4cLvfrTqu3YxljSt++sNKu1xrFLCE2IgBozbLbnytu39usmW82iDdmBKwMPZVNPTJdVNhZLiEALcdKAO+tU=
-X-Received: by 2002:a17:906:1299:: with SMTP id k25mr191018ejb.139.1630617431565;
- Thu, 02 Sep 2021 14:17:11 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210902193447.94039-1-willemdebruijn.kernel@gmail.com>
- <20210902193447.94039-2-willemdebruijn.kernel@gmail.com> <CAKgT0UdhaUp0jcNZSzMu=_OezwqKNHP47u0n_XUkpO_SbSV8hA@mail.gmail.com>
- <CA+FuTSfaN-wLzVq1UQhwiPgH=PKdcW+kz1PDxgfrLAnjWf8CKA@mail.gmail.com>
-In-Reply-To: <CA+FuTSfaN-wLzVq1UQhwiPgH=PKdcW+kz1PDxgfrLAnjWf8CKA@mail.gmail.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Thu, 2 Sep 2021 14:17:00 -0700
-Message-ID: <CAKgT0UdtqJ+ECyDs1dv7ha4Bq12XaGiOQ6uvja5cy06dDR5ziw@mail.gmail.com>
-Subject: Re: [PATCH net] ip_gre: validate csum_start only if CHECKSUM_PARTIAL
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
+        id S1346686AbhIBVW7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 17:22:59 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:54176 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S245379AbhIBVW7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Sep 2021 17:22:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=4W8zxurm5kXw4PloLvamlDJtFD1BuntSj9LBJWLPd1Y=; b=lK7dEoSX/EWfBQhLUweQ63P05F
+        k6ZhJDJgkOYuItsQD653g5Bpc6NpiMC7HyyXsRuN7zzgPqCGtPVghPUiArhcW4/WS8mfLPDrDajx9
+        Y5cFVSqQx9oTzk9QgVjiDCUzHxvM5tyNrq7HqlDfBQ9PXJqmSxyvAF0E+J/RnU8i6Lgw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mLu9j-0053PR-Pk; Thu, 02 Sep 2021 23:21:55 +0200
+Date:   Thu, 2 Sep 2021 23:21:55 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Gerhard Engleder <gerhard@engleder-embedded.com>
+Cc:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Ido Schimmel <idosch@idosch.org>,
-        chouhan.shreyansh630@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next v2 3/3] tsnep: Add TSN endpoint Ethernet MAC
+ driver
+Message-ID: <YTFAc/vMXTKdFSHL@lunn.ch>
+References: <20210831193425.26193-1-gerhard@engleder-embedded.com>
+ <20210831193425.26193-4-gerhard@engleder-embedded.com>
+ <YS6lQejOJJCATMCp@lunn.ch>
+ <CANr-f5zXWrqPxWV81CT6=4O6PoPRB0Qs0T=egJ3q8FMG16f6xw@mail.gmail.com>
+ <YS/qQdmjT/X0tiEt@lunn.ch>
+ <CANr-f5wU0JTqwoHoFEwdFCVSYtcohx-DPc4mz8-GrVFpyNuajA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANr-f5wU0JTqwoHoFEwdFCVSYtcohx-DPc4mz8-GrVFpyNuajA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 2, 2021 at 1:30 PM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
->
-> On Thu, Sep 2, 2021 at 4:25 PM Alexander Duyck
-> <alexander.duyck@gmail.com> wrote:
+On Thu, Sep 02, 2021 at 10:32:10PM +0200, Gerhard Engleder wrote:
+> > > > > +static irqreturn_t tsnep_irq(int irq, void *arg)
+> > > > > +{
+> > > > > +     struct tsnep_adapter *adapter = arg;
+> > > > > +     u32 active = ioread32(adapter->addr + ECM_INT_ACTIVE);
+> > > > > +
+> > > > > +     /* acknowledge interrupt */
+> > > > > +     if (active != 0)
+> > > > > +             iowrite32(active, adapter->addr + ECM_INT_ACKNOWLEDGE);
+> > > > > +
+> > > > > +     /* handle management data interrupt */
+> > > > > +     if ((active & ECM_INT_MD) != 0) {
+> > > > > +             adapter->md_active = false;
+> > > > > +             wake_up_interruptible(&adapter->md_wait);
+> > > > > +     }
+> > > > > +
+> > > > > +     /* handle link interrupt */
+> > > > > +     if ((active & ECM_INT_LINK) != 0) {
+> > > > > +             if (adapter->netdev->phydev) {
+> > > > > +                     struct phy_device *phydev = adapter->netdev->phydev;
+> > > > > +                     u32 status = ioread32(adapter->addr + ECM_STATUS);
+> > > > > +                     int link = (status & ECM_NO_LINK) ? 0 : 1;
+> > > > > +                     u32 speed = status & ECM_SPEED_MASK;
+> > > >
+> > > > How does PHY link and speed get into this MAC register? Is the MAC
+> > > > polling the PHY over the MDIO bus? Is the PHY internal to the MAC and
+> > > > it has backdoor access to the PHY status?
+> > >
+> > > PHY is external. The MAC expects additional signals for link status. These
+> > > signals can be derived from RGMII in band signaling of the link status or by
+> > > using PHY link and speed LED outputs. The MAC is using the link status for
+> > > a quick no link reaction to minimize the impact to real time applications.
+> > > EtherCAT for example also uses the link LED output for a no link reaction
+> > > within a few microseconds.
 > >
-> > On Thu, Sep 2, 2021 at 12:38 PM Willem de Bruijn
-> > <willemdebruijn.kernel@gmail.com> wrote:
-> > >
-> > > From: Willem de Bruijn <willemb@google.com>
-> > >
-> > > Only test integrity of csum_start if checksum offload is configured.
-> > >
-> > > With checksum offload and GRE tunnel checksum, gre_build_header will
-> > > cheaply build the GRE checksum using local checksum offload. This
-> > > depends on inner packet csum offload, and thus that csum_start points
-> > > behind GRE. But validate this condition only with checksum offload.
-> > >
-> > > Link: https://lore.kernel.org/netdev/YS+h%2FtqCJJiQei+W@shredder/
-> > > Fixes: 1d011c4803c7 ("ip_gre: add validation for csum_start")
-> > > Signed-off-by: Willem de Bruijn <willemb@google.com>
-> > > ---
-> > >  net/ipv4/ip_gre.c | 5 ++++-
-> > >  1 file changed, 4 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
-> > > index 177d26d8fb9c..09311992a617 100644
-> > > --- a/net/ipv4/ip_gre.c
-> > > +++ b/net/ipv4/ip_gre.c
-> > > @@ -473,8 +473,11 @@ static void __gre_xmit(struct sk_buff *skb, struct net_device *dev,
-> > >
-> > >  static int gre_handle_offloads(struct sk_buff *skb, bool csum)
-> > >  {
-> > > -       if (csum && skb_checksum_start(skb) < skb->data)
-> > > +       /* Local checksum offload requires csum offload of the inner packet */
-> > > +       if (csum && skb->ip_summed == CHECKSUM_PARTIAL &&
-> > > +           skb_checksum_start(skb) < skb->data)
-> > >                 return -EINVAL;
-> > > +
-> > >         return iptunnel_handle_offloads(skb, csum ? SKB_GSO_GRE_CSUM : SKB_GSO_GRE);
-> > >  }
->
-> Thanks for taking a look.
->
-> > So a few minor nits.
-> >
-> > First I think we need this for both v4 and v6 since it looks like this
-> > code is reproduced for net/ipv6/ip6_gre.c.
->
-> I sent a separate patch for v6. Perhaps should have made it a series
-> to make this more clear.
+> > O.K. This is not the normal Linux way. You normally have the PHY
+> > driver tell the PHY core, which then tells the MAC driver. That always
+> > works. RGMII in band signaling is not supported by all PHY devices,
+> > and the board design would require the LED output are correctly
+> > connected, and i guess you need a hacked PHY driver to use the correct
+> > LED meanings? Plus i guess you have additional changes in the PHY
+> > driver to do fast link down detection?
+> 
+> Yes, LED outputs must be correctly connected in the board design. LED
+> outputs are usually configured with strapping pins, which again require a
+> correct board design.
 
-Yeah, that was part of the reason I assumed the ipv6 patch was overlooked.
+Linux sometime, maybe soon, will be able the control the PHY LEDs, and
+probably export them to user space so root can change their meaning.
 
-> > Second I don't know if we even need to bother including the "csum"
-> > portion of the lookup since that technically is just telling us if the
-> > GRE tunnel is requesting a checksum or not and I am not sure that
-> > applies to the fact that the inner L4 header is going to be what is
-> > requesting the checksum offload most likely.
->
-> This test introduced in the original patch specifically protects the
-> GRE tunnel checksum calculation using lco_csum. The regular inner
-> packet path likely is already robust (as similar bug reports would be
-> more likely for that more common case).
+> Fast link down detection is a hardware property of the selected
+> PHY. So far no PHY driver changes were necessary.
 
-I was just thinking in terms of shaving off some extra comparisons. I
-suppose it depends on if this is being inlined or not. If it is being
-inlined there are at least 2 cases where the if statement would be
-dropped since csum is explicitly false. My thought was that by just
-jumping straight to the skb->ip_summed check we can drop the lookup
-for csum since it would be implied by the fact that skb->ip_summed is
-being checked. It would create a broader check, but at the same time
-it would reduce the number of comparisons in the call.
+Marvell PHYs for example follow 802.3 C40 and default to waiting 750ms
+before reporting the link down. You can configure them to only wait
+10ms, 20ms or 40ms. So it sounds like you are using a PHY which does
+not conform to C40? In general, we probably need to be able to
+configure this, for those that do follow C40.
 
-> > Also maybe this should be triggering a WARN_ON_ONCE if we hit this as
-> > the path triggering this should be fixed rather than us silently
-> > dropping frames. We should be figuring out what cases are resulting in
-> > us getting CHECKSUM_PARTIAL without skb_checksum_start being set.
->
-> We already know that bad packets can enter the kernel and trigger
-> this, using packet sockets and virtio_net_hdr. Unfortunately, this
-> *is* the fix.
+> > I think this needs another DT property to enable using such short
+> > cuts, and you should use the Linux way by default.
+> 
+> Isn't choosing PHY_MAC_INTERRUPT also the Linux way? I preferred it
+> over PHY_POLL, because I need the link information directly in the MAC
+> anyway. But maybe the speed information is too much and should be provided
+> to the MAC.
 
-It sounds almost like we need a CHECKSUM_DODGY to go along with the
-SKB_GSO_DODGY in order to resolve these kinds of issues.
+PHY_MAC_INTERRUPT is just the first step. It means something happened
+in the PHY. You need to ask the PHY what? It could be link up or down,
+it could be cable diagnostics have finished, the temperature is
+getting too hot, whatever can cause the PHY to change state. The PHY
+driver will then determine what has actually happened. Some cases, the
+MAC does not needed to know. Others the MAC will be told, via the
+callback it registered. It gets to know the link speed, up down etc.
+That is the Linux way, the complete chain.
 
-So essentially we have a source that we know can give us bad packets.
-We really should be performing some sort of validation on these much
-earlier in order to clean them up so that we don't have to add this
-sort of exception handling code all over the Tx path.
+> > Also, don't you need a property which tells you to either use RGMII
+> > inband, or LED signals?
+> 
+> No, this decision is done in VHDL/FPGA. No need to consume precious FPGA
+> resources for runtime configuration.
+
+You mean you have two ways to synthesis the MAC. You have two
+bitstreams. One for LEDs and one of inband RGMII?
+
+> I'm afraid that relying on ACPI is not always an option. x86 CPU modules are
+> very often used in industrial automation and the BIOS of the CPU module is
+> usually not adapted to the carrier board.
+
+Yes, i've been there. I have managed to get the BIOS customised, but
+it is not easy. DT is much easier to use.
+
+> Also other drivers implement a fallback like this. Shall I still
+> remove it?
+
+You can keep it. I just don't recommend it, if you can avoid it. But x86...
+
+    Andrew
