@@ -2,149 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD44A3FEAA6
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 10:33:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AA533FEAA8
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 10:33:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244407AbhIBIdK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 04:33:10 -0400
-Received: from relay.sw.ru ([185.231.240.75]:49666 "EHLO relay.sw.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243772AbhIBIdJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Sep 2021 04:33:09 -0400
+        id S244467AbhIBIdi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 04:33:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50906 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243772AbhIBIdh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 04:33:37 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A37CBC061575
+        for <netdev@vger.kernel.org>; Thu,  2 Sep 2021 01:32:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:From:
-        Subject; bh=62yNtXAVsWniAwR6yGNwwYjxs676XySY+v+xUYXen5A=; b=EBbScHoXb2TSzfvaV
-        1pU3ncTE20uBKmts+wDKmKqfsoyjQ3NuRqHou4ZROvnVw2q8sNykJK+13p6st9GCSv8zr4GE8yWEO
-        bejNqnb4uFsNk4ObHk+++NnJKB4HnlDedD2BZn9QPJFaTrFBqYJEdI8Q+7MPaCXJusCJ5pOzvKkvU
-        =;
-Received: from [10.93.0.56]
-        by relay.sw.ru with esmtp (Exim 4.94.2)
-        (envelope-from <vvs@virtuozzo.com>)
-        id 1mLi8e-000YeG-G6; Thu, 02 Sep 2021 11:32:00 +0300
-Subject: Re: [PATCH net-next v4] skb_expand_head() adjust skb->truesize
- incorrectly
-From:   Vasily Averin <vvs@virtuozzo.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Christoph Paasch <christoph.paasch@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org,
-        kernel@openvz.org, Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Julian Wiedmann <jwi@linux.ibm.com>
-References: <b653692b-1550-e17a-6c51-894832c56065@virtuozzo.com>
- <ee5b763a-c39d-80fd-3dd4-bca159b5f5ac@virtuozzo.com>
- <ce783b33-c81f-4760-1f9e-90b7d8c51fd7@gmail.com>
- <b7c2cb05-7307-f04e-530e-89fc466aa83f@virtuozzo.com>
- <ef7ccff8-700b-79c2-9a82-199b9ed3d95b@gmail.com>
- <67740366-7f1b-c953-dfe1-d2085297bdf3@gmail.com>
- <8a183782-f4b9-e12a-55d1-c4a3c4078369@virtuozzo.com>
- <2984f16b-7f20-e72d-1661-b942fdc4ff9b@virtuozzo.com>
-Message-ID: <27f87dd8-f6e4-b2b0-2b3a-9378fddf147f@virtuozzo.com>
-Date:   Thu, 2 Sep 2021 11:31:59 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=xX+kNEOYZp3bJ3dTnTctIZyXNrdpAFSI7OwVO318ukI=; b=iI2Qfbj3LFEGk46LmPVAu3HKf
+        ZG8UOW7m5R1cm3mAmLWj40fBljqRWE6g+WWMYbc9wxBV2pTYMCqyyj9n3OWDy5Qy99diNukG6yi0c
+        9Og3FQfxC5hYIarKIhEnsQOmZMeSQ7wF0qXh+1Gz1oaPGTpvQc6VGnjEfTGSWv1H6xsCrPRR80zSA
+        Hi8PKYZnD/4WXbcpGI66OcePX5wkUFg5O1NWjvwVg2P24U2LGvEtmkyh1CgTkJEtNcsL8ymASXsdw
+        LvQ0Ad6csvxU5yQdlQi6nHso610MIVj35/38P4Q4NguxpKbWj3Kya5Wtv3hj/zOHlBEGKIemKXqYp
+        e339m1n8w==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:48074)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mLi95-00019M-Sv; Thu, 02 Sep 2021 09:32:27 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mLi92-0007fg-Fb; Thu, 02 Sep 2021 09:32:24 +0100
+Date:   Thu, 2 Sep 2021 09:32:24 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
+        "alexandre.torgue@foss.st.com" <alexandre.torgue@foss.st.com>,
+        "joabreu@synopsys.com" <joabreu@synopsys.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        dl-linux-imx <linux-imx@nxp.com>
+Subject: Re: [PATCH] net: stmmac: fix MAC not working when system resume back
+ with WoL enabled
+Message-ID: <20210902083224.GC22278@shell.armlinux.org.uk>
+References: <20210901090228.11308-1-qiangqing.zhang@nxp.com>
+ <20210901092149.fmap4ac7jxf754ao@skbuf>
+ <DB8PR04MB6795CCAE06AA7CEB5CCEC521E6CD9@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <20210901105611.y27yymlyi5e4hys5@skbuf>
+ <DB8PR04MB67956C22F601DA8B7DC147D5E6CD9@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <20210901132547.GB22278@shell.armlinux.org.uk>
+ <DB8PR04MB6795BB2A13AED5F6E56D08A0E6CE9@DB8PR04MB6795.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-In-Reply-To: <2984f16b-7f20-e72d-1661-b942fdc4ff9b@virtuozzo.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <DB8PR04MB6795BB2A13AED5F6E56D08A0E6CE9@DB8PR04MB6795.eurprd04.prod.outlook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/2/21 10:33 AM, Vasily Averin wrote:
-> On 9/2/21 10:13 AM, Vasily Averin wrote:
->> On 9/2/21 7:48 AM, Eric Dumazet wrote:
->>> On 9/1/21 9:32 PM, Eric Dumazet wrote:
->>>> I think you missed netem case, in particular
->>>> skb_orphan_partial() which I already pointed out.
->>>>
->>>> You can setup a stack of virtual devices (tunnels),
->>>> with a qdisc on them, before ip6_xmit() is finally called...
->>>>
->>>> Socket might have been closed already.
->>>>
->>>> To test your patch, you could force a skb_orphan_partial() at the beginning
->>>> of skb_expand_head() (extending code coverage)
->>>
->>> To clarify :
->>>
->>> It is ok to 'downgrade' an skb->destructor having a ref on sk->sk_wmem_alloc to
->>> something owning a ref on sk->refcnt.
->>>
->>> But the opposite operation (ref on sk->sk_refcnt -->  ref on sk->sk_wmem_alloc) is not safe.
->>
->> Could you please explain in more details, since I stil have a completely opposite point of view?
->>
->> Every sk referenced in skb have sk_wmem_alloc > 9 
->> It is assigned to 1 in sk_alloc and decremented right before last __sk_free(),
->> inside  both sk_free() sock_wfree() and __sock_wfree()
->>
->> So it is safe to adjust skb->sk->sk_wmem_alloc, 
->> because alive skb keeps reference to alive sk and last one keeps sk_wmem_alloc > 0
->>
->> So any destructor used sk->sk_refcnt will already have sk_wmem_alloc > 0, 
->> because last sock_put() calls sk_free().
->>
->> However now I'm not sure in reversed direction.
->> skb_set_owner_w() check !sk_fullsock(sk) and call sock_hold(sk);
->> If sk->sk_refcnt can be 0 here (i.e. after execution of old destructor inside skb_orphan) 
->> -- it can be trigger pointed problem:
->> "refcount_add() will trigger a warning (panic under KASAN)".
->>
->> Could you please explain where I'm wrong?
+On Thu, Sep 02, 2021 at 07:28:44AM +0000, Joakim Zhang wrote:
 > 
-> To clarify:
-> I'm agree it is unsafe  to call on alive skb:
+> Hi Russell,
+> 
+> > -----Original Message-----
+> > From: Russell King <linux@armlinux.org.uk>
+> > Sent: 2021年9月1日 21:26
+> > To: Joakim Zhang <qiangqing.zhang@nxp.com>
+> > Cc: Vladimir Oltean <olteanv@gmail.com>; peppe.cavallaro@st.com;
+> > alexandre.torgue@foss.st.com; joabreu@synopsys.com;
+> > davem@davemloft.net; kuba@kernel.org; mcoquelin.stm32@gmail.com;
+> > netdev@vger.kernel.org; andrew@lunn.ch; f.fainelli@gmail.com;
+> > hkallweit1@gmail.com; dl-linux-imx <linux-imx@nxp.com>
+> > Subject: Re: [PATCH] net: stmmac: fix MAC not working when system resume
+> > back with WoL enabled
+> > 
+> > This means you need to have the phy <-> mac link up during
+> > suspend, and in that case, yes, you do not want to call
+> > phylink_stop() or phylink_start().
+> 
+> I have a question here, why need to have the phy<->mac link up during suspend?
 
-I badly explained the problem in previous letter, let me repeat once again:
+You need the link up because I think from reading the code, it is _not_
+the PHY that is triggering the wakeup in the configuration you are using,
+but the MAC.
 
-I'm told about this piece of code:
-+	} else if (sk && skb->destructor != sock_edemux) {
-+		delta = osize - skb_end_offset(skb);
-+		if (!is_skb_wmem(skb))
-+			skb_set_owner_w(skb, sk);
-+		skb->truesize += delta;
-+		if (sk_fullsock(sk))
-+			refcount_add(delta, &sk->sk_wmem_alloc);
- 	}
+If the link is down, the PHY can't pass the received packet to the MAC,
+and the MAC can't recognise the magic packet.
 
-it is called on alive expanded skb and it is incorrect because 2 reasons:
+FEC doesn't have this. FEC relies purely on the PHY detecting the magic
+packet, which is much more power efficient, because it means the MAC
+doesn't need to be powered up and operational while the rest of the
+system is suspended.
 
-a) if old destructor use ref on sk->sk_wmem_alloc
-   It can decrease to 0 and release sk.
-b) if old descriptor use ref on sk->refcnt and !sk_fullsock(sk)
-    old decriptor can release last reference and release sk.
+> As you described in past thread, phylink_stop() and phylink_start() also need to be called even with
+> WoL active.
 
-We can workaround release of sk by move of 
-refcount_add(delta, &sk->sk_wmem_alloc) before skb_set_owner_w()
+That was with the assumption that the PHY was detecting the magic
+packet. It isn't for stmmac - stmmac can be configured to bypass
+the configuration of the PHY for this and uses the MAC to detect
+this instead. If the MAC is doing the detecting for WoL, then you
+need network connectivity to be functional from the network cable
+through the PHY and up to the MAC.
 
-        } else if (sk && skb->destructor != sock_edemux) {
-                delta = osize - skb_end_offset(skb);
-                refcount_add(delta, &sk->sk_wmem_alloc);
-                if (!is_skb_wmem(skb))
-                        skb_set_owner_w(skb, sk);
-                skb->truesize += delta;
-#ifdef CONFIG_INET
-                if (!sk_fullsock(sk))
-                        refcount_dec(delta, &sk->sk_wmem_alloc);
-#endif
-        }
+So, bringing the link down at suspend in this case _will_ break
+WoL. The PHY isn't the device detecting the magic packet, it is the
+MAC, and the MAC must be able to see the network traffic.
 
-However it it does not resolve b) completely
- 
-oid skb_set_owner_w(struct sk_buff *skb, struct sock *sk)
-{
-        skb_orphan(skb); <<< old destructor releases last sk->refcnt ...
-        skb->sk = sk;
-...
-        if (unlikely(!sk_fullsock(sk))) {
-                skb->destructor = sock_edemux;
-                sock_hold(sk);   <<<< ...and it trigger wrining/panic 
-                return;
-        }       
-
-Thank you,
-	Vasily Averin
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
