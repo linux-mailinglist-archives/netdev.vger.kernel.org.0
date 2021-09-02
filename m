@@ -2,95 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00C613FE9D3
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 09:13:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4A1A3FE9EF
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 09:22:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242885AbhIBHOj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 03:14:39 -0400
-Received: from relay.sw.ru ([185.231.240.75]:41040 "EHLO relay.sw.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233363AbhIBHOi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Sep 2021 03:14:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:From:
-        Subject; bh=jcxB9UZFDlTKnN6RO3VLRHt6sc+pufmSIvofaIuTdIM=; b=Z+Cg/Kwu6zgpcbGu5
-        Nr3tsqTQTBrG8tZ1J+aj8ISSz8iOZw7jq2U55gSnFZy2DK39jSLX3EC1quge/gHNEi2flMx7TwFin
-        Yraf7fdUctizqCDDsplHe0517wzVI9pvR+x5oMgGmmdm842KNgCGb6wtPxOeS9KnvyBuxf/QIqpPY
-        =;
-Received: from [10.93.0.56]
-        by relay.sw.ru with esmtp (Exim 4.94.2)
-        (envelope-from <vvs@virtuozzo.com>)
-        id 1mLgug-000YI2-TL; Thu, 02 Sep 2021 10:13:30 +0300
-Subject: Re: [PATCH net-next v4] skb_expand_head() adjust skb->truesize
- incorrectly
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Christoph Paasch <christoph.paasch@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org,
-        kernel@openvz.org, Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Julian Wiedmann <jwi@linux.ibm.com>
-References: <b653692b-1550-e17a-6c51-894832c56065@virtuozzo.com>
- <ee5b763a-c39d-80fd-3dd4-bca159b5f5ac@virtuozzo.com>
- <ce783b33-c81f-4760-1f9e-90b7d8c51fd7@gmail.com>
- <b7c2cb05-7307-f04e-530e-89fc466aa83f@virtuozzo.com>
- <ef7ccff8-700b-79c2-9a82-199b9ed3d95b@gmail.com>
- <67740366-7f1b-c953-dfe1-d2085297bdf3@gmail.com>
-From:   Vasily Averin <vvs@virtuozzo.com>
-Message-ID: <8a183782-f4b9-e12a-55d1-c4a3c4078369@virtuozzo.com>
-Date:   Thu, 2 Sep 2021 10:13:29 +0300
+        id S243359AbhIBHXM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 03:23:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34920 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233163AbhIBHXL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 03:23:11 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E381C061575
+        for <netdev@vger.kernel.org>; Thu,  2 Sep 2021 00:22:13 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id q11so1265652wrr.9
+        for <netdev@vger.kernel.org>; Thu, 02 Sep 2021 00:22:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=6wind.com; s=google;
+        h=reply-to:subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=2Sr4JglvdWDBQ2wOTZW6ElZD1OAh7p+s3FJK89qhgiM=;
+        b=FS94AIis1HaeP4YWFLvWShRs7pOBIvYRjx0VLv6hM9zDKmreAzv5G5CfG8A6iX29W2
+         01ozlnfm6paVlRWetFTsY9E/v+GNNLRVtSwNwt1mJymNKqlW8N7jcS7fMQauEzG2D16y
+         +KgcW68JBohppxrdZB/0JOBdxCrW37YMLzm5SjbdSM5R/I3Zo92O9HGMlOA4+ncodUog
+         Q884MiVIxhIPuj45jbj554K1MyQkbm4SWLhGU6/7FLQ48yZJbASmWaXZLNCl4VST96iD
+         Dcjumy9O6saBzIuzqZIjRA60ReyVtHuT5NtvxMHmzpJ1x39HljOu3SzB7h3BI0Dqto89
+         Pf4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:reply-to:subject:to:cc:references:from
+         :organization:message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=2Sr4JglvdWDBQ2wOTZW6ElZD1OAh7p+s3FJK89qhgiM=;
+        b=cidLbCag4CL9Ryimm2joxFAplUHSSKbPa29tORNIEDDv/nGEwUSyY2cp2wBw/WPMUu
+         a48qPapTRtW8mDU/FyFHzF4sR1ryU6tesAE8rZBonklCOQqx4xUbDqwgkWTuKNL9WPFk
+         ffHDzM2dUU9uhjj2NCwaK/HhKeZanNnViA/CF9iqVOvq2lynLdh/qCMLjB9DrQkybS7o
+         NI84UWXlJJRrLIFwtKauSyEu6FHJySswzz92nxtpGRlVjIIJZl4RD7aUwXVcakQf7Uew
+         HndMyFgYGiJwhruVp6KdI19s6lsRdRN44Amg7OoBJfC/a4s0ALE4xmuurY2CRe6oMNEe
+         hEcg==
+X-Gm-Message-State: AOAM530QDR2hHYu4eWkIEJKidx7t9uPsckA80koKhSxAdmjtPWtpfKUs
+        Fw9R5opyBotTN+SWyLy2RcA6U8nRYc7b3w==
+X-Google-Smtp-Source: ABdhPJx1rtSdVuiiyy5iVOmwPt+Um0lx4nMkwJpGQD/JuUD1FLEgHSpCgTfxVv0hcA4cMAUz7kzYFA==
+X-Received: by 2002:adf:fb44:: with SMTP id c4mr1892372wrs.179.1630567332137;
+        Thu, 02 Sep 2021 00:22:12 -0700 (PDT)
+Received: from ?IPv6:2a01:e0a:410:bb00:ad0b:57f0:790e:61f9? ([2a01:e0a:410:bb00:ad0b:57f0:790e:61f9])
+        by smtp.gmail.com with ESMTPSA id y11sm1166719wru.0.2021.09.02.00.22.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 02 Sep 2021 00:22:11 -0700 (PDT)
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH] include/uapi/linux/xfrm.h: Fix XFRM_MSG_MAPPING ABI
+ breakage
+To:     Eugene Syromiatnikov <esyr@redhat.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Antony Antony <antony.antony@secunet.com>,
+        Christian Langrock <christian.langrock@secunet.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Dmitry V. Levin" <ldv@strace.io>, linux-api@vger.kernel.org
+References: <20210901153407.GA20446@asgard.redhat.com>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+Message-ID: <ef57d76e-358b-4868-aa31-ac45f67bc813@6wind.com>
+Date:   Thu, 2 Sep 2021 09:22:10 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <67740366-7f1b-c953-dfe1-d2085297bdf3@gmail.com>
+In-Reply-To: <20210901153407.GA20446@asgard.redhat.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/2/21 7:48 AM, Eric Dumazet wrote:
-> On 9/1/21 9:32 PM, Eric Dumazet wrote:
->> I think you missed netem case, in particular
->> skb_orphan_partial() which I already pointed out.
->>
->> You can setup a stack of virtual devices (tunnels),
->> with a qdisc on them, before ip6_xmit() is finally called...
->>
->> Socket might have been closed already.
->>
->> To test your patch, you could force a skb_orphan_partial() at the beginning
->> of skb_expand_head() (extending code coverage)
+Le 01/09/2021 à 17:34, Eugene Syromiatnikov a écrit :
+> Commit 2d151d39073a ("xfrm: Add possibility to set the default to block
+> if we have no policy") broke ABI by changing the value of the XFRM_MSG_MAPPING
+> enum item.  Fix it by placing XFRM_MSG_SETDEFAULT/XFRM_MSG_GETDEFAULT
+> to the end of the enum, right before __XFRM_MSG_MAX.
 > 
-> To clarify :
-> 
-> It is ok to 'downgrade' an skb->destructor having a ref on sk->sk_wmem_alloc to
-> something owning a ref on sk->refcnt.
-> 
-> But the opposite operation (ref on sk->sk_refcnt -->  ref on sk->sk_wmem_alloc) is not safe.
+> Fixes: 2d151d39073a ("xfrm: Add possibility to set the default to block if we have no policy")
+> Signed-off-by: Eugene Syromiatnikov <esyr@redhat.com>
 
-Could you please explain in more details, since I stil have a completely opposite point of view?
-
-Every sk referenced in skb have sk_wmem_alloc > 9 
-It is assigned to 1 in sk_alloc and decremented right before last __sk_free(),
-inside  both sk_free() sock_wfree() and __sock_wfree()
-
-So it is safe to adjust skb->sk->sk_wmem_alloc, 
-because alive skb keeps reference to alive sk and last one keeps sk_wmem_alloc > 0
-
-So any destructor used sk->sk_refcnt will already have sk_wmem_alloc > 0, 
-because last sock_put() calls sk_free().
-
-However now I'm not sure in reversed direction.
-skb_set_owner_w() check !sk_fullsock(sk) and call sock_hold(sk);
-If sk->sk_refcnt can be 0 here (i.e. after execution of old destructor inside skb_orphan) 
--- it can be trigger pointed problem:
-"refcount_add() will trigger a warning (panic under KASAN)".
-
-Could you please explain where I'm wrong?
-
-Thank you,
-	Vasily Averin
+Acked-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
