@@ -2,94 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 280423FEAB8
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 10:40:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C0CB3FEAF0
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 11:06:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244552AbhIBIh6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 04:37:58 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:15283 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244392AbhIBIh5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 04:37:57 -0400
-Received: from dggeml757-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4H0Z5s6C98z8Cj6;
-        Thu,  2 Sep 2021 16:36:33 +0800 (CST)
-Received: from localhost.localdomain (10.175.104.82) by
- dggeml757-chm.china.huawei.com (10.1.199.137) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Thu, 2 Sep 2021 16:36:56 +0800
-From:   Ziyang Xuan <william.xuanziyang@huawei.com>
-To:     <davem@davemloft.net>
-CC:     <kuba@kernel.org>, <johan@kernel.org>, <mudongliangabcd@gmail.com>,
-        <linux-usb@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH net] net: hso: add failure handler for add_net_device
-Date:   Thu, 2 Sep 2021 16:36:09 +0800
-Message-ID: <20210902083609.1679146-1-william.xuanziyang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        id S245031AbhIBJGX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 05:06:23 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:60104 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S244968AbhIBJGV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Sep 2021 05:06:21 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 9EFDC204E0;
+        Thu,  2 Sep 2021 11:05:22 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id IYizrHnH6YJ5; Thu,  2 Sep 2021 11:05:21 +0200 (CEST)
+Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id DF4A52009B;
+        Thu,  2 Sep 2021 11:05:21 +0200 (CEST)
+Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
+        by mailout2.secunet.com (Postfix) with ESMTP id D9CD680004A;
+        Thu,  2 Sep 2021 11:05:21 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Thu, 2 Sep 2021 11:05:21 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Thu, 2 Sep 2021
+ 11:05:21 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id 1C92931805E1; Thu,  2 Sep 2021 11:05:21 +0200 (CEST)
+Date:   Thu, 2 Sep 2021 11:05:21 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     "Dmitry V. Levin" <ldv@altlinux.org>
+CC:     Antony Antony <antony.antony@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Christian Langrock <christian.langrock@secunet.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 ipsec-next] xfrm: Add possibility to set the default
+ to block if we have no policy
+Message-ID: <20210902090521.GF9115@gauss3.secunet.de>
+References: <20210331144843.GA25749@moon.secunet.de>
+ <fc1364604051d6be5c4c14817817a004aba539eb.1626592022.git.antony.antony@secunet.com>
+ <20210901151402.GA2557@altlinux.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggeml757-chm.china.huawei.com (10.1.199.137)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20210901151402.GA2557@altlinux.org>
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the network devices connected to the system beyond
-HSO_MAX_NET_DEVICES. add_net_device() in hso_create_net_device()
-will be failed for the network_table is full. It will lead to
-business failure which rely on network_table, for example,
-hso_suspend() and hso_resume(). It will also lead to memory leak
-because resource release process can not search the hso_device
-object from network_table in hso_free_interface().
+On Wed, Sep 01, 2021 at 06:14:02PM +0300, Dmitry V. Levin wrote:
+> 
+> The following part of this patch is ABI break:
+> 
+> > diff --git a/include/uapi/linux/xfrm.h b/include/uapi/linux/xfrm.h
+> > index ffc6a5391bb7..6e8095106192 100644
+> > --- a/include/uapi/linux/xfrm.h
+> > +++ b/include/uapi/linux/xfrm.h
+> > @@ -213,6 +213,11 @@ enum {
+> >  	XFRM_MSG_GETSPDINFO,
+> >  #define XFRM_MSG_GETSPDINFO XFRM_MSG_GETSPDINFO
+> > 
+> > +	XFRM_MSG_SETDEFAULT,
+> > +#define XFRM_MSG_SETDEFAULT XFRM_MSG_SETDEFAULT
+> > +	XFRM_MSG_GETDEFAULT,
+> > +#define XFRM_MSG_GETDEFAULT XFRM_MSG_GETDEFAULT
+> > +
+> >  	XFRM_MSG_MAPPING,
+> >  #define XFRM_MSG_MAPPING XFRM_MSG_MAPPING
+> >  	__XFRM_MSG_MAX
+> 
+> After this change, strace no longer builds with the following diagnostics:
+> 
+> ../../../src/xlat/nl_xfrm_types.h:162:1: error: static assertion failed: "XFRM_MSG_MAPPING != 0x26"
+>   162 | static_assert((XFRM_MSG_MAPPING) == (0x26), "XFRM_MSG_MAPPING != 0x26");
 
-Add failure handler for add_net_device() in hso_create_net_device()
-to solve the above problems.
+Thanks for the report! In the meantime there is a fix proposed:
 
-Fixes: 72dc1c096c70 ("HSO: add option hso driver")
-Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
----
- drivers/net/usb/hso.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/usb/hso.c b/drivers/net/usb/hso.c
-index 24bc1e678b7b..422a07fd8814 100644
---- a/drivers/net/usb/hso.c
-+++ b/drivers/net/usb/hso.c
-@@ -2535,13 +2535,17 @@ static struct hso_device *hso_create_net_device(struct usb_interface *interface,
- 	if (!hso_net->mux_bulk_tx_buf)
- 		goto err_free_tx_urb;
- 
--	add_net_device(hso_dev);
-+	result = add_net_device(hso_dev);
-+	if (result) {
-+		dev_err(&interface->dev, "Failed to add net device\n");
-+		goto err_free_tx_buf;
-+	}
- 
- 	/* registering our net device */
- 	result = register_netdev(net);
- 	if (result) {
- 		dev_err(&interface->dev, "Failed to register device\n");
--		goto err_free_tx_buf;
-+		goto err_rmv_ndev;
- 	}
- 
- 	hso_log_port(hso_dev);
-@@ -2550,8 +2554,9 @@ static struct hso_device *hso_create_net_device(struct usb_interface *interface,
- 
- 	return hso_dev;
- 
--err_free_tx_buf:
-+err_rmv_ndev:
- 	remove_net_device(hso_dev);
-+err_free_tx_buf:
- 	kfree(hso_net->mux_bulk_tx_buf);
- err_free_tx_urb:
- 	usb_free_urb(hso_net->mux_bulk_tx_urb);
--- 
-2.25.1
-
+https://www.spinics.net/lists/netdev/msg764744.html
