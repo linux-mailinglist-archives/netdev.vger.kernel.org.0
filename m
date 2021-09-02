@@ -2,173 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AAFA93FF6B0
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 23:56:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20E693FF6D6
+	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 00:05:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347912AbhIBV46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 17:56:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40012 "EHLO
+        id S1347576AbhIBWGX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 18:06:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347578AbhIBV4n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 17:56:43 -0400
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 606E9C0612A6;
-        Thu,  2 Sep 2021 14:55:41 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id j16so1979705pfc.2;
-        Thu, 02 Sep 2021 14:55:41 -0700 (PDT)
+        with ESMTP id S234573AbhIBWGW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 18:06:22 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4CE3C061575;
+        Thu,  2 Sep 2021 15:05:23 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id dm15so5113454edb.10;
+        Thu, 02 Sep 2021 15:05:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=iwPS3vM5tRHPtHkB7HzB1C1Iavev/cKLScOoPkW3dDw=;
-        b=XbEmzVxTNSXnp78fvnsZwoE9JBNFbdSfVRAmMZLCSS7Ke258A8s9BHsJ8bFSJ6qZkR
-         RV9A36aQqAoqlNXAyR1T1aVT3GVJ4S4Cp+OmcFjMvhxuNPg+k5m5sY2IV7h3S8c48Rrw
-         FIcoB6TtGjrf67V4XJN9MgEjxeOvi2K5+9b8M6NOGMpuVOHreOCkrL7Za+n/fjLn6L33
-         oI2QJJd9NDv/cUKxHEZdZ+npUv6pUF3j048q6a1EzFv6INOOr2r4xC20h1gqHTXc+iv6
-         p84tcFfld0AatIRb5PFKjj2Mc0GrfBrZc8qqMIfi0OpRI1RzAsXm+lCmMUdCLy5HKOFw
-         GyUw==
+        bh=o+2WQogCw3igN9yPZY3CyU3pwsOStgA87+KECE2Hsrw=;
+        b=oZNrS5UWuTdiBOFlEemXGuREgWM62AVbVHYFtDJIwNszbeUd9TiOkRLPsg0RUZS2RV
+         5CpU3m6rZKMewfFybK9JsxLxm7R63cKKqvUN/dYhETtsyCTmZB4UortEpkBYq1NeqLO4
+         wch1Pjxn4AlC0jHWXpR5L2XBChpf8H5bA3F2Q+YdtYXiVEky+/CgxSHjZgFqznzEzG+f
+         +JP2XHVlbr0a+kidp4kZo4Y580c9bkPAmbUmo7DgopYS7TmIuu4SMRM1gQbBf2mLMYie
+         svDvF3vV3A9fkZOYTgk/3b5ZY/W0VtpWoAk7le7NNJE8ixgXQSomBETvF4Oi0DiPaEd4
+         NYlw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=iwPS3vM5tRHPtHkB7HzB1C1Iavev/cKLScOoPkW3dDw=;
-        b=n93bOCv+FBAIJlmLwGnv0Gu50gLn+wMnsENHCqsp2XfklGuwPgEBxKI+UvFW0OfI49
-         5/OEGNUcqe+wo9ho2IyXye5RMmk1kMpyrR+V8oCgLlmvNhEL4jAJZpa6XcIkd9eFabj8
-         zgvXd+EGqYwmaX0KI/2MrOsFlHr90cEscmFx0S+Rp4PEEnFWI6NLrLnPIrGClKzBILQ7
-         dHZT80bK1kRBr5KYVhkO7dkh7mi7iOhm7ryea4oR/ZnU5j7ngWJFPzu5pk3jNHDGHraK
-         olX7zr3Zw6RLyT+3ncm4r63pto2/EJ+9LDZy2Ek1SrPHjJhKDzUbfYtUKbwMkilEhnvH
-         xY9w==
-X-Gm-Message-State: AOAM530p5Qiugjo8lNWGoId7J9CA8LCD/8ieAjjPlFqhkGHf89Xjgn6o
-        8ZWe0jqBl6HIHqx+aPGP75Q=
-X-Google-Smtp-Source: ABdhPJywAHe9cixd6pHWWTse7STlH1AqtmqhAFK5fUDt8/yHmFhUds79RYUqlZ9Tpu0ZR9hoT7LQsA==
-X-Received: by 2002:a05:6a00:1904:b029:3b9:e4ea:1f22 with SMTP id y4-20020a056a001904b02903b9e4ea1f22mr147476pfi.79.1630619740656;
-        Thu, 02 Sep 2021 14:55:40 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:500::5:c1df])
-        by smtp.gmail.com with ESMTPSA id p16sm3110457pfw.66.2021.09.02.14.55.39
+        bh=o+2WQogCw3igN9yPZY3CyU3pwsOStgA87+KECE2Hsrw=;
+        b=QUGz8hIq4HI1B2napA39W3V5QUGUDN6DQANlB7Jjj7WcwdEsyJ2X0QjIwTQrxYi2UC
+         3zk41Bpzg+v3yvZXWUm7RtMDfVhvdDv0b46Eg6jeNSC6a3mDoMbcdrluZFGYCm21EBWC
+         h32Eba5moZ5ouingqHGMMhdlwN4Ivj9SU0cleeobEjXNRtsmDp/OEZB02Qh4Hp00q7/8
+         DjnQz7dQ5SAOYNyQrSpKW/XJaiuU5+yG7+atdPYPKkRVA8KUtfv8ZG/mAxDR95txaJOF
+         AU9KfZWExsyM/HHJMkEPptu0LYib/Qf7+Iblwr9muDf38Zu6JYyHRfGox8v810WXA84C
+         VAGA==
+X-Gm-Message-State: AOAM533ipIU4lo1AZGQ1pGYR4YApdG6iIquiDSvfRHW6PzROsWvMungO
+        DS7hKeshSJows45untkpUM8=
+X-Google-Smtp-Source: ABdhPJzbn24ozn77mvSQqmBLE27jdBnE1HCcitwmPsrisAsN5WOek2/d88f9C7D+m2jjTUAb0w1PWg==
+X-Received: by 2002:a05:6402:b7c:: with SMTP id cb28mr535618edb.152.1630620322289;
+        Thu, 02 Sep 2021 15:05:22 -0700 (PDT)
+Received: from skbuf ([82.78.148.104])
+        by smtp.gmail.com with ESMTPSA id qt23sm1674454ejb.26.2021.09.02.15.05.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Sep 2021 14:55:40 -0700 (PDT)
-Date:   Thu, 2 Sep 2021 14:55:38 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
-        Viktor Malik <vmalik@redhat.com>
-Subject: Re: [PATCH bpf-next v4 18/27] bpf, x64: Store properly return value
- for trampoline with multi func programs
-Message-ID: <20210902215538.a75q7bjcgkpjync4@ast-mbp.dhcp.thefacebook.com>
-References: <20210826193922.66204-1-jolsa@kernel.org>
- <20210826193922.66204-19-jolsa@kernel.org>
- <CAEf4BzbFxSVzu1xrUyzrgn1jKyR40RJ3UEEsUCkii3u5nN_8wg@mail.gmail.com>
- <YS+ZAbb+h9uAX6EP@krava>
- <CAEf4BzY1XhuZ5huinfTmUZGhrT=wgACOgKbbdEPmnek=nN6YgA@mail.gmail.com>
- <YTDKJ2E1fN0hPDZj@krava>
+        Thu, 02 Sep 2021 15:05:21 -0700 (PDT)
+Date:   Fri, 3 Sep 2021 01:05:20 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Saravana Kannan <saravanak@google.com>
+Cc:     netdev@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        linux-kernel@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        kernel-team <kernel-team@android.com>,
+        Len Brown <lenb@kernel.org>
+Subject: Re: [RFC PATCH net-next 0/3] Make the PHY library stop being so
+ greedy when binding the generic PHY driver
+Message-ID: <20210902220520.hyybu6k3mjzbl7mn@skbuf>
+References: <20210901225053.1205571-1-vladimir.oltean@nxp.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YTDKJ2E1fN0hPDZj@krava>
+In-Reply-To: <20210901225053.1205571-1-vladimir.oltean@nxp.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 02, 2021 at 02:57:11PM +0200, Jiri Olsa wrote:
-> > 
-> > Let's say we have 5 kernel functions: a, b, c, d, e. Say a, b, c all
-> > have 1 input args, and d and e have 2.
-> > 
-> > Now let's say we attach just normal fentry program A to function a.
-> > Also we attach normal fexit program E to func e.
-> > 
-> > We'll have A  attached to a with trampoline T1. We'll also have E
-> > attached to e with trampoline T2. Right?
-> > 
-> > And now we try to attach generic fentry (fentry.multi in your
-> > terminology) prog X to all 5 of them. If A and E weren't attached,
-> > we'd need two generic trampolines, one for a, b, c (because 1 input
-> > argument) and another for d,e (because 2 input arguments). But because
-> > we already have A and B attached, we'll end up needing 4:
-> > 
-> > T1 (1 arg)  for func a calling progs A and X
-> > T2 (2 args) for func e calling progs E and X
-> > T3 (1 arg)  for func b and c calling X
-> > T4 (2 args) for func d calling X
+On Thu, Sep 02, 2021 at 01:50:50AM +0300, Vladimir Oltean wrote:
+> This is a continuation of the discussion on patch "[v1,1/2] driver core:
+> fw_devlink: Add support for FWNODE_FLAG_BROKEN_PARENT" from here:
+> https://patchwork.kernel.org/project/netdevbpf/patch/20210826074526.825517-2-saravanak@google.com/
 > 
-> so current code would group T3/T4 together, but if we keep
-> them separated, then we won't need to use new model and
-> cut off some of the code, ok
+> Summary: in a complex combination of device dependencies which is not
+> really relevant to what is being proposed here, DSA ends up calling
+> phylink_of_phy_connect during a period in which the PHY driver goes
+> through a series of probe deferral events.
+> 
+> The central point of that discussion is that DSA seems "broken" for
+> expecting the PHY driver to probe immediately on PHYs belonging to the
+> internal MDIO buses of switches. A few suggestions were made about what
+> to do, but some were not satisfactory and some did not solve the problem.
+> 
+> In fact, fw_devlink, the mechanism that causes the PHY driver to defer
+> probing in this particular case, has some significant "issues" too, but
+> its "issues" are only in quotes "because at worst it'd allow a few
+> unnecessary deferred probes":
+> https://patchwork.kernel.org/project/netdevbpf/patch/20210826074526.825517-2-saravanak@google.com/#24418895
+> 
+> So if that's the criterion by which an issue is an issue, maybe we
+> should take a step back and look at the bigger picture.
+> 
+> There is nothing about the idea that a PHY might defer probing, or about
+> the changes proposed here, that has anything with DSA. Furthermore, the
+> changes done by this series solve the problem in the same way: "they
+> allow a few unnecessary deferred probes" <- in this case they provoke
+> this to the caller of phy_attach_direct.
+> 
+> If we look at commit 16983507742c ("net: phy: probe PHY drivers
+> synchronously"), we see that the PHY library expectation is for the PHY
+> device to have a PHY driver bound to it as soon as device_add() finishes.
+> 
+> Well, as it turns out, in case the PHY device has any supplier which is
+> not ready, this is not possible, but that patch still seems to ensure
+> that the process of binding a driver to the device has at least started.
+> That process will continue for a while, and will race with
+> phy_attach_direct calls, so we need to make the latter observe the fact
+> that a driver is struggling to probe, and wait for it a bit more.
+> 
+> What I've not tested is loading the PHY module at runtime, and seeing
+> how phy_attach_direct behaves then. I expect that this change set will
+> not alter the behavior in that case: the genphy will still bind to a
+> device with no driver, and phy_attach_direct will not return -EPROBE_DEFER
+> in that case.
+> 
+> I might not be very versed in the device core/internals, but the patches
+> make sense to me, and worked as intended from the first try on my system
+> (Turris MOX with mv88e6xxx), which was modified to make the same "sins"
+> as those called out in the thread above:
+> 
+> - use PHY interrupts provided by the switch itself as an interrupt-controller
+> - call of_mdiobus_register from setup() and not from probe(), so as to
+>   not circumvent fw_devlink's limitations, and still get to hit the PHY
+>   probe deferral conditions.
+> 
+> So feedback and testing on other platforms is very appreciated.
+> 
+> Vladimir Oltean (3):
+>   net: phy: don't bind genphy in phy_attach_direct if the specific
+>     driver defers probe
+>   net: dsa: destroy the phylink instance on any error in
+>     dsa_slave_phy_setup
+>   net: dsa: allow the phy_connect() call to return -EPROBE_DEFER
+> 
+>  drivers/base/dd.c            | 21 +++++++++++++++++++--
+>  drivers/net/phy/phy_device.c |  8 ++++++++
+>  include/linux/device.h       |  1 +
+>  net/dsa/dsa2.c               |  2 ++
+>  net/dsa/slave.c              | 12 +++++-------
+>  5 files changed, 35 insertions(+), 9 deletions(-)
+> 
+> -- 
+> 2.25.1
+> 
 
-We've brainstormed this idea further with Andrii.
-(thankfully we could do it in-person now ;) which saved a ton of time)
+Ouch, I just realized that Saravana, the person whose reaction I've been
+waiting for the most, is not copied....
 
-It seems the following should work:
-5 kernel functions: a(int), b(long), c(void*), d(int, int), e(long, long).
-fentry prog A is attached to 'a'.
-fexit prog E is attached to 'e'.
-multi-prog X wants to attach to all of them.
-It can be achieved with 4 trampolines.
+Saravana, you can find the thread here to sync up with what has been
+discussed:
+https://patchwork.kernel.org/project/netdevbpf/cover/20210901225053.1205571-1-vladimir.oltean@nxp.com/
 
-The trampolines called from funcs 'a' and 'e' can be patched to
-call A+X and E+X programs correspondingly.
-The multi program X needs to be able to access return values
-and arguments of all functions it was attached to.
-We can achieve that by always generating a trampoline (both multi and normal)
-with extra constant stored in the stack. This constant is the number of
-arguments served by this trampoline.
-The trampoline 'a' will store nr_args=1.
-The tramopline 'e' will store nr_args=2.
-We need two multi trampolines.
-The multi tramopline X1 that will serve 'b' and 'c' and store nr_args=1
-and multi-tramopline X2 that will serve 'd' and store nr_args=2
-into hidden stack location (like ctx[-2]).
-
-The multi prog X can look like:
-int BPF_PROG(x, __u64 arg1, __u64 arg2, __u64 ret)
-in such case it will read correct args and ret when called from 'd' and 'e'
-and only correct arg1 when called from 'a', 'b', 'c'.
-
-To always correctly access arguments and the return value
-the program can use two new helpers: bpf_arg(ctx, N) and bpf_ret_value(ctx).
-Both will be fully inlined helpers similar to bpf_get_func_ip().
-u64 bpf_arg(ctx, int n)
-{
-  u64 nr_args = ctx[-2]; /* that's the place where _all_ trampoline will store nr_args */
-  if (n > nr_args)
-    return 0;
-  return ctx[n];
-}
-u64 bpf_ret_value(ctx)
-{
-  u64 nr_args = ctx[-2];
-  return ctx[nr_args];
-}
-
-These helpers will be the only recommended way to access args and ret value
-in multi progs.
-The nice advantage is that normal fentry/fexit progs can use them too.
-
-We can rearrange ctx[-1] /* func_ip */ and ctx[-2] /* nr_args */
-if it makes things easier.
-
-If multi prog knows that it is attaching to 100 kernel functions
-and all of them have 2 arguments it can still do
-int BPF_PROG(x, __u64 arg1, __u64 arg2, __u64 ret)
-{ // access arg1, arg2, ret directly
-and it will work correctly.
-
-We can make it really strict in the verifier and disallow such
-direct access to args from the multi prog and only allow
-access via bpf_arg/bpf_ret_value helpers, but I think it's overkill.
-Reading garbage values from stack isn't great, but it's not a safety issue.
-It means that the verifier will allow something like 16 u64-s args
-in multi program. It cannot allow large number, since ctx[1024]
-might become a safety issue, while ctx[4] could be a garbage
-or a valid value depending on the call site.
-
-Thoughts?
+Sorry.
