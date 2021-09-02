@@ -2,64 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB4453FF452
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 21:43:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E9E23FF45C
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 21:52:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347388AbhIBToK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 15:44:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37128 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230462AbhIBToJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 15:44:09 -0400
-Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75C82C061575
-        for <netdev@vger.kernel.org>; Thu,  2 Sep 2021 12:43:10 -0700 (PDT)
-Received: by mail-qv1-xf35.google.com with SMTP id p17so1871607qvo.8
-        for <netdev@vger.kernel.org>; Thu, 02 Sep 2021 12:43:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=iTnZeBa8c1y9Qt+6+fJqwuU8nHmlIOUTjoycEXImeUY=;
-        b=cA1Bwxu5VuLrR1503N4cYp8W0XwyKfU2O8pwLm8VHKhLL3BxbIVeoF8N2BRySuEBZH
-         m4WqVdJVC4yvfBFG/uaypp39MfSLsWA/MNwmsmV99GSOhYzHwuaQRAjiSR6bSu37Mx0D
-         0OxWSJeU3PMwe0Jp4waJikCKvB4ACX6UjtgIqhVgQLvh5T/wHfMjLbOdFwiGebFzy+7N
-         6a8lSaWLvLs4QuwKh7jbHTAB5QNkPTf+vKzwxQqMOvcf/uoRfG94btqpDNngQ9IHTt4m
-         53T/wDbQIRs59KQll3BQYNBaC0W3gHColH4xoe/W/KnfsD7tCwY7sIE346PoZxnWtDh3
-         wsdQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=iTnZeBa8c1y9Qt+6+fJqwuU8nHmlIOUTjoycEXImeUY=;
-        b=KevPzd8U+3PXmINxJxkxTjCsudctC/6hQT7q8ObsfLeP4blnX2RYMCn54EVLEEMCXy
-         u7gvh1sRGRaYp9YoZAXnD6QF65TdrxXQQokEeG65oDSsbLI8IZ7FvyoIj/xhVZNeccES
-         DlS5IV9Uh8FOUD4F3Q2QnCxsKRJGZxXc6vG3sLoVGjg8F9Mq1zg7WxcunqIBZ77VmIlc
-         Yx9/Jp+5yWf0jv3E0XzvhbOHfuBLvwoPMjVOK4er3GJRw4VaHSbPhkYSe1Go2+thNdP6
-         PPqUjPImN2PbjoSxmCr+HvAwFv7mXTys9Z92VkaFxHp8XlWSUkROyTcQ6oicrcQU5jG5
-         3zYw==
-X-Gm-Message-State: AOAM533OwsIrRVgsQIPznWS8iNng+nldlOfv7Eu/WiMYmT2l9RsLBwMD
-        olsnaT7UtoLHFSEkt5jil/fMXDwV+rFq0QL3xUM=
-X-Google-Smtp-Source: ABdhPJzIJ+y6bJtiS9vSv/npQxtUPZFqosZlqdL68Q/nZSDSLZH207Fr+nojcKbGAjjOeKLj+kBW74wQKb/ZdJ/cDO0=
-X-Received: by 2002:a0c:e513:: with SMTP id l19mr4614885qvm.40.1630611789613;
- Thu, 02 Sep 2021 12:43:09 -0700 (PDT)
+        id S1347424AbhIBTwy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 15:52:54 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:54030 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231464AbhIBTwx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Sep 2021 15:52:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=xOucIOQ6UtzBW3tM9Wea+AQXnKYvu/HSHmo7sZLlgbo=; b=4+6aumT0YXZ4ccr6LAogodGa/K
+        ewLzJRNRHlJaihgAp3V972EpohUYUNbLe10SY/+ZUEaLf12MJVUckbz77lw3iXztzT+IYCvg+3FDj
+        mPQFqqhmAfVlzw2PjzkRWCHezSO275WTVt1w/0lxZMGRQn/g/48jfYp89FCCDv8pl/Y4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mLskP-0052nI-2o; Thu, 02 Sep 2021 21:51:41 +0200
+Date:   Thu, 2 Sep 2021 21:51:41 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        linux-kernel@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        kernel-team <kernel-team@android.com>,
+        Len Brown <lenb@kernel.org>
+Subject: Re: [RFC PATCH net-next 1/3] net: phy: don't bind genphy in
+ phy_attach_direct if the specific driver defers probe
+Message-ID: <YTErTRBnRYJpWDnH@lunn.ch>
+References: <20210901225053.1205571-1-vladimir.oltean@nxp.com>
+ <20210901225053.1205571-2-vladimir.oltean@nxp.com>
+ <20210902185016.GL22278@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Sender: paullanyibo3@gmail.com
-Received: by 2002:a0c:fe63:0:0:0:0:0 with HTTP; Thu, 2 Sep 2021 12:43:09 -0700 (PDT)
-From:   PEACE MURICE <Peacemaurice09@gmail.com>
-Date:   Thu, 2 Sep 2021 20:43:09 +0100
-X-Google-Sender-Auth: ro9HVmfrdJmD9FnC_H7OilKkzOA
-Message-ID: <CABmrUnpMBfDSEfm6zd34wQ0aPJhXMqYmRBTEUFLJQAgYUVLSZw@mail.gmail.com>
-Subject: Hello Dear,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210902185016.GL22278@shell.armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Dear,
+On Thu, Sep 02, 2021 at 07:50:16PM +0100, Russell King (Oracle) wrote:
+> On Thu, Sep 02, 2021 at 01:50:51AM +0300, Vladimir Oltean wrote:
+> > diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+> > index 52310df121de..2c22a32f0a1c 100644
+> > --- a/drivers/net/phy/phy_device.c
+> > +++ b/drivers/net/phy/phy_device.c
+> > @@ -1386,8 +1386,16 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
+> >  
+> >  	/* Assume that if there is no driver, that it doesn't
+> >  	 * exist, and we should use the genphy driver.
+> > +	 * The exception is during probing, when the PHY driver might have
+> > +	 * attempted a probe but has requested deferral. Since there might be
+> > +	 * MAC drivers which also attach to the PHY during probe time, try
+> > +	 * harder to bind the specific PHY driver, and defer the MAC driver's
+> > +	 * probing until then.
+> >  	 */
+> >  	if (!d->driver) {
+> > +		if (device_pending_probe(d))
+> > +			return -EPROBE_DEFER;
+> 
+> Something else that concerns me here.
+> 
+> As noted, many network drivers attempt to attach their PHY when the
+> device is brought up, and not during their probe function.
 
-Please can we talk?
-Something just came up and it's very urgent, please I need your attention.
+Yes, this is going to be a problem. I agree it is too late to return
+-EPROBE_DEFER. Maybe phy_attach_direct() needs to wait around, if the
+device is still on the deferred list, otherwise use genphy. And maybe
+a timeout and return -ENODEV, which is not 100% correct, we know the
+device exists, we just cannot drive it.
 
-Regards
-Peace Maurice.
+Can we tell we are in the context of a driver probe? Or do we need to
+add a parameter to the various phy_attach API calls to let the core
+know if this is probe or open?
+
+This is more likely to be a problem with NFS root, with the kernel
+bringing up an interface as soon as its registered. userspace bringing
+up interfaces is generally much later, and udev tends to wait around
+until there are no more driver load requests before the boot
+continues.
+
+	Andrew
