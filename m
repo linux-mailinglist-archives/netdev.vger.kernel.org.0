@@ -2,71 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 684683FEDB7
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 14:24:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97E543FEDBC
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 14:25:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344250AbhIBMZR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 08:25:17 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:53416 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234098AbhIBMZN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Sep 2021 08:25:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=QN4nsexmXXWGS2EzckSq8fXL9yNrhwoxsF46pjuQIC4=; b=CpJKFvxVzDXQIrqsTvRSf3zQsW
-        XibWQvvRrFM0m7YjfqgfdNBFEbOmCtMPCvksNZYzga73MKQBvwZS+w8GPkjyLmnvucAXl9hVGo+QW
-        y7+Y7cwsvjtz+PFQfC5VLqwQO+zD+xztMCDN85Wqq/kUe/gsd+SAIMM3ln8iYFhKvyzA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mLllE-004zjA-Tl; Thu, 02 Sep 2021 14:24:04 +0200
-Date:   Thu, 2 Sep 2021 14:24:04 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     Russell King <linux@armlinux.org.uk>,
+        id S1344399AbhIBM03 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 08:26:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48054 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344074AbhIBM02 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 08:26:28 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22785C061575;
+        Thu,  2 Sep 2021 05:25:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=1wOKCrX3COV6DlxfudE8AnDiURX7M6vGBTgHMAhqiY4=; b=rqK6AEvPgoByLYFRodspB7Byw
+        7gqMzeAVrrtGevy7S/Pe4kpxFOG541wx2HwjnEnffJUbdF5hpGnPUE5ySMo1DbZcFAzPmnds7zmp+
+        Jj1zgwrIxm6M0IrdmtR1pc/NjF4oW1CvyFeGIDapO7P9JKM4zZouHP9S7Vdcxy+PY9MvtgiZ3DXk+
+        mFmcyTwXarm08r5htAsGboZCNkAZqOtGAinHX0bvrFOY06FxWdqIlPllA4Igcplk7tTNVpClxl26y
+        k6yQu2+qEuQvdgC0jKkB1O+Ngc3fVV9HBJzKmsm7WNRrb0nQBzJeEFDuEVjkJLHCrAEDEs2hy32+E
+        4bbcBfltw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:48088)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mLlma-0001P2-4n; Thu, 02 Sep 2021 13:25:28 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mLlmZ-0007ov-0Y; Thu, 02 Sep 2021 13:25:27 +0100
+Date:   Thu, 2 Sep 2021 13:25:26 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
-        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
-        "alexandre.torgue@foss.st.com" <alexandre.torgue@foss.st.com>,
-        "joabreu@synopsys.com" <joabreu@synopsys.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: Re: [PATCH] net: stmmac: fix MAC not working when system resume back
- with WoL enabled
-Message-ID: <YTDCZN/WKlv9BsNG@lunn.ch>
-References: <20210901092149.fmap4ac7jxf754ao@skbuf>
- <DB8PR04MB6795CCAE06AA7CEB5CCEC521E6CD9@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <20210901105611.y27yymlyi5e4hys5@skbuf>
- <DB8PR04MB67956C22F601DA8B7DC147D5E6CD9@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <20210901132547.GB22278@shell.armlinux.org.uk>
- <DB8PR04MB6795BB2A13AED5F6E56D08A0E6CE9@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <20210902083224.GC22278@shell.armlinux.org.uk>
- <DB8PR04MB67954F4650408025E6D4EE2AE6CE9@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <20210902104943.GD22278@shell.armlinux.org.uk>
- <DB8PR04MB6795C37D718096E7CA1AA72DE6CE9@DB8PR04MB6795.eurprd04.prod.outlook.com>
+        linux-kernel@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        kernel-team <kernel-team@android.com>,
+        Len Brown <lenb@kernel.org>
+Subject: Re: [RFC PATCH net-next 2/3] net: dsa: destroy the phylink instance
+ on any error in dsa_slave_phy_setup
+Message-ID: <20210902122526.GF22278@shell.armlinux.org.uk>
+References: <20210901225053.1205571-1-vladimir.oltean@nxp.com>
+ <20210901225053.1205571-3-vladimir.oltean@nxp.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <DB8PR04MB6795C37D718096E7CA1AA72DE6CE9@DB8PR04MB6795.eurprd04.prod.outlook.com>
+In-Reply-To: <20210901225053.1205571-3-vladimir.oltean@nxp.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Emm, @andrew@lunn.ch, Andrew is much familiar with FEC, and PHY maintainers,
-> Could you please help put insights here if possible?
+On Thu, Sep 02, 2021 at 01:50:52AM +0300, Vladimir Oltean wrote:
+> DSA supports connecting to a phy-handle, and has a fallback to a non-OF
+> based method of connecting to an internal PHY on the switch's own MDIO
+> bus, if no phy-handle and no fixed-link nodes were present.
+> 
+> The -ENODEV error code from the first attempt (phylink_of_phy_connect)
+> is what triggers the second attempt (phylink_connect_phy).
+> 
+> However, when the first attempt returns a different error code than
+> -ENODEV, this results in an unbalance of calls to phylink_create and
+> phylink_destroy by the time we exit the function. The phylink instance
+> has leaked.
+> 
+> There are many other error codes that can be returned by
+> phylink_of_phy_connect. For example, phylink_validate returns -EINVAL.
+> So this is a practical issue too.
+> 
+> Fixes: aab9c4067d23 ("net: dsa: Plug in PHYLINK support")
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
+> I know, I will send this bug fix to "net" too, this is provided just for
+> testing purposes, and for the completeness of the patch set.
 
-All the boards i have either have an Ethernet Switch connected to the
-MAC, or a Micrel PHY. None are setup for WoL, since it is not used in
-the use case of these boards.
+Probably should have been the first patch of the set. This looks
+absolutely correct to me. Please send for the net tree.
 
-I think you need to scatter some printk() in various places to confirm
-what is going on. Where is the WoL implemented: MAC or PHY, what is
-suspended or not, etc.
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-    Andrew
+Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
