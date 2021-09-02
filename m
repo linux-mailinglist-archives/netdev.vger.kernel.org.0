@@ -2,206 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 407DA3FF4D3
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 22:21:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83CC93FF4DE
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 22:25:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346091AbhIBUW2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 16:22:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46126 "EHLO
+        id S1346200AbhIBU0b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 16:26:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232042AbhIBUW0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 16:22:26 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC4B3C061575;
-        Thu,  2 Sep 2021 13:21:27 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id g21so4749126edw.4;
-        Thu, 02 Sep 2021 13:21:27 -0700 (PDT)
+        with ESMTP id S1345944AbhIBU0a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 16:26:30 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC51AC061575
+        for <netdev@vger.kernel.org>; Thu,  2 Sep 2021 13:25:31 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id mf2so7233583ejb.9
+        for <netdev@vger.kernel.org>; Thu, 02 Sep 2021 13:25:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=AFcTJM/1mhNsgSgPURjx0gJ3fOMmNuJ4K813cVRnYVk=;
-        b=itrqqWrCMK/r+xsLy+tUfzWIWp2tlWX5pTAYZW9sVDuoOHHaukHQkyAlqPC5MPOs0j
-         p7SgxY0Y4m+yEKIH8p+EBF9SQBjaljHwGftI88BaIWXsrys77OUe5GdrIEASrzxlTjxy
-         qt1alNX+6DDn54i0oHp4ZB4ZYs/jgftbd+f61xWbm2RdFcl/kOCnckw1ZtOhzJXeiQN0
-         TbV5YYjfWspD3oW58TmifB4CbtWLcEbxYK9KhLkPihg0ZRVOVm/gtzW/za25HgE2vSSc
-         8MdjENR5h1J0wRjGZpBY9mTiml2hJ+InEtS3tKJ5+IWUw6rI7XI7jbhuUB+Bq4RMIVJH
-         2RMQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BkqipOImaulc8pT1rr5wO19GmLw8mGgUxtubHurjJNM=;
+        b=HOzdZRxfrMMa8MIt9t8UNJ2S+h5KpSGPHpsafgoOiJhqV5q6Xg+D5qjiaSgewWirwF
+         3I4GYhptaqHLjHuvnA85aDESaRZPghmoRdgA71NBzirEZZ0RlS61LgMufN/5eOxFP5S2
+         569ehr5dGlSuF9BY+bDQEerYdlBGC96HcPkRbC2zBHRGv+YJPpLVzbF9vIZqDBZFrRxo
+         DGsJJ9vTqSEpn3LvfePPauSKygQVJqpyB7Q+S5uX/msXjOHXv4Viijfuh+8Q76T54ZZW
+         xLuhmAZGHddA387jJasxUpfb/LttgsyK5kfRmlij8xO/073tJEpCxH5WTEw8WGoWWdbg
+         KVBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=AFcTJM/1mhNsgSgPURjx0gJ3fOMmNuJ4K813cVRnYVk=;
-        b=FU/xZm48z9p5X7UTH1cbSJhqOKboOz5gBpXbj6TMoxWJ5z+nN228q/M6ijvCdNPN8j
-         iaaeHTB+rBJ26sBMyJVYC98gfwxY0sldH5kH7vkKJXstymDBypZ3Ia0v2w5Fm/pyeIAW
-         vXnsl4tMZglCRSZfonFe+Xio0CMOqYM/J/I4vLq/3TzKwn1kXVrAg1blkCJpvy1b4xNk
-         QBZ4HXEY34H402XmsAzd8fNnjkzlkbfTHIE3EG2IcJ+WKQyDSlVsv8WNwmvkpyQ5kbCi
-         lmtswaulBspePDzz9OqNW+7Xj7EE/kegBMR9DjJqjR/s4Q6ChKOvg56li1Rfo7NyirKN
-         icHA==
-X-Gm-Message-State: AOAM532CX6Pz8nNv6evHRzjUeWRhtfRmR5gUElm658OrLhdMwVbUFBx7
-        opfgFgVCJjelSrpqX3Mk/7s=
-X-Google-Smtp-Source: ABdhPJyV7/E/wloHWVt8oJoNY02iTbn4GPJ/wFEaqR2C8ezOUCOj2KCMggLFCY4qFWtnb6jl8HtcpA==
-X-Received: by 2002:aa7:c313:: with SMTP id l19mr137763edq.131.1630614086275;
-        Thu, 02 Sep 2021 13:21:26 -0700 (PDT)
-Received: from skbuf ([82.78.148.104])
-        by smtp.gmail.com with ESMTPSA id b5sm1630291ejq.56.2021.09.02.13.21.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Sep 2021 13:21:25 -0700 (PDT)
-Date:   Thu, 2 Sep 2021 23:21:24 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        kernel-team <kernel-team@android.com>,
-        Len Brown <lenb@kernel.org>
-Subject: Re: [RFC PATCH net-next 0/3] Make the PHY library stop being so
- greedy when binding the generic PHY driver
-Message-ID: <20210902202124.o5lcnukdzjkbft7l@skbuf>
-References: <20210901225053.1205571-1-vladimir.oltean@nxp.com>
- <20210902121927.GE22278@shell.armlinux.org.uk>
- <20210902123532.ruvuecxoig67yv5v@skbuf>
- <20210902132635.GG22278@shell.armlinux.org.uk>
- <20210902152342.vett7qfhvhiyejvo@skbuf>
- <20210902163144.GH22278@shell.armlinux.org.uk>
- <20210902171033.4byfnu3g25ptnghg@skbuf>
- <20210902175043.GK22278@shell.armlinux.org.uk>
- <20210902190507.shcdmfi3v55l2zuj@skbuf>
- <20210902200301.GM22278@shell.armlinux.org.uk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BkqipOImaulc8pT1rr5wO19GmLw8mGgUxtubHurjJNM=;
+        b=ljl1YONp175eG3NVjltgQulsCL3qEJ3JBg2j1lNmvYMso1LmktgcUkQvSsTuczgLR9
+         tuaUvMD/qqZoKZBArDfPEho+VsvA+f52PEX7PKwgrtORoj2x4+tka1olZmDfasE3ik9r
+         1sI8Bbcxgm9esxSSpVLQNTru+oluo1ykWK+EmofW62v0Qnje5CER02BB+qnOycVCccuf
+         KlqwOh1IGbYasZtAoYBqwcmHvYQfy99+ck9KFSdsf2ngDKorLi44Uvv3ZObbVFRGM+AA
+         Vgzl4yzNZ+GNWN9OvfXTWmTpDosUkJuys01BTUdIjl4fZcd8xDnInRGj26QQqH8NpYsm
+         UP1w==
+X-Gm-Message-State: AOAM530i+99ZDWK/BXnmPtWyFoUGUA71ocPW3MFNRoUWs7QOZAqjeBID
+        oOGyRwRsAWQhye45yB5fHNjpik1Of5LQ6Xr6BgA=
+X-Google-Smtp-Source: ABdhPJyDDA5Y9NprQfvjsRx8ZsqebsO2N7MqdlZ3WX4zITFJMHDL+jUXXSH8uhcI4jidAOdx4ckKQNOyAEezHSoCmS4=
+X-Received: by 2002:a17:907:1dcf:: with SMTP id og15mr7798ejc.470.1630614329473;
+ Thu, 02 Sep 2021 13:25:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210902200301.GM22278@shell.armlinux.org.uk>
+References: <20210902193447.94039-1-willemdebruijn.kernel@gmail.com> <20210902193447.94039-2-willemdebruijn.kernel@gmail.com>
+In-Reply-To: <20210902193447.94039-2-willemdebruijn.kernel@gmail.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Thu, 2 Sep 2021 13:25:18 -0700
+Message-ID: <CAKgT0UdhaUp0jcNZSzMu=_OezwqKNHP47u0n_XUkpO_SbSV8hA@mail.gmail.com>
+Subject: Re: [PATCH net] ip_gre: validate csum_start only if CHECKSUM_PARTIAL
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ido Schimmel <idosch@idosch.org>,
+        chouhan.shreyansh630@gmail.com,
+        Willem de Bruijn <willemb@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 02, 2021 at 09:03:01PM +0100, Russell King (Oracle) wrote:
-> On Thu, Sep 02, 2021 at 10:05:07PM +0300, Vladimir Oltean wrote:
-> > On Thu, Sep 02, 2021 at 06:50:43PM +0100, Russell King (Oracle) wrote:
-> > > On Thu, Sep 02, 2021 at 05:10:34PM +0000, Vladimir Oltean wrote:
-> > > > On Thu, Sep 02, 2021 at 05:31:44PM +0100, Russell King (Oracle) wrote:
-> > > > > On Thu, Sep 02, 2021 at 06:23:42PM +0300, Vladimir Oltean wrote:
-> > > > > > On Thu, Sep 02, 2021 at 02:26:35PM +0100, Russell King (Oracle) wrote:
-> > > > > > > Debian has had support for configuring bridges at boot time via
-> > > > > > > the interfaces file for years. Breaking that is going to upset a
-> > > > > > > lot of people (me included) resulting in busted networks. It
-> > > > > > > would be a sure way to make oneself unpopular.
-> > > > > > >
-> > > > > > > > I expect there to be 2 call paths of phy_attach_direct:
-> > > > > > > > - At probe time. Both the MAC driver and the PHY driver are probing.
-> > > > > > > >   This is what has this patch addresses. There is no issue to return
-> > > > > > > >   -EPROBE_DEFER at that time, since drivers connect to the PHY before
-> > > > > > > >   they register their netdev. So if connecting defers, there is no
-> > > > > > > >   netdev to unregister, and user space knows nothing of this.
-> > > > > > > > - At .ndo_open time. This is where it maybe gets interesting, but not to
-> > > > > > > >   user space. If you open a netdev and it connects to the PHY then, I
-> > > > > > > >   wouldn't expect the PHY to be undergoing a probing process, all of
-> > > > > > > >   that should have been settled by then, should it not? Where it might
-> > > > > > > >   get interesting is with NFS root, and I admit I haven't tested that.
-> > > > > > >
-> > > > > > > I don't think you can make that assumption. Consider the case where
-> > > > > > > systemd is being used, DSA stuff is modular, and we're trying to
-> > > > > > > setup a bridge device on DSA. DSA could be probing while the bridge
-> > > > > > > is being setup.
-> > > > > > >
-> > > > > > > Sadly, this isn't theoretical. I've ended up needing:
-> > > > > > >
-> > > > > > > 	pre-up sleep 1
-> > > > > > >
-> > > > > > > in my bridge configuration to allow time for DSA to finish probing.
-> > > > > > > It's not a pleasant solution, nor a particularly reliable one at
-> > > > > > > that, but it currently works around the problem.
-> > > > > >
-> > > > > > What problem? This is the first time I've heard of this report, and you
-> > > > > > should definitely not need that.
-> > > > >
-> > > > > I found it when upgrading the Clearfog by the DSL modems to v5.13.
-> > > > > When I rebooted it with a previously working kernel (v5.7) it has
-> > > > > never had a problem. With v5.13, it failed to add all the lan ports
-> > > > > into the bridge, because the bridge was still being setup by the
-> > > > > kernel while userspace was trying to configure it. Note that I have
-> > > > > extra debug in my kernels, hence the extra messages:
-> > > >
-> > > > Ok, first you talked about the interfaces file, then systemd. If it's
-> > > > not about systemd's network manager then I don't see how it is relevant.
-> > >
-> > > You're reading in stuff to what I write that I did not write... I said:
-> > >
-> > > "Consider the case where systemd is being used, DSA stuff is modular,
-> > > and we're trying to setup a bridge device on DSA."
-> > >
-> > > That does not mean I'm using systemd's network manager - which is
-> > > something I know little about and have never used.
-> > 
-> > You should definitely try it out, it gets a lot of new features added
-> > all the time, it uses the netlink interface, it reacts on udev events.
-> > 
-> > > The reason I mentioned systemd is precisely because with systemd, you
-> > > get a hell of a lot happening parallel - and that's significiant in
-> > > this case, because it's very clear that modules are being loaded in
-> > > parallel with networking being brought up - and that is where the
-> > > problems begin. In fact, modules themselves get loaded in paralllel
-> > > with systemd.
-> > 
-> > So that's what I don't understand. You're saying that the ifupdown
-> > service runs in parallel with systemd-modules-load.service, and
-> > networking is a kernel module? Doesn't that mean it behaves as expected,
-> > then? /shrug/
-> > Have you tried adding an 'After=systemd-modules-load.service' dependency
-> > to the ifupdown service? I don't think that DSA is that bad that it
-> > registers its net devices outside of the process context in which the
-> > insmod mv88e6xxx.ko is called. Quite the opposite, I think (but I
-> > haven't actually taken a close look yet) that the component stuff
-> > Saravana is proposing would do exactly that. So you "fix" one issue, you
-> > introduce another.
-> 
-> # systemctl list-dependencies networking.service
-> networking.service
->   ├─ifupdown-pre.service
->   ├─system.slice
->   └─network.target
-> # systemctl list-dependencies ifupdown-pre.service
-> ifupdown-pre.service
->   ├─system.slice
->   └─systemd-udevd.service
-> 
-> Looking in the service files for a better idea:
-> 
-> networking.service:
-> Requires=ifupdown-pre.service
-> Wants=network.target
-> After=local-fs.target network-pre.target apparmor.service systemd-sysctl.service systemd-modules-load.service ifupdown-pre.service
-> Before=network.target shutdown.target network-online.target
-> 
-> ifupdown-pre.service:
-> Wants=systemd-udevd.service
-> After=systemd-udev-trigger.service
-> Before=network.target
-> 
-> So, the dependency you mention is already present. As is a dependency
-> on udev. The problem is udev does all the automatic module loading
-> asynchronously and in a multithreaded way.
-> 
-> I don't think there's a way to make systemd wait for all module loads
-> to complete.
+On Thu, Sep 2, 2021 at 12:38 PM Willem de Bruijn
+<willemdebruijn.kernel@gmail.com> wrote:
+>
+> From: Willem de Bruijn <willemb@google.com>
+>
+> Only test integrity of csum_start if checksum offload is configured.
+>
+> With checksum offload and GRE tunnel checksum, gre_build_header will
+> cheaply build the GRE checksum using local checksum offload. This
+> depends on inner packet csum offload, and thus that csum_start points
+> behind GRE. But validate this condition only with checksum offload.
+>
+> Link: https://lore.kernel.org/netdev/YS+h%2FtqCJJiQei+W@shredder/
+> Fixes: 1d011c4803c7 ("ip_gre: add validation for csum_start")
+> Signed-off-by: Willem de Bruijn <willemb@google.com>
+> ---
+>  net/ipv4/ip_gre.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+>
+> diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
+> index 177d26d8fb9c..09311992a617 100644
+> --- a/net/ipv4/ip_gre.c
+> +++ b/net/ipv4/ip_gre.c
+> @@ -473,8 +473,11 @@ static void __gre_xmit(struct sk_buff *skb, struct net_device *dev,
+>
+>  static int gre_handle_offloads(struct sk_buff *skb, bool csum)
+>  {
+> -       if (csum && skb_checksum_start(skb) < skb->data)
+> +       /* Local checksum offload requires csum offload of the inner packet */
+> +       if (csum && skb->ip_summed == CHECKSUM_PARTIAL &&
+> +           skb_checksum_start(skb) < skb->data)
+>                 return -EINVAL;
+> +
+>         return iptunnel_handle_offloads(skb, csum ? SKB_GSO_GRE_CSUM : SKB_GSO_GRE);
+>  }
 
-So ifupdown-pre.service has a call to "udevadm settle". This "watches
-the udev event queue, and exits if all current events are handled",
-according to the man page. But which current events? ifupdown-pre.service
-does not have the dependency on systemd-modules-load.service, just
-networking.service does. So maybe ifupdown-pre.service does not wait for
-DSA to finish initializing, then it tells networking.service that all is ok.
+So a few minor nits.
+
+First I think we need this for both v4 and v6 since it looks like this
+code is reproduced for net/ipv6/ip6_gre.c.
+
+Second I don't know if we even need to bother including the "csum"
+portion of the lookup since that technically is just telling us if the
+GRE tunnel is requesting a checksum or not and I am not sure that
+applies to the fact that the inner L4 header is going to be what is
+requesting the checksum offload most likely.
+
+Also maybe this should be triggering a WARN_ON_ONCE if we hit this as
+the path triggering this should be fixed rather than us silently
+dropping frames. We should be figuring out what cases are resulting in
+us getting CHECKSUM_PARTIAL without skb_checksum_start being set.
