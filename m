@@ -2,54 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B326B3FEE36
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 14:59:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 538D03FEEA2
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 15:26:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344810AbhIBNA3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 09:00:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55904 "EHLO
+        id S234416AbhIBN1m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 09:27:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234247AbhIBNAZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 09:00:25 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE6C2C061575;
-        Thu,  2 Sep 2021 05:59:26 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id a25so4149735ejv.6;
-        Thu, 02 Sep 2021 05:59:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=vaGzIm5LsmBsaKouZzrmYUthPEgqDvMKDaRZQ7yEMO4=;
-        b=i9GHpXvLiZcopIrVEMMb6V3w5gInseFZpl/2spgZ2hqPhy7dLzowfGqBKXvzK1VsZ2
-         mloUwMvKQm7pnyWev0jOH7NgreEliw9+8cagJptnFASWj1jJUCVL1/qzO1rDwMKpyU61
-         EDkt8BasV8WFI8VDRuwEX4XT+uwmI0L2xSoV+kO0uRLXHnvCzOOXzvHq99pSTwULKZ01
-         6CZk0sYYiMcFrmnd0mDPnMb5KK5G+uY5+/3xcW2bLQLeS4meEEBvNKUzOi3/joTOgiwk
-         2ZXUVgcztcc7HmjMHsyAtlGwiXembwPAMuxXEZuWLutOC5hqInnP0bcDJqDouYdhBnaH
-         GINg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=vaGzIm5LsmBsaKouZzrmYUthPEgqDvMKDaRZQ7yEMO4=;
-        b=YRtM/9mmjcCii/MtKTZcvwbO30chpAFUF3ePZNT+u6OBQ5yOVF4CWfc1ZNAYetsulo
-         +YXfcFr7cksMHITUnA5Q18abZuTykojgAcsKE1ENc+Ke0UOdmySj/zHz7a5CnRBW3rbn
-         Il1OOE4dWymyRJOKEkYgRy8WfgZBpw6K5rqeW7ZA2yjB074Dyqrm5PkItc6xMWPOmzVC
-         Orz4dc/rUYq3FqmhCzH9I+ecNXlzamdSZRXS4BvXKMAfWAUHs7n0wzXpDiX5dZFG5GZQ
-         /oxxCEgEldih+Cl06PwiQVGLTe3ykLx8mIJozNe/e2npBX+ZcE/rl90iQ8tNZ92ZtreI
-         Wg/Q==
-X-Gm-Message-State: AOAM532/WW4lo40n5XFQoIVuf2RVSjwkVtIz5gejH/ZRFzZ2EYwW/Dil
-        gjm4RaLdyCQNzemltcvrJAs=
-X-Google-Smtp-Source: ABdhPJxM/T+zJF6YHAwRyfCS/+2BquIGUhci/K8jHTpCgFJDBp07tvm67krYUYmNh6gtUIwskeazrg==
-X-Received: by 2002:a17:906:1d19:: with SMTP id n25mr3673483ejh.11.1630587565279;
-        Thu, 02 Sep 2021 05:59:25 -0700 (PDT)
-Received: from skbuf ([82.78.148.104])
-        by smtp.gmail.com with ESMTPSA id c25sm1079599ejm.9.2021.09.02.05.59.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Sep 2021 05:59:24 -0700 (PDT)
-Date:   Thu, 2 Sep 2021 15:59:23 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+        with ESMTP id S234277AbhIBN1k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 09:27:40 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C91AC061575;
+        Thu,  2 Sep 2021 06:26:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=tJw4vBFLbw26+n1iOurtCAPTzn5rxnS3DNMi7TNfPu4=; b=oIGip4OBLINXP3hGDVMrz4UNy
+        sRLEzFetWGuINThhg/NMbm5BAWE+uQtRcc8rjJK5CWA59kG3Ku2J/uvwA1YYaHh7jNyLIbhY80sFI
+        hsDuIkP63vfNDjrbbiombOov7fiGH9OK2rhRzSQezYv2W2IIppiQ+EXztGrCBttvvJsZV24RX8kpk
+        2ib6T1cYQnuJFbh7j+qhuWb5uFlEPymImOimpGjibhCpSANyt/g55tegIEhhUiNzqqUEmTn0a5AJM
+        6auJjQEUIG2JhhuT5eae/lgVd9FpWFSmDF9BBCwz+f7EVuwOFY6cGvEWMjIUlALsAwXZnlUN5W+E+
+        skq7igmmw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:48090)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mLmjm-0001Tp-KB; Thu, 02 Sep 2021 14:26:38 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mLmjj-0007rI-PN; Thu, 02 Sep 2021 14:26:35 +0100
+Date:   Thu, 2 Sep 2021 14:26:35 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Vladimir Oltean <olteanv@gmail.com>
 Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Rafael J. Wysocki" <rafael@kernel.org>,
@@ -67,7 +54,7 @@ Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
         Len Brown <lenb@kernel.org>
 Subject: Re: [RFC PATCH net-next 0/3] Make the PHY library stop being so
  greedy when binding the generic PHY driver
-Message-ID: <20210902125923.v7fq26iiqydtgq7g@skbuf>
+Message-ID: <20210902132635.GG22278@shell.armlinux.org.uk>
 References: <20210901225053.1205571-1-vladimir.oltean@nxp.com>
  <20210902121927.GE22278@shell.armlinux.org.uk>
  <20210902123532.ruvuecxoig67yv5v@skbuf>
@@ -75,6 +62,8 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 In-Reply-To: <20210902123532.ruvuecxoig67yv5v@skbuf>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -112,9 +101,6 @@ On Thu, Sep 02, 2021 at 03:35:32PM +0300, Vladimir Oltean wrote:
 > The interrupt controller _has_ been set up. The trouble is that the
 > interrupt controller has the same OF node as the switch itself, and the
 > same OF node. Therefore, fw_devlink waits for the _entire_ switch to
-
-...and the same struct device, not "OF node" repeated twice, silly me.
-
 > finish probing, it doesn't have insight into the fact that the
 > dependency is just on the interrupt controller.
 > 
@@ -133,7 +119,17 @@ On Thu, Sep 02, 2021 at 03:35:32PM +0300, Vladimir Oltean wrote:
 > > and probably a whole host of other userspace. It will cause regressions
 > > and instability to userspace. So that's a big no.
 > 
-> Why a big no? I expect there to be 2 call paths of phy_attach_direct:
+> Why a big no?
+
+Fundamental rule of kernel programming: we do not break existing
+userspace.
+
+Debian has had support for configuring bridges at boot time via
+the interfaces file for years. Breaking that is going to upset a
+lot of people (me included) resulting in busted networks. It
+would be a sure way to make oneself unpopular.
+
+> I expect there to be 2 call paths of phy_attach_direct:
 > - At probe time. Both the MAC driver and the PHY driver are probing.
 >   This is what has this patch addresses. There is no issue to return
 >   -EPROBE_DEFER at that time, since drivers connect to the PHY before
@@ -144,3 +140,25 @@ On Thu, Sep 02, 2021 at 03:35:32PM +0300, Vladimir Oltean wrote:
 >   wouldn't expect the PHY to be undergoing a probing process, all of
 >   that should have been settled by then, should it not? Where it might
 >   get interesting is with NFS root, and I admit I haven't tested that.
+
+I don't think you can make that assumption. Consider the case where
+systemd is being used, DSA stuff is modular, and we're trying to
+setup a bridge device on DSA. DSA could be probing while the bridge
+is being setup.
+
+Sadly, this isn't theoretical. I've ended up needing:
+
+	pre-up sleep 1
+
+in my bridge configuration to allow time for DSA to finish probing.
+It's not a pleasant solution, nor a particularly reliable one at
+that, but it currently works around the problem. We don't need more
+cases of this kind of thing leading to boot time unreliability...
+
+Or if we do, then we're turning Linux into Windows, where you can
+end up with different behaviours each time the system is boot
+depending on the exact order that various stuff comes up.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
