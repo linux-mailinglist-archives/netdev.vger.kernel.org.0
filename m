@@ -2,113 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADAD13FF304
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 20:10:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 197E33FF30C
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 20:13:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346866AbhIBSLk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 14:11:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44456 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1346712AbhIBSLj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Sep 2021 14:11:39 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 26CEF6109E;
-        Thu,  2 Sep 2021 18:10:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1630606240;
-        bh=bJKMDSMTDSPzCmUV6+TfycnsnYGDNeK5NjfMv6rYFg8=;
-        h=From:To:Cc:Subject:Date:From;
-        b=ilR1IgZoi+TbhqezSu4TX/WtFEQG/Y4eam5SgMqer4j+0UDd/Puu9Y/0XCV12ECEc
-         bLIEaeHr7hhkuaB7/QZUdRidDnEVHrzdxob3D/HlEkOoV5Ljk0gbWyPFyJT/WukSp3
-         967XHv2RW0X7nWkRB6XbGLEkCgUH71lDYUy4QO+fiPpb6kQ7Ck9V+GR3ZrWWktwEcv
-         9KDDnZzRG2i1vvP7kAtWzDym/5Ljsged+LtijX5MEKOuSTkGaxK3sffCieJp4g4M9Q
-         QkdkEYFTpBgIavHKn93iSIUwpq06emG04nI/J+LH765zx0wvR5CUvkgfWkXcMU8G0z
-         3N7IiiRq8OA/A==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, gnaaman@drivenets.com,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net] net: create netdev->dev_addr assignment helpers
-Date:   Thu,  2 Sep 2021 11:10:37 -0700
-Message-Id: <20210902181037.1958358-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.31.1
+        id S1346905AbhIBSOK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 14:14:10 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:56892 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346848AbhIBSOG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 14:14:06 -0400
+Received: by mail-io1-f71.google.com with SMTP id c22-20020a5d9a960000b029059c9e04cd63so1956771iom.23
+        for <netdev@vger.kernel.org>; Thu, 02 Sep 2021 11:13:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=SKqbmxS+RsaX2s2wlkIqfPl2jpAwEZUOKc/WPcjCCI4=;
+        b=NOMTaQWwJf41GElJWLs9pSXhxtfjhSVtNNtiSins5mjXDHGDYwD+c31sp2GrM0+zcl
+         FIn3ILgnjg/dDhPSaeXg03Bl6M2er4b/YjJEe9rMbZKJuwakk8SHId4Kv3c3qnEZnHBD
+         ZqBbgbJzueNYtC3CebtvR7Xgi2BVolbijj8+g3SdZadL5kv2MrTXWV4TYaqaP8nu9Ev6
+         kUG8CfxWo2iIJHnDhI588TrV9jEgZ+bVg+0VJmEWOsSgLZPtTO+XNjEh2fGYpUYSZFzC
+         Qle8Q1iG6sLZbuAJ8EF7ic4bi6f2B2xv/cg3aC6ln5zgOGu16ZhNA1zpFoCGlxWm1NsI
+         KeaQ==
+X-Gm-Message-State: AOAM530/Ay8MuKoxSCa2Vw2HZ4zKWxgKlF1EQJ1bEcuG0RSSYNngkaeF
+        xzeg8tZxquu0CTAgJmt57l5DaKor8jLr8MAvNuGs9NSSxAdW
+X-Google-Smtp-Source: ABdhPJwD0D7+AptQ8EA9ckgdTuikiRxn9vuAi6y42y6HBFgaRe792GZ/6WBHMCptEET95qkqIwwzNODir9aTMaslfmsTvAlBugdE
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6e02:1d9c:: with SMTP id h28mr3424101ila.266.1630606387606;
+ Thu, 02 Sep 2021 11:13:07 -0700 (PDT)
+Date:   Thu, 02 Sep 2021 11:13:07 -0700
+In-Reply-To: <00000000000034712e05ca9741e8@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000080826005cb07223c@google.com>
+Subject: Re: [syzbot] KASAN: null-ptr-deref Write in __pm_runtime_resume
+From:   syzbot <syzbot+7d41312fe3f123a6f605@syzkaller.appspotmail.com>
+To:     abhishekpandit@chromium.org, apusaka@chromium.org,
+        davem@davemloft.net, gregkh@linuxfoundation.org,
+        hildawu@realtek.com, johan.hedberg@gmail.com, kuba@kernel.org,
+        len.brown@intel.com, linux-bluetooth@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        luiz.dentz@gmail.com, marcel@holtmann.org, netdev@vger.kernel.org,
+        pavel@ucw.cz, rjw@rjwysocki.net, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Recent work on converting address list to a tree made it obvious
-we need an abstraction around writing netdev->dev_addr. Without
-such abstraction updating the main device address is invisible
-to the core.
+syzbot has bisected this issue to:
 
-Introduce a number of helpers which for now just wrap memcpy()
-but in the future can make necessary changes to the address
-tree.
+commit 66f077dde74943e9dd84a9205b4951b19556c9ea
+Author: Archie Pusaka <apusaka@chromium.org>
+Date:   Fri Jul 23 11:31:55 2021 +0000
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
-Looking at the code these seem to be the helpers we'll need
-to cover most cases. Adding them early so they propagate to
-other trees, the patches to use those will start flowing
-after the merge window.
----
- include/linux/etherdevice.h | 12 ++++++++++++
- include/linux/netdevice.h   | 18 ++++++++++++++++++
- 2 files changed, 30 insertions(+)
+    Bluetooth: hci_h5: add WAKEUP_DISABLE flag
 
-diff --git a/include/linux/etherdevice.h b/include/linux/etherdevice.h
-index 330345b1be54..928c411bd509 100644
---- a/include/linux/etherdevice.h
-+++ b/include/linux/etherdevice.h
-@@ -299,6 +299,18 @@ static inline void ether_addr_copy(u8 *dst, const u8 *src)
- #endif
- }
- 
-+/**
-+ * eth_hw_addr_set - Assign Ethernet address to a net_device
-+ * @dev: pointer to net_device structure
-+ * @addr: address to assign
-+ *
-+ * Assign given address to the net_device, addr_assign_type is not changed.
-+ */
-+static inline void eth_hw_addr_set(struct net_device *dev, const u8 *addr)
-+{
-+	ether_addr_copy(dev->dev_addr, addr);
-+}
-+
- /**
-  * eth_hw_addr_inherit - Copy dev_addr from another net_device
-  * @dst: pointer to net_device to copy dev_addr to
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 7c41593c1d6a..d79163208dfd 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -4641,6 +4641,24 @@ void __hw_addr_unsync_dev(struct netdev_hw_addr_list *list,
- void __hw_addr_init(struct netdev_hw_addr_list *list);
- 
- /* Functions used for device addresses handling */
-+static inline void
-+__dev_addr_set(struct net_device *dev, const u8 *addr, size_t len)
-+{
-+	memcpy(dev->dev_addr, addr, len);
-+}
-+
-+static inline void dev_addr_set(struct net_device *dev, const u8 *addr)
-+{
-+	__dev_addr_set(dev, addr, dev->addr_len);
-+}
-+
-+static inline void
-+dev_addr_mod(struct net_device *dev, unsigned int offset,
-+	     const u8 *addr, size_t len)
-+{
-+	memcpy(&dev->dev_addr[offset], addr, len);
-+}
-+
- int dev_addr_add(struct net_device *dev, const unsigned char *addr,
- 		 unsigned char addr_type);
- int dev_addr_del(struct net_device *dev, const unsigned char *addr,
--- 
-2.31.1
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17258e45300000
+start commit:   835d31d319d9 Merge tag 'media/v5.15-1' of git://git.kernel..
+git tree:       upstream
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=14a58e45300000
+console output: https://syzkaller.appspot.com/x/log.txt?x=10a58e45300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=d793523866f2daea
+dashboard link: https://syzkaller.appspot.com/bug?extid=7d41312fe3f123a6f605
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17608125300000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17465ffe300000
 
+Reported-by: syzbot+7d41312fe3f123a6f605@syzkaller.appspotmail.com
+Fixes: 66f077dde749 ("Bluetooth: hci_h5: add WAKEUP_DISABLE flag")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
