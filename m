@@ -2,152 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 916E73FE8AB
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 07:15:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77E113FE8C9
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 07:36:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230365AbhIBFP7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 01:15:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34516 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbhIBFP6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 01:15:58 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6875DC061575
-        for <netdev@vger.kernel.org>; Wed,  1 Sep 2021 22:15:00 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id d5so575427pjx.2
-        for <netdev@vger.kernel.org>; Wed, 01 Sep 2021 22:15:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=nathanrossi.com; s=google;
-        h=date:message-id:in-reply-to:references:from:to:cc:subject
-         :content-transfer-encoding:mime-version;
-        bh=FQcSdkwkCjzmoBdMqo8s6qmG8yRRACp+L5oekxS+zhk=;
-        b=fW1z71u9Oj5bRjdO7IlYgSdc2FU5HXSRLy0dr3XIyhvF4X3D+mgHDx0wECxUpBtqjg
-         uScOCpeFN4sFJJ2aGyupa98DkZblJc0pIY2VSOoCY5VIlPg6oC9EWxdeUAmDwHVysTSJ
-         sVFbVkw8NxBhgnfLUdzlRuqJdScKrN/U2hKR2569qhgeKJy5M+xg/0ZS53nGgFkMNlXp
-         AF0HnVOm7qybPbAQFqMfdCOkZRvkFwtED+3f70zgRr0/xG1p9oixcPZtkTHeVsRP6tcC
-         lMkbJWRSKqUjrCzBmA6YGqm/EPFlObz5/K4Vx4iQ0GpFr77f4f9zpD7RZCylkmIHlfyA
-         +zfA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:in-reply-to:references:from:to
-         :cc:subject:content-transfer-encoding:mime-version;
-        bh=FQcSdkwkCjzmoBdMqo8s6qmG8yRRACp+L5oekxS+zhk=;
-        b=SZWmt64NcQJ/+7QRluG7fsQN4la5UwgeLrRCz4up8BYDyA7I664fIq3C/qGsx53hVk
-         QJzkQgC1xvCUP4jsFSWIHQ/VS+Y5xk01ZjCx6soN7yeaAJ99m7JyjdhH0cughs5qDo8t
-         WsyRzhC4SWmR8URvHYJeZS05iyA+9+PYa971l1jSWy56pbAvt4ra0B3iFLXXObeHKfcz
-         MK8pcNsiVebXgMtMc6RaDd9ysUsNJoTtcSJLZBRUBIM2Oqri9zzeu7HYzC+qzToCKtOG
-         NqF3QpXCKBMxNHFrqdR1/d2FLsWnWCgFzx2mH/K4w/CR0zEZvVSmAOHJrmIg9tRMDVmj
-         H4wg==
-X-Gm-Message-State: AOAM533wESLq+LyvC5Skkd4v5D5rmvB4kGt8H4TIpO4HdV7bT4Z38mcH
-        VG+5dNFxHbSmYwiXF3WqKvLQXA==
-X-Google-Smtp-Source: ABdhPJxJbViKLnWPET7UQVUxGjwYo7+meRFxSlHUg7kB7zV3akcshCbYjtclcwwUZ/9Ptggnlg/wZw==
-X-Received: by 2002:a17:90a:a0a:: with SMTP id o10mr1719013pjo.231.1630559699813;
-        Wed, 01 Sep 2021 22:14:59 -0700 (PDT)
-Received: from [127.0.1.1] (117-20-69-24.751445.bne.nbn.aussiebb.net. [117.20.69.24])
-        by smtp.gmail.com with UTF8SMTPSA id q18sm691691pfj.46.2021.09.01.22.14.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Sep 2021 22:14:59 -0700 (PDT)
-Date:   Thu, 02 Sep 2021 05:14:49 +0000
-Message-Id: <20210902051449.280248-1-nathan@nathanrossi.com>
-In-Reply-To: <20210826071230.11296-1-nathan@nathanrossi.com>
-References: <20210826071230.11296-1-nathan@nathanrossi.com>
-From:   Nathan Rossi <nathan@nathanrossi.com>
-To:     netdev@vger.kernel.org
-Cc:     Nathan Rossi <nathan@nathanrossi.com>,
-        Nathan Rossi <nathan.rossi@digi.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH v2] net: phylink: Update SFP selected interface on advertising changes
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+        id S232582AbhIBFhW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 01:37:22 -0400
+Received: from sender4-op-o14.zoho.com ([136.143.188.14]:17486 "EHLO
+        sender4-op-o14.zoho.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229601AbhIBFhV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 01:37:21 -0400
+X-Greylist: delayed 904 seconds by postgrey-1.27 at vger.kernel.org; Thu, 02 Sep 2021 01:37:21 EDT
+ARC-Seal: i=1; a=rsa-sha256; t=1630560069; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=JX6zs9G2mETaGl43W0akBRQNBSb/QeeDgp31O5ecOh9IHr6+ja3dToIPZUK4148myAX4fVJ+vZaHUYMEa9tC0/4WgTOUsTNoPhUMLIzCk+YlHMqIz/aukev6nbB7aXtdpKlYTdewAzoIaZ/fG2OJifz2myr9v0pH2uFNERuz9zI=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1630560069; h=Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
+        bh=UBH06QlU3lKInJ2h82cHBN/JEK/dlHh6BEK4vbClaRg=; 
+        b=Dr31pE7iY3fYuCVNxFxesBwg6LKC3FvUt/jjVZX4XcnyYTVxIzRHRM6mvmiGTGRkECUm/oAOzHg7tpxTHVOyNDogpqX1b6+M2wjpn5giB6McXD/gjyScT1UwAGAblvKRiskTg3qaoexRN7NOdOPQtsjRQF4lrml6wcI3BXA81GE=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=proelbtn.com;
+        spf=pass  smtp.mailfrom=contact@proelbtn.com;
+        dmarc=pass header.from=<contact@proelbtn.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1630560069;
+        s=default; d=proelbtn.com; i=contact@proelbtn.com;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Transfer-Encoding;
+        bh=UBH06QlU3lKInJ2h82cHBN/JEK/dlHh6BEK4vbClaRg=;
+        b=fJcRIvFZnbIQWZqopjLOcG3I2388OYAd6FrsP/OXmEJnDRYPHvlurXJAlGiF+RVq
+        8cwn16J6lNovEjnSFw1hw80ZdxkHKqGt/nK9EuVt8ZYSiLT4s2Maqj/7QTblfplIu6o
+        9XSaghnT6uGnpa4GyEPwFwSK/CHsB6JxIwQ234aw=
+Received: from r1.local (147.75.94.193 [147.75.94.193]) by mx.zohomail.com
+        with SMTPS id 1630560068122199.3448810284102; Wed, 1 Sep 2021 22:21:08 -0700 (PDT)
+From:   Ryoga Saito <contact@proelbtn.com>
+To:     dsahern@kernel.org
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Ryoga Saito <contact@proelbtn.com>
+Subject: [PATCH] Set fc_nlinfo in nh_create_ipv4, nh_create_ipv6
+Date:   Thu,  2 Sep 2021 05:20:14 +0000
+Message-Id: <20210902052014.605249-1-contact@proelbtn.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nathan Rossi <nathan.rossi@digi.com>
+This patch fixes kernel NULL pointer dereference when creating nexthop
+which is bound with SRv6 decapsulation. In the creation of nexthop,
+__seg6_end_dt_vrf_build is called. __seg6_end_dt_vrf_build expects
+fc_lninfo in fib6_config is set correctly, but it isn't set in
+nh_create_ipv6, which causes kernel crash.
 
-Currently changes to the advertising state via ethtool do not cause any
-reselection of the configured interface mode after the SFP is already
-inserted and initially configured.
+Here is steps to reproduce kernel crash:
 
-While it is not typical to change the advertised link modes for an
-interface using an SFP in certain use cases it is desirable. In the case
-of a SFP port that is capable of handling both SFP and SFP+ modules it
-will automatically select between 1G and 10G modes depending on the
-supported mode of the SFP. However if the SFP module is capable of
-working in multiple modes (e.g. a SFP+ DAC that can operate at 1G or
-10G), one end of the cable may be attached to a SFP 1000base-x port thus
-the SFP+ end must be manually configured to the 1000base-x mode in order
-for the link to be established.
+1. modprobe vrf
+2. ip -6 nexthop add encap seg6local action End.DT4 vrftable 1 dev eth0
 
-This change causes the ethtool setting of advertised mode changes to
-reselect the interface mode so that the link can be established.
-Additionally when a module is inserted the advertising mode is reset to
-match the supported modes of the module.
+We got the following message:
 
-Signed-off-by: Nathan Rossi <nathan.rossi@digi.com>
+[  901.370336] BUG: kernel NULL pointer dereference, address: 0000000000000ba0
+[  901.371658] #PF: supervisor read access in kernel mode
+[  901.372672] #PF: error_code(0x0000) - not-present page
+[  901.373672] PGD 0 P4D 0
+[  901.374248] Oops: 0000 [#1] SMP PTI
+[  901.374944] CPU: 0 PID: 8593 Comm: ip Not tainted 5.14-051400-generic #202108310811-Ubuntu
+[  901.376404] Hardware name: Red Hat KVM, BIOS 1.11.1-4.module_el8.2.0+320+13f867d7 04/01/2014
+[  901.377907] RIP: 0010:vrf_ifindex_lookup_by_table_id+0x19/0x90 [vrf]
+[  901.379182] Code: c1 e9 72 ff ff ff e8 96 49 01 c2 66 0f 1f 44 00 00 0f 1f 44 00 00 55 48 89 e5 41 56 41 55 41 89 f5 41 54 53 8b 05 47 4c 00 00 <48> 8b 97 a0 0b 00 00 48 8b 1c c2 e8 57 27 53 c1 4c 8d a3 88 00 00
+[  901.382652] RSP: 0018:ffffbf2d02043590 EFLAGS: 00010282
+[  901.383746] RAX: 000000000000000b RBX: ffff990808255e70 RCX: ffffbf2d02043aa8
+[  901.385436] RDX: 0000000000000001 RSI: 0000000000000001 RDI: 0000000000000000
+[  901.386924] RBP: ffffbf2d020435b0 R08: 00000000000000c0 R09: ffff990808255e40
+[  901.388537] R10: ffffffff83b08c90 R11: 0000000000000009 R12: 0000000000000000
+[  901.389937] R13: 0000000000000001 R14: 0000000000000000 R15: 000000000000000b
+[  901.391226] FS:  00007fe49381f740(0000) GS:ffff99087dc00000(0000) knlGS:0000000000000000
+[  901.392737] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  901.393803] CR2: 0000000000000ba0 CR3: 000000000e3e8003 CR4: 0000000000770ef0
+[  901.395122] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  901.396496] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  901.397833] PKRU: 55555554
+[  901.398578] Call Trace:
+[  901.399144]  l3mdev_ifindex_lookup_by_table_id+0x3b/0x70
+[  901.400179]  __seg6_end_dt_vrf_build+0x34/0xd0
+[  901.401067]  seg6_end_dt4_build+0x16/0x20
+[  901.401904]  seg6_local_build_state+0x271/0x430
+[  901.402797]  lwtunnel_build_state+0x81/0x130
+[  901.403645]  fib_nh_common_init+0x82/0x100
+[  901.404465]  ? sock_def_readable+0x4b/0x80
+[  901.405285]  fib6_nh_init+0x115/0x7c0
+[  901.406033]  nh_create_ipv6.isra.0+0xe1/0x140
+[  901.406932]  rtm_new_nexthop+0x3b7/0xeb0
+[  901.407828]  rtnetlink_rcv_msg+0x152/0x3a0
+[  901.408663]  ? rtnl_calcit.isra.0+0x130/0x130
+[  901.409535]  netlink_rcv_skb+0x55/0x100
+[  901.410319]  rtnetlink_rcv+0x15/0x20
+[  901.411026]  netlink_unicast+0x1a8/0x250
+[  901.411813]  netlink_sendmsg+0x238/0x470
+[  901.412602]  ? _copy_from_user+0x2b/0x60
+[  901.413394]  sock_sendmsg+0x65/0x70
+[  901.414112]  ____sys_sendmsg+0x218/0x290
+[  901.414929]  ? copy_msghdr_from_user+0x5c/0x90
+[  901.415814]  ___sys_sendmsg+0x81/0xc0
+[  901.416559]  ? fsnotify_destroy_marks+0x27/0xf0
+[  901.417447]  ? call_rcu+0xa4/0x230
+[  901.418153]  ? kmem_cache_free+0x23f/0x410
+[  901.418972]  ? dentry_free+0x37/0x70
+[  901.419705]  ? mntput_no_expire+0x4c/0x260
+[  901.420574]  __sys_sendmsg+0x62/0xb0
+[  901.421297]  __x64_sys_sendmsg+0x1f/0x30
+[  901.422057]  do_syscall_64+0x5c/0xc0
+[  901.422756]  ? syscall_exit_to_user_mode+0x27/0x50
+[  901.423675]  ? __x64_sys_close+0x12/0x40
+[  901.424462]  ? do_syscall_64+0x69/0xc0
+[  901.425219]  ? irqentry_exit_to_user_mode+0x9/0x20
+[  901.426149]  ? irqentry_exit+0x19/0x30
+[  901.426901]  ? exc_page_fault+0x89/0x160
+[  901.427709]  ? asm_exc_page_fault+0x8/0x30
+[  901.428536]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[  901.429514] RIP: 0033:0x7fe493945747
+[  901.430248] Code: 64 89 02 48 c7 c0 ff ff ff ff eb bb 0f 1f 80 00 00 00 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 51 c3 48 83 ec 28 89 54 24 1c 48 89 74 24 10
+[  901.433549] RSP: 002b:00007ffe9932cf68 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+[  901.434981] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fe493945747
+[  901.436303] RDX: 0000000000000000 RSI: 00007ffe9932cfe0 RDI: 0000000000000003
+[  901.437607] RBP: 00000000613053f7 R08: 0000000000000001 R09: 00007ffe9932d07c
+[  901.438990] R10: 000055f4a903a010 R11: 0000000000000246 R12: 0000000000000001
+[  901.440340] R13: 0000000000000001 R14: 000055f4a802b163 R15: 000055f4a8042020
+[  901.441630] Modules linked in: vrf nls_utf8 isofs nls_iso8859_1 dm_multipath scsi_dh_rdac scsi_dh_emc scsi_dh_alua intel_rapl_msr intel_rapl_common isst_if_mbox_msr isst_if_common nfit rapl input_leds joydev serio_raw qemu_fw_cfg mac_hid sch_fq_codel drm virtio_rng ip_tables x_tables autofs4 btrfs blake2b_generic zstd_compress raid10 raid456 async_raid6_recov async_memcpy async_pq async_xor async_tx xor raid6_pq libcrc32c raid1 raid0 multipath linear crct10dif_pclmul crc32_pclmul ghash_clmulni_intel aesni_intel crypto_simd virtio_net net_failover cryptd psmouse virtio_blk failover i2c_piix4 pata_acpi floppy
+[  901.450808] CR2: 0000000000000ba0
+[  901.451514] ---[ end trace c27b934b99ade304 ]---
+[  901.452403] RIP: 0010:vrf_ifindex_lookup_by_table_id+0x19/0x90 [vrf]
+[  901.453626] Code: c1 e9 72 ff ff ff e8 96 49 01 c2 66 0f 1f 44 00 00 0f 1f 44 00 00 55 48 89 e5 41 56 41 55 41 89 f5 41 54 53 8b 05 47 4c 00 00 <48> 8b 97 a0 0b 00 00 48 8b 1c c2 e8 57 27 53 c1 4c 8d a3 88 00 00
+[  901.456910] RSP: 0018:ffffbf2d02043590 EFLAGS: 00010282
+[  901.457912] RAX: 000000000000000b RBX: ffff990808255e70 RCX: ffffbf2d02043aa8
+[  901.459238] RDX: 0000000000000001 RSI: 0000000000000001 RDI: 0000000000000000
+[  901.460552] RBP: ffffbf2d020435b0 R08: 00000000000000c0 R09: ffff990808255e40
+[  901.461882] R10: ffffffff83b08c90 R11: 0000000000000009 R12: 0000000000000000
+[  901.463208] R13: 0000000000000001 R14: 0000000000000000 R15: 000000000000000b
+[  901.464529] FS:  00007fe49381f740(0000) GS:ffff99087dc00000(0000) knlGS:0000000000000000
+[  901.466058] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  901.467189] CR2: 0000000000000ba0 CR3: 000000000e3e8003 CR4: 0000000000770ef0
+[  901.468515] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  901.469858] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  901.471139] PKRU: 55555554
+
+Signed-off-by: Ryoga Saito <contact@proelbtn.com>
 ---
-Changes in v2:
-- Revalidate the configuration after the interface mode change (as done
-  in phylink_sfp_config).
-- In phylink_sfp_config, update the current config advertising state
-  when it differs. This makes sure that the advertising state matches
-  what is applied during module insert/start.
----
- drivers/net/phy/phylink.c | 30 +++++++++++++++++++++++++++++-
- 1 file changed, 29 insertions(+), 1 deletion(-)
+ net/ipv4/nexthop.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 2cdf9f989d..ea4bdc9cf5 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -1525,6 +1525,32 @@ int phylink_ethtool_ksettings_set(struct phylink *pl,
- 	if (config.an_enabled && phylink_is_empty_linkmode(config.advertising))
- 		return -EINVAL;
- 
-+	/* If this link is with an SFP, ensure that changes to advertised modes
-+	 * also cause the associated interface to be selected such that the
-+	 * link can be configured correctly.
-+	 */
-+	if (pl->sfp_port && pl->sfp_bus) {
-+		config.interface = sfp_select_interface(pl->sfp_bus,
-+							config.advertising);
-+		if (config.interface == PHY_INTERFACE_MODE_NA) {
-+			phylink_err(pl,
-+				    "selection of interface failed, advertisement %*pb\n",
-+				    __ETHTOOL_LINK_MODE_MASK_NBITS,
-+				    config.advertising);
-+			return -EINVAL;
-+		}
-+
-+		/* Revalidate with the selected interface */
-+		linkmode_copy(support, pl->supported);
-+		if (phylink_validate(pl, support, &config)) {
-+			phylink_err(pl, "validation of %s/%s with support %*pb failed\n",
-+				    phylink_an_mode_str(pl->cur_link_an_mode),
-+				    phy_modes(config.interface),
-+				    __ETHTOOL_LINK_MODE_MASK_NBITS, support);
-+			return -EINVAL;
-+		}
-+	}
-+
- 	mutex_lock(&pl->state_mutex);
- 	pl->link_config.speed = config.speed;
- 	pl->link_config.duplex = config.duplex;
-@@ -2104,7 +2130,9 @@ static int phylink_sfp_config(struct phylink *pl, u8 mode,
- 	if (phy_interface_mode_is_8023z(iface) && pl->phydev)
- 		return -EINVAL;
- 
--	changed = !linkmode_equal(pl->supported, support);
-+	changed = !linkmode_equal(pl->supported, support) ||
-+		  !linkmode_equal(pl->link_config.advertising,
-+				  config.advertising);
- 	if (changed) {
- 		linkmode_copy(pl->supported, support);
- 		linkmode_copy(pl->link_config.advertising, config.advertising);
----
-2.33.0
+diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
+index 4075230b14c6..75ca4b6e484f 100644
+--- a/net/ipv4/nexthop.c
++++ b/net/ipv4/nexthop.c
+@@ -2490,6 +2490,7 @@ static int nh_create_ipv4(struct net *net, struct nexthop *nh,
+ 		.fc_gw4   = cfg->gw.ipv4,
+ 		.fc_gw_family = cfg->gw.ipv4 ? AF_INET : 0,
+ 		.fc_flags = cfg->nh_flags,
++		.fc_nlinfo = cfg->nlinfo,
+ 		.fc_encap = cfg->nh_encap,
+ 		.fc_encap_type = cfg->nh_encap_type,
+ 	};
+@@ -2528,6 +2529,7 @@ static int nh_create_ipv6(struct net *net,  struct nexthop *nh,
+ 		.fc_ifindex = cfg->nh_ifindex,
+ 		.fc_gateway = cfg->gw.ipv6,
+ 		.fc_flags = cfg->nh_flags,
++		.fc_nlinfo = cfg->nlinfo,
+ 		.fc_encap = cfg->nh_encap,
+ 		.fc_encap_type = cfg->nh_encap_type,
+ 		.fc_is_fdb = cfg->nh_fdb,
+-- 
+2.25.1
+
