@@ -2,271 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 577163FF4F3
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 22:32:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 472D53FF4F6
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 22:33:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235991AbhIBUdW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 16:33:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48644 "EHLO
+        id S239339AbhIBUdw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 16:33:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232398AbhIBUdV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 16:33:21 -0400
-Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8765C061575
-        for <netdev@vger.kernel.org>; Thu,  2 Sep 2021 13:32:22 -0700 (PDT)
-Received: by mail-il1-x132.google.com with SMTP id g8so3160258ilc.5
-        for <netdev@vger.kernel.org>; Thu, 02 Sep 2021 13:32:22 -0700 (PDT)
+        with ESMTP id S234254AbhIBUdu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 16:33:50 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90E61C061575;
+        Thu,  2 Sep 2021 13:32:51 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id s25so4846141edw.0;
+        Thu, 02 Sep 2021 13:32:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=engleder-embedded-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bpfEvfQHHfm4a7cLUlxhEaEOy6czrpgLDcWklEvIxrE=;
-        b=Y9n4c6YS07+e7ilmjFGk3nUoP/HgkWmKpgy/Ej9GG3J6Y0TonjjVA/4dS0ikgwdHjs
-         2wp4lJzyNyqapuSuCSmGt37WthqxzTkpPYzVAGzSJuRMwdOIGEdQZjn5VJkejcrAva+C
-         VKszJFuxI0fjM6B7cHjkq1FbR3Heq7q649EDdLWQh/jrMG2j6iaBDtIf/OCLndggSgSd
-         xVss5L3+3VWFESKDD3phrLFhVcloPRCT7g8pfZQhQfFnWFATwqhR7yt4GA9J8iz5DDFG
-         WkB0t3fNB40r617zglSNd2LGsaDghfQi3mQJ35xezhOPiZBDBrn9M9U+QVq8VQavo0dH
-         zdeg==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=X0qjDEGyIu9rzYFLWwmgoerPbUzMgWFfQroqEuwB9JU=;
+        b=B6Udg4XDmUI1iuyP3qAtJ1Blcha/YUArvQ/Q/PC2atJ7Kfs1/kd2Tr8P2BOfJgajg5
+         XbLayn5DulUXCgxivIqs0Sxj7M6dwZ6BC6zaZjqfh02MIMRGsZk5TU/5rWhIt++GELrQ
+         YBOBk1MFLEXy/s2hYiCnV02a3+cqErJL8WhKEtWMWbp+Ez/fW+MKXBIOZ2utfYFT+oT4
+         ysexm1I8IgcZ1CELkTS/l8ODG+uHZfwhKSuIZT4qYaBtFWvgrHT4/KVjv2laVQ/J/4GN
+         YwET/KwVR9Sp5cVXYBkIVo22/Y+/HjTFFm6jRR2DxwEu8U8ojYF5rwxEa9DBbLnFBZnB
+         3rvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bpfEvfQHHfm4a7cLUlxhEaEOy6czrpgLDcWklEvIxrE=;
-        b=a+Z3X/igCQ+kDJtzeHjdtK/2XW8OOqbAcqnzC2sVVkLjcguMe3ghUv77w7uBg13fxn
-         vB8tG8gYZt+ZKd2i2yBYr89KpjYMevi0iA+jBe6dS0CSOyXSO9zc8hWS/WzBo8cTVFS5
-         4uaziKzwhYVCJ1BhuEIVVP4dcY0RqMUuSLNOcOGa7IxbxdHwk5Fnep/EG04DEWSAeWnL
-         EXTJNHF6IPQfaoqaHvVX5fnpNChqpyy18v8IMlfkFy00aZ8ToxBqvkk9o1zC3DH+3RIU
-         4/iMQx9of2oUS06l047avMKir7rNQ+2SUZKMhcQyHm1GxhluudF8kDzsXQpuIpT0j3w1
-         FAGA==
-X-Gm-Message-State: AOAM5321iX+QCrDAVy9OBshckRjgAFIi2FGLxN99pjq3+5JZiXwRaa5q
-        RkChZdU1f9cdsSP0bphbbIaIwF6GkoG7l/M0pyHo6t0foPpRXoRRQZQ=
-X-Google-Smtp-Source: ABdhPJzzL/UFCE1MgQaYdkv3HfdqRHJUzQUtmeujGTrc7jnwMscnMP3zRSsZGILsJFFmH7RHwWd+FkEMNEOXKvEanj8=
-X-Received: by 2002:a92:ca0a:: with SMTP id j10mr32317ils.192.1630614742336;
- Thu, 02 Sep 2021 13:32:22 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210831193425.26193-1-gerhard@engleder-embedded.com>
- <20210831193425.26193-4-gerhard@engleder-embedded.com> <YS6lQejOJJCATMCp@lunn.ch>
- <CANr-f5zXWrqPxWV81CT6=4O6PoPRB0Qs0T=egJ3q8FMG16f6xw@mail.gmail.com> <YS/qQdmjT/X0tiEt@lunn.ch>
-In-Reply-To: <YS/qQdmjT/X0tiEt@lunn.ch>
-From:   Gerhard Engleder <gerhard@engleder-embedded.com>
-Date:   Thu, 2 Sep 2021 22:32:10 +0200
-Message-ID: <CANr-f5wU0JTqwoHoFEwdFCVSYtcohx-DPc4mz8-GrVFpyNuajA@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 3/3] tsnep: Add TSN endpoint Ethernet MAC driver
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=X0qjDEGyIu9rzYFLWwmgoerPbUzMgWFfQroqEuwB9JU=;
+        b=JlYpMfF79aqNt7W7/ephgEYQVZgrjjJYYFfTYP8hudQrn1BtOmukcWJKN70i87o2DZ
+         gxoTQNTcvilDVb6jtruh1EQVdVwlpujooUDYueN6ALwo81MtKY0A5/5SfBbS0JS8ONBm
+         sLrO83qi66dl8jvifIUuT+amVOWPhXyW2/4Pb7Rw9jT+CEYWiM+Erm9LFvWmnlAq1UKo
+         64GqUYvco9TGz69zmfTcHpWazY15IzXzZtXXTUjOwLT6rfDvsXLmd6bI2Ha0/JXHqYgp
+         vtgHhpdiZ1sUXNGPISqx1Ry/sqCbyAS2HGZpujdUrrETlSl+6Rp+23lc2OT1YbzmB9Z4
+         u/bA==
+X-Gm-Message-State: AOAM532G5D8yjupmTPz/Z8QqnHXMJcgCk5jUT7HtECXpPAs8SI25gHkZ
+        uf0GOOwq64t5cbVX0rTWkuQ=
+X-Google-Smtp-Source: ABdhPJxDUDr8ed8YrnRw/o/YF/UeV8ClZtarD7oF7ezGtr4f06+cbb7ZdYmuZSm0sKbvNT3urXYBWw==
+X-Received: by 2002:a05:6402:5148:: with SMTP id n8mr165714edd.277.1630614770176;
+        Thu, 02 Sep 2021 13:32:50 -0700 (PDT)
+Received: from skbuf ([82.78.148.104])
+        by smtp.gmail.com with ESMTPSA id f30sm1638442ejl.78.2021.09.02.13.32.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Sep 2021 13:32:49 -0700 (PDT)
+Date:   Thu, 2 Sep 2021 23:32:48 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     David Miller <davem@davemloft.net>,
+Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        netdev@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        linux-kernel@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        kernel-team <kernel-team@android.com>,
+        Len Brown <lenb@kernel.org>
+Subject: Re: [RFC PATCH net-next 0/3] Make the PHY library stop being so
+ greedy when binding the generic PHY driver
+Message-ID: <20210902203248.dy5b6ismgb55s5cd@skbuf>
+References: <20210901225053.1205571-1-vladimir.oltean@nxp.com>
+ <20210902121927.GE22278@shell.armlinux.org.uk>
+ <20210902123532.ruvuecxoig67yv5v@skbuf>
+ <YTEvFR2WGQmG3h/C@lunn.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YTEvFR2WGQmG3h/C@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > > +static int tsnep_ethtool_set_priv_flags(struct net_device *netdev,
-> > > > +                                     u32 priv_flags)
-> > > > +{
-> > > > +     struct tsnep_adapter *adapter = netdev_priv(netdev);
-> > > > +     int retval;
-> > > > +
-> > > > +     if (priv_flags & ~TSNEP_PRIV_FLAGS)
-> > > > +             return -EINVAL;
-> > > > +
-> > > > +     if ((priv_flags & TSNEP_PRIV_FLAGS_LOOPBACK_100) &&
-> > > > +         (priv_flags & TSNEP_PRIV_FLAGS_LOOPBACK_1000))
-> > > > +             return -EINVAL;
-> > > > +
-> > > > +     if ((priv_flags & TSNEP_PRIV_FLAGS_LOOPBACK_100) &&
-> > > > +         adapter->loopback != SPEED_100) {
-> > > > +             if (adapter->loopback != SPEED_UNKNOWN)
-> > > > +                     retval = phy_loopback(adapter->phydev, false);
-> > > > +             else
-> > > > +                     retval = 0;
-> > > > +
-> > > > +             if (!retval) {
-> > > > +                     adapter->phydev->speed = SPEED_100;
-> > > > +                     adapter->phydev->duplex = DUPLEX_FULL;
-> > > > +                     retval = phy_loopback(adapter->phydev, true);
-> > >
-> > > This is a pretty unusual use of private flags, changing loopback at
-> > > runtime. ethtool --test generally does that.
-> > >
-> > > What is your use case which requires loopback in normal operation, not
-> > > during testing?
-> >
-> > Yes it is unusual. I was searching for some user space interface for loopback
-> > and found drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c which uses
-> > private flags.
+On Thu, Sep 02, 2021 at 10:07:49PM +0200, Andrew Lunn wrote:
+> > The interrupt controller _has_ been set up. The trouble is that the
+> > interrupt controller has the same OF node as the switch itself, and the
+> > same OF node. Therefore, fw_devlink waits for the _entire_ switch to
+> > finish probing, it doesn't have insight into the fact that the
+> > dependency is just on the interrupt controller.
 >
-> Ah, that passed my by. I would of probably said something about it.
+> That seems to be the problem. fw_devlink appears to think probe is an
+> atomic operation. A device is not probed, or full probed. Where as the
+> drivers are making use of it being non atomic.
 >
-> > Use case is still testing and not normal operation. Testing is done mostly with
-> > a user space application, because I don't want to overload the driver with test
-> > code and test frameworks can be used in user space. With loopback it is
-> > possible to execute a lot of tests like stressing the MAC with various frame
-> > lengths and checking TX/RX time stamps. These tests are useful for every
-> > integration of this IP core into an FPGA and not only for IP core development.
->
-> I did a quick search. CAN has something interesting:
->
-> https://wiki.rdu.im/_pages/Application-Notes/Software/can-bus-in-linux.html
-> $ sudo ip link set can0 down
-> $ sudo ip link set can0 type can loopback on
-> $ sudo ip link set can0 up type can bitrate 1000000
->
-> Also
->
-> https://www.kernel.org/doc/Documentation/networking/can.txt
->
-> The semantics are maybe slightly different. It appears to loopback can
-> messages, but also send out the wire. I think many can transcievers
-> can do this in hardware, but this seems to be a software feature for
-> when the hardware cannot do it? I have seen Ethernet PHYs which do
-> send out the wire when in loopback, so it does seem like a reasonable
-> model. Also i like that you need to down the interface before you can
-> put it into loopback. Saves a lot of surprises.
->
-> Maybe you can look at this, see if it can be made generic, and could
-> be used here?
+> Maybe fw_devlink needs the third state, probing. And when deciding if
+> a device can be probed and depends on a device which is currently
+> probing, it looks deeper, follows the phandle and see if the resource
+> is actually available?
 
-In contrast to CAN, Ethernet loopback is only useful for testing. Even if some
-Ethernet PHYs send out the wire when in loopback, reception from the wire
-is not possible because it will conflict with the looped back frame (Ethernet is
-full duplex capable, CAN not). Ethernet link behavior is configured
-with ethtool,
-so I was searching for some ethtool interface.
+This is interesting because there already exists a device link state for
+when the consumer is "probing", but for the supplier, it's binary:
 
-I will take a look at CAN loopback support.
+/**
+ * enum device_link_state - Device link states.
+ * @DL_STATE_NONE: The presence of the drivers is not being tracked.
+ * @DL_STATE_DORMANT: None of the supplier/consumer drivers is present.
+ * @DL_STATE_AVAILABLE: The supplier driver is present, but the consumer is not.
+ * @DL_STATE_CONSUMER_PROBE: The consumer is probing (supplier driver present).
+ * @DL_STATE_ACTIVE: Both the supplier and consumer drivers are present.
+ * @DL_STATE_SUPPLIER_UNBIND: The supplier driver is unbinding.
+ */
 
-> > > > +static irqreturn_t tsnep_irq(int irq, void *arg)
-> > > > +{
-> > > > +     struct tsnep_adapter *adapter = arg;
-> > > > +     u32 active = ioread32(adapter->addr + ECM_INT_ACTIVE);
-> > > > +
-> > > > +     /* acknowledge interrupt */
-> > > > +     if (active != 0)
-> > > > +             iowrite32(active, adapter->addr + ECM_INT_ACKNOWLEDGE);
-> > > > +
-> > > > +     /* handle management data interrupt */
-> > > > +     if ((active & ECM_INT_MD) != 0) {
-> > > > +             adapter->md_active = false;
-> > > > +             wake_up_interruptible(&adapter->md_wait);
-> > > > +     }
-> > > > +
-> > > > +     /* handle link interrupt */
-> > > > +     if ((active & ECM_INT_LINK) != 0) {
-> > > > +             if (adapter->netdev->phydev) {
-> > > > +                     struct phy_device *phydev = adapter->netdev->phydev;
-> > > > +                     u32 status = ioread32(adapter->addr + ECM_STATUS);
-> > > > +                     int link = (status & ECM_NO_LINK) ? 0 : 1;
-> > > > +                     u32 speed = status & ECM_SPEED_MASK;
-> > >
-> > > How does PHY link and speed get into this MAC register? Is the MAC
-> > > polling the PHY over the MDIO bus? Is the PHY internal to the MAC and
-> > > it has backdoor access to the PHY status?
-> >
-> > PHY is external. The MAC expects additional signals for link status. These
-> > signals can be derived from RGMII in band signaling of the link status or by
-> > using PHY link and speed LED outputs. The MAC is using the link status for
-> > a quick no link reaction to minimize the impact to real time applications.
-> > EtherCAT for example also uses the link LED output for a no link reaction
-> > within a few microseconds.
->
-> O.K. This is not the normal Linux way. You normally have the PHY
-> driver tell the PHY core, which then tells the MAC driver. That always
-> works. RGMII in band signaling is not supported by all PHY devices,
-> and the board design would require the LED output are correctly
-> connected, and i guess you need a hacked PHY driver to use the correct
-> LED meanings? Plus i guess you have additional changes in the PHY
-> driver to do fast link down detection?
+The check that's killing us is in device_links_check_suppliers, and is
+for DL_STATE_AVAILABLE:
 
-Yes, LED outputs must be correctly connected in the board design. LED
-outputs are usually configured with strapping pins, which again require a
-correct board design. Fast link down detection is a hardware property of
-the selected PHY. So far no PHY driver changes were necessary.
+	list_for_each_entry(link, &dev->links.suppliers, c_node) {
+		if (!(link->flags & DL_FLAG_MANAGED))
+			continue;
 
-> I think this needs another DT property to enable using such short
-> cuts, and you should use the Linux way by default.
+		if (link->status != DL_STATE_AVAILABLE &&
+		    !(link->flags & DL_FLAG_SYNC_STATE_ONLY)) {
+			device_links_missing_supplier(dev);
+			dev_err(dev, "probe deferral - supplier %s not ready\n",
+				dev_name(link->supplier));
+			ret = -EPROBE_DEFER;
+			break;
+		}
+		WRITE_ONCE(link->status, DL_STATE_CONSUMER_PROBE);
+	}
 
-Isn't choosing PHY_MAC_INTERRUPT also the Linux way? I preferred it
-over PHY_POLL, because I need the link information directly in the MAC
-anyway. But maybe the speed information is too much and should be provided
-to the MAC.
+Anyway, I was expecting quite a different reaction from this patch
+series, and especially one from Saravana. We are essentially battling to
+handle an -EPROBE_DEFER we don't need (the battle might be worth it
+though, in the general case, which is one of the reasons I posted them).
 
-> Also, don't you need a property which tells you to either use RGMII
-> inband, or LED signals?
+But these patches also solve DSA's issue with the circular dependency
+between the switch and its internal PHYs, and nobody seems to have asked
+the most important question: why?
 
-No, this decision is done in VHDL/FPGA. No need to consume precious FPGA
-resources for runtime configuration.
-
-> > > > +static int tsnep_mdiobus_read(struct mii_bus *bus, int addr, int regnum)
-> > > > +{
-> > > > +     struct tsnep_adapter *adapter = bus->priv;
-> > > > +     u32 md;
-> > > > +     int retval;
-> > > > +
-> > > > +     if (regnum & MII_ADDR_C45)
-> > > > +             return -EOPNOTSUPP;
-> > > > +
-> > > > +     /* management data frame without preamble */
-> > > > +     md = ECM_MD_READ;
-> > >
-> > > I know some PHYs are happy to work without a preamble. But as far as i
-> > > know, 802.3 c22 does not say it is optional. So this needs to be an
-> > > opt-in feature, for when you know all the devices on the bus support
-> > > it. We have a standard DT property for this. See mdio.yaml,
-> > > suppress-preamble. Please look for this in the DT blob, and only
-> > > suppress the pre-amble if it is present.
-> >
-> > You are right, I will improve that.
->
-> You might also be interested in clock-frequency, if you can control
-> the bus frequency. I've run Marvell PHYs at i think 8Mhz, rather than
-> the usual 2.5MHz.
-
-Thank you for the information. Currently the frequency cannot be controlled
-and is fixed at 2.5MHz.
-
-> > > > +static int tsnep_phy_init(struct tsnep_adapter *adapter)
-> > > > +{
-> > > > +     struct device_node *dn;
-> > > > +     int retval;
-> > > > +
-> > > > +     retval = of_get_phy_mode(adapter->pdev->dev.of_node,
-> > > > +                              &adapter->phy_mode);
-> > > > +     if (retval)
-> > > > +             adapter->phy_mode = PHY_INTERFACE_MODE_GMII;
-> > > > +
-> > > > +     dn = of_parse_phandle(adapter->pdev->dev.of_node, "phy-handle", 0);
-> > > > +     adapter->phydev = of_phy_find_device(dn);
-> > > > +     of_node_put(dn);
-> > > > +     if (!adapter->phydev && adapter->mdiobus)
-> > > > +             adapter->phydev = phy_find_first(adapter->mdiobus);
-> > >
-> > > Do you actually need phy_find_first()? It is better to have it in DT.
-> >
-> > I thought it is a reasonable fallback, because then PHY can be ommited in
-> > DT (lazy developer, unknown PHY address during development, ...).
->
-> It is a reasonable fallback, until it goes wrong, because you have two
-> PHYs on the bus etc.
->
-> > Driver
-> > and IP core will be used also on x86 over PCIe without DT. In this case this
-> > fallback also makes sense. But I must confess, the driver is not ready for
-> > x86 use case yet.
->
-> We recently added ACPI properties. See
-> Documentation/firmware-guide/acpi/dsd/phy.rst.
-
-I'm afraid that relying on ACPI is not always an option. x86 CPU modules are
-very often used in industrial automation and the BIOS of the CPU module is
-usually not adapted to the carrier board. Also other drivers implement
-a fallback
-like this. Shall I still remove it?
-
-> Also, watch out. It might not be ready, but it will get compiled for
-> x86, mips, powerpc etc, by the build bots, if you don't prevent it. So
-> it needs to at least be warning free.
-
-Yes, of course!
-
-Gerhard
+The PHY should return -EPROBE_DEFER ad infinitum, since its supplier has
+never finished probing by the time it calls phy_attach_direct.
