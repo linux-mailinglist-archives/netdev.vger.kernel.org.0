@@ -2,87 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D3BE3FEA9E
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 10:28:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 542DE3FEAA1
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 10:31:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244361AbhIBI3A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 04:29:00 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.85.151]:37605 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233546AbhIBI27 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 04:28:59 -0400
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-186-MeFaDgDnNiWxWafPYWD99g-1; Thu, 02 Sep 2021 09:27:59 +0100
-X-MC-Unique: MeFaDgDnNiWxWafPYWD99g-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.23; Thu, 2 Sep 2021 09:27:58 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.023; Thu, 2 Sep 2021 09:27:58 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'David Ahern' <dsahern@gmail.com>,
-        "'netdev@vger.kernel.org'" <netdev@vger.kernel.org>
-Subject: RE: IP routing sending local packet to gateway.
-Thread-Topic: IP routing sending local packet to gateway.
-Thread-Index: AdebRgbMhfPTX4NbSQqr56kVCuK30gAGAC7A///6eoD/+bbC8P/x1sKwgB0DIQD//6CM8A==
-Date:   Thu, 2 Sep 2021 08:27:58 +0000
-Message-ID: <dec7285c174e4299bb90dfe81952c68a@AcuMS.aculab.com>
-References: <15a53d9cc54d42dca565247363b5c205@AcuMS.aculab.com>
- <adaaf38562be4c0ba3e8fe13b90f2178@AcuMS.aculab.com>
- <532f9e8f-5e48-9e2e-c346-e2522f788a40@gmail.com>
- <b1ca6c99cd684a4a83059a0156761d75@AcuMS.aculab.com>
- <b332ecafbd3b4be5949edae050f98882@AcuMS.aculab.com>
- <36d69eb1-fdb0-772e-4d3c-33ebead92b0a@gmail.com>
-In-Reply-To: <36d69eb1-fdb0-772e-4d3c-33ebead92b0a@gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S243655AbhIBIcA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 04:32:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50516 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233362AbhIBIb7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 04:31:59 -0400
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DFB0C061575
+        for <netdev@vger.kernel.org>; Thu,  2 Sep 2021 01:31:01 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id s12so2155984ljg.0
+        for <netdev@vger.kernel.org>; Thu, 02 Sep 2021 01:31:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=SUiAfSITq6W7njnqVRK/mA6fpjG3fTsAcCU4D+dTTVU=;
+        b=TOVeLzPFPcIGAHOAa3nS9nUtQGqfF89UMXfj5K8qnlkb54AK6G/xJRy3bV1nhXXexn
+         nVJ/fZe93t0cotImcc4aGMEZ7aj0ophB4ITfW8D4O4njqjmiOZ9s49d/1t7EOXEdWyis
+         ngyk98JgqzJSusABCMScQgI3L2js/YoxVUJ6s7N4Ypz7ikH0tcfCkZ9kgWFb39mDXq5Q
+         hC0GrTSfgVBXVbcA5qPR5ED1v3WyNbPagqH3L+jIpu3cYc4g6WkgQBXGRncIqQ1rk2xd
+         cH0cBZOnORYOW5xoxUL8+usd+iBvMqn1wNtwQJ1NI1NYxo7g7WQsT4FMXQdcL6Q13uBh
+         SXCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=SUiAfSITq6W7njnqVRK/mA6fpjG3fTsAcCU4D+dTTVU=;
+        b=VDWHDze/3npp9R14OCMPIhDzaANGyRfuaXRxisDhtieDEUCB1lf5uJEzzSGgUqSogY
+         8MwNYcsJbUr/FCgRNzg5BZSk+1BVST71UMj+vot3eS/yM6oAKqmqWAqHENNEekMTlmx5
+         +ff8cWhJgPhyS6cRqEy8Xw3ENY6T8WS8MTSNs1EsLHbcNd7ryc8zcHoAAAt+jaB6uBb7
+         h9aIONEIpWRbe097iSgT2V3Z0lXcaHVHtHfxbPAelSzyBK+RB1glE2k+uBI48xmfvQj3
+         vvVXLPKtKIfWHR9XAUQHNmzInJtd6o5TD93JK6WG3bZiQ5OcXZIPgelT1mQV7/OP5CAZ
+         6l/g==
+X-Gm-Message-State: AOAM530u91bEhwWCOcyqN+qboPqmGRUEdR+xjLGd//XEibha5enPeQrO
+        hocXN2WumP/uk6sWBf/3k0c=
+X-Google-Smtp-Source: ABdhPJwUZ29iEbuxHCu2/LnOTi9dI2ii3RDDV8iubOJoejo6W6b6VWm4fPYeYWhYacX1xOGk6wSuPA==
+X-Received: by 2002:a2e:8789:: with SMTP id n9mr1561519lji.428.1630571459334;
+        Thu, 02 Sep 2021 01:30:59 -0700 (PDT)
+Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.gmail.com with ESMTPSA id 131sm137042ljj.52.2021.09.02.01.30.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Sep 2021 01:30:58 -0700 (PDT)
+From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
+Subject: [PATCH V2 net 1/2] net: dsa: b53: Fix calculating number of switch ports
+Date:   Thu,  2 Sep 2021 10:30:50 +0200
+Message-Id: <20210902083051.18206-1-zajec5@gmail.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20210901092141.6451-1-zajec5@gmail.com>
+References: <20210901092141.6451-1-zajec5@gmail.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogRGF2aWQgQWhlcm4NCj4gU2VudDogMDIgU2VwdGVtYmVyIDIwMjEgMDQ6MzgNCj4gDQo+
-IE9uIDkvMS8yMSA5OjI0IEFNLCBEYXZpZCBMYWlnaHQgd3JvdGU6DQo+ID4gSSd2ZSBmb3VuZCBh
-IHNjcmlwdCB0aGF0IGdldHMgcnVuIGFmdGVyIHRoZSBJUCBhZGRyZXNzIGFuZCBkZWZhdWx0IHJv
-dXRlDQo+ID4gaGF2ZSBiZWVuIGFkZGVkIHRoYXQgZG9lczoNCj4gPg0KPiA+IAlTT1VSQ0U9MTky
-LjE2OC4xLjg4DQo+ID4gCUdBVEVXQVk9MTkyLjE2OC4xLjENCj4gPg0KPiA+IAlpcCBydWxlIGFk
-ZCBmcm9tICIkU09VUkNFIiBsb29rdXAgcHgwDQo+ID4gCWlwIHJ1bGUgYWRkIHRvICIkU09VUkNF
-IiBsb29rdXAgcHgwDQo+ID4NCj4gPiAJaXAgcm91dGUgYWRkIGRlZmF1bHQgdmlhICR7R0FURVdB
-WX0gZGV2IHB4MCBzcmMgJHtTT1VSQ0V9IHRhYmxlIHB4MA0KPiA+DQo+ID4gVGhlICdpcCBydWxl
-JyBhcmUgcHJvYmFibHkgbm90IHJlbGF0ZWQgKG9yIG5lZWRlZCkuDQo+ID4gSSBzdXNwZWN0IHRo
-ZXkgY2F1c2UgdHJhZmZpYyB0byB0aGUgbG9jYWwgSVAgYmUgdHJhbnNtaXR0ZWQgb24gcHgwLg0K
-PiA+IChUaGV5IG1heSBiZSBmcm9tIGEgc3RyYW5nZSBzZXR1cCB3ZSBoYWQgd2hlcmUgdGhhdCBt
-aWdodCBoYXZlIGJlZW4gbmVlZGVkLA0KPiA+IGJ1dCB3aHkgc29tZXRoaW5nIGZyb20gMTAgeWVh
-cnMgYWdvIGFwcGVhcmVkIGlzIGJleW9uZCBtZSAtIGFuZCBvdXIgc291cmNlIGNvbnRyb2wuKQ0K
-PiA+DQo+ID4gQW0gSSByaWdodCBpbiB0aGlua2luZyB0aGF0IHRoZSAndGFibGUgcHgwJyBiaXQg
-aXMgd2hhdCBjYXVzZXMgJ0lkIDIwMCcNCj4gPiBiZSBjcmVhdGVkIGFuZCB0aGF0IGl0IHdvdWxk
-IHJlYWxseSBuZWVkIHRoZSBub3JtYWwgJ3VzZSBhcnAnIHJvdXRlDQo+ID4gYWRkZWQgYXMgd2Vs
-bD8NCj4gPg0KPiANCj4gdGhpcyBpcyB3aHkgdGhlIGZpYiB0cmFjZXBvaW50IGV4aXN0cy4gSXQg
-c2hvd3Mgd2hhdCBpcyBoYXBwZW5pbmcgYXQgdGhlDQo+IHRpbWUgb2YgdGhlIGZpYiBsb29rdXAg
-LSBpbnB1dHMgYW5kIGxvb2t1cCByZXN1bHRzIChndywgZGV2aWNlKSAtIHdoaWNoDQo+IGdpdmUg
-dGhlIGNsdWUgYXMgdG8gd2h5IHRoZSBwYWNrZXQgd2VudCB0aGUgZGlyZWN0aW9uIGl0IGRpZC4N
-Cg0KVGhleSBtb3N0bHkgZ2F2ZSBtZSBhIGhpbnQgYXMgdG8gd2hlcmUgdG8gbG9vay4NClRoZXJl
-IGFyZSBkZWZpbml0ZWx5IHNvbWUgY29kZSBwYXRocyB3aGVyZSBhIGZpYiBlbnRyeSBpcw0KaWdu
-b3JlZCAoYW5kIGl0IGNvbnRpbnVlcyB0byBzZWFyY2gpIHRoYXQgY291bGQgZG8gd2l0aCB0cmFj
-aW5nLg0KDQpCdXQgSSBoYWQgdG8gYWRkIGV4dHJhIHRyYWNlcyB0byB0aGUgJ3JvdXRlIGFkZCcg
-cGF0aHMgdG8NCmZpbmQgd2hhdCB3YXMgYWRkaW5nIHRoZSBleHRyYSBmaWIgdGFibGUuDQpGb3J0
-dW5hdGVseSBJJ3ZlIGdvdCBhIHNlcmlhbCBjb25zb2xlIHNldHVwIChpbnRvIHB1dHR5KQ0Kc28g
-SSBzZXR1cCBmdHJhY2UgYmVmb3JlIHRoZSBuZXR3b3JrIGNvbmZpZyBhY3R1YWxseSBoYXBwZW5z
-Lg0KDQpBbnl3YXkgdGhlIHNjcmlwdCBpcyB0cnlpbmcgdG8gZG8gc29tZXRoaW5nIHRoYXQgd291
-bGQgYmUNCmJldHRlciBkb25lIHdpdGggYSBuZXR3b3JrIG5hbWVzcGFjZS4NCg0KVGhhbmtzIGZv
-ciB0aGUgcG9pbnRlcnMuDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNp
-ZGUsIEJyYW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsN
-ClJlZ2lzdHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
+From: Rafał Miłecki <rafal@milecki.pl>
+
+It isn't true that CPU port is always the last one. Switches BCM5301x
+have 9 ports (port 6 being inactive) and they use port 5 as CPU by
+default (depending on design some other may be CPU ports too).
+
+A more reliable way of determining number of ports is to check for the
+last set bit in the "enabled_ports" bitfield.
+
+This fixes b53 internal state, it will allow providing accurate info to
+the DSA and is required to fix BCM5301x support.
+
+Fixes: 967dd82ffc52 ("net: dsa: b53: Add support for Broadcom RoboSwitch")
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ drivers/net/dsa/b53/b53_common.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
+index bd1417a66cbf..dcf9d7e5ae14 100644
+--- a/drivers/net/dsa/b53/b53_common.c
++++ b/drivers/net/dsa/b53/b53_common.c
+@@ -2612,9 +2612,8 @@ static int b53_switch_init(struct b53_device *dev)
+ 			dev->cpu_port = 5;
+ 	}
+ 
+-	/* cpu port is always last */
+-	dev->num_ports = dev->cpu_port + 1;
+ 	dev->enabled_ports |= BIT(dev->cpu_port);
++	dev->num_ports = fls(dev->enabled_ports);
+ 
+ 	/* Include non standard CPU port built-in PHYs to be probed */
+ 	if (is539x(dev) || is531x5(dev)) {
+-- 
+2.26.2
 
