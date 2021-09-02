@@ -2,205 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B8CF63FF75C
-	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 00:45:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A2523FF76E
+	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 00:54:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348325AbhIBWqK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 18:46:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51422 "EHLO
+        id S1348950AbhIBWz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 18:55:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348316AbhIBWqJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 18:46:09 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C973BC061575;
-        Thu,  2 Sep 2021 15:45:09 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id jg16so4836421ejc.1;
-        Thu, 02 Sep 2021 15:45:09 -0700 (PDT)
+        with ESMTP id S1348697AbhIBWyz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 18:54:55 -0400
+Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 213B4C061575;
+        Thu,  2 Sep 2021 15:53:56 -0700 (PDT)
+Received: by mail-qv1-xf2c.google.com with SMTP id 4so2171960qvp.3;
+        Thu, 02 Sep 2021 15:53:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Mab6iFx7vPOJLixcce4Re9IRPB+O1/BszQb8EGuGv5Q=;
-        b=nm2nhRsIKC1rVdjUva/HDsuqJdhBJYEKAH1qiwk/yBAaUNao8JHSCBex3k6s5wY6Op
-         Rwzo4FBVq8CjiQRA52zW1Nr4FDPr5/6JywFoNhWNI9lq786lF7r/QLMTTeF1D3B7m3Ky
-         POcEPDgxEU+qXpPEVonbdg6Ajcv3WtxKL0D2uauEdEMFyefnI34xuAh/RZh5R4OYLaFv
-         kjoJmZFSwfmaT01Nf+w9fs3bTexXyyqJATO9K0DSBj73J8KlnzQFIv4Ykwy/+/2xIs+Z
-         SG66Zbj2NKIGKzhi4hIlj0spElfubmTbpiRB7zstdjYIvO+IVlFSBtkbLyzR2EQW38IX
-         LHrA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=OzpYK8dvsIlm/S8gJHWT+Oy8oCpnYbMnDX+i/m5SSTs=;
+        b=bQsf4oPtcPEYtYW7ZnoUgMDLuJQdxMtbDg+2hVBPPA8B+SDgbl7yHNhCOARBU3/VuO
+         95jxFnGaKyu37iRHNOiXcsALAVrJbcl923U806rgq63sigTWoMHYV2g4EMFzyiah4yrt
+         GwvmGhD0OojznsPNEOiEKvs4lWiwBg2KBIGlfgSCmwU9u7mFWdG2bon2nT2IpHTJC7hx
+         kVmYm8grMBNhxowgcIM5OlgIZw9c7c15E+hoEJEu0kRYFz3zBjFo1pCK3aYce0XTyX+T
+         W2d1DECpj60DqYOmQve18Q1cJDIWwd0X7+fuCSHzUHy6/YfPu0Amxnbfr2IC/adbg0yV
+         cNFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Mab6iFx7vPOJLixcce4Re9IRPB+O1/BszQb8EGuGv5Q=;
-        b=jsveyKWAQeCAIG8t/1hYZhhCONP0gI1wz7cSqepT32bjqhAPfraiq3gYXrXLAjtVcC
-         pyuSfws562z5S2J3oRAKKlJqs9yjdfkY4nLiXvjIJ+DjaDouEVMu1zVg8hguTKRmIIYL
-         fX9yCDVUS3zQKt1zhlJYig31qlioVIEn7uDhczOAH9KLdWBPyCIpVWjgyR7j1Tgwnlky
-         RrYt4bfEN7XKgBitqKC0iWQpcm/TI1zC4jKgEi5GionkuJj5NZlD+NKu4MS9rrET5FJR
-         Uux7FzH2rrlFofRnFGd0joBOSmxJHFxmdwfIC3o+p0+CttEBcq2+e/2ErOmyAr6f+KZT
-         0jEA==
-X-Gm-Message-State: AOAM532K7vP0njOTh7ImIDky+zy5CuehY4u6uRRL1ExfAg0HSd+0iifU
-        RmmDStFwPPz/Memt9kXHZ8Q=
-X-Google-Smtp-Source: ABdhPJwzFaYzgiq1IeUcUksMRdLc+C517sdgU7OZCHejrQzGI+3lj8uCKMAMaXdwsFkwWlYA3S/pmw==
-X-Received: by 2002:a17:906:3809:: with SMTP id v9mr541465ejc.355.1630622708394;
-        Thu, 02 Sep 2021 15:45:08 -0700 (PDT)
-Received: from skbuf ([82.78.148.104])
-        by smtp.gmail.com with ESMTPSA id i18sm1742296ejg.100.2021.09.02.15.45.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Sep 2021 15:45:07 -0700 (PDT)
-Date:   Fri, 3 Sep 2021 01:45:06 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        netdev@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        kernel-team <kernel-team@android.com>,
-        Len Brown <lenb@kernel.org>
-Subject: Re: [RFC PATCH net-next 1/3] net: phy: don't bind genphy in
- phy_attach_direct if the specific driver defers probe
-Message-ID: <20210902224506.5h7bnybjbljs5uxz@skbuf>
-References: <20210901225053.1205571-1-vladimir.oltean@nxp.com>
- <20210901225053.1205571-2-vladimir.oltean@nxp.com>
- <20210902185016.GL22278@shell.armlinux.org.uk>
- <YTErTRBnRYJpWDnH@lunn.ch>
- <bd7c9398-5d3d-ccd8-8804-25074cff6bde@gmail.com>
- <20210902213303.GO22278@shell.armlinux.org.uk>
- <20210902213949.r3q5764wykqgjm4z@skbuf>
- <20210902222439.GQ22278@shell.armlinux.org.uk>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=OzpYK8dvsIlm/S8gJHWT+Oy8oCpnYbMnDX+i/m5SSTs=;
+        b=nhv6oDa1MnrcQduxipBxy4wyVx41dS4bZV4wV1Q2rJCOCO6BR3TsydxG60i0mItu1/
+         Eu1gcpom0DDsxOm7XrHLCEXO1WWzEg/aa73rTL9SeCkqYBrK2bcAbbPlh4vCwvq9lOG1
+         8u2lbNAS+gzTCmKgDhW90Pw4exmYeQ7fqUZPfcc23nZe1qABLX2e0wwvF4UrNdNPZWJB
+         OZeE4O+VHL08220/0G4oT7HqMwWUEPN6QWa513/CeRkWOvuiZyZ7PZ5AZkubM0F3n5B9
+         0YAn5cdox1pMq4GYGj/9PL559QzsM7HWWK9A+imT5hvIhzVFDmLqV4jNi3yVMX8MSM95
+         o2Aw==
+X-Gm-Message-State: AOAM531S7DOrn+DLyjpKj5yctoFWoYb6gRTHrae6D2KnI2KlQIZNIYAX
+        UBKgusqTVTa2i6c+S89yKbKxmMIk9foMnoRo
+X-Google-Smtp-Source: ABdhPJyg5pvO80hmei1LQvFpHKLM/sURl80NK6h0B8+ffkuxqd34KT8RNR5rdg3dNqfaRjmvRXMCgQ==
+X-Received: by 2002:a05:6214:14f2:: with SMTP id k18mr618747qvw.19.1630623235206;
+        Thu, 02 Sep 2021 15:53:55 -0700 (PDT)
+Received: from [192.168.4.142] (pool-72-82-21-11.prvdri.fios.verizon.net. [72.82.21.11])
+        by smtp.gmail.com with ESMTPSA id r140sm2577993qke.15.2021.09.02.15.53.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 02 Sep 2021 15:53:54 -0700 (PDT)
+Subject: Re: [PATCH v6 1/6] Bluetooth: schedule SCO timeouts with delayed_work
+To:     Eric Dumazet <eric.dumazet@gmail.com>, marcel@holtmann.org,
+        johan.hedberg@gmail.com, luiz.dentz@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, sudipm.mukherjee@gmail.com
+Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, skhan@linuxfoundation.org,
+        gregkh@linuxfoundation.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        syzbot+2f6d7c28bb4bf7e82060@syzkaller.appspotmail.com
+References: <20210810041410.142035-1-desmondcheongzx@gmail.com>
+ <20210810041410.142035-2-desmondcheongzx@gmail.com>
+ <0b33a7fe-4da0-058c-cff3-16bb5cfe8f45@gmail.com>
+ <bad67d05-366b-bebe-cbdb-6555386497de@gmail.com>
+ <94942257-927c-efbc-b3fd-44cc097ad71f@gmail.com>
+From:   Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
+Message-ID: <fa269649-21eb-be76-e552-36a3aa4f3da4@gmail.com>
+Date:   Thu, 2 Sep 2021 18:53:53 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210902222439.GQ22278@shell.armlinux.org.uk>
+In-Reply-To: <94942257-927c-efbc-b3fd-44cc097ad71f@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 02, 2021 at 11:24:39PM +0100, Russell King (Oracle) wrote:
-> On Fri, Sep 03, 2021 at 12:39:49AM +0300, Vladimir Oltean wrote:
-> > On Thu, Sep 02, 2021 at 10:33:03PM +0100, Russell King (Oracle) wrote:
-> > > That's probably an unreliable indicator. DPAA2 has weirdness in the
-> > > way it can dynamically create and destroy network interfaces, which
-> > > does lead to problems with the rtnl lock. I've been carrying a patch
-> > > from NXP for this for almost two years now, which NXP still haven't
-> > > submitted:
-> > >
-> > > http://git.armlinux.org.uk/cgit/linux-arm.git/commit/?h=cex7&id=a600f2ee50223e9bcdcf86b65b4c427c0fd425a4
-> > >
-> > > ... and I've no idea why that patch never made mainline. I need it
-> > > to avoid the stated deadlock on SolidRun Honeycomb platforms when
-> > > creating additional network interfaces for the SFP cages in userspace.
-> >
-> > Ah, nice, I've copied that broken logic for the dpaa2-switch too:
-> > https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=d52ef12f7d6c016f3b249db95af33f725e3dd065
-> >
-> > So why don't you send the patch? I can send it too if you want to, one
-> > for the switch and one for the DPNI driver.
->
-> Sorry, I mis-stated. NXP did submit that exact patch, but it's actually
-> incorrect for the reason I stated when it was sent:
->
-> https://patchwork.ozlabs.org/project/netdev/patch/1574363727-5437-2-git-send-email-ioana.ciornei@nxp.com/
+On 2/9/21 5:41 pm, Eric Dumazet wrote:
+> 
+> 
+> On 9/2/21 12:32 PM, Desmond Cheong Zhi Xi wrote:
+>>
+>> Hi Eric,
+>>
+>> This actually seems to be a pre-existing error in sco_sock_connect that we now hit in sco_sock_timeout.
+>>
+>> Any thoughts on the following patch to address the problem?
+>>
+>> Link: https://lore.kernel.org/lkml/20210831065601.101185-1-desmondcheongzx@gmail.com/
+> 
+> 
+> syzbot is still working on finding a repro, this is obviously not trivial,
+> because this is a race window.
+> 
+> I think this can happen even with a single SCO connection.
+> 
+> This might be triggered more easily forcing a delay in sco_sock_timeout()
+> 
+> diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
+> index 98a88158651281c9f75c4e0371044251e976e7ef..71ebe0243fab106c676c308724fe3a3f92a62cbd 100644
+> --- a/net/bluetooth/sco.c
+> +++ b/net/bluetooth/sco.c
+> @@ -84,8 +84,14 @@ static void sco_sock_timeout(struct work_struct *work)
+>   
+>          sco_conn_lock(conn);
+>          sk = conn->sk;
+> -       if (sk)
+> +       if (sk) {
+> +               // lets pretend cpu has been busy (in interrupts) for 100ms
+> +               int i;
+> +               for (i=0;i<100000;i++)
+> +                       udelay(1);
+> +
+>                  sock_hold(sk);
+> +       }>          sco_conn_unlock(conn);
+>   
+>          if (!sk)
+> 
+> 
+> Stack trace tells us that sco_sock_timeout() is running after last reference
+> on socket has been released.
+> 
+> __refcount_add include/linux/refcount.h:199 [inline]
+>   __refcount_inc include/linux/refcount.h:250 [inline]
+>   refcount_inc include/linux/refcount.h:267 [inline]
+>   sock_hold include/net/sock.h:702 [inline]
+>   sco_sock_timeout+0x216/0x290 net/bluetooth/sco.c:88
+>   process_one_work+0x98d/0x1630 kernel/workqueue.c:2276
+>   worker_thread+0x658/0x11f0 kernel/workqueue.c:2422
+>   kthread+0x3e5/0x4d0 kernel/kthread.c:319
+>   ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+> 
+> This is why I suggested to delay sock_put() to make sure this can not happen.
+> 
+> diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
+> index 98a88158651281c9f75c4e0371044251e976e7ef..bd0222e3f05a6bcb40cffe8405c9dfff98d7afde 100644
+> --- a/net/bluetooth/sco.c
+> +++ b/net/bluetooth/sco.c
+> @@ -195,10 +195,11 @@ static void sco_conn_del(struct hci_conn *hcon, int err)
+>                  sco_sock_clear_timer(sk);
+>                  sco_chan_del(sk, err);
+>                  release_sock(sk);
+> -               sock_put(sk);
+>   
+>                  /* Ensure no more work items will run before freeing conn. */
+>                  cancel_delayed_work_sync(&conn->timeout_work);
+> +
+> +               sock_put(sk);
+>          }
+>   
+>          hcon->sco_data = NULL;
+> 
 
-So why are you carrying it then?
+I see where you're going with this, but once sco_chan_del returns, any
+instance of sco_sock_timeout that hasn't yet called sock_hold will
+simply return, because conn->sk is NULL. Adding a delay to the
+sco_conn_lock critical section in sco_sock_timeout would not affect this
+because sco_chan_del clears conn->sk while holding onto the lock.
 
-> I did miss the rtnl_lock() around phylink_disconnect_phy() in the
-> description of the race, which goes someway towards hiding it, but
-> there is still a race between phylink_destroy() and another thread
-> calling dpaa2_eth_get_link_ksettings(), and priv->mac being freed:
->
-> static int
-> dpaa2_eth_get_link_ksettings(struct net_device *net_dev,
->                              struct ethtool_link_ksettings *link_settings)
-> {
->         struct dpaa2_eth_priv *priv = netdev_priv(net_dev);
->
->         if (dpaa2_eth_is_type_phy(priv))
->                 return phylink_ethtool_ksettings_get(priv->mac->phylink,
->                                                      link_settings);
->
-> which dereferences priv->mac and priv->mac->phylink, vs:
->
-> static irqreturn_t dpni_irq0_handler_thread(int irq_num, void *arg)
-> {
-> ...
->         if (status & DPNI_IRQ_EVENT_ENDPOINT_CHANGED) {
->                 dpaa2_eth_set_mac_addr(netdev_priv(net_dev));
->                 dpaa2_eth_update_tx_fqids(priv);
->
->                 if (dpaa2_eth_has_mac(priv))
->                         dpaa2_eth_disconnect_mac(priv);
->                 else
->                         dpaa2_eth_connect_mac(priv);
->         }
->
-> static void dpaa2_eth_disconnect_mac(struct dpaa2_eth_priv *priv)
-> {
->         if (dpaa2_eth_is_type_phy(priv))
->                 dpaa2_mac_disconnect(priv->mac);
->
->         if (!dpaa2_eth_has_mac(priv))
->                 return;
->
->         dpaa2_mac_close(priv->mac);
->         kfree(priv->mac);		<== potential use after free bug by
->         priv->mac = NULL;		<== dpaa2_eth_get_link_ksettings()
-> }
+The main reason that cancel_delayed_work_sync is run there is to make
+sure that we don't have a UAF on the SCO connection itself after we free
+conn.
 
-Okay, so this needs to stay under the rtnetlink mutex, to serialize with
-dpaa2_eth_get_link_ksettings which is already under the rtnetlink mutex.
-So the way in which rtnl_lock is taken right now is actually fine in a way.
+For a single SCO connection with well-formed channel, I think there
+can't be a race. Here's the reasoning:
 
->
-> void dpaa2_mac_disconnect(struct dpaa2_mac *mac)
-> {
->         if (!mac->phylink)
->                 return;
->
->         phylink_disconnect_phy(mac->phylink);
->         phylink_destroy(mac->phylink);	<== another use-after-free bug via
-> 					    dpaa2_eth_get_link_ksettings()
->         dpaa2_pcs_destroy(mac);
-> }
->
-> Note that phylink_destroy() is documented as:
->
->  * Note: the rtnl lock must not be held when calling this function.
->
-> because it calls sfp_bus_del_upstream(), which will take the rtnl lock
-> itself. An alternative solution would be to remove the rtnl locking
-> from sfp_bus_del_upstream(), but then force _everyone_ to take the
-> rtnl lock before calling phylink_destroy() - meaning a larger block of
-> code ends up executing under the lock than is really necessary.
+- For the timeout to be scheduled, a socket must have a channel with a
+connection.
 
-So phylink_destroy has exactly 20 call sites, it is not that bad?
+- When a channel between a socket and connection is established, the
+socket transitions from BT_OPEN to BT_CONNECTED, BT_CONNECT, or
+BT_CONNECT2.
 
-And as for "larger block than necessary" - doesn't the dpaa2 prolonged
-usage count as necessary?
+- For a socket to be released, it has to be zapped. For sockets that
+have a state of BT_CONNECTED, BT_CONNECT, or BT_CONNECT2, they are
+zapped only when the channel is deleted.
 
-> However, as I stated in my review of the patch "As I've already stated,
-> the phylink is not designed to be created and destroyed on a published
-> network device." That still remains true today, and it seems that the
-> issue has never been fixed in DPAA2 despite having been pointed out.
+- If the channel is deleted (which is protected by sco_conn_lock), then
+conn->sk is NULL, and sco_sock_timeout simply exits. If we had entered
+the critical section in sco_sock_timeout before the channel was deleted,
+then we increased the reference count on the socket, so it won't be
+freed until sco_sock_timeout is done.
 
-So what would you do, exactly, to "fix" the issue that a DPNI can
-connect and disconnect at runtime from a DPMAC?
+Hence, sco_sock_timeout doesn't race with the release of a socket that
+has a well-formed channel with a connection.
 
-Also, "X is not designed to Y" doesn't really say much, given a bit of
-will power. Linux was not designed to run on non-i386 either.
+But if multiple connections are allocated and overwritten in
+sco_sock_connect, then none of the above assumptions hold because the
+SCO connection can't be cleaned up (i.e. conn->sk cannot be set to NULL)
+when the associated socket is released. This scenario happens in the
+syzbot reproducer for the crash here:
+https://syzkaller.appspot.com/bug?id=bcc246d137428d00ed14b476c2068579515fe2bc
 
-Any other issues besides needing to take rtnl_mutex top-level when
-calling phylink_destroy? Since phylink_disconnect_phy needs it anyway,
-and phylink_destroy ends up calling sfp_bus_del_upstream which takes the
-same mutex again, and drivers that connect/disconnect at probe/remove
-time end up calling both in a row, I don't think there is much of an
-issue to speak of, or that the rework would be that difficult.
+That aside, upon taking a closer look, I think there is indeed a race
+lurking in sco_conn_del, but it's not the one that syzbot is hitting.
+Our sock_hold simply comes too late, and by the time it's called we
+might have already have freed the socket.
+
+So probably something like this needs to happen:
+
+diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
+index fa25b07120c9..ea18e5b56343 100644
+--- a/net/bluetooth/sco.c
++++ b/net/bluetooth/sco.c
+@@ -187,10 +187,11 @@ static void sco_conn_del(struct hci_conn *hcon, int err)
+  	/* Kill socket */
+  	sco_conn_lock(conn);
+  	sk = conn->sk;
++	if (sk)
++		sock_hold(sk);
+  	sco_conn_unlock(conn);
+  
+  	if (sk) {
+-		sock_hold(sk);
+  		lock_sock(sk);
+  		sco_sock_clear_timer(sk);
+  		sco_chan_del(sk, err);
