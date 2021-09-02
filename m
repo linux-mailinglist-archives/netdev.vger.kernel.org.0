@@ -2,45 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 557233FEC47
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 12:40:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7849E3FEC4A
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 12:40:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245324AbhIBKlJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 06:41:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60446 "EHLO mail.kernel.org"
+        id S245601AbhIBKlQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 06:41:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60470 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244285AbhIBKlE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Sep 2021 06:41:04 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id BE033610CF;
+        id S244887AbhIBKlF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Sep 2021 06:41:05 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id DAAD4610F9;
         Thu,  2 Sep 2021 10:40:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1630579206;
-        bh=nIjdRScGSWuvC1Sigc0EAEUkSB/5w2uQcuG227e7hiw=;
+        bh=nfzd8wv9AJjbCNf/udVoWui2jMz8QWwsQPgmDGq2st8=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Mc9yCsmAIegCag1DBNr5OcDgeg3JM7ATd1P26DlFa6TajKg3zdRr0k7IXDUnXY+Nn
-         FSGCGrD+TIxZXsUX7H7LEVzJ3u27+zRDHYS8pscw3WtlNN2rQyMM+jn5r0yqHBDugJ
-         4dBjmbjNk1PuTbdoTWaNLxW0e9ma/rjCPq1hKgne2ej3scYdaB/FOrccZBCT76GEEz
-         qV7PuY5+alZfPvZhMFFJirnPs2NfvJASz3Yhhd1+656iEsddRyl7oEKZKMTr6dgG7O
-         1QaTZd8Oa4MReKUWprf63knZ9IwuAqjfmEqBoj/a5Q7AwKmVifE+40Rn5OjjvX6bm2
-         Lm5bTqFGY7Ukw==
+        b=Tvh+WpgYVIcq7dgKlzxsA0KNSSV1M1vqXCoIbG6oRXvh962ExMVXQfJwSbtdfTftF
+         CPjbyI627dV5nW2FLFKhz2xxeJLTbxBrMb0pILScDtIp3dYF8tIYVyUL6WPA1Ah3qi
+         7bFttnSnd4PINixc3b9eslu/oS9lgWWwoeBsVssdhf7PBk4nDA9DHUaws4WZR/MCn0
+         bb1UFGdmn1r0r/mxkhUVekz5Olp92TONAgrZXH0ikC6ol2Uzg3bPryVjmDKgfX/Xy5
+         abIgf4UMYBb2F1emYj14nG27RxV5VqkLIzsWg+SYtBQaedzAULx35rYYUjoq0tZOlr
+         /h4paKEMy2Gcg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id ACFEC60982;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id CE19160A17;
         Thu,  2 Sep 2021 10:40:06 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: qrtr: revert check in qrtr_endpoint_post()
+Subject: Re: [PATCH net] net: dsa: lantiq_gswip: fix maximum frame length
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163057920670.13463.6345421030550581694.git-patchwork-notify@kernel.org>
+Message-Id: <163057920683.13463.14646467225030536879.git-patchwork-notify@kernel.org>
 Date:   Thu, 02 Sep 2021 10:40:06 +0000
-References: <20210902100851.GD2151@kadam>
-In-Reply-To: <20210902100851.GD2151@kadam>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     john.stultz@linaro.org, kuba@kernel.org,
-        torvalds@linux-foundation.org, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        gregkh@linuxfoundation.org, bjorn.andersson@linaro.org,
-        srinivas.kandagatla@linaro.org
+References: <20210901184933.312389-1-jan@3e8.eu>
+In-Reply-To: <20210901184933.312389-1-jan@3e8.eu>
+To:     Jan Hoffmann <jan@3e8.eu>
+Cc:     hauke@hauke-m.de, netdev@vger.kernel.org, stable@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -49,20 +45,20 @@ Hello:
 
 This patch was applied to netdev/net.git (refs/heads/master):
 
-On Thu, 2 Sep 2021 13:08:51 +0300 you wrote:
-> I tried to make this check stricter as a hardenning measure but it broke
-> audo and wifi on these devices so revert it.
+On Wed,  1 Sep 2021 20:49:33 +0200 you wrote:
+> Currently, outgoing packets larger than 1496 bytes are dropped when
+> tagged VLAN is used on a switch port.
 > 
-> Fixes: aaa8e4922c88 ("net: qrtr: make checks in qrtr_endpoint_post() stricter")
-> Reported-by: John Stultz <john.stultz@linaro.org>
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> Tested-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+> Add the frame check sequence length to the value of the register
+> GSWIP_MAC_FLEN to fix this. This matches the lantiq_ppa vendor driver,
+> which uses a value consisting of 1518 bytes for the MAC frame, plus the
+> lengths of special tag and VLAN tags.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] net: qrtr: revert check in qrtr_endpoint_post()
-    https://git.kernel.org/netdev/net/c/d2cabd2dc8da
+  - [net] net: dsa: lantiq_gswip: fix maximum frame length
+    https://git.kernel.org/netdev/net/c/552799f8b3b0
 
 You are awesome, thank you!
 --
