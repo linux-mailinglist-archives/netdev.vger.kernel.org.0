@@ -2,44 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1AE13FEC69
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 12:51:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D8753FEC6C
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 12:51:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343580AbhIBKwA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 06:52:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36246 "EHLO mail.kernel.org"
+        id S1343646AbhIBKwH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 06:52:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36240 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245512AbhIBKvD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S245510AbhIBKvD (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 2 Sep 2021 06:51:03 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 8A533610CF;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 7D541610CE;
         Thu,  2 Sep 2021 10:50:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1630579805;
-        bh=vIsZxdlmx3+9HGh/lCSUQD0R/0Q4d4fGBCN1pLR/AqU=;
+        bh=6ZC72MkkUiRA7idv+wrbolVrOjl4rY32njlxwN5wTgE=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=lzEZFBvTSkX9CakHqnQrzWLWKCVuWxyZx/QUaL8KbwJRz+9VFlZVbVBJ4pH9MpSGT
-         ltMrds21G2aVniOUi74XWw/z5bku07EaH48dAn1NS4dw005WhYPjbs8T7Hswt2R45v
-         aNRGPprDoXnCUdZPR49Tmv2luXMHtGJO7uiK288sTEM3C8eJLCM9MYRk3pmVzDdQ6T
-         Bs3o1203sLq5VCP3LwS0mOj8wwgx9SNtWyA29FsPvCYtivYFX04bBSLMhU/wGLJXFD
-         h/t6vS69FneZeDnUDa7H0lXXCp2zn62hyxlWsmnIKpwvlpt0sG1qFQPN8eLrm5sjuQ
-         y13dIUahBGnrw==
+        b=H4fl9VoFhPtlEd54b2qRnF4WV1/VyfDP2OFtnue/pdIHBZpX3wbTGeIkl4YugLXTD
+         Ny2tCoFEKOesZoFEgfBpsoeq93/df8ec1EUntWw4Vpx97O4bPSSioHhEiPrKPptVNp
+         JuxD6NuTjm7VQtSSUhoNuY51Aa6e49D7WZB7EfgMhdqfatYaqw500Augnowq/HJ9lQ
+         a92obewjMtyGTlyw8Q4vEFbuiT6DoTMMuqBdO2yELRwQPXwRysqbFXCaDimxf0Bvg4
+         5gGRFUrtHkBKBb0A/bmSEDGAD1v1+lRaOQvIq8fi8g4Klz+Re9JnsHoEt2lRBUhe7S
+         qFPwAbbBSHQvQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 791A260A2F;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6D58960982;
         Thu,  2 Sep 2021 10:50:05 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] flow: fix object-size-mismatch warning in
- flowi{4,6}_to_flowi_common()
+Subject: Re: [PATCH] Set fc_nlinfo in nh_create_ipv4, nh_create_ipv6
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163057980548.19226.5521481584542089933.git-patchwork-notify@kernel.org>
+Message-Id: <163057980544.19226.5142981830562504937.git-patchwork-notify@kernel.org>
 Date:   Thu, 02 Sep 2021 10:50:05 +0000
-References: <ae340f07-4d7f-9761-de88-d564c4250104@i-love.sakura.ne.jp>
-In-Reply-To: <ae340f07-4d7f-9761-de88-d564c4250104@i-love.sakura.ne.jp>
-To:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Cc:     davem@davemloft.net, kuba@kernel.org, nathan@kernel.org,
-        ndesaulniers@google.com, netdev@vger.kernel.org,
-        clang-built-linux@googlegroups.com, hdanton@sina.com
+References: <20210902052014.605249-1-contact@proelbtn.com>
+In-Reply-To: <20210902052014.605249-1-contact@proelbtn.com>
+To:     Ryoga Saito <contact@proelbtn.com>
+Cc:     dsahern@kernel.org, davem@davemloft.net, yoshfuji@linux-ipv6.org,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -48,46 +47,20 @@ Hello:
 
 This patch was applied to netdev/net.git (refs/heads/master):
 
-On Thu, 2 Sep 2021 14:36:17 +0900 you wrote:
-> Commit 3df98d79215ace13 ("lsm,selinux: pass flowi_common instead of flowi
-> to the LSM hooks") introduced flowi{4,6}_to_flowi_common() functions which
-> cause UBSAN warning when building with LLVM 11.0.1 on Ubuntu 21.04.
+On Thu,  2 Sep 2021 05:20:14 +0000 you wrote:
+> This patch fixes kernel NULL pointer dereference when creating nexthop
+> which is bound with SRv6 decapsulation. In the creation of nexthop,
+> __seg6_end_dt_vrf_build is called. __seg6_end_dt_vrf_build expects
+> fc_lninfo in fib6_config is set correctly, but it isn't set in
+> nh_create_ipv6, which causes kernel crash.
 > 
->  ================================================================================
->  UBSAN: object-size-mismatch in ./include/net/flow.h:197:33
->  member access within address ffffc9000109fbd8 with insufficient space
->  for an object of type 'struct flowi'
->  CPU: 2 PID: 7410 Comm: systemd-resolve Not tainted 5.14.0 #51
->  Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 02/27/2020
->  Call Trace:
->   dump_stack_lvl+0x103/0x171
->   ubsan_type_mismatch_common+0x1de/0x390
->   __ubsan_handle_type_mismatch_v1+0x41/0x50
->   udp_sendmsg+0xda2/0x1300
->   ? ip_skb_dst_mtu+0x1f0/0x1f0
->   ? sock_rps_record_flow+0xe/0x200
->   ? inet_send_prepare+0x2d/0x90
->   sock_sendmsg+0x49/0x80
->   ____sys_sendmsg+0x269/0x370
->   __sys_sendmsg+0x15e/0x1d0
->   ? syscall_enter_from_user_mode+0xf0/0x1b0
->   do_syscall_64+0x3d/0xb0
->   entry_SYSCALL_64_after_hwframe+0x44/0xae
->  RIP: 0033:0x7f7081a50497
->  Code: 0c 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b7 0f 1f 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 51 c3 48 83 ec 28 89 54 24 1c 48 89 74 24 10
->  RSP: 002b:00007ffc153870f8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
->  RAX: ffffffffffffffda RBX: 000000000000000c RCX: 00007f7081a50497
->  RDX: 0000000000000000 RSI: 00007ffc15387140 RDI: 000000000000000c
->  RBP: 00007ffc15387140 R08: 0000563f29a5e4fc R09: 000000000000cd28
->  R10: 0000563f29a68a30 R11: 0000000000000246 R12: 000000000000000c
->  R13: 0000000000000001 R14: 0000563f29a68a30 R15: 0000563f29a5e50c
->  ================================================================================
+> Here is steps to reproduce kernel crash:
 > 
 > [...]
 
 Here is the summary with links:
-  - flow: fix object-size-mismatch warning in flowi{4,6}_to_flowi_common()
-    https://git.kernel.org/netdev/net/c/b9edbfe1adec
+  - Set fc_nlinfo in nh_create_ipv4, nh_create_ipv6
+    https://git.kernel.org/netdev/net/c/9aca491e0dcc
 
 You are awesome, thank you!
 --
