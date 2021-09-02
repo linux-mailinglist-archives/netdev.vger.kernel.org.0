@@ -2,130 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B786E3FE8FF
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 07:56:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01B673FE904
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 07:59:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238548AbhIBF4q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 01:56:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43828 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236858AbhIBF4p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 01:56:45 -0400
-Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 687CFC061575;
-        Wed,  1 Sep 2021 22:55:47 -0700 (PDT)
-Received: by mail-ot1-x32e.google.com with SMTP id l7-20020a0568302b0700b0051c0181deebso1145564otv.12;
-        Wed, 01 Sep 2021 22:55:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ZqDFUww5Sd5Bkqsvfw9cDIWu5UIF3ohb1b1raBg52Z8=;
-        b=ElnC0VZnQzg7oHz4JKXST89go8Ql3sqORcCHLbEt+xQj2+vg+Xu8v46C4fbqfDoDBT
-         33TipFjzhRt5ppdOL1gIac0L+STuVsDvFFatUlgjtxTVJtOULTxNprdqH8vh1Y3s5+Kf
-         1eP3qsl7ux2A+xVxlbqWBFE+d7X5wfj3OjaPvIb5IfbT7PndNsnTj9xSZ+87E5KOVdtK
-         RY9DmZMCZDXUuMr9uTU9mzd4wIxgoLP2kxfbU2l3Deeu50GVmqF3qq8MLhQSmbSZ5U0o
-         yn6Ec+GTHHbSiFRlAijC8b2uSnmUiIN0LG9QRxrDzGZ7KuR+XySWkI9ZR9rM+Xut+tC6
-         xlcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ZqDFUww5Sd5Bkqsvfw9cDIWu5UIF3ohb1b1raBg52Z8=;
-        b=NGpHoxab1P+uSuVpeThEgSaKmaK8C6ThUuCdaPRuHqmWI7hoLBog4lQDuuFcNKA3ll
-         IdBgcjmU8qrmH9qEkuvoffkaOuy5KvUZZhF+ntMG8lJO966udPt15WFB65045Bc6Ekon
-         f5zxKzlOtRA6AXWrWu9jkWiEWStpgY8kXUmMlrm6i7sNRvOZQwYiIf64HOXxb7mAWanH
-         PeLcBOBhVvSvpK0D3NQqjgjLSfKcgKQ6Yre4n94SrHeNLax6mg6Le8u/3jdHDpOV3EbX
-         vakgHzm95Qft51+W5etjwk30rhNBZ6cVNPDU+Li5ytaQ/ypI4dhRmqcS5/8OZ7SmicMY
-         uDYA==
-X-Gm-Message-State: AOAM532myWY7Cyx8zjzMUUoYyMNvbWZ9IZizhfVRC/F1e/UERDcN72n0
-        gxxTmskB1NMkKh2lEqNrlZyvpPXKqrw=
-X-Google-Smtp-Source: ABdhPJz3SffN5dp3m/PuLhP2c3p9BU6SmEIO3spzk1HIqdBUjpKg71KPCdXzez/VEQBHktEJEpy+ig==
-X-Received: by 2002:a05:6830:4003:: with SMTP id h3mr1196031ots.56.1630562146783;
-        Wed, 01 Sep 2021 22:55:46 -0700 (PDT)
-Received: from ?IPV6:2603:8090:2005:39b3::1027? (2603-8090-2005-39b3-0000-0000-0000-1027.res6.spectrum.com. [2603:8090:2005:39b3::1027])
-        by smtp.gmail.com with UTF8SMTPSA id v11sm171244oto.22.2021.09.01.22.55.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Sep 2021 22:55:46 -0700 (PDT)
-Sender: Larry Finger <larry.finger@gmail.com>
-Message-ID: <bb2a4294-b0b3-e36f-8828-25fde646be2c@lwfinger.net>
-Date:   Thu, 2 Sep 2021 00:55:44 -0500
+        id S241261AbhIBF7m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 01:59:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53244 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238732AbhIBF7k (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Sep 2021 01:59:40 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6434760FC4;
+        Thu,  2 Sep 2021 05:58:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1630562323;
+        bh=BwqwkSdoVWCyqzWTEEXTceIXMVKRB8SwogsNaQ7lvZI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=C7LSfgtMMuexPix16DaTOH3ZmOTPFUlZ+0QlunclyfNWrFDaXWWHvVjHPECgfEZNb
+         A8ffnAGdS3xUa7OtW6S3+ctupWMoTHuRTgRJOhCHlMCqlz25kbNNQzi5CBFAuINy64
+         fiNXWS1ZVAoh+5Zr6BccQx/iRX55Ibv2TcML/o+0=
+Date:   Thu, 2 Sep 2021 07:58:37 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     DENG Qingfang <dqfext@gmail.com>
+Cc:     Sasha Levin <sashal@kernel.org>, stable@vger.kernel.org,
+        Sean Wang <sean.wang@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@savoirfairelinux.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "open list:MEDIATEK SWITCH DRIVER" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>
+Subject: Re: [PATCH 4.19.y] net: dsa: mt7530: disable learning on standalone
+ ports
+Message-ID: <YTBoDaYDJfBz3YzN@kroah.com>
+References: <20210824055509.1316124-1-dqfext@gmail.com>
+ <YSUQV3jhfbhbf5Ct@sashalap>
+ <CALW65ja3hYGmEqcWZzifP2-0WsJOnxcUXsey2ZH5vDbD0-nDeQ@mail.gmail.com>
+ <YSi8Ky3GqBjnxbhC@kroah.com>
+ <20210902053619.1824464-1-dqfext@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.0.1
-Subject: Re: [GIT PULL] Networking for v5.15
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Luca Coelho <luciano.coelho@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-wireless@vger.kernel.org,
-        Miri Korenblit <miriam.rachel.korenblit@intel.com>,
-        Johannes Berg <johannes@sipsolutions.net>
-References: <20210831203727.3852294-1-kuba@kernel.org>
- <CAHk-=wjB_zBwZ+WR9LOpvgjvaQn=cqryoKigod8QnZs=iYGEhA@mail.gmail.com>
- <20210901124131.0bc62578@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Larry Finger <Larry.Finger@lwfinger.net>
-In-Reply-To: <20210901124131.0bc62578@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210902053619.1824464-1-dqfext@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/1/21 14:41, Jakub Kicinski wrote:
-> On Wed, 1 Sep 2021 12:00:57 -0700 Linus Torvalds wrote:
->> On Tue, Aug 31, 2021 at 1:37 PM Jakub Kicinski <kuba@kernel.org> wrote:
->>>
->>> No conflicts at the time of writing. There were conflicts with
->>> char-misc but I believe Greg dropped the commits in question.
->>
->> Hmm. I already merged this earlier, but didn't notice a new warning on
->> my desktop:
+On Thu, Sep 02, 2021 at 01:36:19PM +0800, DENG Qingfang wrote:
+> On Fri, Aug 27, 2021 at 12:19:23PM +0200, Greg KH wrote:
+> > On Tue, Aug 24, 2021 at 11:57:53PM +0800, DENG Qingfang wrote:
+> > > Standalone ports should have address learning disabled, according to
+> > > the documentation:
+> > > https://www.kernel.org/doc/html/v5.14-rc7/networking/dsa/dsa.html#bridge-layer
+> > > dsa_switch_ops on 5.10 or earlier does not have .port_bridge_flags
+> > > function so it has to be done differently.
+> > > 
+> > > I've identified an issue related to this.
+> > 
+> > What issue is that?  Where was it reported?
 > 
->>    RTNL: assertion failed at net/wireless/core.c (61)
->>    WARNING: CPU: 60 PID: 1720 at net/wireless/core.c:61
->> wiphy_idx_to_wiphy+0xbf/0xd0 [cfg80211]
->>    Call Trace:
->>     nl80211_common_reg_change_event+0xf9/0x1e0 [cfg80211]
->>     reg_process_self_managed_hint+0x23d/0x280 [cfg80211]
->>     regulatory_set_wiphy_regd_sync+0x3a/0x90 [cfg80211]
->>     iwl_mvm_init_mcc+0x170/0x190 [iwlmvm]
->>     iwl_op_mode_mvm_start+0x824/0xa60 [iwlmvm]
->>     iwl_opmode_register+0xd0/0x130 [iwlwifi]
->>     init_module+0x23/0x1000 [iwlmvm]
->>
->> They all seem to have that same issue, and it looks like the fix would
->> be to get the RTN lock in iwl_mvm_init_mcc(), but I didn't really look
->> into it very much.
->>
->> This is on my desktop, and I actually don't _use_ the wireless on this
->> machine. I assume it still works despite the warnings, but they should
->> get fixed.
->>
->> I *don't* see these warnings on my laptop where I actually use
->> wireless, but that one uses ath10k_pci, so it seems this is purely a
->> iwlwifi issue.
->>
->> I can't be the only one that sees this. Hmm?
-> 
-> Mm. Looking thru the recent commits there is a suspicious rtnl_unlock()
-> in commit eb09ae93dabf ("iwlwifi: mvm: load regdomain at INIT stage").
-> 
-> CC Miri, Johannes
-> 
+> See Florian's message here
+> https://lore.kernel.org/stable/20210317003549.3964522-2-f.fainelli@gmail.com/
 
-I did not get the bisection finished tonight, but commit eb09ae93dabf is not the 
-problem.
+THat is just the patch changelog text, or is it unique to this
+stable-only patch?  It is not obvious at all.
 
-My bisection has identified commit 7a3f5b0de36 ("netfilter: add netfilter hooks 
-to SRv6 data plane") as bad, and commit 9055a2f59162 ("ixp4xx_eth: make ptp 
-support a platform driver") as good.
+> > > > 2. A partial backport of this patch?
+> > > 
+> > > The other part does not actually fix anything.
+> > 
+> > Then why is it not ok to just take the whole thing?
+> > 
+> > When backporting not-identical-patches, something almost always goes
+> > wrong, so we prefer to take the original commit when ever possible.
+> 
+> Okay. MDB and tag ops can be backported as is, and broadcast/multicast
+> flooding can be implemented in .port_egress_floods. 
 
-Larry
+So what are we supposed to do here?
+
+totally confused,
+
+greg k-h
