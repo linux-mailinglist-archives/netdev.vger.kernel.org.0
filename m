@@ -2,72 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 197E33FF30C
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 20:13:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F7823FF33C
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 20:28:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346905AbhIBSOK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 14:14:10 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:56892 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346848AbhIBSOG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 14:14:06 -0400
-Received: by mail-io1-f71.google.com with SMTP id c22-20020a5d9a960000b029059c9e04cd63so1956771iom.23
-        for <netdev@vger.kernel.org>; Thu, 02 Sep 2021 11:13:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=SKqbmxS+RsaX2s2wlkIqfPl2jpAwEZUOKc/WPcjCCI4=;
-        b=NOMTaQWwJf41GElJWLs9pSXhxtfjhSVtNNtiSins5mjXDHGDYwD+c31sp2GrM0+zcl
-         FIn3ILgnjg/dDhPSaeXg03Bl6M2er4b/YjJEe9rMbZKJuwakk8SHId4Kv3c3qnEZnHBD
-         ZqBbgbJzueNYtC3CebtvR7Xgi2BVolbijj8+g3SdZadL5kv2MrTXWV4TYaqaP8nu9Ev6
-         kUG8CfxWo2iIJHnDhI588TrV9jEgZ+bVg+0VJmEWOsSgLZPtTO+XNjEh2fGYpUYSZFzC
-         Qle8Q1iG6sLZbuAJ8EF7ic4bi6f2B2xv/cg3aC6ln5zgOGu16ZhNA1zpFoCGlxWm1NsI
-         KeaQ==
-X-Gm-Message-State: AOAM530/Ay8MuKoxSCa2Vw2HZ4zKWxgKlF1EQJ1bEcuG0RSSYNngkaeF
-        xzeg8tZxquu0CTAgJmt57l5DaKor8jLr8MAvNuGs9NSSxAdW
-X-Google-Smtp-Source: ABdhPJwD0D7+AptQ8EA9ckgdTuikiRxn9vuAi6y42y6HBFgaRe792GZ/6WBHMCptEET95qkqIwwzNODir9aTMaslfmsTvAlBugdE
+        id S1347001AbhIBS3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 14:29:36 -0400
+Received: from vmicros1.altlinux.org ([194.107.17.57]:54724 "EHLO
+        vmicros1.altlinux.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346971AbhIBS3e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 14:29:34 -0400
+Received: from mua.local.altlinux.org (mua.local.altlinux.org [192.168.1.14])
+        by vmicros1.altlinux.org (Postfix) with ESMTP id 363AC72C8F8;
+        Thu,  2 Sep 2021 21:28:33 +0300 (MSK)
+Received: by mua.local.altlinux.org (Postfix, from userid 508)
+        id 274F87CF76A; Thu,  2 Sep 2021 21:28:33 +0300 (MSK)
+Date:   Thu, 2 Sep 2021 21:28:33 +0300
+From:   "Dmitry V. Levin" <ldv@altlinux.org>
+To:     Eugene Syromiatnikov <esyr@redhat.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Antony Antony <antony.antony@secunet.com>,
+        Christian Langrock <christian.langrock@secunet.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-api@vger.kernel.org
+Subject: Re: [PATCH] include/uapi/linux/xfrm.h: Fix XFRM_MSG_MAPPING ABI
+ breakage
+Message-ID: <20210902182832.GB21258@altlinux.org>
+References: <20210901153407.GA20446@asgard.redhat.com>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1d9c:: with SMTP id h28mr3424101ila.266.1630606387606;
- Thu, 02 Sep 2021 11:13:07 -0700 (PDT)
-Date:   Thu, 02 Sep 2021 11:13:07 -0700
-In-Reply-To: <00000000000034712e05ca9741e8@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000080826005cb07223c@google.com>
-Subject: Re: [syzbot] KASAN: null-ptr-deref Write in __pm_runtime_resume
-From:   syzbot <syzbot+7d41312fe3f123a6f605@syzkaller.appspotmail.com>
-To:     abhishekpandit@chromium.org, apusaka@chromium.org,
-        davem@davemloft.net, gregkh@linuxfoundation.org,
-        hildawu@realtek.com, johan.hedberg@gmail.com, kuba@kernel.org,
-        len.brown@intel.com, linux-bluetooth@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        luiz.dentz@gmail.com, marcel@holtmann.org, netdev@vger.kernel.org,
-        pavel@ucw.cz, rjw@rjwysocki.net, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210901153407.GA20446@asgard.redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this issue to:
+On Wed, Sep 01, 2021 at 05:34:07PM +0200, Eugene Syromiatnikov wrote:
+> Commit 2d151d39073a ("xfrm: Add possibility to set the default to block
+> if we have no policy") broke ABI by changing the value of the XFRM_MSG_MAPPING
+> enum item.  Fix it by placing XFRM_MSG_SETDEFAULT/XFRM_MSG_GETDEFAULT
+> to the end of the enum, right before __XFRM_MSG_MAX.
+> 
+> Fixes: 2d151d39073a ("xfrm: Add possibility to set the default to block if we have no policy")
+> Signed-off-by: Eugene Syromiatnikov <esyr@redhat.com>
 
-commit 66f077dde74943e9dd84a9205b4951b19556c9ea
-Author: Archie Pusaka <apusaka@chromium.org>
-Date:   Fri Jul 23 11:31:55 2021 +0000
+References: https://lore.kernel.org/netdev/20210901151402.GA2557@altlinux.org/
+Reviewed-by: Dmitry V. Levin <ldv@altlinux.org>
 
-    Bluetooth: hci_h5: add WAKEUP_DISABLE flag
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17258e45300000
-start commit:   835d31d319d9 Merge tag 'media/v5.15-1' of git://git.kernel..
-git tree:       upstream
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=14a58e45300000
-console output: https://syzkaller.appspot.com/x/log.txt?x=10a58e45300000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=d793523866f2daea
-dashboard link: https://syzkaller.appspot.com/bug?extid=7d41312fe3f123a6f605
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17608125300000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17465ffe300000
-
-Reported-by: syzbot+7d41312fe3f123a6f605@syzkaller.appspotmail.com
-Fixes: 66f077dde749 ("Bluetooth: hci_h5: add WAKEUP_DISABLE flag")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+-- 
+ldv
