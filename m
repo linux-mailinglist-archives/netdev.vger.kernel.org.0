@@ -2,41 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7849E3FEC4A
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 12:40:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48EB73FEC51
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 12:41:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245601AbhIBKlQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 06:41:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60470 "EHLO mail.kernel.org"
+        id S245067AbhIBKlI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 06:41:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60452 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244887AbhIBKlF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Sep 2021 06:41:05 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id DAAD4610F9;
+        id S244445AbhIBKlE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Sep 2021 06:41:04 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id C1BF1610D2;
         Thu,  2 Sep 2021 10:40:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1630579206;
-        bh=nfzd8wv9AJjbCNf/udVoWui2jMz8QWwsQPgmDGq2st8=;
+        bh=3lo67td5noyQzNkNhoNLS8lIqLNaUptUZ3ae7Bgj2AQ=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Tvh+WpgYVIcq7dgKlzxsA0KNSSV1M1vqXCoIbG6oRXvh962ExMVXQfJwSbtdfTftF
-         CPjbyI627dV5nW2FLFKhz2xxeJLTbxBrMb0pILScDtIp3dYF8tIYVyUL6WPA1Ah3qi
-         7bFttnSnd4PINixc3b9eslu/oS9lgWWwoeBsVssdhf7PBk4nDA9DHUaws4WZR/MCn0
-         bb1UFGdmn1r0r/mxkhUVekz5Olp92TONAgrZXH0ikC6ol2Uzg3bPryVjmDKgfX/Xy5
-         abIgf4UMYBb2F1emYj14nG27RxV5VqkLIzsWg+SYtBQaedzAULx35rYYUjoq0tZOlr
-         /h4paKEMy2Gcg==
+        b=Lqf5lwd/3bk9oMkzfD2Z98kk0yi6FeHckbIn4K2XRcuHIfQP6+TU8tDVwnun3j3Sl
+         MS9kTg93wp4XhK1CdK/3aPIPOnEYMxEQ3ceQdHT/iptMyIcyStPEQacSeIDIV+m1Vv
+         R5GbmxAXPC+VlXmjpW/zCyP5VZPb31ggtuUGxXpoTc2ze8lOHm1tJ6SwMWpOwwCEcZ
+         Dc4HHkZypa/daljODeONx5ipWM9/RB6uBupBgcBD2AKmth/oGNQnUUitqTsYoM9m3M
+         1H9LTXB2PDMCfnkkvpn6SVPTfOM9n1rifmHSL/VOkzsTf+7Y6h1EEfq+YhoLq9bsA1
+         MLxaoOxWBklPQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id CE19160A17;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B792B60A3E;
         Thu,  2 Sep 2021 10:40:06 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: dsa: lantiq_gswip: fix maximum frame length
+Subject: Re: [PATCH] net/sun3_82586: Fix return value of sun3_82586_probe()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163057920683.13463.14646467225030536879.git-patchwork-notify@kernel.org>
+Message-Id: <163057920674.13463.427574638900568513.git-patchwork-notify@kernel.org>
 Date:   Thu, 02 Sep 2021 10:40:06 +0000
-References: <20210901184933.312389-1-jan@3e8.eu>
-In-Reply-To: <20210901184933.312389-1-jan@3e8.eu>
-To:     Jan Hoffmann <jan@3e8.eu>
-Cc:     hauke@hauke-m.de, netdev@vger.kernel.org, stable@vger.kernel.org
+References: <20210901121735.2477588-1-geert@linux-m68k.org>
+In-Reply-To: <20210901121735.2477588-1-geert@linux-m68k.org>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     arnd@arndb.de, davem@davemloft.net, kuba@kernel.org,
+        sammy@sammy.net, netdev@vger.kernel.org,
+        linux-m68k@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -45,20 +47,20 @@ Hello:
 
 This patch was applied to netdev/net.git (refs/heads/master):
 
-On Wed,  1 Sep 2021 20:49:33 +0200 you wrote:
-> Currently, outgoing packets larger than 1496 bytes are dropped when
-> tagged VLAN is used on a switch port.
+On Wed,  1 Sep 2021 14:17:35 +0200 you wrote:
+> drivers/net/ethernet/i825xx/sun3_82586.c: In function ‘sun3_82586_probe’:
+> drivers/net/ethernet/i825xx/sun3_82586.c:317:9: warning: returning ‘struct net_device *’ from a function with return type ‘int’ makes integer from pointer without a cast [-Wint-conversion]
+>   317 |  return dev;
+>       |         ^~~
 > 
-> Add the frame check sequence length to the value of the register
-> GSWIP_MAC_FLEN to fix this. This matches the lantiq_ppa vendor driver,
-> which uses a value consisting of 1518 bytes for the MAC frame, plus the
-> lengths of special tag and VLAN tags.
+> The return type of sun3_82586_probe() was changed, but one return value
+> was forgotten to be updated.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] net: dsa: lantiq_gswip: fix maximum frame length
-    https://git.kernel.org/netdev/net/c/552799f8b3b0
+  - net/sun3_82586: Fix return value of sun3_82586_probe()
+    https://git.kernel.org/netdev/net/c/66abf5fb4cf7
 
 You are awesome, thank you!
 --
