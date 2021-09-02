@@ -2,78 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73BD33FE96A
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 08:45:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 395953FE974
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 08:49:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241779AbhIBGpv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 02:45:51 -0400
-Received: from smtp23.cstnet.cn ([159.226.251.23]:41630 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S241529AbhIBGpu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Sep 2021 02:45:50 -0400
-Received: from localhost.localdomain (unknown [124.16.138.128])
-        by APP-03 (Coremail) with SMTP id rQCowABHyo0NcTBhl3HEAA--.41154S2;
-        Thu, 02 Sep 2021 14:37:01 +0800 (CST)
-From:   jiasheng <jiasheng@iscas.ac.cn>
-To:     netdev@vger.kernel.org
-Cc:     jiasheng <jiasheng@iscas.ac.cn>
-Subject: [PATCH] bpf: Add env_type_is_resolved() in front of env_stack_push() in btf_resolve()
-Date:   Thu,  2 Sep 2021 06:37:00 +0000
-Message-Id: <1630564620-552327-1-git-send-email-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.7.4
-X-CM-TRANSID: rQCowABHyo0NcTBhl3HEAA--.41154S2
-X-Coremail-Antispam: 1UD129KBjvdXoWruw4UKr4fArWUKw48uw4fuFg_yoWkArg_K3
-        W8uF1rGwsxKFsaya1jvw4furW2k3yYqFn7Za1aqFs8G3s8WF15Jrn8Xas3JrsrGrWkKrZF
-        vFZ8G3sIgF1avjkaLaAFLSUrUUUUOb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbgxYjsxI4VW3JwAYFVCjjxCrM7AC8VAFwI0_Jr0_Gr1l1xkIjI8I
-        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
-        8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0
-        cI8IcVCY1x0267AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4
-        A2jsIEc7CjxVAFwI0_GcCE3s1ln4kS14v26r1q6r43M2AIxVAIcxkEcVAq07x20xvEncxI
-        r21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1q6rW5McIj6I8E87
-        Iv67AKxVW8JVWxJwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0E
-        jII2zVCS5cI20VAGYxC7MxkF7I0En4kS14v26r4a6rW5MxkIecxEwVAFwVW8AwCF04k20x
-        vY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwCFI7km07C267AKxVWUtVW8ZwC20s02
-        6c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jr
-        v_JF1lIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVW8JVW5JwCI42IY6xIIjxv20xvE
-        c7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r4j6FyUMIIF0xvEx4A2jsIE14
-        v26r4j6F4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x
-        0zRxgArUUUUU=
-X-Originating-IP: [124.16.138.128]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+        id S241529AbhIBGuD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 02:50:03 -0400
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:54529 "EHLO
+        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239077AbhIBGt4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 02:49:56 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 82F4E580CA8;
+        Thu,  2 Sep 2021 02:48:57 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Thu, 02 Sep 2021 02:48:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=wLdsoF
+        jidL1GAMNupKB6KhdOpkiskgoBwwDwzSeYQJg=; b=X5a10OTpqNQL2LtwJEYgun
+        hRNRyZeZ0dvKiM9QNZHSPBOOHGM4X+YdeimS+wIRuxJOSYGfL7xj3Laj4CtaUQqk
+        k0oMoH/2QhK+x/UQm1Gk4+6SQYbLbR1/WiHxkQ5T0OuiFddooGqB9JAFnoqassrx
+        hEEFSQVWSSCkOrAg0w2PCwGO227gKnZx7dB3frRYf7zOa1oSrhrklPFBdwixKFD3
+        rns3/cwAlnqDwqnPlxWqkr/L5OEze2Qvy32Xt3pLqyGx8snvrOpqWwKBEK1qwVw7
+        UrWZkbFwfWqB5l2zOfcCoFwOiRKxXZjFabPj3dXU4OH7Mh6YxjnaSE0SaHKknh/Q
+        ==
+X-ME-Sender: <xms:2HMwYXZ0KBuL5nWEv0k41eEr3UhoxKjvAYEPV9rEOENUc8Hr7NnaJQ>
+    <xme:2HMwYWa2meGQoXxJoHKYDWPflH-dyF1T5CZYdsB7OLPI-wqz5_F4W9WyD3megonzQ
+    gok1b6pJLkBXMo>
+X-ME-Received: <xmr:2HMwYZ-lurm86Md3Ht_7DEnfwHJAr0jWSfnTLI_FNPjdmgjBrMggfU8PH0y-Rb-zxr4M3atFtv41innkF73fYzaVtcX2iw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddruddvgedguddufecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
+    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
+    leetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
+    guohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:2HMwYdrKvJrArq93dFKGlBQwEjgDkuqSR-8lHOh8os7NOFmXF4aU1Q>
+    <xmx:2HMwYSr_3ckpcQFTWLD4rOu4QOqX2G17MyNke0wKqR2HqFWQ5Xo-YA>
+    <xmx:2HMwYTT9Y446dxssUWUxI6C85XmXco1EqXhhtBBToU6idfD-9Gc1pA>
+    <xmx:2XMwYfivyuycs8WOM08O9ovi4BdFRmNkeMmrDxYP5h_OLZf2Cs0PJg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 2 Sep 2021 02:48:55 -0400 (EDT)
+Date:   Thu, 2 Sep 2021 09:48:51 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     Boris Sukholitko <boris.sukholitko@broadcom.com>,
+        netdev@vger.kernel.org, Jiri Pirko <jiri@resnulli.us>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Vadym Kochan <vadym.kochan@plvision.eu>,
+        Ilya Lifshits <ilya.lifshits@broadcom.com>,
+        tom Herbert <tom@sipanda.io>,
+        Felipe Magno de Almeida <felipe@expertise.dev>,
+        Pedro Tammela <pctammela@mojatatu.com>
+Subject: Re: [PATCH net-next] net/sched: cls_flower: Add orig_ethtype
+Message-ID: <YTBz0zitSUrd0Qd1@shredder>
+References: <20210830080800.18591-1-boris.sukholitko@broadcom.com>
+ <b05f2736-fa76-4071-3d52-92ac765ca405@mojatatu.com>
+ <20210831120440.GA4641@noodle>
+ <b400f8c6-8bd8-2617-0a4f-7c707809da7d@mojatatu.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b400f8c6-8bd8-2617-0a4f-7c707809da7d@mojatatu.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We have found that in the complied files env_stack_push()
-appear more than 10 times, and under at least 90% circumstances
-that env_type_is_resolved() and env_stack_push() appear in pairs.
-For example, they appear together in the btf_modifier_resolve()
-of the file complie from 'kernel/bpf/btf.c'.
-But we have found that in the btf_resolve(), there is only
-env_stack_push() instead of the pair.
-Therefore, we consider that the env_type_is_resolved()
-might be forgotten.
+On Tue, Aug 31, 2021 at 09:18:16AM -0400, Jamal Hadi Salim wrote:
+> You have _not_ been unlucky - it is a design issue with flow dissector
+> and the wrapping around flower. Just waiting to happen for more
+> other use cases..
 
-Signed-off-by: jiasheng <jiasheng@iscas.ac.cn>
----
- kernel/bpf/btf.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+I agree. I think the fundamental problem is that flower does not set
+'FLOW_DISSECTOR_F_STOP_AT_ENCAP' and simply lets the flow dissector
+parse as deep as possible. For example, 'dst_ip' will match on the
+inner most destination IP which is not intuitive and probably different
+than what most hardware implementations do.
 
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index f982a9f0..454c249 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -4002,7 +4002,8 @@ static int btf_resolve(struct btf_verifier_env *env,
- 	int err = 0;
- 
- 	env->resolve_mode = RESOLVE_TBD;
--	env_stack_push(env, t, type_id);
-+	if (env_type_is_resolved(env, type_id))
-+		env_stack_push(env, t, type_id);
- 	while (!err && (v = env_stack_peak(env))) {
- 		env->log_type_id = v->type_id;
- 		err = btf_type_ops(v->t)->resolve(env, v);
--- 
-2.7.4
+This behavior is also very error prone because it means that if the
+kernel learns to dissect a new tunnel protocol, filters can be suddenly
+broken (match on outer field now matches on inner field).
 
+I don't think that changing the default behavior is a solution as it can
+break user space. Maybe adding a 'stop_encap' flag to flower that user
+space will have to set?
