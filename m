@@ -2,92 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 484663FEBE2
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 12:12:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5284F3FEC0E
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 12:21:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233374AbhIBKMy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 06:12:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45508 "EHLO
+        id S240533AbhIBKWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 06:22:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232600AbhIBKMw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 06:12:52 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8F07C061575;
-        Thu,  2 Sep 2021 03:11:53 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id ia27so3046360ejc.10;
-        Thu, 02 Sep 2021 03:11:53 -0700 (PDT)
+        with ESMTP id S233714AbhIBKWI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 06:22:08 -0400
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58C23C061575
+        for <netdev@vger.kernel.org>; Thu,  2 Sep 2021 03:21:10 -0700 (PDT)
+Received: by mail-ej1-x644.google.com with SMTP id a25so3127469ejv.6
+        for <netdev@vger.kernel.org>; Thu, 02 Sep 2021 03:21:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=93MpCKBuP3PiexQORBIsa53hubF8PLlO4HrVUIuNKOY=;
-        b=W4mrHAsQAZm6hTEWuqNoH7IrlcWs3GowYJfXBRKliSrdb6gcq+O133JWaBwN4Ql98z
-         PCYW9krigql6ibTXgLPAGZEVjEQsbz9cDPWMgFD2DZmpBdeLLAYGHNKeW5YpKNK8RbSb
-         AZBsec0bQfPAMIgKzcXZqNY1/yhViw3l3BnL91K1knafSvsFxBhGfiXOcAzZqoLLBAR5
-         hNjt2Vhla2t4/K2nOMJG8hh/oluBUcNZYPJi0QXeqjuJEciHz4l9K9sXBCY7u2I64SRR
-         N2bH8zW/h2TzeNn/cLHWcNw/qkkghF0ac9UtkUOTrBWeo3eprhv42CaKToK+7yThQipp
-         tSwg==
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=qrcv+thwSOCoW3mqgFOszXbfgovjWTgetGbY59CY8wE=;
+        b=G4J/rq4jba+nPcwgQrCLnDnvLdPVOKuTDnr0jRPLDYaz/bKJLY13b1axBRtNFTzTBz
+         UZEH8e7/a+7pQwmIX8iDxRPKZMzYzupzhH0Vt6iVa+/dFCjhpp29rcKjbU0VpNKW/zSB
+         6HYzy2Brjnv+ng5qICPXWc8T3T1bb1vIqwwhS+6PZSFXQ7YPekN7VfBJmWdYHQQH6x29
+         dXJdArMBykOV60e/714TLP54C8x5m0KJuS9cwUWEbCRTvPf384K10iPGdd/A/YDIngkG
+         VwnYIo0wj35X+8uXWaLr1k9Sd4Oz7+yGl9mO07/pzBPul4D9juIhdnupS1gW85dx/pSR
+         iaYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=93MpCKBuP3PiexQORBIsa53hubF8PLlO4HrVUIuNKOY=;
-        b=arpHu0SmIbDhAjeZWVh67Gc1p+Yr20YxmAi2mEqK3ikHJjpt6asA5ToMk2qOCeY5g1
-         NFAo1etOn6l3+wt+FlO23ZBetK97c9wKBMbKQNsXT5ZptyQsTFIFw5C+f6sCzP6K5ORM
-         PHwxTOAL5zSo9Iyyh+r9gIie8iIz84DFaJ/VESGNSfgK1eY+Pfp6eCcyaOF64mmOybCK
-         t3yludpEmQ5aHjfu0Y3FeWahO48xP4jsrMmCqUKGdWXQwUDDoWIJlV31abnLsZ0wX9AT
-         Lpi9mQX2QZS4pSiMwrDAfXpzs4gXgnla5rN06SPqtpnSY/Elaq+8CCHXqPk2YIt2o7KU
-         oltw==
-X-Gm-Message-State: AOAM533l99IGouBJ/71FzUzw9/9xOKREUkVTC7gLBArjsMWsEpItoEVr
-        0F8FvQyOm0juI7YYBcZSJhk=
-X-Google-Smtp-Source: ABdhPJypP5dnegrqCjmAhKmewx4MmREZKkKZRYYtSh5CoKij1TP/x85/FZXRWAzsK3UDs5Qxzr7T5w==
-X-Received: by 2002:a17:906:26c4:: with SMTP id u4mr2830666ejc.511.1630577512412;
-        Thu, 02 Sep 2021 03:11:52 -0700 (PDT)
-Received: from skbuf ([82.78.148.104])
-        by smtp.gmail.com with ESMTPSA id j6sm876846edp.33.2021.09.02.03.11.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Sep 2021 03:11:51 -0700 (PDT)
-Date:   Thu, 2 Sep 2021 13:11:50 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        kernel-team <kernel-team@android.com>,
-        Len Brown <lenb@kernel.org>
-Subject: Re: [RFC PATCH net-next 1/3] net: phy: don't bind genphy in
- phy_attach_direct if the specific driver defers probe
-Message-ID: <20210902101150.dnd2gycc7ekjwgc6@skbuf>
-References: <20210901225053.1205571-1-vladimir.oltean@nxp.com>
- <20210901225053.1205571-2-vladimir.oltean@nxp.com>
- <YTBkbvYYy2f/b3r2@kroah.com>
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to:content-transfer-encoding;
+        bh=qrcv+thwSOCoW3mqgFOszXbfgovjWTgetGbY59CY8wE=;
+        b=kUJkFhr4j3rMur7zWeHSsqFJO9C2EvdxWwmfZb62BiXZ+AQ8Pz9AALCan4o1+KZznN
+         bJ6CYZ7/DRhbsfltL5/mQIQRh/spFYp1w8R/0bEHakqZQMtWGbkL8DxX/4PN5i2rWXBe
+         +SMTrlP89Zi9PO8/g1XEwulPvUySBBrFATHHP+m2J0XCqE02Coax/Z8ijeDyNMADfFk1
+         vGtwC/e60yMk4D3FG+n8yWJcusN7+t6WrAaXXYkJBYKuNYwcYzGZhhlbpIEacBJ50XDL
+         lKzE6t+HwhS+bpi0NNIbxSG/BCyosRIInLHPo5RzJRtCkCF3ecmR/RN3i2bC/GdzDEqc
+         a/HA==
+X-Gm-Message-State: AOAM531DcT+Ua7FV2r3edexC8LX4mW7rgGKto208Ftve18ApsREl3RSg
+        kxFMArRWdollHUUbWVenRNOCvkTFYqRoywEwkAc=
+X-Google-Smtp-Source: ABdhPJzvdvUCQKItdkCpiUkh1SWGBOXP7u23Lg5/GcOOkKgdn/MVFOzJu1AtVkrEn+kwaMS7ebX/50lw5lPx271lAAU=
+X-Received: by 2002:a17:906:f15:: with SMTP id z21mr2968539eji.177.1630578068727;
+ Thu, 02 Sep 2021 03:21:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YTBkbvYYy2f/b3r2@kroah.com>
+Reply-To: idsri69@gmail.com
+Sender: mohammedmrsani@gmail.com
+Received: by 2002:a55:b7c8:0:b029:db:9db5:8e8b with HTTP; Thu, 2 Sep 2021
+ 03:21:07 -0700 (PDT)
+From:   "MR.AMA IDSRI" <idsri69@gmail.com>
+Date:   Thu, 2 Sep 2021 03:21:07 -0700
+X-Google-Sender-Auth: hxy6Cqbln15qxGOojceqbWQAnAg
+Message-ID: <CAHyWD8R31rvKu0S9VejQyyrbY0dmrzRf636VsLaJtK2YVxXcxQ@mail.gmail.com>
+Subject: Request
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 02, 2021 at 07:43:10AM +0200, Greg Kroah-Hartman wrote:
-> Wait, no, this should not be a "special" thing, and why would the list
-> of deferred probe show this?
+--=20
+Dear  Friend
 
-Why as in why would it work/do what I want, or as in why would you want to do that?
+Can you assist to handle this transaction? More details will sent to
+you as soon as i receive your response.Here is my direct contact
+telephone number  Please,get back  to meou can Email me for further
+information.
 
-> If a bus wants to have this type of "generic vs. specific" logic, then
-> it needs to handle it in the bus logic itself as that does NOT fit into
-> the normal driver model at all.  Don't try to get a "hint" of this by
-> messing with the probe function list.
+1. Full name:............
+.2. Current Address:..........
+3. Telephone N=C2=B0:.............
+.4. Occupation:.............
+.5. Age:.................
+6. Country:................
+7.Whatsapp N=C2=B0:..............
 
-Where and how? Do you have an example?
+Best regards,
+Mr.Aam Idrissa
