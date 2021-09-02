@@ -2,106 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CDF53FF4E5
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 22:27:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2233D3FF4EC
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 22:29:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346355AbhIBU2p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 16:28:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47590 "EHLO
+        id S1346489AbhIBUaK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 16:30:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346230AbhIBU2o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 16:28:44 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC293C061575
-        for <netdev@vger.kernel.org>; Thu,  2 Sep 2021 13:27:45 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id u19so4773753edb.3
-        for <netdev@vger.kernel.org>; Thu, 02 Sep 2021 13:27:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xYZaL+wrh+6dGZhTR+5h+iylhbNi5kNWyCVCYtIid9A=;
-        b=FuvN7bCphMyoJN/bSkJWbwESuaupi7+tPsaZ9F7TDIqOCYVgqfXsJQ5ilXOYbhJkO+
-         STWiXBlmAwlpOfK9AV1lRXbPNGczsqgWiC4nY124GCs3ycbEmeEHOtI9dHR2gqgXFZy2
-         OVQtWLuj1uHBR96cgOO0cdCjn3A07ISUOCiezzEZdc4ZQPtJflLHQzvN+y4N5qpwhV7D
-         etFqlEVDxbrYRn9yDKvioyXeY+q1XVyY5OVMatJKMefbPu08umMwFdUGskehI1oZa5cv
-         TlKwy2PbAemxy4qMtO042l5MsMW+xD1XNmBSWXZToeY78PLJd2OiUKojjCzNcMLbdWXm
-         30og==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xYZaL+wrh+6dGZhTR+5h+iylhbNi5kNWyCVCYtIid9A=;
-        b=Y5/ZT6zJNdi1pOYiAvvHL3C0RmTACyalaIV76HxD7vpbI3WUm4VlMhBs/hhTbI0bmb
-         0XB37PQazSf7p37tRNlzeIXs2lG7JAhIdLckSrPZ+TZNYw++S/ORS9DOc+s6BB5EecNc
-         EQezXUcuSIx1NvcABLqrLnx9WCWMEoaJz+EMIwYktX0e3Ma3WQuZNL/FKk6cFizzs9U8
-         1mEqB1jlq3N4MX6gM8P76jnZ6iK8tMSFGVnPSOr0dchAS33bbORr/zUgyupYY6tK2E6y
-         /qlmXRW0Bimg5OGUsyUtX3yNG3xV6/+EU4nk5pMcjUwC4+4fTulMF2TZzObq69gxaj5o
-         /kmw==
-X-Gm-Message-State: AOAM532lRr8ovGb0pKk2QuycIsFPdy9jWsuBpnkPzMLCdCWFWth5OI4f
-        +pfgEtb+N3xcX1x3dYTXsRu0UVrYu3gGHRgT1cs=
-X-Google-Smtp-Source: ABdhPJx62NCPrdbEYhkpxkYE8BGOUZ/7UjNHlPU6h69shfFT5icpz+5nb38rMUCtBzBxIcJs2zN+Peu88etkJQl/y5o=
-X-Received: by 2002:aa7:d40b:: with SMTP id z11mr186189edq.224.1630614464301;
- Thu, 02 Sep 2021 13:27:44 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210902193447.94039-1-willemdebruijn.kernel@gmail.com>
-In-Reply-To: <20210902193447.94039-1-willemdebruijn.kernel@gmail.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Thu, 2 Sep 2021 13:27:33 -0700
-Message-ID: <CAKgT0Uc43z1qZr+wsB-UaxKV-3_RMjA3aw_LeeX-HswTvxitng@mail.gmail.com>
-Subject: Re: [PATCH net] ip6_gre: validate csum_start only if CHECKSUM_PARTIAL
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
+        with ESMTP id S1346225AbhIBUaJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 16:30:09 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6FACC061575;
+        Thu,  2 Sep 2021 13:29:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=GriFeb2SgN20Aboo2d1SssjdRTOJJ4BZ6odFesu7LVk=; b=y8KTWTcb4Tlp7zpMUfgFRmERt
+        gGrQAo0N060ne7kHuVjcl+Vccdr59XlCvCrucfTTUDi9QuIiuZ4yjpFOjnFTgAdE1bFn1uINRsXqz
+        Fw4n/Pm0gP7HwkjYO7jTCa0y5QefPLDq9dW6zLjVDTzSwxg6ohmjD0NgbWSI/hKH/WB7VNbT1y4ng
+        RtyN9ddpOarh+LhK5qDostm6OHDFkOqHT8KpCTu/jLhibJZmveqnwK+rCn07fUfTRLbRyOoP08mK2
+        VR3Lpj5d3qmZ3GHCPc1KJ7TERRL5lTWay3a6w0n/D/fqfNQa19/gosawhWb/jntGDa8hHNoglL0sL
+        Vuja4uW0w==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:48110)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mLtKd-0001zi-Gt; Thu, 02 Sep 2021 21:29:07 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mLtKb-0008CB-GV; Thu, 02 Sep 2021 21:29:05 +0100
+Date:   Thu, 2 Sep 2021 21:29:05 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Ido Schimmel <idosch@idosch.org>,
-        chouhan.shreyansh630@gmail.com,
-        Willem de Bruijn <willemb@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        kernel-team <kernel-team@android.com>,
+        Len Brown <lenb@kernel.org>
+Subject: Re: [RFC PATCH net-next 0/3] Make the PHY library stop being so
+ greedy when binding the generic PHY driver
+Message-ID: <20210902202905.GN22278@shell.armlinux.org.uk>
+References: <20210902121927.GE22278@shell.armlinux.org.uk>
+ <20210902123532.ruvuecxoig67yv5v@skbuf>
+ <20210902132635.GG22278@shell.armlinux.org.uk>
+ <20210902152342.vett7qfhvhiyejvo@skbuf>
+ <20210902163144.GH22278@shell.armlinux.org.uk>
+ <20210902171033.4byfnu3g25ptnghg@skbuf>
+ <20210902175043.GK22278@shell.armlinux.org.uk>
+ <20210902190507.shcdmfi3v55l2zuj@skbuf>
+ <20210902200301.GM22278@shell.armlinux.org.uk>
+ <20210902202124.o5lcnukdzjkbft7l@skbuf>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210902202124.o5lcnukdzjkbft7l@skbuf>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 2, 2021 at 12:36 PM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
->
-> From: Willem de Bruijn <willemb@google.com>
->
-> Only test integrity of csum_start if field is defined.
->
-> With checksum offload and GRE tunnel checksum, gre_build_header will
-> cheaply build the GRE checksum using local checksum offload. This
-> depends on inner packet csum offload, and thus that csum_start points
-> behind GRE. But validate this condition only with checksum offload.
->
-> Link: https://lore.kernel.org/netdev/YS+h%2FtqCJJiQei+W@shredder/
-> Fixes: 9cf448c200ba ("ip6_gre: add validation for csum_start")
-> Signed-off-by: Willem de Bruijn <willemb@google.com>
-> ---
->  net/ipv6/ip6_gre.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
->
-> diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
-> index 7baf41d160f5..c456bc7f7cdc 100644
-> --- a/net/ipv6/ip6_gre.c
-> +++ b/net/ipv6/ip6_gre.c
-> @@ -629,8 +629,11 @@ static int gre_rcv(struct sk_buff *skb)
->
->  static int gre_handle_offloads(struct sk_buff *skb, bool csum)
->  {
-> -       if (csum && skb_checksum_start(skb) < skb->data)
-> +       /* Local checksum offload requires csum offload of the inner packet */
-> +       if (csum && skb->ip_summed == CHECKSUM_PARTIAL &&
-> +           skb_checksum_start(skb) < skb->data)
->                 return -EINVAL;
-> +
->         return iptunnel_handle_offloads(skb,
->                                         csum ? SKB_GSO_GRE_CSUM : SKB_GSO_GRE);
->  }
+On Thu, Sep 02, 2021 at 11:21:24PM +0300, Vladimir Oltean wrote:
+> On Thu, Sep 02, 2021 at 09:03:01PM +0100, Russell King (Oracle) wrote:
+> > # systemctl list-dependencies networking.service
+> > networking.service
+> >   ├─ifupdown-pre.service
+> >   ├─system.slice
+> >   └─network.target
+> > # systemctl list-dependencies ifupdown-pre.service
+> > ifupdown-pre.service
+> >   ├─system.slice
+> >   └─systemd-udevd.service
+> > 
+> > Looking in the service files for a better idea:
+> > 
+> > networking.service:
+> > Requires=ifupdown-pre.service
+> > Wants=network.target
+> > After=local-fs.target network-pre.target apparmor.service systemd-sysctl.service systemd-modules-load.service ifupdown-pre.service
+> > Before=network.target shutdown.target network-online.target
+> > 
+> > ifupdown-pre.service:
+> > Wants=systemd-udevd.service
+> > After=systemd-udev-trigger.service
+> > Before=network.target
+> > 
+> > So, the dependency you mention is already present. As is a dependency
+> > on udev. The problem is udev does all the automatic module loading
+> > asynchronously and in a multithreaded way.
+> > 
+> > I don't think there's a way to make systemd wait for all module loads
+> > to complete.
+> 
+> So ifupdown-pre.service has a call to "udevadm settle". This "watches
+> the udev event queue, and exits if all current events are handled",
+> according to the man page. But which current events? ifupdown-pre.service
+> does not have the dependency on systemd-modules-load.service, just
+> networking.service does. So maybe ifupdown-pre.service does not wait for
+> DSA to finish initializing, then it tells networking.service that all is ok.
 
-Didn't see this come through until I had replied to the other patch.
-Same comments apply here. The "csum" value probably doesn't need to be
-checked when checking skb_checksum_start, and maybe this should
-trigger a WARN_ON_ONCE since it should be rare and we should be fixing
-any path that is requesting CHECKSUM_PARTIAL without setting
-skb_checksum_start.
+ifupdown-pre.service does have a call to udevadm settle, and that
+does get called from what I can tell.
+
+systemd-modules-load.service is an entire red herring. The only
+module listed in the various modules-load.d directories is "tun"
+for openvpn (which isn't currently being used.)
+
+As I've already told you (and you seem to have ignored), DSA gets
+loaded by udev, not by systemd-modules-load.service.
+systemd-modules-load.service is irrelevant to my situation.
+
+I think there's a problem with "and exits if all current events are
+handled" - does that mean it's fired off a modprobe process which
+is in progress, or does that mean that the modprobe process has
+completed.
+
+Given that we can see that ifup is being run while the DSA module is
+still in the middle of probing, the latter interpretation can not be
+true - unless systemd is ignoring the dependencies. Or just in
+general, systemd being systemd (I have very little faith in systemd
+behaving as it should.)
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
