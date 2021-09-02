@@ -2,160 +2,240 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4C963FECC8
-	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 13:17:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 054503FECDA
+	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 13:21:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245081AbhIBLSG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 07:18:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60514 "EHLO
+        id S245263AbhIBLWd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 07:22:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230256AbhIBLSD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 07:18:03 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A31AC061575;
-        Thu,  2 Sep 2021 04:17:05 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id a25so3458322ejv.6;
-        Thu, 02 Sep 2021 04:17:05 -0700 (PDT)
+        with ESMTP id S244843AbhIBLWb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 07:22:31 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D540C061757;
+        Thu,  2 Sep 2021 04:21:33 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id 8so1555916pga.7;
+        Thu, 02 Sep 2021 04:21:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=uFEkTCd/xhh2jHjXLDAM0hWxj6RGslNzQrjo3X/7zUU=;
-        b=A/cYi8R1cALl21mnfBisBtq/UcUEk6B9DJHllYb1B8XYF6oP8CKv0eLrTDrXmwVhN2
-         sWCn2WtsylxzWyApOwb9EVbnqD5s9dS1fx3dQ18RJlfSMV1A1wj9+CqpEJYzKdaKYpB2
-         pi9U8uYZG4sONB1kkD+eTiiN186QrJ24rf1e6ANx14m05K7DDb2XvP0zTDAUoEUkbbR/
-         YPxsu0s6oQv6Kv705tXMzlJPqAknOda6hnKwLjoVPFY8Oi71ux+wYE01I/LJY48VeMmC
-         xOxSSyhOzYAN5ZcHx8i8URE4wk3k76PdeTZPc3mCRXFHDnRwVGmz+DhC9Kg8RCkAFHMz
-         XzFA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=uvXbklsYzxIxtTfrV32ffa9Nuwizcf2v49dwd36P0II=;
+        b=l3pHshNaH16SxCRdn9z7Xh25o4zr254bVE4gj2gcLe03eGaxqkakkGTJFxJqfTpw1V
+         mgl7jhuQxVjIwW/UeX7ktsAfn4KtTM1QiXhueAKmpi1umldFhOhm/opbthWUVENXfmXz
+         sByuEIse1tA9cQPTkGsfIdaE+UkFVQTBoS0K+F+XP4S1/PfM9AjDF1PXXeVM/2D0/+Wg
+         GFVcsUwXqGqAsvdSyylORw5dpuBcJnKleE7Htyj6/Iy7J3TtLZUSPSx2JgomTUK9XCbK
+         tkwtRAK0M+aqYoU4ijzQ2mRPYIgBubcVFek78cQ2L31j1R5JU4P5nO/87EvlyqPdofPx
+         bNug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=uFEkTCd/xhh2jHjXLDAM0hWxj6RGslNzQrjo3X/7zUU=;
-        b=t6nfM9CYcrQN5SmiI5cYlyN6BifsLMSC6OO1BKdQz+5KVfl0Oz2XybsXWHf9h2gFWk
-         hN/DKDDxIW8hkjllIAk8CNciWwwslSmrjw2fKWJ6gESbvV0F5l724jeUbvFrzCb60tGZ
-         YSTuprPjvz2tz5lnx609IBB9VvHxW5QtIdZyHXyG9fRoSlwoyEH+VxvJhuJa1csmQdpB
-         Gi24KzbA9HD4qZrTq1a7W0a+07Pg8SW0If3Gudpm+AM1+peD/Oym4L9bKAsz4SwEPuj2
-         SywBbo6mv7Cuozdfxxl5ARbTGGgJ2BarzDYQv9X5/O1BeGiuromsFRF7rAk1GgnBv6Qe
-         ckSA==
-X-Gm-Message-State: AOAM532vAmsNkP8FA0yxjI3tXWUMtJ+xXzcqLma5v+gfuE7VLFmoFnOT
-        gsEemLpQkdfc4UyUUNVC6KA=
-X-Google-Smtp-Source: ABdhPJxVJn37EXfC1Kkgvx/x3vaArliD0lsBCMi/Vq5/WEkUoTCbcdl5fExGTGuKoQC3WyMe6MlzxQ==
-X-Received: by 2002:a17:907:7844:: with SMTP id lb4mr3117219ejc.381.1630581423928;
-        Thu, 02 Sep 2021 04:17:03 -0700 (PDT)
-Received: from skbuf ([82.78.148.104])
-        by smtp.gmail.com with ESMTPSA id t16sm901503ejj.54.2021.09.02.04.17.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Sep 2021 04:17:03 -0700 (PDT)
-Date:   Thu, 2 Sep 2021 14:17:02 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        kernel-team <kernel-team@android.com>,
-        Len Brown <lenb@kernel.org>
-Subject: Re: [RFC PATCH net-next 1/3] net: phy: don't bind genphy in
- phy_attach_direct if the specific driver defers probe
-Message-ID: <20210902111702.4n6suxfbze46wcgb@skbuf>
-References: <20210901225053.1205571-1-vladimir.oltean@nxp.com>
- <20210901225053.1205571-2-vladimir.oltean@nxp.com>
- <YTBkbvYYy2f/b3r2@kroah.com>
- <20210902101150.dnd2gycc7ekjwgc6@skbuf>
- <YTCpbkDMUfBtJM1V@kroah.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=uvXbklsYzxIxtTfrV32ffa9Nuwizcf2v49dwd36P0II=;
+        b=WZbksE7b07f64CHLut5tSDP3DDRjRp+pMquyfQy+UYrd7OqldYY4IKA7ylQp618A6d
+         3IveHo6rrEFSl91VTl4v3UioEiInylDC3TWCgEh+2BdJRz/0or7754Wo5G7w9ac147ZB
+         X3sXpuVE5yym8MBYauOLmVpogSyivldv0PoEtrDyMPPdydpajvbu1XOou/mFQZw0NJS0
+         kW+6UO4sBMx6gNhiOT+ZSbFZJ5bIPqos12M1jRCs6o5/1wdD6qdBVIN69syBwaKMmlVq
+         6xQNTAIcRreM4BsGjllzMZFo9/TTiF6M7vZo3/qLiRksMsN61ioXh1aDLKC2LDkqGP+p
+         Gi8A==
+X-Gm-Message-State: AOAM533zE6OWbbn50yKRn0cL5IOQ601LbTCNmXE28ze4pFw0kpYCeLpF
+        MNij6O0DmWafLbPZY+XPc+8=
+X-Google-Smtp-Source: ABdhPJxldFu1U8M2V5yK1yTHMDs9K9anELSSV02bNY0qtLdwF/4+Etf8R4JVmeL3O1gUAcLcNnmdKQ==
+X-Received: by 2002:a63:5b08:: with SMTP id p8mr2815838pgb.28.1630581692705;
+        Thu, 02 Sep 2021 04:21:32 -0700 (PDT)
+Received: from ?IPv6:2404:f801:0:5:8000::50b? ([2404:f801:9000:1a:efea::50b])
+        by smtp.gmail.com with ESMTPSA id j6sm2394666pgq.0.2021.09.02.04.21.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 02 Sep 2021 04:21:32 -0700 (PDT)
+Subject: Re: [PATCH V4 00/13] x86/Hyper-V: Add Hyper-V Isolation VM support
+To:     Christoph Hellwig <hch@lst.de>,
+        Michael Kelley <mikelley@microsoft.com>
+Cc:     KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+        "will@kernel.org" <will@kernel.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>, "x86@kernel.org" <x86@kernel.org>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
+        "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>,
+        "jgross@suse.com" <jgross@suse.com>,
+        "sstabellini@kernel.org" <sstabellini@kernel.org>,
+        "joro@8bytes.org" <joro@8bytes.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
+        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        "pgonda@google.com" <pgonda@google.com>,
+        "martin.b.radev@gmail.com" <martin.b.radev@gmail.com>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "rppt@kernel.org" <rppt@kernel.org>,
+        "hannes@cmpxchg.org" <hannes@cmpxchg.org>,
+        "aneesh.kumar@linux.ibm.com" <aneesh.kumar@linux.ibm.com>,
+        "krish.sadhukhan@oracle.com" <krish.sadhukhan@oracle.com>,
+        "saravanand@fb.com" <saravanand@fb.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        "rientjes@google.com" <rientjes@google.com>,
+        "ardb@kernel.org" <ardb@kernel.org>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        vkuznets <vkuznets@redhat.com>,
+        "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
+        "dave.hansen@intel.com" <dave.hansen@intel.com>
+References: <20210827172114.414281-1-ltykernel@gmail.com>
+ <20210830120036.GA22005@lst.de>
+ <MWHPR21MB15933503E7C324167CB4132CD7CC9@MWHPR21MB1593.namprd21.prod.outlook.com>
+ <20210902075939.GB14986@lst.de>
+From:   Tianyu Lan <ltykernel@gmail.com>
+Message-ID: <dc124c3d-a316-d36e-3ae4-21674280f55d@gmail.com>
+Date:   Thu, 2 Sep 2021 19:21:18 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YTCpbkDMUfBtJM1V@kroah.com>
+In-Reply-To: <20210902075939.GB14986@lst.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 02, 2021 at 12:37:34PM +0200, Greg Kroah-Hartman wrote:
-> On Thu, Sep 02, 2021 at 01:11:50PM +0300, Vladimir Oltean wrote:
-> > On Thu, Sep 02, 2021 at 07:43:10AM +0200, Greg Kroah-Hartman wrote:
-> > > Wait, no, this should not be a "special" thing, and why would the list
-> > > of deferred probe show this?
-> >
-> > Why as in why would it work/do what I want, or as in why would you want to do that?
->
-> Both!  :)
 
-So first: why would it work.
-You seem to have a misconception that I am "messing with the probe
-function list".
-I am not, I am just exporting the information whether the device had a
-driver which returned -EPROBE_DEFER during probe, or not. For that I am
-looking at the presence of this device on the deferred_probe_pending_list.
 
-driver_probe_device
--> if (ret == -EPROBE_DEFER || ret == EPROBE_DEFER) driver_deferred_probe_add(dev);
-   -> list_add_tail(&dev->p->deferred_probe, &deferred_probe_pending_list);
+On 9/2/2021 3:59 PM, Christoph Hellwig wrote:
+> On Tue, Aug 31, 2021 at 05:16:19PM +0000, Michael Kelley wrote:
+>> As a quick overview, I think there are four places where the
+>> shared_gpa_boundary must be applied to adjust the guest physical
+>> address that is used.  Each requires mapping a corresponding
+>> virtual address range.  Here are the four places:
+>>
+>> 1)  The so-called "monitor pages" that are a core communication
+>> mechanism between the guest and Hyper-V.  These are two single
+>> pages, and the mapping is handled by calling memremap() for
+>> each of the two pages.  See Patch 7 of Tianyu's series.
+> 
+> Ah, interesting.
+> 
+>> 3)  The network driver send and receive buffers.  vmap_phys_range()
+>> should work here.
+> 
+> Actually it won't.  The problem with these buffers is that they are
+> physically non-contiguous allocations.  We really have two sensible
+> options:
+> 
+>   1) use vmap_pfn as in the current series.  But in that case I think
+>      we should get rid of the other mapping created by vmalloc.  I
+>      though a bit about finding a way to apply the offset in vmalloc
+>      itself, but I think it would be too invasive to the normal fast
+>      path.  So the other sub-option would be to allocate the pages
+>      manually (maybe even using high order allocations to reduce TLB
+>      pressure) and then remap them
 
-driver_bound
--> driver_deferred_probe_del
-   -> list_del_init(&dev->p->deferred_probe);
+Agree. In such case, the map for memory below shared_gpa_boundary is not 
+necessary. allocate_pages() is limited by MAX_ORDER and needs to be 
+called repeatedly to get enough memory.
 
-So the presence of "dev" inside deferred_probe_pending_list means
-precisely that a driver is pending to be bound.
+>   2) do away with the contiguous kernel mapping entirely.  This means
+>      the simple memcpy calls become loops over kmap_local_pfn.  As
+>      I just found out for the send side that would be pretty easy,
+>      but the receive side would be more work.  We'd also need to check
+>      the performance implications.
 
-Second: why would I want to do that.
-In the case of PHY devices, the driver binding process starts here:
+kmap_local_pfn() requires pfn with backing struct page and this doesn't 
+work pfn above shared_gpa_boundary.
+> 
+>> 4) The swiotlb memory used for bounce buffers.  vmap_phys_range()
+>> should work here as well.
+> 
+> Or memremap if it works for 1.
 
-phy_device_register
--> device_add
+Now use vmap_pfn() and the hv map function is reused in the netvsc driver.
 
-It begins synchronously, but may not finish due to probe deferral.
-So after device_add finishes, phydev->drv might be NULL due to 2 reasons:
+> 
+>> Case #2 above does unusual mapping.  The ring buffer consists of a ring
+>> buffer header page, followed by one or more pages that are the actual
+>> ring buffer.  The pages making up the actual ring buffer are mapped
+>> twice in succession.  For example, if the ring buffer has 4 pages
+>> (one header page and three ring buffer pages), the contiguous
+>> virtual mapping must cover these seven pages:  0, 1, 2, 3, 1, 2, 3.
+>> The duplicate contiguous mapping allows the code that is reading
+>> or writing the actual ring buffer to not be concerned about wrap-around
+>> because writing off the end of the ring buffer is automatically
+>> wrapped-around by the mapping.  The amount of data read or
+>> written in one batch never exceeds the size of the ring buffer, and
+>> after a batch is read or written, the read or write indices are adjusted
+>> to put them back into the range of the first mapping of the actual
+>> ring buffer pages.  So there's method to the madness, and the
+>> technique works pretty well.  But this kind of mapping is not
+>> amenable to using vmap_phys_range().
+> 
+> Hmm.  Can you point me to where this is mapped?  Especially for the
+> classic non-isolated case where no vmap/vmalloc mapping is involved
+> at all?
+> 
 
-1. -EPROBE_DEFER triggered by "somebody", either by the PHY driver probe
-   function itself, or by third parties (like device_links_check_suppliers
-   happening to notice that before even calling the driver's probe fn).
-   Anyway, the distinction between these 2 is pretty much irrelevant.
+This is done via vmap() in the hv_ringbuffer_init()
 
-2. There genuinely was no driver loaded in the system for this PHY. Note
-   that the way things are written, the Generic PHY driver will not
-   match on any device in phy_bus_match(). It is bound manually, separately.
+182/* Initialize the ring buffer. */
+183int hv_ringbuffer_init(struct hv_ring_buffer_info *ring_info,
+184                       struct page *pages, u32 page_cnt, u32 
+max_pkt_size)
+185{
+186        int i;
+187        struct page **pages_wraparound;
+188
+189        BUILD_BUG_ON((sizeof(struct hv_ring_buffer) != PAGE_SIZE));
+190
+191        /*
+192         * First page holds struct hv_ring_buffer, do wraparound 
+mapping for
+193         * the rest.
+194         */
+195        pages_wraparound = kcalloc(page_cnt * 2 - 1, sizeof(struct 
+page *),
+196                                   GFP_KERNEL);
+197        if (!pages_wraparound)
+198                return -ENOMEM;
+199
+/* prepare to wrap page array */
+200        pages_wraparound[0] = pages;
+201        for (i = 0; i < 2 * (page_cnt - 1); i++)
+202                pages_wraparound[i + 1] = &pages[i % (page_cnt - 1) + 1];
+203
+/* map */
+204        ring_info->ring_buffer = (struct hv_ring_buffer *)
+205                vmap(pages_wraparound, page_cnt * 2 - 1, VM_MAP, 
+PAGE_KERNEL);
+206
+207        kfree(pages_wraparound);
+208
+209
+210        if (!ring_info->ring_buffer)
+211                return -ENOMEM;
+212
+213        ring_info->ring_buffer->read_index =
+214                ring_info->ring_buffer->write_index = 0;
 
-The PHY library is absolutely happy to work with a headless chicken, a
-phydev with a NULL phydev->drv. Just search for "if (!phydev->drv)"
-inside drivers/net/phy/phy.c and drivers/net/phy/phy_device.c.
 
-However, the phydev walking with a NULL drv can only last for so long.
-An Ethernet port will soon need that PHY device, and will attach to it.
-There are many code paths, all ending in phy_attach_direct.
-However, when an Ethernet port decides to attach to a PHY device is
-completely asynchronous to the lifetime of the PHY device itself.
-This moment is where a driver is really needed, and if none is present,
-the generic one is force-bound.
-
-My patch only distinguishes between case 1 and 2 for which phydev->drv
-might be NULL. It avoids force-binding the generic PHY when a specific
-PHY driver was found, but did not finish binding due to probe deferral.
-
-> > > If a bus wants to have this type of "generic vs. specific" logic, then
-> > > it needs to handle it in the bus logic itself as that does NOT fit into
-> > > the normal driver model at all.  Don't try to get a "hint" of this by
-> > > messing with the probe function list.
-> >
-> > Where and how? Do you have an example?
->
-> No I do not, sorry, most busses do not do this for obvious ordering /
-> loading / we are not that crazy reasons.
->
-> What is causing this all to suddenly break?  The devlink stuff?
-
-There was a report related to fw_devlink indeed, however strictly
-speaking, I wouldn't say it is the cause of all this. It is pretty
-uncommon for a PHY device to defer probing I think, hence the bad
-assumptions made around it.
