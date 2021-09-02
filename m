@@ -2,126 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9B5F3FE8CF
+	by mail.lfdr.de (Postfix) with ESMTP id 281B83FE8CD
 	for <lists+netdev@lfdr.de>; Thu,  2 Sep 2021 07:37:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234640AbhIBFhi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 01:37:38 -0400
-Received: from www262.sakura.ne.jp ([202.181.97.72]:54662 "EHLO
-        www262.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233464AbhIBFhg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 01:37:36 -0400
-Received: from fsav411.sakura.ne.jp (fsav411.sakura.ne.jp [133.242.250.110])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 1825aJ7e058157;
-        Thu, 2 Sep 2021 14:36:19 +0900 (JST)
-        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav411.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav411.sakura.ne.jp);
- Thu, 02 Sep 2021 14:36:19 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav411.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 1825aJJ0058154
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Thu, 2 Sep 2021 14:36:19 +0900 (JST)
-        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        netdev@vger.kernel.org, clang-built-linux@googlegroups.com,
-        Hillf Danton <hdanton@sina.com>
-From:   Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Subject: [PATCH] flow: fix object-size-mismatch warning in
- flowi{4,6}_to_flowi_common()
-Message-ID: <ae340f07-4d7f-9761-de88-d564c4250104@i-love.sakura.ne.jp>
-Date:   Thu, 2 Sep 2021 14:36:17 +0900
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S233269AbhIBFhc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 01:37:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39262 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232994AbhIBFh1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 01:37:27 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4B45C061575;
+        Wed,  1 Sep 2021 22:36:29 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id gp20-20020a17090adf1400b00196b761920aso639423pjb.3;
+        Wed, 01 Sep 2021 22:36:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=AUQQWpdPusKziL81HjIpycnRSPGEY5GISL+U0MCMSmU=;
+        b=JHDFf//yUkiuI37prdgWCjD9R3BX0MF++LeB2tn3JpuX+6C1q9/T+ceQvBcnpO3zhF
+         KqFddP7LZ1WIza6iZtjHkx+HOkhqIrB/Jwe5jYzaAPmoO8PCY0dSbiG7rSs76H6LsE2G
+         2xWEEIiFb0l4UJCSWFol0RNVwEHkXt8RseGH8qmrzmUOot+xJnb2QL7rTfy5sBb8XB83
+         ReDLFc66swXyMR4O4FI20PtOmbYvqeniHo14wvYKBGZWlw7R4FxYc/IXvHakTLtRxjQu
+         u3bn2PgY2puR6lUbYisAHUOxUJg+3sSrmjqmIz8NxNpRS7P0+kgm9SkUEvBdAwYdati8
+         Mb8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=AUQQWpdPusKziL81HjIpycnRSPGEY5GISL+U0MCMSmU=;
+        b=EvlKHtNaNYRmxcgKIv4vpvvihDyjdGeE6PBLYXIq3IzhDdGj0rS8dNaN8nB1YV9KGt
+         /CweHLAh10YsMJs6yZRWGlfN/TX4XrR7J7trxe87n+vWv4ZHsoM5LqQXBQ2PPqZNky3z
+         Fn71jEeJ8Rv8yvzPoGgBU577dOo4jDZnbT7B38NC+ZAXiV7yxUOYxjliQNm4YtGLkiRL
+         79WxaqZc/Mlu9GLK43gjYICN9GHdnZw+pzEwf+OxJwL10FzeImFcWcLucimZuNZ87tX5
+         Bry+q+wYfKiFuXOvqb3PwmAmEiJz0Y+NZcdLqhaok4oF29McXcwO+2Tbiy9hyYPpmMGV
+         9vbw==
+X-Gm-Message-State: AOAM53091xGueyGrITHOxATb7GXp9iDl2zOdJsSCCDN8npskwJGjRYIc
+        YBolGcjyBj/T5YX9/G0fVC8=
+X-Google-Smtp-Source: ABdhPJxJF8LI4M1O2L1/GWavG28s+l1uKa4//ATjWdcEy8H3VklT/CtTQenaVUqvys4DN29witZiTw==
+X-Received: by 2002:a17:902:7806:b0:138:1eee:c010 with SMTP id p6-20020a170902780600b001381eeec010mr1413056pll.20.1630560989012;
+        Wed, 01 Sep 2021 22:36:29 -0700 (PDT)
+Received: from haswell-ubuntu20.lan ([138.197.212.246])
+        by smtp.gmail.com with ESMTPSA id f9sm739690pjq.36.2021.09.01.22.36.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Sep 2021 22:36:28 -0700 (PDT)
+From:   DENG Qingfang <dqfext@gmail.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Sasha Levin <sashal@kernel.org>, stable@vger.kernel.org,
+        Sean Wang <sean.wang@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@savoirfairelinux.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "open list:MEDIATEK SWITCH DRIVER" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>
+Subject: Re: [PATCH 4.19.y] net: dsa: mt7530: disable learning on standalone ports
+Date:   Thu,  2 Sep 2021 13:36:19 +0800
+Message-Id: <20210902053619.1824464-1-dqfext@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <YSi8Ky3GqBjnxbhC@kroah.com>
+References: <20210824055509.1316124-1-dqfext@gmail.com> <YSUQV3jhfbhbf5Ct@sashalap> <CALW65ja3hYGmEqcWZzifP2-0WsJOnxcUXsey2ZH5vDbD0-nDeQ@mail.gmail.com> <YSi8Ky3GqBjnxbhC@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 3df98d79215ace13 ("lsm,selinux: pass flowi_common instead of flowi
-to the LSM hooks") introduced flowi{4,6}_to_flowi_common() functions which
-cause UBSAN warning when building with LLVM 11.0.1 on Ubuntu 21.04.
+On Fri, Aug 27, 2021 at 12:19:23PM +0200, Greg KH wrote:
+> On Tue, Aug 24, 2021 at 11:57:53PM +0800, DENG Qingfang wrote:
+> > Standalone ports should have address learning disabled, according to
+> > the documentation:
+> > https://www.kernel.org/doc/html/v5.14-rc7/networking/dsa/dsa.html#bridge-layer
+> > dsa_switch_ops on 5.10 or earlier does not have .port_bridge_flags
+> > function so it has to be done differently.
+> > 
+> > I've identified an issue related to this.
+> 
+> What issue is that?  Where was it reported?
 
- ================================================================================
- UBSAN: object-size-mismatch in ./include/net/flow.h:197:33
- member access within address ffffc9000109fbd8 with insufficient space
- for an object of type 'struct flowi'
- CPU: 2 PID: 7410 Comm: systemd-resolve Not tainted 5.14.0 #51
- Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 02/27/2020
- Call Trace:
-  dump_stack_lvl+0x103/0x171
-  ubsan_type_mismatch_common+0x1de/0x390
-  __ubsan_handle_type_mismatch_v1+0x41/0x50
-  udp_sendmsg+0xda2/0x1300
-  ? ip_skb_dst_mtu+0x1f0/0x1f0
-  ? sock_rps_record_flow+0xe/0x200
-  ? inet_send_prepare+0x2d/0x90
-  sock_sendmsg+0x49/0x80
-  ____sys_sendmsg+0x269/0x370
-  __sys_sendmsg+0x15e/0x1d0
-  ? syscall_enter_from_user_mode+0xf0/0x1b0
-  do_syscall_64+0x3d/0xb0
-  entry_SYSCALL_64_after_hwframe+0x44/0xae
- RIP: 0033:0x7f7081a50497
- Code: 0c 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b7 0f 1f 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 51 c3 48 83 ec 28 89 54 24 1c 48 89 74 24 10
- RSP: 002b:00007ffc153870f8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
- RAX: ffffffffffffffda RBX: 000000000000000c RCX: 00007f7081a50497
- RDX: 0000000000000000 RSI: 00007ffc15387140 RDI: 000000000000000c
- RBP: 00007ffc15387140 R08: 0000563f29a5e4fc R09: 000000000000cd28
- R10: 0000563f29a68a30 R11: 0000000000000246 R12: 000000000000000c
- R13: 0000000000000001 R14: 0000563f29a68a30 R15: 0000563f29a5e50c
- ================================================================================
+See Florian's message here
+https://lore.kernel.org/stable/20210317003549.3964522-2-f.fainelli@gmail.com/
 
-I don't think we need to call flowi{4,6}_to_flowi() from these functions
-because the first member of "struct flowi4" and "struct flowi6" is
+> 
+> > > 2. A partial backport of this patch?
+> > 
+> > The other part does not actually fix anything.
+> 
+> Then why is it not ok to just take the whole thing?
+> 
+> When backporting not-identical-patches, something almost always goes
+> wrong, so we prefer to take the original commit when ever possible.
 
-  struct flowi_common __fl_common;
+Okay. MDB and tag ops can be backported as is, and broadcast/multicast
+flooding can be implemented in .port_egress_floods. 
 
-while the first member of "struct flowi" is
-
-  union {
-    struct flowi_common __fl_common;
-    struct flowi4       ip4;
-    struct flowi6       ip6;
-    struct flowidn      dn;
-  } u;
-
-which should point to the same address without access to "struct flowi".
-
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
----
- include/net/flow.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/include/net/flow.h b/include/net/flow.h
-index 6f5e70240071..58beb16a49b8 100644
---- a/include/net/flow.h
-+++ b/include/net/flow.h
-@@ -194,7 +194,7 @@ static inline struct flowi *flowi4_to_flowi(struct flowi4 *fl4)
- 
- static inline struct flowi_common *flowi4_to_flowi_common(struct flowi4 *fl4)
- {
--	return &(flowi4_to_flowi(fl4)->u.__fl_common);
-+	return &(fl4->__fl_common);
- }
- 
- static inline struct flowi *flowi6_to_flowi(struct flowi6 *fl6)
-@@ -204,7 +204,7 @@ static inline struct flowi *flowi6_to_flowi(struct flowi6 *fl6)
- 
- static inline struct flowi_common *flowi6_to_flowi_common(struct flowi6 *fl6)
- {
--	return &(flowi6_to_flowi(fl6)->u.__fl_common);
-+	return &(fl6->__fl_common);
- }
- 
- static inline struct flowi *flowidn_to_flowi(struct flowidn *fldn)
--- 
-2.30.2
+> 
+> thanks,
+> 
+> greg k-h
