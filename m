@@ -2,342 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 06E163FFAED
-	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 09:18:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81CA13FFB08
+	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 09:23:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347707AbhICHT0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Sep 2021 03:19:26 -0400
-Received: from smtp06.smtpout.orange.fr ([80.12.242.128]:50216 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347712AbhICHTZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 03:19:25 -0400
-Received: from tomoyo.flets-east.jp ([114.149.34.46])
-        by mwinf5d86 with ME
-        id pKJC2500b0zjR6y03KJMe4; Fri, 03 Sep 2021 09:18:24 +0200
-X-ME-Helo: tomoyo.flets-east.jp
-X-ME-Auth: bWFpbGhvbC52aW5jZW50QHdhbmFkb28uZnI=
-X-ME-Date: Fri, 03 Sep 2021 09:18:24 +0200
-X-ME-IP: 114.149.34.46
-From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [RESEND PATCH v2] can: netlink: prevent incoherent can configuration in case of early return
-Date:   Fri,  3 Sep 2021 16:17:04 +0900
-Message-Id: <20210903071704.455855-1-mailhol.vincent@wanadoo.fr>
-X-Mailer: git-send-email 2.32.0
+        id S1347939AbhICHYS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Sep 2021 03:24:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53482 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234791AbhICHYR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 03:24:17 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10725C061575;
+        Fri,  3 Sep 2021 00:23:16 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id g14so3637281pfm.1;
+        Fri, 03 Sep 2021 00:23:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=CAYgm7r5yvPHVRxLroR+04qagaPonKbxE6ejs/L/yhA=;
+        b=mjGrQ/CoOev8zdQNNOa4Uf4PkX/d+pBiOR4wyoEq4bJt77479T22LNy2Fs3C1FbCvU
+         5VAJVhoweKTiuK8TiDahZpAY6hXE/wpqoDBlj1HFf0kK3yztKk2stj87VZf9plR9znU3
+         syH777Ef5ZQFLI8iRKK5jfdb8LgQyEeYLizaNrP8qzFm5gb0kpumCBY/rCd8ymHfXRDM
+         FBY+fqlxAHNwJgjpV21nJzv8mXajTMPbIEu0C3aGfXBYOnw1bP6mSWDLSiCe1r3FPsCm
+         yCxU4QeN2Q6djOSqJHBYi8Djl6DtIiKsHR/eZy5FoD2+eM0Q7ZB7XhhIR24Sk/JYtDfo
+         CXpw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=CAYgm7r5yvPHVRxLroR+04qagaPonKbxE6ejs/L/yhA=;
+        b=gwtOw8K5SFPBZVVTy0KTBHnHjS5/QyYLYDra9CniRpBELHTJ3ZHmiY3zMpX+qJE7J+
+         MHgOB5ZTCDxSiReV7jtg3AjJCAzrv7pIEnkaVFTy1Uqduodjd55E72OdqI9GtsLiqHw7
+         DaDa8f5TSzrcz3pPQbwU28E4tRW58X1KYIq0a8JwcmLuwzATgWcl1zKlygPfc9mbHMqF
+         /cp0YhwwsrpSH5WVAPGa6t/TmFSDzt3jKlQLRa4hYNa5WiI27UOr+yfoVbZoPZa1lh5M
+         N1MTjqQndnKiIoBiwJexpplvCfHO+PzLSb7SPsD5qpEgiu3NK5drcZri7AE+YXc1O69y
+         OXVA==
+X-Gm-Message-State: AOAM531nRlO+b3fIpICUoDU5N6giHQ5ST0HIrX5Tf9hffnM5n2HQ9MT2
+        E9j2RPI3+dSAWlAR30cjwVv19kEr3uCmM/fPXqTyezaOnHp521E=
+X-Google-Smtp-Source: ABdhPJxtSGOSV4WdjAKSO9lQsFaSbuwGQVddqZ2Pe0/IhgeI5wc/D7DMm5VpaBpGzGCiatqAjub+P+MmSRYdh8uTxSU=
+X-Received: by 2002:a62:7c0d:0:b0:3fe:60d2:bce2 with SMTP id
+ x13-20020a627c0d000000b003fe60d2bce2mr2242436pfc.27.1630653795400; Fri, 03
+ Sep 2021 00:23:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From:   Hao Sun <sunhao.th@gmail.com>
+Date:   Fri, 3 Sep 2021 15:23:04 +0800
+Message-ID: <CACkBjsYoWvCcdrx+dhfMxZPQe6QNPo+TiqBZB5zqr89xikNEqQ@mail.gmail.com>
+Subject: kernel BUG in icmp_glue_bits
+To:     davem@davemloft.net, dsahern@kernel.org, kuba@kernel.org,
+        netdev@vger.kernel.org, yoshfuji@linux-ipv6.org
+Cc:     linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-struct can_priv has a set of flags (can_priv::ctrlmode) which are
-correlated with the other fields of the structure. In
-can_changelink(), those flags are set first and copied to can_priv. If
-the function has to return early, for example due to an out of range
-value provided by the user, then the global configuration might become
-incoherent.
+Hello,
 
-Example: the user provides an out of range dbitrate (e.g. 20
-Mbps). The command fails (-EINVAL), however the FD flag was already
-set resulting in a configuration where FD is on but the databittiming
-parameters are empty.
+When using Healer to fuzz the latest Linux kernel, the following crash
+was triggered.
 
-* Illustration of above example *
+HEAD commit: 7d2a07b76933 Linux 5.14
+git tree: upstream
+console output:
+https://drive.google.com/file/d/1cnXumCo_HKWYN6f4wyomzDwCN4kUVi7O/view?usp=sharing
+kernel config: https://drive.google.com/file/d/1XD9WYDViQLSXN7RGwH8AGGDvP9JvOghx/view?usp=sharing
 
-| $ ip link set can0 type can bitrate 500000 dbitrate 20000000 fd on
-| RTNETLINK answers: Invalid argument
-| $ ip --details link show can0
-| 1: can0: <NOARP,ECHO> mtu 72 qdisc noop state DOWN mode DEFAULT group default qlen 10
-|     link/can  promiscuity 0 minmtu 0 maxmtu 0
-|     can <FD> state STOPPED restart-ms 0
-           ^^ FD flag is set without any of the databittiming parameters...
-| 	  bitrate 500000 sample-point 0.875
-| 	  tq 12 prop-seg 69 phase-seg1 70 phase-seg2 20 sjw 1
-| 	  ES582.1/ES584.1: tseg1 2..256 tseg2 2..128 sjw 1..128 brp 1..512 brp-inc 1
-| 	  ES582.1/ES584.1: dtseg1 2..32 dtseg2 1..16 dsjw 1..8 dbrp 1..32 dbrp-inc 1
-| 	  clock 80000000 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535
+Sorry, I don't have a reproducer for this crash, hope the symbolized
+report can help.
+If you fix this issue, please add the following tag to the commit:
+Reported-by: Hao Sun <sunhao.th@gmail.com>
 
-To prevent this from happening, we do a local copy of can_priv, work
-on it, an copy it at the very end of the function (i.e. only if all
-previous checks succeeded).
-
-Once this done, there is no more need to have a temporary variable for
-a specific parameter. As such, the bittiming and data bittiming (bt
-and dbt) are directly written to the temporary priv variable.
-
-Finally, function can_calc_tdco() was retrieving can_priv from the
-net_device and directly modifying it. We changed the prototype so that
-it instead writes its changes into our temporary priv variable.
-
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
----
-Resending because I got no answers on:
-https://lore.kernel.org/linux-can/20210823024750.702542-1-mailhol.vincent@wanadoo.fr/T/#u
-(I guess everyone bas busy with the upcoming merge window)
-
-I am not sure whether or not this needs a "Fixes" tag. Just in case,
-there it is:
-
-Fixes: 9859ccd2c8be ("can: introduce the data bitrate configuration for CAN FD")
-
-* Changelog *
-
-v1 -> v2:
-  - Change the prototype of can_calc_tdco() so that the changes are
-    applied to the temporary priv instead of netdev_priv(dev).
----
- drivers/net/can/dev/bittiming.c |  8 +--
- drivers/net/can/dev/netlink.c   | 88 +++++++++++++++++----------------
- include/linux/can/bittiming.h   |  7 ++-
- 3 files changed, 53 insertions(+), 50 deletions(-)
-
-diff --git a/drivers/net/can/dev/bittiming.c b/drivers/net/can/dev/bittiming.c
-index f49170eadd54..bddd93e2e439 100644
---- a/drivers/net/can/dev/bittiming.c
-+++ b/drivers/net/can/dev/bittiming.c
-@@ -175,13 +175,9 @@ int can_calc_bittiming(struct net_device *dev, struct can_bittiming *bt,
- 	return 0;
- }
- 
--void can_calc_tdco(struct net_device *dev)
-+void can_calc_tdco(struct can_tdc *tdc, const struct can_tdc_const *tdc_const,
-+		   const struct can_bittiming *dbt)
- {
--	struct can_priv *priv = netdev_priv(dev);
--	const struct can_bittiming *dbt = &priv->data_bittiming;
--	struct can_tdc *tdc = &priv->tdc;
--	const struct can_tdc_const *tdc_const = priv->tdc_const;
--
- 	if (!tdc_const)
- 		return;
- 
-diff --git a/drivers/net/can/dev/netlink.c b/drivers/net/can/dev/netlink.c
-index 80425636049d..50dfed462711 100644
---- a/drivers/net/can/dev/netlink.c
-+++ b/drivers/net/can/dev/netlink.c
-@@ -58,14 +58,20 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
- 			  struct nlattr *data[],
- 			  struct netlink_ext_ack *extack)
- {
--	struct can_priv *priv = netdev_priv(dev);
-+	/* Work on a local copy of priv to prevent inconsistent value
-+	 * in case of early return. net/core/rtnetlink.c has a global
-+	 * mutex so using a static declaration is race free
-+	 */
-+	static struct can_priv priv;
- 	int err;
- 
- 	/* We need synchronization with dev->stop() */
- 	ASSERT_RTNL();
- 
-+	memcpy(&priv, netdev_priv(dev), sizeof(priv));
-+
- 	if (data[IFLA_CAN_BITTIMING]) {
--		struct can_bittiming bt;
-+		struct can_bittiming *bt = &priv.bittiming;
- 
- 		/* Do not allow changing bittiming while running */
- 		if (dev->flags & IFF_UP)
-@@ -76,28 +82,26 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
- 		 * directly via do_set_bitrate(). Bail out if neither
- 		 * is given.
- 		 */
--		if (!priv->bittiming_const && !priv->do_set_bittiming)
-+		if (!priv.bittiming_const && !priv.do_set_bittiming)
- 			return -EOPNOTSUPP;
- 
--		memcpy(&bt, nla_data(data[IFLA_CAN_BITTIMING]), sizeof(bt));
--		err = can_get_bittiming(dev, &bt,
--					priv->bittiming_const,
--					priv->bitrate_const,
--					priv->bitrate_const_cnt);
-+		memcpy(bt, nla_data(data[IFLA_CAN_BITTIMING]), sizeof(*bt));
-+		err = can_get_bittiming(dev, bt,
-+					priv.bittiming_const,
-+					priv.bitrate_const,
-+					priv.bitrate_const_cnt);
- 		if (err)
- 			return err;
- 
--		if (priv->bitrate_max && bt.bitrate > priv->bitrate_max) {
-+		if (priv.bitrate_max && bt->bitrate > priv.bitrate_max) {
- 			netdev_err(dev, "arbitration bitrate surpasses transceiver capabilities of %d bps\n",
--				   priv->bitrate_max);
-+				   priv.bitrate_max);
- 			return -EINVAL;
- 		}
- 
--		memcpy(&priv->bittiming, &bt, sizeof(bt));
--
--		if (priv->do_set_bittiming) {
-+		if (priv.do_set_bittiming) {
- 			/* Finally, set the bit-timing registers */
--			err = priv->do_set_bittiming(dev);
-+			err = priv.do_set_bittiming(dev);
- 			if (err)
- 				return err;
- 		}
-@@ -112,11 +116,11 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
- 		if (dev->flags & IFF_UP)
- 			return -EBUSY;
- 		cm = nla_data(data[IFLA_CAN_CTRLMODE]);
--		ctrlstatic = priv->ctrlmode_static;
-+		ctrlstatic = priv.ctrlmode_static;
- 		maskedflags = cm->flags & cm->mask;
- 
- 		/* check whether provided bits are allowed to be passed */
--		if (maskedflags & ~(priv->ctrlmode_supported | ctrlstatic))
-+		if (maskedflags & ~(priv.ctrlmode_supported | ctrlstatic))
- 			return -EOPNOTSUPP;
- 
- 		/* do not check for static fd-non-iso if 'fd' is disabled */
-@@ -128,16 +132,16 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
- 			return -EOPNOTSUPP;
- 
- 		/* clear bits to be modified and copy the flag values */
--		priv->ctrlmode &= ~cm->mask;
--		priv->ctrlmode |= maskedflags;
-+		priv.ctrlmode &= ~cm->mask;
-+		priv.ctrlmode |= maskedflags;
- 
- 		/* CAN_CTRLMODE_FD can only be set when driver supports FD */
--		if (priv->ctrlmode & CAN_CTRLMODE_FD) {
-+		if (priv.ctrlmode & CAN_CTRLMODE_FD) {
- 			dev->mtu = CANFD_MTU;
- 		} else {
- 			dev->mtu = CAN_MTU;
--			memset(&priv->data_bittiming, 0,
--			       sizeof(priv->data_bittiming));
-+			memset(&priv.data_bittiming, 0,
-+			       sizeof(priv.data_bittiming));
- 		}
- 	}
- 
-@@ -145,7 +149,7 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
- 		/* Do not allow changing restart delay while running */
- 		if (dev->flags & IFF_UP)
- 			return -EBUSY;
--		priv->restart_ms = nla_get_u32(data[IFLA_CAN_RESTART_MS]);
-+		priv.restart_ms = nla_get_u32(data[IFLA_CAN_RESTART_MS]);
- 	}
- 
- 	if (data[IFLA_CAN_RESTART]) {
-@@ -158,7 +162,7 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
- 	}
- 
- 	if (data[IFLA_CAN_DATA_BITTIMING]) {
--		struct can_bittiming dbt;
-+		struct can_bittiming *dbt = &priv.data_bittiming;
- 
- 		/* Do not allow changing bittiming while running */
- 		if (dev->flags & IFF_UP)
-@@ -169,31 +173,29 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
- 		 * directly via do_set_bitrate(). Bail out if neither
- 		 * is given.
- 		 */
--		if (!priv->data_bittiming_const && !priv->do_set_data_bittiming)
-+		if (!priv.data_bittiming_const && !priv.do_set_data_bittiming)
- 			return -EOPNOTSUPP;
- 
--		memcpy(&dbt, nla_data(data[IFLA_CAN_DATA_BITTIMING]),
--		       sizeof(dbt));
--		err = can_get_bittiming(dev, &dbt,
--					priv->data_bittiming_const,
--					priv->data_bitrate_const,
--					priv->data_bitrate_const_cnt);
-+		memcpy(dbt, nla_data(data[IFLA_CAN_DATA_BITTIMING]),
-+		       sizeof(*dbt));
-+		err = can_get_bittiming(dev, dbt,
-+					priv.data_bittiming_const,
-+					priv.data_bitrate_const,
-+					priv.data_bitrate_const_cnt);
- 		if (err)
- 			return err;
- 
--		if (priv->bitrate_max && dbt.bitrate > priv->bitrate_max) {
-+		if (priv.bitrate_max && dbt->bitrate > priv.bitrate_max) {
- 			netdev_err(dev, "canfd data bitrate surpasses transceiver capabilities of %d bps\n",
--				   priv->bitrate_max);
-+				   priv.bitrate_max);
- 			return -EINVAL;
- 		}
- 
--		memcpy(&priv->data_bittiming, &dbt, sizeof(dbt));
--
--		can_calc_tdco(dev);
-+		can_calc_tdco(&priv.tdc, priv.tdc_const, &priv.data_bittiming);
- 
--		if (priv->do_set_data_bittiming) {
-+		if (priv.do_set_data_bittiming) {
- 			/* Finally, set the bit-timing registers */
--			err = priv->do_set_data_bittiming(dev);
-+			err = priv.do_set_data_bittiming(dev);
- 			if (err)
- 				return err;
- 		}
-@@ -201,28 +203,30 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
- 
- 	if (data[IFLA_CAN_TERMINATION]) {
- 		const u16 termval = nla_get_u16(data[IFLA_CAN_TERMINATION]);
--		const unsigned int num_term = priv->termination_const_cnt;
-+		const unsigned int num_term = priv.termination_const_cnt;
- 		unsigned int i;
- 
--		if (!priv->do_set_termination)
-+		if (!priv.do_set_termination)
- 			return -EOPNOTSUPP;
- 
- 		/* check whether given value is supported by the interface */
- 		for (i = 0; i < num_term; i++) {
--			if (termval == priv->termination_const[i])
-+			if (termval == priv.termination_const[i])
- 				break;
- 		}
- 		if (i >= num_term)
- 			return -EINVAL;
- 
- 		/* Finally, set the termination value */
--		err = priv->do_set_termination(dev, termval);
-+		err = priv.do_set_termination(dev, termval);
- 		if (err)
- 			return err;
- 
--		priv->termination = termval;
-+		priv.termination = termval;
- 	}
- 
-+	memcpy(netdev_priv(dev), &priv, sizeof(priv));
-+
- 	return 0;
- }
- 
-diff --git a/include/linux/can/bittiming.h b/include/linux/can/bittiming.h
-index 9de6e9053e34..b3c1711ee0f0 100644
---- a/include/linux/can/bittiming.h
-+++ b/include/linux/can/bittiming.h
-@@ -87,7 +87,8 @@ struct can_tdc_const {
- int can_calc_bittiming(struct net_device *dev, struct can_bittiming *bt,
- 		       const struct can_bittiming_const *btc);
- 
--void can_calc_tdco(struct net_device *dev);
-+void can_calc_tdco(struct can_tdc *tdc, const struct can_tdc_const *tdc_const,
-+		   const struct can_bittiming *dbt);
- #else /* !CONFIG_CAN_CALC_BITTIMING */
- static inline int
- can_calc_bittiming(struct net_device *dev, struct can_bittiming *bt,
-@@ -97,7 +98,9 @@ can_calc_bittiming(struct net_device *dev, struct can_bittiming *bt,
- 	return -EINVAL;
- }
- 
--static inline void can_calc_tdco(struct net_device *dev)
-+static inline void
-+can_calc_tdco(struct can_tdc *tdc, const struct can_tdc_const *tdc_const,
-+	      const struct can_bittiming *dbt)
- {
- }
- #endif /* CONFIG_CAN_CALC_BITTIMING */
--- 
-2.31.1
-
+------------[ cut here ]------------
+kernel BUG at net/core/skbuff.c:2921!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+CPU: 1 PID: 4538 Comm: systemd-udevd Not tainted 5.14.0 #25
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
+1.13.0-1ubuntu1.1 04/01/2014
+RIP: 0010:skb_copy_and_csum_bits+0x704/0x800 net/core/skbuff.c:2921
+Code: 70 fa 49 63 c6 44 01 f5 49 01 c5 89 6c 24 04 4c 89 6c 24 08 e9
+c5 f9 ff ff e8 c8 64 70 fa 0f 0b e9 95 fe ff ff e8 bc 64 70 fa <0f> 0b
+e8 55 52 b7 fa e9 c9 fc ff ff 48 8b 7c 24 20 e8 46 52 b7 fa
+RSP: 0018:ffffc90000167f20 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: 00000000000001e8 RCX: ffff888101503980
+RDX: 0000000000000000 RSI: ffff888101503980 RDI: 0000000000000002
+RBP: 0000000000000000 R08: ffffffff870493c4 R09: 0000000000000000
+R10: 0000000000000005 R11: ffffed10228642a5 R12: 0000000000000000
+R13: ffff888014e10868 R14: 000000000000003c R15: 000000000000003c
+FS:  00007ff42eb758c0(0000) GS:ffff888119f00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00005610e0f77618 CR3: 00000001034f1001 CR4: 0000000000770ee0
+PKRU: 55555554
+Call Trace:
+ <IRQ>
+ icmp_glue_bits+0x79/0x1f0 net/ipv4/icmp.c:356
+ __ip_append_data.isra.0+0x19be/0x33c0 net/ipv4/ip_output.c:1144
+ ip_append_data.part.0+0xf6/0x180 net/ipv4/ip_output.c:1327
+ ip_append_data+0x6c/0x90 net/ipv4/ip_output.c:1316
+ icmp_push_reply+0x13b/0x4b0 net/ipv4/icmp.c:374
+ __icmp_send+0xc47/0x1500 net/ipv4/icmp.c:769
+ icmp_send include/net/icmp.h:43 [inline]
+ ip_fragment net/ipv4/ip_output.c:588 [inline]
+ ip_fragment.constprop.0+0x1e7/0x240 net/ipv4/ip_output.c:575
+ __ip_finish_output net/ipv4/ip_output.c:306 [inline]
+ __ip_finish_output+0x5db/0x11e0 net/ipv4/ip_output.c:290
+ ip_finish_output+0x32/0x200 net/ipv4/ip_output.c:318
+ NF_HOOK_COND include/linux/netfilter.h:296 [inline]
+ ip_output+0x201/0x610 net/ipv4/ip_output.c:432
+ dst_output include/net/dst.h:448 [inline]
+ ip_local_out+0xaf/0x1a0 net/ipv4/ip_output.c:126
+ __ip_queue_xmit+0x823/0x1890 net/ipv4/ip_output.c:533
+ __tcp_transmit_skb+0x1a2d/0x3920 net/ipv4/tcp_output.c:1405
+ tcp_transmit_skb net/ipv4/tcp_output.c:1423 [inline]
+ __tcp_retransmit_skb+0x5c7/0x2a60 net/ipv4/tcp_output.c:3234
+ tcp_retransmit_skb+0x2a/0x360 net/ipv4/tcp_output.c:3257
+ tcp_retransmit_timer+0xe44/0x3050 net/ipv4/tcp_timer.c:539
+ tcp_write_timer_handler+0x4aa/0x940 net/ipv4/tcp_timer.c:622
+ tcp_write_timer+0xa2/0x2b0 net/ipv4/tcp_timer.c:642
+ call_timer_fn+0x1a5/0x6b0 kernel/time/timer.c:1421
+ expire_timers kernel/time/timer.c:1466 [inline]
+ __run_timers.part.0+0x6b0/0xa90 kernel/time/timer.c:1734
+ __run_timers kernel/time/timer.c:1715 [inline]
+ run_timer_softirq+0xb6/0x1d0 kernel/time/timer.c:1747
+ __do_softirq+0x1d7/0x93b kernel/softirq.c:558
+ invoke_softirq kernel/softirq.c:432 [inline]
+ __irq_exit_rcu kernel/softirq.c:636 [inline]
+ irq_exit_rcu+0x14f/0x170 kernel/softirq.c:648
+ sysvec_apic_timer_interrupt+0x93/0xc0 arch/x86/kernel/apic/apic.c:1100
+ </IRQ>
+ asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:638
+RIP: 0010:preempt_count arch/x86/include/asm/preempt.h:27 [inline]
+RIP: 0010:check_kcov_mode+0x0/0x40 kernel/kcov.c:163
+Code: 89 df e8 43 ee 46 00 e9 8d fe ff ff 48 8b 7c 24 08 e8 34 ee 46
+00 e9 f3 fd ff ff cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc <65> 8b
+05 e9 f7 8c 7e 89 c2 81 e2 00 01 00 00 a9 00 01 ff 00 74 10
+RSP: 0018:ffffc900005a7810 EFLAGS: 00000246
+RAX: 0000000000000000 RBX: 0000000000000002 RCX: ffffffff83a0cb5c
+RDX: 0000000000000000 RSI: ffff888101503980 RDI: 0000000000000003
+RBP: ffff888103e7ea80 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000005 R11: fffffbfff1f4b214 R12: 0000000000000022
+R13: 0000000000000073 R14: dffffc0000000000 R15: 0000000000000000
+ write_comp_data+0x1c/0x70 kernel/kcov.c:218
+ tomoyo_domain_quota_is_ok+0x30c/0x540 security/tomoyo/util.c:1093
+ tomoyo_supervisor+0x290/0xe30 security/tomoyo/common.c:2089
+ tomoyo_audit_path_log security/tomoyo/file.c:168 [inline]
+ tomoyo_path_permission security/tomoyo/file.c:587 [inline]
+ tomoyo_path_permission+0x270/0x3a0 security/tomoyo/file.c:573
+ tomoyo_path_perm+0x2fc/0x420 security/tomoyo/file.c:838
+ security_inode_getattr+0xcf/0x140 security/security.c:1333
+ vfs_getattr+0x22/0x60 fs/stat.c:139
+ vfs_statx+0x168/0x370 fs/stat.c:207
+ vfs_fstatat fs/stat.c:225 [inline]
+ vfs_lstat include/linux/fs.h:3386 [inline]
+ __do_sys_newlstat+0x91/0x110 fs/stat.c:380
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7ff42d9e8335
+Code: 69 db 2b 00 64 c7 00 16 00 00 00 b8 ff ff ff ff c3 0f 1f 40 00
+83 ff 01 48 89 f0 77 30 48 89 c7 48 89 d6 b8 06 00 00 00 0f 05 <48> 3d
+00 f0 ff ff 77 03 f3 c3 90 48 8b 15 31 db 2b 00 f7 d8 64 89
+RSP: 002b:00007ffddaf6d118 EFLAGS: 00000246 ORIG_RAX: 0000000000000006
+RAX: ffffffffffffffda RBX: 00005610e0f4b8d0 RCX: 00007ff42d9e8335
+RDX: 00007ffddaf6d150 RSI: 00007ffddaf6d150 RDI: 00005610e0f4a8d0
+RBP: 00007ffddaf6d210 R08: 00007ff42dca71d8 R09: 0000000000001010
+R10: 00005610e0f34830 R11: 0000000000000246 R12: 00005610e0f4a8d0
+R13: 00005610e0f4a8ea R14: 00005610e0f33d05 R15: 00005610e0f33d0a
+Modules linked in:
+Dumping ftrace buffer:
+   (ftrace buffer empty)
+---[ end trace 3f7b18088a4592dc ]---
+RIP: 0010:skb_copy_and_csum_bits+0x704/0x800 net/core/skbuff.c:2921
+Code: 70 fa 49 63 c6 44 01 f5 49 01 c5 89 6c 24 04 4c 89 6c 24 08 e9
+c5 f9 ff ff e8 c8 64 70 fa 0f 0b e9 95 fe ff ff e8 bc 64 70 fa <0f> 0b
+e8 55 52 b7 fa e9 c9 fc ff ff 48 8b 7c 24 20 e8 46 52 b7 fa
+RSP: 0018:ffffc90000167f20 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: 00000000000001e8 RCX: ffff888101503980
+RDX: 0000000000000000 RSI: ffff888101503980 RDI: 0000000000000002
+RBP: 0000000000000000 R08: ffffffff870493c4 R09: 0000000000000000
+R10: 0000000000000005 R11: ffffed10228642a5 R12: 0000000000000000
+R13: ffff888014e10868 R14: 000000000000003c R15: 000000000000003c
+FS:  00007ff42eb758c0(0000) GS:ffff888119f00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00005610e0f77618 CR3: 00000001034f1001 CR4: 0000000000770ee0
+PKRU: 55555554
+----------------
+Code disassembly (best guess):
+   0: 89 df                mov    %ebx,%edi
+   2: e8 43 ee 46 00        callq  0x46ee4a
+   7: e9 8d fe ff ff        jmpq   0xfffffe99
+   c: 48 8b 7c 24 08        mov    0x8(%rsp),%rdi
+  11: e8 34 ee 46 00        callq  0x46ee4a
+  16: e9 f3 fd ff ff        jmpq   0xfffffe0e
+  1b: cc                    int3
+  1c: cc                    int3
+  1d: cc                    int3
+  1e: cc                    int3
+  1f: cc                    int3
+  20: cc                    int3
+  21: cc                    int3
+  22: cc                    int3
+  23: cc                    int3
+  24: cc                    int3
+  25: cc                    int3
+  26: cc                    int3
+  27: cc                    int3
+  28: cc                    int3
+  29: cc                    int3
+* 2a: 65 8b 05 e9 f7 8c 7e mov    %gs:0x7e8cf7e9(%rip),%eax        #
+0x7e8cf81a <-- trapping instruction
+  31: 89 c2                mov    %eax,%edx
+  33: 81 e2 00 01 00 00    and    $0x100,%edx
+  39: a9 00 01 ff 00        test   $0xff0100,%eax
+  3e: 74 10                je     0x50
