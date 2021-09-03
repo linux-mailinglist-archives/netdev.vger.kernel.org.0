@@ -2,233 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA4074005D2
-	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 21:29:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D2194005F3
+	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 21:39:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238770AbhICTae (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Sep 2021 15:30:34 -0400
-Received: from mail-40140.protonmail.ch ([185.70.40.140]:29534 "EHLO
-        mail-40140.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235684AbhICTad (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 15:30:33 -0400
-Date:   Fri, 03 Sep 2021 19:29:28 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-        s=protonmail; t=1630697370;
-        bh=IIWvAM+fUjurDtuiATc04S+qnRbLaXtjcjstHTtfjVg=;
-        h=Date:To:From:Cc:Reply-To:Subject:From;
-        b=A1ioBZl1xKdBjsUoVYbQNxJ8/vBPQLRtMqYZcOhoRHc+wk89nShld8/SEz3kgi4Im
-         LoxHPXGT4vCNsniMyZOF364LhifG4mC/qNldyz81Pcb5SQ3GS5LlgHAUnvRbQ3XzWF
-         oKs6tx17Bz5tLPRWKibbawH6O5a1WMhmshpayBsA=
-To:     dan.carpenter@oracle.com
-From:   Yassine Oudjana <y.oudjana@protonmail.com>
-Cc:     bjorn.andersson@linaro.org, butterflyhuangxx@gmail.com,
-        davem@davemloft.net, kuba@kernel.org,
-        linux-arm-msm@vger.kernel.org, loic.poulain@linaro.org,
-        mani@kernel.org, netdev@vger.kernel.org
-Reply-To: Yassine Oudjana <y.oudjana@protonmail.com>
-Subject: Re: [PATCH v2 net] net: qrtr: make checks in qrtr_endpoint_post() stricter
-Message-ID: <S4IVYQ.R543O8OZ1IFR3@protonmail.com>
+        id S1350002AbhICTj7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Sep 2021 15:39:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54148 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349849AbhICTj6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 15:39:58 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7AECC061575
+        for <netdev@vger.kernel.org>; Fri,  3 Sep 2021 12:38:57 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id u14so161109ejf.13
+        for <netdev@vger.kernel.org>; Fri, 03 Sep 2021 12:38:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=wVgg5l8nV72tzE4xBmoGbb7jSjpXqTztea2lVaWTzj4=;
+        b=XZd5NCKuefsXxnlW19GtZHH0x20eoJ0Q+1ETeKlJVaPIW472U9ZPdXDU2z5vMrw1F+
+         +MesMMbqWvb9oSDA5wGV/UnB2fKHjJ9dx9Mbv5eFa7b+Vg1MJYr7Mu8HHtAP3AK5/5rK
+         s5D6vRSNV2/eQ4pcdQHPvsIhroBF0Kee/bHPwjHAPGUylAboat1Aoe3HAzoyVvHjmm5R
+         j4fr8oitJylAmR6S2POUNWK9JVpvTh0LOLWIl5/ORNdm2bZ6qyxlAhr0+SYjHWt0HoVB
+         brmM4cpQIgXX77TuCabJZEctFxOf1szE7wc9rfHDiWWXquIFcwhJrR+yy5C3QK8eEOra
+         lvZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wVgg5l8nV72tzE4xBmoGbb7jSjpXqTztea2lVaWTzj4=;
+        b=D3tk9zn8WO7lQZtZwyePc/ZLj8i/hV0fz+nhMPkYB+TjI1Udz5JVAooZ2E4bz2cfnV
+         RWDNR0pk1YX+skxzM13o4Zrxa9WG8MdkRZ+Zl2/hXDfs0quGF6coAeXYFzTYUl1yE2dR
+         eIJcZI0l0WXnCHbEXxGQN5aI1b1K7S9r/QwsKzcMNClS11hyF5h7uaqqDLaug7RY48j8
+         k9Osuj04BeDdOnxdA1oWQoJ+weWmzQaLyxJlDTTpzz3tclBpf1tr8xdIvxZ9+Avsss34
+         cPBNGO81g5snaI0M9KReFSwbJifigYqsaHQuHHr5npvwdsBimLKXXc8I0YPG4jv/oF8U
+         TKMQ==
+X-Gm-Message-State: AOAM533XZDjJ7oHss+PEsVSrBCr2QStBCfYeAvmPxYFum3VYOSgzCntK
+        V5SapU8hI3ut3l1pj3fwha908Ha71JFV9A==
+X-Google-Smtp-Source: ABdhPJz0yahheDxZeichdaDB/WUsx3XHyG4mFCv+S/MQXd6Evh4XAlF6gkeELls+/9ugSO3wo8Iz9Q==
+X-Received: by 2002:a17:906:b84a:: with SMTP id ga10mr490792ejb.143.1630697936255;
+        Fri, 03 Sep 2021 12:38:56 -0700 (PDT)
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com. [209.85.128.48])
+        by smtp.gmail.com with ESMTPSA id d3sm52749ejw.18.2021.09.03.12.38.54
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 03 Sep 2021 12:38:55 -0700 (PDT)
+Received: by mail-wm1-f48.google.com with SMTP id l7-20020a1c2507000000b002e6be5d86b3so231504wml.3
+        for <netdev@vger.kernel.org>; Fri, 03 Sep 2021 12:38:54 -0700 (PDT)
+X-Received: by 2002:a1c:210a:: with SMTP id h10mr362069wmh.117.1630697934322;
+ Fri, 03 Sep 2021 12:38:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+References: <20210902193447.94039-1-willemdebruijn.kernel@gmail.com>
+ <20210902193447.94039-2-willemdebruijn.kernel@gmail.com> <CAKgT0UdhaUp0jcNZSzMu=_OezwqKNHP47u0n_XUkpO_SbSV8hA@mail.gmail.com>
+ <CA+FuTSfaN-wLzVq1UQhwiPgH=PKdcW+kz1PDxgfrLAnjWf8CKA@mail.gmail.com>
+ <CAKgT0UdtqJ+ECyDs1dv7ha4Bq12XaGiOQ6uvja5cy06dDR5ziw@mail.gmail.com>
+ <CA+FuTSfpmGHC76GAVVS2qazfLykVZ=mM+33pRHpj-yyM3nqhXA@mail.gmail.com>
+ <CAKgT0UdiYRHrSUGb9qDJ-GGMBj53P1L4KHSV7tv+omA5FjRZNQ@mail.gmail.com>
+ <CA+FuTSf-83bDVzmB757ha99DS=O-KjSFVSn15Y6Vq5Yh9yx2wA@mail.gmail.com> <CAKgT0Uf6YrDtvEfL02-P7A3Q_V32MWZ-tV7B=xtkY0ZzxEo9yg@mail.gmail.com>
+In-Reply-To: <CAKgT0Uf6YrDtvEfL02-P7A3Q_V32MWZ-tV7B=xtkY0ZzxEo9yg@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Fri, 3 Sep 2021 15:38:17 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSeHAd4ouwYd9tL2FHa1YdB3aLznOTnAJt+PShnr+Zd7yw@mail.gmail.com>
+Message-ID: <CA+FuTSeHAd4ouwYd9tL2FHa1YdB3aLznOTnAJt+PShnr+Zd7yw@mail.gmail.com>
+Subject: Re: [PATCH net] ip_gre: validate csum_start only if CHECKSUM_PARTIAL
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ido Schimmel <idosch@idosch.org>,
+        chouhan.shreyansh630@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 30 Aug 2021 11:37:17 +0300 Dan Carpenter wrote:
- > These checks are still not strict enough. The main problem is that if
- > "cb->type =3D=3D QRTR_TYPE_NEW_SERVER" is true then "len - hdrlen" is
- > guaranteed to be 4 but we need to be at least 16 bytes. In fact, we
- > can reject everything smaller than sizeof(*pkt) which is 20 bytes.
- >
- > Also I don't like the ALIGN(size, 4). It's better to just insist that
- > data is needs to be aligned at the start.
- >
- > Fixes: 0baa99ee353c ("net: qrtr: Allow non-immediate node routing")
- > Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
- > ---
- > v2: Fix a % vs & bug. Thanks, butt3rflyh4ck!
- >
- > net/qrtr/qrtr.c | 8 ++++++--
- > 1 file changed, 6 insertions(+), 2 deletions(-)
- >
- > diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
- > index b8508e35d20e..dbb647f5481b 100644
- > --- a/net/qrtr/qrtr.c
- > +++ b/net/qrtr/qrtr.c
- > @@ -493,7 +493,7 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep,=20
-const void *data, size_t len)
- > goto err;
- > }
- >
- > - if (!size || len !=3D ALIGN(size, 4) + hdrlen)
- > + if (!size || size & 3 || len !=3D size + hdrlen)
- > goto err;
- >
- > if (cb->dst_port !=3D QRTR_PORT_CTRL && cb->type !=3D QRTR_TYPE_DATA &&
- > @@ -506,8 +506,12 @@ int qrtr_endpoint_post(struct qrtr_endpoint=20
-*ep, const void *data, size_t len)
- >
- > if (cb->type =3D=3D QRTR_TYPE_NEW_SERVER) {
- > /* Remote node endpoint can bridge other distant nodes */
- > - const struct qrtr_ctrl_pkt *pkt =3D data + hdrlen;
- > + const struct qrtr_ctrl_pkt *pkt;
- >
- > + if (size < sizeof(*pkt))
- > + goto err;
- > +
- > + pkt =3D data + hdrlen;
- > qrtr_node_assign(node, le32_to_cpu(pkt->server.node));
- > }
- >
- > --
- > 2.20.1
- >
+> > > The issue is drivers with NETIF_F_HW_CSUM would be expecting a
+> > > reasonable csum_start and csum_offset. If the hardware is only
+> > > advertising that and we are expecting it to offload the checksum we
+> > > should probably be doing some sort of validation on user derived
+> > > inputs to make sure that they aren't totally ridiculous as is the case
+> > > here where the original issue was that the csum_start wasn't even in
+> > > the packet data.
+> > >
+> > > Would it maybe make sense to look at reverting the earlier fixes and
+> > > instead updating skb_partial_csum_set so that we cannot write a
+> > > csum_start value that is less than the start of skb->data? That way we
+> > > are addressing this at the source instead of allowing the garbage data
+> > > to propagate further down the stack and having to drop it at the
+> > > driver level which is going to have us playing whack a mole trying to
+> > > fix it where it pops up. It seems like we are already validating the
+> > > upper bounds for these values in that function so why not validate the
+> > > lower bounds as well?
+> >
+> > skb_partial_csum_set verifies that csum_start is within bounds
+> > at the time it is called. The offset passed from userspace is
+> > an unsigned int added to skb_headroom(skb), so >= skb->data.
+> >
+> > The issue is with ipgre_xmit calling skb_pull. Only then does it
+> > become out of bounds. From what I saw, pulling headers like
+> > that is very rare in the transmit path. Indeed, I did not see it in
+> > any other tunnels. We could instrument each of these directly,
+> > but at non-trivial cost.
+>
+> So there are some positives and negatives to addressing this in
+> ipgre_xmit. Specifically if we address it before the pull we could do
+> some other quick checks to verify the offset. If the offset and start
+> are both in the region to be pulled we could just drop the offload,
 
-This is crashing MSM8996. I get these messages (dmesg | grep=20
-remoteproc):
+These cases would currently crash the kernel. They are so clearly bad
+input that I would not even try to start accommodating them. Drop
+them.
 
-[ 11.677216] qcom-q6v5-mss 2080000.remoteproc: supply pll not found,=20
-using dummy regulator
-[ 11.701423] qcom_q6v5_pas 1c00000.remoteproc: supply cx not found,=20
-using dummy regulator
-[ 11.716475] qcom_q6v5_pas 1c00000.remoteproc: supply px not found,=20
-using dummy regulator
-[ 11.724481] remoteproc remoteproc0: 2080000.remoteproc is available
-[ 11.747772] remoteproc remoteproc1: 1c00000.remoteproc is available
-[ 11.762163] qcom_q6v5_pas 9300000.remoteproc: supply cx not found,=20
-using dummy regulator
-[ 11.778599] qcom_q6v5_pas 9300000.remoteproc: supply px not found,=20
-using dummy regulator
-[ 11.785288] remoteproc remoteproc2: 9300000.remoteproc is available
-[ 11.786574] remoteproc remoteproc1: powering up 1c00000.remoteproc
-[ 11.791908] remoteproc remoteproc1: Booting fw image=20
-qcom/msm8996/scorpio/slpi.mbn, size 3921212
-[ 11.870859] remoteproc remoteproc2: powering up 9300000.remoteproc
-[ 11.873980] remoteproc remoteproc2: Booting fw image=20
-qcom/msm8996/scorpio/adsp.mbn, size 12264177
-[ 11.922394] remoteproc remoteproc1: remote processor=20
-1c00000.remoteproc is now up
-[ 12.036379] qcom_smd_qrtr remoteproc1:smd-edge.IPCRTR.-1.-1: invalid=20
-ipcrouter packet
-[ 12.039457] qcom_smd_qrtr remoteproc1:smd-edge.IPCRTR.-1.-1: invalid=20
-ipcrouter packet
-[ 12.112448] qcom_smd_qrtr remoteproc2:smd-edge.IPCRTR.-1.-1: invalid=20
-ipcrouter packet
-[ 13.015132] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding=20
-APR dev: aprsvc:q6core:4:3
-[ 13.019159] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding=20
-APR dev: aprsvc:q6afe:4:4
-[ 13.028870] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding=20
-APR dev: aprsvc:q6asm:4:7
-[ 13.031606] qcom,apr remoteproc2:smd-edge.apr_audio_svc.-1.-1: Adding=20
-APR dev: aprsvc:q6adm:4:8
-[ 13.214501] q6asm-dai 9300000.remoteproc:smd-edge:apr:q6asm:dais:=20
-Adding to iommu group 3
-[ 13.994777] remoteproc remoteproc0: powering up 2080000.remoteproc
-[ 13.999669] remoteproc remoteproc0: Booting fw image=20
-qcom/msm8996/scorpio/mba.mbn, size 213888
-[ 14.247034] qcom_smd_qrtr remoteproc1:smd-edge.IPCRTR.-1.-1: invalid=20
-ipcrouter packet
-[ 14.247298] qcom_smd_qrtr remoteproc1:smd-edge.IPCRTR.-1.-1: invalid=20
-ipcrouter packet
-[ 17.118806] qcom_q6v5_pas 1c00000.remoteproc: timeout waiting for=20
-subsystem event response
-[ 17.119496] qcom_smd_qrtr remoteproc2:smd-edge.IPCRTR.-1.-1: invalid=20
-ipcrouter packet
-[ 17.119556] qcom_smd_qrtr remoteproc2:smd-edge.IPCRTR.-1.-1: invalid=20
-ipcrouter packet
-[ 19.422732] qcom_q6v5_pas 1c00000.remoteproc: timeout waiting for=20
-subsystem event response
-[ 19.423388] qcom_smd_qrtr remoteproc2:smd-edge.IPCRTR.-1.-1: invalid=20
-ipcrouter packet
-[ 19.423453] qcom_smd_qrtr remoteproc2:smd-edge.IPCRTR.-1.-1: invalid=20
-ipcrouter packet
-[ 22.238725] qcom_q6v5_pas 9300000.remoteproc: timeout waiting for=20
-subsystem event response
-[ 24.542706] qcom_q6v5_pas 9300000.remoteproc: timeout waiting for=20
-subsystem event response
-[ 24.543468] qcom_smd_qrtr remoteproc2:smd-edge.IPCRTR.-1.-1: invalid=20
-ipcrouter packet
-[ 24.543524] qcom_smd_qrtr remoteproc2:smd-edge.IPCRTR.-1.-1: invalid=20
-ipcrouter packet
-[ 24.658698] qcom-q6v5-mss 2080000.remoteproc: MBA booted without debug=20
-policy, loading mpss
-[ 25.994603] qcom_smd_qrtr remoteproc0:smd-edge.IPCRTR.-1.-1: invalid=20
-ipcrouter packet
-[ 29.662816] qcom_q6v5_pas 9300000.remoteproc: timeout waiting for=20
-subsystem event response
-[ 29.662922] remoteproc remoteproc2: remote processor=20
-9300000.remoteproc is now up
-[ 29.665429] qcom_smd_qrtr remoteproc1:smd-edge.IPCRTR.-1.-1: invalid=20
-ipcrouter packet
-[ 29.665645] qcom_smd_qrtr remoteproc1:smd-edge.IPCRTR.-1.-1: invalid=20
-ipcrouter packet
-[ 34.782737] qcom_q6v5_pas 1c00000.remoteproc: timeout waiting for=20
-subsystem event response
-[ 34.783369] qcom_smd_qrtr remoteproc2:smd-edge.IPCRTR.-1.-1: invalid=20
-ipcrouter packet
-[ 34.783526] qcom_smd_qrtr remoteproc2:smd-edge.IPCRTR.-1.-1: invalid=20
-ipcrouter packet
-[ 39.902789] qcom_q6v5_pas 9300000.remoteproc: timeout waiting for=20
-subsystem event response
-[ 39.903057] qcom_smd_qrtr remoteproc0:smd-edge.IPCRTR.-1.-1: invalid=20
-ipcrouter packet
-[ 39.903131] qcom_smd_qrtr remoteproc0:smd-edge.IPCRTR.-1.-1: invalid=20
-ipcrouter packet
-[ 45.022691] qcom-q6v5-mss 2080000.remoteproc: timeout waiting for=20
-subsystem event response
-[ 45.022824] qcom_smd_qrtr remoteproc0:smd-edge.IPCRTR.-1.-1: invalid=20
-ipcrouter packet
-[ 45.022863] qcom_smd_qrtr remoteproc0:smd-edge.IPCRTR.-1.-1: invalid=20
-ipcrouter packet
-[ 50.146792] qcom-q6v5-mss 2080000.remoteproc: timeout waiting for=20
-subsystem event response
-[ 50.146888] remoteproc remoteproc0: remote processor=20
-2080000.remoteproc is now up
-[ 66.001288] qcom-q6v5-mss 2080000.remoteproc: fatal error without=20
-message
-[ 66.001311] remoteproc remoteproc0: crash detected in=20
-2080000.remoteproc: type fatal error
-[ 66.001328] remoteproc remoteproc0: handling crash #1 in=20
-2080000.remoteproc
-[ 66.001334] remoteproc remoteproc0: recovering 2080000.remoteproc
-[ 66.003850] qcom_smd_qrtr remoteproc1:smd-edge.IPCRTR.-1.-1: invalid=20
-ipcrouter packet
-[ 66.004073] qcom_smd_qrtr remoteproc1:smd-edge.IPCRTR.-1.-1: invalid=20
-ipcrouter packet
-[ 71.134780] qcom_q6v5_pas 1c00000.remoteproc: timeout waiting for=20
-subsystem event response
-[ 71.135455] qcom_smd_qrtr remoteproc2:smd-edge.IPCRTR.-1.-1: invalid=20
-ipcrouter packet
-[ 71.135505] qcom_smd_qrtr remoteproc2:smd-edge.IPCRTR.-1.-1: invalid=20
-ipcrouter packet
-[ 76.258685] qcom_q6v5_pas 9300000.remoteproc: timeout waiting for=20
-subsystem event response
-[ 76.261799] qcom_smd_qrtr remoteproc1:smd-edge.IPCRTR.-1.-1: invalid=20
-ipcrouter packet
-[ 76.262029] qcom_smd_qrtr remoteproc1:smd-edge.IPCRTR.-1.-1: invalid=20
-ipcrouter packet
-[ 81.374728] qcom_q6v5_pas 1c00000.remoteproc: timeout waiting for=20
-subsystem event response
-[ 86.494754] qcom_q6v5_pas 9300000.remoteproc: timeout waiting for=20
-subsystem event response
-[ 86.494812] remoteproc remoteproc0: stopped remote processor=20
-2080000.remoteproc
+> whereas if the offset is stored somewhere in the unstripped data we
+> could then drop the packet and count it as a drop without having to
+> modify the frame via the skb_pull.
 
-Then I get a last message which I wasn't able to capture above but was=20
-able to see:
+This is a broader issue that userspace can pass any csum_start as long
+as it is within packet bounds. We could address it here specifically
+for the GRE header. But that still leaves many potentially bad offsets
+further in the packet in this case, and all the other cases. Checking
+that specific header seems a bit arbitrary to me, and might actually
+give false confidence.
 
-qcom-q6v5-mss 2080000.remoteproc: MBA booted without debug policy,=20
-loading mpss
+We could certainly move the validation from gre_handle_offloads to
+before skb_pull, to make it more obvious *why* the check exists.
 
-and it crashes and reboots right after this message.
+> > The negative underflow and kernel crash is very specific to
+> > lco_csum, which calculates the offset between csum_offset
+> > and transport_offset. Standard checksum offset doesn't.
+> >
+> > One alternative fix, then, would be to add a negative overflow
+> > check in lco_csum itself.
+> > That only has three callers and unfortunately by the time we hit
+> > that for GRE in gre_build_header, there no longer is a path to
+> > cleanly dropping the packet and returning an error.
+>
+> Right. We could find the problem there but it doesn't solve the issue.
+> The problem is the expectation that the offset exists in the area
+> after the checksum for the tunnel header, not before.
+>
+> > I don't find this bad input whack-a-mole elegant either. But I
+> > thought it was the least bad option..
+>
+> The part that has been confusing me is how the virtio_net_hdr could
+> have been pointing as the IP or GRE headers since they shouldn't have
+> been present on the frame provided by the userspace. I think I am
+> starting to see now.
+>
+> So in the case of af_packet it looks like it is calling
+> dev_hard_header which calls header_ops->create before doing the
+> virtio_net_hdr_to_skb call. Do I have that right?
 
+Mostly yes. That is the case for SOCK_DGRAM. For SOCK_RAW, the caller
+is expected to have prepared these headers.
 
+Note that for the ip_gre device to have header_ops, this will be
+ipgre_header_ops, which .create member function comment starts with
+"/* Nice toy. Unfortunately, useless in real life :-)". We recently
+had a small series of fixes related to this special case and packet
+sockets, such as commit fdafed459998 ("ip_gre: set
+dev->hard_header_len and dev->needed_headroom properly"). This case of
+a GRE device that receives packets with outer IP + GRE headers is out
+of the ordinary.
 
+> Maybe for those
+> cases we need to look at adding an unsigned int argument to
+> virtio_net_hdr_to_skb in which we could pass 0 for the unused case or
+> dev->hard_header_len in the cases where we have something like
+> af_packet that is transmitting over an ipgre tunnel. The general idea
+> is to prevent these virtio_net_hdr_to_skb calls from pointing the
+> csum_start into headers that userspace was not responsible for
+> populating.
 
+One issue with that is that dev->hard_header_len itself is imprecise
+for protocols with variable length link layer headers. There, too, we
+have had a variety of bug fixes in the past.
+
+It also adds cost to every user of virtio_net_hdr, while we only know
+one issue in a rare case of the IP_GRE device.
