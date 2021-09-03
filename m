@@ -2,391 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60F2B4003C1
-	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 18:57:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1E744004A7
+	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 20:10:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350169AbhICQ6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Sep 2021 12:58:54 -0400
-Received: from mga14.intel.com ([192.55.52.115]:13117 "EHLO mga14.intel.com"
+        id S1350435AbhICSLg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Sep 2021 14:11:36 -0400
+Received: from relay.sw.ru ([185.231.240.75]:51790 "EHLO relay.sw.ru"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230187AbhICQ6x (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 3 Sep 2021 12:58:53 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10096"; a="219169049"
-X-IronPort-AV: E=Sophos;i="5.85,265,1624345200"; 
-   d="scan'208";a="219169049"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Sep 2021 09:57:53 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.85,265,1624345200"; 
-   d="scan'208";a="534211828"
-Received: from ipd-test105-dell.igk.intel.com (HELO localhost.localdomain) ([10.102.20.173])
-  by FMSMGA003.fm.intel.com with ESMTP; 03 Sep 2021 09:57:46 -0700
-Date:   Fri, 3 Sep 2021 20:58:23 +0200
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org,
-        jonathan.lemon@gmail.com, ciara.loftus@intel.com,
-        bpf@vger.kernel.org, yhs@fb.com, andrii@kernel.org
-Subject: Re: [PATCH bpf-next 19/20] selftests: xsk: add tests for invalid xsk
- descriptors
-Message-ID: <YTJwT8QBAELMO0T1@localhost.localdomain>
-References: <20210901104732.10956-1-magnus.karlsson@gmail.com>
- <20210901104732.10956-20-magnus.karlsson@gmail.com>
+        id S1350377AbhICSLf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 3 Sep 2021 14:11:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:From:
+        Subject; bh=0jkY0Ap3t6JVV0YhdOnHqeGWTCDit365Ya9r8y7B9kU=; b=hPK5/HUHOMehWNYGH
+        4n2XTZ4YB3tRHUWSXH/GoizctjVhj0tX3hYlhmBMs8D3ZosptYBshO/RNq8tBN/9YKBNfLAYxSmSQ
+        N0LQUkDAPx2h1AWehVpw4OgZy3ZOFCyvn2MYJSYIfvvMCDlkLsXzU5ZrXOgPttBGhcJkgji6nWxVE
+        =;
+Received: from [10.93.0.56]
+        by relay.sw.ru with esmtp (Exim 4.94.2)
+        (envelope-from <vvs@virtuozzo.com>)
+        id 1mMDe3-000ihu-Pd; Fri, 03 Sep 2021 21:10:31 +0300
+Subject: Re: WARNING in sk_stream_kill_queues
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Hao Sun <sunhao.th@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org
+References: <CACkBjsYG3O_irFOZqjq5dJVDwW8pSUR_p6oO4BUaabWcx-hQCQ@mail.gmail.com>
+ <c84b07f8-ab0e-9e0c-c5d7-7d44e4d6f3e5@gmail.com>
+From:   Vasily Averin <vvs@virtuozzo.com>
+Message-ID: <9a35a6f2-9373-6561-341c-8933b537122e@virtuozzo.com>
+Date:   Fri, 3 Sep 2021 21:10:31 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210901104732.10956-20-magnus.karlsson@gmail.com>
+In-Reply-To: <c84b07f8-ab0e-9e0c-c5d7-7d44e4d6f3e5@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 01, 2021 at 12:47:31PM +0200, Magnus Karlsson wrote:
-> From: Magnus Karlsson <magnus.karlsson@intel.com>
+On 9/3/21 7:56 PM, Eric Dumazet wrote:
+> On 9/3/21 12:54 AM, Hao Sun wrote:
+>> Hello,
+>>
+>> When using Healer to fuzz the latest Linux kernel, the following crash
+>> was triggered.
+>>
+>> HEAD commit: 9e9fb7655ed58 Merge tag 'net-next-5.15'
+>> git tree: upstream
+>> console output:
+>> https://drive.google.com/file/d/1AXEQDnn7SPgFAMjqbL03_24-X_8YHoAq/view?usp=sharing
+>> kernel config: https://drive.google.com/file/d/1zgxbwaYkrM26KEmJ-5sUZX57gfXtRrwA/view?usp=sharing
+>> C reproducer: https://drive.google.com/file/d/1qa4FVNoO-EsJGuDMtGlTxtHW0li-vMSP/view?usp=sharing
+>> Syzlang reproducer:
+>> https://drive.google.com/file/d/1pL6atNID5ZGzH4GceqyBCOC5IjFfiaVN/view?usp=sharing
+
+>> If you fix this issue, please add the following tag to the commit:
+>> Reported-by: Hao Sun <sunhao.th@gmail.com>
 > 
-> Add tests for invalid xsk descriptors in the Tx ring. A number of
-> handcrafted nasty invalid descriptors are created and submitted to the
-> tx ring to check that they are validated correctly. Corener case valid
+> This is probably a dup, causes skb_expand_head() changes,
+> CC  Vasily Averin <vvs@virtuozzo.com> is currently working on a fix.
 
-Corner
+Thank you for this report and especially for C reproducer!
+	Vasily Averin
 
-> ones are also sent. The tests are run for both aligned and unaligned
-> mode.
-> 
-> pkt_stream_set() is introduced to be able to create a hand-crafted
-> packet stream where every single packet is specified in detail.
-> 
-> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> ---
->  tools/testing/selftests/bpf/xdpxceiver.c | 143 ++++++++++++++++++++---
->  tools/testing/selftests/bpf/xdpxceiver.h |   7 +-
->  2 files changed, 131 insertions(+), 19 deletions(-)
-> 
-> diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
-> index d085033afd53..a4f6ce3a6b14 100644
-> --- a/tools/testing/selftests/bpf/xdpxceiver.c
-> +++ b/tools/testing/selftests/bpf/xdpxceiver.c
-> @@ -46,6 +46,8 @@
->   *       then remove xsk sockets from queue 0 on both veth interfaces and
->   *       finally run a traffic on queues ids 1
->   *    g. unaligned mode
-> + *    h. tests for invalid and corner case Tx descriptors so that the correct ones
-> + *       are discarded and let through, respectively.
->   *
->   * Total tests: 12
->   *
-> @@ -394,7 +396,7 @@ static void __test_spec_init(struct test_spec *test, struct ifobject *ifobj_tx,
->  		for (j = 0; j < MAX_SOCKETS; j++) {
->  			memset(&ifobj->umem_arr[j], 0, sizeof(ifobj->umem_arr[j]));
->  			memset(&ifobj->xsk_arr[j], 0, sizeof(ifobj->xsk_arr[j]));
-> -			ifobj->umem_arr[j].num_frames = DEFAULT_PKT_CNT / 4;
-> +			ifobj->umem_arr[j].num_frames = DEFAULT_UMEM_BUFFERS;
->  			ifobj->umem_arr[j].frame_size = XSK_UMEM__DEFAULT_FRAME_SIZE;
->  			ifobj->xsk_arr[j].rxqsize = XSK_RING_CONS__DEFAULT_NUM_DESCS;
->  		}
-> @@ -450,6 +452,16 @@ static struct pkt *pkt_stream_get_pkt(struct pkt_stream *pkt_stream, u32 pkt_nb)
->  	return &pkt_stream->pkts[pkt_nb];
->  }
->  
-> +static struct pkt *pkt_stream_get_next_rx_pkt(struct pkt_stream *pkt_stream)
-> +{
-> +	while (pkt_stream->rx_pkt_nb < pkt_stream->nb_pkts) {
-> +		if (pkt_stream->pkts[pkt_stream->rx_pkt_nb].valid)
-> +			return &pkt_stream->pkts[pkt_stream->rx_pkt_nb++];
-> +		pkt_stream->rx_pkt_nb++;
-> +	}
-> +	return NULL;
-> +}
-> +
->  static void pkt_stream_delete(struct pkt_stream *pkt_stream)
->  {
->  	free(pkt_stream->pkts);
-> @@ -465,17 +477,31 @@ static void pkt_stream_restore_default(struct test_spec *test)
->  	test->ifobj_rx->pkt_stream = test->pkt_stream_default;
->  }
->  
-> -static struct pkt_stream *pkt_stream_generate(struct xsk_umem_info *umem, u32 nb_pkts, u32 pkt_len)
-> +static struct pkt_stream *__pkt_stream_alloc(u32 nb_pkts)
->  {
->  	struct pkt_stream *pkt_stream;
-> -	u32 i;
->  
-> -	pkt_stream = malloc(sizeof(*pkt_stream));
-> +	pkt_stream = calloc(1, sizeof(*pkt_stream));
+>>  ------------[ cut here ]------------
+>> WARNING: CPU: 1 PID: 10229 at net/core/stream.c:207
+>> sk_stream_kill_queues+0x162/0x190 net/core/stream.c:207
+>> Modules linked in:
+>> CPU: 1 PID: 10229 Comm: syz-executor Not tainted 5.14.0+ #12
+>> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
+>> rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
+>> RIP: 0010:sk_stream_kill_queues+0x162/0x190 net/core/stream.c:207
+>> Code: 41 5c e9 21 3b ce fd e8 1c 3b ce fd 89 de 48 89 ef e8 62 68 fe
+>> ff e8 0d 3b ce fd 8b 95 68 02 00 00 85 d2 74 ca e8 fe 3a ce fd <0f> 0b
+>> e8 f7 3a ce fd 8b 85 20 02 00 00 85 c0 74 c3 e8 e8 3a ce fd
+>> RSP: 0018:ffffc900080b7c98 EFLAGS: 00010202
+>> RAX: 000000000002a750 RBX: 0000000000000180 RCX: ffffc90002c0d000
+>> RDX: 0000000000040000 RSI: ffffffff836939f2 RDI: ffff8881031f0b40
+>> RBP: ffff8881031f0b40 R08: 0000000000000000 R09: 0000000000000000
+>> R10: 000000000000000d R11: 000000000004f380 R12: ffff8881031f0c90
+>> R13: ffff8881031f0bc0 R14: ffff8881031f0cf0 R15: 0000000000000000
+>> FS:  00007f311adcb700(0000) GS:ffff88813dc00000(0000) knlGS:0000000000000000
+>> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>> CR2: 0000000000732190 CR3: 000000010ab01000 CR4: 0000000000752ee0
+>> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+>> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+>> PKRU: 55555554
+>> Call Trace:
+>>  inet_csk_destroy_sock+0x6f/0x1a0 net/ipv4/inet_connection_sock.c:1012
+>>  __tcp_close+0x512/0x610 net/ipv4/tcp.c:2869
+>>  tcp_close+0x29/0xa0 net/ipv4/tcp.c:2881
+>>  inet_release+0x58/0xb0 net/ipv4/af_inet.c:431
+>>  __sock_release+0x47/0xf0 net/socket.c:649
+>>  sock_close+0x18/0x20 net/socket.c:1314
+>>  __fput+0xdf/0x380 fs/file_table.c:280
+>>  task_work_run+0x86/0xd0 kernel/task_work.c:164
+>>  get_signal+0xde6/0x10b0 kernel/signal.c:2596
+>>  arch_do_signal_or_restart+0xa9/0x860 arch/x86/kernel/signal.c:865
+>>  handle_signal_work kernel/entry/common.c:148 [inline]
+>>  exit_to_user_mode_loop kernel/entry/common.c:172 [inline]
+>>  exit_to_user_mode_prepare+0xf2/0x280 kernel/entry/common.c:209
+>>  __syscall_exit_to_user_mode_work kernel/entry/common.c:291 [inline]
+>>  syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:302
+>>  do_syscall_64+0x40/0xb0 arch/x86/entry/common.c:86
+>>  entry_SYSCALL_64_after_hwframe+0x44/0xae
+>> RIP: 0033:0x46a9a9
+>> Code: f7 d8 64 89 02 b8 ff ff ff ff c3 66 0f 1f 44 00 00 48 89 f8 48
+>> 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d
+>> 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
+>> RSP: 002b:00007f311adcac58 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
+>> RAX: 0000000000069340 RBX: 000000000078c0a0 RCX: 000000000046a9a9
+>> RDX: 0000000000088012 RSI: 0000000020000380 RDI: 0000000000000004
+>> RBP: 00000000004e4042 R08: 0000000000000000 R09: 0000000000000027
+>> R10: 000000000020c49a R11: 0000000000000246 R12: 000000000078c0a0
+>> R13: 0000000000000000 R14: 000000000078c0a0 R15: 00007ffe75b47830
+>>
 
-So with that probably my previous comment about use_addr_for_fill being
-not set is not relevant.
-
->  	if (!pkt_stream)
-> -		exit_with_error(ENOMEM);
-> +		return NULL;
->  
->  	pkt_stream->pkts = calloc(nb_pkts, sizeof(*pkt_stream->pkts));
-> -	if (!pkt_stream->pkts)
-> +	if (!pkt_stream->pkts) {
-> +		free(pkt_stream);
-> +		return NULL;
-> +	}
-> +
-> +	pkt_stream->nb_pkts = nb_pkts;
-> +	return pkt_stream;
-> +}
-> +
-> +static struct pkt_stream *pkt_stream_generate(struct xsk_umem_info *umem, u32 nb_pkts, u32 pkt_len)
-> +{
-> +	struct pkt_stream *pkt_stream;
-> +	u32 i;
-> +
-> +	pkt_stream = __pkt_stream_alloc(nb_pkts);
-> +	if (!pkt_stream)
->  		exit_with_error(ENOMEM);
->  
->  	pkt_stream->nb_pkts = nb_pkts;
-> @@ -525,6 +551,26 @@ static void pkt_stream_replace_half(struct test_spec *test, u32 pkt_len, u32 off
->  	test->ifobj_rx->pkt_stream = pkt_stream;
->  }
->  
-> +static void pkt_stream_set(struct test_spec *test, struct pkt *pkts, u32 nb_pkts)
-
-This is still a generation of pkt stream, can we name this is as:
-pkt_stream_generate_custom or is this too long? WDYT?
-
-> +{
-> +	struct pkt_stream *pkt_stream;
-> +	u32 i;
-> +
-> +	pkt_stream = __pkt_stream_alloc(nb_pkts);
-> +	if (!pkt_stream)
-> +		exit_with_error(ENOMEM);
-> +
-> +	test->ifobj_tx->pkt_stream = pkt_stream;
-> +	test->ifobj_rx->pkt_stream = pkt_stream;
-> +
-> +	for (i = 0; i < nb_pkts; i++) {
-> +		pkt_stream->pkts[i].addr = pkts[i].addr;
-> +		pkt_stream->pkts[i].len = pkts[i].len;
-> +		pkt_stream->pkts[i].payload = i;
-> +		pkt_stream->pkts[i].valid = pkts[i].valid;
-> +	}
-> +}
-> +
->  static struct pkt *pkt_generate(struct ifobject *ifobject, u32 pkt_nb)
->  {
->  	struct pkt *pkt = pkt_stream_get_pkt(ifobject->pkt_stream, pkt_nb);
-> @@ -535,6 +581,8 @@ static struct pkt *pkt_generate(struct ifobject *ifobject, u32 pkt_nb)
->  
->  	if (!pkt)
->  		return NULL;
-> +	if (!pkt->valid || pkt->len < PKT_SIZE)
-> +		return pkt;
->  
->  	data = xsk_umem__get_data(ifobject->umem->buffer, pkt->addr);
->  	udp_hdr = (struct udphdr *)(data + sizeof(struct ethhdr) + sizeof(struct iphdr));
-> @@ -596,19 +644,24 @@ static bool is_pkt_valid(struct pkt *pkt, void *buffer, u64 addr, u32 len)
->  		return false;
->  	}
->  
-> +	if (len < PKT_SIZE) {
-> +		/*Do not try to verify packets that are smaller than minimun size. */
-
-minimum
-
-> +		return true;
-> +	}
-> +
-> +	if (pkt->len != len) {
-> +		ksft_test_result_fail
-> +			("ERROR: [%s] expected length [%d], got length [%d]\n",
-> +			 __func__, pkt->len, len);
-> +		return false;
-> +	}
-> +
->  	if (iphdr->version == IP_PKT_VER && iphdr->tos == IP_PKT_TOS) {
->  		u32 seqnum = ntohl(*((u32 *)(data + PKT_HDR_SIZE)));
->  
->  		if (opt_pkt_dump)
->  			pkt_dump(data, PKT_SIZE);
->  
-> -		if (pkt->len != len) {
-> -			ksft_test_result_fail
-> -				("ERROR: [%s] expected length [%d], got length [%d]\n",
-> -					__func__, pkt->len, len);
-> -			return false;
-> -		}
-> -
->  		if (pkt->payload != seqnum) {
->  			ksft_test_result_fail
->  				("ERROR: [%s] expected seqnum [%d], got seqnum [%d]\n",
-> @@ -645,6 +698,15 @@ static void complete_pkts(struct xsk_socket_info *xsk, int batch_size)
->  
->  	rcvd = xsk_ring_cons__peek(&xsk->umem->cq, batch_size, &idx);
->  	if (rcvd) {
-> +		if (rcvd > xsk->outstanding_tx) {
-> +			u64 addr = *xsk_ring_cons__comp_addr(&xsk->umem->cq, idx + rcvd - 1);
-> +
-> +			ksft_test_result_fail("ERROR: [%s] Too many packets completed\n",
-> +					      __func__);
-> +			ksft_print_msg("Last completion address: %llx\n", addr);
-> +			return;
-> +		}
-> +
->  		xsk_ring_cons__release(&xsk->umem->cq, rcvd);
->  		xsk->outstanding_tx -= rcvd;
->  	}
-> @@ -653,11 +715,10 @@ static void complete_pkts(struct xsk_socket_info *xsk, int batch_size)
->  static void receive_pkts(struct pkt_stream *pkt_stream, struct xsk_socket_info *xsk,
->  			 struct pollfd *fds)
->  {
-> -	u32 idx_rx = 0, idx_fq = 0, rcvd, i, pkt_count = 0;
-> -	struct pkt *pkt;
-> +	struct pkt *pkt = pkt_stream_get_next_rx_pkt(pkt_stream);
-> +	u32 idx_rx = 0, idx_fq = 0, rcvd, i;
->  	int ret;
->  
-> -	pkt = pkt_stream_get_pkt(pkt_stream, pkt_count++);
->  	while (pkt) {
->  		rcvd = xsk_ring_cons__peek(&xsk->rx, BATCH_SIZE, &idx_rx);
->  		if (!rcvd) {
-> @@ -685,13 +746,21 @@ static void receive_pkts(struct pkt_stream *pkt_stream, struct xsk_socket_info *
->  			const struct xdp_desc *desc = xsk_ring_cons__rx_desc(&xsk->rx, idx_rx++);
->  			u64 addr = desc->addr, orig;
->  
-> +			if (!pkt) {
-> +				ksft_test_result_fail("ERROR: [%s] Received too many packets.\n",
-> +						      __func__);
-> +				ksft_print_msg("Last packet has addr: %llx len: %u\n",
-> +					       addr, desc->len);
-> +				return;
-> +			}
-> +
->  			orig = xsk_umem__extract_addr(addr);
->  			addr = xsk_umem__add_offset_to_addr(addr);
->  			if (!is_pkt_valid(pkt, xsk->umem->buffer, addr, desc->len))
->  				return;
->  
->  			*xsk_ring_prod__fill_addr(&xsk->umem->fq, idx_fq++) = orig;
-> -			pkt = pkt_stream_get_pkt(pkt_stream, pkt_count++);
-> +			pkt = pkt_stream_get_next_rx_pkt(pkt_stream);
->  		}
->  
->  		xsk_ring_prod__submit(&xsk->umem->fq, rcvd);
-> @@ -875,6 +944,7 @@ static void testapp_cleanup_xsk_res(struct ifobject *ifobj)
->  {
->  	print_verbose("Destroying socket\n");
->  	xsk_socket__delete(ifobj->xsk->xsk);
-> +	munmap(ifobj->umem->buffer, ifobj->umem->num_frames * ifobj->umem->frame_size);
->  	xsk_umem__delete(ifobj->umem->umem);
->  }
->  
-> @@ -1118,6 +1188,33 @@ static bool testapp_unaligned(struct test_spec *test)
->  	return true;
->  }
->  
-> +static void testapp_inv_desc(struct test_spec *test)
-
-I'd say that speaking out whole 'invalid' word wouldn't hurt us here.
-
-> +{
-> +	struct pkt pkts[] = {{0, 0, 0, true}, /* Zero packet length and zero address allowed */
-
-Above looks a bit weird, maybe this should be formatted same as the lines
-below:
-
-	struct pkt pkts[] = {
-		/* Zero packet length and zero address allowed */
-			     {0, 0, 0, true},
-
-> +		/* Zero packet length allowed */
-> +			     {0x1000, 0, 0, true},
-> +		/* Straddling the start of umem */
-> +			     {-2, PKT_SIZE, 0, false},
-> +		/* Packet too large */
-> +			     {0x2000, XSK_UMEM__INVALID_FRAME_SIZE, 0, false},
-> +		/* After umem ends */
-> +			     {UMEM_SIZE, PKT_SIZE, 0, false},
-> +		/* Straddle the end of umem */
-> +			     {UMEM_SIZE - PKT_SIZE / 2, PKT_SIZE, 0, false},
-> +		/* Straddle a page boundrary */
-> +			     {0x3000 - PKT_SIZE / 2, PKT_SIZE, 0, false},
-> +		/* Valid packet for synch so that something is received */
-> +			     {0x4000, PKT_SIZE, 0, true}};
-> +
-> +	if (test->ifobj_tx->umem->unaligned_mode) {
-> +		/* Crossing a page boundrary allowed */
-> +		pkts[6].valid = true;
-> +	}
-> +	pkt_stream_set(test, pkts, ARRAY_SIZE(pkts));
-> +	testapp_validate_traffic(test);
-> +	pkt_stream_restore_default(test);
-> +}
-> +
->  static void init_iface(struct ifobject *ifobj, const char *dst_mac, const char *src_mac,
->  		       const char *dst_ip, const char *src_ip, const u16 dst_port,
->  		       const u16 src_port, thread_func_t func_ptr)
-> @@ -1159,7 +1256,7 @@ static void run_pkt_test(struct test_spec *test, enum test_mode mode, enum test_
->  	case TEST_TYPE_BPF_RES:
->  		testapp_bpf_res(test);
->  		break;
-> -	case TEST_TYPE_NOPOLL:
-> +	case TEST_TYPE_RUN_TO_COMPLETION:
-
-I think that you were updating some comment around it on previous patches
-and it probably belongs to this one.
-
->  		test_spec_set_name(test, "RUN_TO_COMPLETION");
->  		testapp_validate_traffic(test);
->  		break;
-> @@ -1169,6 +1266,16 @@ static void run_pkt_test(struct test_spec *test, enum test_mode mode, enum test_
->  		test_spec_set_name(test, "POLL");
->  		testapp_validate_traffic(test);
->  		break;
-> +	case TEST_TYPE_ALIGNED_INV_DESC:
-> +		test_spec_set_name(test, "ALIGNED_INV_DESC");
-> +		testapp_inv_desc(test);
-> +		break;
-> +	case TEST_TYPE_UNALIGNED_INV_DESC:
-> +		test_spec_set_name(test, "UNALIGNED_INV_DESC");
-> +		test->ifobj_tx->umem->unaligned_mode = true;
-> +		test->ifobj_rx->umem->unaligned_mode = true;
-> +		testapp_inv_desc(test);
-> +		break;
->  	case TEST_TYPE_UNALIGNED:
->  		if (!testapp_unaligned(test))
->  			return;
-> diff --git a/tools/testing/selftests/bpf/xdpxceiver.h b/tools/testing/selftests/bpf/xdpxceiver.h
-> index 129801eb013c..2d9efb89ea28 100644
-> --- a/tools/testing/selftests/bpf/xdpxceiver.h
-> +++ b/tools/testing/selftests/bpf/xdpxceiver.h
-> @@ -38,6 +38,8 @@
->  #define BATCH_SIZE 8
->  #define POLL_TMOUT 1000
->  #define DEFAULT_PKT_CNT (4 * 1024)
-> +#define DEFAULT_UMEM_BUFFERS (DEFAULT_PKT_CNT / 4)
-> +#define UMEM_SIZE (DEFAULT_UMEM_BUFFERS * XSK_UMEM__DEFAULT_FRAME_SIZE)
->  #define RX_FULL_RXQSIZE 32
->  #define DEFAULT_OFFSET 256
->  #define XSK_UMEM__INVALID_FRAME_SIZE (XSK_UMEM__DEFAULT_FRAME_SIZE + 1)
-> @@ -51,9 +53,11 @@ enum test_mode {
->  };
->  
->  enum test_type {
-> -	TEST_TYPE_NOPOLL,
-> +	TEST_TYPE_RUN_TO_COMPLETION,
->  	TEST_TYPE_POLL,
->  	TEST_TYPE_UNALIGNED,
-> +	TEST_TYPE_ALIGNED_INV_DESC,
-> +	TEST_TYPE_UNALIGNED_INV_DESC,
->  	TEST_TYPE_TEARDOWN,
->  	TEST_TYPE_BIDI,
->  	TEST_TYPE_STATS,
-> @@ -104,6 +108,7 @@ struct pkt {
->  
->  struct pkt_stream {
->  	u32 nb_pkts;
-> +	u32 rx_pkt_nb;
->  	struct pkt *pkts;
->  	bool use_addr_for_fill;
->  };
-> -- 
-> 2.29.0
-> 
