@@ -2,226 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6697D3FFF82
-	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 14:01:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3E103FFF85
+	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 14:04:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349233AbhICMCj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Sep 2021 08:02:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33130 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349210AbhICMCi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 08:02:38 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8663CC061575
-        for <netdev@vger.kernel.org>; Fri,  3 Sep 2021 05:01:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=JgwscaMUpXgyTZeGxZugIB9RkvSSJBr2ZFYYVlecTa8=; b=sQQLqWHorusda8xQTZC/4nbAJ
-        40pO0E2jnx+EIROr6IA5ih55c2gHSgGx/xlHPNEjDVsivR++Xzq2Hlik9Gb3rE7PahOVmLPFKdXdF
-        2XVdRpthnt+Fxn/quJU98BWZbl1YI7ikSP6G30APgxxuY1D5o6FU7CsKLmSz2BDoVSZMeQv5Qxa2H
-        UdDqStDDpBHEHPcHHbcKY4Fj22OMSfRxIMN8q1lPon98Ug0KuI4WjcV6MgojO9C3zgv/qM5uNNzuk
-        1tyS7YBc1dXRgmzX5xRrLiaZp2U/O95DV1nq8+lANaARi2swYihlJbEBxgpqgtKpoPcBBPBVDBYZN
-        ZQh8LNGmw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:48148)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mM7sw-0002zU-Lx; Fri, 03 Sep 2021 13:01:30 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mM7st-0000U5-PG; Fri, 03 Sep 2021 13:01:27 +0100
-Date:   Fri, 3 Sep 2021 13:01:27 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>,
-        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
-        "alexandre.torgue@foss.st.com" <alexandre.torgue@foss.st.com>,
-        "joabreu@synopsys.com" <joabreu@synopsys.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: Re: [PATCH] net: stmmac: fix MAC not working when system resume back
- with WoL enabled
-Message-ID: <20210903120127.GW22278@shell.armlinux.org.uk>
-References: <20210902083224.GC22278@shell.armlinux.org.uk>
- <DB8PR04MB67954F4650408025E6D4EE2AE6CE9@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <20210902104943.GD22278@shell.armlinux.org.uk>
- <DB8PR04MB6795C37D718096E7CA1AA72DE6CE9@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <YTDCZN/WKlv9BsNG@lunn.ch>
- <DB8PR04MB6795C36B8211EE1A1C0280D9E6CF9@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <20210903080147.GS22278@shell.armlinux.org.uk>
- <DB8PR04MB679518228AB7B2C5CD47A1B3E6CF9@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <20210903093246.GT22278@shell.armlinux.org.uk>
- <DB8PR04MB6795EE2FA03451AB5D73EFC3E6CF9@DB8PR04MB6795.eurprd04.prod.outlook.com>
+        id S1349336AbhICMFO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Sep 2021 08:05:14 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:52965 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349280AbhICMFM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 08:05:12 -0400
+Received: by mail-io1-f70.google.com with SMTP id e18-20020a6b7312000000b005be766a70dbso3662485ioh.19
+        for <netdev@vger.kernel.org>; Fri, 03 Sep 2021 05:04:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=/fhLtTMWX+YkLat1Pf8WyLw6nCwFWCGtGLW4T/NoWzo=;
+        b=XUQT2XZDDj55fMy5Jb9pkg1y6f6vimRmXNPlZtorluCemAqHoAvieQCHO9XqW8mUr0
+         lruMVF1ohVXxGBfovNrT38/RRsTqsDbIvBZhn34mSEHl0THhuv7lJ3gk0iQ8VaSN7JHb
+         z0UG+OVz3J2h9HMVwDvsW5hb/iyTD8fAiKYGoZks8roxTsI2pJDhitoiOmEgwsLODhmi
+         UqxUWw9JQJr7nVaJufPzXa9pssEDssOmXi/tCvNkIoihRpfJ2wWNVJW3Py+Xhp0LQY+f
+         6sCuBc+3ekSccKdz55WidhBX6tPyPfeMZHrwoqVmJmD+QE1Hfg+Op/C64lzo/oBs4Pkt
+         xW4Q==
+X-Gm-Message-State: AOAM531kY6hJQfOkVPFWV3ISAUT8bCQoQDkhLEn/EM2ZK+Nk1F++Yk0Q
+        bLy6zIvfsWCNxvDKneWgiz+sdDtMlBDP8Y+veWXQNzuvw1Il
+X-Google-Smtp-Source: ABdhPJwRFeeFYeaGNc8dXyz155gF4Qsx41NEvam+wq1fj38Ro4spceicn61CBkiePl/6zKrCeuGUsK7EmPjL7soIdGqqFoPk+kRg
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <DB8PR04MB6795EE2FA03451AB5D73EFC3E6CF9@DB8PR04MB6795.eurprd04.prod.outlook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Received: by 2002:a92:8742:: with SMTP id d2mr2365263ilm.58.1630670652761;
+ Fri, 03 Sep 2021 05:04:12 -0700 (PDT)
+Date:   Fri, 03 Sep 2021 05:04:12 -0700
+In-Reply-To: <20210903111011.2811-1-hdanton@sina.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000000ed7b05cb161911@google.com>
+Subject: Re: [syzbot] INFO: task hung in __lru_add_drain_all
+From:   syzbot <syzbot+a9b681dcbc06eb2bca04@syzkaller.appspotmail.com>
+To:     eric.dumazet@gmail.com, hdanton@sina.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 03, 2021 at 11:04:57AM +0000, Joakim Zhang wrote:
-> 
-> Hi Russell,
-> 
-> [...]
-> > > > > > -----Original Message-----
-> > > > > > From: Andrew Lunn <andrew@lunn.ch>
-> > > > > > Sent: 2021年9月2日 20:24
-> > > > > > To: Joakim Zhang <qiangqing.zhang@nxp.com>
-> > > > > > Cc: Russell King <linux@armlinux.org.uk>; Vladimir Oltean
-> > > > > > <olteanv@gmail.com>; peppe.cavallaro@st.com;
-> > > > > > alexandre.torgue@foss.st.com; joabreu@synopsys.com;
-> > > > > > davem@davemloft.net; kuba@kernel.org;
-> > mcoquelin.stm32@gmail.com;
-> > > > > > netdev@vger.kernel.org; f.fainelli@gmail.com;
-> > > > > > hkallweit1@gmail.com; dl-linux-imx <linux-imx@nxp.com>
-> > > > > > Subject: Re: [PATCH] net: stmmac: fix MAC not working when
-> > > > > > system resume back with WoL enabled
-> > > > > >
-> > > > > > > Emm, @andrew@lunn.ch, Andrew is much familiar with FEC, and
-> > > > > > > PHY maintainers, Could you please help put insights here if possible?
-> > > > > >
-> > > > > > All the boards i have either have an Ethernet Switch connected
-> > > > > > to the MAC, or a Micrel PHY. None are setup for WoL, since it is
-> > > > > > not used in the use case of these boards.
-> > > > > >
-> > > > > > I think you need to scatter some printk() in various places to
-> > > > > > confirm what is going on. Where is the WoL implemented: MAC or
-> > > > > > PHY, what is suspended or not, etc.
-> > > > >
-> > > > > Thanks Andrew, Russell,
-> > > > >
-> > > > > I confirmed FEC is MAC-based WoL, and PHY is active when system
-> > > > suspended if MAC-based WoL is active.
-> > > > > I scatter printk() in both phy_device.c and realtek.c phy driver
-> > > > > to debug this
-> > > > for both WoL active and inactive case.
-> > > > >
-> > > > > When MAC-based WoL is active, phy_suspend() is the last point to
-> > > > > actually
-> > > > suspend the PHY, you can see that,
-> > > > > 	phy_ethtool_get_wol(phydev, &wol);
-> > > > > 	if (wol.wolopts || (netdev && netdev->wol_enabled))
-> > > > > 		return -EBUSY;
-> > > > >
-> > > > > Here, netdev is true and netdev->wol_enabled is ture
-> > > > > (net/ethtool/wol.c: ethnl_set_wol() -> dev->wol_enabled =
-> > > > > !!wol.wolopts;) So that phydev->suspend() would not be called, PHY
-> > > > > is active
-> > > > after system suspended. PHY can receive packets and pass to MAC, MAC
-> > > > is responsible for detecting magic packets then generate a wakeup
-> > > > interrupt. So all is fine for FEC, and the behavior is clear.
-> > > >
-> > > > What happens on resume with FEC?
-> > >
-> > > Since we call phy_stop() in fec_suspend(), the link is down, but the
-> > > PHY is active, after receiving magic packets, the system resume back;
-> > > In fec_resume(), after restart/init FEC, we call phy_start() to let link up, then
-> > all is going well.
-> > 
-> > ... but the link never went down! So I don't understand the last point.
-> 
-> Sorry, what the meaning of "the link never went down"? How do you define
-> the link is down? May be I have not get your original point correctly.
+Hello,
 
-If the link goes down, connectivity between the MAC and the outside
-world is lost - whether that be the link between the MAC and PHY, or
-PHY and the outside world. That's my definition of "link down".
+syzbot has tested the proposed patch but the reproducer is still triggering an issue:
+INFO: task hung in synchronize_rcu
 
-However, if the MAC is still alive and receiving packets, even for
-Wake-on-Lan purposes, from the outside world then the link can not be
-down, it must be operational and therefore it must be in the "up"
-state.
+INFO: task kworker/u4:3:57 blocked for more than 143 seconds.
+      Not tainted 5.14.0-rc3-syzkaller #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:kworker/u4:3    state:D stack:26128 pid:   57 ppid:     2 flags:0x00004000
+Workqueue: events_unbound fsnotify_mark_destroy_workfn
+Call Trace:
+ context_switch kernel/sched/core.c:4683 [inline]
+ __schedule+0x93a/0x26f0 kernel/sched/core.c:5940
+ schedule+0xd3/0x270 kernel/sched/core.c:6019
+ schedule_timeout+0x1db/0x2a0 kernel/time/timer.c:1855
+ do_wait_for_common kernel/sched/completion.c:85 [inline]
+ __wait_for_common kernel/sched/completion.c:106 [inline]
+ wait_for_common kernel/sched/completion.c:117 [inline]
+ wait_for_completion+0x176/0x280 kernel/sched/completion.c:138
+ __synchronize_srcu+0x1f4/0x290 kernel/rcu/srcutree.c:930
+ fsnotify_mark_destroy_workfn+0xfd/0x340 fs/notify/mark.c:832
+ process_one_work+0x98d/0x1630 kernel/workqueue.c:2276
+ worker_thread+0x658/0x11f0 kernel/workqueue.c:2422
+ kthread+0x3e5/0x4d0 kernel/kthread.c:319
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
 
-I'm talking about the physical state of the link - "up" meaning capable
-of passing packets to and from the MAC, "down" meaning incapable of
-passing packets.
+Showing all locks held in the system:
+3 locks held by kworker/0:1/7:
+2 locks held by ksoftirqd/0/13:
+2 locks held by kworker/u4:3/57:
+ #0: ffff888010869138 ((wq_completion)events_unbound){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
+ #0: ffff888010869138 ((wq_completion)events_unbound){+.+.}-{0:0}, at: atomic64_set include/asm-generic/atomic-instrumented.h:620 [inline]
+ #0: ffff888010869138 ((wq_completion)events_unbound){+.+.}-{0:0}, at: atomic_long_set include/asm-generic/atomic-long.h:41 [inline]
+ #0: ffff888010869138 ((wq_completion)events_unbound){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:617 [inline]
+ #0: ffff888010869138 ((wq_completion)events_unbound){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:644 [inline]
+ #0: ffff888010869138 ((wq_completion)events_unbound){+.+.}-{0:0}, at: process_one_work+0x871/0x1630 kernel/workqueue.c:2247
+ #1: ffffc90000f9fdb0 ((reaper_work).work){+.+.}-{0:0}, at: process_one_work+0x8a5/0x1630 kernel/workqueue.c:2251
+2 locks held by kworker/u4:4/129:
+ #0: ffff888010869138 ((wq_completion)events_unbound){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
+ #0: ffff888010869138 ((wq_completion)events_unbound){+.+.}-{0:0}, at: atomic64_set include/asm-generic/atomic-instrumented.h:620 [inline]
+ #0: ffff888010869138 ((wq_completion)events_unbound){+.+.}-{0:0}, at: atomic_long_set include/asm-generic/atomic-long.h:41 [inline]
+ #0: ffff888010869138 ((wq_completion)events_unbound){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:617 [inline]
+ #0: ffff888010869138 ((wq_completion)events_unbound){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:644 [inline]
+ #0: ffff888010869138 ((wq_completion)events_unbound){+.+.}-{0:0}, at: process_one_work+0x871/0x1630 kernel/workqueue.c:2247
+ #1: ffffc900013afdb0 (connector_reaper_work){+.+.}-{0:0}, at: process_one_work+0x8a5/0x1630 kernel/workqueue.c:2251
+1 lock held by khungtaskd/1647:
+ #0: ffffffff8b97ba40 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x53/0x260 kernel/locking/lockdep.c:6446
+1 lock held by khugepaged/1662:
+ #0: ffffffff8ba5e948 (lock#6){+.+.}-{3:3}, at: __lru_add_drain_all+0x65/0x760 mm/swap.c:791
+1 lock held by systemd-udevd/4873:
+1 lock held by in:imklog/8269:
+ #0: ffff888011d9cd70 (&f->f_pos_lock){+.+.}-{3:3}, at: __fdget_pos+0xe9/0x100 fs/file.c:974
+3 locks held by kworker/1:7/10141:
+ #0: ffff88802757d138 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
+ #0: ffff88802757d138 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: atomic64_set include/asm-generic/atomic-instrumented.h:620 [inline]
+ #0: ffff88802757d138 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: atomic_long_set include/asm-generic/atomic-long.h:41 [inline]
+ #0: ffff88802757d138 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:617 [inline]
+ #0: ffff88802757d138 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:644 [inline]
+ #0: ffff88802757d138 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: process_one_work+0x871/0x1630 kernel/workqueue.c:2247
+ #1: ffffc9000a747db0 ((work_completion)(&(&ifa->dad_work)->work)){+.+.}-{0:0}, at: process_one_work+0x8a5/0x1630 kernel/workqueue.c:2251
+ #2: ffffffff8d0cc6a8 (rtnl_mutex){+.+.}-{3:3}, at: addrconf_dad_work+0xa3/0x1340 net/ipv6/addrconf.c:4031
+4 locks held by kworker/u4:7/16665:
 
-> At my side, with MAC-based WoL is active, FEC calls phy_stop() in
-> fec_suspend(), then fec_enet_adjust_link() is called, further
-> fec_stop() is called, FEC only keep necessary receive logic active
-> to service WoL. This is not the link went down? At least I see the
-> log " fec 30be0000.ethernet eth0: Link is Down".
+=============================================
 
-It looks like calling phy_stop() will force a link-down event to be
-reported from phylib. As I say above though, really, this doesn't
-affect the physical state of the link, because the link has to be
-up for the WoL packets to be received by the MAC.
+NMI backtrace for cpu 1
+CPU: 1 PID: 1647 Comm: khungtaskd Not tainted 5.14.0-rc3-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:105
+ nmi_cpu_backtrace.cold+0x44/0xd7 lib/nmi_backtrace.c:105
+ nmi_trigger_cpumask_backtrace+0x1b3/0x230 lib/nmi_backtrace.c:62
+ trigger_all_cpu_backtrace include/linux/nmi.h:146 [inline]
+ check_hung_uninterruptible_tasks kernel/hung_task.c:210 [inline]
+ watchdog+0xd0a/0xfc0 kernel/hung_task.c:295
+ kthread+0x3e5/0x4d0 kernel/kthread.c:319
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+Sending NMI from CPU 1 to CPUs 0:
+NMI backtrace for cpu 0
+CPU: 0 PID: 13 Comm: ksoftirqd/0 Not tainted 5.14.0-rc3-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:match_held_lock+0xe/0xc0 kernel/locking/lockdep.c:5077
+Code: 48 c7 c7 40 db 8b 89 e8 66 7a be ff e8 cd 1a cd ff 31 c0 5d c3 0f 1f 80 00 00 00 00 53 48 89 fb 48 83 ec 08 48 39 77 10 74 6a <66> f7 47 22 f0 ff 74 5a 48 8b 46 08 48 89 f7 48 85 c0 74 42 8b 15
+RSP: 0018:ffffc90000d27410 EFLAGS: 00000093
+RAX: 0000000000000005 RBX: ffff888010a68a18 RCX: 0000000000000001
+RDX: 0000000000000000 RSI: ffffffff8d0cc6a8 RDI: ffff888010a68a18
+RBP: ffffffff8d0cc6a8 R08: ffffc90000d276d8 R09: ffffc90000d276c8
+R10: ffffffff87d55c4a R11: 0000000000000000 R12: ffff888010a68000
+R13: ffff888010a689f0 R14: 00000000ffffffff R15: ffff888010a68a18
+FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000000000052f7b0 CR3: 000000001d209000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ __lock_is_held kernel/locking/lockdep.c:5368 [inline]
+ lock_is_held_type+0xa7/0x140 kernel/locking/lockdep.c:5668
+ lock_is_held include/linux/lockdep.h:283 [inline]
+ lockdep_rtnl_is_held+0x17/0x30 net/core/rtnetlink.c:137
+ __in6_dev_get include/net/addrconf.h:313 [inline]
+ ip6_ignore_linkdown include/net/addrconf.h:404 [inline]
+ find_match.part.0+0x78/0xcc0 net/ipv6/route.c:737
+ find_match net/ipv6/route.c:824 [inline]
+ __find_rr_leaf+0x17f/0xd20 net/ipv6/route.c:825
+ find_rr_leaf net/ipv6/route.c:846 [inline]
+ rt6_select net/ipv6/route.c:890 [inline]
+ fib6_table_lookup+0x649/0xa20 net/ipv6/route.c:2174
+ ip6_pol_route+0x1c5/0x11d0 net/ipv6/route.c:2210
+ pol_lookup_func include/net/ip6_fib.h:579 [inline]
+ fib6_rule_lookup+0x111/0x6f0 net/ipv6/fib6_rules.c:115
+ ip6_route_input_lookup net/ipv6/route.c:2280 [inline]
+ ip6_route_input+0x63c/0xb30 net/ipv6/route.c:2576
+ ip6_rcv_finish_core.constprop.0.isra.0+0x168/0x570 net/ipv6/ip6_input.c:63
+ ip6_rcv_finish net/ipv6/ip6_input.c:74 [inline]
+ NF_HOOK include/linux/netfilter.h:307 [inline]
+ NF_HOOK include/linux/netfilter.h:301 [inline]
+ ipv6_rcv+0x229/0x3c0 net/ipv6/ip6_input.c:297
+ __netif_receive_skb_one_core+0x114/0x180 net/core/dev.c:5498
+ __netif_receive_skb+0x24/0x1b0 net/core/dev.c:5612
+ process_backlog+0x2a5/0x6c0 net/core/dev.c:6492
+ __napi_poll+0xaf/0x440 net/core/dev.c:7047
+ napi_poll net/core/dev.c:7114 [inline]
+ net_rx_action+0x801/0xb40 net/core/dev.c:7201
+ __do_softirq+0x292/0xa27 kernel/softirq.c:559
+ run_ksoftirqd kernel/softirq.c:923 [inline]
+ run_ksoftirqd+0x2d/0x60 kernel/softirq.c:915
+ smpboot_thread_fn+0x645/0x9c0 kernel/smpboot.c:164
+ kthread+0x3e5/0x4d0 kernel/kthread.c:319
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+----------------
+Code disassembly (best guess):
+   0:	48 c7 c7 40 db 8b 89 	mov    $0xffffffff898bdb40,%rdi
+   7:	e8 66 7a be ff       	callq  0xffbe7a72
+   c:	e8 cd 1a cd ff       	callq  0xffcd1ade
+  11:	31 c0                	xor    %eax,%eax
+  13:	5d                   	pop    %rbp
+  14:	c3                   	retq
+  15:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+  1c:	53                   	push   %rbx
+  1d:	48 89 fb             	mov    %rdi,%rbx
+  20:	48 83 ec 08          	sub    $0x8,%rsp
+  24:	48 39 77 10          	cmp    %rsi,0x10(%rdi)
+  28:	74 6a                	je     0x94
+* 2a:	66 f7 47 22 f0 ff    	testw  $0xfff0,0x22(%rdi) <-- trapping instruction
+  30:	74 5a                	je     0x8c
+  32:	48 8b 46 08          	mov    0x8(%rsi),%rax
+  36:	48 89 f7             	mov    %rsi,%rdi
+  39:	48 85 c0             	test   %rax,%rax
+  3c:	74 42                	je     0x80
+  3e:	8b                   	.byte 0x8b
+  3f:	15                   	.byte 0x15
 
-What I don't like about that is that we're saying that the link is
-down, whereas the physical link is actually still up. This is going
-to make network drivers implementation of mac_link_down() rather
-yucky, especially ones that force the physical link down at the MAC
-end when operating in PHY mode and they see a call to mac_link_down()
-(which they do to stop packet reception.) There's no way for them to
-know whether mac_link_down() is a result of a real physical link down
-event, or whether this is a "soft" link down event as you're describing
-at a suspend.
 
-Then there's the issue that some network drivers _must_ see a
-mac_link_down() call to force the link down prior to reconfiguring
-the link (since settings are not allowed to be changed while the
-physical link is up.) So we start to destroy the guarantee that
-mac_link_down() and mac_link_up() will be properly ordered.
+Tested on:
 
-Damn it.
+commit:         c7d10223 Merge tag 'net-5.14-rc4' of git://git.kernel...
+git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git
+console output: https://syzkaller.appspot.com/x/log.txt?x=15c81b33300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=bfd78f4abd4edaa6
+dashboard link: https://syzkaller.appspot.com/bug?extid=a9b681dcbc06eb2bca04
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=13983115300000
 
-> > There's a few more questions:
-> > 1. Since the state at this point will be that netdev and phylink believe
-> >    the link to still be up, should phylink_suspend() force a
-> >    netif_carrier_off() event to stop the netdev transmit watchdog - I
-> >    think it ought to, even though the link will actually remain up.
-> 
-> Agree.
-
-Note that phylib in the FEC case will do this just before calling
-the adjust_link function already.
-
-With phylink, we can make that silent, and I think it should be silent
-because, as I describe above, the physical link isn't actually going
-down.
-
-> > 2. Should we call mac_link_down() prior to the major reconfig - I think
-> >    we should to keep the mac_link_down()/mac_link_up() calls balanced
-> >    (as we do already guarantee.) Will that do any harm for stmmac if we
-> >    were to call mac_link_down() as a result of a call to
-> >    phylink_resume() ?
-> 
-> For STMMAC, I think it's safe, since we calling phylink_resume() before re-config MAC.
-> But we design this for common usage, other MAC drivers may call this at the end of resume
-> path, but I think it also safe, like we unplug then plug the cable. However, it will print the LINK DOWN
-> then LINK UP log, which is very strange when system resume back. Is there any better solution?
-
-I think at this point, we should just print the state of the link at
-resume, which should basically be only a "link down" if the link is
-now physically down at resume.
-
-One thing worries me though - what happens if the link parameters
-change while the system is suspended. The MAC won't be updated with
-the new link parameters. What happens on resume?
-
-> > Why is it different from the .ndo_stop/.ndo_open case, where the PHY may
-> > have been suspended by the actions of .ndo_stop?
-> 
-> It's a good question. PHY will suspend by the actions od .ndo_stop, but it will resume
-> before we config MAC. Please see stmmac_open(), stmmac_init_phy()->phylink_of_phy_connect()
-> -> phy_attach_direct(): phy_resume(phydev), where PHY will be resume backed.
-
-Ah, I forgot FEC does the PHY connect/disconnect at open/stop. Thanks.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
