@@ -2,211 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B8E6400661
-	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 22:12:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0D76400665
+	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 22:14:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350341AbhICUN0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Sep 2021 16:13:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33480 "EHLO
+        id S1350417AbhICUPj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Sep 2021 16:15:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350210AbhICUNV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 16:13:21 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9562C061575
-        for <netdev@vger.kernel.org>; Fri,  3 Sep 2021 13:12:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=1RqmR7fF5uwF76ZoMHz34x87zYITUoVrBIyTrNcysuQ=; b=srqu3MZqnfvRqxorpL440CFpk
-        zL1XYFpPouMF37Dd+Ges7pFnxZFXsSdHxEpIFptdiEv5MrjWC6Via2IrF+AskRNIPhhfMctuLfOwe
-        SLWG9nCUn5kCjDDTEbutWRVwoIdDpss9yDy7iC1cmXpwVRwbgJQhIJ793dF46m3mroksCGnzRe50i
-        sCFVlLYPNMKM6/K8/+iZlWFZD0t3h52XOPe8Axak1acRWOulu17+XMsZRTUKBZqvPMLRLGsJl3fQZ
-        7ID+kods42o9mTUaoOpVJronupbg69IIBSH8o+g0QDMne0R650oP1z4mS4zwJD4hvvxz5EfyC4LNp
-        HjX7VGsFQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:48186)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mMFXp-0003Y2-Ht; Fri, 03 Sep 2021 21:12:13 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mMFXm-0000o6-Ms; Fri, 03 Sep 2021 21:12:10 +0100
-Date:   Fri, 3 Sep 2021 21:12:10 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>,
-        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
-        "alexandre.torgue@foss.st.com" <alexandre.torgue@foss.st.com>,
-        "joabreu@synopsys.com" <joabreu@synopsys.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: Re: [PATCH] net: stmmac: fix MAC not working when system resume back
- with WoL enabled
-Message-ID: <20210903201210.GF1350@shell.armlinux.org.uk>
-References: <DB8PR04MB67954F4650408025E6D4EE2AE6CE9@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <20210902104943.GD22278@shell.armlinux.org.uk>
- <DB8PR04MB6795C37D718096E7CA1AA72DE6CE9@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <YTDCZN/WKlv9BsNG@lunn.ch>
- <DB8PR04MB6795C36B8211EE1A1C0280D9E6CF9@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <20210903080147.GS22278@shell.armlinux.org.uk>
- <DB8PR04MB679518228AB7B2C5CD47A1B3E6CF9@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <20210903093246.GT22278@shell.armlinux.org.uk>
- <DB8PR04MB6795EE2FA03451AB5D73EFC3E6CF9@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <20210903120127.GW22278@shell.armlinux.org.uk>
+        with ESMTP id S239368AbhICUPi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 16:15:38 -0400
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A3CDC061757
+        for <netdev@vger.kernel.org>; Fri,  3 Sep 2021 13:14:38 -0700 (PDT)
+Received: by mail-io1-xd2f.google.com with SMTP id g9so136518ioq.11
+        for <netdev@vger.kernel.org>; Fri, 03 Sep 2021 13:14:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=engleder-embedded-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=klu68g+a7JwyJri/TU9nMjBbX2K7Jipbwhe0jYyf8sk=;
+        b=ziYI2mJKwjNp329iJEVAGP6BlhkZHa27nfhbTIin+xD+KTQNggFl7DYmD2x1ZxgiyJ
+         YGGRTs/H55ofvjb2frJWB9UCYgzt6JT/gcy2sFwibZ+cBDH69IIXcvKpC3pjl7/TThnF
+         btgzc5xpjUGlf15iGenje0FqZMXEdbbvDtIA6Dzsu2inksYvD7RxL0eS4UtbR6AilrgN
+         SXVj3TdyfWDu17P1eHWzJXzxGGcaWbbpsd3xuU0zmSFJuVTpXl3EGIKmq+O0HADwa2ja
+         Q+upKfBLroioZafyeLANs4waTu0uF5ZELu2D0LoXxCIVvUFS11se0EmofD6+Zf/BOGtt
+         0LbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=klu68g+a7JwyJri/TU9nMjBbX2K7Jipbwhe0jYyf8sk=;
+        b=YTC1b6UModMUZq3oyEvAilnzbIC9Peo5MZi0v/hOt5MMRiVd7mLuKcyshymlC/TSnA
+         9ArP1XeolWlR0+C3qw+Ch5La6oC4sWRM6BnPPtyvZ7Q13JpQgxcMFUDALdMD71n2x9lD
+         SSmsON4Fo3kYlKgFBEgzgzz4zKf9krdNW7hhg8R+LIsZ1Ea1FZSAeiogDnEYng0m4zrc
+         QfmjqanBFbFsJ3xjhabBmIYk51DmB/2iWBSwQ8BSqIHbiNvnAJ5niwvtzgtKFi6F+Z3l
+         N6y4o7+gHt/DmSwi66mAuIdPyj+tBEOVh4lXXGvHJz1sXhaQkIItVrT1KgA1QXpSsDQ5
+         PGPg==
+X-Gm-Message-State: AOAM533NjrK0H+fL63LIOSqopWGnZPZKtuhMV0rU9+q1HVbotDCzw4AA
+        +Ji2GhKrixeFXWtU8UAP0kQJvZNYTXjbPkxvfc6wEw==
+X-Google-Smtp-Source: ABdhPJwCrVb6ACMC2TUuqoNLG0sMEntR7PAVyys15e4JFobZ0E/hWkCtTp8QNOLOXnnsUgatQ6ITY9vTkWKACcd+gtE=
+X-Received: by 2002:a5e:9819:: with SMTP id s25mr566253ioj.63.1630700077910;
+ Fri, 03 Sep 2021 13:14:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210903120127.GW22278@shell.armlinux.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+References: <20210831193425.26193-1-gerhard@engleder-embedded.com>
+ <20210831193425.26193-4-gerhard@engleder-embedded.com> <874kb21sb3.fsf@vcostago-mobl2.amr.corp.intel.com>
+In-Reply-To: <874kb21sb3.fsf@vcostago-mobl2.amr.corp.intel.com>
+From:   Gerhard Engleder <gerhard@engleder-embedded.com>
+Date:   Fri, 3 Sep 2021 22:14:26 +0200
+Message-ID: <CANr-f5zkr90FOQ5did25HM0WRn0RKLmgfJXCkH-Br+0kZZxAKw@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 3/3] tsnep: Add TSN endpoint Ethernet MAC driver
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+> > The TSN endpoint Ethernet MAC is a FPGA based network device for
+> > real-time communication.
+> >
+> > It is integrated as Ethernet controller with ethtool and PTP support.
+> > For real-time communcation TC_SETUP_QDISC_TAPRIO is supported.
+> >
+> > Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
+> > ---
+>
+> [...]
+>
+> > +static int tsnep_netdev_open(struct net_device *netdev)
+> > +{
+> > +     struct tsnep_adapter *adapter = netdev_priv(netdev);
+> > +     void *addr;
+> > +     int i;
+> > +     int retval;
+> > +
+> > +     retval = tsnep_phy_open(adapter);
+> > +     if (retval)
+> > +             return retval;
+> > +
+> > +     for (i = 0; i < adapter->num_tx_queues; i++) {
+> > +             addr = adapter->addr + TSNEP_QUEUE(i);
+> > +             retval = tsnep_tx_open(adapter, &adapter->tx[i], addr);
+> > +             if (retval)
+> > +                     goto tx_failed;
+> > +     }
+> > +     retval = netif_set_real_num_tx_queues(adapter->netdev,
+> > +                                           adapter->num_tx_queues);
+> > +     if (retval)
+> > +             goto tx_failed;
+> > +     for (i = 0; i < adapter->num_rx_queues; i++) {
+> > +             addr = adapter->addr + TSNEP_QUEUE(i);
+> > +             retval = tsnep_rx_open(adapter, &adapter->rx[i], addr);
+> > +             if (retval)
+> > +                     goto rx_failed;
+> > +     }
+> > +     retval = netif_set_real_num_rx_queues(adapter->netdev,
+> > +                                           adapter->num_rx_queues);
+> > +     if (retval)
+> > +             goto rx_failed;
+> > +
+> > +     netif_napi_add(adapter->netdev, &adapter->napi, tsnep_rx_napi_poll, 64);
+>
+> I know that you only have support for 1 queue for now. But having
+> "tx[0]" and "rx[0]" hardcoded in tsnep_rx_napi_poll() seems less than
+> ideal if you want to support more queues in the future.
+>
+> And I think that moving 'struct napi_struct' to be closer to the queues
+> now will help make that future transition to multiqueue to be cleaner.
 
-Here's a patch to try - you'll need to integrate the new calls into
-stmmac's suspend and resume hooks. Obviously, given my previous
-comments, this isn't tested!
+You are right, I will try to make it more multiqueue aware for future
+transition.
 
-I didn't need to repeat the mac_wol boolean to phylink_resume as we
-can record the state internally - mac_wol should not change between
-a call to phylink_suspend() and subsequent phylink_resume() anyway.
+> > +void tsnep_ethtool_self_test(struct net_device *netdev,
+> > +                          struct ethtool_test *eth_test, u64 *data)
+> > +{
+> > +     struct tsnep_adapter *adapter = netdev_priv(netdev);
+> > +
+> > +     eth_test->len = TSNEP_TEST_COUNT;
+> > +
+> > +     if (eth_test->flags != ETH_TEST_FL_OFFLINE) {
+> > +             /* no tests are done online */
+> > +             data[TSNEP_TEST_ENABLE] = 0;
+> > +             data[TSNEP_TEST_TAPRIO] = 0;
+> > +             data[TSNEP_TEST_TAPRIO_CHANGE] = 0;
+> > +             data[TSNEP_TEST_TAPRIO_EXTENSION] = 0;
+> > +
+> > +             return;
+> > +     }
+> > +
+> > +     if (tsnep_test_gc_enable(adapter)) {
+> > +             data[TSNEP_TEST_ENABLE] = 0;
+> > +     } else {
+> > +             eth_test->flags |= ETH_TEST_FL_FAILED;
+> > +             data[TSNEP_TEST_ENABLE] = 1;
+> > +     }
+> > +
+> > +     if (tsnep_test_taprio(adapter)) {
+> > +             data[TSNEP_TEST_TAPRIO] = 0;
+> > +     } else {
+> > +             eth_test->flags |= ETH_TEST_FL_FAILED;
+> > +             data[TSNEP_TEST_TAPRIO] = 1;
+> > +     }
+> > +
+> > +     if (tsnep_test_taprio_change(adapter)) {
+> > +             data[TSNEP_TEST_TAPRIO_CHANGE] = 0;
+> > +     } else {
+> > +             eth_test->flags |= ETH_TEST_FL_FAILED;
+> > +             data[TSNEP_TEST_TAPRIO_CHANGE] = 1;
+> > +     }
+> > +
+> > +     if (tsnep_test_taprio_extension(adapter)) {
+> > +             data[TSNEP_TEST_TAPRIO_EXTENSION] = 0;
+> > +     } else {
+> > +             eth_test->flags |= ETH_TEST_FL_FAILED;
+> > +             data[TSNEP_TEST_TAPRIO_EXTENSION] = 1;
+> > +     }
+> > +}
+>
+> I liked these tests :-)
 
-mac_wol should only be true if the MAC is involved in processing
-packets for WoL, false otherwise.
+Thank you! TAPRIO/IEEE802.1Qbv support was challenging for me and these
+tests helped me a lot. My goal was hardware support reduced to the minimum
+and error prone calculation/switching stuff done by software.
 
-Please let me know if this resolves your stmmac WoL issue.
-
-Thanks.
-
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index f0c769027145..c4d0de04416a 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -33,6 +33,7 @@
- enum {
- 	PHYLINK_DISABLE_STOPPED,
- 	PHYLINK_DISABLE_LINK,
-+	PHYLINK_DISABLE_MAC_WOL,
- };
- 
- /**
-@@ -1313,6 +1314,9 @@ EXPORT_SYMBOL_GPL(phylink_start);
-  * network device driver's &struct net_device_ops ndo_stop() method.  The
-  * network device's carrier state should not be changed prior to calling this
-  * function.
-+ *
-+ * This will synchronously bring down the link if the link is not already
-+ * down (in other words, it will trigger a mac_link_down() method call.)
-  */
- void phylink_stop(struct phylink *pl)
- {
-@@ -1338,6 +1342,81 @@ void phylink_stop(struct phylink *pl)
- }
- EXPORT_SYMBOL_GPL(phylink_stop);
- 
-+
-+/**
-+ * phylink_suspend() - handle a network device suspend event
-+ * @pl: a pointer to a &struct phylink returned from phylink_create()
-+ * @mac_wol: true if the MAC needs to receive packets for Wake-on-Lan
-+ *
-+ * Handle a network device suspend event. There are several cases:
-+ * - If Wake-on-Lan is not active, we can bring down the link between
-+ *   the MAC and PHY by calling phylink_stop().
-+ * - If Wake-on-Lan is active, and being handled only by the PHY, we
-+ *   can also bring down the link between the MAC and PHY.
-+ * - If Wake-on-Lan is active, but being handled by the MAC, the MAC
-+ *   still needs to receive packets, so we can not bring the link down.
-+ */
-+void phylink_suspend(struct phylink *pl, bool mac_wol)
-+{
-+	ASSERT_RTNL();
-+
-+	if (mac_wol && (!pl->netdev || pl->netdev->wol_enabled)) {
-+		/* Wake-on-Lan enabled, MAC handling */
-+		mutex_lock(&pl->state_mutex);
-+
-+		/* Stop the resolver bringing the link up */
-+		__set_bit(PHYLINK_DISABLE_MAC_WOL, &pl->phylink_disable_state);
-+
-+		/* Disable the carrier, to prevent transmit timeouts,
-+		 * but one would hope all packets have been sent.
-+		 */
-+		netif_carrier_off(pl->netdev);
-+
-+		/* We do not call mac_link_down() here as we want the
-+		 * link to remain up to receive the WoL packets.
-+		 */
-+		mutex_unlock(&pl->state_mutex);
-+	} else {
-+		phylink_stop(pl);
-+	}
-+}
-+EXPORT_SYMBOL_GPL(phylink_suspend);
-+
-+/**
-+ * phylink_resume() - handle a network device resume event
-+ * @pl: a pointer to a &struct phylink returned from phylink_create()
-+ *
-+ * Undo the effects of phylink_suspend(), returning the link to an
-+ * operational state.
-+ */
-+void phylink_resume(struct phylink *pl)
-+{
-+	ASSERT_RTNL();
-+
-+	if (test_bit(PHYLINK_DISABLE_MAC_WOL, &pl->phylink_disable_state)) {
-+		/* Wake-on-Lan enabled, MAC handling */
-+
-+		/* Call mac_link_down() so we keep the overall state balanced.
-+		 * Do this under the state_mutex lock for consistency. This
-+		 * will cause a "Link Down" message to be printed during
-+		 * resume, which is harmless - the true link state will be
-+		 * printed when we run a resolve.
-+		 */
-+		mutex_lock(&pl->state_mutex);
-+		phylink_link_down(pl);
-+		mutex_unlock(&pl->state_mutex);
-+
-+		/* Re-apply the link parameters so that all the settings get
-+		 * restored to the MAC.
-+		 */
-+		phylink_mac_initial_config(pl, true);
-+		phylink_enable_and_run_resolve(pl, PHYLINK_DISABLE_MAC_WOL);
-+	} else {
-+		phylink_start(pl);
-+	}
-+}
-+EXPORT_SYMBOL_GPL(phylink_resume);
-+
- /**
-  * phylink_ethtool_get_wol() - get the wake on lan parameters for the PHY
-  * @pl: a pointer to a &struct phylink returned from phylink_create()
-diff --git a/include/linux/phylink.h b/include/linux/phylink.h
-index bdeec800da5c..ba0ab7126b96 100644
---- a/include/linux/phylink.h
-+++ b/include/linux/phylink.h
-@@ -462,6 +462,9 @@ void phylink_mac_change(struct phylink *, bool up);
- void phylink_start(struct phylink *);
- void phylink_stop(struct phylink *);
- 
-+void phylink_suspend(struct phylink *pl, bool mac_wol);
-+void phylink_resume(struct phylink *pl);
-+
- void phylink_ethtool_get_wol(struct phylink *, struct ethtool_wolinfo *);
- int phylink_ethtool_set_wol(struct phylink *, struct ethtool_wolinfo *);
- 
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Gerhard
