@@ -2,156 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D9AB3FFBB8
-	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 10:20:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54FBE3FFBC7
+	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 10:20:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348220AbhICIS2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Sep 2021 04:18:28 -0400
-Received: from mail-il1-f199.google.com ([209.85.166.199]:41568 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348168AbhICIS1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 04:18:27 -0400
-Received: by mail-il1-f199.google.com with SMTP id l4-20020a92d8c40000b02902242b6ea4b3so3034591ilo.8
-        for <netdev@vger.kernel.org>; Fri, 03 Sep 2021 01:17:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=6GjhL9Cm8vc8f/tANuKUYM4w6ZUCPAy6g6TMY88ThvQ=;
-        b=YAhb5YhH13auRZcz874nsjbUVYNrHJp+f1Ur93milW+d3TFDMM1Q3hqtxsFyhW3jX/
-         836ZPevNv3W+tDU9hcoI29+gGC96rJUt4PceIgiVk7Mbt2CMm8a0O5OdHmvCY166CioA
-         x2ZK7nXUC5fZ5CQdHxn33fIaIRBfKyww/kaTXfFsytgIaoA0hRIY4bO4s/p3VKbKJhIg
-         VJzKas3nuHpUyMmxs/ExIHap8gOEpqCRX3BpHJqWjwqwpVFuVfX8oxPu9Jt4S5gJ0+F3
-         8jeHar+S4BcBLgl478Mpgo4M/g41oWze5xWyfFX3r3gnOPgLg7PYvV+LFbqUNO6HP1cf
-         MDUQ==
-X-Gm-Message-State: AOAM533G7gJWwLhfQcMOVOFJ+4H4YTbyF2BkyXjOwpvm2d9jtW0hYuq9
-        o/A0bFKVYTRxpq5vrlcGnbbgYYktR2eNbYaTSTGW/bRKpQT8
-X-Google-Smtp-Source: ABdhPJzIzPBJwE2rMNBB25hu4d/eYDdOsTVz0mr9WyCdpNVDqcD5/SshTJsPL0mA28HIO+QQUPJ0jyxkul1JvvFnczSAqYis3y+D
+        id S1348289AbhICIVG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Sep 2021 04:21:06 -0400
+Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:55958 "EHLO
+        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234836AbhICIVF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 04:21:05 -0400
+Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1836Ffh2014570;
+        Fri, 3 Sep 2021 08:19:56 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=corp-2021-07-09;
+ bh=bx7V2zfbFmGATzxGXL9k9x/XEwjkF2Sf+f51miWhHhs=;
+ b=CLO45qJ1AAsTa0R4wQ8slcjnGK4Nq/5Lm90gWaSVPHKx/wvgI49cVKes266GmRTkeM0d
+ RzsX2PwqNBTD/nbq11iEqvY0+oDMyBtWpOwXEaplUXA9Mt9aHRqau3/p/+tMw0Lhh5Qr
+ hYWltZ8nTUFba0cpoUInI3ObfLMR659+Gmgi7V4zh999X1/iHQUSOFCh3a46GnNXxsyx
+ +bjoZpDbB85mU56QIGNHdMke1+Vmhxi5TDZXDxmSq1p15AxTOoJIFwWRWALw0fHVBwB3
+ iVyrUlGun4MWNlL0sOQJL5b2/PHRsJGAp1hqo4SY3U2CIhCi++06U9rBRTwHxlOob/Bt Kw== 
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=corp-2020-01-29;
+ bh=bx7V2zfbFmGATzxGXL9k9x/XEwjkF2Sf+f51miWhHhs=;
+ b=jvKPONwjFwEZY8MtQnqpudHkjbYyYQoxVR4ZG6O/PVqeorpD0ew4edhJIxfc6N+0F1wF
+ AxO9R77UfxV4sAzB7eeU58MTRff74beDvyWJC+0MRggP+uTpRehaggzM1E9QF6JALhrs
+ o91QsT6WJNfMDU1rP7fqPdjnb4LDaPpH4rzfv9HKMpkBkCZDjCMst3nKN55KBKNPe+Mq
+ I71QoOfYgEUNiZJ6JyI7k9Up66hsvt2vZ0NvxBdJOY4ak6DnpcRkpVps6uvp0XuVRvaZ
+ 5+Ay/v7i2DUxJ7DGn1FySlKvXtj49H5XsCvmvzDaSsWr/FL9P3TD10vSsx8VFlBhxoSb IA== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3aue9fr971-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 03 Sep 2021 08:19:55 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 1838A0gP033321;
+        Fri, 3 Sep 2021 08:19:53 GMT
+Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2176.outbound.protection.outlook.com [104.47.58.176])
+        by userp3020.oracle.com with ESMTP id 3ate017bgc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 03 Sep 2021 08:19:53 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dcuRaOQmoo1sRRURa6k63s3J3QBisvOCb7TNRhWPCNUjgAn8riy2vc8YWVZvXC0SL2aBTlcpqzY3yy9KOrx3o/xWAuubTi3m3JptDIt8F3EkTOo5KsLoplBOVwARe6YZnhCAs8Vz0ii1whCYdaW/aXI0j5RtTBGNucJ3BSGnoyhIfJ+A5VSGCaeIEe+8BisYjGf5eapRym2xqH6NWiCbgpBj9H+Pl9D3xmQ6sUysUaUbhC03o2KuZrMpsscsyHkhu4U0I7irLGXFELfM/NT9lJFcPL3IjRXBmGJE2I0jfr91B0BDt6p4PdgQn6c9CiHmvxB2UiuY59vjtMyVW/iJEQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bx7V2zfbFmGATzxGXL9k9x/XEwjkF2Sf+f51miWhHhs=;
+ b=P1t7/tMDLE49v+0a6Yr91yK6l87rz/tNUf3pxiLuO02muvbX3A4Ba11hNgg5kfODCY7Hya4y/Pt70BEkfioleT5gTSdQd+Is1meK1FrstJ4ZA4FK+Kz+Eipj/wb5lyixlu/JRc29oBQXkVe/Lrnoqqzf/taiXtsRH+pEIRfvmZ62DU3Mkl3TWpZk4NUxTHU2BHGIm1K8B8C8a56w7MbyDaLhmAoaWA2u9P3rDCTlEjavJNePHgUt+CQXM8P3IFCInMSN9V6RtBam1inDPwm3bEL28WwShuxIbshWn8rcmMMKTvyLV3U2PWLOM0b3M5/C/dfTqOt1V2NHwAOPCR531w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bx7V2zfbFmGATzxGXL9k9x/XEwjkF2Sf+f51miWhHhs=;
+ b=GetmRLj9u0NAG02g72ReLjgnfd3VcZ/SN3HK2mqhcjZeq0cMaDfDHtt+qq0a+nTUlsWZMkzPsxTQxoCXWqQieU0YoseGLrUP1Hoqk5YW7X6i7H43WJmNKULcZqlnGr1lGNaGvehH3TYuC/MIpBNflWUYVo9DStusjFjbxSUDo3k=
+Authentication-Results: wanadoo.fr; dkim=none (message not signed)
+ header.d=none;wanadoo.fr; dmarc=none action=none header.from=oracle.com;
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by MWHPR10MB1248.namprd10.prod.outlook.com
+ (2603:10b6:301:8::9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4457.23; Fri, 3 Sep
+ 2021 08:19:49 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::5820:e42b:73d7:4268]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::5820:e42b:73d7:4268%7]) with mapi id 15.20.4478.022; Fri, 3 Sep 2021
+ 08:19:49 +0000
+Date:   Fri, 3 Sep 2021 11:19:29 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     luciano.coelho@intel.com, kvalo@codeaurora.org,
+        davem@davemloft.net, kuba@kernel.org, johannes.berg@intel.com,
+        pierre-louis.bossart@linux.intel.com, drorx.moshe@intel.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] iwlwifi: pnvm: Fix a memory leak in
+ 'iwl_pnvm_get_from_fs()'
+Message-ID: <20210903081929.GB1957@kadam>
+References: <1b5d80f54c1dbf85710fd285243932943b498fe7.1630614969.git.christophe.jaillet@wanadoo.fr>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1b5d80f54c1dbf85710fd285243932943b498fe7.1630614969.git.christophe.jaillet@wanadoo.fr>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: JNAP275CA0008.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4c::13)
+ To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:928:: with SMTP id o8mr1723893ilt.37.1630657047408;
- Fri, 03 Sep 2021 01:17:27 -0700 (PDT)
-Date:   Fri, 03 Sep 2021 01:17:27 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000000fb51f05cb12ee30@google.com>
-Subject: [syzbot] BUG: unable to handle kernel paging request in vm_area_dup
-From:   syzbot <syzbot+e561875a461cd966cd9d@syzkaller.appspotmail.com>
-To:     akpm@linux-foundation.org, andrii@kernel.org, ast@kernel.org,
-        axboe@kernel.dk, bpf@vger.kernel.org, christian@brauner.io,
-        daniel@iogearbox.net, ebiederm@xmission.com,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        peterz@infradead.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Received: from kadam (62.8.83.99) by JNAP275CA0008.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4c::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4478.19 via Frontend Transport; Fri, 3 Sep 2021 08:19:42 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b97f81c6-03b3-469c-cdc4-08d96eb3988e
+X-MS-TrafficTypeDiagnostic: MWHPR10MB1248:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <MWHPR10MB12484BCB05B396BC9C4ACE3A8ECF9@MWHPR10MB1248.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: yjyOl8h1bCKEyA0tW8dbPLyBqeft01itfary7mzFIgBB9bkSmN4CxS/M6WFT63Fx/QIKCN7D7RC7wheOTeDO1BMo0yWh3Ny7yKWgeVBelVn9OHty/VuxePa4KvwZEB0/j94UY61xdcduMUE1+5Aqtpx8Muu9Ldu+58dIJ26ov+A+RkjOZxhPNPc3LrU5nWrdhhi08n/PkKllq107izZVZbgnPX/YWzYucKRnYQ9XRTwBCtNwsuLrNIQCe3IowFjwlArH/e2lQFTXigpW+LOBzCCpLzAZ2xXl8sO5a+B1qAqCrjVveRUiduHUfLELgH+41e6mjCBlkAavgExxKRNy74qAJ7uLNr6RHktHqYYm7Lsa8oTVrU2b7UwKyxqWftlmRzSU+I0m6Cy7AGv0dSbPqbzPiBnmdfx1VYMlaBaG6U0e+Yu/PvW67kxznvSeNYi+TU69i7bH6uAGm+ktpCIvohdPMN6wY/IdMy8iD79HdhqAsB+8R4cuvbbOewVplq7MdxKt85Kvk5+W1W0CC/dAL4KdtP4ORbDH1RPWaUs5wwSvzqpwlIjFTC3p/+GCbRbwTeVbFAtuN3DmX/TMW7l2bQ3KTlvl9LzTNJBCe2LHxP0U7AhUodaStD59BQNJ7WyYQPYqo/wEkiUUse7r62PuFvG/a1LAtZTr3IF64h/bBQI2EZ0HPkGkZvfZ++H+DSJYIQ/qPgE/5IzTDN1mbCpa5A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(346002)(39860400002)(376002)(366004)(396003)(33716001)(66946007)(66556008)(38100700002)(38350700002)(6496006)(186003)(478600001)(52116002)(66476007)(44832011)(5660300002)(6666004)(26005)(9686003)(2906002)(4326008)(33656002)(6916009)(55016002)(8676002)(8936002)(86362001)(316002)(83380400001)(7416002)(956004)(9576002)(1076003)(4744005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Er59UJ+wZ4TkE8d+BMOYugREaHqugcubcWZEcsppvf9R8YNRg83KP8Oo1UPe?=
+ =?us-ascii?Q?2CvfWl0waa8Wtz+T7QwgUnKXdEzCxw6b629LpgxkVGYQw75P2iQ937QH+nKP?=
+ =?us-ascii?Q?6L4MuqHeMQA6I5PTeQzyFHAxkcIOSlsWFe1sI4YxwW1pEBK2YJN78HO1dmGN?=
+ =?us-ascii?Q?Rv3Q5Huc4UJ4H+DixkVxtMk7t1y58GKVW81zex5Rs+FhubblKegv2tgvahfz?=
+ =?us-ascii?Q?aWouLOzIOLPwl92NIzg7Morsyma18urHgBsA3uZF6BdEzw6Es04aueAdcAyl?=
+ =?us-ascii?Q?atJDcd3rX8O5rlAx2Wk/ZBpsWiYqZpMtDhZZlTh3EWMblwPBMxzlhvJhDpoX?=
+ =?us-ascii?Q?T+gtjhsMhBdoCMhMp2N7o2LCeuS/Q3T6ZoaCzrFpT3x1j1l3toP1j1rP/4dx?=
+ =?us-ascii?Q?tNnVuU4mH1D/Qe1e6lcnLjukGTnvH7lpKtOKvVrleYcVls/1zR7MsMuQ8Sy0?=
+ =?us-ascii?Q?RIl2TQ58Z3XOABOhJWnFqmL2nToiLRzlw0b3ZzRismihzquNfrEkaXiT2hx0?=
+ =?us-ascii?Q?161dyLPPsxifa4KW+/pFHPEH0XMJpbPmL5bFbuPuwRpGQ09B3j4mKJyMBoVw?=
+ =?us-ascii?Q?7zsLuNYMJyCOXwGVYq68o4Cu8cw9GSJ7FW1MrDEsKQjwt+2AOWYLCympOz2i?=
+ =?us-ascii?Q?cge5PiuvqpjoE3rbpK86C4UZRd+gmA1MXaPLi31oa38dAB03beUsmkqRgPVZ?=
+ =?us-ascii?Q?GinA4U/uSyqGHIndJoObL+9nLqKwv3FoHhfIF7jXEJppJ1Gqz0lGMZApSBVA?=
+ =?us-ascii?Q?+TMVHWsNcqsHybioa9k1SK1JfbRg48PZGFz3SbIx4DDRzZVGqPvyNDOMg4vx?=
+ =?us-ascii?Q?q45FCoxYwhoI0ec/kpxJKj5/a4EdC51CNq1sfucub075t17/xSFmUwUUy+Qq?=
+ =?us-ascii?Q?ZSftiEjhbIYBPltNltXXkDYKrOfJmjAL2dhDyyc+b6L873zejDtAu8iGrDgL?=
+ =?us-ascii?Q?sde80JIPK7TXEpVomeCztigxvLfblcpawCU7zl0+3BNg7bymT381tKR08+xV?=
+ =?us-ascii?Q?RvBemslIrNcBY0lMuiI8Itxf9GyncGUlrS0PzxAhoj6VZ8aaT2XaTlEW5DUj?=
+ =?us-ascii?Q?Nv3vFnhRY7zuCRytQWzFf00blmndbeBvG66ujJQ/poR5+aP7htRQqpk07h+6?=
+ =?us-ascii?Q?k/jiTyjDSlpy7ONvSkAEJyca4L2D79uNYEiQBRH//ven7DEokguUm2MBmzAu?=
+ =?us-ascii?Q?IqAG/x69vsvJfPcNz/tWLNcMLsPB1We1J7Zbc8PyLN1lRBbsaU6WWNQDqAI5?=
+ =?us-ascii?Q?F5J9C2Yeio4YjXasvOgJp3Uw0H4R6lDcKOy6750GuL4/PeTCssg4CvADoKBv?=
+ =?us-ascii?Q?UGVDIsUPsQJZLQ5qYrC8TY9w?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b97f81c6-03b3-469c-cdc4-08d96eb3988e
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Sep 2021 08:19:48.9511
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: FAg9NjhvQBGwxJ8GDzht6L+z+Z+cWJnXQlxq1abLKZSnO8yHeULoUVlJ/yMlrjQJIpF3tVeOdyjgv7QPeqIUuPjlpR40tyI+XsnCxBUfGis=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR10MB1248
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10095 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 bulkscore=0
+ mlxlogscore=999 mlxscore=0 suspectscore=0 spamscore=0 phishscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2108310000 definitions=main-2109030049
+X-Proofpoint-GUID: tOuq-YDE7MWPqpV8aDqKcgsccchGkLMF
+X-Proofpoint-ORIG-GUID: tOuq-YDE7MWPqpV8aDqKcgsccchGkLMF
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Thu, Sep 02, 2021 at 10:38:11PM +0200, Christophe JAILLET wrote:
+> A firmware is requested but never released in this function. This leads to
+> a memory leak in the normal execution path.
+> 
+> Add the missing 'release_firmware()' call.
+> Also introduce a temp variable (new_len) in order to keep the value of
+> 'pnvm->size' after the firmware has been released.
+> 
+> Fixes: cdda18fbbefa ("iwlwifi: pnvm: move file loading code to a separate function")
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-syzbot found the following issue on:
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-HEAD commit:    3f5ad13cb012 Merge tag 'scsi-fixes' of git://git.kernel.or..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=15f9ca49300000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=94074b5caf8665c7
-dashboard link: https://syzkaller.appspot.com/bug?extid=e561875a461cd966cd9d
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+e561875a461cd966cd9d@syzkaller.appspotmail.com
-
-BUG: unable to handle page fault for address: 0000000000114588
-#PF: supervisor read access in kernel mode
-#PF: error_code(0x0000) - not-present page
-PGD 157b8067 P4D 157b8067 PUD 34984067 PMD 0 
-Oops: 0000 [#1] PREEMPT SMP KASAN
-CPU: 1 PID: 9155 Comm: syz-executor.5 Not tainted 5.14.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:freelist_dereference mm/slub.c:287 [inline]
-RIP: 0010:get_freepointer mm/slub.c:294 [inline]
-RIP: 0010:get_freepointer_safe mm/slub.c:308 [inline]
-RIP: 0010:slab_alloc_node mm/slub.c:2927 [inline]
-RIP: 0010:slab_alloc mm/slub.c:2967 [inline]
-RIP: 0010:kmem_cache_alloc+0x16d/0x4a0 mm/slub.c:2972
-Code: 39 f2 75 e7 48 8b 01 48 83 79 10 00 48 89 04 24 0f 84 75 02 00 00 48 85 c0 0f 84 6c 02 00 00 48 8b 7d 00 8b 4d 28 40 f6 c7 0f <48> 8b 1c 08 0f 85 76 02 00 00 48 8d 4a 08 65 48 0f c7 0f 0f 94 c0
-RSP: 0018:ffffc9000168f720 EFLAGS: 00010246
-RAX: 0000000000114528 RBX: 00000000000000c8 RCX: 0000000000000060
-RDX: 0000000000393661 RSI: 0000000000393661 RDI: 00000000000578d0
-RBP: ffff888140006a00 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000001 R11: 0000000000000000 R12: 0000000000000000
-R13: ffffffff8143dbe8 R14: 0000000000000cc0 R15: 0000000000000cc0
-FS:  0000000001575400(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000114588 CR3: 000000001839c000 CR4: 00000000001526e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- vm_area_dup+0x88/0x2b0 kernel/fork.c:357
- dup_mmap kernel/fork.c:537 [inline]
- dup_mm+0x543/0x1380 kernel/fork.c:1379
- copy_mm kernel/fork.c:1431 [inline]
- copy_process+0x71ec/0x74d0 kernel/fork.c:2119
- kernel_clone+0xe7/0xac0 kernel/fork.c:2509
- __do_sys_clone+0xc8/0x110 kernel/fork.c:2626
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x464beb
-Code: ed 0f 85 60 01 00 00 64 4c 8b 0c 25 10 00 00 00 45 31 c0 4d 8d 91 d0 02 00 00 31 d2 31 f6 bf 11 00 20 01 b8 38 00 00 00 0f 05 <48> 3d 00 f0 ff ff 0f 87 89 00 00 00 41 89 c5 85 c0 0f 85 90 00 00
-RSP: 002b:0000000000a9fd50 EFLAGS: 00000246 ORIG_RAX: 0000000000000038
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 0000000000464beb
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000001200011
-RBP: 0000000000000001 R08: 0000000000000000 R09: 0000000001575400
-R10: 00000000015756d0 R11: 0000000000000246 R12: 0000000000000001
-R13: 0000000000000000 R14: 0000000000000001 R15: 0000000000a9fe40
-Modules linked in:
-CR2: 0000000000114588
----[ end trace 0b04bb8235cb5b3a ]---
-RIP: 0010:freelist_dereference mm/slub.c:287 [inline]
-RIP: 0010:get_freepointer mm/slub.c:294 [inline]
-RIP: 0010:get_freepointer_safe mm/slub.c:308 [inline]
-RIP: 0010:slab_alloc_node mm/slub.c:2927 [inline]
-RIP: 0010:slab_alloc mm/slub.c:2967 [inline]
-RIP: 0010:kmem_cache_alloc+0x16d/0x4a0 mm/slub.c:2972
-Code: 39 f2 75 e7 48 8b 01 48 83 79 10 00 48 89 04 24 0f 84 75 02 00 00 48 85 c0 0f 84 6c 02 00 00 48 8b 7d 00 8b 4d 28 40 f6 c7 0f <48> 8b 1c 08 0f 85 76 02 00 00 48 8d 4a 08 65 48 0f c7 0f 0f 94 c0
-RSP: 0018:ffffc9000168f720 EFLAGS: 00010246
-RAX: 0000000000114528 RBX: 00000000000000c8 RCX: 0000000000000060
-RDX: 0000000000393661 RSI: 0000000000393661 RDI: 00000000000578d0
-RBP: ffff888140006a00 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000001 R11: 0000000000000000 R12: 0000000000000000
-R13: ffffffff8143dbe8 R14: 0000000000000cc0 R15: 0000000000000cc0
-FS:  0000000001575400(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f7c3000b0b8 CR3: 000000001839c000 CR4: 00000000001526e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-----------------
-Code disassembly (best guess):
-   0:	39 f2                	cmp    %esi,%edx
-   2:	75 e7                	jne    0xffffffeb
-   4:	48 8b 01             	mov    (%rcx),%rax
-   7:	48 83 79 10 00       	cmpq   $0x0,0x10(%rcx)
-   c:	48 89 04 24          	mov    %rax,(%rsp)
-  10:	0f 84 75 02 00 00    	je     0x28b
-  16:	48 85 c0             	test   %rax,%rax
-  19:	0f 84 6c 02 00 00    	je     0x28b
-  1f:	48 8b 7d 00          	mov    0x0(%rbp),%rdi
-  23:	8b 4d 28             	mov    0x28(%rbp),%ecx
-  26:	40 f6 c7 0f          	test   $0xf,%dil
-* 2a:	48 8b 1c 08          	mov    (%rax,%rcx,1),%rbx <-- trapping instruction
-  2e:	0f 85 76 02 00 00    	jne    0x2aa
-  34:	48 8d 4a 08          	lea    0x8(%rdx),%rcx
-  38:	65 48 0f c7 0f       	cmpxchg16b %gs:(%rdi)
-  3d:	0f 94 c0             	sete   %al
+regards,
+dan carpenter
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
