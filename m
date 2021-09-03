@@ -2,109 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12C924003D4
-	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 19:07:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E60A4003F9
+	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 19:13:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350212AbhICRHt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Sep 2021 13:07:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47012 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229692AbhICRHs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 13:07:48 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30DE6C061575
-        for <netdev@vger.kernel.org>; Fri,  3 Sep 2021 10:06:48 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id t19so13366955ejr.8
-        for <netdev@vger.kernel.org>; Fri, 03 Sep 2021 10:06:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=HOu/v3Ra8O/K9wAzVGGkkdCqDDE4ksGmT9ZXUBUzYGg=;
-        b=KnmLsWaI7nAt7v0Ohft67cbHe0UVPbSk6NVAkQtIoaSlqGCtJnY4vj/Z5/d8DmdH0q
-         PpG6iLDQ8zvWYgQnI9JZIv5XKojAav5TWwf1WipJLHY8sArciIOAv4RLPVfHm+XtPnYK
-         zkM6eKMW2zUDpWjD2dGBSh55SNPzYTzry8Fnd4JsCA+i8RtHXC6DMRk3Bx9U9WVqoIz1
-         NMKHMvFGebCB2hM6b4BcNAtXJuOE2NRw2M2sGNoDmQ8s8hOuuSf85sRB/gWiospKJ+oU
-         nYf+uBSQDpbPhp4yihrbwTu62/KktDIt5h+15do+7BG5en9K+uJfvwV/sWKOVxCnfuTL
-         TY/Q==
+        id S1350130AbhICROc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Sep 2021 13:14:32 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:23265 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232117AbhICROb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 13:14:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1630689211;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yHJyQTuhQ2rUo4HEpkrQXS+C/jFPNpqCCL4OYhPvFJs=;
+        b=P+MrMyKce4Q+zsN6ckx3kh8yefQPpAD2LkLgVJd1yMRenRyqwyO8MmNTOc6nlpp4nPikqh
+        JPSDa0XDUhg2FyTkLEh5Lp89n9qX7StvVVwpcxtEJeUp3VLkLfsOEWjCcpW7peEwz/9vpA
+        LJzcvCSc+6g3qJDyH8UcRYgfolNPcJE=
+Received: from mail-yb1-f197.google.com (mail-yb1-f197.google.com
+ [209.85.219.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-574-IuKpXPnKPkWvTMrV3AZ-ag-1; Fri, 03 Sep 2021 13:13:30 -0400
+X-MC-Unique: IuKpXPnKPkWvTMrV3AZ-ag-1
+Received: by mail-yb1-f197.google.com with SMTP id 83-20020a251956000000b0059948f541cbso7197190ybz.7
+        for <netdev@vger.kernel.org>; Fri, 03 Sep 2021 10:13:30 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=HOu/v3Ra8O/K9wAzVGGkkdCqDDE4ksGmT9ZXUBUzYGg=;
-        b=MAIkO49sx/vjNH/zns8QYBrLlRpi4f5mkC4hT8OSVBGuHIEZaVDb8YJ23TtzILHRH+
-         gq+/bdhlpatDqLqO2FIGa72MGDovwQMuDgd7uFevhbOqknzGQ/juEiSKTgKgVj/tbqR7
-         AyInEC3o/DRX3XcfwNWd9Hsu1Ji+a1x747nggnFtwVZ1I3n1lnExmZXpLl7AMQCs8Rlh
-         EpvifCsTsLSnsncqOLoMt86OH8nJej389FWyQQivO9Ehb5TjrR3DTIsC3OMKkRZlzIIh
-         Z0/Mqq7qNxtcacY8eWUXUl/jXJHZ7miG6NUdJmbP/dp0Ez1rfaep+WPYt4gb6dCGilWM
-         U3xw==
-X-Gm-Message-State: AOAM532HRS/kD9D8MQQApHdgMa+BasRnEh+fbO5Ildc8poxU2k7FO2P+
-        AjPvExKHtaosEDkIunThwdc=
-X-Google-Smtp-Source: ABdhPJzPnEbkASDevNel7TFli2FZVnwLYltOLsIxSrGReTUvtVmamE8eTtUuKExvTMbbAuvH1eZSfQ==
-X-Received: by 2002:a17:906:919:: with SMTP id i25mr5225893ejd.171.1630688806742;
-        Fri, 03 Sep 2021 10:06:46 -0700 (PDT)
-Received: from skbuf ([82.78.148.104])
-        by smtp.gmail.com with ESMTPSA id rl23sm3124463ejb.50.2021.09.03.10.06.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Sep 2021 10:06:46 -0700 (PDT)
-From:   Ioana Ciornei <ciorneiioana@gmail.com>
-X-Google-Original-From: Ioana Ciornei <ciornei.ioana@gmail.com>
-Date:   Fri, 3 Sep 2021 20:06:45 +0300
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        Ioana Ciornei <ciorneiioana@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH net-next] net: dpaa2-mac: add support for more ethtool
- 10G link modes
-Message-ID: <20210903170645.pkejqmg2ayw3ijgr@skbuf>
-References: <E1m5mVT-00032g-Km@rmk-PC.armlinux.org.uk>
- <YPbU59Kmpk0NvlQH@lunn.ch>
- <20210720141134.GT22278@shell.armlinux.org.uk>
- <20210816144752.vxliq642uipdsmdd@skbuf>
- <20210903103358.GU22278@shell.armlinux.org.uk>
- <20210903110916.bjjm6x3h4l4raf27@skbuf>
- <20210903113434.GV22278@shell.armlinux.org.uk>
- <YTIfCCzYK6RK1gYj@lunn.ch>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yHJyQTuhQ2rUo4HEpkrQXS+C/jFPNpqCCL4OYhPvFJs=;
+        b=Q3d8nhI6KRfFJ7AHa6ZdnrHCpLKCX1iuifwm/RsJQSZEZR0NOZ9XJIEpLGOE+e4BBB
+         10aLLE3xj///PkatIopaXHspPsob+oyDe5rNDJjU+5P+nDBGxQddJhwu3bhodyy5wivD
+         /1tzbgXhyaDoMZ5a8urvvDcehBwXDpaQ+LInnm0WaPCYFzU0akZ/WWWZhUunVE5Vo6nS
+         I+D+WOlH3uSbvcIAgXUE0vU+Mm6FdQqOZh+SoN+LUJcRGQCIky187c/ldCHvDQ7bhkrr
+         JjfXH47V1LIL5vWUYgc8h8qR1WcACVrWIjQc9hcrIJO2fYEQFFNlUtAeAkQlLMq0BrrM
+         UQ1Q==
+X-Gm-Message-State: AOAM532f68Iy6vC0ApMSty4T9c+E6h7mB1jj8Yq1P4xwlTtPndH/zwhS
+        HpzJev2VUM+vsxHdAwHnQAuYkdDrXM9El70OZnGPRUoCLkIkLz3TdhuITKyzdlwK865KI5br0u4
+        XD8QJKZnkoWWdBnlBgmV055m9enQ1+q8K
+X-Received: by 2002:a25:c005:: with SMTP id c5mr158251ybf.168.1630689210022;
+        Fri, 03 Sep 2021 10:13:30 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzn64tX3wVU8FQE/8IxOa46/3bOs07liCcjapLECaEcqfxtXRfkxmGyJeh0V2xmOGq4e8Mife4ldeUUuZVuHq4=
+X-Received: by 2002:a25:c005:: with SMTP id c5mr158209ybf.168.1630689209747;
+ Fri, 03 Sep 2021 10:13:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YTIfCCzYK6RK1gYj@lunn.ch>
+References: <cover.1629473233.git.lorenzo@kernel.org> <ab0c64f1543239256ef63ec9b40f35a7491812c6.1629473233.git.lorenzo@kernel.org>
+ <612eb79343225_6b872087a@john-XPS-13-9370.notmuch>
+In-Reply-To: <612eb79343225_6b872087a@john-XPS-13-9370.notmuch>
+From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+Date:   Fri, 3 Sep 2021 19:13:18 +0200
+Message-ID: <CAJ0CqmWGNapcmVae52UJNAg7XKS7f0F2dmQMoO+1sL3zp=oFTw@mail.gmail.com>
+Subject: Re: [PATCH v12 bpf-next 01/18] net: skbuff: add size metadata to
+ skb_shared_info for xdp
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
+        BPF-dev-list <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "Agroskin, Shay" <shayagr@amazon.com>,
+        David Ahern <dsahern@kernel.org>,
+        Jesper Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        "Sarkar, Tirthendu" <tirthendu.sarkar@intel.com>,
+        Toke Hoiland Jorgensen <toke@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 03, 2021 at 03:11:36PM +0200, Andrew Lunn wrote:
+>
+> Lorenzo Bianconi wrote:
+> > Introduce xdp_frags_tsize field in skb_shared_info data structure
+> > to store xdp_buff/xdp_frame truesize (xdp_frags_tsize will be used
+> > in xdp multi-buff support). In order to not increase skb_shared_info
+> > size we will use a hole due to skb_shared_info alignment.
+> > Introduce xdp_frags_size field in skb_shared_info data structure
+> > reusing gso_type field in order to store xdp_buff/xdp_frame paged size.
+> > xdp_frags_size will be used in xdp multi-buff support.
+> >
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+>
+> I assume we can use xdp_frags_tsize for anything else above XDP later?
+> Other than simple question looks OK to me.
 
-> > Thanks. I wonder why searching for it via google and also via patchworks
-> > search facility didn't find it.
-> > 
-> > So, it got incorrectly tagged by netdev maintainers, presumably because
-> > they're too quick to classify a patch while discussion on the patch was
-> > still ongoing - and there's no way for those discussing that to ever
-> > know without finding it in patchwork. Which is pretty much impossible
-> > unless you know the patchwork URL format and message ID, and are
-> > prepared to regularly poll the patchwork website.
-> > 
-> > The netdev process, as a patch submitter or reviewer, is really very
-> > unfriendly.
-> 
-> H Russell, Ioana
-> 
-> It sounds like at LPC there is going to be a time slot to talk about
-> netdev processes.
+yes, right as we did for gso_type/xdp_frags_size.
 
-Is this on the Networking track? I didn't find any session that would
-appear to target this topic.
+Regards,
+Lorenzo
 
-> I would like to find out and discuss the new policy
-> for the time it takes to merge patches. Patchwork issues, and the lack
-> of integration with email workflows could be another interesting topic
-> to discuss.
+>
+> Acked-by: John Fastabend <john.fastabend@gmail.com>
+>
+> > ---
+> >  include/linux/skbuff.h | 6 +++++-
+> >  1 file changed, 5 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> > index 6bdb0db3e825..1abeba7ef82e 100644
+> > --- a/include/linux/skbuff.h
+> > +++ b/include/linux/skbuff.h
+> > @@ -522,13 +522,17 @@ struct skb_shared_info {
+> >       unsigned short  gso_segs;
+> >       struct sk_buff  *frag_list;
+> >       struct skb_shared_hwtstamps hwtstamps;
+> > -     unsigned int    gso_type;
+> > +     union {
+> > +             unsigned int    gso_type;
+> > +             unsigned int    xdp_frags_size;
+> > +     };
+> >       u32             tskey;
+> >
+> >       /*
+> >        * Warning : all fields before dataref are cleared in __alloc_skb()
+> >        */
+> >       atomic_t        dataref;
+> > +     unsigned int    xdp_frags_tsize;
+> >
+> >       /* Intermediate layers must ensure that destructor_arg
+> >        * remains valid until skb destructor */
+> > --
+> > 2.31.1
+> >
+>
+>
 
-It would be interesting to have patchwork send a notification of some
-sorts to the submitter when a certain patch set's state was changed.
-
-Ioana
