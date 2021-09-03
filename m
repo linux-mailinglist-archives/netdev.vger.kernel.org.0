@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 959F5400354
-	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 18:31:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 582DA400356
+	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 18:31:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350020AbhICQbd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1350028AbhICQbd (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Fri, 3 Sep 2021 12:31:33 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:58758 "EHLO
+Received: from mail.netfilter.org ([217.70.188.207]:58766 "EHLO
         mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349995AbhICQba (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 12:31:30 -0400
+        with ESMTP id S235689AbhICQbb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 12:31:31 -0400
 Received: from localhost.localdomain (unknown [78.30.35.141])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 3F8D8600AA;
+        by mail.netfilter.org (Postfix) with ESMTPSA id D98ED600AB;
         Fri,  3 Sep 2021 18:29:27 +0200 (CEST)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net 2/5] netfilter: conntrack: sanitize table size default settings
-Date:   Fri,  3 Sep 2021 18:30:17 +0200
-Message-Id: <20210903163020.13741-3-pablo@netfilter.org>
+Subject: [PATCH net 3/5] netfilter: conntrack: switch to siphash
+Date:   Fri,  3 Sep 2021 18:30:18 +0200
+Message-Id: <20210903163020.13741-4-pablo@netfilter.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210903163020.13741-1-pablo@netfilter.org>
 References: <20210903163020.13741-1-pablo@netfilter.org>
@@ -31,105 +31,176 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Florian Westphal <fw@strlen.de>
 
-conntrack has two distinct table size settings:
-nf_conntrack_max and nf_conntrack_buckets.
+Replace jhash in conntrack and nat core with siphash.
 
-The former limits how many conntrack objects are allowed to exist
-in each namespace.
-
-The second sets the size of the hashtable.
-
-As all entries are inserted twice (once for original direction, once for
-reply), there should be at least twice as many buckets in the table than
-the maximum number of conntrack objects that can exist at the same time.
-
-Change the default multiplier to 1 and increase the chosen bucket sizes.
-This results in the same nf_conntrack_max settings as before but reduces
-the average bucket list length.
+While at it, use the netns mix value as part of the input key
+rather than abuse the seed value.
 
 Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- .../networking/nf_conntrack-sysctl.rst        | 13 ++++----
- net/netfilter/nf_conntrack_core.c             | 30 +++++++++----------
- 2 files changed, 22 insertions(+), 21 deletions(-)
+ net/netfilter/nf_conntrack_core.c   | 31 +++++++++++++++++------------
+ net/netfilter/nf_conntrack_expect.c | 25 ++++++++++++++++-------
+ net/netfilter/nf_nat_core.c         | 18 +++++++++++++----
+ 3 files changed, 50 insertions(+), 24 deletions(-)
 
-diff --git a/Documentation/networking/nf_conntrack-sysctl.rst b/Documentation/networking/nf_conntrack-sysctl.rst
-index 024d784157c8..de3815dd4d49 100644
---- a/Documentation/networking/nf_conntrack-sysctl.rst
-+++ b/Documentation/networking/nf_conntrack-sysctl.rst
-@@ -17,9 +17,8 @@ nf_conntrack_acct - BOOLEAN
- nf_conntrack_buckets - INTEGER
- 	Size of hash table. If not specified as parameter during module
- 	loading, the default size is calculated by dividing total memory
--	by 16384 to determine the number of buckets but the hash table will
--	never have fewer than 32 and limited to 16384 buckets. For systems
--	with more than 4GB of memory it will be 65536 buckets.
-+	by 16384 to determine the number of buckets. The hash table will
-+	never have fewer than 1024 and never more than 262144 buckets.
- 	This sysctl is only writeable in the initial net namespace.
- 
- nf_conntrack_checksum - BOOLEAN
-@@ -100,8 +99,12 @@ nf_conntrack_log_invalid - INTEGER
- 	Log invalid packets of a type specified by value.
- 
- nf_conntrack_max - INTEGER
--	Size of connection tracking table.  Default value is
--	nf_conntrack_buckets value * 4.
-+        Maximum number of allowed connection tracking entries. This value is set
-+        to nf_conntrack_buckets by default.
-+        Note that connection tracking entries are added to the table twice -- once
-+        for the original direction and once for the reply direction (i.e., with
-+        the reversed address). This means that with default settings a maxed-out
-+        table will have a average hash chain length of 2, not 1.
- 
- nf_conntrack_tcp_be_liberal - BOOLEAN
- 	- 0 - disabled (default)
 diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-index d31dbccbe7bd..cdd8a1dc2275 100644
+index cdd8a1dc2275..da2650f872e1 100644
 --- a/net/netfilter/nf_conntrack_core.c
 +++ b/net/netfilter/nf_conntrack_core.c
-@@ -2594,26 +2594,24 @@ int nf_conntrack_init_start(void)
- 		spin_lock_init(&nf_conntrack_locks[i]);
+@@ -21,7 +21,6 @@
+ #include <linux/stddef.h>
+ #include <linux/slab.h>
+ #include <linux/random.h>
+-#include <linux/jhash.h>
+ #include <linux/siphash.h>
+ #include <linux/err.h>
+ #include <linux/percpu.h>
+@@ -184,25 +183,31 @@ EXPORT_SYMBOL_GPL(nf_conntrack_htable_size);
+ unsigned int nf_conntrack_max __read_mostly;
+ EXPORT_SYMBOL_GPL(nf_conntrack_max);
+ seqcount_spinlock_t nf_conntrack_generation __read_mostly;
+-static unsigned int nf_conntrack_hash_rnd __read_mostly;
++static siphash_key_t nf_conntrack_hash_rnd __read_mostly;
  
- 	if (!nf_conntrack_htable_size) {
--		/* Idea from tcp.c: use 1/16384 of memory.
--		 * On i386: 32MB machine has 512 buckets.
--		 * >= 1GB machines have 16384 buckets.
--		 * >= 4GB machines have 65536 buckets.
--		 */
- 		nf_conntrack_htable_size
- 			= (((nr_pages << PAGE_SHIFT) / 16384)
- 			   / sizeof(struct hlist_head));
--		if (nr_pages > (4 * (1024 * 1024 * 1024 / PAGE_SIZE)))
--			nf_conntrack_htable_size = 65536;
-+		if (BITS_PER_LONG >= 64 &&
-+		    nr_pages > (4 * (1024 * 1024 * 1024 / PAGE_SIZE)))
-+			nf_conntrack_htable_size = 262144;
- 		else if (nr_pages > (1024 * 1024 * 1024 / PAGE_SIZE))
--			nf_conntrack_htable_size = 16384;
--		if (nf_conntrack_htable_size < 32)
--			nf_conntrack_htable_size = 32;
--
--		/* Use a max. factor of four by default to get the same max as
--		 * with the old struct list_heads. When a table size is given
--		 * we use the old value of 8 to avoid reducing the max.
--		 * entries. */
--		max_factor = 4;
-+			nf_conntrack_htable_size = 65536;
+ static u32 hash_conntrack_raw(const struct nf_conntrack_tuple *tuple,
+ 			      const struct net *net)
+ {
+-	unsigned int n;
+-	u32 seed;
++	struct {
++		struct nf_conntrack_man src;
++		union nf_inet_addr dst_addr;
++		u32 net_mix;
++		u16 dport;
++		u16 proto;
++	} __aligned(SIPHASH_ALIGNMENT) combined;
+ 
+ 	get_random_once(&nf_conntrack_hash_rnd, sizeof(nf_conntrack_hash_rnd));
+ 
+-	/* The direction must be ignored, so we hash everything up to the
+-	 * destination ports (which is a multiple of 4) and treat the last
+-	 * three bytes manually.
+-	 */
+-	seed = nf_conntrack_hash_rnd ^ net_hash_mix(net);
+-	n = (sizeof(tuple->src) + sizeof(tuple->dst.u3)) / sizeof(u32);
+-	return jhash2((u32 *)tuple, n, seed ^
+-		      (((__force __u16)tuple->dst.u.all << 16) |
+-		      tuple->dst.protonum));
++	memset(&combined, 0, sizeof(combined));
 +
-+		if (nf_conntrack_htable_size < 1024)
-+			nf_conntrack_htable_size = 1024;
-+		/* Use a max. factor of one by default to keep the average
-+		 * hash chain length at 2 entries.  Each entry has to be added
-+		 * twice (once for original direction, once for reply).
-+		 * When a table size is given we use the old value of 8 to
-+		 * avoid implicit reduction of the max entries setting.
-+		 */
-+		max_factor = 1;
- 	}
++	/* The direction must be ignored, so handle usable members manually. */
++	combined.src = tuple->src;
++	combined.dst_addr = tuple->dst.u3;
++	combined.net_mix = net_hash_mix(net);
++	combined.dport = (__force __u16)tuple->dst.u.all;
++	combined.proto = tuple->dst.protonum;
++
++	return (u32)siphash(&combined, sizeof(combined), &nf_conntrack_hash_rnd);
+ }
  
- 	nf_conntrack_hash = nf_ct_alloc_hashtable(&nf_conntrack_htable_size, 1);
+ static u32 scale_hash(u32 hash)
+diff --git a/net/netfilter/nf_conntrack_expect.c b/net/netfilter/nf_conntrack_expect.c
+index 1e851bc2e61a..f562eeef4234 100644
+--- a/net/netfilter/nf_conntrack_expect.c
++++ b/net/netfilter/nf_conntrack_expect.c
+@@ -17,7 +17,7 @@
+ #include <linux/err.h>
+ #include <linux/percpu.h>
+ #include <linux/kernel.h>
+-#include <linux/jhash.h>
++#include <linux/siphash.h>
+ #include <linux/moduleparam.h>
+ #include <linux/export.h>
+ #include <net/net_namespace.h>
+@@ -41,7 +41,7 @@ EXPORT_SYMBOL_GPL(nf_ct_expect_hash);
+ unsigned int nf_ct_expect_max __read_mostly;
+ 
+ static struct kmem_cache *nf_ct_expect_cachep __read_mostly;
+-static unsigned int nf_ct_expect_hashrnd __read_mostly;
++static siphash_key_t nf_ct_expect_hashrnd __read_mostly;
+ 
+ /* nf_conntrack_expect helper functions */
+ void nf_ct_unlink_expect_report(struct nf_conntrack_expect *exp,
+@@ -81,15 +81,26 @@ static void nf_ct_expectation_timed_out(struct timer_list *t)
+ 
+ static unsigned int nf_ct_expect_dst_hash(const struct net *n, const struct nf_conntrack_tuple *tuple)
+ {
+-	unsigned int hash, seed;
++	struct {
++		union nf_inet_addr dst_addr;
++		u32 net_mix;
++		u16 dport;
++		u8 l3num;
++		u8 protonum;
++	} __aligned(SIPHASH_ALIGNMENT) combined;
++	u32 hash;
+ 
+ 	get_random_once(&nf_ct_expect_hashrnd, sizeof(nf_ct_expect_hashrnd));
+ 
+-	seed = nf_ct_expect_hashrnd ^ net_hash_mix(n);
++	memset(&combined, 0, sizeof(combined));
+ 
+-	hash = jhash2(tuple->dst.u3.all, ARRAY_SIZE(tuple->dst.u3.all),
+-		      (((tuple->dst.protonum ^ tuple->src.l3num) << 16) |
+-		       (__force __u16)tuple->dst.u.all) ^ seed);
++	combined.dst_addr = tuple->dst.u3;
++	combined.net_mix = net_hash_mix(n);
++	combined.dport = (__force __u16)tuple->dst.u.all;
++	combined.l3num = tuple->src.l3num;
++	combined.protonum = tuple->dst.protonum;
++
++	hash = siphash(&combined, sizeof(combined), &nf_ct_expect_hashrnd);
+ 
+ 	return reciprocal_scale(hash, nf_ct_expect_hsize);
+ }
+diff --git a/net/netfilter/nf_nat_core.c b/net/netfilter/nf_nat_core.c
+index 7de595ead06a..7008961f5cb0 100644
+--- a/net/netfilter/nf_nat_core.c
++++ b/net/netfilter/nf_nat_core.c
+@@ -13,7 +13,7 @@
+ #include <linux/skbuff.h>
+ #include <linux/gfp.h>
+ #include <net/xfrm.h>
+-#include <linux/jhash.h>
++#include <linux/siphash.h>
+ #include <linux/rtnetlink.h>
+ 
+ #include <net/netfilter/nf_conntrack.h>
+@@ -34,7 +34,7 @@ static unsigned int nat_net_id __read_mostly;
+ 
+ static struct hlist_head *nf_nat_bysource __read_mostly;
+ static unsigned int nf_nat_htable_size __read_mostly;
+-static unsigned int nf_nat_hash_rnd __read_mostly;
++static siphash_key_t nf_nat_hash_rnd __read_mostly;
+ 
+ struct nf_nat_lookup_hook_priv {
+ 	struct nf_hook_entries __rcu *entries;
+@@ -153,12 +153,22 @@ static unsigned int
+ hash_by_src(const struct net *n, const struct nf_conntrack_tuple *tuple)
+ {
+ 	unsigned int hash;
++	struct {
++		struct nf_conntrack_man src;
++		u32 net_mix;
++		u32 protonum;
++	} __aligned(SIPHASH_ALIGNMENT) combined;
+ 
+ 	get_random_once(&nf_nat_hash_rnd, sizeof(nf_nat_hash_rnd));
+ 
++	memset(&combined, 0, sizeof(combined));
++
+ 	/* Original src, to ensure we map it consistently if poss. */
+-	hash = jhash2((u32 *)&tuple->src, sizeof(tuple->src) / sizeof(u32),
+-		      tuple->dst.protonum ^ nf_nat_hash_rnd ^ net_hash_mix(n));
++	combined.src = tuple->src;
++	combined.net_mix = net_hash_mix(n);
++	combined.protonum = tuple->dst.protonum;
++
++	hash = siphash(&combined, sizeof(combined), &nf_nat_hash_rnd);
+ 
+ 	return reciprocal_scale(hash, nf_nat_htable_size);
+ }
 -- 
 2.20.1
 
