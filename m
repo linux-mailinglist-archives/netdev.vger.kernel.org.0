@@ -2,70 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D65D400001
-	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 14:50:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F00C400002
+	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 14:51:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349162AbhICMvI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Sep 2021 08:51:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46896 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235336AbhICMvG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 3 Sep 2021 08:51:06 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 09C37610CF;
-        Fri,  3 Sep 2021 12:50:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1630673407;
-        bh=GCOJB9F6sCbHTvnV6mLZld+vtAI6/dHWzf6wEbaaJsw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=WBXKN8rGDn98bQcQVrrG1+Pk2JAu2I6BrEs1NbEULkrKokR47yDeGoblPvVGxbF59
-         EH3PkrLnjjQiz3+/GNRFgme5nlWLhR1uRzjG+vx7mheL81gCHxTUwihaeVBdScY/48
-         mQU8Q3hIprUuzWMjwyUNtbUdPRV8xIjGbC9oc2LAi069qhfK5YGmKPA6Rykj+CVC0Z
-         B0KWscaN4XarQty8i8XxpQ9KK+5AiRorzityH7+9folONikMPecwFE/HPgTV1G/Fuj
-         O26i1yg4RtazVTI91OEjIwgR99u8CjJKk/Imv2OXWJnQgI9caknq6QTIl/kWXfBxJS
-         4DtMR7Klz6c4w==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 012FC609D9;
-        Fri,  3 Sep 2021 12:50:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S1349070AbhICMwi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Sep 2021 08:52:38 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:55330 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235336AbhICMwh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 08:52:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1630673497;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=DF2I+24AkIxRwqkEhT0lnpePfg+abdYQYWaKlAVyD/A=;
+        b=QgLUPC/qEjsZMGrXp4dQhMaZ4IRVNmOMvNPzmhZUj254MnhpCCma7IU8CdWSvqSK5LEkTN
+        oZxJHHTGA15Q+OOywX94YVX9a61Bj2zpJZ3PB9UNA0mBOnypmE8C7cSEGJYDvHkZ2BrV4+
+        mIiv8CjacapbKgmVwV7bN/VH31qrLRU=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-2-F_lCc-dCNAm06vdqy3sqgg-1; Fri, 03 Sep 2021 08:51:36 -0400
+X-MC-Unique: F_lCc-dCNAm06vdqy3sqgg-1
+Received: by mail-ed1-f70.google.com with SMTP id o11-20020a056402038b00b003c9e6fd522bso2689989edv.19
+        for <netdev@vger.kernel.org>; Fri, 03 Sep 2021 05:51:36 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=DF2I+24AkIxRwqkEhT0lnpePfg+abdYQYWaKlAVyD/A=;
+        b=eux5/bG/Y2BQRSTVaEceEvrLnRyiSk5qHDzIYkY+vrg8FLl4G5O0gAeXXTn6dQDheI
+         fWu0RRi0ALEy7oQEgzKXT3tNOAwmvgl1uBXczYm3fZDAzo4dQ21u+xIBWOJs640l60+3
+         0F0lSwxxXTfMEXjqeAWNJurTzXVo9sD0ONo8WYc5YvRpMRQqF8rfRnRm+jijekua1SVb
+         pK1soEnAQ+22qDQqaByQqenmA+PmHugTsajDh22VfYjOq1a3R7i3xq6lWosvhuKkur4x
+         ulqCCCEmVdfH8tfbFd9ibmmTpQyO1+VkuIiNeE2b2lliM5+KbbZDulvyahdiHm6eVFf6
+         9PlQ==
+X-Gm-Message-State: AOAM530L0LGoaYkRTtkcchmw7/ScfXttQNn32dk7681380ZOnureoe+j
+        cAyidDAkOhAaEii/Kr6vrsD8vQWN8GxMsMUt7kV/SDX8yGZXAK8S8oBUNrEGUxK+VP/10ct6/L/
+        8W3njyYHLTOPMcd2L
+X-Received: by 2002:a05:6402:18ec:: with SMTP id x44mr3799683edy.331.1630673495263;
+        Fri, 03 Sep 2021 05:51:35 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx8/zNYsvWxJttqosppBPW56JQy0Hy96063NjGYssxoHP8Kz56/+VNYFokXhgAQGoC1tL6Bkw==
+X-Received: by 2002:a05:6402:18ec:: with SMTP id x44mr3799651edy.331.1630673494961;
+        Fri, 03 Sep 2021 05:51:34 -0700 (PDT)
+Received: from steredhat (host-79-51-2-59.retail.telecomitalia.it. [79.51.2.59])
+        by smtp.gmail.com with ESMTPSA id b2sm2876144edt.74.2021.09.03.05.51.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Sep 2021 05:51:34 -0700 (PDT)
+Date:   Fri, 3 Sep 2021 14:51:32 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Colin Ian King <colin.king@canonical.com>,
+        Norbert Slusarek <nslusarek@gmx.net>,
+        Andra Paraschiv <andraprs@amazon.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stsp2@yandex.ru, oxffffaa@gmail.com
+Subject: Re: [PATCH net-next v5 3/6] vhost/vsock: support MSG_EOR bit
+ processing
+Message-ID: <20210903125132.fpuwfij6ggsg4wuf@steredhat>
+References: <20210903123016.3272800-1-arseny.krasnov@kaspersky.com>
+ <20210903123238.3273526-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: cs89x0: disable compile testing on powerpc
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163067340699.3998.16811546131332320324.git-patchwork-notify@kernel.org>
-Date:   Fri, 03 Sep 2021 12:50:06 +0000
-References: <1630672147-29639-1-git-send-email-arnd@arndb.de>
-In-Reply-To: <1630672147-29639-1-git-send-email-arnd@arndb.de>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        sfr@canb.auug.org.au, linux@roeck-us.net
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20210903123238.3273526-1-arseny.krasnov@kaspersky.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Fri, Sep 03, 2021 at 03:32:35PM +0300, Arseny Krasnov wrote:
+>'MSG_EOR' handling has similar logic as 'MSG_EOM' - if bit present
+>in packet's header, reset it to 0. Then restore it back if packet
+>processing wasn't completed. Instead of bool variable for each
+>flag, bit mask variable was added: it has logical OR of 'MSG_EOR'
+>and 'MSG_EOM' if needed, to restore flags, this variable is ORed
+>with flags field of packet.
+>
+>Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+>---
+> drivers/vhost/vsock.c | 22 +++++++++++++---------
+> 1 file changed, 13 insertions(+), 9 deletions(-)
+>
+>diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+>index feaf650affbe..938aefbc75ec 100644
+>--- a/drivers/vhost/vsock.c
+>+++ b/drivers/vhost/vsock.c
+>@@ -114,7 +114,7 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
+> 		size_t nbytes;
+> 		size_t iov_len, payload_len;
+> 		int head;
+>-		bool restore_flag = false;
+>+		u32 flags_to_restore = 0;
+>
+> 		spin_lock_bh(&vsock->send_pkt_list_lock);
+> 		if (list_empty(&vsock->send_pkt_list)) {
+>@@ -179,15 +179,20 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
+> 			 * created dynamically and are initialized with header
+> 			 * of current packet(except length). But in case of
+> 			 * SOCK_SEQPACKET, we also must clear message delimeter
+>-			 * bit(VIRTIO_VSOCK_SEQ_EOM). Otherwise, instead of one
+>-			 * packet with delimeter(which marks end of message),
+>-			 * there will be sequence of packets with delimeter
+>-			 * bit set. After initialized header will be copied to
+>-			 * rx buffer, this bit will be restored.
+>+			 * bit (VIRTIO_VSOCK_SEQ_EOM) and MSG_EOR bit
+>+			 * (VIRTIO_VSOCK_SEQ_EOR) if set. Otherwise,
+>+			 * there will be sequence of packets with these
+>+			 * bits set. After initialized header will be copied to
+>+			 * rx buffer, these required bits will be restored.
+> 			 */
+> 			if (le32_to_cpu(pkt->hdr.flags) & VIRTIO_VSOCK_SEQ_EOM) {
+> 				pkt->hdr.flags &= ~cpu_to_le32(VIRTIO_VSOCK_SEQ_EOM);
+>-				restore_flag = true;
+>+				flags_to_restore |= VIRTIO_VSOCK_SEQ_EOM;
+>+
+>+				if (le32_to_cpu(pkt->hdr.flags) & VIRTIO_VSOCK_SEQ_EOR) {
+>+					pkt->hdr.flags &= ~cpu_to_le32(VIRTIO_VSOCK_SEQ_EOR);
+>+					flags_to_restore |= VIRTIO_VSOCK_SEQ_EOR;
+>+				}
+> 			}
+> 		}
+>
+>@@ -224,8 +229,7 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
+> 		 * to send it with the next available buffer.
+> 		 */
+> 		if (pkt->off < pkt->len) {
+>-			if (restore_flag)
+>-				pkt->hdr.flags |= cpu_to_le32(VIRTIO_VSOCK_SEQ_EOM);
+>+			pkt->hdr.flags |= cpu_to_le32(flags_to_restore);
+>
+> 			/* We are queueing the same virtio_vsock_pkt to 
+> 			handle
+> 			 * the remaining bytes, and we want to deliver it
+>-- 
+>2.25.1
+>
 
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Fri,  3 Sep 2021 12:29:07 +0000 you wrote:
-> The ISA DMA API is inconsistent between architectures, and while
-> powerpc implements most of what the others have, it does not provide
-> isa_virt_to_bus():
-> 
-> ../drivers/net/ethernet/cirrus/cs89x0.c: In function ‘net_open’:
-> ../drivers/net/ethernet/cirrus/cs89x0.c:897:20: error: implicit declaration of function ‘isa_virt_to_bus’ [-Werror=implicit-function-declaration]
->      (unsigned long)isa_virt_to_bus(lp->dma_buff));
-> ../drivers/net/ethernet/cirrus/cs89x0.c:894:3: note: in expansion of macro ‘cs89_dbg’
->    cs89_dbg(1, debug, "%s: dma %lx %lx\n",
-> 
-> [...]
-
-Here is the summary with links:
-  - net: cs89x0: disable compile testing on powerpc
-    https://git.kernel.org/netdev/net/c/f1181e39d6ac
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 
