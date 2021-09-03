@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB285400411
-	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 19:23:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB809400418
+	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 19:27:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350156AbhICRYP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Sep 2021 13:24:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:25842 "EHLO
+        id S1349819AbhICR2O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Sep 2021 13:28:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:20237 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1349819AbhICRYO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 13:24:14 -0400
+        by vger.kernel.org with ESMTP id S235713AbhICR2N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 13:28:13 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1630689794;
+        s=mimecast20190719; t=1630690033;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=W+TaHnw1m4QF3+gFNvlmfVjI3Eug4gclNUnkDmbww1M=;
-        b=c2EmbHV/kBLZSzBlpZ0bq36BQl5Ih1ZYzUtJ+Vtxwd8vxcas++g/zBJf3HURY4JncCzpCm
-        sNaIny4Wrenw1Vtai2sKAjxL3VjXaF0h0K4SdIvSQ/iUmKG3Kd5i0oLjUy8/7k/LPM1DLK
-        2TVh/3V9silIVSnKC6IldjLA/8lCu+I=
-Received: from mail-yb1-f199.google.com (mail-yb1-f199.google.com
- [209.85.219.199]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-84-vep_D2SaN1WQTwqnfUqGNA-1; Fri, 03 Sep 2021 13:23:13 -0400
-X-MC-Unique: vep_D2SaN1WQTwqnfUqGNA-1
-Received: by mail-yb1-f199.google.com with SMTP id 63-20020a250d42000000b0059dc43162c9so7133071ybn.23
-        for <netdev@vger.kernel.org>; Fri, 03 Sep 2021 10:23:13 -0700 (PDT)
+        bh=vypUNeu4j8vtRPkeg58KYPnt2rPCVH7ThBxevYKDRbg=;
+        b=GWiLBFwnxVAq502Un9v4ejxx/iIQZgwA8nRWMkPN95xKcRezoHnmNcZWuvl5VO7/1Aa0iN
+        J/J+6OqNNUWpfl5B5j5jyfG0qzL1NqVQ4fnxuvPpBr7zJP2im/ld8rogPSYUDSg1bTWMhK
+        sNnOvzPRLqt2NK4kkgXppASWrsUhYIQ=
+Received: from mail-yb1-f200.google.com (mail-yb1-f200.google.com
+ [209.85.219.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-568-m4QOnNvoNC-TzsIfJAUfRg-1; Fri, 03 Sep 2021 13:27:12 -0400
+X-MC-Unique: m4QOnNvoNC-TzsIfJAUfRg-1
+Received: by mail-yb1-f200.google.com with SMTP id q80-20020a25d953000000b0059a45a5f834so7186077ybg.22
+        for <netdev@vger.kernel.org>; Fri, 03 Sep 2021 10:27:11 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=W+TaHnw1m4QF3+gFNvlmfVjI3Eug4gclNUnkDmbww1M=;
-        b=E2891o2KOi6VKH5pgkbJOQqom5kHeO2dUKV/6tYk1sNN0tNh/SoheUGlukrJHXPDbg
-         7uKjBq+FCgXPqDixlcAgkx9bsgM2V39cpwRH9nkWM49I0ftt9tK/5wRo/kVMOKQTIGzW
-         eZz9gsHSBoBl2GFhL1y1ZVJBL5oMhSQ0sf6mO46iTk5RIF9l3fzKRw0PlaRrJYHztNCq
-         cRiP2fQg/pweDKZefpHDvqAtBBz9lUnS8qpxTFSoE5uOQr603tYCB1UYATjYf7F2p4g8
-         Vp3DK+ObBYQtBiucR8ZrpIKAHEaXfBoWffTpeEhiUKnvEa+1/oKbuRvlzSAuS+xlNopC
-         Ejbw==
-X-Gm-Message-State: AOAM530VCry3uwM2PGq0n7mrckrHClgQBptCjkzc1u1JtbC8X0+4YK6I
-        D+xUvGnG7AtZg9mh3TX25r0nNvHwtc1vWGnO2u1GAGcjLh1WXDZ00EdyTBeKw9L3UC3+Es1USop
-        z4RRyjdIooKuboWY8HG03QCOnZl8aysmT
-X-Received: by 2002:a25:27c1:: with SMTP id n184mr179850ybn.496.1630689792899;
-        Fri, 03 Sep 2021 10:23:12 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJznjCtfZQz2JDWJu9YExK6+0HVbzx0EdaRPmcnXCz9PzzDz4Yb+Lh5OYwO+8PDvyyVgD4ABTsgvFHw+Orr9g9g=
-X-Received: by 2002:a25:27c1:: with SMTP id n184mr179819ybn.496.1630689792637;
- Fri, 03 Sep 2021 10:23:12 -0700 (PDT)
+        bh=vypUNeu4j8vtRPkeg58KYPnt2rPCVH7ThBxevYKDRbg=;
+        b=qg8Jowia5RlETN6MaT6ibnOKICsqpkmb6LU7pkC16C3d+DUMusumlNPJkR8fQH9Jmw
+         6BAyQeLs9s8YUFvPWS7eV+x9z0wCJBehYIWgA3BN4/mTJhISODp8u/aTgWCD11q7D+4I
+         d4rRjnc1jvTH98M2dlLCAz+dPz9flQce5+OhuoygCHQ0W0z24u4ufBrZK9ysqMdJBmUS
+         Ea90Dx+I8LkkE3MkjqBcB/C0pV4NRJBHhhuW62Odv6sc5M9GfJ9KE0gvBoc5S9bj+dRQ
+         pgqyBdr2G0JKTD47+KZWeZ1eaqKKMePs4xmwUsHYeJNt8rZooGPn/9XAczVs/GcVVxXd
+         FTaQ==
+X-Gm-Message-State: AOAM531tv80l7VRZf4426MgpoV1AQmbr1bahzbKRjE7zGUkT+VUNshL/
+        qI+nfxiHaBdndDC06IkMI+2yPMJUnx5BBOglJk4wPUwLsCjkdmKjW7eZBVW+BEKjOdDwTYnwxV1
+        qp5JWgFxz2o/xbsK7xJZLn+0c57kjid1Z
+X-Received: by 2002:a25:824e:: with SMTP id d14mr176418ybn.179.1630690031473;
+        Fri, 03 Sep 2021 10:27:11 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy2p2cdv8mEYoPe6nCStjJ4fbKvrZKTSaom9r22ZjfiwIrAaPVkgTsG/G/DQhTZ3tQ0LzQswc8mEePYjJx8eiQ=
+X-Received: by 2002:a25:824e:: with SMTP id d14mr176392ybn.179.1630690031232;
+ Fri, 03 Sep 2021 10:27:11 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1629473233.git.lorenzo@kernel.org> <b1f0cbc19e00e4a4dbb7dd5d82e0c8bad300cffc.1629473233.git.lorenzo@kernel.org>
- <612eba0cd2678_6b872081d@john-XPS-13-9370.notmuch>
-In-Reply-To: <612eba0cd2678_6b872081d@john-XPS-13-9370.notmuch>
+References: <cover.1629473233.git.lorenzo@kernel.org> <4f0438cf2a94e539e56b6a291978e08fd2e9c60b.1629473233.git.lorenzo@kernel.org>
+ <612ebe4548da_6b87208fa@john-XPS-13-9370.notmuch>
+In-Reply-To: <612ebe4548da_6b87208fa@john-XPS-13-9370.notmuch>
 From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Date:   Fri, 3 Sep 2021 19:23:01 +0200
-Message-ID: <CAJ0CqmU6cFP3WrvqVqbVKt8R-yrKTKp2ZHm65O-w5fjEJVvemA@mail.gmail.com>
-Subject: Re: [PATCH v12 bpf-next 03/18] net: mvneta: update mb bit before
- passing the xdp buffer to eBPF layer
+Date:   Fri, 3 Sep 2021 19:27:00 +0200
+Message-ID: <CAJ0CqmX3JtmZk9fKr9tH-SF4=1G8FxuoBLdFQ=3JQ1mOZAuiOg@mail.gmail.com>
+Subject: Re: [PATCH v12 bpf-next 06/18] net: marvell: rely on
+ xdp_update_skb_shared_info utility routine
 To:     John Fastabend <john.fastabend@gmail.com>
 Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
         BPF-dev-list <bpf@vger.kernel.org>,
@@ -78,120 +78,98 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 1, 2021 at 1:24 AM John Fastabend <john.fastabend@gmail.com> wrote:
 >
 > Lorenzo Bianconi wrote:
-> > Update multi-buffer bit (mb) in xdp_buff to notify XDP/eBPF layer and
-> > XDP remote drivers if this is a "non-linear" XDP buffer. Access
-> > skb_shared_info only if xdp_buff mb is set in order to avoid possible
-> > cache-misses.
+> > Rely on xdp_update_skb_shared_info routine in order to avoid
+> > resetting frags array in skb_shared_info structure building
+> > the skb in mvneta_swbm_build_skb(). Frags array is expected to
+> > be initialized by the receiving driver building the xdp_buff
+> > and here we just need to update memory metadata.
 > >
 > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 > > ---
-> >  drivers/net/ethernet/marvell/mvneta.c | 23 ++++++++++++++++++-----
-> >  1 file changed, 18 insertions(+), 5 deletions(-)
+>
+> Acked-by: John Fastabend <john.fastabend@gmail.com>
+>
+> >  drivers/net/ethernet/marvell/mvneta.c | 35 +++++++++++++++------------
+> >  1 file changed, 20 insertions(+), 15 deletions(-)
 > >
 > > diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-> > index 5d1007e1b5c9..9f4858e35566 100644
+> > index cbf614d6b993..b996eb49d813 100644
 > > --- a/drivers/net/ethernet/marvell/mvneta.c
 > > +++ b/drivers/net/ethernet/marvell/mvneta.c
-> > @@ -2037,9 +2037,14 @@ mvneta_xdp_put_buff(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
-> >  {
-> >       int i;
-> >
-> > +     if (likely(!xdp_buff_is_mb(xdp)))
-> > +             goto out;
-> > +
->
-> Wouldn't nr_frags = 0 in the !xdp_buff_is_mb case? Is the
-> xdp_buff_is_mb check with goto really required?
-
-if xdp_buff_is_mb is false, nr_frags will not be initialized otherwise
-we will trigger a cache-miss for the single-buffer use case (where
-initializing skb_shared_info is not required).
-
->
-> >       for (i = 0; i < sinfo->nr_frags; i++)
-> >               page_pool_put_full_page(rxq->page_pool,
-> >                                       skb_frag_page(&sinfo->frags[i]), true);
-> > +
-> > +out:
-> >       page_pool_put_page(rxq->page_pool, virt_to_head_page(xdp->data),
-> >                          sync_len, true);
-> >  }
-> > @@ -2241,7 +2246,6 @@ mvneta_swbm_rx_frame(struct mvneta_port *pp,
-> >       int data_len = -MVNETA_MH_SIZE, len;
-> >       struct net_device *dev = pp->dev;
-> >       enum dma_data_direction dma_dir;
-> > -     struct skb_shared_info *sinfo;
-> >
-> >       if (*size > MVNETA_MAX_RX_BUF_SIZE) {
-> >               len = MVNETA_MAX_RX_BUF_SIZE;
-> > @@ -2261,11 +2265,9 @@ mvneta_swbm_rx_frame(struct mvneta_port *pp,
-> >
-> >       /* Prefetch header */
-> >       prefetch(data);
-> > +     xdp_buff_clear_mb(xdp);
-> >       xdp_prepare_buff(xdp, data, pp->rx_offset_correction + MVNETA_MH_SIZE,
-> >                        data_len, false);
-> > -
-> > -     sinfo = xdp_get_shared_info_from_buff(xdp);
-> > -     sinfo->nr_frags = 0;
-> >  }
-> >
-> >  static void
-> > @@ -2299,6 +2301,9 @@ mvneta_swbm_add_rx_fragment(struct mvneta_port *pp,
-> >               skb_frag_off_set(frag, pp->rx_offset_correction);
+> > @@ -2304,11 +2304,19 @@ mvneta_swbm_add_rx_fragment(struct mvneta_port *pp,
 > >               skb_frag_size_set(frag, data_len);
 > >               __skb_frag_set_page(frag, page);
-> > +
-> > +             if (!xdp_buff_is_mb(xdp))
-> > +                     xdp_buff_set_mb(xdp);
+> >
+> > -             if (!xdp_buff_is_mb(xdp))
+> > +             if (!xdp_buff_is_mb(xdp)) {
+> > +                     sinfo->xdp_frags_size = *size;
+> >                       xdp_buff_set_mb(xdp);
+> > +             }
+> > +             if (page_is_pfmemalloc(page))
+> > +                     xdp_buff_set_frag_pfmemalloc(xdp);
 > >       } else {
 > >               page_pool_put_full_page(rxq->page_pool, page, true);
 > >       }
-> > @@ -2320,8 +2325,12 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct page_pool *pool,
+> > +
+> > +     /* last fragment */
+> > +     if (len == *size)
+> > +             sinfo->xdp_frags_tsize = sinfo->nr_frags * PAGE_SIZE;
+> >       *size -= len;
+> >  }
+> >
+> > @@ -2316,13 +2324,18 @@ static struct sk_buff *
+> >  mvneta_swbm_build_skb(struct mvneta_port *pp, struct page_pool *pool,
 > >                     struct xdp_buff *xdp, u32 desc_status)
 > >  {
-> >       struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
-> > -     int i, num_frags = sinfo->nr_frags;
+> > -     struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
+> > +     unsigned int size, truesize;
 > >       struct sk_buff *skb;
-> > +     u8 num_frags;
-> > +     int i;
-> > +
-> > +     if (unlikely(xdp_buff_is_mb(xdp)))
-> > +             num_frags = sinfo->nr_frags;
+> >       u8 num_frags;
+> > -     int i;
 > >
-> >       skb = build_skb(xdp->data_hard_start, PAGE_SIZE);
-> >       if (!skb)
-> > @@ -2333,6 +2342,9 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct page_pool *pool,
-> >       skb_put(skb, xdp->data_end - xdp->data);
-> >       skb->ip_summed = mvneta_rx_csum(pp, desc_status);
-> >
-> > +     if (likely(!xdp_buff_is_mb(xdp)))
-> > +             goto out;
-> > +
+> > -     if (unlikely(xdp_buff_is_mb(xdp)))
+> > +     if (unlikely(xdp_buff_is_mb(xdp))) {
 >
-> Not that I care much, but couldn't you just init num_frags = 0 and
-> avoid the goto?
+> Just curious does the mvneta hardware support header split? If we
+> get to that point then we can drop the unlikely.
 
-same here.
+nope, it does not :(
 
 Regards,
 Lorenzo
 
 >
-> Anyways its not my driver so no need to change it if you like it better
-> the way it is. Mostly just checking my understanding.
->
-> >       for (i = 0; i < num_frags; i++) {
-> >               skb_frag_t *frag = &sinfo->frags[i];
+> > +             struct skb_shared_info *sinfo;
+> > +
+> > +             sinfo = xdp_get_shared_info_from_buff(xdp);
+> > +             truesize = sinfo->xdp_frags_tsize;
+> > +             size = sinfo->xdp_frags_size;
+> >               num_frags = sinfo->nr_frags;
+> > +     }
 > >
-> > @@ -2341,6 +2353,7 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct page_pool *pool,
-> >                               skb_frag_size(frag), PAGE_SIZE);
-> >       }
+> >       skb = build_skb(xdp->data_hard_start, PAGE_SIZE);
+> >       if (!skb)
+> > @@ -2334,18 +2347,10 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct page_pool *pool,
+> >       skb_put(skb, xdp->data_end - xdp->data);
+> >       skb->ip_summed = mvneta_rx_csum(pp, desc_status);
 > >
-> > +out:
+> > -     if (likely(!xdp_buff_is_mb(xdp)))
+> > -             goto out;
+> > -
+> > -     for (i = 0; i < num_frags; i++) {
+> > -             skb_frag_t *frag = &sinfo->frags[i];
+> > -
+> > -             skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
+> > -                             skb_frag_page(frag), skb_frag_off(frag),
+> > -                             skb_frag_size(frag), PAGE_SIZE);
+> > -     }
+> > +     if (unlikely(xdp_buff_is_mb(xdp)))
+> > +             xdp_update_skb_shared_info(skb, num_frags, size, truesize,
+> > +                                        xdp_buff_is_frag_pfmemalloc(xdp));
+> >
+> > -out:
 > >       return skb;
 > >  }
 > >
