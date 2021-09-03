@@ -2,73 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D6FFE40044E
-	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 19:49:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 758D340045D
+	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 19:54:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350014AbhICRuB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Sep 2021 13:50:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56694 "EHLO
+        id S1350056AbhICRzH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Sep 2021 13:55:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349916AbhICRuB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 13:50:01 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16E6AC061575;
-        Fri,  3 Sep 2021 10:49:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=OJ2pEw5jPPStfKuNWXFd6825jYJnL3pOyXkglFCIiQ4=; b=pwlxB4IL3DK1Eftvqa6FVK++Yc
-        coLVKGyAD06wolmKKZjYt/FJE7rS1cPtB/k5RwW+exKdv5MFxxXxlQ1AqhpCgJdWF078l3AweMU4F
-        y0uDq++WnpDSBj1MOqrVGcUifhMQWoGXObMhAxWVfhhLoEATtpz798h/V8t+cG461E1qMODC3iNvq
-        +j9u3ZE0VWiUru3vhJzP0Z8VUSvA+EKDEiv3jGqoeuXVn5jm8Gx602Ehzz9/zwQyICK+jUpbeM/1o
-        q6Bg2m0GvfDya+8BbKOsq4iFQmrvyds97Re89fhTPvIuzmKICNif99ecRvOtclR9Xyw6M3tD22wuX
-        6qJn/jnw==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1mMDJ9-00CVS0-My; Fri, 03 Sep 2021 17:48:55 +0000
-Date:   Fri, 3 Sep 2021 10:48:55 -0700
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     dingsenjie@163.com
-Cc:     jirislaby@kernel.org, mickflemm@gmail.com, kvalo@codeaurora.org,
-        davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dingsenjie <dingsenjie@yulong.com>
-Subject: Re: [PATCH] wireless: ath5k: Remove unnecessary label of
- ath5k_beacon_update
-Message-ID: <YTJgB4MNNolkrLYS@bombadil.infradead.org>
-References: <20210903062316.11756-1-dingsenjie@163.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210903062316.11756-1-dingsenjie@163.com>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+        with ESMTP id S1350004AbhICRzG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 13:55:06 -0400
+Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79784C061575;
+        Fri,  3 Sep 2021 10:54:06 -0700 (PDT)
+Received: by mail-il1-x134.google.com with SMTP id x5so6000866ill.3;
+        Fri, 03 Sep 2021 10:54:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=Ye2M8PjhiidjldphQgtj41d0RRTFZHgu1gFnmiPIiHE=;
+        b=M1TuOkrLsk2gRBJLCVDgyiWgwQ5VD4RzvlCoXdMMpHHLoh5bqGS0DRN1gPJ6NCeJnB
+         XVL0mh90T+UrLhiQ92pBWpN3PXiRQW4O9NuxJOelM+BeH+8VO4IXUqHfIBRnDD9+vQZj
+         7FTRcGauc79msEFl2mndk3UvAfhlKm5KN1OU9/pJanW//HpvFnevxPaIz2zmRZiihz7W
+         UgA6yXgLHDtiUSQpYC7+2RpIXQZN+0aRc8gtYl/FvAsMlfpNUDV0RuhbiQT0A0J+Tu2O
+         s8PdxJMq1i8J/Pgl8pEdPEOyjE5IwbJv62VB507sGTnZ2B7t0x7MA+WSDqFJZxkpngOm
+         Zp4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=Ye2M8PjhiidjldphQgtj41d0RRTFZHgu1gFnmiPIiHE=;
+        b=jVVcajjB9FZD4XX9OkzLyz28efnac23xH0De/1XUv9zapXIFibfH3CLf8e+nYKWT7W
+         Ffx0V+apXt67lQ91/vd6zkxz/hCa8uSiMvSTaQbrCUyztNB4L5zSiylUJirMiKouNsRP
+         DSKq1+9+HtQ3tJH/+RmzlN3jKP6nALEG7M4hUFz20T6OSIi4dgVro9udHD/DpZxNpndP
+         /LmORnbNBv732HrlTlM1pZmAwi5D4aNwREhRT9SB6yaIAeTjDnIjozctXFzuU8rUEAhO
+         fIc/368Oagc6R9IbolI2ep5kWQMRpgJKpbnMPGPhSRwrEdXVSl7t0BNJfBxOzMWgYzUA
+         dXyQ==
+X-Gm-Message-State: AOAM532T6zJIAu57mZWyyf/qP3ERT7DVfHx/430bmYW/35d0OEQA8fvp
+        sOCaijY/PMXZXtJxRiWWUiQ=
+X-Google-Smtp-Source: ABdhPJw/dgsfOotkpsxIJI1DvEzAKMKgmSSDchKGh77p+Wx1xTFmnweviWQzPH6hHpJaXZDaY15M4A==
+X-Received: by 2002:a05:6e02:144:: with SMTP id j4mr110033ilr.75.1630691645886;
+        Fri, 03 Sep 2021 10:54:05 -0700 (PDT)
+Received: from localhost ([172.243.157.240])
+        by smtp.gmail.com with ESMTPSA id p7sm70069iln.70.2021.09.03.10.54.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Sep 2021 10:54:05 -0700 (PDT)
+Date:   Fri, 03 Sep 2021 10:53:56 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>,
+        magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        maciej.fijalkowski@intel.com
+Cc:     jonathan.lemon@gmail.com, ciara.loftus@intel.com,
+        bpf@vger.kernel.org, yhs@fb.com, andrii@kernel.org
+Message-ID: <6132613457747_1c226208a0@john-XPS-13-9370.notmuch>
+In-Reply-To: <20210901104732.10956-2-magnus.karlsson@gmail.com>
+References: <20210901104732.10956-1-magnus.karlsson@gmail.com>
+ <20210901104732.10956-2-magnus.karlsson@gmail.com>
+Subject: RE: [PATCH bpf-next 01/20] selftests: xsk: simplify xsk and umem
+ arrays
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 03, 2021 at 02:23:16PM +0800, dingsenjie@163.com wrote:
-> From: dingsenjie <dingsenjie@yulong.com>
+Magnus Karlsson wrote:
+> From: Magnus Karlsson <magnus.karlsson@intel.com>
 > 
-> The label just used as return, so we delete it and
-> use the return statement instead of the goto statement.
+> Simplify the xsk_info and umem_info allocation by allocating them
+> upfront in an array, instead of allocating an array of pointers to
+> future creations of these. Allocating them upfront also has the
+> advantage that configuration information can be stored in these
+> structures instead of relying on global variables. With the previous
+> structure, xsk_info and umem_info were created too late to be able to
+> store most configuration information. This will be used to eliminate
+> most global variables in later patches in this series.
 > 
-> Signed-off-by: dingsenjie <dingsenjie@yulong.com>
+> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 > ---
->  drivers/net/wireless/ath/ath5k/base.c | 13 ++++---------
->  1 file changed, 4 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/ath/ath5k/base.c b/drivers/net/wireless/ath/ath5k/base.c
-> index 4c6e57f..9739189 100644
-> --- a/drivers/net/wireless/ath/ath5k/base.c
-> +++ b/drivers/net/wireless/ath/ath5k/base.c
-> @@ -1896,23 +1896,18 @@ static int ath5k_remove_padding(struct sk_buff *skb)
->  	struct ath5k_vif *avf;
->  	struct sk_buff *skb;
 
-Just initialize ret = -EINVAL at the top, and you to get clear out a few
-braces which are not needed anymore. Anyway, this code is not reflected
-on linux-next, what codebase are you using? If the code change is just
-a cleanup it should remove more code than add, and a commmit log should
-reflect that clearly.
-
-  Luis
+Acked-by: John Fastabend <john.fastabend@gmail.com>
