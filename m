@@ -2,183 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D2194005F3
-	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 21:39:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87F35400633
+	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 21:54:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350002AbhICTj7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Sep 2021 15:39:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54148 "EHLO
+        id S1349686AbhICTzF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Sep 2021 15:55:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349849AbhICTj6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 15:39:58 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7AECC061575
-        for <netdev@vger.kernel.org>; Fri,  3 Sep 2021 12:38:57 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id u14so161109ejf.13
-        for <netdev@vger.kernel.org>; Fri, 03 Sep 2021 12:38:57 -0700 (PDT)
+        with ESMTP id S234588AbhICTzE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 15:55:04 -0400
+Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0134C061575
+        for <netdev@vger.kernel.org>; Fri,  3 Sep 2021 12:54:03 -0700 (PDT)
+Received: by mail-il1-x130.google.com with SMTP id g8so135144ilc.5
+        for <netdev@vger.kernel.org>; Fri, 03 Sep 2021 12:54:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=engleder-embedded-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=wVgg5l8nV72tzE4xBmoGbb7jSjpXqTztea2lVaWTzj4=;
-        b=XZd5NCKuefsXxnlW19GtZHH0x20eoJ0Q+1ETeKlJVaPIW472U9ZPdXDU2z5vMrw1F+
-         +MesMMbqWvb9oSDA5wGV/UnB2fKHjJ9dx9Mbv5eFa7b+Vg1MJYr7Mu8HHtAP3AK5/5rK
-         s5D6vRSNV2/eQ4pcdQHPvsIhroBF0Kee/bHPwjHAPGUylAboat1Aoe3HAzoyVvHjmm5R
-         j4fr8oitJylAmR6S2POUNWK9JVpvTh0LOLWIl5/ORNdm2bZ6qyxlAhr0+SYjHWt0HoVB
-         brmM4cpQIgXX77TuCabJZEctFxOf1szE7wc9rfHDiWWXquIFcwhJrR+yy5C3QK8eEOra
-         lvZA==
+        bh=WhUkEmPqCcDJAYSx7n9rl5f9Im7JA8BFKLZ4EdK5U7s=;
+        b=AH6yS0qtb4wGIkbWMNJTTnJkvJuMioZNblzcidzAo4jUWPlAGjNqEDmB4WYN27TU/2
+         xP4KfZdKjBzCf6JT8CgyDrwaZdVoZCsaKbDFdas5bj6V22ACpFeX1sg86mW3bYjAalkV
+         jlA0KG1VthpimpDeU/b3yvgMOrtxaP1SKisLh9S3I99hfsXQL4k/SrduXA0jCPYgbTQA
+         ptKqQOKDTXPtXcVtBmPwuPnTMMDyT0s4bEEW1AM15RLkazu1TbfZRLtfXVNc/54viU51
+         m1HzrFHLfGs72tiI4IwFMW3W7lTVnowNpxgAZrLs45Dt5Wr74WtyrWRv9tgAsnX0o8fc
+         wwhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=wVgg5l8nV72tzE4xBmoGbb7jSjpXqTztea2lVaWTzj4=;
-        b=D3tk9zn8WO7lQZtZwyePc/ZLj8i/hV0fz+nhMPkYB+TjI1Udz5JVAooZ2E4bz2cfnV
-         RWDNR0pk1YX+skxzM13o4Zrxa9WG8MdkRZ+Zl2/hXDfs0quGF6coAeXYFzTYUl1yE2dR
-         eIJcZI0l0WXnCHbEXxGQN5aI1b1K7S9r/QwsKzcMNClS11hyF5h7uaqqDLaug7RY48j8
-         k9Osuj04BeDdOnxdA1oWQoJ+weWmzQaLyxJlDTTpzz3tclBpf1tr8xdIvxZ9+Avsss34
-         cPBNGO81g5snaI0M9KReFSwbJifigYqsaHQuHHr5npvwdsBimLKXXc8I0YPG4jv/oF8U
-         TKMQ==
-X-Gm-Message-State: AOAM533XZDjJ7oHss+PEsVSrBCr2QStBCfYeAvmPxYFum3VYOSgzCntK
-        V5SapU8hI3ut3l1pj3fwha908Ha71JFV9A==
-X-Google-Smtp-Source: ABdhPJz0yahheDxZeichdaDB/WUsx3XHyG4mFCv+S/MQXd6Evh4XAlF6gkeELls+/9ugSO3wo8Iz9Q==
-X-Received: by 2002:a17:906:b84a:: with SMTP id ga10mr490792ejb.143.1630697936255;
-        Fri, 03 Sep 2021 12:38:56 -0700 (PDT)
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com. [209.85.128.48])
-        by smtp.gmail.com with ESMTPSA id d3sm52749ejw.18.2021.09.03.12.38.54
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 03 Sep 2021 12:38:55 -0700 (PDT)
-Received: by mail-wm1-f48.google.com with SMTP id l7-20020a1c2507000000b002e6be5d86b3so231504wml.3
-        for <netdev@vger.kernel.org>; Fri, 03 Sep 2021 12:38:54 -0700 (PDT)
-X-Received: by 2002:a1c:210a:: with SMTP id h10mr362069wmh.117.1630697934322;
- Fri, 03 Sep 2021 12:38:54 -0700 (PDT)
+        bh=WhUkEmPqCcDJAYSx7n9rl5f9Im7JA8BFKLZ4EdK5U7s=;
+        b=ZSkJeRVvjqxxHF8tU85ueQxz8w183AGOjhwOQLzbuR2TmSar0EFZRj+mR/b9WHEdcj
+         5n59op8NB/c3T80GH+neozaPiaGn9mEBO2XIlhfGeCis0kxk8NI1/RA6DnFryNMQc8+d
+         m1Xw3FnQuTdgrYUUCSOXbxBasaFw7S2kwcBWttPF9EwNdPEZvw0uS1G2KMOc05KxeWqM
+         gTrTgF+P4kO9yC1LdjkmzPxiA7UUjIxU+HtBoC6zUnMPdWFxExm74tp4xR81dMq33sKI
+         efuRuW2WtBnnaDcVSchXRbnFMdswUaReDd3NdfRP2Vqq69gQIdsp8SSgyCqH6o6B0A05
+         /Bcg==
+X-Gm-Message-State: AOAM531Hs6E1YJA1bBMDmpLY82h+/RfXA6sb+ffxii7tjq7wkewXGdbP
+        mjE3AnJuol9D+isKcuGDA6RD5xvYN0YG7Z2hkQO+Rg==
+X-Google-Smtp-Source: ABdhPJxUt6K9CNI+ofNIPhR+qmvS+X62FrTVZ8AS+QG+X3gWIh0mimgONY80QXwueTd37786K2D+ff9cQF0hXtE/6VU=
+X-Received: by 2002:a05:6e02:20cd:: with SMTP id 13mr457664ilq.156.1630698842742;
+ Fri, 03 Sep 2021 12:54:02 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210902193447.94039-1-willemdebruijn.kernel@gmail.com>
- <20210902193447.94039-2-willemdebruijn.kernel@gmail.com> <CAKgT0UdhaUp0jcNZSzMu=_OezwqKNHP47u0n_XUkpO_SbSV8hA@mail.gmail.com>
- <CA+FuTSfaN-wLzVq1UQhwiPgH=PKdcW+kz1PDxgfrLAnjWf8CKA@mail.gmail.com>
- <CAKgT0UdtqJ+ECyDs1dv7ha4Bq12XaGiOQ6uvja5cy06dDR5ziw@mail.gmail.com>
- <CA+FuTSfpmGHC76GAVVS2qazfLykVZ=mM+33pRHpj-yyM3nqhXA@mail.gmail.com>
- <CAKgT0UdiYRHrSUGb9qDJ-GGMBj53P1L4KHSV7tv+omA5FjRZNQ@mail.gmail.com>
- <CA+FuTSf-83bDVzmB757ha99DS=O-KjSFVSn15Y6Vq5Yh9yx2wA@mail.gmail.com> <CAKgT0Uf6YrDtvEfL02-P7A3Q_V32MWZ-tV7B=xtkY0ZzxEo9yg@mail.gmail.com>
-In-Reply-To: <CAKgT0Uf6YrDtvEfL02-P7A3Q_V32MWZ-tV7B=xtkY0ZzxEo9yg@mail.gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Fri, 3 Sep 2021 15:38:17 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSeHAd4ouwYd9tL2FHa1YdB3aLznOTnAJt+PShnr+Zd7yw@mail.gmail.com>
-Message-ID: <CA+FuTSeHAd4ouwYd9tL2FHa1YdB3aLznOTnAJt+PShnr+Zd7yw@mail.gmail.com>
-Subject: Re: [PATCH net] ip_gre: validate csum_start only if CHECKSUM_PARTIAL
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
+References: <20210831193425.26193-1-gerhard@engleder-embedded.com>
+ <20210831193425.26193-4-gerhard@engleder-embedded.com> <YS6lQejOJJCATMCp@lunn.ch>
+ <CANr-f5zXWrqPxWV81CT6=4O6PoPRB0Qs0T=egJ3q8FMG16f6xw@mail.gmail.com>
+ <YS/qQdmjT/X0tiEt@lunn.ch> <CANr-f5wU0JTqwoHoFEwdFCVSYtcohx-DPc4mz8-GrVFpyNuajA@mail.gmail.com>
+ <YTFAc/vMXTKdFSHL@lunn.ch>
+In-Reply-To: <YTFAc/vMXTKdFSHL@lunn.ch>
+From:   Gerhard Engleder <gerhard@engleder-embedded.com>
+Date:   Fri, 3 Sep 2021 21:53:51 +0200
+Message-ID: <CANr-f5xksPeHJJFF0Qq65tX_sCqmWgxkD0q0LcChWzoC5hiR3Q@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 3/3] tsnep: Add TSN endpoint Ethernet MAC driver
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Ido Schimmel <idosch@idosch.org>,
-        chouhan.shreyansh630@gmail.com
+        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > The issue is drivers with NETIF_F_HW_CSUM would be expecting a
-> > > reasonable csum_start and csum_offset. If the hardware is only
-> > > advertising that and we are expecting it to offload the checksum we
-> > > should probably be doing some sort of validation on user derived
-> > > inputs to make sure that they aren't totally ridiculous as is the case
-> > > here where the original issue was that the csum_start wasn't even in
-> > > the packet data.
+> > > > > > +static irqreturn_t tsnep_irq(int irq, void *arg)
+> > > > > > +{
+> > > > > > +     struct tsnep_adapter *adapter = arg;
+> > > > > > +     u32 active = ioread32(adapter->addr + ECM_INT_ACTIVE);
+> > > > > > +
+> > > > > > +     /* acknowledge interrupt */
+> > > > > > +     if (active != 0)
+> > > > > > +             iowrite32(active, adapter->addr + ECM_INT_ACKNOWLEDGE);
+> > > > > > +
+> > > > > > +     /* handle management data interrupt */
+> > > > > > +     if ((active & ECM_INT_MD) != 0) {
+> > > > > > +             adapter->md_active = false;
+> > > > > > +             wake_up_interruptible(&adapter->md_wait);
+> > > > > > +     }
+> > > > > > +
+> > > > > > +     /* handle link interrupt */
+> > > > > > +     if ((active & ECM_INT_LINK) != 0) {
+> > > > > > +             if (adapter->netdev->phydev) {
+> > > > > > +                     struct phy_device *phydev = adapter->netdev->phydev;
+> > > > > > +                     u32 status = ioread32(adapter->addr + ECM_STATUS);
+> > > > > > +                     int link = (status & ECM_NO_LINK) ? 0 : 1;
+> > > > > > +                     u32 speed = status & ECM_SPEED_MASK;
+> > > > >
+> > > > > How does PHY link and speed get into this MAC register? Is the MAC
+> > > > > polling the PHY over the MDIO bus? Is the PHY internal to the MAC and
+> > > > > it has backdoor access to the PHY status?
+> > > >
+> > > > PHY is external. The MAC expects additional signals for link status. These
+> > > > signals can be derived from RGMII in band signaling of the link status or by
+> > > > using PHY link and speed LED outputs. The MAC is using the link status for
+> > > > a quick no link reaction to minimize the impact to real time applications.
+> > > > EtherCAT for example also uses the link LED output for a no link reaction
+> > > > within a few microseconds.
 > > >
-> > > Would it maybe make sense to look at reverting the earlier fixes and
-> > > instead updating skb_partial_csum_set so that we cannot write a
-> > > csum_start value that is less than the start of skb->data? That way we
-> > > are addressing this at the source instead of allowing the garbage data
-> > > to propagate further down the stack and having to drop it at the
-> > > driver level which is going to have us playing whack a mole trying to
-> > > fix it where it pops up. It seems like we are already validating the
-> > > upper bounds for these values in that function so why not validate the
-> > > lower bounds as well?
+> > > O.K. This is not the normal Linux way. You normally have the PHY
+> > > driver tell the PHY core, which then tells the MAC driver. That always
+> > > works. RGMII in band signaling is not supported by all PHY devices,
+> > > and the board design would require the LED output are correctly
+> > > connected, and i guess you need a hacked PHY driver to use the correct
+> > > LED meanings? Plus i guess you have additional changes in the PHY
+> > > driver to do fast link down detection?
 > >
-> > skb_partial_csum_set verifies that csum_start is within bounds
-> > at the time it is called. The offset passed from userspace is
-> > an unsigned int added to skb_headroom(skb), so >= skb->data.
+> > Yes, LED outputs must be correctly connected in the board design. LED
+> > outputs are usually configured with strapping pins, which again require a
+> > correct board design.
+>
+> Linux sometime, maybe soon, will be able the control the PHY LEDs, and
+> probably export them to user space so root can change their meaning.
+>
+> > Fast link down detection is a hardware property of the selected
+> > PHY. So far no PHY driver changes were necessary.
+>
+> Marvell PHYs for example follow 802.3 C40 and default to waiting 750ms
+> before reporting the link down. You can configure them to only wait
+> 10ms, 20ms or 40ms. So it sounds like you are using a PHY which does
+> not conform to C40? In general, we probably need to be able to
+> configure this, for those that do follow C40.
+>
+> > > I think this needs another DT property to enable using such short
+> > > cuts, and you should use the Linux way by default.
 > >
-> > The issue is with ipgre_xmit calling skb_pull. Only then does it
-> > become out of bounds. From what I saw, pulling headers like
-> > that is very rare in the transmit path. Indeed, I did not see it in
-> > any other tunnels. We could instrument each of these directly,
-> > but at non-trivial cost.
+> > Isn't choosing PHY_MAC_INTERRUPT also the Linux way? I preferred it
+> > over PHY_POLL, because I need the link information directly in the MAC
+> > anyway. But maybe the speed information is too much and should be provided
+> > to the MAC.
 >
-> So there are some positives and negatives to addressing this in
-> ipgre_xmit. Specifically if we address it before the pull we could do
-> some other quick checks to verify the offset. If the offset and start
-> are both in the region to be pulled we could just drop the offload,
+> PHY_MAC_INTERRUPT is just the first step. It means something happened
+> in the PHY. You need to ask the PHY what? It could be link up or down,
+> it could be cable diagnostics have finished, the temperature is
+> getting too hot, whatever can cause the PHY to change state. The PHY
+> driver will then determine what has actually happened. Some cases, the
+> MAC does not needed to know. Others the MAC will be told, via the
+> callback it registered. It gets to know the link speed, up down etc.
+> That is the Linux way, the complete chain.
 
-These cases would currently crash the kernel. They are so clearly bad
-input that I would not even try to start accommodating them. Drop
-them.
+I will reduce the MAC knowledge to "something happened" and let the driver
+tell it what. Driver and VHDL will be changed.
 
-> whereas if the offset is stored somewhere in the unstripped data we
-> could then drop the packet and count it as a drop without having to
-> modify the frame via the skb_pull.
-
-This is a broader issue that userspace can pass any csum_start as long
-as it is within packet bounds. We could address it here specifically
-for the GRE header. But that still leaves many potentially bad offsets
-further in the packet in this case, and all the other cases. Checking
-that specific header seems a bit arbitrary to me, and might actually
-give false confidence.
-
-We could certainly move the validation from gre_handle_offloads to
-before skb_pull, to make it more obvious *why* the check exists.
-
-> > The negative underflow and kernel crash is very specific to
-> > lco_csum, which calculates the offset between csum_offset
-> > and transport_offset. Standard checksum offset doesn't.
+> > > Also, don't you need a property which tells you to either use RGMII
+> > > inband, or LED signals?
 > >
-> > One alternative fix, then, would be to add a negative overflow
-> > check in lco_csum itself.
-> > That only has three callers and unfortunately by the time we hit
-> > that for GRE in gre_build_header, there no longer is a path to
-> > cleanly dropping the packet and returning an error.
+> > No, this decision is done in VHDL/FPGA. No need to consume precious FPGA
+> > resources for runtime configuration.
 >
-> Right. We could find the problem there but it doesn't solve the issue.
-> The problem is the expectation that the offset exists in the area
-> after the checksum for the tunnel header, not before.
+> You mean you have two ways to synthesis the MAC. You have two
+> bitstreams. One for LEDs and one of inband RGMII?
+
+No, not two bitstreams. Just board specific glue logic around the IP core.
+As mentioned above, it will be changed.
+
+> > I'm afraid that relying on ACPI is not always an option. x86 CPU modules are
+> > very often used in industrial automation and the BIOS of the CPU module is
+> > usually not adapted to the carrier board.
 >
-> > I don't find this bad input whack-a-mole elegant either. But I
-> > thought it was the least bad option..
->
-> The part that has been confusing me is how the virtio_net_hdr could
-> have been pointing as the IP or GRE headers since they shouldn't have
-> been present on the frame provided by the userspace. I think I am
-> starting to see now.
->
-> So in the case of af_packet it looks like it is calling
-> dev_hard_header which calls header_ops->create before doing the
-> virtio_net_hdr_to_skb call. Do I have that right?
+> Yes, i've been there. I have managed to get the BIOS customised, but
+> it is not easy. DT is much easier to use.
 
-Mostly yes. That is the case for SOCK_DGRAM. For SOCK_RAW, the caller
-is expected to have prepared these headers.
+Yes, it is not easy and it makes you cry when you have to switch to a different
+CPU module.
 
-Note that for the ip_gre device to have header_ops, this will be
-ipgre_header_ops, which .create member function comment starts with
-"/* Nice toy. Unfortunately, useless in real life :-)". We recently
-had a small series of fixes related to this special case and packet
-sockets, such as commit fdafed459998 ("ip_gre: set
-dev->hard_header_len and dev->needed_headroom properly"). This case of
-a GRE device that receives packets with outer IP + GRE headers is out
-of the ordinary.
-
-> Maybe for those
-> cases we need to look at adding an unsigned int argument to
-> virtio_net_hdr_to_skb in which we could pass 0 for the unused case or
-> dev->hard_header_len in the cases where we have something like
-> af_packet that is transmitting over an ipgre tunnel. The general idea
-> is to prevent these virtio_net_hdr_to_skb calls from pointing the
-> csum_start into headers that userspace was not responsible for
-> populating.
-
-One issue with that is that dev->hard_header_len itself is imprecise
-for protocols with variable length link layer headers. There, too, we
-have had a variety of bug fixes in the past.
-
-It also adds cost to every user of virtio_net_hdr, while we only know
-one issue in a rare case of the IP_GRE device.
+Gerhard
