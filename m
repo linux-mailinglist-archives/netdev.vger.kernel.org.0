@@ -2,347 +2,391 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7695240046A
-	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 19:57:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60F2B4003C1
+	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 18:57:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350355AbhICR6u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Sep 2021 13:58:50 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:57718 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1349967AbhICR6t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 13:58:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1630691868;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Twv1Frpa8K4MzmT8jpLTv8Z81z6nimrFuVhAjS15+48=;
-        b=XXZ2hPUCXX8i2nl8rdcEof2rIRUU+CM5PVxgWrsePs689FMurB1a2549pYKJZd4bLHIeYo
-        TCMZb4lqFNTOX0GD4Yb2yTpz9w5jXuQKujXhk4GVnUcYAnm+Wh5/J8mBqQxT1TltCVN21E
-        ZWXJ8JP6zXWUOY09GTap9C19arRssI4=
-Received: from mail-yb1-f199.google.com (mail-yb1-f199.google.com
- [209.85.219.199]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-439-XUFW9EjdNgGSIg5l-wZPpw-1; Fri, 03 Sep 2021 13:57:47 -0400
-X-MC-Unique: XUFW9EjdNgGSIg5l-wZPpw-1
-Received: by mail-yb1-f199.google.com with SMTP id k15-20020a25240f000000b0059efafc5a58so5469723ybk.11
-        for <netdev@vger.kernel.org>; Fri, 03 Sep 2021 10:57:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Twv1Frpa8K4MzmT8jpLTv8Z81z6nimrFuVhAjS15+48=;
-        b=aYZWsstyTFeAmjoj922mvecf6ErxeD/71FvuhYc+KWgnZakiP/ae6mcBylygiTxzY0
-         9NsVFKtIe5NIAq1DFd8NtpAHrJsrTY4KBLNrpu6Z8DEnT9i9D1MGsI72X0L+S1lSfQ6j
-         Id6tmShp4v07AROzxGWK1/iZwpkZWHnvIpPtrkThUKAXQkyKdbhznbYQ3K6rooGEYW31
-         Qy1GFuBn87Yn11PiSY/riVkaZHGY7boaE9bd8Oiu8b9mOmgXZ/HO5k+hyIBPG+1kYjjj
-         0VGBLFkh86JvxiCukp4XCleKlCRx6Ic6WBP3TgkeLZU5fgbRg07WIS8HV4BgqyY83E++
-         mrpA==
-X-Gm-Message-State: AOAM532esW6XNed0qWb2yYIWuYyKHFrRKWrdD7X0iPVvJC98Ld7V2k1y
-        OhzYd9BGvP2KzQgSsT1IY5dOrLud0kwc2mfuMHJaI7IqDSQzy8zgMARtc8EPgqdcyVeH+rQ/Z1g
-        QvT6cGkg3Rzcx+YwRgexRlMYqF4bN+QLg
-X-Received: by 2002:a25:27c1:: with SMTP id n184mr368380ybn.496.1630691866942;
-        Fri, 03 Sep 2021 10:57:46 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwnmvzaERUxcreGEzkqeG0FqvGW198r8CZnCmObJT/+i91Ku1HeyVDtgchE4FBRvysamLeDes030dILckwE19E=
-X-Received: by 2002:a25:27c1:: with SMTP id n184mr368345ybn.496.1630691866589;
- Fri, 03 Sep 2021 10:57:46 -0700 (PDT)
+        id S1350169AbhICQ6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Sep 2021 12:58:54 -0400
+Received: from mga14.intel.com ([192.55.52.115]:13117 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230187AbhICQ6x (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 3 Sep 2021 12:58:53 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10096"; a="219169049"
+X-IronPort-AV: E=Sophos;i="5.85,265,1624345200"; 
+   d="scan'208";a="219169049"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Sep 2021 09:57:53 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.85,265,1624345200"; 
+   d="scan'208";a="534211828"
+Received: from ipd-test105-dell.igk.intel.com (HELO localhost.localdomain) ([10.102.20.173])
+  by FMSMGA003.fm.intel.com with ESMTP; 03 Sep 2021 09:57:46 -0700
+Date:   Fri, 3 Sep 2021 20:58:23 +0200
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        jonathan.lemon@gmail.com, ciara.loftus@intel.com,
+        bpf@vger.kernel.org, yhs@fb.com, andrii@kernel.org
+Subject: Re: [PATCH bpf-next 19/20] selftests: xsk: add tests for invalid xsk
+ descriptors
+Message-ID: <YTJwT8QBAELMO0T1@localhost.localdomain>
+References: <20210901104732.10956-1-magnus.karlsson@gmail.com>
+ <20210901104732.10956-20-magnus.karlsson@gmail.com>
 MIME-Version: 1.0
-References: <cover.1629473233.git.lorenzo@kernel.org> <14b99bc75ce0f8d4968208fb0b420a054e45433e.1629473234.git.lorenzo@kernel.org>
- <612ecb262b05_6b87208c0@john-XPS-13-9370.notmuch>
-In-Reply-To: <612ecb262b05_6b87208c0@john-XPS-13-9370.notmuch>
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Date:   Fri, 3 Sep 2021 19:57:35 +0200
-Message-ID: <CAJ0CqmW+LuUvwiV_iuog60H1mkne5edgpWGt5Pyd9uMRaCA0BA@mail.gmail.com>
-Subject: Re: [PATCH v12 bpf-next 17/18] net: xdp: introduce
- bpf_xdp_adjust_data helper
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
-        BPF-dev-list <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "Agroskin, Shay" <shayagr@amazon.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jesper Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        "Sarkar, Tirthendu" <tirthendu.sarkar@intel.com>,
-        Toke Hoiland Jorgensen <toke@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210901104732.10956-20-magnus.karlsson@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->
-> Lorenzo Bianconi wrote:
-> > For XDP frames split over multiple buffers, the xdp_md->data and
-> > xdp_md->data_end pointers will point to the start and end of the first
-> > fragment only. bpf_xdp_adjust_data can be used to access subsequent
-> > fragments by moving the data pointers. To use, an XDP program can call
-> > this helper with the byte offset of the packet payload that
-> > it wants to access; the helper will move xdp_md->data and xdp_md ->data_end
-> > so they point to the requested payload offset and to the end of the
-> > fragment containing this byte offset, and return the byte offset of the
-> > start of the fragment.
-> > To move back to the beginning of the packet, simply call the
-> > helper with an offset of '0'.
-> > Note also that the helpers that modify the packet boundaries
-> > (bpf_xdp_adjust_head(), bpf_xdp_adjust_tail() and
-> > bpf_xdp_adjust_meta()) will fail if the pointers have been
-> > moved; it is the responsibility of the BPF program to move them
-> > back before using these helpers.
->
-> I'm ok with this for a first iteration I guess with more work we
-> can make the helpers use the updated pointers though.
->
-> >
-> > Suggested-by: John Fastabend <john.fastabend@gmail.com>
-> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
->
-> Overall looks good couple small nits/questions below. Thanks!
->
-> > ---
-> >  include/net/xdp.h              |  8 +++++
-> >  include/uapi/linux/bpf.h       | 32 ++++++++++++++++++
-> >  net/bpf/test_run.c             |  8 +++++
-> >  net/core/filter.c              | 62 +++++++++++++++++++++++++++++++++-
-> >  tools/include/uapi/linux/bpf.h | 32 ++++++++++++++++++
-> >  5 files changed, 141 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/include/net/xdp.h b/include/net/xdp.h
-> > index cdaecf8d4d61..ce4764c7cd40 100644
-> > --- a/include/net/xdp.h
-> > +++ b/include/net/xdp.h
-> > @@ -82,6 +82,11 @@ struct xdp_buff {
-> >       struct xdp_txq_info *txq;
-> >       u32 frame_sz; /* frame size to deduce data_hard_end/reserved tailroom*/
-> >       u16 flags; /* supported values defined in xdp_flags */
-> > +     /* xdp multi-buff metadata used for frags iteration */
-> > +     struct {
-> > +             u16 headroom;   /* frame headroom: data - data_hard_start */
-> > +             u16 headlen;    /* first buffer length: data_end - data */
-> > +     } mb;
-> >  };
-> >
-> >  static __always_inline bool xdp_buff_is_mb(struct xdp_buff *xdp)
-> > @@ -127,6 +132,9 @@ xdp_prepare_buff(struct xdp_buff *xdp, unsigned char *hard_start,
-> >       xdp->data = data;
-> >       xdp->data_end = data + data_len;
-> >       xdp->data_meta = meta_valid ? data : data + 1;
-> > +     /* mb metadata for frags iteration */
-> > +     xdp->mb.headroom = headroom;
-> > +     xdp->mb.headlen = data_len;
-> >  }
-> >
-> >  /* Reserve memory area at end-of data area.
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > index 9e2c3b12ea49..a7b5185a718a 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -4877,6 +4877,37 @@ union bpf_attr {
-> >   *           Get the total size of a given xdp buff (linear and paged area)
-> >   *   Return
-> >   *           The total size of a given xdp buffer.
-> > + *
-> > + * long bpf_xdp_adjust_data(struct xdp_buff *xdp_md, u32 offset)
-> > + *   Description
-> > + *           For XDP frames split over multiple buffers, the
-> > + *           *xdp_md*\ **->data** and*xdp_md *\ **->data_end** pointers
->                                        ^^^^
-> missing space?
+On Wed, Sep 01, 2021 at 12:47:31PM +0200, Magnus Karlsson wrote:
+> From: Magnus Karlsson <magnus.karlsson@intel.com>
+> 
+> Add tests for invalid xsk descriptors in the Tx ring. A number of
+> handcrafted nasty invalid descriptors are created and submitted to the
+> tx ring to check that they are validated correctly. Corener case valid
 
-ack, right. I will fix it.
+Corner
 
->
-> > + *           will point to the start and end of the first fragment only.
-> > + *           This helper can be used to access subsequent fragments by
-> > + *           moving the data pointers. To use, an XDP program can call
-> > + *           this helper with the byte offset of the packet payload that
-> > + *           it wants to access; the helper will move *xdp_md*\ **->data**
-> > + *           and *xdp_md *\ **->data_end** so they point to the requested
-> > + *           payload offset and to the end of the fragment containing this
-> > + *           byte offset, and return the byte offset of the start of the
-> > + *           fragment.
-> > + *           To move back to the beginning of the packet, simply call the
-> > + *           helper with an offset of '0'.
-> > + *           Note also that the helpers that modify the packet boundaries
-> > + *           (*bpf_xdp_adjust_head()*, *bpf_xdp_adjust_tail()* and
-> > + *           *bpf_xdp_adjust_meta()*) will fail if the pointers have been
-> > + *           moved; it is the responsibility of the BPF program to move them
-> > + *           back before using these helpers.
-> > + *
-> > + *           A call to this helper is susceptible to change the underlying
-> > + *           packet buffer. Therefore, at load time, all checks on pointers
-> > + *           previously done by the verifier are invalidated and must be
-> > + *           performed again, if the helper is used in combination with
-> > + *           direct packet access.
-> > + *   Return
-> > + *           offset between the beginning of the current fragment and
-> > + *           original *xdp_md*\ **->data** on success, or a negative error
-> > + *           in case of failure.
-> >   */
-> >  #define __BPF_FUNC_MAPPER(FN)                \
-> >       FN(unspec),                     \
-> > @@ -5055,6 +5086,7 @@ union bpf_attr {
-> >       FN(get_func_ip),                \
-> >       FN(get_attach_cookie),          \
-> >       FN(xdp_get_buff_len),           \
-> > +     FN(xdp_adjust_data),            \
-> >       /* */
-> >
-> >  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-> > diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-> > index 869dcf23a1ca..f09c2c8c0d6c 100644
-> > --- a/net/bpf/test_run.c
-> > +++ b/net/bpf/test_run.c
-> > @@ -757,6 +757,8 @@ static int xdp_convert_md_to_buff(struct xdp_md *xdp_md, struct xdp_buff *xdp)
-> >       }
-> >
-> >       xdp->data = xdp->data_meta + xdp_md->data;
-> > +     xdp->mb.headroom = xdp->data - xdp->data_hard_start;
-> > +     xdp->mb.headlen = xdp->data_end - xdp->data;
-> >       return 0;
-> >
-> >  free_dev:
-> > @@ -871,6 +873,12 @@ int bpf_prog_test_run_xdp(struct bpf_prog *prog, const union bpf_attr *kattr,
-> >       if (ret)
-> >               goto out;
-> >
-> > +     /* data pointers need to be reset after frag iteration */
-> > +     if (unlikely(xdp.data_hard_start + xdp.mb.headroom != xdp.data)) {
-> > +             ret = -EFAULT;
-> > +             goto out;
-> > +     }
-> > +
-> >       size = xdp.data_end - xdp.data_meta + sinfo->xdp_frags_size;
-> >       ret = bpf_test_finish(kattr, uattr, xdp.data_meta, sinfo, size,
-> >                             retval, duration);
-> > diff --git a/net/core/filter.c b/net/core/filter.c
-> > index 2122c00c680f..ed2a6632adce 100644
-> > --- a/net/core/filter.c
-> > +++ b/net/core/filter.c
-> > @@ -3827,6 +3827,10 @@ BPF_CALL_2(bpf_xdp_adjust_head, struct xdp_buff *, xdp, int, offset)
-> >       void *data_start = xdp_frame_end + metalen;
-> >       void *data = xdp->data + offset;
-> >
-> > +     /* data pointers need to be reset after frag iteration */
-> > +     if (unlikely(xdp->data_hard_start + xdp->mb.headroom != xdp->data))
-> > +             return -EINVAL;
->
-> -EFAULT? It might be nice if error code is different from below
-> for debugging?
+> ones are also sent. The tests are run for both aligned and unaligned
+> mode.
+> 
+> pkt_stream_set() is introduced to be able to create a hand-crafted
+> packet stream where every single packet is specified in detail.
+> 
+> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> ---
+>  tools/testing/selftests/bpf/xdpxceiver.c | 143 ++++++++++++++++++++---
+>  tools/testing/selftests/bpf/xdpxceiver.h |   7 +-
+>  2 files changed, 131 insertions(+), 19 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
+> index d085033afd53..a4f6ce3a6b14 100644
+> --- a/tools/testing/selftests/bpf/xdpxceiver.c
+> +++ b/tools/testing/selftests/bpf/xdpxceiver.c
+> @@ -46,6 +46,8 @@
+>   *       then remove xsk sockets from queue 0 on both veth interfaces and
+>   *       finally run a traffic on queues ids 1
+>   *    g. unaligned mode
+> + *    h. tests for invalid and corner case Tx descriptors so that the correct ones
+> + *       are discarded and let through, respectively.
+>   *
+>   * Total tests: 12
+>   *
+> @@ -394,7 +396,7 @@ static void __test_spec_init(struct test_spec *test, struct ifobject *ifobj_tx,
+>  		for (j = 0; j < MAX_SOCKETS; j++) {
+>  			memset(&ifobj->umem_arr[j], 0, sizeof(ifobj->umem_arr[j]));
+>  			memset(&ifobj->xsk_arr[j], 0, sizeof(ifobj->xsk_arr[j]));
+> -			ifobj->umem_arr[j].num_frames = DEFAULT_PKT_CNT / 4;
+> +			ifobj->umem_arr[j].num_frames = DEFAULT_UMEM_BUFFERS;
+>  			ifobj->umem_arr[j].frame_size = XSK_UMEM__DEFAULT_FRAME_SIZE;
+>  			ifobj->xsk_arr[j].rxqsize = XSK_RING_CONS__DEFAULT_NUM_DESCS;
+>  		}
+> @@ -450,6 +452,16 @@ static struct pkt *pkt_stream_get_pkt(struct pkt_stream *pkt_stream, u32 pkt_nb)
+>  	return &pkt_stream->pkts[pkt_nb];
+>  }
+>  
+> +static struct pkt *pkt_stream_get_next_rx_pkt(struct pkt_stream *pkt_stream)
+> +{
+> +	while (pkt_stream->rx_pkt_nb < pkt_stream->nb_pkts) {
+> +		if (pkt_stream->pkts[pkt_stream->rx_pkt_nb].valid)
+> +			return &pkt_stream->pkts[pkt_stream->rx_pkt_nb++];
+> +		pkt_stream->rx_pkt_nb++;
+> +	}
+> +	return NULL;
+> +}
+> +
+>  static void pkt_stream_delete(struct pkt_stream *pkt_stream)
+>  {
+>  	free(pkt_stream->pkts);
+> @@ -465,17 +477,31 @@ static void pkt_stream_restore_default(struct test_spec *test)
+>  	test->ifobj_rx->pkt_stream = test->pkt_stream_default;
+>  }
+>  
+> -static struct pkt_stream *pkt_stream_generate(struct xsk_umem_info *umem, u32 nb_pkts, u32 pkt_len)
+> +static struct pkt_stream *__pkt_stream_alloc(u32 nb_pkts)
+>  {
+>  	struct pkt_stream *pkt_stream;
+> -	u32 i;
+>  
+> -	pkt_stream = malloc(sizeof(*pkt_stream));
+> +	pkt_stream = calloc(1, sizeof(*pkt_stream));
 
-ack, I will fix it in v13
+So with that probably my previous comment about use_addr_for_fill being
+not set is not relevant.
 
->
-> > +
-> >       if (unlikely(data < data_start ||
-> >                    data > xdp->data_end - ETH_HLEN))
-> >               return -EINVAL;
-> > @@ -3836,6 +3840,9 @@ BPF_CALL_2(bpf_xdp_adjust_head, struct xdp_buff *, xdp, int, offset)
-> >                       xdp->data_meta, metalen);
-> >       xdp->data_meta += offset;
-> >       xdp->data = data;
-> > +     /* update metada for multi-buff frag iteration */
-> > +     xdp->mb.headroom = xdp->data - xdp->data_hard_start;
-> > +     xdp->mb.headlen = xdp->data_end - xdp->data;
-> >
-> >       return 0;
-> >  }
-> > @@ -3910,6 +3917,10 @@ BPF_CALL_2(bpf_xdp_adjust_tail, struct xdp_buff *, xdp, int, offset)
-> >       void *data_hard_end = xdp_data_hard_end(xdp); /* use xdp->frame_sz */
-> >       void *data_end = xdp->data_end + offset;
-> >
-> > +     /* data pointer needs to be reset after frag iteration */
-> > +     if (unlikely(xdp->data + xdp->mb.headlen != xdp->data_end))
-> > +             return -EINVAL;
->
-> EFAULT?
+>  	if (!pkt_stream)
+> -		exit_with_error(ENOMEM);
+> +		return NULL;
+>  
+>  	pkt_stream->pkts = calloc(nb_pkts, sizeof(*pkt_stream->pkts));
+> -	if (!pkt_stream->pkts)
+> +	if (!pkt_stream->pkts) {
+> +		free(pkt_stream);
+> +		return NULL;
+> +	}
+> +
+> +	pkt_stream->nb_pkts = nb_pkts;
+> +	return pkt_stream;
+> +}
+> +
+> +static struct pkt_stream *pkt_stream_generate(struct xsk_umem_info *umem, u32 nb_pkts, u32 pkt_len)
+> +{
+> +	struct pkt_stream *pkt_stream;
+> +	u32 i;
+> +
+> +	pkt_stream = __pkt_stream_alloc(nb_pkts);
+> +	if (!pkt_stream)
+>  		exit_with_error(ENOMEM);
+>  
+>  	pkt_stream->nb_pkts = nb_pkts;
+> @@ -525,6 +551,26 @@ static void pkt_stream_replace_half(struct test_spec *test, u32 pkt_len, u32 off
+>  	test->ifobj_rx->pkt_stream = pkt_stream;
+>  }
+>  
+> +static void pkt_stream_set(struct test_spec *test, struct pkt *pkts, u32 nb_pkts)
 
-ack, I will fix it in v13
+This is still a generation of pkt stream, can we name this is as:
+pkt_stream_generate_custom or is this too long? WDYT?
 
->
-> > +
-> >       if (unlikely(xdp_buff_is_mb(xdp)))
-> >               return bpf_xdp_mb_adjust_tail(xdp, offset);
-> >
-> > @@ -3949,6 +3960,10 @@ BPF_CALL_2(bpf_xdp_adjust_meta, struct xdp_buff *, xdp, int, offset)
-> >       void *meta = xdp->data_meta + offset;
-> >       unsigned long metalen = xdp->data - meta;
-> >
-> > +     /* data pointer needs to be reset after frag iteration */
-> > +     if (unlikely(xdp->data_hard_start + xdp->mb.headroom != xdp->data))
-> > +             return -EINVAL;
->
-> same comment.
+> +{
+> +	struct pkt_stream *pkt_stream;
+> +	u32 i;
+> +
+> +	pkt_stream = __pkt_stream_alloc(nb_pkts);
+> +	if (!pkt_stream)
+> +		exit_with_error(ENOMEM);
+> +
+> +	test->ifobj_tx->pkt_stream = pkt_stream;
+> +	test->ifobj_rx->pkt_stream = pkt_stream;
+> +
+> +	for (i = 0; i < nb_pkts; i++) {
+> +		pkt_stream->pkts[i].addr = pkts[i].addr;
+> +		pkt_stream->pkts[i].len = pkts[i].len;
+> +		pkt_stream->pkts[i].payload = i;
+> +		pkt_stream->pkts[i].valid = pkts[i].valid;
+> +	}
+> +}
+> +
+>  static struct pkt *pkt_generate(struct ifobject *ifobject, u32 pkt_nb)
+>  {
+>  	struct pkt *pkt = pkt_stream_get_pkt(ifobject->pkt_stream, pkt_nb);
+> @@ -535,6 +581,8 @@ static struct pkt *pkt_generate(struct ifobject *ifobject, u32 pkt_nb)
+>  
+>  	if (!pkt)
+>  		return NULL;
+> +	if (!pkt->valid || pkt->len < PKT_SIZE)
+> +		return pkt;
+>  
+>  	data = xsk_umem__get_data(ifobject->umem->buffer, pkt->addr);
+>  	udp_hdr = (struct udphdr *)(data + sizeof(struct ethhdr) + sizeof(struct iphdr));
+> @@ -596,19 +644,24 @@ static bool is_pkt_valid(struct pkt *pkt, void *buffer, u64 addr, u32 len)
+>  		return false;
+>  	}
+>  
+> +	if (len < PKT_SIZE) {
+> +		/*Do not try to verify packets that are smaller than minimun size. */
 
-ack, I will fix it in v13
+minimum
 
->
-> >       if (xdp_data_meta_unsupported(xdp))
-> >               return -ENOTSUPP;
-> >       if (unlikely(meta < xdp_frame_end ||
-> > @@ -3970,6 +3985,48 @@ static const struct bpf_func_proto bpf_xdp_adjust_meta_proto = {
-> >       .arg2_type      = ARG_ANYTHING,
-> >  };
-> >
-> > +BPF_CALL_2(bpf_xdp_adjust_data, struct xdp_buff *, xdp, u32, offset)
-> > +{
-> > +     struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
-> > +     u32 base_offset = xdp->mb.headlen;
-> > +     int i;
-> > +
-> > +     if (!xdp_buff_is_mb(xdp) || offset > sinfo->xdp_frags_size)
-> > +             return -EINVAL;
->
-> Do we need to error this? If its not mb we can just return the same
-> as offset==0?
+> +		return true;
+> +	}
+> +
+> +	if (pkt->len != len) {
+> +		ksft_test_result_fail
+> +			("ERROR: [%s] expected length [%d], got length [%d]\n",
+> +			 __func__, pkt->len, len);
+> +		return false;
+> +	}
+> +
+>  	if (iphdr->version == IP_PKT_VER && iphdr->tos == IP_PKT_TOS) {
+>  		u32 seqnum = ntohl(*((u32 *)(data + PKT_HDR_SIZE)));
+>  
+>  		if (opt_pkt_dump)
+>  			pkt_dump(data, PKT_SIZE);
+>  
+> -		if (pkt->len != len) {
+> -			ksft_test_result_fail
+> -				("ERROR: [%s] expected length [%d], got length [%d]\n",
+> -					__func__, pkt->len, len);
+> -			return false;
+> -		}
+> -
+>  		if (pkt->payload != seqnum) {
+>  			ksft_test_result_fail
+>  				("ERROR: [%s] expected seqnum [%d], got seqnum [%d]\n",
+> @@ -645,6 +698,15 @@ static void complete_pkts(struct xsk_socket_info *xsk, int batch_size)
+>  
+>  	rcvd = xsk_ring_cons__peek(&xsk->umem->cq, batch_size, &idx);
+>  	if (rcvd) {
+> +		if (rcvd > xsk->outstanding_tx) {
+> +			u64 addr = *xsk_ring_cons__comp_addr(&xsk->umem->cq, idx + rcvd - 1);
+> +
+> +			ksft_test_result_fail("ERROR: [%s] Too many packets completed\n",
+> +					      __func__);
+> +			ksft_print_msg("Last completion address: %llx\n", addr);
+> +			return;
+> +		}
+> +
+>  		xsk_ring_cons__release(&xsk->umem->cq, rcvd);
+>  		xsk->outstanding_tx -= rcvd;
+>  	}
+> @@ -653,11 +715,10 @@ static void complete_pkts(struct xsk_socket_info *xsk, int batch_size)
+>  static void receive_pkts(struct pkt_stream *pkt_stream, struct xsk_socket_info *xsk,
+>  			 struct pollfd *fds)
+>  {
+> -	u32 idx_rx = 0, idx_fq = 0, rcvd, i, pkt_count = 0;
+> -	struct pkt *pkt;
+> +	struct pkt *pkt = pkt_stream_get_next_rx_pkt(pkt_stream);
+> +	u32 idx_rx = 0, idx_fq = 0, rcvd, i;
+>  	int ret;
+>  
+> -	pkt = pkt_stream_get_pkt(pkt_stream, pkt_count++);
+>  	while (pkt) {
+>  		rcvd = xsk_ring_cons__peek(&xsk->rx, BATCH_SIZE, &idx_rx);
+>  		if (!rcvd) {
+> @@ -685,13 +746,21 @@ static void receive_pkts(struct pkt_stream *pkt_stream, struct xsk_socket_info *
+>  			const struct xdp_desc *desc = xsk_ring_cons__rx_desc(&xsk->rx, idx_rx++);
+>  			u64 addr = desc->addr, orig;
+>  
+> +			if (!pkt) {
+> +				ksft_test_result_fail("ERROR: [%s] Received too many packets.\n",
+> +						      __func__);
+> +				ksft_print_msg("Last packet has addr: %llx len: %u\n",
+> +					       addr, desc->len);
+> +				return;
+> +			}
+> +
+>  			orig = xsk_umem__extract_addr(addr);
+>  			addr = xsk_umem__add_offset_to_addr(addr);
+>  			if (!is_pkt_valid(pkt, xsk->umem->buffer, addr, desc->len))
+>  				return;
+>  
+>  			*xsk_ring_prod__fill_addr(&xsk->umem->fq, idx_fq++) = orig;
+> -			pkt = pkt_stream_get_pkt(pkt_stream, pkt_count++);
+> +			pkt = pkt_stream_get_next_rx_pkt(pkt_stream);
+>  		}
+>  
+>  		xsk_ring_prod__submit(&xsk->umem->fq, rcvd);
+> @@ -875,6 +944,7 @@ static void testapp_cleanup_xsk_res(struct ifobject *ifobj)
+>  {
+>  	print_verbose("Destroying socket\n");
+>  	xsk_socket__delete(ifobj->xsk->xsk);
+> +	munmap(ifobj->umem->buffer, ifobj->umem->num_frames * ifobj->umem->frame_size);
+>  	xsk_umem__delete(ifobj->umem->umem);
+>  }
+>  
+> @@ -1118,6 +1188,33 @@ static bool testapp_unaligned(struct test_spec *test)
+>  	return true;
+>  }
+>  
+> +static void testapp_inv_desc(struct test_spec *test)
 
-ack, we can check do something like:
+I'd say that speaking out whole 'invalid' word wouldn't hurt us here.
 
-u32 max_offset = xdp->mb.headlen;
+> +{
+> +	struct pkt pkts[] = {{0, 0, 0, true}, /* Zero packet length and zero address allowed */
 
-if (xdp_buff_is_mb(xdp))
-   max_offset += sinfo->xdp_frags_size;
+Above looks a bit weird, maybe this should be formatted same as the lines
+below:
 
-if (offset > max_offset)
-   return -EINVAL;
+	struct pkt pkts[] = {
+		/* Zero packet length and zero address allowed */
+			     {0, 0, 0, true},
 
-what do you think?
+> +		/* Zero packet length allowed */
+> +			     {0x1000, 0, 0, true},
+> +		/* Straddling the start of umem */
+> +			     {-2, PKT_SIZE, 0, false},
+> +		/* Packet too large */
+> +			     {0x2000, XSK_UMEM__INVALID_FRAME_SIZE, 0, false},
+> +		/* After umem ends */
+> +			     {UMEM_SIZE, PKT_SIZE, 0, false},
+> +		/* Straddle the end of umem */
+> +			     {UMEM_SIZE - PKT_SIZE / 2, PKT_SIZE, 0, false},
+> +		/* Straddle a page boundrary */
+> +			     {0x3000 - PKT_SIZE / 2, PKT_SIZE, 0, false},
+> +		/* Valid packet for synch so that something is received */
+> +			     {0x4000, PKT_SIZE, 0, true}};
+> +
+> +	if (test->ifobj_tx->umem->unaligned_mode) {
+> +		/* Crossing a page boundrary allowed */
+> +		pkts[6].valid = true;
+> +	}
+> +	pkt_stream_set(test, pkts, ARRAY_SIZE(pkts));
+> +	testapp_validate_traffic(test);
+> +	pkt_stream_restore_default(test);
+> +}
+> +
+>  static void init_iface(struct ifobject *ifobj, const char *dst_mac, const char *src_mac,
+>  		       const char *dst_ip, const char *src_ip, const u16 dst_port,
+>  		       const u16 src_port, thread_func_t func_ptr)
+> @@ -1159,7 +1256,7 @@ static void run_pkt_test(struct test_spec *test, enum test_mode mode, enum test_
+>  	case TEST_TYPE_BPF_RES:
+>  		testapp_bpf_res(test);
+>  		break;
+> -	case TEST_TYPE_NOPOLL:
+> +	case TEST_TYPE_RUN_TO_COMPLETION:
 
-Regards,
-Lorenzo
+I think that you were updating some comment around it on previous patches
+and it probably belongs to this one.
 
->
-> > +
-> > +     if (offset < xdp->mb.headlen) {
-> > +             /* linear area */
-> > +             xdp->data = xdp->data_hard_start + xdp->mb.headroom + offset;
-> > +             xdp->data_end = xdp->data_hard_start + xdp->mb.headroom +
-> > +                             xdp->mb.headlen;
-> > +             return 0;
-> > +     }
-> > +
-> > +     for (i = 0; i < sinfo->nr_frags; i++) {
-> > +             /* paged area */
-> > +             skb_frag_t *frag = &sinfo->frags[i];
-> > +             unsigned int size = skb_frag_size(frag);
-> > +
-> > +             if (offset < base_offset + size) {
-> > +                     u8 *addr = skb_frag_address(frag);
-> > +
-> > +                     xdp->data = addr + offset - base_offset;
-> > +                     xdp->data_end = addr + size;
-> > +                     break;
-> > +             }
-> > +             base_offset += size;
-> > +     }
-> > +     return base_offset;
-> > +}
->
-
+>  		test_spec_set_name(test, "RUN_TO_COMPLETION");
+>  		testapp_validate_traffic(test);
+>  		break;
+> @@ -1169,6 +1266,16 @@ static void run_pkt_test(struct test_spec *test, enum test_mode mode, enum test_
+>  		test_spec_set_name(test, "POLL");
+>  		testapp_validate_traffic(test);
+>  		break;
+> +	case TEST_TYPE_ALIGNED_INV_DESC:
+> +		test_spec_set_name(test, "ALIGNED_INV_DESC");
+> +		testapp_inv_desc(test);
+> +		break;
+> +	case TEST_TYPE_UNALIGNED_INV_DESC:
+> +		test_spec_set_name(test, "UNALIGNED_INV_DESC");
+> +		test->ifobj_tx->umem->unaligned_mode = true;
+> +		test->ifobj_rx->umem->unaligned_mode = true;
+> +		testapp_inv_desc(test);
+> +		break;
+>  	case TEST_TYPE_UNALIGNED:
+>  		if (!testapp_unaligned(test))
+>  			return;
+> diff --git a/tools/testing/selftests/bpf/xdpxceiver.h b/tools/testing/selftests/bpf/xdpxceiver.h
+> index 129801eb013c..2d9efb89ea28 100644
+> --- a/tools/testing/selftests/bpf/xdpxceiver.h
+> +++ b/tools/testing/selftests/bpf/xdpxceiver.h
+> @@ -38,6 +38,8 @@
+>  #define BATCH_SIZE 8
+>  #define POLL_TMOUT 1000
+>  #define DEFAULT_PKT_CNT (4 * 1024)
+> +#define DEFAULT_UMEM_BUFFERS (DEFAULT_PKT_CNT / 4)
+> +#define UMEM_SIZE (DEFAULT_UMEM_BUFFERS * XSK_UMEM__DEFAULT_FRAME_SIZE)
+>  #define RX_FULL_RXQSIZE 32
+>  #define DEFAULT_OFFSET 256
+>  #define XSK_UMEM__INVALID_FRAME_SIZE (XSK_UMEM__DEFAULT_FRAME_SIZE + 1)
+> @@ -51,9 +53,11 @@ enum test_mode {
+>  };
+>  
+>  enum test_type {
+> -	TEST_TYPE_NOPOLL,
+> +	TEST_TYPE_RUN_TO_COMPLETION,
+>  	TEST_TYPE_POLL,
+>  	TEST_TYPE_UNALIGNED,
+> +	TEST_TYPE_ALIGNED_INV_DESC,
+> +	TEST_TYPE_UNALIGNED_INV_DESC,
+>  	TEST_TYPE_TEARDOWN,
+>  	TEST_TYPE_BIDI,
+>  	TEST_TYPE_STATS,
+> @@ -104,6 +108,7 @@ struct pkt {
+>  
+>  struct pkt_stream {
+>  	u32 nb_pkts;
+> +	u32 rx_pkt_nb;
+>  	struct pkt *pkts;
+>  	bool use_addr_for_fill;
+>  };
+> -- 
+> 2.29.0
+> 
