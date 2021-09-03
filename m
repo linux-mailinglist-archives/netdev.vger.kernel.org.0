@@ -2,132 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 006EB3FF8C9
-	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 04:07:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CED7D3FF8CF
+	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 04:15:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344750AbhICCIY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Sep 2021 22:08:24 -0400
-Received: from mga18.intel.com ([134.134.136.126]:31374 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232931AbhICCIW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Sep 2021 22:08:22 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10095"; a="206422289"
-X-IronPort-AV: E=Sophos;i="5.85,264,1624345200"; 
-   d="scan'208";a="206422289"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2021 19:07:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.85,264,1624345200"; 
-   d="scan'208";a="691781879"
-Received: from siang-ilbpg0.png.intel.com ([10.88.227.28])
-  by fmsmga005.fm.intel.com with ESMTP; 02 Sep 2021 19:07:18 -0700
-From:   Song Yoong Siang <yoong.siang.song@intel.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org,
-        Song Yoong Siang <yoong.siang.song@intel.com>
-Subject: [PATCH net 1/1] net: stmmac: Fix overall budget calculation for rxtx_napi
-Date:   Fri,  3 Sep 2021 10:00:26 +0800
-Message-Id: <20210903020026.1381962-1-yoong.siang.song@intel.com>
-X-Mailer: git-send-email 2.25.1
+        id S1344924AbhICCQz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Sep 2021 22:16:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41932 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242797AbhICCQy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Sep 2021 22:16:54 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3308FC061575
+        for <netdev@vger.kernel.org>; Thu,  2 Sep 2021 19:15:55 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id h9so8878224ejs.4
+        for <netdev@vger.kernel.org>; Thu, 02 Sep 2021 19:15:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=vCsIXCUIo4U27jwNkmfQGyMnD+0UtUag5leEX/B23VA=;
+        b=OLXieu5C23HCHIbHJf1QpZ3ZG/21Taw2slo9p/SDfDopoMUkMpIEgtSmoERZMlTDrQ
+         AJSoEEkeaugPhwmSep0anOXjYX9IJ8yU/5uGEGcpDyowFc3ehGP9/11Qy3CmkYhY9wUT
+         J+odcO8XgsGtANzabgpfCRE1aNf7E40XViFvmgNp2CcAT8cYJ7p6SFUXKYHTiWRxI0XW
+         B6kV4Go0k8zcRT1rsB/1KvPtejBXUtg+EhQT3MzawGCjmWR8R9JAMSzn23v2/6rbVqxo
+         bQ3tmDnQR69fEr9NvXWXmXdiplN3VJ+f8hQLYmzwePKBvDbxH0Yg05mTliMz6y8r/fnW
+         8+Vg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=vCsIXCUIo4U27jwNkmfQGyMnD+0UtUag5leEX/B23VA=;
+        b=FHrkqdsYaLD3Sz4UW6raxRYSXTCSuT4uBBaIWLysfq4H9DiOK5NrM+BKlCSJcMCiZN
+         dANiSW3UYg4W8fgQqzze9Mhw1DrfF9M7dsdG0bYkQNN7H/4rEWKRtVzeO1OeboVwkRqn
+         91Rym++QRaiAstIxN/6w0xGvfiV5EI/spJSJfcMK88THYQXdbsKAKlKPRDKtVAEMR071
+         iidtFzbrQOPQNNUOXymmmWKGuhn8kM/8S9lc3Xs1MwpXET81y5q3JvArvC6j0Y7vAChv
+         QpdfZ9d0M9o2zm3J5Qvr1N1xElJ+RdK6JZJNreZrjWCRyk5Nlvb2NWI81XuA+4NiWRHm
+         vSkA==
+X-Gm-Message-State: AOAM533TMGAtEj4GjHhsk/KyG58pJrWMyr3qxlekCw+XXlq5MgWlA+U+
+        N9HNwSNq0035pTGks3seCqAgpi2YM+AT/wrOePqkkLNxqlMX
+X-Google-Smtp-Source: ABdhPJxLHl9QJMJkgu7S/Ue7YgcYfSOOQu/XXCxhMSL5ntLnZM0AYuTtv9TMheuYa9JTM7y2uZ0mFG3AiDUsgG70txY=
+X-Received: by 2002:a17:906:abd7:: with SMTP id kq23mr1430286ejb.542.1630635353644;
+ Thu, 02 Sep 2021 19:15:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <c6864908-d093-1705-76ce-94d6af85e092@linux.alibaba.com>
+ <18f0171e-0cc8-6ae6-d04a-a69a2a3c1a39@linux.alibaba.com> <7f239a0e-7a09-3dc0-43ce-27c19c7a309d@linux.alibaba.com>
+ <4c000115-4069-5277-ce82-946f2fdb790a@linux.alibaba.com> <CAHC9VhRBhCfX45V701rbGsvmOPQ4Nyp7dX2GA6NL8FxnA9akXg@mail.gmail.com>
+ <a53753dc-0cce-4f9a-cb97-fc790d30a234@linux.alibaba.com>
+In-Reply-To: <a53753dc-0cce-4f9a-cb97-fc790d30a234@linux.alibaba.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Thu, 2 Sep 2021 22:15:42 -0400
+Message-ID: <CAHC9VhR2c=HYdWmz-At0+7RexUBjQHktv3ypHmFU2jD5gDc2Cw@mail.gmail.com>
+Subject: Re: [PATCH] Revert "net: fix NULL pointer reference in cipso_v4_doi_free"
+To:     =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tx_done is not used for napi_complete_done(). Thus, NAPI busy polling
-mechanism by gro_flush_timeout and napi_defer_hard_irqs will not able
-be triggered after a packet is transmitted when there is no receive
-packet.
+On Wed, Sep 1, 2021 at 10:37 PM =E7=8E=8B=E8=B4=87 <yun.wang@linux.alibaba.=
+com> wrote:
+> On 2021/9/2 =E4=B8=8A=E5=8D=885:05, Paul Moore wrote:
+> > On Tue, Aug 31, 2021 at 10:21 PM =E7=8E=8B=E8=B4=87 <yun.wang@linux.ali=
+baba.com> wrote:
+> >>
+> >> Hi Paul, it confused me since it's the first time I face
+> >> such situation, but I just realized what you're asking is
+> >> actually this revert, correct?
+> >
+> > I believe DaveM already answered your question in the other thread,
+> > but if you are still unsure about the patch let me know.
+>
+> I do failed to get the point :-(
+>
+> As I checked the:
+>   https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git
+>
+> both v1 and v2 are there with the same description and both code modifica=
+tion
+> are applied.
+>
+> We want revert v1 but not in a revert patch style, then do you suggest
+> send a normal patch to do the code revert?
 
-Fix this by taking the maximum value between tx_done and rx_done as
-overall budget completed by the rxtx NAPI poll to ensure XDP Tx ZC
-operation is continuously polling for next Tx frame. This gives
-benefit of lower packet submission processing latency and jitter
-under XDP Tx ZC mode.
+It sounds like DaveM wants you to create a normal (not a revert) patch
+that removes the v1 changes while leaving the v2 changes intact.  In
+the patch description you can mention that v1 was merged as a mistake
+and that v2 is the correct fix (provide commit IDs for each in your
+commit description using the usual 12-char hash snippet followed by
+the subject in parens-and-quotes).
 
-Performance of tx-only using xdp-sock on Intel ADL-S platform is
-the same with and without this patch.
-
-root@intel-corei7-64:~# ./xdpsock -i enp0s30f4 -t -z -q 1 -n 10
- sock0@enp0s30f4:1 txonly xdp-drv
-                   pps            pkts           10.00
-rx                 0              0
-tx                 511630         8659520
-
- sock0@enp0s30f4:1 txonly xdp-drv
-                   pps            pkts           10.00
-rx                 0              0
-tx                 511625         13775808
-
- sock0@enp0s30f4:1 txonly xdp-drv
-                   pps            pkts           10.00
-rx                 0              0
-tx                 511619         18892032
-
-Fixes: 132c32ee5bc0 ("net: stmmac: Add TX via XDP zero-copy socket")
-Cc: <stable@vger.kernel.org> # 5.13.x
-Co-developed-by: Ong Boon Leong <boon.leong.ong@intel.com>
-Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
-Signed-off-by: Song Yoong Siang <yoong.siang.song@intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index ed0cd3920171..97238359e101 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -5347,7 +5347,7 @@ static int stmmac_napi_poll_rxtx(struct napi_struct *napi, int budget)
- 	struct stmmac_channel *ch =
- 		container_of(napi, struct stmmac_channel, rxtx_napi);
- 	struct stmmac_priv *priv = ch->priv_data;
--	int rx_done, tx_done;
-+	int rx_done, tx_done, rxtx_done;
- 	u32 chan = ch->index;
- 
- 	priv->xstats.napi_poll++;
-@@ -5357,14 +5357,16 @@ static int stmmac_napi_poll_rxtx(struct napi_struct *napi, int budget)
- 
- 	rx_done = stmmac_rx_zc(priv, budget, chan);
- 
-+	rxtx_done = max(tx_done, rx_done);
-+
- 	/* If either TX or RX work is not complete, return budget
- 	 * and keep pooling
- 	 */
--	if (tx_done >= budget || rx_done >= budget)
-+	if (rxtx_done >= budget)
- 		return budget;
- 
- 	/* all work done, exit the polling mode */
--	if (napi_complete_done(napi, rx_done)) {
-+	if (napi_complete_done(napi, rxtx_done)) {
- 		unsigned long flags;
- 
- 		spin_lock_irqsave(&ch->lock, flags);
-@@ -5375,7 +5377,7 @@ static int stmmac_napi_poll_rxtx(struct napi_struct *napi, int budget)
- 		spin_unlock_irqrestore(&ch->lock, flags);
- 	}
- 
--	return min(rx_done, budget - 1);
-+	return min(rxtx_done, budget - 1);
- }
- 
- /**
--- 
-2.25.1
-
+--=20
+paul moore
+www.paul-moore.com
