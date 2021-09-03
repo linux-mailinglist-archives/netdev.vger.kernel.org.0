@@ -2,97 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59F6A4001D2
-	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 17:14:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 257D5400256
+	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 17:30:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236549AbhICPP2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Sep 2021 11:15:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48552 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236367AbhICPP1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 11:15:27 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC723C061757
-        for <netdev@vger.kernel.org>; Fri,  3 Sep 2021 08:14:27 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id fz10so3863673pjb.0
-        for <netdev@vger.kernel.org>; Fri, 03 Sep 2021 08:14:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=Zg/5XIA6AOIvCKf28eKv1Mz/3KXT2akr96LQrUcvm3E=;
-        b=eX1Ye6X9od4Y6LQMOHXLDkXdsCuAfE/9BDFzmczzVIMNZJJW3PSL7C1VWu4DFqmhEf
-         EoJacDRG8C1kRM+fK2ZQA9mE5Ccw0CQLFXDgCZOOJwed0m4A+b4XbjOvV0ki4qLuhMrs
-         MmSDENQZjHf5yWne5RlOSE5eTQRjaIwPTJsBS/7i0wu1u0t2bXUbX0uupOb81QWIIKA9
-         yIQuOl+2MTZhWaqmmldx9/q2Lvk3EjyzO1yktN6acRYBoTeURFyO2r4dwOkKLJy7mRC0
-         J/y09SVMk0L/RVJlGszpvPrrZO3+yadKLQeQP+KhUC16lWxa/Fz1AjBeMAh+YAL9+GDr
-         C22A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=Zg/5XIA6AOIvCKf28eKv1Mz/3KXT2akr96LQrUcvm3E=;
-        b=S976LeNWl4FithJqEN5EYNbQLSEBZ/QV8oQxxOSYT6l9sDXXDbI870uqZwFKl6Swpo
-         5QIkJ3buz3Sh6Ob/Sz7t75LmgbOK/iWmG4nZVk6I39C0GNS9/KX+2TvZc4gwmWuRi68e
-         +ZgmZvxUAMnVmnQjs2hN/ChFAkQdbcXaN32DINxO4BDiVHr+xuh2dqlaKvNiwjOJQhxx
-         Mb1yxE1s3R5WcbjGQa95LEreRvxW2N5TdOvnf3yPRuNc2qKGOeH3cF55Oux5+E2X/gRo
-         qxKEP/W0Kze5AvD0eSj1NCuejaWWb6EhnBBTOn54sqcBt6aMjLsh67ZTX/m97/DSZIQ1
-         IYEA==
-X-Gm-Message-State: AOAM5302fy/7XUUWnOtI42FOKQAbmQnmss8Rflw9dVzSf8mzvW49cfhv
-        quyFo4ZyqPVtdZuUh0zX6Yug9w==
-X-Google-Smtp-Source: ABdhPJwLMXobar8pQBxWMm+INz/w+EbHQCYCIQ9vclZBAbeXoX4ljXzPmAbE2yIjtOd5uamloOTybA==
-X-Received: by 2002:a17:902:7e88:b0:138:f5b2:2df9 with SMTP id z8-20020a1709027e8800b00138f5b22df9mr3339879pla.48.1630682067368;
-        Fri, 03 Sep 2021 08:14:27 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local ([50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id l12sm5517244pji.36.2021.09.03.08.14.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 03 Sep 2021 08:14:27 -0700 (PDT)
-Subject: Re: [PATCH net-next] ionic: fix a sleeping in atomic bug
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     drivers@pensando.io, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Allen Hubbe <allenbh@pensando.io>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-References: <20210903131856.GA25934@kili>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <9ff5b195-decd-a49d-29e7-02c407cf4c0d@pensando.io>
-Date:   Fri, 3 Sep 2021 08:14:25 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.13.0
+        id S234053AbhICPbW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Sep 2021 11:31:22 -0400
+Received: from mga14.intel.com ([192.55.52.115]:5963 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1349724AbhICPbT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 3 Sep 2021 11:31:19 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10096"; a="219150078"
+X-IronPort-AV: E=Sophos;i="5.85,265,1624345200"; 
+   d="scan'208";a="219150078"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Sep 2021 08:30:15 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.85,265,1624345200"; 
+   d="scan'208";a="500491541"
+Received: from unknown (HELO localhost.igk.intel.com) ([10.102.22.231])
+  by fmsmga008.fm.intel.com with ESMTP; 03 Sep 2021 08:30:10 -0700
+From:   Maciej Machnikowski <maciej.machnikowski@intel.com>
+To:     maciej.machnikowski@intel.com, netdev@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org
+Cc:     richardcochran@gmail.com, abyagowi@fb.com,
+        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [RFC v4 net-next 0/2] Add RTNL interface for SyncE
+Date:   Fri,  3 Sep 2021 17:14:34 +0200
+Message-Id: <20210903151436.529478-1-maciej.machnikowski@intel.com>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
-In-Reply-To: <20210903131856.GA25934@kili>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/3/21 6:18 AM, Dan Carpenter wrote:
-> This code is holding spin_lock_bh(&lif->rx_filters.lock); so the
-> allocation needs to be atomic.
->
-> Fixes: 969f84394604 ("ionic: sync the filters in the work task")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Synchronous Ethernet networks use a physical layer clock to syntonize
+the frequency across different network elements.
 
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
+Basic SyncE node defined in the ITU-T G.8264 consist of an Ethernet
+Equipment Clock (EEC) and have the ability to recover synchronization
+from the synchronization inputs - either traffic interfaces or external
+frequency sources.
+The EEC can synchronize its frequency (syntonize) to any of those sources.
+It is also able to select synchronization source through priority tables
+and synchronization status messaging. It also provides neccessary
+filtering and holdover capabilities
 
-> ---
->   drivers/net/ethernet/pensando/ionic/ionic_rx_filter.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.c b/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.c
-> index 7e3a5634c161..25ecfcfa1281 100644
-> --- a/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.c
-> +++ b/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.c
-> @@ -318,7 +318,7 @@ void ionic_rx_filter_sync(struct ionic_lif *lif)
->   			if (f->state == IONIC_FILTER_STATE_NEW ||
->   			    f->state == IONIC_FILTER_STATE_OLD) {
->   				sync_item = devm_kzalloc(dev, sizeof(*sync_item),
-> -							 GFP_KERNEL);
-> +							 GFP_ATOMIC);
->   				if (!sync_item)
->   					goto loop_out;
->   
+This patch series introduces basic interface for reading the Ethernet
+Equipment Clock (EEC) state on a SyncE capable device. This state gives
+information about the source of the syntonization signal (ether my port,
+or any external one) and the state of EEC. This interface is required\
+to implement Synchronization Status Messaging on upper layers.
+
+Next steps:
+ - add interface to enable source clocks and get information about them
+ - properly return the EEC_SRC_PORT flag depending on the port recovered
+   clock being enabled and locked
+
+v2:
+- removed whitespace changes
+- fix issues reported by test robot
+v3:
+- Changed naming from SyncE to EEC
+- Clarify cover letter and commit message for patch 1
+v4:
+- Removed sync_source and pin_idx info
+- Changed one structure to attributes
+- Added EEC_SRC_PORT flag to indicate that the EEC is synchronized
+  to the recovered clock of a port that returns the state
+
+Maciej Machnikowski (2):
+  rtnetlink: Add new RTM_GETEECSTATE message to get SyncE status
+  ice: add support for reading SyncE DPLL state
+
+ drivers/net/ethernet/intel/ice/ice.h          |  5 ++
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   | 34 +++++++++
+ drivers/net/ethernet/intel/ice/ice_common.c   | 62 ++++++++++++++++
+ drivers/net/ethernet/intel/ice/ice_common.h   |  4 ++
+ drivers/net/ethernet/intel/ice/ice_devids.h   |  3 +
+ drivers/net/ethernet/intel/ice/ice_main.c     | 29 ++++++++
+ drivers/net/ethernet/intel/ice/ice_ptp.c      | 35 +++++++++
+ drivers/net/ethernet/intel/ice/ice_ptp_hw.c   | 44 ++++++++++++
+ drivers/net/ethernet/intel/ice/ice_ptp_hw.h   | 22 ++++++
+ include/linux/netdevice.h                     |  6 ++
+ include/uapi/linux/if_link.h                  | 31 ++++++++
+ include/uapi/linux/rtnetlink.h                |  3 +
+ net/core/rtnetlink.c                          | 71 +++++++++++++++++++
+ security/selinux/nlmsgtab.c                   |  3 +-
+ 14 files changed, 351 insertions(+), 1 deletion(-)
+
+-- 
+2.26.3
 
