@@ -2,127 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 146AB400248
-	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 17:27:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64DE5400201
+	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 17:25:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349933AbhICP1p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Sep 2021 11:27:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:46056 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1349908AbhICP1f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 11:27:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1630682794;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=tEPNOxkaSwVynI5bC9ITnmbjNbhpuULp2AY9Cx1gq1w=;
-        b=YBviGS280fgksjac80ID9aM0xJw3pnrWMH9g+o66vewY1/svx+qf0d/toAANGEwG5FoTxn
-        W27ftYNpW4Vp/UPmTqfx0J2g+2p3mgthXjVrMxNPvTA3Ulf9PQBPuZHZlzzB4vKXAcKOTe
-        aLgUvQPHPDhWnMx32EzCUUJsu9wE6lU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-435-zok3IZI4OUubFL4NfRx2ng-1; Fri, 03 Sep 2021 11:26:34 -0400
-X-MC-Unique: zok3IZI4OUubFL4NfRx2ng-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2C75F1854E20;
-        Fri,  3 Sep 2021 15:26:32 +0000 (UTC)
-Received: from virtlab512.virt.lab.eng.bos.redhat.com (virtlab512.virt.lab.eng.bos.redhat.com [10.19.152.206])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 540656F7EA;
-        Fri,  3 Sep 2021 15:26:27 +0000 (UTC)
-From:   Nitesh Narayan Lal <nitesh@redhat.com>
-To:     linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
-        davem@davemloft.net, ajit.khaparde@broadcom.com,
-        sriharsha.basavapatna@broadcom.com, somnath.kotur@broadcom.com,
-        huangguangbin2@huawei.com, huangdaode@huawei.com,
-        mtosatti@redhat.com, juri.lelli@redhat.com, frederic@kernel.org,
-        abelits@marvell.com, bhelgaas@google.com, rostedt@goodmis.org,
-        peterz@infradead.org
-Cc:     nilal@redhat.com, jesse.brandeburg@intel.com, robin.murphy@arm.com,
-        mingo@kernel.org, jbrandeb@kernel.org, akpm@linuxfoundation.org,
-        sfr@canb.auug.org.au, stephen@networkplumber.org,
-        rppt@linux.vnet.ibm.com, chris.friesen@windriver.com,
-        maz@kernel.org, nhorman@tuxdriver.com, pjwaskiewicz@gmail.com,
-        sassmann@redhat.com, thenzl@redhat.com, james.smart@broadcom.com,
-        dick.kennedy@broadcom.com, jkc@redhat.com, faisal.latif@intel.com,
-        shiraz.saleem@intel.com, tariqt@nvidia.com, ahleihel@redhat.com,
-        kheib@redhat.com, borisp@nvidia.com, saeedm@nvidia.com,
-        tatyana.e.nikolova@intel.com, mustafa.ismail@intel.com,
-        ahs3@redhat.com, leonro@nvidia.com,
-        chandrakanth.patil@broadcom.com, bjorn.andersson@linaro.org,
-        chunkuang.hu@kernel.org, yongqiang.niu@mediatek.com,
-        baolin.wang7@gmail.com, poros@redhat.com, minlei@redhat.com,
-        emilne@redhat.com, jejb@linux.ibm.com, martin.petersen@oracle.com,
-        kabel@kernel.org, viresh.kumar@linaro.org, kuba@kernel.org,
-        kashyap.desai@broadcom.com, sumit.saxena@broadcom.com,
-        shivasharan.srikanteshwara@broadcom.com,
-        sathya.prakash@broadcom.com, sreekanth.reddy@broadcom.com,
-        suganath-prabu.subramani@broadcom.com, tglx@linutronix.de,
-        ley.foon.tan@intel.com, jbrunet@baylibre.com,
-        johannes@sipsolutions.net, snelson@pensando.io,
-        lewis.hanly@microchip.com, benve@cisco.com, _govind@gmx.com,
-        jassisinghbrar@gmail.com
-Subject: [PATCH v6 14/14] net/mlx4: Use irq_update_affinity_hint
-Date:   Fri,  3 Sep 2021 11:24:30 -0400
-Message-Id: <20210903152430.244937-15-nitesh@redhat.com>
-In-Reply-To: <20210903152430.244937-1-nitesh@redhat.com>
-References: <20210903152430.244937-1-nitesh@redhat.com>
+        id S1349654AbhICPZ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Sep 2021 11:25:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51110 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349652AbhICPZ6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 11:25:58 -0400
+Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 433EFC061760
+        for <netdev@vger.kernel.org>; Fri,  3 Sep 2021 08:24:58 -0700 (PDT)
+Received: by mail-ot1-x342.google.com with SMTP id i3-20020a056830210300b0051af5666070so6967317otc.4
+        for <netdev@vger.kernel.org>; Fri, 03 Sep 2021 08:24:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=k3+PIl84BDEKsR+afDftURi+daSqqQKQrezVjb4o2gs=;
+        b=g6a1wE76cAC/UC8dHgVZXtb/SItBqL3lD8PuxMEV8qeMp0P7qTS+wQOBdgLghDREjL
+         ech//YRNnlY19q5unPIVpK8mSpFJaVn8HBlkt96azMVLT+yvmPdF6JPAJkRMBLu9I/q/
+         f6aUDi4VzR+O09ypkfr+KlLwH6WimiC6NP1l8iKcsfsKBXrnNFhXbhiDeOQDIxX/yu0u
+         pIQftSmAs5S5ub0blt0rJ8IhgiII85ZywNsOIl/tgeW68JKsLkdIgWGs5+QLargdS31V
+         wnJBZpT/FnjpYKKtQc58AM2I82hGxbonCKrkkcUuzLqk5hEq4/XQ55VO5sWf1WTk5aQC
+         p06Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=k3+PIl84BDEKsR+afDftURi+daSqqQKQrezVjb4o2gs=;
+        b=EfAANsaknDJn6GFXBX4td/i5NhUcAg/n8z6ovAO5e2pxMmjw83ju6sWFx2MGkoDeNL
+         KyuQivME+JPAfL5zhAr5X3grdjWR8kH8GJxFS/0+bKBzqk859PMXURKhGu1gwswXvWGt
+         cvF4zhQuBhAEDAVLDMwUyfW1YFogQ7sO6Rifa9ADXyVIR4Mh1r+xC433k5746qSsGF1N
+         T8f+rW6K7oigdAOpWiofshB4jTS9Y5REjMX53HLZ+JTbmVwqrv2cnGeQSZyjeTTm8gSn
+         PhM+HQxVOw7u7cr6VKrvXor/yz1zMIB71nfo1ErgzwNZx6az26Cccrq+WFwcwUMnDve8
+         HXow==
+X-Gm-Message-State: AOAM532MPaUYdfWcaebmv/ThaaKirlfvt3Dosh/P87XVNpVyiFLT+mEW
+        RjOnnAbnDYHllmGnL5XqmHDsi0pCdR2PW7hKAkc=
+X-Google-Smtp-Source: ABdhPJz5NBRMdM3n2We0P8DPtW48lfMSOGUpgJSXO0JBQ15uTp8YKugBfr3MHvRce3FPlUn/57K4h8M2IM4FTWMieMY=
+X-Received: by 2002:a9d:527:: with SMTP id 36mr3741359otw.363.1630682697428;
+ Fri, 03 Sep 2021 08:24:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Sender: mrslila88haber@gmail.com
+Received: by 2002:a4a:3512:0:0:0:0:0 with HTTP; Fri, 3 Sep 2021 08:24:56 -0700 (PDT)
+From:   Mrs Lila Haber <mrslilahabe2016@gmail.com>
+Date:   Fri, 3 Sep 2021 15:24:56 +0000
+X-Google-Sender-Auth: i8b55dTsZhNGVbuA4zPzHvbW6lk
+Message-ID: <CAODWenam_h+6HCXTX5fy-vE4bcrKcrzFOonr05qUF7xjSf4B_A@mail.gmail.com>
+Subject: Dear Child of God
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The driver uses irq_set_affinity_hint() to update the affinity_hint mask
-that is consumed by the userspace to distribute the interrupts. However,
-under the hood irq_set_affinity_hint() also applies the provided cpumask
-(if not NULL) as the affinity for the given interrupt which is an
-undocumented side effect.
+Dear Child of God,
 
-To remove this side effect irq_set_affinity_hint() has been marked
-as deprecated and new interfaces have been introduced. Hence, replace the
-irq_set_affinity_hint() with the new interface irq_update_affinity_hint()
-that only updates the affinity_hint pointer.
+Calvary Greetings in the name of the LORD Almighty and Our LORD JESUS
+CHRIST the giver of every good thing. Good day and compliments of the
+seasons, i know this letter will definitely come to you as a huge
+surprise, but I implore you to take the time to go through it
+carefully as the decision you make will go off a long way to determine
+my future and continued existence. I am Mrs Lila Haber aging widow of
+57 years old suffering from long time illness.I have some funds I
+inherited from my late husband, the sum of (19.1Million Dollars) and I
+needed a very honest and God fearing who can withdraw this money then
+use the funds for Charity works. I WISH TO GIVE THIS FUNDS TO YOU FOR
+CHARITY WORKS. I found your email address from the internet after
+honest prayers to the LORD to bring me a helper and i decided to
+contact you if you may be willing and interested to handle these trust
+funds in good faith before anything happens to me.
 
-Signed-off-by: Nitesh Narayan Lal <nitesh@redhat.com>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlx4/eq.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+I accept this decision because I do not have any child who will
+inherit this money after I die. I want your urgent reply to me so that
+I will give you the deposit receipt which the SECURITY COMPANY issued
+to me as next of kin for immediate transfer of the money to your
+account in your country, to start the good work of God, I want you to
+use the 25/percent of the total amount to help yourself in doing the
+project. I am desperately in keen need of assistance and I have
+summoned up courage to contact you for this task, you must not fail me
+and the millions of the poor people in our todays WORLD. This is no
+stolen money and there are no dangers involved,100% RISK FREE with
+full legal proof. Please if you would be able to use the funds for the
+Charity works kindly let me know immediately.I will appreciate your
+utmost confidentiality and trust in this matter to accomplish my heart
+desire, as I don't want anything that will jeopardize my last wish.
+Please
+kindly respond quickly for further details.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/eq.c b/drivers/net/ethernet/mellanox/mlx4/eq.c
-index 9e48509ed3b2..414e390e6b48 100644
---- a/drivers/net/ethernet/mellanox/mlx4/eq.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/eq.c
-@@ -244,9 +244,9 @@ static void mlx4_set_eq_affinity_hint(struct mlx4_priv *priv, int vec)
- 	    cpumask_empty(eq->affinity_mask))
- 		return;
- 
--	hint_err = irq_set_affinity_hint(eq->irq, eq->affinity_mask);
-+	hint_err = irq_update_affinity_hint(eq->irq, eq->affinity_mask);
- 	if (hint_err)
--		mlx4_warn(dev, "irq_set_affinity_hint failed, err %d\n", hint_err);
-+		mlx4_warn(dev, "irq_update_affinity_hint failed, err %d\n", hint_err);
- }
- #endif
- 
-@@ -1123,9 +1123,7 @@ static void mlx4_free_irqs(struct mlx4_dev *dev)
- 	for (i = 0; i < dev->caps.num_comp_vectors + 1; ++i)
- 		if (eq_table->eq[i].have_irq) {
- 			free_cpumask_var(eq_table->eq[i].affinity_mask);
--#if defined(CONFIG_SMP)
--			irq_set_affinity_hint(eq_table->eq[i].irq, NULL);
--#endif
-+			irq_update_affinity_hint(eq_table->eq[i].irq, NULL);
- 			free_irq(eq_table->eq[i].irq, eq_table->eq + i);
- 			eq_table->eq[i].have_irq = 0;
- 		}
--- 
-2.27.0
-
+Warmest Regards,
+Mrs Lila Haber
