@@ -2,123 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 317213FFB5F
-	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 09:55:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 986CE3FFB72
+	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 10:00:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348120AbhICHzQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Sep 2021 03:55:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60572 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348107AbhICHzP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 03:55:15 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1E01C061575;
-        Fri,  3 Sep 2021 00:54:15 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id s29so3688427pfw.5;
-        Fri, 03 Sep 2021 00:54:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=CMZ1yyi16oqxGNmWrTRmixFhuOGqIwUUrsc3+oEvQLQ=;
-        b=AeyDQY9c3UDEIOHYavQLmYnA94d4zpvooNUNsPC6+jzPddrZ/pS3k7b+8BRCFd6sEt
-         VZKFplcMfjmfbKoCt+rW/tQ27LEkQ+q+AGRPyRYbFPB7LB94D15KgYM3Ajov0MCONCg+
-         UpOXU7peWZsCcu9VzLgCseL9vXyUTd33VTXy1jS2Ty3YHr1/+pM1QZc7vK1nbYKur7HR
-         a9L/LMxtoUU76mw/YQaz5vLaV6edQ9Gh1O43T7fpWBVyAGImNH+X3oP+ahbln9IG7YoV
-         TbLdxqBUcPBCWqx/frvu5HEiLJzqC1DTY5ofwPFY5iK+NEJHwJQ9AzEz0QgHMA4qcwJi
-         ufeQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=CMZ1yyi16oqxGNmWrTRmixFhuOGqIwUUrsc3+oEvQLQ=;
-        b=D0S1etV3IU/NMZpC+UL+y+K//wyVocvwqhGRtyGTkj5Vai0T8b9fvps3jcHt7gOwai
-         dxdOozb7Q+LMBhUUQX/n+K5KklGHSbIeO32FRG2dW58MS4NubV3+Rw0pCNfGz2ZTV/eZ
-         LvQSghTNM+Bm+GjEq9AzM72t3UsD8XhJZLaQH0KCeDXFJcCYl6VwibaNMGlKv/DZ0fWr
-         wrR7KGQIWQbaEaOsSl9ifcdgchLujCHdo6ipPnOAHmX3k+SYJ2Zu+sfVVWmHcvCrvO9P
-         KrUPSUPzL5qydofS/36q+YmE609VIiRDOGKrzxwUna+rT+wVVCKuetG+1ZKmJhyhxQhX
-         LaVA==
-X-Gm-Message-State: AOAM530qkU5SflJGJhKGWVatqOSw13at7mZuEUFoBficfqYsVe9C9Jy2
-        636YOgXBp6MNrNfwx9D1eh8Yely2VRZtLahQBQ==
-X-Google-Smtp-Source: ABdhPJyAqvm3zibS819NJDXGX6KUDZ6JLuFBr2kOplBsGryaQFcudKuOunst68KqG25+1XWL9bBBQeUuXt9MeD3u+jo=
-X-Received: by 2002:a05:6a00:c81:b029:30e:21bf:4c15 with SMTP id
- a1-20020a056a000c81b029030e21bf4c15mr2080205pfv.70.1630655655266; Fri, 03 Sep
- 2021 00:54:15 -0700 (PDT)
+        id S1348044AbhICIBG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Sep 2021 04:01:06 -0400
+Received: from www62.your-server.de ([213.133.104.62]:40308 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347597AbhICIBD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 04:01:03 -0400
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mM47F-0002qT-OO; Fri, 03 Sep 2021 10:00:01 +0200
+Received: from [85.5.47.65] (helo=linux.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mM47F-000Xgi-GI; Fri, 03 Sep 2021 10:00:01 +0200
+Subject: Re: [PATCH v3 bpf-next 2/7] bpf: add bpf_trace_vprintk helper
+To:     Dave Marchevsky <davemarchevsky@fb.com>, bpf@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Yonghong Song <yhs@fb.com>, netdev@vger.kernel.org
+References: <20210828052006.1313788-1-davemarchevsky@fb.com>
+ <20210828052006.1313788-3-davemarchevsky@fb.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <1253feeb-9832-1a86-7eb2-5076698c4ca3@iogearbox.net>
+Date:   Fri, 3 Sep 2021 10:00:00 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-From:   Hao Sun <sunhao.th@gmail.com>
-Date:   Fri, 3 Sep 2021 15:54:04 +0800
-Message-ID: <CACkBjsYG3O_irFOZqjq5dJVDwW8pSUR_p6oO4BUaabWcx-hQCQ@mail.gmail.com>
-Subject: WARNING in sk_stream_kill_queues
-To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210828052006.1313788-3-davemarchevsky@fb.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.2/26282/Thu Sep  2 10:22:04 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 8/28/21 7:20 AM, Dave Marchevsky wrote:
+> This helper is meant to be "bpf_trace_printk, but with proper vararg
+> support". Follow bpf_snprintf's example and take a u64 pseudo-vararg
+> array. Write to /sys/kernel/debug/tracing/trace_pipe using the same
+> mechanism as bpf_trace_printk.
+> 
+> Signed-off-by: Dave Marchevsky <davemarchevsky@fb.com>
 
-When using Healer to fuzz the latest Linux kernel, the following crash
-was triggered.
+lgtm, minor comments below:
 
-HEAD commit: 9e9fb7655ed58 Merge tag 'net-next-5.15'
-git tree: upstream
-console output:
-https://drive.google.com/file/d/1AXEQDnn7SPgFAMjqbL03_24-X_8YHoAq/view?usp=sharing
-kernel config: https://drive.google.com/file/d/1zgxbwaYkrM26KEmJ-5sUZX57gfXtRrwA/view?usp=sharing
-C reproducer: https://drive.google.com/file/d/1qa4FVNoO-EsJGuDMtGlTxtHW0li-vMSP/view?usp=sharing
-Syzlang reproducer:
-https://drive.google.com/file/d/1pL6atNID5ZGzH4GceqyBCOC5IjFfiaVN/view?usp=sharing
+> ---
+>   include/linux/bpf.h            |  1 +
+>   include/uapi/linux/bpf.h       |  9 ++++++
+>   kernel/bpf/core.c              |  5 ++++
+>   kernel/bpf/helpers.c           |  2 ++
+>   kernel/trace/bpf_trace.c       | 52 +++++++++++++++++++++++++++++++++-
+>   tools/include/uapi/linux/bpf.h |  9 ++++++
+>   6 files changed, 77 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index be8d57e6e78a..b6c45a6cbbba 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -1088,6 +1088,7 @@ bool bpf_prog_array_compatible(struct bpf_array *array, const struct bpf_prog *f
+>   int bpf_prog_calc_tag(struct bpf_prog *fp);
+>   
+>   const struct bpf_func_proto *bpf_get_trace_printk_proto(void);
+> +const struct bpf_func_proto *bpf_get_trace_vprintk_proto(void);
+>   
+>   typedef unsigned long (*bpf_ctx_copy_t)(void *dst, const void *src,
+>   					unsigned long off, unsigned long len);
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 791f31dd0abe..f171d4d33136 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -4877,6 +4877,14 @@ union bpf_attr {
+>    *		Get the struct pt_regs associated with **task**.
+>    *	Return
+>    *		A pointer to struct pt_regs.
+> + *
+> + * u64 bpf_trace_vprintk(const char *fmt, u32 fmt_size, const void *data, u32 data_len)
 
-If you fix this issue, please add the following tag to the commit:
-Reported-by: Hao Sun <sunhao.th@gmail.com>
+s/u64/long/
 
- ------------[ cut here ]------------
-WARNING: CPU: 1 PID: 10229 at net/core/stream.c:207
-sk_stream_kill_queues+0x162/0x190 net/core/stream.c:207
-Modules linked in:
-CPU: 1 PID: 10229 Comm: syz-executor Not tainted 5.14.0+ #12
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
-RIP: 0010:sk_stream_kill_queues+0x162/0x190 net/core/stream.c:207
-Code: 41 5c e9 21 3b ce fd e8 1c 3b ce fd 89 de 48 89 ef e8 62 68 fe
-ff e8 0d 3b ce fd 8b 95 68 02 00 00 85 d2 74 ca e8 fe 3a ce fd <0f> 0b
-e8 f7 3a ce fd 8b 85 20 02 00 00 85 c0 74 c3 e8 e8 3a ce fd
-RSP: 0018:ffffc900080b7c98 EFLAGS: 00010202
-RAX: 000000000002a750 RBX: 0000000000000180 RCX: ffffc90002c0d000
-RDX: 0000000000040000 RSI: ffffffff836939f2 RDI: ffff8881031f0b40
-RBP: ffff8881031f0b40 R08: 0000000000000000 R09: 0000000000000000
-R10: 000000000000000d R11: 000000000004f380 R12: ffff8881031f0c90
-R13: ffff8881031f0bc0 R14: ffff8881031f0cf0 R15: 0000000000000000
-FS:  00007f311adcb700(0000) GS:ffff88813dc00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000732190 CR3: 000000010ab01000 CR4: 0000000000752ee0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-PKRU: 55555554
-Call Trace:
- inet_csk_destroy_sock+0x6f/0x1a0 net/ipv4/inet_connection_sock.c:1012
- __tcp_close+0x512/0x610 net/ipv4/tcp.c:2869
- tcp_close+0x29/0xa0 net/ipv4/tcp.c:2881
- inet_release+0x58/0xb0 net/ipv4/af_inet.c:431
- __sock_release+0x47/0xf0 net/socket.c:649
- sock_close+0x18/0x20 net/socket.c:1314
- __fput+0xdf/0x380 fs/file_table.c:280
- task_work_run+0x86/0xd0 kernel/task_work.c:164
- get_signal+0xde6/0x10b0 kernel/signal.c:2596
- arch_do_signal_or_restart+0xa9/0x860 arch/x86/kernel/signal.c:865
- handle_signal_work kernel/entry/common.c:148 [inline]
- exit_to_user_mode_loop kernel/entry/common.c:172 [inline]
- exit_to_user_mode_prepare+0xf2/0x280 kernel/entry/common.c:209
- __syscall_exit_to_user_mode_work kernel/entry/common.c:291 [inline]
- syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:302
- do_syscall_64+0x40/0xb0 arch/x86/entry/common.c:86
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x46a9a9
-Code: f7 d8 64 89 02 b8 ff ff ff ff c3 66 0f 1f 44 00 00 48 89 f8 48
-89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d
-01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f311adcac58 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
-RAX: 0000000000069340 RBX: 000000000078c0a0 RCX: 000000000046a9a9
-RDX: 0000000000088012 RSI: 0000000020000380 RDI: 0000000000000004
-RBP: 00000000004e4042 R08: 0000000000000000 R09: 0000000000000027
-R10: 000000000020c49a R11: 0000000000000246 R12: 000000000078c0a0
-R13: 0000000000000000 R14: 000000000078c0a0 R15: 00007ffe75b47830
+> + *	Description
+> + *		Behaves like **bpf_trace_printk**\ () helper, but takes an array of u64
+
+nit: maybe for users it's more clear from description if you instead mention that data_len
+needs to be multiple of 8 bytes? Or somehow mention the relation with data more clearly
+resp. which shortcoming it addresses compared to bpf_trace_printk(), so developers can more
+easily parse it.
+
+> + *		to format. Arguments are to be used as in **bpf_seq_printf**\ () helper.
+> + *	Return
+> + *		The number of bytes written to the buffer, or a negative error
+> + *		in case of failure.
+>    */
+[...]
+>   	default:
+>   		return NULL;
+>   	}
+> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> index 10672ebc63b7..ea8358b0c748 100644
+> --- a/kernel/trace/bpf_trace.c
+> +++ b/kernel/trace/bpf_trace.c
+> @@ -398,7 +398,7 @@ static const struct bpf_func_proto bpf_trace_printk_proto = {
+>   	.arg2_type	= ARG_CONST_SIZE,
+>   };
+>   
+> -const struct bpf_func_proto *bpf_get_trace_printk_proto(void)
+> +static void __set_printk_clr_event(void)
+>   {
+>   	/*
+>   	 * This program might be calling bpf_trace_printk,
+> @@ -410,10 +410,58 @@ const struct bpf_func_proto *bpf_get_trace_printk_proto(void)
+>   	 */
+>   	if (trace_set_clr_event("bpf_trace", "bpf_trace_printk", 1))
+>   		pr_warn_ratelimited("could not enable bpf_trace_printk events");
+> +}
+>   
+> +const struct bpf_func_proto *bpf_get_trace_printk_proto(void)
+> +{
+> +	__set_printk_clr_event();
+>   	return &bpf_trace_printk_proto;
+>   }
+>   
+> +BPF_CALL_4(bpf_trace_vprintk, char *, fmt, u32, fmt_size, const void *, data,
+> +	   u32, data_len)
+> +{
+> +	static char buf[BPF_TRACE_PRINTK_SIZE];
+> +	unsigned long flags;
+> +	int ret, num_args;
+> +	u32 *bin_args;
+> +
+> +	if (data_len & 7 || data_len > MAX_BPRINTF_VARARGS * 8 ||
+> +	    (data_len && !data))
+> +		return -EINVAL;
+> +	num_args = data_len / 8;
+> +
+> +	ret = bpf_bprintf_prepare(fmt, fmt_size, data, &bin_args, num_args);
+> +	if (ret < 0)
+> +		return ret;
+
+Given you have ARG_PTR_TO_MEM_OR_NULL for data, does this gracefully handle the
+case where you pass in fmt string containing e.g. %ps but data being NULL? From
+reading bpf_bprintf_prepare() looks like it does just fine, but might be nice
+to explicitly add a tiny selftest case for it while you're at it.
+
+> +	raw_spin_lock_irqsave(&trace_printk_lock, flags);
+> +	ret = bstr_printf(buf, sizeof(buf), fmt, bin_args);
+> +
+> +	trace_bpf_trace_printk(buf);
+> +	raw_spin_unlock_irqrestore(&trace_printk_lock, flags);
+> +
+> +	bpf_bprintf_cleanup();
+> +
+> +	return ret;
+> +}
+
+Thanks,
+Daniel
