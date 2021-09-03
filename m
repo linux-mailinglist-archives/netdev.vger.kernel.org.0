@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE1D33FFB9A
-	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 10:12:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5136E3FFB9F
+	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 10:15:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348172AbhICINg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Sep 2021 04:13:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36648 "EHLO
+        id S1348188AbhICIPw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Sep 2021 04:15:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348163AbhICINf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 04:13:35 -0400
-Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14CF1C061757
-        for <netdev@vger.kernel.org>; Fri,  3 Sep 2021 01:12:36 -0700 (PDT)
-Received: by mail-ot1-x331.google.com with SMTP id v33-20020a0568300921b0290517cd06302dso5706216ott.13
-        for <netdev@vger.kernel.org>; Fri, 03 Sep 2021 01:12:36 -0700 (PDT)
+        with ESMTP id S1348164AbhICIPr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 04:15:47 -0400
+Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 475F0C061757
+        for <netdev@vger.kernel.org>; Fri,  3 Sep 2021 01:14:48 -0700 (PDT)
+Received: by mail-ot1-x333.google.com with SMTP id g66-20020a9d12c8000000b0051aeba607f1so5696417otg.11
+        for <netdev@vger.kernel.org>; Fri, 03 Sep 2021 01:14:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=oYFuqTMJDaSGzBqj0N8ZsJWA2n+2LB/4OzK3j+yo80g=;
-        b=LqaKFr4ieNaDSx4/7sC84S3BWSh38y2bLT0amWlt7lK8+J69KJDQxTbooSrFLLWQy4
-         WAeTVZ4KtWujiqwwmr6FIVx2pTJqTDLjDZ/xcS1qftQaajDYmUu6orVeyQ88hmiE8jEB
-         R9+TFnqdIbzEn2vr7w0ftTmiVFThRsF0Et72yA63T9XWC7sQfoVc1R95VLQ8mdT1uhZf
-         /rBH+GKiZOXvJC1slviIf/L15gZODZDSuyPDKbMzT/odJ0D+6hxMHJdA2tAM442wdInQ
-         jWIU8QYVhuoy/JMgOlSQw6kd0h+NgRnI0bnDiPfi5G4omY7MTZ0xQRC+KQib8F18YPTD
-         bWXQ==
+        bh=8uUWdhYM5DsWR8yzVOZBpySwPmRDi+irTyHSxQBi1Jc=;
+        b=W1MyPOyB1j98UnxjNvMa6STDSgGBvBfkTEqrTbrvVwkvPsQ4oHRiNxiFoDibRe3inu
+         XkeYhi+Q5o4bRFj1uZzljoyuhLWPURp9xS6gURGoSSEcBSzc/CkuoVXgDGiM3SW3M5y4
+         YYuAeGyAFYywBfeFuSRQ29h2xue9VRJurnJJAakeaTxrArIst9biNix/sgEFoC9U47y0
+         pyvzWCX+v7pnDvqyDjdhkBOZUXrlSXFP4sYkM+2OvNFaBpaMtMErYUP0hOtyuAIu8f5R
+         BN+uU9tkPRyYwziA2ougXolIUczQB8tLd4sw+fg28FMOL9IDBFYb+ggp1CFYBfNLDT//
+         cjvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=oYFuqTMJDaSGzBqj0N8ZsJWA2n+2LB/4OzK3j+yo80g=;
-        b=WkqnRKEAezvEhilqvG+rCbnvyFPtPPRKBezRbNu1wsY+AlVdGNzaVGseU7Uqe7Y8QD
-         Bizqk186NilbE4eib2ar7gmesCV7emODpTfdfIofzAoOmXLrfG92dTnQl2GQOmih1KF8
-         QmCMBwJzPNSk8d51rWZQrx2xbhYEi5RLY/gZwmNnN8kDzQgkcxEM0uDjokATPZxaWX0h
-         duUwbYG28pKnljp/qVGTr05OmJn3CRS9YguF+OqD7uzWfxsxgygCG5Y4jJud1K9TyxKI
-         l+dwZ/905uQKDWR2tJ4Hm4eYz9QMo06nDRCpT52AJckTQg8a/vGMRUAAuQPZTwfjck4R
-         rpGA==
-X-Gm-Message-State: AOAM533CE/RTNEwfQh3BOiSvU7OSPM8m60Mv1tuURoXomEnJGLgfyRlb
-        eVLt/WgnqrWVtnqC1Dccg8C7yg8kAaOV48WFdtvQJw==
-X-Google-Smtp-Source: ABdhPJx9DqYm52WI3nuvdfP+/HC3bQbC4EKQ8sIUiE08OVgMI6gi+Ed4TSmuiRXKV4YnyBPkSzwv1+FYRr2fp9+vUgU=
-X-Received: by 2002:a05:6830:3114:: with SMTP id b20mr2073419ots.17.1630656755231;
- Fri, 03 Sep 2021 01:12:35 -0700 (PDT)
+        bh=8uUWdhYM5DsWR8yzVOZBpySwPmRDi+irTyHSxQBi1Jc=;
+        b=Y2xP2VBn5ZTOWZYMZ16pF0kSXJWaYE/qJc1ClmA/6LT150TmhR+j3Byqj98s0D7SsV
+         Y5fWthkEUJxYQxDdJZ4hDLSO70kccLL8uKmKYZuu+27A6ZPZuMobpbLBs60kPz396Ajo
+         8WNP7jHXUJ08aIphtArTpiS5nTuqEcOAh0T3UIkB1erOddypIh14cH8T3h1pPwuqKE65
+         4mp1hWSbmxyEor3JFLn1rSIe19erHT3fpaJOPVse59brb6O9ATlJt04wx6h6UPV8j74g
+         1BL2QpZNSqr/zjGdtOgJlfMmMxWPPZ++hf3EcdYLVC+fFha4bTyG6PbAVGCbynMK2tYc
+         5U5A==
+X-Gm-Message-State: AOAM5310vuu/xj4QgIy8l0EsdH6IPWFXehIMNzq90E9wmRHfFPC/FsS0
+        Sq6m7cLhkpl53usEhZ1ToH5nE6hPX8DF10H26MyNIw==
+X-Google-Smtp-Source: ABdhPJxOHa43+/4XgM8xkdIAhtvrj5Uw+u2abRaPJ16HEWRDINduJ5ovsIgediP01+/Lf4fMVKPFUM5C1qH6FQoxWy0=
+X-Received: by 2002:a9d:4104:: with SMTP id o4mr2200950ote.251.1630656887458;
+ Fri, 03 Sep 2021 01:14:47 -0700 (PDT)
 MIME-Version: 1.0
-References: <00000000000022749505cb06942c@google.com>
-In-Reply-To: <00000000000022749505cb06942c@google.com>
+References: <000000000000cdb6a905cb069738@google.com>
+In-Reply-To: <000000000000cdb6a905cb069738@google.com>
 From:   Marco Elver <elver@google.com>
-Date:   Fri, 3 Sep 2021 10:12:24 +0200
-Message-ID: <CANpmjNN8TOPdy-9w8Y432N9tm9Fn6E-SD9QxDp6Frh-uYefykA@mail.gmail.com>
-Subject: Re: [syzbot] net-next build error (4)
-To:     syzbot <syzbot+c61aaee16441c4fa206a@syzkaller.appspotmail.com>
+Date:   Fri, 3 Sep 2021 10:14:36 +0200
+Message-ID: <CANpmjNP2JEyFO_d9Dxkw5h6WQL70AhDsxkyoFTizvo+n3Ct3Tg@mail.gmail.com>
+Subject: Re: [syzbot] net build error (3)
+To:     syzbot <syzbot+8322c0f0976fafa0ae88@syzkaller.appspotmail.com>
 Cc:     akpm@linux-foundation.org, bp@alien8.de, davem@davemloft.net,
         hpa@zytor.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
         mingo@redhat.com, netdev@vger.kernel.org,
@@ -63,21 +63,21 @@ X-Mailing-List: netdev@vger.kernel.org
 
 #syz fix: x86/setup: Explicitly include acpi.h
 
-On Thu, 2 Sept 2021 at 19:33, syzbot
-<syzbot+c61aaee16441c4fa206a@syzkaller.appspotmail.com> wrote:
+On Thu, 2 Sept 2021 at 19:34, syzbot
+<syzbot+8322c0f0976fafa0ae88@syzkaller.appspotmail.com> wrote:
 >
 > Hello,
 >
 > syzbot found the following issue on:
 >
-> HEAD commit:    9e9fb7655ed5 Merge tag 'net-next-5.15' of git://git.kernel..
-> git tree:       net-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=16e87c6d300000
+> HEAD commit:    d12e1c464988 net: dsa: b53: Set correct number of ports in..
+> git tree:       net
+> console output: https://syzkaller.appspot.com/x/log.txt?x=125c2886300000
 > kernel config:  https://syzkaller.appspot.com/x/.config?x=bd61edfef9fa14b1
-> dashboard link: https://syzkaller.appspot.com/bug?extid=c61aaee16441c4fa206a
+> dashboard link: https://syzkaller.appspot.com/bug?extid=8322c0f0976fafa0ae88
 >
 > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+c61aaee16441c4fa206a@syzkaller.appspotmail.com
+> Reported-by: syzbot+8322c0f0976fafa0ae88@syzkaller.appspotmail.com
 >
 > arch/x86/kernel/setup.c:916:6: error: implicit declaration of function 'acpi_mps_check' [-Werror=implicit-function-declaration]
 > arch/x86/kernel/setup.c:1110:2: error: implicit declaration of function 'acpi_table_upgrade' [-Werror=implicit-function-declaration]
@@ -96,4 +96,4 @@ On Thu, 2 Sept 2021 at 19:33, syzbot
 > --
 > You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
 > To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/00000000000022749505cb06942c%40google.com.
+> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/000000000000cdb6a905cb069738%40google.com.
