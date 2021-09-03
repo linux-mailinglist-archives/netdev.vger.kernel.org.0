@@ -2,75 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7B43400854
-	for <lists+netdev@lfdr.de>; Sat,  4 Sep 2021 01:26:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A277240085C
+	for <lists+netdev@lfdr.de>; Sat,  4 Sep 2021 01:37:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350772AbhICX0r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Sep 2021 19:26:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35816 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244436AbhICX0q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 3 Sep 2021 19:26:46 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0B2A160FDC;
-        Fri,  3 Sep 2021 23:25:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1630711546;
-        bh=2hug832GJVtzrYvTvTp/Z6fnqDv0J6Tt1NOdriwux7k=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=aHy1L04+CSr5H32nt2zgsUjRjyqzOE7W8gQiSpgka29Lmvhm8F1SbdZWD4iNo85JX
-         NjfP5AWptaLs7k3GirxkdcZ1hbrx6hKOj1HHZlehV4tUXrBYLcVULrbCQU9d6joeTc
-         1N7s7xZeg1MwycD5Nto+GXknCHypR17NHwW3seSClnlfoYCwzY9DEAy0LiuVNkF9FV
-         +E4u3Gpj1tRVSxEIAFbJ8bVKccx+Rohswc1uMJes5QJggoH+uWiIdGjR5x67+SuE7f
-         +hnPX8vPzcsBJdNksAr78KLib47itPGA5Xi275XUuYAfmqHViG5+O7ePopIi2kNNtB
-         KuOlnPKWVfWnw==
-Date:   Fri, 3 Sep 2021 16:25:45 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Toms Atteka <cpp.code.lv@gmail.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v3] net: openvswitch: IPv6: Add IPv6 extension
- header support
-Message-ID: <20210903162545.6e12b15c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210903205332.707905-1-cpp.code.lv@gmail.com>
-References: <20210903205332.707905-1-cpp.code.lv@gmail.com>
+        id S241254AbhICXik (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Sep 2021 19:38:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51284 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230004AbhICXij (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 19:38:39 -0400
+Received: from mail-vs1-xe2f.google.com (mail-vs1-xe2f.google.com [IPv6:2607:f8b0:4864:20::e2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F90EC061575;
+        Fri,  3 Sep 2021 16:37:39 -0700 (PDT)
+Received: by mail-vs1-xe2f.google.com with SMTP id l9so649656vsb.8;
+        Fri, 03 Sep 2021 16:37:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=c5HXH0UEqvRFg7fiHvVooz4ZvcE8dS4x+eksgLrM1Hw=;
+        b=HPToHelTDdD9RGA7PhQY5Kk4vQtSrX2eLhAA5TD2hefxJ/fLZuNWzdZZtPrrDYt7TF
+         /nDmPenuq5cBQH9X1LrE4jrcQxw7sWuLs4CeNvQPWMd3QFZDhIQVCOM03ed4ECC9mamZ
+         hi+oMBFgWmhH5UyAylNWdAbGOhBwMG2gsUBzGE58RhfW5VtdAcxJLMO2P75jta4ZYYy2
+         jZ6UbxR/F01hI5sHQCuDYR9Cau7LYzWvbifPXfUWWfnLSwNMwclUPUXYH/8FPzB17/56
+         dmllTrs5NsoqJkVk5KkWnpV/17pjJVyPO6V11KknV1i6UO74hTVuhDpg+DHcwR+0uIbh
+         xyLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=c5HXH0UEqvRFg7fiHvVooz4ZvcE8dS4x+eksgLrM1Hw=;
+        b=oz6oWMaQVtSNre2Pq2NQS+BVuSgCUgv31JCDcI9UEqebBbjTfdtA7s4HwZ57zpaw/n
+         NeU98pXs5k5GPK6Yt8PfZedupyLpfmAp4PbgPm9/gR95/qLCu1Y9Xs6aa7nEOKAiBD9+
+         CxD/7IWTUxPjNj++9Cxoum89sf2Po/tB5DHtWKjdFtklbKktP5sz9v92pleY7vx060aS
+         kWRYMMZdrRCO5xB+Uu//BWRNW5bGQqjZfqHbEZRXWYB3WSI0z4tfRPom+/ycEc9iSnEc
+         JvOQjtau9keynyGq2iIZyR2NPjDtgQtcD2EDsafqC9AJwqy3LVV6DJa0NcjIdR+pzMxI
+         E3wA==
+X-Gm-Message-State: AOAM530tK4WiW5kHG4CLBUfODeNTblzbrxGeJubW80wFPvo5DB8B61Sg
+        pkUXplpJyDcr2IpF0oMVipC2/tS+y1tEOGeWmCiKP7rT
+X-Google-Smtp-Source: ABdhPJwOY5zUBLI5T3CaX+ma5kogdwn2AWrK3PuyGyqNvv8Imxb+7s/BU65Gm1S7sCVGVIL3bvZD+a4T/Smy9ErDRsI=
+X-Received: by 2002:a67:2d08:: with SMTP id t8mr827077vst.10.1630712258221;
+ Fri, 03 Sep 2021 16:37:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20210903031306.78292-1-desmondcheongzx@gmail.com>
+In-Reply-To: <20210903031306.78292-1-desmondcheongzx@gmail.com>
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Date:   Fri, 3 Sep 2021 16:37:27 -0700
+Message-ID: <CABBYNZJnbDDqX=bEtRhn7URaOfoMVHR8JTavr+T8k0UYMLOhQg@mail.gmail.com>
+Subject: Re: [PATCH 0/2] Bluetooth: various SCO fixes
+To:     Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  3 Sep 2021 13:53:32 -0700 Toms Atteka wrote:
-> This change adds a new OpenFlow field OFPXMT_OFB_IPV6_EXTHDR and
-> packets can be filtered using ipv6_ext flag.
->=20
-> Signed-off-by: Toms Atteka <cpp.code.lv@gmail.com>
+Hi Desmond,
 
-net/openvswitch/flow.c:268:6: warning: no previous prototype for =E2=80=98g=
-et_ipv6_ext_hdrs=E2=80=99 [-Wmissing-prototypes]
-  268 | void get_ipv6_ext_hdrs(struct sk_buff *skb, struct ipv6hdr *nh, u16=
- *ext_hdrs)
-      |      ^~~~~~~~~~~~~~~~~
-net/openvswitch/flow.c:268:6: warning: symbol 'get_ipv6_ext_hdrs' was not d=
-eclared. Should it be static?
-net/openvswitch/flow.c:243: warning: This comment starts with '/**', but is=
-n't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
- * Parses packet and sets IPv6 extension header flags.
+On Thu, Sep 2, 2021 at 8:23 PM Desmond Cheong Zhi Xi
+<desmondcheongzx@gmail.com> wrote:
+>
+>
+> Hi,
+>
+> This patch set contains some of the fixes for SCO following our
+> discussion on commit ba316be1b6a0 ("Bluetooth: schedule SCO timeouts
+> with delayed_work") [1].
+>
+> I believe these patches should go in together with [2] to address the
+> UAF errors that have been reported by Syzbot following
+> commit ba316be1b6a0.
+>
+> Link: https://lore.kernel.org/lkml/20210810041410.142035-2-desmondcheongzx@gmail.com/ [1]
+> Link: https://lore.kernel.org/lkml/20210831065601.101185-1-desmondcheongzx@gmail.com/ [2]
+>
+> Best wishes,
+> Desmond
+>
+> Desmond Cheong Zhi Xi (2):
+>   Bluetooth: call sock_hold earlier in sco_conn_del
+>   Bluetooth: fix init and cleanup of sco_conn.timeout_work
+>
+>  net/bluetooth/sco.c | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
+>
+> --
+> 2.25.1
 
+Applied, thanks.
 
-Also please CC appropriate maintainers on your submissions
-(scripts/get_maintainers is a good guide) and besides that:
-
-
-# Form letter - net-next is closed
-
-We have already sent the networking pull request for 5.15
-and therefore net-next is closed for new drivers, features,
-code refactoring and optimizations. We are currently accepting
-bug fixes only.
-
-Please repost when net-next reopens after 5.15-rc1 is cut.
-
-Look out for the announcement on the mailing list or check:
-http://vger.kernel.org/~davem/net-next.html
-
-RFC patches sent for review only are obviously welcome at any time.
+-- 
+Luiz Augusto von Dentz
