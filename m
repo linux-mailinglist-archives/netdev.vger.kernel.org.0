@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C39DB400234
-	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 17:27:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C78C400242
+	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 17:27:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349824AbhICP1W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Sep 2021 11:27:22 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:55010 "EHLO
+        id S1349889AbhICP1d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Sep 2021 11:27:33 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:56674 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1349783AbhICP1L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 11:27:11 -0400
+        by vger.kernel.org with ESMTP id S1349585AbhICP1Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 11:27:16 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1630682771;
+        s=mimecast20190719; t=1630682776;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=/5iITQ7YECayxCOaMFV8bBYl4Mk3une/qouZSkA99xY=;
-        b=NwSj8vBhHazpurNNVhzSEwBpttt9z4urXtvGdbOZjuSpWmCi0Bac6v+fmWZezx4T6QfX+5
-        hVYDsbwIHCy3d9KR+9qdMefea0br6ZjNw5Vi2RnuwY3+1nRJ/Gxnk7x/gG015dV8zQhYDT
-        MFmo/6dlBnXxD9MybOEm2Fg2yYdstec=
+        bh=IOzJpRkGxmKTqFp67xwOIenGyy38XfGpuDU4zTEm0Aw=;
+        b=HcjAO2TCvb+Yyc17geI5IjmThlpr7cUNVHgCj5BZkaiSuel/KUNkPK29yBQVKLp76s51M/
+        +z+63IsIhhJFtxG0NYNCUhcf7foZ4FLpAlUnlor36a9DEEVoFfe1WCMgZi0HiYB94O9yAF
+        RStxI1ecdcpyOLmeMdoM8HDDRYKF1No=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-104-f_orblj7MGGe9X69sU5hjQ-1; Fri, 03 Sep 2021 11:26:10 -0400
-X-MC-Unique: f_orblj7MGGe9X69sU5hjQ-1
+ us-mta-396-zfQr1nrbNlC8_0u-D3PU8A-1; Fri, 03 Sep 2021 11:26:15 -0400
+X-MC-Unique: zfQr1nrbNlC8_0u-D3PU8A-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B0D0F184609A;
-        Fri,  3 Sep 2021 15:26:08 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A0F9918460E0;
+        Fri,  3 Sep 2021 15:26:13 +0000 (UTC)
 Received: from virtlab512.virt.lab.eng.bos.redhat.com (virtlab512.virt.lab.eng.bos.redhat.com [10.19.152.206])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 79ADC6E0B0;
-        Fri,  3 Sep 2021 15:25:58 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CB1C76E0B0;
+        Fri,  3 Sep 2021 15:26:08 +0000 (UTC)
 From:   Nitesh Narayan Lal <nitesh@redhat.com>
 To:     linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
         linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
@@ -66,9 +66,9 @@ Cc:     nilal@redhat.com, jesse.brandeburg@intel.com, robin.murphy@arm.com,
         johannes@sipsolutions.net, snelson@pensando.io,
         lewis.hanly@microchip.com, benve@cisco.com, _govind@gmx.com,
         jassisinghbrar@gmail.com
-Subject: [PATCH v6 10/14] mailbox: Use irq_update_affinity_hint
-Date:   Fri,  3 Sep 2021 11:24:26 -0400
-Message-Id: <20210903152430.244937-11-nitesh@redhat.com>
+Subject: [PATCH v6 11/14] scsi: lpfc: Use irq_set_affinity
+Date:   Fri,  3 Sep 2021 11:24:27 -0400
+Message-Id: <20210903152430.244937-12-nitesh@redhat.com>
 In-Reply-To: <20210903152430.244937-1-nitesh@redhat.com>
 References: <20210903152430.244937-1-nitesh@redhat.com>
 MIME-Version: 1.0
@@ -78,56 +78,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The driver uses irq_set_affinity_hint() to:
+The driver uses irq_set_affinity_hint to set the affinity for the lpfc
+interrupts to a mask corresponding to the local NUMA node to avoid
+performance overhead on AMD architectures.
 
-- Set the affinity_hint which is consumed by the userspace for
-  distributing the interrupts
+However, irq_set_affinity_hint() setting the affinity is an undocumented
+side effect that this function also sets the affinity under the hood.
+To remove this side effect irq_set_affinity_hint() has been marked as
+deprecated and new interfaces have been introduced.
 
-- Enforce affinity
+Also, as per the commit dcaa21367938 ("scsi: lpfc: Change default IRQ model
+on AMD architectures"):
+"On AMD architecture, revert the irq allocation to the normal style
+(non-managed) and then use irq_set_affinity_hint() to set the cpu affinity
+and disable user-space rebalancing."
+we don't really need to set the affinity_hint as user-space rebalancing for
+the lpfc interrupts is not desired.
 
-As per commit 6ac17fe8c14a ("mailbox: bcm-flexrm-mailbox: Set IRQ affinity
-hint for FlexRM ring IRQs") the latter is done to ensure that the FlexRM
-ring interrupts are evenly spread across all available CPUs. However, since
-commit a0c9259dc4e1 ("irq/matrix: Spread interrupts on allocation") the
-spreading of interrupts is dynamically performed at the time of allocation.
-Hence, there is no need for the drivers to enforce their own affinity for
-the spreading of interrupts.
-
-Also, irq_set_affinity_hint() applying the provided cpumask as an affinity
-for the interrupt is an undocumented side effect. To remove this side
-effect irq_set_affinity_hint() has been marked as deprecated and new
-interfaces have been introduced. Hence, replace the irq_set_affinity_hint()
-with the new interface irq_update_affinity_hint() that only sets the
-affinity_hint pointer.
+Hence, replace the irq_set_affinity_hint() with irq_set_affinity() which
+only applies the affinity for the interrupts.
 
 Signed-off-by: Nitesh Narayan Lal <nitesh@redhat.com>
-Acked-by: Jassi Brar <jaswinder.singh@linaro.org>
+Reviewed-by: James Smart <jsmart2021@gmail.com>
 ---
- drivers/mailbox/bcm-flexrm-mailbox.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/scsi/lpfc/lpfc_init.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/mailbox/bcm-flexrm-mailbox.c b/drivers/mailbox/bcm-flexrm-mailbox.c
-index 78073ad1f2f1..16982c13d323 100644
---- a/drivers/mailbox/bcm-flexrm-mailbox.c
-+++ b/drivers/mailbox/bcm-flexrm-mailbox.c
-@@ -1298,7 +1298,7 @@ static int flexrm_startup(struct mbox_chan *chan)
- 	val = (num_online_cpus() < val) ? val / num_online_cpus() : 1;
- 	cpumask_set_cpu((ring->num / val) % num_online_cpus(),
- 			&ring->irq_aff_hint);
--	ret = irq_set_affinity_hint(ring->irq, &ring->irq_aff_hint);
-+	ret = irq_update_affinity_hint(ring->irq, &ring->irq_aff_hint);
- 	if (ret) {
- 		dev_err(ring->mbox->dev,
- 			"failed to set IRQ affinity hint for ring%d\n",
-@@ -1425,7 +1425,7 @@ static void flexrm_shutdown(struct mbox_chan *chan)
+diff --git a/drivers/scsi/lpfc/lpfc_init.c b/drivers/scsi/lpfc/lpfc_init.c
+index 0ec322f0e3cb..5d761ad642a5 100644
+--- a/drivers/scsi/lpfc/lpfc_init.c
++++ b/drivers/scsi/lpfc/lpfc_init.c
+@@ -12617,7 +12617,7 @@ lpfc_irq_set_aff(struct lpfc_hba_eq_hdl *eqhdl, unsigned int cpu)
+ 	cpumask_clear(&eqhdl->aff_mask);
+ 	cpumask_set_cpu(cpu, &eqhdl->aff_mask);
+ 	irq_set_status_flags(eqhdl->irq, IRQ_NO_BALANCING);
+-	irq_set_affinity_hint(eqhdl->irq, &eqhdl->aff_mask);
++	irq_set_affinity(eqhdl->irq, &eqhdl->aff_mask);
+ }
  
- 	/* Release IRQ */
- 	if (ring->irq_requested) {
--		irq_set_affinity_hint(ring->irq, NULL);
-+		irq_update_affinity_hint(ring->irq, NULL);
- 		free_irq(ring->irq, ring);
- 		ring->irq_requested = false;
+ /**
+@@ -12906,7 +12906,6 @@ lpfc_sli4_enable_msix(struct lpfc_hba *phba)
+ 	for (--index; index >= 0; index--) {
+ 		eqhdl = lpfc_get_eq_hdl(index);
+ 		lpfc_irq_clear_aff(eqhdl);
+-		irq_set_affinity_hint(eqhdl->irq, NULL);
+ 		free_irq(eqhdl->irq, eqhdl);
  	}
+ 
+@@ -13067,7 +13066,6 @@ lpfc_sli4_disable_intr(struct lpfc_hba *phba)
+ 		for (index = 0; index < phba->cfg_irq_chann; index++) {
+ 			eqhdl = lpfc_get_eq_hdl(index);
+ 			lpfc_irq_clear_aff(eqhdl);
+-			irq_set_affinity_hint(eqhdl->irq, NULL);
+ 			free_irq(eqhdl->irq, eqhdl);
+ 		}
+ 	} else {
 -- 
 2.27.0
 
