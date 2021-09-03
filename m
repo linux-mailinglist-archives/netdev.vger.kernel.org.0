@@ -2,121 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1E744004A7
-	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 20:10:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C19E40055E
+	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 20:54:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350435AbhICSLg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Sep 2021 14:11:36 -0400
-Received: from relay.sw.ru ([185.231.240.75]:51790 "EHLO relay.sw.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1350377AbhICSLf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 3 Sep 2021 14:11:35 -0400
+        id S1351326AbhICSzk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Sep 2021 14:55:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43876 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351317AbhICSzi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 14:55:38 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 684C1C061575;
+        Fri,  3 Sep 2021 11:54:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:From:
-        Subject; bh=0jkY0Ap3t6JVV0YhdOnHqeGWTCDit365Ya9r8y7B9kU=; b=hPK5/HUHOMehWNYGH
-        4n2XTZ4YB3tRHUWSXH/GoizctjVhj0tX3hYlhmBMs8D3ZosptYBshO/RNq8tBN/9YKBNfLAYxSmSQ
-        N0LQUkDAPx2h1AWehVpw4OgZy3ZOFCyvn2MYJSYIfvvMCDlkLsXzU5ZrXOgPttBGhcJkgji6nWxVE
-        =;
-Received: from [10.93.0.56]
-        by relay.sw.ru with esmtp (Exim 4.94.2)
-        (envelope-from <vvs@virtuozzo.com>)
-        id 1mMDe3-000ihu-Pd; Fri, 03 Sep 2021 21:10:31 +0300
-Subject: Re: WARNING in sk_stream_kill_queues
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Hao Sun <sunhao.th@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org
-References: <CACkBjsYG3O_irFOZqjq5dJVDwW8pSUR_p6oO4BUaabWcx-hQCQ@mail.gmail.com>
- <c84b07f8-ab0e-9e0c-c5d7-7d44e4d6f3e5@gmail.com>
-From:   Vasily Averin <vvs@virtuozzo.com>
-Message-ID: <9a35a6f2-9373-6561-341c-8933b537122e@virtuozzo.com>
-Date:   Fri, 3 Sep 2021 21:10:31 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=LDPyZjoZATgjIoK4fh0rqe2iVjJiFfhqid+X8wbi9L4=; b=SfWG3XvW1LPlQbkBl870Z0j8A
+        IG/Gez70wjcdq+LkJf2jIwvtR0aVsVbOrSGu7FwboY+36PZglh3xUC33RUtvKjzrmSjX6NkCGKJKx
+        oO2wg1rlJrPRwqaAkfNbYo3PZqrK7x+PnFqaSdkujHRTULW9O8pe0a+bvr2fhJeXtSXPoPTgorPVl
+        V42AVLnZU4jwfKehXl06v8wex1pf5UNwcoEASjWdGSnsCBIEEWDbecfP6ra5yjm9hXbGfDwa30ZBk
+        ZhzoScF8GmlPpXb38IPcyPdjKpoOG3NRk1KOVmBPHLJMcI2bXZPIBtEQcDFSK9cNjTqTmMGOX69IY
+        m5UKHFj1A==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:48178)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mMEKi-0003R7-1C; Fri, 03 Sep 2021 19:54:36 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mMEKg-0000jL-UN; Fri, 03 Sep 2021 19:54:34 +0100
+Date:   Fri, 3 Sep 2021 19:54:34 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH net-next 0/3] Make the PHY library stop being so
+ greedy when binding the generic PHY driver
+Message-ID: <20210903185434.GX22278@shell.armlinux.org.uk>
+References: <20210902132635.GG22278@shell.armlinux.org.uk>
+ <20210902152342.vett7qfhvhiyejvo@skbuf>
+ <20210902163144.GH22278@shell.armlinux.org.uk>
+ <20210902171033.4byfnu3g25ptnghg@skbuf>
+ <20210902175043.GK22278@shell.armlinux.org.uk>
+ <20210902190507.shcdmfi3v55l2zuj@skbuf>
+ <20210902200301.GM22278@shell.armlinux.org.uk>
+ <20210902202124.o5lcnukdzjkbft7l@skbuf>
+ <20210902202905.GN22278@shell.armlinux.org.uk>
+ <20210903162253.5utsa45zy6h4v76t@skbuf>
 MIME-Version: 1.0
-In-Reply-To: <c84b07f8-ab0e-9e0c-c5d7-7d44e4d6f3e5@gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210903162253.5utsa45zy6h4v76t@skbuf>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/3/21 7:56 PM, Eric Dumazet wrote:
-> On 9/3/21 12:54 AM, Hao Sun wrote:
->> Hello,
->>
->> When using Healer to fuzz the latest Linux kernel, the following crash
->> was triggered.
->>
->> HEAD commit: 9e9fb7655ed58 Merge tag 'net-next-5.15'
->> git tree: upstream
->> console output:
->> https://drive.google.com/file/d/1AXEQDnn7SPgFAMjqbL03_24-X_8YHoAq/view?usp=sharing
->> kernel config: https://drive.google.com/file/d/1zgxbwaYkrM26KEmJ-5sUZX57gfXtRrwA/view?usp=sharing
->> C reproducer: https://drive.google.com/file/d/1qa4FVNoO-EsJGuDMtGlTxtHW0li-vMSP/view?usp=sharing
->> Syzlang reproducer:
->> https://drive.google.com/file/d/1pL6atNID5ZGzH4GceqyBCOC5IjFfiaVN/view?usp=sharing
-
->> If you fix this issue, please add the following tag to the commit:
->> Reported-by: Hao Sun <sunhao.th@gmail.com>
+On Fri, Sep 03, 2021 at 07:22:53PM +0300, Vladimir Oltean wrote:
+> [ trimming the CC list, I'm sure most people don't care, if they do,
+>   they can watch the mailing list ]
 > 
-> This is probably a dup, causes skb_expand_head() changes,
-> CC  Vasily Averin <vvs@virtuozzo.com> is currently working on a fix.
+> On Thu, Sep 02, 2021 at 09:29:05PM +0100, Russell King (Oracle) wrote:
+> > On Thu, Sep 02, 2021 at 11:21:24PM +0300, Vladimir Oltean wrote:
+> > > On Thu, Sep 02, 2021 at 09:03:01PM +0100, Russell King (Oracle) wrote:
+> > > > # systemctl list-dependencies networking.service
+> > > > networking.service
+> > > >   ├─ifupdown-pre.service
+> > > >   ├─system.slice
+> > > >   └─network.target
+> > > > # systemctl list-dependencies ifupdown-pre.service
+> > > > ifupdown-pre.service
+> > > >   ├─system.slice
+> > > >   └─systemd-udevd.service
+> > > > 
+> > > > Looking in the service files for a better idea:
+> > > > 
+> > > > networking.service:
+> > > > Requires=ifupdown-pre.service
+> > > > Wants=network.target
+> > > > After=local-fs.target network-pre.target apparmor.service systemd-sysctl.service systemd-modules-load.service ifupdown-pre.service
+> > > > Before=network.target shutdown.target network-online.target
+> > > > 
+> > > > ifupdown-pre.service:
+> > > > Wants=systemd-udevd.service
+> > > > After=systemd-udev-trigger.service
+> > > > Before=network.target
+> > > > 
+> > > > So, the dependency you mention is already present. As is a dependency
+> > > > on udev. The problem is udev does all the automatic module loading
+> > > > asynchronously and in a multithreaded way.
+> > > > 
+> > > > I don't think there's a way to make systemd wait for all module loads
+> > > > to complete.
+> > > 
+> > > So ifupdown-pre.service has a call to "udevadm settle". This "watches
+> > > the udev event queue, and exits if all current events are handled",
+> > > according to the man page. But which current events? ifupdown-pre.service
+> > > does not have the dependency on systemd-modules-load.service, just
+> > > networking.service does. So maybe ifupdown-pre.service does not wait for
+> > > DSA to finish initializing, then it tells networking.service that all is ok.
+> > 
+> > ifupdown-pre.service does have a call to udevadm settle, and that
+> > does get called from what I can tell.
+> > 
+> > systemd-modules-load.service is an entire red herring. The only
+> > module listed in the various modules-load.d directories is "tun"
+> > for openvpn (which isn't currently being used.)
+> > 
+> > As I've already told you (and you seem to have ignored), DSA gets
+> > loaded by udev, not by systemd-modules-load.service.
+> > systemd-modules-load.service is irrelevant to my situation.
+> > 
+> > I think there's a problem with "and exits if all current events are
+> > handled" - does that mean it's fired off a modprobe process which
+> > is in progress, or does that mean that the modprobe process has
+> > completed.
+> > 
+> > Given that we can see that ifup is being run while the DSA module is
+> > still in the middle of probing, the latter interpretation can not be
+> > true - unless systemd is ignoring the dependencies. Or just in
+> > general, systemd being systemd (I have very little faith in systemd
+> > behaving as it should.)
+> 
+> So I've set a fresh installation of Debian Buster on my Turris MOX,
+> which has 3 mv88e6xxx switches, and I've put the mv88e6xxx driver inside
+> the rootfs as a module to be loaded by udev based on modaliases just
+> like you've said.  Additionally, the PHY driver is also a module.
+> The kernel is built straight from the v5.13 tag, absolutely no changes.
+> 
+> Literally the only changes I've done to this system are:
+> 1. install bridge-utils
+> 2. create this file, it is sourced by /etc/network/interfaces:
+> root@debian:~# cat /etc/network/interfaces.d/bridge
+> auto br0
+> iface br0 inet manual
+>         bridge_ports lan1 lan2 lan3 lan4 lan5 lan6 lan7 lan8 lan9 lan10 lan11 lan12 lan13 lan14 lan15 lan16 lan17 lan18 lan19 lan20 lan21 lan22 lan23 lan24 sfp
+>         bridge_maxwait 0
+> 
+> I've rebooted the board about 10 times and it has never skipped
+> enslaving a port to the bridge.
 
-Thank you for this report and especially for C reproducer!
-	Vasily Averin
+What do you do about the host CPU interface, which needs to be up
+before you can bring up any of the bridge ports?
 
->>  ------------[ cut here ]------------
->> WARNING: CPU: 1 PID: 10229 at net/core/stream.c:207
->> sk_stream_kill_queues+0x162/0x190 net/core/stream.c:207
->> Modules linked in:
->> CPU: 1 PID: 10229 Comm: syz-executor Not tainted 5.14.0+ #12
->> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
->> rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
->> RIP: 0010:sk_stream_kill_queues+0x162/0x190 net/core/stream.c:207
->> Code: 41 5c e9 21 3b ce fd e8 1c 3b ce fd 89 de 48 89 ef e8 62 68 fe
->> ff e8 0d 3b ce fd 8b 95 68 02 00 00 85 d2 74 ca e8 fe 3a ce fd <0f> 0b
->> e8 f7 3a ce fd 8b 85 20 02 00 00 85 c0 74 c3 e8 e8 3a ce fd
->> RSP: 0018:ffffc900080b7c98 EFLAGS: 00010202
->> RAX: 000000000002a750 RBX: 0000000000000180 RCX: ffffc90002c0d000
->> RDX: 0000000000040000 RSI: ffffffff836939f2 RDI: ffff8881031f0b40
->> RBP: ffff8881031f0b40 R08: 0000000000000000 R09: 0000000000000000
->> R10: 000000000000000d R11: 000000000004f380 R12: ffff8881031f0c90
->> R13: ffff8881031f0bc0 R14: ffff8881031f0cf0 R15: 0000000000000000
->> FS:  00007f311adcb700(0000) GS:ffff88813dc00000(0000) knlGS:0000000000000000
->> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->> CR2: 0000000000732190 CR3: 000000010ab01000 CR4: 0000000000752ee0
->> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
->> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
->> PKRU: 55555554
->> Call Trace:
->>  inet_csk_destroy_sock+0x6f/0x1a0 net/ipv4/inet_connection_sock.c:1012
->>  __tcp_close+0x512/0x610 net/ipv4/tcp.c:2869
->>  tcp_close+0x29/0xa0 net/ipv4/tcp.c:2881
->>  inet_release+0x58/0xb0 net/ipv4/af_inet.c:431
->>  __sock_release+0x47/0xf0 net/socket.c:649
->>  sock_close+0x18/0x20 net/socket.c:1314
->>  __fput+0xdf/0x380 fs/file_table.c:280
->>  task_work_run+0x86/0xd0 kernel/task_work.c:164
->>  get_signal+0xde6/0x10b0 kernel/signal.c:2596
->>  arch_do_signal_or_restart+0xa9/0x860 arch/x86/kernel/signal.c:865
->>  handle_signal_work kernel/entry/common.c:148 [inline]
->>  exit_to_user_mode_loop kernel/entry/common.c:172 [inline]
->>  exit_to_user_mode_prepare+0xf2/0x280 kernel/entry/common.c:209
->>  __syscall_exit_to_user_mode_work kernel/entry/common.c:291 [inline]
->>  syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:302
->>  do_syscall_64+0x40/0xb0 arch/x86/entry/common.c:86
->>  entry_SYSCALL_64_after_hwframe+0x44/0xae
->> RIP: 0033:0x46a9a9
->> Code: f7 d8 64 89 02 b8 ff ff ff ff c3 66 0f 1f 44 00 00 48 89 f8 48
->> 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d
->> 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
->> RSP: 002b:00007f311adcac58 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
->> RAX: 0000000000069340 RBX: 000000000078c0a0 RCX: 000000000046a9a9
->> RDX: 0000000000088012 RSI: 0000000020000380 RDI: 0000000000000004
->> RBP: 00000000004e4042 R08: 0000000000000000 R09: 0000000000000027
->> R10: 000000000020c49a R11: 0000000000000246 R12: 000000000078c0a0
->> R13: 0000000000000000 R14: 000000000078c0a0 R15: 00007ffe75b47830
->>
+What does the useful "systemd-analyse plot" show? It seems a useful
+tool which I've only recently found to analyse what is going on at
+boot.
 
+I think I have an idea why it's happening here.
+
+eno1 is connected to the switch. Because eno1 needs to be up first,
+I did this:
+
+# eno1: Switch uplink
+auto eno1
+allow-hotplug eno1
+iface eno1 inet manual
+	# custom hack to disable IPv6 addresses on this interface.
+        ipv6-disable 1
+        up ip link set $IFACE up
+        up ifup --allow=$IFACE -a || :
+        down ifdown --allow=$IFACE -a || :
+        down ip link set $IFACE down
+
+with:
+
+allow-eno1 brdsl
+iface brdsl inet manual
+        bridge-ports lan2 lan3 lan4 lan5
+        bridge-maxwait 0
+        pre-up sleep 1
+        up ip li set $IFACE type bridge vlan_filtering 1
+
+The effect of that is the "allow-hotplug eno1" causes the systemd
+unit ifup@eno1 to be triggered as soon as eno1 appears - this is
+_before_ DSA has loaded. Once eno1 is up, that then triggers brdsl
+to be configured - but DSA is still probing at that point.
+
+I think removing the "allow-hotplug eno1" should move all that forward
+to being started by networking.service, rather than all being triggered
+by ifup@eno1. I haven't tested that yet though.
+
+Sadly, this behaviour is not documented in the interfaces(5) man page.
+
+Systemd is too complex, not well documented, it's interactions aren't
+documented, it's too easy to non-obviously misconfigure, and it's
+sometimes way too clever. In case it's not obvious - I absolutely hate
+systemd.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
