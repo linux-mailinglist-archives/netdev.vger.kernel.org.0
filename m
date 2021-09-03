@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31E1E40086B
-	for <lists+netdev@lfdr.de>; Sat,  4 Sep 2021 01:50:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DD25400869
+	for <lists+netdev@lfdr.de>; Sat,  4 Sep 2021 01:50:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241254AbhICXvd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Sep 2021 19:51:33 -0400
-Received: from mail-io1-f69.google.com ([209.85.166.69]:36698 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236816AbhICXvb (ORCPT
+        id S1350532AbhICXvc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Sep 2021 19:51:32 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:57152 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236131AbhICXvb (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 19:51:31 -0400
-Received: by mail-io1-f69.google.com with SMTP id e187-20020a6bb5c4000000b005b5fe391cf9so489116iof.3
+Received: by mail-io1-f70.google.com with SMTP id c22-20020a5d9a960000b029059c9e04cd63so434053iom.23
         for <netdev@vger.kernel.org>; Fri, 03 Sep 2021 16:50:30 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=GoYAXS68C6w1w241WimPZMhFnsezbmShwJ0ZtOemdb4=;
-        b=q6Dgg6KHRnKj1Kh/WM574ZTzu2LnQ+HQ/HbHvDN7BxNkVHGEepvFEtF/HIEtpbebxq
-         B1jarLHmneS8/OKvzSayRuZpsjWxdnMY39YfhGOfkyVoQW1bOttAmHFOWq6T08ucKucc
-         VCNHuNZGJb8CYqSMxaktccueJ6MkWklcRcKXHnOV4VRr/PThqPT+Bcd91Hs5h/W9GfJy
-         KmqucA16UjGXckbTBreFrOj0VG9HQuTvuWtRHzoiA1Kyn1xE022CRqatZ2IbxdCEbQQ0
-         xBYsPuD56CS7RPIH8GdcxO3kFUOQh/DJkum0i5y5opU+LF5CUwfBJc4BcP3yarIoMBh8
-         pDXQ==
-X-Gm-Message-State: AOAM533Ve5J1t2EPVt025vTw+wrgKeG2ZiIU1VTCjzUhEgWxeJvI1kFc
-        Vp7rK/pxpbYV60rTsH0f1+sDK13fF2lVtRZdyu5iXbKt0JCv
-X-Google-Smtp-Source: ABdhPJw87NykjYA37TqFpgY59kbGvi6goCXSXYgumaO25s+RjAbuqKuZCBuk59kkhxdDqKvgtjf0DsXEVYewfcTw2NFgChyyhbIN
+        bh=E4DKx2x3qEqa/La398s4sWrvTl4Rrvl7+M4z46YI5nw=;
+        b=JcvtDi/StCGH5v0mNciIIi+/geF9VyePvHLv+2wSGE5R6D374/Zl8Y/Hfq+Zv6hKPP
+         wuRPGqMizp1ah0u8+v26F0e5mzDXjdOrbV0iIY8CeF1uZ5yxgwWGkX2YZE971ScRoW8S
+         8RBpBKqgqta4+tX3sIQBJrgnotlEH0jwykn56hOopUgvqCSC0fkPLNj4Qc3oXNJc0w2M
+         2Q12ari4HYAocDGVuUXny1JXKdz0UGbaF6uRwyvlL87fZSwXg/icvZ0A8mCGpDBaNDtq
+         mOk4sFcLgRsFWOC5vG6aXOEeWnJQQ/EtcAaNZNy9EPqR6Drc2+TwSRqsdLYBU2xQMOaF
+         h09g==
+X-Gm-Message-State: AOAM531c2WWnS+zxPf+GE8NBchRt+ouGkeuuWHYFBhhyBlXNiil1ZggJ
+        5yu+SxoG0mg47PKb+Y7ebi2D6ZQXQRUbJC7RvcPM6Aqho45A
+X-Google-Smtp-Source: ABdhPJzSeGhr37gFeiCKruL8NhBCmPy1C8w+hqnxOiKGXVriffaHMbUj5Y+WfrPbf599kIzjB1187p6UDgJKxMmCZe0mjYkUQVJE
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:d05:: with SMTP id g5mr764028ilj.42.1630713030738;
+X-Received: by 2002:a05:6e02:144:: with SMTP id j4mr1033579ilr.75.1630713030517;
  Fri, 03 Sep 2021 16:50:30 -0700 (PDT)
 Date:   Fri, 03 Sep 2021 16:50:30 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000ed8c0a05cb1ff6d8@google.com>
-Subject: [syzbot] WARNING: kmalloc bug in nf_tables_newset
-From:   syzbot <syzbot+cd43695a64bcd21b8596@syzkaller.appspotmail.com>
+Message-ID: <000000000000ea2f2605cb1ff6f6@google.com>
+Subject: [syzbot] WARNING: kmalloc bug in hash_ip_create
+From:   syzbot <syzbot+3493b1873fb3ea827986@syzkaller.appspotmail.com>
 To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
         kadlec@netfilter.org, kuba@kernel.org,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
@@ -51,39 +51,38 @@ syzbot found the following issue on:
 
 HEAD commit:    a9c9a6f741cd Merge tag 'scsi-misc' of git://git.kernel.org..
 git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=119f0915300000
+console output: https://syzkaller.appspot.com/x/log.txt?x=13246f25300000
 kernel config:  https://syzkaller.appspot.com/x/.config?x=7860a0536ececf0c
-dashboard link: https://syzkaller.appspot.com/bug?extid=cd43695a64bcd21b8596
+dashboard link: https://syzkaller.appspot.com/bug?extid=3493b1873fb3ea827986
 compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13281b33300000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1077b4b9300000
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11602f35300000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10e8fbf5300000
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+cd43695a64bcd21b8596@syzkaller.appspotmail.com
+Reported-by: syzbot+3493b1873fb3ea827986@syzkaller.appspotmail.com
 
 ------------[ cut here ]------------
-WARNING: CPU: 0 PID: 8421 at mm/util.c:597 kvmalloc_node+0x111/0x120 mm/util.c:597
+WARNING: CPU: 1 PID: 8430 at mm/util.c:597 kvmalloc_node+0x111/0x120 mm/util.c:597
 Modules linked in:
-CPU: 1 PID: 8421 Comm: syz-executor968 Not tainted 5.14.0-syzkaller #0
+CPU: 1 PID: 8430 Comm: syz-executor792 Not tainted 5.14.0-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
 RIP: 0010:kvmalloc_node+0x111/0x120 mm/util.c:597
 Code: 01 00 00 00 4c 89 e7 e8 8d 12 0d 00 49 89 c5 e9 69 ff ff ff e8 f0 21 d1 ff 41 89 ed 41 81 cd 00 20 01 00 eb 95 e8 df 21 d1 ff <0f> 0b e9 4c ff ff ff 0f 1f 84 00 00 00 00 00 55 48 89 fd 53 e8 c6
-RSP: 0018:ffffc90006f2f330 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: ffff8880259c0000 RSI: ffffffff81a4f621 RDI: 0000000000000003
-RBP: 0000000000000dc0 R08: 000000007fffffff R09: 00000000ffffffff
-R10: ffffffff81a4f5de R11: 0000000000000000 R12: 0000000400000108
-R13: 0000000000000000 R14: 00000000ffffffff R15: dffffc0000000000
-FS:  0000000001785300(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+RSP: 0018:ffffc9000108f280 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: ffffc9000108f3a0 RCX: 0000000000000000
+RDX: ffff88801bfd5580 RSI: ffffffff81a4f621 RDI: 0000000000000003
+RBP: 0000000000400dc0 R08: 000000007fffffff R09: 00000000ffffffff
+R10: ffffffff81a4f5de R11: 000000000000001f R12: 0000000200000018
+R13: 0000000000000000 R14: 00000000ffffffff R15: ffff888028b41a00
+FS:  0000000002409300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
 CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f6394785000 CR3: 000000001dd56000 CR4: 0000000000350ef0
+CR2: 0000000020000006 CR3: 00000000127f1000 CR4: 0000000000350ee0
 Call Trace:
- kvmalloc include/linux/mm.h:806 [inline]
- kvzalloc include/linux/mm.h:814 [inline]
- nf_tables_newset+0x1512/0x3340 net/netfilter/nf_tables_api.c:4341
- nfnetlink_rcv_batch+0x1710/0x25f0 net/netfilter/nfnetlink.c:513
- nfnetlink_rcv_skb_batch net/netfilter/nfnetlink.c:634 [inline]
- nfnetlink_rcv+0x3af/0x420 net/netfilter/nfnetlink.c:652
+ hash_ip_create+0x4bb/0x13d0 net/netfilter/ipset/ip_set_hash_gen.h:1524
+ ip_set_create+0x782/0x15a0 net/netfilter/ipset/ip_set_core.c:1100
+ nfnetlink_rcv_msg+0xbc9/0x13f0 net/netfilter/nfnetlink.c:296
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2504
+ nfnetlink_rcv+0x1ac/0x420 net/netfilter/nfnetlink.c:654
  netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
  netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1340
  netlink_sendmsg+0x86d/0xdb0 net/netlink/af_netlink.c:1929
@@ -95,14 +94,14 @@ Call Trace:
  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
  entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x43f189
+RIP: 0033:0x43f029
 Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffd36aa47e8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 0000000000400488 RCX: 000000000043f189
-RDX: 0000000000000000 RSI: 0000000020000040 RDI: 0000000000000003
-RBP: 0000000000403170 R08: 0000000000000a00 R09: 0000000000400488
-R10: 0000000000000001 R11: 0000000000000246 R12: 0000000000403200
-R13: 0000000000000000 R14: 00000000004ad018 R15: 0000000000400488
+RSP: 002b:00007ffd662e8c48 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 0000000000400488 RCX: 000000000043f029
+RDX: 0000000000000000 RSI: 00000000200000c0 RDI: 0000000000000003
+RBP: 0000000000403010 R08: 0000000000000005 R09: 0000000000400488
+R10: 0000000000000001 R11: 0000000000000246 R12: 00000000004030a0
+R13: 0000000000000000 R14: 00000000004ac018 R15: 0000000000400488
 
 
 ---
