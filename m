@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD2623FFA29
-	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 08:14:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A1F03FFA2D
+	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 08:14:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344508AbhICGPH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Sep 2021 02:15:07 -0400
-Received: from mx13.kaspersky-labs.com ([91.103.66.164]:25017 "EHLO
-        mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234109AbhICGPF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 02:15:05 -0400
-Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay13.kaspersky-labs.com (Postfix) with ESMTP id 791DF5210F3;
-        Fri,  3 Sep 2021 09:14:04 +0300 (MSK)
+        id S1345602AbhICGPl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Sep 2021 02:15:41 -0400
+Received: from mx12.kaspersky-labs.com ([91.103.66.155]:42443 "EHLO
+        mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242768AbhICGPk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 02:15:40 -0400
+Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
+        by relay12.kaspersky-labs.com (Postfix) with ESMTP id BA25E7597B;
+        Fri,  3 Sep 2021 09:14:38 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail202102; t=1630649644;
-        bh=eaFyXAtHgvusgE2gF7Bwy2o/KgRvSmEZUxGeY5Dp9+k=;
+        s=mail202102; t=1630649678;
+        bh=GfnUcJLo9U9m2eHeY1kiaWcphVfFjQ9hOr7Vf9qFRPY=;
         h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=oYJp8WEIbdPnb/4bchkdZ8JaMtO6P9CgvbcVvrpfACIA73nT4UAW7kLtWfPB45q7o
-         mD6z2/hqH9pZywn1+UxdvAkCh7YX2FTzMBn9jqyHsOiJJYF/tvUKbH79QCdK2THEv3
-         ePyEzgGfrJYLK7RmOJiDDVGCDn5im6MCjVZ05nmRwf8ihBnOMesg094n0csrtkgw/k
-         nu2lajr+IvOyCJztxIHe656z7FE+s4M/usLkAp8bPA40fxglRnAr+HbEQcUEXPMtx5
-         rcaVc3ag2CGPdvWIEBErWO+MAWX5eTkDZ7OovpLz7xerjCe0bMDbz5JHtCRQlnJjHJ
-         HyyWt5g4VBY0g==
+        b=bzWddz1mAaDQA8/gslzhan2rQpQmtDqDkTEyOMNMlqDwT81CXkUAXnNwfXNS/FffV
+         fBMpy72cpvfbf5uT7WRXrc4SNSL7Ay+NMk0+U82jAu3nk/2jX0yBtONOjZr2Gv+u9V
+         WvCJzYwrcKhntHZYSItkhIm99IS6mOjjVaNXGcJcCWEKfe90SsGMafYphsO8sNCHBS
+         4DriYe4g5LS2zYMTLEztNPJpVV0ZlmhM6WgW3TKNoijfDLiev4PaByR8PN9YonHx9m
+         zJrygJHj+Qwj+Fzs3lJdZh/XPW+KDwYnryP08hWgRv+MPTrhDcroKNs2Q0g8s+/9mX
+         mMjRKcQLOOI5A==
 Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
         (using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
         (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id A05C9520FD1;
-        Fri,  3 Sep 2021 09:14:03 +0300 (MSK)
+        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id CD3447595E;
+        Fri,  3 Sep 2021 09:14:37 +0300 (MSK)
 Received: from arseniy-pc.avp.ru (10.64.68.129) by hqmailmbx3.avp.ru
  (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 3
- Sep 2021 09:14:02 +0300
+ Sep 2021 09:14:37 +0300
 From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
 To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
@@ -42,20 +42,22 @@ To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Arseny Krasnov <arseny.krasnov@kaspersky.com>,
         Norbert Slusarek <nslusarek@gmx.net>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Colin Ian King <colin.king@canonical.com>
+        Colin Ian King <colin.king@canonical.com>,
+        Andra Paraschiv <andraprs@amazon.com>
 CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <stsp2@yandex.ru>, <oxffffaa@gmail.com>
-Subject: [PATCH net-next v4 0/6] virtio/vsock: introduce MSG_EOR flag for SEQPACKET
-Date:   Fri, 3 Sep 2021 09:13:49 +0300
-Message-ID: <20210903061353.3187150-1-arseny.krasnov@kaspersky.com>
+Subject: [PATCH net-next v4 1/6] virtio/vsock: rename 'EOR' to 'EOM' bit.
+Date:   Fri, 3 Sep 2021 09:14:29 +0300
+Message-ID: <20210903061431.3187357-1-arseny.krasnov@kaspersky.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210903061353.3187150-1-arseny.krasnov@kaspersky.com>
+References: <20210903061353.3187150-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-Originating-IP: [10.64.68.129]
-X-ClientProxiedBy: hqmailmbx1.avp.ru (10.64.67.241) To hqmailmbx3.avp.ru
+X-ClientProxiedBy: hqmailmbx3.avp.ru (10.64.67.243) To hqmailmbx3.avp.ru
  (10.64.67.243)
 X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
 X-KSE-AntiSpam-Interceptor-Info: scan successful
@@ -95,74 +97,114 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-	This patchset implements support of MSG_EOR bit for SEQPACKET
-AF_VSOCK sockets over virtio transport.
-	First we need to define 'messages' and 'records' like this:
-Message is result of sending calls: 'write()', 'send()', 'sendmsg()'
-etc. It has fixed maximum length, and it bounds are visible using
-return from receive calls: 'read()', 'recv()', 'recvmsg()' etc.
-Current implementation based on message definition above.
-	Record has unlimited length, it consists of multiple message,
-and bounds of record are visible via MSG_EOR flag returned from
-'recvmsg()' call. Sender passes MSG_EOR to sending system call and
-receiver will see MSG_EOR when corresponding message will be processed.
-	Idea of patchset comes from POSIX: it says that SEQPACKET
-supports record boundaries which are visible for receiver using
-MSG_EOR bit. So, it looks like MSG_EOR is enough thing for SEQPACKET
-and we don't need to maintain boundaries of corresponding send -
-receive system calls. But, for 'sendXXX()' and 'recXXX()' POSIX says,
-that all these calls operates with messages, e.g. 'sendXXX()' sends
-message, while 'recXXX()' reads messages and for SEQPACKET, 'recXXX()'
-must read one entire message from socket, dropping all out of size
-bytes. Thus, both message boundaries and MSG_EOR bit must be supported
-to follow POSIX rules.
-	To support MSG_EOR new bit was added along with existing
-'VIRTIO_VSOCK_SEQ_EOR': 'VIRTIO_VSOCK_SEQ_EOM'(end-of-message) - now it
-works in the same way as 'VIRTIO_VSOCK_SEQ_EOR'. But 'VIRTIO_VSOCK_SEQ_EOR'
-is used to mark 'MSG_EOR' bit passed from userspace.
-	This patchset includes simple test for MSG_EOR.
-
- Arseny Krasnov(6):
-  virtio/vsock: rename 'EOR' to 'EOM' bit.
-  virtio/vsock: add 'VIRTIO_VSOCK_SEQ_EOR' bit.
-  vhost/vsock: support MSG_EOR bit processing
-  virtio/vsock: support MSG_EOR bit processing
-  af_vsock: rename variables in receive loop
-  vsock_test: update message bounds test for MSG_EOR
-
- drivers/vhost/vsock.c                   | 28 +++++++++++++----------
- include/uapi/linux/virtio_vsock.h       |  3 ++-
- net/vmw_vsock/af_vsock.c                | 10 ++++----
- net/vmw_vsock/virtio_transport_common.c | 23 ++++++++++++-------
- tools/testing/vsock/vsock_test.c        |  8 ++++++-
- 5 files changed, 45 insertions(+), 27 deletions(-)
-
- v3 -> v4:
- - 'sendXXX()' renamed to 'send*()' in 0002- commit msg.
- - Comment about bit restore updated in 0003-.
- - 'same' renamed to 'similar' in 0003- commit msg.
- - u32 used instead of uint32_t in 0003-.
-
- v2 -> v3:
- - 'virtio/vsock: rename 'EOR' to 'EOM' bit.' - commit message updated.
- - 'VIRTIO_VSOCK_SEQ_EOR' bit add moved to separate patch.
- - 'vhost/vsock: support MSG_EOR bit processing' - commit message
-   updated.
- - 'vhost/vsock: support MSG_EOR bit processing' - removed unneeded
-   'le32_to_cpu()', because input argument was already in CPU
-   endianness.
-
- v1 -> v2:
- - 'VIRTIO_VSOCK_SEQ_EOR' is renamed to 'VIRTIO_VSOCK_SEQ_EOM', to
-   support backward compatibility.
- - use bitmask of flags to restore in vhost.c, instead of separated
-   bool variable for each flag.
- - test for EAGAIN removed, as logically it is not part of this
-   patchset(will be sent separately).
- - cover letter updated(added part with POSIX description).
+This current implemented bit is used to mark end of messages
+('EOM' - end of message), not records('EOR' - end of record).
+Also rename 'record' to 'message' in implementation as it is
+different things.
 
 Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+---
+ drivers/vhost/vsock.c                   | 12 ++++++------
+ include/uapi/linux/virtio_vsock.h       |  2 +-
+ net/vmw_vsock/virtio_transport_common.c | 14 +++++++-------
+ 3 files changed, 14 insertions(+), 14 deletions(-)
 
+diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+index f249622ef11b..feaf650affbe 100644
+--- a/drivers/vhost/vsock.c
++++ b/drivers/vhost/vsock.c
+@@ -178,15 +178,15 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
+ 			 * small rx buffers, headers of packets in rx queue are
+ 			 * created dynamically and are initialized with header
+ 			 * of current packet(except length). But in case of
+-			 * SOCK_SEQPACKET, we also must clear record delimeter
+-			 * bit(VIRTIO_VSOCK_SEQ_EOR). Otherwise, instead of one
+-			 * packet with delimeter(which marks end of record),
++			 * SOCK_SEQPACKET, we also must clear message delimeter
++			 * bit(VIRTIO_VSOCK_SEQ_EOM). Otherwise, instead of one
++			 * packet with delimeter(which marks end of message),
+ 			 * there will be sequence of packets with delimeter
+ 			 * bit set. After initialized header will be copied to
+ 			 * rx buffer, this bit will be restored.
+ 			 */
+-			if (le32_to_cpu(pkt->hdr.flags) & VIRTIO_VSOCK_SEQ_EOR) {
+-				pkt->hdr.flags &= ~cpu_to_le32(VIRTIO_VSOCK_SEQ_EOR);
++			if (le32_to_cpu(pkt->hdr.flags) & VIRTIO_VSOCK_SEQ_EOM) {
++				pkt->hdr.flags &= ~cpu_to_le32(VIRTIO_VSOCK_SEQ_EOM);
+ 				restore_flag = true;
+ 			}
+ 		}
+@@ -225,7 +225,7 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
+ 		 */
+ 		if (pkt->off < pkt->len) {
+ 			if (restore_flag)
+-				pkt->hdr.flags |= cpu_to_le32(VIRTIO_VSOCK_SEQ_EOR);
++				pkt->hdr.flags |= cpu_to_le32(VIRTIO_VSOCK_SEQ_EOM);
+ 
+ 			/* We are queueing the same virtio_vsock_pkt to handle
+ 			 * the remaining bytes, and we want to deliver it
+diff --git a/include/uapi/linux/virtio_vsock.h b/include/uapi/linux/virtio_vsock.h
+index 3dd3555b2740..8485b004a5f8 100644
+--- a/include/uapi/linux/virtio_vsock.h
++++ b/include/uapi/linux/virtio_vsock.h
+@@ -97,7 +97,7 @@ enum virtio_vsock_shutdown {
+ 
+ /* VIRTIO_VSOCK_OP_RW flags values */
+ enum virtio_vsock_rw {
+-	VIRTIO_VSOCK_SEQ_EOR = 1,
++	VIRTIO_VSOCK_SEQ_EOM = 1,
+ };
+ 
+ #endif /* _UAPI_LINUX_VIRTIO_VSOCK_H */
+diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+index 081e7ae93cb1..4d5a93beceb0 100644
+--- a/net/vmw_vsock/virtio_transport_common.c
++++ b/net/vmw_vsock/virtio_transport_common.c
+@@ -77,7 +77,7 @@ virtio_transport_alloc_pkt(struct virtio_vsock_pkt_info *info,
+ 
+ 		if (msg_data_left(info->msg) == 0 &&
+ 		    info->type == VIRTIO_VSOCK_TYPE_SEQPACKET)
+-			pkt->hdr.flags |= cpu_to_le32(VIRTIO_VSOCK_SEQ_EOR);
++			pkt->hdr.flags |= cpu_to_le32(VIRTIO_VSOCK_SEQ_EOM);
+ 	}
+ 
+ 	trace_virtio_transport_alloc_pkt(src_cid, src_port,
+@@ -457,7 +457,7 @@ static int virtio_transport_seqpacket_do_dequeue(struct vsock_sock *vsk,
+ 				dequeued_len += pkt_len;
+ 		}
+ 
+-		if (le32_to_cpu(pkt->hdr.flags) & VIRTIO_VSOCK_SEQ_EOR) {
++		if (le32_to_cpu(pkt->hdr.flags) & VIRTIO_VSOCK_SEQ_EOM) {
+ 			msg_ready = true;
+ 			vvs->msg_count--;
+ 		}
+@@ -1029,7 +1029,7 @@ virtio_transport_recv_enqueue(struct vsock_sock *vsk,
+ 		goto out;
+ 	}
+ 
+-	if (le32_to_cpu(pkt->hdr.flags) & VIRTIO_VSOCK_SEQ_EOR)
++	if (le32_to_cpu(pkt->hdr.flags) & VIRTIO_VSOCK_SEQ_EOM)
+ 		vvs->msg_count++;
+ 
+ 	/* Try to copy small packets into the buffer of last packet queued,
+@@ -1044,12 +1044,12 @@ virtio_transport_recv_enqueue(struct vsock_sock *vsk,
+ 
+ 		/* If there is space in the last packet queued, we copy the
+ 		 * new packet in its buffer. We avoid this if the last packet
+-		 * queued has VIRTIO_VSOCK_SEQ_EOR set, because this is
+-		 * delimiter of SEQPACKET record, so 'pkt' is the first packet
+-		 * of a new record.
++		 * queued has VIRTIO_VSOCK_SEQ_EOM set, because this is
++		 * delimiter of SEQPACKET message, so 'pkt' is the first packet
++		 * of a new message.
+ 		 */
+ 		if ((pkt->len <= last_pkt->buf_len - last_pkt->len) &&
+-		    !(le32_to_cpu(last_pkt->hdr.flags) & VIRTIO_VSOCK_SEQ_EOR)) {
++		    !(le32_to_cpu(last_pkt->hdr.flags) & VIRTIO_VSOCK_SEQ_EOM)) {
+ 			memcpy(last_pkt->buf + last_pkt->len, pkt->buf,
+ 			       pkt->len);
+ 			last_pkt->len += pkt->len;
 -- 
 2.25.1
 
