@@ -2,204 +2,305 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82D9D3FFD10
-	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 11:27:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E22F53FFD2E
+	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 11:33:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348782AbhICJ2b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Sep 2021 05:28:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54246 "EHLO
+        id S1348829AbhICJd7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Sep 2021 05:33:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232257AbhICJ2a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 05:28:30 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACF44C061575;
-        Fri,  3 Sep 2021 02:27:30 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id e21so10757272ejz.12;
-        Fri, 03 Sep 2021 02:27:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=98U6tP9GpBzT341VTGl00bgihnu7GKQ3T3inht08g64=;
-        b=Gfms5tJb+S1JUnUcWuX8H59hWdYjbsq2N5xdq3+ApSAOrVu7Q2zTuKXSIPvoIYgSab
-         zlAkNhaG5uK+rs8udVlW7Bqw9kSho+w5FgFmZOvZf948Gsu6VA8C+eZggEftfKWCJDoa
-         Cs/GcGfsjuWiZO/+6P03B1lREgVKg7Yi/scawqKD2I35f4ZVLyP7KqfY0cLZV7HdRJFh
-         ZzIRDl6n0gpJZYZRzvs126u6gLuF03q3vsHDWgRqlhXHxstwQHyJ3zOB12a6YlmPkAG4
-         gDmfq05jP3VdBcDEJCdmaJn1+r7ClczyoohBoEIbkwCbS2nJ8JnMfV7TPgHtZwA+i7VV
-         NF3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=98U6tP9GpBzT341VTGl00bgihnu7GKQ3T3inht08g64=;
-        b=APaGCFkgv6pLofvHrts0IqrvY7jeEKXXB0Y9aa/+DEVbEdv7fiT4TlZ6lxfQM2vWZa
-         CQ06GDsDAt9+gw30TilOhDSYXNd4AsE8eCsx/a4FJ+z/QRagpvdpRZ6UW6xalEm7F8S4
-         itbTq/ulIT3zykCexacak5NrI7EPeXEiFZk502h0jXr5JQ8LQmgQdUBhQ8hi46mrL80H
-         NI4P9sl++D5/GfwFBT6W+eeaU0c9jXc1syz7aUH2FrkrkTIjXatAEfK/crYldEmIeNLd
-         uOwB5XDXX+znqddHoUqfaIS/8XAWPUoZo8KxCnGWXMSmbeKt6gcU/JruKb075WWOOT+b
-         Gyzg==
-X-Gm-Message-State: AOAM531HnIKG6zmkf8oEL9FdhO9VkCVGsFz0BjcI2BxJN5FUh4fk15/e
-        y0ErxmLRjSxoaySrSzvZilo=
-X-Google-Smtp-Source: ABdhPJz6Z+i1MKPF6nnWiX8wxORP4DxEP8XjnsoXDEfh8mtSUmLdxrS8BBfa22C7mVpq2PK+FxWFAw==
-X-Received: by 2002:a17:906:802:: with SMTP id e2mr3126470ejd.133.1630661249140;
-        Fri, 03 Sep 2021 02:27:29 -0700 (PDT)
-Received: from skbuf ([82.78.148.104])
-        by smtp.gmail.com with ESMTPSA id b5sm2382684ejq.56.2021.09.03.02.27.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Sep 2021 02:27:28 -0700 (PDT)
-From:   Ioana Ciornei <ciorneiioana@gmail.com>
-X-Google-Original-From: Ioana Ciornei <ciornei.ioana@gmail.com>
-Date:   Fri, 3 Sep 2021 12:27:27 +0300
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        netdev@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        kernel-team <kernel-team@android.com>,
-        Len Brown <lenb@kernel.org>
-Subject: Re: [RFC PATCH net-next 1/3] net: phy: don't bind genphy in
- phy_attach_direct if the specific driver defers probe
-Message-ID: <20210903092727.ae44m5rk3qdhyq6x@skbuf>
-References: <20210901225053.1205571-1-vladimir.oltean@nxp.com>
- <20210901225053.1205571-2-vladimir.oltean@nxp.com>
- <20210902185016.GL22278@shell.armlinux.org.uk>
- <YTErTRBnRYJpWDnH@lunn.ch>
- <bd7c9398-5d3d-ccd8-8804-25074cff6bde@gmail.com>
- <20210902213303.GO22278@shell.armlinux.org.uk>
- <20210902213949.r3q5764wykqgjm4z@skbuf>
- <20210902222439.GQ22278@shell.armlinux.org.uk>
+        with ESMTP id S244272AbhICJd6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 05:33:58 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E18FC061575
+        for <netdev@vger.kernel.org>; Fri,  3 Sep 2021 02:32:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=AkAUfQFX11xzdh/it+RaUnXZHT4m8fQAIx/HpoewkEE=; b=F/FV46rWc27BStJjNrVIO169u
+        xfgD0hmGKTqwLYcz+G0Hi6cHTRXk2WRujR6it24G2/oKDNBG2ME85ydP/J0/ZthoYwB6BTb/8Trag
+        e2cn8RcKaclgieWfFZsfzmcvaio8+YozJrVyhX4Rrdp45c48UHshcQPX31UOsOguIEzcVNXAbEzm4
+        tpp5ykGzffKhvSsrqsERWrnIMuwvsR+RiFW1132oV2iocniirNxJWlyb6TNmgX7Zx0bg1A7ri8vAb
+        gDobRdqgWq4kWOFteX3S/00McWPUQICNmlszk2WdaVZlz3fEMAs4IqDLoYovyLckDlwJWwW1FpYMf
+        sc1iXqZNw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:48140)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mM5Z3-0002ne-KS; Fri, 03 Sep 2021 10:32:49 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mM5Z0-0000Mo-Gr; Fri, 03 Sep 2021 10:32:46 +0100
+Date:   Fri, 3 Sep 2021 10:32:46 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>,
+        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
+        "alexandre.torgue@foss.st.com" <alexandre.torgue@foss.st.com>,
+        "joabreu@synopsys.com" <joabreu@synopsys.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        dl-linux-imx <linux-imx@nxp.com>
+Subject: Re: [PATCH] net: stmmac: fix MAC not working when system resume back
+ with WoL enabled
+Message-ID: <20210903093246.GT22278@shell.armlinux.org.uk>
+References: <20210901132547.GB22278@shell.armlinux.org.uk>
+ <DB8PR04MB6795BB2A13AED5F6E56D08A0E6CE9@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <20210902083224.GC22278@shell.armlinux.org.uk>
+ <DB8PR04MB67954F4650408025E6D4EE2AE6CE9@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <20210902104943.GD22278@shell.armlinux.org.uk>
+ <DB8PR04MB6795C37D718096E7CA1AA72DE6CE9@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <YTDCZN/WKlv9BsNG@lunn.ch>
+ <DB8PR04MB6795C36B8211EE1A1C0280D9E6CF9@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <20210903080147.GS22278@shell.armlinux.org.uk>
+ <DB8PR04MB679518228AB7B2C5CD47A1B3E6CF9@DB8PR04MB6795.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20210902222439.GQ22278@shell.armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <DB8PR04MB679518228AB7B2C5CD47A1B3E6CF9@DB8PR04MB6795.eurprd04.prod.outlook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 02, 2021 at 11:24:39PM +0100, Russell King (Oracle) wrote:
-> On Fri, Sep 03, 2021 at 12:39:49AM +0300, Vladimir Oltean wrote:
-> > On Thu, Sep 02, 2021 at 10:33:03PM +0100, Russell King (Oracle) wrote:
-> > > That's probably an unreliable indicator. DPAA2 has weirdness in the
-> > > way it can dynamically create and destroy network interfaces, which
-> > > does lead to problems with the rtnl lock. I've been carrying a patch
-> > > from NXP for this for almost two years now, which NXP still haven't
-> > > submitted:
-> > > 
-> > > http://git.armlinux.org.uk/cgit/linux-arm.git/commit/?h=cex7&id=a600f2ee50223e9bcdcf86b65b4c427c0fd425a4
-> > > 
-> > > ... and I've no idea why that patch never made mainline. I need it
-> > > to avoid the stated deadlock on SolidRun Honeycomb platforms when
-> > > creating additional network interfaces for the SFP cages in userspace.
+On Fri, Sep 03, 2021 at 08:39:23AM +0000, Joakim Zhang wrote:
+> 
+> Hi Russell,
+> 
+> > -----Original Message-----
+> > From: Russell King <linux@armlinux.org.uk>
+> > Sent: 2021年9月3日 16:02
+> > To: Joakim Zhang <qiangqing.zhang@nxp.com>
+> > Cc: Andrew Lunn <andrew@lunn.ch>; Vladimir Oltean <olteanv@gmail.com>;
+> > peppe.cavallaro@st.com; alexandre.torgue@foss.st.com;
+> > joabreu@synopsys.com; davem@davemloft.net; kuba@kernel.org;
+> > mcoquelin.stm32@gmail.com; netdev@vger.kernel.org; f.fainelli@gmail.com;
+> > hkallweit1@gmail.com; dl-linux-imx <linux-imx@nxp.com>
+> > Subject: Re: [PATCH] net: stmmac: fix MAC not working when system resume
+> > back with WoL enabled
 > > 
-> > Ah, nice, I've copied that broken logic for the dpaa2-switch too:
-> > https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=d52ef12f7d6c016f3b249db95af33f725e3dd065
+> > On Fri, Sep 03, 2021 at 06:51:09AM +0000, Joakim Zhang wrote:
+> > >
+> > > > -----Original Message-----
+> > > > From: Andrew Lunn <andrew@lunn.ch>
+> > > > Sent: 2021年9月2日 20:24
+> > > > To: Joakim Zhang <qiangqing.zhang@nxp.com>
+> > > > Cc: Russell King <linux@armlinux.org.uk>; Vladimir Oltean
+> > > > <olteanv@gmail.com>; peppe.cavallaro@st.com;
+> > > > alexandre.torgue@foss.st.com; joabreu@synopsys.com;
+> > > > davem@davemloft.net; kuba@kernel.org; mcoquelin.stm32@gmail.com;
+> > > > netdev@vger.kernel.org; f.fainelli@gmail.com; hkallweit1@gmail.com;
+> > > > dl-linux-imx <linux-imx@nxp.com>
+> > > > Subject: Re: [PATCH] net: stmmac: fix MAC not working when system
+> > > > resume back with WoL enabled
+> > > >
+> > > > > Emm, @andrew@lunn.ch, Andrew is much familiar with FEC, and PHY
+> > > > > maintainers, Could you please help put insights here if possible?
+> > > >
+> > > > All the boards i have either have an Ethernet Switch connected to
+> > > > the MAC, or a Micrel PHY. None are setup for WoL, since it is not
+> > > > used in the use case of these boards.
+> > > >
+> > > > I think you need to scatter some printk() in various places to
+> > > > confirm what is going on. Where is the WoL implemented: MAC or PHY,
+> > > > what is suspended or not, etc.
+> > >
+> > > Thanks Andrew, Russell,
+> > >
+> > > I confirmed FEC is MAC-based WoL, and PHY is active when system
+> > suspended if MAC-based WoL is active.
+> > > I scatter printk() in both phy_device.c and realtek.c phy driver to debug this
+> > for both WoL active and inactive case.
+> > >
+> > > When MAC-based WoL is active, phy_suspend() is the last point to actually
+> > suspend the PHY, you can see that,
+> > > 	phy_ethtool_get_wol(phydev, &wol);
+> > > 	if (wol.wolopts || (netdev && netdev->wol_enabled))
+> > > 		return -EBUSY;
+> > >
+> > > Here, netdev is true and netdev->wol_enabled is ture
+> > > (net/ethtool/wol.c: ethnl_set_wol() -> dev->wol_enabled =
+> > > !!wol.wolopts;) So that phydev->suspend() would not be called, PHY is active
+> > after system suspended. PHY can receive packets and pass to MAC, MAC is
+> > responsible for detecting magic packets then generate a wakeup interrupt. So
+> > all is fine for FEC, and the behavior is clear.
 > > 
-> > So why don't you send the patch? I can send it too if you want to, one
-> > for the switch and one for the DPNI driver.
+> > What happens on resume with FEC?
 > 
-> Sorry, I mis-stated. NXP did submit that exact patch, but it's actually
-> incorrect for the reason I stated when it was sent:
-> 
-> https://patchwork.ozlabs.org/project/netdev/patch/1574363727-5437-2-git-send-email-ioana.ciornei@nxp.com/
-> 
-> I did miss the rtnl_lock() around phylink_disconnect_phy() in the
-> description of the race, which goes someway towards hiding it, but
-> there is still a race between phylink_destroy() and another thread
-> calling dpaa2_eth_get_link_ksettings(), and priv->mac being freed:
-> 
-> static int
-> dpaa2_eth_get_link_ksettings(struct net_device *net_dev,
->                              struct ethtool_link_ksettings *link_settings)
-> {
->         struct dpaa2_eth_priv *priv = netdev_priv(net_dev);
-> 
->         if (dpaa2_eth_is_type_phy(priv))
->                 return phylink_ethtool_ksettings_get(priv->mac->phylink,
->                                                      link_settings);
-> 
-> which dereferences priv->mac and priv->mac->phylink, vs:
-> 
-> static irqreturn_t dpni_irq0_handler_thread(int irq_num, void *arg)
-> {
-> ...
->         if (status & DPNI_IRQ_EVENT_ENDPOINT_CHANGED) {
->                 dpaa2_eth_set_mac_addr(netdev_priv(net_dev));
->                 dpaa2_eth_update_tx_fqids(priv);
-> 
->                 if (dpaa2_eth_has_mac(priv))
->                         dpaa2_eth_disconnect_mac(priv);
->                 else
->                         dpaa2_eth_connect_mac(priv);
->         }
-> 
-> static void dpaa2_eth_disconnect_mac(struct dpaa2_eth_priv *priv)
-> {
->         if (dpaa2_eth_is_type_phy(priv))
->                 dpaa2_mac_disconnect(priv->mac);
-> 
->         if (!dpaa2_eth_has_mac(priv))
->                 return;
-> 
->         dpaa2_mac_close(priv->mac);
->         kfree(priv->mac);		<== potential use after free bug by
->         priv->mac = NULL;		<== dpaa2_eth_get_link_ksettings()
-> }
-> 
-> void dpaa2_mac_disconnect(struct dpaa2_mac *mac)
-> {
->         if (!mac->phylink)
->                 return;
-> 
->         phylink_disconnect_phy(mac->phylink);
->         phylink_destroy(mac->phylink);	<== another use-after-free bug via
-> 					    dpaa2_eth_get_link_ksettings()
->         dpaa2_pcs_destroy(mac);
-> }
-> 
-> Note that phylink_destroy() is documented as:
-> 
->  * Note: the rtnl lock must not be held when calling this function.
-> 
-> because it calls sfp_bus_del_upstream(), which will take the rtnl lock
-> itself. An alternative solution would be to remove the rtnl locking
-> from sfp_bus_del_upstream(), but then force _everyone_ to take the
-> rtnl lock before calling phylink_destroy() - meaning a larger block of
-> code ends up executing under the lock than is really necessary.
-> 
-> However, as I stated in my review of the patch "As I've already stated,
-> the phylink is not designed to be created and destroyed on a published
-> network device." That still remains true today, and it seems that the
-> issue has never been fixed in DPAA2 despite having been pointed out.
-> 
+> Since we call phy_stop() in fec_suspend(), the link is down, but the PHY is active, after receiving
+> magic packets, the system resume back; In fec_resume(), after restart/init FEC, we call phy_start()
+> to let link up, then all is going well.
 
-My attempt to fix this issue was that patch that you just pointed at.
-Taking your feedback into account (that phylink is not designed to be
-created and destroyed on a published networking device) I really do not
-know what other viable solution to send out.
+... but the link never went down! So I don't understand the last point.
 
-The alternative here would have been to just have a different driver for
-the MAC side (probing on dpmac objects) that creates the phylink
-instance at probe time and then is just used by the dpaa2-eth driver
-when it connects to a dpmac. This way no phylink is created/destroyed
-dynamically.
+> > > For STMMAC, when MAC-based WoL is active, according to the current
+> > > implementation, only call phylink_mac_change()=false, PHY would be
+> > > active, so PHY can receive packets then pass to MAC, MAC ignore packets
+> > except magic packets. System can be waked up successfully.
+> > >
+> > > The issue is that phylink_mac_change()=false only notify a phylink of
+> > > a change in MAC state, as we analyzed before, PHY would link up again
+> > > before system suspended, which lead to .mac_link_up can't be called when
+> > system resume back. Unfortunately, all MAC configurations are in
+> > stmmac_mac_link_up(), as a result, MAC has not been initialized correctly
+> > when system resume back, so that it can't work any longer.
+> > 
+> > Oh, I thought your problem was that the system didn't wake up.
+> > 
+> > In any case, remove the calls to phylink_mac_change() from the suspend and
+> > resume functions, they are completely _incorrect_.
+> 
+> Ok, I will do that.
+> 
+> > > Intend to fix this obvious breakage, I did some work:
+> > > Removing phylink_mac_change() (Russell said it's for MLO_AN_INBAND,
+> > > but we have a MLO_AN_PHY) from suspend/resume path, then adding
+> > > phylink_stop() in suspend, phylink_start() in resume() also for WoL active path.
+> > I found remote magic packets can't wake up the system, I firstly suspect PHY
+> > may be suspended. After further debug, I confirm that PHY is active, and
+> > stmmac_pmt() is correctly configured.
+> > 
+> > As I've said a few times now, if the MAC is doing the wakeup, you need the PHY
+> > to MAC link to be up, so you should _not_ call
+> > phylink_stop() and phylink_start() from the suspend/resume functions because
+> > they will take the link down.
+> 
+> Yes, I recall you said this before. Is it the requirement for phylink?
+> For FEC, we call phy_stop() when suspend, and phy_start() when resume, with MAC is doing
+> the wakeup.
 
-This was the architecture of my initial attempt at supporting phylink in
-DPAA2.
-https://patchwork.ozlabs.org/project/netdev/patch/1560470153-26155-5-git-send-email-ioana.ciornei@nxp.com/
+phylink_stop() will synchronously force the phy/mac link down if it
+wasn't already down, and it'll do this by calling the mac_link_down()
+method.
 
-If you have any suggestion on how I should go about fixing this, please
-let me know.
+phylink_start() will remove the force-down that phylink_stop() places,
+and will re-resolve the link. You will get a "major reconfiguration"
+event, and if the link is up, a mac_link_up() call.
 
-Ioana
+These are primarily designed to be called from the .ndo_open and
+.ndo_stop calls (as their kerneldoc mentions) but have found their way
+into suspend/resume methods.
 
+If a MAC is being suspended - as in powered down - you definitely want
+to bring it down to a safe state where link events are not going to
+affect the MAC. Calling phylink_stop() will do that. On resume, you
+want to reconfigure and allow the MAC to receive link events, and
+calling phylink_start() will do that.
+
+However, if the MAC is not being suspended because you want WoL to
+work, then you need the PHY/MAC link _not_ to be brought down so the
+MAC can receive packets and examine them to see if it should wake up.
+Phylink does not really cater for that case - it wasn't on my radar
+as I don't have any modern systems that support suspend/resume, much
+less MAC based WoL.
+
+> > Maybe I should provide phylink_suspend()/phylink_resume() which look at the
+> > netdev state just like phylib does, and conditionally call
+> > phylink_stop() and phylink_start() so driver authors don't have to consider this.
+> > 
+> > Something like:
+> > 
+> > /**
+> >  *...
+> >  * @mac_wol: true if the MAC needs to receive packets for Wake-on-Lan  */
+> > void phylink_suspend(struct phylink *phylink, bool mac_wol) {
+> > 	ASSERT_RTNL();
+> > 
+> > 	if (!mac_wol && !(phylink->netdev && phylink->netdev->wol_active))
+> > 		phylink_stop(phylink);
+> > }
+> > 
+> > /**
+> >  *...
+> >  * @mac_wol: true if the MAC needs to receive packets for Wake-on-Lan
+> >  *
+> >  * @mac_wol must have the same value as passed previously to
+> >  * phylink_suspend().
+> >  */
+> > void phylink_resume(struct phylink *phylink, bool mac_wol) {
+> > 	ASSERT_RTNL();
+> > 
+> > 	if (!mac_wol && !(phylink->netdev && phylink->netdev->wol_active))
+> > 		phylink_start(phylink);
+> > }
+> 
+> That's great!!! MAC driver authors don't need to distinguish the different cases.
+> 
+> > > The conclusion is that, as long as we call phylink_stop() for WoL
+> > > active in suspend(), then system can't be waked up any longer, and the
+> > > PHY situation is active. This let me recall what Russell mentioned in this
+> > thread, if we need bring MAC link up with phylink framework to let MAC can
+> > see traffic from PHY when MAC-based WoL is active?
+> > >
+> > > Now, I don't know where I can further dig into this issue, if you have any
+> > advice please share with me , thanks in advance.
+> > 
+> > So my question now is: as the MAC needs to be alive while the system is
+> > suspended, that implies that it has been configured to receive packets. When
+> > the system resumes, why exactly doesn't the MAC continue to work? Does the
+> > MAC get reset after the system comes out of resume and lose all of its
+> > configuration?
+> 
+> Yes, as I described in commit message, when STMMAC resume back, either WoL is active or not,
+> it reset the hardware then reconfig the MAC.
+> stmmac_resume()->stmmac_hw_setup()->stmmac_init_dma_engine()...
+
+Okay, so that means I need to make phylink_resume() trigger a major
+config if we are using WoL.
+
+There's a few more questions:
+1. Since the state at this point will be that netdev and phylink believe
+   the link to still be up, should phylink_suspend() force a
+   netif_carrier_off() event to stop the netdev transmit watchdog - I
+   think it ought to, even though the link will actually remain up.
+2. Should we call mac_link_down() prior to the major reconfig - I think
+   we should to keep the mac_link_down()/mac_link_up() calls balanced
+   (as we do already guarantee.) Will that do any harm for stmmac if we
+   were to call mac_link_down() as a result of a call to
+   phylink_resume() ?
+
+> > Reading what stmmac_resume() does, it seems that may well be the case, or if
+> > not, the actions of stmmac_resume() ends up reprogramming a great deal of
+> > the device setup. If this is the case, then yes, we need phylink to be triggered
+> > to reconfigure the link - which we could do in
+> > phylink_resume() if mac_wol was active.
+> > 
+> > While reading stmmac_resume(), I have to question the placement of this code
+> > block:
+> > 
+> >         if (!device_may_wakeup(priv->device) || !priv->plat->pmt) {
+> >                 rtnl_lock();
+> >                 phylink_start(priv->phylink);
+> >                 /* We may have called phylink_speed_down before */
+> >                 phylink_speed_up(priv->phylink);
+> >                 rtnl_unlock();
+> >         }
+> > 
+> > in the sequence there - phylink_start() should be called when you're ready for
+> > the link to come up - in other words, when you're ready to start seeing packets
+> > arrive at the MAC's interface. However, the code following is clearing and
+> > resetting up queues, restoring receive modes, setting up the hardware, and
+> > restoring the vlan filtering.
+> > Surely all that should happen before calling phylink_start(), much like it already
+> > does in stmmac_open() ?
+> 
+> There is a story here, SNPS EQOS IP need PHY provides RXC clock for MAC's receive
+> logic, so we need phylink_start() to bring PHY link up, that make PHY resume back,
+> PHY could stop RXC clock when in suspended state. This is the reason why calling phylink_start()
+> before re-config MAC.
+
+Why is it different from the .ndo_stop/.ndo_open case, where the PHY may
+have been suspended by the actions of .ndo_stop?
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
