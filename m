@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BD54400221
-	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 17:27:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4036D400223
+	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 17:27:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349762AbhICP06 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Sep 2021 11:26:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:28419 "EHLO
+        id S1349821AbhICP1H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Sep 2021 11:27:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:59715 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1349763AbhICP0t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 11:26:49 -0400
+        by vger.kernel.org with ESMTP id S1349775AbhICP0w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 11:26:52 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1630682748;
+        s=mimecast20190719; t=1630682752;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=FWALQBvzU+R41Zk/e9uMwLuEm9ztHruG7nkdG+hizdg=;
-        b=a6aUxHLmoJJ1xdm/4yDI+i2P3u0U6nKVpB1dXNndQCVxixcKCvFW7DhfKkGruV/BmGXy7y
-        NU02q4Ish0JJonlCFIzk0rtulHb+F+TsG3g1gkSfaiYaaKCyzpYHQhTSi5mAO/rjrVda7c
-        HZ3HyarVPwt7LPpUGQ+ZDF+KZFHfFko=
+        bh=J9NGBS2kCr9ghVesZ7zV6rjuMpoTkhfRKssnzMwknq4=;
+        b=LmVlq5rghXyXI5Fv+bERCa8TjaUKblOHiCWInQVvqufK5KzxWHVPIsHQM5HD7UaFoRV3bo
+        rMgbAPn6r1PjkFzsH6DDo0gA3wCJJBq5W82bH6ZyQRU6J5rODIAX2mh5iEfjz+RMMKLnVb
+        kvL6VE0je52Ty+oqA262M6eqeJZ8+XQ=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-532-0_3urZ0nOJ-EfhiYVhYRXA-1; Fri, 03 Sep 2021 11:25:45 -0400
-X-MC-Unique: 0_3urZ0nOJ-EfhiYVhYRXA-1
+ us-mta-156-XLEU-nOUOJmddA_g5yIbIw-1; Fri, 03 Sep 2021 11:25:50 -0400
+X-MC-Unique: XLEU-nOUOJmddA_g5yIbIw-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BD0AA80198A;
-        Fri,  3 Sep 2021 15:25:43 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A3FC5800FF3;
+        Fri,  3 Sep 2021 15:25:48 +0000 (UTC)
 Received: from virtlab512.virt.lab.eng.bos.redhat.com (virtlab512.virt.lab.eng.bos.redhat.com [10.19.152.206])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5D9C46F7E3;
-        Fri,  3 Sep 2021 15:25:33 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D6DCB6E0B0;
+        Fri,  3 Sep 2021 15:25:43 +0000 (UTC)
 From:   Nitesh Narayan Lal <nitesh@redhat.com>
 To:     linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
         linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
@@ -66,9 +66,9 @@ Cc:     nilal@redhat.com, jesse.brandeburg@intel.com, robin.murphy@arm.com,
         johannes@sipsolutions.net, snelson@pensando.io,
         lewis.hanly@microchip.com, benve@cisco.com, _govind@gmx.com,
         jassisinghbrar@gmail.com
-Subject: [PATCH v6 06/14] RDMA/irdma: Use irq_update_affinity_hint
-Date:   Fri,  3 Sep 2021 11:24:22 -0400
-Message-Id: <20210903152430.244937-7-nitesh@redhat.com>
+Subject: [PATCH v6 07/14] enic: Use irq_update_affinity_hint
+Date:   Fri,  3 Sep 2021 11:24:23 -0400
+Message-Id: <20210903152430.244937-8-nitesh@redhat.com>
 In-Reply-To: <20210903152430.244937-1-nitesh@redhat.com>
 References: <20210903152430.244937-1-nitesh@redhat.com>
 MIME-Version: 1.0
@@ -90,33 +90,38 @@ irq_set_affinity_hint() with the new interface irq_update_affinity_hint()
 that only updates the affinity_hint pointer.
 
 Signed-off-by: Nitesh Narayan Lal <nitesh@redhat.com>
-Acked-by: Tatyana Nikolova <tatyana.e.nikolova@intel.com>
+Reviewed-by: Christian Benvenuti <benve@cisco.com>
 ---
- drivers/infiniband/hw/irdma/hw.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/cisco/enic/enic_main.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/infiniband/hw/irdma/hw.c b/drivers/infiniband/hw/irdma/hw.c
-index 00de5ee9a260..cc165065447a 100644
---- a/drivers/infiniband/hw/irdma/hw.c
-+++ b/drivers/infiniband/hw/irdma/hw.c
-@@ -537,7 +537,7 @@ static void irdma_destroy_irq(struct irdma_pci_f *rf,
- 	struct irdma_sc_dev *dev = &rf->sc_dev;
+diff --git a/drivers/net/ethernet/cisco/enic/enic_main.c b/drivers/net/ethernet/cisco/enic/enic_main.c
+index d0a8f7106958..97eb5bd62855 100644
+--- a/drivers/net/ethernet/cisco/enic/enic_main.c
++++ b/drivers/net/ethernet/cisco/enic/enic_main.c
+@@ -150,10 +150,10 @@ static void enic_set_affinity_hint(struct enic *enic)
+ 		    !cpumask_available(enic->msix[i].affinity_mask) ||
+ 		    cpumask_empty(enic->msix[i].affinity_mask))
+ 			continue;
+-		err = irq_set_affinity_hint(enic->msix_entry[i].vector,
+-					    enic->msix[i].affinity_mask);
++		err = irq_update_affinity_hint(enic->msix_entry[i].vector,
++					       enic->msix[i].affinity_mask);
+ 		if (err)
+-			netdev_warn(enic->netdev, "irq_set_affinity_hint failed, err %d\n",
++			netdev_warn(enic->netdev, "irq_update_affinity_hint failed, err %d\n",
+ 				    err);
+ 	}
  
- 	dev->irq_ops->irdma_dis_irq(dev, msix_vec->idx);
--	irq_set_affinity_hint(msix_vec->irq, NULL);
-+	irq_update_affinity_hint(msix_vec->irq, NULL);
- 	free_irq(msix_vec->irq, dev_id);
+@@ -173,7 +173,7 @@ static void enic_unset_affinity_hint(struct enic *enic)
+ 	int i;
+ 
+ 	for (i = 0; i < enic->intr_count; i++)
+-		irq_set_affinity_hint(enic->msix_entry[i].vector, NULL);
++		irq_update_affinity_hint(enic->msix_entry[i].vector, NULL);
  }
  
-@@ -1087,7 +1087,7 @@ irdma_cfg_ceq_vector(struct irdma_pci_f *rf, struct irdma_ceq *iwceq,
- 	}
- 	cpumask_clear(&msix_vec->mask);
- 	cpumask_set_cpu(msix_vec->cpu_affinity, &msix_vec->mask);
--	irq_set_affinity_hint(msix_vec->irq, &msix_vec->mask);
-+	irq_update_affinity_hint(msix_vec->irq, &msix_vec->mask);
- 	if (status) {
- 		ibdev_dbg(&rf->iwdev->ibdev, "ERR: ceq irq config fail\n");
- 		return IRDMA_ERR_CFG;
+ static int enic_udp_tunnel_set_port(struct net_device *netdev,
 -- 
 2.27.0
 
