@@ -2,135 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E60A4003F9
-	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 19:13:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 226B7400405
+	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 19:21:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350130AbhICROc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Sep 2021 13:14:32 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:23265 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232117AbhICROb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 13:14:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1630689211;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=yHJyQTuhQ2rUo4HEpkrQXS+C/jFPNpqCCL4OYhPvFJs=;
-        b=P+MrMyKce4Q+zsN6ckx3kh8yefQPpAD2LkLgVJd1yMRenRyqwyO8MmNTOc6nlpp4nPikqh
-        JPSDa0XDUhg2FyTkLEh5Lp89n9qX7StvVVwpcxtEJeUp3VLkLfsOEWjCcpW7peEwz/9vpA
-        LJzcvCSc+6g3qJDyH8UcRYgfolNPcJE=
-Received: from mail-yb1-f197.google.com (mail-yb1-f197.google.com
- [209.85.219.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-574-IuKpXPnKPkWvTMrV3AZ-ag-1; Fri, 03 Sep 2021 13:13:30 -0400
-X-MC-Unique: IuKpXPnKPkWvTMrV3AZ-ag-1
-Received: by mail-yb1-f197.google.com with SMTP id 83-20020a251956000000b0059948f541cbso7197190ybz.7
-        for <netdev@vger.kernel.org>; Fri, 03 Sep 2021 10:13:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yHJyQTuhQ2rUo4HEpkrQXS+C/jFPNpqCCL4OYhPvFJs=;
-        b=Q3d8nhI6KRfFJ7AHa6ZdnrHCpLKCX1iuifwm/RsJQSZEZR0NOZ9XJIEpLGOE+e4BBB
-         10aLLE3xj///PkatIopaXHspPsob+oyDe5rNDJjU+5P+nDBGxQddJhwu3bhodyy5wivD
-         /1tzbgXhyaDoMZ5a8urvvDcehBwXDpaQ+LInnm0WaPCYFzU0akZ/WWWZhUunVE5Vo6nS
-         I+D+WOlH3uSbvcIAgXUE0vU+Mm6FdQqOZh+SoN+LUJcRGQCIky187c/ldCHvDQ7bhkrr
-         JjfXH47V1LIL5vWUYgc8h8qR1WcACVrWIjQc9hcrIJO2fYEQFFNlUtAeAkQlLMq0BrrM
-         UQ1Q==
-X-Gm-Message-State: AOAM532f68Iy6vC0ApMSty4T9c+E6h7mB1jj8Yq1P4xwlTtPndH/zwhS
-        HpzJev2VUM+vsxHdAwHnQAuYkdDrXM9El70OZnGPRUoCLkIkLz3TdhuITKyzdlwK865KI5br0u4
-        XD8QJKZnkoWWdBnlBgmV055m9enQ1+q8K
-X-Received: by 2002:a25:c005:: with SMTP id c5mr158251ybf.168.1630689210022;
-        Fri, 03 Sep 2021 10:13:30 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzn64tX3wVU8FQE/8IxOa46/3bOs07liCcjapLECaEcqfxtXRfkxmGyJeh0V2xmOGq4e8Mife4ldeUUuZVuHq4=
-X-Received: by 2002:a25:c005:: with SMTP id c5mr158209ybf.168.1630689209747;
- Fri, 03 Sep 2021 10:13:29 -0700 (PDT)
+        id S235720AbhICRWY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Sep 2021 13:22:24 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:55300 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232937AbhICRWX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 3 Sep 2021 13:22:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=yXfaRWVvHoCmdJzLZVNuqDaV0Ec4KTad1XigEwbGnGY=; b=cA
+        HeJeE3AU4CZHkK4ITo0fPb4nKcouTJuSQuLCGCKwdnpgDOaSHIrEESj0J40KSgek0Ghz7P/2LO5vO
+        f7wr4qRbAaeLI2BiPGHtc9KjK2FfM0sBuAwcR//Z1GLK/LTIvpO0/CJM7InjKm4jf2zI1bME6Yel2
+        WwaZdJv/YLln5Cw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mMCsR-0059kK-Gy; Fri, 03 Sep 2021 19:21:19 +0200
+Date:   Fri, 3 Sep 2021 19:21:19 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH net-next 0/3] Make the PHY library stop being so
+ greedy when binding the generic PHY driver
+Message-ID: <YTJZj/Js+nmDTG0y@lunn.ch>
+References: <20210902132635.GG22278@shell.armlinux.org.uk>
+ <20210902152342.vett7qfhvhiyejvo@skbuf>
+ <20210902163144.GH22278@shell.armlinux.org.uk>
+ <20210902171033.4byfnu3g25ptnghg@skbuf>
+ <20210902175043.GK22278@shell.armlinux.org.uk>
+ <20210902190507.shcdmfi3v55l2zuj@skbuf>
+ <20210902200301.GM22278@shell.armlinux.org.uk>
+ <20210902202124.o5lcnukdzjkbft7l@skbuf>
+ <20210902202905.GN22278@shell.armlinux.org.uk>
+ <20210903162253.5utsa45zy6h4v76t@skbuf>
 MIME-Version: 1.0
-References: <cover.1629473233.git.lorenzo@kernel.org> <ab0c64f1543239256ef63ec9b40f35a7491812c6.1629473233.git.lorenzo@kernel.org>
- <612eb79343225_6b872087a@john-XPS-13-9370.notmuch>
-In-Reply-To: <612eb79343225_6b872087a@john-XPS-13-9370.notmuch>
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Date:   Fri, 3 Sep 2021 19:13:18 +0200
-Message-ID: <CAJ0CqmWGNapcmVae52UJNAg7XKS7f0F2dmQMoO+1sL3zp=oFTw@mail.gmail.com>
-Subject: Re: [PATCH v12 bpf-next 01/18] net: skbuff: add size metadata to
- skb_shared_info for xdp
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
-        BPF-dev-list <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "Agroskin, Shay" <shayagr@amazon.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jesper Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        "Sarkar, Tirthendu" <tirthendu.sarkar@intel.com>,
-        Toke Hoiland Jorgensen <toke@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210903162253.5utsa45zy6h4v76t@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->
-> Lorenzo Bianconi wrote:
-> > Introduce xdp_frags_tsize field in skb_shared_info data structure
-> > to store xdp_buff/xdp_frame truesize (xdp_frags_tsize will be used
-> > in xdp multi-buff support). In order to not increase skb_shared_info
-> > size we will use a hole due to skb_shared_info alignment.
-> > Introduce xdp_frags_size field in skb_shared_info data structure
-> > reusing gso_type field in order to store xdp_buff/xdp_frame paged size.
-> > xdp_frags_size will be used in xdp multi-buff support.
-> >
-> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
->
-> I assume we can use xdp_frags_tsize for anything else above XDP later?
-> Other than simple question looks OK to me.
+On Fri, Sep 03, 2021 at 07:22:53PM +0300, Vladimir Oltean wrote:
+> [ trimming the CC list, I'm sure most people don't care, if they do,
+>   they can watch the mailing list ]
+> 
+> On Thu, Sep 02, 2021 at 09:29:05PM +0100, Russell King (Oracle) wrote:
+> > On Thu, Sep 02, 2021 at 11:21:24PM +0300, Vladimir Oltean wrote:
+> > > On Thu, Sep 02, 2021 at 09:03:01PM +0100, Russell King (Oracle) wrote:
+> > > > # systemctl list-dependencies networking.service
+> > > > networking.service
+> > > >   ├─ifupdown-pre.service
+> > > >   ├─system.slice
+> > > >   └─network.target
+> > > > # systemctl list-dependencies ifupdown-pre.service
+> > > > ifupdown-pre.service
+> > > >   ├─system.slice
+> > > >   └─systemd-udevd.service
+> > > > 
+> > > > Looking in the service files for a better idea:
+> > > > 
+> > > > networking.service:
+> > > > Requires=ifupdown-pre.service
+> > > > Wants=network.target
+> > > > After=local-fs.target network-pre.target apparmor.service systemd-sysctl.service systemd-modules-load.service ifupdown-pre.service
+> > > > Before=network.target shutdown.target network-online.target
+> > > > 
+> > > > ifupdown-pre.service:
+> > > > Wants=systemd-udevd.service
+> > > > After=systemd-udev-trigger.service
+> > > > Before=network.target
+> > > > 
+> > > > So, the dependency you mention is already present. As is a dependency
+> > > > on udev. The problem is udev does all the automatic module loading
+> > > > asynchronously and in a multithreaded way.
+> > > > 
+> > > > I don't think there's a way to make systemd wait for all module loads
+> > > > to complete.
+> > > 
+> > > So ifupdown-pre.service has a call to "udevadm settle". This "watches
+> > > the udev event queue, and exits if all current events are handled",
+> > > according to the man page. But which current events? ifupdown-pre.service
+> > > does not have the dependency on systemd-modules-load.service, just
+> > > networking.service does. So maybe ifupdown-pre.service does not wait for
+> > > DSA to finish initializing, then it tells networking.service that all is ok.
+> > 
+> > ifupdown-pre.service does have a call to udevadm settle, and that
+> > does get called from what I can tell.
+> > 
+> > systemd-modules-load.service is an entire red herring. The only
+> > module listed in the various modules-load.d directories is "tun"
+> > for openvpn (which isn't currently being used.)
+> > 
+> > As I've already told you (and you seem to have ignored), DSA gets
+> > loaded by udev, not by systemd-modules-load.service.
+> > systemd-modules-load.service is irrelevant to my situation.
+> > 
+> > I think there's a problem with "and exits if all current events are
+> > handled" - does that mean it's fired off a modprobe process which
+> > is in progress, or does that mean that the modprobe process has
+> > completed.
+> > 
+> > Given that we can see that ifup is being run while the DSA module is
+> > still in the middle of probing, the latter interpretation can not be
+> > true - unless systemd is ignoring the dependencies. Or just in
+> > general, systemd being systemd (I have very little faith in systemd
+> > behaving as it should.)
+> 
+> So I've set a fresh installation of Debian Buster on my Turris MOX,
+> which has 3 mv88e6xxx switches, and I've put the mv88e6xxx driver inside
+> the rootfs as a module to be loaded by udev based on modaliases just
+> like you've said.  Additionally, the PHY driver is also a module.
+> The kernel is built straight from the v5.13 tag, absolutely no changes.
+> 
+> Literally the only changes I've done to this system are:
+> 1. install bridge-utils
+> 2. create this file, it is sourced by /etc/network/interfaces:
+> root@debian:~# cat /etc/network/interfaces.d/bridge
+> auto br0
+> iface br0 inet manual
+>         bridge_ports lan1 lan2 lan3 lan4 lan5 lan6 lan7 lan8 lan9 lan10 lan11 lan12 lan13 lan14 lan15 lan16 lan17 lan18 lan19 lan20 lan21 lan22 lan23 lan24 sfp
+>         bridge_maxwait 0
 
-yes, right as we did for gso_type/xdp_frags_size.
+Hi Russell
 
-Regards,
-Lorenzo
+Do you have
 
->
-> Acked-by: John Fastabend <john.fastabend@gmail.com>
->
-> > ---
-> >  include/linux/skbuff.h | 6 +++++-
-> >  1 file changed, 5 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> > index 6bdb0db3e825..1abeba7ef82e 100644
-> > --- a/include/linux/skbuff.h
-> > +++ b/include/linux/skbuff.h
-> > @@ -522,13 +522,17 @@ struct skb_shared_info {
-> >       unsigned short  gso_segs;
-> >       struct sk_buff  *frag_list;
-> >       struct skb_shared_hwtstamps hwtstamps;
-> > -     unsigned int    gso_type;
-> > +     union {
-> > +             unsigned int    gso_type;
-> > +             unsigned int    xdp_frags_size;
-> > +     };
-> >       u32             tskey;
-> >
-> >       /*
-> >        * Warning : all fields before dataref are cleared in __alloc_skb()
-> >        */
-> >       atomic_t        dataref;
-> > +     unsigned int    xdp_frags_tsize;
-> >
-> >       /* Intermediate layers must ensure that destructor_arg
-> >        * remains valid until skb destructor */
-> > --
-> > 2.31.1
-> >
->
->
+auto brdsl
 
+in your /etc/network/interfaces?
+
+Looking at /lib/udev/bridge-network-interface it seems it will only do
+hotplug of interfaces if auto is set on the bridge interface. Without
+auto, it only does coldplug. So late appearing switch ports won't get
+added.
+
+      Andrew
