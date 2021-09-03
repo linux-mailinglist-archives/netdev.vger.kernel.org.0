@@ -2,143 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 582CC3FFA3D
-	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 08:16:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 997BC3FFA59
+	for <lists+netdev@lfdr.de>; Fri,  3 Sep 2021 08:24:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346814AbhICGRh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Sep 2021 02:17:37 -0400
-Received: from mx13.kaspersky-labs.com ([91.103.66.164]:26008 "EHLO
-        mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346781AbhICGRf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 02:17:35 -0400
-Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay13.kaspersky-labs.com (Postfix) with ESMTP id D3404521546;
-        Fri,  3 Sep 2021 09:16:29 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail202102; t=1630649789;
-        bh=zA66q/z+6uWww8VK3ZD3B6UBxpbsiv8++v4tgwOJAqM=;
-        h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=0aYuIf9D0a57+EcBa6qjyOMFdoThyTn5H2mtQDlw+oLIINeWJWs/nZH+DhcuHDheW
-         gxY3TjaXadL4jQ3WO+Qkmx2WLBBYtlGL/lsRFIkwKFRXABkzDrzc/TglQKl9UXjyBq
-         qPybkjlOjJu4N2nXbemZo54CGCTQJqNJpfL75Tci0YTKz0QhFZ0kNt+PUErXuLXKdg
-         q2ysbu4tSmkrK4hinDAXsZSjQGgFf5jV6K6in5gMYxydExB2JT64+bos1j1i1/zI36
-         ptG0O+ko0+slDKs4I2G8kMZkMIIkM+4A4SCCbs5X21+iCE1kxSEmuadm0INr54Nybz
-         fZHOg0bC2CGuw==
-Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
-        (using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id 688B752153E;
-        Fri,  3 Sep 2021 09:16:29 +0300 (MSK)
-Received: from arseniy-pc.avp.ru (10.64.64.121) by hqmailmbx3.avp.ru
- (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 3
- Sep 2021 09:16:28 +0300
-From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
-To:     Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Arseny Krasnov <arseny.krasnov@kaspersky.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        Andra Paraschiv <andraprs@amazon.com>
-CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <stsp2@yandex.ru>, <oxffffaa@gmail.com>
-Subject: [PATCH net-next v4 6/6] vsock_test: update message bounds test for MSG_EOR
-Date:   Fri, 3 Sep 2021 09:16:20 +0300
-Message-ID: <20210903061623.3188172-1-arseny.krasnov@kaspersky.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210903061353.3187150-1-arseny.krasnov@kaspersky.com>
-References: <20210903061353.3187150-1-arseny.krasnov@kaspersky.com>
+        id S1345805AbhICGZh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Sep 2021 02:25:37 -0400
+Received: from m12-16.163.com ([220.181.12.16]:33641 "EHLO m12-16.163.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230128AbhICGZg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 3 Sep 2021 02:25:36 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=gwsSz
+        w+Owsx9E4ND5+dICrWSiwl4/4CbypIPkR7vonI=; b=Ndzlx7LlgcBchTm16OBPA
+        D9z5qAA3g/mFnDrTiU5yV35+osDXdAbtU0u2Hgm3KvgrLzGBTtfdTOay9uSphwet
+        HHsiTgWCvuo1FuNJF0F0aVr4zhwwpeEfj9LEgOcCuFrv5gMyoirzL+6Mw+pJy3sG
+        GPDrwnGH1JHMbWcZ0shV4M=
+Received: from COOL-20201222LC.ccdomain.com (unknown [218.94.48.178])
+        by smtp12 (Coremail) with SMTP id EMCowABn+2yHvzFh91wlAg--.14S2;
+        Fri, 03 Sep 2021 14:24:19 +0800 (CST)
+From:   dingsenjie@163.com
+To:     jirislaby@kernel.org, mickflemm@gmail.com, mcgrof@kernel.org,
+        kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dingsenjie <dingsenjie@yulong.com>
+Subject: [PATCH] wireless: ath5k: Remove unnecessary label of ath5k_beacon_update
+Date:   Fri,  3 Sep 2021 14:23:16 +0800
+Message-Id: <20210903062316.11756-1-dingsenjie@163.com>
+X-Mailer: git-send-email 2.21.0.windows.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.64.64.121]
-X-ClientProxiedBy: hqmailmbx1.avp.ru (10.64.67.241) To hqmailmbx3.avp.ru
- (10.64.67.243)
-X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
-X-KSE-AntiSpam-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 09/03/2021 06:01:42
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 165946 [Sep 03 2021]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
-X-KSE-AntiSpam-Info: LuaCore: 461 461 c95454ca24f64484bdf56c7842a96dd24416624e
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2;arseniy-pc.avp.ru:7.1.1;kaspersky.com:7.1.1
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Deterministic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 09/03/2021 05:52:00
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: Clean, bases: 03.09.2021 4:06:00
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-KLMS-Rule-ID: 52
-X-KLMS-Message-Action: clean
-X-KLMS-AntiSpam-Status: not scanned, disabled by settings
-X-KLMS-AntiSpam-Interceptor-Info: not scanned
-X-KLMS-AntiPhishing: Clean, bases: 2021/09/03 04:45:00
-X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/09/03 02:56:00 #17151492
-X-KLMS-AntiVirus-Status: Clean, skipped
+X-CM-TRANSID: EMCowABn+2yHvzFh91wlAg--.14S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrZFyfWr1rJryxJr4fCF1rZwb_yoWDuwc_ur
+        WI93Z7JF15GryYgrsrC3y3Z34IkFW8uF95G3WjqFW7KF13CrWkAr95Zr9rGw17uw4xAFnx
+        uFsrAFy3tw1jvjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU0D73DUUUUU==
+X-Originating-IP: [218.94.48.178]
+X-CM-SenderInfo: 5glqw25hqmxvi6rwjhhfrp/1tbiYxQDyFaEEMIYRAAAsg
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Set 'MSG_EOR' in one of message sent, check that 'MSG_EOR'
-is visible in corresponding message at receiver.
+From: dingsenjie <dingsenjie@yulong.com>
 
-Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+The label just used as return, so we delete it and
+use the return statement instead of the goto statement.
+
+Signed-off-by: dingsenjie <dingsenjie@yulong.com>
 ---
- tools/testing/vsock/vsock_test.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/net/wireless/ath/ath5k/base.c | 13 ++++---------
+ 1 file changed, 4 insertions(+), 9 deletions(-)
 
-diff --git a/tools/testing/vsock/vsock_test.c b/tools/testing/vsock/vsock_test.c
-index 67766bfe176f..2a3638c0a008 100644
---- a/tools/testing/vsock/vsock_test.c
-+++ b/tools/testing/vsock/vsock_test.c
-@@ -282,6 +282,7 @@ static void test_stream_msg_peek_server(const struct test_opts *opts)
+diff --git a/drivers/net/wireless/ath/ath5k/base.c b/drivers/net/wireless/ath/ath5k/base.c
+index 4c6e57f..9739189 100644
+--- a/drivers/net/wireless/ath/ath5k/base.c
++++ b/drivers/net/wireless/ath/ath5k/base.c
+@@ -1896,23 +1896,18 @@ static int ath5k_remove_padding(struct sk_buff *skb)
+ 	struct ath5k_vif *avf;
+ 	struct sk_buff *skb;
+ 
+-	if (WARN_ON(!vif)) {
+-		ret = -EINVAL;
+-		goto out;
+-	}
++	if (WARN_ON(!vif))
++		return -EINVAL;
+ 
+ 	skb = ieee80211_beacon_get(hw, vif);
+ 
+-	if (!skb) {
+-		ret = -ENOMEM;
+-		goto out;
+-	}
++	if (!skb)
++		return -ENOMEM;
+ 
+ 	avf = (void *)vif->drv_priv;
+ 	ath5k_txbuf_free_skb(ah, avf->bbuf);
+ 	avf->bbuf->skb = skb;
+ 	ret = ath5k_beacon_setup(ah, avf->bbuf);
+-out:
+ 	return ret;
  }
  
- #define MESSAGES_CNT 7
-+#define MSG_EOR_IDX (MESSAGES_CNT / 2)
- static void test_seqpacket_msg_bounds_client(const struct test_opts *opts)
- {
- 	int fd;
-@@ -294,7 +295,7 @@ static void test_seqpacket_msg_bounds_client(const struct test_opts *opts)
- 
- 	/* Send several messages, one with MSG_EOR flag */
- 	for (int i = 0; i < MESSAGES_CNT; i++)
--		send_byte(fd, 1, 0);
-+		send_byte(fd, 1, (i == MSG_EOR_IDX) ? MSG_EOR : 0);
- 
- 	control_writeln("SENDDONE");
- 	close(fd);
-@@ -324,6 +325,11 @@ static void test_seqpacket_msg_bounds_server(const struct test_opts *opts)
- 			perror("message bound violated");
- 			exit(EXIT_FAILURE);
- 		}
-+
-+		if ((i == MSG_EOR_IDX) ^ !!(msg.msg_flags & MSG_EOR)) {
-+			perror("MSG_EOR");
-+			exit(EXIT_FAILURE);
-+		}
- 	}
- 
- 	close(fd);
 -- 
-2.25.1
+1.9.1
+
 
