@@ -2,279 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F06F400A8F
-	for <lists+netdev@lfdr.de>; Sat,  4 Sep 2021 13:27:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D25CE400A96
+	for <lists+netdev@lfdr.de>; Sat,  4 Sep 2021 13:27:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233727AbhIDIoR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Sep 2021 04:44:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57876 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233278AbhIDIoQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Sep 2021 04:44:16 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2D1BC061575
-        for <netdev@vger.kernel.org>; Sat,  4 Sep 2021 01:43:15 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id v123so1364534pfb.11
-        for <netdev@vger.kernel.org>; Sat, 04 Sep 2021 01:43:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=MyZDsyRp8d7Nz/bpQylF+ViUcJxOfrCc2VN9A8K9j44=;
-        b=VfGyNHiQt7CEfxMb907l+bs/Lf0V2asD7g5ugz5FxImufjiA0P52dnovdg+2UOALYU
-         rty6SmFDzLQ2dof9nCrqV0X8Anl3p9CbPp/WgxSBQR13x4hJSsLJZDufyVf5Ce4kcbC7
-         H7uFKpYcbUXNvTKaN3IB+CmStG1cWO+ymcVs/doz+ujVB3Q/w5oL30uu9wj2T+PGf6uR
-         NpIEIEp6d3wt+QhUy/T+8mD9vIs0GS7dOsormAn2aDlmjUq/WE8XGtUiuXkDpbe5CBCr
-         MZEknnWFhL/NnoiXvap9OlQMamy1DFbW0H3S9ACWpb7Tmd/suTwPgieYCjiT0EpvwGJG
-         /+ew==
+        id S229832AbhIDJTT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Sep 2021 05:19:19 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:40910 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234717AbhIDJTR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Sep 2021 05:19:17 -0400
+Received: by mail-io1-f71.google.com with SMTP id i26-20020a5e851a000000b005bb55343e9bso1153392ioj.7
+        for <netdev@vger.kernel.org>; Sat, 04 Sep 2021 02:18:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=MyZDsyRp8d7Nz/bpQylF+ViUcJxOfrCc2VN9A8K9j44=;
-        b=jfTKeWHkljWIrkcIFF27dIv3z9CBkjDgWqwtdW+ocKuceFaC70zxU+/sinrvJqMg+T
-         kNw2J0SbCa0jOsfLyr1x7nPqQsJwJCEXWgbbD4COD6QivIw5PnBWSFAudg0f/pXqJFrn
-         8DGseAODYOvxWuJ8VO9Fv8K1WWBhXZB0WthkzK4FI0EaFH4kE7F2SHbje7IPH2lLlCwy
-         8GygCdNegvV7FHIrbnCWGiP/CRVhz1L3QrO8iG+0NscRJHAQLKJjytI2v5fOD1MYv+C6
-         AU3TnmENQmAF3bVF3nOqEYYh90Ca3qB9VXyVNCnjqLWIeaVNu6w5+TtOVS0JxBlazaso
-         8FcQ==
-X-Gm-Message-State: AOAM533R4izt1MdQrpB62usrFQ18ev9hdLkVtYTyL5FZLzACx/ZkqGYO
-        4gY8wB9W3PDuvxE7G0J6VR0=
-X-Google-Smtp-Source: ABdhPJzT+8yvMGoTBH9a/TuyQ2UQRWeaXd9y0g5hD5S9N9ci4edgz5Ml7WjKJwzsDLs4ngUU0NKaJA==
-X-Received: by 2002:a65:44c6:: with SMTP id g6mr2759899pgs.442.1630744995027;
-        Sat, 04 Sep 2021 01:43:15 -0700 (PDT)
-Received: from Laptop-X1 ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id y8sm1723365pfe.162.2021.09.04.01.43.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 04 Sep 2021 01:43:14 -0700 (PDT)
-Date:   Sat, 4 Sep 2021 16:43:09 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
-        Xiumei Mu <xmu@redhat.com>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>, wireguard@lists.zx2c4.com
-Subject: Re: [PATCH net] wireguard: remove peer cache in netns_pre_exit
-Message-ID: <YTMxnfkJVA8b6lAV@Laptop-X1>
-References: <20210901122904.9094-1-liuhangbin@gmail.com>
- <YS+GX/Y85bch4gMU@zx2c4.com>
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=wuygMjKpui/5Jp1GW19pmXZYMaAIg3AN6x3yHD7X2RI=;
+        b=CcSMA+5zXujU/uKbs+DFKA69IP57S/fCFkLyLagMMce6Won0rvEsPAmZyLB17+S306
+         sa2f2OQdpyn6+B7bo/bLHsKq6STAU3qYVx2oZ5nXNjG3mla6E5v22bZhu/DtCbpCFAO7
+         u92FUyPTEMXo+dzkbiPcZV/Hv9wXHJixKFAgmzQSBuMZtorOvwbkgz66YfsGlGNmYTij
+         ZtWGSF7u4u0aNkrOBxzNWbkVyKda/Cu2oIDt1JsjkcrEwg/zCjvqRrX6WAOPzEChcMHG
+         fe/nmeoTYlIiBffw9uOD2wQ7o5M6JYFZkW61+eVa86qBvHoEh+cOIxy6jx1Ym7wmy40c
+         wRzQ==
+X-Gm-Message-State: AOAM531DBGVQwNRsV1BpxzP+MEY6HyH9GCldaFIa3PJRfDGxsFeHDc0n
+        VkIhJMa4sB68RAR+44EdaJuFS2qdLdgLwo102G8QOPhcClv1
+X-Google-Smtp-Source: ABdhPJywEVIZdqnQcPsYk8BQqFbHBEahEnMNwNuu8dy3OrdOYDb3AdBnKH5NrneQJxrZJ6KFut5T8dyvRBVTCuChUi5iIhjA5H0c
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YS+GX/Y85bch4gMU@zx2c4.com>
+X-Received: by 2002:a05:6638:2297:: with SMTP id y23mr2557981jas.105.1630747096187;
+ Sat, 04 Sep 2021 02:18:16 -0700 (PDT)
+Date:   Sat, 04 Sep 2021 02:18:16 -0700
+In-Reply-To: <20210904080739.3026-1-hdanton@sina.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000006309ef05cb27e5b9@google.com>
+Subject: Re: [syzbot] INFO: task hung in __lru_add_drain_all
+From:   syzbot <syzbot+a9b681dcbc06eb2bca04@syzkaller.appspotmail.com>
+To:     eric.dumazet@gmail.com, hdanton@sina.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 01, 2021 at 03:55:43PM +0200, Jason A. Donenfeld wrote:
-> Hi Hangbin,
-> 
-> Thanks for the patch and especially for the test. While I see that
-> you've pointed to a real problem, I don't think that this particular way
-> of fixing it is correct, because it will cause issues for userspace that
-> expects to be able to read back the list of peers for, for example,
-> keeping track of the latest endpoint addresses or rx/tx transfer
-> quantities.
-> 
-> I think the real solution here is to simply clear the endpoint src cache
-> and consequently the dst_cache. This is slightly complicated by the fact
-> that dst_cache releases dsts lazily, so I needed to add a little utility
-> function for that, but that was pretty easy to do.
-> 
-> Can you take a look at the below patch and let me know if it works for
-> you and passes other testing you and Toke might be doing with it? (Also,
-> please CC the wireguard mailing list in addition to netdev next time?)
-> If the patch looks good to you and works well, I'll include it in the
-> next series of wireguard patches I send back out to netdev. I'm back
-> from travels next week and will begin working on the next series then.
+Hello,
 
-Hi Jason,
+syzbot has tested the proposed patch but the reproducer is still triggering an issue:
+INFO: task hung in synchronize_rcu
 
-I tested your patch on both physical and virtual machines. All works fine.
+INFO: task kworker/u4:3:57 blocked for more than 143 seconds.
+      Not tainted 5.14.0-syzkaller #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:kworker/u4:3    state:D stack:24944 pid:   57 ppid:     2 flags:0x00004000
+Workqueue: events_unbound fsnotify_mark_destroy_workfn
+Call Trace:
+ context_switch kernel/sched/core.c:4940 [inline]
+ __schedule+0x940/0x26f0 kernel/sched/core.c:6287
+ schedule+0xd3/0x270 kernel/sched/core.c:6366
+ schedule_timeout+0x1db/0x2a0 kernel/time/timer.c:1857
+ do_wait_for_common kernel/sched/completion.c:85 [inline]
+ __wait_for_common kernel/sched/completion.c:106 [inline]
+ wait_for_common kernel/sched/completion.c:117 [inline]
+ wait_for_completion+0x176/0x280 kernel/sched/completion.c:138
+ __synchronize_srcu+0x1f4/0x290 kernel/rcu/srcutree.c:930
+ fsnotify_mark_destroy_workfn+0xfd/0x340 fs/notify/mark.c:860
+ process_one_work+0x9bf/0x16b0 kernel/workqueue.c:2297
+ process_scheduled_works kernel/workqueue.c:2360 [inline]
+ worker_thread+0x85c/0x11f0 kernel/workqueue.c:2446
+ kthread+0x3e5/0x4d0 kernel/kthread.c:319
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+INFO: lockdep is turned off.
+NMI backtrace for cpu 1
+CPU: 1 PID: 1649 Comm: khungtaskd Not tainted 5.14.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:105
+ nmi_cpu_backtrace.cold+0x47/0x144 lib/nmi_backtrace.c:105
+ nmi_trigger_cpumask_backtrace+0x1ae/0x220 lib/nmi_backtrace.c:62
+ trigger_all_cpu_backtrace include/linux/nmi.h:146 [inline]
+ check_hung_uninterruptible_tasks kernel/hung_task.c:210 [inline]
+ watchdog+0xc1d/0xf50 kernel/hung_task.c:295
+ kthread+0x3e5/0x4d0 kernel/kthread.c:319
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+Sending NMI from CPU 1 to CPUs 0:
+NMI backtrace for cpu 0
+CPU: 0 PID: 4027 Comm: syz-executor.5 Not tainted 5.14.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:preempt_count arch/x86/include/asm/preempt.h:27 [inline]
+RIP: 0010:check_kcov_mode kernel/kcov.c:163 [inline]
+RIP: 0010:__sanitizer_cov_trace_pc+0x0/0x60 kernel/kcov.c:197
+Code: 01 f0 4d 89 03 e9 63 fd ff ff b9 ff ff ff ff ba 08 00 00 00 4d 8b 03 48 0f bd ca 49 8b 45 00 48 63 c9 e9 64 ff ff ff 0f 1f 00 <65> 8b 05 39 d2 8b 7e 89 c1 48 8b 34 24 81 e1 00 01 00 00 65 48 8b
+RSP: 0018:ffffc90014246c50 EFLAGS: 00000246
+RAX: 0000000000000000 RBX: 0000000000000001 RCX: ffff8880600a5580
+RDX: 0000000000000000 RSI: ffff8880600a5580 RDI: 0000000000000003
+RBP: 0000000000000000 R08: 000000000000002f R09: 0000000000000000
+R10: ffffffff83f5086c R11: 0000000000000000 R12: ffffc90014246fd6
+R13: ffff88802e928008 R14: ffffc90014246fe0 R15: ffffc90014246fd6
+FS:  00007f0e855b9700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000000000052f7b0 CR3: 00000000532b1000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ number+0x16a/0xae0 lib/vsprintf.c:465
+ vsnprintf+0xf09/0x14f0 lib/vsprintf.c:2863
+ snprintf+0xbb/0xf0 lib/vsprintf.c:2930
+ __dev_alloc_name net/core/dev.c:1126 [inline]
+ dev_alloc_name_ns+0x3a4/0x6b0 net/core/dev.c:1154
+ dev_get_valid_name+0x67/0x160 net/core/dev.c:1189
+ register_netdevice+0x361/0x1500 net/core/dev.c:10214
+ ipvlan_link_new+0x39b/0xc00 drivers/net/ipvlan/ipvlan_main.c:586
+ __rtnl_newlink+0x106d/0x1750 net/core/rtnetlink.c:3458
+ rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3506
+ rtnetlink_rcv_msg+0x413/0xb80 net/core/rtnetlink.c:5572
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2504
+ netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1340
+ netlink_sendmsg+0x86d/0xdb0 net/netlink/af_netlink.c:1929
+ sock_sendmsg_nosec net/socket.c:704 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:724
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2409
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2463
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2492
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x4665e9
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f0e855b9188 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 000000000056bf80 RCX: 00000000004665e9
+RDX: 0000000000000000 RSI: 0000000020000080 RDI: 0000000000000003
+RBP: 00000000004bfcc4 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 000000000056bf80
+R13: 00007ffdedf0960f R14: 00007f0e855b9300 R15: 0000000000022000
+----------------
+Code disassembly (best guess):
+   0:	01 f0                	add    %esi,%eax
+   2:	4d 89 03             	mov    %r8,(%r11)
+   5:	e9 63 fd ff ff       	jmpq   0xfffffd6d
+   a:	b9 ff ff ff ff       	mov    $0xffffffff,%ecx
+   f:	ba 08 00 00 00       	mov    $0x8,%edx
+  14:	4d 8b 03             	mov    (%r11),%r8
+  17:	48 0f bd ca          	bsr    %rdx,%rcx
+  1b:	49 8b 45 00          	mov    0x0(%r13),%rax
+  1f:	48 63 c9             	movslq %ecx,%rcx
+  22:	e9 64 ff ff ff       	jmpq   0xffffff8b
+  27:	0f 1f 00             	nopl   (%rax)
+* 2a:	65 8b 05 39 d2 8b 7e 	mov    %gs:0x7e8bd239(%rip),%eax        # 0x7e8bd26a <-- trapping instruction
+  31:	89 c1                	mov    %eax,%ecx
+  33:	48 8b 34 24          	mov    (%rsp),%rsi
+  37:	81 e1 00 01 00 00    	and    $0x100,%ecx
+  3d:	65                   	gs
+  3e:	48                   	rex.W
+  3f:	8b                   	.byte 0x8b
 
-So please feel free to add
 
-Tested-by: Hangbin Liu <liuhangbin@gmail.com>
+Tested on:
 
-Thanks
-Hangbin
-> 
-> Regards,
-> Jason
-> 
-> ---------8<-------------8<-----------------
-> 
-> From f9984a41eeaebfdcef5aba8a71966b77ba0de8c0 Mon Sep 17 00:00:00 2001
-> From: "Jason A. Donenfeld" <Jason@zx2c4.com>
-> Date: Wed, 1 Sep 2021 14:53:39 +0200
-> Subject: [PATCH] wireguard: device: reset peer src endpoint when netns exits
-> MIME-Version: 1.0
-> Content-Type: text/plain; charset=UTF-8
-> Content-Transfer-Encoding: 8bit
-> 
-> Each peer's endpoint contains a dst_cache entry that takes a reference
-> to another netdev. When the containing namespace exits, we take down the
-> socket and prevent future sockets from being created (by setting
-> creating_net to NULL), which removes that potential reference on the
-> netns. However, it doesn't release references to the netns that a netdev
-> cached in dst_cache might be taking, so the netns still might fail to
-> exit. Since the socket is gimped anyway, we can simply clear all the
-> dst_caches (by way of clearing the endpoint src), which will release all
-> references.
-> 
-> However, the current dst_cache_reset function only releases those
-> references lazily. But it turns out that all of our usages of
-> wg_socket_clear_peer_endpoint_src are called from contexts that are not
-> exactly high-speed or bottle-necked. For example, when there's
-> connection difficulty, or when userspace is reconfiguring the interface.
-> And in particular for this patch, when the netns is exiting. So for
-> those cases, it makes more sense to call dst_release immediately. For
-> that, we add a small helper function to dst_cache.
-> 
-> This patch also adds a test to netns.sh from Hangbin Liu to ensure this
-> doesn't regress.
-> 
-> Test-by: Hangbin Liu <liuhangbin@gmail.com>
-> Reported-by: Xiumei Mu <xmu@redhat.com>
-> Cc: Hangbin Liu <liuhangbin@gmail.com>
-> Cc: Toke Høiland-Jørgensen <toke@redhat.com>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Fixes: 900575aa33a3 ("wireguard: device: avoid circular netns references")
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> ---
->  drivers/net/wireguard/device.c             |  3 +++
->  drivers/net/wireguard/socket.c             |  2 +-
->  include/net/dst_cache.h                    | 11 ++++++++++
->  net/core/dst_cache.c                       | 19 +++++++++++++++++
->  tools/testing/selftests/wireguard/netns.sh | 24 +++++++++++++++++++++-
->  5 files changed, 57 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/wireguard/device.c b/drivers/net/wireguard/device.c
-> index 551ddaaaf540..77e64ea6be67 100644
-> --- a/drivers/net/wireguard/device.c
-> +++ b/drivers/net/wireguard/device.c
-> @@ -398,6 +398,7 @@ static struct rtnl_link_ops link_ops __read_mostly = {
->  static void wg_netns_pre_exit(struct net *net)
->  {
->  	struct wg_device *wg;
-> +	struct wg_peer *peer;
->  
->  	rtnl_lock();
->  	list_for_each_entry(wg, &device_list, device_list) {
-> @@ -407,6 +408,8 @@ static void wg_netns_pre_exit(struct net *net)
->  			mutex_lock(&wg->device_update_lock);
->  			rcu_assign_pointer(wg->creating_net, NULL);
->  			wg_socket_reinit(wg, NULL, NULL);
-> +			list_for_each_entry(peer, &wg->peer_list, peer_list)
-> +				wg_socket_clear_peer_endpoint_src(peer);
->  			mutex_unlock(&wg->device_update_lock);
->  		}
->  	}
-> diff --git a/drivers/net/wireguard/socket.c b/drivers/net/wireguard/socket.c
-> index 8c496b747108..6f07b949cb81 100644
-> --- a/drivers/net/wireguard/socket.c
-> +++ b/drivers/net/wireguard/socket.c
-> @@ -308,7 +308,7 @@ void wg_socket_clear_peer_endpoint_src(struct wg_peer *peer)
->  {
->  	write_lock_bh(&peer->endpoint_lock);
->  	memset(&peer->endpoint.src6, 0, sizeof(peer->endpoint.src6));
-> -	dst_cache_reset(&peer->endpoint_cache);
-> +	dst_cache_reset_now(&peer->endpoint_cache);
->  	write_unlock_bh(&peer->endpoint_lock);
->  }
->  
-> diff --git a/include/net/dst_cache.h b/include/net/dst_cache.h
-> index 67634675e919..df6622a5fe98 100644
-> --- a/include/net/dst_cache.h
-> +++ b/include/net/dst_cache.h
-> @@ -79,6 +79,17 @@ static inline void dst_cache_reset(struct dst_cache *dst_cache)
->  	dst_cache->reset_ts = jiffies;
->  }
->  
-> +/**
-> + *	dst_cache_reset_now - invalidate the cache contents immediately
-> + *	@dst_cache: the cache
-> + *
-> + *	The caller must be sure there are no concurrent users, as this frees
-> + *	all dst_cache users immediately, rather than waiting for the next
-> + *	per-cpu usage like dst_cache_reset does. Most callers should use the
-> + *	higher speed lazily-freed dst_cache_reset function instead.
-> + */
-> +void dst_cache_reset_now(struct dst_cache *dst_cache);
-> +
->  /**
->   *	dst_cache_init - initialize the cache, allocating the required storage
->   *	@dst_cache: the cache
-> diff --git a/net/core/dst_cache.c b/net/core/dst_cache.c
-> index be74ab4551c2..0ccfd5fa5cb9 100644
-> --- a/net/core/dst_cache.c
-> +++ b/net/core/dst_cache.c
-> @@ -162,3 +162,22 @@ void dst_cache_destroy(struct dst_cache *dst_cache)
->  	free_percpu(dst_cache->cache);
->  }
->  EXPORT_SYMBOL_GPL(dst_cache_destroy);
-> +
-> +void dst_cache_reset_now(struct dst_cache *dst_cache)
-> +{
-> +	int i;
-> +
-> +	if (!dst_cache->cache)
-> +		return;
-> +
-> +	dst_cache->reset_ts = jiffies;
-> +	for_each_possible_cpu(i) {
-> +		struct dst_cache_pcpu *idst = per_cpu_ptr(dst_cache->cache, i);
-> +		struct dst_entry *dst = idst->dst;
-> +
-> +		idst->cookie = 0;
-> +		idst->dst = NULL;
-> +		dst_release(dst);
-> +	}
-> +}
-> +EXPORT_SYMBOL_GPL(dst_cache_reset_now);
-> diff --git a/tools/testing/selftests/wireguard/netns.sh b/tools/testing/selftests/wireguard/netns.sh
-> index 2e5c1630885e..8a9461aa0878 100755
-> --- a/tools/testing/selftests/wireguard/netns.sh
-> +++ b/tools/testing/selftests/wireguard/netns.sh
-> @@ -613,6 +613,28 @@ ip0 link set wg0 up
->  kill $ncat_pid
->  ip0 link del wg0
->  
-> +# Ensure that dst_cache references don't outlive netns lifetime
-> +ip1 link add dev wg0 type wireguard
-> +ip2 link add dev wg0 type wireguard
-> +configure_peers
-> +ip1 link add veth1 type veth peer name veth2
-> +ip1 link set veth2 netns $netns2
-> +ip1 addr add fd00:aa::1/64 dev veth1
-> +ip2 addr add fd00:aa::2/64 dev veth2
-> +ip1 link set veth1 up
-> +ip2 link set veth2 up
-> +waitiface $netns1 veth1
-> +waitiface $netns2 veth2
-> +ip1 -6 route add default dev veth1 via fd00:aa::2
-> +ip2 -6 route add default dev veth2 via fd00:aa::1
-> +n1 wg set wg0 peer "$pub2" endpoint [fd00:aa::2]:2
-> +n2 wg set wg0 peer "$pub1" endpoint [fd00:aa::1]:1
-> +n1 ping6 -c 1 fd00::2
-> +pp ip netns delete $netns1
-> +pp ip netns delete $netns2
-> +pp ip netns add $netns1
-> +pp ip netns add $netns2
-> +
->  # Ensure there aren't circular reference loops
->  ip1 link add wg1 type wireguard
->  ip2 link add wg2 type wireguard
-> @@ -631,7 +653,7 @@ while read -t 0.1 -r line 2>/dev/null || [[ $? -ne 142 ]]; do
->  done < /dev/kmsg
->  alldeleted=1
->  for object in "${!objects[@]}"; do
-> -	if [[ ${objects["$object"]} != *createddestroyed ]]; then
-> +	if [[ ${objects["$object"]} != *createddestroyed && ${objects["$object"]} != *createdcreateddestroyeddestroyed ]]; then
->  		echo "Error: $object: merely ${objects["$object"]}" >&3
->  		alldeleted=0
->  	fi
-> -- 
-> 2.32.0
+commit:         f1583cb1 Merge tag 'linux-kselftest-next-5.15-rc1' of ..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=123f2ab9300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=9c582b69de20dde2
+dashboard link: https://syzkaller.appspot.com/bug?extid=a9b681dcbc06eb2bca04
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=12e12515300000
+
