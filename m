@@ -2,231 +2,325 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46534400D4C
-	for <lists+netdev@lfdr.de>; Sun,  5 Sep 2021 00:05:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D285400D86
+	for <lists+netdev@lfdr.de>; Sun,  5 Sep 2021 01:26:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234106AbhIDWGv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Sep 2021 18:06:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34764 "EHLO
+        id S236361AbhIDX1D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Sep 2021 19:27:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230316AbhIDWGu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Sep 2021 18:06:50 -0400
-Received: from mail-vs1-xe2c.google.com (mail-vs1-xe2c.google.com [IPv6:2607:f8b0:4864:20::e2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27AD2C061575
-        for <netdev@vger.kernel.org>; Sat,  4 Sep 2021 15:05:48 -0700 (PDT)
-Received: by mail-vs1-xe2c.google.com with SMTP id a21so2415401vsp.12
-        for <netdev@vger.kernel.org>; Sat, 04 Sep 2021 15:05:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4rYZyA8DQGvHTAG0lxbv1Y/MS6jTayi4LbPn8iyNQFc=;
-        b=osIUAPjDTVwdOdpH5WXMPbsemE+uTeiZqFRqUtc8ThsW8r4RC44yvjnbCkYIRNrWcQ
-         WZGa/My3ivJQummUnB1s89/noavdWLFQuu8MCGKcEGeJzDkJf76FwbW8ON3fDYgNkspW
-         GGgjIrzdZrwq2NmC5H9VI4ljhnQ5+xWeKkwIerV0M6+aSdsYTOBWaYg06L76Il1IiRqV
-         9Q3NJJ9qvqaN4Mu7vWa0ftClX3mPfQr7hChA/YvUJzYYoOUrdDRONrok6VBncmqcvdF6
-         3uzL7LmBIjGRuShIosQcsJp/4cGxygiRz8JgmgqJXkV620/oMiW783WtAqyWCJxOyJ9j
-         biiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4rYZyA8DQGvHTAG0lxbv1Y/MS6jTayi4LbPn8iyNQFc=;
-        b=oUqjwa4LUJkWzNvV5R7u3sxzl4xERKP0Co4y9xQzh2Xhh+pu9eQngUMdcre3hDeMve
-         4YuFSz2/CYCJhkq398okUHXxsGwHoJV2oJ3Xsw1B9rp7h567v/qUyoqY81KCnHuXQBvb
-         5nZdvIve0PmjoA8D5qn8tVoTI1RhsAMSXacYcyUxLDQMkyZi8R/yiM64GZy15XuSDjBH
-         twtopAiwhS2Epe82sSXeDhOQWI9aM2FQ3jDMFZ8xWHMEeV/zPWYpfI9vdFzOlGq8TptJ
-         DAPXrO1ce/0TcNbvHgpvOWE7MrXUh2RBHbfTXmivuuRRmMfKER6cz343ukaFJiSq2ADS
-         sCdg==
-X-Gm-Message-State: AOAM532T4CBhBReplQMl0TjeuWoquLQpQNQ/8JxDMv4+HErn4ZRTdT+w
-        3dbxU81WodFYq6XyxRE0yv4apqNgaqg=
-X-Google-Smtp-Source: ABdhPJzpacUk6Q2LerFGfLzpiE+TnVxkkU+buXkFDMc5bmBHHC+PN4OvKaUD3FjplLqiLdrzGJxVpw==
-X-Received: by 2002:a05:6102:c4b:: with SMTP id y11mr3126806vss.24.1630793146573;
-        Sat, 04 Sep 2021 15:05:46 -0700 (PDT)
-Received: from mail-vs1-f45.google.com (mail-vs1-f45.google.com. [209.85.217.45])
-        by smtp.gmail.com with ESMTPSA id s26sm397588vsl.10.2021.09.04.15.05.46
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 04 Sep 2021 15:05:46 -0700 (PDT)
-Received: by mail-vs1-f45.google.com with SMTP id u1so2421893vsq.10
-        for <netdev@vger.kernel.org>; Sat, 04 Sep 2021 15:05:46 -0700 (PDT)
-X-Received: by 2002:a05:6102:3031:: with SMTP id v17mr3011393vsa.49.1630793145716;
- Sat, 04 Sep 2021 15:05:45 -0700 (PDT)
+        with ESMTP id S233054AbhIDX1C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Sep 2021 19:27:02 -0400
+Received: from pandora.armlinux.org.uk (unknown [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C335FC061575;
+        Sat,  4 Sep 2021 16:25:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=gYzkQfO/6AYOvfn48KCHQkwP+aGQmKlCKvjIh11n23M=; b=tpOU6vUXdMOlKNuDeJl5qyIKx
+        v/cUB8AnehgUXDn6uXp7pLXZ2dJHx5/6CjKoY+5IZkbivbyUVWQnlKFJGVe+W3teQhUKD0Y6n83ba
+        2EoVc9GchDIwhi0Y3RpUwxDZ7wu0pVTKt1PtaKV6V6fAanoRMaNAVL8DhbzrAfHN3ryNzkMyxgwEw
+        g1mUMse1sdm6BBvLvzWadcCbTw5CxZY6hHQbNvakZsrMOygJ+2mOhutcytmUqkgUD/LTqpluiG54K
+        kbIvjhM6QeiAeZxFbnQ3z3OU84tWiZyWQ/8x8RkOqjcyPVfXkoNYKLCpEUeMPr6uGMs/uEDf2lPW9
+        0rzt7rPnA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:44954)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mMf2b-0004qO-RD; Sun, 05 Sep 2021 00:25:41 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mMf2a-0001lp-Al; Sun, 05 Sep 2021 00:25:40 +0100
+Date:   Sun, 5 Sep 2021 00:25:40 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        netdev@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH net-next 1/3] net: phy: don't bind genphy in
+ phy_attach_direct if the specific driver defers probe
+Message-ID: <YTQAdJDMnPqbpxKk@shell.armlinux.org.uk>
+References: <20210902213303.GO22278@shell.armlinux.org.uk>
+ <20210902213949.r3q5764wykqgjm4z@skbuf>
+ <20210902222439.GQ22278@shell.armlinux.org.uk>
+ <20210902224506.5h7bnybjbljs5uxz@skbuf>
+ <YTFX7n9qj2cUh0Ap@lunn.ch>
+ <20210902232607.v7uglvpqi5hyoudq@skbuf>
+ <20210903000419.GR22278@shell.armlinux.org.uk>
+ <20210903204822.cachpb2uh53rilzt@skbuf>
+ <20210903220623.GA22278@shell.armlinux.org.uk>
+ <20210904215905.7tcgmtayo73x53wy@skbuf>
 MIME-Version: 1.0
-References: <20210902193447.94039-1-willemdebruijn.kernel@gmail.com>
- <20210902193447.94039-2-willemdebruijn.kernel@gmail.com> <CAKgT0UdhaUp0jcNZSzMu=_OezwqKNHP47u0n_XUkpO_SbSV8hA@mail.gmail.com>
- <CA+FuTSfaN-wLzVq1UQhwiPgH=PKdcW+kz1PDxgfrLAnjWf8CKA@mail.gmail.com>
- <CAKgT0UdtqJ+ECyDs1dv7ha4Bq12XaGiOQ6uvja5cy06dDR5ziw@mail.gmail.com>
- <CA+FuTSfpmGHC76GAVVS2qazfLykVZ=mM+33pRHpj-yyM3nqhXA@mail.gmail.com>
- <CAKgT0UdiYRHrSUGb9qDJ-GGMBj53P1L4KHSV7tv+omA5FjRZNQ@mail.gmail.com>
- <CA+FuTSf-83bDVzmB757ha99DS=O-KjSFVSn15Y6Vq5Yh9yx2wA@mail.gmail.com>
- <CAKgT0Uf6YrDtvEfL02-P7A3Q_V32MWZ-tV7B=xtkY0ZzxEo9yg@mail.gmail.com>
- <CA+FuTSeHAd4ouwYd9tL2FHa1YdB3aLznOTnAJt+PShnr+Zd7yw@mail.gmail.com>
- <CAKgT0Ucx+i6prW5n95dYRF=+7hz2pzNDpQfwwUY607MyQh1gGg@mail.gmail.com>
- <CA+FuTSdwF7h5S7TZAwujPWhPqar6_q-37nT_syWHA+pmYm68aw@mail.gmail.com>
- <CAKgT0Ud5ZFQ3Jv4DAFftf6OkhJe5UxEcuVTJs-9HYk8ptCt9Uw@mail.gmail.com>
- <CA+FuTScCp7EB4bLfrTADia5pOfDwsLNxN0pkWjLN_+CefYNTkg@mail.gmail.com> <CAKgT0UecD+EmPRyWEghf8M_qrv8JN4iojqv2eZc-VD_OZDzB-g@mail.gmail.com>
-In-Reply-To: <CAKgT0UecD+EmPRyWEghf8M_qrv8JN4iojqv2eZc-VD_OZDzB-g@mail.gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Sat, 4 Sep 2021 18:05:08 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSdTjtgTZj6n9QtCEYWwip7M7kgKS=ybNOjiE3mzuCzsew@mail.gmail.com>
-Message-ID: <CA+FuTSdTjtgTZj6n9QtCEYWwip7M7kgKS=ybNOjiE3mzuCzsew@mail.gmail.com>
-Subject: Re: [PATCH net] ip_gre: validate csum_start only if CHECKSUM_PARTIAL
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ido Schimmel <idosch@idosch.org>,
-        chouhan.shreyansh630@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210904215905.7tcgmtayo73x53wy@skbuf>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Sep 4, 2021 at 5:54 PM Alexander Duyck
-<alexander.duyck@gmail.com> wrote:
->
-> On Sat, Sep 4, 2021 at 2:40 PM Willem de Bruijn
-> <willemdebruijn.kernel@gmail.com> wrote:
-> >
-> > On Sat, Sep 4, 2021 at 11:37 AM Alexander Duyck
-> > <alexander.duyck@gmail.com> wrote:
-> > >
-> > > On Sat, Sep 4, 2021 at 7:46 AM Willem de Bruijn
-> > > <willemdebruijn.kernel@gmail.com> wrote:
-> > > >
-> > > > On Fri, Sep 3, 2021 at 7:27 PM Alexander Duyck
-> > > > <alexander.duyck@gmail.com> wrote:
-> > > > >
-> > > > > On Fri, Sep 3, 2021 at 12:38 PM Willem de Bruijn
-> > > > > <willemdebruijn.kernel@gmail.com> wrote:
-> > > > > >
-> > > > >
-> > > > > <snip>
-> > > > >
-> > > > > > > whereas if the offset is stored somewhere in the unstripped data we
-> > > > > > > could then drop the packet and count it as a drop without having to
-> > > > > > > modify the frame via the skb_pull.
-> > > > > >
-> > > > > > This is a broader issue that userspace can pass any csum_start as long
-> > > > > > as it is within packet bounds. We could address it here specifically
-> > > > > > for the GRE header. But that still leaves many potentially bad offsets
-> > > > > > further in the packet in this case, and all the other cases. Checking
-> > > > > > that specific header seems a bit arbitrary to me, and might actually
-> > > > > > give false confidence.
-> > > > > >
-> > > > > > We could certainly move the validation from gre_handle_offloads to
-> > > > > > before skb_pull, to make it more obvious *why* the check exists.
-> > > > >
-> > > > > Agreed. My main concern is that the csum_start is able to be located
-> > > > > somewhere where the userspace didn't write. For the most part the
-> > > > > csum_start and csum_offset just needs to be restricted to the regions
-> > > > > that the userspace actually wrote to.
-> > > >
-> > > > I don't quite follow. Even with this bug, the offset is somewhere userspace
-> > > > wrote. That data is just pulled.
-> > >
-> > > Sorry, I was thinking of the SOCK_DGRAM case where the header is added
-> > > via a call to dev_hard_header().
-> > >
-> > > > > > > Maybe for those
-> > > > > > > cases we need to look at adding an unsigned int argument to
-> > > > > > > virtio_net_hdr_to_skb in which we could pass 0 for the unused case or
-> > > > > > > dev->hard_header_len in the cases where we have something like
-> > > > > > > af_packet that is transmitting over an ipgre tunnel. The general idea
-> > > > > > > is to prevent these virtio_net_hdr_to_skb calls from pointing the
-> > > > > > > csum_start into headers that userspace was not responsible for
-> > > > > > > populating.
-> > > > > >
-> > > > > > One issue with that is that dev->hard_header_len itself is imprecise
-> > > > > > for protocols with variable length link layer headers. There, too, we
-> > > > > > have had a variety of bug fixes in the past.
-> > > > > >
-> > > > > > It also adds cost to every user of virtio_net_hdr, while we only know
-> > > > > > one issue in a rare case of the IP_GRE device.
-> > > > >
-> > > > > Quick question, the assumption is that the checksum should always be
-> > > > > performed starting no earlier than the transport header right? Looking
-> > > > > over virtio_net_hdr_to_skb it looks like it is already verifying the
-> > > > > transport header is in the linear portion of the skb. I'm wondering if
-> > > > > we couldn't just look at adding a check to verify the transport offset
-> > > > > is <= csum start? We might also be able to get rid of one of the two
-> > > > > calls to pskb_may_pull by doing that.
-> > > >
-> > > > Are you referring to this part in the .._NEEDS_CSUM branch?
-> > > >
-> > > >                 if (!skb_partial_csum_set(skb, start, off))
-> > > >                         return -EINVAL;
-> > > >
-> > > >                 p_off = skb_transport_offset(skb) + thlen;
-> > > >                 if (!pskb_may_pull(skb, p_off))
-> > > >                         return -EINVAL;
-> > > >
-> > > > skb_partial_csum_set is actually what sets the transport offset,
-> > > > derived from start.
-> > >
-> > > Ugh, I had overlooked that as I was more focused on the
-> > > skb_probe_transport_header calls in the af_packet code.
-> > >
-> > > So we can have both the transport offset and the csum_start in a
-> > > region that gets stripped by the ipgre code. Worse yet the inner
-> > > transport header will also be pointing somewhere outside of the
-> > > encapsulated region when we pass it off to skb_reset_inner_headers().
-> > >
-> > > Maybe it would make sense to just have the check look into the
-> > > transport offset instead of csum start as that way you are essentially
-> > > addressing two possible issues instead of one, and it would
-> > > effectively combine multiple checks as the uninitialized value is ~0
-> > > which should always be greater than "skb_headroom + tunnel->hlen +
-> > > sizeof(struct iphdr)". I think you mentioned before placing a check
-> > > just before you make the call to skb_pull in the GRE transmit path.
-> > > Doing that we would at least reduce the impact as it would only apply
-> > > in the header_ops case in ipgre_xmit instead of being applied to all
-> > > the transmit paths which don't perform the pull.
-> >
-> > Do you mean
-> >
-> >         if (dev->header_ops) {
-> > +               int pull_len = tunnel->hlen + sizeof(struct iphdr);
-> > +
-> >                 if (skb_cow_head(skb, 0))
-> >                         goto free_skb;
-> >
-> >                 tnl_params = (const struct iphdr *)skb->data;
-> >
-> > +               if (pull_len > skb_transport_offset(skb))
-> > +                       goto free_skb;
-> > +
-> >                 /* Pull skb since ip_tunnel_xmit() needs skb->data pointing
-> >                  * to gre header.
-> >                  */
-> > -               skb_pull(skb, tunnel->hlen + sizeof(struct iphdr));
-> > +               skb_pull(skb, pull_len);
-> >                 skb_reset_mac_header(skb);
-> >
-> > plus then
-> >
-> >  static int gre_handle_offloads(struct sk_buff *skb, bool csum)
-> >  {
-> > -       /* Local checksum offload requires csum offload of the inner packet */
-> > -       if (csum && skb->ip_summed == CHECKSUM_PARTIAL &&
-> > -           skb_checksum_start(skb) < skb->data)
-> > -               return -EINVAL;
-> > -
-> >         return iptunnel_handle_offloads(skb, csum ? SKB_GSO_GRE_CSUM :
-> > SKB_GSO_GRE);
-> >  }
->
-> Yes, this is what I was thinking. We will also need an IPv6 version of
-> this as well, and may want to add a comment clarifying that this is to
-> prevent us from pointing inner offsets at pulled headers.
->
-> It lets us drop the csum, ipsummed, and csum_start checks in favor of
-> just the skb_transport_offset comparison which should be a net win
-> since it reduces the number of paths the code is encountered in, and
-> reduces the number of checks to just 1.
+On Sun, Sep 05, 2021 at 12:59:05AM +0300, Vladimir Oltean wrote:
+> [ again, trimming the CC list, because I assume most people don't care,
+>   and if they do, the mailing lists are there for that ]
+> 
+> On Fri, Sep 03, 2021 at 11:06:23PM +0100, Russell King (Oracle) wrote:
+> > On Fri, Sep 03, 2021 at 11:48:22PM +0300, Vladimir Oltean wrote:
+> > > On Fri, Sep 03, 2021 at 01:04:19AM +0100, Russell King (Oracle) wrote:
+> > > > Removing a lock and then running the kernel is a down right stupid
+> > > > way to test to see if a lock is necessary.
+> > > > 
+> > > > That approach is like having built a iron bridge, covered it in paint,
+> > > > then you remove most the bolts, and then test to see whether it's safe
+> > > > for vehicles to travel over it by riding your bicycle across it and
+> > > > declaring it safe.
+> > > > 
+> > > > Sorry, but if you think "remove lock, run kernel, if it works fine
+> > > > the lock is unnecessary" is a valid approach, then you've just
+> > > > disqualified yourself from discussing this topic any further.
+> > > > Locking is done by knowing the code and code analysis, not by
+> > > > playing "does the code fail if I remove it" games. I am utterly
+> > > > shocked that you think that this is a valid approach.
+> > > 
+> > > ... and this is exactly why you will no longer get any attention from me
+> > > on this topic. Good luck.
+> > 
+> > Good, because your approach to this to me reads as "I don't think you
+> > know what the hell you're doing so I'm going to remove a lock to test
+> > whether it is needed." Effectively, that action is an insult towards
+> > me as the author of that code.
+> 
+> The reason why you aren't getting any of my attention is your attitude,
+> in case it was not clear.
+> 
+> You've transformed a few words I said and which were entirely
+> reasonable, "I don't know exactly why the SFP bus needs the rtnl_mutex,
+> I've removed those locks and will see what fails tomorrow", into a soap
+> opera based on something I did not say.
 
-Okay. Yes, this looks better to me too. Thanks.
+You really don't understand, do you.
 
-Do you want to submit it? Or I can do it, either way.
+I will say again: you can not remove a lock and then run-time test
+to see whether that lock is required. It doesn't just work like that,
+and the more you persist to assert that it does, the more stupid you
+look to all those who have had years of kernel programming experience.
+So please continue...
+
+> > And as I said, if you think that's a valid approach, then quite frankly
+> > I don't want you touching my code, because you clearly don't know what
+> > you're doing as you aren't willing to put the necessary effort in to
+> > understanding the code.
+> > 
+> > Removing a lock and running the kernel is _never_ a valid way to see
+> > whether the lock is required or not. The only way is via code analysis.
+> 
+> It is a completely valid approach for a simple reason: if there was an
+> obvious reason why the SFP bus code would have needed serialization
+> through the rtnetlink mutex, I could have found out by looking at all
+> the failed assertions and said to myself "oh, yeah, right, of course",
+> instead of spending several hours looking at the code, at which point I
+> would have had fewer chances of figuring out anyway.
+
+If we want to answer the question of "why rtnl_mutex" then one first
+has to understand the locking strategy and why I ended up there. It
+is _not_ simple.
+
+> > I wonder whether you'd take the same approach with filesystems or
+> > memory management code. Why don't you try removing some locks from
+> > those subsystems and see how long your filesystems last?
+> 
+> This is a completely irrelevant and wrong argument, of course there are
+> sandboxes in which incompetent people can do insane things without doing
+> any damage, even if the subsystems they are interested in are filesystems
+> and memory management. It brings exactly nothing to the discussion.
+
+It is entirely relevant - it is about your approach to testing whether
+a lock is necessary or not. Your stated approach is "lets remove the
+lock and then run the kernel and see if anything breaks." I assert
+that approach is completely invalid.
+
+> If the mere idea of me removing a lock was insulting to you, I've no
+> idea what atrocity this might even compare to. But suffice to say, I
+> spent several hours and it is not obvious at all, based on code analysis
+> as you wish, why it must be the rtnl_lock and not any other mutex taken
+> by both the SFP module driver and the SFP upstream consumer (phylink),
+> with the same semantics except not the mega-bloated rtnetlink mutex.
+> 
+> These are my notes from the plane, it is a single pass (the second pass
+> will most likely not happen), again it is purely based on code analysis
+> as you requested, non-expert of course because it is the first time I
+> look at the details or even study the code paths, and I haven't even run
+> the code without the rtnetlink protection as I originally intended.
+> 
+> phylink_register_sfp
+> -> bus = sfp_bus_find_fwnode(fwnode)
+>    -> fwnode_property_get_reference_args(fwnode)
+>    -> bus = sfp_bus_get(fwnode)
+>       -> mutex_lock(&sfp_mutex)
+>       -> search for fwnode in sfp->fwnode of sfp_buses list # side note, the iterator in this function should have been named "bus", not "sfp", for consistency
+>          -> if found, kref_get(&sfp->kref)
+>          -> else allocate new sfp bus with this sfp->fwnode, and kref_init
+>       -> mutex_unlock(&sfp_mutex)
+>    -> fwnode_handle_put(fwnode)
+> -> pl->sfp_bus = bus
+> -> sfp_bus_add_upstream(bus, pl)
+>    -> rtnl_lock()
+>    -> kref_get(bus->kref) <- why? this increments from 1 to 2. Indicative of possibly concurrent code
+>    -> bus->upstream = pl
+>    -> if (bus->sfp) <- this code path does not populate bus->sfp, so unless code is running concurrently (?!) branch is not taken
+>       -> sfp_register_bus(bus)
+>    -> rtnl_unlock()
+>    -> if (ret) => sfp_bus_put(bus) <= on error this decrements the kref back from 2 to 1
+>       -> kref_put_mutex(&bus->kref, sfp_bus_release, &sfp_mutex)
+> -> sfp_bus_put(bus)
+>    -> on error, drops the kref from 1 to 0 and frees the bus under the sfp_mutex
+>    -> on normal path, drops the kref from 2 to 1
+
+First question "why? this increments from 1 to 2. Indicative of possibly
+concurrent code" - you appear to have answered that already in two lines
+immediately above.
+
+In the case of a pre-existing bus being found, then the krefs will be
+one higher than the numerical values you have given above.
+
+> Ok, why would bus->sfp be non-NULL (how would the sfp_register_bus possibly be triggered by this function)?
+
+You've already answered that above. "else allocate new sfp bus with this
+sfp->fwnode, and kref_init". In that case, bus->sfp will be NULL because
+the socket hasn't been registered.
+
+> sfp->bus is set from:
+> 
+> sfp_unregister_socket(bus)
+> -> rtnl_lock
+> -> if (bus->upstream_ops) sfp_unregister_bus(bus)
+> -> sfp_socket_clear(bus)
+>    -> bus->sfp = NULL
+> -> rtnl_unlock
+> -> sfp_bus_put(bus)
+> 
+> sfp_register_socket(dev, sfp, ops)
+> -> bus = sfp_bus_get(dev->fwnode)
+> -> rtnl_lock
+> -> bus->sfp_dev = dev;
+> -> bus->sfp = sfp;
+> -> bus->socket_ops = ops;
+> -> if (bus->upstream_ops) => sfp_register_bus(bus);
+> -> rtnl_unlock
+> -> on error => sfp_bus_put(bus)
+> -> return bus
+> 
+> Who calls sfp_register_socket and sfp_unregister_socket?
+> 
+> sfp_probe (the driver for the cage)
+> -> sfp->sfp_bus = sfp_register_socket(sfp->dev, sfp, &sfp_module_ops)
+> 
+> sfp_remove
+> -> sfp_unregister_socket(sfp->sfp_bus)
+> 
+> So sfp_register_bus can be called either by phylink_register_sfp(the upstream side) or sfp_probe(the cage side). They are serialized by the rtnl_mutex.
+
+So here you have established the need for serialisation. However, I
+don't think you have completely grasped it fully.
+
+Not only do these two need to be serialised, but also the calls
+through sfp_bus, to prevent bus->sfp, bus->socket_ops,
+bus->upstream_ops, or bus->upstream changing beneath us.
+
+Sure, bus->sfp, bus->socket_ops isn't going to change except when the
+SFP cage is being removed once setup - but these may be dereferenced
+by a call from the network side. The same is true of calls going the
+other way.
+
+So, we now have a concrete reason why we need serialisation here,
+agreed?
+
+Let's take a moment, and assume the sfp-bus layer uses its own private
+mutex to achieve this, which would be taken whenever either side calls
+one of the interface functions so that dereferences of bus->sfp,
+bus->socket_ops, bus->upstream_ops and bus->upstream are all safe.
+
+sfp_get_module_info() and sfp_get_module_eeprom() are called from
+ethtool operations. So, lockdep will see rtnl taken first, then our
+private mutex. As soon as any two locks nest, it creates an immediate
+nesting rule for these two locks to avoid an AB-BA deadlock. We must
+always take our private mutex before rtnl, otherwise we have the
+possibility of an AB-BA deadlock.
+
+The next part of the puzzle is how we add and remove PHYs.
+
+Pick any ethtool implementation that dereferences the net device
+"phydev" member, for example linkstate_get_sqi(). This happens to
+take the phydev->lock, but that is not important - the important
+point is that netdev->phydev must be a valid phydev or NULL and
+must not change while the ethtool call is being processed. Which
+lock guarantees that? It's the rtnl lock.
+
+So, to safely change netdev->phydev on a published or running net
+device, we must be holding the rtnl lock.
+
+Okay, now lets go back to the sfp_bus layer, and lets consider the
+case where a PHY is being removed - and continue to assume that we
+are using our private locks in that code. The SFP cage code has
+called sfp_remove_phy(), which takes our lock and then calls
+through to the disconnect_phy method.
+
+The disconnect_phy() needs to take the rtnl lock to safely remove the
+phydev from the network device... but we've taken our private lock.
+
+So, we end up with two paths, one which takes the locks in the order
+AB and another which takes them in order BA. Lockdep will spot that
+and will complain.
+
+What ways can that be solved?
+
+- One can fall back and just use the rtnl lock.
+- One could refcount the structures on both sides, and adding code
+  to handle the case where one side or the other goes away - but
+  even with that, it's still unsafe.
+
+  Consider sfp_get_module_eeprom(). This will sleep while i2c is
+  read (many network drivers will sleep here under the rtnl lock.)
+  The SFP cage module gets removed mid-call. There's absolutely
+  nothing to prevent that happening. We don't get a look in while
+  the i2c adapter is sleeping to abort that. Maybe the SFP cage
+  gets removed. We now have lost its code, so when the i2c adapter
+  returns, we get a kernel oops because the code we were going to
+  execute on function return has been removed.
+
+As soon as you start thinking "we can add a lock here instead of rtnl"
+then things start getting really difficult because of netdev holding
+rtnl when making some calls through to the SFP cage code, and rtnl
+needing to be held when changing the phydev in the network interface
+side.
+
+It isn't nice, I know. I wish it wasn't that way, and we could have
+finer grained locking, but I don't see any possibilities to avoid the
+AB-BA deadlock problem without introducing even more code and/or
+creating bugs in the process of doing so.
+
+
+Now, if you take your approach of "lets remove the rtnl lock and see
+whether anything breaks" I can tell you now - you likely won't notice
+anything break from a few hundred boots. However, removing the lock
+_provably_ opens a race between threads loading or removing the SFP
+cage code and actions happening in the netdev layer.
+
+This is why your approach is invalid. You can not prove a negative.
+You can not prove that a lock isn't needed by removing it. Computing
+does not work that way.
+
+I don't write code to "work 99% of the time". I write code to try to
+achieve reliable operation, and that means having the necessary locks
+in place to avoid races and prevent kernel oops.
+
+One of the things that having been involved in Linux for so long
+teaches you is that a race, no matter how rare, will get found.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
