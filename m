@@ -2,69 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C4CFC4008A8
-	for <lists+netdev@lfdr.de>; Sat,  4 Sep 2021 02:14:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 669F24008AA
+	for <lists+netdev@lfdr.de>; Sat,  4 Sep 2021 02:14:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350845AbhIDAIN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Sep 2021 20:08:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58068 "EHLO
+        id S1350860AbhIDAI1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Sep 2021 20:08:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241161AbhIDAIM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 20:08:12 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3C41C061575;
-        Fri,  3 Sep 2021 17:07:11 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id k17so499224pls.0;
-        Fri, 03 Sep 2021 17:07:11 -0700 (PDT)
+        with ESMTP id S1350601AbhIDAI0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Sep 2021 20:08:26 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 050A1C061575;
+        Fri,  3 Sep 2021 17:07:26 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id 28-20020a17090a031cb0290178dcd8a4d1so554827pje.0;
+        Fri, 03 Sep 2021 17:07:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=subject:to:references:from:message-id:date:user-agent:mime-version
          :in-reply-to:content-language:content-transfer-encoding;
-        bh=ac0NqM/OB6g9iUrCA7LBliwNibjwqAkrbgHRRkfR0qc=;
-        b=UbzjLAokr68iaS5qyEY7+2a3znQA05YmHnx+QznBEGguQHYlWQJL43jlNWyyqtKZHF
-         a3BD+oeriMLrJMwr6ZfIdbaDpzob6rryPmxTArXXoNeTR5Vd8+jWG44brEMuaNMEKABH
-         eDFjH3MFCm1tT3yq4e1leVcc5635czp/5uSqhGZlz6g4zjYLeDmwNgpyXXmRkAc7NS7k
-         iJlLg1Aje0o8/UAbwAa5PJulYAk8XvVjwdBMrnzeNE3XJ4xXbZVI0WzJmyKb7cuqDDJw
-         U7E9qLdAU/40KcAS1gBnx8//mHZC/28z1mBh8WVXUo5tawRlj2/sIoT9OVKgN3viO5CQ
-         D38w==
+        bh=Myq6bRmVy0VPz7UOQnNxBiQSZVbmCyYoGJRM61g0+C4=;
+        b=A9G4KhtufPhoOA8gvqml423oqLYCKrmLp2WVGtlkAY2WLWHrWloZX/LQkD2w0xa5PG
+         GWS+iKch3cYRLecm4ovgybpc1X8Mr0I5uNToKcfAzqU3QTf2r3ftwGwCVo+Pj74wpFVJ
+         Ov/FlvOSGPKGsODcR85Gfyx2q5EGxxzk3m+8gky8aY3GfZf5klLD9ph1EQdMq2qgxWrU
+         fWCJVawGjMIPCkB0E73qtZgu7Wee/PFuOZPHzP7QQg/dxNNYLgw6erfdLFpNkNMAo66a
+         xkn6SKX/eKRIBgmNncDRjH63PlTAHe/ETvPH/8OecTRouJt3LyuOn+sh+VhUyUiuWwOo
+         j/ng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=ac0NqM/OB6g9iUrCA7LBliwNibjwqAkrbgHRRkfR0qc=;
-        b=qR6mi2PK8w6GB4Pd55wY7I5B42O4cMpLN4uyklXCHF3qDUnrj4vdnxE2j9PVbAlhDZ
-         L06aEn5g1nAID8i4Lt0PTcrE6b3ryNlicvjwavj74DtI5KU/Ffuy1OVPzqVimBsw1Mcr
-         bZMWdseBAgT9MXbvZGbximpnNwdJITPQyCFd2JOPh/1eymyCIUOfy+djN6Iv/lUMuynt
-         eGTAP4xwrXecH7dl/XyXWKSlfOvxZHND16nltDdgrZyL9kp6IswFuOhhiBuiUIAendZ/
-         4lppDXMcrDvQXAdfbHlyN4OnA/TnFu3LEb6gtd3gAAGMmwRYEyt0U/d/0XgKW/8VsELv
-         kLsA==
-X-Gm-Message-State: AOAM530rBIzrbJ2TCUJjUCNKZe2zotbRogdvFZrQ7rASl3+VG5JW/f+A
-        vb3fJEoUSnZonHIq6rmdaGw=
-X-Google-Smtp-Source: ABdhPJztUluPpgOgdJ9YCbcBM4OW6xd2f41oS2ThJ2UZkjveWclXRERBhDWTF1CEHF7eZu4hfuOEeQ==
-X-Received: by 2002:a17:902:e811:b0:138:a9a5:bc3a with SMTP id u17-20020a170902e81100b00138a9a5bc3amr1222282plg.18.1630714031311;
-        Fri, 03 Sep 2021 17:07:11 -0700 (PDT)
+        bh=Myq6bRmVy0VPz7UOQnNxBiQSZVbmCyYoGJRM61g0+C4=;
+        b=XnCMI3YVcaZiHjITjj42Wb6LNo+6VNGO6KL6LERjjWq+rIm9HINajhBEsPEIhW5wS2
+         S1SEO3PhiJQDN+bBtDI/NONanGSU3jbna62heIyTVIafzeXeHadWpJVHTmPqlzyjneO5
+         wY/WAlHc6jyxyLu+8mAUAIcnckjhNzsvqqg49VY8a8Ecjp3Z6I9mwKbfrhmLga29AR18
+         /tsaKlGI658X/bHoriJs/OMYDk3/MFD73jbdU4nMTPyBctM5KTxO4OXxgt3PRL8/D1ud
+         pkMVneqn/XrlzbCp+KOgODRuqWQGkoYfIt9EX2IWA/5WW6EW9FDGg718wUmQKiPUj7wt
+         9cvQ==
+X-Gm-Message-State: AOAM533wNLk3Ujx+6No7j5azbykxOXtcnXYdgr0x5a4A6cWH/nUAhwlE
+        gFxxgrVsGjytHYRjqBRAhxo=
+X-Google-Smtp-Source: ABdhPJyx/gQkg5in+KQuvrev3VebglsQMJxualNgy5/M+zPrYTL2ts4BQaJ8iHGY1k9XCP23CgmUsA==
+X-Received: by 2002:a17:902:8d8b:b0:138:e09d:d901 with SMTP id v11-20020a1709028d8b00b00138e09dd901mr1167727plo.34.1630714045562;
+        Fri, 03 Sep 2021 17:07:25 -0700 (PDT)
 Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id o18sm321027pjg.26.2021.09.03.17.07.09
+        by smtp.gmail.com with ESMTPSA id z67sm425437pfb.169.2021.09.03.17.07.24
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 03 Sep 2021 17:07:11 -0700 (PDT)
-Subject: Re: [syzbot] WARNING: kmalloc bug in bpf_check
-To:     syzbot <syzbot+f3e749d4c662818ae439@syzkaller.appspotmail.com>,
-        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        clang-built-linux@googlegroups.com, daniel@iogearbox.net,
-        davem@davemloft.net, hawk@kernel.org, john.fastabend@gmail.com,
-        kafai@fb.com, kpsingh@kernel.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, nathan@kernel.org,
-        ndesaulniers@google.com, netdev@vger.kernel.org,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
-References: <0000000000002c756105cb201ef1@google.com>
+        Fri, 03 Sep 2021 17:07:25 -0700 (PDT)
+Subject: Re: [syzbot] WARNING: kmalloc bug in hash_netport_create
+To:     syzbot <syzbot+3f5904753c2388727c6c@syzkaller.appspotmail.com>,
+        coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
+        kadlec@netfilter.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
+        syzkaller-bugs@googlegroups.com
+References: <0000000000003166f105cb201ea6@google.com>
 From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <fa1d99d6-3f83-73bb-0aff-a70d3f1bc9dc@gmail.com>
-Date:   Fri, 3 Sep 2021 17:07:08 -0700
+Message-ID: <78f147d2-3f26-462e-4263-2029e0dc4d98@gmail.com>
+Date:   Fri, 3 Sep 2021 17:07:23 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.12.0
 MIME-Version: 1.0
-In-Reply-To: <0000000000002c756105cb201ef1@google.com>
+In-Reply-To: <0000000000003166f105cb201ea6@google.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -81,56 +79,70 @@ On 9/3/21 5:01 PM, syzbot wrote:
 > 
 > HEAD commit:    a9c9a6f741cd Merge tag 'scsi-misc' of git://git.kernel.org..
 > git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=13fd5915300000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=c84ed2c3f57ace
-> dashboard link: https://syzkaller.appspot.com/bug?extid=f3e749d4c662818ae439
-> compiler:       Debian clang version 11.0.1-2, GNU ld (GNU Binutils for Debian) 2.35.1
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11e4cdf5300000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14ef3b33300000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=12a90fb1300000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=1ac29107aeb2a552
+> dashboard link: https://syzkaller.appspot.com/bug?extid=3f5904753c2388727c6c
+> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14581b33300000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13579a69300000
 > 
 > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+f3e749d4c662818ae439@syzkaller.appspotmail.com
+> Reported-by: syzbot+3f5904753c2388727c6c@syzkaller.appspotmail.com
 > 
 > ------------[ cut here ]------------
-> WARNING: CPU: 0 PID: 8408 at mm/util.c:597 kvmalloc_node+0x108/0x110 mm/util.c:597
+> WARNING: CPU: 1 PID: 8430 at mm/util.c:597 kvmalloc_node+0x111/0x120 mm/util.c:597
 > Modules linked in:
-> CPU: 0 PID: 8408 Comm: syz-executor221 Not tainted 5.14.0-syzkaller #0
+> CPU: 1 PID: 8430 Comm: syz-executor891 Not tainted 5.14.0-syzkaller #0
 > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> RIP: 0010:kvmalloc_node+0x108/0x110 mm/util.c:597
-> Code: ff 48 89 df 44 89 fe 44 89 f2 e8 a3 6e 17 00 48 89 c5 eb 05 e8 19 28 ce ff 48 89 e8 5b 41 5c 41 5e 41 5f 5d c3 e8 08 28 ce ff <0f> 0b 31 ed eb e9 66 90 41 56 53 49 89 f6 48 89 fb e8 f2 27 ce ff
-> RSP: 0018:ffffc900017ff210 EFLAGS: 00010293
-> RAX: ffffffff81b2b708 RBX: 0000000200004d00 RCX: ffff888013ded580
-> RDX: 0000000000000000 RSI: 0000000200004d00 RDI: 000000007fffffff
-> RBP: 0000000000000000 R08: ffffffff81b2b6ac R09: 00000000ffffffff
-> R10: fffff520002ffe15 R11: 0000000000000000 R12: 0000000000000000
-> R13: dffffc0000000000 R14: 00000000ffffffff R15: 0000000000002dc0
-> FS:  0000000001386300(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+> RIP: 0010:kvmalloc_node+0x111/0x120 mm/util.c:597
+> Code: 01 00 00 00 4c 89 e7 e8 ed 11 0d 00 49 89 c5 e9 69 ff ff ff e8 90 55 d1 ff 41 89 ed 41 81 cd 00 20 01 00 eb 95 e8 7f 55 d1 ff <0f> 0b e9 4c ff ff ff 0f 1f 84 00 00 00 00 00 55 48 89 fd 53 e8 66
+> RSP: 0018:ffffc900010a7078 EFLAGS: 00010293
+> RAX: 0000000000000000 RBX: ffffc900010a7190 RCX: 0000000000000000
+> RDX: ffff88801d93e300 RSI: ffffffff81a3f651 RDI: 0000000000000003
+> RBP: 0000000000400dc0 R08: 000000007fffffff R09: 000000000000001f
+> R10: ffffffff81a3f60e R11: 000000000000001f R12: 0000000400000018
+> R13: 0000000000000000 R14: 00000000ffffffff R15: ffff88803040e000
+> FS:  0000000002161300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
 > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00007f3e712d36c0 CR3: 00000000342e8000 CR4: 00000000001506f0
+> CR2: 0000000020000080 CR3: 000000003ea95000 CR4: 00000000001506e0
 > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
 > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 > Call Trace:
->  kvmalloc include/linux/mm.h:806 [inline]
->  kvmalloc_array include/linux/mm.h:824 [inline]
->  kvcalloc include/linux/mm.h:829 [inline]
->  check_btf_line kernel/bpf/verifier.c:9925 [inline]
->  check_btf_info kernel/bpf/verifier.c:10049 [inline]
->  bpf_check+0xd634/0x150d0 kernel/bpf/verifier.c:13759
->  bpf_prog_load kernel/bpf/syscall.c:2301 [inline]
->  __sys_bpf+0x11181/0x126e0 kernel/bpf/syscall.c:4587
->  __do_sys_bpf kernel/bpf/syscall.c:4691 [inline]
->  __se_sys_bpf kernel/bpf/syscall.c:4689 [inline]
->  __x64_sys_bpf+0x78/0x90 kernel/bpf/syscall.c:4689
+>  hash_netport_create+0x3dd/0x1220 net/netfilter/ipset/ip_set_hash_gen.h:1524
+>  ip_set_create+0x782/0x15a0 net/netfilter/ipset/ip_set_core.c:1100
+>  nfnetlink_rcv_msg+0xbc9/0x13f0 net/netfilter/nfnetlink.c:296
+>  netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2504
+>  nfnetlink_rcv+0x1ac/0x420 net/netfilter/nfnetlink.c:654
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
+>  netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1340
+>  netlink_sendmsg+0x86d/0xdb0 net/netlink/af_netlink.c:1929
+>  sock_sendmsg_nosec net/socket.c:704 [inline]
+>  sock_sendmsg+0xcf/0x120 net/socket.c:724
+>  sock_no_sendpage+0xf3/0x130 net/core/sock.c:2980
+>  kernel_sendpage.part.0+0x1a0/0x340 net/socket.c:3504
+>  kernel_sendpage net/socket.c:3501 [inline]
+>  sock_sendpage+0xe5/0x140 net/socket.c:1003
+>  pipe_to_sendpage+0x2ad/0x380 fs/splice.c:364
+>  splice_from_pipe_feed fs/splice.c:418 [inline]
+>  __splice_from_pipe+0x43e/0x8a0 fs/splice.c:562
+>  splice_from_pipe fs/splice.c:597 [inline]
+>  generic_splice_sendpage+0xd4/0x140 fs/splice.c:746
+>  do_splice_from fs/splice.c:767 [inline]
+>  do_splice+0xb7e/0x1960 fs/splice.c:1079
+>  __do_splice+0x134/0x250 fs/splice.c:1144
+>  __do_sys_splice fs/splice.c:1350 [inline]
+>  __se_sys_splice fs/splice.c:1332 [inline]
+>  __x64_sys_splice+0x198/0x250 fs/splice.c:1332
 >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
+>  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
 >  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> RIP: 0033:0x43f0a9
+> RIP: 0033:0x43efb9
 > Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007ffe831a89a8 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
-> RAX: ffffffffffffffda RBX: 0000000000400488 RCX: 000000000043f0a9
-> RDX: 0000000000000078 RSI: 0000000020000500 RDI: 0000000000000005
-> RBP: 0000000000403090 R08: 0000000000000000 R09: 0000000000400488
-> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000403120
+> RSP: 002b:00007ffd3f03c028 EFLAGS: 00000246 ORIG_RAX: 0000000000000113
+> RAX: ffffffffffffffda RBX: 0000000000400488 RCX: 000000000043efb9
+> RDX: 0000000000000004 RSI: 0000000000000000 RDI: 0000000000000003
+> RBP: 0000000000402fa0 R08: 0000000100000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000403030
 > R13: 0000000000000000 R14: 00000000004ac018 R15: 0000000000400488
 > 
 > 
@@ -166,4 +178,3 @@ Date:   Wed Jul 14 09:45:49 2021 -0700
     Acked-by: Willy Tarreau <w@1wt.eu>
     Cc: Kees Cook <keescook@chromium.org>
     Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-
