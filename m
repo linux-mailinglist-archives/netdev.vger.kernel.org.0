@@ -2,83 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 76717400C42
-	for <lists+netdev@lfdr.de>; Sat,  4 Sep 2021 19:24:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA171400C86
+	for <lists+netdev@lfdr.de>; Sat,  4 Sep 2021 20:30:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237206AbhIDRY3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Sep 2021 13:24:29 -0400
-Received: from relay.sw.ru ([185.231.240.75]:40668 "EHLO relay.sw.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237110AbhIDRY2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 4 Sep 2021 13:24:28 -0400
+        id S237391AbhIDSbn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Sep 2021 14:31:43 -0400
+Received: from lizzy.crudebyte.com ([91.194.90.13]:53875 "EHLO
+        lizzy.crudebyte.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234085AbhIDSbm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Sep 2021 14:31:42 -0400
+X-Greylist: delayed 1838 seconds by postgrey-1.27 at vger.kernel.org; Sat, 04 Sep 2021 14:31:42 EDT
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:From:
-        Subject; bh=gUqgvy02f4+L2h01QsSAozR5KCMkELC05U5xEFTXuHo=; b=OX9CrPeb4WhBmn5kh
-        mmHSI5lvzDx1eJA3simcLU0apsqIltVri7faJXA4Agb8xSAOAf05zd2zWFNvBEK6gxrw0Xh1YFLq4
-        zqOcehzKduG13rX1n860gxYhJ12W9JnxXgMo+eftUWoyBF5oQiu17g/zsA9eL9U7IJBoJGFKrxUyo
-        =;
-Received: from [10.93.0.56]
-        by relay.sw.ru with esmtp (Exim 4.94.2)
-        (envelope-from <vvs@virtuozzo.com>)
-        id 1mMZNz-000nOH-QK; Sat, 04 Sep 2021 20:23:23 +0300
-Subject: Re: WARNING in sk_stream_kill_queues
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Hao Sun <sunhao.th@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org
-References: <CACkBjsYG3O_irFOZqjq5dJVDwW8pSUR_p6oO4BUaabWcx-hQCQ@mail.gmail.com>
- <c84b07f8-ab0e-9e0c-c5d7-7d44e4d6f3e5@gmail.com>
- <9a35a6f2-9373-6561-341c-8933b537122e@virtuozzo.com>
- <71e8b315-3f3a-85ae-fede-914269a15272@virtuozzo.com>
- <606daddf-6ca5-6789-b571-6178100432be@gmail.com>
-From:   Vasily Averin <vvs@virtuozzo.com>
-Message-ID: <c857c5c7-9d65-dda1-cfba-6f4f66251cd9@virtuozzo.com>
-Date:   Sat, 4 Sep 2021 20:23:22 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
-MIME-Version: 1.0
-In-Reply-To: <606daddf-6ca5-6789-b571-6178100432be@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        d=crudebyte.com; s=lizzy; h=Cc:To:Subject:Date:From:References:In-Reply-To:
+        Message-Id:Content-Type:Content-Transfer-Encoding:MIME-Version:Content-ID:
+        Content-Description; bh=Tut7eTe5qe1gcpJfndZBSuyDAml0NcR3QWvzUhKfSJY=; b=oYHno
+        iRcK+FKCG4rE4dKoOsvOtE16e06TIYCMX1cdpwU2WFr43Uym6XV0ppIsplej2Z8glajT79hBJ3Ujg
+        TnIKexznxmAoi2a4UzTPyC1B3DB/6fxLefXyH3mcD9izODJeJAQE3p63zolbw//aflxsD2UAEns4F
+        /GY3x7TsVJp1CwLKIZtTJ5QJfLJEff5hhB77DjML2jbl2NkyT8ZKlUpkU3Z84Xnd5+5XApgvwB1zJ
+        FMg/OsVKjxnIkbxpEMgEph4g4Y2lKg2K/mFNxCB6URN4IqZXcSmsj5HQE/TxW3f1nVebF6+ERxoce
+        G5+OCVjw4XtQ9d+tHZulD4BHwprGg==;
+Message-Id: <28bb651ae0349a7d57e8ddc92c1bd5e62924a912.1630770829.git.linux_oss@crudebyte.com>
+In-Reply-To: <cover.1630770829.git.linux_oss@crudebyte.com>
+References: <cover.1630770829.git.linux_oss@crudebyte.com>
+From:   Christian Schoenebeck <linux_oss@crudebyte.com>
+Date:   Sat, 4 Sep 2021 17:07:12 +0200
+Subject: [PATCH 1/2] net/9p: use macro to define default msize
+To:     v9fs-developer@lists.sourceforge.net
+Cc:     netdev@vger.kernel.org,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>, Greg Kurz <groug@kaod.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/4/21 8:14 PM, Eric Dumazet wrote:
-> 
-> 
-> On 9/4/21 7:48 AM, Vasily Averin wrote:
-> 
->> Eric,
->> this problem is not related to my patches.
->> I've reproduced the problem locally on orignal kernel with original config,
->> then I've applied last version of my patch -- but it did not help, issue was reproduced again,
->> then I've reverted all my patches, see lest below -- and reproduced the problem once again
->>
->> Thank you,
->> 	Vasily Averin
->>
->> b8a0bb68ac30 (HEAD -> net-next-5.15) Revert "ipv6: allocate enough headroom in ip6_finish_output2()"
->> 1bc2de674a1b Revert "ipv6: ip6_finish_output2: set sk into newly allocated nskb"
->> 780e2f7d9b93 Revert "skbuff: introduce skb_expand_head()"
->> 782eaeed9de7 Revert "ipv6: use skb_expand_head in ip6_finish_output2"
->> 639e9842fc1f Revert "ipv6: use skb_expand_head in ip6_xmit"
->> 3b16ee164bcd Revert "ipv4: use skb_expand_head in ip_finish_output2"
->> ab48caf0e632 Revert "vrf: use skb_expand_head in vrf_finish_output"
->> 4da67a72ceef Revert "ax25: use skb_expand_head"
->> 9b113a8a62f0 Revert "bpf: use skb_expand_head in bpf_out_neigh_v4/6"
->> fc4ab503ce8f Revert "vrf: fix NULL dereference in vrf_finish_output()"
->>
-> 
-> OK, thanks for checking.
-> 
-> The repro on my host does not trigger the issue, I can not really investigate/bisect.
+Use a macro to define the default value for the 'msize' option
+at one place instead of using two separate integer literals.
 
-I"ve recompiled kernel with original config,
-It was booted very slowly, ~10 minutes,
-then reproducer worked a quite long time,
-node was crashed in 3000-4000 seconds uptime.
+Signed-off-by: Christian Schoenebeck <linux_oss@crudebyte.com>
+---
+ net/9p/client.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-Thank you,
-	Vasily Averin
+diff --git a/net/9p/client.c b/net/9p/client.c
+index b7b958f61faf..1cb255587fff 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -30,6 +30,8 @@
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/9p.h>
+ 
++#define DEFAULT_MSIZE 8192
++
+ /*
+   * Client Option Parsing (code inspired by NFS code)
+   *  - a little lazy - parse all client options
+@@ -65,7 +67,7 @@ EXPORT_SYMBOL(p9_is_proto_dotu);
+ 
+ int p9_show_client_options(struct seq_file *m, struct p9_client *clnt)
+ {
+-	if (clnt->msize != 8192)
++	if (clnt->msize != DEFAULT_MSIZE)
+ 		seq_printf(m, ",msize=%u", clnt->msize);
+ 	seq_printf(m, ",trans=%s", clnt->trans_mod->name);
+ 
+@@ -139,7 +141,7 @@ static int parse_opts(char *opts, struct p9_client *clnt)
+ 	int ret = 0;
+ 
+ 	clnt->proto_version = p9_proto_2000L;
+-	clnt->msize = 8192;
++	clnt->msize = DEFAULT_MSIZE;
+ 
+ 	if (!opts)
+ 		return 0;
+-- 
+2.20.1
+
