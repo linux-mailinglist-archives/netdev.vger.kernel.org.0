@@ -2,147 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95CA2400BB3
-	for <lists+netdev@lfdr.de>; Sat,  4 Sep 2021 16:46:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6228A400BB4
+	for <lists+netdev@lfdr.de>; Sat,  4 Sep 2021 16:49:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236646AbhIDOrY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Sep 2021 10:47:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52508 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236649AbhIDOrW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Sep 2021 10:47:22 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FC94C0613CF
-        for <netdev@vger.kernel.org>; Sat,  4 Sep 2021 07:46:21 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id h9so3994268ejs.4
-        for <netdev@vger.kernel.org>; Sat, 04 Sep 2021 07:46:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mGGhM1W4cUcmHXpwbpm+c3b/vJrXUQ7gtGxBdY0GKN0=;
-        b=ZhNaJycbdwLvqtID0KJFVrzlrI+E+ZY/eqvfgHhYnbwn7HXlbQmIlZ8Wi4PT4F6+NZ
-         81VnBT7aP5BMFAHPNneJQHXVeG15EGVjjFAuBSr/tdWyLh/KDbupWG1EQZRAgx+c7AnV
-         9r/QxfFEGGPv+IIaiuSbX7R8N3KzfdjOYOj5RZmqRYGvN8T31v8X2nTn07BkcuiqW8bI
-         epxGMMKy27fdljcMcTkbxz3oLIMpu9zkycZQ+Aqh6N5FMFnGad84PmAqQqZ/w+YYrR3K
-         3XP3LTeWo9B8LUiGGO3wwAExbP9eYY6p8/4Dd84VSfAKd1ztc6x9hvyGIrBJ+e1yAGEU
-         SfMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mGGhM1W4cUcmHXpwbpm+c3b/vJrXUQ7gtGxBdY0GKN0=;
-        b=kpXxZjT3pde0tnrt5hqnsRrOA+cHhIJdvdyicbCQeBG8KsK4NXrDfr/HrOXtzKtao8
-         QWjmMmC2x1a+Q39tuVVZhY04uQjrroz+pVbhiWkMIZO+SUXu+1HLRi3N5t7EHT8tnZFM
-         cd4aVdvYF5X47FNc/1o/UReWPv1jpT5UGU7GFUAepopqlP3eUcxJKCkjsfoMy7ada826
-         r+E9je+GdQNJVGLaB+jVCdnW6OejMUAX2SknF4YEQWiY5245lyCwiRrjaBDGvJNYemOI
-         KjtxvwW3FCYIjM5eB/WgaJPWrmSWTRboH4vhREa8MBpBz7fpHRPXuulgtb/hYHENkZlR
-         58wA==
-X-Gm-Message-State: AOAM530WvurvypZtsjZmZVjxTjkUhpn1RsM65qvTzmFY0c19ll4EotaV
-        iWKj5kAG6K13Gua7sIS1SSFQxnHGw6GcJg==
-X-Google-Smtp-Source: ABdhPJzrMvKnAr2HngTXw/JUxibCivEEFtkaxch10WE5iL4DYjv4DGEmL+Q6LKgWDgcIQJbSm1R1gQ==
-X-Received: by 2002:a17:906:c249:: with SMTP id bl9mr4557272ejb.225.1630766779249;
-        Sat, 04 Sep 2021 07:46:19 -0700 (PDT)
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com. [209.85.221.53])
-        by smtp.gmail.com with ESMTPSA id b5sm1160511ejq.56.2021.09.04.07.46.18
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 04 Sep 2021 07:46:18 -0700 (PDT)
-Received: by mail-wr1-f53.google.com with SMTP id b10so2979315wru.0
-        for <netdev@vger.kernel.org>; Sat, 04 Sep 2021 07:46:18 -0700 (PDT)
-X-Received: by 2002:a5d:464f:: with SMTP id j15mr4313299wrs.325.1630766777712;
- Sat, 04 Sep 2021 07:46:17 -0700 (PDT)
+        id S236687AbhIDOta (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Sep 2021 10:49:30 -0400
+Received: from relay.sw.ru ([185.231.240.75]:52562 "EHLO relay.sw.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234792AbhIDOt3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 4 Sep 2021 10:49:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:From:
+        Subject; bh=tXIHNQoEOkIAybC/J4mKwOIRiIwvVjP5yN4twwIB1v4=; b=C3JzPZ/yP/oFRxBx/
+        rRUpfsfaDJy3eZiwxS/hYRf2XPPl5aaAzVVEpdGNUaKMVSBHx2x0kHiAAV3D6mILYdYWoFjxwqxfQ
+        PbueUNV9Wy9c9QrWEBClSzMN8MO2DtUZvCbG2hoHA2lCU3kH5uv4MT7CCUShmjXUU+UJMVEm9udV4
+        =;
+Received: from [10.93.0.56]
+        by relay.sw.ru with esmtp (Exim 4.94.2)
+        (envelope-from <vvs@virtuozzo.com>)
+        id 1mMWy0-000n07-Kv; Sat, 04 Sep 2021 17:48:24 +0300
+Subject: Re: WARNING in sk_stream_kill_queues
+From:   Vasily Averin <vvs@virtuozzo.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Hao Sun <sunhao.th@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org
+References: <CACkBjsYG3O_irFOZqjq5dJVDwW8pSUR_p6oO4BUaabWcx-hQCQ@mail.gmail.com>
+ <c84b07f8-ab0e-9e0c-c5d7-7d44e4d6f3e5@gmail.com>
+ <9a35a6f2-9373-6561-341c-8933b537122e@virtuozzo.com>
+Message-ID: <71e8b315-3f3a-85ae-fede-914269a15272@virtuozzo.com>
+Date:   Sat, 4 Sep 2021 17:48:23 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-References: <20210902193447.94039-1-willemdebruijn.kernel@gmail.com>
- <20210902193447.94039-2-willemdebruijn.kernel@gmail.com> <CAKgT0UdhaUp0jcNZSzMu=_OezwqKNHP47u0n_XUkpO_SbSV8hA@mail.gmail.com>
- <CA+FuTSfaN-wLzVq1UQhwiPgH=PKdcW+kz1PDxgfrLAnjWf8CKA@mail.gmail.com>
- <CAKgT0UdtqJ+ECyDs1dv7ha4Bq12XaGiOQ6uvja5cy06dDR5ziw@mail.gmail.com>
- <CA+FuTSfpmGHC76GAVVS2qazfLykVZ=mM+33pRHpj-yyM3nqhXA@mail.gmail.com>
- <CAKgT0UdiYRHrSUGb9qDJ-GGMBj53P1L4KHSV7tv+omA5FjRZNQ@mail.gmail.com>
- <CA+FuTSf-83bDVzmB757ha99DS=O-KjSFVSn15Y6Vq5Yh9yx2wA@mail.gmail.com>
- <CAKgT0Uf6YrDtvEfL02-P7A3Q_V32MWZ-tV7B=xtkY0ZzxEo9yg@mail.gmail.com>
- <CA+FuTSeHAd4ouwYd9tL2FHa1YdB3aLznOTnAJt+PShnr+Zd7yw@mail.gmail.com> <CAKgT0Ucx+i6prW5n95dYRF=+7hz2pzNDpQfwwUY607MyQh1gGg@mail.gmail.com>
-In-Reply-To: <CAKgT0Ucx+i6prW5n95dYRF=+7hz2pzNDpQfwwUY607MyQh1gGg@mail.gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Sat, 4 Sep 2021 10:45:40 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSdwF7h5S7TZAwujPWhPqar6_q-37nT_syWHA+pmYm68aw@mail.gmail.com>
-Message-ID: <CA+FuTSdwF7h5S7TZAwujPWhPqar6_q-37nT_syWHA+pmYm68aw@mail.gmail.com>
-Subject: Re: [PATCH net] ip_gre: validate csum_start only if CHECKSUM_PARTIAL
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ido Schimmel <idosch@idosch.org>,
-        chouhan.shreyansh630@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <9a35a6f2-9373-6561-341c-8933b537122e@virtuozzo.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 3, 2021 at 7:27 PM Alexander Duyck
-<alexander.duyck@gmail.com> wrote:
->
-> On Fri, Sep 3, 2021 at 12:38 PM Willem de Bruijn
-> <willemdebruijn.kernel@gmail.com> wrote:
-> >
->
-> <snip>
->
-> > > whereas if the offset is stored somewhere in the unstripped data we
-> > > could then drop the packet and count it as a drop without having to
-> > > modify the frame via the skb_pull.
-> >
-> > This is a broader issue that userspace can pass any csum_start as long
-> > as it is within packet bounds. We could address it here specifically
-> > for the GRE header. But that still leaves many potentially bad offsets
-> > further in the packet in this case, and all the other cases. Checking
-> > that specific header seems a bit arbitrary to me, and might actually
-> > give false confidence.
-> >
-> > We could certainly move the validation from gre_handle_offloads to
-> > before skb_pull, to make it more obvious *why* the check exists.
->
-> Agreed. My main concern is that the csum_start is able to be located
-> somewhere where the userspace didn't write. For the most part the
-> csum_start and csum_offset just needs to be restricted to the regions
-> that the userspace actually wrote to.
+On 9/3/21 9:10 PM, Vasily Averin wrote:
+> On 9/3/21 7:56 PM, Eric Dumazet wrote:
+>> On 9/3/21 12:54 AM, Hao Sun wrote:
+>>> Hello,
+>>>
+>>> When using Healer to fuzz the latest Linux kernel, the following crash
+>>> was triggered.
+>>>
+>>> HEAD commit: 9e9fb7655ed58 Merge tag 'net-next-5.15'
+>>> git tree: upstream
+>>> console output:
+>>> https://drive.google.com/file/d/1AXEQDnn7SPgFAMjqbL03_24-X_8YHoAq/view?usp=sharing
+>>> kernel config: https://drive.google.com/file/d/1zgxbwaYkrM26KEmJ-5sUZX57gfXtRrwA/view?usp=sharing
+>>> C reproducer: https://drive.google.com/file/d/1qa4FVNoO-EsJGuDMtGlTxtHW0li-vMSP/view?usp=sharing
+>>> Syzlang reproducer:
+>>> https://drive.google.com/file/d/1pL6atNID5ZGzH4GceqyBCOC5IjFfiaVN/view?usp=sharing
+> 
+>>> If you fix this issue, please add the following tag to the commit:
+>>> Reported-by: Hao Sun <sunhao.th@gmail.com>
+>>
+>> This is probably a dup, causes skb_expand_head() changes,
+>> CC  Vasily Averin <vvs@virtuozzo.com> is currently working on a fix.
+> 
+> Thank you for this report and especially for C reproducer!
 
-I don't quite follow. Even with this bug, the offset is somewhere userspace
-wrote. That data is just pulled.
+Eric,
+this problem is not related to my patches.
+I've reproduced the problem locally on orignal kernel with original config,
+then I've applied last version of my patch -- but it did not help, issue was reproduced again,
+then I've reverted all my patches, see lest below -- and reproduced the problem once again
 
-> > > Maybe for those
-> > > cases we need to look at adding an unsigned int argument to
-> > > virtio_net_hdr_to_skb in which we could pass 0 for the unused case or
-> > > dev->hard_header_len in the cases where we have something like
-> > > af_packet that is transmitting over an ipgre tunnel. The general idea
-> > > is to prevent these virtio_net_hdr_to_skb calls from pointing the
-> > > csum_start into headers that userspace was not responsible for
-> > > populating.
-> >
-> > One issue with that is that dev->hard_header_len itself is imprecise
-> > for protocols with variable length link layer headers. There, too, we
-> > have had a variety of bug fixes in the past.
-> >
-> > It also adds cost to every user of virtio_net_hdr, while we only know
-> > one issue in a rare case of the IP_GRE device.
->
-> Quick question, the assumption is that the checksum should always be
-> performed starting no earlier than the transport header right? Looking
-> over virtio_net_hdr_to_skb it looks like it is already verifying the
-> transport header is in the linear portion of the skb. I'm wondering if
-> we couldn't just look at adding a check to verify the transport offset
-> is <= csum start? We might also be able to get rid of one of the two
-> calls to pskb_may_pull by doing that.
+Thank you,
+	Vasily Averin
 
-Are you referring to this part in the .._NEEDS_CSUM branch?
+b8a0bb68ac30 (HEAD -> net-next-5.15) Revert "ipv6: allocate enough headroom in ip6_finish_output2()"
+1bc2de674a1b Revert "ipv6: ip6_finish_output2: set sk into newly allocated nskb"
+780e2f7d9b93 Revert "skbuff: introduce skb_expand_head()"
+782eaeed9de7 Revert "ipv6: use skb_expand_head in ip6_finish_output2"
+639e9842fc1f Revert "ipv6: use skb_expand_head in ip6_xmit"
+3b16ee164bcd Revert "ipv4: use skb_expand_head in ip_finish_output2"
+ab48caf0e632 Revert "vrf: use skb_expand_head in vrf_finish_output"
+4da67a72ceef Revert "ax25: use skb_expand_head"
+9b113a8a62f0 Revert "bpf: use skb_expand_head in bpf_out_neigh_v4/6"
+fc4ab503ce8f Revert "vrf: fix NULL dereference in vrf_finish_output()"
 
-                if (!skb_partial_csum_set(skb, start, off))
-                        return -EINVAL;
+>>>  ------------[ cut here ]------------
+>>> WARNING: CPU: 1 PID: 10229 at net/core/stream.c:207
+>>> sk_stream_kill_queues+0x162/0x190 net/core/stream.c:207
+>>> Modules linked in:
+>>> CPU: 1 PID: 10229 Comm: syz-executor Not tainted 5.14.0+ #12
+>>> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
+>>> rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
+>>> RIP: 0010:sk_stream_kill_queues+0x162/0x190 net/core/stream.c:207
+>>> Code: 41 5c e9 21 3b ce fd e8 1c 3b ce fd 89 de 48 89 ef e8 62 68 fe
+>>> ff e8 0d 3b ce fd 8b 95 68 02 00 00 85 d2 74 ca e8 fe 3a ce fd <0f> 0b
+>>> e8 f7 3a ce fd 8b 85 20 02 00 00 85 c0 74 c3 e8 e8 3a ce fd
+>>> RSP: 0018:ffffc900080b7c98 EFLAGS: 00010202
+>>> RAX: 000000000002a750 RBX: 0000000000000180 RCX: ffffc90002c0d000
+>>> RDX: 0000000000040000 RSI: ffffffff836939f2 RDI: ffff8881031f0b40
+>>> RBP: ffff8881031f0b40 R08: 0000000000000000 R09: 0000000000000000
+>>> R10: 000000000000000d R11: 000000000004f380 R12: ffff8881031f0c90
+>>> R13: ffff8881031f0bc0 R14: ffff8881031f0cf0 R15: 0000000000000000
+>>> FS:  00007f311adcb700(0000) GS:ffff88813dc00000(0000) knlGS:0000000000000000
+>>> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>>> CR2: 0000000000732190 CR3: 000000010ab01000 CR4: 0000000000752ee0
+>>> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+>>> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+>>> PKRU: 55555554
+>>> Call Trace:
+>>>  inet_csk_destroy_sock+0x6f/0x1a0 net/ipv4/inet_connection_sock.c:1012
+>>>  __tcp_close+0x512/0x610 net/ipv4/tcp.c:2869
+>>>  tcp_close+0x29/0xa0 net/ipv4/tcp.c:2881
+>>>  inet_release+0x58/0xb0 net/ipv4/af_inet.c:431
+>>>  __sock_release+0x47/0xf0 net/socket.c:649
+>>>  sock_close+0x18/0x20 net/socket.c:1314
+>>>  __fput+0xdf/0x380 fs/file_table.c:280
+>>>  task_work_run+0x86/0xd0 kernel/task_work.c:164
+>>>  get_signal+0xde6/0x10b0 kernel/signal.c:2596
+>>>  arch_do_signal_or_restart+0xa9/0x860 arch/x86/kernel/signal.c:865
+>>>  handle_signal_work kernel/entry/common.c:148 [inline]
+>>>  exit_to_user_mode_loop kernel/entry/common.c:172 [inline]
+>>>  exit_to_user_mode_prepare+0xf2/0x280 kernel/entry/common.c:209
+>>>  __syscall_exit_to_user_mode_work kernel/entry/common.c:291 [inline]
+>>>  syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:302
+>>>  do_syscall_64+0x40/0xb0 arch/x86/entry/common.c:86
+>>>  entry_SYSCALL_64_after_hwframe+0x44/0xae
+>>> RIP: 0033:0x46a9a9
+>>> Code: f7 d8 64 89 02 b8 ff ff ff ff c3 66 0f 1f 44 00 00 48 89 f8 48
+>>> 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d
+>>> 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
+>>> RSP: 002b:00007f311adcac58 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
+>>> RAX: 0000000000069340 RBX: 000000000078c0a0 RCX: 000000000046a9a9
+>>> RDX: 0000000000088012 RSI: 0000000020000380 RDI: 0000000000000004
+>>> RBP: 00000000004e4042 R08: 0000000000000000 R09: 0000000000000027
+>>> R10: 000000000020c49a R11: 0000000000000246 R12: 000000000078c0a0
+>>> R13: 0000000000000000 R14: 000000000078c0a0 R15: 00007ffe75b47830
+>>>
+> 
 
-                p_off = skb_transport_offset(skb) + thlen;
-                if (!pskb_may_pull(skb, p_off))
-                        return -EINVAL;
-
-skb_partial_csum_set is actually what sets the transport offset,
-derived from start.
