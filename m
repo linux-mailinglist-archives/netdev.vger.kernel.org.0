@@ -2,135 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2038401016
-	for <lists+netdev@lfdr.de>; Sun,  5 Sep 2021 16:07:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9326401019
+	for <lists+netdev@lfdr.de>; Sun,  5 Sep 2021 16:10:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231939AbhIEOIk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Sep 2021 10:08:40 -0400
-Received: from kylie.crudebyte.com ([5.189.157.229]:33251 "EHLO
-        kylie.crudebyte.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229566AbhIEOIj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Sep 2021 10:08:39 -0400
-X-Greylist: delayed 2061 seconds by postgrey-1.27 at vger.kernel.org; Sun, 05 Sep 2021 10:08:38 EDT
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
-        Content-ID:Content-Description;
-        bh=IuretZyFZs1KI18cMliVpIjYMRXc1j5/4gT4w9nc3nw=; b=LFCFg76w5km7YZ82OxCvJ4Wvnf
-        kwn0tYY7wyUmE86Wv4TnEVjEZTRRVIDZkAaZ7mqukQHAtKUmKslU69fBkhkryXezq3x6xnLZ+j0Ii
-        SgCYrsJbhUPh1p7kwXeCbYvIUs6PjJFr2D/SnUVeWo+zRsFgavVyNxFn/BLySdX/cK/FM9THxc9II
-        flxZa7NwZDPGcK1Ohcu24+GRCsygXeBc5JUIpu2iraJxzcdq7+Trlw7HHmeaeygNldxbTfTSnYUMR
-        2QSoDMH2c8yRpsXB+mD/rdUP2KCBehYKt1yX9+hJcbRimzZ2R3piXB+pJ6Ob2g7uSfOfHiAqRr4RP
-        rr07y5/9Q4Gir4+Ut/1deXmybspMqPMO7YJvfmIXomrmv9rKfxhrS2eLWObz+ObyeT/TM2gK/UGAO
-        LjABzAg0n5QJXTnRRHeNtrAH9BO2R/SPe7nBaiAvmNM/E/ARMS+Ceb88apKaGKSVKrvX3xGqSdlBx
-        H8CWLD34beC0bHvg7EOJcKH9pSZIk+dqiE56t6bCWqdEopQ4LgTETUAJkMFEgYX1I76mM4eaSNqVg
-        To5j57RlG29ZId9iN4MTJ/KluAMP+teq9TBqMKBJbSU5t4DCp5tEsELYx6lSBA+wHKqRLBMg11HnN
-        9c4y+/gyeriJhLqk60HpNoUm2+OYdIkwZPUejXGJA=;
-From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-To:     Dominique Martinet <asmadeus@codewreck.org>
-Cc:     v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>, Greg Kurz <groug@kaod.org>
-Subject: Re: [PATCH 2/2] net/9p: increase default msize to 128k
-Date:   Sun, 05 Sep 2021 15:33:11 +0200
-Message-ID: <1915472.2DI3jHSlUk@silver>
-In-Reply-To: <YTQB5jCbvhmCWzNd@codewreck.org>
-References: <cover.1630770829.git.linux_oss@crudebyte.com> <61ea0f0faaaaf26dd3c762eabe4420306ced21b9.1630770829.git.linux_oss@crudebyte.com> <YTQB5jCbvhmCWzNd@codewreck.org>
+        id S232941AbhIEOLq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Sep 2021 10:11:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46154 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229566AbhIEOLp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Sep 2021 10:11:45 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A612C061575;
+        Sun,  5 Sep 2021 07:10:42 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id u15-20020a05600c19cf00b002f6445b8f55so2976295wmq.0;
+        Sun, 05 Sep 2021 07:10:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ESbKLeNsLnxks8j4gUKa9N22AZupbWMMz8A0h0s8pbs=;
+        b=aFa/WFKPa8FTj7sMuJX3RV1hGn05T1Ty2QYLB17FTdW70TCep3QGBjksWIOAYhs/Jm
+         GUVMlxDE0TfiYgoHn7meKhFo5Yg7pVObLM9c8tVx4LZf16vPqCbzHrvN5WbkpFgtfRA2
+         SzatcjoqNVtT8QnCSS4r9J/C7vBe5Vijb6jjrdu7AoeLNVzd0Nf44BKbOc04LM5vUu9b
+         KIfm1VQ4/7K/rIME4zQfZMbElpKBJKmgxSDG/0M9IUz4qGtxtTqBFIz0HEP+uPzFW/TH
+         xDVdq49t2Oxtqe8O56Gi0v4wnWzRrnBkYya2hiBZNP3eLaR4Wzm0ViiBZFnRnc2jez1R
+         yMew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ESbKLeNsLnxks8j4gUKa9N22AZupbWMMz8A0h0s8pbs=;
+        b=LTku1cd6x7uT2iMcxAYMC2xsmYF3Si3jH9uxD2yDeY3NLIdfCxRj7mZkr4VLyOChP/
+         6eMOUt1ngeSbGx30viQkAj18UBC02mX3CghLwHuqfYfeJ0Es5oWJqmOOo/erNaEOnge+
+         gRS3s0OxGd37gA6tHbM0gh9VFowLRY5n/fR17s0M+Y9fcT0qP+21T4s2TQbMk1/6tJbu
+         hTUdgRnzyyrfihwfb39PuQk5i+DNuRYKTo2yN2xr5Q8e0wDa82s1K1HKF/aw4aPjkqBY
+         HqwZDhb/h7jl1k1JXf3T+lRMjVVJqAzDhRxrDlum/Ov5lFw1yEKWTdrDo6iQryV6nUTl
+         eQQQ==
+X-Gm-Message-State: AOAM533tAMGGZVa3MfJzi+j3PYgK34elYWyNvJBiHNm17z0qkQOOiSZ7
+        cKLGUFo1sOhQwn++sbxcm0Q=
+X-Google-Smtp-Source: ABdhPJyGuae+vRDbUtx/y9ysoOjF8UFtVqRRuiZGTgJhrqqniTg5gQKF3hxLeGC9w5EzIHoCsMIjpw==
+X-Received: by 2002:a1c:2705:: with SMTP id n5mr7167229wmn.176.1630851040576;
+        Sun, 05 Sep 2021 07:10:40 -0700 (PDT)
+Received: from curtine-ThinkPad-P1-Gen-3.Home (bl9-74-29.dsl.telepac.pt. [85.242.74.29])
+        by smtp.gmail.com with ESMTPSA id f20sm4602376wmb.32.2021.09.05.07.10.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 05 Sep 2021 07:10:40 -0700 (PDT)
+From:   Eric Curtin <ericcurtin17@gmail.com>
+To:     vfedorenko@novek.ru
+Cc:     aahringo@redhat.com, linux-cifs@vger.kernel.org,
+        linux-nfs@vger.kernel.org, lsahlber@redhat.com,
+        netdev@vger.kernel.org, smfrench@gmail.com, swhiteho@redhat.com
+Subject: Re: quic in-kernel implementation?
+Date:   Sun,  5 Sep 2021 15:09:31 +0100
+Message-Id: <20210905140931.345774-1-ericcurtin17@gmail.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <9ce530f5-cfe7-b1d4-ede6-d88801a769ba@novek.ru>
+References: <9ce530f5-cfe7-b1d4-ede6-d88801a769ba@novek.ru>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sonntag, 5. September 2021 01:31:50 CEST Dominique Martinet wrote:
-> Hi Christian,
-> 
-> thanks for the follow up, this has been on my todolist forever and
-> despite how simple it is I never took the time for it...
-> 
-> 
-> I've applied both patches to my -next branch... We're a bit tight for
-> this merge window (v5.15) but I'll send it to linux mid next week anyway.
+Hi Guys,
 
-That would be great!
-
-> I've also added this patch (sorry for laziness) for TCP, other transports
-> are OK iirc:
-> 
-> From 657e35583c70bed86526cb8eb207abe3d55ea4ea Mon Sep 17 00:00:00 2001
-> From: Dominique Martinet <asmadeus@codewreck.org>
-> Date: Sun, 5 Sep 2021 08:29:22 +0900
-> Subject: [PATCH] net/9p: increase tcp max msize to 1MB
-> 
-> Historically TCP has been limited to 64K buffers, but increasing msize
-> provides huge performance benefits especially as latency increase so allow
-> for bigger buffers.
-> 
-> Ideally further improvements could change the allocation from the current
-> contiguous chunk in slab (kmem_cache) to some scatter-gather compatible
-> API...
-> 
-> Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
-> 
-> diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
-> index f4dd0456beaf..007bbcc68010 100644
-> --- a/net/9p/trans_fd.c
-> +++ b/net/9p/trans_fd.c
-> @@ -34,7 +34,7 @@
->  #include <linux/syscalls.h> /* killme */
-> 
->  #define P9_PORT 564
-> -#define MAX_SOCK_BUF (64*1024)
-> +#define MAX_SOCK_BUF (1024*1024)
->  #define MAXPOLLWADDR   2
-> 
->  static struct p9_trans_module p9_tcp_trans;
-
-Yes, makes sense.
-
-Is the TCP transport driver of the Linux 9p client somewhat equally mature to 
-the virtio transport driver? Because I still have macOS support for 9p in QEMU 
-on my TODO list and accordingly a decision for a specific transport type for 
-macOS will be needed.
-
-For the next series mentioned by me (getting rid of the 512k msize capping) I 
-first need to readup on the Linux kernel code. According to the discussion we 
-already had about that issue, the reason for that capping was that the amount 
-of virtio elements is currently hard coded in the Linux client's virtio 
-transport:
-
-On Samstag, 27. Februar 2021 01:03:40 CEST Dominique Martinet wrote:
-> Christian Schoenebeck wrote on Fri, Feb 26, 2021 at 02:49:12PM +0100:
-> > Right now the client uses a hard coded amount of 128 elements. So what
-> > about replacing VIRTQUEUE_NUM by a variable which is initialized with a
-> > value according to the user's requested 'msize' option at init time?
-> > 
-> > According to the virtio specs the max. amount of elements in a virtqueue
-> > is
-> > 32768. So 32768 * 4k = 128M as new upper limit would already be a
-> > significant improvement and would not require too many changes to the
-> > client code, right?
-> The current code inits the chan->sg at probe time (when driver is
-> loader) and not mount time, and it is currently embedded in the chan
-> struct, so that would need allocating at mount time (p9_client_create ;
-> either resizing if required or not sharing) but it doesn't sound too
-> intrusive yes.
-> 
-> I don't see more adherenences to VIRTQUEUE_NUM that would hurt trying.
-
-So probably as a first step I would only re-allocate the virtio elements 
-according to the user supplied (i.e. large) 'msize' value if the 9p driver is 
-not in use at that point, and stick to capping otherwise. That should probably 
-be fine for many users and would avoid need for some synchronization measures 
-and the traps it might bring. But again, I still need to read more of the 
-Linux client code first.
-
-BTW just in case I have not mentioned it before: there are some developer docs 
-for the QEMU 9p server implementation now:
-https://wiki.qemu.org/Documentation/9p
-
-Best regards,
-Christian Schoenebeck
-
+Great idea, something I have been hoping to see in the kernel for a
+while. How has your implementation been going @Vadim? I'd be interested
+in a non-encrypted version of QUIC also in the kernel (may not be
+supported in the spec but possible and I think worth having), would be
+useful for cases where you don't care about network ossification
+protection or data-in-transit encryption, say a trusted local network
+where you would prefer the performance and reliability advantages of
+going plaintext and you don't want to figure out how to deploy
+certififcates. Something that could be used as a straight swap for a
+TCP socket.
 
