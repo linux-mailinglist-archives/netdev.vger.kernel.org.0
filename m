@@ -2,102 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42D984010AA
-	for <lists+netdev@lfdr.de>; Sun,  5 Sep 2021 17:54:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30F884010AC
+	for <lists+netdev@lfdr.de>; Sun,  5 Sep 2021 17:55:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236953AbhIEPy2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Sep 2021 11:54:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40476 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236545AbhIEPyY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Sep 2021 11:54:24 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4044C061575
-        for <netdev@vger.kernel.org>; Sun,  5 Sep 2021 08:53:20 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id e21so8115064ejz.12
-        for <netdev@vger.kernel.org>; Sun, 05 Sep 2021 08:53:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8/rHObnVcA+CHkGC0ScxYD7AHQulA6jGTXzVzfO0V9c=;
-        b=M4z7ylVOA1TJkPqkMMOtlDKvXL+W3NsOH+5gUtFLcfHEAjY4kTpKmmWLXfhL39hDLq
-         RtPGvb/CMY9yis3oYBf4zCfp2rVNeyTa2fQgUDjWcVP18ZcYJUH5W80M7HwN5plBchea
-         OeOGW7x0TDD1BesYaFSEsCHZd+NoYm2uBfLLSGR7Xbm2vm2LM6e4eSQOuMkI6I/pwnlI
-         UIAxfxEuth25GMaQ5/ojOhShqwnqxS+NBtzgBhg7p2EM4pKa0osKaIiDLwpb0tJ3PdhK
-         NObb4qWJC07Sttwdm5+GHVdjkArjNlFfN98pJwd9yYg76SXIpZNgF7OGdxSbDA3brD4q
-         j2dg==
+        id S237553AbhIEP4h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Sep 2021 11:56:37 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:55543 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232271AbhIEP4h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Sep 2021 11:56:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1630857333;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=FkqlDLwxY15uPA5cvtZn8WB/ij23mnSGY7u9OAsR1+Q=;
+        b=Rs8BKOvSH1U4pHq+wAtCjVwyt8FTP8bSzs2F082KK6anN/z4edwqSqhlHJ2a8C8pGdYUcr
+        TGF0VLbj3Os0FlaLNGhBzQh8MirTfCwKpoW6/WConwXBITMj92eMEWc+25KGKImXRm6/t+
+        CBAYw8Hb5x32Z3LMe0sjH6jB8BjyYIU=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-68-hpiWQ5D4PQCHekX1dV1atg-1; Sun, 05 Sep 2021 11:55:32 -0400
+X-MC-Unique: hpiWQ5D4PQCHekX1dV1atg-1
+Received: by mail-wm1-f70.google.com with SMTP id f17-20020a05600c155100b002f05f30ff03so2723292wmg.3
+        for <netdev@vger.kernel.org>; Sun, 05 Sep 2021 08:55:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8/rHObnVcA+CHkGC0ScxYD7AHQulA6jGTXzVzfO0V9c=;
-        b=GyHeKSj0pr35yd+tDvvsCBk7NKaX8MkPe6bDsc94dgo9oteQQdDZowqBPYL7Gas5fi
-         13h8Jmtw71YOpkdQN3W1W1ROKxsDFAulNxiNsc1HVumI9Jljod4R0JaRpK3ySMHCh4Dq
-         dHskj3J5KEeu6lHPZ7bGSFUGmziyEiLuZ05hslhznwajn2yNG3I0hO7Rh87NpDnqY0Id
-         zqRsLeCuhTdVmIxItxbExpCj9LWr46UFkGAAPTJbFatcoLVf/vo3vlihRIn9vbPF3D/q
-         QuE1mwqpVel72Sj+4wUjuIY8q4EYC5UVwaKZtJLDCsnhs9vspGJt+2z8ch1Wsewvg+YB
-         6SXA==
-X-Gm-Message-State: AOAM532lxmLk+NulA8qfWAm2Y5A19gXczUBo4nqHla8gXqWHYLlmXwWN
-        jEhL/uLHhU8zlzcWqubkMTOLgEF+pm17iK0HpnT4hReo
-X-Google-Smtp-Source: ABdhPJzbEhhIR6nGbGIXbiOZHNb7YO/xSWYDyU5PbfpTFyohLBhoJFFuWIK1AFidFyADRTVZnEgZpzLgSsejfiKFl6A=
-X-Received: by 2002:a17:906:3e10:: with SMTP id k16mr9424765eji.116.1630857199155;
- Sun, 05 Sep 2021 08:53:19 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210902193447.94039-1-willemdebruijn.kernel@gmail.com>
- <20210902193447.94039-2-willemdebruijn.kernel@gmail.com> <CAKgT0UdhaUp0jcNZSzMu=_OezwqKNHP47u0n_XUkpO_SbSV8hA@mail.gmail.com>
- <CA+FuTSfaN-wLzVq1UQhwiPgH=PKdcW+kz1PDxgfrLAnjWf8CKA@mail.gmail.com>
- <CAKgT0UdtqJ+ECyDs1dv7ha4Bq12XaGiOQ6uvja5cy06dDR5ziw@mail.gmail.com>
- <CA+FuTSfpmGHC76GAVVS2qazfLykVZ=mM+33pRHpj-yyM3nqhXA@mail.gmail.com>
- <CAKgT0UdiYRHrSUGb9qDJ-GGMBj53P1L4KHSV7tv+omA5FjRZNQ@mail.gmail.com>
- <CA+FuTSf-83bDVzmB757ha99DS=O-KjSFVSn15Y6Vq5Yh9yx2wA@mail.gmail.com>
- <CAKgT0Uf6YrDtvEfL02-P7A3Q_V32MWZ-tV7B=xtkY0ZzxEo9yg@mail.gmail.com>
- <CA+FuTSeHAd4ouwYd9tL2FHa1YdB3aLznOTnAJt+PShnr+Zd7yw@mail.gmail.com>
- <CAKgT0Ucx+i6prW5n95dYRF=+7hz2pzNDpQfwwUY607MyQh1gGg@mail.gmail.com>
- <CA+FuTSdwF7h5S7TZAwujPWhPqar6_q-37nT_syWHA+pmYm68aw@mail.gmail.com>
- <CAKgT0Ud5ZFQ3Jv4DAFftf6OkhJe5UxEcuVTJs-9HYk8ptCt9Uw@mail.gmail.com>
- <CA+FuTScCp7EB4bLfrTADia5pOfDwsLNxN0pkWjLN_+CefYNTkg@mail.gmail.com>
- <CAKgT0UecD+EmPRyWEghf8M_qrv8JN4iojqv2eZc-VD_OZDzB-g@mail.gmail.com>
- <CA+FuTSdTjtgTZj6n9QtCEYWwip7M7kgKS=ybNOjiE3mzuCzsew@mail.gmail.com>
- <CAKgT0UeSpzLTkzDQh-zX9fcW9059NeKNbkJBJL1PD9ztdpSGVA@mail.gmail.com> <CA+FuTSfO6OWv1_gfdNub9UXfkpx=gjg0KBg7mibxj8nkpERc1g@mail.gmail.com>
-In-Reply-To: <CA+FuTSfO6OWv1_gfdNub9UXfkpx=gjg0KBg7mibxj8nkpERc1g@mail.gmail.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Sun, 5 Sep 2021 08:53:08 -0700
-Message-ID: <CAKgT0UeH3aTnMKqzmtqfWrtmkW6cB=Mk6OSJi0FvmDEbmNAd+Q@mail.gmail.com>
-Subject: Re: [PATCH net] ip_gre: validate csum_start only if CHECKSUM_PARTIAL
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FkqlDLwxY15uPA5cvtZn8WB/ij23mnSGY7u9OAsR1+Q=;
+        b=tXYi9XbgziYiVfASpYdxxQwNt1U5GssG0cCLsLy8q2pYCTMsm718YNqtHp552lAGJ3
+         0mJlqAa/pLCCycBRbPyBjiq8R1v5QGRL15UVuwQSXQLSsdsoXnxjgKIOKfY43qXLP1Sk
+         EdcjFhV8TuV5Kpo7+7zrBFahFcq4405ANi4UWklfvKzU6yKfFJoRXsdlZGQsi02MaKdx
+         EpPxOUTnhD9s5GD2Jdl6RQwEw6ehpsoPAfLJDuamBhl+RVOs82x1x0Ine0vJoDHpAEkD
+         qNVNXdZkpEjJYE/cVxzTVNmXAjJHwootlNbmyhuKTj0ub5ZpXKKt0Wd8k1qj2tmM7wIl
+         ku5Q==
+X-Gm-Message-State: AOAM530bdOzEJAFnnQ9GA2O1DCEzMpPaAG0dtstoVrt9EGDXcD7PZ+jz
+        gOIdALZeu6+/VFE/ZD6gFXiFATmaJx0heNE6BbxnaAky0Tmwgvvrab051KsknqCzF7jMpuIIHRN
+        aETRaDCvP52TqPN+4
+X-Received: by 2002:adf:e901:: with SMTP id f1mr9157537wrm.13.1630857331190;
+        Sun, 05 Sep 2021 08:55:31 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzoTItRtnLZijeuCdThieRPiWw2ARQXOEWH6eQ4SZ+adLnfig/pueE4P6suOA4XEsTs9sRHXg==
+X-Received: by 2002:adf:e901:: with SMTP id f1mr9157499wrm.13.1630857330868;
+        Sun, 05 Sep 2021 08:55:30 -0700 (PDT)
+Received: from redhat.com ([2.55.131.183])
+        by smtp.gmail.com with ESMTPSA id a10sm5294954wrd.51.2021.09.05.08.55.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 05 Sep 2021 08:55:30 -0700 (PDT)
+Date:   Sun, 5 Sep 2021 11:55:26 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Ido Schimmel <idosch@idosch.org>,
-        chouhan.shreyansh630@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+        Colin Ian King <colin.king@canonical.com>,
+        Norbert Slusarek <nslusarek@gmx.net>,
+        Andra Paraschiv <andraprs@amazon.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stsp2@yandex.ru, oxffffaa@gmail.com
+Subject: Re: [PATCH net-next v5 0/6] virtio/vsock: introduce MSG_EOR flag for
+ SEQPACKET
+Message-ID: <20210905115139-mutt-send-email-mst@kernel.org>
+References: <20210903123016.3272800-1-arseny.krasnov@kaspersky.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210903123016.3272800-1-arseny.krasnov@kaspersky.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 5, 2021 at 8:24 AM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
->
-> On Sat, Sep 4, 2021 at 7:47 PM Alexander Duyck
-> <alexander.duyck@gmail.com> wrote:
+On Fri, Sep 03, 2021 at 03:30:13PM +0300, Arseny Krasnov wrote:
+> 	This patchset implements support of MSG_EOR bit for SEQPACKET
+> AF_VSOCK sockets over virtio transport.
+> 	First we need to define 'messages' and 'records' like this:
+> Message is result of sending calls: 'write()', 'send()', 'sendmsg()'
+> etc. It has fixed maximum length, and it bounds are visible using
+> return from receive calls: 'read()', 'recv()', 'recvmsg()' etc.
+> Current implementation based on message definition above.
+> 	Record has unlimited length, it consists of multiple message,
+> and bounds of record are visible via MSG_EOR flag returned from
+> 'recvmsg()' call. Sender passes MSG_EOR to sending system call and
+> receiver will see MSG_EOR when corresponding message will be processed.
+> 	Idea of patchset comes from POSIX: it says that SEQPACKET
+> supports record boundaries which are visible for receiver using
+> MSG_EOR bit. So, it looks like MSG_EOR is enough thing for SEQPACKET
+> and we don't need to maintain boundaries of corresponding send -
+> receive system calls. But, for 'sendXXX()' and 'recXXX()' POSIX says,
+> that all these calls operates with messages, e.g. 'sendXXX()' sends
+> message, while 'recXXX()' reads messages and for SEQPACKET, 'recXXX()'
+> must read one entire message from socket, dropping all out of size
+> bytes. Thus, both message boundaries and MSG_EOR bit must be supported
+> to follow POSIX rules.
+> 	To support MSG_EOR new bit was added along with existing
+> 'VIRTIO_VSOCK_SEQ_EOR': 'VIRTIO_VSOCK_SEQ_EOM'(end-of-message) - now it
+> works in the same way as 'VIRTIO_VSOCK_SEQ_EOR'. But 'VIRTIO_VSOCK_SEQ_EOR'
+> is used to mark 'MSG_EOR' bit passed from userspace.
+> 	This patchset includes simple test for MSG_EOR.
 
-<snip>
 
-> > You can do it since you have essentially already written half the code.. :)
->
-> Sent, but only the ipv4 patch.
->
-> I actually do not see an equivalent skb_pull path in ip6_gre.c. Will
-> take a closer look later, but don't have time for that now.
->
-> https://patchwork.kernel.org/project/netdevbpf/patch/20210905152109.1805619-1-willemdebruijn.kernel@gmail.com/
+I'm prepared to merge this for this window,
+but I'm not sure who's supposed to ack the net/vmw_vsock/af_vsock.c
+bits. It's a harmless variable renaming so maybe it does not matter.
 
-So does that mean that commit 9cf448c200ba ("ip6_gre: add validation
-for csum_start") is adding overhead that doesn't really address
-anything, and is introducing false positives? If so, should we just
-revert it?
+The rest is virtio stuff so I guess my tree is ok.
 
-Thanks,
+Objections, anyone?
 
-- Alex
+
+
+>  Arseny Krasnov(6):
+>   virtio/vsock: rename 'EOR' to 'EOM' bit.
+>   virtio/vsock: add 'VIRTIO_VSOCK_SEQ_EOR' bit.
+>   vhost/vsock: support MSG_EOR bit processing
+>   virtio/vsock: support MSG_EOR bit processing
+>   af_vsock: rename variables in receive loop
+>   vsock_test: update message bounds test for MSG_EOR
+> 
+>  drivers/vhost/vsock.c                   | 28 +++++++++++++----------
+>  include/uapi/linux/virtio_vsock.h       |  3 ++-
+>  net/vmw_vsock/af_vsock.c                | 10 ++++----
+>  net/vmw_vsock/virtio_transport_common.c | 23 ++++++++++++-------
+>  tools/testing/vsock/vsock_test.c        |  8 ++++++-
+>  5 files changed, 45 insertions(+), 27 deletions(-)
+> 
+>  v4 -> v5:
+>  - Move bitwise and out of le32_to_cpu() in 0003.
+> 
+>  v3 -> v4:
+>  - 'sendXXX()' renamed to 'send*()' in 0002- commit msg.
+>  - Comment about bit restore updated in 0003-.
+>  - 'same' renamed to 'similar' in 0003- commit msg.
+>  - u32 used instead of uint32_t in 0003-.
+> 
+>  v2 -> v3:
+>  - 'virtio/vsock: rename 'EOR' to 'EOM' bit.' - commit message updated.
+>  - 'VIRTIO_VSOCK_SEQ_EOR' bit add moved to separate patch.
+>  - 'vhost/vsock: support MSG_EOR bit processing' - commit message
+>    updated.
+>  - 'vhost/vsock: support MSG_EOR bit processing' - removed unneeded
+>    'le32_to_cpu()', because input argument was already in CPU
+>    endianness.
+> 
+>  v1 -> v2:
+>  - 'VIRTIO_VSOCK_SEQ_EOR' is renamed to 'VIRTIO_VSOCK_SEQ_EOM', to
+>    support backward compatibility.
+>  - use bitmask of flags to restore in vhost.c, instead of separated
+>    bool variable for each flag.
+>  - test for EAGAIN removed, as logically it is not part of this
+>    patchset(will be sent separately).
+>  - cover letter updated(added part with POSIX description).
+> 
+> Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+> -- 
+> 2.25.1
+
