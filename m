@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C4C1A401118
-	for <lists+netdev@lfdr.de>; Sun,  5 Sep 2021 20:05:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4CF640111D
+	for <lists+netdev@lfdr.de>; Sun,  5 Sep 2021 20:16:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234286AbhIESBJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Sep 2021 14:01:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58242 "EHLO mail.kernel.org"
+        id S234473AbhIESLJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Sep 2021 14:11:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60684 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229865AbhIESBJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 5 Sep 2021 14:01:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 8C3E060F12;
-        Sun,  5 Sep 2021 18:00:05 +0000 (UTC)
+        id S229865AbhIESLI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 5 Sep 2021 14:11:08 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 55EB160F5B;
+        Sun,  5 Sep 2021 18:10:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1630864805;
-        bh=KGRbfLpOeUoWtSBrJA9cOLrYGIImRuHj7Gfgos7XZwA=;
+        s=k20201202; t=1630865405;
+        bh=QSqrKLY/xqY4uM+Kl6BcRDNKB0MgCiqJMZ6bpGnJEe8=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=IxSKRxJwlmohaCrz228gJFgF4Ck1a4/pr6vMXcRGNmndweqfSW/jfenVOkGDvJCZO
-         MzNgd16w7bPaJxrMZoiq9xgqyCV3Zj78D8VJe8LsCjVV7uwf6QNTYM3o963cJk4Rna
-         FeinaWL/Go8ckr7RAMDG5MeIACdStAQCP1OtmwWMVEsCQwCWl0ZirRkephLVysheel
-         ML3DrYIRwYbqKw41Uf/e0bj3H+HSefHNfDOQw9wzPDX7igERMb2hVIJyYh69yt1NHE
-         lLzL6MxhBsRogH3weK08Ln0am4r0+FqZ65Exdy59T94MzFLLUTHdzKXJrpXQ6IQSZ9
-         AK7wR197HaQEA==
+        b=c9tf4/6Ski+SL1tovVd5vUScJ8rlHGNNzMIOT9YWfV0JKovNaZZtVOnIOF9V0LKp1
+         Yy8tyvHIwYaTt1yiSQo+YWULDk4JK8fTBAz04rjsFSq7mK6HrIkfbAycVeSm8g1ebM
+         1RHTgl6ftvE2Ah9qt7hRcVDleiPYgKNuMH8StIqBa71pdvAXwvou9T7QvakKeIDYAo
+         b0qlKYNqKHDRkYywsQzLNa59DEl6r1L3svZM66IiEInP+G3AOiaZ128SYs6WNuDkdd
+         lJr8gpB2MVmYNedfAInV1JGauhZTreQs7dVvCJQmIG9JjrDCmV0C9726cA8SNEMXJF
+         ZP/hbh59ehgVw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 7BBDE609D9;
-        Sun,  5 Sep 2021 18:00:05 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 4327460A49;
+        Sun,  5 Sep 2021 18:10:05 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] ip_gre: validate csum_start only on pull
+Subject: Re: [PATCH] net: dsa: b53: Fix IMP port setup on BCM5301x
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163086480550.8097.6046777069094364476.git-patchwork-notify@kernel.org>
-Date:   Sun, 05 Sep 2021 18:00:05 +0000
-References: <20210905152109.1805619-1-willemdebruijn.kernel@gmail.com>
-In-Reply-To: <20210905152109.1805619-1-willemdebruijn.kernel@gmail.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        idosch@idosch.org, chouhan.shreyansh630@gmail.com,
-        willemb@google.com, alexander.duyck@gmail.com
+Message-Id: <163086540526.12372.2831878860317230975.git-patchwork-notify@kernel.org>
+Date:   Sun, 05 Sep 2021 18:10:05 +0000
+References: <20210905172328.26281-1-zajec5@gmail.com>
+In-Reply-To: <20210905172328.26281-1-zajec5@gmail.com>
+To:     =?utf-8?b?UmFmYcWCIE1pxYJlY2tpIDx6YWplYzVAZ21haWwuY29tPg==?=@ci.codeaurora.org
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, olteanv@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, f.fainelli@gmail.com,
+        netdev@vger.kernel.org, rafal@milecki.pl
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -47,21 +47,21 @@ Hello:
 
 This patch was applied to netdev/net.git (refs/heads/master):
 
-On Sun,  5 Sep 2021 11:21:09 -0400 you wrote:
-> From: Willem de Bruijn <willemb@google.com>
+On Sun,  5 Sep 2021 19:23:28 +0200 you wrote:
+> From: Rafał Miłecki <rafal@milecki.pl>
 > 
-> The GRE tunnel device can pull existing outer headers in ipge_xmit.
-> This is a rare path, apparently unique to this device. The below
-> commit ensured that pulling does not move skb->data beyond csum_start.
+> Broadcom's b53 switches have one IMP (Inband Management Port) that needs
+> to be programmed using its own designed register. IMP port may be
+> different than CPU port - especially on devices with multiple CPU ports.
 > 
-> But it has a false positive if ip_summed is not CHECKSUM_PARTIAL and
-> thus csum_start is irrelevant.
+> For that reason it's required to explicitly note IMP port index and
+> check for it when choosing a register to use.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] ip_gre: validate csum_start only on pull
-    https://git.kernel.org/netdev/net/c/8a0ed250f911
+  - net: dsa: b53: Fix IMP port setup on BCM5301x
+    https://git.kernel.org/netdev/net/c/63f8428b4077
 
 You are awesome, thank you!
 --
