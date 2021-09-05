@@ -2,81 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9E71400FB8
-	for <lists+netdev@lfdr.de>; Sun,  5 Sep 2021 14:54:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CFB1400FC0
+	for <lists+netdev@lfdr.de>; Sun,  5 Sep 2021 15:03:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237988AbhIEMzI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Sep 2021 08:55:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60426 "EHLO mail.kernel.org"
+        id S237589AbhIENCn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Sep 2021 09:02:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34104 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231370AbhIEMzH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 5 Sep 2021 08:55:07 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 734C960F45;
-        Sun,  5 Sep 2021 12:54:03 +0000 (UTC)
+        id S229566AbhIENCj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 5 Sep 2021 09:02:39 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 090136069E;
+        Sun,  5 Sep 2021 13:01:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1630846443;
-        bh=ruSh1z2qEZxoZPV6/YxEJiqcX9nKjn3W941R1BHEJP4=;
+        s=k20201202; t=1630846896;
+        bh=t8si10xmGr93hrxLkWZvJna7ZbS944x/VXWktrSiYSo=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rlE3czGFQd04BjSleaGyCPPROfHKgJEj2HwFaH9vtcyKEmouQCDGDDZ/oDhPMOWjA
-         YJBKvl0gPrgimxvKs6a5lBDGZ6OVJRl/IGFz8pCTTC5Xh843NORP4xpM4HJtH7Qqdx
-         gOBGe4MzU9AxjSoK3/GjotEH3cDJ1wp6JSgantNDDp66jS/SEsLNI0T56kAPCLZ1IM
-         p4UlVy9mnSaS1outL7eJkQ3jIEfYcAvU9gKYGffbAGKmizX1PIgsWw8oKFOHfzhhus
-         6s1BwmYqgGlwWgxWKIWroMBtD4NUPE0WqWRndOTFkBAz4L6r4W+dMVb8GhPx5T0qAJ
-         RDQjFGMJsAtmQ==
-Date:   Sun, 5 Sep 2021 08:54:02 -0400
-From:   Sasha Levin <sashal@kernel.org>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
-        =?utf-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        stable@vger.kernel.org, Abaci <abaci@linux.alibaba.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        linux-security-module@vger.kernel.org
-Subject: Re: [PATCH AUTOSEL 5.13 13/14] net: fix NULL pointer reference in
- cipso_v4_doi_free
-Message-ID: <YTS96ql9DzxpYpnl@sashalap>
-References: <20210830115942.1017300-1-sashal@kernel.org>
- <20210830115942.1017300-13-sashal@kernel.org>
- <CAD-N9QUXXjEMtdDniuqcNSAtaOhKtHE=hLMchtCJgbvxQXdABQ@mail.gmail.com>
- <CAHC9VhTjFMw111-fyZsFaCSnN3b-TuQjqXcc1zVu2QTTekTohw@mail.gmail.com>
+        b=fP9vsDvbeOJKYodtbCVgTw5aJzcJq/X8mzE7gtdE5GqALhprKRAFdHd0xRVYYXTLR
+         W4baJjHS9LyjS8j+DpFqvwLwIlFaeYepmRSrQlf0MU1Jwom1UZjfiZEORWc/EfRNXh
+         gv3YUIzyUBi3x4FdCXXV3ZgNbOz1m2gYQMGetNaTYNQopeb7l+JBmBcfQa2Yeu7dDw
+         zR3YQQ6AAGy3XZBtgiDrwv1wM8mCXXQUE1mOSuIqq9ruG5y3iU23rH1iTI+yYPJy4U
+         rsLyeGrQsfIM6WQLP7wVQr53shTYmtEUNptE4BHCLSsDVV9g9gpzComPc4olf7Plpo
+         iYixjblkboDEA==
+Date:   Sun, 5 Sep 2021 16:01:32 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [RFC PATCH net] net: dsa: tear down devlink port regions when
+ tearing down the devlink port on error
+Message-ID: <YTS/rK73Qbd3KAtz@unreal>
+References: <20210902231738.1903476-1-vladimir.oltean@nxp.com>
+ <YTRswWukNB0zDRIc@unreal>
+ <20210905084518.emlagw76qmo44rpw@skbuf>
+ <YTSa/3XHe9qVz9t7@unreal>
+ <20210905103125.2ulxt2l65frw7bwu@skbuf>
+ <YTSgVw7BNK1e4YWY@unreal>
+ <20210905110735.asgsyjygsrxti6jk@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAHC9VhTjFMw111-fyZsFaCSnN3b-TuQjqXcc1zVu2QTTekTohw@mail.gmail.com>
+In-Reply-To: <20210905110735.asgsyjygsrxti6jk@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 30, 2021 at 10:20:22AM -0400, Paul Moore wrote:
->On Mon, Aug 30, 2021 at 8:42 AM Dongliang Mu <mudongliangabcd@gmail.com> wrote:
->>
->> On Mon, Aug 30, 2021 at 8:01 PM Sasha Levin <sashal@kernel.org> wrote:
->> >
->> > From: 王贇 <yun.wang@linux.alibaba.com>
->> >
->> > [ Upstream commit 733c99ee8be9a1410287cdbb943887365e83b2d6 ]
->> >
->>
->> Hi Sasha,
->>
->> Michael Wang has sent a v2 patch [1] for this bug and it is merged
->> into netdev/net-next.git. However, the v1 patch is already in the
->> upstream tree.
->>
->> How do you guys handle such a issue?
->>
->> [1] https://lkml.org/lkml/2021/8/30/229
->
->Ugh.  Michael can you please work with netdev to fix this in the
->upstream, and hopefully -stable, kernels?  My guess is you will need
->to rebase your v2 patch on top of the v1 patch (basically what exists
->in upstream) and send that back out.
+On Sun, Sep 05, 2021 at 02:07:35PM +0300, Vladimir Oltean wrote:
+> On Sun, Sep 05, 2021 at 01:47:51PM +0300, Leon Romanovsky wrote:
+> > On Sun, Sep 05, 2021 at 01:31:25PM +0300, Vladimir Oltean wrote:
+> > > On Sun, Sep 05, 2021 at 01:25:03PM +0300, Leon Romanovsky wrote:
+> > > > On Sun, Sep 05, 2021 at 11:45:18AM +0300, Vladimir Oltean wrote:
+> > > > > On Sun, Sep 05, 2021 at 10:07:45AM +0300, Leon Romanovsky wrote:
+> > > > > > On Fri, Sep 03, 2021 at 02:17:38AM +0300, Vladimir Oltean wrote:
+> > 
+> > <...>
+> > 
+> > > > That sentence means that your change is OK and you did it right by not
+> > > > changing devlink port to hold not-working ports.
+> > > 
+> > > You're with me so far.
+> > > 
+> > > There is a second part. The ports with 'status = "disabled"' in the
+> > > device tree still get devlink ports registered, but with the
+> > > DEVLINK_PORT_FLAVOUR_UNUSED flavour and no netdev. These devlink ports
+> > > still have things like port regions exported.
+> > > 
+> > > What we do for ports that have failed to probe is to reinit their
+> > > devlink ports as DEVLINK_PORT_FLAVOUR_UNUSED, and their port regions, so
+> > > they effectively behave as though they were disabled in the device tree.
+> > 
+> > Yes, and this part require DSA knowledge that I don't have, because you
+> > suggest fallback for any error during devlink port register,
+> 
+> Again, fallback but not during devlink port register. The devlink port
+> was registered just fine, but our plans changed midway. If you want to
+> create a net device with an associated devlink port, first you need to
+> create the devlink port and then the net device, then you need to link
+> the two using devlink_port_type_eth_set, at least according to my
+> understanding.
+> 
+> So the failure is during the creation of the **net device**, we now have a
+> devlink port which was originally intended to be of the Ethernet type
+> and have a physical flavour, but it will not be backed by any net device,
+> because the creation of that just failed. So the question is simply what
+> to do with that devlink port.
 
-I'm just going to drop this one for now (it never made it in). If there
-is a follow-up you do want us to queue please let us know :)
+I lost you here, from known to me from the NIC, the **net devices** are
+created with devlink_alloc() API call and devlink_port_register comes
+later. It means that net device is created (or not) before devlink port
+code.
 
--- 
-Thanks,
-Sasha
+Anyway, it is really not important to me as long as changes won't touch
+net/core/devlink.c.
+
+Thanks
