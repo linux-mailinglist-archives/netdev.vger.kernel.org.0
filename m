@@ -2,137 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 999DE4010A2
-	for <lists+netdev@lfdr.de>; Sun,  5 Sep 2021 17:47:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D65EA4010A4
+	for <lists+netdev@lfdr.de>; Sun,  5 Sep 2021 17:50:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237285AbhIEPsc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Sep 2021 11:48:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39160 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231657AbhIEPsb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Sep 2021 11:48:31 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FF15C061575
-        for <netdev@vger.kernel.org>; Sun,  5 Sep 2021 08:47:28 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id n27so8154233eja.5
-        for <netdev@vger.kernel.org>; Sun, 05 Sep 2021 08:47:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+fcTuIfPSL6WdPSoyPQDexJMeE1W679eEN0NffGbf1o=;
-        b=LwVhVyB94H7sQ8GEkTIEC5jzNJ1zyBoxDFdeSzza860IApJkxT0yIAptysOZ+8oKr4
-         PSxiU5E+qtQtIXjo3x7hMxayNZgZCNJL+/gwWc1uO5tYn9sQGH5WKg4tqiZv3qp1rG+U
-         DE2Ph+0h5KQmpiVrF8KQ0kE1hjB+pduSyENR0KfIcA5HfZ5xOY2dJRm3kN4BfxiJBvN0
-         R28D3bNpFrMPFDCs/Rq0gqxCoi4g/Y7rPzNfgcvAH/0NU6gU0HdduGxKM6WqXRlCQWY4
-         WW9VoUu+dIfFAHB2/bej1PqZ15ez94EV7zgieE/LsSPzDmbn2GcdUq92YbABewJ8+c73
-         SVNg==
+        id S237589AbhIEPvX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Sep 2021 11:51:23 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:59762 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236513AbhIEPvW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Sep 2021 11:51:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1630857019;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=dt3+lUrr17xrCqRRoNhFo4SoQOQwGb+2P4GqnUIMZG4=;
+        b=ZGDlo0d5jxQ1ZDCumKj0VG6tpGI/E76mQRQZzSiaQXq5SQoouQ5n0ykhQ0/+rarJ7+IkBz
+        Vki8ZuEHELeC+KDepNrk71EJr16msnlxY2GQfQ00g1azTZ11vdoZGv+wR0YXwyxaC/B3ZI
+        YW9GsgG1YfR0i05pNY/Ko4b0XYIJk3s=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-27-0bnvgPJHNVS8GHnyYDEgSw-1; Sun, 05 Sep 2021 11:50:18 -0400
+X-MC-Unique: 0bnvgPJHNVS8GHnyYDEgSw-1
+Received: by mail-ed1-f72.google.com with SMTP id bf22-20020a0564021a5600b003c86b59e291so2297493edb.18
+        for <netdev@vger.kernel.org>; Sun, 05 Sep 2021 08:50:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+fcTuIfPSL6WdPSoyPQDexJMeE1W679eEN0NffGbf1o=;
-        b=bsj2v87/51r99LBVfZPnietceiTydJFPDYKJPPq7D6yx9THmDVHhOwAQTF1vAMCxnq
-         iWbx9+ByvxzpY+ASbLtFIiQMNLTPzl8TmXMDTYFzUWYjGYGjkg7em/eY8w2ZCZfUELSa
-         8NY40JZNlyPIPEBKk/u/kux0l76tPOafVMHNTqJxokJwFcL5Yf/LPzWtQ0VW7tkSa4i7
-         aIuGIZ+EYb1/lm7S6VbeTDMGw0vJGgPJamATyhYigszgKrcf1r0hIzKkhEFvCDkjjulo
-         +Zz27wQdE6sGO7K0H/92P1aJJ/bSB36pOc7rSf9+6ZemVtQjcggMl8xmKbqyl0rYIq27
-         Oa5w==
-X-Gm-Message-State: AOAM532hVLkQeIXhe5PdYfXJ79ytf9WntCY59xuaZV/BR7cmacKr/vnS
-        UJUHtTr8a+fn7V2AhSiDv7gl4dcB7uzc7m7uq/M=
-X-Google-Smtp-Source: ABdhPJwEygtxm8ufOijtlsR+ftZvRQNfzQ7piDdm9oNOC4uKQlRhCEBpK7Q/VZ84M7BMuK7ORJzO0vSlrUQqd0tnLtc=
-X-Received: by 2002:a17:906:e51:: with SMTP id q17mr9497268eji.76.1630856847085;
- Sun, 05 Sep 2021 08:47:27 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210905152109.1805619-1-willemdebruijn.kernel@gmail.com>
-In-Reply-To: <20210905152109.1805619-1-willemdebruijn.kernel@gmail.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Sun, 5 Sep 2021 08:47:16 -0700
-Message-ID: <CAKgT0UfX__k29P+SuhSrsantA9=KVi8=9+pspmcDXh+dWuHyfQ@mail.gmail.com>
-Subject: Re: [PATCH net] ip_gre: validate csum_start only on pull
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=dt3+lUrr17xrCqRRoNhFo4SoQOQwGb+2P4GqnUIMZG4=;
+        b=lCy9NMcq2ZVQvCzT6m3S86QJMHSD69pToOmD1Uc4qn68Ar6lyK5ctbxCFL7b8HEldM
+         Q1zPQDYLK6UKySy91Ne4YkQ1ahi+lNnNDnTJxsdJguDgGDc0WX3Mzv5dWZYllaBljhaK
+         rP/4tFz6cfP0YhFhP4NAUxZVxdQAY7jEIzgQg8faGRgKE6OCL8ZX3cDDulQJA6gcZwud
+         7Hm9FCd6j8PWDkZZnoFlQscb2fiWH6n1rqUpepBUg3qBJjyuxC0ZRWJiBNuVj0ZgHDoY
+         EIsGpHQ9LwBtRZmGdUNnsC9RFXrhEZqVgmUDqbWfkGY3nfmtCwCF3NllLVm4iwKCdkdC
+         qP3Q==
+X-Gm-Message-State: AOAM530s3P/DvLrMDpMUCN4L+6WqPTqwAOyPpgH+5M990pPsOQJjPJbk
+        6d2J3v0fmbYKtep4MDAlTrNCJKtlXXq274YIXvGpy6LQIMWlXzs7GjDVpKjGTXaUuQKxbxk9Psy
+        J7LKC6yxVEzGlhBMU
+X-Received: by 2002:aa7:c514:: with SMTP id o20mr9209156edq.318.1630857016058;
+        Sun, 05 Sep 2021 08:50:16 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw/Vr1hTVx3/Sty6LNqcZMAJAOmpd1FUx3LtNW8reY+9FMDFhx51QrJugo5epYEB0BNnX/rsw==
+X-Received: by 2002:aa7:c514:: with SMTP id o20mr9209144edq.318.1630857015928;
+        Sun, 05 Sep 2021 08:50:15 -0700 (PDT)
+Received: from redhat.com ([2.55.131.183])
+        by smtp.gmail.com with ESMTPSA id g18sm2495519ejr.99.2021.09.05.08.50.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 05 Sep 2021 08:50:15 -0700 (PDT)
+Date:   Sun, 5 Sep 2021 11:50:11 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Ido Schimmel <idosch@idosch.org>,
-        chouhan.shreyansh630@gmail.com,
-        Willem de Bruijn <willemb@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Norbert Slusarek <nslusarek@gmx.net>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stsp2@yandex.ru, oxffffaa@gmail.com
+Subject: Re: [PATCH net-next v4 2/6] virtio/vsock: add 'VIRTIO_VSOCK_SEQ_EOR'
+ bit.
+Message-ID: <20210905115002-mutt-send-email-mst@kernel.org>
+References: <20210903061353.3187150-1-arseny.krasnov@kaspersky.com>
+ <20210903061523.3187714-1-arseny.krasnov@kaspersky.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210903061523.3187714-1-arseny.krasnov@kaspersky.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 5, 2021 at 8:21 AM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
->
-> From: Willem de Bruijn <willemb@google.com>
->
-> The GRE tunnel device can pull existing outer headers in ipge_xmit.
-> This is a rare path, apparently unique to this device. The below
-> commit ensured that pulling does not move skb->data beyond csum_start.
->
-> But it has a false positive if ip_summed is not CHECKSUM_PARTIAL and
-> thus csum_start is irrelevant.
->
-> Refine to exclude this. At the same time simplify and strengthen the
-> test.
->
-> Simplify, by moving the check next to the offending pull, making it
-> more self documenting and removing an unnecessary branch from other
-> code paths.
->
-> Strengthen, by also ensuring that the transport header is correct and
-> therefore the inner headers will be after skb_reset_inner_headers.
-> The transport header is set to csum_start in skb_partial_csum_set.
->
-> Link: https://lore.kernel.org/netdev/YS+h%2FtqCJJiQei+W@shredder/
-> Fixes: 1d011c4803c7 ("ip_gre: add validation for csum_start")
-> Reported-by: Ido Schimmel <idosch@idosch.org>
-> Suggested-by: Alexander Duyck <alexander.duyck@gmail.com>
-> Signed-off-by: Willem de Bruijn <willemb@google.com>
+On Fri, Sep 03, 2021 at 09:15:20AM +0300, Arseny Krasnov wrote:
+> This bit is used to handle POSIX MSG_EOR flag passed from
+> userspace in 'send*()' system calls. It marks end of each
+> record and is visible to receiver using 'recvmsg()' system
+> call.
+> 
+> Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+> Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+
+Spec patch for this?
+
 > ---
->  net/ipv4/ip_gre.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
->
-> diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
-> index 177d26d8fb9c..0fe6c936dc54 100644
-> --- a/net/ipv4/ip_gre.c
-> +++ b/net/ipv4/ip_gre.c
-> @@ -473,8 +473,6 @@ static void __gre_xmit(struct sk_buff *skb, struct net_device *dev,
->
->  static int gre_handle_offloads(struct sk_buff *skb, bool csum)
->  {
-> -       if (csum && skb_checksum_start(skb) < skb->data)
-> -               return -EINVAL;
->         return iptunnel_handle_offloads(skb, csum ? SKB_GSO_GRE_CSUM : SKB_GSO_GRE);
->  }
->
-> @@ -632,15 +630,20 @@ static netdev_tx_t ipgre_xmit(struct sk_buff *skb,
->         }
->
->         if (dev->header_ops) {
-> +               const int pull_len = tunnel->hlen + sizeof(struct iphdr);
-> +
->                 if (skb_cow_head(skb, 0))
->                         goto free_skb;
->
->                 tnl_params = (const struct iphdr *)skb->data;
->
-> +               if (pull_len > skb_transport_offset(skb))
-> +                       goto free_skb;
-> +
->                 /* Pull skb since ip_tunnel_xmit() needs skb->data pointing
->                  * to gre header.
->                  */
-> -               skb_pull(skb, tunnel->hlen + sizeof(struct iphdr));
-> +               skb_pull(skb, pull_len);
->                 skb_reset_mac_header(skb);
->         } else {
->                 if (skb_cow_head(skb, dev->needed_headroom))
-> --
-> 2.33.0.153.gba50c8fa24-goog
->
+>  include/uapi/linux/virtio_vsock.h | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/include/uapi/linux/virtio_vsock.h b/include/uapi/linux/virtio_vsock.h
+> index 8485b004a5f8..64738838bee5 100644
+> --- a/include/uapi/linux/virtio_vsock.h
+> +++ b/include/uapi/linux/virtio_vsock.h
+> @@ -98,6 +98,7 @@ enum virtio_vsock_shutdown {
+>  /* VIRTIO_VSOCK_OP_RW flags values */
+>  enum virtio_vsock_rw {
+>  	VIRTIO_VSOCK_SEQ_EOM = 1,
+> +	VIRTIO_VSOCK_SEQ_EOR = 2,
+>  };
+>  
+>  #endif /* _UAPI_LINUX_VIRTIO_VSOCK_H */
+> -- 
+> 2.25.1
 
-Looks good to me.
-
-Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
