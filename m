@@ -2,202 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 916744011BD
-	for <lists+netdev@lfdr.de>; Sun,  5 Sep 2021 23:16:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD83C4011DF
+	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 00:21:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238222AbhIEVRI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Sep 2021 17:17:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55110 "EHLO
+        id S238416AbhIEVqP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Sep 2021 17:46:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231335AbhIEVRH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Sep 2021 17:17:07 -0400
-Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85B80C061575
-        for <netdev@vger.kernel.org>; Sun,  5 Sep 2021 14:16:03 -0700 (PDT)
-Received: by mail-oi1-x22d.google.com with SMTP id w144so6427977oie.13
-        for <netdev@vger.kernel.org>; Sun, 05 Sep 2021 14:16:03 -0700 (PDT)
+        with ESMTP id S238283AbhIEVqP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Sep 2021 17:46:15 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 367B0C061575
+        for <netdev@vger.kernel.org>; Sun,  5 Sep 2021 14:45:11 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id m28so9540061lfj.6
+        for <netdev@vger.kernel.org>; Sun, 05 Sep 2021 14:45:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=44Vum6v34eA5a4+LyGTdR/8ARH31f7BfkNnNOViZXdc=;
-        b=FoozNQFWf00mJmgGxOAljpekwpnmUwfHBWP00foJKwB/s6O5sOoEVBgcrhwc0fs2mG
-         qgbsvZRu8jNFU4ernoYRNtn8+/blZoPwMGCQDXu2zyXqw3sCG54EUwHxERGRic8PIhEf
-         9F/luoYJsqshQlbTKzurMaWYJDhNC72ig8+BFaQJr4w5oC8LXt5JVLuS6bo9/YG3k2S8
-         gP25+INP9AtmzHhhDZWDVuBNzJqt/B9+InCClyFetRRsi4+RscR0kjKxo7bdAyPHa87r
-         lP0MXL7CaAahrPYbU5cgs7Ab1g4usJ0ZkXBE5maQG/wQmtkNNXxZlbNcgcqFiuIhem6F
-         kASA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=uzTT7u+8B9a7HCpw6zkqtD67jmDiWWQ49J2sucyVY1I=;
+        b=hUvI8Du+fKz7GqA4mjeJ5YzFKl8EsVv64QKKRqS+gAQ+2vAJ+9HRYV9bDNHc5ID0XT
+         zUy0/XcmSku5OQI55ScUF9TAp/Gn5pJjm4v6m3BemCInWa3O0/ILrVA1oLkbG79hObmw
+         LEtEGTyXLi2ZTRE7SATO/zRzI3k9dXJMW0nmhSOqw5K4kNauEOa8QzE52rmNq25prhkc
+         9svp1gI9etD+x8dnPcaKjE2XxJP3IwcW7f40aJPmn7fRpj04R4RnDV6DoTOZ7zoJ8FZ4
+         /q/dd+jQMVwKWhxstVscMI4d8DPgoWlEt2eM0DDDGcJcWHmfHP5e5pD2O1zVdhpwojfl
+         yDOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=44Vum6v34eA5a4+LyGTdR/8ARH31f7BfkNnNOViZXdc=;
-        b=fm4GPNKI06Kp6lKC+yarQ54dkBGjIXWjrTAOiBffArnaHWynprBktGkkeEgFomXXs/
-         lhPx7tHStPOIjwVyo2rJ4mDE4HDL1HZP09jJtyaLVvAvKU+7iKB+lXoSguBwHQdPDixo
-         G5s+luQFiLJjKR41zH0tgI9i19LRHajB0EKj0Qw2VjNf3Ets/H/D5pRgFYn5VO3GuTQH
-         nBJ1TRj3rYn7jy7BrBbGcGzRDQoYk6oMmAKKi8bL2b5TBTaAC0e7E8xYyTfUa2ixrEhK
-         7fjs1D1xaaVhXXXLntEtxJDrqwOJBYpTfGr9QU+tdIcGsFzFfKT98sRVXyvljhZ7EIfe
-         EohA==
-X-Gm-Message-State: AOAM531gWWd7bDPnj+ES56VgQIP9yGNiPQwFm/NTpFKdQ0twrRuaBqPs
-        0MtWlv7gFv5exPNzBmaAGiA=
-X-Google-Smtp-Source: ABdhPJzEKMucBLu1TjTIH2Zh7EYrbTdIM3sWVTAmBpe3/kByY1f9sH5CDzGObt561DT6cuEgGTly+g==
-X-Received: by 2002:a05:6808:997:: with SMTP id a23mr6680594oic.11.1630876562808;
-        Sun, 05 Sep 2021 14:16:02 -0700 (PDT)
-Received: from ?IPV6:2600:1700:dfe0:49f0:5d95:1dc7:eeeb:985e? ([2600:1700:dfe0:49f0:5d95:1dc7:eeeb:985e])
-        by smtp.gmail.com with ESMTPSA id e2sm1268718ooh.40.2021.09.05.14.16.01
+        bh=uzTT7u+8B9a7HCpw6zkqtD67jmDiWWQ49J2sucyVY1I=;
+        b=W/dbSaZOWFTQ9QkZw5oJTdHI/IPshNspSsFZxBxoPmofFKm5+/E1CKfpPxfx5DMXcL
+         eoapPyXAvhqBPyUQFkSk4sMoJFWjHSEKXMgiHRQAkkdCXnQ9Pzr8klfC5jPhhLqPgHLm
+         ymLZZDf3XZ8oYaDdu8mXCBM6Awymn5bmQNcLVa5a3PzOIboAG3Oh84bpe/QjI+T7HMfd
+         ID86J7TCcTsApO0ar7EwS3tnSnGztN2v3KjVl87ajBhPmmPAdTxe9bcPUa2Z0BKwFb4u
+         mdKUi1eksQsjNy0+Oyez5PRevRf4bgNPmHLNC728eYSdcW6Y25m4Y8+Xpx0Un/hZtf68
+         lINw==
+X-Gm-Message-State: AOAM532qpAptsnNJgezlTIDH4CeS5tUEHb1zRYb/RaMKojbCP+W9JrJ7
+        mkkZJbbGM1onCKyFVT5rRsY=
+X-Google-Smtp-Source: ABdhPJzE2EDFNV+/AnUoiaumSz1H44rRefHEOBRWDB0qGiCS6fcd6A5zHnVdGWgpTPfCoCVNg4YWVQ==
+X-Received: by 2002:a05:6512:228f:: with SMTP id f15mr7188273lfu.253.1630878308875;
+        Sun, 05 Sep 2021 14:45:08 -0700 (PDT)
+Received: from localhost.localdomain (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.googlemail.com with ESMTPSA id n3sm570294lft.63.2021.09.05.14.45.07
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 05 Sep 2021 14:16:02 -0700 (PDT)
-Message-ID: <05523f76-6846-449e-bc66-5f4d15946ad5@gmail.com>
-Date:   Sun, 5 Sep 2021 14:16:00 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.0.3
+        Sun, 05 Sep 2021 14:45:08 -0700 (PDT)
 Subject: Re: [PATCH] net: dsa: b53: Fix IMP port setup on BCM5301x
-Content-Language: en-US
-To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        patchwork-bot+netdevbpf@kernel.org
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, olteanv@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        rafal@milecki.pl
 References: <20210905172328.26281-1-zajec5@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20210905172328.26281-1-zajec5@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+ <163086540526.12372.2831878860317230975.git-patchwork-notify@kernel.org>
+ <5de7487c-4ffe-bca4-f9a3-e437fc63926b@gmail.com>
+From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Message-ID: <40577a0e-27ce-01c3-2520-ff28885ab031@gmail.com>
+Date:   Sun, 5 Sep 2021 23:45:06 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
+MIME-Version: 1.0
+In-Reply-To: <5de7487c-4ffe-bca4-f9a3-e437fc63926b@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 9/5/2021 10:23 AM, Rafał Miłecki wrote:
-> From: Rafał Miłecki <rafal@milecki.pl>
+On 05.09.2021 23:04, Florian Fainelli wrote:
+> On 9/5/2021 11:10 AM, patchwork-bot+netdevbpf@kernel.org wrote:
+>> Hello:
+>>
+>> This patch was applied to netdev/net.git (refs/heads/master):
+>>
+>> On Sun,  5 Sep 2021 19:23:28 +0200 you wrote:
+>>> From: Rafał Miłecki <rafal@milecki.pl>
+>>>
+>>> Broadcom's b53 switches have one IMP (Inband Management Port) that needs
+>>> to be programmed using its own designed register. IMP port may be
+>>> different than CPU port - especially on devices with multiple CPU ports.
+>>>
+>>> For that reason it's required to explicitly note IMP port index and
+>>> check for it when choosing a register to use.
+>>>
+>>> [...]
+>>
+>> Here is the summary with links:
+>>    - net: dsa: b53: Fix IMP port setup on BCM5301x
+>>      https://git.kernel.org/netdev/net/c/63f8428b4077
+>>
+>> You are awesome, thank you!
+>> -- 
+>> Deet-doot-dot, I am a bot.
+>> https://korg.docs.kernel.org/patchwork/pwbot.html
 > 
-> Broadcom's b53 switches have one IMP (Inband Management Port) that needs
-> to be programmed using its own designed register. IMP port may be
-> different than CPU port - especially on devices with multiple CPU ports.
-
-There are two choices: port 5 or port 8,
-
+> David, can you please wait more than 1h 47 minutes before applying a patch to give a review? This is absolutely not the way this should have been fixed because it adds to the driver's port information burden rather than not.
 > 
-> For that reason it's required to explicitly note IMP port index and
-> check for it when choosing a register to use.
-> 
-> This commit fixes BCM5301x support. Those switches use CPU port 5 while
-> their IMP port is 8. Before this patch b53 was trying to program port 5
-> with B53_PORT_OVERRIDE_CTRL instead of B53_GMII_PORT_OVERRIDE_CTRL(5).
-> 
-> It may be possible to also replace "cpu_port" usages with
-> dsa_is_cpu_port() but that is out of the scope of thix BCM5301x fix.
+> This is not the first time this has happened, and this is really really starting to annoy the crap out of me. While I am appreciative of your responsiveness in applying patches, I am definitively not when it comes to not allowing a proper review to happen. So please, I am begging you, wait at least 12h, ideally 24h before applying a patch. You have patchwork, you have responsive maintainers, so nothing will get dropped on the floor.
 
-Actually this would have been well within the scope of this patch.
+I was also surprised a bit with that quick apply. I prefer to have my
+code reviewed properly.
 
-> 
-> Fixes: 967dd82ffc52 ("net: dsa: b53: Add support for Broadcom RoboSwitch")
-> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
-
-I really don't like the duplication of the "imp_port" and "cpu_port" 
-members, first because this caused us problems before, and second 
-because for all switch entries except the BCM5301X, cpu_port == 
-imp_port, so this a duplication, and a waste of storage space to encode 
-information.
-
-In fact, there is no such thing as CPU port technically you chose either 
-IMP0 or IMP1. IMP0 is port 8 and IMP1 is port 5.
-
-> ---
->   drivers/net/dsa/b53/b53_common.c | 28 +++++++++++++++++++++++++---
->   drivers/net/dsa/b53/b53_priv.h   |  1 +
->   2 files changed, 26 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-> index 5646eb8afe38..604f54112665 100644
-> --- a/drivers/net/dsa/b53/b53_common.c
-> +++ b/drivers/net/dsa/b53/b53_common.c
-> @@ -1144,7 +1144,7 @@ static void b53_force_link(struct b53_device *dev, int port, int link)
->   	u8 reg, val, off;
->   
->   	/* Override the port settings */
-> -	if (port == dev->cpu_port) {
-> +	if (port == dev->imp_port) {
-
-This should be port == 8
-
->   		off = B53_PORT_OVERRIDE_CTRL;
->   		val = PORT_OVERRIDE_EN;
->   	} else {
-> @@ -1168,7 +1168,7 @@ static void b53_force_port_config(struct b53_device *dev, int port,
->   	u8 reg, val, off;
->   
->   	/* Override the port settings */
-> -	if (port == dev->cpu_port) {
-> +	if (port == dev->imp_port) {
-
-Likewise
-
->   		off = B53_PORT_OVERRIDE_CTRL;
->   		val = PORT_OVERRIDE_EN;
->   	} else {
-> @@ -1236,7 +1236,7 @@ static void b53_adjust_link(struct dsa_switch *ds, int port,
->   	b53_force_link(dev, port, phydev->link);
->   
->   	if (is531x5(dev) && phy_interface_is_rgmii(phydev)) {
-> -		if (port == 8)
-> +		if (port == dev->imp_port)
-
-That use of port 8 was correct.
-
->   			off = B53_RGMII_CTRL_IMP;
->   		else
->   			off = B53_RGMII_CTRL_P(port);
-> @@ -2280,6 +2280,7 @@ struct b53_chip_data {
->   	const char *dev_name;
->   	u16 vlans;
->   	u16 enabled_ports;
-> +	u8 imp_port;
->   	u8 cpu_port;
->   	u8 vta_regs[3];
->   	u8 arl_bins;
-> @@ -2304,6 +2305,7 @@ static const struct b53_chip_data b53_switch_chips[] = {
->   		.enabled_ports = 0x1f,
->   		.arl_bins = 2,
->   		.arl_buckets = 1024,
-> +		.imp_port = 5,
-
-Could have used B53_CPU_PORT_25 here.
-
->   		.cpu_port = B53_CPU_PORT_25,
->   		.duplex_reg = B53_DUPLEX_STAT_FE,
->   	},
-> @@ -2314,6 +2316,7 @@ static const struct b53_chip_data b53_switch_chips[] = {
->   		.enabled_ports = 0x1f,
->   		.arl_bins = 2,
->   		.arl_buckets = 1024,
-> +		.imp_port = 5,
->   		.cpu_port = B53_CPU_PORT_25,
-
-and here.
-
->   		.duplex_reg = B53_DUPLEX_STAT_FE,
->   	},
-> @@ -2324,6 +2327,7 @@ static const struct b53_chip_data b53_switch_chips[] = {
->   		.enabled_ports = 0x1f,
->   		.arl_bins = 4,
->   		.arl_buckets = 1024,
-> +		.imp_port = 8,
->   		.cpu_port = B53_CPU_PORT,
-
-and B53_CPU_PORT here and for each entry below.
-
-I will put this patch into my local test rack and see what breaks, and 
-we can address this more cleanly with net-next. Another case where if we 
-had more time to do a proper review we could come up with a small fix, 
-and not create additional technical debt to fix in the next release 
-cycle. Hope's spring is eternal, oh and I just came back from France, so 
-I guess I am full of complaints, too :)
---
-Florian
+I'm OK with a revert and working on a better fix (or change for
+net-next) if that is a valid option. I can also work on fixing that fix
+as I surely don't mean to leave code as is when maintainer isn't happy
+about it.
