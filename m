@@ -2,223 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BD054011A8
-	for <lists+netdev@lfdr.de>; Sun,  5 Sep 2021 23:04:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0221E4011A9
+	for <lists+netdev@lfdr.de>; Sun,  5 Sep 2021 23:04:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233779AbhIEVFH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Sep 2021 17:05:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52412 "EHLO
+        id S238248AbhIEVFO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Sep 2021 17:05:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231935AbhIEVFG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Sep 2021 17:05:06 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47879C061575
-        for <netdev@vger.kernel.org>; Sun,  5 Sep 2021 14:04:03 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id j1so3040484pjv.3
-        for <netdev@vger.kernel.org>; Sun, 05 Sep 2021 14:04:03 -0700 (PDT)
+        with ESMTP id S238241AbhIEVFN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Sep 2021 17:05:13 -0400
+Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4166AC061575
+        for <netdev@vger.kernel.org>; Sun,  5 Sep 2021 14:04:09 -0700 (PDT)
+Received: by mail-qv1-xf2b.google.com with SMTP id p17so2979405qvo.8
+        for <netdev@vger.kernel.org>; Sun, 05 Sep 2021 14:04:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8sNKEVJBC2v8g4oUEvMr7hiCcGK5pocfEGEp7QE+uNk=;
-        b=Y6VghV8fTqkS26PwLmH4McynWrZ7OTKq1bFj+o2Gg+h+pCcPNKQStZG/FmplOZT7EM
-         KmeiWMC8frtkq70DuXlsWa+UN9obBBowNDE1ndPirTCixslhbBQ9SBOSHS3iupWoxPAh
-         lK+T9KrcKHjUXVcLEyB7VUk2qMOOqo3pnNB9I=
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=OH16u8lqIoOs6IBmDVCBjsxYmVyEjaXGe8M6wXeXqQo=;
+        b=SX5o+ECjbvk6u36MZDFAIlwsL7IMMua+eW749WiwvRwPhgYVfb68eE2RvzCYOMtuB2
+         wPbmX7LSUd52da429Lo/zfp0Qs4sUnvOKyVKRLfe6XVADVhIDpIGFDK/fG7KGJ3ozBhm
+         K6/VAJrEsbPjAh9PohTeAZj6mSPvX9XzoWzgIHLWNWJYgWUMyb+NZRq0EVVoje+oPcqC
+         wZQnjTGGEFBCPuItWOsOtPV/pFOv5/4+NlXkI72FSw/6HiOSxCPmudVsF/Cq4eWUyhKo
+         0KLwjyq9UA6NQxykAC0Fo4wHNfbhWYzzuIbMn7jvbQ5FtZNiOl3Twggazyo5V53uJr2x
+         wvFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=8sNKEVJBC2v8g4oUEvMr7hiCcGK5pocfEGEp7QE+uNk=;
-        b=JKyYsT5Kk9RDZtBPWnkDXbdjvBK4dc50pYc//IP6N4vKZzR2mwFOum06ivp8G6Jgf3
-         yroamFB+jrpna21h6FtATvnxV3LZih5Njokg9ObjPw6OVl6n4+eBs7x9dqPqDn3q+LJX
-         BZi1o6OMEjIGt/Mfvc3ISPhCPocDSMsrRVzIruICAVchwNlfqFjJUta1zm2YF0sNhbx1
-         YEzYmrcaLvP75TJuKauABsPic9Wx2Q2f4hlfOxiH8f4m1qxuOjdExO3Jc74l7eKhQ1O2
-         bYYG7OPojhaDQfa58qoFvn4Xzh5CkDZxBWwPfWLrdiyjt+52WzdY31tCuA+5HCuwFC1U
-         t4bA==
-X-Gm-Message-State: AOAM531aQ3/1XHHFovAlZt4NayCJkDGl2quV7iJlLD3OOdJ1ePeG+dH5
-        SdHYZ1fm5PYrrkugmeUcHFqc9g==
-X-Google-Smtp-Source: ABdhPJwup5WpYvzf3TPglhjUyzySn9YGNiVmr7+eq7fdfkNhRwCRNXx4lIdbfKBgFJ86itinGYaAaw==
-X-Received: by 2002:a17:90a:a092:: with SMTP id r18mr10298978pjp.175.1630875842717;
-        Sun, 05 Sep 2021 14:04:02 -0700 (PDT)
-Received: from smtp.gmail.com ([2620:15c:202:201:5077:c47b:f2dc:d63b])
-        by smtp.gmail.com with ESMTPSA id n9sm5243109pfu.152.2021.09.05.14.04.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Sep 2021 14:04:02 -0700 (PDT)
-From:   Stephen Boyd <swboyd@chromium.org>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     linux-kernel@vger.kernel.org, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        netdev@vger.kernel.org, Govind Singh <govinds@codeaurora.org>,
-        Youghandhar Chintala <youghand@codeaurora.org>,
-        Abhishek Kumar <kuabhs@chromium.org>
-Subject: [PATCH] ath10k: Don't always treat modem stop events as crashes
-Date:   Sun,  5 Sep 2021 14:04:00 -0700
-Message-Id: <20210905210400.1157870-1-swboyd@chromium.org>
-X-Mailer: git-send-email 2.33.0.153.gba50c8fa24-goog
+        bh=OH16u8lqIoOs6IBmDVCBjsxYmVyEjaXGe8M6wXeXqQo=;
+        b=mfVmpxnjHqb7tgyOlz8veKmqedmmK55SXl213lT2NIPsgx/ToNl3udpHk6CmAdYVbG
+         MONuFXFC7TC/D17tLK+zRp65m9gDQ6DqQqcqOSai72mwZyUiE0tIlGFpdOxdqP09V49T
+         aYGP/NiBoOwSAJhq9yLQ9EloNrwjn7UNfhyBf9bU1kovoI7pMgISA/49bUMv2JwIgJtx
+         WPBMmpkoGcP8aTpJ/75fZ94B9kqOVfz3AmuYsXH6fNK89beMm2ehFFmmj6OyzhkwxBR2
+         Hyrfh5kxtw+DVxg47T1a+i2tVV5zpxzohZVpHOknU2ewyRW36Js5rPPHMlRhKGrUgEjQ
+         xB6A==
+X-Gm-Message-State: AOAM531i2mSGLq/LiciGkdMQZOl5A5It7w+lW95tnPhEuKn1ms1h7w99
+        R4TGgH8N/m6hUfTH8qxduuC3lYTdU0E=
+X-Google-Smtp-Source: ABdhPJxNquDpjQplqzUOT/fGvSYF104Z2WpsRWWO+ga/kDToTDpgpbdyxE1j5pAoY133kmgRC1sH7Q==
+X-Received: by 2002:a0c:9a08:: with SMTP id p8mr9220970qvd.2.1630875848384;
+        Sun, 05 Sep 2021 14:04:08 -0700 (PDT)
+Received: from ?IPV6:2600:1700:dfe0:49f0:5d95:1dc7:eeeb:985e? ([2600:1700:dfe0:49f0:5d95:1dc7:eeeb:985e])
+        by smtp.gmail.com with ESMTPSA id b19sm4863657qkc.7.2021.09.05.14.04.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 05 Sep 2021 14:04:07 -0700 (PDT)
+Message-ID: <5de7487c-4ffe-bca4-f9a3-e437fc63926b@gmail.com>
+Date:   Sun, 5 Sep 2021 14:04:06 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.0.3
+Subject: Re: [PATCH] net: dsa: b53: Fix IMP port setup on BCM5301x
+Content-Language: en-US
+To:     patchwork-bot+netdevbpf@kernel.org,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, olteanv@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        rafal@milecki.pl
+References: <20210905172328.26281-1-zajec5@gmail.com>
+ <163086540526.12372.2831878860317230975.git-patchwork-notify@kernel.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <163086540526.12372.2831878860317230975.git-patchwork-notify@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When rebooting on sc7180 Trogdor devices I see the following crash from
-the wifi driver.
 
- ath10k_snoc 18800000.wifi: firmware crashed! (guid 83493570-29a2-4e98-a83e-70048c47669c)
 
-This is because a modem stop event looks just like a firmware crash to
-the driver, the qmi connection is closed in both cases. Use the qcom ssr
-notifier block to stop treating the qmi connection close event as a
-firmware crash signal when the modem hasn't actually crashed. See
-ath10k_qmi_event_server_exit() for more details.
+On 9/5/2021 11:10 AM, patchwork-bot+netdevbpf@kernel.org wrote:
+> Hello:
+> 
+> This patch was applied to netdev/net.git (refs/heads/master):
+> 
+> On Sun,  5 Sep 2021 19:23:28 +0200 you wrote:
+>> From: Rafał Miłecki <rafal@milecki.pl>
+>>
+>> Broadcom's b53 switches have one IMP (Inband Management Port) that needs
+>> to be programmed using its own designed register. IMP port may be
+>> different than CPU port - especially on devices with multiple CPU ports.
+>>
+>> For that reason it's required to explicitly note IMP port index and
+>> check for it when choosing a register to use.
+>>
+>> [...]
+> 
+> Here is the summary with links:
+>    - net: dsa: b53: Fix IMP port setup on BCM5301x
+>      https://git.kernel.org/netdev/net/c/63f8428b4077
+> 
+> You are awesome, thank you!
+> --
+> Deet-doot-dot, I am a bot.
+> https://korg.docs.kernel.org/patchwork/pwbot.html
 
-This silences the crash message seen during every reboot.
+David, can you please wait more than 1h 47 minutes before applying a 
+patch to give a review? This is absolutely not the way this should have 
+been fixed because it adds to the driver's port information burden 
+rather than not.
 
-Fixes: 3f14b73c3843 ("ath10k: Enable MSA region dump support for WCN3990")
-Cc: Govind Singh <govinds@codeaurora.org>
-Cc: Youghandhar Chintala <youghand@codeaurora.org>
-Cc: Abhishek Kumar <kuabhs@chromium.org>
-Signed-off-by: Stephen Boyd <swboyd@chromium.org>
----
- drivers/net/wireless/ath/ath10k/snoc.c | 75 ++++++++++++++++++++++++++
- drivers/net/wireless/ath/ath10k/snoc.h |  4 ++
- 2 files changed, 79 insertions(+)
+This is not the first time this has happened, and this is really really 
+starting to annoy the crap out of me. While I am appreciative of your 
+responsiveness in applying patches, I am definitively not when it comes 
+to not allowing a proper review to happen. So please, I am begging you, 
+wait at least 12h, ideally 24h before applying a patch. You have 
+patchwork, you have responsive maintainers, so nothing will get dropped 
+on the floor.
 
-diff --git a/drivers/net/wireless/ath/ath10k/snoc.c b/drivers/net/wireless/ath/ath10k/snoc.c
-index ea00fbb15601..fc4970e063f8 100644
---- a/drivers/net/wireless/ath/ath10k/snoc.c
-+++ b/drivers/net/wireless/ath/ath10k/snoc.c
-@@ -12,6 +12,7 @@
- #include <linux/platform_device.h>
- #include <linux/property.h>
- #include <linux/regulator/consumer.h>
-+#include <linux/remoteproc/qcom_rproc.h>
- #include <linux/of_address.h>
- #include <linux/iommu.h>
- 
-@@ -1477,6 +1478,70 @@ void ath10k_snoc_fw_crashed_dump(struct ath10k *ar)
- 	mutex_unlock(&ar->dump_mutex);
- }
- 
-+static int ath10k_snoc_modem_notify(struct notifier_block *nb, unsigned long action,
-+				    void *data)
-+{
-+	struct ath10k_snoc *ar_snoc = container_of(nb, struct ath10k_snoc, nb);
-+	struct ath10k *ar = ar_snoc->ar;
-+	struct qcom_ssr_notify_data *notify_data = data;
-+
-+	switch (action) {
-+	case QCOM_SSR_BEFORE_POWERUP:
-+		ath10k_dbg(ar, ATH10K_DBG_SNOC, "received modem starting event\n");
-+		clear_bit(ATH10K_SNOC_FLAG_UNREGISTERING, &ar_snoc->flags);
-+		break;
-+
-+	case QCOM_SSR_AFTER_POWERUP:
-+		ath10k_dbg(ar, ATH10K_DBG_SNOC, "received modem running event\n");
-+		break;
-+
-+	case QCOM_SSR_BEFORE_SHUTDOWN:
-+		ath10k_dbg(ar, ATH10K_DBG_SNOC, "received modem %s event\n",
-+			   notify_data->crashed ? "crashed" : "stopping");
-+		if (!notify_data->crashed)
-+			set_bit(ATH10K_SNOC_FLAG_UNREGISTERING, &ar_snoc->flags);
-+		else
-+			clear_bit(ATH10K_SNOC_FLAG_UNREGISTERING, &ar_snoc->flags);
-+		break;
-+
-+	case QCOM_SSR_AFTER_SHUTDOWN:
-+		ath10k_dbg(ar, ATH10K_DBG_SNOC, "received modem offline event\n");
-+		break;
-+
-+	default:
-+		ath10k_err(ar, "received unrecognized event %lu\n", action);
-+		break;
-+	}
-+
-+	return NOTIFY_OK;
-+}
-+
-+static int ath10k_modem_init(struct ath10k *ar)
-+{
-+	struct ath10k_snoc *ar_snoc = ath10k_snoc_priv(ar);
-+	void *notifier;
-+
-+	ar_snoc->nb.notifier_call = ath10k_snoc_modem_notify;
-+
-+	notifier = qcom_register_ssr_notifier("mpss", &ar_snoc->nb);
-+	if (IS_ERR(notifier))
-+		return PTR_ERR(notifier);
-+
-+	ar_snoc->notifier = notifier;
-+
-+	return 0;
-+}
-+
-+static void ath10k_modem_deinit(struct ath10k *ar)
-+{
-+	int ret;
-+	struct ath10k_snoc *ar_snoc = ath10k_snoc_priv(ar);
-+
-+	ret = qcom_unregister_ssr_notifier(ar_snoc->notifier, &ar_snoc->nb);
-+	if (ret)
-+		ath10k_err(ar, "error %d unregistering notifier\n", ret);
-+}
-+
- static int ath10k_setup_msa_resources(struct ath10k *ar, u32 msa_size)
- {
- 	struct device *dev = ar->dev;
-@@ -1740,10 +1805,19 @@ static int ath10k_snoc_probe(struct platform_device *pdev)
- 		goto err_fw_deinit;
- 	}
- 
-+	ret = ath10k_modem_init(ar);
-+	if (ret) {
-+		ath10k_err(ar, "failed to initialize modem notifier: %d\n", ret);
-+		goto err_qmi_deinit;
-+	}
-+
- 	ath10k_dbg(ar, ATH10K_DBG_SNOC, "snoc probe\n");
- 
- 	return 0;
- 
-+err_qmi_deinit:
-+	ath10k_qmi_deinit(ar);
-+
- err_fw_deinit:
- 	ath10k_fw_deinit(ar);
- 
-@@ -1771,6 +1845,7 @@ static int ath10k_snoc_free_resources(struct ath10k *ar)
- 	ath10k_fw_deinit(ar);
- 	ath10k_snoc_free_irq(ar);
- 	ath10k_snoc_release_resource(ar);
-+	ath10k_modem_deinit(ar);
- 	ath10k_qmi_deinit(ar);
- 	ath10k_core_destroy(ar);
- 
-diff --git a/drivers/net/wireless/ath/ath10k/snoc.h b/drivers/net/wireless/ath/ath10k/snoc.h
-index 5095d1893681..d986edc772f8 100644
---- a/drivers/net/wireless/ath/ath10k/snoc.h
-+++ b/drivers/net/wireless/ath/ath10k/snoc.h
-@@ -6,6 +6,8 @@
- #ifndef _SNOC_H_
- #define _SNOC_H_
- 
-+#include <linux/notifier.h>
-+
- #include "hw.h"
- #include "ce.h"
- #include "qmi.h"
-@@ -75,6 +77,8 @@ struct ath10k_snoc {
- 	struct clk_bulk_data *clks;
- 	size_t num_clks;
- 	struct ath10k_qmi *qmi;
-+	struct notifier_block nb;
-+	void *notifier;
- 	unsigned long flags;
- 	bool xo_cal_supported;
- 	u32 xo_cal_data;
+Thank you
 
-base-commit: 7d2a07b769330c34b4deabeed939325c77a7ec2f
+PS: for some reason Rafal's email address got turned into: "Rafał 
+Miłecki <zajec5@gmail.com>"@ci.codeaurora.org. You might want to look 
+into that as well.
 -- 
-https://chromeos.dev
-
+Florian
