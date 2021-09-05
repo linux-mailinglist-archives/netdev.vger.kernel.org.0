@@ -2,95 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12D86401121
+	by mail.lfdr.de (Postfix) with ESMTP id 5C1A0401122
 	for <lists+netdev@lfdr.de>; Sun,  5 Sep 2021 20:16:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238113AbhIESMi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Sep 2021 14:12:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42478 "EHLO
+        id S238126AbhIESMk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Sep 2021 14:12:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238112AbhIESMg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Sep 2021 14:12:36 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70270C0613C1
-        for <netdev@vger.kernel.org>; Sun,  5 Sep 2021 11:11:32 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id i13so2888377pjv.5
-        for <netdev@vger.kernel.org>; Sun, 05 Sep 2021 11:11:32 -0700 (PDT)
+        with ESMTP id S238112AbhIESMj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Sep 2021 14:12:39 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E2BBC061575
+        for <netdev@vger.kernel.org>; Sun,  5 Sep 2021 11:11:36 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id d3-20020a17090ae28300b0019629c96f25so3071201pjz.2
+        for <netdev@vger.kernel.org>; Sun, 05 Sep 2021 11:11:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=1X/NmGjbwTh3m0JJv07UyzNDXqUCUnf1x3RH1bjIMBs=;
-        b=fn9C31ZzaSptIW1y9t/vnYgD61hUuU2RVGqaQwaSasySroQYNSI5D6flszJTP+e+7p
-         Dt3VpOdLSGRRW4KSbWXTgwWfF5/O70yHkadOEd4HdN679KEg9/Ck2PCbEYnpJmyZluy6
-         KRTghQBT4PYDMI0ou/6o0OVpM4EC1aUDYe3kc=
+        bh=nikWqps1Cu6hl5mvWTSQn2dFuzKei25t4mc3AjH912w=;
+        b=dYBR9rBGXVR7XU7j9AmoCiSUf9zTg0Hl0P3UBVPYkdyduzcZaz+2SIUGp2oMd7Wfmz
+         Sr5M9uRlB2jEQ2Mqo5D5xacTkushy2nXfzdHg2/+hk6DHWZVL//cSMvnktdsTmFElhB0
+         4Q+LMBoFYyLPKni7xvmbieoj93++y2SaCeFy0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=1X/NmGjbwTh3m0JJv07UyzNDXqUCUnf1x3RH1bjIMBs=;
-        b=JSWb4+WCj0tUOgscCkC+Hy8+4Gh2V3XfnVqAXpzutMhaq7yGS1lMq8l/s7FSYvhyNb
-         OQEAOyFFaH+OBTPWM93jCl7K4ILOREvm4uGCc2X1+rljnWDytyq52WqJXsfM3BQHjjH7
-         mfengQ4gQZ2XlIMI7rh2tijp1iY7/KDL1t2LArhU0CrtLMl+W4jJu+BmEdcAjCsQV52O
-         SPiGB9zQwuHlRvF43pMjPOIJI/j/jumTJ+2EYok09P3jVZ86KYAOICp4jRBZGfmpu97v
-         NnjNAYb7e7g+K8IeF9+DkL+fCaGWJ44cNN8Mjgfx143bGFr8HE0muNkX72DgsmBEbUag
-         pRBw==
-X-Gm-Message-State: AOAM532d1c1x7weRaR+aVWMLvhmj0RnNPWxls4t5OfjAsgJwG3mwyzSa
-        ui3en9ib0UVW/cwQ0ii9CKW4WQ==
-X-Google-Smtp-Source: ABdhPJxh1d0PKBD4XiXG8taQjvsD5D8H06yYrfIdGJnPn2IIFWodqDD8B4nJZkSuYmCaTvZzs5M6Yg==
-X-Received: by 2002:a17:902:7e4d:b0:13a:8f:42d4 with SMTP id a13-20020a1709027e4d00b0013a008f42d4mr7769665pln.62.1630865491640;
-        Sun, 05 Sep 2021 11:11:31 -0700 (PDT)
+        bh=nikWqps1Cu6hl5mvWTSQn2dFuzKei25t4mc3AjH912w=;
+        b=XpEZpbR2oPyhL3sELRgw7fnoC2cnyoaxgVwcQzyazDicY2mHd31+oWBaBs3h+YRpvp
+         aDnzbdXVAU0z7yMi48QIqonQDWMP1ZfTdLfa1G4onzrk39JrSNU74TnlJyOBCxLWszRO
+         bRxIei5RKFLlDnsGFkxz1G7qqx6PMgl8cRZIjgC8vhRP9eISwHB7qShM8CH04C5LNGB7
+         lDyonv1VDjVAm0ucx0rGlyOgZGLq0SPCmcJwNwIduwvUpcXKlC/7+FspGCaIhbTTGfAh
+         70Ce0RlXXG9KwIa25oAONYVZccsnDdxy0V/u4Z/EyWyE5t0frn/elOy9S5vV0KFCLuOj
+         DOpg==
+X-Gm-Message-State: AOAM530HLAXSN7V8TYP+TGr1Xb0XhAUamGUmV2S1S7qGes2F6dkQtTLi
+        A1xvFAk0Z1tsr2XoqnnvwvzwOw==
+X-Google-Smtp-Source: ABdhPJyveefI41DcqL+r3ngU9IFZ7cAFSdA125C66TWkuQ092fd7Qi75ud4VVrzsmagctD2LRCeB7Q==
+X-Received: by 2002:a17:903:18d:b0:138:7d06:dbca with SMTP id z13-20020a170903018d00b001387d06dbcamr7684600plg.19.1630865495038;
+        Sun, 05 Sep 2021 11:11:35 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id d13sm5058115pfn.114.2021.09.05.11.11.28
+        by smtp.gmail.com with ESMTPSA id d13sm5058115pfn.114.2021.09.05.11.11.32
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 05 Sep 2021 11:11:31 -0700 (PDT)
+        Sun, 05 Sep 2021 11:11:34 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, edwin.peer@broadcom.com,
         gospo@broadcom.com
-Subject: [PATCH net 3/5] bnxt_en: Fix asic.rev in devlink dev info command
-Date:   Sun,  5 Sep 2021 14:10:57 -0400
-Message-Id: <1630865459-19146-4-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net 4/5] bnxt_en: Fix UDP tunnel logic
+Date:   Sun,  5 Sep 2021 14:10:58 -0400
+Message-Id: <1630865459-19146-5-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1630865459-19146-1-git-send-email-michael.chan@broadcom.com>
 References: <1630865459-19146-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000575e6505cb437651"
+        boundary="0000000000008e0c6805cb437691"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000575e6505cb437651
+--0000000000008e0c6805cb437691
 
-The current asic.rev is incomplete and does not include the metal
-revision.  Add the metal revision and decode the complete asic
-revision into the more common and readable form (A0, B0, etc).
+The current logic assumes that when the driver sends the message to the
+firmware to add the VXLAN or Geneve port, the firmware will never fail
+the operation.  The UDP ports are always stored and are used to check
+the tunnel packets in .ndo_features_check().  These tunnnel packets
+will fail to offload on the transmit side if firmware fails the call to
+add the UDP ports.
 
-Fixes: 7154917a12b2 ("bnxt_en: Refactor bnxt_dl_info_get().")
-Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
-Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
+To fix the problem, bp->vxlan_port and bp->nge_port will only be set to
+the offloaded ports when the HWRM_TUNNEL_DST_PORT_ALLOC firmware call
+succeeds.  When deleting a UDP port, we check that the port was
+previously added successfuly first by checking the FW ID.
+
+Fixes: 1698d600b361 ("bnxt_en: Implement .ndo_features_check().")
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 28 ++++++++++++++---------
+ 1 file changed, 17 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-index cb20e627282a..9576547df4ab 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-@@ -477,7 +477,7 @@ static int bnxt_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
- 		return rc;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index acaf1e0f049e..40a390652d8d 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -4641,6 +4641,13 @@ static int bnxt_hwrm_tunnel_dst_port_free(struct bnxt *bp, u8 tunnel_type)
+ 	struct hwrm_tunnel_dst_port_free_input *req;
+ 	int rc;
  
- 	ver_resp = &bp->ver_resp;
--	sprintf(buf, "%X", ver_resp->chip_rev);
-+	sprintf(buf, "%c%d", 'A' + ver_resp->chip_rev, ver_resp->chip_metal);
- 	rc = bnxt_dl_info_put(bp, req, BNXT_VERSION_FIXED,
- 			      DEVLINK_INFO_VERSION_GENERIC_ASIC_REV, buf);
++	if (tunnel_type == TUNNEL_DST_PORT_FREE_REQ_TUNNEL_TYPE_VXLAN &&
++	    bp->vxlan_fw_dst_port_id == INVALID_HW_RING_ID)
++		return 0;
++	if (tunnel_type == TUNNEL_DST_PORT_FREE_REQ_TUNNEL_TYPE_GENEVE &&
++	    bp->nge_fw_dst_port_id == INVALID_HW_RING_ID)
++		return 0;
++
+ 	rc = hwrm_req_init(bp, req, HWRM_TUNNEL_DST_PORT_FREE);
  	if (rc)
+ 		return rc;
+@@ -4650,10 +4657,12 @@ static int bnxt_hwrm_tunnel_dst_port_free(struct bnxt *bp, u8 tunnel_type)
+ 	switch (tunnel_type) {
+ 	case TUNNEL_DST_PORT_FREE_REQ_TUNNEL_TYPE_VXLAN:
+ 		req->tunnel_dst_port_id = cpu_to_le16(bp->vxlan_fw_dst_port_id);
++		bp->vxlan_port = 0;
+ 		bp->vxlan_fw_dst_port_id = INVALID_HW_RING_ID;
+ 		break;
+ 	case TUNNEL_DST_PORT_FREE_REQ_TUNNEL_TYPE_GENEVE:
+ 		req->tunnel_dst_port_id = cpu_to_le16(bp->nge_fw_dst_port_id);
++		bp->nge_port = 0;
+ 		bp->nge_fw_dst_port_id = INVALID_HW_RING_ID;
+ 		break;
+ 	default:
+@@ -4691,10 +4700,12 @@ static int bnxt_hwrm_tunnel_dst_port_alloc(struct bnxt *bp, __be16 port,
+ 
+ 	switch (tunnel_type) {
+ 	case TUNNEL_DST_PORT_ALLOC_REQ_TUNNEL_TYPE_VXLAN:
++		bp->vxlan_port = port;
+ 		bp->vxlan_fw_dst_port_id =
+ 			le16_to_cpu(resp->tunnel_dst_port_id);
+ 		break;
+ 	case TUNNEL_DST_PORT_ALLOC_REQ_TUNNEL_TYPE_GENEVE:
++		bp->nge_port = port;
+ 		bp->nge_fw_dst_port_id = le16_to_cpu(resp->tunnel_dst_port_id);
+ 		break;
+ 	default:
+@@ -8223,12 +8234,10 @@ static int bnxt_hwrm_port_qstats_ext(struct bnxt *bp, u8 flags)
+ 
+ static void bnxt_hwrm_free_tunnel_ports(struct bnxt *bp)
+ {
+-	if (bp->vxlan_fw_dst_port_id != INVALID_HW_RING_ID)
+-		bnxt_hwrm_tunnel_dst_port_free(
+-			bp, TUNNEL_DST_PORT_FREE_REQ_TUNNEL_TYPE_VXLAN);
+-	if (bp->nge_fw_dst_port_id != INVALID_HW_RING_ID)
+-		bnxt_hwrm_tunnel_dst_port_free(
+-			bp, TUNNEL_DST_PORT_FREE_REQ_TUNNEL_TYPE_GENEVE);
++	bnxt_hwrm_tunnel_dst_port_free(bp,
++		TUNNEL_DST_PORT_FREE_REQ_TUNNEL_TYPE_VXLAN);
++	bnxt_hwrm_tunnel_dst_port_free(bp,
++		TUNNEL_DST_PORT_FREE_REQ_TUNNEL_TYPE_GENEVE);
+ }
+ 
+ static int bnxt_set_tpa(struct bnxt *bp, bool set_tpa)
+@@ -12627,13 +12636,10 @@ static int bnxt_udp_tunnel_sync(struct net_device *netdev, unsigned int table)
+ 	unsigned int cmd;
+ 
+ 	udp_tunnel_nic_get_port(netdev, table, 0, &ti);
+-	if (ti.type == UDP_TUNNEL_TYPE_VXLAN) {
+-		bp->vxlan_port = ti.port;
++	if (ti.type == UDP_TUNNEL_TYPE_VXLAN)
+ 		cmd = TUNNEL_DST_PORT_FREE_REQ_TUNNEL_TYPE_VXLAN;
+-	} else {
+-		bp->nge_port = ti.port;
++	else
+ 		cmd = TUNNEL_DST_PORT_FREE_REQ_TUNNEL_TYPE_GENEVE;
+-	}
+ 
+ 	if (ti.port)
+ 		return bnxt_hwrm_tunnel_dst_port_alloc(bp, ti.port, cmd);
 -- 
 2.18.1
 
 
---000000000000575e6505cb437651
+--0000000000008e0c6805cb437691
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -161,13 +231,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIJY3jQAWbN5X90/oSKLTH2B7NAzDkE+/
-ldlJNmrT4K9FMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDkw
-NTE4MTEzMlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIHPcinspoXQx62oIEQZh2AiX+XqJIEos
+693/ka6dizyeMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDkw
+NTE4MTEzNVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQAuwWh4lAkJHFkVfA5r9+oe5XlEw2gqSaRRhuD7D+5hyzp+XyQx
-Jv9UfyuiM3H4yql0Clisrr9kuPnA7UZ8VX16VJubYAQOl6WsauYCi0b9nKh0RcGexeeBpUeSh4Fb
-+AI3NXQ2uGz+lJOsN/ZE0guMry4H/ETRWNE/UZjzY+wQVODYIe65IaSY60nyJoW3cbSYcnob+DaL
-UpSXCNWkA87feqL0v2sXunZVDHhkiKVRD31mL7gHY3ROira0KNrdMpTMEtjXffAUU/bs6XpY9Yz9
-0gPzJWgsaTKbDCD81SLsxtGBe4cQ1P70+4XyYNKOKFVS+IBk5hxTbZqpEHK++FwN
---000000000000575e6505cb437651--
+ATANBgkqhkiG9w0BAQEFAASCAQDXlWU/nicj2bOoDRwT6f9NEShgoowlzIJqX+J5zrfY3KDR0pvd
+/k/XwH+kM2V1zkD3r2723zte0r++ew177SclO4vnDHM2TuwHVkMKhVFs0Czpq5eTcTlY/feJCLdH
+tFe5Mgiy1SK4b8XolIiKKMQEU6PPqKvp4S3dTEqMdSFid0eHvTa2JnIMYccxku4EVOUTlS0fLqcs
+dX+D2tpk4N3h9ZWjJ4ljLFJ0Z+Fz1yH0JgfStYjB3d3lucYC6/qz+jDP5yFdzHBtSpOzD2UKjCte
+Otkfu5EcfGQs1GPQi97TDtWjKlR6GIuO15FwaIKhZdrHPGR/CLZHJRVLJmUY5SKr
+--0000000000008e0c6805cb437691--
