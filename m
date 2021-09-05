@@ -2,109 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5769E400E8F
-	for <lists+netdev@lfdr.de>; Sun,  5 Sep 2021 09:24:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3883F400E9D
+	for <lists+netdev@lfdr.de>; Sun,  5 Sep 2021 09:50:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236394AbhIEHYo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Sep 2021 03:24:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43310 "EHLO mail.kernel.org"
+        id S235707AbhIEHvS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Sep 2021 03:51:18 -0400
+Received: from mout.gmx.net ([212.227.17.20]:55495 "EHLO mout.gmx.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236152AbhIEHYn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 5 Sep 2021 03:24:43 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EBB5F60F4A;
-        Sun,  5 Sep 2021 07:23:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1630826620;
-        bh=Bl5XjlnUT7ec37WklJ+pflfpCbR6md7qSYkSRa9o8jA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=BXlXQaXhmiIky1Oq2A9b/ufFM2/vf1hpEf5fSuIQrVz/qGyvryVOsUIlA/ckyZI0j
-         2oeP3sspHJK24YJqm3hbylunwXta6kk4bdCd70Q045pulWAp6g1mYgaeYbJTl2fw9p
-         ABgXECNtVmGb4NJjD3K1fWnf7Qs/hUjj0Jn6aWAENGxaz43zgo0bbx3MtVjEorrITa
-         ob9ESVjWcVl41aEDWPMGzGi7Qn6WiLIcNAZFf/MUxCgs+W6FsuMoVGVE+ecsAxOuAk
-         NvXnCAluF+D5JBCabbR+rv4kPSjMvTC1IaVV98l8E3B3fvEpU+RGrPDBqdPdncaU0G
-         b87lPdbZEhvEA==
-Date:   Sun, 5 Sep 2021 10:23:36 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Yongxin Liu <yongxin.liu@windriver.com>
-Cc:     david.m.ertman@intel.com, shiraz.saleem@intel.com,
-        anthony.l.nguyen@intel.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net,
-        jesse.brandeburg@intel.com, intel-wired-lan@lists.osuosl.org,
-        kuba@kernel.org
-Subject: Re: [PATCH net] ice: check whether AUX devices/drivers are supported
- in ice_rebuild
-Message-ID: <YTRweH4JMbzUtxLf@unreal>
-References: <20210903012500.39407-1-yongxin.liu@windriver.com>
+        id S229599AbhIEHvS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 5 Sep 2021 03:51:18 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1630828204;
+        bh=v00yWsL4XEVZ7bXh82uXAMAbo31Pik3HWj63p8nK5ns=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=apyYQxqSCwjarPgAD2Z1HvI3n2Kfe3wUZ+nPu1NK+8/cdCXbvBuPsBR1olC7ZsFmO
+         AqehUNL5LG4Pw1VHxuRhLiOGAfoTNdpAWx8DWqDLI8xlcKgk0bv1Aw+aWBY3Xnx6nm
+         efF1KR3w49g1agVJgL/67Xol8v1XoKyxbDkvz3Mw=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from localhost.localdomain ([79.150.72.99]) by mail.gmx.net
+ (mrgmx104 [212.227.17.174]) with ESMTPSA (Nemesis) id
+ 1MhlGq-1mrhoy112O-00dp8K; Sun, 05 Sep 2021 09:50:04 +0200
+From:   Len Baker <len.baker@gmx.com>
+To:     Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Len Baker <len.baker@gmx.com>, Kees Cook <keescook@chromium.org>,
+        Yevgeny Kliteynik <kliteyn@nvidia.com>,
+        Alex Vesker <valex@nvidia.com>,
+        Erez Shitrit <erezsh@nvidia.com>,
+        Jianbo Liu <jianbol@nvidia.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-hardening@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net/mlx5: DR, Prefer kcalloc over open coded arithmetic
+Date:   Sun,  5 Sep 2021 09:49:36 +0200
+Message-Id: <20210905074936.15723-1-len.baker@gmx.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210903012500.39407-1-yongxin.liu@windriver.com>
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:tMmxEffSTzXE4Bi0GOPfWgJ6Vy1HEY4xMiDcYJTvywx5Mza37MF
+ PmNQJkymVUswaYdAYscm/4NDeeMcF+tHqrKrHlxbCfIJUzJMJjV6UbrnE68DCivadHpJwSG
+ dKo4rqy8zC547KFXwBL//PVXo/AGBJK1BycTM72eCa7IVpIs5erhyQI2JeSS/IsH8p+WrUV
+ Vk/ZxgwCMV33Hu6FJBSvg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:NC7nl/kio1g=:Lyy8rF7rv2sr05B4FXhdIA
+ RchAvfWvhDd+il/3FeEXeE7E3zyTbXFYQG7DSf8heIvW9VnmoxYjUiQ7cJcuB2JWQsZ96a4Fh
+ 1f0QIeGcceqQychifaFMZwELZeGPwlru3cfS1x+cb7ucAZIiL16cLvic1wrEuy+Uq1poRSxvH
+ N+5Y0N3bk/z8/pnbAHuvNexa7VbTe3382V4eDWTODXeSndH5LN+jQsX3KNIOJeAhHP51ns7H/
+ a1LI08HwoH+h+Ze+lqz6kp841tCzsXXvDE0q8GKurisrQDW/RFS9VGminFczEq8bO41reKZ7M
+ xFtTidXgUV3aM/W1sdYQ5+2iqyoOeXaWjiEwp86z/ZrB/QxAZhbiXqIEEbe1vkHsIPTFo/nAc
+ 7HRnjxOKk0Oev4JdvQoF/+e6aN1vdV5g69TV5WuDhFt0zqsp2yXf+P7sbdv25rCOsQRyh/utc
+ U1FX7spXejq+zx4shI4NYplzfQEeXgTTUii/Xh5D19cONFZO+unmFTOb1huXa/sxeLduyfPUH
+ SKRuf79unO4jyJkuxQ45tJuRKfsL0apsMWrMdg2hhPFolOAHC5CrU6Y8GnyirTrZbEGTIj5KO
+ Q26gPBJY3oU07lO+C/6yKENcopGMMtAqWr28pzovoCeolH9dBWS7rv3vR5nw73Ke+Y9591E+N
+ duLeSM42IEG4mYGg5NEjEVkkSrd/W4zkWlqA90EFyuOPBf8iRgX8R+pBSkzy2nY/SF8wwqTMZ
+ H/BkNOWdJdYO5jPah2CMPCVNZxr4wfEidBA9aAyHsjS7USO1qyGra+XF4dshjzEzH7X1euFjo
+ /6lf/4/LJF6r+0flOsVTlVDeNg9gsSeVkITEDAk2AA3Tx1GjMRgPWnqAC+QMaOOpcOXbfvqOr
+ hItBhmP4c5kYmbLChFI/b2BKyujxgcFZnN/fKa3qolfn/SneNEKQYHSj0nRUX3Iq5Os76JFOc
+ 6vpCCDhMcwSdHPHS1IKdXuIDttMb/2jXTal3rf9OzaGGJ7nzgZTXuPhtmRPtBy2U6CcX4F9X+
+ 4krhITW26G2x8nipTFPbqbjfdV9XbA3+nofjvPzTd6FBaOMevHAjJ9c0gqrnlQUJAGMK/Lhdj
+ NET18qMvqsJ1QwqtnoeEX0NvMkcDTkhhzTbVGuIjQzgZ4PjxoFXmfW+UA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 03, 2021 at 09:25:00AM +0800, Yongxin Liu wrote:
-> In ice_rebuild(), check whether AUX devices/drivers are supported or not
-> before calling ice_plug_aux_dev().
-> 
-> Fix the following call trace, if RDMA functionality is not available.
-> 
->   auxiliary ice.roce.0: adding auxiliary device failed!: -17
->   sysfs: cannot create duplicate filename '/bus/auxiliary/devices/ice.roce.0'
->   Workqueue: ice ice_service_task [ice]
->   Call Trace:
->    dump_stack_lvl+0x38/0x49
->    dump_stack+0x10/0x12
->    sysfs_warn_dup+0x5b/0x70
->    sysfs_do_create_link_sd.isra.2+0xc8/0xd0
->    sysfs_create_link+0x25/0x40
->    bus_add_device+0x6d/0x110
->    device_add+0x49d/0x940
->    ? _printk+0x52/0x6e
->    ? _printk+0x52/0x6e
->    __auxiliary_device_add+0x60/0xc0
->    ice_plug_aux_dev+0xd3/0xf0 [ice]
->    ice_rebuild+0x27d/0x510 [ice]
->    ice_do_reset+0x51/0xe0 [ice]
->    ice_service_task+0x108/0xe70 [ice]
->    ? __switch_to+0x13b/0x510
->    process_one_work+0x1de/0x420
->    ? apply_wqattrs_cleanup+0xc0/0xc0
->    worker_thread+0x34/0x400
->    ? apply_wqattrs_cleanup+0xc0/0xc0
->    kthread+0x14d/0x180
->    ? set_kthread_struct+0x40/0x40
->    ret_from_fork+0x1f/0x30
-> 
-> Fixes: f9f5301e7e2d ("ice: Register auxiliary device to provide RDMA")
-> Signed-off-by: Yongxin Liu <yongxin.liu@windriver.com>
-> ---
->  drivers/net/ethernet/intel/ice/ice_main.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-> index 0d6c143f6653..98cc708e9517 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_main.c
-> +++ b/drivers/net/ethernet/intel/ice/ice_main.c
-> @@ -6466,7 +6466,9 @@ static void ice_rebuild(struct ice_pf *pf, enum ice_reset_req reset_type)
->  	/* if we get here, reset flow is successful */
->  	clear_bit(ICE_RESET_FAILED, pf->state);
->  
-> -	ice_plug_aux_dev(pf);
-> +	if (ice_is_aux_ena(pf))
-> +		ice_plug_aux_dev(pf);
-> +
+As noted in the "Deprecated Interfaces, Language Features, Attributes,
+and Conventions" documentation [1], size calculations (especially
+multiplication) should not be performed in memory allocator (or similar)
+function arguments due to the risk of them overflowing. This could lead
+to values wrapping around and a smaller allocation being made than the
+caller was expecting. Using those allocations could lead to linear
+overflows of heap memory and other misbehaviors.
 
-The change is ok, but it hints that auxiliary bus is used horribly wrong
-in this driver. In proper implementation, which should rely on driver/core,
-every subdriver like ice.eth, ice.roce e.t.c is supposed to be retriggered
-by the code and shouldn't  ave "if (ice_is_aux_ena(pf))" checks.
+So, refactor the code a bit to use the purpose specific kcalloc()
+function instead of the argument size * count in the kzalloc() function.
 
-Thanks
+[1] https://www.kernel.org/doc/html/v5.14/process/deprecated.html#open-cod=
+ed-arithmetic-in-allocator-arguments
 
->  	return;
->  
->  err_vsi_rebuild:
-> -- 
-> 2.14.5
-> 
+Signed-off-by: Len Baker <len.baker@gmx.com>
+=2D--
+ .../net/ethernet/mellanox/mlx5/core/steering/dr_action.c  | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c =
+b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
+index 6475ba35cf6b..e8957dad3bb1 100644
+=2D-- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
+@@ -716,6 +716,7 @@ mlx5dr_action_create_mult_dest_tbl(struct mlx5dr_domai=
+n *dmn,
+ 	struct mlx5dr_action *action;
+ 	bool reformat_req =3D false;
+ 	u32 num_of_ref =3D 0;
++	u32 ref_act_cnt;
+ 	int ret;
+ 	int i;
+
+@@ -724,11 +725,14 @@ mlx5dr_action_create_mult_dest_tbl(struct mlx5dr_dom=
+ain *dmn,
+ 		return NULL;
+ 	}
+
+-	hw_dests =3D kzalloc(sizeof(*hw_dests) * num_of_dests, GFP_KERNEL);
++	hw_dests =3D kcalloc(num_of_dests, sizeof(*hw_dests), GFP_KERNEL);
+ 	if (!hw_dests)
+ 		return NULL;
+
+-	ref_actions =3D kzalloc(sizeof(*ref_actions) * num_of_dests * 2, GFP_KER=
+NEL);
++	if (unlikely(check_mul_overflow(num_of_dests, 2u, &ref_act_cnt)))
++		goto free_hw_dests;
++
++	ref_actions =3D kcalloc(ref_act_cnt, sizeof(*ref_actions), GFP_KERNEL);
+ 	if (!ref_actions)
+ 		goto free_hw_dests;
+
+=2D-
+2.25.1
+
