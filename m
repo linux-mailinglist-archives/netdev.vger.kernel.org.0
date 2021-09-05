@@ -2,76 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42DBE40116D
-	for <lists+netdev@lfdr.de>; Sun,  5 Sep 2021 21:50:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58245401174
+	for <lists+netdev@lfdr.de>; Sun,  5 Sep 2021 22:06:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236670AbhIETvK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Sep 2021 15:51:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44106 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234400AbhIETvK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 5 Sep 2021 15:51:10 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 8AB1960F9D;
-        Sun,  5 Sep 2021 19:50:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1630871406;
-        bh=WUen2AYBkRSCqZov2myIdmekgMpwiKnOen85YlRPNq4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=SC6+lq+APCBBV3XgspY5lxpYCIvPu/CNQOmGGN5R+Brd74fJYpPsEGRys/srVm1LD
-         DvXCEDNnydehKOD/rXzez5N6LnQsXz/OQ1x8AYYX86+d4ItZZdjHki/WwS6+6kusqK
-         6/0rPdqoEIWDNRm82fCvXVO8i3iA0F02U/3IhAJ4ywy6VpeITuuM7wEU+cvLb9Mzno
-         6mfYiYftNSHB1ToKRTHT1ITiokelv8T/+36djfMKZ+50ZNFG7Gcp4+oXrQNeA7CKT9
-         U+HtqCKyawz0PF2ud+zXsp2s4xqQ3aFgJCAf7xMT1Eysa/MstyOoIHZ5BHK4r+LUu2
-         ZR7rIchhpX9rA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 7E59F60A49;
-        Sun,  5 Sep 2021 19:50:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S235820AbhIEUFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Sep 2021 16:05:18 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:52037 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232635AbhIEUFK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Sep 2021 16:05:10 -0400
+Received: by mail-io1-f72.google.com with SMTP id i11-20020a056602134b00b005be82e3028bso3663709iov.18
+        for <netdev@vger.kernel.org>; Sun, 05 Sep 2021 13:04:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=u7MTmHe0EZ9aA9LzZAxZXm6GQj3ww9LG3NsEE4FMIzE=;
+        b=jMAvnP0Hk72SawrVJ1eJJ5dwQoGFzcrT2SaoyvmWnc5m4ks7rDHQkNFoczFhFpscnO
+         cdu2ltq91pgac3F47CmSVWd8HFpFWVwUTIZL3eG2qVqrUb31bODAY3/8gGbWj5g6cRD/
+         PFWMUhVjQGuLfBMGZhwIAKnxl7p4pfC5CwvSVRHrWmuM65mPLUPnvV4BoC2npiFExe89
+         90EXzgqCvYRCAw93eBExpZjJxiD2qRoBaSiFotgASsu2zsisnea6byZlcbBI8fEdqLdE
+         DSWUpPNYVWr796kC+vgGqFSA39rkgQstMwijsbF1kYyGwupk+w3Zr3aAuMFx5GATYFS+
+         dMqQ==
+X-Gm-Message-State: AOAM5335FRw5VNRbgKFhZ56zHTB6zuX3HEuC+VupFTVcdVx0FIsxzVwc
+        2Y6rdZVGrRqUQx0Nkqs6oM73e/ip2Ux/qVxlcXjsxza5GIFo
+X-Google-Smtp-Source: ABdhPJw8uxsAVTc7y/O2Nho+1GgIvGWLtmslQzKpOBn86Tsfrhp/WIPdMKxCklB4s2cNvBUTeZJMFKunrHzUglETpZQX+qZo7Qz/
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/5] bnxt_en: Bug fixes
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163087140651.29855.15194980262589527468.git-patchwork-notify@kernel.org>
-Date:   Sun, 05 Sep 2021 19:50:06 +0000
-References: <1630865459-19146-1-git-send-email-michael.chan@broadcom.com>
-In-Reply-To: <1630865459-19146-1-git-send-email-michael.chan@broadcom.com>
-To:     Michael Chan <michael.chan@broadcom.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        edwin.peer@broadcom.com, gospo@broadcom.com
+X-Received: by 2002:a6b:7b4b:: with SMTP id m11mr7043393iop.165.1630872246693;
+ Sun, 05 Sep 2021 13:04:06 -0700 (PDT)
+Date:   Sun, 05 Sep 2021 13:04:06 -0700
+In-Reply-To: <0000000000002c756105cb201ef1@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000f032a605cb450801@google.com>
+Subject: Re: [syzbot] WARNING: kmalloc bug in bpf_check
+From:   syzbot <syzbot+f3e749d4c662818ae439@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, andrii@kernel.org, ast@kernel.org,
+        bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
+        daniel@iogearbox.net, davem@davemloft.net, eric.dumazet@gmail.com,
+        hawk@kernel.org, john.fastabend@gmail.com, kafai@fb.com,
+        kpsingh@kernel.org, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, nathan@kernel.org, ndesaulniers@google.com,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, torvalds@linux-foundation.org,
+        w@1wt.eu, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+syzbot has bisected this issue to:
 
-This series was applied to netdev/net.git (refs/heads/master):
+commit 7661809d493b426e979f39ab512e3adf41fbcc69
+Author: Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed Jul 14 16:45:49 2021 +0000
 
-On Sun,  5 Sep 2021 14:10:54 -0400 you wrote:
-> This series includes 3 fixes related to devlink firmware and chip
-> versions.  The other 2 patches fix a UDP tunneling issue and an
-> error recovery issue.
-> 
-> Edwin Peer (2):
->   bnxt_en: fix stored FW_PSID version masks
->   bnxt_en: fix read of stored FW_PSID version on P5 devices
-> 
-> [...]
+    mm: don't allow oversized kvmalloc() calls
 
-Here is the summary with links:
-  - [net,1/5] bnxt_en: fix stored FW_PSID version masks
-    https://git.kernel.org/netdev/net/c/1656db67233e
-  - [net,2/5] bnxt_en: fix read of stored FW_PSID version on P5 devices
-    https://git.kernel.org/netdev/net/c/beb55fcf950f
-  - [net,3/5] bnxt_en: Fix asic.rev in devlink dev info command
-    https://git.kernel.org/netdev/net/c/6fdab8a3ade2
-  - [net,4/5] bnxt_en: Fix UDP tunnel logic
-    https://git.kernel.org/netdev/net/c/7ae9dc356f24
-  - [net,5/5] bnxt_en: Fix possible unintended driver initiated error recovery
-    https://git.kernel.org/netdev/net/c/1b2b91831983
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=13136b83300000
+start commit:   a9c9a6f741cd Merge tag 'scsi-misc' of git://git.kernel.org..
+git tree:       upstream
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=10936b83300000
+console output: https://syzkaller.appspot.com/x/log.txt?x=17136b83300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=c84ed2c3f57ace
+dashboard link: https://syzkaller.appspot.com/bug?extid=f3e749d4c662818ae439
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11e4cdf5300000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14ef3b33300000
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Reported-by: syzbot+f3e749d4c662818ae439@syzkaller.appspotmail.com
+Fixes: 7661809d493b ("mm: don't allow oversized kvmalloc() calls")
 
-
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
