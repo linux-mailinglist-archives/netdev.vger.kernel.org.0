@@ -2,85 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A4C540111E
+	by mail.lfdr.de (Postfix) with ESMTP id 73DD540111F
 	for <lists+netdev@lfdr.de>; Sun,  5 Sep 2021 20:16:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237398AbhIESM0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Sep 2021 14:12:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42422 "EHLO
+        id S238044AbhIESMa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Sep 2021 14:12:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229865AbhIESMZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Sep 2021 14:12:25 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B456C061575
-        for <netdev@vger.kernel.org>; Sun,  5 Sep 2021 11:11:22 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id gp20-20020a17090adf1400b00196b761920aso3060130pjb.3
-        for <netdev@vger.kernel.org>; Sun, 05 Sep 2021 11:11:22 -0700 (PDT)
+        with ESMTP id S229865AbhIESM3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Sep 2021 14:12:29 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2128C061575
+        for <netdev@vger.kernel.org>; Sun,  5 Sep 2021 11:11:25 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id q68so4393010pga.9
+        for <netdev@vger.kernel.org>; Sun, 05 Sep 2021 11:11:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=0+De8X+0II+FvED4Yi1L/vYY22Misuf5YIOS4C/nU1Y=;
-        b=eCUdFN9/79bTtozuTFCUue761i6pbVNvVMdO/MbaWSiYHJ7xpxuWQ3aCwjTLSGNzAz
-         8+B7ZD+NWMsFJ3P38Ey04MQ4oDnD6XEvz8IdKaL7Un5koY0pLhGZzpr0D5ojvF3gBlNs
-         GYo2sx+ZRIOIx4QUuErVYNBSEKO+DO4I6re20=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=Fj5mtpZe88Wwv5VgWgIi8D3QpGXwYNdx03aAkT0VBOA=;
+        b=U/B/zq9TMjG0VBfUOmam99WKBE/+koPgxc+5h2Ix5PryH7Xc33fruZYeiYhpVEbzHE
+         eQLF+RRijPAj00tu6p3mCrzaLD9lntBCSiCNgaejWOs9y7snPp2xPVjPqFPzMleOcJls
+         +FqH3gFR35qwD/IXN+54L6+YGs9SpBZZI71Q4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=0+De8X+0II+FvED4Yi1L/vYY22Misuf5YIOS4C/nU1Y=;
-        b=WZUw9wq0/KbpsjmGiu9/CosDQViKZYe4FzONifGYhIlYy8QAjVIVea0o83e4YCw/xt
-         TU76pdXOrbIaFDhtTcw19/YXPOazEvsL3JfSrZczjlSO1yM99HJp07YXGDxwncwvSP0i
-         hfcakrn1Z0DtQPD3kzECuHO+xgnkj8uIfRDkVUGgv4imDIPzdODVP/YjONiDEh9is2Yy
-         W1suQsBW7o9NJcojEI7XbofqLPDyvgtnOAZqJLt6B4L8Z5qKQSAnws/7xpUCUr6YPYuy
-         cZVRRPGXpdJhe5xbhEgTCJCxM0HXZghgoCUslFblOMDxs3SeU/zcULDwHbs8WsGtAeUd
-         ZRJw==
-X-Gm-Message-State: AOAM532+zmzRCXeavomdOVT+aPy7bbUrywCiNM3ZQp4mP1Zy+yr6vwCw
-        URUnlp67K1b98/sIM5fvTrH+9LV/5xmlcw==
-X-Google-Smtp-Source: ABdhPJzl7IKcJuhIFs64psGYcpvdkugWufsVjX1m2jp0BUxR6B8S7QmkBLv4M74uVqmUoStZIOQFLw==
-X-Received: by 2002:a17:902:dac6:b0:138:85a7:ef80 with SMTP id q6-20020a170902dac600b0013885a7ef80mr7616189plx.45.1630865481278;
-        Sun, 05 Sep 2021 11:11:21 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=Fj5mtpZe88Wwv5VgWgIi8D3QpGXwYNdx03aAkT0VBOA=;
+        b=Y6H630VeM8Ibj6mSr54tGmUAlDaRvix1iUWuFhZmQbipLNSN9LL1mPtwF+I7ESN8pb
+         3fTiOWR1at7q+naFDofjjAzjBDemQXIgjp8/vySXEHlLZiedFQ0VqXu9dSJ+6EqlV1QY
+         6dPzUrUjJHPTMM5F/p5Y3MevCnydHQTUPBrNMpiU2G1IzC/Py7mtPDHjErznrDshL8+n
+         ZZyYudzynnqNcfv8ZMeVBCl3ieCoCp6UnHavSWr8/peCGaLQqMBZmzxpiZJJCkniX4W6
+         svzUKS8ef9ruzVrC+Hgy17e9U5j4Lv+KcjEhLn0a9wVuRZRhx/V1cCeIUCNtUjo8uVHs
+         Zg7g==
+X-Gm-Message-State: AOAM533Cd0Psb9vRp2Sb7mmzlnfs462/A6nT+jRs/iNESdL5ABdCT4Hq
+        WOTFSDzUeCSy4LeaXb5mkIbasw==
+X-Google-Smtp-Source: ABdhPJzyEWhlgsDijRu+zxkuulp4BumXd/ZP8Vu5GXv/YQkbKzy0eyvqnedFLW0h5o/KWJqCgUmglg==
+X-Received: by 2002:aa7:8097:0:b029:3cd:b205:cfe9 with SMTP id v23-20020aa780970000b02903cdb205cfe9mr8283172pff.1.1630865484837;
+        Sun, 05 Sep 2021 11:11:24 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id d13sm5058115pfn.114.2021.09.05.11.11.18
+        by smtp.gmail.com with ESMTPSA id d13sm5058115pfn.114.2021.09.05.11.11.21
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 05 Sep 2021 11:11:20 -0700 (PDT)
+        Sun, 05 Sep 2021 11:11:24 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, edwin.peer@broadcom.com,
         gospo@broadcom.com
-Subject: [PATCH net 0/5] bnxt_en: Bug fixes
-Date:   Sun,  5 Sep 2021 14:10:54 -0400
-Message-Id: <1630865459-19146-1-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net 1/5] bnxt_en: fix stored FW_PSID version masks
+Date:   Sun,  5 Sep 2021 14:10:55 -0400
+Message-Id: <1630865459-19146-2-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1630865459-19146-1-git-send-email-michael.chan@broadcom.com>
+References: <1630865459-19146-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000bb581805cb4375ea"
+        boundary="000000000000f080fa05cb437599"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000bb581805cb4375ea
+--000000000000f080fa05cb437599
 
-This series includes 3 fixes related to devlink firmware and chip
-versions.  The other 2 patches fix a UDP tunneling issue and an
-error recovery issue.
+From: Edwin Peer <edwin.peer@broadcom.com>
 
-Edwin Peer (2):
-  bnxt_en: fix stored FW_PSID version masks
-  bnxt_en: fix read of stored FW_PSID version on P5 devices
+The FW_PSID version components are 8 bits wide, not 4.
 
-Michael Chan (3):
-  bnxt_en: Fix asic.rev in devlink dev info command
-  bnxt_en: Fix UDP tunnel logic
-  bnxt_en: Fix possible unintended driver initiated error recovery
+Fixes: db28b6c77f40 ("bnxt_en: Fix devlink info's stored fw.psid version format.")
+Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 53 ++++++++++++-------
- .../net/ethernet/broadcom/bnxt/bnxt_devlink.c | 51 ++++++++++++------
- .../net/ethernet/broadcom/bnxt/bnxt_devlink.h |  4 +-
- 3 files changed, 72 insertions(+), 36 deletions(-)
-
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+index 1423cc617d93..01c21d75f4d4 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+@@ -478,8 +478,8 @@ static int bnxt_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
+ 	if (BNXT_PF(bp) && !bnxt_hwrm_get_nvm_cfg_ver(bp, &nvm_cfg_ver)) {
+ 		u32 ver = nvm_cfg_ver.vu32;
+ 
+-		sprintf(buf, "%d.%d.%d", (ver >> 16) & 0xf, (ver >> 8) & 0xf,
+-			ver & 0xf);
++		sprintf(buf, "%d.%d.%d", (ver >> 16) & 0xff, (ver >> 8) & 0xff,
++			ver & 0xff);
+ 		rc = bnxt_dl_info_put(bp, req, BNXT_VERSION_STORED,
+ 				      DEVLINK_INFO_VERSION_GENERIC_FW_PSID,
+ 				      buf);
 -- 
 2.18.1
 
 
---000000000000bb581805cb4375ea
+--000000000000f080fa05cb437599
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -151,13 +162,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIIMg0t+27urcnoQeVsahEq0SMfSwxiEJ
-oUs/y+1EBMYuMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDkw
-NTE4MTEyMlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIHJuWdpX9c4/nRPW9nHIY0IrHlzERE5u
+0b0Df7WGYDw2MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDkw
+NTE4MTEyNVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQBKycU3JJ8O56Z/VdqiLVkFJzRBTa5hIIuVY423qEa9+Osuo9h3
-dFT/ZtDoRoTAGSZYDSxfLqVqwUSs9jD10fKZBU86Hgm6NoC2qspiiVPscGNftHYf7IEQkVhSf3tn
-4gUbu5A3is6N+LiexP1Owkhuc2T7k1gpdyQ5ggBvsvxZCxhBDDVSWQ+WtDR0Csf/nFsikKmxda0E
-fgIFRwcGA1x0ei2fyEUG6KG6vZn1vAOEhJNDAOHWaQq1V1LAjIHYjK2/ibIzwgOYeeZ9mT6KrZA+
-fRZnqgmthWWSoiyfgl+GgbcavY6rB7OTtCgoRZL18/ev8jSJlcBjixc67KNfUzx7
---000000000000bb581805cb4375ea--
+ATANBgkqhkiG9w0BAQEFAASCAQCXLjYJtMohIhIhbWODHvhrzDIu58PrGk0lsyZkLavSNZ3hexGp
+uz7NtaEkfA/e+HNkKy8xuydlvd1hJAhKbzzg5gkcqzD+/N4/lJVAQlc5cChu/xX+qTotxEYpcWIX
+JYwfqfQjXuZ2wiPW83CkUffNi1lKwWdheruYLsBE/C7aHju7HTVlRo9d1+PmmWNiMO5kQ9pzltLJ
+2O2IXFHi/08POnKqnYmcO64CaEZgk8tg6j/aRiAYp5XnJ7eMrD7Ef6tx/nU6BzJmzZHRahCCsgB/
+Jdhst9iezsinGubI4Nx6p+wXKPoAz8SzBwgAGg8HbDbR1CjC+wqaGl6nRGZJbcRt
+--000000000000f080fa05cb437599--
