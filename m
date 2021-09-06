@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34EEF401E03
-	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 18:04:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C8B8401E06
+	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 18:04:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243830AbhIFQEz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Sep 2021 12:04:55 -0400
-Received: from smtp13.smtpout.orange.fr ([80.12.242.135]:42825 "EHLO
+        id S243866AbhIFQFI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Sep 2021 12:05:08 -0400
+Received: from smtp13.smtpout.orange.fr ([80.12.242.135]:33718 "EHLO
         smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S243806AbhIFQEy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Sep 2021 12:04:54 -0400
+        with ESMTP id S243841AbhIFQFH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Sep 2021 12:05:07 -0400
 Received: from localhost.localdomain ([114.149.34.46])
         by mwinf5d79 with ME
-        id qg3U2500Z0zjR6y03g3m5h; Mon, 06 Sep 2021 18:03:48 +0200
+        id qg3U2500Z0zjR6y03g3z7v; Mon, 06 Sep 2021 18:04:01 +0200
 X-ME-Helo: localhost.localdomain
 X-ME-Auth: bWFpbGhvbC52aW5jZW50QHdhbmFkb28uZnI=
-X-ME-Date: Mon, 06 Sep 2021 18:03:48 +0200
+X-ME-Date: Mon, 06 Sep 2021 18:04:01 +0200
 X-ME-IP: 114.149.34.46
 From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 To:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH v3 1/2] can: netlink: prevent incoherent can configuration in case of early return
-Date:   Tue,  7 Sep 2021 01:03:09 +0900
-Message-Id: <20210906160310.54831-2-mailhol.vincent@wanadoo.fr>
+Subject: [PATCH v3 2/2] can: bittiming: change can_calc_tdco()'s prototype to not directly modify priv
+Date:   Tue,  7 Sep 2021 01:03:10 +0900
+Message-Id: <20210906160310.54831-3-mailhol.vincent@wanadoo.fr>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20210906160310.54831-1-mailhol.vincent@wanadoo.fr>
 References: <20210906160310.54831-1-mailhol.vincent@wanadoo.fr>
@@ -34,154 +34,83 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-struct can_priv has a set of flags (can_priv::ctrlmode) which are
-correlated with the other fields of the structure. In
-can_changelink(), those flags are set first and copied to can_priv. If
-the function has to return early, for example due to an out of range
-value provided by the user, then the global configuration might become
-incoherent.
+In previous commit, we introduced a temporary priv variable in
+can_changelink(), wrote the changes to it and committed all changes at
+the very end of the function.
 
-Example: the user provides an out of range dbitrate (e.g. 20
-Mbps). The command fails (-EINVAL), however the FD flag was already
-set resulting in a configuration where FD is on but the databittiming
-parameters are empty.
-
-* Illustration of above example *
-
-| $ ip link set can0 type can bitrate 500000 dbitrate 20000000 fd on
-| RTNETLINK answers: Invalid argument
-| $ ip --details link show can0
-| 1: can0: <NOARP,ECHO> mtu 72 qdisc noop state DOWN mode DEFAULT group default qlen 10
-|     link/can  promiscuity 0 minmtu 0 maxmtu 0
-|     can <FD> state STOPPED restart-ms 0
-           ^^ FD flag is set without any of the databittiming parameters...
-| 	  bitrate 500000 sample-point 0.875
-| 	  tq 12 prop-seg 69 phase-seg1 70 phase-seg2 20 sjw 1
-| 	  ES582.1/ES584.1: tseg1 2..256 tseg2 2..128 sjw 1..128 brp 1..512 brp-inc 1
-| 	  ES582.1/ES584.1: dtseg1 2..32 dtseg2 1..16 dsjw 1..8 dbrp 1..32 dbrp-inc 1
-| 	  clock 80000000 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535
-
-To prevent this from happening, we do a local copy of can_priv, work
-on it, an copy it at the very end of the function (i.e. only if all
-previous checks succeeded).
-
-Once this done, there is no more need to have a temporary variable for
-a specific parameter. As such, the bittiming and data bittiming (bt
-and dbt) are directly written to the temporary priv variable.
+However, the function can_calc_tdco() directly retrieves can_priv from
+the net_device and directly modifies it. We change the prototype so
+that it instead writes its changes to a struct can_priv that is passed
+as an argument. This way, can_changelink() can pass the newly
+introduced temporary priv variable.
 
 
-N.B. The temporary can_priv is too big to be allocated on the stack
-because, on x86_64 sizeof(struct can_priv) is 448 and:
-
-| $ objdump -d drivers/net/can/dev/netlink.o | ./scripts/checkstack.pl
-| 0x00000000000002100 can_changelink []:            1200
-
-
-Fixes: 9859ccd2c8be ("can: introduce the data bitrate configuration for CAN FD")
+Fixes: c25cc7993243 ("can: bittiming: add calculation for CAN FD Transmitter Delay Compensation (TDC)")
 Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 ---
- drivers/net/can/dev/netlink.c | 32 ++++++++++++++++++--------------
- 1 file changed, 18 insertions(+), 14 deletions(-)
+ drivers/net/can/dev/bittiming.c | 8 ++------
+ drivers/net/can/dev/netlink.c   | 2 +-
+ include/linux/can/bittiming.h   | 7 +++++--
+ 3 files changed, 8 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/can/dev/netlink.c b/drivers/net/can/dev/netlink.c
-index 80425636049d..21b76ca8cb22 100644
---- a/drivers/net/can/dev/netlink.c
-+++ b/drivers/net/can/dev/netlink.c
-@@ -58,14 +58,19 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
- 			  struct nlattr *data[],
- 			  struct netlink_ext_ack *extack)
- {
--	struct can_priv *priv = netdev_priv(dev);
-+	/* Work on a local copy of priv to prevent inconsistent value
-+	 * in case of early return.
-+	 */
-+	static struct can_priv *priv;
- 	int err;
- 
- 	/* We need synchronization with dev->stop() */
- 	ASSERT_RTNL();
- 
-+	priv = kmemdup(netdev_priv(dev), sizeof(*priv), GFP_KERNEL);
-+
- 	if (data[IFLA_CAN_BITTIMING]) {
--		struct can_bittiming bt;
-+		struct can_bittiming *bt = &priv->bittiming;
- 
- 		/* Do not allow changing bittiming while running */
- 		if (dev->flags & IFF_UP)
-@@ -79,22 +84,20 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
- 		if (!priv->bittiming_const && !priv->do_set_bittiming)
- 			return -EOPNOTSUPP;
- 
--		memcpy(&bt, nla_data(data[IFLA_CAN_BITTIMING]), sizeof(bt));
--		err = can_get_bittiming(dev, &bt,
-+		memcpy(bt, nla_data(data[IFLA_CAN_BITTIMING]), sizeof(*bt));
-+		err = can_get_bittiming(dev, bt,
- 					priv->bittiming_const,
- 					priv->bitrate_const,
- 					priv->bitrate_const_cnt);
- 		if (err)
- 			return err;
- 
--		if (priv->bitrate_max && bt.bitrate > priv->bitrate_max) {
-+		if (priv->bitrate_max && bt->bitrate > priv->bitrate_max) {
- 			netdev_err(dev, "arbitration bitrate surpasses transceiver capabilities of %d bps\n",
- 				   priv->bitrate_max);
- 			return -EINVAL;
- 		}
- 
--		memcpy(&priv->bittiming, &bt, sizeof(bt));
--
- 		if (priv->do_set_bittiming) {
- 			/* Finally, set the bit-timing registers */
- 			err = priv->do_set_bittiming(dev);
-@@ -158,7 +161,7 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
- 	}
- 
- 	if (data[IFLA_CAN_DATA_BITTIMING]) {
--		struct can_bittiming dbt;
-+		struct can_bittiming *dbt = &priv->data_bittiming;
- 
- 		/* Do not allow changing bittiming while running */
- 		if (dev->flags & IFF_UP)
-@@ -172,23 +175,21 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
- 		if (!priv->data_bittiming_const && !priv->do_set_data_bittiming)
- 			return -EOPNOTSUPP;
- 
--		memcpy(&dbt, nla_data(data[IFLA_CAN_DATA_BITTIMING]),
--		       sizeof(dbt));
--		err = can_get_bittiming(dev, &dbt,
-+		memcpy(dbt, nla_data(data[IFLA_CAN_DATA_BITTIMING]),
-+		       sizeof(*dbt));
-+		err = can_get_bittiming(dev, dbt,
- 					priv->data_bittiming_const,
- 					priv->data_bitrate_const,
- 					priv->data_bitrate_const_cnt);
- 		if (err)
- 			return err;
- 
--		if (priv->bitrate_max && dbt.bitrate > priv->bitrate_max) {
-+		if (priv->bitrate_max && dbt->bitrate > priv->bitrate_max) {
- 			netdev_err(dev, "canfd data bitrate surpasses transceiver capabilities of %d bps\n",
- 				   priv->bitrate_max);
- 			return -EINVAL;
- 		}
- 
--		memcpy(&priv->data_bittiming, &dbt, sizeof(dbt));
--
- 		can_calc_tdco(dev);
- 
- 		if (priv->do_set_data_bittiming) {
-@@ -223,6 +224,9 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
- 		priv->termination = termval;
- 	}
- 
-+	memcpy(netdev_priv(dev), priv, sizeof(*priv));
-+	kfree(priv);
-+
+diff --git a/drivers/net/can/dev/bittiming.c b/drivers/net/can/dev/bittiming.c
+index f49170eadd54..bddd93e2e439 100644
+--- a/drivers/net/can/dev/bittiming.c
++++ b/drivers/net/can/dev/bittiming.c
+@@ -175,13 +175,9 @@ int can_calc_bittiming(struct net_device *dev, struct can_bittiming *bt,
  	return 0;
  }
  
+-void can_calc_tdco(struct net_device *dev)
++void can_calc_tdco(struct can_tdc *tdc, const struct can_tdc_const *tdc_const,
++		   const struct can_bittiming *dbt)
+ {
+-	struct can_priv *priv = netdev_priv(dev);
+-	const struct can_bittiming *dbt = &priv->data_bittiming;
+-	struct can_tdc *tdc = &priv->tdc;
+-	const struct can_tdc_const *tdc_const = priv->tdc_const;
+-
+ 	if (!tdc_const)
+ 		return;
+ 
+diff --git a/drivers/net/can/dev/netlink.c b/drivers/net/can/dev/netlink.c
+index 21b76ca8cb22..66815ea6046e 100644
+--- a/drivers/net/can/dev/netlink.c
++++ b/drivers/net/can/dev/netlink.c
+@@ -190,7 +190,7 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
+ 			return -EINVAL;
+ 		}
+ 
+-		can_calc_tdco(dev);
++		can_calc_tdco(&priv->tdc, priv->tdc_const, &priv->data_bittiming);
+ 
+ 		if (priv->do_set_data_bittiming) {
+ 			/* Finally, set the bit-timing registers */
+diff --git a/include/linux/can/bittiming.h b/include/linux/can/bittiming.h
+index 9de6e9053e34..b3c1711ee0f0 100644
+--- a/include/linux/can/bittiming.h
++++ b/include/linux/can/bittiming.h
+@@ -87,7 +87,8 @@ struct can_tdc_const {
+ int can_calc_bittiming(struct net_device *dev, struct can_bittiming *bt,
+ 		       const struct can_bittiming_const *btc);
+ 
+-void can_calc_tdco(struct net_device *dev);
++void can_calc_tdco(struct can_tdc *tdc, const struct can_tdc_const *tdc_const,
++		   const struct can_bittiming *dbt);
+ #else /* !CONFIG_CAN_CALC_BITTIMING */
+ static inline int
+ can_calc_bittiming(struct net_device *dev, struct can_bittiming *bt,
+@@ -97,7 +98,9 @@ can_calc_bittiming(struct net_device *dev, struct can_bittiming *bt,
+ 	return -EINVAL;
+ }
+ 
+-static inline void can_calc_tdco(struct net_device *dev)
++static inline void
++can_calc_tdco(struct can_tdc *tdc, const struct can_tdc_const *tdc_const,
++	      const struct can_bittiming *dbt)
+ {
+ }
+ #endif /* CONFIG_CAN_CALC_BITTIMING */
 -- 
 2.32.0
 
