@@ -2,75 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CCC804020CC
-	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 22:53:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21D0A40214F
+	for <lists+netdev@lfdr.de>; Tue,  7 Sep 2021 00:34:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243527AbhIFUxK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Sep 2021 16:53:10 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:57668 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231256AbhIFUxJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Sep 2021 16:53:09 -0400
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 186KpskO037276;
-        Mon, 6 Sep 2021 15:51:54 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1630961514;
-        bh=CaGvOIn5BfLBICoO2Syfm1nTIE98ALRNKcUG8DqS28Y=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To;
-        b=FCLoq88EgFSlhRVh3RrfZgE8gCcERYu9svnRT/G+dmXvrfpWXaKYL/XgODlo975dv
-         ZDQFmrWjErP2pEkAzdntUSTJhD4r2L7GvNPKawi9zYZe8p+BAakc4uOnhDpSIAMb1z
-         LMGv4p94MbCTtt2q1IJ6wjc20k7sKL349HV2dZXM=
-Received: from DFLE106.ent.ti.com (dfle106.ent.ti.com [10.64.6.27])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 186KpsmK046914
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 6 Sep 2021 15:51:54 -0500
-Received: from DFLE103.ent.ti.com (10.64.6.24) by DFLE106.ent.ti.com
- (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 6
- Sep 2021 15:51:54 -0500
-Received: from DFLE103.ent.ti.com ([fe80::7431:ea48:7659:dc14]) by
- DFLE103.ent.ti.com ([fe80::7431:ea48:7659:dc14%17]) with mapi id
- 15.01.2308.014; Mon, 6 Sep 2021 15:51:54 -0500
-From:   "Modi, Geet" <geet.modi@ti.com>
-To:     Andrew Lunn <andrew@lunn.ch>, "Nagalla, Hari" <hnagalla@ti.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Sharma, Vikram" <vikram.sharma@ti.com>
-Subject: Re: [EXTERNAL] Re: [PATCH] net: phy: dp83tc811: modify list of
- interrupts enabled at initialization
-Thread-Topic: [EXTERNAL] Re: [PATCH] net: phy: dp83tc811: modify list of
- interrupts enabled at initialization
-Thread-Index: AQHXoC4XSSkBWxKBYUuzA52mb5z+zauRtoAAgAWhA4A=
-Date:   Mon, 6 Sep 2021 20:51:53 +0000
-Message-ID: <99232B33-1C2F-45AF-A259-0868AC7D3FBC@ti.com>
-References: <20210902190944.4963-1-hnagalla@ti.com> <YTFc6pyEtlRO/4r/@lunn.ch>
-In-Reply-To: <YTFc6pyEtlRO/4r/@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Microsoft-MacOutlook/16.52.21080801
-x-originating-ip: [10.250.200.196]
-x-exclaimer-md-config: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <8EAD9598455E4F41B2E9AFE87D9E830F@owa.mail.ti.com>
-Content-Transfer-Encoding: base64
+        id S240889AbhIFWei (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Sep 2021 18:34:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56074 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231857AbhIFWeh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Sep 2021 18:34:37 -0400
+Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41D4EC061575
+        for <netdev@vger.kernel.org>; Mon,  6 Sep 2021 15:33:32 -0700 (PDT)
+Received: by mail-ot1-x330.google.com with SMTP id x10-20020a056830408a00b004f26cead745so10404836ott.10
+        for <netdev@vger.kernel.org>; Mon, 06 Sep 2021 15:33:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=vIzeEE1ePgpyBPlhVu71FqTJ1tZomSrQP3uHsMOsN20=;
+        b=ZfSz5qFqZAAHxsHtuI/kg65U4/D0y5kR7vjHWk+Qk6EgTYUCDG1/yu37lr+XfPOym1
+         O1iI9nTLIcK4IMwJJsUdqTQ+K3UW6nsMTAPHmzAmqcZO7tgftI4vhJqAm5LuAoo00evy
+         35PX3wN6pyArz7Dgch2yB71YNVK8dOopGxEplT6AzziTBkHT88ifBxzu8iwvSHynpEy/
+         Q4bBujBJYSnK+AUnLztLe8ifOc4uJ6arqbOHxNznWEQDaDMbDT1v0zJgR+WIqQ5ofYar
+         R70m4zkfDqhqAevgoco03eTEt23hEpl+aJu1H/dhdviJOlO6XtovQn2JeOGh0u4H1AR0
+         KGBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=vIzeEE1ePgpyBPlhVu71FqTJ1tZomSrQP3uHsMOsN20=;
+        b=PyI1xfvXyOlg9l1ea/hYX5bfAwATMXvsQYmZWWLCJkVO6jQGYNq+6jnVlAFtUlHawE
+         NobdviKGj/N7JSuiOvGiOj2y6vlIn7TTKCvwTU4TrTFzsIJ6rm9xQKo2S8MJT2L8HEqT
+         O2yg71qv4SJfvOJpiE5qNCTBl1qDwwNok7EJ7zOamGl07xEMh4tjQu6VOK76MQADkCFp
+         wfzRkPgmcvj1ypfUEg75W31FZoLXGt1wpQ/aLNO9EnxW4FHImXym7au7n2LNCaPROTnv
+         eYVGrDA5bqE6XuGJGEWBJtwwNGSquVKiP7//t57eHWwTr4DFAEUNu2mnk1Ym9IbCPcWA
+         lRkQ==
+X-Gm-Message-State: AOAM5305Aou+29tRD0pkUbJbnFasp4MydM0hnDxjKLUkhD+C8fG1OQ6m
+        0HX+NVwY6mwbwchWMP4GxAM=
+X-Google-Smtp-Source: ABdhPJzxp2vfqmIXFiAa8uGTNwG/Rto+A3EOc//WQRqvX5PIncwmSUI++PC64nrJjSNTd/ZXexWLnA==
+X-Received: by 2002:a05:6830:1395:: with SMTP id d21mr12521133otq.166.1630967611441;
+        Mon, 06 Sep 2021 15:33:31 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.45])
+        by smtp.googlemail.com with ESMTPSA id w23sm1766597oih.4.2021.09.06.15.33.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 06 Sep 2021 15:33:31 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next 0/4] Cleanup of ip scripts
+To:     Stephen Hemminger <stephen@networkplumber.org>,
+        netdev@vger.kernel.org
+Cc:     Stephen Hemminger <sthemmin@microsoft.com>
+References: <20210901204701.19646-1-sthemmin@microsoft.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <496129af-ea16-b059-f7ab-9f9f72431d3f@gmail.com>
+Date:   Mon, 6 Sep 2021 16:33:29 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.13.0
 MIME-Version: 1.0
+In-Reply-To: <20210901204701.19646-1-sthemmin@microsoft.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgQW5kcmV3LA0KDQpUaGlzIGZlYXR1cmUgaXMgbm90IHVzZWQgYnkgb3VyIG1haW5zdHJlYW0g
-Y3VzdG9tZXJzIGFzIHRoZXkgaGF2ZSBhZGRpdGlvbmFsIG1lY2hhbmlzbSB0byBtb25pdG9yIHRo
-ZSBzdXBwbHkgYXQgU3lzdGVtIGxldmVsLiANCg0KSGVuY2Ugd2FudCB0byBrZWVwIGl0IGRpc2Fi
-bGUgYnkgZGVmYXVsdC4NCg0KUmVnYXJkcywNCkdlZXQNCg0KDQrvu79PbiA5LzIvMjEsIDQ6MjMg
-UE0sICJBbmRyZXcgTHVubiIgPGFuZHJld0BsdW5uLmNoPiB3cm90ZToNCg0KICAgIE9uIFRodSwg
-U2VwIDAyLCAyMDIxIGF0IDAyOjA5OjQ0UE0gLTA1MDAsIGhuYWdhbGxhQHRpLmNvbSB3cm90ZToN
-CiAgICA+IEZyb206IEhhcmkgTmFnYWxsYSA8aG5hZ2FsbGFAdGkuY29tPg0KICAgID4gDQogICAg
-PiBEaXNhYmxlIHRoZSBvdmVyIHZvbHRhZ2UgaW50ZXJydXB0IGF0IGluaXRpYWxpemF0aW9uIHRv
-IG1lZXQgdHlwaWNhbA0KICAgID4gYXBwbGljYXRpb24gcmVxdWlyZW1lbnQuDQoNCiAgICBBcmUg
-eW91IHNheWluZyBpdCBpcyB0eXBpY2FsIHRvIHN1cHBseSB0b28gaGlnaCBhIHZvbHRhZ2U/DQoN
-CiAgICAgICAgQW5kcmV3DQoNCg==
+On 9/1/21 2:46 PM, Stephen Hemminger wrote:
+> Remove several old useless scripts and fix the routel script
+> by rewriting it.
+> 
+
+applied to iproute2-next
+
