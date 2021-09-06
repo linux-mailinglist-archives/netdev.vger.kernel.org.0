@@ -2,68 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B593401DC8
-	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 17:50:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F0D1401DE9
+	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 18:00:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243032AbhIFPvM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Sep 2021 11:51:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56694 "EHLO mail.kernel.org"
+        id S243586AbhIFQBM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Sep 2021 12:01:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60946 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242432AbhIFPvK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Sep 2021 11:51:10 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 4B8B960F9E;
-        Mon,  6 Sep 2021 15:50:05 +0000 (UTC)
+        id S243493AbhIFQBL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Sep 2021 12:01:11 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id EA1EC60ED8;
+        Mon,  6 Sep 2021 16:00:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1630943405;
-        bh=HqLRktkRBEJxR+5alQ8M/Dk+icix4Yp6GNAzyh2MS+Q=;
+        s=k20201202; t=1630944006;
+        bh=oSHEvD7VzntICJNmc1hic4KcSf8HhuxH6mVwdVDeso4=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=JJ60xXimupeOLrSIpfH4aNdgrOtsxNs28xBRzBrZLSuUb51bEYh3a5n6WnJ+w/J0X
-         voiP168YGN8SIUyQffbKkaRjWYEdfuPmRDYLwH14V2aP0vm8yyuWix64GuJ50dLa8s
-         3Dl5wEcSGXmKYLx8ncTQxMjmDsIq9/3oG4EUNucBM5tVdxUZtC4qrKS2y8j9FscENj
-         ful60HeyqkM2ltUq1OGuD1D2wI4L+xxprmnAk6HGef8nF1YxBD9u7Sto6o2f71Fmfj
-         6/9IwFA2/avCgJ6JNy9Nm4AeE300U9rkj/Y8Y5nkp0tOUDn3Zhgb5ByhnRqTT4tWYL
-         jk22ACRl/PQWg==
+        b=hlr6TBOep81WiJwvRVaN9hdkx03ShavtEBdfTIR9eGPCDLSHTvTTTI0UKEpiQiT4D
+         969doVNTGsHamiAhTrWajtW3vcO4wrTe3MWgsZOXtj3jAZib3uSp8rDrPReFhv2yM+
+         qwWyEe1a6IbG/CWDlbCk1p/X5nyEfreOTCBoECIJeSWHUTenJfKX/0YhdPUMB+1bXY
+         L2Q07bKd/P7fk3AhENhLRaTN30cG6BT8dSNe5osZum2svVwYEZkl7LPC+yd8vVzLHK
+         dYK6r66Z8otgSVSvO3vQPChn3Zb1/scQOyyFv09VbOm5/+iB7NEA2xsFGYwgCBKje4
+         ZoFrhVwBkGTCA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3FE5460A37;
-        Mon,  6 Sep 2021 15:50:05 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id DEA1A60A37;
+        Mon,  6 Sep 2021 16:00:05 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: qcom/emac: Replace strlcpy with strscpy
+Subject: Re: [PATCH v1 net-next 1/2] net: wwan: iosm: Replace io.*64_lo_hi() with
+ regular accessors
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163094340525.32353.11305691764552334355.git-patchwork-notify@kernel.org>
-Date:   Mon, 06 Sep 2021 15:50:05 +0000
-References: <20210906135653.109449-1-wangborong@cdjrlc.com>
-In-Reply-To: <20210906135653.109449-1-wangborong@cdjrlc.com>
-To:     Jason Wang <wangborong@cdjrlc.com>
-Cc:     davem@davemloft.net, timur@kernel.org, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-Id: <163094400590.4713.10843179790386866340.git-patchwork-notify@kernel.org>
+Date:   Mon, 06 Sep 2021 16:00:05 +0000
+References: <20210906124449.20742-1-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20210906124449.20742-1-andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     m.chetan.kumar@intel.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linuxwwan@intel.com,
+        loic.poulain@linaro.org, ryazanov.s.a@gmail.com,
+        johannes@sipsolutions.net, davem@davemloft.net, kuba@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This series was applied to netdev/net.git (refs/heads/master):
 
-On Mon,  6 Sep 2021 21:56:53 +0800 you wrote:
-> The strlcpy should not be used because it doesn't limit the source
-> length. As linus says, it's a completely useless function if you
-> can't implicitly trust the source string - but that is almost always
-> why people think they should use it! All in all the BSD function
-> will lead some potential bugs.
+On Mon,  6 Sep 2021 15:44:48 +0300 you wrote:
+> The io.*_lo_hi() variants are not strictly needed on the x86 hardware
+> and especially the PCI bus. Replace them with regular accessors, but
+> leave headers in place in case of 32-bit build.
 > 
-> But the strscpy doesn't require reading memory from the src string
-> beyond the specified "count" bytes, and since the return value is
-> easier to error-check than strlcpy()'s. In addition, the implementation
-> is robust to the string changing out from underneath it, unlike the
-> current strlcpy() implementation.
-> 
-> [...]
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+>  drivers/net/wwan/iosm/iosm_ipc_mmio.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
 
 Here is the summary with links:
-  - net: qcom/emac: Replace strlcpy with strscpy
-    https://git.kernel.org/netdev/net/c/0a83299935f0
+  - [v1,net-next,1/2] net: wwan: iosm: Replace io.*64_lo_hi() with regular accessors
+    https://git.kernel.org/netdev/net/c/1d99411fe701
+  - [v1,net-next,2/2] net: wwan: iosm: Unify IO accessors used in the driver
+    https://git.kernel.org/netdev/net/c/b539c44df067
 
 You are awesome, thank you!
 --
