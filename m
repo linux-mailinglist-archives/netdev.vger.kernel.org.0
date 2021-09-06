@@ -2,395 +2,240 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A48F34018D7
-	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 11:29:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E4754018DE
+	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 11:31:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241295AbhIFJaz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Sep 2021 05:30:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49360 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241206AbhIFJay (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Sep 2021 05:30:54 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D671C061575;
-        Mon,  6 Sep 2021 02:29:49 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id 17so6219318pgp.4;
-        Mon, 06 Sep 2021 02:29:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=hL2ugt59kOCAMo+Nwz7pp0ILNBTnt9SHLqa6r2SYKKQ=;
-        b=f8S7kjs/+WhRPf5Q5OnBagtx7FEFHKZ+4HkKgF6hxo7te04of8kuvUbFgAzzIKG8O9
-         YS7aj48Z10CghHBhiol4ds/Z9ulgAPnIEo3EcZ3g4gZhWDoTaxhtwU54gvsBUS8H19DV
-         4+yHMFDPji0ImWPywSxEzwE0Dx0LkbNcdOtzaGip7mSLsxeo6Ol2IhCco2vTJZwxtsX1
-         f8FgI2qJiKjKPWKzFaYx0XtoA2gwVscaE2jqboiyGx0tBtrbzi39uM4mhapvrMKoPV8K
-         DjT5f2X7Jf2dkH8YxrKkV7bMcAYm6pA/YLkA+0OTciD8elXWNOnqFPOsuOkexpFNgNll
-         XeSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=hL2ugt59kOCAMo+Nwz7pp0ILNBTnt9SHLqa6r2SYKKQ=;
-        b=f3F+P1O7Udlu2t4gxBI4F9UdKM2TUbNHc2I77CtcyQLeYJEToOIc7vjtn6pe5WF+Y5
-         NWkcXbMIudTjjoGyOAVvpDykppU2sHqBPh5Ql20E5r/hv7DVkeQnMbJDQQOtZASzt8qR
-         irIOpv4NFTW3sdDWrvx33q192TsvW4QQv1JqnIGbDVkzdzZU5hDjZJH02h1DOXmwhiUt
-         FWJyZ2nTeE3Cml7/u1mC63QAyfEttRofWy+65lzHiFqbcy2SM3B7Oy4Z/8E17zxEvzen
-         Ik9JyJhSzC6FbmQgGUwsMIijvsdC2IoNBQBd+mx8CbM5NcF7DENRX4Z1carE/7hKn+AJ
-         izMw==
-X-Gm-Message-State: AOAM5330AoXZXUf2VJ5i9cEAl5k9PhX2rraGvXejp3fqB2k2YBaCB4AD
-        ZsXuuTyJ5LIUf7dsegBbaPc=
-X-Google-Smtp-Source: ABdhPJwOe8B+CLfO6tTr9GRywGUhzTze4STspDfmBSz8ORqi/MdXQx6o6JEqFo9//6/78CHTmkmynw==
-X-Received: by 2002:aa7:8e81:0:b0:3fe:f212:f9dd with SMTP id a1-20020aa78e81000000b003fef212f9ddmr10801405pfr.46.1630920588805;
-        Mon, 06 Sep 2021 02:29:48 -0700 (PDT)
-Received: from arn.remote.csb ([49.206.7.248])
-        by smtp.gmail.com with ESMTPSA id x124sm6913652pfb.59.2021.09.06.02.29.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Sep 2021 02:29:48 -0700 (PDT)
-From:   Abhiram R N <abhiramrn@gmail.com>
-X-Google-Original-From: Abhiram R N <abhiramrm@gmail.com>
-Date:   Mon, 6 Sep 2021 14:59:35 +0530
-To:     Roi Dayan <roid@nvidia.com>
-Cc:     Abhiram R N <abhiramrn@gmail.com>, saeedm@nvidia.com,
-        arn@redhat.com, hakhande@redhat.com,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net/mlx5e: Add extack msgs related to TC for better
- debug
-Message-ID: <20210906092935.GA29607@arn.remote.csb>
-References: <b25cb092-6793-5175-55a2-1d620949da09@nvidia.com>
- <20210831084406.12825-1-abhiramrn@gmail.com>
- <76ab8d32-4457-8dd2-8df0-d31919d8441f@nvidia.com>
+        id S241356AbhIFJcU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Sep 2021 05:32:20 -0400
+Received: from mx0a-0064b401.pphosted.com ([205.220.166.238]:32968 "EHLO
+        mx0a-0064b401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S241279AbhIFJcT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Sep 2021 05:32:19 -0400
+Received: from pps.filterd (m0250809.ppops.net [127.0.0.1])
+        by mx0a-0064b401.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1868a0m7000628;
+        Mon, 6 Sep 2021 02:31:10 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=windriver.com; h=from : to : cc :
+ subject : date : message-id : content-transfer-encoding : content-type :
+ mime-version; s=PPS06212021;
+ bh=mHen41UErFXR9v5YvatPOEQ8bs75/lZuwhA6u13dtZQ=;
+ b=sKL0UMjPQlT+Tvi/8bvxmyt4pzKT2tS9ubTg/j6PCFWbkX52Ibp4LorWyaqNscHHxL8p
+ DTBExbOMdbuOdULer/MeYANOfPw48IsMRMRjxRTH1vTyX7QLbg1DNoSAjowUY8EqW+iK
+ 4q/pS5FsgCKMfRHO1bJGfrwUsEPXhaVjdSUvPiIdtuD7BFusbpdIBY+Tn2kWrP/JOatg
+ wuWxG2UbcF2M55AIfWHx6QszKQYdgw/4YA6wvE+R1mRpCdezhI5xsDgyXWM22G+uMQTM
+ JDw7kVwoDcKbrYAxpOEn8/z9+1SA1yOuOUN/BYJ+IUdObtNbzVArFWApsWCBSR/v6mCI UA== 
+Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2172.outbound.protection.outlook.com [104.47.55.172])
+        by mx0a-0064b401.pphosted.com with ESMTP id 3aw6bj890k-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 06 Sep 2021 02:31:10 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=krgM7OZ9sT2RBkkQD2AbPa6hKamSw4ACJKaIN001XpDbmMYxvft5jT4PxaDk28pJUvjTCl2DuZjE1vw9hjMf3edIRpV4Fkv3jsqCHsjTOxPwry8VYnh/4ZBrnqFUHoVYKUVJU1CqaIkNmazCzhzUrFNCj/XzOZLrYdFJc4HpvMzf7PTcRAVB9Aq7vIw6xwbEQL0cF7r/aH8ZIbN3IwyY0S4BWqmfFegMIhH+rG2CvL6la03VgaT0gZCsQ3AspYCF5PINBXEqhwqqkKmc9DPoqfW4Ib0wLzeCZ3CUhg0mLbQzYnVDPWql28I2+VScaURvchIg41tqrGBH1nsAFMDw1g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
+ bh=mHen41UErFXR9v5YvatPOEQ8bs75/lZuwhA6u13dtZQ=;
+ b=Zvc+xqOhNyHsMrM9zaxMwAdlldjNSPfSWm0Xt99cabTm00Emyb8sGvejAd/evlu545yM65WVxMI4/fW9L3Zacz0mBuG7kNikR0mGNHZ2YPj+rs/KjRtPLA+tQEAi7dzY8RTDtgNIV+BrjZWA4YvdA7Me+/QooWp6zK0nRlbag0GjheWlL6+720q1D+ZAAu5aVAYRcT5NyYSciDgSZC+1xNCKlcKj97e68rjS+s6dPMv1F+lA/0VRDNFQ18ejKY6BB2DVvuXEt40GeYp/7U89p086CzdFS73/7fzf4HlqeoCupXiZeQ+V22CmSU+J10uYEwZBx1NoBsixtQFKQS42ow==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=windriver.com; dmarc=pass action=none
+ header.from=windriver.com; dkim=pass header.d=windriver.com; arc=none
+Authentication-Results: intel.com; dkim=none (message not signed)
+ header.d=none;intel.com; dmarc=none action=none header.from=windriver.com;
+Received: from DM6PR11MB2587.namprd11.prod.outlook.com (2603:10b6:5:c3::16) by
+ DM6PR11MB3644.namprd11.prod.outlook.com (2603:10b6:5:139::28) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4478.17; Mon, 6 Sep 2021 09:31:07 +0000
+Received: from DM6PR11MB2587.namprd11.prod.outlook.com
+ ([fe80::b866:141c:8869:a813]) by DM6PR11MB2587.namprd11.prod.outlook.com
+ ([fe80::b866:141c:8869:a813%6]) with mapi id 15.20.4457.017; Mon, 6 Sep 2021
+ 09:31:07 +0000
+From:   Jun Miao <jun.miao@windriver.com>
+To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, kuba@kernel.org, shiraz.saleem@intel.com,
+        david.m.ertman@intel.com
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, jun.miao@windriver.com
+Subject: [v2][PATCH] ice: Fix NULL pointer dereference of pf->aux_idx
+Date:   Mon,  6 Sep 2021 17:30:54 +0800
+Message-Id: <20210906093054.2904558-1-jun.miao@windriver.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: HK2PR04CA0054.apcprd04.prod.outlook.com
+ (2603:1096:202:14::22) To DM6PR11MB2587.namprd11.prod.outlook.com
+ (2603:10b6:5:c3::16)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <76ab8d32-4457-8dd2-8df0-d31919d8441f@nvidia.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from pek-lpggp7.wrs.com (60.247.85.82) by HK2PR04CA0054.apcprd04.prod.outlook.com (2603:1096:202:14::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4478.17 via Frontend Transport; Mon, 6 Sep 2021 09:31:04 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b48d1699-1f04-4fd2-8d38-08d971190e15
+X-MS-TrafficTypeDiagnostic: DM6PR11MB3644:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DM6PR11MB364464BDA0F4ABEFF4436B498ED29@DM6PR11MB3644.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1247;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Daj8GYwE1DuaBDHooCT8HZFqcksy2TxAEnFlShAIFmmJzsYX/FOJbp2W+WpYt1ks+/jri/TVAzhqYCum43cOll0H1CXaS8KR9qQroaLI3spDULXQkVppe93sUKoPnoXns8D1qObJsvEnVtDTeGvX1VJbXu7aW9Yfh0Jsf9gMudx/AqIkTYVkWMUyANYVgl5fDmh7Gx/bmUFl+dEsBGnG6ZPwuck2XBtq6GyLmqYrOI9mPW9DzoWGp4Lp4yDXh0jrm8ioNCNkZFzdEIcFI2d6EFl3h4zax5JkFYLrASIGXWQ7Ps9+wIwuGVcs81Se7XeXqkGhkITDIGjV+L/W8oeW9TO7p0wYJujz1SzBF0xaVzJcb8EvXRSU0G2wNCsy+y3h7PEnXv8ETPW6w2rFVIpYSoHzdFfBkr12JJw8J5aeJcL0i4yK9d0LgC4+/TDJWDEnsWiCOEK06wez3Zc58Ni9zS3vkJTFjOfKYibpkgtIjlZoAUeiYJzfGcne70fjp3BiK+szgzmXwkrETsKaffip5xsv+aJ1DJ6sTXIImkTV+UE5C4FCujkFa50pk/vZjXe55ALXnDyUPjWk/cXxXLpIIL9IbtwsHcdTTb2hcxuEWj3YkVhZdOEoo0/imeeZofVvZegQzomaF13NZigqnSb+r/0wsfwF+Uikg3KobBOBKRHl1fZ979u3qZkYRNOdf60zFu2EfznWzQmS2M7Ld2mn4A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB2587.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(83380400001)(44832011)(6512007)(6486002)(45080400002)(5660300002)(8676002)(316002)(508600001)(107886003)(2616005)(38100700002)(38350700002)(36756003)(4326008)(86362001)(956004)(6506007)(2906002)(1076003)(66556008)(66946007)(66476007)(52116002)(186003)(26005)(6666004)(8936002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?g430sDot25q3/Ukih4yFo63IIlLvAVQDPp5VIhAJwHDuLKQCIN02eDIX3NZY?=
+ =?us-ascii?Q?B2CwlC7W3VqA2a9MNZAy2HUfSQ0T7TdQa0JJ4ZKvSdB9ZYbdI/kjn/4B66G3?=
+ =?us-ascii?Q?L4jzm2xOuDEMKEq0iu2RzUYyA1LKuGXCZFxFTfieuS6shdTfePxueOpb8wOD?=
+ =?us-ascii?Q?EwKucYDgAvN+i7szNtByi6Pj0mlVUFBC5p+WBUvKDkIVLiGEk4vZPhVgdVKh?=
+ =?us-ascii?Q?p783Xokaw1/h0u/nRMz+HtQW/UCjpjGr7PLMZ3DOkw9ErbvsERp2VrnRmSur?=
+ =?us-ascii?Q?E08IZ1Ot+Mo4K9u7SJNCdn+0XO4IwHrCl26Svu8i7iiVSkS3EvWAQQLW2ZxJ?=
+ =?us-ascii?Q?OcI/B5EpM6t+eIb4FI9A2JES9lMP/RJlev4R/iKbkmxU2meJsT2VvsllkBCQ?=
+ =?us-ascii?Q?Azyy3mrdwjNm0FgbXqYOYAAJGaHW3p/h9JZVIrK2AtqqhMqqPEt2uOhBmZnY?=
+ =?us-ascii?Q?KXoKiog9Apibmq4IFfmRLN7Dqw2JqYJXZ78YZ9NFBQDO6asT4e6Rj81Q7LqO?=
+ =?us-ascii?Q?OHufg3d6j7w43NAGz0LwETRNUu4Qu0YHKr9zjoTqqSqncM6EYN7IQxKImTKr?=
+ =?us-ascii?Q?cjU5IDpI1qfJOTRiwsblyKxe/hk7E7vkpB31eaw7EL9PN/XlfFhc5aqQHSP1?=
+ =?us-ascii?Q?MoTP7V8RzHq8csztfG8V06fgXhzYFW4VKU74ZBDOSB2wP54zjO11iP2XptJE?=
+ =?us-ascii?Q?6OzT7lqRHN4piyT6qtNU8O2Q6czodx7c9/1GGYoDvO4REX4At3AjGcfl4uY2?=
+ =?us-ascii?Q?QBg6u6OWYJ5qe2EJadv5PZvW6rAaFkGI0JgmdlclWf/r/4lgcr8FpxkUS7yJ?=
+ =?us-ascii?Q?ywLV1nWiCxZF5LwKSUwkZzpZJGxZt7wHG/LJkKqHNK/dMLp5nNoifWOkSbIv?=
+ =?us-ascii?Q?uEAm7aK/+XKZGlrkCjmd7nB3tAnvQkuLytNrUwpaJsUnevHfWe9beOFiRGSJ?=
+ =?us-ascii?Q?IBmYcfeH5u0kHObTS0vLWULrfpsfqy9LeL3hLKPrrr2vUelp/pWQaPyO4MEM?=
+ =?us-ascii?Q?6xOJi7p4dj+LtKKeq83ortdQ1kqYmjHPGbVUNNy4fZD8lRG7CyOgUhNtkqo6?=
+ =?us-ascii?Q?jvwHBaagrT7lGah9p+vhepTJC+qWCv45hUc7CF/tSSWVcbR28cdl25tF064q?=
+ =?us-ascii?Q?V1jR/Ad++DgUvS8KU5+qsVpa3Xg64kFvt5Yeau1frIFA7e/ftkmegrGYN9EJ?=
+ =?us-ascii?Q?S3j40hdOdtRPvhs2RaQxK2t+rP7pmV4CiK7KBqfUEUXBl13CNW4pVY80s4eL?=
+ =?us-ascii?Q?TEec0URJq40FMIEhkyrPiiqtNP74ryYhRLQutvtXhjwkyzcT8/7Su5D88YlA?=
+ =?us-ascii?Q?Q4wGhv7iNgdUYdh6Z1yDZo8I?=
+X-OriginatorOrg: windriver.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b48d1699-1f04-4fd2-8d38-08d971190e15
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB2587.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Sep 2021 09:31:07.5529
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ddb2873-a1ad-4a18-ae4e-4644631433be
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: L2+EGQ5i/OiPvKp2fS4ojC1i+W+mwZh1KubIrCTxl2yK2uHPBV3uUHMg4iKwqr3ee3D0vmhdcfiV4XLINLYNjA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB3644
+X-Proofpoint-GUID: 52rVTx0OaGaxS66zFQPBhPLme02BW1IW
+X-Proofpoint-ORIG-GUID: 52rVTx0OaGaxS66zFQPBhPLme02BW1IW
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
+ definitions=2021-09-06_05,2021-09-03_01,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 spamscore=0
+ mlxscore=0 mlxlogscore=999 suspectscore=0 bulkscore=0 lowpriorityscore=0
+ clxscore=1015 phishscore=0 priorityscore=1501 adultscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2108310000
+ definitions=main-2109060060
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The RDMA is not supported on some devices such as E822-C.
+When triger PCI hotplug, there will be a kernel NULL pointer Call Trace.
 
-Hi,
+Since of removing the E822-C ice driver, ice_remove() will callback ida_free().
+But there isn`t be alloced "pf->aux_idx", when the RDMA is unsupported. So we
+should check whether support RDMA firstly, before free the "pf->aux_idx".
 
-Thanks for your feedback. Please see replies inline.
+Feature description and call trace Log:
 
-On Sun, Sep 05, 2021 at 04:39:41PM +0300, Roi Dayan wrote:
-> 
-> 
-> On 2021-08-31 11:44 AM, Abhiram R N wrote:
-> > As multiple places EOPNOTSUPP and EINVAL is returned from driver
-> > it becomes difficult to understand the reason only with error code.
-> > With the netlink extack message exact reason will be known and will
-> > aid in debugging.
-> > 
-> > Signed-off-by: Abhiram R N <abhiramrn@gmail.com>
-> > ---
-> >   .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 106 +++++++++++++-----
-> >   1 file changed, 76 insertions(+), 30 deletions(-)
-> > 
-> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> > index d273758255c3..911eab2acaad 100644
-> > --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> > @@ -1894,8 +1894,10 @@ static int parse_tunnel_attr(struct mlx5e_priv *priv,
-> >   	bool needs_mapping, sets_mapping;
-> >   	int err;
-> > -	if (!mlx5e_is_eswitch_flow(flow))
-> > +	if (!mlx5e_is_eswitch_flow(flow)) {
-> > +		NL_SET_ERR_MSG_MOD(extack, "Match on tunnel is not supported");
-> >   		return -EOPNOTSUPP;
-> > +	}
-> >   	needs_mapping = !!flow->attr->chain;
-> >   	sets_mapping = !flow->attr->chain && flow_has_tc_fwd_action(f);
-> > @@ -2267,8 +2269,10 @@ static int __parse_cls_flower(struct mlx5e_priv *priv,
-> >   		addr_type = match.key->addr_type;
-> >   		/* the HW doesn't support frag first/later */
-> > -		if (match.mask->flags & FLOW_DIS_FIRST_FRAG)
-> > +		if (match.mask->flags & FLOW_DIS_FIRST_FRAG) {
-> > +			NL_SET_ERR_MSG_MOD(extack, "Match on frag first/later is not supported");
-> >   			return -EOPNOTSUPP;
-> > +		}
-> >   		if (match.mask->flags & FLOW_DIS_IS_FRAGMENT) {
-> >   			MLX5_SET(fte_match_set_lyr_2_4, headers_c, frag, 1);
-> > @@ -2435,8 +2439,11 @@ static int __parse_cls_flower(struct mlx5e_priv *priv,
-> >   		switch (ip_proto) {
-> >   		case IPPROTO_ICMP:
-> >   			if (!(MLX5_CAP_GEN(priv->mdev, flex_parser_protocols) &
-> > -			      MLX5_FLEX_PROTO_ICMP))
-> > +			      MLX5_FLEX_PROTO_ICMP)) {
-> > +				NL_SET_ERR_MSG_MOD(extack,
-> > +						   "Match on Flex protocols for ICMP not supported");
-> 
-> can you add "is" as ".. is not supported"?
-Sure. Will change it.
-> 
-> >   				return -EOPNOTSUPP;
-> > +			}
-> >   			MLX5_SET(fte_match_set_misc3, misc_c_3, icmp_type,
-> >   				 match.mask->type);
-> >   			MLX5_SET(fte_match_set_misc3, misc_v_3, icmp_type,
-> > @@ -2448,8 +2455,11 @@ static int __parse_cls_flower(struct mlx5e_priv *priv,
-> >   			break;
-> >   		case IPPROTO_ICMPV6:
-> >   			if (!(MLX5_CAP_GEN(priv->mdev, flex_parser_protocols) &
-> > -			      MLX5_FLEX_PROTO_ICMPV6))
-> > +			      MLX5_FLEX_PROTO_ICMPV6)) {
-> > +				NL_SET_ERR_MSG_MOD(extack,
-> > +						   "Match on Flex protocols for ICMPV6 not supported");
-> 
-> can you add "is" as ".. is not supported"?
-Sure. will change it.
-> 
-> also, can you submit this patch to net-next and not net please?
-> it's not really fixing an issue and will help avoid conflicts with
-> changes we plan on this file.
-> thanks
+There are E822-C on the board:
+ec:00.0 Ethernet controller: Intel Corporation Ethernet Connection E822-C for QSFP (rev 20)
+ec:00.1 Ethernet controller: Intel Corporation Ethernet Connection E822-C for QSFP (rev 20)
+ec:00.2 Ethernet controller: Intel Corporation Ethernet Connection E822-C for QSFP (rev 20)
+ec:00.3 Ethernet controller: Intel Corporation Ethernet Connection E822-C for QSFP (rev 20)
+ec:00.4 Ethernet controller: Intel Corporation Ethernet Connection E822-C for SFP (rev 20)
 
-Sure. I will submit it to net-next. I checked now and net-next is closed 
-it says (http://vger.kernel.org/~davem/net-next.html). 
-I will wait for it to be open and then submit there.
+root@intel-x86-64:~#echo 1 > /sys/bus/pci/devices/0000:ec:00.3/remove
+BUG: kernel NULL pointer dereference, address: 0000000000000000
+PGD 0 P4D 0
+Oops: 0000 [#1] PREEMPT SMP NOPTI
+CPU: 17 PID: 791 Comm: sh Not tainted 5.14.0-next-20210903 #1
+Hardware name: Intel Corporation JACOBSVILLE/JACOBSVILLE, BIOS
+JBVLCRB2.86B.0014.P67.2103111848 03/11/2021
+RIP: 0010:ida_free+0x7f/0x150
+Code: 00 00 48 c7 45 d0 00 00 00 00 0f 88 d8 00 00 00 89 f3 e8 44 38 84 00 48 8d
+7d a8 49 89 c6 e8 38 ee 00 00 a8 01 49 89 c5 75 47 <4c> 0f a3 20 0f 92 c0 84 c0
+75 79 48 8b 7d a8 4c 89 f6 e8 6a 38 84
+RSP: 0018:ffffb114c18dbc38 EFLAGS: 00010046
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000001
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffffb114c18dbc38
+RBP: ffffb114c18dbc90 R08: 0000000000000000 R09: ffffb114c18dbc28
+R10: 0000000000000000 R11: ffffffff89e59e58 R12: 0000000000000000
+R13: 0000000000000000 R14: 0000000000000246 R15: ffffa0e5e10f4900
+FS:  00007fc4d4021740(0000) GS:ffffa0f500040000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000000000 CR3: 000000010a70a000 CR4: 0000000000350ee0
+Call Trace:
+ ice_remove+0xc4/0x210 [ice]
+ pci_device_remove+0x3b/0xc0
+ device_release_driver_internal+0xfe/0x1d0
+ device_release_driver+0x12/0x20
+ pci_stop_bus_device+0x61/0x90
+ pci_stop_and_remove_bus_device_locked+0x1a/0x30
+ remove_store+0x7c/0x90
+ dev_attr_store+0x14/0x30
+ sysfs_kf_write+0x39/0x50
+ kernfs_fop_write_iter+0x123/0x1b0
+ new_sync_write+0x10e/0x1b0
+ vfs_write+0x131/0x2a0
+ ksys_write+0x5e/0xe0
+ __x64_sys_write+0x1a/0x20
+ do_syscall_64+0x3f/0xa0
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7fc4d411faa7
+Code: 0f 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b7 0f 1f 00 f3 0f 1e fa 64 8b
+04 25 18 00 00 00 85 c0 75 10 b8 01 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 51 c3
+48 83 ec 28 48 89 54 24 18 48 89 74 24
+RSP: 002b:00007fff097188b8 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007fc4d411faa7
+RDX: 0000000000000002 RSI: 0000555bc86bf640 RDI: 0000000000000001
+RBP: 0000555bc86bf640 R08: 0000000000000000 R09: 00007fc4d41cf4e0
+R10: 00007fc4d41cf3e0 R11: 0000000000000246 R12: 0000000000000002
+R13: 00007fc4d42155a0 R14: 0000000000000002 R15: 00007fc4d42157a0
+Modules linked in: intel_rapl_msr intel_rapl_common ice i10nm_edac
+x86_pkg_temp_thermal intel_powerclamp matroxfb_base iTCO_wdt coretemp
+intel_pmc_bxt matroxfb_g450 crct10dif_pclmul iTCO_vendor_support matroxfb_accel
+intel_spi_pci crct10dif_common watchdog intel_spi matroxfb_DAC1064 intel_th_gth
+aesni_intel spi_nor g450_pll crypto_simd input_leds matroxfb_misc cryptd
+intel_th_pci led_class i2c_i801 intel_th i2c_smbus i2c_ismt wmi acpi_cpufreq
+sch_fq_codel openvswitch nsh nf_conncount nf_nat nf_conntrack nf_defrag_ipv6
+nf_defrag_ipv4 fuse configfs
+CR2: 0000000000000000
+---[ end trace b7d0a971ebc5759b ]---
+SmmCorePerformanceLib: No enough space to save boot records
+RIP: 0010:ida_free+0x7f/0x150
+Code: 00 00 48 c7 45 d0 00 00 00 00 0f 88 d8 00 00 00 89 f3 e8 44 38 84 00 48 8d
+7d a8 49 89 c6 e8 38 ee 00 00 a8 01 49 89 c5 75 47 <4c> 0f a3 20 0f 92 c0 84 c0
+75 79 48 8b 7d a8 4c 89 f6 e8 6a 38 84
+RSP: 0018:ffffb114c18dbc38 EFLAGS: 00010046
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000001
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffffb114c18dbc38
+RBP: ffffb114c18dbc90 R08: 0000000000000000 R09: ffffb114c18dbc28
+R10: 0000000000000000 R11: ffffffff89e59e58 R12: 0000000000000000
+R13: 0000000000000000 R14: 0000000000000246 R15: ffffa0e5e10f4900
+FS:  00007fc4d4021740(0000) GS:ffffa0f500040000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000000000 CR3: 000000010a70a000 CR4: 0000000000350ee0
+note: sh[791] exited with preempt_count 1
+Killed
 
-> 
-> 
-> >   				return -EOPNOTSUPP;
-> > +			}
-> >   			MLX5_SET(fte_match_set_misc3, misc_c_3, icmpv6_type,
-> >   				 match.mask->type);
-> >   			MLX5_SET(fte_match_set_misc3, misc_v_3, icmpv6_type,
-> > @@ -2555,15 +2565,19 @@ static int pedit_header_offsets[] = {
-> >   #define pedit_header(_ph, _htype) ((void *)(_ph) + pedit_header_offsets[_htype])
-> >   static int set_pedit_val(u8 hdr_type, u32 mask, u32 val, u32 offset,
-> > -			 struct pedit_headers_action *hdrs)
-> > +			 struct pedit_headers_action *hdrs,
-> > +			 struct netlink_ext_ack *extack)
-> >   {
-> >   	u32 *curr_pmask, *curr_pval;
-> >   	curr_pmask = (u32 *)(pedit_header(&hdrs->masks, hdr_type) + offset);
-> >   	curr_pval  = (u32 *)(pedit_header(&hdrs->vals, hdr_type) + offset);
-> > -	if (*curr_pmask & mask)  /* disallow acting twice on the same location */
-> > +	if (*curr_pmask & mask) {  /* disallow acting twice on the same location */
-> > +		NL_SET_ERR_MSG_MOD(extack,
-> > +				   "curr_pmask and new mask same. Acting twice on same location");
-> >   		goto out_err;
-> > +	}
-> >   	*curr_pmask |= mask;
-> >   	*curr_pval  |= (val & mask);
-> > @@ -2893,7 +2907,7 @@ parse_pedit_to_modify_hdr(struct mlx5e_priv *priv,
-> >   	val = act->mangle.val;
-> >   	offset = act->mangle.offset;
-> > -	err = set_pedit_val(htype, ~mask, val, offset, &hdrs[cmd]);
-> > +	err = set_pedit_val(htype, ~mask, val, offset, &hdrs[cmd], extack);
-> >   	if (err)
-> >   		goto out_err;
-> > @@ -2913,8 +2927,10 @@ parse_pedit_to_reformat(struct mlx5e_priv *priv,
-> >   	u32 mask, val, offset;
-> >   	u32 *p;
-> > -	if (act->id != FLOW_ACTION_MANGLE)
-> > +	if (act->id != FLOW_ACTION_MANGLE) {
-> > +		NL_SET_ERR_MSG_MOD(extack, "Unsupported action id");
-> >   		return -EOPNOTSUPP;
-> > +	}
-> >   	if (act->mangle.htype != FLOW_ACT_MANGLE_HDR_TYPE_ETH) {
-> >   		NL_SET_ERR_MSG_MOD(extack, "Only Ethernet modification is supported");
-> > @@ -3363,12 +3379,16 @@ static int parse_tc_nic_actions(struct mlx5e_priv *priv,
-> >   	u32 action = 0;
-> >   	int err, i;
-> > -	if (!flow_action_has_entries(flow_action))
-> > +	if (!flow_action_has_entries(flow_action)) {
-> > +		NL_SET_ERR_MSG_MOD(extack, "Flow Action doesn't have any entries");
-> >   		return -EINVAL;
-> > +	}
-> >   	if (!flow_action_hw_stats_check(flow_action, extack,
-> > -					FLOW_ACTION_HW_STATS_DELAYED_BIT))
-> > +					FLOW_ACTION_HW_STATS_DELAYED_BIT)) {
-> > +		NL_SET_ERR_MSG_MOD(extack, "Flow Action HW stats check not supported");
-> >   		return -EOPNOTSUPP;
-> > +	}
-> >   	nic_attr = attr->nic_attr;
-> > @@ -3459,7 +3479,8 @@ static int parse_tc_nic_actions(struct mlx5e_priv *priv,
-> >   			flow_flag_set(flow, CT);
-> >   			break;
-> >   		default:
-> > -			NL_SET_ERR_MSG_MOD(extack, "The offload action is not supported");
-> > +			NL_SET_ERR_MSG_MOD(extack,
-> > +					   "The offload action is not supported in NIC action");
-> >   			return -EOPNOTSUPP;
-> >   		}
-> >   	}
-> > @@ -3514,19 +3535,25 @@ static bool is_merged_eswitch_vfs(struct mlx5e_priv *priv,
-> >   static int parse_tc_vlan_action(struct mlx5e_priv *priv,
-> >   				const struct flow_action_entry *act,
-> >   				struct mlx5_esw_flow_attr *attr,
-> > -				u32 *action)
-> > +				u32 *action,
-> > +				struct netlink_ext_ack *extack)
-> >   {
-> >   	u8 vlan_idx = attr->total_vlan;
-> > -	if (vlan_idx >= MLX5_FS_VLAN_DEPTH)
-> > +	if (vlan_idx >= MLX5_FS_VLAN_DEPTH) {
-> > +		NL_SET_ERR_MSG_MOD(extack, "Total vlans used is greater than supported");
-> >   		return -EOPNOTSUPP;
-> > +	}
-> >   	switch (act->id) {
-> >   	case FLOW_ACTION_VLAN_POP:
-> >   		if (vlan_idx) {
-> >   			if (!mlx5_eswitch_vlan_actions_supported(priv->mdev,
-> > -								 MLX5_FS_VLAN_DEPTH))
-> > +								 MLX5_FS_VLAN_DEPTH)) {
-> > +				NL_SET_ERR_MSG_MOD(extack,
-> > +						   "vlan pop action is not supported");
-> >   				return -EOPNOTSUPP;
-> > +			}
-> >   			*action |= MLX5_FLOW_CONTEXT_ACTION_VLAN_POP_2;
-> >   		} else {
-> > @@ -3542,20 +3569,27 @@ static int parse_tc_vlan_action(struct mlx5e_priv *priv,
-> >   		if (vlan_idx) {
-> >   			if (!mlx5_eswitch_vlan_actions_supported(priv->mdev,
-> > -								 MLX5_FS_VLAN_DEPTH))
-> > +								 MLX5_FS_VLAN_DEPTH)) {
-> > +				NL_SET_ERR_MSG_MOD(extack,
-> > +						   "vlan push action is not supported for vlan depth > 1");
-> >   				return -EOPNOTSUPP;
-> > +			}
-> >   			*action |= MLX5_FLOW_CONTEXT_ACTION_VLAN_PUSH_2;
-> >   		} else {
-> >   			if (!mlx5_eswitch_vlan_actions_supported(priv->mdev, 1) &&
-> >   			    (act->vlan.proto != htons(ETH_P_8021Q) ||
-> > -			     act->vlan.prio))
-> > +			     act->vlan.prio)) {
-> > +				NL_SET_ERR_MSG_MOD(extack,
-> > +						   "vlan push action is not supported");
-> >   				return -EOPNOTSUPP;
-> > +			}
-> >   			*action |= MLX5_FLOW_CONTEXT_ACTION_VLAN_PUSH;
-> >   		}
-> >   		break;
-> >   	default:
-> > +		NL_SET_ERR_MSG_MOD(extack, "Unexpected action id for VLAN");
-> >   		return -EINVAL;
-> >   	}
-> > @@ -3589,7 +3623,8 @@ static struct net_device *get_fdb_out_dev(struct net_device *uplink_dev,
-> >   static int add_vlan_push_action(struct mlx5e_priv *priv,
-> >   				struct mlx5_flow_attr *attr,
-> >   				struct net_device **out_dev,
-> > -				u32 *action)
-> > +				u32 *action,
-> > +				struct netlink_ext_ack *extack)
-> >   {
-> >   	struct net_device *vlan_dev = *out_dev;
-> >   	struct flow_action_entry vlan_act = {
-> > @@ -3600,7 +3635,7 @@ static int add_vlan_push_action(struct mlx5e_priv *priv,
-> >   	};
-> >   	int err;
-> > -	err = parse_tc_vlan_action(priv, &vlan_act, attr->esw_attr, action);
-> > +	err = parse_tc_vlan_action(priv, &vlan_act, attr->esw_attr, action, extack);
-> >   	if (err)
-> >   		return err;
-> > @@ -3611,14 +3646,15 @@ static int add_vlan_push_action(struct mlx5e_priv *priv,
-> >   		return -ENODEV;
-> >   	if (is_vlan_dev(*out_dev))
-> > -		err = add_vlan_push_action(priv, attr, out_dev, action);
-> > +		err = add_vlan_push_action(priv, attr, out_dev, action, extack);
-> >   	return err;
-> >   }
-> >   static int add_vlan_pop_action(struct mlx5e_priv *priv,
-> >   			       struct mlx5_flow_attr *attr,
-> > -			       u32 *action)
-> > +			       u32 *action,
-> > +			       struct netlink_ext_ack *extack)
-> >   {
-> >   	struct flow_action_entry vlan_act = {
-> >   		.id = FLOW_ACTION_VLAN_POP,
-> > @@ -3628,7 +3664,7 @@ static int add_vlan_pop_action(struct mlx5e_priv *priv,
-> >   	nest_level = attr->parse_attr->filter_dev->lower_level -
-> >   						priv->netdev->lower_level;
-> >   	while (nest_level--) {
-> > -		err = parse_tc_vlan_action(priv, &vlan_act, attr->esw_attr, action);
-> > +		err = parse_tc_vlan_action(priv, &vlan_act, attr->esw_attr, action, extack);
-> >   		if (err)
-> >   			return err;
-> >   	}
-> > @@ -3751,12 +3787,16 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
-> >   	int err, i, if_count = 0;
-> >   	bool mpls_push = false;
-> > -	if (!flow_action_has_entries(flow_action))
-> > +	if (!flow_action_has_entries(flow_action)) {
-> > +		NL_SET_ERR_MSG_MOD(extack, "Flow action doesn't have any entries");
-> >   		return -EINVAL;
-> > +	}
-> >   	if (!flow_action_hw_stats_check(flow_action, extack,
-> > -					FLOW_ACTION_HW_STATS_DELAYED_BIT))
-> > +					FLOW_ACTION_HW_STATS_DELAYED_BIT)) {
-> > +		NL_SET_ERR_MSG_MOD(extack, "Flow Action HW stats check is not supported");
-> >   		return -EOPNOTSUPP;
-> > +	}
-> >   	esw_attr = attr->esw_attr;
-> >   	parse_attr = attr->parse_attr;
-> > @@ -3900,14 +3940,14 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
-> >   				if (is_vlan_dev(out_dev)) {
-> >   					err = add_vlan_push_action(priv, attr,
-> >   								   &out_dev,
-> > -								   &action);
-> > +								   &action, extack);
-> >   					if (err)
-> >   						return err;
-> >   				}
-> >   				if (is_vlan_dev(parse_attr->filter_dev)) {
-> >   					err = add_vlan_pop_action(priv, attr,
-> > -								  &action);
-> > +								  &action, extack);
-> >   					if (err)
-> >   						return err;
-> >   				}
-> > @@ -3953,10 +3993,13 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
-> >   			break;
-> >   		case FLOW_ACTION_TUNNEL_ENCAP:
-> >   			info = act->tunnel;
-> > -			if (info)
-> > +			if (info) {
-> >   				encap = true;
-> > -			else
-> > +			} else {
-> > +				NL_SET_ERR_MSG_MOD(extack,
-> > +						   "Zero tunnel attributes is not supported");
-> >   				return -EOPNOTSUPP;
-> > +			}
-> >   			break;
-> >   		case FLOW_ACTION_VLAN_PUSH:
-> > @@ -3970,7 +4013,7 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
-> >   							      act, parse_attr, hdrs,
-> >   							      &action, extack);
-> >   			} else {
-> > -				err = parse_tc_vlan_action(priv, act, esw_attr, &action);
-> > +				err = parse_tc_vlan_action(priv, act, esw_attr, &action, extack);
-> >   			}
-> >   			if (err)
-> >   				return err;
-> > @@ -4023,7 +4066,8 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
-> >   			flow_flag_set(flow, SAMPLE);
-> >   			break;
-> >   		default:
-> > -			NL_SET_ERR_MSG_MOD(extack, "The offload action is not supported");
-> > +			NL_SET_ERR_MSG_MOD(extack,
-> > +					   "The offload action is not supported in FDB action");
-> >   			return -EOPNOTSUPP;
-> >   		}
-> >   	}
-> > @@ -4731,8 +4775,10 @@ static int scan_tc_matchall_fdb_actions(struct mlx5e_priv *priv,
-> >   		return -EOPNOTSUPP;
-> >   	}
-> > -	if (!flow_action_basic_hw_stats_check(flow_action, extack))
-> > +	if (!flow_action_basic_hw_stats_check(flow_action, extack)) {
-> > +		NL_SET_ERR_MSG_MOD(extack, "Flow Action HW stats check is not supported");
-> >   		return -EOPNOTSUPP;
-> > +	}
-> >   	flow_action_for_each(i, act, flow_action) {
-> >   		switch (act->id) {
-> > 
+Fixes: d25a0fc41c1f ("ice: Initialize RDMA support")
+Signed-off-by: Jun Miao <jun.miao@windriver.com>
+---
+ drivers/net/ethernet/intel/ice/ice_main.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-Thanks & Regards,
-Abhiram R N
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 0d6c143f6653..947a47d10855 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -4615,7 +4615,10 @@ static void ice_remove(struct pci_dev *pdev)
+ 
+ 	ice_aq_cancel_waiting_tasks(pf);
+ 	ice_unplug_aux_dev(pf);
+-	ida_free(&ice_aux_ida, pf->aux_idx);
++
++	if (ice_is_aux_ena(pf))
++		ida_free(&ice_aux_ida, pf->aux_idx);
++
+ 	set_bit(ICE_DOWN, pf->state);
+ 
+ 	mutex_destroy(&(&pf->hw)->fdir_fltr_lock);
+-- 
+2.32.0
 
