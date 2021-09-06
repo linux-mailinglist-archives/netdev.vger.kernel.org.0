@@ -2,72 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C4DFA4015E4
-	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 07:30:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70C27401616
+	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 07:56:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238744AbhIFF0O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Sep 2021 01:26:14 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:38688 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230340AbhIFF0N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Sep 2021 01:26:13 -0400
-Received: by mail-io1-f70.google.com with SMTP id n8-20020a6b7708000000b005bd491bdb6aso4410674iom.5
-        for <netdev@vger.kernel.org>; Sun, 05 Sep 2021 22:25:07 -0700 (PDT)
+        id S238941AbhIFF4D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Sep 2021 01:56:03 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:45431 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231271AbhIFF4B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Sep 2021 01:56:01 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1630907696;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=uXUj74/nW7Dop13kd56Tk5oKTffqICUe0M10X4WaPl4=;
+        b=GUdZ1eZQlzCOGh1NwV8LtGH2T8rzYVbjGWgYpiIJXoRpQ92bQe12hhNowOqoFXtPMxzW5u
+        aP3PYHxyAmwSjUySiwvrIceX1TPdj2cz/H7djZxQi1eHPdnARmD4QnZmPJUGR8BF2LTKWC
+        5MAZc/xWES7JWGitNVqcR86RsKXi2zg=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-238-1z0ZaUuwNyuGdiWlLRL0WQ-1; Mon, 06 Sep 2021 01:54:55 -0400
+X-MC-Unique: 1z0ZaUuwNyuGdiWlLRL0WQ-1
+Received: by mail-wm1-f69.google.com with SMTP id u1-20020a05600c210100b002e74fc5af71so1931134wml.1
+        for <netdev@vger.kernel.org>; Sun, 05 Sep 2021 22:54:55 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=ZvVDoBv3IAH8y1S0lXBguVVm08g+13BDGKyt9/bor9Y=;
-        b=N8ZiAjjNT52U4mCRlOdac7sNgHsk3D3RIFm7GOiCnPVc9cwbrae35pZc3FXvVbfS1p
-         1JSwr5niuixCW82n+c65eXLCOFBjxBVhBmHZDIf4xGWTXFBG96yGhxyWtLHK0K518zfe
-         T3oyNVt8Ku8CAU+w5pGauWlq31RpSmzCICYCKUjVcemEpuVrbZasgUn9UgRW8xrzyaoT
-         IIPwaKp3v7pGKDyEQyn2YXb9qiB9zxy4tVzq0+K5W/6tcwKRbYc+72VQLU3UeDT1OuEx
-         zkjoT44p0zB3eicsBjTPMEMhb8ds3PNnjTbiH5HSxrxVHx84ZiFvCQlyrjXvokf2pCgR
-         4LMA==
-X-Gm-Message-State: AOAM532Eyy0Jj3BbM2Kid8iB+PmXWjqgARZXmZD8bLT+oooTdc2zAMrE
-        vEI67NWVg33vSyYsTDb6QigeXAzjgaEw5jzF8+xCie/rMHMj
-X-Google-Smtp-Source: ABdhPJzd449QRHh060sSTuNCXAhTIrwXmTA69htRCTu+gj5HcaUCJCrRFnuZykGCC4UYH518hB/hhMO85JbepGiR6Qh7k2AHNNjo
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=uXUj74/nW7Dop13kd56Tk5oKTffqICUe0M10X4WaPl4=;
+        b=j0R7uy/pD1EVb4DpL7qf1Iqd+f4AbTPtSDPOpIn0znkZdCoASC/6WHc07w42h7ippX
+         KT0bONx15hLv7GiY4bb5VlLEpBTmp3+QxoZ/vRHgf7KfC6cLNO9n8o2ccL/mjlgAWtzl
+         jt68nC7cIM3ED3qh6/0qFT7UieJo+JOYHkUQIVXJqIZEl4E67/1jwwrDOFeWx3x+5Rjv
+         Z+aYZX2M7oVzlHZ14VNsdC1MzXLcuNAc8JPuOyQOGu5WTuICwAif93wI08pPJZruiWCE
+         QpNkKVcFbN+AUO9It3PRIiozOdubQ6+Uu+GNpwOPeph9YzOs/90Sro6J9Q4/Ei5t5hgv
+         L+jQ==
+X-Gm-Message-State: AOAM5337zJAKr5lCxqYcZqzul3zq9F7rVvsV+67Z3Yqk3cEzFUEs5581
+        30cqVTsdvNB+npBys6UO4VATN0gnN4344HLZzAU1SkEm1Uqg8btID+XvKU41Zhg1D7YDcsEHU4j
+        ifC0oo852E48PrVId
+X-Received: by 2002:adf:c14c:: with SMTP id w12mr11478515wre.115.1630907694559;
+        Sun, 05 Sep 2021 22:54:54 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzR1O2bgM/VI9yvbWaSh3BRtvaI+DJ+X6rHFaklEn67szHR3xlYEE2NCPwCA7NsX4rJPFqdkg==
+X-Received: by 2002:adf:c14c:: with SMTP id w12mr11478480wre.115.1630907694360;
+        Sun, 05 Sep 2021 22:54:54 -0700 (PDT)
+Received: from redhat.com ([2.55.131.183])
+        by smtp.gmail.com with ESMTPSA id h8sm6166143wmb.35.2021.09.05.22.54.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 05 Sep 2021 22:54:53 -0700 (PDT)
+Date:   Mon, 6 Sep 2021 01:54:46 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Xie Yongji <xieyongji@bytedance.com>
+Cc:     jasowang@redhat.com, stefanha@redhat.com, sgarzare@redhat.com,
+        parav@nvidia.com, hch@infradead.org,
+        christian.brauner@canonical.com, rdunlap@infradead.org,
+        willy@infradead.org, viro@zeniv.linux.org.uk, axboe@kernel.dk,
+        bcrl@kvack.org, corbet@lwn.net, mika.penttila@nextfour.com,
+        dan.carpenter@oracle.com, joro@8bytes.org,
+        gregkh@linuxfoundation.org, zhe.he@windriver.com,
+        xiaodong.liu@intel.com, joe@perches.com, robin.murphy@arm.com,
+        will@kernel.org, john.garry@huawei.com, songmuchun@bytedance.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v12 05/13] vdpa: Add reset callback in vdpa_config_ops
+Message-ID: <20210906015243-mutt-send-email-mst@kernel.org>
+References: <20210830141737.181-1-xieyongji@bytedance.com>
+ <20210830141737.181-6-xieyongji@bytedance.com>
 MIME-Version: 1.0
-X-Received: by 2002:a02:294b:: with SMTP id p72mr9242294jap.0.1630905907569;
- Sun, 05 Sep 2021 22:25:07 -0700 (PDT)
-Date:   Sun, 05 Sep 2021 22:25:07 -0700
-In-Reply-To: <000000000000ed8c0a05cb1ff6d8@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000486b8b05cb4cdf5c@google.com>
-Subject: Re: [syzbot] WARNING: kmalloc bug in nf_tables_newset
-From:   syzbot <syzbot+cd43695a64bcd21b8596@syzkaller.appspotmail.com>
-To:     akpm@linux-foundation.org, coreteam@netfilter.org,
-        davem@davemloft.net, eric.dumazet@gmail.com, fw@strlen.de,
-        kadlec@netfilter.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        pablo@netfilter.org, syzkaller-bugs@googlegroups.com,
-        torvalds@linux-foundation.org, w@1wt.eu
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210830141737.181-6-xieyongji@bytedance.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this issue to:
+On Mon, Aug 30, 2021 at 10:17:29PM +0800, Xie Yongji wrote:
+> This adds a new callback to support device specific reset
+> behavior. The vdpa bus driver will call the reset function
+> instead of setting status to zero during resetting.
+> 
+> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
 
-commit 7661809d493b426e979f39ab512e3adf41fbcc69
-Author: Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed Jul 14 16:45:49 2021 +0000
+This does gloss over a significant change though:
 
-    mm: don't allow oversized kvmalloc() calls
+> @@ -348,12 +352,12 @@ static inline struct device *vdpa_get_dma_dev(struct vdpa_device *vdev)
+>  	return vdev->dma_dev;
+>  }
+>  
+> -static inline void vdpa_reset(struct vdpa_device *vdev)
+> +static inline int vdpa_reset(struct vdpa_device *vdev)
+>  {
+>  	const struct vdpa_config_ops *ops = vdev->config;
+>  
+>  	vdev->features_valid = false;
+> -	ops->set_status(vdev, 0);
+> +	return ops->reset(vdev);
+>  }
+>  
+>  static inline int vdpa_set_features(struct vdpa_device *vdev, u64 features)
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15f767b1300000
-start commit:   a9c9a6f741cd Merge tag 'scsi-misc' of git://git.kernel.org..
-git tree:       upstream
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=17f767b1300000
-console output: https://syzkaller.appspot.com/x/log.txt?x=13f767b1300000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=7860a0536ececf0c
-dashboard link: https://syzkaller.appspot.com/bug?extid=cd43695a64bcd21b8596
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13281b33300000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1077b4b9300000
+Unfortunately this breaks virtio_vdpa:
 
-Reported-by: syzbot+cd43695a64bcd21b8596@syzkaller.appspotmail.com
-Fixes: 7661809d493b ("mm: don't allow oversized kvmalloc() calls")
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+static void virtio_vdpa_reset(struct virtio_device *vdev)
+{
+        struct vdpa_device *vdpa = vd_get_vdpa(vdev);
+
+        vdpa_reset(vdpa);
+}
+
+
+and there's no easy way to fix this, kernel can't recover
+from a reset failure e.g. during driver unbind.
+
+Find a way to disable virtio_vdpa for now?
+
+> -- 
+> 2.11.0
+
