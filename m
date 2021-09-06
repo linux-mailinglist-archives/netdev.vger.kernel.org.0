@@ -2,235 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A8E41401A9B
-	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 13:31:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DEA4D401AB8
+	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 13:45:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241229AbhIFLc3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Sep 2021 07:32:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:43748 "EHLO
+        id S241366AbhIFLqy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Sep 2021 07:46:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:56974 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240407AbhIFLcY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Sep 2021 07:32:24 -0400
+        by vger.kernel.org with ESMTP id S238683AbhIFLqy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Sep 2021 07:46:54 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1630927879;
+        s=mimecast20190719; t=1630928749;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ifh2AKn2IYRrBAFZpGRrv4Jn5qIpOvQyMh+sOZEw61k=;
-        b=I0aDSYu6O8oj1Gm3ew8jOBv5gW7vTSPAv7VjdzjnIiheg1G0+WzJjC1C/tI39sRyJgfXCq
-        cyMJXQv01f6bVpofLj+LUD9lP0tqVbZxAqTy9lmJP4ccdIHHXbk2z2DTKTepUMHo2to3aw
-        +7Amyy4G/g+1b5O8WVY9hyWpxDXg/K0=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-6-AnpIvmnqORCQGcMEXZHIyg-1; Mon, 06 Sep 2021 07:31:18 -0400
-X-MC-Unique: AnpIvmnqORCQGcMEXZHIyg-1
-Received: by mail-wm1-f72.google.com with SMTP id j33-20020a05600c48a100b002e879427915so2227163wmp.5
-        for <netdev@vger.kernel.org>; Mon, 06 Sep 2021 04:31:18 -0700 (PDT)
+        bh=FD68V5/mIZyw6+xqFrXs0v7DkrCCsMsknSF1z9hZHDc=;
+        b=DLj08bwhOlzzzSWL79Hj36hOLSoEGUwXbKu7XmU7ZRohua0+H+/K48I6nX77yOwmlzEPnG
+        kY0aXomXhybbKJeVujdk6pu3uxCJ50P/s0CTuIZb5PerbA4aQdSh5D90d3CtTNLSWbcGJa
+        UKiMYzn/QShUuoF1GN6Aqb9ZGUNRC3s=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-114-MKibeZu5NWamKxJtrDIwyQ-1; Mon, 06 Sep 2021 07:45:48 -0400
+X-MC-Unique: MKibeZu5NWamKxJtrDIwyQ-1
+Received: by mail-ed1-f71.google.com with SMTP id w18-20020aa7cb52000000b003c95870200fso3420651edt.16
+        for <netdev@vger.kernel.org>; Mon, 06 Sep 2021 04:45:47 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:cc:subject:to:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ifh2AKn2IYRrBAFZpGRrv4Jn5qIpOvQyMh+sOZEw61k=;
-        b=FOpjQ+AORKdYrz2JfsdtqRYmEB0g0mfQ+z7YKF8rjJ9FvHTyXiBe5NA6iPAMNawpGY
-         RTXd9e5j8lCNQRXui13Q6UItCkqZmZ2JFjC5PLX7H0marsjUK1g74HCLQpxqs9B8ueLo
-         G4Zt6TBzamQsiwllzz33/P+SXp5vD9mm7bsGznH36VHlQTEb8sYsCvxZVYNk3n76vxnt
-         xkD+AkgBflCHiy7uSI2VevYEOCl3gx4A6GlU+IJRhDir7vX8vm80KK+DiskGZ73nFNtO
-         LUScprz3pcOzbU2/BfRldGX9tWwJ/4jfBfd1l3nv6pUC/0VvyEc9g3GLDWH777YSyVv7
-         h1ag==
-X-Gm-Message-State: AOAM5323h9IslcZHoaVScDBEhX1x28uCNRv9ic1vAilEAkdAuw6szvu8
-        TX88mlt1PO0zLIkSicwE83jEbcIzJkECQmjwkNK1KDFk/Vpj8LIBLRnsCsOfhC2TOxk0pzYYf3N
-        lWNLXh0QSS3zUy+jZ
-X-Received: by 2002:adf:eb4a:: with SMTP id u10mr12773349wrn.11.1630927877227;
-        Mon, 06 Sep 2021 04:31:17 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwRDD+CFWqGasfoJ4bWw1zXPZwgO49ADZdpw61tpeyBjS5qkitLHCkPuytVwq/iV6MGXa+HdQ==
-X-Received: by 2002:adf:eb4a:: with SMTP id u10mr12773300wrn.11.1630927876958;
-        Mon, 06 Sep 2021 04:31:16 -0700 (PDT)
-Received: from [192.168.42.238] (3-14-107-185.static.kviknet.dk. [185.107.14.3])
-        by smtp.gmail.com with ESMTPSA id u26sm7984094wrd.32.2021.09.06.04.31.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Sep 2021 04:31:16 -0700 (PDT)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     brouer@redhat.com, duanxiongchun@bytedance.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        zhengqi.arch@bytedance.com, chenying.kernel@bytedance.com,
-        intel-wired-lan@lists.osuosl.org, songmuchun@bytedance.com,
-        bpf@vger.kernel.org, wangdongdong.6@bytedance.com,
-        zhouchengming@bytedance.com, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, jeffrey.t.kirsher@intel.com,
-        magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: Re: [External] Re: [Intel-wired-lan] [PATCH v2] ixgbe: Fix NULL
- pointer dereference in ixgbe_xdp_setup
-To:     Feng Zhou <zhoufeng.zf@bytedance.com>,
-        Paul Menzel <pmenzel@molgen.mpg.de>,
-        Jason Xing <xingwanli@kuaishou.com>
-References: <20210903064013.9842-1-zhoufeng.zf@bytedance.com>
- <2ee172ab-836c-d464-be59-935030d01f4b@molgen.mpg.de>
- <8ce8de1c-14bf-20ad-00c0-9e0d8ff34b91@bytedance.com>
-Message-ID: <318e7f75-287e-148a-cdb0-648b7c36e0a9@redhat.com>
-Date:   Mon, 6 Sep 2021 13:31:14 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=FD68V5/mIZyw6+xqFrXs0v7DkrCCsMsknSF1z9hZHDc=;
+        b=p7P+eUCcmT6MZOQy7gZB3Z+X8mE0Rfm0h2xjxEnaDhK7Q8GSp9NlSstcT0rRrtWXv0
+         0sYRTlpHv//RMf0gEbSiKPBrT+l2SzX6/z0Ii5zTJd2O9qWcWcJWG5RZ4yt0S2ruJ0/H
+         cOtIi8BeyIFNYGRkMu0lWIDyOCrlxBGo/CAlc2dl2nwkmAlJQJR3m5Glr8kFA2iyEG6C
+         K8RXdZwMD2KzCj/Dh+4EDNpB3sKzs/vSV8CxUmjE4ds5SWEYQ/OVG21Wnbqwr8pl/4Nw
+         MDg7jXFv18j4rJ7c2X6XXvsFR4/fmi9LLs3PhxIVofJoHgr9TUJ3ixHqn91mcCzH/9lr
+         TJAQ==
+X-Gm-Message-State: AOAM533921XCQMGupCD58Gh19YDDu1k3ZCifmqHDSkt2M00KVJpXtGV5
+        ClenZcWc0T69ExCXLGzpuJ3lS3zAiBMUEEKDLyaWyPQEkmqvZrFZ7Zrm4YuS6srjjS3ks+s9qQa
+        9GRResIDX0FqFB6TL
+X-Received: by 2002:aa7:c5cb:: with SMTP id h11mr13094562eds.255.1630928746060;
+        Mon, 06 Sep 2021 04:45:46 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwRiM23jDm9wRkk6LQ5A09USsfHjsc69oq/+XQi954hhFssz+ZFE01x3Ag1TEC1myedjDBmvg==
+X-Received: by 2002:aa7:c5cb:: with SMTP id h11mr13094459eds.255.1630928744621;
+        Mon, 06 Sep 2021 04:45:44 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id h22sm3738217eji.112.2021.09.06.04.45.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Sep 2021 04:45:43 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 3C3D418022B; Mon,  6 Sep 2021 13:45:38 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Cong Wang <cong.wang@bytedance.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Subject: Re: [RFC Patch net-next] net_sched: introduce eBPF based Qdisc
+In-Reply-To: <CAM_iQpUhmYBvu7p_jdiYxxPLqMmo3EFfRPfEsciCypUpM58UnQ@mail.gmail.com>
+References: <20210821010240.10373-1-xiyou.wangcong@gmail.com>
+ <20210824234700.qlteie6al3cldcu5@kafai-mbp>
+ <CAM_iQpWP_kvE58Z+363n+miTQYPYLn6U4sxMKVaDvuRvjJo_Tg@mail.gmail.com>
+ <612f137f4dc5c_152fe20891@john-XPS-13-9370.notmuch>
+ <871r68vapw.fsf@toke.dk>
+ <CAM_iQpUhmYBvu7p_jdiYxxPLqMmo3EFfRPfEsciCypUpM58UnQ@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Mon, 06 Sep 2021 13:45:38 +0200
+Message-ID: <87fsuiq659.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <8ce8de1c-14bf-20ad-00c0-9e0d8ff34b91@bytedance.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Feng and Jason,
+Cong Wang <xiyou.wangcong@gmail.com> writes:
 
-Please notice that you are both developing patches that change the ixgbe 
-driver in related areas.
+> On Wed, Sep 1, 2021 at 3:42 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@red=
+hat.com> wrote:
+>>
+>> John Fastabend <john.fastabend@gmail.com> writes:
+>>
+>> > Cong Wang wrote:
+>> >> On Tue, Aug 24, 2021 at 4:47 PM Martin KaFai Lau <kafai@fb.com> wrote:
+>> >> > Please explain more on this.  What is currently missing
+>> >> > to make qdisc in struct_ops possible?
+>> >>
+>> >> I think you misunderstand this point. The reason why I avoid it is
+>> >> _not_ anything is missing, quite oppositely, it is because it requires
+>> >> a lot of work to implement a Qdisc with struct_ops approach, literally
+>> >> all those struct Qdisc_ops (not to mention struct Qdisc_class_ops).
+>> >> WIth current approach, programmers only need to implement two
+>> >> eBPF programs (enqueue and dequeue).
+>> >>
+>> >> Thanks.
+>> >
+>> > Another idea. Rather than work with qdisc objects which creates all
+>> > these issues with how to work with existing interfaces, filters, etc.
+>> > Why not create an sk_buff map? Then this can be used from the existing
+>> > egress/ingress hooks independent of the actual qdisc being used.
+>>
+>> I agree. In fact, I'm working on doing just this for XDP, and I see no
+>> reason why the map type couldn't be reused for skbs as well. Doing it
+>> this way has a couple of benefits:
+>
+> I do see a lot of reasons, for starters, struct skb_buff is very different
+> from struct xdp_buff, any specialized map can not be reused. I guess you
+> are using a generic one, how do you handle the refcnt at least for skb?
 
-Jason's patch:
-  Subject: [PATCH v7] ixgbe: let the xdpdrv work with more than 64 cpus
- 
-https://lore.kernel.org/all/20210901101206.50274-1-kerneljasonxing@gmail.com/
+Well, you can't keep XDP frames and skbs in the same map instance, but
+you can create a map type that can be instantiated to hold either type
+and otherwise keep the same semantics. The map can just inc/dec the
+refcnt as skbs are added/removed from it.
 
-We might need both as this patch looks like a fix to a panic, and 
-Jason's patch allows XDP on ixgbe to work on machines with more than 64 
-CPUs.
+>> - It leaves more flexibility to BPF: want a simple FIFO queue? just
+>>   implement that with a single queue map. Or do you want to build a full
+>>   hierarchical queueing structure? Just instantiate as many queue maps
+>>   as you need to achieve this. Etc.
+>
+> Please give an example without a queue. ;) Queue is too simple, show us
+> something more useful please. How do you plan to re-implement EDT with
+> just queues?
 
--Jesper
+I'm using 'queue' as a shorthand for any queueing/scheduling algorithm
+implementable by a qdisc. We need to cover them all, obviously, not just
+FIFO queues (in fact I think we should actively be discouraging those,
+but that's a different story :) )
 
-On 06/09/2021 09.49, Feng Zhou wrote:
-> 
-> 在 2021/9/6 下午2:37, Paul Menzel 写道:
->> Dear Feng,
->>
->>
->> Am 03.09.21 um 08:40 schrieb Feng zhou:
->>
->> (If you care, in your email client, your last name does not start with 
->> a capital letter.)
->>
->>> From: Feng Zhou <zhoufeng.zf@bytedance.com>
->>>
->>> The ixgbe driver currently generates a NULL pointer dereference with
->>> some machine (online cpus < 63). This is due to the fact that the
->>> maximum value of num_xdp_queues is nr_cpu_ids. Code is in
->>> "ixgbe_set_rss_queues"".
->>>
->>> Here's how the problem repeats itself:
->>> Some machine (online cpus < 63), And user set num_queues to 63 through
->>> ethtool. Code is in the "ixgbe_set_channels",
->>> adapter->ring_feature[RING_F_FDIR].limit = count;
->>
->> For better legibility, you might want to indent code (blocks) by four 
->> spaces and add blank lines around it (also below).
->>
->>> It becames 63.
->>
->> becomes
->>
->>> When user use xdp, "ixgbe_set_rss_queues" will set queues num.
->>> adapter->num_rx_queues = rss_i;
->>> adapter->num_tx_queues = rss_i;
->>> adapter->num_xdp_queues = ixgbe_xdp_queues(adapter);
->>> And rss_i's value is from
->>> f = &adapter->ring_feature[RING_F_FDIR];
->>> rss_i = f->indices = f->limit;
->>> So "num_rx_queues" > "num_xdp_queues", when run to "ixgbe_xdp_setup",
->>> for (i = 0; i < adapter->num_rx_queues; i++)
->>>     if (adapter->xdp_ring[i]->xsk_umem)
->>> lead to panic.
->>
->> lead*s*?
->>
->>> Call trace:
->>> [exception RIP: ixgbe_xdp+368]
->>> RIP: ffffffffc02a76a0  RSP: ffff9fe16202f8d0  RFLAGS: 00010297
->>> RAX: 0000000000000000  RBX: 0000000000000020  RCX: 0000000000000000
->>> RDX: 0000000000000000  RSI: 000000000000001c  RDI: ffffffffa94ead90
->>> RBP: ffff92f8f24c0c18   R8: 0000000000000000   R9: 0000000000000000
->>> R10: ffff9fe16202f830  R11: 0000000000000000  R12: ffff92f8f24c0000
->>> R13: ffff9fe16202fc01  R14: 000000000000000a  R15: ffffffffc02a7530
->>> ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
->>>   7 [ffff9fe16202f8f0] dev_xdp_install at ffffffffa89fbbcc
->>>   8 [ffff9fe16202f920] dev_change_xdp_fd at ffffffffa8a08808
->>>   9 [ffff9fe16202f960] do_setlink at ffffffffa8a20235
->>> 10 [ffff9fe16202fa88] rtnl_setlink at ffffffffa8a20384
->>> 11 [ffff9fe16202fc78] rtnetlink_rcv_msg at ffffffffa8a1a8dd
->>> 12 [ffff9fe16202fcf0] netlink_rcv_skb at ffffffffa8a717eb
->>> 13 [ffff9fe16202fd40] netlink_unicast at ffffffffa8a70f88
->>> 14 [ffff9fe16202fd80] netlink_sendmsg at ffffffffa8a71319
->>> 15 [ffff9fe16202fdf0] sock_sendmsg at ffffffffa89df290
->>> 16 [ffff9fe16202fe08] __sys_sendto at ffffffffa89e19c8
->>> 17 [ffff9fe16202ff30] __x64_sys_sendto at ffffffffa89e1a64
->>> 18 [ffff9fe16202ff38] do_syscall_64 at ffffffffa84042b9
->>> 19 [ffff9fe16202ff50] entry_SYSCALL_64_after_hwframe at ffffffffa8c0008c
->>
->> Please describe the fix in the commit message.
->>
->>> Fixes: 4a9b32f30f80 ("ixgbe: fix potential RX buffer starvation for
->>> AF_XDP")
->>> Signed-off-by: Feng Zhou <zhoufeng.zf@bytedance.com>
->>> ---
->>> Updates since v1:
->>> - Fix "ixgbe_max_channels" callback so that it will not allow a 
->>> setting of
->>> queues to be higher than the num_online_cpus().
->>> more details can be seen from here:
->>> https://patchwork.ozlabs.org/project/intel-wired-lan/patch/20210817075407.11961-1-zhoufeng.zf@bytedance.com/ 
->>>
->>> Thanks to Maciej Fijalkowski for your advice.
->>>
->>>   drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c | 2 +-
->>>   drivers/net/ethernet/intel/ixgbe/ixgbe_main.c    | 8 ++++++--
->>>   2 files changed, 7 insertions(+), 3 deletions(-)
->>>
->>> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c 
->>> b/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
->>> index 4ceaca0f6ce3..21321d164708 100644
->>> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
->>> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
->>> @@ -3204,7 +3204,7 @@ static unsigned int ixgbe_max_channels(struct 
->>> ixgbe_adapter *adapter)
->>>           max_combined = ixgbe_max_rss_indices(adapter);
->>>       }
->>>   -    return max_combined;
->>> +    return min_t(int, max_combined, num_online_cpus());
->>>   }
->>>     static void ixgbe_get_channels(struct net_device *dev,
->>> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c 
->>> b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
->>> index 14aea40da50f..5db496cc5070 100644
->>> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
->>> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
->>> @@ -10112,6 +10112,7 @@ static int ixgbe_xdp_setup(struct net_device 
->>> *dev, struct bpf_prog *prog)
->>>       struct ixgbe_adapter *adapter = netdev_priv(dev);
->>>       struct bpf_prog *old_prog;
->>>       bool need_reset;
->>> +    int num_queues;
->>>         if (adapter->flags & IXGBE_FLAG_SRIOV_ENABLED)
->>>           return -EINVAL;
->>> @@ -10161,11 +10162,14 @@ static int ixgbe_xdp_setup(struct 
->>> net_device *dev, struct bpf_prog *prog)
->>>       /* Kick start the NAPI context if there is an AF_XDP socket open
->>>        * on that queue id. This so that receiving will start.
->>>        */
->>> -    if (need_reset && prog)
->>> -        for (i = 0; i < adapter->num_rx_queues; i++)
->>> +    if (need_reset && prog) {
->>> +        num_queues = min_t(int, adapter->num_rx_queues,
->>> +            adapter->num_xdp_queues);
->>> +        for (i = 0; i < num_queues; i++)
->>>               if (adapter->xdp_ring[i]->xsk_pool)
->>>                   (void)ixgbe_xsk_wakeup(adapter->netdev, i,
->>>                                  XDP_WAKEUP_RX);
->>> +    }
->>>         return 0;
->>>   }
->>>
-> Thanks for your advice. I will modify the commit message in v3
-> 
+For EDT it would be something like:
+
+- On enqueue, stick frames into the map with a rank corresponding to
+  their transmission time (the map implements the PIFO queue, just like
+  your patch).
+
+- (re-)arm a BPF timer to fire at the time of the next transmission
+  event, and have that timer trigger interface TX.
+
+The first bit is straight-forward, and that last bit needs a new helper
+or something like it. For qdiscs I guess we could just expose
+qdisc_watchdog()? For XDP we'd need something new...
+
+
+>> - The behaviour is defined entirely by BPF program behaviour, and does
+>>   not require setting up a qdisc hierarchy in addition to writing BPF
+>>   code.
+>
+> I have no idea why you call this a benefit, because my goal is to
+> replace Qdisc's, not to replace any other things. You know there are
+> plenty of Qdisc's which are not implemented in Linux kernel.
+
+It's a benefit because it means you can keep everything together. I.e.,
+you don't need to *both* write BPF code implementing your qdisc, *and* a
+setup script to build the qdisc hierarchy. That simplifies deployment.
+
+I suppose we could support inserting BPF qdiscs into a qdisc hierarchy
+as well if needed. I don't personally see much use for that, but if
+there's a use case, sure, why not?
+
+>> - It should be possible to structure the hooks in a way that allows
+>>   reusing queueing algorithm implementations between the qdisc and XDP
+>>   layers.
+>
+> XDP has no skb but xdp_buff, no? And again, why only queues?
+
+See above :)
+
+-Toke
 
