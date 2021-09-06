@@ -2,222 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C70B401B30
-	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 14:27:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8609401B5E
+	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 14:45:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242227AbhIFM23 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Sep 2021 08:28:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33546 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242100AbhIFM22 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Sep 2021 08:28:28 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68B3EC061757
-        for <netdev@vger.kernel.org>; Mon,  6 Sep 2021 05:27:23 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id lc21so13182437ejc.7
-        for <netdev@vger.kernel.org>; Mon, 06 Sep 2021 05:27:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=Y5hIRzIcGYWYEqJdUxq8kIJNt4wpkM8c30kp0VYy3s0=;
-        b=RpyN+7kHyZxh7p46y90oto/q/ZN++UGDtiIxG6GpGVk0trybvspmC+nH9gB70ft8Si
-         irAuD2Vd88vmIks9NwnrqTc0d/TmlkprPB64kM+pdqJNt9ewnxkL1btFlXHriUEDw2Na
-         yBAMXZ0VMyXpIJWR2HLr2sAKg2bF7XvHIVpYV4cfdyH3ZESXmQ6+QvzaD2OHAn8Si3eT
-         nWI9rJg1Od7tSj25gidkcnLp8eMNwQ/tpXtOMw/EuokwTQmeyh3pWW2Et6t0D610VJBP
-         aDS9AXD8Wssfk/L2jPaZlMR521EvfI9jy63yhz4pO9eXrvZHb+kSoTT6sAc0yL/teydo
-         vq0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=Y5hIRzIcGYWYEqJdUxq8kIJNt4wpkM8c30kp0VYy3s0=;
-        b=f4M8fiyYNhhH4U6RCa1Jq6cOj3aCzyQ0XYnxNOgzO0kSWJ2iMDmDrXoX6IVkyjOI+B
-         kNWlxu0Q82oApeVIoKjO86VK3IRFTXzoWCSsqfWlYJXfoLrR/vI1TF/2wr4AQawxrf6T
-         8Ds+fwbeogohyNdy0iuoQv8278WBqoO2Lwg/w+f75pDocEXWXv1xaV32VJENquRo3tNO
-         TUDJcaQlAbHdKv6dyQgoAgHAXEOA6Jp5Ld8WNOOyfhngaGBXo8VWms+22dJM+zzLdnve
-         yZ6op47jx6Fh2x0swU2V/DYsh/wWD6nKVOOiF81mGtB+vr4ma04AWmXmdZahdMh7e2lh
-         sGiA==
-X-Gm-Message-State: AOAM532qHQH733eczhQ63gkSLLO/mxhxWU4sayD3GR4VD+1CVZszmScx
-        KQuugFPEud+6EU8WVKQUt6o5SpHY6PNJUZG67TnCaw==
-X-Google-Smtp-Source: ABdhPJw0fbyJT0dChQiU4JYE+nMwo9KS/iOIxBb429I4Yc0RaqXikg9Jo2aRrEQxqUWcWGSxlBGOzJ4qEAlj8KR0Cpk=
-X-Received: by 2002:a17:906:84d0:: with SMTP id f16mr13543927ejy.6.1630931241703;
- Mon, 06 Sep 2021 05:27:21 -0700 (PDT)
-MIME-Version: 1.0
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Mon, 6 Sep 2021 17:57:10 +0530
-Message-ID: <CA+G9fYtFvJdtBknaDKR54HHMf4XsXKD4UD3qXkQ1KhgY19n3tw@mail.gmail.com>
-Subject: ipv4/tcp.c:4234:1: error: the frame size of 1152 bytes is larger than
- 1024 bytes [-Werror=frame-larger-than=]
-To:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>, lkft-triage@lists.linaro.org
-Cc:     Arnd Bergmann <arnd@arndb.de>,
+        id S242192AbhIFMp4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Sep 2021 08:45:56 -0400
+Received: from mga06.intel.com ([134.134.136.31]:4811 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241544AbhIFMp4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Sep 2021 08:45:56 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10098"; a="280971784"
+X-IronPort-AV: E=Sophos;i="5.85,272,1624345200"; 
+   d="scan'208";a="280971784"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2021 05:44:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.85,272,1624345200"; 
+   d="scan'208";a="537009956"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by FMSMGA003.fm.intel.com with ESMTP; 06 Sep 2021 05:44:48 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 8D2EA198; Mon,  6 Sep 2021 15:44:51 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     M Chetan Kumar <m.chetan.kumar@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Intel Corporation <linuxwwan@intel.com>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
         "David S. Miller" <davem@davemloft.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH v1 net-next 1/2] net: wwan: iosm: Replace io.*64_lo_hi() with regular accessors
+Date:   Mon,  6 Sep 2021 15:44:48 +0300
+Message-Id: <20210906124449.20742-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.33.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[Please ignore this email if it is already reported ]
-Following build warnings/ errors noticed while building linux mainline
-master branch
-with gcc-11 for arm architecture with provided config file.
+The io.*_lo_hi() variants are not strictly needed on the x86 hardware
+and especially the PCI bus. Replace them with regular accessors, but
+leave headers in place in case of 32-bit build.
 
-make --silent --keep-going --jobs=8
-O=/home/tuxbuild/.cache/tuxmake/builds/current ARCH=arm
-CROSS_COMPILE=arm-linux-gnueabihf- 'CC=sccache
-arm-linux-gnueabihf-gcc' 'HOSTCC=sccache gcc' olddefconfig
-make --silent --keep-going --jobs=8
-O=/home/tuxbuild/.cache/tuxmake/builds/current ARCH=arm
-CROSS_COMPILE=arm-linux-gnueabihf- 'CC=sccache
-arm-linux-gnueabihf-gcc' 'HOSTCC=sccache gcc'
-/builds/linux/arch/arm/boot/dts/bcm2711-rpi-4-b.dts:220.10-231.4:
-Warning (pci_device_reg): /scb/pcie@7d500000/pci@1,0: PCI unit address
-format error, expected 0,0
-/builds/linux/arch/arm/boot/dts/bcm2711-rpi-4-b.dts:220.10-231.4:
-Warning (pci_device_reg): /scb/pcie@7d500000/pci@1,0: PCI unit address
-format error, expected 0,0
-/builds/linux/net/ipv4/tcp.c: In function 'do_tcp_getsockopt.constprop':
-/builds/linux/net/ipv4/tcp.c:4234:1: error: the frame size of 1152
-bytes is larger than 1024 bytes [-Werror=frame-larger-than=]
- 4234 | }
-      | ^
-cc1: all warnings being treated as errors
-make[3]: *** [/builds/linux/scripts/Makefile.build:277: net/ipv4/tcp.o] Error 1
-/builds/linux/fs/select.c: In function 'do_sys_poll':
-/builds/linux/fs/select.c:1041:1: error: the frame size of 1264 bytes
-is larger than 1024 bytes [-Werror=frame-larger-than=]
- 1041 | }
-      | ^
-cc1: all warnings being treated as errors
-make[2]: *** [/builds/linux/scripts/Makefile.build:277: fs/select.o] Error 1
-make[3]: Target '__build' not remade because of errors.
-make[2]: *** [/builds/linux/scripts/Makefile.build:540: net/ipv4] Error 2
-make[2]: Target '__build' not remade because of errors.
-make[1]: *** [/builds/linux/Makefile:1872: fs] Error 2
-/builds/linux/net/mac80211/mlme.c: In function 'ieee80211_sta_rx_queued_mgmt':
-/builds/linux/net/mac80211/mlme.c:4345:1: error: the frame size of
-1040 bytes is larger than 1024 bytes [-Werror=frame-larger-than=]
- 4345 | }
-      | ^
-cc1: all warnings being treated as errors
-make[3]: *** [/builds/linux/scripts/Makefile.build:277:
-net/mac80211/mlme.o] Error 1
-make[3]: Target '__build' not remade because of errors.
-make[2]: *** [/builds/linux/scripts/Makefile.build:540: net/mac80211] Error 2
-make[2]: Target '__build' not remade because of errors.
-make[1]: *** [/builds/linux/Makefile:1872: net] Error 2
-/builds/linux/drivers/base/test/property-entry-test.c: In function
-'pe_test_uint_arrays':
-/builds/linux/drivers/base/test/property-entry-test.c:250:1: error:
-the frame size of 1040 bytes is larger than 1024 bytes
-[-Werror=frame-larger-than=]
-  250 | }
-      | ^
-cc1: all warnings being treated as errors
-make[4]: *** [/builds/linux/scripts/Makefile.build:277:
-drivers/base/test/property-entry-test.o] Error 1
-make[4]: Target '__build' not remade because of errors.
-make[3]: *** [/builds/linux/scripts/Makefile.build:540:
-drivers/base/test] Error 2
-make[3]: Target '__build' not remade because of errors.
-make[2]: *** [/builds/linux/scripts/Makefile.build:540: drivers/base] Error 2
-/builds/linux/drivers/usb/host/xhci.c: In function 'xhci_reserve_bandwidth':
-/builds/linux/drivers/usb/host/xhci.c:2867:1: error: the frame size of
-1064 bytes is larger than 1024 bytes [-Werror=frame-larger-than=]
- 2867 | }
-      | ^
-cc1: all warnings being treated as errors
-make[4]: *** [/builds/linux/scripts/Makefile.build:277:
-drivers/usb/host/xhci.o] Error 1
-make[4]: Target '__build' not remade because of errors.
-make[3]: *** [/builds/linux/scripts/Makefile.build:540:
-drivers/usb/host] Error 2
-/builds/linux/drivers/net/ethernet/qlogic/qede/qede_filter.c: In
-function 'qede_config_rx_mode':
-/builds/linux/drivers/net/ethernet/qlogic/qede/qede_filter.c:1278:1:
-error: the frame size of 1072 bytes is larger than 1024 bytes
-[-Werror=frame-larger-than=]
- 1278 | }
-      | ^
-cc1: all warnings being treated as errors
-make[6]: *** [/builds/linux/scripts/Makefile.build:277:
-drivers/net/ethernet/qlogic/qede/qede_filter.o] Error 1
-make[6]: Target '__build' not remade because of errors.
-make[5]: *** [/builds/linux/scripts/Makefile.build:540:
-drivers/net/ethernet/qlogic/qede] Error 2
-make[5]: Target '__build' not remade because of errors.
-make[4]: *** [/builds/linux/scripts/Makefile.build:540:
-drivers/net/ethernet/qlogic] Error 2
-make[3]: Target '__build' not remade because of errors.
-make[2]: *** [/builds/linux/scripts/Makefile.build:540: drivers/usb] Error 2
-make[4]: Target '__build' not remade because of errors.
-make[3]: *** [/builds/linux/scripts/Makefile.build:540:
-drivers/net/ethernet] Error 2
-make[3]: Target '__build' not remade because of errors.
-make[2]: *** [/builds/linux/scripts/Makefile.build:540: drivers/net] Error 2
-/builds/linux/drivers/media/dvb-frontends/mxl5xx.c: In function 'config_ts':
-/builds/linux/drivers/media/dvb-frontends/mxl5xx.c:1575:1: error: the
-frame size of 1232 bytes is larger than 1024 bytes
-[-Werror=frame-larger-than=]
- 1575 | }
-      | ^
-cc1: all warnings being treated as errors
-make[4]: *** [/builds/linux/scripts/Makefile.build:277:
-drivers/media/dvb-frontends/mxl5xx.o] Error 1
-make[4]: Target '__build' not remade because of errors.
-make[3]: *** [/builds/linux/scripts/Makefile.build:540:
-drivers/media/dvb-frontends] Error 2
-make[3]: Target '__build' not remade because of errors.
-make[2]: *** [/builds/linux/scripts/Makefile.build:540: drivers/media] Error 2
-make[2]: Target '__build' not remade because of errors.
-make[1]: *** [/builds/linux/Makefile:1872: drivers] Error 2
-make[1]: Target '__all' not remade because of errors.
-make: *** [Makefile:219: __sub-make] Error 2
-make: Target '__all' not remade because of errors.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/net/wwan/iosm/iosm_ipc_mmio.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Build config:
-https://builds.tuxbuild.com/1xjZpYj47LrrGs1OE1xApznPplW/config
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_mmio.c b/drivers/net/wwan/iosm/iosm_ipc_mmio.c
+index 06c94b1720b6..dadd8fada259 100644
+--- a/drivers/net/wwan/iosm/iosm_ipc_mmio.c
++++ b/drivers/net/wwan/iosm/iosm_ipc_mmio.c
+@@ -188,10 +188,10 @@ void ipc_mmio_config(struct iosm_mmio *ipc_mmio)
+ 	/* AP memory window (full window is open and active so that modem checks
+ 	 * each AP address) 0 means don't check on modem side.
+ 	 */
+-	iowrite64_lo_hi(0, ipc_mmio->base + ipc_mmio->offset.ap_win_base);
+-	iowrite64_lo_hi(0, ipc_mmio->base + ipc_mmio->offset.ap_win_end);
++	iowrite64(0, ipc_mmio->base + ipc_mmio->offset.ap_win_base);
++	iowrite64(0, ipc_mmio->base + ipc_mmio->offset.ap_win_end);
+ 
+-	iowrite64_lo_hi(ipc_mmio->context_info_addr,
++	iowrite64(ipc_mmio->context_info_addr,
+ 			ipc_mmio->base + ipc_mmio->offset.context_info);
+ }
+ 
+@@ -201,7 +201,7 @@ void ipc_mmio_set_psi_addr_and_size(struct iosm_mmio *ipc_mmio, dma_addr_t addr,
+ 	if (!ipc_mmio)
+ 		return;
+ 
+-	iowrite64_lo_hi(addr, ipc_mmio->base + ipc_mmio->offset.psi_address);
++	iowrite64(addr, ipc_mmio->base + ipc_mmio->offset.psi_address);
+ 	writel(size, ipc_mmio->base + ipc_mmio->offset.psi_size);
+ }
+ 
+-- 
+2.33.0
 
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-
-meta data:
------------
-    git_describe: v5.14-9687-g27151f177827
-    git_ref:
-    git_repo: https://gitlab.com/Linaro/lkft/mirrors/torvalds/linux-mainline
-    git_sha: 27151f177827d478508e756c7657273261aaf8a9
-    git_short_log: 27151f177827 (\Merge tag
-'perf-tools-for-v5.15-2021-09-04' of
-git://git.kernel.org/pub/scm/linux/kernel/git/acme/linux\)
-    kconfig: [
-        defconfig
-        https://raw.githubusercontent.com/Linaro/meta-lkft/sumo/recipes-kernel/linux/files/lkft.config
-        https://raw.githubusercontent.com/Linaro/meta-lkft/sumo/recipes-kernel/linux/files/lkft-crypto.config
-        https://raw.githubusercontent.com/Linaro/meta-lkft/sumo/recipes-kernel/linux/files/distro-overrides.config
-        https://raw.githubusercontent.com/Linaro/meta-lkft/sumo/recipes-kernel/linux/files/systemd.config
-        https://raw.githubusercontent.com/Linaro/meta-lkft/sumo/recipes-kernel/linux/files/virtio.config
-        CONFIG_ARM_TI_CPUFREQ=y
-        CONFIG_SERIAL_8250_OMAP=y
-        CONFIG_POSIX_MQUEUE=y
-        CONFIG_OF=y
-        CONFIG_KASAN=y
-        CONFIG_KUNIT=y
-        CONFIG_KUNIT_ALL_TESTS=y
-    ],
-    kernel_version: 5.14.0
-    target_arch: arm
-    toolchain: gcc-11
-
-steps to reproduce:
-https://builds.tuxbuild.com/1xjZpYj47LrrGs1OE1xApznPplW/tuxmake_reproducer.sh
-
---
-Linaro LKFT
-https://lkft.linaro.org
