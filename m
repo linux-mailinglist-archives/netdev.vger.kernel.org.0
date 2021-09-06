@@ -2,103 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D63740196B
-	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 12:05:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7870D4019F7
+	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 12:40:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241747AbhIFKF3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Sep 2021 06:05:29 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:33926 "EHLO m43-7.mailgun.net"
+        id S242143AbhIFKlY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Sep 2021 06:41:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48310 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241501AbhIFKF2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Sep 2021 06:05:28 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1630922664; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=vb4/JswAWmt98qU4Xk7ycoBR57/SEn/Y7gRs6lvuB+o=;
- b=YhEP7TJ4O8jtciG5FDHnJ2+XJiXvRDIyZvMSOPF+RWhxawu2zQo2+gjyk0n41Y6G9k9q1WK3
- qgBPMn2BFzjXkACdbH/1W3xolVRp2xysNYJAQoILzMYDI2IG2j9uCptpZziYwOyUf0TGP+59
- x/OjklEbKhjVx8rRqyHOJTMJBdI=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
- 6135e76c6fc2cf7ad90dd5ba (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 06 Sep 2021 10:03:24
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id ACD4CC43460; Mon,  6 Sep 2021 10:03:23 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 50B52C4338F;
-        Mon,  6 Sep 2021 10:03:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 50B52C4338F
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: iwlwifi: fix printk format warnings in uefi.c
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20210821020901.25901-1-rdunlap@infradead.org>
-References: <20210821020901.25901-1-rdunlap@infradead.org>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     netdev@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        linux-wireless@vger.kernel.org,
+        id S229913AbhIFKlX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Sep 2021 06:41:23 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1920B60EBA;
+        Mon,  6 Sep 2021 10:40:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1630924818;
+        bh=DDPfs7HWdQxUNn6g1tSkQLKbmCHfs6sAw/+UHBIdi/M=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Th9BCpYBnVmKPtw+yozEi03DflXbpHZnsOAy4Jc0WTQbi+twSgb1XrzHHguyEtFuD
+         unLwYfRWOgpMIlwzUdVta6PvLtBhb/hhKQ5qEENKV7U9Q2LFFvwWeMqWPPk6Ap99ke
+         t2pEWUD6KxAncNF8dArN3EdFE4wFqS1pAblmOOdgP+5BvHtbm3NKW50g544B2Y1M7A
+         0XwU7gfX6Z1zYK/ZPcefKlnE2u5JqlMtdYXMpq/QSt/s/+ZJTfO/4ugaIfwejhWnlB
+         f5vXatWtRfzOn3a/PJ5ZMIbaUJ+VquKa0OnNdFXWmQbxRvwTPgstQShQxiAmi1QiQD
+         A+2M66YfjlnIQ==
+Date:   Mon, 6 Sep 2021 12:40:11 +0200
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Vinod Koul <vkoul@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Vignesh R <vigneshr@ti.com>, Marc Zyngier <maz@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Lee Jones <lee.jones@linaro.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-Id: <20210906100323.ACD4CC43460@smtp.codeaurora.org>
-Date:   Mon,  6 Sep 2021 10:03:23 +0000 (UTC)
+        Jakub Kicinski <kuba@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mark Brown <broonie@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        dmaengine@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-media@vger.kernel.org, netdev@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-serial@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-spi@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: Use 'enum' instead of 'oneOf' plus 'const'
+ entries
+Message-ID: <20210906124011.66b8e9f3@coco.lan>
+In-Reply-To: <20210824202014.978922-1-robh@kernel.org>
+References: <20210824202014.978922-1-robh@kernel.org>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.30; x86_64-redhat-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Randy Dunlap <rdunlap@infradead.org> wrote:
+Em Tue, 24 Aug 2021 15:20:14 -0500
+Rob Herring <robh@kernel.org> escreveu:
 
-> The kernel test robot reports printk format warnings in uefi.c, so
-> correct them.
+> 'enum' is equivalent to 'oneOf' with a list of 'const' entries, but 'enum'
+> is more concise and yields better error messages.
 > 
-> ../drivers/net/wireless/intel/iwlwifi/fw/uefi.c: In function 'iwl_uefi_get_pnvm':
-> ../drivers/net/wireless/intel/iwlwifi/fw/uefi.c:52:30: warning: format '%zd' expects argument of type 'signed size_t', but argument 7 has type 'long unsigned int' [-Wformat=]
->    52 |                              "PNVM UEFI variable not found %d (len %zd)\n",
->       |                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->    53 |                              err, package_size);
->       |                                   ~~~~~~~~~~~~
->       |                                   |
->       |                                   long unsigned int
-> ../drivers/net/wireless/intel/iwlwifi/fw/uefi.c:59:29: warning: format '%zd' expects argument of type 'signed size_t', but argument 6 has type 'long unsigned int' [-Wformat=]
->    59 |         IWL_DEBUG_FW(trans, "Read PNVM from UEFI with size %zd\n", package_size);
->       |                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~
->       |                                                                    |
->       |                                                                    long unsigned int
-> 
-> Fixes: 84c3c9952afb ("iwlwifi: move UEFI code to a separate file")
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Reported-by: kernel test robot <lkp@intel.com>
-> Cc: Kalle Valo <kvalo@codeaurora.org>
-> Cc: Luca Coelho <luciano.coelho@intel.com>
-> Cc: linux-wireless@vger.kernel.org
+> Cc: Vinod Koul <vkoul@kernel.org>
+> Cc: Maxime Ripard <mripard@kernel.org>
+> Cc: Vignesh R <vigneshr@ti.com>
+> Cc: Marc Zyngier <maz@kernel.org>
+> Cc: Sakari Ailus <sakari.ailus@linux.intel.com>
+> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+> Cc: Lee Jones <lee.jones@linaro.org>
 > Cc: "David S. Miller" <davem@davemloft.net>
 > Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Bjorn Helgaas <bhelgaas@google.com>
+> Cc: Kishon Vijay Abraham I <kishon@ti.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Mark Brown <broonie@kernel.org>
+> Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
+> Cc: dmaengine@vger.kernel.org
+> Cc: linux-i2c@vger.kernel.org
+> Cc: linux-media@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Cc: linux-pci@vger.kernel.org
+> Cc: linux-phy@lists.infradead.org
+> Cc: linux-serial@vger.kernel.org
+> Cc: alsa-devel@alsa-project.org
+> Cc: linux-spi@vger.kernel.org
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>  .../bindings/display/msm/dsi-phy-10nm.yaml           |  6 +++---
+>  .../bindings/display/msm/dsi-phy-14nm.yaml           |  6 +++---
+>  .../bindings/display/msm/dsi-phy-28nm.yaml           |  8 ++++----
+>  .../bindings/dma/allwinner,sun6i-a31-dma.yaml        | 12 ++++++------
+>  .../devicetree/bindings/firmware/arm,scpi.yaml       |  6 +++---
+>  .../devicetree/bindings/i2c/ti,omap4-i2c.yaml        | 10 +++++-----
+>  .../interrupt-controller/loongson,liointc.yaml       |  8 ++++----
 
-Patch applied to wireless-drivers.git, thanks.
 
-e4457a45b41c iwlwifi: fix printk format warnings in uefi.c
+>  .../devicetree/bindings/media/i2c/mipi-ccs.yaml      |  8 ++++----
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20210821020901.25901-1-rdunlap@infradead.org/
+For media:
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Acked-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 
+Thanks,
+Mauro
