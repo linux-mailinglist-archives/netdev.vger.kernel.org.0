@@ -2,140 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EEFBC401CDD
-	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 16:18:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 834FC401CFD
+	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 16:27:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243235AbhIFOTD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Sep 2021 10:19:03 -0400
-Received: from mail-lj1-f169.google.com ([209.85.208.169]:36371 "EHLO
-        mail-lj1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242521AbhIFOS6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Sep 2021 10:18:58 -0400
-Received: by mail-lj1-f169.google.com with SMTP id p15so11631809ljn.3;
-        Mon, 06 Sep 2021 07:17:52 -0700 (PDT)
+        id S243281AbhIFO2q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Sep 2021 10:28:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60674 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239556AbhIFO2p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Sep 2021 10:28:45 -0400
+Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D4C3C061575
+        for <netdev@vger.kernel.org>; Mon,  6 Sep 2021 07:27:41 -0700 (PDT)
+Received: by mail-qk1-x72f.google.com with SMTP id bk29so7018112qkb.8
+        for <netdev@vger.kernel.org>; Mon, 06 Sep 2021 07:27:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9fcPtrsgTauGuHC1/pIPJAJfOzYQqe90AVtL6ot0wpU=;
+        b=qbnFMcKn6p+9hxpdSVI54vx+OWQwTdhqrIU6ck2k9Dhh/QA0x76/g41wGVsteHqjKv
+         2C1nlaiJYiHhyg4FzF5AX9Bidayt9OBdrHVwjfljGT5vuOKAVQRYV1QBTaOp1ORm3vzf
+         RlK6dWsK7jfiFLLEObZ0911oTJ6LyQB1XsN4BZ31w0liU0QBWGnBizLNk9POtnp3lriS
+         CHLCCtHjegUHWLRpNZaWlvfcM17UHnPtt215cafYXnPB48L9PMl+MbfRFEO4Z3o3WaPp
+         tviBHamjvx5/ZOnfF/8K5LhK2Gd+VtM2hHyFJMfV8fZMlo/nNnhbTW3Ma77yyGiQVmnC
+         wSeA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2EwqJcWnHUqv05vUvZldGspuNe7xKxXkBQ2oaQaV/Ps=;
-        b=VoDyMzGiQCXssI4Oo9nlFkHBRICBRyXluko9IDyB48vb/7NFLQo8H0D2PbXbvpJc0K
-         F3sBJJGNOfNfcnA9MsHwwwyJnILI70W1E7k32t3zY5wg9a/qeGuzY0P+neoFwk+ZmnxV
-         fyOQCn0gZb7cA5xANVVPed08Epqjjv1JarWIQ+EGsiYoHQDh8hm/DSQGE6Pzs4nRZEz9
-         sLGwgGN+lhcn+Jm4oZcLgKKT0UCs5FalgJWabASZRhx3u5vcYyFBvOvMV6NcBdQML5pj
-         OiXjGh1Aj4WK1A7Uku3oOJoCpjstFnEnt7FTMO5nPx67I/nZnAQE8bs6MrRacSv61ves
-         rNBA==
-X-Gm-Message-State: AOAM530oqKXkgACsyUGUBcN96xprccxdZ37OvxAqjyxFePB29KG3havC
-        jNHcBLe5Tn0rXAxgXg4Msj6/1H8aKcR48Wn7k/TJ2Qm51qs=
-X-Google-Smtp-Source: ABdhPJxZ9cXoPyU5eEgKGQ26M1q9Nd7oYzXFOVWIv3RLeYEwFqjjewpW2MXRpaKJIx2YeOAUe9l5mJRyDp1yjSRkyCM=
-X-Received: by 2002:a2e:b558:: with SMTP id a24mr10799644ljn.225.1630937872011;
- Mon, 06 Sep 2021 07:17:52 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9fcPtrsgTauGuHC1/pIPJAJfOzYQqe90AVtL6ot0wpU=;
+        b=aL3W+EVLy2KrJTm4VyzwZCS+aaRE3yvFmj2S5cZhMiKqh9ndmkWsN7ztsiAA/UyfCM
+         5vIE5WhrKFzSJfvQ4DQh1Oq57EZHmx6H0ciSFxaUR8XA2i6HyF+PAWmlhdWlIs6lqP+T
+         GNGzEwHE5uh7CzfjWLnjnob4zLkjEfyIwOslAztG7SzXDdjbLTJMiBL+zsjNA31nZwYM
+         kg+hNGnWPKZUHcR6R6jqdG62Nn9BsGzuegF3Bkfr/J5WUbyqyVmxNdeN2rHHpuOKmr82
+         w4x65rpFsJUyIx30AhPtJTN1C4euFLAFI52ASh6rClWj8qEX/WeMTMoM5O8reJnI02TY
+         +W9Q==
+X-Gm-Message-State: AOAM531UIBespiyyPMI5gifDVia3OylWp1AfdP/y/38dpJCBRBsOt7vS
+        hCvp+6k6U0NDY5/v/hzYR3oi9k+xmNI=
+X-Google-Smtp-Source: ABdhPJzSkeAzM5sFE0CZS4dL/vKzjSM6sak/PrWLqJgAZAOAzxgppN0bu4Ix5Y0T5pVM0//9SrT4UA==
+X-Received: by 2002:ae9:e858:: with SMTP id a85mr11089819qkg.97.1630938460404;
+        Mon, 06 Sep 2021 07:27:40 -0700 (PDT)
+Received: from willemb.nyc.corp.google.com ([2620:0:1003:312:2be8:4885:147d:736a])
+        by smtp.gmail.com with ESMTPSA id a185sm6536137qkg.128.2021.09.06.07.27.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Sep 2021 07:27:40 -0700 (PDT)
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, idosch@idosch.org,
+        chouhan.shreyansh630@gmail.com, alexander.duyck@gmail.com,
+        Willem de Bruijn <willemb@google.com>
+Subject: [PATCH net] ip6_gre: Revert "ip6_gre: add validation for csum_start"
+Date:   Mon,  6 Sep 2021 10:27:38 -0400
+Message-Id: <20210906142738.1948625-1-willemdebruijn.kernel@gmail.com>
+X-Mailer: git-send-email 2.33.0.153.gba50c8fa24-goog
 MIME-Version: 1.0
-References: <20210903071704.455855-1-mailhol.vincent@wanadoo.fr> <20210906081805.dyd74xfu74gcnslg@pengutronix.de>
-In-Reply-To: <20210906081805.dyd74xfu74gcnslg@pengutronix.de>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Mon, 6 Sep 2021 23:17:40 +0900
-Message-ID: <CAMZ6Rq+tNxU5ePDivMdwkbZK_hyao9hSyd0DrXnF503Qk1duqw@mail.gmail.com>
-Subject: Re: [RESEND PATCH v2] can: netlink: prevent incoherent can
- configuration in case of early return
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     linux-can <linux-can@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon. 6 Sep 2021 at 17:18, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
-> On 03.09.2021 16:17:04, Vincent Mailhol wrote:
-> > struct can_priv has a set of flags (can_priv::ctrlmode) which are
-> > correlated with the other fields of the structure. In
-> > can_changelink(), those flags are set first and copied to can_priv. If
-> > the function has to return early, for example due to an out of range
-> > value provided by the user, then the global configuration might become
-> > incoherent.
-> >
-> > Example: the user provides an out of range dbitrate (e.g. 20
-> > Mbps). The command fails (-EINVAL), however the FD flag was already
-> > set resulting in a configuration where FD is on but the databittiming
-> > parameters are empty.
-> >
-> > * Illustration of above example *
-> >
-> > | $ ip link set can0 type can bitrate 500000 dbitrate 20000000 fd on
-> > | RTNETLINK answers: Invalid argument
-> > | $ ip --details link show can0
-> > | 1: can0: <NOARP,ECHO> mtu 72 qdisc noop state DOWN mode DEFAULT group default qlen 10
-> > |     link/can  promiscuity 0 minmtu 0 maxmtu 0
-> > |     can <FD> state STOPPED restart-ms 0
-> >            ^^ FD flag is set without any of the databittiming parameters...
-> > |       bitrate 500000 sample-point 0.875
-> > |       tq 12 prop-seg 69 phase-seg1 70 phase-seg2 20 sjw 1
-> > |       ES582.1/ES584.1: tseg1 2..256 tseg2 2..128 sjw 1..128 brp 1..512 brp-inc 1
-> > |       ES582.1/ES584.1: dtseg1 2..32 dtseg2 1..16 dsjw 1..8 dbrp 1..32 dbrp-inc 1
-> > |       clock 80000000 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535
-> >
-> > To prevent this from happening, we do a local copy of can_priv, work
-> > on it, an copy it at the very end of the function (i.e. only if all
-> > previous checks succeeded).
->
-> I don't like the optimization of using a static priv. If it's too big to
-> be allocated on the stack, allocate it on the heap, i.e. using
-> kmemdup()/kfree().
+From: Willem de Bruijn <willemb@google.com>
 
-The static declaration is only an issue of coding style, correct?
-Or is there an actual risk of doing so?
-This is for my understanding, I will remove the static
-declaration regardless of your answer.
+This reverts commit 9cf448c200ba9935baa94e7a0964598ce947db9d.
 
-On my x86_64 machine, sizeof(priv) is 448 and if I declare priv on the stack:
-| $ objdump -d drivers/net/can/dev/netlink.o | ./scripts/checkstack.pl
-| 0x00000000000002100 can_changelink []:            1200
+This commit was added for equivalence with a similar fix to ip_gre.
+That fix proved to have a bug. Upon closer inspection, ip6_gre is not
+susceptible to the original bug.
 
-So I will allocate it on the heap.
+So revert the unnecessary extra check.
 
-N.B. In above figures CONFIG_CAN_LEDS is *off* because that driver
-was tagged as broken in:
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=30f3b42147ba6f29bc95c1bba34468740762d91b
+In short, ipgre_xmit calls skb_pull to remove ipv4 headers previously
+inserted by dev_hard_header. ip6gre_tunnel_xmit does not.
 
-> > Once this done, there is no more need to have a temporary variable for
-> > a specific parameter. As such, the bittiming and data bittiming (bt
-> > and dbt) are directly written to the temporary priv variable.
-> >
-> > Finally, function can_calc_tdco() was retrieving can_priv from the
-> > net_device and directly modifying it. We changed the prototype so that
-> > it instead writes its changes into our temporary priv variable.
->
-> Is it possible to split this into a separate patch, so that the part
-> without the tdco can be backported more easily to older kernels not
-> having tdco? The patch fixing the tdco would be the 2nd patch...
+Link: https://lore.kernel.org/netdev/CA+FuTSe+vJgTVLc9SojGuN-f9YQ+xWLPKE_S4f=f+w+_P2hgUg@mail.gmail.com/#t
+Fixes: 9cf448c200ba ("ip6_gre: add validation for csum_start")
+Signed-off-by: Willem de Bruijn <willemb@google.com>
+---
+ net/ipv6/ip6_gre.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-ACK. I will send a v3 with that split.
+diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
+index 7baf41d160f5..3ad201d372d8 100644
+--- a/net/ipv6/ip6_gre.c
++++ b/net/ipv6/ip6_gre.c
+@@ -629,8 +629,6 @@ static int gre_rcv(struct sk_buff *skb)
+ 
+ static int gre_handle_offloads(struct sk_buff *skb, bool csum)
+ {
+-	if (csum && skb_checksum_start(skb) < skb->data)
+-		return -EINVAL;
+ 	return iptunnel_handle_offloads(skb,
+ 					csum ? SKB_GSO_GRE_CSUM : SKB_GSO_GRE);
+ }
+-- 
+2.33.0.153.gba50c8fa24-goog
 
-> > Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-> > ---
-> > Resending because I got no answers on:
-> > https://lore.kernel.org/linux-can/20210823024750.702542-1-mailhol.vincent@wanadoo.fr/T/#u
-> > (I guess everyone bas busy with the upcoming merge window)
->
-> Busy yes, but not with the merge window :)
->
-> > I am not sure whether or not this needs a "Fixes" tag. Just in case,
-> > there it is:
-> >
-> > Fixes: 9859ccd2c8be ("can: introduce the data bitrate configuration for CAN FD")
->
-> ...if it's possible to split this patch into 2 parts, add individual
-> fixes tags to them.
-
-ACK.
-
-
-> regards,
-> Marc
->
-> --
-> Pengutronix e.K.                 | Marc Kleine-Budde           |
-> Embedded Linux                   | https://www.pengutronix.de  |
-> Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-> Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
