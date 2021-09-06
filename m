@@ -2,295 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB49B401780
-	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 10:05:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E653401779
+	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 10:05:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240412AbhIFIGH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Sep 2021 04:06:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57596 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240524AbhIFIEX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Sep 2021 04:04:23 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC14EC0617AF;
-        Mon,  6 Sep 2021 01:03:00 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id fs6so3776831pjb.4;
-        Mon, 06 Sep 2021 01:03:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oqkiNgpbcHxiMem52GJfPa+oCf4Ivn8zPQL81258VJE=;
-        b=OREHjphfgu5QhlFKzul2AwQB2Ex6gFv29yi3aTXkoTID/FYtBXMV+1JYjOOabJzjd7
-         OfBmwu8vcdLxsxekvXlQBaNX+5Ls5feeKabjoC64Ox0SRGWIiCIci9M/KEm2eTnMyAbC
-         xegezARmJWtERMIte/AMziW5qKmhJ9O91UJ95dS/fvEPki17Wcx5eI2EwCiMQ/5Z9PBR
-         0OO8C3R1njhCOy/VmbeqVkJyhgiNhdQqWaMu3785SxpvSQZV9bv31f5UlYDLg2ZbTjAc
-         tDmdh1S21lF28msSBaQJUt+V6f5m0eOdRonkqC7AGghz6tXundwGOTkE1Cq9tXl19Dhn
-         VZwQ==
+        id S240581AbhIFIE4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Sep 2021 04:04:56 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:21237 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240525AbhIFIEw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Sep 2021 04:04:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1630915426;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=W2g1b9NX3P4QOnCtZSdNu+sJkQfvHZK6OJZ7BDJqDLg=;
+        b=ZaputEcm/bYOJY/hTTB9gC/tjdWq5WQ1tWLKLj6Fbfv75sH+YpyM5GM10STYXGnViCX1Kr
+        61Wt7eklQVQOpM8rDngzK+Lk9H4ztr1z20NF3VS3Lmk8b2MZDCDopuBvuICzdSf2Q2ST+v
+        QUeuO723eJpApjtmax69nvNHX2sQaLY=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-215-gSSC235MP1C4U1OcLrRIaA-1; Mon, 06 Sep 2021 04:03:45 -0400
+X-MC-Unique: gSSC235MP1C4U1OcLrRIaA-1
+Received: by mail-ed1-f69.google.com with SMTP id g17-20020a056402425100b003cd5ba2852fso3307258edb.1
+        for <netdev@vger.kernel.org>; Mon, 06 Sep 2021 01:03:45 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oqkiNgpbcHxiMem52GJfPa+oCf4Ivn8zPQL81258VJE=;
-        b=q50Ld/+iByNiYXxIiVj1TvpuLQUPkd4kyTbMdXIPm2zKNqPJHDwDeryazm2gnXBLaH
-         rZp0XPbj+fcfMc8eJ0n8EM37oYpYib2sSKB5V1+F59e+Fj587DaJjFQbmBtlvx4lLC86
-         wIGainBYN9hqqnSpHFyPzcM5Y/t6UehHrQGsf9uQKjfJxgMybv3ZoKvpNZ87Jg0JOWlh
-         CLH7tiAQ7owLlPPvs9dcusnbIVq4/K2kRst4emLgPPxg21SZ9UjyOcpAXJK8fW/ryPcQ
-         toXuQme/WLVtEX3Shc/8A5bRw1BEReCog9r0WuFQxxyyhmUDEQ8byDKWdxkRcJChcJxw
-         +8tQ==
-X-Gm-Message-State: AOAM530Cdd1kxViFUAITVRkD5RnqinLSvvKqiRCDAVW6yyV99h/Rh9OC
-        FmLvinIo0kyqnFkwuEIIkNpyV0pTdKbOfr/NwxM=
-X-Google-Smtp-Source: ABdhPJxDQDLThQU+H4j80pLbMT5Zvx3pcm23+qEAE91MCfNYVgIUyJWWCKtBrgvRBAz8jD6iTZt4yD1XKFsGGCAS5p8=
-X-Received: by 2002:a17:90b:400c:: with SMTP id ie12mr12384496pjb.112.1630915380182;
- Mon, 06 Sep 2021 01:03:00 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=W2g1b9NX3P4QOnCtZSdNu+sJkQfvHZK6OJZ7BDJqDLg=;
+        b=AUpqpp8h7cJy2mCQIpDPUiur2ehwTL3Kb9PHFlZSdbTGVO+45GVJSwi+/yyuErE3ar
+         WhbqmMHYCaDont70oJ7sWeTL1HbTAorh8nY+ch0qLg1IfnMgaLMLGqYWCImuEb4af8Sx
+         iILA+eA1qLloXxdpx51OzJ7gBT4itLPdwBX/VqCPzl8URnLE2Zc2O3WZDmTQlqxzAem7
+         bKVjqfmjvjGkAQnYbp8+H5AHA4+56/f1xG+8UJw3ZKTowNA0izv7ThyPm4A0vlx1iAb8
+         8XpcBgImZ8m99Lw5AU7F3ecjRZI+SEuKvn/P8HkneIzI6k0eDTNwQrUc+0AuNrTWdjsh
+         HxKg==
+X-Gm-Message-State: AOAM53203r4ghXTZZ3kL83xiF4ZYjJ3d8ZnLWffbsLptQuCAhYdnORks
+        xJurFBHuVj/JK1C0fWy/Ws+eLrvEGavQe02tyx1/AIoNLijTQmYgMpsRZkbm+ZM77OY2v6Ve0lP
+        w+XeMJxuJzc2agJxw
+X-Received: by 2002:a05:6402:148:: with SMTP id s8mr12049799edu.298.1630915424072;
+        Mon, 06 Sep 2021 01:03:44 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxRJf9kq4wjR1PeMax4DOv0vHAJxFFvRjMlnKsmrmMvqdiz5jcTh29LDuagCJ7xkcWidZAWDA==
+X-Received: by 2002:a05:6402:148:: with SMTP id s8mr12049783edu.298.1630915423910;
+        Mon, 06 Sep 2021 01:03:43 -0700 (PDT)
+Received: from redhat.com ([2.55.131.183])
+        by smtp.gmail.com with ESMTPSA id c25sm3423749ejm.9.2021.09.06.01.03.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Sep 2021 01:03:43 -0700 (PDT)
+Date:   Mon, 6 Sep 2021 04:03:38 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     Arseny Krasnov <arseny.krasnov@kaspersky.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Colin Ian King <colin.king@canonical.com>,
+        Norbert Slusarek <nslusarek@gmx.net>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "stsp2@yandex.ru" <stsp2@yandex.ru>,
+        "oxffffaa@gmail.com" <oxffffaa@gmail.com>
+Subject: Re: [PATCH net-next v5 0/6] virtio/vsock: introduce MSG_EOR flag for
+ SEQPACKET
+Message-ID: <20210906040148-mutt-send-email-mst@kernel.org>
+References: <20210903123016.3272800-1-arseny.krasnov@kaspersky.com>
+ <20210905115139-mutt-send-email-mst@kernel.org>
+ <4558e96b-6330-667f-955b-b689986f884f@kaspersky.com>
+ <20210905121932-mutt-send-email-mst@kernel.org>
+ <5b20410a-fb8f-2e38-59d9-74dc6b8a9d4f@kaspersky.com>
+ <20210905161809-mutt-send-email-mst@kernel.org>
+ <20210906073315.n7qgsv3gm7dasgzu@steredhat>
 MIME-Version: 1.0
-References: <20210901104732.10956-1-magnus.karlsson@gmail.com>
- <20210901104732.10956-18-magnus.karlsson@gmail.com> <YTJBdg9S1QEvPVZY@localhost.localdomain>
-In-Reply-To: <YTJBdg9S1QEvPVZY@localhost.localdomain>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Mon, 6 Sep 2021 10:02:49 +0200
-Message-ID: <CAJ8uoz2Zckgz_=uHGMV-hfthwi6BE+6eaQkTZhGWSxqzNAkZ=A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 17/20] selftests: xsk: add test for unaligned mode
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Ciara Loftus <ciara.loftus@intel.com>,
-        bpf <bpf@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210906073315.n7qgsv3gm7dasgzu@steredhat>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 3, 2021 at 3:37 PM Maciej Fijalkowski
-<maciej.fijalkowski@intel.com> wrote:
->
-> On Wed, Sep 01, 2021 at 12:47:29PM +0200, Magnus Karlsson wrote:
-> > From: Magnus Karlsson <magnus.karlsson@intel.com>
-> >
-> > Add a test for unaligned mode in which packet buffers can be placed
-> > anywhere within the umem. Some packets are made to straddle page
-> > boundraries in order to check for correctness. On the Tx side, buffers
->
-> boundaries
->
-> > are now allocated according to the addresses found in the packet
-> > stream. Thus, the placement of buffers can be controlled with the
-> > boolean use_addr_for_fill in the packet stream.
-> >
-> > One new pkt_stream insterface is introduced: pkt_stream_replace_half()
->
-> interface
->
-> > that replaces every other packet in the default packet stream with the
-> > specified new packet.
->
-> Can you describe the introduction of DEFAULT_OFFSET ?
+On Mon, Sep 06, 2021 at 09:33:15AM +0200, Stefano Garzarella wrote:
+> On Sun, Sep 05, 2021 at 04:18:52PM -0400, Michael S. Tsirkin wrote:
+> > On Sun, Sep 05, 2021 at 07:21:10PM +0300, Arseny Krasnov wrote:
+> > > 
+> > > On 05.09.2021 19:19, Michael S. Tsirkin wrote:
+> > > > On Sun, Sep 05, 2021 at 07:02:44PM +0300, Arseny Krasnov wrote:
+> > > >> On 05.09.2021 18:55, Michael S. Tsirkin wrote:
+> > > >>> On Fri, Sep 03, 2021 at 03:30:13PM +0300, Arseny Krasnov wrote:
+> > > >>>> 	This patchset implements support of MSG_EOR bit for SEQPACKET
+> > > >>>> AF_VSOCK sockets over virtio transport.
+> > > >>>> 	First we need to define 'messages' and 'records' like this:
+> > > >>>> Message is result of sending calls: 'write()', 'send()', 'sendmsg()'
+> > > >>>> etc. It has fixed maximum length, and it bounds are visible using
+> > > >>>> return from receive calls: 'read()', 'recv()', 'recvmsg()' etc.
+> > > >>>> Current implementation based on message definition above.
+> > > >>>> 	Record has unlimited length, it consists of multiple message,
+> > > >>>> and bounds of record are visible via MSG_EOR flag returned from
+> > > >>>> 'recvmsg()' call. Sender passes MSG_EOR to sending system call and
+> > > >>>> receiver will see MSG_EOR when corresponding message will be processed.
+> > > >>>> 	Idea of patchset comes from POSIX: it says that SEQPACKET
+> > > >>>> supports record boundaries which are visible for receiver using
+> > > >>>> MSG_EOR bit. So, it looks like MSG_EOR is enough thing for SEQPACKET
+> > > >>>> and we don't need to maintain boundaries of corresponding send -
+> > > >>>> receive system calls. But, for 'sendXXX()' and 'recXXX()' POSIX says,
+> > > >>>> that all these calls operates with messages, e.g. 'sendXXX()' sends
+> > > >>>> message, while 'recXXX()' reads messages and for SEQPACKET, 'recXXX()'
+> > > >>>> must read one entire message from socket, dropping all out of size
+> > > >>>> bytes. Thus, both message boundaries and MSG_EOR bit must be supported
+> > > >>>> to follow POSIX rules.
+> > > >>>> 	To support MSG_EOR new bit was added along with existing
+> > > >>>> 'VIRTIO_VSOCK_SEQ_EOR': 'VIRTIO_VSOCK_SEQ_EOM'(end-of-message) - now it
+> > > >>>> works in the same way as 'VIRTIO_VSOCK_SEQ_EOR'. But 'VIRTIO_VSOCK_SEQ_EOR'
+> > > >>>> is used to mark 'MSG_EOR' bit passed from userspace.
+> > > >>>> 	This patchset includes simple test for MSG_EOR.
+> > > >>> I'm prepared to merge this for this window,
+> > > >>> but I'm not sure who's supposed to ack the net/vmw_vsock/af_vsock.c
+> > > >>> bits. It's a harmless variable renaming so maybe it does not matter.
+> > > >>>
+> > > >>> The rest is virtio stuff so I guess my tree is ok.
+> > > >>>
+> > > >>> Objections, anyone?
+> > > >> https://lkml.org/lkml/2021/9/3/76 this is v4. It is same as v5 in af_vsock.c changes.
+> > > >>
+> > > >> It has Reviewed by from Stefano Garzarella.
+> > > > Is Stefano the maintainer for af_vsock then?
+> > > > I wasn't sure.
+> 
+> I'm maintaining virtio-vsock stuff, but I'm reviewing most of the af_vsock
+> patches. We don't have an entry for it in MAINTAINERS, maybe we should.
 
-Will fix both.
+Yea, please add that. And the test I guess?
+It's now Dave and while he's great as we all know,
+reducing the load on him is a good thing to do.
 
-> >
-> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> > ---
-> >  tools/testing/selftests/bpf/xdpxceiver.c | 125 ++++++++++++++++++-----
-> >  tools/testing/selftests/bpf/xdpxceiver.h |   4 +
-> >  2 files changed, 106 insertions(+), 23 deletions(-)
-> >
-> > diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
-> > index d4aad4833754..a24068993cc3 100644
-> > --- a/tools/testing/selftests/bpf/xdpxceiver.c
-> > +++ b/tools/testing/selftests/bpf/xdpxceiver.c
-> > @@ -19,7 +19,7 @@
-> >   * Virtual Ethernet interfaces.
-> >   *
-> >   * For each mode, the following tests are run:
-> > - *    a. nopoll - soft-irq processing
-> > + *    a. nopoll - soft-irq processing in run-to-completion mode
-> >   *    b. poll - using poll() syscall
-> >   *    c. Socket Teardown
-> >   *       Create a Tx and a Rx socket, Tx from one socket, Rx on another. Destroy
-> > @@ -45,6 +45,7 @@
-> >   *       Configure sockets at indexes 0 and 1, run a traffic on queue ids 0,
-> >   *       then remove xsk sockets from queue 0 on both veth interfaces and
-> >   *       finally run a traffic on queues ids 1
-> > + *    g. unaligned mode
-> >   *
-> >   * Total tests: 12
-> >   *
-> > @@ -243,6 +244,9 @@ static int xsk_configure_umem(struct xsk_umem_info *umem, void *buffer, u64 size
-> >       };
-> >       int ret;
-> >
-> > +     if (umem->unaligned_mode)
-> > +             cfg.flags |= XDP_UMEM_UNALIGNED_CHUNK_FLAG;
-> > +
-> >       ret = xsk_umem__create(&umem->umem, buffer, size,
-> >                              &umem->fq, &umem->cq, &cfg);
-> >       if (ret)
-> > @@ -252,19 +256,6 @@ static int xsk_configure_umem(struct xsk_umem_info *umem, void *buffer, u64 size
-> >       return 0;
-> >  }
-> >
-> > -static void xsk_populate_fill_ring(struct xsk_umem_info *umem)
-> > -{
-> > -     int ret, i;
-> > -     u32 idx = 0;
-> > -
-> > -     ret = xsk_ring_prod__reserve(&umem->fq, XSK_RING_PROD__DEFAULT_NUM_DESCS, &idx);
-> > -     if (ret != XSK_RING_PROD__DEFAULT_NUM_DESCS)
-> > -             exit_with_error(-ret);
-> > -     for (i = 0; i < XSK_RING_PROD__DEFAULT_NUM_DESCS; i++)
-> > -             *xsk_ring_prod__fill_addr(&umem->fq, idx++) = i * umem->frame_size;
-> > -     xsk_ring_prod__submit(&umem->fq, XSK_RING_PROD__DEFAULT_NUM_DESCS);
-> > -}
-> > -
-> >  static int xsk_configure_socket(struct xsk_socket_info *xsk, struct xsk_umem_info *umem,
-> >                               struct ifobject *ifobject, u32 qid)
-> >  {
-> > @@ -487,7 +478,8 @@ static struct pkt_stream *pkt_stream_generate(struct xsk_umem_info *umem, u32 nb
-> >
-> >       pkt_stream->nb_pkts = nb_pkts;
-> >       for (i = 0; i < nb_pkts; i++) {
-> > -             pkt_stream->pkts[i].addr = (i % umem->num_frames) * umem->frame_size;
-> > +             pkt_stream->pkts[i].addr = (i % umem->num_frames) * umem->frame_size +
-> > +                     DEFAULT_OFFSET;
-> >               pkt_stream->pkts[i].len = pkt_len;
-> >               pkt_stream->pkts[i].payload = i;
->
-> Probably we need to init use_addr_for_fill to false by default in here as
-> pkt_stream is malloc'd.
+> > > Ack, let's wait for maintainer's comment
+> > 
+> > 
+> > The specific patch is a trivial variable renaming so
+> > I parked this in my tree for now, will merge unless I
+> > hear any objections in the next couple of days.
+> 
+> I agree, I think your tree is fine, since this series is mostly about
+> virtio-vsock.
+> 
+> Thanks,
+> Stefano
 
-I will use calloc here, instead of in patch #19. Was fixed too late in
-the patch set.
-
-> >
-> > @@ -500,6 +492,12 @@ static struct pkt_stream *pkt_stream_generate(struct xsk_umem_info *umem, u32 nb
-> >       return pkt_stream;
-> >  }
-> >
-> > +static struct pkt_stream *pkt_stream_clone(struct xsk_umem_info *umem,
-> > +                                        struct pkt_stream *pkt_stream)
-> > +{
-> > +     return pkt_stream_generate(umem, pkt_stream->nb_pkts, pkt_stream->pkts[0].len);
-> > +}
-> > +
-> >  static void pkt_stream_replace(struct test_spec *test, u32 nb_pkts, u32 pkt_len)
-> >  {
-> >       struct pkt_stream *pkt_stream;
-> > @@ -507,8 +505,22 @@ static void pkt_stream_replace(struct test_spec *test, u32 nb_pkts, u32 pkt_len)
-> >       pkt_stream = pkt_stream_generate(test->ifobj_tx->umem, nb_pkts, pkt_len);
-> >       test->ifobj_tx->pkt_stream = pkt_stream;
-> >       test->ifobj_rx->pkt_stream = pkt_stream;
-> > +}
-> >
-> > -     pkt_stream_delete(pkt_stream);
-> > +static void pkt_stream_replace_half(struct test_spec *test, u32 pkt_len, u32 offset)
-> > +{
-> > +     struct xsk_umem_info *umem = test->ifobj_tx->umem;
-> > +     struct pkt_stream *pkt_stream;
-> > +     u32 i;
-> > +
-> > +     pkt_stream = pkt_stream_clone(umem, test->pkt_stream_default);
-> > +     for (i = 0; i < test->pkt_stream_default->nb_pkts; i += 2) {
-> > +             pkt_stream->pkts[i].addr = (i % umem->num_frames) * umem->frame_size + offset;
-> > +             pkt_stream->pkts[i].len = pkt_len;
-> > +     }
-> > +
-> > +     test->ifobj_tx->pkt_stream = pkt_stream;
-> > +     test->ifobj_rx->pkt_stream = pkt_stream;
-> >  }
-> >
-> >  static struct pkt *pkt_generate(struct ifobject *ifobject, u32 pkt_nb)
-> > @@ -572,9 +584,9 @@ static void pkt_dump(void *pkt, u32 len)
-> >       fprintf(stdout, "---------------------------------------\n");
-> >  }
-> >
-> > -static bool is_pkt_valid(struct pkt *pkt, void *buffer, const struct xdp_desc *desc)
-> > +static bool is_pkt_valid(struct pkt *pkt, void *buffer, u64 addr, u32 len)
-> >  {
-> > -     void *data = xsk_umem__get_data(buffer, desc->addr);
-> > +     void *data = xsk_umem__get_data(buffer, addr);
-> >       struct iphdr *iphdr = (struct iphdr *)(data + sizeof(struct ethhdr));
-> >
-> >       if (!pkt) {
-> > @@ -588,10 +600,10 @@ static bool is_pkt_valid(struct pkt *pkt, void *buffer, const struct xdp_desc *d
-> >               if (opt_pkt_dump)
-> >                       pkt_dump(data, PKT_SIZE);
-> >
-> > -             if (pkt->len != desc->len) {
-> > +             if (pkt->len != len) {
-> >                       ksft_test_result_fail
-> >                               ("ERROR: [%s] expected length [%d], got length [%d]\n",
-> > -                                     __func__, pkt->len, desc->len);
-> > +                                     __func__, pkt->len, len);
-> >                       return false;
-> >               }
-> >
-> > @@ -673,7 +685,7 @@ static void receive_pkts(struct pkt_stream *pkt_stream, struct xsk_socket_info *
-> >
-> >                       orig = xsk_umem__extract_addr(addr);
-> >                       addr = xsk_umem__add_offset_to_addr(addr);
-> > -                     if (!is_pkt_valid(pkt, xsk->umem->buffer, desc))
-> > +                     if (!is_pkt_valid(pkt, xsk->umem->buffer, addr, desc->len))
-> >                               return;
-> >
-> >                       *xsk_ring_prod__fill_addr(&xsk->umem->fq, idx_fq++) = orig;
-> > @@ -817,13 +829,16 @@ static void tx_stats_validate(struct ifobject *ifobject)
-> >
-> >  static void thread_common_ops(struct test_spec *test, struct ifobject *ifobject)
-> >  {
-> > +     int mmap_flags = MAP_PRIVATE | MAP_ANONYMOUS | MAP_NORESERVE;
-> >       u32 i;
-> >
-> >       ifobject->ns_fd = switch_namespace(ifobject->nsname);
-> >
-> > +     if (ifobject->umem->unaligned_mode)
-> > +             mmap_flags |= MAP_HUGETLB;
-> > +
-> >       for (i = 0; i < test->nb_sockets; i++) {
-> >               u64 umem_sz = ifobject->umem->num_frames * ifobject->umem->frame_size;
-> > -             int mmap_flags = MAP_PRIVATE | MAP_ANONYMOUS | MAP_NORESERVE;
-> >               u32 ctr = 0;
-> >               void *bufs;
-> >
-> > @@ -881,6 +896,32 @@ static void *worker_testapp_validate_tx(void *arg)
-> >       pthread_exit(NULL);
-> >  }
-> >
-> > +static void xsk_populate_fill_ring(struct xsk_umem_info *umem, struct pkt_stream *pkt_stream)
-> > +{
-> > +     u32 idx = 0, i;
-> > +     int ret;
-> > +
-> > +     ret = xsk_ring_prod__reserve(&umem->fq, XSK_RING_PROD__DEFAULT_NUM_DESCS, &idx);
-> > +     if (ret != XSK_RING_PROD__DEFAULT_NUM_DESCS)
-> > +             exit_with_error(ENOSPC);
->
-> -ENOSPC?
-
-Without the minus sign is correct here. Though I would prefer to not
-use exit_with_error at all except for in the main function, this would
-require a lot of surgery and is left as an exercise for later patch
-sets.
-
-> > +     for (i = 0; i < XSK_RING_PROD__DEFAULT_NUM_DESCS; i++) {
-> > +             u64 addr;
-> > +
-> > +             if (pkt_stream->use_addr_for_fill) {
-> > +                     struct pkt *pkt = pkt_stream_get_pkt(pkt_stream, i);
-> > +
-> > +                     if (!pkt)
-> > +                             break;
-> > +                     addr = pkt->addr;
-> > +             } else {
-> > +                     addr = (i % umem->num_frames) * umem->frame_size + DEFAULT_OFFSET;
-> > +             }
-> > +
-> > +             *xsk_ring_prod__fill_addr(&umem->fq, idx++) = addr;
-> > +     }
-> > +     xsk_ring_prod__submit(&umem->fq, XSK_RING_PROD__DEFAULT_NUM_DESCS);
-> > +}
