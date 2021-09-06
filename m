@@ -2,99 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6507C402160
-	for <lists+netdev@lfdr.de>; Tue,  7 Sep 2021 01:05:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DE8840217D
+	for <lists+netdev@lfdr.de>; Tue,  7 Sep 2021 01:51:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231465AbhIFXFp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Sep 2021 19:05:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34580 "EHLO
+        id S232860AbhIFXiR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Sep 2021 19:38:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229949AbhIFXFo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Sep 2021 19:05:44 -0400
-Received: from mail-oo1-xc2d.google.com (mail-oo1-xc2d.google.com [IPv6:2607:f8b0:4864:20::c2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A871C061575
-        for <netdev@vger.kernel.org>; Mon,  6 Sep 2021 16:04:39 -0700 (PDT)
-Received: by mail-oo1-xc2d.google.com with SMTP id k18-20020a4abd92000000b002915ed21fb8so2379933oop.11
-        for <netdev@vger.kernel.org>; Mon, 06 Sep 2021 16:04:39 -0700 (PDT)
+        with ESMTP id S229866AbhIFXiR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Sep 2021 19:38:17 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFC46C061575;
+        Mon,  6 Sep 2021 16:37:10 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id e7so8132966pgk.2;
+        Mon, 06 Sep 2021 16:37:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=wrmaRlRPPmTRnnQ/74msivvAO8dxTRgKmoFDMkOFd2Q=;
-        b=nmBHruUB/3A4Sqp3d7DFOOLYGHHNHlkVa4KkM15mzFi3fHfIo/2LLrVkNL6R3sCE9x
-         bcObl6GMwi3rviIGhyishPwtRqKtOSoMsNEtRTkw3xxMiV2tjZT35jcQz2whnPBwugrq
-         hv0/N9MrgtqwEn+jGbXi9vvEdatEUIk5tbr4SO+Od4o+eqlN4qS1v0XB3PRcByUZUZRk
-         WzHCMA0A0vkTPl48iVuudzbEX0q1/emQm8feZ2MVwUgN+bV/fnKb5JgMsMoE6jRPC1mo
-         j5KwNXVHOY6IrWPs0jbHERwIUxAtxbrNna0BSULztggRAcqbN9vtOQDvemWlltwUjbJI
-         h4AA==
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sanJQgCOj6QndmuB/d1oi1oeHwgYC+0Otb8h+XZVNNI=;
+        b=Z5I2WDWbjBd8bVxVY5zxa5Lf6V+l0DGyC/hOgiwHSrTOOen/88bEu07rDPQ4ZShBgQ
+         dSUy9aWem3GOLdx3PzONf9XLsqdDFHgVstzRF+EdBjFoeY37c8bJZY+SWsOfyMsYLoWB
+         iFilu0WgaYjxlK17giSFJ1D+ykz1C1SLgZqkwMFdEx+R+g1GYgJTvMBabjnJKP/crLMR
+         I+ieOQGPYltTq7oDpxKVsg1Gkcpsu1ecvpEhfyNGTYzVYAhRK1ChnO+OY4qTtbQ09pny
+         xwdTl1DjEIS4+AvBZrvhTOSl2gLYeRban0knGGjzJLESTLxctKuPAmy1jRDteoxQFH61
+         rmwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=wrmaRlRPPmTRnnQ/74msivvAO8dxTRgKmoFDMkOFd2Q=;
-        b=s+96oy/vbGew9w10AF5KRPQrghizCizX8HKeHob30Sl970Kz+HM6ZOjfVhP1MWRFbe
-         wkGob8l4r76t+NRmJyVVusXOz8Mil/mw7anDJs//55xymBqU0CrxFaTkiApXHwvcnaC/
-         KbdvvNDKLE+DC4wShfyEw4eiJ8DuHY+4VsOMWIHfKlpdl/sjfJa1YcgO7WV4vy3QQHeF
-         xDlQsRFT3Na2rJd1ix4C68T0LZlb62UuM1ekKHD7rL1Uz8jrsT7FTsbMNjzEEZIC74B7
-         Ry9zyvK0JejjOSB2/Q9laoD026HkeAEUV51Rfk9n70e5lXKQXROXCR6KWcsIMAO371Ew
-         Jv/Q==
-X-Gm-Message-State: AOAM532PcZWJba4O2hg6Gf0xyaozFFukSeVVO4Bh30IACyNpPJ+p700K
-        xEbzDBnkFA24l2Evwa7VBoM=
-X-Google-Smtp-Source: ABdhPJwegvMZgjFADGbJc+TZAiHdReNk/vmGwB+NqU5oOnGL+EaKZT62J0Y1xNKoZaphuej7oTGELw==
-X-Received: by 2002:a4a:e3cf:: with SMTP id m15mr15565564oov.21.1630969478382;
-        Mon, 06 Sep 2021 16:04:38 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.45])
-        by smtp.googlemail.com with ESMTPSA id g8sm2055786otk.34.2021.09.06.16.04.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Sep 2021 16:04:37 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next 0/2] bridge: vlan: add support for
- mcast_router option
-To:     Nikolay Aleksandrov <razor@blackwall.org>, netdev@vger.kernel.org
-Cc:     roopa@nvidia.com, dsahern@gmail.com, stephen@networkplumber.org,
-        Nikolay Aleksandrov <nikolay@nvidia.com>
-References: <20210901103816.1163765-1-razor@blackwall.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <33c59bc1-dc6e-3d72-ac7b-a0a461426295@gmail.com>
-Date:   Mon, 6 Sep 2021 17:04:36 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.13.0
+        bh=sanJQgCOj6QndmuB/d1oi1oeHwgYC+0Otb8h+XZVNNI=;
+        b=Ot2C/Uj4EXyxEJTmRJbdav8QjyBlGn/N/GYsSPwMvlc7YPQA6buG+GXRxH7L8/joJi
+         Saw1XO7CW6IjojUHljyO4RBKSk50Wa7ncEXMI6Q7G5ykBXhHZvEGKmsuHciBmWkg/R1R
+         HBF++RgKHO7J6qc1lMplMk465ZGRC08K/LwXs9YCeVEcFI3rJprdQMjrehoPL4fJaHgx
+         HkheCgNyIJXt1d6hMRK/ryQmK378hdrKIKQDhtNKBAe1iYqjU8aMjMuAm4mviaV24gEH
+         kj1zxoIp+rVSobKn2gt6tJpfleala8g3aD+R7fzf45JrEDpxrpFQUJ2oHOAuctxnmtw2
+         f6SA==
+X-Gm-Message-State: AOAM532MxMRm/WHbSVKnX0i5t26x/zGEvHG3NM+v5KANKQWUlvbdYrD8
+        /a9vvbywMY4Wu+MwKYzWdnE=
+X-Google-Smtp-Source: ABdhPJxQv460ugCPPWo2Au4TeA7NDFDB7zF3qIAdkwwmscxGUcK+DTWr5lJwt5yAdkfHSl7t2N3ENQ==
+X-Received: by 2002:a62:8415:0:b0:407:8998:7c84 with SMTP id k21-20020a628415000000b0040789987c84mr14198037pfd.71.1630971429983;
+        Mon, 06 Sep 2021 16:37:09 -0700 (PDT)
+Received: from tong-desktop.local (99-105-211-126.lightspeed.sntcca.sbcglobal.net. [99.105.211.126])
+        by smtp.googlemail.com with ESMTPSA id t68sm10890250pgc.59.2021.09.06.16.37.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Sep 2021 16:37:09 -0700 (PDT)
+From:   Tong Zhang <ztong0001@gmail.com>
+To:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tong Zhang <ztong0001@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Dario Binacchi <dariobin@libero.it>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v1] can: c_can: fix null-ptr-deref on ioctl()
+Date:   Mon,  6 Sep 2021 16:37:02 -0700
+Message-Id: <20210906233704.1162666-1-ztong0001@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20210901103816.1163765-1-razor@blackwall.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/1/21 4:38 AM, Nikolay Aleksandrov wrote:
-> From: Nikolay Aleksandrov <nikolay@nvidia.com>
-> 
-> Hi,
-> This set adds support for vlan port/bridge multicast router option. It is
-> similar to the already existing bridge-wide mcast_router control. Patch 01
-> moves attribute adding and parsing together for vlan option setting,
-> similar to global vlan option setting. It simplifies adding new options
-> because we can avoid reserved values and additional checks. Patch 02
-> adds the new mcast_router option and updates the related man page.
-> 
-> Example:
->  # mark port ens16 as a permanent mcast router for vlan 100
->  $ bridge vlan set dev ens16 vid 100 mcast_router 2
->  # disable mcast router for port ens16 and vlan 200
->  $ bridge vlan set dev ens16 vid 200 mcast_router 0
->  $ bridge -d vlan show
->  port              vlan-id
->  ens16             1 PVID Egress Untagged
->                      state forwarding mcast_router 1
->                    100
->                      state forwarding mcast_router 2
->                    200
->                      state forwarding mcast_router 0
-> 
-> Note that this set depends on the latest kernel uapi headers.
-> 
+the pdev maybe not a platform device, e.g. c_can_pci device,
+in this case, calling to_platform_device() would not make sense.
+Also, per the comment in drivers/net/can/c_can/c_can_ethtool.c, @bus_info
+sould match dev_name() string, so I am replacing this with dev_name() to
+fix this issue.
 
-applied to iproute2-next.
+[    1.458583] BUG: unable to handle page fault for address: 0000000100000000
+[    1.460921] RIP: 0010:strnlen+0x1a/0x30
+[    1.466336]  ? c_can_get_drvinfo+0x65/0xb0 [c_can]
+[    1.466597]  ethtool_get_drvinfo+0xae/0x360
+[    1.466826]  dev_ethtool+0x10f8/0x2970
+[    1.467880]  sock_ioctl+0xef/0x300
+
+Fixes: 2722ac986e93 ("can: c_can: add ethtool support")
+Signed-off-by: Tong Zhang <ztong0001@gmail.com>
+---
+ drivers/net/can/c_can/c_can_ethtool.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/drivers/net/can/c_can/c_can_ethtool.c b/drivers/net/can/c_can/c_can_ethtool.c
+index cd5f07fca2a5..377c7d2e7612 100644
+--- a/drivers/net/can/c_can/c_can_ethtool.c
++++ b/drivers/net/can/c_can/c_can_ethtool.c
+@@ -15,10 +15,8 @@ static void c_can_get_drvinfo(struct net_device *netdev,
+ 			      struct ethtool_drvinfo *info)
+ {
+ 	struct c_can_priv *priv = netdev_priv(netdev);
+-	struct platform_device *pdev = to_platform_device(priv->device);
+-
+ 	strscpy(info->driver, "c_can", sizeof(info->driver));
+-	strscpy(info->bus_info, pdev->name, sizeof(info->bus_info));
++	strscpy(info->bus_info, dev_name(priv->device), sizeof(info->bus_info));
+ }
+ 
+ static void c_can_get_ringparam(struct net_device *netdev,
+-- 
+2.25.1
 
