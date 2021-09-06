@@ -2,151 +2,242 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A8F164017B9
-	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 10:18:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1971D401836
+	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 10:47:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240441AbhIFITQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Sep 2021 04:19:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32842 "EHLO
+        id S241098AbhIFIsE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Sep 2021 04:48:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240260AbhIFITP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Sep 2021 04:19:15 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10B01C061575
-        for <netdev@vger.kernel.org>; Mon,  6 Sep 2021 01:18:11 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1mN9pP-0005q5-Ih; Mon, 06 Sep 2021 10:18:07 +0200
-Received: from pengutronix.de (2a03-f580-87bc-d400-4919-df7f-870a-a6c2.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:4919:df7f:870a:a6c2])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 857816775A7;
-        Mon,  6 Sep 2021 08:18:06 +0000 (UTC)
-Date:   Mon, 6 Sep 2021 10:18:05 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RESEND PATCH v2] can: netlink: prevent incoherent can
- configuration in case of early return
-Message-ID: <20210906081805.dyd74xfu74gcnslg@pengutronix.de>
-References: <20210903071704.455855-1-mailhol.vincent@wanadoo.fr>
+        with ESMTP id S241501AbhIFIrN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Sep 2021 04:47:13 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D32EC0613C1
+        for <netdev@vger.kernel.org>; Mon,  6 Sep 2021 01:46:08 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id mf2so11987435ejb.9
+        for <netdev@vger.kernel.org>; Mon, 06 Sep 2021 01:46:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8LAmaSyJa7xIkRyWmQFQLPdtTpPfl6cF8N/0UDdi5JQ=;
+        b=ftFDUtejRaca7/VzbCnbdEqwMSB1qRj0J5JYAYxPmAajPt03iJ9JCXESud9TiTSFw/
+         I7SEgZbb5lKtt2/bzhJSqptGgf4gIGPXHdpEN+PqnzoJCwe5G6zw1nZV5r1mHhS2Uj6u
+         Ma3WF0jXLDn+f7ZSOT3zf1nrVt/O+3Hz8nT/Xs9Zrojfwv8wZrnspilhtE7WoyICjPFF
+         /BMAycSuJw9hbx4I4PL//aQpMrxhcaD/FCjz3yn0AM8kK11PIo9D4z2JpAZFfyn00OAF
+         XAOQbuFOpM72i24Kdf2NjGDkRC54nedjfG1Hhy3fsWsggeuCs9rfuR4xMpV0zJe/P+Dq
+         iNcg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8LAmaSyJa7xIkRyWmQFQLPdtTpPfl6cF8N/0UDdi5JQ=;
+        b=ccDoxslbXHbH4N7HXy7qQCQLLU7QO64PcWlWNdZVbthm51RjI1ftgdOiT2AG1tuelH
+         sePvZvqxPG1jJXkv8d+25CCDV153yMLFHp5jRrPuae4YRS/EoTdbWXklf7F9gmGB1yp6
+         o9P0V3GZV4qh/zEWndR33dvRcF44EhHEZWSDin2pmQVE/sgLYholDr/rQsjxlakxw1fY
+         xMgMY0bll6QxfpIywROPS3SGcm5SBbbKGahwfoIr79Hrgj4Sw+008jdC6rX2I5J5f3SU
+         7wMezU7O8iFzWrPK1ZNc2NNAJNlLJorqsMYEmVN2djJagX2mlSpvrScR3tl2Q/433sLw
+         ZARw==
+X-Gm-Message-State: AOAM5333JfsXR+LJdG8SX2Xwg9zzKs5y5se0n28RsJDHKE7GJj9l6Wwg
+        myctj587SRI61ykCMzMU0mw2mmApvf3SnWyVE7RO
+X-Google-Smtp-Source: ABdhPJxRcevb7Cx9lFr/uLNuGUc45WhioHM0KmVHs1F8bqTkXfZVuaNxvzm/8iuqiAHlOvgz0eipWdPdNONQLdXkGV8=
+X-Received: by 2002:a17:907:1c01:: with SMTP id nc1mr12529737ejc.504.1630917966948;
+ Mon, 06 Sep 2021 01:46:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="rrycmjrnbv6ttokf"
-Content-Disposition: inline
-In-Reply-To: <20210903071704.455855-1-mailhol.vincent@wanadoo.fr>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+References: <20210831103634.33-1-xieyongji@bytedance.com> <20210831103634.33-6-xieyongji@bytedance.com>
+ <20210906015524-mutt-send-email-mst@kernel.org> <CACycT3v4ZVnh7DGe_RtAOx4Vvau0km=HWyCM=KzKhD+ahYKafQ@mail.gmail.com>
+ <20210906023131-mutt-send-email-mst@kernel.org> <CACycT3ssC1bhNzY9Pk=LPvKjMrFFavTfCKTJtR2XEiVYqDxT1Q@mail.gmail.com>
+ <20210906035338-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20210906035338-mutt-send-email-mst@kernel.org>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Mon, 6 Sep 2021 16:45:55 +0800
+Message-ID: <CACycT3vQHRsJ_j5f4T9RoB4MQzBoYO5ts3egVe9K6TcCVfLOFQ@mail.gmail.com>
+Subject: Re: [PATCH v13 05/13] vdpa: Add reset callback in vdpa_config_ops
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christian Brauner <christian.brauner@canonical.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
+        Greg KH <gregkh@linuxfoundation.org>,
+        He Zhe <zhe.he@windriver.com>,
+        Liu Xiaodong <xiaodong.liu@intel.com>,
+        Joe Perches <joe@perches.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Will Deacon <will@kernel.org>,
+        John Garry <john.garry@huawei.com>, songmuchun@bytedance.com,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Sep 6, 2021 at 4:01 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+>
+> On Mon, Sep 06, 2021 at 03:06:44PM +0800, Yongji Xie wrote:
+> > On Mon, Sep 6, 2021 at 2:37 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > >
+> > > On Mon, Sep 06, 2021 at 02:09:25PM +0800, Yongji Xie wrote:
+> > > > On Mon, Sep 6, 2021 at 1:56 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > > > >
+> > > > > On Tue, Aug 31, 2021 at 06:36:26PM +0800, Xie Yongji wrote:
+> > > > > > This adds a new callback to support device specific reset
+> > > > > > behavior. The vdpa bus driver will call the reset function
+> > > > > > instead of setting status to zero during resetting.
+> > > > > >
+> > > > > > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+> > > > >
+> > > > >
+> > > > > This does gloss over a significant change though:
+> > > > >
+> > > > >
+> > > > > > ---
+> > > > > > @@ -348,12 +352,12 @@ static inline struct device *vdpa_get_dma_dev(struct vdpa_device *vdev)
+> > > > > >       return vdev->dma_dev;
+> > > > > >  }
+> > > > > >
+> > > > > > -static inline void vdpa_reset(struct vdpa_device *vdev)
+> > > > > > +static inline int vdpa_reset(struct vdpa_device *vdev)
+> > > > > >  {
+> > > > > >       const struct vdpa_config_ops *ops = vdev->config;
+> > > > > >
+> > > > > >       vdev->features_valid = false;
+> > > > > > -     ops->set_status(vdev, 0);
+> > > > > > +     return ops->reset(vdev);
+> > > > > >  }
+> > > > > >
+> > > > > >  static inline int vdpa_set_features(struct vdpa_device *vdev, u64 features)
+> > > > >
+> > > > >
+> > > > > Unfortunately this breaks virtio_vdpa:
+> > > > >
+> > > > >
+> > > > > static void virtio_vdpa_reset(struct virtio_device *vdev)
+> > > > > {
+> > > > >         struct vdpa_device *vdpa = vd_get_vdpa(vdev);
+> > > > >
+> > > > >         vdpa_reset(vdpa);
+> > > > > }
+> > > > >
+> > > > >
+> > > > > and there's no easy way to fix this, kernel can't recover
+> > > > > from a reset failure e.g. during driver unbind.
+> > > > >
+> > > >
+> > > > Yes, but it should be safe with the protection of software IOTLB even
+> > > > if the reset() fails during driver unbind.
+> > > >
+> > > > Thanks,
+> > > > Yongji
+> > >
+> > > Hmm. I don't see it.
+> > > What exactly will happen? What prevents device from poking at
+> > > memory after reset? Note that dma unmap in e.g. del_vqs happens
+> > > too late.
+> >
+> > But I didn't see any problems with touching the memory for virtqueues.
+>
+> Drivers make the assumption that after reset returns no new
+> buffers will be consumed. For example a bunch of drivers
+> call virtqueue_detach_unused_buf.
 
---rrycmjrnbv6ttokf
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I'm not sure if I get your point. But it looks like
+virtqueue_detach_unused_buf() will check the driver's metadata first
+rather than read the memory from virtqueue.
 
-On 03.09.2021 16:17:04, Vincent Mailhol wrote:
-> struct can_priv has a set of flags (can_priv::ctrlmode) which are
-> correlated with the other fields of the structure. In
-> can_changelink(), those flags are set first and copied to can_priv. If
-> the function has to return early, for example due to an out of range
-> value provided by the user, then the global configuration might become
-> incoherent.
->=20
-> Example: the user provides an out of range dbitrate (e.g. 20
-> Mbps). The command fails (-EINVAL), however the FD flag was already
-> set resulting in a configuration where FD is on but the databittiming
-> parameters are empty.
->=20
-> * Illustration of above example *
->=20
-> | $ ip link set can0 type can bitrate 500000 dbitrate 20000000 fd on
-> | RTNETLINK answers: Invalid argument
-> | $ ip --details link show can0
-> | 1: can0: <NOARP,ECHO> mtu 72 qdisc noop state DOWN mode DEFAULT group d=
-efault qlen 10
-> |     link/can  promiscuity 0 minmtu 0 maxmtu 0
-> |     can <FD> state STOPPED restart-ms 0
->            ^^ FD flag is set without any of the databittiming parameters.=
-=2E.
-> | 	  bitrate 500000 sample-point 0.875
-> | 	  tq 12 prop-seg 69 phase-seg1 70 phase-seg2 20 sjw 1
-> | 	  ES582.1/ES584.1: tseg1 2..256 tseg2 2..128 sjw 1..128 brp 1..512 brp=
--inc 1
-> | 	  ES582.1/ES584.1: dtseg1 2..32 dtseg2 1..16 dsjw 1..8 dbrp 1..32 dbrp=
--inc 1
-> | 	  clock 80000000 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_ma=
-x_segs 65535
->=20
-> To prevent this from happening, we do a local copy of can_priv, work
-> on it, an copy it at the very end of the function (i.e. only if all
-> previous checks succeeded).
+> I can't say whether block makes this assumption anywhere.
+> Needs careful auditing.
+>
+> > The memory should not be freed after dma unmap?
+>
+> But unmap does not happen until after the reset.
+>
 
-I don't like the optimization of using a static priv. If it's too big to
-be allocated on the stack, allocate it on the heap, i.e. using
-kmemdup()/kfree().
+I mean the memory is totally allocated and controlled by the VDUSE
+driver. The VDUSE driver will not return them to the buddy system
+unless userspace unmap it.
 
-> Once this done, there is no more need to have a temporary variable for
-> a specific parameter. As such, the bittiming and data bittiming (bt
-> and dbt) are directly written to the temporary priv variable.
->=20
-> Finally, function can_calc_tdco() was retrieving can_priv from the
-> net_device and directly modifying it. We changed the prototype so that
-> it instead writes its changes into our temporary priv variable.
+>
+> > And the memory for the bounce buffer should also be safe to be
+> > accessed by userspace in this case.
+> >
+> > > And what about e.g. interrupts?
+> > > E.g. we have this:
+> > >
+> > >         /* Virtqueues are stopped, nothing can use vblk->vdev anymore. */
+> > >         vblk->vdev = NULL;
+> > >
+> > > and this is no longer true at this point.
+> > >
+> >
+> > You're right. But I didn't see where the interrupt handler will use
+> > the vblk->vdev.
+>
+> static void virtblk_done(struct virtqueue *vq)
+> {
+>         struct virtio_blk *vblk = vq->vdev->priv;
+>
+> vq->vdev is the same as vblk->vdev.
+>
 
-Is it possible to split this into a separate patch, so that the part
-without the tdco can be backported more easily to older kernels not
-having tdco? The patch fixing the tdco would be the 2nd patch...
+We will test the vq->ready (will be set to false in del_vqs()) before
+injecting an interrupt in the VDUSE driver. So it should be OK?
 
-> Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-> ---
-> Resending because I got no answers on:
-> https://lore.kernel.org/linux-can/20210823024750.702542-1-mailhol.vincent=
-@wanadoo.fr/T/#u
-> (I guess everyone bas busy with the upcoming merge window)
+>
+> > So it seems to be not too late to fix it:
+> >
+> > diff --git a/drivers/vdpa/vdpa_user/vduse_dev.c
+> > b/drivers/vdpa/vdpa_user/vduse_dev.c
+> > index 5c25ff6483ad..ea41a7389a26 100644
+> > --- a/drivers/vdpa/vdpa_user/vduse_dev.c
+> > +++ b/drivers/vdpa/vdpa_user/vduse_dev.c
+> > @@ -665,13 +665,13 @@ static void vduse_vdpa_set_config(struct
+> > vdpa_device *vdpa, unsigned int offset,
+> >  static int vduse_vdpa_reset(struct vdpa_device *vdpa)
+> >  {
+> >         struct vduse_dev *dev = vdpa_to_vduse(vdpa);
+> > +       int ret;
+> >
+> > -       if (vduse_dev_set_status(dev, 0))
+> > -               return -EIO;
+> > +       ret = vduse_dev_set_status(dev, 0);
+> >
+> >         vduse_dev_reset(dev);
+> >
+> > -       return 0;
+> > +       return ret;
+> >  }
+> >
+> >  static u32 vduse_vdpa_get_generation(struct vdpa_device *vdpa)
+> >
+> > Thanks,
+> > Yongji
+>
+> Needs some comments to explain why it's done like this.
+>
 
-Busy yes, but not with the merge window :)
+This is used to make sure the userspace can't not inject the interrupt
+any more after reset. The vduse_dev_reset() will clear the interrupt
+callback and flush the irq kworker.
 
-> I am not sure whether or not this needs a "Fixes" tag. Just in case,
-> there it is:
->=20
-> Fixes: 9859ccd2c8be ("can: introduce the data bitrate configuration for C=
-AN FD")
+> BTW device is generally wedged at this point right?
+> E.g. if reset during initialization fails, userspace
+> will still get the reset at some later point and be
+> confused ...
+>
 
-=2E..if it's possible to split this patch into 2 parts, add individual
-fixes tags to them.
+Sorry, I don't get why userspace will get the reset at some later point?
 
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---rrycmjrnbv6ttokf
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmE1zrsACgkQqclaivrt
-76msFwf/SL0XkEAhaxhdBuuALp3rJfdjijUtMv0n4CyhfcUNLaWIWPDnCLr5E7tG
-yfzQksVxVSloEp8IsezBdsMQi6sKmHu+ocO3BbIAEihPJDhfCySnrrmRhM51M0Ka
-N/f3u5yl5GjlASXfGQ1NIKlRGjDsb1yyR5TSYFq4wYUnb/N21lNvi28ST2nUFM8R
-KvI1zajrCpmMJJXBcYHuQiYOUG1duUF/MGcCFD4lZS9OciFNEC3w7TKXQ0T5nr2o
-MJrr4tYmYDInR4TigKO4kZvk/BgpeFdhdC/Q2cVhxpaJYsSdyMGmHXmNlrdFhJvG
-HhM0RlZLBMSbqksJkw4PL5fr3/578Q==
-=iwQ/
------END PGP SIGNATURE-----
-
---rrycmjrnbv6ttokf--
+Thanks,
+Yongji
