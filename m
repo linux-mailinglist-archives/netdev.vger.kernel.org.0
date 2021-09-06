@@ -2,78 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0AAE401C36
-	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 15:24:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 883BD401C3D
+	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 15:26:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241292AbhIFNZH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Sep 2021 09:25:07 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:57846 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232694AbhIFNZG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Sep 2021 09:25:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=zM7DYcWrFNeOvzT5B/RGXmNq4S28epUTPOEQr+MGMkI=; b=0ngmq+osCfDKWn5ywa8xtd3S6P
-        SxGWtV6oh9Zz6f4gd07/3sGxDRHkoQHGRvwMCt9SXN+Xrg63b8bmJbHQziHgOCIHh+8f+Z19x9EeY
-        nO33KMNkZy0ZlFtQsTRU0134JWy7TKq6ibb7FasbV7Fe51WKhd3j1ZwuN7Qr50FjzJTA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mNEbF-005VIx-1T; Mon, 06 Sep 2021 15:23:49 +0200
-Date:   Mon, 6 Sep 2021 15:23:49 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
-        "alexandre.torgue@foss.st.com" <alexandre.torgue@foss.st.com>,
-        "joabreu@synopsys.com" <joabreu@synopsys.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: Re: [PATCH] net: stmmac: fix MAC not working when system resume back
- with WoL enabled
-Message-ID: <YTYWZaVJoETikxeF@lunn.ch>
-References: <20210903080147.GS22278@shell.armlinux.org.uk>
- <DB8PR04MB679518228AB7B2C5CD47A1B3E6CF9@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <20210903093246.GT22278@shell.armlinux.org.uk>
- <DB8PR04MB6795EE2FA03451AB5D73EFC3E6CF9@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <20210903120127.GW22278@shell.armlinux.org.uk>
- <20210903201210.GF1350@shell.armlinux.org.uk>
- <DB8PR04MB6795FC58C1D0E2481E2BC35EE6D29@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <YTXgqBRMRvYdPyJU@shell.armlinux.org.uk>
- <DB8PR04MB67958E22A85B15FFCA7CDA70E6D29@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <YTX515RMVNmT4q+o@shell.armlinux.org.uk>
+        id S242137AbhIFNZt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Sep 2021 09:25:49 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:30793 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S241543AbhIFNZs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Sep 2021 09:25:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1630934682;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=KpGb85w8gQcgfPRHBY1c5nljJLmxAZ2B+i0uFEYG7dE=;
+        b=UGubOZpXOssb+mphw+e/x4ioEX41YXdH/m7NRG0Q75CvRDO0BxukwSbPZ6i/7MV4Wjgzol
+        m4zBvxk0fP0cblGA/8iZ/jMZf2jHxkKqiqElIlUKH8Unr6wY4GSZidqrKm1QpZEa61ASic
+        Y8XAc/1hk4uznILXvVYqfynCOpPY9cA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-247-ZtEtZBdDPTGGlzYQ_rTNKw-1; Mon, 06 Sep 2021 09:24:40 -0400
+X-MC-Unique: ZtEtZBdDPTGGlzYQ_rTNKw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 740D510054F6;
+        Mon,  6 Sep 2021 13:24:39 +0000 (UTC)
+Received: from localhost (unknown [10.39.194.203])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3C8835C22B;
+        Mon,  6 Sep 2021 13:24:35 +0000 (UTC)
+Date:   Mon, 6 Sep 2021 14:24:34 +0100
+From:   Stefan Hajnoczi <stefanha@redhat.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Dexuan Cui <decui@microsoft.com>, linux-kernel@vger.kernel.org,
+        Jorgen Hansen <jhansen@vmware.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH] MAINTAINERS: add VM SOCKETS (AF_VSOCK) entry
+Message-ID: <YTYWkupSYR29IMuM@stefanha-x1.localdomain>
+References: <20210906091159.66181-1-sgarzare@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="rgq6+WKf0E8dVAr9"
 Content-Disposition: inline
-In-Reply-To: <YTX515RMVNmT4q+o@shell.armlinux.org.uk>
+In-Reply-To: <20210906091159.66181-1-sgarzare@redhat.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> We do have the ability to place the link into the slowest mutually
-> supported speed via phy(link)?_speed_down(). This has the advantage of
-> reducing the power used to keep the link active while in suspend (which
-> is its primary purpose) but also reduces the possible link modes that
-> could be autonegotiated with the partner.
-> 
-> I think I'd suggest to Andrew that phy_speed_down() should only
-> advertise one capability, not "everything we support below the minimum
-> mutually supported capability" - that way, if a link change is attempted
-> on the partner while the system is suspended, the link will not come up
-> and its obvious it isn't going to work.
 
-Yes, that sounds reasonable.
+--rgq6+WKf0E8dVAr9
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> I think this is an issue for a separate patch set.
+On Mon, Sep 06, 2021 at 11:11:59AM +0200, Stefano Garzarella wrote:
+> Add a new entry for VM Sockets (AF_VSOCK) that covers vsock core,
+> tests, and headers. Move some general vsock stuff from virtio-vsock
+> entry into this new more general vsock entry.
+>=20
+> I've been reviewing and contributing for the last few years,
+> so I'm available to help maintain this code.
+>=20
+> Cc: Dexuan Cui <decui@microsoft.com>
+> Cc: Jorgen Hansen <jhansen@vmware.com>
+> Cc: Stefan Hajnoczi <stefanha@redhat.com>
+> Suggested-by: Michael S. Tsirkin <mst@redhat.com>
+> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> ---
+>=20
+> Dexuan, Jorgen, Stefan, would you like to co-maintain or
+> be added as a reviewer?
 
-Yes, i would say a change like that is net-next material.
+Please skip me for now. I'm available if you take an extended period of
+time off and other special situations but don't have enough time to play
+an active role.
 
-     Andrew
+Thanks,
+Stefan
+
+--rgq6+WKf0E8dVAr9
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmE2FpIACgkQnKSrs4Gr
+c8h+dAgAgaznoT/gv3/pwLS4I0vUZFmrU8gfnCt9njexTIR3/p2nwq3kt6smttke
+PxIsIDO9CuBUhktBZTOBQcm1CCMJ89uus3PzzpUEI/CxKLxupWW1ZSAjFVLDg1AR
+KuRW9T5KW9lZKIwq++RLWMCAl+qu/kx6rxuD6opi7zpda6yTDL5i4EKov1Iq/yWL
+MLeJDqcvTyEKsaR6eMuE+3uJpqVreZBns1hUpmJb3dql3JtKTQls08TIv/CCnmSw
+KsOl2OIZ9m5c5XkJ2gY0ZkLU8UMpn4gqAEs/4M//WiA1jHb7OKEZwNB5HTHs6BOV
+8RAAzszVVesp0VG0mrrFr3i5E7YC3g==
+=0Br2
+-----END PGP SIGNATURE-----
+
+--rgq6+WKf0E8dVAr9--
+
