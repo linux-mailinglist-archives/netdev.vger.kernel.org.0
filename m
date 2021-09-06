@@ -2,95 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB91140122B
-	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 01:55:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BF59401235
+	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 02:11:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238331AbhIEX4i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Sep 2021 19:56:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33476 "EHLO
+        id S234182AbhIFAJ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Sep 2021 20:09:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229666AbhIEX4h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Sep 2021 19:56:37 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB83BC061575;
-        Sun,  5 Sep 2021 16:55:33 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1630886132;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=htNt0m9nOHGLJS+qiDTAK6Mcl3GNSWsAsqlDk5pIWKs=;
-        b=ZJXLgiWpz+VGt31DxlSZe++i8KKC++HF9m4G3FH/T/6A2sCUjWn3aJs+vD53/fjjJqragO
-        ZG8TcI6DvtiZA+MJPz1fTW+ReHyM2H5OdfFVrvG8WCcbI4eNPcP2W8sgQV9VseiZcocov5
-        /wqMfBAWHQdK3HAlgszTKljhO05jxatal0rNcQE79mUpfJJD4WiEAHOsgDiIV2Qc9HL2Dk
-        3vnHP9gw8DXZ79EqT4vgitX/80aeSx3qBwmlhxH+65Yh9ipeffGOGR0L0erjz+MJMkt5+m
-        p0CFx36xhtYq8BDb1gCDvGtgkps8o+g3LeL3NOa2bKAsJOAyK22Z9M5ycjmJAg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1630886132;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=htNt0m9nOHGLJS+qiDTAK6Mcl3GNSWsAsqlDk5pIWKs=;
-        b=Tc++YGUfuxCKx0MXvCKWxi6HEsU5Kceo6oXMeNF4ECU00N0iQ8K+JsA6MfvnfrAMQj1FgX
-        Rlj6xebVNdu3hdCg==
-To:     Hillf Danton <hdanton@sina.com>,
-        syzbot <syzbot+a9b681dcbc06eb2bca04@syzkaller.appspotmail.com>
-Cc:     eric.dumazet@gmail.com, hdanton@sina.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] INFO: task hung in __lru_add_drain_all
-In-Reply-To: <20210904080739.3026-1-hdanton@sina.com>
-References: <20210904005650.2914-1-hdanton@sina.com>
- <20210904080739.3026-1-hdanton@sina.com>
-Date:   Mon, 06 Sep 2021 01:55:31 +0200
-Message-ID: <87h7eya87g.ffs@tglx>
+        with ESMTP id S229735AbhIFAJ2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Sep 2021 20:09:28 -0400
+Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 126B8C061575
+        for <netdev@vger.kernel.org>; Sun,  5 Sep 2021 17:08:24 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id D607DC01E; Mon,  6 Sep 2021 02:08:18 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1630886898; bh=OeCX4dJpwBgitXOSpmPOmvNzOoK+lAbEx+BXVeu2QM4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=17Fqq2Fo5jQOobm0vMf6lneLlkpDc5uxueDYcq1/GU3rsBSmycv9xTu8aZW3+hdPr
+         fHaVmAu6ZbaPBGKN8BqbduccwhJ37y0xRln9YOUqM0kJFWZsXtR+Depfpte6tnclSP
+         fy4NCB1YX3WYZT/jydnexd2eMi1fh1Nt5Q/13AlFcPDJHfouymV+Jr0OJZ+kD1+BWS
+         fS7SAGBRPaZKoE8CcDL1zCaWEdeqoyTGQqu0IXFVQ3dSIjoJUyRyu2Y6Tit9QIIFYa
+         D+ZhqkKNqcCDtxqr8eRRW1ip9405NF47N755hweocb1adesDKp4yqvlgDc9TNz0v1J
+         Npdtr8yHM/Oxg==
+X-Spam-Checker-Version: SpamAssassin 3.3.2 (2011-06-06) on nautica.notk.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.0 required=5.0 tests=UNPARSEABLE_RELAY
+        autolearn=unavailable version=3.3.2
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 7E163C009;
+        Mon,  6 Sep 2021 02:08:15 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1630886897; bh=OeCX4dJpwBgitXOSpmPOmvNzOoK+lAbEx+BXVeu2QM4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=GynXHJhrXtydznYDXD1Zd+zU+gXHeODQ3ykenpx+yygjUyhg0FSE7pI2wmRoyRkjT
+         VKwShy/ag4EWe87WDyF++0V0JFEqIQYxetyVBCwRCtjoXZTapoBQdd6A/LgmLmmdET
+         nDv/i7yuaExhCV6h72kEy4LBI/JrseIKnR9Pcp/HEpCAf7ZETV6pAauYQk94Mmps+C
+         BTkB63PnUNVZR9zuiwkACMD6HBNJ3RIsbdQaZtVK7TtZyyrk6KyuEyD1L7qtOKGoT4
+         Tz0h175G7O25e46iELfV2+dO384GSxVRO1KYoSNZacG4uCrBZEytOUHEgKzbhBNvJL
+         uII+8LHqv2afQ==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id e8c97575;
+        Mon, 6 Sep 2021 00:08:11 +0000 (UTC)
+Date:   Mon, 6 Sep 2021 09:07:56 +0900
+From:   Dominique Martinet <asmadeus@codewreck.org>
+To:     Eric Van Hensbergen <ericvh@gmail.com>
+Cc:     Christian Schoenebeck <linux_oss@crudebyte.com>,
+        Greg Kurz <groug@kaod.org>,
+        Latchesar Ionkov <lucho@ionkov.net>, netdev@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net
+Subject: Re: [PATCH 2/2] net/9p: increase default msize to 128k
+Message-ID: <YTVb3K37JxUWUdXN@codewreck.org>
+References: <cover.1630770829.git.linux_oss@crudebyte.com>
+ <61ea0f0faaaaf26dd3c762eabe4420306ced21b9.1630770829.git.linux_oss@crudebyte.com>
+ <YTQB5jCbvhmCWzNd@codewreck.org>
+ <1915472.2DI3jHSlUk@silver>
+ <YTU7FJuooYSjISlq@codewreck.org>
+ <CAFkjPTkJFrqhCCHgUBsDiEVjpeJoKZ4gRy=G-4DpJo9xanpYaA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAFkjPTkJFrqhCCHgUBsDiEVjpeJoKZ4gRy=G-4DpJo9xanpYaA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Sep 04 2021 at 16:07, Hillf Danton wrote:
->
-> See if ieee80211_iface_work is burning more CPU cycles than thought, given the
-> bound workqueue work blocked for more than 143 seconds.
->
-> #syz test git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
->
-> --- a/net/mac80211/iface.c
-> +++ b/net/mac80211/iface.c
-> @@ -1494,6 +1494,7 @@ static void ieee80211_iface_work(struct
->  
->  		kfree_skb(skb);
->  		kcov_remote_stop();
-> +		cond_resched();
->  	}
->  
->  	/* process status queue */
-> @@ -1504,6 +1505,7 @@ static void ieee80211_iface_work(struct
->  		kfree_skb(skb);
->  
->  		kcov_remote_stop();
-> +		cond_resched();
->  	}
->  
->  	/* then other type-dependent work */
-> --
+Eric Van Hensbergen wrote on Sun, Sep 05, 2021 at 06:44:13PM -0500:
+> there will likely be a tradeoff with tcp in terms of latency to first
+> message so while
+> absolute bw may be higher processing time may suffer.  8k was default msize
+> to more closely match it to jumbo frames on an ethernet.  of course all
+> that intuition is close to 30 years out of date….
 
-Again. What are you trying to achieve here? 
+It's not because the max size is 128k (or 1MB) that this much is sent
+over the wire everytime -- if a message used to fit in 8KB, then its
+on-the-wire size won't change and speed/latency won't be affected for
+these.
 
-ieee80211_iface_work() is a work function invoked from a worker thread
-in preemptible task context.
+For messages that do require more than 8KB (read/write/readdir) then you
+can fit more data per message, so for a given userspace request (feed me
+xyz amount of data) you'll have less client-server round-trips, and the
+final user-reflected latency will be better as well -- that's why
+e.g. NFS has been setting a max size of 1MB by default for a while now,
+and they allow even more (32MB iirc? not sure)
 
-The kernel config used for this has CONFIG_PREEMPT=y, which means that
-the context in which you are sprinkling cond_resched() is already fully
-preemtible and the only reason for this fail would be a fatal bug in the
-scheduler core or in the preemption mechanism. Pretty unlikely to go
-unnoticed for anything else than for this particular reproducer.
+I've only had done these tests years ago and no longer have access to
+the note that was written back then, but TCP also definitely benefits
+from > 64k msize as long as there's enough memory available.
 
-Can you please stop waisting precious compute power?
 
-Thanks,
+The downside (because it's not free) is there though, you need more
+memory for 9p with big buffers even if we didn't need so much in the
+first place.
+The code using a slab now means that the memory is not locked per mount
+as it used to, but that also means allocations can fail if there is a
+big pressure after not having been released. OTOH as long as it's
+consistently used the buffers will be recycled so it's not necessarily
+too bad performance-wise in hot periods.
 
-        tglx
+Ideally we'd need to rework transports to allow scatter-gather (iovec or
+similar API), and work with smaller allocations batched together on
+send, but I don't have time for something like that... If we do that we
+can probably get the best of both worlds -- and could consider >1MB, but
+that's unrealistic as of now, regardless of the transport.
+
+-- 
+Dominique
