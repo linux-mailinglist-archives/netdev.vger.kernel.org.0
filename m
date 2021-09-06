@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2051D4012C2
-	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 03:22:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1343401342
+	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 03:24:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238742AbhIFBWL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Sep 2021 21:22:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38612 "EHLO mail.kernel.org"
+        id S240166AbhIFBYx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Sep 2021 21:24:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38896 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238971AbhIFBVq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 5 Sep 2021 21:21:46 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1BC33610C8;
-        Mon,  6 Sep 2021 01:20:42 +0000 (UTC)
+        id S239789AbhIFBXt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 5 Sep 2021 21:23:49 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AA6B161164;
+        Mon,  6 Sep 2021 01:21:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1630891243;
-        bh=zer8h7C3K3dyF82nvXtNP81OaA4zrCRJbFaH/pOCLEo=;
+        s=k20201202; t=1630891305;
+        bh=xqDJY+Ve/3PvQAXOoBIQfvHgmdTDQqXae5sOyZFfw4s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rGF5H22WW2sHz6AsQRIixbNK/E2fLaamKsNvx7u34Er0T7arFvSbS3zo76OKuOyiW
-         a1OLNdDGQQB+6DPQ/3R66XM1S6CXFr0bxhpigFyiy5hoCiM0BMsBNs67iVsN+ZTZDT
-         KRg3i5eiMESWCQ0LrX+hijThm5lOFj3NrtLS1vyOZuPW5DCm2RwhKeAaRxMvvQOB2i
-         lPI0TpTfAyVjolCc7CPZCeSSHML3GwWsFwjT6xx3CZkFy1PUzligu7ogsrWstUWGvu
-         Saa8+mwxCGO8Ec0j+eYRZ6JO+6nHuoc7DwvGzgociWYkB8SwzkG535oYIPqhR2CVHy
-         Ss6oGA5L819rQ==
+        b=Qs2sBTZaUzOhq/zKi7EID1adXzzzd9hz+hRBuaTsDBKgOUWmSzIYxb8WoT4Xh6dnw
+         fbTZdQo68Dxh2Zo19+EHaWX2XmSocAGzZ86QGQNTuBPBP8jmPHhJoNdHoK2SKCq07R
+         5d4SDvu65HvO1tJ7Kt8/UBJyi2G0zqgjfr1OyLxNCBvk0x6UG/mzyjG7OdS2jztXUN
+         +KVlscXJYZvFRYnFQ+Mdgye3TVQb7sz8MZ4wU4VSiJas7V/TAK/KTq5g4zDOENG/Jy
+         miJIRJjsAiR+n8QhGj1iA8Aq7L4gUq2BET1Iq9kF7W7zK0cKgEccP4yusMnR1ytuz3
+         u0CbM3TCALHsw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Jens Axboe <axboe@kernel.dk>, Daniel Wagner <dwagner@suse.de>,
         Peter Zijlstra <peterz@infradead.org>,
         Sasha Levin <sashal@kernel.org>, io-uring@vger.kernel.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.14 41/47] io-wq: remove GFP_ATOMIC allocation off schedule out path
-Date:   Sun,  5 Sep 2021 21:19:45 -0400
-Message-Id: <20210906011951.928679-41-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.13 41/46] io-wq: remove GFP_ATOMIC allocation off schedule out path
+Date:   Sun,  5 Sep 2021 21:20:46 -0400
+Message-Id: <20210906012052.929174-41-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210906011951.928679-1-sashal@kernel.org>
-References: <20210906011951.928679-1-sashal@kernel.org>
+In-Reply-To: <20210906012052.929174-1-sashal@kernel.org>
+References: <20210906012052.929174-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -100,10 +100,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 40 insertions(+), 32 deletions(-)
 
 diff --git a/fs/io-wq.c b/fs/io-wq.c
-index 7d2ed8c7dd31..4ce83bb48021 100644
+index 91b0d1fb90eb..87705ae951fd 100644
 --- a/fs/io-wq.c
 +++ b/fs/io-wq.c
-@@ -51,6 +51,10 @@ struct io_worker {
+@@ -53,6 +53,10 @@ struct io_worker {
  
  	struct completion ref_done;
  
@@ -114,7 +114,7 @@ index 7d2ed8c7dd31..4ce83bb48021 100644
  	struct rcu_head rcu;
  };
  
-@@ -272,24 +276,18 @@ static void io_wqe_inc_running(struct io_worker *worker)
+@@ -273,24 +277,18 @@ static void io_wqe_inc_running(struct io_worker *worker)
  	atomic_inc(&acct->nr_running);
  }
  
@@ -143,7 +143,7 @@ index 7d2ed8c7dd31..4ce83bb48021 100644
  	raw_spin_lock_irq(&wqe->lock);
  	if (acct->nr_workers < acct->max_workers) {
  		if (!acct->nr_workers)
-@@ -299,33 +297,42 @@ static void create_worker_cb(struct callback_head *cb)
+@@ -300,33 +298,42 @@ static void create_worker_cb(struct callback_head *cb)
  	}
  	raw_spin_unlock_irq(&wqe->lock);
  	if (do_create) {
@@ -200,7 +200,7 @@ index 7d2ed8c7dd31..4ce83bb48021 100644
  fail:
  	atomic_dec(&acct->nr_running);
  	io_worker_ref_put(wq);
-@@ -343,7 +350,7 @@ static void io_wqe_dec_running(struct io_worker *worker)
+@@ -344,7 +351,7 @@ static void io_wqe_dec_running(struct io_worker *worker)
  	if (atomic_dec_and_test(&acct->nr_running) && io_wqe_run_queue(wqe)) {
  		atomic_inc(&acct->nr_running);
  		atomic_inc(&wqe->wq->worker_refs);
@@ -209,7 +209,7 @@ index 7d2ed8c7dd31..4ce83bb48021 100644
  	}
  }
  
-@@ -1004,12 +1011,12 @@ struct io_wq *io_wq_create(unsigned bounded, struct io_wq_data *data)
+@@ -1010,12 +1017,12 @@ struct io_wq *io_wq_create(unsigned bounded, struct io_wq_data *data)
  
  static bool io_task_work_match(struct callback_head *cb, void *data)
  {
@@ -225,7 +225,7 @@ index 7d2ed8c7dd31..4ce83bb48021 100644
  }
  
  void io_wq_exit_start(struct io_wq *wq)
-@@ -1026,12 +1033,13 @@ static void io_wq_exit_workers(struct io_wq *wq)
+@@ -1032,12 +1039,13 @@ static void io_wq_exit_workers(struct io_wq *wq)
  		return;
  
  	while ((cb = task_work_cancel_match(wq->task, io_task_work_match, wq)) != NULL) {
