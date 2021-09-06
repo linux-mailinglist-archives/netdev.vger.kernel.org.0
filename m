@@ -2,159 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C6714401673
-	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 08:38:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FD05401678
+	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 08:38:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239477AbhIFGiS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Sep 2021 02:38:18 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:30853 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239356AbhIFGiQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Sep 2021 02:38:16 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1630910232;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=NwUBcFLW2DErKP8nW3thbj1Bfk3yLnGU+eP2iS4eEBM=;
-        b=QYuNd++ezwA7PDK5HSG93hEuQh38D/s6/4PFw1kzIQd2Eyu9DRjrBvwdXSp+OalBFUJLQv
-        yRwz9+VERtrL0nmhfDm4FY1hc4UZlVPIiz2ymRme0uQF19lAYxYde2IIl5qilE11BCtqXC
-        Ly7hqDqu8Q1udtZb/vOBITSj2XpHJJA=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-227-qe8s2p7sN1upXKTaTYsgJQ-1; Mon, 06 Sep 2021 02:37:10 -0400
-X-MC-Unique: qe8s2p7sN1upXKTaTYsgJQ-1
-Received: by mail-wm1-f70.google.com with SMTP id f17-20020a05600c155100b002f05f30ff03so3510418wmg.3
-        for <netdev@vger.kernel.org>; Sun, 05 Sep 2021 23:37:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=NwUBcFLW2DErKP8nW3thbj1Bfk3yLnGU+eP2iS4eEBM=;
-        b=JxMlV9KHjudKCSP5YCWcCWte2ZyD62r3U+uUveIAu5wgRMkgjJX9zgTWdkMyxk03fO
-         PlUY2FmPDS0AZ0oeC0KNM/P1bTcg+cNXTPmiTtGFDzV1LqPBqmdX6lS43/AJ/7HYIHue
-         MmCSvquw8nbrw1AoBmGhqM8yCwJ20JWzYaxpQ7L7xd3ubFFukRQ7Pzr2scB7ul22rV4T
-         kXh4Ji16eKziuxDLfFMmYLP/qa24mfKjNxY6tvnqDeYDJ42/W0ffh7os8BOzcdSFai2P
-         Cnv5mKsvCsbF6y9jzMAxHt8QEknASjIAk1lGkI3ob96u6MB1dWPXOPxml4rfN4YbyREa
-         HhWA==
-X-Gm-Message-State: AOAM530yQWh/3I3Sfo/kTY29ke4pWZhvGUiXuIFWlHF4tIvplHEMYLDb
-        BxUzD7n/3Us8rzMdky2Ay5b/MSoRN+sSQgrZ5xL76YxqcF2GaY13F5m4PNnkoUJ+bJauB+2QwS9
-        8Wj0saPSTgGVXucPi
-X-Received: by 2002:a1c:1f8e:: with SMTP id f136mr9990679wmf.132.1630910229712;
-        Sun, 05 Sep 2021 23:37:09 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyRCwrPqlTT9EQxN6i2JahNEijC2yzlB8bw+tqErn2HIqi0obsj9A8iduK7E+CvdT1s7MMNSQ==
-X-Received: by 2002:a1c:1f8e:: with SMTP id f136mr9990653wmf.132.1630910229544;
-        Sun, 05 Sep 2021 23:37:09 -0700 (PDT)
-Received: from redhat.com ([2.55.131.183])
-        by smtp.gmail.com with ESMTPSA id g1sm8586151wrb.27.2021.09.05.23.37.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Sep 2021 23:37:08 -0700 (PDT)
-Date:   Mon, 6 Sep 2021 02:37:03 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Yongji Xie <xieyongji@bytedance.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Christian Brauner <christian.brauner@canonical.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        Mika =?iso-8859-1?Q?Penttil=E4?= <mika.penttila@nextfour.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
-        Greg KH <gregkh@linuxfoundation.org>,
-        He Zhe <zhe.he@windriver.com>,
-        Liu Xiaodong <xiaodong.liu@intel.com>,
-        Joe Perches <joe@perches.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Will Deacon <will@kernel.org>,
-        John Garry <john.garry@huawei.com>, songmuchun@bytedance.com,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v13 05/13] vdpa: Add reset callback in vdpa_config_ops
-Message-ID: <20210906023131-mutt-send-email-mst@kernel.org>
-References: <20210831103634.33-1-xieyongji@bytedance.com>
- <20210831103634.33-6-xieyongji@bytedance.com>
- <20210906015524-mutt-send-email-mst@kernel.org>
- <CACycT3v4ZVnh7DGe_RtAOx4Vvau0km=HWyCM=KzKhD+ahYKafQ@mail.gmail.com>
+        id S239543AbhIFGih (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Sep 2021 02:38:37 -0400
+Received: from mx3.molgen.mpg.de ([141.14.17.11]:55061 "EHLO mx1.molgen.mpg.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S239356AbhIFGig (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Sep 2021 02:38:36 -0400
+Received: from [192.168.0.4] (ip5f5ae911.dynamic.kabel-deutschland.de [95.90.233.17])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id C480A61E64784;
+        Mon,  6 Sep 2021 08:37:29 +0200 (CEST)
+Subject: Re: [Intel-wired-lan] [PATCH v2] ixgbe: Fix NULL pointer dereference
+ in ixgbe_xdp_setup
+To:     Feng Zhou <zhoufeng.zf@bytedance.com>
+Cc:     duanxiongchun@bytedance.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, zhengqi.arch@bytedance.com,
+        chenying.kernel@bytedance.com, intel-wired-lan@lists.osuosl.org,
+        songmuchun@bytedance.com, bpf@vger.kernel.org,
+        wangdongdong.6@bytedance.com, zhouchengming@bytedance.com,
+        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
+        jeffrey.t.kirsher@intel.com, magnus.karlsson@intel.com,
+        maciej.fijalkowski@intel.com
+References: <20210903064013.9842-1-zhoufeng.zf@bytedance.com>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+Message-ID: <2ee172ab-836c-d464-be59-935030d01f4b@molgen.mpg.de>
+Date:   Mon, 6 Sep 2021 08:37:29 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACycT3v4ZVnh7DGe_RtAOx4Vvau0km=HWyCM=KzKhD+ahYKafQ@mail.gmail.com>
+In-Reply-To: <20210903064013.9842-1-zhoufeng.zf@bytedance.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 06, 2021 at 02:09:25PM +0800, Yongji Xie wrote:
-> On Mon, Sep 6, 2021 at 1:56 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > On Tue, Aug 31, 2021 at 06:36:26PM +0800, Xie Yongji wrote:
-> > > This adds a new callback to support device specific reset
-> > > behavior. The vdpa bus driver will call the reset function
-> > > instead of setting status to zero during resetting.
-> > >
-> > > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-> >
-> >
-> > This does gloss over a significant change though:
-> >
-> >
-> > > ---
-> > > @@ -348,12 +352,12 @@ static inline struct device *vdpa_get_dma_dev(struct vdpa_device *vdev)
-> > >       return vdev->dma_dev;
-> > >  }
-> > >
-> > > -static inline void vdpa_reset(struct vdpa_device *vdev)
-> > > +static inline int vdpa_reset(struct vdpa_device *vdev)
-> > >  {
-> > >       const struct vdpa_config_ops *ops = vdev->config;
-> > >
-> > >       vdev->features_valid = false;
-> > > -     ops->set_status(vdev, 0);
-> > > +     return ops->reset(vdev);
-> > >  }
-> > >
-> > >  static inline int vdpa_set_features(struct vdpa_device *vdev, u64 features)
-> >
-> >
-> > Unfortunately this breaks virtio_vdpa:
-> >
-> >
-> > static void virtio_vdpa_reset(struct virtio_device *vdev)
-> > {
-> >         struct vdpa_device *vdpa = vd_get_vdpa(vdev);
-> >
-> >         vdpa_reset(vdpa);
-> > }
-> >
-> >
-> > and there's no easy way to fix this, kernel can't recover
-> > from a reset failure e.g. during driver unbind.
-> >
+Dear Feng,
+
+
+Am 03.09.21 um 08:40 schrieb Feng zhou:
+
+(If you care, in your email client, your last name does not start with a 
+capital letter.)
+
+> From: Feng Zhou <zhoufeng.zf@bytedance.com>
 > 
-> Yes, but it should be safe with the protection of software IOTLB even
-> if the reset() fails during driver unbind.
+> The ixgbe driver currently generates a NULL pointer dereference with
+> some machine (online cpus < 63). This is due to the fact that the
+> maximum value of num_xdp_queues is nr_cpu_ids. Code is in
+> "ixgbe_set_rss_queues"".
 > 
-> Thanks,
-> Yongji
+> Here's how the problem repeats itself:
+> Some machine (online cpus < 63), And user set num_queues to 63 through
+> ethtool. Code is in the "ixgbe_set_channels",
+> adapter->ring_feature[RING_F_FDIR].limit = count;
 
-Hmm. I don't see it.
-What exactly will happen? What prevents device from poking at
-memory after reset? Note that dma unmap in e.g. del_vqs happens
-too late.  And what about e.g. interrupts?
-E.g. we have this:
+For better legibility, you might want to indent code (blocks) by four 
+spaces and add blank lines around it (also below).
 
-        /* Virtqueues are stopped, nothing can use vblk->vdev anymore. */
-        vblk->vdev = NULL;
+> It becames 63.
 
-and this is no longer true at this point.
+becomes
 
+> When user use xdp, "ixgbe_set_rss_queues" will set queues num.
+> adapter->num_rx_queues = rss_i;
+> adapter->num_tx_queues = rss_i;
+> adapter->num_xdp_queues = ixgbe_xdp_queues(adapter);
+> And rss_i's value is from
+> f = &adapter->ring_feature[RING_F_FDIR];
+> rss_i = f->indices = f->limit;
+> So "num_rx_queues" > "num_xdp_queues", when run to "ixgbe_xdp_setup",
+> for (i = 0; i < adapter->num_rx_queues; i++)
+> 	if (adapter->xdp_ring[i]->xsk_umem)
+> lead to panic.
 
--- 
-MST
+lead*s*?
 
+> Call trace:
+> [exception RIP: ixgbe_xdp+368]
+> RIP: ffffffffc02a76a0  RSP: ffff9fe16202f8d0  RFLAGS: 00010297
+> RAX: 0000000000000000  RBX: 0000000000000020  RCX: 0000000000000000
+> RDX: 0000000000000000  RSI: 000000000000001c  RDI: ffffffffa94ead90
+> RBP: ffff92f8f24c0c18   R8: 0000000000000000   R9: 0000000000000000
+> R10: ffff9fe16202f830  R11: 0000000000000000  R12: ffff92f8f24c0000
+> R13: ffff9fe16202fc01  R14: 000000000000000a  R15: ffffffffc02a7530
+> ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
+>   7 [ffff9fe16202f8f0] dev_xdp_install at ffffffffa89fbbcc
+>   8 [ffff9fe16202f920] dev_change_xdp_fd at ffffffffa8a08808
+>   9 [ffff9fe16202f960] do_setlink at ffffffffa8a20235
+> 10 [ffff9fe16202fa88] rtnl_setlink at ffffffffa8a20384
+> 11 [ffff9fe16202fc78] rtnetlink_rcv_msg at ffffffffa8a1a8dd
+> 12 [ffff9fe16202fcf0] netlink_rcv_skb at ffffffffa8a717eb
+> 13 [ffff9fe16202fd40] netlink_unicast at ffffffffa8a70f88
+> 14 [ffff9fe16202fd80] netlink_sendmsg at ffffffffa8a71319
+> 15 [ffff9fe16202fdf0] sock_sendmsg at ffffffffa89df290
+> 16 [ffff9fe16202fe08] __sys_sendto at ffffffffa89e19c8
+> 17 [ffff9fe16202ff30] __x64_sys_sendto at ffffffffa89e1a64
+> 18 [ffff9fe16202ff38] do_syscall_64 at ffffffffa84042b9
+> 19 [ffff9fe16202ff50] entry_SYSCALL_64_after_hwframe at ffffffffa8c0008c
+
+Please describe the fix in the commit message.
+
+> Fixes: 4a9b32f30f80 ("ixgbe: fix potential RX buffer starvation for
+> AF_XDP")
+> Signed-off-by: Feng Zhou <zhoufeng.zf@bytedance.com>
+> ---
+> Updates since v1:
+> - Fix "ixgbe_max_channels" callback so that it will not allow a setting of
+> queues to be higher than the num_online_cpus().
+> more details can be seen from here:
+> https://patchwork.ozlabs.org/project/intel-wired-lan/patch/20210817075407.11961-1-zhoufeng.zf@bytedance.com/
+> Thanks to Maciej Fijalkowski for your advice.
+> 
+>   drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c | 2 +-
+>   drivers/net/ethernet/intel/ixgbe/ixgbe_main.c    | 8 ++++++--
+>   2 files changed, 7 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
+> index 4ceaca0f6ce3..21321d164708 100644
+> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
+> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
+> @@ -3204,7 +3204,7 @@ static unsigned int ixgbe_max_channels(struct ixgbe_adapter *adapter)
+>   		max_combined = ixgbe_max_rss_indices(adapter);
+>   	}
+>   
+> -	return max_combined;
+> +	return min_t(int, max_combined, num_online_cpus());
+>   }
+>   
+>   static void ixgbe_get_channels(struct net_device *dev,
+> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> index 14aea40da50f..5db496cc5070 100644
+> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> @@ -10112,6 +10112,7 @@ static int ixgbe_xdp_setup(struct net_device *dev, struct bpf_prog *prog)
+>   	struct ixgbe_adapter *adapter = netdev_priv(dev);
+>   	struct bpf_prog *old_prog;
+>   	bool need_reset;
+> +	int num_queues;
+>   
+>   	if (adapter->flags & IXGBE_FLAG_SRIOV_ENABLED)
+>   		return -EINVAL;
+> @@ -10161,11 +10162,14 @@ static int ixgbe_xdp_setup(struct net_device *dev, struct bpf_prog *prog)
+>   	/* Kick start the NAPI context if there is an AF_XDP socket open
+>   	 * on that queue id. This so that receiving will start.
+>   	 */
+> -	if (need_reset && prog)
+> -		for (i = 0; i < adapter->num_rx_queues; i++)
+> +	if (need_reset && prog) {
+> +		num_queues = min_t(int, adapter->num_rx_queues,
+> +			adapter->num_xdp_queues);
+> +		for (i = 0; i < num_queues; i++)
+>   			if (adapter->xdp_ring[i]->xsk_pool)
+>   				(void)ixgbe_xsk_wakeup(adapter->netdev, i,
+>   						       XDP_WAKEUP_RX);
+> +	}
+>   
+>   	return 0;
+>   }
+> 
