@@ -2,110 +2,239 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BF59401235
-	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 02:11:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EEE2A40123B
+	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 02:43:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234182AbhIFAJ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Sep 2021 20:09:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36264 "EHLO
+        id S236946AbhIFAom (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Sep 2021 20:44:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229735AbhIFAJ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Sep 2021 20:09:28 -0400
-Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 126B8C061575
-        for <netdev@vger.kernel.org>; Sun,  5 Sep 2021 17:08:24 -0700 (PDT)
-Received: by nautica.notk.org (Postfix, from userid 108)
-        id D607DC01E; Mon,  6 Sep 2021 02:08:18 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1630886898; bh=OeCX4dJpwBgitXOSpmPOmvNzOoK+lAbEx+BXVeu2QM4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=17Fqq2Fo5jQOobm0vMf6lneLlkpDc5uxueDYcq1/GU3rsBSmycv9xTu8aZW3+hdPr
-         fHaVmAu6ZbaPBGKN8BqbduccwhJ37y0xRln9YOUqM0kJFWZsXtR+Depfpte6tnclSP
-         fy4NCB1YX3WYZT/jydnexd2eMi1fh1Nt5Q/13AlFcPDJHfouymV+Jr0OJZ+kD1+BWS
-         fS7SAGBRPaZKoE8CcDL1zCaWEdeqoyTGQqu0IXFVQ3dSIjoJUyRyu2Y6Tit9QIIFYa
-         D+ZhqkKNqcCDtxqr8eRRW1ip9405NF47N755hweocb1adesDKp4yqvlgDc9TNz0v1J
-         Npdtr8yHM/Oxg==
-X-Spam-Checker-Version: SpamAssassin 3.3.2 (2011-06-06) on nautica.notk.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.0 required=5.0 tests=UNPARSEABLE_RELAY
-        autolearn=unavailable version=3.3.2
-Received: from odin.codewreck.org (localhost [127.0.0.1])
-        by nautica.notk.org (Postfix) with ESMTPS id 7E163C009;
-        Mon,  6 Sep 2021 02:08:15 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1630886897; bh=OeCX4dJpwBgitXOSpmPOmvNzOoK+lAbEx+BXVeu2QM4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GynXHJhrXtydznYDXD1Zd+zU+gXHeODQ3ykenpx+yygjUyhg0FSE7pI2wmRoyRkjT
-         VKwShy/ag4EWe87WDyF++0V0JFEqIQYxetyVBCwRCtjoXZTapoBQdd6A/LgmLmmdET
-         nDv/i7yuaExhCV6h72kEy4LBI/JrseIKnR9Pcp/HEpCAf7ZETV6pAauYQk94Mmps+C
-         BTkB63PnUNVZR9zuiwkACMD6HBNJ3RIsbdQaZtVK7TtZyyrk6KyuEyD1L7qtOKGoT4
-         Tz0h175G7O25e46iELfV2+dO384GSxVRO1KYoSNZacG4uCrBZEytOUHEgKzbhBNvJL
-         uII+8LHqv2afQ==
-Received: from localhost (odin.codewreck.org [local])
-        by odin.codewreck.org (OpenSMTPD) with ESMTPA id e8c97575;
-        Mon, 6 Sep 2021 00:08:11 +0000 (UTC)
-Date:   Mon, 6 Sep 2021 09:07:56 +0900
-From:   Dominique Martinet <asmadeus@codewreck.org>
-To:     Eric Van Hensbergen <ericvh@gmail.com>
-Cc:     Christian Schoenebeck <linux_oss@crudebyte.com>,
-        Greg Kurz <groug@kaod.org>,
-        Latchesar Ionkov <lucho@ionkov.net>, netdev@vger.kernel.org,
-        v9fs-developer@lists.sourceforge.net
-Subject: Re: [PATCH 2/2] net/9p: increase default msize to 128k
-Message-ID: <YTVb3K37JxUWUdXN@codewreck.org>
-References: <cover.1630770829.git.linux_oss@crudebyte.com>
- <61ea0f0faaaaf26dd3c762eabe4420306ced21b9.1630770829.git.linux_oss@crudebyte.com>
- <YTQB5jCbvhmCWzNd@codewreck.org>
- <1915472.2DI3jHSlUk@silver>
- <YTU7FJuooYSjISlq@codewreck.org>
- <CAFkjPTkJFrqhCCHgUBsDiEVjpeJoKZ4gRy=G-4DpJo9xanpYaA@mail.gmail.com>
+        with ESMTP id S233965AbhIFAoj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Sep 2021 20:44:39 -0400
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 753BCC06175F
+        for <netdev@vger.kernel.org>; Sun,  5 Sep 2021 17:43:35 -0700 (PDT)
+Received: by mail-oi1-x230.google.com with SMTP id w144so6879737oie.13
+        for <netdev@vger.kernel.org>; Sun, 05 Sep 2021 17:43:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kali.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=VXz3E7pt4ytJZFiidta6LWpYOPkipEqLXRupmapbEkg=;
+        b=hG0uEpCkucAjn2t8kIfAgSG7UwOiEnFhcQemLyHrWcRloRDLXWznn6ZN3Z9qmKEJp/
+         stQb9NvQo+/tXaM8tSPvQGrrM12aGphPU9BROyJNOaVij0ZZANc7SO6fnSoH5XjHkRYE
+         T0O3janIJjd11ceL5oFXFhpFsBQxu+Vcub48fzPxz3LglWw10a1DFhS0TBvElFyTBIoU
+         DPg8TWiX3NbiTnM9dQQ4cPJOuJIBDnDPMfI18A5K79JANydFKd/PVjOaL48hk2hbt/qx
+         jcchydaLfw0arkQ8f3IadtWggyLwbnU68bGVYTaV8QxdiYbh0IKFmAiBWPN99aq5ugw3
+         xGhw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=VXz3E7pt4ytJZFiidta6LWpYOPkipEqLXRupmapbEkg=;
+        b=avnRR09IL1aaDxzDCE0c81xTq5f0r8k86p1Lqr0zm2h/ApOXtjOzFpiNAP58My3gXS
+         1z6RmK0LRDvpn3pOgLMmUrniDkgQxafEW5wazMfE278fD5e1fwKue1G35PTrXTIxEzB5
+         crAqb3b/Sv3PWNXb1WjciDw+J35rWrWgiVRXfyb8tZBu2oQ0Ij1xU6HgbsUzNqcMSamj
+         7P8AndYR1cqxg6BrCkmUaat4pgJIdl9tExx11g2sN1qGzkBSlB84ViMru45VdT1LCwSZ
+         K9ngQZTapTxCQ0JjPe4gGSbpPHfA9zyDuWxjiv3PyfgX0Z4LF/xn2M5lBDmLcNmW23MT
+         +SOQ==
+X-Gm-Message-State: AOAM530KnZJ5BDI1xk1bYjvCP/VTqZdDNU3smNqE50TJ6vkoQBv6G4+D
+        2LYXUESef8H8zFIEOkydOiaVog==
+X-Google-Smtp-Source: ABdhPJxMgzd1ppDDtypbqleJZ+qHh8aZdbGzv7WtFvDErUHqWWycI0D7asw3iyPTo4fjijSD3iB68Q==
+X-Received: by 2002:a05:6808:a01:: with SMTP id n1mr6665277oij.52.1630889014515;
+        Sun, 05 Sep 2021 17:43:34 -0700 (PDT)
+Received: from MacBook-Pro.hackershack.net (cpe-173-173-107-246.satx.res.rr.com. [173.173.107.246])
+        by smtp.gmail.com with ESMTPSA id u14sm1482783oth.73.2021.09.05.17.43.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 05 Sep 2021 17:43:34 -0700 (PDT)
+Subject: Re: [PATCH] ath10k: Don't always treat modem stop events as crashes
+To:     Stephen Boyd <swboyd@chromium.org>,
+        Kalle Valo <kvalo@codeaurora.org>
+Cc:     linux-kernel@vger.kernel.org, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        netdev@vger.kernel.org, Govind Singh <govinds@codeaurora.org>,
+        Youghandhar Chintala <youghand@codeaurora.org>,
+        Abhishek Kumar <kuabhs@chromium.org>
+References: <20210905210400.1157870-1-swboyd@chromium.org>
+From:   Steev Klimaszewski <steev@kali.org>
+Message-ID: <2ab941df-f604-59b7-28ab-d1a9a6ced2c7@kali.org>
+Date:   Sun, 5 Sep 2021 19:43:32 -0500
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.13.0
 MIME-Version: 1.0
+In-Reply-To: <20210905210400.1157870-1-swboyd@chromium.org>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAFkjPTkJFrqhCCHgUBsDiEVjpeJoKZ4gRy=G-4DpJo9xanpYaA@mail.gmail.com>
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Eric Van Hensbergen wrote on Sun, Sep 05, 2021 at 06:44:13PM -0500:
-> there will likely be a tradeoff with tcp in terms of latency to first
-> message so while
-> absolute bw may be higher processing time may suffer.  8k was default msize
-> to more closely match it to jumbo frames on an ethernet.  of course all
-> that intuition is close to 30 years out of date….
 
-It's not because the max size is 128k (or 1MB) that this much is sent
-over the wire everytime -- if a message used to fit in 8KB, then its
-on-the-wire size won't change and speed/latency won't be affected for
-these.
+On 9/5/21 4:04 PM, Stephen Boyd wrote:
+> When rebooting on sc7180 Trogdor devices I see the following crash from
+> the wifi driver.
+>
+>  ath10k_snoc 18800000.wifi: firmware crashed! (guid 83493570-29a2-4e98-a83e-70048c47669c)
+>
+> This is because a modem stop event looks just like a firmware crash to
+> the driver, the qmi connection is closed in both cases. Use the qcom ssr
+> notifier block to stop treating the qmi connection close event as a
+> firmware crash signal when the modem hasn't actually crashed. See
+> ath10k_qmi_event_server_exit() for more details.
+>
+> This silences the crash message seen during every reboot.
+>
+> Fixes: 3f14b73c3843 ("ath10k: Enable MSA region dump support for WCN3990")
+> Cc: Govind Singh <govinds@codeaurora.org>
+> Cc: Youghandhar Chintala <youghand@codeaurora.org>
+> Cc: Abhishek Kumar <kuabhs@chromium.org>
+> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+> ---
+>  drivers/net/wireless/ath/ath10k/snoc.c | 75 ++++++++++++++++++++++++++
+>  drivers/net/wireless/ath/ath10k/snoc.h |  4 ++
+>  2 files changed, 79 insertions(+)
+>
+> diff --git a/drivers/net/wireless/ath/ath10k/snoc.c b/drivers/net/wireless/ath/ath10k/snoc.c
+> index ea00fbb15601..fc4970e063f8 100644
+> --- a/drivers/net/wireless/ath/ath10k/snoc.c
+> +++ b/drivers/net/wireless/ath/ath10k/snoc.c
+> @@ -12,6 +12,7 @@
+>  #include <linux/platform_device.h>
+>  #include <linux/property.h>
+>  #include <linux/regulator/consumer.h>
+> +#include <linux/remoteproc/qcom_rproc.h>
+>  #include <linux/of_address.h>
+>  #include <linux/iommu.h>
+>  
+> @@ -1477,6 +1478,70 @@ void ath10k_snoc_fw_crashed_dump(struct ath10k *ar)
+>  	mutex_unlock(&ar->dump_mutex);
+>  }
+>  
+> +static int ath10k_snoc_modem_notify(struct notifier_block *nb, unsigned long action,
+> +				    void *data)
+> +{
+> +	struct ath10k_snoc *ar_snoc = container_of(nb, struct ath10k_snoc, nb);
+> +	struct ath10k *ar = ar_snoc->ar;
+> +	struct qcom_ssr_notify_data *notify_data = data;
+> +
+> +	switch (action) {
+> +	case QCOM_SSR_BEFORE_POWERUP:
+> +		ath10k_dbg(ar, ATH10K_DBG_SNOC, "received modem starting event\n");
+> +		clear_bit(ATH10K_SNOC_FLAG_UNREGISTERING, &ar_snoc->flags);
+> +		break;
+> +
+> +	case QCOM_SSR_AFTER_POWERUP:
+> +		ath10k_dbg(ar, ATH10K_DBG_SNOC, "received modem running event\n");
+> +		break;
+> +
+> +	case QCOM_SSR_BEFORE_SHUTDOWN:
+> +		ath10k_dbg(ar, ATH10K_DBG_SNOC, "received modem %s event\n",
+> +			   notify_data->crashed ? "crashed" : "stopping");
+> +		if (!notify_data->crashed)
+> +			set_bit(ATH10K_SNOC_FLAG_UNREGISTERING, &ar_snoc->flags);
+> +		else
+> +			clear_bit(ATH10K_SNOC_FLAG_UNREGISTERING, &ar_snoc->flags);
+> +		break;
+> +
+> +	case QCOM_SSR_AFTER_SHUTDOWN:
+> +		ath10k_dbg(ar, ATH10K_DBG_SNOC, "received modem offline event\n");
+> +		break;
+> +
+> +	default:
+> +		ath10k_err(ar, "received unrecognized event %lu\n", action);
+> +		break;
+> +	}
+> +
+> +	return NOTIFY_OK;
+> +}
+> +
+> +static int ath10k_modem_init(struct ath10k *ar)
+> +{
+> +	struct ath10k_snoc *ar_snoc = ath10k_snoc_priv(ar);
+> +	void *notifier;
+> +
+> +	ar_snoc->nb.notifier_call = ath10k_snoc_modem_notify;
+> +
+> +	notifier = qcom_register_ssr_notifier("mpss", &ar_snoc->nb);
+> +	if (IS_ERR(notifier))
+> +		return PTR_ERR(notifier);
+> +
+> +	ar_snoc->notifier = notifier;
+> +
+> +	return 0;
+> +}
+> +
+> +static void ath10k_modem_deinit(struct ath10k *ar)
+> +{
+> +	int ret;
+> +	struct ath10k_snoc *ar_snoc = ath10k_snoc_priv(ar);
+> +
+> +	ret = qcom_unregister_ssr_notifier(ar_snoc->notifier, &ar_snoc->nb);
+> +	if (ret)
+> +		ath10k_err(ar, "error %d unregistering notifier\n", ret);
+> +}
+> +
+>  static int ath10k_setup_msa_resources(struct ath10k *ar, u32 msa_size)
+>  {
+>  	struct device *dev = ar->dev;
+> @@ -1740,10 +1805,19 @@ static int ath10k_snoc_probe(struct platform_device *pdev)
+>  		goto err_fw_deinit;
+>  	}
+>  
+> +	ret = ath10k_modem_init(ar);
+> +	if (ret) {
+> +		ath10k_err(ar, "failed to initialize modem notifier: %d\n", ret);
+> +		goto err_qmi_deinit;
+> +	}
+> +
+>  	ath10k_dbg(ar, ATH10K_DBG_SNOC, "snoc probe\n");
+>  
+>  	return 0;
+>  
+> +err_qmi_deinit:
+> +	ath10k_qmi_deinit(ar);
+> +
+>  err_fw_deinit:
+>  	ath10k_fw_deinit(ar);
+>  
+> @@ -1771,6 +1845,7 @@ static int ath10k_snoc_free_resources(struct ath10k *ar)
+>  	ath10k_fw_deinit(ar);
+>  	ath10k_snoc_free_irq(ar);
+>  	ath10k_snoc_release_resource(ar);
+> +	ath10k_modem_deinit(ar);
+>  	ath10k_qmi_deinit(ar);
+>  	ath10k_core_destroy(ar);
+>  
+> diff --git a/drivers/net/wireless/ath/ath10k/snoc.h b/drivers/net/wireless/ath/ath10k/snoc.h
+> index 5095d1893681..d986edc772f8 100644
+> --- a/drivers/net/wireless/ath/ath10k/snoc.h
+> +++ b/drivers/net/wireless/ath/ath10k/snoc.h
+> @@ -6,6 +6,8 @@
+>  #ifndef _SNOC_H_
+>  #define _SNOC_H_
+>  
+> +#include <linux/notifier.h>
+> +
+>  #include "hw.h"
+>  #include "ce.h"
+>  #include "qmi.h"
+> @@ -75,6 +77,8 @@ struct ath10k_snoc {
+>  	struct clk_bulk_data *clks;
+>  	size_t num_clks;
+>  	struct ath10k_qmi *qmi;
+> +	struct notifier_block nb;
+> +	void *notifier;
+>  	unsigned long flags;
+>  	bool xo_cal_supported;
+>  	u32 xo_cal_data;
+>
+> base-commit: 7d2a07b769330c34b4deabeed939325c77a7ec2f
 
-For messages that do require more than 8KB (read/write/readdir) then you
-can fit more data per message, so for a given userspace request (feed me
-xyz amount of data) you'll have less client-server round-trips, and the
-final user-reflected latency will be better as well -- that's why
-e.g. NFS has been setting a max size of 1MB by default for a while now,
-and they allow even more (32MB iirc? not sure)
 
-I've only had done these tests years ago and no longer have access to
-the note that was written back then, but TCP also definitely benefits
-from > 64k msize as long as there's enough memory available.
+I was also seeing this on the Lenovo Yoga C630, so I pulled the patch in
+to test here and after testing 20 reboots, I have not seen the message once.
 
+Tested-By: Steev Klimaszewski <steev@kali.org>
 
-The downside (because it's not free) is there though, you need more
-memory for 9p with big buffers even if we didn't need so much in the
-first place.
-The code using a slab now means that the memory is not locked per mount
-as it used to, but that also means allocations can fail if there is a
-big pressure after not having been released. OTOH as long as it's
-consistently used the buffers will be recycled so it's not necessarily
-too bad performance-wise in hot periods.
-
-Ideally we'd need to rework transports to allow scatter-gather (iovec or
-similar API), and work with smaller allocations batched together on
-send, but I don't have time for something like that... If we do that we
-can probably get the best of both worlds -- and could consider >1MB, but
-that's unrealistic as of now, regardless of the transport.
-
--- 
-Dominique
