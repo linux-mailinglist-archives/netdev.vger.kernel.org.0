@@ -2,326 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AED540176E
-	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 10:02:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E9AB401771
+	for <lists+netdev@lfdr.de>; Mon,  6 Sep 2021 10:02:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240406AbhIFIB0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Sep 2021 04:01:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56942 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240206AbhIFIBZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Sep 2021 04:01:25 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45400C061575;
-        Mon,  6 Sep 2021 01:00:21 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id g13-20020a17090a3c8d00b00196286963b9so3780264pjc.3;
-        Mon, 06 Sep 2021 01:00:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=D/RYpiu45Y06Qm/sLy8nQ/AnuaSLV5tqMOb1n5eENQc=;
-        b=Jb0sm2P4eunUQzrfJ8DxxHOhe3AEkpredl1thO85T7S/3aWDo/j+nx5YARzdiAYRkZ
-         3lt2PICz34E21p8hkKdYg2fcsnAS+M9EBnOcr5qYaxHX60a2pjl3tP3YLa3YHhS9kf/f
-         SoAb81FxV4PjF4fICOLPLWMx6uciWBA125xwt0ibnPrQYFkJfDnf1Rnbun+X3Am5Bb1W
-         Zm5oF9AuyhTOzmNaUnE3M+9wuBZKEfyYSNIO+xfdL9+bLztBjAJRu6szR+ND2xHdDODv
-         4xXRqw6E6yhq4xYkgQBemyImwn0PVwCod8RkymDJtnKW0eIam84BC/IhdrZ2x/gn/N3C
-         nPLA==
+        id S240442AbhIFICN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Sep 2021 04:02:13 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:46723 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240413AbhIFICJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Sep 2021 04:02:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1630915265;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=NO6GFqxRcZJwYtn+Qe2gbxSZz+UC4dbKjNIIRf72XCk=;
+        b=Ov0bj2YFrCarQhs7xKGTfaB0tUGXFmw1VVU1PVc3aGQTR0ptVdy40bw0urTlXwI9XYwtHZ
+        XJsyJKBmTEBnTrMNngx2rQDnVsflhpHFhb5qcPdYK9IR4UVq51fqo0YeEDnnjtWAtE8ZhR
+        YeyzDB24/+ZacaxxZPl7ejJEMlIVCuk=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-566-tkwcus5aPzSKVW2LxCY_aA-1; Mon, 06 Sep 2021 04:01:03 -0400
+X-MC-Unique: tkwcus5aPzSKVW2LxCY_aA-1
+Received: by mail-wm1-f72.google.com with SMTP id v2-20020a7bcb420000b02902e6b108fcf1so3575420wmj.8
+        for <netdev@vger.kernel.org>; Mon, 06 Sep 2021 01:01:03 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=D/RYpiu45Y06Qm/sLy8nQ/AnuaSLV5tqMOb1n5eENQc=;
-        b=Hosb/rVlJn7KuJffRPLD5mr56iePcqtxC457OPPNtQMeaHGmBmIuNISt8kO0eo4SnR
-         uo66Cp5LLOyBHKqe8k/boKDwoXN1vPH93bZNjWOjjkyT6zADv4eLDkGLV3IE80CwEKSP
-         fdhlxDFaz9gz5ENli6pbFbFmxi+FhNGzGZXn/semvjRM3zQ1gDMiMCfMlMDMdkOf0Wkq
-         QDraFRlyFPnOpGS0nIy8ujjrb5q8bieT8NHz1WMrx+0gxKUGb9VEXc4DgfGAL3QFqCdw
-         jCZw+gEeFT6ST/piLDO6zmBfB/T+UtYblzqVvpBiYQKLJMZZihZSFDo4EdOkcxe8DDqe
-         57kg==
-X-Gm-Message-State: AOAM531cnQl/uyVS/K8OND7UF9PoBaFbpi5xXAeB099J7I87b3CWrupj
-        X6eS4wOMDRgiegazPx1fAiPKGUB0bihgqEUEgiw=
-X-Google-Smtp-Source: ABdhPJzI51d3+fdoUHkLtutZrZkMS2XLXRMY2UyWGLJDCeRJ9sTmvuFZ/o+PUIp2c0RrUJ3tXeE1hIAWbz8dfoAdr0Q=
-X-Received: by 2002:a17:90a:5583:: with SMTP id c3mr12562903pji.133.1630915220686;
- Mon, 06 Sep 2021 01:00:20 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=NO6GFqxRcZJwYtn+Qe2gbxSZz+UC4dbKjNIIRf72XCk=;
+        b=h3aPWrBmckAoj9GnSvFrTb9RSZrtiJjHhnGuybAEFqdR9M5v2+TCf+NhpryvYMs1Sd
+         C1793QqFlatApsfo3FrjtuxqRwSScO4128txZrFO2bGSyxvGYf/c/i7iwC7mRxNIMfWd
+         8sQKYbvqCefblkWzmEYh1LSHy+1DiN972szhxdWtpWoHAjxKR/CvI36aRN6gOnRhrJmX
+         5JFcyO4HcN8gDO67U6lk0Eb+snrt6ollmnajK4z3HRydhDeMr8+M/0h6ydOxVBlZhP1Y
+         OrZzeV0nJ8KgdMHiqYIFo6DhlqVtBZ7jquWPGvZNMJYaipjEGhm3oa7iznAeOo5k26wb
+         g7WA==
+X-Gm-Message-State: AOAM530yrOWNUsO1L4VMVUZ7RNWfvhO+7TMQbs+LXq3X10Gcmg0WskWL
+        ow5JKFi0to6ghysBFIbk0bWyqBZvqudPcGNOCKL9NOZnY/6EqfyyO/SdVnWRw6KiOULTBDbHhbE
+        uVdCgpItkqRjHqBlT
+X-Received: by 2002:a1c:4d10:: with SMTP id o16mr10145309wmh.60.1630915262500;
+        Mon, 06 Sep 2021 01:01:02 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyD0Y0QTVxlVRT+q0YtcHDYNCzcA75tKV0/AOdp2DwxYwSQKzP8ML7fq7xzKLKNz0GctS8Quw==
+X-Received: by 2002:a1c:4d10:: with SMTP id o16mr10145288wmh.60.1630915262309;
+        Mon, 06 Sep 2021 01:01:02 -0700 (PDT)
+Received: from redhat.com ([2.55.131.183])
+        by smtp.gmail.com with ESMTPSA id e3sm6259897wrc.11.2021.09.06.01.00.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Sep 2021 01:01:01 -0700 (PDT)
+Date:   Mon, 6 Sep 2021 04:00:55 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Yongji Xie <xieyongji@bytedance.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christian Brauner <christian.brauner@canonical.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mika =?iso-8859-1?Q?Penttil=E4?= <mika.penttila@nextfour.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
+        Greg KH <gregkh@linuxfoundation.org>,
+        He Zhe <zhe.he@windriver.com>,
+        Liu Xiaodong <xiaodong.liu@intel.com>,
+        Joe Perches <joe@perches.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Will Deacon <will@kernel.org>,
+        John Garry <john.garry@huawei.com>, songmuchun@bytedance.com,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v13 05/13] vdpa: Add reset callback in vdpa_config_ops
+Message-ID: <20210906035338-mutt-send-email-mst@kernel.org>
+References: <20210831103634.33-1-xieyongji@bytedance.com>
+ <20210831103634.33-6-xieyongji@bytedance.com>
+ <20210906015524-mutt-send-email-mst@kernel.org>
+ <CACycT3v4ZVnh7DGe_RtAOx4Vvau0km=HWyCM=KzKhD+ahYKafQ@mail.gmail.com>
+ <20210906023131-mutt-send-email-mst@kernel.org>
+ <CACycT3ssC1bhNzY9Pk=LPvKjMrFFavTfCKTJtR2XEiVYqDxT1Q@mail.gmail.com>
 MIME-Version: 1.0
-References: <20210901104732.10956-1-magnus.karlsson@gmail.com>
- <20210901104732.10956-17-magnus.karlsson@gmail.com> <YTI4Ucn+6/uWLezP@localhost.localdomain>
-In-Reply-To: <YTI4Ucn+6/uWLezP@localhost.localdomain>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Mon, 6 Sep 2021 10:00:09 +0200
-Message-ID: <CAJ8uoz3i6hnh+Nu8UB6QJWWJDTrH30_Te4jWQnrtqL83D_A23Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 16/20] selftests: xsk: introduce replacing the
- default packet stream
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Ciara Loftus <ciara.loftus@intel.com>,
-        bpf <bpf@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACycT3ssC1bhNzY9Pk=LPvKjMrFFavTfCKTJtR2XEiVYqDxT1Q@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 3, 2021 at 3:04 PM Maciej Fijalkowski
-<maciej.fijalkowski@intel.com> wrote:
->
-> On Wed, Sep 01, 2021 at 12:47:28PM +0200, Magnus Karlsson wrote:
-> > From: Magnus Karlsson <magnus.karlsson@intel.com>
+On Mon, Sep 06, 2021 at 03:06:44PM +0800, Yongji Xie wrote:
+> On Mon, Sep 6, 2021 at 2:37 PM Michael S. Tsirkin <mst@redhat.com> wrote:
 > >
-> > Introduce the concept of a default packet stream that is the set of
-> > packets sent by most tests. Then add the ability to replace it for a
-> > test that would like to send or receive something else through the use
-> > of the function pkt_stream_replace() and then restored with
-> > pkt_stream_restore_default(). These are then used to convert the
-> > STAT_TX_INVALID_TEST to use these new APIs.
->
-> s/STAT_TX_INVALID_TEST/STAT_TEST_TX_INVALID
+> > On Mon, Sep 06, 2021 at 02:09:25PM +0800, Yongji Xie wrote:
+> > > On Mon, Sep 6, 2021 at 1:56 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > > >
+> > > > On Tue, Aug 31, 2021 at 06:36:26PM +0800, Xie Yongji wrote:
+> > > > > This adds a new callback to support device specific reset
+> > > > > behavior. The vdpa bus driver will call the reset function
+> > > > > instead of setting status to zero during resetting.
+> > > > >
+> > > > > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+> > > >
+> > > >
+> > > > This does gloss over a significant change though:
+> > > >
+> > > >
+> > > > > ---
+> > > > > @@ -348,12 +352,12 @@ static inline struct device *vdpa_get_dma_dev(struct vdpa_device *vdev)
+> > > > >       return vdev->dma_dev;
+> > > > >  }
+> > > > >
+> > > > > -static inline void vdpa_reset(struct vdpa_device *vdev)
+> > > > > +static inline int vdpa_reset(struct vdpa_device *vdev)
+> > > > >  {
+> > > > >       const struct vdpa_config_ops *ops = vdev->config;
+> > > > >
+> > > > >       vdev->features_valid = false;
+> > > > > -     ops->set_status(vdev, 0);
+> > > > > +     return ops->reset(vdev);
+> > > > >  }
+> > > > >
+> > > > >  static inline int vdpa_set_features(struct vdpa_device *vdev, u64 features)
+> > > >
+> > > >
+> > > > Unfortunately this breaks virtio_vdpa:
+> > > >
+> > > >
+> > > > static void virtio_vdpa_reset(struct virtio_device *vdev)
+> > > > {
+> > > >         struct vdpa_device *vdpa = vd_get_vdpa(vdev);
+> > > >
+> > > >         vdpa_reset(vdpa);
+> > > > }
+> > > >
+> > > >
+> > > > and there's no easy way to fix this, kernel can't recover
+> > > > from a reset failure e.g. during driver unbind.
+> > > >
+> > >
+> > > Yes, but it should be safe with the protection of software IOTLB even
+> > > if the reset() fails during driver unbind.
+> > >
+> > > Thanks,
+> > > Yongji
+> >
+> > Hmm. I don't see it.
+> > What exactly will happen? What prevents device from poking at
+> > memory after reset? Note that dma unmap in e.g. del_vqs happens
+> > too late.
+> 
+> But I didn't see any problems with touching the memory for virtqueues.
 
-Will fix.
+Drivers make the assumption that after reset returns no new
+buffers will be consumed. For example a bunch of drivers
+call virtqueue_detach_unused_buf.
+I can't say whether block makes this assumption anywhere.
+Needs careful auditing.
 
-> >
-> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> > ---
-> >  tools/testing/selftests/bpf/xdpxceiver.c | 67 +++++++++++++++++-------
-> >  tools/testing/selftests/bpf/xdpxceiver.h |  1 +
-> >  2 files changed, 50 insertions(+), 18 deletions(-)
-> >
-> > diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
-> > index 09d2854c10e6..d4aad4833754 100644
-> > --- a/tools/testing/selftests/bpf/xdpxceiver.c
-> > +++ b/tools/testing/selftests/bpf/xdpxceiver.c
-> > @@ -390,6 +390,7 @@ static void __test_spec_init(struct test_spec *test, struct ifobject *ifobj_tx,
-> >               ifobj->umem = &ifobj->umem_arr[0];
-> >               ifobj->xsk = &ifobj->xsk_arr[0];
-> >               ifobj->use_poll = false;
-> > +             ifobj->pkt_stream = test->pkt_stream_default;
-> >
-> >               if (i == 0) {
-> >                       ifobj->rx_on = false;
-> > @@ -418,9 +419,12 @@ static void __test_spec_init(struct test_spec *test, struct ifobject *ifobj_tx,
-> >  static void test_spec_init(struct test_spec *test, struct ifobject *ifobj_tx,
-> >                          struct ifobject *ifobj_rx, enum test_mode mode)
-> >  {
-> > +     struct pkt_stream *pkt_stream;
-> >       u32 i;
-> >
-> > +     pkt_stream = test->pkt_stream_default;
-> >       memset(test, 0, sizeof(*test));
-> > +     test->pkt_stream_default = pkt_stream;
-> >
-> >       for (i = 0; i < MAX_INTERFACES; i++) {
-> >               struct ifobject *ifobj = i ? ifobj_rx : ifobj_tx;
-> > @@ -455,6 +459,19 @@ static struct pkt *pkt_stream_get_pkt(struct pkt_stream *pkt_stream, u32 pkt_nb)
-> >       return &pkt_stream->pkts[pkt_nb];
-> >  }
-> >
-> > +static void pkt_stream_delete(struct pkt_stream *pkt_stream)
-> > +{
-> > +     free(pkt_stream->pkts);
-> > +     free(pkt_stream);
-> > +}
-> > +
-> > +static void pkt_stream_restore_default(struct test_spec *test)
-> > +{
-> > +     pkt_stream_delete(test->ifobj_tx->pkt_stream);
->
-> I suppose that streams are the same for both tx and rx ifobjs hence it's
-> enough to call the delete op a single time.
+> The memory should not be freed after dma unmap?
 
-At this point in time, yes. But this has to change as we develop more tests.
+But unmap does not happen until after the reset.
 
-> > +     test->ifobj_tx->pkt_stream = test->pkt_stream_default;
-> > +     test->ifobj_rx->pkt_stream = test->pkt_stream_default;
-> > +}
-> > +
-> >  static struct pkt_stream *pkt_stream_generate(struct xsk_umem_info *umem, u32 nb_pkts, u32 pkt_len)
-> >  {
-> >       struct pkt_stream *pkt_stream;
-> > @@ -483,6 +500,17 @@ static struct pkt_stream *pkt_stream_generate(struct xsk_umem_info *umem, u32 nb
-> >       return pkt_stream;
-> >  }
-> >
-> > +static void pkt_stream_replace(struct test_spec *test, u32 nb_pkts, u32 pkt_len)
-> > +{
-> > +     struct pkt_stream *pkt_stream;
-> > +
-> > +     pkt_stream = pkt_stream_generate(test->ifobj_tx->umem, nb_pkts, pkt_len);
-> > +     test->ifobj_tx->pkt_stream = pkt_stream;
-> > +     test->ifobj_rx->pkt_stream = pkt_stream;
-> > +
-> > +     pkt_stream_delete(pkt_stream);
->
-> Shouldn't this be deleting the stream that got replaced? You're assigning
-> pkt_stream to ifobjs and then immediately free it.
->
-> I'd say that we should drop this call to pkt_stream_delete() in here
-> unless I'm missing something, pkt_stream_restore_default() will free the
-> currently assigned pkt stream and bring back the default one to the
-> ifobjs.
 
-That is indeed a bug and should be removed.
+> And the memory for the bounce buffer should also be safe to be
+> accessed by userspace in this case.
+> 
+> > And what about e.g. interrupts?
+> > E.g. we have this:
+> >
+> >         /* Virtqueues are stopped, nothing can use vblk->vdev anymore. */
+> >         vblk->vdev = NULL;
+> >
+> > and this is no longer true at this point.
+> >
+> 
+> You're right. But I didn't see where the interrupt handler will use
+> the vblk->vdev.
 
-> > +}
-> > +
-> >  static struct pkt *pkt_generate(struct ifobject *ifobject, u32 pkt_nb)
-> >  {
-> >       struct pkt *pkt = pkt_stream_get_pkt(ifobject->pkt_stream, pkt_nb);
-> > @@ -557,7 +585,7 @@ static bool is_pkt_valid(struct pkt *pkt, void *buffer, const struct xdp_desc *d
-> >       if (iphdr->version == IP_PKT_VER && iphdr->tos == IP_PKT_TOS) {
-> >               u32 seqnum = ntohl(*((u32 *)(data + PKT_HDR_SIZE)));
-> >
-> > -             if (opt_pkt_dump && test_type != TEST_TYPE_STATS)
-> > +             if (opt_pkt_dump)
-> >                       pkt_dump(data, PKT_SIZE);
-> >
-> >               if (pkt->len != desc->len) {
-> > @@ -598,9 +626,6 @@ static void complete_pkts(struct xsk_socket_info *xsk, int batch_size)
-> >       unsigned int rcvd;
-> >       u32 idx;
-> >
-> > -     if (!xsk->outstanding_tx)
-> > -             return;
-> > -
-> >       if (xsk_ring_prod__needs_wakeup(&xsk->tx))
-> >               kick_tx(xsk);
-> >
-> > @@ -831,6 +856,7 @@ static void thread_common_ops(struct test_spec *test, struct ifobject *ifobject)
-> >
-> >  static void testapp_cleanup_xsk_res(struct ifobject *ifobj)
-> >  {
-> > +     print_verbose("Destroying socket\n");
-> >       xsk_socket__delete(ifobj->xsk->xsk);
-> >       xsk_umem__delete(ifobj->umem->umem);
-> >  }
-> > @@ -878,9 +904,6 @@ static void *worker_testapp_validate_rx(void *arg)
-> >       else
-> >               receive_pkts(ifobject->pkt_stream, ifobject->xsk, &fds);
-> >
-> > -     if (test_type == TEST_TYPE_TEARDOWN)
-> > -             print_verbose("Destroying socket\n");
-> > -
-> >       if (test->total_steps == test->current_step)
-> >               testapp_cleanup_xsk_res(ifobject);
-> >       pthread_exit(NULL);
-> > @@ -890,19 +913,11 @@ static void testapp_validate_traffic(struct test_spec *test)
-> >  {
-> >       struct ifobject *ifobj_tx = test->ifobj_tx;
-> >       struct ifobject *ifobj_rx = test->ifobj_rx;
-> > -     struct pkt_stream *pkt_stream;
-> >       pthread_t t0, t1;
-> >
-> >       if (pthread_barrier_init(&barr, NULL, 2))
-> >               exit_with_error(errno);
-> >
-> > -     if (stat_test_type == STAT_TEST_TX_INVALID)
-> > -             pkt_stream = pkt_stream_generate(test->ifobj_tx->umem, DEFAULT_PKT_CNT,
-> > -                                              XSK_UMEM__INVALID_FRAME_SIZE);
-> > -     else
-> > -             pkt_stream = pkt_stream_generate(test->ifobj_tx->umem, DEFAULT_PKT_CNT, PKT_SIZE);
-> > -     ifobj_tx->pkt_stream = pkt_stream;
-> > -     ifobj_rx->pkt_stream = pkt_stream;
-> >       test->current_step++;
-> >
-> >       /*Spawn RX thread */
-> > @@ -982,7 +997,9 @@ static void testapp_bpf_res(struct test_spec *test)
-> >
-> >  static void testapp_stats(struct test_spec *test)
-> >  {
-> > -     for (int i = 0; i < STAT_TEST_TYPE_MAX; i++) {
-> > +     int i;
-> > +
-> > +     for (i = 0; i < STAT_TEST_TYPE_MAX; i++) {
-> >               test_spec_reset(test);
-> >               stat_test_type = i;
-> >
-> > @@ -991,21 +1008,27 @@ static void testapp_stats(struct test_spec *test)
-> >                       test_spec_set_name(test, "STAT_RX_DROPPED");
-> >                       test->ifobj_rx->umem->frame_headroom = test->ifobj_rx->umem->frame_size -
-> >                               XDP_PACKET_HEADROOM - 1;
-> > +                     testapp_validate_traffic(test);
-> >                       break;
-> >               case STAT_TEST_RX_FULL:
-> >                       test_spec_set_name(test, "STAT_RX_FULL");
-> >                       test->ifobj_rx->xsk->rxqsize = RX_FULL_RXQSIZE;
-> > +                     testapp_validate_traffic(test);
-> >                       break;
-> >               case STAT_TEST_TX_INVALID:
-> >                       test_spec_set_name(test, "STAT_TX_INVALID");
-> > -                     continue;
-> > +                     pkt_stream_replace(test, DEFAULT_PKT_CNT, XSK_UMEM__INVALID_FRAME_SIZE);
-> > +                     testapp_validate_traffic(test);
-> > +
-> > +                     pkt_stream_restore_default(test);
-> > +                     break;
-> >               case STAT_TEST_RX_FILL_EMPTY:
-> >                       test_spec_set_name(test, "STAT_RX_FILL_EMPTY");
-> > +                     testapp_validate_traffic(test);
-> >                       break;
-> >               default:
-> >                       break;
-> >               }
-> > -             testapp_validate_traffic(test);
-> >       }
-> >
-> >       /* To only see the whole stat set being completed unless an individual test fails. */
-> > @@ -1106,6 +1129,7 @@ int main(int argc, char **argv)
-> >  {
-> >       struct rlimit _rlim = { RLIM_INFINITY, RLIM_INFINITY };
-> >       struct ifobject *ifobj_tx, *ifobj_rx;
-> > +     struct pkt_stream *pkt_stream_default;
->
-> rct broken by a little?
->
-> >       struct test_spec test;
-> >       u32 i, j;
-> >
-> > @@ -1133,6 +1157,12 @@ int main(int argc, char **argv)
-> >       init_iface(ifobj_rx, MAC2, MAC1, IP2, IP1, UDP_PORT2, UDP_PORT1,
-> >                  worker_testapp_validate_rx);
-> >
-> > +     test_spec_init(&test, ifobj_tx, ifobj_rx, 0);
-> > +     pkt_stream_default = pkt_stream_generate(ifobj_tx->umem, DEFAULT_PKT_CNT, PKT_SIZE);
-> > +     if (!pkt_stream_default)
-> > +             exit_with_error(ENOMEM);
->
-> I missed this probably while reviewing previous set, but to be consistent
-> with 083be682d976 ("selftests: xsk: Return correct error codes") this
-> probably should have -ENOMEM as an arg?
+static void virtblk_done(struct virtqueue *vq)
+{
+        struct virtio_blk *vblk = vq->vdev->priv;
 
-Have eliminated exit_with_error from most of the functions I have been
-touching, but not from the main function. Want the error to be printed
-out before exiting the program, so kept it at this level.
+vq->vdev is the same as vblk->vdev.
 
-> > +     test.pkt_stream_default = pkt_stream_default;
-> > +
-> >       ksft_set_plan(TEST_MODE_MAX * TEST_TYPE_MAX);
-> >
-> >       for (i = 0; i < TEST_MODE_MAX; i++)
-> > @@ -1142,6 +1172,7 @@ int main(int argc, char **argv)
-> >                       usleep(USLEEP_MAX);
-> >               }
-> >
-> > +     pkt_stream_delete(pkt_stream_default);
-> >       ifobject_delete(ifobj_tx);
-> >       ifobject_delete(ifobj_rx);
-> >
-> > diff --git a/tools/testing/selftests/bpf/xdpxceiver.h b/tools/testing/selftests/bpf/xdpxceiver.h
-> > index c5baa7c5f560..e27fe348ae50 100644
-> > --- a/tools/testing/selftests/bpf/xdpxceiver.h
-> > +++ b/tools/testing/selftests/bpf/xdpxceiver.h
-> > @@ -132,6 +132,7 @@ struct ifobject {
-> >  struct test_spec {
-> >       struct ifobject *ifobj_tx;
-> >       struct ifobject *ifobj_rx;
-> > +     struct pkt_stream *pkt_stream_default;
-> >       u16 total_steps;
-> >       u16 current_step;
-> >       u16 nb_sockets;
-> > --
-> > 2.29.0
-> >
+
+> So it seems to be not too late to fix it:
+> 
+> diff --git a/drivers/vdpa/vdpa_user/vduse_dev.c
+> b/drivers/vdpa/vdpa_user/vduse_dev.c
+> index 5c25ff6483ad..ea41a7389a26 100644
+> --- a/drivers/vdpa/vdpa_user/vduse_dev.c
+> +++ b/drivers/vdpa/vdpa_user/vduse_dev.c
+> @@ -665,13 +665,13 @@ static void vduse_vdpa_set_config(struct
+> vdpa_device *vdpa, unsigned int offset,
+>  static int vduse_vdpa_reset(struct vdpa_device *vdpa)
+>  {
+>         struct vduse_dev *dev = vdpa_to_vduse(vdpa);
+> +       int ret;
+> 
+> -       if (vduse_dev_set_status(dev, 0))
+> -               return -EIO;
+> +       ret = vduse_dev_set_status(dev, 0);
+> 
+>         vduse_dev_reset(dev);
+> 
+> -       return 0;
+> +       return ret;
+>  }
+> 
+>  static u32 vduse_vdpa_get_generation(struct vdpa_device *vdpa)
+> 
+> Thanks,
+> Yongji
+
+Needs some comments to explain why it's done like this.
+
+BTW device is generally wedged at this point right?
+E.g. if reset during initialization fails, userspace
+will still get the reset at some later point and be
+confused ...
+
+-- 
+MST
+
