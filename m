@@ -2,61 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85A1040302A
-	for <lists+netdev@lfdr.de>; Tue,  7 Sep 2021 23:20:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BB10403032
+	for <lists+netdev@lfdr.de>; Tue,  7 Sep 2021 23:22:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347091AbhIGVVR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Sep 2021 17:21:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33188 "EHLO mail.kernel.org"
+        id S1347170AbhIGVXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Sep 2021 17:23:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34980 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243883AbhIGVVR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 Sep 2021 17:21:17 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D2FA760F70;
-        Tue,  7 Sep 2021 21:20:09 +0000 (UTC)
+        id S1347129AbhIGVXe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 Sep 2021 17:23:34 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id E43A361102;
+        Tue,  7 Sep 2021 21:22:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631049610;
-        bh=y4MtEnAQkUBnqYlXn4+fKLJaWh4I7BtXMyuW9PWLfww=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=If6Kbrxe394FEqFourgXMcvZWy0yI9xpdyfHKjbizjMD0CEKWmgCZqbHfXb+QwqJ2
-         8pYoRxiORmKOG2l5vOHr5lFa5Acoy3TpK7l+wEbhlHiG+IzNaUa8kbztIK5GFuflEP
-         MnH9wMC5OlGBHFBO9wcjjzlbSTkq9tg/qAinyEJpVvOi+qODZe8bdPRuuzikSlkIpg
-         FoceSoWEOUswi3wZkKEu+tWhz6WIxbtsRGlrmbDJYzJ9dmzsDx4bTpP/UtREmWGSwA
-         iRvV2NULlYcsdDztPsypqzQa2gs9qQNk3kOuUH3cOAXHPv3xWtFaaLxrqcXGFRr5Cn
-         +F6MSbRFm/yVA==
-Date:   Tue, 7 Sep 2021 14:20:08 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Marco Elver <elver@google.com>,
-        syzbot <syzbot+8322c0f0976fafa0ae88@syzkaller.appspotmail.com>,
-        akpm@linux-foundation.org, bp@alien8.de, davem@davemloft.net,
-        hpa@zytor.com, linux-kernel@vger.kernel.org, mingo@redhat.com,
-        netdev@vger.kernel.org, rafael.j.wysocki@intel.com,
-        rppt@kernel.org, syzkaller-bugs@googlegroups.com,
-        tglx@linutronix.de, x86@kernel.org
-Subject: Re: [syzbot] net build error (3)
-Message-ID: <20210907142008.333c8a66@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <73b64f16-a8d0-cd1e-c08f-dbc3cf493e5a@gmail.com>
-References: <000000000000cdb6a905cb069738@google.com>
-        <CANpmjNP2JEyFO_d9Dxkw5h6WQL70AhDsxkyoFTizvo+n3Ct3Tg@mail.gmail.com>
-        <73b64f16-a8d0-cd1e-c08f-dbc3cf493e5a@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        s=k20201202; t=1631049747;
+        bh=mpprWvjYhsVojAHrR9gaDmc2KSzr3zkjrtJcsTroQDQ=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=dCQFW4AmbVIZ1waBdE4Mpjz8UqoTEQ6ZLmm0RA2JfteEOWIxXNTsieLoFLXlN4FNq
+         Z/wnk2B92/gMiowoMtf83KGJ5PT7qfHhNk8EXtr//gFTCbTPW3ILxnq/Vc7UlbELYb
+         dv99qudDqIFkb84GtqOSYb6+i5aQseAXAmHfulMgtQgK7xYRPlY9b6DyVTvKJnOmuP
+         5rGbfrsWtrF6n6TFdOLotUH4EEya1PvWp+3hVg5f3Yf+HTZl65iOxolhQ4r4nU8VMS
+         KM7pRHq/puFOcUSITjW5nLdC3Cc0eBlCubUWFIlq/iL+/WAUB6h/a/UUPKQKOvEziO
+         3xpCyjRBjp2iw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id DE879609AB;
+        Tue,  7 Sep 2021 21:22:27 +0000 (UTC)
+Subject: Re: [GIT PULL] Networking for 5.15-rc1
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20210907191640.1569636-1-kuba@kernel.org>
+References: <20210907191640.1569636-1-kuba@kernel.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20210907191640.1569636-1-kuba@kernel.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.15-rc1
+X-PR-Tracked-Commit-Id: 0f77f2defaf682eb7e7ef623168e49c74ae529e3
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 626bf91a292e2035af5b9d9cce35c5c138dfe06d
+Message-Id: <163104974790.25074.5266425509923162400.pr-tracker-bot@kernel.org>
+Date:   Tue, 07 Sep 2021 21:22:27 +0000
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 7 Sep 2021 13:56:15 -0700 Florian Fainelli wrote:
-> On 9/3/2021 1:14 AM, Marco Elver wrote:
-> > #syz fix: x86/setup: Explicitly include acpi.h
-> > 
-> > On Thu, 2 Sept 2021 at 19:34, syzbot
-> > <syzbot+8322c0f0976fafa0ae88@syzkaller.appspotmail.com> wrote:  
-> 
-> David, Jakub can you cherry pick that change into net/master, today's 
-> net/master tree was still failing to build because of this.
-> 
-> Thanks!
+The pull request you sent on Tue,  7 Sep 2021 12:16:40 -0700:
 
-I posted a PR earlier today, I'll forward our trees as soon as Linus
-pulls.
+> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.15-rc1
+
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/626bf91a292e2035af5b9d9cce35c5c138dfe06d
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
