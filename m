@@ -2,104 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DE8840217D
-	for <lists+netdev@lfdr.de>; Tue,  7 Sep 2021 01:51:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92DA64021FB
+	for <lists+netdev@lfdr.de>; Tue,  7 Sep 2021 04:30:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232860AbhIFXiR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Sep 2021 19:38:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41516 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229866AbhIFXiR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Sep 2021 19:38:17 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFC46C061575;
-        Mon,  6 Sep 2021 16:37:10 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id e7so8132966pgk.2;
-        Mon, 06 Sep 2021 16:37:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sanJQgCOj6QndmuB/d1oi1oeHwgYC+0Otb8h+XZVNNI=;
-        b=Z5I2WDWbjBd8bVxVY5zxa5Lf6V+l0DGyC/hOgiwHSrTOOen/88bEu07rDPQ4ZShBgQ
-         dSUy9aWem3GOLdx3PzONf9XLsqdDFHgVstzRF+EdBjFoeY37c8bJZY+SWsOfyMsYLoWB
-         iFilu0WgaYjxlK17giSFJ1D+ykz1C1SLgZqkwMFdEx+R+g1GYgJTvMBabjnJKP/crLMR
-         I+ieOQGPYltTq7oDpxKVsg1Gkcpsu1ecvpEhfyNGTYzVYAhRK1ChnO+OY4qTtbQ09pny
-         xwdTl1DjEIS4+AvBZrvhTOSl2gLYeRban0knGGjzJLESTLxctKuPAmy1jRDteoxQFH61
-         rmwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sanJQgCOj6QndmuB/d1oi1oeHwgYC+0Otb8h+XZVNNI=;
-        b=Ot2C/Uj4EXyxEJTmRJbdav8QjyBlGn/N/GYsSPwMvlc7YPQA6buG+GXRxH7L8/joJi
-         Saw1XO7CW6IjojUHljyO4RBKSk50Wa7ncEXMI6Q7G5ykBXhHZvEGKmsuHciBmWkg/R1R
-         HBF++RgKHO7J6qc1lMplMk465ZGRC08K/LwXs9YCeVEcFI3rJprdQMjrehoPL4fJaHgx
-         HkheCgNyIJXt1d6hMRK/ryQmK378hdrKIKQDhtNKBAe1iYqjU8aMjMuAm4mviaV24gEH
-         kj1zxoIp+rVSobKn2gt6tJpfleala8g3aD+R7fzf45JrEDpxrpFQUJ2oHOAuctxnmtw2
-         f6SA==
-X-Gm-Message-State: AOAM532MxMRm/WHbSVKnX0i5t26x/zGEvHG3NM+v5KANKQWUlvbdYrD8
-        /a9vvbywMY4Wu+MwKYzWdnE=
-X-Google-Smtp-Source: ABdhPJxQv460ugCPPWo2Au4TeA7NDFDB7zF3qIAdkwwmscxGUcK+DTWr5lJwt5yAdkfHSl7t2N3ENQ==
-X-Received: by 2002:a62:8415:0:b0:407:8998:7c84 with SMTP id k21-20020a628415000000b0040789987c84mr14198037pfd.71.1630971429983;
-        Mon, 06 Sep 2021 16:37:09 -0700 (PDT)
-Received: from tong-desktop.local (99-105-211-126.lightspeed.sntcca.sbcglobal.net. [99.105.211.126])
-        by smtp.googlemail.com with ESMTPSA id t68sm10890250pgc.59.2021.09.06.16.37.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Sep 2021 16:37:09 -0700 (PDT)
-From:   Tong Zhang <ztong0001@gmail.com>
-To:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tong Zhang <ztong0001@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Dario Binacchi <dariobin@libero.it>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1] can: c_can: fix null-ptr-deref on ioctl()
-Date:   Mon,  6 Sep 2021 16:37:02 -0700
-Message-Id: <20210906233704.1162666-1-ztong0001@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S236253AbhIGBCb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Sep 2021 21:02:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33050 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229975AbhIGBCa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Sep 2021 21:02:30 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 04E456054F;
+        Tue,  7 Sep 2021 01:01:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1630976485;
+        bh=zNnXuU6f/iMX8dxmKzv/o3lnqUVV9kUDRkHkEIlEWds=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ZiYGLRU06rHu151FzCb7cJwrKG6OumKNA3jDEs4Yd6E5VhlkDXZEOYmfxVMqGAQMQ
+         bo6MRnZ/pAdTX11s0YOYFiaaoBiwo9yiNIXGJVDtV0yL1sPgd9GKMsvvI+PcRciOrd
+         Wo30efbek2FvUmzzSS0ggi3IuP2AlB3Q89BX7JW6+r06FwZD1Xev4QDSgFvBd9UmQ/
+         3DMuofrPY1peEV+fX7hRh4pOWz1jsIbW9+Gvj+ygqM6aP7BVcJeMRvnBc8OOuAMi3u
+         nAE3EjW58EXxNyV3lWwPkOuwYju8elSZY3uJIATwwv87MddQLEr9VVoBVix1ts2C8n
+         ulUd2ddVHB6yg==
+Date:   Mon, 6 Sep 2021 18:01:24 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Machnikowski, Maciej" <maciej.machnikowski@intel.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        "abyagowi@fb.com" <abyagowi@fb.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "Andrew Lunn" <andrew@lunn.ch>, Michal Kubecek <mkubecek@suse.cz>
+Subject: Re: [PATCH net-next 1/2] rtnetlink: Add new RTM_GETEECSTATE message
+ to get SyncE status
+Message-ID: <20210906180124.33ff49ef@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <PH0PR11MB49511F2017F48BBAAB2A065CEAD29@PH0PR11MB4951.namprd11.prod.outlook.com>
+References: <20210903151436.529478-1-maciej.machnikowski@intel.com>
+        <20210903151436.529478-2-maciej.machnikowski@intel.com>
+        <20210903151425.0bea0ce7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <PH0PR11MB4951623918C9BA8769C10E50EAD29@PH0PR11MB4951.namprd11.prod.outlook.com>
+        <20210906113925.1ce63ac7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <PH0PR11MB49511F2017F48BBAAB2A065CEAD29@PH0PR11MB4951.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-the pdev maybe not a platform device, e.g. c_can_pci device,
-in this case, calling to_platform_device() would not make sense.
-Also, per the comment in drivers/net/can/c_can/c_can_ethtool.c, @bus_info
-sould match dev_name() string, so I am replacing this with dev_name() to
-fix this issue.
+On Mon, 6 Sep 2021 19:01:54 +0000 Machnikowski, Maciej wrote:
+> > > Hmm. Main reason for netlink is that linuxptp already supports it,
+> > > and it was suggested by Richard.
+> > > Having an NDO would also make it easier to add a SyncE-related
+> > > files to the sysfs for easier operation (following the ideas from the ptp
+> > > pins subsystem).
+> > > But I'm open for suggestions.  
+> > 
+> > I think linuxptp will need support for ethtool netlink sockets sooner
+> > rather than later. Moving this to ethtool makes sense to me since it's
+> > very much a Ethernet-oriented API at this point.  
+> 
+> Ethtool also makes a lot of sense, but will it be possible to still make sysfs,
+> and it makes sense to add it for some deployments (more on that below)
 
-[    1.458583] BUG: unable to handle page fault for address: 0000000100000000
-[    1.460921] RIP: 0010:strnlen+0x1a/0x30
-[    1.466336]  ? c_can_get_drvinfo+0x65/0xb0 [c_can]
-[    1.466597]  ethtool_get_drvinfo+0xae/0x360
-[    1.466826]  dev_ethtool+0x10f8/0x2970
-[    1.467880]  sock_ioctl+0xef/0x300
+It should not make much difference whether ndo or ethtool op is used.
 
-Fixes: 2722ac986e93 ("can: c_can: add ethtool support")
-Signed-off-by: Tong Zhang <ztong0001@gmail.com>
----
- drivers/net/can/c_can/c_can_ethtool.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+> > > This bit has a different meaning. If it's set the port in question
+> > > is a frequency source for the multiport device, if it's cleared - some other
+> > > source is used as a source. This is needed to prevent setting invalid
+> > > configurations in the PHY (like setting the frequency source as a Master
+> > > in AN) or sending invalid messages. If the port is a frequency source
+> > > it must always send back QL-DNU messages to prevent synchronization
+> > > loops.  
+> > 
+> > Ah! I see. Is being the "source" negotiated somehow? Don't we need to
+> > give the user / linuxptp to select the source based on whatever info
+> > it has about topology?  
+> 
+> The frequency source can be either pre-set statically, negotiated using
+> ESMC QL-levels (if working in QL-Enabled mode), or follow automatic
+> fallback inside the device. This  flag gives feedback about the validity
+> of recovered clock coming from a given port and is useful when you
+> enable multiple recovered clocks on more than one port in
+> active-passive model. In that case the "driving" port may change 
+> dynamically, so it's a good idea to have some interface to reflect that.
 
-diff --git a/drivers/net/can/c_can/c_can_ethtool.c b/drivers/net/can/c_can/c_can_ethtool.c
-index cd5f07fca2a5..377c7d2e7612 100644
---- a/drivers/net/can/c_can/c_can_ethtool.c
-+++ b/drivers/net/can/c_can/c_can_ethtool.c
-@@ -15,10 +15,8 @@ static void c_can_get_drvinfo(struct net_device *netdev,
- 			      struct ethtool_drvinfo *info)
- {
- 	struct c_can_priv *priv = netdev_priv(netdev);
--	struct platform_device *pdev = to_platform_device(priv->device);
--
- 	strscpy(info->driver, "c_can", sizeof(info->driver));
--	strscpy(info->bus_info, pdev->name, sizeof(info->bus_info));
-+	strscpy(info->bus_info, dev_name(priv->device), sizeof(info->bus_info));
- }
- 
- static void c_can_get_ringparam(struct net_device *netdev,
--- 
-2.25.1
+The ESMC messages are handled by Linux or some form of firmware?
+I don't see how you can implement any selection policy with a read-only
+API.
 
+In general it would be more natural to place a "source id" at the
+DPLL/clock, the "source" flag seems to mark the wrong end of the
+relationship. If there ever are multiple consumers we won't be able 
+to tell which "target" the "source" is referring to. Hard to judge 
+how much of a problem that could be by looking at a small slice of 
+the system.
+
+> That's where sysfs file be useful. When I add the implementation for
+> recovered clock configuration, the sysfs may be used as standalone 
+> interface for configuring them when no dynamic change is needed.
+
+I didn't get that. Do you mean using a sysfs file to configure 
+the parameters of the DPLL? 
+
+If the DPLL has its own set of concerns we should go ahead and create
+explicit object / configuration channel for it.
+
+Somehow I got it into my head that you care mostly about transmitting
+the clock, IOW recovering it from one port and using on another but
+that's probably not even a strong use case for you or NICs in general :S
+
+> > > Addressed all other comments - and thanks for giving a lot of helpful
+> > > suggestions!  
+> > 
+> > Thanks, BTW I think I forgot to ask for documentation, dumping info
+> > about the API and context under Documentation/ would be great!  
+> 
+> Could you suggest where to add that? Grepping for ndo_ don't give much.
+> I can add a new synce.rst file if it makes sense.
+
+New networking/synce.rst file makes perfect sense to me. And perhaps
+link to it from driver-api/ptp.rst.
