@@ -2,138 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E98BC4025D4
-	for <lists+netdev@lfdr.de>; Tue,  7 Sep 2021 10:59:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5037C4025F9
+	for <lists+netdev@lfdr.de>; Tue,  7 Sep 2021 11:10:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245435AbhIGJAo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Sep 2021 05:00:44 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:59842 "EHLO inva020.nxp.com"
+        id S244703AbhIGJLN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Sep 2021 05:11:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45560 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244961AbhIGJAV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 Sep 2021 05:00:21 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id B08E31A2AB0;
-        Tue,  7 Sep 2021 10:59:14 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 4CC5E1A13F6;
-        Tue,  7 Sep 2021 10:59:14 +0200 (CEST)
-Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id DD1A4183AC4C;
-        Tue,  7 Sep 2021 16:59:11 +0800 (+08)
-From:   Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
-To:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     allan.nielsen@microchip.com, joergen.andreasen@microchip.com,
-        UNGLinuxDriver@microchip.com, vinicius.gomes@intel.com,
-        michael.chan@broadcom.com, vishal@chelsio.com, saeedm@mellanox.com,
-        jiri@mellanox.com, idosch@mellanox.com,
-        alexandre.belloni@bootlin.com, kuba@kernel.org,
-        xiaoliang.yang_1@nxp.com, po.liu@nxp.com, vladimir.oltean@nxp.com,
-        leoyang.li@nxp.com, f.fainelli@gmail.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, claudiu.manoil@nxp.com
-Subject: [PATCH v4 net-next 8/8] net: dsa: felix: use vcap policer to set flow meter for psfp
-Date:   Tue,  7 Sep 2021 17:09:15 +0800
-Message-Id: <20210907090915.17866-9-xiaoliang.yang_1@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210907090915.17866-1-xiaoliang.yang_1@nxp.com>
-References: <20210907090915.17866-1-xiaoliang.yang_1@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S243468AbhIGJLM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 Sep 2021 05:11:12 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 5925F61102;
+        Tue,  7 Sep 2021 09:10:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1631005806;
+        bh=uPbfy4mODdIz4BjAVSEGBJX/mpjICUVdEQbd7dDa7k4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=XpQH2Po+oHFilzA1jwKByu9ZlpRnXV3MFn/9Qd2zpj/q2XW1jXk4TJYBNJUwIMid3
+         ftyA9YwyiVVh/r8EqIFI6WR+BLJ2A8gyoJFIh/CVG2hmXEeZlCq+jZtwp4/AHo1JfO
+         qwyGCH19tAX25uYa18+YEGBUZL04sRlitQuLou6Hmgpo7PrMujekM7uTWjyqtOqDAs
+         Q4w5GyNuOkLMuu7OtOwVk8cg3eUJmR66N10t8WGkCVmcrShQHA2+G3bZC4n/3+U9WT
+         ZJhGKUEQnxkdGnhtORleccFNNmKi2pdDlNoA2kuNNbIXEKRxeAoYEaDMVN26fcnTe9
+         ITXEOA4+6q57g==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 4D979609F5;
+        Tue,  7 Sep 2021 09:10:06 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: pull-request: wireless-drivers-2021-09-07
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163100580631.1890.9498522128656095721.git-patchwork-notify@kernel.org>
+Date:   Tue, 07 Sep 2021 09:10:06 +0000
+References: <20210907033842.CE38EC43460@smtp.codeaurora.org>
+In-Reply-To: <20210907033842.CE38EC43460@smtp.codeaurora.org>
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch add police action to set flow meter table which is defined
-in IEEE802.1Qci. Flow metering is two rates two buckets and three color
-marker to policing the frames, we only enable one rate one bucket in
-this patch.
+Hello:
 
-Flow metering shares a same policer pool with VCAP policers, so the PSFP
-policer calls ocelot_vcap_policer_add() and ocelot_vcap_policer_del() to
-set flow meter police.
+This pull request was applied to netdev/net.git (refs/heads/master):
 
-Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
----
- drivers/net/dsa/ocelot/felix_vsc9959.c | 32 +++++++++++++++++++++++++-
- 1 file changed, 31 insertions(+), 1 deletion(-)
+On Tue,  7 Sep 2021 03:38:42 +0000 (UTC) you wrote:
+> Hi,
+> 
+> here's a pull request to net tree, more info below. Please let me know if there
+> are any problems.
+> 
+> Kalle
+> 
+> [...]
 
-diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index 1418d2a66bd6..1118101d0ee8 100644
---- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-+++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -1343,6 +1343,7 @@ static int vsc9959_port_setup_tc(struct dsa_switch *ds, int port,
- 
- #define VSC9959_PSFP_SFID_MAX			175
- #define VSC9959_PSFP_GATE_ID_MAX		183
-+#define VSC9959_PSFP_POLICER_BASE		63
- #define VSC9959_PSFP_POLICER_MAX		383
- #define VSC9959_PSFP_GATE_LIST_NUM		4
- #define VSC9959_PSFP_GATE_CYCLETIME_MIN		5000
-@@ -1854,7 +1855,10 @@ static int vsc9959_psfp_filter_add(struct ocelot *ocelot,
- 	struct felix_stream stream = {0};
- 	struct felix_stream_gate *sgi;
- 	struct ocelot_psfp_list *psfp;
-+	struct ocelot_policer pol;
- 	int ret, i, size;
-+	u64 rate, burst;
-+	u32 index;
- 
- 	psfp = &ocelot->psfp;
- 
-@@ -1873,13 +1877,33 @@ static int vsc9959_psfp_filter_add(struct ocelot *ocelot,
- 			ret = vsc9959_psfp_sgi_table_add(ocelot, sgi);
- 			if (ret) {
- 				kfree(sgi);
--				return ret;
-+				goto err;
- 			}
- 			sfi.sg_valid = 1;
- 			sfi.sgid = sgi->index;
- 			kfree(sgi);
- 			break;
- 		case FLOW_ACTION_POLICE:
-+			index = a->police.index + VSC9959_PSFP_POLICER_BASE;
-+			if (index > VSC9959_PSFP_POLICER_MAX) {
-+				ret = -EINVAL;
-+				goto err;
-+			}
-+
-+			rate = a->police.rate_bytes_ps;
-+			burst = rate * PSCHED_NS2TICKS(a->police.burst);
-+			pol = (struct ocelot_policer) {
-+				.burst = div_u64(burst, PSCHED_TICKS_PER_SEC),
-+				.rate = div_u64(rate, 1000) * 8,
-+			};
-+			ret = ocelot_vcap_policer_add(ocelot, index, &pol);
-+			if (ret)
-+				goto err;
-+
-+			sfi.fm_valid = 1;
-+			sfi.fmid = index;
-+			sfi.maxsdu = a->police.mtu;
-+			break;
- 		default:
- 			return -EOPNOTSUPP;
- 		}
-@@ -1916,6 +1940,9 @@ static int vsc9959_psfp_filter_add(struct ocelot *ocelot,
- 	if (sfi.sg_valid)
- 		vsc9959_psfp_sgi_table_del(ocelot, sfi.sgid);
- 
-+	if (sfi.fm_valid)
-+		ocelot_vcap_policer_del(ocelot, sfi.fmid);
-+
- 	return ret;
- }
- 
-@@ -1939,6 +1966,9 @@ static int vsc9959_psfp_filter_del(struct ocelot *ocelot,
- 	if (sfi->sg_valid)
- 		vsc9959_psfp_sgi_table_del(ocelot, sfi->sgid);
- 
-+	if (sfi->fm_valid)
-+		ocelot_vcap_policer_del(ocelot, sfi->fmid);
-+
- 	vsc9959_psfp_sfi_table_del(ocelot, stream->sfid);
- 
- 	stream->sfid_valid = 0;
--- 
-2.17.1
+Here is the summary with links:
+  - pull-request: wireless-drivers-2021-09-07
+    https://git.kernel.org/netdev/net/c/8f110f35f962
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
