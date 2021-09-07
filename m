@@ -2,96 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 287614030E2
-	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 00:24:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CC564030E5
+	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 00:24:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348183AbhIGWZE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Sep 2021 18:25:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39812 "EHLO
+        id S1347901AbhIGWZF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Sep 2021 18:25:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241562AbhIGWY5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Sep 2021 18:24:57 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71E01C061757
-        for <netdev@vger.kernel.org>; Tue,  7 Sep 2021 15:23:50 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id z19so50040edi.9
-        for <netdev@vger.kernel.org>; Tue, 07 Sep 2021 15:23:50 -0700 (PDT)
+        with ESMTP id S1347658AbhIGWZA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Sep 2021 18:25:00 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F5C6C06175F
+        for <netdev@vger.kernel.org>; Tue,  7 Sep 2021 15:23:51 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id g21so81608edw.4
+        for <netdev@vger.kernel.org>; Tue, 07 Sep 2021 15:23:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=anyfinetworks-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=iSAVXuQHVYqkBfCzECbIyafToN/+xfGCAmaG2XA6/Jc=;
-        b=x9YlaDHS3ZJ+/8geUZQAIDQ3CVZDTIsbZgbaSRQAzcUlD+jFmrQ2ENv1IO8DrrOALy
-         mm+PYCCl/Hgj6tdtcS9HhAP1kXbsz4VjbDdZzf62uSwvkGx91zmJXwLsYCv0eqHtiy89
-         S/8d2in9m9y4xSP6NkCU+ztTfAUrqhvljyp7Mdm+jD1bQN9ic4uCmp1J5Ak3WbEZjKlU
-         3zX4F8bqrgMxP16Qnb9JwFIlwSdadDUkgvuXd5g/5XJUIAukNvrkzBccGYUwa1a+LmiN
-         OzIjJBGNEMpsDm/FGyQwVEBlMbJ8Wa/6dQM9hWnQi15Uz6dg7uUi1q4S+vqagz9R/4UC
-         JJ5g==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=2vMJ3l66MA4Xk2XsGDPJ11b5ddQG+LbfDZ98V6KBPYQ=;
+        b=t6wSvyqGm0TH8zdK/DXSlSWY8TgAvVRfYSUnQlkKnYRBW0eGXyTlXPmpvg3Ska129X
+         Yxxpu1F2IHRgpN4lwpMlpRnatLwwORctnfLp2jxdNwT3vKSBoqZ1wPoguRUShH7IaDZH
+         6U1MW8sBSt6RO9KYghNQifwh/fE7mEUT9beZgNb6MsWc+pC0LiCo73bGNU5dLPVTHeW2
+         Yq5L7MGBBqLxY9JP3n4BG5l7Hk9QXQpteBwTgsMJoosSZ0qDajvWuZ5ujfPZ0CeuAgwr
+         ndg8wtDSwo7XsoJuBO3P4DISNFANzAg2LnDktSNWZpu9nsF14ZHNsPgIkD3e1EsVu0pv
+         GgAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=iSAVXuQHVYqkBfCzECbIyafToN/+xfGCAmaG2XA6/Jc=;
-        b=omGU/I9D9SgdSlU4Wy5e9/cajBhdrhAW3//takMoEiqw+aerCa7s3L5WP1laNwFTBo
-         gl7qzR2nIkVf44jE2uhKzQ6Q5Es/9p4RyIXzTp4FDcpwgAqjII8CxhyRn3tYSnmNH2ZP
-         2vVfvaoD9XY2vrtxPqT14J5Nm43pIhf5aPgqqphVM71LkibGfI2Ydf1KIuqx+jvKO8pC
-         dZM/0TYUnVDB7xDaRbjAT5hJ4oeQE6H0nAvb2IJ/WNKmrIksT9mZdjdEWt5tjK299FS5
-         9swSFwxbt6vjRCwKMFBrcySo/OnaUxRroJ01RsETgpS71eedr+OPGOz86mjr2SxSJEhO
-         R8RQ==
-X-Gm-Message-State: AOAM531j4417itTDjnJ78F0fgJWNDg3SsZHoRTrC1novo1TKXe2dlYn3
-        KM9MYiJKf0LA9CfZ/dFBI7DuvA==
-X-Google-Smtp-Source: ABdhPJySKnc7m7Nf8TU4fjrsZwxbCMv1kIl0E/jlTFjRQdt2EGRC+2UncbYh/QBkqg9WnWZzANdF2Q==
-X-Received: by 2002:a05:6402:1cbb:: with SMTP id cz27mr523878edb.334.1631053429007;
-        Tue, 07 Sep 2021 15:23:49 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=2vMJ3l66MA4Xk2XsGDPJ11b5ddQG+LbfDZ98V6KBPYQ=;
+        b=g5i9AA/LwIRErtMCFe1X4Xloo3TWQdI/8/S8M8gxKExzoKPuNn5wKDUfSvGlV4/6yS
+         PVskuNkvdKI07YEQjViGs4ldTvj3NSHpeVh2Tcn/NTe4VXxih4+RWqL3HDyyd5BvFntc
+         /J3pwTHLHYpgFw3hM7nevyExpYDzoqk1eX4ZfG+gDlpxeOUxB8wzxdC8Nh3jYLLDUIlp
+         2ACpY4MOzAI5WyyTLEU4bLCRmrAKhGPoO6iIEgMYa9zARgK4mZRyR+5vSrUJjQKfkbA9
+         cz4kFZms2dOx8G7nIKYsE14vx5ssaWRjE/lsjfzf2DgBsqqfZAdD0H4wA09ycLoHBpQB
+         qepQ==
+X-Gm-Message-State: AOAM531enbHM/b9FTZkBuT9Nr9zrofkDbGb7IZHG+6NAc5EFKEKNEcZq
+        ++rVQbD7ftSApAtBXTzh6r67nQ==
+X-Google-Smtp-Source: ABdhPJwgG/puxsuG33LJpm369ZIEvvdH4LjSB0lkFALPWHzZ9W5rHFgvd6KvgkWYKwjgaeAZoZhGCA==
+X-Received: by 2002:aa7:d0c3:: with SMTP id u3mr533835edo.158.1631053430002;
+        Tue, 07 Sep 2021 15:23:50 -0700 (PDT)
 Received: from anpc2.lan (static-213-115-136-2.sme.telenor.se. [213.115.136.2])
-        by smtp.gmail.com with ESMTPSA id gb24sm71772ejc.53.2021.09.07.15.23.47
+        by smtp.gmail.com with ESMTPSA id gb24sm71772ejc.53.2021.09.07.15.23.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Sep 2021 15:23:48 -0700 (PDT)
+        Tue, 07 Sep 2021 15:23:49 -0700 (PDT)
 From:   Johan Almbladh <johan.almbladh@anyfinetworks.com>
 To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org
 Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
         john.fastabend@gmail.com, kpsingh@kernel.org, iii@linux.ibm.com,
         netdev@vger.kernel.org, bpf@vger.kernel.org,
         Johan Almbladh <johan.almbladh@anyfinetworks.com>
-Subject: [PATCH bpf-next v2 00/13] bpf/tests: Extend JIT test suite coverage
-Date:   Wed,  8 Sep 2021 00:23:26 +0200
-Message-Id: <20210907222339.4130924-1-johan.almbladh@anyfinetworks.com>
+Subject: [PATCH bpf-next v2 01/13] bpf/tests: Allow different number of runs per test case
+Date:   Wed,  8 Sep 2021 00:23:27 +0200
+Message-Id: <20210907222339.4130924-2-johan.almbladh@anyfinetworks.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210907222339.4130924-1-johan.almbladh@anyfinetworks.com>
+References: <20210907222339.4130924-1-johan.almbladh@anyfinetworks.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch set adds a number of new tests to the test_bpf.ko test suite.
-The tests are intended to verify the correctness of eBPF JITs.
+This patch allows a test cast to specify the number of runs to use. For
+compatibility with existing test case definitions, the default value 0
+is interpreted as MAX_TESTRUNS.
 
-Changes since v1:
-* Fixed ASCII diagram of staggered jump test pattern (6/13).
-* Fixed R0 initialization issue found by kbuild CI. Add comment on
-  diagnostics/debugging instead of setting R0 to the current
-  instruction index (3,4,7/13).
+A reduced number of runs is useful for complex test programs where 1000
+runs may take a very long time. Instead of reducing what is tested, one
+can instead reduce the number of times the test is run.
 
-Link: https://lore.kernel.org/bpf/20210902185229.1840281-1-johan.almbladh@anyfinetworks.com/
+Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
+---
+ lib/test_bpf.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Johan Almbladh (13):
-  bpf/tests: Allow different number of runs per test case
-  bpf/tests: Reduce memory footprint of test suite
-  bpf/tests: Add exhaustive tests of ALU shift values
-  bpf/tests: Add exhaustive tests of ALU operand magnitudes
-  bpf/tests: Add exhaustive tests of JMP operand magnitudes
-  bpf/tests: Add staggered JMP and JMP32 tests
-  bpf/tests: Add exhaustive test of LD_IMM64 immediate magnitudes
-  bpf/tests: Add test case flag for verifier zero-extension
-  bpf/tests: Add JMP tests with small offsets
-  bpf/tests: Add JMP tests with degenerate conditional
-  bpf/tests: Expand branch conversion JIT test
-  bpf/tests: Add more BPF_END byte order conversion tests
-  bpf/tests: Add tail call limit test with external function call
-
- lib/test_bpf.c | 3316 +++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 3274 insertions(+), 42 deletions(-)
-
+diff --git a/lib/test_bpf.c b/lib/test_bpf.c
+index 830a18ecffc8..c8bd3e9ab10a 100644
+--- a/lib/test_bpf.c
++++ b/lib/test_bpf.c
+@@ -80,6 +80,7 @@ struct bpf_test {
+ 	int expected_errcode; /* used when FLAG_EXPECTED_FAIL is set in the aux */
+ 	__u8 frag_data[MAX_DATA];
+ 	int stack_depth; /* for eBPF only, since tests don't call verifier */
++	int nr_testruns; /* Custom run count, defaults to MAX_TESTRUNS if 0 */
+ };
+ 
+ /* Large test cases need separate allocation and fill handler. */
+@@ -8631,6 +8632,9 @@ static int run_one(const struct bpf_prog *fp, struct bpf_test *test)
+ {
+ 	int err_cnt = 0, i, runs = MAX_TESTRUNS;
+ 
++	if (test->nr_testruns)
++		runs = min(test->nr_testruns, MAX_TESTRUNS);
++
+ 	for (i = 0; i < MAX_SUBTESTS; i++) {
+ 		void *data;
+ 		u64 duration;
 -- 
 2.25.1
 
