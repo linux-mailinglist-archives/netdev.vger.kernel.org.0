@@ -2,111 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72F16402A03
-	for <lists+netdev@lfdr.de>; Tue,  7 Sep 2021 15:44:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81636402A05
+	for <lists+netdev@lfdr.de>; Tue,  7 Sep 2021 15:45:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344797AbhIGNps (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Sep 2021 09:45:48 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:59372 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1344269AbhIGNpr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 Sep 2021 09:45:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=B7Z2Hp4psPJjkAd1T3DsxGWaTveEV56D2pW82c6wQ5w=; b=u+BY5UwVJZoBV+EtekNUnwjL4W
-        6Cis7LsEXBmzBVfDSiNlIO9SPBp00jDwlvtQ+cUoJYokCqPf2B/Zel1PP1czkZBP28YtmypaNjMC2
-        TUStTTXNhxndlxk1v4JzlVqE1+IWcAyJhrsBrFpY5T6SzUOOuTlc/xkG5HY2fsQK33Nk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mNbOq-005eE4-DY; Tue, 07 Sep 2021 15:44:32 +0200
-Date:   Tue, 7 Sep 2021 15:44:32 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        patchwork-bot+netdevbpf@kernel.org,
-        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        vivien.didelot@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        netdev@vger.kernel.org, rafal@milecki.pl
-Subject: Re: [PATCH] net: dsa: b53: Fix IMP port setup on BCM5301x
-Message-ID: <YTdswC0SvBWExoVk@lunn.ch>
-References: <20210905172328.26281-1-zajec5@gmail.com>
- <163086540526.12372.2831878860317230975.git-patchwork-notify@kernel.org>
- <5de7487c-4ffe-bca4-f9a3-e437fc63926b@gmail.com>
- <YTVlYqzeKckGfqu0@lunn.ch>
- <20210906184838.2ebf3dd3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1344772AbhIGNqG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Sep 2021 09:46:06 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:58080 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1344824AbhIGNp4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Sep 2021 09:45:56 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1631022290;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=lnk+MQgYpOvpu6ZC3StBomend8wJttqrx2hILwEGg6U=;
+        b=boirB9fAqcjuYnW8nKTnR6cc/TLB7woroMmUGPgfoKLxXzArsJWDDsCBMQEosUzxPIdXE9
+        u7eIGukJlsm4AvIz9UYHOldaoedCO725dGYHsuoLwNypcK0koIwXJZtnNvqL0dM+TWCFDR
+        Jf6qxctZQF1kmLtxOxuIOdi4aoy3NBw=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-254-bwksPe8FMeC-Rh3kFCCwHQ-1; Tue, 07 Sep 2021 09:44:49 -0400
+X-MC-Unique: bwksPe8FMeC-Rh3kFCCwHQ-1
+Received: by mail-ed1-f72.google.com with SMTP id d25-20020a056402517900b003c7225c36c2so5349619ede.3
+        for <netdev@vger.kernel.org>; Tue, 07 Sep 2021 06:44:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=lnk+MQgYpOvpu6ZC3StBomend8wJttqrx2hILwEGg6U=;
+        b=Nyv9x1NOvuvzdC1K6Z2H6zymWlmWrGrl25yTGfrdtfX5BudknrH9MGgVI95E9+4mdF
+         L39LGMfvypyOZlrxmtCtopi9A2Nmli+a1jQcMgKHXwimqGonFlRFhG1oTfOA7MGY0XZE
+         cQ1LlIznYpvoD8+IfYEluOLrYfVfn/t7/VZeebFYO5JQkAh2u1I++gp8GsUqRhcXifSH
+         jWx8+MVeu+6un2WJ7llrwK2pItsunism26qJVCSJ5lItaIwPNMu1VL1LTQZrP+YrpICS
+         7fWfkG4YihRhWio/zOL0LLpaL0WpheRAJyufjIyB5345kr23jf3IOqIy573zlpEDUOQw
+         O3ew==
+X-Gm-Message-State: AOAM533Hev5qf8UZm/luCi3Q4hu3rnI1FdFt87vnPqmY0X3QoL9NJWz6
+        mvahRtKLyg1jdt5XsHkfU2TqH1qW2NJNxlKKTPZKxiZHrwKBldctaVSCUQbPuynMQBtb2pWIF5t
+        PR/UT7QGVp2YTYTgP
+X-Received: by 2002:a17:906:a0da:: with SMTP id bh26mr18289209ejb.505.1631022287820;
+        Tue, 07 Sep 2021 06:44:47 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyVF/1iqIfSrn6+Si0AdBKy73K2PY5tGqudcMlZdwkLzqypht3xb386lYimlwo97HcwjdtQDA==
+X-Received: by 2002:a17:906:a0da:: with SMTP id bh26mr18289182ejb.505.1631022287623;
+        Tue, 07 Sep 2021 06:44:47 -0700 (PDT)
+Received: from localhost (net-37-116-49-210.cust.vodafonedsl.it. [37.116.49.210])
+        by smtp.gmail.com with ESMTPSA id ly7sm5580034ejb.109.2021.09.07.06.44.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Sep 2021 06:44:47 -0700 (PDT)
+Date:   Tue, 7 Sep 2021 15:44:44 +0200
+From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, brouer@redhat.com, davem@davemloft.net,
+        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        shayagr@amazon.com, john.fastabend@gmail.com, dsahern@kernel.org,
+        echaudro@redhat.com, jasowang@redhat.com,
+        alexander.duyck@gmail.com, saeed@kernel.org,
+        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
+        tirthendu.sarkar@intel.com, toke@redhat.com
+Subject: Re: [PATCH v13 bpf-next 05/18] net: xdp: add
+ xdp_update_skb_shared_info utility routine
+Message-ID: <YTdszJFfSUVCacJq@lore-desk>
+References: <cover.1631007211.git.lorenzo@kernel.org>
+ <f46a84381037e76ff0e812abd77a0670d0d14767.1631007211.git.lorenzo@kernel.org>
+ <29fc47da-f9b3-9698-d58d-a06010945a21@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="yBVkDLz2+tzWwFpW"
 Content-Disposition: inline
-In-Reply-To: <20210906184838.2ebf3dd3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <29fc47da-f9b3-9698-d58d-a06010945a21@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 06, 2021 at 06:48:38PM -0700, Jakub Kicinski wrote:
-> On Mon, 6 Sep 2021 02:48:34 +0200 Andrew Lunn wrote:
-> > > not allowing a proper review to happen. So please, I am begging you, wait at
-> > > least 12h, ideally 24h before applying a patch.  
-> 
-> The fixed wait time before applying would likely require more nuance.
-> For example something like 0h for build fixed; 12h if reviewed by all
-> area experts; 24h+ for the rest? Not counting weekends?
-> 
-> > 24 hours is too short. We all have lives outside of the kernel. I
-> > found the older policy of 3 days worked well. Enough time for those
-> > who had interest to do a review, but short enough to not really slow
-> > down development. And 3 days is still probably faster than any other
-> > subsystem.
-> 
-> It is deeply unsatisfying tho to be waiting for reviews 3 days, ping
-> people and then have to apply the patch anyway based on one's own
-> judgment.
 
-I would skip the ping bit and just apply it. Unless you really think
-it needs a deep review.
+--yBVkDLz2+tzWwFpW
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> Right now we make some attempts to delegate to "Needs ACK" state but
-> with mixed result (see the two patches hanging in that state now).
-> 
-> Perhaps the "Plan to review" marking in pw is also putting the cart
-> before the horse.
+[...]
+>=20
+> Do we need to clear gso_type here as it is shared/union with xdp_frags_si=
+ze
+> ?
+> (see below ... it is already cleared before call)
+>=20
+>=20
+> > +}
+> > +
+> >   /* Avoids inlining WARN macro in fast-path */
+> >   void xdp_warn(const char *msg, const char *func, const int line);
+> >   #define XDP_WARN(msg) xdp_warn(msg, __func__, __LINE__)
+> > diff --git a/net/core/xdp.c b/net/core/xdp.c
+> > index cc92ccb38432..504be3ce3ca9 100644
+> > --- a/net/core/xdp.c
+> > +++ b/net/core/xdp.c
+> > @@ -531,8 +531,20 @@ struct sk_buff *__xdp_build_skb_from_frame(struct =
+xdp_frame *xdpf,
+> >   					   struct sk_buff *skb,
+> >   					   struct net_device *dev)
+> >   {
+> > +	unsigned int frag_size, frag_tsize;
+> >   	unsigned int headroom, frame_size;
+> >   	void *hard_start;
+> > +	u8 nr_frags;
+> > +
+> > +	/* xdp multi-buff frame */
+> > +	if (unlikely(xdp_frame_is_mb(xdpf))) {
+> > +		struct skb_shared_info *sinfo;
+> > +
+> > +		sinfo =3D xdp_get_shared_info_from_frame(xdpf);
+> > +		frag_tsize =3D sinfo->xdp_frags_tsize;
+> > +		frag_size =3D sinfo->xdp_frags_size;
+> > +		nr_frags =3D sinfo->nr_frags;
+> > +	}
+> >   	/* Part of headroom was reserved to xdpf */
+> >   	headroom =3D sizeof(*xdpf) + xdpf->headroom;
+> > @@ -552,6 +564,11 @@ struct sk_buff *__xdp_build_skb_from_frame(struct =
+xdp_frame *xdpf,
+> >   	if (xdpf->metasize)
+> >   		skb_metadata_set(skb, xdpf->metasize);
+> > +	if (unlikely(xdp_frame_is_mb(xdpf)))
+> > +		xdp_update_skb_shared_info(skb, nr_frags,
+> > +					   frag_size, frag_tsize,
+> > +					   xdp_frame_is_frag_pfmemalloc(xdpf));
+> > +
+>=20
+> There is a build_skb_around() call before this call, which via
+> __build_skb_around() will clear top part of skb_shared_info.
+> (Thus, clearing gso_type not needed ... see above)
 
-For me personally, the reason i like three days is that sometimes i'm
-away in the wilderness, visiting friends, away on business, etc. I'm
-not checking emails. So having to take some sort of action to say i'm
-not going to take any action until later, just defeaters the point.
+yes, this is why I need save sinfo->nr_frags, sinfo->xdp_frags_size, ...
 
-> Either way if we're expending brain cycles on process changes it would
-> be cool to think more broadly than just "how long to set a timer for".
+Regards,
+Lorenzo
 
-One observation is that netdev drivers are very siloed. A vendor
-driver rarely gets reviewed by another vendor. I think reviews are
-mostly made by vendor neutral people, and they look for specific
-things. I'm interested in phy, ethtool, and anything which looks like
-it could be adding a new KAPI of some sort. There are people who
-trigger on the keyword XDP, or BPF, devlink etc. Some areas of netdev
-do tend to get more reviews than others. Again, my areas of interest,
-phys, DSA, ethtool. The core stack gets reviewed by Eric, routing by
-David, and i'm sure there are others in parts i don't take an interest
-and i've not noticed.
+>=20
+> >   	/* Essential SKB info: protocol and skb->dev */
+> >   	skb->protocol =3D eth_type_trans(skb, dev);
+>=20
+>=20
+> Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+>=20
 
-If a patch is from somebody who is not the maintainer of a siloed
-driver, and the maintainer is active, then a review is more likely to
-happen.
+--yBVkDLz2+tzWwFpW
+Content-Type: application/pgp-signature; name="signature.asc"
 
-So some sort of model could be made of this, to predict if a patchset
-is likely to get reviewed, if time is allowed for the reviewer to
-actually do the review. I don't know if a mental model is sufficient,
-for the two people who are merging patches, or some tools could be
-produced to help a little. Maybe just simple things like, is the
-poster of the patch series the maintain of the driver it applies
-to. Maybe some keyword matching? Maybe Sasha Levin can run a machine
-learning system over the last few years of the netdev archive to train
-a model which will product if a patchset will get reviewed? That would
-be applicable outside of netdev, it could be a useful feature in
-general. Maybe it is a research project Julia Lawall at Inria could
-give to a PhD student?
+-----BEGIN PGP SIGNATURE-----
 
-  Andrew
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYTdsyQAKCRA6cBh0uS2t
+rP7VAQCodpQzoU+PTk71eMryk6U1HRGFxa639QDaWonfRCbuOAEAzm81W4puZ4b6
+eOxQy90Iz+BYLViTC61rFEyS5nI8HgU=
+=t6rt
+-----END PGP SIGNATURE-----
+
+--yBVkDLz2+tzWwFpW--
+
