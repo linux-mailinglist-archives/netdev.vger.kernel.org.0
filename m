@@ -2,293 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63D04402AFF
-	for <lists+netdev@lfdr.de>; Tue,  7 Sep 2021 16:46:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A294B402B09
+	for <lists+netdev@lfdr.de>; Tue,  7 Sep 2021 16:49:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343535AbhIGOrr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Sep 2021 10:47:47 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:35027 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S245477AbhIGOrg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Sep 2021 10:47:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1631025989;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=OsgjKO/xkIXXMqmMySBL4a/OoZlEznCfkycSG4LTdTc=;
-        b=c8XGBeivnSSN6xp4AutPsuzgJ8pG0aAekUzz0x5ureKzWzKYfyIBa/Bxd1anwmkCIli5+T
-        9YU2bRHj/PC3yOr5Y3OK4b4INSdtF92xkL3Iff90NGPn4WC1tD9W0j+nxTpBp31vZ3bubf
-        Y0rsFDIJRpMADpEGNvz/C2LuYD+23mw=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-58-gIpUi3hbMXqvPaohBkgF_Q-1; Tue, 07 Sep 2021 10:46:27 -0400
-X-MC-Unique: gIpUi3hbMXqvPaohBkgF_Q-1
-Received: by mail-ed1-f70.google.com with SMTP id u2-20020aa7d982000000b003cda80fa659so4166628eds.14
-        for <netdev@vger.kernel.org>; Tue, 07 Sep 2021 07:46:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=OsgjKO/xkIXXMqmMySBL4a/OoZlEznCfkycSG4LTdTc=;
-        b=FoppfWOXxX00I9EuC+S2f5fVq7ONFrxPCCwUxby4mDTZ0b5m+IMpuS2pS8pdU9CSP2
-         MPnhhUagUpcL9oTSf3wKu7pdIMuKLnyKSCiipzl4QU9MzLiBSkzSyKim7yzkx9svX2iL
-         3biksajUt7spUiNVCwHgDJw+MymxvmTy1VF3haZlEw98I1f91nMSbV5mxm1b8aSljd7V
-         5F0XocY4TV/uBmNbLUeDNmDHjyqEB07b7RbCySObu3haQl9WpxEkCG98oDtW1l//krho
-         C2TYUxNViyz+VQ7vVCUv3pGF4PWyiwCNFMbJNVxIDAaFnqMnoelNGEbESrigRcjGLou7
-         Yv0w==
-X-Gm-Message-State: AOAM531kDJ+vPVTMUhoiEOiVOvACh7q2HpZNJrCagfy29PcH+XWvO49I
-        ra05OcnsrSUbG9XDWFWg6FTvuvMmkKlia1a8ctvvSiBGmd2izDB+S9NFEFJuIq0uiL0RsX6EUXz
-        jyi0iimvxL2a9WH3K
-X-Received: by 2002:aa7:ca14:: with SMTP id y20mr18902356eds.2.1631025986666;
-        Tue, 07 Sep 2021 07:46:26 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy2JEn+iCBdhPVcPYk7lSbYQYXbz3pwdYtBF3M1ixJ5DRzHYg27uLurVhJSzC9j8sS1Znqd/w==
-X-Received: by 2002:aa7:ca14:: with SMTP id y20mr18902339eds.2.1631025986444;
-        Tue, 07 Sep 2021 07:46:26 -0700 (PDT)
-Received: from localhost (net-37-116-49-210.cust.vodafonedsl.it. [37.116.49.210])
-        by smtp.gmail.com with ESMTPSA id q12sm6698885edw.81.2021.09.07.07.46.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Sep 2021 07:46:26 -0700 (PDT)
-Date:   Tue, 7 Sep 2021 16:46:23 +0200
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, brouer@redhat.com, davem@davemloft.net,
-        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        shayagr@amazon.com, john.fastabend@gmail.com, dsahern@kernel.org,
-        echaudro@redhat.com, jasowang@redhat.com,
-        alexander.duyck@gmail.com, saeed@kernel.org,
-        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
-        tirthendu.sarkar@intel.com, toke@redhat.com
-Subject: Re: [PATCH v13 bpf-next 02/18] xdp: introduce flags field in
- xdp_buff/xdp_frame
-Message-ID: <YTd7P/XG/2U8w8/J@lore-desk>
-References: <cover.1631007211.git.lorenzo@kernel.org>
- <980ad3161b9a312510c9fff76fa74e675b8f9bf3.1631007211.git.lorenzo@kernel.org>
- <52c78ca8-a053-2128-05a0-3aff6f84abd1@redhat.com>
+        id S238222AbhIGOuR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Sep 2021 10:50:17 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:15305 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232105AbhIGOuQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Sep 2021 10:50:16 -0400
+Received: from dggeme766-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4H3p6c74wQz8snd;
+        Tue,  7 Sep 2021 22:48:24 +0800 (CST)
+Received: from [10.174.176.245] (10.174.176.245) by
+ dggeme766-chm.china.huawei.com (10.3.19.112) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.8; Tue, 7 Sep 2021 22:48:52 +0800
+Subject: Re: [PATCH v2 0/3] auth_gss: netns refcount leaks when
+ use-gss-proxy==1
+To:     "J. Bruce Fields" <bfields@fieldses.org>,
+        Wenbin Zeng <wenbin.zeng@gmail.com>, <viro@zeniv.linux.org.uk>,
+        <davem@davemloft.net>, <jlayton@kernel.org>,
+        <trond.myklebust@hammerspace.com>, <anna.schumaker@netapp.com>,
+        <wenbinzeng@tencent.com>, <dsahern@gmail.com>,
+        <nicolas.dichtel@6wind.com>, <willy@infradead.org>,
+        <edumazet@google.com>, <jakub.kicinski@netronome.com>,
+        <tyhicks@canonical.com>, <chuck.lever@oracle.com>,
+        <neilb@suse.com>, <linux-fsdevel@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-nfs@vger.kernel.org>
+References: <1556692945-3996-1-git-send-email-wenbinzeng@tencent.com>
+ <1557470163-30071-1-git-send-email-wenbinzeng@tencent.com>
+ <20190515010331.GA3232@fieldses.org>
+ <20190612083755.GA27776@bridge.tencent.com>
+ <20190612155224.GF16331@fieldses.org>
+From:   "wanghai (M)" <wanghai38@huawei.com>
+Message-ID: <2c9e3d91-f4b3-6f6a-0dc0-21cef4fab3bb@huawei.com>
+Date:   Tue, 7 Sep 2021 22:48:52 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="Sdy9MTaWNHDmP6Ag"
-Content-Disposition: inline
-In-Reply-To: <52c78ca8-a053-2128-05a0-3aff6f84abd1@redhat.com>
+In-Reply-To: <20190612155224.GF16331@fieldses.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.245]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggeme766-chm.china.huawei.com (10.3.19.112)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---Sdy9MTaWNHDmP6Ag
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+在 2019/6/12 23:52, J. Bruce Fields 写道:
+> On Wed, Jun 12, 2019 at 04:37:55PM +0800, Wenbin Zeng wrote:
+>> On Tue, May 14, 2019 at 09:03:31PM -0400, J. Bruce Fields wrote:
+>>> Whoops, I was slow to test these.  I'm getting failuring krb5 nfs
+>>> mounts, and the following the server's logs.  Dropping the three patches
+>>> for now.
+>> My bad, I should have found it earlier. Thank you for testing it, Bruce.
+>>
+>> I figured it out, the problem that you saw is due to the following code:
+>> the if-condition is incorrect here because sn->gssp_clnt==NULL doesn't mean
+>> inexistence of 'use-gss-proxy':
+> Thanks, but with the new patches I see the following.  I haven't tried
+> to investigate.
+This patchset adds the nsfs_evict()->netns_evict() code for breaking 
+deadlock bugs that exist, but this may cause double free because 
+nsfs_evict()->netns_evict() may be called multiple times.
 
-> (Minor changes requested below)
->=20
-> On 07/09/2021 14.35, Lorenzo Bianconi wrote:
-> > Introduce flags field in xdp_frame and xdp_buffer data structures
-> > to define additional buffer features. At the moment the only
-> > supported buffer feature is multi-buffer bit (mb). Multi-buffer bit
-> > is used to specify if this is a linear buffer (mb =3D 0) or a multi-buf=
-fer
-> > frame (mb =3D 1). In the latter case the driver is expected to initiali=
-ze
-> > the skb_shared_info structure at the end of the first buffer to link
-> > together subsequent buffers belonging to the same frame.
-> >=20
-> > Acked-by: John Fastabend <john.fastabend@gmail.com>
-> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > ---
-> >   include/net/xdp.h | 29 +++++++++++++++++++++++++++++
-> >   1 file changed, 29 insertions(+)
-> >=20
-> > diff --git a/include/net/xdp.h b/include/net/xdp.h
-> > index ad5b02dcb6f4..ed5ea784fd45 100644
-> > --- a/include/net/xdp.h
-> > +++ b/include/net/xdp.h
-> > @@ -66,6 +66,10 @@ struct xdp_txq_info {
-> >   	struct net_device *dev;
-> >   };
-> > +enum xdp_buff_flags {
-> > +	XDP_FLAGS_MULTI_BUFF	=3D BIT(0), /* non-linear xdp buff */
-> > +};
-> > +
-> >   struct xdp_buff {
-> >   	void *data;
-> >   	void *data_end;
-> > @@ -74,13 +78,30 @@ struct xdp_buff {
-> >   	struct xdp_rxq_info *rxq;
-> >   	struct xdp_txq_info *txq;
-> >   	u32 frame_sz; /* frame size to deduce data_hard_end/reserved tailroo=
-m*/
-> > +	u16 flags; /* supported values defined in xdp_flags */
->                                                   ^^^^^^^^^
-> Variable/enum is named "xdp_buff_flags", but comment says "xdp_flags".
+for example:
 
-ack, I will fix it in v14
+int main()
+{
+     int fd = open("/proc/self/ns/net", O_RDONLY);
+     close(fd);
 
->=20
-> I think we should change flags to use u32, because xdp_buff already conta=
-in
-> 4 byte padding. (pahole output provided as help below)
+     fd = open("/proc/self/ns/net", O_RDONLY);
+     close(fd);
+}
 
-ack, I will fix it in v14
->=20
-> >   };
-> > +static __always_inline bool xdp_buff_is_mb(struct xdp_buff *xdp)
-> > +{
-> > +	return !!(xdp->flags & XDP_FLAGS_MULTI_BUFF);
-> > +}
-> > +
-> > +static __always_inline void xdp_buff_set_mb(struct xdp_buff *xdp)
-> > +{
-> > +	xdp->flags |=3D XDP_FLAGS_MULTI_BUFF;
-> > +}
-> > +
-> > +static __always_inline void xdp_buff_clear_mb(struct xdp_buff *xdp)
-> > +{
-> > +	xdp->flags &=3D ~XDP_FLAGS_MULTI_BUFF;
-> > +}
-> > +
-> >   static __always_inline void
-> >   xdp_init_buff(struct xdp_buff *xdp, u32 frame_sz, struct xdp_rxq_info=
- *rxq)
-> >   {
-> >   	xdp->frame_sz =3D frame_sz;
-> >   	xdp->rxq =3D rxq;
-> > +	xdp->flags =3D 0;
-> >   }
-> >   static __always_inline void
-> > @@ -122,8 +143,14 @@ struct xdp_frame {
-> >   	 */
-> >   	struct xdp_mem_info mem;
-> >   	struct net_device *dev_rx; /* used by cpumap */
-> > +	u16 flags; /* supported values defined in xdp_flags */
->                                                   ^^^^^^^^^
-> Variable/enum is named "xdp_buff_flags", but comment says "xdp_flags".
->=20
-> Here (for xdp_frame) I also think we should change flags to u32, because
-> adding this u16 cause extra padding anyhow. (pahole output provided as he=
-lp
-> below).
+Therefore, the nsfs evict cannot be used to break the deadlock.
 
-ack, I will fix it in v14
->=20
->=20
-> >   };
-> > +static __always_inline bool xdp_frame_is_mb(struct xdp_frame *frame)
-> > +{
-> > +	return !!(frame->flags & XDP_FLAGS_MULTI_BUFF);
-> > +}
-> > +
-> >   #define XDP_BULK_QUEUE_SIZE	16
-> >   struct xdp_frame_bulk {
-> >   	int count;
-> > @@ -180,6 +207,7 @@ void xdp_convert_frame_to_buff(struct xdp_frame *fr=
-ame, struct xdp_buff *xdp)
-> >   	xdp->data_end =3D frame->data + frame->len;
-> >   	xdp->data_meta =3D frame->data - frame->metasize;
-> >   	xdp->frame_sz =3D frame->frame_sz;
-> > +	xdp->flags =3D frame->flags;
-> >   }
-> >   static inline
-> > @@ -206,6 +234,7 @@ int xdp_update_frame_from_buff(struct xdp_buff *xdp,
-> >   	xdp_frame->headroom =3D headroom - sizeof(*xdp_frame);
-> >   	xdp_frame->metasize =3D metasize;
-> >   	xdp_frame->frame_sz =3D xdp->frame_sz;
-> > +	xdp_frame->flags =3D xdp->flags;
-> >   	return 0;
-> >   }
-> >=20
->=20
->=20
->=20
-> Details below... no need to read any further
->=20
-> Investigating struct xdp_frame with pahole:
->=20
-> $ pahole -C xdp_frame net/core/xdp.o
-> struct xdp_frame {
-> 	void *                     data;             /*     0     8 */
-> 	u16                        len;              /*     8     2 */
-> 	u16                        headroom;         /*    10     2 */
-> 	u32                        metasize:8;       /*    12: 0  4 */
-> 	u32                        frame_sz:24;      /*    12: 8  4 */
-> 	struct xdp_mem_info        mem;              /*    16     8 */
-> 	struct net_device *        dev_rx;           /*    24     8 */
->=20
-> 	/* size: 32, cachelines: 1, members: 7 */
-> 	/* last cacheline: 32 bytes */
-> };
->=20
->=20
->  pahole -C xdp_frame net/core/xdp.o
-> struct xdp_frame {
-> 	void *                     data;             /*     0     8 */
-> 	u16                        len;              /*     8     2 */
-> 	u16                        headroom;         /*    10     2 */
-> 	u32                        metasize:8;       /*    12: 0  4 */
-> 	u32                        frame_sz:24;      /*    12: 8  4 */
-> 	struct xdp_mem_info        mem;              /*    16     8 */
-> 	struct net_device *        dev_rx;           /*    24     8 */
-> 	u16                        flags;            /*    32     2 */
->=20
-> 	/* size: 40, cachelines: 1, members: 8 */
-> 	/* padding: 6 */
-> 	/* last cacheline: 40 bytes */
-> };
->=20
->=20
-> $ pahole -C xdp_frame net/core/xdp.o
-> struct xdp_frame {
-> 	void *                     data;             /*     0     8 */
-> 	u16                        len;              /*     8     2 */
-> 	u16                        headroom;         /*    10     2 */
-> 	u32                        metasize:8;       /*    12: 0  4 */
-> 	u32                        frame_sz:24;      /*    12: 8  4 */
-> 	struct xdp_mem_info        mem;              /*    16     8 */
-> 	struct net_device *        dev_rx;           /*    24     8 */
-> 	u32                        flags;            /*    32     4 */
->=20
-> 	/* size: 40, cachelines: 1, members: 8 */
-> 	/* padding: 4 */
-> 	/* last cacheline: 40 bytes */
-> };
->=20
->=20
-> Details for struct xdp_buff, it already contains 4 bytes padding.
->=20
-> $ pahole -C xdp_buff net/core/xdp.o
-> struct xdp_buff {
-> 	void *                     data;             /*     0     8 */
-> 	void *                     data_end;         /*     8     8 */
-> 	void *                     data_meta;        /*    16     8 */
-> 	void *                     data_hard_start;  /*    24     8 */
-> 	struct xdp_rxq_info *      rxq;              /*    32     8 */
-> 	struct xdp_txq_info *      txq;              /*    40     8 */
-> 	u32                        frame_sz;         /*    48     4 */
-> 	u16                        flags;            /*    52     2 */
->=20
-> 	/* size: 56, cachelines: 1, members: 8 */
-> 	/* padding: 2 */
-> 	/* last cacheline: 56 bytes */
-> };
-
-ack, right.
-
-Regards,
-Lorenzo
-
->=20
-
---Sdy9MTaWNHDmP6Ag
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYTd7PAAKCRA6cBh0uS2t
-rBEBAP9tmgIQxl0vUSLVblsDKeUE8sOcZNKkVPb3FGvI9qIkxgD/eWDgeD9Xw4sX
-nMlox64EfRPyAAPvC11PTOeAOo0B/w8=
-=O3aw
------END PGP SIGNATURE-----
-
---Sdy9MTaWNHDmP6Ag--
-
+A large number of netns leaks may cause OOM problems, currently I can't 
+find a good solution to fix it, does anyone have a good idea?
+> --b.
+>
+> [ 2908.134813] ------------[ cut here ]------------
+> [ 2908.135732] name 'use-gss-proxy'
+> [ 2908.136276] WARNING: CPU: 2 PID: 15032 at fs/proc/generic.c:673 remove_proc_entry+0x124/0x190
+> [ 2908.138144] Modules linked in: nfsv4 rpcsec_gss_krb5 nfsv3 nfs_acl nfs lockd grace auth_rpcgss sunrpc
+> [ 2908.140183] CPU: 2 PID: 15032 Comm: (coredump) Not tainted 5.2.0-rc2-00441-gaef575f54640 #2257
+> [ 2908.142062] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.12.0-2.fc30 04/01/2014
+> [ 2908.143756] RIP: 0010:remove_proc_entry+0x124/0x190
+> [ 2908.144519] Code: c3 48 c7 c7 60 24 8b 82 e8 29 16 a5 00 eb d5 48 c7 c7 60 24 8b 82 e8 1b 16 a5 00 4c 89 e6 48 c7 c7 ec 4c 52 82 e8 50 fd db ff <0f> 0b eb b6 48 8b 04 24 83 a8 90 00 00 00 01 e9 78 ff ff ff 4c 89
+> [ 2908.148138] RSP: 0018:ffffc900047bbdb0 EFLAGS: 00010282
+> [ 2908.148945] RAX: 0000000000000000 RBX: ffff888036060580 RCX: 0000000000000000
+> [ 2908.150139] RDX: ffff88807fd24e80 RSI: ffff88807fd165b8 RDI: 00000000ffffffff
+> [ 2908.151334] RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+> [ 2908.152564] R10: 0000000000000000 R11: 0000000000000000 R12: ffffffffa00adb1b
+> [ 2908.153816] R13: 00007ffc8bda5d30 R14: 0000000000000000 R15: ffff88805e2873a8
+> [ 2908.155007] FS:  00007f470bc27e40(0000) GS:ffff88807fd00000(0000) knlGS:0000000000000000
+> [ 2908.156421] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [ 2908.157333] CR2: 0000562b07764c58 CR3: 000000005e8ea001 CR4: 00000000001606e0
+> [ 2908.158529] Call Trace:
+> [ 2908.158796]  destroy_use_gss_proxy_proc_entry+0xb7/0x150 [auth_rpcgss]
+> [ 2908.159966]  gss_svc_shutdown_net+0x11/0x170 [auth_rpcgss]
+> [ 2908.160830]  netns_evict+0x2f/0x40
+> [ 2908.161266]  nsfs_evict+0x27/0x40
+> [ 2908.161685]  evict+0xd0/0x1a0
+> [ 2908.162035]  __dentry_kill+0xdf/0x180
+> [ 2908.162520]  dentry_kill+0x50/0x1c0
+> [ 2908.163005]  ? dput+0x1c/0x2b0
+> [ 2908.163369]  dput+0x260/0x2b0
+> [ 2908.163739]  path_put+0x12/0x20
+> [ 2908.164155]  do_faccessat+0x17c/0x240
+> [ 2908.164643]  do_syscall_64+0x50/0x1c0
+> [ 2908.165170]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> [ 2908.165959] RIP: 0033:0x7f47098e2157
+> [ 2908.166445] Code: 77 01 c3 48 8b 15 69 dd 2c 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 b8 15 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 01 c3 48 8b 15 39 dd 2c 00 f7 d8 64 89 02 b8
+> [ 2908.169994] RSP: 002b:00007ffc8bda5d28 EFLAGS: 00000246 ORIG_RAX: 0000000000000015
+> [ 2908.171315] RAX: ffffffffffffffda RBX: 0000562b0774d979 RCX: 00007f47098e2157
+> [ 2908.172563] RDX: 00007ffc8bda5d3e RSI: 0000000000000000 RDI: 00007ffc8bda5d30
+> [ 2908.173753] RBP: 00007ffc8bda5d70 R08: 0000000000000000 R09: 0000562b07d0b130
+> [ 2908.174943] R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffc8bda5d30
+> [ 2908.176163] R13: 0000562b07b34c80 R14: 0000562b07b35120 R15: 0000000000000000
+> [ 2908.177395] irq event stamp: 4256
+> [ 2908.177835] hardirqs last  enabled at (4255): [<ffffffff811221ee>] console_unlock+0x41e/0x590
+> [ 2908.179378] hardirqs last disabled at (4256): [<ffffffff81001b2f>] trace_hardirqs_off_thunk+0x1a/0x1c
+> [ 2908.181031] softirqs last  enabled at (4252): [<ffffffff820002be>] __do_softirq+0x2be/0x4aa
+> [ 2908.182458] softirqs last disabled at (4233): [<ffffffff810bf8e0>] irq_exit+0x80/0x90
+> [ 2908.183869] ---[ end trace d88132b63efc09d8 ]---
+> [ 2908.184620] BUG: kernel NULL pointer dereference, address: 0000000000000030
+> [ 2908.185829] #PF: supervisor read access in kernel mode
+> [ 2908.186924] #PF: error_code(0x0000) - not-present page
+> [ 2908.187887] PGD 0 P4D 0
+> [ 2908.188318] Oops: 0000 [#1] PREEMPT SMP PTI
+> [ 2908.189254] CPU: 2 PID: 15032 Comm: (coredump) Tainted: G        W         5.2.0-rc2-00441-gaef575f54640 #2257
+> [ 2908.192506] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.12.0-2.fc30 04/01/2014
+> [ 2908.195137] RIP: 0010:__lock_acquire+0x3d2/0x1d90
+> [ 2908.196414] Code: db 48 8b 84 24 88 00 00 00 65 48 33 04 25 28 00 00 00 0f 85 be 10 00 00 48 8d 65 d8 44 89 d8 5b 41 5c 41 5d 41 5e 41 5f 5d c3 <48> 81 3f 60 0d 01 83 41 bb 00 00 00 00 45 0f 45 d8 83 fe 01 0f 87
+> [ 2908.202720] RSP: 0018:ffffc900047bbc80 EFLAGS: 00010002
+> [ 2908.204165] RAX: 0000000000000000 RBX: 0000000000000001 RCX: 0000000000000000
+> [ 2908.206125] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000030
+> [ 2908.208203] RBP: ffffc900047bbd40 R08: 0000000000000001 R09: 0000000000000000
+> [ 2908.210219] R10: 0000000000000001 R11: 0000000000000001 R12: ffff88807ad91500
+> [ 2908.211386] R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000282
+> [ 2908.212532] FS:  00007f470bc27e40(0000) GS:ffff88807fd00000(0000) knlGS:0000000000000000
+> [ 2908.213647] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [ 2908.214400] CR2: 0000000000000030 CR3: 000000005e8ea001 CR4: 00000000001606e0
+> [ 2908.215393] Call Trace:
+> [ 2908.215589]  ? __lock_acquire+0x255/0x1d90
+> [ 2908.216071]  ? clear_gssp_clnt+0x1b/0x50 [auth_rpcgss]
+> [ 2908.216720]  ? __mutex_lock+0x99/0x920
+> [ 2908.217114]  lock_acquire+0x95/0x1b0
+> [ 2908.217484]  ? cache_purge+0x1c/0x110 [sunrpc]
+> [ 2908.218000]  _raw_spin_lock+0x2f/0x40
+> [ 2908.218370]  ? cache_purge+0x1c/0x110 [sunrpc]
+> [ 2908.218882]  cache_purge+0x1c/0x110 [sunrpc]
+> [ 2908.219346]  gss_svc_shutdown_net+0xb8/0x170 [auth_rpcgss]
+> [ 2908.220104]  netns_evict+0x2f/0x40
+> [ 2908.220439]  nsfs_evict+0x27/0x40
+> [ 2908.220786]  evict+0xd0/0x1a0
+> [ 2908.221050]  __dentry_kill+0xdf/0x180
+> [ 2908.221458]  dentry_kill+0x50/0x1c0
+> [ 2908.221842]  ? dput+0x1c/0x2b0
+> [ 2908.222126]  dput+0x260/0x2b0
+> [ 2908.222384]  path_put+0x12/0x20
+> [ 2908.222753]  do_faccessat+0x17c/0x240
+> [ 2908.223125]  do_syscall_64+0x50/0x1c0
+> [ 2908.223479]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> [ 2908.224152] RIP: 0033:0x7f47098e2157
+> [ 2908.224566] Code: 77 01 c3 48 8b 15 69 dd 2c 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 b8 15 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 01 c3 48 8b 15 39 dd 2c 00 f7 d8 64 89 02 b8
+> [ 2908.228198] RSP: 002b:00007ffc8bda5d28 EFLAGS: 00000246 ORIG_RAX: 0000000000000015
+> [ 2908.229496] RAX: ffffffffffffffda RBX: 0000562b0774d979 RCX: 00007f47098e2157
+> [ 2908.230938] RDX: 00007ffc8bda5d3e RSI: 0000000000000000 RDI: 00007ffc8bda5d30
+> [ 2908.232182] RBP: 00007ffc8bda5d70 R08: 0000000000000000 R09: 0000562b07d0b130
+> [ 2908.233481] R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffc8bda5d30
+> [ 2908.234750] R13: 0000562b07b34c80 R14: 0000562b07b35120 R15: 0000000000000000
+> [ 2908.236068] Modules linked in: nfsv4 rpcsec_gss_krb5 nfsv3 nfs_acl nfs lockd grace auth_rpcgss sunrpc
+> [ 2908.237861] CR2: 0000000000000030
+> [ 2908.238277] ---[ end trace d88132b63efc09d9 ]---
