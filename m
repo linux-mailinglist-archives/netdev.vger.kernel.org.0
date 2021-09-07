@@ -2,72 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18DD940296B
-	for <lists+netdev@lfdr.de>; Tue,  7 Sep 2021 15:10:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22F10402975
+	for <lists+netdev@lfdr.de>; Tue,  7 Sep 2021 15:11:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344667AbhIGNLN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Sep 2021 09:11:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37232 "EHLO mail.kernel.org"
+        id S1344702AbhIGNMC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Sep 2021 09:12:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37748 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243976AbhIGNLM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 Sep 2021 09:11:12 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 7910461057;
-        Tue,  7 Sep 2021 13:10:06 +0000 (UTC)
+        id S1344579AbhIGNMB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 Sep 2021 09:12:01 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1BC17610C8;
+        Tue,  7 Sep 2021 13:10:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631020206;
-        bh=xCwlLeM3S/KdjmRtHP6BV82/ufommIMDbF/40He+gkQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Af2G74Y8792N5XcftcR0HXJiBtYtdXTfpdUPi49tFYkXsteg7Fr06NQ/fbsD2OUj/
-         RTYKgBMEaiC/oDaKTubKi3OwAsPpHcMx2Eq85dYOgLWQ54D/9ZJ+KAhuU9pdrpzrrJ
-         XlOMVb4HjlfvQI2uRZhsPZm5b3qt94ti1NynFx30WWRc0uFPV4jZaa60OaoAOCZxiG
-         L7AoroQeBOvba74zoLwhSZlkPfLQEqBwsAax28MhIbnrP8QqtahPC0qcrZMptK7BBm
-         ppcNmC6rtpzCQItYSeocvB8oMVE8GUPgmUUezLs7/KvMGr1ZKnMdrLmETdxDCS5BXr
-         EVSNy17ZohjHg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6E7D1609AB;
-        Tue,  7 Sep 2021 13:10:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1631020255;
+        bh=Rz4hO5BCGbbFRWC2Nk/lcOLcGQGu2pIVCHJHZv8S3Gg=;
+        h=From:To:Cc:Subject:Date:From;
+        b=WKyM1BLcBEz+7Ut1+BSJQqK1I5IO+KSJ9+X/kL0LMyH1bC227Dbkq5bjr+285Ye+J
+         K2TYwcAaxotF1zoc78dAE7KCT1/7lOrmoFo6D7RAErdq63oHgAceg3MxDt4kJMqPr+
+         4Ml3GJf0jxhzH+8l/Nm3t6rb2F8hLpU0ysOqkVmJoICoNKVU4zQTOSAPKDh6G6juS0
+         uxH95HR/fc7OaAibjJJd5PX4ZY0rGGTx7YRJyn6GBwbE9Oy1VKjIRc7p8UyMf3bHrG
+         5xLSQmIRfNVXJtCGr6n1Bd2bUAOK7O8Sdh5XeJh67o6WdIBUcfAdJu46RWHC+bp28+
+         5DstxAJsLOXxw==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Arnd Bergmann <arnd@arndb.de>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Armin Wolf <W_Armin@gmx.de>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] ne2000: fix unused function warning
+Date:   Tue,  7 Sep 2021 15:10:30 +0200
+Message-Id: <20210907131046.117800-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/2] net: stmmac: fix WoL issue
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163102020644.3494.2552562162347505160.git-patchwork-notify@kernel.org>
-Date:   Tue, 07 Sep 2021 13:10:06 +0000
-References: <20210907105647.16068-1-qiangqing.zhang@nxp.com>
-In-Reply-To: <20210907105647.16068-1-qiangqing.zhang@nxp.com>
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
-        mcoquelin.stm32@gmail.com, linux@armlinux.org.uk, andrew@lunn.ch,
-        hkallweit1@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-imx@nxp.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: Arnd Bergmann <arnd@arndb.de>
 
-This series was applied to netdev/net.git (refs/heads/master):
+Geert noticed a warning on MIPS TX49xx:
 
-On Tue,  7 Sep 2021 18:56:45 +0800 you wrote:
-> This patch set fixes stmmac not working after system resume back with WoL
-> active. Thanks a lot for Russell King keeps looking into this issue.
-> 
-> Joakim Zhang (1):
->   net: stmmac: fix MAC not working when system resume back with WoL
->     active
-> 
-> [...]
+drivers/net/ethernet/8390/ne.c:909:20: warning: ‘ne_add_devices’ defined but not used [-Wunused-function]
 
-Here is the summary with links:
-  - [net,1/2] net: phylink: add suspend/resume support
-    https://git.kernel.org/netdev/net/c/f97493657c63
-  - [net,2/2] net: stmmac: fix MAC not working when system resume back with WoL active
-    https://git.kernel.org/netdev/net/c/90702dcd19c0
+Move the function into the #ifdef section that contains its
+only caller.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Fixes: 4228c3942821 ("make legacy ISA probe optional")
+Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/net/ethernet/8390/ne.c | 32 ++++++++++++++++----------------
+ 1 file changed, 16 insertions(+), 16 deletions(-)
 
+diff --git a/drivers/net/ethernet/8390/ne.c b/drivers/net/ethernet/8390/ne.c
+index 53660bc8d6ff..1f7525f55994 100644
+--- a/drivers/net/ethernet/8390/ne.c
++++ b/drivers/net/ethernet/8390/ne.c
+@@ -906,22 +906,6 @@ static struct platform_driver ne_driver = {
+ 	},
+ };
+ 
+-static void __init ne_add_devices(void)
+-{
+-	int this_dev;
+-	struct platform_device *pdev;
+-
+-	for (this_dev = 0; this_dev < MAX_NE_CARDS; this_dev++) {
+-		if (pdev_ne[this_dev])
+-			continue;
+-		pdev = platform_device_register_simple(
+-			DRV_NAME, this_dev, NULL, 0);
+-		if (IS_ERR(pdev))
+-			continue;
+-		pdev_ne[this_dev] = pdev;
+-	}
+-}
+-
+ #ifdef MODULE
+ static int __init ne_init(void)
+ {
+@@ -953,6 +937,22 @@ static int __init ne_init(void)
+ module_init(ne_init);
+ 
+ #ifdef CONFIG_NETDEV_LEGACY_INIT
++static void __init ne_add_devices(void)
++{
++	int this_dev;
++	struct platform_device *pdev;
++
++	for (this_dev = 0; this_dev < MAX_NE_CARDS; this_dev++) {
++		if (pdev_ne[this_dev])
++			continue;
++		pdev = platform_device_register_simple(
++			DRV_NAME, this_dev, NULL, 0);
++		if (IS_ERR(pdev))
++			continue;
++		pdev_ne[this_dev] = pdev;
++	}
++}
++
+ struct net_device * __init ne_probe(int unit)
+ {
+ 	int this_dev;
+-- 
+2.29.2
 
