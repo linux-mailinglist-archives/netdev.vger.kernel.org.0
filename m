@@ -2,105 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD65E402D69
-	for <lists+netdev@lfdr.de>; Tue,  7 Sep 2021 19:06:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7605402D72
+	for <lists+netdev@lfdr.de>; Tue,  7 Sep 2021 19:07:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345391AbhIGRHE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Sep 2021 13:07:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51508 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345076AbhIGRHD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Sep 2021 13:07:03 -0400
-Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65514C061757
-        for <netdev@vger.kernel.org>; Tue,  7 Sep 2021 10:05:57 -0700 (PDT)
-Received: by mail-il1-x134.google.com with SMTP id b4so10765914ilr.11
-        for <netdev@vger.kernel.org>; Tue, 07 Sep 2021 10:05:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=VNjx9C77fxKJjjnMzzRBLz2JIaY+C4dZcQ09RbcNS2Q=;
-        b=cb4FtZ6SBif/ljyw5A0WKK38D5OuY6aF9PnArFV7u9UeRQH3PGA3n0KA9DYXcA2Gg3
-         pEZY9xHIXP5OEY62DM63baGgSNDeLFBrTMNE6nKHz039ovopxXzX9YumNf/gOY1PnbOc
-         f7rsh6BKYwW9WrGMQKJRry61vGU5Div98jdPOUzng2tqsoK6644ascQwk5sDZUN5MjJ3
-         7l3s8uDFDqryyDdZD7jXGtO0gIG0ResuoV3kDI3uboWbNUYKc1OdaOILb96QhW8D0DY5
-         mfmh1SdIZhGnJffpQPY4HGcPUt/OTUYTWmCI+/8XYYGLBOJxThtodWOy5TPqKrjEC2Ip
-         X3kg==
+        id S1345595AbhIGRIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Sep 2021 13:08:06 -0400
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:46512
+        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1345260AbhIGRIF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Sep 2021 13:08:05 -0400
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com [209.85.128.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 3FC554015D
+        for <netdev@vger.kernel.org>; Tue,  7 Sep 2021 17:06:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1631034417;
+        bh=VG0JhmyVLkk6Ofw6jiVRBn2qayN7edeiW2niGR0upjE=;
+        h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:
+         In-Reply-To:Content-Type;
+        b=DW9tvDKCIFDG49oCgdTZGYsao7WHQCFCyDvehY118aOJ24awi4yK43QaQ68ljseDq
+         72WKRLcwYHOujiFHJ428KRFtU8p4aJgGVCzfMIVfQkOq/N+63MdzMob6Qc8GSGyl1q
+         U8PpPEgklRs6+n22GNtH3S4RuyJi90x7jJDqqa1XHwhnsbRzgBKDEO1J4vyhUAktb7
+         r5IxAjGVg0wmgBn+WCGnqu0/2+p+7vLVAEWvm3E9ZKHu2e9kDIAOvoFCREfJRnxQrL
+         vGN1vYKTlRJUN/li7EdJ7gNa50yClNRZElbF8Gjo17bKiGzWZodss00CzcanMb4EqL
+         7Tn8Uu4pHtWqA==
+Received: by mail-wm1-f70.google.com with SMTP id r4-20020a1c4404000000b002e728beb9fbso1448479wma.9
+        for <netdev@vger.kernel.org>; Tue, 07 Sep 2021 10:06:57 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=VNjx9C77fxKJjjnMzzRBLz2JIaY+C4dZcQ09RbcNS2Q=;
-        b=VBfVTCjNailig3VpR8+kM+0MDFX8lidTS9+i5SZGXJIiSLm69YUr2dd8U2xvnk9rZ/
-         61VPO8hhgHQWP1WFw4xEArM2eobySwUH4ji3Di/WAGos2fgqx2KHTLL0MlBLIPK/1kWl
-         EEpsGD7/jCFi8Gl2zghaKFjJaFRawnrV6lEeyio+D22wbhOZlJcwvzSdPyrmvxg22SIy
-         T1OwpLp4NCyLHwrJWbW2d019wVCDRaUqVs7SoCP0B5SkDWm4sD2JGLw7kFWawKsAiwjl
-         jrj3LBnrrKwWKdlRNGGN/d+yhV2ARVn4VJypq8PFj8hDADstJ5DctNOeIQmt1jIBnq/F
-         bJ+Q==
-X-Gm-Message-State: AOAM531GXxEj/Bk/NxylMyqbTdfImBvVZdGIcOs7ybs37u3eUMBP+Ibi
-        K1fa/1/N1Qm+SoqCFL1yvjb45A==
-X-Google-Smtp-Source: ABdhPJx1+EwFVKgQ/KliZy4TFCcJVc/pDh0iExXIRkpUm04sL6u+odLmSXGSHCWly8tuiVi8QVyQgg==
-X-Received: by 2002:a05:6e02:d43:: with SMTP id h3mr12844700ilj.112.1631034356695;
-        Tue, 07 Sep 2021 10:05:56 -0700 (PDT)
-Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id y7sm6051136ilq.57.2021.09.07.10.05.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Sep 2021 10:05:56 -0700 (PDT)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     pkurapat@codeaurora.org, avuyyuru@codeaurora.org,
-        bjorn.andersson@linaro.org, cpratapa@codeaurora.org,
-        subashab@codeaurora.org, evgreen@chromium.org, elder@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net] net: ipa: initialize all filter table slots
-Date:   Tue,  7 Sep 2021 12:05:54 -0500
-Message-Id: <20210907170554.399108-1-elder@linaro.org>
-X-Mailer: git-send-email 2.27.0
+        bh=VG0JhmyVLkk6Ofw6jiVRBn2qayN7edeiW2niGR0upjE=;
+        b=sPWVa4Zj6RF+7O35oT4wWLKJDVU7KeewgUGQmT+DMxSkfg58c/fjtlBWWHSxONUe2l
+         z7uGZdWzQdz8ec93O96nxAXrGEFtLNWU2ToZUDBbyQswPRy8R+mu1Ww7d61hXNFYp+yn
+         sz+oUEklK96+S5DCrM3fRPheLa4Jqjoxcixo4S9NTPw2V1Wbmq3E1LLh0fkH++rUp6fJ
+         dgsfYQy68uPluUykK/kttoJAkGD8BJrLS4sJ7Y4NLSFOqE/dBjRPdUiLLjkJWH96c1WA
+         68HQfbUGRddzZHPiQAl/5X5dr2VEtwXPdyr1TIxnuFsxPc4bELXZ9YV5nY0Km6DNjRgJ
+         e/tg==
+X-Gm-Message-State: AOAM531Wo/+EWZYnTGqWA4goGLm3pvMWfJnIzP/+KoJkRTg6wRQKh/p6
+        1P0pJ1hZiLlXrPff6ueqJq7iIKJvEdBwYEl9ORQcSM23+7geVQFSrF074uobqHnphJvyH3AFiQe
+        p5UxTHGLBFDxds2a5nfR8sDZJmUf+hlszRQ==
+X-Received: by 2002:a05:6000:186:: with SMTP id p6mr20176891wrx.210.1631034416929;
+        Tue, 07 Sep 2021 10:06:56 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzE/K0JY0VlMzZwE0MrSbz25moOxrUCE+1AcR5gJXHm/zeMeF7W8lJAkFYZcpZ3SugSoUEeOg==
+X-Received: by 2002:a05:6000:186:: with SMTP id p6mr20176851wrx.210.1631034416728;
+        Tue, 07 Sep 2021 10:06:56 -0700 (PDT)
+Received: from [192.168.3.211] ([79.98.113.47])
+        by smtp.gmail.com with ESMTPSA id w29sm11722496wra.88.2021.09.07.10.06.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Sep 2021 10:06:56 -0700 (PDT)
+Subject: Re: [PATCH 05/15] nfc: pn533: drop unneeded debug prints
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Krzysztof Opasiak <k.opasiak@samsung.com>,
+        Mark Greer <mgreer@animalcreek.com>,
+        "David S. Miller" <davem@davemloft.net>, linux-nfc@lists.01.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org
+References: <20210907121816.37750-1-krzysztof.kozlowski@canonical.com>
+ <20210907121816.37750-6-krzysztof.kozlowski@canonical.com>
+ <35626061-ff2e-cb01-21ff-87a6f776dc28@canonical.com>
+ <20210907100310.0cdec18b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Message-ID: <f6677c91-30ba-132d-20d2-0ec7edf40025@canonical.com>
+Date:   Tue, 7 Sep 2021 19:06:55 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210907100310.0cdec18b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is an off-by-one problem in ipa_table_init_add(), when
-initializing filter tables.
+On 07/09/2021 19:03, Jakub Kicinski wrote:
+> On Tue, 7 Sep 2021 18:05:25 +0200 Krzysztof Kozlowski wrote:
+>> On 07/09/2021 14:18, Krzysztof Kozlowski wrote:
+>>> ftrace is a preferred and standard way to debug entering and exiting
+>>> functions so drop useless debug prints.
+>>>
+>>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+>>> ---
+>>>  drivers/nfc/pn533/i2c.c   | 1 -
+>>>  drivers/nfc/pn533/pn533.c | 2 --
+>>>  2 files changed, 3 deletions(-)
+>>>
+>>> diff --git a/drivers/nfc/pn533/i2c.c b/drivers/nfc/pn533/i2c.c
+>>> index e6bf8cfe3aa7..91d4a035eb63 100644
+>>> --- a/drivers/nfc/pn533/i2c.c
+>>> +++ b/drivers/nfc/pn533/i2c.c
+>>> @@ -138,7 +138,6 @@ static irqreturn_t pn533_i2c_irq_thread_fn(int irq, void *data)
+>>>  	}
+>>>  
+>>>  	client = phy->i2c_dev;  
+>>
+>> This line should also be removed (reported by kbuild robot).
+>>
+>> I will send a v2.
+> 
+> Dave marked the series as Deferred (although this patch is Changes
+> Requested, I'm guessing you did that, if so please don't change patch
+> states in netdev pw)
 
-In that function, the number of filter table entries is determined
-based on the number of set bits in the filter map.  However that
-count does *not* include the extra "slot" in the filter table that
-holds the filter map itself.  Meanwhile, ipa_table_addr() *does*
-include the filter map in the memory it returns, but because the
-count it's provided doesn't include it, it includes one too few
-table entries.
+Yes, that was me. Sorry for disturbing the process.
 
-Fix this by including the extra slot for the filter map in the count
-computed in ipa_table_init_add().
+>, please hold off:
+> 
+> 
+> # Form letter - net-next is closed
+> 
+> We have already sent the networking pull request for 5.15
+> and therefore net-next is closed for new drivers, features,
+> code refactoring and optimizations. We are currently accepting
+> bug fixes only.
+> 
+> Please repost when net-next reopens after 5.15-rc1 is cut.
+> 
+> Look out for the announcement on the mailing list or check:
+> http://vger.kernel.org/~davem/net-next.html
+> 
+> RFC patches sent for review only are obviously welcome at any time.
 
-Note: ipa_filter_reset_table() does not have this problem; it resets
-filter table entries one by one, but does not overwrite the filter
-bitmap.
+Sure, I'll wait till end of merge window.
 
-Fixes: 2b9feef2b6c2 ("soc: qcom: ipa: filter and routing tables")
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/ipa_table.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ipa/ipa_table.c b/drivers/net/ipa/ipa_table.c
-index 2324e1b93e37d..1da334f54944a 100644
---- a/drivers/net/ipa/ipa_table.c
-+++ b/drivers/net/ipa/ipa_table.c
-@@ -430,7 +430,8 @@ static void ipa_table_init_add(struct gsi_trans *trans, bool filter,
- 	 * table region determines the number of entries it has.
- 	 */
- 	if (filter) {
--		count = hweight32(ipa->filter_map);
-+		/* Include one extra "slot" to hold the filter map itself */
-+		count = 1 + hweight32(ipa->filter_map);
- 		hash_count = hash_mem->size ? count : 0;
- 	} else {
- 		count = mem->size / sizeof(__le64);
--- 
-2.27.0
-
+Best regards,
+Krzysztof
