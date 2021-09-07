@@ -2,232 +2,239 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3A31402776
-	for <lists+netdev@lfdr.de>; Tue,  7 Sep 2021 12:57:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 061B64027A1
+	for <lists+netdev@lfdr.de>; Tue,  7 Sep 2021 13:13:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343787AbhIGK62 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Sep 2021 06:58:28 -0400
-Received: from mail-db8eur05on2043.outbound.protection.outlook.com ([40.107.20.43]:29537
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1343769AbhIGK6W (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 Sep 2021 06:58:22 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Nr9o6kNNlOXt2nskRa+43duVl3qeGSzEhxr7yDnBOgN78oV2c2WdXyZu3VbHPnXRXuei8cjprIQU3KI7bJobs+OAA6ffwQENx37O+ur/rl7Y1Fdet/phoNkDPHWK1VSyMZWrg41x9AzGu4tr1jP4hA1BD7bgeXzoxkNvaIMQX6WNiI2vE+kwQ4c7poVVFwd/3/MMHDxGBQULMrxJgOlqv1rMBI1tgIYh4A6rEyVDRFyvEo6zg68TN2SRNIWAafVAG00AiFnd3ECXsl3AVpTL4P0TxIMlVCc9V7EAR5Y9DOh+xY2OMp6PK6zSGRpaeYNU2TDO+LCi/ykWzkIN+FEwmg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=JwVuoEa3QkcL6Y/Lz52Zn8xRhQklASppkKwvawYnDA4=;
- b=iL571YP4Y+Dknj78IofWFS4h2oWCbTMtVYmewCVSTKzGLYU/5Ag7tGbG12bjkJR73IYGidTHs1BrDrURGw2ZZrD2fq+/8NgNkkqrFI5u0GU727jQmmx4O7IZ2KZHZOK72P0gDx/LhbTIIEMrSqq2PASp3RiS/5SaIJ31PFhMmDWSyo8AENPkewpvR76q2FipVyqYfIDwQfwW45LkgiBfEGe7gA+iAB334WchQVUB4zAx6wOhEks4+DJUeZKGKS9rIvqrbTnCJiQGs96f61zUomRncZLH3l/WvnOmudhgDIEVI/fKUOwiRLzyGooMdaPqjdHUJ5ekQoyyaeVq/b3Bjg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JwVuoEa3QkcL6Y/Lz52Zn8xRhQklASppkKwvawYnDA4=;
- b=b7MCfkbWEL2tkMyjqH3Rsj/s7PqsVJNX1/Sbkfl125M6STa7ng5+P7gO6qezxjb91RTch6smAGiyzhiLpov5gsEYX6+1vbUCFHkTsVBbKstdOHsRI1tgDoGxpapX0GjtluOaxoRkZzwl6Oh5luCSVAZgRmRiYM9d25ruGQrhvk0=
-Authentication-Results: st.com; dkim=none (message not signed)
- header.d=none;st.com; dmarc=none action=none header.from=nxp.com;
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
- by DBAPR04MB7382.eurprd04.prod.outlook.com (2603:10a6:10:1ab::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4478.22; Tue, 7 Sep
- 2021 10:57:14 +0000
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::5d5a:30b0:2bc2:312f]) by DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::5d5a:30b0:2bc2:312f%9]) with mapi id 15.20.4500.014; Tue, 7 Sep 2021
- 10:57:13 +0000
-From:   Joakim Zhang <qiangqing.zhang@nxp.com>
-To:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
-        mcoquelin.stm32@gmail.com, linux@armlinux.org.uk, andrew@lunn.ch,
-        hkallweit1@gmail.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-imx@nxp.com
-Subject: [PATCH net 2/2] net: stmmac: fix MAC not working when system resume back with WoL active
-Date:   Tue,  7 Sep 2021 18:56:47 +0800
-Message-Id: <20210907105647.16068-3-qiangqing.zhang@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210907105647.16068-1-qiangqing.zhang@nxp.com>
-References: <20210907105647.16068-1-qiangqing.zhang@nxp.com>
-Content-Type: text/plain
-X-ClientProxiedBy: SI2P153CA0001.APCP153.PROD.OUTLOOK.COM (2603:1096:4:140::7)
- To DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
+        id S245729AbhIGLO4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Sep 2021 07:14:56 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:19014 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245739AbhIGLOy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Sep 2021 07:14:54 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4H3jGK1cJ0zbmB0;
+        Tue,  7 Sep 2021 19:09:45 +0800 (CST)
+Received: from dggpeml500025.china.huawei.com (7.185.36.35) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.8; Tue, 7 Sep 2021 19:13:45 +0800
+Received: from [10.174.176.117] (10.174.176.117) by
+ dggpeml500025.china.huawei.com (7.185.36.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.8; Tue, 7 Sep 2021 19:13:44 +0800
+Subject: Re: [PATCH bpf] bpf: handle return value of BPF_PROG_TYPE_STRUCT_OPS
+ prog
+To:     <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, <netdev@vger.kernel.org>
+CC:     Martin KaFai Lau <kafai@fb.com>, KP Singh <kpsingh@kernel.org>
+References: <20210901085344.3052333-1-houtao1@huawei.com>
+From:   Hou Tao <houtao1@huawei.com>
+Message-ID: <ff54247f-e1bd-0d8b-51d2-ce0fcfc0731b@huawei.com>
+Date:   Tue, 7 Sep 2021 19:13:44 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (119.31.174.71) by SI2P153CA0001.APCP153.PROD.OUTLOOK.COM (2603:1096:4:140::7) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.1 via Frontend Transport; Tue, 7 Sep 2021 10:57:09 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c8676a61-5373-418f-7689-08d971ee3f5a
-X-MS-TrafficTypeDiagnostic: DBAPR04MB7382:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DBAPR04MB7382F5FEAC769F77120C8EC0E6D39@DBAPR04MB7382.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /sw19x29gMHmlN5hn/Cg98uZZRkPHQzzlUC3X9ygVRfrBrhjDpvMlkQyjcMWY0TPLxm8rOOcu+nih3UXFjkZOKK7cffZ81qJklqw7+FkTnojen9Cebtm6p+1Z2WScX8srB7jaFBur52jGGvIf+gMOyc6C/nNi4IGNWC4RuN1QKhWe6FQrqM/6FUYhVcC72ENsb8bQoyH1Ov/AGSRdZ3ZTP2cnyrPGidOE1Pq3HHSLwAIyOJRovDKZnz9uF1JohUFCROaSdXiIeblfFDAglK4hvG4sbtboQsJxo47iLwpWjupmAUY8ABCDsTwrr6DkGjdJ3KEfzqGuL6FWSsd7EQ4PwPArNpwydb9oLTe3WjzcnbDXRQZlYZ2hv8BqPnYQgNfMHzDkYX6QOMMrg/8+DCmCFzd5nHhgs1LxQ48EWzQhtAs8pc71Aq/xLb5wi65dkZLSLskQ3T7OeCBQdZmDE5jhoU73xZ3PLeLoiVSnfw4FAH5LFrmftWhmVZGRgNNNGHxjE71rmlMLvFHjH2I0I4JqOQfHv0IAv+pDJtwnC2DixqSBb4ofe39HFFcGmzen1F9H5p4Qt3puqw4wgNyg0eWWja2gUm8HhVKyqKblIazbVKrHu132/awmk+C7zP8TRbEaAQhfW0OUHfw1jg1RPkYiRP3yG/Rw+McdPH3JZUV1u8yKvDP7/BZF08sqWCY8xu+R0UMIr3pgyXDUEdsx/8rJ34hba9kdtWCsTEA30VQFLsdXWN/cO/6ihEho70zyHNq/o8TQ55VMUuKR2LVk8laHi/lMSYTZxEZuFQgFvcCf+w=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(376002)(346002)(366004)(396003)(136003)(1076003)(316002)(966005)(186003)(52116002)(8936002)(38100700002)(5660300002)(36756003)(38350700002)(26005)(66946007)(86362001)(4326008)(2616005)(956004)(2906002)(6512007)(6486002)(7416002)(6666004)(83380400001)(6506007)(66476007)(478600001)(66556008)(8676002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?SiOBRrnhV8MaHQ6O0ITdd9Q+q+qsfosdF/jqeM7ng+xy9VlpdSf3TUjwXeDH?=
- =?us-ascii?Q?s3eYWwdaZI7RYPQIKtuDKuzn+A82e8X0vsybcK0uP/gCzOnmT7NinNZIU++E?=
- =?us-ascii?Q?hX2l75mijxT68yT+Ej+qjfcl4iqejswGXuL5QZIE4pm44ikqrIg+S7JaKwqh?=
- =?us-ascii?Q?724Ybbg4/2iEFYo+3ABJwGZ9uFHAcfaEQLdhke+ErQjNGh6DqCoSpmK+/Y87?=
- =?us-ascii?Q?u27glGLtnuRStiJVy/1LN8sXubN2GwzrNeC2vfk9j8Irw5lKh6DtFLmAvtx2?=
- =?us-ascii?Q?F8DPaEjQ8auqYt7n7vy1Bn5OsDKO1nYfd9fq5oVDmgmN5cwVEwNg+TEN9/PJ?=
- =?us-ascii?Q?5YnUP7w1JHUb6+dvuvOzNgItcY+sVQ0KA7UhiTnI4vCDTG5H+uP33lZia9A9?=
- =?us-ascii?Q?0UxRQOjZH3sCgswHlLZJd6j7JgLk5/XXKOBdhikkM5LDykJrmqVIT+fkDkaV?=
- =?us-ascii?Q?Nhds19b1A05583zcLfpt5N4vMFkD58caBk6oOhgD9YTg7JMgpBT8MlDF2g/8?=
- =?us-ascii?Q?zHHsOm65Nf0Jrx7YCzZ4Y5r04L4ATwga9nGEq3fARZ6xgl5zuEkxYq7xJ1Hc?=
- =?us-ascii?Q?/ZisoBsKzyV72jvpd+tDZvtKHM0tuAV7akhrJyqlzGHwPQperfopGE8yoq10?=
- =?us-ascii?Q?k4rupj6YEhAu6DM+BTjosrinZfft9FMRp7ZuPcNlYkZPbvhdeB3/dwKbuJaV?=
- =?us-ascii?Q?34BgcOp3yakx9qgjFo2uznef8MoWMh5gb25N/v7wx0vn/g6zf5T204e3aKp2?=
- =?us-ascii?Q?yiZ8jyxjoZIzy+ZSXtjupsRqrkJdXrzh2+8k27vYi+xo5zL7ymtvsIJ4S+sn?=
- =?us-ascii?Q?jVu/MX60pRAIQIuRJGupXWaEc2Xg8eRsXp1QtEEIS8dN0F5AyLEtRTo04Zqz?=
- =?us-ascii?Q?j/eXoJfvu6CK9zUcmUml9Fw+udm2W7XwLvR0PDOKZJMBoGJtC5W4W31l7KIN?=
- =?us-ascii?Q?ukfmltsueMEmeY7Q1WXo+NM1Olyb7toEygr+eNnPA3ANsRO9p1Avp13mM6uv?=
- =?us-ascii?Q?AayesKo81KFtmzzo42DGwBBvq8KVGixfyWif4klLnnprPTBnfHjxwEjRt6jz?=
- =?us-ascii?Q?6EgafX5EVSFZBkeGcx2yhSDr5as1WAk01X+YQRoI0mYbqF66uGJ2ODFUIuV9?=
- =?us-ascii?Q?VRhdo/eNAnhyGW2RPlAe0Lp8eHT1G1FLwslxj7eGBbBwO/EIqfl7wNs5mWIa?=
- =?us-ascii?Q?q7FTDApRzuXJKZ5I2chIVuzqFDHsyyGs346FGoN1GIwbX8ef/Oh0p2bgL6wy?=
- =?us-ascii?Q?+7fouOtjIWcHpwPoX34/HQGoNWkQYkji6vLQZBEe+qG9KjSnEq/Pc5m8Arkh?=
- =?us-ascii?Q?SCi5NkU2vL1ChCg0+MgH304S?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c8676a61-5373-418f-7689-08d971ee3f5a
-X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Sep 2021 10:57:13.0575
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 4BMvTbTKOan9FrvJ/nhv9ZFBxU93+B3Wu8FvDDFn+EOfo0LDSp9jHWtQETb9xK1QB+9+8LjxH+kQ60rDbS/SCA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR04MB7382
+In-Reply-To: <20210901085344.3052333-1-houtao1@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.174.176.117]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpeml500025.china.huawei.com (7.185.36.35)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We can reproduce this issue with below steps:
-1) enable WoL on the host
-2) host system suspended
-3) remote client send out wakeup packets
-We can see that host system resume back, but can't work, such as ping failed.
+ping ?
 
-After a bit digging, this issue is introduced by the commit 46f69ded988d
-("net: stmmac: Use resolved link config in mac_link_up()"), which use
-the finalised link parameters in mac_link_up() rather than the
-parameters in mac_config().
++cc netdev
 
-There are two scenarios for MAC suspend/resume in STMMAC driver:
-
-1) MAC suspend with WoL inactive, stmmac_suspend() call
-phylink_mac_change() to notify phylink machine that a change in MAC
-state, then .mac_link_down callback would be invoked. Further, it will
-call phylink_stop() to stop the phylink instance. When MAC resume back,
-firstly phylink_start() is called to start the phylink instance, then
-call phylink_mac_change() which will finally trigger phylink machine to
-invoke .mac_config and .mac_link_up callback. All is fine since
-configuration in these two callbacks will be initialized, that means MAC
-can restore the state.
-
-2) MAC suspend with WoL active, phylink_mac_change() will put link
-down, but there is no phylink_stop() to stop the phylink instance, so it
-will link up again, that means .mac_config and .mac_link_up would be
-invoked before system suspended. After system resume back, it will do
-DMA initialization and SW reset which let MAC lost the hardware setting
-(i.e MAC_Configuration register(offset 0x0) is reset). Since link is up
-before system suspended, so .mac_link_up would not be invoked after
-system resume back, lead to there is no chance to initialize the
-configuration in .mac_link_up callback, as a result, MAC can't work any
-longer.
-
-After discussed with Russell King [1], we confirm that phylink framework
-have not take WoL into consideration yet. This patch calls
-phylink_suspend()/phylink_resume() functions which is newly introduced
-by Russell King to fix this issue.
-
-[1] https://lore.kernel.org/netdev/20210901090228.11308-1-qiangqing.zhang@nxp.com/
-
-Fixes: 46f69ded988d ("net: stmmac: Use resolved link config in mac_link_up()")
-Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
----
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 36 +++++++++----------
- 1 file changed, 18 insertions(+), 18 deletions(-)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 97238359e101..ece02b35a6ce 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -7123,8 +7123,6 @@ int stmmac_suspend(struct device *dev)
- 	if (!ndev || !netif_running(ndev))
- 		return 0;
- 
--	phylink_mac_change(priv->phylink, false);
--
- 	mutex_lock(&priv->lock);
- 
- 	netif_device_detach(ndev);
-@@ -7150,14 +7148,6 @@ int stmmac_suspend(struct device *dev)
- 		stmmac_pmt(priv, priv->hw, priv->wolopts);
- 		priv->irq_wake = 1;
- 	} else {
--		mutex_unlock(&priv->lock);
--		rtnl_lock();
--		if (device_may_wakeup(priv->device))
--			phylink_speed_down(priv->phylink, false);
--		phylink_stop(priv->phylink);
--		rtnl_unlock();
--		mutex_lock(&priv->lock);
--
- 		stmmac_mac_set(priv, priv->ioaddr, false);
- 		pinctrl_pm_select_sleep_state(priv->device);
- 		/* Disable clock in case of PWM is off */
-@@ -7171,6 +7161,16 @@ int stmmac_suspend(struct device *dev)
- 
- 	mutex_unlock(&priv->lock);
- 
-+	rtnl_lock();
-+	if (device_may_wakeup(priv->device) && priv->plat->pmt) {
-+		phylink_suspend(priv->phylink, true);
-+	} else {
-+		if (device_may_wakeup(priv->device))
-+			phylink_speed_down(priv->phylink, false);
-+		phylink_suspend(priv->phylink, false);
-+	}
-+	rtnl_unlock();
-+
- 	if (priv->dma_cap.fpesel) {
- 		/* Disable FPE */
- 		stmmac_fpe_configure(priv, priv->ioaddr,
-@@ -7261,13 +7261,15 @@ int stmmac_resume(struct device *dev)
- 			return ret;
- 	}
- 
--	if (!device_may_wakeup(priv->device) || !priv->plat->pmt) {
--		rtnl_lock();
--		phylink_start(priv->phylink);
--		/* We may have called phylink_speed_down before */
--		phylink_speed_up(priv->phylink);
--		rtnl_unlock();
-+	rtnl_lock();
-+	if (device_may_wakeup(priv->device) && priv->plat->pmt) {
-+		phylink_resume(priv->phylink);
-+	} else {
-+		phylink_resume(priv->phylink);
-+		if (device_may_wakeup(priv->device))
-+			phylink_speed_up(priv->phylink);
- 	}
-+	rtnl_unlock();
- 
- 	rtnl_lock();
- 	mutex_lock(&priv->lock);
-@@ -7288,8 +7290,6 @@ int stmmac_resume(struct device *dev)
- 	mutex_unlock(&priv->lock);
- 	rtnl_unlock();
- 
--	phylink_mac_change(priv->phylink, true);
--
- 	netif_device_attach(ndev);
- 
- 	return 0;
--- 
-2.17.1
-
+On 9/1/2021 4:53 PM, Hou Tao wrote:
+> Currently if a function ptr in struct_ops has a return value, its
+> caller will get a random return value from it, because the return
+> value of related BPF_PROG_TYPE_STRUCT_OPS prog is just dropped.
+>
+> So adding a new flag BPF_TRAMP_F_RET_FENTRY_RET to tell bpf trampoline
+> to save and return the return value of struct_ops prog if ret_size of
+> the function ptr is greater than 0. Also restricting the flag to be
+> used alone.
+>
+> Fixes: 85d33df357b6 ("bpf: Introduce BPF_MAP_TYPE_STRUCT_OPS")
+> Signed-off-by: Hou Tao <houtao1@huawei.com>
+> ---
+>  arch/x86/net/bpf_jit_comp.c | 53 ++++++++++++++++++++++++++++---------
+>  include/linux/bpf.h         |  2 ++
+>  kernel/bpf/bpf_struct_ops.c |  7 +++--
+>  3 files changed, 47 insertions(+), 15 deletions(-)
+>
+> diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
+> index 16d76f814e9b..47780844598a 100644
+> --- a/arch/x86/net/bpf_jit_comp.c
+> +++ b/arch/x86/net/bpf_jit_comp.c
+> @@ -1744,7 +1744,7 @@ static void restore_regs(const struct btf_func_model *m, u8 **prog, int nr_args,
+>  }
+>  
+>  static int invoke_bpf_prog(const struct btf_func_model *m, u8 **pprog,
+> -			   struct bpf_prog *p, int stack_size, bool mod_ret)
+> +			   struct bpf_prog *p, int stack_size, bool save_ret)
+>  {
+>  	u8 *prog = *pprog;
+>  	u8 *jmp_insn;
+> @@ -1777,11 +1777,15 @@ static int invoke_bpf_prog(const struct btf_func_model *m, u8 **pprog,
+>  	if (emit_call(&prog, p->bpf_func, prog))
+>  		return -EINVAL;
+>  
+> -	/* BPF_TRAMP_MODIFY_RETURN trampolines can modify the return
+> +	/*
+> +	 * BPF_TRAMP_MODIFY_RETURN trampolines can modify the return
+>  	 * of the previous call which is then passed on the stack to
+>  	 * the next BPF program.
+> +	 *
+> +	 * BPF_TRAMP_FENTRY trampoline may need to return the return
+> +	 * value of BPF_PROG_TYPE_STRUCT_OPS prog.
+>  	 */
+> -	if (mod_ret)
+> +	if (save_ret)
+>  		emit_stx(&prog, BPF_DW, BPF_REG_FP, BPF_REG_0, -8);
+>  
+>  	/* replace 2 nops with JE insn, since jmp target is known */
+> @@ -1828,13 +1832,15 @@ static int emit_cond_near_jump(u8 **pprog, void *func, void *ip, u8 jmp_cond)
+>  }
+>  
+>  static int invoke_bpf(const struct btf_func_model *m, u8 **pprog,
+> -		      struct bpf_tramp_progs *tp, int stack_size)
+> +		      struct bpf_tramp_progs *tp, int stack_size,
+> +		      bool save_ret)
+>  {
+>  	int i;
+>  	u8 *prog = *pprog;
+>  
+>  	for (i = 0; i < tp->nr_progs; i++) {
+> -		if (invoke_bpf_prog(m, &prog, tp->progs[i], stack_size, false))
+> +		if (invoke_bpf_prog(m, &prog, tp->progs[i], stack_size,
+> +				    save_ret))
+>  			return -EINVAL;
+>  	}
+>  	*pprog = prog;
+> @@ -1877,6 +1883,23 @@ static int invoke_bpf_mod_ret(const struct btf_func_model *m, u8 **pprog,
+>  	return 0;
+>  }
+>  
+> +static bool is_valid_bpf_tramp_flags(unsigned int flags)
+> +{
+> +	if ((flags & BPF_TRAMP_F_RESTORE_REGS) &&
+> +	    (flags & BPF_TRAMP_F_SKIP_FRAME))
+> +		return false;
+> +
+> +	/*
+> +	 * BPF_TRAMP_F_RET_FENTRY_RET is only used by bpf_struct_ops,
+> +	 * and it must be used alone.
+> +	 */
+> +	if ((flags & BPF_TRAMP_F_RET_FENTRY_RET) &&
+> +	    (flags & ~BPF_TRAMP_F_RET_FENTRY_RET))
+> +		return false;
+> +
+> +	return true;
+> +}
+> +
+>  /* Example:
+>   * __be16 eth_type_trans(struct sk_buff *skb, struct net_device *dev);
+>   * its 'struct btf_func_model' will be nr_args=2
+> @@ -1949,17 +1972,19 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
+>  	struct bpf_tramp_progs *fmod_ret = &tprogs[BPF_TRAMP_MODIFY_RETURN];
+>  	u8 **branches = NULL;
+>  	u8 *prog;
+> +	bool save_ret;
+>  
+>  	/* x86-64 supports up to 6 arguments. 7+ can be added in the future */
+>  	if (nr_args > 6)
+>  		return -ENOTSUPP;
+>  
+> -	if ((flags & BPF_TRAMP_F_RESTORE_REGS) &&
+> -	    (flags & BPF_TRAMP_F_SKIP_FRAME))
+> +	if (!is_valid_bpf_tramp_flags(flags))
+>  		return -EINVAL;
+>  
+> -	if (flags & BPF_TRAMP_F_CALL_ORIG)
+> -		stack_size += 8; /* room for return value of orig_call */
+> +	/* room for return value of orig_call or fentry prog */
+> +	save_ret = flags & (BPF_TRAMP_F_CALL_ORIG | BPF_TRAMP_F_RET_FENTRY_RET);
+> +	if (save_ret)
+> +		stack_size += 8;
+>  
+>  	if (flags & BPF_TRAMP_F_SKIP_FRAME)
+>  		/* skip patched call instruction and point orig_call to actual
+> @@ -1986,7 +2011,8 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
+>  	}
+>  
+>  	if (fentry->nr_progs)
+> -		if (invoke_bpf(m, &prog, fentry, stack_size))
+> +		if (invoke_bpf(m, &prog, fentry, stack_size,
+> +			       flags & BPF_TRAMP_F_RET_FENTRY_RET))
+>  			return -EINVAL;
+>  
+>  	if (fmod_ret->nr_progs) {
+> @@ -2033,7 +2059,7 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
+>  	}
+>  
+>  	if (fexit->nr_progs)
+> -		if (invoke_bpf(m, &prog, fexit, stack_size)) {
+> +		if (invoke_bpf(m, &prog, fexit, stack_size, false)) {
+>  			ret = -EINVAL;
+>  			goto cleanup;
+>  		}
+> @@ -2053,9 +2079,10 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
+>  			ret = -EINVAL;
+>  			goto cleanup;
+>  		}
+> -		/* restore original return value back into RAX */
+> -		emit_ldx(&prog, BPF_DW, BPF_REG_0, BPF_REG_FP, -8);
+>  	}
+> +	/* restore return value of orig_call or fentry prog back into RAX */
+> +	if (save_ret)
+> +		emit_ldx(&prog, BPF_DW, BPF_REG_0, BPF_REG_FP, -8);
+>  
+>  	EMIT1(0x5B); /* pop rbx */
+>  	EMIT1(0xC9); /* leave */
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index e8e2b0393ca9..85413eb368de 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -553,6 +553,8 @@ struct btf_func_model {
+>   * programs only. Should not be used with normal calls and indirect calls.
+>   */
+>  #define BPF_TRAMP_F_SKIP_FRAME		BIT(2)
+> +/* Return the return value of fentry prog. Only used by bpf_struct_ops. */
+> +#define BPF_TRAMP_F_RET_FENTRY_RET	BIT(3)
+>  
+>  /* Each call __bpf_prog_enter + call bpf_func + call __bpf_prog_exit is ~50
+>   * bytes on x86.  Pick a number to fit into BPF_IMAGE_SIZE / 2
+> diff --git a/kernel/bpf/bpf_struct_ops.c b/kernel/bpf/bpf_struct_ops.c
+> index 70f6fd4fa305..2ce17447fb76 100644
+> --- a/kernel/bpf/bpf_struct_ops.c
+> +++ b/kernel/bpf/bpf_struct_ops.c
+> @@ -367,6 +367,7 @@ static int bpf_struct_ops_map_update_elem(struct bpf_map *map, void *key,
+>  		const struct btf_type *mtype, *ptype;
+>  		struct bpf_prog *prog;
+>  		u32 moff;
+> +		u32 flags;
+>  
+>  		moff = btf_member_bit_offset(t, member) / 8;
+>  		ptype = btf_type_resolve_ptr(btf_vmlinux, member->type, NULL);
+> @@ -430,10 +431,12 @@ static int bpf_struct_ops_map_update_elem(struct bpf_map *map, void *key,
+>  
+>  		tprogs[BPF_TRAMP_FENTRY].progs[0] = prog;
+>  		tprogs[BPF_TRAMP_FENTRY].nr_progs = 1;
+> +		flags = st_ops->func_models[i].ret_size > 0 ?
+> +			BPF_TRAMP_F_RET_FENTRY_RET : 0;
+>  		err = arch_prepare_bpf_trampoline(NULL, image,
+>  						  st_map->image + PAGE_SIZE,
+> -						  &st_ops->func_models[i], 0,
+> -						  tprogs, NULL);
+> +						  &st_ops->func_models[i],
+> +						  flags, tprogs, NULL);
+>  		if (err < 0)
+>  			goto reset_unlock;
+>  
