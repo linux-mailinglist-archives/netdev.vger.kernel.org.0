@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A265E402409
-	for <lists+netdev@lfdr.de>; Tue,  7 Sep 2021 09:21:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A304040240C
+	for <lists+netdev@lfdr.de>; Tue,  7 Sep 2021 09:21:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240324AbhIGHVU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Sep 2021 03:21:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57494 "EHLO
+        id S241129AbhIGHVZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Sep 2021 03:21:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239792AbhIGHVK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Sep 2021 03:21:10 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57FF4C061796;
-        Tue,  7 Sep 2021 00:20:04 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id n14-20020a05600c3b8e00b002f8bd2f8ab6so987624wms.5;
-        Tue, 07 Sep 2021 00:20:04 -0700 (PDT)
+        with ESMTP id S240031AbhIGHVL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Sep 2021 03:21:11 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D20FEC061575;
+        Tue,  7 Sep 2021 00:20:05 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id g16so907768wrb.3;
+        Tue, 07 Sep 2021 00:20:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=sxkrSYD9cgbDYCmPJ3kUKrpYLNcLTg8gLS7WNJCmpuA=;
-        b=gIka95ViF4uxeTGQNA8iWtKTpxg2UsrQzGQ9sImr2Z/Q8yClsunHt0cI87H23rdOP2
-         UW/bqaGpSWYHQ+sFxac+RrA654oapp1axe9s0ZcLPY5jZRnN9kPYre1ppr11YOQrQDj8
-         UhN6KdTeL8bWejKwH8miChXmpwAyLTMgY3OzC86UlHAIekDsXFqLyFdnq7SwRI/QERo6
-         TZgi8UTo837o94eISh4VDLiLigfEOX6qNrQZdhLYn5edYe7kjp0RKh3WOQE/xq9xMlA3
-         tQjeNQxSt1LWB0X282lmFXQoaig5rr5Dk5TGcfUT/ho956egEV8A/7HGGeCzljgo5cWs
-         0cFg==
+        bh=F6ztmsfCuyf/euy3NnBbv+85iaiLweq/gL4Cay2GcwU=;
+        b=UrepSu6u7XLCqk4FtouQaRlbPc3BRW8f26PCZeUiix7VZ+Qjp6p5gwg6rzQAi9XTg7
+         ExFR4LPd3UiFk3BjTfubGeXdXJJo1O+Rv9TIUvKM1BUASuWkgHnACdJouRQsC8EA0fS1
+         STwfNM57wgsMsXMLvL2oAU5emd7zWIcH5hbEYpsiJxQQdR/DV+S5mSpGvug4PaAY+tmj
+         38Yo4vSjUJkX2tKuxV+59JrEHEXuUd8PPZWsjno+XMET2/IX3ZL7VC0fs8kfVs28YhpX
+         TC0kNKHS7UmQZ8zP5zHKO6OrctlCP6uwOTK80ri0EZho9n6NCFCygRvVdwW8OS02rDQq
+         wHFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=sxkrSYD9cgbDYCmPJ3kUKrpYLNcLTg8gLS7WNJCmpuA=;
-        b=EnsepqxEKzONiqGIWjHDQKqXVtLB37C+blHTLnswP3zmgxTW2kTBKSOkh86txRYTcW
-         /fywoEFSR17vVo1Y/jkLi2aE6yONPf4Lvzurzuh3reyvmZdoELyNMVGc9o4YDVKuVyAR
-         CH3AY75dysZH/pbZILnUzGPJfATeHL72+IeAQPOprdqKRo33ewSOyznRVwZlP+PHUcPG
-         4E2IO11j2QuZtqdD9a35qcqNLRch2AonlTm168FOT9+fbsIVGhQWFbyAaREKjFcSiQig
-         7HPdVyklP6E7POEcgnliK8UxmcGsFP2pcqclVGOxgamRqjgIYxWsZ+uqtuMs6LP/maS3
-         w8Cg==
-X-Gm-Message-State: AOAM530xnCoJbYevO54izrWXFxfOBgbR0mccIXWWw+/+fdO4KR96mjCF
-        dfI+P0MucM1fn8AJlIcdZIk=
-X-Google-Smtp-Source: ABdhPJy36tCGZ9KWhWOEgloj8u8OcW2PWjfC3kKQR5eYAhPrpCrxBx6lTFgpuLOoIDupiBBKB5ThiA==
-X-Received: by 2002:a7b:c1cf:: with SMTP id a15mr2443424wmj.85.1630999202977;
-        Tue, 07 Sep 2021 00:20:02 -0700 (PDT)
+        bh=F6ztmsfCuyf/euy3NnBbv+85iaiLweq/gL4Cay2GcwU=;
+        b=KNPjnXgR+vmdilWB78mwmWAcgm9SkTTsjiXnD2V/iSQtwjv9vonMtB1DGGodL3QbYu
+         sMHbcoDB+zdaxU0UFEv1AjI+AIQQJcamHz9p3KtE3D3H6JWwKiLnFEVCM+yS3/7AhL3W
+         GSj7Zp3kgbP64hSv5YlfkX87upu6YwdjB+QsGaece0zIKg35t8XXJJPu8VOYnZvDO0lB
+         Vv86OqdKWkMA4SimHwBcITqn2gZL744KzuB2ZNFML7qIaxUA31PUpN0Cc9Eod4hsFpP7
+         iU9AgVEty46FIP8kjX/9QVGAwiMNBuchX6GIJRD10WCzttFSzSKnWwLc1RK/O9mYWx3O
+         1LsA==
+X-Gm-Message-State: AOAM531MWYe3a6SLn4h9x3RSmI7/itdEhK6sx5frY3eojU7kTujwYt2a
+        Z/NSIsjZL1qfLY4BFXRpGcU=
+X-Google-Smtp-Source: ABdhPJxQqaEwvVb4XOpnUp29Z4O1AbvvJN5pNisBlfJQXQ8XoKyBGtdfF1x/YZJ7s0SNkQRri9BVJQ==
+X-Received: by 2002:adf:ea0c:: with SMTP id q12mr17519935wrm.392.1630999204451;
+        Tue, 07 Sep 2021 00:20:04 -0700 (PDT)
 Received: from localhost.localdomain (h-46-59-47-246.A165.priv.bahnhof.se. [46.59.47.246])
-        by smtp.gmail.com with ESMTPSA id k16sm722941wrd.47.2021.09.07.00.20.01
+        by smtp.gmail.com with ESMTPSA id k16sm722941wrd.47.2021.09.07.00.20.03
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 07 Sep 2021 00:20:02 -0700 (PDT)
+        Tue, 07 Sep 2021 00:20:04 -0700 (PDT)
 From:   Magnus Karlsson <magnus.karlsson@gmail.com>
 To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
         daniel@iogearbox.net, netdev@vger.kernel.org,
         maciej.fijalkowski@intel.com
 Cc:     jonathan.lemon@gmail.com, ciara.loftus@intel.com,
         bpf@vger.kernel.org, yhs@fb.com, andrii@kernel.org
-Subject: [PATCH bpf-next v2 09/20] selftests: xsk: introduce rx_on and tx_on in ifobject
-Date:   Tue,  7 Sep 2021 09:19:17 +0200
-Message-Id: <20210907071928.9750-10-magnus.karlsson@gmail.com>
+Subject: [PATCH bpf-next v2 10/20] selftests: xsk: replace second_step global variable
+Date:   Tue,  7 Sep 2021 09:19:18 +0200
+Message-Id: <20210907071928.9750-11-magnus.karlsson@gmail.com>
 X-Mailer: git-send-email 2.29.0
 In-Reply-To: <20210907071928.9750-1-magnus.karlsson@gmail.com>
 References: <20210907071928.9750-1-magnus.karlsson@gmail.com>
@@ -67,145 +67,236 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Introduce rx_on and tx_on in the ifobject so that we can describe if
-the thread should create a socket with only tx, rx, or both. This
-eliminates some test specific if statements from the code. We can also
-eliminate the flow vector structure now as this is fully specified
-by the tx_on and rx_on variables.
+Replace the second_step global variable with a test specification
+variable called total_steps that a test can be set to indicate how
+many times the packet stream should be sent without reinitializing any
+sockets. This eliminates test specific code in the test runner around
+the bidirectional test.
+
+The total_steps variable is 1 by default as most tests only need a
+single round of packets.
 
 Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 ---
- tools/testing/selftests/bpf/xdpxceiver.c | 34 ++++++++++--------------
- tools/testing/selftests/bpf/xdpxceiver.h | 10 ++-----
- 2 files changed, 16 insertions(+), 28 deletions(-)
+ tools/testing/selftests/bpf/xdpxceiver.c | 77 +++++++++++-------------
+ tools/testing/selftests/bpf/xdpxceiver.h |  4 +-
+ 2 files changed, 36 insertions(+), 45 deletions(-)
 
 diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
-index 9a98c45933c5..a896d5845c0e 100644
+index a896d5845c0e..0a3e28c9e2a9 100644
 --- a/tools/testing/selftests/bpf/xdpxceiver.c
 +++ b/tools/testing/selftests/bpf/xdpxceiver.c
-@@ -278,14 +278,8 @@ static int xsk_configure_socket(struct xsk_socket_info *xsk, struct xsk_umem_inf
- 	cfg.xdp_flags = xdp_flags;
- 	cfg.bind_flags = xdp_bind_flags;
+@@ -408,6 +408,8 @@ static void __test_spec_init(struct test_spec *test, struct ifobject *ifobj_tx,
  
--	if (test_type != TEST_TYPE_BIDI) {
--		rxr = (ifobject->fv.vector == rx) ? &xsk->rx : NULL;
--		txr = (ifobject->fv.vector == tx) ? &xsk->tx : NULL;
--	} else {
--		rxr = &xsk->rx;
--		txr = &xsk->tx;
--	}
--
-+	txr = ifobject->tx_on ? &xsk->tx : NULL;
-+	rxr = ifobject->rx_on ? &xsk->rx : NULL;
- 	return xsk_socket__create(&xsk->xsk, ifobject->ifname, qid, umem->umem, rxr, txr, &cfg);
+ 	test->ifobj_tx = ifobj_tx;
+ 	test->ifobj_rx = ifobj_rx;
++	test->current_step = 0;
++	test->total_steps = 1;
  }
  
-@@ -395,10 +389,13 @@ static void __test_spec_init(struct test_spec *test, struct ifobject *ifobj_tx,
- 		ifobj->xsk = &ifobj->xsk_arr[0];
- 		ifobj->use_poll = false;
- 
--		if (i == tx)
--			ifobj->fv.vector = tx;
--		else
--			ifobj->fv.vector = rx;
-+		if (i == 0) {
-+			ifobj->rx_on = false;
-+			ifobj->tx_on = true;
-+		} else {
-+			ifobj->rx_on = true;
-+			ifobj->tx_on = false;
-+		}
- 
- 		for (j = 0; j < MAX_SOCKETS; j++) {
- 			memset(&ifobj->umem_arr[j], 0, sizeof(ifobj->umem_arr[j]));
-@@ -923,14 +920,10 @@ static void testapp_teardown(struct test_spec *test)
- static void swap_directions(struct ifobject **ifobj1, struct ifobject **ifobj2)
- {
- 	thread_func_t tmp_func_ptr = (*ifobj1)->func_ptr;
--	enum fvector tmp_vector = (*ifobj1)->fv.vector;
- 	struct ifobject *tmp_ifobj = (*ifobj1);
- 
- 	(*ifobj1)->func_ptr = (*ifobj2)->func_ptr;
--	(*ifobj1)->fv.vector = (*ifobj2)->fv.vector;
--
- 	(*ifobj2)->func_ptr = tmp_func_ptr;
--	(*ifobj2)->fv.vector = tmp_vector;
- 
- 	*ifobj1 = *ifobj2;
- 	*ifobj2 = tmp_ifobj;
-@@ -939,6 +932,8 @@ static void swap_directions(struct ifobject **ifobj1, struct ifobject **ifobj2)
- static void testapp_bidi(struct test_spec *test)
- {
- 	test_spec_set_name(test, "BIDIRECTIONAL");
-+	test->ifobj_tx->rx_on = true;
-+	test->ifobj_rx->tx_on = true;
- 	for (int i = 0; i < MAX_BIDI_ITER; i++) {
- 		print_verbose("Creating socket\n");
- 		testapp_validate_traffic(test);
-@@ -1012,7 +1007,7 @@ static void testapp_stats(struct test_spec *test)
- 
- static void init_iface(struct ifobject *ifobj, const char *dst_mac, const char *src_mac,
- 		       const char *dst_ip, const char *src_ip, const u16 dst_port,
--		       const u16 src_port, enum fvector vector, thread_func_t func_ptr)
-+		       const u16 src_port, thread_func_t func_ptr)
- {
- 	struct in_addr ip;
- 
-@@ -1028,7 +1023,6 @@ static void init_iface(struct ifobject *ifobj, const char *dst_mac, const char *
- 	ifobj->dst_port = dst_port;
- 	ifobj->src_port = src_port;
- 
--	ifobj->fv.vector = vector;
- 	ifobj->func_ptr = func_ptr;
- }
- 
-@@ -1144,9 +1138,9 @@ int main(int argc, char **argv)
- 		ksft_exit_xfail();
+ static void test_spec_init(struct test_spec *test, struct ifobject *ifobj_tx,
+@@ -713,7 +715,7 @@ static bool rx_stats_are_valid(struct ifobject *ifobject)
+ 	optlen = sizeof(stats);
+ 	err = getsockopt(fd, SOL_XDP, XDP_STATISTICS, &stats, &optlen);
+ 	if (err) {
+-		ksft_test_result_fail("ERROR: [%s] getsockopt(XDP_STATISTICS) error %u %s\n",
++		ksft_test_result_fail("ERROR Rx: [%s] getsockopt(XDP_STATISTICS) error %u %s\n",
+ 				      __func__, -err, strerror(-err));
+ 		return true;
  	}
+@@ -754,7 +756,7 @@ static void tx_stats_validate(struct ifobject *ifobject)
+ 	optlen = sizeof(stats);
+ 	err = getsockopt(fd, SOL_XDP, XDP_STATISTICS, &stats, &optlen);
+ 	if (err) {
+-		ksft_test_result_fail("ERROR: [%s] getsockopt(XDP_STATISTICS) error %u %s\n",
++		ksft_test_result_fail("ERROR Tx: [%s] getsockopt(XDP_STATISTICS) error %u %s\n",
+ 				      __func__, -err, strerror(-err));
+ 		return;
+ 	}
+@@ -766,12 +768,13 @@ static void tx_stats_validate(struct ifobject *ifobject)
+ 			      __func__, stats.tx_invalid_descs, ifobject->pkt_stream->nb_pkts);
+ }
  
--	init_iface(ifobj_tx, MAC1, MAC2, IP1, IP2, UDP_PORT1, UDP_PORT2, tx,
-+	init_iface(ifobj_tx, MAC1, MAC2, IP1, IP2, UDP_PORT1, UDP_PORT2,
- 		   worker_testapp_validate_tx);
--	init_iface(ifobj_rx, MAC2, MAC1, IP2, IP1, UDP_PORT2, UDP_PORT1, rx,
-+	init_iface(ifobj_rx, MAC2, MAC1, IP2, IP1, UDP_PORT2, UDP_PORT1,
- 		   worker_testapp_validate_rx);
+-static void thread_common_ops(struct ifobject *ifobject, void *bufs)
++static void thread_common_ops(struct test_spec *test, struct ifobject *ifobject)
+ {
+ 	u64 umem_sz = ifobject->umem->num_frames * ifobject->umem->frame_size;
+ 	int mmap_flags = MAP_PRIVATE | MAP_ANONYMOUS | MAP_NORESERVE;
+ 	size_t mmap_sz = umem_sz;
+ 	int ctr = 0, ret;
++	void *bufs;
  
- 	ksft_set_plan(TEST_MODE_MAX * TEST_TYPE_MAX);
+ 	ifobject->ns_fd = switch_namespace(ifobject->nsname);
+ 
+@@ -813,26 +816,19 @@ static void thread_common_ops(struct ifobject *ifobject, void *bufs)
+ 	ifobject->xsk = &ifobject->xsk_arr[0];
+ }
+ 
+-static bool testapp_is_test_two_stepped(void)
+-{
+-	return (test_type != TEST_TYPE_BIDI && test_type != TEST_TYPE_BPF_RES) || second_step;
+-}
+-
+ static void testapp_cleanup_xsk_res(struct ifobject *ifobj)
+ {
+-	if (testapp_is_test_two_stepped()) {
+-		xsk_socket__delete(ifobj->xsk->xsk);
+-		(void)xsk_umem__delete(ifobj->umem->umem);
+-	}
++	xsk_socket__delete(ifobj->xsk->xsk);
++	xsk_umem__delete(ifobj->umem->umem);
+ }
+ 
+ static void *worker_testapp_validate_tx(void *arg)
+ {
+-	struct ifobject *ifobject = (struct ifobject *)arg;
+-	void *bufs = NULL;
++	struct test_spec *test = (struct test_spec *)arg;
++	struct ifobject *ifobject = test->ifobj_tx;
+ 
+-	if (!second_step)
+-		thread_common_ops(ifobject, bufs);
++	if (test->current_step == 1)
++		thread_common_ops(test, ifobject);
+ 
+ 	print_verbose("Sending %d packets on interface %s\n", ifobject->pkt_stream->nb_pkts,
+ 		      ifobject->ifname);
+@@ -841,18 +837,19 @@ static void *worker_testapp_validate_tx(void *arg)
+ 	if (stat_test_type == STAT_TEST_TX_INVALID)
+ 		tx_stats_validate(ifobject);
+ 
+-	testapp_cleanup_xsk_res(ifobject);
++	if (test->total_steps == test->current_step)
++		testapp_cleanup_xsk_res(ifobject);
+ 	pthread_exit(NULL);
+ }
+ 
+ static void *worker_testapp_validate_rx(void *arg)
+ {
+-	struct ifobject *ifobject = (struct ifobject *)arg;
++	struct test_spec *test = (struct test_spec *)arg;
++	struct ifobject *ifobject = test->ifobj_rx;
+ 	struct pollfd fds[MAX_SOCKS] = { };
+-	void *bufs = NULL;
+ 
+-	if (!second_step)
+-		thread_common_ops(ifobject, bufs);
++	if (test->current_step == 1)
++		thread_common_ops(test, ifobject);
+ 
+ 	if (stat_test_type != STAT_TEST_RX_FILL_EMPTY)
+ 		xsk_populate_fill_ring(ifobject->umem);
+@@ -871,7 +868,8 @@ static void *worker_testapp_validate_rx(void *arg)
+ 	if (test_type == TEST_TYPE_TEARDOWN)
+ 		print_verbose("Destroying socket\n");
+ 
+-	testapp_cleanup_xsk_res(ifobject);
++	if (test->total_steps == test->current_step)
++		testapp_cleanup_xsk_res(ifobject);
+ 	pthread_exit(NULL);
+ }
+ 
+@@ -891,16 +889,17 @@ static void testapp_validate_traffic(struct test_spec *test)
+ 		pkt_stream = pkt_stream_generate(test->ifobj_tx->umem, DEFAULT_PKT_CNT, PKT_SIZE);
+ 	ifobj_tx->pkt_stream = pkt_stream;
+ 	ifobj_rx->pkt_stream = pkt_stream;
++	test->current_step++;
+ 
+ 	/*Spawn RX thread */
+-	pthread_create(&t0, NULL, ifobj_rx->func_ptr, ifobj_rx);
++	pthread_create(&t0, NULL, ifobj_rx->func_ptr, test);
+ 
+ 	pthread_barrier_wait(&barr);
+ 	if (pthread_barrier_destroy(&barr))
+ 		exit_with_error(errno);
+ 
+ 	/*Spawn TX thread */
+-	pthread_create(&t1, NULL, ifobj_tx->func_ptr, ifobj_tx);
++	pthread_create(&t1, NULL, ifobj_tx->func_ptr, test);
+ 
+ 	pthread_join(t1, NULL);
+ 	pthread_join(t0, NULL);
+@@ -934,15 +933,12 @@ static void testapp_bidi(struct test_spec *test)
+ 	test_spec_set_name(test, "BIDIRECTIONAL");
+ 	test->ifobj_tx->rx_on = true;
+ 	test->ifobj_rx->tx_on = true;
+-	for (int i = 0; i < MAX_BIDI_ITER; i++) {
+-		print_verbose("Creating socket\n");
+-		testapp_validate_traffic(test);
+-		if (!second_step) {
+-			print_verbose("Switching Tx/Rx vectors\n");
+-			swap_directions(&test->ifobj_rx, &test->ifobj_tx);
+-		}
+-		second_step = true;
+-	}
++	test->total_steps = 2;
++	testapp_validate_traffic(test);
++
++	print_verbose("Switching Tx/Rx vectors\n");
++	swap_directions(&test->ifobj_rx, &test->ifobj_tx);
++	testapp_validate_traffic(test);
+ 
+ 	swap_directions(&test->ifobj_rx, &test->ifobj_tx);
+ }
+@@ -961,16 +957,12 @@ static void swap_xsk_resources(struct ifobject *ifobj_tx, struct ifobject *ifobj
+ 
+ static void testapp_bpf_res(struct test_spec *test)
+ {
+-	int i;
+-
+ 	test_spec_set_name(test, "BPF_RES");
+-	for (i = 0; i < MAX_BPF_ITER; i++) {
+-		print_verbose("Creating socket\n");
+-		testapp_validate_traffic(test);
+-		if (!second_step)
+-			swap_xsk_resources(test->ifobj_tx, test->ifobj_rx);
+-		second_step = true;
+-	}
++	test->total_steps = 2;
++	testapp_validate_traffic(test);
++
++	swap_xsk_resources(test->ifobj_tx, test->ifobj_rx);
++	testapp_validate_traffic(test);
+ }
+ 
+ static void testapp_stats(struct test_spec *test)
+@@ -1032,7 +1024,6 @@ static void run_pkt_test(struct test_spec *test, int mode, int type)
+ 
+ 	/* reset defaults after potential previous test */
+ 	xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
+-	second_step = 0;
+ 	stat_test_type = -1;
+ 
+ 	configured_mode = mode;
 diff --git a/tools/testing/selftests/bpf/xdpxceiver.h b/tools/testing/selftests/bpf/xdpxceiver.h
-index e02a4dd71bfb..03ff52897d7b 100644
+index 03ff52897d7b..ea505a4cb8c0 100644
 --- a/tools/testing/selftests/bpf/xdpxceiver.h
 +++ b/tools/testing/selftests/bpf/xdpxceiver.h
-@@ -100,13 +100,6 @@ struct xsk_socket_info {
- 	u32 rxqsize;
+@@ -24,7 +24,6 @@
+ #define MAX_SOCKETS 2
+ #define MAX_TEST_NAME_SIZE 32
+ #define MAX_TEARDOWN_ITER 10
+-#define MAX_BIDI_ITER 2
+ #define MAX_BPF_ITER 2
+ #define PKT_HDR_SIZE (sizeof(struct ethhdr) + sizeof(struct iphdr) + \
+ 			sizeof(struct udphdr))
+@@ -72,7 +71,6 @@ enum stat_test_type {
+ 
+ static int configured_mode;
+ static bool opt_pkt_dump;
+-static bool second_step;
+ static int test_type;
+ 
+ static bool opt_verbose;
+@@ -137,6 +135,8 @@ struct ifobject {
+ struct test_spec {
+ 	struct ifobject *ifobj_tx;
+ 	struct ifobject *ifobj_rx;
++	u16 total_steps;
++	u16 current_step;
+ 	char name[MAX_TEST_NAME_SIZE];
  };
  
--struct flow_vector {
--	enum fvector {
--		tx,
--		rx,
--	} vector;
--};
--
- struct pkt {
- 	u64 addr;
- 	u32 len;
-@@ -127,7 +120,6 @@ struct ifobject {
- 	struct xsk_socket_info *xsk_arr;
- 	struct xsk_umem_info *umem;
- 	struct xsk_umem_info *umem_arr;
--	struct flow_vector fv;
- 	thread_func_t func_ptr;
- 	struct pkt_stream *pkt_stream;
- 	int ns_fd;
-@@ -135,6 +127,8 @@ struct ifobject {
- 	u32 src_ip;
- 	u16 src_port;
- 	u16 dst_port;
-+	bool tx_on;
-+	bool rx_on;
- 	bool use_poll;
- 	u8 dst_mac[ETH_ALEN];
- 	u8 src_mac[ETH_ALEN];
 -- 
 2.29.0
 
