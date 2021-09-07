@@ -2,223 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 48A014029E4
-	for <lists+netdev@lfdr.de>; Tue,  7 Sep 2021 15:40:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72F16402A03
+	for <lists+netdev@lfdr.de>; Tue,  7 Sep 2021 15:44:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344787AbhIGNlf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Sep 2021 09:41:35 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:48030 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1344752AbhIGNlc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Sep 2021 09:41:32 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1631022026;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kEyxhXA1nsSl2HrxYLUrYbEDotEGx7xbkdxp8TfXNp4=;
-        b=are75rjXMhIRC8Y5htZW2/+90RCOl76RRc8Dw8YNQ1Pv8JAAZa9DLNXIi6eAwegjhbFGB1
-        qdcjfuUmyq2ERD2/gqle6yQOLlOESExsKMjfkA/zJh/N3sf2q2cYNYFg3Q88Dky85YqC21
-        sL0EUuUq3z5zeG43oYVDL05GSOfQ1MM=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-34-babRN1ZVM0GtagubcCIO1g-1; Tue, 07 Sep 2021 09:40:25 -0400
-X-MC-Unique: babRN1ZVM0GtagubcCIO1g-1
-Received: by mail-wr1-f69.google.com with SMTP id z16-20020adfdf90000000b00159083b5966so2111674wrl.23
-        for <netdev@vger.kernel.org>; Tue, 07 Sep 2021 06:40:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:cc:subject:to:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=kEyxhXA1nsSl2HrxYLUrYbEDotEGx7xbkdxp8TfXNp4=;
-        b=qo6uHZYjl+O5iMaaercT5/kI+rdQ0XQDeQ+uek5YNsrhXzeZ0IwrJXPlD1SUNZfVcD
-         RHD/uwGPNG7sjKGp1uStRB2MS7HAXPDFSOKA0nkRA3UHFkXkswNe6Yp3Rnbu8PaZVszE
-         oPzdq8zQ7TtcW6XKeFYl02w25RAEwmP+jlQFrrRKTVRSbQ/2tW1403c7qlkUeox1sYog
-         EbrrA98kJVbtxtZKEO1FYsekgIQUTQlPsuzgn9QaDbtsOXuAZW6gK6rgd36l9PSyhIe4
-         H61nzzMgC03sSkYsEe1/S7eGbSIYYloE1MawpNQ0IgUBqOF3zNw97McwS9EHyCz/+IbQ
-         TG3A==
-X-Gm-Message-State: AOAM532VQGhOtD3C1n/ne7SYryJp7m+YTouCCwdalKBczEtq0EI7S5Kt
-        HGQ7K7pkQPeZNyUHYj2XCWXC3W92MseVS65hi+xZBx7sNSFJ7VPIdgVcCuz67s2PbSZWHpiqyJM
-        4r2JitB0oo4m0XuXo
-X-Received: by 2002:adf:9d47:: with SMTP id o7mr19321788wre.50.1631022023951;
-        Tue, 07 Sep 2021 06:40:23 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJypAJsoHicvmpgSyeJ8s5Au9SMTzDbIHPNihwTKs68MFHt48z6xj4j3BJhBVirF1LdYtzA9rg==
-X-Received: by 2002:adf:9d47:: with SMTP id o7mr19321755wre.50.1631022023734;
-        Tue, 07 Sep 2021 06:40:23 -0700 (PDT)
-Received: from [192.168.42.238] (3-14-107-185.static.kviknet.dk. [185.107.14.3])
-        by smtp.gmail.com with ESMTPSA id s13sm2382832wmc.47.2021.09.07.06.40.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Sep 2021 06:40:23 -0700 (PDT)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     brouer@redhat.com, lorenzo.bianconi@redhat.com,
-        davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, shayagr@amazon.com, john.fastabend@gmail.com,
-        dsahern@kernel.org, echaudro@redhat.com, jasowang@redhat.com,
-        alexander.duyck@gmail.com, saeed@kernel.org,
-        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
-        tirthendu.sarkar@intel.com, toke@redhat.com
-Subject: Re: [PATCH v13 bpf-next 05/18] net: xdp: add
- xdp_update_skb_shared_info utility routine
-To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <cover.1631007211.git.lorenzo@kernel.org>
- <f46a84381037e76ff0e812abd77a0670d0d14767.1631007211.git.lorenzo@kernel.org>
-Message-ID: <29fc47da-f9b3-9698-d58d-a06010945a21@redhat.com>
-Date:   Tue, 7 Sep 2021 15:40:20 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S1344797AbhIGNps (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Sep 2021 09:45:48 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:59372 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1344269AbhIGNpr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 Sep 2021 09:45:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=B7Z2Hp4psPJjkAd1T3DsxGWaTveEV56D2pW82c6wQ5w=; b=u+BY5UwVJZoBV+EtekNUnwjL4W
+        6Cis7LsEXBmzBVfDSiNlIO9SPBp00jDwlvtQ+cUoJYokCqPf2B/Zel1PP1czkZBP28YtmypaNjMC2
+        TUStTTXNhxndlxk1v4JzlVqE1+IWcAyJhrsBrFpY5T6SzUOOuTlc/xkG5HY2fsQK33Nk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mNbOq-005eE4-DY; Tue, 07 Sep 2021 15:44:32 +0200
+Date:   Tue, 7 Sep 2021 15:44:32 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        patchwork-bot+netdevbpf@kernel.org,
+        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        vivien.didelot@gmail.com, olteanv@gmail.com, davem@davemloft.net,
+        netdev@vger.kernel.org, rafal@milecki.pl
+Subject: Re: [PATCH] net: dsa: b53: Fix IMP port setup on BCM5301x
+Message-ID: <YTdswC0SvBWExoVk@lunn.ch>
+References: <20210905172328.26281-1-zajec5@gmail.com>
+ <163086540526.12372.2831878860317230975.git-patchwork-notify@kernel.org>
+ <5de7487c-4ffe-bca4-f9a3-e437fc63926b@gmail.com>
+ <YTVlYqzeKckGfqu0@lunn.ch>
+ <20210906184838.2ebf3dd3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-In-Reply-To: <f46a84381037e76ff0e812abd77a0670d0d14767.1631007211.git.lorenzo@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210906184838.2ebf3dd3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 07/09/2021 14.35, Lorenzo Bianconi wrote:
-> Introduce xdp_update_skb_shared_info routine to update frags array
-> metadata in skb_shared_info data structure converting to a skb from
-> a xdp_buff or xdp_frame.
-> According to the current skb_shared_info architecture in
-> xdp_frame/xdp_buff and to the xdp multi-buff support, there is
-> no need to run skb_add_rx_frag() and reset frags array converting the buffer
-> to a skb since the frag array will be in the same position for xdp_buff/xdp_frame
-> and for the skb, we just need to update memory metadata.
-> Introduce XDP_FLAGS_PF_MEMALLOC flag in xdp_buff_flags in order to mark
-> the xdp_buff or xdp_frame as under memory-pressure if pages of the frags array
-> are under memory pressure. Doing so we can avoid looping over all fragments in
-> xdp_update_skb_shared_info routine. The driver is expected to set the
-> flag constructing the xdp_buffer using xdp_buff_set_frag_pfmemalloc
-> utility routine.
-> Rely on xdp_update_skb_shared_info in __xdp_build_skb_from_frame routine
-> converting the multi-buff xdp_frame to a skb after performing a XDP_REDIRECT.
+On Mon, Sep 06, 2021 at 06:48:38PM -0700, Jakub Kicinski wrote:
+> On Mon, 6 Sep 2021 02:48:34 +0200 Andrew Lunn wrote:
+> > > not allowing a proper review to happen. So please, I am begging you, wait at
+> > > least 12h, ideally 24h before applying a patch.  
 > 
-> Acked-by: John Fastabend <john.fastabend@gmail.com>
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> ---
->   include/net/xdp.h | 33 ++++++++++++++++++++++++++++++++-
->   net/core/xdp.c    | 17 +++++++++++++++++
->   2 files changed, 49 insertions(+), 1 deletion(-)
+> The fixed wait time before applying would likely require more nuance.
+> For example something like 0h for build fixed; 12h if reviewed by all
+> area experts; 24h+ for the rest? Not counting weekends?
 > 
-> diff --git a/include/net/xdp.h b/include/net/xdp.h
-> index ed5ea784fd45..53cccdc9528c 100644
-> --- a/include/net/xdp.h
-> +++ b/include/net/xdp.h
-> @@ -67,7 +67,10 @@ struct xdp_txq_info {
->   };
->   
->   enum xdp_buff_flags {
-> -	XDP_FLAGS_MULTI_BUFF	= BIT(0), /* non-linear xdp buff */
-> +	XDP_FLAGS_MULTI_BUFF		= BIT(0), /* non-linear xdp buff */
-> +	XDP_FLAGS_FRAGS_PF_MEMALLOC	= BIT(1), /* xdp multi-buff paged memory
-> +						   * is under pressure
-> +						   */
->   };
->   
->   struct xdp_buff {
-> @@ -96,6 +99,16 @@ static __always_inline void xdp_buff_clear_mb(struct xdp_buff *xdp)
->   	xdp->flags &= ~XDP_FLAGS_MULTI_BUFF;
->   }
->   
-> +static __always_inline bool xdp_buff_is_frag_pfmemalloc(struct xdp_buff *xdp)
-> +{
-> +	return !!(xdp->flags & XDP_FLAGS_FRAGS_PF_MEMALLOC);
-> +}
-> +
-> +static __always_inline void xdp_buff_set_frag_pfmemalloc(struct xdp_buff *xdp)
-> +{
-> +	xdp->flags |= XDP_FLAGS_FRAGS_PF_MEMALLOC;
-> +}
-> +
->   static __always_inline void
->   xdp_init_buff(struct xdp_buff *xdp, u32 frame_sz, struct xdp_rxq_info *rxq)
->   {
-> @@ -151,6 +164,11 @@ static __always_inline bool xdp_frame_is_mb(struct xdp_frame *frame)
->   	return !!(frame->flags & XDP_FLAGS_MULTI_BUFF);
->   }
->   
-> +static __always_inline bool xdp_frame_is_frag_pfmemalloc(struct xdp_frame *frame)
-> +{
-> +	return !!(frame->flags & XDP_FLAGS_FRAGS_PF_MEMALLOC);
-> +}
-> +
->   #define XDP_BULK_QUEUE_SIZE	16
->   struct xdp_frame_bulk {
->   	int count;
-> @@ -186,6 +204,19 @@ static inline void xdp_scrub_frame(struct xdp_frame *frame)
->   	frame->dev_rx = NULL;
->   }
->   
-> +static inline void
-> +xdp_update_skb_shared_info(struct sk_buff *skb, u8 nr_frags,
-> +			   unsigned int size, unsigned int truesize,
-> +			   bool pfmemalloc)
-> +{
-> +	skb_shinfo(skb)->nr_frags = nr_frags;
-> +
-> +	skb->len += size;
-> +	skb->data_len += size;
-> +	skb->truesize += truesize;
-> +	skb->pfmemalloc |= pfmemalloc;
+> > 24 hours is too short. We all have lives outside of the kernel. I
+> > found the older policy of 3 days worked well. Enough time for those
+> > who had interest to do a review, but short enough to not really slow
+> > down development. And 3 days is still probably faster than any other
+> > subsystem.
+> 
+> It is deeply unsatisfying tho to be waiting for reviews 3 days, ping
+> people and then have to apply the patch anyway based on one's own
+> judgment.
 
-Do we need to clear gso_type here as it is shared/union with 
-xdp_frags_size ?
-(see below ... it is already cleared before call)
+I would skip the ping bit and just apply it. Unless you really think
+it needs a deep review.
 
+> Right now we make some attempts to delegate to "Needs ACK" state but
+> with mixed result (see the two patches hanging in that state now).
+> 
+> Perhaps the "Plan to review" marking in pw is also putting the cart
+> before the horse.
 
-> +}
-> +
->   /* Avoids inlining WARN macro in fast-path */
->   void xdp_warn(const char *msg, const char *func, const int line);
->   #define XDP_WARN(msg) xdp_warn(msg, __func__, __LINE__)
-> diff --git a/net/core/xdp.c b/net/core/xdp.c
-> index cc92ccb38432..504be3ce3ca9 100644
-> --- a/net/core/xdp.c
-> +++ b/net/core/xdp.c
-> @@ -531,8 +531,20 @@ struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
->   					   struct sk_buff *skb,
->   					   struct net_device *dev)
->   {
-> +	unsigned int frag_size, frag_tsize;
->   	unsigned int headroom, frame_size;
->   	void *hard_start;
-> +	u8 nr_frags;
-> +
-> +	/* xdp multi-buff frame */
-> +	if (unlikely(xdp_frame_is_mb(xdpf))) {
-> +		struct skb_shared_info *sinfo;
-> +
-> +		sinfo = xdp_get_shared_info_from_frame(xdpf);
-> +		frag_tsize = sinfo->xdp_frags_tsize;
-> +		frag_size = sinfo->xdp_frags_size;
-> +		nr_frags = sinfo->nr_frags;
-> +	}
->   
->   	/* Part of headroom was reserved to xdpf */
->   	headroom = sizeof(*xdpf) + xdpf->headroom;
-> @@ -552,6 +564,11 @@ struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
->   	if (xdpf->metasize)
->   		skb_metadata_set(skb, xdpf->metasize);
->   
-> +	if (unlikely(xdp_frame_is_mb(xdpf)))
-> +		xdp_update_skb_shared_info(skb, nr_frags,
-> +					   frag_size, frag_tsize,
-> +					   xdp_frame_is_frag_pfmemalloc(xdpf));
-> +
+For me personally, the reason i like three days is that sometimes i'm
+away in the wilderness, visiting friends, away on business, etc. I'm
+not checking emails. So having to take some sort of action to say i'm
+not going to take any action until later, just defeaters the point.
 
-There is a build_skb_around() call before this call, which via 
-__build_skb_around() will clear top part of skb_shared_info.
-(Thus, clearing gso_type not needed ... see above)
+> Either way if we're expending brain cycles on process changes it would
+> be cool to think more broadly than just "how long to set a timer for".
 
->   	/* Essential SKB info: protocol and skb->dev */
->   	skb->protocol = eth_type_trans(skb, dev);
->   
+One observation is that netdev drivers are very siloed. A vendor
+driver rarely gets reviewed by another vendor. I think reviews are
+mostly made by vendor neutral people, and they look for specific
+things. I'm interested in phy, ethtool, and anything which looks like
+it could be adding a new KAPI of some sort. There are people who
+trigger on the keyword XDP, or BPF, devlink etc. Some areas of netdev
+do tend to get more reviews than others. Again, my areas of interest,
+phys, DSA, ethtool. The core stack gets reviewed by Eric, routing by
+David, and i'm sure there are others in parts i don't take an interest
+and i've not noticed.
 
+If a patch is from somebody who is not the maintainer of a siloed
+driver, and the maintainer is active, then a review is more likely to
+happen.
 
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+So some sort of model could be made of this, to predict if a patchset
+is likely to get reviewed, if time is allowed for the reviewer to
+actually do the review. I don't know if a mental model is sufficient,
+for the two people who are merging patches, or some tools could be
+produced to help a little. Maybe just simple things like, is the
+poster of the patch series the maintain of the driver it applies
+to. Maybe some keyword matching? Maybe Sasha Levin can run a machine
+learning system over the last few years of the netdev archive to train
+a model which will product if a patchset will get reviewed? That would
+be applicable outside of netdev, it could be a useful feature in
+general. Maybe it is a research project Julia Lawall at Inria could
+give to a PhD student?
 
+  Andrew
