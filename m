@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 398C3402870
-	for <lists+netdev@lfdr.de>; Tue,  7 Sep 2021 14:19:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75D6240286C
+	for <lists+netdev@lfdr.de>; Tue,  7 Sep 2021 14:19:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344256AbhIGMTp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Sep 2021 08:19:45 -0400
-Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:33452
+        id S1344188AbhIGMTi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Sep 2021 08:19:38 -0400
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:33468
         "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1344099AbhIGMTb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Sep 2021 08:19:31 -0400
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com [209.85.128.70])
+        by vger.kernel.org with ESMTP id S1344141AbhIGMTd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Sep 2021 08:19:33 -0400
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com [209.85.128.69])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 0C11B4079B
-        for <netdev@vger.kernel.org>; Tue,  7 Sep 2021 12:18:25 +0000 (UTC)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 0046240779
+        for <netdev@vger.kernel.org>; Tue,  7 Sep 2021 12:18:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
         s=20210705; t=1631017105;
-        bh=ygx+SrZOuhDRvL55hE9xxzLOd3db853TUebx3pnrgoQ=;
+        bh=Lf3U+DHYhMpuIl7nTJH6GPAYe+llXfLG7+wtuS7r1DY=;
         h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
          MIME-Version;
-        b=qR2mBzHAg4xNvGGzKLIBF7SEUJ5NOhEoyl3qE0updZ3W8SzdP48mLxO/jtC2D6+Ay
-         SlIrRbexGDB5fO5v0Irf2kCxkRlP6PrIRsqf/czAGGA5ggJI3QSQrSa29sQa70jGJE
-         LkhT8qhYTYwebXC+Z+Cw1XldYql3OUC0haqxWqNbWdn5Ux8V7H80BaWHTutEBxOcmH
-         FKPzYC9NZ0tr5H35mcaFQ9UQcVbC/lV5hocLWILedAlyNPTj7tD1Wm2yAiXxoVNn62
-         ydTd+DHR7N0dCHNumCgVxvVp+jkvUet9RLHHJXV6JcOG1H6p+1bnRfYiO6GzugWnFs
-         jQWjetbI+6vow==
-Received: by mail-wm1-f70.google.com with SMTP id c2-20020a7bc8420000b0290238db573ab7so1112983wml.5
+        b=nnymz8kp/mgzjScIEynJSLO0Mz2YcEfaFbhDyohlg4NxN8OWavup8s34wsYvdgt2+
+         Sps/J7Upxp7riu4drfB6OlQ9kwBSRfv1vcMAC34509xEIQP/iIXsiOkOpZooL7VArD
+         HOgmVq12UXlLzuv8bmtgbjWS4u4JvsVGkEhTtk33yWchKmOd53MjTAZoPMCqy/0MJX
+         uTJMSQHAKzLaTBfMUoMGXJM4qfk9lWxSis1yxZb+GRjzQMlAXJq+uaF4I7Ta5JqG4I
+         yyQAfDyorNATsnr2h4eNVIuoif7U9ZdVPQToTbUgRGs09JsFAHamlvtuk6VW+ryl3y
+         hVs99MdtojFoA==
+Received: by mail-wm1-f69.google.com with SMTP id z18-20020a1c7e120000b02902e69f6fa2e0so3317136wmc.9
         for <netdev@vger.kernel.org>; Tue, 07 Sep 2021 05:18:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ygx+SrZOuhDRvL55hE9xxzLOd3db853TUebx3pnrgoQ=;
-        b=X6Zxe0p/ajMhMGm0j5kivhLQkTH5Azh85IKKae2l2k+dEqOqY2/T7nLbW105J0w8cl
-         ib8Cu6Y304JypU61WGI9JKB9DyPmddIPhko6Rc3SvDOFHZgSimq2ArvbWpAV9O/aFS+R
-         ND32FWVxOqkShXpK1C75tlnZteRsfDbgQRSrTvcfcsXlwEGtIHmFTYhVUDQBbY2TVSwD
-         RFG4YdB2TyOnDhY3BuGJ9kBdS0EzcjrQRiD/dYop7ahHXvuwiuDdLzZQ/tHGTQAxDysj
-         UtEQ4QU45rH4zFEiEqYmQA2rEOyWvNDToxxsWgCZ7vY5F53NmJcGwraRj3CAHI0ZoOhl
-         FI2A==
-X-Gm-Message-State: AOAM5329IWHxQosaRQZeIHZ4Kx9dzpvY8YpU1Roq0cC7NUM83/P+Pi5X
-        j6OdW/cYBXXaw6IEBxYPBqIPU3thkiEpQOg3tXxIKx5Y7V+06/wjnNoUEasxKt0JtMRHBEUSErs
-        jIqTqqwj0LCU6ZOx5J+DiGwjuKFggepLOXg==
-X-Received: by 2002:a05:600c:210a:: with SMTP id u10mr3576590wml.127.1631017104502;
-        Tue, 07 Sep 2021 05:18:24 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyB9lpSYRjC+nwBj78YNN3ZDlBL5vpXCZ8sbbrL5Cjob2y7j5eoJJP5w2OFbtm4kDLZhWgyyA==
-X-Received: by 2002:a05:600c:210a:: with SMTP id u10mr3576575wml.127.1631017104347;
-        Tue, 07 Sep 2021 05:18:24 -0700 (PDT)
+        bh=Lf3U+DHYhMpuIl7nTJH6GPAYe+llXfLG7+wtuS7r1DY=;
+        b=Rcq+UuObmBxxIyIBJkw1sMPQy3UbKwG3aA8jPret03Rh5D5JRwQVrH6zMo5UkENnkl
+         az8U0iOa+AeEsZiOOp++b+p1+S69H2pezrgS3M0d5M1TJMbCf+SKCWrioQ1HNKw+QPsd
+         q2GSuWMUStfXpi7uxrOV8EQgRGqwalS8YbR3vEQQDm72duQkjRo02upb6bzE2FovGkUy
+         MolXRe6kv0x/msfNe7UlNqnGDg0qS29GSKm2/+DjrR7qTaNuMaNHEwBdW3smSuF0ACPa
+         YH6M6gXWxegEkE7t/fzfo4RU6bVtd74UqpJOxF3vr75Qt/x/LIVvCCsKVYzirs20spLO
+         ermA==
+X-Gm-Message-State: AOAM531OnNv7ZcG9JpJA850oHhc+Y0uAsajlJdvJNELbQEXrQODJxyVF
+        XaKJK/52mYi7jjx6C0YSqM/zYokK7FUqOOqMmEMRggBW9HXsNROdNXdgvQTxuO25ztmE3tlPAG9
+        yAxTwF5rLUxW/vmJiaz7DVvZWJToz59zz3w==
+X-Received: by 2002:a05:600c:a49:: with SMTP id c9mr3543981wmq.159.1631017105645;
+        Tue, 07 Sep 2021 05:18:25 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwGnITbLQyBPqv15Y5qGEl25iI8Aaoxxgo0CFdcBuZBhKAuVcx8mn1j6CPUzijO1vm85/0Uww==
+X-Received: by 2002:a05:600c:a49:: with SMTP id c9mr3543965wmq.159.1631017105503;
+        Tue, 07 Sep 2021 05:18:25 -0700 (PDT)
 Received: from kozik-lap.lan ([79.98.113.47])
-        by smtp.gmail.com with ESMTPSA id m3sm13525216wrg.45.2021.09.07.05.18.23
+        by smtp.gmail.com with ESMTPSA id m3sm13525216wrg.45.2021.09.07.05.18.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Sep 2021 05:18:23 -0700 (PDT)
+        Tue, 07 Sep 2021 05:18:25 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Krzysztof Opasiak <k.opasiak@samsung.com>,
@@ -61,9 +61,9 @@ To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Jakub Kicinski <kuba@kernel.org>, linux-nfc@lists.01.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-wireless@vger.kernel.org
-Subject: [PATCH 02/15] nfc: do not break pr_debug() call into separate lines
-Date:   Tue,  7 Sep 2021 14:18:03 +0200
-Message-Id: <20210907121816.37750-3-krzysztof.kozlowski@canonical.com>
+Subject: [PATCH 03/15] nfc: nci: replace GPLv2 boilerplate with SPDX
+Date:   Tue,  7 Sep 2021 14:18:04 +0200
+Message-Id: <20210907121816.37750-4-krzysztof.kozlowski@canonical.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210907121816.37750-1-krzysztof.kozlowski@canonical.com>
 References: <20210907121816.37750-1-krzysztof.kozlowski@canonical.com>
@@ -73,75 +73,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove unneeded line break between pr_debug and arguments.
+Replace standard GPLv2 only license text with SPDX tag.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 ---
- net/nfc/hci/llc_shdlc.c | 23 +++++++++--------------
- 1 file changed, 9 insertions(+), 14 deletions(-)
+ net/nfc/nci/uart.c | 16 ++--------------
+ 1 file changed, 2 insertions(+), 14 deletions(-)
 
-diff --git a/net/nfc/hci/llc_shdlc.c b/net/nfc/hci/llc_shdlc.c
-index 78b2ceb8ae6e..e90f70385813 100644
---- a/net/nfc/hci/llc_shdlc.c
-+++ b/net/nfc/hci/llc_shdlc.c
-@@ -201,8 +201,7 @@ static void llc_shdlc_reset_t2(struct llc_shdlc *shdlc, int y_nr)
- 			del_timer_sync(&shdlc->t2_timer);
- 			shdlc->t2_active = false;
- 
--			pr_debug
--			    ("All sent frames acked. Stopped T2(retransmit)\n");
-+			pr_debug("All sent frames acked. Stopped T2(retransmit)\n");
- 		}
- 	} else {
- 		skb = skb_peek(&shdlc->ack_pending_q);
-@@ -211,8 +210,7 @@ static void llc_shdlc_reset_t2(struct llc_shdlc *shdlc, int y_nr)
- 			  msecs_to_jiffies(SHDLC_T2_VALUE_MS));
- 		shdlc->t2_active = true;
- 
--		pr_debug
--		    ("Start T2(retransmit) for remaining unacked sent frames\n");
-+		pr_debug("Start T2(retransmit) for remaining unacked sent frames\n");
- 	}
- }
- 
-@@ -518,12 +516,11 @@ static void llc_shdlc_handle_send_queue(struct llc_shdlc *shdlc)
- 	unsigned long time_sent;
- 
- 	if (shdlc->send_q.qlen)
--		pr_debug
--		    ("sendQlen=%d ns=%d dnr=%d rnr=%s w_room=%d unackQlen=%d\n",
--		     shdlc->send_q.qlen, shdlc->ns, shdlc->dnr,
--		     shdlc->rnr == false ? "false" : "true",
--		     shdlc->w - llc_shdlc_w_used(shdlc->ns, shdlc->dnr),
--		     shdlc->ack_pending_q.qlen);
-+		pr_debug("sendQlen=%d ns=%d dnr=%d rnr=%s w_room=%d unackQlen=%d\n",
-+			 shdlc->send_q.qlen, shdlc->ns, shdlc->dnr,
-+			 shdlc->rnr == false ? "false" : "true",
-+			 shdlc->w - llc_shdlc_w_used(shdlc->ns, shdlc->dnr),
-+			 shdlc->ack_pending_q.qlen);
- 
- 	while (shdlc->send_q.qlen && shdlc->ack_pending_q.qlen < shdlc->w &&
- 	       (shdlc->rnr == false)) {
-@@ -641,8 +638,7 @@ static void llc_shdlc_sm_work(struct work_struct *work)
- 		llc_shdlc_handle_send_queue(shdlc);
- 
- 		if (shdlc->t1_active && timer_pending(&shdlc->t1_timer) == 0) {
--			pr_debug
--			    ("Handle T1(send ack) elapsed (T1 now inactive)\n");
-+			pr_debug("Handle T1(send ack) elapsed (T1 now inactive)\n");
- 
- 			shdlc->t1_active = false;
- 			r = llc_shdlc_send_s_frame(shdlc, S_FRAME_RR,
-@@ -652,8 +648,7 @@ static void llc_shdlc_sm_work(struct work_struct *work)
- 		}
- 
- 		if (shdlc->t2_active && timer_pending(&shdlc->t2_timer) == 0) {
--			pr_debug
--			    ("Handle T2(retransmit) elapsed (T2 inactive)\n");
-+			pr_debug("Handle T2(retransmit) elapsed (T2 inactive)\n");
- 
- 			shdlc->t2_active = false;
- 
+diff --git a/net/nfc/nci/uart.c b/net/nfc/nci/uart.c
+index 502e7a3f8948..65814dd72618 100644
+--- a/net/nfc/nci/uart.c
++++ b/net/nfc/nci/uart.c
+@@ -1,20 +1,8 @@
++// SPDX-License-Identifier: GPL-2.0
+ /*
+  * Copyright (C) 2015, Marvell International Ltd.
+  *
+- * This software file (the "File") is distributed by Marvell International
+- * Ltd. under the terms of the GNU General Public License Version 2, June 1991
+- * (the "License").  You may use, redistribute and/or modify this File in
+- * accordance with the terms and conditions of the License, a copy of which
+- * is available on the worldwide web at
+- * http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
+- *
+- * THE FILE IS DISTRIBUTED AS-IS, WITHOUT WARRANTY OF ANY KIND, AND THE
+- * IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE
+- * ARE EXPRESSLY DISCLAIMED.  The License provides additional details about
+- * this warranty disclaimer.
+- */
+-
+-/* Inspired (hugely) by HCI LDISC implementation in Bluetooth.
++ * Inspired (hugely) by HCI LDISC implementation in Bluetooth.
+  *
+  *  Copyright (C) 2000-2001  Qualcomm Incorporated
+  *  Copyright (C) 2002-2003  Maxim Krasnyansky <maxk@qualcomm.com>
 -- 
 2.30.2
 
