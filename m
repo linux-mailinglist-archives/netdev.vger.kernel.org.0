@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9F3C402775
+	by mail.lfdr.de (Postfix) with ESMTP id F3A31402776
 	for <lists+netdev@lfdr.de>; Tue,  7 Sep 2021 12:57:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343697AbhIGK6V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Sep 2021 06:58:21 -0400
-Received: from mail-db8eur05on2042.outbound.protection.outlook.com ([40.107.20.42]:9677
+        id S1343787AbhIGK62 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Sep 2021 06:58:28 -0400
+Received: from mail-db8eur05on2043.outbound.protection.outlook.com ([40.107.20.43]:29537
         "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1343685AbhIGK6R (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 Sep 2021 06:58:17 -0400
+        id S1343769AbhIGK6W (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 Sep 2021 06:58:22 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DUGFYC1vU1YwDbNFSGJh4ihmVZBJvzNXYmgvqirnoCDMYDbCcSDYeV18ZbsqQyful1f+9KtDf6H+AfF5Hy9ZnDO8Z1/M1gAH1c4UEhTOizqI/Mn11+41/o3f28Z1KYuwOnV4+9A1dX2618w1J75YzJeoRI9UKHbYUZ3Cmvp25I6Sn75yGPMJeb3yYNkw7yPY6/RgjMB0ULEmAvMGeLdLVeMUkanxGNVidnlontp77yrWtGJ58fAG/f/Zv948jIz0T5q3MG81BMBxJzJ9mLB/N2LTL4A2huj3269tbFM2WiNZbZ8he8CULYtn1r5RPaLYGS/X/XHp34Xkzyi7zNTyVg==
+ b=Nr9o6kNNlOXt2nskRa+43duVl3qeGSzEhxr7yDnBOgN78oV2c2WdXyZu3VbHPnXRXuei8cjprIQU3KI7bJobs+OAA6ffwQENx37O+ur/rl7Y1Fdet/phoNkDPHWK1VSyMZWrg41x9AzGu4tr1jP4hA1BD7bgeXzoxkNvaIMQX6WNiI2vE+kwQ4c7poVVFwd/3/MMHDxGBQULMrxJgOlqv1rMBI1tgIYh4A6rEyVDRFyvEo6zg68TN2SRNIWAafVAG00AiFnd3ECXsl3AVpTL4P0TxIMlVCc9V7EAR5Y9DOh+xY2OMp6PK6zSGRpaeYNU2TDO+LCi/ykWzkIN+FEwmg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=91JEltll2f4dC4e8q5WhoS1JMsKPgMU/VAfm96LpZic=;
- b=Ck2PAAVY4er6pUOR3sI18RpzDPypSubq32q76Y2dCFGpKPYMdkbiGAUIft4Z3KsAQF2iSUOQHO3BkpdWiW0vfrrL53SU+OLajOrqEEXZLiWVDfD+U70p7a15A92sHBS+05XlJonTjM4jyZOAHQmk+Avf2S/+xkG/y0/vyhR7wIQQoef6bhLuclsw2+ceztJL1NpUkQqhNFfhLuoMtfW7tcvOkrHBQAYlJXKI6haoJCvT/E75dXyYL8hmss7gu02H2BHvHkhbUjWypmvfEA48vJ2IEPX8FUZn9JyRB8cABvmmx9EvHdJHF6qUpPlcoQwMTelExQW7CuMxUaADRx0FNQ==
+ bh=JwVuoEa3QkcL6Y/Lz52Zn8xRhQklASppkKwvawYnDA4=;
+ b=iL571YP4Y+Dknj78IofWFS4h2oWCbTMtVYmewCVSTKzGLYU/5Ag7tGbG12bjkJR73IYGidTHs1BrDrURGw2ZZrD2fq+/8NgNkkqrFI5u0GU727jQmmx4O7IZ2KZHZOK72P0gDx/LhbTIIEMrSqq2PASp3RiS/5SaIJ31PFhMmDWSyo8AENPkewpvR76q2FipVyqYfIDwQfwW45LkgiBfEGe7gA+iAB334WchQVUB4zAx6wOhEks4+DJUeZKGKS9rIvqrbTnCJiQGs96f61zUomRncZLH3l/WvnOmudhgDIEVI/fKUOwiRLzyGooMdaPqjdHUJ5ekQoyyaeVq/b3Bjg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=91JEltll2f4dC4e8q5WhoS1JMsKPgMU/VAfm96LpZic=;
- b=grstrSBBIjjtrWibhFJNc/ViZTP0m/7JyEf37l/oP/tyaW7w0P/pG9p7I1j4p9RSXYUe6KSp9eTwUujsNLOfXAgEur8PAHIU1f6MgX7fCXCqz9HfU17QGEpaVjFtyzUEwokf3PUEImAG0D5P+iD7FvCE3HffdxLPNzi2X+JDl38=
+ bh=JwVuoEa3QkcL6Y/Lz52Zn8xRhQklASppkKwvawYnDA4=;
+ b=b7MCfkbWEL2tkMyjqH3Rsj/s7PqsVJNX1/Sbkfl125M6STa7ng5+P7gO6qezxjb91RTch6smAGiyzhiLpov5gsEYX6+1vbUCFHkTsVBbKstdOHsRI1tgDoGxpapX0GjtluOaxoRkZzwl6Oh5luCSVAZgRmRiYM9d25ruGQrhvk0=
 Authentication-Results: st.com; dkim=none (message not signed)
  header.d=none;st.com; dmarc=none action=none header.from=nxp.com;
 Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
  by DBAPR04MB7382.eurprd04.prod.outlook.com (2603:10a6:10:1ab::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4478.22; Tue, 7 Sep
- 2021 10:57:09 +0000
+ 2021 10:57:14 +0000
 Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
  ([fe80::5d5a:30b0:2bc2:312f]) by DB8PR04MB6795.eurprd04.prod.outlook.com
  ([fe80::5d5a:30b0:2bc2:312f%9]) with mapi id 15.20.4500.014; Tue, 7 Sep 2021
- 10:57:09 +0000
+ 10:57:13 +0000
 From:   Joakim Zhang <qiangqing.zhang@nxp.com>
 To:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
         joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
@@ -43,9 +43,9 @@ To:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
         hkallweit1@gmail.com
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-imx@nxp.com
-Subject: [PATCH net 1/2] net: phylink: add suspend/resume support
-Date:   Tue,  7 Sep 2021 18:56:46 +0800
-Message-Id: <20210907105647.16068-2-qiangqing.zhang@nxp.com>
+Subject: [PATCH net 2/2] net: stmmac: fix MAC not working when system resume back with WoL active
+Date:   Tue,  7 Sep 2021 18:56:47 +0800
+Message-Id: <20210907105647.16068-3-qiangqing.zhang@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210907105647.16068-1-qiangqing.zhang@nxp.com>
 References: <20210907105647.16068-1-qiangqing.zhang@nxp.com>
@@ -54,198 +54,180 @@ X-ClientProxiedBy: SI2P153CA0001.APCP153.PROD.OUTLOOK.COM (2603:1096:4:140::7)
  To DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (119.31.174.71) by SI2P153CA0001.APCP153.PROD.OUTLOOK.COM (2603:1096:4:140::7) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.1 via Frontend Transport; Tue, 7 Sep 2021 10:57:04 +0000
+Received: from localhost.localdomain (119.31.174.71) by SI2P153CA0001.APCP153.PROD.OUTLOOK.COM (2603:1096:4:140::7) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.1 via Frontend Transport; Tue, 7 Sep 2021 10:57:09 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 790d13e5-675b-4096-f180-08d971ee3cdb
+X-MS-Office365-Filtering-Correlation-Id: c8676a61-5373-418f-7689-08d971ee3f5a
 X-MS-TrafficTypeDiagnostic: DBAPR04MB7382:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DBAPR04MB7382198235C7F8467E52A811E6D39@DBAPR04MB7382.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-Microsoft-Antispam-PRVS: <DBAPR04MB7382F5FEAC769F77120C8EC0E6D39@DBAPR04MB7382.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: I9cqn5As9fuIxGP5xbOZfFztkd9J3srycY+p7objCj97GXXTpB2fmF0e33nG7wCEwpI75uOlJQgr9ZY9r7KWXjifg2Ar2iRUFILfKdKUgtqW5O/eceb6UEYbCIYjVfnDPf0TCADinHH7RMTD+KQzJKNjIHZn5XCsnu9vTbFQN4laHt1t0vON1YAvOA6Pv3zjT68R/Osv9yT6dorM3/uqsoZ2iFj+nECGlnrnX1CXJJwm9pJmlXq4qknqVG0v0MYiIl4LwKICVzwePh86Ii5gOGvQXLT0AHI85XO7/vex0WGfBkatEpIY5ASkUUnQ6mefKQlPovEJNOXUWr+04plveVWlaJdLfHZdhpByUc6piNO9pzVaNVPEX4e1MbpXsks7ydsyCQJczooMJGNAO/904ikptX2ODNjayFO7vgolzF8euyQheRpADrP2FwVKyflEMZ4Ay1J0jlsbqlzz+Z+VwpbrPBxKKhWy85gheyUEudx7+JZeU5wiCpXg6D8X4UHngiwxcVQMP7jnImjOXNtVZu5cqawFpjSKhDc97PN8wGuKIDYz9FCEV0AIoGqKUt66BgX7qM5MV0bix/TRGyOQtLAUDwiUNKLMwBUKfWsHNaLDAPLPy4E4gWo9tomG7TgbKzzm9ziZPl/FdAsU2z887OfLL+exeaLSjksLF7WJ8g5CuJ0UZRi9pLCNXyTK0MwWKUE2zPhmupWcDx2fAXXsEw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(376002)(346002)(366004)(396003)(136003)(1076003)(316002)(186003)(52116002)(8936002)(38100700002)(5660300002)(36756003)(38350700002)(15650500001)(26005)(66946007)(86362001)(4326008)(2616005)(956004)(2906002)(6512007)(6486002)(7416002)(6666004)(83380400001)(6506007)(66476007)(478600001)(66556008)(8676002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: /sw19x29gMHmlN5hn/Cg98uZZRkPHQzzlUC3X9ygVRfrBrhjDpvMlkQyjcMWY0TPLxm8rOOcu+nih3UXFjkZOKK7cffZ81qJklqw7+FkTnojen9Cebtm6p+1Z2WScX8srB7jaFBur52jGGvIf+gMOyc6C/nNi4IGNWC4RuN1QKhWe6FQrqM/6FUYhVcC72ENsb8bQoyH1Ov/AGSRdZ3ZTP2cnyrPGidOE1Pq3HHSLwAIyOJRovDKZnz9uF1JohUFCROaSdXiIeblfFDAglK4hvG4sbtboQsJxo47iLwpWjupmAUY8ABCDsTwrr6DkGjdJ3KEfzqGuL6FWSsd7EQ4PwPArNpwydb9oLTe3WjzcnbDXRQZlYZ2hv8BqPnYQgNfMHzDkYX6QOMMrg/8+DCmCFzd5nHhgs1LxQ48EWzQhtAs8pc71Aq/xLb5wi65dkZLSLskQ3T7OeCBQdZmDE5jhoU73xZ3PLeLoiVSnfw4FAH5LFrmftWhmVZGRgNNNGHxjE71rmlMLvFHjH2I0I4JqOQfHv0IAv+pDJtwnC2DixqSBb4ofe39HFFcGmzen1F9H5p4Qt3puqw4wgNyg0eWWja2gUm8HhVKyqKblIazbVKrHu132/awmk+C7zP8TRbEaAQhfW0OUHfw1jg1RPkYiRP3yG/Rw+McdPH3JZUV1u8yKvDP7/BZF08sqWCY8xu+R0UMIr3pgyXDUEdsx/8rJ34hba9kdtWCsTEA30VQFLsdXWN/cO/6ihEho70zyHNq/o8TQ55VMUuKR2LVk8laHi/lMSYTZxEZuFQgFvcCf+w=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(376002)(346002)(366004)(396003)(136003)(1076003)(316002)(966005)(186003)(52116002)(8936002)(38100700002)(5660300002)(36756003)(38350700002)(26005)(66946007)(86362001)(4326008)(2616005)(956004)(2906002)(6512007)(6486002)(7416002)(6666004)(83380400001)(6506007)(66476007)(478600001)(66556008)(8676002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?YHTp7k+5aK5o3ed5z6p8gfcroZD6hHwzlB/6ekIuhHCtIUTecLB0CE4nbOlU?=
- =?us-ascii?Q?mCfPryil6zPn2/ft2szCBZsyp8J0FX0D/bV+RSe2NzNe5161iDnQ8BPiTLTr?=
- =?us-ascii?Q?P3llKJpNscbrQ78qMiihf7Ugvx90aoIgGa6nKpcLzetSVlnE0zJAUyowf/oT?=
- =?us-ascii?Q?oUPQHJNIbYTWWI9VD1QMihCUkmlR936gWkr6+HLRGGi5YCj6ii9DtLg+lkvs?=
- =?us-ascii?Q?syigfXQMnO1lldq8iwjfCx2NSJ9fEtd1E2orhpQWQK7PXODqSPi791w9VPu5?=
- =?us-ascii?Q?H12vL1BzjDkTKFemebvcoDznkIoLhACgGdlHv8X11uqkh6+F3cExeiIAJcA1?=
- =?us-ascii?Q?ksDR+/hXQUoP6EgDpfvnd7Gx8M++4qxDa9drCso2Gwx/rNaSQ/+7OrDeEqhI?=
- =?us-ascii?Q?VDO5mWc98wEveQX+2pcvK0pix+bY75HV8fbhA3nQb7oXOtbkm7Hxf4y/5fpR?=
- =?us-ascii?Q?FlqhKBYw21d56SVEspzCfzHy82HqsoYE3hB0FEmG4nOFJZ5RY2xbPB7m2J2D?=
- =?us-ascii?Q?0N8663KnSJ6zlAlzRDyw2hOASRABqZ8Ve0kZMYOHuq5HljhPDGp7sw32/NEF?=
- =?us-ascii?Q?tebRhhunpmP1aE/r3l7YxbTU9sgxC3pS3nAXQVBLTPUJtqqRxmiqvqBCASDK?=
- =?us-ascii?Q?8ZdnMMNQ6zVdn/l+JkqAyKmxD1BCLU41UEuBtbp70j/En3un4Nj3IuMy4/WA?=
- =?us-ascii?Q?WsQ2/M6dR9F0EPlY094El1HNMS9JTfuytag8qnwl7tRBJHGDSFQ0m85Iu7dB?=
- =?us-ascii?Q?uVEuihIWNlHtsk2kv6Is2B6Oaahz7SWbpLI243lGjVK764FEDbcSBFGj4Jp2?=
- =?us-ascii?Q?5ey8k32iTHFn6UxLlJSipMH4Xdd/iWNfxXMD1PPpvPpWT0Bg88JP327vUSHz?=
- =?us-ascii?Q?l70RIlqdh1p6wCemgAe5nAaykqlixsZyN6PxlQ7pZM5FwR44ty5wkmhFMD4V?=
- =?us-ascii?Q?v2bzZWwVWrvwIwNLulMeDIyZ0wMgfOWpi+MGRtZD7N8QZdrTLAbQaMXNBiek?=
- =?us-ascii?Q?Xv7BxPmdq66KJoKgoxd5yVEINIahiUi/kH+Cxii6dKuR00A7jGYQ3sY0VzZO?=
- =?us-ascii?Q?H9mftX9KhmmLMCuf0pegMA6wm4PiZz9zpvNI8jsO4AIo6RN1x8BFWl8WTCk1?=
- =?us-ascii?Q?sLeCdWmWPAGE7PhFmIeLh9lR6DQKo8mDyio5Ysf/ou9wZhihoo6RUN0mKjzp?=
- =?us-ascii?Q?8qodNi0YmK+3YiY6k+qn1D9eMDysyc3mBZA1YjiyWjm3vxZGloxFyYJJwAYK?=
- =?us-ascii?Q?JUMW4IZ+YeFxMSQHowL2xWFijkSAx24JR4YL/mGbXQ/ta3jHaosIKlDfieWt?=
- =?us-ascii?Q?WRpfwaIxmO8tS3EBPbBLM11b?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?SiOBRrnhV8MaHQ6O0ITdd9Q+q+qsfosdF/jqeM7ng+xy9VlpdSf3TUjwXeDH?=
+ =?us-ascii?Q?s3eYWwdaZI7RYPQIKtuDKuzn+A82e8X0vsybcK0uP/gCzOnmT7NinNZIU++E?=
+ =?us-ascii?Q?hX2l75mijxT68yT+Ej+qjfcl4iqejswGXuL5QZIE4pm44ikqrIg+S7JaKwqh?=
+ =?us-ascii?Q?724Ybbg4/2iEFYo+3ABJwGZ9uFHAcfaEQLdhke+ErQjNGh6DqCoSpmK+/Y87?=
+ =?us-ascii?Q?u27glGLtnuRStiJVy/1LN8sXubN2GwzrNeC2vfk9j8Irw5lKh6DtFLmAvtx2?=
+ =?us-ascii?Q?F8DPaEjQ8auqYt7n7vy1Bn5OsDKO1nYfd9fq5oVDmgmN5cwVEwNg+TEN9/PJ?=
+ =?us-ascii?Q?5YnUP7w1JHUb6+dvuvOzNgItcY+sVQ0KA7UhiTnI4vCDTG5H+uP33lZia9A9?=
+ =?us-ascii?Q?0UxRQOjZH3sCgswHlLZJd6j7JgLk5/XXKOBdhikkM5LDykJrmqVIT+fkDkaV?=
+ =?us-ascii?Q?Nhds19b1A05583zcLfpt5N4vMFkD58caBk6oOhgD9YTg7JMgpBT8MlDF2g/8?=
+ =?us-ascii?Q?zHHsOm65Nf0Jrx7YCzZ4Y5r04L4ATwga9nGEq3fARZ6xgl5zuEkxYq7xJ1Hc?=
+ =?us-ascii?Q?/ZisoBsKzyV72jvpd+tDZvtKHM0tuAV7akhrJyqlzGHwPQperfopGE8yoq10?=
+ =?us-ascii?Q?k4rupj6YEhAu6DM+BTjosrinZfft9FMRp7ZuPcNlYkZPbvhdeB3/dwKbuJaV?=
+ =?us-ascii?Q?34BgcOp3yakx9qgjFo2uznef8MoWMh5gb25N/v7wx0vn/g6zf5T204e3aKp2?=
+ =?us-ascii?Q?yiZ8jyxjoZIzy+ZSXtjupsRqrkJdXrzh2+8k27vYi+xo5zL7ymtvsIJ4S+sn?=
+ =?us-ascii?Q?jVu/MX60pRAIQIuRJGupXWaEc2Xg8eRsXp1QtEEIS8dN0F5AyLEtRTo04Zqz?=
+ =?us-ascii?Q?j/eXoJfvu6CK9zUcmUml9Fw+udm2W7XwLvR0PDOKZJMBoGJtC5W4W31l7KIN?=
+ =?us-ascii?Q?ukfmltsueMEmeY7Q1WXo+NM1Olyb7toEygr+eNnPA3ANsRO9p1Avp13mM6uv?=
+ =?us-ascii?Q?AayesKo81KFtmzzo42DGwBBvq8KVGixfyWif4klLnnprPTBnfHjxwEjRt6jz?=
+ =?us-ascii?Q?6EgafX5EVSFZBkeGcx2yhSDr5as1WAk01X+YQRoI0mYbqF66uGJ2ODFUIuV9?=
+ =?us-ascii?Q?VRhdo/eNAnhyGW2RPlAe0Lp8eHT1G1FLwslxj7eGBbBwO/EIqfl7wNs5mWIa?=
+ =?us-ascii?Q?q7FTDApRzuXJKZ5I2chIVuzqFDHsyyGs346FGoN1GIwbX8ef/Oh0p2bgL6wy?=
+ =?us-ascii?Q?+7fouOtjIWcHpwPoX34/HQGoNWkQYkji6vLQZBEe+qG9KjSnEq/Pc5m8Arkh?=
+ =?us-ascii?Q?SCi5NkU2vL1ChCg0+MgH304S?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 790d13e5-675b-4096-f180-08d971ee3cdb
+X-MS-Exchange-CrossTenant-Network-Message-Id: c8676a61-5373-418f-7689-08d971ee3f5a
 X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Sep 2021 10:57:08.8759
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Sep 2021 10:57:13.0575
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: BV80L2hBDD/KDZChvJlLpvM2C7XnxwoXVJD9XsQyDyjIrV8jAlqlNxFKA8m4X6QBJWdbFw6CwdoWS36oImnOMQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 4BMvTbTKOan9FrvJ/nhv9ZFBxU93+B3Wu8FvDDFn+EOfo0LDSp9jHWtQETb9xK1QB+9+8LjxH+kQ60rDbS/SCA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR04MB7382
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+We can reproduce this issue with below steps:
+1) enable WoL on the host
+2) host system suspended
+3) remote client send out wakeup packets
+We can see that host system resume back, but can't work, such as ping failed.
 
-Joakim Zhang reports that Wake-on-Lan with the stmmac ethernet driver broke
-when moving the incorrect handling of mac link state out of mac_config().
-This reason this breaks is because the stmmac's WoL is handled by the MAC
-rather than the PHY, and phylink doesn't cater for that scenario.
+After a bit digging, this issue is introduced by the commit 46f69ded988d
+("net: stmmac: Use resolved link config in mac_link_up()"), which use
+the finalised link parameters in mac_link_up() rather than the
+parameters in mac_config().
 
-This patch adds the necessary phylink code to handle suspend/resume events
-according to whether the MAC still needs a valid link or not. This is the
-barest minimum for this support.
+There are two scenarios for MAC suspend/resume in STMMAC driver:
 
-Reported-by: Joakim Zhang <qiangqing.zhang@nxp.com>
-Tested-by: Joakim Zhang <qiangqing.zhang@nxp.com>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+1) MAC suspend with WoL inactive, stmmac_suspend() call
+phylink_mac_change() to notify phylink machine that a change in MAC
+state, then .mac_link_down callback would be invoked. Further, it will
+call phylink_stop() to stop the phylink instance. When MAC resume back,
+firstly phylink_start() is called to start the phylink instance, then
+call phylink_mac_change() which will finally trigger phylink machine to
+invoke .mac_config and .mac_link_up callback. All is fine since
+configuration in these two callbacks will be initialized, that means MAC
+can restore the state.
+
+2) MAC suspend with WoL active, phylink_mac_change() will put link
+down, but there is no phylink_stop() to stop the phylink instance, so it
+will link up again, that means .mac_config and .mac_link_up would be
+invoked before system suspended. After system resume back, it will do
+DMA initialization and SW reset which let MAC lost the hardware setting
+(i.e MAC_Configuration register(offset 0x0) is reset). Since link is up
+before system suspended, so .mac_link_up would not be invoked after
+system resume back, lead to there is no chance to initialize the
+configuration in .mac_link_up callback, as a result, MAC can't work any
+longer.
+
+After discussed with Russell King [1], we confirm that phylink framework
+have not take WoL into consideration yet. This patch calls
+phylink_suspend()/phylink_resume() functions which is newly introduced
+by Russell King to fix this issue.
+
+[1] https://lore.kernel.org/netdev/20210901090228.11308-1-qiangqing.zhang@nxp.com/
+
+Fixes: 46f69ded988d ("net: stmmac: Use resolved link config in mac_link_up()")
 Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
 ---
- drivers/net/phy/phylink.c | 82 +++++++++++++++++++++++++++++++++++++++
- include/linux/phylink.h   |  3 ++
- 2 files changed, 85 insertions(+)
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c | 36 +++++++++----------
+ 1 file changed, 18 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 2cdf9f989dec..a1464b764d4d 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -33,6 +33,7 @@
- enum {
- 	PHYLINK_DISABLE_STOPPED,
- 	PHYLINK_DISABLE_LINK,
-+	PHYLINK_DISABLE_MAC_WOL,
- };
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 97238359e101..ece02b35a6ce 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -7123,8 +7123,6 @@ int stmmac_suspend(struct device *dev)
+ 	if (!ndev || !netif_running(ndev))
+ 		return 0;
  
- /**
-@@ -1282,6 +1283,9 @@ EXPORT_SYMBOL_GPL(phylink_start);
-  * network device driver's &struct net_device_ops ndo_stop() method.  The
-  * network device's carrier state should not be changed prior to calling this
-  * function.
-+ *
-+ * This will synchronously bring down the link if the link is not already
-+ * down (in other words, it will trigger a mac_link_down() method call.)
-  */
- void phylink_stop(struct phylink *pl)
- {
-@@ -1301,6 +1305,84 @@ void phylink_stop(struct phylink *pl)
- }
- EXPORT_SYMBOL_GPL(phylink_stop);
+-	phylink_mac_change(priv->phylink, false);
+-
+ 	mutex_lock(&priv->lock);
  
-+/**
-+ * phylink_suspend() - handle a network device suspend event
-+ * @pl: a pointer to a &struct phylink returned from phylink_create()
-+ * @mac_wol: true if the MAC needs to receive packets for Wake-on-Lan
-+ *
-+ * Handle a network device suspend event. There are several cases:
-+ * - If Wake-on-Lan is not active, we can bring down the link between
-+ *   the MAC and PHY by calling phylink_stop().
-+ * - If Wake-on-Lan is active, and being handled only by the PHY, we
-+ *   can also bring down the link between the MAC and PHY.
-+ * - If Wake-on-Lan is active, but being handled by the MAC, the MAC
-+ *   still needs to receive packets, so we can not bring the link down.
-+ */
-+void phylink_suspend(struct phylink *pl, bool mac_wol)
-+{
-+	ASSERT_RTNL();
-+
-+	if (mac_wol && (!pl->netdev || pl->netdev->wol_enabled)) {
-+		/* Wake-on-Lan enabled, MAC handling */
-+		mutex_lock(&pl->state_mutex);
-+
-+		/* Stop the resolver bringing the link up */
-+		__set_bit(PHYLINK_DISABLE_MAC_WOL, &pl->phylink_disable_state);
-+
-+		/* Disable the carrier, to prevent transmit timeouts,
-+		 * but one would hope all packets have been sent. This
-+		 * also means phylink_resolve() will do nothing.
-+		 */
-+		netif_carrier_off(pl->netdev);
-+
-+		/* We do not call mac_link_down() here as we want the
-+		 * link to remain up to receive the WoL packets.
-+		 */
-+		mutex_unlock(&pl->state_mutex);
+ 	netif_device_detach(ndev);
+@@ -7150,14 +7148,6 @@ int stmmac_suspend(struct device *dev)
+ 		stmmac_pmt(priv, priv->hw, priv->wolopts);
+ 		priv->irq_wake = 1;
+ 	} else {
+-		mutex_unlock(&priv->lock);
+-		rtnl_lock();
+-		if (device_may_wakeup(priv->device))
+-			phylink_speed_down(priv->phylink, false);
+-		phylink_stop(priv->phylink);
+-		rtnl_unlock();
+-		mutex_lock(&priv->lock);
+-
+ 		stmmac_mac_set(priv, priv->ioaddr, false);
+ 		pinctrl_pm_select_sleep_state(priv->device);
+ 		/* Disable clock in case of PWM is off */
+@@ -7171,6 +7161,16 @@ int stmmac_suspend(struct device *dev)
+ 
+ 	mutex_unlock(&priv->lock);
+ 
++	rtnl_lock();
++	if (device_may_wakeup(priv->device) && priv->plat->pmt) {
++		phylink_suspend(priv->phylink, true);
 +	} else {
-+		phylink_stop(pl);
++		if (device_may_wakeup(priv->device))
++			phylink_speed_down(priv->phylink, false);
++		phylink_suspend(priv->phylink, false);
 +	}
-+}
-+EXPORT_SYMBOL_GPL(phylink_suspend);
++	rtnl_unlock();
 +
-+/**
-+ * phylink_resume() - handle a network device resume event
-+ * @pl: a pointer to a &struct phylink returned from phylink_create()
-+ *
-+ * Undo the effects of phylink_suspend(), returning the link to an
-+ * operational state.
-+ */
-+void phylink_resume(struct phylink *pl)
-+{
-+	ASSERT_RTNL();
-+
-+	if (test_bit(PHYLINK_DISABLE_MAC_WOL, &pl->phylink_disable_state)) {
-+		/* Wake-on-Lan enabled, MAC handling */
-+
-+		/* Call mac_link_down() so we keep the overall state balanced.
-+		 * Do this under the state_mutex lock for consistency. This
-+		 * will cause a "Link Down" message to be printed during
-+		 * resume, which is harmless - the true link state will be
-+		 * printed when we run a resolve.
-+		 */
-+		mutex_lock(&pl->state_mutex);
-+		phylink_link_down(pl);
-+		mutex_unlock(&pl->state_mutex);
-+
-+		/* Re-apply the link parameters so that all the settings get
-+		 * restored to the MAC.
-+		 */
-+		phylink_mac_initial_config(pl, true);
-+
-+		/* Re-enable and re-resolve the link parameters */
-+		clear_bit(PHYLINK_DISABLE_MAC_WOL, &pl->phylink_disable_state);
-+		phylink_run_resolve(pl);
+ 	if (priv->dma_cap.fpesel) {
+ 		/* Disable FPE */
+ 		stmmac_fpe_configure(priv, priv->ioaddr,
+@@ -7261,13 +7261,15 @@ int stmmac_resume(struct device *dev)
+ 			return ret;
+ 	}
+ 
+-	if (!device_may_wakeup(priv->device) || !priv->plat->pmt) {
+-		rtnl_lock();
+-		phylink_start(priv->phylink);
+-		/* We may have called phylink_speed_down before */
+-		phylink_speed_up(priv->phylink);
+-		rtnl_unlock();
++	rtnl_lock();
++	if (device_may_wakeup(priv->device) && priv->plat->pmt) {
++		phylink_resume(priv->phylink);
 +	} else {
-+		phylink_start(pl);
-+	}
-+}
-+EXPORT_SYMBOL_GPL(phylink_resume);
-+
- /**
-  * phylink_ethtool_get_wol() - get the wake on lan parameters for the PHY
-  * @pl: a pointer to a &struct phylink returned from phylink_create()
-diff --git a/include/linux/phylink.h b/include/linux/phylink.h
-index afb3ded0b691..237291196ce2 100644
---- a/include/linux/phylink.h
-+++ b/include/linux/phylink.h
-@@ -451,6 +451,9 @@ void phylink_mac_change(struct phylink *, bool up);
- void phylink_start(struct phylink *);
- void phylink_stop(struct phylink *);
++		phylink_resume(priv->phylink);
++		if (device_may_wakeup(priv->device))
++			phylink_speed_up(priv->phylink);
+ 	}
++	rtnl_unlock();
  
-+void phylink_suspend(struct phylink *pl, bool mac_wol);
-+void phylink_resume(struct phylink *pl);
-+
- void phylink_ethtool_get_wol(struct phylink *, struct ethtool_wolinfo *);
- int phylink_ethtool_set_wol(struct phylink *, struct ethtool_wolinfo *);
+ 	rtnl_lock();
+ 	mutex_lock(&priv->lock);
+@@ -7288,8 +7290,6 @@ int stmmac_resume(struct device *dev)
+ 	mutex_unlock(&priv->lock);
+ 	rtnl_unlock();
  
+-	phylink_mac_change(priv->phylink, true);
+-
+ 	netif_device_attach(ndev);
+ 
+ 	return 0;
 -- 
 2.17.1
 
