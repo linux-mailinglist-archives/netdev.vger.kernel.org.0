@@ -2,133 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7605402D72
-	for <lists+netdev@lfdr.de>; Tue,  7 Sep 2021 19:07:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BFED402DF4
+	for <lists+netdev@lfdr.de>; Tue,  7 Sep 2021 19:49:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345595AbhIGRIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Sep 2021 13:08:06 -0400
-Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:46512
-        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1345260AbhIGRIF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Sep 2021 13:08:05 -0400
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com [209.85.128.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 3FC554015D
-        for <netdev@vger.kernel.org>; Tue,  7 Sep 2021 17:06:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1631034417;
-        bh=VG0JhmyVLkk6Ofw6jiVRBn2qayN7edeiW2niGR0upjE=;
-        h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:
-         In-Reply-To:Content-Type;
-        b=DW9tvDKCIFDG49oCgdTZGYsao7WHQCFCyDvehY118aOJ24awi4yK43QaQ68ljseDq
-         72WKRLcwYHOujiFHJ428KRFtU8p4aJgGVCzfMIVfQkOq/N+63MdzMob6Qc8GSGyl1q
-         U8PpPEgklRs6+n22GNtH3S4RuyJi90x7jJDqqa1XHwhnsbRzgBKDEO1J4vyhUAktb7
-         r5IxAjGVg0wmgBn+WCGnqu0/2+p+7vLVAEWvm3E9ZKHu2e9kDIAOvoFCREfJRnxQrL
-         vGN1vYKTlRJUN/li7EdJ7gNa50yClNRZElbF8Gjo17bKiGzWZodss00CzcanMb4EqL
-         7Tn8Uu4pHtWqA==
-Received: by mail-wm1-f70.google.com with SMTP id r4-20020a1c4404000000b002e728beb9fbso1448479wma.9
-        for <netdev@vger.kernel.org>; Tue, 07 Sep 2021 10:06:57 -0700 (PDT)
+        id S239840AbhIGRuN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Sep 2021 13:50:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33156 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234449AbhIGRuD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Sep 2021 13:50:03 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A772C061757
+        for <netdev@vger.kernel.org>; Tue,  7 Sep 2021 10:48:56 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id s10so21015165lfr.11
+        for <netdev@vger.kernel.org>; Tue, 07 Sep 2021 10:48:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bjCisZtyiZU0LQwOeq50RsYJm8zh3sRUcejawyWs6lU=;
+        b=wmteHSfRwqG/ySfkjHDD1r+FmFQRX81yD5yQXmvHKwRnAtmnYC0LodQXNR0HrGOT0x
+         pTKCzmkazPZJzoRM1P+TWSX8t3zWJpuuCd9uRVKiL9BBEpn1uaErmNrI8YJLJ9ciDLcR
+         Q6NMfu2b7qpIWt8YLvDsNUgIZKkN13PYsW/F4YwyIzvTDwcTWlx4WIAFdeoncm42CFm9
+         nUaDEx7vA32VrmTM3/i7mTz3OtL1fuUxNBjdLZVNtKLi5oDJE2pl6k/YND45MP/YPg/w
+         BNMQFt9KIRmznWlN19UKMhU+O/ddHGm13HnR/jnAgLrcyTq1dhTp5Onf3MKRa1Ausb47
+         6n5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=VG0JhmyVLkk6Ofw6jiVRBn2qayN7edeiW2niGR0upjE=;
-        b=sPWVa4Zj6RF+7O35oT4wWLKJDVU7KeewgUGQmT+DMxSkfg58c/fjtlBWWHSxONUe2l
-         z7uGZdWzQdz8ec93O96nxAXrGEFtLNWU2ToZUDBbyQswPRy8R+mu1Ww7d61hXNFYp+yn
-         sz+oUEklK96+S5DCrM3fRPheLa4Jqjoxcixo4S9NTPw2V1Wbmq3E1LLh0fkH++rUp6fJ
-         dgsfYQy68uPluUykK/kttoJAkGD8BJrLS4sJ7Y4NLSFOqE/dBjRPdUiLLjkJWH96c1WA
-         68HQfbUGRddzZHPiQAl/5X5dr2VEtwXPdyr1TIxnuFsxPc4bELXZ9YV5nY0Km6DNjRgJ
-         e/tg==
-X-Gm-Message-State: AOAM531Wo/+EWZYnTGqWA4goGLm3pvMWfJnIzP/+KoJkRTg6wRQKh/p6
-        1P0pJ1hZiLlXrPff6ueqJq7iIKJvEdBwYEl9ORQcSM23+7geVQFSrF074uobqHnphJvyH3AFiQe
-        p5UxTHGLBFDxds2a5nfR8sDZJmUf+hlszRQ==
-X-Received: by 2002:a05:6000:186:: with SMTP id p6mr20176891wrx.210.1631034416929;
-        Tue, 07 Sep 2021 10:06:56 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzE/K0JY0VlMzZwE0MrSbz25moOxrUCE+1AcR5gJXHm/zeMeF7W8lJAkFYZcpZ3SugSoUEeOg==
-X-Received: by 2002:a05:6000:186:: with SMTP id p6mr20176851wrx.210.1631034416728;
-        Tue, 07 Sep 2021 10:06:56 -0700 (PDT)
-Received: from [192.168.3.211] ([79.98.113.47])
-        by smtp.gmail.com with ESMTPSA id w29sm11722496wra.88.2021.09.07.10.06.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Sep 2021 10:06:56 -0700 (PDT)
-Subject: Re: [PATCH 05/15] nfc: pn533: drop unneeded debug prints
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Krzysztof Opasiak <k.opasiak@samsung.com>,
-        Mark Greer <mgreer@animalcreek.com>,
-        "David S. Miller" <davem@davemloft.net>, linux-nfc@lists.01.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org
-References: <20210907121816.37750-1-krzysztof.kozlowski@canonical.com>
- <20210907121816.37750-6-krzysztof.kozlowski@canonical.com>
- <35626061-ff2e-cb01-21ff-87a6f776dc28@canonical.com>
- <20210907100310.0cdec18b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Message-ID: <f6677c91-30ba-132d-20d2-0ec7edf40025@canonical.com>
-Date:   Tue, 7 Sep 2021 19:06:55 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bjCisZtyiZU0LQwOeq50RsYJm8zh3sRUcejawyWs6lU=;
+        b=IJf1PG1qCF7Kr5xgpUTEL20D5pl9D/c1PjGI4/JQrMJyBXD1MS3GLg3bEsQ73nJ7MR
+         k5vPyuuX/pEg7k51b3uQ+aJ+NFZidH4bzm5/uoLQjOZoBSmWNCv+p3LcxRWUFa02qNFn
+         cPdTxGt47PYqKay2TWNE/sfSDHUTz40koJl2nsNfwL9FiwibBQ9DYaH5fR+0mKf68mee
+         ROWfyQFMLTKxPe8IazI5iPLu+jEHoXc5+UoRQmRpKIo3MOXaYH8q0qrOn9fETLs2uBgT
+         XpNWAto31K8kl+O1LHgAV6rkvPalbd6PGVAUZqzduz++wV82b1PtvKySpnRkRq5bMnqI
+         VuYQ==
+X-Gm-Message-State: AOAM533dcatI19vjD23m9v65Ifu2PJoBadd3NYLbe75SWbXyQkKJzmeI
+        IvpmDfQrRjQfgQsF8Oj3N12n1Kwda3wHA1RrRe0Fzw==
+X-Google-Smtp-Source: ABdhPJz2EPzZMWVdfMnV0euqBbeBksWmA24e9yEzRb7znw9ktyTzcukxU2qVnjFEfMl96VazxonrFDsBh9Gyk4c7w68=
+X-Received: by 2002:a19:6455:: with SMTP id b21mr13171889lfj.656.1631036934764;
+ Tue, 07 Sep 2021 10:48:54 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210907100310.0cdec18b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210830214859.403100-1-linus.walleij@linaro.org>
+ <20210830214859.403100-6-linus.walleij@linaro.org> <20210830224626.dvtvlizztfaazhlf@skbuf>
+In-Reply-To: <20210830224626.dvtvlizztfaazhlf@skbuf>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Tue, 7 Sep 2021 19:48:43 +0200
+Message-ID: <CACRpkdb7yhraJNH=b=mv=bE7p6Q_k-Yy0M9YT9QctKC1GLhVEw@mail.gmail.com>
+Subject: Re: [PATCH net-next 5/5 v2] net: dsa: rtl8366rb: Support fast aging
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Mauri Sandberg <sandberg@mailfence.com>,
+        DENG Qingfang <dqfext@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/09/2021 19:03, Jakub Kicinski wrote:
-> On Tue, 7 Sep 2021 18:05:25 +0200 Krzysztof Kozlowski wrote:
->> On 07/09/2021 14:18, Krzysztof Kozlowski wrote:
->>> ftrace is a preferred and standard way to debug entering and exiting
->>> functions so drop useless debug prints.
->>>
->>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
->>> ---
->>>  drivers/nfc/pn533/i2c.c   | 1 -
->>>  drivers/nfc/pn533/pn533.c | 2 --
->>>  2 files changed, 3 deletions(-)
->>>
->>> diff --git a/drivers/nfc/pn533/i2c.c b/drivers/nfc/pn533/i2c.c
->>> index e6bf8cfe3aa7..91d4a035eb63 100644
->>> --- a/drivers/nfc/pn533/i2c.c
->>> +++ b/drivers/nfc/pn533/i2c.c
->>> @@ -138,7 +138,6 @@ static irqreturn_t pn533_i2c_irq_thread_fn(int irq, void *data)
->>>  	}
->>>  
->>>  	client = phy->i2c_dev;  
->>
->> This line should also be removed (reported by kbuild robot).
->>
->> I will send a v2.
-> 
-> Dave marked the series as Deferred (although this patch is Changes
-> Requested, I'm guessing you did that, if so please don't change patch
-> states in netdev pw)
+On Tue, Aug 31, 2021 at 12:46 AM Vladimir Oltean <olteanv@gmail.com> wrote:
 
-Yes, that was me. Sorry for disturbing the process.
+> > +     /* This will age out any L2 entries */
+>
+> Clarify "any L2 entries". The fdb flushing process should remove the
+> dynamically learned FDB entries, it should keep the static ones. Did you
+> say "any" because rtl8366rb does not implement static FDB entries via
+> .port_fdb_add, and therefore all entries are dynamic, or does it really
+> delete static FDB entries?
 
->, please hold off:
-> 
-> 
-> # Form letter - net-next is closed
-> 
-> We have already sent the networking pull request for 5.15
-> and therefore net-next is closed for new drivers, features,
-> code refactoring and optimizations. We are currently accepting
-> bug fixes only.
-> 
-> Please repost when net-next reopens after 5.15-rc1 is cut.
-> 
-> Look out for the announcement on the mailing list or check:
-> http://vger.kernel.org/~davem/net-next.html
-> 
-> RFC patches sent for review only are obviously welcome at any time.
+It's what Realtek calls "L2 entries" sadly I do not fully understand
+their lingo.
 
-Sure, I'll wait till end of merge window.
+The ASIC can do static L2 entries as well, but I haven't looked into
+that. The (confused) docs for the function that set these bits is
+the following:
 
+"ASIC will age out L2 entry with fields Static, Auth and IP_MULT are 0.
+ Aging out function is for new address learning LUT update because
+ size of LUT is limited, old address information should not be kept and
+ get more new learning SA information. Age field of L2 LUT is updated
+ by following sequence {0b10,0b11,0b01,0b00} which means the LUT
+ entries with age value 0b00 is free for ASIC. ASIC will use this aging
+ sequence to decide which entry to be replace by new SA learning
+ information. This function can be replace by setting STP state each
+ port."
 
-Best regards,
-Krzysztof
+Next it sets the bit for the port in register
+RTL8366RB_SECURITY_CTRL.
+
+Realtek talks about "LUT" which I think is the same as "FDB"
+(which I assume is forwarding database, I'm not good with this stuff).
+
+My interpretation of this convoluted text is that static, auth and ip_mult
+will *not* be affected ("are 0"), but only learned entries in the LUT/FDB
+will be affected. The sequence listed in the comment I interpret as a
+reference to what the ASIC is doing with the age field for the entry
+internally to achieve this. Then I guess they say that one can also
+do fast aging by stopping the port (duh).
+
+I'll update the doc to say "any learned L2 entries", but eager to hear
+what you say about it too :)
+
+Yours,
+Linus Walleij
