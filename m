@@ -2,104 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B910402423
-	for <lists+netdev@lfdr.de>; Tue,  7 Sep 2021 09:23:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E73B2402511
+	for <lists+netdev@lfdr.de>; Tue,  7 Sep 2021 10:25:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241720AbhIGHW7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Sep 2021 03:22:59 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:24912 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238034AbhIGHWt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Sep 2021 03:22:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1630999303;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=oaKB7upFfFLl+Pp6dLBHJb3Ed1n4Piy1w3dtvzMllDk=;
-        b=ORTztN0VjnB+8j8/Jas0QubDGlulq0Qq47W9w/4wdZcXXNJvOMdV4Ltc9RSgN0hqed7QE8
-        gf1+j/aEn06fUuoF7BWkzB5oav6PHzaGF23qMwG5Pnxk9/buAoCRd69b+q1AAgCVO87NSh
-        8328cKwQvrzTszfaTLEBDlKrCd+J0J8=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-590-_MvVzoTdM2O-DAi8Pabb1g-1; Tue, 07 Sep 2021 03:21:37 -0400
-X-MC-Unique: _MvVzoTdM2O-DAi8Pabb1g-1
-Received: by mail-ed1-f69.google.com with SMTP id j13-20020aa7ca4d000000b003c44c679d73so4774262edt.8
-        for <netdev@vger.kernel.org>; Tue, 07 Sep 2021 00:21:37 -0700 (PDT)
+        id S242571AbhIGI00 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 7 Sep 2021 04:26:26 -0400
+Received: from mail-vs1-f50.google.com ([209.85.217.50]:35730 "EHLO
+        mail-vs1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242535AbhIGI0Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Sep 2021 04:26:16 -0400
+Received: by mail-vs1-f50.google.com with SMTP id p14so7610659vsm.2;
+        Tue, 07 Sep 2021 01:25:10 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=oaKB7upFfFLl+Pp6dLBHJb3Ed1n4Piy1w3dtvzMllDk=;
-        b=fm0MuFE+x5A9GlzFKxK7WcHvlfMrribbRhDGMqhFKtjI4mkvwDgYQSMcrDNCt81GtG
-         woOoeniXX6X0pLSlwvOQunpI559wbaDUOEmb/mgc9X6k46CVM2DyKmRCmzB5/SlzLArY
-         0t2XNgRjlxzt9nTAU+GnsYV4Y51HkGLROFapW7PqEQpnMSpU+Vo8VZu5h2Dt67ZusFvk
-         Xbxj5pW7dsOorqfVuI3cckCyKD02x0NFY2XurDbNO7QK32+NisqBV02XlO8mwNel+oI5
-         apT2MB+E1hp1T5W2CPO0nNF02j/fPszRwD/6NteVQ4UOoNUjrLlLXvF18Hy+scAdrN0C
-         H6YQ==
-X-Gm-Message-State: AOAM530PMNcghhFcpxOD16B6Gd36ErN1CEr9ktpQf3OHruA36XgzLRRj
-        7bNFiyRpGRH61Y3kppE6IO6VcUsL23YjCUh+2fuLLM+FeVlfR2xCdRPpmQKqUVQ1HBolgpKzjAY
-        fs5sHZ5J4nQDGD4YT
-X-Received: by 2002:aa7:cd92:: with SMTP id x18mr16824604edv.325.1630999295981;
-        Tue, 07 Sep 2021 00:21:35 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx6Uc8T7kEgxWO5FQfq7yWolBxu7KgEZ38BIbUnYz9ZEWtsIPRwsqwwuW4waLHl5HXsZmNjuQ==
-X-Received: by 2002:aa7:cd92:: with SMTP id x18mr16824591edv.325.1630999295860;
-        Tue, 07 Sep 2021 00:21:35 -0700 (PDT)
-Received: from steredhat (host-79-51-2-59.retail.telecomitalia.it. [79.51.2.59])
-        by smtp.gmail.com with ESMTPSA id ee18sm5872580edb.62.2021.09.07.00.21.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Sep 2021 00:21:35 -0700 (PDT)
-Date:   Tue, 7 Sep 2021 09:21:33 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Dexuan Cui <decui@microsoft.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH] MAINTAINERS: add VM SOCKETS (AF_VSOCK) entry
-Message-ID: <20210907072133.mzyqugkob3yqm2ek@steredhat>
-References: <20210906091159.66181-1-sgarzare@redhat.com>
- <BYAPR21MB1270B80C872030CA534C667EBFD29@BYAPR21MB1270.namprd21.prod.outlook.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=i5otPz9IyNInXN4bHLqTb0mS9hIBl4WWXnjx8UfK1+8=;
+        b=hGKtKYVWwtPBx+cdkbe+Qu+cE8MRQbJDEt17SNywML54Kl9fpRLOTQWO2AtyCJt65r
+         JLpExbQWDfVpMTtpjcC9+2CN8etIkEY3IAIUzlKFghcJrzuh7ejEoy2pAlNXGQXlUUso
+         skSCjdjPTQxJHreBxYKRlcXFKLHmJCXd9n5JfI+8lbIIPKKwlGaJMDcjwxZntr+/UDKs
+         9simxmSqkU5tFjHoAiqlFyjUnQWARFgZ8iBrlf0t/MDkPk6+wbqHKWFe2GgeeEmNmbFj
+         Q8+hW+GHOUj0fMOXs2AxEbzYY6JyHi2URLWlLcMNvrkwWIAp2gSnPMnyzbP+eUh2Y/ET
+         spMQ==
+X-Gm-Message-State: AOAM532vyTGFFJmztXjtsArTJNMqbrA5kivn2USE4F9iQvyGhlttYe93
+        CjCUtrJOEsxr68MHhrJ1WzD70Mb/GCP4Uy2MwJ4=
+X-Google-Smtp-Source: ABdhPJzwZKq9XwQQIWNnk4yre3z52lV+DpCZ+Fh8SeQZudq4WhXPp91m3s38OB9Wl4gw/hVKRQWmznD55GZGp8/YmGU=
+X-Received: by 2002:a67:cb0a:: with SMTP id b10mr8214785vsl.9.1631003110202;
+ Tue, 07 Sep 2021 01:25:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <BYAPR21MB1270B80C872030CA534C667EBFD29@BYAPR21MB1270.namprd21.prod.outlook.com>
+References: <20210803114051.2112986-1-arnd@kernel.org> <20210803114051.2112986-11-arnd@kernel.org>
+ <CAMuHMdVvBL=qZkWF5DXdKjFMKgT-3X-OUBnLYrqawQijoLG4Xw@mail.gmail.com>
+In-Reply-To: <CAMuHMdVvBL=qZkWF5DXdKjFMKgT-3X-OUBnLYrqawQijoLG4Xw@mail.gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 7 Sep 2021 10:24:58 +0200
+Message-ID: <CAMuHMdVhN-frrSgsxJ_28_5B+gYROTkN_dPT1yHBsQU+2U4_=g@mail.gmail.com>
+Subject: Re: [PATCH v2 10/14] [net-next] make legacy ISA probe optional
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>, Andrii Nakryiko <andriin@fb.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Doug Berger <opendmb@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Finn Thain <fthain@telegraphics.com.au>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, Jessica Yu <jeyu@kernel.org>,
+        Michael Schmitz <schmitzmic@gmail.com>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Sam Creasey <sammy@sammy.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 06, 2021 at 07:10:46PM +0000, Dexuan Cui wrote:
->> From: Stefano Garzarella <sgarzare@redhat.com>
->> Sent: Monday, September 6, 2021 2:12 AM
->>
->> Add a new entry for VM Sockets (AF_VSOCK) that covers vsock core,
->> tests, and headers. Move some general vsock stuff from virtio-vsock
->> entry into this new more general vsock entry.
->>
->> I've been reviewing and contributing for the last few years,
->> so I'm available to help maintain this code.
->>
->> Cc: Dexuan Cui <decui@microsoft.com>
->> Cc: Jorgen Hansen <jhansen@vmware.com>
->> Cc: Stefan Hajnoczi <stefanha@redhat.com>
->> Suggested-by: Michael S. Tsirkin <mst@redhat.com>
->> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
->> ---
->>
->> Dexuan, Jorgen, Stefan, would you like to co-maintain or
->> be added as a reviewer?
->>
->> Thanks,
->> Stefano
+Hi Arnd,
+
+On Wed, Aug 11, 2021 at 4:50 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> On Tue, Aug 3, 2021 at 1:41 PM Arnd Bergmann <arnd@kernel.org> wrote:
+> > From: Arnd Bergmann <arnd@arndb.de>
+> >
+> > There are very few ISA drivers left that rely on the static probing from
+> > drivers/net/Space.o. Make them all select a new CONFIG_NETDEV_LEGACY_INIT
+> > symbol, and drop the entire probe logic when that is disabled.
+> >
+> > The 9 drivers that are called from Space.c are the same set that
+> > calls netdev_boot_setup_check().
+> >
+> > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 >
->Please skip me (I still review the hv_sock related patches).
+> > --- a/drivers/net/ethernet/8390/ne.c
+> > +++ b/drivers/net/ethernet/8390/ne.c
+> > @@ -951,6 +951,7 @@ static int __init ne_init(void)
+> >  }
+> >  module_init(ne_init);
+> >
+> > +#ifdef CONFIG_NETDEV_LEGACY_INIT
+> >  struct net_device * __init ne_probe(int unit)
+> >  {
+> >         int this_dev;
+> > @@ -991,6 +992,7 @@ struct net_device * __init ne_probe(int unit)
+> >
+> >         return ERR_PTR(-ENODEV);
+> >  }
+> > +#endif
+> >  #endif /* MODULE */
+>
+> My rbtx4927 build log says:
+>
+> drivers/net/ethernet/8390/ne.c:909:20: warning: ‘ne_add_devices’
+> defined but not used [-Wunused-function]
 
-Yep, thanks for the help with hv_vsock!
+Same for atari_defconfig.
 
-Stefano
+Gr{oetje,eeting}s,
 
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
