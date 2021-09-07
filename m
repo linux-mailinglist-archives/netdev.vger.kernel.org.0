@@ -2,101 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E063D402895
-	for <lists+netdev@lfdr.de>; Tue,  7 Sep 2021 14:20:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39DB44028DD
+	for <lists+netdev@lfdr.de>; Tue,  7 Sep 2021 14:35:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344473AbhIGMVB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Sep 2021 08:21:01 -0400
-Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:33710
-        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1344497AbhIGMUC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Sep 2021 08:20:02 -0400
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com [209.85.221.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id A0A954079E
-        for <netdev@vger.kernel.org>; Tue,  7 Sep 2021 12:18:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1631017120;
-        bh=IGi454bY1uM8p5QRZSKGDo9YXvHCL/LufQFtzz+SznM=;
-        h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=BKgQmkFGobUvYp4GFsCJgQW/pS4+dZHWtVS2CgD0+/SI7oAylF4qKPMClkPE2XS9K
-         KiZgUKdoGhiybUMClbmES0ASH/vud9PeZBpFkNjWyNt1E5o1XhJkp7Rpx++N8C3zW6
-         Ho1loJ4DQ2kx8RN6QMF24nvlqOSbTPQAKgfAid2UyNRputTZHAaoQs+OO5q23+jOtk
-         x6M9WFETDet2o8tUchLOwI9jxOtL8VKItU8ahicahuLk/ImV0VX/13u7+cHFhCxhbQ
-         ZXqRG6pQpbHxYhkM5caBjQto37Wy/nRNpkqVFkWT+0GhNR+RcCyPMu8vz/LMs5nc6E
-         2oXBE6+0V5CTw==
-Received: by mail-wr1-f72.google.com with SMTP id t15-20020a5d42cf000000b001565f9c9ee8so2055596wrr.2
-        for <netdev@vger.kernel.org>; Tue, 07 Sep 2021 05:18:40 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=IGi454bY1uM8p5QRZSKGDo9YXvHCL/LufQFtzz+SznM=;
-        b=L2S4VNWzSnOh3/HUN6pf9n2wotZURKz1tFLQnz3bkcjdC2Pi7dhWafA6uWDTz6MWIk
-         dX/mIbFcAPwO/ks1DoGd3a+s6KClH6m2GRJN0iPiHP5OHD9VJVEbPkhHtdrO/Cx/J0ke
-         5Lj1lbkQORj1EP3lpOP83+1KGjmGrP/RdYlmcs2uUVfw4flCG+8RtqczuOaW0i+z9HFq
-         Ch7cy5323ju66Z3g28vfAbyxhgPU9+Bray1J6BgNqx/WBfi78/xFl33xk7Sz69A7eQGY
-         iewsZeezVfdrMl86epFuXNjXT1a1c+OcezGWOItmU3rBPVKBrxB+lcnjo1meaew4UrTi
-         h/jQ==
-X-Gm-Message-State: AOAM531lH7G6BYzrPSUuOJh1CUbKJM6aXpbK1z+aE5q0CL6eR2CGEUe9
-        rNIJN/5IGkEPr9e2tfwH9t5ZTRw1x7VV8kb3Ul1r779VP2pb7SqV2CtUPcb5V35mOZXwOcpUohW
-        1cvdcv+AfmnNqA7jlza2gEqtQCJS9OnONfg==
-X-Received: by 2002:a05:600c:1d27:: with SMTP id l39mr3629441wms.146.1631017120415;
-        Tue, 07 Sep 2021 05:18:40 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxzkQReT6hqXvnsRi4xVMvPv5mwLHDY/KqHilLqyCDbOJpRRpQ8tjRRU7brxn8w70vPDRKkmA==
-X-Received: by 2002:a05:600c:1d27:: with SMTP id l39mr3629425wms.146.1631017120289;
-        Tue, 07 Sep 2021 05:18:40 -0700 (PDT)
-Received: from kozik-lap.lan ([79.98.113.47])
-        by smtp.gmail.com with ESMTPSA id m3sm13525216wrg.45.2021.09.07.05.18.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Sep 2021 05:18:39 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Krzysztof Opasiak <k.opasiak@samsung.com>,
-        Mark Greer <mgreer@animalcreek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-nfc@lists.01.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org
-Subject: [PATCH 15/15] nfc: mrvl: drop unneeded memory allocation fail messages
-Date:   Tue,  7 Sep 2021 14:18:16 +0200
-Message-Id: <20210907121816.37750-16-krzysztof.kozlowski@canonical.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210907121816.37750-1-krzysztof.kozlowski@canonical.com>
-References: <20210907121816.37750-1-krzysztof.kozlowski@canonical.com>
+        id S1343949AbhIGMgw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Sep 2021 08:36:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44164 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1343886AbhIGMgw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 Sep 2021 08:36:52 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B91F86105A;
+        Tue,  7 Sep 2021 12:35:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1631018145;
+        bh=ptlJekemLbUgW6di/vftwrTn+WLtKtSU4+aQzLLA7UU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=jGyFcBY/t2O+BXAhvSKWTXFcf1ixzfvyA74KpgoIVabPXSW/mNv6PPFIJQ0ZU8/yf
+         fpxh+nEuzmJYNvWxyjm3zhSk2tGiJNwtYsQ2Kc5RW3rvJ5oJrpNDXzQm5jGFQX6eKQ
+         XjM0BlAcbNK/aC5c/GzTZjdceqG3D0ZuVqv5mtPvSZ+reZBJPGv785VnRwvbe7NVE9
+         UZHmVnnePR7H1z/+U0lhBX/mPHSk07wxUcdv6LCHGxELu58EtgFJ4Nex/hdJCsBrwM
+         x1DC37nLVCyInp9KqzZ/CGqjElOC+arqZS7/HtoQ9+p8iX+fa/I643o/ZEaWYNcUYg
+         qPNCQIZ9LJDYw==
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     bpf@vger.kernel.org, netdev@vger.kernel.org
+Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
+        john.fastabend@gmail.com, dsahern@kernel.org, brouer@redhat.com,
+        echaudro@redhat.com, jasowang@redhat.com,
+        alexander.duyck@gmail.com, saeed@kernel.org,
+        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
+        tirthendu.sarkar@intel.com, toke@redhat.com
+Subject: [PATCH v13 bpf-next 00/18] mvneta: introduce XDP multi-buffer support
+Date:   Tue,  7 Sep 2021 14:35:04 +0200
+Message-Id: <cover.1631007211.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=y
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-nci_skb_alloc() already prints an error message on memory allocation
-failure.
+This series introduce XDP multi-buffer support. The mvneta driver is
+the first to support these new "non-linear" xdp_{buff,frame}. Reviewers
+please focus on how these new types of xdp_{buff,frame} packets
+traverse the different layers and the layout design. It is on purpose
+that BPF-helpers are kept simple, as we don't want to expose the
+internal layout to allow later changes.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
----
- drivers/nfc/nfcmrvl/fw_dnld.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+The main idea for the new multi-buffer layout is to reuse the same
+structure used for non-linear SKB. This rely on the "skb_shared_info"
+struct at the end of the first buffer to link together subsequent
+buffers. Keeping the layout compatible with SKBs is also done to ease
+and speedup creating a SKB from an xdp_{buff,frame}.
+Converting xdp_frame to SKB and deliver it to the network stack is shown
+in patch 05/18 (e.g. cpumaps).
 
-diff --git a/drivers/nfc/nfcmrvl/fw_dnld.c b/drivers/nfc/nfcmrvl/fw_dnld.c
-index edac56b01fd1..e83f65596a88 100644
---- a/drivers/nfc/nfcmrvl/fw_dnld.c
-+++ b/drivers/nfc/nfcmrvl/fw_dnld.c
-@@ -76,10 +76,8 @@ static struct sk_buff *alloc_lc_skb(struct nfcmrvl_private *priv, uint8_t plen)
- 	struct nci_data_hdr *hdr;
- 
- 	skb = nci_skb_alloc(priv->ndev, (NCI_DATA_HDR_SIZE + plen), GFP_KERNEL);
--	if (!skb) {
--		pr_err("no memory for data\n");
-+	if (!skb)
- 		return NULL;
--	}
- 
- 	hdr = skb_put(skb, NCI_DATA_HDR_SIZE);
- 	hdr->conn_id = NCI_CORE_LC_CONNID_PROP_FW_DL;
+A multi-buffer bit (mb) has been introduced in the flags field of xdp_{buff,frame}
+structure to notify the bpf/network layer if this is a xdp multi-buffer frame
+(mb = 1) or not (mb = 0).
+The mb bit will be set by a xdp multi-buffer capable driver only for
+non-linear frames maintaining the capability to receive linear frames
+without any extra cost since the skb_shared_info structure at the end
+of the first buffer will be initialized only if mb is set.
+Moreover the flags field in xdp_{buff,frame} will be reused even for
+xdp rx csum offloading in future series.
+
+Typical use cases for this series are:
+- Jumbo-frames
+- Packet header split (please see Google’s use-case @ NetDevConf 0x14, [0])
+- TSO/GRO for XDP_REDIRECT
+
+The two following ebpf helpers (and related selftests) has been introduced:
+- bpf_xdp_adjust_data:
+  Move xdp_md->data and xdp_md->data_end pointers in subsequent fragments
+  according to the offset provided by the ebpf program. This helper can be
+  used to read/write values in frame payload.
+- bpf_xdp_get_buff_len:
+  Return the total frame size (linear + paged parts)
+
+bpf_xdp_adjust_tail and bpf_xdp_copy helpers have been modified to take into
+account xdp multi-buff frames.
+
+A multi-buffer enabled NIC may receive XDP frames with multiple frags. If a BPF
+program does not understand mb layouts its possible to contrive a BPF program
+that incorrectly views data_end as the end of data when there is more data in
+the payload. Note helpers will generally due the correct thing, for example
+perf_output will consume entire payload. But, it is still possible some programs
+could do the wrong thing even if in an edge case. Although we expect most BPF
+programs not to be impacted we can't rule out, you've been warned.
+
+More info about the main idea behind this approach can be found here [1][2].
+
+Changes since v12:
+- fix bpf_xdp_adjust_data helper for single-buffer use case
+- return -EFAULT in bpf_xdp_adjust_{head,tail} in case the data pointers are not
+  properly reset
+- collect ACKs from John
+
+Changes since v11:
+- add missing static to bpf_xdp_get_buff_len_proto structure
+- fix bpf_xdp_adjust_data helper when offset is smaller than linear area length.
+
+Changes since v10:
+- move xdp->data to the requested payload offset instead of to the beginning of
+  the fragment in bpf_xdp_adjust_data()
+
+Changes since v9:
+- introduce bpf_xdp_adjust_data helper and related selftest
+- add xdp_frags_size and xdp_frags_tsize fields in skb_shared_info
+- introduce xdp_update_skb_shared_info utility routine in ordere to not reset
+  frags array in skb_shared_info converting from a xdp_buff/xdp_frame to a skb 
+- simplify bpf_xdp_copy routine
+
+Changes since v8:
+- add proper dma unmapping if XDP_TX fails on mvneta for a xdp multi-buff
+- switch back to skb_shared_info implementation from previous xdp_shared_info
+  one
+- avoid using a bietfield in xdp_buff/xdp_frame since it introduces performance
+  regressions. Tested now on 10G NIC (ixgbe) to verify there are no performance
+  penalties for regular codebase
+- add bpf_xdp_get_buff_len helper and remove frame_length field in xdp ctx
+- add data_len field in skb_shared_info struct
+- introduce XDP_FLAGS_FRAGS_PF_MEMALLOC flag
+
+Changes since v7:
+- rebase on top of bpf-next
+- fix sparse warnings
+- improve comments for frame_length in include/net/xdp.h
+
+Changes since v6:
+- the main difference respect to previous versions is the new approach proposed
+  by Eelco to pass full length of the packet to eBPF layer in XDP context
+- reintroduce multi-buff support to eBPF kself-tests
+- reintroduce multi-buff support to bpf_xdp_adjust_tail helper
+- introduce multi-buffer support to bpf_xdp_copy helper
+- rebase on top of bpf-next
+
+Changes since v5:
+- rebase on top of bpf-next
+- initialize mb bit in xdp_init_buff() and drop per-driver initialization
+- drop xdp->mb initialization in xdp_convert_zc_to_xdp_frame()
+- postpone introduction of frame_length field in XDP ctx to another series
+- minor changes
+
+Changes since v4:
+- rebase ontop of bpf-next
+- introduce xdp_shared_info to build xdp multi-buff instead of using the
+  skb_shared_info struct
+- introduce frame_length in xdp ctx
+- drop previous bpf helpers
+- fix bpf_xdp_adjust_tail for xdp multi-buff
+- introduce xdp multi-buff self-tests for bpf_xdp_adjust_tail
+- fix xdp_return_frame_bulk for xdp multi-buff
+
+Changes since v3:
+- rebase ontop of bpf-next
+- add patch 10/13 to copy back paged data from a xdp multi-buff frame to
+  userspace buffer for xdp multi-buff selftests
+
+Changes since v2:
+- add throughput measurements
+- drop bpf_xdp_adjust_mb_header bpf helper
+- introduce selftest for xdp multibuffer
+- addressed comments on bpf_xdp_get_frags_count
+- introduce xdp multi-buff support to cpumaps
+
+Changes since v1:
+- Fix use-after-free in xdp_return_{buff/frame}
+- Introduce bpf helpers
+- Introduce xdp_mb sample program
+- access skb_shared_info->nr_frags only on the last fragment
+
+Changes since RFC:
+- squash multi-buffer bit initialization in a single patch
+- add mvneta non-linear XDP buff support for tx side
+
+[0] https://netdevconf.info/0x14/session.html?talk-the-path-to-tcp-4k-mtu-and-rx-zerocopy
+[1] https://github.com/xdp-project/xdp-project/blob/master/areas/core/xdp-multi-buffer01-design.org
+[2] https://netdevconf.info/0x14/session.html?tutorial-add-XDP-support-to-a-NIC-driver (XDPmulti-buffers section)
+
+Eelco Chaudron (3):
+  bpf: add multi-buff support to the bpf_xdp_adjust_tail() API
+  bpf: add multi-buffer support to xdp copy helpers
+  bpf: update xdp_adjust_tail selftest to include multi-buffer
+
+Lorenzo Bianconi (15):
+  net: skbuff: add size metadata to skb_shared_info for xdp
+  xdp: introduce flags field in xdp_buff/xdp_frame
+  net: mvneta: update mb bit before passing the xdp buffer to eBPF layer
+  net: mvneta: simplify mvneta_swbm_add_rx_fragment management
+  net: xdp: add xdp_update_skb_shared_info utility routine
+  net: marvell: rely on xdp_update_skb_shared_info utility routine
+  xdp: add multi-buff support to xdp_return_{buff/frame}
+  net: mvneta: add multi buffer support to XDP_TX
+  net: mvneta: enable jumbo frames for XDP
+  bpf: introduce bpf_xdp_get_buff_len helper
+  bpf: move user_size out of bpf_test_init
+  bpf: introduce multibuff support to bpf_prog_test_run_xdp()
+  bpf: test_run: add xdp_shared_info pointer in bpf_test_finish
+    signature
+  net: xdp: introduce bpf_xdp_adjust_data helper
+  bpf: add bpf_xdp_adjust_data selftest
+
+ drivers/net/ethernet/marvell/mvneta.c         | 204 ++++++++++-------
+ include/linux/skbuff.h                        |   6 +-
+ include/net/xdp.h                             |  95 +++++++-
+ include/uapi/linux/bpf.h                      |  39 ++++
+ kernel/trace/bpf_trace.c                      |   3 +
+ net/bpf/test_run.c                            | 117 ++++++++--
+ net/core/filter.c                             | 216 +++++++++++++++++-
+ net/core/xdp.c                                |  76 +++++-
+ tools/include/uapi/linux/bpf.h                |  39 ++++
+ .../bpf/prog_tests/xdp_adjust_data.c          |  63 +++++
+ .../bpf/prog_tests/xdp_adjust_tail.c          | 118 ++++++++++
+ .../selftests/bpf/prog_tests/xdp_bpf2bpf.c    | 151 ++++++++----
+ .../bpf/progs/test_xdp_adjust_tail_grow.c     |  10 +-
+ .../bpf/progs/test_xdp_adjust_tail_shrink.c   |  32 ++-
+ .../selftests/bpf/progs/test_xdp_bpf2bpf.c    |   2 +-
+ .../bpf/progs/test_xdp_update_frags.c         |  45 ++++
+ 16 files changed, 1051 insertions(+), 165 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_adjust_data.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_update_frags.c
+
 -- 
-2.30.2
+2.31.1
 
