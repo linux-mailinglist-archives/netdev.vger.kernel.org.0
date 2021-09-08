@@ -2,195 +2,247 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32DE940354D
-	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 09:28:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 930E740359F
+	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 09:44:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348373AbhIHH2Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Sep 2021 03:28:16 -0400
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:18950 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345425AbhIHH2P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Sep 2021 03:28:15 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1631086028; x=1662622028;
-  h=from:to:subject:date:message-id:references:in-reply-to:
-   content-id:content-transfer-encoding:mime-version;
-  bh=GU+Bdjk2JqBCCD2T323mlJe9iezax5njlkyI0TZBHt8=;
-  b=MZR7QpS0buSkFxpFiajnZM8oR8gEvSLOUG0eL/SDonhulkb6Rv8GgQPd
-   3Dqihot5Rvt+UBZcN2Z++CCcnHYZgwT+yioucJHVxUCJ4+GB+ir5Uu9WH
-   k/NoE3xFQhAEsphgySjWEUKqfUKSbCysIC8HPmC79UiAEhGOJcMXc6rTR
-   Wjg2T5Jy8xjHu6NNNeoFYRbeiD5+TJLoE7h417EZbUyIeBNV7yj3e7EKu
-   G1TkLt4f4Jdd2OPCP/ZWHx7qUfnLCQnh13gZ4PMSQpf4RVUxTrAQ0W7ke
-   ke8z1CQi8apGoOyVFLXIkAasY3ovHHUutN59QWF3UkJqQqoblKQM2EZ05
-   A==;
-IronPort-SDR: F5gVHx1uQLYM5iULYzdS1nbe7X4nhsqhq/72iixL0lqhMz5EQhvRv/iCj91By1IAGDjeqyEoTE
- YXa69cyi0efwogH7z6g9/VB4+6EOz6fgMEJ6SqE5mCrHbD0OqxNjzcGx3/3F5jdD9eaHKrCXL2
- 0k825X7BeyhBaCNiZbh77sIEmGVsdxKqmg9VHtLJOe/wcx0bolC3Ad+D5AHrqIxNgBgvpk6+aY
- 7mL7K5qUg1l8USKrd076jaomxQ5UhOJwrUitnYkPHCXUi9oU63DeWtNipISPQPpBKqjNJOhX3o
- KdH69NC1nLn2Pta33j/iLZBb
-X-IronPort-AV: E=Sophos;i="5.85,277,1624345200"; 
-   d="scan'208";a="135762823"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Sep 2021 00:27:07 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Wed, 8 Sep 2021 00:27:06 -0700
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14 via Frontend Transport; Wed, 8 Sep 2021 00:27:06 -0700
+        id S1350259AbhIHHpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Sep 2021 03:45:04 -0400
+Received: from mail-eopbgr80052.outbound.protection.outlook.com ([40.107.8.52]:29825
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S233210AbhIHHpD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Sep 2021 03:45:03 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YB8PNLnyuZuqucvMw9cS+PutGQNn6DmbdVE/dWTHNezjaHct5tYZndiC3wRMt+LOCD7oAON6WUA+7+vmjvP9I2Nv3f/9KEe/uI7zT1+q7Bf/TEoFUUP52kva2gZ9xg4DB1SMJ/5bcNLuP6UCgVGrQblOuuYVEJHa5CI8SV7P5QRVOgdIAoEriPOsVbPQvSc6JcGv9g6Vm+gQynQf5pXv+izeWEBrCKipFJxuRrENDQuyUdNlHGbiuuvSHOr/skWZ6f49seNd5oJ/OzUBNxDcnfEMvKL7L/UHT8o775x/HxdzJGqekqRe68177QqSXQhi4syUZDfxRaP2stj/XizVcw==
+ b=Ya6WXrIyF9uJuY12LmyTQCMU3XIhcUSMIL0ni0Gs4n5GaX+SLNHQ6O/PTsPXOdlIQlO8eVW7KlnkrzpPEWpWuWS6juuCGXgPl689bcurMMUaYXE+CmzNBoLNQOvSKMUOhJaYO7qlHQBMlfzSz14/t46ACuuFcZ+Y/j8gZu3AD2M0FI+3h/vUISOIsGwgc7VjucVMCPUFQ+D/UJ8G4c8DeH/cJIOu64kX+vIsqtScT2RHsDsp1ikFESUSvjHPqx+r6ezeJZ729EBrlfyHY11dYV/fNeZTZ/QhsshS8dzaChPiLqLrK+95No7/fQJ0lLtbI3Y+2ZKc/QyPR33fT///YQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=yOd2Pl5XxJ338sx3oJqw1geuhysoz8AEM0qM1ckeHtI=;
- b=YhUHv80v67l5PEqk9KJXklZaiRPE9WihtP3YpweAozwhdzS8k6znZ6G1diHOj7H+T2GAYld2YKS4ywJH8F0DiiRNCSn8XPN2PlMpolEfL4opIzM4tfkCLBgLz4flOoHOKpfguSWtTHoteZGFc+5uolTTYVDcJhyNdyXYiYjiNkmK/WM+tMbobO8zAhGGzTX9PViP1jxvG3Ye++/eI2pq1NRpzoAkaATp3Un3LB287vaKj/PgAbWx8uO+OXMXh7VQ9FlDhB4/w8fTxPxixe/krqJGvwS24xSJ36eSVfEUhAkKCJ6lEe9A+nrh9Gt3FQoX0HMU8ruCnaTq4mZCVTMnCA==
+ bh=SxFOVMvr3I7ZqC047mf3EEdFJnJVE0Na9oNxpm+A3cM=;
+ b=FLbe3AkKR3BAjRluky8FL6x7WUZoVNQGRNd/lgcRmA7IkgSWNcwqPngVqxyKX7uV6Yy9GoYBHu1pOyiPs2Hh1ZE6ZM6Cgm7XiNN4kUru86KpQilVrUyCMW/HKRC7wsG2+KGzj2Btw508wZKft7XilcNTMu08VokIzzg5PnDHMOGxFJNoYm94aYVw+fyb5EPUCMDgoLniKihPKNCpj7RgO0oXBnCWPtFvd/IJ6B88FvrQM91yOzZfgUbK09DT9qXPL1VTJhOWxlaQZv4rib4eaV6jSPHzJlNzde5AugF4fwzF4DsV01nb/LcEFIlrlP7B+DbQqD7xXQieY/KM8W/vsQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yOd2Pl5XxJ338sx3oJqw1geuhysoz8AEM0qM1ckeHtI=;
- b=fswOhQ7TFRgHi/te8qaGp8HyUDki7FWhnp0GK1wBDBEU29X6mGIGC7Z/QQxzAnNo3tPP8VB361z7ombqKxNIXSdVMBOi3heDU0rTVhU1htTyI7Cvz3Dw+hGpq6nXCEgFguq7eqcI1go5dUF2lQSIOcs5Ib7hkHWfBDjA6+z+SmE=
-Received: from DM4PR11MB5536.namprd11.prod.outlook.com (2603:10b6:5:39b::15)
- by DM6PR11MB4106.namprd11.prod.outlook.com (2603:10b6:5:19f::31) with
+ bh=SxFOVMvr3I7ZqC047mf3EEdFJnJVE0Na9oNxpm+A3cM=;
+ b=hM0XdG3owte4gbonMMj07bhTt30imOdbT3+H0jz/weCrxK+je6OAgJ/F90jBrCnQprdlvRxEeWhuoXldOY/PiPruBd9CkHh5aM2V2Z+5+38YN7GOWnjDYfDQkRFuVZKqEkW9N948/aTODgRZ4IdLbqN3iTJvCbJYkVD0HxRPO2o=
+Authentication-Results: st.com; dkim=none (message not signed)
+ header.d=none;st.com; dmarc=none action=none header.from=nxp.com;
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
+ by DB6PR0401MB2327.eurprd04.prod.outlook.com (2603:10a6:4:48::25) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.14; Wed, 8 Sep
- 2021 07:27:03 +0000
-Received: from DM4PR11MB5536.namprd11.prod.outlook.com
- ([fe80::e016:4c8f:2234:fe1c]) by DM4PR11MB5536.namprd11.prod.outlook.com
- ([fe80::e016:4c8f:2234:fe1c%9]) with mapi id 15.20.4478.025; Wed, 8 Sep 2021
- 07:27:03 +0000
-From:   <Nicolas.Ferre@microchip.com>
-To:     <ztong0001@gmail.com>, <Claudiu.Beznea@microchip.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1] net: macb: fix use after free on rmmod
-Thread-Topic: [PATCH v1] net: macb: fix use after free on rmmod
-Thread-Index: AQHXpILrg944TDc8eEOxLjHp95xqtQ==
-Date:   Wed, 8 Sep 2021 07:27:03 +0000
-Message-ID: <48b53487-a708-ec79-a993-3448f4ca6e6d@microchip.com>
-References: <20210907202958.692166-1-ztong0001@gmail.com>
-In-Reply-To: <20210907202958.692166-1-ztong0001@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=microchip.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 2fe35875-456b-4466-07d4-08d9729a0e19
-x-ms-traffictypediagnostic: DM6PR11MB4106:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM6PR11MB410618E7A47A5D87242575B8E0D49@DM6PR11MB4106.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Wz1EX9syotrUeJPfxYmOPmXdSwY6zXqvDcNn05uDlJbi7i9AT/cb+egHt2xkhPQzD0MJYpoTX4OzD5t+QBRwwPN+0clFNXdXA3tih6MSqmZFfJk4XWQSaNIxJoUoHPt2dmkFJU3NwJxuGexQayrV/10ZoGL8prhc1iXkOY/r3H/OUc6HWsZefw3/rMDeoG95+yUFqmp+xn+P6GPWg1rQefBsGLdOIsqGoY2/OxP7R/96Ms4nZyB5DmUXxLoKE6tQEvWepYOBbQ7XIRj9NKofQe2w84VKCdRwA+QdLSpreo+MWua+oiFVoW9Ti/eM1wM+CZ7Amr25aDCtGz5fN1ESWXAVFstFZpcsJiX1sBd6C2bGAN0QXrar7RQJv5o77Mck1e3M6X4jlXZ5qrmTh8HYSAlqKMluQBo7s3RlTdWApM0w2VZ/fggOuP4tBaICcjUAsuBJiqUxtX6Ke23P6SUMC0iscBAQ/FuLoGNNJ7SdhhFZWyxRvXPgglhPChjIWr2Wv/0mpRQLlj7OoakAbnkpJ+ji8UDx25rZeGaEibr1Jkq8DWzHdqj7I/x+VzPnVRiFT4L3gcNCZOGlglb9AcmxTrKCOE5tuZK69SdJppTi6DWyZXu37lSbqIegxRaCQqN4eHZ3uQfZmVRIlGJxFRu6BGHzAHl7Xs26xXsGozuhTqENrnSfI2e1fOCrhTNweP3JJdk5HdZ6T7kK8UZ1wTKyYK9gG0ywwf6mNs5LaLVn/Q1OzLPZzsaU/CtCipiGQz5T6dQpwgJ+0Wa6T+QsmprZng==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB5536.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(110136005)(31696002)(76116006)(38100700002)(186003)(86362001)(31686004)(36756003)(8936002)(8676002)(316002)(2616005)(6512007)(91956017)(66946007)(66556008)(64756008)(2906002)(122000001)(66476007)(508600001)(6506007)(66446008)(38070700005)(53546011)(6486002)(83380400001)(5660300002)(71200400001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?Windows-1252?Q?I8S1ZYN5Endj5UukaFubjyo6me86oQ0hmeX+nmpm71UVnp+Gk1LHUQCs?=
- =?Windows-1252?Q?DhBY0WFgqi95FNSPWxB+zV5dJOLjZWS4GQTJUbvw3229MILA4AXJH16w?=
- =?Windows-1252?Q?S4ZnwINyz8pQ5hbDehEE3ww4HjqlOskEvXeS5LIv/HWguNX3TbOj/MNz?=
- =?Windows-1252?Q?/Qd6849xx5iSmwl8x2xKs/9TS9DC47NNmAmZAdy850tFlOti0pjVE7zZ?=
- =?Windows-1252?Q?4zpZPpl5Kwqk/mS1mApbqEU4FOoF6JjeDz4HnN4zh8DzdCiaQCYbM6pM?=
- =?Windows-1252?Q?rl/i1bdF86qIza07gNga1QJ8sV09VikazB3nsQhtSfcqmQGTd8zQFXN6?=
- =?Windows-1252?Q?kjmJ2cjcENApIvvqVNy4tifZU3Glp3369Zk1aGp40ZqJZHO6HlNA9umP?=
- =?Windows-1252?Q?bFfnaIddAnXf/FSfFQ7aZTbRo238gmrlWUSCtgAE2QiRI3FpLhfOIITh?=
- =?Windows-1252?Q?30knp/RG3SH1Pb4f5iggpItK+LdhQMcHgAnMKs8cU0UKrQt+mnd2owq/?=
- =?Windows-1252?Q?+XNxJv7ERC0LqV2u/eFEVfAgjktmbDZwB8KzCT1zg1FFVh2e4jme6xe9?=
- =?Windows-1252?Q?oGYrWlo0WtFRjbT4CB9PJD1PBzlJyXzFuJIURL26np18bsXudxA7wHG5?=
- =?Windows-1252?Q?KDvakhWC0J7WFI3ViANO+CEaz56Rnve6Pzvn1dPpd7xWXj0TIqlFNWeN?=
- =?Windows-1252?Q?3tpuqANx/hugSP9t2nHaIuJR/DhD2Pd20CZxCNjrGh1ypS0lKDj6PIJE?=
- =?Windows-1252?Q?VAxX+ipqrx4TODXQLpVvpo3pLQpGyXNA3wm09SYoTY3KWOXAaT2HqpxF?=
- =?Windows-1252?Q?TTc6iebbW/bU4tt0Ex1wtkY/Iy0GGAnnVXY87b7KRkjfuVX26EWtvohO?=
- =?Windows-1252?Q?Eb0gWZpX0A42UWJcOXvksdFlXwW/OVMzni8gp0/DfLpdqPe0UuR5+E2x?=
- =?Windows-1252?Q?I1tKbMMJRq6Ngvd1Ti36I/q/Mjevz3BpmtlBwpdQGQNBTXF3Y8wf871D?=
- =?Windows-1252?Q?7imO9K1cMiIFSyH2FSgG7nyboO2G9D7l8akoe40PoQXk2XCfAJ8qoZFy?=
- =?Windows-1252?Q?8LlFVxBvQ7peXZQobfnKNe/1UkCZUxW128tYinJKv3b4i9QHaKVG0v53?=
- =?Windows-1252?Q?sgrFA4EBNn+hJHGsTFh100etQIcF6QZZ9APTbvNAIZ2AwerxSS9RSsTC?=
- =?Windows-1252?Q?7Tmiv9x0MQGhzowcY55FC/GMv/+V9AkPzACgretOVCP/jfqlew9aMwu+?=
- =?Windows-1252?Q?u3eUB7DLXpZgvy5mBTtgY4ZnEsINx90lM+IBC1woqEBZSP5EefnF2lJV?=
- =?Windows-1252?Q?iVOxR11Eey/rL6n4JaWULimkPBb8M2bSojc9W35xO1svZQr/8SvfYSxf?=
- =?Windows-1252?Q?HWkZHtijuEiG1HDDXeC1Tp1Z7424gsdXtKWPfKSaSWH628dA1ehC2YgZ?=
- =?Windows-1252?Q?VMinyKFyWcR7Vm8Gii07bgvEj/zDWQvlvOm5KqoQ52o/geHfA3TjYKid?=
- =?Windows-1252?Q?sjyjIe5h?=
-Content-Type: text/plain; charset="Windows-1252"
-Content-ID: <4C89508D9048B04EBDDCDB4D728CF081@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4478.22; Wed, 8 Sep
+ 2021 07:43:52 +0000
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::5d5a:30b0:2bc2:312f]) by DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::5d5a:30b0:2bc2:312f%9]) with mapi id 15.20.4500.014; Wed, 8 Sep 2021
+ 07:43:52 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org
+Cc:     linux-imx@nxp.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net] net: stmmac: fix system hang caused by eee_ctrl_timer during suspend/resume
+Date:   Wed,  8 Sep 2021 15:43:35 +0800
+Message-Id: <20210908074335.4662-1-qiangqing.zhang@nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR02CA0092.apcprd02.prod.outlook.com
+ (2603:1096:4:90::32) To DB8PR04MB6795.eurprd04.prod.outlook.com
+ (2603:10a6:10:fa::15)
 MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (119.31.174.71) by SG2PR02CA0092.apcprd02.prod.outlook.com (2603:1096:4:90::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4478.19 via Frontend Transport; Wed, 8 Sep 2021 07:43:49 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 478115ef-70cf-428e-3124-08d9729c676d
+X-MS-TrafficTypeDiagnostic: DB6PR0401MB2327:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DB6PR0401MB2327EC7546474C49E896DA0DE6D49@DB6PR0401MB2327.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: pYRH0IFVX1bVXUFZDiCNaue3M3Jz6kYyqQ84CnzJEmQGCKCiGsMHpkR8DbormNSU9GJN9pGvGa1TmiAszNP+4dNyBSHOANIfU5H1cGnF2uSwDeuGcaBvk7SGBzaFxm5NtD83idfINf4K4MlyF/PczSX9buegWxZOz53Z9pKZ28Ljl4K2CtfVdG5J9QB5FtdMF09RpQHluFwcYMYoKp8axj7tK7DrpJhUQ8mVJ3kIBSPQzcbBkpoEr3cFVEDXvzz42eWpTCWPkNVku1jDvR8dDNvdxlCf/Jw0Qt1zad38l9XryABy+8UOLsGe65cmhWo3FKsRF9SclzKyyubZhS8WgY5Y1TQIXufjxE5B0rM/KAOClwspipvNkKFnixpQLPC0RiN5jUwW7QLV/5nrmFHRw0Ri5iaXKtLElIMtF5o3u511eDeC2xOAuhEWRj6Xr7Fu2Ot8X2e4KfWHpAjBQsOaiw8sOMxFcoBkf7dKqdmns0jEwcT9KwMKjIOve/H7Pc26NUo6M0ZnPWmUsdwGGBA+s6pCyOEGN/0OBC3InTWFl/6cc8GkEweqsOiVua9azwlHGNOxA47mVOHrKxJPn6N4WmMIcsMAwEdoTmoR901EpxA1ZM/8jVaw1/rhs5YRFkHgD0GKONcsJWCm5IDH31rL83vm7Xec/kMKua4KqOAA09ZwdHnz+T947i6xJK42yA026mZNHC8tODr1OVdslhgO/A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(52116002)(6506007)(15650500001)(508600001)(5660300002)(8676002)(2906002)(26005)(66946007)(38350700002)(66556008)(186003)(6512007)(6486002)(8936002)(86362001)(6666004)(4326008)(956004)(316002)(2616005)(1076003)(36756003)(38100700002)(66476007)(83380400001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?FHzaiUByEX97D1+GJH9j2O/eWkC4eetmjUfZ1MkGTtDMZniCDSSbBd6PLSHe?=
+ =?us-ascii?Q?vLaYxbddzj5R+KDdQhPxja9fM6ynSqydNAgDVFNjTPa6HJAynmkyh6NN1osv?=
+ =?us-ascii?Q?iRyN5w1MNKWcWMwBjYpCNNm737f6LNO6h8luxxtzl3A8tHf6wREBt2eCFHYu?=
+ =?us-ascii?Q?h9d9qAd5OmnPRyo53CyyH5W8TlfHBu3fhV++58aps2KQ3a+TFRpp2eFTBuE+?=
+ =?us-ascii?Q?D1FPLQwSBDKm3+qZNVo+dhPB4QWC48heY6SxO+uoYay32WW5pRjkTkSFF6Mq?=
+ =?us-ascii?Q?6SqTPGuYkadpcNr/F/9pa0wDRf4rLvCNm0QGe1V1oZxaxbUDbb7ceO29wKhD?=
+ =?us-ascii?Q?gYiM9rsjlHgd3uslNOoFJ6pF8DomxyeoOIn7voCIarnLDaeBLWshwH+SQItJ?=
+ =?us-ascii?Q?G7NquBNAx+//7+EFgQPphHU9Yst3NBwEugNAeDAIckFrOgEqqRJnUJBgMHy2?=
+ =?us-ascii?Q?Tfb0zMZJHfIvyiE/c4esvU7N66EmYd1It3X0fN39ThJlN9/FE3fcF16+tAzN?=
+ =?us-ascii?Q?BA9hppbbh+r5J084ch8MHmVuHtnsv/cqx1cdhVKa8h8H5WwMXrJcDoYLmUbT?=
+ =?us-ascii?Q?axPiItg93rcplmcwOXTqSxJ/pVcsNVF83uie5Fpca00tZ+5JhLNSqt0CxL9R?=
+ =?us-ascii?Q?acj1Xvz7DGwlFe3arSs3QD5sH81vBpaJPXk+dXvJbn4V7qznmWBjtJvxFa4u?=
+ =?us-ascii?Q?KnDkEN5LzOlDGZG/txQlmz94UsPZGKM8bSwDY8+wnD4TBluqdCvnyEZbpvCo?=
+ =?us-ascii?Q?HWWAOOwxBZvFG55nWndPFiJEe+XPBMMxWcxi5dIFbQnPUWMUiaOxELT+xFSC?=
+ =?us-ascii?Q?xaW+Sf8hZYTfZcIG9PuBk69vJaP7pYkASpQBQzQwxGerAjTUceGNJg/Y7bY3?=
+ =?us-ascii?Q?NjaN8sQvFSRvs/tyI+ywI77NUZyJwXAzQhLXYa0XNg41Xnp+tu5myuqRs/Us?=
+ =?us-ascii?Q?YNgP9k2usKqvYCyDbxtGlqpbeAUUpr6aBQOa+LD6DN9jwTXOztKPAmnSEHCN?=
+ =?us-ascii?Q?OIweTWpV2kYe2HqLdXSHNmxQUtpG5EIePf2q27lMHnxK/BOi2aMewBPN/kx2?=
+ =?us-ascii?Q?KM6q64W/6eBmZlQWi9zPPIuQ6Wiq7Ll4agMD82WRXwLOIo2p9bUlvZq8Su8k?=
+ =?us-ascii?Q?VMZKQhLDUO9Iq+wF7DCQeZGhTUhVrnIikB2g4ze3rY9qmPlji7KCKR/RpwEn?=
+ =?us-ascii?Q?kDCekI3msw7Oz276dMyDVlPJHctPnz4ySUR4DQkASwD0Y/wheXR6F2XTNO5o?=
+ =?us-ascii?Q?qC8Kt3B0Yc6svqXOnhk9DctOiq9PAAmiKKy2o4ZoQ+P8E80DyC58rNgWuTrg?=
+ =?us-ascii?Q?Req88ZhnVxDHKjpX8eL0OWOl?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 478115ef-70cf-428e-3124-08d9729c676d
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB5536.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2fe35875-456b-4466-07d4-08d9729a0e19
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Sep 2021 07:27:03.6119
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Sep 2021 07:43:52.7101
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: NEqsAJfq/Iv2xoPvCLRyd3JInxFv4CK5l403Ab/dA8C7s2NK4nVdIiDP/Es1DOoddvpiLqE6OZvYbofI/ognowauUqZMHP5u6W5+nTkaXgM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4106
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: whxuRbqptOsEJMEtdY58nOD3D4gOnT0vClC7Q6i4OSXaE/LEI7ORoOoDWAg+qk1PJSHiPfTOO7GYlzwtLnjvbQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0401MB2327
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/09/2021 at 22:29, Tong Zhang wrote:
-> plat_dev->dev->platform_data is released by platform_device_unregister(),
-> use of pclk and hclk is use after free. This patch keeps a copy to fix
-> the issue.
->=20
-> [   31.261225] BUG: KASAN: use-after-free in macb_remove+0x77/0xc6 [macb_=
-pci]
-> [   31.275563] Freed by task 306:
-> [   30.276782]  platform_device_release+0x25/0x80
->=20
-> Signed-off-by: Tong Zhang <ztong0001@gmail.com>
-> ---
->   drivers/net/ethernet/cadence/macb_pci.c | 6 ++++--
->   1 file changed, 4 insertions(+), 2 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/cadence/macb_pci.c b/drivers/net/ethern=
-et/cadence/macb_pci.c
-> index 8b7b59908a1a..4dd0cec2e542 100644
-> --- a/drivers/net/ethernet/cadence/macb_pci.c
-> +++ b/drivers/net/ethernet/cadence/macb_pci.c
-> @@ -110,10 +110,12 @@ static void macb_remove(struct pci_dev *pdev)
->   {
->          struct platform_device *plat_dev =3D pci_get_drvdata(pdev);
->          struct macb_platform_data *plat_data =3D dev_get_platdata(&plat_=
-dev->dev);
-> +       struct clk *pclk =3D plat_data->pclk;
-> +       struct clk *hclk =3D plat_data->hclk;
->=20
->          platform_device_unregister(plat_dev);
-> -       clk_unregister(plat_data->pclk);
-> -       clk_unregister(plat_data->hclk);
-> +       clk_unregister(pclk);
-> +       clk_unregister(hclk);
+commit 5f58591323bf ("net: stmmac: delete the eee_ctrl_timer after
+napi disabled"), this patch tries to fix system hang caused by eee_ctrl_timer,
+unfortunately, it only can resolve it for system reboot stress test. System
+hang also can be reproduced easily during system suspend/resume stess test
+when mount NFS on i.MX8MP EVK board.
 
-NACK, I  would prefer that you switch lines and do clock clk unregister=20
-before: this way we avoid the problem and I think that you don't need=20
-clocks for unregistering the platform device anyway.
+In stmmac driver, eee feature is combined to phylink framework. When do
+system suspend, phylink_stop() would queue delayed work, it invokes
+stmmac_mac_link_down(), where to deactivate eee_ctrl_timer synchronizly.
+In above commit, try to fix issue by deactivating eee_ctrl_timer obviously,
+but it is not enough. Looking into eee_ctrl_timer expire callback
+stmmac_eee_ctrl_timer(), it could enable hareware eee mode again. What is
+unexpected is that LPI interrupt (MAC_Interrupt_Enable.LPIEN bit) is always
+asserted. This interrupt has chance to be issued when LPI state entry/exit
+from the MAC, and at that time, clock could have been already disabled.
+The result is that system hang when driver try to touch register from
+interrupt handler.
 
-Please change accordingly or tell me what could go bad.
+The reason why above commit can fix system hang issue in stmmac_release()
+is that, deactivate eee_ctrl_timer not just after napi disabled, further
+after irq freed.
 
-Regards,
-   Nicolas
+In conclusion, hardware would generate LPI interrupt when clock has been
+disabled during suspend or resume, since hardware is in eee mode and LPI
+interrupt enabled.
 
+Interrupts from MAC, MTL and DMA level are enabled and never been disabled
+when system suspend, so postpone clocks management from suspend stage to
+noirq suspend stage should be more safe.
 
->   }
->=20
->   static const struct pci_device_id dev_id_table[] =3D {
-> --
-> 2.25.1
->=20
+Fixes: 5f58591323bf ("net: stmmac: delete the eee_ctrl_timer after napi disabled")
+Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+---
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c | 14 ------
+ .../ethernet/stmicro/stmmac/stmmac_platform.c | 44 +++++++++++++++++++
+ 2 files changed, 44 insertions(+), 14 deletions(-)
 
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index ece02b35a6ce..246f84fedbc8 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -7118,7 +7118,6 @@ int stmmac_suspend(struct device *dev)
+ 	struct net_device *ndev = dev_get_drvdata(dev);
+ 	struct stmmac_priv *priv = netdev_priv(ndev);
+ 	u32 chan;
+-	int ret;
+ 
+ 	if (!ndev || !netif_running(ndev))
+ 		return 0;
+@@ -7150,13 +7149,6 @@ int stmmac_suspend(struct device *dev)
+ 	} else {
+ 		stmmac_mac_set(priv, priv->ioaddr, false);
+ 		pinctrl_pm_select_sleep_state(priv->device);
+-		/* Disable clock in case of PWM is off */
+-		clk_disable_unprepare(priv->plat->clk_ptp_ref);
+-		ret = pm_runtime_force_suspend(dev);
+-		if (ret) {
+-			mutex_unlock(&priv->lock);
+-			return ret;
+-		}
+ 	}
+ 
+ 	mutex_unlock(&priv->lock);
+@@ -7242,12 +7234,6 @@ int stmmac_resume(struct device *dev)
+ 		priv->irq_wake = 0;
+ 	} else {
+ 		pinctrl_pm_select_default_state(priv->device);
+-		/* enable the clk previously disabled */
+-		ret = pm_runtime_force_resume(dev);
+-		if (ret)
+-			return ret;
+-		if (priv->plat->clk_ptp_ref)
+-			clk_prepare_enable(priv->plat->clk_ptp_ref);
+ 		/* reset the phy so that it's ready */
+ 		if (priv->mii)
+ 			stmmac_mdio_reset(priv->mii);
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+index 5ca710844cc1..4885f9ad1b1e 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+@@ -9,6 +9,7 @@
+ *******************************************************************************/
+ 
+ #include <linux/platform_device.h>
++#include <linux/pm_runtime.h>
+ #include <linux/module.h>
+ #include <linux/io.h>
+ #include <linux/of.h>
+@@ -771,9 +772,52 @@ static int __maybe_unused stmmac_runtime_resume(struct device *dev)
+ 	return stmmac_bus_clks_config(priv, true);
+ }
+ 
++static int stmmac_pltfr_noirq_suspend(struct device *dev)
++{
++	struct net_device *ndev = dev_get_drvdata(dev);
++	struct stmmac_priv *priv = netdev_priv(ndev);
++	int ret;
++
++	if (!netif_running(ndev))
++		return 0;
++
++	if (!device_may_wakeup(priv->device) || !priv->plat->pmt) {
++		/* Disable clock in case of PWM is off */
++		clk_disable_unprepare(priv->plat->clk_ptp_ref);
++
++		ret = pm_runtime_force_suspend(dev);
++		if (ret)
++			return ret;
++	}
++
++	return 0;
++}
++
++static int stmmac_pltfr_noirq_resume(struct device *dev)
++{
++	struct net_device *ndev = dev_get_drvdata(dev);
++	struct stmmac_priv *priv = netdev_priv(ndev);
++	int ret;
++
++	if (!netif_running(ndev))
++		return 0;
++
++	if (!device_may_wakeup(priv->device) || !priv->plat->pmt) {
++		/* enable the clk previously disabled */
++		ret = pm_runtime_force_resume(dev);
++		if (ret)
++			return ret;
++
++		clk_prepare_enable(priv->plat->clk_ptp_ref);
++	}
++
++	return 0;
++}
++
+ const struct dev_pm_ops stmmac_pltfr_pm_ops = {
+ 	SET_SYSTEM_SLEEP_PM_OPS(stmmac_pltfr_suspend, stmmac_pltfr_resume)
+ 	SET_RUNTIME_PM_OPS(stmmac_runtime_suspend, stmmac_runtime_resume, NULL)
++	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(stmmac_pltfr_noirq_suspend, stmmac_pltfr_noirq_resume)
+ };
+ EXPORT_SYMBOL_GPL(stmmac_pltfr_pm_ops);
+ 
+-- 
+2.17.1
 
---=20
-Nicolas Ferre
