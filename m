@@ -2,247 +2,295 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 930E740359F
-	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 09:44:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F05714035DE
+	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 10:03:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350259AbhIHHpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Sep 2021 03:45:04 -0400
-Received: from mail-eopbgr80052.outbound.protection.outlook.com ([40.107.8.52]:29825
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233210AbhIHHpD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Sep 2021 03:45:03 -0400
+        id S1348088AbhIHIEw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Sep 2021 04:04:52 -0400
+Received: from mga09.intel.com ([134.134.136.24]:32076 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1346759AbhIHIEu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Sep 2021 04:04:50 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10100"; a="220444765"
+X-IronPort-AV: E=Sophos;i="5.85,277,1624345200"; 
+   d="scan'208";a="220444765"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Sep 2021 01:03:37 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.85,277,1624345200"; 
+   d="scan'208";a="503455350"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by fmsmga008.fm.intel.com with ESMTP; 08 Sep 2021 01:03:37 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12; Wed, 8 Sep 2021 01:03:37 -0700
+Received: from fmsmsx606.amr.corp.intel.com (10.18.126.86) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12; Wed, 8 Sep 2021 01:03:36 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx606.amr.corp.intel.com (10.18.126.86) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12 via Frontend Transport; Wed, 8 Sep 2021 01:03:36 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.107)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2242.12; Wed, 8 Sep 2021 01:03:36 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ya6WXrIyF9uJuY12LmyTQCMU3XIhcUSMIL0ni0Gs4n5GaX+SLNHQ6O/PTsPXOdlIQlO8eVW7KlnkrzpPEWpWuWS6juuCGXgPl689bcurMMUaYXE+CmzNBoLNQOvSKMUOhJaYO7qlHQBMlfzSz14/t46ACuuFcZ+Y/j8gZu3AD2M0FI+3h/vUISOIsGwgc7VjucVMCPUFQ+D/UJ8G4c8DeH/cJIOu64kX+vIsqtScT2RHsDsp1ikFESUSvjHPqx+r6ezeJZ729EBrlfyHY11dYV/fNeZTZ/QhsshS8dzaChPiLqLrK+95No7/fQJ0lLtbI3Y+2ZKc/QyPR33fT///YQ==
+ b=oAy20Nm+LFSG9Yr2T+vD6/SOWR/B6Nq3eqJXgu0ULEOl3v2rGl5hKDOewlQhg5//Nuk6o2c/+aFRXIuxydeWu4CYOBGQoK4DrhCD36R/4EYCAjDa5Vua3BTfVKTe64N6H7nuk4Ck53Cbrf811zITbJf2Nw75B1h4l3DHhs8HsBgoC7HEYdsZUPJ5rNsqfrew7zFq5ziJcWJ4+MgnbXJvAJildhzknohHicVy6CdLdNu9czGaV7OYBc+rHK4mNzFY7Dtra+X0RwZTBs01Wi9+Lj7kT9Nwoc7e26rv2KrtwOBdPX5QSvuG1s2zYsTxDbL43hpnyMF5A+iJGjRP97NmDw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=SxFOVMvr3I7ZqC047mf3EEdFJnJVE0Na9oNxpm+A3cM=;
- b=FLbe3AkKR3BAjRluky8FL6x7WUZoVNQGRNd/lgcRmA7IkgSWNcwqPngVqxyKX7uV6Yy9GoYBHu1pOyiPs2Hh1ZE6ZM6Cgm7XiNN4kUru86KpQilVrUyCMW/HKRC7wsG2+KGzj2Btw508wZKft7XilcNTMu08VokIzzg5PnDHMOGxFJNoYm94aYVw+fyb5EPUCMDgoLniKihPKNCpj7RgO0oXBnCWPtFvd/IJ6B88FvrQM91yOzZfgUbK09DT9qXPL1VTJhOWxlaQZv4rib4eaV6jSPHzJlNzde5AugF4fwzF4DsV01nb/LcEFIlrlP7B+DbQqD7xXQieY/KM8W/vsQ==
+ bh=OzRYeMuTQ6oN7UiGLe2MDFLfKLgXRBKGQ1AlFmAlBjY=;
+ b=Z54TOkHX6pU8li3gpaBpfMy01QpuX97h2Wy4QQW+Rmoyyp27O9UtMgh3DXyQV2T+r74JPukYwb36NZUVo/JXj3HqM+CFf3xf9QF80O0S5Y02ocXLUxSNqePmRBxIW5ED8dN+a/+7QNcd9Jr96mMaBzJlhHFQI8piSD5HhprLyO/24UisDTNRJc4SZ8COVwvx35Tn3g+yHXdXy/aNP6yVTg9xxcB466nA34RVUapUbW+Fx/NZSOcVzDekaoC0h9pmjJPqdLKGJHGmq4eHziaiCtszjFh3QFqLvwPBG+tPvWFSWKMm6vjWssujdcK5PunxiU9DFcZ31SXl+MToPSle4g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SxFOVMvr3I7ZqC047mf3EEdFJnJVE0Na9oNxpm+A3cM=;
- b=hM0XdG3owte4gbonMMj07bhTt30imOdbT3+H0jz/weCrxK+je6OAgJ/F90jBrCnQprdlvRxEeWhuoXldOY/PiPruBd9CkHh5aM2V2Z+5+38YN7GOWnjDYfDQkRFuVZKqEkW9N948/aTODgRZ4IdLbqN3iTJvCbJYkVD0HxRPO2o=
-Authentication-Results: st.com; dkim=none (message not signed)
- header.d=none;st.com; dmarc=none action=none header.from=nxp.com;
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
- by DB6PR0401MB2327.eurprd04.prod.outlook.com (2603:10a6:4:48::25) with
+ bh=OzRYeMuTQ6oN7UiGLe2MDFLfKLgXRBKGQ1AlFmAlBjY=;
+ b=xvcgY976ul3pEQdzN5xHn/PlQj8QABhQcM0jyTPix1EtIB9uK61GrH0R9upwMHRWruiJhQCr3e0F3iohY8bCJPt4a+D8YV7N4E/pII3V8Y8MaMP6lv+ae66G+zng5COj07elXRV7veRjkjI/JERQKTpi7YAcMeZsLt0A7KuEjPY=
+Received: from PH0PR11MB4951.namprd11.prod.outlook.com (2603:10b6:510:43::5)
+ by PH0PR11MB5143.namprd11.prod.outlook.com (2603:10b6:510:3f::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4478.22; Wed, 8 Sep
- 2021 07:43:52 +0000
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::5d5a:30b0:2bc2:312f]) by DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::5d5a:30b0:2bc2:312f%9]) with mapi id 15.20.4500.014; Wed, 8 Sep 2021
- 07:43:52 +0000
-From:   Joakim Zhang <qiangqing.zhang@nxp.com>
-To:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-imx@nxp.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net] net: stmmac: fix system hang caused by eee_ctrl_timer during suspend/resume
-Date:   Wed,  8 Sep 2021 15:43:35 +0800
-Message-Id: <20210908074335.4662-1-qiangqing.zhang@nxp.com>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR02CA0092.apcprd02.prod.outlook.com
- (2603:1096:4:90::32) To DB8PR04MB6795.eurprd04.prod.outlook.com
- (2603:10a6:10:fa::15)
+ 2021 08:03:35 +0000
+Received: from PH0PR11MB4951.namprd11.prod.outlook.com
+ ([fe80::58cd:3e24:745c:e221]) by PH0PR11MB4951.namprd11.prod.outlook.com
+ ([fe80::58cd:3e24:745c:e221%7]) with mapi id 15.20.4415.029; Wed, 8 Sep 2021
+ 08:03:35 +0000
+From:   "Machnikowski, Maciej" <maciej.machnikowski@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        "abyagowi@fb.com" <abyagowi@fb.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "Andrew Lunn" <andrew@lunn.ch>, Michal Kubecek <mkubecek@suse.cz>,
+        Saeed Mahameed <saeed@kernel.org>,
+        Michael Chan <michael.chan@broadcom.com>
+Subject: RE: [PATCH net-next 1/2] rtnetlink: Add new RTM_GETEECSTATE message
+ to get SyncE status
+Thread-Topic: [PATCH net-next 1/2] rtnetlink: Add new RTM_GETEECSTATE message
+ to get SyncE status
+Thread-Index: AQHXoNimVzUXkjuVtUCdGyBU/1Tj8auS4GqAgARwniCAAApOgIAAAHuggABqPwCAAH2kEIAAa06AgAADpCCAAE4LAIAAxVmQ
+Date:   Wed, 8 Sep 2021 08:03:35 +0000
+Message-ID: <PH0PR11MB495169997552152891A69B57EAD49@PH0PR11MB4951.namprd11.prod.outlook.com>
+References: <20210903151436.529478-1-maciej.machnikowski@intel.com>
+        <20210903151436.529478-2-maciej.machnikowski@intel.com>
+        <20210903151425.0bea0ce7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <PH0PR11MB4951623918C9BA8769C10E50EAD29@PH0PR11MB4951.namprd11.prod.outlook.com>
+        <20210906113925.1ce63ac7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <PH0PR11MB49511F2017F48BBAAB2A065CEAD29@PH0PR11MB4951.namprd11.prod.outlook.com>
+        <20210906180124.33ff49ef@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <PH0PR11MB495152B03F32A5A17EDB2F6CEAD39@PH0PR11MB4951.namprd11.prod.outlook.com>
+        <20210907075509.0b3cb353@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <PH0PR11MB49512C265E090FC8741D8510EAD39@PH0PR11MB4951.namprd11.prod.outlook.com>
+ <20210907124730.33852895@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210907124730.33852895@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+dlp-product: dlpe-windows
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 2dd6e67c-ec32-4dd7-4ae7-08d9729f28c3
+x-ms-traffictypediagnostic: PH0PR11MB5143:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <PH0PR11MB514340143C70769C2824C349EAD49@PH0PR11MB5143.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: ren7haNukiQurbhL9siUKvxQgNiGhSn9r925Bm/h1j7hmSTMNgAHc5dB1xi/YlHK0HLsV9Ga45wVVnYBuXfv2nF95IcJxjvh1RYwNcTZHkfzN03s3jC2T+6ksawg2Osw0PFqByeZlH7XC1z/xnk5cwf/pTn1LmBLtlMQWsFAvgCfLVzizNxV/C17VXfnRNKrAgyjK1Oz3EPeeZgMzhdjfZa5tQu4q1hxQCi74FKD5P2sHIY0znfiFW3zaq3F7Llpoqo/I8Z0RwFOYFVfdLXaxeCK+L3VTbvTiOLu3GQlmfwhL1qkFVm7bo3ols6ic1DZJC/AsOFwQNIzDVNKD92CX3UfMdrXYvIq6j++DXQmSgBn8dN5t2ezJRwJn+ac6SFrsc72tlGoyRjVNlEZ9hKr7fV6LR8OXW/7lhP3kqH0xJGbXLGgeD0W4/QykZ43ZcdMFPXZZsM+bOl0n+U6C10odoyHWOdjv0fsbKGNvR9FuuRi9TBV7RzU/8NedYWm7kdwtHo+ZlQJj4c++2Ei464u3daQlbjROIo9HXoxtxJIFZhZRbJ0A6DugIT4CHtjpbP0M6JG2xYwj/x3BL/vAcUJj15YV1C6Kap6wSdiFtC2eykcBoIE6tX6xJPv7zkKY2hAdp+vDVvPwsyRmfFi9Z5O1W4zE/0U1cdqM4xp0TlBLc9BrmfL3JJRIkLIXkwItwFG4dcIo8+98Og9DyB5UMWooWVq3iU91Wz74GH0Kc8X1s9LcXMvC4n5q1P2rnvlSrOo2qGNBicLA4etkWkG9vaTvzfPjlDdx2O4JexOglH/bFU=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB4951.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(186003)(66946007)(2906002)(55016002)(66446008)(64756008)(66556008)(76116006)(4326008)(71200400001)(8936002)(66476007)(966005)(38100700002)(53546011)(9686003)(7696005)(52536014)(6506007)(86362001)(7416002)(83380400001)(122000001)(508600001)(5660300002)(33656002)(8676002)(316002)(38070700005)(6916009)(54906003)(15650500001)(26005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?bT09ehGMeuVqZcVg+JJSUxBuAqEE0r81iVU8ICaoRryThGgUuqI28q4gaus1?=
+ =?us-ascii?Q?bPwTpgNDr+0mAoWbIomlf7B01UTCICnMG0tM/3KYx+Jei2I6T351KyjZzaSR?=
+ =?us-ascii?Q?sw0NGdDu+F/GpySqrcGMl01YjlTCEZeq3UXwOTAxPwg69gbygzlyREWVHfjS?=
+ =?us-ascii?Q?5Ov4aMaX1wVZ8HofdoLwOsrSpk5fcgv41pQXomZsO9dzwzNT1BV4pcg07Q+d?=
+ =?us-ascii?Q?zQ09uQ/1Y0rwBS591oxaqFdrRNSitwH15SZa6Fu71VEhikPDC+6fHSKw1u5w?=
+ =?us-ascii?Q?Vnu0RiMA8kCDyYQNgsSVTf2AJhr0W5hlj+1hRzlZieVd5ndMtGPaB1asgLxA?=
+ =?us-ascii?Q?5W1VOGDUvmFC48Ajq1cqPJUVe9S5UcVDOZRzMN7vWUMq/LHy2rk+V+ZEQSF7?=
+ =?us-ascii?Q?1zQJehQQQbD6GgNKTSMT9rQijGZUkg6ksT9bnFypO51iEdXBVL8POTQyEZcK?=
+ =?us-ascii?Q?tr7MGSZ4QFKnTnkxwe5a76iLQlUxXJ5gq31hIdCx1u5UwWmEUoBcbsOxkuyw?=
+ =?us-ascii?Q?NzjOShaOrBOunVd8IDNQb6wcB7yASUbROeH2duhgnQrcGLOVLSgpnDHaR0lE?=
+ =?us-ascii?Q?o03Q8mrSt/W9+UMmAHm1TRGOe3woDA/haS5vibRTjqYE+mBO1mOvvG1Rx0jd?=
+ =?us-ascii?Q?MM8mkx7QGrQml6D0D1ygggKm5OALjwHGgdVoa6Mf3t+GqvqmXmRIH9Xynfe3?=
+ =?us-ascii?Q?8LgIXsK61aCuwDPgz1RQhMpWeF4Z2UNqTfvAmgLV1vKff30vsNxcqZZkAONS?=
+ =?us-ascii?Q?pHDuBxnk2uAkzf81q1WD5LUpapuBs78nOMFW3yLOt8sQVOCnKEoa0ouOZOMn?=
+ =?us-ascii?Q?/4mVPdmHIoVtFtfDPSnKKlOilRlmSGzdsxy2r4trHG26KiNtxRLBNfjiL7qB?=
+ =?us-ascii?Q?G0pdQyTyymPJ89yxdNAXtkV0WF/MdeDMoLGdsj/qTrSpn73VUEpvpOOOmlhy?=
+ =?us-ascii?Q?ip1wRkn8o3DYQNly1GeC0SPC/uyACQxDieTtPTVLMFjkj+zjypWMJTxaPG0L?=
+ =?us-ascii?Q?zvdXSxLoedAjO+F+8ctChdHyf80SBaMWWYjCtiU3TsZGsBvPodrQO+RrJCeI?=
+ =?us-ascii?Q?AzpdY72oJ/O/DEjmSTFpIriLQUuXXzQGXCGzwNbBMmtyF5Mdkv8DtiSHsDd2?=
+ =?us-ascii?Q?vo0rzb5bmZ9KxuG5LeiXgIRyQ/hS9Z5yACCfJ0Ru53TPbwdhtHvhTLp/j8b9?=
+ =?us-ascii?Q?uSsKijQdamKPrqhwP94+YbB8KZ5TaS3jBsIqAqqoce4TcjkPKxROwwsOOQA3?=
+ =?us-ascii?Q?0THrU+Y47K3EOVBrfniTFmYIR++0TuLeFmBdFYrC7wKVxBDqjMYLsQ5Ob2La?=
+ =?us-ascii?Q?gp4=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (119.31.174.71) by SG2PR02CA0092.apcprd02.prod.outlook.com (2603:1096:4:90::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4478.19 via Frontend Transport; Wed, 8 Sep 2021 07:43:49 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 478115ef-70cf-428e-3124-08d9729c676d
-X-MS-TrafficTypeDiagnostic: DB6PR0401MB2327:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DB6PR0401MB2327EC7546474C49E896DA0DE6D49@DB6PR0401MB2327.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: pYRH0IFVX1bVXUFZDiCNaue3M3Jz6kYyqQ84CnzJEmQGCKCiGsMHpkR8DbormNSU9GJN9pGvGa1TmiAszNP+4dNyBSHOANIfU5H1cGnF2uSwDeuGcaBvk7SGBzaFxm5NtD83idfINf4K4MlyF/PczSX9buegWxZOz53Z9pKZ28Ljl4K2CtfVdG5J9QB5FtdMF09RpQHluFwcYMYoKp8axj7tK7DrpJhUQ8mVJ3kIBSPQzcbBkpoEr3cFVEDXvzz42eWpTCWPkNVku1jDvR8dDNvdxlCf/Jw0Qt1zad38l9XryABy+8UOLsGe65cmhWo3FKsRF9SclzKyyubZhS8WgY5Y1TQIXufjxE5B0rM/KAOClwspipvNkKFnixpQLPC0RiN5jUwW7QLV/5nrmFHRw0Ri5iaXKtLElIMtF5o3u511eDeC2xOAuhEWRj6Xr7Fu2Ot8X2e4KfWHpAjBQsOaiw8sOMxFcoBkf7dKqdmns0jEwcT9KwMKjIOve/H7Pc26NUo6M0ZnPWmUsdwGGBA+s6pCyOEGN/0OBC3InTWFl/6cc8GkEweqsOiVua9azwlHGNOxA47mVOHrKxJPn6N4WmMIcsMAwEdoTmoR901EpxA1ZM/8jVaw1/rhs5YRFkHgD0GKONcsJWCm5IDH31rL83vm7Xec/kMKua4KqOAA09ZwdHnz+T947i6xJK42yA026mZNHC8tODr1OVdslhgO/A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(52116002)(6506007)(15650500001)(508600001)(5660300002)(8676002)(2906002)(26005)(66946007)(38350700002)(66556008)(186003)(6512007)(6486002)(8936002)(86362001)(6666004)(4326008)(956004)(316002)(2616005)(1076003)(36756003)(38100700002)(66476007)(83380400001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?FHzaiUByEX97D1+GJH9j2O/eWkC4eetmjUfZ1MkGTtDMZniCDSSbBd6PLSHe?=
- =?us-ascii?Q?vLaYxbddzj5R+KDdQhPxja9fM6ynSqydNAgDVFNjTPa6HJAynmkyh6NN1osv?=
- =?us-ascii?Q?iRyN5w1MNKWcWMwBjYpCNNm737f6LNO6h8luxxtzl3A8tHf6wREBt2eCFHYu?=
- =?us-ascii?Q?h9d9qAd5OmnPRyo53CyyH5W8TlfHBu3fhV++58aps2KQ3a+TFRpp2eFTBuE+?=
- =?us-ascii?Q?D1FPLQwSBDKm3+qZNVo+dhPB4QWC48heY6SxO+uoYay32WW5pRjkTkSFF6Mq?=
- =?us-ascii?Q?6SqTPGuYkadpcNr/F/9pa0wDRf4rLvCNm0QGe1V1oZxaxbUDbb7ceO29wKhD?=
- =?us-ascii?Q?gYiM9rsjlHgd3uslNOoFJ6pF8DomxyeoOIn7voCIarnLDaeBLWshwH+SQItJ?=
- =?us-ascii?Q?G7NquBNAx+//7+EFgQPphHU9Yst3NBwEugNAeDAIckFrOgEqqRJnUJBgMHy2?=
- =?us-ascii?Q?Tfb0zMZJHfIvyiE/c4esvU7N66EmYd1It3X0fN39ThJlN9/FE3fcF16+tAzN?=
- =?us-ascii?Q?BA9hppbbh+r5J084ch8MHmVuHtnsv/cqx1cdhVKa8h8H5WwMXrJcDoYLmUbT?=
- =?us-ascii?Q?axPiItg93rcplmcwOXTqSxJ/pVcsNVF83uie5Fpca00tZ+5JhLNSqt0CxL9R?=
- =?us-ascii?Q?acj1Xvz7DGwlFe3arSs3QD5sH81vBpaJPXk+dXvJbn4V7qznmWBjtJvxFa4u?=
- =?us-ascii?Q?KnDkEN5LzOlDGZG/txQlmz94UsPZGKM8bSwDY8+wnD4TBluqdCvnyEZbpvCo?=
- =?us-ascii?Q?HWWAOOwxBZvFG55nWndPFiJEe+XPBMMxWcxi5dIFbQnPUWMUiaOxELT+xFSC?=
- =?us-ascii?Q?xaW+Sf8hZYTfZcIG9PuBk69vJaP7pYkASpQBQzQwxGerAjTUceGNJg/Y7bY3?=
- =?us-ascii?Q?NjaN8sQvFSRvs/tyI+ywI77NUZyJwXAzQhLXYa0XNg41Xnp+tu5myuqRs/Us?=
- =?us-ascii?Q?YNgP9k2usKqvYCyDbxtGlqpbeAUUpr6aBQOa+LD6DN9jwTXOztKPAmnSEHCN?=
- =?us-ascii?Q?OIweTWpV2kYe2HqLdXSHNmxQUtpG5EIePf2q27lMHnxK/BOi2aMewBPN/kx2?=
- =?us-ascii?Q?KM6q64W/6eBmZlQWi9zPPIuQ6Wiq7Ll4agMD82WRXwLOIo2p9bUlvZq8Su8k?=
- =?us-ascii?Q?VMZKQhLDUO9Iq+wF7DCQeZGhTUhVrnIikB2g4ze3rY9qmPlji7KCKR/RpwEn?=
- =?us-ascii?Q?kDCekI3msw7Oz276dMyDVlPJHctPnz4ySUR4DQkASwD0Y/wheXR6F2XTNO5o?=
- =?us-ascii?Q?qC8Kt3B0Yc6svqXOnhk9DctOiq9PAAmiKKy2o4ZoQ+P8E80DyC58rNgWuTrg?=
- =?us-ascii?Q?Req88ZhnVxDHKjpX8eL0OWOl?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 478115ef-70cf-428e-3124-08d9729c676d
-X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Sep 2021 07:43:52.7101
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB4951.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2dd6e67c-ec32-4dd7-4ae7-08d9729f28c3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Sep 2021 08:03:35.7097
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: whxuRbqptOsEJMEtdY58nOD3D4gOnT0vClC7Q6i4OSXaE/LEI7ORoOoDWAg+qk1PJSHiPfTOO7GYlzwtLnjvbQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0401MB2327
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Dk8UMy1RbpiQ7M4xRu9fNel+e/1GBvQsrL9J21GRQMXbo/zKriNt1sLjAUx1blkpr/oy69Da6T40SuXDAuuq83N4Gw+BFKoclIirrvQKGOY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB5143
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-commit 5f58591323bf ("net: stmmac: delete the eee_ctrl_timer after
-napi disabled"), this patch tries to fix system hang caused by eee_ctrl_timer,
-unfortunately, it only can resolve it for system reboot stress test. System
-hang also can be reproduced easily during system suspend/resume stess test
-when mount NFS on i.MX8MP EVK board.
 
-In stmmac driver, eee feature is combined to phylink framework. When do
-system suspend, phylink_stop() would queue delayed work, it invokes
-stmmac_mac_link_down(), where to deactivate eee_ctrl_timer synchronizly.
-In above commit, try to fix issue by deactivating eee_ctrl_timer obviously,
-but it is not enough. Looking into eee_ctrl_timer expire callback
-stmmac_eee_ctrl_timer(), it could enable hareware eee mode again. What is
-unexpected is that LPI interrupt (MAC_Interrupt_Enable.LPIEN bit) is always
-asserted. This interrupt has chance to be issued when LPI state entry/exit
-from the MAC, and at that time, clock could have been already disabled.
-The result is that system hang when driver try to touch register from
-interrupt handler.
 
-The reason why above commit can fix system hang issue in stmmac_release()
-is that, deactivate eee_ctrl_timer not just after napi disabled, further
-after irq freed.
+> -----Original Message-----
+> From: Jakub Kicinski <kuba@kernel.org>
+> Sent: Tuesday, September 7, 2021 9:48 PM
+> Subject: Re: [PATCH net-next 1/2] rtnetlink: Add new RTM_GETEECSTATE
+> message to get SyncE status
+>=20
+> On Tue, 7 Sep 2021 15:47:05 +0000 Machnikowski, Maciej wrote:
+> > > > It can be either in FW or in Linux - depending on the deployment.
+> > > > We try to define the API that would enable Linux to manage that.
+> > >
+> > > We should implement the API for Linux to manage things from the get
+> go.
+> >
+> > Yep! Yet let's go one step at a time. I believe once we have the basics=
+ (EEC
+> > monitoring and recovered clock configuration) we'll be able to implemen=
+t
+> > a basic functionality - and add bells and whistles later on, as there a=
+re more
+> > capabilities that we could support in SW.
+>=20
+> The set API may shape how the get API looks. We need a minimal viable
+> API where the whole control part of it is not "firmware or proprietary
+> tools take care of that".
+>=20
+> Do you have public docs on how the whole solution works?
 
-In conclusion, hardware would generate LPI interrupt when clock has been
-disabled during suspend or resume, since hardware is in eee mode and LPI
-interrupt enabled.
+The best reference would be my netdev 0x15 tutorial:
+https://netdevconf.info/0x15/session.html?Introduction-to-time-synchronizat=
+ion-over-Ethernet
+The SyncE API considerations starts ~54:00, but basically we need API for:
+- Controlling the lane to pin mapping for clock recovery
+- Check the EEC/DPLL state and see what's the source of reference frequency
+(in more advanced deployments)
+- control additional input and output pins (GNSS input, external inputs, re=
+covered
+  frequency reference)
+=20
+> > > > The DPLL will operate on pins, so it will have a pin connected from=
+ the
+> > > > MAC/PHY that will have the recovered clock, but the recovered clock
+> > > > can be enabled from any port/lane. That information is kept in the
+> > > > MAC/PHY and the DPLL side will not be aware who it belongs to.
+> > >
+> > > So the clock outputs are muxed to a single pin at the Ethernet IP
+> > > level, in your design. I wonder if this is the common implementation
+> > > and therefore if it's safe to bake that into the API. Input from othe=
+r
+> > > vendors would be great...
+> >
+> > I believe this is the state-of-art: here's the Broadcom public one
+> > https://docs.broadcom.com/doc/1211168567832, I believe Marvel
+> > has similar solution. But would also be happy to hear others.
+>=20
+> Interesting. That reveals the need for also marking the backup
+> (/secondary) clock.
 
-Interrupts from MAC, MTL and DMA level are enabled and never been disabled
-when system suspend, so postpone clocks management from suspend stage to
-noirq suspend stage should be more safe.
+That's optional, but useful. And here's where we need a feedback
+on which port/lane is currently used, as the switch may be automatic
 
-Fixes: 5f58591323bf ("net: stmmac: delete the eee_ctrl_timer after napi disabled")
-Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
----
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 14 ------
- .../ethernet/stmicro/stmmac/stmmac_platform.c | 44 +++++++++++++++++++
- 2 files changed, 44 insertions(+), 14 deletions(-)
+> Have you seen any docs on how systems with discreet PHY ASICs mux
+> the clocks?
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index ece02b35a6ce..246f84fedbc8 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -7118,7 +7118,6 @@ int stmmac_suspend(struct device *dev)
- 	struct net_device *ndev = dev_get_drvdata(dev);
- 	struct stmmac_priv *priv = netdev_priv(ndev);
- 	u32 chan;
--	int ret;
- 
- 	if (!ndev || !netif_running(ndev))
- 		return 0;
-@@ -7150,13 +7149,6 @@ int stmmac_suspend(struct device *dev)
- 	} else {
- 		stmmac_mac_set(priv, priv->ioaddr, false);
- 		pinctrl_pm_select_sleep_state(priv->device);
--		/* Disable clock in case of PWM is off */
--		clk_disable_unprepare(priv->plat->clk_ptp_ref);
--		ret = pm_runtime_force_suspend(dev);
--		if (ret) {
--			mutex_unlock(&priv->lock);
--			return ret;
--		}
- 	}
- 
- 	mutex_unlock(&priv->lock);
-@@ -7242,12 +7234,6 @@ int stmmac_resume(struct device *dev)
- 		priv->irq_wake = 0;
- 	} else {
- 		pinctrl_pm_select_default_state(priv->device);
--		/* enable the clk previously disabled */
--		ret = pm_runtime_force_resume(dev);
--		if (ret)
--			return ret;
--		if (priv->plat->clk_ptp_ref)
--			clk_prepare_enable(priv->plat->clk_ptp_ref);
- 		/* reset the phy so that it's ready */
- 		if (priv->mii)
- 			stmmac_mdio_reset(priv->mii);
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-index 5ca710844cc1..4885f9ad1b1e 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-@@ -9,6 +9,7 @@
- *******************************************************************************/
- 
- #include <linux/platform_device.h>
-+#include <linux/pm_runtime.h>
- #include <linux/module.h>
- #include <linux/io.h>
- #include <linux/of.h>
-@@ -771,9 +772,52 @@ static int __maybe_unused stmmac_runtime_resume(struct device *dev)
- 	return stmmac_bus_clks_config(priv, true);
- }
- 
-+static int stmmac_pltfr_noirq_suspend(struct device *dev)
-+{
-+	struct net_device *ndev = dev_get_drvdata(dev);
-+	struct stmmac_priv *priv = netdev_priv(ndev);
-+	int ret;
-+
-+	if (!netif_running(ndev))
-+		return 0;
-+
-+	if (!device_may_wakeup(priv->device) || !priv->plat->pmt) {
-+		/* Disable clock in case of PWM is off */
-+		clk_disable_unprepare(priv->plat->clk_ptp_ref);
-+
-+		ret = pm_runtime_force_suspend(dev);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static int stmmac_pltfr_noirq_resume(struct device *dev)
-+{
-+	struct net_device *ndev = dev_get_drvdata(dev);
-+	struct stmmac_priv *priv = netdev_priv(ndev);
-+	int ret;
-+
-+	if (!netif_running(ndev))
-+		return 0;
-+
-+	if (!device_may_wakeup(priv->device) || !priv->plat->pmt) {
-+		/* enable the clk previously disabled */
-+		ret = pm_runtime_force_resume(dev);
-+		if (ret)
-+			return ret;
-+
-+		clk_prepare_enable(priv->plat->clk_ptp_ref);
-+	}
-+
-+	return 0;
-+}
-+
- const struct dev_pm_ops stmmac_pltfr_pm_ops = {
- 	SET_SYSTEM_SLEEP_PM_OPS(stmmac_pltfr_suspend, stmmac_pltfr_resume)
- 	SET_RUNTIME_PM_OPS(stmmac_runtime_suspend, stmmac_runtime_resume, NULL)
-+	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(stmmac_pltfr_noirq_suspend, stmmac_pltfr_noirq_resume)
- };
- EXPORT_SYMBOL_GPL(stmmac_pltfr_pm_ops);
- 
--- 
-2.17.1
+Yes - unfortunately they are not public :(
 
+=20
+> > > Also do I understand correctly that the output of the Ethernet IP
+> > > is just the raw Rx clock once receiver is locked and the DPLL which
+> > > enum if_synce_state refers to is in the time IP, that DPLL could be
+> > > driven by GNSS etc?
+> >
+> > Ethernet IP/PHY usually outputs a divided clock signal (since it's
+> > easier to route) derived from the RX clock.
+> > The DPLL connectivity is vendor-specific, as you can use it to connect
+> > some external signals, but you can as well just care about relying
+> > the SyncE clock and only allow recovering it and passing along
+> > the QL info when your EEC is locked. That's why I backed up from
+> > a full DPLL implementation in favor of a more generic EEC clock.
+>=20
+> What is an ECC clock? To me the PLL state in the Ethernet port is the
+> state of the recovered clock. enum if_eec_state has values like
+> holdover which seem to be more applicable to the "system wide" PLL.
+
+EEC is Ethernet Equipment Clock. In most cases this will be a DPLL, but tha=
+t's
+not mandatory and I believe it may be different is switches where
+you only need to drive all ports TX from a single frequency source. In this
+case the DPLL can be embedded in the multiport PHY,
+=20
+> Let me ask this - if one port is training the link and the other one has
+> the lock and is the source - what state will be reported for each port?
+
+In this case the port that has the lock source will report the lock and=20
+the EEC_SRC_PORT flag. The port that trains the link will show the
+lock without the flag and once it completes the training sequence it will
+use the EEC's frequency to transmit the data so that the next hop is able
+to synchronize its EEC to the incoming RX frequency
+
+> > The Time IP is again relative and vendor-specific. If SyncE is deployed
+> > alongside PTP it will most likely be tightly coupled, but if you only
+> > care about having a frequency source - it's not mandatory and it can be
+> > as well in the PHY IP.
+>=20
+> I would not think having just the freq is very useful.
+
+This depends on the deployment. There are couple popular frequencies
+Most popular are 2,048 kHz, 10 MHz and 64 kHz. There are many=20
+deployments that only require frequency sync without the phase
+and/or time. I.e. if you deploy frequency division duplex you only need the
+frequency reference, and the higher frequency you have - the faster you can
+lock to it.
+=20
+> > Also I think I will strip the reported states to the bare minimum defin=
+ed
+> > in the ITU-T G.781 instead of reusing the states that were already defi=
+ned
+> > for a specific DPLL.
+> >
+> > > > This is the right thinking. The DPLL can also have different extern=
+al
+> sources,
+> > > > like the GNSS, and can also drive different output clocks. But for =
+the
+> most
+> > > > basic SyncE implementation, which only runs on a recovered clock, w=
+e
+> won't
+> > > > need the DPLL subsystem.
+> > >
+> > > The GNSS pulse would come in over an external pin, tho, right? Your
+> > > earlier version of the patchset had GNSS as an enum value, how would
+> > > the driver / FW know that a given pin means GNSS?
+> >
+> > The GNSS 1PPS will more likely go directly to the "full" DPLL.
+> > The pin topology can be derived from FW or any vendor-specific way of
+> mapping
+> > pins to their sources. And, in "worst" case can just be hardcoded for a
+> specific
+> > device.
