@@ -2,116 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CB75403267
-	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 03:52:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00694403292
+	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 04:21:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347051AbhIHBxE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Sep 2021 21:53:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57822 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346972AbhIHBxD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Sep 2021 21:53:03 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAFACC061575
-        for <netdev@vger.kernel.org>; Tue,  7 Sep 2021 18:51:56 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id s25so698765edw.0
-        for <netdev@vger.kernel.org>; Tue, 07 Sep 2021 18:51:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LxLbN5oXo3pkASZMt7+BOQU43HJcJssxtcghQNdRrVo=;
-        b=AvxEqZUbI6FOu7pL8djSL10B3yrzx6C1ITuJnwmqc68sRjbZt0UZcqj4OOhM/IN1fR
-         mQG32bTk85V1KzAyt6/UfkczGxInrsiK0SxFntGyw21Fx6X9gUZPDg0Vkw6nUon4YkgN
-         GbxPU6vAxh7JV7pXhTlUM8mduw1Pz4ptY22hI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LxLbN5oXo3pkASZMt7+BOQU43HJcJssxtcghQNdRrVo=;
-        b=H5ONqLQTl+JmZMcyqnQaPiGujcPmYV5FcRo1w302+0KtFXPk7Modb7ROTNgYWaZ2iT
-         bluwwJziAj1Fj0R1/g0/0rkuVB044k7thP+1tiIFJnT4hLFogLaMW01tVfqyem0pxSBa
-         WWidfI4fVQEGQt/yJsSwLfUVWeILJpYHkRIfIhWVoGghQwwkfqmqM2mKAAOZu5dFROMx
-         J5YgeTqq8xeaUaK1TDZVPGeRyTj2RBwm2lz1Wjl5DH+3UkExQMaSpJIB5hROU2AnExmQ
-         oLy5T4/PrLUxOjrBFE0JGxliq5m1Mos67Dn9+W3E1eZcnFhCqOlNR/PxszLb2gbjw/F8
-         9hfg==
-X-Gm-Message-State: AOAM531n/d3qgQJc2Wwp6QzeAvkQc4pj3q6pAaNpI/rVTlz2WHxRY18B
-        4OuObKMk6aaTGFJNGzSIyV49adOWj3h2ZA9fKfg=
-X-Google-Smtp-Source: ABdhPJxnVgzgA3XXwqa4EFlL8d7umhpYJlwy6xIaq03K038qo+htUAlqbwCrnXE5YaLnhN/a7zpsRA==
-X-Received: by 2002:a05:6402:1455:: with SMTP id d21mr1312413edx.161.1631065915149;
-        Tue, 07 Sep 2021 18:51:55 -0700 (PDT)
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com. [209.85.221.47])
-        by smtp.gmail.com with ESMTPSA id u10sm296001eds.83.2021.09.07.18.51.55
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Sep 2021 18:51:55 -0700 (PDT)
-Received: by mail-wr1-f47.google.com with SMTP id q26so750768wrc.7
-        for <netdev@vger.kernel.org>; Tue, 07 Sep 2021 18:51:55 -0700 (PDT)
-X-Received: by 2002:a05:6512:3987:: with SMTP id j7mr946864lfu.280.1631065441904;
- Tue, 07 Sep 2021 18:44:01 -0700 (PDT)
+        id S1347187AbhIHCWL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Sep 2021 22:22:11 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:57420 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235450AbhIHCWJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Sep 2021 22:22:09 -0400
+Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 188242Ss133490
+        for <netdev@vger.kernel.org>; Tue, 7 Sep 2021 22:21:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=dvb+WS+x8LJerF80Gp1bxBXOqyttDpgbDh4MJ79Xoi4=;
+ b=Yf75sg9sYc1JTMTonxiUdILN+/+toY4RkAsncLLbNNIx70gU1Ou+I4kvCeudKX4HEeq8
+ fsGge+gXCEqcKCfBqgE5YsJg40tQ450RPHiXz6H1Ts408bximwbSGgcjKgnIqqsmb5Qo
+ y4eo5DQzYLrJQcIcQii+Qqu+xUt2bG9piIMCVNeUY6ixUmBtU4pCKgRY+DNqbd7cz7OK
+ u0Iwfziv1ZdWSJyKKK5MNdDIvku3WO8NgBlIvogId/X16+q1XPD4JGast0ubUoe2kOqs
+ kEcVn+PMeNABjJ78C0ZFpqzoQgP9sPGLEysTfegJwx7tn9NJiUP8vngTpvyJmpvDmVCX 2w== 
+Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3axd250meq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 07 Sep 2021 22:21:02 -0400
+Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
+        by ppma05wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1882HHF4007544
+        for <netdev@vger.kernel.org>; Wed, 8 Sep 2021 02:21:01 GMT
+Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
+        by ppma05wdc.us.ibm.com with ESMTP id 3axcnn863r-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 08 Sep 2021 02:21:01 +0000
+Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
+        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1882L0Ah12452278
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 8 Sep 2021 02:21:00 GMT
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E9793AE0D1;
+        Wed,  8 Sep 2021 02:20:59 +0000 (GMT)
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 91CF2AE4CE;
+        Wed,  8 Sep 2021 02:20:44 +0000 (GMT)
+Received: from suka-w540.ibmuc.com (unknown [9.65.208.93])
+        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTP;
+        Wed,  8 Sep 2021 02:20:44 +0000 (GMT)
+From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     Brian King <brking@linux.ibm.com>, Dany Madden <drt@linux.ibm.com>,
+        Rick Lindsley <ricklind@linux.ibm.com>
+Subject: [PATCH net internal 1/1] ibmvnic: check failover_pending in login response
+Date:   Tue,  7 Sep 2021 19:20:43 -0700
+Message-Id: <20210908022043.138931-1-sukadev@linux.ibm.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <CA+G9fYtFvJdtBknaDKR54HHMf4XsXKD4UD3qXkQ1KhgY19n3tw@mail.gmail.com>
- <CAHk-=wisUqoX5Njrnnpp0pDx+bxSAJdPxfgEUv82tZkvUqoN1w@mail.gmail.com>
- <CAHk-=whF9F89vsfH8E9TGc0tZA-yhzi2Di8wOtquNB5vRkFX5w@mail.gmail.com>
- <92c20b62-c4a7-8e63-4a94-76bdf6d9481e@kernel.org> <CAHk-=wiynwuneR4EbUNtd2_yNT_DR0VQhUF1QOZ352D-NOncjQ@mail.gmail.com>
- <a2c18c6b-ff13-a887-dd52-4f0aeeb25c27@kernel.org> <CAHk-=whcFKGyJOgmwJtWwDCP7VFPydnTtsvjPL6ZP6d6gTyPDQ@mail.gmail.com>
-In-Reply-To: <CAHk-=whcFKGyJOgmwJtWwDCP7VFPydnTtsvjPL6ZP6d6gTyPDQ@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 7 Sep 2021 18:43:46 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wi+O66NwiiAYBeS6kiix6YGuDvPf-MPddtycE_D4fWV=g@mail.gmail.com>
-Message-ID: <CAHk-=wi+O66NwiiAYBeS6kiix6YGuDvPf-MPddtycE_D4fWV=g@mail.gmail.com>
-Subject: Re: ipv4/tcp.c:4234:1: error: the frame size of 1152 bytes is larger
- than 1024 bytes [-Werror=frame-larger-than=]
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Ariel Elior <aelior@marvell.com>,
-        GR-everest-linux-l2@marvell.com, Wei Liu <wei.liu@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>, lkft-triage@lists.linaro.org,
-        Arnd Bergmann <arnd@arndb.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: kxhNLr6BzmIyNLU3sovYXLcfPoyfCVfo
+X-Proofpoint-ORIG-GUID: kxhNLr6BzmIyNLU3sovYXLcfPoyfCVfo
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-09-07_08:2021-09-07,2021-09-07 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 spamscore=0
+ suspectscore=0 malwarescore=0 mlxlogscore=999 lowpriorityscore=0
+ phishscore=0 clxscore=1015 priorityscore=1501 bulkscore=0 impostorscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2109030001 definitions=main-2109080011
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 7, 2021 at 6:35 PM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> I think a lot of them have just copied the x86 code (it was 4k long
-> ago), without actually understanding all the details.
+If a failover occurs before a login response is received, the login
+response buffer maybe undefined. Check that there was no failover
+before accessing the login response buffer.
 
-Just to put the x86 number in perspective: it was raised to 8192 back
-in 2013, with the comment
+Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+---
+ drivers/net/ethernet/ibm/ibmvnic.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-    x86/cpu: Increase max CPU count to 8192
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index a775c69e4fd7..6aa6ff89a765 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -4700,6 +4700,14 @@ static int handle_login_rsp(union ibmvnic_crq *login_rsp_crq,
+ 		return 0;
+ 	}
+ 
++	if (adapter->failover_pending) {
++		adapter->init_done_rc = -EAGAIN;
++		netdev_dbg(netdev, "Failover pending, ignoring login response\n");
++		complete(&adapter->init_done);
++		/* login response buffer will be released on reset */
++		return 0;
++	}
++
+ 	netdev->mtu = adapter->req_mtu - ETH_HLEN;
+ 
+ 	netdev_dbg(adapter->netdev, "Login Response Buffer:\n");
+-- 
+2.26.2
 
-    The MAXSMP option is intended to enable silly large numbers of
-    CPUs for testing purposes.  The current value of 4096 isn't very
-    silly any longer as there are actual SGI machines that approach
-    6096 CPUs when taking HT into account.
-
-    Increase the value to a nice round 8192 to account for this and
-    allow for short term future increases.
-
-so on the x86 side, people have actually done these things.
-
-Other architectures? I think some IBM power9 machines can hit 192
-cores (with SMT4 - so NR_CPUS of 768), but I don't think there's been
-an equivalent of an SGI for anything but x86.
-
-But admittedly I haven't checked or followed those things. I could
-easily imagine some boutique super-beefy setup.
-
-               Linus
