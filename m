@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C0E9403F71
-	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 21:07:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4600A403F73
+	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 21:07:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350598AbhIHTH7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Sep 2021 15:07:59 -0400
-Received: from home.keithp.com ([63.227.221.253]:35594 "EHLO elaine.keithp.com"
+        id S1351998AbhIHTIC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Sep 2021 15:08:02 -0400
+Received: from home.keithp.com ([63.227.221.253]:35604 "EHLO elaine.keithp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1350387AbhIHTHa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1350390AbhIHTHa (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 8 Sep 2021 15:07:30 -0400
 Received: from localhost (localhost [127.0.0.1])
-        by elaine.keithp.com (Postfix) with ESMTP id DA45E3F30882;
-        Wed,  8 Sep 2021 12:05:49 -0700 (PDT)
+        by elaine.keithp.com (Postfix) with ESMTP id 57B233F3088A;
+        Wed,  8 Sep 2021 12:05:51 -0700 (PDT)
 X-Virus-Scanned: Debian amavisd-new at keithp.com
 Received: from elaine.keithp.com ([127.0.0.1])
         by localhost (elaine.keithp.com [127.0.0.1]) (amavisd-new, port 10024)
-        with LMTP id ZJ8V24QNtY-4; Wed,  8 Sep 2021 12:05:49 -0700 (PDT)
+        with LMTP id 0QUbIxJ0odCs; Wed,  8 Sep 2021 12:05:51 -0700 (PDT)
 Received: from keithp.com (168-103-156-98.tukw.qwest.net [168.103.156.98])
-        by elaine.keithp.com (Postfix) with ESMTPSA id 769D03F30883;
+        by elaine.keithp.com (Postfix) with ESMTPSA id 913AE3F3088B;
         Wed,  8 Sep 2021 12:05:48 -0700 (PDT)
 Received: by keithp.com (Postfix, from userid 1000)
-        id 593CF1E60132; Wed,  8 Sep 2021 12:06:09 -0700 (PDT)
+        id 5D8FF1E6013A; Wed,  8 Sep 2021 12:06:09 -0700 (PDT)
 From:   Keith Packard <keithpac@amazon.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Abbott Liu <liuwenliang@huawei.com>,
@@ -75,9 +75,9 @@ Cc:     Abbott Liu <liuwenliang@huawei.com>,
         virtualization@lists.linux-foundation.org,
         "Wolfram Sang (Renesas)" <wsa+renesas@sang-engineering.com>,
         YiFei Zhu <yifeifz2@illinois.edu>, Yonghong Song <yhs@fb.com>
-Subject: [PATCH v4 3/7] ARM: Use smp_processor_id() in vfp_pm_suspend instead of ti->cpu
-Date:   Wed,  8 Sep 2021 12:06:01 -0700
-Message-Id: <20210908190605.419064-4-keithpac@amazon.com>
+Subject: [PATCH v4 4/7] Make sure task_struct is available for raw_smp_processor_id
+Date:   Wed,  8 Sep 2021 12:06:02 -0700
+Message-Id: <20210908190605.419064-5-keithpac@amazon.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20210908190605.419064-1-keithpac@amazon.com>
 References: <id:20210907220038.91021-1-keithpac@amazon.com>
@@ -88,39 +88,182 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These are equivalent when thread_info contains the CPU value, but when
-THREAD_INFO_IN_TASK is enabled, cpu moves to task_struct. Using the macro
-allows either.
+To allow architectures to use the 'cpu' field in task_struct for cpu
+identification, the task_struct must be visible whereever the
+raw_smp_processor_id macro is used. It would be simplest to include
+linux/sched.h from the relevant asm/smp.h file, but that file is
+included from linux/sched.h, and the recursive include ends up with
+several declarations in the wrong order.
+
+To avoid this, the PowerPC architecture code has this ugly hack:
+
+	#define raw_smp_processor_id() \
+		(*(unsigned int *)((void *)current + _TASK_CPU))
+
+As an alternative, placing includes of linux/sched.h in a few files
+that are used along with asm/smp.h means we can use the task_struct
+field directly.
 
 Signed-off-by: Keith Packard <keithpac@amazon.com>
 ---
- arch/arm/vfp/vfpmodule.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/arm/mm/proc-v7-bugs.c     | 1 +
+ drivers/vhost/vhost.c          | 1 +
+ drivers/vhost/vhost.h          | 1 +
+ include/asm-generic/irq_regs.h | 1 +
+ include/linux/of_address.h     | 1 +
+ include/linux/random.h         | 1 +
+ include/linux/topology.h       | 1 +
+ init/calibrate.c               | 1 +
+ kernel/bpf/bpf_lru_list.h      | 1 +
+ kernel/bpf/percpu_freelist.h   | 1 +
+ kernel/sched/cpuacct.c         | 2 +-
+ lib/irq_regs.c                 | 1 +
+ 12 files changed, 12 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/vfp/vfpmodule.c b/arch/arm/vfp/vfpmodule.c
-index 2cb355c1b5b7..d7a3818da671 100644
---- a/arch/arm/vfp/vfpmodule.c
-+++ b/arch/arm/vfp/vfpmodule.c
-@@ -458,16 +458,16 @@ static int vfp_pm_suspend(void)
+diff --git a/arch/arm/mm/proc-v7-bugs.c b/arch/arm/mm/proc-v7-bugs.c
+index 114c05ab4dd9..9ea078c619a7 100644
+--- a/arch/arm/mm/proc-v7-bugs.c
++++ b/arch/arm/mm/proc-v7-bugs.c
+@@ -1,4 +1,5 @@
+ // SPDX-License-Identifier: GPL-2.0
++#include <linux/sched.h>
+ #include <linux/arm-smccc.h>
+ #include <linux/kernel.h>
+ #include <linux/smp.h>
+diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+index 5ccb0705beae..e5a073bb5b1e 100644
+--- a/drivers/vhost/vhost.c
++++ b/drivers/vhost/vhost.c
+@@ -10,6 +10,7 @@
+  * Generic code for virtio server in host kernel.
+  */
  
- 		/* disable, just in case */
- 		fmxr(FPEXC, fmrx(FPEXC) & ~FPEXC_EN);
--	} else if (vfp_current_hw_state[ti->cpu]) {
-+	} else if (vfp_current_hw_state[smp_processor_id()]) {
- #ifndef CONFIG_SMP
- 		fmxr(FPEXC, fpexc | FPEXC_EN);
--		vfp_save_state(vfp_current_hw_state[ti->cpu], fpexc);
-+		vfp_save_state(vfp_current_hw_state[smp_processor_id()], fpexc);
- 		fmxr(FPEXC, fpexc);
- #endif
- 	}
++#include <linux/sched.h>
+ #include <linux/eventfd.h>
+ #include <linux/vhost.h>
+ #include <linux/uio.h>
+diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
+index b063324c7669..963d08ff2a62 100644
+--- a/drivers/vhost/vhost.h
++++ b/drivers/vhost/vhost.h
+@@ -2,6 +2,7 @@
+ #ifndef _VHOST_H
+ #define _VHOST_H
  
- 	/* clear any information we had about last context state */
--	vfp_current_hw_state[ti->cpu] = NULL;
-+	vfp_current_hw_state[smp_processor_id()] = NULL;
++#include <linux/sched.h>
+ #include <linux/eventfd.h>
+ #include <linux/vhost.h>
+ #include <linux/mm.h>
+diff --git a/include/asm-generic/irq_regs.h b/include/asm-generic/irq_regs.h
+index 2e7c6e89d42e..ab4ca7ab362c 100644
+--- a/include/asm-generic/irq_regs.h
++++ b/include/asm-generic/irq_regs.h
+@@ -8,6 +8,7 @@
+ #ifndef _ASM_GENERIC_IRQ_REGS_H
+ #define _ASM_GENERIC_IRQ_REGS_H
  
- 	return 0;
- }
++#include <linux/sched.h>
+ #include <linux/percpu.h>
+ 
+ /*
+diff --git a/include/linux/of_address.h b/include/linux/of_address.h
+index 88bc943405cd..60c30168d48d 100644
+--- a/include/linux/of_address.h
++++ b/include/linux/of_address.h
+@@ -1,6 +1,7 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+ #ifndef __OF_ADDRESS_H
+ #define __OF_ADDRESS_H
++#include <linux/sched.h>
+ #include <linux/ioport.h>
+ #include <linux/errno.h>
+ #include <linux/of.h>
+diff --git a/include/linux/random.h b/include/linux/random.h
+index f45b8be3e3c4..0accd9277e95 100644
+--- a/include/linux/random.h
++++ b/include/linux/random.h
+@@ -7,6 +7,7 @@
+ #ifndef _LINUX_RANDOM_H
+ #define _LINUX_RANDOM_H
+ 
++#include <linux/sched.h>
+ #include <linux/bug.h>
+ #include <linux/kernel.h>
+ #include <linux/list.h>
+diff --git a/include/linux/topology.h b/include/linux/topology.h
+index 7634cd737061..4bd993bc9513 100644
+--- a/include/linux/topology.h
++++ b/include/linux/topology.h
+@@ -27,6 +27,7 @@
+ #ifndef _LINUX_TOPOLOGY_H
+ #define _LINUX_TOPOLOGY_H
+ 
++#include <linux/sched.h>
+ #include <linux/arch_topology.h>
+ #include <linux/cpumask.h>
+ #include <linux/bitops.h>
+diff --git a/init/calibrate.c b/init/calibrate.c
+index f3831272f113..45002e27e385 100644
+--- a/init/calibrate.c
++++ b/init/calibrate.c
+@@ -10,6 +10,7 @@
+ #include <linux/init.h>
+ #include <linux/timex.h>
+ #include <linux/smp.h>
++#include <linux/sched.h>
+ #include <linux/percpu.h>
+ 
+ unsigned long lpj_fine;
+diff --git a/kernel/bpf/bpf_lru_list.h b/kernel/bpf/bpf_lru_list.h
+index 6b12f06ee18c..5aed0c288c76 100644
+--- a/kernel/bpf/bpf_lru_list.h
++++ b/kernel/bpf/bpf_lru_list.h
+@@ -4,6 +4,7 @@
+ #ifndef __BPF_LRU_LIST_H_
+ #define __BPF_LRU_LIST_H_
+ 
++#include <linux/sched.h>
+ #include <linux/list.h>
+ #include <linux/spinlock_types.h>
+ 
+diff --git a/kernel/bpf/percpu_freelist.h b/kernel/bpf/percpu_freelist.h
+index 3c76553cfe57..3bc7a2bbe79b 100644
+--- a/kernel/bpf/percpu_freelist.h
++++ b/kernel/bpf/percpu_freelist.h
+@@ -3,6 +3,7 @@
+  */
+ #ifndef __PERCPU_FREELIST_H__
+ #define __PERCPU_FREELIST_H__
++#include <linux/sched.h>
+ #include <linux/spinlock.h>
+ #include <linux/percpu.h>
+ 
+diff --git a/kernel/sched/cpuacct.c b/kernel/sched/cpuacct.c
+index 104a1bade14f..fb5f52e889a4 100644
+--- a/kernel/sched/cpuacct.c
++++ b/kernel/sched/cpuacct.c
+@@ -5,8 +5,8 @@
+  * Based on the work by Paul Menage (menage@google.com) and Balbir Singh
+  * (balbir@in.ibm.com).
+  */
+-#include <asm/irq_regs.h>
+ #include "sched.h"
++#include <asm/irq_regs.h>
+ 
+ /* Time spent by the tasks of the CPU accounting group executing in ... */
+ enum cpuacct_stat_index {
+diff --git a/lib/irq_regs.c b/lib/irq_regs.c
+index 0d545a93070e..c9d8235f6444 100644
+--- a/lib/irq_regs.c
++++ b/lib/irq_regs.c
+@@ -5,6 +5,7 @@
+  * Written by David Howells (dhowells@redhat.com)
+  */
+ #include <linux/export.h>
++#include <linux/sched.h>
+ #include <linux/percpu.h>
+ #include <asm/irq_regs.h>
+ 
 -- 
 2.33.0
 
