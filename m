@@ -2,83 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C95C4403D10
-	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 17:57:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47249403D30
+	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 17:59:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352198AbhIHP6f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Sep 2021 11:58:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60922 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1349791AbhIHP6e (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Sep 2021 11:58:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6DE7660EE6;
-        Wed,  8 Sep 2021 15:57:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631116646;
-        bh=ELvutsBWnKljahCvmsUf1lTmYmJcUrk25vI9Qu6RLeU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PPKnDcaUpF7UJAtCrxsg6TaImq+zosSFohM4v+Two1N1RTL0H2O6LjldOSv8+ajsI
-         NPSLzjOfRmv+DcULTsCoJ5/Qow+YUMoZH4wvHKIYmrxuO8WC2HWywg6OPIzfnKKIVz
-         r5gd0praMBEggJVNzQ29xSyYQ9XAVhbqMv7LQqt1smeFME3oK0G3vJYhA/SrYJb3Eo
-         mKAjKg9iEK4Kge0vMJ9Syj7hQ4FxpBYMoCJT8W6B751ZJho+gikM7kQOAb5mV8qNBZ
-         sFeKCTwBaopKA9DyrnlMkaYVawj8tOIxUsiiocQ5hrx5wj8iY+7J9zki+nLs3PAQmm
-         /r1vcY8pBCpBQ==
-Date:   Wed, 8 Sep 2021 08:57:23 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Cc:     moyufeng <moyufeng@huawei.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
-        alexander.duyck@gmail.com, linux@armlinux.org.uk, mw@semihalf.com,
-        linuxarm@openeuler.org, yisen.zhuang@huawei.com,
-        salil.mehta@huawei.com, thomas.petazzoni@bootlin.com,
-        hawk@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        john.fastabend@gmail.com, akpm@linux-foundation.org,
-        peterz@infradead.org, will@kernel.org, willy@infradead.org,
-        vbabka@suse.cz, fenghua.yu@intel.com, guro@fb.com,
-        peterx@redhat.com, feng.tang@intel.com, jgg@ziepe.ca,
-        mcroce@microsoft.com, hughd@google.com, jonathan.lemon@gmail.com,
-        alobakin@pm.me, willemb@google.com, wenxu@ucloud.cn,
-        cong.wang@bytedance.com, haokexin@gmail.com, nogikh@google.com,
-        elver@google.com, yhs@fb.com, kpsingh@kernel.org,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, chenhao288@hisilicon.com
-Subject: Re: [PATCH net-next v2 4/4] net: hns3: support skb's frag page
- recycling based on page pool
-Message-ID: <20210908085723.3c9c2de2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <YTjWK1rNsYIcTt4O@apalos.home>
-References: <1628217982-53533-1-git-send-email-linyunsheng@huawei.com>
-        <1628217982-53533-5-git-send-email-linyunsheng@huawei.com>
-        <2b75d66b-a3bf-2490-2f46-fef5731ed7ad@huawei.com>
-        <20210908080843.2051c58d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YTjWK1rNsYIcTt4O@apalos.home>
+        id S1352298AbhIHQBE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Sep 2021 12:01:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52592 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349719AbhIHQBD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Sep 2021 12:01:03 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66600C061575
+        for <netdev@vger.kernel.org>; Wed,  8 Sep 2021 08:59:55 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id e23so5833538lfj.9
+        for <netdev@vger.kernel.org>; Wed, 08 Sep 2021 08:59:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=F4infFLVixS1zGDFn3Ppp1mthbrjmBNRT6/Rci2kJg8=;
+        b=H8ZMch42HiybhAm4Ner+rjzqPv+vf/l5o8J/kw1HS5STE/87Uu67cqIKV7XOttIzH6
+         Fr/yJ3v1JspZbfGvuL5igjanpDAyvA/Yy598WQlVH1jVhZa0SPwMaVtG0sJiHxnuShdx
+         4vioibFKRKMO6AdS+qLyXRlpX18FbIq4PUiRk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=F4infFLVixS1zGDFn3Ppp1mthbrjmBNRT6/Rci2kJg8=;
+        b=VAxdSIr+bGR94qg10TYrT1INHBt1n5byGH2lSgQ2n40+leo2a4Ce+ETKXXysdeBusT
+         BiydoAZLgJFC+UWtMbmi9br8Lbt9KsTWCz73RNB0Re6eYhtSIXrqDhR+nBWzuwU7J4Ak
+         cqaYGnmtSr+OdejphMA9f1Aq6RrLAPMPLqMywi/wq91JulOrxItlfV+H/hgo2IYPBugl
+         s5HAEYx2GXG9HUkIXWX8B8wiBaEryktT9oanNG1DkLiaPviCnj5ZEfMaeH1pDnC05Kgh
+         maJYtLhObH/iGg1zlrpO3KIRY5MSTKY8FiLs78FCUvagzcAM/NqLh1TVONIateHlLEEO
+         q3Ig==
+X-Gm-Message-State: AOAM531O0y5PqVuKmA9BNLSTFSTJlDPvC3AE18N1ZJlDGIRwt1gdvrie
+        Hu1/0KKSkbBj9AMMaU3nSu4wIAyPDSY1PFZH8KY=
+X-Google-Smtp-Source: ABdhPJwzcDuYUwL/ChEF3kcd8IC1C1Txyq/Wq4HPYnG8k6RTmol5V8yhXeB2yhc9r3up+ALe+Si8mg==
+X-Received: by 2002:a05:6512:3341:: with SMTP id y1mr3209102lfd.6.1631116793759;
+        Wed, 08 Sep 2021 08:59:53 -0700 (PDT)
+Received: from mail-lj1-f180.google.com (mail-lj1-f180.google.com. [209.85.208.180])
+        by smtp.gmail.com with ESMTPSA id u4sm226316lfo.209.2021.09.08.08.59.52
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Sep 2021 08:59:53 -0700 (PDT)
+Received: by mail-lj1-f180.google.com with SMTP id h1so4328945ljl.9
+        for <netdev@vger.kernel.org>; Wed, 08 Sep 2021 08:59:52 -0700 (PDT)
+X-Received: by 2002:a05:651c:158f:: with SMTP id h15mr3559594ljq.249.1631116792643;
+ Wed, 08 Sep 2021 08:59:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <CA+G9fYtFvJdtBknaDKR54HHMf4XsXKD4UD3qXkQ1KhgY19n3tw@mail.gmail.com>
+ <CAHk-=wisUqoX5Njrnnpp0pDx+bxSAJdPxfgEUv82tZkvUqoN1w@mail.gmail.com>
+ <CAHk-=whF9F89vsfH8E9TGc0tZA-yhzi2Di8wOtquNB5vRkFX5w@mail.gmail.com> <20210908100304.oknxj4v436sbg3nb@liuwe-devbox-debian-v2>
+In-Reply-To: <20210908100304.oknxj4v436sbg3nb@liuwe-devbox-debian-v2>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed, 8 Sep 2021 08:59:36 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgMyCaFMybdQRJYJLbbbv5S2UHsU3oQ+CBRyYkvjmR=hA@mail.gmail.com>
+Message-ID: <CAHk-=wgMyCaFMybdQRJYJLbbbv5S2UHsU3oQ+CBRyYkvjmR=hA@mail.gmail.com>
+Subject: Re: ipv4/tcp.c:4234:1: error: the frame size of 1152 bytes is larger
+ than 1024 bytes [-Werror=frame-larger-than=]
+To:     Wei Liu <wei.liu@kernel.org>
+Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Ariel Elior <aelior@marvell.com>,
+        GR-everest-linux-l2@marvell.com,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>, lkft-triage@lists.linaro.org,
+        Arnd Bergmann <arnd@arndb.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 8 Sep 2021 18:26:35 +0300 Ilias Apalodimas wrote:
-> > Normally I'd say put the stats in ethtool -S and the rest in debugfs
-> > but I'm not sure if exposing pages_state_hold_cnt and
-> > pages_state_release_cnt directly. Those are short counters, and will
-> > very likely wrap. They are primarily meaningful for calculating
-> > page_pool_inflight(). Given this I think their semantics may be too
-> > confusing for an average ethtool -S user.
-> > 
-> > Putting all the information in debugfs seems like a better idea.  
-> 
-> I can't really disagree on the aforementioned stats being confusing.
-> However at some point we'll want to add more useful page_pool stats (e.g the
-> percentage of the page/page fragments that are hitting the recycling path).
-> Would it still be 'ok' to have info split across ethtool and debugfs?
+On Wed, Sep 8, 2021 at 3:03 AM Wei Liu <wei.liu@kernel.org> wrote:
+>
+> Thanks for the heads-up. I found one instance of this bad practice in
+> hv_apic.c. Presumably that's the one you were referring to.
 
-Possibly. We'll also see what Alex L comes up with for XDP stats. Maybe
-we can arrive at a netlink API for standard things (broken record).
+Yeah, that must have been the one I saw.
 
-You said percentage - even tho I personally don't like it - there is a
-small precedent of ethtool -S containing non-counter information (IOW
-not monotonically increasing event counters), e.g. some vendors rammed
-PCI link quality in there. So if all else fails ethtool -S should be
-fine.
+> However calling into the allocator from that IPI path seems very heavy
+> weight. I will discuss with fellow engineers on how to fix it properly.
+
+In other places, the options have been fairly straightforward:
+
+ (a) avoid the allocation entirely.
+
+I think the main reason hyperv does it is because it wants to clear
+the "current cpu" from the cpumask for the ALL_BUT_SELF case, and if
+you can just instead keep track of that "all but self" bit separately
+and pass it down the call chain, you may not need that allocation at
+all.
+
+ (b) use a static percpu allocation
+
+The IPI code generally wants interrupts disabled anyway, or it
+certainly can just do the required preemption disable to make sure
+that it has exclusive access to a percpu allocation.
+
+ (c) take advantage of any hypervisor limitations
+
+If hyperv is limited to some smaller number of CPU's - google seems to
+imply 240 - maybe you can keep such a smaller allocation on the stack,
+but just verify that the incoming cpumask is less than whatever the
+hyperv limit is.
+
+That (c) is obviously the worst choice in some sense, but in some
+cases limiting yourself to simplify things isn't wrong.
+
+I suspect the percpu allocation model is the easiest one. It's what
+other IPI code does. See for example
+
+  arch/x86/kernel/apic/x2apic_cluster.c:
+      __x2apic_send_IPI_mask()
+
+and that percpu 'ipi_mask' thing.
+
+That said, if you are already just iterating over the mask, doing (a)
+may be trivial. No allocation at all is even better than a percpu one.
+
+I'm sure there are other options. The above is just the obvious ones
+that come to mind.
+
+           Linus
