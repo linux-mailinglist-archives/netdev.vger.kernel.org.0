@@ -2,194 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B683404052
-	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 22:51:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB28F404060
+	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 22:58:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350635AbhIHUwN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Sep 2021 16:52:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34022 "EHLO
+        id S1352436AbhIHU7Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Sep 2021 16:59:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235437AbhIHUwN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Sep 2021 16:52:13 -0400
-Received: from fieldses.org (fieldses.org [IPv6:2600:3c00:e000:2f7::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8305C061575;
-        Wed,  8 Sep 2021 13:51:04 -0700 (PDT)
-Received: by fieldses.org (Postfix, from userid 2815)
-        id 473C669C3; Wed,  8 Sep 2021 16:51:03 -0400 (EDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fieldses.org 473C669C3
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fieldses.org;
-        s=default; t=1631134263;
-        bh=Rsr8yhVwiPXAd+PHqS4Ee2gc2en0YgpekPyCT9JDLz8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=AG6HtQGpBu/qrIDH/pa46CTseZpfnQxz9iVFCVtOKplxZXjIHf5VVXNVgp/IxAvya
-         B3aMND26lRgQDI/J4DAtJhD/yTlUrYEmShEzvggkn6ITF+TZs/ftLiq3yChyH8vg7Z
-         vSTWKeer7FWRoJFLlwsm1OuzVJKPsyrpP9djQprM=
-Date:   Wed, 8 Sep 2021 16:51:03 -0400
-From:   "J. Bruce Fields" <bfields@fieldses.org>
-To:     "wanghai (M)" <wanghai38@huawei.com>
-Cc:     Wenbin Zeng <wenbin.zeng@gmail.com>, viro@zeniv.linux.org.uk,
-        davem@davemloft.net, jlayton@kernel.org,
-        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
-        wenbinzeng@tencent.com, dsahern@gmail.com,
-        nicolas.dichtel@6wind.com, willy@infradead.org,
-        edumazet@google.com, jakub.kicinski@netronome.com,
-        tyhicks@canonical.com, chuck.lever@oracle.com, neilb@suse.com,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-nfs@vger.kernel.org
-Subject: Re: [PATCH v2 0/3] auth_gss: netns refcount leaks when
- use-gss-proxy==1
-Message-ID: <20210908205103.GE23978@fieldses.org>
-References: <1556692945-3996-1-git-send-email-wenbinzeng@tencent.com>
- <1557470163-30071-1-git-send-email-wenbinzeng@tencent.com>
- <20190515010331.GA3232@fieldses.org>
- <20190612083755.GA27776@bridge.tencent.com>
- <20190612155224.GF16331@fieldses.org>
- <2c9e3d91-f4b3-6f6a-0dc0-21cef4fab3bb@huawei.com>
+        with ESMTP id S235437AbhIHU7Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Sep 2021 16:59:24 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78C45C061575;
+        Wed,  8 Sep 2021 13:58:15 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id z9-20020a7bc149000000b002e8861aff59so2631478wmi.0;
+        Wed, 08 Sep 2021 13:58:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=hSocSWxCXqTtY7IKswJjQcQ4A/k6XRZNGQUNO2WMnGY=;
+        b=VUBU5OR6v6gVEVmrEFfx+o4vCn96JH3KGMWJo7zyAa7DlTJtK01Yt6qimX3yltc18z
+         dKIJb14ozxEjNI66XlGwkXYhwClNZ0nwF2/BKIeNMFm9Wrt0/pFvP0hcZbDfroRRAy28
+         pa8QSLqqfLiVEgh95eu4r8zQ3jndK8s9vqbCHVDagX0kDNnR9hMKpA069XKRXd6nPNS4
+         VASY33S7Ey2PpLg6HOM/uKMKlUhBZEdhiMcgNsy8KUgymWJHyC5FN/y2EdXhaGXX+evg
+         hkHrZ8u8YAu8k1fpC0RFjJFvMKgBN7YY2QqqnnYZOfl/oGM17FfyC6yFj+Cavj2qHHLZ
+         qGWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=hSocSWxCXqTtY7IKswJjQcQ4A/k6XRZNGQUNO2WMnGY=;
+        b=HEJhwWxmDwl6RHCCEkfr3VsA5eGgnEFQdzZ387UpFZBmYuM/LTTpY4sJanxMrV9DRK
+         amEu70HNhX0vUeURRdlbyjQw1dwWO9vBQUF71EY+VLjVyoH5EGv3WLRYu+nhPi2uB1S4
+         PwQSSmhy9y3rTUYsJbnP25NDvtxJeAw1vkrRFfg7QBWFEZXnWuX+qIiZ5NKrcPgwSxCe
+         f2ExssDG+BYKPVZRoqotW6wzeYtl0sJYizzwTCO9d8gn7TGHwHm+RllYNkAXmaVJE/rp
+         A5yaMVEOG1B9t3A6uFNHZ7HVs3KV+VnPAxB3KMaEAp6fH2oxt8zfQafokiQIxFrlJFBD
+         26ng==
+X-Gm-Message-State: AOAM532VOf+QmIhzmOgfbU/fZsNjfERWIZ5iLEYERafh9CwQkbnbyV1N
+        pnCbj+rBqYsNG90DG82YobiSNhUoNN58Ug==
+X-Google-Smtp-Source: ABdhPJzGzcRN8XlxAJDijyjtEXq0U8rBWTPf+y5u0tB1o3a6kslnKemjvmsLF2GMUiU9xXFGEB+RTA==
+X-Received: by 2002:a7b:c255:: with SMTP id b21mr176029wmj.44.1631134694106;
+        Wed, 08 Sep 2021 13:58:14 -0700 (PDT)
+Received: from eldamar (80-218-24-251.dclient.hispeed.ch. [80.218.24.251])
+        by smtp.gmail.com with ESMTPSA id f17sm231024wrt.63.2021.09.08.13.58.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Sep 2021 13:58:12 -0700 (PDT)
+Sender: Salvatore Bonaccorso <salvatore.bonaccorso@gmail.com>
+Date:   Wed, 8 Sep 2021 22:58:11 +0200
+From:   Salvatore Bonaccorso <carnil@debian.org>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     syzbot <syzbot+ce96ca2b1d0b37c6422d@syzkaller.appspotmail.com>,
+        coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
+        kadlec@netfilter.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        stable@vger.kernel.org, elbrus@debian.org
+Subject: Re: [syzbot] general protection fault in nft_set_elem_expr_alloc
+Message-ID: <YTkj4xH2Ol075+Ge@eldamar.lan>
+References: <000000000000ef07b205c3cb1234@google.com>
+ <20210602170317.GA18869@salvia>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <2c9e3d91-f4b3-6f6a-0dc0-21cef4fab3bb@huawei.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+In-Reply-To: <20210602170317.GA18869@salvia>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 07, 2021 at 10:48:52PM +0800, wanghai (M) wrote:
-> 
-> 在 2019/6/12 23:52, J. Bruce Fields 写道:
-> >On Wed, Jun 12, 2019 at 04:37:55PM +0800, Wenbin Zeng wrote:
-> >>On Tue, May 14, 2019 at 09:03:31PM -0400, J. Bruce Fields wrote:
-> >>>Whoops, I was slow to test these.  I'm getting failuring krb5 nfs
-> >>>mounts, and the following the server's logs.  Dropping the three patches
-> >>>for now.
-> >>My bad, I should have found it earlier. Thank you for testing it, Bruce.
-> >>
-> >>I figured it out, the problem that you saw is due to the following code:
-> >>the if-condition is incorrect here because sn->gssp_clnt==NULL doesn't mean
-> >>inexistence of 'use-gss-proxy':
-> >Thanks, but with the new patches I see the following.  I haven't tried
-> >to investigate.
-> This patchset adds the nsfs_evict()->netns_evict() code for breaking
-> deadlock bugs that exist, but this may cause double free because
-> nsfs_evict()->netns_evict() may be called multiple times.
-> 
-> for example:
-> 
-> int main()
-> {
->     int fd = open("/proc/self/ns/net", O_RDONLY);
->     close(fd);
-> 
->     fd = open("/proc/self/ns/net", O_RDONLY);
->     close(fd);
-> }
-> 
-> Therefore, the nsfs evict cannot be used to break the deadlock.
+Hi Pablo,
 
-Sorry, I haven't really been following this, but I though this problem
-was fixed by your checking for gssp_clnt (instead of just relying on the
-use_gssp_proc check) in v3 of your patches?
-
---b.
-
+On Wed, Jun 02, 2021 at 07:03:17PM +0200, Pablo Neira Ayuso wrote:
+> On Wed, Jun 02, 2021 at 09:37:26AM -0700, syzbot wrote:
+> > Hello,
+> > 
+> > syzbot found the following issue on:
+> > 
+> > HEAD commit:    6850ec97 Merge branch 'mptcp-fixes-for-5-13'
+> > git tree:       net
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=1355504dd00000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=770708ea7cfd4916
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=ce96ca2b1d0b37c6422d
+> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1502d517d00000
+> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12bbbe13d00000
+> > 
+> > The issue was bisected to:
+> > 
+> > commit 05abe4456fa376040f6cc3cc6830d2e328723478
+> > Author: Pablo Neira Ayuso <pablo@netfilter.org>
+> > Date:   Wed May 20 13:44:37 2020 +0000
+> > 
+> >     netfilter: nf_tables: allow to register flowtable with no devices
+> > 
+> > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10fa1387d00000
+> > final oops:     https://syzkaller.appspot.com/x/report.txt?x=12fa1387d00000
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=14fa1387d00000
+> > 
+> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > Reported-by: syzbot+ce96ca2b1d0b37c6422d@syzkaller.appspotmail.com
+> > Fixes: 05abe4456fa3 ("netfilter: nf_tables: allow to register flowtable with no devices")
+> > 
+> > general protection fault, probably for non-canonical address 0xdffffc000000000e: 0000 [#1] PREEMPT SMP KASAN
+> > KASAN: null-ptr-deref in range [0x0000000000000070-0x0000000000000077]
+> > CPU: 1 PID: 8438 Comm: syz-executor343 Not tainted 5.13.0-rc3-syzkaller #0
+> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> > RIP: 0010:nft_set_elem_expr_alloc+0x17e/0x280 net/netfilter/nf_tables_api.c:5321
+> > Code: 48 c1 ea 03 80 3c 02 00 0f 85 09 01 00 00 49 8b 9d c0 00 00 00 48 b8 00 00 00 00 00 fc ff df 48 8d 7b 70 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 d9 00 00 00 48 8b 5b 70 48 85 db 74 21 e8 9a bd
 > 
-> A large number of netns leaks may cause OOM problems, currently I
-> can't find a good solution to fix it, does anyone have a good idea?
-> >--b.
-> >
-> >[ 2908.134813] ------------[ cut here ]------------
-> >[ 2908.135732] name 'use-gss-proxy'
-> >[ 2908.136276] WARNING: CPU: 2 PID: 15032 at fs/proc/generic.c:673 remove_proc_entry+0x124/0x190
-> >[ 2908.138144] Modules linked in: nfsv4 rpcsec_gss_krb5 nfsv3 nfs_acl nfs lockd grace auth_rpcgss sunrpc
-> >[ 2908.140183] CPU: 2 PID: 15032 Comm: (coredump) Not tainted 5.2.0-rc2-00441-gaef575f54640 #2257
-> >[ 2908.142062] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.12.0-2.fc30 04/01/2014
-> >[ 2908.143756] RIP: 0010:remove_proc_entry+0x124/0x190
-> >[ 2908.144519] Code: c3 48 c7 c7 60 24 8b 82 e8 29 16 a5 00 eb d5 48 c7 c7 60 24 8b 82 e8 1b 16 a5 00 4c 89 e6 48 c7 c7 ec 4c 52 82 e8 50 fd db ff <0f> 0b eb b6 48 8b 04 24 83 a8 90 00 00 00 01 e9 78 ff ff ff 4c 89
-> >[ 2908.148138] RSP: 0018:ffffc900047bbdb0 EFLAGS: 00010282
-> >[ 2908.148945] RAX: 0000000000000000 RBX: ffff888036060580 RCX: 0000000000000000
-> >[ 2908.150139] RDX: ffff88807fd24e80 RSI: ffff88807fd165b8 RDI: 00000000ffffffff
-> >[ 2908.151334] RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
-> >[ 2908.152564] R10: 0000000000000000 R11: 0000000000000000 R12: ffffffffa00adb1b
-> >[ 2908.153816] R13: 00007ffc8bda5d30 R14: 0000000000000000 R15: ffff88805e2873a8
-> >[ 2908.155007] FS:  00007f470bc27e40(0000) GS:ffff88807fd00000(0000) knlGS:0000000000000000
-> >[ 2908.156421] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> >[ 2908.157333] CR2: 0000562b07764c58 CR3: 000000005e8ea001 CR4: 00000000001606e0
-> >[ 2908.158529] Call Trace:
-> >[ 2908.158796]  destroy_use_gss_proxy_proc_entry+0xb7/0x150 [auth_rpcgss]
-> >[ 2908.159966]  gss_svc_shutdown_net+0x11/0x170 [auth_rpcgss]
-> >[ 2908.160830]  netns_evict+0x2f/0x40
-> >[ 2908.161266]  nsfs_evict+0x27/0x40
-> >[ 2908.161685]  evict+0xd0/0x1a0
-> >[ 2908.162035]  __dentry_kill+0xdf/0x180
-> >[ 2908.162520]  dentry_kill+0x50/0x1c0
-> >[ 2908.163005]  ? dput+0x1c/0x2b0
-> >[ 2908.163369]  dput+0x260/0x2b0
-> >[ 2908.163739]  path_put+0x12/0x20
-> >[ 2908.164155]  do_faccessat+0x17c/0x240
-> >[ 2908.164643]  do_syscall_64+0x50/0x1c0
-> >[ 2908.165170]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-> >[ 2908.165959] RIP: 0033:0x7f47098e2157
-> >[ 2908.166445] Code: 77 01 c3 48 8b 15 69 dd 2c 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 b8 15 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 01 c3 48 8b 15 39 dd 2c 00 f7 d8 64 89 02 b8
-> >[ 2908.169994] RSP: 002b:00007ffc8bda5d28 EFLAGS: 00000246 ORIG_RAX: 0000000000000015
-> >[ 2908.171315] RAX: ffffffffffffffda RBX: 0000562b0774d979 RCX: 00007f47098e2157
-> >[ 2908.172563] RDX: 00007ffc8bda5d3e RSI: 0000000000000000 RDI: 00007ffc8bda5d30
-> >[ 2908.173753] RBP: 00007ffc8bda5d70 R08: 0000000000000000 R09: 0000562b07d0b130
-> >[ 2908.174943] R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffc8bda5d30
-> >[ 2908.176163] R13: 0000562b07b34c80 R14: 0000562b07b35120 R15: 0000000000000000
-> >[ 2908.177395] irq event stamp: 4256
-> >[ 2908.177835] hardirqs last  enabled at (4255): [<ffffffff811221ee>] console_unlock+0x41e/0x590
-> >[ 2908.179378] hardirqs last disabled at (4256): [<ffffffff81001b2f>] trace_hardirqs_off_thunk+0x1a/0x1c
-> >[ 2908.181031] softirqs last  enabled at (4252): [<ffffffff820002be>] __do_softirq+0x2be/0x4aa
-> >[ 2908.182458] softirqs last disabled at (4233): [<ffffffff810bf8e0>] irq_exit+0x80/0x90
-> >[ 2908.183869] ---[ end trace d88132b63efc09d8 ]---
-> >[ 2908.184620] BUG: kernel NULL pointer dereference, address: 0000000000000030
-> >[ 2908.185829] #PF: supervisor read access in kernel mode
-> >[ 2908.186924] #PF: error_code(0x0000) - not-present page
-> >[ 2908.187887] PGD 0 P4D 0
-> >[ 2908.188318] Oops: 0000 [#1] PREEMPT SMP PTI
-> >[ 2908.189254] CPU: 2 PID: 15032 Comm: (coredump) Tainted: G        W         5.2.0-rc2-00441-gaef575f54640 #2257
-> >[ 2908.192506] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.12.0-2.fc30 04/01/2014
-> >[ 2908.195137] RIP: 0010:__lock_acquire+0x3d2/0x1d90
-> >[ 2908.196414] Code: db 48 8b 84 24 88 00 00 00 65 48 33 04 25 28 00 00 00 0f 85 be 10 00 00 48 8d 65 d8 44 89 d8 5b 41 5c 41 5d 41 5e 41 5f 5d c3 <48> 81 3f 60 0d 01 83 41 bb 00 00 00 00 45 0f 45 d8 83 fe 01 0f 87
-> >[ 2908.202720] RSP: 0018:ffffc900047bbc80 EFLAGS: 00010002
-> >[ 2908.204165] RAX: 0000000000000000 RBX: 0000000000000001 RCX: 0000000000000000
-> >[ 2908.206125] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000030
-> >[ 2908.208203] RBP: ffffc900047bbd40 R08: 0000000000000001 R09: 0000000000000000
-> >[ 2908.210219] R10: 0000000000000001 R11: 0000000000000001 R12: ffff88807ad91500
-> >[ 2908.211386] R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000282
-> >[ 2908.212532] FS:  00007f470bc27e40(0000) GS:ffff88807fd00000(0000) knlGS:0000000000000000
-> >[ 2908.213647] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> >[ 2908.214400] CR2: 0000000000000030 CR3: 000000005e8ea001 CR4: 00000000001606e0
-> >[ 2908.215393] Call Trace:
-> >[ 2908.215589]  ? __lock_acquire+0x255/0x1d90
-> >[ 2908.216071]  ? clear_gssp_clnt+0x1b/0x50 [auth_rpcgss]
-> >[ 2908.216720]  ? __mutex_lock+0x99/0x920
-> >[ 2908.217114]  lock_acquire+0x95/0x1b0
-> >[ 2908.217484]  ? cache_purge+0x1c/0x110 [sunrpc]
-> >[ 2908.218000]  _raw_spin_lock+0x2f/0x40
-> >[ 2908.218370]  ? cache_purge+0x1c/0x110 [sunrpc]
-> >[ 2908.218882]  cache_purge+0x1c/0x110 [sunrpc]
-> >[ 2908.219346]  gss_svc_shutdown_net+0xb8/0x170 [auth_rpcgss]
-> >[ 2908.220104]  netns_evict+0x2f/0x40
-> >[ 2908.220439]  nsfs_evict+0x27/0x40
-> >[ 2908.220786]  evict+0xd0/0x1a0
-> >[ 2908.221050]  __dentry_kill+0xdf/0x180
-> >[ 2908.221458]  dentry_kill+0x50/0x1c0
-> >[ 2908.221842]  ? dput+0x1c/0x2b0
-> >[ 2908.222126]  dput+0x260/0x2b0
-> >[ 2908.222384]  path_put+0x12/0x20
-> >[ 2908.222753]  do_faccessat+0x17c/0x240
-> >[ 2908.223125]  do_syscall_64+0x50/0x1c0
-> >[ 2908.223479]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-> >[ 2908.224152] RIP: 0033:0x7f47098e2157
-> >[ 2908.224566] Code: 77 01 c3 48 8b 15 69 dd 2c 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 b8 15 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 01 c3 48 8b 15 39 dd 2c 00 f7 d8 64 89 02 b8
-> >[ 2908.228198] RSP: 002b:00007ffc8bda5d28 EFLAGS: 00000246 ORIG_RAX: 0000000000000015
-> >[ 2908.229496] RAX: ffffffffffffffda RBX: 0000562b0774d979 RCX: 00007f47098e2157
-> >[ 2908.230938] RDX: 00007ffc8bda5d3e RSI: 0000000000000000 RDI: 00007ffc8bda5d30
-> >[ 2908.232182] RBP: 00007ffc8bda5d70 R08: 0000000000000000 R09: 0000562b07d0b130
-> >[ 2908.233481] R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffc8bda5d30
-> >[ 2908.234750] R13: 0000562b07b34c80 R14: 0000562b07b35120 R15: 0000000000000000
-> >[ 2908.236068] Modules linked in: nfsv4 rpcsec_gss_krb5 nfsv3 nfs_acl nfs lockd grace auth_rpcgss sunrpc
-> >[ 2908.237861] CR2: 0000000000000030
-> >[ 2908.238277] ---[ end trace d88132b63efc09d9 ]---
+> It's a real bug. Bisect is not correct though.
+> 
+> I'll post a patch to fix it. Thanks.
+
+So if I see it correctly the fix landed in ad9f151e560b ("netfilter:
+nf_tables: initialize set before expression setup") in 5.13-rc7 and
+landed as well in 5.12.13. The issue is though still present in the
+5.10.y series.
+
+Would it be possible to backport the fix as well to 5.10.y? It is
+needed there as well.
+
+Regards,
+Salvatore
