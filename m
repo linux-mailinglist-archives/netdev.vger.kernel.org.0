@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DC21403F70
-	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 21:06:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C440403F69
+	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 21:06:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350096AbhIHTHy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Sep 2021 15:07:54 -0400
-Received: from home.keithp.com ([63.227.221.253]:35746 "EHLO elaine.keithp.com"
+        id S1351396AbhIHTHt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Sep 2021 15:07:49 -0400
+Received: from home.keithp.com ([63.227.221.253]:35810 "EHLO elaine.keithp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1350339AbhIHTHa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Sep 2021 15:07:30 -0400
+        id S1350403AbhIHTHb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Sep 2021 15:07:31 -0400
 Received: from localhost (localhost [127.0.0.1])
-        by elaine.keithp.com (Postfix) with ESMTP id 4C7193F30884;
+        by elaine.keithp.com (Postfix) with ESMTP id D07AF3F3088E;
         Wed,  8 Sep 2021 12:05:52 -0700 (PDT)
 X-Virus-Scanned: Debian amavisd-new at keithp.com
 Received: from elaine.keithp.com ([127.0.0.1])
         by localhost (elaine.keithp.com [127.0.0.1]) (amavisd-new, port 10024)
-        with LMTP id hrJI3NCUC0ro; Wed,  8 Sep 2021 12:05:51 -0700 (PDT)
+        with LMTP id V1Qx1SNyqjFn; Wed,  8 Sep 2021 12:05:52 -0700 (PDT)
 Received: from keithp.com (168-103-156-98.tukw.qwest.net [168.103.156.98])
-        by elaine.keithp.com (Postfix) with ESMTPSA id 2E7DD3F30890;
-        Wed,  8 Sep 2021 12:05:49 -0700 (PDT)
+        by elaine.keithp.com (Postfix) with ESMTPSA id 72B553F3088D;
+        Wed,  8 Sep 2021 12:05:50 -0700 (PDT)
 Received: by keithp.com (Postfix, from userid 1000)
-        id 65CAB1E6013C; Wed,  8 Sep 2021 12:06:09 -0700 (PDT)
+        id 6A4821E6013D; Wed,  8 Sep 2021 12:06:09 -0700 (PDT)
 From:   Keith Packard <keithpac@amazon.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Abbott Liu <liuwenliang@huawei.com>,
@@ -75,9 +75,9 @@ Cc:     Abbott Liu <liuwenliang@huawei.com>,
         virtualization@lists.linux-foundation.org,
         "Wolfram Sang (Renesas)" <wsa+renesas@sang-engineering.com>,
         YiFei Zhu <yifeifz2@illinois.edu>, Yonghong Song <yhs@fb.com>
-Subject: [PATCH v4 6/7] ARM: Use TPIDRPRW for current
-Date:   Wed,  8 Sep 2021 12:06:04 -0700
-Message-Id: <20210908190605.419064-7-keithpac@amazon.com>
+Subject: [PATCH v4 7/7] ARM: Move thread_info into task_struct (v7 only)
+Date:   Wed,  8 Sep 2021 12:06:05 -0700
+Message-Id: <20210908190605.419064-8-keithpac@amazon.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20210908190605.419064-1-keithpac@amazon.com>
 References: <id:20210907220038.91021-1-keithpac@amazon.com>
@@ -89,154 +89,193 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Store current task pointer in CPU thread ID register TPIDRPRW so that
-accessing it doesn't depend on being able to locate thread_info off of
-the kernel stack pointer.
+This avoids many stack overflow attacks which modified the thread_info
+structure by moving that into the task_struct as is done is almost all
+other architectures.
+
+This also involved removing the 'cpu' member from the thread_info
+struct and using the one added to the task_struct instead by the
+THREAD_INFO_IN_TASK code.
+
+This code is currently enabled only for v7 hardware as most other ARM
+architectures do not have the TPIDRPRW register that is used to
+store the current value. It could probably be enabled for v6k
+architectures as well, but I haven't tested that.
+
+With the TPIDRPRW register, the kernel can identify the current
+cpu. Without that register, there's a circular dependency between the
+current cpu and 'current' — know one and you can find the
+other. Leaving the thread_info in the kernel stack lets you find the
+cpu number independently.
 
 Signed-off-by: Keith Packard <keithpac@amazon.com>
 ---
- arch/arm/Kconfig                 |  4 +++
- arch/arm/include/asm/assembler.h |  8 +++++
- arch/arm/include/asm/current.h   | 54 ++++++++++++++++++++++++++++++++
- arch/arm/kernel/entry-armv.S     |  4 +++
- arch/arm/kernel/setup.c          |  1 +
- arch/arm/kernel/smp.c            |  1 +
- 6 files changed, 72 insertions(+)
- create mode 100644 arch/arm/include/asm/current.h
+ arch/arm/Kconfig                   |  1 +
+ arch/arm/include/asm/assembler.h   |  4 ++++
+ arch/arm/include/asm/smp.h         |  4 ++++
+ arch/arm/include/asm/thread_info.h | 12 +++++++++++-
+ arch/arm/kernel/asm-offsets.c      |  4 ++++
+ arch/arm/kernel/entry-armv.S       |  4 ++++
+ arch/arm/vfp/vfpmodule.c           |  9 +++++++++
+ 7 files changed, 37 insertions(+), 1 deletion(-)
 
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 24804f11302d..414fe23fd5ac 100644
+index 414fe23fd5ac..5846b4f5444b 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1172,6 +1172,10 @@ config SMP_ON_UP
- 
- 	  If you don't know what to do here, say Y.
- 
-+config CURRENT_POINTER_IN_TPIDRPRW
-+	def_bool y
-+	depends on (CPU_V6K || CPU_V7) && !CPU_V6
-+
- config ARM_CPU_TOPOLOGY
- 	bool "Support cpu topology definition"
- 	depends on SMP && CPU_V7
+@@ -128,6 +128,7 @@ config ARM
+ 	select RTC_LIB
+ 	select SET_FS
+ 	select SYS_SUPPORTS_APM_EMULATION
++	select THREAD_INFO_IN_TASK if CURRENT_POINTER_IN_TPIDRPRW
+ 	# Above selects are sorted alphabetically; please add new ones
+ 	# according to that.  Thanks.
+ 	help
 diff --git a/arch/arm/include/asm/assembler.h b/arch/arm/include/asm/assembler.h
-index e2b1fd558bf3..ea12fe3bb589 100644
+index ea12fe3bb589..b23d2b87184a 100644
 --- a/arch/arm/include/asm/assembler.h
 +++ b/arch/arm/include/asm/assembler.h
-@@ -209,6 +209,14 @@
+@@ -203,10 +203,14 @@
+  * Get current thread_info.
+  */
+ 	.macro	get_thread_info, rd
++#ifdef CONFIG_THREAD_INFO_IN_TASK
++	mrc	p15, 0, \rd, c13, c0, 4
++#else
+  ARM(	mov	\rd, sp, lsr #THREAD_SIZE_ORDER + PAGE_SHIFT	)
+  THUMB(	mov	\rd, sp			)
+  THUMB(	lsr	\rd, \rd, #THREAD_SIZE_ORDER + PAGE_SHIFT	)
  	mov	\rd, \rd, lsl #THREAD_SIZE_ORDER + PAGE_SHIFT
++#endif
  	.endm
  
-+/*
-+ * Set current task_info
-+ * @src: Source register containing task_struct pointer
-+ */
-+	.macro	set_current src : req
-+	mcr	p15, 0, \src, c13, c0, 4
-+	.endm
-+
  /*
-  * Increment/decrement the preempt count.
-  */
-diff --git a/arch/arm/include/asm/current.h b/arch/arm/include/asm/current.h
-new file mode 100644
-index 000000000000..ec25737855e5
---- /dev/null
-+++ b/arch/arm/include/asm/current.h
-@@ -0,0 +1,54 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright © 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-+ *
-+ * Author Keith Packard <keithpac@amazon.com>
-+ */
-+
-+#ifndef _ASM_ARM_CURRENT_H_
-+#define _ASM_ARM_CURRENT_H_
-+
-+#ifndef __ASSEMBLY__
-+
-+register unsigned long current_stack_pointer asm ("sp");
-+
-+/*
-+ * Same as asm-generic/current.h, except that we store current
-+ * in TPIDRPRW. TPIDRPRW only exists on V6K and V7
-+ */
-+#ifdef CONFIG_CURRENT_POINTER_IN_TPIDRPRW
-+
-+struct task_struct;
-+
-+static inline void set_current(struct task_struct *tsk)
-+{
-+	/* Set TPIDRPRW */
-+	asm volatile("mcr p15, 0, %0, c13, c0, 4" : : "r" (tsk) : "memory");
-+}
-+
-+static __always_inline struct task_struct *get_current(void)
-+{
-+	struct task_struct *tsk;
-+
-+	/*
-+	 * Read TPIDRPRW.
-+	 * We want to allow caching the value, so avoid using volatile and
-+	 * instead use a fake stack read to hazard against barrier().
-+	 */
-+	asm("mrc p15, 0, %0, c13, c0, 4" : "=r" (tsk)
-+		: "Q" (*(const unsigned long *)current_stack_pointer));
-+
-+	return tsk;
-+}
-+#define current get_current()
+diff --git a/arch/arm/include/asm/smp.h b/arch/arm/include/asm/smp.h
+index d43b64635d77..beb3872645d9 100644
+--- a/arch/arm/include/asm/smp.h
++++ b/arch/arm/include/asm/smp.h
+@@ -15,7 +15,11 @@
+ # error "<asm/smp.h> included in non-SMP build"
+ #endif
+ 
++#ifdef CONFIG_THREAD_INFO_IN_TASK
++#define raw_smp_processor_id() (current->cpu)
 +#else
+ #define raw_smp_processor_id() (current_thread_info()->cpu)
++#endif
+ 
+ struct seq_file;
+ 
+diff --git a/arch/arm/include/asm/thread_info.h b/arch/arm/include/asm/thread_info.h
+index 70d4cbc49ae1..6b67703ca16a 100644
+--- a/arch/arm/include/asm/thread_info.h
++++ b/arch/arm/include/asm/thread_info.h
+@@ -55,8 +55,10 @@ struct thread_info {
+ 	unsigned long		flags;		/* low level flags */
+ 	int			preempt_count;	/* 0 => preemptable, <0 => bug */
+ 	mm_segment_t		addr_limit;	/* address limit */
++#ifndef CONFIG_THREAD_INFO_IN_TASK
+ 	struct task_struct	*task;		/* main task structure */
+ 	__u32			cpu;		/* cpu */
++#endif
+ 	__u32			cpu_domain;	/* cpu domain */
+ #ifdef CONFIG_STACKPROTECTOR_PER_TASK
+ 	unsigned long		stack_canary;
+@@ -75,14 +77,21 @@ struct thread_info {
+ #endif
+ };
+ 
++#ifdef CONFIG_THREAD_INFO_IN_TASK
++#define INIT_THREAD_INFO_TASK(tsk)
++#else
++#define INIT_THREAD_INFO_TASK(tsk) .task = &tsk,
++#endif
 +
-+#define set_current(tsk) do {} while (0)
-+
-+#include <asm-generic/current.h>
-+
-+#endif /* CONFIG_SMP */
-+
-+#endif /* __ASSEMBLY__ */
-+
-+#endif /* _ASM_ARM_CURRENT_H_ */
+ #define INIT_THREAD_INFO(tsk)						\
+ {									\
+-	.task		= &tsk,						\
++	INIT_THREAD_INFO_TASK(tsk)					\
+ 	.flags		= 0,						\
+ 	.preempt_count	= INIT_PREEMPT_COUNT,				\
+ 	.addr_limit	= KERNEL_DS,					\
+ }
+ 
++#ifndef CONFIG_THREAD_INFO_IN_TASK
+ /*
+  * how to get the thread information struct from C
+  */
+@@ -93,6 +102,7 @@ static inline struct thread_info *current_thread_info(void)
+ 	return (struct thread_info *)
+ 		(current_stack_pointer & ~(THREAD_SIZE - 1));
+ }
++#endif
+ 
+ #define thread_saved_pc(tsk)	\
+ 	((unsigned long)(task_thread_info(tsk)->cpu_context.pc))
+diff --git a/arch/arm/kernel/asm-offsets.c b/arch/arm/kernel/asm-offsets.c
+index 70993af22d80..2a6745f7423e 100644
+--- a/arch/arm/kernel/asm-offsets.c
++++ b/arch/arm/kernel/asm-offsets.c
+@@ -44,8 +44,12 @@ int main(void)
+   DEFINE(TI_FLAGS,		offsetof(struct thread_info, flags));
+   DEFINE(TI_PREEMPT,		offsetof(struct thread_info, preempt_count));
+   DEFINE(TI_ADDR_LIMIT,		offsetof(struct thread_info, addr_limit));
++#ifdef CONFIG_THREAD_INFO_IN_TASK
++  DEFINE(TI_CPU,		offsetof(struct task_struct, cpu));
++#else
+   DEFINE(TI_TASK,		offsetof(struct thread_info, task));
+   DEFINE(TI_CPU,		offsetof(struct thread_info, cpu));
++#endif
+   DEFINE(TI_CPU_DOMAIN,		offsetof(struct thread_info, cpu_domain));
+   DEFINE(TI_CPU_SAVE,		offsetof(struct thread_info, cpu_context));
+   DEFINE(TI_USED_CP,		offsetof(struct thread_info, used_cp));
 diff --git a/arch/arm/kernel/entry-armv.S b/arch/arm/kernel/entry-armv.S
-index 0ea8529a4872..db3947ee9c3e 100644
+index db3947ee9c3e..5ae687c8c7b8 100644
 --- a/arch/arm/kernel/entry-armv.S
 +++ b/arch/arm/kernel/entry-armv.S
-@@ -761,6 +761,10 @@ ENTRY(__switch_to)
- 	ldr	r6, [r2, #TI_CPU_DOMAIN]
+@@ -762,9 +762,13 @@ ENTRY(__switch_to)
  #endif
  	switch_tls r1, r4, r5, r3, r7
-+#ifdef CONFIG_CURRENT_POINTER_IN_TPIDRPRW
-+	ldr	r7, [r2, #TI_TASK]
-+	set_current r7
+ #ifdef CONFIG_CURRENT_POINTER_IN_TPIDRPRW
++#ifdef CONFIG_THREAD_INFO_IN_TASK
++	set_current r2
++#else
+ 	ldr	r7, [r2, #TI_TASK]
+ 	set_current r7
+ #endif
 +#endif
  #if defined(CONFIG_STACKPROTECTOR) && !defined(CONFIG_SMP)
  	ldr	r7, [r2, #TI_TASK]
  	ldr	r8, =__stack_chk_guard
-diff --git a/arch/arm/kernel/setup.c b/arch/arm/kernel/setup.c
-index d0dc60afe54f..2fdf8c31d6c9 100644
---- a/arch/arm/kernel/setup.c
-+++ b/arch/arm/kernel/setup.c
-@@ -586,6 +586,7 @@ void __init smp_setup_processor_id(void)
- 	u32 mpidr = is_smp() ? read_cpuid_mpidr() & MPIDR_HWID_BITMASK : 0;
- 	u32 cpu = MPIDR_AFFINITY_LEVEL(mpidr, 0);
- 
-+	set_current(&init_task);
- 	cpu_logical_map(0) = cpu;
- 	for (i = 1; i < nr_cpu_ids; ++i)
- 		cpu_logical_map(i) = i == cpu ? 0 : i;
-diff --git a/arch/arm/kernel/smp.c b/arch/arm/kernel/smp.c
-index 8ccf10b34f08..09771916442a 100644
---- a/arch/arm/kernel/smp.c
-+++ b/arch/arm/kernel/smp.c
-@@ -410,6 +410,7 @@ asmlinkage void secondary_start_kernel(unsigned int cpu, struct task_struct *tas
+diff --git a/arch/arm/vfp/vfpmodule.c b/arch/arm/vfp/vfpmodule.c
+index d7a3818da671..84a691da59fa 100644
+--- a/arch/arm/vfp/vfpmodule.c
++++ b/arch/arm/vfp/vfpmodule.c
+@@ -158,7 +158,12 @@ static void vfp_thread_copy(struct thread_info *thread)
+  */
+ static int vfp_notifier(struct notifier_block *self, unsigned long cmd, void *v)
  {
- 	struct mm_struct *mm = &init_mm;
++#ifdef CONFIG_THREAD_INFO_IN_TASK
++	struct task_struct *tsk = v;
++	struct thread_info *thread = &tsk->thread_info;
++#else
+ 	struct thread_info *thread = v;
++#endif
+ 	u32 fpexc;
+ #ifdef CONFIG_SMP
+ 	unsigned int cpu;
+@@ -169,7 +174,11 @@ static int vfp_notifier(struct notifier_block *self, unsigned long cmd, void *v)
+ 		fpexc = fmrx(FPEXC);
  
-+	set_current(task);
- 	secondary_biglittle_init();
+ #ifdef CONFIG_SMP
++#ifdef CONFIG_THREAD_INFO_IN_TASK
++		cpu = tsk->cpu;
++#else
+ 		cpu = thread->cpu;
++#endif
  
- 	/*
+ 		/*
+ 		 * On SMP, if VFP is enabled, save the old state in
 -- 
 2.33.0
 
