@@ -2,139 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2761403BAF
-	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 16:42:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D49E403BC3
+	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 16:50:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349419AbhIHOnS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Sep 2021 10:43:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34596 "EHLO
+        id S1348854AbhIHOvf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Sep 2021 10:51:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231164AbhIHOnR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Sep 2021 10:43:17 -0400
-Received: from mail-vs1-xe35.google.com (mail-vs1-xe35.google.com [IPv6:2607:f8b0:4864:20::e35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C857C061575
-        for <netdev@vger.kernel.org>; Wed,  8 Sep 2021 07:42:09 -0700 (PDT)
-Received: by mail-vs1-xe35.google.com with SMTP id u1so2222724vsq.10
-        for <netdev@vger.kernel.org>; Wed, 08 Sep 2021 07:42:09 -0700 (PDT)
+        with ESMTP id S235726AbhIHOve (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Sep 2021 10:51:34 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 908BDC061575
+        for <netdev@vger.kernel.org>; Wed,  8 Sep 2021 07:50:26 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id c6so4762701ybm.10
+        for <netdev@vger.kernel.org>; Wed, 08 Sep 2021 07:50:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=hiFSlR9syjKHuvoqExFm8WJ8uXOU90QQcy0FwyC7vVI=;
-        b=EdXGbtZ1B0sll2SOuAggry/PztZXouonh3HUxuq9bnJwNFyst35cMBpFDz9Vut1sos
-         SoApX1dxEuAsQKTYIAL4BSb4Q352HdfVjcNUuLBRX9vldVq9LDkNBqvqQLY8hpm00Oxo
-         ugUl4r1AwufkJzDQQ4d25hB1rAG5joEiBezqYiqFEymy1xDxXvIoD5c+Gt+SU26Dq1pb
-         OoqM4z3ailCqjveJLIbgdoMnHdrWhp19KLr08vBQ8KrhriiT35Fqrb1uHFbVIll71uBJ
-         43oEloqROCzJpSVS7TNeYuChXBtF1WQ67/A+KNC39s4kB/H8HpjDBSWMOGRD60tzIsIR
-         byNw==
+        bh=YXEDz7oYZ9GVUcmsFxgUXf/+gVqKX8tYxel25XnFhQk=;
+        b=pbjCyzFTALXr0BXl5ZqQtgWQqC6a1sLiadtnhsMIPnXGTyhzgH5kpweFWU7G6SfwO2
+         PKPGmPvHs/dIEXV/HSvW73bdIn3P0hovqzS/K2acGseK0vRVcBbsKNl/L7XiTKHawWwA
+         PesH7J1hMvPSSfrXN5Q8DbaxO7JtlmJwEnR84mEdKy3jdcLG+7fpvIGw0INc8nKVi0uL
+         awjKo5K7nYwIlHXDfBzXaqKeTjdP4xznndi20EBb91myipuqd2nUuQ96ZOiPnon6SJU4
+         Dgm9iB+A0JM4WMK0WhV75KDb+BFZuTGz73TNUufVrrnzN8otT+pUWAW1BKcLl0MF/nte
+         R5GQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=hiFSlR9syjKHuvoqExFm8WJ8uXOU90QQcy0FwyC7vVI=;
-        b=Es9tntAXBUuOGdepO9qFfPXhisJAtOdo7G+4XkkyAQVuKFEJaWxL5mvqY0YRxc5cqH
-         vSUu2oqknS3t7ep7VoD/5Pj+ex1uJI8Ju+0bLz00V/L8xIrg9bVa+hXSVTTvPKJRO4TY
-         ssrNBX/siNvQsA91qoXJbLE5vWi0ui6u02Z6yWvEmr8Z9FIIPrRSKBiHHVno4aOxhrD1
-         fhqSI1E8B/6TM44Sx2YYCMtfP9xc7T4jLdfiFoxoaLlr1HvNrszAbGzjIP0sScSDz7zy
-         6F+DXFIMcZh+B95NR0fUedSML8bvGR+Z0V+wUkozLwSMQsnd7HCHg9F+VU9SI75MpACO
-         ro+w==
-X-Gm-Message-State: AOAM533VBlFcn6JSjW+Y+DdbCZAutBwrVnyTit+tGcVlUYV96/H987k2
-        T8/a/+2PzuivNKueecsM9ZPpOVObSLk=
-X-Google-Smtp-Source: ABdhPJxRZ097dVF37pdD5xjPtFYsJEsavqs0k0YgqRd+dqPuqovMy2YHLlTN2Yd6wlNPKqTHVOVQow==
-X-Received: by 2002:a67:ef51:: with SMTP id k17mr2334614vsr.2.1631112128284;
-        Wed, 08 Sep 2021 07:42:08 -0700 (PDT)
-Received: from mail-vs1-f43.google.com (mail-vs1-f43.google.com. [209.85.217.43])
-        by smtp.gmail.com with ESMTPSA id m206sm301840vkm.3.2021.09.08.07.42.06
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Sep 2021 07:42:07 -0700 (PDT)
-Received: by mail-vs1-f43.google.com with SMTP id l9so2219845vsb.8
-        for <netdev@vger.kernel.org>; Wed, 08 Sep 2021 07:42:06 -0700 (PDT)
-X-Received: by 2002:a05:6102:483:: with SMTP id n3mr2536007vsa.42.1631112126493;
- Wed, 08 Sep 2021 07:42:06 -0700 (PDT)
+        bh=YXEDz7oYZ9GVUcmsFxgUXf/+gVqKX8tYxel25XnFhQk=;
+        b=aVO4X6hREHp5Cug/5hZaiR7iNaohkb4O7npJFtT05tvkQ23H192skRyTDzz4v5CSCG
+         1AKsZKQxmE0pVT5j6wNqA7FYmcf2KeQdYuuZxBiRW/n7z/cB1ZxQTavrxqgAEhtxtrA7
+         uVask8YyECsEEFXsAW8Ky2I2sXMFcJkH6HFogoY88d3ViuhHbOmYQ6O4QKrwJAyz7W6O
+         8+lSR1uCRSHdptAtc4QZPe+ee78WCe5Pp/F7oO3oZMeQjkRHQtYFYjiTcGUCrCrLNsIX
+         Ue3e1JvNlzAgywBNsJ4RQtqTBu8WDDOJRd9jZcts4BnlyT2wFOvkvnF2peB3Igtru3mp
+         rlAg==
+X-Gm-Message-State: AOAM530uU2N7A9yQWwpCe/PGeTiX2fPWTnZ0f8cXiu67pyRa0w95FX7+
+        bi0Fqh8wFzCYNmPenwiqRy4dYaG1sRIHnB1ybekT9g==
+X-Google-Smtp-Source: ABdhPJz/s/V+QKAdSxOV2bcgwhoA1WXIhjED/O6lwg6Bbxfk8TTcLpRhkZ3HeC7f0kNS2MSsTUihgZ41vrb77ROMIHM=
+X-Received: by 2002:a25:dd46:: with SMTP id u67mr5486909ybg.295.1631112625292;
+ Wed, 08 Sep 2021 07:50:25 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210907121052.75cb416d@hermes.local>
-In-Reply-To: <20210907121052.75cb416d@hermes.local>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 8 Sep 2021 10:41:29 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSdH5v3HBUmh-Hvt-4SRgXPVNvdSokq=wids_t2Ze_YBQw@mail.gmail.com>
-Message-ID: <CA+FuTSdH5v3HBUmh-Hvt-4SRgXPVNvdSokq=wids_t2Ze_YBQw@mail.gmail.com>
-Subject: Re: Fw: [Bug 214339] New: sendmsg return value may be positive while
- send errors
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org
+References: <CA+G9fYtFvJdtBknaDKR54HHMf4XsXKD4UD3qXkQ1KhgY19n3tw@mail.gmail.com>
+ <CAHk-=wisUqoX5Njrnnpp0pDx+bxSAJdPxfgEUv82tZkvUqoN1w@mail.gmail.com>
+ <CAHk-=whF9F89vsfH8E9TGc0tZA-yhzi2Di8wOtquNB5vRkFX5w@mail.gmail.com> <53ce8db-3372-b5e2-cee7-c0ebe9c45a9@tarent.de>
+In-Reply-To: <53ce8db-3372-b5e2-cee7-c0ebe9c45a9@tarent.de>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 8 Sep 2021 07:50:13 -0700
+Message-ID: <CANn89iJzyPbR-fS8S_oAMSJzUGTHAfx49CXVc6ZSckUk91Opvg@mail.gmail.com>
+Subject: Re: ipv4/tcp.c:4234:1: error: the frame size of 1152 bytes is larger
+ than 1024 bytes [-Werror=frame-larger-than=]
+To:     Thorsten Glaser <t.glaser@tarent.de>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Ariel Elior <aelior@marvell.com>,
+        GR-everest-linux-l2@marvell.com, Wei Liu <wei.liu@kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>, lkft-triage@lists.linaro.org,
+        Arnd Bergmann <arnd@arndb.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 7, 2021 at 3:11 PM Stephen Hemminger
-<stephen@networkplumber.org> wrote:
+On Wed, Sep 8, 2021 at 6:48 AM Thorsten Glaser <t.glaser@tarent.de> wrote:
 >
+> On Tue, 7 Sep 2021, Linus Torvalds wrote:
 >
+> > The do_tcp_getsockopt() one in tpc.c is a classic case of "lots of
+> > different case statements, many of them with their own struct
+> > allocations on stack, and all of them disjoint".
 >
-> Begin forwarded message:
+> Any compiler developers here? AFAIK the compiler knows the lifetime
+> of function-local variables, so why not alias the actual memory
+> locations and ranges to minimise stack usage?
 >
-> Date: Tue, 07 Sep 2021 09:23:54 +0000
-> From: bugzilla-daemon@bugzilla.kernel.org
-> To: stephen@networkplumber.org
-> Subject: [Bug 214339] New: sendmsg return value may be positive while send errors
->
->
-> https://bugzilla.kernel.org/show_bug.cgi?id=214339
->
->             Bug ID: 214339
->            Summary: sendmsg return value may be positive while send errors
->            Product: Networking
->            Version: 2.5
->     Kernel Version: 4.9.99
->           Hardware: All
->                 OS: Linux
->               Tree: Mainline
->             Status: NEW
->           Severity: normal
->           Priority: P1
->          Component: IPV4
->           Assignee: stephen@networkplumber.org
->           Reporter: 1031265646@qq.com
->         Regression: No
->
-> in file udp.c, a function named udp_sendmsg has a code like this:
->
->         /* Lockless fast path for the non-corking case. */
->         if (!corkreq) {
->                 skb = ip_make_skb(sk, fl4, getfrag, msg, ulen,
->                                   sizeof(struct udphdr), &ipc, &rt,
->                                   msg->msg_flags);
->                 err = PTR_ERR(skb);
->                 if (!IS_ERR_OR_NULL(skb))
->                         err = udp_send_skb(skb, fl4);
->                 goto out;
->         }
->
-> but function ip_make_skb may return a null, then err will be set to 0;and out
-> like this:
 
-ip_make_skb returns NULL on MSG_PROBE, as intended.
+At least on my builds,  do_tcp_getsockopt() uses less than 512 bytes of stack.
 
-or if __ip_make_skb did not find an skb on __skb_dequeue(queue). But
-this is not possible, as __ip_append_data either succeeds and enqueues
-an skb or fails and makes ip_send_skb fail before reaching that code.
+Probably because tcp_zerocopy_receive() is _not_ inlined, by pure luck
+I suppose.
 
-I don't see anything wrong here.
+Perhaps we should use noinline_for_stack here.
 
-> out:
->         ip_rt_put(rt);
->         if (free)
->                 kfree(ipc.opt);
->         if (!err)
->                 return len;  // return a positive value
->
-> actually, because lock of kernel memory or socket_buffer,
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index e8b48df73c852a48e51754ea98b1e08bf024bb9e..437910c096b202420518c9e5e5cd26b2194d8aa2
+100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -2054,9 +2054,10 @@ static void tcp_zc_finalize_rx_tstamp(struct sock *sk,
+ }
 
-I don't follow this part. This operation runs without locks.
-
-> the ip_make_skb failed
-> means the send operation failed. but a positive value is returnd here.
-> finnally, users regard the operation was success, but actually it failed in
-> kernel.
+ #define TCP_ZEROCOPY_PAGE_BATCH_SIZE 32
+-static int tcp_zerocopy_receive(struct sock *sk,
+-                               struct tcp_zerocopy_receive *zc,
+-                               struct scm_timestamping_internal *tss)
++static noinline_for_stack int
++tcp_zerocopy_receive(struct sock *sk,
++                    struct tcp_zerocopy_receive *zc,
++                    struct scm_timestamping_internal *tss)
+ {
+        u32 length = 0, offset, vma_len, avail_len, copylen = 0;
+        unsigned long address = (unsigned long)zc->address;
