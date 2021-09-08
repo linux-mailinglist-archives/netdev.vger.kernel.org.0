@@ -2,155 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4025C403204
-	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 03:01:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A4BD40321C
+	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 03:18:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346153AbhIHBCQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Sep 2021 21:02:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46404 "EHLO
+        id S1346592AbhIHBTf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Sep 2021 21:19:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345859AbhIHBCO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Sep 2021 21:02:14 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7107C06175F
-        for <netdev@vger.kernel.org>; Tue,  7 Sep 2021 18:01:07 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id k17so283271pls.0
-        for <netdev@vger.kernel.org>; Tue, 07 Sep 2021 18:01:07 -0700 (PDT)
+        with ESMTP id S1346614AbhIHBTe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Sep 2021 21:19:34 -0400
+Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5F51C061575
+        for <netdev@vger.kernel.org>; Tue,  7 Sep 2021 18:18:27 -0700 (PDT)
+Received: by mail-ot1-x32c.google.com with SMTP id o16-20020a9d2210000000b0051b1e56c98fso789909ota.8
+        for <netdev@vger.kernel.org>; Tue, 07 Sep 2021 18:18:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=fL7IHHdZ/gzoOTGUPxPDxAU1KAMX+gAeeQ7IEIgS92I=;
-        b=fUGYNrjWnrb3I1eaPcRpBHa5uCveys5QZgedEq6FkqjUD4OZbSwa4C3wVTN3Ea0J1E
-         NEeFEDtPtBpxrAKvOWTnaDwo2B2v/P/5kd5YLX/XwbKcaO8nplHt67j6ZHZVQpMteY+4
-         0eAtp+P3YO9W747F5K61gMUrXOoE1IA72GO8EM4UhZ02fP45WR68o9G/TsFy4xh+tT6j
-         8Gh/i3SW9y/vNeQtT6qSMbCQ9H+zzZF6E2bhHT6OyoUZ3m6dfTL3zikE4O0/Fj8Ue6Rj
-         Bh5cOEbzVLnmPBaFdSs4A1+vikjxpd4fQt9bHyJ402yyWqWjZTTapx4aTi1GtG/PfSRF
-         MbAg==
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=kpnQKmbY+JepyxJ2aGC5AtSqs/jlrRhXaZomZ7suhYo=;
+        b=k2PhHD2vGC+rGG0msS9tA2LJoOgfuyQlceFF6cVfxSzcc75C4mPpGAtsXmKpRODCJa
+         w2ICy7P9ySoNW9XB1DwynkIFhsWtw2kuPTDE23rwbtplV80f6YuZWln6Gek8naiACyff
+         u3/T1sszbZLUjv9PoT6znkf22VirS9x8vAII53vqjwDLWMdmA3WdOVub1TBgREwG/hb2
+         EtISy03+UgMY1BCsB3S5Skb8luCC+a2h4lZ6hUPV6/9bDQZZxctKyklV8G/KRuH7jdtQ
+         a2AiQtSgBUCKMwKldl/zrDD/+xsZjK4X0GEwvyQlAseBD+PfNCrAg8hj0/SaxS9hHmJ2
+         vVLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=fL7IHHdZ/gzoOTGUPxPDxAU1KAMX+gAeeQ7IEIgS92I=;
-        b=URRI/hd2l4NgLaSsLqm4MxHPkD9/Y7tQejI2uhjamn4lai4cxXK7zaD/1tagA8TsIu
-         VzcvMSzyQROQjFIHePM3dzWomwgZ3k1GciZYpFOErUvLQbYXeIPz63s6FhXCjKGC6QfY
-         /T/eEyvWZLTiRlvhJCp2mp7sp3jc7kYxtsryZSkMwypoU2NB2lXe7SQR2WyQexJOFYGo
-         1cLCBk70l876NcwEPinbUEzoiVtn9JJprGpNg8porT8kcEkD60C/NzYT0UlXF/c6JdHJ
-         0XfaPiEBkU6xGFgxtGHXt7Rtziwkygi2iylB3wPHSQr4blIRkBgdoQEBTI/YJX5fGcX2
-         3P5g==
-X-Gm-Message-State: AOAM532Ai3Y5rgQPY7irTprBYBmFB6iWyGwOioqnw0wttP1HrmvXT+90
-        WWZNDURC4EnkRRt+j36BuX8YMw==
-X-Google-Smtp-Source: ABdhPJzn6dDaPFPvD6xD3dX6BMiDBYlT3VapdFvc9aR8lJIc1mWPZRw21Ia813useTb+MqcxrF740A==
-X-Received: by 2002:a17:90b:33c8:: with SMTP id lk8mr1221312pjb.241.1631062867247;
-        Tue, 07 Sep 2021 18:01:07 -0700 (PDT)
-Received: from dragon (80.251.214.228.16clouds.com. [80.251.214.228])
-        by smtp.gmail.com with ESMTPSA id g2sm239957pfo.154.2021.09.07.18.01.03
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 07 Sep 2021 18:01:06 -0700 (PDT)
-Date:   Wed, 8 Sep 2021 09:00:58 +0800
-From:   Shawn Guo <shawn.guo@linaro.org>
-To:     Soeren Moch <smoch@web.de>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-rockchip@lists.infradead.org" 
-        <linux-rockchip@lists.infradead.org>
-Subject: Re: [BUG] Re: [PATCH] brcmfmac: use ISO3166 country code and 0 rev
- as fallback
-Message-ID: <20210908010057.GB25255@dragon>
-References: <20210425110200.3050-1-shawn.guo@linaro.org>
- <cb7ac252-3356-8ef7-fcf9-eb017f5f161f@web.de>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=kpnQKmbY+JepyxJ2aGC5AtSqs/jlrRhXaZomZ7suhYo=;
+        b=QCrRnj/CfsnZTUbuh8yG66Dtp/vOybqSOsjscVy6hyDnBWxeWwbiO5tXuGJJsBQnxq
+         gu2sdujeyJ72OYoNpDP6igaUYUWpvrssDCw6FkOXB+cBBeFGMsWn81vrgrO+bqcSEUmc
+         c/ZcAvUOc/OM5D4TqwQb3cEdvjxnYd4N5446LwkiCAOrdl31YnLSzHVxxWIR2coMaN19
+         /CDKugD2y9mwpEWNocccMviKXsdAyytm/gMpV5c7mGcLVKruBdGB4ER9uu2qWcDq4CKT
+         Hvz34i3fc5vJqEb+JCRb/jbnf79eX27dXbMNLsVlEa3mUYaOXXE8DShAXesczOxuzEpq
+         lNIA==
+X-Gm-Message-State: AOAM530/vZsPBGK+0PjRHPoAe9Id3wnEyfjShe+fjxDjUBaKJSG0SwKS
+        5radyXbimOpwlQ5yOxEYGNU=
+X-Google-Smtp-Source: ABdhPJytU38Ew9QGUlQ41pErS2T4gL8HuwSUOzpUEv1r8VcRgJdxcIuURUl0rxZMS7qFBTIuTfO8Vw==
+X-Received: by 2002:a05:6830:4c1:: with SMTP id s1mr1011783otd.221.1631063907128;
+        Tue, 07 Sep 2021 18:18:27 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.45])
+        by smtp.googlemail.com with ESMTPSA id l3sm130062otd.79.2021.09.07.18.18.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Sep 2021 18:18:26 -0700 (PDT)
+Subject: Re: [PATCH iproute2 1/2] tc: u32: add support for json output
+To:     Stephen Hemminger <stephen@networkplumber.org>,
+        Thorsten Glaser <t.glaser@tarent.de>,
+        Davide Caratti <dcaratti@redhat.com>
+Cc:     Wen Liang <liangwen12year@gmail.com>, netdev@vger.kernel.org,
+        aclaudi@redhat.com
+References: <cover.1630978600.git.liangwen12year@gmail.com>
+ <5c4108ba5d3c30a0366ad79b49e1097bd9cc96e1.1630978600.git.liangwen12year@gmail.com>
+ <20210907122914.34b5b1a1@hermes.local>
+ <f9752b7-476-5ae6-6ab4-717e1c8553bb@tarent.de>
+ <20210907135548.01bab77e@hermes.local>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <a2446fef-129f-51d2-040e-a0a42d24819c@gmail.com>
+Date:   Tue, 7 Sep 2021 19:18:25 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <cb7ac252-3356-8ef7-fcf9-eb017f5f161f@web.de>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20210907135548.01bab77e@hermes.local>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Soeren,
-
-On Tue, Sep 07, 2021 at 09:22:52PM +0200, Soeren Moch wrote:
-> On 25.04.21 13:02, Shawn Guo wrote:
-> > Instead of aborting country code setup in firmware, use ISO3166 country
-> > code and 0 rev as fallback, when country_codes mapping table is not
-> > configured.  This fallback saves the country_codes table setup for recent
-> > brcmfmac chipsets/firmwares, which just use ISO3166 code and require no
-> > revision number.
-> This patch breaks wireless support on RockPro64. At least the access
-> point is not usable, station mode not tested.
+On 9/7/21 2:55 PM, Stephen Hemminger wrote:
+> On Tue, 7 Sep 2021 21:32:41 +0200 (CEST)
+> Thorsten Glaser <t.glaser@tarent.de> wrote:
 > 
-> brcmfmac: brcmf_c_preinit_dcmds: Firmware: BCM4359/9 wl0: Mar  6 2017
-> 10:16:06 version 9.87.51.7 (r686312) FWID 01-4dcc75d9
+>> On Tue, 7 Sep 2021, Stephen Hemminger wrote:
+>>
+>>> Space is not valid in JSON tag.  
+>>
+>> They are valid. Any strings are valid.
 > 
-> Reverting this patch makes the access point show up again with linux-5.14 .
-
-Sorry for breaking your device!
-
-So it sounds like you do not have country_codes configured for your
-BCM4359/9 device, while it needs particular `rev` setup for the ccode
-you are testing with.  It was "working" likely because you have a static
-`ccode` and `regrev` setting in nvram file.  But roaming to a different
-region will mostly get you a broken WiFi support.  Is it possible to set
-up the country_codes for your device to get it work properly?
-
-Shawn
-
+> Your right the library is quoting them, but various style guidelines
+> do not recommend doing this.
 > 
-> Regards,
-> Soeren
-> > Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
-> > ---
-> >  .../broadcom/brcm80211/brcmfmac/cfg80211.c      | 17 +++++++++++------
-> >  1 file changed, 11 insertions(+), 6 deletions(-)
-> >
-> > diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-> > index f4405d7861b6..6cb09c7c37b6 100644
-> > --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-> > +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-> > @@ -7442,18 +7442,23 @@ static s32 brcmf_translate_country_code(struct brcmf_pub *drvr, char alpha2[2],
-> >  	s32 found_index;
-> >  	int i;
-> >
-> > -	country_codes = drvr->settings->country_codes;
-> > -	if (!country_codes) {
-> > -		brcmf_dbg(TRACE, "No country codes configured for device\n");
-> > -		return -EINVAL;
-> > -	}
-> > -
-> >  	if ((alpha2[0] == ccreq->country_abbrev[0]) &&
-> >  	    (alpha2[1] == ccreq->country_abbrev[1])) {
-> >  		brcmf_dbg(TRACE, "Country code already set\n");
-> >  		return -EAGAIN;
-> >  	}
-> >
-> > +	country_codes = drvr->settings->country_codes;
-> > +	if (!country_codes) {
-> > +		brcmf_dbg(TRACE, "No country codes configured for device, using ISO3166 code and 0 rev\n");
-> > +		memset(ccreq, 0, sizeof(*ccreq));
-> > +		ccreq->country_abbrev[0] = alpha2[0];
-> > +		ccreq->country_abbrev[1] = alpha2[1];
-> > +		ccreq->ccode[0] = alpha2[0];
-> > +		ccreq->ccode[1] = alpha2[1];
-> > +		return 0;
-> > +	}
-> > +
-> >  	found_index = -1;
-> >  	for (i = 0; i < country_codes->table_size; i++) {
-> >  		cc = &country_codes->table[i];
-> 
+
+And Davide pointed out a good example of why.
