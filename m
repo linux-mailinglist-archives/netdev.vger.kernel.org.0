@@ -2,81 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 068714038FE
-	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 13:40:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05CFB403908
+	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 13:42:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351501AbhIHLlO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Sep 2021 07:41:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36522 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235453AbhIHLlN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Sep 2021 07:41:13 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 5F95561157;
-        Wed,  8 Sep 2021 11:40:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631101205;
-        bh=14G3beQpxy2SPLHfXGVauPG/jcl9eTPysyZMbssgrIw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Ox2EONkSBX70W9l9X109b6rWySSfQzgxMidvA865fuOwcrQnK9qc+9uKRKUv8WG62
-         5WUFOMVt2OHwJXyGAWw9P/rv92aXR7HRXIwVp/51AO8NSsCgX1+O77hY4ayy7tmYAk
-         eA4XQGfNuvECPznb2sHGCsY74Q2jt3qYHqI+i73108SKe85vtN+xmDUdKOE0RKKuG7
-         i6ioMZkWrtrmlE1L2lVMYqeAXBq49nPcnOuVSx2EQv9ZUe0KpAziKMZltPRu9hRd8B
-         mdySU8QWq8wz4K/ewM8uQP51KrtdiIsJZyN9rFHyB1NkPt7GYc049swUsKN757TIkG
-         4sq78R6ZMJzKA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5336A60A6D;
-        Wed,  8 Sep 2021 11:40:05 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S1351506AbhIHLnq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Sep 2021 07:43:46 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:25977 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235453AbhIHLnp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Sep 2021 07:43:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1631101356;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=0OKWbveyBp4LK+jfSbX2BcrMPG8lLWS9NwmPSKg8Irs=;
+        b=F5vy7fjHl5FnZhs4m556q5of0cr3m6XhmSDAj2x1WtAgea+s6hc1fS/F7h/Ubdph1jTgDH
+        8AkysnC81NAGSZWtQa3BB73ziEhdpYItviJ0POpqp5dgV5qZZXApJJ4bd3H9N3DyFFd7uS
+        cSiRWwXDNuYjpnSLpCKNvjx1T4JZtfI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-315-20EbSMTJPlid_wF6ZA4jZg-1; Wed, 08 Sep 2021 07:42:35 -0400
+X-MC-Unique: 20EbSMTJPlid_wF6ZA4jZg-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BCCF8835DE0;
+        Wed,  8 Sep 2021 11:42:34 +0000 (UTC)
+Received: from gerbillo.redhat.com (unknown [10.39.192.231])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AC24560C17;
+        Wed,  8 Sep 2021 11:42:29 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org
+Subject: [PATCH] vhost_net: fix OoB on sendmsg() failure.
+Date:   Wed,  8 Sep 2021 13:42:09 +0200
+Message-Id: <463c1b02ca6f65fc1183431d8d85ec8154a2c28e.1631090797.git.pabeni@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: stmmac: fix system hang caused by eee_ctrl_timer
- during suspend/resume
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163110120533.13176.6299418024122400249.git-patchwork-notify@kernel.org>
-Date:   Wed, 08 Sep 2021 11:40:05 +0000
-References: <20210908074335.4662-1-qiangqing.zhang@nxp.com>
-In-Reply-To: <20210908074335.4662-1-qiangqing.zhang@nxp.com>
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
-        linux-imx@nxp.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+If the sendmsg() call in vhost_tx_batch() fails, both the 'batched_xdp'
+and 'done_idx' indexes are left unchanged. If such failure happens
+when batched_xdp == VHOST_NET_BATCH, the next call to
+vhost_net_build_xdp() will access and write memory outside the xdp
+buffers area.
 
-This patch was applied to netdev/net.git (refs/heads/master):
+Since sendmsg() can only error with EBADFD, this change addresses the
+issue explicitly freeing the XDP buffers batch on error.
 
-On Wed,  8 Sep 2021 15:43:35 +0800 you wrote:
-> commit 5f58591323bf ("net: stmmac: delete the eee_ctrl_timer after
-> napi disabled"), this patch tries to fix system hang caused by eee_ctrl_timer,
-> unfortunately, it only can resolve it for system reboot stress test. System
-> hang also can be reproduced easily during system suspend/resume stess test
-> when mount NFS on i.MX8MP EVK board.
-> 
-> In stmmac driver, eee feature is combined to phylink framework. When do
-> system suspend, phylink_stop() would queue delayed work, it invokes
-> stmmac_mac_link_down(), where to deactivate eee_ctrl_timer synchronizly.
-> In above commit, try to fix issue by deactivating eee_ctrl_timer obviously,
-> but it is not enough. Looking into eee_ctrl_timer expire callback
-> stmmac_eee_ctrl_timer(), it could enable hareware eee mode again. What is
-> unexpected is that LPI interrupt (MAC_Interrupt_Enable.LPIEN bit) is always
-> asserted. This interrupt has chance to be issued when LPI state entry/exit
-> from the MAC, and at that time, clock could have been already disabled.
-> The result is that system hang when driver try to touch register from
-> interrupt handler.
-> 
-> [...]
+Fixes: 0a0be13b8fe2 ("vhost_net: batch submitting XDP buffers to underlayer sockets")
+Suggested-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+---
+Note: my understanding is that this should go through MST's tree, please
+educate me otherwise, thanks!
+---
+ drivers/vhost/net.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-Here is the summary with links:
-  - [net] net: stmmac: fix system hang caused by eee_ctrl_timer during suspend/resume
-    https://git.kernel.org/netdev/net/c/276aae377206
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
+index 3a249ee7e144..28ef323882fb 100644
+--- a/drivers/vhost/net.c
++++ b/drivers/vhost/net.c
+@@ -467,7 +467,7 @@ static void vhost_tx_batch(struct vhost_net *net,
+ 		.num = nvq->batched_xdp,
+ 		.ptr = nvq->xdp,
+ 	};
+-	int err;
++	int i, err;
+ 
+ 	if (nvq->batched_xdp == 0)
+ 		goto signal_used;
+@@ -476,6 +476,15 @@ static void vhost_tx_batch(struct vhost_net *net,
+ 	err = sock->ops->sendmsg(sock, msghdr, 0);
+ 	if (unlikely(err < 0)) {
+ 		vq_err(&nvq->vq, "Fail to batch sending packets\n");
++
++		/* free pages owned by XDP; since this is an unlikely error path,
++		 * keep it simple and avoid more complex bulk update for the
++		 * used pages
++		 */
++		for (i = 0; i < nvq->batched_xdp; ++i)
++			put_page(virt_to_head_page(nvq->xdp[i].data));
++		nvq->batched_xdp = 0;
++		nvq->done_idx = 0;
+ 		return;
+ 	}
+ 
+-- 
+2.26.3
 
