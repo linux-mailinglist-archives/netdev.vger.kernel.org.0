@@ -2,48 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C8C1403C07
-	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 16:59:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E7B6403C00
+	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 16:59:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351974AbhIHPAN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Sep 2021 11:00:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59212 "EHLO mail.kernel.org"
+        id S1351959AbhIHPAM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Sep 2021 11:00:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59108 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1351932AbhIHPAL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Sep 2021 11:00:11 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 831A661163;
+        id S1347994AbhIHPAK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Sep 2021 11:00:10 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7AC1F61154;
         Wed,  8 Sep 2021 14:59:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1631113142;
-        bh=iER6cNpcjgk8n1TWkifigpXyj5UmGCift9D4uF2jMns=;
-        h=From:To:Cc:Subject:Date:From;
-        b=jEUUiYNesrwxixTuVWUx37ompZysIA5p0KCoiioN0f2BlrS+efomxgByiawC6Jjl8
-         PfASkEjlfK7hzn3PNaz05R+fyf9GRreUV4a7BzTb9ouOrpuHon2nuQvF1WY/NNgHmC
-         4t4sQQQX0l/0beJPHdHfx/wbrDWugLr74aLeNc3pPp2boRHSfLPcda06Vfzz/bPVkP
-         STfQDLJpguHWxcT/MVZBintfsTiKoFKXdekzRbOzF+JA36vlO4oBOHqfVXsVVkX30W
-         3j2HjgCY9z6S4nOOWu7yrTZmsviG4hwOnZf1Xez8C06XGSDDbZzBtD7v0995qNdA82
-         mmKlHGuSQkIxQ==
+        bh=daJWLkNc7RzTtuIc5F7JfUkVrbDyqcaJn+pUKDZsze8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=PN8GOegnY4QkUBJ0sKw5Exv3kfq2eRjsFbuDM8KAUJWQ56vbMyoblodeODVnMM2Xc
+         8XZyYMPLEq3tvfd+IWHr6vcj5sWjFCxARgasb5e2o3PMt2iu11t1hJJKdDzpo8XZ4l
+         9Bao2y3HG8RTZXd9sUhZZoUN/ZfIQcO+RNJciJjU8gHD42HfwCjnDX+kUCKA/JdIMj
+         vm3wEfcze4D/yp7UwBNpCodzft4w0ZOOIdfDXlIygcUadfnls4SPq8lQIpyP0RN3DI
+         0QAM5ZbO8PX7R3oR6UPc7yOGSgmV9YlGwjobCZD/RD/fyfa0JmZEY55WNeWuXCH5Fe
+         UK6JdTIvnxWvA==
 Received: by mail.kernel.org with local (Exim 4.94.2)
         (envelope-from <mchehab@kernel.org>)
-        id 1mNz2S-006r3a-E3; Wed, 08 Sep 2021 16:59:00 +0200
+        id 1mNz2S-006r3d-Gy; Wed, 08 Sep 2021 16:59:00 +0200
 From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
         Greg KH <gregkh@linuxfoundation.org>
 Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        "Jonathan Corbet" <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
         Anton Vorontsov <anton@enomsg.org>,
         Colin Cross <ccross@android.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@kernel.org>,
         Kees Cook <keescook@chromium.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>,
         Tony Luck <tony.luck@intel.com>, Yonghong Song <yhs@fb.com>,
-        bpf@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH 0/9] get_abi.pl: Check for missing symbols at the ABI specs
-Date:   Wed,  8 Sep 2021 16:58:47 +0200
-Message-Id: <cover.1631112725.git.mchehab+huawei@kernel.org>
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH 1/9] scripts: get_abi.pl: Check for missing symbols at the ABI specs
+Date:   Wed,  8 Sep 2021 16:58:48 +0200
+Message-Id: <02050f2ec03b75edc9a72a3842710df02943750e.1631112725.git.mchehab+huawei@kernel.org>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <cover.1631112725.git.mchehab+huawei@kernel.org>
+References: <cover.1631112725.git.mchehab+huawei@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: Mauro Carvalho Chehab <mchehab@kernel.org>
@@ -51,89 +57,154 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Greg,
+Check for the symbols that exists under /sys but aren't
+defined at Documentation/ABI.
 
-Sometime ago, I discussed with Jonathan Cameron about providing 
-a way check that the ABI documentation is incomplete.
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+---
+ scripts/get_abi.pl | 88 ++++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 86 insertions(+), 2 deletions(-)
 
-While it would be doable to validate the ABI by searching __ATTR and 
-similar macros around the driver, this would probably be very complex
-and would take a while to parse.
-
-So, I ended by implementing a new feature at scripts/get_abi.pl
-which does a check on the sysfs contents of a running system:
-it reads everything under /sys and reads the entire ABI from
-Documentation/ABI. It then warns for symbols that weren't found,
-optionally showing possible candidates that might be misdefined.
-
-I opted to place it on 3 patches:
-
-The first patch adds the basic logic. It runs really quicky (up to 2
-seconds), but it doesn't use sysfs softlinks.
-
-Patch 2 adds support for also parsing softlinks. It slows the logic,
-with now takes ~40 seconds to run on my desktop (and ~23
-seconds on a HiKey970 ARM board). There are space there for
-performance improvements, by using a more sophisticated
-algorithm, at the expense of making the code harder to
-understand. I ended opting to use a simple implementation
-for now, as ~40 seconds sounds acceptable on my eyes.
-
-Patch 3 adds an optional parameter to allow filtering the results
-using a regex given by the user.
-
-One of the problems with the current ABI definitions is that several
-symbols define wildcards, on non-standard ways. The more commonly
-wildcards used there are:
-
-	<foo>
-	{foo}
-	[foo]
-	X
-	Y
-	Z
-	/.../
-
-The script converts the above wildcards into (somewhat relaxed)
-regexes.
-
-There's one place using  "(some description)". This one is harder to
-parse, as parenthesis are used by the parsing regexes. As this happens
-only on one file, patch 4 addresses such case.
-
-Patch 5 to 9 fix some other ABI troubles I identified.
-
-In long term, perhaps the better would be to just use regex on What:
-fields, as this would avoid extra heuristics at get_abi.pl, but this is
-OOT from this patch, and would mean a large number of changes.
-
--
-
-As reference, I sent an early implementation of this change as a RFC:
-	https://lore.kernel.org/lkml/cover.1624014140.git.mchehab+huawei@kernel.org/
-
-Mauro Carvalho Chehab (9):
-  scripts: get_abi.pl: Check for missing symbols at the ABI specs
-  scripts: get_abi.pl: detect softlinks
-  scripts: get_abi.pl: add an option to filter undefined results
-  ABI: sysfs-bus-usb: better document variable argument
-  ABI: sysfs-module: better document module name parameter
-  ABI: sysfs-tty: better document module name parameter
-  ABI: sysfs-kernel-slab: use a wildcard for the cache name
-  ABI: security: fix location for evm and ima_policy
-  ABI: sysfs-module: document initstate
-
- Documentation/ABI/stable/sysfs-module       |  10 +-
- Documentation/ABI/testing/evm               |   4 +-
- Documentation/ABI/testing/ima_policy        |   2 +-
- Documentation/ABI/testing/sysfs-bus-usb     |  16 +-
- Documentation/ABI/testing/sysfs-kernel-slab |  94 ++++-----
- Documentation/ABI/testing/sysfs-module      |   7 +
- Documentation/ABI/testing/sysfs-tty         |  32 +--
- scripts/get_abi.pl                          | 218 +++++++++++++++++++-
- 8 files changed, 303 insertions(+), 80 deletions(-)
-
+diff --git a/scripts/get_abi.pl b/scripts/get_abi.pl
+index d7aa82094296..31b2fdf1f318 100755
+--- a/scripts/get_abi.pl
++++ b/scripts/get_abi.pl
+@@ -13,7 +13,9 @@ my $help = 0;
+ my $man = 0;
+ my $debug = 0;
+ my $enable_lineno = 0;
++my $show_warnings = 1;
+ my $prefix="Documentation/ABI";
++my $sysfs_prefix="/sys";
+ 
+ #
+ # If true, assumes that the description is formatted with ReST
+@@ -36,7 +38,7 @@ pod2usage(2) if (scalar @ARGV < 1 || @ARGV > 2);
+ 
+ my ($cmd, $arg) = @ARGV;
+ 
+-pod2usage(2) if ($cmd ne "search" && $cmd ne "rest" && $cmd ne "validate");
++pod2usage(2) if ($cmd ne "search" && $cmd ne "rest" && $cmd ne "validate" && $cmd ne "undefined");
+ pod2usage(2) if ($cmd eq "search" && !$arg);
+ 
+ require Data::Dumper if ($debug);
+@@ -50,6 +52,8 @@ my %symbols;
+ sub parse_error($$$$) {
+ 	my ($file, $ln, $msg, $data) = @_;
+ 
++	return if (!$show_warnings);
++
+ 	$data =~ s/\s+$/\n/;
+ 
+ 	print STDERR "Warning: file $file#$ln:\n\t$msg";
+@@ -521,11 +525,86 @@ sub search_symbols {
+ 	}
+ }
+ 
++# Exclude /sys/kernel/debug and /sys/kernel/tracing from the search path
++sub skip_debugfs {
++	if (($File::Find::dir =~ m,^/sys/kernel,)) {
++		return grep {!/(debug|tracing)/ } @_;
++	}
++
++	if (($File::Find::dir =~ m,^/sys/fs,)) {
++		return grep {!/(pstore|bpf|fuse)/ } @_;
++	}
++
++	return @_
++}
++
++my %leaf;
++
++my $escape_symbols = qr { ([\x01-\x08\x0e-\x1f\x21-\x29\x2b-\x2d\x3a-\x40\x7b-\xff]) }x;
++sub parse_existing_sysfs {
++	my $file = $File::Find::name;
++
++	my $mode = (stat($file))[2];
++	return if ($mode & S_IFDIR);
++
++	my $leave = $file;
++	$leave =~ s,.*/,,;
++
++	if (defined($leaf{$leave})) {
++		# FIXME: need to check if the path makes sense
++		my $what = $leaf{$leave};
++
++		$what =~ s/,/ /g;
++
++		$what =~ s/\<[^\>]+\>/.*/g;
++		$what =~ s/\{[^\}]+\}/.*/g;
++		$what =~ s/\[[^\]]+\]/.*/g;
++		$what =~ s,/\.\.\./,/.*/,g;
++		$what =~ s,/\*/,/.*/,g;
++
++		$what =~ s/\s+/ /g;
++
++		# Escape all other symbols
++		$what =~ s/$escape_symbols/\\$1/g;
++
++		foreach my $i (split / /,$what) {
++			if ($file =~ m#^$i$#) {
++#				print "$file: $i: OK!\n";
++				return;
++			}
++		}
++
++		print "$file: $leave is defined at $what\n";
++
++		return;
++	}
++
++	print "$file not found.\n";
++}
++
++sub undefined_symbols {
++	foreach my $what (sort keys %data) {
++		my $leave = $what;
++		$leave =~ s,.*/,,;
++
++		if (defined($leaf{$leave})) {
++			$leaf{$leave} .= " " . $what;
++		} else {
++			$leaf{$leave} = $what;
++		}
++	}
++
++	find({wanted =>\&parse_existing_sysfs, preprocess =>\&skip_debugfs, no_chdir => 1}, $sysfs_prefix);
++}
++
+ # Ensure that the prefix will always end with a slash
+ # While this is not needed for find, it makes the patch nicer
+ # with --enable-lineno
+ $prefix =~ s,/?$,/,;
+ 
++if ($cmd eq "undefined" || $cmd eq "search") {
++	$show_warnings = 0;
++}
+ #
+ # Parses all ABI files located at $prefix dir
+ #
+@@ -536,7 +615,9 @@ print STDERR Data::Dumper->Dump([\%data], [qw(*data)]) if ($debug);
+ #
+ # Handles the command
+ #
+-if ($cmd eq "search") {
++if ($cmd eq "undefined") {
++	undefined_symbols;
++} elsif ($cmd eq "search") {
+ 	search_symbols;
+ } else {
+ 	if ($cmd eq "rest") {
+@@ -575,6 +656,9 @@ B<rest>                  - output the ABI in ReST markup language
+ 
+ B<validate>              - validate the ABI contents
+ 
++B<undefined>             - existing symbols at the system that aren't
++                           defined at Documentation/ABI
++
+ =back
+ 
+ =head1 OPTIONS
 -- 
 2.31.1
-
 
