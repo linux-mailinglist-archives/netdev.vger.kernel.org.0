@@ -2,91 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B037403BC8
-	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 16:51:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C8C1403C07
+	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 16:59:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349326AbhIHOwe convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 8 Sep 2021 10:52:34 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.85.151]:48136 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S245253AbhIHOwd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Sep 2021 10:52:33 -0400
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-10-MqPP_QLZOnaPOvxdcdkU6A-1; Wed, 08 Sep 2021 15:51:23 +0100
-X-MC-Unique: MqPP_QLZOnaPOvxdcdkU6A-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.23; Wed, 8 Sep 2021 15:51:21 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.023; Wed, 8 Sep 2021 15:51:21 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Wei Liu' <wei.liu@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-CC:     Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        "Brendan Higgins" <brendanhiggins@google.com>,
-        Ariel Elior <aelior@marvell.com>,
-        "GR-everest-linux-l2@marvell.com" <GR-everest-linux-l2@marvell.com>,
-        "Linux ARM" <linux-arm-kernel@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        "lkft-triage@lists.linaro.org" <lkft-triage@lists.linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-Subject: RE: ipv4/tcp.c:4234:1: error: the frame size of 1152 bytes is larger
- than 1024 bytes [-Werror=frame-larger-than=]
-Thread-Topic: ipv4/tcp.c:4234:1: error: the frame size of 1152 bytes is larger
- than 1024 bytes [-Werror=frame-larger-than=]
-Thread-Index: AQHXpJjLHdBfxh/omUuYsxLT8U4Q1auaODzA
-Date:   Wed, 8 Sep 2021 14:51:21 +0000
-Message-ID: <46be667d057f413aac7871ebe784e274@AcuMS.aculab.com>
-References: <CA+G9fYtFvJdtBknaDKR54HHMf4XsXKD4UD3qXkQ1KhgY19n3tw@mail.gmail.com>
- <CAHk-=wisUqoX5Njrnnpp0pDx+bxSAJdPxfgEUv82tZkvUqoN1w@mail.gmail.com>
- <CAHk-=whF9F89vsfH8E9TGc0tZA-yhzi2Di8wOtquNB5vRkFX5w@mail.gmail.com>
- <20210908100304.oknxj4v436sbg3nb@liuwe-devbox-debian-v2>
-In-Reply-To: <20210908100304.oknxj4v436sbg3nb@liuwe-devbox-debian-v2>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1351974AbhIHPAN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Sep 2021 11:00:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59212 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1351932AbhIHPAL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Sep 2021 11:00:11 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 831A661163;
+        Wed,  8 Sep 2021 14:59:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1631113142;
+        bh=iER6cNpcjgk8n1TWkifigpXyj5UmGCift9D4uF2jMns=;
+        h=From:To:Cc:Subject:Date:From;
+        b=jEUUiYNesrwxixTuVWUx37ompZysIA5p0KCoiioN0f2BlrS+efomxgByiawC6Jjl8
+         PfASkEjlfK7hzn3PNaz05R+fyf9GRreUV4a7BzTb9ouOrpuHon2nuQvF1WY/NNgHmC
+         4t4sQQQX0l/0beJPHdHfx/wbrDWugLr74aLeNc3pPp2boRHSfLPcda06Vfzz/bPVkP
+         STfQDLJpguHWxcT/MVZBintfsTiKoFKXdekzRbOzF+JA36vlO4oBOHqfVXsVVkX30W
+         3j2HjgCY9z6S4nOOWu7yrTZmsviG4hwOnZf1Xez8C06XGSDDbZzBtD7v0995qNdA82
+         mmKlHGuSQkIxQ==
+Received: by mail.kernel.org with local (Exim 4.94.2)
+        (envelope-from <mchehab@kernel.org>)
+        id 1mNz2S-006r3a-E3; Wed, 08 Sep 2021 16:59:00 +0200
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>
+Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        Anton Vorontsov <anton@enomsg.org>,
+        Colin Cross <ccross@android.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Tony Luck <tony.luck@intel.com>, Yonghong Song <yhs@fb.com>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH 0/9] get_abi.pl: Check for missing symbols at the ABI specs
+Date:   Wed,  8 Sep 2021 16:58:47 +0200
+Message-Id: <cover.1631112725.git.mchehab+huawei@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
+Sender: Mauro Carvalho Chehab <mchehab@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wei Liu
-> Sent: 08 September 2021 11:03
-...
-> However calling into the allocator from that IPI path seems very heavy
-> weight. I will discuss with fellow engineers on how to fix it properly.
+Hi Greg,
 
-Isn't the IPI code something that is likely to get called
-when a lot of stack has already been used?
+Sometime ago, I discussed with Jonathan Cameron about providing 
+a way check that the ABI documentation is incomplete.
 
-So you really shouldn't be using much stack at all??
+While it would be doable to validate the ABI by searching __ATTR and 
+similar macros around the driver, this would probably be very complex
+and would take a while to parse.
 
-	David
+So, I ended by implementing a new feature at scripts/get_abi.pl
+which does a check on the sysfs contents of a running system:
+it reads everything under /sys and reads the entire ABI from
+Documentation/ABI. It then warns for symbols that weren't found,
+optionally showing possible candidates that might be misdefined.
+
+I opted to place it on 3 patches:
+
+The first patch adds the basic logic. It runs really quicky (up to 2
+seconds), but it doesn't use sysfs softlinks.
+
+Patch 2 adds support for also parsing softlinks. It slows the logic,
+with now takes ~40 seconds to run on my desktop (and ~23
+seconds on a HiKey970 ARM board). There are space there for
+performance improvements, by using a more sophisticated
+algorithm, at the expense of making the code harder to
+understand. I ended opting to use a simple implementation
+for now, as ~40 seconds sounds acceptable on my eyes.
+
+Patch 3 adds an optional parameter to allow filtering the results
+using a regex given by the user.
+
+One of the problems with the current ABI definitions is that several
+symbols define wildcards, on non-standard ways. The more commonly
+wildcards used there are:
+
+	<foo>
+	{foo}
+	[foo]
+	X
+	Y
+	Z
+	/.../
+
+The script converts the above wildcards into (somewhat relaxed)
+regexes.
+
+There's one place using  "(some description)". This one is harder to
+parse, as parenthesis are used by the parsing regexes. As this happens
+only on one file, patch 4 addresses such case.
+
+Patch 5 to 9 fix some other ABI troubles I identified.
+
+In long term, perhaps the better would be to just use regex on What:
+fields, as this would avoid extra heuristics at get_abi.pl, but this is
+OOT from this patch, and would mean a large number of changes.
 
 -
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+
+As reference, I sent an early implementation of this change as a RFC:
+	https://lore.kernel.org/lkml/cover.1624014140.git.mchehab+huawei@kernel.org/
+
+Mauro Carvalho Chehab (9):
+  scripts: get_abi.pl: Check for missing symbols at the ABI specs
+  scripts: get_abi.pl: detect softlinks
+  scripts: get_abi.pl: add an option to filter undefined results
+  ABI: sysfs-bus-usb: better document variable argument
+  ABI: sysfs-module: better document module name parameter
+  ABI: sysfs-tty: better document module name parameter
+  ABI: sysfs-kernel-slab: use a wildcard for the cache name
+  ABI: security: fix location for evm and ima_policy
+  ABI: sysfs-module: document initstate
+
+ Documentation/ABI/stable/sysfs-module       |  10 +-
+ Documentation/ABI/testing/evm               |   4 +-
+ Documentation/ABI/testing/ima_policy        |   2 +-
+ Documentation/ABI/testing/sysfs-bus-usb     |  16 +-
+ Documentation/ABI/testing/sysfs-kernel-slab |  94 ++++-----
+ Documentation/ABI/testing/sysfs-module      |   7 +
+ Documentation/ABI/testing/sysfs-tty         |  32 +--
+ scripts/get_abi.pl                          | 218 +++++++++++++++++++-
+ 8 files changed, 303 insertions(+), 80 deletions(-)
+
+-- 
+2.31.1
+
 
