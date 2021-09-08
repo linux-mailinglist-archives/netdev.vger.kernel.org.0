@@ -2,95 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CDF6403C46
-	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 17:08:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97A14403C6E
+	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 17:24:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349476AbhIHPJz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Sep 2021 11:09:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39488 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1349248AbhIHPJx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Sep 2021 11:09:53 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 548E6611C6;
-        Wed,  8 Sep 2021 15:08:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631113725;
-        bh=EcFdlIlPuXpuvXGjbL2rGt+KIE0grzuBurK1IY0GYXE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=FYD6C6nflF/20yxECHrnoZBf29DPDeGsA08BuRUaUu4zoq4SOfCTCCObhS79xN04O
-         2lfsy/eWmi8YES3m73WjP50fWo+g5qb6V9xSMuuv/0BBpt/0uD25K4v/3m8FBZFq90
-         Yj7GtcWbEP280yCS1oBb9nGKyPL6s26OtKm0V0flqnG8x4oW2DA/8OTmsyocIi6xkx
-         3shuPnOlles6AsM3pZdgn0gpdv8mZhbrRKFsLtclrBzJTQSd0FgNRgGHxdl9jT0RFl
-         lZkB6myOLN0wFmMx45AzmDE9OHkm1kJMz6eyv02SQCQJj9cdLZElUSFxT345pI/97o
-         oZoseWoFvIdgw==
-Date:   Wed, 8 Sep 2021 08:08:43 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     moyufeng <moyufeng@huawei.com>
-Cc:     Yunsheng Lin <linyunsheng@huawei.com>, <davem@davemloft.net>,
-        <alexander.duyck@gmail.com>, <linux@armlinux.org.uk>,
-        <mw@semihalf.com>, <linuxarm@openeuler.org>,
-        <yisen.zhuang@huawei.com>, <salil.mehta@huawei.com>,
-        <thomas.petazzoni@bootlin.com>, <hawk@kernel.org>,
-        <ilias.apalodimas@linaro.org>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <john.fastabend@gmail.com>,
-        <akpm@linux-foundation.org>, <peterz@infradead.org>,
-        <will@kernel.org>, <willy@infradead.org>, <vbabka@suse.cz>,
-        <fenghua.yu@intel.com>, <guro@fb.com>, <peterx@redhat.com>,
-        <feng.tang@intel.com>, <jgg@ziepe.ca>, <mcroce@microsoft.com>,
-        <hughd@google.com>, <jonathan.lemon@gmail.com>, <alobakin@pm.me>,
-        <willemb@google.com>, <wenxu@ucloud.cn>, <cong.wang@bytedance.com>,
-        <haokexin@gmail.com>, <nogikh@google.com>, <elver@google.com>,
-        <yhs@fb.com>, <kpsingh@kernel.org>, <andrii@kernel.org>,
-        <kafai@fb.com>, <songliubraving@fb.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <chenhao288@hisilicon.com>
-Subject: Re: [PATCH net-next v2 4/4] net: hns3: support skb's frag page
- recycling based on page pool
-Message-ID: <20210908080843.2051c58d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <2b75d66b-a3bf-2490-2f46-fef5731ed7ad@huawei.com>
-References: <1628217982-53533-1-git-send-email-linyunsheng@huawei.com>
-        <1628217982-53533-5-git-send-email-linyunsheng@huawei.com>
-        <2b75d66b-a3bf-2490-2f46-fef5731ed7ad@huawei.com>
+        id S1351840AbhIHPZD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Sep 2021 11:25:03 -0400
+Received: from mail-wr1-f42.google.com ([209.85.221.42]:37486 "EHLO
+        mail-wr1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230332AbhIHPZC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Sep 2021 11:25:02 -0400
+Received: by mail-wr1-f42.google.com with SMTP id v10so3898866wrd.4;
+        Wed, 08 Sep 2021 08:23:54 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=1t5LYToXMKzmQGZhhdsl+wcVGB4mGa+92qwlh2R7WK8=;
+        b=fokVFnFlZTnk+C8IcO5UcufX3C0IssE6sFF2S9CBMAQE1CAWiUWorclsLi/NDW5I59
+         xSW+ALYgg+/Uj5x7Rl+dsj/2xzkQKFMAvsD7CWIyv4RXBPnoQQM3G3QOvzEdgV8ap/8n
+         49cbFnDgx8CcI6dYc2b8hVg2Qa+eI5eA34DFsfjErCqJFa6uYJkOQeymY81ypSJXhWQX
+         es3mkebSiCmgec1srXpMKa/9jvdUGDbBgd6ZjaccQs4VqtmvJaDfrJrwD4D7TwbFhP25
+         VRYNCtwJtYUfNguhKK1DMUGpxQ3RWNUTdwGQC9lSoZhEyC6Sqw8spaDX2Z2uNR4KFens
+         hdMg==
+X-Gm-Message-State: AOAM531uDev/QXBAufE+NeL/mdNk6wUgTU+gX3wGBYY9iF4Qp7oItO8Y
+        34xUQKc+Vv8swtzAI8pZu0Q=
+X-Google-Smtp-Source: ABdhPJwtCnniMnv2FH4hW32bnl4MIBdEAEuQG84WcjPSOttEQvakqMUDFeH6Cxa9SmN1PRBTYeInfw==
+X-Received: by 2002:adf:9e4d:: with SMTP id v13mr4758076wre.26.1631114633660;
+        Wed, 08 Sep 2021 08:23:53 -0700 (PDT)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id j17sm2367696wrh.67.2021.09.08.08.23.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Sep 2021 08:23:53 -0700 (PDT)
+Date:   Wed, 8 Sep 2021 15:23:51 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     David Laight <David.Laight@ACULAB.COM>
+Cc:     'Wei Liu' <wei.liu@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Ariel Elior <aelior@marvell.com>,
+        "GR-everest-linux-l2@marvell.com" <GR-everest-linux-l2@marvell.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        "lkft-triage@lists.linaro.org" <lkft-triage@lists.linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: ipv4/tcp.c:4234:1: error: the frame size of 1152 bytes is larger
+ than 1024 bytes [-Werror=frame-larger-than=]
+Message-ID: <20210908152351.asln63jxk43xffib@liuwe-devbox-debian-v2>
+References: <CA+G9fYtFvJdtBknaDKR54HHMf4XsXKD4UD3qXkQ1KhgY19n3tw@mail.gmail.com>
+ <CAHk-=wisUqoX5Njrnnpp0pDx+bxSAJdPxfgEUv82tZkvUqoN1w@mail.gmail.com>
+ <CAHk-=whF9F89vsfH8E9TGc0tZA-yhzi2Di8wOtquNB5vRkFX5w@mail.gmail.com>
+ <20210908100304.oknxj4v436sbg3nb@liuwe-devbox-debian-v2>
+ <46be667d057f413aac7871ebe784e274@AcuMS.aculab.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <46be667d057f413aac7871ebe784e274@AcuMS.aculab.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 8 Sep 2021 16:31:40 +0800 moyufeng wrote:
->     After adding page pool to hns3 receiving package process,
-> we want to add some debug info. Such as below:
->=20
-> 1. count of page pool allocate and free page, which is defined
-> for pages_state_hold_cnt and pages_state_release_cnt in page
-> pool framework.
->=20
-> 2. pool size=E3=80=81order=E3=80=81nid=E3=80=81dev=E3=80=81max_len, which=
- is setted for
-> each rx ring in hns3 driver.
->=20
-> In this regard, we consider two ways to show these info=EF=BC=9A
->=20
-> 1. Add it to queue statistics and query it by ethtool -S.
->=20
-> 2. Add a file node "page_pool_info" for debugfs, then cat this
-> file node, print as below:
->=20
-> queue_id  allocate_cnt  free_cnt  pool_size  order  nid  dev  max_len
-> 000		   xxx       xxx        xxx    xxx  xxx  xxx      xxx
-> 001
-> 002
-> .
-> .
-> =09
-> Which one is more acceptable, or would you have some other suggestion?
+On Wed, Sep 08, 2021 at 02:51:21PM +0000, David Laight wrote:
+> From: Wei Liu
+> > Sent: 08 September 2021 11:03
+> ...
+> > However calling into the allocator from that IPI path seems very heavy
+> > weight. I will discuss with fellow engineers on how to fix it properly.
+> 
+> Isn't the IPI code something that is likely to get called
+> when a lot of stack has already been used?
+> 
+> So you really shouldn't be using much stack at all??
 
-Normally I'd say put the stats in ethtool -S and the rest in debugfs
-but I'm not sure if exposing pages_state_hold_cnt and
-pages_state_release_cnt directly. Those are short counters, and will
-very likely wrap. They are primarily meaningful for calculating
-page_pool_inflight(). Given this I think their semantics may be too
-confusing for an average ethtool -S user.
+I don't follow your questions. I don't dispute there is a problem. I
+just think calling into the allocator is not a good idea in that
+particular piece of code we need to fix.
 
-Putting all the information in debugfs seems like a better idea.
+Hopefully we can come up with a solution to remove need for a cpumask in
+that code -- discussion is on-going.
+
+Wei.
+
+> 
+> 	David
+> 
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> Registration No: 1397386 (Wales)
+> 
