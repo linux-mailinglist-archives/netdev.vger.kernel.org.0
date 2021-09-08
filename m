@@ -2,136 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 519E84033E2
-	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 07:45:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7DCD403436
+	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 08:21:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237853AbhIHFqN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Sep 2021 01:46:13 -0400
-Received: from mail-eopbgr1410108.outbound.protection.outlook.com ([40.107.141.108]:35648
-        "EHLO JPN01-OS2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232277AbhIHFqK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Sep 2021 01:46:10 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FsHqSSFl4UE/5HOuv/05aGryyjfUHxXhn4vVwzLOjGdXeCuoW4Es/WVoR/fmrJDacc+A8F6Eajhs8Z9a1WpLX7Yp+wISi+Tf4uA40vh6kyc3JAsiqvrUfVElmMFPU4OSDmEkCz0xGEQWg5yKroWx0Fjk7Jm6+txyrbC2/5otWnhrZDsXMsBFuiD+ztoac7OM1xffew6SvaZcWIME8NuchSUtBWSXSH4FaudX0DhsXsiLbPcfjb6U4GUoMY97HI3W3fxjDj40+aLWiqv5zaiH52BTAy3VbC9BQGpAmUAf6OMbsUjphCglLNmi/QR+Cwz8VdFLo77vOS6ela3cWoZa3w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=qDlth7Gzva2jdX+bXAraHZZZSVlQU3XugUJ9fZRkbVw=;
- b=C686R2tXJDg7mXMDOflGgliwoom9dhfPceS8G32cLF/kR0U4ssSVBQaRlpyNTSNYD6tgp7Iwa6wavmxS6iN74GT7ZOkxdSHFQz/ay4CpREPcZqbYzfqLpXnedkgwuqzjIgsYgQH5s9rQvzShcZDtjtcFBRr6B6c6pt3T48LYFvxNBdx8Nam9WB0yB7WQmhGUni3qFc1gx+MwcB5jOvuyTpzwapGzpjj9yYelRH34KsQWds3EHH/fdQ1RrGvBTTrlo/KlzhNuIizZJl3LhZYPgKqb6GYcrZOElM+qu9Y6R5QS8u5PY/dWkHyLIgP1+PbkLwF4mUPvQviADJg/CthPBg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
- dkim=pass header.d=renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qDlth7Gzva2jdX+bXAraHZZZSVlQU3XugUJ9fZRkbVw=;
- b=qSi/M340rPHYT7t96AkssCE6Q1zOsiSwykYU2lXCIh0O4cf+zqjGWGfjKlNIoKdS26XHphC09nJHoaJdk12tQ4tYsMX1xCGWFU3RvdIUosvl0zokrxb7T0gFFyxFEgIACwjhZfUs5kd7esbdnsrz6YP6ldUg3q3hI/IxFDj13E0=
-Received: from TY2PR01MB3692.jpnprd01.prod.outlook.com (2603:1096:404:d5::22)
- by TYCPR01MB6429.jpnprd01.prod.outlook.com (2603:1096:400:92::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.14; Wed, 8 Sep
- 2021 05:45:01 +0000
-Received: from TY2PR01MB3692.jpnprd01.prod.outlook.com
- ([fe80::b10a:f267:d52c:1e5b]) by TY2PR01MB3692.jpnprd01.prod.outlook.com
- ([fe80::b10a:f267:d52c:1e5b%3]) with mapi id 15.20.4478.026; Wed, 8 Sep 2021
- 05:45:01 +0000
-From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-To:     Sergey Shtylyov <s.shtylyov@omp.ru>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-Subject: RE: [PATCH] net: renesas: sh_eth: Fix freeing wrong tx descriptor
-Thread-Topic: [PATCH] net: renesas: sh_eth: Fix freeing wrong tx descriptor
-Thread-Index: AQHXo9u81SMMhOXtDE2P4NymXZOfj6uY9cIAgACpn8A=
-Date:   Wed, 8 Sep 2021 05:45:01 +0000
-Message-ID: <TY2PR01MB36924D8258BD1C8E3287136DD8D49@TY2PR01MB3692.jpnprd01.prod.outlook.com>
-References: <20210907112940.967985-1-yoshihiro.shimoda.uh@renesas.com>
- <a610ac4b-eeb9-50c2-4b88-0d77d1c83d47@omp.ru>
-In-Reply-To: <a610ac4b-eeb9-50c2-4b88-0d77d1c83d47@omp.ru>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: omp.ru; dkim=none (message not signed)
- header.d=none;omp.ru; dmarc=none action=none header.from=renesas.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 6ed44edb-b841-4deb-2132-08d9728bcce9
-x-ms-traffictypediagnostic: TYCPR01MB6429:
-x-microsoft-antispam-prvs: <TYCPR01MB642987DEAF45554303232716D8D49@TYCPR01MB6429.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: qhzSpfTCeMKpcqhTRzu23IoKcWonsZlLkfy7T6tFSFa7uBTa4TKpOkHvX/bOph2MrF109ZC4sVzxSMKVdYr0L8cBwxr8rs9K25hbvSqumDv0zn0op22bKvIg+WMKy6JAwqpmOPMxTm4sXDGQFtwzuF9k8i1BoXMtfOWigGCc2bz9FyrmJW0RXIuCEDmhMNqw2F3tQrYh+GbFrfgb1ne4riH+Fyp9/wpKRuvNLTcW6Idue3iwJZoZjp8pGKb+TFXSUUr50OUBIqe0E0CvOx+543SE6Vseqwvb+znYlTygOJRyx60k3oEgMq35xRWfZLwujYYjGCyP2ic8EQBWyVRfm95oMvK99AsgU+6MzMPGmpb2Sk/kF1um9zKrN14PneoLfaq2/kg9aTMsy9ggGGeNlxy2vssWX4s5tncvMZDZZ08EQmbCQIWxYzdzS9KtFqGZZvpyeUgAtKXwWGnKOMJ8lpPcAjlcl1D/7vvrn1RIGaIf8cmqDIw1Vb55NHye5LltSMRc8y4E50WgvZ0mQZD9tL1UR1RtPAxTpbVm3hugjviOnxd0OBFO7yp7SEaUBfT1rySUBEVvPa3TTxr7kF4oItcKWgnHFo/9KJvjfDt1jHjKqBFyU9/V7D1r865ypOctPAUJCgejzyhUFFCywMb1B9RByNUxnKaUrTCsjuusTnYG20R84LxHsPIk0NJDwJG/7t1/4PyjAc+6vWD/paJ6eQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TY2PR01MB3692.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(39860400002)(346002)(396003)(376002)(136003)(4326008)(86362001)(71200400001)(66946007)(76116006)(5660300002)(478600001)(186003)(38070700005)(83380400001)(66476007)(9686003)(33656002)(55016002)(8936002)(2906002)(8676002)(6506007)(110136005)(7696005)(64756008)(66446008)(38100700002)(54906003)(52536014)(122000001)(4744005)(53546011)(316002)(66556008);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?ZmJQWFBaYTBUZmtxczNPd0pUcTVrUlkvd0Y4enJrUFJoOEJUamJkR1F0NHFR?=
- =?utf-8?B?UXgxaU04VkNvY1RqOHcyTnB6b1AvQU85dlg4WDJMUGlaRUo2Smp1RTZKMllj?=
- =?utf-8?B?NDN4dWNBU2pHUW9kSjZNTTBBMmxJV1A1Z1Y1YzYwQ0FDcXpyL2lBM1drTUNx?=
- =?utf-8?B?VXpvRy9hVTlkMVZ3QXJLV3ZQb09EdzVYeHh3N2dlU2pmcTN5ejg1cUJXVXZj?=
- =?utf-8?B?R1NJMDNzLzVScEhxbndyWURlQU5aZlZIRnZTYllLOEFFRE9zclJHUStrRmJL?=
- =?utf-8?B?aDdkT25KRy9LMW9aT3YyMFZlcVQvZnAvRjBLWVB4SzNpVHpGQzdPWXRCT01E?=
- =?utf-8?B?R3BPeE13ejhzZStFTFZXbFBSbGNNRU54MlJKc3d2R1pURnRWZ2kzaUhBenBj?=
- =?utf-8?B?azkxQ3Y4eUdQSWplYTRGekloNmV0YlNWdkMzYVkvTlYzak8xME5vUnBadFlM?=
- =?utf-8?B?OCtIQlJadkYzd1hBMkl3RUdVMGlnb2JQUHM4SDUyZXBVUUM2RjFOTVY2R0RW?=
- =?utf-8?B?WWYrTnFQTkhXdTV0YjJnU05rM1Q4d3hIVGZqNmFkdGpjZVBjT2NsSVBhei80?=
- =?utf-8?B?ZXB6VC9TVk9EbG1pM0ViTnpHNWdpUGYyMXM5a2hrdUM5Ti9RS2U5RDJISWVK?=
- =?utf-8?B?RzZFbkRhMWZhVVVBUG9LNVVITFBlMFNFb01BTHkwNEtCWXIxVHlnbVFXQlNy?=
- =?utf-8?B?NzdvTXVvNk5SYTlsTnBZVmVsWjFjMDM2NFZOMDYzdE1ZOHVKMFI0WHBUamFl?=
- =?utf-8?B?bEdhaHI4aWg5L3dvbnhuN2prQmZ6d2lYRWJBRE8zK3ZEczhFTEpDOE5YUVhw?=
- =?utf-8?B?OFVhU0N2cVJtUDh4bTlqM1EyVlJJaEdjQUlsSWRYTWJkQlhjakFYM2FQczdC?=
- =?utf-8?B?bitzMnFyZDEyN01FdEdmVW94VDQrU01PVzYraFhpMmFlbXVRK3FKdVI5N1E1?=
- =?utf-8?B?eVYvRFlKVVNwZ3V5enpMM0FwVDR2aEdZSGtFcGxFSUgrUGJjdVRKMWFuUnJ4?=
- =?utf-8?B?SjFnZzErclNsMEYycW05SzdIVmZpb29LWHZBYjIwVUJOVW5aSE9FdXVPYmhS?=
- =?utf-8?B?UEVIV3dMV1IzYUlSb090SFV0TGpybHpMeXI1REx0U1g1Ulk5NXlvZ1V6a1h3?=
- =?utf-8?B?K3BqN01tK2pyeXk1VkpIZDl6MGY4TEY4TjZ5UVFOaUh4RTloWFJHK2hnN2xD?=
- =?utf-8?B?Nm5OblZLZDhCcXpDNDNwUHFyNnVwMExhKzNHVWRHR0x3YW5NWE5kR05WdE9o?=
- =?utf-8?B?VDQxUmt6TVFtakU0Nk1DZW10OWllZm5pSzdDRmNlcXhOcEtiTmhlK1hINzEx?=
- =?utf-8?B?L0thMlVDSzB4ZHQ0VnJQZm0zNWlNV1BHMGdrK3hEaDhZNDZlRGlSU1dxYTZl?=
- =?utf-8?B?K3kxNEplZis4RGYwRzZNdWhGZ0JnbUovUXoweEVnbW5ZZWZIRzdReVVDWXg4?=
- =?utf-8?B?MTA5cFdCd2FGSFF0eGRVdVRUWnI2Z05aNCtPSGk0WXRreDdHUnNWMUl3bUZL?=
- =?utf-8?B?R2JCenY3R1pLQWdFMGVENDlOalV6Z2p4YjFSakxmZFkwLzZoTTdYQ0UxUW15?=
- =?utf-8?B?THhEcnViNjJITG85K205c21ra0dRa1djR2g2cFg5bTR4YWJSUFR0akdOWnRk?=
- =?utf-8?B?Uk5uemtYOFFFbitmSnVXQ0xMSHl5eE9NN1ZmR0N1anRUcEFHK3dEMUZKcTFi?=
- =?utf-8?B?dEN4Sk5FYmROYmQ2VW9ZdzZsMW1VbFBXZ2x4NkdIUlJVai9sMXlZMEwrWWlD?=
- =?utf-8?B?OVptSlhsbzNHeHlPMktiODNwYmpCOHlTZTJIcWdsTVVaSWI2U2tqTnZHR3ZR?=
- =?utf-8?Q?etudihqiBckxUu3Ioaz6XKE2mU+rq7tbFGeOs=3D?=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1347708AbhIHGWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Sep 2021 02:22:36 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:53730 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235929AbhIHGWc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Sep 2021 02:22:32 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1631082084; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=TzsX5eejCGRkn41+A5EeEvv+e8xkszYmuNBsdRhsfBk=;
+ b=cwzEhLoySahOwZiQvYl2d1V8oYzzw3WvTth6S6+lNd9IddoPotqZIcrviSHTBRE3d+e4AlXy
+ zG85uw7KrwHgiXJDxm6S95iIW/QrG7UE68+G/+pMAvSl6TzmifdOAI1hOMlJi2Mi4bKstd4T
+ +UYT13d/ibtnvWQkB4OYdwAJehY=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n04.prod.us-east-1.postgun.com with SMTP id
+ 613856646fc2cf7ad9706faf (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 08 Sep 2021 06:21:24
+ GMT
+Sender: subashab=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 2549FC43635; Wed,  8 Sep 2021 06:21:23 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00
+        autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: subashab)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 982C6C4338F;
+        Wed,  8 Sep 2021 06:21:12 +0000 (UTC)
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TY2PR01MB3692.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6ed44edb-b841-4deb-2132-08d9728bcce9
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Sep 2021 05:45:01.1747
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 9NuEAWvehXGRnsyy5QutWIwOYlZPOKnpVVaHgvxy0btKVhJ1dcq94TZx5mpFbrXF19WHsWoCf/aGrlnaFWgjNZ+TM3oWHI4pEeO46rzsP2VlQKGF718xj5dXOUtXhF83
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYCPR01MB6429
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Wed, 08 Sep 2021 00:21:12 -0600
+From:   subashab@codeaurora.org
+To:     Daniele Palmas <dnlplm@gmail.com>
+Cc:     =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>,
+        Aleksander Morgado <aleksander@aleksander.es>,
+        Network Development <netdev@vger.kernel.org>,
+        Sean Tranchetti <stranche@codeaurora.org>
+Subject: Re: RMNET QMAP data aggregation with size greater than 16384
+In-Reply-To: <CAGRyCJGCT5GgFQOCb01zotGBpC66-r2X7EVru-S04i=Sgw9CSA@mail.gmail.com>
+References: <CAAP7ucKuS9p_hkR5gMWiM984Hvt09iNQEt32tCFDCT5p0fqg4Q@mail.gmail.com>
+ <c0e14605e9bc650aca26b8c3920e9aba@codeaurora.org>
+ <CAAP7ucK7EeBPJHt9XFp7bd5cGXtH5w2VGgh3yD7OA9SYd5JkJw@mail.gmail.com>
+ <77b850933d9af8ddbc21f5908ca0764d@codeaurora.org>
+ <CAAP7ucJRbg58Yqcx-qFFUuu=_=3Ss1HE1ZW4XGrm0KsSXnwdmA@mail.gmail.com>
+ <13972ac97ffe7a10fd85fe03dc84dc02@codeaurora.org>
+ <87bl6aqrat.fsf@miraculix.mork.no>
+ <CAAP7ucLDFPMG08syrcnKKrX-+MS4_-tpPzZSfMOD6_7G-zq4gQ@mail.gmail.com>
+ <2c2d1204842f457bb0d0b2c4cd58847d@codeaurora.org>
+ <87sfzlplr2.fsf@miraculix.mork.no>
+ <394353d6f31303c64b0d26bc5268aca7@codeaurora.org>
+ <CAGRyCJEekOwNwdtzMoW7LYGzDDcaoDdc-n5L+rJ9LgfbckFzXQ@mail.gmail.com>
+ <7aac9ee90376e4757e5f2ebc4948ebed@codeaurora.org>
+ <87tujtamk5.fsf@miraculix.mork.no>
+ <CAGRyCJGCT5GgFQOCb01zotGBpC66-r2X7EVru-S04i=Sgw9CSA@mail.gmail.com>
+Message-ID: <4e1ce15e24e0cee183a1c96cda04324e@codeaurora.org>
+X-Sender: subashab@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgU2VyZ2V5LA0KDQo+IEZyb206IFNlcmdleSBTaHR5bHlvdiwgU2VudDogV2VkbmVzZGF5LCBT
-ZXB0ZW1iZXIgOCwgMjAyMSA0OjMwIEFNDQo+IA0KPiBPbiA5LzcvMjEgMjoyOSBQTSwgWW9zaGlo
-aXJvIFNoaW1vZGEgd3JvdGU6DQo+IA0KPiA+IFRoZSBjdXJfdHggY291bnRlciBtdXN0IGJlIGlu
-Y3JlbWVudGVkIGFmdGVyIFRBQ1QgYml0IG9mDQo+ID4gdHhkZXNjLT5zdGF0dXMgd2FzIHNldC4g
-SG93ZXZlciwgYSBDUFUgaXMgcG9zc2libGUgdG8gcmVvcmRlcg0KPiA+IGluc3RydWN0aW9ucyBh
-bmQvb3IgbWVtb3J5IGFjY2Vzc2VzIGJldHdlZW4gY3VyX3R4IGFuZA0KPiA+IHR4ZGVzYy0+c3Rh
-dHVzLiBBbmQgdGhlbiwgaWYgVFggaW50ZXJydXB0IGhhcHBlbmVkIGF0IHN1Y2ggYQ0KPiA+IHRp
-bWluZywgdGhlIHNoX2V0aF90eF9mcmVlKCkgbWF5IGZyZWUgdGhlIGRlc2NyaXB0b3Igd3Jvbmds
-eS4NCj4gPiBTbywgYWRkIHdtYigpIGJlZm9yZSBjdXJfdHgrKy4NCj4gDQo+ICAgIE5vdCBkbWFf
-d21iKCk/IDotKQ0KDQpPbiBhcm12OCwgZG1hX3dtYigpIGlzIERNQiBPU0hTVCwgYW5kIHdtYigp
-IGlzIERTQiBTVC4NCklJVUMsIERNQiBPU0hTVCBpcyBub3QgYWZmZWN0ZWQgdGhlIG9yZGVyaW5n
-IG9mIGluc3RydWN0aW9ucy4NClNvLCB3ZSBoYXZlIHRvIHVzZSB3bWIoKS4NCg0KPiA+IE90aGVy
-d2lzZSBORVRERVYgV0FUQ0hET0cgdGltZW91dCBpcyBwb3NzaWJsZSB0byBoYXBwZW4uDQo+ID4N
-Cj4gPiBGaXhlczogODZhNzRmZjIxYTdhICgibmV0OiBzaF9ldGg6IGFkZCBzdXBwb3J0IGZvciBS
-ZW5lc2FzIFN1cGVySCBFdGhlcm5ldCIpDQo+ID4gU2lnbmVkLW9mZi1ieTogWW9zaGloaXJvIFNo
-aW1vZGEgPHlvc2hpaGlyby5zaGltb2RhLnVoQHJlbmVzYXMuY29tPg0KPiANCj4gUmV2aWV3ZWQt
-Ynk6IFNlcmdleSBTaHR5bHlvdiA8cy5zaHR5bHlvdkBvbXAucnU+DQoNClRoYW5rIHlvdSBmb3Ig
-eW91ciByZXZpZXchDQoNCkJlc3QgcmVnYXJkcywNCllvc2hpaGlybyBTaGltb2RhDQoNCg==
+> I have done a bit of testing both with qmi_wwann qmap implementation
+> and rmnet, so far everything seems to be working fine.
+> 
+> Thanks,
+> Daniele
+
+Thanks, I'll send out the patch with additional sysfs once net-next
+is open.
+
+--
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora 
+Forum,
+a Linux Foundation Collaborative Project
