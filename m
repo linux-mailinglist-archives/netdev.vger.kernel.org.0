@@ -2,130 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA376404081
-	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 23:25:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8643A4040DD
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 00:08:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352518AbhIHV0M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Sep 2021 17:26:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41540 "EHLO
+        id S237486AbhIHWJs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Sep 2021 18:09:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351083AbhIHV0K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Sep 2021 17:26:10 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 904E9C061757
-        for <netdev@vger.kernel.org>; Wed,  8 Sep 2021 14:25:02 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id k24so3962464pgh.8
-        for <netdev@vger.kernel.org>; Wed, 08 Sep 2021 14:25:02 -0700 (PDT)
+        with ESMTP id S235838AbhIHWJp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Sep 2021 18:09:45 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 485DDC061575;
+        Wed,  8 Sep 2021 15:08:37 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id g8so4945912edt.7;
+        Wed, 08 Sep 2021 15:08:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oIrl1iKEkPhOhEiYAXs9Icej/cMm4caDVRBNE890nMk=;
-        b=TZmdsHFXh0pLbF1Aki2gtLI09dMbe3Ck4iTtyNnvaXyZ/0MyHfj3eTpEmvvWie3oK0
-         cytHyGfWn4YRMdeRykGfsw2GmbCKItYUkNXCjAyqGo7/aybSIK4cB1hK8BHHbDC+Rglm
-         +7sBlWMUqHT0wWp7Rs236+DLRPwub1Ity73wYOkcDPMzPoxx/GAUXmcsqWqXI9YuGuwg
-         RYuca1gvKTUx1K4VHJOnY7D5fJTJaLdL3ilkulhIb+iGIiJVFwU+rdidcNbIWUtm+owb
-         p9mg5VcxFDT4KWJ13LIAknBLMD0rOIdliDjoS+XOmvOKcnXBkz6g3fuawcYn7xjpS/HZ
-         1koQ==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=VBAGFGwrV6My3M7WCsYfCb12ANprEDTyOrbroDO3Vpw=;
+        b=Q2WhAOoiS6fQ0aLjqJdZmEUCEZO4WqWq40c6W+3Rj+kh6WGU2zwGUVSAFIAtfFvQb4
+         5JOXK7ABEx5QytUxwABV8GnxVnFfDH4YuWxRjlq7NKhgbQ4QiQE4SnCeu86AdwfyvjQK
+         UChp/5qkfB7NPSMdCzguFiljgsJ1htWus48sqq4+Vlm6FcA6BQNBdFKH62JamATMc4R7
+         qWJY2Qp8UDMZ0OPlvMQAO9oggAEO99JdKgffR5hyOazKAs6fwYbF92eF73afPzzfCfIM
+         Rvl4NGkcMQp5vXNg6mkWxEajmIgqVV9XvYFd8ePjCAMLRLD7PB9KarKaIgg0fsS21Ada
+         xBSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oIrl1iKEkPhOhEiYAXs9Icej/cMm4caDVRBNE890nMk=;
-        b=CFTq61pSMoMSmLUdQY0Lz22n/LOwQ8tsRqc2a+O0BlSrxM+Ls/HwkZaCcV1x2kC1cT
-         2uW6gY7lzFCFooQD5Xa4hXZ0HsVD9PnNcl9FpYDTzSSdM5tN3JeEHGz2ZF6CnXJx2DXD
-         SnwngqPsGeT9e55VeDp5hB144nT6ZSoWaWc5xHQhfEknrkfiQ67IXPKDCpRveIx/ePs7
-         N5UV/Q4qdsyqfZT1vNBiUDtLR9EV0bIIbD7Ugvb2pCIlqOYtMQ6vztrdFR96knbLkNIb
-         o8ffcApU8kn4iI72rPrC1XKxB3U86zTckhoVOMBWL6TynN+LNd6mSSURQShPM4ndGNJO
-         zu4Q==
-X-Gm-Message-State: AOAM530HAPV1cPIPxOqNhICNwowZVQ/2/H+tkzbk1UBzyGIz0L294rd5
-        P1nNoZ0Zs1MoPALYZ4eFLTHIte5hoEwCJ/SMr5nn3w==
-X-Google-Smtp-Source: ABdhPJyUrdsaj05MhT3SMnsbrzqT90+34gdQiJaQ/ddhshRsBjoS6XuOMJPHdXQfVHjUjKB5Qt1vTuPUMgCizyFpLN8=
-X-Received: by 2002:a62:1b92:0:b0:3eb:3f92:724 with SMTP id
- b140-20020a621b92000000b003eb3f920724mr147019pfb.3.1631136301711; Wed, 08 Sep
- 2021 14:25:01 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=VBAGFGwrV6My3M7WCsYfCb12ANprEDTyOrbroDO3Vpw=;
+        b=DGDN+vIqTGYYXWbA0IfzlrlRNlLiTJPYU6Rv9vYYZ+2431LecpuSh/Yeqcqq8I2T9S
+         yG6rMu0oOTHGJq/Jlyu1TXt22Hy0o+UN55f/uU6tWa+DAWmiaUduDRYTjybykHLZhSTg
+         YZXiST70pWtnFMwxqHj07ZGeLObh+xnQuueJIiOW+R50fw8f+SlLWb2a+JlK1uuhFlV3
+         X8eJ5UDfhKUOk+NdG0r8lK7JZeVPRZBKqap0G8Kx95DP8tdJ6u7ffTFS1sz4RKjJgUtL
+         io4FL2VPs496F27EClXJ1tMTKvAebgcpPu/8VIcw6Cx9q6t4nqaeU3x6nvjbLF+CqmCi
+         V5Uw==
+X-Gm-Message-State: AOAM5331/dKVbUQ3AYziny7uTPTlUX17Vi5axLyAkVlnGFWjtMOMl+Hp
+        daHVFdjt5+C9wjvwU42wKYM=
+X-Google-Smtp-Source: ABdhPJyAX5iJInw8VBWMJZf55kQdCJRNoTZZ9/va5DV6QpA/lPy2cpEcToZHD/lRvHEHwLzcve2R1g==
+X-Received: by 2002:a50:99cc:: with SMTP id n12mr477598edb.53.1631138915862;
+        Wed, 08 Sep 2021 15:08:35 -0700 (PDT)
+Received: from skbuf ([82.78.148.104])
+        by smtp.gmail.com with ESMTPSA id sb21sm116807ejb.8.2021.09.08.15.08.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Sep 2021 15:08:35 -0700 (PDT)
+Date:   Thu, 9 Sep 2021 01:08:34 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Circular dependency between DSA switch driver and tagging protocol
+ driver
+Message-ID: <20210908220834.d7gmtnwrorhharna@skbuf>
 MIME-Version: 1.0
-References: <CA+G9fYtFvJdtBknaDKR54HHMf4XsXKD4UD3qXkQ1KhgY19n3tw@mail.gmail.com>
- <CAHk-=wisUqoX5Njrnnpp0pDx+bxSAJdPxfgEUv82tZkvUqoN1w@mail.gmail.com>
- <CAHk-=whF9F89vsfH8E9TGc0tZA-yhzi2Di8wOtquNB5vRkFX5w@mail.gmail.com>
- <36aa5cb7-e3d6-33cb-9ac6-c9ff1169d711@linuxfoundation.org>
- <CAK8P3a1vNx1s-tcjtu6VDxak4NHyztF0XZGe3wOrNbigx1f4tw@mail.gmail.com> <120389b9-f90b-0fa3-21d5-1f789b4c984d@linuxfoundation.org>
-In-Reply-To: <120389b9-f90b-0fa3-21d5-1f789b4c984d@linuxfoundation.org>
-From:   Brendan Higgins <brendanhiggins@google.com>
-Date:   Wed, 8 Sep 2021 14:24:50 -0700
-Message-ID: <CAFd5g47MgGCoenw08hehegstQSujT7AwksQkxA7mQgKhChimNw@mail.gmail.com>
-Subject: Re: ipv4/tcp.c:4234:1: error: the frame size of 1152 bytes is larger
- than 1024 bytes [-Werror=frame-larger-than=]
-To:     Shuah Khan <skhan@linuxfoundation.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ariel Elior <aelior@marvell.com>,
-        GR-everest-linux-l2@marvell.com, Wei Liu <wei.liu@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>, lkft-triage@lists.linaro.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        KUnit Development <kunit-dev@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 8, 2021 at 10:16 AM Shuah Khan <skhan@linuxfoundation.org> wrote:
->
-> On 9/8/21 11:05 AM, Arnd Bergmann wrote:
-> > On Wed, Sep 8, 2021 at 4:12 PM Shuah Khan <skhan@linuxfoundation.org> wrote:
-> >> On 9/7/21 5:14 PM, Linus Torvalds wrote:
-> >>> The KUNIT macros create all these individually reasonably small
-> >>> initialized structures on stack, and when you have more than a small
-> >>> handful of them the KUNIT infrastructure just makes the stack space
-> >>> explode. Sometimes the compiler will be able to re-use the stack
-> >>> slots, but it seems to be an iffy proposition to depend on it - it
-> >>> seems to be a combination of luck and various config options.
-> >>>
-> >>
-> >> I have been concerned about these macros creeping in for a while.
-> >> I will take a closer look and work with Brendan to come with a plan
-> >> to address it.
-> >
-> > I've previously sent patches to turn off the structleak plugin for
-> > any kunit test file to work around this, but only a few of those patches
-> > got merged and new files have been added since. It would
-> > definitely help to come up with a proper fix, but my structleak-disable
-> > hack should be sufficient as a quick fix.
-> >
->
-> Looks like these are RFC patches and the discussion went cold. Let's pick
-> this back up and we can make progress.
->
-> https://lore.kernel.org/lkml/CAFd5g45+JqKDqewqz2oZtnphA-_0w62FdSTkRs43K_NJUgnLBg@mail.gmail.com/
+Hi,
 
-I can try to get the patch reapplying and send it out (I just figured
-that Arnd or Kees would want to send it out :-)  since it was your
-idea).
+Since commits 566b18c8b752 ("net: dsa: sja1105: implement TX
+timestamping for SJA1110") and 994d2cbb08ca ("net: dsa: tag_sja1105: be
+dsa_loop-safe"), net/dsa/tag_sja1105.ko has gained a build and insmod
+time dependency on drivers/net/dsa/sja1105.ko, due to several symbols
+exported by the latter and used by the former.
 
-I definitely agree that in the cases where KUnit is not actually
-contributing to blowing the stack - struct leak just thinks it is,
-this is fine; however, it sounds like Linus' concerns with KUnit's
-macros go deeper than this. Arnd, I think you sketched out a way to
-make the KUNIT_* macros take up less space, but after some
-investigation we found that it was pretty inflexible.
+So first one needs to insmod sja1105.ko, then insmod tag_sja1105.ko.
 
-Ideally test cases should never get big enough for KUNIT_* macros to
-be a problem (when they do it is usually an indication that your test
-case is trying to do too many things); nevertheless, we are still in
-this situation.
+But dsa_port_parse_cpu returns -EPROBE_DEFER when dsa_tag_protocol_get
+returns -ENOPROTOOPT. It means, there is no DSA_TAG_PROTO_SJA1105 in the
+list of tagging protocols known by DSA, try again later. There is a
+runtime dependency for DSA to have the tagging protocol loaded. Combined
+with the symbol dependency, this is a de facto circular dependency.
 
-I think I will need to dust off some cobwebs out of my brain to
-remember why I didn't like the idea of making the KUNIT_* macros take
-up less stack space.
+So when we first insmod sja1105.ko, nothing happens, probing is deferred.
+
+Then when we insmod tag_sja1105.ko, we expect the DSA probing to kick
+off where it left from, and probe the switch too.
+
+However this does not happen because the deferred probing list in the
+device core is reconsidered for a new attempt only if a driver is bound
+to a new device. But DSA tagging protocols are drivers with no struct
+device.
+
+One can of course manually kick the driver after the two insmods:
+
+echo spi0.1 > /sys/bus/spi/drivers/sja1105/bind
+
+and this works, but automatic module loading based on modaliases will be
+broken if both tag_sja1105.ko and sja1105.ko are modules, and sja1105 is
+the last device to get a driver bound to it.
+
+Where is the problem?
