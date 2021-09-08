@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F38B403F62
-	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 21:06:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34021403F66
+	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 21:06:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350409AbhIHTH0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Sep 2021 15:07:26 -0400
+        id S1350453AbhIHTHb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Sep 2021 15:07:31 -0400
 Received: from home.keithp.com ([63.227.221.253]:35456 "EHLO elaine.keithp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1350339AbhIHTHX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Sep 2021 15:07:23 -0400
+        id S1350364AbhIHTH1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Sep 2021 15:07:27 -0400
 Received: from localhost (localhost [127.0.0.1])
-        by elaine.keithp.com (Postfix) with ESMTP id 5A9873F30881;
-        Wed,  8 Sep 2021 12:05:48 -0700 (PDT)
+        by elaine.keithp.com (Postfix) with ESMTP id 7C6753F30892;
+        Wed,  8 Sep 2021 12:05:49 -0700 (PDT)
 X-Virus-Scanned: Debian amavisd-new at keithp.com
 Received: from elaine.keithp.com ([127.0.0.1])
         by localhost (elaine.keithp.com [127.0.0.1]) (amavisd-new, port 10024)
-        with LMTP id VY1FZb1c7sU8; Wed,  8 Sep 2021 12:05:47 -0700 (PDT)
+        with LMTP id pQrw0rspp1ef; Wed,  8 Sep 2021 12:05:48 -0700 (PDT)
 Received: from keithp.com (168-103-156-98.tukw.qwest.net [168.103.156.98])
-        by elaine.keithp.com (Postfix) with ESMTPSA id 56FE93F30883;
-        Wed,  8 Sep 2021 12:05:47 -0700 (PDT)
+        by elaine.keithp.com (Postfix) with ESMTPSA id 6A82E3F30882;
+        Wed,  8 Sep 2021 12:05:48 -0700 (PDT)
 Received: by keithp.com (Postfix, from userid 1000)
-        id 50A2E1E60122; Wed,  8 Sep 2021 12:06:09 -0700 (PDT)
+        id 54D1D1E6012A; Wed,  8 Sep 2021 12:06:09 -0700 (PDT)
 From:   Keith Packard <keithpac@amazon.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Abbott Liu <liuwenliang@huawei.com>,
@@ -75,9 +75,9 @@ Cc:     Abbott Liu <liuwenliang@huawei.com>,
         virtualization@lists.linux-foundation.org,
         "Wolfram Sang (Renesas)" <wsa+renesas@sang-engineering.com>,
         YiFei Zhu <yifeifz2@illinois.edu>, Yonghong Song <yhs@fb.com>
-Subject: [PATCH v4 1/7] ARM: Pass cpu number to secondary_start_kernel
-Date:   Wed,  8 Sep 2021 12:05:59 -0700
-Message-Id: <20210908190605.419064-2-keithpac@amazon.com>
+Subject: [PATCH v4 2/7] ARM: Pass task to secondary_start_kernel
+Date:   Wed,  8 Sep 2021 12:06:00 -0700
+Message-Id: <20210908190605.419064-3-keithpac@amazon.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20210908190605.419064-1-keithpac@amazon.com>
 References: <id:20210907220038.91021-1-keithpac@amazon.com>
@@ -88,139 +88,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of pulling the CPU value out of the thread_info struct, pass
-it as an argument. When first initializing secondary processors, this
-is done by stashing the value in the secondary_data struct. When
-restarting idle processors, the previous CPU value is passed.
-
-Because the cpu is now known at the top of secondary_start_kernel, the
-per_cpu_offset value can now be set at this point, instead of in
-cpu_init where it was also incorrectly setting the per_cpu_offset for
-the boot processor before that value had been computed.
+This avoids needing to compute the task pointer in this function,
+allowing it to be used as the source of identification in the future.
 
 Signed-off-by: Keith Packard <keithpac@amazon.com>
-Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
 ---
- arch/arm/include/asm/smp.h   |  3 ++-
- arch/arm/kernel/head-nommu.S |  1 +
- arch/arm/kernel/head.S       |  1 +
- arch/arm/kernel/setup.c      |  6 ------
- arch/arm/kernel/smp.c        | 14 +++++++++-----
- 5 files changed, 13 insertions(+), 12 deletions(-)
+ arch/arm/include/asm/smp.h   | 3 ++-
+ arch/arm/kernel/head-nommu.S | 1 +
+ arch/arm/kernel/head.S       | 1 +
+ arch/arm/kernel/smp.c        | 8 +++++---
+ 4 files changed, 9 insertions(+), 4 deletions(-)
 
 diff --git a/arch/arm/include/asm/smp.h b/arch/arm/include/asm/smp.h
-index 5d508f5d56c4..86a7fd721556 100644
+index 86a7fd721556..d43b64635d77 100644
 --- a/arch/arm/include/asm/smp.h
 +++ b/arch/arm/include/asm/smp.h
 @@ -48,7 +48,7 @@ extern void set_smp_ipi_range(int ipi_base, int nr_ipi);
   * Called from platform specific assembly code, this is the
   * secondary CPU entry point.
   */
--asmlinkage void secondary_start_kernel(void);
-+asmlinkage void secondary_start_kernel(unsigned int cpu);
+-asmlinkage void secondary_start_kernel(unsigned int cpu);
++asmlinkage void secondary_start_kernel(unsigned int cpu, struct task_struct *task);
  
  
  /*
-@@ -61,6 +61,7 @@ struct secondary_data {
- 	};
+@@ -62,6 +62,7 @@ struct secondary_data {
  	unsigned long swapper_pg_dir;
  	void *stack;
-+	unsigned int cpu;
+ 	unsigned int cpu;
++	struct task_struct *task;
  };
  extern struct secondary_data secondary_data;
  extern void secondary_startup(void);
 diff --git a/arch/arm/kernel/head-nommu.S b/arch/arm/kernel/head-nommu.S
-index 0fc814bbc34b..5aa8ef42717f 100644
+index 5aa8ef42717f..218715c135ed 100644
 --- a/arch/arm/kernel/head-nommu.S
 +++ b/arch/arm/kernel/head-nommu.S
-@@ -114,6 +114,7 @@ ENTRY(secondary_startup)
- 	add	r12, r12, r10
+@@ -115,6 +115,7 @@ ENTRY(secondary_startup)
  	ret	r12
  1:	bl	__after_proc_init
-+	ldr	r0, [r7, #16]			@ set up cpu number
+ 	ldr	r0, [r7, #16]			@ set up cpu number
++	ldr	r1, [r7, #20]			@ set up task pointer
  	ldr	sp, [r7, #12]			@ set up the stack pointer
  	mov	fp, #0
  	b	secondary_start_kernel
 diff --git a/arch/arm/kernel/head.S b/arch/arm/kernel/head.S
-index 7f62c5eccdf3..0e541af738e2 100644
+index 0e541af738e2..4a6cb0b0808b 100644
 --- a/arch/arm/kernel/head.S
 +++ b/arch/arm/kernel/head.S
-@@ -394,6 +394,7 @@ ENDPROC(secondary_startup_arm)
- 
+@@ -395,6 +395,7 @@ ENDPROC(secondary_startup_arm)
  ENTRY(__secondary_switched)
  	ldr_l	r7, secondary_data + 12		@ get secondary_data.stack
-+	ldr_l	r0, secondary_data + 16		@ get secondary_data.cpu
+ 	ldr_l	r0, secondary_data + 16		@ get secondary_data.cpu
++	ldr_l	r1, secondary_data + 20		@ get secondary_data.task
  	mov	sp, r7
  	mov	fp, #0
  	b	secondary_start_kernel
-diff --git a/arch/arm/kernel/setup.c b/arch/arm/kernel/setup.c
-index 73ca7797b92f..ca0201635fac 100644
---- a/arch/arm/kernel/setup.c
-+++ b/arch/arm/kernel/setup.c
-@@ -532,12 +532,6 @@ void notrace cpu_init(void)
- 		BUG();
- 	}
- 
--	/*
--	 * This only works on resume and secondary cores. For booting on the
--	 * boot cpu, smp_prepare_boot_cpu is called after percpu area setup.
--	 */
--	set_my_cpu_offset(per_cpu_offset(cpu));
--
- 	cpu_proc_init();
- 
- 	/*
 diff --git a/arch/arm/kernel/smp.c b/arch/arm/kernel/smp.c
-index 74679240a9d8..55cb1689a4b3 100644
+index 55cb1689a4b3..5e999f1f1aea 100644
 --- a/arch/arm/kernel/smp.c
 +++ b/arch/arm/kernel/smp.c
-@@ -153,6 +153,7 @@ int __cpu_up(unsigned int cpu, struct task_struct *idle)
- 	secondary_data.pgdir = virt_to_phys(idmap_pgd);
+@@ -154,6 +154,7 @@ int __cpu_up(unsigned int cpu, struct task_struct *idle)
  	secondary_data.swapper_pg_dir = get_arch_pgd(swapper_pg_dir);
  #endif
-+	secondary_data.cpu = cpu;
+ 	secondary_data.cpu = cpu;
++	secondary_data.task = idle;
  	sync_cache_w(&secondary_data);
  
  	/*
-@@ -373,11 +374,14 @@ void arch_cpu_idle_dead(void)
- 	 * cpu initialisation.  There's some initialisation which needs
+@@ -375,13 +376,14 @@ void arch_cpu_idle_dead(void)
  	 * to be repeated to undo the effects of taking the CPU offline.
  	 */
--	__asm__("mov	sp, %0\n"
-+	__asm__("mov	r0, %1\n"
-+	"	mov	sp, %0\n"
+ 	__asm__("mov	r0, %1\n"
++	"	mov	r1, %2\n"
+ 	"	mov	sp, %0\n"
  	"	mov	fp, #0\n"
  	"	b	secondary_start_kernel"
  		:
--		: "r" (task_stack_page(current) + THREAD_SIZE - 8));
-+		: "r" (task_stack_page(current) + THREAD_SIZE - 8),
-+		  "r" (cpu)
-+		: "r0");
+ 		: "r" (task_stack_page(current) + THREAD_SIZE - 8),
+-		  "r" (cpu)
+-		: "r0");
++		  "r" (cpu), "r" (current)
++		: "r0", "r1");
  }
  #endif /* CONFIG_HOTPLUG_CPU */
  
-@@ -400,10 +404,11 @@ static void smp_store_cpu_info(unsigned int cpuid)
+@@ -404,7 +406,7 @@ static void smp_store_cpu_info(unsigned int cpuid)
   * This is the secondary CPU boot entry.  We're using this CPUs
   * idle thread stack, but a set of temporary page tables.
   */
--asmlinkage void secondary_start_kernel(void)
-+asmlinkage void secondary_start_kernel(unsigned int cpu)
+-asmlinkage void secondary_start_kernel(unsigned int cpu)
++asmlinkage void secondary_start_kernel(unsigned int cpu, struct task_struct *task)
  {
  	struct mm_struct *mm = &init_mm;
--	unsigned int cpu;
-+
-+	set_my_cpu_offset(per_cpu_offset(cpu));
  
- 	secondary_biglittle_init();
- 
-@@ -420,7 +425,6 @@ asmlinkage void secondary_start_kernel(void)
- 	 * All kernel threads share the same mm context; grab a
- 	 * reference and switch to it.
- 	 */
--	cpu = smp_processor_id();
- 	mmgrab(mm);
- 	current->active_mm = mm;
- 	cpumask_set_cpu(cpu, mm_cpumask(mm));
 -- 
 2.33.0
 
