@@ -2,110 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EADDB404115
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 00:37:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F116F404176
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 00:59:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241891AbhIHWi2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Sep 2021 18:38:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57724 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237353AbhIHWi1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Sep 2021 18:38:27 -0400
-Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4715BC061757
-        for <netdev@vger.kernel.org>; Wed,  8 Sep 2021 15:37:19 -0700 (PDT)
-Received: by mail-io1-xd35.google.com with SMTP id a22so5367950iok.12
-        for <netdev@vger.kernel.org>; Wed, 08 Sep 2021 15:37:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fJ3ihx4At7jgHYb3j4mYdDe9G4uE+v4pbaUUjca10is=;
-        b=Q75NbNDpBphtBp+PKFLy985Z4TTGj4ihZPMVooF8G2q+TppHtpDID51jmQAp5DG4jc
-         ZGHcVuPWy0owAmiNaf/M9z4/2p+UBiaOdW6CiL1yfw3ia3UJiklAankiuBOipM5srSP+
-         bqi5n2KdIRWO/1X+cu2BWHrYtmVBrfhDHGbL0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fJ3ihx4At7jgHYb3j4mYdDe9G4uE+v4pbaUUjca10is=;
-        b=TWZkDlR6aZEEq3JhRNxyDTJjzSAW8RnpMRSpBKL/JC8cz53jnrdm1Koze+oKcNGq7k
-         egWlH5DL4ksmFQyk8LCfxGuYkSIXPshWyw1S48LOdExQ51zvQu3+7BENiWSSWPELYCkT
-         ZAy6tbvHWrg8MGvYpm6qKrk8nplCYTHjCxRh49Jl+Ncy4tceRXT46SFxjAS9v2AcwLzM
-         5Cmbbsax7TyiJvPZWwLrVgS/+7s0PGQKTXVa8YkAeDsyNimuu6L5R9zHW8vOq0x33t1X
-         ier7RePkb8Ro/HRQTLRvmfuhCwh5G/xZpqzfUetBrrhDwnz9zwhJX+m9Qdw98m4OlijB
-         EVuQ==
-X-Gm-Message-State: AOAM533LHNB/y4/Rq1EKj54z3ndq4tXLHg3tzbP1PV3XTzwLq1V45Lrm
-        hiuIbgvuJy89mVwJPAfOuLhhe5LT/FEbsmdo9OAx9CKeHrnzhQ==
-X-Google-Smtp-Source: ABdhPJzwDblF0Ih7VdiBmyr77yCQeqfj4l4itTfLgiElnagK5TDnK04rTWAknk1pCDtaGemvtTa13cAdWAvzwWeHTxQ=
-X-Received: by 2002:a05:6602:20ce:: with SMTP id 14mr478898ioz.204.1631140638724;
- Wed, 08 Sep 2021 15:37:18 -0700 (PDT)
+        id S1348425AbhIHXBD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Sep 2021 19:01:03 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:33300 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1348275AbhIHXAy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Sep 2021 19:00:54 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=7Cew9e3UlL5P09S1oK6yvHHk9eW+3ig/EHObaHl7uN0=; b=E4Qbf0R1jMJ2BNuiIIqQQ771eY
+        sQGaw9vSomjmLbAmMkpy9F3TRnJn6NeIrTlAmB1GlITkteIsivc5u5hGX7hJ5CYo8BV0kmLe5C+Zc
+        hKrbRJsnJjvVWYNA9w2o3mZ37y/Eg69FucZu0Z0G7zVatQmrcsjo9w03Ybl+WPlNgq58=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mO6XP-005obr-TM; Thu, 09 Sep 2021 00:59:27 +0200
+Date:   Thu, 9 Sep 2021 00:59:27 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "Machnikowski, Maciej" <maciej.machnikowski@intel.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ido Schimmel <idosch@idosch.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        "abyagowi@fb.com" <abyagowi@fb.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Saeed Mahameed <saeed@kernel.org>,
+        Michael Chan <michael.chan@broadcom.com>
+Subject: Re: [PATCH net-next 1/2] rtnetlink: Add new RTM_GETEECSTATE message
+ to get SyncE status
+Message-ID: <YTlAT+1wkazy3Uge@lunn.ch>
+References: <20210906180124.33ff49ef@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <PH0PR11MB495152B03F32A5A17EDB2F6CEAD39@PH0PR11MB4951.namprd11.prod.outlook.com>
+ <20210907075509.0b3cb353@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <PH0PR11MB49512C265E090FC8741D8510EAD39@PH0PR11MB4951.namprd11.prod.outlook.com>
+ <20210907124730.33852895@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <PH0PR11MB495169997552152891A69B57EAD49@PH0PR11MB4951.namprd11.prod.outlook.com>
+ <20210908092115.191fdc28@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <PH0PR11MB4951AA3C65DD8E7612F5F396EAD49@PH0PR11MB4951.namprd11.prod.outlook.com>
+ <YTkQTQM6Is4Hqmxh@lunn.ch>
+ <20210908152027.313d7168@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-References: <20210905210400.1157870-1-swboyd@chromium.org> <YTe+a0Gu7O6MEy2d@google.com>
- <CAE-0n52d_GBh70pSDXTrVkD5S6akP4O9YcE4tVRKZcvLtLZSmg@mail.gmail.com>
-In-Reply-To: <CAE-0n52d_GBh70pSDXTrVkD5S6akP4O9YcE4tVRKZcvLtLZSmg@mail.gmail.com>
-From:   Abhishek Kumar <kuabhs@chromium.org>
-Date:   Wed, 8 Sep 2021 15:37:07 -0700
-Message-ID: <CACTWRwsRLrKHRWVoHHyrU2DEc_VkhqSi66tdD2OBWs_y8J2LPw@mail.gmail.com>
-Subject: Re: [PATCH] ath10k: Don't always treat modem stop events as crashes
-To:     Stephen Boyd <swboyd@chromium.org>
-Cc:     Matthias Kaehlcke <mka@chromium.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        ath10k <ath10k@lists.infradead.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        linux-arm-msm@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        Govind Singh <govinds@codeaurora.org>,
-        Youghandhar Chintala <youghand@codeaurora.org>,
-        Rakesh Pillai <pillair@codeaurora.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210908152027.313d7168@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The way I see this, this issue is happening because of a much bigger
-design constraint. On integrated(modem+wifi) solutions, if remote proc
-service is shutdown, it has a trickle down effect. It deinitializes
-the modem processor (which controls wifi as its subsystem) and the
-wifi FW. As the fw de-initializes, we see the Delete server generated
-by the wifi FW. The FW generates delete server qmi event and there is
-no way on the host wifi driver to differentiate between delete event
-generated from a FW crash and de-initialization due to remoteproc and
-so we see the FW crash logs even during shutdown.
+On Wed, Sep 08, 2021 at 03:20:27PM -0700, Jakub Kicinski wrote:
+> On Wed, 8 Sep 2021 21:34:37 +0200 Andrew Lunn wrote:
+> > Since we are talking about clocks and dividers, and multiplexors,
+> > should all this be using the common clock framework, which already
+> > supports most of this? Do we actually need something new?
+> 
+> Does the common clock framework expose any user space API?
 
-I would like to know what are Qualcomm's views on the design
-constraint and any plans to reduce the rigidity. Also, will the FW
-broadcast other qmi events(QRTR_TYPE_BYE for e.g.) during shutdown
-(different from crash) ? If so then we can utilize that event and then
-we don't even have to add dependency on remoteproc.
+Ah, good point. No, i don't think it does, apart from debugfs, which
+is not really a user space API, and it contains read only descriptions
+of the clock tree, current status, mux settings, dividers etc.
 
-Overall this change should fix the issue, additionally I have one
-comment below and would like other reviewers views.
+So probably anybody implemented the proposed API the Linux way will
+use the common clock framework and its internal API, and debug the
+implementation via debugfs.
 
->  #include <linux/regulator/consumer.h>
-> +#include <linux/remoteproc/qcom_rproc.h>
->  #include <linux/of_address.h>
-We are adding an external dependency here but since this is added in
-snoc.c (which is for integrated solution only), I can expect if SNOC
-is enabled, remote proc will be enabled as well, so it should be fine.
+PHY drivers already do use it, e.g. when the PHY is using a clock
+provided by the MAC, it uses the API to enable/disable and set ifs
+frequency as needed.
 
-Reviewed-by: Abhishek Kumar <kuabhs@chromium.org>
-
-On Tue, Sep 7, 2021 at 12:48 PM Stephen Boyd <swboyd@chromium.org> wrote:
->
-> Quoting Matthias Kaehlcke (2021-09-07 12:32:59)
-> > On Sun, Sep 05, 2021 at 02:04:00PM -0700, Stephen Boyd wrote:
-> > > @@ -1740,10 +1805,19 @@ static int ath10k_snoc_probe(struct platform_device *pdev)
-> > >               goto err_fw_deinit;
-> > >       }
-> > >
-> > > +     ret = ath10k_modem_init(ar);
-> > > +     if (ret) {
-> > > +             ath10k_err(ar, "failed to initialize modem notifier: %d\n", ret);
-> >
-> > nit: ath10k_modem_init() encapsulates/hides the setup of the notifier,
-> > the error message should be inside the function, as for _deinit()
->
-> Sure. I can fix it. I was also wondering if I should drop the debug
-> prints for the cases that don't matter in the switch statement but I'll
-> just leave that alone unless someone complains about it.
+    Andrew
