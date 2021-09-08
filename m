@@ -2,196 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 455F84038ED
-	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 13:37:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 068714038FE
+	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 13:40:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349267AbhIHLiS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Sep 2021 07:38:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48650 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349173AbhIHLiR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Sep 2021 07:38:17 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E2A5C061757
-        for <netdev@vger.kernel.org>; Wed,  8 Sep 2021 04:37:10 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id y13so3572845ybi.6
-        for <netdev@vger.kernel.org>; Wed, 08 Sep 2021 04:37:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=anyfinetworks-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qx6GQAMSO0U5K2BQS7wUUyyG/8gFYoHictTOXxfB8o4=;
-        b=A0536G+j0jtXOcqV21wJGXr5MugvHCmfMYFaPbbAfqY2cCqPGj1LP9HTci4DIsP59v
-         xc4w9yKVww+P4uzNGaHSfF6JxQXj+GIHlKm1cRtbcWs4voqWNl5G4BYhMBJeVXuz4FzT
-         65CA5HQ6SddZlCIjGC2ZaqSKIyZ4u6BJsx9wE6gnXmZC3jdiEJ4kQQbwDBlN58qDhYR3
-         JMW/PAvJwc6N7V2Pl3XjUs90V5re+pao++Br5lU16ZdSNuYEhqiRKgl1zYxl7Yi+A6o+
-         TAe6Z80FxqJvTM9vAGzATZMLuTyAcX22vAcqQYtPG1s9CCtUXp8WRWWgXsihiVHXs3qX
-         kw8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qx6GQAMSO0U5K2BQS7wUUyyG/8gFYoHictTOXxfB8o4=;
-        b=KMZ2bFcDoKO24Ga8ZRjkS4JyXvOOFK7xBh/5cCGR0DnwAoDP0xlT+a/yQiJmGce5zZ
-         AbEo0LMR0dHyxtFNP+ZZq2B0OOV1+GIiLOltPpKgOpRFtryUBYWj1MB/KcS1G+HHq7US
-         G5blaxgSerUrD+hXkibQ2DP7eiLcUZiSY46mElbIwOi42WTE3rVZr02tSLOLrzhBz6u1
-         KdxG3PmoOxpd+nwHW8PLUB51YbMj17B+65NOAA07se3vYR64Bi/AoLYuvex9/WSu2wCU
-         kxj3swYV2qnSIFb+av8683dUocD+U86Fol8O+0ZO+ydHWb3QZrLahhSKOmdeK5p37zMt
-         bQeQ==
-X-Gm-Message-State: AOAM5302h24GsQdtvKjcEp7d+2Irv9sLx3D6kVilvt39x4xje2ANe1Xj
-        f4ZeBJoni185D66RZbEmBSEqAkEt+/lp4YRiPE4t5A==
-X-Google-Smtp-Source: ABdhPJwPNsP/cmoVneQoRGDpwarZJpktJvAbCd/Xjm1YQ4xhRQIkRrKgikr8DWAh5SUZuN8hQx5+JnlNnXJr6PYJL1s=
-X-Received: by 2002:a25:bb08:: with SMTP id z8mr4576585ybg.306.1631101029164;
- Wed, 08 Sep 2021 04:37:09 -0700 (PDT)
+        id S1351501AbhIHLlO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Sep 2021 07:41:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36522 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235453AbhIHLlN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Sep 2021 07:41:13 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 5F95561157;
+        Wed,  8 Sep 2021 11:40:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1631101205;
+        bh=14G3beQpxy2SPLHfXGVauPG/jcl9eTPysyZMbssgrIw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Ox2EONkSBX70W9l9X109b6rWySSfQzgxMidvA865fuOwcrQnK9qc+9uKRKUv8WG62
+         5WUFOMVt2OHwJXyGAWw9P/rv92aXR7HRXIwVp/51AO8NSsCgX1+O77hY4ayy7tmYAk
+         eA4XQGfNuvECPznb2sHGCsY74Q2jt3qYHqI+i73108SKe85vtN+xmDUdKOE0RKKuG7
+         i6ioMZkWrtrmlE1L2lVMYqeAXBq49nPcnOuVSx2EQv9ZUe0KpAziKMZltPRu9hRd8B
+         mdySU8QWq8wz4K/ewM8uQP51KrtdiIsJZyN9rFHyB1NkPt7GYc049swUsKN757TIkG
+         4sq78R6ZMJzKA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5336A60A6D;
+        Wed,  8 Sep 2021 11:40:05 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <1631089206-5931-1-git-send-email-yangtiezhu@loongson.cn>
- <e05e7407-74bb-3ba3-aab7-f62ca16a59ba@iogearbox.net> <9d0ca1ba-b8e1-dc99-17f4-189571f33c97@loongson.cn>
-In-Reply-To: <9d0ca1ba-b8e1-dc99-17f4-189571f33c97@loongson.cn>
-From:   Johan Almbladh <johan.almbladh@anyfinetworks.com>
-Date:   Wed, 8 Sep 2021 13:36:58 +0200
-Message-ID: <CAM1=_QR7jEKWCta6krttm9dTdXAa8HpDcp+eV5ufiUMbJ9SivA@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next] bpf: Make actual max tail call count as MAX_TAIL_CALL_CNT
-To:     Tiezhu Yang <yangtiezhu@loongson.cn>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Shubham Bansal <illusionist.neo@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Paul Burton <paulburton@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        naveen.n.rao@linux.ibm.com, Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Luke Nelson <luke.r.nels@gmail.com>,
-        Xi Wang <xi.wang@gmail.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>, bjorn@kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Paul Chaignon <paul@cilium.io>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] net: stmmac: fix system hang caused by eee_ctrl_timer
+ during suspend/resume
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163110120533.13176.6299418024122400249.git-patchwork-notify@kernel.org>
+Date:   Wed, 08 Sep 2021 11:40:05 +0000
+References: <20210908074335.4662-1-qiangqing.zhang@nxp.com>
+In-Reply-To: <20210908074335.4662-1-qiangqing.zhang@nxp.com>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
+        linux-imx@nxp.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 8, 2021 at 12:56 PM Tiezhu Yang <yangtiezhu@loongson.cn> wrote:
->
-> On 09/08/2021 04:47 PM, Daniel Borkmann wrote:
-> > [ You have a huge Cc list, but forgot to add Paul and Johan who recently
-> >   looked into this. Added here. ]
-> >
-> > On 9/8/21 10:20 AM, Tiezhu Yang wrote:
-> >> In the current code, the actual max tail call count is 33 which is
-> >> greater
-> >> than MAX_TAIL_CALL_CNT, this is not consistent with the intended meaning
-> >> in the commit 04fd61ab36ec ("bpf: allow bpf programs to tail-call other
-> >> bpf programs"):
-> >>
-> >> "The chain of tail calls can form unpredictable dynamic loops therefore
-> >> tail_call_cnt is used to limit the number of calls and currently is set
-> >> to 32."
-> >>
-> >> Additionally, after commit 874be05f525e ("bpf, tests: Add tail call test
-> >> suite"), we can see there exists failed testcase.
-> >>
-> >> On all archs when CONFIG_BPF_JIT_ALWAYS_ON is not set:
-> >>   # echo 0 > /proc/sys/net/core/bpf_jit_enable
-> >>   # modprobe test_bpf
-> >>   # dmesg | grep -w FAIL
-> >>   Tail call error path, max count reached jited:0 ret 34 != 33 FAIL
-> >>
-> >> On some archs:
-> >>   # echo 1 > /proc/sys/net/core/bpf_jit_enable
-> >>   # modprobe test_bpf
-> >>   # dmesg | grep -w FAIL
-> >>   Tail call error path, max count reached jited:1 ret 34 != 33 FAIL
-> >>
-> >> with this patch, make the actual max tail call count as
-> >> MAX_TAIL_CALL_CNT,
-> >> at the same time, the above failed testcase can be fixed.
-> >>
-> >> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
-> >> ---
-> >>
-> >> Hi all,
-> >>
-> >> This is a RFC patch, if I am wrong or I missed something,
-> >> please let me know, thank you!
-> >
-> > Yes, the original commit from 04fd61ab36ec ("bpf: allow bpf programs
-> > to tail-call
-> > other bpf programs") got the counting wrong, but please also check
-> > f9dabe016b63
-> > ("bpf: Undo off-by-one in interpreter tail call count limit") where we
-> > agreed to
-> > align everything to 33 in order to avoid changing existing behavior,
-> > and if we
-> > intend to ever change the count, then only in terms of increasing but
-> > not decreasing
-> > since that ship has sailed.
->
-> Thank you, understood.
->
-> But I still think there is some confusion about the macro MAX_TAIL_CALL_CNT
-> which is 32 and the actual value 33, I spent some time to understand it
-> at the first glance.
->
-> Is it impossible to keep the actual max tail call count consistent with
-> the value 32 of MAX_TAIL_CALL_CNT now?
+Hello:
 
-Yes. If the limit is 32 or 33 does not really matter, but there has to
-be a limit. Since the actual limit has been 33, we don't want to break
-any user space program relying on this value.
+This patch was applied to netdev/net.git (refs/heads/master):
 
-> At least, maybe we need to modify the testcase?
+On Wed,  8 Sep 2021 15:43:35 +0800 you wrote:
+> commit 5f58591323bf ("net: stmmac: delete the eee_ctrl_timer after
+> napi disabled"), this patch tries to fix system hang caused by eee_ctrl_timer,
+> unfortunately, it only can resolve it for system reboot stress test. System
+> hang also can be reproduced easily during system suspend/resume stess test
+> when mount NFS on i.MX8MP EVK board.
+> 
+> In stmmac driver, eee feature is combined to phylink framework. When do
+> system suspend, phylink_stop() would queue delayed work, it invokes
+> stmmac_mac_link_down(), where to deactivate eee_ctrl_timer synchronizly.
+> In above commit, try to fix issue by deactivating eee_ctrl_timer obviously,
+> but it is not enough. Looking into eee_ctrl_timer expire callback
+> stmmac_eee_ctrl_timer(), it could enable hareware eee mode again. What is
+> unexpected is that LPI interrupt (MAC_Interrupt_Enable.LPIEN bit) is always
+> asserted. This interrupt has chance to be issued when LPI state entry/exit
+> from the MAC, and at that time, clock could have been already disabled.
+> The result is that system hang when driver try to touch register from
+> interrupt handler.
+> 
+> [...]
 
-Before making any changes in the test or the BPF code, we need to
-understand what the current behaviour actually is. Then we can make
-the necessary changes to make everything consistent with 33.
+Here is the summary with links:
+  - [net] net: stmmac: fix system hang caused by eee_ctrl_timer during suspend/resume
+    https://git.kernel.org/netdev/net/c/276aae377206
 
-> > Tiezhu, do you still see any arch that is not on 33
-> > from your testing?
->
-> If the testcase "Tail call error path, max count reached" in test_bpf is
-> right,
-> it seems that the tail call count limit is 32 on x86, because the testcase
-> passed on x86 jited.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-When I run the test_bpf.ko suite I get the following limits.
 
-Interpreter: 33
-JIT for arm{32,64}, mips, s390x, powerpc{32,64}, sparc: 33
-JIT for x86-{32,64}: 32
-
-However, there are also tail call tests in the selftests suite.
-According to Paul those tests show that everything is consistent with
-33 now. So, there seem to be a discrepancy between the test_bpf.ko
-tests and the selftests.
-
-I am trying to investigate this matter further, but so far I have only
-been able to run the test_bpf.ko module for various archs in QEMU.
-Link: https://github.com/almbladh/test-linux
-
-I am currently working on getting the selftests to run in QEMU too,
-using Buildroot. If you have a working setup for this, it would be
-great if you could share that.
-
-Thanks,
-Johan
-
->
-> > Last time Paul fixed the remaining ones in 96bc4432f5ad ("bpf,
-> > riscv: Limit to 33 tail calls") and e49e6f6db04e ("bpf, mips: Limit to
-> > 33 tail calls").
-> >
-> > Thanks,
-> > Daniel
->
