@@ -2,118 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86B55403F55
-	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 21:02:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E125403F60
+	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 21:06:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350276AbhIHTEC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Sep 2021 15:04:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37848 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349845AbhIHTEB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Sep 2021 15:04:01 -0400
-Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F545C061575;
-        Wed,  8 Sep 2021 12:02:53 -0700 (PDT)
-Received: by mail-il1-x132.google.com with SMTP id v16so3414786ilo.10;
-        Wed, 08 Sep 2021 12:02:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=x2FDPr6yRtupQhLE4miDTkWgI4YgoogIHLlJR7Xih1A=;
-        b=Rpo6d0wlBs2UZEoJBrspoTCPbB2wxnXk64z2+Lqv1mJmSmcQ+UxeUZ1F3PHDBA0V+G
-         J/OOqo7iHAaV3MtLlLFhy40oXQiMJ4Dk9b1xUwH9/C18SQaHZ1EqjaesKfFwkvAjSasc
-         HRBanr/V7It5mDM9hQEd7vSWJG4hthhYhWrecwzSZTj4ckK3GikSxTs9APJn7XpElsJo
-         apviXdoVWetpabXwpu/p9vcU9128w+FNMdwHUukwQlve/Q9DO3ox0xwWZsZtaJJaLANj
-         OgtEmPEXsPSPHaKtxQy6zRLaLg4r4rdWqrqehYWhb7H1EsuhuOvyAL+uMOMwcDOQySNu
-         kYMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=x2FDPr6yRtupQhLE4miDTkWgI4YgoogIHLlJR7Xih1A=;
-        b=GO9mU8T8Ir6fpGdeYcvrbTbP+WuGNzTufelKM0AaFrO4oSAVvsFl0G0fUq1hvpSzu2
-         +LWDr+uzFN+8VNE4cVgpuIXlNeBgn7XrU6whWEgP6gTAQySgnpagthqlKhBZ4CyZfL9O
-         r91VOw2W6FkhVZRgnhM5DuNhePvtnKy2nJXLTMPlmz9orZFg2v9KUYkoJRZqk/D4cldV
-         zWR+7NyNUx+ndCHYAOFZZT+72OGsIvJvdIonmqXKJsl34RJDGElBvwnHt/EwWmAgEReA
-         H4TYWcW/boPVP36LGSR7k+cjC02DzJjDyrqZHofInSX3xaB8RCbacqwFwOvQwxsMNQBG
-         HVKw==
-X-Gm-Message-State: AOAM530IIuAknRli4HwO7JBjo0dKekKmG/a4+LmTEI1lixqJkr2bTW4t
-        GIS4unjdv9M5dOiuLx44Kj0Ch3ZS00AphAt2CUTS88n/Cbs=
-X-Google-Smtp-Source: ABdhPJxdPQMgyqHVHO5RULubySm78Aw9INUL0p+riw8HzmRchTllzs2uPB3wmmDJl0sO2kgvFC0wIv/Obda2aVoUxC8=
-X-Received: by 2002:a92:1304:: with SMTP id 4mr1043255ilt.196.1631127772901;
- Wed, 08 Sep 2021 12:02:52 -0700 (PDT)
+        id S1349619AbhIHTHU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Sep 2021 15:07:20 -0400
+Received: from home.keithp.com ([63.227.221.253]:35386 "EHLO elaine.keithp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1347196AbhIHTHU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Sep 2021 15:07:20 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by elaine.keithp.com (Postfix) with ESMTP id B7B0F3F30886;
+        Wed,  8 Sep 2021 12:05:47 -0700 (PDT)
+X-Virus-Scanned: Debian amavisd-new at keithp.com
+Received: from elaine.keithp.com ([127.0.0.1])
+        by localhost (elaine.keithp.com [127.0.0.1]) (amavisd-new, port 10024)
+        with LMTP id jjqKtPL7fQVo; Wed,  8 Sep 2021 12:05:47 -0700 (PDT)
+Received: from keithp.com (168-103-156-98.tukw.qwest.net [168.103.156.98])
+        by elaine.keithp.com (Postfix) with ESMTPSA id 4484C3F30881;
+        Wed,  8 Sep 2021 12:05:47 -0700 (PDT)
+Received: by keithp.com (Postfix, from userid 1000)
+        id 4D1691E6011A; Wed,  8 Sep 2021 12:06:09 -0700 (PDT)
+From:   Keith Packard <keithpac@amazon.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Abbott Liu <liuwenliang@huawei.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Ben Segall <bsegall@google.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        bpf@vger.kernel.org, Christoph Lameter <cl@linux.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Dennis Zhou <dennis@kernel.org>, devicetree@vger.kernel.org,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Ingo Molnar <mingo@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Joe Perches <joe@perches.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Keith Packard <keithpac@amazon.com>,
+        KP Singh <kpsingh@kernel.org>, kvm@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-arch@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mm@kvack.org, Manivannan Sadhasivam <mani@kernel.org>,
+        Marc Zyngier <maz@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Mel Gorman <mgorman@suse.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Mike Rapoport <rppt@kernel.org>, netdev@vger.kernel.org,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nick Desaulniers <ndesaulniers@gooogle.com>,
+        Nicolas Pitre <nico@fluxnic.net>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Song Liu <songliubraving@fb.com>,
+        Srikar Dronamraju <srikar@linux.vnet.ibm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Tejun Heo <tj@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        virtualization@lists.linux-foundation.org,
+        "Wolfram Sang (Renesas)" <wsa+renesas@sang-engineering.com>,
+        YiFei Zhu <yifeifz2@illinois.edu>, Yonghong Song <yhs@fb.com>
+Subject: [PATCH v4 0/7] ARM: support THREAD_INFO_IN_TASK
+Date:   Wed,  8 Sep 2021 12:05:58 -0700
+Message-Id: <20210908190605.419064-1-keithpac@amazon.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <id:20210907220038.91021-1-keithpac@amazon.com>
+References: <id:20210907220038.91021-1-keithpac@amazon.com>
 MIME-Version: 1.0
-References: <20210907202958.692166-1-ztong0001@gmail.com> <48b53487-a708-ec79-a993-3448f4ca6e6d@microchip.com>
-In-Reply-To: <48b53487-a708-ec79-a993-3448f4ca6e6d@microchip.com>
-From:   Tong Zhang <ztong0001@gmail.com>
-Date:   Wed, 8 Sep 2021 12:02:41 -0700
-Message-ID: <CAA5qM4CtA7mQ5ph8t5Da2zz08zuLOCocYYkHVTdM_rPS_xYJkA@mail.gmail.com>
-Subject: Re: [PATCH v1] net: macb: fix use after free on rmmod
-To:     Nicolas Ferre <Nicolas.Ferre@microchip.com>
-Cc:     Claudiu Beznea <Claudiu.Beznea@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks Nicolas, sent a v2 as suggested.
-- Tong
+Placing thread_info in the kernel stack leaves it vulnerable to stack
+overflow attacks. This short series addresses that by using the
+existing THREAD_INFO_IN_TASK infrastructure.
 
-On Wed, Sep 8, 2021 at 12:27 AM <Nicolas.Ferre@microchip.com> wrote:
->
-> On 07/09/2021 at 22:29, Tong Zhang wrote:
-> > plat_dev->dev->platform_data is released by platform_device_unregister(),
-> > use of pclk and hclk is use after free. This patch keeps a copy to fix
-> > the issue.
-> >
-> > [   31.261225] BUG: KASAN: use-after-free in macb_remove+0x77/0xc6 [macb_pci]
-> > [   31.275563] Freed by task 306:
-> > [   30.276782]  platform_device_release+0x25/0x80
-> >
-> > Signed-off-by: Tong Zhang <ztong0001@gmail.com>
-> > ---
-> >   drivers/net/ethernet/cadence/macb_pci.c | 6 ++++--
-> >   1 file changed, 4 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/net/ethernet/cadence/macb_pci.c b/drivers/net/ethernet/cadence/macb_pci.c
-> > index 8b7b59908a1a..4dd0cec2e542 100644
-> > --- a/drivers/net/ethernet/cadence/macb_pci.c
-> > +++ b/drivers/net/ethernet/cadence/macb_pci.c
-> > @@ -110,10 +110,12 @@ static void macb_remove(struct pci_dev *pdev)
-> >   {
-> >          struct platform_device *plat_dev = pci_get_drvdata(pdev);
-> >          struct macb_platform_data *plat_data = dev_get_platdata(&plat_dev->dev);
-> > +       struct clk *pclk = plat_data->pclk;
-> > +       struct clk *hclk = plat_data->hclk;
-> >
-> >          platform_device_unregister(plat_dev);
-> > -       clk_unregister(plat_data->pclk);
-> > -       clk_unregister(plat_data->hclk);
-> > +       clk_unregister(pclk);
-> > +       clk_unregister(hclk);
->
-> NACK, I  would prefer that you switch lines and do clock clk unregister
-> before: this way we avoid the problem and I think that you don't need
-> clocks for unregistering the platform device anyway.
->
-> Please change accordingly or tell me what could go bad.
->
-> Regards,
->    Nicolas
->
->
-> >   }
-> >
-> >   static const struct pci_device_id dev_id_table[] = {
-> > --
-> > 2.25.1
-> >
->
->
-> --
-> Nicolas Ferre
+This is the fourth version of this series, in this version the changes
+are restricted to hardware which provides the TPIDRPRW register. This
+register is repurposed from holding the per_cpu_offset value to
+holding the 'current' value as that allows fetching this value
+atomically so that it can be used in a preemptable context.
+
+The series is broken into seven pieces:
+
+ 1) Change the secondary_start_kernel API to receive the cpu
+    number. This avoids needing to be able to find this value independently in
+    future patches.
+
+ 2) Change the secondary_start_kernel API to also receive the 'task'
+    value. Passing the value to this function also avoids needing to
+    be able to discover it independently.
+
+ 3) A cleanup which avoids assuming that THREAD_INFO_IN_TASK is not set.
+
+ 4) Patches across the kernel which ensure that linux/sched.h has been
+    included whenever raw_smp_processor_id() is used.
+
+ 5) Disable the optimization storing per_cpu_offset in TPIDRPRW. This
+    leaves the register free to hold 'current' instead.
+
+ 6) Use TPIDRPRW for 'current'. This is enabled for either CPU_V6K or
+    CPU_V7, but not if CPU_V6 is also enabled.
+
+ 7) Enable THREAD_INFO_IN_TASK whenever TPIDRPRW is used to hold 'current'.
+
+Signed-off-by: Keith Packard <keithpac@amazon.com>
+
+Keith Packard (7):
+  ARM: Pass cpu number to secondary_start_kernel
+  ARM: Pass task to secondary_start_kernel
+  ARM: Use smp_processor_id() in vfp_pm_suspend instead of ti->cpu
+  Make sure task_struct is available for raw_smp_processor_id
+  ARM: Stop using TPIDRPRW to hold per_cpu_offset
+  ARM: Use TPIDRPRW for current
+  ARM: Move thread_info into task_struct (v7 only)
+
+ arch/arm/Kconfig                   |  5 +++
+ arch/arm/include/asm/assembler.h   | 12 +++++++
+ arch/arm/include/asm/current.h     | 54 ++++++++++++++++++++++++++++++
+ arch/arm/include/asm/percpu.h      | 31 -----------------
+ arch/arm/include/asm/smp.h         |  8 ++++-
+ arch/arm/include/asm/thread_info.h | 12 ++++++-
+ arch/arm/kernel/asm-offsets.c      |  4 +++
+ arch/arm/kernel/entry-armv.S       |  8 +++++
+ arch/arm/kernel/head-nommu.S       |  2 ++
+ arch/arm/kernel/head.S             |  2 ++
+ arch/arm/kernel/setup.c            | 14 +-------
+ arch/arm/kernel/smp.c              | 16 +++++----
+ arch/arm/mm/proc-v7-bugs.c         |  1 +
+ arch/arm/vfp/vfpmodule.c           | 15 +++++++--
+ drivers/vhost/vhost.c              |  1 +
+ drivers/vhost/vhost.h              |  1 +
+ include/asm-generic/irq_regs.h     |  1 +
+ include/linux/of_address.h         |  1 +
+ include/linux/random.h             |  1 +
+ include/linux/topology.h           |  1 +
+ init/calibrate.c                   |  1 +
+ kernel/bpf/bpf_lru_list.h          |  1 +
+ kernel/bpf/percpu_freelist.h       |  1 +
+ kernel/sched/cpuacct.c             |  2 +-
+ lib/irq_regs.c                     |  1 +
+ 25 files changed, 140 insertions(+), 56 deletions(-)
+ create mode 100644 arch/arm/include/asm/current.h
+
+-- 
+2.33.0
+
