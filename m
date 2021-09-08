@@ -2,110 +2,240 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F76840329E
-	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 04:26:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 244034032AE
+	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 04:37:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347440AbhIHC1G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Sep 2021 22:27:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37068 "EHLO
+        id S1347292AbhIHCio (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Sep 2021 22:38:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347386AbhIHC1E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Sep 2021 22:27:04 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD92EC061757;
-        Tue,  7 Sep 2021 19:25:57 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id k24so920276pgh.8;
-        Tue, 07 Sep 2021 19:25:57 -0700 (PDT)
+        with ESMTP id S235776AbhIHCim (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Sep 2021 22:38:42 -0400
+Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60F9AC061575;
+        Tue,  7 Sep 2021 19:37:35 -0700 (PDT)
+Received: by mail-oi1-x22f.google.com with SMTP id p2so1214095oif.1;
+        Tue, 07 Sep 2021 19:37:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=KpE+tSoXtIOrVuWjkXbb+qiN54PPmFaUs54WUhu4gqg=;
-        b=BkHHn77LAqXdcGy4v409R8lRlvO+MrZf1qVHKrfWSys1JSsFPjZ8pRBJ3iRtsEmg6I
-         YzNch8dK74TpOJPHiCeXWlinHlcu5vHhnOfbhcfjzW0GToY8mDmYwHWR97ZJyb9A77NY
-         ZhVV3yaRKB0WKy7NCsLwv0mZGqXTkScBn5NXhsa8DyFuePK20jUSBKj9TzSACPSTY3/g
-         7JtnnMqoWWTOME2+eXBp5lfB1H7tc3PAKPhUF2AQVgcmAyusye5ejOn88YS2iXTNOTb/
-         qrIrcut4KRh0dWxEJCCyvM0h+JbkoMHvoAeC1MMdBH68qO2I8ufb6GxpTIbrrNmEdzyD
-         Knrw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=NsguYS5uzhUdOW9e+Rb/jXTsKu2P16e41K7Xn3TVElc=;
+        b=RD9A11fS82i4pPHhfJ4rPe+2GBzVeARMaTw/0Z5DdqMYOzLXac3rETP/HSOkOtpPPD
+         FCF8S3gcdLcGh1DcypolHAXjV9g4BlS3NeWLrnMOUUpOW0qxs7INp+i4ycfpLg8xZGaJ
+         eP8/PyPANSB+P024rB2xBjFmOEhDhQet7yvLkSuDgtCBuK53W1z8I25zeodFTYbOkTN9
+         x1SF9Y+GmZnbk+gnc91dIoKbCRcJQDjAwO4gyepYvJ9tY0e4uJHv4T7xWSo1KWPWkbpQ
+         Gw/hm9NyKI+1NGPOSM/VHkGn2ElpzGrbigGObgGc0SioIJ60pXdmD9QdDX930G8XpXjl
+         lIvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=KpE+tSoXtIOrVuWjkXbb+qiN54PPmFaUs54WUhu4gqg=;
-        b=BP3MVETE5opO/SnokBVgQHgkhi3xjDWRSopoknkHaZ/aXjFEKN8PBlgvoIABCWTb2F
-         9nvEl43VpOK+D2XEcUXYB0y2mQGkAQ+WqWPXmz0TPWUCRHlpyLx0t4azZjJ+1nc5BgLs
-         HoiioNBdffCn/PPEqgmqJjGgZTLOaUUdSXQJgKN+7i+Rfn1naLbt3gX5sf0c1Nchp+Cw
-         sap+lTi4zg65VLXe//M7OQBGinEOx6tIOuigoz/aJy/fivVSmS/Lz8bhST6tNySZZxyP
-         otA8ztIibdNhApRX5DIuEbPMZA/pBxgLDNmRp87dk4xmwHKBacXZMef0BGb8CVChZiy5
-         BK1w==
-X-Gm-Message-State: AOAM53032x2U7rSXirsoioa5zWcd3zbjCT+8h07QMu/x4gzn5w1j3prB
-        taildJGTaeQnRnRVp635hZL4tjGh6rfWtHdAVXQ=
-X-Google-Smtp-Source: ABdhPJyzofjTb0czO2LIyAQi5gy0gAyChpYPgCp191UZsxkU6yXnFTt0PWUITu0Wm2quIn/pm6ka92QFPg7vTZAHSss=
-X-Received: by 2002:a65:63d0:: with SMTP id n16mr1404509pgv.432.1631067957289;
- Tue, 07 Sep 2021 19:25:57 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=NsguYS5uzhUdOW9e+Rb/jXTsKu2P16e41K7Xn3TVElc=;
+        b=UD9HsuTyK6W6bCO7otFdaIdNlRho6knpGH9AKqPq2TBwOLHQk+AFJn5adZQWtSFVuL
+         lsFQxgAeljUIMtdssa4bhxJsQ96DKhDpFE0TBGdbkCCsJpE/yxCCKgGg7YeIzzVS9glD
+         ulzvDUUW0U40NMWh3udIGi1V7iGyQrOL++zmvbAKUDpBSQmO6tg71ncL9m/enOzoMLME
+         UBP0qrJ+/THaTdikSDUQmNm4Q0sZHiR0N17wx1Q9Ls56VuntH/kjGK3e1FAsjoY9C3G9
+         e5381NpS71P4vvHWo4GZZIzuwndgjjIbVm41N+jFDxM6nfHTOjqSPtucxfsBxnnWXWN3
+         4zYg==
+X-Gm-Message-State: AOAM530ZObdg0KBV6abhaKcsdPJzkCeZN8JY9PTcxAgw0MlEBd4gKMBm
+        JS//KOdFsBm3jslNnQP3TSuiEmztcXARbv9Mb+gN3iTD3YxNm4Bd
+X-Google-Smtp-Source: ABdhPJx9aRvD4JgKPvHZBe4rjkEZuRHyEwlKic8GY7NVRY4Hdyl8qIZI9FPwsxYNTI8wiUVaXlKnJEHrY90e9HjYs0g=
+X-Received: by 2002:a05:6808:319:: with SMTP id i25mr789546oie.141.1631068654661;
+ Tue, 07 Sep 2021 19:37:34 -0700 (PDT)
 MIME-Version: 1.0
-From:   Ujjal Roy <royujjal@gmail.com>
-Date:   Wed, 8 Sep 2021 07:55:45 +0530
-Message-ID: <CAE2MWknAvL01A9V44PaODencJpGFHuOzH36h4ry=pbgOf4B9jw@mail.gmail.com>
-Subject: ip6mr: Indentation not proper in ip6mr_cache_report()
-To:     "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        James Morris <jmorris@namei.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Patrick McHardy <kaber@trash.net>
-Cc:     Kernel <linux-kernel@vger.kernel.org>,
-        Kernel <netdev@vger.kernel.org>
-Content-Type: multipart/mixed; boundary="000000000000339ba105cb729a62"
+References: <20210903064013.9842-1-zhoufeng.zf@bytedance.com>
+ <2ee172ab-836c-d464-be59-935030d01f4b@molgen.mpg.de> <8ce8de1c-14bf-20ad-00c0-9e0d8ff34b91@bytedance.com>
+ <318e7f75-287e-148a-cdb0-648b7c36e0a9@redhat.com>
+In-Reply-To: <318e7f75-287e-148a-cdb0-648b7c36e0a9@redhat.com>
+From:   Jason Xing <kerneljasonxing@gmail.com>
+Date:   Wed, 8 Sep 2021 10:36:58 +0800
+Message-ID: <CAL+tcoANwm41McdufaB0UggcUN3cXsPL6Vta99BPodYKwLyBGw@mail.gmail.com>
+Subject: Re: [External] Re: [Intel-wired-lan] [PATCH v2] ixgbe: Fix NULL
+ pointer dereference in ixgbe_xdp_setup
+To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc:     Feng Zhou <zhoufeng.zf@bytedance.com>,
+        Paul Menzel <pmenzel@molgen.mpg.de>,
+        Jason Xing <xingwanli@kuaishou.com>, brouer@redhat.com,
+        duanxiongchun@bytedance.com, netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, zhengqi.arch@bytedance.com,
+        chenying.kernel@bytedance.com, intel-wired-lan@lists.osuosl.org,
+        songmuchun@bytedance.com, bpf@vger.kernel.org,
+        wangdongdong.6@bytedance.com, zhouchengming@bytedance.com,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        David Miller <davem@davemloft.net>, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
+        john.fastabend@gmail.com, jeffrey.t.kirsher@intel.com,
+        magnus.karlsson@intel.com,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000339ba105cb729a62
-Content-Type: text/plain; charset="UTF-8"
+On Mon, Sep 6, 2021 at 7:32 PM Jesper Dangaard Brouer
+<jbrouer@redhat.com> wrote:
+>
+> Hi Feng and Jason,
+>
+> Please notice that you are both developing patches that change the ixgbe
+> driver in related areas.
 
-Hi All,
+Thanks for noticing. We're doing different things as they are both
+related to XDP on ixgbe actually.
 
-Before sending the patch, I am writing this email to get your
-attention please. As per my knowledge I can see ip6mr_cache_report()
-has some indentation issues. Please have a look at the line 1085.
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/net/ipv6/ip6mr.c#n1085
+Jason
 
-Sharing a patch based on the latest stable Linux.
-
-Thanks,
-UjjaL Roy
-
---000000000000339ba105cb729a62
-Content-Type: application/octet-stream; 
-	name="ip6mr-ip6mr_cache_report-indent-fix.patch"
-Content-Disposition: attachment; 
-	filename="ip6mr-ip6mr_cache_report-indent-fix.patch"
-Content-Transfer-Encoding: base64
-Content-ID: <f_ktavq4ka0>
-X-Attachment-Id: f_ktavq4ka0
-
-ZGlmZiAtLWdpdCBhL25ldC9pcHY2L2lwNm1yLmMgYi9uZXQvaXB2Ni9pcDZtci5jCmluZGV4IDM2
-ZWQ5ZWZiODgyNS4uYWE1Yjg4NGE4MTllIDEwMDY0NAotLS0gYS9uZXQvaXB2Ni9pcDZtci5jCisr
-KyBiL25ldC9pcHY2L2lwNm1yLmMKQEAgLTEwODIsMzAgKzEwODIsMjYgQEAgc3RhdGljIGludCBp
-cDZtcl9jYWNoZV9yZXBvcnQoc3RydWN0IG1yX3RhYmxlICptcnQsIHN0cnVjdCBza19idWZmICpw
-a3QsCiAJfSBlbHNlCiAjZW5kaWYKIAl7Ci0JLyoKLQkgKglDb3B5IHRoZSBJUCBoZWFkZXIKLQkg
-Ki8KKwkJLyogQ29weSB0aGUgSVAgaGVhZGVyICovCisJCXNrYl9wdXQoc2tiLCBzaXplb2Yoc3Ry
-dWN0IGlwdjZoZHIpKTsKKwkJc2tiX3Jlc2V0X25ldHdvcmtfaGVhZGVyKHNrYik7CisJCXNrYl9j
-b3B5X3RvX2xpbmVhcl9kYXRhKHNrYiwgaXB2Nl9oZHIocGt0KSwKKwkJCQkJc2l6ZW9mKHN0cnVj
-dCBpcHY2aGRyKSk7CisKKwkJLyogQWRkIG91ciBoZWFkZXIgKi8KKwkJc2tiX3B1dChza2IsIHNp
-emVvZigqbXNnKSk7CisJCXNrYl9yZXNldF90cmFuc3BvcnRfaGVhZGVyKHNrYik7CisJCW1zZyA9
-IChzdHJ1Y3QgbXJ0Nm1zZyAqKXNrYl90cmFuc3BvcnRfaGVhZGVyKHNrYik7CiAKLQlza2JfcHV0
-KHNrYiwgc2l6ZW9mKHN0cnVjdCBpcHY2aGRyKSk7Ci0Jc2tiX3Jlc2V0X25ldHdvcmtfaGVhZGVy
-KHNrYik7Ci0Jc2tiX2NvcHlfdG9fbGluZWFyX2RhdGEoc2tiLCBpcHY2X2hkcihwa3QpLCBzaXpl
-b2Yoc3RydWN0IGlwdjZoZHIpKTsKKwkJbXNnLT5pbTZfbWJ6ID0gMDsKKwkJbXNnLT5pbTZfbXNn
-dHlwZSA9IGFzc2VydDsKKwkJbXNnLT5pbTZfbWlmID0gbWlmaTsKKwkJbXNnLT5pbTZfcGFkID0g
-MDsKKwkJbXNnLT5pbTZfc3JjID0gaXB2Nl9oZHIocGt0KS0+c2FkZHI7CisJCW1zZy0+aW02X2Rz
-dCA9IGlwdjZfaGRyKHBrdCktPmRhZGRyOwogCi0JLyoKLQkgKglBZGQgb3VyIGhlYWRlcgotCSAq
-LwotCXNrYl9wdXQoc2tiLCBzaXplb2YoKm1zZykpOwotCXNrYl9yZXNldF90cmFuc3BvcnRfaGVh
-ZGVyKHNrYik7Ci0JbXNnID0gKHN0cnVjdCBtcnQ2bXNnICopc2tiX3RyYW5zcG9ydF9oZWFkZXIo
-c2tiKTsKLQotCW1zZy0+aW02X21ieiA9IDA7Ci0JbXNnLT5pbTZfbXNndHlwZSA9IGFzc2VydDsK
-LQltc2ctPmltNl9taWYgPSBtaWZpOwotCW1zZy0+aW02X3BhZCA9IDA7Ci0JbXNnLT5pbTZfc3Jj
-ID0gaXB2Nl9oZHIocGt0KS0+c2FkZHI7Ci0JbXNnLT5pbTZfZHN0ID0gaXB2Nl9oZHIocGt0KS0+
-ZGFkZHI7Ci0KLQlza2JfZHN0X3NldChza2IsIGRzdF9jbG9uZShza2JfZHN0KHBrdCkpKTsKLQlz
-a2ItPmlwX3N1bW1lZCA9IENIRUNLU1VNX1VOTkVDRVNTQVJZOworCQlza2JfZHN0X3NldChza2Is
-IGRzdF9jbG9uZShza2JfZHN0KHBrdCkpKTsKKwkJc2tiLT5pcF9zdW1tZWQgPSBDSEVDS1NVTV9V
-Tk5FQ0VTU0FSWTsKIAl9CiAKIAlyY3VfcmVhZF9sb2NrKCk7Cg==
---000000000000339ba105cb729a62--
+>
+> Jason's patch:
+>   Subject: [PATCH v7] ixgbe: let the xdpdrv work with more than 64 cpus
+>
+> https://lore.kernel.org/all/20210901101206.50274-1-kerneljasonxing@gmail.=
+com/
+>
+> We might need both as this patch looks like a fix to a panic, and
+> Jason's patch allows XDP on ixgbe to work on machines with more than 64
+> CPUs.
+>
+> -Jesper
+>
+> On 06/09/2021 09.49, Feng Zhou wrote:
+> >
+> > =E5=9C=A8 2021/9/6 =E4=B8=8B=E5=8D=882:37, Paul Menzel =E5=86=99=E9=81=
+=93:
+> >> Dear Feng,
+> >>
+> >>
+> >> Am 03.09.21 um 08:40 schrieb Feng zhou:
+> >>
+> >> (If you care, in your email client, your last name does not start with
+> >> a capital letter.)
+> >>
+> >>> From: Feng Zhou <zhoufeng.zf@bytedance.com>
+> >>>
+> >>> The ixgbe driver currently generates a NULL pointer dereference with
+> >>> some machine (online cpus < 63). This is due to the fact that the
+> >>> maximum value of num_xdp_queues is nr_cpu_ids. Code is in
+> >>> "ixgbe_set_rss_queues"".
+> >>>
+> >>> Here's how the problem repeats itself:
+> >>> Some machine (online cpus < 63), And user set num_queues to 63 throug=
+h
+> >>> ethtool. Code is in the "ixgbe_set_channels",
+> >>> adapter->ring_feature[RING_F_FDIR].limit =3D count;
+> >>
+> >> For better legibility, you might want to indent code (blocks) by four
+> >> spaces and add blank lines around it (also below).
+> >>
+> >>> It becames 63.
+> >>
+> >> becomes
+> >>
+> >>> When user use xdp, "ixgbe_set_rss_queues" will set queues num.
+> >>> adapter->num_rx_queues =3D rss_i;
+> >>> adapter->num_tx_queues =3D rss_i;
+> >>> adapter->num_xdp_queues =3D ixgbe_xdp_queues(adapter);
+> >>> And rss_i's value is from
+> >>> f =3D &adapter->ring_feature[RING_F_FDIR];
+> >>> rss_i =3D f->indices =3D f->limit;
+> >>> So "num_rx_queues" > "num_xdp_queues", when run to "ixgbe_xdp_setup",
+> >>> for (i =3D 0; i < adapter->num_rx_queues; i++)
+> >>>     if (adapter->xdp_ring[i]->xsk_umem)
+> >>> lead to panic.
+> >>
+> >> lead*s*?
+> >>
+> >>> Call trace:
+> >>> [exception RIP: ixgbe_xdp+368]
+> >>> RIP: ffffffffc02a76a0  RSP: ffff9fe16202f8d0  RFLAGS: 00010297
+> >>> RAX: 0000000000000000  RBX: 0000000000000020  RCX: 0000000000000000
+> >>> RDX: 0000000000000000  RSI: 000000000000001c  RDI: ffffffffa94ead90
+> >>> RBP: ffff92f8f24c0c18   R8: 0000000000000000   R9: 0000000000000000
+> >>> R10: ffff9fe16202f830  R11: 0000000000000000  R12: ffff92f8f24c0000
+> >>> R13: ffff9fe16202fc01  R14: 000000000000000a  R15: ffffffffc02a7530
+> >>> ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
+> >>>   7 [ffff9fe16202f8f0] dev_xdp_install at ffffffffa89fbbcc
+> >>>   8 [ffff9fe16202f920] dev_change_xdp_fd at ffffffffa8a08808
+> >>>   9 [ffff9fe16202f960] do_setlink at ffffffffa8a20235
+> >>> 10 [ffff9fe16202fa88] rtnl_setlink at ffffffffa8a20384
+> >>> 11 [ffff9fe16202fc78] rtnetlink_rcv_msg at ffffffffa8a1a8dd
+> >>> 12 [ffff9fe16202fcf0] netlink_rcv_skb at ffffffffa8a717eb
+> >>> 13 [ffff9fe16202fd40] netlink_unicast at ffffffffa8a70f88
+> >>> 14 [ffff9fe16202fd80] netlink_sendmsg at ffffffffa8a71319
+> >>> 15 [ffff9fe16202fdf0] sock_sendmsg at ffffffffa89df290
+> >>> 16 [ffff9fe16202fe08] __sys_sendto at ffffffffa89e19c8
+> >>> 17 [ffff9fe16202ff30] __x64_sys_sendto at ffffffffa89e1a64
+> >>> 18 [ffff9fe16202ff38] do_syscall_64 at ffffffffa84042b9
+> >>> 19 [ffff9fe16202ff50] entry_SYSCALL_64_after_hwframe at ffffffffa8c00=
+08c
+> >>
+> >> Please describe the fix in the commit message.
+> >>
+> >>> Fixes: 4a9b32f30f80 ("ixgbe: fix potential RX buffer starvation for
+> >>> AF_XDP")
+> >>> Signed-off-by: Feng Zhou <zhoufeng.zf@bytedance.com>
+> >>> ---
+> >>> Updates since v1:
+> >>> - Fix "ixgbe_max_channels" callback so that it will not allow a
+> >>> setting of
+> >>> queues to be higher than the num_online_cpus().
+> >>> more details can be seen from here:
+> >>> https://patchwork.ozlabs.org/project/intel-wired-lan/patch/2021081707=
+5407.11961-1-zhoufeng.zf@bytedance.com/
+> >>>
+> >>> Thanks to Maciej Fijalkowski for your advice.
+> >>>
+> >>>   drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c | 2 +-
+> >>>   drivers/net/ethernet/intel/ixgbe/ixgbe_main.c    | 8 ++++++--
+> >>>   2 files changed, 7 insertions(+), 3 deletions(-)
+> >>>
+> >>> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
+> >>> b/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
+> >>> index 4ceaca0f6ce3..21321d164708 100644
+> >>> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
+> >>> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
+> >>> @@ -3204,7 +3204,7 @@ static unsigned int ixgbe_max_channels(struct
+> >>> ixgbe_adapter *adapter)
+> >>>           max_combined =3D ixgbe_max_rss_indices(adapter);
+> >>>       }
+> >>>   -    return max_combined;
+> >>> +    return min_t(int, max_combined, num_online_cpus());
+> >>>   }
+> >>>     static void ixgbe_get_channels(struct net_device *dev,
+> >>> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> >>> b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> >>> index 14aea40da50f..5db496cc5070 100644
+> >>> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> >>> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> >>> @@ -10112,6 +10112,7 @@ static int ixgbe_xdp_setup(struct net_device
+> >>> *dev, struct bpf_prog *prog)
+> >>>       struct ixgbe_adapter *adapter =3D netdev_priv(dev);
+> >>>       struct bpf_prog *old_prog;
+> >>>       bool need_reset;
+> >>> +    int num_queues;
+> >>>         if (adapter->flags & IXGBE_FLAG_SRIOV_ENABLED)
+> >>>           return -EINVAL;
+> >>> @@ -10161,11 +10162,14 @@ static int ixgbe_xdp_setup(struct
+> >>> net_device *dev, struct bpf_prog *prog)
+> >>>       /* Kick start the NAPI context if there is an AF_XDP socket ope=
+n
+> >>>        * on that queue id. This so that receiving will start.
+> >>>        */
+> >>> -    if (need_reset && prog)
+> >>> -        for (i =3D 0; i < adapter->num_rx_queues; i++)
+> >>> +    if (need_reset && prog) {
+> >>> +        num_queues =3D min_t(int, adapter->num_rx_queues,
+> >>> +            adapter->num_xdp_queues);
+> >>> +        for (i =3D 0; i < num_queues; i++)
+> >>>               if (adapter->xdp_ring[i]->xsk_pool)
+> >>>                   (void)ixgbe_xsk_wakeup(adapter->netdev, i,
+> >>>                                  XDP_WAKEUP_RX);
+> >>> +    }
+> >>>         return 0;
+> >>>   }
+> >>>
+> > Thanks for your advice. I will modify the commit message in v3
+> >
+>
