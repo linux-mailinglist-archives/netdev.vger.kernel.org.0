@@ -2,102 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00694403292
-	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 04:21:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DFD1403295
+	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 04:22:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347187AbhIHCWL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Sep 2021 22:22:11 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:57420 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235450AbhIHCWJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Sep 2021 22:22:09 -0400
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 188242Ss133490
-        for <netdev@vger.kernel.org>; Tue, 7 Sep 2021 22:21:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=dvb+WS+x8LJerF80Gp1bxBXOqyttDpgbDh4MJ79Xoi4=;
- b=Yf75sg9sYc1JTMTonxiUdILN+/+toY4RkAsncLLbNNIx70gU1Ou+I4kvCeudKX4HEeq8
- fsGge+gXCEqcKCfBqgE5YsJg40tQ450RPHiXz6H1Ts408bximwbSGgcjKgnIqqsmb5Qo
- y4eo5DQzYLrJQcIcQii+Qqu+xUt2bG9piIMCVNeUY6ixUmBtU4pCKgRY+DNqbd7cz7OK
- u0Iwfziv1ZdWSJyKKK5MNdDIvku3WO8NgBlIvogId/X16+q1XPD4JGast0ubUoe2kOqs
- kEcVn+PMeNABjJ78C0ZFpqzoQgP9sPGLEysTfegJwx7tn9NJiUP8vngTpvyJmpvDmVCX 2w== 
-Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3axd250meq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 07 Sep 2021 22:21:02 -0400
-Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
-        by ppma05wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1882HHF4007544
-        for <netdev@vger.kernel.org>; Wed, 8 Sep 2021 02:21:01 GMT
-Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
-        by ppma05wdc.us.ibm.com with ESMTP id 3axcnn863r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 08 Sep 2021 02:21:01 +0000
-Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
-        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1882L0Ah12452278
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 8 Sep 2021 02:21:00 GMT
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E9793AE0D1;
-        Wed,  8 Sep 2021 02:20:59 +0000 (GMT)
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 91CF2AE4CE;
-        Wed,  8 Sep 2021 02:20:44 +0000 (GMT)
-Received: from suka-w540.ibmuc.com (unknown [9.65.208.93])
-        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTP;
-        Wed,  8 Sep 2021 02:20:44 +0000 (GMT)
-From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     Brian King <brking@linux.ibm.com>, Dany Madden <drt@linux.ibm.com>,
-        Rick Lindsley <ricklind@linux.ibm.com>
-Subject: [PATCH net internal 1/1] ibmvnic: check failover_pending in login response
-Date:   Tue,  7 Sep 2021 19:20:43 -0700
-Message-Id: <20210908022043.138931-1-sukadev@linux.ibm.com>
-X-Mailer: git-send-email 2.31.1
+        id S1347240AbhIHCYC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Sep 2021 22:24:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36334 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347250AbhIHCYA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Sep 2021 22:24:00 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 027C7C06175F;
+        Tue,  7 Sep 2021 19:22:53 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id e16so738089pfc.6;
+        Tue, 07 Sep 2021 19:22:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:date:to:cc:subject:message-id:mail-followup-to
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=RgKpPDodG3G5oLWhYuKNMeJdFTTOJJB0RNkReJ0NUcw=;
+        b=R3aTWtDcq6OEPruWydNlWcCuhPQOTZh38ifMO0YYkI2RtcN8BOaFlFIPOFIetS6hLm
+         lE9XRhFuw0NiGnNrApwroNdTVkGBN6+drWHFfVZtrLHxSyhjHYvEC+3zHfQQ3DDvVEQw
+         DWd/xBKG8GgDtMpXx+hm4vv84Vy0J9fBiPcbAE6zmSu55kZ3zJ31dA6CJDjfjuyNx9zY
+         5wJZCBwRbvFUtZ5RxYF3FHhdxSSfvlFvSyRwxEgiSaUYxmsclAl8BU2uYGdFIomvXuR4
+         Cgdm6mMfqCJkIgN5nJVufdlXNEiBIysOBBydrKsG6OMhVPLGL6Ox/TXYKbIz9oK0Pl66
+         +kbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:from:date:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to;
+        bh=RgKpPDodG3G5oLWhYuKNMeJdFTTOJJB0RNkReJ0NUcw=;
+        b=cuCTG+bZ9R45/YApcYrU0Dz8XpgBn7SXXAefxZe9hrW71CAhWGJefIXetaUFZ1HReI
+         BHeAcEu2x5cKrXry3TRDLssERkttsbnSBoZmciS9lBOGMX88XHO7DjhexLYsx9ywUL+N
+         wDQPOFbf2raVWNIItJxFLa9lX4Din5eGiQsuN391K9avJv+5PTgTjbVtDYtO6OIuIipF
+         gNLyvXKTNMOiyhChKEwbCZGPlNP8UMgZYynJGUX840ZwhRh6cpZtVZhZQAQbWjbpHvfg
+         I4QdiNYiO+vlh/ZAvwO5IX2wwBekyKIu3A+ZcfQKjfGEJ4N9IpTwKdoq0DRLoBwvhikM
+         LmHQ==
+X-Gm-Message-State: AOAM533WUf6V7/xMK2Fhx77GYPMn4OK/4SG1fxKxFc2DWGPRLMHnCVLm
+        RxGuXkF4dw4XmaoLKp4kd07X/c7XU82Pgw==
+X-Google-Smtp-Source: ABdhPJxYE3fKWGUVetuvwfA/m57aNn0CUrXx82i9bK8h75ppM+lWtRKW12hARoe9d818bHP9PuhMNQ==
+X-Received: by 2002:aa7:9f10:0:b0:414:ab4e:7c53 with SMTP id g16-20020aa79f10000000b00414ab4e7c53mr1380478pfr.59.1631067773331;
+        Tue, 07 Sep 2021 19:22:53 -0700 (PDT)
+Received: from slk1.local.net (n49-192-82-34.sun3.vic.optusnet.com.au. [49.192.82.34])
+        by smtp.gmail.com with ESMTPSA id n11sm330633pjh.23.2021.09.07.19.22.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Sep 2021 19:22:52 -0700 (PDT)
+Sender: Duncan Roe <duncan.roe2@gmail.com>
+From:   Duncan Roe <duncan_roe@optusnet.com.au>
+X-Google-Original-From: Duncan Roe <dunc@slk1.local.net>
+Date:   Wed, 8 Sep 2021 12:22:44 +1000
+To:     Jan Engelhardt <jengelh@inai.de>
+Cc:     Florian Westphal <fw@strlen.de>,
+        Cole Dishington <Cole.Dishington@alliedtelesis.co.nz>,
+        pablo@netfilter.org, kadlec@netfilter.org, davem@davemloft.net,
+        kuba@kernel.org, shuah@kernel.org, linux-kernel@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org,
+        Anthony Lineham <anthony.lineham@alliedtelesis.co.nz>,
+        Scott Parlane <scott.parlane@alliedtelesis.co.nz>,
+        Blair Steven <blair.steven@alliedtelesis.co.nz>
+Subject: Re: [PATCH net v2] net: netfilter: Fix port selection of FTP for
+ NF_NAT_RANGE_PROTO_SPECIFIED
+Message-ID: <YTgedODOPAQboQlm@slk1.local.net>
+Mail-Followup-To: Jan Engelhardt <jengelh@inai.de>,
+        Florian Westphal <fw@strlen.de>,
+        Cole Dishington <Cole.Dishington@alliedtelesis.co.nz>,
+        pablo@netfilter.org, kadlec@netfilter.org, davem@davemloft.net,
+        kuba@kernel.org, shuah@kernel.org, linux-kernel@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org,
+        Anthony Lineham <anthony.lineham@alliedtelesis.co.nz>,
+        Scott Parlane <scott.parlane@alliedtelesis.co.nz>,
+        Blair Steven <blair.steven@alliedtelesis.co.nz>
+References: <20210907021415.962-1-Cole.Dishington@alliedtelesis.co.nz>
+ <20210907135458.GF23554@breakpoint.cc>
+ <r46nn4-n993-rs28-84sr-o1qop429rr9@vanv.qr>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: kxhNLr6BzmIyNLU3sovYXLcfPoyfCVfo
-X-Proofpoint-ORIG-GUID: kxhNLr6BzmIyNLU3sovYXLcfPoyfCVfo
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-09-07_08:2021-09-07,2021-09-07 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 spamscore=0
- suspectscore=0 malwarescore=0 mlxlogscore=999 lowpriorityscore=0
- phishscore=0 clxscore=1015 priorityscore=1501 bulkscore=0 impostorscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2109030001 definitions=main-2109080011
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <r46nn4-n993-rs28-84sr-o1qop429rr9@vanv.qr>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If a failover occurs before a login response is received, the login
-response buffer maybe undefined. Check that there was no failover
-before accessing the login response buffer.
+On Tue, Sep 07, 2021 at 05:11:42PM +0200, Jan Engelhardt wrote:
+>
+> On Tuesday 2021-09-07 15:54, Florian Westphal wrote:
+> >> -	/* Try to get same port: if not, try to change it. */
+> >> -	for (port = ntohs(exp->saved_proto.tcp.port); port != 0; port++) {
+> >> -		int ret;
+> >> +	if (htons(nat->range_info.min_proto.all) == 0 ||
+> >> +	    htons(nat->range_info.max_proto.all) == 0) {
+> >
+> >Either use if (nat->range_info.min_proto.all || ...
+> >
+> >or use ntohs().  I will leave it up to you if you prefer
+> >ntohs(nat->range_info.min_proto.all) == 0 or
+> >nat->range_info.min_proto.all == ntohs(0).
+>
+> If one has the option, one should always prefer to put htons/htonl on
+> the side with the constant literal;
+> Propagation of constants and compile-time evaluation is the target.
+>
+> That works for some other functions as well (e.g.
+> strlen("fixedstring")).
 
-Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
----
- drivers/net/ethernet/ibm/ibmvnic.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+When comparing against constant zero, why use htons/htonl at all?
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index a775c69e4fd7..6aa6ff89a765 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -4700,6 +4700,14 @@ static int handle_login_rsp(union ibmvnic_crq *login_rsp_crq,
- 		return 0;
- 	}
- 
-+	if (adapter->failover_pending) {
-+		adapter->init_done_rc = -EAGAIN;
-+		netdev_dbg(netdev, "Failover pending, ignoring login response\n");
-+		complete(&adapter->init_done);
-+		/* login response buffer will be released on reset */
-+		return 0;
-+	}
-+
- 	netdev->mtu = adapter->req_mtu - ETH_HLEN;
- 
- 	netdev_dbg(adapter->netdev, "Login Response Buffer:\n");
--- 
-2.26.2
-
+Cheers ... Duncan.
