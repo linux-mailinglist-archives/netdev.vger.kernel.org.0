@@ -2,209 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E7B6403C00
-	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 16:59:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CDF6403C46
+	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 17:08:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351959AbhIHPAM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Sep 2021 11:00:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59108 "EHLO mail.kernel.org"
+        id S1349476AbhIHPJz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Sep 2021 11:09:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39488 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1347994AbhIHPAK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Sep 2021 11:00:10 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7AC1F61154;
-        Wed,  8 Sep 2021 14:59:02 +0000 (UTC)
+        id S1349248AbhIHPJx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Sep 2021 11:09:53 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 548E6611C6;
+        Wed,  8 Sep 2021 15:08:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631113142;
-        bh=daJWLkNc7RzTtuIc5F7JfUkVrbDyqcaJn+pUKDZsze8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PN8GOegnY4QkUBJ0sKw5Exv3kfq2eRjsFbuDM8KAUJWQ56vbMyoblodeODVnMM2Xc
-         8XZyYMPLEq3tvfd+IWHr6vcj5sWjFCxARgasb5e2o3PMt2iu11t1hJJKdDzpo8XZ4l
-         9Bao2y3HG8RTZXd9sUhZZoUN/ZfIQcO+RNJciJjU8gHD42HfwCjnDX+kUCKA/JdIMj
-         vm3wEfcze4D/yp7UwBNpCodzft4w0ZOOIdfDXlIygcUadfnls4SPq8lQIpyP0RN3DI
-         0QAM5ZbO8PX7R3oR6UPc7yOGSgmV9YlGwjobCZD/RD/fyfa0JmZEY55WNeWuXCH5Fe
-         UK6JdTIvnxWvA==
-Received: by mail.kernel.org with local (Exim 4.94.2)
-        (envelope-from <mchehab@kernel.org>)
-        id 1mNz2S-006r3d-Gy; Wed, 08 Sep 2021 16:59:00 +0200
-From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>
-Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        "Jonathan Corbet" <corbet@lwn.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Anton Vorontsov <anton@enomsg.org>,
-        Colin Cross <ccross@android.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Tony Luck <tony.luck@intel.com>, Yonghong Song <yhs@fb.com>,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH 1/9] scripts: get_abi.pl: Check for missing symbols at the ABI specs
-Date:   Wed,  8 Sep 2021 16:58:48 +0200
-Message-Id: <02050f2ec03b75edc9a72a3842710df02943750e.1631112725.git.mchehab+huawei@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <cover.1631112725.git.mchehab+huawei@kernel.org>
-References: <cover.1631112725.git.mchehab+huawei@kernel.org>
+        s=k20201202; t=1631113725;
+        bh=EcFdlIlPuXpuvXGjbL2rGt+KIE0grzuBurK1IY0GYXE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=FYD6C6nflF/20yxECHrnoZBf29DPDeGsA08BuRUaUu4zoq4SOfCTCCObhS79xN04O
+         2lfsy/eWmi8YES3m73WjP50fWo+g5qb6V9xSMuuv/0BBpt/0uD25K4v/3m8FBZFq90
+         Yj7GtcWbEP280yCS1oBb9nGKyPL6s26OtKm0V0flqnG8x4oW2DA/8OTmsyocIi6xkx
+         3shuPnOlles6AsM3pZdgn0gpdv8mZhbrRKFsLtclrBzJTQSd0FgNRgGHxdl9jT0RFl
+         lZkB6myOLN0wFmMx45AzmDE9OHkm1kJMz6eyv02SQCQJj9cdLZElUSFxT345pI/97o
+         oZoseWoFvIdgw==
+Date:   Wed, 8 Sep 2021 08:08:43 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     moyufeng <moyufeng@huawei.com>
+Cc:     Yunsheng Lin <linyunsheng@huawei.com>, <davem@davemloft.net>,
+        <alexander.duyck@gmail.com>, <linux@armlinux.org.uk>,
+        <mw@semihalf.com>, <linuxarm@openeuler.org>,
+        <yisen.zhuang@huawei.com>, <salil.mehta@huawei.com>,
+        <thomas.petazzoni@bootlin.com>, <hawk@kernel.org>,
+        <ilias.apalodimas@linaro.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <john.fastabend@gmail.com>,
+        <akpm@linux-foundation.org>, <peterz@infradead.org>,
+        <will@kernel.org>, <willy@infradead.org>, <vbabka@suse.cz>,
+        <fenghua.yu@intel.com>, <guro@fb.com>, <peterx@redhat.com>,
+        <feng.tang@intel.com>, <jgg@ziepe.ca>, <mcroce@microsoft.com>,
+        <hughd@google.com>, <jonathan.lemon@gmail.com>, <alobakin@pm.me>,
+        <willemb@google.com>, <wenxu@ucloud.cn>, <cong.wang@bytedance.com>,
+        <haokexin@gmail.com>, <nogikh@google.com>, <elver@google.com>,
+        <yhs@fb.com>, <kpsingh@kernel.org>, <andrii@kernel.org>,
+        <kafai@fb.com>, <songliubraving@fb.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <chenhao288@hisilicon.com>
+Subject: Re: [PATCH net-next v2 4/4] net: hns3: support skb's frag page
+ recycling based on page pool
+Message-ID: <20210908080843.2051c58d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <2b75d66b-a3bf-2490-2f46-fef5731ed7ad@huawei.com>
+References: <1628217982-53533-1-git-send-email-linyunsheng@huawei.com>
+        <1628217982-53533-5-git-send-email-linyunsheng@huawei.com>
+        <2b75d66b-a3bf-2490-2f46-fef5731ed7ad@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Sender: Mauro Carvalho Chehab <mchehab@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Check for the symbols that exists under /sys but aren't
-defined at Documentation/ABI.
+On Wed, 8 Sep 2021 16:31:40 +0800 moyufeng wrote:
+>     After adding page pool to hns3 receiving package process,
+> we want to add some debug info. Such as below:
+>=20
+> 1. count of page pool allocate and free page, which is defined
+> for pages_state_hold_cnt and pages_state_release_cnt in page
+> pool framework.
+>=20
+> 2. pool size=E3=80=81order=E3=80=81nid=E3=80=81dev=E3=80=81max_len, which=
+ is setted for
+> each rx ring in hns3 driver.
+>=20
+> In this regard, we consider two ways to show these info=EF=BC=9A
+>=20
+> 1. Add it to queue statistics and query it by ethtool -S.
+>=20
+> 2. Add a file node "page_pool_info" for debugfs, then cat this
+> file node, print as below:
+>=20
+> queue_id  allocate_cnt  free_cnt  pool_size  order  nid  dev  max_len
+> 000		   xxx       xxx        xxx    xxx  xxx  xxx      xxx
+> 001
+> 002
+> .
+> .
+> =09
+> Which one is more acceptable, or would you have some other suggestion?
 
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
----
- scripts/get_abi.pl | 88 ++++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 86 insertions(+), 2 deletions(-)
+Normally I'd say put the stats in ethtool -S and the rest in debugfs
+but I'm not sure if exposing pages_state_hold_cnt and
+pages_state_release_cnt directly. Those are short counters, and will
+very likely wrap. They are primarily meaningful for calculating
+page_pool_inflight(). Given this I think their semantics may be too
+confusing for an average ethtool -S user.
 
-diff --git a/scripts/get_abi.pl b/scripts/get_abi.pl
-index d7aa82094296..31b2fdf1f318 100755
---- a/scripts/get_abi.pl
-+++ b/scripts/get_abi.pl
-@@ -13,7 +13,9 @@ my $help = 0;
- my $man = 0;
- my $debug = 0;
- my $enable_lineno = 0;
-+my $show_warnings = 1;
- my $prefix="Documentation/ABI";
-+my $sysfs_prefix="/sys";
- 
- #
- # If true, assumes that the description is formatted with ReST
-@@ -36,7 +38,7 @@ pod2usage(2) if (scalar @ARGV < 1 || @ARGV > 2);
- 
- my ($cmd, $arg) = @ARGV;
- 
--pod2usage(2) if ($cmd ne "search" && $cmd ne "rest" && $cmd ne "validate");
-+pod2usage(2) if ($cmd ne "search" && $cmd ne "rest" && $cmd ne "validate" && $cmd ne "undefined");
- pod2usage(2) if ($cmd eq "search" && !$arg);
- 
- require Data::Dumper if ($debug);
-@@ -50,6 +52,8 @@ my %symbols;
- sub parse_error($$$$) {
- 	my ($file, $ln, $msg, $data) = @_;
- 
-+	return if (!$show_warnings);
-+
- 	$data =~ s/\s+$/\n/;
- 
- 	print STDERR "Warning: file $file#$ln:\n\t$msg";
-@@ -521,11 +525,86 @@ sub search_symbols {
- 	}
- }
- 
-+# Exclude /sys/kernel/debug and /sys/kernel/tracing from the search path
-+sub skip_debugfs {
-+	if (($File::Find::dir =~ m,^/sys/kernel,)) {
-+		return grep {!/(debug|tracing)/ } @_;
-+	}
-+
-+	if (($File::Find::dir =~ m,^/sys/fs,)) {
-+		return grep {!/(pstore|bpf|fuse)/ } @_;
-+	}
-+
-+	return @_
-+}
-+
-+my %leaf;
-+
-+my $escape_symbols = qr { ([\x01-\x08\x0e-\x1f\x21-\x29\x2b-\x2d\x3a-\x40\x7b-\xff]) }x;
-+sub parse_existing_sysfs {
-+	my $file = $File::Find::name;
-+
-+	my $mode = (stat($file))[2];
-+	return if ($mode & S_IFDIR);
-+
-+	my $leave = $file;
-+	$leave =~ s,.*/,,;
-+
-+	if (defined($leaf{$leave})) {
-+		# FIXME: need to check if the path makes sense
-+		my $what = $leaf{$leave};
-+
-+		$what =~ s/,/ /g;
-+
-+		$what =~ s/\<[^\>]+\>/.*/g;
-+		$what =~ s/\{[^\}]+\}/.*/g;
-+		$what =~ s/\[[^\]]+\]/.*/g;
-+		$what =~ s,/\.\.\./,/.*/,g;
-+		$what =~ s,/\*/,/.*/,g;
-+
-+		$what =~ s/\s+/ /g;
-+
-+		# Escape all other symbols
-+		$what =~ s/$escape_symbols/\\$1/g;
-+
-+		foreach my $i (split / /,$what) {
-+			if ($file =~ m#^$i$#) {
-+#				print "$file: $i: OK!\n";
-+				return;
-+			}
-+		}
-+
-+		print "$file: $leave is defined at $what\n";
-+
-+		return;
-+	}
-+
-+	print "$file not found.\n";
-+}
-+
-+sub undefined_symbols {
-+	foreach my $what (sort keys %data) {
-+		my $leave = $what;
-+		$leave =~ s,.*/,,;
-+
-+		if (defined($leaf{$leave})) {
-+			$leaf{$leave} .= " " . $what;
-+		} else {
-+			$leaf{$leave} = $what;
-+		}
-+	}
-+
-+	find({wanted =>\&parse_existing_sysfs, preprocess =>\&skip_debugfs, no_chdir => 1}, $sysfs_prefix);
-+}
-+
- # Ensure that the prefix will always end with a slash
- # While this is not needed for find, it makes the patch nicer
- # with --enable-lineno
- $prefix =~ s,/?$,/,;
- 
-+if ($cmd eq "undefined" || $cmd eq "search") {
-+	$show_warnings = 0;
-+}
- #
- # Parses all ABI files located at $prefix dir
- #
-@@ -536,7 +615,9 @@ print STDERR Data::Dumper->Dump([\%data], [qw(*data)]) if ($debug);
- #
- # Handles the command
- #
--if ($cmd eq "search") {
-+if ($cmd eq "undefined") {
-+	undefined_symbols;
-+} elsif ($cmd eq "search") {
- 	search_symbols;
- } else {
- 	if ($cmd eq "rest") {
-@@ -575,6 +656,9 @@ B<rest>                  - output the ABI in ReST markup language
- 
- B<validate>              - validate the ABI contents
- 
-+B<undefined>             - existing symbols at the system that aren't
-+                           defined at Documentation/ABI
-+
- =back
- 
- =head1 OPTIONS
--- 
-2.31.1
-
+Putting all the information in debugfs seems like a better idea.
