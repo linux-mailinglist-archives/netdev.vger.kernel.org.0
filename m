@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 627E8403237
-	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 03:36:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CB75403267
+	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 03:52:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346180AbhIHBhU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Sep 2021 21:37:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54138 "EHLO
+        id S1347051AbhIHBxE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Sep 2021 21:53:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239561AbhIHBhR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Sep 2021 21:37:17 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EA9DC061575
-        for <netdev@vger.kernel.org>; Tue,  7 Sep 2021 18:36:10 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id k4so1538979lfj.7
-        for <netdev@vger.kernel.org>; Tue, 07 Sep 2021 18:36:10 -0700 (PDT)
+        with ESMTP id S1346972AbhIHBxD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Sep 2021 21:53:03 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAFACC061575
+        for <netdev@vger.kernel.org>; Tue,  7 Sep 2021 18:51:56 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id s25so698765edw.0
+        for <netdev@vger.kernel.org>; Tue, 07 Sep 2021 18:51:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linux-foundation.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=cmtZIOS9Ve5xG2iMzkU1sWtv+qTK9kG1NPN7g5hyzNo=;
-        b=Avp2QNon6oXLwlm91DcxXo2K8Ngk0nif54gPFAF8gSN1i8UGU3RnS5zbBTY4njddzE
-         kRimZCEAjTDErRvXr9NzGnDj9ERJN9NqfNGni7tfa8fg8ZRHueouEt6GdIwj0aLgB6gt
-         6fk+gKUyYscFIVOTodXPJQY4t8lVrFzEU6fng=
+        bh=LxLbN5oXo3pkASZMt7+BOQU43HJcJssxtcghQNdRrVo=;
+        b=AvxEqZUbI6FOu7pL8djSL10B3yrzx6C1ITuJnwmqc68sRjbZt0UZcqj4OOhM/IN1fR
+         mQG32bTk85V1KzAyt6/UfkczGxInrsiK0SxFntGyw21Fx6X9gUZPDg0Vkw6nUon4YkgN
+         GbxPU6vAxh7JV7pXhTlUM8mduw1Pz4ptY22hI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=cmtZIOS9Ve5xG2iMzkU1sWtv+qTK9kG1NPN7g5hyzNo=;
-        b=kb41HAxPj5Eiqv0pLcMJil7jaGQO7BJ3k2X/Br8opfy/WEOPzTZztcm/Qyja0w1TLp
-         p2TlWIvlyGTw70JzVUgU9KNxu6S9sqfsJZf5+4W+1GPoRxwS2wtRw5fZ6JyfQP0ZvSm3
-         6z7FYaWFq6qcQEMhKVbpr1MjzkewoOceCR/SuJTXnIShdDnKAZjewnmI3pJa2seHBVDb
-         kojvSgFa6kYSMQKjJBNBMits8Ta5l9rqwec0FDtWqZQIOHxEQjmSSer/WWgSsBZsi1H1
-         vsGNB/QeNcZHzPwXMdfmvaZRSxAX9/yJ63wJcg2ITc+2n3OCD09ZI6vb8zFScC6e0AFx
-         h6yg==
-X-Gm-Message-State: AOAM532VjfkPxKRAV4qBul3nuHMvbqoc21S3w5yM2A8IF+TpFfUMpPge
-        +SMe/L1oUHq0oTnG9fVgs1d5vCAJiTy6lNkfZ2Y=
-X-Google-Smtp-Source: ABdhPJx1C99QWWmTvABKmaNLuaLy7uZe+qh/2RVOv0hDklL3ZIzO/UOJc6LXQpcX9T4mj+/aQ+HlLA==
-X-Received: by 2002:a05:6512:1056:: with SMTP id c22mr861737lfb.586.1631064968077;
-        Tue, 07 Sep 2021 18:36:08 -0700 (PDT)
-Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com. [209.85.208.174])
-        by smtp.gmail.com with ESMTPSA id v1sm58775lja.134.2021.09.07.18.36.06
+        bh=LxLbN5oXo3pkASZMt7+BOQU43HJcJssxtcghQNdRrVo=;
+        b=H5ONqLQTl+JmZMcyqnQaPiGujcPmYV5FcRo1w302+0KtFXPk7Modb7ROTNgYWaZ2iT
+         bluwwJziAj1Fj0R1/g0/0rkuVB044k7thP+1tiIFJnT4hLFogLaMW01tVfqyem0pxSBa
+         WWidfI4fVQEGQt/yJsSwLfUVWeILJpYHkRIfIhWVoGghQwwkfqmqM2mKAAOZu5dFROMx
+         J5YgeTqq8xeaUaK1TDZVPGeRyTj2RBwm2lz1Wjl5DH+3UkExQMaSpJIB5hROU2AnExmQ
+         oLy5T4/PrLUxOjrBFE0JGxliq5m1Mos67Dn9+W3E1eZcnFhCqOlNR/PxszLb2gbjw/F8
+         9hfg==
+X-Gm-Message-State: AOAM531n/d3qgQJc2Wwp6QzeAvkQc4pj3q6pAaNpI/rVTlz2WHxRY18B
+        4OuObKMk6aaTGFJNGzSIyV49adOWj3h2ZA9fKfg=
+X-Google-Smtp-Source: ABdhPJxnVgzgA3XXwqa4EFlL8d7umhpYJlwy6xIaq03K038qo+htUAlqbwCrnXE5YaLnhN/a7zpsRA==
+X-Received: by 2002:a05:6402:1455:: with SMTP id d21mr1312413edx.161.1631065915149;
+        Tue, 07 Sep 2021 18:51:55 -0700 (PDT)
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com. [209.85.221.47])
+        by smtp.gmail.com with ESMTPSA id u10sm296001eds.83.2021.09.07.18.51.55
         for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Sep 2021 18:36:07 -0700 (PDT)
-Received: by mail-lj1-f174.google.com with SMTP id s12so794828ljg.0
-        for <netdev@vger.kernel.org>; Tue, 07 Sep 2021 18:36:06 -0700 (PDT)
-X-Received: by 2002:a2e:b53a:: with SMTP id z26mr781467ljm.95.1631064966392;
- Tue, 07 Sep 2021 18:36:06 -0700 (PDT)
+        Tue, 07 Sep 2021 18:51:55 -0700 (PDT)
+Received: by mail-wr1-f47.google.com with SMTP id q26so750768wrc.7
+        for <netdev@vger.kernel.org>; Tue, 07 Sep 2021 18:51:55 -0700 (PDT)
+X-Received: by 2002:a05:6512:3987:: with SMTP id j7mr946864lfu.280.1631065441904;
+ Tue, 07 Sep 2021 18:44:01 -0700 (PDT)
 MIME-Version: 1.0
 References: <CA+G9fYtFvJdtBknaDKR54HHMf4XsXKD4UD3qXkQ1KhgY19n3tw@mail.gmail.com>
  <CAHk-=wisUqoX5Njrnnpp0pDx+bxSAJdPxfgEUv82tZkvUqoN1w@mail.gmail.com>
  <CAHk-=whF9F89vsfH8E9TGc0tZA-yhzi2Di8wOtquNB5vRkFX5w@mail.gmail.com>
  <92c20b62-c4a7-8e63-4a94-76bdf6d9481e@kernel.org> <CAHk-=wiynwuneR4EbUNtd2_yNT_DR0VQhUF1QOZ352D-NOncjQ@mail.gmail.com>
- <a2c18c6b-ff13-a887-dd52-4f0aeeb25c27@kernel.org>
-In-Reply-To: <a2c18c6b-ff13-a887-dd52-4f0aeeb25c27@kernel.org>
+ <a2c18c6b-ff13-a887-dd52-4f0aeeb25c27@kernel.org> <CAHk-=whcFKGyJOgmwJtWwDCP7VFPydnTtsvjPL6ZP6d6gTyPDQ@mail.gmail.com>
+In-Reply-To: <CAHk-=whcFKGyJOgmwJtWwDCP7VFPydnTtsvjPL6ZP6d6gTyPDQ@mail.gmail.com>
 From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 7 Sep 2021 18:35:50 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whcFKGyJOgmwJtWwDCP7VFPydnTtsvjPL6ZP6d6gTyPDQ@mail.gmail.com>
-Message-ID: <CAHk-=whcFKGyJOgmwJtWwDCP7VFPydnTtsvjPL6ZP6d6gTyPDQ@mail.gmail.com>
+Date:   Tue, 7 Sep 2021 18:43:46 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wi+O66NwiiAYBeS6kiix6YGuDvPf-MPddtycE_D4fWV=g@mail.gmail.com>
+Message-ID: <CAHk-=wi+O66NwiiAYBeS6kiix6YGuDvPf-MPddtycE_D4fWV=g@mail.gmail.com>
 Subject: Re: ipv4/tcp.c:4234:1: error: the frame size of 1152 bytes is larger
  than 1024 bytes [-Werror=frame-larger-than=]
 To:     Nathan Chancellor <nathan@kernel.org>
@@ -86,37 +86,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 7, 2021 at 5:15 PM Nathan Chancellor <nathan@kernel.org> wrote:
+On Tue, Sep 7, 2021 at 6:35 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
 >
-> Ah, okay, that is an x86-only limitation so I missed it. I do not think
-> there is any bug with that Kconfig logic but it is only used on x86.
+> I think a lot of them have just copied the x86 code (it was 4k long
+> ago), without actually understanding all the details.
 
-Yeah. I think other architectures are basically just buggy, but nobody
-has ever cared or noticed, because the hardware basically doesn't
-exist.
+Just to put the x86 number in perspective: it was raised to 8192 back
+in 2013, with the comment
 
-People hopefully don't actually configure for the kernel theoretical
-maximum outside of x86. Even there it's a bit ridiculous, but the
-hardware with lots and lots of cores at least _has_ existed.
+    x86/cpu: Increase max CPU count to 8192
 
-> Indeed. Grepping around the tree, I see that arc, arm64, ia64, powerpc,
-> and sparc64 all support NR_CPUS up to 4096 (8192 for PPC) but none of
-> them select CPUMASK_OFFSTACK
+    The MAXSMP option is intended to enable silly large numbers of
+    CPUs for testing purposes.  The current value of 4096 isn't very
+    silly any longer as there are actual SGI machines that approach
+    6096 CPUs when taking HT into account.
 
-I think this one says it all:
+    Increase the value to a nice round 8192 to account for this and
+    allow for short term future increases.
 
-   arch/arc/Kconfig: range 2 4096
+so on the x86 side, people have actually done these things.
 
-yeah. ARC allows you to configure 4k CPU's.
+Other architectures? I think some IBM power9 machines can hit 192
+cores (with SMT4 - so NR_CPUS of 768), but I don't think there's been
+an equivalent of an SGI for anything but x86.
 
-I think a lot of them have just copied the x86 code (it was 4k long
-ago), without actually understanding all the details.
+But admittedly I haven't checked or followed those things. I could
+easily imagine some boutique super-beefy setup.
 
-That is indeed a strong argument for getting rid of the current
-much-too-subtle CPUMASK_OFFSTACK situation.
-
-But as the hyperv code shows, even on x86 the "we never allocate a
-full cpumask on the stack" has gotten lost a bit since the days that
-Rusty and others actually implemented this all.
-
-           Linus
+               Linus
