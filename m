@@ -2,321 +2,321 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3D8D403602
-	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 10:23:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4712A403625
+	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 10:33:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348118AbhIHIWn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Sep 2021 04:22:43 -0400
-Received: from mail.loongson.cn ([114.242.206.163]:47460 "EHLO loongson.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1347802AbhIHIWm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Sep 2021 04:22:42 -0400
-Received: from linux.localdomain (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9CxVOY2cjhh5Y0BAA--.6828S2;
-        Wed, 08 Sep 2021 16:20:08 +0800 (CST)
-From:   Tiezhu Yang <yangtiezhu@loongson.cn>
-To:     Shubham Bansal <illusionist.neo@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Paul Burton <paulburton@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        naveen.n.rao@linux.ibm.com, Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Luke Nelson <luke.r.nels@gmail.com>,
-        Xi Wang <xi.wang@gmail.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>, bjorn@kernel.org,
-        davem@davemloft.net
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-riscv@lists.infradead.org, sparclinux@vger.kernel.org
-Subject: [RFC PATCH bpf-next] bpf: Make actual max tail call count as MAX_TAIL_CALL_CNT
-Date:   Wed,  8 Sep 2021 16:20:06 +0800
-Message-Id: <1631089206-5931-1-git-send-email-yangtiezhu@loongson.cn>
-X-Mailer: git-send-email 2.1.0
-X-CM-TRANSID: AQAAf9CxVOY2cjhh5Y0BAA--.6828S2
-X-Coremail-Antispam: 1UD129KBjvJXoW3JFyUWF4kuFW8Xr18XF47Arb_yoWfXw48pr
-        18JwnakrWvqw15Aa4xJayUWw4UKF4vgFW7KFn8CFWSyanFvr9rWF13Kw15ZFZ0vrW8Jw4r
-        XFZ0kr13C3WkXwUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvlb7Iv0xC_Kw4lb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I2
-        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
-        A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xII
-        jxv20xvEc7CjxVAFwI0_Cr0_Gr1UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwV
-        C2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC
-        0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Gr0_Cr
-        1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JM4IIrI8v6xkF7I0E8cxan2IY
-        04v7MxkIecxEwVAFwVW8ZwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8Jw
-        C20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAF
-        wI0_Wrv_Gr1UMIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7
-        IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvE
-        x4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvj
-        DU0xZFpf9x07bwc_fUUUUU=
-X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
+        id S1348238AbhIHIe1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Sep 2021 04:34:27 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:9405 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348283AbhIHIcv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Sep 2021 04:32:51 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4H4FcT2Pvyz8yMC;
+        Wed,  8 Sep 2021 16:27:21 +0800 (CST)
+Received: from dggpeml500024.china.huawei.com (7.185.36.10) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.8; Wed, 8 Sep 2021 16:31:40 +0800
+Received: from [10.67.103.6] (10.67.103.6) by dggpeml500024.china.huawei.com
+ (7.185.36.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.8; Wed, 8 Sep 2021
+ 16:31:40 +0800
+Subject: Re: [PATCH net-next v2 4/4] net: hns3: support skb's frag page
+ recycling based on page pool
+To:     Yunsheng Lin <linyunsheng@huawei.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>
+References: <1628217982-53533-1-git-send-email-linyunsheng@huawei.com>
+ <1628217982-53533-5-git-send-email-linyunsheng@huawei.com>
+CC:     <alexander.duyck@gmail.com>, <linux@armlinux.org.uk>,
+        <mw@semihalf.com>, <linuxarm@openeuler.org>,
+        <yisen.zhuang@huawei.com>, <salil.mehta@huawei.com>,
+        <thomas.petazzoni@bootlin.com>, <hawk@kernel.org>,
+        <ilias.apalodimas@linaro.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <john.fastabend@gmail.com>,
+        <akpm@linux-foundation.org>, <peterz@infradead.org>,
+        <will@kernel.org>, <willy@infradead.org>, <vbabka@suse.cz>,
+        <fenghua.yu@intel.com>, <guro@fb.com>, <peterx@redhat.com>,
+        <feng.tang@intel.com>, <jgg@ziepe.ca>, <mcroce@microsoft.com>,
+        <hughd@google.com>, <jonathan.lemon@gmail.com>, <alobakin@pm.me>,
+        <willemb@google.com>, <wenxu@ucloud.cn>, <cong.wang@bytedance.com>,
+        <haokexin@gmail.com>, <nogikh@google.com>, <elver@google.com>,
+        <yhs@fb.com>, <kpsingh@kernel.org>, <andrii@kernel.org>,
+        <kafai@fb.com>, <songliubraving@fb.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <chenhao288@hisilicon.com>, <moyufeng@huawei.com>
+From:   moyufeng <moyufeng@huawei.com>
+Message-ID: <2b75d66b-a3bf-2490-2f46-fef5731ed7ad@huawei.com>
+Date:   Wed, 8 Sep 2021 16:31:40 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.8.0
+MIME-Version: 1.0
+In-Reply-To: <1628217982-53533-5-git-send-email-linyunsheng@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.103.6]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpeml500024.china.huawei.com (7.185.36.10)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the current code, the actual max tail call count is 33 which is greater
-than MAX_TAIL_CALL_CNT, this is not consistent with the intended meaning
-in the commit 04fd61ab36ec ("bpf: allow bpf programs to tail-call other
-bpf programs"):
+Hi Jakub
 
-"The chain of tail calls can form unpredictable dynamic loops therefore
-tail_call_cnt is used to limit the number of calls and currently is set
-to 32."
+    After adding page pool to hns3 receiving package process,
+we want to add some debug info. Such as below:
 
-Additionally, after commit 874be05f525e ("bpf, tests: Add tail call test
-suite"), we can see there exists failed testcase.
+1. count of page pool allocate and free page, which is defined
+for pages_state_hold_cnt and pages_state_release_cnt in page
+pool framework.
 
-On all archs when CONFIG_BPF_JIT_ALWAYS_ON is not set:
- # echo 0 > /proc/sys/net/core/bpf_jit_enable
- # modprobe test_bpf
- # dmesg | grep -w FAIL
- Tail call error path, max count reached jited:0 ret 34 != 33 FAIL
+2. pool size、order、nid、dev、max_len, which is setted for
+each rx ring in hns3 driver.
 
-On some archs:
- # echo 1 > /proc/sys/net/core/bpf_jit_enable
- # modprobe test_bpf
- # dmesg | grep -w FAIL
- Tail call error path, max count reached jited:1 ret 34 != 33 FAIL
+In this regard, we consider two ways to show these info：
 
-with this patch, make the actual max tail call count as MAX_TAIL_CALL_CNT,
-at the same time, the above failed testcase can be fixed.
+1. Add it to queue statistics and query it by ethtool -S.
 
-Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
----
+2. Add a file node "page_pool_info" for debugfs, then cat this
+file node, print as below:
 
-Hi all,
+queue_id  allocate_cnt  free_cnt  pool_size  order  nid  dev  max_len
+000		   xxx       xxx        xxx    xxx  xxx  xxx      xxx
+001
+002
+.
+.
+	
+Which one is more acceptable, or would you have some other suggestion?
 
-This is a RFC patch, if I am wrong or I missed something,
-please let me know, thank you!
+Thanks
 
- arch/arm/net/bpf_jit_32.c         | 11 ++++++-----
- arch/arm64/net/bpf_jit_comp.c     |  7 ++++---
- arch/mips/net/ebpf_jit.c          |  4 ++--
- arch/powerpc/net/bpf_jit_comp32.c |  4 ++--
- arch/powerpc/net/bpf_jit_comp64.c | 12 ++++++------
- arch/riscv/net/bpf_jit_comp32.c   |  4 ++--
- arch/riscv/net/bpf_jit_comp64.c   |  4 ++--
- arch/sparc/net/bpf_jit_comp_64.c  |  8 ++++----
- kernel/bpf/core.c                 |  4 ++--
- 9 files changed, 30 insertions(+), 28 deletions(-)
 
-diff --git a/arch/arm/net/bpf_jit_32.c b/arch/arm/net/bpf_jit_32.c
-index a951276..39d9ae9 100644
---- a/arch/arm/net/bpf_jit_32.c
-+++ b/arch/arm/net/bpf_jit_32.c
-@@ -1180,18 +1180,19 @@ static int emit_bpf_tail_call(struct jit_ctx *ctx)
- 
- 	/* tmp2[0] = array, tmp2[1] = index */
- 
--	/* if (tail_call_cnt > MAX_TAIL_CALL_CNT)
--	 *	goto out;
-+	/*
- 	 * tail_call_cnt++;
-+	 * if (tail_call_cnt > MAX_TAIL_CALL_CNT)
-+	 *	goto out;
- 	 */
-+	tc = arm_bpf_get_reg64(tcc, tmp, ctx);
-+	emit(ARM_ADDS_I(tc[1], tc[1], 1), ctx);
-+	emit(ARM_ADC_I(tc[0], tc[0], 0), ctx);
- 	lo = (u32)MAX_TAIL_CALL_CNT;
- 	hi = (u32)((u64)MAX_TAIL_CALL_CNT >> 32);
--	tc = arm_bpf_get_reg64(tcc, tmp, ctx);
- 	emit(ARM_CMP_I(tc[0], hi), ctx);
- 	_emit(ARM_COND_EQ, ARM_CMP_I(tc[1], lo), ctx);
- 	_emit(ARM_COND_HI, ARM_B(jmp_offset), ctx);
--	emit(ARM_ADDS_I(tc[1], tc[1], 1), ctx);
--	emit(ARM_ADC_I(tc[0], tc[0], 0), ctx);
- 	arm_bpf_put_reg64(tcc, tmp, ctx);
- 
- 	/* prog = array->ptrs[index]
-diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
-index 41c23f4..5d6c843 100644
---- a/arch/arm64/net/bpf_jit_comp.c
-+++ b/arch/arm64/net/bpf_jit_comp.c
-@@ -286,14 +286,15 @@ static int emit_bpf_tail_call(struct jit_ctx *ctx)
- 	emit(A64_CMP(0, r3, tmp), ctx);
- 	emit(A64_B_(A64_COND_CS, jmp_offset), ctx);
- 
--	/* if (tail_call_cnt > MAX_TAIL_CALL_CNT)
--	 *     goto out;
-+	/*
- 	 * tail_call_cnt++;
-+	 * if (tail_call_cnt > MAX_TAIL_CALL_CNT)
-+	 *     goto out;
- 	 */
-+	emit(A64_ADD_I(1, tcc, tcc, 1), ctx);
- 	emit_a64_mov_i64(tmp, MAX_TAIL_CALL_CNT, ctx);
- 	emit(A64_CMP(1, tcc, tmp), ctx);
- 	emit(A64_B_(A64_COND_HI, jmp_offset), ctx);
--	emit(A64_ADD_I(1, tcc, tcc, 1), ctx);
- 
- 	/* prog = array->ptrs[index];
- 	 * if (prog == NULL)
-diff --git a/arch/mips/net/ebpf_jit.c b/arch/mips/net/ebpf_jit.c
-index 3a73e93..029fc34 100644
---- a/arch/mips/net/ebpf_jit.c
-+++ b/arch/mips/net/ebpf_jit.c
-@@ -617,14 +617,14 @@ static int emit_bpf_tail_call(struct jit_ctx *ctx, int this_idx)
- 	b_off = b_imm(this_idx + 1, ctx);
- 	emit_instr(ctx, bne, MIPS_R_AT, MIPS_R_ZERO, b_off);
- 	/*
--	 * if (TCC-- < 0)
-+	 * if (--TCC < 0)
- 	 *     goto out;
- 	 */
- 	/* Delay slot */
- 	tcc_reg = (ctx->flags & EBPF_TCC_IN_V1) ? MIPS_R_V1 : MIPS_R_S4;
- 	emit_instr(ctx, daddiu, MIPS_R_T5, tcc_reg, -1);
- 	b_off = b_imm(this_idx + 1, ctx);
--	emit_instr(ctx, bltz, tcc_reg, b_off);
-+	emit_instr(ctx, bltz, MIPS_R_T5, b_off);
- 	/*
- 	 * prog = array->ptrs[index];
- 	 * if (prog == NULL)
-diff --git a/arch/powerpc/net/bpf_jit_comp32.c b/arch/powerpc/net/bpf_jit_comp32.c
-index beb12cb..b5585ad 100644
---- a/arch/powerpc/net/bpf_jit_comp32.c
-+++ b/arch/powerpc/net/bpf_jit_comp32.c
-@@ -221,12 +221,12 @@ static void bpf_jit_emit_tail_call(u32 *image, struct codegen_context *ctx, u32
- 	PPC_BCC(COND_GE, out);
- 
- 	/*
-+	 * tail_call_cnt++;
- 	 * if (tail_call_cnt > MAX_TAIL_CALL_CNT)
- 	 *   goto out;
- 	 */
--	EMIT(PPC_RAW_CMPLWI(_R0, MAX_TAIL_CALL_CNT));
--	/* tail_call_cnt++; */
- 	EMIT(PPC_RAW_ADDIC(_R0, _R0, 1));
-+	EMIT(PPC_RAW_CMPLWI(_R0, MAX_TAIL_CALL_CNT));
- 	PPC_BCC(COND_GT, out);
- 
- 	/* prog = array->ptrs[index]; */
-diff --git a/arch/powerpc/net/bpf_jit_comp64.c b/arch/powerpc/net/bpf_jit_comp64.c
-index b87a63d..bb15cc4 100644
---- a/arch/powerpc/net/bpf_jit_comp64.c
-+++ b/arch/powerpc/net/bpf_jit_comp64.c
-@@ -227,6 +227,12 @@ static void bpf_jit_emit_tail_call(u32 *image, struct codegen_context *ctx, u32
- 	PPC_BCC(COND_GE, out);
- 
- 	/*
-+	 * tail_call_cnt++;
-+	 */
-+	EMIT(PPC_RAW_ADDI(b2p[TMP_REG_1], b2p[TMP_REG_1], 1));
-+	PPC_BPF_STL(b2p[TMP_REG_1], 1, bpf_jit_stack_tailcallcnt(ctx));
-+
-+	/*
- 	 * if (tail_call_cnt > MAX_TAIL_CALL_CNT)
- 	 *   goto out;
- 	 */
-@@ -234,12 +240,6 @@ static void bpf_jit_emit_tail_call(u32 *image, struct codegen_context *ctx, u32
- 	EMIT(PPC_RAW_CMPLWI(b2p[TMP_REG_1], MAX_TAIL_CALL_CNT));
- 	PPC_BCC(COND_GT, out);
- 
--	/*
--	 * tail_call_cnt++;
--	 */
--	EMIT(PPC_RAW_ADDI(b2p[TMP_REG_1], b2p[TMP_REG_1], 1));
--	PPC_BPF_STL(b2p[TMP_REG_1], 1, bpf_jit_stack_tailcallcnt(ctx));
--
- 	/* prog = array->ptrs[index]; */
- 	EMIT(PPC_RAW_MULI(b2p[TMP_REG_1], b2p_index, 8));
- 	EMIT(PPC_RAW_ADD(b2p[TMP_REG_1], b2p[TMP_REG_1], b2p_bpf_array));
-diff --git a/arch/riscv/net/bpf_jit_comp32.c b/arch/riscv/net/bpf_jit_comp32.c
-index e649742..1608d94 100644
---- a/arch/riscv/net/bpf_jit_comp32.c
-+++ b/arch/riscv/net/bpf_jit_comp32.c
-@@ -800,12 +800,12 @@ static int emit_bpf_tail_call(int insn, struct rv_jit_context *ctx)
- 
- 	/*
- 	 * temp_tcc = tcc - 1;
--	 * if (tcc < 0)
-+	 * if (temp_tcc < 0)
- 	 *   goto out;
- 	 */
- 	emit(rv_addi(RV_REG_T1, RV_REG_TCC, -1), ctx);
- 	off = ninsns_rvoff(tc_ninsn - (ctx->ninsns - start_insn));
--	emit_bcc(BPF_JSLT, RV_REG_TCC, RV_REG_ZERO, off, ctx);
-+	emit_bcc(BPF_JSLT, RV_REG_T1, RV_REG_ZERO, off, ctx);
- 
- 	/*
- 	 * prog = array->ptrs[index];
-diff --git a/arch/riscv/net/bpf_jit_comp64.c b/arch/riscv/net/bpf_jit_comp64.c
-index 3af4131..6e9ba83 100644
---- a/arch/riscv/net/bpf_jit_comp64.c
-+++ b/arch/riscv/net/bpf_jit_comp64.c
-@@ -311,12 +311,12 @@ static int emit_bpf_tail_call(int insn, struct rv_jit_context *ctx)
- 	off = ninsns_rvoff(tc_ninsn - (ctx->ninsns - start_insn));
- 	emit_branch(BPF_JGE, RV_REG_A2, RV_REG_T1, off, ctx);
- 
--	/* if (TCC-- < 0)
-+	/* if (--TCC < 0)
- 	 *     goto out;
- 	 */
- 	emit_addi(RV_REG_T1, tcc, -1, ctx);
- 	off = ninsns_rvoff(tc_ninsn - (ctx->ninsns - start_insn));
--	emit_branch(BPF_JSLT, tcc, RV_REG_ZERO, off, ctx);
-+	emit_branch(BPF_JSLT, RV_REG_T1, RV_REG_ZERO, off, ctx);
- 
- 	/* prog = array->ptrs[index];
- 	 * if (!prog)
-diff --git a/arch/sparc/net/bpf_jit_comp_64.c b/arch/sparc/net/bpf_jit_comp_64.c
-index 9a2f20c..50d914c 100644
---- a/arch/sparc/net/bpf_jit_comp_64.c
-+++ b/arch/sparc/net/bpf_jit_comp_64.c
-@@ -863,6 +863,10 @@ static void emit_tail_call(struct jit_ctx *ctx)
- 	emit_branch(BGEU, ctx->idx, ctx->idx + OFFSET1, ctx);
- 	emit_nop(ctx);
- 
-+	emit_alu_K(ADD, tmp, 1, ctx);
-+	off = BPF_TAILCALL_CNT_SP_OFF;
-+	emit(ST32 | IMMED | RS1(SP) | S13(off) | RD(tmp), ctx);
-+
- 	off = BPF_TAILCALL_CNT_SP_OFF;
- 	emit(LD32 | IMMED | RS1(SP) | S13(off) | RD(tmp), ctx);
- 	emit_cmpi(tmp, MAX_TAIL_CALL_CNT, ctx);
-@@ -870,10 +874,6 @@ static void emit_tail_call(struct jit_ctx *ctx)
- 	emit_branch(BGU, ctx->idx, ctx->idx + OFFSET2, ctx);
- 	emit_nop(ctx);
- 
--	emit_alu_K(ADD, tmp, 1, ctx);
--	off = BPF_TAILCALL_CNT_SP_OFF;
--	emit(ST32 | IMMED | RS1(SP) | S13(off) | RD(tmp), ctx);
--
- 	emit_alu3_K(SLL, bpf_index, 3, tmp, ctx);
- 	emit_alu(ADD, bpf_array, tmp, ctx);
- 	off = offsetof(struct bpf_array, ptrs);
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 9f4636d..8edb1c3 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -1564,10 +1564,10 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn)
- 
- 		if (unlikely(index >= array->map.max_entries))
- 			goto out;
--		if (unlikely(tail_call_cnt > MAX_TAIL_CALL_CNT))
--			goto out;
- 
- 		tail_call_cnt++;
-+		if (unlikely(tail_call_cnt > MAX_TAIL_CALL_CNT))
-+			goto out;
- 
- 		prog = READ_ONCE(array->ptrs[index]);
- 		if (!prog)
--- 
-2.1.0
-
+On 2021/8/6 10:46, Yunsheng Lin wrote:
+> This patch adds skb's frag page recycling support based on
+> the frag page support in page pool.
+> 
+> The performance improves above 10~20% for single thread iperf
+> TCP flow with IOMMU disabled when iperf server and irq/NAPI
+> have a different CPU.
+> 
+> The performance improves about 135%(14Gbit to 33Gbit) for single
+> thread iperf TCP flow when IOMMU is in strict mode and iperf
+> server shares the same cpu with irq/NAPI.
+> 
+> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+> ---
+>  drivers/net/ethernet/hisilicon/Kconfig          |  1 +
+>  drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 79 +++++++++++++++++++++++--
+>  drivers/net/ethernet/hisilicon/hns3/hns3_enet.h |  3 +
+>  3 files changed, 78 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/hisilicon/Kconfig b/drivers/net/ethernet/hisilicon/Kconfig
+> index 094e4a3..2ba0e7b 100644
+> --- a/drivers/net/ethernet/hisilicon/Kconfig
+> +++ b/drivers/net/ethernet/hisilicon/Kconfig
+> @@ -91,6 +91,7 @@ config HNS3
+>  	tristate "Hisilicon Network Subsystem Support HNS3 (Framework)"
+>  	depends on PCI
+>  	select NET_DEVLINK
+> +	select PAGE_POOL
+>  	help
+>  	  This selects the framework support for Hisilicon Network Subsystem 3.
+>  	  This layer facilitates clients like ENET, RoCE and user-space ethernet
+> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+> index cb8d5da..fcbeb1f 100644
+> --- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+> @@ -3205,6 +3205,21 @@ static int hns3_alloc_buffer(struct hns3_enet_ring *ring,
+>  	unsigned int order = hns3_page_order(ring);
+>  	struct page *p;
+>  
+> +	if (ring->page_pool) {
+> +		p = page_pool_dev_alloc_frag(ring->page_pool,
+> +					     &cb->page_offset,
+> +					     hns3_buf_size(ring));
+> +		if (unlikely(!p))
+> +			return -ENOMEM;
+> +
+> +		cb->priv = p;
+> +		cb->buf = page_address(p);
+> +		cb->dma = page_pool_get_dma_addr(p);
+> +		cb->type = DESC_TYPE_PP_FRAG;
+> +		cb->reuse_flag = 0;
+> +		return 0;
+> +	}
+> +
+>  	p = dev_alloc_pages(order);
+>  	if (!p)
+>  		return -ENOMEM;
+> @@ -3227,8 +3242,13 @@ static void hns3_free_buffer(struct hns3_enet_ring *ring,
+>  	if (cb->type & (DESC_TYPE_SKB | DESC_TYPE_BOUNCE_HEAD |
+>  			DESC_TYPE_BOUNCE_ALL | DESC_TYPE_SGL_SKB))
+>  		napi_consume_skb(cb->priv, budget);
+> -	else if (!HNAE3_IS_TX_RING(ring) && cb->pagecnt_bias)
+> -		__page_frag_cache_drain(cb->priv, cb->pagecnt_bias);
+> +	else if (!HNAE3_IS_TX_RING(ring)) {
+> +		if (cb->type & DESC_TYPE_PAGE && cb->pagecnt_bias)
+> +			__page_frag_cache_drain(cb->priv, cb->pagecnt_bias);
+> +		else if (cb->type & DESC_TYPE_PP_FRAG)
+> +			page_pool_put_full_page(ring->page_pool, cb->priv,
+> +						false);
+> +	}
+>  	memset(cb, 0, sizeof(*cb));
+>  }
+>  
+> @@ -3315,7 +3335,7 @@ static int hns3_alloc_and_map_buffer(struct hns3_enet_ring *ring,
+>  	int ret;
+>  
+>  	ret = hns3_alloc_buffer(ring, cb);
+> -	if (ret)
+> +	if (ret || ring->page_pool)
+>  		goto out;
+>  
+>  	ret = hns3_map_buffer(ring, cb);
+> @@ -3337,7 +3357,8 @@ static int hns3_alloc_and_attach_buffer(struct hns3_enet_ring *ring, int i)
+>  	if (ret)
+>  		return ret;
+>  
+> -	ring->desc[i].addr = cpu_to_le64(ring->desc_cb[i].dma);
+> +	ring->desc[i].addr = cpu_to_le64(ring->desc_cb[i].dma +
+> +					 ring->desc_cb[i].page_offset);
+>  
+>  	return 0;
+>  }
+> @@ -3367,7 +3388,8 @@ static void hns3_replace_buffer(struct hns3_enet_ring *ring, int i,
+>  {
+>  	hns3_unmap_buffer(ring, &ring->desc_cb[i]);
+>  	ring->desc_cb[i] = *res_cb;
+> -	ring->desc[i].addr = cpu_to_le64(ring->desc_cb[i].dma);
+> +	ring->desc[i].addr = cpu_to_le64(ring->desc_cb[i].dma +
+> +					 ring->desc_cb[i].page_offset);
+>  	ring->desc[i].rx.bd_base_info = 0;
+>  }
+>  
+> @@ -3539,6 +3561,12 @@ static void hns3_nic_reuse_page(struct sk_buff *skb, int i,
+>  	u32 frag_size = size - pull_len;
+>  	bool reused;
+>  
+> +	if (ring->page_pool) {
+> +		skb_add_rx_frag(skb, i, desc_cb->priv, frag_offset,
+> +				frag_size, truesize);
+> +		return;
+> +	}
+> +
+>  	/* Avoid re-using remote or pfmem page */
+>  	if (unlikely(!dev_page_is_reusable(desc_cb->priv)))
+>  		goto out;
+> @@ -3856,6 +3884,9 @@ static int hns3_alloc_skb(struct hns3_enet_ring *ring, unsigned int length,
+>  		/* We can reuse buffer as-is, just make sure it is reusable */
+>  		if (dev_page_is_reusable(desc_cb->priv))
+>  			desc_cb->reuse_flag = 1;
+> +		else if (desc_cb->type & DESC_TYPE_PP_FRAG)
+> +			page_pool_put_full_page(ring->page_pool, desc_cb->priv,
+> +						false);
+>  		else /* This page cannot be reused so discard it */
+>  			__page_frag_cache_drain(desc_cb->priv,
+>  						desc_cb->pagecnt_bias);
+> @@ -3863,6 +3894,10 @@ static int hns3_alloc_skb(struct hns3_enet_ring *ring, unsigned int length,
+>  		hns3_rx_ring_move_fw(ring);
+>  		return 0;
+>  	}
+> +
+> +	if (ring->page_pool)
+> +		skb_mark_for_recycle(skb);
+> +
+>  	u64_stats_update_begin(&ring->syncp);
+>  	ring->stats.seg_pkt_cnt++;
+>  	u64_stats_update_end(&ring->syncp);
+> @@ -3901,6 +3936,10 @@ static int hns3_add_frag(struct hns3_enet_ring *ring)
+>  					    "alloc rx fraglist skb fail\n");
+>  				return -ENXIO;
+>  			}
+> +
+> +			if (ring->page_pool)
+> +				skb_mark_for_recycle(new_skb);
+> +
+>  			ring->frag_num = 0;
+>  
+>  			if (ring->tail_skb) {
+> @@ -4705,6 +4744,29 @@ static void hns3_put_ring_config(struct hns3_nic_priv *priv)
+>  	priv->ring = NULL;
+>  }
+>  
+> +static void hns3_alloc_page_pool(struct hns3_enet_ring *ring)
+> +{
+> +	struct page_pool_params pp_params = {
+> +		.flags = PP_FLAG_DMA_MAP | PP_FLAG_PAGE_FRAG |
+> +				PP_FLAG_DMA_SYNC_DEV,
+> +		.order = hns3_page_order(ring),
+> +		.pool_size = ring->desc_num * hns3_buf_size(ring) /
+> +				(PAGE_SIZE << hns3_page_order(ring)),
+> +		.nid = dev_to_node(ring_to_dev(ring)),
+> +		.dev = ring_to_dev(ring),
+> +		.dma_dir = DMA_FROM_DEVICE,
+> +		.offset = 0,
+> +		.max_len = PAGE_SIZE << hns3_page_order(ring),
+> +	};
+> +
+> +	ring->page_pool = page_pool_create(&pp_params);
+> +	if (IS_ERR(ring->page_pool)) {
+> +		dev_warn(ring_to_dev(ring), "page pool creation failed: %ld\n",
+> +			 PTR_ERR(ring->page_pool));
+> +		ring->page_pool = NULL;
+> +	}
+> +}
+> +
+>  static int hns3_alloc_ring_memory(struct hns3_enet_ring *ring)
+>  {
+>  	int ret;
+> @@ -4724,6 +4786,8 @@ static int hns3_alloc_ring_memory(struct hns3_enet_ring *ring)
+>  		goto out_with_desc_cb;
+>  
+>  	if (!HNAE3_IS_TX_RING(ring)) {
+> +		hns3_alloc_page_pool(ring);
+> +
+>  		ret = hns3_alloc_ring_buffers(ring);
+>  		if (ret)
+>  			goto out_with_desc;
+> @@ -4764,6 +4828,11 @@ void hns3_fini_ring(struct hns3_enet_ring *ring)
+>  		devm_kfree(ring_to_dev(ring), tx_spare);
+>  		ring->tx_spare = NULL;
+>  	}
+> +
+> +	if (!HNAE3_IS_TX_RING(ring) && ring->page_pool) {
+> +		page_pool_destroy(ring->page_pool);
+> +		ring->page_pool = NULL;
+> +	}
+>  }
+>  
+>  static int hns3_buf_size2type(u32 buf_size)
+> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
+> index 15af3d9..27809d6 100644
+> --- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
+> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
+> @@ -6,6 +6,7 @@
+>  
+>  #include <linux/dim.h>
+>  #include <linux/if_vlan.h>
+> +#include <net/page_pool.h>
+>  
+>  #include "hnae3.h"
+>  
+> @@ -307,6 +308,7 @@ enum hns3_desc_type {
+>  	DESC_TYPE_BOUNCE_ALL		= 1 << 3,
+>  	DESC_TYPE_BOUNCE_HEAD		= 1 << 4,
+>  	DESC_TYPE_SGL_SKB		= 1 << 5,
+> +	DESC_TYPE_PP_FRAG		= 1 << 6,
+>  };
+>  
+>  struct hns3_desc_cb {
+> @@ -451,6 +453,7 @@ struct hns3_enet_ring {
+>  	struct hnae3_queue *tqp;
+>  	int queue_index;
+>  	struct device *dev; /* will be used for DMA mapping of descriptors */
+> +	struct page_pool *page_pool;
+>  
+>  	/* statistic */
+>  	struct ring_stats stats;
+> 
