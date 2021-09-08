@@ -2,119 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9634B403DEC
-	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 18:51:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE207403E06
+	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 18:56:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350096AbhIHQxA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Sep 2021 12:53:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36302 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349995AbhIHQw7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Sep 2021 12:52:59 -0400
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF5AAC061757
-        for <netdev@vger.kernel.org>; Wed,  8 Sep 2021 09:51:50 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id k5-20020a05600c1c8500b002f76c42214bso2127059wms.3
-        for <netdev@vger.kernel.org>; Wed, 08 Sep 2021 09:51:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=u0sEIssVhhMZXP/9tK3Wy1fvOEBz/DBHnG38YBmZtuU=;
-        b=JNh4XvHXFB+ZZmOGIGOzaSfeJ3JwGO7/ddserLozPdp/XmPjRDTKbU5CLsPS0DSD7O
-         PB64MXie4CDEQSLl2sB0ccud87Uq+r8lvZzZ/ZjGFWpIkVcVSwqbPDyw+EWIdDsodjAJ
-         GdPKMfxVllrouhxsUX0oiPaINyFXjWVmpZmmh4u/FJxPOQqxIkropGoW7RBpZmhJigGd
-         bIyEpWwvN8n10zsuHNrFEodSfb2nGXx+jyJ0b5v5nuIUvpSSG81iPAtvBwAKmTEhDiEx
-         GYuebSgPMnV1sjDRqcTOyz3igWwOu+HT/vBBnopnjrJTWljyrg5sbck2VY1iIpmqkrlO
-         D7gw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=u0sEIssVhhMZXP/9tK3Wy1fvOEBz/DBHnG38YBmZtuU=;
-        b=ds+zNgyODSU7j92/YqWKhKHLGaHHGDDQlwpJwf4/YdoRz341hrMGBKe+Fsb/GssYaS
-         lcnqsM+1Vc13aFo0U5G/qRSM8ybT39V0S87/mkd5kxJMzz+C547q1vlZP9/HOb+PkJOY
-         RfChaOqg0+8lKqD8IBkG7h2UyK/xnBPP9EeXRI+3oq7/n4w6u0sdO6vYpmeUjLPe84tc
-         xndk/xugGz7inyNhi+cpPaLt4Q2S1nzqD9aaUiIAfMGhJjJvXBCH0bjbUisOwW7Z5CsT
-         L+K2/waz2HH9tThhCXxCIg27PaZPcOzmue+OJPlBN8HT+T93rbtFXInz1vnSZy/uDpCl
-         93ug==
-X-Gm-Message-State: AOAM532GGZewfftuuuIlspxnlHmCb0iRFFEBIlEqnHpKmCkJZ8xLNfYs
-        MAVw/Z68vegKFAokhaRduPo4tA==
-X-Google-Smtp-Source: ABdhPJzveQXqk7vxlS0je8HU7aSts3V9itUTDgGo7hbGJh4/dvZ49lDyAxd1/y8umswsHVFKjezE7g==
-X-Received: by 2002:a1c:210a:: with SMTP id h10mr4713239wmh.117.1631119909316;
-        Wed, 08 Sep 2021 09:51:49 -0700 (PDT)
-Received: from apalos.home (ppp-94-66-220-137.home.otenet.gr. [94.66.220.137])
-        by smtp.gmail.com with ESMTPSA id d8sm2828142wrv.20.2021.09.08.09.51.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Sep 2021 09:51:48 -0700 (PDT)
-Date:   Wed, 8 Sep 2021 19:51:44 +0300
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     moyufeng <moyufeng@huawei.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
-        alexander.duyck@gmail.com, linux@armlinux.org.uk, mw@semihalf.com,
-        linuxarm@openeuler.org, yisen.zhuang@huawei.com,
-        salil.mehta@huawei.com, thomas.petazzoni@bootlin.com,
-        hawk@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        john.fastabend@gmail.com, akpm@linux-foundation.org,
-        peterz@infradead.org, will@kernel.org, willy@infradead.org,
-        vbabka@suse.cz, fenghua.yu@intel.com, guro@fb.com,
-        peterx@redhat.com, feng.tang@intel.com, jgg@ziepe.ca,
-        mcroce@microsoft.com, hughd@google.com, jonathan.lemon@gmail.com,
-        alobakin@pm.me, willemb@google.com, wenxu@ucloud.cn,
-        cong.wang@bytedance.com, haokexin@gmail.com, nogikh@google.com,
-        elver@google.com, yhs@fb.com, kpsingh@kernel.org,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, chenhao288@hisilicon.com
-Subject: Re: [PATCH net-next v2 4/4] net: hns3: support skb's frag page
- recycling based on page pool
-Message-ID: <YTjqIOt5+0J0r2bg@apalos.home>
-References: <1628217982-53533-1-git-send-email-linyunsheng@huawei.com>
- <1628217982-53533-5-git-send-email-linyunsheng@huawei.com>
- <2b75d66b-a3bf-2490-2f46-fef5731ed7ad@huawei.com>
- <20210908080843.2051c58d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <YTjWK1rNsYIcTt4O@apalos.home>
- <20210908085723.3c9c2de2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1352292AbhIHQ5w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Sep 2021 12:57:52 -0400
+Received: from mout.kundenserver.de ([217.72.192.75]:43015 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349999AbhIHQ5v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Sep 2021 12:57:51 -0400
+Received: from mail-wr1-f47.google.com ([209.85.221.47]) by
+ mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1Miqzy-1mtnOX3RY4-00exig; Wed, 08 Sep 2021 18:56:41 +0200
+Received: by mail-wr1-f47.google.com with SMTP id t18so4390722wrb.0;
+        Wed, 08 Sep 2021 09:56:41 -0700 (PDT)
+X-Gm-Message-State: AOAM533oDNzKetqzApjoyCaoKRan32dRS6hzofEEwM+Qy76zRz4zQhJi
+        sZZeg/YI/vcHcgfJBUSW/Fc53NOb/4Cv2BxysnU=
+X-Google-Smtp-Source: ABdhPJwcocFM9OAq7VwP5lDXlDVhqgm1fdUp0h8xqCE/B+fuvzp4uvB0PS7Bz4fzjuBe7pj6aM8HUHjsb3+/dBvc4Cs=
+X-Received: by 2002:a5d:528b:: with SMTP id c11mr5060071wrv.369.1631120201451;
+ Wed, 08 Sep 2021 09:56:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210908085723.3c9c2de2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <CA+G9fYtFvJdtBknaDKR54HHMf4XsXKD4UD3qXkQ1KhgY19n3tw@mail.gmail.com>
+ <CAHk-=wisUqoX5Njrnnpp0pDx+bxSAJdPxfgEUv82tZkvUqoN1w@mail.gmail.com>
+ <CAHk-=whF9F89vsfH8E9TGc0tZA-yhzi2Di8wOtquNB5vRkFX5w@mail.gmail.com>
+ <53ce8db-3372-b5e2-cee7-c0ebe9c45a9@tarent.de> <CANn89iJzyPbR-fS8S_oAMSJzUGTHAfx49CXVc6ZSckUk91Opvg@mail.gmail.com>
+ <CAHk-=whkOK2DTHMt1rQ7wCBCqW=itkihpQBcZ=T6vrciEE4ycA@mail.gmail.com>
+In-Reply-To: <CAHk-=whkOK2DTHMt1rQ7wCBCqW=itkihpQBcZ=T6vrciEE4ycA@mail.gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 8 Sep 2021 18:56:25 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1r_-7hsU8ZPv7Pow7jEkOhzDNQ9e16_pb+h+nG86AbgQ@mail.gmail.com>
+Message-ID: <CAK8P3a1r_-7hsU8ZPv7Pow7jEkOhzDNQ9e16_pb+h+nG86AbgQ@mail.gmail.com>
+Subject: Re: ipv4/tcp.c:4234:1: error: the frame size of 1152 bytes is larger
+ than 1024 bytes [-Werror=frame-larger-than=]
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Thorsten Glaser <t.glaser@tarent.de>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Ariel Elior <aelior@marvell.com>,
+        GR-everest-linux-l2@marvell.com, Wei Liu <wei.liu@kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>, lkft-triage@lists.linaro.org,
+        Arnd Bergmann <arnd@arndb.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:AUzJX5SCn3HfUVKOOm17oyVJ7FU2co24FEFbfskcTiyQMmo8paE
+ YhDdPvanf28YoAkwKIxdE25GfPciVl6k3+N+sszG5FCy8fC69A1lhkd/X0CYKA/YN/JDXuJ
+ /BNROQ5JPbIMSFBkmyuq6FLAbU4/PeW3FkeE6GTn9APJG4xuo4UT/w2ViGCzo15blXIB8of
+ Qkdfy7s2ETb5+XmeFp/Xg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:jdj8MSBaAT8=:/xCi0cgwY88KZxoPwBICI5
+ MbqskY4yf2w10+wh2z4Grpv48FcMZXSLpCQIfB+f9DAGkt6jNH5mNg6vzL8qHDnDhSWAS0RNa
+ i+h1IOeE013UkakVbZ6t7mC7dsw9R5MWe9lhfWOmJ2KS9OxBZibKfPgF5FFsAKeQszLfDfvzz
+ ZVTr4eHGivjpwMxM+0x0W+USAcwOwK7TZ1AKM/2DfArj5kMLm2YcSmCGCd0NaQmS4K5eMbcJL
+ 6LI9h9PlcfWWuGVcDOL+5k7bfR5SxC6GYM35kh4unpeD8SrVsZYG/24NZKo8tTimWVRRXyeVb
+ 27pMw1coGDUbffTUwq4U3T7uhdjgZnWWHQCxGlbMCBsygpodw+8OFE02HwYVAyUqyV/AJjElp
+ ob0n42qLgiPJ8z3KyfqVyRdlSrHCtZxt8DmlBND9gcWSAlZK2oL4Ff9sCCsgkBKzz3mi+ABlK
+ 3OtW11S7BaKjWAKwj+a0n+C0A7+0FKNV7qhChBhtAF72afI8obgBfpqQJkSbMqnuScWr5tNlY
+ RoSoINEg8LGn73w6q7CkJ/AGsILRhMFztLAhuL5u6I0to1N1gOcl2IMVT3BXjbzd51uiHkHnP
+ MCFtNtpH76mTYTJrqZ9iUwmOUylNUli8sRjOgBQyXfy8sM6PHakk3eZ9x8+lBohndhNWigoKf
+ L7Tbpeig/syxAdjuJxe3E86wTU42aV50wR03+Tpqtioky4t5EfjDBMeIwf+XWw4w1THZ58oB8
+ cq8pnZY4dUjGAxS7I2pX5MGibLb8PDzUb5BKvTMK7OujsPLmQpRrD4c6MpOJrN+THP2ggqH44
+ OYIOk06pgzGntdDC5zhhnNv9ohgMb3K5BAqKLbb8aOUKpwnMjYFjLas/cvGkinkFnArrBfc0i
+ 8EJSGxM2Y5UnWrMedOUg==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 08, 2021 at 08:57:23AM -0700, Jakub Kicinski wrote:
-> On Wed, 8 Sep 2021 18:26:35 +0300 Ilias Apalodimas wrote:
-> > > Normally I'd say put the stats in ethtool -S and the rest in debugfs
-> > > but I'm not sure if exposing pages_state_hold_cnt and
-> > > pages_state_release_cnt directly. Those are short counters, and will
-> > > very likely wrap. They are primarily meaningful for calculating
-> > > page_pool_inflight(). Given this I think their semantics may be too
-> > > confusing for an average ethtool -S user.
-> > > 
-> > > Putting all the information in debugfs seems like a better idea.  
-> > 
-> > I can't really disagree on the aforementioned stats being confusing.
-> > However at some point we'll want to add more useful page_pool stats (e.g the
-> > percentage of the page/page fragments that are hitting the recycling path).
-> > Would it still be 'ok' to have info split across ethtool and debugfs?
-> 
-> Possibly. We'll also see what Alex L comes up with for XDP stats. Maybe
-> we can arrive at a netlink API for standard things (broken record).
-> 
-> You said percentage - even tho I personally don't like it - there is a
-> small precedent of ethtool -S containing non-counter information (IOW
-> not monotonically increasing event counters), e.g. some vendors rammed
-> PCI link quality in there. So if all else fails ethtool -S should be
-> fine.
+On Wed, Sep 8, 2021 at 5:49 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+> On Wed, Sep 8, 2021 at 7:50 AM Eric Dumazet <edumazet@google.com> wrote:
+> In the past I've seen at least two patterns
+>
+>  (a) not merging stack slots at all
+>
+>  (b) some odd "pattern allocator" problems, where I think gcc ended up
+> re-using previous stack slots if they were the right size, but failing
+> when previous allocations were fragmented
+>
+> that (a) thing is what -fconserve-stack is all about, and we also used
+> to have (iirc) -fno-defer-pop to avoid having function call argument
+> stacks stick around.
 
-Yea percentage may have been the wrong example. I agree that having
-absolute numbers (all allocated pages and recycled pages) is a better
-option.  To be honest keeping the 'weird' stats in debugfs seems sane, the 
-pages_state_hold_cnt/pages_state_release_cnt are only going to be needed
-during debug.
+CONFIG_KASAN_STACK leads to (a), and this has been the source of
+long discussions about whether to turn it off altogether, the current state
+being that it's disabled for CONFIG_COMPILE_TEST on clang because
+this can explode the stack usage even further when it starts spilling
+registers.
 
+gcc also runs into this problem, but at least newer versions at not nearly
+as bad as they used to be in the past.
 
-Thanks
-/Ilias
+       Arnd
