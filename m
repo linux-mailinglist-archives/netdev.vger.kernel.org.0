@@ -2,133 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC7EB403F28
-	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 20:36:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7989E403F51
+	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 21:02:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350166AbhIHSh2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Sep 2021 14:37:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60068 "EHLO
+        id S240952AbhIHTDv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Sep 2021 15:03:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233322AbhIHSh1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Sep 2021 14:37:27 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0AF9C061757
-        for <netdev@vger.kernel.org>; Wed,  8 Sep 2021 11:36:18 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id z18so6169090ybg.8
-        for <netdev@vger.kernel.org>; Wed, 08 Sep 2021 11:36:18 -0700 (PDT)
+        with ESMTP id S230044AbhIHTDu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Sep 2021 15:03:50 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41F17C061575;
+        Wed,  8 Sep 2021 12:02:42 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id u11-20020a17090adb4b00b00181668a56d6so2219059pjx.5;
+        Wed, 08 Sep 2021 12:02:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HjX7K+TpcsYd5c/+i/WbHHjSxL38J99SoKGPyzKH+qw=;
-        b=CYBWB5q7jmOjcODURqsEnS5W5yx2Qi6I07YkUlnIctAeoRJ8biEygroEnwpp0PDJ6U
-         ze0b1h8LMgTHCC0GhPo7kEJwcMqGeyNuVfTlSGTHT52D+jPtlCpMun2plXeYb79OrxCu
-         vnvXypySx/umpFMQc2pjnisaNxF24BXtfkIqcc2MqlfKaxgOiSX/lILCmeEmDs2NMdkk
-         ZGKNbTQLa6RW9jmCYjVh3M0JvoIa3AOBQHSblCxS3t72mLmAIunEooTILzdLP2D0S/3B
-         TDaUmYA1VfWvhRWgGNIrmsOd0+2kfykDZwRVTmv8AH9aPF4adoNPkTtfvKkM1XzxemQx
-         4inA==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=U1k5GQSTcred1g/ZNyrVoNcjW0ouRAOMfDJ41Mlu1oc=;
+        b=cHhAr/lTYynEQBFsKa9bx49xDOWen4UKlN3N8aXy/rpd3jiIQFEHC2kaq+Z+bY36Zs
+         WdPi/s4bZdmkVchfc/YH5j41O1S11CM2y5AhS3lKqBofNAWGMwgPhReJTCZ+zcBaoOsC
+         rFhJeGr9TIwv2+kZCFw7mnhLH2YfNLUuj/9j+rD7AR7S0I7m1WBjwZSeAHmj+d05RF83
+         TVBNVxI7WEUby8GBpFrYiDoL+PuNIdDyATfskZj1d2xDmMg3jNFFnqqI2WyWawneT+Cl
+         mekjiSFZuGdABZ2cx283w3cSy/ihiUeyQKQU+1hBVeD3CLoJQnBIUQXUYL0Ek+dbyKep
+         rX3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HjX7K+TpcsYd5c/+i/WbHHjSxL38J99SoKGPyzKH+qw=;
-        b=fe6+Q/Bz+mQeU/q3ewhIIPgVWYF3utKCHu7TJg62BkfSOxGbI1UfBnHCIN4FEHcmqX
-         REJfZ4+PcibJr8+ep7oJFJtqiH7l8WlLfIRqDBpKj9ADph4sq2+1Ly/01RmJDJIYHyd7
-         kGy0jqpw69y66KD8f2ALG5V1dJPzrVOw4cuF2zSvqy2gUOoeVksEErU4wWmDzwN6L0eg
-         2yy4a5DvTm9b2YuYG5znqi5hFUjItj72ofD1TdZRHwdhD7tTE5FL5W0EMmwoq1a05zb2
-         A3ckxmj8i9W3SgQx+gRdHDIH6Kv3DwfjLygmPvwvlZEMRfYJsGtxXLWrcOzxe/TjWr8+
-         tRFg==
-X-Gm-Message-State: AOAM5314GloUwLNFL5aBuYxlh6X7VGuIqtvtDo0Htuh24X4MTJetCDty
-        QLxFbGLGY/ZAJzGDLiP1aZWl9rcj7qW4gi3RES8QWw==
-X-Google-Smtp-Source: ABdhPJzBtuBmf8CUZA8q8DjeeQMm7Fxlgthk077R1iNzqYe+bpT075CwGt89gtqpajwh7YnIq5OiO03iBkciQ03ShwY=
-X-Received: by 2002:a25:5606:: with SMTP id k6mr6705534ybb.476.1631126178008;
- Wed, 08 Sep 2021 11:36:18 -0700 (PDT)
-MIME-Version: 1.0
-References: <YSf/Mps9E77/6kZX@lunn.ch> <CAGETcx_h6moWbS7m4hPm6Ub3T0tWayUQkppjevkYyiA=8AmACw@mail.gmail.com>
- <YSg+dRPSX9/ph6tb@lunn.ch> <CAGETcx_r8LSxV5=GQ-1qPjh7qGbCqTsSoSkQfxAKL5q+znRoWg@mail.gmail.com>
- <YSjsQmx8l4MXNvP+@lunn.ch> <CAGETcx_vMNZbT-5vCAvvpQNMMHy-19oR-mSfrg6=eSO49vLScQ@mail.gmail.com>
- <YSlG4XRGrq5D1/WU@lunn.ch> <CAGETcx-ZvENq8tFZ9wb_BCPZabpZcqPrguY5rsg4fSNdOAB+Kw@mail.gmail.com>
- <YSpr/BOZj2PKoC8B@lunn.ch> <CAGETcx_mjY10WzaOvb=vuojbodK7pvY1srvKmimu4h6xWkeQuQ@mail.gmail.com>
- <YS4rw7NQcpRmkO/K@lunn.ch>
-In-Reply-To: <YS4rw7NQcpRmkO/K@lunn.ch>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Wed, 8 Sep 2021 11:35:41 -0700
-Message-ID: <CAGETcx8haSe5Hx0ywfTS+htST=FoH5=+u=v0KMPvtMeeJ_BB3w@mail.gmail.com>
-Subject: Re: [PATCH v1 1/2] driver core: fw_devlink: Add support for FWNODE_FLAG_BROKEN_PARENT
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=U1k5GQSTcred1g/ZNyrVoNcjW0ouRAOMfDJ41Mlu1oc=;
+        b=JfZNbhIR21dk5ZdgkL3OVUe/UMIqsGgD/05vDWSb7gNZKZTR/zq3u6rhREAFjocaQk
+         nbFB5VuIZl2VOwxDcDuGjdlyHKVLObwtTfwXzWm/cRcNTC6tupsiytVNQDO3iNroD28p
+         POp8GXQDnlddJwQ/UQOPG3m0g+uIIJB5S+w6qUVn3ap5Tx06sSZDCXWWNLDiN8k+9Cye
+         +mIUYTGAElMRgd9VbMs53Zl1wGp6vFybz3fotth788Gw9lrcbch3OEJGjk7BmP6ALNxz
+         NdgTj4b1p3ofv6oYdUzKMFYLRcnHzlpXb6uLUVy5K27irCRzubQ77fE5iTsuc5YzRbk/
+         sIVQ==
+X-Gm-Message-State: AOAM531YD/RX45VGWxNW2bhveN/cYkjPNoljRcIyc9+Wx690KW0SkCIa
+        d04IWmY+lIHLJz4o+6jAsU3mObCgg/D8Wg==
+X-Google-Smtp-Source: ABdhPJxbQeIDZMPm9HrQqP63h0FIOAqMScmLwBrQe91itkWilAyF+eWES5YKI987V80RiPJBE57cyQ==
+X-Received: by 2002:a17:90b:1952:: with SMTP id nk18mr5688240pjb.193.1631127761633;
+        Wed, 08 Sep 2021 12:02:41 -0700 (PDT)
+Received: from tong-desktop.local (99-105-211-126.lightspeed.sntcca.sbcglobal.net. [99.105.211.126])
+        by smtp.googlemail.com with ESMTPSA id t10sm3863378pge.10.2021.09.08.12.02.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Sep 2021 12:02:41 -0700 (PDT)
+From:   Tong Zhang <ztong0001@gmail.com>
+To:     Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
-        Alvin Sipraga <ALSI@bang-olufsen.dk>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-acpi@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Tong Zhang <ztong0001@gmail.com>,
+        Nicolas Ferre <Nicolas.Ferre@microchip.com>
+Subject: [PATCH v2] net: macb: fix use after free on rmmod
+Date:   Wed,  8 Sep 2021 12:02:32 -0700
+Message-Id: <20210908190232.573178-1-ztong0001@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <48b53487-a708-ec79-a993-3448f4ca6e6d@microchip.com>
+References: <48b53487-a708-ec79-a993-3448f4ca6e6d@microchip.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 31, 2021 at 6:16 AM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> > > I must admit, my main problem at the moment is -rc1 in two weeks
-> > > time. It seems like a number of board with Ethernet switches will be
-> > > broken, that worked before. phy-handle is not limited to switch
-> > > drivers, it is also used for Ethernet drivers. So it could be, a
-> > > number of Ethernet drivers are also going to be broken in -rc1?
-> >
-> > Again, in those cases, based on your FEC example, fw_devlink=on
-> > actually improves things.
->
-> Debatable. I did some testing. As expected some boards with Ethernet
-> switches are now broken. Without fw_devlink=on, some boards are not
-> optimal, but they actually work. With it, they are broken.
->
-> I did a bisect, and they have been broken since:
->
-> ea718c699055c8566eb64432388a04974c43b2ea is the first bad commit
-> commit ea718c699055c8566eb64432388a04974c43b2ea
-> Author: Saravana Kannan <saravanak@google.com>
-> Date:   Tue Mar 2 13:11:32 2021 -0800
->
->     Revert "Revert "driver core: Set fw_devlink=on by default""
->
->     This reverts commit 3e4c982f1ce75faf5314477b8da296d2d00919df.
->
->     Since all reported issues due to fw_devlink=on should be addressed by
->     this series, revert the revert. fw_devlink=on Take II.
->
->     Signed-off-by: Saravana Kannan <saravanak@google.com>
->     Link: https://lore.kernel.org/r/20210302211133.2244281-4-saravanak@google.com
->     Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->
->  drivers/base/core.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> So however it is fixed, it needs to go into stable, not just -rc1.
->
-> > Again, it's not a widespread problem as I explained before.
-> > fw_devlink=on has been the default for 2 kernel versions now. With no
-> > unfixed reported issues.
->
-> Given that some Ethernet switches have been broken all that time, i
-> wonder what else has been broken? Normally, the kernel which is
-> release in December becomes the next LTS. It then gets picked up by
-> the distros and more wide spread tested. So it could be, you get a
-> flood of reports in January and February about things which are
-> broken. This is why i don't think you should be relying on bug
-> reports, you should be taking a more proactive stance and trying to
-> analyse the DTB blobs.
->
-> I will spend some time trying out your proposed fix. See if they are a
-> quick fix for stable.
+plat_dev->dev->platform_data is released by platform_device_unregister(),
+use of pclk and hclk is a use-after-free. Since device unregister won't
+need a clk device we adjust the function call sequence to fix this issue.
 
-Hi Andrew,
+[   31.261225] BUG: KASAN: use-after-free in macb_remove+0x77/0xc6 [macb_pci]
+[   31.275563] Freed by task 306:
+[   30.276782]  platform_device_release+0x25/0x80
 
-Did you have a chance to try it out? I can fix up the commit text and
-send out vN+1 of the patch if it works for you.
+Suggested-by: Nicolas Ferre <Nicolas.Ferre@microchip.com>
+Signed-off-by: Tong Zhang <ztong0001@gmail.com>
+---
+v2: switch lines to fix the issue instead
 
--Saravana
+ drivers/net/ethernet/cadence/macb_pci.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/cadence/macb_pci.c b/drivers/net/ethernet/cadence/macb_pci.c
+index 8b7b59908a1a..f66d22de5168 100644
+--- a/drivers/net/ethernet/cadence/macb_pci.c
++++ b/drivers/net/ethernet/cadence/macb_pci.c
+@@ -111,9 +111,9 @@ static void macb_remove(struct pci_dev *pdev)
+ 	struct platform_device *plat_dev = pci_get_drvdata(pdev);
+ 	struct macb_platform_data *plat_data = dev_get_platdata(&plat_dev->dev);
+ 
+-	platform_device_unregister(plat_dev);
+ 	clk_unregister(plat_data->pclk);
+ 	clk_unregister(plat_data->hclk);
++	platform_device_unregister(plat_dev);
+ }
+ 
+ static const struct pci_device_id dev_id_table[] = {
+-- 
+2.25.1
+
