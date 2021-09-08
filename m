@@ -2,295 +2,321 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F05714035DE
-	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 10:03:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3D8D403602
+	for <lists+netdev@lfdr.de>; Wed,  8 Sep 2021 10:23:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348088AbhIHIEw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Sep 2021 04:04:52 -0400
-Received: from mga09.intel.com ([134.134.136.24]:32076 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1346759AbhIHIEu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Sep 2021 04:04:50 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10100"; a="220444765"
-X-IronPort-AV: E=Sophos;i="5.85,277,1624345200"; 
-   d="scan'208";a="220444765"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Sep 2021 01:03:37 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.85,277,1624345200"; 
-   d="scan'208";a="503455350"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by fmsmga008.fm.intel.com with ESMTP; 08 Sep 2021 01:03:37 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.12; Wed, 8 Sep 2021 01:03:37 -0700
-Received: from fmsmsx606.amr.corp.intel.com (10.18.126.86) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.12; Wed, 8 Sep 2021 01:03:36 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx606.amr.corp.intel.com (10.18.126.86) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.12 via Frontend Transport; Wed, 8 Sep 2021 01:03:36 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.107)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2242.12; Wed, 8 Sep 2021 01:03:36 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oAy20Nm+LFSG9Yr2T+vD6/SOWR/B6Nq3eqJXgu0ULEOl3v2rGl5hKDOewlQhg5//Nuk6o2c/+aFRXIuxydeWu4CYOBGQoK4DrhCD36R/4EYCAjDa5Vua3BTfVKTe64N6H7nuk4Ck53Cbrf811zITbJf2Nw75B1h4l3DHhs8HsBgoC7HEYdsZUPJ5rNsqfrew7zFq5ziJcWJ4+MgnbXJvAJildhzknohHicVy6CdLdNu9czGaV7OYBc+rHK4mNzFY7Dtra+X0RwZTBs01Wi9+Lj7kT9Nwoc7e26rv2KrtwOBdPX5QSvuG1s2zYsTxDbL43hpnyMF5A+iJGjRP97NmDw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=OzRYeMuTQ6oN7UiGLe2MDFLfKLgXRBKGQ1AlFmAlBjY=;
- b=Z54TOkHX6pU8li3gpaBpfMy01QpuX97h2Wy4QQW+Rmoyyp27O9UtMgh3DXyQV2T+r74JPukYwb36NZUVo/JXj3HqM+CFf3xf9QF80O0S5Y02ocXLUxSNqePmRBxIW5ED8dN+a/+7QNcd9Jr96mMaBzJlhHFQI8piSD5HhprLyO/24UisDTNRJc4SZ8COVwvx35Tn3g+yHXdXy/aNP6yVTg9xxcB466nA34RVUapUbW+Fx/NZSOcVzDekaoC0h9pmjJPqdLKGJHGmq4eHziaiCtszjFh3QFqLvwPBG+tPvWFSWKMm6vjWssujdcK5PunxiU9DFcZ31SXl+MToPSle4g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OzRYeMuTQ6oN7UiGLe2MDFLfKLgXRBKGQ1AlFmAlBjY=;
- b=xvcgY976ul3pEQdzN5xHn/PlQj8QABhQcM0jyTPix1EtIB9uK61GrH0R9upwMHRWruiJhQCr3e0F3iohY8bCJPt4a+D8YV7N4E/pII3V8Y8MaMP6lv+ae66G+zng5COj07elXRV7veRjkjI/JERQKTpi7YAcMeZsLt0A7KuEjPY=
-Received: from PH0PR11MB4951.namprd11.prod.outlook.com (2603:10b6:510:43::5)
- by PH0PR11MB5143.namprd11.prod.outlook.com (2603:10b6:510:3f::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4478.22; Wed, 8 Sep
- 2021 08:03:35 +0000
-Received: from PH0PR11MB4951.namprd11.prod.outlook.com
- ([fe80::58cd:3e24:745c:e221]) by PH0PR11MB4951.namprd11.prod.outlook.com
- ([fe80::58cd:3e24:745c:e221%7]) with mapi id 15.20.4415.029; Wed, 8 Sep 2021
- 08:03:35 +0000
-From:   "Machnikowski, Maciej" <maciej.machnikowski@intel.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "abyagowi@fb.com" <abyagowi@fb.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "Andrew Lunn" <andrew@lunn.ch>, Michal Kubecek <mkubecek@suse.cz>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Michael Chan <michael.chan@broadcom.com>
-Subject: RE: [PATCH net-next 1/2] rtnetlink: Add new RTM_GETEECSTATE message
- to get SyncE status
-Thread-Topic: [PATCH net-next 1/2] rtnetlink: Add new RTM_GETEECSTATE message
- to get SyncE status
-Thread-Index: AQHXoNimVzUXkjuVtUCdGyBU/1Tj8auS4GqAgARwniCAAApOgIAAAHuggABqPwCAAH2kEIAAa06AgAADpCCAAE4LAIAAxVmQ
-Date:   Wed, 8 Sep 2021 08:03:35 +0000
-Message-ID: <PH0PR11MB495169997552152891A69B57EAD49@PH0PR11MB4951.namprd11.prod.outlook.com>
-References: <20210903151436.529478-1-maciej.machnikowski@intel.com>
-        <20210903151436.529478-2-maciej.machnikowski@intel.com>
-        <20210903151425.0bea0ce7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <PH0PR11MB4951623918C9BA8769C10E50EAD29@PH0PR11MB4951.namprd11.prod.outlook.com>
-        <20210906113925.1ce63ac7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <PH0PR11MB49511F2017F48BBAAB2A065CEAD29@PH0PR11MB4951.namprd11.prod.outlook.com>
-        <20210906180124.33ff49ef@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <PH0PR11MB495152B03F32A5A17EDB2F6CEAD39@PH0PR11MB4951.namprd11.prod.outlook.com>
-        <20210907075509.0b3cb353@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <PH0PR11MB49512C265E090FC8741D8510EAD39@PH0PR11MB4951.namprd11.prod.outlook.com>
- <20210907124730.33852895@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210907124730.33852895@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-reaction: no-action
-dlp-version: 11.5.1.3
-dlp-product: dlpe-windows
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 2dd6e67c-ec32-4dd7-4ae7-08d9729f28c3
-x-ms-traffictypediagnostic: PH0PR11MB5143:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <PH0PR11MB514340143C70769C2824C349EAD49@PH0PR11MB5143.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ren7haNukiQurbhL9siUKvxQgNiGhSn9r925Bm/h1j7hmSTMNgAHc5dB1xi/YlHK0HLsV9Ga45wVVnYBuXfv2nF95IcJxjvh1RYwNcTZHkfzN03s3jC2T+6ksawg2Osw0PFqByeZlH7XC1z/xnk5cwf/pTn1LmBLtlMQWsFAvgCfLVzizNxV/C17VXfnRNKrAgyjK1Oz3EPeeZgMzhdjfZa5tQu4q1hxQCi74FKD5P2sHIY0znfiFW3zaq3F7Llpoqo/I8Z0RwFOYFVfdLXaxeCK+L3VTbvTiOLu3GQlmfwhL1qkFVm7bo3ols6ic1DZJC/AsOFwQNIzDVNKD92CX3UfMdrXYvIq6j++DXQmSgBn8dN5t2ezJRwJn+ac6SFrsc72tlGoyRjVNlEZ9hKr7fV6LR8OXW/7lhP3kqH0xJGbXLGgeD0W4/QykZ43ZcdMFPXZZsM+bOl0n+U6C10odoyHWOdjv0fsbKGNvR9FuuRi9TBV7RzU/8NedYWm7kdwtHo+ZlQJj4c++2Ei464u3daQlbjROIo9HXoxtxJIFZhZRbJ0A6DugIT4CHtjpbP0M6JG2xYwj/x3BL/vAcUJj15YV1C6Kap6wSdiFtC2eykcBoIE6tX6xJPv7zkKY2hAdp+vDVvPwsyRmfFi9Z5O1W4zE/0U1cdqM4xp0TlBLc9BrmfL3JJRIkLIXkwItwFG4dcIo8+98Og9DyB5UMWooWVq3iU91Wz74GH0Kc8X1s9LcXMvC4n5q1P2rnvlSrOo2qGNBicLA4etkWkG9vaTvzfPjlDdx2O4JexOglH/bFU=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB4951.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(186003)(66946007)(2906002)(55016002)(66446008)(64756008)(66556008)(76116006)(4326008)(71200400001)(8936002)(66476007)(966005)(38100700002)(53546011)(9686003)(7696005)(52536014)(6506007)(86362001)(7416002)(83380400001)(122000001)(508600001)(5660300002)(33656002)(8676002)(316002)(38070700005)(6916009)(54906003)(15650500001)(26005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?bT09ehGMeuVqZcVg+JJSUxBuAqEE0r81iVU8ICaoRryThGgUuqI28q4gaus1?=
- =?us-ascii?Q?bPwTpgNDr+0mAoWbIomlf7B01UTCICnMG0tM/3KYx+Jei2I6T351KyjZzaSR?=
- =?us-ascii?Q?sw0NGdDu+F/GpySqrcGMl01YjlTCEZeq3UXwOTAxPwg69gbygzlyREWVHfjS?=
- =?us-ascii?Q?5Ov4aMaX1wVZ8HofdoLwOsrSpk5fcgv41pQXomZsO9dzwzNT1BV4pcg07Q+d?=
- =?us-ascii?Q?zQ09uQ/1Y0rwBS591oxaqFdrRNSitwH15SZa6Fu71VEhikPDC+6fHSKw1u5w?=
- =?us-ascii?Q?Vnu0RiMA8kCDyYQNgsSVTf2AJhr0W5hlj+1hRzlZieVd5ndMtGPaB1asgLxA?=
- =?us-ascii?Q?5W1VOGDUvmFC48Ajq1cqPJUVe9S5UcVDOZRzMN7vWUMq/LHy2rk+V+ZEQSF7?=
- =?us-ascii?Q?1zQJehQQQbD6GgNKTSMT9rQijGZUkg6ksT9bnFypO51iEdXBVL8POTQyEZcK?=
- =?us-ascii?Q?tr7MGSZ4QFKnTnkxwe5a76iLQlUxXJ5gq31hIdCx1u5UwWmEUoBcbsOxkuyw?=
- =?us-ascii?Q?NzjOShaOrBOunVd8IDNQb6wcB7yASUbROeH2duhgnQrcGLOVLSgpnDHaR0lE?=
- =?us-ascii?Q?o03Q8mrSt/W9+UMmAHm1TRGOe3woDA/haS5vibRTjqYE+mBO1mOvvG1Rx0jd?=
- =?us-ascii?Q?MM8mkx7QGrQml6D0D1ygggKm5OALjwHGgdVoa6Mf3t+GqvqmXmRIH9Xynfe3?=
- =?us-ascii?Q?8LgIXsK61aCuwDPgz1RQhMpWeF4Z2UNqTfvAmgLV1vKff30vsNxcqZZkAONS?=
- =?us-ascii?Q?pHDuBxnk2uAkzf81q1WD5LUpapuBs78nOMFW3yLOt8sQVOCnKEoa0ouOZOMn?=
- =?us-ascii?Q?/4mVPdmHIoVtFtfDPSnKKlOilRlmSGzdsxy2r4trHG26KiNtxRLBNfjiL7qB?=
- =?us-ascii?Q?G0pdQyTyymPJ89yxdNAXtkV0WF/MdeDMoLGdsj/qTrSpn73VUEpvpOOOmlhy?=
- =?us-ascii?Q?ip1wRkn8o3DYQNly1GeC0SPC/uyACQxDieTtPTVLMFjkj+zjypWMJTxaPG0L?=
- =?us-ascii?Q?zvdXSxLoedAjO+F+8ctChdHyf80SBaMWWYjCtiU3TsZGsBvPodrQO+RrJCeI?=
- =?us-ascii?Q?AzpdY72oJ/O/DEjmSTFpIriLQUuXXzQGXCGzwNbBMmtyF5Mdkv8DtiSHsDd2?=
- =?us-ascii?Q?vo0rzb5bmZ9KxuG5LeiXgIRyQ/hS9Z5yACCfJ0Ru53TPbwdhtHvhTLp/j8b9?=
- =?us-ascii?Q?uSsKijQdamKPrqhwP94+YbB8KZ5TaS3jBsIqAqqoce4TcjkPKxROwwsOOQA3?=
- =?us-ascii?Q?0THrU+Y47K3EOVBrfniTFmYIR++0TuLeFmBdFYrC7wKVxBDqjMYLsQ5Ob2La?=
- =?us-ascii?Q?gp4=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB4951.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2dd6e67c-ec32-4dd7-4ae7-08d9729f28c3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Sep 2021 08:03:35.7097
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Dk8UMy1RbpiQ7M4xRu9fNel+e/1GBvQsrL9J21GRQMXbo/zKriNt1sLjAUx1blkpr/oy69Da6T40SuXDAuuq83N4Gw+BFKoclIirrvQKGOY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB5143
-X-OriginatorOrg: intel.com
+        id S1348118AbhIHIWn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Sep 2021 04:22:43 -0400
+Received: from mail.loongson.cn ([114.242.206.163]:47460 "EHLO loongson.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1347802AbhIHIWm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Sep 2021 04:22:42 -0400
+Received: from linux.localdomain (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9CxVOY2cjhh5Y0BAA--.6828S2;
+        Wed, 08 Sep 2021 16:20:08 +0800 (CST)
+From:   Tiezhu Yang <yangtiezhu@loongson.cn>
+To:     Shubham Bansal <illusionist.neo@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Paul Burton <paulburton@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        naveen.n.rao@linux.ibm.com, Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Luke Nelson <luke.r.nels@gmail.com>,
+        Xi Wang <xi.wang@gmail.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>, bjorn@kernel.org,
+        davem@davemloft.net
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-riscv@lists.infradead.org, sparclinux@vger.kernel.org
+Subject: [RFC PATCH bpf-next] bpf: Make actual max tail call count as MAX_TAIL_CALL_CNT
+Date:   Wed,  8 Sep 2021 16:20:06 +0800
+Message-Id: <1631089206-5931-1-git-send-email-yangtiezhu@loongson.cn>
+X-Mailer: git-send-email 2.1.0
+X-CM-TRANSID: AQAAf9CxVOY2cjhh5Y0BAA--.6828S2
+X-Coremail-Antispam: 1UD129KBjvJXoW3JFyUWF4kuFW8Xr18XF47Arb_yoWfXw48pr
+        18JwnakrWvqw15Aa4xJayUWw4UKF4vgFW7KFn8CFWSyanFvr9rWF13Kw15ZFZ0vrW8Jw4r
+        XFZ0kr13C3WkXwUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvlb7Iv0xC_Kw4lb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I2
+        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
+        A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xII
+        jxv20xvEc7CjxVAFwI0_Cr0_Gr1UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwV
+        C2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC
+        0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Gr0_Cr
+        1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JM4IIrI8v6xkF7I0E8cxan2IY
+        04v7MxkIecxEwVAFwVW8ZwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8Jw
+        C20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAF
+        wI0_Wrv_Gr1UMIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7
+        IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvE
+        x4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvj
+        DU0xZFpf9x07bwc_fUUUUU=
+X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+In the current code, the actual max tail call count is 33 which is greater
+than MAX_TAIL_CALL_CNT, this is not consistent with the intended meaning
+in the commit 04fd61ab36ec ("bpf: allow bpf programs to tail-call other
+bpf programs"):
 
+"The chain of tail calls can form unpredictable dynamic loops therefore
+tail_call_cnt is used to limit the number of calls and currently is set
+to 32."
 
-> -----Original Message-----
-> From: Jakub Kicinski <kuba@kernel.org>
-> Sent: Tuesday, September 7, 2021 9:48 PM
-> Subject: Re: [PATCH net-next 1/2] rtnetlink: Add new RTM_GETEECSTATE
-> message to get SyncE status
->=20
-> On Tue, 7 Sep 2021 15:47:05 +0000 Machnikowski, Maciej wrote:
-> > > > It can be either in FW or in Linux - depending on the deployment.
-> > > > We try to define the API that would enable Linux to manage that.
-> > >
-> > > We should implement the API for Linux to manage things from the get
-> go.
-> >
-> > Yep! Yet let's go one step at a time. I believe once we have the basics=
- (EEC
-> > monitoring and recovered clock configuration) we'll be able to implemen=
-t
-> > a basic functionality - and add bells and whistles later on, as there a=
-re more
-> > capabilities that we could support in SW.
->=20
-> The set API may shape how the get API looks. We need a minimal viable
-> API where the whole control part of it is not "firmware or proprietary
-> tools take care of that".
->=20
-> Do you have public docs on how the whole solution works?
+Additionally, after commit 874be05f525e ("bpf, tests: Add tail call test
+suite"), we can see there exists failed testcase.
 
-The best reference would be my netdev 0x15 tutorial:
-https://netdevconf.info/0x15/session.html?Introduction-to-time-synchronizat=
-ion-over-Ethernet
-The SyncE API considerations starts ~54:00, but basically we need API for:
-- Controlling the lane to pin mapping for clock recovery
-- Check the EEC/DPLL state and see what's the source of reference frequency
-(in more advanced deployments)
-- control additional input and output pins (GNSS input, external inputs, re=
-covered
-  frequency reference)
-=20
-> > > > The DPLL will operate on pins, so it will have a pin connected from=
- the
-> > > > MAC/PHY that will have the recovered clock, but the recovered clock
-> > > > can be enabled from any port/lane. That information is kept in the
-> > > > MAC/PHY and the DPLL side will not be aware who it belongs to.
-> > >
-> > > So the clock outputs are muxed to a single pin at the Ethernet IP
-> > > level, in your design. I wonder if this is the common implementation
-> > > and therefore if it's safe to bake that into the API. Input from othe=
-r
-> > > vendors would be great...
-> >
-> > I believe this is the state-of-art: here's the Broadcom public one
-> > https://docs.broadcom.com/doc/1211168567832, I believe Marvel
-> > has similar solution. But would also be happy to hear others.
->=20
-> Interesting. That reveals the need for also marking the backup
-> (/secondary) clock.
+On all archs when CONFIG_BPF_JIT_ALWAYS_ON is not set:
+ # echo 0 > /proc/sys/net/core/bpf_jit_enable
+ # modprobe test_bpf
+ # dmesg | grep -w FAIL
+ Tail call error path, max count reached jited:0 ret 34 != 33 FAIL
 
-That's optional, but useful. And here's where we need a feedback
-on which port/lane is currently used, as the switch may be automatic
+On some archs:
+ # echo 1 > /proc/sys/net/core/bpf_jit_enable
+ # modprobe test_bpf
+ # dmesg | grep -w FAIL
+ Tail call error path, max count reached jited:1 ret 34 != 33 FAIL
 
-> Have you seen any docs on how systems with discreet PHY ASICs mux
-> the clocks?
+with this patch, make the actual max tail call count as MAX_TAIL_CALL_CNT,
+at the same time, the above failed testcase can be fixed.
 
-Yes - unfortunately they are not public :(
+Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+---
 
-=20
-> > > Also do I understand correctly that the output of the Ethernet IP
-> > > is just the raw Rx clock once receiver is locked and the DPLL which
-> > > enum if_synce_state refers to is in the time IP, that DPLL could be
-> > > driven by GNSS etc?
-> >
-> > Ethernet IP/PHY usually outputs a divided clock signal (since it's
-> > easier to route) derived from the RX clock.
-> > The DPLL connectivity is vendor-specific, as you can use it to connect
-> > some external signals, but you can as well just care about relying
-> > the SyncE clock and only allow recovering it and passing along
-> > the QL info when your EEC is locked. That's why I backed up from
-> > a full DPLL implementation in favor of a more generic EEC clock.
->=20
-> What is an ECC clock? To me the PLL state in the Ethernet port is the
-> state of the recovered clock. enum if_eec_state has values like
-> holdover which seem to be more applicable to the "system wide" PLL.
+Hi all,
 
-EEC is Ethernet Equipment Clock. In most cases this will be a DPLL, but tha=
-t's
-not mandatory and I believe it may be different is switches where
-you only need to drive all ports TX from a single frequency source. In this
-case the DPLL can be embedded in the multiport PHY,
-=20
-> Let me ask this - if one port is training the link and the other one has
-> the lock and is the source - what state will be reported for each port?
+This is a RFC patch, if I am wrong or I missed something,
+please let me know, thank you!
 
-In this case the port that has the lock source will report the lock and=20
-the EEC_SRC_PORT flag. The port that trains the link will show the
-lock without the flag and once it completes the training sequence it will
-use the EEC's frequency to transmit the data so that the next hop is able
-to synchronize its EEC to the incoming RX frequency
+ arch/arm/net/bpf_jit_32.c         | 11 ++++++-----
+ arch/arm64/net/bpf_jit_comp.c     |  7 ++++---
+ arch/mips/net/ebpf_jit.c          |  4 ++--
+ arch/powerpc/net/bpf_jit_comp32.c |  4 ++--
+ arch/powerpc/net/bpf_jit_comp64.c | 12 ++++++------
+ arch/riscv/net/bpf_jit_comp32.c   |  4 ++--
+ arch/riscv/net/bpf_jit_comp64.c   |  4 ++--
+ arch/sparc/net/bpf_jit_comp_64.c  |  8 ++++----
+ kernel/bpf/core.c                 |  4 ++--
+ 9 files changed, 30 insertions(+), 28 deletions(-)
 
-> > The Time IP is again relative and vendor-specific. If SyncE is deployed
-> > alongside PTP it will most likely be tightly coupled, but if you only
-> > care about having a frequency source - it's not mandatory and it can be
-> > as well in the PHY IP.
->=20
-> I would not think having just the freq is very useful.
+diff --git a/arch/arm/net/bpf_jit_32.c b/arch/arm/net/bpf_jit_32.c
+index a951276..39d9ae9 100644
+--- a/arch/arm/net/bpf_jit_32.c
++++ b/arch/arm/net/bpf_jit_32.c
+@@ -1180,18 +1180,19 @@ static int emit_bpf_tail_call(struct jit_ctx *ctx)
+ 
+ 	/* tmp2[0] = array, tmp2[1] = index */
+ 
+-	/* if (tail_call_cnt > MAX_TAIL_CALL_CNT)
+-	 *	goto out;
++	/*
+ 	 * tail_call_cnt++;
++	 * if (tail_call_cnt > MAX_TAIL_CALL_CNT)
++	 *	goto out;
+ 	 */
++	tc = arm_bpf_get_reg64(tcc, tmp, ctx);
++	emit(ARM_ADDS_I(tc[1], tc[1], 1), ctx);
++	emit(ARM_ADC_I(tc[0], tc[0], 0), ctx);
+ 	lo = (u32)MAX_TAIL_CALL_CNT;
+ 	hi = (u32)((u64)MAX_TAIL_CALL_CNT >> 32);
+-	tc = arm_bpf_get_reg64(tcc, tmp, ctx);
+ 	emit(ARM_CMP_I(tc[0], hi), ctx);
+ 	_emit(ARM_COND_EQ, ARM_CMP_I(tc[1], lo), ctx);
+ 	_emit(ARM_COND_HI, ARM_B(jmp_offset), ctx);
+-	emit(ARM_ADDS_I(tc[1], tc[1], 1), ctx);
+-	emit(ARM_ADC_I(tc[0], tc[0], 0), ctx);
+ 	arm_bpf_put_reg64(tcc, tmp, ctx);
+ 
+ 	/* prog = array->ptrs[index]
+diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
+index 41c23f4..5d6c843 100644
+--- a/arch/arm64/net/bpf_jit_comp.c
++++ b/arch/arm64/net/bpf_jit_comp.c
+@@ -286,14 +286,15 @@ static int emit_bpf_tail_call(struct jit_ctx *ctx)
+ 	emit(A64_CMP(0, r3, tmp), ctx);
+ 	emit(A64_B_(A64_COND_CS, jmp_offset), ctx);
+ 
+-	/* if (tail_call_cnt > MAX_TAIL_CALL_CNT)
+-	 *     goto out;
++	/*
+ 	 * tail_call_cnt++;
++	 * if (tail_call_cnt > MAX_TAIL_CALL_CNT)
++	 *     goto out;
+ 	 */
++	emit(A64_ADD_I(1, tcc, tcc, 1), ctx);
+ 	emit_a64_mov_i64(tmp, MAX_TAIL_CALL_CNT, ctx);
+ 	emit(A64_CMP(1, tcc, tmp), ctx);
+ 	emit(A64_B_(A64_COND_HI, jmp_offset), ctx);
+-	emit(A64_ADD_I(1, tcc, tcc, 1), ctx);
+ 
+ 	/* prog = array->ptrs[index];
+ 	 * if (prog == NULL)
+diff --git a/arch/mips/net/ebpf_jit.c b/arch/mips/net/ebpf_jit.c
+index 3a73e93..029fc34 100644
+--- a/arch/mips/net/ebpf_jit.c
++++ b/arch/mips/net/ebpf_jit.c
+@@ -617,14 +617,14 @@ static int emit_bpf_tail_call(struct jit_ctx *ctx, int this_idx)
+ 	b_off = b_imm(this_idx + 1, ctx);
+ 	emit_instr(ctx, bne, MIPS_R_AT, MIPS_R_ZERO, b_off);
+ 	/*
+-	 * if (TCC-- < 0)
++	 * if (--TCC < 0)
+ 	 *     goto out;
+ 	 */
+ 	/* Delay slot */
+ 	tcc_reg = (ctx->flags & EBPF_TCC_IN_V1) ? MIPS_R_V1 : MIPS_R_S4;
+ 	emit_instr(ctx, daddiu, MIPS_R_T5, tcc_reg, -1);
+ 	b_off = b_imm(this_idx + 1, ctx);
+-	emit_instr(ctx, bltz, tcc_reg, b_off);
++	emit_instr(ctx, bltz, MIPS_R_T5, b_off);
+ 	/*
+ 	 * prog = array->ptrs[index];
+ 	 * if (prog == NULL)
+diff --git a/arch/powerpc/net/bpf_jit_comp32.c b/arch/powerpc/net/bpf_jit_comp32.c
+index beb12cb..b5585ad 100644
+--- a/arch/powerpc/net/bpf_jit_comp32.c
++++ b/arch/powerpc/net/bpf_jit_comp32.c
+@@ -221,12 +221,12 @@ static void bpf_jit_emit_tail_call(u32 *image, struct codegen_context *ctx, u32
+ 	PPC_BCC(COND_GE, out);
+ 
+ 	/*
++	 * tail_call_cnt++;
+ 	 * if (tail_call_cnt > MAX_TAIL_CALL_CNT)
+ 	 *   goto out;
+ 	 */
+-	EMIT(PPC_RAW_CMPLWI(_R0, MAX_TAIL_CALL_CNT));
+-	/* tail_call_cnt++; */
+ 	EMIT(PPC_RAW_ADDIC(_R0, _R0, 1));
++	EMIT(PPC_RAW_CMPLWI(_R0, MAX_TAIL_CALL_CNT));
+ 	PPC_BCC(COND_GT, out);
+ 
+ 	/* prog = array->ptrs[index]; */
+diff --git a/arch/powerpc/net/bpf_jit_comp64.c b/arch/powerpc/net/bpf_jit_comp64.c
+index b87a63d..bb15cc4 100644
+--- a/arch/powerpc/net/bpf_jit_comp64.c
++++ b/arch/powerpc/net/bpf_jit_comp64.c
+@@ -227,6 +227,12 @@ static void bpf_jit_emit_tail_call(u32 *image, struct codegen_context *ctx, u32
+ 	PPC_BCC(COND_GE, out);
+ 
+ 	/*
++	 * tail_call_cnt++;
++	 */
++	EMIT(PPC_RAW_ADDI(b2p[TMP_REG_1], b2p[TMP_REG_1], 1));
++	PPC_BPF_STL(b2p[TMP_REG_1], 1, bpf_jit_stack_tailcallcnt(ctx));
++
++	/*
+ 	 * if (tail_call_cnt > MAX_TAIL_CALL_CNT)
+ 	 *   goto out;
+ 	 */
+@@ -234,12 +240,6 @@ static void bpf_jit_emit_tail_call(u32 *image, struct codegen_context *ctx, u32
+ 	EMIT(PPC_RAW_CMPLWI(b2p[TMP_REG_1], MAX_TAIL_CALL_CNT));
+ 	PPC_BCC(COND_GT, out);
+ 
+-	/*
+-	 * tail_call_cnt++;
+-	 */
+-	EMIT(PPC_RAW_ADDI(b2p[TMP_REG_1], b2p[TMP_REG_1], 1));
+-	PPC_BPF_STL(b2p[TMP_REG_1], 1, bpf_jit_stack_tailcallcnt(ctx));
+-
+ 	/* prog = array->ptrs[index]; */
+ 	EMIT(PPC_RAW_MULI(b2p[TMP_REG_1], b2p_index, 8));
+ 	EMIT(PPC_RAW_ADD(b2p[TMP_REG_1], b2p[TMP_REG_1], b2p_bpf_array));
+diff --git a/arch/riscv/net/bpf_jit_comp32.c b/arch/riscv/net/bpf_jit_comp32.c
+index e649742..1608d94 100644
+--- a/arch/riscv/net/bpf_jit_comp32.c
++++ b/arch/riscv/net/bpf_jit_comp32.c
+@@ -800,12 +800,12 @@ static int emit_bpf_tail_call(int insn, struct rv_jit_context *ctx)
+ 
+ 	/*
+ 	 * temp_tcc = tcc - 1;
+-	 * if (tcc < 0)
++	 * if (temp_tcc < 0)
+ 	 *   goto out;
+ 	 */
+ 	emit(rv_addi(RV_REG_T1, RV_REG_TCC, -1), ctx);
+ 	off = ninsns_rvoff(tc_ninsn - (ctx->ninsns - start_insn));
+-	emit_bcc(BPF_JSLT, RV_REG_TCC, RV_REG_ZERO, off, ctx);
++	emit_bcc(BPF_JSLT, RV_REG_T1, RV_REG_ZERO, off, ctx);
+ 
+ 	/*
+ 	 * prog = array->ptrs[index];
+diff --git a/arch/riscv/net/bpf_jit_comp64.c b/arch/riscv/net/bpf_jit_comp64.c
+index 3af4131..6e9ba83 100644
+--- a/arch/riscv/net/bpf_jit_comp64.c
++++ b/arch/riscv/net/bpf_jit_comp64.c
+@@ -311,12 +311,12 @@ static int emit_bpf_tail_call(int insn, struct rv_jit_context *ctx)
+ 	off = ninsns_rvoff(tc_ninsn - (ctx->ninsns - start_insn));
+ 	emit_branch(BPF_JGE, RV_REG_A2, RV_REG_T1, off, ctx);
+ 
+-	/* if (TCC-- < 0)
++	/* if (--TCC < 0)
+ 	 *     goto out;
+ 	 */
+ 	emit_addi(RV_REG_T1, tcc, -1, ctx);
+ 	off = ninsns_rvoff(tc_ninsn - (ctx->ninsns - start_insn));
+-	emit_branch(BPF_JSLT, tcc, RV_REG_ZERO, off, ctx);
++	emit_branch(BPF_JSLT, RV_REG_T1, RV_REG_ZERO, off, ctx);
+ 
+ 	/* prog = array->ptrs[index];
+ 	 * if (!prog)
+diff --git a/arch/sparc/net/bpf_jit_comp_64.c b/arch/sparc/net/bpf_jit_comp_64.c
+index 9a2f20c..50d914c 100644
+--- a/arch/sparc/net/bpf_jit_comp_64.c
++++ b/arch/sparc/net/bpf_jit_comp_64.c
+@@ -863,6 +863,10 @@ static void emit_tail_call(struct jit_ctx *ctx)
+ 	emit_branch(BGEU, ctx->idx, ctx->idx + OFFSET1, ctx);
+ 	emit_nop(ctx);
+ 
++	emit_alu_K(ADD, tmp, 1, ctx);
++	off = BPF_TAILCALL_CNT_SP_OFF;
++	emit(ST32 | IMMED | RS1(SP) | S13(off) | RD(tmp), ctx);
++
+ 	off = BPF_TAILCALL_CNT_SP_OFF;
+ 	emit(LD32 | IMMED | RS1(SP) | S13(off) | RD(tmp), ctx);
+ 	emit_cmpi(tmp, MAX_TAIL_CALL_CNT, ctx);
+@@ -870,10 +874,6 @@ static void emit_tail_call(struct jit_ctx *ctx)
+ 	emit_branch(BGU, ctx->idx, ctx->idx + OFFSET2, ctx);
+ 	emit_nop(ctx);
+ 
+-	emit_alu_K(ADD, tmp, 1, ctx);
+-	off = BPF_TAILCALL_CNT_SP_OFF;
+-	emit(ST32 | IMMED | RS1(SP) | S13(off) | RD(tmp), ctx);
+-
+ 	emit_alu3_K(SLL, bpf_index, 3, tmp, ctx);
+ 	emit_alu(ADD, bpf_array, tmp, ctx);
+ 	off = offsetof(struct bpf_array, ptrs);
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 9f4636d..8edb1c3 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -1564,10 +1564,10 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn)
+ 
+ 		if (unlikely(index >= array->map.max_entries))
+ 			goto out;
+-		if (unlikely(tail_call_cnt > MAX_TAIL_CALL_CNT))
+-			goto out;
+ 
+ 		tail_call_cnt++;
++		if (unlikely(tail_call_cnt > MAX_TAIL_CALL_CNT))
++			goto out;
+ 
+ 		prog = READ_ONCE(array->ptrs[index]);
+ 		if (!prog)
+-- 
+2.1.0
 
-This depends on the deployment. There are couple popular frequencies
-Most popular are 2,048 kHz, 10 MHz and 64 kHz. There are many=20
-deployments that only require frequency sync without the phase
-and/or time. I.e. if you deploy frequency division duplex you only need the
-frequency reference, and the higher frequency you have - the faster you can
-lock to it.
-=20
-> > Also I think I will strip the reported states to the bare minimum defin=
-ed
-> > in the ITU-T G.781 instead of reusing the states that were already defi=
-ned
-> > for a specific DPLL.
-> >
-> > > > This is the right thinking. The DPLL can also have different extern=
-al
-> sources,
-> > > > like the GNSS, and can also drive different output clocks. But for =
-the
-> most
-> > > > basic SyncE implementation, which only runs on a recovered clock, w=
-e
-> won't
-> > > > need the DPLL subsystem.
-> > >
-> > > The GNSS pulse would come in over an external pin, tho, right? Your
-> > > earlier version of the patchset had GNSS as an enum value, how would
-> > > the driver / FW know that a given pin means GNSS?
-> >
-> > The GNSS 1PPS will more likely go directly to the "full" DPLL.
-> > The pin topology can be derived from FW or any vendor-specific way of
-> mapping
-> > pins to their sources. And, in "worst" case can just be hardcoded for a
-> specific
-> > device.
