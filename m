@@ -2,76 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08510404899
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 12:40:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0D6C4048EE
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 13:08:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234134AbhIIKlQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 06:41:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55798 "EHLO mail.kernel.org"
+        id S234892AbhIILJu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 07:09:50 -0400
+Received: from mout.gmx.net ([212.227.17.20]:48793 "EHLO mout.gmx.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233654AbhIIKlP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Sep 2021 06:41:15 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 1815361051;
-        Thu,  9 Sep 2021 10:40:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631184006;
-        bh=HtLo+QZon2GmCMDp/1+xD0TFN+fnYB2CvGWRaYOJG2A=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=bshU4qwJNO6RRdGU05GqxqvtKaNnUyT4m7xyxkk30j/b5mGKSDSj4pnGJkJQpuXf2
-         o/LJsfF3JZLFnlPDwenhbb3XQ/D33IeSQSXid6cl2a1tbBEEnW3mmETbRhOtsk0lsK
-         x1x++w33zyqX/cE8u0o7qySpob9DWlHWG8CiBpV2GAKfV1KUr7dArV+MZJuta1nXjs
-         g2g5QniIVtH7qTWl6t9Kt1OHRBgef5g6QLNaGO9I8x2NFGixanX/IUGs2/iqrBDPgs
-         N4JKNx8KMiGnKJ2jJxfpd2qpsi21CcmDKS92WS4RTUKzlNG3NX0hJYddOYOhz2zVor
-         qRuOUjguss09g==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 093496098C;
-        Thu,  9 Sep 2021 10:40:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S233990AbhIILJt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Sep 2021 07:09:49 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1631185707;
+        bh=AAIXTUSD2D+UBvM2ZbhnEuK+blZbIXOcoQG3/MEal9c=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=LCfkrbakCGoPJrMf8RHEpkgMV5b+E3D09/Pg2P1MUZSFFEMaSSZgltRyTPpxF6h2F
+         e+IOd/dFGn50ftH714QpkR44YqrXyQCiELHsslEDH0rjHlOyyxO4KA9VujhYbG7/cH
+         cPZ1fgbrnHXxHMb8AY1ALSQDWy2kVfGrr9tDmGDw=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.178.51] ([46.223.119.124]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MacOQ-1mvgiv1erS-00c9cG; Thu, 09
+ Sep 2021 13:08:27 +0200
+Subject: Re: [PATCH 0/3] Fix for KSZ DSA switch shutdown
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     p.rosenberger@kunbus.com, woojung.huh@microchip.com,
+        UNGLinuxDriver@microchip.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210909095324.12978-1-LinoSanfilippo@gmx.de>
+ <20210909101451.jhfk45gitpxzblap@skbuf>
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Message-ID: <81c1a19f-c5dc-ab4a-76ff-59704ea95849@gmx.de>
+Date:   Thu, 9 Sep 2021 13:08:26 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/2] sfc: fallback for lack of xdp tx queues
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163118400603.20005.10629847709385572006.git-patchwork-notify@kernel.org>
-Date:   Thu, 09 Sep 2021 10:40:06 +0000
-References: <20210909092846.18217-1-ihuguet@redhat.com>
-In-Reply-To: <20210909092846.18217-1-ihuguet@redhat.com>
-To:     =?utf-8?b?w43DsWlnbyBIdWd1ZXQgPGlodWd1ZXRAcmVkaGF0LmNvbT4=?=@ci.codeaurora.org
-Cc:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org
+In-Reply-To: <20210909101451.jhfk45gitpxzblap@skbuf>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:/wwtckDhDW6OpxHZAWeZEXMWVj4tAjKBl2xYBkDv++je5LVyan9
+ o7dniwUh87k9qsx5pemOMg5DwMjmDYlHCYZFoLidJVHF3PDlHY4C5Fk6heaox7MuqKRmJG6
+ 64JYZHL7q2FoJ/ZehVGnV50+SfDJMBT43Qwmiwi105qRGzoaanLmnC5AZQp6Sqz9/7zZF2e
+ 2LYfHwQ4ry8REopuR00Vw==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:N6VlbDoFWT8=:5hhJqPmPxuzwCWPyL0fWon
+ vddAbhotSJBIPWiXLDF86CUJzkTc+yyQ9MhQFtbpUkEiwR87YAjE59YLfaJnMiA/yc37UsNhh
+ aPAILjj8A2FoskO2N0oGSP18hpwrTx/MXWUiEZD/OsWWcC3cyDQbjTIy8CevngSwm9DpnarSK
+ fORQ9GKPmXFs180y1r4DSd/LbATypPOVDWl0g3nQCB3QAYyUOV2+Pwk3MHpm/yJpYTJ/+Bgl6
+ LPu3XfKBkB4IbIUovTFUpdZ22stvNjSREjHoX8TTN/oQzphmT66F+3MUui2pAO2KPhsRoJegX
+ X026HXIz4CZJGYVI4syJoyVfjn4S40afBFCpPUwVe0wJtLcDIHShJKwUrbr8plzmGNWpU73Dq
+ BxgE59YtSVcr/McecZCrCwE6DbAU3b5tYIq9jQbGyDCoxV1lyapR7KrhAbGrrXUTxZYFDMBzf
+ fcAuXXY7JFE769LpPlu5BBql9uF7ww+wp7Jzd4CeUYgsbwkWX3ckZB5ZUQsL91oCt7t8IGyCk
+ fRTiejOJVJQnUQr4+OKrcec6KS5gnqOogscdu9JdbH4eVF7kIiw+9ckr3a1HEzM4d79lIWHDI
+ Gev0htMlxFfw8nPVvh6E5E+iOzt59C4P0eK/LCajSltFidcCwW1r1vBH9FpXw3+lkVsfF0pug
+ sq4xX2UcEk43XxYBW/zvF+HxQTnG8xmRiZFXFfbPU1lwhBBkLbsdxgFDwHt9z3pH3MAP5w1wt
+ xbmw0NjxetIhKIitUYaOphCb+ETTrCBaBfRhB7PaSFUfPx2MgkuqERRzKwdRkO5VjFmgPxLyG
+ Rm5adkRxOpvtLwk3dAjEBN+KePb/Tq4IjX/Uq4Kos4NAeq8z5SiJhDxeOEva77Ml+jfmi/AkZ
+ 7nVsepjwD9a3hlEg6dVWxKWNtvzsJrjCnl5LRS67Wfn1UduOvCKvM1aN2cgHPg0JgValsEhAy
+ 03R07yCaPgY9dMwK1vDLB74lWIi4wzMe0KuJFo6I5mnIqZlDZQVtFqF2hqybbNSEuXxwr3QFn
+ 9kavCjKNJuhVoFk4i53rz/akAkkWoMY/vnaWIHUGhhP9Amgayvn5xuhCyiGLommHWr9pf14jW
+ mdw7WTp1zTpJcg=
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This series was applied to netdev/net.git (refs/heads/master):
+Hi,
 
-On Thu,  9 Sep 2021 11:28:44 +0200 you wrote:
-> If there are not enough hardware resources to allocate one tx queue per
-> CPU for XDP, XDP_TX and XDP_REDIRECT actions were unavailable, and using
-> them resulted each time with the packet being drop and this message in
-> the logs: XDP TX failed (-22)
-> 
-> These patches implement 2 fallback solutions for 2 different situations
-> that might happen:
-> 1. There are not enough free resources for all the tx queues, but there
->    are some free resources available
-> 2. There are not enough free resources at all for tx queues.
-> 
-> [...]
+On 09.09.21 at 12:14, Vladimir Oltean wrote:
+>
+> Can you try this patch
+>
+> commit 07b90056cb15ff9877dca0d8f1b6583d1051f724
+> Author: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Date:   Tue Jan 12 01:09:43 2021 +0200
+>
+>     net: dsa: unbind all switches from tree when DSA master unbinds
+>
+>     Currently the following happens when a DSA master driver unbinds whi=
+le
+>     there are DSA switches attached to it:
+>
 
-Here is the summary with links:
-  - [net,1/2] sfc: fallback for lack of xdp tx queues
-    https://git.kernel.org/netdev/net/c/415446185b93
-  - [net,2/2] sfc: last resort fallback for lack of xdp tx queues
-    https://git.kernel.org/netdev/net/c/6215b608a8c4
+This patch is already part of the kernel which shows the described shutdow=
+n issues.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Regards,
+Lino
