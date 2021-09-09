@@ -2,187 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BA4F404725
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 10:40:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 415DE40474A
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 10:50:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231972AbhIIIll (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 04:41:41 -0400
-Received: from mout.web.de ([212.227.15.4]:34745 "EHLO mout.web.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231281AbhIIIlk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Sep 2021 04:41:40 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1631176809;
-        bh=TDYtB2JcYZdl2exMRt0DaFOKdnm/cLDcrA9GN52GAs0=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=fSfy+5e1UPRsu1uF5sKdX2j2N0MwJp8oKakSA3Ghq6orbX06lTOtPVkiWJ99uuhZ0
-         NaXpF3Ivxq9zMQqXvRpAqqBJoRl7cYTTVwILl0SIyZaf7l7p0BWVAkvzZ0XJ1Plitt
-         UJvfR2yjurGaWnUlIemidx0jAf3QYSK4IYIwIUpg=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.27] ([89.14.20.203]) by smtp.web.de (mrweb002
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0Lp7Lg-1mu27Z2Gcm-00esRM; Thu, 09
- Sep 2021 10:40:09 +0200
-Subject: Re: [BUG] Re: [PATCH] brcmfmac: use ISO3166 country code and 0 rev as
- fallback
-To:     Shawn Guo <shawn.guo@linaro.org>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-rockchip@lists.infradead.org" 
-        <linux-rockchip@lists.infradead.org>
-References: <20210425110200.3050-1-shawn.guo@linaro.org>
- <cb7ac252-3356-8ef7-fcf9-eb017f5f161f@web.de> <20210908010057.GB25255@dragon>
- <100f5bef-936c-43f1-9b3e-a477a0640d84@web.de> <20210909022033.GC25255@dragon>
-From:   Soeren Moch <smoch@web.de>
-Message-ID: <56e9a81a-4e05-cf5e-a8df-782ac75fdbe6@web.de>
-Date:   Thu, 9 Sep 2021 10:39:58 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S232375AbhIIIvM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 04:51:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53306 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231892AbhIIIvF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 04:51:05 -0400
+Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55490C061757
+        for <netdev@vger.kernel.org>; Thu,  9 Sep 2021 01:49:56 -0700 (PDT)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed20:7d44:646d:3ffb:9bbf])
+        by albert.telenet-ops.be with bizsmtp
+        id rkpq2501H3eH4vN06kpqre; Thu, 09 Sep 2021 10:49:54 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1mOFkk-003Cqm-9d; Thu, 09 Sep 2021 10:49:50 +0200
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1mOFkj-00Aj4l-2S; Thu, 09 Sep 2021 10:49:49 +0200
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     Magnus Damm <magnus.damm@gmail.com>
+Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
+        Adam Ford <aford173@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        linux-renesas-soc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH 0/9] renesas: Add compatible properties to Ethernet PHY nodes
+Date:   Thu,  9 Sep 2021 10:49:36 +0200
+Message-Id: <cover.1631174218.git.geert+renesas@glider.be>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20210909022033.GC25255@dragon>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Content-Language: en-GB
-X-Provags-ID: V03:K1:vnwaoO3CKyw/+P4arC4J3P4RilNP9UxvfkXbCFPrAJIrWhE4fas
- zfTZToRbEd21n7qaSwo4h+jRz9xC+YhpWn/OS1t3M8iT/0zs6uO3+S73pyeuhEFRB0IvOU8
- I/94oMJXXOT0uxGH7UlbWA0XteN5tflAjhTgaPnMOWuINuz1mje6JORCp/jsjdKWz5YmVRS
- j9WpQeEtbJMRd8sn+9QrQ==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:cjiZyj6VQ8M=:tS9nCgiRMtk20B3olBKG1G
- i7vEnrFk/td2e6qasyeRW+yOOPCSHYwaz4rHirW+lqUs9RWqgA3bqShbDqrizKkQ8d2BEAMGY
- 7p322fSSqg0IybRkY3mvn7LlxG2vO/RoXYw84rGUukD1ui1vjmKHBoK30/m3UGs3k2qoTsVOv
- phcAp28BivYXyRd9qBxIZWvCsh0I6p10x36LC1hioLlglqYS4Og0tJ2lAzJwuqqFd+uxRur6D
- FZS4dpVXZKVaO2qwn9plD7sCxjdFl4ZgmnxoKNg4Mt61kjzeq+L7hhbYn1SwtvC+2gxCRpjI1
- DcO9w8RQC+Nnh8DGzMuS/uF1zhbxQIWrGE6NUCIrLktrwG+8AbMKDPTUJI0wjjCWFVwc3LSF9
- zTBpleJ/25MDG+kWSUHWWdlh+Cmr6KjJzbtK2a4Ot9AQO9TlFy0dM4QmRELgyEkExpF6MNWfU
- KQb/PdJfLxT4VBB0gh44zbC5qf29bgf2z4weP3AMBM0t/PPmCLKtjVTBCP5nzOOd2CHp6cqQb
- lypkay97BJ/w2aTojQ0Mzq4nk9/qaXiayn8ejES+MDrk06mEu+Ujwfxff88o53Zcd8FDnxQuH
- PDDrM9wdxmRScumrFQ2WUL2FZ27hQR+xzz7J4V9jQfn7Z3/FDHb8lQRCrx8EhxDmkx0aaetSK
- lU815ldge1H70AojNkvUpzT2I2uith2lQlmYLyw9kX0EyqzHBEY/2EaPvcmNBi5mgSyyd3jQZ
- xEo5sTR7T8UhLJk1GOkGUxv0dUiMp3fQ8ANdpf3zO4nox5cr56qoNKuzWY8ZjudvMsrg7gw/3
- 5BlNOo6DoxMd5OzDRgaXXEht3oRST9umn+9WU4HKVEGcjJHsxlMG9394naDrDaMmRmnsa9Fjs
- U+U4HciMWGkFI9CAJ1UZzunqT56R/ngnqIQbmgLctn7Ds9k1PBj7KYdzc5SxVAqu2P5vf69P+
- 5s4IGfTtIXskEft6YUOIFz8I5wW5jrBkiFF1Sy9KWmO+M9M5An4H0uqtfTNvJYNmwAlxgM6YE
- oHxFB1SB9LR8b0enkJDUl3IP+c9SvO8HlhF2RHf3Tp/G9hmsI21jsaN6mMtb5fkbkPV/mPrTf
- TXF4lrIgIyKIz8=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Shawn,
+	Hi all,
 
-On 09.09.21 04:20, Shawn Guo wrote:
-> On Wed, Sep 08, 2021 at 07:08:06AM +0200, Soeren Moch wrote:
->> Hi Shawn,
->>
->> On 08.09.21 03:00, Shawn Guo wrote:
->>> Hi Soeren,
->>>
->>> On Tue, Sep 07, 2021 at 09:22:52PM +0200, Soeren Moch wrote:
->>>> On 25.04.21 13:02, Shawn Guo wrote:
->>>>> Instead of aborting country code setup in firmware, use ISO3166 coun=
-try
->>>>> code and 0 rev as fallback, when country_codes mapping table is not
->>>>> configured.  This fallback saves the country_codes table setup for r=
-ecent
->>>>> brcmfmac chipsets/firmwares, which just use ISO3166 code and require=
- no
->>>>> revision number.
->>>> This patch breaks wireless support on RockPro64. At least the access
->>>> point is not usable, station mode not tested.
->>>>
->>>> brcmfmac: brcmf_c_preinit_dcmds: Firmware: BCM4359/9 wl0: Mar=C2=A0 6=
- 2017
->>>> 10:16:06 version 9.87.51.7 (r686312) FWID 01-4dcc75d9
->>>>
->>>> Reverting this patch makes the access point show up again with linux-=
-5.14 .
->>> Sorry for breaking your device!
->>>
->>> So it sounds like you do not have country_codes configured for your
->>> BCM4359/9 device, while it needs particular `rev` setup for the ccode
->>> you are testing with.  It was "working" likely because you have a stat=
-ic
->>> `ccode` and `regrev` setting in nvram file.
->> It always has been a mystery to me how country codes are configured for
->> this device. Before I read your patch I did not even know that a
->> translation table is required. Is there some documentation how this is
->> supposed to work? Not sure if this makes a difference, BCM4359/9 is a
->> Cypress device I think, I added mainline support for it some time ago.
-> One way to add the translation table is using DT.  You can find more
-> info and example in following commits:
->
-> b41936227078 ("dt-bindings: bcm4329-fmac: add optional brcm,ccode-map")
-> 1a3ac5c651a0 ("brcmfmac: support parse country code map from DT")
-OK, thanks.
-When one way is to use DT, what is the 'traditional way' to add such table=
-?
+If an Ethernet PHY reset is asserted when the Ethernet driver is
+initialized, the PHY cannot be probed:
 
-And maybe the more interesting question, where can these settings be
-obtained from? The tweaked device specific settings probably from the
-device vendor, good luck!
-But the general country specific settings, as you are obviously
-interested in with your trivial mapping, shouldn't they go into driver
-directly? Only to be overruled when device specific settings are
-available via DT? And of course only for device/firmware combinations
-that support this general mapping, so that other devices with 'unknown
-mapping' are not broken by this enhancement?
->> I have installed different firmware files, brcmfmac4359-sdio.clm_blob,
->> brcmfmac4359-sdio.bin, brcmfmac4359-sdio.txt, the latter also linked as
->> brcmfmac4359-sdio.pine64,rockpro64-2.1.txt. This probably is the nvram
->> file. ccode and regrev are set to zero, which probably means
->> 'international save settings".
-> I'm not sure how this 'international save settings' works for brcmfmac
-> devices.  Do you have more info or any pointers?
-The correct term in this context probably is 'world regulatory domain',
-the most restrictive wifi settings that can be used all over the world.
-This usually is taken as default by cfg80211, apparently also for
-(some?) brcmfmac devices/firmwares.
+    mdio_bus ee700000.ethernet-ffffffff: MDIO device at address 1 is missing
 
-These 'world' settings can be replaced by more permissive country
-specific regulatory domain settings, but for brcmfmac devices this seems
-to be firmware specific and requires this country mapping.
+This happens because the Linux PHY subsystem tries to read the PHY
+Identifier registers before handling PHY reset.  Hence if the PHY reset
+was asserted before, identification fails.
 
-I have seen a country code "00" for the world regulatory domain in the
-past, not sure if this is standard or a device/driver/software specific
-hack and if this can be used for brcmfmac (mapping from string "00" to
-country_code=3D0 ?). For sure here are more experienced wifi developers
-who know better.
->>> But roaming to a different
->>> region will mostly get you a broken WiFi support.  Is it possible to s=
-et
->>> up the country_codes for your device to get it work properly?
->> In linux-5.13 it worked, probably with save settings (not all channels
->> selectable, limited tx power), with linux-5.14 it stopped working, so i=
-t
->> is a regression.
->> I personally would like to learn how all this is configured properly.
->> For general use I think save settings are better than no wifi at all
->> with this patch. This fallback to ISO CC seams to work with newer
->> (Synaptics?) devices only.
-> I do not mind you send a reverting if you have problem to add a proper
-> translation table for your device.  But that would mean I have to add
-> a pretty "meaningless" translation table for my devices :(
->
-Is this not the usual DT policy, that missing optional properties should
-not prevent a device to work, that old dtbs should still work when new
-properties are added?
+An easy way to reproduce this issue is by using kexec to launch a new
+kernel (the PHY reset will be asserted before starting the new kernel),
+or by unbinding and rebinding the Ethernet driver (the PHY reset will be
+asserted during unbind), e.g. on koelsch:
 
-I'm not sure what's the best way forward. A plain revert of this patch
-would at least bring back wifi support for RockPro64 devices with
-existing dtbs. Maybe someone else has a better proposal how to proceed.
+    echo ee700000.ethernet > /sys/bus/platform/drivers/sh-eth/unbind
+    $ echo ee700000.ethernet > /sys/bus/platform/drivers/sh-eth/bind
 
-Regards,
-Soeren
+The recommended approach[1][2] seems to be working around this issue by
+adding compatible values to all ethernet-phy nodes, so Linux can
+identify the PHY at any time, without reading the PHY ID from the
+device, and regardless of the state of the PHY reset line.
 
+Hence this patch series adds such compatible values to all Ethernet PHY
+subnodes representing PHYs on all boards with Renesas ARM and ARM64
+SoCs.  For easier review, I have split the series in one patch per PHY
+model.
+
+On most boards, I could verify the actual PHY ID at runtime[3], on other
+boards I had to resort to schematics.
+
+Kexec and Ethernet driver rebind have been tested on Koelsch and
+Salvator-XS.
+
+I plan to queue these in renesas-devel for v5.16.
+
+Thanks for your comments!
+
+[1] "Re: [PATCH] RFC: net: phy: of phys probe/reset issue"
+    https://lore.kernel.org/r/ade12434-adf2-6ea7-24ce-ce45ad2e1b5e@gmail.com/
+[2] "PHY reset may still be asserted during MDIO probe"
+    https://lore.kernel.org/r/CAMuHMdXno2OUHqsAfO0z43JmGkFehD+FJ2dEjEsr_P53oAAPxA@mail.gmail.com
+[3] The easiest way to obtain the PHY ID is by adding a debug print to
+    drivers/net/phy/phy_device.c:get_phy_c22_id(), _before_ applying
+    this patch.
+
+Geert Uytterhoeven (9):
+  ARM: dts: renesas: Add compatible properties to KSZ8041 Ethernet PHYs
+  ARM: dts: renesas: Add compatible properties to KSZ8081 Ethernet PHYs
+  ARM: dts: renesas: Add compatible properties to KSZ9031 Ethernet PHYs
+  iARM: dts: renesas: Add compatible properties to LAN8710A Ethernet
+    PHYs
+  ARM: dts: renesas: Add compatible properties to RTL8201FL Ethernet
+    PHYs
+  ARM: dts: renesas: Add compatible properties to uPD6061x Ethernet PHYs
+  arm64: dts: renesas: Add compatible properties to AR8031 Ethernet PHYs
+  arm64: dts: renesas: Add compatible properties to KSZ9031 Ethernet
+    PHYs
+  arm64: dts: renesas: Add compatible properties to RTL8211E Ethernet
+    PHYs
+
+ arch/arm/boot/dts/iwg20d-q7-common.dtsi             | 2 ++
+ arch/arm/boot/dts/r7s72100-genmai.dts               | 2 ++
+ arch/arm/boot/dts/r7s72100-gr-peach.dts             | 2 ++
+ arch/arm/boot/dts/r7s72100-rskrza1.dts              | 2 ++
+ arch/arm/boot/dts/r7s9210-rza2mevb.dts              | 2 ++
+ arch/arm/boot/dts/r8a7740-armadillo800eva.dts       | 2 ++
+ arch/arm/boot/dts/r8a7742-iwg21d-q7-dbcm-ca.dts     | 2 ++
+ arch/arm/boot/dts/r8a7742-iwg21d-q7.dts             | 2 ++
+ arch/arm/boot/dts/r8a7743-sk-rzg1m.dts              | 2 ++
+ arch/arm/boot/dts/r8a7745-iwg22d-sodimm.dts         | 2 ++
+ arch/arm/boot/dts/r8a7745-sk-rzg1e.dts              | 2 ++
+ arch/arm/boot/dts/r8a77470-iwg23s-sbc.dts           | 2 ++
+ arch/arm/boot/dts/r8a7790-lager.dts                 | 2 ++
+ arch/arm/boot/dts/r8a7790-stout.dts                 | 2 ++
+ arch/arm/boot/dts/r8a7791-koelsch.dts               | 2 ++
+ arch/arm/boot/dts/r8a7791-porter.dts                | 2 ++
+ arch/arm/boot/dts/r8a7793-gose.dts                  | 2 ++
+ arch/arm/boot/dts/r8a7794-alt.dts                   | 2 ++
+ arch/arm/boot/dts/r8a7794-silk.dts                  | 2 ++
+ arch/arm64/boot/dts/renesas/beacon-renesom-som.dtsi | 2 ++
+ arch/arm64/boot/dts/renesas/cat875.dtsi             | 2 ++
+ arch/arm64/boot/dts/renesas/draak.dtsi              | 2 ++
+ arch/arm64/boot/dts/renesas/ebisu.dtsi              | 2 ++
+ arch/arm64/boot/dts/renesas/hihope-rzg2-ex.dtsi     | 2 ++
+ arch/arm64/boot/dts/renesas/r8a77970-eagle.dts      | 2 ++
+ arch/arm64/boot/dts/renesas/r8a77970-v3msk.dts      | 2 ++
+ arch/arm64/boot/dts/renesas/r8a77980-condor.dts     | 2 ++
+ arch/arm64/boot/dts/renesas/r8a77980-v3hsk.dts      | 2 ++
+ arch/arm64/boot/dts/renesas/r8a779a0-falcon.dts     | 2 ++
+ arch/arm64/boot/dts/renesas/salvator-common.dtsi    | 2 ++
+ arch/arm64/boot/dts/renesas/ulcb.dtsi               | 2 ++
+ 31 files changed, 62 insertions(+)
+
+-- 
+2.25.1
+
+Gr{oetje,eeting}s,
+
+						Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+							    -- Linus Torvalds
