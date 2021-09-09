@@ -2,96 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0ED6740449D
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 06:50:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DE604044E5
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 07:21:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350475AbhIIEvH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 00:51:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55632 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231364AbhIIEvG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 00:51:06 -0400
-Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3941C061575;
-        Wed,  8 Sep 2021 21:49:57 -0700 (PDT)
-Received: by mail-ot1-x335.google.com with SMTP id c42-20020a05683034aa00b0051f4b99c40cso1001882otu.0;
-        Wed, 08 Sep 2021 21:49:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zSdDJmykDz9RTad7mrV36cJkuuQOB/FNuOcap03OkbQ=;
-        b=WhMD+ExrGhJW1OHa5voKbQZpKXvfpplr6A2O+kLcKVPh9VhkAFPZdWQnSIfi1dO3Pc
-         IEYcRwc00hz+0TfbtGfjxrZfKqzx+1NnJIYUEadNVbHmrOOILrYtRsAz3SCTEvgSeOsI
-         Trk5CVsi3yC1NUko5efAQkZPA4ZwiOjviaiXSaeVdXM0RioH+wa/N7bSmgj8lJIyWbQ1
-         Mhw0o310t5SnQYzzxGa5q0d4jyyvVe1uPWU6z2+zcwgxDIm8EFgQhNlR7aWDfcvjP/wX
-         /RZoXYLsRjPzFR0HyVBnatWw13/bMe1SX0EGVJ61jkBaqkyDKRWF0MT/xm2E/0QBCq92
-         r05A==
+        id S1350660AbhIIFUf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 01:20:35 -0400
+Received: from mail-il1-f200.google.com ([209.85.166.200]:33592 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350542AbhIIFUd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 01:20:33 -0400
+Received: by mail-il1-f200.google.com with SMTP id h10-20020a056e020d4a00b00227fc2e6687so1069861ilj.0
+        for <netdev@vger.kernel.org>; Wed, 08 Sep 2021 22:19:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=zSdDJmykDz9RTad7mrV36cJkuuQOB/FNuOcap03OkbQ=;
-        b=e9nk4yAyKlrqM76zddkKYTnzg4ymmoPE5Leo9wQR1fzLTNSOASYdngSFFbEO5dm02+
-         PVStDlV9QVek1KQFF2k37RfcxTKfAq0gUFovj2uJOXjfI86yR3F72W4R6IjT+B8hvF+Q
-         1Em5qWZtFWr+VawfncmJFHHf2szxn5OqKDoaj+n4M8ysF3Me9TJIf2TiIolpBS0TjZz9
-         8tM3aKgYz9j9U8/c/9+4gV3c3uft5HWfs5U/tfoVXDqmzGTzcDKHakgli+bK5R8vU36l
-         ntPehnKdG1ezVqOZmM+6L0P1XvFdLMbNTqZD3aSVvfGCEE7HymJ1PM98AWE2MMmNcQdP
-         Q3gQ==
-X-Gm-Message-State: AOAM530gpjPzDGp0Mks456fYdE8oGMyA+WhMOJV3lukc20RChtVyLL/Z
-        sQmabP5SmRrg3YaRy5est6U6T8yjGTI=
-X-Google-Smtp-Source: ABdhPJwEm11UZMvKdp3qo1Wj2KPQIelfNBHGRzB8M6PTnjqGCcHcgmAXjNotYVd5/Wq9v0MYEEbwKA==
-X-Received: by 2002:a05:6830:2781:: with SMTP id x1mr927266otu.334.1631162997005;
-        Wed, 08 Sep 2021 21:49:57 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id 97sm180427otv.26.2021.09.08.21.49.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Sep 2021 21:49:56 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
-        Arnd Bergmann <arnd@kernel.org>
-Subject: [PATCH] net: ni65: Avoid typecast of pointer to u32
-Date:   Wed,  8 Sep 2021 21:49:53 -0700
-Message-Id: <20210909044953.1564070-1-linux@roeck-us.net>
-X-Mailer: git-send-email 2.33.0
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=f3hT4JE/CvcilmtBix+GJkLPDC0aJEDxVIYiUI/wdA8=;
+        b=RquRt5cDT6SD0Ti33/bXZ4hv7SCeh4aLzLgSENpM3/AROhSHspIPKniJXy+ssKu1zl
+         6M2JSB+nTRpkq4GvmLJbg2V+Cps6DcZv91e2tjXzxt3Uv5fT/2qSJVW0u/ym7W/UcNlj
+         wbl9KMa0x0N3oKXtuyQvN0nLAn2yiXtpB2pmnz0RMlLIaFKeo0xA5HgERtbLEPN5SXjD
+         cgW0RfpUAlF4WzDiW1OQGQFRk66YUIVfFq/id2CP/hZxrvqxir7hz4QmCVTeLr/xNK2X
+         7ZddaRaAvkjnrV82As27L1jtfrhlmAiB9c06bQtnFv6v4KFOzDSrGatF5OjmBPC2lIMy
+         SyXA==
+X-Gm-Message-State: AOAM531q8BQU4Jd6msshH4lHN+ebZsjzOB6etj/ri1zrLwzRdDChco0D
+        ACSmRHmlRLpBkCCtha3481bpYGyzV0aJkrR4sYchQ/EqPFLc
+X-Google-Smtp-Source: ABdhPJzbDwn39QD2pajtS0BqmGDWmZtqRx2uVNYFsfektWfDvS67tn9qgxfRmfFzU378bdyJkt+CMASHgEcycqPuk4LAwGuAvBOt
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a6b:f214:: with SMTP id q20mr1142800ioh.84.1631164764876;
+ Wed, 08 Sep 2021 22:19:24 -0700 (PDT)
+Date:   Wed, 08 Sep 2021 22:19:24 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000006173bf05cb892427@google.com>
+Subject: [syzbot] WARNING: kmalloc bug in hash_ipport_create
+From:   syzbot <syzbot+a568bbab323b96631e61@syzkaller.appspotmail.com>
+To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
+        kadlec@netfilter.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Building alpha:allmodconfig results in the following error.
+Hello,
 
-drivers/net/ethernet/amd/ni65.c: In function 'ni65_stop_start':
-drivers/net/ethernet/amd/ni65.c:751:37: error:
-	cast from pointer to integer of different size
-		buffer[i] = (u32) isa_bus_to_virt(tmdp->u.buffer);
+syzbot found the following issue on:
 
-'buffer[]' is declared as unsigned long, so replace the typecast to u32
-with a typecast to unsigned long to fix the problem.
+HEAD commit:    626bf91a292e Merge tag 'net-5.15-rc1' of git://git.kernel...
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=150107a5300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=16e23f04679ec35e
+dashboard link: https://syzkaller.appspot.com/bug?extid=a568bbab323b96631e61
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=178b5d0d300000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16fad1dd300000
 
-Cc: Arnd Bergmann <arnd@kernel.org>
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+a568bbab323b96631e61@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+WARNING: CPU: 1 PID: 8419 at mm/util.c:597 kvmalloc_node+0x111/0x120 mm/util.c:597
+Modules linked in:
+CPU: 0 PID: 8419 Comm: syz-executor852 Not tainted 5.14.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:kvmalloc_node+0x111/0x120 mm/util.c:597
+Code: 01 00 00 00 4c 89 e7 e8 3d 13 0d 00 49 89 c5 e9 69 ff ff ff e8 50 9d d0 ff 41 89 ed 41 81 cd 00 20 01 00 eb 95 e8 3f 9d d0 ff <0f> 0b e9 4c ff ff ff 0f 1f 84 00 00 00 00 00 55 48 89 fd 53 e8 26
+RSP: 0018:ffffc9000110f288 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: ffffc9000110f3a0 RCX: 0000000000000000
+RDX: ffff88807ad9d580 RSI: ffffffff81a57421 RDI: 0000000000000003
+RBP: 0000000000400dc0 R08: 000000007fffffff R09: ffff8880b9d3298b
+R10: ffffffff81a573de R11: 000000000000001f R12: 0000000200000018
+R13: 0000000000000000 R14: 00000000ffffffff R15: ffff888027ea2a00
+FS:  0000000001147300(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fd51c03d0c8 CR3: 00000000726fe000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ hash_ipport_create+0x3dd/0x1220 net/netfilter/ipset/ip_set_hash_gen.h:1524
+ ip_set_create+0x782/0x15a0 net/netfilter/ipset/ip_set_core.c:1100
+ nfnetlink_rcv_msg+0xbc9/0x13f0 net/netfilter/nfnetlink.c:296
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2504
+ nfnetlink_rcv+0x1ac/0x420 net/netfilter/nfnetlink.c:654
+ netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1340
+ netlink_sendmsg+0x86d/0xdb0 net/netlink/af_netlink.c:1929
+ sock_sendmsg_nosec net/socket.c:704 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:724
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2409
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2463
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2492
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x43f039
+Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fff01c17cc8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 0000000000400488 RCX: 000000000043f039
+RDX: 0000000000000000 RSI: 0000000020001080 RDI: 0000000000000003
+RBP: 0000000000403020 R08: 0000000000000009 R09: 0000000000400488
+R10: 0000000000000003 R11: 0000000000000246 R12: 00000000004030b0
+R13: 0000000000000000 R14: 00000000004ac018 R15: 0000000000400488
+
+
 ---
- drivers/net/ethernet/amd/ni65.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/net/ethernet/amd/ni65.c b/drivers/net/ethernet/amd/ni65.c
-index b5df7ad5a83f..032e8922b482 100644
---- a/drivers/net/ethernet/amd/ni65.c
-+++ b/drivers/net/ethernet/amd/ni65.c
-@@ -748,7 +748,7 @@ static void ni65_stop_start(struct net_device *dev,struct priv *p)
- #ifdef XMT_VIA_SKB
- 			skb_save[i] = p->tmd_skb[i];
- #endif
--			buffer[i] = (u32) isa_bus_to_virt(tmdp->u.buffer);
-+			buffer[i] = (unsigned long)isa_bus_to_virt(tmdp->u.buffer);
- 			blen[i] = tmdp->blen;
- 			tmdp->u.s.status = 0x0;
- 		}
--- 
-2.33.0
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
