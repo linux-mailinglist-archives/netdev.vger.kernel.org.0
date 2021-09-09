@@ -2,69 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C690F405C69
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 19:55:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 76617405CD9
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 20:24:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242249AbhIIR4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 13:56:23 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:35182 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237254AbhIIR4W (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Sep 2021 13:56:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=1UWlNkIF4/UMRB1ZyeAZe5VS1c7OZjo4kDlZHIcxZoQ=; b=DuLHRghbg6cQ0z9uqyjy2SwKh1
-        RdMn1VMSB9aolUNTsdIIya54TuNOSvXh5fObFlroiLQ1nuYxY2w66h9egToVCZZQJtpaVio89+2e9
-        S6G2Dq7qyxeDo2Jcd6821Lp48VsNfIwKb7JkntUBHY9NjkjlitLHNuVeYibmwouHOQ6A=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mOOGL-005wn8-KZ; Thu, 09 Sep 2021 19:55:01 +0200
-Date:   Thu, 9 Sep 2021 19:55:01 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, p.rosenberger@kunbus.com,
-        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/3] Fix for KSZ DSA switch shutdown
-Message-ID: <YTpKddrZVDsGlhRn@lunn.ch>
-References: <20210909095324.12978-1-LinoSanfilippo@gmx.de>
- <20210909101451.jhfk45gitpxzblap@skbuf>
- <81c1a19f-c5dc-ab4a-76ff-59704ea95849@gmx.de>
- <20210909114248.aijujvl7xypkh7qe@skbuf>
- <20210909125606.giiqvil56jse4bjk@skbuf>
- <trinity-85ae3f9c-38f9-4442-98d3-bdc01279c7a8-1631193592256@3c-app-gmx-bs01>
- <YTokNsh6mohaWvH0@lunn.ch>
- <8d168388-4388-c0ec-7cfa-5757bf5b0c24@gmx.de>
+        id S242867AbhIISZ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 14:25:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43102 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237172AbhIISZ4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 14:25:56 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7D89C061574;
+        Thu,  9 Sep 2021 11:24:46 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id v10so5732675ybq.7;
+        Thu, 09 Sep 2021 11:24:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KzqhAoSAPM6bZ1hCV3tRQyqH8rphFgNmfKLy7TWm2X0=;
+        b=btqKcU2HmL2BiBkmMCBIvNpTv3lp9pBtN8nj0oQXXN9kB8pVTrF67gKDwMu0IePTNd
+         jDaITWvzAkaqLUwPqlPHdoX736EqOp86F/6mKgPcS1L8RHkQ+6wnMe/PXXXRtLWqIB10
+         6PFrRpiZG4DMZWlJwO+rZ+ikO+Kg7cOBQVo5IkWY+OIUmAoteirWygMpeJaum5J0j24h
+         cL/DFO/LF86L6SqpdxKV1zyCpp/aCtnJ4q5oGY9ZsiEHIWza0NujaOZvcuUZkG1HExIR
+         Xy53lvrxe/aN/7FMr4lJq1ZsLItpPeWOUYM3rM3Z0uRPYMXiuF5P3nxL/mLSIactNFbB
+         uVbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KzqhAoSAPM6bZ1hCV3tRQyqH8rphFgNmfKLy7TWm2X0=;
+        b=gINDvb1dCN5vNostt8CFEJhC7oCREspsaxA23Vn4JZqUOspa9bojhv2FmyvTH04jXD
+         vvejSV8CmqrZyY04iMOlhcbApxtuXDcL1yysEA3d2yWFx+z15jqo2ilPumsiaKXkwwFK
+         YPk2GfinV+93NL+6xE4DCmMjNirr4T3TNaLjFr6gQnuepJE4NJhAtiXa1vrG8O49+KpO
+         Ixh7sQ5u3DFhsVbxmrPF5D2tCGbYK/SaMFFbPv3+jMSm5ncnQi2qktWkoGNXg5ikg+6N
+         ZHeVZVZCbPEKKVhQW4+1c5RIPQwyml0Omsl/cS02nOE0WvypkiR6XxVSzDANMnJ8Ov2w
+         s51A==
+X-Gm-Message-State: AOAM531Tmzg5EfNt2doTEpkVqrJ4YxggGuc8XNO9eivPsUMzhuNFCbhf
+        AGTrP/a7tT1chpsBLNtUcYaspW8AlgrJC/ydjwI=
+X-Google-Smtp-Source: ABdhPJxvIPKE9S4snyMEjt+/biIRqw07FXYDwejFlVyDe8Kayu7VSZp6pM8XTr34PIDjaezpZlF81t4UbKNVvyTDw4k=
+X-Received: by 2002:a25:3604:: with SMTP id d4mr5260859yba.4.1631211885893;
+ Thu, 09 Sep 2021 11:24:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8d168388-4388-c0ec-7cfa-5757bf5b0c24@gmx.de>
+References: <1e9ee1059ddb0ad7cd2c5f9eeaa26606f9d5fbbf.1631189197.git.daniel@iogearbox.net>
+ <6196fbdd4e40a07f18669cd08b29c5016776067b.1631189197.git.daniel@iogearbox.net>
+In-Reply-To: <6196fbdd4e40a07f18669cd08b29c5016776067b.1631189197.git.daniel@iogearbox.net>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 9 Sep 2021 11:24:34 -0700
+Message-ID: <CAEf4BzZMan5TCZoey2JJvAevs5WYFQyOuuy+niOvxUpGAXXTMw@mail.gmail.com>
+Subject: Re: [PATCH bpf 2/3] bpf, selftests: Add cgroup v1 net_cls classid helpers
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        tj@kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Martynas Pumputis <m@lambda.lt>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 09, 2021 at 06:46:49PM +0200, Lino Sanfilippo wrote:
-> On 09.09.21 at 17:11, Andrew Lunn wrote:
-> >> Andrew: the switch is not on a hat, the device tree part I use is:
-> >
-> > And this is not an overlay. It is all there at boot?
-> >
-> 
-> Well actually we DO use an overlay. The dev tree snipped I posted was an excerpt form
-> fdtdump. The concerning fragment looks like this in the overlay file:
+On Thu, Sep 9, 2021 at 5:13 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> Minimal set of helpers for net_cls classid cgroupv1 management in order
+> to set an id, join from a process, initiate setup and teardown. cgroupv2
+> helpers are left as-is, but reused where possible.
+>
+> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+> ---
 
-Thanks for the information. Good to know somebody is using DSA like
-this. The device tree description can be quite complex, especially for
-some of the other switches.
+LGTM.
 
-> But probably this does not matter any more now that Vladimir was
-> able to reproduce the issue.
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
 
-Agreed.
+>  tools/testing/selftests/bpf/cgroup_helpers.c | 118 +++++++++++++++++--
+>  tools/testing/selftests/bpf/cgroup_helpers.h |  16 ++-
+>  2 files changed, 122 insertions(+), 12 deletions(-)
+>
 
-	Andrew
+[...]
