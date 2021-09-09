@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AED744051F3
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:46:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 562EE405274
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:48:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354684AbhIIMjP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 08:39:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46126 "EHLO mail.kernel.org"
+        id S243367AbhIIMne (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 08:43:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48336 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236416AbhIIMfe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Sep 2021 08:35:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0FA016137C;
-        Thu,  9 Sep 2021 11:53:57 +0000 (UTC)
+        id S1354150AbhIIMg5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Sep 2021 08:36:57 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4BB8B61B80;
+        Thu,  9 Sep 2021 11:54:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631188439;
-        bh=J1mrhdFTEaNjzXoW4CbUkVw6pt0Rz7WHcCkwEjtFvCs=;
+        s=k20201202; t=1631188448;
+        bh=M/5LBEPPTORhcqx3JN0jmF/ewLoZaMPYF79cxMbO9Eo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hFIKyMoMOYKcoW8ximYLLTezT+0FDsR93Cg5WK+iY5seiGnp5P3QIdApGTn+2sMNo
-         6KLtYKNjpXo4WOIvzjctB0TQnNIlvp2aZqrNKkXwyHTFA669w7IT+yTIJzQFKF4dCb
-         7QtiEH4GDphqSh6jr7ea1IIR4AYKxMr5wbRZe6O3vJFmVjKiGSB0TzKyNXO5uBL7Xd
-         KWcxrGMMKVVfMdjwHBM0YxotV2ZOYT6F7fKOVBqHW5rqZ0fNWnUK0trk/aYHv2d1mc
-         uPSjjuT5R92MtjMtrTMIxMBEcyyVD+mWoLAtWUUjH4A0gSGSlu0U9T9/t8asebWRse
-         XEL310A+5IlpA==
+        b=l5Ppc6SvwJbyd5+A4+hBsgnICo7QfAXsb1GRjCOvVJmnW8ZOIoDqRkz3BSfN+XHFv
+         VFYWUsxee7WFYrI1SIJBidt3nS1crqyUFg8rcWcUJ+wH4ajWDIqHW2iOexhkdLN4CT
+         /g6k785W4aOfG/VcbJyHIjVv7pEbIEDO28SZVfAnIRQ29k95XaRzqlapgQbs3O/NFW
+         g6k2TBQzp8FPvcuFsxpXHhIeJCIEDAZxEnjJ6A8pFJ8754PGjWZPejHXJ2kRuCWLhN
+         JwWBJyPGHk4QIAqsrjZ70K0umeq0NU8f8TnRtwLX7VAPWyJIARNUx/HEijaPlAvnMM
+         fqybRmdigi98w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eli Cohen <elic@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org
-Subject: [PATCH AUTOSEL 5.10 124/176] net: Fix offloading indirect devices dependency on qdisc order creation
-Date:   Thu,  9 Sep 2021 07:50:26 -0400
-Message-Id: <20210909115118.146181-124-sashal@kernel.org>
+Cc:     Chris Chiu <chris.chiu@canonical.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 131/176] rtl8xxxu: Fix the handling of TX A-MPDU aggregation
+Date:   Thu,  9 Sep 2021 07:50:33 -0400
+Message-Id: <20210909115118.146181-131-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909115118.146181-1-sashal@kernel.org>
 References: <20210909115118.146181-1-sashal@kernel.org>
@@ -43,208 +43,134 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eli Cohen <elic@nvidia.com>
+From: Chris Chiu <chris.chiu@canonical.com>
 
-[ Upstream commit 74fc4f828769cca1c3be89ea92cb88feaa27ef52 ]
+[ Upstream commit 95a581ab3592082c60a08090aabe09ac7d0bd650 ]
 
-Currently, when creating an ingress qdisc on an indirect device before
-the driver registered for callbacks, the driver will not have a chance
-to register its filter configuration callbacks.
+The TX A-MPDU aggregation is not handled in the driver since the
+ieee80211_start_tx_ba_session has never been started properly.
+Start and stop the TX BA session by tracking the TX aggregation
+status of each TID. Fix the ampdu_action and the tx descriptor
+accordingly with the given TID.
 
-To fix that, modify the code such that it keeps track of all the ingress
-qdiscs that call flow_indr_dev_setup_offload(). When a driver calls
-flow_indr_dev_register(),  go through the list of tracked ingress qdiscs
-and call the driver callback entry point so as to give it a chance to
-register its callback.
-
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
-Signed-off-by: Eli Cohen <elic@nvidia.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Chris Chiu <chris.chiu@canonical.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20210804151325.86600-1-chris.chiu@canonical.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/flow_offload.h            |  1 +
- net/core/flow_offload.c               | 89 ++++++++++++++++++++++++++-
- net/netfilter/nf_flow_table_offload.c |  1 +
- net/netfilter/nf_tables_offload.c     |  1 +
- net/sched/cls_api.c                   |  1 +
- 5 files changed, 92 insertions(+), 1 deletion(-)
+ .../net/wireless/realtek/rtl8xxxu/rtl8xxxu.h  |  2 ++
+ .../wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 33 ++++++++++++++-----
+ 2 files changed, 26 insertions(+), 9 deletions(-)
 
-diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-index 123b1e9ea304..010d58159887 100644
---- a/include/net/flow_offload.h
-+++ b/include/net/flow_offload.h
-@@ -444,6 +444,7 @@ struct flow_block_offload {
- 	struct list_head *driver_block_list;
- 	struct netlink_ext_ack *extack;
- 	struct Qdisc *sch;
-+	struct list_head *cb_list_head;
- };
+diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
+index acb6b0cd3667..b28fa0c4d180 100644
+--- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
++++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
+@@ -1378,6 +1378,8 @@ struct rtl8xxxu_priv {
+ 	u8 no_pape:1;
+ 	u8 int_buf[USB_INTR_CONTENT_LENGTH];
+ 	u8 rssi_level;
++	DECLARE_BITMAP(tx_aggr_started, IEEE80211_NUM_TIDS);
++	DECLARE_BITMAP(tid_tx_operational, IEEE80211_NUM_TIDS);
+ 	/*
+ 	 * Only one virtual interface permitted because only STA mode
+ 	 * is supported and no iface_combinations are provided.
+diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+index 5cd7ef3625c5..0d374a294840 100644
+--- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
++++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+@@ -4805,6 +4805,8 @@ rtl8xxxu_fill_txdesc_v1(struct ieee80211_hw *hw, struct ieee80211_hdr *hdr,
+ 	struct ieee80211_rate *tx_rate = ieee80211_get_tx_rate(hw, tx_info);
+ 	struct rtl8xxxu_priv *priv = hw->priv;
+ 	struct device *dev = &priv->udev->dev;
++	u8 *qc = ieee80211_get_qos_ctl(hdr);
++	u8 tid = qc[0] & IEEE80211_QOS_CTL_TID_MASK;
+ 	u32 rate;
+ 	u16 rate_flags = tx_info->control.rates[0].flags;
+ 	u16 seq_number;
+@@ -4828,7 +4830,7 @@ rtl8xxxu_fill_txdesc_v1(struct ieee80211_hw *hw, struct ieee80211_hdr *hdr,
  
- enum tc_setup_type;
-diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
-index 715b67f6c62f..e3f0d5906811 100644
---- a/net/core/flow_offload.c
-+++ b/net/core/flow_offload.c
-@@ -321,6 +321,7 @@ EXPORT_SYMBOL(flow_block_cb_setup_simple);
- static DEFINE_MUTEX(flow_indr_block_lock);
- static LIST_HEAD(flow_block_indr_list);
- static LIST_HEAD(flow_block_indr_dev_list);
-+static LIST_HEAD(flow_indir_dev_list);
+ 	tx_desc->txdw3 = cpu_to_le32((u32)seq_number << TXDESC32_SEQ_SHIFT);
  
- struct flow_indr_dev {
- 	struct list_head		list;
-@@ -346,6 +347,33 @@ static struct flow_indr_dev *flow_indr_dev_alloc(flow_indr_block_bind_cb_t *cb,
- 	return indr_dev;
- }
+-	if (ampdu_enable)
++	if (ampdu_enable && test_bit(tid, priv->tid_tx_operational))
+ 		tx_desc->txdw1 |= cpu_to_le32(TXDESC32_AGG_ENABLE);
+ 	else
+ 		tx_desc->txdw1 |= cpu_to_le32(TXDESC32_AGG_BREAK);
+@@ -4876,6 +4878,8 @@ rtl8xxxu_fill_txdesc_v2(struct ieee80211_hw *hw, struct ieee80211_hdr *hdr,
+ 	struct rtl8xxxu_priv *priv = hw->priv;
+ 	struct device *dev = &priv->udev->dev;
+ 	struct rtl8xxxu_txdesc40 *tx_desc40;
++	u8 *qc = ieee80211_get_qos_ctl(hdr);
++	u8 tid = qc[0] & IEEE80211_QOS_CTL_TID_MASK;
+ 	u32 rate;
+ 	u16 rate_flags = tx_info->control.rates[0].flags;
+ 	u16 seq_number;
+@@ -4902,7 +4906,7 @@ rtl8xxxu_fill_txdesc_v2(struct ieee80211_hw *hw, struct ieee80211_hdr *hdr,
  
-+struct flow_indir_dev_info {
-+	void *data;
-+	struct net_device *dev;
-+	struct Qdisc *sch;
-+	enum tc_setup_type type;
-+	void (*cleanup)(struct flow_block_cb *block_cb);
-+	struct list_head list;
-+	enum flow_block_command command;
-+	enum flow_block_binder_type binder_type;
-+	struct list_head *cb_list;
-+};
+ 	tx_desc40->txdw9 = cpu_to_le32((u32)seq_number << TXDESC40_SEQ_SHIFT);
+ 
+-	if (ampdu_enable)
++	if (ampdu_enable && test_bit(tid, priv->tid_tx_operational))
+ 		tx_desc40->txdw2 |= cpu_to_le32(TXDESC40_AGG_ENABLE);
+ 	else
+ 		tx_desc40->txdw2 |= cpu_to_le32(TXDESC40_AGG_BREAK);
+@@ -5015,12 +5019,19 @@ static void rtl8xxxu_tx(struct ieee80211_hw *hw,
+ 	if (ieee80211_is_data_qos(hdr->frame_control) && sta) {
+ 		if (sta->ht_cap.ht_supported) {
+ 			u32 ampdu, val32;
++			u8 *qc = ieee80211_get_qos_ctl(hdr);
++			u8 tid = qc[0] & IEEE80211_QOS_CTL_TID_MASK;
+ 
+ 			ampdu = (u32)sta->ht_cap.ampdu_density;
+ 			val32 = ampdu << TXDESC_AMPDU_DENSITY_SHIFT;
+ 			tx_desc->txdw2 |= cpu_to_le32(val32);
+ 
+ 			ampdu_enable = true;
 +
-+static void existing_qdiscs_register(flow_indr_block_bind_cb_t *cb, void *cb_priv)
-+{
-+	struct flow_block_offload bo;
-+	struct flow_indir_dev_info *cur;
-+
-+	list_for_each_entry(cur, &flow_indir_dev_list, list) {
-+		memset(&bo, 0, sizeof(bo));
-+		bo.command = cur->command;
-+		bo.binder_type = cur->binder_type;
-+		INIT_LIST_HEAD(&bo.cb_list);
-+		cb(cur->dev, cur->sch, cb_priv, cur->type, &bo, cur->data, cur->cleanup);
-+		list_splice(&bo.cb_list, cur->cb_list);
-+	}
-+}
-+
- int flow_indr_dev_register(flow_indr_block_bind_cb_t *cb, void *cb_priv)
- {
- 	struct flow_indr_dev *indr_dev;
-@@ -367,6 +395,7 @@ int flow_indr_dev_register(flow_indr_block_bind_cb_t *cb, void *cb_priv)
++			if (!test_bit(tid, priv->tx_aggr_started) &&
++			    !(skb->protocol == cpu_to_be16(ETH_P_PAE)))
++				if (!ieee80211_start_tx_ba_session(sta, tid, 0))
++					set_bit(tid, priv->tx_aggr_started);
+ 		}
  	}
  
- 	list_add(&indr_dev->list, &flow_block_indr_dev_list);
-+	existing_qdiscs_register(cb, cb_priv);
- 	mutex_unlock(&flow_indr_block_lock);
+@@ -6095,6 +6106,7 @@ rtl8xxxu_ampdu_action(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
+ 	struct device *dev = &priv->udev->dev;
+ 	u8 ampdu_factor, ampdu_density;
+ 	struct ieee80211_sta *sta = params->sta;
++	u16 tid = params->tid;
+ 	enum ieee80211_ampdu_mlme_action action = params->action;
  
- 	return 0;
-@@ -463,7 +492,59 @@ struct flow_block_cb *flow_indr_block_cb_alloc(flow_setup_cb_t *cb,
- }
- EXPORT_SYMBOL(flow_indr_block_cb_alloc);
- 
--int flow_indr_dev_setup_offload(struct net_device *dev, struct Qdisc *sch,
-+static struct flow_indir_dev_info *find_indir_dev(void *data)
-+{
-+	struct flow_indir_dev_info *cur;
-+
-+	list_for_each_entry(cur, &flow_indir_dev_list, list) {
-+		if (cur->data == data)
-+			return cur;
-+	}
-+	return NULL;
-+}
-+
-+static int indir_dev_add(void *data, struct net_device *dev, struct Qdisc *sch,
-+			 enum tc_setup_type type, void (*cleanup)(struct flow_block_cb *block_cb),
-+			 struct flow_block_offload *bo)
-+{
-+	struct flow_indir_dev_info *info;
-+
-+	info = find_indir_dev(data);
-+	if (info)
-+		return -EEXIST;
-+
-+	info = kzalloc(sizeof(*info), GFP_KERNEL);
-+	if (!info)
-+		return -ENOMEM;
-+
-+	info->data = data;
-+	info->dev = dev;
-+	info->sch = sch;
-+	info->type = type;
-+	info->cleanup = cleanup;
-+	info->command = bo->command;
-+	info->binder_type = bo->binder_type;
-+	info->cb_list = bo->cb_list_head;
-+
-+	list_add(&info->list, &flow_indir_dev_list);
-+	return 0;
-+}
-+
-+static int indir_dev_remove(void *data)
-+{
-+	struct flow_indir_dev_info *info;
-+
-+	info = find_indir_dev(data);
-+	if (!info)
-+		return -ENOENT;
-+
-+	list_del(&info->list);
-+
-+	kfree(info);
-+	return 0;
-+}
-+
-+int flow_indr_dev_setup_offload(struct net_device *dev,	struct Qdisc *sch,
- 				enum tc_setup_type type, void *data,
- 				struct flow_block_offload *bo,
- 				void (*cleanup)(struct flow_block_cb *block_cb))
-@@ -471,6 +552,12 @@ int flow_indr_dev_setup_offload(struct net_device *dev, struct Qdisc *sch,
- 	struct flow_indr_dev *this;
- 
- 	mutex_lock(&flow_indr_block_lock);
-+
-+	if (bo->command == FLOW_BLOCK_BIND)
-+		indir_dev_add(data, dev, sch, type, cleanup, bo);
-+	else if (bo->command == FLOW_BLOCK_UNBIND)
-+		indir_dev_remove(data);
-+
- 	list_for_each_entry(this, &flow_block_indr_dev_list, list)
- 		this->cb(dev, sch, this->cb_priv, type, bo, data, cleanup);
- 
-diff --git a/net/netfilter/nf_flow_table_offload.c b/net/netfilter/nf_flow_table_offload.c
-index 92047cea3c17..a6b654b028dd 100644
---- a/net/netfilter/nf_flow_table_offload.c
-+++ b/net/netfilter/nf_flow_table_offload.c
-@@ -940,6 +940,7 @@ static void nf_flow_table_block_offload_init(struct flow_block_offload *bo,
- 	bo->command	= cmd;
- 	bo->binder_type	= FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
- 	bo->extack	= extack;
-+	bo->cb_list_head = &flowtable->flow_block.cb_list;
- 	INIT_LIST_HEAD(&bo->cb_list);
- }
- 
-diff --git a/net/netfilter/nf_tables_offload.c b/net/netfilter/nf_tables_offload.c
-index 9ce776175214..e5fcbb0e4b8e 100644
---- a/net/netfilter/nf_tables_offload.c
-+++ b/net/netfilter/nf_tables_offload.c
-@@ -323,6 +323,7 @@ static void nft_flow_block_offload_init(struct flow_block_offload *bo,
- 	bo->command	= cmd;
- 	bo->binder_type	= FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
- 	bo->extack	= extack;
-+	bo->cb_list_head = &basechain->flow_block.cb_list;
- 	INIT_LIST_HEAD(&bo->cb_list);
- }
- 
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 31ac76a9189e..8073657a0fd2 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -634,6 +634,7 @@ static void tcf_block_offload_init(struct flow_block_offload *bo,
- 	bo->block_shared = shared;
- 	bo->extack = extack;
- 	bo->sch = sch;
-+	bo->cb_list_head = &flow_block->cb_list;
- 	INIT_LIST_HEAD(&bo->cb_list);
- }
- 
+ 	switch (action) {
+@@ -6107,17 +6119,20 @@ rtl8xxxu_ampdu_action(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
+ 		dev_dbg(dev,
+ 			"Changed HT: ampdu_factor %02x, ampdu_density %02x\n",
+ 			ampdu_factor, ampdu_density);
+-		break;
++		return IEEE80211_AMPDU_TX_START_IMMEDIATE;
++	case IEEE80211_AMPDU_TX_STOP_CONT:
+ 	case IEEE80211_AMPDU_TX_STOP_FLUSH:
+-		dev_dbg(dev, "%s: IEEE80211_AMPDU_TX_STOP_FLUSH\n", __func__);
+-		rtl8xxxu_set_ampdu_factor(priv, 0);
+-		rtl8xxxu_set_ampdu_min_space(priv, 0);
+-		break;
+ 	case IEEE80211_AMPDU_TX_STOP_FLUSH_CONT:
+-		dev_dbg(dev, "%s: IEEE80211_AMPDU_TX_STOP_FLUSH_CONT\n",
+-			 __func__);
++		dev_dbg(dev, "%s: IEEE80211_AMPDU_TX_STOP\n", __func__);
+ 		rtl8xxxu_set_ampdu_factor(priv, 0);
+ 		rtl8xxxu_set_ampdu_min_space(priv, 0);
++		clear_bit(tid, priv->tx_aggr_started);
++		clear_bit(tid, priv->tid_tx_operational);
++		ieee80211_stop_tx_ba_cb_irqsafe(vif, sta->addr, tid);
++		break;
++	case IEEE80211_AMPDU_TX_OPERATIONAL:
++		dev_dbg(dev, "%s: IEEE80211_AMPDU_TX_OPERATIONAL\n", __func__);
++		set_bit(tid, priv->tid_tx_operational);
+ 		break;
+ 	case IEEE80211_AMPDU_RX_START:
+ 		dev_dbg(dev, "%s: IEEE80211_AMPDU_RX_START\n", __func__);
 -- 
 2.30.2
 
