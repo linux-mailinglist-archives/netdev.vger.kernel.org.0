@@ -2,97 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95ED4405D06
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 20:54:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6F3B405D31
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 21:12:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237363AbhIISzv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 14:55:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49854 "EHLO
+        id S237728AbhIITNu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 15:13:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232029AbhIISzt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 14:55:49 -0400
-Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3617CC061574
-        for <netdev@vger.kernel.org>; Thu,  9 Sep 2021 11:54:40 -0700 (PDT)
-Received: by mail-yb1-xb41.google.com with SMTP id c206so5882297ybb.12
-        for <netdev@vger.kernel.org>; Thu, 09 Sep 2021 11:54:40 -0700 (PDT)
+        with ESMTP id S231425AbhIITNt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 15:13:49 -0400
+Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3A22C061574;
+        Thu,  9 Sep 2021 12:12:39 -0700 (PDT)
+Received: by mail-oi1-x234.google.com with SMTP id y128so3899765oie.4;
+        Thu, 09 Sep 2021 12:12:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=NWKMZ//AyFWFbpFk6FF66OtPadVuan7a1ybZS8hGNR8=;
-        b=TqzMHkKFOYBs81HP79Y86p4jVq3TEVg/avjxKdyKgVMZX6rgtAt1Sx+l/FYZy/iJrv
-         4B5WasdOfyEr+gGdo+iPeq79PG1Dpi/1OdxD+TgUqB4F6m85bk0BueGq/wism3/mgjgi
-         uvN2Lpur1t0i+1/vjrO+6f+RfkszO28TSMEf4L86C6F5eOCOWqmQA5MaUs1688uLupvL
-         J++NxrsL/DTyx8EceqD6ldcgEjpcltJRLD43VnTt+g0f30fWdZYz3MBnDBlLUq54quEl
-         AU0RECfzoUb0i35t0B4+Tsvb9WN8+7QP5JFuC+O5H7s90NuS24BmKjx0IKQ+Ekcv5k6R
-         2Tag==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=qPQHwAFiSYdLyleAbELrQZ2a09NIC4IXr92lC8k0Z2o=;
+        b=iP93NZjLCWK7wrqXWEzIuyPF1eZNfnZ3JjpCM3RA+qd12seWfFmLUQQbh+/RrxpGmj
+         ENQ8gOluBLG8GHQBb+a97ETd6UUMNun19AFQwNotAQqAdX27mfavG+nw0dNPuLCBqUnj
+         Slj6zu9FeZDMvZgcz51saRw1LklQCwZSjgoemHLLI6hM4s7/i75qfYjqhS+kY/kdG65l
+         a/EUPjXbQjZYFgENdYljH7VsPsAPkSdnX/JDpdMEO9TxVkMY1EDW12ESbmKouOuC4BG1
+         xwWKt8CWA5ypzZ8KgPSxKgDua/+uNGDAhtQsXwO9G5+SjqVMkgRPBCMsyS1PlTQHU7iE
+         m97A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=NWKMZ//AyFWFbpFk6FF66OtPadVuan7a1ybZS8hGNR8=;
-        b=BoMOkWxfqknZ1ILVS32bFSKvjXnlIcCyy1RsvSazBbZ95kZj6aGd8fJCrj42Nx++rZ
-         G6tI4jxDBSZR/RJ3QFjjhNSURkkPNKLwrT4jG9CB3NOUYHa6TIl+C8J9GTAeu2gxYK6k
-         5HwHqHHBH5NYiF/C2+4LRULgKSslUZvFWlQXe4DPyzRAL5FYXAAuF3U29MspfJ+I0H55
-         yjGs9/rj7DC7d/vgAciFHGA6qVrgSc3bO+35n8OGEwLnLiLawKRz+6mybZbcDZBwmkHU
-         So5mpVphTSxGrr/g0hJ+2UVPH4knYaKEmrKSv+4ybSVdHdlbU4N8crH37+kRIp2r0W08
-         gKCg==
-X-Gm-Message-State: AOAM5319Vvg4n8CYlmEXDYPKzhwbCmRnP4F3Acu6ghZgO1Kvm9w9BMFt
-        WZhVaBWT3NW8GeU5bAJHRv29bs7ehxcK8Ju0Ol0=
-X-Google-Smtp-Source: ABdhPJx0V/c6h9r4if5JgH68hxwDDWSvgVyvlZA9GOuqhSCSBbvVI5Gg5fyzxEAK3POarSOJEmktgr92CvD8kDBnlWE=
-X-Received: by 2002:a25:6117:: with SMTP id v23mr5790712ybb.103.1631213678905;
- Thu, 09 Sep 2021 11:54:38 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=qPQHwAFiSYdLyleAbELrQZ2a09NIC4IXr92lC8k0Z2o=;
+        b=bUdSW1MsJpiTanugR1uY2Q73ijjrGtB3e1u5zWLh9DO+GkT4X86ZykKGNC6vGBZ8ze
+         njYVcTVM2ygdwP6Dp9IUUA0F/oaVwDb4td7i7k6OJn39jxj/Es7MEDm4YMlfVxt0qaWC
+         1zHcuXgPyn9dR4/1FmtStWDj7Np8MSBKYfdr02IL7+N57Ndp0P0fGqBs2YpJ4dK8GG6B
+         8yRDwVSv2gEKitXwDVfD9TT9zXDAOX4N4sNNtYNvWMzpxX+/iLyWU+eeJOcx3QXref5u
+         hMfHzgXawnDfOI1LhDtOZEbu56jGuv80uGsCboVEjC6M1NYLJkRzjYy9FCDNv4VB8E6+
+         7vbg==
+X-Gm-Message-State: AOAM531bai/98D8crKhr5cF/Nq3717AJ1BTHrTNbxFpnVCOrzWDDxCuM
+        /qvAZyaXELpOr3asIIsYI0o=
+X-Google-Smtp-Source: ABdhPJy+SBSctEcaaYBPlw3qORiGmzGEDUEjUOC7t0uGsaCXWESlSTjxPpHMdXVn+rNqPxve9DMoqQ==
+X-Received: by 2002:a05:6808:1481:: with SMTP id e1mr1037664oiw.5.1631214759289;
+        Thu, 09 Sep 2021 12:12:39 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:395a:c:3f8e:f434])
+        by smtp.googlemail.com with ESMTPSA id w1sm651917ott.21.2021.09.09.12.12.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Sep 2021 12:12:38 -0700 (PDT)
+Subject: Re: [PATCH] net: ipv6: don't generate link-local address in any
+ addr_gen_mode
+To:     Lorenzo Colitti <lorenzo@google.com>
+Cc:     Rocco Yue <rocco.yue@mediatek.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Linux NetDev <netdev@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, wsd_upstream@mediatek.com,
+        rocco.yue@gmail.com, chao.song@mediatek.com,
+        =?UTF-8?B?S3VvaG9uZyBXYW5nICjnjovlnIvptLsp?= 
+        <kuohong.wang@mediatek.com>,
+        =?UTF-8?B?Wmh1b2xpYW5nIFpoYW5nICjlvKDljZPkuq4p?= 
+        <zhuoliang.zhang@mediatek.com>
+References: <46a9dbf2-9748-330a-963e-57e615a15440@gmail.com>
+ <20210701085117.19018-1-rocco.yue@mediatek.com>
+ <62c9f5b7-84bd-d809-4e33-39fed7a9d780@gmail.com>
+ <CAKD1Yr2aijPe_aq+SRm-xv0ZPoz_gKjYrEX97R1NJyYpSnv4zg@mail.gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <6a8f0e91-225a-e2a8-3745-12ff1710a8df@gmail.com>
+Date:   Thu, 9 Sep 2021 13:12:37 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.14.0
 MIME-Version: 1.0
-Received: by 2002:a05:6918:230a:b0:58:ea61:819e with HTTP; Thu, 9 Sep 2021
- 11:54:38 -0700 (PDT)
-Reply-To: robertandersonhappy1@gmail.com
-From:   robert <nnadinawafo11@gmail.com>
-Date:   Thu, 9 Sep 2021 11:54:38 -0700
-Message-ID: <CAPhDfr04qNPv5=Qnz92gzPbnuyizM-9tQw=bU7jjpmx64CSVZA@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAKD1Yr2aijPe_aq+SRm-xv0ZPoz_gKjYrEX97R1NJyYpSnv4zg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Attention Please,
+On 9/9/21 12:20 AM, Lorenzo Colitti wrote:
+>> I think another addr_gen_mode is better than a separate sysctl. It looks
+>> like IN6_ADDR_GEN_MODE_STABLE_PRIVACY and IN6_ADDR_GEN_MODE_RANDOM are
+>> the ones used for RAs, so add something like:
+>>
+>> IN6_ADDR_GEN_MODE_STABLE_PRIVACY_NO_LLA,
+>> IN6_ADDR_GEN_MODE_RANDOM_NO_LLA,
+> 
+> I think the real requirement here (which wasn't clear in this thread)
+> is that the network needs to control the interface ID (i.e., the
+> bottom 64 bits) of the link-local address, but the device is free to
+> use whatever interface IDs to form global addresses. See:
+> https://www.etsi.org/deliver/etsi_ts/129000_129099/129061/15.03.00_60/ts_129061v150300p.pdf
+> 
+> How do you think that would best be implemented?
 
-I am Bar. uchenna ilobi ,  How are you, I hope you are fine and
-healthy? This is to inform you that i have concluded the transaction
-successfully with the help of a new partner from Venezuela and now the
-fund has been transferred to Venezuela into the bank account of the
-new partner.
+There is an established paradigm for configuring how an IPv6 address is
+created or whether it is created at all - the IFLA_INET6_ADDR_GEN_MODE
+attribute.
 
-Meanwhile, I have decided to compensate you with the sum of
-US$350,000.00 (thiree Hundred and Fifty Thousand United States
-Dollars) due to your past effort, though you disappointed me along the
-line. But nevertheless I am very happy for the successful ending of
-the transaction without any problem and that is the reason why i have
-decided to compensate you with the sum of US$350,000.00 so that you
-will share the joy with me.
+> 
+> 1. The actual interface ID could be passed in using IFLA_INET6_TOKEN,
+> but there is only one token, so that would cause all future addresses
+> to use the token, disabling things like privacy addresses (bad).
+> 2. We could add new IN6_ADDR_GEN_MODE_STABLE_PRIVACY_LL_TOKEN,
+> IN6_ADDR_GEN_MODE_RANDOM_LL_TOKEN, etc., but we'd need to add one such
+> mode for every new mode we add.
+> 3. We could add a separate sysctl for the link-local address, but you
+> said that per-device sysctls aren't free.
 
-I advise you to contact my secretary for Atm Card of US$350.000.00,
-which I kept for you. Contact him now without any delay.
+per-device sysctl's are one of primary causes of per netdev memory usage.
 
-Name: solomon brandy
+Besides that there is no reason to add complexity by having a link
+attribute and a sysctl for this feature.
 
-Email:solomonbrandyfiveone@gmail.com
+> 4. We could change the behaviour so that if the user configures a
+> token and then sets IN6_ADDR_GEN_MODE_*, then we use the token only
+> for the link-local address. But that would impact backwards
+> compatibility.
+> 
+> Thoughts?
 
-Kindly reconfirm to him the following below information:
-
-Your full name_________________________
-Your address__________________________
-Your country___________________________
-Your age______________________________
-Your occupation________________________
-Your cell Phone number______________________
-
-Note that if you did not send him the above information complete, he
-will not release the Atm card to you because he has to be sure that it
-is you. Ask him to send you the total sum of ($350.000.00 ) Atm card,
-which I kept for you.
-
-Best regards,
-
-Mr. uchenna ilobi
+We can have up to 255 ADDR_GEN_MODEs (GEN_MODE is a u8). There is
+established code for handling the attribute and changes to it. Let's
+reuse it.
