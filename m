@@ -2,491 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5386B405B39
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 18:48:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF486405B95
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 18:56:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231316AbhIIQtR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 12:49:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48334 "EHLO
+        id S238914AbhIIQ5r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 12:57:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239704AbhIIQtK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 12:49:10 -0400
-Received: from mail-qv1-xf49.google.com (mail-qv1-xf49.google.com [IPv6:2607:f8b0:4864:20::f49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41C58C061575
-        for <netdev@vger.kernel.org>; Thu,  9 Sep 2021 09:48:01 -0700 (PDT)
-Received: by mail-qv1-xf49.google.com with SMTP id u6-20020ad449a6000000b003798010ad14so7738060qvx.10
-        for <netdev@vger.kernel.org>; Thu, 09 Sep 2021 09:48:01 -0700 (PDT)
+        with ESMTP id S231316AbhIIQ5q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 12:57:46 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2D5EC061574;
+        Thu,  9 Sep 2021 09:56:36 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id k24so2390525pgh.8;
+        Thu, 09 Sep 2021 09:56:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=IMj/rIfNdJeeUF+FlwIsH4hs1mbpSXmqFJm48NclVww=;
-        b=UFn0HFmXoW6gwgT17y/0iUAcakdzLusQlRpqyDyweWHtAo0WTVbcyLQ+W8LAynefHC
-         9zAuum1lNIkuOVkFuFKAvAkHhS2mWtSiUuY0mOo008XFAZjUSZElEZJzc+hYFvIyPSBt
-         8zHNlLO4jHZrIVV4680qt/DAs9us6dlT0KjuTEp6mbg5Phl5lRLjOjsL5JgdqsXE+gSW
-         AahcvmjLP2wUNirlwMC7weUI5CGxFwhG2etGtElgAWDiSDyHfK/ODsp6NnnfIsGS+/lU
-         fc7CiPUNaPJNum5ROFLp2cg9PKLWJ/YSagBuTNUXBDfoaEsW7XmkADJayFGmPwP4Zsvj
-         0bKg==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=d0um/axuJ3r16rMBlaskZ7yotW/MSL6Ipn9q9Wl2+Zo=;
+        b=bW3YPTr5V5UzNYXEQjY85mcUVsdbVylkrW0ft0XV617jPZ4tx/AUPBwnwp5T/G2fwR
+         n9I1etPIbpj/7MbERTUddag97TzedvjhWvinsHr6Mk6veTLrYakdze7fnBLploBtCsel
+         kF7eg/f6yONFgtMGlgwQDSBrvmWyiQZTA0oywJakXE2o9jL0nwwbyIflCAtPL5IpjhIk
+         aaFOj2z3QL/cSuxFeFA37SAkpjRk+O2/ihDkY5UFqdctKW6dnPjp5Gv1+FL1LPG6r1e1
+         10zZ/h7JjyFiBIQfTzeSIFITPocFTe98MIDlaqfkbooV3JueN66Qayg0c+vqhURug3Ip
+         imDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=IMj/rIfNdJeeUF+FlwIsH4hs1mbpSXmqFJm48NclVww=;
-        b=2r5Dt2GA04MawXOnIWsWzS/qLonJw6VJWHN6lV8kedNGbnpUw58EhpyHs/qjouimMt
-         MTnUb03xsHDbgWMHvb0S1zE+pDfWTRexC9BA2Xr6RrMwCgCcf1zcrdqpTIkwZodMRwm/
-         OxvlE6RZEz2Y8otvS7RqgWr8Bv4kQVcvmmXRJ9gjBhKyEmyjpfcJE6rwS22i3BYQYadl
-         0TFXAjo34T5rES1JSOwwMbGHkK49H4MG4TAcczbgoZsxrc+9Gzk/d4W0F2CzoR3+8tWH
-         SEWB8zoI/AZzPBWm/F1mVf++tGDZiohoBa3j23rDiaW+07/DMjWvP80+E+S1iLqNbtWa
-         zM2Q==
-X-Gm-Message-State: AOAM533nYUd8f+m93zDLwp3ePsYm8QXME1sNfnWyCU6jm/kqX3TjycuW
-        sLjLBVP4fBArYhIWTRMdUF4Zig8=
-X-Google-Smtp-Source: ABdhPJyuPqofISYhPI3+Hna52ReTYpusT0R3wqECL0uHS7mhMxKTEprmvZqj9wnaSSSGN5cUEVRycC8=
-X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:201:5cc5:b62d:9471:6101])
- (user=sdf job=sendgmr) by 2002:a05:6214:6aa:: with SMTP id
- s10mr937017qvz.56.1631206080415; Thu, 09 Sep 2021 09:48:00 -0700 (PDT)
-Date:   Thu, 9 Sep 2021 09:47:58 -0700
-In-Reply-To: <1e9ee1059ddb0ad7cd2c5f9eeaa26606f9d5fbbf.1631189197.git.daniel@iogearbox.net>
-Message-Id: <YTo6vkBA9U65tdDG@google.com>
-Mime-Version: 1.0
-References: <1e9ee1059ddb0ad7cd2c5f9eeaa26606f9d5fbbf.1631189197.git.daniel@iogearbox.net>
-Subject: Re: [PATCH bpf 1/3] bpf, cgroups: Fix cgroup v2 fallback on v1/v2
- mixed mode
-From:   sdf@google.com
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, tj@kernel.org,
-        davem@davemloft.net, m@lambda.lt, alexei.starovoitov@gmail.com,
-        andrii@kernel.org
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=d0um/axuJ3r16rMBlaskZ7yotW/MSL6Ipn9q9Wl2+Zo=;
+        b=6HXKQ77UBMxYJFr1NJ59k1q9Q4w8F8ZCJvHfibX45N2jcwgj4BlbsHqST5yEuiVZfO
+         I8ev1xfyyHJ/tYQ1BsHKsjzrXdUUvPxvZqDlXylXukVRGtVbdWXSzgmsPeeOdvbD7XLD
+         ApDIL0UbFD7vEMu8kQbGfzKja4kIr1m85tpGNFfB7tdsAShBEZEn43mKgd+wu3DLiJAq
+         yIu5W1i6T1bzt2XT8emcGH2nFLy84INw7lwqbWo120nPdKFv1pcGKNncSawGXTo99XFQ
+         edBbSzAfc3nXQL2E/tY1QhL5w+W8IhaJfqfN38WJ+4KgLYDTtWlGzFSVeQo9GfqmqVm6
+         Q2qA==
+X-Gm-Message-State: AOAM532sEyJeG7Q7pi3QS8/pkM1/1JkXKYOZe/ndW9TzCTTw8TNWCwA5
+        ilIDByY+dRGQj3XZQiBQppw=
+X-Google-Smtp-Source: ABdhPJyRyyNmEOJjjBxSHiH5m984sSGDHBHqCrtZe8H3SS5cAimrlhtQiUpsVlB7L6+jrXOWzGKn9Q==
+X-Received: by 2002:a63:f410:: with SMTP id g16mr3471753pgi.201.1631206596098;
+        Thu, 09 Sep 2021 09:56:36 -0700 (PDT)
+Received: from [10.230.31.46] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id me10sm2642713pjb.51.2021.09.09.09.56.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Sep 2021 09:56:35 -0700 (PDT)
+Message-ID: <0da3e5a4-e95a-c34a-6332-6ecb76e98f1f@gmail.com>
+Date:   Thu, 9 Sep 2021 09:56:24 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.1.0
+Subject: Re: [PATCH v1 1/2] driver core: fw_devlink: Add support for
+ FWNODE_FLAG_BROKEN_PARENT
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Saravana Kannan <saravanak@google.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
+        Alvin Sipraga <ALSI@bang-olufsen.dk>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-acpi@vger.kernel.org
+References: <YSf/Mps9E77/6kZX@lunn.ch>
+ <CAGETcx_h6moWbS7m4hPm6Ub3T0tWayUQkppjevkYyiA=8AmACw@mail.gmail.com>
+ <YSg+dRPSX9/ph6tb@lunn.ch>
+ <CAGETcx_r8LSxV5=GQ-1qPjh7qGbCqTsSoSkQfxAKL5q+znRoWg@mail.gmail.com>
+ <YSjsQmx8l4MXNvP+@lunn.ch>
+ <CAGETcx_vMNZbT-5vCAvvpQNMMHy-19oR-mSfrg6=eSO49vLScQ@mail.gmail.com>
+ <YSlG4XRGrq5D1/WU@lunn.ch>
+ <CAGETcx-ZvENq8tFZ9wb_BCPZabpZcqPrguY5rsg4fSNdOAB+Kw@mail.gmail.com>
+ <YSpr/BOZj2PKoC8B@lunn.ch>
+ <CAGETcx_mjY10WzaOvb=vuojbodK7pvY1srvKmimu4h6xWkeQuQ@mail.gmail.com>
+ <YTll0i6Rz3WAAYzs@lunn.ch>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <YTll0i6Rz3WAAYzs@lunn.ch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/09, Daniel Borkmann wrote:
-> Fix cgroup v1 interference when non-root cgroup v2 BPF programs are used.
-> Back in the days, commit bd1060a1d671 ("sock, cgroup: add  
-> sock->sk_cgroup")
-> embedded per-socket cgroup information into sock->sk_cgrp_data and in  
-> order
-> to save 8 bytes in struct sock made both mutually exclusive, that is, when
-> cgroup v1 socket tagging (e.g. net_cls/net_prio) is used, then cgroup v2
-> falls back to the root cgroup in sock_cgroup_ptr() (&cgrp_dfl_root.cgrp).
 
-> The assumption made was "there is no reason to mix the two and this is in  
-> line
-> with how legacy and v2 compatibility is handled" as stated in  
-> bd1060a1d671.
-> However, with Kubernetes more widely supporting cgroups v2 as well  
-> nowadays,
-> this assumption no longer holds, and the possibility of the v1/v2 mixed  
-> mode
-> with the v2 root fallback being hit becomes a real security issue.
 
-> Many of the cgroup v2 BPF programs are also used for policy enforcement,  
-> just
-> to pick _one_ example, that is, to programmatically deny socket related  
-> system
-> calls like connect(2) or bind(2). A v2 root fallback would implicitly  
-> cause
-> a policy bypass for the affected Pods.
-
-> In production environments, we have recently seen this case due to various
-> circumstances: i) a different 3rd party agent and/or ii) a container  
-> runtime
-> such as [0] in the user's environment configuring legacy cgroup v1 net_cls
-> tags, which triggered implicitly mentioned root fallback. Another case is
-> Kubernetes projects like kind [1] which create Kubernetes nodes in a  
-> container
-> and also add cgroup namespaces to the mix, meaning programs which are  
-> attached
-> to the cgroup v2 root of the cgroup namespace get attached to a non-root
-> cgroup v2 path from init namespace point of view. And the latter's root is
-> out of reach for agents on a kind Kubernetes node to configure. Meaning,  
-> any
-> entity on the node setting cgroup v1 net_cls tag will trigger the bypass
-> despite cgroup v2 BPF programs attached to the namespace root.
-
-> Generally, this mutual exclusiveness does not hold anymore in today's user
-> environments and makes cgroup v2 usage from BPF side fragile and  
-> unreliable.
-> This fix adds proper struct cgroup pointer for the cgroup v2 case to  
-> struct
-> sock_cgroup_data in order to address these issues; this implicitly also  
-> fixes
-> the tradeoffs being made back then with regards to races and refcount  
-> leaks
-> as stated in bd1060a1d671, and removes the fallback, so that cgroup v2 BPF
-> programs always operate as expected.
-
->    [0] https://github.com/nestybox/sysbox/
->    [1] https://kind.sigs.k8s.io/
-
-> Fixes: bd1060a1d671 ("sock, cgroup: add sock->sk_cgroup")
-> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: Tejun Heo <tj@kernel.org>
-> Cc: Martynas Pumputis <m@lambda.lt>
-> ---
->   include/linux/cgroup-defs.h  | 107 +++++++++--------------------------
->   include/linux/cgroup.h       |  22 +------
->   kernel/cgroup/cgroup.c       |  50 ++++------------
->   net/core/netclassid_cgroup.c |   7 +--
->   net/core/netprio_cgroup.c    |  10 +---
->   5 files changed, 41 insertions(+), 155 deletions(-)
-
-> diff --git a/include/linux/cgroup-defs.h b/include/linux/cgroup-defs.h
-> index e1c705fdfa7c..44446025741f 100644
-> --- a/include/linux/cgroup-defs.h
-> +++ b/include/linux/cgroup-defs.h
-> @@ -752,107 +752,54 @@ static inline void  
-> cgroup_threadgroup_change_end(struct task_struct *tsk) {}
->    * sock_cgroup_data is embedded at sock->sk_cgrp_data and contains
->    * per-socket cgroup information except for memcg association.
->    *
-> - * On legacy hierarchies, net_prio and net_cls controllers directly set
-> - * attributes on each sock which can then be tested by the network layer.
-> - * On the default hierarchy, each sock is associated with the cgroup it  
-> was
-> - * created in and the networking layer can match the cgroup directly.
-> - *
-> - * To avoid carrying all three cgroup related fields separately in sock,
-> - * sock_cgroup_data overloads (prioidx, classid) and the cgroup pointer.
-> - * On boot, sock_cgroup_data records the cgroup that the sock was created
-> - * in so that cgroup2 matches can be made; however, once either net_prio  
-> or
-> - * net_cls starts being used, the area is overridden to carry prioidx  
-> and/or
-> - * classid.  The two modes are distinguished by whether the lowest bit is
-> - * set.  Clear bit indicates cgroup pointer while set bit prioidx and
-> - * classid.
-> - *
-> - * While userland may start using net_prio or net_cls at any time, once
-> - * either is used, cgroup2 matching no longer works.  There is no reason  
-> to
-> - * mix the two and this is in line with how legacy and v2 compatibility  
-> is
-> - * handled.  On mode switch, cgroup references which are already being
-> - * pointed to by socks may be leaked.  While this can be remedied by  
-> adding
-> - * synchronization around sock_cgroup_data, given that the number of  
-> leaked
-> - * cgroups is bound and highly unlikely to be high, this seems to be the
-> - * better trade-off.
-> + * On legacy hierarchies, net_prio and net_cls controllers directly
-> + * set attributes on each sock which can then be tested by the network
-> + * layer. On the default hierarchy, each sock is associated with the
-> + * cgroup it was created in and the networking layer can match the
-> + * cgroup directly.
->    */
->   struct sock_cgroup_data {
-> -	union {
-> -#ifdef __LITTLE_ENDIAN
-> -		struct {
-> -			u8	is_data : 1;
-> -			u8	no_refcnt : 1;
-> -			u8	unused : 6;
-> -			u8	padding;
-> -			u16	prioidx;
-> -			u32	classid;
-> -		} __packed;
-> -#else
-> -		struct {
-> -			u32	classid;
-> -			u16	prioidx;
-> -			u8	padding;
-> -			u8	unused : 6;
-> -			u8	no_refcnt : 1;
-> -			u8	is_data : 1;
-> -		} __packed;
-> +	struct cgroup	*cgroup; /* v2 */
-> +#if defined(CONFIG_CGROUP_NET_CLASSID)
-> +	u32		classid; /* v1 */
-> +#endif
-> +#if defined(CONFIG_CGROUP_NET_PRIO)
-> +	u16		prioidx; /* v1 */
->   #endif
-> -		u64		val;
-> -	};
->   };
-
-> -/*
-> - * There's a theoretical window where the following accessors race with
-> - * updaters and return part of the previous pointer as the prioidx or
-> - * classid.  Such races are short-lived and the result isn't critical.
-> - */
->   static inline u16 sock_cgroup_prioidx(const struct sock_cgroup_data  
-> *skcd)
->   {
-> -	/* fallback to 1 which is always the ID of the root cgroup */
-> -	return (skcd->is_data & 1) ? skcd->prioidx : 1;
-> +#if defined(CONFIG_CGROUP_NET_PRIO)
-> +	return READ_ONCE(skcd->prioidx);
-> +#else
-> +	return 1;
-> +#endif
->   }
-
->   static inline u32 sock_cgroup_classid(const struct sock_cgroup_data  
-> *skcd)
->   {
-> -	/* fallback to 0 which is the unconfigured default classid */
-> -	return (skcd->is_data & 1) ? skcd->classid : 0;
-> +#if defined(CONFIG_CGROUP_NET_CLASSID)
-> +	return READ_ONCE(skcd->classid);
-> +#else
-> +	return 0;
-> +#endif
->   }
-
-> -/*
-> - * If invoked concurrently, the updaters may clobber each other.  The
-> - * caller is responsible for synchronization.
-> - */
->   static inline void sock_cgroup_set_prioidx(struct sock_cgroup_data *skcd,
->   					   u16 prioidx)
->   {
-> -	struct sock_cgroup_data skcd_buf = {{ .val = READ_ONCE(skcd->val) }};
-> -
-> -	if (sock_cgroup_prioidx(&skcd_buf) == prioidx)
-> -		return;
-> -
-> -	if (!(skcd_buf.is_data & 1)) {
-> -		skcd_buf.val = 0;
-> -		skcd_buf.is_data = 1;
-> -	}
-> -
-> -	skcd_buf.prioidx = prioidx;
-> -	WRITE_ONCE(skcd->val, skcd_buf.val);	/* see sock_cgroup_ptr() */
-> +#if defined(CONFIG_CGROUP_NET_PRIO)
-> +	WRITE_ONCE(skcd->prioidx, prioidx);
-> +#endif
->   }
-
->   static inline void sock_cgroup_set_classid(struct sock_cgroup_data *skcd,
->   					   u32 classid)
->   {
-> -	struct sock_cgroup_data skcd_buf = {{ .val = READ_ONCE(skcd->val) }};
-> -
-> -	if (sock_cgroup_classid(&skcd_buf) == classid)
-> -		return;
-> -
-> -	if (!(skcd_buf.is_data & 1)) {
-> -		skcd_buf.val = 0;
-> -		skcd_buf.is_data = 1;
-> -	}
-> -
-> -	skcd_buf.classid = classid;
-> -	WRITE_ONCE(skcd->val, skcd_buf.val);	/* see sock_cgroup_ptr() */
-> +#if defined(CONFIG_CGROUP_NET_CLASSID)
-> +	WRITE_ONCE(skcd->classid, classid);
-> +#endif
->   }
-
->   #else	/* CONFIG_SOCK_CGROUP_DATA */
-> diff --git a/include/linux/cgroup.h b/include/linux/cgroup.h
-> index 7bf60454a313..a7e79ad7c9b0 100644
-> --- a/include/linux/cgroup.h
-> +++ b/include/linux/cgroup.h
-> @@ -829,33 +829,13 @@ static inline void  
-> cgroup_account_cputime_field(struct task_struct *task,
->    */
->   #ifdef CONFIG_SOCK_CGROUP_DATA
-
-> -#if defined(CONFIG_CGROUP_NET_PRIO) || defined(CONFIG_CGROUP_NET_CLASSID)
-> -extern spinlock_t cgroup_sk_update_lock;
-> -#endif
-> -
-> -void cgroup_sk_alloc_disable(void);
->   void cgroup_sk_alloc(struct sock_cgroup_data *skcd);
->   void cgroup_sk_clone(struct sock_cgroup_data *skcd);
->   void cgroup_sk_free(struct sock_cgroup_data *skcd);
-
->   static inline struct cgroup *sock_cgroup_ptr(struct sock_cgroup_data  
-> *skcd)
->   {
-> -#if defined(CONFIG_CGROUP_NET_PRIO) || defined(CONFIG_CGROUP_NET_CLASSID)
-> -	unsigned long v;
-> -
-> -	/*
-> -	 * @skcd->val is 64bit but the following is safe on 32bit too as we
-> -	 * just need the lower ulong to be written and read atomically.
-> -	 */
-> -	v = READ_ONCE(skcd->val);
-> -
-> -	if (v & 3)
-> -		return &cgrp_dfl_root.cgrp;
-> -
-> -	return (struct cgroup *)(unsigned long)v ?: &cgrp_dfl_root.cgrp;
-> -#else
-> -	return (struct cgroup *)(unsigned long)skcd->val;
-> -#endif
-> +	return READ_ONCE(skcd->cgroup);
-
-Do we really need READ_ONCE here? I was always assuming it was there
-because we were flipping that lower bit. Now that it's a simple
-pointer, why not 'return skcd->cgroup' instead?
-
->   }
-
->   #else	/* CONFIG_CGROUP_DATA */
-> diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
-> index 881ce1470beb..15ad5c8b24a8 100644
-> --- a/kernel/cgroup/cgroup.c
-> +++ b/kernel/cgroup/cgroup.c
-> @@ -6572,74 +6572,44 @@ int cgroup_parse_float(const char *input,  
-> unsigned dec_shift, s64 *v)
->    */
->   #ifdef CONFIG_SOCK_CGROUP_DATA
-
-> -#if defined(CONFIG_CGROUP_NET_PRIO) || defined(CONFIG_CGROUP_NET_CLASSID)
-> -
-> -DEFINE_SPINLOCK(cgroup_sk_update_lock);
-> -static bool cgroup_sk_alloc_disabled __read_mostly;
-> -
-> -void cgroup_sk_alloc_disable(void)
-> -{
-> -	if (cgroup_sk_alloc_disabled)
-> -		return;
-> -	pr_info("cgroup: disabling cgroup2 socket matching due to net_prio or  
-> net_cls activation\n");
-> -	cgroup_sk_alloc_disabled = true;
-> -}
-> -
-> -#else
-> -
-> -#define cgroup_sk_alloc_disabled	false
-> -
-> -#endif
-> -
->   void cgroup_sk_alloc(struct sock_cgroup_data *skcd)
->   {
-> -	if (cgroup_sk_alloc_disabled) {
-> -		skcd->no_refcnt = 1;
-> -		return;
-> -	}
-> -
->   	/* Don't associate the sock with unrelated interrupted task's cgroup. */
->   	if (in_interrupt())
->   		return;
-
->   	rcu_read_lock();
-> -
->   	while (true) {
->   		struct css_set *cset;
-
->   		cset = task_css_set(current);
->   		if (likely(cgroup_tryget(cset->dfl_cgrp))) {
-> -			skcd->val = (unsigned long)cset->dfl_cgrp;
-> +			WRITE_ONCE(skcd->cgroup, cset->dfl_cgrp);
->   			cgroup_bpf_get(cset->dfl_cgrp);
->   			break;
->   		}
->   		cpu_relax();
->   	}
-> -
->   	rcu_read_unlock();
->   }
-
->   void cgroup_sk_clone(struct sock_cgroup_data *skcd)
->   {
-> -	if (skcd->val) {
-> -		if (skcd->no_refcnt)
-> -			return;
-> -		/*
-> -		 * We might be cloning a socket which is left in an empty
-> -		 * cgroup and the cgroup might have already been rmdir'd.
-> -		 * Don't use cgroup_get_live().
-> -		 */
-> -		cgroup_get(sock_cgroup_ptr(skcd));
-> -		cgroup_bpf_get(sock_cgroup_ptr(skcd));
-> -	}
-> +	struct cgroup *cgrp = sock_cgroup_ptr(skcd);
+On 9/8/2021 6:39 PM, Andrew Lunn wrote:
+>> --- a/net/dsa/dsa2.c
+>> +++ b/net/dsa/dsa2.c
+>> @@ -1286,6 +1286,17 @@ static int dsa_switch_parse_of(struct
+>> dsa_switch *ds, struct device_node *dn)
+>>   {
+>>          int err;
+>>
+>> +       /* A lot of switch devices have their PHYs as child devices and have
+>> +        * the PHYs depend on the switch as a supplier (Eg: interrupt
+>> +        * controller). With fw_devlink=on, that means the PHYs will defer
+>> +        * probe until the probe() of the switch completes. However, the way
+>> +        * the DSA framework is designed, the PHYs are expected to be probed
+>> +        * successfully before the probe() of the switch completes.
+>> +        *
+>> +        * So, mark the switch devices as a "broken parent" so that fw_devlink
+>> +        * knows not to create device links between PHYs and the parent switch.
+>> +        */
+>> +       np->fwnode.flags |= FWNODE_FLAG_BROKEN_PARENT;
+>>          err = dsa_switch_parse_member_of(ds, dn);
+>>          if (err)
+>>                  return err;
+> 
+> This does not work. First off, its dn, not np. But with that fixed, it
+> still does not work. This is too late, the mdio busses have already
+> been registered and probed, the PHYs have been found on the busses,
+> and the PHYs would of been probed, if not for fw_devlink.
+> 
+> What did work was:
+> 
+> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+> index c45ca2473743..45d67d50e35f 100644
+> --- a/drivers/net/dsa/mv88e6xxx/chip.c
+> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
+> @@ -6249,8 +6249,10 @@ static int mv88e6xxx_probe(struct mdio_device *mdiodev)
+>          if (!np && !pdata)
+>                  return -EINVAL;
+>   
+> -       if (np)
+> +       if (np) {
+>                  compat_info = of_device_get_match_data(dev);
+> +               np->fwnode.flags |= FWNODE_FLAG_BROKEN_PARENT;
+> +       }
+>   
+>          if (pdata) {
+>                  compat_info = pdata_device_get_match_data(dev);
+> 
+> This will fix it for mv88e6xxx. But if the same problem occurs in any
+> of the other DSA drivers, they will still be broken:
+> 
+> ~/linux/drivers/net/dsa$ grep -r mdiobus_register *
+> bcm_sf2.c:	err = mdiobus_register(priv->slave_mii_bus);
+> dsa_loop_bdinfo.c:	return mdiobus_register_board_info(&bdinfo, 1);
+> lantiq_gswip.c:	return of_mdiobus_register(ds->slave_mii_bus, mdio_np);
+> mt7530.c:	ret = mdiobus_register(bus);
+> mv88e6xxx/chip.c:	err = of_mdiobus_register(bus, np);
+> grep: mv88e6xxx/chip.o: binary file matches
+> ocelot/seville_vsc9953.c:	rc = mdiobus_register(bus);
+> ocelot/felix_vsc9959.c:	rc = mdiobus_register(bus);
+> qca/ar9331.c:	ret = of_mdiobus_register(mbus, mnp);
+> qca8k.c:	return devm_of_mdiobus_register(priv->dev, bus, mdio);
+> realtek-smi-core.c:	ret = of_mdiobus_register(smi->slave_mii_bus, mdio_np);
+> sja1105/sja1105_mdio.c:	rc = of_mdiobus_register(bus, np);
+> sja1105/sja1105_mdio.c:	rc = of_mdiobus_register(bus, np);
+> sja1105/sja1105_mdio.c:	rc = mdiobus_register(bus);
+> sja1105/sja1105_mdio.c:int sja1105_mdiobus_register(struct dsa_switch *ds)
+> sja1105/sja1105.h:int sja1105_mdiobus_register(struct dsa_switch *ds);
+> sja1105/sja1105_main.c:	rc = sja1105_mdiobus_register(ds);
+> 
+> If you are happy to use a big hammer:
+> 
+> diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+> index 53f034fc2ef7..7ecd910f7fb8 100644
+> --- a/drivers/net/phy/mdio_bus.c
+> +++ b/drivers/net/phy/mdio_bus.c
+> @@ -525,6 +525,9 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
+>              NULL == bus->read || NULL == bus->write)
+>                  return -EINVAL;
+>   
+> +       if (bus->parent && bus->parent->of_node)
+> +               bus->parent->of_node->fwnode.flags |= FWNODE_FLAG_BROKEN_PARENT;
 > +
-> +	/*
-> +	 * We might be cloning a socket which is left in an empty
-> +	 * cgroup and the cgroup might have already been rmdir'd.
-> +	 * Don't use cgroup_get_live().
-> +	 */
-> +	cgroup_get(cgrp);
-> +	cgroup_bpf_get(cgrp);
->   }
+>          BUG_ON(bus->state != MDIOBUS_ALLOCATED &&
+>                 bus->state != MDIOBUS_UNREGISTERED);
+>   
+> So basically saying all MDIO busses potentially have a problem.
+> 
+> I also don't like the name FWNODE_FLAG_BROKEN_PARENT. The parents are
+> not broken, they work fine, if fw_devlink gets out of the way and
+> allows them to do their job.
+> 
+> You also asked about why the component framework is not used. DSA has
+> been around for a while, the first commit dates back to October
+> 2008. Russell Kings first commit for the component framework is
+> January 2014. The plain driver model has worked for the last 13 years,
+> so there has not been any need to change.
 
->   void cgroup_sk_free(struct sock_cgroup_data *skcd)
->   {
->   	struct cgroup *cgrp = sock_cgroup_ptr(skcd);
+That part of the story is more complicated than that, DSA did not get 
+any development from 2008 till 2014 when I picked it up to add support 
+for Broadcom switches. In 2016, in order to support more switches, 
+especially those that were "pure" MDIO devices, Andrew came up with the 
+mdio_device structure and also created "dsa2" which allowed registering 
+switches from their actual bus. This allowed us to depart from all of 
+the limitations of the unique "dsa" platform device which was just 
+horrible to work with.
 
-> -	if (skcd->no_refcnt)
-> -		return;
->   	cgroup_bpf_put(cgrp);
->   	cgroup_put(cgrp);
->   }
-> diff --git a/net/core/netclassid_cgroup.c b/net/core/netclassid_cgroup.c
-> index b49c57d35a88..1a6a86693b74 100644
-> --- a/net/core/netclassid_cgroup.c
-> +++ b/net/core/netclassid_cgroup.c
-> @@ -71,11 +71,8 @@ static int update_classid_sock(const void *v, struct  
-> file *file, unsigned n)
->   	struct update_classid_context *ctx = (void *)v;
->   	struct socket *sock = sock_from_file(file);
+I recall very clearly that one of your prototypes that I tested was 
+using the component framework, although I do not remember why we did not 
+pursue that route and instead the DSA switch tree got reference counted 
+and got its current form. So Andrew, you did evaluate the component 
+framework but ended up not using it, do you remember why?
 
-> -	if (sock) {
-> -		spin_lock(&cgroup_sk_update_lock);
-> +	if (sock)
->   		sock_cgroup_set_classid(&sock->sk->sk_cgrp_data, ctx->classid);
-> -		spin_unlock(&cgroup_sk_update_lock);
-> -	}
->   	if (--ctx->batch == 0) {
->   		ctx->batch = UPDATE_CLASSID_BATCH;
->   		return n + 1;
-> @@ -121,8 +118,6 @@ static int write_classid(struct cgroup_subsys_state  
-> *css, struct cftype *cft,
->   	struct css_task_iter it;
->   	struct task_struct *p;
-
-> -	cgroup_sk_alloc_disable();
-> -
->   	cs->classid = (u32)value;
-
->   	css_task_iter_start(css, 0, &it);
-> diff --git a/net/core/netprio_cgroup.c b/net/core/netprio_cgroup.c
-> index 99a431c56f23..8456dfbe2eb4 100644
-> --- a/net/core/netprio_cgroup.c
-> +++ b/net/core/netprio_cgroup.c
-> @@ -207,8 +207,6 @@ static ssize_t write_priomap(struct kernfs_open_file  
-> *of,
->   	if (!dev)
->   		return -ENODEV;
-
-> -	cgroup_sk_alloc_disable();
-> -
->   	rtnl_lock();
-
->   	ret = netprio_set_prio(of_css(of), dev, prio);
-> @@ -221,12 +219,10 @@ static ssize_t write_priomap(struct  
-> kernfs_open_file *of,
->   static int update_netprio(const void *v, struct file *file, unsigned n)
->   {
->   	struct socket *sock = sock_from_file(file);
-> -	if (sock) {
-> -		spin_lock(&cgroup_sk_update_lock);
-> +
-> +	if (sock)
->   		sock_cgroup_set_prioidx(&sock->sk->sk_cgrp_data,
->   					(unsigned long)v);
-> -		spin_unlock(&cgroup_sk_update_lock);
-> -	}
->   	return 0;
->   }
-
-> @@ -235,8 +231,6 @@ static void net_prio_attach(struct cgroup_taskset  
-> *tset)
->   	struct task_struct *p;
->   	struct cgroup_subsys_state *css;
-
-> -	cgroup_sk_alloc_disable();
-> -
->   	cgroup_taskset_for_each(p, css, tset) {
->   		void *v = (void *)(unsigned long)css->id;
-
-> --
-> 2.21.0
-
+There is nothing wrong with the current approach of allowing switches to 
+come up and do the final tree setup when the tree is fully resolved. If 
+there are driver level changes that we can make to ease the pain on the 
+device link framework, we should certainly entertain them, keep in mind 
+that DSA for better or worse shows a lot of cargo cult programming.
+-- 
+Florian
