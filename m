@@ -2,149 +2,246 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0014E405FE2
-	for <lists+netdev@lfdr.de>; Fri, 10 Sep 2021 01:10:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D7B1405FF8
+	for <lists+netdev@lfdr.de>; Fri, 10 Sep 2021 01:20:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348814AbhIIXLd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 19:11:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50276 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231814AbhIIXL1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Sep 2021 19:11:27 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 22440611BD;
-        Thu,  9 Sep 2021 23:10:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631229017;
-        bh=3YxsuiRXu/smKF4MR7FdUwElSK/efD1o+XDrBjXxq+o=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EKLDkvZAeJ5mfJdofd6v00Ql38FCNvRcZq5Uax6iT9so9XPdYG1j/3DK2dPVHXuU4
-         bxTRKIAIaQgNAxBCknj6yMKrsKWRdg+uOGm7kmhvahXLUrWT2VOFqXaLPeajzrFnc6
-         ugyTcc6opeqM9bcafAsRrEF0weOJV830/I6UZueoJ4dhmKUKsFEXblUeV8edDXi9f3
-         2gwsMdENDMevIClYgWddI/iF0DVl6s+4t9NvkjG5uKfutF10W7g6KH7E+u8WW6Ugo3
-         rSJEKOw2n0lpNM4HOxVyHuNeeRwBTFTHmbPSF2/kywAqeG0jf6miV0Iz1Q4j3Ce+gX
-         ucOmz4sUybcgg==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, jiri@resnulli.us,
-        xiyou.wangcong@gmail.com, edumazet@google.com,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net 3/3] selftests: net: test ethtool -L vs mq
-Date:   Thu,  9 Sep 2021 16:10:04 -0700
-Message-Id: <20210909231004.196905-4-kuba@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210909231004.196905-1-kuba@kernel.org>
-References: <20210909231004.196905-1-kuba@kernel.org>
+        id S1348945AbhIIXVr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 19:21:47 -0400
+Received: from www62.your-server.de ([213.133.104.62]:48290 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234743AbhIIXVq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 19:21:46 -0400
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mOTLI-000FQ5-5O; Fri, 10 Sep 2021 01:20:28 +0200
+Received: from [85.5.47.65] (helo=linux.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mOTLH-000Rzk-Re; Fri, 10 Sep 2021 01:20:27 +0200
+Subject: Re: Actual tail call count limits in x86 JITs and interpreter
+To:     Johan Almbladh <johan.almbladh@anyfinetworks.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Paul Chaignon <paul@cilium.io>,
+        Tiezhu Yang <yangtiezhu@loongson.cn>
+Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+References: <CAM1=_QRyRVCODcXo_Y6qOm1iT163HoiSj8U2pZ8Rj3hzMTT=HQ@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <f79a0ea1-fa20-82e1-71bd-f3a9f9e946ec@iogearbox.net>
+Date:   Fri, 10 Sep 2021 01:20:27 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAM1=_QRyRVCODcXo_Y6qOm1iT163HoiSj8U2pZ8Rj3hzMTT=HQ@mail.gmail.com>
+Content-Type: multipart/mixed;
+ boundary="------------4F1BF1A3FD060DAEA711EF56"
+Content-Language: en-US
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.2/26289/Thu Sep  9 10:20:35 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a selftest for checking mq children are visible after ethtool -L.
+This is a multi-part message in MIME format.
+--------------4F1BF1A3FD060DAEA711EF56
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+On 9/10/21 12:15 AM, Johan Almbladh wrote:
+> I have done some investigation into this matter, and this is what I
+> have found. To recap, the situation is as follows.
+> 
+> MAX_TAIL_CALL_CNT is defined to be 32. Since the interpreter has used
+> 33 instead, we agree to use that limit across all JIT implementations
+> to not break any user space program. To make sure everything uses the
+> same limit, we must first understand what the current state actually
+> is so we know what to fix.
+> 
+> Me: according to test_bpf.ko the tail call limit is 33 for the
+> interpreter, and 32 for the x86-64 JIT.
+> Paul: according to selftests the tail call limit is 33 for both the
+> interpreter and the x86-64 JIT.
+> 
+> Link: https://lore.kernel.org/bpf/20210809093437.876558-1-johan.almbladh@anyfinetworks.com/
+> 
+> I have been able to reproduce the above selftests results using
+> vmtest.sh. Digging deeper into this, I found that there are actually
+> two different code paths where the tail call count is checked in the
+> x86-64 JIT, corresponding to direct and indirect tail calls. By
+> setting different limits in those two places, I found that selftests
+> tailcall_3 hits the limit in emit_bpf_tail_call_direct(), whereas the
+> test_bpf.ko is limited by emit_bpf_tail_call_indirect().
+
+I hacked a quick test case so that both are covered, see attached. Both
+have the same behavior from my testing with and without the x86-64 JIT.
+Bit late over here, will check more tomorrow, but in both cases we also
+emit the same JIT code wrt counter update..
+
+> I am not 100% sure that this is the correct explanation, but it sounds
+> very reasonable. However, the asm generated in the two cases look very
+> similar to me, so by looking at that alone I cannot really see that
+> the limits would be different. Perhaps someone more versed in x86 asm
+> could take a closer look.
+> 
+> What are your thoughts?
+> 
+> Johan
+> 
+
+
+--------------4F1BF1A3FD060DAEA711EF56
+Content-Type: text/x-patch;
+ name="0001-bpf-selftests-Replicate-tailcall_3-limit-test-for-in.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename*0="0001-bpf-selftests-Replicate-tailcall_3-limit-test-for-in.pa";
+ filename*1="tch"
+
+From c68f8e699a639392f24244068c1b49389f67f302 Mon Sep 17 00:00:00 2001
+From: Daniel Borkmann <daniel@iogearbox.net>
+Date: Thu, 9 Sep 2021 22:55:13 +0000
+Subject: [PATCH bpf-next] bpf, selftests: Replicate tailcall_3 limit test for indirect call case
+
+The tailcall_3 test program uses bpf_tail_call_static() where the JIT
+would patch a direct jump. Add a new tailcall_6 test program replicating
+exactly the same test just ensuring that bpf_tail_call() uses a map index
+where the verifier cannot make assumptions this time. In other words this
+will now cover both on x86-64 JIT, emit_bpf_tail_call_direct() emission
+as well as emit_bpf_tail_call_indirect() emission.
+
+  # ./test_progs -t tailcalls
+  #136/1 tailcalls/tailcall_1:OK
+  #136/2 tailcalls/tailcall_2:OK
+  #136/3 tailcalls/tailcall_3:OK
+  #136/4 tailcalls/tailcall_4:OK
+  #136/5 tailcalls/tailcall_5:OK
+  #136/6 tailcalls/tailcall_6:OK
+  #136/7 tailcalls/tailcall_bpf2bpf_1:OK
+  #136/8 tailcalls/tailcall_bpf2bpf_2:OK
+  #136/9 tailcalls/tailcall_bpf2bpf_3:OK
+  #136/10 tailcalls/tailcall_bpf2bpf_4:OK
+  #136/11 tailcalls/tailcall_bpf2bpf_5:OK
+  #136 tailcalls:OK
+  Summary: 1/11 PASSED, 0 SKIPPED, 0 FAILED
+
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Johan Almbladh <johan.almbladh@anyfinetworks.com>
+Cc: Paul Chaignon <paul@cilium.io>
+Cc: Tiezhu Yang <yangtiezhu@loongson.cn>
 ---
- .../drivers/net/netdevsim/ethtool-common.sh   |  2 +-
- .../drivers/net/netdevsim/tc-mq-visibility.sh | 77 +++++++++++++++++++
- 2 files changed, 78 insertions(+), 1 deletion(-)
- create mode 100755 tools/testing/selftests/drivers/net/netdevsim/tc-mq-visibility.sh
+ .../selftests/bpf/prog_tests/tailcalls.c      | 25 ++++++++++---
+ tools/testing/selftests/bpf/progs/tailcall6.c | 36 +++++++++++++++++++
+ 2 files changed, 56 insertions(+), 5 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/tailcall6.c
 
-diff --git a/tools/testing/selftests/drivers/net/netdevsim/ethtool-common.sh b/tools/testing/selftests/drivers/net/netdevsim/ethtool-common.sh
-index 7ca1f030d209..922744059aaa 100644
---- a/tools/testing/selftests/drivers/net/netdevsim/ethtool-common.sh
-+++ b/tools/testing/selftests/drivers/net/netdevsim/ethtool-common.sh
-@@ -50,7 +50,7 @@ function make_netdev {
- 	modprobe netdevsim
-     fi
- 
--    echo $NSIM_ID > /sys/bus/netdevsim/new_device
-+    echo $NSIM_ID $@ > /sys/bus/netdevsim/new_device
-     # get new device name
-     ls /sys/bus/netdevsim/devices/netdevsim${NSIM_ID}/net/
+diff --git a/tools/testing/selftests/bpf/prog_tests/tailcalls.c b/tools/testing/selftests/bpf/prog_tests/tailcalls.c
+index b5940e6ca67c..7bf3a7a97d7b 100644
+--- a/tools/testing/selftests/bpf/prog_tests/tailcalls.c
++++ b/tools/testing/selftests/bpf/prog_tests/tailcalls.c
+@@ -219,10 +219,7 @@ static void test_tailcall_2(void)
+ 	bpf_object__close(obj);
  }
-diff --git a/tools/testing/selftests/drivers/net/netdevsim/tc-mq-visibility.sh b/tools/testing/selftests/drivers/net/netdevsim/tc-mq-visibility.sh
-new file mode 100755
-index 000000000000..fd13c8cfb7a8
+ 
+-/* test_tailcall_3 checks that the count value of the tail call limit
+- * enforcement matches with expectations.
+- */
+-static void test_tailcall_3(void)
++static void test_tailcall_count(const char *which)
+ {
+ 	int err, map_fd, prog_fd, main_fd, data_fd, i, val;
+ 	struct bpf_map *prog_array, *data_map;
+@@ -231,7 +228,7 @@ static void test_tailcall_3(void)
+ 	__u32 retval, duration;
+ 	char buff[128] = {};
+ 
+-	err = bpf_prog_load("tailcall3.o", BPF_PROG_TYPE_SCHED_CLS, &obj,
++	err = bpf_prog_load(which, BPF_PROG_TYPE_SCHED_CLS, &obj,
+ 			    &prog_fd);
+ 	if (CHECK_FAIL(err))
+ 		return;
+@@ -296,6 +293,22 @@ static void test_tailcall_3(void)
+ 	bpf_object__close(obj);
+ }
+ 
++/* test_tailcall_3 checks that the count value of the tail call limit
++ * enforcement matches with expectations. JIT uses direct jump.
++ */
++static void test_tailcall_3(void)
++{
++	test_tailcall_count("tailcall3.o");
++}
++
++/* test_tailcall_6 checks that the count value of the tail call limit
++ * enforcement matches with expectations. JIT uses indirect jump.
++ */
++static void test_tailcall_6(void)
++{
++	test_tailcall_count("tailcall6.o");
++}
++
+ /* test_tailcall_4 checks that the kernel properly selects indirect jump
+  * for the case where the key is not known. Latter is passed via global
+  * data to select different targets we can compare return value of.
+@@ -822,6 +835,8 @@ void test_tailcalls(void)
+ 		test_tailcall_4();
+ 	if (test__start_subtest("tailcall_5"))
+ 		test_tailcall_5();
++	if (test__start_subtest("tailcall_6"))
++		test_tailcall_6();
+ 	if (test__start_subtest("tailcall_bpf2bpf_1"))
+ 		test_tailcall_bpf2bpf_1();
+ 	if (test__start_subtest("tailcall_bpf2bpf_2"))
+diff --git a/tools/testing/selftests/bpf/progs/tailcall6.c b/tools/testing/selftests/bpf/progs/tailcall6.c
+new file mode 100644
+index 000000000000..9c298d908693
 --- /dev/null
-+++ b/tools/testing/selftests/drivers/net/netdevsim/tc-mq-visibility.sh
-@@ -0,0 +1,77 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0-only
++++ b/tools/testing/selftests/bpf/progs/tailcall6.c
+@@ -0,0 +1,36 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <linux/bpf.h>
 +
-+source ethtool-common.sh
++#include <bpf/bpf_helpers.h>
 +
-+set -o pipefail
++struct {
++	__uint(type, BPF_MAP_TYPE_PROG_ARRAY);
++	__uint(max_entries, 1);
++	__uint(key_size, sizeof(__u32));
++	__uint(value_size, sizeof(__u32));
++} jmp_table SEC(".maps");
 +
-+n_children() {
-+    n=$(tc qdisc show dev $NDEV | grep '^qdisc' | wc -l)
-+    echo $((n - 1))
++int count = 0;
++volatile int which;
++
++SEC("classifier/0")
++int bpf_func_0(struct __sk_buff *skb)
++{
++	count++;
++	if (__builtin_constant_p(which))
++		__bpf_unreachable();
++	bpf_tail_call(skb, &jmp_table, which);
++	return 1;
 +}
 +
-+tcq() {
-+    tc qdisc $1 dev $NDEV ${@:2}
++SEC("classifier")
++int entry(struct __sk_buff *skb)
++{
++	if (__builtin_constant_p(which))
++		__bpf_unreachable();
++	bpf_tail_call(skb, &jmp_table, which);
++	return 0;
 +}
 +
-+n_child_assert() {
-+    n=$(n_children)
-+    if [ $n -ne $1 ]; then
-+	echo "ERROR ($root): ${@:2}, expected $1 have $n"
-+	((num_errors++))
-+    else
-+	((num_passes++))
-+    fi
-+}
-+
-+
-+for root in mq mqprio; do
-+    NDEV=$(make_netdev 1 4)
-+
-+    opts=
-+    [ $root == "mqprio" ] && opts='hw 0 num_tc 1 map 0 0 0 0  queues 1@0'
-+
-+    tcq add root handle 100: $root $opts
-+    n_child_assert 4 'Init'
-+
-+    # All defaults
-+
-+    for n in 3 2 1 2 3 4 1 4; do
-+	ethtool -L $NDEV combined $n
-+	n_child_assert $n "Change queues to $n while down"
-+    done
-+
-+    ip link set dev $NDEV up
-+
-+    for n in 3 2 1 2 3 4 1 4; do
-+	ethtool -L $NDEV combined $n
-+	n_child_assert $n "Change queues to $n while up"
-+    done
-+
-+    # One real one
-+    tcq replace parent 100:4 handle 204: pfifo_fast
-+    n_child_assert 4 "One real queue"
-+
-+    ethtool -L $NDEV combined 1
-+    n_child_assert 2 "One real queue, one default"
-+
-+    ethtool -L $NDEV combined 4
-+    n_child_assert 4 "One real queue, rest default"
-+
-+    # Graft some
-+    tcq replace parent 100:1 handle 204:
-+    n_child_assert 3 "Grafted"
-+
-+    ethtool -L $NDEV combined 1
-+    n_child_assert 1 "Grafted, one"
-+
-+    cleanup_nsim
-+done
-+
-+if [ $num_errors -eq 0 ]; then
-+    echo "PASSED all $((num_passes)) checks"
-+    exit 0
-+else
-+    echo "FAILED $num_errors/$((num_errors+num_passes)) checks"
-+    exit 1
-+fi
++char __license[] SEC("license") = "GPL";
++int _version SEC("version") = 1;
 -- 
-2.31.1
+2.27.0
 
+
+--------------4F1BF1A3FD060DAEA711EF56--
