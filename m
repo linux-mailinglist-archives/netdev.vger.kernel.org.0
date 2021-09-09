@@ -2,95 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75B1B405F4E
-	for <lists+netdev@lfdr.de>; Fri, 10 Sep 2021 00:16:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C166D405F98
+	for <lists+netdev@lfdr.de>; Fri, 10 Sep 2021 00:30:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242479AbhIIWRT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 18:17:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38726 "EHLO
+        id S235083AbhIIWbI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 18:31:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232273AbhIIWRS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 18:17:18 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2504C061575
-        for <netdev@vger.kernel.org>; Thu,  9 Sep 2021 15:16:08 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id s16so7090482ybe.0
-        for <netdev@vger.kernel.org>; Thu, 09 Sep 2021 15:16:08 -0700 (PDT)
+        with ESMTP id S229531AbhIIWbH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 18:31:07 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42DB7C061574;
+        Thu,  9 Sep 2021 15:29:57 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id k23so71286pji.0;
+        Thu, 09 Sep 2021 15:29:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=anyfinetworks-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=u/FPYK1IWjl7CJh31tHuM4mcsWQo2ROdCZ/zThgYVII=;
-        b=s6lzDaIN6ngQe3LkVxL6yDLdQaPzvNPvdJ4Z4SgbHh7Qpo/K0BojuCvK89xOC0EG9y
-         Sgvp202qsRojWrkJLHa+43YmI0lxPlbmGjYdNuHMBGqc1JP5mqgwioMb1B8swrZbTGFE
-         0ymZO3z5JVVRxCp7+LUlEfXPNS652N0hEKshrvJWXRD6HyGax/ofTtS3ExxPrDfQgauP
-         Ybgk0DzTt5e0JUJ7aiqnSII2UoIWKdKEZsB9hB9t6zvGMsheYN2J9grJuOW37Y42BUrk
-         84gYNUjzYpgTrXIBRg0gU11gDDjq4PfzzkVNZtL0IB7jybIgTtRweArbNo4+/XGCt5Yq
-         4+9Q==
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=bnhX5uj2rAQbqykqjIAuORREFzEvDfH4zbDhGukqKhI=;
+        b=fOJ4FfY7JfvYVDAPeWdDQhYHAVy2gS076rWTqLu4ZPRLZPN+9/C03g/vsNR0YLvk4J
+         Id23kkXi6/3+UdDb3YfWQpjlLuDbGEXjfO7jGi9WeWieJ5aIHWDb2VMCsfamy8MYLeTB
+         0qdfhVo7tHgTDi4uK0o+ilKYfH2CbO+XdaPbAgyNxmQZS3GC6a9g+QI9zmrJqVCc8DLu
+         5O6khzd6r93RcbsFgOP53i+kFzpswihgO5avBq0b9LqffJf9mAjkuevIfKKO/fxMvawr
+         AWnMhFjitkjIa5kiSAoPQewEnsMpahKkHSS9z/1+szwtzIIe3RJR8nW2EhP+WgMWuPCp
+         MAAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=u/FPYK1IWjl7CJh31tHuM4mcsWQo2ROdCZ/zThgYVII=;
-        b=qMtFxe0CcOcDcaaDS3CW+AmuCb/WL5hNk4rdqqbhq4AN/K1j5d1KzoLKyoSApkPYjM
-         thnqxsnLwHhpy9xnxsyCVpyNKTef2ovM/J0mHJoy3P9lDusNkckJScY6uCKwsS51zIYz
-         P/Czdk7ulWdsEMGJ0pkYHI6+d//WGQETTLLB/st4njnYhEa4ioL1ssja4P/UP9K8edMN
-         BR6oh9gXZeUJ28/LW4PVXrivv6FMAspuqg1i4wMYj9xFrd8c5p+ljjxbSq4bMdTrA8NM
-         xq0MiiKiSpkOg3WlkRMOWDdL/X4Ri6VLqIKYMuCA8uXscTAZFwN/hMpqJnS0F6uT92Nf
-         fzog==
-X-Gm-Message-State: AOAM531pDDNdcinP9csUxV/tLYCNxCQGhoU/ak92FXspZqzztt5EIeHB
-        6XyQF/7s7iJ63kpaEiLnuguIoDqYCqHqnQMHLjnbSg==
-X-Google-Smtp-Source: ABdhPJz6l8ZDOXKsm3TJwgF3q92DeKinpuJmy/dcNcG+iXwbIB1VRLVv0Z3k10BkXeiaTWY6Q7bXteIo7SREdEr/B1U=
-X-Received: by 2002:a05:6902:1546:: with SMTP id r6mr7369626ybu.268.1631225767910;
- Thu, 09 Sep 2021 15:16:07 -0700 (PDT)
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=bnhX5uj2rAQbqykqjIAuORREFzEvDfH4zbDhGukqKhI=;
+        b=YjhBNFvTXVxhIuIYWorKOOaTdoYTC9mNXbIsVMKQzrnAru6h8luL8CywBXMsOWnPiu
+         Y9PlW9TZ+ubLhjpzt8VHcI4i5diSMKVQgEnTOYWIh7A8ctzkFDFYQ/F+27O1n2M+LZYF
+         WCB+kvPeH6qoOVxy2skhjamdx5Di6gxEe5w5wrh7ByVQcQNlG8Jp9Ptc9eDcDu1UeEPz
+         w9dnH0GnCQeWy+QaVGs12RVmch7iq8Jw9A5C478JFeB8KVfTu9I/MxpeTRj/e+8tFNsc
+         zEDqHDvChUSInvWO4apZmwzlzkk3a2sIb7mk5Pj4knex9ShYumnK/dZKAH4265nLWiJS
+         Xqqg==
+X-Gm-Message-State: AOAM532dC3LN7ECB7SPWErgjmS15Qk08DDEjzdP7aksK6AsFJn1y3f/V
+        0Wdpm9r/+8+7t9wHTrU+/XY=
+X-Google-Smtp-Source: ABdhPJyT+PH6brx2Qu2YHDrGWG+OBmAWiR2Slu4WCfACX4II1Uc5BHEYehpqb8TRfZqxHqEFcdMUDQ==
+X-Received: by 2002:a17:90a:a88b:: with SMTP id h11mr5992014pjq.44.1631226596550;
+        Thu, 09 Sep 2021 15:29:56 -0700 (PDT)
+Received: from localhost (2603-800c-1a02-1bae-e24f-43ff-fee6-449f.res6.spectrum.com. [2603:800c:1a02:1bae:e24f:43ff:fee6:449f])
+        by smtp.gmail.com with ESMTPSA id d13sm3146968pfn.114.2021.09.09.15.29.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Sep 2021 15:29:56 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Thu, 9 Sep 2021 12:29:54 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
+        m@lambda.lt, alexei.starovoitov@gmail.com, andrii@kernel.org,
+        sdf@google.com
+Subject: Re: [PATCH bpf v2 1/3] bpf, cgroups: Fix cgroup v2 fallback on v1/v2
+ mixed mode
+Message-ID: <YTqK4oAG3CTxQ7Lq@slm.duckdns.org>
+References: <f36377d0c40cce0cdeaff50031c268bc640d94f0.1631219956.git.daniel@iogearbox.net>
 MIME-Version: 1.0
-From:   Johan Almbladh <johan.almbladh@anyfinetworks.com>
-Date:   Fri, 10 Sep 2021 00:15:57 +0200
-Message-ID: <CAM1=_QRyRVCODcXo_Y6qOm1iT163HoiSj8U2pZ8Rj3hzMTT=HQ@mail.gmail.com>
-Subject: Actual tail call count limits in x86 JITs and interpreter
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Paul Chaignon <paul@cilium.io>,
-        Tiezhu Yang <yangtiezhu@loongson.cn>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f36377d0c40cce0cdeaff50031c268bc640d94f0.1631219956.git.daniel@iogearbox.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I have done some investigation into this matter, and this is what I
-have found. To recap, the situation is as follows.
+Hello,
 
-MAX_TAIL_CALL_CNT is defined to be 32. Since the interpreter has used
-33 instead, we agree to use that limit across all JIT implementations
-to not break any user space program. To make sure everything uses the
-same limit, we must first understand what the current state actually
-is so we know what to fix.
+On Thu, Sep 09, 2021 at 10:43:40PM +0200, Daniel Borkmann wrote:
+...
+> Generally, this mutual exclusiveness does not hold anymore in today's user
+> environments and makes cgroup v2 usage from BPF side fragile and unreliable.
+> This fix adds proper struct cgroup pointer for the cgroup v2 case to struct
+> sock_cgroup_data in order to address these issues; this implicitly also fixes
+> the tradeoffs being made back then with regards to races and refcount leaks
+> as stated in bd1060a1d671, and removes the fallback, so that cgroup v2 BPF
+> programs always operate as expected.
+> 
+>   [0] https://github.com/nestybox/sysbox/
+>   [1] https://kind.sigs.k8s.io/
+> 
+> Fixes: bd1060a1d671 ("sock, cgroup: add sock->sk_cgroup")
+> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: David S. Miller <davem@davemloft.net>
+> Cc: Tejun Heo <tj@kernel.org>
+> Cc: Martynas Pumputis <m@lambda.lt>
+> Cc: Stanislav Fomichev <sdf@google.com>
 
-Me: according to test_bpf.ko the tail call limit is 33 for the
-interpreter, and 32 for the x86-64 JIT.
-Paul: according to selftests the tail call limit is 33 for both the
-interpreter and the x86-64 JIT.
+While this does increase cgroup's footprint inside sock, I think it's worth
+considering the following points:
 
-Link: https://lore.kernel.org/bpf/20210809093437.876558-1-johan.almbladh@anyfinetworks.com/
+1. It's clear now that we won't need more cgroup related socket fields for
+   network integration. cgroup2 membership tagging has proven flexible
+   enough especially in combination with bpf.
 
-I have been able to reproduce the above selftests results using
-vmtest.sh. Digging deeper into this, I found that there are actually
-two different code paths where the tail call count is checked in the
-x86-64 JIT, corresponding to direct and indirect tail calls. By
-setting different limits in those two places, I found that selftests
-tailcall_3 hits the limit in emit_bpf_tail_call_direct(), whereas the
-test_bpf.ko is limited by emit_bpf_tail_call_indirect().
+2. Users have been transitioning from cgroup1 to cgroup2, some gradually,
+   which is why this multiplexing is becoming an issue. In time, as
+   transtions progress further, we should be able to disable cgroup1 network
+   controllers for many use cases.
 
-I am not 100% sure that this is the correct explanation, but it sounds
-very reasonable. However, the asm generated in the two cases look very
-similar to me, so by looking at that alone I cannot really see that
-the limits would be different. Perhaps someone more versed in x86 asm
-could take a closer look.
+For the series,
 
-What are your thoughts?
+Acked-by: Tejun Heo <tj@kernel.org>
 
-Johan
+Thanks.
+
+-- 
+tejun
