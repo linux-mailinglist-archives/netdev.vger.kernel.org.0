@@ -2,86 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C55AE405909
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 16:30:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC0A640596F
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 16:45:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243429AbhIIOaa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 10:30:30 -0400
-Received: from mout.gmx.net ([212.227.17.20]:49729 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1343552AbhIIOaZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Sep 2021 10:30:25 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1631197743;
-        bh=SrzovyttAcKVSAtr6u9eRl2MdXd1NuR4UoArSDLLiKQ=;
-        h=X-UI-Sender-Class:Subject:From:To:Cc:References:Date:In-Reply-To;
-        b=J17L7qNjeek5mC3sR8ASfIMZ6BAt1lJzG1HzFMdkTfsxXhnXKJZ39qXqhyhzYe3WR
-         8ebXve9Z5pryBHo/+U+AuWZ0DlZXMBHMq829/gG9UyTgxwLgS1j9VSO0AU0wwpAxyT
-         Ms+JbNMqS1mAST+Ikk1+A/eRex90QbN87IIIP/eI=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.178.51] ([46.223.119.124]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1M2O2Q-1mMgLo434g-003vHN; Thu, 09
- Sep 2021 16:29:03 +0200
-Subject: Re: [PATCH 0/3] Fix for KSZ DSA switch shutdown
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     p.rosenberger@kunbus.com, woojung.huh@microchip.com,
-        UNGLinuxDriver@microchip.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210909095324.12978-1-LinoSanfilippo@gmx.de>
- <20210909101451.jhfk45gitpxzblap@skbuf>
- <81c1a19f-c5dc-ab4a-76ff-59704ea95849@gmx.de>
- <20210909114248.aijujvl7xypkh7qe@skbuf>
- <20210909125606.giiqvil56jse4bjk@skbuf>
- <trinity-85ae3f9c-38f9-4442-98d3-bdc01279c7a8-1631193592256@3c-app-gmx-bs01>
-Message-ID: <781fe00f-046f-28e2-0e23-ea34c1432fd5@gmx.de>
-Date:   Thu, 9 Sep 2021 16:29:00 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1348120AbhIIOqF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 10:46:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47470 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344558AbhIIOqA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 10:46:00 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C19EAC05BD20
+        for <netdev@vger.kernel.org>; Thu,  9 Sep 2021 07:33:14 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id a25so4037499ejv.6
+        for <netdev@vger.kernel.org>; Thu, 09 Sep 2021 07:33:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=anyfinetworks-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jlYtNVI6TuHDqTfFXy2pYNiOsiXmR1EZWOxg8MEom7w=;
+        b=hM7CWgJpKcQ4qgOW/wf88DKoNAAnaAbf/YCiU37BsmVNbuQaTsE9ZNqSw7F4V1wQr1
+         9PLvjH/be6agqv7v2emics/emY6swH1QVzGgESWhJ7WWGzAhpJsz+dK0Uejoqyjvh0bV
+         cVmVmhTJ164S4NcbYQ9KRjg0zXd/v5xcnM9OwZ7M56OP7nK7rjeZGSAycByAD96hXkd9
+         WlM3agB1IQMjPbEDwu8J7nv3121vNRnH1+6UXUe45ZStlL5ksrOAsTwig6lCDzTdMCkT
+         6zWkECuZHsg3cvOjIE759hLb0deDyZsEFptdk4iJl6JJXXmnnr9r7gLybeFExM+wtDzJ
+         B+Wg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jlYtNVI6TuHDqTfFXy2pYNiOsiXmR1EZWOxg8MEom7w=;
+        b=I36JWkOqEXfWZ56R2s7S2V//+cpu7uc2iUXPt1ZOyFLbW4IlfTcSisc7IoqdO/4cA8
+         ftgd/sEVeE+hNVCNMVLEjZHo5jJ6cY0t/bvKxJYOZntFsT+1gL+7fgKyRLBz2vToPX0M
+         8y0WOsaw6fQZ74AbdZAk+eBhxrn8/2sB0l8LKEa8nyDNIm2ONY1h7rJLDWem/cDdjKqX
+         zaxnHHo0ukN9ictVWtaktv79CboMmuhsoPUSsSJn9OMaEUaPv/wuSdfJz6Nk8+AwVGCq
+         5I8+Ui9gW4ReOHXEcPKe86QRC3Ab3eYic+Zs0/J3O04tbrjcgMum4N4TOoLKKWmBUGsk
+         pI+g==
+X-Gm-Message-State: AOAM5329JH7dJG82o4MLkTMzW/aN5lmF6oNrz2Ww6t+88ca9Rzh500nl
+        9j8uuc1kGuqujO6ZuGF60bw9zQ==
+X-Google-Smtp-Source: ABdhPJwV54VCR3d0LHqic66zeutbSRGlxcMZexvBX4tLlvLXh8Yxp+2rhF9UDged46fV4OqryBmdJw==
+X-Received: by 2002:a17:906:c0cd:: with SMTP id bn13mr3767773ejb.251.1631197993316;
+        Thu, 09 Sep 2021 07:33:13 -0700 (PDT)
+Received: from anpc2.lan (static-213-115-136-2.sme.telenor.se. [213.115.136.2])
+        by smtp.gmail.com with ESMTPSA id bj10sm1030909ejb.17.2021.09.09.07.33.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Sep 2021 07:33:12 -0700 (PDT)
+From:   Johan Almbladh <johan.almbladh@anyfinetworks.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org
+Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, iii@linux.ibm.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Johan Almbladh <johan.almbladh@anyfinetworks.com>
+Subject: [PATCH bpf-next v3 00/13] bpf/tests: Extend JIT test suite coverage
+Date:   Thu,  9 Sep 2021 16:32:50 +0200
+Message-Id: <20210909143303.811171-1-johan.almbladh@anyfinetworks.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-In-Reply-To: <trinity-85ae3f9c-38f9-4442-98d3-bdc01279c7a8-1631193592256@3c-app-gmx-bs01>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:ZIBNnfoGWY6mMPacP9U/QFdOPQ2ocSG3p43fN+MpQWVthy4sTYj
- Hxw53BJXQBfgMSnbXC7OQSCerW8tcC5YtAryfF8mWylfF7rMP+Jc29NoWjP79BBCnVndbeY
- OxgLNsBZlYEIj2SXYVMC/mC22/ZNIs0g8Eq0tIkSfeBniBJSLbX85kBn/KZsiB4mTMD5PQQ
- Lf0EHoPlwpwjoUiIR0WGA==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:But/oxILJJE=:RemG3C2oL84Ni6Jt/sAgJs
- g5DPkW19rjxT25H6Gs89+hR77GY0D4NPXtS1N9gxTOsKMUOeUxy2KKQQBgjQ2a8vra+hte9O1
- BPhRi2b4dguMEiNtZqBX0UyC8TV6SlivfVD/sCj7YtW9kdoCxiq2tSXKyw5xNcnhD9h+DHxrs
- btG9/Tm/z4K2hMNvrMaGzlZ9gH2C9KSqkzRq8bUdjE1PvcESOMXvjNZxanf6ThDDfbtgpvQxE
- fWoCTBL6fOR22r+6NJjIieKaCe/PvJe1/y5wlQfiCAnrl7hgd7+eqKsdU2GaTf+lYtqnuusFa
- bPVngmElF5ajvs2+e/Rq7MrjS4xlN1x+bQkCrSRyaSWXZkDo/8fuK8uMqmi3ORyqhg/0Rml+D
- FCAXtHtIBVQFgrU1yR1IQVziA5eO4wmqPfYWv4VcX65LyS+sgJB/s1vhRm+fQOyJGS0wMoQV/
- hMh/lBs4wewV5ZPr+2HfiO7yNwSwU1s7V/CurGLTOzwCggRdWh+e2XEq0f5w291EwtFOl7qox
- jD+CctG9FHTLAVpXwptb5XceaE4OKzaRUyKgswJuVlei13OlkoKgJ79MCeWLIWl38O0hr+gE8
- bE+F3ujdiAzm1znN158dyWFwhhbj1g05mKybDG+FXLaL2QDMAJsoAPPHzAnwJJtWfcQa7duPC
- NOziqf7GPab4yV3bpDIcgmjkNuhiygxQeO3ob+XaGKiqz/yDDtKQzjBJG90/rthUouv20VblQ
- ejZYnq52z9KiACjBVF5tNckjnhfSqTN58drDpL9balNterf08VG7vWyMvO8LYtiepnK5BFL08
- Ebm+s9t92DdIKFm8CIWK8lFY3nDeXt9ZHDU2TwKzG1E4oVosIzqUFUqzFxw4K/Z35HZSkjqN4
- V5qTPyP7yHDuHZ06e9TyPK4w+pqGc4uYrtF4sn0VOGdy0FxhAMfDTXerWyMUIBP91mmt7HnVU
- P5rlbTTKl7F9GEJAAWRPXN5TBURSwayisuUFnJjBviwMAbXOx3sJ7cmf4/b/xZOUG2kpBEmos
- NqyKF7FcPd8gYVKfZikNqfaI78hOyZmr/O/NPWgjj+xc7o74K7K8Rq6cMp1RwlTRihrEKT5hc
- haeydXTKn4oWy0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09.09.21 at 15:19, Lino Sanfilippo wrote:
+This patch set adds a number of new tests to the test_bpf.ko test suite.
+The tests are intended to verify the correctness of eBPF JITs.
 
->>
->
-> The kernel I use is the Raspberry Pi 5.10 kernel. The commit number in t=
-his kernel is d0b97c8cd63e37e6d4dc9fefd6381b09f6c31a67
->
+Changes since v2:
+* Fixed tail call test case to handle the case where a called function is
+  outside the 32-bit range of the BPF immediate field. Such calls are
+  now omitted in this test. (13/13)
+* Fixed typo in commit message. (7/13)
 
-This is not correct. The kernel I use right now is based on Gregs stable l=
-inux-5.10.y.
-The commit number is correct here. Sorry for the confusion.
+Link: https://lore.kernel.org/bpf/20210907222339.4130924-1-johan.almbladh@anyfinetworks.com/
+Link: https://lore.kernel.org/bpf/20210902185229.1840281-1-johan.almbladh@anyfinetworks.com/
 
-Regards,
-Lino
+Johan Almbladh (13):
+  bpf/tests: Allow different number of runs per test case
+  bpf/tests: Reduce memory footprint of test suite
+  bpf/tests: Add exhaustive tests of ALU shift values
+  bpf/tests: Add exhaustive tests of ALU operand magnitudes
+  bpf/tests: Add exhaustive tests of JMP operand magnitudes
+  bpf/tests: Add staggered JMP and JMP32 tests
+  bpf/tests: Add exhaustive test of LD_IMM64 immediate magnitudes
+  bpf/tests: Add test case flag for verifier zero-extension
+  bpf/tests: Add JMP tests with small offsets
+  bpf/tests: Add JMP tests with degenerate conditional
+  bpf/tests: Expand branch conversion JIT test
+  bpf/tests: Add more BPF_END byte order conversion tests
+  bpf/tests: Add tail call limit test with external function call
+
+ lib/test_bpf.c | 3348 +++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 3306 insertions(+), 42 deletions(-)
+
+-- 
+2.30.2
+
