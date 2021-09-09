@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BFA92404D5F
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:03:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9DAE404D64
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:04:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344118AbhIIMCE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 08:02:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41778 "EHLO mail.kernel.org"
+        id S1344197AbhIIMCG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 08:02:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41776 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1345873AbhIIL75 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1345874AbhIIL75 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 9 Sep 2021 07:59:57 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D5569615E1;
-        Thu,  9 Sep 2021 11:46:03 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1A5B16147F;
+        Thu,  9 Sep 2021 11:46:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631187964;
-        bh=IlDkFE/49KxnaZ9iZ9njirpbhLIXAYkUrhv+dy3zJ90=;
+        s=k20201202; t=1631187965;
+        bh=SyAxMhOp2pwQ74LlnnoLxvfi9WBzRJkbZSYLuemmFXQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DXE5RZ3aNcWpm/oKMr/akb8VAGxaxr9jPg2uPqefmFugrSeV5vw6LOKn0p31L3oRw
-         5IuBzgSbIAwl6NN9BbQMPTqeq/UYYMtrAH3dgHmWxZRnFHpzmntpYm9Dd1OaORf4um
-         kwdtSGCljDvxHVToIdvq+5sCrlGZ6kKn9KvE+WfpPwRMINn4aDo8nRBclDRi2fCeJC
-         w2/Xw2YGonkveXTIqF8jlPU3ZHaBqfdOjpB+o8KWJGcDu1nGTnOku0F7ZDcgzTzX2u
-         cMSekVzrzQRCjGwlTmzg12scjhfn+ytnXOqAONZy9oA2keDvJVFV/Q8THUeY3GAW7I
-         kNScH7H7q7Z6A==
+        b=IiDDLrxQke98e3UxXfaj18NkCF9pMY/0gQ9ig2XnV66gYMAJBQKhMupzvvLuFwuOu
+         YetnQq+TZNMXhS0TVR3iM8SDC0YaylscUDIaGSEjTJAsPabARuOHhyRIf6KxGdIH0O
+         1mq9r8a1UrDHU+HhorcNzfAXvpf4XG6kChq/2avuKCa6MMToIDEsN2kQHUjmdhYRIu
+         xcohjLUIQPTDP0SHCwdE8lAxCGEQz1mDRG9bFRElsSc6MtAi8/9OyZHeh5p4+Hh7vM
+         6tHK8DXDm66InmOLO2to2c/B9d4I1HPrU9mD21o2ZDxmH7f6yjjUZBUUelPZo3HnRl
+         GqZXXoN/0/sjQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ilan Peer <ilan.peer@intel.com>,
+Cc:     Zhang Qilong <zhangqilong3@huawei.com>,
         Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.14 229/252] iwlwifi: mvm: Do not use full SSIDs in 6GHz scan
-Date:   Thu,  9 Sep 2021 07:40:43 -0400
-Message-Id: <20210909114106.141462-229-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.14 230/252] iwlwifi: mvm: fix a memory leak in iwl_mvm_mac_ctxt_beacon_changed
+Date:   Thu,  9 Sep 2021 07:40:44 -0400
+Message-Id: <20210909114106.141462-230-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909114106.141462-1-sashal@kernel.org>
 References: <20210909114106.141462-1-sashal@kernel.org>
@@ -43,51 +43,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ilan Peer <ilan.peer@intel.com>
+From: Zhang Qilong <zhangqilong3@huawei.com>
 
-[ Upstream commit deedf9b97cd4ef45da476c9bdd2a5f3276053956 ]
+[ Upstream commit 0f5d44ac6e55551798dd3da0ff847c8df5990822 ]
 
-The scan request processing populated the direct SSIDs
-in the FW scan request command also for 6GHz scan, which is not
-needed and might result in unexpected behavior.
+If beacon_inject_active is true, we will return without freeing
+beacon.  Fid that by freeing it before returning.
 
-Fix the code to add the direct SSIDs only in case the scan
-is not a 6GHz scan.
-
-Signed-off-by: Ilan Peer <ilan.peer@intel.com>
+Signed-off-by: Zhang Qilong <zhangqilong3@huawei.com>
+[reworded the commit message]
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20210802170640.f465937c7bbf.Ic11a1659ddda850c3ec1b1afbe9e2b9577ac1800@changeid
+Link: https://lore.kernel.org/r/iwlwifi.20210802172232.d16206ca60fc.I9984a9b442c84814c307cee3213044e24d26f38a@changeid
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/scan.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/mvm/mac-ctxt.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-index 0368b7101222..4899d8f90bab 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-@@ -2368,14 +2368,17 @@ static int iwl_mvm_scan_umac_v14(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
- 	if (ret)
- 		return ret;
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac-ctxt.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac-ctxt.c
+index fd5e08961651..7f0c82189808 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/mac-ctxt.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac-ctxt.c
+@@ -1005,8 +1005,10 @@ int iwl_mvm_mac_ctxt_beacon_changed(struct iwl_mvm *mvm,
+ 		return -ENOMEM;
  
--	iwl_mvm_scan_umac_fill_probe_p_v4(params, &scan_p->probe_params,
--					  &bitmap_ssid);
- 	if (!params->scan_6ghz) {
-+		iwl_mvm_scan_umac_fill_probe_p_v4(params, &scan_p->probe_params,
-+					  &bitmap_ssid);
- 		iwl_mvm_scan_umac_fill_ch_p_v6(mvm, params, vif,
--					       &scan_p->channel_params, bitmap_ssid);
-+				       &scan_p->channel_params, bitmap_ssid);
+ #ifdef CONFIG_IWLWIFI_DEBUGFS
+-	if (mvm->beacon_inject_active)
++	if (mvm->beacon_inject_active) {
++		dev_kfree_skb(beacon);
+ 		return -EBUSY;
++	}
+ #endif
  
- 		return 0;
-+	} else {
-+		pb->preq = params->preq;
- 	}
-+
- 	cp->flags = iwl_mvm_scan_umac_chan_flags_v2(mvm, params, vif);
- 	cp->n_aps_override[0] = IWL_SCAN_ADWELL_N_APS_GO_FRIENDLY;
- 	cp->n_aps_override[1] = IWL_SCAN_ADWELL_N_APS_SOCIAL_CHS;
+ 	ret = iwl_mvm_mac_ctxt_send_beacon(mvm, vif, beacon);
 -- 
 2.30.2
 
