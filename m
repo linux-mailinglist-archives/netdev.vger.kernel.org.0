@@ -2,36 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49F4E4051E3
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:46:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 948F84051E8
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:46:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354480AbhIIMjH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 08:39:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45830 "EHLO mail.kernel.org"
+        id S1354621AbhIIMjL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 08:39:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45944 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1353810AbhIIMe6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Sep 2021 08:34:58 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8AD0761B6F;
-        Thu,  9 Sep 2021 11:53:46 +0000 (UTC)
+        id S1354315AbhIIMfO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Sep 2021 08:35:14 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9A53F61B68;
+        Thu,  9 Sep 2021 11:53:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631188427;
-        bh=rXlLFN2W3/ibx/tfFV1MtqfrE46u2tbBH270PV+DI1g=;
+        s=k20201202; t=1631188432;
+        bh=yqZajeSzuZRjAZq/e6DFxJmN7kiugX54XlOTrOdtcWY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NL8fLk8S1JpH72LiKdoCPp6qAmg8RXLlVd11fLndZJbdR029ep2Zh8odPPzEqZFmT
-         5aVv4wOVXmeavnrLS6TYW78FTt597+9Achko+Qi4dXU3bz8pHJn8k0lHzCGOECRuGc
-         I2SJ+pf6IPfoYLRJMXoy+Q4Q4AALQx3sf5LGG3I1vBXpZvKGNDicfxcIDXZYrVbAKk
-         lnLn7ouHOwqZq1vUecB5NyYW/Xv7iiHGOoYC2mMO08LNkko8Gg1qtNf5PuIbm9hjTs
-         e/qP3UbgEV4eDNE3b8bDSWxt/YJtmTeuIOKJVlPB0OIrXCDulr9NvZnAcxpSiypv/6
-         wXeV+ti5Uza4Q==
+        b=vBxn8OErmeWBll5IVruVqJzukIE8KgXi+Cv3DwFZ4hjNt5ZDKkMAxl226ZbtjAQBU
+         ZpUswukHwRWloWqKyHdANczdq19QCWnXlk7J80R/eGffikeExtRVM/yvCXI+k8M0p8
+         ZfFTtwC8mS3JYMCY0VCFxa5xHLsWKb9AjZygsKACqKNbVQBM6KQ0wJ9vSv0u2tg2sR
+         vhiKWiczFOqJpvAQYYd8c3XMiWkXVIbRxYNpv3Rz2r/DrWuZB4HJX/YieEOFIN9Qba
+         nU/qZnzYQBPfrDQxxhA7Xz6O8+iEx2zcQ9TK3xZWmf5DbQP2ihecvi3zRZ/ek85zQ2
+         7HzdoCeiMTkOQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 115/176] Bluetooth: Fix handling of LE Enhanced Connection Complete
-Date:   Thu,  9 Sep 2021 07:50:17 -0400
-Message-Id: <20210909115118.146181-115-sashal@kernel.org>
+Cc:     Luke Hsiao <lukehsiao@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 119/176] tcp: enable data-less, empty-cookie SYN with TFO_SERVER_COOKIE_NOT_REQD
+Date:   Thu,  9 Sep 2021 07:50:21 -0400
+Message-Id: <20210909115118.146181-119-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909115118.146181-1-sashal@kernel.org>
 References: <20210909115118.146181-1-sashal@kernel.org>
@@ -43,167 +45,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Luke Hsiao <lukehsiao@google.com>
 
-[ Upstream commit cafae4cd625502f65d1798659c1aa9b62d38cc56 ]
+[ Upstream commit e3faa49bcecdfcc80e94dd75709d6acb1a5d89f6 ]
 
-LE Enhanced Connection Complete contains the Local RPA used in the
-connection which must be used when set otherwise there could problems
-when pairing since the address used by the remote stack could be the
-Local RPA:
+Since the original TFO server code was implemented in commit
+168a8f58059a22feb9e9a2dcc1b8053dbbbc12ef ("tcp: TCP Fast Open Server -
+main code path") the TFO server code has supported the sysctl bit flag
+TFO_SERVER_COOKIE_NOT_REQD. Currently, when the TFO_SERVER_ENABLE and
+TFO_SERVER_COOKIE_NOT_REQD sysctl bit flags are set, a server connection
+will accept a SYN with N bytes of data (N > 0) that has no TFO cookie,
+create a new fast open connection, process the incoming data in the SYN,
+and make the connection ready for accepting. After accepting, the
+connection is ready for read()/recvmsg() to read the N bytes of data in
+the SYN, ready for write()/sendmsg() calls and data transmissions to
+transmit data.
 
-BLUETOOTH CORE SPECIFICATION Version 5.2 | Vol 4, Part E
-page 2396
+This commit changes an edge case in this feature by changing this
+behavior to apply to (N >= 0) bytes of data in the SYN rather than only
+(N > 0) bytes of data in the SYN. Now, a server will accept a data-less
+SYN without a TFO cookie if TFO_SERVER_COOKIE_NOT_REQD is set.
 
-  'Resolvable Private Address being used by the local device for this
-  connection. This is only valid when the Own_Address_Type (from the
-  HCI_LE_Create_Connection, HCI_LE_Set_Advertising_Parameters,
-  HCI_LE_Set_Extended_Advertising_Parameters, or
-  HCI_LE_Extended_Create_Connection commands) is set to 0x02 or
-  0x03, and the Controller generated a resolvable private address for the
-  local device using a non-zero local IRK. For other Own_Address_Type
-  values, the Controller shall return all zeros.'
+Caveat! While this enables a new kind of TFO (data-less empty-cookie
+SYN), some firewall rules setup may not work if they assume such packets
+are not legit TFOs and will filter them.
 
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Luke Hsiao <lukehsiao@google.com>
+Acked-by: Neal Cardwell <ncardwell@google.com>
+Acked-by: Yuchung Cheng <ycheng@google.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Link: https://lore.kernel.org/r/20210816205105.2533289-1-luke.w.hsiao@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_event.c | 93 ++++++++++++++++++++++++++-------------
- 1 file changed, 62 insertions(+), 31 deletions(-)
+ net/ipv4/tcp_fastopen.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 45de2d8b9a9d..9f52145bb7b7 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -5070,9 +5070,64 @@ static void hci_disconn_phylink_complete_evt(struct hci_dev *hdev,
- }
- #endif
- 
-+static void le_conn_update_addr(struct hci_conn *conn, bdaddr_t *bdaddr,
-+				u8 bdaddr_type, bdaddr_t *local_rpa)
-+{
-+	if (conn->out) {
-+		conn->dst_type = bdaddr_type;
-+		conn->resp_addr_type = bdaddr_type;
-+		bacpy(&conn->resp_addr, bdaddr);
-+
-+		/* Check if the controller has set a Local RPA then it must be
-+		 * used instead or hdev->rpa.
-+		 */
-+		if (local_rpa && bacmp(local_rpa, BDADDR_ANY)) {
-+			conn->init_addr_type = ADDR_LE_DEV_RANDOM;
-+			bacpy(&conn->init_addr, local_rpa);
-+		} else if (hci_dev_test_flag(conn->hdev, HCI_PRIVACY)) {
-+			conn->init_addr_type = ADDR_LE_DEV_RANDOM;
-+			bacpy(&conn->init_addr, &conn->hdev->rpa);
-+		} else {
-+			hci_copy_identity_address(conn->hdev, &conn->init_addr,
-+						  &conn->init_addr_type);
-+		}
-+	} else {
-+		conn->resp_addr_type = conn->hdev->adv_addr_type;
-+		/* Check if the controller has set a Local RPA then it must be
-+		 * used instead or hdev->rpa.
-+		 */
-+		if (local_rpa && bacmp(local_rpa, BDADDR_ANY)) {
-+			conn->resp_addr_type = ADDR_LE_DEV_RANDOM;
-+			bacpy(&conn->resp_addr, local_rpa);
-+		} else if (conn->hdev->adv_addr_type == ADDR_LE_DEV_RANDOM) {
-+			/* In case of ext adv, resp_addr will be updated in
-+			 * Adv Terminated event.
-+			 */
-+			if (!ext_adv_capable(conn->hdev))
-+				bacpy(&conn->resp_addr,
-+				      &conn->hdev->random_addr);
-+		} else {
-+			bacpy(&conn->resp_addr, &conn->hdev->bdaddr);
-+		}
-+
-+		conn->init_addr_type = bdaddr_type;
-+		bacpy(&conn->init_addr, bdaddr);
-+
-+		/* For incoming connections, set the default minimum
-+		 * and maximum connection interval. They will be used
-+		 * to check if the parameters are in range and if not
-+		 * trigger the connection update procedure.
-+		 */
-+		conn->le_conn_min_interval = conn->hdev->le_conn_min_interval;
-+		conn->le_conn_max_interval = conn->hdev->le_conn_max_interval;
-+	}
-+}
-+
- static void le_conn_complete_evt(struct hci_dev *hdev, u8 status,
--			bdaddr_t *bdaddr, u8 bdaddr_type, u8 role, u16 handle,
--			u16 interval, u16 latency, u16 supervision_timeout)
-+				 bdaddr_t *bdaddr, u8 bdaddr_type,
-+				 bdaddr_t *local_rpa, u8 role, u16 handle,
-+				 u16 interval, u16 latency,
-+				 u16 supervision_timeout)
- {
- 	struct hci_conn_params *params;
- 	struct hci_conn *conn;
-@@ -5120,32 +5175,7 @@ static void le_conn_complete_evt(struct hci_dev *hdev, u8 status,
- 		cancel_delayed_work(&conn->le_conn_timeout);
+diff --git a/net/ipv4/tcp_fastopen.c b/net/ipv4/tcp_fastopen.c
+index d49709ba8e16..107111984384 100644
+--- a/net/ipv4/tcp_fastopen.c
++++ b/net/ipv4/tcp_fastopen.c
+@@ -379,8 +379,7 @@ struct sock *tcp_try_fastopen(struct sock *sk, struct sk_buff *skb,
+ 		return NULL;
  	}
  
--	if (!conn->out) {
--		/* Set the responder (our side) address type based on
--		 * the advertising address type.
--		 */
--		conn->resp_addr_type = hdev->adv_addr_type;
--		if (hdev->adv_addr_type == ADDR_LE_DEV_RANDOM) {
--			/* In case of ext adv, resp_addr will be updated in
--			 * Adv Terminated event.
--			 */
--			if (!ext_adv_capable(hdev))
--				bacpy(&conn->resp_addr, &hdev->random_addr);
--		} else {
--			bacpy(&conn->resp_addr, &hdev->bdaddr);
--		}
--
--		conn->init_addr_type = bdaddr_type;
--		bacpy(&conn->init_addr, bdaddr);
--
--		/* For incoming connections, set the default minimum
--		 * and maximum connection interval. They will be used
--		 * to check if the parameters are in range and if not
--		 * trigger the connection update procedure.
--		 */
--		conn->le_conn_min_interval = hdev->le_conn_min_interval;
--		conn->le_conn_max_interval = hdev->le_conn_max_interval;
--	}
-+	le_conn_update_addr(conn, bdaddr, bdaddr_type, local_rpa);
+-	if (syn_data &&
+-	    tcp_fastopen_no_cookie(sk, dst, TFO_SERVER_COOKIE_NOT_REQD))
++	if (tcp_fastopen_no_cookie(sk, dst, TFO_SERVER_COOKIE_NOT_REQD))
+ 		goto fastopen;
  
- 	/* Lookup the identity address from the stored connection
- 	 * address and address type.
-@@ -5239,7 +5269,7 @@ static void hci_le_conn_complete_evt(struct hci_dev *hdev, struct sk_buff *skb)
- 	BT_DBG("%s status 0x%2.2x", hdev->name, ev->status);
- 
- 	le_conn_complete_evt(hdev, ev->status, &ev->bdaddr, ev->bdaddr_type,
--			     ev->role, le16_to_cpu(ev->handle),
-+			     NULL, ev->role, le16_to_cpu(ev->handle),
- 			     le16_to_cpu(ev->interval),
- 			     le16_to_cpu(ev->latency),
- 			     le16_to_cpu(ev->supervision_timeout));
-@@ -5253,7 +5283,7 @@ static void hci_le_enh_conn_complete_evt(struct hci_dev *hdev,
- 	BT_DBG("%s status 0x%2.2x", hdev->name, ev->status);
- 
- 	le_conn_complete_evt(hdev, ev->status, &ev->bdaddr, ev->bdaddr_type,
--			     ev->role, le16_to_cpu(ev->handle),
-+			     &ev->local_rpa, ev->role, le16_to_cpu(ev->handle),
- 			     le16_to_cpu(ev->interval),
- 			     le16_to_cpu(ev->latency),
- 			     le16_to_cpu(ev->supervision_timeout));
-@@ -5289,7 +5319,8 @@ static void hci_le_ext_adv_term_evt(struct hci_dev *hdev, struct sk_buff *skb)
- 	if (conn) {
- 		struct adv_info *adv_instance;
- 
--		if (hdev->adv_addr_type != ADDR_LE_DEV_RANDOM)
-+		if (hdev->adv_addr_type != ADDR_LE_DEV_RANDOM ||
-+		    bacmp(&conn->resp_addr, BDADDR_ANY))
- 			return;
- 
- 		if (!hdev->cur_adv_instance) {
+ 	if (foc->len == 0) {
 -- 
 2.30.2
 
