@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F6204051F5
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:46:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AED744051F3
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:46:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354734AbhIIMjU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 08:39:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46118 "EHLO mail.kernel.org"
+        id S1354684AbhIIMjP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 08:39:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46126 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1354563AbhIIMfe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S236416AbhIIMfe (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 9 Sep 2021 08:35:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 44033611B0;
-        Thu,  9 Sep 2021 11:53:54 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0FA016137C;
+        Thu,  9 Sep 2021 11:53:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631188435;
-        bh=NyYDkBj2exwUxrdJ3yy0kdAm2cAfu+ZrmkTsZjwhJdw=;
+        s=k20201202; t=1631188439;
+        bh=J1mrhdFTEaNjzXoW4CbUkVw6pt0Rz7WHcCkwEjtFvCs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PjFkI9OImF76NPOJ6w1rPqpMsSB2XYjyR7nZlY3K4J26TiVAnE8eV4ZnEt9nxXKi7
-         EzceLvhnJZRSz52lxY1UDKF9ic+6TRv6nailyE0mNTDsWXTEmpa4g/2A+R1CG4bkVF
-         ry9jXIr2s0iDVVlEnoGTGjULJGTrMEmmhZ9gGkTdGMAGPwbcSCtS+bL+KBsgyDzmSq
-         FVv09OsRTT5TGFy0HmRSGbDnWbOTvEtx8HmKmtyOOvnOPVO9hHyXc1PGg86JzKx5fP
-         VOaudL4/mIbXEA4XeY7w5Okz+yWOGdpZ/q9ETZMeUrtRAazl9gfdy1jrKlfehXStOq
-         /YjYS6NsF+1MQ==
+        b=hFIKyMoMOYKcoW8ximYLLTezT+0FDsR93Cg5WK+iY5seiGnp5P3QIdApGTn+2sMNo
+         6KLtYKNjpXo4WOIvzjctB0TQnNIlvp2aZqrNKkXwyHTFA669w7IT+yTIJzQFKF4dCb
+         7QtiEH4GDphqSh6jr7ea1IIR4AYKxMr5wbRZe6O3vJFmVjKiGSB0TzKyNXO5uBL7Xd
+         KWcxrGMMKVVfMdjwHBM0YxotV2ZOYT6F7fKOVBqHW5rqZ0fNWnUK0trk/aYHv2d1mc
+         uPSjjuT5R92MtjMtrTMIxMBEcyyVD+mWoLAtWUUjH4A0gSGSlu0U9T9/t8asebWRse
+         XEL310A+5IlpA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andrii@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 121/176] selftests/bpf: Fix flaky send_signal test
-Date:   Thu,  9 Sep 2021 07:50:23 -0400
-Message-Id: <20210909115118.146181-121-sashal@kernel.org>
+Cc:     Eli Cohen <elic@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org
+Subject: [PATCH AUTOSEL 5.10 124/176] net: Fix offloading indirect devices dependency on qdisc order creation
+Date:   Thu,  9 Sep 2021 07:50:26 -0400
+Message-Id: <20210909115118.146181-124-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909115118.146181-1-sashal@kernel.org>
 References: <20210909115118.146181-1-sashal@kernel.org>
@@ -43,83 +43,208 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yonghong Song <yhs@fb.com>
+From: Eli Cohen <elic@nvidia.com>
 
-[ Upstream commit b16ac5bf732a5e23d164cf908ec7742d6a6120d3 ]
+[ Upstream commit 74fc4f828769cca1c3be89ea92cb88feaa27ef52 ]
 
-libbpf CI has reported send_signal test is flaky although
-I am not able to reproduce it in my local environment.
-But I am able to reproduce with on-demand libbpf CI ([1]).
+Currently, when creating an ingress qdisc on an indirect device before
+the driver registered for callbacks, the driver will not have a chance
+to register its filter configuration callbacks.
 
-Through code analysis, the following is possible reason.
-The failed subtest runs bpf program in softirq environment.
-Since bpf_send_signal() only sends to a fork of "test_progs"
-process. If the underlying current task is
-not "test_progs", bpf_send_signal() will not be triggered
-and the subtest will fail.
+To fix that, modify the code such that it keeps track of all the ingress
+qdiscs that call flow_indr_dev_setup_offload(). When a driver calls
+flow_indr_dev_register(),  go through the list of tracked ingress qdiscs
+and call the driver callback entry point so as to give it a chance to
+register its callback.
 
-To reduce the chances where the underlying process is not
-the intended one, this patch boosted scheduling priority to
--20 (highest allowed by setpriority() call). And I did
-10 runs with on-demand libbpf CI with this patch and I
-didn't observe any failures.
-
- [1] https://github.com/libbpf/libbpf/actions/workflows/ondemand.yml
-
-Signed-off-by: Yonghong Song <yhs@fb.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/bpf/20210817190923.3186725-1-yhs@fb.com
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+Signed-off-by: Eli Cohen <elic@nvidia.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../selftests/bpf/prog_tests/send_signal.c       | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ include/net/flow_offload.h            |  1 +
+ net/core/flow_offload.c               | 89 ++++++++++++++++++++++++++-
+ net/netfilter/nf_flow_table_offload.c |  1 +
+ net/netfilter/nf_tables_offload.c     |  1 +
+ net/sched/cls_api.c                   |  1 +
+ 5 files changed, 92 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/send_signal.c b/tools/testing/selftests/bpf/prog_tests/send_signal.c
-index 7043e6ded0e6..75b72c751772 100644
---- a/tools/testing/selftests/bpf/prog_tests/send_signal.c
-+++ b/tools/testing/selftests/bpf/prog_tests/send_signal.c
-@@ -1,5 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <test_progs.h>
-+#include <sys/time.h>
-+#include <sys/resource.h>
- #include "test_send_signal_kern.skel.h"
+diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+index 123b1e9ea304..010d58159887 100644
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -444,6 +444,7 @@ struct flow_block_offload {
+ 	struct list_head *driver_block_list;
+ 	struct netlink_ext_ack *extack;
+ 	struct Qdisc *sch;
++	struct list_head *cb_list_head;
+ };
  
- static volatile int sigusr1_received = 0;
-@@ -41,12 +43,23 @@ static void test_send_signal_common(struct perf_event_attr *attr,
+ enum tc_setup_type;
+diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
+index 715b67f6c62f..e3f0d5906811 100644
+--- a/net/core/flow_offload.c
++++ b/net/core/flow_offload.c
+@@ -321,6 +321,7 @@ EXPORT_SYMBOL(flow_block_cb_setup_simple);
+ static DEFINE_MUTEX(flow_indr_block_lock);
+ static LIST_HEAD(flow_block_indr_list);
+ static LIST_HEAD(flow_block_indr_dev_list);
++static LIST_HEAD(flow_indir_dev_list);
+ 
+ struct flow_indr_dev {
+ 	struct list_head		list;
+@@ -346,6 +347,33 @@ static struct flow_indr_dev *flow_indr_dev_alloc(flow_indr_block_bind_cb_t *cb,
+ 	return indr_dev;
+ }
+ 
++struct flow_indir_dev_info {
++	void *data;
++	struct net_device *dev;
++	struct Qdisc *sch;
++	enum tc_setup_type type;
++	void (*cleanup)(struct flow_block_cb *block_cb);
++	struct list_head list;
++	enum flow_block_command command;
++	enum flow_block_binder_type binder_type;
++	struct list_head *cb_list;
++};
++
++static void existing_qdiscs_register(flow_indr_block_bind_cb_t *cb, void *cb_priv)
++{
++	struct flow_block_offload bo;
++	struct flow_indir_dev_info *cur;
++
++	list_for_each_entry(cur, &flow_indir_dev_list, list) {
++		memset(&bo, 0, sizeof(bo));
++		bo.command = cur->command;
++		bo.binder_type = cur->binder_type;
++		INIT_LIST_HEAD(&bo.cb_list);
++		cb(cur->dev, cur->sch, cb_priv, cur->type, &bo, cur->data, cur->cleanup);
++		list_splice(&bo.cb_list, cur->cb_list);
++	}
++}
++
+ int flow_indr_dev_register(flow_indr_block_bind_cb_t *cb, void *cb_priv)
+ {
+ 	struct flow_indr_dev *indr_dev;
+@@ -367,6 +395,7 @@ int flow_indr_dev_register(flow_indr_block_bind_cb_t *cb, void *cb_priv)
  	}
  
- 	if (pid == 0) {
-+		int old_prio;
+ 	list_add(&indr_dev->list, &flow_block_indr_dev_list);
++	existing_qdiscs_register(cb, cb_priv);
+ 	mutex_unlock(&flow_indr_block_lock);
+ 
+ 	return 0;
+@@ -463,7 +492,59 @@ struct flow_block_cb *flow_indr_block_cb_alloc(flow_setup_cb_t *cb,
+ }
+ EXPORT_SYMBOL(flow_indr_block_cb_alloc);
+ 
+-int flow_indr_dev_setup_offload(struct net_device *dev, struct Qdisc *sch,
++static struct flow_indir_dev_info *find_indir_dev(void *data)
++{
++	struct flow_indir_dev_info *cur;
 +
- 		/* install signal handler and notify parent */
- 		signal(SIGUSR1, sigusr1_handler);
- 
- 		close(pipe_c2p[0]); /* close read */
- 		close(pipe_p2c[1]); /* close write */
- 
-+		/* boost with a high priority so we got a higher chance
-+		 * that if an interrupt happens, the underlying task
-+		 * is this process.
-+		 */
-+		errno = 0;
-+		old_prio = getpriority(PRIO_PROCESS, 0);
-+		ASSERT_OK(errno, "getpriority");
-+		ASSERT_OK(setpriority(PRIO_PROCESS, 0, -20), "setpriority");
++	list_for_each_entry(cur, &flow_indir_dev_list, list) {
++		if (cur->data == data)
++			return cur;
++	}
++	return NULL;
++}
 +
- 		/* notify parent signal handler is installed */
- 		CHECK(write(pipe_c2p[1], buf, 1) != 1, "pipe_write", "err %d\n", -errno);
- 
-@@ -62,6 +75,9 @@ static void test_send_signal_common(struct perf_event_attr *attr,
- 		/* wait for parent notification and exit */
- 		CHECK(read(pipe_p2c[0], buf, 1) != 1, "pipe_read", "err %d\n", -errno);
- 
-+		/* restore the old priority */
-+		ASSERT_OK(setpriority(PRIO_PROCESS, 0, old_prio), "setpriority");
++static int indir_dev_add(void *data, struct net_device *dev, struct Qdisc *sch,
++			 enum tc_setup_type type, void (*cleanup)(struct flow_block_cb *block_cb),
++			 struct flow_block_offload *bo)
++{
++	struct flow_indir_dev_info *info;
 +
- 		close(pipe_c2p[1]);
- 		close(pipe_p2c[0]);
- 		exit(0);
++	info = find_indir_dev(data);
++	if (info)
++		return -EEXIST;
++
++	info = kzalloc(sizeof(*info), GFP_KERNEL);
++	if (!info)
++		return -ENOMEM;
++
++	info->data = data;
++	info->dev = dev;
++	info->sch = sch;
++	info->type = type;
++	info->cleanup = cleanup;
++	info->command = bo->command;
++	info->binder_type = bo->binder_type;
++	info->cb_list = bo->cb_list_head;
++
++	list_add(&info->list, &flow_indir_dev_list);
++	return 0;
++}
++
++static int indir_dev_remove(void *data)
++{
++	struct flow_indir_dev_info *info;
++
++	info = find_indir_dev(data);
++	if (!info)
++		return -ENOENT;
++
++	list_del(&info->list);
++
++	kfree(info);
++	return 0;
++}
++
++int flow_indr_dev_setup_offload(struct net_device *dev,	struct Qdisc *sch,
+ 				enum tc_setup_type type, void *data,
+ 				struct flow_block_offload *bo,
+ 				void (*cleanup)(struct flow_block_cb *block_cb))
+@@ -471,6 +552,12 @@ int flow_indr_dev_setup_offload(struct net_device *dev, struct Qdisc *sch,
+ 	struct flow_indr_dev *this;
+ 
+ 	mutex_lock(&flow_indr_block_lock);
++
++	if (bo->command == FLOW_BLOCK_BIND)
++		indir_dev_add(data, dev, sch, type, cleanup, bo);
++	else if (bo->command == FLOW_BLOCK_UNBIND)
++		indir_dev_remove(data);
++
+ 	list_for_each_entry(this, &flow_block_indr_dev_list, list)
+ 		this->cb(dev, sch, this->cb_priv, type, bo, data, cleanup);
+ 
+diff --git a/net/netfilter/nf_flow_table_offload.c b/net/netfilter/nf_flow_table_offload.c
+index 92047cea3c17..a6b654b028dd 100644
+--- a/net/netfilter/nf_flow_table_offload.c
++++ b/net/netfilter/nf_flow_table_offload.c
+@@ -940,6 +940,7 @@ static void nf_flow_table_block_offload_init(struct flow_block_offload *bo,
+ 	bo->command	= cmd;
+ 	bo->binder_type	= FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
+ 	bo->extack	= extack;
++	bo->cb_list_head = &flowtable->flow_block.cb_list;
+ 	INIT_LIST_HEAD(&bo->cb_list);
+ }
+ 
+diff --git a/net/netfilter/nf_tables_offload.c b/net/netfilter/nf_tables_offload.c
+index 9ce776175214..e5fcbb0e4b8e 100644
+--- a/net/netfilter/nf_tables_offload.c
++++ b/net/netfilter/nf_tables_offload.c
+@@ -323,6 +323,7 @@ static void nft_flow_block_offload_init(struct flow_block_offload *bo,
+ 	bo->command	= cmd;
+ 	bo->binder_type	= FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
+ 	bo->extack	= extack;
++	bo->cb_list_head = &basechain->flow_block.cb_list;
+ 	INIT_LIST_HEAD(&bo->cb_list);
+ }
+ 
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 31ac76a9189e..8073657a0fd2 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -634,6 +634,7 @@ static void tcf_block_offload_init(struct flow_block_offload *bo,
+ 	bo->block_shared = shared;
+ 	bo->extack = extack;
+ 	bo->sch = sch;
++	bo->cb_list_head = &flow_block->cb_list;
+ 	INIT_LIST_HEAD(&bo->cb_list);
+ }
+ 
 -- 
 2.30.2
 
