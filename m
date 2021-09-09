@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AAE8405474
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 15:29:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3682740547B
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 15:30:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353973AbhIIM6s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 08:58:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40984 "EHLO mail.kernel.org"
+        id S1356219AbhIIM67 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 08:58:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41728 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1354484AbhIIMvK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Sep 2021 08:51:10 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1F4DB63242;
-        Thu,  9 Sep 2021 11:57:16 +0000 (UTC)
+        id S1352852AbhIIMvX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Sep 2021 08:51:23 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5839163156;
+        Thu,  9 Sep 2021 11:57:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631188636;
-        bh=tKk3M5hdu0SivRmHrP4r5yAGD7NV+BEosnEsay9gu6c=;
+        s=k20201202; t=1631188638;
+        bh=7X5tW0vkiweF1UonXwW8M/dDVIrWkufNyhzFGEKT+iU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ggd6xxaEr8sC70xrg7QMsy2h6ULYjOvlFws6wYKEFxMdZQqduS76Lqg9gXU3CaAy+
-         6r56Eroh5QLtXPXsaFqnx3eYocZuA5DFGptQaPaIBXI8MxTnLwb87lsnnTVaXJLz2w
-         T7FuEJOAK8BmJW/0RodTipDsWgg/9D05HwRUcOthaTJLyxVQI3hE/tCQ+mYnyTlQaB
-         NoDb2J6iALStTXxGVv5HfvvhZQpHAUm+EjhHaiVEBb2ONeNyOrKyuGycXYtgpeBVYY
-         qCLFnBBGHAoEpjoO/pu8NbMsZu9KyaBAzatzb6OHrKmUgabTBqoAhXyqoKIX0W/8yT
-         rdTD9dPo2dwYw==
+        b=ETplFBBXrVnpoFmsodm6oqSHZb1FHhm9ShaaQOWPFCBh3FoBXrZrXrNLq00PAH+3v
+         +QhM0BsOIAbniB5luxBupGvuPfM3J/M50xjgCQMucmJQ2oy6b9+WkUY37bD/0Ft3VO
+         dbHUdlm+zfuVB+I3IG5ZilT7qyUiyVyqnMYSYdJgbslO3mhGrNd+zR8CRZ9D7MrSlK
+         EWkEPi6/SobswNx6bj70I/3e1VxpMvmu+LRw9th5etBDB3Babytcccbo9nQJ2VdTHW
+         0QtZJIFj8zjGhSC0G38BUhU4MdsWILUJNf8fPKQscbf36xg7T4sIwd+Kr7yHJ27Bix
+         8uO6pmKX209fA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 102/109] iwlwifi: mvm: fix access to BSS elements
-Date:   Thu,  9 Sep 2021 07:54:59 -0400
-Message-Id: <20210909115507.147917-102-sashal@kernel.org>
+Cc:     Yevgeny Kliteynik <kliteyn@nvidia.com>,
+        Alex Vesker <valex@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 103/109] net/mlx5: DR, Enable QP retransmission
+Date:   Thu,  9 Sep 2021 07:55:00 -0400
+Message-Id: <20210909115507.147917-103-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909115507.147917-1-sashal@kernel.org>
 References: <20210909115507.147917-1-sashal@kernel.org>
@@ -43,49 +44,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-[ Upstream commit 6c608cd6962ebdf84fd3de6d42f88ed64d2f4e1b ]
+[ Upstream commit ec449ed8230cd30769de3cb70ee0fce293047372 ]
 
-BSS elements are protected using RCU, so we need to use
-RCU properly to access them, fix that.
+Under high stress, SW steering might get stuck on polling for completion
+that never comes.
+For such cases QP needs to have protocol retransmission mechanism enabled.
+Currently the retransmission timeout is defined as 0 (unlimited). Fix this
+by defining a real timeout.
 
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20210805130823.fd8b5791ab44.Iba26800a6301078d3782fb249c476dd8ac2bf3c6@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
+Reviewed-by: Alex Vesker <valex@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-index 09b1a6beee77..081cbc9ec736 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-@@ -2970,16 +2970,20 @@ static void iwl_mvm_check_he_obss_narrow_bw_ru_iter(struct wiphy *wiphy,
- 						    void *_data)
- {
- 	struct iwl_mvm_he_obss_narrow_bw_ru_data *data = _data;
-+	const struct cfg80211_bss_ies *ies;
- 	const struct element *elem;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
+index f012aac83b10..401564b94eb1 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
+@@ -603,6 +603,7 @@ static int dr_cmd_modify_qp_rtr2rts(struct mlx5_core_dev *mdev,
+ 	MLX5_SET(qpc, qpc, log_ack_req_freq, 0);
+ 	MLX5_SET(qpc, qpc, retry_count, attr->retry_cnt);
+ 	MLX5_SET(qpc, qpc, rnr_retry, attr->rnr_retry);
++	MLX5_SET(qpc, qpc, primary_address_path.ack_timeout, 0x8); /* ~1ms */
  
--	elem = cfg80211_find_elem(WLAN_EID_EXT_CAPABILITY, bss->ies->data,
--				  bss->ies->len);
-+	rcu_read_lock();
-+	ies = rcu_dereference(bss->ies);
-+	elem = cfg80211_find_elem(WLAN_EID_EXT_CAPABILITY, ies->data,
-+				  ies->len);
- 
- 	if (!elem || elem->datalen < 10 ||
- 	    !(elem->data[10] &
- 	      WLAN_EXT_CAPA10_OBSS_NARROW_BW_RU_TOLERANCE_SUPPORT)) {
- 		data->tolerated = false;
- 	}
-+	rcu_read_unlock();
- }
- 
- static void iwl_mvm_check_he_obss_narrow_bw_ru(struct ieee80211_hw *hw,
+ 	return mlx5_core_qp_modify(mdev, MLX5_CMD_OP_RTR2RTS_QP, 0, qpc,
+ 				   &dr_qp->mqp);
 -- 
 2.30.2
 
