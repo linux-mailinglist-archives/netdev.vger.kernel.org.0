@@ -2,39 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5880C404F51
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:20:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FCAE404F5B
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:21:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350773AbhIIMSJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 08:18:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51600 "EHLO mail.kernel.org"
+        id S1350975AbhIIMSP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 08:18:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51718 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1352640AbhIIMPE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Sep 2021 08:15:04 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2423161A08;
-        Thu,  9 Sep 2021 11:49:21 +0000 (UTC)
+        id S1352741AbhIIMPI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Sep 2021 08:15:08 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 33DC561A3A;
+        Thu,  9 Sep 2021 11:49:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631188162;
-        bh=sYydYxRyDsnWxhv0ACQkOPeeGjMFpExS/qG7QDvFyBU=;
+        s=k20201202; t=1631188166;
+        bh=DGJlaWkXczT7hs0YZrX1UHK2Uy0SYQKrZyStzYEnIvc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V24C5ED3JrkR0x3CMqYsAVwMz2gKayBeLIFFaL/q5WJDFidjxVt5FK2KjiICBUhbb
-         Wfw0FNYYwMzTbb8FUVBKQDn6ly/zorwVJm8ZR1yGZHhYXdee4PAcm1lHE5hcFGt4LC
-         trSXR/Eqo1LSLy3Nj4HlPPKt/vd8pw9jtDFEoLIdpDE7EwHanBHBHtLeCcaq+b4eyy
-         I2n47qXpZca9xi0VYwuJy4fQTh2AyYHF8L714b770Q0HYq/ti199HpO8x/feTBBzen
-         Jr3shBjKwXXswSCvbTb3eLrrvzOT5xhxMixWKFrSQMjR32J8rGjO2gSbNGv5kzGsZZ
-         Xggr1vWUClXCQ==
+        b=gJdNst1JyjYFESXbHxhUecutKlbFYkxP9X3z5dLdcuNIqg7gb+AKFUeSkW0EJpSOi
+         TGmjFGR0ymKxGfPEia2EjE9o4mrOkAaJnpS+NMA+cNWgoaZ9fnMHNS4mHHGhrkdx7Y
+         +WSIY9/pQyP5d/U51QtkBi0ly39Jaddo46no6dsEwxfPWTgmJ+mpc263FolTUwpE+m
+         O7LqTNepBWP+ELQXaigzsFC6PwrpguPXRGUiebmGv7xQA5p+gUyMZkOgpLqRM6L/aT
+         /UyoomhYYZJl4FXyq3Jt9PogchMIVBoE6H5unD6sksH0fDJZUeiUaBPofyRN1PlVtn
+         WblWxWl60wZfA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eran Ben Elisha <eranbe@nvidia.com>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Moshe Shemesh <moshe@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.13 128/219] net/mlx5: Fix variable type to match 64bit
-Date:   Thu,  9 Sep 2021 07:45:04 -0400
-Message-Id: <20210909114635.143983-128-sashal@kernel.org>
+Cc:     Johan Almbladh <johan.almbladh@anyfinetworks.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.13 131/219] mac80211: Fix monitor MTU limit so that A-MSDUs get through
+Date:   Thu,  9 Sep 2021 07:45:07 -0400
+Message-Id: <20210909114635.143983-131-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909114635.143983-1-sashal@kernel.org>
 References: <20210909114635.143983-1-sashal@kernel.org>
@@ -46,65 +43,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eran Ben Elisha <eranbe@nvidia.com>
+From: Johan Almbladh <johan.almbladh@anyfinetworks.com>
 
-[ Upstream commit 979aa51967add26b37f9d77e01729d44a2da8e5f ]
+[ Upstream commit 79f5962baea74ce1cd4e5949598944bff854b166 ]
 
-Fix the following smatch warning:
-wait_func_handle_exec_timeout() warn: should '1 << ent->idx' be a 64 bit type?
+The maximum MTU was set to 2304, which is the maximum MSDU size. While
+this is valid for normal WLAN interfaces, it is too low for monitor
+interfaces. A monitor interface may receive and inject MPDU frames, and
+the maximum MPDU frame size is larger than 2304. The MPDU may also
+contain an A-MSDU frame, in which case the size may be much larger than
+the MTU limit. Since the maximum size of an A-MSDU depends on the PHY
+mode of the transmitting STA, it is not possible to set an exact MTU
+limit for a monitor interface. Now the maximum MTU for a monitor
+interface is unrestricted.
 
-Use 1ULL, to have a 64 bit type variable.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Eran Ben Elisha <eranbe@nvidia.com>
-Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
+Link: https://lore.kernel.org/r/20210628123246.2070558-1-johan.almbladh@anyfinetworks.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/cmd.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ net/mac80211/iface.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
-index 9d79c5ec31e9..db5dfff585c9 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
-@@ -877,7 +877,7 @@ static void cb_timeout_handler(struct work_struct *work)
- 	ent->ret = -ETIMEDOUT;
- 	mlx5_core_warn(dev, "cmd[%d]: %s(0x%x) Async, timeout. Will cause a leak of a command resource\n",
- 		       ent->idx, mlx5_command_str(msg_to_opcode(ent->in)), msg_to_opcode(ent->in));
--	mlx5_cmd_comp_handler(dev, 1UL << ent->idx, true);
-+	mlx5_cmd_comp_handler(dev, 1ULL << ent->idx, true);
+diff --git a/net/mac80211/iface.c b/net/mac80211/iface.c
+index 137fa4c50e07..8df7ab34911c 100644
+--- a/net/mac80211/iface.c
++++ b/net/mac80211/iface.c
+@@ -1985,9 +1985,16 @@ int ieee80211_if_add(struct ieee80211_local *local, const char *name,
  
- out:
- 	cmd_ent_put(ent); /* for the cmd_ent_get() took on schedule delayed work */
-@@ -994,7 +994,7 @@ static void cmd_work_handler(struct work_struct *work)
- 		MLX5_SET(mbox_out, ent->out, status, status);
- 		MLX5_SET(mbox_out, ent->out, syndrome, drv_synd);
+ 		netdev_set_default_ethtool_ops(ndev, &ieee80211_ethtool_ops);
  
--		mlx5_cmd_comp_handler(dev, 1UL << ent->idx, true);
-+		mlx5_cmd_comp_handler(dev, 1ULL << ent->idx, true);
- 		return;
- 	}
+-		/* MTU range: 256 - 2304 */
++		/* MTU range is normally 256 - 2304, where the upper limit is
++		 * the maximum MSDU size. Monitor interfaces send and receive
++		 * MPDU and A-MSDU frames which may be much larger so we do
++		 * not impose an upper limit in that case.
++		 */
+ 		ndev->min_mtu = 256;
+-		ndev->max_mtu = local->hw.max_mtu;
++		if (type == NL80211_IFTYPE_MONITOR)
++			ndev->max_mtu = 0;
++		else
++			ndev->max_mtu = local->hw.max_mtu;
  
-@@ -1008,7 +1008,7 @@ static void cmd_work_handler(struct work_struct *work)
- 		poll_timeout(ent);
- 		/* make sure we read the descriptor after ownership is SW */
- 		rmb();
--		mlx5_cmd_comp_handler(dev, 1UL << ent->idx, (ent->ret == -ETIMEDOUT));
-+		mlx5_cmd_comp_handler(dev, 1ULL << ent->idx, (ent->ret == -ETIMEDOUT));
- 	}
- }
- 
-@@ -1068,7 +1068,7 @@ static void wait_func_handle_exec_timeout(struct mlx5_core_dev *dev,
- 		       mlx5_command_str(msg_to_opcode(ent->in)), msg_to_opcode(ent->in));
- 
- 	ent->ret = -ETIMEDOUT;
--	mlx5_cmd_comp_handler(dev, 1UL << ent->idx, true);
-+	mlx5_cmd_comp_handler(dev, 1ULL << ent->idx, true);
- }
- 
- static int wait_func(struct mlx5_core_dev *dev, struct mlx5_cmd_work_ent *ent)
+ 		ret = cfg80211_register_netdevice(ndev);
+ 		if (ret) {
 -- 
 2.30.2
 
