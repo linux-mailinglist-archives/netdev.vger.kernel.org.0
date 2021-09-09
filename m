@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A30F404A7F
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 13:46:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50A7C404A7C
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 13:46:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235466AbhIILq6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 07:46:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46150 "EHLO mail.kernel.org"
+        id S241279AbhIILqz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 07:46:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46708 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237400AbhIILow (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S237796AbhIILow (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 9 Sep 2021 07:44:52 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 746C1611CA;
-        Thu,  9 Sep 2021 11:42:38 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9FDEB61212;
+        Thu,  9 Sep 2021 11:42:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631187759;
-        bh=2JntmivuHJPxvvoKc91C/1ZAcnZue6O8y+RHCQyB10Y=;
+        s=k20201202; t=1631187760;
+        bh=FIgcBaf1x/mj2ueC9NL0wLHh1TCLgr9fKcH5mALS70Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fSiuOnYrDGOzfyltB9MgNOu1yEVZOKPHybITbLyezhKyqQqu3IMWe4cHZx0WFoDm1
-         zPq8m1iS9uxvc3hWNOJqyNIu323pqTcJ2LZ+Jd5SuNqUwVIesmt+Tq2AIp7sjSWH5+
-         8a5qtYsw8jwgHNPrbHC15bXkcufFClLQ9VRas5W+cRMaoWgdtZFGwyfgJr6KZfY2jC
-         89mB9DHnwbA46iGPRtmCen+g/pgFSqHITsdjsUYDDBgi3vpO2sY6+Syu8Dm7itEPID
-         DRLzUYZ/lQ4bK8Rdm3/N9ErxG51oaHSsthHNsvN3Te0KBYpeWw3Agp4/dvQse6HO1N
-         g4Q06xaIhWy6Q==
+        b=g+HeQH0E+Xvda8uYKnGe0eEabbb4k0eIt6B0rbJU7DBemVgHFUywm2lITERzfYCoe
+         vlAs5Jdn1RI7Hng9timr0q5EalafLYncoOHHna3zeKVp2Nwi08l7B1wM84pY4w/B3u
+         1WoLMwDowKqOOG3Fgc3aLDloAW0gec5QlFL/JTByBGQTK+qgcehjnm3yZ2/W27nmGb
+         nxAT9nSGUJjY7fre19jd3c2eS8SCLIQF9wsbXu2cYlFn27G9psdDmL0A+Wsdhu+90D
+         LKFcchsre6kznFwt79HQr+J1s9YT01W5VAfN0tH9UHEr1bwTjrrgXhfdh4gvUScMPm
+         TSeaeFfMpFChA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alex Elder <elder@linaro.org>,
+Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        kernel test robot <lkp@intel.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.14 072/252] net: ipa: always validate filter and route tables
-Date:   Thu,  9 Sep 2021 07:38:06 -0400
-Message-Id: <20210909114106.141462-72-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.14 073/252] ipv4: ip_output.c: Fix out-of-bounds warning in ip_copy_addrs()
+Date:   Thu,  9 Sep 2021 07:38:07 -0400
+Message-Id: <20210909114106.141462-73-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909114106.141462-1-sashal@kernel.org>
 References: <20210909114106.141462-1-sashal@kernel.org>
@@ -42,131 +43,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alex Elder <elder@linaro.org>
+From: "Gustavo A. R. Silva" <gustavoars@kernel.org>
 
-[ Upstream commit 546948bf362541857d4f500705efe08a2fe0bb95 ]
+[ Upstream commit 6321c7acb82872ef6576c520b0e178eaad3a25c0 ]
 
-All checks in ipa_table_validate_build() are computed at build time,
-so build that unconditionally.
+Fix the following out-of-bounds warning:
 
-In ipa_table_valid() calls to ipa_table_valid_one() are missing the
-IPA pointer parameter is missing in (a bug that shows up only when
-IPA_VALIDATE is defined).  Don't bother checking whether hashed
-table memory regions are valid if hashed tables are not supported.
+    In function 'ip_copy_addrs',
+        inlined from '__ip_queue_xmit' at net/ipv4/ip_output.c:517:2:
+net/ipv4/ip_output.c:449:2: warning: 'memcpy' offset [40, 43] from the object at 'fl' is out of the bounds of referenced subobject 'saddr' with type 'unsigned int' at offset 36 [-Warray-bounds]
+      449 |  memcpy(&iph->saddr, &fl4->saddr,
+          |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      450 |         sizeof(fl4->saddr) + sizeof(fl4->daddr));
+          |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-With those things fixed, have these table validation functions built
-unconditionally (not dependent on IPA_VALIDATE).
+The problem is that the original code is trying to copy data into a
+couple of struct members adjacent to each other in a single call to
+memcpy(). This causes a legitimate compiler warning because memcpy()
+overruns the length of &iph->saddr and &fl4->saddr. As these are just
+a couple of struct members, fix this by using direct assignments,
+instead of memcpy().
 
-Signed-off-by: Alex Elder <elder@linaro.org>
+This helps with the ongoing efforts to globally enable -Warray-bounds
+and get us closer to being able to tighten the FORTIFY_SOURCE routines
+on memcpy().
+
+Link: https://github.com/KSPP/linux/issues/109
+Reported-by: kernel test robot <lkp@intel.com>
+Link: https://lore.kernel.org/lkml/d5ae2e65-1f18-2577-246f-bada7eee6ccd@intel.com/
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ipa/ipa_table.c | 36 +++++++++++++++++-------------------
- drivers/net/ipa/ipa_table.h | 16 ----------------
- 2 files changed, 17 insertions(+), 35 deletions(-)
+ net/ipv4/ip_output.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ipa/ipa_table.c b/drivers/net/ipa/ipa_table.c
-index 4f5b6749f6aa..c607ebec7456 100644
---- a/drivers/net/ipa/ipa_table.c
-+++ b/drivers/net/ipa/ipa_table.c
-@@ -120,8 +120,6 @@
-  */
- #define IPA_ZERO_RULE_SIZE		(2 * sizeof(__le32))
- 
--#ifdef IPA_VALIDATE
--
- /* Check things that can be validated at build time. */
- static void ipa_table_validate_build(void)
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index 8d8a8da3ae7e..a202dcec0dc2 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -446,8 +446,9 @@ static void ip_copy_addrs(struct iphdr *iph, const struct flowi4 *fl4)
  {
-@@ -169,7 +167,7 @@ ipa_table_valid_one(struct ipa *ipa, enum ipa_mem_id mem_id, bool route)
- 		return true;
- 
- 	/* Hashed table regions can be zero size if hashing is not supported */
--	if (hashed && !mem->size)
-+	if (ipa_table_hash_support(ipa) && !mem->size)
- 		return true;
- 
- 	dev_err(dev, "%s table region %u size 0x%02x, expected 0x%02x\n",
-@@ -183,14 +181,22 @@ bool ipa_table_valid(struct ipa *ipa)
- {
- 	bool valid;
- 
--	valid = ipa_table_valid_one(IPA_MEM_V4_FILTER, false);
--	valid = valid && ipa_table_valid_one(IPA_MEM_V4_FILTER_HASHED, false);
--	valid = valid && ipa_table_valid_one(IPA_MEM_V6_FILTER, false);
--	valid = valid && ipa_table_valid_one(IPA_MEM_V6_FILTER_HASHED, false);
--	valid = valid && ipa_table_valid_one(IPA_MEM_V4_ROUTE, true);
--	valid = valid && ipa_table_valid_one(IPA_MEM_V4_ROUTE_HASHED, true);
--	valid = valid && ipa_table_valid_one(IPA_MEM_V6_ROUTE, true);
--	valid = valid && ipa_table_valid_one(IPA_MEM_V6_ROUTE_HASHED, true);
-+	valid = ipa_table_valid_one(ipa, IPA_MEM_V4_FILTER, false);
-+	valid = valid && ipa_table_valid_one(ipa, IPA_MEM_V6_FILTER, false);
-+	valid = valid && ipa_table_valid_one(ipa, IPA_MEM_V4_ROUTE, true);
-+	valid = valid && ipa_table_valid_one(ipa, IPA_MEM_V6_ROUTE, true);
+ 	BUILD_BUG_ON(offsetof(typeof(*fl4), daddr) !=
+ 		     offsetof(typeof(*fl4), saddr) + sizeof(fl4->saddr));
+-	memcpy(&iph->saddr, &fl4->saddr,
+-	       sizeof(fl4->saddr) + sizeof(fl4->daddr));
 +
-+	if (!ipa_table_hash_support(ipa))
-+		return valid;
-+
-+	valid = valid && ipa_table_valid_one(ipa, IPA_MEM_V4_FILTER_HASHED,
-+					     false);
-+	valid = valid && ipa_table_valid_one(ipa, IPA_MEM_V6_FILTER_HASHED,
-+					     false);
-+	valid = valid && ipa_table_valid_one(ipa, IPA_MEM_V4_ROUTE_HASHED,
-+					     true);
-+	valid = valid && ipa_table_valid_one(ipa, IPA_MEM_V6_ROUTE_HASHED,
-+					     true);
- 
- 	return valid;
- }
-@@ -217,14 +223,6 @@ bool ipa_filter_map_valid(struct ipa *ipa, u32 filter_map)
- 	return true;
++	iph->saddr = fl4->saddr;
++	iph->daddr = fl4->daddr;
  }
  
--#else /* !IPA_VALIDATE */
--static void ipa_table_validate_build(void)
--
--{
--}
--
--#endif /* !IPA_VALIDATE */
--
- /* Zero entry count means no table, so just return a 0 address */
- static dma_addr_t ipa_table_addr(struct ipa *ipa, bool filter_mask, u16 count)
- {
-diff --git a/drivers/net/ipa/ipa_table.h b/drivers/net/ipa/ipa_table.h
-index 1e2be9fce2f8..b6a9a0d79d68 100644
---- a/drivers/net/ipa/ipa_table.h
-+++ b/drivers/net/ipa/ipa_table.h
-@@ -16,8 +16,6 @@ struct ipa;
- /* The maximum number of route table entries (IPv4, IPv6; hashed or not) */
- #define IPA_ROUTE_COUNT_MAX	15
- 
--#ifdef IPA_VALIDATE
--
- /**
-  * ipa_table_valid() - Validate route and filter table memory regions
-  * @ipa:	IPA pointer
-@@ -35,20 +33,6 @@ bool ipa_table_valid(struct ipa *ipa);
-  */
- bool ipa_filter_map_valid(struct ipa *ipa, u32 filter_mask);
- 
--#else /* !IPA_VALIDATE */
--
--static inline bool ipa_table_valid(struct ipa *ipa)
--{
--	return true;
--}
--
--static inline bool ipa_filter_map_valid(struct ipa *ipa, u32 filter_mask)
--{
--	return true;
--}
--
--#endif /* !IPA_VALIDATE */
--
- /**
-  * ipa_table_hash_support() - Return true if hashed tables are supported
-  * @ipa:	IPA pointer
+ /* Note: skb->sk can be different from sk, in case of tunnels */
 -- 
 2.30.2
 
