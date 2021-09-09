@@ -2,42 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C479404E72
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:18:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B11A8404E74
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:18:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347663AbhIIMLm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 08:11:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47194 "EHLO mail.kernel.org"
+        id S237246AbhIIMLp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 08:11:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47186 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1348919AbhIIMFH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Sep 2021 08:05:07 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 16068617E3;
-        Thu,  9 Sep 2021 11:47:14 +0000 (UTC)
+        id S1345229AbhIIMHF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Sep 2021 08:07:05 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 23CCE61980;
+        Thu,  9 Sep 2021 11:47:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631188036;
-        bh=cVzuaQ2uqDC6xVYgHkhTzbNHaKughqasOwpslbxgqfQ=;
+        s=k20201202; t=1631188059;
+        bh=CCqSZBrjoqhbOd+VZEKVATTkTGbF+yGwyIWlC/YNMf0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tx31CNaEWn/hrpoGNNWMV0tlccn0oRhRFC7KqP6vJBZ0EvZRTppjr1oD/ALTifkD7
-         nmWiiljrqrrSmt7vxwHF8nBvlJIrOdXScpT86voR62cgZBu5a8FQyztIkX4KuPY5hF
-         DzQyqxWAcRvy2YRAQD2MN6L3bY6vQLG8aSBt7scvkL/UcMMSJPsrTkInz6vmdwe6zC
-         9i8Ty0HHGULwdaQPPNx6U8PKcuKDwkcE3waom3ZXX+HeBISMu0fYRdawklIEYxpUfz
-         lGvCkepU93UzUKTfvwRPUuKprtQEXCTn3AXlbs/di8AUJqs5S8Bz3sAxlmA+ZGzxM+
-         ntzHityDkSRvQ==
+        b=XxlsHaFbBfEsbA2PyvSjho02a4es2g9zvClbejdIGYmffJ+i6kuuWvx0omqtHj4pY
+         E7na6+/lvtlZgsF3D/5KsFRtIO7ReiwNJ9Axwo+He1nwtCeGzT6dnVEC6c7nGheIr2
+         5TpKlp6HvzMPBW02cYx2fFBQzNAhk78UVvFzMoF9KvbzDCVF6C9VnouLKWnQjc1/wH
+         6MAQ9zFL93kMj0QhVg4uL9+lMHkSltZElSrrkscUq+x1kjv8X5cUVYOosxxx330QaF
+         M+vuF/E0dpIZq6i7lSGyic37PegmPuiGmcjtS6bzdbB9Fq9E3VB7IUvUQHZOraBELp
+         2sqmYcKWoHwGg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sasha Neftin <sasha.neftin@intel.com>,
-        Aleksandr Loktionov <aleksandr.loktionov@intel.com>,
-        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.13 031/219] igc: Check if num of q_vectors is smaller than max before array access
-Date:   Thu,  9 Sep 2021 07:43:27 -0400
-Message-Id: <20210909114635.143983-31-sashal@kernel.org>
+Cc:     =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund@corigine.com>,
+        Louis Peens <louis.peens@corigine.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, oss-drivers@corigine.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.13 049/219] nfp: fix return statement in nfp_net_parse_meta()
+Date:   Thu,  9 Sep 2021 07:43:45 -0400
+Message-Id: <20210909114635.143983-49-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909114635.143983-1-sashal@kernel.org>
 References: <20210909114635.143983-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -45,51 +46,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+From: Niklas Söderlund <niklas.soderlund@corigine.com>
 
-[ Upstream commit 373e2829e7c2e1e606503cdb5c97749f512a4be9 ]
+[ Upstream commit 4431531c482a2c05126caaa9fcc5053a4a5c495b ]
 
-Ensure that the adapter->q_vector[MAX_Q_VECTORS] array isn't accessed
-beyond its size. It was fixed by using a local variable num_q_vectors
-as a limit for loop index, and ensure that num_q_vectors is not bigger
-than MAX_Q_VECTORS.
+The return type of the function is bool and while NULL do evaluate to
+false it's not very nice, fix this by explicitly returning false. There
+is no functional change.
 
-Suggested-by: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Niklas Söderlund <niklas.soderlund@corigine.com>
+Signed-off-by: Louis Peens <louis.peens@corigine.com>
+Signed-off-by: Simon Horman <simon.horman@corigine.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/igc/igc_main.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/netronome/nfp/nfp_net_common.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index 9b85fdf01297..3e301c5c5270 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -4402,6 +4402,7 @@ static irqreturn_t igc_msix_ring(int irq, void *data)
-  */
- static int igc_request_msix(struct igc_adapter *adapter)
- {
-+	unsigned int num_q_vectors = adapter->num_q_vectors;
- 	int i = 0, err = 0, vector = 0, free_vector = 0;
- 	struct net_device *netdev = adapter->netdev;
- 
-@@ -4410,7 +4411,13 @@ static int igc_request_msix(struct igc_adapter *adapter)
- 	if (err)
- 		goto err_out;
- 
--	for (i = 0; i < adapter->num_q_vectors; i++) {
-+	if (num_q_vectors > MAX_Q_VECTORS) {
-+		num_q_vectors = MAX_Q_VECTORS;
-+		dev_warn(&adapter->pdev->dev,
-+			 "The number of queue vectors (%d) is higher than max allowed (%d)\n",
-+			 adapter->num_q_vectors, MAX_Q_VECTORS);
-+	}
-+	for (i = 0; i < num_q_vectors; i++) {
- 		struct igc_q_vector *q_vector = adapter->q_vector[i];
- 
- 		vector++;
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+index eeb30680b4dc..0a0a26376bea 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+@@ -1697,7 +1697,7 @@ nfp_net_parse_meta(struct net_device *netdev, struct nfp_meta_parsed *meta,
+ 		case NFP_NET_META_RESYNC_INFO:
+ 			if (nfp_net_tls_rx_resync_req(netdev, data, pkt,
+ 						      pkt_len))
+-				return NULL;
++				return false;
+ 			data += sizeof(struct nfp_net_tls_resync_req);
+ 			break;
+ 		default:
 -- 
 2.30.2
 
