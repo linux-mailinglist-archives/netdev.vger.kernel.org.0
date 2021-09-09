@@ -2,109 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C166D405F98
-	for <lists+netdev@lfdr.de>; Fri, 10 Sep 2021 00:30:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29432405F9D
+	for <lists+netdev@lfdr.de>; Fri, 10 Sep 2021 00:33:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235083AbhIIWbI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 18:31:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41862 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229531AbhIIWbH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 18:31:07 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42DB7C061574;
-        Thu,  9 Sep 2021 15:29:57 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id k23so71286pji.0;
-        Thu, 09 Sep 2021 15:29:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=bnhX5uj2rAQbqykqjIAuORREFzEvDfH4zbDhGukqKhI=;
-        b=fOJ4FfY7JfvYVDAPeWdDQhYHAVy2gS076rWTqLu4ZPRLZPN+9/C03g/vsNR0YLvk4J
-         Id23kkXi6/3+UdDb3YfWQpjlLuDbGEXjfO7jGi9WeWieJ5aIHWDb2VMCsfamy8MYLeTB
-         0qdfhVo7tHgTDi4uK0o+ilKYfH2CbO+XdaPbAgyNxmQZS3GC6a9g+QI9zmrJqVCc8DLu
-         5O6khzd6r93RcbsFgOP53i+kFzpswihgO5avBq0b9LqffJf9mAjkuevIfKKO/fxMvawr
-         AWnMhFjitkjIa5kiSAoPQewEnsMpahKkHSS9z/1+szwtzIIe3RJR8nW2EhP+WgMWuPCp
-         MAAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=bnhX5uj2rAQbqykqjIAuORREFzEvDfH4zbDhGukqKhI=;
-        b=YjhBNFvTXVxhIuIYWorKOOaTdoYTC9mNXbIsVMKQzrnAru6h8luL8CywBXMsOWnPiu
-         Y9PlW9TZ+ubLhjpzt8VHcI4i5diSMKVQgEnTOYWIh7A8ctzkFDFYQ/F+27O1n2M+LZYF
-         WCB+kvPeH6qoOVxy2skhjamdx5Di6gxEe5w5wrh7ByVQcQNlG8Jp9Ptc9eDcDu1UeEPz
-         w9dnH0GnCQeWy+QaVGs12RVmch7iq8Jw9A5C478JFeB8KVfTu9I/MxpeTRj/e+8tFNsc
-         zEDqHDvChUSInvWO4apZmwzlzkk3a2sIb7mk5Pj4knex9ShYumnK/dZKAH4265nLWiJS
-         Xqqg==
-X-Gm-Message-State: AOAM532dC3LN7ECB7SPWErgjmS15Qk08DDEjzdP7aksK6AsFJn1y3f/V
-        0Wdpm9r/+8+7t9wHTrU+/XY=
-X-Google-Smtp-Source: ABdhPJyT+PH6brx2Qu2YHDrGWG+OBmAWiR2Slu4WCfACX4II1Uc5BHEYehpqb8TRfZqxHqEFcdMUDQ==
-X-Received: by 2002:a17:90a:a88b:: with SMTP id h11mr5992014pjq.44.1631226596550;
-        Thu, 09 Sep 2021 15:29:56 -0700 (PDT)
-Received: from localhost (2603-800c-1a02-1bae-e24f-43ff-fee6-449f.res6.spectrum.com. [2603:800c:1a02:1bae:e24f:43ff:fee6:449f])
-        by smtp.gmail.com with ESMTPSA id d13sm3146968pfn.114.2021.09.09.15.29.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Sep 2021 15:29:56 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Thu, 9 Sep 2021 12:29:54 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
-        m@lambda.lt, alexei.starovoitov@gmail.com, andrii@kernel.org,
-        sdf@google.com
-Subject: Re: [PATCH bpf v2 1/3] bpf, cgroups: Fix cgroup v2 fallback on v1/v2
- mixed mode
-Message-ID: <YTqK4oAG3CTxQ7Lq@slm.duckdns.org>
-References: <f36377d0c40cce0cdeaff50031c268bc640d94f0.1631219956.git.daniel@iogearbox.net>
+        id S240907AbhIIWeb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 18:34:31 -0400
+Received: from mga12.intel.com ([192.55.52.136]:61387 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1346632AbhIIWeY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Sep 2021 18:34:24 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10102"; a="200455911"
+X-IronPort-AV: E=Sophos;i="5.85,281,1624345200"; 
+   d="scan'208";a="200455911"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2021 15:33:03 -0700
+X-IronPort-AV: E=Sophos;i="5.85,281,1624345200"; 
+   d="scan'208";a="470280978"
+Received: from jabusaid-mobl.amr.corp.intel.com ([10.255.231.212])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2021 15:33:03 -0700
+Date:   Thu, 9 Sep 2021 15:33:02 -0700 (PDT)
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     Sasha Levin <sashal@kernel.org>
+cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Yonglong Li <liyonglong@chinatelecom.cn>,
+        Geliang Tang <geliangtang@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        mptcp@lists.linux.dev
+Subject: Re: [PATCH AUTOSEL 5.14 209/252] mptcp: fix ADD_ADDR and RM_ADDR
+ maybe flush addr_signal each other
+In-Reply-To: <20210909114106.141462-209-sashal@kernel.org>
+Message-ID: <3a6c39db-8aca-b64b-51db-cd1544daf9dc@linux.intel.com>
+References: <20210909114106.141462-1-sashal@kernel.org> <20210909114106.141462-209-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f36377d0c40cce0cdeaff50031c268bc640d94f0.1631219956.git.daniel@iogearbox.net>
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
 
-On Thu, Sep 09, 2021 at 10:43:40PM +0200, Daniel Borkmann wrote:
-...
-> Generally, this mutual exclusiveness does not hold anymore in today's user
-> environments and makes cgroup v2 usage from BPF side fragile and unreliable.
-> This fix adds proper struct cgroup pointer for the cgroup v2 case to struct
-> sock_cgroup_data in order to address these issues; this implicitly also fixes
-> the tradeoffs being made back then with regards to races and refcount leaks
-> as stated in bd1060a1d671, and removes the fallback, so that cgroup v2 BPF
-> programs always operate as expected.
-> 
->   [0] https://github.com/nestybox/sysbox/
->   [1] https://kind.sigs.k8s.io/
-> 
-> Fixes: bd1060a1d671 ("sock, cgroup: add sock->sk_cgroup")
-> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: Tejun Heo <tj@kernel.org>
-> Cc: Martynas Pumputis <m@lambda.lt>
-> Cc: Stanislav Fomichev <sdf@google.com>
+On Thu, 9 Sep 2021, Sasha Levin wrote:
 
-While this does increase cgroup's footprint inside sock, I think it's worth
-considering the following points:
+> From: Yonglong Li <liyonglong@chinatelecom.cn>
+>
+> [ Upstream commit 119c022096f5805680c79dfa74e15044c289856d ]
+>
+> ADD_ADDR shares pm.addr_signal with RM_ADDR, so after RM_ADDR/ADD_ADDR
+> has done, we should not clean ADD_ADDR/RM_ADDR's addr_signal.
+>
+> Co-developed-by: Geliang Tang <geliangtang@gmail.com>
+> Signed-off-by: Geliang Tang <geliangtang@gmail.com>
+> Signed-off-by: Yonglong Li <liyonglong@chinatelecom.cn>
+> Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+> Signed-off-by: David S. Miller <davem@davemloft.net>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
+> net/mptcp/pm.c | 13 ++++++++++---
+> 1 file changed, 10 insertions(+), 3 deletions(-)
 
-1. It's clear now that we won't need more cgroup related socket fields for
-   network integration. cgroup2 membership tagging has proven flexible
-   enough especially in combination with bpf.
+Hi Sasha,
 
-2. Users have been transitioning from cgroup1 to cgroup2, some gradually,
-   which is why this multiplexing is becoming an issue. In time, as
-   transtions progress further, we should be able to disable cgroup1 network
-   controllers for many use cases.
+This patch is part of a 5-patch series, and was not intended for 
+backporting. Please drop the patch from all stable branches.
 
-For the series,
 
-Acked-by: Tejun Heo <tj@kernel.org>
+Thanks!
 
-Thanks.
-
--- 
-tejun
+--
+Mat Martineau
+Intel
