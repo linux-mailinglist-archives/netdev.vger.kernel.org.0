@@ -2,178 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C8B740452F
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 07:50:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B84A4404556
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 08:02:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350876AbhIIFvq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 01:51:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41272 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230515AbhIIFvp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 01:51:45 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26240C061575;
-        Wed,  8 Sep 2021 22:50:36 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id z18so1596063ybg.8;
-        Wed, 08 Sep 2021 22:50:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rbAwJn7fFiGfPLrVocqe11Q3q7IsLXBF5Gxx03pmlXE=;
-        b=CmWrpGJWf7JI1pP0j0mp45iHU8XkQe2EqAUzjV7ZmD/9FcnGbJAjU+KHRVJytckonC
-         vujUXfoq2DKOdHDooun6rux/zPb5UUNw6F0/rYYiG63z0gXl5FRo9mM4D/ZHlcjFEoT5
-         TSsPsN+5dKnBSLAhkl0Su9JKaQpr90RBEm4Bp9T0uBXdLr0wrGO5QAHwK8IFJ0/Bufj4
-         1xgY7VRPTUjHu9eIZWZuoV3u6fgcauS7FWhKhnxCRypxO896NpcBImOjOFxkiiobXx1x
-         j7DRcXdP4TINM1IE+y5xZAS4KExdFRwogWOejAehtF6YEY4uO6oaSr2HYcGFJo7eD5l9
-         eReQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rbAwJn7fFiGfPLrVocqe11Q3q7IsLXBF5Gxx03pmlXE=;
-        b=M3+o7Uiu2ar8ZmAdlz5a0o3Y4xuynbbto8jAT3JRlBMLlkVg3gKjpuhOh573UaB8s0
-         WzAGVKnr7orkAomdBC5w5SoQOPQg1Qb9DDJ2r9u8E/1wKLoLnIcKRaaggIUoehqGXW+N
-         n2BOvCccpEye+zrC6LQ0b1tX5muHWfuHFnoQmsvf23mwcgNo+IO0t600MP2EUJM+cKeu
-         lEFRP/Qyde0Pom5UJ+Rr9k7h9IIqlDyabwkNysxojttfzLGze25feudhrXBjqdSEQA3V
-         FETbUZWPxVV2Uf08JvxuaBV9tUlRE9emWIWGcAdfUBN6HApNYlp/6aks+0G3ncYqrTRB
-         dr8g==
-X-Gm-Message-State: AOAM532tcAScQoeYh3tFoz9gew+uC4b6JjUv5JA5kVc/FkmxuFCwrkF4
-        ECiOr/KkSegP09sE+lI+5KbrN44vqUbNiLvBrH8=
-X-Google-Smtp-Source: ABdhPJxt1xA0uM8Q0oqALtqvGBUDGndJ4a+HcDFgyDfaBTs5y9qs8UNRpk1kp/Lb9NyUROynnQ45aqXim7JNzY/Zqj0=
-X-Received: by 2002:a5b:702:: with SMTP id g2mr1597430ybq.307.1631166635450;
- Wed, 08 Sep 2021 22:50:35 -0700 (PDT)
+        id S1351064AbhIIGDR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 02:03:17 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:22922 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1351007AbhIIGDP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 02:03:15 -0400
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 1895XYsd160903;
+        Thu, 9 Sep 2021 02:02:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=Bniqri9MMZkWL4BcC80wpYalGB3I9kfht9xfS/+NPuA=;
+ b=fnrm/lYQqShOZO23oZuijEowgc3frhlDwQ5LyTprvvXE1N+qmQ5ycNyHdB4+rjmgkOWW
+ a7R1CUGNraOvu9tfIadu33AGU0RovGYDp6VbqaCV6ybut3X0KDuNMuLmDFCeTH7Aq5u6
+ yLgYsYRSXW+PrlVH9qgrByNu5JXgCt1iMd0xIzMdBK8T3D/RP64M71aeJ5B091TMINGU
+ TTC2Moefnxd3zT3dmRtSjgl+vrRMhEIZi6SbHGheMtgpueTbac4B/IWNhUeppN4qMgsB
+ gN51T2wB7oKaiKWOZ/lIIz6XeO8CFZgoUezGwmzijHbC/0q5mrYjRHHU4CYgOE7pIT+h CA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3ay3cwttcf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 09 Sep 2021 02:02:06 -0400
+Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 1895qk8U030249;
+        Thu, 9 Sep 2021 02:02:05 -0400
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3ay3cwttbs-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 09 Sep 2021 02:02:05 -0400
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1895wHS9018989;
+        Thu, 9 Sep 2021 06:02:03 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma02fra.de.ibm.com with ESMTP id 3axcnk84d7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 09 Sep 2021 06:02:03 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 189620oK50266522
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 9 Sep 2021 06:02:00 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 65F5042047;
+        Thu,  9 Sep 2021 06:02:00 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C04074204F;
+        Thu,  9 Sep 2021 06:01:59 +0000 (GMT)
+Received: from [9.171.14.134] (unknown [9.171.14.134])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu,  9 Sep 2021 06:01:59 +0000 (GMT)
+Subject: Re: [PATCH] s390/ism: switch from 'pci_' to 'dma_' API
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        jwi@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        borntraeger@de.ibm.com
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+References: <04d96a44cad009f15334876321aa236dc169b24c.1629753393.git.christophe.jaillet@wanadoo.fr>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+Message-ID: <e57bb882-fc43-e24e-361b-1fd26996aebe@linux.ibm.com>
+Date:   Thu, 9 Sep 2021 08:02:01 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
+In-Reply-To: <04d96a44cad009f15334876321aa236dc169b24c.1629753393.git.christophe.jaillet@wanadoo.fr>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: _6SuNhk299Qng7ujndXRjzl6QAYjp0dx
+X-Proofpoint-ORIG-GUID: k4QMLt1AAXR98gcYOiMUX9-KvP5U18HV
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-References: <1631158350-3661-1-git-send-email-yangtiezhu@loongson.cn>
-In-Reply-To: <1631158350-3661-1-git-send-email-yangtiezhu@loongson.cn>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 8 Sep 2021 22:50:24 -0700
-Message-ID: <CAEf4BzZqoVZ7keWCLmC=A5oPPwj_xMNRWDkJUcjWn9yE_z1gSg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf: Change value of MAX_TAIL_CALL_CNT from 32
- to 33
-To:     Tiezhu Yang <yangtiezhu@loongson.cn>
-Cc:     Shubham Bansal <illusionist.neo@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Paul Burton <paulburton@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        naveen.n.rao@linux.ibm.com, Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Luke Nelson <luke.r.nels@gmail.com>,
-        Xi Wang <xi.wang@gmail.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Johan Almbladh <johan.almbladh@anyfinetworks.com>,
-        Paul Chaignon <paul@cilium.io>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-riscv@lists.infradead.org, sparclinux@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-09-09_01:2021-09-07,2021-09-09 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ suspectscore=0 spamscore=0 mlxscore=0 impostorscore=0 phishscore=0
+ adultscore=0 lowpriorityscore=0 bulkscore=0 clxscore=1011 malwarescore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2109030001 definitions=main-2109090033
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 8, 2021 at 8:33 PM Tiezhu Yang <yangtiezhu@loongson.cn> wrote:
->
-> In the current code, the actual max tail call count is 33 which is greater
-> than MAX_TAIL_CALL_CNT (defined as 32), the actual limit is not consistent
-> with the meaning of MAX_TAIL_CALL_CNT, there is some confusion and need to
-> spend some time to think the reason at the first glance.
-
-think *about* the reason
-
->
-> We can see the historical evolution from commit 04fd61ab36ec ("bpf: allow
-> bpf programs to tail-call other bpf programs") and commit f9dabe016b63
-> ("bpf: Undo off-by-one in interpreter tail call count limit").
->
-> In order to avoid changing existing behavior, the actual limit is 33 now,
-> this is resonable.
-
-typo: reasonable
-
->
-> After commit 874be05f525e ("bpf, tests: Add tail call test suite"), we can
-> see there exists failed testcase.
->
-> On all archs when CONFIG_BPF_JIT_ALWAYS_ON is not set:
->  # echo 0 > /proc/sys/net/core/bpf_jit_enable
->  # modprobe test_bpf
->  # dmesg | grep -w FAIL
->  Tail call error path, max count reached jited:0 ret 34 != 33 FAIL
->
-> On some archs:
->  # echo 1 > /proc/sys/net/core/bpf_jit_enable
->  # modprobe test_bpf
->  # dmesg | grep -w FAIL
->  Tail call error path, max count reached jited:1 ret 34 != 33 FAIL
->
-> So it is necessary to change the value of MAX_TAIL_CALL_CNT from 32 to 33,
-> then do some small changes of the related code.
->
-> With this patch, it does not change the current limit, MAX_TAIL_CALL_CNT
-> can reflect the actual max tail call count, and the above failed testcase
-> can be fixed.
->
-> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+On 23/08/2021 23:17, Christophe JAILLET wrote:
+> The wrappers in include/linux/pci-dma-compat.h should go away.
+> 
+> The patch has been generated with the coccinelle script below.
+> 
+> @@
+> expression e1, e2;
+> @@
+> -    pci_set_dma_mask(e1, e2)
+> +    dma_set_mask(&e1->dev, e2)
+> 
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 > ---
+> If needed, see post from Christoph Hellwig on the kernel-janitors ML:
+>    https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
+> 
+> This has *NOT* been compile tested because I don't have the needed
+> configuration.
+> ---
+>  drivers/s390/net/ism_drv.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-This change breaks selftests ([0]), please fix them at the same time
-as you are changing the kernel behavior:
-
-  test_tailcall_2:PASS:tailcall 128 nsec
-  test_tailcall_2:PASS:tailcall 128 nsec
-  test_tailcall_2:FAIL:tailcall err 0 errno 2 retval 4
-  #135/2 tailcalls/tailcall_2:FAIL
-  test_tailcall_3:PASS:tailcall 128 nsec
-  test_tailcall_3:FAIL:tailcall count err 0 errno 2 count 34
-  test_tailcall_3:PASS:tailcall 128 nsec
-  #135/3 tailcalls/tailcall_3:FAIL
-  #135/4 tailcalls/tailcall_4:OK
-  #135/5 tailcalls/tailcall_5:OK
-  #135/6 tailcalls/tailcall_bpf2bpf_1:OK
-  test_tailcall_bpf2bpf_2:PASS:tailcall 128 nsec
-  test_tailcall_bpf2bpf_2:FAIL:tailcall count err 0 errno 2 count 34
-  test_tailcall_bpf2bpf_2:PASS:tailcall 128 nsec
-  #135/7 tailcalls/tailcall_bpf2bpf_2:FAIL
-  #135/8 tailcalls/tailcall_bpf2bpf_3:OK
-  test_tailcall_bpf2bpf_4:PASS:tailcall 54 nsec
-  test_tailcall_bpf2bpf_4:FAIL:tailcall count err 0 errno 2 count 32
-  #135/9 tailcalls/tailcall_bpf2bpf_4:FAIL
-  test_tailcall_bpf2bpf_4:PASS:tailcall 54 nsec
-  test_tailcall_bpf2bpf_4:FAIL:tailcall count err 0 errno 2 count 32
-  #135/10 tailcalls/tailcall_bpf2bpf_5:FAIL
-  #135 tailcalls:FAIL
-
-
-  [0] https://github.com/kernel-patches/bpf/pull/1747/checks?check_run_id=3552002906
-
->  arch/arm/net/bpf_jit_32.c         | 11 ++++++-----
->  arch/arm64/net/bpf_jit_comp.c     |  7 ++++---
->  arch/mips/net/ebpf_jit.c          |  4 ++--
->  arch/powerpc/net/bpf_jit_comp32.c |  4 ++--
->  arch/powerpc/net/bpf_jit_comp64.c | 12 ++++++------
->  arch/riscv/net/bpf_jit_comp32.c   |  4 ++--
->  arch/riscv/net/bpf_jit_comp64.c   |  4 ++--
->  arch/sparc/net/bpf_jit_comp_64.c  |  8 ++++----
->  include/linux/bpf.h               |  2 +-
->  kernel/bpf/core.c                 |  4 ++--
->  10 files changed, 31 insertions(+), 29 deletions(-)
->
-
-[...]
+Thank you for the patch. I compile tested successfully, we will 
+include the patch in our next submission for the net-next tree.
