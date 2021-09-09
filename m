@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A6CB405689
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 15:37:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 354D1405684
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 15:37:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359862AbhIINUd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 09:20:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38872 "EHLO mail.kernel.org"
+        id S1359840AbhIINUb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 09:20:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35410 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1354939AbhIINNS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1355250AbhIINNS (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 9 Sep 2021 09:13:18 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 49EBF632CE;
-        Thu,  9 Sep 2021 12:01:42 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 48E1C632E1;
+        Thu,  9 Sep 2021 12:01:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631188903;
-        bh=P1VZTvoePBSG6pc+gLrIfstQ0Cg98NTAGUfibfgaOLI=;
+        s=k20201202; t=1631188908;
+        bh=Y+PalN4q8RvwBAPT9+jNu3pp5FWhX2jqDZDErdHwqSA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fglcE7QxLVsp1dE9/H11BrwTjtVEZJmDRSMwlidW/6D0OStBPRl3WMvqOeLCzScIm
-         oeAh025mqkSJNv4AapD3cFYglxyPAqZ58ovsawo8Lfe4Gh90YwycYexppokqx8RYdq
-         yKeBVFrRrcDU1sv95OgWymxDfb8tqp0SP774SqEpIwqCYoYm1vbI2i24LJSxOWmzf2
-         mETNkwkRFRtwBB/B+azcMC4Ixvrm+1VHEAhKO/WNKMXcAOx3nHtc2J1K/Oy4CT4H6G
-         EdR1S7FqgU1rtZ9zZsDHOgSTTn4dhxDlVNPEeBrajmE3Z3Bv/sTrBCDXa1FoWfrWsF
-         b7Yy28qVzqnPg==
+        b=PYRP3hLJlTjW+WKSLnFa8jRkUpWI8ahF9rI9ALp3+aEy/jUH+WY2Uj8zGveWPk6fa
+         PatItwzfDWpxVW6gOeM3NoyAbgf/dtMPav1JzB2nXYOtVTjGtvvn/5dNXMlKHDFUMC
+         DcU830f7iHgZGEez9nVUxrh5wD+bsJuO4U/slkgXyEmYNQgTqJZ18LwEVDiOmNTqEj
+         8cCNsVpiG/K5THHOl0ZKIuKQCi0D7ZFNyJ3fSjiH0q5zLDMYClM+9b79/sqJsZaSbc
+         Rp56FcUKjetxGl8GBm+pZ9bL61INIqobv5jvkOLdwFEXyPAzk2wxPS5/eUD8N3ZF9+
+         gEvovuTbCG0Iw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>,
-        syzbot+66264bf2fd0476be7e6c@syzkaller.appspotmail.com,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 21/35] Bluetooth: skip invalid hci_sync_conn_complete_evt
-Date:   Thu,  9 Sep 2021 08:01:02 -0400
-Message-Id: <20210909120116.150912-21-sashal@kernel.org>
+Cc:     "J. Bruce Fields" <bfields@redhat.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 25/35] rpc: fix gss_svc_init cleanup on failure
+Date:   Thu,  9 Sep 2021 08:01:06 -0400
+Message-Id: <20210909120116.150912-25-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909120116.150912-1-sashal@kernel.org>
 References: <20210909120116.150912-1-sashal@kernel.org>
@@ -44,57 +43,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
+From: "J. Bruce Fields" <bfields@redhat.com>
 
-[ Upstream commit 92fe24a7db751b80925214ede43f8d2be792ea7b ]
+[ Upstream commit 5a4753446253a427c0ff1e433b9c4933e5af207c ]
 
-Syzbot reported a corrupted list in kobject_add_internal [1]. This
-happens when multiple HCI_EV_SYNC_CONN_COMPLETE event packets with
-status 0 are sent for the same HCI connection. This causes us to
-register the device more than once which corrupts the kset list.
+The failure case here should be rare, but it's obviously wrong.
 
-As this is forbidden behavior, we add a check for whether we're
-trying to process the same HCI_EV_SYNC_CONN_COMPLETE event multiple
-times for one connection. If that's the case, the event is invalid, so
-we report an error that the device is misbehaving, and ignore the
-packet.
-
-Link: https://syzkaller.appspot.com/bug?extid=66264bf2fd0476be7e6c [1]
-Reported-by: syzbot+66264bf2fd0476be7e6c@syzkaller.appspotmail.com
-Tested-by: syzbot+66264bf2fd0476be7e6c@syzkaller.appspotmail.com
-Signed-off-by: Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: J. Bruce Fields <bfields@redhat.com>
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_event.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ net/sunrpc/auth_gss/svcauth_gss.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 7ed3c7df271a..6528ecc3a3bc 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -3747,6 +3747,21 @@ static void hci_sync_conn_complete_evt(struct hci_dev *hdev,
- 
- 	switch (ev->status) {
- 	case 0x00:
-+		/* The synchronous connection complete event should only be
-+		 * sent once per new connection. Receiving a successful
-+		 * complete event when the connection status is already
-+		 * BT_CONNECTED means that the device is misbehaving and sent
-+		 * multiple complete event packets for the same new connection.
-+		 *
-+		 * Registering the device more than once can corrupt kernel
-+		 * memory, hence upon detecting this invalid event, we report
-+		 * an error and ignore the packet.
-+		 */
-+		if (conn->state == BT_CONNECTED) {
-+			bt_dev_err(hdev, "Ignoring connect complete event for existing connection");
-+			goto unlock;
-+		}
-+
- 		conn->handle = __le16_to_cpu(ev->handle);
- 		conn->state  = BT_CONNECTED;
- 		conn->type   = ev->link_type;
+diff --git a/net/sunrpc/auth_gss/svcauth_gss.c b/net/sunrpc/auth_gss/svcauth_gss.c
+index bb8b0ef5de82..daf0c1ea3917 100644
+--- a/net/sunrpc/auth_gss/svcauth_gss.c
++++ b/net/sunrpc/auth_gss/svcauth_gss.c
+@@ -1845,7 +1845,7 @@ gss_svc_init_net(struct net *net)
+ 		goto out2;
+ 	return 0;
+ out2:
+-	destroy_use_gss_proxy_proc_entry(net);
++	rsi_cache_destroy_net(net);
+ out1:
+ 	rsc_cache_destroy_net(net);
+ 	return rv;
 -- 
 2.30.2
 
