@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C2B7404E21
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:17:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2FA3404DF8
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:16:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344357AbhIIMJF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 08:09:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42132 "EHLO mail.kernel.org"
+        id S1348442AbhIIMHo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 08:07:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42148 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1347738AbhIIME2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1347788AbhIIME2 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 9 Sep 2021 08:04:28 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 72CE8615E5;
-        Thu,  9 Sep 2021 11:47:06 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C1DAD6187D;
+        Thu,  9 Sep 2021 11:47:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631188027;
-        bh=hJq9Ki+WluUwy6uIyZphLMXchIWvjp7UattgDb7WsT8=;
+        s=k20201202; t=1631188028;
+        bh=2ZQgAdSqM3Z1B/NFboHJ5P2AqXD4GDXImXq2D9M7XEk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s5kMs4rZV0Okr2yZRuGNk8VuYj75bde5+iOYh3YR0lvI2G73CTVgTKTmsty17s6St
-         i65p9VqAHwRSm6VXU8S69GL+sCT71RQJqhpu92uwBFH9XX3WxjCYk7UG6FZ5OAl9yp
-         uZ0CHuK8A8ovOY3myc16w92LwpzhrAk/YbMThm5K/x6Pge9g3uKCuOimrxtIKLV1dJ
-         +siWbFd3OqDsXle6xdD2BP6ELddis+Ni0uNLpSt8Knnr4rpUCKpOH88ZFNOIpBNCfC
-         YkU3MOgWq0Q2kaZbQpZc9/B6l7K3NEQPVWGr8jd5HRjtpRQa0PY1icvB0WIeYC7YL/
-         4Tf59paOANXkw==
+        b=KINcNcCBBbvbrOe2QstnrbfRUhJX1bpFIBLa2crU9mClGRUM5PLNLNpnK2drlxpHq
+         BgFq/KwEA8IBurstZ6L8PeWgmY5z5jHzsMSaUtqcY/xRhK64N2PPNwyjHeRb4+6vZN
+         O6IeXNiT3S3jSp9wW1DKsfkI/bPlmXagYRuknQt+2Np70bSk7zXqKsUvyElIilQGuI
+         o1Qltz2yfeRCMTgrYAke2HXDaSek6rQRUT7R84gjxWY36pkTZgfVlZXhq6UMXj7ZwB
+         L8l+ErB2iofZSgG+fQvaF0mTLu4cw3j52JjarwtD7rKFtr+OiGP0oFID2inKp5omyW
+         ybSf5HHXe8u9g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yajun Deng <yajun.deng@linux.dev>, Yonghong Song <yhs@fb.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.13 024/219] netlink: Deal with ESRCH error in nlmsg_notify()
-Date:   Thu,  9 Sep 2021 07:43:20 -0400
-Message-Id: <20210909114635.143983-24-sashal@kernel.org>
+Cc:     Alex Elder <elder@linaro.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.13 025/219] net: ipa: fix IPA v4.11 interconnect data
+Date:   Thu,  9 Sep 2021 07:43:21 -0400
+Message-Id: <20210909114635.143983-25-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909114635.143983-1-sashal@kernel.org>
 References: <20210909114635.143983-1-sashal@kernel.org>
@@ -43,67 +42,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yajun Deng <yajun.deng@linux.dev>
+From: Alex Elder <elder@linaro.org>
 
-[ Upstream commit fef773fc8110d8124c73a5e6610f89e52814637d ]
+[ Upstream commit 0ac26271344478ff718329fa9d4ef81d4bcbc43b ]
 
-Yonghong Song report:
-The bpf selftest tc_bpf failed with latest bpf-next.
-The following is the command to run and the result:
-$ ./test_progs -n 132
-[   40.947571] bpf_testmod: loading out-of-tree module taints kernel.
-test_tc_bpf:PASS:test_tc_bpf__open_and_load 0 nsec
-test_tc_bpf:PASS:bpf_tc_hook_create(BPF_TC_INGRESS) 0 nsec
-test_tc_bpf:PASS:bpf_tc_hook_create invalid hook.attach_point 0 nsec
-test_tc_bpf_basic:PASS:bpf_obj_get_info_by_fd 0 nsec
-test_tc_bpf_basic:PASS:bpf_tc_attach 0 nsec
-test_tc_bpf_basic:PASS:handle set 0 nsec
-test_tc_bpf_basic:PASS:priority set 0 nsec
-test_tc_bpf_basic:PASS:prog_id set 0 nsec
-test_tc_bpf_basic:PASS:bpf_tc_attach replace mode 0 nsec
-test_tc_bpf_basic:PASS:bpf_tc_query 0 nsec
-test_tc_bpf_basic:PASS:handle set 0 nsec
-test_tc_bpf_basic:PASS:priority set 0 nsec
-test_tc_bpf_basic:PASS:prog_id set 0 nsec
-libbpf: Kernel error message: Failed to send filter delete notification
-test_tc_bpf_basic:FAIL:bpf_tc_detach unexpected error: -3 (errno 3)
-test_tc_bpf:FAIL:test_tc_internal ingress unexpected error: -3 (errno 3)
+Currently three interconnects are defined for the Qualcomm SC7280
+SoC, but this was based on a misunderstanding.  There should only be
+two interconnects defined:  one between the IPA and system memory;
+and another between the AP and IPA config space.  The bandwidths
+defined for the memory and config interconnects do not match what I
+understand to be proper values, so update these.
 
-The failure seems due to the commit
-    cfdf0d9ae75b ("rtnetlink: use nlmsg_notify() in rtnetlink_send()")
-
-Deal with ESRCH error in nlmsg_notify() even the report variable is zero.
-
-Reported-by: Yonghong Song <yhs@fb.com>
-Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
-Link: https://lore.kernel.org/r/20210719051816.11762-1-yajun.deng@linux.dev
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Alex Elder <elder@linaro.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netlink/af_netlink.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ipa/ipa_data-v4.11.c | 13 ++++---------
+ 1 file changed, 4 insertions(+), 9 deletions(-)
 
-diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-index 6133e412b948..b9ed16ff09c1 100644
---- a/net/netlink/af_netlink.c
-+++ b/net/netlink/af_netlink.c
-@@ -2545,13 +2545,15 @@ int nlmsg_notify(struct sock *sk, struct sk_buff *skb, u32 portid,
- 		/* errors reported via destination sk->sk_err, but propagate
- 		 * delivery errors if NETLINK_BROADCAST_ERROR flag is set */
- 		err = nlmsg_multicast(sk, skb, exclude_portid, group, flags);
-+		if (err == -ESRCH)
-+			err = 0;
- 	}
- 
- 	if (report) {
- 		int err2;
- 
- 		err2 = nlmsg_unicast(sk, skb, portid);
--		if (!err || err == -ESRCH)
-+		if (!err)
- 			err = err2;
- 	}
- 
+diff --git a/drivers/net/ipa/ipa_data-v4.11.c b/drivers/net/ipa/ipa_data-v4.11.c
+index 05806ceae8b5..157f8d47058b 100644
+--- a/drivers/net/ipa/ipa_data-v4.11.c
++++ b/drivers/net/ipa/ipa_data-v4.11.c
+@@ -346,18 +346,13 @@ static const struct ipa_mem_data ipa_mem_data = {
+ static const struct ipa_interconnect_data ipa_interconnect_data[] = {
+ 	{
+ 		.name			= "memory",
+-		.peak_bandwidth		= 465000,	/* 465 MBps */
+-		.average_bandwidth	= 80000,	/* 80 MBps */
+-	},
+-	/* Average rate is unused for the next two interconnects */
+-	{
+-		.name			= "imem",
+-		.peak_bandwidth		= 68570,	/* 68.57 MBps */
+-		.average_bandwidth	= 80000,	/* 80 MBps (unused?) */
++		.peak_bandwidth		= 600000,	/* 600 MBps */
++		.average_bandwidth	= 150000,	/* 150 MBps */
+ 	},
++	/* Average rate is unused for the next interconnect */
+ 	{
+ 		.name			= "config",
+-		.peak_bandwidth		= 30000,	/* 30 MBps */
++		.peak_bandwidth		= 74000,	/* 74 MBps */
+ 		.average_bandwidth	= 0,		/* unused */
+ 	},
+ };
 -- 
 2.30.2
 
