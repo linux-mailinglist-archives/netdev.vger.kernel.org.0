@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BF5240537E
+	by mail.lfdr.de (Postfix) with ESMTP id B963F40537F
 	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:52:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353495AbhIIMwl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 08:52:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56650 "EHLO mail.kernel.org"
+        id S1354930AbhIIMwp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 08:52:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57498 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1355348AbhIIMpT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Sep 2021 08:45:19 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D3928613AC;
-        Thu,  9 Sep 2021 11:56:00 +0000 (UTC)
+        id S1355441AbhIIMpo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Sep 2021 08:45:44 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 578C261C45;
+        Thu,  9 Sep 2021 11:56:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631188561;
-        bh=9OHCdoC2zS+9x1XGxywbtw+tpN9NjKwHyk7WhAEKvX4=;
+        s=k20201202; t=1631188564;
+        bh=6GEVfw7vZfopUGRg2JPt3lCF1iqxYlN92cwC0NlRvgk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rk9kexFUpftqxn6H64T5UR93WUH1bi8SexK7SyRgnOs09auqo44Ed9MZX3AmCcnQG
-         ubr5ih9JaMrtgV432lc5Qc7Rynjl685FmnADro8r87P2c0wzWJ6D3ikfGZJT5IfqBa
-         I60fgb0aJSdNKe7yAK6aTn3BbUR+v9IEdilduOlPniEWJt5Nqu9pTyt48UcRdneOby
-         ADMDroW3SqzRMZ4BJZA95wxAuqmaMglgXZCdkmkHgZ1RZzztyG++S9P0ofJnWyE1Dq
-         tf8zv7ftTvOJ613vbX1UCgo1WKTJ7uHAM2KoFZYpuA0EoeJDJUn3fNLTHbMPSX4AW1
-         3Zhmec96qJHEw==
+        b=Mm9h5ahhpdnV4jl4igTN2BfnvH4L9FAbv8RnNrki9zQ+DRphGj5GWxAo4NWsi4hpS
+         8ZzKr4n+itDDrsOVTW7ksnt0t4QAvESr90d3v6+qYLLGpWqlw+mVtecJs6NddP6lw1
+         wSl4rfV+DHLvpwQkTgLLZ5L/yqU5ZyfJCSqeDbecyUyTKk3xEMIHh6EHAURUgspco6
+         50rdGk7IDBhXGuevkn0nkyMc2RtcAWDu4jIUszFChig98GktJMGZUlRGC86JB1Ifvf
+         duR+L0TIN3wY7GGsiQUT3UmZFVWUehinie2AZk3XdmohLcad6z/Az65P2yyeUrYj/5
+         IEiNdyL3/y05g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>,
-        syzbot+66264bf2fd0476be7e6c@syzkaller.appspotmail.com,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 043/109] Bluetooth: skip invalid hci_sync_conn_complete_evt
-Date:   Thu,  9 Sep 2021 07:54:00 -0400
-Message-Id: <20210909115507.147917-43-sashal@kernel.org>
+Cc:     Yufeng Mo <moyufeng@huawei.com>,
+        Jay Vosburgh <jay.vosburgh@canonical.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 045/109] bonding: 3ad: fix the concurrency between __bond_release_one() and bond_3ad_state_machine_handler()
+Date:   Thu,  9 Sep 2021 07:54:02 -0400
+Message-Id: <20210909115507.147917-45-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909115507.147917-1-sashal@kernel.org>
 References: <20210909115507.147917-1-sashal@kernel.org>
@@ -44,57 +43,97 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
+From: Yufeng Mo <moyufeng@huawei.com>
 
-[ Upstream commit 92fe24a7db751b80925214ede43f8d2be792ea7b ]
+[ Upstream commit 220ade77452c15ecb1ab94c3f8aaeb6d033c3582 ]
 
-Syzbot reported a corrupted list in kobject_add_internal [1]. This
-happens when multiple HCI_EV_SYNC_CONN_COMPLETE event packets with
-status 0 are sent for the same HCI connection. This causes us to
-register the device more than once which corrupts the kset list.
+Some time ago, I reported a calltrace issue
+"did not find a suitable aggregator", please see[1].
+After a period of analysis and reproduction, I find
+that this problem is caused by concurrency.
 
-As this is forbidden behavior, we add a check for whether we're
-trying to process the same HCI_EV_SYNC_CONN_COMPLETE event multiple
-times for one connection. If that's the case, the event is invalid, so
-we report an error that the device is misbehaving, and ignore the
-packet.
+Before the problem occurs, the bond structure is like follows:
 
-Link: https://syzkaller.appspot.com/bug?extid=66264bf2fd0476be7e6c [1]
-Reported-by: syzbot+66264bf2fd0476be7e6c@syzkaller.appspotmail.com
-Tested-by: syzbot+66264bf2fd0476be7e6c@syzkaller.appspotmail.com
-Signed-off-by: Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+bond0 - slaver0(eth0) - agg0.lag_ports -> port0 - port1
+                      \
+                        port0
+      \
+        slaver1(eth1) - agg1.lag_ports -> NULL
+                      \
+                        port1
+
+If we run 'ifenslave bond0 -d eth1', the process is like below:
+
+excuting __bond_release_one()
+|
+bond_upper_dev_unlink()[step1]
+|                       |                       |
+|                       |                       bond_3ad_lacpdu_recv()
+|                       |                       ->bond_3ad_rx_indication()
+|                       |                       spin_lock_bh()
+|                       |                       ->ad_rx_machine()
+|                       |                       ->__record_pdu()[step2]
+|                       |                       spin_unlock_bh()
+|                       |                       |
+|                       bond_3ad_state_machine_handler()
+|                       spin_lock_bh()
+|                       ->ad_port_selection_logic()
+|                       ->try to find free aggregator[step3]
+|                       ->try to find suitable aggregator[step4]
+|                       ->did not find a suitable aggregator[step5]
+|                       spin_unlock_bh()
+|                       |
+|                       |
+bond_3ad_unbind_slave() |
+spin_lock_bh()
+spin_unlock_bh()
+
+step1: already removed slaver1(eth1) from list, but port1 remains
+step2: receive a lacpdu and update port0
+step3: port0 will be removed from agg0.lag_ports. The struct is
+       "agg0.lag_ports -> port1" now, and agg0 is not free. At the
+	   same time, slaver1/agg1 has been removed from the list by step1.
+	   So we can't find a free aggregator now.
+step4: can't find suitable aggregator because of step2
+step5: cause a calltrace since port->aggregator is NULL
+
+To solve this concurrency problem, put bond_upper_dev_unlink()
+after bond_3ad_unbind_slave(). In this way, we can invalid the port
+first and skip this port in bond_3ad_state_machine_handler(). This
+eliminates the situation that the slaver has been removed from the
+list but the port is still valid.
+
+[1]https://lore.kernel.org/netdev/10374.1611947473@famine/
+
+Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
+Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_event.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ drivers/net/bonding/bond_main.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index e8e7f108b016..82e42d8e2ea0 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -4202,6 +4202,21 @@ static void hci_sync_conn_complete_evt(struct hci_dev *hdev,
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index e21643377162..1949f631e1bc 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -1926,7 +1926,6 @@ static int __bond_release_one(struct net_device *bond_dev,
+ 	/* recompute stats just before removing the slave */
+ 	bond_get_stats(bond->dev, &bond->bond_stats);
  
- 	switch (ev->status) {
- 	case 0x00:
-+		/* The synchronous connection complete event should only be
-+		 * sent once per new connection. Receiving a successful
-+		 * complete event when the connection status is already
-+		 * BT_CONNECTED means that the device is misbehaving and sent
-+		 * multiple complete event packets for the same new connection.
-+		 *
-+		 * Registering the device more than once can corrupt kernel
-+		 * memory, hence upon detecting this invalid event, we report
-+		 * an error and ignore the packet.
-+		 */
-+		if (conn->state == BT_CONNECTED) {
-+			bt_dev_err(hdev, "Ignoring connect complete event for existing connection");
-+			goto unlock;
-+		}
+-	bond_upper_dev_unlink(bond, slave);
+ 	/* unregister rx_handler early so bond_handle_frame wouldn't be called
+ 	 * for this slave anymore.
+ 	 */
+@@ -1935,6 +1934,8 @@ static int __bond_release_one(struct net_device *bond_dev,
+ 	if (BOND_MODE(bond) == BOND_MODE_8023AD)
+ 		bond_3ad_unbind_slave(slave);
+ 
++	bond_upper_dev_unlink(bond, slave);
 +
- 		conn->handle = __le16_to_cpu(ev->handle);
- 		conn->state  = BT_CONNECTED;
- 		conn->type   = ev->link_type;
+ 	if (bond_mode_can_use_xmit_hash(bond))
+ 		bond_update_slave_arr(bond, slave);
+ 
 -- 
 2.30.2
 
