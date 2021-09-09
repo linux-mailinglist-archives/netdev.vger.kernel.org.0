@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A38CD404C52
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 13:55:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B42F404C62
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 13:55:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244862AbhIIL4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 07:56:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34380 "EHLO mail.kernel.org"
+        id S238636AbhIIL4s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 07:56:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34484 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244216AbhIILyb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Sep 2021 07:54:31 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 51239613CE;
-        Thu,  9 Sep 2021 11:44:49 +0000 (UTC)
+        id S244421AbhIILyh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Sep 2021 07:54:37 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id EBEC96137A;
+        Thu,  9 Sep 2021 11:44:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631187890;
-        bh=8c/eQqw1Q4DZpbkkKK58w3TPYSvDluXMkTalTg9CsI4=;
+        s=k20201202; t=1631187893;
+        bh=EBbZEKk1Q8+0/FK1lc9ndXo46blG1XTr/+ky+ipJG2Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eGMHqfxQgOzV5bHJilCBOFViuX9OCsdxU5B8VkwO6B1O94cjHi5PNphogCRHv5y0f
-         gN9BnGb1jo6jZeh4mCXUSP5VuP9ZYfvhCJMd3S4yNhyWHwb6Fph/wT6EzmEw2tGH0v
-         ulUKTMQxDa72ImeGjQ9XHRNG16seG8jt6/9EGEXFx3kCch1onv3gZ9erLy50ndHGpo
-         dFVZrLwWfbpcNUnObNp3DkvusfPjzVBqYyrLdA97C7qzok5jcwPLZNVsrrVidy5GEh
-         UpOM76sBA/dYzZjdSa+dChm+T7KbRjFAjLHDSxRlreSLZHjhUzWnutsj8jXJolmtpq
-         OL71cKulxqrJw==
+        b=hPR73eX7WnWDPPVwWZaRRaTyhMek6hxoM6XbrK0/HbcuV0r4UEkjPkhpovdeK7FD5
+         rUX3wRGMx/5jICMci1tEzM3N1zaizKHPC4+qavoPrQ2FYhppBHeBtcX8mtCfNrmvp8
+         7R6YAuSZbJ6cal7iH+S9NurZ9ySybBBoiPUs/Z45tviB72wXLwW1ABTt/+1a8VtJuJ
+         PYI1hdAJCTwP8gM8yzuK+MoWWwlNqiOonsdB0N27ZtM4VXVAe5lE+AZDu5DL4L30+1
+         dNOYoWml6AUd8Axyk8gRzhJwBxZ3NJee81IRs8z+bdY+jULWiFZF1lazk0GO+P3BF9
+         uLH/gPnIU59Wg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andrii@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.14 171/252] selftests/bpf: Fix flaky send_signal test
-Date:   Thu,  9 Sep 2021 07:39:45 -0400
-Message-Id: <20210909114106.141462-171-sashal@kernel.org>
+Cc:     Bongsu Jeon <bongsu.jeon@samsung.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.14 174/252] selftests: nci: Fix the code for next nlattr offset
+Date:   Thu,  9 Sep 2021 07:39:48 -0400
+Message-Id: <20210909114106.141462-174-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909114106.141462-1-sashal@kernel.org>
 References: <20210909114106.141462-1-sashal@kernel.org>
@@ -43,83 +43,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yonghong Song <yhs@fb.com>
+From: Bongsu Jeon <bongsu.jeon@samsung.com>
 
-[ Upstream commit b16ac5bf732a5e23d164cf908ec7742d6a6120d3 ]
+[ Upstream commit 78a7b2a8a0fa31f63ac16ac13601db6ed8259dfc ]
 
-libbpf CI has reported send_signal test is flaky although
-I am not able to reproduce it in my local environment.
-But I am able to reproduce with on-demand libbpf CI ([1]).
+nlattr could have a padding for 4 bytes alignment. So next nla's offset
+should be calculated with a padding.
 
-Through code analysis, the following is possible reason.
-The failed subtest runs bpf program in softirq environment.
-Since bpf_send_signal() only sends to a fork of "test_progs"
-process. If the underlying current task is
-not "test_progs", bpf_send_signal() will not be triggered
-and the subtest will fail.
-
-To reduce the chances where the underlying process is not
-the intended one, this patch boosted scheduling priority to
--20 (highest allowed by setpriority() call). And I did
-10 runs with on-demand libbpf CI with this patch and I
-didn't observe any failures.
-
- [1] https://github.com/libbpf/libbpf/actions/workflows/ondemand.yml
-
-Signed-off-by: Yonghong Song <yhs@fb.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/bpf/20210817190923.3186725-1-yhs@fb.com
+Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../selftests/bpf/prog_tests/send_signal.c       | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ tools/testing/selftests/nci/nci_dev.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/send_signal.c b/tools/testing/selftests/bpf/prog_tests/send_signal.c
-index 023cc532992d..839f7ddaec16 100644
---- a/tools/testing/selftests/bpf/prog_tests/send_signal.c
-+++ b/tools/testing/selftests/bpf/prog_tests/send_signal.c
-@@ -1,5 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <test_progs.h>
-+#include <sys/time.h>
-+#include <sys/resource.h>
- #include "test_send_signal_kern.skel.h"
+diff --git a/tools/testing/selftests/nci/nci_dev.c b/tools/testing/selftests/nci/nci_dev.c
+index 57b505cb1561..9687100f15ea 100644
+--- a/tools/testing/selftests/nci/nci_dev.c
++++ b/tools/testing/selftests/nci/nci_dev.c
+@@ -113,8 +113,8 @@ static int send_cmd_mt_nla(int sd, __u16 nlmsg_type, __u32 nlmsg_pid,
+ 		if (nla_len > 0)
+ 			memcpy(NLA_DATA(na), nla_data[cnt], nla_len[cnt]);
  
- int sigusr1_received = 0;
-@@ -41,12 +43,23 @@ static void test_send_signal_common(struct perf_event_attr *attr,
+-		msg.n.nlmsg_len += NLMSG_ALIGN(na->nla_len);
+-		prv_len = na->nla_len;
++		prv_len = NLA_ALIGN(nla_len[cnt]) + NLA_HDRLEN;
++		msg.n.nlmsg_len += prv_len;
  	}
  
- 	if (pid == 0) {
-+		int old_prio;
-+
- 		/* install signal handler and notify parent */
- 		signal(SIGUSR1, sigusr1_handler);
- 
- 		close(pipe_c2p[0]); /* close read */
- 		close(pipe_p2c[1]); /* close write */
- 
-+		/* boost with a high priority so we got a higher chance
-+		 * that if an interrupt happens, the underlying task
-+		 * is this process.
-+		 */
-+		errno = 0;
-+		old_prio = getpriority(PRIO_PROCESS, 0);
-+		ASSERT_OK(errno, "getpriority");
-+		ASSERT_OK(setpriority(PRIO_PROCESS, 0, -20), "setpriority");
-+
- 		/* notify parent signal handler is installed */
- 		CHECK(write(pipe_c2p[1], buf, 1) != 1, "pipe_write", "err %d\n", -errno);
- 
-@@ -62,6 +75,9 @@ static void test_send_signal_common(struct perf_event_attr *attr,
- 		/* wait for parent notification and exit */
- 		CHECK(read(pipe_p2c[0], buf, 1) != 1, "pipe_read", "err %d\n", -errno);
- 
-+		/* restore the old priority */
-+		ASSERT_OK(setpriority(PRIO_PROCESS, 0, old_prio), "setpriority");
-+
- 		close(pipe_c2p[1]);
- 		close(pipe_p2c[0]);
- 		exit(0);
+ 	buf = (char *)&msg;
 -- 
 2.30.2
 
