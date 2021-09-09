@@ -2,39 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D931405095
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:41:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8EEC405094
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:41:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353100AbhIIM2n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 08:28:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34532 "EHLO mail.kernel.org"
+        id S1344014AbhIIM2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 08:28:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34536 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1346005AbhIIMYO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1347245AbhIIMYO (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 9 Sep 2021 08:24:14 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id ACDF361371;
-        Thu,  9 Sep 2021 11:51:15 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A357361B04;
+        Thu,  9 Sep 2021 11:51:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631188276;
-        bh=nMfTGbcyNEWLGDa5SeipsmZJGiZsvo5JM3wuNC1ZhG0=;
+        s=k20201202; t=1631188285;
+        bh=syssOq1j2yQRRM8P5ht0TXo62YuE27FA3gWG9IInyWU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p/z/zrKC7Sh7FEOjyLtuE2REWgeqzpc1psx+D4lMM0SfB/Lpk6DR+HTghPx1KFAWm
-         FTA9REUSecl3tfNr0Ol+9D+rBlA35jsGaCMxUTradaNU5b6xgUhdMqoWr47UMlQQhv
-         fmFr9Fx/lFYQlw5UA93Ono+kygAaQ5HoZUAaF5gwU3O8abueP5tNwLnWNr6JEP3kAe
-         mZzFPWxS8iUcner1M12fXaxor7z4cYY8hLBVQbELLgc3buLvXpHOjr5TmhtDYMuw25
-         nvPobgd54rFKYAfNxzTS+AGJPMuiWEuqZbOSIrKR+UeZLcHja7nN85AdfNwH9mTsNj
-         cjY10opI61aYQ==
+        b=l8rpGf6xCASPi4QX4QBclXu5XT+wU2rFZVemRsYcv//z7qHRaWk/MWCl5HMs2T2Jn
+         0tw+m6mXgVwT2ssN6X7uUl4i4AjHSDHXNlXVl8/yJuqgWAuhZQ4ir712yPGhsTfPdS
+         y/Og+I1peRbun9zawCYW68VWAgxjetWbhEHcvgrdpieNIi+h6HCJV8xmiNk26OER5G
+         TLSosy4QYHzX24em2DWh2HwFVHbuIU20cwZfxqqc1O7jTpcPGpcI0xceaAD8Ac8ryE
+         W9mB3yTY4N76WM9Ru5hLGrmogZLkVOWBNpf29hdVrSVYKtNQY5oNIPsBOoCb4aN0Hy
+         dUr4R1Jv52Asw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Guojia Liao <liaoguojia@huawei.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.13 219/219] net: hns3: clean up a type mismatch warning
-Date:   Thu,  9 Sep 2021 07:46:35 -0400
-Message-Id: <20210909114635.143983-219-sashal@kernel.org>
+Cc:     Martynas Pumputis <m@lambda.lt>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 005/176] libbpf: Fix reuse of pinned map on older kernel
+Date:   Thu,  9 Sep 2021 07:48:27 -0400
+Message-Id: <20210909115118.146181-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210909114635.143983-1-sashal@kernel.org>
-References: <20210909114635.143983-1-sashal@kernel.org>
+In-Reply-To: <20210909115118.146181-1-sashal@kernel.org>
+References: <20210909115118.146181-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -43,43 +44,117 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Guojia Liao <liaoguojia@huawei.com>
+From: Martynas Pumputis <m@lambda.lt>
 
-[ Upstream commit e79c0e324b011b0288cd411a5b53870a7730f163 ]
+[ Upstream commit 97eb31384af943d6b97eb5947262cee4ef25cb87 ]
 
-abs() returns signed long, which could not convert the type
-as unsigned, and it may cause a mismatch type warning from
-static tools. To fix it, this patch uses an variable to save
-the abs()'s result and does a explicit conversion.
+When loading a BPF program with a pinned map, the loader checks whether
+the pinned map can be reused, i.e. their properties match. To derive
+such of the pinned map, the loader invokes BPF_OBJ_GET_INFO_BY_FD and
+then does the comparison.
 
-Signed-off-by: Guojia Liao <liaoguojia@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Unfortunately, on < 4.12 kernels the BPF_OBJ_GET_INFO_BY_FD is not
+available, so loading the program fails with the following error:
+
+	libbpf: failed to get map info for map FD 5: Invalid argument
+	libbpf: couldn't reuse pinned map at
+		'/sys/fs/bpf/tc/globals/cilium_call_policy': parameter
+		mismatch"
+	libbpf: map 'cilium_call_policy': error reusing pinned map
+	libbpf: map 'cilium_call_policy': failed to create:
+		Invalid argument(-22)
+	libbpf: failed to load object 'bpf_overlay.o'
+
+To fix this, fallback to derivation of the map properties via
+/proc/$PID/fdinfo/$MAP_FD if BPF_OBJ_GET_INFO_BY_FD fails with EINVAL,
+which can be used as an indicator that the kernel doesn't support
+the latter.
+
+Signed-off-by: Martynas Pumputis <m@lambda.lt>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Link: https://lore.kernel.org/bpf/20210712125552.58705-1-m@lambda.lt
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ tools/lib/bpf/libbpf.c | 48 +++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 45 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-index 38b601031db4..95343f6d15e1 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-@@ -10,7 +10,14 @@
- 
- static u16 hclge_errno_to_resp(int errno)
- {
--	return abs(errno);
-+	int resp = abs(errno);
-+
-+	/* The status for pf to vf msg cmd is u16, constrainted by HW.
-+	 * We need to keep the same type with it.
-+	 * The intput errno is the stander error code, it's safely to
-+	 * use a u16 to store the abs(errno).
-+	 */
-+	return (u16)resp;
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 95eef7ebdac5..a4e61dd5d8b3 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -3613,6 +3613,42 @@ static int bpf_map_find_btf_info(struct bpf_object *obj, struct bpf_map *map)
+ 	return 0;
  }
  
- /* hclge_gen_resp_to_vf: used to generate a synchronous response to VF when PF
++static int bpf_get_map_info_from_fdinfo(int fd, struct bpf_map_info *info)
++{
++	char file[PATH_MAX], buff[4096];
++	FILE *fp;
++	__u32 val;
++	int err;
++
++	snprintf(file, sizeof(file), "/proc/%d/fdinfo/%d", getpid(), fd);
++	memset(info, 0, sizeof(*info));
++
++	fp = fopen(file, "r");
++	if (!fp) {
++		err = -errno;
++		pr_warn("failed to open %s: %d. No procfs support?\n", file,
++			err);
++		return err;
++	}
++
++	while (fgets(buff, sizeof(buff), fp)) {
++		if (sscanf(buff, "map_type:\t%u", &val) == 1)
++			info->type = val;
++		else if (sscanf(buff, "key_size:\t%u", &val) == 1)
++			info->key_size = val;
++		else if (sscanf(buff, "value_size:\t%u", &val) == 1)
++			info->value_size = val;
++		else if (sscanf(buff, "max_entries:\t%u", &val) == 1)
++			info->max_entries = val;
++		else if (sscanf(buff, "map_flags:\t%i", &val) == 1)
++			info->map_flags = val;
++	}
++
++	fclose(fp);
++
++	return 0;
++}
++
+ int bpf_map__reuse_fd(struct bpf_map *map, int fd)
+ {
+ 	struct bpf_map_info info = {};
+@@ -3621,6 +3657,8 @@ int bpf_map__reuse_fd(struct bpf_map *map, int fd)
+ 	char *new_name;
+ 
+ 	err = bpf_obj_get_info_by_fd(fd, &info, &len);
++	if (err && errno == EINVAL)
++		err = bpf_get_map_info_from_fdinfo(fd, &info);
+ 	if (err)
+ 		return err;
+ 
+@@ -4032,12 +4070,16 @@ static bool map_is_reuse_compat(const struct bpf_map *map, int map_fd)
+ 	struct bpf_map_info map_info = {};
+ 	char msg[STRERR_BUFSIZE];
+ 	__u32 map_info_len;
++	int err;
+ 
+ 	map_info_len = sizeof(map_info);
+ 
+-	if (bpf_obj_get_info_by_fd(map_fd, &map_info, &map_info_len)) {
+-		pr_warn("failed to get map info for map FD %d: %s\n",
+-			map_fd, libbpf_strerror_r(errno, msg, sizeof(msg)));
++	err = bpf_obj_get_info_by_fd(map_fd, &map_info, &map_info_len);
++	if (err && errno == EINVAL)
++		err = bpf_get_map_info_from_fdinfo(map_fd, &map_info);
++	if (err) {
++		pr_warn("failed to get map info for map FD %d: %s\n", map_fd,
++			libbpf_strerror_r(errno, msg, sizeof(msg)));
+ 		return false;
+ 	}
+ 
 -- 
 2.30.2
 
