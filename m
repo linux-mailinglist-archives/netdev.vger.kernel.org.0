@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4976A404E83
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:18:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50AF4404E85
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:18:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348660AbhIIMMP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 08:12:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47690 "EHLO mail.kernel.org"
+        id S1346632AbhIIMMS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 08:12:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47664 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1350591AbhIIMIc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1350589AbhIIMIc (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 9 Sep 2021 08:08:32 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9123D6187F;
-        Thu,  9 Sep 2021 11:47:55 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B4C3D61989;
+        Thu,  9 Sep 2021 11:47:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631188076;
-        bh=i4ErxyzzLgLnLnJ8aj/xumvmlyPlB/kL5/uWAvzENUk=;
+        s=k20201202; t=1631188077;
+        bh=FIgcBaf1x/mj2ueC9NL0wLHh1TCLgr9fKcH5mALS70Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a+7dqfay8i5zqpHVFadgF+GqBct7yhmcC6ptcXsusbguUQp/TkxdI3fFbE9UEvECy
-         vis4fKaR9qSLRcHcwpf2yM6Ov5L0UsMx3iC8GmMFbNfJQ+tepTn2RMNaSE/a6kexJg
-         29mmZqGNpnqtx+O8KA0ehOFQW25359TnDUGlKdW7I3hUeyK3RvLR7scD6cgsa3/nDy
-         bYjuppoqMy6oRHCab5bir7eQ1Bdr2mOirWyebgAp7ti1Mw0VXT4fyehCGos6N1d2i1
-         SKpLmbNBzhpiIaRH+fdKw1kDKRJd5m624uvYvr3lcVPa6kaZSN5Ee/tjV+/1L56a2F
-         AvPRxbReLrN1w==
+        b=ZNTAqOiBuJgDfD85VwOlwdgSuGXygyzH49OP2oPM77Nk9rE0eATGeblONOlx+g2sN
+         YEITgDTvWoBWU2Bxags773Ok0aW+tOaVk3mTyjWlm69wUj3tQ6TbyZ1rAIbDf9P/fj
+         WJF78Vp179qH+HJXo53/1jU7NArvIQ8ZqC/L4X9OU7zUpFZY5osVCmL9s3wQy36Hxn
+         89nL8mfIBWAsWIaQFJMCNLu/gmBgPQSFxr9XuqE2ms36fB6eeciby7Oe7TaNCOgHAN
+         YS0AqgqiOuq2q7ELHrTPX7ohVrWBprmGb9q8dUThlvLS6YDJy/AXGnB73xAgfViFdE
+         ke/Z7kywvtnoQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alex Elder <elder@linaro.org>,
+Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        kernel test robot <lkp@intel.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.13 062/219] net: ipa: fix ipa_cmd_table_valid()
-Date:   Thu,  9 Sep 2021 07:43:58 -0400
-Message-Id: <20210909114635.143983-62-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.13 063/219] ipv4: ip_output.c: Fix out-of-bounds warning in ip_copy_addrs()
+Date:   Thu,  9 Sep 2021 07:43:59 -0400
+Message-Id: <20210909114635.143983-63-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909114635.143983-1-sashal@kernel.org>
 References: <20210909114635.143983-1-sashal@kernel.org>
@@ -42,160 +43,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alex Elder <elder@linaro.org>
+From: "Gustavo A. R. Silva" <gustavoars@kernel.org>
 
-[ Upstream commit f2c1dac0abcfa93e8b20065b8d6b4b2b6f9990aa ]
+[ Upstream commit 6321c7acb82872ef6576c520b0e178eaad3a25c0 ]
 
-Stop supporting different sizes for hashed and non-hashed filter or
-route tables.  Add BUILD_BUG_ON() calls to verify the sizes of the
-fields in the filter/route table initialization immediate command
-are the same.
+Fix the following out-of-bounds warning:
 
-Add a check to ipa_cmd_table_valid() to ensure the size of the
-memory region being checked fits within the immediate command field
-that must hold it.
+    In function 'ip_copy_addrs',
+        inlined from '__ip_queue_xmit' at net/ipv4/ip_output.c:517:2:
+net/ipv4/ip_output.c:449:2: warning: 'memcpy' offset [40, 43] from the object at 'fl' is out of the bounds of referenced subobject 'saddr' with type 'unsigned int' at offset 36 [-Warray-bounds]
+      449 |  memcpy(&iph->saddr, &fl4->saddr,
+          |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      450 |         sizeof(fl4->saddr) + sizeof(fl4->daddr));
+          |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Remove two Boolean parameters used only for error reporting.  This
-actually fixes a bug that would only show up if IPA_VALIDATE were
-defined.  Define ipa_cmd_table_valid() unconditionally (no longer
-dependent on IPA_VALIDATE).
+The problem is that the original code is trying to copy data into a
+couple of struct members adjacent to each other in a single call to
+memcpy(). This causes a legitimate compiler warning because memcpy()
+overruns the length of &iph->saddr and &fl4->saddr. As these are just
+a couple of struct members, fix this by using direct assignments,
+instead of memcpy().
 
-Signed-off-by: Alex Elder <elder@linaro.org>
+This helps with the ongoing efforts to globally enable -Warray-bounds
+and get us closer to being able to tighten the FORTIFY_SOURCE routines
+on memcpy().
+
+Link: https://github.com/KSPP/linux/issues/109
+Reported-by: kernel test robot <lkp@intel.com>
+Link: https://lore.kernel.org/lkml/d5ae2e65-1f18-2577-246f-bada7eee6ccd@intel.com/
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ipa/ipa_cmd.c   | 38 ++++++++++++++++++++++++-------------
- drivers/net/ipa/ipa_cmd.h   | 15 +++------------
- drivers/net/ipa/ipa_table.c |  2 +-
- 3 files changed, 29 insertions(+), 26 deletions(-)
+ net/ipv4/ip_output.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ipa/ipa_cmd.c b/drivers/net/ipa/ipa_cmd.c
-index 525cdf28d9ea..1e43748dcb40 100644
---- a/drivers/net/ipa/ipa_cmd.c
-+++ b/drivers/net/ipa/ipa_cmd.c
-@@ -159,35 +159,45 @@ static void ipa_cmd_validate_build(void)
- 	BUILD_BUG_ON(TABLE_SIZE > field_max(IP_FLTRT_FLAGS_NHASH_SIZE_FMASK));
- #undef TABLE_COUNT_MAX
- #undef TABLE_SIZE
--}
- 
--#ifdef IPA_VALIDATE
-+	/* Hashed and non-hashed fields are assumed to be the same size */
-+	BUILD_BUG_ON(field_max(IP_FLTRT_FLAGS_HASH_SIZE_FMASK) !=
-+		     field_max(IP_FLTRT_FLAGS_NHASH_SIZE_FMASK));
-+	BUILD_BUG_ON(field_max(IP_FLTRT_FLAGS_HASH_ADDR_FMASK) !=
-+		     field_max(IP_FLTRT_FLAGS_NHASH_ADDR_FMASK));
-+}
- 
- /* Validate a memory region holding a table */
--bool ipa_cmd_table_valid(struct ipa *ipa, const struct ipa_mem *mem,
--			 bool route, bool ipv6, bool hashed)
-+bool ipa_cmd_table_valid(struct ipa *ipa, const struct ipa_mem *mem, bool route)
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index 8d8a8da3ae7e..a202dcec0dc2 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -446,8 +446,9 @@ static void ip_copy_addrs(struct iphdr *iph, const struct flowi4 *fl4)
  {
-+	u32 offset_max = field_max(IP_FLTRT_FLAGS_NHASH_ADDR_FMASK);
-+	u32 size_max = field_max(IP_FLTRT_FLAGS_NHASH_SIZE_FMASK);
-+	const char *table = route ? "route" : "filter";
- 	struct device *dev = &ipa->pdev->dev;
--	u32 offset_max;
- 
--	offset_max = hashed ? field_max(IP_FLTRT_FLAGS_HASH_ADDR_FMASK)
--			    : field_max(IP_FLTRT_FLAGS_NHASH_ADDR_FMASK);
-+	/* Size must fit in the immediate command field that holds it */
-+	if (mem->size > size_max) {
-+		dev_err(dev, "%s table region size too large\n", table);
-+		dev_err(dev, "    (0x%04x > 0x%04x)\n",
-+			mem->size, size_max);
+ 	BUILD_BUG_ON(offsetof(typeof(*fl4), daddr) !=
+ 		     offsetof(typeof(*fl4), saddr) + sizeof(fl4->saddr));
+-	memcpy(&iph->saddr, &fl4->saddr,
+-	       sizeof(fl4->saddr) + sizeof(fl4->daddr));
 +
-+		return false;
-+	}
-+
-+	/* Offset must fit in the immediate command field that holds it */
- 	if (mem->offset > offset_max ||
- 	    ipa->mem_offset > offset_max - mem->offset) {
--		dev_err(dev, "IPv%c %s%s table region offset too large\n",
--			ipv6 ? '6' : '4', hashed ? "hashed " : "",
--			route ? "route" : "filter");
-+		dev_err(dev, "%s table region offset too large\n", table);
- 		dev_err(dev, "    (0x%04x + 0x%04x > 0x%04x)\n",
- 			ipa->mem_offset, mem->offset, offset_max);
- 
- 		return false;
- 	}
- 
-+	/* Entire memory range must fit within IPA-local memory */
- 	if (mem->offset > ipa->mem_size ||
- 	    mem->size > ipa->mem_size - mem->offset) {
--		dev_err(dev, "IPv%c %s%s table region out of range\n",
--			ipv6 ? '6' : '4', hashed ? "hashed " : "",
--			route ? "route" : "filter");
-+		dev_err(dev, "%s table region out of range\n", table);
- 		dev_err(dev, "    (0x%04x + 0x%04x > 0x%04x)\n",
- 			mem->offset, mem->size, ipa->mem_size);
- 
-@@ -197,6 +207,8 @@ bool ipa_cmd_table_valid(struct ipa *ipa, const struct ipa_mem *mem,
- 	return true;
++	iph->saddr = fl4->saddr;
++	iph->daddr = fl4->daddr;
  }
  
-+#ifdef IPA_VALIDATE
-+
- /* Validate the memory region that holds headers */
- static bool ipa_cmd_header_valid(struct ipa *ipa)
- {
-diff --git a/drivers/net/ipa/ipa_cmd.h b/drivers/net/ipa/ipa_cmd.h
-index b99262281f41..ea723419c826 100644
---- a/drivers/net/ipa/ipa_cmd.h
-+++ b/drivers/net/ipa/ipa_cmd.h
-@@ -57,20 +57,18 @@ struct ipa_cmd_info {
- 	enum dma_data_direction direction;
- };
- 
--#ifdef IPA_VALIDATE
--
- /**
-  * ipa_cmd_table_valid() - Validate a memory region holding a table
-  * @ipa:	- IPA pointer
-  * @mem:	- IPA memory region descriptor
-  * @route:	- Whether the region holds a route or filter table
-- * @ipv6:	- Whether the table is for IPv6 or IPv4
-- * @hashed:	- Whether the table is hashed or non-hashed
-  *
-  * Return:	true if region is valid, false otherwise
-  */
- bool ipa_cmd_table_valid(struct ipa *ipa, const struct ipa_mem *mem,
--			    bool route, bool ipv6, bool hashed);
-+			    bool route);
-+
-+#ifdef IPA_VALIDATE
- 
- /**
-  * ipa_cmd_data_valid() - Validate command-realted configuration is valid
-@@ -82,13 +80,6 @@ bool ipa_cmd_data_valid(struct ipa *ipa);
- 
- #else /* !IPA_VALIDATE */
- 
--static inline bool ipa_cmd_table_valid(struct ipa *ipa,
--				       const struct ipa_mem *mem, bool route,
--				       bool ipv6, bool hashed)
--{
--	return true;
--}
--
- static inline bool ipa_cmd_data_valid(struct ipa *ipa)
- {
- 	return true;
-diff --git a/drivers/net/ipa/ipa_table.c b/drivers/net/ipa/ipa_table.c
-index 3168d72f4245..618a84cf669a 100644
---- a/drivers/net/ipa/ipa_table.c
-+++ b/drivers/net/ipa/ipa_table.c
-@@ -174,7 +174,7 @@ ipa_table_valid_one(struct ipa *ipa, bool route, bool ipv6, bool hashed)
- 		size = (1 + IPA_FILTER_COUNT_MAX) * sizeof(__le64);
- 	}
- 
--	if (!ipa_cmd_table_valid(ipa, mem, route, ipv6, hashed))
-+	if (!ipa_cmd_table_valid(ipa, mem, route))
- 		return false;
- 
- 	/* mem->size >= size is sufficient, but we'll demand more */
+ /* Note: skb->sk can be different from sk, in case of tunnels */
 -- 
 2.30.2
 
