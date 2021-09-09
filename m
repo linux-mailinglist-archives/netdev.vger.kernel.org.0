@@ -2,112 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D2C540468E
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 09:53:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74A0B404699
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 09:57:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229965AbhIIHyV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 03:54:21 -0400
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:26607 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229789AbhIIHyU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 03:54:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1631173991; x=1662709991;
-  h=subject:to:references:from:message-id:date:mime-version:
-   in-reply-to:content-transfer-encoding;
-  bh=uFD8a+128+tOgNMGAqiJQckk8rCXeARK5pmVYW+YIS0=;
-  b=q0XvIj9rko+W/F+4YTZDlnwE+qNSdrTBJt0MM+IRPB+H6Z6vwxyCqlLw
-   FtZtJcw3yIBiJRsrmY2ifRM4IuGS8HHxVqF9DuVZtu1z0Dj54DcRTX0Xn
-   E/k9i5n7n8RizRm1Fp8Wlnc84tNqgTx4gEdVl6aI2mkhUxbBsF3DJw3Ac
-   +Bj71oMQkaMVBgFnEBj7AZ0SXkX4y7tO4heTPqUgoccSLC3mE8fHCZ5sw
-   bgfY3hphW9E8NRjmISA5pXOKl6Da5d0OrV5z/XxKqtfgNi0tc77KZB+G8
-   Qc+JGyZd+3uJOuyqjFrWNozI2G5EX3Ug4V09xNBd+P18A08pQVxzlCy6N
-   w==;
-IronPort-SDR: jcje1fa0ZdjXpeep9uu4mFXJPOZCdmyCIv1qk92Q+GY1PlmZpXPA5UFj8UI8RZA+Iw/8ecvVJm
- XRAGHK7f/ucCVQLQIrYQBGVJz9gAK4T/go9wltMRI0QfcaFnCvW+M1hsUd4q1qgG5vq//BxafU
- HybUwaQ5c8/gJMNh+5M72ymIKLRxx5GZ5GWtTZ54JNzaw/vM1O/pECS/l36UBp4RIS0cmqwk62
- P1HExpzh2rDIvd9x8RL8zcCw6H9eWb95KAuWwImigxYSjJ+M409MrCLDqto79o+HIPjX+sQHiz
- 0PjJ+53ZV/D3boakTxelxfrF
-X-IronPort-AV: E=Sophos;i="5.85,279,1624345200"; 
-   d="scan'208";a="143440117"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Sep 2021 00:53:09 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Thu, 9 Sep 2021 00:53:09 -0700
-Received: from [10.159.245.112] (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2176.14 via Frontend
- Transport; Thu, 9 Sep 2021 00:53:08 -0700
-Subject: Re: [PATCH v2] net: macb: fix use after free on rmmod
-To:     Tong Zhang <ztong0001@gmail.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        id S230073AbhIIH6v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 03:58:51 -0400
+Received: from www62.your-server.de ([213.133.104.62]:59298 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229609AbhIIH6r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 03:58:47 -0400
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mOEvf-0001T3-P1; Thu, 09 Sep 2021 09:57:03 +0200
+Received: from [85.5.47.65] (helo=linux.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mOEvf-000H3n-3x; Thu, 09 Sep 2021 09:57:03 +0200
+Subject: Re: [PATCH bpf-next] bpf: Change value of MAX_TAIL_CALL_CNT from 32
+ to 33
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Tiezhu Yang <yangtiezhu@loongson.cn>
+Cc:     Shubham Bansal <illusionist.neo@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Paul Burton <paulburton@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        naveen.n.rao@linux.ibm.com, Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Luke Nelson <luke.r.nels@gmail.com>,
+        Xi Wang <xi.wang@gmail.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <48b53487-a708-ec79-a993-3448f4ca6e6d@microchip.com>
- <20210908190232.573178-1-ztong0001@gmail.com>
-From:   Nicolas Ferre <nicolas.ferre@microchip.com>
-Organization: microchip
-Message-ID: <a0f3f83d-0c83-5521-a608-026423e1c69e@microchip.com>
-Date:   Thu, 9 Sep 2021 09:53:06 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        Johan Almbladh <johan.almbladh@anyfinetworks.com>,
+        Paul Chaignon <paul@cilium.io>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-riscv@lists.infradead.org, sparclinux@vger.kernel.org
+References: <1631158350-3661-1-git-send-email-yangtiezhu@loongson.cn>
+ <CAEf4BzZqoVZ7keWCLmC=A5oPPwj_xMNRWDkJUcjWn9yE_z1gSg@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <e9063116-617a-5916-bc6f-a1e917776bd7@iogearbox.net>
+Date:   Thu, 9 Sep 2021 09:57:02 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20210908190232.573178-1-ztong0001@gmail.com>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+In-Reply-To: <CAEf4BzZqoVZ7keWCLmC=A5oPPwj_xMNRWDkJUcjWn9yE_z1gSg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.2/26288/Wed Sep  8 10:22:21 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08/09/2021 at 21:02, Tong Zhang wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+On 9/9/21 7:50 AM, Andrii Nakryiko wrote:
+> On Wed, Sep 8, 2021 at 8:33 PM Tiezhu Yang <yangtiezhu@loongson.cn> wrote:
+>>
+>> In the current code, the actual max tail call count is 33 which is greater
+>> than MAX_TAIL_CALL_CNT (defined as 32), the actual limit is not consistent
+>> with the meaning of MAX_TAIL_CALL_CNT, there is some confusion and need to
+>> spend some time to think the reason at the first glance.
 > 
-> plat_dev->dev->platform_data is released by platform_device_unregister(),
-> use of pclk and hclk is a use-after-free. Since device unregister won't
-> need a clk device we adjust the function call sequence to fix this issue.
+> think *about* the reason
 > 
-> [   31.261225] BUG: KASAN: use-after-free in macb_remove+0x77/0xc6 [macb_pci]
-> [   31.275563] Freed by task 306:
-> [   30.276782]  platform_device_release+0x25/0x80
+>> We can see the historical evolution from commit 04fd61ab36ec ("bpf: allow
+>> bpf programs to tail-call other bpf programs") and commit f9dabe016b63
+>> ("bpf: Undo off-by-one in interpreter tail call count limit").
+>>
+>> In order to avoid changing existing behavior, the actual limit is 33 now,
+>> this is resonable.
 > 
-> Suggested-by: Nicolas Ferre <Nicolas.Ferre@microchip.com>
-> Signed-off-by: Tong Zhang <ztong0001@gmail.com>
+> typo: reasonable
+> 
+>> After commit 874be05f525e ("bpf, tests: Add tail call test suite"), we can
+>> see there exists failed testcase.
+>>
+>> On all archs when CONFIG_BPF_JIT_ALWAYS_ON is not set:
+>>   # echo 0 > /proc/sys/net/core/bpf_jit_enable
+>>   # modprobe test_bpf
+>>   # dmesg | grep -w FAIL
+>>   Tail call error path, max count reached jited:0 ret 34 != 33 FAIL
+>>
+>> On some archs:
+>>   # echo 1 > /proc/sys/net/core/bpf_jit_enable
+>>   # modprobe test_bpf
+>>   # dmesg | grep -w FAIL
+>>   Tail call error path, max count reached jited:1 ret 34 != 33 FAIL
+>>
+>> So it is necessary to change the value of MAX_TAIL_CALL_CNT from 32 to 33,
+>> then do some small changes of the related code.
+>>
+>> With this patch, it does not change the current limit, MAX_TAIL_CALL_CNT
+>> can reflect the actual max tail call count, and the above failed testcase
+>> can be fixed.
+>>
+>> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+>> ---
+> 
+> This change breaks selftests ([0]), please fix them at the same time
+> as you are changing the kernel behavior:
 
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+The below selftests shouldn't have to change given there is no change in
+behavior intended (MAX_TAIL_CALL_CNT is bumped to 33 but counter inc'ed
+prior to the comparison). It just means that /all/ JITs must be changed
+and in particular properly _tested_.
 
-Thanks Tong Zhang.
-Regards,
-   Nicolas
+>    test_tailcall_2:PASS:tailcall 128 nsec
+>    test_tailcall_2:PASS:tailcall 128 nsec
+>    test_tailcall_2:FAIL:tailcall err 0 errno 2 retval 4
+>    #135/2 tailcalls/tailcall_2:FAIL
+>    test_tailcall_3:PASS:tailcall 128 nsec
+>    test_tailcall_3:FAIL:tailcall count err 0 errno 2 count 34
+>    test_tailcall_3:PASS:tailcall 128 nsec
+>    #135/3 tailcalls/tailcall_3:FAIL
+>    #135/4 tailcalls/tailcall_4:OK
+>    #135/5 tailcalls/tailcall_5:OK
+>    #135/6 tailcalls/tailcall_bpf2bpf_1:OK
+>    test_tailcall_bpf2bpf_2:PASS:tailcall 128 nsec
+>    test_tailcall_bpf2bpf_2:FAIL:tailcall count err 0 errno 2 count 34
+>    test_tailcall_bpf2bpf_2:PASS:tailcall 128 nsec
+>    #135/7 tailcalls/tailcall_bpf2bpf_2:FAIL
+>    #135/8 tailcalls/tailcall_bpf2bpf_3:OK
+>    test_tailcall_bpf2bpf_4:PASS:tailcall 54 nsec
+>    test_tailcall_bpf2bpf_4:FAIL:tailcall count err 0 errno 2 count 32
+>    #135/9 tailcalls/tailcall_bpf2bpf_4:FAIL
+>    test_tailcall_bpf2bpf_4:PASS:tailcall 54 nsec
+>    test_tailcall_bpf2bpf_4:FAIL:tailcall count err 0 errno 2 count 32
+>    #135/10 tailcalls/tailcall_bpf2bpf_5:FAIL
+>    #135 tailcalls:FAIL
+> 
+>    [0] https://github.com/kernel-patches/bpf/pull/1747/checks?check_run_id=3552002906
+> 
+>>   arch/arm/net/bpf_jit_32.c         | 11 ++++++-----
+>>   arch/arm64/net/bpf_jit_comp.c     |  7 ++++---
+>>   arch/mips/net/ebpf_jit.c          |  4 ++--
+>>   arch/powerpc/net/bpf_jit_comp32.c |  4 ++--
+>>   arch/powerpc/net/bpf_jit_comp64.c | 12 ++++++------
+>>   arch/riscv/net/bpf_jit_comp32.c   |  4 ++--
+>>   arch/riscv/net/bpf_jit_comp64.c   |  4 ++--
+>>   arch/sparc/net/bpf_jit_comp_64.c  |  8 ++++----
+>>   include/linux/bpf.h               |  2 +-
+>>   kernel/bpf/core.c                 |  4 ++--
+>>   10 files changed, 31 insertions(+), 29 deletions(-)
+>>
+> 
+> [...]
+> 
 
-> ---
-> v2: switch lines to fix the issue instead
-> 
->   drivers/net/ethernet/cadence/macb_pci.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/cadence/macb_pci.c b/drivers/net/ethernet/cadence/macb_pci.c
-> index 8b7b59908a1a..f66d22de5168 100644
-> --- a/drivers/net/ethernet/cadence/macb_pci.c
-> +++ b/drivers/net/ethernet/cadence/macb_pci.c
-> @@ -111,9 +111,9 @@ static void macb_remove(struct pci_dev *pdev)
->          struct platform_device *plat_dev = pci_get_drvdata(pdev);
->          struct macb_platform_data *plat_data = dev_get_platdata(&plat_dev->dev);
-> 
-> -       platform_device_unregister(plat_dev);
->          clk_unregister(plat_data->pclk);
->          clk_unregister(plat_data->hclk);
-> +       platform_device_unregister(plat_dev);
->   }
-> 
->   static const struct pci_device_id dev_id_table[] = {
-> --
-> 2.25.1
-> 
-
-
--- 
-Nicolas Ferre
