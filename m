@@ -2,246 +2,249 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D7B1405FF8
-	for <lists+netdev@lfdr.de>; Fri, 10 Sep 2021 01:20:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B767406008
+	for <lists+netdev@lfdr.de>; Fri, 10 Sep 2021 01:24:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348945AbhIIXVr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 19:21:47 -0400
-Received: from www62.your-server.de ([213.133.104.62]:48290 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234743AbhIIXVq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 19:21:46 -0400
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mOTLI-000FQ5-5O; Fri, 10 Sep 2021 01:20:28 +0200
-Received: from [85.5.47.65] (helo=linux.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mOTLH-000Rzk-Re; Fri, 10 Sep 2021 01:20:27 +0200
-Subject: Re: Actual tail call count limits in x86 JITs and interpreter
-To:     Johan Almbladh <johan.almbladh@anyfinetworks.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Paul Chaignon <paul@cilium.io>,
-        Tiezhu Yang <yangtiezhu@loongson.cn>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>
-References: <CAM1=_QRyRVCODcXo_Y6qOm1iT163HoiSj8U2pZ8Rj3hzMTT=HQ@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <f79a0ea1-fa20-82e1-71bd-f3a9f9e946ec@iogearbox.net>
-Date:   Fri, 10 Sep 2021 01:20:27 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1349437AbhIIXZO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 19:25:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54060 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231819AbhIIXZM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 19:25:12 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2539DC061574;
+        Thu,  9 Sep 2021 16:24:02 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id jg16so405979ejc.1;
+        Thu, 09 Sep 2021 16:24:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=7B2jVKUvjKXqdjzGbtYw/f224Fbf0aPkONNS6eLcB5Y=;
+        b=Wnoc89U+kj2OdOEKWOyxhrVdnjJq4lDcZK7ZgPd5sL3EK4DKvCRC/x+i3MN98SVHsb
+         U5UcSm4UQp9YkwZDjkZaoxhV25hkh2bX9O7lA4jlCsyeVyepHr6hPdCIcIav8vkp2wPR
+         vp2jWI6/ePw2DCbmxFJeNOqUSJSI0YokfQMI0VbsFPOCg5K/GwbIvWUPGmuONsA6Prdt
+         6uGbz/6NSG1i87sVaI39BKULi6WPLFaXFU92eiTZjJBfiBzE4Eb/KALy4ZxrJwRDYWRZ
+         zPEtAMqfUad+OLK8I9FwOIH4NbbOL7rarwpu9CzLCLuI7FnzIIPA6HSMXrACgb8n4NNf
+         Z+eQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=7B2jVKUvjKXqdjzGbtYw/f224Fbf0aPkONNS6eLcB5Y=;
+        b=ji3LnqMObrMbWb66ST2+LolDbTMow2eyKBL3BPQXLNPDzdPoOZ+eHwjfqfeoiivJ7g
+         yiWi1VFpxwhFH7G8khFe3OZjkPJ2F9Z1vDrSdpeo9fWNI371TkmVPNpP7bRuKmCZ/EyL
+         F5tou6W98Bw5MVihLTbtML5BvqpWVp5dUoqi+Tesg6aFPne2U5cMfP/BhR8hrl46wI+G
+         KvA07TYKRm5aeGxGgh2/UzSRf9oB9vWZ6JJteS72wizQ7w0C7llubg7YYJMXQwXZieml
+         aAd0TiECOIWfcy4dsETIHSacTmvtGmhMLwyRj1VYHJtsRnI6Br4SEeojepVbhkrmC93w
+         8QEg==
+X-Gm-Message-State: AOAM530j2Cp9oBy+0H2F4xiSdR8LW8vj6TxX+no9fMCCyqOXv7zbtgdo
+        gcFvisO+gSkgY/p3ujiNgzvMluVjEK5T1w==
+X-Google-Smtp-Source: ABdhPJw9HGJ2JRiaPVCz6cxxYLTuyeRjRowp5W57WWKcp8pcA30YFQ1jyNSqV72EIVrDWvsHxwa8HA==
+X-Received: by 2002:a17:907:3e20:: with SMTP id hp32mr5934445ejc.536.1631229840601;
+        Thu, 09 Sep 2021 16:24:00 -0700 (PDT)
+Received: from skbuf ([82.78.148.104])
+        by smtp.gmail.com with ESMTPSA id dh16sm1492112edb.63.2021.09.09.16.23.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Sep 2021 16:24:00 -0700 (PDT)
+Date:   Fri, 10 Sep 2021 02:23:58 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Saravana Kannan <saravanak@google.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>, p.rosenberger@kunbus.com,
+        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
+        andrew@lunn.ch, vivien.didelot@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/3] Fix for KSZ DSA switch shutdown
+Message-ID: <20210909232358.aen6ep3m2zlktogv@skbuf>
+References: <20210909101451.jhfk45gitpxzblap@skbuf>
+ <81c1a19f-c5dc-ab4a-76ff-59704ea95849@gmx.de>
+ <20210909114248.aijujvl7xypkh7qe@skbuf>
+ <20210909125606.giiqvil56jse4bjk@skbuf>
+ <trinity-85ae3f9c-38f9-4442-98d3-bdc01279c7a8-1631193592256@3c-app-gmx-bs01>
+ <20210909154734.ujfnzu6omcjuch2a@skbuf>
+ <8498b0ce-99bb-aef9-05e1-d359f1cad6cf@gmx.de>
+ <2b316d9f-1249-9008-2901-4ab3128eed81@gmail.com>
+ <5b899bb3-ed37-19ae-8856-3dabce534cc6@gmx.de>
+ <20210909225457.figd5e5o3yw76mcs@skbuf>
 MIME-Version: 1.0
-In-Reply-To: <CAM1=_QRyRVCODcXo_Y6qOm1iT163HoiSj8U2pZ8Rj3hzMTT=HQ@mail.gmail.com>
-Content-Type: multipart/mixed;
- boundary="------------4F1BF1A3FD060DAEA711EF56"
-Content-Language: en-US
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.2/26289/Thu Sep  9 10:20:35 2021)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210909225457.figd5e5o3yw76mcs@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------4F1BF1A3FD060DAEA711EF56
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-
-On 9/10/21 12:15 AM, Johan Almbladh wrote:
-> I have done some investigation into this matter, and this is what I
-> have found. To recap, the situation is as follows.
+On Fri, Sep 10, 2021 at 01:54:57AM +0300, Vladimir Oltean wrote:
+> On Thu, Sep 09, 2021 at 07:07:33PM +0200, Lino Sanfilippo wrote:
+> > > It does not scale really well to have individual drivers call
+> > > dsa_tree_shutdown() in their respective .shutdown callback, and in a
+> > > multi-switch configuration, I am not sure what the results would
+> > > look like.
+> > >
+> > > In premise, each driver ought to be able to call
+> > > dsa_unregister_switch(), along with all of the driver specific
+> > > shutdown and eventually, given proper device ordering the DSA tree
+> > > would get automatically torn down, and then the DSA master's
+> > > .shutdown() callback would be called.
+> > >
+> > > FWIW, the reason why we call .shutdown() in bcmgenet is to turn off
+> > > DMA and clocks, which matters for kexec (DMA) as well as power
+> > > savings (S5 mode).
+> >
+> > I agree with the scalability. Concerning the multi-switch case I dont
+> > know about the possible issues (I am quite new to working with DSA).
+> > So lets wait for Vladimirs solution.
 > 
-> MAX_TAIL_CALL_CNT is defined to be 32. Since the interpreter has used
-> 33 instead, we agree to use that limit across all JIT implementations
-> to not break any user space program. To make sure everything uses the
-> same limit, we must first understand what the current state actually
-> is so we know what to fix.
+> I'm back for now and was able to spend a bit more time and understand
+> what is happening.
 > 
-> Me: according to test_bpf.ko the tail call limit is 33 for the
-> interpreter, and 32 for the x86-64 JIT.
-> Paul: according to selftests the tail call limit is 33 for both the
-> interpreter and the x86-64 JIT.
+> So first things first: why does DSA call dev_hold long-term on the
+> master, and where from?
 > 
-> Link: https://lore.kernel.org/bpf/20210809093437.876558-1-johan.almbladh@anyfinetworks.com/
+> Answer: it does so since commit 2f1e8ea726e9 ("net: dsa: link interfaces
+> with the DSA master to get rid of lockdep warnings"), see this call path:
 > 
-> I have been able to reproduce the above selftests results using
-> vmtest.sh. Digging deeper into this, I found that there are actually
-> two different code paths where the tail call count is checked in the
-> x86-64 JIT, corresponding to direct and indirect tail calls. By
-> setting different limits in those two places, I found that selftests
-> tailcall_3 hits the limit in emit_bpf_tail_call_direct(), whereas the
-> test_bpf.ko is limited by emit_bpf_tail_call_indirect().
-
-I hacked a quick test case so that both are covered, see attached. Both
-have the same behavior from my testing with and without the x86-64 JIT.
-Bit late over here, will check more tomorrow, but in both cases we also
-emit the same JIT code wrt counter update..
-
-> I am not 100% sure that this is the correct explanation, but it sounds
-> very reasonable. However, the asm generated in the two cases look very
-> similar to me, so by looking at that alone I cannot really see that
-> the limits would be different. Perhaps someone more versed in x86 asm
-> could take a closer look.
+> dsa_slave_create
+> -> netdev_upper_dev_link
+>    -> __netdev_upper_dev_link
+>       -> __netdev_adjacent_dev_insert
+>          -> dev_hold
 > 
-> What are your thoughts?
+> Ok, so since DSA holds a reference to the master interface, it is
+> natural that unregister_netdevice() will not finish, and it will hang
+> the system.
 > 
-> Johan
+> Question 2: why does bcmgenet need to unregister the net device on
+> shutdown?
 > 
+> See Florian's answer, it doesn't, strictly speaking, it just needs to
+> turn off the DMA and some clocks.
+> 
+> Question 3: can we revert commit 2f1e8ea726e9?
+> 
+> Answer: not so easily, we are looking at >10 commits to revert, and find
+> other solutions to some problems. We have built in the meantime on top
+> of the fact that there is an upper/lower relationship between DSA user
+> ports and the DSA master.
+> 
+> Question 4: how do other stacked interfaces deal with this?
+> 
+> Answer: as I said in the commit message of 2f1e8ea726e9, DSA is not
+> VLAN, DSA has unique challenges of its own, like a tree of struct
+> devices to manage, with their own lifetime. So what other drivers do is
+> not really relevant. Anyway, to entertain the question: VLAN watches the
+> NETDEV_UNREGISTER event emitted on the netdev notifier chain for its
+> real_dev, and effectively unregisters itself. Now this is exactly why it
+> is irrelevant, we can watch for NETDEV_UNREGISTER on the DSA master, but
+> then what? There is nothing sensible to do. Consider that in the master
+> unbind case (not shutdown), both the NETDEV_UNREGISTER code path will
+> execute, and the unbind of the DSA switch itself, due to that device
+> link. But let's say we delete the device link and leave only the
+> NETDEV_UNREGISTER code path to do something. What?
+> device_release_driver(ds->dev), most probably. That would effectively
+> force the DSA unbind path. But surprise: the DSA unbind path takes the
+> rtnl_mutex from quite a couple of places, and we are already under the
+> rtnl_lock (held by the netdev notifier chain). So, unless we schedule
+> the DSA device driver detach, there is an impending deadlock.
+> Ok, let's entertain even that: detach the DSA driver in a scheduled work
+> item, with the rtnl_lock not held. First off, we will trigger again the
+> WARN_ON solved by commit 2f1e8ea726e9 (because the unregistering of the
+> DSA master has "completed", but it still has an upper interface - us),
+> and secondly, the unregister_netdev function will have already deleted
+> stuff belonging to the DSA master, namely its sysfs entries. But DSA
+> also touches the master's sysfs, namely the "tagging" file. So NULL
+> pointer dereference on the master's sysfs.
+> So very simply put, DSA cannot unbind itself from the switch device when
+> the master net device unregisters. The best case scenario would be for
+> DSA to unbind _before_ the net device even unregisters. That was the
+> whole point of my attempt with the device links, to ensure shutdown
+> _ordering_.
+> 
+> Question 5: can the device core actually be patched to call
+> device_links_unbind_consumers() from device_shutdown()? This would
+> actually simplify DSA's options, and make the device links live up to
+> their documented expectations.
+> 
+> Answer: yes and no, technically it can, but it is an invasive change
+> which will certainly introduce regressions. See the answer to question 2
+> for an example. Technically .shutdown exists so that drivers can do
+> something lightweight to quiesce the hardware, without really caring too
+> much about data structure integrity (hey, the kernel is going to die
+> soon anyway). But some drivers, like bcmgenet, do the same thing in
+> .resume and .shutdown, which blurs the lines quite a lot. If the device
+> links were to start calling .remove at shutdown time, potentially after
+> .shutdown was already called, bcmgenet would effectively unregister its
+> net device twice. Yikes.
+> 
+> Question 6: How about a patch on the device core that is more lightweight?
+> Wouldn't it be sensible for device_shutdown() to just call ->remove if
+> the device's bus has no ->shutdown, and the device's driver doesn't have
+> a ->shutdown either?
+> 
+> Answer: This would sometimes work, the vast majority of DSA switch
+> drivers, and Ethernet controllers (in this case used as DSA masters) do
+> not have a .shutdown method implemented. But their bus does: PCI does,
+> SPI controllers do, most of the time. So it would work for limited
+> scenarios, but would be ineffective in the general sense.
+> 
+> Question 7: I said that .shutdown, as opposed to .remove, doesn't really
+> care so much about the integrity of data structures. So how far should
+> we really go to fix this issue? Should we even bother to unbind the
+> whole DSA tree, when the sole problem is that we are the DSA master's
+> upper, and that is keeping a reference on it?
+> 
+> Answer: Well, any solution that does unnecessary data structure teardown
+> only delays the reboot for nothing. Lino's patch just bluntly calls
+> dsa_tree_teardown() from the switch .shutdown method, and this leaks
+> memory, namely dst->ports. But does this really matter? Nope, so let's
+> extrapolate. In this case, IMO, the simplest possible solution would be
+> to patch bcmgenet to not unregister the net device. Then treat every
+> other DSA master driver in the same way as they come, one by one.
+> Do you need to unregister_netdevice() at shutdown? No. Then don't.
+> Is it nice? Probably not, but I'm not seeing alternatives.
+> 
+> Also, unless I'm missing something, Lino probably still sees the WARN_ON
+> in bcmgenet's unregister_netdevice() about eth0 getting unregistered
+> while having an upper interface. If not, it's by sheer luck that the DSA
+> switch's ->shutdown gets called before bcmgenet's ->shutdown. But for
+> this reason, it isn't a great solution either. If the device links can't
+> guarantee us some sort of shutdown ordering (what we ideally want, as
+> mentioned, is for the DSA switch driver to get _unbound_ (->remove)
+> before the DSA master gets unbound or shut down).
 
+I forgot about this, for completeness:
 
---------------4F1BF1A3FD060DAEA711EF56
-Content-Type: text/x-patch;
- name="0001-bpf-selftests-Replicate-tailcall_3-limit-test-for-in.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
- filename*0="0001-bpf-selftests-Replicate-tailcall_3-limit-test-for-in.pa";
- filename*1="tch"
+Question 8: Ok, so this is an even more lightweight variant of question 6.
+To patch device_shutdown here:
 
-From c68f8e699a639392f24244068c1b49389f67f302 Mon Sep 17 00:00:00 2001
-From: Daniel Borkmann <daniel@iogearbox.net>
-Date: Thu, 9 Sep 2021 22:55:13 +0000
-Subject: [PATCH bpf-next] bpf, selftests: Replicate tailcall_3 limit test for indirect call case
+ 		if (dev->bus && dev->bus->shutdown) {
+ 			if (initcall_debug)
+ 				dev_info(dev, "shutdown\n");
+ 			dev->bus->shutdown(dev);
+ 		} else if (dev->driver && dev->driver->shutdown) {
+ 			if (initcall_debug)
+ 				dev_info(dev, "shutdown\n");
+ 			dev->driver->shutdown(dev);
++		} else {
++			__device_release_driver(dev, parent);
+ 		}
 
-The tailcall_3 test program uses bpf_tail_call_static() where the JIT
-would patch a direct jump. Add a new tailcall_6 test program replicating
-exactly the same test just ensuring that bpf_tail_call() uses a map index
-where the verifier cannot make assumptions this time. In other words this
-will now cover both on x86-64 JIT, emit_bpf_tail_call_direct() emission
-as well as emit_bpf_tail_call_indirect() emission.
+would go towards helping DSA in general, but it wouldn't help the situation at hand,
+and it would introduce regressions.
 
-  # ./test_progs -t tailcalls
-  #136/1 tailcalls/tailcall_1:OK
-  #136/2 tailcalls/tailcall_2:OK
-  #136/3 tailcalls/tailcall_3:OK
-  #136/4 tailcalls/tailcall_4:OK
-  #136/5 tailcalls/tailcall_5:OK
-  #136/6 tailcalls/tailcall_6:OK
-  #136/7 tailcalls/tailcall_bpf2bpf_1:OK
-  #136/8 tailcalls/tailcall_bpf2bpf_2:OK
-  #136/9 tailcalls/tailcall_bpf2bpf_3:OK
-  #136/10 tailcalls/tailcall_bpf2bpf_4:OK
-  #136/11 tailcalls/tailcall_bpf2bpf_5:OK
-  #136 tailcalls:OK
-  Summary: 1/11 PASSED, 0 SKIPPED, 0 FAILED
+So what about patching bcmgenet (and other drivers) to implement .shutdown in the following way:
 
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Johan Almbladh <johan.almbladh@anyfinetworks.com>
-Cc: Paul Chaignon <paul@cilium.io>
-Cc: Tiezhu Yang <yangtiezhu@loongson.cn>
----
- .../selftests/bpf/prog_tests/tailcalls.c      | 25 ++++++++++---
- tools/testing/selftests/bpf/progs/tailcall6.c | 36 +++++++++++++++++++
- 2 files changed, 56 insertions(+), 5 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/progs/tailcall6.c
+	device_release_driver(&pdev->dev);
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/tailcalls.c b/tools/testing/selftests/bpf/prog_tests/tailcalls.c
-index b5940e6ca67c..7bf3a7a97d7b 100644
---- a/tools/testing/selftests/bpf/prog_tests/tailcalls.c
-+++ b/tools/testing/selftests/bpf/prog_tests/tailcalls.c
-@@ -219,10 +219,7 @@ static void test_tailcall_2(void)
- 	bpf_object__close(obj);
- }
- 
--/* test_tailcall_3 checks that the count value of the tail call limit
-- * enforcement matches with expectations.
-- */
--static void test_tailcall_3(void)
-+static void test_tailcall_count(const char *which)
- {
- 	int err, map_fd, prog_fd, main_fd, data_fd, i, val;
- 	struct bpf_map *prog_array, *data_map;
-@@ -231,7 +228,7 @@ static void test_tailcall_3(void)
- 	__u32 retval, duration;
- 	char buff[128] = {};
- 
--	err = bpf_prog_load("tailcall3.o", BPF_PROG_TYPE_SCHED_CLS, &obj,
-+	err = bpf_prog_load(which, BPF_PROG_TYPE_SCHED_CLS, &obj,
- 			    &prog_fd);
- 	if (CHECK_FAIL(err))
- 		return;
-@@ -296,6 +293,22 @@ static void test_tailcall_3(void)
- 	bpf_object__close(obj);
- }
- 
-+/* test_tailcall_3 checks that the count value of the tail call limit
-+ * enforcement matches with expectations. JIT uses direct jump.
-+ */
-+static void test_tailcall_3(void)
-+{
-+	test_tailcall_count("tailcall3.o");
-+}
-+
-+/* test_tailcall_6 checks that the count value of the tail call limit
-+ * enforcement matches with expectations. JIT uses indirect jump.
-+ */
-+static void test_tailcall_6(void)
-+{
-+	test_tailcall_count("tailcall6.o");
-+}
-+
- /* test_tailcall_4 checks that the kernel properly selects indirect jump
-  * for the case where the key is not known. Latter is passed via global
-  * data to select different targets we can compare return value of.
-@@ -822,6 +835,8 @@ void test_tailcalls(void)
- 		test_tailcall_4();
- 	if (test__start_subtest("tailcall_5"))
- 		test_tailcall_5();
-+	if (test__start_subtest("tailcall_6"))
-+		test_tailcall_6();
- 	if (test__start_subtest("tailcall_bpf2bpf_1"))
- 		test_tailcall_bpf2bpf_1();
- 	if (test__start_subtest("tailcall_bpf2bpf_2"))
-diff --git a/tools/testing/selftests/bpf/progs/tailcall6.c b/tools/testing/selftests/bpf/progs/tailcall6.c
-new file mode 100644
-index 000000000000..9c298d908693
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/tailcall6.c
-@@ -0,0 +1,36 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <linux/bpf.h>
-+
-+#include <bpf/bpf_helpers.h>
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_PROG_ARRAY);
-+	__uint(max_entries, 1);
-+	__uint(key_size, sizeof(__u32));
-+	__uint(value_size, sizeof(__u32));
-+} jmp_table SEC(".maps");
-+
-+int count = 0;
-+volatile int which;
-+
-+SEC("classifier/0")
-+int bpf_func_0(struct __sk_buff *skb)
-+{
-+	count++;
-+	if (__builtin_constant_p(which))
-+		__bpf_unreachable();
-+	bpf_tail_call(skb, &jmp_table, which);
-+	return 1;
-+}
-+
-+SEC("classifier")
-+int entry(struct __sk_buff *skb)
-+{
-+	if (__builtin_constant_p(which))
-+		__bpf_unreachable();
-+	bpf_tail_call(skb, &jmp_table, which);
-+	return 0;
-+}
-+
-+char __license[] SEC("license") = "GPL";
-+int _version SEC("version") = 1;
--- 
-2.27.0
+basically this should force-unbind the driver from the device, which
+would quite nicely make the device link go into action and make DSA
+unbind too.
 
-
---------------4F1BF1A3FD060DAEA711EF56--
+Answer: device_release_driver calls device_lock(dev), and device_shutdown
+also holds that lock when it calls our ->shutdown method. So unless the
+device core would be so nice so as to provide a generic shutdown method
+that just unbinds the device using an unlocked version of device_release_driver,
+we are back to square one with this solution. Anything that needs to patch
+the device core is more or less disqualified, especially for a bug fix.
