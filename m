@@ -2,61 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E43D40575D
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 15:41:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53BD040584C
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 15:56:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357614AbhIINdy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 09:33:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40718 "EHLO mail.kernel.org"
+        id S1355698AbhIINxT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 09:53:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38060 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1358060AbhIINbv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Sep 2021 09:31:51 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 66ED360555;
-        Thu,  9 Sep 2021 13:30:41 +0000 (UTC)
+        id S238647AbhIINwN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Sep 2021 09:52:13 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C66B460041;
+        Thu,  9 Sep 2021 13:51:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1631194241;
-        bh=TwE5ieLltQT1dAuj4+qxelD1xElQNJNdGPiXzXPxTtc=;
+        s=korg; t=1631195463;
+        bh=9nVW5b9CIZO8paiwj2IcNBcJlmc8azfXpVGaorx2PoM=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OkVimI2MX61gciZOGFagbIvRicVWt2kjUC3pBlGR6Thu8KIKMZUuc6lt6umQLcnhN
-         CPolFhE+gHMNMNElNUlmG87gH2rJc3YnXdO4RrLeLMSCtSbWSUAj/qXEiPD0W8TvfG
-         UfzOmR8BvpPPagcO7xjHJnR1TmANlewHTahS+pxU=
-Date:   Thu, 9 Sep 2021 15:30:39 +0200
+        b=0CRAFxiZS4HATnPqHRQ5opfDmDlB+Dfo989YpBV2bc+BAk91QDpOyEA7mJViyEfFt
+         uymiKP/rVMkYOAQesVKHWRqffJbnGMAtNYbvqo6pJLA/NkuAhbCGNBuAGj9+ThYXe7
+         4mXgoU/5ftg5CrUHR7D3+mdcd1d8IffjeUw2qBKE=
+Date:   Thu, 9 Sep 2021 15:51:00 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Haakon Bugge <haakon.bugge@oracle.com>
-Cc:     Sasha Levin <sashal@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux-Net <netdev@vger.kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        OFED mailing list <linux-rdma@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Guillaume Nault <gnault@redhat.com>
-Subject: Re: Please add 2dce224f469f ("netns: protect netns ID lookups with
- RCU") to LTS
-Message-ID: <YToMf8zUVNVDCAKX@kroah.com>
-References: <7F058034-8A2B-4C19-A39E-12B0DB117328@oracle.com>
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        Anton Vorontsov <anton@enomsg.org>,
+        Colin Cross <ccross@android.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Tony Luck <tony.luck@intel.com>, Yonghong Song <yhs@fb.com>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 0/9] get_abi.pl: Check for missing symbols at the ABI
+ specs
+Message-ID: <YToRRMhYfdnzFyMB@kroah.com>
+References: <cover.1631112725.git.mchehab+huawei@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <7F058034-8A2B-4C19-A39E-12B0DB117328@oracle.com>
+In-Reply-To: <cover.1631112725.git.mchehab+huawei@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 09, 2021 at 01:10:05PM +0000, Haakon Bugge wrote:
-> Hi Greg & Sasha,
+On Wed, Sep 08, 2021 at 04:58:47PM +0200, Mauro Carvalho Chehab wrote:
+> Hi Greg,
 > 
+> Sometime ago, I discussed with Jonathan Cameron about providing 
+> a way check that the ABI documentation is incomplete.
 > 
-> tl;dr: Please add 2dce224f469f ("netns: protect netns ID lookups with
-> RCU") to the stable releases from v5.4 and older. It fixes a
-> spin_unlock_bh() in peernet2id() called with IRQs off. I think this
-> neat side-effect of commit 2dce224f469f was quite un-intentional,
-> hence no Fixes: tag or CC: stable.
+> While it would be doable to validate the ABI by searching __ATTR and 
+> similar macros around the driver, this would probably be very complex
+> and would take a while to parse.
+> 
+> So, I ended by implementing a new feature at scripts/get_abi.pl
+> which does a check on the sysfs contents of a running system:
+> it reads everything under /sys and reads the entire ABI from
+> Documentation/ABI. It then warns for symbols that weren't found,
+> optionally showing possible candidates that might be misdefined.
+> 
+> I opted to place it on 3 patches:
+> 
+> The first patch adds the basic logic. It runs really quicky (up to 2
+> seconds), but it doesn't use sysfs softlinks.
+> 
+> Patch 2 adds support for also parsing softlinks. It slows the logic,
+> with now takes ~40 seconds to run on my desktop (and ~23
+> seconds on a HiKey970 ARM board). There are space there for
+> performance improvements, by using a more sophisticated
+> algorithm, at the expense of making the code harder to
+> understand. I ended opting to use a simple implementation
+> for now, as ~40 seconds sounds acceptable on my eyes.
+> 
+> Patch 3 adds an optional parameter to allow filtering the results
+> using a regex given by the user.
+> 
+> One of the problems with the current ABI definitions is that several
+> symbols define wildcards, on non-standard ways. The more commonly
+> wildcards used there are:
+> 
+> 	<foo>
+> 	{foo}
+> 	[foo]
+> 	X
+> 	Y
+> 	Z
+> 	/.../
+> 
+> The script converts the above wildcards into (somewhat relaxed)
+> regexes.
+> 
+> There's one place using  "(some description)". This one is harder to
+> parse, as parenthesis are used by the parsing regexes. As this happens
+> only on one file, patch 4 addresses such case.
+> 
+> Patch 5 to 9 fix some other ABI troubles I identified.
+> 
+> In long term, perhaps the better would be to just use regex on What:
+> fields, as this would avoid extra heuristics at get_abi.pl, but this is
+> OOT from this patch, and would mean a large number of changes.
 
-Please provide a working backport for all of the relevant kernel
-verisons, as it does not apply cleanly on it's own.
+This is cool stuff, thanks for doing this!
 
-thanks,
+I'll look at it more once 5.15-rc1 is out, thanks.
 
 greg k-h
