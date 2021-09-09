@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5130405985
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 16:45:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A442405986
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 16:45:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239879AbhIIOqp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 10:46:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47490 "EHLO
+        id S1344398AbhIIOqr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 10:46:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347896AbhIIOqE (ORCPT
+        with ESMTP id S1344874AbhIIOqE (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 10:46:04 -0400
 Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92545C0617AF
-        for <netdev@vger.kernel.org>; Thu,  9 Sep 2021 07:33:25 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id lc21so4030740ejc.7
-        for <netdev@vger.kernel.org>; Thu, 09 Sep 2021 07:33:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91E74C05BD33
+        for <netdev@vger.kernel.org>; Thu,  9 Sep 2021 07:33:26 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id e21so4005918ejz.12
+        for <netdev@vger.kernel.org>; Thu, 09 Sep 2021 07:33:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=anyfinetworks-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=BrMA0XSQ71yLEbRWsyu+DocRPQut2y4m9TWpIdwAKEY=;
-        b=zXshAqfhQgl6WVmPx7g27hSZkbGzdv3hgskRNFwspXFB02/TPqU9RSZWmtpDl6idZY
-         3ja/YAgYt2dpie9Ti/XPcBefklEkEHUSX8j+8l6nbCNTHFfJ7YGd6yfshwG9TcwdDNkc
-         xjgDNiRQVRt8YFYIKooUO+SoVF61Hw8ZaKHJwC7QO93/7NB+J7wMHDZLxJxZF5+a9pz6
-         0Rj8iOWn4b9DuUN+AivKd0kSY6MVX9nuDPlzrBktBSZ+EnfUFcMfs5nH4T5W3ZJZ/CaB
-         RKin8TpfTGcloSMqfwZyV6ADkEVcy0Qn8ULYUjF2+0u/Uo+YCKTGVatdnt0fDpTIqdWB
-         tG/A==
+        bh=+tVwcYYoISq7MFEiZUlH6wSoyP/GdeKabJlrQIhydTY=;
+        b=YQ1l4lruNhTTFHhBXSBtlKPE72VJ8W/+fiwLz7ssf8x09f0IaIuJQgcM36u1xDy2a+
+         Pori0FZr0qlw+NlJXT+cJ9/Nwg+mr3Sf5yqtY4XlDAGv0oCR5a4itlx1NpRBDPQNcnpn
+         FaR6CGFJPMZu59yFemD7/siaKeJBAqsnHJ8yUHeVBVnDsBaKM2G287QmNG0b5ZqboQwx
+         fCWjKcaIKDiCqaOqEi9W1rSw7ZvTI+jicSkxnqJHrelc/BBD50736F5tQHOMnbU9Zx5w
+         8QnWZL/6MGviXhNOG7EBzOlioinj1DU3ZWa3Sy74V7SFEUqN2/ssnzdUGFjdCeTJ3/Cd
+         nSTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=BrMA0XSQ71yLEbRWsyu+DocRPQut2y4m9TWpIdwAKEY=;
-        b=xP8EzOrhhIB976nApBBaxkIJTdf99+RAabs/OGWlMfIuqTBDH91F3koW8vnTRNDTyR
-         /hDqOuP8AmBh0xx6cGrCaTVMjKIj78QoYx1bQ5HApwMcAwrxZaQQEBacn1gokpA5u5LM
-         jLTjqmk9CPHlxJpR2t2lp2LA1/9zXGdo8NTiy9Gzwj6G+JW4/rCoYsfNRoZrfVsGQLaa
-         uNL0hRYoS9u0pwb5pATcvsBMeZWY4amZCO+j3Tb7j02hU30G7Bn0iOu93bkNHGnYDYeW
-         nTOsGGxnV9SEKa92NmEorJh3teNL15heR/mBZ+435EErXaNh/Dnh69Cm0oe3Ypwu7rz1
-         sk/g==
-X-Gm-Message-State: AOAM532jfuojHXLMYrB/1zUoqL1ZVDZFLu+Cbzb8Jf+CIIeImCCTn2//
-        7jPrUfHvf+wk6ew4+Z9xF2ww5Q==
-X-Google-Smtp-Source: ABdhPJx5EvBqW2pdSI18tgWWvd6+tnYwuU6klmk3qMwLWIbQgt1U+fHkZR1PgateQmPpkVkFTot57Q==
-X-Received: by 2002:a17:906:f24d:: with SMTP id gy13mr3624452ejb.395.1631198004148;
-        Thu, 09 Sep 2021 07:33:24 -0700 (PDT)
+        bh=+tVwcYYoISq7MFEiZUlH6wSoyP/GdeKabJlrQIhydTY=;
+        b=JzYO/riYlxHU60upjCE4ek2SMU5r51kV6JQApFftWHW2edYoFtJDHuZbpNVB+KRpRN
+         xBHWbSjibz/9NBucxaYjChe9JUxpnZf8FW53paF/dRV9mGgjc1hv/l6ZnPoS51UGjSPi
+         HztcUc2qmv8WoS0Oe3njGD2uLTzpRhnTIE8/tjbs6GGQu6w3328uISaBLtEhGtFuiuaQ
+         8OUZA2GUhTdhS/rjXMAVjdIMJU49sZGA20c/qsMs3jzYR3mcDN3TE1/fNMMDFKNCiVRu
+         M6ibSbCPAg4fkPnd8EcBmtQ2FUJrFAYosExylrTozovOpepuR1kjadmS+2DqhTSRApc2
+         MI0g==
+X-Gm-Message-State: AOAM531wwtHmXqVenxT0Jl88iN+6d2XnfdyGvvSJrp51/imz+c5qvDuI
+        AyhpYTWYBHsItYylkIXJNu+DQQ==
+X-Google-Smtp-Source: ABdhPJxADZyjXKKNM6WzGsQ+QjHf42i9h/UpbxTbWaTV2z11wwgSAC6usrg+vmOb5UUwWNCM7Wq2rw==
+X-Received: by 2002:a17:907:1b02:: with SMTP id mp2mr3784652ejc.196.1631198005106;
+        Thu, 09 Sep 2021 07:33:25 -0700 (PDT)
 Received: from anpc2.lan (static-213-115-136-2.sme.telenor.se. [213.115.136.2])
-        by smtp.gmail.com with ESMTPSA id bj10sm1030909ejb.17.2021.09.09.07.33.23
+        by smtp.gmail.com with ESMTPSA id bj10sm1030909ejb.17.2021.09.09.07.33.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Sep 2021 07:33:23 -0700 (PDT)
+        Thu, 09 Sep 2021 07:33:24 -0700 (PDT)
 From:   Johan Almbladh <johan.almbladh@anyfinetworks.com>
 To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org
 Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
         john.fastabend@gmail.com, kpsingh@kernel.org, iii@linux.ibm.com,
         netdev@vger.kernel.org, bpf@vger.kernel.org,
         Johan Almbladh <johan.almbladh@anyfinetworks.com>
-Subject: [PATCH bpf-next v3 10/13] bpf/tests: Add JMP tests with degenerate conditional
-Date:   Thu,  9 Sep 2021 16:33:00 +0200
-Message-Id: <20210909143303.811171-11-johan.almbladh@anyfinetworks.com>
+Subject: [PATCH bpf-next v3 11/13] bpf/tests: Expand branch conversion JIT test
+Date:   Thu,  9 Sep 2021 16:33:01 +0200
+Message-Id: <20210909143303.811171-12-johan.almbladh@anyfinetworks.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909143303.811171-1-johan.almbladh@anyfinetworks.com>
 References: <20210909143303.811171-1-johan.almbladh@anyfinetworks.com>
@@ -65,254 +65,192 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds a set of tests for JMP and JMP32 operations where the
-branch decision is know at JIT time. Mainly testing JIT behaviour.
+This patch expands the branch conversion test introduced by 66e5eb84
+("bpf, tests: Add branch conversion JIT test"). The test now includes
+a JMP with maximum eBPF offset. This triggers branch conversion for the
+64-bit MIPS JIT. Additional variants are also added for cases when the
+branch is taken or not taken.
 
 Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
 ---
- lib/test_bpf.c | 229 +++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 229 insertions(+)
+ lib/test_bpf.c | 143 ++++++++++++++++++++++++++++++++++---------------
+ 1 file changed, 100 insertions(+), 43 deletions(-)
 
 diff --git a/lib/test_bpf.c b/lib/test_bpf.c
-index 7286cf347b95..ae261667ca0a 100644
+index ae261667ca0a..a515f9b670c9 100644
 --- a/lib/test_bpf.c
 +++ b/lib/test_bpf.c
-@@ -10709,6 +10709,235 @@ static struct bpf_test tests[] = {
- 		.fill_helper = bpf_fill_jmp32_jsle_reg,
- 		.nr_testruns = NR_PATTERN_RUNS,
+@@ -463,41 +463,6 @@ static int bpf_fill_stxdw(struct bpf_test *self)
+ 	return __bpf_fill_stxdw(self, BPF_DW);
+ }
+ 
+-static int bpf_fill_long_jmp(struct bpf_test *self)
+-{
+-	unsigned int len = BPF_MAXINSNS;
+-	struct bpf_insn *insn;
+-	int i;
+-
+-	insn = kmalloc_array(len, sizeof(*insn), GFP_KERNEL);
+-	if (!insn)
+-		return -ENOMEM;
+-
+-	insn[0] = BPF_ALU64_IMM(BPF_MOV, R0, 1);
+-	insn[1] = BPF_JMP_IMM(BPF_JEQ, R0, 1, len - 2 - 1);
+-
+-	/*
+-	 * Fill with a complex 64-bit operation that expands to a lot of
+-	 * instructions on 32-bit JITs. The large jump offset can then
+-	 * overflow the conditional branch field size, triggering a branch
+-	 * conversion mechanism in some JITs.
+-	 *
+-	 * Note: BPF_MAXINSNS of ALU64 MUL is enough to trigger such branch
+-	 * conversion on the 32-bit MIPS JIT. For other JITs, the instruction
+-	 * count and/or operation may need to be modified to trigger the
+-	 * branch conversion.
+-	 */
+-	for (i = 2; i < len - 1; i++)
+-		insn[i] = BPF_ALU64_IMM(BPF_MUL, R0, (i << 16) + i);
+-
+-	insn[len - 1] = BPF_EXIT_INSN();
+-
+-	self->u.ptr.insns = insn;
+-	self->u.ptr.len = len;
+-
+-	return 0;
+-}
+-
+ static int __bpf_ld_imm64(struct bpf_insn insns[2], u8 reg, s64 imm64)
+ {
+ 	struct bpf_insn tmp[] = {BPF_LD_IMM64(reg, imm64)};
+@@ -506,6 +471,73 @@ static int __bpf_ld_imm64(struct bpf_insn insns[2], u8 reg, s64 imm64)
+ 	return 2;
+ }
+ 
++/*
++ * Branch conversion tests. Complex operations can expand to a lot
++ * of instructions when JITed. This in turn may cause jump offsets
++ * to overflow the field size of the native instruction, triggering
++ * a branch conversion mechanism in some JITs.
++ */
++static int __bpf_fill_max_jmp(struct bpf_test *self, int jmp, int imm)
++{
++	struct bpf_insn *insns;
++	int len = S16_MAX + 5;
++	int i;
++
++	insns = kmalloc_array(len, sizeof(*insns), GFP_KERNEL);
++	if (!insns)
++		return -ENOMEM;
++
++	i = __bpf_ld_imm64(insns, R1, 0x0123456789abcdefULL);
++	insns[i++] = BPF_ALU64_IMM(BPF_MOV, R0, 1);
++	insns[i++] = BPF_JMP_IMM(jmp, R0, imm, S16_MAX);
++	insns[i++] = BPF_ALU64_IMM(BPF_MOV, R0, 2);
++	insns[i++] = BPF_EXIT_INSN();
++
++	while (i < len - 1) {
++		static const int ops[] = {
++			BPF_LSH, BPF_RSH, BPF_ARSH, BPF_ADD,
++			BPF_SUB, BPF_MUL, BPF_DIV, BPF_MOD,
++		};
++		int op = ops[(i >> 1) % ARRAY_SIZE(ops)];
++
++		if (i & 1)
++			insns[i++] = BPF_ALU32_REG(op, R0, R1);
++		else
++			insns[i++] = BPF_ALU64_REG(op, R0, R1);
++	}
++
++	insns[i++] = BPF_EXIT_INSN();
++	self->u.ptr.insns = insns;
++	self->u.ptr.len = len;
++	BUG_ON(i != len);
++
++	return 0;
++}
++
++/* Branch taken by runtime decision */
++static int bpf_fill_max_jmp_taken(struct bpf_test *self)
++{
++	return __bpf_fill_max_jmp(self, BPF_JEQ, 1);
++}
++
++/* Branch not taken by runtime decision */
++static int bpf_fill_max_jmp_not_taken(struct bpf_test *self)
++{
++	return __bpf_fill_max_jmp(self, BPF_JEQ, 0);
++}
++
++/* Branch always taken, known at JIT time */
++static int bpf_fill_max_jmp_always_taken(struct bpf_test *self)
++{
++	return __bpf_fill_max_jmp(self, BPF_JGE, 0);
++}
++
++/* Branch never taken, known at JIT time */
++static int bpf_fill_max_jmp_never_taken(struct bpf_test *self)
++{
++	return __bpf_fill_max_jmp(self, BPF_JLT, 0);
++}
++
+ /* Test an ALU shift operation for all valid shift values */
+ static int __bpf_fill_alu_shift(struct bpf_test *self, u8 op,
+ 				u8 mode, bool alu32)
+@@ -8653,14 +8685,6 @@ static struct bpf_test tests[] = {
+ 		{ },
+ 		{ { 0, 1 } },
  	},
-+	/* Conditional jumps with constant decision */
-+	{
-+		"JMP_JSET_K: imm = 0 -> never taken",
-+		.u.insns_int = {
-+			BPF_ALU64_IMM(BPF_MOV, R0, 1),
-+			BPF_JMP_IMM(BPF_JSET, R1, 0, 1),
-+			BPF_ALU64_IMM(BPF_MOV, R0, 0),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL | FLAG_NO_DATA,
-+		{ },
-+		{ { 0, 0 } },
-+	},
-+	{
-+		"JMP_JLT_K: imm = 0 -> never taken",
-+		.u.insns_int = {
-+			BPF_ALU64_IMM(BPF_MOV, R0, 1),
-+			BPF_JMP_IMM(BPF_JLT, R1, 0, 1),
-+			BPF_ALU64_IMM(BPF_MOV, R0, 0),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL | FLAG_NO_DATA,
-+		{ },
-+		{ { 0, 0 } },
-+	},
-+	{
-+		"JMP_JGE_K: imm = 0 -> always taken",
-+		.u.insns_int = {
-+			BPF_ALU64_IMM(BPF_MOV, R0, 1),
-+			BPF_JMP_IMM(BPF_JGE, R1, 0, 1),
-+			BPF_ALU64_IMM(BPF_MOV, R0, 0),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL | FLAG_NO_DATA,
-+		{ },
-+		{ { 0, 1 } },
-+	},
-+	{
-+		"JMP_JGT_K: imm = 0xffffffff -> never taken",
-+		.u.insns_int = {
-+			BPF_ALU64_IMM(BPF_MOV, R0, 1),
-+			BPF_JMP_IMM(BPF_JGT, R1, U32_MAX, 1),
-+			BPF_ALU64_IMM(BPF_MOV, R0, 0),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL | FLAG_NO_DATA,
-+		{ },
-+		{ { 0, 0 } },
-+	},
-+	{
-+		"JMP_JLE_K: imm = 0xffffffff -> always taken",
-+		.u.insns_int = {
-+			BPF_ALU64_IMM(BPF_MOV, R0, 1),
-+			BPF_JMP_IMM(BPF_JLE, R1, U32_MAX, 1),
-+			BPF_ALU64_IMM(BPF_MOV, R0, 0),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL | FLAG_NO_DATA,
-+		{ },
-+		{ { 0, 1 } },
-+	},
-+	{
-+		"JMP32_JSGT_K: imm = 0x7fffffff -> never taken",
-+		.u.insns_int = {
-+			BPF_ALU64_IMM(BPF_MOV, R0, 1),
-+			BPF_JMP32_IMM(BPF_JSGT, R1, S32_MAX, 1),
-+			BPF_ALU64_IMM(BPF_MOV, R0, 0),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL | FLAG_NO_DATA,
-+		{ },
-+		{ { 0, 0 } },
-+	},
-+	{
-+		"JMP32_JSGE_K: imm = -0x80000000 -> always taken",
-+		.u.insns_int = {
-+			BPF_ALU64_IMM(BPF_MOV, R0, 1),
-+			BPF_JMP32_IMM(BPF_JSGE, R1, S32_MIN, 1),
-+			BPF_ALU64_IMM(BPF_MOV, R0, 0),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL | FLAG_NO_DATA,
-+		{ },
-+		{ { 0, 1 } },
-+	},
-+	{
-+		"JMP32_JSLT_K: imm = -0x80000000 -> never taken",
-+		.u.insns_int = {
-+			BPF_ALU64_IMM(BPF_MOV, R0, 1),
-+			BPF_JMP32_IMM(BPF_JSLT, R1, S32_MIN, 1),
-+			BPF_ALU64_IMM(BPF_MOV, R0, 0),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL | FLAG_NO_DATA,
-+		{ },
-+		{ { 0, 0 } },
-+	},
-+	{
-+		"JMP32_JSLE_K: imm = 0x7fffffff -> always taken",
-+		.u.insns_int = {
-+			BPF_ALU64_IMM(BPF_MOV, R0, 1),
-+			BPF_JMP32_IMM(BPF_JSLE, R1, S32_MAX, 1),
-+			BPF_ALU64_IMM(BPF_MOV, R0, 0),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL | FLAG_NO_DATA,
-+		{ },
-+		{ { 0, 1 } },
-+	},
-+	{
-+		"JMP_JEQ_X: dst = src -> always taken",
-+		.u.insns_int = {
-+			BPF_ALU64_IMM(BPF_MOV, R0, 1),
-+			BPF_JMP_REG(BPF_JEQ, R1, R1, 1),
-+			BPF_ALU64_IMM(BPF_MOV, R0, 0),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL | FLAG_NO_DATA,
-+		{ },
-+		{ { 0, 1 } },
-+	},
-+	{
-+		"JMP_JGE_X: dst = src -> always taken",
-+		.u.insns_int = {
-+			BPF_ALU64_IMM(BPF_MOV, R0, 1),
-+			BPF_JMP_REG(BPF_JGE, R1, R1, 1),
-+			BPF_ALU64_IMM(BPF_MOV, R0, 0),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL | FLAG_NO_DATA,
-+		{ },
-+		{ { 0, 1 } },
-+	},
-+	{
-+		"JMP_JLE_X: dst = src -> always taken",
-+		.u.insns_int = {
-+			BPF_ALU64_IMM(BPF_MOV, R0, 1),
-+			BPF_JMP_REG(BPF_JLE, R1, R1, 1),
-+			BPF_ALU64_IMM(BPF_MOV, R0, 0),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL | FLAG_NO_DATA,
-+		{ },
-+		{ { 0, 1 } },
-+	},
-+	{
-+		"JMP_JSGE_X: dst = src -> always taken",
-+		.u.insns_int = {
-+			BPF_ALU64_IMM(BPF_MOV, R0, 1),
-+			BPF_JMP_REG(BPF_JSGE, R1, R1, 1),
-+			BPF_ALU64_IMM(BPF_MOV, R0, 0),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL | FLAG_NO_DATA,
-+		{ },
-+		{ { 0, 1 } },
-+	},
-+	{
-+		"JMP_JSLE_X: dst = src -> always taken",
-+		.u.insns_int = {
-+			BPF_ALU64_IMM(BPF_MOV, R0, 1),
-+			BPF_JMP_REG(BPF_JSLE, R1, R1, 1),
-+			BPF_ALU64_IMM(BPF_MOV, R0, 0),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL | FLAG_NO_DATA,
-+		{ },
-+		{ { 0, 1 } },
-+	},
-+	{
-+		"JMP_JNE_X: dst = src -> never taken",
-+		.u.insns_int = {
-+			BPF_ALU64_IMM(BPF_MOV, R0, 1),
-+			BPF_JMP_REG(BPF_JNE, R1, R1, 1),
-+			BPF_ALU64_IMM(BPF_MOV, R0, 0),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL | FLAG_NO_DATA,
-+		{ },
-+		{ { 0, 0 } },
-+	},
-+	{
-+		"JMP_JGT_X: dst = src -> never taken",
-+		.u.insns_int = {
-+			BPF_ALU64_IMM(BPF_MOV, R0, 1),
-+			BPF_JMP_REG(BPF_JGT, R1, R1, 1),
-+			BPF_ALU64_IMM(BPF_MOV, R0, 0),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL | FLAG_NO_DATA,
-+		{ },
-+		{ { 0, 0 } },
-+	},
-+	{
-+		"JMP_JLT_X: dst = src -> never taken",
-+		.u.insns_int = {
-+			BPF_ALU64_IMM(BPF_MOV, R0, 1),
-+			BPF_JMP_REG(BPF_JLT, R1, R1, 1),
-+			BPF_ALU64_IMM(BPF_MOV, R0, 0),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL | FLAG_NO_DATA,
-+		{ },
-+		{ { 0, 0 } },
-+	},
-+	{
-+		"JMP_JSGT_X: dst = src -> never taken",
-+		.u.insns_int = {
-+			BPF_ALU64_IMM(BPF_MOV, R0, 1),
-+			BPF_JMP_REG(BPF_JSGT, R1, R1, 1),
-+			BPF_ALU64_IMM(BPF_MOV, R0, 0),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL | FLAG_NO_DATA,
-+		{ },
-+		{ { 0, 0 } },
-+	},
-+	{
-+		"JMP_JSLT_X: dst = src -> never taken",
-+		.u.insns_int = {
-+			BPF_ALU64_IMM(BPF_MOV, R0, 1),
-+			BPF_JMP_REG(BPF_JSLT, R1, R1, 1),
-+			BPF_ALU64_IMM(BPF_MOV, R0, 0),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL | FLAG_NO_DATA,
-+		{ },
-+		{ { 0, 0 } },
-+	},
- 	/* Short relative jumps */
+-	{	/* Mainly checking JIT here. */
+-		"BPF_MAXINSNS: Very long conditional jump",
+-		{ },
+-		INTERNAL | FLAG_NO_DATA,
+-		{ },
+-		{ { 0, 1 } },
+-		.fill_helper = bpf_fill_long_jmp,
+-	},
  	{
- 		"Short relative jump: offset=0",
+ 		"JMP_JA: Jump, gap, jump, ...",
+ 		{ },
+@@ -11009,6 +11033,39 @@ static struct bpf_test tests[] = {
+ 		{ },
+ 		{ { 0, 0 } },
+ 	},
++	/* Conditional branch conversions */
++	{
++		"Long conditional jump: taken at runtime",
++		{ },
++		INTERNAL | FLAG_NO_DATA,
++		{ },
++		{ { 0, 1 } },
++		.fill_helper = bpf_fill_max_jmp_taken,
++	},
++	{
++		"Long conditional jump: not taken at runtime",
++		{ },
++		INTERNAL | FLAG_NO_DATA,
++		{ },
++		{ { 0, 2 } },
++		.fill_helper = bpf_fill_max_jmp_not_taken,
++	},
++	{
++		"Long conditional jump: always taken, known at JIT time",
++		{ },
++		INTERNAL | FLAG_NO_DATA,
++		{ },
++		{ { 0, 1 } },
++		.fill_helper = bpf_fill_max_jmp_always_taken,
++	},
++	{
++		"Long conditional jump: never taken, known at JIT time",
++		{ },
++		INTERNAL | FLAG_NO_DATA,
++		{ },
++		{ { 0, 2 } },
++		.fill_helper = bpf_fill_max_jmp_never_taken,
++	},
+ 	/* Staggered jump sequences, immediate */
+ 	{
+ 		"Staggered jumps: JMP_JA",
 -- 
 2.30.2
 
