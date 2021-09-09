@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7967404AF4
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 13:49:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57235404B3D
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 13:50:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239996AbhIILt5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 07:49:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47268 "EHLO mail.kernel.org"
+        id S240038AbhIILvC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 07:51:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55120 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241770AbhIILrw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Sep 2021 07:47:52 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 71CF4611EF;
-        Thu,  9 Sep 2021 11:43:19 +0000 (UTC)
+        id S239649AbhIILs6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Sep 2021 07:48:58 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E5D666126A;
+        Thu,  9 Sep 2021 11:43:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631187800;
-        bh=HJfAW2t0hTonjZ5FlDW4q1tk06LyhkwoiHH4zkem0bc=;
+        s=k20201202; t=1631187813;
+        bh=uLZ/voZxpdGW5MEY6zifV7PeAzyie8gXGgGTSK/r0Kw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a3g60+ngxWFunZ5cN96bxkSNYKlru4Okb52qesRkio9C/IDuf6ucOX+i1kGb/nMzo
-         1g7AJafyL7g2QfaXVd/AWVYjVbiT0galZGnUtgZXXroux5Za7oYRLOebjcS36LYsd5
-         68BtG4sUE1/5BSQB+7p10NMv+/DkwlLLVA8MBo5g+Bq6laJPYkdcUOVs7Wu8rb1eF8
-         Yo1ajdCEi/22uJzzv4Uz/pb0Fsm462DlIfMVLxovyeJzTfE+MS2KOQfHP6GzO+QyA9
-         OR8ogEvoOQnkh2H+yCWtG5JRpf6lJLgds0VLxYvi7S4dBWaiUeiQrW3pc3Z/Wo/jiG
-         89GOQTXkyM9ZA==
+        b=d0K7207guq27SbIg1AdZDUt54EvRyUhBQ3S179iYweJD+Q7FNCAh1ItKj9HDikavf
+         4iL8YKNSruIn9uFHZdhhahpwb69FEmmq1la8hbu6HqxOOU600pEtW8ADa8N7MVhNSu
+         SZA4Ks61MIVATLnHIQ2xCetHUJa9cyjmbKduHZmAVP50Mr+WYJuKKfmd0aDtT62YUg
+         DYbU+sQda2rnPH779c8nPt4fVxV94ZjQ6/qMxvPeEsiS3nAR+AZlKS8uAvOrcG/hra
+         aj+6XR80yznaqjLhduEAG6jVgoCmfJ1L75Ql4YrJmEMedI9P3035ytpQ/5a8tkvWlL
+         GInLlUsXJ97+g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
+Cc:     Alex Elder <elder@linaro.org>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.14 104/252] dpaa2-switch: do not enable the DPSW at probe time
-Date:   Thu,  9 Sep 2021 07:38:38 -0400
-Message-Id: <20210909114106.141462-104-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.14 114/252] net: ipa: fix IPA v4.9 interconnects
+Date:   Thu,  9 Sep 2021 07:38:48 -0400
+Message-Id: <20210909114106.141462-114-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909114106.141462-1-sashal@kernel.org>
 References: <20210909114106.141462-1-sashal@kernel.org>
@@ -42,38 +42,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ioana Ciornei <ioana.ciornei@nxp.com>
+From: Alex Elder <elder@linaro.org>
 
-[ Upstream commit 042ad90ca7ce70f35dc5efd5b2043d2f8aceb12a ]
+[ Upstream commit 0fd75f5760b6a7a7f35dff46a6cdc4f6d1a86ee8 ]
 
-We should not enable the switch interfaces at probe time since this is
-trigged by the open callback. Remove the call dpsw_enable() which does
-exactly this.
+Three interconnects are defined for IPA version 4.9, but there
+should only be two.  They should also use names that match what's
+used for other platforms (and specified in the Device Tree binding).
 
-Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+Signed-off-by: Alex Elder <elder@linaro.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c | 6 ------
- 1 file changed, 6 deletions(-)
+ drivers/net/ipa/ipa_data-v4.9.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c
-index 98cc0133c343..5ad5419e8be3 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c
-@@ -3231,12 +3231,6 @@ static int dpaa2_switch_probe(struct fsl_mc_device *sw_dev)
- 			       &ethsw->fq[i].napi, dpaa2_switch_poll,
- 			       NAPI_POLL_WEIGHT);
- 
--	err = dpsw_enable(ethsw->mc_io, 0, ethsw->dpsw_handle);
--	if (err) {
--		dev_err(ethsw->dev, "dpsw_enable err %d\n", err);
--		goto err_free_netdev;
--	}
--
- 	/* Setup IRQs */
- 	err = dpaa2_switch_setup_irqs(sw_dev);
- 	if (err)
+diff --git a/drivers/net/ipa/ipa_data-v4.9.c b/drivers/net/ipa/ipa_data-v4.9.c
+index 798d43e1eb13..4cce5dce9215 100644
+--- a/drivers/net/ipa/ipa_data-v4.9.c
++++ b/drivers/net/ipa/ipa_data-v4.9.c
+@@ -416,18 +416,13 @@ static const struct ipa_mem_data ipa_mem_data = {
+ /* Interconnect rates are in 1000 byte/second units */
+ static const struct ipa_interconnect_data ipa_interconnect_data[] = {
+ 	{
+-		.name			= "ipa_to_llcc",
++		.name			= "memory",
+ 		.peak_bandwidth		= 600000,	/* 600 MBps */
+ 		.average_bandwidth	= 150000,	/* 150 MBps */
+ 	},
+-	{
+-		.name			= "llcc_to_ebi1",
+-		.peak_bandwidth		= 1804000,	/* 1.804 GBps */
+-		.average_bandwidth	= 150000,	/* 150 MBps */
+-	},
+ 	/* Average rate is unused for the next interconnect */
+ 	{
+-		.name			= "appss_to_ipa",
++		.name			= "config",
+ 		.peak_bandwidth		= 74000,	/* 74 MBps */
+ 		.average_bandwidth	= 0,		/* unused */
+ 	},
 -- 
 2.30.2
 
