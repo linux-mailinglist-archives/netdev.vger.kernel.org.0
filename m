@@ -2,169 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EC7D4047B1
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 11:24:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE5664047BA
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 11:29:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232842AbhIIJZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 05:25:20 -0400
-Received: from mga05.intel.com ([192.55.52.43]:7010 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232422AbhIIJZS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Sep 2021 05:25:18 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10101"; a="306302786"
-X-IronPort-AV: E=Sophos;i="5.85,279,1624345200"; 
-   d="scan'208";a="306302786"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2021 02:24:09 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.85,279,1624345200"; 
-   d="scan'208";a="696160554"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by fmsmga005.fm.intel.com with ESMTP; 09 Sep 2021 02:24:09 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.12; Thu, 9 Sep 2021 02:24:09 -0700
-Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.12; Thu, 9 Sep 2021 02:24:08 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.12 via Frontend Transport; Thu, 9 Sep 2021 02:24:08 -0700
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (104.47.73.48) by
- edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2242.12; Thu, 9 Sep 2021 02:24:08 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bFgUZLvRpNIAAh/YthMLC932x81yKJuceQmH9eI8pi+OyandH8J1bPJ/q75Mqmf2LsObkuddEPVfJpmmSlNQ12G0vLKFgsEe9IaktK6O9TpHNEirS7PuE05V5fb0LMh+dYMmMKayDHnKwfxFGO3fureFJ3GRTQKQNhvj4YEwT2XBYQGu+kBDuS6dYxxGjdA1xGve8KDZ73wI0bQEJKNXIOyxJUR08+OQGW+BS3Gq2ZBhSb6HdDjQeYNVeSUc1QleLmdoMwAuv3nzccExx/cCoKa/djOyvQTKgV44zTfaNyF6oxvyoCkEW7Plh3ffZlOEPPstT3peXJum3drtvyyapQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=n9fKmtHbiviq35kzxiDCoHW/4IdvTHwwpEH2qgsRZ2g=;
- b=CAC0B3ZrzIszI8OVaFee7YU139VVFCS3cHVJmVYBTiR2jsyAUaLh3f6SQhzRkD1GsNGviG8arLvL9dMWm+wNGcftAsVQx4IzLgAl8AEcFJVnJh+iLyt2HZUWSTAS5Kupgg9wQ0J8DWYOjzUKSmwB1kf1xB468z04Mi+Vyz2kJWBl6SrHyvytN1IRqc1cmDW0MG2+hwKXSftZ3RuhF1P1jfOzqPd2QrgNuF7/AMZ3YjW8PbDR3h5MfhIvBZrg+lpezSz+lKpY5qBjJyB5WLqUTaLc8oVf9NTW8AWLRvktwtXgnrsT6Y5eQ/V2A+zbKenhXv4QMT1a7qShKP34SWUGJg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=n9fKmtHbiviq35kzxiDCoHW/4IdvTHwwpEH2qgsRZ2g=;
- b=NNQaDOT9/Dx70QRLmqKVWiuzYRRICoWt8JiEGik9a9aVv3136CLMQjRO10v9Yd7VLJJI/KVvf6P0yffjF6qFUVkPkEbEury0VKNYOLLlmY8PqMxK0ySzCWtYZ4e9d9mNOm4JZcl+YiTfBJUpXBI/YEdfLWTxqSlhuXvRr0uwpTw=
-Received: from PH0PR11MB4951.namprd11.prod.outlook.com (2603:10b6:510:43::5)
- by PH0PR11MB5112.namprd11.prod.outlook.com (2603:10b6:510:3b::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.16; Thu, 9 Sep
- 2021 09:24:07 +0000
-Received: from PH0PR11MB4951.namprd11.prod.outlook.com
- ([fe80::58cd:3e24:745c:e221]) by PH0PR11MB4951.namprd11.prod.outlook.com
- ([fe80::58cd:3e24:745c:e221%7]) with mapi id 15.20.4415.029; Thu, 9 Sep 2021
- 09:24:07 +0000
-From:   "Machnikowski, Maciej" <maciej.machnikowski@intel.com>
-To:     "Machnikowski, Maciej" <maciej.machnikowski@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "abyagowi@fb.com" <abyagowi@fb.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "Michal Kubecek" <mkubecek@suse.cz>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>
-Subject: RE: [PATCH net-next 1/2] rtnetlink: Add new RTM_GETEECSTATE message
- to get SyncE status
-Thread-Topic: [PATCH net-next 1/2] rtnetlink: Add new RTM_GETEECSTATE message
- to get SyncE status
-Thread-Index: AQHXoNimVzUXkjuVtUCdGyBU/1Tj8auS4GqAgARwniCAAApOgIAAAHuggABqPwCAAH2kEIAAa06AgAADpCCAAE4LAIAAxVmQgACTXICAAAjlIIAAWwUAgAAPkwCAAAwiAIAAi8MggAANkZA=
-Date:   Thu, 9 Sep 2021 09:24:07 +0000
-Message-ID: <PH0PR11MB4951328A680F3D0FC7F9051CEAD59@PH0PR11MB4951.namprd11.prod.outlook.com>
-References: <PH0PR11MB49511F2017F48BBAAB2A065CEAD29@PH0PR11MB4951.namprd11.prod.outlook.com>
-        <20210906180124.33ff49ef@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <PH0PR11MB495152B03F32A5A17EDB2F6CEAD39@PH0PR11MB4951.namprd11.prod.outlook.com>
-        <20210907075509.0b3cb353@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <PH0PR11MB49512C265E090FC8741D8510EAD39@PH0PR11MB4951.namprd11.prod.outlook.com>
-        <20210907124730.33852895@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <PH0PR11MB495169997552152891A69B57EAD49@PH0PR11MB4951.namprd11.prod.outlook.com>
-        <20210908092115.191fdc28@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <PH0PR11MB4951AA3C65DD8E7612F5F396EAD49@PH0PR11MB4951.namprd11.prod.outlook.com>
-        <20210908151852.7ad8a0f1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YTlD3Gok7w/MF+g2@lunn.ch>
- <20210908165802.1d5c952d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <PH0PR11MB49516BE62562735F017470A4EAD59@PH0PR11MB4951.namprd11.prod.outlook.com>
-In-Reply-To: <PH0PR11MB49516BE62562735F017470A4EAD59@PH0PR11MB4951.namprd11.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-reaction: no-action
-dlp-version: 11.5.1.3
-dlp-product: dlpe-windows
-authentication-results: intel.com; dkim=none (message not signed)
- header.d=none;intel.com; dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: dc485084-82ee-40a5-1e8a-08d973739330
-x-ms-traffictypediagnostic: PH0PR11MB5112:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <PH0PR11MB5112AC3484821B21627A56F7EAD59@PH0PR11MB5112.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: SnU69RXSDuiB5kwZKcDt5+Crfx4Joc2Gj+T3TTqJoGOBx+xA/R46LkpDOqR/h+//wqoBD8f3R1W7Rqw8aWAUMYcUz15cwBQ4KbxU7O0ysWpl7R2jmUSyi/7nDfyR3lJC6aLG8tkmTCikeW2xaZq+AC0dey/eUYY+b+FjXsvwPKnYwtLfvl79NpnULm81+LUlWumRD65i8KkM2m+rVuM8VC+dB1l775Nj3fXNc7yatoie4yDmfzrCjSW7qIxSxupxSHWoBuEbpc++iZD98gxuvZivhPWtAOeJQvnhc9w2jXd2Lf5VEPen/Njbgc8xMGSgvK+5Uok2ZIT7oh7wYmmZTO3wNM633OEoL9I8K3VuPA7ruKhozwBlrGmNK8QyvhH9B+Mha/a/MNi09mmbYN3KM1EtH3jkwj4hsGIAYXYN+iKA+iE1v8VJQyBz+aIcwh1OItjJ6489/UBX7wYcYTUxvh3ydOXy6E6Y3CeXtRVyPn5zSQuScNQufALs/Wj+SAzpnARCScRJN+xgWKQI50pfBWQEnEURwqAWEHCm8ghoGLjDaDnjsdHqNwZtMw+bU/bOTD3YGXBLhIYrtozY+ypx00XA1oNJHYdthQAQWSIpU5stXoPA2jQGz1KMHuCtbNnevr8gNb6Kxw46qLmc3rPTLM0IwoBljH3eVUZ5yDo71f3jb/2cNl+g6jDaTR3Wd0wB/ItkVGdWVdK0xwqzdqo5lQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB4951.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(346002)(376002)(39860400002)(396003)(136003)(186003)(26005)(7696005)(38070700005)(54906003)(83380400001)(71200400001)(110136005)(2906002)(316002)(6506007)(9686003)(7416002)(76116006)(4744005)(55016002)(478600001)(5660300002)(52536014)(4326008)(8676002)(66446008)(64756008)(66476007)(66946007)(66556008)(8936002)(2940100002)(33656002)(122000001)(86362001)(38100700002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?GEHZaZKu4JhGReSxHJCzgFrVEYL8D6IYS1oi9+uZIsLI9uMbcuC8j+jKi+t8?=
- =?us-ascii?Q?vEZOM7tsTBWAhOaPFOwjCIr80zLkzuyfm3kLwrbd+U48lRRhKxEnnHE1pB9i?=
- =?us-ascii?Q?miIG0lDyckZLeJK8MVIgebC85ktCQMIykRew77OLC5MCD5kyGMAimiWhpO1z?=
- =?us-ascii?Q?PykKcs7dhpt/2016ZXx8xv6Snlo7RdkAoMIfilTDdsVP/U/awlhg5PjTb7++?=
- =?us-ascii?Q?aMBLqMNvohfrh4IcHe/ChMn3NiJ+a77tY2Uneycn4LM33qvDXksCgPtpxQ2b?=
- =?us-ascii?Q?r4IpB12VyzTbrlA7/giOYlHRkPOp9pMFt0C2eZPqtuuKPtl5wBE6tGdU32aO?=
- =?us-ascii?Q?Z6grfx8dOrjuTD/p0VCD85q9AemYrkWbPkCfYcydMI1mL+6j0wM7W9ay/Gkd?=
- =?us-ascii?Q?GfL7ZEvlrsUXbsanPYBEJDye2PHOVxra3p80LLZ+dIfmflIC8Vp10b5jb8L3?=
- =?us-ascii?Q?upPZC+cdkoXPQJzNbNizCIsn9xV0wHirxFi1qHaMi1pG7pY0+/WPbuTsZgQ2?=
- =?us-ascii?Q?qb79mwqxoJ2ewaPSvade9TXiVd2Dxl6YVtuZJMr0zZ59Yb1QkWeFbhuIgcIO?=
- =?us-ascii?Q?t6RavgnL7US/IsdVFWdm0JAugP5s0s40nR9mPhOsxlDOWLzI5K+QPXt6U5V2?=
- =?us-ascii?Q?BA661177N9dLdB3Jq7a8rLk7yaUy/PiT1S9H2K8OJPRMeEwBo1G24YinYvDN?=
- =?us-ascii?Q?e4NI5xv8GAqtHpT1lXmqy+se4E7L+y6W5Xo7zf7/Gufpxsz/ESqnZ6ee9P3S?=
- =?us-ascii?Q?2KDSG0KJu0UwfiAW3Pl49BB6LUTFggPHXgWzRLOy35VN8jjvW47M5eNDViEV?=
- =?us-ascii?Q?b50C3yC5W4HsXyx2dg4apWcNrwqeHwWBn9QTah7L0QohQu3RIl+GWlXrV+Wz?=
- =?us-ascii?Q?bq6Uo4UBIiqdAoz20ptpsJZpcDjYX2K89P89j69QAyM8fE6XZ/Zv896PIkZj?=
- =?us-ascii?Q?UGTeYKS6Iwds5NClD+dyANhtaJUdCfbRmiba4GxMaCIXBViz3zm6gHk5lD9v?=
- =?us-ascii?Q?ZeshFOecgPQe+Gk0AxN2jUwHmo3373WusMykVklSNXJ6FnsGQctVdA0rSbav?=
- =?us-ascii?Q?mitn2YqxNYTzAloK6WOQINuwaU2vpmfwFlll67r03ZdgemeIvago50Gqvxfv?=
- =?us-ascii?Q?4PGTEkjBFxl+h/cq2RKVckLq7784S1984iUfnMhmkjKQ1r2kouxSbLbAekpR?=
- =?us-ascii?Q?vMIholW/UWm+8KPV4K+QvWZLsj7ppiK97ngPpDul+xB8hwfMxOGgwIF71QUd?=
- =?us-ascii?Q?LVIUBulsbCSqVWUWeO9e0Q2zUfmv6tbuVtwOTxenr6wuaJ8P3V/mNcaGaQ2v?=
- =?us-ascii?Q?8EM=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S232936AbhIIJaO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 05:30:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:58740 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232860AbhIIJaN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 05:30:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1631179744;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=UJFJy/0BaHlqH2c/JRnf3STy2KHZHL1KbjWxtW7U0ZQ=;
+        b=hjW9UcTbcpUgwlkhfMldglBKv859RBhN4igD6T8Zbl8hVCRZwFF8+9NdvGKRz+i8PyfF63
+        XSny1Do2VkmYSmpde2SITCg1I2ga4qm7HUt20R4LKifk9xS3IQoYRAgI15aAsa9ulrA+of
+        3t5LVXGh9TUT+n1cspqj5ATlDaXN09I=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-219-Oim_kd1VMBiqgQPgoIWmcg-1; Thu, 09 Sep 2021 05:29:03 -0400
+X-MC-Unique: Oim_kd1VMBiqgQPgoIWmcg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8311E1030C23;
+        Thu,  9 Sep 2021 09:29:01 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.39.192.151])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CBA87177F1;
+        Thu,  9 Sep 2021 09:28:58 +0000 (UTC)
+From:   =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+To:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
+        john.fastabend@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+Subject: [PATCH net 0/2] sfc: fallback for lack of xdp tx queues
+Date:   Thu,  9 Sep 2021 11:28:44 +0200
+Message-Id: <20210909092846.18217-1-ihuguet@redhat.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB4951.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dc485084-82ee-40a5-1e8a-08d973739330
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Sep 2021 09:24:07.5999
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 8XCTeORUh7DgwWM2Ixc8Bvi7ZZmWN4Zdlr0HW4x7923Y9/Pdw0IWQk2HJ2FtbEG94YXoLf8OPg+LMBVf/WaDAeqwCKSnNefbnEHoZwnMlVI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB5112
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dave,
+If there are not enough hardware resources to allocate one tx queue per
+CPU for XDP, XDP_TX and XDP_REDIRECT actions were unavailable, and using
+them resulted each time with the packet being drop and this message in
+the logs: XDP TX failed (-22)
 
-Are there any free slots on Plumbers to discuss and close on SyncE interfac=
-es=20
-(or can we add an extra one). I can reuse the slides from the Netdev to giv=
-e=20
-background and a live discussion may help closing opens around it,
-and I'd be happy to co-present with anyone who wants to also join this effo=
-rt.
+These patches implement 2 fallback solutions for 2 different situations
+that might happen:
+1. There are not enough free resources for all the tx queues, but there
+   are some free resources available
+2. There are not enough free resources at all for tx queues.
 
-Regards
-Maciek
+Both solutions are based in sharing tx queues, using __netif_tx_lock for
+synchronization. In the second case, as there are not XDP TX queues to
+share, network stack queues are used instead, but since we're taking
+__netif_tx_lock, concurrent access to the queues is correctly protected.
+
+The solution for this second case might affect performance both of XDP
+traffic and normal traffice due to lock contention if both are used
+intensively. That's why I call it a "last resort" fallback: it's not a
+desirable situation, but at least we have XDP TX working.
+
+Some tests has shown good results and indicate that the non-fallback
+case is not being damaged by this changes. They are also promising for
+the fallback cases. This is the test:
+1. From another machine, send high amount of packets with pktgen, script
+   samples/pktgen/pktgen_sample04_many_flows.sh
+2. In the tested machine, run samples/bpf/xdp_rxq_info with arguments
+   "-a XDP_TX --swapmac" and see the results
+3. In the tested machine, run also pktgen_sample04 to create high TX
+   normal traffic, and see how xdp_rxq_info results vary
+
+Note that this test doesn't check the worst situations for the fallback
+solutions because XDP_TX will only be executed from the same CPUs that
+are processed by sfc, and not from every CPU in the system, so the
+performance drop due to the highest locking contention doesn't happen.
+I'd like to test that, as well, but I don't have access right now to a
+proper environment.
+
+Test results:
+
+Without doing TX:
+Before changes: ~2,900,000 pps
+After changes, 1 queues/core: ~2,900,000 pps
+After changes, 2 queues/core: ~2,900,000 pps
+After changes, 8 queues/core: ~2,900,000 pps
+After changes, borrowing from network stack: ~2,900,000 pps
+
+With multiflow TX at the same time:
+Before changes: ~1,700,000 - 2,900,000 pps
+After changes, 1 queues/core: ~1,700,000 - 2,900,000 pps
+After changes, 2 queues/core: ~1,700,000 pps
+After changes, 8 queues/core: ~1,700,000 pps
+After changes, borrowing from network stack: 1,150,000 pps
+
+Sporadic "XDP TX failed (-5)" warnings are shown when running xdp program
+and pktgen simultaneously. This was expected because XDP doesn't have any
+buffering system if the NIC is under very high pressure. Thousands of
+these warnings are shown in the case of borrowing net stack queues. As I
+said before, this was also expected.
+
+
+Íñigo Huguet (2):
+  sfc: fallback for lack of xdp tx queues
+  sfc: last resort fallback for lack of xdp tx queues
+
+ drivers/net/ethernet/sfc/efx_channels.c | 98 ++++++++++++++++++-------
+ drivers/net/ethernet/sfc/net_driver.h   |  8 ++
+ drivers/net/ethernet/sfc/tx.c           | 29 ++++++--
+ 3 files changed, 99 insertions(+), 36 deletions(-)
+
+-- 
+2.31.1
+
