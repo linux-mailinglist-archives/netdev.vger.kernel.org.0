@@ -2,83 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8B6840599D
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 16:47:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0B094059AC
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 16:49:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240885AbhIIOsT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 10:48:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48330 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239137AbhIIOsJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 10:48:09 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDD28C0698DE;
-        Thu,  9 Sep 2021 07:39:20 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id z4so2908640wrr.6;
-        Thu, 09 Sep 2021 07:39:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Nn30ccIH4JoWD6yLd4SqcwwQB1qB1pHSCA5yIkmN8mQ=;
-        b=fR1EXGC+uJQQ64WeKXfdo3uxWGtDr7y/vk/GRzYs3SYdxIkhM+8f2DoUN7ER/DckyK
-         fvnT7CeJxWFJ8fHx9EU4sPELcZfjZ6o3FSC1/4sq8ZJHV1xUY3QCX2N3XyHNhfWm5muB
-         OIPJwdaC6bFvjMynm7lm4UlqJgUGeZc3XcBYJGKJfLERneQX1l54SxFNtPW6d6Y4Ue5A
-         9K6E+i2btsG8QBgEOcaXJCMDvekIQf2sylYn4BQrfOa1yGRsFHxHxktEXeq22yDSiHlj
-         TwUMPjimUpMOWDVF3cdZ0DpmQxeJ9PKjLKjfFez2WtpQRAC3Udevzfv7ft84mrCNMk46
-         dW3g==
+        id S241675AbhIIOuf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 10:50:35 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:53388 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236703AbhIIOuP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 10:50:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1631198931;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=u9JDbGLr6dkNUoEd0zlqfw7GomTfOIulFrb+2DtUYJA=;
+        b=B5M6iD8/K4Z+0ryZ6P9C5iJ8iTkROoppGr4NM+Sk8/spmB5Y07HkrGwrLKEq+DoDUolk+9
+        IsXYdR1qQIugo5SlrFqRHElcviVLBWLQPYRHbl5gRj75q7t2M16IMre3/+PZt2ZddJvPjG
+        qgi2usmXOilo0hqluxKiQjnL2Y4LbFU=
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com
+ [209.85.166.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-599-mWGvMC43N8a7-SUFUFf7Iw-1; Thu, 09 Sep 2021 10:48:50 -0400
+X-MC-Unique: mWGvMC43N8a7-SUFUFf7Iw-1
+Received: by mail-io1-f70.google.com with SMTP id d23-20020a056602281700b005b5b34670c7so2059259ioe.12
+        for <netdev@vger.kernel.org>; Thu, 09 Sep 2021 07:48:49 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Nn30ccIH4JoWD6yLd4SqcwwQB1qB1pHSCA5yIkmN8mQ=;
-        b=AZOWlVIUfihLI837B3qRhD0zUV7bk4pCa14+GkKeJqvkJs4W8fHWsjey7ZiZuPpl7i
-         2khQ9vtpoALz+9335MD2exvVvNLr888+JJGQSrjK+LutjteoxXxdORD5B9xmqGEmixW5
-         EhkbddNEgB3Xro/5tIwYKYgS73dz6gahMf30HI5k/JiL/KP2a4waQ8saI9A2TZMJI3Lm
-         SdjQDquTRNJB01/EJ/C7FCs5iTRUUk9zXxNDNtgMUkpmksGz+7m85dYBj4wIOqgPazz7
-         MY5M7WJpTGeIJxoGI7LQDIverTKOCxuq/byj+M3CXGyIoj/B7y2HJ0DYGbrO/E/Yq7kd
-         byWg==
-X-Gm-Message-State: AOAM532nWQj2XL0xbGvbqPhLlTbcKSFZOia3TWSmd4JfLbj3XPKj+q1J
-        gDIiXR8wSMQLWblL+sBsDtw4Qe3XAmKPAw==
-X-Google-Smtp-Source: ABdhPJwrxlwFsCmqwVWSXKZgDNYjJYVLduuehkklCjsdf37obwJjiX6yDFHueOSCYQQ/Q8IoMhNsmA==
-X-Received: by 2002:a5d:4488:: with SMTP id j8mr4044189wrq.260.1631198359342;
-        Thu, 09 Sep 2021 07:39:19 -0700 (PDT)
-Received: from [80.5.213.92] (cpc108963-cmbg20-2-0-cust347.5-4.cable.virginm.net. [80.5.213.92])
-        by smtp.gmail.com with ESMTPSA id n4sm1724249wme.31.2021.09.09.07.39.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 09 Sep 2021 07:39:18 -0700 (PDT)
-Subject: Re: [PATCH net 0/2] sfc: fallback for lack of xdp tx queues
-To:     =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>,
-        habetsm.xilinx@gmail.com, davem@davemloft.net, kuba@kernel.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
-References: <20210909092846.18217-1-ihuguet@redhat.com>
-From:   Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <5233eedf-42a7-f938-67cd-e7acc5f3bbce@gmail.com>
-Date:   Thu, 9 Sep 2021 15:39:17 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=u9JDbGLr6dkNUoEd0zlqfw7GomTfOIulFrb+2DtUYJA=;
+        b=ToEEt9sSf9l5grpMOq7aaPjASV2J5FKrU95ges14piIshYb/8zpN6d987ihltHs9HQ
+         Z+ems+Mg6dWHDVpWA7BXOGZGFTlwBoaF1466mWd4yT4DSaVXbWy/YFNBNuCnoQthu9Sy
+         i0lG8lDmafAQEAb9cmYd6kLmliFnKlPi+7+E3fOekKSPR++nJdr9d2nFhkH2kgb1+GC+
+         gmYEG/kSXiEXDqLk2YQkweCezPuafwSQvWWL+O7KKjEGnyknI3+qC9pkTYclKTpZAALa
+         +6eXb7/R/XIXgZoTSdPlxr8ajo4LOJbMPUStK9MLhXpo/bVlV6ETeOKQEq/uiRyPhxTB
+         B6xw==
+X-Gm-Message-State: AOAM5320G9VZChxGbaHgDHwGnooKd3Ar2JTVPVGREIIR93y1nLLsjthc
+        vUquORMfcBRwt69ZNFxomCsaigaiKGuBGRV86QN+V4hFscuoUav9uIG542bWXrgvJQ8hen6SZa7
+        2xM8pVhH4/oLcTcSAvrYGjIAf+oOsIY66
+X-Received: by 2002:a6b:3f02:: with SMTP id m2mr2975596ioa.136.1631198929422;
+        Thu, 09 Sep 2021 07:48:49 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzG1bHzR6MK4Ss51+mBC39dYSC8m50NMcEX5BeZwpBtCi4rKCrXEQfCjjQYKDJ4jPW6l0G3Uz+rBGHTewBW09Y=
+X-Received: by 2002:a6b:3f02:: with SMTP id m2mr2975576ioa.136.1631198929227;
+ Thu, 09 Sep 2021 07:48:49 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210909092846.18217-1-ihuguet@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
+References: <20210909092846.18217-1-ihuguet@redhat.com> <5233eedf-42a7-f938-67cd-e7acc5f3bbce@gmail.com>
+In-Reply-To: <5233eedf-42a7-f938-67cd-e7acc5f3bbce@gmail.com>
+From:   =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>
+Date:   Thu, 9 Sep 2021 16:48:38 +0200
+Message-ID: <CACT4ouf64jvpjUcmfJ=hc0SjrSGYx4QFL0j6sEitMWi-kjp47A@mail.gmail.com>
+Subject: Re: [PATCH net 0/2] sfc: fallback for lack of xdp tx queues
+To:     Edward Cree <ecree.xilinx@gmail.com>
+Cc:     habetsm.xilinx@gmail.com, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, ast@kernel.org,
+        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/09/2021 10:28, Íñigo Huguet wrote:
-> Íñigo Huguet (2):
->   sfc: fallback for lack of xdp tx queues
->   sfc: last resort fallback for lack of xdp tx queues
-Patches LGTM, thanks for working on this.
+On Thu, Sep 9, 2021 at 4:39 PM Edward Cree <ecree.xilinx@gmail.com> wrote:
+> Patches LGTM, thanks for working on this.
+>
+> However, I would like to grumble a bit about process: firstly I would
+>  have thought this was more net-next than net material.
 
-However, I would like to grumble a bit about process: firstly I would
- have thought this was more net-next than net material.
-Secondly and more importantly, I would really have liked to have had
- more than 72 minutes to review this before it was applied.  Dave, I
- realise you never sleep, but the rest of us occasionally have to :P
+I intended to send it for net-next, but by mistake I tagged it as net.
+Sorry, my fault.
 
--ed
+> Secondly and more importantly, I would really have liked to have had
+>  more than 72 minutes to review this before it was applied.  Dave, I
+>  realise you never sleep, but the rest of us occasionally have to :P
+
+I go to sleep now too, or at least rest a bit  :-P
+--=20
+=C3=8D=C3=B1igo Huguet
+
