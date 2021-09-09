@@ -2,50 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 138A140484D
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 12:16:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB87B40484E
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 12:16:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233647AbhIIKRL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 06:17:11 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:52008 "EHLO
-        mail.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230153AbhIIKRK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 06:17:10 -0400
-Received: from localhost (unknown [149.11.102.75])
-        by mail.monkeyblade.net (Postfix) with ESMTPSA id E4FD14F65C2E3;
-        Thu,  9 Sep 2021 03:15:57 -0700 (PDT)
-Date:   Thu, 09 Sep 2021 11:15:52 +0100 (BST)
-Message-Id: <20210909.111552.1875064195273792824.davem@davemloft.net>
-To:     maciej.machnikowski@intel.com
-Cc:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        richardcochran@gmail.com, abyagowi@fb.com,
-        anthony.l.nguyen@intel.com, linux-kselftest@vger.kernel.org,
-        mkubecek@suse.cz, saeed@kernel.org, michael.chan@broadcom.com,
-        kuba@kernel.org, andrew@lunn.ch
-Subject: Re: [PATCH net-next 1/2] rtnetlink: Add new RTM_GETEECSTATE
- message to get SyncE status
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <PH0PR11MB4951328A680F3D0FC7F9051CEAD59@PH0PR11MB4951.namprd11.prod.outlook.com>
-References: <20210908165802.1d5c952d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <PH0PR11MB49516BE62562735F017470A4EAD59@PH0PR11MB4951.namprd11.prod.outlook.com>
-        <PH0PR11MB4951328A680F3D0FC7F9051CEAD59@PH0PR11MB4951.namprd11.prod.outlook.com>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Thu, 09 Sep 2021 03:16:00 -0700 (PDT)
+        id S233434AbhIIKRS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 06:17:18 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:34740 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230153AbhIIKRR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Sep 2021 06:17:17 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 5DEF320536;
+        Thu,  9 Sep 2021 12:16:07 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 1xaOSM7Z8LQF; Thu,  9 Sep 2021 12:16:03 +0200 (CEST)
+Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 6A488201E2;
+        Thu,  9 Sep 2021 12:16:03 +0200 (CEST)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout2.secunet.com (Postfix) with ESMTP id 6473980004A;
+        Thu,  9 Sep 2021 12:16:03 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Thu, 9 Sep 2021 12:16:03 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Thu, 9 Sep
+ 2021 12:16:02 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id A07433181BF3; Thu,  9 Sep 2021 12:16:02 +0200 (CEST)
+Date:   Thu, 9 Sep 2021 12:16:02 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     kernel test robot <lkp@intel.com>
+CC:     Eugene Syromiatnikov <esyr@redhat.com>, <kbuild-all@lists.01.org>,
+        <netdev@vger.kernel.org>, "Dmitry V. Levin" <ldv@altlinux.org>
+Subject: Re: [ipsec:testing 1/2] include/linux/compiler_types.h:328:38:
+ error: call to '__compiletime_assert_633' declared with attribute error:
+ BUILD_BUG_ON failed: XFRM_MSG_MAX != XFRM_MSG_MAPPING
+Message-ID: <20210909101602.GG9115@gauss3.secunet.de>
+References: <202109082146.dl8o0gJv-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <202109082146.dl8o0gJv-lkp@intel.com>
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Machnikowski, Maciej" <maciej.machnikowski@intel.com>
-Date: Thu, 9 Sep 2021 09:24:07 +0000
-
-> Dave,
+On Wed, Sep 08, 2021 at 09:15:53PM +0800, kernel test robot wrote:
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/klassert/ipsec.git testing
+> head:   f693aa9c98e4e3347930f928c123bb2460317fe0
+> commit: 56e47fcb5c6150e22c5a591833d67c3ae7a4e9be [1/2] include/uapi/linux/xfrm.h: Fix XFRM_MSG_MAPPING ABI breakage
+> config: x86_64-randconfig-a005-20210908 (attached as .config)
+> compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+> reproduce (this is a W=1 build):
+>         # https://git.kernel.org/pub/scm/linux/kernel/git/klassert/ipsec.git/commit/?id=56e47fcb5c6150e22c5a591833d67c3ae7a4e9be
+>         git remote add ipsec https://git.kernel.org/pub/scm/linux/kernel/git/klassert/ipsec.git
+>         git fetch --no-tags ipsec testing
+>         git checkout 56e47fcb5c6150e22c5a591833d67c3ae7a4e9be
+>         # save the attached .config to linux build tree
+>         mkdir build_dir
+>         make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 > 
-> Are there any free slots on Plumbers to discuss and close on SyncE interfaces 
-> (or can we add an extra one). I can reuse the slides from the Netdev to give 
-> background and a live discussion may help closing opens around it,
-> and I'd be happy to co-present with anyone who wants to also join this effort.
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All errors (new ones prefixed by >>):
+> 
+>    In file included from <command-line>:
+>    security/selinux/nlmsgtab.c: In function 'selinux_nlmsg_lookup':
+> >> include/linux/compiler_types.h:328:38: error: call to '__compiletime_assert_633' declared with attribute error: BUILD_BUG_ON failed: XFRM_MSG_MAX != XFRM_MSG_MAPPING
 
-Sorry, I think it's much too late for this.
+Eugene, I had to drop this patch for now.
+Please fix and resend, thanks!
