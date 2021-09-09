@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35E93404D2C
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:02:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E68BB404D5A
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:03:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239060AbhIIMBA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 08:01:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34410 "EHLO mail.kernel.org"
+        id S245758AbhIIMCA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 08:02:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41686 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1343998AbhIIL6e (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Sep 2021 07:58:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EF36F613D1;
-        Thu,  9 Sep 2021 11:45:41 +0000 (UTC)
+        id S1345651AbhIIL7v (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Sep 2021 07:59:51 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A259C6141B;
+        Thu,  9 Sep 2021 11:46:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631187942;
-        bh=FJDEMwktXn6qoOVuuZ3UsTrU/a8iOrq0C9h8bgYPG6s=;
+        s=k20201202; t=1631187963;
+        bh=P9ZjK+o2s9regC1QoJWaKrnsuGmcJw2S4q1Z0fD9Cko=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=agnM9wyK991SiTKcGukADw7WlRFbjYkIUwuxXboMZMpjtsunOcZsXMQMTAMqwaslM
-         AR+DeSUzb2GEbAnarUQyK5y9nXu7zzzJJmvpM/4eqsknn96ZFmi865ZzfJKstFEwn0
-         tjjlHkdteK60W/spUQQKAdxb6Vm449x8KtiTjb5JIRkjD3vOwLyKT+pgTTMP6gQdXQ
-         r8O/5qD2V2zUGov7Bm1SiqbI22unQ78MnNqKBdDmaycTfxNOzOTAdsAADR/cWsguLr
-         1J5IlrqW098i+rOy/RP+SjA4cK1g0OVz7hUdwIAbQ4sD9m98wqDiXA5FRiwz9qty27
-         jBZAVETV1NmiQ==
+        b=YGNH3Nxs5+gZ4DA7ifjEUB/RawJsszF6Swa5z0laKEukhR8Yp1PxyGlwQpefOxVZd
+         /bcp786lFyFtWPtGNVOtUjjXXAwW75NF7QAgPSCJioznG2o6nTnldmsTtQhT/X/BmL
+         v1YC+X6yqGXgUjL/4nHOLsSkzv60PNXxqKyjvSWeBD5eBK30S0FDKZeNEVCh1fuwQz
+         +r9yXHwMtnQ1ZAX5THMdsWsokZT5YXo5dr0XUQCMHdmYtBRNw2qWDJeanVEwnlpqf/
+         OXQ3ych9xPEkqncsiQZDCsMxmpQi5ofAjnGMSF4RkcYMdojK/+TTDLFry1Lr97L7Ng
+         oTtWY8qdEgXBQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Subbaraya Sundeep <sbhatta@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.14 212/252] octeontx2-pf: cleanup transmit link deriving logic
-Date:   Thu,  9 Sep 2021 07:40:26 -0400
-Message-Id: <20210909114106.141462-212-sashal@kernel.org>
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.14 228/252] iwlwifi: pcie: free RBs during configure
+Date:   Thu,  9 Sep 2021 07:40:42 -0400
+Message-Id: <20210909114106.141462-228-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909114106.141462-1-sashal@kernel.org>
 References: <20210909114106.141462-1-sashal@kernel.org>
@@ -43,142 +43,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Subbaraya Sundeep <sbhatta@marvell.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 039190bb353a16657b44c5833bcad57e029c6934 ]
+[ Upstream commit 6ac5720086c8b176794eb74c5cc09f8b79017f38 ]
 
-Unlike OcteonTx2, the channel numbers used by CGX/RPM
-and LBK on CN10K silicons aren't fixed in HW. They are
-SW programmable, hence we cannot derive transmit link
-from static channel numbers anymore. Get the same from
-admin function via mailbox.
+When switching op-modes, or more generally when reconfiguring,
+we might switch the RB size. In _iwl_pcie_rx_init() we have a
+comment saying we must free all RBs since we might switch the
+size, but this is actually too late: the switch has been done
+and we'll free the buffers with the wrong size.
 
-Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fix this by always freeing the buffers, if any, at the start
+of configure, instead of only after the size may have changed.
+
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20210802170640.42d7c93279c4.I07f74e65aab0e3d965a81206fcb289dc92d74878@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/marvell/octeontx2/af/mbox.h  |  1 +
- .../ethernet/marvell/octeontx2/af/rvu_nix.c   |  9 ++++++--
- .../marvell/octeontx2/nic/otx2_common.c       | 23 ++-----------------
- .../marvell/octeontx2/nic/otx2_common.h       |  1 +
- 4 files changed, 11 insertions(+), 23 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/pcie/rx.c    | 5 ++++-
+ drivers/net/wireless/intel/iwlwifi/pcie/trans.c | 3 +++
+ 2 files changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-index f5ec39de026a..05f4334700e9 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-@@ -717,6 +717,7 @@ struct nix_lf_alloc_rsp {
- 	u8	cgx_links;  /* No. of CGX links present in HW */
- 	u8	lbk_links;  /* No. of LBK links present in HW */
- 	u8	sdp_links;  /* No. of SDP links present in HW */
-+	u8	tx_link;    /* Transmit channel link number */
- };
+diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/rx.c b/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
+index 4f6f4b2720f0..ff7ca3c57f34 100644
+--- a/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
++++ b/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
+@@ -487,6 +487,9 @@ void iwl_pcie_free_rbs_pool(struct iwl_trans *trans)
+ 	struct iwl_trans_pcie *trans_pcie = IWL_TRANS_GET_PCIE_TRANS(trans);
+ 	int i;
  
- struct nix_lf_free_req {
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-index 4bfbbdf38770..592230c3e171 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-@@ -249,9 +249,11 @@ static bool is_valid_txschq(struct rvu *rvu, int blkaddr,
- 	return true;
- }
- 
--static int nix_interface_init(struct rvu *rvu, u16 pcifunc, int type, int nixlf)
-+static int nix_interface_init(struct rvu *rvu, u16 pcifunc, int type, int nixlf,
-+			      struct nix_lf_alloc_rsp *rsp)
- {
- 	struct rvu_pfvf *pfvf = rvu_get_pfvf(rvu, pcifunc);
-+	struct rvu_hwinfo *hw = rvu->hw;
- 	struct mac_ops *mac_ops;
- 	int pkind, pf, vf, lbkid;
- 	u8 cgx_id, lmac_id;
-@@ -276,6 +278,8 @@ static int nix_interface_init(struct rvu *rvu, u16 pcifunc, int type, int nixlf)
- 		pfvf->tx_chan_base = pfvf->rx_chan_base;
- 		pfvf->rx_chan_cnt = 1;
- 		pfvf->tx_chan_cnt = 1;
-+		rsp->tx_link = cgx_id * hw->lmac_per_cgx + lmac_id;
++	if (!trans_pcie->rx_pool)
++		return;
 +
- 		cgx_set_pkind(rvu_cgx_pdata(cgx_id, rvu), lmac_id, pkind);
- 		rvu_npc_set_pkind(rvu, pkind, pfvf);
+ 	for (i = 0; i < RX_POOL_SIZE(trans_pcie->num_rx_bufs); i++) {
+ 		if (!trans_pcie->rx_pool[i].page)
+ 			continue;
+@@ -1062,7 +1065,7 @@ static int _iwl_pcie_rx_init(struct iwl_trans *trans)
+ 	INIT_LIST_HEAD(&rba->rbd_empty);
+ 	spin_unlock_bh(&rba->lock);
  
-@@ -309,6 +313,7 @@ static int nix_interface_init(struct rvu *rvu, u16 pcifunc, int type, int nixlf)
- 					rvu_nix_chan_lbk(rvu, lbkid, vf + 1);
- 		pfvf->rx_chan_cnt = 1;
- 		pfvf->tx_chan_cnt = 1;
-+		rsp->tx_link = hw->cgx_links + lbkid;
- 		rvu_npc_set_pkind(rvu, NPC_RX_LBK_PKIND, pfvf);
- 		rvu_npc_install_promisc_entry(rvu, pcifunc, nixlf,
- 					      pfvf->rx_chan_base,
-@@ -1258,7 +1263,7 @@ int rvu_mbox_handler_nix_lf_alloc(struct rvu *rvu,
- 	rvu_write64(rvu, blkaddr, NIX_AF_LFX_TX_PARSE_CFG(nixlf), cfg);
+-	/* free all first - we might be reconfigured for a different size */
++	/* free all first - we overwrite everything here */
+ 	iwl_pcie_free_rbs_pool(trans);
  
- 	intf = is_afvf(pcifunc) ? NIX_INTF_TYPE_LBK : NIX_INTF_TYPE_CGX;
--	err = nix_interface_init(rvu, pcifunc, intf, nixlf);
-+	err = nix_interface_init(rvu, pcifunc, intf, nixlf, rsp);
- 	if (err)
- 		goto free_mem;
- 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-index 211200879b3e..791046eb9604 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-@@ -572,25 +572,6 @@ void otx2_get_mac_from_af(struct net_device *netdev)
- }
- EXPORT_SYMBOL(otx2_get_mac_from_af);
- 
--static int otx2_get_link(struct otx2_nic *pfvf)
--{
--	int link = 0;
--	u16 map;
--
--	/* cgx lmac link */
--	if (pfvf->hw.tx_chan_base >= CGX_CHAN_BASE) {
--		map = pfvf->hw.tx_chan_base & 0x7FF;
--		link = 4 * ((map >> 8) & 0xF) + ((map >> 4) & 0xF);
--	}
--	/* LBK channel */
--	if (pfvf->hw.tx_chan_base < SDP_CHAN_BASE) {
--		map = pfvf->hw.tx_chan_base & 0x7FF;
--		link = pfvf->hw.cgx_links | ((map >> 8) & 0xF);
--	}
--
--	return link;
--}
--
- int otx2_txschq_config(struct otx2_nic *pfvf, int lvl)
+ 	for (i = 0; i < RX_QUEUE_SIZE; i++)
+diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
+index bee6b4574226..65cc25cbb9ec 100644
+--- a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
++++ b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
+@@ -1866,6 +1866,9 @@ static void iwl_trans_pcie_configure(struct iwl_trans *trans,
  {
- 	struct otx2_hw *hw = &pfvf->hw;
-@@ -646,8 +627,7 @@ int otx2_txschq_config(struct otx2_nic *pfvf, int lvl)
- 		req->regval[1] = TXSCH_TL1_DFLT_RR_PRIO << 24 | DFLT_RR_QTM;
+ 	struct iwl_trans_pcie *trans_pcie = IWL_TRANS_GET_PCIE_TRANS(trans);
  
- 		req->num_regs++;
--		req->reg[2] = NIX_AF_TL3_TL2X_LINKX_CFG(schq,
--							otx2_get_link(pfvf));
-+		req->reg[2] = NIX_AF_TL3_TL2X_LINKX_CFG(schq, hw->tx_link);
- 		/* Enable this queue and backpressure */
- 		req->regval[2] = BIT_ULL(13) | BIT_ULL(12);
- 
-@@ -1592,6 +1572,7 @@ void mbox_handler_nix_lf_alloc(struct otx2_nic *pfvf,
- 	pfvf->hw.lso_tsov6_idx = rsp->lso_tsov6_idx;
- 	pfvf->hw.cgx_links = rsp->cgx_links;
- 	pfvf->hw.lbk_links = rsp->lbk_links;
-+	pfvf->hw.tx_link = rsp->tx_link;
- }
- EXPORT_SYMBOL(mbox_handler_nix_lf_alloc);
- 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-index 8fd58cd07f50..93b17bbb9b44 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-@@ -212,6 +212,7 @@ struct otx2_hw {
- 	u64			cgx_fec_uncorr_blks;
- 	u8			cgx_links;  /* No. of CGX links present in HW */
- 	u8			lbk_links;  /* No. of LBK links present in HW */
-+	u8			tx_link;    /* Transmit channel link number */
- #define HW_TSO			0
- #define CN10K_MBOX		1
- #define CN10K_LMTST		2
++	/* free all first - we might be reconfigured for a different size */
++	iwl_pcie_free_rbs_pool(trans);
++
+ 	trans->txqs.cmd.q_id = trans_cfg->cmd_queue;
+ 	trans->txqs.cmd.fifo = trans_cfg->cmd_fifo;
+ 	trans->txqs.cmd.wdg_timeout = trans_cfg->cmd_q_wdg_timeout;
 -- 
 2.30.2
 
