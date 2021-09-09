@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42EF840508B
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:41:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 436BE405088
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:41:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352952AbhIIM2V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 08:28:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33430 "EHLO mail.kernel.org"
+        id S1350745AbhIIM2P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 08:28:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33458 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1351087AbhIIMW4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1351939AbhIIMW4 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 9 Sep 2021 08:22:56 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9F8B961ABD;
-        Thu,  9 Sep 2021 11:51:09 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CF8A261B00;
+        Thu,  9 Sep 2021 11:51:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631188270;
-        bh=Uh4gAPJjL7EvxAYvjfESQ3h7Yip6zR0rBwfOQmMswjk=;
+        s=k20201202; t=1631188271;
+        bh=SOPpvKtzb0tg3krV8vKQe7HXELjbnHOL7sw10xfYj78=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pYrC8L9h3qa3NnnyicPKd8kIFUm9YpDcf5LZDkY9gE5NtKGRvttZlidxvxBByxxqj
-         UjxaugT1RCLtxGWzor/kPYK6mwS43U7ALHBIN6ckzhWJBD3Vk79tUtXrH1RrkPmsli
-         WcI9yazVBcLH/4iwCxTuAQW5ix5DgNecMnBJBRQkjLUrF0PtPkt8o5PDRJp0j8hW4w
-         z5vJxpxCph/XuIcf4R5PkQqh6P/cbnbxWCRuvZielP1UbXTOVW72dskfgFGp6rTcBI
-         ng26EJV/1t89OLAeuKHx+y1ENhq9HRVrCsaM9p0STSP8edk7KWKDqBS9HFyxBsDm0M
-         RX63kHsLE6bcA==
+        b=c0/HfAN+BVSFvCmIv3JxFrPpIYM2/xHAi9iCj5SSsdfMcFLwIr0eOyDwazz5qvb7o
+         DxyiRukk/iv5jtPMHsfGO42yaYI4rccz8k1lRXBMa8RdnrX+iLtc7U/mWa3BFPkr4G
+         Obmnv6n6mDHcGiN52QxXjzkLXe3lbQGVpnu0VJJamvHFpjP43hG2llMSGMHZRycfOI
+         MqLat8wQ8euqznad00/+mwuoKFGcHtUE1dWNjKyJxUJL7QQCYdRWkUr3g0Wo6dgTZV
+         XJxx2pXxFTLoszL5u2X8EbZEktO74nS7wmHwCQho8WZjKd6c7IKkFMe+yea/OkBHW4
+         tQFbi+dZSe8ZA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zekun Shen <bruceshenzk@gmail.com>,
+Cc:     Miaoqing Pan <miaoqing@codeaurora.org>,
         Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.13 214/219] ath9k: fix OOB read ar9300_eeprom_restore_internal
-Date:   Thu,  9 Sep 2021 07:46:30 -0400
-Message-Id: <20210909114635.143983-214-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.13 215/219] ath9k: fix sleeping in atomic context
+Date:   Thu,  9 Sep 2021 07:46:31 -0400
+Message-Id: <20210909114635.143983-215-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909114635.143983-1-sashal@kernel.org>
 References: <20210909114635.143983-1-sashal@kernel.org>
@@ -43,46 +43,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zekun Shen <bruceshenzk@gmail.com>
+From: Miaoqing Pan <miaoqing@codeaurora.org>
 
-[ Upstream commit 23151b9ae79e3bc4f6a0c4cd3a7f355f68dad128 ]
+[ Upstream commit 7c48662b9d56666219f526a71ace8c15e6e12f1f ]
 
-Bad header can have large length field which can cause OOB.
-cptr is the last bytes for read, and the eeprom is parsed
-from high to low address. The OOB, triggered by the condition
-length > cptr could cause memory error with a read on
-negative index.
+The problem is that gpio_free() can sleep and the cfg_soc() can be
+called with spinlocks held. One problematic call tree is:
 
-There are some sanity check around length, but it is not
-compared with cptr (the remaining bytes). Here, the
-corrupted/bad EEPROM can cause panic.
+--> ath_reset_internal() takes &sc->sc_pcu_lock spin lock
+   --> ath9k_hw_reset()
+      --> ath9k_hw_gpio_request_in()
+         --> ath9k_hw_gpio_request()
+            --> ath9k_hw_gpio_cfg_soc()
 
-I was able to reproduce the crash, but I cannot find the
-log and the reproducer now. After I applied the patch, the
-bug is no longer reproducible.
+Remove gpio_free(), use error message instead, so we should make sure
+there is no GPIO conflict.
 
-Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+Also remove ath9k_hw_gpio_free() from ath9k_hw_apply_gpio_override(),
+as gpio_mask will never be set for SOC chips.
+
+Signed-off-by: Miaoqing Pan <miaoqing@codeaurora.org>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/YM3xKsQJ0Hw2hjrc@Zekuns-MBP-16.fios-router.home
+Link: https://lore.kernel.org/r/1628481916-15030-1-git-send-email-miaoqing@codeaurora.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath9k/ar9003_eeprom.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/wireless/ath/ath9k/hw.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath9k/ar9003_eeprom.c b/drivers/net/wireless/ath/ath9k/ar9003_eeprom.c
-index b4885a700296..b0a4ca3559fd 100644
---- a/drivers/net/wireless/ath/ath9k/ar9003_eeprom.c
-+++ b/drivers/net/wireless/ath/ath9k/ar9003_eeprom.c
-@@ -3351,7 +3351,8 @@ static int ar9300_eeprom_restore_internal(struct ath_hw *ah,
- 			"Found block at %x: code=%d ref=%d length=%d major=%d minor=%d\n",
- 			cptr, code, reference, length, major, minor);
- 		if ((!AR_SREV_9485(ah) && length >= 1024) ||
--		    (AR_SREV_9485(ah) && length > EEPROM_DATA_LEN_9485)) {
-+		    (AR_SREV_9485(ah) && length > EEPROM_DATA_LEN_9485) ||
-+		    (length > cptr)) {
- 			ath_dbg(common, EEPROM, "Skipping bad header\n");
- 			cptr -= COMP_HDR_LEN;
- 			continue;
+diff --git a/drivers/net/wireless/ath/ath9k/hw.c b/drivers/net/wireless/ath/ath9k/hw.c
+index 2ca3b86714a9..172081ffe477 100644
+--- a/drivers/net/wireless/ath/ath9k/hw.c
++++ b/drivers/net/wireless/ath/ath9k/hw.c
+@@ -1621,7 +1621,6 @@ static void ath9k_hw_apply_gpio_override(struct ath_hw *ah)
+ 		ath9k_hw_gpio_request_out(ah, i, NULL,
+ 					  AR_GPIO_OUTPUT_MUX_AS_OUTPUT);
+ 		ath9k_hw_set_gpio(ah, i, !!(ah->gpio_val & BIT(i)));
+-		ath9k_hw_gpio_free(ah, i);
+ 	}
+ }
+ 
+@@ -2728,14 +2727,17 @@ static void ath9k_hw_gpio_cfg_output_mux(struct ath_hw *ah, u32 gpio, u32 type)
+ static void ath9k_hw_gpio_cfg_soc(struct ath_hw *ah, u32 gpio, bool out,
+ 				  const char *label)
+ {
++	int err;
++
+ 	if (ah->caps.gpio_requested & BIT(gpio))
+ 		return;
+ 
+-	/* may be requested by BSP, free anyway */
+-	gpio_free(gpio);
+-
+-	if (gpio_request_one(gpio, out ? GPIOF_OUT_INIT_LOW : GPIOF_IN, label))
++	err = gpio_request_one(gpio, out ? GPIOF_OUT_INIT_LOW : GPIOF_IN, label);
++	if (err) {
++		ath_err(ath9k_hw_common(ah), "request GPIO%d failed:%d\n",
++			gpio, err);
+ 		return;
++	}
+ 
+ 	ah->caps.gpio_requested |= BIT(gpio);
+ }
 -- 
 2.30.2
 
