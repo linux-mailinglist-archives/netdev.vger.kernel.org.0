@@ -2,159 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A7604041FE
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 02:00:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE2D9404232
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 02:17:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244633AbhIIABn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Sep 2021 20:01:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47972 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241339AbhIIABm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Sep 2021 20:01:42 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED889C061575
-        for <netdev@vger.kernel.org>; Wed,  8 Sep 2021 17:00:33 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id 8so4298708pga.7
-        for <netdev@vger.kernel.org>; Wed, 08 Sep 2021 17:00:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5d6bbt6S1JRjYLjDkhQ4Mo7VS1AW4UrFmiuHXZgYoSw=;
-        b=gKoCjWxEs+CXVPJ9VaN1E9yZoT76y9vffyvBeKnJVsd0N68oK7wgeqTeEIZLm9g5l8
-         magKAzjL5Rn5rNyYgLM+EtRurtYAQurtlFNwLlFi449PJz4v9p9pDMh29+HLlrfGf99m
-         c/pxGwRUtK9PoEtCAtTgu9FzyXBbH7EDUz1WwFeS8mkpyNJU5Flcg0AfINnW/ktbBeBC
-         TbFmVBwDl/e/IVpjIsRSH+wLix1gyaZKHY9RqgGRxhRNbod6qMcRHTUeFcayDyPgeuwu
-         Bk8w6oIZavGZRKETzjUeKY9y4uqaucRypvz9JPbo+WGjzTvUhBEZ9nYbRjwEbEJOhetY
-         MSmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5d6bbt6S1JRjYLjDkhQ4Mo7VS1AW4UrFmiuHXZgYoSw=;
-        b=sr0jLnLSh69kfUK7UeDcWo456gBCsngqGAumya5bVOSvKrGvKmjrrN2trVKSbd/Dup
-         de3lsLgNfULBMLJxmfjaCWc/w3ZYdaF6NU25IJcNcvVGYYDZ1oRTxCsgYbFdOTUkj6C8
-         gbTcAVLOnj/AXXdR3txFYOKDmVMe6nT7OKUTv55zZU2wRNip49/mgZPWOAdvKSPcvEKh
-         tkZBe7IOqNl/vG7zulCEHU0qgqT/WtmpGwa+BXpme3Nw7xf164EWUivMC9LN29hBX1GL
-         dXU2Pp1gMT2FhpigDshnUcoQdb9qNTsYN3LBPFZrB5AezbyoMWVz+R8p8X8tHgeOsqEC
-         Q0xg==
-X-Gm-Message-State: AOAM531Dx999KWRmp1rnyysPaHXPX1hFVGOoYBNfFcvVOUaX3ijZgxJj
-        HqJkQyxO4B8Kp7pyWhEjDwg=
-X-Google-Smtp-Source: ABdhPJyYg/YFlf8uQSxOKFyAQr5exN37VBb8jCoP19XNEIA5fmj9bnbDhx9JKbfIb9q7K0mh3qlupA==
-X-Received: by 2002:a63:f84f:: with SMTP id v15mr31215pgj.204.1631145633415;
-        Wed, 08 Sep 2021 17:00:33 -0700 (PDT)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:af86:2ee7:e519:ad66])
-        by smtp.gmail.com with ESMTPSA id v13sm41010pfm.16.2021.09.08.17.00.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Sep 2021 17:00:32 -0700 (PDT)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>, Qian Cai <cai@lca.pw>
-Subject: [PATCH net] net/af_unix: fix a data-race in unix_dgram_poll
-Date:   Wed,  8 Sep 2021 17:00:29 -0700
-Message-Id: <20210909000029.1751608-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.33.0.153.gba50c8fa24-goog
-MIME-Version: 1.0
+        id S1348438AbhIIATE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Sep 2021 20:19:04 -0400
+Received: from mail-eopbgr80078.outbound.protection.outlook.com ([40.107.8.78]:42468
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1348138AbhIIATB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Sep 2021 20:19:01 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Y5PmOAwZdurJUuCbx7TVuh6GCeVAdsn+hAP+eTG0pHID4Ne6Bdml8XUv0kFDTiT9MyrolgWXTH+IxmYQLRlMZ3Buq+5kSV1aqcP2/CpnzC6JQ4YGgylBeIO5mB5349A0VXLggYn+xfsJOMDX6HwQvUu8kWthEG1EiGaHitd0J6Jnbjn/WnogIrp/52ZzZIvmCI87TtwuNjgWShJtV+suZUnZKww7h2pKvrhwCUKl8UCtkmYQU4yObFgikpNX9BWAToRWUbwobIKEhePvPS0+ilua08gGENyT67j084XQsvA0BDCeabikLQ3DETF8EQ4ADIiGxpqeIuhjtC0HErqkLg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
+ bh=iGgi1cBe1MLiDK5Hq8PxY3rn4I4+FVhaWLr3/d2Ydjk=;
+ b=IKcKZFq46JzYaro8u0U9+PgBLc94XeEi3Tg5thY9c7iUA84A6RBkPxjzDAZTVvowibxu8L/0LxX7I2eyACEtWuDYHBllU/OFIdVZG94GxriydrW6jPbRiU8VfcmrdqsVYldYLfBaCPaH24hpl9JNGUz5wWDdsFc+CUwIc+XEgXmViXUnBBASBt/UHn9GYAHYRXt7tl9Nsfwe1qvHQ6sv+x6mouk6IBMfXPj4og0EgZHWIeMGwK1YjwnXwq2Rc9ufOqrDFNKIA+mWM3GIKumAJG57oxsAnLHhUeKxzX5CKh6+W9xhfvvi5GKKBjviM4R9Fndk5vl7ZwpxeYkDjvjJUg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=iGgi1cBe1MLiDK5Hq8PxY3rn4I4+FVhaWLr3/d2Ydjk=;
+ b=qgT2xjqRS4L43bAnHRnJ1dNbj/GQDy+rr8eLnY32zchiEL4PgkFX4TU5nCbhN95Tp42nsO5ZTeV/Jp1stO/PERsLZLojc/zC5QwNRpFZVdgZrlAzqifKcpQAztYLkq5nZapU3U0RIBHZE3iAkhr1QWLhng7WyFyLIRYyy6s/nMI=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VE1PR04MB6511.eurprd04.prod.outlook.com (2603:10a6:803:11f::33) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.14; Thu, 9 Sep
+ 2021 00:17:50 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4478.026; Thu, 9 Sep 2021
+ 00:17:50 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: [RFC PATCH net 0/2] Break circular dependency between sja1105.ko and tag_sja1105.ko
+Date:   Thu,  9 Sep 2021 03:17:34 +0300
+Message-Id: <20210909001736.3769910-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.25.1
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: VI1PR04CA0058.eurprd04.prod.outlook.com
+ (2603:10a6:802:2::29) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (82.78.148.104) by VI1PR04CA0058.eurprd04.prod.outlook.com (2603:10a6:802:2::29) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.14 via Frontend Transport; Thu, 9 Sep 2021 00:17:49 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5c75f880-55cd-4cfd-ba85-08d973274224
+X-MS-TrafficTypeDiagnostic: VE1PR04MB6511:
+X-Microsoft-Antispam-PRVS: <VE1PR04MB6511CA03DF62A5172A4B091AE0D59@VE1PR04MB6511.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: O0xW3KCaa4DbFmf2Tk51kgCj/ancTu67CrCPo1dSYwQBu8WtP6tvUsuvAS2MBvPZJpujrH8OJgusQV1cX/jkZUzV3/RKScufz3UxZJH6pTX9qlzzBvGhWdBeB8M/iev06o8NKSOqVwBNTgGblQYMasoHbejbAyylcOCyoj+UcF4ygjGGvdnnT9lDTavq+S09Yu86ML+QwBaGjoxX/Rupx2/dPY1FvuKzgq4yAVMzSCEWgDTzBO8IidSKFRKAs0nmGY54xm13b7uqZeQCKtE8zj19ji+uuBNhOhZGFaqeTnkRf+u02jJl7sb0/ygPQ+a+CL4pHmynRdwTkgb1f8rOQrFT4pwDefhbQFy5FgFC9Hzx8as6OT/QVKxTr5nqhto2gusxiIfAozKVjtCljwRWY/0QsxlOK3hzkKqBZGKsqGft87RQArCxOIBZLSBk864jhljGmLKR7/6me/IwU/Lltaj6G6WrmfNu9412fspVUMZg7j6TYIxJrL7mW47CQfgVLjhkvgVbM6L3Mqs8S1jbU+wwmStFMoAO9ewoHh+iK+CaovRwbS+ePUrmRxMGyupekVVhMrcKDdX95IGX8f/SvsCHxuvdyErsp826vB63/096exmrEewB5b0pbOcKhasK/agKNEgxLsSGRIVYJ5JKHzI8ZEVGmpz049qFxu5ehoqZIADeuzILySWXv5bUEFxzYHLwKPbln+NKk9EzQuA67C9z2k7ygNUbhwMO586KEsF9xspY6KoAhwg+KLbh6MT4qGIreBT7iNzqu0ins7GqMEt+Wn116FlvEnWHW0nN+FY=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(38350700002)(38100700002)(1076003)(4744005)(4326008)(8676002)(2906002)(6506007)(66946007)(83380400001)(2616005)(956004)(66556008)(966005)(6486002)(26005)(6512007)(8936002)(66476007)(5660300002)(6666004)(36756003)(6916009)(52116002)(86362001)(44832011)(316002)(508600001)(186003)(54906003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?aTitsuJe6VL2CMDux/V2AFJSPZaMJOdhKwamKuUo9rmALumNfVu9pl7I8UlF?=
+ =?us-ascii?Q?52DW9t47P7xvCW3i/xPNUJEfjTOy9BjdMT1KLezNnde7mDyk2u1WraYyL7+k?=
+ =?us-ascii?Q?5krkmlPPpLjuv4pgTlQ5gS5m+NcTzysR1SKdRnLzb3tNmHIXSVuKEBVGR1Ub?=
+ =?us-ascii?Q?yh/ZGrAv8YkgB1RHqU+/SDBE8nl/Emt9rghkFMvcQ3uSOSXpbDwTYDBQ9Pik?=
+ =?us-ascii?Q?Rnm5wGLJ+Nz4yan1iwYRfPM50Gh/STMWNGkAKTI6KJQQvO5doU8Ts9qBGHwM?=
+ =?us-ascii?Q?HZtfWCGxY05WoCaLDXzxRXbLyTM2VLhemEFxm49eF34uEeMti5VZnyK98gEZ?=
+ =?us-ascii?Q?urXmRON5SH4EaPWFXjLWmiXvq7r7vVMXozL8XHu4B9EMGbFRm9rrl66vsTIe?=
+ =?us-ascii?Q?N8KOYmwYsgZgxU/fFZFpKFc4/9kBdHRcCfhfzoOUquBVVPWUWgHrzpxsU87f?=
+ =?us-ascii?Q?AcKUPcHk0y2dtYU3lHkl9GvM+89g9zETn3kYWVP1jOmQflUYwJHh2DbjvIsh?=
+ =?us-ascii?Q?F84biZ8LGGGsP65vYkWEmDcL6blJNeyvn2335rlVg8ymLDE3moJFyqiX1CXU?=
+ =?us-ascii?Q?XR848qfMA+FnY3NSltcnjH2Qz5MaNsJzQFCwGIfhzsyWkN7ey1YCzyM4ji4r?=
+ =?us-ascii?Q?jfkelRtIBJnqMb845K0O338M6XkiIaCwcFF2639cK25bLaiUpjRvODQCW0oJ?=
+ =?us-ascii?Q?y1HGXU7l7mTMZP02zqf3wk3/EXzegU9JW2BfaP2WwRBMZVWoKHpBPgIEvhAI?=
+ =?us-ascii?Q?JLf6WQAhvNxwOT6TTDm9/ElJQNSh5iAkV4Pqf0S0uj0t1zy3s763awStSmBp?=
+ =?us-ascii?Q?sZAEmSw6ubvA3Gm3fm+fO/10R5vYdv3Gn6ulGtDDkHaLqikogJ4+/1e6a3QD?=
+ =?us-ascii?Q?8uUchfz2etvSF7MakBJ0SC6uSEfMhyN4P/cEuGOwa4k+JMZ2mO9sFuGGkDma?=
+ =?us-ascii?Q?vUwQhN5MMKSRXPL9h4VGT1Swo5wVsA8y3vV5SE/ParHaX08+2oPjQLb6p6JM?=
+ =?us-ascii?Q?OiHBQqI/J9Tw1iEA3W8QsG8iFjF6Roamrzf8BnqLq21i/QkZ53ZQaPhF9Ho/?=
+ =?us-ascii?Q?vpfv0NS+CHtY8VmV/dx4Yfx0ewUlbiVXD1InUzBO/VFpBZT6jwqmPLG/NuQm?=
+ =?us-ascii?Q?e4pvFvbHXnAmSV4YnXQrQ/Cjp6YjEdThvSu7kjNYpwWibnrEloph7HbaqeWy?=
+ =?us-ascii?Q?jMvdx7p83lRBwF/JV56Q4zT81i9fvrgZoCUGy2r4l2rmuvigqo1YHFvFW/Sc?=
+ =?us-ascii?Q?fZ0vJsixFFwio5/ZMdunwIgUnUZE1ERgTOHkSU3O/FohCzRE2tyNPrdiYjpF?=
+ =?us-ascii?Q?kHUD2ij0+vZg5TPSHgtcdTaz?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5c75f880-55cd-4cfd-ba85-08d973274224
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Sep 2021 00:17:50.2316
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: GsqhzfXIfQKqJWJ1QZzwu4UXXoxNFMK69vApoXmv/jxrBByEzYT4MIrQmu0S7bN1mlMxjETn767h94AEC0HUWw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6511
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+These patches are posted just as a basis for the discussion here:
+https://lore.kernel.org/netdev/20210908220834.d7gmtnwrorhharna@skbuf/
 
-syzbot reported another data-race in af_unix [1]
+They are fairly large and I didn't feel like posting them inline would
+be very easy to look at them.
 
-Lets change __skb_insert() to use WRITE_ONCE() when changing
-skb head qlen.
+Vladimir Oltean (2):
+  net: dsa: sja1105: split out the probing code into a separate driver
+  net: dsa: move sja1110_process_meta_tstamp inside the tagging protocol
+    driver
 
-Also, change unix_dgram_poll() to use lockless version
-of unix_recvq_full()
+ drivers/net/dsa/sja1105/Kconfig               |   4 +
+ drivers/net/dsa/sja1105/Makefile              |   2 +
+ drivers/net/dsa/sja1105/sja1105_main.c        | 316 -----------------
+ drivers/net/dsa/sja1105/sja1105_probe.c       | 322 ++++++++++++++++++
+ drivers/net/dsa/sja1105/sja1105_ptp.c         |  45 +--
+ drivers/net/dsa/sja1105/sja1105_ptp.h         |  19 --
+ drivers/net/dsa/sja1105/sja1105_spi.c         |  12 +
+ .../net/dsa/sja1105/sja1105_static_config.c   |   1 +
+ include/linux/dsa/sja1105.h                   |  29 +-
+ net/dsa/tag_sja1105.c                         |  43 +++
+ 10 files changed, 404 insertions(+), 389 deletions(-)
+ create mode 100644 drivers/net/dsa/sja1105/sja1105_probe.c
 
-It is verry possible we can switch all/most unix_recvq_full()
-to the lockless version, this will be done in a future kernel version.
-
-[1] HEAD commit: 8596e589b787732c8346f0482919e83cc9362db1
-
-BUG: KCSAN: data-race in skb_queue_tail / unix_dgram_poll
-
-write to 0xffff88814eeb24e0 of 4 bytes by task 25815 on cpu 0:
- __skb_insert include/linux/skbuff.h:1938 [inline]
- __skb_queue_before include/linux/skbuff.h:2043 [inline]
- __skb_queue_tail include/linux/skbuff.h:2076 [inline]
- skb_queue_tail+0x80/0xa0 net/core/skbuff.c:3264
- unix_dgram_sendmsg+0xff2/0x1600 net/unix/af_unix.c:1850
- sock_sendmsg_nosec net/socket.c:703 [inline]
- sock_sendmsg net/socket.c:723 [inline]
- ____sys_sendmsg+0x360/0x4d0 net/socket.c:2392
- ___sys_sendmsg net/socket.c:2446 [inline]
- __sys_sendmmsg+0x315/0x4b0 net/socket.c:2532
- __do_sys_sendmmsg net/socket.c:2561 [inline]
- __se_sys_sendmmsg net/socket.c:2558 [inline]
- __x64_sys_sendmmsg+0x53/0x60 net/socket.c:2558
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x3d/0x90 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-read to 0xffff88814eeb24e0 of 4 bytes by task 25834 on cpu 1:
- skb_queue_len include/linux/skbuff.h:1869 [inline]
- unix_recvq_full net/unix/af_unix.c:194 [inline]
- unix_dgram_poll+0x2bc/0x3e0 net/unix/af_unix.c:2777
- sock_poll+0x23e/0x260 net/socket.c:1288
- vfs_poll include/linux/poll.h:90 [inline]
- ep_item_poll fs/eventpoll.c:846 [inline]
- ep_send_events fs/eventpoll.c:1683 [inline]
- ep_poll fs/eventpoll.c:1798 [inline]
- do_epoll_wait+0x6ad/0xf00 fs/eventpoll.c:2226
- __do_sys_epoll_wait fs/eventpoll.c:2238 [inline]
- __se_sys_epoll_wait fs/eventpoll.c:2233 [inline]
- __x64_sys_epoll_wait+0xf6/0x120 fs/eventpoll.c:2233
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x3d/0x90 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-value changed: 0x0000001b -> 0x00000001
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 1 PID: 25834 Comm: syz-executor.1 Tainted: G        W         5.14.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-
-Fixes: 86b18aaa2b5b ("skbuff: fix a data race in skb_queue_len()")
-Cc: Qian Cai <cai@lca.pw>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- include/linux/skbuff.h | 2 +-
- net/unix/af_unix.c     | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 6bdb0db3e8258ad2745705a9b046eb1c93e05840..841e2f0f5240ba9e210bb9a3fc1cbedc2162b2a8 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -1940,7 +1940,7 @@ static inline void __skb_insert(struct sk_buff *newsk,
- 	WRITE_ONCE(newsk->prev, prev);
- 	WRITE_ONCE(next->prev, newsk);
- 	WRITE_ONCE(prev->next, newsk);
--	list->qlen++;
-+	WRITE_ONCE(list->qlen, list->qlen + 1);
- }
- 
- static inline void __skb_queue_splice(const struct sk_buff_head *list,
-diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index eb47b9de23809ac9216aae46c2fb1eae4543c890..92345c9bb60cc3b469e7cf50effe122b81c7bb89 100644
---- a/net/unix/af_unix.c
-+++ b/net/unix/af_unix.c
-@@ -3073,7 +3073,7 @@ static __poll_t unix_dgram_poll(struct file *file, struct socket *sock,
- 
- 		other = unix_peer(sk);
- 		if (other && unix_peer(other) != sk &&
--		    unix_recvq_full(other) &&
-+		    unix_recvq_full_lockless(other) &&
- 		    unix_dgram_peer_wake_me(sk, other))
- 			writable = 0;
- 
 -- 
-2.33.0.153.gba50c8fa24-goog
+2.25.1
 
