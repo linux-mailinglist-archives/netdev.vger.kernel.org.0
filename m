@@ -2,63 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D60F405C5A
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 19:49:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C690F405C69
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 19:55:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242042AbhIIRvE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 13:51:04 -0400
-Received: from guitar.tcltek.co.il ([192.115.133.116]:39072 "EHLO
-        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241621AbhIIRvD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Sep 2021 13:51:03 -0400
-Received: from tarshish.tkos.co.il (unknown [10.0.8.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx.tkos.co.il (Postfix) with ESMTPS id 9124D440E2F;
-        Thu,  9 Sep 2021 20:49:31 +0300 (IDT)
-From:   Baruch Siach <baruch@tkos.co.il>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        Baruch Siach <baruch@tkos.co.il>
-Subject: [PATCH] net/packet: clarify source of pr_*() messages
-Date:   Thu,  9 Sep 2021 20:49:47 +0300
-Message-Id: <3ca9c4b3d77fb729f6741cb00d461da3bc6b2096.1631209787.git.baruch@tkos.co.il>
-X-Mailer: git-send-email 2.33.0
+        id S242249AbhIIR4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 13:56:23 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:35182 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237254AbhIIR4W (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Sep 2021 13:56:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=1UWlNkIF4/UMRB1ZyeAZe5VS1c7OZjo4kDlZHIcxZoQ=; b=DuLHRghbg6cQ0z9uqyjy2SwKh1
+        RdMn1VMSB9aolUNTsdIIya54TuNOSvXh5fObFlroiLQ1nuYxY2w66h9egToVCZZQJtpaVio89+2e9
+        S6G2Dq7qyxeDo2Jcd6821Lp48VsNfIwKb7JkntUBHY9NjkjlitLHNuVeYibmwouHOQ6A=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mOOGL-005wn8-KZ; Thu, 09 Sep 2021 19:55:01 +0200
+Date:   Thu, 9 Sep 2021 19:55:01 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, p.rosenberger@kunbus.com,
+        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/3] Fix for KSZ DSA switch shutdown
+Message-ID: <YTpKddrZVDsGlhRn@lunn.ch>
+References: <20210909095324.12978-1-LinoSanfilippo@gmx.de>
+ <20210909101451.jhfk45gitpxzblap@skbuf>
+ <81c1a19f-c5dc-ab4a-76ff-59704ea95849@gmx.de>
+ <20210909114248.aijujvl7xypkh7qe@skbuf>
+ <20210909125606.giiqvil56jse4bjk@skbuf>
+ <trinity-85ae3f9c-38f9-4442-98d3-bdc01279c7a8-1631193592256@3c-app-gmx-bs01>
+ <YTokNsh6mohaWvH0@lunn.ch>
+ <8d168388-4388-c0ec-7cfa-5757bf5b0c24@gmx.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8d168388-4388-c0ec-7cfa-5757bf5b0c24@gmx.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add pr_fmt macro to spell out the source of messages in prefix.
+On Thu, Sep 09, 2021 at 06:46:49PM +0200, Lino Sanfilippo wrote:
+> On 09.09.21 at 17:11, Andrew Lunn wrote:
+> >> Andrew: the switch is not on a hat, the device tree part I use is:
+> >
+> > And this is not an overlay. It is all there at boot?
+> >
+> 
+> Well actually we DO use an overlay. The dev tree snipped I posted was an excerpt form
+> fdtdump. The concerning fragment looks like this in the overlay file:
 
-Before this patch:
+Thanks for the information. Good to know somebody is using DSA like
+this. The device tree description can be quite complex, especially for
+some of the other switches.
 
-  packet size is too long (1543 > 1518)
+> But probably this does not matter any more now that Vladimir was
+> able to reproduce the issue.
 
-With this patch:
+Agreed.
 
-  af_packet: packet size is too long (1543 > 1518)
-
-Signed-off-by: Baruch Siach <baruch@tkos.co.il>
----
- net/packet/af_packet.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-index 543365f58e97..2a2bc64f75cf 100644
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -46,6 +46,8 @@
-  *					Copyright (C) 2011, <lokec@ccs.neu.edu>
-  */
- 
-+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-+
- #include <linux/ethtool.h>
- #include <linux/types.h>
- #include <linux/mm.h>
--- 
-2.33.0
-
+	Andrew
