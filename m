@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D53A405066
+	by mail.lfdr.de (Postfix) with ESMTP id E8670405067
 	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:41:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344809AbhIIM1d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 08:27:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57780 "EHLO mail.kernel.org"
+        id S1351121AbhIIM1f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 08:27:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57788 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1348541AbhIIMWO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Sep 2021 08:22:14 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 55CF061AEB;
-        Thu,  9 Sep 2021 11:50:57 +0000 (UTC)
+        id S1350593AbhIIMWQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Sep 2021 08:22:16 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 903ED61AEC;
+        Thu,  9 Sep 2021 11:50:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631188258;
-        bh=cxVfn/O02A/1ZlmwHs+RTuVFT0wAlcVG06PJriqW1iY=;
+        s=k20201202; t=1631188259;
+        bh=X+FLbjA7aUy6pDS2PfreaYIzs44DNysFpu7NLz6bn04=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m4oqf9AAtphL6L8HdskFD7s7sDDEMpip7ipyDXRvxUMtSiS+5sPzTJdy/bT4Jap4a
-         JTRID1YPmp0dhjB5DU2blnBJd+qE282f6uIRBsdQnQKPhICDfDqdNwsX5nWnL9bowg
-         M3HWzZySif9X/yfjW9Q7/+KHACPFm9WTjW/NvHgZg8CwHZ+OEFlBYsfK5w7Cy0QzkB
-         cQxUXHAs39XgaJFLHQ8GGbOnNc31HJP2V17Mby4sRlQXSqNOyAq1NU2HCcusmpqdGS
-         6j2dkruaRtFT0MMgReTW9feliAA2Zdpqoklfl+BX3KummU9wE//aBlYQAKxDMT4Ft/
-         UEZ7YsPRbE5mA==
+        b=gr2uoiNj9ogFWgjCFdHFHh4s7E2Z/nN2lz9Mz4rYq+FvqXb68N6n6+7ikqyJIwdxd
+         QkgG5ds90N1TEq3yS4xaObVHco0OfAUMCqQsSg7VwEOQ7ws+4iq7v7aQlr7cjTjuq1
+         4MycI/0DvvK+aapcbhDFTTpnoE8hjaDosaw5EuxSsTj6PzUMRbZIF7sQLDe+OGTVKb
+         PUIxITp44mpTgAqLsW5zMzC0F3rLIls2/NsroHU3YzrC9bYkZLjBD+cmixcvL3nkHZ
+         rui3q59Q09O2PEcqyFQyB4MoxdVw/+QzD4ZghCs1zJvv/BAk+6boFf8PkDJ/wIPiQO
+         dbhn+qVMIYeqw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
+Cc:     Ilan Peer <ilan.peer@intel.com>,
         Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.13 204/219] iwlwifi: mvm: avoid static queue number aliasing
-Date:   Thu,  9 Sep 2021 07:46:20 -0400
-Message-Id: <20210909114635.143983-204-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.13 205/219] iwlwifi: mvm: Fix umac scan request probe parameters
+Date:   Thu,  9 Sep 2021 07:46:21 -0400
+Message-Id: <20210909114635.143983-205-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909114635.143983-1-sashal@kernel.org>
 References: <20210909114635.143983-1-sashal@kernel.org>
@@ -43,233 +43,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Ilan Peer <ilan.peer@intel.com>
 
-[ Upstream commit c6ce1c74ef2923b8ffd85f7f8b486f804f343b39 ]
+[ Upstream commit 35fc5feca7b24b97e828e6e6a4243b4b9b0131f8 ]
 
-When TVQM is enabled (iwl_mvm_has_new_tx_api() is true), then
-queue numbers are just sequentially assigned 0, 1, 2, ...
-Prior to TVQM, in DQA, there were some statically allocated
-queue numbers:
- * IWL_MVM_DQA_AUX_QUEUE == 1,
- * both IWL_MVM_DQA_INJECT_MONITOR_QUEUE and
-   IWL_MVM_DQA_P2P_DEVICE_QUEUE == 2, and
- * IWL_MVM_DQA_AP_PROBE_RESP_QUEUE == 9.
+Both 'iwl_scan_probe_params_v3' and 'iwl_scan_probe_params_v4'
+wrongly addressed the 'bssid_array' field which should supposed
+to be any array of BSSIDs each of size ETH_ALEN and not the
+opposite. Fix it.
 
-Now, these values are assigned to the members mvm->aux_queue,
-mvm->snif_queue, mvm->probe_queue and mvm->p2p_dev_queue by
-default. Normally, this doesn't really matter, and if TVQM is
-in fact available we override them to the real values after
-allocating a queue for use there.
-
-However, this allocation doesn't always happen. For example,
-for mvm->p2p_dev_queue (== 2) it only happens when the P2P
-Device interface is started, if any. If it's not started, the
-value in mvm->p2p_dev_queue remains 2. This wouldn't really
-matter all that much if it weren't for iwl_mvm_is_static_queue()
-which checks a queue number against one of those four static
-numbers.
-
-Now, if no P2P Device or monitor interface is added then queue
-2 may be dynamically allocated, yet alias mvm->p2p_dev_queue or
-mvm->snif_queue, and thus iwl_mvm_is_static_queue() erroneously
-returns true for it. If it then gets full, all interface queues
-are stopped, instead of just backpressuring against the one TXQ
-that's really the only affected one.
-
-This clearly can lead to issues, as everything is stopped even
-if just a single TXQ filled its corresponding HW queue, if it
-happens to have an appropriate number (2 or 9, AUX is always
-reassigned.) Due to a mac80211 bug, this also led to a situation
-in which the queues remained stopped across a deauthentication
-and then attempts to connect to a new AP started failing, but
-that's fixed separately.
-
-Fix all of this by simply initializing the queue numbers to
-the invalid value until they're used, if TVQM is enabled, and
-also setting them back to that value when the queues are later
-freed again.
-
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Ilan Peer <ilan.peer@intel.com>
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20210802172232.2e47e623f9e2.I9b0830dafbb68ef35b7b8f0f46160abec02ac7d0@changeid
+Link: https://lore.kernel.org/r/iwlwifi.20210802215208.04146f24794f.I90726440ddff75013e9fecbe9fa1a05c69e3f17b@changeid
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/ops.c | 24 +++++++++++++---
- drivers/net/wireless/intel/iwlwifi/mvm/sta.c | 30 ++++++++++++--------
- 2 files changed, 38 insertions(+), 16 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/fw/api/scan.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/ops.c b/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
-index ebed82c590e5..31611542e1aa 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
-@@ -754,10 +754,26 @@ iwl_op_mode_mvm_start(struct iwl_trans *trans, const struct iwl_cfg *cfg,
+diff --git a/drivers/net/wireless/intel/iwlwifi/fw/api/scan.h b/drivers/net/wireless/intel/iwlwifi/fw/api/scan.h
+index b2605aefc290..8b200379f7c2 100644
+--- a/drivers/net/wireless/intel/iwlwifi/fw/api/scan.h
++++ b/drivers/net/wireless/intel/iwlwifi/fw/api/scan.h
+@@ -1,6 +1,6 @@
+ /* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
+ /*
+- * Copyright (C) 2012-2014, 2018-2020 Intel Corporation
++ * Copyright (C) 2012-2014, 2018-2021 Intel Corporation
+  * Copyright (C) 2013-2015 Intel Mobile Communications GmbH
+  * Copyright (C) 2016-2017 Intel Deutschland GmbH
+  */
+@@ -874,7 +874,7 @@ struct iwl_scan_probe_params_v3 {
+ 	u8 reserved;
+ 	struct iwl_ssid_ie direct_scan[PROBE_OPTION_MAX];
+ 	__le32 short_ssid[SCAN_SHORT_SSID_MAX_SIZE];
+-	u8 bssid_array[ETH_ALEN][SCAN_BSSID_MAX_SIZE];
++	u8 bssid_array[SCAN_BSSID_MAX_SIZE][ETH_ALEN];
+ } __packed; /* SCAN_PROBE_PARAMS_API_S_VER_3 */
  
- 	mvm->fw_restart = iwlwifi_mod_params.fw_restart ? -1 : 0;
+ /**
+@@ -894,7 +894,7 @@ struct iwl_scan_probe_params_v4 {
+ 	__le16 reserved;
+ 	struct iwl_ssid_ie direct_scan[PROBE_OPTION_MAX];
+ 	__le32 short_ssid[SCAN_SHORT_SSID_MAX_SIZE];
+-	u8 bssid_array[ETH_ALEN][SCAN_BSSID_MAX_SIZE];
++	u8 bssid_array[SCAN_BSSID_MAX_SIZE][ETH_ALEN];
+ } __packed; /* SCAN_PROBE_PARAMS_API_S_VER_4 */
  
--	mvm->aux_queue = IWL_MVM_DQA_AUX_QUEUE;
--	mvm->snif_queue = IWL_MVM_DQA_INJECT_MONITOR_QUEUE;
--	mvm->probe_queue = IWL_MVM_DQA_AP_PROBE_RESP_QUEUE;
--	mvm->p2p_dev_queue = IWL_MVM_DQA_P2P_DEVICE_QUEUE;
-+	if (iwl_mvm_has_new_tx_api(mvm)) {
-+		/*
-+		 * If we have the new TX/queue allocation API initialize them
-+		 * all to invalid numbers. We'll rewrite the ones that we need
-+		 * later, but that doesn't happen for all of them all of the
-+		 * time (e.g. P2P Device is optional), and if a dynamic queue
-+		 * ends up getting number 2 (IWL_MVM_DQA_P2P_DEVICE_QUEUE) then
-+		 * iwl_mvm_is_static_queue() erroneously returns true, and we
-+		 * might have things getting stuck.
-+		 */
-+		mvm->aux_queue = IWL_MVM_INVALID_QUEUE;
-+		mvm->snif_queue = IWL_MVM_INVALID_QUEUE;
-+		mvm->probe_queue = IWL_MVM_INVALID_QUEUE;
-+		mvm->p2p_dev_queue = IWL_MVM_INVALID_QUEUE;
-+	} else {
-+		mvm->aux_queue = IWL_MVM_DQA_AUX_QUEUE;
-+		mvm->snif_queue = IWL_MVM_DQA_INJECT_MONITOR_QUEUE;
-+		mvm->probe_queue = IWL_MVM_DQA_AP_PROBE_RESP_QUEUE;
-+		mvm->p2p_dev_queue = IWL_MVM_DQA_P2P_DEVICE_QUEUE;
-+	}
- 
- 	mvm->sf_state = SF_UNINIT;
- 	if (iwl_mvm_has_unified_ucode(mvm))
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/sta.c b/drivers/net/wireless/intel/iwlwifi/mvm/sta.c
-index f618368eda83..c310c366c38e 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/sta.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/sta.c
-@@ -316,8 +316,9 @@ static int iwl_mvm_invalidate_sta_queue(struct iwl_mvm *mvm, int queue,
- }
- 
- static int iwl_mvm_disable_txq(struct iwl_mvm *mvm, struct ieee80211_sta *sta,
--			       int queue, u8 tid, u8 flags)
-+			       u16 *queueptr, u8 tid, u8 flags)
- {
-+	int queue = *queueptr;
- 	struct iwl_scd_txq_cfg_cmd cmd = {
- 		.scd_queue = queue,
- 		.action = SCD_CFG_DISABLE_QUEUE,
-@@ -326,6 +327,7 @@ static int iwl_mvm_disable_txq(struct iwl_mvm *mvm, struct ieee80211_sta *sta,
- 
- 	if (iwl_mvm_has_new_tx_api(mvm)) {
- 		iwl_trans_txq_free(mvm->trans, queue);
-+		*queueptr = IWL_MVM_INVALID_QUEUE;
- 
- 		return 0;
- 	}
-@@ -487,6 +489,7 @@ static int iwl_mvm_free_inactive_queue(struct iwl_mvm *mvm, int queue,
- 	u8 sta_id, tid;
- 	unsigned long disable_agg_tids = 0;
- 	bool same_sta;
-+	u16 queue_tmp = queue;
- 	int ret;
- 
- 	lockdep_assert_held(&mvm->mutex);
-@@ -509,7 +512,7 @@ static int iwl_mvm_free_inactive_queue(struct iwl_mvm *mvm, int queue,
- 		iwl_mvm_invalidate_sta_queue(mvm, queue,
- 					     disable_agg_tids, false);
- 
--	ret = iwl_mvm_disable_txq(mvm, old_sta, queue, tid, 0);
-+	ret = iwl_mvm_disable_txq(mvm, old_sta, &queue_tmp, tid, 0);
- 	if (ret) {
- 		IWL_ERR(mvm,
- 			"Failed to free inactive queue %d (ret=%d)\n",
-@@ -1184,6 +1187,7 @@ static int iwl_mvm_sta_alloc_queue(struct iwl_mvm *mvm,
- 	unsigned int wdg_timeout =
- 		iwl_mvm_get_wd_timeout(mvm, mvmsta->vif, false, false);
- 	int queue = -1;
-+	u16 queue_tmp;
- 	unsigned long disable_agg_tids = 0;
- 	enum iwl_mvm_agg_state queue_state;
- 	bool shared_queue = false, inc_ssn;
-@@ -1332,7 +1336,8 @@ static int iwl_mvm_sta_alloc_queue(struct iwl_mvm *mvm,
- 	return 0;
- 
- out_err:
--	iwl_mvm_disable_txq(mvm, sta, queue, tid, 0);
-+	queue_tmp = queue;
-+	iwl_mvm_disable_txq(mvm, sta, &queue_tmp, tid, 0);
- 
- 	return ret;
- }
-@@ -1779,7 +1784,7 @@ static void iwl_mvm_disable_sta_queues(struct iwl_mvm *mvm,
- 		if (mvm_sta->tid_data[i].txq_id == IWL_MVM_INVALID_QUEUE)
- 			continue;
- 
--		iwl_mvm_disable_txq(mvm, sta, mvm_sta->tid_data[i].txq_id, i,
-+		iwl_mvm_disable_txq(mvm, sta, &mvm_sta->tid_data[i].txq_id, i,
- 				    0);
- 		mvm_sta->tid_data[i].txq_id = IWL_MVM_INVALID_QUEUE;
- 	}
-@@ -1987,7 +1992,7 @@ static int iwl_mvm_add_int_sta_with_queue(struct iwl_mvm *mvm, int macidx,
- 	ret = iwl_mvm_add_int_sta_common(mvm, sta, addr, macidx, maccolor);
- 	if (ret) {
- 		if (!iwl_mvm_has_new_tx_api(mvm))
--			iwl_mvm_disable_txq(mvm, NULL, *queue,
-+			iwl_mvm_disable_txq(mvm, NULL, queue,
- 					    IWL_MAX_TID_COUNT, 0);
- 		return ret;
- 	}
-@@ -2060,7 +2065,7 @@ int iwl_mvm_rm_snif_sta(struct iwl_mvm *mvm, struct ieee80211_vif *vif)
- 	if (WARN_ON_ONCE(mvm->snif_sta.sta_id == IWL_MVM_INVALID_STA))
- 		return -EINVAL;
- 
--	iwl_mvm_disable_txq(mvm, NULL, mvm->snif_queue, IWL_MAX_TID_COUNT, 0);
-+	iwl_mvm_disable_txq(mvm, NULL, &mvm->snif_queue, IWL_MAX_TID_COUNT, 0);
- 	ret = iwl_mvm_rm_sta_common(mvm, mvm->snif_sta.sta_id);
- 	if (ret)
- 		IWL_WARN(mvm, "Failed sending remove station\n");
-@@ -2077,7 +2082,7 @@ int iwl_mvm_rm_aux_sta(struct iwl_mvm *mvm)
- 	if (WARN_ON_ONCE(mvm->aux_sta.sta_id == IWL_MVM_INVALID_STA))
- 		return -EINVAL;
- 
--	iwl_mvm_disable_txq(mvm, NULL, mvm->aux_queue, IWL_MAX_TID_COUNT, 0);
-+	iwl_mvm_disable_txq(mvm, NULL, &mvm->aux_queue, IWL_MAX_TID_COUNT, 0);
- 	ret = iwl_mvm_rm_sta_common(mvm, mvm->aux_sta.sta_id);
- 	if (ret)
- 		IWL_WARN(mvm, "Failed sending remove station\n");
-@@ -2173,7 +2178,7 @@ static void iwl_mvm_free_bcast_sta_queues(struct iwl_mvm *mvm,
- 					  struct ieee80211_vif *vif)
- {
- 	struct iwl_mvm_vif *mvmvif = iwl_mvm_vif_from_mac80211(vif);
--	int queue;
-+	u16 *queueptr, queue;
- 
- 	lockdep_assert_held(&mvm->mutex);
- 
-@@ -2182,10 +2187,10 @@ static void iwl_mvm_free_bcast_sta_queues(struct iwl_mvm *mvm,
- 	switch (vif->type) {
- 	case NL80211_IFTYPE_AP:
- 	case NL80211_IFTYPE_ADHOC:
--		queue = mvm->probe_queue;
-+		queueptr = &mvm->probe_queue;
- 		break;
- 	case NL80211_IFTYPE_P2P_DEVICE:
--		queue = mvm->p2p_dev_queue;
-+		queueptr = &mvm->p2p_dev_queue;
- 		break;
- 	default:
- 		WARN(1, "Can't free bcast queue on vif type %d\n",
-@@ -2193,7 +2198,8 @@ static void iwl_mvm_free_bcast_sta_queues(struct iwl_mvm *mvm,
- 		return;
- 	}
- 
--	iwl_mvm_disable_txq(mvm, NULL, queue, IWL_MAX_TID_COUNT, 0);
-+	queue = *queueptr;
-+	iwl_mvm_disable_txq(mvm, NULL, queueptr, IWL_MAX_TID_COUNT, 0);
- 	if (iwl_mvm_has_new_tx_api(mvm))
- 		return;
- 
-@@ -2428,7 +2434,7 @@ int iwl_mvm_rm_mcast_sta(struct iwl_mvm *mvm, struct ieee80211_vif *vif)
- 
- 	iwl_mvm_flush_sta(mvm, &mvmvif->mcast_sta, true);
- 
--	iwl_mvm_disable_txq(mvm, NULL, mvmvif->cab_queue, 0, 0);
-+	iwl_mvm_disable_txq(mvm, NULL, &mvmvif->cab_queue, 0, 0);
- 
- 	ret = iwl_mvm_rm_sta_common(mvm, mvmvif->mcast_sta.sta_id);
- 	if (ret)
+ #define SCAN_MAX_NUM_CHANS_V3 67
 -- 
 2.30.2
 
