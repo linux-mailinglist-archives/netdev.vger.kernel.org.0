@@ -2,121 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C13FC4043C2
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 04:53:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 344CF4043E1
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 05:15:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348203AbhIICyX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Sep 2021 22:54:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:29871 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1347175AbhIICyW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Sep 2021 22:54:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1631155992;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=4Dd9/A9sFeDep6pwypkyHRy6LbqeJ+nHZSlHUWD9puM=;
-        b=LwwwRfEb7kSUSqx9BJpdwrHPpPVXHy7UaQmVJGxgm5Ey6DM+ucc8DTOM7UJOKgkd3p4OKe
-        0ODdoXV1Edg/HRfx+4AjS/4HzIN7CygC621zy4sU8y+hQlTJNaoeZAA15SPVz3h2t1imw7
-        PYknWeW+4DsMiomc8MT98G2KbvNRCG4=
-Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
- [209.85.167.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-439-LMhjinA4P120imOf6Mydxw-1; Wed, 08 Sep 2021 22:53:11 -0400
-X-MC-Unique: LMhjinA4P120imOf6Mydxw-1
-Received: by mail-lf1-f69.google.com with SMTP id w18-20020ac25d520000b02903c5ff81b281so175273lfd.3
-        for <netdev@vger.kernel.org>; Wed, 08 Sep 2021 19:53:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4Dd9/A9sFeDep6pwypkyHRy6LbqeJ+nHZSlHUWD9puM=;
-        b=VaIW4NcvAyQcRLttKHqTHdHa53QSPpfYN/0A96YEZUb93kbU33SkQyu2xfFZUjFssE
-         MBeT2/W5lHPyvzD8Kwc6xfaZHIZKPUZiOXvjAIk17BKDxdtNMoRbcL7dgjDTv4p5x81Q
-         U8DIRnoUKzjhZCzpE8lJwjqmyiFjMnDpbzGeR7CAqdorM9oS7pzdMrpURV1b3OmIflQu
-         6UUaoomvtkSYciX0KD+iYEImMOvAWN5oQaFzwjj6WbRvw7J6bm0+aJxKFskkaQfyW3PS
-         Xg9OR5e5MqiLgryrMa93Q8BUJAhoFo/YeDYAebnVQbhkplJ12smzy419rQkDR3ergcyU
-         HzBA==
-X-Gm-Message-State: AOAM532t7VBElGe568+o5lEFCP8TgRn40OvqHQCgtx5YYpqr7iVYaTSJ
-        oD1Q0b/VTwDG3gOfMpUDNdizQkzxxc0Njw+vJo9d9JpoXouam7UhCqboFr6E9x8ERv3pbYKAvdz
-        GaYzgsJ8H+6xF1zyw3z26gw/3fCvL7eOX
-X-Received: by 2002:a2e:99d9:: with SMTP id l25mr425105ljj.217.1631155990093;
-        Wed, 08 Sep 2021 19:53:10 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxo1QiSnPNV+uG69sTm5YphTzwX2AqVXNZlrZDd69Dbr+lA7ndwSZ8/FU/at8ix62m9YeVPMnUYQ2Rz6NMek4E=
-X-Received: by 2002:a2e:99d9:: with SMTP id l25mr425099ljj.217.1631155989914;
- Wed, 08 Sep 2021 19:53:09 -0700 (PDT)
+        id S1349727AbhIIDOh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Sep 2021 23:14:37 -0400
+Received: from out30-44.freemail.mail.aliyun.com ([115.124.30.44]:56809 "EHLO
+        out30-44.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1349225AbhIIDOd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Sep 2021 23:14:33 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=yun.wang@linux.alibaba.com;NM=1;PH=DS;RN=19;SR=0;TI=SMTPD_---0UnkWDai_1631157201;
+Received: from testdeMacBook-Pro.local(mailfrom:yun.wang@linux.alibaba.com fp:SMTPD_---0UnkWDai_1631157201)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 09 Sep 2021 11:13:22 +0800
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "open list:PERFORMANCE EVENTS SUBSYSTEM" 
+        <linux-perf-users@vger.kernel.org>,
+        "open list:PERFORMANCE EVENTS SUBSYSTEM" 
+        <linux-kernel@vger.kernel.org>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <netdev@vger.kernel.org>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <bpf@vger.kernel.org>
+From:   =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
+Subject: [RFC PATCH] perf: fix panic by mark recursion inside
+ perf_log_throttle
+Message-ID: <ff979a43-045a-dc56-64d1-2c31dd4db381@linux.alibaba.com>
+Date:   Thu, 9 Sep 2021 11:13:21 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:78.0)
+ Gecko/20100101 Thunderbird/78.13.0
 MIME-Version: 1.0
-References: <463c1b02ca6f65fc1183431d8d85ec8154a2c28e.1631090797.git.pabeni@redhat.com>
-In-Reply-To: <463c1b02ca6f65fc1183431d8d85ec8154a2c28e.1631090797.git.pabeni@redhat.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Thu, 9 Sep 2021 10:52:59 +0800
-Message-ID: <CACGkMEvTBt3WSJnxvGN0-gsZNXE1eRqx4ZV7X+d9gar1VfwArA@mail.gmail.com>
-Subject: Re: [PATCH] vhost_net: fix OoB on sendmsg() failure.
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>, kvm <kvm@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 8, 2021 at 7:42 PM Paolo Abeni <pabeni@redhat.com> wrote:
->
-> If the sendmsg() call in vhost_tx_batch() fails, both the 'batched_xdp'
-> and 'done_idx' indexes are left unchanged. If such failure happens
-> when batched_xdp == VHOST_NET_BATCH, the next call to
-> vhost_net_build_xdp() will access and write memory outside the xdp
-> buffers area.
->
-> Since sendmsg() can only error with EBADFD, this change addresses the
-> issue explicitly freeing the XDP buffers batch on error.
->
-> Fixes: 0a0be13b8fe2 ("vhost_net: batch submitting XDP buffers to underlayer sockets")
-> Suggested-by: Jason Wang <jasowang@redhat.com>
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> ---
-> Note: my understanding is that this should go through MST's tree, please
-> educate me otherwise, thanks!
-> ---
+When running with ftrace function enabled, we observed panic
+as below:
 
-Acked-by: Jason Wang <jasowang@redhat.com>
+  traps: PANIC: double fault, error_code: 0x0
+  [snip]
+  RIP: 0010:perf_swevent_get_recursion_context+0x0/0x70
+  [snip]
+  Call Trace:
+   <NMI>
+   perf_trace_buf_alloc+0x26/0xd0
+   perf_ftrace_function_call+0x18f/0x2e0
+   kernelmode_fixup_or_oops+0x5/0x120
+   __bad_area_nosemaphore+0x1b8/0x280
+   do_user_addr_fault+0x410/0x920
+   exc_page_fault+0x92/0x300
+   asm_exc_page_fault+0x1e/0x30
+  RIP: 0010:__get_user_nocheck_8+0x6/0x13
+   perf_callchain_user+0x266/0x2f0
+   get_perf_callchain+0x194/0x210
+   perf_callchain+0xa3/0xc0
+   perf_prepare_sample+0xa5/0xa60
+   perf_event_output_forward+0x7b/0x1b0
+   __perf_event_overflow+0x67/0x120
+   perf_swevent_overflow+0xcb/0x110
+   perf_swevent_event+0xb0/0xf0
+   perf_tp_event+0x292/0x410
+   perf_trace_run_bpf_submit+0x87/0xc0
+   perf_trace_lock_acquire+0x12b/0x170
+   lock_acquire+0x1bf/0x2e0
+   perf_output_begin+0x70/0x4b0
+   perf_log_throttle+0xe2/0x1a0
+   perf_event_nmi_handler+0x30/0x50
+   nmi_handle+0xba/0x2a0
+   default_do_nmi+0x45/0xf0
+   exc_nmi+0x155/0x170
+   end_repeat_nmi+0x16/0x55
 
-Thanks!
+According to the trace we know the story is like this, the NMI
+triggered perf IRQ throttling and call perf_log_throttle(),
+which triggered the swevent overflow, and the overflow process
+do perf_callchain_user() which triggered a user PF, and the PF
+process triggered perf ftrace which finally lead into a suspected
+stack overflow.
 
->  drivers/vhost/net.c | 11 ++++++++++-
->  1 file changed, 10 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
-> index 3a249ee7e144..28ef323882fb 100644
-> --- a/drivers/vhost/net.c
-> +++ b/drivers/vhost/net.c
-> @@ -467,7 +467,7 @@ static void vhost_tx_batch(struct vhost_net *net,
->                 .num = nvq->batched_xdp,
->                 .ptr = nvq->xdp,
->         };
-> -       int err;
-> +       int i, err;
->
->         if (nvq->batched_xdp == 0)
->                 goto signal_used;
-> @@ -476,6 +476,15 @@ static void vhost_tx_batch(struct vhost_net *net,
->         err = sock->ops->sendmsg(sock, msghdr, 0);
->         if (unlikely(err < 0)) {
->                 vq_err(&nvq->vq, "Fail to batch sending packets\n");
-> +
-> +               /* free pages owned by XDP; since this is an unlikely error path,
-> +                * keep it simple and avoid more complex bulk update for the
-> +                * used pages
-> +                */
-> +               for (i = 0; i < nvq->batched_xdp; ++i)
-> +                       put_page(virt_to_head_page(nvq->xdp[i].data));
-> +               nvq->batched_xdp = 0;
-> +               nvq->done_idx = 0;
->                 return;
->         }
->
-> --
-> 2.26.3
->
+This patch marking the context as recursion during perf_log_throttle()
+, so no more swevent during the process and no more panic.
+
+Signed-off-by: Michael Wang <yun.wang@linux.alibaba.com>
+---
+ kernel/events/core.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
+
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index 744e872..6063443 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -8716,6 +8716,7 @@ static void perf_log_throttle(struct perf_event *event, int enable)
+ 	struct perf_output_handle handle;
+ 	struct perf_sample_data sample;
+ 	int ret;
++	int rctx;
+
+ 	struct {
+ 		struct perf_event_header	header;
+@@ -8738,14 +8739,17 @@ static void perf_log_throttle(struct perf_event *event, int enable)
+
+ 	perf_event_header__init_id(&throttle_event.header, &sample, event);
+
++	rctx = perf_swevent_get_recursion_context();
+ 	ret = perf_output_begin(&handle, &sample, event,
+ 				throttle_event.header.size);
+-	if (ret)
+-		return;
++	if (!ret) {
++		perf_output_put(&handle, throttle_event);
++		perf_event__output_id_sample(event, &handle, &sample);
++		perf_output_end(&handle);
++	}
+
+-	perf_output_put(&handle, throttle_event);
+-	perf_event__output_id_sample(event, &handle, &sample);
+-	perf_output_end(&handle);
++	if (rctx >= 0)
++		perf_swevent_put_recursion_context(rctx);
+ }
+
+ /*
+-- 
+1.8.3.1
 
