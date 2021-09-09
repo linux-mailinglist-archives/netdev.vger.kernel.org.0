@@ -2,108 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A66240565C
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 15:37:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43A8A405667
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 15:37:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359590AbhIINT0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 09:19:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54048 "EHLO mail.kernel.org"
+        id S1359677AbhIINTp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 09:19:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54080 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1358780AbhIINJi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Sep 2021 09:09:38 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 513D26329B;
-        Thu,  9 Sep 2021 12:01:12 +0000 (UTC)
+        id S1358827AbhIINJo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Sep 2021 09:09:44 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8DD30632B9;
+        Thu,  9 Sep 2021 12:01:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631188873;
-        bh=rxqNsyf+5zOsajsG/cLOwTR5w2JzO9s+Wk3tEDzXAFE=;
+        s=k20201202; t=1631188874;
+        bh=szX6G5SkYjqrpSOViwJuOIG2sbRiHaH5KfPb32e85l0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=un1EnWZiRxUdXXTwZLNsxeP/EB/hhH7MMmJfrkxcJ8rEOf/Nixe64P8KUO/BJ9ixX
-         yyetH6funQIT02p4wf+PWSm24dWu3nXvOiZ0u2udR21UnbiIOQm1Ci8+1kVPrQLcCt
-         u+pI8eZDYBAkLTdT1YmocvXVlGyjvCBACaSgIZsYGvO+Sgl5z3fLA1ds2JZj9QhPw9
-         pr2Env5o0Xyqnb72HYDpHzM+0BzIvpqlYDy3LdAUb4gcVGQzLpWYcfUlUn4e2A8MUM
-         /O47rdMVPNG1WF0S23MZ+dd53ZcXlKxy9cJX1VhwctZywmhSMDyitlvgH8HmXyhbYO
-         wQPMT0RAYPbTA==
+        b=RssiTH08SVxX1G+aPdtylFr3HW+Y6CeRlqv+1xrBTD7vqD+XZGS5sC5Yf903KuoX1
+         UE3+8Lcbbonmh0G5i77VCXHUyrlBlKGSslnoR9ZH6MBpGbChhMGl8424uRn9cLcimK
+         RZP7Vj4EGHDbtJtNzx6Mh2P3P2mPyTEINbK8IfbaVrLDLFOg1e8XfKsmZEPQ4AxWHk
+         YTWPRL8Sedt5L9rF+y5u1oUf2O3Jz7gHv17qSXlr8BjgnDMnnEZfiGPDQjXXwmTykj
+         xl8UTiv4f/YEpRTKuakhiVEkLTXWYLSb9sQCdcU7BEBSEJmsTZe+nxVN4A1RSSJAlx
+         G95NrlyfMK8Vw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Miaoqing Pan <miaoqing@codeaurora.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 46/48] ath9k: fix sleeping in atomic context
-Date:   Thu,  9 Sep 2021 08:00:13 -0400
-Message-Id: <20210909120015.150411-46-sashal@kernel.org>
+Cc:     =?UTF-8?q?=E7=8E=8B=E8=B4=87?= <yun.wang@linux.alibaba.com>,
+        Abaci <abaci@linux.alibaba.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-security-module@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 47/48] net: fix NULL pointer reference in cipso_v4_doi_free
+Date:   Thu,  9 Sep 2021 08:00:14 -0400
+Message-Id: <20210909120015.150411-47-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909120015.150411-1-sashal@kernel.org>
 References: <20210909120015.150411-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Miaoqing Pan <miaoqing@codeaurora.org>
+From: 王贇 <yun.wang@linux.alibaba.com>
 
-[ Upstream commit 7c48662b9d56666219f526a71ace8c15e6e12f1f ]
+[ Upstream commit 733c99ee8be9a1410287cdbb943887365e83b2d6 ]
 
-The problem is that gpio_free() can sleep and the cfg_soc() can be
-called with spinlocks held. One problematic call tree is:
+In netlbl_cipsov4_add_std() when 'doi_def->map.std' alloc
+failed, we sometime observe panic:
 
---> ath_reset_internal() takes &sc->sc_pcu_lock spin lock
-   --> ath9k_hw_reset()
-      --> ath9k_hw_gpio_request_in()
-         --> ath9k_hw_gpio_request()
-            --> ath9k_hw_gpio_cfg_soc()
+  BUG: kernel NULL pointer dereference, address:
+  ...
+  RIP: 0010:cipso_v4_doi_free+0x3a/0x80
+  ...
+  Call Trace:
+   netlbl_cipsov4_add_std+0xf4/0x8c0
+   netlbl_cipsov4_add+0x13f/0x1b0
+   genl_family_rcv_msg_doit.isra.15+0x132/0x170
+   genl_rcv_msg+0x125/0x240
 
-Remove gpio_free(), use error message instead, so we should make sure
-there is no GPIO conflict.
+This is because in cipso_v4_doi_free() there is no check
+on 'doi_def->map.std' when 'doi_def->type' equal 1, which
+is possibe, since netlbl_cipsov4_add_std() haven't initialize
+it before alloc 'doi_def->map.std'.
 
-Also remove ath9k_hw_gpio_free() from ath9k_hw_apply_gpio_override(),
-as gpio_mask will never be set for SOC chips.
+This patch just add the check to prevent panic happen for similar
+cases.
 
-Signed-off-by: Miaoqing Pan <miaoqing@codeaurora.org>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/1628481916-15030-1-git-send-email-miaoqing@codeaurora.org
+Reported-by: Abaci <abaci@linux.alibaba.com>
+Signed-off-by: Michael Wang <yun.wang@linux.alibaba.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath9k/hw.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ net/netlabel/netlabel_cipso_v4.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath9k/hw.c b/drivers/net/wireless/ath/ath9k/hw.c
-index 9d664398a41b..b707c14dab6f 100644
---- a/drivers/net/wireless/ath/ath9k/hw.c
-+++ b/drivers/net/wireless/ath/ath9k/hw.c
-@@ -1595,7 +1595,6 @@ static void ath9k_hw_apply_gpio_override(struct ath_hw *ah)
- 		ath9k_hw_gpio_request_out(ah, i, NULL,
- 					  AR_GPIO_OUTPUT_MUX_AS_OUTPUT);
- 		ath9k_hw_set_gpio(ah, i, !!(ah->gpio_val & BIT(i)));
--		ath9k_hw_gpio_free(ah, i);
+diff --git a/net/netlabel/netlabel_cipso_v4.c b/net/netlabel/netlabel_cipso_v4.c
+index 7fd1104ba900..d17a8f3d3387 100644
+--- a/net/netlabel/netlabel_cipso_v4.c
++++ b/net/netlabel/netlabel_cipso_v4.c
+@@ -163,8 +163,8 @@ static int netlbl_cipsov4_add_std(struct genl_info *info,
+ 		return -ENOMEM;
+ 	doi_def->map.std = kzalloc(sizeof(*doi_def->map.std), GFP_KERNEL);
+ 	if (doi_def->map.std == NULL) {
+-		ret_val = -ENOMEM;
+-		goto add_std_failure;
++		kfree(doi_def);
++		return -ENOMEM;
  	}
- }
+ 	doi_def->type = CIPSO_V4_MAP_TRANS;
  
-@@ -2702,14 +2701,17 @@ static void ath9k_hw_gpio_cfg_output_mux(struct ath_hw *ah, u32 gpio, u32 type)
- static void ath9k_hw_gpio_cfg_soc(struct ath_hw *ah, u32 gpio, bool out,
- 				  const char *label)
- {
-+	int err;
-+
- 	if (ah->caps.gpio_requested & BIT(gpio))
- 		return;
- 
--	/* may be requested by BSP, free anyway */
--	gpio_free(gpio);
--
--	if (gpio_request_one(gpio, out ? GPIOF_OUT_INIT_LOW : GPIOF_IN, label))
-+	err = gpio_request_one(gpio, out ? GPIOF_OUT_INIT_LOW : GPIOF_IN, label);
-+	if (err) {
-+		ath_err(ath9k_hw_common(ah), "request GPIO%d failed:%d\n",
-+			gpio, err);
- 		return;
-+	}
- 
- 	ah->caps.gpio_requested |= BIT(gpio);
- }
 -- 
 2.30.2
 
