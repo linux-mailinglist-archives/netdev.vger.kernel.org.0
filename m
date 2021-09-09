@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9380C4057E8
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 15:44:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3BF44057EF
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 15:44:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357093AbhIINoB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 09:44:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57772 "EHLO mail.kernel.org"
+        id S1351956AbhIINoN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 09:44:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58618 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1356449AbhIIMzM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Sep 2021 08:55:12 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CD1876322D;
-        Thu,  9 Sep 2021 11:58:06 +0000 (UTC)
+        id S1356614AbhIIMzd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Sep 2021 08:55:33 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 49BED613D2;
+        Thu,  9 Sep 2021 11:58:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631188687;
-        bh=idyDFC2+HeruMcqKUqpotWuIe9YhVI1CIW7aQEnqD8M=;
+        s=k20201202; t=1631188690;
+        bh=BZvm1toZ3Z9QlyIH9RMnJNT1diE06Fi3/45GUdOHi9k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g4k1JIQgsWNuUmklj7lVtYW2MtzI3pGJWUF3vTpo71Tdde+p0CCyNr0SBqaaMJRSd
-         Ci9iT8g+nc/Kf1Syw76yAN68CEgbtyUOw7xNFC+aDNfehhxtuzXH3MGG66Je4fa/7s
-         TxIEPkR58S7LVnHGKpBWMagXAagf7bGcqpfXq1ESDfnoQ1NKlk92ITP9YGMt1hdxUe
-         IasjSd/+NuJTQcvU3LIRuLsFwRvPjQmFggye2Ue8xH3ayx/2uUfZZG4onSJoakY2pB
-         6TenYc/Ku/oD7cqrEKrUrivcD+moMiOoXGCQUP2sPa5IwEDCQIUV6F3z+e9IEZObjz
-         tOcqvfmCClBpA==
+        b=Xk0/nyqvCn1QfSLE8Woty1BbZfxXsFBnQaNYiTiTyf6VMVMhhrILhoIoZvU2Xu5OK
+         7qxIZgBiDwdHgJhu5laH+WjDAr49RPh0Aa31qFmW7pdoUbcUjeZ4+aDbxwexPDPIsM
+         QPJxFSsxJIAMvvn2JKSMjO/leeUA0av30TFEDtyJFMbw2TgmNmC9RH9Re1mCy7gHKL
+         /deKQX46l3pqElg78JoTCIFGd73WbvLSWbwsP1ee9OmuQAnD95jDy67KX9YC/XQlTU
+         1aiuJve5npcTtEFYDgp/DPGAKuMHsUG07kPpSBaRIyjuCOmfYcQ8GTg9SujxofB6aR
+         EtFeswrivXhnQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yufeng Mo <moyufeng@huawei.com>,
-        Jay Vosburgh <jay.vosburgh@canonical.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 33/74] bonding: 3ad: fix the concurrency between __bond_release_one() and bond_3ad_state_machine_handler()
-Date:   Thu,  9 Sep 2021 07:56:45 -0400
-Message-Id: <20210909115726.149004-33-sashal@kernel.org>
+Cc:     Johan Almbladh <johan.almbladh@anyfinetworks.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Yonghong Song <yhs@fb.com>, Sasha Levin <sashal@kernel.org>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 35/74] bpf: Fix off-by-one in tail call count limiting
+Date:   Thu,  9 Sep 2021 07:56:47 -0400
+Message-Id: <20210909115726.149004-35-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909115726.149004-1-sashal@kernel.org>
 References: <20210909115726.149004-1-sashal@kernel.org>
@@ -43,97 +43,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yufeng Mo <moyufeng@huawei.com>
+From: Johan Almbladh <johan.almbladh@anyfinetworks.com>
 
-[ Upstream commit 220ade77452c15ecb1ab94c3f8aaeb6d033c3582 ]
+[ Upstream commit b61a28cf11d61f512172e673b8f8c4a6c789b425 ]
 
-Some time ago, I reported a calltrace issue
-"did not find a suitable aggregator", please see[1].
-After a period of analysis and reproduction, I find
-that this problem is caused by concurrency.
+Before, the interpreter allowed up to MAX_TAIL_CALL_CNT + 1 tail calls.
+Now precisely MAX_TAIL_CALL_CNT is allowed, which is in line with the
+behavior of the x86 JITs.
 
-Before the problem occurs, the bond structure is like follows:
-
-bond0 - slaver0(eth0) - agg0.lag_ports -> port0 - port1
-                      \
-                        port0
-      \
-        slaver1(eth1) - agg1.lag_ports -> NULL
-                      \
-                        port1
-
-If we run 'ifenslave bond0 -d eth1', the process is like below:
-
-excuting __bond_release_one()
-|
-bond_upper_dev_unlink()[step1]
-|                       |                       |
-|                       |                       bond_3ad_lacpdu_recv()
-|                       |                       ->bond_3ad_rx_indication()
-|                       |                       spin_lock_bh()
-|                       |                       ->ad_rx_machine()
-|                       |                       ->__record_pdu()[step2]
-|                       |                       spin_unlock_bh()
-|                       |                       |
-|                       bond_3ad_state_machine_handler()
-|                       spin_lock_bh()
-|                       ->ad_port_selection_logic()
-|                       ->try to find free aggregator[step3]
-|                       ->try to find suitable aggregator[step4]
-|                       ->did not find a suitable aggregator[step5]
-|                       spin_unlock_bh()
-|                       |
-|                       |
-bond_3ad_unbind_slave() |
-spin_lock_bh()
-spin_unlock_bh()
-
-step1: already removed slaver1(eth1) from list, but port1 remains
-step2: receive a lacpdu and update port0
-step3: port0 will be removed from agg0.lag_ports. The struct is
-       "agg0.lag_ports -> port1" now, and agg0 is not free. At the
-	   same time, slaver1/agg1 has been removed from the list by step1.
-	   So we can't find a free aggregator now.
-step4: can't find suitable aggregator because of step2
-step5: cause a calltrace since port->aggregator is NULL
-
-To solve this concurrency problem, put bond_upper_dev_unlink()
-after bond_3ad_unbind_slave(). In this way, we can invalid the port
-first and skip this port in bond_3ad_state_machine_handler(). This
-eliminates the situation that the slaver has been removed from the
-list but the port is still valid.
-
-[1]https://lore.kernel.org/netdev/10374.1611947473@famine/
-
-Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
-Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Acked-by: Yonghong Song <yhs@fb.com>
+Link: https://lore.kernel.org/bpf/20210728164741.350370-1-johan.almbladh@anyfinetworks.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/bonding/bond_main.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ kernel/bpf/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index c814b266af79..d6c5f41b17f7 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -1912,7 +1912,6 @@ static int __bond_release_one(struct net_device *bond_dev,
- 	/* recompute stats just before removing the slave */
- 	bond_get_stats(bond->dev, &bond->bond_stats);
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index d2b6d2459aad..b4a35c11bc92 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -1198,7 +1198,7 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn, u64 *stack)
  
--	bond_upper_dev_unlink(bond, slave);
- 	/* unregister rx_handler early so bond_handle_frame wouldn't be called
- 	 * for this slave anymore.
- 	 */
-@@ -1921,6 +1920,8 @@ static int __bond_release_one(struct net_device *bond_dev,
- 	if (BOND_MODE(bond) == BOND_MODE_8023AD)
- 		bond_3ad_unbind_slave(slave);
+ 		if (unlikely(index >= array->map.max_entries))
+ 			goto out;
+-		if (unlikely(tail_call_cnt > MAX_TAIL_CALL_CNT))
++		if (unlikely(tail_call_cnt >= MAX_TAIL_CALL_CNT))
+ 			goto out;
  
-+	bond_upper_dev_unlink(bond, slave);
-+
- 	if (bond_mode_can_use_xmit_hash(bond))
- 		bond_update_slave_arr(bond, slave);
- 
+ 		tail_call_cnt++;
 -- 
 2.30.2
 
