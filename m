@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA152404C3E
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 13:55:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CE73404C41
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 13:55:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243158AbhIIL4O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 07:56:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34230 "EHLO mail.kernel.org"
+        id S243946AbhIIL4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 07:56:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34238 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243674AbhIILyW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S243678AbhIILyW (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 9 Sep 2021 07:54:22 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9CD31611ED;
-        Thu,  9 Sep 2021 11:44:46 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 06D8F6103D;
+        Thu,  9 Sep 2021 11:44:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631187887;
-        bh=ZkM60eH0yUjVRm4ry7zRSJTCPCqCrBzfUlOb97Ujv5I=;
+        s=k20201202; t=1631187888;
+        bh=Jh5NE7jztA+6OO7D91sSydLB1UH+UHC6Tmy4Sbywk7U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g/dm7hkpkFkbGgtYj4xLGsL4JTkU1tSKECG1Du0iuChxHeIBHnPTxZWceRG4kM7jB
-         E/Z47NjQZiBh3iJncdgi9+i1nvcnAQLID50zhw28vqLSlNxV09XtqParV9Ox+k6T0z
-         KeYKxUafVXVwLBqBLwfs9hx6fccz7Ifl64NZFHAcYSdg/AuDcKb0leT3cCrXbJy8CM
-         fQl13aEkYp0mEUXjPH84Sl5ENZ+r6fp7ClHzgf2yiRbQtSPBAogJ7NpKjs+xXVLHiz
-         MYWQv8uLp/Ahi4iG25PQfW8Gw7AMQaMgK4W7j1y6f/Lx8A7/qOJ7ATk9gae6NXWwGz
-         AN92spLGb/Rvw==
+        b=LaYLZAM/DeVf0FYCw8rJjJgxPL4NfLy/U3TfhiI50HKrnKYNcGgvh4TdHm5CI5xzk
+         Px99QriOrD4jNAreDmzOXSATgDfGkb23Ad0qf1tbzI/mkmPkiZEW46xYzOP0kqRX63
+         Kzv6XaQaU/tK2sOat4Weh5B8w3d+8NXQkPg3Z/Vgqj0gA24wHsz1itlual3VKUj3NH
+         Vkvptw2k9GoR0Q/lZUXE4wjECrZboJPUp/vE7/Rwe5ZvJbg8pl0LymwKSvc8Rxjs7p
+         fdXyd412kIyVd/xtraCvGZtXhJbBd879l+ddWh24yaMK1AV7Mo97IOnyA29cgv9q7V
+         yczcJzpkhH75Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Stefan Assmann <sassmann@kpanic.de>,
-        Marek Szlosek <marek.szlosek@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+Cc:     Yucong Sun <fallentree@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
         Sasha Levin <sashal@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.14 169/252] iavf: use mutexes for locking of critical sections
-Date:   Thu,  9 Sep 2021 07:39:43 -0400
-Message-Id: <20210909114106.141462-169-sashal@kernel.org>
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.14 170/252] selftests/bpf: Correctly display subtest skip status
+Date:   Thu,  9 Sep 2021 07:39:44 -0400
+Message-Id: <20210909114106.141462-170-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909114106.141462-1-sashal@kernel.org>
 References: <20210909114106.141462-1-sashal@kernel.org>
@@ -44,436 +44,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefan Assmann <sassmann@kpanic.de>
+From: Yucong Sun <fallentree@fb.com>
 
-[ Upstream commit 5ac49f3c2702f269d31cc37eb9308bc557953c4d ]
+[ Upstream commit f667d1d66760fcb27aee6c9964eefde39a464afe ]
 
-As follow-up to the discussion with Jakub Kicinski about iavf locking
-being insufficient [1] convert iavf to use mutexes instead of bitops.
-The locking logic is kept as is, just a drop-in replacement of
-enum iavf_critical_section_t with separate mutexes.
-The only difference is that the mutexes will be destroyed before the
-module is unloaded.
+In skip_account(), test->skip_cnt is set to 0 at the end, this makes next print
+statement never display SKIP status for the subtest. This patch moves the
+accounting logic after the print statement, fixing the issue.
 
-[1] https://lwn.net/ml/netdev/20210316150210.00007249%40intel.com/
+This patch also added SKIP status display for normal tests.
 
-Signed-off-by: Stefan Assmann <sassmann@kpanic.de>
-Tested-by: Marek Szlosek <marek.szlosek@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Yucong Sun <fallentree@fb.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/20210817044732.3263066-3-fallentree@fb.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/iavf/iavf.h        |   9 +-
- .../net/ethernet/intel/iavf/iavf_ethtool.c    |  10 +-
- drivers/net/ethernet/intel/iavf/iavf_main.c   | 100 +++++++++---------
- 3 files changed, 56 insertions(+), 63 deletions(-)
+ tools/testing/selftests/bpf/test_progs.c | 25 ++++++++++++------------
+ 1 file changed, 13 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf.h b/drivers/net/ethernet/intel/iavf/iavf.h
-index 90793b36126e..68c80f04113c 100644
---- a/drivers/net/ethernet/intel/iavf/iavf.h
-+++ b/drivers/net/ethernet/intel/iavf/iavf.h
-@@ -186,12 +186,6 @@ enum iavf_state_t {
- 	__IAVF_RUNNING,		/* opened, working */
- };
+diff --git a/tools/testing/selftests/bpf/test_progs.c b/tools/testing/selftests/bpf/test_progs.c
+index 6f103106a39b..bfbf2277b61a 100644
+--- a/tools/testing/selftests/bpf/test_progs.c
++++ b/tools/testing/selftests/bpf/test_progs.c
+@@ -148,18 +148,18 @@ void test__end_subtest()
+ 	struct prog_test_def *test = env.test;
+ 	int sub_error_cnt = test->error_cnt - test->old_error_cnt;
  
--enum iavf_critical_section_t {
--	__IAVF_IN_CRITICAL_TASK,	/* cannot be interrupted */
--	__IAVF_IN_CLIENT_TASK,
--	__IAVF_IN_REMOVE_TASK,	/* device being removed */
--};
+-	if (sub_error_cnt)
+-		env.fail_cnt++;
+-	else if (test->skip_cnt == 0)
+-		env.sub_succ_cnt++;
+-	skip_account();
 -
- #define IAVF_CLOUD_FIELD_OMAC		0x01
- #define IAVF_CLOUD_FIELD_IMAC		0x02
- #define IAVF_CLOUD_FIELD_IVLAN	0x04
-@@ -236,6 +230,9 @@ struct iavf_adapter {
- 	struct iavf_q_vector *q_vectors;
- 	struct list_head vlan_filter_list;
- 	struct list_head mac_filter_list;
-+	struct mutex crit_lock;
-+	struct mutex client_lock;
-+	struct mutex remove_lock;
- 	/* Lock to protect accesses to MAC and VLAN lists */
- 	spinlock_t mac_vlan_list_lock;
- 	char misc_vector_name[IFNAMSIZ + 9];
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_ethtool.c b/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
-index af43fbd8cb75..edbeb27213f8 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
-@@ -1352,8 +1352,7 @@ static int iavf_add_fdir_ethtool(struct iavf_adapter *adapter, struct ethtool_rx
- 	if (!fltr)
- 		return -ENOMEM;
+ 	dump_test_log(test, sub_error_cnt);
  
--	while (test_and_set_bit(__IAVF_IN_CRITICAL_TASK,
--				&adapter->crit_section)) {
-+	while (!mutex_trylock(&adapter->crit_lock)) {
- 		if (--count == 0) {
- 			kfree(fltr);
- 			return -EINVAL;
-@@ -1378,7 +1377,7 @@ static int iavf_add_fdir_ethtool(struct iavf_adapter *adapter, struct ethtool_rx
- 	if (err && fltr)
- 		kfree(fltr);
+ 	fprintf(env.stdout, "#%d/%d %s:%s\n",
+ 	       test->test_num, test->subtest_num, test->subtest_name,
+ 	       sub_error_cnt ? "FAIL" : (test->skip_cnt ? "SKIP" : "OK"));
  
--	clear_bit(__IAVF_IN_CRITICAL_TASK, &adapter->crit_section);
-+	mutex_unlock(&adapter->crit_lock);
- 	return err;
++	if (sub_error_cnt)
++		env.fail_cnt++;
++	else if (test->skip_cnt == 0)
++		env.sub_succ_cnt++;
++	skip_account();
++
+ 	free(test->subtest_name);
+ 	test->subtest_name = NULL;
  }
+@@ -786,17 +786,18 @@ int main(int argc, char **argv)
+ 			test__end_subtest();
  
-@@ -1563,8 +1562,7 @@ iavf_set_adv_rss_hash_opt(struct iavf_adapter *adapter,
- 		return -EINVAL;
- 	}
+ 		test->tested = true;
+-		if (test->error_cnt)
+-			env.fail_cnt++;
+-		else
+-			env.succ_cnt++;
+-		skip_account();
  
--	while (test_and_set_bit(__IAVF_IN_CRITICAL_TASK,
--				&adapter->crit_section)) {
-+	while (!mutex_trylock(&adapter->crit_lock)) {
- 		if (--count == 0) {
- 			kfree(rss_new);
- 			return -EINVAL;
-@@ -1600,7 +1598,7 @@ iavf_set_adv_rss_hash_opt(struct iavf_adapter *adapter,
- 	if (!err)
- 		mod_delayed_work(iavf_wq, &adapter->watchdog_task, 0);
+ 		dump_test_log(test, test->error_cnt);
  
--	clear_bit(__IAVF_IN_CRITICAL_TASK, &adapter->crit_section);
-+	mutex_unlock(&adapter->crit_lock);
+ 		fprintf(env.stdout, "#%d %s:%s\n",
+ 			test->test_num, test->test_name,
+-			test->error_cnt ? "FAIL" : "OK");
++			test->error_cnt ? "FAIL" : (test->skip_cnt ? "SKIP" : "OK"));
++
++		if (test->error_cnt)
++			env.fail_cnt++;
++		else
++			env.succ_cnt++;
++		skip_account();
  
- 	if (!rss_new_add)
- 		kfree(rss_new);
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index e5e6a5b11e6d..23762a7ef740 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -132,21 +132,18 @@ enum iavf_status iavf_free_virt_mem_d(struct iavf_hw *hw,
- }
- 
- /**
-- * iavf_lock_timeout - try to set bit but give up after timeout
-- * @adapter: board private structure
-- * @bit: bit to set
-+ * iavf_lock_timeout - try to lock mutex but give up after timeout
-+ * @lock: mutex that should be locked
-  * @msecs: timeout in msecs
-  *
-  * Returns 0 on success, negative on failure
-  **/
--static int iavf_lock_timeout(struct iavf_adapter *adapter,
--			     enum iavf_critical_section_t bit,
--			     unsigned int msecs)
-+static int iavf_lock_timeout(struct mutex *lock, unsigned int msecs)
- {
- 	unsigned int wait, delay = 10;
- 
- 	for (wait = 0; wait < msecs; wait += delay) {
--		if (!test_and_set_bit(bit, &adapter->crit_section))
-+		if (mutex_trylock(lock))
- 			return 0;
- 
- 		msleep(delay);
-@@ -1940,7 +1937,7 @@ static void iavf_watchdog_task(struct work_struct *work)
- 	struct iavf_hw *hw = &adapter->hw;
- 	u32 reg_val;
- 
--	if (test_and_set_bit(__IAVF_IN_CRITICAL_TASK, &adapter->crit_section))
-+	if (!mutex_trylock(&adapter->crit_lock))
- 		goto restart_watchdog;
- 
- 	if (adapter->flags & IAVF_FLAG_PF_COMMS_FAILED)
-@@ -1958,8 +1955,7 @@ static void iavf_watchdog_task(struct work_struct *work)
- 			adapter->state = __IAVF_STARTUP;
- 			adapter->flags &= ~IAVF_FLAG_PF_COMMS_FAILED;
- 			queue_delayed_work(iavf_wq, &adapter->init_task, 10);
--			clear_bit(__IAVF_IN_CRITICAL_TASK,
--				  &adapter->crit_section);
-+			mutex_unlock(&adapter->crit_lock);
- 			/* Don't reschedule the watchdog, since we've restarted
- 			 * the init task. When init_task contacts the PF and
- 			 * gets everything set up again, it'll restart the
-@@ -1969,14 +1965,13 @@ static void iavf_watchdog_task(struct work_struct *work)
- 		}
- 		adapter->aq_required = 0;
- 		adapter->current_op = VIRTCHNL_OP_UNKNOWN;
--		clear_bit(__IAVF_IN_CRITICAL_TASK,
--			  &adapter->crit_section);
-+		mutex_unlock(&adapter->crit_lock);
- 		queue_delayed_work(iavf_wq,
- 				   &adapter->watchdog_task,
- 				   msecs_to_jiffies(10));
- 		goto watchdog_done;
- 	case __IAVF_RESETTING:
--		clear_bit(__IAVF_IN_CRITICAL_TASK, &adapter->crit_section);
-+		mutex_unlock(&adapter->crit_lock);
- 		queue_delayed_work(iavf_wq, &adapter->watchdog_task, HZ * 2);
- 		return;
- 	case __IAVF_DOWN:
-@@ -1999,7 +1994,7 @@ static void iavf_watchdog_task(struct work_struct *work)
- 		}
- 		break;
- 	case __IAVF_REMOVE:
--		clear_bit(__IAVF_IN_CRITICAL_TASK, &adapter->crit_section);
-+		mutex_unlock(&adapter->crit_lock);
- 		return;
- 	default:
- 		goto restart_watchdog;
-@@ -2021,7 +2016,7 @@ static void iavf_watchdog_task(struct work_struct *work)
- 	if (adapter->state == __IAVF_RUNNING ||
- 	    adapter->state == __IAVF_COMM_FAILED)
- 		iavf_detect_recover_hung(&adapter->vsi);
--	clear_bit(__IAVF_IN_CRITICAL_TASK, &adapter->crit_section);
-+	mutex_unlock(&adapter->crit_lock);
- restart_watchdog:
- 	if (adapter->aq_required)
- 		queue_delayed_work(iavf_wq, &adapter->watchdog_task,
-@@ -2085,7 +2080,7 @@ static void iavf_disable_vf(struct iavf_adapter *adapter)
- 	memset(adapter->vf_res, 0, IAVF_VIRTCHNL_VF_RESOURCE_SIZE);
- 	iavf_shutdown_adminq(&adapter->hw);
- 	adapter->netdev->flags &= ~IFF_UP;
--	clear_bit(__IAVF_IN_CRITICAL_TASK, &adapter->crit_section);
-+	mutex_unlock(&adapter->crit_lock);
- 	adapter->flags &= ~IAVF_FLAG_RESET_PENDING;
- 	adapter->state = __IAVF_DOWN;
- 	wake_up(&adapter->down_waitqueue);
-@@ -2118,15 +2113,14 @@ static void iavf_reset_task(struct work_struct *work)
- 	/* When device is being removed it doesn't make sense to run the reset
- 	 * task, just return in such a case.
- 	 */
--	if (test_bit(__IAVF_IN_REMOVE_TASK, &adapter->crit_section))
-+	if (mutex_is_locked(&adapter->remove_lock))
- 		return;
- 
--	if (iavf_lock_timeout(adapter, __IAVF_IN_CRITICAL_TASK, 200)) {
-+	if (iavf_lock_timeout(&adapter->crit_lock, 200)) {
- 		schedule_work(&adapter->reset_task);
- 		return;
- 	}
--	while (test_and_set_bit(__IAVF_IN_CLIENT_TASK,
--				&adapter->crit_section))
-+	while (!mutex_trylock(&adapter->client_lock))
- 		usleep_range(500, 1000);
- 	if (CLIENT_ENABLED(adapter)) {
- 		adapter->flags &= ~(IAVF_FLAG_CLIENT_NEEDS_OPEN |
-@@ -2178,7 +2172,7 @@ static void iavf_reset_task(struct work_struct *work)
- 		dev_err(&adapter->pdev->dev, "Reset never finished (%x)\n",
- 			reg_val);
- 		iavf_disable_vf(adapter);
--		clear_bit(__IAVF_IN_CLIENT_TASK, &adapter->crit_section);
-+		mutex_unlock(&adapter->client_lock);
- 		return; /* Do not attempt to reinit. It's dead, Jim. */
- 	}
- 
-@@ -2305,13 +2299,13 @@ static void iavf_reset_task(struct work_struct *work)
- 		adapter->state = __IAVF_DOWN;
- 		wake_up(&adapter->down_waitqueue);
- 	}
--	clear_bit(__IAVF_IN_CLIENT_TASK, &adapter->crit_section);
--	clear_bit(__IAVF_IN_CRITICAL_TASK, &adapter->crit_section);
-+	mutex_unlock(&adapter->client_lock);
-+	mutex_unlock(&adapter->crit_lock);
- 
- 	return;
- reset_err:
--	clear_bit(__IAVF_IN_CLIENT_TASK, &adapter->crit_section);
--	clear_bit(__IAVF_IN_CRITICAL_TASK, &adapter->crit_section);
-+	mutex_unlock(&adapter->client_lock);
-+	mutex_unlock(&adapter->crit_lock);
- 	dev_err(&adapter->pdev->dev, "failed to allocate resources during reinit\n");
- 	iavf_close(netdev);
- }
-@@ -2339,7 +2333,7 @@ static void iavf_adminq_task(struct work_struct *work)
- 	if (!event.msg_buf)
- 		goto out;
- 
--	if (iavf_lock_timeout(adapter, __IAVF_IN_CRITICAL_TASK, 200))
-+	if (iavf_lock_timeout(&adapter->crit_lock, 200))
- 		goto freedom;
- 	do {
- 		ret = iavf_clean_arq_element(hw, &event, &pending);
-@@ -2354,7 +2348,7 @@ static void iavf_adminq_task(struct work_struct *work)
- 		if (pending != 0)
- 			memset(event.msg_buf, 0, IAVF_MAX_AQ_BUF_SIZE);
- 	} while (pending);
--	clear_bit(__IAVF_IN_CRITICAL_TASK, &adapter->crit_section);
-+	mutex_unlock(&adapter->crit_lock);
- 
- 	if ((adapter->flags &
- 	     (IAVF_FLAG_RESET_PENDING | IAVF_FLAG_RESET_NEEDED)) ||
-@@ -2421,7 +2415,7 @@ static void iavf_client_task(struct work_struct *work)
- 	 * later.
- 	 */
- 
--	if (test_and_set_bit(__IAVF_IN_CLIENT_TASK, &adapter->crit_section))
-+	if (!mutex_trylock(&adapter->client_lock))
- 		return;
- 
- 	if (adapter->flags & IAVF_FLAG_SERVICE_CLIENT_REQUESTED) {
-@@ -2444,7 +2438,7 @@ static void iavf_client_task(struct work_struct *work)
- 		adapter->flags &= ~IAVF_FLAG_CLIENT_NEEDS_OPEN;
- 	}
- out:
--	clear_bit(__IAVF_IN_CLIENT_TASK, &adapter->crit_section);
-+	mutex_unlock(&adapter->client_lock);
- }
- 
- /**
-@@ -3047,8 +3041,7 @@ static int iavf_configure_clsflower(struct iavf_adapter *adapter,
- 	if (!filter)
- 		return -ENOMEM;
- 
--	while (test_and_set_bit(__IAVF_IN_CRITICAL_TASK,
--				&adapter->crit_section)) {
-+	while (!mutex_trylock(&adapter->crit_lock)) {
- 		if (--count == 0)
- 			goto err;
- 		udelay(1);
-@@ -3079,7 +3072,7 @@ static int iavf_configure_clsflower(struct iavf_adapter *adapter,
- 	if (err)
- 		kfree(filter);
- 
--	clear_bit(__IAVF_IN_CRITICAL_TASK, &adapter->crit_section);
-+	mutex_unlock(&adapter->crit_lock);
- 	return err;
- }
- 
-@@ -3226,8 +3219,7 @@ static int iavf_open(struct net_device *netdev)
- 		return -EIO;
- 	}
- 
--	while (test_and_set_bit(__IAVF_IN_CRITICAL_TASK,
--				&adapter->crit_section))
-+	while (!mutex_trylock(&adapter->crit_lock))
- 		usleep_range(500, 1000);
- 
- 	if (adapter->state != __IAVF_DOWN) {
-@@ -3262,7 +3254,7 @@ static int iavf_open(struct net_device *netdev)
- 
- 	iavf_irq_enable(adapter, true);
- 
--	clear_bit(__IAVF_IN_CRITICAL_TASK, &adapter->crit_section);
-+	mutex_unlock(&adapter->crit_lock);
- 
- 	return 0;
- 
-@@ -3274,7 +3266,7 @@ static int iavf_open(struct net_device *netdev)
- err_setup_tx:
- 	iavf_free_all_tx_resources(adapter);
- err_unlock:
--	clear_bit(__IAVF_IN_CRITICAL_TASK, &adapter->crit_section);
-+	mutex_unlock(&adapter->crit_lock);
- 
- 	return err;
- }
-@@ -3298,8 +3290,7 @@ static int iavf_close(struct net_device *netdev)
- 	if (adapter->state <= __IAVF_DOWN_PENDING)
- 		return 0;
- 
--	while (test_and_set_bit(__IAVF_IN_CRITICAL_TASK,
--				&adapter->crit_section))
-+	while (!mutex_trylock(&adapter->crit_lock))
- 		usleep_range(500, 1000);
- 
- 	set_bit(__IAVF_VSI_DOWN, adapter->vsi.state);
-@@ -3310,7 +3301,7 @@ static int iavf_close(struct net_device *netdev)
- 	adapter->state = __IAVF_DOWN_PENDING;
- 	iavf_free_traffic_irqs(adapter);
- 
--	clear_bit(__IAVF_IN_CRITICAL_TASK, &adapter->crit_section);
-+	mutex_unlock(&adapter->crit_lock);
- 
- 	/* We explicitly don't free resources here because the hardware is
- 	 * still active and can DMA into memory. Resources are cleared in
-@@ -3659,8 +3650,8 @@ static void iavf_init_task(struct work_struct *work)
- 						    init_task.work);
- 	struct iavf_hw *hw = &adapter->hw;
- 
--	if (iavf_lock_timeout(adapter, __IAVF_IN_CRITICAL_TASK, 5000)) {
--		dev_warn(&adapter->pdev->dev, "failed to set __IAVF_IN_CRITICAL_TASK in %s\n", __FUNCTION__);
-+	if (iavf_lock_timeout(&adapter->crit_lock, 5000)) {
-+		dev_warn(&adapter->pdev->dev, "failed to acquire crit_lock in %s\n", __FUNCTION__);
- 		return;
- 	}
- 	switch (adapter->state) {
-@@ -3695,7 +3686,7 @@ static void iavf_init_task(struct work_struct *work)
- 	}
- 	queue_delayed_work(iavf_wq, &adapter->init_task, HZ);
- out:
--	clear_bit(__IAVF_IN_CRITICAL_TASK, &adapter->crit_section);
-+	mutex_unlock(&adapter->crit_lock);
- }
- 
- /**
-@@ -3712,12 +3703,12 @@ static void iavf_shutdown(struct pci_dev *pdev)
- 	if (netif_running(netdev))
- 		iavf_close(netdev);
- 
--	if (iavf_lock_timeout(adapter, __IAVF_IN_CRITICAL_TASK, 5000))
--		dev_warn(&adapter->pdev->dev, "failed to set __IAVF_IN_CRITICAL_TASK in %s\n", __FUNCTION__);
-+	if (iavf_lock_timeout(&adapter->crit_lock, 5000))
-+		dev_warn(&adapter->pdev->dev, "failed to acquire crit_lock in %s\n", __FUNCTION__);
- 	/* Prevent the watchdog from running. */
- 	adapter->state = __IAVF_REMOVE;
- 	adapter->aq_required = 0;
--	clear_bit(__IAVF_IN_CRITICAL_TASK, &adapter->crit_section);
-+	mutex_unlock(&adapter->crit_lock);
- 
- #ifdef CONFIG_PM
- 	pci_save_state(pdev);
-@@ -3811,6 +3802,9 @@ static int iavf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	/* set up the locks for the AQ, do this only once in probe
- 	 * and destroy them only once in remove
- 	 */
-+	mutex_init(&adapter->crit_lock);
-+	mutex_init(&adapter->client_lock);
-+	mutex_init(&adapter->remove_lock);
- 	mutex_init(&hw->aq.asq_mutex);
- 	mutex_init(&hw->aq.arq_mutex);
- 
-@@ -3862,8 +3856,7 @@ static int __maybe_unused iavf_suspend(struct device *dev_d)
- 
- 	netif_device_detach(netdev);
- 
--	while (test_and_set_bit(__IAVF_IN_CRITICAL_TASK,
--				&adapter->crit_section))
-+	while (!mutex_trylock(&adapter->crit_lock))
- 		usleep_range(500, 1000);
- 
- 	if (netif_running(netdev)) {
-@@ -3874,7 +3867,7 @@ static int __maybe_unused iavf_suspend(struct device *dev_d)
- 	iavf_free_misc_irq(adapter);
- 	iavf_reset_interrupt_capability(adapter);
- 
--	clear_bit(__IAVF_IN_CRITICAL_TASK, &adapter->crit_section);
-+	mutex_unlock(&adapter->crit_lock);
- 
- 	return 0;
- }
-@@ -3936,7 +3929,7 @@ static void iavf_remove(struct pci_dev *pdev)
- 	struct iavf_hw *hw = &adapter->hw;
- 	int err;
- 	/* Indicate we are in remove and not to run reset_task */
--	set_bit(__IAVF_IN_REMOVE_TASK, &adapter->crit_section);
-+	mutex_lock(&adapter->remove_lock);
- 	cancel_delayed_work_sync(&adapter->init_task);
- 	cancel_work_sync(&adapter->reset_task);
- 	cancel_delayed_work_sync(&adapter->client_task);
-@@ -3958,8 +3951,8 @@ static void iavf_remove(struct pci_dev *pdev)
- 		iavf_request_reset(adapter);
- 		msleep(50);
- 	}
--	if (iavf_lock_timeout(adapter, __IAVF_IN_CRITICAL_TASK, 5000))
--		dev_warn(&adapter->pdev->dev, "failed to set __IAVF_IN_CRITICAL_TASK in %s\n", __FUNCTION__);
-+	if (iavf_lock_timeout(&adapter->crit_lock, 5000))
-+		dev_warn(&adapter->pdev->dev, "failed to acquire crit_lock in %s\n", __FUNCTION__);
- 
- 	/* Shut down all the garbage mashers on the detention level */
- 	adapter->state = __IAVF_REMOVE;
-@@ -3984,6 +3977,11 @@ static void iavf_remove(struct pci_dev *pdev)
- 	/* destroy the locks only once, here */
- 	mutex_destroy(&hw->aq.arq_mutex);
- 	mutex_destroy(&hw->aq.asq_mutex);
-+	mutex_destroy(&adapter->client_lock);
-+	mutex_unlock(&adapter->crit_lock);
-+	mutex_destroy(&adapter->crit_lock);
-+	mutex_unlock(&adapter->remove_lock);
-+	mutex_destroy(&adapter->remove_lock);
- 
- 	iounmap(hw->hw_addr);
- 	pci_release_regions(pdev);
+ 		reset_affinity();
+ 		restore_netns();
 -- 
 2.30.2
 
