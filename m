@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8468F4050FE
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:42:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA5A14050F9
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:42:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352805AbhIIMdI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 08:33:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33210 "EHLO mail.kernel.org"
+        id S243551AbhIIMdB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 08:33:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34716 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1353767AbhIIMYt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1353768AbhIIMYt (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 9 Sep 2021 08:24:49 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 71F3261B02;
-        Thu,  9 Sep 2021 11:51:29 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BD99D61ABF;
+        Thu,  9 Sep 2021 11:51:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631188290;
-        bh=oXQrmImgzspKLQctNWZ27J0bJXr2dNfubqFfMuqlvks=;
+        s=k20201202; t=1631188291;
+        bh=oEucGP7KA0TVuE98wc3+iLQVouHdB1vVi2pdgYZ5p3g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E3pHCylQBkizldpSjHg+yQVGo7hGs24BcDQpyfAL/O3qWDihKQ4lwBcGjqR4vwUeu
-         0XBbXHhhqsHcR3Amb5CY0kazCj30W2GvNlITKhCoXYToM0pAbjUz5J60GqM93B9S4x
-         w0fNiecYuwus2g2CVRHymckayPOSdlCgW0pM2hvJ8xigPdq4PhAtY+5qXfgVOp/Y2f
-         Mwtk80pSNajQTDccSVKJ/4gTpzst5AsK2+WfHDRqHY/dEqcyBACqjqMJEDuswH4hn9
-         NxDxkAijAzyVoB+RtOW64n35j+jvpVAw8P2WPaIWTgnUq5PFGlDSJH9CZLItIF3eWr
-         ZGkBpRaBhEGTA==
+        b=hLTJhmGEeuMZb7KdTz+C81nFGoZYPQkF1UbfKEC/3B/ybnyJPYznPA6dx3uyhlWN7
+         OABEHAD4Gs0uObt0JtII/RvLYOweFI69hhMCun/xDVyxj8plxPdDLgzIFgkbry2vVC
+         EHRkOxPoUuVDIThlhV4HIhkQewkXyY2rSqVtvZ1LJ67etkLa0AYOfLvHtXRoePKs/Y
+         9bZka33oN+tunna+k1nnzfeTJW77rw7/bX5/PpGmKXl9GYIBDx+RjS2WwQDIi8KkbY
+         3LtFV3NouWv9Q+3lLDsbwhg8CAjSVtS8zAmSWijw8sxvAhwgO83e9btFy5AOL64Gro
+         MgLthg1kgT/bA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xin Long <lucien.xin@gmail.com>, Jon Maloy <jmaloy@redhat.com>,
+Cc:     Marek Vasut <marex@denx.de>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net
-Subject: [PATCH AUTOSEL 5.10 009/176] tipc: keep the skb in rcv queue until the whole data is read
-Date:   Thu,  9 Sep 2021 07:48:31 -0400
-Message-Id: <20210909115118.146181-9-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 010/176] net: phy: Fix data type in DP83822 dp8382x_disable_wol()
+Date:   Thu,  9 Sep 2021 07:48:32 -0400
+Message-Id: <20210909115118.146181-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909115118.146181-1-sashal@kernel.org>
 References: <20210909115118.146181-1-sashal@kernel.org>
@@ -43,106 +43,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xin Long <lucien.xin@gmail.com>
+From: Marek Vasut <marex@denx.de>
 
-[ Upstream commit f4919ff59c2828064b4156e3c3600a169909bcf4 ]
+[ Upstream commit 0d6835ffe50c9c1f098b5704394331710b67af48 ]
 
-Currently, when userspace reads a datagram with a buffer that is
-smaller than this datagram, the data will be truncated and only
-part of it can be received by users. It doesn't seem right that
-users don't know the datagram size and have to use a huge buffer
-to read it to avoid the truncation.
+The last argument of phy_clear_bits_mmd(..., u16 val); is u16 and not
+int, just inline the value into the function call arguments.
 
-This patch to fix it by keeping the skb in rcv queue until the
-whole data is read by users. Only the last msg of the datagram
-will be marked with MSG_EOR, just as TCP/SCTP does.
+No functional change.
 
-Note that this will work as above only when MSG_EOR is set in the
-flags parameter of recvmsg(), so that it won't break any old user
-applications.
-
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
-Acked-by: Jon Maloy <jmaloy@redhat.com>
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: David S. Miller <davem@davemloft.net>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/tipc/socket.c | 36 +++++++++++++++++++++++++++---------
- 1 file changed, 27 insertions(+), 9 deletions(-)
+ drivers/net/phy/dp83822.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-index 9bd72468bc68..963047c57c27 100644
---- a/net/tipc/socket.c
-+++ b/net/tipc/socket.c
-@@ -1887,6 +1887,7 @@ static int tipc_recvmsg(struct socket *sock, struct msghdr *m,
- 	bool connected = !tipc_sk_type_connectionless(sk);
- 	struct tipc_sock *tsk = tipc_sk(sk);
- 	int rc, err, hlen, dlen, copy;
-+	struct tipc_skb_cb *skb_cb;
- 	struct sk_buff_head xmitq;
- 	struct tipc_msg *hdr;
- 	struct sk_buff *skb;
-@@ -1910,6 +1911,7 @@ static int tipc_recvmsg(struct socket *sock, struct msghdr *m,
- 		if (unlikely(rc))
- 			goto exit;
- 		skb = skb_peek(&sk->sk_receive_queue);
-+		skb_cb = TIPC_SKB_CB(skb);
- 		hdr = buf_msg(skb);
- 		dlen = msg_data_sz(hdr);
- 		hlen = msg_hdr_sz(hdr);
-@@ -1929,18 +1931,33 @@ static int tipc_recvmsg(struct socket *sock, struct msghdr *m,
+diff --git a/drivers/net/phy/dp83822.c b/drivers/net/phy/dp83822.c
+index a9b058bb1be8..7bf43031cea8 100644
+--- a/drivers/net/phy/dp83822.c
++++ b/drivers/net/phy/dp83822.c
+@@ -305,11 +305,9 @@ static int dp83822_config_intr(struct phy_device *phydev)
  
- 	/* Capture data if non-error msg, otherwise just set return value */
- 	if (likely(!err)) {
--		copy = min_t(int, dlen, buflen);
--		if (unlikely(copy != dlen))
--			m->msg_flags |= MSG_TRUNC;
--		rc = skb_copy_datagram_msg(skb, hlen, m, copy);
-+		int offset = skb_cb->bytes_read;
-+
-+		copy = min_t(int, dlen - offset, buflen);
-+		rc = skb_copy_datagram_msg(skb, hlen + offset, m, copy);
-+		if (unlikely(rc))
-+			goto exit;
-+		if (unlikely(offset + copy < dlen)) {
-+			if (flags & MSG_EOR) {
-+				if (!(flags & MSG_PEEK))
-+					skb_cb->bytes_read = offset + copy;
-+			} else {
-+				m->msg_flags |= MSG_TRUNC;
-+				skb_cb->bytes_read = 0;
-+			}
-+		} else {
-+			if (flags & MSG_EOR)
-+				m->msg_flags |= MSG_EOR;
-+			skb_cb->bytes_read = 0;
-+		}
- 	} else {
- 		copy = 0;
- 		rc = 0;
--		if (err != TIPC_CONN_SHUTDOWN && connected && !m->msg_control)
-+		if (err != TIPC_CONN_SHUTDOWN && connected && !m->msg_control) {
- 			rc = -ECONNRESET;
-+			goto exit;
-+		}
- 	}
--	if (unlikely(rc))
--		goto exit;
+ static int dp8382x_disable_wol(struct phy_device *phydev)
+ {
+-	int value = DP83822_WOL_EN | DP83822_WOL_MAGIC_EN |
+-		    DP83822_WOL_SECURE_ON;
+-
+-	return phy_clear_bits_mmd(phydev, DP83822_DEVADDR,
+-				  MII_DP83822_WOL_CFG, value);
++	return phy_clear_bits_mmd(phydev, DP83822_DEVADDR, MII_DP83822_WOL_CFG,
++				  DP83822_WOL_EN | DP83822_WOL_MAGIC_EN |
++				  DP83822_WOL_SECURE_ON);
+ }
  
- 	/* Mark message as group event if applicable */
- 	if (unlikely(grp_evt)) {
-@@ -1963,9 +1980,10 @@ static int tipc_recvmsg(struct socket *sock, struct msghdr *m,
- 		tipc_node_distr_xmit(sock_net(sk), &xmitq);
- 	}
- 
--	tsk_advance_rx_queue(sk);
-+	if (!skb_cb->bytes_read)
-+		tsk_advance_rx_queue(sk);
- 
--	if (likely(!connected))
-+	if (likely(!connected) || skb_cb->bytes_read)
- 		goto exit;
- 
- 	/* Send connection flow control advertisement when applicable */
+ static int dp83822_read_status(struct phy_device *phydev)
 -- 
 2.30.2
 
