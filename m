@@ -2,39 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00B6F405288
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:48:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 04F44405297
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:48:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353088AbhIIMoD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 08:44:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45810 "EHLO mail.kernel.org"
+        id S1354496AbhIIMoU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 08:44:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46118 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1354207AbhIIMi7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Sep 2021 08:38:59 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 40BC461BB3;
-        Thu,  9 Sep 2021 11:54:30 +0000 (UTC)
+        id S1354810AbhIIMji (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Sep 2021 08:39:38 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id ADFBC61BE4;
+        Thu,  9 Sep 2021 11:54:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631188471;
-        bh=Ovgj/vvutDI05EUO8Ndt1ma2M8LJQI9jF2jiL+0HvmY=;
+        s=k20201202; t=1631188485;
+        bh=BZrkluB2099K/J1qS8KSKoiffuQQBK2F02rugxMspQk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BnsNRZAMHlo1uucQ0UV9B9fCRkdhNpFhCA60RJaixYGxmclqvJODiw5arITVY5uL7
-         Tp+Q2Lj81lgkAqKwNHQ6fpA1VVBed4K8Vvqjzqze1oXAbrZLUuIAZ3NFEClj66g4pO
-         iz9qvk/gJezj84Ay/txRRmoczrgecO8hQM0tA0Y7+9szV/iTfYPWtxKMuEJZBQYwgH
-         CbQAQS5tSzYL7T1Eo0XAsF+gOl83sFlPZP7xRGMtMU8lwt9PDnyQYq1ot9AgML0Q/i
-         1EW56s8HHchWOGCDEwZ/IDP7SrcriCn/Br3hqH4/aJ1V8LarzRdXWAgEphw+ynQcPX
-         K8vloWCnenBqw==
+        b=CPAhG+6AjtrKPlyYZyP7G3Db5HkCbOXkYXAldfKwGonF1PWgHEJBrAz8wqTQ52NAw
+         9k7+wHtqBJzV8oR3o66NghWKUaGmQaeag2WDPN4WkGb8GsDJnZYPGoPZ9y6VmgOGIO
+         gTe2xyg/dFaLhTqDzbwsfuuOzsRcYotUXcKiZyjkegDK2fTMjeJtnoYuKUKSkulaQM
+         JC/ntjByvoTRUzSaWfL0dG9nONsd4usXpFd1zOtqv8h0vv4mLLeCUdYQl0joEhWKEk
+         tHZUled7eh37NyXd8j6dLvjbC5viujhXu45tv9Qh2axuMeiK6RrGPq9UIeIOa74u6t
+         mwFN1pBItaygg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Li Zhijian <lizhijian@cn.fujitsu.com>,
-        kernel test robot <lkp@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 149/176] selftests/bpf: Enlarge select() timeout for test_maps
-Date:   Thu,  9 Sep 2021 07:50:51 -0400
-Message-Id: <20210909115118.146181-149-sashal@kernel.org>
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 160/176] iwlwifi: pcie: free RBs during configure
+Date:   Thu,  9 Sep 2021 07:51:02 -0400
+Message-Id: <20210909115118.146181-160-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909115118.146181-1-sashal@kernel.org>
 References: <20210909115118.146181-1-sashal@kernel.org>
@@ -46,55 +43,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Li Zhijian <lizhijian@cn.fujitsu.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 2d82d73da35b72b53fe0d96350a2b8d929d07e42 ]
+[ Upstream commit 6ac5720086c8b176794eb74c5cc09f8b79017f38 ]
 
-0Day robot observed that it's easily timeout on a heavy load host.
--------------------
- # selftests: bpf: test_maps
- # Fork 1024 tasks to 'test_update_delete'
- # Fork 1024 tasks to 'test_update_delete'
- # Fork 100 tasks to 'test_hashmap'
- # Fork 100 tasks to 'test_hashmap_percpu'
- # Fork 100 tasks to 'test_hashmap_sizes'
- # Fork 100 tasks to 'test_hashmap_walk'
- # Fork 100 tasks to 'test_arraymap'
- # Fork 100 tasks to 'test_arraymap_percpu'
- # Failed sockmap unexpected timeout
- not ok 3 selftests: bpf: test_maps # exit=1
- # selftests: bpf: test_lru_map
- # nr_cpus:8
--------------------
-Since this test will be scheduled by 0Day to a random host that could have
-only a few cpus(2-8), enlarge the timeout to avoid a false NG report.
+When switching op-modes, or more generally when reconfiguring,
+we might switch the RB size. In _iwl_pcie_rx_init() we have a
+comment saying we must free all RBs since we might switch the
+size, but this is actually too late: the switch has been done
+and we'll free the buffers with the wrong size.
 
-In practice, i tried to pin it to only one cpu by 'taskset 0x01 ./test_maps',
-and knew 10S is likely enough, but i still perfer to a larger value 30.
+Fix this by always freeing the buffers, if any, at the start
+of configure, instead of only after the size may have changed.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Li Zhijian <lizhijian@cn.fujitsu.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Acked-by: Song Liu <songliubraving@fb.com>
-Link: https://lore.kernel.org/bpf/20210820015556.23276-2-lizhijian@cn.fujitsu.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20210802170640.42d7c93279c4.I07f74e65aab0e3d965a81206fcb289dc92d74878@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/test_maps.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/intel/iwlwifi/pcie/rx.c    | 5 ++++-
+ drivers/net/wireless/intel/iwlwifi/pcie/trans.c | 3 +++
+ 2 files changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/bpf/test_maps.c b/tools/testing/selftests/bpf/test_maps.c
-index 0d92ebcb335d..179e680e8d13 100644
---- a/tools/testing/selftests/bpf/test_maps.c
-+++ b/tools/testing/selftests/bpf/test_maps.c
-@@ -968,7 +968,7 @@ static void test_sockmap(unsigned int tasks, void *data)
+diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/rx.c b/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
+index 94299f259518..2c13fa8f2820 100644
+--- a/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
++++ b/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
+@@ -544,6 +544,9 @@ void iwl_pcie_free_rbs_pool(struct iwl_trans *trans)
+ 	struct iwl_trans_pcie *trans_pcie = IWL_TRANS_GET_PCIE_TRANS(trans);
+ 	int i;
  
- 		FD_ZERO(&w);
- 		FD_SET(sfd[3], &w);
--		to.tv_sec = 1;
-+		to.tv_sec = 30;
- 		to.tv_usec = 0;
- 		s = select(sfd[3] + 1, &w, NULL, NULL, &to);
- 		if (s == -1) {
++	if (!trans_pcie->rx_pool)
++		return;
++
+ 	for (i = 0; i < RX_POOL_SIZE(trans_pcie->num_rx_bufs); i++) {
+ 		if (!trans_pcie->rx_pool[i].page)
+ 			continue;
+@@ -1094,7 +1097,7 @@ static int _iwl_pcie_rx_init(struct iwl_trans *trans)
+ 	INIT_LIST_HEAD(&rba->rbd_empty);
+ 	spin_unlock(&rba->lock);
+ 
+-	/* free all first - we might be reconfigured for a different size */
++	/* free all first - we overwrite everything here */
+ 	iwl_pcie_free_rbs_pool(trans);
+ 
+ 	for (i = 0; i < RX_QUEUE_SIZE; i++)
+diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
+index bb990be7c870..082768ec8aa8 100644
+--- a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
++++ b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
+@@ -1909,6 +1909,9 @@ static void iwl_trans_pcie_configure(struct iwl_trans *trans,
+ {
+ 	struct iwl_trans_pcie *trans_pcie = IWL_TRANS_GET_PCIE_TRANS(trans);
+ 
++	/* free all first - we might be reconfigured for a different size */
++	iwl_pcie_free_rbs_pool(trans);
++
+ 	trans->txqs.cmd.q_id = trans_cfg->cmd_queue;
+ 	trans->txqs.cmd.fifo = trans_cfg->cmd_fifo;
+ 	trans->txqs.cmd.wdg_timeout = trans_cfg->cmd_q_wdg_timeout;
 -- 
 2.30.2
 
