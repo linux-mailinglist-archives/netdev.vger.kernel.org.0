@@ -2,39 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F212404B74
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 13:51:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68973404BCD
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 13:54:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236784AbhIILwP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 07:52:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54736 "EHLO mail.kernel.org"
+        id S241531AbhIILxN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 07:53:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55360 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237548AbhIILu2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Sep 2021 07:50:28 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B961A61213;
-        Thu,  9 Sep 2021 11:43:48 +0000 (UTC)
+        id S239488AbhIILvB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Sep 2021 07:51:01 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 94C9D61356;
+        Thu,  9 Sep 2021 11:44:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631187829;
-        bh=A/QQumOH8O6k/Xn5qDY6TMC4AxTRp7rzpMcWLtKRmjY=;
+        s=k20201202; t=1631187844;
+        bh=35mbzRvU6JfJ7yvh2CXrenvC6BWUwLp9YJcEV3nMwhw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Fl14Y4YSxLbg/rUWjj3lLh9PW9y/AfsvAxLQP/OqUKqhtzAiXwOgAndEjCBePJEUS
-         2ofrnAvsI6Kvez4tQMtEiRXwxnhrCUqXmMxTFqzqYi9oqBWjrQlOz9hGGm72i7yTKC
-         78UkXCxiuFS5M+KNswTgQR/FKWvJC0OcPiFMMyPONE1kR3xRk/Ikq/qxLQVw00XWO5
-         ExdiOMBRDsZjr86+l/DPetGtLw5/zHinsA4mOu5gm4dC7VU/WzkJBihW9SIyjsuyrw
-         KZ2YEkGI9L9D/PqIQqXDnwh5PV0LM31yB+fErL5Jbl8W9zAFDaIiFcRULSun2J0oFa
-         xXUcRMQcZ2oSA==
+        b=AS4ZDyfizY21jcRGsfxXJS2cxu+kD6eGDcvFwtZ6/t/vhpzRNU8x/QZvBrPGzO03S
+         EWouS7u576MRYwDIA/gpnpcO3ob+pRp/7WsTL0DxO/UkpSXO7H4dx/w4+Ed+nWGL9a
+         X3UGzP3rmsOWXmwsQLiWeSYxKKhd4wHalLEw0Oihy4BgpYonmIH19MhtHOBEkRctrs
+         szGJc9UsPBZ7harnVlhLOBhFWUDbnPdYpEor0LbvyAxnnq0JhwoOYbaW0Z0Lf87dX1
+         CNWmBSxD2k3M44Apk/1EHIUKcqDVAYCvdIw+p/NTDcamPhc2RSmVmspyRWHDYUjVSu
+         B2Q/yl9h+mKFg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
+Cc:     Jussi Maki <joamaki@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
-        clang-built-linux@googlegroups.com
-Subject: [PATCH AUTOSEL 5.14 126/252] net: ethernet: stmmac: Do not use unreachable() in ipq806x_gmac_probe()
-Date:   Thu,  9 Sep 2021 07:39:00 -0400
-Message-Id: <20210909114106.141462-126-sashal@kernel.org>
+        bpf@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.14 137/252] selftests/bpf: Fix xdp_tx.c prog section name
+Date:   Thu,  9 Sep 2021 07:39:11 -0400
+Message-Id: <20210909114106.141462-137-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909114106.141462-1-sashal@kernel.org>
 References: <20210909114106.141462-1-sashal@kernel.org>
@@ -46,86 +44,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Jussi Maki <joamaki@gmail.com>
 
-[ Upstream commit 4367355dd90942a71641c98c40c74589c9bddf90 ]
+[ Upstream commit 95413846cca37f20000dd095cf6d91f8777129d7 ]
 
-When compiling with clang in certain configurations, an objtool warning
-appears:
+The program type cannot be deduced from 'tx' which causes an invalid
+argument error when trying to load xdp_tx.o using the skeleton.
+Rename the section name to "xdp" so that libbpf can deduce the type.
 
-drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.o: warning: objtool:
-ipq806x_gmac_probe() falls through to next function phy_modes()
-
-This happens because the unreachable annotation in the third switch
-statement is not eliminated. The compiler should know that the first
-default case would prevent the second and third from being reached as
-the comment notes but sanitizer options can make it harder for the
-compiler to reason this out.
-
-Help the compiler out by eliminating the unreachable() annotation and
-unifying the default case error handling so that there is no objtool
-warning, the meaning of the code stays the same, and there is less
-duplication.
-
-Reported-by: Sami Tolvanen <samitolvanen@google.com>
-Tested-by: Sami Tolvanen <samitolvanen@google.com>
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Jussi Maki <joamaki@gmail.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/20210731055738.16820-7-joamaki@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../ethernet/stmicro/stmmac/dwmac-ipq806x.c    | 18 ++++++++----------
- 1 file changed, 8 insertions(+), 10 deletions(-)
+ tools/testing/selftests/bpf/progs/xdp_tx.c   | 2 +-
+ tools/testing/selftests/bpf/test_xdp_veth.sh | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
-index 28dd0ed85a82..f7dc8458cde8 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
-@@ -289,10 +289,7 @@ static int ipq806x_gmac_probe(struct platform_device *pdev)
- 		val &= ~NSS_COMMON_GMAC_CTL_PHY_IFACE_SEL;
- 		break;
- 	default:
--		dev_err(&pdev->dev, "Unsupported PHY mode: \"%s\"\n",
--			phy_modes(gmac->phy_mode));
--		err = -EINVAL;
--		goto err_remove_config_dt;
-+		goto err_unsupported_phy;
- 	}
- 	regmap_write(gmac->nss_common, NSS_COMMON_GMAC_CTL(gmac->id), val);
+diff --git a/tools/testing/selftests/bpf/progs/xdp_tx.c b/tools/testing/selftests/bpf/progs/xdp_tx.c
+index 94e6c2b281cb..5f725c720e00 100644
+--- a/tools/testing/selftests/bpf/progs/xdp_tx.c
++++ b/tools/testing/selftests/bpf/progs/xdp_tx.c
+@@ -3,7 +3,7 @@
+ #include <linux/bpf.h>
+ #include <bpf/bpf_helpers.h>
  
-@@ -309,10 +306,7 @@ static int ipq806x_gmac_probe(struct platform_device *pdev)
- 			NSS_COMMON_CLK_SRC_CTRL_OFFSET(gmac->id);
- 		break;
- 	default:
--		dev_err(&pdev->dev, "Unsupported PHY mode: \"%s\"\n",
--			phy_modes(gmac->phy_mode));
--		err = -EINVAL;
--		goto err_remove_config_dt;
-+		goto err_unsupported_phy;
- 	}
- 	regmap_write(gmac->nss_common, NSS_COMMON_CLK_SRC_CTRL, val);
+-SEC("tx")
++SEC("xdp")
+ int xdp_tx(struct xdp_md *xdp)
+ {
+ 	return XDP_TX;
+diff --git a/tools/testing/selftests/bpf/test_xdp_veth.sh b/tools/testing/selftests/bpf/test_xdp_veth.sh
+index ba8ffcdaac30..995278e684b6 100755
+--- a/tools/testing/selftests/bpf/test_xdp_veth.sh
++++ b/tools/testing/selftests/bpf/test_xdp_veth.sh
+@@ -108,7 +108,7 @@ ip link set dev veth2 xdp pinned $BPF_DIR/progs/redirect_map_1
+ ip link set dev veth3 xdp pinned $BPF_DIR/progs/redirect_map_2
  
-@@ -329,8 +323,7 @@ static int ipq806x_gmac_probe(struct platform_device *pdev)
- 				NSS_COMMON_CLK_GATE_GMII_TX_EN(gmac->id);
- 		break;
- 	default:
--		/* We don't get here; the switch above will have errored out */
--		unreachable();
-+		goto err_unsupported_phy;
- 	}
- 	regmap_write(gmac->nss_common, NSS_COMMON_CLK_GATE, val);
+ ip -n ns1 link set dev veth11 xdp obj xdp_dummy.o sec xdp_dummy
+-ip -n ns2 link set dev veth22 xdp obj xdp_tx.o sec tx
++ip -n ns2 link set dev veth22 xdp obj xdp_tx.o sec xdp
+ ip -n ns3 link set dev veth33 xdp obj xdp_dummy.o sec xdp_dummy
  
-@@ -361,6 +354,11 @@ static int ipq806x_gmac_probe(struct platform_device *pdev)
- 
- 	return 0;
- 
-+err_unsupported_phy:
-+	dev_err(&pdev->dev, "Unsupported PHY mode: \"%s\"\n",
-+		phy_modes(gmac->phy_mode));
-+	err = -EINVAL;
-+
- err_remove_config_dt:
- 	stmmac_remove_config_dt(pdev, plat_dat);
- 
+ trap cleanup EXIT
 -- 
 2.30.2
 
