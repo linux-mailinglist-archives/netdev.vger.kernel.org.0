@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BEA3405527
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 15:32:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9676405524
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 15:32:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355883AbhIINIk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 09:08:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46262 "EHLO mail.kernel.org"
+        id S1355149AbhIINI2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 09:08:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46258 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1357662AbhIINDP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1357658AbhIINDP (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 9 Sep 2021 09:03:15 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5AB366328F;
-        Thu,  9 Sep 2021 11:59:36 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E61DC6328B;
+        Thu,  9 Sep 2021 11:59:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631188777;
-        bh=9OsgcUcU6CeRPqG5bL4ROrMvmMSpM/tU+23LLjiTJOY=;
+        s=k20201202; t=1631188779;
+        bh=H+isFLhv7fXZadAnSAxSil/y1Hb6bZxn8GmeSiUGOhc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZkBXYNETYj8+hg7I7mX6cXyf43EOz21NxHrPD84BiAjWM8lVjDw94M8JJHu9PUu4o
-         AxR3ewMiYKmqvXjeoQ8c6wxAyhxcVsvbHxpOgZ1G23FDTHQMKwj/hnpU75Dr0CE9gd
-         9xepuKLqM37Rv7Hxc/0/688+MV/PhreVOTn45O4bWBTimHiG8UXFvTHCa2NssqXj6L
-         28NtfnqLO+QJuvwJ/saGnzEz8/gKmM0olygZzNNXLtIc0GCJqTIzuQWWnFxTbu2Rsz
-         zmmUajN4Jnhtyx+oGnqctSvIZMhFF87VNunRlUkcuRB9dEKIhlXL/aIi57il9p3qsH
-         tMWCjMnri1wVg==
+        b=i9lxA/pyBd8kAXRPYrXb/kW7V0rs+F5l/l3bKmqoLWXAXCvho4S7RKTCAWTeKgGnn
+         E/gzKyFYYVXD9E5SXw6rPa7zAHTqY1R5moycTiHKmOHkb696PCgSDlNVq0Uqzb9FW3
+         9k5wDkgofrTMF5H4nbwMx1+TEC52TrcZ9653Pw1sWm+qGm1RfAkJmCi03693pMtKdX
+         fo7NDNDI/IzCb6yrzROUwoDwsF+HQdKf8ZxOrgUwVT94dqB4UTwxw64xUzhgPiJdRH
+         mcMJQbrA+yIMro03vhYF9Cd43xvs6fkZoYezwoheIml/9WDKZ16kSC3hP5AJcIqsfV
+         3jeDsSSU3RCmQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>,
-        syzbot+66264bf2fd0476be7e6c@syzkaller.appspotmail.com,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 29/59] Bluetooth: skip invalid hci_sync_conn_complete_evt
-Date:   Thu,  9 Sep 2021 07:58:30 -0400
-Message-Id: <20210909115900.149795-29-sashal@kernel.org>
+Cc:     Johan Almbladh <johan.almbladh@anyfinetworks.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Yonghong Song <yhs@fb.com>, Sasha Levin <sashal@kernel.org>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 31/59] bpf: Fix off-by-one in tail call count limiting
+Date:   Thu,  9 Sep 2021 07:58:32 -0400
+Message-Id: <20210909115900.149795-31-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909115900.149795-1-sashal@kernel.org>
 References: <20210909115900.149795-1-sashal@kernel.org>
@@ -44,57 +43,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
+From: Johan Almbladh <johan.almbladh@anyfinetworks.com>
 
-[ Upstream commit 92fe24a7db751b80925214ede43f8d2be792ea7b ]
+[ Upstream commit b61a28cf11d61f512172e673b8f8c4a6c789b425 ]
 
-Syzbot reported a corrupted list in kobject_add_internal [1]. This
-happens when multiple HCI_EV_SYNC_CONN_COMPLETE event packets with
-status 0 are sent for the same HCI connection. This causes us to
-register the device more than once which corrupts the kset list.
+Before, the interpreter allowed up to MAX_TAIL_CALL_CNT + 1 tail calls.
+Now precisely MAX_TAIL_CALL_CNT is allowed, which is in line with the
+behavior of the x86 JITs.
 
-As this is forbidden behavior, we add a check for whether we're
-trying to process the same HCI_EV_SYNC_CONN_COMPLETE event multiple
-times for one connection. If that's the case, the event is invalid, so
-we report an error that the device is misbehaving, and ignore the
-packet.
-
-Link: https://syzkaller.appspot.com/bug?extid=66264bf2fd0476be7e6c [1]
-Reported-by: syzbot+66264bf2fd0476be7e6c@syzkaller.appspotmail.com
-Tested-by: syzbot+66264bf2fd0476be7e6c@syzkaller.appspotmail.com
-Signed-off-by: Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Acked-by: Yonghong Song <yhs@fb.com>
+Link: https://lore.kernel.org/bpf/20210728164741.350370-1-johan.almbladh@anyfinetworks.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_event.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ kernel/bpf/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index b3253f2e11af..5186f199d892 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -3761,6 +3761,21 @@ static void hci_sync_conn_complete_evt(struct hci_dev *hdev,
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index e7211b0fa27c..1d19f4fa7f44 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -1095,7 +1095,7 @@ static unsigned int ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn,
  
- 	switch (ev->status) {
- 	case 0x00:
-+		/* The synchronous connection complete event should only be
-+		 * sent once per new connection. Receiving a successful
-+		 * complete event when the connection status is already
-+		 * BT_CONNECTED means that the device is misbehaving and sent
-+		 * multiple complete event packets for the same new connection.
-+		 *
-+		 * Registering the device more than once can corrupt kernel
-+		 * memory, hence upon detecting this invalid event, we report
-+		 * an error and ignore the packet.
-+		 */
-+		if (conn->state == BT_CONNECTED) {
-+			bt_dev_err(hdev, "Ignoring connect complete event for existing connection");
-+			goto unlock;
-+		}
-+
- 		conn->handle = __le16_to_cpu(ev->handle);
- 		conn->state  = BT_CONNECTED;
- 		conn->type   = ev->link_type;
+ 		if (unlikely(index >= array->map.max_entries))
+ 			goto out;
+-		if (unlikely(tail_call_cnt > MAX_TAIL_CALL_CNT))
++		if (unlikely(tail_call_cnt >= MAX_TAIL_CALL_CNT))
+ 			goto out;
+ 
+ 		tail_call_cnt++;
 -- 
 2.30.2
 
