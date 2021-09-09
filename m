@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87898404DA2
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:05:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C710A404DE2
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:16:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346963AbhIIMEJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 08:04:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41776 "EHLO mail.kernel.org"
+        id S245510AbhIIMHL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 08:07:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42022 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1343693AbhIIMB5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Sep 2021 08:01:57 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 51AC7615A3;
-        Thu,  9 Sep 2021 11:46:30 +0000 (UTC)
+        id S236506AbhIIMCU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Sep 2021 08:02:20 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8B022615E0;
+        Thu,  9 Sep 2021 11:46:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631187991;
-        bh=AnqclIy/yhabaP/XcnnT3myiJuVDcV2mN78sB8cMj18=;
+        s=k20201202; t=1631187992;
+        bh=NCxLR79vOFEL/5e0BQOkAXYhuTh3N8prrKjcQ0ciQMg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RDm/Df3iV5VFR9LRzMQYYI73JYdnjXy+63sI3X8oFXRPZ6Z+X2Q42GTsxPlJqNRDy
-         kBa5tPQsOeXb0AsP58vS6ZGJxvhew96zhU0+7USyY1FfTOQNsaHUI4CXmbsNMs1NUD
-         qXhts1JCtTArHef9adcsNXHJ1uTE8xEZ47fvpp0v5PKCwMiAJsMFfbGhukzJr18cjw
-         KE4yxp0BDS48xRtxpOPJOMI0Xlvy5wuml9ErACHPkhRsIRst4hdGRXXmheyXiwd99g
-         5wma83EKrNgMUNknPWx0lH9kpNcOJSeGWrH4x9Ci52EgBMMwkOw7O22TA8rOtSg94R
-         boNopdpNQ7UdQ==
+        b=RsIODibEsnh8TYsKQKXxZP+oDMLr3AaQ1BC6q4aGYss9qKfPcbH38nnlhXzJeqkal
+         jj0qRcv+9BxDQuO+7NbIShj3A4ogTnZKqdH36W8ceAhpVDvUU9PA+LzQQO42jUQImU
+         1M2FTzflNjc8OiZvNrnHr9lSipo0LEBpxEmnw/BwMjvCr+zwREzn5H42f8gC9yMAG9
+         g2LUjSlfxkLSUREQB4mJy4EFPoce3K4z7znABeAi6svlh//b5FTAULZoLFfat5mzvh
+         V2+6ONYIyD7Za9MyHK8ctE147WI9Iu+BXfDq6z17B0Rpnxfi6ENKHQ72CRvWybDa0z
+         QG1EUcOs4e7fg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Haimin Zhang <tcs_kernel@tencent.com>,
-        syzbot+2b3e5fb6c7ef285a94f6@syzkaller.appspotmail.com,
+Cc:     Yang Yingliang <yangyingliang@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.14 250/252] fix array-index-out-of-bounds in taprio_change
-Date:   Thu,  9 Sep 2021 07:41:04 -0400
-Message-Id: <20210909114106.141462-250-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.14 251/252] net: w5100: check return value after calling platform_get_resource()
+Date:   Thu,  9 Sep 2021 07:41:05 -0400
+Message-Id: <20210909114106.141462-251-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909114106.141462-1-sashal@kernel.org>
 References: <20210909114106.141462-1-sashal@kernel.org>
@@ -43,38 +42,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Haimin Zhang <tcs_kernel@tencent.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit efe487fce3061d94222c6501d7be3aa549b3dc78 ]
+[ Upstream commit a39ff4a47f3e1da3b036817ef436b1a9be10783a ]
 
-syzbot report an array-index-out-of-bounds in taprio_change
-index 16 is out of range for type '__u16 [16]'
-that's because mqprio->num_tc is lager than TC_MAX_QUEUE,so we check
-the return value of netdev_set_num_tc.
+It will cause null-ptr-deref if platform_get_resource() returns NULL,
+we need check the return value.
 
-Reported-by: syzbot+2b3e5fb6c7ef285a94f6@syzkaller.appspotmail.com
-Signed-off-by: Haimin Zhang <tcs_kernel@tencent.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sched/sch_taprio.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/wiznet/w5100.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index 9c79374457a0..1ab2fc933a21 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -1513,7 +1513,9 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
- 	taprio_set_picos_per_byte(dev, q);
+diff --git a/drivers/net/ethernet/wiznet/w5100.c b/drivers/net/ethernet/wiznet/w5100.c
+index 811815f8cd3b..f974e70a82e8 100644
+--- a/drivers/net/ethernet/wiznet/w5100.c
++++ b/drivers/net/ethernet/wiznet/w5100.c
+@@ -1047,6 +1047,8 @@ static int w5100_mmio_probe(struct platform_device *pdev)
+ 		mac_addr = data->mac_addr;
  
- 	if (mqprio) {
--		netdev_set_num_tc(dev, mqprio->num_tc);
-+		err = netdev_set_num_tc(dev, mqprio->num_tc);
-+		if (err)
-+			goto free_sched;
- 		for (i = 0; i < mqprio->num_tc; i++)
- 			netdev_set_tc_queue(dev, i,
- 					    mqprio->count[i],
+ 	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!mem)
++		return -EINVAL;
+ 	if (resource_size(mem) < W5100_BUS_DIRECT_SIZE)
+ 		ops = &w5100_mmio_indirect_ops;
+ 	else
 -- 
 2.30.2
 
