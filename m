@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCC9C405106
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:42:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E742405101
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:42:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351980AbhIIMdP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 08:33:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33216 "EHLO mail.kernel.org"
+        id S1352837AbhIIMdK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 08:33:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33230 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1353784AbhIIMYv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1353785AbhIIMYv (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 9 Sep 2021 08:24:51 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4B7A2606A5;
-        Thu,  9 Sep 2021 11:51:33 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 990BE6113A;
+        Thu,  9 Sep 2021 11:51:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631188294;
-        bh=ojuaTAZhr8Uw6QEtkXAyeaRZbg6Ro4//uWTFWOQSH8Q=;
+        s=k20201202; t=1631188295;
+        bh=l78uYDchjdPKARcINjvKtyH8RNP7Yr+otkiFfhf5K+w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LMcOBlFB5mNi/B5QjkxGFNvqv+pEX6Ev5+MsIurcfcFWGida6MipyeqA6Z8dAIEga
-         IzhqJh3Jd6cAi4O8qvAxXYEmJOuFfuoTFs6hgBDNWoaaOC1fL4mWJvu8V1S0S2eRC6
-         BYWr7e23Rj723PZcs59k8ZMqgFsqJpxfHLPJ74rhMSJFRF/D0zwkcTJIyivGK0QqKr
-         GO1PreZr1lFiz/kgEVfNPIBAIiBXu6mV/3iedRO6KSYckZbhm2uI9rIwOr5VIOeIZ3
-         b2OPFshcgkyhSYqDueVmeMjYOw2UCWTeITBIrf9XXshKj3nuKVHwdiNgO1MnIdoy2z
-         H0Fs2D2b6BVkA==
+        b=Q+etADSRxm+eBk7BYJ6lY4jlhL2Kud+KQ975S+wriNGsdHRaOKK9sJ+oLFrTowF8n
+         9GX33KIog3tDi9qKMnej9Ez1UlsZR9MD993PZw2hM9FyEO3qa5Zj6mWl2Z46D7Aqtd
+         fPpWUd0AV/NUD+qoctJXBMOfiFouBo2hjOBT+DD+qDZaWe+2n/tL4RKU6+zfgGYE8t
+         /hGuMgGckNp0G+XwRyud6WluWqhqYX43r8iK1LaBD3V/1gScZx8ID4rbv/zsrxC0fF
+         EmRTMlVZI3MuiR2iOaGFWxKh8RhXmskrq9ByyTAZSPboRnp2prhot2/mT+dhe4EOTq
+         Nqv3oMrqJ0d/g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Stefan Assmann <sassmann@kpanic.de>,
@@ -30,9 +30,9 @@ Cc:     Stefan Assmann <sassmann@kpanic.de>,
         Tony Nguyen <anthony.l.nguyen@intel.com>,
         Sasha Levin <sashal@kernel.org>,
         intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 012/176] iavf: do not override the adapter state in the watchdog task
-Date:   Thu,  9 Sep 2021 07:48:34 -0400
-Message-Id: <20210909115118.146181-12-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 013/176] iavf: fix locking of critical sections
+Date:   Thu,  9 Sep 2021 07:48:35 -0400
+Message-Id: <20210909115118.146181-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909115118.146181-1-sashal@kernel.org>
 References: <20210909115118.146181-1-sashal@kernel.org>
@@ -46,65 +46,176 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Stefan Assmann <sassmann@kpanic.de>
 
-[ Upstream commit 22c8fd71d3a5e6fe584ccc2c1e8760e5baefd5aa ]
+[ Upstream commit 226d528512cfac890a1619aea4301f3dd314fe60 ]
 
-The iavf watchdog task overrides adapter->state to __IAVF_RESETTING
-when it detects a pending reset. Then schedules iavf_reset_task() which
-takes care of the reset.
+To avoid races between iavf_init_task(), iavf_reset_task(),
+iavf_watchdog_task(), iavf_adminq_task() as well as the shutdown and
+remove functions more locking is required.
+The current protection by __IAVF_IN_CRITICAL_TASK is needed in
+additional places.
 
-The reset task is capable of handling the reset without changing
-adapter->state. In fact we lose the state information when the watchdog
-task prematurely changes the adapter state. This may lead to a crash if
-instead of the reset task the iavf_remove() function gets called before
-the reset task.
-In that case (if we were in state __IAVF_RUNNING previously) the
-iavf_remove() function triggers iavf_close() which fails to close the
-device because of the incorrect state information.
+- The reset task performs state transitions, therefore needs locking.
+- The adminq task acts on replies from the PF in
+  iavf_virtchnl_completion() which may alter the states.
+- The init task is not only run during probe but also if a VF gets stuck
+  to reinitialize it.
+- The shutdown function performs a state transition.
+- The remove function performs a state transition and also free's
+  resources.
 
-This may result in a crash due to pending interrupts.
-kernel BUG at drivers/pci/msi.c:357!
-[...]
-Call Trace:
- [<ffffffffbddf24dd>] pci_disable_msix+0x3d/0x50
- [<ffffffffc08d2a63>] iavf_reset_interrupt_capability+0x23/0x40 [iavf]
- [<ffffffffc08d312a>] iavf_remove+0x10a/0x350 [iavf]
- [<ffffffffbddd3359>] pci_device_remove+0x39/0xc0
- [<ffffffffbdeb492f>] __device_release_driver+0x7f/0xf0
- [<ffffffffbdeb49c3>] device_release_driver+0x23/0x30
- [<ffffffffbddcabb4>] pci_stop_bus_device+0x84/0xa0
- [<ffffffffbddcacc2>] pci_stop_and_remove_bus_device+0x12/0x20
- [<ffffffffbddf361f>] pci_iov_remove_virtfn+0xaf/0x160
- [<ffffffffbddf3bcc>] sriov_disable+0x3c/0xf0
- [<ffffffffbddf3ca3>] pci_disable_sriov+0x23/0x30
- [<ffffffffc0667365>] i40e_free_vfs+0x265/0x2d0 [i40e]
- [<ffffffffc0667624>] i40e_pci_sriov_configure+0x144/0x1f0 [i40e]
- [<ffffffffbddd5307>] sriov_numvfs_store+0x177/0x1d0
-Code: 00 00 e8 3c 25 e3 ff 49 c7 86 88 08 00 00 00 00 00 00 5b 41 5c 41 5d 41 5e 41 5f 5d c3 48 8b 7b 28 e8 0d 44
-RIP  [<ffffffffbbbf1068>] free_msi_irqs+0x188/0x190
-
-The solution is to not touch the adapter->state in iavf_watchdog_task()
-and let the reset task handle the state transition.
+iavf_lock_timeout() is introduced to avoid waiting infinitely
+and cause a deadlock. Rather unlock and print a warning.
 
 Signed-off-by: Stefan Assmann <sassmann@kpanic.de>
 Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/iavf/iavf_main.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/net/ethernet/intel/iavf/iavf_main.c | 57 ++++++++++++++++++---
+ 1 file changed, 50 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 7023aa147043..da401d5694bf 100644
+index da401d5694bf..f06c079e812e 100644
 --- a/drivers/net/ethernet/intel/iavf/iavf_main.c
 +++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -1951,7 +1951,6 @@ static void iavf_watchdog_task(struct work_struct *work)
- 		/* check for hw reset */
- 	reg_val = rd32(hw, IAVF_VF_ARQLEN1) & IAVF_VF_ARQLEN1_ARQENABLE_MASK;
- 	if (!reg_val) {
--		adapter->state = __IAVF_RESETTING;
- 		adapter->flags |= IAVF_FLAG_RESET_PENDING;
- 		adapter->aq_required = 0;
- 		adapter->current_op = VIRTCHNL_OP_UNKNOWN;
+@@ -131,6 +131,30 @@ enum iavf_status iavf_free_virt_mem_d(struct iavf_hw *hw,
+ 	return 0;
+ }
+ 
++/**
++ * iavf_lock_timeout - try to set bit but give up after timeout
++ * @adapter: board private structure
++ * @bit: bit to set
++ * @msecs: timeout in msecs
++ *
++ * Returns 0 on success, negative on failure
++ **/
++static int iavf_lock_timeout(struct iavf_adapter *adapter,
++			     enum iavf_critical_section_t bit,
++			     unsigned int msecs)
++{
++	unsigned int wait, delay = 10;
++
++	for (wait = 0; wait < msecs; wait += delay) {
++		if (!test_and_set_bit(bit, &adapter->crit_section))
++			return 0;
++
++		msleep(delay);
++	}
++
++	return -1;
++}
++
+ /**
+  * iavf_schedule_reset - Set the flags and schedule a reset event
+  * @adapter: board private structure
+@@ -2064,6 +2088,10 @@ static void iavf_reset_task(struct work_struct *work)
+ 	if (test_bit(__IAVF_IN_REMOVE_TASK, &adapter->crit_section))
+ 		return;
+ 
++	if (iavf_lock_timeout(adapter, __IAVF_IN_CRITICAL_TASK, 200)) {
++		schedule_work(&adapter->reset_task);
++		return;
++	}
+ 	while (test_and_set_bit(__IAVF_IN_CLIENT_TASK,
+ 				&adapter->crit_section))
+ 		usleep_range(500, 1000);
+@@ -2278,6 +2306,8 @@ static void iavf_adminq_task(struct work_struct *work)
+ 	if (!event.msg_buf)
+ 		goto out;
+ 
++	if (iavf_lock_timeout(adapter, __IAVF_IN_CRITICAL_TASK, 200))
++		goto freedom;
+ 	do {
+ 		ret = iavf_clean_arq_element(hw, &event, &pending);
+ 		v_op = (enum virtchnl_ops)le32_to_cpu(event.desc.cookie_high);
+@@ -2291,6 +2321,7 @@ static void iavf_adminq_task(struct work_struct *work)
+ 		if (pending != 0)
+ 			memset(event.msg_buf, 0, IAVF_MAX_AQ_BUF_SIZE);
+ 	} while (pending);
++	clear_bit(__IAVF_IN_CRITICAL_TASK, &adapter->crit_section);
+ 
+ 	if ((adapter->flags &
+ 	     (IAVF_FLAG_RESET_PENDING | IAVF_FLAG_RESET_NEEDED)) ||
+@@ -3593,6 +3624,10 @@ static void iavf_init_task(struct work_struct *work)
+ 						    init_task.work);
+ 	struct iavf_hw *hw = &adapter->hw;
+ 
++	if (iavf_lock_timeout(adapter, __IAVF_IN_CRITICAL_TASK, 5000)) {
++		dev_warn(&adapter->pdev->dev, "failed to set __IAVF_IN_CRITICAL_TASK in %s\n", __FUNCTION__);
++		return;
++	}
+ 	switch (adapter->state) {
+ 	case __IAVF_STARTUP:
+ 		if (iavf_startup(adapter) < 0)
+@@ -3605,14 +3640,14 @@ static void iavf_init_task(struct work_struct *work)
+ 	case __IAVF_INIT_GET_RESOURCES:
+ 		if (iavf_init_get_resources(adapter) < 0)
+ 			goto init_failed;
+-		return;
++		goto out;
+ 	default:
+ 		goto init_failed;
+ 	}
+ 
+ 	queue_delayed_work(iavf_wq, &adapter->init_task,
+ 			   msecs_to_jiffies(30));
+-	return;
++	goto out;
+ init_failed:
+ 	if (++adapter->aq_wait_count > IAVF_AQ_MAX_ERR) {
+ 		dev_err(&adapter->pdev->dev,
+@@ -3621,9 +3656,11 @@ static void iavf_init_task(struct work_struct *work)
+ 		iavf_shutdown_adminq(hw);
+ 		adapter->state = __IAVF_STARTUP;
+ 		queue_delayed_work(iavf_wq, &adapter->init_task, HZ * 5);
+-		return;
++		goto out;
+ 	}
+ 	queue_delayed_work(iavf_wq, &adapter->init_task, HZ);
++out:
++	clear_bit(__IAVF_IN_CRITICAL_TASK, &adapter->crit_section);
+ }
+ 
+ /**
+@@ -3640,9 +3677,12 @@ static void iavf_shutdown(struct pci_dev *pdev)
+ 	if (netif_running(netdev))
+ 		iavf_close(netdev);
+ 
++	if (iavf_lock_timeout(adapter, __IAVF_IN_CRITICAL_TASK, 5000))
++		dev_warn(&adapter->pdev->dev, "failed to set __IAVF_IN_CRITICAL_TASK in %s\n", __FUNCTION__);
+ 	/* Prevent the watchdog from running. */
+ 	adapter->state = __IAVF_REMOVE;
+ 	adapter->aq_required = 0;
++	clear_bit(__IAVF_IN_CRITICAL_TASK, &adapter->crit_section);
+ 
+ #ifdef CONFIG_PM
+ 	pci_save_state(pdev);
+@@ -3870,10 +3910,6 @@ static void iavf_remove(struct pci_dev *pdev)
+ 				 err);
+ 	}
+ 
+-	/* Shut down all the garbage mashers on the detention level */
+-	adapter->state = __IAVF_REMOVE;
+-	adapter->aq_required = 0;
+-	adapter->flags &= ~IAVF_FLAG_REINIT_ITR_NEEDED;
+ 	iavf_request_reset(adapter);
+ 	msleep(50);
+ 	/* If the FW isn't responding, kick it once, but only once. */
+@@ -3881,6 +3917,13 @@ static void iavf_remove(struct pci_dev *pdev)
+ 		iavf_request_reset(adapter);
+ 		msleep(50);
+ 	}
++	if (iavf_lock_timeout(adapter, __IAVF_IN_CRITICAL_TASK, 5000))
++		dev_warn(&adapter->pdev->dev, "failed to set __IAVF_IN_CRITICAL_TASK in %s\n", __FUNCTION__);
++
++	/* Shut down all the garbage mashers on the detention level */
++	adapter->state = __IAVF_REMOVE;
++	adapter->aq_required = 0;
++	adapter->flags &= ~IAVF_FLAG_REINIT_ITR_NEEDED;
+ 	iavf_free_all_tx_resources(adapter);
+ 	iavf_free_all_rx_resources(adapter);
+ 	iavf_misc_irq_disable(adapter);
 -- 
 2.30.2
 
