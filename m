@@ -2,73 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA2DE404854
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 12:20:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8FBF404881
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 12:32:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233648AbhIIKVW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 06:21:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49290 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229980AbhIIKVP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Sep 2021 06:21:15 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 8644E61179;
-        Thu,  9 Sep 2021 10:20:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631182806;
-        bh=yOqjpLq81aL1iJ7wL+fljsZHNFHSnXlJXDmrJay09uE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=FUPp1Sv+zQQOUaNIKzZnry+9jf9ManmdN4oPnzWE4Vog4uRcqfl0Cpvx/U/XwQhJP
-         IbeWfA3AFfTYGb84urwKahQ9ELsFKhO7OONUwVzP6auepxp/ywKAP9w/ajl3xlc125
-         4eFPPJvWTAeWlmGVFWxZHszXPlm847C9jX/Waw2nfWBgU26HX93eiFVHRbtSzX6vHT
-         J4TKhzVPPhnXiQsc5AIt1i3A7xVPBfIiIRgDm4OV085tC8mhuIvSnUldxSqMvlxmpe
-         ViEIan5Qoyvi9pJkgYmz6s3AoTvs1attG4poMpD2rqoKoChMpc0NtJhIUU1OI5zE1v
-         x/iyT5objnWjQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 799B8608FC;
-        Thu,  9 Sep 2021 10:20:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S234128AbhIIKdV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 06:33:21 -0400
+Received: from mail-il1-f197.google.com ([209.85.166.197]:36462 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233370AbhIIKdU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 06:33:20 -0400
+Received: by mail-il1-f197.google.com with SMTP id s15-20020a056e02216f00b002276040aa1dso1595762ilv.3
+        for <netdev@vger.kernel.org>; Thu, 09 Sep 2021 03:32:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=wYGQ6jwHlyJRKwQ0wASVxdo20+iSeZwpNWcEYrVI0Mg=;
+        b=lNlQcTDumvPEBtUPRCfA6WIGlRR90H2iSWkn73LkppPG3zK5r2dI1ZknAXnFJ/UrSW
+         g7csLy8awpm+ljW/oD7OxY0+hXZUTZskqrAt5zl+hIa2IDycGKTYahW7BesUIvdaWAQB
+         rvBOQIPajpm9uA5geLcPriEJkk9lxs96xFa+gqJfwltxhSWrzWPQ6l4YVPoMyRAVfPlQ
+         jdQ0ixdY0YPNtWcBL8njPPAgnKAoa9j8lQAmZHtBMHi6ZVbRGyNnYtAZGab+63hBQzTY
+         TLGsfp3JqyRiDN45JOkA/GXPiKtEkrE/rq8f8VHNsI8DA8aHnP1Awg6N3/nJXu8erXm8
+         +RLg==
+X-Gm-Message-State: AOAM533YsQRZkMDAT+aP+1AFXkTwSBp5vM5QgoETTt2vLYmuk8Ot54b7
+        nALveI1m7SSxwcI5f9uR+2aSaEGAXFafFPIQe+sMJhnuzs0r
+X-Google-Smtp-Source: ABdhPJyLqRh/TbRtIHt72BPFNapbFg9OeSZoFGu+kZ/Sb6A9wM8KjD+jiurXOZXjz8P6xfgVBECN1lEOE5FmMsE/lX8rlWQ2Uj5i
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: stmmac: platform: fix build warning when with
- !CONFIG_PM_SLEEP
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163118280649.11319.16154808916739272991.git-patchwork-notify@kernel.org>
-Date:   Thu, 09 Sep 2021 10:20:06 +0000
-References: <20210909092322.19825-1-qiangqing.zhang@nxp.com>
-In-Reply-To: <20210909092322.19825-1-qiangqing.zhang@nxp.com>
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+X-Received: by 2002:a02:ba1a:: with SMTP id z26mr2259499jan.98.1631183531325;
+ Thu, 09 Sep 2021 03:32:11 -0700 (PDT)
+Date:   Thu, 09 Sep 2021 03:32:11 -0700
+In-Reply-To: <0000000000006173bf05cb892427@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000f2bcea05cb8d8266@google.com>
+Subject: Re: [syzbot] WARNING: kmalloc bug in hash_ipport_create
+From:   syzbot <syzbot+a568bbab323b96631e61@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, coreteam@netfilter.org,
+        davem@davemloft.net, fw@strlen.de, kadlec@netfilter.org,
+        kuba@kernel.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        pablo@netfilter.org, syzkaller-bugs@googlegroups.com,
+        torvalds@linux-foundation.org, w@1wt.eu
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+syzbot has bisected this issue to:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+commit 7661809d493b426e979f39ab512e3adf41fbcc69
+Author: Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed Jul 14 16:45:49 2021 +0000
 
-On Thu,  9 Sep 2021 17:23:22 +0800 you wrote:
-> Use __maybe_unused for noirq_suspend()/noirq_resume() hooks to avoid
-> build warning with !CONFIG_PM_SLEEP:
-> 
-> >> drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c:796:12: error: 'stmmac_pltfr_noirq_resume' defined but not used [-Werror=unused-function]
->      796 | static int stmmac_pltfr_noirq_resume(struct device *dev)
->          |            ^~~~~~~~~~~~~~~~~~~~~~~~~
-> >> drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c:775:12: error: 'stmmac_pltfr_noirq_suspend' defined but not used [-Werror=unused-function]
->      775 | static int stmmac_pltfr_noirq_suspend(struct device *dev)
->          |            ^~~~~~~~~~~~~~~~~~~~~~~~~~
->    cc1: all warnings being treated as errors
-> 
-> [...]
+    mm: don't allow oversized kvmalloc() calls
 
-Here is the summary with links:
-  - [net] net: stmmac: platform: fix build warning when with !CONFIG_PM_SLEEP
-    https://git.kernel.org/netdev/net/c/2a48d96fd58a
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15bb0a93300000
+start commit:   626bf91a292e Merge tag 'net-5.15-rc1' of git://git.kernel...
+git tree:       net-next
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=17bb0a93300000
+console output: https://syzkaller.appspot.com/x/log.txt?x=13bb0a93300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=16e23f04679ec35e
+dashboard link: https://syzkaller.appspot.com/bug?extid=a568bbab323b96631e61
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=178b5d0d300000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16fad1dd300000
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Reported-by: syzbot+a568bbab323b96631e61@syzkaller.appspotmail.com
+Fixes: 7661809d493b ("mm: don't allow oversized kvmalloc() calls")
 
-
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
