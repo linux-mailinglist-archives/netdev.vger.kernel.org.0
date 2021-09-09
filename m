@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2152404FDA
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:22:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33218404FE3
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:22:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344051AbhIIMXK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 08:23:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56612 "EHLO mail.kernel.org"
+        id S1353551AbhIIMXT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 08:23:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57788 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1351484AbhIIMTL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Sep 2021 08:19:11 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 05FB061AA3;
-        Thu,  9 Sep 2021 11:50:10 +0000 (UTC)
+        id S1353061AbhIIMUM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Sep 2021 08:20:12 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CCFA46134F;
+        Thu,  9 Sep 2021 11:50:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631188211;
-        bh=Sqm1ezpWhfOOYNEh71e5rZBHDetby1QRKhnCvilqNEk=;
+        s=k20201202; t=1631188232;
+        bh=Kw790umdX6yFtTkHkFCA1RpMD2ncwavpHbPzi7OuG+M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BErP9e5ZCZOuK1TNXdjPf4zdZ3rguh9+RvJhpHIUk59nyXlbz8qDwzeXDPLIICdC0
-         v+3jWhkkIERq3yIoItu706Is0eM9Xc5V+q6C3TtiHkxZqsCUnWq+xA5NuJ1XZBNWET
-         yN0YJPfa0p+/CE1hU/EnQnsF/LakkoYju7KhX/WwlLA3fO7vC8FjbPlQw1pTTmsG83
-         H2qwbULr+CNYjyTc+rDm6IneH1yR5n7Myw0G4lJSb1MA84gOK3Zp/gS6+2I3bvQ0VW
-         JONvloCahuOFs87CbkZKggR+Ihx4cNgIVu5Fk7hpWypWIYFYPDj2hAwIStywdX7o4y
-         CB6aYp9RFge5g==
+        b=q7qwx8lv+oGrl5aAl2TbNxxw9m3Qy5IQyO/d6lwc0pjDMtIwGbSYzqvE5m+1PhlIO
+         97XiR2W3vraD8JT7V7jj6rWrdQFnBK65X14A7qcmUucrwGRTCHxAIMm1R+Nl8g8Zh1
+         201HunHIeKqDG7oCLGf49limrGkzCCPtToWWIPI4kwjb6G61+yUxPgvwByNWvnKarC
+         j8nEv/37tW67CaAKRHI5YY9eOE8hrSVojKtly0ykxLy1P72nch7SbSokIzEPNCxBgn
+         1GeTAKkj88YSGsVCILwRvsmqQkb+d2URl0yUhiw2ZUCo+kP9GnGCeC6kFI22jqS/Yg
+         HHx4gjHP4XCFg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Subbaraya Sundeep <sbhatta@marvell.com>,
-        Hariprasad Kelam <hkelam@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
+Cc:     Yonglong Li <liyonglong@chinatelecom.cn>,
+        Geliang Tang <geliangtang@gmail.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.13 167/219] octeontx2-pf: Fix NIX1_RX interface backpressure
-Date:   Thu,  9 Sep 2021 07:45:43 -0400
-Message-Id: <20210909114635.143983-167-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        mptcp@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.13 184/219] mptcp: fix ADD_ADDR and RM_ADDR maybe flush addr_signal each other
+Date:   Thu,  9 Sep 2021 07:46:00 -0400
+Message-Id: <20210909114635.143983-184-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909114635.143983-1-sashal@kernel.org>
 References: <20210909114635.143983-1-sashal@kernel.org>
@@ -44,51 +45,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Subbaraya Sundeep <sbhatta@marvell.com>
+From: Yonglong Li <liyonglong@chinatelecom.cn>
 
-[ Upstream commit e8fb4df1f5d84bc08dd4f4827821a851d2eab241 ]
+[ Upstream commit 119c022096f5805680c79dfa74e15044c289856d ]
 
-'bp_ena' in Aura context is NIX block index, setting it
-zero will always backpressure NIX0 block, even if NIXLF
-belongs to NIX1. Hence fix this by setting it appropriately
-based on NIX block address.
+ADD_ADDR shares pm.addr_signal with RM_ADDR, so after RM_ADDR/ADD_ADDR
+has done, we should not clean ADD_ADDR/RM_ADDR's addr_signal.
 
-Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
-Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+Co-developed-by: Geliang Tang <geliangtang@gmail.com>
+Signed-off-by: Geliang Tang <geliangtang@gmail.com>
+Signed-off-by: Yonglong Li <liyonglong@chinatelecom.cn>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../ethernet/marvell/octeontx2/nic/otx2_common.c  | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ net/mptcp/pm.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-index 16ba457197a2..ac41e913e45f 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-@@ -1187,7 +1187,22 @@ static int otx2_aura_init(struct otx2_nic *pfvf, int aura_id,
- 	/* Enable backpressure for RQ aura */
- 	if (aura_id < pfvf->hw.rqpool_cnt && !is_otx2_lbkvf(pfvf->pdev)) {
- 		aq->aura.bp_ena = 0;
-+		/* If NIX1 LF is attached then specify NIX1_RX.
-+		 *
-+		 * Below NPA_AURA_S[BP_ENA] is set according to the
-+		 * NPA_BPINTF_E enumeration given as:
-+		 * 0x0 + a*0x1 where 'a' is 0 for NIX0_RX and 1 for NIX1_RX so
-+		 * NIX0_RX is 0x0 + 0*0x1 = 0
-+		 * NIX1_RX is 0x0 + 1*0x1 = 1
-+		 * But in HRM it is given that
-+		 * "NPA_AURA_S[BP_ENA](w1[33:32]) - Enable aura backpressure to
-+		 * NIX-RX based on [BP] level. One bit per NIX-RX; index
-+		 * enumerated by NPA_BPINTF_E."
-+		 */
-+		if (pfvf->nix_blkaddr == BLKADDR_NIX1)
-+			aq->aura.bp_ena = 1;
- 		aq->aura.nix0_bpid = pfvf->bpid[0];
-+
- 		/* Set backpressure level for RQ's Aura */
- 		aq->aura.bp = RQ_BP_LVL_AURA;
+diff --git a/net/mptcp/pm.c b/net/mptcp/pm.c
+index 9d00fa6d22e9..feecc3485c68 100644
+--- a/net/mptcp/pm.c
++++ b/net/mptcp/pm.c
+@@ -253,6 +253,7 @@ bool mptcp_pm_add_addr_signal(struct mptcp_sock *msk, unsigned int remaining,
+ 			      struct mptcp_addr_info *saddr, bool *echo, bool *port)
+ {
+ 	int ret = false;
++	u8 add_addr;
+ 
+ 	spin_lock_bh(&msk->pm.lock);
+ 
+@@ -267,7 +268,11 @@ bool mptcp_pm_add_addr_signal(struct mptcp_sock *msk, unsigned int remaining,
+ 		goto out_unlock;
+ 
+ 	*saddr = msk->pm.local;
+-	WRITE_ONCE(msk->pm.addr_signal, 0);
++	if (*echo)
++		add_addr = msk->pm.addr_signal & ~BIT(MPTCP_ADD_ADDR_ECHO);
++	else
++		add_addr = msk->pm.addr_signal & ~BIT(MPTCP_ADD_ADDR_SIGNAL);
++	WRITE_ONCE(msk->pm.addr_signal, add_addr);
+ 	ret = true;
+ 
+ out_unlock:
+@@ -279,6 +284,7 @@ bool mptcp_pm_rm_addr_signal(struct mptcp_sock *msk, unsigned int remaining,
+ 			     struct mptcp_rm_list *rm_list)
+ {
+ 	int ret = false, len;
++	u8 rm_addr;
+ 
+ 	spin_lock_bh(&msk->pm.lock);
+ 
+@@ -286,16 +292,17 @@ bool mptcp_pm_rm_addr_signal(struct mptcp_sock *msk, unsigned int remaining,
+ 	if (!mptcp_pm_should_rm_signal(msk))
+ 		goto out_unlock;
+ 
++	rm_addr = msk->pm.addr_signal & ~BIT(MPTCP_RM_ADDR_SIGNAL);
+ 	len = mptcp_rm_addr_len(&msk->pm.rm_list_tx);
+ 	if (len < 0) {
+-		WRITE_ONCE(msk->pm.addr_signal, 0);
++		WRITE_ONCE(msk->pm.addr_signal, rm_addr);
+ 		goto out_unlock;
  	}
+ 	if (remaining < len)
+ 		goto out_unlock;
+ 
+ 	*rm_list = msk->pm.rm_list_tx;
+-	WRITE_ONCE(msk->pm.addr_signal, 0);
++	WRITE_ONCE(msk->pm.addr_signal, rm_addr);
+ 	ret = true;
+ 
+ out_unlock:
 -- 
 2.30.2
 
