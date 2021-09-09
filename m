@@ -2,104 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87AC2404849
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 12:15:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 138A140484D
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 12:16:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233728AbhIIKQH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 06:16:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44364 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233654AbhIIKQE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 06:16:04 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 871E5C06175F;
-        Thu,  9 Sep 2021 03:14:54 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id n27so2513299eja.5;
-        Thu, 09 Sep 2021 03:14:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ufx5aLQHEqxHso6qEYibiVseetvvPctAZYkyxXCLvhQ=;
-        b=ZYDWtwPAc2btsuzQvd5JTyajb4TE1k/rihy2b+cXjrqhsYP1QMpPXrtIVIbNKnV24S
-         99I6wAfbKjZKgCKvb8kX/KQBJMc+fdyhMIIVl/A2m7iz7BXxGpshCpj1iQjRwScXUcU7
-         8fRkFfz3FviniUtUQskIZzqIfn8gw4lu+bQ4jmbpiutKQX8YBu65pyWZ9/0TVRNjbvs0
-         u1VKkBImqCdozhYRq5yEWTtatafXkjHoLL2GyTuBbH+0eVDuR3yXuFTaZZ8Qym2q/Hdt
-         YmfA4NNTiqqpdzKgVenl6GDbHRc3UKMwaaFWONMl3lxVR7Ahz8QNyhv+SgXRolHli7iY
-         2maQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ufx5aLQHEqxHso6qEYibiVseetvvPctAZYkyxXCLvhQ=;
-        b=N8pGVzWw6pkMTnjyOIk39lSNxy8I6cBSHgTv3INtk3yhQFePfFpPaF6gmJ1bFDCXOz
-         fm2Y+KwZ1Cn1AZAMAuZ9aW/2/RVTS4lrxb5TH8xMUsneJsYRwCOzsRvA5OcsZ6zdJXGO
-         cCXdT+psEq6xBqQUIov1k/HpKCdlNqRswBNhlMDluwT83Oqosu31EezubqY5C9LFWwP8
-         yknJbY5bMfjhly28wngD+qprXqa59y8SRpMTjJySK791fFmqg8lkpwJVJmDW/g3nD7l9
-         /kxL5FG3jYQxVMfvK92PqH0GrhpNDcdESJUB2eTmtruY5KdHZ7XAjEPYMlp/sRGYN2ku
-         H3Xw==
-X-Gm-Message-State: AOAM532j+dkgSiyIBlR0jY/GaCpLbaXxH8536U+szOC85AzQiHns6Vk/
-        ql8cdRalc9Hu4dNLBrvSNTo=
-X-Google-Smtp-Source: ABdhPJzxwejgpFNfsrCjgyYmRLMeRrUV8+fyCS6p0G1uZkMZtJLPYU9TJ+d31Q82unEJHWJHkXdlsA==
-X-Received: by 2002:a17:906:c249:: with SMTP id bl9mr2543083ejb.225.1631182493135;
-        Thu, 09 Sep 2021 03:14:53 -0700 (PDT)
-Received: from skbuf ([82.78.148.104])
-        by smtp.gmail.com with ESMTPSA id bj10sm689334ejb.17.2021.09.09.03.14.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Sep 2021 03:14:52 -0700 (PDT)
-Date:   Thu, 9 Sep 2021 13:14:51 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Cc:     p.rosenberger@kunbus.com, woojung.huh@microchip.com,
-        UNGLinuxDriver@microchip.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/3] Fix for KSZ DSA switch shutdown
-Message-ID: <20210909101451.jhfk45gitpxzblap@skbuf>
-References: <20210909095324.12978-1-LinoSanfilippo@gmx.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210909095324.12978-1-LinoSanfilippo@gmx.de>
+        id S233647AbhIIKRL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 06:17:11 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:52008 "EHLO
+        mail.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230153AbhIIKRK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 06:17:10 -0400
+Received: from localhost (unknown [149.11.102.75])
+        by mail.monkeyblade.net (Postfix) with ESMTPSA id E4FD14F65C2E3;
+        Thu,  9 Sep 2021 03:15:57 -0700 (PDT)
+Date:   Thu, 09 Sep 2021 11:15:52 +0100 (BST)
+Message-Id: <20210909.111552.1875064195273792824.davem@davemloft.net>
+To:     maciej.machnikowski@intel.com
+Cc:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        richardcochran@gmail.com, abyagowi@fb.com,
+        anthony.l.nguyen@intel.com, linux-kselftest@vger.kernel.org,
+        mkubecek@suse.cz, saeed@kernel.org, michael.chan@broadcom.com,
+        kuba@kernel.org, andrew@lunn.ch
+Subject: Re: [PATCH net-next 1/2] rtnetlink: Add new RTM_GETEECSTATE
+ message to get SyncE status
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <PH0PR11MB4951328A680F3D0FC7F9051CEAD59@PH0PR11MB4951.namprd11.prod.outlook.com>
+References: <20210908165802.1d5c952d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <PH0PR11MB49516BE62562735F017470A4EAD59@PH0PR11MB4951.namprd11.prod.outlook.com>
+        <PH0PR11MB4951328A680F3D0FC7F9051CEAD59@PH0PR11MB4951.namprd11.prod.outlook.com>
+X-Mailer: Mew version 6.8 on Emacs 27.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Thu, 09 Sep 2021 03:16:00 -0700 (PDT)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 09, 2021 at 11:53:21AM +0200, Lino Sanfilippo wrote:
-> This patch series fixes a system hang I got each time i tried to shutdown
-> or reboot a system that uses a KSZ9897 as a DSA switch with a broadcom
-> GENET network device as the DSA master device. At the time the system hangs
-> the message "unregister_netdevice: waiting for eth0 to become free. Usage
-> count = 2." is dumped periodically to the console.
-> 
-> After some investigation I found the reason to be unreleased references to
-> the master device which are still held by the slave devices at the time the
-> system is shut down (I have two slave devices in use).
-> 
-> While these references are supposed to be released in ksz_switch_remove()
-> this function never gets the chance to be called due to the system hang at
-> the master device deregistration which happens before ksz_switch_remove()
-> is called.
-> 
-> The fix is to make sure that the master device references are already
-> released when the device is unregistered. For this reason PATCH1 provides
-> a new function dsa_tree_shutdown() that can be called by DSA drivers to
-> untear the DSA switch at shutdown. PATCH2 uses this function in a new
-> helper function for KSZ switches to properly shutdown the KSZ switch.
-> PATCH 3 uses the new helper function in the KSZ9477 shutdown handler.
-> 
-> Theses patches have been tested on a Raspberry PI 5.10 kernel with a
-> KSZ9897. The patches have been adjusted to apply against net-next and are
-> compile tested with next-next.
+From: "Machnikowski, Maciej" <maciej.machnikowski@intel.com>
+Date: Thu, 9 Sep 2021 09:24:07 +0000
 
-Can you try this patch
+> Dave,
+> 
+> Are there any free slots on Plumbers to discuss and close on SyncE interfaces 
+> (or can we add an extra one). I can reuse the slides from the Netdev to give 
+> background and a live discussion may help closing opens around it,
+> and I'd be happy to co-present with anyone who wants to also join this effort.
 
-commit 07b90056cb15ff9877dca0d8f1b6583d1051f724
-Author: Vladimir Oltean <vladimir.oltean@nxp.com>
-Date:   Tue Jan 12 01:09:43 2021 +0200
-
-    net: dsa: unbind all switches from tree when DSA master unbinds
-
-    Currently the following happens when a DSA master driver unbinds while
-    there are DSA switches attached to it:
+Sorry, I think it's much too late for this.
