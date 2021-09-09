@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB55740566B
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 15:37:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2550040567F
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 15:37:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359700AbhIINTu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 09:19:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35418 "EHLO mail.kernel.org"
+        id S1359806AbhIINUX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 09:20:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36122 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1358507AbhIINLR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Sep 2021 09:11:17 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E53586139D;
-        Thu,  9 Sep 2021 12:01:29 +0000 (UTC)
+        id S1358967AbhIINLk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Sep 2021 09:11:40 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2CFC260F6C;
+        Thu,  9 Sep 2021 12:01:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631188891;
-        bh=dzAigAepBsLS1JtEPhZgzE3+YL6NfLUinqhExcTXxbQ=;
+        s=k20201202; t=1631188895;
+        bh=K5gwc1hm6QAcBwI9w5qko2ajGG95XuMHVbJfJJua3zE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qPjF9ttSd+FkUdanIZyvgUM4eRFR+lODWk2ffMf6XVkbxFZScqsmNl/xxsSQn2WMk
-         vuP1XzXU3MCKYfGsnW+URbzOprtutNZsjcVSPODuktSgRxwCLKmnNlGfSISWEnMC1u
-         AhPFWC3HQHDPhbWED8bYqmv2IWPvyyiF8a1QxVoD6du9ADi8PcUhazfyBbBSJUpt6E
-         0eSLKgYf3mOPuff4sbDLkoDdNQzYgwLHckHdOHCP4FsYQxti9s1EwpnpeY+6359uoK
-         CeWNNFcNV2T98u9AIA51aYtFTnXgvlvEzQeqFxyfh2gM2Z610jI7slCFGoF+/ON2lF
-         wriPaoFIp9Flw==
+        b=OPUIYBYEjIH+ZejMzQWwhiEtNilpkI8nmL5DLsiKGmRzQ+QA0G6hGKdKX8tVAmVjt
+         0Eig82fWhslyQ/AZQ54+b5razfsIJ3J2FYyq+rAsRwVC0OaetgKANggPEDOUgpVvMD
+         2ISiZn7X+k9WHcRsXtGXUxJ3xvIVvrf2RJ7C1vv+szSs+cZoGeXGo8EDCBt3XHetYt
+         fw8vVOFgx5LG2XIrvZ5jVS0JVEOrGpDES4hXyQXzMvtveFMG65juHqJh4Jg6O/ExtB
+         9rug3uca2He67bgP9WROGMzlQutcbBL293znVz3JfHAi1TfjKAwA7I67pT/ftxWduQ
+         2+vWyeojgXyfg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johan Almbladh <johan.almbladh@anyfinetworks.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 11/35] bpf/tests: Do not PASS tests without actually testing the result
-Date:   Thu,  9 Sep 2021 08:00:52 -0400
-Message-Id: <20210909120116.150912-11-sashal@kernel.org>
+Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        kernel test robot <lkp@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 15/35] ipv4: ip_output.c: Fix out-of-bounds warning in ip_copy_addrs()
+Date:   Thu,  9 Sep 2021 08:00:56 -0400
+Message-Id: <20210909120116.150912-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909120116.150912-1-sashal@kernel.org>
 References: <20210909120116.150912-1-sashal@kernel.org>
@@ -43,53 +43,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johan Almbladh <johan.almbladh@anyfinetworks.com>
+From: "Gustavo A. R. Silva" <gustavoars@kernel.org>
 
-[ Upstream commit 2b7e9f25e590726cca76700ebdb10e92a7a72ca1 ]
+[ Upstream commit 6321c7acb82872ef6576c520b0e178eaad3a25c0 ]
 
-Each test case can have a set of sub-tests, where each sub-test can
-run the cBPF/eBPF test snippet with its own data_size and expected
-result. Before, the end of the sub-test array was indicated by both
-data_size and result being zero. However, most or all of the internal
-eBPF tests has a data_size of zero already. When such a test also had
-an expected value of zero, the test was never run but reported as
-PASS anyway.
+Fix the following out-of-bounds warning:
 
-Now the test runner always runs the first sub-test, regardless of the
-data_size and result values. The sub-test array zero-termination only
-applies for any additional sub-tests.
+    In function 'ip_copy_addrs',
+        inlined from '__ip_queue_xmit' at net/ipv4/ip_output.c:517:2:
+net/ipv4/ip_output.c:449:2: warning: 'memcpy' offset [40, 43] from the object at 'fl' is out of the bounds of referenced subobject 'saddr' with type 'unsigned int' at offset 36 [-Warray-bounds]
+      449 |  memcpy(&iph->saddr, &fl4->saddr,
+          |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      450 |         sizeof(fl4->saddr) + sizeof(fl4->daddr));
+          |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-There are other ways fix it of course, but this solution at least
-removes the surprise of eBPF tests with a zero result always succeeding.
+The problem is that the original code is trying to copy data into a
+couple of struct members adjacent to each other in a single call to
+memcpy(). This causes a legitimate compiler warning because memcpy()
+overruns the length of &iph->saddr and &fl4->saddr. As these are just
+a couple of struct members, fix this by using direct assignments,
+instead of memcpy().
 
-Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/bpf/20210721103822.3755111-1-johan.almbladh@anyfinetworks.com
+This helps with the ongoing efforts to globally enable -Warray-bounds
+and get us closer to being able to tighten the FORTIFY_SOURCE routines
+on memcpy().
+
+Link: https://github.com/KSPP/linux/issues/109
+Reported-by: kernel test robot <lkp@intel.com>
+Link: https://lore.kernel.org/lkml/d5ae2e65-1f18-2577-246f-bada7eee6ccd@intel.com/
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/test_bpf.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ net/ipv4/ip_output.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/lib/test_bpf.c b/lib/test_bpf.c
-index 7db8d06006d8..cf2880d2ce3f 100644
---- a/lib/test_bpf.c
-+++ b/lib/test_bpf.c
-@@ -5399,7 +5399,14 @@ static int run_one(const struct bpf_prog *fp, struct bpf_test *test)
- 		u64 duration;
- 		u32 ret;
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index e808227c58d6..477540b3d320 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -376,8 +376,9 @@ static void ip_copy_addrs(struct iphdr *iph, const struct flowi4 *fl4)
+ {
+ 	BUILD_BUG_ON(offsetof(typeof(*fl4), daddr) !=
+ 		     offsetof(typeof(*fl4), saddr) + sizeof(fl4->saddr));
+-	memcpy(&iph->saddr, &fl4->saddr,
+-	       sizeof(fl4->saddr) + sizeof(fl4->daddr));
++
++	iph->saddr = fl4->saddr;
++	iph->daddr = fl4->daddr;
+ }
  
--		if (test->test[i].data_size == 0 &&
-+		/*
-+		 * NOTE: Several sub-tests may be present, in which case
-+		 * a zero {data_size, result} tuple indicates the end of
-+		 * the sub-test array. The first test is always run,
-+		 * even if both data_size and result happen to be zero.
-+		 */
-+		if (i > 0 &&
-+		    test->test[i].data_size == 0 &&
- 		    test->test[i].result == 0)
- 			break;
- 
+ /* Note: skb->sk can be different from sk, in case of tunnels */
 -- 
 2.30.2
 
