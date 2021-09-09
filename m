@@ -2,96 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFE8040447E
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 06:33:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0ED6740449D
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 06:50:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349958AbhIIEee (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 00:34:34 -0400
-Received: from zg8tmty1ljiyny4xntqumjca.icoremail.net ([165.227.154.27]:39653
-        "HELO zg8tmty1ljiyny4xntqumjca.icoremail.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with SMTP id S229549AbhIIEed (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 00:34:33 -0400
+        id S1350475AbhIIEvH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 00:51:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55632 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231364AbhIIEvG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 00:51:06 -0400
+Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3941C061575;
+        Wed,  8 Sep 2021 21:49:57 -0700 (PDT)
+Received: by mail-ot1-x335.google.com with SMTP id c42-20020a05683034aa00b0051f4b99c40cso1001882otu.0;
+        Wed, 08 Sep 2021 21:49:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fudan.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
-        Message-Id; bh=15PV/LqowfaC+fxf6vWbltb0UNQfC6jSPzN+3vijUwc=; b=3
-        DJjFnbhsbzatVfC5kPmsEk1UPwiv7vfjI6C/y/3X8LYWTdtQ7ti4nRqk85rOC9H6
-        ns5IPiAoofi7djqHBlyvKC18+JSgSB9zGqSV722nckXNML5Eu3ia5qq91eYOKjlr
-        W2pEWVmqTnuiZL6ZpFy5V5oZ6W1Tw/SRbH3kpfSGOA=
-Received: from localhost.localdomain (unknown [10.162.127.118])
-        by app1 (Coremail) with SMTP id XAUFCgCXn19pjjlhq309AA--.1163S3;
-        Thu, 09 Sep 2021 12:32:41 +0800 (CST)
-From:   Xiyu Yang <xiyuyang19@fudan.edu.cn>
-To:     Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-nfs@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     yuanxzhang@fudan.edu.cn, Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Xin Xiong <xiongx18@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>
-Subject: [PATCH] net/sunrpc: fix reference count leaks in rpc_sysfs_xprt_state_change
-Date:   Thu,  9 Sep 2021 12:32:38 +0800
-Message-Id: <1631161958-77832-1-git-send-email-xiyuyang19@fudan.edu.cn>
-X-Mailer: git-send-email 2.7.4
-X-CM-TRANSID: XAUFCgCXn19pjjlhq309AA--.1163S3
-X-Coremail-Antispam: 1UD129KBjvJXoW7WF1kAry5Kr43Gr1rKF48WFg_yoW8JFyfpr
-        y5K34a9F98tr47G3ZrC3W0ga4jvFs8X3W5X3yI9w1kA3WDAasxGr1F9rsrWr18ArWruFW8
-        JF109F4ruF4DCaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUU9G14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
-        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
-        CE3s1lnxkEFVAIw20F6cxK64vIFxWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xv
-        F2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jrv_JF1lYx0Ex4A2jsIE14v26r1j6r
-        4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I
-        648v4I1lFIxGxcIEc7CjxVA2Y2ka0xkIwI1lc2xSY4AK6svPMxAIw28IcxkI7VAKI48JMx
-        C20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAF
-        wI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20x
-        vE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v2
-        0xvaj40_Gr0_Zr1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxV
-        W8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUbZmitUUUUU==
-X-CM-SenderInfo: irzsiiysuqikmy6i3vldqovvfxof0/
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zSdDJmykDz9RTad7mrV36cJkuuQOB/FNuOcap03OkbQ=;
+        b=WhMD+ExrGhJW1OHa5voKbQZpKXvfpplr6A2O+kLcKVPh9VhkAFPZdWQnSIfi1dO3Pc
+         IEYcRwc00hz+0TfbtGfjxrZfKqzx+1NnJIYUEadNVbHmrOOILrYtRsAz3SCTEvgSeOsI
+         Trk5CVsi3yC1NUko5efAQkZPA4ZwiOjviaiXSaeVdXM0RioH+wa/N7bSmgj8lJIyWbQ1
+         Mhw0o310t5SnQYzzxGa5q0d4jyyvVe1uPWU6z2+zcwgxDIm8EFgQhNlR7aWDfcvjP/wX
+         /RZoXYLsRjPzFR0HyVBnatWw13/bMe1SX0EGVJ61jkBaqkyDKRWF0MT/xm2E/0QBCq92
+         r05A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=zSdDJmykDz9RTad7mrV36cJkuuQOB/FNuOcap03OkbQ=;
+        b=e9nk4yAyKlrqM76zddkKYTnzg4ymmoPE5Leo9wQR1fzLTNSOASYdngSFFbEO5dm02+
+         PVStDlV9QVek1KQFF2k37RfcxTKfAq0gUFovj2uJOXjfI86yR3F72W4R6IjT+B8hvF+Q
+         1Em5qWZtFWr+VawfncmJFHHf2szxn5OqKDoaj+n4M8ysF3Me9TJIf2TiIolpBS0TjZz9
+         8tM3aKgYz9j9U8/c/9+4gV3c3uft5HWfs5U/tfoVXDqmzGTzcDKHakgli+bK5R8vU36l
+         ntPehnKdG1ezVqOZmM+6L0P1XvFdLMbNTqZD3aSVvfGCEE7HymJ1PM98AWE2MMmNcQdP
+         Q3gQ==
+X-Gm-Message-State: AOAM530gpjPzDGp0Mks456fYdE8oGMyA+WhMOJV3lukc20RChtVyLL/Z
+        sQmabP5SmRrg3YaRy5est6U6T8yjGTI=
+X-Google-Smtp-Source: ABdhPJwEm11UZMvKdp3qo1Wj2KPQIelfNBHGRzB8M6PTnjqGCcHcgmAXjNotYVd5/Wq9v0MYEEbwKA==
+X-Received: by 2002:a05:6830:2781:: with SMTP id x1mr927266otu.334.1631162997005;
+        Wed, 08 Sep 2021 21:49:57 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id 97sm180427otv.26.2021.09.08.21.49.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Sep 2021 21:49:56 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        Arnd Bergmann <arnd@kernel.org>
+Subject: [PATCH] net: ni65: Avoid typecast of pointer to u32
+Date:   Wed,  8 Sep 2021 21:49:53 -0700
+Message-Id: <20210909044953.1564070-1-linux@roeck-us.net>
+X-Mailer: git-send-email 2.33.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The refcount leak issues take place in an error handling path. When the
-3rd argument buf doesn't match with "offline", "online" or "remove", the
-function simply returns -EINVAL and forgets to decrease the reference
-count of a rpc_xprt object and a rpc_xprt_switch object increased by
-rpc_sysfs_xprt_kobj_get_xprt() and
-rpc_sysfs_xprt_kobj_get_xprt_switch(), causing reference count leaks of
-both unused objects.
+Building alpha:allmodconfig results in the following error.
 
-Fix this issue by jumping to the error handling path labelled with
-out_put when buf matches none of "offline", "online" or "remove".
+drivers/net/ethernet/amd/ni65.c: In function 'ni65_stop_start':
+drivers/net/ethernet/amd/ni65.c:751:37: error:
+	cast from pointer to integer of different size
+		buffer[i] = (u32) isa_bus_to_virt(tmdp->u.buffer);
 
-Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
-Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
+'buffer[]' is declared as unsigned long, so replace the typecast to u32
+with a typecast to unsigned long to fix the problem.
+
+Cc: Arnd Bergmann <arnd@kernel.org>
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 ---
- net/sunrpc/sysfs.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/amd/ni65.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/sunrpc/sysfs.c b/net/sunrpc/sysfs.c
-index 64da3bfd28e6..0cce0375107f 100644
---- a/net/sunrpc/sysfs.c
-+++ b/net/sunrpc/sysfs.c
-@@ -265,8 +265,10 @@ static ssize_t rpc_sysfs_xprt_state_change(struct kobject *kobj,
- 		online = 1;
- 	else if (!strncmp(buf, "remove", 6))
- 		remove = 1;
--	else
--		return -EINVAL;
-+	else {
-+		count = -EINVAL;
-+		goto out_put;
-+	}
- 
- 	if (wait_on_bit_lock(&xprt->state, XPRT_LOCKED, TASK_KILLABLE)) {
- 		count = -EINTR;
+diff --git a/drivers/net/ethernet/amd/ni65.c b/drivers/net/ethernet/amd/ni65.c
+index b5df7ad5a83f..032e8922b482 100644
+--- a/drivers/net/ethernet/amd/ni65.c
++++ b/drivers/net/ethernet/amd/ni65.c
+@@ -748,7 +748,7 @@ static void ni65_stop_start(struct net_device *dev,struct priv *p)
+ #ifdef XMT_VIA_SKB
+ 			skb_save[i] = p->tmd_skb[i];
+ #endif
+-			buffer[i] = (u32) isa_bus_to_virt(tmdp->u.buffer);
++			buffer[i] = (unsigned long)isa_bus_to_virt(tmdp->u.buffer);
+ 			blen[i] = tmdp->blen;
+ 			tmdp->u.s.status = 0x0;
+ 		}
 -- 
-2.7.4
+2.33.0
 
