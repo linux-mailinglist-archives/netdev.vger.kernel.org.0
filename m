@@ -2,92 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C30514051D7
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:46:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EB714052D2
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:50:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354391AbhIIMi6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 08:38:58 -0400
-Received: from mail-ot1-f46.google.com ([209.85.210.46]:37479 "EHLO
-        mail-ot1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351614AbhIIMeO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 08:34:14 -0400
-Received: by mail-ot1-f46.google.com with SMTP id i3-20020a056830210300b0051af5666070so2259643otc.4;
-        Thu, 09 Sep 2021 05:33:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=mgK7NOGoFgYko3sL9/CnFKWvO1Nc0SwAG4V9JvFppl0=;
-        b=MwASJW5zaS47XJzk+OUMFCM8579zUeVFHmrZiTvd/73yfZn3/Ksa1AhBkLNG4ebrvg
-         JMhGG4weOt07iMTQQp6XEqELjBkHqIi++UCN64RejODnNcEUAFWtU5AWVXZfItF4ONOw
-         jezomeqlOt9AS8QXXTA7/o6MpW1VosXnp6KtUgQs42QTXe85oldC6QfizVKuhJltSCJ6
-         JMH2qVJlR4yxm/uV24pRT+GpkKB2jqGQDoc+5hJbp3fyys2jZrhbUH9u2vmOd3eRy9Cz
-         IAQhxFwg6GahPRjI5UbdrCwWFV0/lLNZ7l78KOljL6yWx/Jbbh2ecIyTtt3qTZp9yt38
-         5jiw==
-X-Gm-Message-State: AOAM533Hyf1r8POXE325IHB1GbIN1ZdMhD3czKuMmAbUILg66jAEff+y
-        mORvBymB3JQ2Ald0C6Mzvw==
-X-Google-Smtp-Source: ABdhPJw1M/AsCCVywKipuhZa6/5nA/2P6FN5EmeeX004LUh08SNTosLeVyAGlWR8c1Aqa3bmnf0Ltw==
-X-Received: by 2002:a9d:641a:: with SMTP id h26mr2231113otl.15.1631190782575;
-        Thu, 09 Sep 2021 05:33:02 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id x4sm361101ood.2.2021.09.09.05.33.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Sep 2021 05:33:01 -0700 (PDT)
-Received: (nullmailer pid 200342 invoked by uid 1000);
-        Thu, 09 Sep 2021 12:32:53 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>, devicetree@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-In-Reply-To: <20210908221118.138045-1-linus.walleij@linaro.org>
-References: <20210908221118.138045-1-linus.walleij@linaro.org>
-Subject: Re: [PATCH] dt-bindings: net: Add bindings for IXP4xx V.35 WAN HSS
-Date:   Thu, 09 Sep 2021 07:32:53 -0500
-Message-Id: <1631190773.296990.200341.nullmailer@robh.at.kernel.org>
+        id S1352879AbhIIMr2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 08:47:28 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:34430 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1354448AbhIIMmO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Sep 2021 08:42:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=ccslqbdbDMRBI5TMJhPLL0kOsQFJUv4TDelcaobks6E=; b=05fGKYQu2zD3ugpGX5N14Irr/u
+        4b2Xrw30clYSR6GzAqprkul/PZvrYUFHAsgBsUlQYPoAkIntZMzoEReouEB/rC5W9RMm/fJXufvNK
+        YRzOO15MAZywz9newS+wsM8iX2FIthUvRopVsx+PK+IdpiEK8tqC0PAbTvJ3aCpzGbJI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mOJMM-005uJ8-Ct; Thu, 09 Sep 2021 14:40:54 +0200
+Date:   Thu, 9 Sep 2021 14:40:54 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Cc:     olteanv@gmail.com, p.rosenberger@kunbus.com,
+        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/3] Fix for KSZ DSA switch shutdown
+Message-ID: <YToA1hf2/2KWoKxh@lunn.ch>
+References: <20210909095324.12978-1-LinoSanfilippo@gmx.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210909095324.12978-1-LinoSanfilippo@gmx.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 09 Sep 2021 00:11:18 +0200, Linus Walleij wrote:
-> This adds device tree bindings for the IXP4xx V.35 WAN high
-> speed serial (HSS) link.
+On Thu, Sep 09, 2021 at 11:53:21AM +0200, Lino Sanfilippo wrote:
+> This patch series fixes a system hang I got each time i tried to shutdown
+> or reboot a system that uses a KSZ9897 as a DSA switch with a broadcom
+> GENET network device as the DSA master device. At the time the system hangs
+> the message "unregister_netdevice: waiting for eth0 to become free. Usage
+> count = 2." is dumped periodically to the console.
 > 
-> An example is added to the NPE example where the HSS appears
-> as a child.
+> After some investigation I found the reason to be unreleased references to
+> the master device which are still held by the slave devices at the time the
+> system is shut down (I have two slave devices in use).
 > 
-> Cc: devicetree@vger.kernel.org
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> ---
-> Currently only adding these bindings so we can describe the
-> hardware in device trees.
-> ---
->  ...ntel,ixp4xx-network-processing-engine.yaml |  26 ++++
->  .../bindings/net/intel,ixp4xx-hss.yaml        | 129 ++++++++++++++++++
->  2 files changed, 155 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/intel,ixp4xx-hss.yaml
+> While these references are supposed to be released in ksz_switch_remove()
+> this function never gets the chance to be called due to the system hang at
+> the master device deregistration which happens before ksz_switch_remove()
+> is called.
 > 
+> The fix is to make sure that the master device references are already
+> released when the device is unregistered. For this reason PATCH1 provides
+> a new function dsa_tree_shutdown() that can be called by DSA drivers to
+> untear the DSA switch at shutdown. PATCH2 uses this function in a new
+> helper function for KSZ switches to properly shutdown the KSZ switch.
+> PATCH 3 uses the new helper function in the KSZ9477 shutdown handler.
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+I agree with Vladimir here. Shutdown works without issue on mv88e6xxx,
+i do it frequently. I'm sure other developers shutdown there devices
+at the end of the edit/compile/test cycle. If there was a generic
+problem, we would probably know about it. So it seems like there is
+something specific to your system which breaks the reference
+counting. We need to understand that first, then we can see how we fix
+it.
 
-yamllint warnings/errors:
+> 
+> Theses patches have been tested on a Raspberry PI 5.10 kernel with a
+> KSZ9897. The patches have been adjusted to apply against net-next and are
+> compile tested with next-next.
 
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/firmware/intel,ixp4xx-network-processing-engine.example.dt.yaml: npe@c8006000: '#address-cells', '#size-cells', 'hss@0' do not match any of the regexes: 'pinctrl-[0-9]+'
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/firmware/intel,ixp4xx-network-processing-engine.yaml
+Is the switch on a hat? Are you using DT overlays?
 
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/1526025
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+   Andrew
