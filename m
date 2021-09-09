@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E742405101
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:42:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FDB240510B
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:42:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352837AbhIIMdK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 08:33:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33230 "EHLO mail.kernel.org"
+        id S1352986AbhIIMd1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 08:33:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33458 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1353785AbhIIMYv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Sep 2021 08:24:51 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 990BE6113A;
-        Thu,  9 Sep 2021 11:51:34 +0000 (UTC)
+        id S1353833AbhIIMY5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Sep 2021 08:24:57 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 714A861B08;
+        Thu,  9 Sep 2021 11:51:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631188295;
-        bh=l78uYDchjdPKARcINjvKtyH8RNP7Yr+otkiFfhf5K+w=;
+        s=k20201202; t=1631188299;
+        bh=37TMLUSfMQCXfG0l7cchb1QLoKsWRbJKjTCLzDqEFk8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q+etADSRxm+eBk7BYJ6lY4jlhL2Kud+KQ975S+wriNGsdHRaOKK9sJ+oLFrTowF8n
-         9GX33KIog3tDi9qKMnej9Ez1UlsZR9MD993PZw2hM9FyEO3qa5Zj6mWl2Z46D7Aqtd
-         fPpWUd0AV/NUD+qoctJXBMOfiFouBo2hjOBT+DD+qDZaWe+2n/tL4RKU6+zfgGYE8t
-         /hGuMgGckNp0G+XwRyud6WluWqhqYX43r8iK1LaBD3V/1gScZx8ID4rbv/zsrxC0fF
-         EmRTMlVZI3MuiR2iOaGFWxKh8RhXmskrq9ByyTAZSPboRnp2prhot2/mT+dhe4EOTq
-         Nqv3oMrqJ0d/g==
+        b=Tv8zAHkzBq06qsWrrbSqNezTc2CudnUQuhTzQb9dTBP8JDfa+NnJpOR5ko460Ba9d
+         N9dKwXl75whp3Y7NmjDsicarQSKazq1AjLgPj9PiJm+th1zV3i23iTLd2F93RmmGMV
+         n/W/n+KT3/HdTB563iL2IF9XfSHXiOynf7tizn7g/cQjCtOFyl8Wj9rzOMcrn8uVYN
+         fDWl/XVW/9iy1BlZfTo6oC5y8BAwBEekYwfeIMljK0UB7/9PVcx7ZGdsafwAnP6pRU
+         HdQIFYQ9JcTvHBLwvz95UT74MibU2qzm/KLRHLp6mDjNdJ6qfUttKAsRFjO1zXckb7
+         gHyyhwM1/mR7Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Stefan Assmann <sassmann@kpanic.de>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 013/176] iavf: fix locking of critical sections
-Date:   Thu,  9 Sep 2021 07:48:35 -0400
-Message-Id: <20210909115118.146181-13-sashal@kernel.org>
+Cc:     Yajun Deng <yajun.deng@linux.dev>, Yonghong Song <yhs@fb.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 016/176] netlink: Deal with ESRCH error in nlmsg_notify()
+Date:   Thu,  9 Sep 2021 07:48:38 -0400
+Message-Id: <20210909115118.146181-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909115118.146181-1-sashal@kernel.org>
 References: <20210909115118.146181-1-sashal@kernel.org>
@@ -44,178 +43,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefan Assmann <sassmann@kpanic.de>
+From: Yajun Deng <yajun.deng@linux.dev>
 
-[ Upstream commit 226d528512cfac890a1619aea4301f3dd314fe60 ]
+[ Upstream commit fef773fc8110d8124c73a5e6610f89e52814637d ]
 
-To avoid races between iavf_init_task(), iavf_reset_task(),
-iavf_watchdog_task(), iavf_adminq_task() as well as the shutdown and
-remove functions more locking is required.
-The current protection by __IAVF_IN_CRITICAL_TASK is needed in
-additional places.
+Yonghong Song report:
+The bpf selftest tc_bpf failed with latest bpf-next.
+The following is the command to run and the result:
+$ ./test_progs -n 132
+[   40.947571] bpf_testmod: loading out-of-tree module taints kernel.
+test_tc_bpf:PASS:test_tc_bpf__open_and_load 0 nsec
+test_tc_bpf:PASS:bpf_tc_hook_create(BPF_TC_INGRESS) 0 nsec
+test_tc_bpf:PASS:bpf_tc_hook_create invalid hook.attach_point 0 nsec
+test_tc_bpf_basic:PASS:bpf_obj_get_info_by_fd 0 nsec
+test_tc_bpf_basic:PASS:bpf_tc_attach 0 nsec
+test_tc_bpf_basic:PASS:handle set 0 nsec
+test_tc_bpf_basic:PASS:priority set 0 nsec
+test_tc_bpf_basic:PASS:prog_id set 0 nsec
+test_tc_bpf_basic:PASS:bpf_tc_attach replace mode 0 nsec
+test_tc_bpf_basic:PASS:bpf_tc_query 0 nsec
+test_tc_bpf_basic:PASS:handle set 0 nsec
+test_tc_bpf_basic:PASS:priority set 0 nsec
+test_tc_bpf_basic:PASS:prog_id set 0 nsec
+libbpf: Kernel error message: Failed to send filter delete notification
+test_tc_bpf_basic:FAIL:bpf_tc_detach unexpected error: -3 (errno 3)
+test_tc_bpf:FAIL:test_tc_internal ingress unexpected error: -3 (errno 3)
 
-- The reset task performs state transitions, therefore needs locking.
-- The adminq task acts on replies from the PF in
-  iavf_virtchnl_completion() which may alter the states.
-- The init task is not only run during probe but also if a VF gets stuck
-  to reinitialize it.
-- The shutdown function performs a state transition.
-- The remove function performs a state transition and also free's
-  resources.
+The failure seems due to the commit
+    cfdf0d9ae75b ("rtnetlink: use nlmsg_notify() in rtnetlink_send()")
 
-iavf_lock_timeout() is introduced to avoid waiting infinitely
-and cause a deadlock. Rather unlock and print a warning.
+Deal with ESRCH error in nlmsg_notify() even the report variable is zero.
 
-Signed-off-by: Stefan Assmann <sassmann@kpanic.de>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Reported-by: Yonghong Song <yhs@fb.com>
+Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
+Link: https://lore.kernel.org/r/20210719051816.11762-1-yajun.deng@linux.dev
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/iavf/iavf_main.c | 57 ++++++++++++++++++---
- 1 file changed, 50 insertions(+), 7 deletions(-)
+ net/netlink/af_netlink.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index da401d5694bf..f06c079e812e 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -131,6 +131,30 @@ enum iavf_status iavf_free_virt_mem_d(struct iavf_hw *hw,
- 	return 0;
- }
- 
-+/**
-+ * iavf_lock_timeout - try to set bit but give up after timeout
-+ * @adapter: board private structure
-+ * @bit: bit to set
-+ * @msecs: timeout in msecs
-+ *
-+ * Returns 0 on success, negative on failure
-+ **/
-+static int iavf_lock_timeout(struct iavf_adapter *adapter,
-+			     enum iavf_critical_section_t bit,
-+			     unsigned int msecs)
-+{
-+	unsigned int wait, delay = 10;
-+
-+	for (wait = 0; wait < msecs; wait += delay) {
-+		if (!test_and_set_bit(bit, &adapter->crit_section))
-+			return 0;
-+
-+		msleep(delay);
-+	}
-+
-+	return -1;
-+}
-+
- /**
-  * iavf_schedule_reset - Set the flags and schedule a reset event
-  * @adapter: board private structure
-@@ -2064,6 +2088,10 @@ static void iavf_reset_task(struct work_struct *work)
- 	if (test_bit(__IAVF_IN_REMOVE_TASK, &adapter->crit_section))
- 		return;
- 
-+	if (iavf_lock_timeout(adapter, __IAVF_IN_CRITICAL_TASK, 200)) {
-+		schedule_work(&adapter->reset_task);
-+		return;
-+	}
- 	while (test_and_set_bit(__IAVF_IN_CLIENT_TASK,
- 				&adapter->crit_section))
- 		usleep_range(500, 1000);
-@@ -2278,6 +2306,8 @@ static void iavf_adminq_task(struct work_struct *work)
- 	if (!event.msg_buf)
- 		goto out;
- 
-+	if (iavf_lock_timeout(adapter, __IAVF_IN_CRITICAL_TASK, 200))
-+		goto freedom;
- 	do {
- 		ret = iavf_clean_arq_element(hw, &event, &pending);
- 		v_op = (enum virtchnl_ops)le32_to_cpu(event.desc.cookie_high);
-@@ -2291,6 +2321,7 @@ static void iavf_adminq_task(struct work_struct *work)
- 		if (pending != 0)
- 			memset(event.msg_buf, 0, IAVF_MAX_AQ_BUF_SIZE);
- 	} while (pending);
-+	clear_bit(__IAVF_IN_CRITICAL_TASK, &adapter->crit_section);
- 
- 	if ((adapter->flags &
- 	     (IAVF_FLAG_RESET_PENDING | IAVF_FLAG_RESET_NEEDED)) ||
-@@ -3593,6 +3624,10 @@ static void iavf_init_task(struct work_struct *work)
- 						    init_task.work);
- 	struct iavf_hw *hw = &adapter->hw;
- 
-+	if (iavf_lock_timeout(adapter, __IAVF_IN_CRITICAL_TASK, 5000)) {
-+		dev_warn(&adapter->pdev->dev, "failed to set __IAVF_IN_CRITICAL_TASK in %s\n", __FUNCTION__);
-+		return;
-+	}
- 	switch (adapter->state) {
- 	case __IAVF_STARTUP:
- 		if (iavf_startup(adapter) < 0)
-@@ -3605,14 +3640,14 @@ static void iavf_init_task(struct work_struct *work)
- 	case __IAVF_INIT_GET_RESOURCES:
- 		if (iavf_init_get_resources(adapter) < 0)
- 			goto init_failed;
--		return;
-+		goto out;
- 	default:
- 		goto init_failed;
+diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+index e527f5686e2b..8434da3c0487 100644
+--- a/net/netlink/af_netlink.c
++++ b/net/netlink/af_netlink.c
+@@ -2537,13 +2537,15 @@ int nlmsg_notify(struct sock *sk, struct sk_buff *skb, u32 portid,
+ 		/* errors reported via destination sk->sk_err, but propagate
+ 		 * delivery errors if NETLINK_BROADCAST_ERROR flag is set */
+ 		err = nlmsg_multicast(sk, skb, exclude_portid, group, flags);
++		if (err == -ESRCH)
++			err = 0;
  	}
  
- 	queue_delayed_work(iavf_wq, &adapter->init_task,
- 			   msecs_to_jiffies(30));
--	return;
-+	goto out;
- init_failed:
- 	if (++adapter->aq_wait_count > IAVF_AQ_MAX_ERR) {
- 		dev_err(&adapter->pdev->dev,
-@@ -3621,9 +3656,11 @@ static void iavf_init_task(struct work_struct *work)
- 		iavf_shutdown_adminq(hw);
- 		adapter->state = __IAVF_STARTUP;
- 		queue_delayed_work(iavf_wq, &adapter->init_task, HZ * 5);
--		return;
-+		goto out;
- 	}
- 	queue_delayed_work(iavf_wq, &adapter->init_task, HZ);
-+out:
-+	clear_bit(__IAVF_IN_CRITICAL_TASK, &adapter->crit_section);
- }
+ 	if (report) {
+ 		int err2;
  
- /**
-@@ -3640,9 +3677,12 @@ static void iavf_shutdown(struct pci_dev *pdev)
- 	if (netif_running(netdev))
- 		iavf_close(netdev);
- 
-+	if (iavf_lock_timeout(adapter, __IAVF_IN_CRITICAL_TASK, 5000))
-+		dev_warn(&adapter->pdev->dev, "failed to set __IAVF_IN_CRITICAL_TASK in %s\n", __FUNCTION__);
- 	/* Prevent the watchdog from running. */
- 	adapter->state = __IAVF_REMOVE;
- 	adapter->aq_required = 0;
-+	clear_bit(__IAVF_IN_CRITICAL_TASK, &adapter->crit_section);
- 
- #ifdef CONFIG_PM
- 	pci_save_state(pdev);
-@@ -3870,10 +3910,6 @@ static void iavf_remove(struct pci_dev *pdev)
- 				 err);
+ 		err2 = nlmsg_unicast(sk, skb, portid);
+-		if (!err || err == -ESRCH)
++		if (!err)
+ 			err = err2;
  	}
  
--	/* Shut down all the garbage mashers on the detention level */
--	adapter->state = __IAVF_REMOVE;
--	adapter->aq_required = 0;
--	adapter->flags &= ~IAVF_FLAG_REINIT_ITR_NEEDED;
- 	iavf_request_reset(adapter);
- 	msleep(50);
- 	/* If the FW isn't responding, kick it once, but only once. */
-@@ -3881,6 +3917,13 @@ static void iavf_remove(struct pci_dev *pdev)
- 		iavf_request_reset(adapter);
- 		msleep(50);
- 	}
-+	if (iavf_lock_timeout(adapter, __IAVF_IN_CRITICAL_TASK, 5000))
-+		dev_warn(&adapter->pdev->dev, "failed to set __IAVF_IN_CRITICAL_TASK in %s\n", __FUNCTION__);
-+
-+	/* Shut down all the garbage mashers on the detention level */
-+	adapter->state = __IAVF_REMOVE;
-+	adapter->aq_required = 0;
-+	adapter->flags &= ~IAVF_FLAG_REINIT_ITR_NEEDED;
- 	iavf_free_all_tx_resources(adapter);
- 	iavf_free_all_rx_resources(adapter);
- 	iavf_misc_irq_disable(adapter);
 -- 
 2.30.2
 
