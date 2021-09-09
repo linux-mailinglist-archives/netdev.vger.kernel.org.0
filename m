@@ -2,137 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E10D405B23
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 18:44:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77ED2405B24
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 18:44:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238914AbhIIQpS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 12:45:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47366 "EHLO
+        id S239117AbhIIQpi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 12:45:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238744AbhIIQpQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 12:45:16 -0400
-Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D905C061767;
-        Thu,  9 Sep 2021 09:44:07 -0700 (PDT)
-Received: by mail-ot1-x335.google.com with SMTP id k12-20020a056830150c00b0051abe7f680bso3290075otp.1;
-        Thu, 09 Sep 2021 09:44:07 -0700 (PDT)
+        with ESMTP id S237070AbhIIQph (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 12:45:37 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4A82C061574;
+        Thu,  9 Sep 2021 09:44:27 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id j2so1447927pll.1;
+        Thu, 09 Sep 2021 09:44:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=sender:to:cc:references:from:subject:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=N33tNDE983KFwzlOPCn9woI2Z+VdOff5TDBckNp3U9Q=;
-        b=iP+z647fLsud8UrzxAwWm4ioiHRr0rdv+dTMbUjK9HT/xKLLGLSWTP5lqyOfSr0Qdi
-         GrH+UZie0L6S+P6HSuR3bEXjM3/bea48sXaOa0kLd300aOEqJd045QHT33dpn/rI/rJj
-         xteptZW14fUEj8OLM6ejvijvgZFTCM4XJW0qljtvcpfzMY4ptR9jxW1trJna+Jsr7SM9
-         oWqemVqmZORbYYkKXa177dkxR13LsADm6DmKRoXtFI7PxyZN8LP+5WbWkGIH8lNgNASJ
-         jQeiwmOQoj6HHODJB/wd7yqGRDsdJUGDiIOqMi+LJyKFuOJXGi39YmdZHODWsXLgZvXr
-         QoeQ==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=b4uDLJPP+FU7QUvKzFswN3F23ammEK+c1YsboO8yo7Y=;
+        b=oP2Y9akyRZyieSz6Vi8BvwKhZ75XuY4QdoNLEbSOR9dJgaCfTbbYsHykkWCDo04Yyt
+         MEK46Z3PBgF40Guta6hyMnOr+svxIdDBxsLtJudVVhcAW1oG0arq3aDEjcJfArcX5kng
+         vE9HY4Xh9Yb6ddoL/9YjKTMEqWs4atpvOnWcFlXU/XonaT46yul/EJ7s6eHjAn6+1+Bl
+         ZpYYA2KdBeqDClultty999x8TQUXR5p/66IezsMdmxz36bUBAm/Zf+4qV5kSsDYbF3gr
+         /W1lsXIOvQ9WfSYPkTwIKAMfiswKDCSSThxFsB0yNi6uDjoLrqgmH84YoJFSv7gtXkEt
+         +Xkw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:to:cc:references:from:subject:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=N33tNDE983KFwzlOPCn9woI2Z+VdOff5TDBckNp3U9Q=;
-        b=iZfvPpo0Uj9L9y1j2bC1KzOCAjlhi2gf6TNQQ8mglqrnBAi6NmDEoSwDBaiRdSW9aA
-         1pwg2CUEyKzUzomaHBGvJ1+3/w/e0yBOERhMCZLmSFdE1QfWYTr5ogH/6bFkoMdJXjl3
-         Nl97JeeqJMXc7bmkXEwXJL8er+p+4Zj2TcZNSx5xTleLVxgFXvZ8E2bEb6R+nCh5abpH
-         nVNNz5PAC+r0slhs9xrQj0Nv9e9tc5+Sn3L3rmjPrptVvqYGBRKtjTyteI7VLh9cjcg+
-         7JmhK5IJzlgR20/aGw/+/jEmzQwwo1fVg2rxvNJ4I0qD8pxEG6OMcJJwMQOL8nCWHCLM
-         aBmQ==
-X-Gm-Message-State: AOAM53220pkMhuIjRv6cqMpUjuJZKyIAfNn5ykaPzPfjUgDIn+D8NkUQ
-        NPItOChlj2gf1VVi0xcQPVLF5Pq6V30=
-X-Google-Smtp-Source: ABdhPJywGYdmWMj6VK/Nd5t9DDrFvruXPcLntzXEkaYiBjGzvGPEzi/yNEYqOQBVQB4zsKneYA4Bsw==
-X-Received: by 2002:a9d:7ccc:: with SMTP id r12mr688426otn.350.1631205846387;
-        Thu, 09 Sep 2021 09:44:06 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id c3sm525651oiy.30.2021.09.09.09.44.04
+        bh=b4uDLJPP+FU7QUvKzFswN3F23ammEK+c1YsboO8yo7Y=;
+        b=ddaT5r/yxs+wMONJ8EPmsY0u9+hmr6i9dScZ7dLVtPqcswMzwBEgi+1FlUh4NEpuNR
+         5fnqlPW4iw7KOl9aCg1cQiH32o9tB8J5rb0tHbqXPFc2o9linoFoSCm0lcRt8osw8R0J
+         5EZMbEXF0tzFpejnYa2IHVHi55GwrquedtTW7oSsPKx1MvXsJCpQAucrFzt7LohRzOJq
+         hVIPFYJXe/PgrkpfLbwFQenK4yl8J9Ol63A8eNFMNxKlGjG6JqlSfT2zy8QsEKV9KObI
+         1Ayb7COFsTNHnEHYBaPT0j1N7giStfLZlmV32L4ELw9H6OnP4fwvbcrCl+w+BJE22IdV
+         scaQ==
+X-Gm-Message-State: AOAM533lCoJG0rDiP5rRlzTKwk9x6mZzb2xZK+ECDj/Y1GLSD4UzkBKz
+        E/k5h8DxS2f77TpHxJJiaWwI0PmiDis=
+X-Google-Smtp-Source: ABdhPJxlF5YvZh35lFdwNXgmJt5w/7E3r9OPnqqK9IavRUuK8qj5MJIDxpghWQyc7qXBpIrRYNo3PA==
+X-Received: by 2002:a17:90b:4c4d:: with SMTP id np13mr4681791pjb.166.1631205867034;
+        Thu, 09 Sep 2021 09:44:27 -0700 (PDT)
+Received: from [192.168.1.121] (99-44-17-11.lightspeed.irvnca.sbcglobal.net. [99.44.17.11])
+        by smtp.gmail.com with ESMTPSA id cp17sm2769945pjb.3.2021.09.09.09.44.25
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 09 Sep 2021 09:44:05 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     ajk@comnets.uni-bremen.de, kuba@kernel.org,
-        linux-hams@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210909035743.1247042-1-linux@roeck-us.net>
- <20210909.123442.1648633411296774237.davem@davemloft.net>
- <751f5079-2da1-187e-573c-d7d2d6743bbf@roeck-us.net>
- <20210909.162721.1267526781289116670.davem@davemloft.net>
-From:   Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH] net: 6pack: Fix tx timeout and slot time
-Message-ID: <aaa2d05e-cdbd-f80c-d85f-1ee92e7a7946@roeck-us.net>
-Date:   Thu, 9 Sep 2021 09:44:03 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        Thu, 09 Sep 2021 09:44:26 -0700 (PDT)
+Message-ID: <2b316d9f-1249-9008-2901-4ab3128eed81@gmail.com>
+Date:   Thu, 9 Sep 2021 09:44:24 -0700
 MIME-Version: 1.0
-In-Reply-To: <20210909.162721.1267526781289116670.davem@davemloft.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.1.0
+Subject: Re: [PATCH 0/3] Fix for KSZ DSA switch shutdown
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     p.rosenberger@kunbus.com, woojung.huh@microchip.com,
+        UNGLinuxDriver@microchip.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210909095324.12978-1-LinoSanfilippo@gmx.de>
+ <20210909101451.jhfk45gitpxzblap@skbuf>
+ <81c1a19f-c5dc-ab4a-76ff-59704ea95849@gmx.de>
+ <20210909114248.aijujvl7xypkh7qe@skbuf>
+ <20210909125606.giiqvil56jse4bjk@skbuf>
+ <trinity-85ae3f9c-38f9-4442-98d3-bdc01279c7a8-1631193592256@3c-app-gmx-bs01>
+ <20210909154734.ujfnzu6omcjuch2a@skbuf>
+ <8498b0ce-99bb-aef9-05e1-d359f1cad6cf@gmx.de>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <8498b0ce-99bb-aef9-05e1-d359f1cad6cf@gmx.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/9/21 8:27 AM, David Miller wrote:
-> From: Guenter Roeck <linux@roeck-us.net>
-> Date: Thu, 9 Sep 2021 07:53:29 -0700
-> 
->> On 9/9/21 4:34 AM, David Miller wrote:
->>> From: Guenter Roeck <linux@roeck-us.net>
->>> Date: Wed,  8 Sep 2021 20:57:43 -0700
+
+
+On 9/9/2021 9:37 AM, Lino Sanfilippo wrote:
+> On 09.09.21 at 17:47, Vladimir Oltean wrote:
+>> On Thu, Sep 09, 2021 at 03:19:52PM +0200, Lino Sanfilippo wrote:
+>>>> Do you see similar things on your 5.10 kernel?
 >>>
->>>> tx timeout and slot time are currently specified in units of HZ.
->>>> On Alpha, HZ is defined as 1024. When building alpha:allmodconfig,
->>>> this results in the following error message.
->>>>
->>>> drivers/net/hamradio/6pack.c: In function 'sixpack_open':
->>>> drivers/net/hamradio/6pack.c:71:41: error:
->>>> 	unsigned conversion from 'int' to 'unsigned char'
->>>> 	changes value from '256' to '0'
->>>>
->>>> In the 6PACK protocol, tx timeout is specified in units of 10 ms
->>>> and transmitted over the wire. Defining a value dependent on HZ
->>>> doesn't really make sense. Assume that the intent was to set tx
->>>> timeout and slot time based on a HZ value of 100 and use constants
->>>> instead of values depending on HZ for SIXP_TXDELAY and SIXP_SLOTTIME.
->>>>
->>>> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
->>>> ---
->>>> No idea if this is correct or even makes sense. Compile tested only.
->>> These are timer offsets so they have to me HZ based.  Better to make
->>> the
->>> structure members unsigned long, I think.
+>>> For the master device is see
 >>>
+>>> lrwxrwxrwx 1 root root 0 Sep  9 14:10 /sys/class/net/eth0/device/consumer:spi:spi3.0 -> ../../../virtual/devlink/platform:fd580000.ethernet--spi:spi3.0
 >>
->> Hmm, ok. Both tx_delay and slottime are updated in sp_encaps(),
->> though,
->> from data in the transmit buffer. The KISS protocol description states
->> that the values are in units of 10ms; that is where my assumption
->> came from.
+>> So this is the worst of the worst, we have a device link but it doesn't help.
+>>
+>> Where the device link helps is here:
+>>
+>> __device_release_driver
+>> 	while (device_links_busy(dev))
+>> 		device_links_unbind_consumers(dev);
+>>
+>> but during dev_shutdown, device_links_unbind_consumers does not get called
+>> (actually I am not even sure whether it should).
+>>
+>> I've reproduced your issue by making this very simple change:
+>>
+>> diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.c b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+>> index 60d94e0a07d6..ec00f34cac47 100644
+>> --- a/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+>> +++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+>> @@ -1372,6 +1372,7 @@ static struct pci_driver enetc_pf_driver = {
+>>   	.id_table = enetc_pf_id_table,
+>>   	.probe = enetc_pf_probe,
+>>   	.remove = enetc_pf_remove,
+>> +	.shutdown = enetc_pf_remove,
+>>   #ifdef CONFIG_PCI_IOV
+>>   	.sriov_configure = enetc_sriov_configure,
+>>   #endif
+>>
+>> on my DSA master driver. This is what the genet driver has "special".
+>>
 > 
-> They are ms and must be converted using to HZ in order to use the values as timer offsets.
+> Ah, that is interesting.
 > 
-> The values are perfectly fine, the types used to store them need to be fixed.
+>> I was led into grave error by Documentation/driver-api/device_link.rst,
+>> which I've based my patch on, where it clearly says that device links
+>> are supposed to help with shutdown ordering (how?!).
+>>
+>> So the question is, why did my DSA trees get torn down on shutdown?
+>> Basically the short answer is that my SPI controller driver does
+>> implement .shutdown, and calls the same code path as the .remove code,
+>> which calls spi_unregister_controller which removes all SPI children..
+>>
+>> When I added this device link, one of the main objectives was to not
+>> modify all DSA drivers. I was certain based on the documentation that
+>> device links would help, now I'm not so sure anymore.
+>>
+>> So what happens is that the DSA master attempts to unregister its net
+>> device on .shutdown, but DSA does not implement .shutdown, so it just
+>> sits there holding a reference (supposedly via dev_hold, but where from?!)
+>> to the master, which makes netdev_wait_allrefs to wait and wait.
+>>
 > 
->> Anyway, I am inclined to just mark the protocol as dependent on
->> !ALPHA. Would you accept that ?
+> Right, that was also my conclusion.
 > 
-> No, fix this properly.  Make the unsigfned char members be unsigned long.
+>> I need more time for the denial phase to pass, and to understand what
+>> can actually be done. I will also be away from the keyboard for the next
+>> few days, so it might take a while. Your patches obviously offer a
+>> solution only for KSZ switches, we need something more general. If I
+>> understand your solution, it works not by virtue of there being any
+>> shutdown ordering guarantee at all, but simply due to the fact that
+>> DSA's .shutdown hook gets called eventually, and the reference to the
+>> master gets freed eventually, which unblocks the unregister_netdevice
+>> call from the master.
 > 
-> Why do you not want to fix it this way?
+> Well actually the SPI shutdown hook gets called which then calls ksz9477_shutdown
+> (formerly ksz9477_reset_switch) which then shuts down the switch by
+> stopping the worker thread and tearing down the DSA tree (via dsa_tree_shutdown()).
 > 
+> While it is right that the patch series only fixes the KSZ case for now, the idea was that
+> other drivers could use a similar approach in by calling the new function dsa_tree_shutdown()
+> in their shutdown handler to make sure that all refs to the master device are released.
 
-All I want is to get alpha:allmodconfig to compile, nothing else,
-but at the same time I don't want to introduce new bugs.
+It does not scale really well to have individual drivers call 
+dsa_tree_shutdown() in their respective .shutdown callback, and in a 
+multi-switch configuration, I am not sure what the results would look like.
 
-If I make tx_delay unsigned long, it is still passed to encode_sixpack()
-as parameter, and that parameter is declared unsigned char and put into
-a byte sized buffer. If the value is 0x100, it will then be truncated to
-0x0, only that is then done silently without generating a compile error.
-Sure, that fixes the compile error, but not the underlying issue. Maybe
-that truncation is perfectly fine, but I don't understand the code well
-enough to make that call.
+In premise, each driver ought to be able to call 
+dsa_unregister_switch(), along with all of the driver specific shutdown 
+and eventually, given proper device ordering the DSA tree would get 
+automatically torn down, and then the DSA master's .shutdown() callback 
+would be called.
 
-Never mind, I'll let someone else who has a better understanding of the code
-deal with this.
-
-Guenter
+FWIW, the reason why we call .shutdown() in bcmgenet is to turn off DMA 
+and clocks, which matters for kexec (DMA) as well as power savings (S5 
+mode).
+-- 
+Florian
