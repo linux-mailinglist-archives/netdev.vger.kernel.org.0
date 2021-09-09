@@ -2,163 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EBD00404790
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 11:10:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78FF14047AE
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 11:23:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232511AbhIIJLQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 05:11:16 -0400
-Received: from mail.katalix.com ([3.9.82.81]:36716 "EHLO mail.katalix.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232344AbhIIJLP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Sep 2021 05:11:15 -0400
-Received: from localhost (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
-        (Authenticated sender: tom)
-        by mail.katalix.com (Postfix) with ESMTPSA id 5360D8CBD2;
-        Thu,  9 Sep 2021 10:10:05 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
-        t=1631178605; bh=S5cUewsLIelagEyliEJ6UyVWnsjw94B9J1KlcsX+IMU=;
-        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-         Content-Disposition:In-Reply-To:From;
-        z=Date:=20Thu,=209=20Sep=202021=2010:10:05=20+0100|From:=20Tom=20Pa
-         rkin=20<tparkin@katalix.com>|To:=20Xiyu=20Yang=20<xiyuyang19@fudan
-         .edu.cn>|Cc:=20"David=20S.=20Miller"=20<davem@davemloft.net>,=0D=0
-         A=09Jakub=20Kicinski=20<kuba@kernel.org>,=0D=0A=09Cong=20Wang=20<c
-         ong.wang@bytedance.com>,=0D=0A=09Randy=20Dunlap=20<rdunlap@infrade
-         ad.org>,=0D=0A=09Xin=20Xiong=20<xiongx18@fudan.edu.cn>,=0D=0A=09"G
-         ong,=20Sishuai"=20<sishuai@purdue.edu>,=0D=0A=09Matthias=20Schiffe
-         r=20<mschiffer@universe-factory.net>,=0D=0A=09Bhaskar=20Chowdhury=
-         20<unixbhaskar@gmail.com>,=20netdev@vger.kernel.org,=0D=0A=09linux
-         -kernel@vger.kernel.org,=20yuanxzhang@fudan.edu.cn,=0D=0A=09Xin=20
-         Tan=20<tanxin.ctf@gmail.com>|Subject:=20Re:=20[PATCH]=20net/l2tp:=
-         20Fix=20reference=20count=20leak=20in=20l2tp_udp_recv_core|Message
-         -ID:=20<20210909091005.GB7098@katalix.com>|References:=20<16311619
-         30-77772-1-git-send-email-xiyuyang19@fudan.edu.cn>=0D=0A=20<202109
-         09090156.GA7098@katalix.com>|MIME-Version:=201.0|Content-Dispositi
-         on:=20inline|In-Reply-To:=20<20210909090156.GA7098@katalix.com>;
-        b=LRYzfGSoRf6fB/e/lQHYCa23SUGzOBde3/9YnbI0WQMXywqDRj7mU7pb4xkgt0WfF
-         JpMp1S9iKNTgkXVufRC6XYCJ1e86Dc/6dchHFhfiYMBWc7Tcl+0vLPYp3B1Mx5WXbl
-         ppteHY5V4E/b2o1IRSbkCVbrNeFfqmvRBfMcSs6wYBMDxC7lR3CcGx4V/Wh7dJmEiT
-         qLVFLTYEJKCX2L1aZPV/YzroKquveEFg6aqddsxVOzHpwASFCFxFw55ARThiWAc/wJ
-         k+rU7BWc9IF58++/K3S/xJZRlqXskeoMkgr3hZ7zsrOjOAP0cOTEruNbIq11rcApxs
-         EtUlMqNHLAzDg==
-Date:   Thu, 9 Sep 2021 10:10:05 +0100
-From:   Tom Parkin <tparkin@katalix.com>
-To:     Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Xin Xiong <xiongx18@fudan.edu.cn>,
-        "Gong, Sishuai" <sishuai@purdue.edu>,
-        Matthias Schiffer <mschiffer@universe-factory.net>,
-        Bhaskar Chowdhury <unixbhaskar@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yuanxzhang@fudan.edu.cn, Xin Tan <tanxin.ctf@gmail.com>
-Subject: Re: [PATCH] net/l2tp: Fix reference count leak in l2tp_udp_recv_core
-Message-ID: <20210909091005.GB7098@katalix.com>
-References: <1631161930-77772-1-git-send-email-xiyuyang19@fudan.edu.cn>
- <20210909090156.GA7098@katalix.com>
+        id S232725AbhIIJYU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 05:24:20 -0400
+Received: from mail-eopbgr60071.outbound.protection.outlook.com ([40.107.6.71]:16515
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232262AbhIIJYS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Sep 2021 05:24:18 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TlfUBJzaf51KLzV3quvgkJ6ug5Gb0EP2UnXdVAa1JBQLByGlnXSpc3Wu70daE3N98otllXHd4QBcwuCmk8fw9o/bcNr/5TBXWhBwMesWcikr2e3+W1V3WsoofS3hIXEZ9jhcaYcfph1ZIrRYl06MKaMqsSe+ty3FaXCp5iTrqaTIWpBXfzkix24ifvmYvx6koYEv0KgC/ohBBkgwUMrpP2m+hsfXP23rN9H7IqEX8efDswKFa6c9a1uNmUhWmtFhAp6VKxSEEaNhEFm8wBUa0yHRtbvk8O/+8JBu8QI197rF/nLALYyHjDuJxGgDZOCFmOZ0htFDt7iJZcYhfsMX9A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
+ bh=dUStuCdpcsCKQemZ8w157CaHQvZ+LY+JxQEdui4Wryk=;
+ b=I1y4xiYxbLJaKKETmuy9wPTBhTQ1tXkPEko9Ntw7OulTYaDWinhtAjG21CYVFCASgxd2hfvct2q4DBEXxCZ/ESD0aUYlaBExibiX8iYurn9peZnAfG9QTylofdIhduVy5aO3wp0kTLd+l3I6eof1dS0WQ+Z497eS+P0aYTy81JwBPvVIKxHFcEoMi9k8GIol5lAixnAMGP0tOEd/3vRiAo4lQRWw2scZjixeAm7/HUyf35PPldzk2xpUBi1rgYy0x9xW7gj4RSVZPqlqmcFvtBFnguTfrIEA/Iq5foqBwO3EVR89cemoIeUKEOZtBzFuiEj4rrb0Se/rHKE5m4RrcQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dUStuCdpcsCKQemZ8w157CaHQvZ+LY+JxQEdui4Wryk=;
+ b=JYlz36tDkzGg2WQbvn5495/+ftprpV6N343CAKaBIuk0P7S37YjAuCtL+9CorF4mAMXKQ2S43R+XTBv8EP29bfheYvhxGnG0nNSEyd3ryodKR54tHSso6ENGJICzjDAQIu4kvv4kNjLuRnac5pgsQhVBv1KDMBADMFED+0wVH0I=
+Authentication-Results: st.com; dkim=none (message not signed)
+ header.d=none;st.com; dmarc=none action=none header.from=nxp.com;
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
+ by DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.14; Thu, 9 Sep
+ 2021 09:23:08 +0000
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::5d5a:30b0:2bc2:312f]) by DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::5d5a:30b0:2bc2:312f%9]) with mapi id 15.20.4500.017; Thu, 9 Sep 2021
+ 09:23:08 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net] net: stmmac: platform: fix build warning when with !CONFIG_PM_SLEEP
+Date:   Thu,  9 Sep 2021 17:23:22 +0800
+Message-Id: <20210909092322.19825-1-qiangqing.zhang@nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: SGAP274CA0020.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b6::32)
+ To DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="pvezYHf7grwyp3Bc"
-Content-Disposition: inline
-In-Reply-To: <20210909090156.GA7098@katalix.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (119.31.174.71) by SGAP274CA0020.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b6::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.14 via Frontend Transport; Thu, 9 Sep 2021 09:23:05 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5d0ba1d6-0ee8-40f9-c1a4-08d973736f73
+X-MS-TrafficTypeDiagnostic: DB8PR04MB6795:
+X-Microsoft-Antispam-PRVS: <DB8PR04MB6795F4217B6BA6C34C61F493E6D59@DB8PR04MB6795.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: U13lrVtTMp7PTwQV12bv+uz2FmWk2+Q0nI9RqMmUVMGhCmBx1qJXCFBlS4ViB06NFjRFl3V5MqKVq7tixSkoMeJGr2uirKwoqfkmjEL9rFctxOQDKcI7TiroQJbuDYTtdxY5HoWJBJLEmKSyQTi+f0QHAn7UV5fsAvj6l0xQpR9r1vsN64UPEgZVNKUINy5DgOFHv/YtFi9OSvVI5NwNCASBf+aoeOqmO8hj4fp/HFl8xH1FT7LL6vC0LbQjJqls5FMAJx3lHTzcOGqRzPz+d/aKG2pqaRMEBihFRxid1gErshl7PlPzQnx2V3KtW0MMmX2qgpj4pXHaZFBiS+FlBmu60vO85LI2pa7hw+R1x1YMGJZkgRqHIo7HxnkCbruOA2OXvcpjeWruTPEPGo6KNVwHrI/UkjgYY5GoUgrhkkbgfCSE2C7H1WJs1ccVVyO2fPRoTVUVMwCzDjxauTdzc3VQDlbzhoVwcKb4Mzip10Ljd3W0pXTmulymLRXiQFYsT0V7YuKLN+yBYsLAkc/D4o6mQRKQVnhaeRahCXJ8QcXVV+fNlCNvHZ/iXIa3pMIF04F8+5MEVD465xzdcvFrz7LH+4Twf89RZqwjAtSsFeU9FIQzisCvPHaJTe3KOecEdc6Wd+gqS5FCUmuTR9RadXUbfPqh+B6dB/aFtxVgFcJeutpnd3qcAEqLnQjln3irDESg65ZWMeaXcEQKQi63nw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(346002)(136003)(376002)(39860400002)(366004)(6512007)(38350700002)(8676002)(2616005)(38100700002)(5660300002)(956004)(36756003)(4326008)(1076003)(316002)(6506007)(52116002)(2906002)(26005)(186003)(83380400001)(86362001)(8936002)(6486002)(66556008)(66476007)(66946007)(478600001)(6666004);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?E1Z+er3EWfy12RdEUD3xq9m37ijO7i9v2diG/5iSz2t/g65R3ycTop7PkXXx?=
+ =?us-ascii?Q?Wq8qrJNVsfYLRnLmibGis99heVft/OCrupdX0YcQwjTifbmyxat261Iu6FaE?=
+ =?us-ascii?Q?PCBaA5xUNqBI1Oea9rBNYEFmK6w6BeAiPMyg0VZylIBrtzdI8lcLscU0tbcr?=
+ =?us-ascii?Q?ekBM3RHbq9ZMwmQhRpPSn1kAMNonh5CQKf791qvGmDA+mqTa+XaK1g3HFsZt?=
+ =?us-ascii?Q?LyhD4+GpCmSIUkjucoiGV8m4Q3jo7iFPdqiM701i6Tzor+6W2W2yG8triyqk?=
+ =?us-ascii?Q?d7gQ9MTF/hitwU+8YYTi9xbtrBPE/H1km2DTPaH7MfKqkAFFANUMWx8WNn8Q?=
+ =?us-ascii?Q?2iGNSw88M0It4RuwCqPdUOfhTKNCVFVCAZdaBTYwCYvdNw+l8jgQJ5prN+OP?=
+ =?us-ascii?Q?c2xeCFELQ+5AdfyKAdhCY4j0Wbqd2p4sL3jPDAMlYKMcl2L45+f6ABWblpii?=
+ =?us-ascii?Q?BAVaJTT5huwoI9vhZPi+b4SJKuEFB95KrKW350IvL6bBXWFg8/J5+CAdWQR1?=
+ =?us-ascii?Q?UTihjT/XpXEOaqT7Ylc+MIaqMoS557c6vEQNL3/kJq+4VWOuvbloPdMpypBc?=
+ =?us-ascii?Q?tIpleBL91ztAznufksERxbLBQtW4kusXB1EMtuMnCsn8aLehjfgu+7a11qEA?=
+ =?us-ascii?Q?w7MxFzrXM1oggd55ykp09A/gFyj4KzU03dBfTG1eSxfcQs40TAr0DWMpeSr8?=
+ =?us-ascii?Q?+cNovpXUQdCNXUOaztTvVU9O3J46S15agPfb0eKHSvikLoVHue4aj8ForO6j?=
+ =?us-ascii?Q?Ctr4mZ8Z2r6afLH4ZMAelALNXhLwLr5ECT4x5uqs3KpQc7pNGfe6QKqyLKiV?=
+ =?us-ascii?Q?/Azc/+h0x/9VWHxHMh0ugUdLD50LhXj2doOcwoR7Io51oSyAePZtWDfboUZG?=
+ =?us-ascii?Q?0fsrwjDqHyB37WBt8HNeXAaIbN7HUg4xXVCpFInNbmnc+Fw4zOEjAbaEnox1?=
+ =?us-ascii?Q?sr8ieA35fXuiT9A89mWYbzBmC38DSKlLxQqALxQ1LkmCLS+vag9Zo7hSPY6K?=
+ =?us-ascii?Q?br03v2tKp1K+9YxAbyWilnjMpjELEiI8LFFXSh/U+RaETmXhAESyAA78j9dv?=
+ =?us-ascii?Q?Mv7Qijvw3AJqdkG377flCLnfk2Ma1K1RgcTSRlPG8D4K14KCEV97502oK2zg?=
+ =?us-ascii?Q?zbUaPX74javl57ZPGFBCSnVIyQWqSAHZMLrqSJBW58ABWxHqTZymo4asEFcj?=
+ =?us-ascii?Q?e57rnxqJc3/gt2IeTLGdoGWYXTPsDnyvEhA00tNWDVkrxuDIHisAsH1jBW5i?=
+ =?us-ascii?Q?mi+r6g4WBOlgset3Ucgmlu/oXOFcJof8aKTb1AvGfiENrqWd4aHPcyu2X3dX?=
+ =?us-ascii?Q?xDabPDMPOxJZLUeV3+QlDWCl?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5d0ba1d6-0ee8-40f9-c1a4-08d973736f73
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Sep 2021 09:23:08.0495
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: NDJcGnHSQFH+SpHgtMxZsMDhabiCZXvKuNVHA4wnQG9IOme94fjV73hude4LGPXUCCTBts+9CnrQmTUGV6Qxzw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6795
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Use __maybe_unused for noirq_suspend()/noirq_resume() hooks to avoid
+build warning with !CONFIG_PM_SLEEP:
 
---pvezYHf7grwyp3Bc
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+>> drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c:796:12: error: 'stmmac_pltfr_noirq_resume' defined but not used [-Werror=unused-function]
+     796 | static int stmmac_pltfr_noirq_resume(struct device *dev)
+         |            ^~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c:775:12: error: 'stmmac_pltfr_noirq_suspend' defined but not used [-Werror=unused-function]
+     775 | static int stmmac_pltfr_noirq_suspend(struct device *dev)
+         |            ^~~~~~~~~~~~~~~~~~~~~~~~~~
+   cc1: all warnings being treated as errors
 
-On  Thu, Sep 09, 2021 at 10:01:56 +0100, Tom Parkin wrote:
-> On  Thu, Sep 09, 2021 at 12:32:00 +0800, Xiyu Yang wrote:
-> > The reference count leak issue may take place in an error handling
-> > path. If both conditions of tunnel->version =3D=3D L2TP_HDR_VER_3 and t=
-he
-> > return value of l2tp_v3_ensure_opt_in_linear is nonzero, the function
-> > would directly jump to label invalid, without decrementing the reference
-> > count of the l2tp_session object session increased earlier by
-> > l2tp_tunnel_get_session(). This may result in refcount leaks.
->=20
-> I agree with your analysis.  Thanks for catching this!
->=20
+Fixes: 276aae377206 ("net: stmmac: fix system hang caused by eee_ctrl_timer during suspend/resume")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Also: I forgot to mention I think this fixes:
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+index 4885f9ad1b1e..62cec9bfcd33 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+@@ -772,7 +772,7 @@ static int __maybe_unused stmmac_runtime_resume(struct device *dev)
+ 	return stmmac_bus_clks_config(priv, true);
+ }
+ 
+-static int stmmac_pltfr_noirq_suspend(struct device *dev)
++static int __maybe_unused stmmac_pltfr_noirq_suspend(struct device *dev)
+ {
+ 	struct net_device *ndev = dev_get_drvdata(dev);
+ 	struct stmmac_priv *priv = netdev_priv(ndev);
+@@ -793,7 +793,7 @@ static int stmmac_pltfr_noirq_suspend(struct device *dev)
+ 	return 0;
+ }
+ 
+-static int stmmac_pltfr_noirq_resume(struct device *dev)
++static int __maybe_unused stmmac_pltfr_noirq_resume(struct device *dev)
+ {
+ 	struct net_device *ndev = dev_get_drvdata(dev);
+ 	struct stmmac_priv *priv = netdev_priv(ndev);
+-- 
+2.17.1
 
-4522a70db7aa ("l2tp: fix reading optional fields of L2TPv3")
-
-> >=20
-> > Fix this issue by decrease the reference count before jumping to the
-> > label invalid.
-> >=20
-> > Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-> > Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
-> > Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
-> > ---
-> >  net/l2tp/l2tp_core.c | 4 +++-
-> >  1 file changed, 3 insertions(+), 1 deletion(-)
-> >=20
-> > diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
-> > index 53486b162f01..93271a2632b8 100644
-> > --- a/net/l2tp/l2tp_core.c
-> > +++ b/net/l2tp/l2tp_core.c
-> > @@ -869,8 +869,10 @@ static int l2tp_udp_recv_core(struct l2tp_tunnel *=
-tunnel, struct sk_buff *skb)
-> >  	}
-> > =20
-> >  	if (tunnel->version =3D=3D L2TP_HDR_VER_3 &&
-> > -	    l2tp_v3_ensure_opt_in_linear(session, skb, &ptr, &optr))
-> > +	    l2tp_v3_ensure_opt_in_linear(session, skb, &ptr, &optr)) {
-> > +		l2tp_session_dec_refcount(session);
-> >  		goto invalid;
-> > +	}
->=20
-> The error paths in l2tp_udp_recv_core are a bit convoluted because of
-> the check (!session || !session->recv_skb) which may or may not need
-> to drop a session reference if triggered.
->=20
-> I think it could be simplified since session->recv_skb is always set
-> for all the current session types in the tree, but doing that is probably
-> a little patch series on its own.
->=20
-> > =20
-> >  	l2tp_recv_common(session, skb, ptr, optr, hdrflags, length);
-> >  	l2tp_session_dec_refcount(session);
-> > --=20
-> > 2.7.4
-> >=20
->=20
-> --=20
-> Tom Parkin
-> Katalix Systems Ltd
-> https://katalix.com
-> Catalysts for your Embedded Linux software development
-
-
-
---=20
-Tom Parkin
-Katalix Systems Ltd
-https://katalix.com
-Catalysts for your Embedded Linux software development
-
---pvezYHf7grwyp3Bc
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEsUkgyDzMwrj81nq0lIwGZQq6i9AFAmE5z2wACgkQlIwGZQq6
-i9C4qQf/SOQ8IC/syT/vn7h1nvj8jVbE+ktHfMD5hsv2z3pumYBVIi+DnUfbwX+l
-l8/Hp9YSk2KjVdXuYBgRqgcJ0vD9wVIfoafXrr7pjAGkEiVx6SVVJbefobi18Pry
-Uyl18XFkc0j8I5DGfwdWWuKdy7Jx6eyVupvFfKOw79mqe5zmz2FnUmckcNdYnNSN
-IkzTEnuCvXrUQIVV+JiHRy4ef/psO50L1Lgb+cPeuZImpjuzFFwTYxN4Og2jsvKe
-Fg+7sRjxDajqSbVQQ680GhQYwp49d/5reVob1+Ssk4xcAG0QFNaATyUmjEj1iu5c
-vPBSzTLYbZEnxk1wnyjs2jEwHBm4mw==
-=aUD2
------END PGP SIGNATURE-----
-
---pvezYHf7grwyp3Bc--
