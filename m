@@ -2,273 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1FC04047C1
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 11:29:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4254A404818
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 11:54:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233004AbhIIJaZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 05:30:25 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:53740 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233080AbhIIJaX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 05:30:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1631179752;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/18NQOC3C5nIfaP3aKfDzGgqLFzNkkut1m2yMHPqSj0=;
-        b=EXqbTM51JznHYcr3PEPGcSoMerlepNcOWBB3qQ7c6hyjk1yxRvLmGnECTrzdZhNFnCvLoo
-        kLfdjiDXKBMvpa2l7dfhFHU2azWJy7jGJQoNEOva633GqsDIjjKnKY44Oz9gPtii5KRptP
-        uSnyNHzj0HTSTPBRro7a88Fo9QIuzBY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-283-3h9HhrHgOoW6-bQ-m3-zgQ-1; Thu, 09 Sep 2021 05:29:11 -0400
-X-MC-Unique: 3h9HhrHgOoW6-bQ-m3-zgQ-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D5B661030C20;
-        Thu,  9 Sep 2021 09:29:09 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.39.192.151])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3573D5C1D0;
-        Thu,  9 Sep 2021 09:29:07 +0000 (UTC)
-From:   =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
-To:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
-Subject: [PATCH net 2/2] sfc: last resort fallback for lack of xdp tx queues
-Date:   Thu,  9 Sep 2021 11:28:46 +0200
-Message-Id: <20210909092846.18217-3-ihuguet@redhat.com>
-In-Reply-To: <20210909092846.18217-1-ihuguet@redhat.com>
-References: <20210909092846.18217-1-ihuguet@redhat.com>
+        id S233501AbhIIJzJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 05:55:09 -0400
+Received: from mout.gmx.net ([212.227.17.21]:59647 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233181AbhIIJzH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Sep 2021 05:55:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1631181225;
+        bh=TyajP3TQHWCSO51l7ROYmJ+J3jJ3UVz8VcrVa8pQORg=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=MqqPi4cXk5xuygz7OEaR1/HLm5vz0ohwCR/hbiteIwo4vvt9pgmG/YnKPgCbDQQdA
+         KrFmGjRRTD8Y8VE3hjzt3AlG8fBQzkk0SEbXf8Az3wkfbzIJhWXvbg36VPqGjQslko
+         tVvLuKN1+o7nxeEarqoAP0IuVbka/zn7m+SdAvRo=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from Venus.fritz.box ([46.223.119.124]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1N79u8-1n0ZaX0DeO-017Uwp; Thu, 09
+ Sep 2021 11:53:45 +0200
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+To:     olteanv@gmail.com
+Cc:     p.rosenberger@kunbus.com, woojung.huh@microchip.com,
+        UNGLinuxDriver@microchip.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Subject: [PATCH 0/3] Fix for KSZ DSA switch shutdown
+Date:   Thu,  9 Sep 2021 11:53:21 +0200
+Message-Id: <20210909095324.12978-1-LinoSanfilippo@gmx.de>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Transfer-Encoding: base64
+X-Provags-ID: V03:K1:hEctqTOBs7LoknwP+wrUDjHT7rIXAsnPX8ZNsFHTOJ0x7gOnybW
+ wVjTrlD9IngF3bOVbU4O3ZKCWCG0QELQDfon0O0lBqpSfIHegVhy/Yskt3FTGRsPKaD8Qck
+ Oqwmod6kD/wdM6v+H1SQKuzDu7jkryUV2ByyAXPvJQswDy1TdrtgC5pfPosOhGbLdF45nRT
+ CxEDolLgXLnMhA9IPejMg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:bCXA2YNG7G8=:kikj125z90xM7GquRStpKL
+ tBlgYF+Gl7pZDCFNzh+9I80ir6qDR1F6vhDVuwpnvM6URRsBP78bgCVk5S49+jvNvp8h8v7tP
+ zg9kvFyUnGRYTKvDQrdtdUmHG98AfZ4DMI8tAMEJqhAC2NuulrOrbdC9Gs2WP47EDrXnlMAlV
+ gQCaWaYeHYJcUYUi8T9tHZnQFOlptP2LqynvPXY5kdN7QkFXy586cEVxuARimtnFXuVFMWRUw
+ hY5i3vR6WYF3bKN8FdOUWPqpoGT/Rk6tS2x3e8D9NOIn5MueGbujGJcYLTuDH6yxfugneQDOD
+ BwpJ76pxVpmmNBujji9aGy2+LdLjUL9cRoui/NzF2eGJ9AYWrtsyePs0g7WO1N9r7uag7auka
+ Qo0KeTW7tatYXHznnm9lEUWuT9msz5LxIjmPIBNPNGzNDrZD2+p39lpsjLaNx7s+RMAEdwTzG
+ Aw7sGTmR6Q3FvgfFammvNMq1pqI7Njj92C++s0MnOoTi1FIyaaugvdFURFvtYm9g7P5bm8gi9
+ h924NJINgJHnOzjZStQY19E0y4tvTSEB+PimMFmyEwnb3NJTYePNQlOlB/7BsFIA8lLEfR0Td
+ JCKKXnvSI880JWtUTPeamD2QXFzjX4oy0jYYei3ulchlW54nKWaK1vHpIU9VUjqXXU4/BN3fY
+ beq5lpWex+XImcYvh+13UpCHTUNfTxCyj9lZWMgowsNlrlt1tQyFzYc0VN8nx6gKkbC/uPJOv
+ 2uoDQs9ZEWo6jD9SCdnFEvtlStWk+ky+ZkICZv2M5WdbGaUPMf3z6i1W2nASLKedzUacZjxbz
+ 7BeWPv28WPTOV8CpBR63zI9e7l8a91EnT7NLp+rkCDpeRXs/r2vH2Y6K43RYshFKQN524DpOJ
+ EV9L+kY2IFq1JiIUp8Sx1x693f+/ccLQpzUwWAXV2aKSwo/oSEmTTmSpCPN0WZ1mxZk7JQT5K
+ gpVfSKvlERnevbfFEZC78fesU89Qe35NoNoQHmoEDt4D++S125UA/4j9pvKFdbxJKgFnhF2xZ
+ L1myNGN/492+RH4ZZPpJnv8H74fZoaJSU0URejN+gkJi0dkTgDwGrLkhF+5+uQsZBgHIpRPJX
+ odHftVWAU0QTsc=
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Previous patch addressed the situation of having some free resources for
-xdp tx but not enough for one tx queue per CPU. This patch address the
-worst case of not having resources at all for xdp tx.
-
-Instead of using queues dedicated to xdp, normal queues used by network
-stack are shared for both cases, using __netif_tx_lock for
-synchronization. Also queue stop/restart must be considered in the xdp
-path to avoid freezing the queue.
-
-This is not the ideal situation we might want to be, and a performance
-penalty is expected both for normal and xdp traffic, but at least XDP
-will work in all possible situations (with a warning in the logs),
-improving a bit the pain of not knowing in what situations we can use it
-and in what situations we cannot.
-
-Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
----
- drivers/net/ethernet/sfc/efx_channels.c | 82 ++++++++++++++-----------
- drivers/net/ethernet/sfc/net_driver.h   |  2 +-
- drivers/net/ethernet/sfc/tx.c           | 14 ++++-
- 3 files changed, 58 insertions(+), 40 deletions(-)
-
-diff --git a/drivers/net/ethernet/sfc/efx_channels.c b/drivers/net/ethernet/sfc/efx_channels.c
-index e7849f1260a1..3dbea028b325 100644
---- a/drivers/net/ethernet/sfc/efx_channels.c
-+++ b/drivers/net/ethernet/sfc/efx_channels.c
-@@ -167,19 +167,19 @@ static int efx_allocate_msix_channels(struct efx_nic *efx,
- 	 * This may be more pessimistic than it needs to be.
- 	 */
- 	if (n_channels >= max_channels) {
--		efx->xdp_txq_queues_mode = EFX_XDP_TX_QUEUES_DISABLED;
--		netif_err(efx, drv, efx->net_dev,
--			  "Insufficient resources for %d XDP event queues (%d other channels, max %d)\n",
--			  n_xdp_ev, n_channels, max_channels);
--		netif_err(efx, drv, efx->net_dev,
--			  "XDP_TX and XDP_REDIRECT will not work on this interface\n");
-+		efx->xdp_txq_queues_mode = EFX_XDP_TX_QUEUES_BORROWED;
-+		netif_warn(efx, drv, efx->net_dev,
-+			   "Insufficient resources for %d XDP event queues (%d other channels, max %d)\n",
-+			   n_xdp_ev, n_channels, max_channels);
-+		netif_warn(efx, drv, efx->net_dev,
-+			   "XDP_TX and XDP_REDIRECT might decrease device's performance\n");
- 	} else if (n_channels + n_xdp_tx > efx->max_vis) {
--		efx->xdp_txq_queues_mode = EFX_XDP_TX_QUEUES_DISABLED;
--		netif_err(efx, drv, efx->net_dev,
--			  "Insufficient resources for %d XDP TX queues (%d other channels, max VIs %d)\n",
--			  n_xdp_tx, n_channels, efx->max_vis);
--		netif_err(efx, drv, efx->net_dev,
--			  "XDP_TX and XDP_REDIRECT will not work on this interface\n");
-+		efx->xdp_txq_queues_mode = EFX_XDP_TX_QUEUES_BORROWED;
-+		netif_warn(efx, drv, efx->net_dev,
-+			   "Insufficient resources for %d XDP TX queues (%d other channels, max VIs %d)\n",
-+			   n_xdp_tx, n_channels, efx->max_vis);
-+		netif_warn(efx, drv, efx->net_dev,
-+			   "XDP_TX and XDP_REDIRECT might decrease device's performance\n");
- 	} else if (n_channels + n_xdp_ev > max_channels) {
- 		efx->xdp_txq_queues_mode = EFX_XDP_TX_QUEUES_SHARED;
- 		netif_warn(efx, drv, efx->net_dev,
-@@ -194,7 +194,7 @@ static int efx_allocate_msix_channels(struct efx_nic *efx,
- 		efx->xdp_txq_queues_mode = EFX_XDP_TX_QUEUES_DEDICATED;
- 	}
- 
--	if (efx->xdp_txq_queues_mode != EFX_XDP_TX_QUEUES_DISABLED) {
-+	if (efx->xdp_txq_queues_mode != EFX_XDP_TX_QUEUES_BORROWED) {
- 		efx->n_xdp_channels = n_xdp_ev;
- 		efx->xdp_tx_per_channel = tx_per_ev;
- 		efx->xdp_tx_queue_count = n_xdp_tx;
-@@ -205,7 +205,7 @@ static int efx_allocate_msix_channels(struct efx_nic *efx,
- 	} else {
- 		efx->n_xdp_channels = 0;
- 		efx->xdp_tx_per_channel = 0;
--		efx->xdp_tx_queue_count = 0;
-+		efx->xdp_tx_queue_count = n_xdp_tx;
- 	}
- 
- 	if (vec_count < n_channels) {
-@@ -872,6 +872,20 @@ int efx_realloc_channels(struct efx_nic *efx, u32 rxq_entries, u32 txq_entries)
- 	goto out;
- }
- 
-+static inline int
-+efx_set_xdp_tx_queue(struct efx_nic *efx, int xdp_queue_number,
-+		     struct efx_tx_queue *tx_queue)
-+{
-+	if (xdp_queue_number >= efx->xdp_tx_queue_count)
-+		return -EINVAL;
-+
-+	netif_dbg(efx, drv, efx->net_dev, "Channel %u TXQ %u is XDP %u, HW %u\n",
-+		  tx_queue->channel->channel, tx_queue->label,
-+		  xdp_queue_number, tx_queue->queue);
-+	efx->xdp_tx_queues[xdp_queue_number] = tx_queue;
-+	return 0;
-+}
-+
- int efx_set_channels(struct efx_nic *efx)
- {
- 	struct efx_tx_queue *tx_queue;
-@@ -910,20 +924,9 @@ int efx_set_channels(struct efx_nic *efx)
- 			if (efx_channel_is_xdp_tx(channel)) {
- 				efx_for_each_channel_tx_queue(tx_queue, channel) {
- 					tx_queue->queue = next_queue++;
--
--					/* We may have a few left-over XDP TX
--					 * queues owing to xdp_tx_queue_count
--					 * not dividing evenly by EFX_MAX_TXQ_PER_CHANNEL.
--					 * We still allocate and probe those
--					 * TXQs, but never use them.
--					 */
--					if (xdp_queue_number < efx->xdp_tx_queue_count) {
--						netif_dbg(efx, drv, efx->net_dev, "Channel %u TXQ %u is XDP %u, HW %u\n",
--							  channel->channel, tx_queue->label,
--							  xdp_queue_number, tx_queue->queue);
--						efx->xdp_tx_queues[xdp_queue_number] = tx_queue;
-+					rc = efx_set_xdp_tx_queue(efx, xdp_queue_number, tx_queue);
-+					if (rc == 0)
- 						xdp_queue_number++;
--					}
- 				}
- 			} else {
- 				efx_for_each_channel_tx_queue(tx_queue, channel) {
-@@ -932,6 +935,17 @@ int efx_set_channels(struct efx_nic *efx)
- 						  channel->channel, tx_queue->label,
- 						  tx_queue->queue);
- 				}
-+
-+				/* If XDP is borrowing queues from net stack, it must use the queue
-+				 * with no csum offload, which is the first one of the channel
-+				 * (note: channel->tx_queue_by_type is not initialized yet)
-+				 */
-+				if (efx->xdp_txq_queues_mode == EFX_XDP_TX_QUEUES_BORROWED) {
-+					tx_queue = &channel->tx_queue[0];
-+					rc = efx_set_xdp_tx_queue(efx, xdp_queue_number, tx_queue);
-+					if (rc == 0)
-+						xdp_queue_number++;
-+				}
- 			}
- 		}
- 	}
-@@ -940,19 +954,15 @@ int efx_set_channels(struct efx_nic *efx)
- 	WARN_ON(efx->xdp_txq_queues_mode != EFX_XDP_TX_QUEUES_DEDICATED &&
- 		xdp_queue_number > efx->xdp_tx_queue_count);
- 
--	/* If we have less XDP TX queues than CPUs, assign the already existing
--	 * queues to the exceeding CPUs (this means that we will have to use
--	 * locking when transmitting with XDP)
-+	/* If we have more CPUs than assigned XDP TX queues, assign the already
-+	 * existing queues to the exceeding CPUs
- 	 */
- 	next_queue = 0;
- 	while (xdp_queue_number < efx->xdp_tx_queue_count) {
- 		tx_queue = efx->xdp_tx_queues[next_queue++];
--		channel = tx_queue->channel;
--		netif_dbg(efx, drv, efx->net_dev, "Channel %u TXQ %u is XDP %u, HW %u\n",
--			  channel->channel, tx_queue->label,
--			  xdp_queue_number, tx_queue->queue);
--
--		efx->xdp_tx_queues[xdp_queue_number++] = tx_queue;
-+		rc = efx_set_xdp_tx_queue(efx, xdp_queue_number, tx_queue);
-+		if (rc == 0)
-+			xdp_queue_number++;
- 	}
- 
- 	rc = netif_set_real_num_tx_queues(efx->net_dev, efx->n_tx_channels);
-diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
-index e731c766f709..f6981810039d 100644
---- a/drivers/net/ethernet/sfc/net_driver.h
-+++ b/drivers/net/ethernet/sfc/net_driver.h
-@@ -785,7 +785,7 @@ struct efx_async_filter_insertion {
- enum efx_xdp_tx_queues_mode {
- 	EFX_XDP_TX_QUEUES_DEDICATED,	/* one queue per core, locking not needed */
- 	EFX_XDP_TX_QUEUES_SHARED,	/* each queue used by more than 1 core */
--	EFX_XDP_TX_QUEUES_DISABLED	/* xdp tx not available */
-+	EFX_XDP_TX_QUEUES_BORROWED	/* queues borrowed from net stack */
- };
- 
- /**
-diff --git a/drivers/net/ethernet/sfc/tx.c b/drivers/net/ethernet/sfc/tx.c
-index c7afd6cda902..d16e031e95f4 100644
---- a/drivers/net/ethernet/sfc/tx.c
-+++ b/drivers/net/ethernet/sfc/tx.c
-@@ -428,10 +428,8 @@ int efx_xdp_tx_buffers(struct efx_nic *efx, int n, struct xdp_frame **xdpfs,
- 	unsigned int len;
- 	int space;
- 	int cpu;
--	int i;
-+	int i = 0;
- 
--	if (unlikely(efx->xdp_txq_queues_mode == EFX_XDP_TX_QUEUES_DISABLED))
--		return -EINVAL;
- 	if (unlikely(n && !xdpfs))
- 		return -EINVAL;
- 	if (unlikely(!n))
-@@ -448,6 +446,15 @@ int efx_xdp_tx_buffers(struct efx_nic *efx, int n, struct xdp_frame **xdpfs,
- 	if (efx->xdp_txq_queues_mode != EFX_XDP_TX_QUEUES_DEDICATED)
- 		HARD_TX_LOCK(efx->net_dev, tx_queue->core_txq, cpu);
- 
-+	/* If we're borrowing net stack queues we have to handle stop-restart
-+	 * or we might block the queue and it will be considered as frozen
-+	 */
-+	if (efx->xdp_txq_queues_mode == EFX_XDP_TX_QUEUES_BORROWED) {
-+		if (netif_tx_queue_stopped(tx_queue->core_txq))
-+			goto unlock;
-+		efx_tx_maybe_stop_queue(tx_queue);
-+	}
-+
- 	/* Check for available space. We should never need multiple
- 	 * descriptors per frame.
- 	 */
-@@ -486,6 +493,7 @@ int efx_xdp_tx_buffers(struct efx_nic *efx, int n, struct xdp_frame **xdpfs,
- 	if (flush && i > 0)
- 		efx_nic_push_buffers(tx_queue);
- 
-+unlock:
- 	if (efx->xdp_txq_queues_mode != EFX_XDP_TX_QUEUES_DEDICATED)
- 		HARD_TX_UNLOCK(efx->net_dev, tx_queue->core_txq);
- 
--- 
-2.31.1
-
+VGhpcyBwYXRjaCBzZXJpZXMgZml4ZXMgYSBzeXN0ZW0gaGFuZyBJIGdvdCBlYWNoIHRpbWUgaSB0
+cmllZCB0byBzaHV0ZG93bgpvciByZWJvb3QgYSBzeXN0ZW0gdGhhdCB1c2VzIGEgS1NaOTg5NyBh
+cyBhIERTQSBzd2l0Y2ggd2l0aCBhIGJyb2FkY29tCkdFTkVUIG5ldHdvcmsgZGV2aWNlIGFzIHRo
+ZSBEU0EgbWFzdGVyIGRldmljZS4gQXQgdGhlIHRpbWUgdGhlIHN5c3RlbSBoYW5ncwp0aGUgbWVz
+c2FnZSAidW5yZWdpc3Rlcl9uZXRkZXZpY2U6IHdhaXRpbmcgZm9yIGV0aDAgdG8gYmVjb21lIGZy
+ZWUuIFVzYWdlCmNvdW50ID0gMi4iIGlzIGR1bXBlZCBwZXJpb2RpY2FsbHkgdG8gdGhlIGNvbnNv
+bGUuCgpBZnRlciBzb21lIGludmVzdGlnYXRpb24gSSBmb3VuZCB0aGUgcmVhc29uIHRvIGJlIHVu
+cmVsZWFzZWQgcmVmZXJlbmNlcyB0bwp0aGUgbWFzdGVyIGRldmljZSB3aGljaCBhcmUgc3RpbGwg
+aGVsZCBieSB0aGUgc2xhdmUgZGV2aWNlcyBhdCB0aGUgdGltZSB0aGUKc3lzdGVtIGlzIHNodXQg
+ZG93biAoSSBoYXZlIHR3byBzbGF2ZSBkZXZpY2VzIGluIHVzZSkuCgpXaGlsZSB0aGVzZSByZWZl
+cmVuY2VzIGFyZSBzdXBwb3NlZCB0byBiZSByZWxlYXNlZCBpbiBrc3pfc3dpdGNoX3JlbW92ZSgp
+CnRoaXMgZnVuY3Rpb24gbmV2ZXIgZ2V0cyB0aGUgY2hhbmNlIHRvIGJlIGNhbGxlZCBkdWUgdG8g
+dGhlIHN5c3RlbSBoYW5nIGF0CnRoZSBtYXN0ZXIgZGV2aWNlIGRlcmVnaXN0cmF0aW9uIHdoaWNo
+IGhhcHBlbnMgYmVmb3JlIGtzel9zd2l0Y2hfcmVtb3ZlKCkKaXMgY2FsbGVkLgoKVGhlIGZpeCBp
+cyB0byBtYWtlIHN1cmUgdGhhdCB0aGUgbWFzdGVyIGRldmljZSByZWZlcmVuY2VzIGFyZSBhbHJl
+YWR5CnJlbGVhc2VkIHdoZW4gdGhlIGRldmljZSBpcyB1bnJlZ2lzdGVyZWQuIEZvciB0aGlzIHJl
+YXNvbiBQQVRDSDEgcHJvdmlkZXMKYSBuZXcgZnVuY3Rpb24gZHNhX3RyZWVfc2h1dGRvd24oKSB0
+aGF0IGNhbiBiZSBjYWxsZWQgYnkgRFNBIGRyaXZlcnMgdG8KdW50ZWFyIHRoZSBEU0Egc3dpdGNo
+IGF0IHNodXRkb3duLiBQQVRDSDIgdXNlcyB0aGlzIGZ1bmN0aW9uIGluIGEgbmV3CmhlbHBlciBm
+dW5jdGlvbiBmb3IgS1NaIHN3aXRjaGVzIHRvIHByb3Blcmx5IHNodXRkb3duIHRoZSBLU1ogc3dp
+dGNoLgpQQVRDSCAzIHVzZXMgdGhlIG5ldyBoZWxwZXIgZnVuY3Rpb24gaW4gdGhlIEtTWjk0Nzcg
+c2h1dGRvd24gaGFuZGxlci4KClRoZXNlcyBwYXRjaGVzIGhhdmUgYmVlbiB0ZXN0ZWQgb24gYSBS
+YXNwYmVycnkgUEkgNS4xMCBrZXJuZWwgd2l0aCBhCktTWjk4OTcuIFRoZSBwYXRjaGVzIGhhdmUg
+YmVlbiBhZGp1c3RlZCB0byBhcHBseSBhZ2FpbnN0IG5ldC1uZXh0IGFuZCBhcmUKY29tcGlsZSB0
+ZXN0ZWQgd2l0aCBuZXh0LW5leHQuCgpMaW5vIFNhbmZpbGlwcG8gKDMpOgogIG5ldDogZHNhOiBp
+bnRyb2R1Y2UgZnVuY3Rpb24gZHNhX3RyZWVfc2h1dGRvd24oKQogIG5ldDogZHNhOiBtaWNyb2No
+aXA6IHByb3ZpZGUgdGhlIGZ1bmN0aW9uIGtzel9zd2l0Y2hfc2h1dGRvd24oKQogIG5ldDogZHNh
+OiBtaWNyb2NoaXA6IHRlYXIgZG93biBEU0EgdHJlZSBhdCBzeXN0ZW0gc2h1dGRvd24KCiBkcml2
+ZXJzL25ldC9kc2EvbWljcm9jaGlwL2tzejk0NzcuYyAgICB8IDEyICsrKysrKysrKysrLQogZHJp
+dmVycy9uZXQvZHNhL21pY3JvY2hpcC9rc3pfY29tbW9uLmMgfCAxMyArKysrKysrKysrKysrCiBk
+cml2ZXJzL25ldC9kc2EvbWljcm9jaGlwL2tzel9jb21tb24uaCB8ICAxICsKIGluY2x1ZGUvbmV0
+L2RzYS5oICAgICAgICAgICAgICAgICAgICAgIHwgIDEgKwogbmV0L2RzYS9kc2EyLmMgICAgICAg
+ICAgICAgICAgICAgICAgICAgfCAgOCArKysrKysrKwogNSBmaWxlcyBjaGFuZ2VkLCAzNCBpbnNl
+cnRpb25zKCspLCAxIGRlbGV0aW9uKC0pCgoKYmFzZS1jb21taXQ6IDYyNmJmOTFhMjkyZTIwMzVh
+ZjViOWQ5Y2NlMzVjNWMxMzhkZmUwNmQKLS0gCjIuMzMuMAoK
