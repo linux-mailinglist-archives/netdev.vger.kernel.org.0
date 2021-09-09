@@ -2,38 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33218404FE3
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:22:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18C27404FDD
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:22:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353551AbhIIMXT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 08:23:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57788 "EHLO mail.kernel.org"
+        id S1352882AbhIIMXN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 08:23:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57790 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1353061AbhIIMUM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1353059AbhIIMUM (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 9 Sep 2021 08:20:12 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CCFA46134F;
-        Thu,  9 Sep 2021 11:50:31 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 35D8061A89;
+        Thu,  9 Sep 2021 11:50:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631188232;
-        bh=Kw790umdX6yFtTkHkFCA1RpMD2ncwavpHbPzi7OuG+M=;
+        s=k20201202; t=1631188234;
+        bh=irqyFv88sOHnPHJmIZxNFsH3dUiHqespwnL0sn7K1eU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q7qwx8lv+oGrl5aAl2TbNxxw9m3Qy5IQyO/d6lwc0pjDMtIwGbSYzqvE5m+1PhlIO
-         97XiR2W3vraD8JT7V7jj6rWrdQFnBK65X14A7qcmUucrwGRTCHxAIMm1R+Nl8g8Zh1
-         201HunHIeKqDG7oCLGf49limrGkzCCPtToWWIPI4kwjb6G61+yUxPgvwByNWvnKarC
-         j8nEv/37tW67CaAKRHI5YY9eOE8hrSVojKtly0ykxLy1P72nch7SbSokIzEPNCxBgn
-         1GeTAKkj88YSGsVCILwRvsmqQkb+d2URl0yUhiw2ZUCo+kP9GnGCeC6kFI22jqS/Yg
-         HHx4gjHP4XCFg==
+        b=ssUGol4xSt4EwNz46/Bai1uL8AnuAU22waKYXzScE03xvG5gk9fiz4I7vB+sbCSBP
+         +GajHH+8lPltndLVhChGCiJqVlc1pwvuuot7Yw1BSIE9Q/6E8kSGjUKms4tRA8DcQE
+         0y5wemStj9D9vWCcLXkjbgoz4avCobZ3BsznWdWNj+G1GMWvEqHhFzi1SYnzD5Wyjl
+         AaruSsBVEEG0e0uWApu3Mgb5Kr65wUqCLDKC+trBKNcROfADSZuC+J6AfNf+oQacUK
+         2qnK9V9gZKS2xkCFOekfGQei41rbTZkuarmzwGT5/q/ZHqFu3BhmpBS1eatoAZDmI/
+         UU/4wy8mfKedQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yonglong Li <liyonglong@chinatelecom.cn>,
-        Geliang Tang <geliangtang@gmail.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        mptcp@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.13 184/219] mptcp: fix ADD_ADDR and RM_ADDR maybe flush addr_signal each other
-Date:   Thu,  9 Sep 2021 07:46:00 -0400
-Message-Id: <20210909114635.143983-184-sashal@kernel.org>
+Cc:     Li Zhijian <lizhijian@cn.fujitsu.com>,
+        kernel test robot <lkp@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.13 185/219] selftests/bpf: Enlarge select() timeout for test_maps
+Date:   Thu,  9 Sep 2021 07:46:01 -0400
+Message-Id: <20210909114635.143983-185-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909114635.143983-1-sashal@kernel.org>
 References: <20210909114635.143983-1-sashal@kernel.org>
@@ -45,76 +46,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yonglong Li <liyonglong@chinatelecom.cn>
+From: Li Zhijian <lizhijian@cn.fujitsu.com>
 
-[ Upstream commit 119c022096f5805680c79dfa74e15044c289856d ]
+[ Upstream commit 2d82d73da35b72b53fe0d96350a2b8d929d07e42 ]
 
-ADD_ADDR shares pm.addr_signal with RM_ADDR, so after RM_ADDR/ADD_ADDR
-has done, we should not clean ADD_ADDR/RM_ADDR's addr_signal.
+0Day robot observed that it's easily timeout on a heavy load host.
+-------------------
+ # selftests: bpf: test_maps
+ # Fork 1024 tasks to 'test_update_delete'
+ # Fork 1024 tasks to 'test_update_delete'
+ # Fork 100 tasks to 'test_hashmap'
+ # Fork 100 tasks to 'test_hashmap_percpu'
+ # Fork 100 tasks to 'test_hashmap_sizes'
+ # Fork 100 tasks to 'test_hashmap_walk'
+ # Fork 100 tasks to 'test_arraymap'
+ # Fork 100 tasks to 'test_arraymap_percpu'
+ # Failed sockmap unexpected timeout
+ not ok 3 selftests: bpf: test_maps # exit=1
+ # selftests: bpf: test_lru_map
+ # nr_cpus:8
+-------------------
+Since this test will be scheduled by 0Day to a random host that could have
+only a few cpus(2-8), enlarge the timeout to avoid a false NG report.
 
-Co-developed-by: Geliang Tang <geliangtang@gmail.com>
-Signed-off-by: Geliang Tang <geliangtang@gmail.com>
-Signed-off-by: Yonglong Li <liyonglong@chinatelecom.cn>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+In practice, i tried to pin it to only one cpu by 'taskset 0x01 ./test_maps',
+and knew 10S is likely enough, but i still perfer to a larger value 30.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Li Zhijian <lizhijian@cn.fujitsu.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Acked-by: Song Liu <songliubraving@fb.com>
+Link: https://lore.kernel.org/bpf/20210820015556.23276-2-lizhijian@cn.fujitsu.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mptcp/pm.c | 13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+ tools/testing/selftests/bpf/test_maps.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/mptcp/pm.c b/net/mptcp/pm.c
-index 9d00fa6d22e9..feecc3485c68 100644
---- a/net/mptcp/pm.c
-+++ b/net/mptcp/pm.c
-@@ -253,6 +253,7 @@ bool mptcp_pm_add_addr_signal(struct mptcp_sock *msk, unsigned int remaining,
- 			      struct mptcp_addr_info *saddr, bool *echo, bool *port)
- {
- 	int ret = false;
-+	u8 add_addr;
+diff --git a/tools/testing/selftests/bpf/test_maps.c b/tools/testing/selftests/bpf/test_maps.c
+index 51adc42b2b40..7fed68492a2e 100644
+--- a/tools/testing/selftests/bpf/test_maps.c
++++ b/tools/testing/selftests/bpf/test_maps.c
+@@ -968,7 +968,7 @@ static void test_sockmap(unsigned int tasks, void *data)
  
- 	spin_lock_bh(&msk->pm.lock);
- 
-@@ -267,7 +268,11 @@ bool mptcp_pm_add_addr_signal(struct mptcp_sock *msk, unsigned int remaining,
- 		goto out_unlock;
- 
- 	*saddr = msk->pm.local;
--	WRITE_ONCE(msk->pm.addr_signal, 0);
-+	if (*echo)
-+		add_addr = msk->pm.addr_signal & ~BIT(MPTCP_ADD_ADDR_ECHO);
-+	else
-+		add_addr = msk->pm.addr_signal & ~BIT(MPTCP_ADD_ADDR_SIGNAL);
-+	WRITE_ONCE(msk->pm.addr_signal, add_addr);
- 	ret = true;
- 
- out_unlock:
-@@ -279,6 +284,7 @@ bool mptcp_pm_rm_addr_signal(struct mptcp_sock *msk, unsigned int remaining,
- 			     struct mptcp_rm_list *rm_list)
- {
- 	int ret = false, len;
-+	u8 rm_addr;
- 
- 	spin_lock_bh(&msk->pm.lock);
- 
-@@ -286,16 +292,17 @@ bool mptcp_pm_rm_addr_signal(struct mptcp_sock *msk, unsigned int remaining,
- 	if (!mptcp_pm_should_rm_signal(msk))
- 		goto out_unlock;
- 
-+	rm_addr = msk->pm.addr_signal & ~BIT(MPTCP_RM_ADDR_SIGNAL);
- 	len = mptcp_rm_addr_len(&msk->pm.rm_list_tx);
- 	if (len < 0) {
--		WRITE_ONCE(msk->pm.addr_signal, 0);
-+		WRITE_ONCE(msk->pm.addr_signal, rm_addr);
- 		goto out_unlock;
- 	}
- 	if (remaining < len)
- 		goto out_unlock;
- 
- 	*rm_list = msk->pm.rm_list_tx;
--	WRITE_ONCE(msk->pm.addr_signal, 0);
-+	WRITE_ONCE(msk->pm.addr_signal, rm_addr);
- 	ret = true;
- 
- out_unlock:
+ 		FD_ZERO(&w);
+ 		FD_SET(sfd[3], &w);
+-		to.tv_sec = 1;
++		to.tv_sec = 30;
+ 		to.tv_usec = 0;
+ 		s = select(sfd[3] + 1, &w, NULL, NULL, &to);
+ 		if (s == -1) {
 -- 
 2.30.2
 
