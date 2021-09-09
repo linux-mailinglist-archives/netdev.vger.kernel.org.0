@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31E8F4052CA
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:49:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBF654052B6
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 14:49:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353545AbhIIMrH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 08:47:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57490 "EHLO mail.kernel.org"
+        id S1354069AbhIIMqd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 08:46:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57498 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1355154AbhIIMlo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1355158AbhIIMlo (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 9 Sep 2021 08:41:44 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3DAF161BF6;
-        Thu,  9 Sep 2021 11:55:14 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BE0D161BD0;
+        Thu,  9 Sep 2021 11:55:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631188515;
-        bh=KLdNNpiGulrcPlS+HcqvOs4Ctr1qIKhW0Dvj0QE4AhE=;
+        s=k20201202; t=1631188517;
+        bh=FYYmUAcosH6wJTlRB+8qa2A7eYG5KleotZPuCN4eOfY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GSSbrA/vI90fqWdJMX0cyv+LN97gNjsv4W4lvghox6ripSCm3MdVrQGWPAvOfo8xi
-         HDwP9efODduDQLwT3AhXQYg9A5KiRJzpIBRC9OBncT6HUy9tXz+WYtc9TvzObZYNLU
-         uw2nyhCNwlOJh2pRo+iCkwRlHKFxX0vCh2AWq1VzKEKKUJGnxqX8K/Xi+u4JTkKgkL
-         QVCofriSizlMfBYvecV2BXNIxP4Cd99bEOBMgS53LSWdcxo49u4LKfqs5M+cbW/BIT
-         ALebPom0+TuMkGQHgHOHJCuKBYYNZ7XFBiHaG0ivQyO2zfbLCLGnFa0FBML9IjVORp
-         ZxTjBVPR4ukzA==
+        b=nfJ9NKBlqsV+rCH92qyQNceOvaWxQMC02ciPfGACzk2KybmN7+x+rQpsv5CPOCFBc
+         jlpW4BxQMtBlohL5zX4BwVKcrHvAuT6GAwDpNcTfhEA58ac11zf1M7ME7N8K1/CfWZ
+         M5iAMr1xhSEs52SMi7VfLxu32uHAMW29a7XNh4C26Yz5oJxLmKQRgVn7gWEz7UNMYE
+         VOlEdX9zTdKgYrA3mOGW2jVh7sXJs4dSAUqtCWBNYsTjpO8vYdG0kJUjZmYTY9LFxp
+         Lc7vFboi23nC34Y1n992w5EQliAO6UiVZlm6ra1hmlNuhNNzD7OEfMtCUJqqN6FcjC
+         nM/4MHAMhRJZQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xin Long <lucien.xin@gmail.com>, Jon Maloy <jmaloy@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net
-Subject: [PATCH AUTOSEL 5.4 006/109] tipc: keep the skb in rcv queue until the whole data is read
-Date:   Thu,  9 Sep 2021 07:53:23 -0400
-Message-Id: <20210909115507.147917-6-sashal@kernel.org>
+Cc:     Stefan Assmann <sassmann@kpanic.de>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 008/109] iavf: do not override the adapter state in the watchdog task
+Date:   Thu,  9 Sep 2021 07:53:25 -0400
+Message-Id: <20210909115507.147917-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909115507.147917-1-sashal@kernel.org>
 References: <20210909115507.147917-1-sashal@kernel.org>
@@ -43,106 +44,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xin Long <lucien.xin@gmail.com>
+From: Stefan Assmann <sassmann@kpanic.de>
 
-[ Upstream commit f4919ff59c2828064b4156e3c3600a169909bcf4 ]
+[ Upstream commit 22c8fd71d3a5e6fe584ccc2c1e8760e5baefd5aa ]
 
-Currently, when userspace reads a datagram with a buffer that is
-smaller than this datagram, the data will be truncated and only
-part of it can be received by users. It doesn't seem right that
-users don't know the datagram size and have to use a huge buffer
-to read it to avoid the truncation.
+The iavf watchdog task overrides adapter->state to __IAVF_RESETTING
+when it detects a pending reset. Then schedules iavf_reset_task() which
+takes care of the reset.
 
-This patch to fix it by keeping the skb in rcv queue until the
-whole data is read by users. Only the last msg of the datagram
-will be marked with MSG_EOR, just as TCP/SCTP does.
+The reset task is capable of handling the reset without changing
+adapter->state. In fact we lose the state information when the watchdog
+task prematurely changes the adapter state. This may lead to a crash if
+instead of the reset task the iavf_remove() function gets called before
+the reset task.
+In that case (if we were in state __IAVF_RUNNING previously) the
+iavf_remove() function triggers iavf_close() which fails to close the
+device because of the incorrect state information.
 
-Note that this will work as above only when MSG_EOR is set in the
-flags parameter of recvmsg(), so that it won't break any old user
-applications.
+This may result in a crash due to pending interrupts.
+kernel BUG at drivers/pci/msi.c:357!
+[...]
+Call Trace:
+ [<ffffffffbddf24dd>] pci_disable_msix+0x3d/0x50
+ [<ffffffffc08d2a63>] iavf_reset_interrupt_capability+0x23/0x40 [iavf]
+ [<ffffffffc08d312a>] iavf_remove+0x10a/0x350 [iavf]
+ [<ffffffffbddd3359>] pci_device_remove+0x39/0xc0
+ [<ffffffffbdeb492f>] __device_release_driver+0x7f/0xf0
+ [<ffffffffbdeb49c3>] device_release_driver+0x23/0x30
+ [<ffffffffbddcabb4>] pci_stop_bus_device+0x84/0xa0
+ [<ffffffffbddcacc2>] pci_stop_and_remove_bus_device+0x12/0x20
+ [<ffffffffbddf361f>] pci_iov_remove_virtfn+0xaf/0x160
+ [<ffffffffbddf3bcc>] sriov_disable+0x3c/0xf0
+ [<ffffffffbddf3ca3>] pci_disable_sriov+0x23/0x30
+ [<ffffffffc0667365>] i40e_free_vfs+0x265/0x2d0 [i40e]
+ [<ffffffffc0667624>] i40e_pci_sriov_configure+0x144/0x1f0 [i40e]
+ [<ffffffffbddd5307>] sriov_numvfs_store+0x177/0x1d0
+Code: 00 00 e8 3c 25 e3 ff 49 c7 86 88 08 00 00 00 00 00 00 5b 41 5c 41 5d 41 5e 41 5f 5d c3 48 8b 7b 28 e8 0d 44
+RIP  [<ffffffffbbbf1068>] free_msi_irqs+0x188/0x190
 
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
-Acked-by: Jon Maloy <jmaloy@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+The solution is to not touch the adapter->state in iavf_watchdog_task()
+and let the reset task handle the state transition.
+
+Signed-off-by: Stefan Assmann <sassmann@kpanic.de>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/tipc/socket.c | 36 +++++++++++++++++++++++++++---------
- 1 file changed, 27 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/intel/iavf/iavf_main.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-index a5922ce9109c..231f9e1bf6bb 100644
---- a/net/tipc/socket.c
-+++ b/net/tipc/socket.c
-@@ -1756,6 +1756,7 @@ static int tipc_recvmsg(struct socket *sock, struct msghdr *m,
- 	bool connected = !tipc_sk_type_connectionless(sk);
- 	struct tipc_sock *tsk = tipc_sk(sk);
- 	int rc, err, hlen, dlen, copy;
-+	struct tipc_skb_cb *skb_cb;
- 	struct sk_buff_head xmitq;
- 	struct tipc_msg *hdr;
- 	struct sk_buff *skb;
-@@ -1779,6 +1780,7 @@ static int tipc_recvmsg(struct socket *sock, struct msghdr *m,
- 		if (unlikely(rc))
- 			goto exit;
- 		skb = skb_peek(&sk->sk_receive_queue);
-+		skb_cb = TIPC_SKB_CB(skb);
- 		hdr = buf_msg(skb);
- 		dlen = msg_data_sz(hdr);
- 		hlen = msg_hdr_sz(hdr);
-@@ -1798,18 +1800,33 @@ static int tipc_recvmsg(struct socket *sock, struct msghdr *m,
- 
- 	/* Capture data if non-error msg, otherwise just set return value */
- 	if (likely(!err)) {
--		copy = min_t(int, dlen, buflen);
--		if (unlikely(copy != dlen))
--			m->msg_flags |= MSG_TRUNC;
--		rc = skb_copy_datagram_msg(skb, hlen, m, copy);
-+		int offset = skb_cb->bytes_read;
-+
-+		copy = min_t(int, dlen - offset, buflen);
-+		rc = skb_copy_datagram_msg(skb, hlen + offset, m, copy);
-+		if (unlikely(rc))
-+			goto exit;
-+		if (unlikely(offset + copy < dlen)) {
-+			if (flags & MSG_EOR) {
-+				if (!(flags & MSG_PEEK))
-+					skb_cb->bytes_read = offset + copy;
-+			} else {
-+				m->msg_flags |= MSG_TRUNC;
-+				skb_cb->bytes_read = 0;
-+			}
-+		} else {
-+			if (flags & MSG_EOR)
-+				m->msg_flags |= MSG_EOR;
-+			skb_cb->bytes_read = 0;
-+		}
- 	} else {
- 		copy = 0;
- 		rc = 0;
--		if (err != TIPC_CONN_SHUTDOWN && connected && !m->msg_control)
-+		if (err != TIPC_CONN_SHUTDOWN && connected && !m->msg_control) {
- 			rc = -ECONNRESET;
-+			goto exit;
-+		}
- 	}
--	if (unlikely(rc))
--		goto exit;
- 
- 	/* Mark message as group event if applicable */
- 	if (unlikely(grp_evt)) {
-@@ -1832,9 +1849,10 @@ static int tipc_recvmsg(struct socket *sock, struct msghdr *m,
- 		tipc_node_distr_xmit(sock_net(sk), &xmitq);
- 	}
- 
--	tsk_advance_rx_queue(sk);
-+	if (!skb_cb->bytes_read)
-+		tsk_advance_rx_queue(sk);
- 
--	if (likely(!connected))
-+	if (likely(!connected) || skb_cb->bytes_read)
- 		goto exit;
- 
- 	/* Send connection flow control advertisement when applicable */
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
+index 94a3f000e999..3e76111af872 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_main.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+@@ -1961,7 +1961,6 @@ static void iavf_watchdog_task(struct work_struct *work)
+ 		/* check for hw reset */
+ 	reg_val = rd32(hw, IAVF_VF_ARQLEN1) & IAVF_VF_ARQLEN1_ARQENABLE_MASK;
+ 	if (!reg_val) {
+-		adapter->state = __IAVF_RESETTING;
+ 		adapter->flags |= IAVF_FLAG_RESET_PENDING;
+ 		adapter->aq_required = 0;
+ 		adapter->current_op = VIRTCHNL_OP_UNKNOWN;
 -- 
 2.30.2
 
