@@ -2,58 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF58040594D
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 16:41:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C55AE405909
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 16:30:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236784AbhIIOmT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 10:42:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47176 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239687AbhIIOmO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Sep 2021 10:42:14 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B8C9C0363C7;
-        Thu,  9 Sep 2021 07:05:38 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1mOKgF-0003zm-Hr; Thu, 09 Sep 2021 16:05:31 +0200
-Date:   Thu, 9 Sep 2021 16:05:31 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Salvatore Bonaccorso <carnil@debian.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        syzbot <syzbot+ce96ca2b1d0b37c6422d@syzkaller.appspotmail.com>,
-        coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
-        kadlec@netfilter.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        stable@vger.kernel.org, elbrus@debian.org
-Subject: Re: [syzbot] general protection fault in nft_set_elem_expr_alloc
-Message-ID: <20210909140531.GJ23554@breakpoint.cc>
-References: <000000000000ef07b205c3cb1234@google.com>
- <20210602170317.GA18869@salvia>
- <YTkj4xH2Ol075+Ge@eldamar.lan>
- <YTmnpquHt3+02t9k@kroah.com>
+        id S243429AbhIIOaa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 10:30:30 -0400
+Received: from mout.gmx.net ([212.227.17.20]:49729 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1343552AbhIIOaZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Sep 2021 10:30:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1631197743;
+        bh=SrzovyttAcKVSAtr6u9eRl2MdXd1NuR4UoArSDLLiKQ=;
+        h=X-UI-Sender-Class:Subject:From:To:Cc:References:Date:In-Reply-To;
+        b=J17L7qNjeek5mC3sR8ASfIMZ6BAt1lJzG1HzFMdkTfsxXhnXKJZ39qXqhyhzYe3WR
+         8ebXve9Z5pryBHo/+U+AuWZ0DlZXMBHMq829/gG9UyTgxwLgS1j9VSO0AU0wwpAxyT
+         Ms+JbNMqS1mAST+Ikk1+A/eRex90QbN87IIIP/eI=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.178.51] ([46.223.119.124]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1M2O2Q-1mMgLo434g-003vHN; Thu, 09
+ Sep 2021 16:29:03 +0200
+Subject: Re: [PATCH 0/3] Fix for KSZ DSA switch shutdown
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     p.rosenberger@kunbus.com, woojung.huh@microchip.com,
+        UNGLinuxDriver@microchip.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210909095324.12978-1-LinoSanfilippo@gmx.de>
+ <20210909101451.jhfk45gitpxzblap@skbuf>
+ <81c1a19f-c5dc-ab4a-76ff-59704ea95849@gmx.de>
+ <20210909114248.aijujvl7xypkh7qe@skbuf>
+ <20210909125606.giiqvil56jse4bjk@skbuf>
+ <trinity-85ae3f9c-38f9-4442-98d3-bdc01279c7a8-1631193592256@3c-app-gmx-bs01>
+Message-ID: <781fe00f-046f-28e2-0e23-ea34c1432fd5@gmx.de>
+Date:   Thu, 9 Sep 2021 16:29:00 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YTmnpquHt3+02t9k@kroah.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <trinity-85ae3f9c-38f9-4442-98d3-bdc01279c7a8-1631193592256@3c-app-gmx-bs01>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:ZIBNnfoGWY6mMPacP9U/QFdOPQ2ocSG3p43fN+MpQWVthy4sTYj
+ Hxw53BJXQBfgMSnbXC7OQSCerW8tcC5YtAryfF8mWylfF7rMP+Jc29NoWjP79BBCnVndbeY
+ OxgLNsBZlYEIj2SXYVMC/mC22/ZNIs0g8Eq0tIkSfeBniBJSLbX85kBn/KZsiB4mTMD5PQQ
+ Lf0EHoPlwpwjoUiIR0WGA==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:But/oxILJJE=:RemG3C2oL84Ni6Jt/sAgJs
+ g5DPkW19rjxT25H6Gs89+hR77GY0D4NPXtS1N9gxTOsKMUOeUxy2KKQQBgjQ2a8vra+hte9O1
+ BPhRi2b4dguMEiNtZqBX0UyC8TV6SlivfVD/sCj7YtW9kdoCxiq2tSXKyw5xNcnhD9h+DHxrs
+ btG9/Tm/z4K2hMNvrMaGzlZ9gH2C9KSqkzRq8bUdjE1PvcESOMXvjNZxanf6ThDDfbtgpvQxE
+ fWoCTBL6fOR22r+6NJjIieKaCe/PvJe1/y5wlQfiCAnrl7hgd7+eqKsdU2GaTf+lYtqnuusFa
+ bPVngmElF5ajvs2+e/Rq7MrjS4xlN1x+bQkCrSRyaSWXZkDo/8fuK8uMqmi3ORyqhg/0Rml+D
+ FCAXtHtIBVQFgrU1yR1IQVziA5eO4wmqPfYWv4VcX65LyS+sgJB/s1vhRm+fQOyJGS0wMoQV/
+ hMh/lBs4wewV5ZPr+2HfiO7yNwSwU1s7V/CurGLTOzwCggRdWh+e2XEq0f5w291EwtFOl7qox
+ jD+CctG9FHTLAVpXwptb5XceaE4OKzaRUyKgswJuVlei13OlkoKgJ79MCeWLIWl38O0hr+gE8
+ bE+F3ujdiAzm1znN158dyWFwhhbj1g05mKybDG+FXLaL2QDMAJsoAPPHzAnwJJtWfcQa7duPC
+ NOziqf7GPab4yV3bpDIcgmjkNuhiygxQeO3ob+XaGKiqz/yDDtKQzjBJG90/rthUouv20VblQ
+ ejZYnq52z9KiACjBVF5tNckjnhfSqTN58drDpL9balNterf08VG7vWyMvO8LYtiepnK5BFL08
+ Ebm+s9t92DdIKFm8CIWK8lFY3nDeXt9ZHDU2TwKzG1E4oVosIzqUFUqzFxw4K/Z35HZSkjqN4
+ V5qTPyP7yHDuHZ06e9TyPK4w+pqGc4uYrtF4sn0VOGdy0FxhAMfDTXerWyMUIBP91mmt7HnVU
+ P5rlbTTKl7F9GEJAAWRPXN5TBURSwayisuUFnJjBviwMAbXOx3sJ7cmf4/b/xZOUG2kpBEmos
+ NqyKF7FcPd8gYVKfZikNqfaI78hOyZmr/O/NPWgjj+xc7o74K7K8Rq6cMp1RwlTRihrEKT5hc
+ haeydXTKn4oWy0=
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greg KH <gregkh@linuxfoundation.org> wrote:
-> On Wed, Sep 08, 2021 at 10:58:11PM +0200, Salvatore Bonaccorso wrote:
-> > So if I see it correctly the fix landed in ad9f151e560b ("netfilter:
-> > nf_tables: initialize set before expression setup") in 5.13-rc7 and
-> > landed as well in 5.12.13. The issue is though still present in the
-> > 5.10.y series.
-> > 
-> > Would it be possible to backport the fix as well to 5.10.y? It is
-> > needed there as well.
-> 
-> I would need a working backport, as it does not apply cleanly to 5.10.y
-> :(
+On 09.09.21 at 15:19, Lino Sanfilippo wrote:
 
-Done, sent to stable@.
+>>
+>
+> The kernel I use is the Raspberry Pi 5.10 kernel. The commit number in t=
+his kernel is d0b97c8cd63e37e6d4dc9fefd6381b09f6c31a67
+>
+
+This is not correct. The kernel I use right now is based on Gregs stable l=
+inux-5.10.y.
+The commit number is correct here. Sorry for the confusion.
+
+Regards,
+Lino
