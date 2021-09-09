@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CE74405588
-	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 15:33:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E3DA3405724
+	for <lists+netdev@lfdr.de>; Thu,  9 Sep 2021 15:40:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354235AbhIINKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 09:10:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53480 "EHLO mail.kernel.org"
+        id S1353483AbhIINbU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 09:31:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53478 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1358416AbhIINHT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1358415AbhIINHT (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 9 Sep 2021 09:07:19 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 14864632AC;
-        Thu,  9 Sep 2021 12:00:37 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4BC46632A2;
+        Thu,  9 Sep 2021 12:00:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631188838;
-        bh=6woaAJNYbapAVX7efnvWQUPnidQjrilw2Bey6M517to=;
+        s=k20201202; t=1631188840;
+        bh=j61zGCSZwjnnJq+phWNgsDOdEeEvxw4PcG9RN09arIU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BF53y2EXloYBJvGtZBkxYmbkafyTKZsNLZc0NdWwWaXgF9b/r5QPCKFo3OSTB9Luz
-         rkkrZegLfqEU012P7oh8OF+fWyG3p0ROmfrxnmRyVhOUYI6J4dp2FHWd8QxmSlqgvw
-         JqT4fllHLx8HbQebl4KVSJoHQDsIY5GQCOHriYrEjkhvhdfM6p6vI/3wUKl76SwsCM
-         XoKWAnFLvNy2NT7otPhf+9N1rLd6S0XmGJ1gK9gilidLpSNkLNeG6v+3C/zgX3LQPo
-         AgwWx87RggR0ESPuNVXyxuz0Og3SOQfBdZIpSF3kb8s1+7SB5mcB47avdkwaaVKayN
-         UP2R0z74dRTWg==
+        b=Ik6L3w8PGXsOLevw/9SSqALiTrfamz8OvEN876AUQgeSmuoQSbVnG0xSLI9m7+jnz
+         6ZA1yHrf+C6QtMJJGZ3C7u7+qiEgsbHJ5cESfrGt1ecyvcIuS069p7U8yJhZ07uynU
+         e9xl3K61zuAcBMEZUn7iqYJOds4/efkF1ghhoK6c/2V8peTf9Dk9aoY64rtuefLF4Z
+         uPoi7d2wvjb7E1o9zEV0/+ERBIrxI6uTQsdbXmnId1C9OWkd9Mfj0HajgGstkL83/+
+         HQjFnOHIIg6O7bbU28yX3qRwWBvABfzUIiBlCXylBuX1S9Q/lUqd4dIDt6XTEhfXVE
+         C7BagRMzzJf0Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
         kernel test robot <lkp@intel.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 18/48] ipv4: ip_output.c: Fix out-of-bounds warning in ip_copy_addrs()
-Date:   Thu,  9 Sep 2021 07:59:45 -0400
-Message-Id: <20210909120015.150411-18-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 19/48] flow_dissector: Fix out-of-bounds warnings
+Date:   Thu,  9 Sep 2021 07:59:46 -0400
+Message-Id: <20210909120015.150411-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210909120015.150411-1-sashal@kernel.org>
 References: <20210909120015.150411-1-sashal@kernel.org>
@@ -45,24 +45,37 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "Gustavo A. R. Silva" <gustavoars@kernel.org>
 
-[ Upstream commit 6321c7acb82872ef6576c520b0e178eaad3a25c0 ]
+[ Upstream commit 323e0cb473e2a8706ff162b6b4f4fa16023c9ba7 ]
 
-Fix the following out-of-bounds warning:
+Fix the following out-of-bounds warnings:
 
-    In function 'ip_copy_addrs',
-        inlined from '__ip_queue_xmit' at net/ipv4/ip_output.c:517:2:
-net/ipv4/ip_output.c:449:2: warning: 'memcpy' offset [40, 43] from the object at 'fl' is out of the bounds of referenced subobject 'saddr' with type 'unsigned int' at offset 36 [-Warray-bounds]
-      449 |  memcpy(&iph->saddr, &fl4->saddr,
-          |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      450 |         sizeof(fl4->saddr) + sizeof(fl4->daddr));
-          |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    net/core/flow_dissector.c: In function '__skb_flow_dissect':
+>> net/core/flow_dissector.c:1104:4: warning: 'memcpy' offset [24, 39] from the object at '<unknown>' is out of the bounds of referenced subobject 'saddr' with type 'struct in6_addr' at offset 8 [-Warray-bounds]
+     1104 |    memcpy(&key_addrs->v6addrs, &iph->saddr,
+          |    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     1105 |           sizeof(key_addrs->v6addrs));
+          |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    In file included from include/linux/ipv6.h:5,
+                     from net/core/flow_dissector.c:6:
+    include/uapi/linux/ipv6.h:133:18: note: subobject 'saddr' declared here
+      133 |  struct in6_addr saddr;
+          |                  ^~~~~
+>> net/core/flow_dissector.c:1059:4: warning: 'memcpy' offset [16, 19] from the object at '<unknown>' is out of the bounds of referenced subobject 'saddr' with type 'unsigned int' at offset 12 [-Warray-bounds]
+     1059 |    memcpy(&key_addrs->v4addrs, &iph->saddr,
+          |    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     1060 |           sizeof(key_addrs->v4addrs));
+          |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    In file included from include/linux/ip.h:17,
+                     from net/core/flow_dissector.c:5:
+    include/uapi/linux/ip.h:103:9: note: subobject 'saddr' declared here
+      103 |  __be32 saddr;
+          |         ^~~~~
 
 The problem is that the original code is trying to copy data into a
 couple of struct members adjacent to each other in a single call to
-memcpy(). This causes a legitimate compiler warning because memcpy()
-overruns the length of &iph->saddr and &fl4->saddr. As these are just
-a couple of struct members, fix this by using direct assignments,
-instead of memcpy().
+memcpy().  So, the compiler legitimately complains about it. As these
+are just a couple of members, fix this by copying each one of them in
+separate calls to memcpy().
 
 This helps with the ongoing efforts to globally enable -Warray-bounds
 and get us closer to being able to tighten the FORTIFY_SOURCE routines
@@ -75,25 +88,39 @@ Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/ip_output.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ net/core/flow_dissector.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-index 3164bae4024a..589fd0904e0d 100644
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -393,8 +393,9 @@ static void ip_copy_addrs(struct iphdr *iph, const struct flowi4 *fl4)
- {
- 	BUILD_BUG_ON(offsetof(typeof(*fl4), daddr) !=
- 		     offsetof(typeof(*fl4), saddr) + sizeof(fl4->saddr));
--	memcpy(&iph->saddr, &fl4->saddr,
--	       sizeof(fl4->saddr) + sizeof(fl4->daddr));
-+
-+	iph->saddr = fl4->saddr;
-+	iph->daddr = fl4->daddr;
- }
+diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
+index 26b0f70d2f1c..6b04cbd00842 100644
+--- a/net/core/flow_dissector.c
++++ b/net/core/flow_dissector.c
+@@ -176,8 +176,10 @@ bool __skb_flow_dissect(const struct sk_buff *skb,
+ 							      FLOW_DISSECTOR_KEY_IPV4_ADDRS,
+ 							      target_container);
  
- /* Note: skb->sk can be different from sk, in case of tunnels */
+-			memcpy(&key_addrs->v4addrs, &iph->saddr,
+-			       sizeof(key_addrs->v4addrs));
++			memcpy(&key_addrs->v4addrs.src, &iph->saddr,
++			       sizeof(key_addrs->v4addrs.src));
++			memcpy(&key_addrs->v4addrs.dst, &iph->daddr,
++			       sizeof(key_addrs->v4addrs.dst));
+ 			key_control->addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
+ 		}
+ 
+@@ -216,8 +218,10 @@ bool __skb_flow_dissect(const struct sk_buff *skb,
+ 							      FLOW_DISSECTOR_KEY_IPV6_ADDRS,
+ 							      target_container);
+ 
+-			memcpy(&key_addrs->v6addrs, &iph->saddr,
+-			       sizeof(key_addrs->v6addrs));
++			memcpy(&key_addrs->v6addrs.src, &iph->saddr,
++			       sizeof(key_addrs->v6addrs.src));
++			memcpy(&key_addrs->v6addrs.dst, &iph->daddr,
++			       sizeof(key_addrs->v6addrs.dst));
+ 			key_control->addr_type = FLOW_DISSECTOR_KEY_IPV6_ADDRS;
+ 		}
+ 
 -- 
 2.30.2
 
