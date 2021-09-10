@@ -2,70 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C50C14068FC
-	for <lists+netdev@lfdr.de>; Fri, 10 Sep 2021 11:19:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B64D4068FF
+	for <lists+netdev@lfdr.de>; Fri, 10 Sep 2021 11:20:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232072AbhIJJU1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Sep 2021 05:20:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37570 "EHLO mail.kernel.org"
+        id S232056AbhIJJVT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Sep 2021 05:21:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37786 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231950AbhIJJU0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 10 Sep 2021 05:20:26 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id F1CFE60E54;
-        Fri, 10 Sep 2021 09:19:14 +0000 (UTC)
+        id S231984AbhIJJVR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 10 Sep 2021 05:21:17 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 538566101A;
+        Fri, 10 Sep 2021 09:20:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631265555;
-        bh=MMdXWy9QH0CzGaZwwChXTBW5lxYyYuHrr1/bvcKTO20=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=F8JcAKGjm89rFblCLpR+Tlttk8cyjZwZ6IjQe8rcKDaWLIChbb8lKu4LRiXkNu1zU
-         7zOvkS2atN/JENfcou79ze/peTxu7QZgJLtF+jFSb/8gveQ37vT5Vgbvq45iuQ033W
-         djHtyCbnG/3SqLCsUVHebjEfcBJrcW7jZrqHzQUqBYa0zFJFnuWbUP/gFnqBYZ9Jll
-         DhL12KibM5lY4NCLzoa/GxShPqNxTVqC239ao2kcG2jaIXzlm8M8Q/jyrYJ2VqzteH
-         qawRXAhIcj/lB/LQfkq6/HCr0/FmDeIPZaB32NBEnBLe+dapcpPM7mK8DUP7psSGC5
-         RbfwRSCRnqWqA==
-Date:   Fri, 10 Sep 2021 12:19:10 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Dave Ertman <david.m.ertman@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, yongxin.liu@windriver.com,
-        shiraz.saleem@intel.com, anthony.l.nguyen@intel.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jesse.brandeburg@intel.com, intel-wired-lan@lists.osuosl.org,
-        linux-rdma@vger.kernel.org, jgg@ziepe.ca
-Subject: Re: [PATCH RESEND net] ice: Correctly deal with PFs that do not
- support RDMA
-Message-ID: <YTsjDsFbBggL2X/8@unreal>
-References: <20210909151223.572918-1-david.m.ertman@intel.com>
+        s=k20201202; t=1631265606;
+        bh=TTnHjDM7hC2gqA+yHvVRiuvc2GFJfi+X+dpBc9bZjH0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=BwfRFk0pR3YBkml0lP3z8+rCtgRe1dGGS7eAu6tXRAP42tzgnpSaGwpGyKybnA8ZK
+         9eyGbK3o6EDqhn8YhB9Uju8ikO3mya1v16vyqOk9jYvU+RjWCIPTFtvtKwDOjJDelE
+         qzSL3ra/zhrNMNUt3C6zgLIf/yEvvETfvRyu9hVeKBFo2+qYGmPnWt7WsZ+IfWXG01
+         5DbbXgJNIam9aB1RbNCy4jscgcVeOioiITkBJPXFQ3XXDye6BcyRrDVK3WJQWQp1sg
+         DTuIwMg2/bmoyfvsoVeOlGM9zOsJ3T7Guvde7Nn5qPmvvv1pnJLhsiuOIF2F5xgRgw
+         2xpTwt5gGk2BA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 4685B609F8;
+        Fri, 10 Sep 2021 09:20:06 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210909151223.572918-1-david.m.ertman@intel.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net v2] qed: Handle management FW error
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163126560628.21841.13064285830398756933.git-patchwork-notify@kernel.org>
+Date:   Fri, 10 Sep 2021 09:20:06 +0000
+References: <20210910083356.17046-1-smalin@marvell.com>
+In-Reply-To: <20210910083356.17046-1-smalin@marvell.com>
+To:     Shai Malin <smalin@marvell.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        aelior@marvell.com, malin1024@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 09, 2021 at 08:12:23AM -0700, Dave Ertman wrote:
-> There are two cases where the current PF does not support RDMA
-> functionality.  The first is if the NVM loaded on the device is set
-> to not support RDMA (common_caps.rdma is false).  The second is if
-> the kernel bonding driver has included the current PF in an active
-> link aggregate.
+Hello:
+
+This patch was applied to netdev/net.git (refs/heads/master):
+
+On Fri, 10 Sep 2021 11:33:56 +0300 you wrote:
+> Handle MFW (management FW) error response in order to avoid a crash
+> during recovery flows.
 > 
-> When the driver has determined that this PF does not support RDMA, then
-> auxiliary devices should not be created on the auxiliary bus. 
+> Changes from v1:
+> - Add "Fixes tag".
+> 
+> Fixes: tag 5e7ba042fd05 ("qed: Fix reading stale configuration information")
+> Signed-off-by: Ariel Elior <aelior@marvell.com>
+> Signed-off-by: Shai Malin <smalin@marvell.com>
+> 
+> [...]
 
-This part is wrong, auxiliary devices should always be created, in your case it
-will be one eth device only without extra irdma device.
+Here is the summary with links:
+  - [net,v2] qed: Handle management FW error
+    https://git.kernel.org/netdev/net/c/20e100f52730
 
-Your "bug" is that you mixed auxiliary bus devices with "regular" ones
-and created eth device not as auxiliary one. This is why you are calling
-to auxiliary_device_init() for RDMA only and fallback to non-auxiliary mode.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-I hope that this is simple mistake while Intel folks rushed to merge irdma
-and not deliberate decision to find a way to support out-of-tree drivers.
 
-As a reminder, the whole idea of auxiliary bus is to have small,
-independent vendor driver core logic that manages capabilities and
-based on that creates/removes sub-devices (eth, rdma, vdpa ...), so
-driver core can properly load/unload their respective drivers.
-
-Thanks
