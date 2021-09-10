@@ -2,130 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5C7E40702C
-	for <lists+netdev@lfdr.de>; Fri, 10 Sep 2021 19:03:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A871E407034
+	for <lists+netdev@lfdr.de>; Fri, 10 Sep 2021 19:05:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231236AbhIJREk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Sep 2021 13:04:40 -0400
-Received: from mail-bn8nam12on2052.outbound.protection.outlook.com ([40.107.237.52]:47456
-        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231154AbhIJREj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 10 Sep 2021 13:04:39 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EA3bQYM4ywtFahryXuZwPJQJ+6dEwLy78K+W1fVfVIoagX2p0O61Nx0FY7oyLNe+A69biAfnNCFprkKx3CWlmlDYIbVEpD42EW5qQqCjmhdNDWlzXCeJE+0zw7FLb7hQcwEr/BH3Q1BJGlBkaHxNkmjLeaATi+cXO7q9Y3TGwTF9ENAtqYQO73Duh7Zr/OLEWQyMS2tDfWG/zVHTYsqGn/jVBAwKIYL2YDxyhvwd240SSeS3c1sCtqcKjCftGSmYGOBdIbHXz85neiDHXWuHtUmpS6FvMC+hB9oAH8B3aYzoIDkaS7QJc608GdoTFCC678fFZMmw02UiRGSJMTLk+Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=Qi4ljE1T+Q7qOsoXIFHPEdVJHZqPJT4AchhEKwhJw5w=;
- b=kbS6tg6u6tUv+R2wE3maqZDZX/j7Mi7ncONMO64me/PEKScNVUG5u4Jf4zVCVJXDXDwt8+Vw95jtbmnTUKmRvC2OWWynoA7+9r0GelAaxHzjTtnbRbQrg1F0AkY1kzQ/pAqD4sJGdTpjnBR0WcwY9CcufB2GH7AryKYQpWKjiTs2TzmEpvMMXZ6/iLwLC70LNT4ebIVB8RMRwwhuYwCK3zXac1VWDIUPvVVwGKGDQK1sm/eroUGn5iFdMV/Xzom+5icDh7k9gwFxSUr6+TDA7Wmjn85uRaLxpjMdOp0/zJ6/k88TIj0hjXy7xVJJ+xHCH1U1uiAOCHVPo5p5bGpDPw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
- dkim=pass header.d=silabs.com; arc=none
+        id S230513AbhIJRGZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Sep 2021 13:06:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36188 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229448AbhIJRGS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Sep 2021 13:06:18 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE667C061574;
+        Fri, 10 Sep 2021 10:05:06 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id q21so4279434ljj.6;
+        Fri, 10 Sep 2021 10:05:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Qi4ljE1T+Q7qOsoXIFHPEdVJHZqPJT4AchhEKwhJw5w=;
- b=PI7A/ZHZwNLJb2agfNqi3li6PPfLuBitkrzpWZjbPVAH/LDkXFFqxLoBBAiURLfIiQyKsC348bSXWXKtjYyxR7Q422+Gu0Gq897W3WmQQm9i2zrwJYpZcKYKRzYMY/UU6+/rP6XrsNVOHoKyMeiAXv3ODpI/qb2rG4uyVTr3prU=
-Authentication-Results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=silabs.com;
-Received: from SN6PR11MB2718.namprd11.prod.outlook.com (2603:10b6:805:63::18)
- by SA0PR11MB4734.namprd11.prod.outlook.com (2603:10b6:806:99::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.15; Fri, 10 Sep
- 2021 17:03:26 +0000
-Received: from SN6PR11MB2718.namprd11.prod.outlook.com
- ([fe80::7050:a0a:415:2ccd]) by SN6PR11MB2718.namprd11.prod.outlook.com
- ([fe80::7050:a0a:415:2ccd%7]) with mapi id 15.20.4500.017; Fri, 10 Sep 2021
- 17:03:26 +0000
-From:   =?ISO-8859-1?Q?J=E9r=F4me?= Pouiller <jerome.pouiller@silabs.com>
-To:     Kari Argillander <kari.argillander@gmail.com>
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=v2uHo0KL4tP8i7F5Ezn7qF1nuW399RUbWTYsco45lbE=;
+        b=Gh0rtBaEd97D+5SpIuEt2bCTCCw4UDFXm8Ymf2Sh0tn/rWqMUvhO7CDl/W/kgHOv11
+         rFotXtDOuMes+OhBWneyrv9LgUwGFNOQOFXqEN/9i/oBiyOGyM6j49ugH4Jxe6KmiUBi
+         X7naAqA/WJkuhzzVNwVncYFqkgd3CntmVdkLko3SV+KhSeX0+wBkFgvx7eXNLybM4JPh
+         3d3u23cA/wMPZWm4I50i3yvowNK4XgK30L+MDen5iHPECFyEanEbFrsX+HIoaJhzwuYE
+         Aq7IN/rKw0gR4IX4bTLJ9vs4zdhCt7kz3Ug70o+dfQo97khbQb2GRGCu5hhNPhxGCsgF
+         r/nw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=v2uHo0KL4tP8i7F5Ezn7qF1nuW399RUbWTYsco45lbE=;
+        b=5ZCY+hUA075vILh6C90/wztdFZaPDivO73C3zZczxKoqZRvLET5LDJjhkcrDUGvU4e
+         Vxg6edieYDBIaeW64N0wf73HgBPIgUXpRSDrX2/xEDPGV9EW6BPMI7i7OBdhlHPKnkfh
+         YwFwpk08lgmH/ZR1yc0MXDusx+SvN20o4sLdkBDlKCv4TaP1qSeZomDLR3cg7VT/H0qn
+         nWXw8BR8UA3mEetoWKemmLbeRbGlblzfneHxDhrgofUPaENz+FAHRgxpvF4y7zrk4O7/
+         z9RvfU6OJyIr9R6Y0o+vR3yhQttN7GTcIp+5o31G5a3TX0Q9QzmP9nDunk25O1Z89e3i
+         u5FA==
+X-Gm-Message-State: AOAM532PF+1qJIMfEzjvnmmDXfWKudMYiSlDe1XTXP5Vlzcl1Cwcr4yT
+        pDN9pGjaajL41LxdkiKM1uCTfL+dVWwBjw==
+X-Google-Smtp-Source: ABdhPJzYw419oOrtRsYCDIM2D1Cfjgfaqc/Oq/JMFlKMR88lfrIfVzm2rVNNT/3gy32wAVZCdFMqGw==
+X-Received: by 2002:a2e:bb85:: with SMTP id y5mr5045243lje.207.1631293505129;
+        Fri, 10 Sep 2021 10:05:05 -0700 (PDT)
+Received: from kari-VirtualBox ([31.132.12.44])
+        by smtp.gmail.com with ESMTPSA id h21sm608079lfv.273.2021.09.10.10.05.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Sep 2021 10:05:04 -0700 (PDT)
+Date:   Fri, 10 Sep 2021 20:05:03 +0300
+From:   Kari Argillander <kari.argillander@gmail.com>
+To:     =?utf-8?B?SsOpcsO0bWU=?= Pouiller <jerome.pouiller@silabs.com>
 Cc:     devel@driverdev.osuosl.org, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Kalle Valo <kvalo@codeaurora.org>,
         "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 13/31] staging: wfx: update with API 3.8
-Date:   Fri, 10 Sep 2021 19:03:21 +0200
-Message-ID: <1877189.TBeQGNYS2h@pc-42>
-Organization: Silicon Labs
-In-Reply-To: <20210910164326.ivhlbnaq6526wcso@kari-VirtualBox>
-References: <20210910160504.1794332-1-Jerome.Pouiller@silabs.com> <20210910160504.1794332-14-Jerome.Pouiller@silabs.com> <20210910164326.ivhlbnaq6526wcso@kari-VirtualBox>
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
-X-ClientProxiedBy: SA9PR03CA0009.namprd03.prod.outlook.com
- (2603:10b6:806:20::14) To SN6PR11MB2718.namprd11.prod.outlook.com
- (2603:10b6:805:63::18)
+Subject: Re: [PATCH 29/31] staging: wfx: remove useless comments after #endif
+Message-ID: <20210910170503.cnc2eri32v3bgo65@kari-VirtualBox>
+References: <20210910160504.1794332-1-Jerome.Pouiller@silabs.com>
+ <20210910160504.1794332-30-Jerome.Pouiller@silabs.com>
+ <20210910162718.tjcwwxtxbr3ugdgf@kari-VirtualBox>
+ <3556920.DX4m0svyV5@pc-42>
 MIME-Version: 1.0
-Received: from pc-42.localnet (2a01:e34:ecb5:66a0:9876:e1d7:65be:d294) by SA9PR03CA0009.namprd03.prod.outlook.com (2603:10b6:806:20::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.16 via Frontend Transport; Fri, 10 Sep 2021 17:03:24 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 552218db-10d8-4306-10c6-08d9747ce798
-X-MS-TrafficTypeDiagnostic: SA0PR11MB4734:
-X-Microsoft-Antispam-PRVS: <SA0PR11MB47340D497F57ACAB4B683D2293D69@SA0PR11MB4734.namprd11.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: JbzppeVj0/gybMTYBKH1RTNqskkeVdQZa5rA05MQdY0haUY98bbKCHRmBzGi6y8wFheuin/upN8DeFIL08s0C7Sl/AaGA8X7B3O7IF6G1ydO/P1OUYzEz3aW/6RaPNBXcc5ohlQwg6JO4zG98aApWqtkX8fIrwqIhsuYTG5bLUF+fEK+v4x7rXdvBWXmx7bDaQRxilvQPsdovdOtfWiavmkZKwXONEMQTtrLHuIFs1RX8j5mkuB/VwFPlGFdq534YzY9txvQVIJJBuE5enS8MMNi65uX1w2gSuCQ/kYZCU7VhZIn4nvmUHJzL+7jHRPeRXDcRt0NMjPWSu6ch5vtLe7rpkWIRjtGDOsdqcqGbXVJxswuLC377ZnhQAK7WjD3Q/xLe60/4t/OKMwodzBti5tZUP2ofBiYf9XkyoNl77d2iv0Ht38pl6aPdUuTflmsGvHi9GG6PYVYx1kC/+KT6GG5r8cATq8zqhSYxx2pqfFDDe9wllX3DoygSCcuZr/68G2veYD2HT4I7n3eeQyigyI3/dkON6/NkFuwxcpUZ1/qhI2d1gA20DcpkhfBXgve+MSRnoesngQaxoByN60lmpadTaP+UfHt0WF86ouVU0/cjPd21oOPHSNBmY/cDt8gdDGd+W/5Nmdrqe9WgwI0aA9uCRVEBcWsYx5ryWPTokA+BdWvKjYfL/wnaVPq3IBBjSTGVKBfHETnrTZZUhntsjHxfeJBHxWKHcxsDeGnYoYp1N27IShn/n5I18GamyDpq66/7CfZV9nPOmvfFSkO/A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB2718.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(366004)(376002)(136003)(396003)(39850400004)(316002)(6512007)(54906003)(38100700002)(8936002)(6916009)(66556008)(66946007)(6666004)(478600001)(5660300002)(66476007)(6506007)(2906002)(966005)(4744005)(33716001)(52116002)(36916002)(9686003)(4326008)(6486002)(8676002)(86362001)(186003)(39026012);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?AeAYX1vvr89pyAPIO79idsPoKzlpKAhzJ/nEH5yEsJtYM35dpe3UdmgFX/?=
- =?iso-8859-1?Q?aKHnLbvcgwvISwxehj5lH2GptvZJq/mw/xDPULba1Jwafu2H9JxTTmGheG?=
- =?iso-8859-1?Q?10CyrIXzagmUQJCFOHVlBfXYrlAk7jOJIcZj55F9O70XyP4nh/r9Zn6qmr?=
- =?iso-8859-1?Q?8LcVDhA4+6nqsdfHc6K7lLaB3//0frci/LwkJ6tn4a6lX+W/sAerRHcFvk?=
- =?iso-8859-1?Q?Je6qvSCF7v4XhQcSwTQje3y79D+dXN/YJwTRBFO/YWoBuxyuA18vVRliJ9?=
- =?iso-8859-1?Q?E/1FKobfXAkFjHWULlHIN3uQ0mE4oQR2wJNofud2aCOWnOVj0BfXvfVSAl?=
- =?iso-8859-1?Q?yLX8UnCCESrUWcP40E3Gm/4BgVeImhAmYR/bZE1t78NeZBID8YkFIt8x4w?=
- =?iso-8859-1?Q?8oqs1VKTt/A70cTL+vRlrmWlk0Hdf5qVTbV35TRXvAi/iDSVDKuS7/k/Ya?=
- =?iso-8859-1?Q?HeR24ayPcF1SSjebLazSNyOYYbVGTid79fpZvjzF7tTE8YoJz9Ekf3gjLS?=
- =?iso-8859-1?Q?bvhLU72kNvhXbZSoZFQ+KA2rZRKLMKNilHy6Oz3h9MlYMZqB7AoQq/hCmd?=
- =?iso-8859-1?Q?qXNWBlzyAl0kAUzG6iA4X8cuK6hSJQL11NDLsvZjHJyOtmzQrqQxWoa+UW?=
- =?iso-8859-1?Q?CSzqKqTrhTLiG6g6evwyktXVLKQ2BR1lIK2Q3GYh8XnSoIs8XMvJ9t7n89?=
- =?iso-8859-1?Q?zbD0Y8ocHY4fFE/ym1rJHWOtA3BI3CLbVYLuB/Z+TKrCCw6hSrrY9ytlN+?=
- =?iso-8859-1?Q?XXS9vUP9+Y+wDn0rjFMrOIQKq9IWSnzcDfC35ySmZHNI1h5aYYoUXRumyT?=
- =?iso-8859-1?Q?3PtMJjoH3siHlKfcHdRNJhB1BRwZTU2pU9Gn/krfbxIObpltnDVcr3koIQ?=
- =?iso-8859-1?Q?n/LKCcH8uEs9P6keRxr4U9NR6S0pXm7h/IYbS4Qzxl/+32R/8bVSOuV++J?=
- =?iso-8859-1?Q?k+dfpAg5hBDoG7iTPpW3SY+fMXVroKBgDahTx1UEiD8jFDRCZEPTfD2pjh?=
- =?iso-8859-1?Q?sUTTTwS4ubefaqF6uVQRNLXhrLOc8kXNcGPsKxVP6xdYtBez+tX9TQrk0O?=
- =?iso-8859-1?Q?A9PKkP0224/CAiVCZg+oF5Y+rITEQDE27RkFxwUP4iNZw/HIGGj88NzfP0?=
- =?iso-8859-1?Q?myD53DLjfOUgstq52/xYQ+xFftXXF64s3G0IUqIySUXSdlbxjAXzEGw5Ra?=
- =?iso-8859-1?Q?q2QRuWyC57bY5yKaYts+5XexdCBFBzCx2kK1UUbwQhfNNt9VMFL3xVb7+h?=
- =?iso-8859-1?Q?VL940RdFuWDMDwlBtM90OYLDSzQEKIcWFv+gqHKQZ1MBBM7ESunoVaRBB/?=
- =?iso-8859-1?Q?nYWTrEnt7MRwSOgt8FwZR3FwD1GL3QqE79rPFsfkAk3hHeCduAS7N5h7Eh?=
- =?iso-8859-1?Q?82DvbpNTqkOJPVSbqQN3X/q4u7UhHRpjQ6qTwuaHHbmWEhEr4eXnF3xATr?=
- =?iso-8859-1?Q?FLY7dCepQ5w6NhDn?=
-X-OriginatorOrg: silabs.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 552218db-10d8-4306-10c6-08d9747ce798
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB2718.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Sep 2021 17:03:26.0984
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 54dbd822-5231-4b20-944d-6f4abcd541fb
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: u5RQurcTgXqyfUnXbZ4emtBG4mwQ3Q5uOiMAe83aQ3UmLIlIfXo2YyHfGaWVOCsIB4xeBJYnhiX5U+r9aj/cVA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR11MB4734
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <3556920.DX4m0svyV5@pc-42>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Friday 10 September 2021 18:43:26 CEST Kari Argillander wrote:
->=20
-> On Fri, Sep 10, 2021 at 06:04:46PM +0200, Jerome Pouiller wrote:
-> > From: J=E9r=F4me Pouiller <jerome.pouiller@silabs.com>
-> >
-> > API 3.8 introduces new statistic counters. These changes are backward
-> > compatible.
->=20
-> It will be obvious to some what API 3.8 is. But at least me can rise my
-> hand and admit that I do not. Probably wfx api but ig there is any
-> public info but it here. If there is not just say Wfx api 3.8.
+On Fri, Sep 10, 2021 at 06:49:30PM +0200, Jérôme Pouiller wrote:
+> On Friday 10 September 2021 18:27:18 CEST Kari Argillander wrote:
+> > On Fri, Sep 10, 2021 at 06:05:02PM +0200, Jerome Pouiller wrote:
+> > > From: Jérôme Pouiller <jerome.pouiller@silabs.com>
+> > >
+> > > Comments after the last #endif of header files don't bring any
+> > > information and are redundant with the name of the file. Drop them.
+> > 
+> > How so? You see right away that this indeed is header guard and not some
+> > other random thing. Also kernel coding standard says:
+> > 
+> >         At the end of any non-trivial #if or #ifdef block (more than a
+> >         few line), place a comment after the #endif on the same line,
+> >         noting the conditional expression used.
+> > 
+> > There is no point dropping them imo. If you think about space saving
+> > this patch will take more space. Because it will be in version history.
+> > So nack from me unless some one can trun my head around.
+> 
+> IMHO, the #endif on the last line of an header file terminates a trivial
+> #ifdef block.
+> Moreover, they are often out-of-sync with the #ifndef statement, like here:
 
-Indeed. In add, it seems it is not documented in the release note of
-the firmware[1] :(. I am going to improve that.
+That one is of course true. 
 
-[1] https://github.com/SiliconLabs/wfx-firmware/blob/master/CHANGES.md
-
---=20
-J=E9r=F4me Pouiller
-
-
+> 
+> [...]
+> > > diff --git a/drivers/staging/wfx/key.h b/drivers/staging/wfx/key.h
+> > > index dd189788acf1..2d135eff7af2 100644
+> > > --- a/drivers/staging/wfx/key.h
+> > > +++ b/drivers/staging/wfx/key.h
+> > > @@ -17,4 +17,4 @@ int wfx_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
+> > >               struct ieee80211_vif *vif, struct ieee80211_sta *sta,
+> > >               struct ieee80211_key_conf *key);
+> > >
+> > > -#endif /* WFX_STA_H */
+> > > +#endif
+> [...]
+> 
+> -- 
+> Jérôme Pouiller
+> 
+> 
