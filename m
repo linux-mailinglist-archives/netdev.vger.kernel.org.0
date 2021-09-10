@@ -2,179 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27113406737
-	for <lists+netdev@lfdr.de>; Fri, 10 Sep 2021 08:28:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC2FE40676B
+	for <lists+netdev@lfdr.de>; Fri, 10 Sep 2021 08:55:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231252AbhIJG3j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Sep 2021 02:29:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34472 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231206AbhIJG3a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Sep 2021 02:29:30 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56C3AC061574;
-        Thu,  9 Sep 2021 23:28:20 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id g16so1045918wrb.3;
-        Thu, 09 Sep 2021 23:28:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=BEChKUpHUmXhTGEtZcd0x0DwjyIGrrpVYK+hpDQ+L/k=;
-        b=YhlEoJTSoEafgKpmxDwPRCClV7fs+0ObWNjO4p4XJgj/DZXUt8U5MjLL7KylgcpXZJ
-         sjTtX6gxgGzg0G0FZ6Py0pZeqMMVUhf1m67hGUYTFmtFvOAgcl6NOrhyrnIpv7cXo5kc
-         Qnyu7xToNTiZsZntVL8E0vyLVmhfZGl9z/gOcQKti1jTc3UyhvqiJCY0fklMSUoFxp2Q
-         BJ+j25X2zljxBrYdqJA119/hScwi3LCCwOXCr+u4Zlj8XaWshq8ryRHBhcTZa/alzgyG
-         HIS5VhsYv+rnFvu4g5RVR6BhUB1EPNnFwuTS02L5clCXMuHA+UEfZkEYBjYFN3L7oRWU
-         waLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=BEChKUpHUmXhTGEtZcd0x0DwjyIGrrpVYK+hpDQ+L/k=;
-        b=pNojfETUmds4eEeNI+a/SgMDcS7qT0zkGcAz1kg5DOoAuPvz+29CH9XmS+Dosbel+y
-         pQxdO2tdosAPqdCi7bW82RRjPeFgiBGwTttysXC8zVQ3dSqOoN4aXEdVGbi6a2Q4TQSy
-         zNUEvHIxis3IvCYyTCsOYDG8iBM3+vvOfTuKHfcroAvRe7ane180I7YLqQ9VXPGrtfKl
-         DMBh9xPWunwyWVnof0PAXuueJLJGQCeuioMVVOtnm7YVBb8KGqP9EnZhSU7jGHAGL3Qv
-         xVyCm0zuYx6hIOpUG1uwtoBUTTf9rhTr80mEifsVMAV5E0oFdMDLkAalbPIQuz+iaqz0
-         UNTg==
-X-Gm-Message-State: AOAM530w6Vr8WFtcaKuZD8sKcnhRQs8RCML0zxplYRyzfuyJ3Rn1D2Bm
-        Zl3sl9qdJhTQ1DCTnRWcZgENPRf5ObI=
-X-Google-Smtp-Source: ABdhPJxIIGGVU5DA0a69MXDVvABs5Pz2jNzE6lelZxBsSiXoDqdDNxhwoXFd4qMtbi0qZja9to+DFg==
-X-Received: by 2002:adf:fd8c:: with SMTP id d12mr7733884wrr.21.1631255298731;
-        Thu, 09 Sep 2021 23:28:18 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f08:4500:c9c:396a:4a57:ee58? (p200300ea8f0845000c9c396a4a57ee58.dip0.t-ipconnect.de. [2003:ea:8f08:4500:c9c:396a:4a57:ee58])
-        by smtp.googlemail.com with ESMTPSA id a6sm3364537wmb.7.2021.09.09.23.28.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 09 Sep 2021 23:28:18 -0700 (PDT)
-Subject: [PATCH 5/5] cxgb3: Remove seeprom_write and use VPD API
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Bjorn Helgaas <bhelgaas@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Raju Rangoju <rajur@chelsio.com>
-Cc:     "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <ba0b18a3-64d8-d72f-9e9f-ad3e4d7ae3b8@gmail.com>
-Message-ID: <a0291004-dda3-ea08-4d6c-a2f8826c8527@gmail.com>
-Date:   Fri, 10 Sep 2021 08:27:08 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S231290AbhIJG4z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Sep 2021 02:56:55 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:53982 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231223AbhIJG4x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Sep 2021 02:56:53 -0400
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 18A6svpK027003;
+        Thu, 9 Sep 2021 23:55:40 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type :
+ content-transfer-encoding : in-reply-to : mime-version; s=facebook;
+ bh=4alyeq5y6iX5fmLuzvmqZ1cdbDykScKeFA43YCDHJro=;
+ b=kiolNmJPlnwrp3Rv5faZsISjp76q+W1PjjdWX63zIDxqwo3wcVetCTqlj0Qs+3XEEQd9
+ FRcMdFS0ugoiuHaHLDvjjNYNiqAlyDJ0l1/osjhK+Lkwqs3DEeZjbubV91Cd1GRqQMj3
+ TA5DvG6Vd4JgzCJBVGd+BXofZXfVfJqU8so= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 3aytfxu354-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 09 Sep 2021 23:55:40 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.228) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.14; Thu, 9 Sep 2021 23:55:38 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=W1ScnhWt/t4JOmiFkFGe7x67KUC9lcY/6+5t3GxQMcgH+khRqw29XwYYwk4BK+bybaf59/yhBgF+p6xXHg9cLAxmUghyUixOQSI5ThzbbKw2sxJVhWfOSTZxQnH3XFXRcJ2cQ8sIxZ73r/yuUZo9M+N0ucAwhYO9fX5esZNYXiMxHBJfkqXi7fgfsAI1JjZGpa7Z1VDl10xK3+c+ADU5HmdLUmE+20u5XprcVEc2WMjhf+Hjwl2Gk6uve1yIZ2EpRJJO4c3AhhRWFn5BX0w3z1p3i6FdWrhobcDay+5iQCjH1WcUf/YbJxnNNvR1yzZSHpUfzro3OWfziEJ08/QaoQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
+ bh=+1aYR+EsRzeL1XCV/PU1nfRW0esIvta5cE4NZ/MI4q4=;
+ b=Yqi5i/e4KOP+LzQGjwnwy+XhDlsvCeh7VtodVXg+5l9f/VBDf1Y8EhK0X5+WvDWGapYIPb4+taRAWMZXhjKmwfn+11OQdbNhoFPicS6fG88m+Jp/c7yAEEAHw1kriG7cWIbeBEDktb8BpYVHy31lWPSAEYm1LGMwSkh8PEjqvhyheNbh2Z4wRf5dEdnZva2dqmoA0KBhmf8IoOpbnZuYrziZ0uWIHotJp/cMTFmedDdrW5H5I0TPIbCzUW5uhMhQcgJ0ZVhyezp46NdnlYcmtLGTC0QkYpr7VCQRKBiE6W6E8wxRsANWPMQbKS92DCPIPu8Pv1A/nQVZMFQsjBRgWQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Authentication-Results: redhat.com; dkim=none (message not signed)
+ header.d=none;redhat.com; dmarc=none action=none header.from=fb.com;
+Received: from SA1PR15MB5016.namprd15.prod.outlook.com (2603:10b6:806:1db::19)
+ by SA1PR15MB4323.namprd15.prod.outlook.com (2603:10b6:806:1ae::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.16; Fri, 10 Sep
+ 2021 06:55:38 +0000
+Received: from SA1PR15MB5016.namprd15.prod.outlook.com
+ ([fe80::3c1b:1a10:9708:7e36]) by SA1PR15MB5016.namprd15.prod.outlook.com
+ ([fe80::3c1b:1a10:9708:7e36%8]) with mapi id 15.20.4500.017; Fri, 10 Sep 2021
+ 06:55:38 +0000
+Date:   Thu, 9 Sep 2021 23:55:35 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+CC:     John Fastabend <john.fastabend@gmail.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Cong Wang <cong.wang@bytedance.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Subject: Re: [RFC Patch net-next] net_sched: introduce eBPF based Qdisc
+Message-ID: <20210910065535.vtwafxy2a7boipqg@kafai-mbp.dhcp.thefacebook.com>
+References: <20210824234700.qlteie6al3cldcu5@kafai-mbp>
+ <CAM_iQpWP_kvE58Z+363n+miTQYPYLn6U4sxMKVaDvuRvjJo_Tg@mail.gmail.com>
+ <612f137f4dc5c_152fe20891@john-XPS-13-9370.notmuch>
+ <871r68vapw.fsf@toke.dk>
+ <20210901174543.xukawl7ylkqzbuax@kafai-mbp.dhcp.thefacebook.com>
+ <871r66ud8y.fsf@toke.dk>
+ <613136d0cf411_2c56f2086@john-XPS-13-9370.notmuch>
+ <87bl5asjdj.fsf@toke.dk>
+ <20210902233510.gnimg2krwwkzv4f2@kafai-mbp.dhcp.thefacebook.com>
+ <87zgstra6j.fsf@toke.dk>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <87zgstra6j.fsf@toke.dk>
+X-ClientProxiedBy: MWHPR20CA0012.namprd20.prod.outlook.com
+ (2603:10b6:300:13d::22) To SA1PR15MB5016.namprd15.prod.outlook.com
+ (2603:10b6:806:1db::19)
 MIME-Version: 1.0
-In-Reply-To: <ba0b18a3-64d8-d72f-9e9f-ad3e4d7ae3b8@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:28fd) by MWHPR20CA0012.namprd20.prod.outlook.com (2603:10b6:300:13d::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.14 via Frontend Transport; Fri, 10 Sep 2021 06:55:37 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 68f886fc-f7bf-4e83-edb4-08d97427fee2
+X-MS-TrafficTypeDiagnostic: SA1PR15MB4323:
+X-Microsoft-Antispam-PRVS: <SA1PR15MB4323CD759CDE024C1B47AC3FD5D69@SA1PR15MB4323.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: pzjTz/oRwSwsDM1pxDzi7YIB/RiIdN346X0ZKZj1k4TujDGFPoRXZQ1MFFpEDbULLShHHWwxhmfQT2w0u1zKBPJKPL+dx7tBguFUBkcFcgwSC4UkaacK8ieAjxvLE5g/Y9FLg9/tMkqX9OdLmhhcGdhsKbIDyjT2MNIWm5Xrfwzq+p4hDaFOdHrFD9W7+PWgLZFNxZHMxrfv6hXufPbTSk3Vs1HjdnZ/lxP+x+auGb/LoP4ti+WUI09QlWOnNFeQ4gFFfgQODUEb0xZcHBPrqrOpoD3GlSV03P8hWAaVfJtl6/b7+UjTr9XvON0dVtH760jyCueSNWeASsKX6zQH+5PB4d5g1ELryRwMJUk03vhRDTtAztOk//KPyUPfmq/wRgd12delkYZmqVTcZSE9UlRMzj9Upjxwkjdrg07t1tBmcfESdw+LDaB48PGgmUNIXtMDvclOuMhTo4kZ7BK05VQuPgNx2pySq/TWYz8FZbg5UG7aSql1eUOA2do5ibC8YJ71jOFz291i2FHQ9avZwRO0nKqGqS/+4JNz/BdJjB+kbNNLDgNFRv8hGOJARjB56SN47SROcSGNBgcpVWKh0IjzCR3HrVdyma2W0lS1ihnk0fc2Cn0EZtD0liW4I4BrAhr//A8Sazs4uf5WK8QXAA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5016.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(366004)(39860400002)(346002)(396003)(136003)(2906002)(83380400001)(7696005)(66476007)(5660300002)(6506007)(52116002)(8936002)(66556008)(9686003)(6916009)(8676002)(316002)(38100700002)(86362001)(4326008)(55016002)(1076003)(186003)(54906003)(66946007)(478600001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?LObRl3cDnbjwbkPeK1FsbpnXXyPbpjihzXNhP1Amcmt1ZGU4L6GZUv9FCV?=
+ =?iso-8859-1?Q?9TzIE1dwBEyus19hZ+mz/M2nEiSDLQGpTeE0e60/cQYG5O88OxD3UScu6F?=
+ =?iso-8859-1?Q?5sYmP6Ru9nPWZl1Glc/7y+G7CHQVkp6XpXObla01QvKO/H/G6K7KK+ovF3?=
+ =?iso-8859-1?Q?dr7X0HZkn90NDXTuuMJzSli/6SaFPLdLDIJVtPSKEZauUgEVnndLTRXykY?=
+ =?iso-8859-1?Q?DwuBNmtlkljDfolqUziTHfhJn5r7uTec1l1tKQjPZKRwFq57vvJTPzUZyM?=
+ =?iso-8859-1?Q?LEyql9CNHdnIQsnoive69s5kFSmbGS+FT72OCPjf8WEqzV1PYFQz53PA3F?=
+ =?iso-8859-1?Q?o8a3AEzZ6xMXb6JkTUCXYprL4D4NoAzpMVqN7bYeany8jiRPe/Pd+kWf6b?=
+ =?iso-8859-1?Q?XSecoMY3xpozsixN/JGd1Zpl0LoHNSTwCgr7bbXMUSp2pJatvN89Hs/f8I?=
+ =?iso-8859-1?Q?sPQ/bM57Jc3P9RhYgnlB3tmj94gnoK+qU+NI2+KaMbNzXYCl4KRt6ckBbe?=
+ =?iso-8859-1?Q?v0jYetU88dC1/7iwIEuZBwgmFq5kICyVMNab+GN06gV9IbmG0wWKvPW/fN?=
+ =?iso-8859-1?Q?NpFOf64QGgnB4pYf7dCRN5LBSLPTC49fHYcfDBrT/x13+EqOGkjWpZDKtJ?=
+ =?iso-8859-1?Q?l2lWW+0tbMM1dE/zCsOzVxNwyx0aAaLHAPpTunKCir+EHBDw9irvbw8JUT?=
+ =?iso-8859-1?Q?jBOVU/Po9yobANHKxTHOdGSfi2skasoI8QLF/F99h80wa6Er5AZ/3x4Y6J?=
+ =?iso-8859-1?Q?nSsBHymC9hQdSCB7ROIDetPYfRuOiaJmGgnpKSkd6kwjRy+YqVJMRyu4Y1?=
+ =?iso-8859-1?Q?utTDA6/SAF2CEk1UEV+9ypQxy3icNly7emZfLRKNI4rzj5fhkCJRbuyPhT?=
+ =?iso-8859-1?Q?M58MqfwO2K01dusYqo/N4IBzT9RLr3v5MlRgcbfe8jyDB6lzyPXVYF8sPw?=
+ =?iso-8859-1?Q?/sdkwOEixZ8aXDDXyHjyj7JAsNf6CD1nF8Y/j9axz5wqeTxhD7VEsLawCP?=
+ =?iso-8859-1?Q?NiUPQR2SQ5CEpvWIISCN8SW6Bcj5S5GZGPSX6zZyykOnGfA4DecjspyUNx?=
+ =?iso-8859-1?Q?YQO0mOHtYeZFZw2sdYWjsKGbvn+B/+kBUd55WTB/OuuyoE78iSLTJUZUYY?=
+ =?iso-8859-1?Q?z7WvuZCgAJ7hkguwqX4L9FMXc30sOa+RA9WlE6Acjwrhy68MpsrdQpUnK4?=
+ =?iso-8859-1?Q?ixHDBiyMQRQ4WNtyeGhKn9MIobv42BoDW7iBvkMBEO51Onroyn1u0Q4Fqc?=
+ =?iso-8859-1?Q?z/rgG+IaeGZGarqOksRDBX9mwpUMzexp7wX3J1grJFxZztF9uS0TV5wq2I?=
+ =?iso-8859-1?Q?TWfqNEl8zTIs31CEuPqfhkAjIFDezfpZ3rwhC2Xv78KvAM5EYKSgal8Zs0?=
+ =?iso-8859-1?Q?BwyCsXuBCvrf+vv97TBK4OHdKd5PE2hA=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 68f886fc-f7bf-4e83-edb4-08d97427fee2
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5016.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Sep 2021 06:55:38.0627
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: J8r3nnYxrbuO4NYwhRyarqdHvSEn65wcl9YBmhgyw/wYdGXD+bW1ZKBeErLkLNiF
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR15MB4323
+X-OriginatorOrg: fb.com
+X-Proofpoint-GUID: KUu_PvAivm7XzJEz3tGuuIsH_4aQcDnW
+X-Proofpoint-ORIG-GUID: KUu_PvAivm7XzJEz3tGuuIsH_4aQcDnW
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-09-10_02:2021-09-09,2021-09-10 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
+ bulkscore=0 clxscore=1015 adultscore=0 impostorscore=0 priorityscore=1501
+ phishscore=0 mlxscore=0 malwarescore=0 spamscore=0 lowpriorityscore=0
+ mlxlogscore=756 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2109030001 definitions=main-2109100042
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Using the VPD API allows to simplify the code and completely get
-rid of t3_seeprom_write().
+On Fri, Sep 03, 2021 at 04:44:04PM +0200, Toke Høiland-Jørgensen wrote:
+> Martin KaFai Lau <kafai@fb.com> writes:
+> 
+> > On Fri, Sep 03, 2021 at 12:27:52AM +0200, Toke Høiland-Jørgensen wrote:
+> >> >> The question is if it's useful to provide the full struct_ops for
+> >> >> qdiscs? Having it would allow a BPF program to implement that interface
+> >> >> towards userspace (things like statistics, classes etc), but the
+> >> >> question is if anyone is going to bother with that given the wealth of
+> >> >> BPF-specific introspection tools already available?
+> > Instead of bpftool can only introspect bpf qdisc and the existing tc
+> > can only introspect kernel qdisc,  it will be nice to have bpf
+> > qdisc work as other qdisc and showing details together with others
+> > in tc.  e.g. a bpf qdisc export its data/stats with its btf-id
+> > to tc and have tc print it out in a generic way?
+> 
+> I'm not opposed to the idea, certainly. I just wonder if people who go
+> to the trouble of writing a custom qdisc in BPF will feel it's worth it
+> to do the extra work to make this available via a second API. We could
+> certainly encourage it, and some things are easy (drop and pkt counters,
+> etc), but other things (like class stats) will depend on the semantics
+> of the qdisc being implemented, so will require extra work from the BPF
+> qdisc developer...
+Right, different qdisc has different stats, I think it is currently
+stored in qdisc_priv()?  When a qdisc is created, a separate priv is
+created together.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/chelsio/cxgb3/common.h   |  1 -
- .../net/ethernet/chelsio/cxgb3/cxgb3_main.c   | 11 ++----
- drivers/net/ethernet/chelsio/cxgb3/t3_hw.c    | 35 -------------------
- 3 files changed, 3 insertions(+), 44 deletions(-)
+Yes, the bpf qdisc prog can store its stats to a bpf map, but then when the
+same prog attached to different qdiscs, it has to create different stats maps?
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb3/common.h b/drivers/net/ethernet/chelsio/cxgb3/common.h
-index 56312f9ed..d115ec932 100644
---- a/drivers/net/ethernet/chelsio/cxgb3/common.h
-+++ b/drivers/net/ethernet/chelsio/cxgb3/common.h
-@@ -676,7 +676,6 @@ void t3_link_changed(struct adapter *adapter, int port_id);
- void t3_link_fault(struct adapter *adapter, int port_id);
- int t3_link_start(struct cphy *phy, struct cmac *mac, struct link_config *lc);
- const struct adapter_info *t3_get_adapter_info(unsigned int board_id);
--int t3_seeprom_write(struct adapter *adapter, u32 addr, __le32 data);
- int t3_seeprom_wp(struct adapter *adapter, int enable);
- int t3_get_tp_version(struct adapter *adapter, u32 *vers);
- int t3_check_tpsram_version(struct adapter *adapter);
-diff --git a/drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c b/drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c
-index d73339682..e185f5f24 100644
---- a/drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c
-+++ b/drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c
-@@ -2054,7 +2054,6 @@ static int set_eeprom(struct net_device *dev, struct ethtool_eeprom *eeprom,
- 	struct port_info *pi = netdev_priv(dev);
- 	struct adapter *adapter = pi->adapter;
- 	u32 aligned_offset, aligned_len;
--	__le32 *p;
- 	u8 *buf;
- 	int err;
- 
-@@ -2080,17 +2079,13 @@ static int set_eeprom(struct net_device *dev, struct ethtool_eeprom *eeprom,
- 	if (err)
- 		goto out;
- 
--	for (p = (__le32 *) buf; !err && aligned_len; aligned_len -= 4, p++) {
--		err = t3_seeprom_write(adapter, aligned_offset, *p);
--		aligned_offset += 4;
--	}
--
--	if (!err)
-+	err = pci_write_vpd(adapter->pdev, aligned_offset, aligned_len, buf);
-+	if (err >= 0)
- 		err = t3_seeprom_wp(adapter, 1);
- out:
- 	if (buf != data)
- 		kfree(buf);
--	return err;
-+	return err < 0 ? err : 0;
- }
- 
- static void get_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
-diff --git a/drivers/net/ethernet/chelsio/cxgb3/t3_hw.c b/drivers/net/ethernet/chelsio/cxgb3/t3_hw.c
-index ec4b49ebe..cb85c2f21 100644
---- a/drivers/net/ethernet/chelsio/cxgb3/t3_hw.c
-+++ b/drivers/net/ethernet/chelsio/cxgb3/t3_hw.c
-@@ -595,44 +595,9 @@ struct t3_vpd {
- 	u32 pad;		/* for multiple-of-4 sizing and alignment */
- };
- 
--#define EEPROM_MAX_POLL   40
- #define EEPROM_STAT_ADDR  0x4000
- #define VPD_BASE          0xc00
- 
--/**
-- *	t3_seeprom_write - write a VPD EEPROM location
-- *	@adapter: adapter to write
-- *	@addr: EEPROM address
-- *	@data: value to write
-- *
-- *	Write a 32-bit word to a location in VPD EEPROM using the card's PCI
-- *	VPD ROM capability.
-- */
--int t3_seeprom_write(struct adapter *adapter, u32 addr, __le32 data)
--{
--	u16 val;
--	int attempts = EEPROM_MAX_POLL;
--	unsigned int base = adapter->params.pci.vpd_cap_addr;
--
--	if ((addr >= EEPROMSIZE && addr != EEPROM_STAT_ADDR) || (addr & 3))
--		return -EINVAL;
--
--	pci_write_config_dword(adapter->pdev, base + PCI_VPD_DATA,
--			       le32_to_cpu(data));
--	pci_write_config_word(adapter->pdev,base + PCI_VPD_ADDR,
--			      addr | PCI_VPD_ADDR_F);
--	do {
--		msleep(1);
--		pci_read_config_word(adapter->pdev, base + PCI_VPD_ADDR, &val);
--	} while ((val & PCI_VPD_ADDR_F) && --attempts);
--
--	if (val & PCI_VPD_ADDR_F) {
--		CH_ERR(adapter, "write to EEPROM address 0x%x failed\n", addr);
--		return -EIO;
--	}
--	return 0;
--}
--
- /**
-  *	t3_seeprom_wp - enable/disable EEPROM write protection
-  *	@adapter: the adapter
--- 
-2.33.0
+Also, instead of ->enqueue() itself is a bpf prog,
+having an ->enqueue() preparing a bpf ctx (zeroing, assigning...etc) and
+then make another call to a bpf prog will all add some costs.
 
-
+That said, I still think it needs a bpf skb map that can queue/dequeue
+skb first.  Then it will become possible to prototype different interface
+ideas.
