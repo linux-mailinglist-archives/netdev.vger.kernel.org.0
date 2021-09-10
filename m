@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 383DC406F88
-	for <lists+netdev@lfdr.de>; Fri, 10 Sep 2021 18:18:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 559FE406F8A
+	for <lists+netdev@lfdr.de>; Fri, 10 Sep 2021 18:19:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229909AbhIJQTb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Sep 2021 12:19:31 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:34633 "EHLO
+        id S230078AbhIJQUY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Sep 2021 12:20:24 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:38726 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229734AbhIJQTa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Sep 2021 12:19:30 -0400
+        by vger.kernel.org with ESMTP id S230057AbhIJQUU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Sep 2021 12:20:20 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1631290698;
+        s=mimecast20190719; t=1631290747;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=bVwb4xgVCPE4xO7m7QqDyPvYMqtac8bl6AY+84GyYjg=;
-        b=gJWxaCy8ZgSw+YCAK7sCxET1ow2N+WCkZfvr8OTP8ky9Ct/kiNqSSRC1MToqVKJA/i+ni/
-        LdD4usiiktrEqYwPqdU6G7karNFxNoPMulPxW6fCfcImwWJHl5fvyfU/GTIedY+0x0zoPY
-        SjqgIxAv915UZbmEFcz+0QtRHy4ZfCA=
-Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
- [209.85.167.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-421-1b-aTz3tNba_HndbQ709oA-1; Fri, 10 Sep 2021 12:18:17 -0400
-X-MC-Unique: 1b-aTz3tNba_HndbQ709oA-1
-Received: by mail-lf1-f72.google.com with SMTP id o18-20020ac24e92000000b003eb17514a7eso1062277lfr.18
-        for <netdev@vger.kernel.org>; Fri, 10 Sep 2021 09:18:16 -0700 (PDT)
+        bh=hCmmhYCPvZGsQCildcllyAD8h6CmMr1J1+mjHiwFbv8=;
+        b=bine9hFo8wshVyIyXxFmWpAkhUkYfK8jtxNy2ip4RbxJWFSiDMSrLB5T0WQp+KiP6bcjv/
+        RLoX9yYapoeOThJD0CVSqhL9CTyQj4PGztd7IANfJTcz7dRkD5uNgLwvfL5d515LUZ6ZBR
+        MwOj+Mc4iRiVOyKHrxxyaRjlqVeA0aM=
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
+ [209.85.167.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-80-V_nEA0_EN7S88xNEZYhcjg-1; Fri, 10 Sep 2021 12:19:05 -0400
+X-MC-Unique: V_nEA0_EN7S88xNEZYhcjg-1
+Received: by mail-lf1-f69.google.com with SMTP id n5-20020a19ef05000000b003e224cd5844so1068889lfh.12
+        for <netdev@vger.kernel.org>; Fri, 10 Sep 2021 09:19:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:cc:subject:to:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=bVwb4xgVCPE4xO7m7QqDyPvYMqtac8bl6AY+84GyYjg=;
-        b=vnK+Sadj6MS18OG7OjyzIQwWnD0an49bTSjeTxC9JlYSlFL64GN4ntB+676PpesegH
-         P7PAw6GURLOcKP7/KAQhF7937c+LQ0sNwIRoR/REsOzQXsj8HwzPmIB/BLTvKe0nn4W0
-         tn87SGU+phURxgJ6FqXPHzeaQlM8gmF4oOPUab4r9vQaaGnr3Gg2in1SnUbraeXPXKm0
-         fcWmSkIf4/lLohQADKVIrXzLIA0yo8vDn6NiYTwHM1UnLzRzy9WmG5ExBqMQ6IP+K8XE
-         eiRcjjN7lxw5DOcY33Cf7zGP2Hhk9sR3pGcsI8+LXH2jgmLjH25MQyREm2Ti+aWJSw9g
-         mQgw==
-X-Gm-Message-State: AOAM531VEx0pUJGct9CHMl0N6k0OG4QJMuVGp9Gq8PIE+voDTckM4hxf
-        AjOB2JGP0BYgS/qL2LVFAaDdSWY+ieOgoe8mPTmFuL3kJjrXjKMK8CoBCi0wlGdyk1YzLOQwxTA
-        yktnclPbMagFBfys6
-X-Received: by 2002:a2e:9a59:: with SMTP id k25mr4705334ljj.52.1631290695472;
-        Fri, 10 Sep 2021 09:18:15 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw6n3E/WZ4PU7yxujz/KFg/XsuTTIhEoHX7uVNUP6UXPYZWkTUfqvEDkBW6zaG7MScUjvz3LA==
-X-Received: by 2002:a2e:9a59:: with SMTP id k25mr4705307ljj.52.1631290695199;
-        Fri, 10 Sep 2021 09:18:15 -0700 (PDT)
+        bh=hCmmhYCPvZGsQCildcllyAD8h6CmMr1J1+mjHiwFbv8=;
+        b=XRAf0/d4pY0ff5RS4yGfVtq0O5dHC4za8Jj0Dc78lQUUa9DaKj7CnVrEXvA0AjwpW4
+         tI4se+YpIQokPR/eftQsCdcl7ZkX1cjxEChK0BP1O7Zo+D5lssjr65GcxpK/WWxV5Dn9
+         JN2Ks0BJNIRBZbQKRBA6Z+7Y5IZQpTanb8FN+wkvgAvOdsrtzym+OgbtqECVO+w/7IXU
+         cSpdt6lmRJD3H08YYdfHcppHFA1GbCaVH1nSQGJjvDiU2TdgClcXAXaSKVT7DA+aahr+
+         HvZaq/f6nUNSj+C3fytwwJXavv3TE9rmijdO8Gnp3UQUVW7kuZAG40frbk4GHZTxnnIl
+         v5UA==
+X-Gm-Message-State: AOAM5319/Clux2hhvyPA3nmw/rnn10+nqyr/kjPiRZcAC57feAPl9Lxb
+        jFVnHQeLN3ixk6OIWEtxt5JBGVfsjXZzb9NCQ/r09UPqdVJGOPm03pgWfDpoS1EzqK4c58QWTwn
+        iBRsxsTS6w+UsbWQw
+X-Received: by 2002:a05:6512:169b:: with SMTP id bu27mr4660374lfb.578.1631290744262;
+        Fri, 10 Sep 2021 09:19:04 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzim6Euy/3NCFRnAiZtE9Q36wCG3/lp0JG3DrZgW43gzrdDOJ2Bf+M+9QprRsrpPnvVFV6h/A==
+X-Received: by 2002:a05:6512:169b:: with SMTP id bu27mr4660341lfb.578.1631290743980;
+        Fri, 10 Sep 2021 09:19:03 -0700 (PDT)
 Received: from [192.168.42.238] (87-59-106-155-cable.dk.customer.tdc.net. [87.59.106.155])
-        by smtp.gmail.com with ESMTPSA id o17sm452308lfi.203.2021.09.10.09.18.13
+        by smtp.gmail.com with ESMTPSA id h13sm597384lfv.62.2021.09.10.09.19.02
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 10 Sep 2021 09:18:14 -0700 (PDT)
+        Fri, 10 Sep 2021 09:19:03 -0700 (PDT)
 From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
 X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
 Cc:     brouer@redhat.com, lorenzo.bianconi@redhat.com,
@@ -60,18 +60,18 @@ Cc:     brouer@redhat.com, lorenzo.bianconi@redhat.com,
         alexander.duyck@gmail.com, saeed@kernel.org,
         maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
         tirthendu.sarkar@intel.com, toke@redhat.com
-Subject: Re: [PATCH v14 bpf-next 01/18] net: skbuff: add size metadata to
- skb_shared_info for xdp
+Subject: Re: [PATCH v14 bpf-next 02/18] xdp: introduce flags field in
+ xdp_buff/xdp_frame
 To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
         netdev@vger.kernel.org
 References: <cover.1631289870.git.lorenzo@kernel.org>
- <1a6336639c151227b263d6d621c490a8267d4119.1631289870.git.lorenzo@kernel.org>
-Message-ID: <4aef85af-5843-91ca-39db-e7cd2e9cdf28@redhat.com>
-Date:   Fri, 10 Sep 2021 18:18:12 +0200
+ <b74dac5c5bfe5115dd777d0eafcb0c3c21853348.1631289870.git.lorenzo@kernel.org>
+Message-ID: <edf63174-dc00-fb1c-e467-5a1522783cde@redhat.com>
+Date:   Fri, 10 Sep 2021 18:19:01 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <1a6336639c151227b263d6d621c490a8267d4119.1631289870.git.lorenzo@kernel.org>
+In-Reply-To: <b74dac5c5bfe5115dd777d0eafcb0c3c21853348.1631289870.git.lorenzo@kernel.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -81,45 +81,19 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 10/09/2021 18.14, Lorenzo Bianconi wrote:
-> Introduce xdp_frags_truesize field in skb_shared_info data structure
-> to store xdp_buff/xdp_frame truesize (xdp_frags_truesize will be used
-> in xdp multi-buff support). In order to not increase skb_shared_info
-> size we will use a hole due to skb_shared_info alignment.
-> Introduce xdp_frags_size field in skb_shared_info data structure
-> reusing gso_type field in order to store xdp_buff/xdp_frame paged size.
-> xdp_frags_size will be used in xdp multi-buff support.
+> Introduce flags field in xdp_frame and xdp_buffer data structures
+> to define additional buffer features. At the moment the only
+> supported buffer feature is multi-buffer bit (mb). Multi-buffer bit
+> is used to specify if this is a linear buffer (mb = 0) or a multi-buffer
+> frame (mb = 1). In the latter case the driver is expected to initialize
+> the skb_shared_info structure at the end of the first buffer to link
+> together subsequent buffers belonging to the same frame.
 > 
-> Acked-by: John Fastabend <john.fastabend@gmail.com>
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> Acked-by: John Fastabend<john.fastabend@gmail.com>
+> Signed-off-by: Lorenzo Bianconi<lorenzo@kernel.org>
 > ---
->   include/linux/skbuff.h | 6 +++++-
->   1 file changed, 5 insertions(+), 1 deletion(-)
+>   include/net/xdp.h | 29 +++++++++++++++++++++++++++++
+>   1 file changed, 29 insertions(+)
 
 Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-
-
-> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> index 6bdb0db3e825..769ffd09f975 100644
-> --- a/include/linux/skbuff.h
-> +++ b/include/linux/skbuff.h
-> @@ -522,13 +522,17 @@ struct skb_shared_info {
->   	unsigned short	gso_segs;
->   	struct sk_buff	*frag_list;
->   	struct skb_shared_hwtstamps hwtstamps;
-> -	unsigned int	gso_type;
-> +	union {
-> +		unsigned int	gso_type;
-> +		unsigned int	xdp_frags_size;
-> +	};
->   	u32		tskey;
->   
->   	/*
->   	 * Warning : all fields before dataref are cleared in __alloc_skb()
->   	 */
->   	atomic_t	dataref;
-> +	unsigned int	xdp_frags_truesize;
->   
->   	/* Intermediate layers must ensure that destructor_arg
->   	 * remains valid until skb destructor */
-> 
 
