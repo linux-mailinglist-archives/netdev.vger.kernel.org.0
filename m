@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E263C406248
-	for <lists+netdev@lfdr.de>; Fri, 10 Sep 2021 02:44:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DF7840638B
+	for <lists+netdev@lfdr.de>; Fri, 10 Sep 2021 02:50:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237590AbhIJApO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Sep 2021 20:45:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44584 "EHLO mail.kernel.org"
+        id S233725AbhIJApY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Sep 2021 20:45:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46512 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231461AbhIJASG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Sep 2021 20:18:06 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8EBFC611C1;
-        Fri, 10 Sep 2021 00:16:48 +0000 (UTC)
+        id S231445AbhIJAUT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Sep 2021 20:20:19 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5C009610A3;
+        Fri, 10 Sep 2021 00:19:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631233009;
+        s=k20201202; t=1631233146;
         bh=gwRwG4G4N8PGqxgHm684roFXH4gnD9B5AOdGvL2KIko=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a8/3PmeqlFM9eIyf3fy2QcKKkRdDAUO80tj7OfcKXfDBML2Kb+2NKTK1/4ryCauNV
-         PKqmZoLEYYthivHDqtnSaBNTXHUE2DAsqeLJojLjD2vc7NFuRW57LBQSn6GSLfUeFR
-         eBwjKN8ZB1LAUwUTf0jX5CWjHlkM4Ovj2vPxO7fEVOXtFM1jBU22PIDesq184s0nXZ
-         8Ykda7ZfxzZC1HSJS/ZdzhwsVMrtrhG1QxnUmH2/NnPA/m/PFxf2Mwk4doMkmPqME2
-         NVeRrffFYvi80uk5puTevRQedg8ooLmq2sck2xqgOfJe4AjIfNsaCpbnBlIcv6BF52
-         bC/Xz6+7md+DA==
+        b=bgYLWlFfKY/o77DA50WpYKvJLUXmmoy9AenRFkLJzTOhHQecTYx1/ti00JP1hx33F
+         f1qLGPQ8DBn4DZUQ32qRqLeL3OjwIEOAWeM7VG3FVegU2XEgmUao7dkmn8ux3IIUkq
+         0OpJ2hYZ6qKqD6sBT9cRJM3PirazDK+ZcPKir9EP6hJTYTl/Hj4FQb2oMP8+POMEf9
+         s7WL0pTP4FGHCypNSLYVoU+1u2nYW+Sc4VGTE/AjV5ztQpZQ521bSKxULWSXPLcuqT
+         hxE7EUB6vw9xmGQmn9Mhz8OmAF8LxjRx4pE4dnnsc3l7mBPD7OA9fXz4SzQD20+f9Z
+         ysVWyeEY5OEnA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Chuck Lever <chuck.lever@oracle.com>,
         Anna Schumaker <Anna.Schumaker@Netapp.com>,
         Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.14 36/99] xprtrdma: Disconnect after an ib_post_send() immediate error
-Date:   Thu,  9 Sep 2021 20:14:55 -0400
-Message-Id: <20210910001558.173296-36-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.13 31/88] xprtrdma: Disconnect after an ib_post_send() immediate error
+Date:   Thu,  9 Sep 2021 20:17:23 -0400
+Message-Id: <20210910001820.174272-31-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210910001558.173296-1-sashal@kernel.org>
-References: <20210910001558.173296-1-sashal@kernel.org>
+In-Reply-To: <20210910001820.174272-1-sashal@kernel.org>
+References: <20210910001820.174272-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
