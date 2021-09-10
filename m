@@ -2,143 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3ED56406AB9
-	for <lists+netdev@lfdr.de>; Fri, 10 Sep 2021 13:31:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3487406B02
+	for <lists+netdev@lfdr.de>; Fri, 10 Sep 2021 13:51:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232841AbhIJLcS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Sep 2021 07:32:18 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:25594 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232755AbhIJLcR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Sep 2021 07:32:17 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1631273466;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=MgZpunMwRsx/HKG8133Hqd4YNO163VRr9FdTYPCJcJM=;
-        b=P74E7y1gpL7r4KNKz+KXHMUIVlgwezNdNADktQlf2bVp2DG3D1UoF5BWp2D0An6nCeEiWZ
-        n9Hkw1cKeVsm/L1jq3QTGH4xqXRYS0qhLfE/uOmLmgz4F/Ahxt9qjqReiokaGnadsKgzID
-        qu0BbpkNBXd3agG271MVnU+sPRGrHho=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-532-muyfqufYNHKFi_jc83fKuw-1; Fri, 10 Sep 2021 07:31:05 -0400
-X-MC-Unique: muyfqufYNHKFi_jc83fKuw-1
-Received: by mail-ed1-f71.google.com with SMTP id y21-20020a056402359500b003cd0257fc7fso758856edc.10
-        for <netdev@vger.kernel.org>; Fri, 10 Sep 2021 04:31:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=MgZpunMwRsx/HKG8133Hqd4YNO163VRr9FdTYPCJcJM=;
-        b=V7OPtRrlEh1eu1s7GZ/UqB9SozUT/qDfVBlMTWUaP4vIJKGO4UEWl5ycMLZ8sWo2ZY
-         k1Nd9FnVboqa6ueSvkcYjrLnOif6A2qjkkcz2y2up3zaKHFtDEBSJKI/2mekJO3HhpbV
-         oMfSv7LS1z/3qevmGkhyPjGJG+iGk99riXJiBFUyadFtVSlZ0VadeBllmsJDhaHiHpsk
-         rIq0ylr7kGQdcVUQ/xcjT17OQUnX7NF/so1y/KyXJD/hf41idmfP0XWkWfUqBMzQggbf
-         GmbOC6Tw/v6oMQVlQQF7MXihXYNcfVeUJI4Gscc7G2YWfwZ1D8fBK1MN7dF4gwLFiZ9g
-         WkUA==
-X-Gm-Message-State: AOAM531IjAw6mMQ8qBzwn0dITK4Z6NXIBGJ8VLkc3moprF9mqWLeAIsi
-        RFMt5fqRY30sVyeO3DrpSq6zr2+FHHQE0nz2IQZGDR7xTvsWIETFrgd9/hQrX+lCPJm1ZffVdJI
-        smDnLlvJNsPzn/ImH
-X-Received: by 2002:aa7:c784:: with SMTP id n4mr8537980eds.99.1631273463941;
-        Fri, 10 Sep 2021 04:31:03 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzI5YrwS+0ERVHYZlZnF2Wl30iULHObEWf4EdeoOej/ES155Q+tOh54L26URfB6ln6yiRzjCg==
-X-Received: by 2002:aa7:c784:: with SMTP id n4mr8537952eds.99.1631273463690;
-        Fri, 10 Sep 2021 04:31:03 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id j14sm2670239edk.7.2021.09.10.04.31.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Sep 2021 04:31:02 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 435371802C6; Fri, 10 Sep 2021 13:31:01 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     John Fastabend <john.fastabend@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Cong Wang <cong.wang@bytedance.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Subject: Re: [RFC Patch net-next] net_sched: introduce eBPF based Qdisc
-In-Reply-To: <20210910065535.vtwafxy2a7boipqg@kafai-mbp.dhcp.thefacebook.com>
-References: <20210824234700.qlteie6al3cldcu5@kafai-mbp>
- <CAM_iQpWP_kvE58Z+363n+miTQYPYLn6U4sxMKVaDvuRvjJo_Tg@mail.gmail.com>
- <612f137f4dc5c_152fe20891@john-XPS-13-9370.notmuch>
- <871r68vapw.fsf@toke.dk>
- <20210901174543.xukawl7ylkqzbuax@kafai-mbp.dhcp.thefacebook.com>
- <871r66ud8y.fsf@toke.dk>
- <613136d0cf411_2c56f2086@john-XPS-13-9370.notmuch>
- <87bl5asjdj.fsf@toke.dk>
- <20210902233510.gnimg2krwwkzv4f2@kafai-mbp.dhcp.thefacebook.com>
- <87zgstra6j.fsf@toke.dk>
- <20210910065535.vtwafxy2a7boipqg@kafai-mbp.dhcp.thefacebook.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 10 Sep 2021 13:31:01 +0200
-Message-ID: <87o890mzuy.fsf@toke.dk>
+        id S232892AbhIJLwP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Sep 2021 07:52:15 -0400
+Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:32772
+        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232613AbhIJLwP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Sep 2021 07:52:15 -0400
+Received: from localhost (1.general.cking.uk.vpn [10.172.193.212])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id E6A2840198;
+        Fri, 10 Sep 2021 11:51:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1631274661;
+        bh=+RWGL6GMLleMJEJELE6w/v8VzwjFlxKfUcLYDwXNzNY=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type;
+        b=nd9Zb/uQMTIQ+I6GT5Tzp6wkA3/qoCGMBdDWW0JxJVHAhrgr7TJRAGYrIF1uRwqJQ
+         ghsg1ueNDHWyJJhiUamDe7RY5FIPYPWALUL3ZGexl1niiUIqsdiFmuraHK9PG4inyU
+         0SNpwHi4JoNYGGV1S4ALKcMbZLLyG7ERiVwGLF9dyaX8CzXTfV4DMxGoCXZ9SZfNri
+         mH86nigsF78WZXZ2i85BPeZGfqHdzYuiiz6+pKKE1B+sRv6NMfoCXxOHngAziFfa95
+         OlGcTGdqg1ZfqyCJb7QzHAarHcP01ExggUJqAK6s6ogdq4KdOiKHc/SLtSFWQUekdR
+         OEKAg6R+bhQCQ==
+From:   Colin King <colin.king@canonical.com>
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: ixgbevf: Remove redundant initialization of variable ret_val
+Date:   Fri, 10 Sep 2021 12:51:00 +0100
+Message-Id: <20210910115100.45429-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Martin KaFai Lau <kafai@fb.com> writes:
+From: Colin Ian King <colin.king@canonical.com>
 
-> On Fri, Sep 03, 2021 at 04:44:04PM +0200, Toke H=C3=B8iland-J=C3=B8rgense=
-n wrote:
->> Martin KaFai Lau <kafai@fb.com> writes:
->>=20
->> > On Fri, Sep 03, 2021 at 12:27:52AM +0200, Toke H=C3=B8iland-J=C3=B8rge=
-nsen wrote:
->> >> >> The question is if it's useful to provide the full struct_ops for
->> >> >> qdiscs? Having it would allow a BPF program to implement that inte=
-rface
->> >> >> towards userspace (things like statistics, classes etc), but the
->> >> >> question is if anyone is going to bother with that given the wealt=
-h of
->> >> >> BPF-specific introspection tools already available?
->> > Instead of bpftool can only introspect bpf qdisc and the existing tc
->> > can only introspect kernel qdisc,  it will be nice to have bpf
->> > qdisc work as other qdisc and showing details together with others
->> > in tc.  e.g. a bpf qdisc export its data/stats with its btf-id
->> > to tc and have tc print it out in a generic way?
->>=20
->> I'm not opposed to the idea, certainly. I just wonder if people who go
->> to the trouble of writing a custom qdisc in BPF will feel it's worth it
->> to do the extra work to make this available via a second API. We could
->> certainly encourage it, and some things are easy (drop and pkt counters,
->> etc), but other things (like class stats) will depend on the semantics
->> of the qdisc being implemented, so will require extra work from the BPF
->> qdisc developer...
-> Right, different qdisc has different stats, I think it is currently
-> stored in qdisc_priv()?  When a qdisc is created, a separate priv is
-> created together.
->
-> Yes, the bpf qdisc prog can store its stats to a bpf map, but then
-> when the same prog attached to different qdiscs, it has to create
-> different stats maps?
+The variable ret_val is being initialized with a value that is never
+read, it is being updated later on. The assignment is redundant and
+can be removed.
 
-Hmm, yeah, I guess it would. But if it's storing the packets in a map it
-would need to have separate instances of those as well. I was kinda
-assuming that a separate instance of the BPF program would be loaded
-into the kernel for each qdisc instance, with its own instance of all
-maps etc.
+Addresses-Coverity: ("Unused value")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/ethernet/intel/ixgbevf/vf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> Also, instead of ->enqueue() itself is a bpf prog, having an
-> ->enqueue() preparing a bpf ctx (zeroing, assigning...etc) and then
-> make another call to a bpf prog will all add some costs.
-
-Hmm, yeah, I guess, but I kinda doubt we can avoid having *some* kind of
-setup to get the right semantics for the BPF program, which might as
-well be in the qdisc enqueue() func. But let's see, happy to be proved
-wrong on this :)
-
-> That said, I still think it needs a bpf skb map that can queue/dequeue
-> skb first.  Then it will become possible to prototype different interface
-> ideas.
-
-Agreed!
-
--Toke
+diff --git a/drivers/net/ethernet/intel/ixgbevf/vf.c b/drivers/net/ethernet/intel/ixgbevf/vf.c
+index 5fc347abab3c..d459f5c8e98f 100644
+--- a/drivers/net/ethernet/intel/ixgbevf/vf.c
++++ b/drivers/net/ethernet/intel/ixgbevf/vf.c
+@@ -66,9 +66,9 @@ static s32 ixgbevf_reset_hw_vf(struct ixgbe_hw *hw)
+ {
+ 	struct ixgbe_mbx_info *mbx = &hw->mbx;
+ 	u32 timeout = IXGBE_VF_INIT_TIMEOUT;
+-	s32 ret_val = IXGBE_ERR_INVALID_MAC_ADDR;
+ 	u32 msgbuf[IXGBE_VF_PERMADDR_MSG_LEN];
+ 	u8 *addr = (u8 *)(&msgbuf[1]);
++	s32 ret_val;
+ 
+ 	/* Call adapter stop to disable tx/rx and clear interrupts */
+ 	hw->mac.ops.stop_adapter(hw);
+-- 
+2.32.0
 
