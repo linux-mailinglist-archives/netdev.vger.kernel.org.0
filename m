@@ -2,95 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C993A4066E4
-	for <lists+netdev@lfdr.de>; Fri, 10 Sep 2021 07:39:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 237B1406727
+	for <lists+netdev@lfdr.de>; Fri, 10 Sep 2021 08:20:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230451AbhIJFlI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Sep 2021 01:41:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52180 "EHLO
+        id S231129AbhIJGVr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Sep 2021 02:21:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230324AbhIJFlH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Sep 2021 01:41:07 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 551CBC061574;
-        Thu,  9 Sep 2021 22:39:57 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id q68so833208pga.9;
-        Thu, 09 Sep 2021 22:39:57 -0700 (PDT)
+        with ESMTP id S230467AbhIJGVr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Sep 2021 02:21:47 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82089C061574;
+        Thu,  9 Sep 2021 23:20:36 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id i23so1029188wrb.2;
+        Thu, 09 Sep 2021 23:20:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vbOH6ll+rNRptf5bFlhufPxCFK/dpsvHD3JWD57fqWc=;
-        b=WGMmLd9Ckc6BmriCW8TMj9Nn19IF1+iwy9YH/ZeaLqX7IyTcJhfhg9SNrX1mWPVUMg
-         Pzn0DJMKOCA4NRNmwGpu01gYvZMf1XYoCPbkg2LgiFLCt7/0Ie6feJbOiDx+JE1qe4SW
-         Qpx8ifaZh79NGsqkPLgeJlFJZTVUKfSkjg5umE4xpTj+MxMxB45Knl6KwCDN0T6X8Qud
-         a2TngecUDOBQa47O7rTXn6hPL/I3ivBy9IZMZn69tEbdORJXvR3Ff1avNHjWrbyqRe0p
-         aUXRVkKC9GqtMaxYfKcMMoVW51Vvgu1uVuL3B/XUt3SrlFZcxqWLIEWN2fjgEJRdIxON
-         anSA==
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=y6dZT2c2pP0I23V365/4zZiIEmdIs5esWRP7Tih9j94=;
+        b=j7/8Scsuye+ggI10v4RHijARF+Bh9ZXltP6peecNiP2r6pMDpR9nMiC/jeiN5ZmPjq
+         zOrCzzllxtJ0TEDHOwLc0GS1FUtH8tR/Xh1Cojo85kEdexaE4Z+Ib5MSekspU/2rdomz
+         Z1mtClNfvI4jyg94RhFIgVoEhlGHg8YK3dXiJwGcyBhNvjvWfdbGBHLrXRgzOeN1Xcrt
+         ZrfABHdJ3KZcoNzfsXT+R8lm+BFVGBbGhByxnmbqgl9luHbSGJlpgbU/7SDFuJXDKHi9
+         PE4DfUSFF+gGGBv7a/2lHWrgt86jf8CGkdHWlbnWgnn0NXcM6pdmi8BEq/ix0FImxu45
+         /9cg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vbOH6ll+rNRptf5bFlhufPxCFK/dpsvHD3JWD57fqWc=;
-        b=SF18NOqXTScRiRNTeiNiGzv4uqgbeMAlNuTWGEpgLw4RIkV/lw0XXETohfU3nAC2bt
-         KQF/py+JXg6wc8a+KwUs2+x1VD+I1iHu96o4SpvvDJkkJInsPchHNuAyJla0Ly1AxZvk
-         lildeOPjoqCeW4MfEXhhC25eD+XytJyV3pvonhjRAh3IHuj7FZxKyxrhSz2PVtETbx+P
-         bJ4AEhxY+1FsJpA0dHrQfFlLbU0Nsmy36UpJx8RO2yX2JwQLSuzjeVfZXToi9OrcZWoo
-         O4L5DO4ct0fDz5X4Y/Ov8yBnEWiOsb7GGLSHMxKFHDJ0LqY6E0B5PKk6+fW0RK9DMrGU
-         JmsQ==
-X-Gm-Message-State: AOAM533yZSoizai63KvhUYsTuaXMKkE0UAgJuj49KH2jlviBtue00Xzg
-        s/0KcfWUQAjCRbiiE+mgLq4=
-X-Google-Smtp-Source: ABdhPJwUp+hfHZCdHLBtXqHfk98qf4zhS80c0Fy1ZmZrMzoiU0SnfoJUXK6JF+1qENKyylogv39+XQ==
-X-Received: by 2002:aa7:9282:0:b0:3e2:800a:b423 with SMTP id j2-20020aa79282000000b003e2800ab423mr6378282pfa.21.1631252396876;
-        Thu, 09 Sep 2021 22:39:56 -0700 (PDT)
-Received: from linux-VirtualBox.. ([203.205.141.115])
-        by smtp.gmail.com with ESMTPSA id c24sm3980295pfd.145.2021.09.09.22.39.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Sep 2021 22:39:56 -0700 (PDT)
-From:   Xingbang Liu <liu.airalert@gmail.com>
-To:     nbd@nbd.name, lorenzo.bianconi83@gmail.com, kvalo@codeaurora.org,
-        davem@davemloft.net, kuba@kernel.org, matthias.bgg@gmail.com
-Cc:     ryder.lee@mediatek.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, Xingbang Liu <liu.airalert@gmail.com>
-Subject: [PATCH] mt76: move spin_lock_bh to spin_lock in tasklet
-Date:   Fri, 10 Sep 2021 13:39:28 +0800
-Message-Id: <20210910053928.7254-1-liu.airalert@gmail.com>
-X-Mailer: git-send-email 2.30.2
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=y6dZT2c2pP0I23V365/4zZiIEmdIs5esWRP7Tih9j94=;
+        b=F/btKzut8YcNRda6op0jAxlDNNdENa3tZP/Y5oTp1sB0HhySS5vwhDl/uCL7umB9bA
+         dF99JMPWvktUo5J4uDLNoprPKX/K8i3Osv7gBuZ1p9TzwLWtPrMtJh3x7FjyN9/4l/U1
+         tQdO13q3VugkgiIAReZ5fO+Byl6TAB7i2mnkzuInroPt7MvQjpYF5WbGV7qRJdYEThfb
+         DqBBVmCqzCIoK/cJcVG+dj575sk4qWDGyCK5tV6K1iqFqR2PQfkGXhHGItKb0JuIiKZ0
+         TSWUuPqOpdZnp9LUpoSt7+7f9Je++1MkftI8kYOIvt0SQMaujSmJ9sigJREwAzur1vRn
+         /gLg==
+X-Gm-Message-State: AOAM531kr86d9GYfng+Z7n9V4wBxK2XrO0t18kM3zm4U7/Z8hjIohvpy
+        cNr7WZvg7vqHD9FdvJqGlV/stSdUIZw=
+X-Google-Smtp-Source: ABdhPJxbLvZnUcC3qWb0Thc8U9EgbVvDcw77phStyrlgOGji0jhQ50DRSvtjSixqotdJatS0vgbQJw==
+X-Received: by 2002:adf:b78d:: with SMTP id s13mr7886227wre.344.1631254834843;
+        Thu, 09 Sep 2021 23:20:34 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f08:4500:c9c:396a:4a57:ee58? (p200300ea8f0845000c9c396a4a57ee58.dip0.t-ipconnect.de. [2003:ea:8f08:4500:c9c:396a:4a57:ee58])
+        by smtp.googlemail.com with ESMTPSA id t9sm4160968wrg.4.2021.09.09.23.20.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Sep 2021 23:20:34 -0700 (PDT)
+To:     Bjorn Helgaas <bhelgaas@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Raju Rangoju <rajur@chelsio.com>
+Cc:     "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH 0/5] PCI/VPD: Add and use pci_read/write_vpd_any()
+Message-ID: <ba0b18a3-64d8-d72f-9e9f-ad3e4d7ae3b8@gmail.com>
+Date:   Fri, 10 Sep 2021 08:20:23 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-as you are already in a tasklet, it is unnecessary to call spin_lock_bh.
+In certain cases we need a variant of pci_read_vpd()/pci_write_vpd() that
+does not check against dev->vpd.len. Such cases are:
+- reading VPD if dev->vpd.len isn't set yet (in pci_vpd_size())
+- devices that map non-VPD information to arbitrary places in VPD address
+  space (example: Chelsio T3 EEPROM write-protect flag)
+Therefore add function variants that check against PCI_VPD_MAX_SIZE only.
 
-Signed-off-by: Xingbang Liu <liu.airalert@gmail.com>
----
- drivers/net/wireless/mediatek/mt76/mt76x02_mmio.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Make the cxgb3 driver the first user of the new functions.
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt76x02_mmio.c b/drivers/net/wireless/mediatek/mt76/mt76x02_mmio.c
-index b50084bbe83d..00b9d9efc5a9 100644
---- a/drivers/net/wireless/mediatek/mt76/mt76x02_mmio.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt76x02_mmio.c
-@@ -53,7 +53,7 @@ static void mt76x02_pre_tbtt_tasklet(struct tasklet_struct *t)
- 		mt76_skb_set_moredata(data.tail[i], false);
- 	}
- 
--	spin_lock_bh(&q->lock);
-+	spin_lock(&q->lock);
- 	while ((skb = __skb_dequeue(&data.q)) != NULL) {
- 		struct ieee80211_tx_info *info = IEEE80211_SKB_CB(skb);
- 		struct ieee80211_vif *vif = info->control.vif;
-@@ -61,7 +61,7 @@ static void mt76x02_pre_tbtt_tasklet(struct tasklet_struct *t)
- 
- 		mt76_tx_queue_skb(dev, q, skb, &mvif->group_wcid, NULL);
- 	}
--	spin_unlock_bh(&q->lock);
-+	spin_unlock(&q->lock);
- }
- 
- static void mt76x02e_pre_tbtt_enable(struct mt76x02_dev *dev, bool en)
+Preferably this series should go through the PCI tree.
+
+Heiner Kallweit (5):
+  PCI/VPD: Add pci_read/write_vpd_any()
+  PCI/VPD: Use pci_read_vpd_any() in pci_vpd_size()
+  cxgb3: Remove t3_seeprom_read and use VPD API
+  cxgb3: Use VPD API in t3_seeprom_wp()
+  cxgb3: Remove seeprom_write and user VPD API
+
+ drivers/net/ethernet/chelsio/cxgb3/common.h   |  2 -
+ .../net/ethernet/chelsio/cxgb3/cxgb3_main.c   | 38 +++----
+ drivers/net/ethernet/chelsio/cxgb3/t3_hw.c    | 98 +++----------------
+ drivers/pci/vpd.c                             | 79 ++++++++++-----
+ include/linux/pci.h                           |  2 +
+ 5 files changed, 83 insertions(+), 136 deletions(-)
+
 -- 
-2.30.2
+2.33.0
 
