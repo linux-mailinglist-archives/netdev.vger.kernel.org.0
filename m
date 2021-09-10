@@ -2,192 +2,234 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2BCD406F10
-	for <lists+netdev@lfdr.de>; Fri, 10 Sep 2021 18:09:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 293AC406F5D
+	for <lists+netdev@lfdr.de>; Fri, 10 Sep 2021 18:14:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232776AbhIJQLD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Sep 2021 12:11:03 -0400
-Received: from mail-bn8nam11on2056.outbound.protection.outlook.com ([40.107.236.56]:31936
-        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233050AbhIJQI7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 10 Sep 2021 12:08:59 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NPKjQ5WXf/EeCL1r9Pn22BQCWK0SzREnVjo0V7/xNayXEUu+2su5v6FrNX4igaPGrzDEPnUiucnb48oHM9pFsyZaG1GAH4yv1k13cfiviaMnEAJ76Pk60F3mGW/TCzeGl2v6mV9hcIgBZmrpxrgHM0JrKdIS2HVpBp5+dc4a0Ge6UUNbbSu4At7UPw6w43xTQwwKp5eiMCzhPf9eh4VkghMNa6QiqwYU4HMQRKXdC5hnmnNH1rFXSvEWVGD+a7UA4FUuxb/aAkQT+NxL1Kezpi8DImAjx0eMBx/l1wHlcRu9XX8azv7mjUN0pErHOVB0Q1+vO5G6dQ4fssf743vNIQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=xN4+7gc0FnJx3MvoIvCbVWojWzEUHWgpv9NIeAgt6mU=;
- b=SY+2VLtfaNlKyzK3tzJmRtmsTmPvsz/i5gEBbEBb/6YYAh47SxaudynqrqSRbkT2hFyqPsh2htNcBR/JDVRimdh2EbC2HBPfGW3r4Rolh4tYqJ9b0Raf7lRUaGw7ws3XlRmCdtePy7ZH8vKMR99nYr/L7Ho8XeZ473dZYpGZAw2qw2v1Ah6vIaj3WMq0HJbdZaC2M84FiWm3LiPmoH0Kzyze9vvv4cUnMBbXW+OidALdyRJaWv63KZPbWaLjgrhA3oK7y41SmtjdiGxkjHQqB1F0XpOayW/6ppEmAdASkLE5sxv5dU32anyzVGYScRAS6jmUn5qJ/knljsRvrs6o6w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
- dkim=pass header.d=silabs.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xN4+7gc0FnJx3MvoIvCbVWojWzEUHWgpv9NIeAgt6mU=;
- b=U79gSkbPpXZHxHjPRXPCf+JNdTZLCa6xNEC618fTACCEOga/8NNgpJJ9/Rbg5fmziH2ctCVPiUkLt/+9/YkeQ54IP03ldq/BMAT+GWrTRo8R2CWO6FCPgnKaVRrG2aTVNBfxC+LUt7RmZ2VHWJp3mRmlSJep9/R7fXnWSbI8JTY=
-Authentication-Results: driverdev.osuosl.org; dkim=none (message not signed)
- header.d=none;driverdev.osuosl.org; dmarc=none action=none
- header.from=silabs.com;
-Received: from SN6PR11MB2718.namprd11.prod.outlook.com (2603:10b6:805:63::18)
- by SA2PR11MB5099.namprd11.prod.outlook.com (2603:10b6:806:f9::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.17; Fri, 10 Sep
- 2021 16:07:00 +0000
-Received: from SN6PR11MB2718.namprd11.prod.outlook.com
- ([fe80::7050:a0a:415:2ccd]) by SN6PR11MB2718.namprd11.prod.outlook.com
- ([fe80::7050:a0a:415:2ccd%7]) with mapi id 15.20.4500.017; Fri, 10 Sep 2021
- 16:07:00 +0000
-From:   Jerome Pouiller <Jerome.Pouiller@silabs.com>
-To:     devel@driverdev.osuosl.org, linux-wireless@vger.kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        =?UTF-8?q?J=C3=A9r=C3=B4me=20Pouiller?= 
-        <jerome.pouiller@silabs.com>
-Subject: [PATCH 31/31] staging: wfx: indent functions arguments
-Date:   Fri, 10 Sep 2021 18:05:04 +0200
-Message-Id: <20210910160504.1794332-32-Jerome.Pouiller@silabs.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20210910160504.1794332-1-Jerome.Pouiller@silabs.com>
-References: <20210910160504.1794332-1-Jerome.Pouiller@silabs.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
-X-ClientProxiedBy: SN4PR0601CA0006.namprd06.prod.outlook.com
- (2603:10b6:803:2f::16) To SN6PR11MB2718.namprd11.prod.outlook.com
- (2603:10b6:805:63::18)
+        id S233392AbhIJQQH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Sep 2021 12:16:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40958 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232852AbhIJQP5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 10 Sep 2021 12:15:57 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BD0D56124D;
+        Fri, 10 Sep 2021 16:14:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1631290485;
+        bh=KTRbesloDgAJK/uWsB63LOXoSNg6sbXunfivfYH3XYg=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Gz2NZg6In6TpFodqgItr20cg5F4SfVSmUXCtSvFzREF6axnMB66/qsevz+VPqcl6F
+         Nft6trg//qk57oPlZoZ5TPu/HBHHmQsWRn26je21zdjT1sbWNR9oXry3YL1IHqhEvX
+         9ru3GTUwhv4k3nV76+3rZo9oSYj8SBvXheaJ6IDD2kEjL2/T7FEomZ3T8IYo7q4xM+
+         ArqZzcJJHDG3E1H9HxdvIT+eV0qZEOE89tNgZjabVtLb5xVY9OaK7+t7zyTWdZgEVo
+         hF26ppoRiPOHtU9qwx2cOGSWZelikOMxo3wj9ceQ2sU+LKPhcySHZHFD4rqXxipNmH
+         HV1YUtdk38dJg==
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     bpf@vger.kernel.org, netdev@vger.kernel.org
+Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
+        john.fastabend@gmail.com, dsahern@kernel.org, brouer@redhat.com,
+        echaudro@redhat.com, jasowang@redhat.com,
+        alexander.duyck@gmail.com, saeed@kernel.org,
+        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
+        tirthendu.sarkar@intel.com, toke@redhat.com
+Subject: [PATCH v14 bpf-next 00/18] mvneta: introduce XDP multi-buffer support
+Date:   Fri, 10 Sep 2021 18:14:06 +0200
+Message-Id: <cover.1631289870.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Received: from pc-42.silabs.com (2a01:e34:ecb5:66a0:9876:e1d7:65be:d294) by SN4PR0601CA0006.namprd06.prod.outlook.com (2603:10b6:803:2f::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.15 via Frontend Transport; Fri, 10 Sep 2021 16:06:30 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4cd6e4b2-150e-4d82-7e1b-08d97474f447
-X-MS-TrafficTypeDiagnostic: SA2PR11MB5099:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <SA2PR11MB5099E9E6646DAC7F1632E54A93D69@SA2PR11MB5099.namprd11.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:378;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: OWPrUOMDWre9YfY3QGE1Ty9OJYN04Im6w6V4FTNWqAylM6wWgi/n0dEn3fRyttPIMcdtUEqvLQteH9O4n44kLDxU3PhOVIxJiYdJoB6HinPcKKZ1Sgk4gGv1PDZVaKeh/Wej5CUeud2u/jEIPY77EZlgcQARdkrka0gv94CTa66szanlafA+Yp1XaQ/VNFHFUfrv5ks0DHUjN6oc6CmqT7Ieb6wvKVWPitd+Ys1wHaHUyk6ryq8f0g4YLhfP0hWNw4J9z4vTf0YsObgIYLmREIIkT3JyhUsPMqq29ravkCArD0iXj4Q8pSf9L9wpShIHvIPpmuKodoGmBnKJKa1fp78t1qslIfo0nBOWRYTQUgAahWtS5VkpdhjINHtX6HL0DnMkMYhVKN5TLvG5U/k1QxnH9b/Bs+7u8TNcv1mtt+obXnEa39dudDS9cJeGRpQbaLGHc7cpnQPTDY1l+3ynohEXIKAM8ZPPgA1C3j9HANBrgDaAtlsMNHswkD3sYK3Qqhfo9YSZetitDca3pYZkLyBEwhdahcUvbh8Hvj1KYEpuTxKmdgIDZkvE0KXK2gnwW4tilxdH4vmoVPtfhY6FMik7927FBk4nkLQ+ZtIijhxk+0kSDAD5ymE6+B0LLx63Q9aYwrV+SosxMSb/mYyhnw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB2718.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(376002)(39850400004)(396003)(136003)(346002)(83380400001)(316002)(66556008)(2906002)(6666004)(6486002)(86362001)(66946007)(54906003)(36756003)(1076003)(5660300002)(38100700002)(186003)(8936002)(2616005)(4326008)(8676002)(66476007)(478600001)(52116002)(7696005)(107886003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?bmduc0FhY0w5TGZhYXB4aG1vdEE5RXEycEM2UmcweHVkL0dpU1FOcGNhV253?=
- =?utf-8?B?S3hzSTlKWFJSMEVGczN3R0lWUWZJTDBUWTVPbVVXMzFtK1NadDMwaGFyVnlr?=
- =?utf-8?B?U3pFbm9ocG9oYThQYllDNE4rKzJGMld0ejI4YnA5TVM2aFhJc045bHRiUkZZ?=
- =?utf-8?B?bmYzL1lsNmlNUHdEcFFVUHZEVlRHMXNhbEVYWlpoa3QzTWtsbDl2TnI0a3Rh?=
- =?utf-8?B?WFI4UUJFbTlPcnd0cDVsbVNUVGs3eG4ycGp4bXk2Z2tueFJpTlJsL3phWndy?=
- =?utf-8?B?NWVXTmlUOHU2WmFwR2o4UVJQTmY3ZDRoUTk4ZVBoTUgyRTUrUldzNllzcTMz?=
- =?utf-8?B?K2c0QXpiMmpWc3EzNFRnbEVUUDltS1IvQ3ZZOTJBT0JTMUhHVTJiMVZsdStZ?=
- =?utf-8?B?WkFtVzBHaHpUU3JFZzRZY3ExWDBuZ0g1S2dRaHhsMEZ6RWFaeGtSTWYvd1Q3?=
- =?utf-8?B?Ri8rWFpyMjRVN3IxTjJscWFZdDlBSk51RUV5cHpsODB4cjF1UW9ld29sSGVr?=
- =?utf-8?B?cEY5VXpGUm1rWUdXaWhOZGVOQkVmaTkrRVkwcjZrb2VuQWVaQ2lHSXd5aWRP?=
- =?utf-8?B?Z1hKSkMyQUFNalhZazZJY0NRQXVRbzhpM2YzMC80a1BiaTZkVlRVeDRENTdw?=
- =?utf-8?B?UElJMzR4dXRBSGdJc25GOEs1UC8zRkZrK0R6MHZnMEVzTXR6K2pkYnZEdnhW?=
- =?utf-8?B?TmpnTzlPVnhhQ29JL3YrSzIrdkpnR1FRU2lLSWIvcFl0dGpSekhTYjFWeGho?=
- =?utf-8?B?alB6RnBSM3FpaFVOUVc2b2NWWFpTb2dzR0JIS2ZrK3NoUmZSNDN5N2RsZ1RY?=
- =?utf-8?B?dkx3Mk1McEpkeE52R09YNXgvY1VsOTh1MzZQQzBzM1Uwa3d5TGFPWENZRVhD?=
- =?utf-8?B?U1A4RXp5Y2FvM3ZDWnBINmpkRTl2WHZBcExrNmM4eFNQRTNuT3JaTWxEdVJ5?=
- =?utf-8?B?N2FkRTgxTEs0Y0pkaW96M2p0ekVYMFlwaXRoa214bHdjZzZ5emlHSkJUbmh2?=
- =?utf-8?B?UXpnSUJLTHp1U2tQVGhURWkwamliM0JTYnd4ZTFpNEQvRVB4a2R6VzdVZXhn?=
- =?utf-8?B?TUJvTWQrTndjWURiR0FrZ0FnNVFyeVQwOHZaaTZ2Q1l0SXhYNCtVTkVmeUJr?=
- =?utf-8?B?c1FKOHJPMXhKbmtKNHdjY3R6dEVuaTFtOG5oZ0NSOFlEZE9qMFdEdGg2OUtC?=
- =?utf-8?B?ODI5RGZDZWZTQUc2VTNkOGJaKzhMTjU3c3hvMENEK0NMMURxeHRhMnV0azlV?=
- =?utf-8?B?WG5EcmkwSXFTKytMc21GQVRQN2p3R1VFTVpycHRoSG5GTlp4TWJUNWRKc002?=
- =?utf-8?B?dmtBODIzNTJBLzh1NHpFL1YwR2RCTk91NWhiNmovM2UxTlZmdC9MbThxeHYw?=
- =?utf-8?B?d1JvZU4rNE82bFpiaFdscjFvd1ZZSitsOUI5cnQrdHBlNG9vekZKUitqUEhW?=
- =?utf-8?B?bGVXK0lDY0RUT2lwclVXZWFFS0NTQ3VXVUR0VDhUL1VKMStBNU5ZNnhIWVpR?=
- =?utf-8?B?blB0dVZGOUJGdyt3cFhkYXNtNFdReWt0cVM1RGpsS29ienNtYnlqZkxpdjV6?=
- =?utf-8?B?bHMyUjRQQ1hISXBwTUYvUVVOZmlCY1hBTUFQcHdHRllWclpCcC8vU3FWbWRq?=
- =?utf-8?B?OGVLRTdZLzZBRFAraTJ6NlRzY1J4QmlGanh4TE9OSTRHQ05meFEzZ1dscklK?=
- =?utf-8?B?Q0krMVM4N2JaUnNrUnNRT1pYM1gxeG83NWJnc2NNMDMzZGpFcGtEeGZVQTZH?=
- =?utf-8?B?RG01ZFFyd2VqSVZlR0h2UWVjTWFqNkFITXhEU2R6UDBWSWw2amNFTytYaTNo?=
- =?utf-8?B?QWlYUzZlYzVKb256SCtRS25OamxyZWoyZjdBaWsxeFZDVStseFMyOWFOY0Na?=
- =?utf-8?Q?Zq1b6n7dyRbpA?=
-X-OriginatorOrg: silabs.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4cd6e4b2-150e-4d82-7e1b-08d97474f447
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB2718.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Sep 2021 16:06:31.5568
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 54dbd822-5231-4b20-944d-6f4abcd541fb
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: UzOTUTYpu/kLQcX7gdqFEdPBjHP0MG80UT1hUFrVLecN3CmhxFxWI0LnRuPSaFywgSqJDSQzzY8KNqEt5K7DPA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR11MB5099
+Content-Type: text/plain; charset=y
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogSsOpcsO0bWUgUG91aWxsZXIgPGplcm9tZS5wb3VpbGxlckBzaWxhYnMuY29tPgoKRnVu
-Y3Rpb24gYXJndW1lbnRzIG11c3QgYmUgYWxpZ25lZCB3aXRoIGxlZnQgcGFyZW50aGVzaXMuIEFw
-cGx5IHRoYXQKcnVsZS4KClNpZ25lZC1vZmYtYnk6IErDqXLDtG1lIFBvdWlsbGVyIDxqZXJvbWUu
-cG91aWxsZXJAc2lsYWJzLmNvbT4KLS0tCiBkcml2ZXJzL3N0YWdpbmcvd2Z4L2hpZl90eF9taWIu
-YyB8ICAyICstCiBkcml2ZXJzL3N0YWdpbmcvd2Z4L2tleS5jICAgICAgICB8IDI2ICsrKysrKysr
-KysrKystLS0tLS0tLS0tLS0tCiAyIGZpbGVzIGNoYW5nZWQsIDE0IGluc2VydGlvbnMoKyksIDE0
-IGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvc3RhZ2luZy93ZngvaGlmX3R4X21p
-Yi5jIGIvZHJpdmVycy9zdGFnaW5nL3dmeC9oaWZfdHhfbWliLmMKaW5kZXggNDVlNTMxZDk5NmJk
-Li45N2U5NjFlNmJjZjYgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvc3RhZ2luZy93ZngvaGlmX3R4X21p
-Yi5jCisrKyBiL2RyaXZlcnMvc3RhZ2luZy93ZngvaGlmX3R4X21pYi5jCkBAIC03NSw3ICs3NSw3
-IEBAIGludCBoaWZfZ2V0X2NvdW50ZXJzX3RhYmxlKHN0cnVjdCB3ZnhfZGV2ICp3ZGV2LCBpbnQg
-dmlmX2lkLAogCX0gZWxzZSB7CiAJCXJldHVybiBoaWZfcmVhZF9taWIod2RldiwgdmlmX2lkLAog
-CQkJCSAgICBISUZfTUlCX0lEX0VYVEVOREVEX0NPVU5URVJTX1RBQkxFLCBhcmcsCi0JCQkJc2l6
-ZW9mKHN0cnVjdCBoaWZfbWliX2V4dGVuZGVkX2NvdW50X3RhYmxlKSk7CisJCQkJICAgIHNpemVv
-ZihzdHJ1Y3QgaGlmX21pYl9leHRlbmRlZF9jb3VudF90YWJsZSkpOwogCX0KIH0KIApkaWZmIC0t
-Z2l0IGEvZHJpdmVycy9zdGFnaW5nL3dmeC9rZXkuYyBiL2RyaXZlcnMvc3RhZ2luZy93Zngva2V5
-LmMKaW5kZXggNTFhNTI4MTAyMDE2Li42NTEzNGExNzQ2ODMgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMv
-c3RhZ2luZy93Zngva2V5LmMKKysrIGIvZHJpdmVycy9zdGFnaW5nL3dmeC9rZXkuYwpAQCAtMzEs
-NyArMzEsNyBAQCBzdGF0aWMgdm9pZCB3ZnhfZnJlZV9rZXkoc3RydWN0IHdmeF9kZXYgKndkZXYs
-IGludCBpZHgpCiB9CiAKIHN0YXRpYyB1OCBmaWxsX3dlcF9wYWlyKHN0cnVjdCBoaWZfd2VwX3Bh
-aXJ3aXNlX2tleSAqbXNnLAotCQkJICAgICBzdHJ1Y3QgaWVlZTgwMjExX2tleV9jb25mICprZXks
-IHU4ICpwZWVyX2FkZHIpCisJCQlzdHJ1Y3QgaWVlZTgwMjExX2tleV9jb25mICprZXksIHU4ICpw
-ZWVyX2FkZHIpCiB7CiAJV0FSTihrZXktPmtleWxlbiA+IHNpemVvZihtc2ctPmtleV9kYXRhKSwg
-ImluY29uc2lzdGVudCBkYXRhIik7CiAJbXNnLT5rZXlfbGVuZ3RoID0ga2V5LT5rZXlsZW47CkBA
-IC00MSw3ICs0MSw3IEBAIHN0YXRpYyB1OCBmaWxsX3dlcF9wYWlyKHN0cnVjdCBoaWZfd2VwX3Bh
-aXJ3aXNlX2tleSAqbXNnLAogfQogCiBzdGF0aWMgdTggZmlsbF93ZXBfZ3JvdXAoc3RydWN0IGhp
-Zl93ZXBfZ3JvdXBfa2V5ICptc2csCi0JCQkgICAgICBzdHJ1Y3QgaWVlZTgwMjExX2tleV9jb25m
-ICprZXkpCisJCQkgc3RydWN0IGllZWU4MDIxMV9rZXlfY29uZiAqa2V5KQogewogCVdBUk4oa2V5
-LT5rZXlsZW4gPiBzaXplb2YobXNnLT5rZXlfZGF0YSksICJpbmNvbnNpc3RlbnQgZGF0YSIpOwog
-CW1zZy0+a2V5X2lkID0ga2V5LT5rZXlpZHg7CkBAIC01MSw3ICs1MSw3IEBAIHN0YXRpYyB1OCBm
-aWxsX3dlcF9ncm91cChzdHJ1Y3QgaGlmX3dlcF9ncm91cF9rZXkgKm1zZywKIH0KIAogc3RhdGlj
-IHU4IGZpbGxfdGtpcF9wYWlyKHN0cnVjdCBoaWZfdGtpcF9wYWlyd2lzZV9rZXkgKm1zZywKLQkJ
-CSAgICAgIHN0cnVjdCBpZWVlODAyMTFfa2V5X2NvbmYgKmtleSwgdTggKnBlZXJfYWRkcikKKwkJ
-CSBzdHJ1Y3QgaWVlZTgwMjExX2tleV9jb25mICprZXksIHU4ICpwZWVyX2FkZHIpCiB7CiAJdTgg
-KmtleWJ1ZiA9IGtleS0+a2V5OwogCkBAIC02OCw5ICs2OCw5IEBAIHN0YXRpYyB1OCBmaWxsX3Rr
-aXBfcGFpcihzdHJ1Y3QgaGlmX3RraXBfcGFpcndpc2Vfa2V5ICptc2csCiB9CiAKIHN0YXRpYyB1
-OCBmaWxsX3RraXBfZ3JvdXAoc3RydWN0IGhpZl90a2lwX2dyb3VwX2tleSAqbXNnLAotCQkJICAg
-ICAgIHN0cnVjdCBpZWVlODAyMTFfa2V5X2NvbmYgKmtleSwKLQkJCSAgICAgICBzdHJ1Y3QgaWVl
-ZTgwMjExX2tleV9zZXEgKnNlcSwKLQkJCSAgICAgICBlbnVtIG5sODAyMTFfaWZ0eXBlIGlmdHlw
-ZSkKKwkJCSAgc3RydWN0IGllZWU4MDIxMV9rZXlfY29uZiAqa2V5LAorCQkJICBzdHJ1Y3QgaWVl
-ZTgwMjExX2tleV9zZXEgKnNlcSwKKwkJCSAgZW51bSBubDgwMjExX2lmdHlwZSBpZnR5cGUpCiB7
-CiAJdTggKmtleWJ1ZiA9IGtleS0+a2V5OwogCkBAIC05Myw3ICs5Myw3IEBAIHN0YXRpYyB1OCBm
-aWxsX3RraXBfZ3JvdXAoc3RydWN0IGhpZl90a2lwX2dyb3VwX2tleSAqbXNnLAogfQogCiBzdGF0
-aWMgdTggZmlsbF9jY21wX3BhaXIoc3RydWN0IGhpZl9hZXNfcGFpcndpc2Vfa2V5ICptc2csCi0J
-CQkgICAgICBzdHJ1Y3QgaWVlZTgwMjExX2tleV9jb25mICprZXksIHU4ICpwZWVyX2FkZHIpCisJ
-CQkgc3RydWN0IGllZWU4MDIxMV9rZXlfY29uZiAqa2V5LCB1OCAqcGVlcl9hZGRyKQogewogCVdB
-Uk4oa2V5LT5rZXlsZW4gIT0gc2l6ZW9mKG1zZy0+YWVzX2tleV9kYXRhKSwgImluY29uc2lzdGVu
-dCBkYXRhIik7CiAJZXRoZXJfYWRkcl9jb3B5KG1zZy0+cGVlcl9hZGRyZXNzLCBwZWVyX2FkZHIp
-OwpAQCAtMTAyLDggKzEwMiw4IEBAIHN0YXRpYyB1OCBmaWxsX2NjbXBfcGFpcihzdHJ1Y3QgaGlm
-X2Flc19wYWlyd2lzZV9rZXkgKm1zZywKIH0KIAogc3RhdGljIHU4IGZpbGxfY2NtcF9ncm91cChz
-dHJ1Y3QgaGlmX2Flc19ncm91cF9rZXkgKm1zZywKLQkJCSAgICAgICBzdHJ1Y3QgaWVlZTgwMjEx
-X2tleV9jb25mICprZXksCi0JCQkgICAgICAgc3RydWN0IGllZWU4MDIxMV9rZXlfc2VxICpzZXEp
-CisJCQkgIHN0cnVjdCBpZWVlODAyMTFfa2V5X2NvbmYgKmtleSwKKwkJCSAgc3RydWN0IGllZWU4
-MDIxMV9rZXlfc2VxICpzZXEpCiB7CiAJV0FSTihrZXktPmtleWxlbiAhPSBzaXplb2YobXNnLT5h
-ZXNfa2V5X2RhdGEpLCAiaW5jb25zaXN0ZW50IGRhdGEiKTsKIAltZW1jcHkobXNnLT5hZXNfa2V5
-X2RhdGEsIGtleS0+a2V5LCBrZXktPmtleWxlbik7CkBAIC0xMTQsNyArMTE0LDcgQEAgc3RhdGlj
-IHU4IGZpbGxfY2NtcF9ncm91cChzdHJ1Y3QgaGlmX2Flc19ncm91cF9rZXkgKm1zZywKIH0KIAog
-c3RhdGljIHU4IGZpbGxfc21zNF9wYWlyKHN0cnVjdCBoaWZfd2FwaV9wYWlyd2lzZV9rZXkgKm1z
-ZywKLQkJCSAgICAgIHN0cnVjdCBpZWVlODAyMTFfa2V5X2NvbmYgKmtleSwgdTggKnBlZXJfYWRk
-cikKKwkJCSBzdHJ1Y3QgaWVlZTgwMjExX2tleV9jb25mICprZXksIHU4ICpwZWVyX2FkZHIpCiB7
-CiAJdTggKmtleWJ1ZiA9IGtleS0+a2V5OwogCkBAIC0xMjksNyArMTI5LDcgQEAgc3RhdGljIHU4
-IGZpbGxfc21zNF9wYWlyKHN0cnVjdCBoaWZfd2FwaV9wYWlyd2lzZV9rZXkgKm1zZywKIH0KIAog
-c3RhdGljIHU4IGZpbGxfc21zNF9ncm91cChzdHJ1Y3QgaGlmX3dhcGlfZ3JvdXBfa2V5ICptc2cs
-Ci0JCQkgICAgICAgc3RydWN0IGllZWU4MDIxMV9rZXlfY29uZiAqa2V5KQorCQkJICBzdHJ1Y3Qg
-aWVlZTgwMjExX2tleV9jb25mICprZXkpCiB7CiAJdTggKmtleWJ1ZiA9IGtleS0+a2V5OwogCkBA
-IC0xNDMsOCArMTQzLDggQEAgc3RhdGljIHU4IGZpbGxfc21zNF9ncm91cChzdHJ1Y3QgaGlmX3dh
-cGlfZ3JvdXBfa2V5ICptc2csCiB9CiAKIHN0YXRpYyB1OCBmaWxsX2Flc19jbWFjX2dyb3VwKHN0
-cnVjdCBoaWZfaWd0a19ncm91cF9rZXkgKm1zZywKLQkJCQkgICBzdHJ1Y3QgaWVlZTgwMjExX2tl
-eV9jb25mICprZXksCi0JCQkJICAgc3RydWN0IGllZWU4MDIxMV9rZXlfc2VxICpzZXEpCisJCQkg
-ICAgICBzdHJ1Y3QgaWVlZTgwMjExX2tleV9jb25mICprZXksCisJCQkgICAgICBzdHJ1Y3QgaWVl
-ZTgwMjExX2tleV9zZXEgKnNlcSkKIHsKIAlXQVJOKGtleS0+a2V5bGVuICE9IHNpemVvZihtc2ct
-PmlndGtfa2V5X2RhdGEpLCAiaW5jb25zaXN0ZW50IGRhdGEiKTsKIAltZW1jcHkobXNnLT5pZ3Rr
-X2tleV9kYXRhLCBrZXktPmtleSwga2V5LT5rZXlsZW4pOwotLSAKMi4zMy4wCgo=
+This series introduce XDP multi-buffer support. The mvneta driver is
+the first to support these new "non-linear" xdp_{buff,frame}. Reviewers
+please focus on how these new types of xdp_{buff,frame} packets
+traverse the different layers and the layout design. It is on purpose
+that BPF-helpers are kept simple, as we don't want to expose the
+internal layout to allow later changes.
+
+The main idea for the new multi-buffer layout is to reuse the same
+structure used for non-linear SKB. This rely on the "skb_shared_info"
+struct at the end of the first buffer to link together subsequent
+buffers. Keeping the layout compatible with SKBs is also done to ease
+and speedup creating a SKB from an xdp_{buff,frame}.
+Converting xdp_frame to SKB and deliver it to the network stack is shown
+in patch 05/18 (e.g. cpumaps).
+
+A multi-buffer bit (mb) has been introduced in the flags field of xdp_{buff,frame}
+structure to notify the bpf/network layer if this is a xdp multi-buffer frame
+(mb = 1) or not (mb = 0).
+The mb bit will be set by a xdp multi-buffer capable driver only for
+non-linear frames maintaining the capability to receive linear frames
+without any extra cost since the skb_shared_info structure at the end
+of the first buffer will be initialized only if mb is set.
+Moreover the flags field in xdp_{buff,frame} will be reused even for
+xdp rx csum offloading in future series.
+
+Typical use cases for this series are:
+- Jumbo-frames
+- Packet header split (please see Google’s use-case @ NetDevConf 0x14, [0])
+- TSO/GRO for XDP_REDIRECT
+
+The two following ebpf helpers (and related selftests) has been introduced:
+- bpf_xdp_adjust_data:
+  Move xdp_md->data and xdp_md->data_end pointers in subsequent fragments
+  according to the offset provided by the ebpf program. This helper can be
+  used to read/write values in frame payload.
+- bpf_xdp_get_buff_len:
+  Return the total frame size (linear + paged parts)
+
+bpf_xdp_adjust_tail and bpf_xdp_copy helpers have been modified to take into
+account xdp multi-buff frames.
+
+A multi-buffer enabled NIC may receive XDP frames with multiple frags. If a BPF
+program does not understand mb layouts its possible to contrive a BPF program
+that incorrectly views data_end as the end of data when there is more data in
+the payload. Note helpers will generally due the correct thing, for example
+perf_output will consume entire payload. But, it is still possible some programs
+could do the wrong thing even if in an edge case. Although we expect most BPF
+programs not to be impacted we can't rule out, you've been warned.
+
+More info about the main idea behind this approach can be found here [1][2].
+
+Changes since v13:
+- use u32 for xdp_buff/xdp_frame flags field
+- rename xdp_frags_tsize in xdp_frags_truesize
+- fixed comments
+
+Changes since v12:
+- fix bpf_xdp_adjust_data helper for single-buffer use case
+- return -EFAULT in bpf_xdp_adjust_{head,tail} in case the data pointers are not
+  properly reset
+- collect ACKs from John
+
+Changes since v11:
+- add missing static to bpf_xdp_get_buff_len_proto structure
+- fix bpf_xdp_adjust_data helper when offset is smaller than linear area length.
+
+Changes since v10:
+- move xdp->data to the requested payload offset instead of to the beginning of
+  the fragment in bpf_xdp_adjust_data()
+
+Changes since v9:
+- introduce bpf_xdp_adjust_data helper and related selftest
+- add xdp_frags_size and xdp_frags_tsize fields in skb_shared_info
+- introduce xdp_update_skb_shared_info utility routine in ordere to not reset
+  frags array in skb_shared_info converting from a xdp_buff/xdp_frame to a skb 
+- simplify bpf_xdp_copy routine
+
+Changes since v8:
+- add proper dma unmapping if XDP_TX fails on mvneta for a xdp multi-buff
+- switch back to skb_shared_info implementation from previous xdp_shared_info
+  one
+- avoid using a bietfield in xdp_buff/xdp_frame since it introduces performance
+  regressions. Tested now on 10G NIC (ixgbe) to verify there are no performance
+  penalties for regular codebase
+- add bpf_xdp_get_buff_len helper and remove frame_length field in xdp ctx
+- add data_len field in skb_shared_info struct
+- introduce XDP_FLAGS_FRAGS_PF_MEMALLOC flag
+
+Changes since v7:
+- rebase on top of bpf-next
+- fix sparse warnings
+- improve comments for frame_length in include/net/xdp.h
+
+Changes since v6:
+- the main difference respect to previous versions is the new approach proposed
+  by Eelco to pass full length of the packet to eBPF layer in XDP context
+- reintroduce multi-buff support to eBPF kself-tests
+- reintroduce multi-buff support to bpf_xdp_adjust_tail helper
+- introduce multi-buffer support to bpf_xdp_copy helper
+- rebase on top of bpf-next
+
+Changes since v5:
+- rebase on top of bpf-next
+- initialize mb bit in xdp_init_buff() and drop per-driver initialization
+- drop xdp->mb initialization in xdp_convert_zc_to_xdp_frame()
+- postpone introduction of frame_length field in XDP ctx to another series
+- minor changes
+
+Changes since v4:
+- rebase ontop of bpf-next
+- introduce xdp_shared_info to build xdp multi-buff instead of using the
+  skb_shared_info struct
+- introduce frame_length in xdp ctx
+- drop previous bpf helpers
+- fix bpf_xdp_adjust_tail for xdp multi-buff
+- introduce xdp multi-buff self-tests for bpf_xdp_adjust_tail
+- fix xdp_return_frame_bulk for xdp multi-buff
+
+Changes since v3:
+- rebase ontop of bpf-next
+- add patch 10/13 to copy back paged data from a xdp multi-buff frame to
+  userspace buffer for xdp multi-buff selftests
+
+Changes since v2:
+- add throughput measurements
+- drop bpf_xdp_adjust_mb_header bpf helper
+- introduce selftest for xdp multibuffer
+- addressed comments on bpf_xdp_get_frags_count
+- introduce xdp multi-buff support to cpumaps
+
+Changes since v1:
+- Fix use-after-free in xdp_return_{buff/frame}
+- Introduce bpf helpers
+- Introduce xdp_mb sample program
+- access skb_shared_info->nr_frags only on the last fragment
+
+Changes since RFC:
+- squash multi-buffer bit initialization in a single patch
+- add mvneta non-linear XDP buff support for tx side
+
+[0] https://netdevconf.info/0x14/session.html?talk-the-path-to-tcp-4k-mtu-and-rx-zerocopy
+[1] https://github.com/xdp-project/xdp-project/blob/master/areas/core/xdp-multi-buffer01-design.org
+[2] https://netdevconf.info/0x14/session.html?tutorial-add-XDP-support-to-a-NIC-driver (XDPmulti-buffers section)
+
+Eelco Chaudron (3):
+  bpf: add multi-buff support to the bpf_xdp_adjust_tail() API
+  bpf: add multi-buffer support to xdp copy helpers
+  bpf: update xdp_adjust_tail selftest to include multi-buffer
+
+Lorenzo Bianconi (15):
+  net: skbuff: add size metadata to skb_shared_info for xdp
+  xdp: introduce flags field in xdp_buff/xdp_frame
+  net: mvneta: update mb bit before passing the xdp buffer to eBPF layer
+  net: mvneta: simplify mvneta_swbm_add_rx_fragment management
+  net: xdp: add xdp_update_skb_shared_info utility routine
+  net: marvell: rely on xdp_update_skb_shared_info utility routine
+  xdp: add multi-buff support to xdp_return_{buff/frame}
+  net: mvneta: add multi buffer support to XDP_TX
+  net: mvneta: enable jumbo frames for XDP
+  bpf: introduce bpf_xdp_get_buff_len helper
+  bpf: move user_size out of bpf_test_init
+  bpf: introduce multibuff support to bpf_prog_test_run_xdp()
+  bpf: test_run: add xdp_shared_info pointer in bpf_test_finish
+    signature
+  net: xdp: introduce bpf_xdp_adjust_data helper
+  bpf: add bpf_xdp_adjust_data selftest
+
+ drivers/net/ethernet/marvell/mvneta.c         | 204 ++++++++++-------
+ include/linux/skbuff.h                        |   6 +-
+ include/net/xdp.h                             |  95 +++++++-
+ include/uapi/linux/bpf.h                      |  39 ++++
+ kernel/trace/bpf_trace.c                      |   3 +
+ net/bpf/test_run.c                            | 117 ++++++++--
+ net/core/filter.c                             | 216 +++++++++++++++++-
+ net/core/xdp.c                                |  76 +++++-
+ tools/include/uapi/linux/bpf.h                |  39 ++++
+ .../bpf/prog_tests/xdp_adjust_data.c          |  63 +++++
+ .../bpf/prog_tests/xdp_adjust_tail.c          | 118 ++++++++++
+ .../selftests/bpf/prog_tests/xdp_bpf2bpf.c    | 151 ++++++++----
+ .../bpf/progs/test_xdp_adjust_tail_grow.c     |  10 +-
+ .../bpf/progs/test_xdp_adjust_tail_shrink.c   |  32 ++-
+ .../selftests/bpf/progs/test_xdp_bpf2bpf.c    |   2 +-
+ .../bpf/progs/test_xdp_update_frags.c         |  45 ++++
+ 16 files changed, 1051 insertions(+), 165 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_adjust_data.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_update_frags.c
+
+-- 
+2.31.1
+
