@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9BAD407709
-	for <lists+netdev@lfdr.de>; Sat, 11 Sep 2021 15:13:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B616407758
+	for <lists+netdev@lfdr.de>; Sat, 11 Sep 2021 15:15:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236699AbhIKNOa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Sep 2021 09:14:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38202 "EHLO mail.kernel.org"
+        id S236051AbhIKNQs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Sep 2021 09:16:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40666 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236352AbhIKNNo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Sep 2021 09:13:44 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 544D2611F2;
-        Sat, 11 Sep 2021 13:12:31 +0000 (UTC)
+        id S236789AbhIKNOy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 11 Sep 2021 09:14:54 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9FA36611C3;
+        Sat, 11 Sep 2021 13:12:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631365952;
-        bh=b1NkeVqnYrPA3DmXYYRWWj0Gnvrnh3Atp/VKObJ4sGA=;
+        s=k20201202; t=1631365980;
+        bh=aiMlmuA36RxP7RdJ7UfeVbFHzCB64ReqOvzOFfEOCKo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AcUGIroIXSG8W4ic4WkFK3gONpuWJuyrbHxyenZsflZWJqF3V++2spZ+JCCOlOh7u
-         DhF/7Br4vxFFAAlJ7QHHlbEDICwkyFB7OYVgzF+H7cLozKLS0A+J1ORazSP+QYxtfg
-         14BHtlWhBMmGaXUjrDDgcUYnX2Sqy3J/wFU2wBNB8QQ0KFi2dpo3QCLZrelyYvZ+9S
-         HH25qnf94E03XFdIa/3J4neiAxc2WDZB01i66m7Ks1GnIuctHtaG5sCSbqc0RdxSYN
-         f75N31mnIGfpgZkX1qQtQ3tXi0JSSz7Z7HObEvkuQaBSfxxlFsTeTJLTaVYPDVyXny
-         1MB5svzkrf2jw==
+        b=VKn1Hllr+ck2BH50/GFg6BSZo4Yv7X9RO3VL31J67YUjSgv6dLZm6PuS6J+H5+4pK
+         e5SQwgqg7Gd2cXn0kD4cCyObw1tNvTAgEm9TUj2U/qf6PCYYv2Pr83gpLQKJxQ5Bf4
+         d/DF9IvuI5g0c+2120iP+t8zjCs2tOrlDI3HtvhlAErJg0QTbzVswI1qa4/h79Spjh
+         S31JBiKymkAz5yAkp61uHUwGjsmjEVrTxXnV6WlWz9wcPSJAd+r/Nm4wFqFrSPhE/G
+         ecjEfCvobopOJfS0SMRu6MvbfURDztxvvOzuO1tYXIx4AVsLAmwcxRym0Ylyo3N5XA
+         JDCcMdTK1qdyg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
+Cc:     Smadar Fuks <smadarf@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.14 32/32] net: phylink: add suspend/resume support
-Date:   Sat, 11 Sep 2021 09:11:49 -0400
-Message-Id: <20210911131149.284397-32-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.13 20/29] octeontx2-af: Add additional register check to rvu_poll_reg()
+Date:   Sat, 11 Sep 2021 09:12:24 -0400
+Message-Id: <20210911131233.284800-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210911131149.284397-1-sashal@kernel.org>
-References: <20210911131149.284397-1-sashal@kernel.org>
+In-Reply-To: <20210911131233.284800-1-sashal@kernel.org>
+References: <20210911131233.284800-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -43,150 +43,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+From: Smadar Fuks <smadarf@marvell.com>
 
-[ Upstream commit f97493657c6372eeefe70faadd214bf31488c44e ]
+[ Upstream commit 21274aa1781941884599a97ab59be7f8f36af98c ]
 
-Joakim Zhang reports that Wake-on-Lan with the stmmac ethernet driver broke
-when moving the incorrect handling of mac link state out of mac_config().
-This reason this breaks is because the stmmac's WoL is handled by the MAC
-rather than the PHY, and phylink doesn't cater for that scenario.
+Check one more time before exiting the API with an error.
+Fix API to poll at least twice, in case there are other high priority
+tasks and this API doesn't get CPU cycles for multiple jiffies update.
 
-This patch adds the necessary phylink code to handle suspend/resume events
-according to whether the MAC still needs a valid link or not. This is the
-barest minimum for this support.
+In addition, increase timeout from usecs_to_jiffies(10000) to
+usecs_to_jiffies(20000), to prevent the case that for CONFIG_100HZ
+timeout will be a single jiffies.
+A single jiffies results actual timeout that can be any time between
+1usec and 10msec. To solve this, a value of usecs_to_jiffies(20000)
+ensures that timeout is 2 jiffies.
 
-Reported-by: Joakim Zhang <qiangqing.zhang@nxp.com>
-Tested-by: Joakim Zhang <qiangqing.zhang@nxp.com>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+Signed-off-by: Smadar Fuks <smadarf@marvell.com>
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/phylink.c | 82 +++++++++++++++++++++++++++++++++++++++
- include/linux/phylink.h   |  3 ++
- 2 files changed, 85 insertions(+)
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index eb29ef53d971..42e5a681183f 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -33,6 +33,7 @@
- enum {
- 	PHYLINK_DISABLE_STOPPED,
- 	PHYLINK_DISABLE_LINK,
-+	PHYLINK_DISABLE_MAC_WOL,
- };
- 
- /**
-@@ -1281,6 +1282,9 @@ EXPORT_SYMBOL_GPL(phylink_start);
-  * network device driver's &struct net_device_ops ndo_stop() method.  The
-  * network device's carrier state should not be changed prior to calling this
-  * function.
-+ *
-+ * This will synchronously bring down the link if the link is not already
-+ * down (in other words, it will trigger a mac_link_down() method call.)
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
+index ab24a5e8ee8a..556cb816fe5d 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
+@@ -88,7 +88,8 @@ static void rvu_setup_hw_capabilities(struct rvu *rvu)
   */
- void phylink_stop(struct phylink *pl)
+ int rvu_poll_reg(struct rvu *rvu, u64 block, u64 offset, u64 mask, bool zero)
  {
-@@ -1300,6 +1304,84 @@ void phylink_stop(struct phylink *pl)
+-	unsigned long timeout = jiffies + usecs_to_jiffies(10000);
++	unsigned long timeout = jiffies + usecs_to_jiffies(20000);
++	bool twice = false;
+ 	void __iomem *reg;
+ 	u64 reg_val;
+ 
+@@ -103,6 +104,15 @@ int rvu_poll_reg(struct rvu *rvu, u64 block, u64 offset, u64 mask, bool zero)
+ 		usleep_range(1, 5);
+ 		goto again;
+ 	}
++	/* In scenarios where CPU is scheduled out before checking
++	 * 'time_before' (above) and gets scheduled in such that
++	 * jiffies are beyond timeout value, then check again if HW is
++	 * done with the operation in the meantime.
++	 */
++	if (!twice) {
++		twice = true;
++		goto again;
++	}
+ 	return -EBUSY;
  }
- EXPORT_SYMBOL_GPL(phylink_stop);
- 
-+/**
-+ * phylink_suspend() - handle a network device suspend event
-+ * @pl: a pointer to a &struct phylink returned from phylink_create()
-+ * @mac_wol: true if the MAC needs to receive packets for Wake-on-Lan
-+ *
-+ * Handle a network device suspend event. There are several cases:
-+ * - If Wake-on-Lan is not active, we can bring down the link between
-+ *   the MAC and PHY by calling phylink_stop().
-+ * - If Wake-on-Lan is active, and being handled only by the PHY, we
-+ *   can also bring down the link between the MAC and PHY.
-+ * - If Wake-on-Lan is active, but being handled by the MAC, the MAC
-+ *   still needs to receive packets, so we can not bring the link down.
-+ */
-+void phylink_suspend(struct phylink *pl, bool mac_wol)
-+{
-+	ASSERT_RTNL();
-+
-+	if (mac_wol && (!pl->netdev || pl->netdev->wol_enabled)) {
-+		/* Wake-on-Lan enabled, MAC handling */
-+		mutex_lock(&pl->state_mutex);
-+
-+		/* Stop the resolver bringing the link up */
-+		__set_bit(PHYLINK_DISABLE_MAC_WOL, &pl->phylink_disable_state);
-+
-+		/* Disable the carrier, to prevent transmit timeouts,
-+		 * but one would hope all packets have been sent. This
-+		 * also means phylink_resolve() will do nothing.
-+		 */
-+		netif_carrier_off(pl->netdev);
-+
-+		/* We do not call mac_link_down() here as we want the
-+		 * link to remain up to receive the WoL packets.
-+		 */
-+		mutex_unlock(&pl->state_mutex);
-+	} else {
-+		phylink_stop(pl);
-+	}
-+}
-+EXPORT_SYMBOL_GPL(phylink_suspend);
-+
-+/**
-+ * phylink_resume() - handle a network device resume event
-+ * @pl: a pointer to a &struct phylink returned from phylink_create()
-+ *
-+ * Undo the effects of phylink_suspend(), returning the link to an
-+ * operational state.
-+ */
-+void phylink_resume(struct phylink *pl)
-+{
-+	ASSERT_RTNL();
-+
-+	if (test_bit(PHYLINK_DISABLE_MAC_WOL, &pl->phylink_disable_state)) {
-+		/* Wake-on-Lan enabled, MAC handling */
-+
-+		/* Call mac_link_down() so we keep the overall state balanced.
-+		 * Do this under the state_mutex lock for consistency. This
-+		 * will cause a "Link Down" message to be printed during
-+		 * resume, which is harmless - the true link state will be
-+		 * printed when we run a resolve.
-+		 */
-+		mutex_lock(&pl->state_mutex);
-+		phylink_link_down(pl);
-+		mutex_unlock(&pl->state_mutex);
-+
-+		/* Re-apply the link parameters so that all the settings get
-+		 * restored to the MAC.
-+		 */
-+		phylink_mac_initial_config(pl, true);
-+
-+		/* Re-enable and re-resolve the link parameters */
-+		clear_bit(PHYLINK_DISABLE_MAC_WOL, &pl->phylink_disable_state);
-+		phylink_run_resolve(pl);
-+	} else {
-+		phylink_start(pl);
-+	}
-+}
-+EXPORT_SYMBOL_GPL(phylink_resume);
-+
- /**
-  * phylink_ethtool_get_wol() - get the wake on lan parameters for the PHY
-  * @pl: a pointer to a &struct phylink returned from phylink_create()
-diff --git a/include/linux/phylink.h b/include/linux/phylink.h
-index afb3ded0b691..237291196ce2 100644
---- a/include/linux/phylink.h
-+++ b/include/linux/phylink.h
-@@ -451,6 +451,9 @@ void phylink_mac_change(struct phylink *, bool up);
- void phylink_start(struct phylink *);
- void phylink_stop(struct phylink *);
- 
-+void phylink_suspend(struct phylink *pl, bool mac_wol);
-+void phylink_resume(struct phylink *pl);
-+
- void phylink_ethtool_get_wol(struct phylink *, struct ethtool_wolinfo *);
- int phylink_ethtool_set_wol(struct phylink *, struct ethtool_wolinfo *);
  
 -- 
 2.30.2
