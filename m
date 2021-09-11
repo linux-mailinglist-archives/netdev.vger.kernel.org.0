@@ -2,68 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C722B40757B
-	for <lists+netdev@lfdr.de>; Sat, 11 Sep 2021 09:43:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E62C4075CC
+	for <lists+netdev@lfdr.de>; Sat, 11 Sep 2021 11:30:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235374AbhIKHpB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Sep 2021 03:45:01 -0400
-Received: from jabberwock.ucw.cz ([46.255.230.98]:40212 "EHLO
-        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233040AbhIKHpA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Sep 2021 03:45:00 -0400
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id BEB611C0B7A; Sat, 11 Sep 2021 09:43:36 +0200 (CEST)
-Date:   Sat, 11 Sep 2021 09:43:35 +0200
-From:   Pavel Machek <pavel@denx.de>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Pavel Machek <pavel@denx.de>, Aya Levin <ayal@nvidia.com>
-Subject: Re: [net 4/7] net/mlx5: FWTrace, cancel work on alloc pd error flow
-Message-ID: <20210911074335.GA27612@amd>
-References: <20210907212420.28529-1-saeed@kernel.org>
- <20210907212420.28529-5-saeed@kernel.org>
+        id S235500AbhIKJb1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Sep 2021 05:31:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43768 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235407AbhIKJbY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 11 Sep 2021 05:31:24 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 196DF61216;
+        Sat, 11 Sep 2021 09:30:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1631352606;
+        bh=qdaWEUd1KSrLpISbbqbmAzB80NVLQS21cH6iG8/ZBZw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=qOSkB35zTtfCVAWtwAb3pw6H2aNP5lAUirDjwRVqDTrazC9HEv4Ju62gbnExW1BC/
+         YjRCV8lsADelggta77QGJoX7YEyUyxF+rulizSM5UDtD/7nGNc2Oq+zVDGILg55CVg
+         AbyM64GBagjFr4WDwLcbrk9QSfnjyXq7o2Bb28IxAjKhbdQKg+10Qa8CYMesFey5Rl
+         hV4ahWodfytLxb+KCYaw9n+jRUZfqFfQf0AZT2gfwsaG04lMHzPDiqSct41wEUVPMR
+         BXmL9045/w/JPgMcSKMqzmyFYk9IUX7mOeC7Vy6C0ThWHg+Lvk+exrQDd3bXbeq1sQ
+         ArfZTUHZQgt9A==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0DA7C609ED;
+        Sat, 11 Sep 2021 09:30:06 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="ReaqsoxgOBHFXBhH"
-Content-Disposition: inline
-In-Reply-To: <20210907212420.28529-5-saeed@kernel.org>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: stmmac: allow CSR clock of 300MHz
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163135260605.6855.16868234164937660969.git-patchwork-notify@kernel.org>
+Date:   Sat, 11 Sep 2021 09:30:06 +0000
+References: <20210910195535.12533-1-jesper.nilsson@axis.com>
+In-Reply-To: <20210910195535.12533-1-jesper.nilsson@axis.com>
+To:     Jesper Nilsson <jesper.nilsson@axis.com>
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
+        mcoquelin.stm32@gmail.com, kernel@axis.com, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
---ReaqsoxgOBHFXBhH
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This patch was applied to netdev/net.git (refs/heads/master):
 
-On Tue 2021-09-07 14:24:17, Saeed Mahameed wrote:
-> From: Saeed Mahameed <saeedm@nvidia.com>
->=20
-> Handle error flow on mlx5_core_alloc_pd() failure,
-> read_fw_strings_work must be canceled.
->=20
-> Fixes: c71ad41ccb0c ("net/mlx5: FW tracer, events handling")
+On Fri, 10 Sep 2021 21:55:34 +0200 you wrote:
+> The Synopsys Ethernet IP uses the CSR clock as a base clock for MDC.
+> The divisor used is set in the MAC_MDIO_Address register field CR
+> (Clock Rate)
+> 
+> The divisor is there to change the CSR clock into a clock that falls
+> below the IEEE 802.3 specified max frequency of 2.5MHz.
+> 
+> [...]
 
-Reviewed-by: Pavel Machek (CIP) <pavel@denx.de>
+Here is the summary with links:
+  - net: stmmac: allow CSR clock of 300MHz
+    https://git.kernel.org/netdev/net/c/08dad2f4d541
 
---=20
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
---ReaqsoxgOBHFXBhH
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAmE8XicACgkQMOfwapXb+vJ67gCeMQC0K/Xplu9yYC6HdydFPF/N
-dVUAn0vsbGRkNH5In0Ke99DAzKyVC8j3
-=6xzz
------END PGP SIGNATURE-----
-
---ReaqsoxgOBHFXBhH--
