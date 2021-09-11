@@ -2,39 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A7204077C2
-	for <lists+netdev@lfdr.de>; Sat, 11 Sep 2021 15:18:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44D4B4077DA
+	for <lists+netdev@lfdr.de>; Sat, 11 Sep 2021 15:19:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236963AbhIKNT5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Sep 2021 09:19:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38202 "EHLO mail.kernel.org"
+        id S236772AbhIKNUz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Sep 2021 09:20:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41100 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236619AbhIKNRm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Sep 2021 09:17:42 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1C6956127B;
-        Sat, 11 Sep 2021 13:13:44 +0000 (UTC)
+        id S236420AbhIKNSq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 11 Sep 2021 09:18:46 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A364961360;
+        Sat, 11 Sep 2021 13:13:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631366024;
-        bh=Z+xubYbtg/Rc2Q/6ngq8tjfsWPqkLVeIKUkaN9SisN4=;
+        s=k20201202; t=1631366036;
+        bh=rx8falONLClRA0qBopJysTvMQwI64xThcCLw7e61JSE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=unsKZs1/CelxdnzCl9iG8G8pYbqf14t8BLqCd77VYv+v0YUtlZ1XyBj5+cc01Z/cX
-         igYsqShtVg/vXUg4GV2PLFSTyYYNuLplHL2ySzpi3GECK1w8edQ2KiBddE54f9hqWS
-         Xci4uuqk+2MP3fmNBEoT5CRdwmDRcJDwCg3Mu0CHocs0NpU4zO5INH6H3hwErF9GRB
-         edSQkMEDqyDju7kAX/egiOZYeuA9C3xQBTCdacS7RniCGGFvbQAbppohGffZtWmQgb
-         YWG4ksHhzXQOYAcNF8834LbVUNQsPmqKQ85ApwE1zLT/U0LR/Uirhoy1wSU+CI9oQV
-         kMH8Y4mIjzq+A==
+        b=b3nl5A/WtUV2bEf5JER9A+UC8KKOeS8cgTmCBDJZmKRve1Bn98kf6/Mr5wCn+VDKY
+         QTteMXiHhJLbVVaNNJeTXe1cufiqDOdEHTdra9ah3mhC6VrLkB/1LWw/Kx0FAFahs2
+         Mqyd3rl7nv3PW6BMzY4MIXAQ/sEwclcv2UwO2zVwvNSa/e3r4H3SgVlczYm3lEp3Vu
+         onRfp33GjRsd4bGYVx/+J0c3quqjI9//St01lVqphXUF390qs7tjH5VNihRrGxfg5Q
+         XG3sERONS8mGQxm5uDJ8AGI5TMH6QpJ/CyRuGlWFEL/qCukyIoHg6hdNoKDG4kCr84
+         YJaSQLqD+A5ZA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
+Cc:     Ryoga Saito <contact@proelbtn.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 25/25] net: phylink: add suspend/resume support
-Date:   Sat, 11 Sep 2021 09:13:12 -0400
-Message-Id: <20210911131312.285225-25-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 08/14] Set fc_nlinfo in nh_create_ipv4, nh_create_ipv6
+Date:   Sat, 11 Sep 2021 09:13:39 -0400
+Message-Id: <20210911131345.285564-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210911131312.285225-1-sashal@kernel.org>
-References: <20210911131312.285225-1-sashal@kernel.org>
+In-Reply-To: <20210911131345.285564-1-sashal@kernel.org>
+References: <20210911131345.285564-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -43,151 +42,135 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+From: Ryoga Saito <contact@proelbtn.com>
 
-[ Upstream commit f97493657c6372eeefe70faadd214bf31488c44e ]
+[ Upstream commit 9aca491e0dccf8a9d84a5b478e5eee3c6ea7803b ]
 
-Joakim Zhang reports that Wake-on-Lan with the stmmac ethernet driver broke
-when moving the incorrect handling of mac link state out of mac_config().
-This reason this breaks is because the stmmac's WoL is handled by the MAC
-rather than the PHY, and phylink doesn't cater for that scenario.
+This patch fixes kernel NULL pointer dereference when creating nexthop
+which is bound with SRv6 decapsulation. In the creation of nexthop,
+__seg6_end_dt_vrf_build is called. __seg6_end_dt_vrf_build expects
+fc_lninfo in fib6_config is set correctly, but it isn't set in
+nh_create_ipv6, which causes kernel crash.
 
-This patch adds the necessary phylink code to handle suspend/resume events
-according to whether the MAC still needs a valid link or not. This is the
-barest minimum for this support.
+Here is steps to reproduce kernel crash:
 
-Reported-by: Joakim Zhang <qiangqing.zhang@nxp.com>
-Tested-by: Joakim Zhang <qiangqing.zhang@nxp.com>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+1. modprobe vrf
+2. ip -6 nexthop add encap seg6local action End.DT4 vrftable 1 dev eth0
+
+We got the following message:
+
+[  901.370336] BUG: kernel NULL pointer dereference, address: 0000000000000ba0
+[  901.371658] #PF: supervisor read access in kernel mode
+[  901.372672] #PF: error_code(0x0000) - not-present page
+[  901.373672] PGD 0 P4D 0
+[  901.374248] Oops: 0000 [#1] SMP PTI
+[  901.374944] CPU: 0 PID: 8593 Comm: ip Not tainted 5.14-051400-generic #202108310811-Ubuntu
+[  901.376404] Hardware name: Red Hat KVM, BIOS 1.11.1-4.module_el8.2.0+320+13f867d7 04/01/2014
+[  901.377907] RIP: 0010:vrf_ifindex_lookup_by_table_id+0x19/0x90 [vrf]
+[  901.379182] Code: c1 e9 72 ff ff ff e8 96 49 01 c2 66 0f 1f 44 00 00 0f 1f 44 00 00 55 48 89 e5 41 56 41 55 41 89 f5 41 54 53 8b 05 47 4c 00 00 <48> 8b 97 a0 0b 00 00 48 8b 1c c2 e8 57 27 53 c1 4c 8d a3 88 00 00
+[  901.382652] RSP: 0018:ffffbf2d02043590 EFLAGS: 00010282
+[  901.383746] RAX: 000000000000000b RBX: ffff990808255e70 RCX: ffffbf2d02043aa8
+[  901.385436] RDX: 0000000000000001 RSI: 0000000000000001 RDI: 0000000000000000
+[  901.386924] RBP: ffffbf2d020435b0 R08: 00000000000000c0 R09: ffff990808255e40
+[  901.388537] R10: ffffffff83b08c90 R11: 0000000000000009 R12: 0000000000000000
+[  901.389937] R13: 0000000000000001 R14: 0000000000000000 R15: 000000000000000b
+[  901.391226] FS:  00007fe49381f740(0000) GS:ffff99087dc00000(0000) knlGS:0000000000000000
+[  901.392737] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  901.393803] CR2: 0000000000000ba0 CR3: 000000000e3e8003 CR4: 0000000000770ef0
+[  901.395122] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  901.396496] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  901.397833] PKRU: 55555554
+[  901.398578] Call Trace:
+[  901.399144]  l3mdev_ifindex_lookup_by_table_id+0x3b/0x70
+[  901.400179]  __seg6_end_dt_vrf_build+0x34/0xd0
+[  901.401067]  seg6_end_dt4_build+0x16/0x20
+[  901.401904]  seg6_local_build_state+0x271/0x430
+[  901.402797]  lwtunnel_build_state+0x81/0x130
+[  901.403645]  fib_nh_common_init+0x82/0x100
+[  901.404465]  ? sock_def_readable+0x4b/0x80
+[  901.405285]  fib6_nh_init+0x115/0x7c0
+[  901.406033]  nh_create_ipv6.isra.0+0xe1/0x140
+[  901.406932]  rtm_new_nexthop+0x3b7/0xeb0
+[  901.407828]  rtnetlink_rcv_msg+0x152/0x3a0
+[  901.408663]  ? rtnl_calcit.isra.0+0x130/0x130
+[  901.409535]  netlink_rcv_skb+0x55/0x100
+[  901.410319]  rtnetlink_rcv+0x15/0x20
+[  901.411026]  netlink_unicast+0x1a8/0x250
+[  901.411813]  netlink_sendmsg+0x238/0x470
+[  901.412602]  ? _copy_from_user+0x2b/0x60
+[  901.413394]  sock_sendmsg+0x65/0x70
+[  901.414112]  ____sys_sendmsg+0x218/0x290
+[  901.414929]  ? copy_msghdr_from_user+0x5c/0x90
+[  901.415814]  ___sys_sendmsg+0x81/0xc0
+[  901.416559]  ? fsnotify_destroy_marks+0x27/0xf0
+[  901.417447]  ? call_rcu+0xa4/0x230
+[  901.418153]  ? kmem_cache_free+0x23f/0x410
+[  901.418972]  ? dentry_free+0x37/0x70
+[  901.419705]  ? mntput_no_expire+0x4c/0x260
+[  901.420574]  __sys_sendmsg+0x62/0xb0
+[  901.421297]  __x64_sys_sendmsg+0x1f/0x30
+[  901.422057]  do_syscall_64+0x5c/0xc0
+[  901.422756]  ? syscall_exit_to_user_mode+0x27/0x50
+[  901.423675]  ? __x64_sys_close+0x12/0x40
+[  901.424462]  ? do_syscall_64+0x69/0xc0
+[  901.425219]  ? irqentry_exit_to_user_mode+0x9/0x20
+[  901.426149]  ? irqentry_exit+0x19/0x30
+[  901.426901]  ? exc_page_fault+0x89/0x160
+[  901.427709]  ? asm_exc_page_fault+0x8/0x30
+[  901.428536]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[  901.429514] RIP: 0033:0x7fe493945747
+[  901.430248] Code: 64 89 02 48 c7 c0 ff ff ff ff eb bb 0f 1f 80 00 00 00 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 51 c3 48 83 ec 28 89 54 24 1c 48 89 74 24 10
+[  901.433549] RSP: 002b:00007ffe9932cf68 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+[  901.434981] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fe493945747
+[  901.436303] RDX: 0000000000000000 RSI: 00007ffe9932cfe0 RDI: 0000000000000003
+[  901.437607] RBP: 00000000613053f7 R08: 0000000000000001 R09: 00007ffe9932d07c
+[  901.438990] R10: 000055f4a903a010 R11: 0000000000000246 R12: 0000000000000001
+[  901.440340] R13: 0000000000000001 R14: 000055f4a802b163 R15: 000055f4a8042020
+[  901.441630] Modules linked in: vrf nls_utf8 isofs nls_iso8859_1 dm_multipath scsi_dh_rdac scsi_dh_emc scsi_dh_alua intel_rapl_msr intel_rapl_common isst_if_mbox_msr isst_if_common nfit rapl input_leds joydev serio_raw qemu_fw_cfg mac_hid sch_fq_codel drm virtio_rng ip_tables x_tables autofs4 btrfs blake2b_generic zstd_compress raid10 raid456 async_raid6_recov async_memcpy async_pq async_xor async_tx xor raid6_pq libcrc32c raid1 raid0 multipath linear crct10dif_pclmul crc32_pclmul ghash_clmulni_intel aesni_intel crypto_simd virtio_net net_failover cryptd psmouse virtio_blk failover i2c_piix4 pata_acpi floppy
+[  901.450808] CR2: 0000000000000ba0
+[  901.451514] ---[ end trace c27b934b99ade304 ]---
+[  901.452403] RIP: 0010:vrf_ifindex_lookup_by_table_id+0x19/0x90 [vrf]
+[  901.453626] Code: c1 e9 72 ff ff ff e8 96 49 01 c2 66 0f 1f 44 00 00 0f 1f 44 00 00 55 48 89 e5 41 56 41 55 41 89 f5 41 54 53 8b 05 47 4c 00 00 <48> 8b 97 a0 0b 00 00 48 8b 1c c2 e8 57 27 53 c1 4c 8d a3 88 00 00
+[  901.456910] RSP: 0018:ffffbf2d02043590 EFLAGS: 00010282
+[  901.457912] RAX: 000000000000000b RBX: ffff990808255e70 RCX: ffffbf2d02043aa8
+[  901.459238] RDX: 0000000000000001 RSI: 0000000000000001 RDI: 0000000000000000
+[  901.460552] RBP: ffffbf2d020435b0 R08: 00000000000000c0 R09: ffff990808255e40
+[  901.461882] R10: ffffffff83b08c90 R11: 0000000000000009 R12: 0000000000000000
+[  901.463208] R13: 0000000000000001 R14: 0000000000000000 R15: 000000000000000b
+[  901.464529] FS:  00007fe49381f740(0000) GS:ffff99087dc00000(0000) knlGS:0000000000000000
+[  901.466058] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  901.467189] CR2: 0000000000000ba0 CR3: 000000000e3e8003 CR4: 0000000000770ef0
+[  901.468515] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  901.469858] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  901.471139] PKRU: 55555554
+
+Signed-off-by: Ryoga Saito <contact@proelbtn.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/phylink.c | 82 +++++++++++++++++++++++++++++++++++++++
- include/linux/phylink.h   |  3 ++
- 2 files changed, 85 insertions(+)
+ net/ipv4/nexthop.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 6072e87ed6c3..42826ce0e0bf 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -32,6 +32,7 @@
- enum {
- 	PHYLINK_DISABLE_STOPPED,
- 	PHYLINK_DISABLE_LINK,
-+	PHYLINK_DISABLE_MAC_WOL,
- };
- 
- /**
-@@ -1251,6 +1252,9 @@ EXPORT_SYMBOL_GPL(phylink_start);
-  * network device driver's &struct net_device_ops ndo_stop() method.  The
-  * network device's carrier state should not be changed prior to calling this
-  * function.
-+ *
-+ * This will synchronously bring down the link if the link is not already
-+ * down (in other words, it will trigger a mac_link_down() method call.)
-  */
- void phylink_stop(struct phylink *pl)
- {
-@@ -1270,6 +1274,84 @@ void phylink_stop(struct phylink *pl)
- }
- EXPORT_SYMBOL_GPL(phylink_stop);
- 
-+/**
-+ * phylink_suspend() - handle a network device suspend event
-+ * @pl: a pointer to a &struct phylink returned from phylink_create()
-+ * @mac_wol: true if the MAC needs to receive packets for Wake-on-Lan
-+ *
-+ * Handle a network device suspend event. There are several cases:
-+ * - If Wake-on-Lan is not active, we can bring down the link between
-+ *   the MAC and PHY by calling phylink_stop().
-+ * - If Wake-on-Lan is active, and being handled only by the PHY, we
-+ *   can also bring down the link between the MAC and PHY.
-+ * - If Wake-on-Lan is active, but being handled by the MAC, the MAC
-+ *   still needs to receive packets, so we can not bring the link down.
-+ */
-+void phylink_suspend(struct phylink *pl, bool mac_wol)
-+{
-+	ASSERT_RTNL();
-+
-+	if (mac_wol && (!pl->netdev || pl->netdev->wol_enabled)) {
-+		/* Wake-on-Lan enabled, MAC handling */
-+		mutex_lock(&pl->state_mutex);
-+
-+		/* Stop the resolver bringing the link up */
-+		__set_bit(PHYLINK_DISABLE_MAC_WOL, &pl->phylink_disable_state);
-+
-+		/* Disable the carrier, to prevent transmit timeouts,
-+		 * but one would hope all packets have been sent. This
-+		 * also means phylink_resolve() will do nothing.
-+		 */
-+		netif_carrier_off(pl->netdev);
-+
-+		/* We do not call mac_link_down() here as we want the
-+		 * link to remain up to receive the WoL packets.
-+		 */
-+		mutex_unlock(&pl->state_mutex);
-+	} else {
-+		phylink_stop(pl);
-+	}
-+}
-+EXPORT_SYMBOL_GPL(phylink_suspend);
-+
-+/**
-+ * phylink_resume() - handle a network device resume event
-+ * @pl: a pointer to a &struct phylink returned from phylink_create()
-+ *
-+ * Undo the effects of phylink_suspend(), returning the link to an
-+ * operational state.
-+ */
-+void phylink_resume(struct phylink *pl)
-+{
-+	ASSERT_RTNL();
-+
-+	if (test_bit(PHYLINK_DISABLE_MAC_WOL, &pl->phylink_disable_state)) {
-+		/* Wake-on-Lan enabled, MAC handling */
-+
-+		/* Call mac_link_down() so we keep the overall state balanced.
-+		 * Do this under the state_mutex lock for consistency. This
-+		 * will cause a "Link Down" message to be printed during
-+		 * resume, which is harmless - the true link state will be
-+		 * printed when we run a resolve.
-+		 */
-+		mutex_lock(&pl->state_mutex);
-+		phylink_link_down(pl);
-+		mutex_unlock(&pl->state_mutex);
-+
-+		/* Re-apply the link parameters so that all the settings get
-+		 * restored to the MAC.
-+		 */
-+		phylink_mac_initial_config(pl, true);
-+
-+		/* Re-enable and re-resolve the link parameters */
-+		clear_bit(PHYLINK_DISABLE_MAC_WOL, &pl->phylink_disable_state);
-+		phylink_run_resolve(pl);
-+	} else {
-+		phylink_start(pl);
-+	}
-+}
-+EXPORT_SYMBOL_GPL(phylink_resume);
-+
- /**
-  * phylink_ethtool_get_wol() - get the wake on lan parameters for the PHY
-  * @pl: a pointer to a &struct phylink returned from phylink_create()
-diff --git a/include/linux/phylink.h b/include/linux/phylink.h
-index d81a714cfbbd..ff56e3e373f0 100644
---- a/include/linux/phylink.h
-+++ b/include/linux/phylink.h
-@@ -446,6 +446,9 @@ void phylink_mac_change(struct phylink *, bool up);
- void phylink_start(struct phylink *);
- void phylink_stop(struct phylink *);
- 
-+void phylink_suspend(struct phylink *pl, bool mac_wol);
-+void phylink_resume(struct phylink *pl);
-+
- void phylink_ethtool_get_wol(struct phylink *, struct ethtool_wolinfo *);
- int phylink_ethtool_set_wol(struct phylink *, struct ethtool_wolinfo *);
- 
+diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
+index f5f4369c131c..858bb10d8341 100644
+--- a/net/ipv4/nexthop.c
++++ b/net/ipv4/nexthop.c
+@@ -1183,6 +1183,7 @@ static int nh_create_ipv4(struct net *net, struct nexthop *nh,
+ 		.fc_gw4   = cfg->gw.ipv4,
+ 		.fc_gw_family = cfg->gw.ipv4 ? AF_INET : 0,
+ 		.fc_flags = cfg->nh_flags,
++		.fc_nlinfo = cfg->nlinfo,
+ 		.fc_encap = cfg->nh_encap,
+ 		.fc_encap_type = cfg->nh_encap_type,
+ 	};
+@@ -1218,6 +1219,7 @@ static int nh_create_ipv6(struct net *net,  struct nexthop *nh,
+ 		.fc_ifindex = cfg->nh_ifindex,
+ 		.fc_gateway = cfg->gw.ipv6,
+ 		.fc_flags = cfg->nh_flags,
++		.fc_nlinfo = cfg->nlinfo,
+ 		.fc_encap = cfg->nh_encap,
+ 		.fc_encap_type = cfg->nh_encap_type,
+ 	};
 -- 
 2.30.2
 
