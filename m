@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D54BF40787C
-	for <lists+netdev@lfdr.de>; Sat, 11 Sep 2021 15:58:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D8EE407882
+	for <lists+netdev@lfdr.de>; Sat, 11 Sep 2021 15:59:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236050AbhIKOAG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Sep 2021 10:00:06 -0400
-Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:26316 "EHLO
+        id S236106AbhIKOAZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Sep 2021 10:00:25 -0400
+Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:40570 "EHLO
         mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235788AbhIKOAF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Sep 2021 10:00:05 -0400
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18B3vWwF032089;
-        Sat, 11 Sep 2021 13:58:46 GMT
+        by vger.kernel.org with ESMTP id S230249AbhIKOAW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Sep 2021 10:00:22 -0400
+Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18BDp8Mv024971;
+        Sat, 11 Sep 2021 13:59:04 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
  subject : date : message-id : mime-version : content-type :
  content-transfer-encoding; s=corp-2021-07-09;
- bh=icI4OzlJuvPlxzco+Wt1J38LLdSCpelQqeMeI0FLOVg=;
- b=Trd/glsqrzzA+5NeZJvDCWE+2oZ/0Ntpc1KrceBIiyPxC6LZfMHD6ErrzPGswBpXkOhJ
- DgRsBFii6TSW8VVfOHcTd+sItkbd8VvBkgcIjktsUuXoffNlCr6OYNpdw4f61RatPdFR
- erDZlKrMAloT7uPBIUCmRHRE2Nx9FxTLdo5FeXmoimSLl8hkQOduoQksp2ngQnWnxvwL
- kumE1DQwk/rQUU3NhfU7wpbOpWtgIEYseOX7DNt5RWrMFL9YZ3Zrk6XjJlFl+e194omn
- nSxISTXh6OepXsxaeDBGbDfc7YDr1hggsecE/8mE/xzNrJRRByoGmDcqkMZqNI6rHtti sQ== 
+ bh=7gkzNNSHrsclaAJzy9Tpqx1IGp0KP7TP28LEij8pdNo=;
+ b=dMhX4CXSY+e4Wn2uXoebGVyLdzynnU2LGqhCEOqzc6GpnlEg4RaDZP2imaEldI+bpgRz
+ z2tmoVNZYhIj97SXNGerME9uh+zCGOrVDe3LnLTm3g6OztMr89q+iG2o2I0kdrmQjMtg
+ WVrxajSPhrB9HH6NzbLPwqCdH/dxOvQEb8frVOWmK77ClqG9MjhMY3Y8+XPreGLk2T7I
+ MpeTDBWYtmNhhZxMXIWIiHOPNCKXRwHDJTpnpPQKssktfJaeqCI3663043D0sOO4VJB6
+ 9c0gP1DTaOCOe/vAcTYPjXKtHHiPHwVW8jz8pkrVUT8ufFrVurKypAc0L2ipHBWxxLe0 +g== 
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
  subject : date : message-id : mime-version : content-type :
  content-transfer-encoding; s=corp-2020-01-29;
- bh=icI4OzlJuvPlxzco+Wt1J38LLdSCpelQqeMeI0FLOVg=;
- b=N9IL/MGMYkBzaOeq6/G+vPSpZXUeqiFa6M2j/WSzCmkWNvnSIx4AubEmkyyJA2xyUSvg
- 1UD/HoGNxgArAb3rYnkDnkVdGEggumpaEWJSsYTHhA3ik3rmg6hYSppUmXZOV1JEwvsa
- diPvTAXJbCQkG+eHvzlzBei5j3qlqvcaI2geWx+i0h47zLZza24vIsRNYf0wG2+GwAS2
- CxLbiKmpJi8Qo7oyP/SR4XnqqwXCFYFrKJsQza5PmJ47m+liZe6BwvAYV+yy3m0GbDya
- Gj6G3ukl+yGmXQSj+RoM2J7Kxoxu3JvI1rnC8pO9vIpCfeU7rfipvf62cbKFFZmhESa4 PQ== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3b0n0trg18-1
+ bh=7gkzNNSHrsclaAJzy9Tpqx1IGp0KP7TP28LEij8pdNo=;
+ b=DQ6qdHTSqEI7ugzEh+paHi8sMdADl6+QJHCjQ8RtWhevx7cJWyQUAHeeyV1k/B/NIilr
+ NlpXW9AQ5X+NLsxGR5XQJuXh9e3Tsfrv3Xa/NkCIUdfT33IwodFlrFadBm9OQY3SUBP9
+ QbMjpgguzE0kVCxOWG+G3VSX62/Q2a2zD8jNOUYg8NZTHpKmXwzYLErQK9hcy/kuT3g6
+ 0MVfV4YZJArD3yhBMI6pAVcsAS2qP5KFZk1q/bhzHfoVRr9D9NUJLKaNcZJjFSB3Sngu
+ S8Pi5gSvThDL8zq2KOupcBNBuSHPCpnT83cpp2YTVSOroB+wW3Pxy234mbtZVdokjFsl yQ== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3b0mbc0gvp-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 11 Sep 2021 13:58:46 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 18BDsxj5101662;
-        Sat, 11 Sep 2021 13:58:45 GMT
+        Sat, 11 Sep 2021 13:59:04 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 18BDt5Yo146230;
+        Sat, 11 Sep 2021 13:58:53 GMT
 Received: from lab02.no.oracle.com (lab02.no.oracle.com [10.172.144.56])
-        by userp3030.oracle.com with ESMTP id 3b0hjrrb2y-1;
-        Sat, 11 Sep 2021 13:58:45 +0000
+        by userp3020.oracle.com with ESMTP id 3b0kshvace-1;
+        Sat, 11 Sep 2021 13:58:53 +0000
 From:   =?UTF-8?q?H=C3=A5kon=20Bugge?= <haakon.bugge@oracle.com>
 To:     gregkh@linuxfoundation.org, sashal@kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org,
@@ -49,19 +49,19 @@ Cc:     davem@davemloft.net, netdev@vger.kernel.org,
         linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
         gnault@redhat.com
 Subject: [PATCH 5.4] netns: protect netns ID lookups with RCU
-Date:   Sat, 11 Sep 2021 15:58:42 +0200
-Message-Id: <1631368722-22606-1-git-send-email-haakon.bugge@oracle.com>
+Date:   Sat, 11 Sep 2021 15:58:50 +0200
+Message-Id: <1631368730-22657-1-git-send-email-haakon.bugge@oracle.com>
 X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10103 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 adultscore=0 phishscore=0
- mlxlogscore=999 suspectscore=0 spamscore=0 bulkscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2109030001
- definitions=main-2109110095
-X-Proofpoint-GUID: gFM7Cp8gwjZ_M5VG93Rj0RJeYI-iqDOo
-X-Proofpoint-ORIG-GUID: gFM7Cp8gwjZ_M5VG93Rj0RJeYI-iqDOo
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 suspectscore=0
+ spamscore=0 adultscore=0 malwarescore=0 bulkscore=0 mlxscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2109030001 definitions=main-2109110095
+X-Proofpoint-GUID: GgaY1MROOBy6r9dw6O4-gdsJcoiCDwod
+X-Proofpoint-ORIG-GUID: GgaY1MROOBy6r9dw6O4-gdsJcoiCDwod
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -153,7 +153,6 @@ ipoib starts and calls the same path and ends up trying to acquire the
 same global lock again.
 
 (cherry picked from commit 2dce224f469f060b9998a5a869151ef83c08ce77)
-
 Fixes: fba143c66abb ("netns: avoid disabling irq for netns id")
 Signed-off-by: Håkon Bugge <haakon.bugge@oracle.com>
 
@@ -161,7 +160,7 @@ Conflicts:
 	net/core/net_namespace.c
 
 		* rtnl_valid_dump_net_req() has a very minimal
-                  implementation in 4.19, hence only a simple
+                  implementation in 4.14, hence only a simple
                   substituting of spin_{lock,unlock}_bh() with
                   rcu_spin_{lock,unlock}() was required
 ---
@@ -169,10 +168,10 @@ Conflicts:
  1 file changed, 10 insertions(+), 8 deletions(-)
 
 diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
-index 939d8a3..26d70c0 100644
+index 1af25d5..37f4313 100644
 --- a/net/core/net_namespace.c
 +++ b/net/core/net_namespace.c
-@@ -192,9 +192,9 @@ static int net_eq_idr(int id, void *net, void *peer)
+@@ -181,9 +181,9 @@ static int net_eq_idr(int id, void *net, void *peer)
  	return 0;
  }
  
@@ -185,7 +184,7 @@ index 939d8a3..26d70c0 100644
   */
  static int __peernet2id_alloc(struct net *net, struct net *peer, bool *alloc)
  {
-@@ -218,7 +218,7 @@ static int __peernet2id_alloc(struct net *net, struct net *peer, bool *alloc)
+@@ -207,7 +207,7 @@ static int __peernet2id_alloc(struct net *net, struct net *peer, bool *alloc)
  	return NETNSA_NSID_NOT_ASSIGNED;
  }
  
@@ -194,7 +193,7 @@ index 939d8a3..26d70c0 100644
  static int __peernet2id(struct net *net, struct net *peer)
  {
  	bool no = false;
-@@ -261,9 +261,10 @@ int peernet2id(struct net *net, struct net *peer)
+@@ -240,9 +240,10 @@ int peernet2id(struct net *net, struct net *peer)
  {
  	int id;
  
@@ -207,7 +206,7 @@ index 939d8a3..26d70c0 100644
  	return id;
  }
  EXPORT_SYMBOL(peernet2id);
-@@ -837,6 +838,7 @@ struct rtnl_net_dump_cb {
+@@ -761,6 +762,7 @@ struct rtnl_net_dump_cb {
  	int s_idx;
  };
  
@@ -215,7 +214,7 @@ index 939d8a3..26d70c0 100644
  static int rtnl_net_dumpid_one(int id, void *peer, void *data)
  {
  	struct rtnl_net_dump_cb *net_cb = (struct rtnl_net_dump_cb *)data;
-@@ -867,9 +869,9 @@ static int rtnl_net_dumpid(struct sk_buff *skb, struct netlink_callback *cb)
+@@ -791,9 +793,9 @@ static int rtnl_net_dumpid(struct sk_buff *skb, struct netlink_callback *cb)
  		.s_idx = cb->args[0],
  	};
  
