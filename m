@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DFE9407763
-	for <lists+netdev@lfdr.de>; Sat, 11 Sep 2021 15:15:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6526407765
+	for <lists+netdev@lfdr.de>; Sat, 11 Sep 2021 15:16:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235954AbhIKNRC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Sep 2021 09:17:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37760 "EHLO mail.kernel.org"
+        id S236776AbhIKNRB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Sep 2021 09:17:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41100 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236064AbhIKNPJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S236095AbhIKNPJ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sat, 11 Sep 2021 09:15:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EDF2D6121F;
-        Sat, 11 Sep 2021 13:13:01 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 39BA761153;
+        Sat, 11 Sep 2021 13:13:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631365982;
-        bh=1hv/tJtozOoDLf0cxrTyIzGNXzwE9pY0zWKMoVJLTrY=;
+        s=k20201202; t=1631365983;
+        bh=BP4d9d4bjOOYFK7CSlAnWJ5oSIt8LhI/0CCz34oz1K8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PUrzLoXIz4mbST5/JjVrvWtdpAUJTthE6j8TRqk7EIx9S2Hj+xhF2T/gKBNWeUef+
-         l5x/El+rzS8hsWA2F/6T8tW7N7C3wu8c2TZrHu9hgBdRRFdiyWTRxVf2QN2cLHSWnm
-         ET1FAYRisxy50m3mcvcQw4c53+c6lK3NBJtvtpVftTCBROclhip04p50MJLB6WT4h5
-         0Qk8QnHD/OquQy2ICOwth7NEM+Ym05krnL5i5gjpCMfIsmOInbgUOWOOI/k5rE8XXG
-         OoV9Z8PWf2xEHccVoLXu8UfbeO9yflCqXOBCnwUz+lkYAaIQ3vpSUuiD5vIxraCT6l
-         QUOxU6cMBZnQw==
+        b=JYwncPe2l7VA/zk7BnyoVRqHWgTdj301BNfEz1q7G6+iaA+GWHIMVuuhPlYMCYzGm
+         6SiThh+x4iOozkKz5kRUPOxUZe7UYJaqMDqs5EFPIIarvok3Rdqgo1wJKFzIxwFAUK
+         631llq2LiL3qpXVa4LKr6yI+poJP7j8RIgGVSWnVMv+o+2J0PXYKPvnOzvLuanB6pe
+         vreDHJkOYTmVkEzygcxGOTqKS3qp7i31jU1PfZCejmS4e23yIgGYfHKatxUWWOVefT
+         cEHqy1s6CDCJjkL70O4EP9hk8gdtT26vfgWcArPYvCDD2NTpkYGglx4/2TgFm7jep7
+         lcTmPuzsjEpmA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+Cc:     Daniele Palmas <dnlplm@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.13 22/29] flow: fix object-size-mismatch warning in flowi{4,6}_to_flowi_common()
-Date:   Sat, 11 Sep 2021 09:12:26 -0400
-Message-Id: <20210911131233.284800-22-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.13 23/29] net: usb: cdc_mbim: avoid altsetting toggling for Telit LN920
+Date:   Sat, 11 Sep 2021 09:12:27 -0400
+Message-Id: <20210911131233.284800-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210911131233.284800-1-sashal@kernel.org>
 References: <20210911131233.284800-1-sashal@kernel.org>
@@ -44,89 +43,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+From: Daniele Palmas <dnlplm@gmail.com>
 
-[ Upstream commit b9edbfe1adecfc48fd11061dce68afb03d6adbdc ]
+[ Upstream commit aabbdc67f3485b5db27ab4eba01e5fbf1ffea62c ]
 
-Commit 3df98d79215ace13 ("lsm,selinux: pass flowi_common instead of flowi
-to the LSM hooks") introduced flowi{4,6}_to_flowi_common() functions which
-cause UBSAN warning when building with LLVM 11.0.1 on Ubuntu 21.04.
+Add quirk CDC_MBIM_FLAG_AVOID_ALTSETTING_TOGGLE for Telit LN920
+0x1061 composition in order to avoid bind error.
 
- ================================================================================
- UBSAN: object-size-mismatch in ./include/net/flow.h:197:33
- member access within address ffffc9000109fbd8 with insufficient space
- for an object of type 'struct flowi'
- CPU: 2 PID: 7410 Comm: systemd-resolve Not tainted 5.14.0 #51
- Hardware name: VMware, Inc. VMware Virtual Platform/440BX Desktop Reference Platform, BIOS 6.00 02/27/2020
- Call Trace:
-  dump_stack_lvl+0x103/0x171
-  ubsan_type_mismatch_common+0x1de/0x390
-  __ubsan_handle_type_mismatch_v1+0x41/0x50
-  udp_sendmsg+0xda2/0x1300
-  ? ip_skb_dst_mtu+0x1f0/0x1f0
-  ? sock_rps_record_flow+0xe/0x200
-  ? inet_send_prepare+0x2d/0x90
-  sock_sendmsg+0x49/0x80
-  ____sys_sendmsg+0x269/0x370
-  __sys_sendmsg+0x15e/0x1d0
-  ? syscall_enter_from_user_mode+0xf0/0x1b0
-  do_syscall_64+0x3d/0xb0
-  entry_SYSCALL_64_after_hwframe+0x44/0xae
- RIP: 0033:0x7f7081a50497
- Code: 0c 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b7 0f 1f 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 51 c3 48 83 ec 28 89 54 24 1c 48 89 74 24 10
- RSP: 002b:00007ffc153870f8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
- RAX: ffffffffffffffda RBX: 000000000000000c RCX: 00007f7081a50497
- RDX: 0000000000000000 RSI: 00007ffc15387140 RDI: 000000000000000c
- RBP: 00007ffc15387140 R08: 0000563f29a5e4fc R09: 000000000000cd28
- R10: 0000563f29a68a30 R11: 0000000000000246 R12: 000000000000000c
- R13: 0000000000000001 R14: 0000563f29a68a30 R15: 0000563f29a5e50c
- ================================================================================
-
-I don't think we need to call flowi{4,6}_to_flowi() from these functions
-because the first member of "struct flowi4" and "struct flowi6" is
-
-  struct flowi_common __fl_common;
-
-while the first member of "struct flowi" is
-
-  union {
-    struct flowi_common __fl_common;
-    struct flowi4       ip4;
-    struct flowi6       ip6;
-    struct flowidn      dn;
-  } u;
-
-which should point to the same address without access to "struct flowi".
-
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/flow.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/usb/cdc_mbim.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/include/net/flow.h b/include/net/flow.h
-index 6f5e70240071..58beb16a49b8 100644
---- a/include/net/flow.h
-+++ b/include/net/flow.h
-@@ -194,7 +194,7 @@ static inline struct flowi *flowi4_to_flowi(struct flowi4 *fl4)
+diff --git a/drivers/net/usb/cdc_mbim.c b/drivers/net/usb/cdc_mbim.c
+index 5db66272fc82..ec3a97e079fc 100644
+--- a/drivers/net/usb/cdc_mbim.c
++++ b/drivers/net/usb/cdc_mbim.c
+@@ -653,6 +653,11 @@ static const struct usb_device_id mbim_devs[] = {
+ 	  .driver_info = (unsigned long)&cdc_mbim_info_avoid_altsetting_toggle,
+ 	},
  
- static inline struct flowi_common *flowi4_to_flowi_common(struct flowi4 *fl4)
- {
--	return &(flowi4_to_flowi(fl4)->u.__fl_common);
-+	return &(fl4->__fl_common);
- }
- 
- static inline struct flowi *flowi6_to_flowi(struct flowi6 *fl6)
-@@ -204,7 +204,7 @@ static inline struct flowi *flowi6_to_flowi(struct flowi6 *fl6)
- 
- static inline struct flowi_common *flowi6_to_flowi_common(struct flowi6 *fl6)
- {
--	return &(flowi6_to_flowi(fl6)->u.__fl_common);
-+	return &(fl6->__fl_common);
- }
- 
- static inline struct flowi *flowidn_to_flowi(struct flowidn *fldn)
++	/* Telit LN920 */
++	{ USB_DEVICE_AND_INTERFACE_INFO(0x1bc7, 0x1061, USB_CLASS_COMM, USB_CDC_SUBCLASS_MBIM, USB_CDC_PROTO_NONE),
++	  .driver_info = (unsigned long)&cdc_mbim_info_avoid_altsetting_toggle,
++	},
++
+ 	/* default entry */
+ 	{ USB_INTERFACE_INFO(USB_CLASS_COMM, USB_CDC_SUBCLASS_MBIM, USB_CDC_PROTO_NONE),
+ 	  .driver_info = (unsigned long)&cdc_mbim_info_zlp,
 -- 
 2.30.2
 
