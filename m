@@ -2,101 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DD57407D7B
-	for <lists+netdev@lfdr.de>; Sun, 12 Sep 2021 15:11:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4D17407D88
+	for <lists+netdev@lfdr.de>; Sun, 12 Sep 2021 15:18:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235308AbhILNMw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Sep 2021 09:12:52 -0400
-Received: from mout.gmx.net ([212.227.17.22]:35423 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235203AbhILNMv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 12 Sep 2021 09:12:51 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1631452284;
-        bh=A/5R/9lReRnqhX6VardHyEyyLao6a251fVotksIzRz4=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=FHaHEneD/JHM91TlbiVBwG1FybHQieys3tZ581/oKQypH5ceh3JkG1LwdYEUL6OUw
-         6zj1G4LfYdl7CYUgq8mQYxfThp3P/JSkZuEBxw3M8hcg0ZHdfJBeXyg1egHrYH6464
-         boDX61NkPwYOm4kq+wa75mjkSLQzXO7r/gqNkrmw=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from localhost.localdomain ([79.150.72.99]) by mail.gmx.net
- (mrgmx105 [212.227.17.174]) with ESMTPSA (Nemesis) id
- 1MbRfl-1mvz7q2KgT-00burL; Sun, 12 Sep 2021 15:11:23 +0200
-From:   Len Baker <len.baker@gmx.com>
-To:     Simon Horman <simon.horman@corigine.com>,
+        id S235322AbhILNT5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Sep 2021 09:19:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48796 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235178AbhILNTz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Sep 2021 09:19:55 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 859EAC061574;
+        Sun, 12 Sep 2021 06:18:41 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id j13so9958562edv.13;
+        Sun, 12 Sep 2021 06:18:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=JjkuUFG8aC+b+dNRAS0GS2+3+6SH7OL6eP6H9dMuzpg=;
+        b=BiD1DLf1/KO0J+5uDPTUYwSBh2enT2UXVgZYGoTFKRywIyeDX5XQIpvnhvAgZHP5st
+         qhz3Wekn2YD6xs+28AmtEaUDMkeK7Jqy9QMk85cd0xF+bNoXh4djm644eAiIK/pNSxRi
+         0MwT4zb/xuN4r4tF4zLuYDWeYjWUDxDfjdCEGHJaGu7z+pf/Go7zRQRBkebGaxq8BjTl
+         po/wkDpWa07/rXmNVd72uodQMzucaseosATGHRjFK5XzVJ2ixVeNQM7xqjq6vrlH93Ma
+         NYzVzggZ7Px7QBiqd2RGRrVxediX6V3kqAwUOPQpW5JTV+K+E1bSYZy6nxEXEo3kZeGY
+         oh3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=JjkuUFG8aC+b+dNRAS0GS2+3+6SH7OL6eP6H9dMuzpg=;
+        b=pND7wKMxWvd1YpWAmHVKLvpRGrwBo2KgN0xbJ+Wb6l/DNfWE3NGdkmEkJ/lEg2rwos
+         SufTlwP2YwsEZBzwXabRdNimnQ9TQPXV6k9wrnCwAFHLdV2aRMUd4ZFC3hcKIlEJ2NPL
+         vo5fgkFlL4aDmCNwtCpbbGiJN0/eqOZ9zLTWWG6A+q6vIE92LkoE5rxZCKDJrB1bEJ9W
+         d4V7NmnY/FtAId/zNItoikiZsxpJKfN1IZ3sxLjZtKGYWQ9dcJcFsfHEJ905eb876WbU
+         e3x7prkUCtPHTZDfou9nF/f5fQlRHdZgIFH9bYWCz1z09xaZQro5womEJpmTtAsEfDC2
+         8cmQ==
+X-Gm-Message-State: AOAM533czWgwpNcao9bd5XBafihxXVEnYtSd1VYCAo1mjvlKozUi6YwC
+        Q9tagJq4EgbBYbVw1G5e6nA=
+X-Google-Smtp-Source: ABdhPJwU34hiWxo3W+6lr2nqbitJVT+uVLKsSOEIKBVD1dGl3QZsS9x7NyNMcwCYUhOZSyIM+lZHtw==
+X-Received: by 2002:a05:6402:5c2:: with SMTP id n2mr8010126edx.239.1631452719669;
+        Sun, 12 Sep 2021 06:18:39 -0700 (PDT)
+Received: from skbuf ([82.78.148.104])
+        by smtp.gmail.com with ESMTPSA id a15sm2425158edr.2.2021.09.12.06.18.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 12 Sep 2021 06:18:39 -0700 (PDT)
+Date:   Sun, 12 Sep 2021 16:18:37 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Len Baker <len.baker@gmx.com>, Kees Cook <keescook@chromium.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        oss-drivers@corigine.com, netdev@vger.kernel.org,
-        linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] nfp: Prefer struct_size over open coded arithmetic
-Date:   Sun, 12 Sep 2021 15:10:57 +0200
-Message-Id: <20210912131057.2285-1-len.baker@gmx.com>
-X-Mailer: git-send-email 2.25.1
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        George McCollister <george.mccollister@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Subject: Re: [RFC PATCH net 2/5] net: dsa: be compatible with masters which
+ unregister on shutdown
+Message-ID: <20210912131837.4i6pzwgn573xutmo@skbuf>
+References: <20210912120932.993440-1-vladimir.oltean@nxp.com>
+ <20210912120932.993440-3-vladimir.oltean@nxp.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:xQAYY+Wh3B5HSBfIXdY8+Kf81F3qLDBWMoLrHBOCyshSYw3i/RW
- e+K8wrfSv20BllJvs53spJa4W2SC/Mv0nkaEjszAWE1b1C0stbJ5yuK1Q0cUgoXk5rgjDaY
- aOWPEMQIO+qHqaiWI3sIAyDp+dapwOfvBkjnxxdNny1dTg/en3+bMDOcnLlL26N738cCTal
- 1d+67ZAZatc2kGXROTVOA==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:u7CVJm1RPxk=:1VBoFGX8IlYt2jE+xxUaIL
- ff2UltfrQLU1mqqJb7jFf35QnbmQO57kMXAJy8gR22BDvBp/yUkhfmJ+8iNAeX194eyzWW2QD
- p8BHFY6AyLeKX425tsTzCJf99HV2pRGqpjzChBAM8aWbZ80YvAPdhkXLyqYjvin+TVNa0RjDE
- ux17lqoxq5O4wxeaXD25fqeNG8JLwCvZQKYyzx4tTOnyZy28q7hf0aZ/sUVL4xfRMiadE6RfK
- kRCqtMq78mOUWRcKl2fNVIPzEkLq1WPxBu9bfivYQThkGpmckjOgIkGt2JiYb1WDqgOca394K
- AL5rKMh+ynSQfq7+bd0lOWIu+TllD2tmDn9Jaz8ndQgyVbjVp1Ciphc9piPDWSqfpNDFB1+RM
- gHgfjNiNgbdd6qspL/UCMrn4t8NZtWUp/RvAk9BYgG0KLNgRuJB7jZkOZCxLFH1zANV+XnQPf
- M8yKSjH3ErFBF4peSaueVxXwil3/IxBLrBdzI+KZ81rxE5pQZukSOlAbWa6MTaOTokKXWyJ10
- sItVP+HqXOXOYXIdP8A5l9srpgHUiGu6Dsi0f3fkv62PSvEyAlcTbOZqO3ZTssut97rUIpspu
- VG3IAxsuX2XfoeT82++CSkWAHIx6cbXK9fhz0VeQj9Q9kSSECoQZgwikkXiJ7T0bk7swReqyi
- AEbFRePf9c1/tN3oc5SC58riSmyIfEAQ1120E/muKiOAGTQ1ZNvtnixQAaO9P1vav/GLkU8/S
- PfWdhJDKK+Z1tv10ZFRT56wwpoc74oB3P4aJk+UKp+Few2Yfivok8fs3ChMiNNWvjE9IDR1Yz
- Z+R6IuayR0RKmkJAdahcBWc72e/V/E2jGj6OpLEqqPquvPeWM6t6JTwdBfv2Pbuju7KVamqP8
- Btj0H2phmuaKntjKaww8TWdu6FsKttQCJCHDbbj4iYc6FRPtSEKOmarRtzB6DAIUBibdYB/NN
- +qQEjOPlqQdo4x/gfyLucU/3vTsoLi8yVPmf9s/bTJ64SoFzT4GG+HsOBd/u48GdPQfyfs3Tk
- N57YioDiW8zSvlaq7bLt5TpT3XxmwicI7pMS5pDFVi2NunBbW0AUSs9k2ve6mpwitKIYgCv8Y
- Rldt21TSBEQMd8=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210912120932.993440-3-vladimir.oltean@nxp.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As noted in the "Deprecated Interfaces, Language Features, Attributes,
-and Conventions" documentation [1], size calculations (especially
-multiplication) should not be performed in memory allocator (or similar)
-function arguments due to the risk of them overflowing. This could lead
-to values wrapping around and a smaller allocation being made than the
-caller was expecting. Using those allocations could lead to linear
-overflows of heap memory and other misbehaviors.
+On Sun, Sep 12, 2021 at 03:09:29PM +0300, Vladimir Oltean wrote:
+> +static int b53_mmap_shutdown(struct platform_device *pdev)
+> +{
+> +	struct b53_device *dev = platform_get_drvdata(pdev);
+> +
+> +	if (dev)
+> +		b53_switch_shutdown(dev);
+> +
+> +	platform_set_drvdata(pdev, NULL);
+> +}
+> +
+>  static const struct of_device_id b53_mmap_of_table[] = {
+>  	{ .compatible = "brcm,bcm3384-switch" },
+>  	{ .compatible = "brcm,bcm6328-switch" },
+> @@ -331,6 +343,7 @@ MODULE_DEVICE_TABLE(of, b53_mmap_of_table);
+>  static struct platform_driver b53_mmap_driver = {
+>  	.probe = b53_mmap_probe,
+>  	.remove = b53_mmap_remove,
+> +	.shutdown = b53_mmap_shutdown,
+>  	.driver = {
+>  		.name = "b53-switch",
+>  		.of_match_table = b53_mmap_of_table,
 
-So, use the struct_size() helper to do the arithmetic instead of the
-argument "size + count * size" in the kzalloc() function.
+I forgot to enable all variants of the b53 driver, and as such, the mmap
+version fails to build (the shutdown function should return void, not int).
 
-[1] https://www.kernel.org/doc/html/v5.14/process/deprecated.html#open-cod=
-ed-arithmetic-in-allocator-arguments
-
-Signed-off-by: Len Baker <len.baker@gmx.com>
-=2D--
- drivers/net/ethernet/netronome/nfp/nfp_net_repr.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c b/drivers/n=
-et/ethernet/netronome/nfp/nfp_net_repr.c
-index 3b8e675087de..369f6ae700c7 100644
-=2D-- a/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c
-@@ -499,8 +499,7 @@ struct nfp_reprs *nfp_reprs_alloc(unsigned int num_rep=
-rs)
- {
- 	struct nfp_reprs *reprs;
-
--	reprs =3D kzalloc(sizeof(*reprs) +
--			num_reprs * sizeof(struct net_device *), GFP_KERNEL);
-+	reprs =3D kzalloc(struct_size(reprs, reprs, num_reprs), GFP_KERNEL);
- 	if (!reprs)
- 		return NULL;
- 	reprs->num_reprs =3D num_reprs;
-=2D-
-2.25.1
-
+I will fix this when I send the v2 patch, but I will not send that now,
+as I would like to get some feedback on the approach first.
