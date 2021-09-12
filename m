@@ -2,99 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02ED0407CD4
-	for <lists+netdev@lfdr.de>; Sun, 12 Sep 2021 12:22:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34375407CEA
+	for <lists+netdev@lfdr.de>; Sun, 12 Sep 2021 12:41:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233163AbhILKXr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Sep 2021 06:23:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38938 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229568AbhILKXq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Sep 2021 06:23:46 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0BC5C061574
-        for <netdev@vger.kernel.org>; Sun, 12 Sep 2021 03:22:32 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id j1so4278341pjv.3
-        for <netdev@vger.kernel.org>; Sun, 12 Sep 2021 03:22:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
-        bh=cRw6V0itpzJ/HF6i//HTF/8TNJY0NDMAyJ/SuugqXkI=;
-        b=fAWeYOojV1ilc51Wz4ekHB0jitlIaRDUZRYZ2QET22EToO3kRUMevUhiSE10R1euBj
-         edwhW1+Rpe21Gdyeqos9/McG/xPUFWmxqtfk56CaYHma1weSXNNlH6taT0HJWpFrVoij
-         /OsoGXHAY/qG0XGv/m9Rftf3FokMI1rbpb+1fs7AXcHgsXdBxiNU+Mq5hXtnK/bcblk6
-         8+hzY9W7OLYbGNC81o0506S8NqG8/ukveR+qmPVMso+3TI8ljLAJdsAJNqNqDv4NICCd
-         ku/FwwUUV19ZB2SLKubEU410p/36A7LhYuExQBbwYj3bWCPY3f9Sy2N2zmNOeDAY471H
-         2rbQ==
+        id S233439AbhILKmc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Sep 2021 06:42:32 -0400
+Received: from mail-il1-f200.google.com ([209.85.166.200]:48766 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232848AbhILKmb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Sep 2021 06:42:31 -0400
+Received: by mail-il1-f200.google.com with SMTP id n4-20020a056e021ba400b0022481cdc803so13291722ili.15
+        for <netdev@vger.kernel.org>; Sun, 12 Sep 2021 03:41:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to;
-        bh=cRw6V0itpzJ/HF6i//HTF/8TNJY0NDMAyJ/SuugqXkI=;
-        b=GkSB0ySM9tdezmAqvdiVjYAKrfrDyiDNasSWFpHkhxfqSVGbJonL7aVOGGFNesYpqA
-         tp61gJA/DgorEKOmLDt/SdkubTrdVKQHW1luFQ4jZ7aOnn5woEVzSfSZrYJFJoIPWhk/
-         H8zkBgr2x0CPIOucVASmqg1Mikx1h6VAwVh5h/xviyi0XvgZo4vIQLBVOBZKzT6lEI+A
-         2Dxsdba3hzure0rYFQvkvhrKkZyO88ybPcR0RMCwN5Vw6PwFIzwrIOL98worRbqKpeMp
-         GBRZxFXQh2sCN8WOA2qV9Ng/FqDaTSp24dOfNj+na0LfdFbogEExeUbLsJXKv0TbNUcX
-         DIoA==
-X-Gm-Message-State: AOAM533zdwesBSCHgefdtOSQ1BSxB87cXsa+mTv8/u0aofaqQ3hXQHEq
-        2RpBpCPMt5Hp1LW7JLugGcdRzF3Kkoso8Mm4bWQ=
-X-Google-Smtp-Source: ABdhPJzdqdvhdeUPYhtMzwb6rdvQAzVy0f8hoKdiTfUBWuf7+kZ0VgWY40+PRTmcOVX/gR0ytAjyXWiThyXqABW/VZw=
-X-Received: by 2002:a17:90a:192:: with SMTP id 18mr7009370pjc.119.1631442152158;
- Sun, 12 Sep 2021 03:22:32 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=BAjX2AkFDNKH19LZZYWbrkqCvuFRehf7ymn/cg3ceC0=;
+        b=NszX/FYJJYhDKCJGEReDV9QhKl816fvxKO+tcONWmPqewm1oPkWzev0yDelL9D9JXZ
+         JOl+kaLNmqGMSlZRTXvOCsSkJNM60hFGPO38SjipCmeNXIejQpHYeyTDFGnGK6vI6Mmz
+         r3leHU1eplLXJUA4IpLmRBwC/Yvqd4y372TVul0x4rTU0IHF9XjhL9i5tHHJEHnYkrD4
+         u9+uPS8Ty8WCKy+IYjFtN232N41Cyx0ZlXdy4Dt5U6yvlDjfKZgUQTKkwg61D3MMUxvl
+         1FgyIfljalIIhKWW/Ai6bXVbePlSf1sPlzRRHFxOucV89He3pYHHRQK0/eT7EN6MDGhV
+         hOXQ==
+X-Gm-Message-State: AOAM531N9zb9GL1ineEkFN/b6mbARDeSAWkEeMNfHjw1dtEL7Sb/eRKn
+        gEe68zBAvMJ/AvSEZHanCvF6epHNViDgfIdX1K9xK9EI6FvW
+X-Google-Smtp-Source: ABdhPJxBLhkP+lsamSOdAfVRoDbugO0ApB1zr09uxqaa9wtDcudadu3O+ExWe6kaPZkPpafpA7xZJ6Q5T9kTnWKn/HZgjSXVDvw8
 MIME-Version: 1.0
-Reply-To: mrs.saliuali@gmail.com
-Sender: chinedu00226@gmail.com
-Received: by 2002:a05:7300:11ab:b0:3b:b581:cc4c with HTTP; Sun, 12 Sep 2021
- 03:22:31 -0700 (PDT)
-From:   "Mr. Saliu Ali" <mrs.saliuali@gmail.com>
-Date:   Sun, 12 Sep 2021 03:22:31 -0700
-X-Google-Sender-Auth: i3aB27e9lQRn_odBN_DFfHtWt8E
-Message-ID: <CAO_JxW_Q3ctmP_5osnOsCu2-evyJO23eU6bdsDB0kwVt-vGusg@mail.gmail.com>
-Subject: PICK YOUR PAYMENT URGENT FROM WESTERN UNION
-To:     undisclosed-recipients:;
+X-Received: by 2002:a05:6e02:2194:: with SMTP id j20mr4005230ila.268.1631443277088;
+ Sun, 12 Sep 2021 03:41:17 -0700 (PDT)
+Date:   Sun, 12 Sep 2021 03:41:17 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000008cad05cbc9fdf2@google.com>
+Subject: [syzbot] riscv/fixes boot error: BUG: unable to handle kernel paging
+ request in corrupted
+From:   syzbot <syzbot+6dfe749a37c4895fd959@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, jmorris@namei.org, john.fastabend@gmail.com,
+        kafai@fb.com, kpsingh@kernel.org, linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        serge@hallyn.com, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Customer,
+Hello,
 
-Western Union Money Transfer, in conjunction with the International
-Monetary Fund (IMF) Reconciliation Committee had agreed to pay you a
-total amount of $100,000.00 USD compensation fund. The compensation
-fund had been signed to be paid to you for all the money you have lost
-to scammers and through internet banking frauds.
+syzbot found the following issue on:
 
-Your name appeared on our payment schedule list of beneficiaries that
-will receive their funds in this last quarter payment of the year
-according to our banking regulation. We apologize for the delay of
-your payment.
+HEAD commit:    7d2a07b76933 Linux 5.14
+git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git fixes
+console output: https://syzkaller.appspot.com/x/log.txt?x=150f460d300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=f8211b06020972e8
+dashboard link: https://syzkaller.appspot.com/bug?extid=6dfe749a37c4895fd959
+compiler:       riscv64-linux-gnu-gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
+userspace arch: riscv64
 
-The sum of $5,000.00 USD will be transferred to you via WU every day
-until all the $100,000.00 USD is sent across to you.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+6dfe749a37c4895fd959@syzkaller.appspotmail.com
 
-We have registered your first payment of $5,000.00 USD online through
-Western Union Money Transfer.
+Unable to handle kernel paging request at virtual address 0000000000400dc0
+Oops [#1]
+Modules linked in:
+CPU: 0 PID: 2973 Comm: dhcpcd-run-hook Not tainted 5.14.0-syzkaller #0
+Hardware name: riscv-virtio,qemu (DT)
+epc : slab_alloc_node mm/slub.c:2900 [inline]
+epc : slab_alloc mm/slub.c:2967 [inline]
+epc : __kmalloc+0xce/0x388 mm/slub.c:4111
+ ra : slab_pre_alloc_hook mm/slab.h:494 [inline]
+ ra : slab_alloc_node mm/slub.c:2880 [inline]
+ ra : slab_alloc mm/slub.c:2967 [inline]
+ ra : __kmalloc+0x6e/0x388 mm/slub.c:4111
+epc : ffffffff803e3568 ra : ffffffff803e3508 sp : ffffffe00b36ba70
+ gp : ffffffff83f967d8 tp : ffffffe0081ac740 t0 : 0000000000000000
+ t1 : 0000000000000001 t2 : 0000000000000000 s0 : ffffffe00b36bb10
+ s1 : ffffffe005602500 a0 : 0000000000000000 a1 : ffffffe00b36be5c
+ a2 : 1ffffffc01035a0f a3 : 0000000000400dc0 a4 : 0000000000000001
+ a5 : ffffffff82e4b410 a6 : 0000000000f00000 a7 : ffffffff8038ca52
+ s2 : ffffffff83f96adc s3 : 0000000000400dc0 s4 : 0000000000000010
+ s5 : ffffffff807e81f8 s6 : ffffffff83f9a0d0 s7 : 0000000000000000
+ s8 : 0000000000400dc0 s9 : 0000000000000001 s10: 0000000000000000
+ s11: 0000000000000000 t3 : 2e9dd4183131c900 t4 : ffffffc7f0788989
+ t5 : ffffffc7f078898a t6 : ffffffe00b07e9c0
+status: 0000000000000120 badaddr: 0000000000400dc0 cause: 000000000000000d
+[<ffffffff803e3568>] slab_alloc_node mm/slub.c:2900 [inline]
+[<ffffffff803e3568>] slab_alloc mm/slub.c:2967 [inline]
+[<ffffffff803e3568>] __kmalloc+0xce/0x388 mm/slub.c:4111
+[<ffffffff807e81f8>] kmalloc include/linux/slab.h:596 [inline]
+[<ffffffff807e81f8>] kzalloc+0x26/0x32 include/linux/slab.h:721
+[<ffffffff807ebea4>] lsm_cred_alloc security/security.c:537 [inline]
+[<ffffffff807ebea4>] security_prepare_creds+0xde/0x106 security/security.c:1691
+[<ffffffff8007ba92>] prepare_creds+0x40e/0x5ae kernel/cred.c:293
+[<ffffffff8007d014>] copy_creds+0x62/0x908 kernel/cred.c:367
+[<ffffffff800216ba>] copy_process+0xb52/0x3a98 kernel/fork.c:1992
+[<ffffffff8002480c>] kernel_clone+0x94/0x878 kernel/fork.c:2509
+[<ffffffff80025074>] __do_sys_clone+0x84/0xac kernel/fork.c:2626
+[<ffffffff80025336>] sys_clone+0x32/0x44 kernel/fork.c:2594
+[<ffffffff80005150>] ret_from_syscall+0x0/0x2
+---[ end trace 90d68454cb946b7b ]---
 
-Just confirm your first payment with below instruction,
-Open this website: www.westernunion.com/us/en/send-money/app/tracktransfer
 
-As soon you open the website, enter this tracking number(MTCN): 826-743-9026,
-As soon you enter the tracking number click "Track Transfer" to
-confirm by yourself.
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
- 	Money Transfer | Global Money Transfer | Western Union
-
-Sender Names: Anita Philip
-City: Ouagadougou
-Country of sender: Burkina Faso.	
-
-Go to any Western union office in your area and pick it up. Make sure
-you go with an identification of yourself like driving license or
-national id or international passport.
-
-Yours sincerely,
-Dr. Mrs. Saliu Ali
-Director, Western Union, Burkina Faso.
-7th September, 2021.
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
