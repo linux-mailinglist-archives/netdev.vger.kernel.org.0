@@ -2,138 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7856D407EA6
+	by mail.lfdr.de (Postfix) with ESMTP id C1651407EA7
 	for <lists+netdev@lfdr.de>; Sun, 12 Sep 2021 18:35:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234846AbhILQgW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Sep 2021 12:36:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35122 "EHLO
+        id S235011AbhILQgY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Sep 2021 12:36:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229560AbhILQgU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Sep 2021 12:36:20 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33DF4C061574
-        for <netdev@vger.kernel.org>; Sun, 12 Sep 2021 09:35:06 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id k24so7077531pgh.8
-        for <netdev@vger.kernel.org>; Sun, 12 Sep 2021 09:35:06 -0700 (PDT)
+        with ESMTP id S234105AbhILQgW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Sep 2021 12:36:22 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2C11C061574
+        for <netdev@vger.kernel.org>; Sun, 12 Sep 2021 09:35:07 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id j1so4633011pjv.3
+        for <netdev@vger.kernel.org>; Sun, 12 Sep 2021 09:35:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=YzrjhKXCaBWyEpJ6sywR8jtuAA7scEM4o6bsAn/2oKM=;
-        b=FHatnFni0R4lmx1SCd4roSJw5uqWGoMEtMkjtpms9Z1bqnZ6V46M5O0EZwTLuhQrd6
-         rwYtDrzQ/pJTYk5QJfsarjtLnZ6YOf/m8U9E1urx6ST1ycLWTfwv6ec2RU0iW7EUfn8u
-         npjqo7Vy/L3FKHk/EBdDCFi6PD0fOoBHb1jeQ=
+        bh=jcxCnmCF89EF94Yi+tyhGdj+WFK48Xq5HdyYgb0z3J8=;
+        b=PKBDiJX8PYf9os/aL1ULf3RVmOdqbt8PEv149uRIZw/MhvM0F0kYY6shtPtW0PIwpj
+         aeXvkBcfGaLAAfWnKsAo8pXxn0Z44L1edoe6Su4nydd5Y170HnXE+mxNOIVuUPxEEqn9
+         AGv+mWAjZndKF/MCEJ+52UKj6i4Y0d48bCsyc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=YzrjhKXCaBWyEpJ6sywR8jtuAA7scEM4o6bsAn/2oKM=;
-        b=YtMeE4AdH6MnbEftFJNhb7poYgh3n3eOFYRPDtz2IQVJwHviuh7CGDNj+ee3PM7T65
-         cuows9hIRJ78Q01a9TuQ3VUTWLKdjKryMfBe7Oy/Kei1DxT40qTfryNCdNQwRDUv5C2u
-         TqOP47g5IKBoFOZgQxTmG4753a3/LrwSpo74tfxwT15i/psRjqBdcqbMdrB6ptud1VxR
-         QVhDMDHGLhpT5gQXxfuRwe+LRTpO/LhBsUI6xYJKohXgo9AaHzu059ksBsNslorAX99j
-         W8bYLTFS7vEFbLp3kNUaoc4mSD0zRd9j2xx8gEl8HXuG24GsfCK9Pdzu5al19ED5mdKw
-         jKCQ==
-X-Gm-Message-State: AOAM532CHPYmMVrTvCHYxqe0OvDQD/u20lOwMEUWqQoACjwDEVXHbrAe
-        7wHkosMl8t29glt5IE9h6A+hrw==
-X-Google-Smtp-Source: ABdhPJwR5flhl1OO6rSfGBQvr5Xn3PdSsNiPXNT//Sc62mNalDRE8YZxkloum+ONaxOW8kh5rbUqtQ==
-X-Received: by 2002:a63:e613:: with SMTP id g19mr7340376pgh.12.1631464505393;
-        Sun, 12 Sep 2021 09:35:05 -0700 (PDT)
+        bh=jcxCnmCF89EF94Yi+tyhGdj+WFK48Xq5HdyYgb0z3J8=;
+        b=lpQUyUhVWDsginyDo+6S2GolWAW179euicI7aiGSuzK2iD/MdwTdh18Tx64qKzhFO6
+         AZjWDxEZYrneLDqCLAnwPacgLRNcPMSwHU7x+CTaZWI3Bbks63DXGQKHLMqu3FRaesXR
+         +nMXRw5O1+iDta5S9YJm0Z/8JQjUKo8ThLJziYvWenfzs59PPG/wsaxbwC2sysxgFWe3
+         XTxpxXJ1JcLfO8I8hPyLfBknqagR0WqGtO3lNgv9tOC91K+bG3LHCnSFbOObnCs/1koF
+         1SUj+UdpKxfqHYpdzldAkSOoz8jgQ2IJ4KobTEcwMfsBPcasiDQovUYZcKWx2hQPB8Qy
+         NhYg==
+X-Gm-Message-State: AOAM532Rlc2W6vzwV267PFet5Kp/YLblLIVvHof22HIgg90vBNo5lUGq
+        3gIn1HYAGjAuPQeyr6lF3Fmn3w==
+X-Google-Smtp-Source: ABdhPJwzZkveoZBwhs9VhcQiVEVIxQQOFsBE/STrO8VH5akhvwnO6dd6fuPiB2QbGZ5KEMXgRPbGNw==
+X-Received: by 2002:a17:90a:de16:: with SMTP id m22mr8388465pjv.38.1631464506693;
+        Sun, 12 Sep 2021 09:35:06 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id l22sm5444224pgo.45.2021.09.12.09.35.04
+        by smtp.gmail.com with ESMTPSA id l22sm5444224pgo.45.2021.09.12.09.35.05
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 12 Sep 2021 09:35:04 -0700 (PDT)
+        Sun, 12 Sep 2021 09:35:05 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, edwin.peer@broadcom.com,
         gospo@broadcom.com
-Subject: [PATCH net 2/3] bnxt_en: make bnxt_free_skbs() safe to call after bnxt_free_mem()
-Date:   Sun, 12 Sep 2021 12:34:48 -0400
-Message-Id: <1631464489-8046-3-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net 3/3] bnxt_en: Clean up completion ring page arrays completely
+Date:   Sun, 12 Sep 2021 12:34:49 -0400
+Message-Id: <1631464489-8046-4-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1631464489-8046-1-git-send-email-michael.chan@broadcom.com>
 References: <1631464489-8046-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000056d80a05cbceee08"
+        boundary="0000000000006e041605cbceeeca"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000056d80a05cbceee08
+--0000000000006e041605cbceeeca
 
-From: Edwin Peer <edwin.peer@broadcom.com>
+We recently changed the completion ring page arrays to be dynamically
+allocated to better support the expanded range of ring depths.  The
+cleanup path for this was not quite complete.  It might cause the
+shutdown path to crash if we need to abort before the completion ring
+arrays have been allocated and initialized.
 
-The call to bnxt_free_mem(..., false) in the bnxt_half_open_nic() error
-path will deallocate ring descriptor memory via bnxt_free_?x_rings(),
-but because irq_re_init is false, the ring info itself is not freed.
+Fix it by initializing the ring_mem->pg_arr to NULL after freeing the
+completion ring page array.  Add a check in bnxt_free_ring() to skip
+referencing the rmem->pg_arr if it is NULL.
 
-To simplify error paths, deallocation functions have generally been
-written to be safe when called on unallocated memory. It should always
-be safe to call dev_close(), which calls bnxt_free_skbs() a second time,
-even in this semi- allocated ring state.
-
-Calling bnxt_free_skbs() a second time with the rings already freed will
-cause NULL pointer dereference.  Fix it by checking the rings are valid
-before proceeding in bnxt_free_tx_skbs() and
-bnxt_free_one_rx_ring_skbs().
-
-Fixes: 975bc99a4a39 ("bnxt_en: Refactor bnxt_free_rx_skbs().")
-Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
+Fixes: 03c7448790b8 ("bnxt_en: Don't use static arrays for completion ring pages")
+Reviewed-by: Andy Gospodarek <gospo@broadcom.com>
+Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 8b0a2ae1367c..9f9806f1c0fc 100644
+index 9f9806f1c0fc..f32431a7e5a6 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -2729,6 +2729,9 @@ static void bnxt_free_tx_skbs(struct bnxt *bp)
- 		struct bnxt_tx_ring_info *txr = &bp->tx_ring[i];
- 		int j;
+@@ -2912,6 +2912,9 @@ static void bnxt_free_ring(struct bnxt *bp, struct bnxt_ring_mem_info *rmem)
+ 	struct pci_dev *pdev = bp->pdev;
+ 	int i;
  
-+		if (!txr->tx_buf_ring)
-+			continue;
++	if (!rmem->pg_arr)
++		goto skip_pages;
 +
- 		for (j = 0; j < max_idx;) {
- 			struct bnxt_sw_tx_bd *tx_buf = &txr->tx_buf_ring[j];
- 			struct sk_buff *skb;
-@@ -2813,6 +2816,9 @@ static void bnxt_free_one_rx_ring_skbs(struct bnxt *bp, int ring_nr)
- 	}
+ 	for (i = 0; i < rmem->nr_pages; i++) {
+ 		if (!rmem->pg_arr[i])
+ 			continue;
+@@ -2921,6 +2924,7 @@ static void bnxt_free_ring(struct bnxt *bp, struct bnxt_ring_mem_info *rmem)
  
- skip_rx_tpa_free:
-+	if (!rxr->rx_buf_ring)
-+		goto skip_rx_buf_free;
-+
- 	for (i = 0; i < max_idx; i++) {
- 		struct bnxt_sw_rx_bd *rx_buf = &rxr->rx_buf_ring[i];
- 		dma_addr_t mapping = rx_buf->mapping;
-@@ -2835,6 +2841,11 @@ static void bnxt_free_one_rx_ring_skbs(struct bnxt *bp, int ring_nr)
- 			kfree(data);
- 		}
+ 		rmem->pg_arr[i] = NULL;
  	}
-+
-+skip_rx_buf_free:
-+	if (!rxr->rx_agg_ring)
-+		goto skip_rx_agg_free;
-+
- 	for (i = 0; i < max_agg_idx; i++) {
- 		struct bnxt_sw_rx_agg_bd *rx_agg_buf = &rxr->rx_agg_ring[i];
- 		struct page *page = rx_agg_buf->page;
-@@ -2851,6 +2862,8 @@ static void bnxt_free_one_rx_ring_skbs(struct bnxt *bp, int ring_nr)
++skip_pages:
+ 	if (rmem->pg_tbl) {
+ 		size_t pg_tbl_size = rmem->nr_pages * 8;
  
- 		__free_page(page);
- 	}
+@@ -3240,10 +3244,14 @@ static int bnxt_alloc_tx_rings(struct bnxt *bp)
+ 
+ static void bnxt_free_cp_arrays(struct bnxt_cp_ring_info *cpr)
+ {
++	struct bnxt_ring_struct *ring = &cpr->cp_ring_struct;
 +
-+skip_rx_agg_free:
- 	if (rxr->rx_page) {
- 		__free_page(rxr->rx_page);
- 		rxr->rx_page = NULL;
+ 	kfree(cpr->cp_desc_ring);
+ 	cpr->cp_desc_ring = NULL;
++	ring->ring_mem.pg_arr = NULL;
+ 	kfree(cpr->cp_desc_mapping);
+ 	cpr->cp_desc_mapping = NULL;
++	ring->ring_mem.dma_arr = NULL;
+ }
+ 
+ static int bnxt_alloc_cp_arrays(struct bnxt_cp_ring_info *cpr, int n)
 -- 
 2.18.1
 
 
---00000000000056d80a05cbceee08
+--0000000000006e041605cbceeeca
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -204,13 +191,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIJOgmiiE1lj+ljEftmZq/0ur9kMIQbgA
-rRrjMhFL3oziMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDkx
-MjE2MzUwNVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIBdmV4Qx2b1VLNB/vxJAWGtAvZ6DWRe3
+aF/baJDI89k2MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDkx
+MjE2MzUwN1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQB9rhXPqMBsSWsVwadFJ/fb3lzl8YYKjlWocYZ+Cpt6koaEw5E/
-lmOBj8w3L1jtzf4ZY87CedYedkr1+OjnAGvLOj3UCKzDuyTWYvmenmWq8+zrH5W2V+LPbU4QK47F
-JIpUwixd7wD51K2LKyRAuwcomnqhQsNjxWEA/s4Eh20S0LlDwk3YcN/XYr4LZxW1jzB6AKWJ+4T+
-8Ah9/cjeOKpZJEhr+rJinQRN2YODhVHmkKHwAFa/iJ7Hd2JRe7lgr9RetpmWu4YCPvb/Gz5r3uSf
-dG1HKlyKyiIczOIzxSsPDCHotmpWNVWimyJ7O+upxjMItiWtbvrdOAvmUxGTdNxX
---00000000000056d80a05cbceee08--
+ATANBgkqhkiG9w0BAQEFAASCAQA86ROcdyEpmPnnYrRDXqCZ60c06c8Kdz+0mJK7FduI+2sIG7O9
+ONZVx0fdz61tc0ytpPn/X9/HqDPcYenvnX0cKP7oEbtYIqp6l/hccWQ8tWYo6CYpEShPasFiIe6s
+y9zBL/igKAEIHK5bnS5BEq6MP2sotOKYIUxLR2LMd28cQYLcq9m9ktX6HfZjQuKhWHoJePqrGnsI
+/v0HrnhwV+PWxsN0GM+W6cmYY3ua2xqc5PxUX6SDSks3W274rm2DMw0EylgY94BZHJpGSzLlbIpn
+6M9ZMjN41Hd7g7oTWXHarlJ6HAQDS3lk/QSTls0LB/9VhlA6xjBa2Ld3vV8xW2uG
+--0000000000006e041605cbceeeca--
