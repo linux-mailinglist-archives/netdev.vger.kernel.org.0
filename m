@@ -2,123 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8224E4081E4
-	for <lists+netdev@lfdr.de>; Sun, 12 Sep 2021 23:39:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C68034081E9
+	for <lists+netdev@lfdr.de>; Sun, 12 Sep 2021 23:43:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236451AbhILVkO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Sep 2021 17:40:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45384 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236320AbhILVkN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Sep 2021 17:40:13 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64216C061574;
-        Sun, 12 Sep 2021 14:38:58 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id 9so11241178edx.11;
-        Sun, 12 Sep 2021 14:38:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=i/jEd8c7Upbl8XQpByKCTkjIzB/I2CUIv7rgFRPBAQM=;
-        b=Y2gzZXrk2XTDD9Sh6p5GjcmZNQn1HYY9SQB56mBYz8MbHFRUVlbWBMHVhVs5bzKL+6
-         hqAvu/rUFh+RsDTlgAei+Od2ARYGnr4ifR86TwWhOIwFb9g/Kii3SNbGdHH3PmGJnw/v
-         v4PnJkdoocdRMbYALqC6eWw0Fjtk71pUBbUjZoA4bO2tbaDP5XMs5KBG1Mw7DF/1LEEP
-         202Ya/TJfvQ1Rs+YFZ3hZo1wgHDACkPiVTkFtHN0kvtODE+l4R+ZT+DCjiY035FJS76f
-         CCqfOl/VFfoQHAPqx8eHIuK/6iMCabyn6IooSlbaKNeaOz/HG1rTGiwbx8xh6fQw4u+N
-         v6dQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=i/jEd8c7Upbl8XQpByKCTkjIzB/I2CUIv7rgFRPBAQM=;
-        b=c8Y9xdk4VTtZDg6jodJtv7VvjRxTcaGWd3YE/hd1TQo2dVia9SCPdj/ES9dS7+VVlw
-         l5pYyzFZDPHinyUzaTzsa/GSBYtJ69XK8guKYXnpL6UNAqrALY3nV2dkmjt9SXwKVLze
-         izpVks8MgbLkhpCqwC7QzpJRiIiI1+tiMs9iCmSt9Bwoo0AfDTAw1A4bP5EhL2QT0Fmt
-         R3Y5cUCFVN+lsiYV95HgmeiKFGRlcKl3jqvrPe49UQGbGZDjpgnwe9hpZCx4VUaOGBGz
-         mmTtyOaHHY2LFNfkJoeo4WC4GV6o5OQfI2l2YsmRe5311ccKK5cgzlt28dcFWsYi221r
-         xLoQ==
-X-Gm-Message-State: AOAM533d1cc94GWLvTccfaLLVrb32OyjfA71YiTycImJ4QmXtUy3Ajb6
-        pumXDeHuGhugiU5Oir5Hztk=
-X-Google-Smtp-Source: ABdhPJzLKIiesrF1bvNuMiJnpElEmUgQB+M0bfbA5pbroDW+UunOO2En0TW87cEr33eCKtiVHNEh4A==
-X-Received: by 2002:a05:6402:440f:: with SMTP id y15mr9497342eda.400.1631482736998;
-        Sun, 12 Sep 2021 14:38:56 -0700 (PDT)
-Received: from skbuf ([82.78.148.104])
-        by smtp.gmail.com with ESMTPSA id v12sm2870933ede.16.2021.09.12.14.38.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Sep 2021 14:38:56 -0700 (PDT)
-Date:   Mon, 13 Sep 2021 00:38:55 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Gerhard Engleder <gerhard@engleder-embedded.com>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH net] Revert "net: phy: Uniform PHY driver access"
-Message-ID: <20210912213855.kxoyfqdyxktax6d3@skbuf>
-References: <20210912192805.1394305-1-vladimir.oltean@nxp.com>
- <CANr-f5wCpcPM+FbeW+x-JmZt0-WmE=b5Ys1Pa_G7p8v3nLyCcQ@mail.gmail.com>
+        id S236545AbhILVoe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Sep 2021 17:44:34 -0400
+Received: from smtp-out1.suse.de ([195.135.220.28]:47236 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236427AbhILVo1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Sep 2021 17:44:27 -0400
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 04F2821E67;
+        Sun, 12 Sep 2021 21:43:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1631482992; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type;
+        bh=PuHw5xLu82SNCNuRYKn+QUbL1o/QBkuudwVecwQBT94=;
+        b=bsFIJoKkke1JKSSzBNvFIY6cqRWdHnFHp2KcX4W+hb14k28f4BNdpwCcyoTHkxAJaNuTC/
+        S01etygGngXv9sjEc2tODAMQgv8fP0F0OYXGHMjPhwmW4WlbxzbgxseoT1GA3Mx0/LHBHQ
+        JPMhU3zohMLeyOntfcz08XqHTDeh19Y=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1631482992;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type;
+        bh=PuHw5xLu82SNCNuRYKn+QUbL1o/QBkuudwVecwQBT94=;
+        b=R37pXOU0EsitxJwnmgPLZCzHb57nZ9AjGRtNWCeYmP/ntQdSCz9w3jmmkOI58Cpzftj3vZ
+        JFQnnxT0AD5HYzDQ==
+Received: from lion.mk-sys.cz (unknown [10.100.200.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id F0293A3B81;
+        Sun, 12 Sep 2021 21:43:11 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id CFCDE6085C; Sun, 12 Sep 2021 23:43:08 +0200 (CEST)
+Date:   Sun, 12 Sep 2021 23:43:08 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>
+Subject: ethtool 5.14 released
+Message-ID: <20210912214308.lwb6fibqbqygkwtf@lion.mk-sys.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="lf2o2xxiujvyk4nx"
 Content-Disposition: inline
-In-Reply-To: <CANr-f5wCpcPM+FbeW+x-JmZt0-WmE=b5Ys1Pa_G7p8v3nLyCcQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 12, 2021 at 10:49:25PM +0200, Gerhard Engleder wrote:
-> > This reverts commit 3ac8eed62596387214869319379c1fcba264d8c6.
-> >
-> > I am not actually sure I follow the patch author's logic, because the
-> > change does more than it says on the box, but this patch breaks
-> > suspend/resume on NXP LS1028A and probably on any other systems which
-> > have PHY devices with no driver bound, because the patch has removed the
-> > "!phydev->drv" check without actually explaining why that is fine.
-> 
-> The wrong assumption was that the driver is set for every device during probe
-> before suspend. Intention of the patch was only clean up of
-> to_phy_driver() usage.
 
-I am not sure why "to_phy_driver" needs cleanup. Au contraire, I think
-the PHY library's usage of struct phy_device :: drv is what is strange
-and potentially buggy, it is the only subsystem I know of that keeps its
-own driver pointer rather than looking at struct device :: driver.
-I think this is largely for historical reasons (it has done this since
-the first commit), but it looks to me like to_phy_driver could be used
-as part of a larger macro called something like phydev_get_drv which
-retrieves the phy_driver from the phydev->mdio.dev.driver.
+--lf2o2xxiujvyk4nx
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-I say it is buggy because when probing fails ("fails" includes things
-like -EPROBE_DEFER) it does not even bother to clear phydev->drv back to
-NULL, even though the device will not have a driver pointer. There are
-also other things which it does not clean up on probe failure, btw, each
-with its own interesting side effects.
+Hello,
 
-> >  static bool mdio_bus_phy_may_suspend(struct phy_device *phydev)
-> >  {
-> > +       struct device_driver *drv = phydev->mdio.dev.driver;
-> > +       struct phy_driver *phydrv = to_phy_driver(drv);
-> >         struct net_device *netdev = phydev->attached_dev;
-> >
-> > -       if (!phydev->drv->suspend)
-> > +       if (!drv || !phydrv->suspend)
-> >                 return false;
-> >
-> >         /* PHY not attached? May suspend if the PHY has not already been
-> 
-> I suggest to add the "!phydev->drv" check, but others may know it
-> better than me.
+ethtool 5.14 has been released.
 
-So in this case, the difference will be that with your change, a
-phy_probe that returns an error code like -EPROBE_DEFER will have the
-phydev->drv set, and it will not return false ("may not suspend") quickly,
-while the code in its original form will not attempt to suspend that PHY.
+Home page: https://www.kernel.org/pub/software/network/ethtool/
+Download link:
+https://www.kernel.org/pub/software/network/ethtool/ethtool-5.14.tar.xz
 
-The implication is that we may call the ->suspend method of a PHY that
-is deferring probe, _before_ the probe has actually succeeded.
+Release notes:
 
-To me, making that change and moving the code in yet a third state is
-way outside of the scope, which was to restore it to a known working
-condition (aka bug fix). If you want to make that change, feel free, I will not.
+	* Feature: do not silently ignore --json if unsupported
+	* Feature: support new message types in pretty print
+
+Michal
+
+--lf2o2xxiujvyk4nx
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmE+dGYACgkQ538sG/LR
+dpWToQf/Xrxb6ZibktysxFA8eqrG5T7pfaH9c4Wx48HIZ+W7zZnXdbwiURrEhW4Q
+ek+vuaiqW8AtX7+KgZy9ofx3/RdKjw7Pa1drAZydo1vMNvznQOr9iuN2qhNMvuTJ
+7afUR5bgbkDzbJse0xaGZM15SYE5OFICVAD9S2G6sL8cMoUUrJThJdNbeTUfSeEb
+yCv90LubH3FPgboG1s//o0WetnPFa09+EwSCbtEQtRjrfWGwCVPDABQ8fci1BHls
+k/eCmLOWdnfbFW9BX+5u+leo+/7Y7wvyqCEyrsaGo1pLnufRFk3tswfK7HHDUSIl
+jFDsaqFX2DGs/cTQWWcF+Yds9mF4QQ==
+=YNOY
+-----END PGP SIGNATURE-----
+
+--lf2o2xxiujvyk4nx--
