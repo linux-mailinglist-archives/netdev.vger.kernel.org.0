@@ -2,55 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F583407E5E
-	for <lists+netdev@lfdr.de>; Sun, 12 Sep 2021 18:02:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E9CD407E75
+	for <lists+netdev@lfdr.de>; Sun, 12 Sep 2021 18:13:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235971AbhILQDd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Sep 2021 12:03:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56080 "EHLO
+        id S232147AbhILQO0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Sep 2021 12:14:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236022AbhILQDV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Sep 2021 12:03:21 -0400
-Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 515F3C0613D8;
-        Sun, 12 Sep 2021 09:02:03 -0700 (PDT)
-Received: by mail-oi1-x22c.google.com with SMTP id bd1so10763730oib.5;
-        Sun, 12 Sep 2021 09:02:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=k7vOSXJvuBFedGqEmsc9y4fLwgAcNpSGF+uyNF/6Rc4=;
-        b=GVTomCds0oHSZwZ+CTeT02sfHZ+uX8vQBFkmUFHVSBVMyoMK1poVF7DH8H5r1UYFRK
-         aPCLOAbhNTN0Pf73m3EnkBCGrCx8Sz8mfm4fpr03P50xQCkmjPnx6H1fMBfR8TXi2yql
-         7EpXjBZQjVBhuRLjaeIAzrOfigBrZLiN1cMRentTn0+/xh9NknH0Wl8VZJEOKW2wEAbz
-         cLq7gUjvQS/t3euFq+3g8iDOzvLSyu8Sijmu75+aIQRni0rJJTrPiWLF1zYZ7e0lMEjv
-         TCPoA1bHoUyY94AnRaVage1SFWbZ2fb2dbI3Hl/OEyUsEJ3gyUrP6RZBCknb7+wWO1mY
-         VqZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=k7vOSXJvuBFedGqEmsc9y4fLwgAcNpSGF+uyNF/6Rc4=;
-        b=WS2tJITiLSR5jdYu9qbSAHAIcbycQfiWLVmlBoryw9sa3DTwlencz1lfn3ySQawgP+
-         dyYAKCJ0kvmvZ6fTJ29EKQ08kfd8vMGO5DmfRKhB97jtSLSWzI3MkMJTFJPZlrnzU7wK
-         gUKLCrxDuLJ10A/ThiyIKHCOMonl4vBVItq+YpP9BtJ//ydHymWnSzRoJy+iXnTWAbpD
-         rSikyl7BBLUjDgM9HgUVHOXp0Sv3o7BKFVzXXotK+0Nd0eA03qlByUu0e5Ym2iaObXrz
-         kjbba8gUwkEGnJrPLMjFooyP9iRWs0j/P253O6t5f1hpV1SoBH0RVuBSyBWi5MB5Gt89
-         spWg==
-X-Gm-Message-State: AOAM531ciwSOECCpjocAT1rXbghXqrWa9loaiEjx9BVOD67Z9X7Gp7jX
-        NQXtWsR35mhzRPZiIPcW37Q=
-X-Google-Smtp-Source: ABdhPJxb1VPXMwcXDAB2MTnc8E2tBnOL9N7CU6cFnuCzUVgrOk+LibtThqzlA+vv5VXasU/DM9aWpA==
-X-Received: by 2002:a05:6808:2cd:: with SMTP id a13mr5006585oid.3.1631462522711;
-        Sun, 12 Sep 2021 09:02:02 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id z1sm1202256ooj.25.2021.09.12.09.02.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Sep 2021 09:02:02 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Richard Henderson <rth@twiddle.net>,
+        with ESMTP id S229726AbhILQOV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Sep 2021 12:14:21 -0400
+X-Greylist: delayed 64 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 12 Sep 2021 09:13:01 PDT
+Received: from lb1-smtp-cloud9.xs4all.net (lb1-smtp-cloud9.xs4all.net [IPv6:2001:888:0:108::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A374C061574;
+        Sun, 12 Sep 2021 09:13:01 -0700 (PDT)
+Received: from cust-3a8def63 ([IPv6:fc0c:c1c9:903d:e9b4:326e:d2bd:718e:17cc])
+        by smtp-cloud9.xs4all.net with ESMTPSA
+        id PS57m4UmccSrkPS59mriLd; Sun, 12 Sep 2021 18:11:54 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xs4all.nl; s=s2;
+        t=1631463114; bh=Rkh5fe5ckn+qv2he4b3qNVogdA8plV7NpPMyL17OrJ0=;
+        h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type:From:
+         Subject;
+        b=tpeNy1kSwSoI+lvdLcKG52+7AwavVNtPziXnSj8+4LWYS6LcGN4DDcnfVZ9v7W33z
+         LSUjGuJcEw1KjQK/Nnl7I+SlZA3MPWMlCQMiS5oqo7hpOPJCnhYFHBWJiFcYZSEm+X
+         46nzMB1D8F2muY/J8Jaq1ou/0U9CY94ZMayOJGuOldK0QQUQmU0HiFLdHLUfi6i8HJ
+         GCw1YTrgoKsLiqVge5lE1ogiNLSeh3E3kjLrdgqJqkZMOhfuoFlYfA3XovSQee9pSy
+         bc3Hg9btUwwzvcQ9y5f54BKWWIXNc7GR5n/Zkq4rjVmMyv9rzPffGwbNGKGNULjOpC
+         Kq86eZmK0HkyA==
+Date:   Sun, 12 Sep 2021 18:11:48 +0200
+From:   Jeroen Roovers <jer@xs4all.nl>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Richard Henderson <rth@twiddle.net>,
         Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
         Matt Turner <mattst88@gmail.com>,
         "James E . J . Bottomley" <James.Bottomley@HansenPartnership.com>,
@@ -59,48 +41,62 @@ Cc:     Richard Henderson <rth@twiddle.net>,
         Jakub Kicinski <kuba@kernel.org>, linux-alpha@vger.kernel.org,
         Geert Uytterhoeven <geert@linux-m68k.org>,
         linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org,
-        netdev@vger.kernel.org, linux-sparse@vger.kernel.org,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH 4/4] alpha: Use absolute_pointer for strcmp on fixed memory location
-Date:   Sun, 12 Sep 2021 09:01:49 -0700
-Message-Id: <20210912160149.2227137-5-linux@roeck-us.net>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20210912160149.2227137-1-linux@roeck-us.net>
+        netdev@vger.kernel.org, linux-sparse@vger.kernel.org
+Subject: Re: [PATCH 2/4] net: i825xx: Use absolute_pointer for memcpy on
+ fixed memory location
+Message-ID: <20210912181148.60f147c8@wim.jer>
+In-Reply-To: <20210912160149.2227137-3-linux@roeck-us.net>
 References: <20210912160149.2227137-1-linux@roeck-us.net>
+        <20210912160149.2227137-3-linux@roeck-us.net>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-CMAE-Envelope: MS4xfDDN+TVFZlqrPTgn5UvnCAIeaDEYv00W+k2D6F8WSW6CaVM3Vx2T12jZ3P+tSZYXAkmi6pjvZgc8k9a2owRgUCSuC2zQGYxwEYaHCL5QuBfRHx9eHd4A
+ eZyYC12vLAmsBCmCHogCVD9xE3ne1gBAFQDRn6Uhps5sLb4wxLrzmi1dmgm71vH2Wfg5Zo/38RPF174c6DCbDqlg5jY1DYgFNhjZRmkgOBlKBDogPiRpyJvO
+ rSYfziqnvgoT+H1Z7UKwrCo3+7vE0g0DS+Ixf59o53mcejQTRA4uhlrw//Xqs9ImhWM63wROcfIQjpNcw6CV2sMPkV6zKEHqA195ny4fQNbT0QVM8upL4McG
+ LSUypvGXg3M5ZkvPie7YQ0LfNW7tt8lvpT1pBb8VjoWYGotgEud9dI7fbj8E+5FVZodxbbOb6hdJ3QALRHXnhfhXE5nPARSrXDuwUKZjdtR0a9XvcCgbSsIx
+ H1tc95ZpyxPmRkZbkm9MaLYADy5ZY/+pnwZnFJc6emWx3cqQkHacNyeI3LUqL/6OiqgRTb/WSUFYMINyofds3yUhef34fWvFE5Wd6mXsaGPi45ovRKZn7ECf
+ 1pHG1fFaOiEmO5lUNWTgf7jaioAjG20J5MHd6blltY+B5RCj/nqb+OBg4Zv+tVOJLkgfAA2ACFfRwsIfCrDWx/jY
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-alpha:allmodconfig fails to build with the following error
-when using gcc 11.x.
+On Sun, 12 Sep 2021 09:01:47 -0700
+Guenter Roeck <linux@roeck-us.net> wrote:
 
-arch/alpha/kernel/setup.c: In function 'setup_arch':
-arch/alpha/kernel/setup.c:493:13: error:
-	'strcmp' reading 1 or more bytes from a region of size 0
+> gcc 11.x reports the following compiler warning/error.
+> 
+> drivers/net/ethernet/i825xx/82596.c: In function 'i82596_probe':
+>     ./arch/m68k/include/asm/string.h:72:25: error:
+>             '__builtin_memcpy' reading 6 bytes from a region of size 0
+>                     [-Werror=stringop-overread]
+> 
+> Use absolute_address() to work around the problem.
 
-Avoid the problem by using absolute_pointer() when providing a memory
-address to strcmp().
+=> absolute_pointer()
 
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
----
- arch/alpha/kernel/setup.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+> ---
+>  drivers/net/ethernet/i825xx/82596.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/i825xx/82596.c
+> b/drivers/net/ethernet/i825xx/82596.c index
+> b8a40146b895..b482f6f633bd 100644 ---
+> a/drivers/net/ethernet/i825xx/82596.c +++
+> b/drivers/net/ethernet/i825xx/82596.c @@ -1144,7 +1144,7 @@ static
+> struct net_device * __init i82596_probe(void) err = -ENODEV;
+>  			goto out;
+>  		}
+> -		memcpy(eth_addr, (void *) 0xfffc1f2c,
+> ETH_ALEN);	/* YUCK! Get addr from NOVRAM */
+> +		memcpy(eth_addr, absolute_pointer(0xfffc1f2c),
+> ETH_ALEN); /* YUCK! Get addr from NOVRAM */ dev->base_addr =
+> MVME_I596_BASE; dev->irq = (unsigned) MVME16x_IRQ_I596;
+>  		goto found;
 
-diff --git a/arch/alpha/kernel/setup.c b/arch/alpha/kernel/setup.c
-index b4fbbba30aa2..aab477a76c30 100644
---- a/arch/alpha/kernel/setup.c
-+++ b/arch/alpha/kernel/setup.c
-@@ -490,7 +490,7 @@ setup_arch(char **cmdline_p)
- 	/* Hack for Jensen... since we're restricted to 8 or 16 chars for
- 	   boot flags depending on the boot mode, we need some shorthand.
- 	   This should do for installation.  */
--	if (strcmp(COMMAND_LINE, "INSTALL") == 0) {
-+	if (strcmp(absolute_pointer(COMMAND_LINE), "INSTALL") == 0) {
- 		strlcpy(command_line, "root=/dev/fd0 load_ramdisk=1", sizeof command_line);
- 	} else {
- 		strlcpy(command_line, COMMAND_LINE, sizeof command_line);
--- 
-2.33.0
 
+Regards,
+      jer
