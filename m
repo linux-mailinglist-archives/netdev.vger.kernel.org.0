@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A08A407B2E
-	for <lists+netdev@lfdr.de>; Sun, 12 Sep 2021 02:51:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E659C407B23
+	for <lists+netdev@lfdr.de>; Sun, 12 Sep 2021 02:47:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234543AbhILAw2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Sep 2021 20:52:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57708 "EHLO
+        id S234738AbhILAsY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Sep 2021 20:48:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229947AbhILAw1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Sep 2021 20:52:27 -0400
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64F74C061574
-        for <netdev@vger.kernel.org>; Sat, 11 Sep 2021 17:51:14 -0700 (PDT)
-Received: by mail-lj1-x229.google.com with SMTP id f2so10047667ljn.1
-        for <netdev@vger.kernel.org>; Sat, 11 Sep 2021 17:51:14 -0700 (PDT)
+        with ESMTP id S229947AbhILAsW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Sep 2021 20:48:22 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24AAFC061574
+        for <netdev@vger.kernel.org>; Sat, 11 Sep 2021 17:47:09 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id q21so10023778ljj.6
+        for <netdev@vger.kernel.org>; Sat, 11 Sep 2021 17:47:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linux-foundation.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=djPK8cia5m0qX5Zxp7M6GNMnA/J0EGKvTFEvrA/orKo=;
-        b=BeZ4wj46QWUIa1PRMxDJJzSxU067c8arLPq359/YAIYM2Pa0vDxJ8SxI9wU5chvg6x
-         BdROVYGYeqJj5fLU+2WKja4e3teRqDF//UpkYy1+DfaBSxLpp8qry0a9vpB11tJA8BrZ
-         wqMor7qv9Hf7pXq+K01/g7ViYfTGbH32VnwLU=
+        bh=fTtI1r5tPdIsG/NkIDSe/Aqz0eLPuMAYXLyyQSCQenY=;
+        b=hfTvAxTgvh8dEvrrDxR1ts56KucOk9K49I6CwiyfT/tY2ZjzFKVA1lkSySAKreAWgo
+         VhO/812N3vhm209MU9Q9V6tlHvzI9p8WifyBBoR0fSaGmuxPOrmttOegqVxG0p+D+3GY
+         5ija9A2vsipX8mcMCJiZFFlb1VoRK5Mr5hWlg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=djPK8cia5m0qX5Zxp7M6GNMnA/J0EGKvTFEvrA/orKo=;
-        b=nU5HgzKf0bA0E3fKJOvdfH8yuk6KibSHmS3ugrpsiUmVTYEOW1lsm577fYw+7H6wOB
-         ckYO5sKu+g58Y8ejoVXkmt7r9J4saMg8RR4Q64wxZwj/QZiBFAA5elFxPfig+8dJSFpg
-         e609x8vsgSJNNt4L4UB3jJ4dbw6ThRmlSPFDvf70v9YBxOhWfBbBg6G2riCltFScj90L
-         hmHbcyAJBHXCLha6QQRG5Et62GXud3NgD3bsyUCq3x4mlm9YgB+J/1vdPoxOSOpxbZbH
-         zpon+ckqPh2AovmkUF5buoV2gk0QYvcrWBC0CY24vNJtbCewI89N1UBohGhaMM7Wew8h
-         umuA==
-X-Gm-Message-State: AOAM530vmJ+xz3wr6+dk5SxVayAm06LmA3NmP9DMefxFg3yOSY6dK+x7
-        ApuuT61IgjUmgelhyVSB70m4LbRNWs9bWoFNIeE=
-X-Google-Smtp-Source: ABdhPJy9+0ZMZfz7OQbYdVB3G20+/geGSphhJyy99ybscRGgGfIz4zVtAafRSkOKK6p5RAZpX8GnKQ==
-X-Received: by 2002:a2e:7505:: with SMTP id q5mr1531791ljc.506.1631407872619;
-        Sat, 11 Sep 2021 17:51:12 -0700 (PDT)
-Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com. [209.85.167.42])
-        by smtp.gmail.com with ESMTPSA id j28sm354648lfp.307.2021.09.11.17.51.12
+        bh=fTtI1r5tPdIsG/NkIDSe/Aqz0eLPuMAYXLyyQSCQenY=;
+        b=xowcvgNhtZUil+KoTepggL7TXV8FE/9vQHxpxcYXMp3veci2iaRs4X4HTG/PXaqgrI
+         Qwe8UPb69tAzdCo6EstVN7avAYacKC9lu/PCUp9UEA23jJfRlKbhv8m/r8cVdgKecySd
+         1cFtzCdAuNMU+xPVf9r3FdoERa2LY2j4+XP78IfUuPvNkbkzyyqG5QaKDCK6+F9Gp7uT
+         jh1qDUc0W9mjPekD0FOuL3MxPfAgGU53O0VMkjRD6n8ztx32bTzlB/L0FlM2hfbMzfkD
+         FGAekkXVKv6W1ZDSH2VxPefOqRwykL0EnfcWhD+1ssG92J4nkAIE8bU76Tsk3ZL/ay+Q
+         zWHA==
+X-Gm-Message-State: AOAM5329SVzOTY25tBTSo1pocMdGBZwV9iNhxbNcv/tuKJ2yDItEGOsT
+        tIaxsf6cFZpeG8OUJ+g18qp0OIyhZ/4GpK8HLGE=
+X-Google-Smtp-Source: ABdhPJw57druMdZx6Rol9rVbtOpqHTd3EWO1pQDzz2OKIs3KF26a2WmYNemIOOyaCW5YAINEjYiqXw==
+X-Received: by 2002:a2e:4e09:: with SMTP id c9mr4098449ljb.62.1631407627274;
+        Sat, 11 Sep 2021 17:47:07 -0700 (PDT)
+Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com. [209.85.167.52])
+        by smtp.gmail.com with ESMTPSA id z4sm356088lfr.201.2021.09.11.17.47.04
         for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 11 Sep 2021 17:51:12 -0700 (PDT)
-Received: by mail-lf1-f42.google.com with SMTP id t19so12527283lfe.13
-        for <netdev@vger.kernel.org>; Sat, 11 Sep 2021 17:51:12 -0700 (PDT)
-X-Received: by 2002:a05:6512:34c3:: with SMTP id w3mr3705182lfr.173.1631407431833;
- Sat, 11 Sep 2021 17:43:51 -0700 (PDT)
+        Sat, 11 Sep 2021 17:47:05 -0700 (PDT)
+Received: by mail-lf1-f52.google.com with SMTP id k13so12574756lfv.2
+        for <netdev@vger.kernel.org>; Sat, 11 Sep 2021 17:47:04 -0700 (PDT)
+X-Received: by 2002:a05:6512:3d04:: with SMTP id d4mr3696677lfv.474.1631407624560;
+ Sat, 11 Sep 2021 17:47:04 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210909095608-mutt-send-email-mst@kernel.org>
- <CAHk-=wgcXzshPVvVgGDqa9Y9Sde6RsUvj9jvx0htBqPuaTGX4Q@mail.gmail.com> <20210911200508-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20210911200508-mutt-send-email-mst@kernel.org>
+References: <20210911200504-mutt-send-email-mst@kernel.org> <163140733123.30830.10283487707815357982.pr-tracker-bot@kernel.org>
+In-Reply-To: <163140733123.30830.10283487707815357982.pr-tracker-bot@kernel.org>
 From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sat, 11 Sep 2021 17:43:35 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wguv1zB0h99LKH1UpjNvcg7tsckE_udYr3AP=2aEUdtwA@mail.gmail.com>
-Message-ID: <CAHk-=wguv1zB0h99LKH1UpjNvcg7tsckE_udYr3AP=2aEUdtwA@mail.gmail.com>
-Subject: Re: [GIT PULL] virtio,vdpa,vhost: features, fixes
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     KVM list <kvm@vger.kernel.org>,
+Date:   Sat, 11 Sep 2021 17:46:48 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wj1Wd8yVyErBrG06jE+Q2rgjNB2N=MzEdjNVo9v0YRwAA@mail.gmail.com>
+Message-ID: <CAHk-=wj1Wd8yVyErBrG06jE+Q2rgjNB2N=MzEdjNVo9v0YRwAA@mail.gmail.com>
+Subject: Re: [GIT PULL V2] virtio,vdpa,vhost: features, fixes
+To:     pr-tracker-bot@kernel.org
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        KVM list <kvm@vger.kernel.org>,
         virtualization@lists.linux-foundation.org,
         Netdev <netdev@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
@@ -67,24 +67,30 @@ Cc:     KVM list <kvm@vger.kernel.org>,
         elic@nvidia.com, Jason Wang <jasowang@redhat.com>,
         lingshan.zhu@intel.com, mgurtovoy@nvidia.com,
         Viresh Kumar <viresh.kumar@linaro.org>,
-        Will Deacon <will@kernel.org>, Wolfram Sang <wsa@kernel.org>,
-        xianting.tian@linux.alibaba.com, xieyongji@bytedance.com
+        Wolfram Sang <wsa@kernel.org>, xianting.tian@linux.alibaba.com,
+        xieyongji@bytedance.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Sep 11, 2021 at 5:11 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+On Sat, Sep 11, 2021 at 5:42 PM <pr-tracker-bot@kernel.org> wrote:
 >
-> It's in the tag for_linus_v2 - the point of keeping for_linus
-> intact was so anyone can compare these two.
+> The pull request you sent on Sat, 11 Sep 2021 20:05:04 -0400:
+>
+> > https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus_v2
+>
+> has been merged into torvalds/linux.git:
+> https://git.kernel.org/torvalds/c/a93a962669cdbe56bb0bcd88156f0f1598f31c88
 
-Well, since I had already spent the effort in trying to figure things
-out, I had merged the original branch.
+Note that pr-tracker-bot is confused, but not entirely wrong.
 
-I just didn't _like_ having to spend that effort, particularly not the
-weekend before I do rc1.
+Because this was a subset of the pull request that was actually
+merged, pr-tracker-bot reports that it was merged.
 
-This has not been one of those smooth merge windows that we occasionally have.
+True.
 
-             Linus
+But what was _really_ merged was the first version that contained this
+and then some.
+
+           Linus
