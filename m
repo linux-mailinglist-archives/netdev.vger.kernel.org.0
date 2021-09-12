@@ -2,120 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47CEF40817E
-	for <lists+netdev@lfdr.de>; Sun, 12 Sep 2021 22:29:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 395EC408191
+	for <lists+netdev@lfdr.de>; Sun, 12 Sep 2021 22:37:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236342AbhILUae (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Sep 2021 16:30:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58200 "EHLO
+        id S236217AbhILUiv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Sep 2021 16:38:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236311AbhILUab (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Sep 2021 16:30:31 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28096C06175F;
-        Sun, 12 Sep 2021 13:29:16 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id n10so11108384eda.10;
-        Sun, 12 Sep 2021 13:29:16 -0700 (PDT)
+        with ESMTP id S235269AbhILUio (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Sep 2021 16:38:44 -0400
+Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42342C061574;
+        Sun, 12 Sep 2021 13:37:30 -0700 (PDT)
+Received: by mail-ot1-x32c.google.com with SMTP id k12-20020a056830150c00b0051abe7f680bso10510968otp.1;
+        Sun, 12 Sep 2021 13:37:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=nDiAjJkyqCsELYW0aSzatGXsLEfOimLAHoAsEf0YhTo=;
-        b=TLjlk0wDcQ3/zoJe9KWiL8augt8//w8eLROYIVaHADRT/inwkXxW0t0oc4nfJme/g5
-         iJ+56TYDJM9ySNqJ8h25EKoNJ5UtLu/6fsq5ZZSVYfom8eAEm6qY29k2ZHKnDkMhOIvE
-         pfsMiDhKoM6vwMU0PIQueal82Y4lrK0XUdf7DNsoXvqCbkY0H0ENgYUIgK9nZadAGxPI
-         4E01Pamra6Mx31s40sLX+9Xq5SZ5f9iL+8xJ4y5wpgpQg431Tq3k9GEZ8/eLN1XW4iEl
-         dKdJD6ipsZWLtAn5cFyc+fgs223W6tCYeeRua0TN1/HAFZ04+CXG7lLO7jUEPqqEuPZo
-         ysrg==
+        h=sender:to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=sGO52QCbtTKYdjcgj2GabgzNcLXhaoNx+6K218Q6YKM=;
+        b=BoFoBk6YCh+SHOSsUgl2enC7/u2I2Bj4b7E3MP/cJEMdjyirzvoalq82dA+5XeNWwl
+         /4MX3K/6+Xlj40bcX+GF4RP8Np3PeD5WLjyuCNRAh/yUxFLrsFfGqZHVTX+4voCDXThQ
+         NtCPmvzn6p+zmvtMjAf39/fOY68oVD2yl1mYDt0TXnPjWiPfwLnBaXyNVrTevhQVK5pD
+         aw64A7C41B/zB54y/F7R6iae8wdcyUP5mhh/68BIQ4hchpPoT6t+dOxtutYlJ8dqp3XS
+         yjBSGiq5nQNB+jK0YfSdbGNqMPP3srkCCqL2YC3AJg3enTDIsnt4wkcbYUuMIGJkyi31
+         IwEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=nDiAjJkyqCsELYW0aSzatGXsLEfOimLAHoAsEf0YhTo=;
-        b=8BfHzYDAdFIxdYEaV0oqZDCNq+oyXDgx8y23ilXCdUApvWKaE9POFZ1jBvcCiBzuUu
-         o4/L6A4BEUCl8LN2B8PFV1g0PJT5RAZykgcMFH+iIOokGTstZpZo9qI2TS0VcmpljJdk
-         4CACHQzF72TE4gqioG+sS3iGFptutqfcqMmpbBnHUJcVlq6HK+BSkE6FRglHy3xCpYdd
-         9E1KcLfOYlz1iXGOOU32f6DZ33hSupJVMjgDmrqE7U87SMa9HGJy7j5H1QIw8jGvLv9D
-         jEzXDIkl++aoNTuOFBITjYSOqZ5tlezUupnaO4DQZ594NwPtKxKIPoeIvWeJNLlVj1eB
-         S20w==
-X-Gm-Message-State: AOAM530EbFGPK3IsWPkkMmKuQoMCVbQXM2fOA64KZM0drjNb3ZPu2cNE
-        0qkUiNxD7U1VOo7Nw2umD50=
-X-Google-Smtp-Source: ABdhPJy9obgdlbIv+kBC4v7uDrCA1dGNJPuefkh4eizMm1cWDxYr63HzegGy96XFswBmPQaF1HHVug==
-X-Received: by 2002:a05:6402:648:: with SMTP id u8mr9637158edx.394.1631478554638;
-        Sun, 12 Sep 2021 13:29:14 -0700 (PDT)
-Received: from skbuf ([82.78.148.104])
-        by smtp.gmail.com with ESMTPSA id 90sm2761308edc.36.2021.09.12.13.29.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Sep 2021 13:29:14 -0700 (PDT)
-Date:   Sun, 12 Sep 2021 23:29:13 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Saravana Kannan <saravanak@google.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, p.rosenberger@kunbus.com,
-        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
-        vivien.didelot@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/3] Fix for KSZ DSA switch shutdown
-Message-ID: <20210912202913.mu3o5u2l64j7mpwe@skbuf>
-References: <trinity-85ae3f9c-38f9-4442-98d3-bdc01279c7a8-1631193592256@3c-app-gmx-bs01>
- <20210909154734.ujfnzu6omcjuch2a@skbuf>
- <8498b0ce-99bb-aef9-05e1-d359f1cad6cf@gmx.de>
- <2b316d9f-1249-9008-2901-4ab3128eed81@gmail.com>
- <5b899bb3-ed37-19ae-8856-3dabce534cc6@gmx.de>
- <20210909225457.figd5e5o3yw76mcs@skbuf>
- <35466c02-16da-0305-6d53-1c3bbf326418@gmail.com>
- <YTtG3NbYjUbu4jJE@lunn.ch>
- <20210910145852.4te2zjkchnajb3qw@skbuf>
- <53f2509f-b648-b33d-1542-17a2c9d69966@gmx.de>
+        h=x-gm-message-state:sender:to:cc:references:from:subject:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=sGO52QCbtTKYdjcgj2GabgzNcLXhaoNx+6K218Q6YKM=;
+        b=paT/axvKVvZ3RLeKhVFOKy2Flcfawc0EuHWAvAdtGgR/elc3hz2YZuYrhNlS4udQ6W
+         i8ZLtqD8jEX6jJpi2yLrqnrPLhb41hWUGXdJFoRyf/CAcOA28sYRlOeNwtVI377ypWCz
+         8JSI2Tgu+wgFKtxukBNYctYeSiCFaNjRTY7WelXfTLay/TGocCH2u7122z3KholPr+j6
+         2S8htr585OzXCRi/1hnV8y64LdzeIWnrixFs5sTA6KIfn5Q0OBtg4NOg6WC1ER/f1ODE
+         yVOUCeGbhhh29sMrM7Kp9uerxvPDgErF5GdtBuODmLqcjBUZ66aePkFNWcyc5Bhqiogj
+         2CcQ==
+X-Gm-Message-State: AOAM532DXDGfpcA5nCnvHEAmXKMBS/zvXsp9+iCcC5707lPf25ejh+Vn
+        2OnCLKfi77SdvwKNgI8f6BAVzP+iQxw=
+X-Google-Smtp-Source: ABdhPJyr/+V+h4oQD6vwcSYgo9ReR96NTjTaNALCXrvxkaPwBpC+OfD7ikcSEXFhco1iPgTbl+o8QA==
+X-Received: by 2002:a05:6830:10:: with SMTP id c16mr6943996otp.63.1631479049479;
+        Sun, 12 Sep 2021 13:37:29 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id 33sm1333791otx.19.2021.09.12.13.37.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 12 Sep 2021 13:37:28 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        alpha <linux-alpha@vger.kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-parisc@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        Sparse Mailing-list <linux-sparse@vger.kernel.org>
+References: <20210912160149.2227137-1-linux@roeck-us.net>
+ <20210912160149.2227137-5-linux@roeck-us.net>
+ <CAHk-=wi1=8shingNuo1CtfJ7eDByDsmwsz750Nbxq=7q0Gs+zg@mail.gmail.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH 4/4] alpha: Use absolute_pointer for strcmp on fixed
+ memory location
+Message-ID: <0f36c218-d79c-145f-3368-7456dd39a3f2@roeck-us.net>
+Date:   Sun, 12 Sep 2021 13:37:26 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <53f2509f-b648-b33d-1542-17a2c9d69966@gmx.de>
+In-Reply-To: <CAHk-=wi1=8shingNuo1CtfJ7eDByDsmwsz750Nbxq=7q0Gs+zg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 12, 2021 at 10:19:24PM +0200, Lino Sanfilippo wrote:
+On 9/12/21 12:13 PM, Linus Torvalds wrote:
+> On Sun, Sep 12, 2021 at 9:02 AM Guenter Roeck <linux@roeck-us.net> wrote:
+>>
+>> -       if (strcmp(COMMAND_LINE, "INSTALL") == 0) {
+>> +       if (strcmp(absolute_pointer(COMMAND_LINE), "INSTALL") == 0) {
 > 
-> Hi,
+> Again, this feels very much like treating the symptoms, not actually
+> fixing the real issue.
 > 
-> On 10.09.21 at 16:58, Vladimir Oltean wrote:
-> > On Fri, Sep 10, 2021 at 01:51:56PM +0200, Andrew Lunn wrote:
-> >>> It does not really scale but we also don't have that many DSA masters to
-> >>> support, I believe I can name them all: bcmgenet, stmmac, bcmsysport, enetc,
-> >>> mv643xx_eth, cpsw, macb.
-> >>
-> >> fec, mvneta, mvpp2, i210/igb.
-> >
-> > I can probably double that list only with Freescale/NXP Ethernet
-> > drivers, some of which are not even submitted to mainline. To name some
-> > mainline drivers: gianfar, dpaa-eth, dpaa2-eth, dpaa2-switch, ucc_geth.
-> > Also consider that DSA/switchdev drivers can also be DSA masters of
-> > their own, we have boards doing that too.
-> >
-> > Anyway, I've decided to at least try and accept the fact that DSA
-> > masters will unregister their net_device on shutdown, and attempt to do
-> > something sane for all DSA switches in that case.
-> >
-> > Attached are two patches (they are fairly big so I won't paste them
-> > inline, and I would like initial feedback before posting them to the
-> > list).
-> >
-> > As mentioned in those patches, the shutdown ordering guarantee is still
-> > very important, I still have no clue what goes on there, what we need to
-> > do, etc.
-> >
+> It's COMMAND_LINE itself that should have been fixed up, not that one use of it.
 > 
-> I tested these patches with my 5.10 kernel (based on Gregs 5.10.27 stable
-> kernel) and while I do not see the message "unregister_netdevice: waiting
-> for eth0 to become free. Usage count = 2." any more the shutdown/reboot hangs, too.
-> After a few attempts without any error messages on the console I was able to get a
->  stack trace. Something still seems to go wrong in bcm2835_spi_shutdown() (see attachment).
-> I have not had the time yet to investigate this further (or to test the patches
->  with a newer kernel).
+> Because the only reason you didn't get a warning from later uses is
+> that 'strcmp()' is doing compiler-specific magic. You're just delaying
+> the inevitable warnings about the other uses of that thing.
+> 
 
-Could you post the full kernel output? The picture you've posted is
-truncated and only shows a WARN_ON in rpi_firmware_transaction and is
-probably a symptom and not the issue (which is above and not shown).
+COMMAND_LINE is, for whatever reason, defined in
+arch/alpha/include/uapi/asm/setup.h, ie in the uapi.
+
+Can I even touch that ?
+
+Guenter
