@@ -2,121 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FA34407EA5
+	by mail.lfdr.de (Postfix) with ESMTP id 7856D407EA6
 	for <lists+netdev@lfdr.de>; Sun, 12 Sep 2021 18:35:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234022AbhILQgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Sep 2021 12:36:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35118 "EHLO
+        id S234846AbhILQgW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Sep 2021 12:36:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233093AbhILQgT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Sep 2021 12:36:19 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2EA4C061574
-        for <netdev@vger.kernel.org>; Sun, 12 Sep 2021 09:35:04 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id gp20-20020a17090adf1400b00196b761920aso4796922pjb.3
-        for <netdev@vger.kernel.org>; Sun, 12 Sep 2021 09:35:04 -0700 (PDT)
+        with ESMTP id S229560AbhILQgU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Sep 2021 12:36:20 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33DF4C061574
+        for <netdev@vger.kernel.org>; Sun, 12 Sep 2021 09:35:06 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id k24so7077531pgh.8
+        for <netdev@vger.kernel.org>; Sun, 12 Sep 2021 09:35:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=7ppKr6ZTXlGI01b/hUzcLDMgG2UwV4lHjvewc0QSmag=;
-        b=eXipoXONLV4sASgy3mBvCyN26zwcAOm3ic+1HGbX1kgDJLTLMw8SA8ZWkuVCJDFSGp
-         N2nHxXXNOEXeww+8dWW3MIZ7G/JYolKCs/PAI3BF+nU7jzOMC85BGHWzNv4Emq1URJc6
-         LyfF10RXxCNnnfqdRH4x791O0GM3KfgBKgxPM=
+        bh=YzrjhKXCaBWyEpJ6sywR8jtuAA7scEM4o6bsAn/2oKM=;
+        b=FHatnFni0R4lmx1SCd4roSJw5uqWGoMEtMkjtpms9Z1bqnZ6V46M5O0EZwTLuhQrd6
+         rwYtDrzQ/pJTYk5QJfsarjtLnZ6YOf/m8U9E1urx6ST1ycLWTfwv6ec2RU0iW7EUfn8u
+         npjqo7Vy/L3FKHk/EBdDCFi6PD0fOoBHb1jeQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=7ppKr6ZTXlGI01b/hUzcLDMgG2UwV4lHjvewc0QSmag=;
-        b=dFUw/9YO16a3z/5FQus3QDbDVf9UMRBdnfyUAFK4brTGDwFZQHGZkvVIhyK5qAf6v8
-         DjQgv9qwvWZJHlej+fmPbGFWnmFspMZg19P6fHmI07VwRzQo7PtO9cEQesU6swqgCKk0
-         s+BYrP7YTXVGeEUS49I8gOYRQu9WAFbyNgAQOqdDfzScPNbvpiBWxi5mSTQSvfVFT3O1
-         LnCPpJEHSKlRFzT93qAv0CN6fvEWyWg1NczIfHpGSq9ayLq0hmknZUewbwRwAVG9FqSM
-         tURDmCjn/65NbiAkmG/baJjaavVhxalnVi6pMhBY6MzEjomMw9QVq1R0odhMC8fP1EV6
-         kBPg==
-X-Gm-Message-State: AOAM5336mprpcMJ1q/3sjvAkHZK7WZIR/eyLYcreW2kApG/y9O7orHSz
-        olrDwwOaI/q860UP7sFUt10Vx3iwLJ/RxA==
-X-Google-Smtp-Source: ABdhPJz5O9GF8cbnKl3pU4f08sBk/pwj7zR4ByCqpEwS0+/RalMk8Bju94EE2p51WgT4b9pmwWC24g==
-X-Received: by 2002:a17:90a:1a52:: with SMTP id 18mr7946002pjl.43.1631464504133;
-        Sun, 12 Sep 2021 09:35:04 -0700 (PDT)
+        bh=YzrjhKXCaBWyEpJ6sywR8jtuAA7scEM4o6bsAn/2oKM=;
+        b=YtMeE4AdH6MnbEftFJNhb7poYgh3n3eOFYRPDtz2IQVJwHviuh7CGDNj+ee3PM7T65
+         cuows9hIRJ78Q01a9TuQ3VUTWLKdjKryMfBe7Oy/Kei1DxT40qTfryNCdNQwRDUv5C2u
+         TqOP47g5IKBoFOZgQxTmG4753a3/LrwSpo74tfxwT15i/psRjqBdcqbMdrB6ptud1VxR
+         QVhDMDHGLhpT5gQXxfuRwe+LRTpO/LhBsUI6xYJKohXgo9AaHzu059ksBsNslorAX99j
+         W8bYLTFS7vEFbLp3kNUaoc4mSD0zRd9j2xx8gEl8HXuG24GsfCK9Pdzu5al19ED5mdKw
+         jKCQ==
+X-Gm-Message-State: AOAM532CHPYmMVrTvCHYxqe0OvDQD/u20lOwMEUWqQoACjwDEVXHbrAe
+        7wHkosMl8t29glt5IE9h6A+hrw==
+X-Google-Smtp-Source: ABdhPJwR5flhl1OO6rSfGBQvr5Xn3PdSsNiPXNT//Sc62mNalDRE8YZxkloum+ONaxOW8kh5rbUqtQ==
+X-Received: by 2002:a63:e613:: with SMTP id g19mr7340376pgh.12.1631464505393;
+        Sun, 12 Sep 2021 09:35:05 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id l22sm5444224pgo.45.2021.09.12.09.35.03
+        by smtp.gmail.com with ESMTPSA id l22sm5444224pgo.45.2021.09.12.09.35.04
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 12 Sep 2021 09:35:03 -0700 (PDT)
+        Sun, 12 Sep 2021 09:35:04 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, edwin.peer@broadcom.com,
         gospo@broadcom.com
-Subject: [PATCH net 1/3] bnxt_en: Fix error recovery regression
-Date:   Sun, 12 Sep 2021 12:34:47 -0400
-Message-Id: <1631464489-8046-2-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net 2/3] bnxt_en: make bnxt_free_skbs() safe to call after bnxt_free_mem()
+Date:   Sun, 12 Sep 2021 12:34:48 -0400
+Message-Id: <1631464489-8046-3-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1631464489-8046-1-git-send-email-michael.chan@broadcom.com>
 References: <1631464489-8046-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000444d9805cbceee1e"
+        boundary="00000000000056d80a05cbceee08"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000444d9805cbceee1e
+--00000000000056d80a05cbceee08
 
-The recent patch has introduced a regression by not reading the reset
-count in the ERROR_RECOVERY async event handler.  We may have just
-gone through a reset and the reset count has just incremented.  If
-we don't update the reset count in the ERROR_RECOVERY event handler,
-the health check timer will see that the reset count has changed and
-will initiate an unintended reset.
+From: Edwin Peer <edwin.peer@broadcom.com>
 
-Restore the unconditional update of the reset count in
-bnxt_async_event_process() if error recovery watchdog is enabled.
-Also, update the reset count at the end of the reset sequence to
-make it even more robust.
+The call to bnxt_free_mem(..., false) in the bnxt_half_open_nic() error
+path will deallocate ring descriptor memory via bnxt_free_?x_rings(),
+but because irq_re_init is false, the ring info itself is not freed.
 
-Fixes: 1b2b91831983 ("bnxt_en: Fix possible unintended driver initiated error recovery")
-Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
+To simplify error paths, deallocation functions have generally been
+written to be safe when called on unallocated memory. It should always
+be safe to call dev_close(), which calls bnxt_free_skbs() a second time,
+even in this semi- allocated ring state.
+
+Calling bnxt_free_skbs() a second time with the rings already freed will
+cause NULL pointer dereference.  Fix it by checking the rings are valid
+before proceeding in bnxt_free_tx_skbs() and
+bnxt_free_one_rx_ring_skbs().
+
+Fixes: 975bc99a4a39 ("bnxt_en: Refactor bnxt_free_rx_skbs().")
+Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 9b86516e59a1..8b0a2ae1367c 100644
+index 8b0a2ae1367c..9f9806f1c0fc 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -2213,12 +2213,11 @@ static int bnxt_async_event_process(struct bnxt *bp,
- 			DIV_ROUND_UP(fw_health->polling_dsecs * HZ,
- 				     bp->current_interval * 10);
- 		fw_health->tmr_counter = fw_health->tmr_multiplier;
--		if (!fw_health->enabled) {
-+		if (!fw_health->enabled)
- 			fw_health->last_fw_heartbeat =
- 				bnxt_fw_health_readl(bp, BNXT_FW_HEARTBEAT_REG);
--			fw_health->last_fw_reset_cnt =
--				bnxt_fw_health_readl(bp, BNXT_FW_RESET_CNT_REG);
--		}
-+		fw_health->last_fw_reset_cnt =
-+			bnxt_fw_health_readl(bp, BNXT_FW_RESET_CNT_REG);
- 		netif_info(bp, drv, bp->dev,
- 			   "Error recovery info: error recovery[1], master[%d], reset count[%u], health status: 0x%x\n",
- 			   fw_health->master, fw_health->last_fw_reset_cnt,
-@@ -12207,6 +12206,11 @@ static void bnxt_fw_reset_task(struct work_struct *work)
- 			return;
- 		}
+@@ -2729,6 +2729,9 @@ static void bnxt_free_tx_skbs(struct bnxt *bp)
+ 		struct bnxt_tx_ring_info *txr = &bp->tx_ring[i];
+ 		int j;
  
-+		if ((bp->fw_cap & BNXT_FW_CAP_ERROR_RECOVERY) &&
-+		    bp->fw_health->enabled) {
-+			bp->fw_health->last_fw_reset_cnt =
-+				bnxt_fw_health_readl(bp, BNXT_FW_RESET_CNT_REG);
-+		}
- 		bp->fw_reset_state = 0;
- 		/* Make sure fw_reset_state is 0 before clearing the flag */
- 		smp_mb__before_atomic();
++		if (!txr->tx_buf_ring)
++			continue;
++
+ 		for (j = 0; j < max_idx;) {
+ 			struct bnxt_sw_tx_bd *tx_buf = &txr->tx_buf_ring[j];
+ 			struct sk_buff *skb;
+@@ -2813,6 +2816,9 @@ static void bnxt_free_one_rx_ring_skbs(struct bnxt *bp, int ring_nr)
+ 	}
+ 
+ skip_rx_tpa_free:
++	if (!rxr->rx_buf_ring)
++		goto skip_rx_buf_free;
++
+ 	for (i = 0; i < max_idx; i++) {
+ 		struct bnxt_sw_rx_bd *rx_buf = &rxr->rx_buf_ring[i];
+ 		dma_addr_t mapping = rx_buf->mapping;
+@@ -2835,6 +2841,11 @@ static void bnxt_free_one_rx_ring_skbs(struct bnxt *bp, int ring_nr)
+ 			kfree(data);
+ 		}
+ 	}
++
++skip_rx_buf_free:
++	if (!rxr->rx_agg_ring)
++		goto skip_rx_agg_free;
++
+ 	for (i = 0; i < max_agg_idx; i++) {
+ 		struct bnxt_sw_rx_agg_bd *rx_agg_buf = &rxr->rx_agg_ring[i];
+ 		struct page *page = rx_agg_buf->page;
+@@ -2851,6 +2862,8 @@ static void bnxt_free_one_rx_ring_skbs(struct bnxt *bp, int ring_nr)
+ 
+ 		__free_page(page);
+ 	}
++
++skip_rx_agg_free:
+ 	if (rxr->rx_page) {
+ 		__free_page(rxr->rx_page);
+ 		rxr->rx_page = NULL;
 -- 
 2.18.1
 
 
---000000000000444d9805cbceee1e
+--00000000000056d80a05cbceee08
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -187,13 +204,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIKD7MzUd+wSCwqEF7vqS36dIyKlGB7JJ
-SnEgC2K0ieRIMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDkx
-MjE2MzUwNFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIJOgmiiE1lj+ljEftmZq/0ur9kMIQbgA
+rRrjMhFL3oziMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDkx
+MjE2MzUwNVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQCsnp2O/vp0ctGqR5zmjdZvEptL1oA7YmvUVuhjT7YFh6XraxVc
-++SVMAKZElBeA4WO1QOG2u9UlMNtqjcZJguwn8O1hQbNxOq0uvs1Tzl188GcuijDJUrlR/ARaN/9
-299ogqbz5wqPws+E+CO0ijB3IFlm9Cjsdg5e5Ok84FA+Jq8haiSOIKY6L0lLHTS9b29xGsOmsyKw
-x+fJXiI16u4crDDeilh5wkVHoV5+eKBs72XBJwHtLhjinziY8bWAYKwLfNXpv9v0oryC/GKutZZU
-iDbqkrjRagkjGVRew9JOY3FhXqLX1MF1CBeUTUnpO4BJ+hh3ZjoPxRAcE96is0K8
---000000000000444d9805cbceee1e--
+ATANBgkqhkiG9w0BAQEFAASCAQB9rhXPqMBsSWsVwadFJ/fb3lzl8YYKjlWocYZ+Cpt6koaEw5E/
+lmOBj8w3L1jtzf4ZY87CedYedkr1+OjnAGvLOj3UCKzDuyTWYvmenmWq8+zrH5W2V+LPbU4QK47F
+JIpUwixd7wD51K2LKyRAuwcomnqhQsNjxWEA/s4Eh20S0LlDwk3YcN/XYr4LZxW1jzB6AKWJ+4T+
+8Ah9/cjeOKpZJEhr+rJinQRN2YODhVHmkKHwAFa/iJ7Hd2JRe7lgr9RetpmWu4YCPvb/Gz5r3uSf
+dG1HKlyKyiIczOIzxSsPDCHotmpWNVWimyJ7O+upxjMItiWtbvrdOAvmUxGTdNxX
+--00000000000056d80a05cbceee08--
