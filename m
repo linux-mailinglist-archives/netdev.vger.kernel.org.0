@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FC8C408C3B
-	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 15:15:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F7D4408C26
+	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 15:12:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236675AbhIMNQK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Sep 2021 09:16:10 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:9423 "EHLO
+        id S239125AbhIMNN7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Sep 2021 09:13:59 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:9424 "EHLO
         szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236206AbhIMNNu (ORCPT
+        with ESMTP id S236725AbhIMNNu (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 13 Sep 2021 09:13:50 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4H7Rc33kMLz8yV0;
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4H7Rc373w6z8yVZ;
         Mon, 13 Sep 2021 21:08:03 +0800 (CST)
 Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2308.8; Mon, 13 Sep 2021 21:12:28 +0800
 Received: from localhost.localdomain (10.67.165.24) by
@@ -26,9 +26,9 @@ From:   Guangbin Huang <huangguangbin2@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <huangguangbin2@huawei.com>
-Subject: [PATCH net 1/6] net: hns3: add option to turn off page pool feature
-Date:   Mon, 13 Sep 2021 21:08:20 +0800
-Message-ID: <20210913130825.27025-2-huangguangbin2@huawei.com>
+Subject: [PATCH net 2/6] net: hns3: pad the short tunnel frame before sending to hardware
+Date:   Mon, 13 Sep 2021 21:08:21 +0800
+Message-ID: <20210913130825.27025-3-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20210913130825.27025-1-huangguangbin2@huawei.com>
 References: <20210913130825.27025-1-huangguangbin2@huawei.com>
@@ -43,50 +43,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yunsheng Lin <linyunsheng@huawei.com>
+From: Yufeng Mo <moyufeng@huawei.com>
 
-When page pool is added to the hns3 driver, it is always
-enabled unconditionally, which means spilt page handling
-in the hns3 driver is dead code.
+The hardware cannot handle short tunnel frames below 65 bytes,
+and will cause vlan tag missing problem. So pads packet size to
+65 bytes for tunnel frames to fix this bug.
 
-As there is a requirement to test the performance between
-spilt page handling in driver and page pool, so add a module
-param to support disabling the page pool.
-
-When the page pool is proved to perform better in most case,
-the spilt page handling in driver can be removed.
-
-Fixes: 93188e9642c3 ("net: hns3: support skb's frag page recycling based on page pool")
-Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+Fixes: 3db084d28dc0("net: hns3: Fix for vxlan tx checksum bug")
+Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index 22af3d6ce178..293243bbe407 100644
+index 293243bbe407..adc54a726661 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -61,6 +61,9 @@ static unsigned int tx_sgl = 1;
- module_param(tx_sgl, uint, 0600);
- MODULE_PARM_DESC(tx_sgl, "Minimum number of frags when using dma_map_sg() to optimize the IOMMU mapping");
+@@ -76,6 +76,7 @@ module_param(page_pool_enabled, bool, 0400);
+ #define HNS3_OUTER_VLAN_TAG	2
  
-+static bool page_pool_enabled = true;
-+module_param(page_pool_enabled, bool, 0400);
+ #define HNS3_MIN_TX_LEN		33U
++#define HNS3_MIN_TUN_PKT_LEN	65U
+ 
+ /* hns3_pci_tbl - PCI Device ID Table
+  *
+@@ -1427,8 +1428,11 @@ static int hns3_set_l2l3l4(struct sk_buff *skb, u8 ol4_proto,
+ 			       l4.tcp->doff);
+ 		break;
+ 	case IPPROTO_UDP:
+-		if (hns3_tunnel_csum_bug(skb))
+-			return skb_checksum_help(skb);
++		if (hns3_tunnel_csum_bug(skb)) {
++			int ret = skb_put_padto(skb, HNS3_MIN_TUN_PKT_LEN);
 +
- #define HNS3_SGL_SIZE(nfrag)	(sizeof(struct scatterlist) * (nfrag) +	\
- 				 sizeof(struct sg_table))
- #define HNS3_MAX_SGL_SIZE	ALIGN(HNS3_SGL_SIZE(HNS3_MAX_TSO_BD_NUM), \
-@@ -4753,7 +4756,8 @@ static int hns3_alloc_ring_memory(struct hns3_enet_ring *ring)
- 		goto out_with_desc_cb;
++			return ret ? ret : skb_checksum_help(skb);
++		}
  
- 	if (!HNAE3_IS_TX_RING(ring)) {
--		hns3_alloc_page_pool(ring);
-+		if (page_pool_enabled)
-+			hns3_alloc_page_pool(ring);
- 
- 		ret = hns3_alloc_ring_buffers(ring);
- 		if (ret)
+ 		hns3_set_field(*type_cs_vlan_tso, HNS3_TXD_L4CS_B, 1);
+ 		hns3_set_field(*type_cs_vlan_tso, HNS3_TXD_L4T_S,
 -- 
 2.33.0
 
