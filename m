@@ -2,155 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 923C74089FB
-	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 13:18:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FC45408A44
+	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 13:31:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239475AbhIMLTx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Sep 2021 07:19:53 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:26122 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S238424AbhIMLTw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Sep 2021 07:19:52 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18DBCQdr027683;
-        Mon, 13 Sep 2021 04:18:35 -0700
-Received: from nam02-dm3-obe.outbound.protection.outlook.com (mail-dm3nam07lp2048.outbound.protection.outlook.com [104.47.56.48])
-        by mx0a-0016f401.pphosted.com with ESMTP id 3b25je80jq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 13 Sep 2021 04:18:35 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=G9U9EW1PvEvENnZGbY85vUV9zcUlZeCMH63ZZy0UZJEb+9JW/qvz0SqBXhmRsmdA5pWjGJu0IKxgcB7LHhDF1xKcvde10LjP1MsTFBEnS1J/i1iDe+46m5sAGPVO1YVmr/WMV/HI1MUwtUEkkYxMwmheXwH9D0fkBBW3lH+IsFrjtYw97VjE0GN0iT90XklmQQcBCIdT30ZLbfh374LK/Z+AgfJXrwQlddeVe81vUwiiIV4EVI3PMynn/SNpqRVbrHjkfycjytFZ/HAE0XFKUfXtJrcrOztyPLK0Sq00Jy8VVFadtBw0qA0M9fjKJ90aHNrkBSsBoAPdvqcTsMS3Mg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=ZDmqUPkTG4mQuFkf9i4XgyN5iX1zy6YzLEKu1IKChnE=;
- b=NSj6zmuq0kfMAlbFWn4kLiiaips9yva73YDni6Ap5zuTk4uglSzXIAzu3WpFnNtwPqPXk2tbq/Vz8iPGHnpbRmeiYrklTAKD+D2JjtJDvGaJLa7cCbJqgMkpyo/TX/Jj6CjMLm9YJ7TNJ13RGlPZmOPyBNDfq8H1OJhD2k60EqHJn+3dDnrQ7bSciQ0is6lgVLtaadoFf/VThUE33vHdyhcCXTV7zEBccoXFQFF12+7e9XBTwuqUynQ5bj9ioc55jd5iVRXGMAEw6hI9eba+lhy9G4A0RRbbtSrOliFbfDCqKZIYaJiaXuyJGC14oh0NM6d779SlkwHMEYz37Dhxfw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
+        id S239631AbhIMLcq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Sep 2021 07:32:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33442 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239416AbhIMLcp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Sep 2021 07:32:45 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98FD3C061574
+        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 04:31:29 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id h9so20337729ejs.4
+        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 04:31:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZDmqUPkTG4mQuFkf9i4XgyN5iX1zy6YzLEKu1IKChnE=;
- b=aIdmJyEfajMcMiGi4brHKKkpaf/39bQJ6GZwA9UpvOgdIChUk2E+VinsvSafr6hHWd8AUDJoXuDw44GSKPXAdUQ6i4vXb01NryIqfhqZmNnOLOHx+oVXMZvtpAopy79IWkTQkG1zvwv8/pBRkYNG4jLwNw49bamLgO6HHSuoNUo=
-Received: from SJ0PR18MB3882.namprd18.prod.outlook.com (2603:10b6:a03:2c8::13)
- by SJ0PR18MB3817.namprd18.prod.outlook.com (2603:10b6:a03:2cb::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.14; Mon, 13 Sep
- 2021 11:18:33 +0000
-Received: from SJ0PR18MB3882.namprd18.prod.outlook.com
- ([fe80::c38:a710:6617:82a5]) by SJ0PR18MB3882.namprd18.prod.outlook.com
- ([fe80::c38:a710:6617:82a5%4]) with mapi id 15.20.4500.019; Mon, 13 Sep 2021
- 11:18:33 +0000
-From:   Shai Malin <smalin@marvell.com>
-To:     Adrian Bunk <bunk@kernel.org>
-CC:     Ariel Elior <aelior@marvell.com>,
-        Sudarsana Reddy Kalluru <skalluru@marvell.com>,
-        GR-everest-linux-l2 <GR-everest-linux-l2@marvell.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] bnx2x: Fix enabling network interfaces without VFs
-Thread-Topic: [PATCH] bnx2x: Fix enabling network interfaces without VFs
-Thread-Index: AdeokQdWaCl+umkYRFqKciB9qHGJfw==
-Date:   Mon, 13 Sep 2021 11:18:33 +0000
-Message-ID: <SJ0PR18MB3882AD2C9F93E24C35A2E6FECCD99@SJ0PR18MB3882.namprd18.prod.outlook.com>
-Accept-Language: he-IL, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=marvell.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5a7b6e9f-7fd1-4acb-4414-08d976a83922
-x-ms-traffictypediagnostic: SJ0PR18MB3817:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <SJ0PR18MB381787E9141AAC30873A22D8CCD99@SJ0PR18MB3817.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Cr7UvD8JntoQUWDKruFOzFNNYQjAk/nyMJ6rjQ1h2VIk/3I+PZ7r7dEC6qiabbTzvnCXKRtcxd9BH6flG8s0dR4vZfOBt+yP3zEfkLyngh71ZETNZlOkPcwSU9PcGRXFKbnGsY4b42Fcjha6nPvx7J7vP8+j4l+UZYe8UKYkVpBZi8CZqALkXv+erBxN9fP2yVbH+DG86cOVMQVa3OroJLM+SVdxJuGqmUKX1/m0YB65XBW2uusnIUL2VxuPgoARYEYmuLK016R81bTk3rAw5Z9u+XNdMaa92XMo/Nb6TlyGZzv+ILo8TippDk4VjK4UZjnbZGO07CCTSYSJUaERsbUG4Vk73+UQ2EG4PQapMVnsg0pw06qQPfKi0aKtf0mfr3yH2klN1YncCtcBdKfEMjVRrdYpj4Qoc+DOs446XkR+jZQGQa6B0+rc1SXhLNWgW8l04kvOngZ7qQ2ePgT0dLFDYI+c0xt0lW5xA340OkhhCbhUK10/atd9m4F1AK5qCPH9LYUbJzAZL6/q5s049OeGXY0BQMAkNphLWK19Zx2A5nrC697u2xp1dOgKCksmw/l5Uxus/ymk7C0AJwJYXfSuEbk8s15TH4wZPrN7w/VMuu/fc7SothqUtteiRHA9MaJ/pUA9ZE8ieYaHI0DdZ6YMmCPibo/Bb2E6rZS4KDJSx6br0n98FbJrDimrywT6XCHZWncFBTztmUk6F1Khhw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR18MB3882.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(4326008)(52536014)(26005)(186003)(9686003)(55016002)(6506007)(33656002)(7696005)(38070700005)(5660300002)(6916009)(71200400001)(54906003)(2906002)(122000001)(66446008)(38100700002)(86362001)(316002)(83380400001)(8936002)(508600001)(64756008)(66556008)(66476007)(8676002)(76116006)(66946007);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?dENqZVRkZVdJZHpnVlE5c1BpQ2ZVSFpmSWRFTnU3ZnJTUWNDUS9CMlJCQk5u?=
- =?utf-8?B?cEZNNzBDWDdLTkgzMXdlbmFacnRNWTRsWnJ1R056ZGFOYkh1M0lTWm9iMUZS?=
- =?utf-8?B?WjZtdUlsS3N2NS93cGxsQ0prMFFnT25jalZlWDJhZXlPVlNnSmJIYWZGNW9z?=
- =?utf-8?B?SjVmcUVOT0tySWRDWTNDQnVBL01EMHJwRUoxYXdEc1Rjbnp4RW9tRysrc1Zn?=
- =?utf-8?B?ZWo1OXloaHV0VWw2ams3T0JFcHQvazBXZVg1Z21EeFIzeVlqeXllMnh6NXV4?=
- =?utf-8?B?Z1RhZ3Y2cExQM3kwYVU4a08vTjZFVjdtcmd0K2Jmd2p3cDhhRjNSWEgzNmhJ?=
- =?utf-8?B?MDRZZjRlYnloTERkSHE4QS9pRmlPT2hvRDdIWXgzZUxZTFJBbERZMDZIMXBv?=
- =?utf-8?B?ck54SHFGUGZCNGwvVEU4VHZxREMyYUZZcjRkVzRhY3J2SzhQQ0h5eUc2SEw0?=
- =?utf-8?B?Sy81MHpHZHJLMmpRSmxzRU85MkUvWFJNWTlSL2kyTU5vYjdSeVAyT04yaDVT?=
- =?utf-8?B?b3pWanM3VXBPYWhBeXZUQ0ZRanFweXRyWG9sUFJBVWF3UnpwSTRBZmQyTVM5?=
- =?utf-8?B?aUZFZGl2amVKbnN6a2RGQzg1WGl1YVRPazZnSDU0WmpET3BBd1Z0aitCVmQ2?=
- =?utf-8?B?YXAwRDFud2hNZDV2NGVET1hjaUJubm5Wd1VaSUlhbGtHK2pHQ1lWU3pxenZK?=
- =?utf-8?B?QzFGNWU5L3R5Vkl4anNkZU0xdmVZU2RxaWk0c2pmcjRQbjBubE00UkF2RUty?=
- =?utf-8?B?WnhDb3N2MHoyMHJYUG5GSFNiZnYzeFl1SnVVS1BRRHRrUTVXM1JpWmh5MmJM?=
- =?utf-8?B?OWJJVHVUNEgzcDF3ZGdVLzNLTFBwWXZDOXJDd3BxVTBwUHB4RWdWUko5SHVk?=
- =?utf-8?B?cVRJRzlVQzNIalRLbVYrVFREMVRzOVdJNDM2L3dvWTc1ak1VZ1E1ZEV4b1Np?=
- =?utf-8?B?cFBLeWxTYWp3NnNuMFZVdXBTY2FFWWRtWktWM0FyWXpHQmdLYVVRMlNOV3pH?=
- =?utf-8?B?cE11MWRUblBJZmpDVFJoRXhIaTJuckpLUGFISWNLaUphRTFBWTh6MC93N2pL?=
- =?utf-8?B?YmpnYkt3QVA0RkVheXFReVEwc0NKSlR4aDZNSmVpbXBoZmFFTnVSdEsrNThR?=
- =?utf-8?B?UXpxN3dldUpDZ2hkRTRtblBPRVc3MGJNSEx2YU1IckxkVEhXamJZeWkxeGF5?=
- =?utf-8?B?VUhidkNaYVlhV2luZWI0ZGNPc0FSMUZkVmVQd25TeHNQcmM4NjdPem95cEtX?=
- =?utf-8?B?VmkvYVN4UzB1K01vaUlPVHBOOU94cFFUZkJuWkpzSlJuOTdUSGttV2JMdVlq?=
- =?utf-8?B?a2JsMEdKQXZ3dWhpckRJK1hIbWU0YmZyMDJ6NllzWVJ2U1FpZHIzYzcxUHNK?=
- =?utf-8?B?MVh6UU1RMlZPc2dvMU91TzNNNXBaN3VnS3lhMFROY2tNWmVodERBTnFjNzl4?=
- =?utf-8?B?SVhWTG5ZNTI0QnduYWRrOUZ1TWpZaXluYlRPeTIrWkFxRmNDcStaTWdXNFRv?=
- =?utf-8?B?cWhMeHhhbGtRdi9nWG5IdERhc2FhbGFQZDBqWkgrV25EaG9vSWZpSU52VjJp?=
- =?utf-8?B?OVo3NERvY1dMOXQ1aEVMaWhKWm8rTkIzemxSd2h6UDRLWitEcWNSVHF2aFBS?=
- =?utf-8?B?Mm9rVjJGOFV1QzloYkVoemp1dHN1Vzk1RVNIdlh3aytObndvUGZWUlpYaXBG?=
- =?utf-8?B?VXhma3BoQ2p4VDBwNVJYM25iYUlBOXJsd0dlS0hUL3V4aGlJak9pUFpSM0Yy?=
- =?utf-8?Q?B1yH9X0MiC/r4wATHPV1ZeJ3OrAzFuLnrDDAOFV?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=3q/Qolc0T+O1pwUJbFNVkBR3teS2P6zbcTF7FIYPAns=;
+        b=k1NJn1PWU80SC1C/PWn8Ld9Ore+ZuOz9DMrYvRswVPiOR+ALKW87fL6JKWtd5+lEtO
+         ZA9PoAtS6N/eaDAkk1n7eY985b9cCG4fePtAHeWZWpVzMGwUx1xd/srtuBOROBNexube
+         wfJskqa43KZiQ7nn8AOsHOg1yxrmgTs6CujkyrU/SVFK1o1d7B0go4fGY6APuYAXl9Nt
+         VI4H0ZnURAjDKYo5OfcGe2boVq0zVsxFCHWxwA3jpyjj63pZox+k7NP5WJcsC4AlDUcG
+         +saSTfmffkZiO33bpoioMjgR19TvU8rK1HO9c0dgqBxOWFYI9G8GeJrYuciJLvdFGkl5
+         c+Ng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3q/Qolc0T+O1pwUJbFNVkBR3teS2P6zbcTF7FIYPAns=;
+        b=fHBKkPLysRj6hd41nHupbxNQquZaViz69Z6z7rE1ZnRJ1cul/zexl6zSzfsZnuU/nu
+         E5DW/NkYWmnpV4zj4DJpnVMuj4n4PENhIuM8Kh/17OQc4h/6xLMJ5fYBEi4c7l6Dr003
+         lOOBalJ73PkMwHKBKS6Qoe1neTR3kuUYgw+gkMmdcM2RP8/k71S7YzE6enUe+cgaIyOd
+         tMjXYDlDFi7KbKIkUYFTid4rJTbNXIYkFO76zbtJz6bHhUeS+2nalFErrGF5ERlvWNaQ
+         4c0votJPZACEhkR1dPcO4/1/Nj+wiopxjqG6hSpBqBgIFJ5Zt06nbkq9gD3jFC1Ca/Nd
+         ux5A==
+X-Gm-Message-State: AOAM532pgAAI7j7ARvBoFLirDZBn6BsrtgJFe/43iw5sH/4KIcXoY3xV
+        kJXoXlXUcgxyZIm58aoRWjB6+Mu1ki0=
+X-Google-Smtp-Source: ABdhPJzmh6b012v0qJ8TEcMoFs5NIEZwF4FWvFvR0UHYZSExe85VWIab1N04ldEwAJpzDvHexJpq9A==
+X-Received: by 2002:a17:906:d20a:: with SMTP id w10mr12552966ejz.426.1631532688106;
+        Mon, 13 Sep 2021 04:31:28 -0700 (PDT)
+Received: from skbuf ([82.78.148.104])
+        by smtp.gmail.com with ESMTPSA id h10sm3284279ede.28.2021.09.13.04.31.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Sep 2021 04:31:27 -0700 (PDT)
+Date:   Mon, 13 Sep 2021 14:31:26 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [RFC PATCH net] net: dsa: flush switchdev workqueue before
+ tearing down CPU/DSA ports
+Message-ID: <20210913113126.34th7ubolxwngi3c@skbuf>
+References: <20210912160015.1198083-1-vladimir.oltean@nxp.com>
+ <5223b1d0-b55b-390c-b3d3-f6e6fa24d6d8@gmail.com>
+ <20210912161913.sqfcmff77ldc3m5e@skbuf>
+ <6af5c67f-db27-061c-3a33-fbc4cede98d1@gmail.com>
+ <20210912163341.zlhsgq3uvkro3bem@skbuf>
+ <763e2236-31f9-8947-22d1-cf0b48d8a81a@gmail.com>
+ <20210913021235.hlq2q2tx5iteho3x@skbuf>
+ <37a4bef7-68de-f618-f741-d0de49c88e82@gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: marvell.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SJ0PR18MB3882.namprd18.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5a7b6e9f-7fd1-4acb-4414-08d976a83922
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Sep 2021 11:18:33.3332
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: kbXOXmj9JaYKrctjAh1Hon6PZlXzfuw5FnMQufbm9y3oOmTZqKuW9hleDelpuUlLrQ6PrIVG3se3jcVAkM2n2A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR18MB3817
-X-Proofpoint-GUID: _9-WiABln7h_jUrLCirIQCl2Mhshs_MN
-X-Proofpoint-ORIG-GUID: _9-WiABln7h_jUrLCirIQCl2Mhshs_MN
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
- definitions=2021-09-13_04,2021-09-09_01,2020-04-07_01
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <37a4bef7-68de-f618-f741-d0de49c88e82@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQpPbiA5LzEyLzIwMjEgYXQgMTo0MlBNLCBBZHJpYW4gQnVuayBXcm90ZToNCj4gT24gTW9uLCBT
-ZXAgMTMsIDIwMjEgYXQgMDg6MTQ6MzNBTSArMDAwMCwgU2hhaSBNYWxpbiB3cm90ZToNCj4gPiBP
-biA5LzEyLzIwMjEgYXQgMTA6MDhQTSwgQWRyaWFuIEJ1bmsgV3JvdGU6DQo+ID4gPiBUaGlzIGZ1
-bmN0aW9uIGlzIGNhbGxlZCB0byBlbmFibGUgU1ItSU9WIHdoZW4gYXZhaWxhYmxlLA0KPiA+ID4g
-bm90IGVuYWJsaW5nIGludGVyZmFjZXMgd2l0aG91dCBWRnMgd2FzIGEgcmVncmVzc2lvbi4NCj4g
-PiA+DQo+ID4gPiBGaXhlczogNjUxNjFjMzU1NTRmICgiYm54Mng6IEZpeCBtaXNzaW5nIGVycm9y
-IGNvZGUgaW4gYm54MnhfaW92X2luaXRfb25lKCkiKQ0KPiA+ID4gU2lnbmVkLW9mZi1ieTogQWRy
-aWFuIEJ1bmsgPGJ1bmtAa2VybmVsLm9yZz4NCj4gPiA+IFJlcG9ydGVkLWJ5OiBZdW5RaWFuZyBT
-dSA8d3pzc3lxYUBnbWFpbC5jb20+DQo+ID4gPiBUZXN0ZWQtYnk6IFl1blFpYW5nIFN1IDx3enNz
-eXFhQGdtYWlsLmNvbT4NCj4gPiA+IENjOiBzdGFibGVAdmdlci5rZXJuZWwub3JnDQo+ID4gPiAt
-LS0NCj4gPiA+ICBkcml2ZXJzL25ldC9ldGhlcm5ldC9icm9hZGNvbS9ibngyeC9ibngyeF9zcmlv
-di5jIHwgMiArLQ0KPiA+ID4gIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKSwgMSBkZWxl
-dGlvbigtKQ0KPiA+ID4NCj4gPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9i
-cm9hZGNvbS9ibngyeC9ibngyeF9zcmlvdi5jDQo+ID4gPiBiL2RyaXZlcnMvbmV0L2V0aGVybmV0
-L2Jyb2FkY29tL2JueDJ4L2JueDJ4X3NyaW92LmMNCj4gPiA+IGluZGV4IGYyNTVmZDBiMTZkYi4u
-NmZiZjczNWZjYTMxIDEwMDY0NA0KPiA+ID4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvYnJv
-YWRjb20vYm54MngvYm54Mnhfc3Jpb3YuYw0KPiA+ID4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJu
-ZXQvYnJvYWRjb20vYm54MngvYm54Mnhfc3Jpb3YuYw0KPiA+ID4gQEAgLTEyMjQsNyArMTIyNCw3
-IEBAIGludCBibngyeF9pb3ZfaW5pdF9vbmUoc3RydWN0IGJueDJ4ICpicCwgaW50DQo+ID4gPiBp
-bnRfbW9kZV9wYXJhbSwNCj4gPiA+DQo+ID4gPiAgCS8qIFNSLUlPViBjYXBhYmlsaXR5IHdhcyBl
-bmFibGVkIGJ1dCB0aGVyZSBhcmUgbm8gVkZzKi8NCj4gPiA+ICAJaWYgKGlvdi0+dG90YWwgPT0g
-MCkgew0KPiA+ID4gLQkJZXJyID0gLUVJTlZBTDsNCj4gPiA+ICsJCWVyciA9IDA7DQo+ID4gPiAg
-CQlnb3RvIGZhaWxlZDsNCj4gPiA+ICAJfQ0KPiA+DQo+ID4gVGhhbmtzIGZvciByZXBvcnRpbmcg
-dGhpcyBpc3N1ZSENCj4gPiBCdXQgdGhlIGNvbXBsZXRlIGZpeCBzaG91bGQgYWxzbyBub3QgdXNl
-ICJnb3RvIGZhaWxlZCIuDQo+ID4gSW5zdGVhZCwgcGxlYXNlIGNyZWF0ZSBhIG5ldyAiZ290byBz
-a2lwX3ZmcyIgc28gaXQgd2lsbCBza2lwDQo+ID4gdGhlIGxvZyBvZiAiRmFpbGVkIGVycj0iLg0K
-PiANCj4gSXMgdGhpcyByZWFsbHkgZGVzaXJhYmxlPw0KPiBJdCBpcyBhIGRlYnVnIHByaW50IG5v
-dCBlbmFibGVkIGJ5IGRlZmF1bHQsDQo+IGFuZCB0cnlpbmcgdG8gZW5hYmxlIFNSLUlPViBkaWQg
-ZmFpbC4NCg0KSSBhZ3JlZS4NCg0KQWNrZWQtYnk6IFNoYWkgTWFsaW4gPHNtYWxpbkBtYXJ2ZWxs
-LmNvbT4NCg0KPiANCj4gY3UNCj4gQWRyaWFuDQo=
+On Sun, Sep 12, 2021 at 07:20:23PM -0700, Florian Fainelli wrote:
+> On 9/12/2021 7:12 PM, Vladimir Oltean wrote:
+> > On Sun, Sep 12, 2021 at 07:06:25PM -0700, Florian Fainelli wrote:
+> > > On 9/12/2021 9:33 AM, Vladimir Oltean wrote:
+> > > > On Sun, Sep 12, 2021 at 09:24:53AM -0700, Florian Fainelli wrote:
+> > > > > On 9/12/2021 9:19 AM, Vladimir Oltean wrote:
+> > > > > > On Sun, Sep 12, 2021 at 09:13:36AM -0700, Florian Fainelli wrote:
+> > > > > > > Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> > > > > > >
+> > > > > > > Did you post this as a RFC for a particular reason, or just to give
+> > > > > > > reviewers some time?
+> > > > > >
+> > > > > > Both.
+> > > > > >
+> > > > > > In principle there's nothing wrong with what this patch does, only
+> > > > > > perhaps maybe something with what it doesn't do.
+> > > > > >
+> > > > > > We keep saying that a network interface should be ready to pass traffic
+> > > > > > as soon as it's registered, but that "walk dst->ports linearly when
+> > > > > > calling dsa_port_setup" might not really live up to that promise.
+> > > > >
+> > > > > That promise most definitively existed back when Lennert wrote this code and
+> > > > > we had an array of ports and the switch drivers brought up their port in
+> > > > > their ->setup() method, nowadays, not so sure anymore because of the
+> > > > > .port_enable() as much as the list.
+> > > > >
+> > > > > This is making me wonder whether the occasional messages I am seeing on
+> > > > > system suspend from __dev_queue_xmit: Virtual device %s asks to queue
+> > > > > packet! might have something to do with that and/or the inappropriate
+> > > > > ordering between suspending the switch and the DSA master.
+> > > >
+> > > > Sorry, I have never tested the suspend/resume code path, mostly because
+> > > > I don't know what would the easiest way be to wake up my systems from
+> > > > suspend. If you could give me some pointers there I would be glad to
+> > > > look into it.
+> > >
+> > > If your systems support suspend/resume just do:
+> > >
+> > > echo mem > /sys/power/state
+> > > or
+> > > echo standby > /sys/power/state
+> > >
+> > > if they don't, then maybe a x86 VM with dsa_loop may precipitate the
+> > > problem, but since it uses DSA_TAG_PROTO_NONE, I doubt it, we would need to
+> > > pass traffic on the DSA devices for this warning to show up.
+> >
+> > I figured out a working combination in the meanwhile, I even found a bug
+> > in the process:
+> > https://patchwork.kernel.org/project/netdevbpf/patch/20210912192805.1394305-1-vladimir.oltean@nxp.com/
+> >
+> > However I did not see those messages getting printed while pinging after
+> > system resume (note that none of the DSA switch drivers I tested with
+> > did implement .suspend or .resume), with net-next or with linux-stable/linux-5.14.y.
+> >
+> > Is there more to your setup to reproduce this issue?
+>
+> All switch ports are brought up with a DHCP client, the issue is
+> definitively intermittent and not frequent, I don't have suspend/resume
+> working on 5.14.y yet, but going as far back as 5.10.y should let you see
+> the same kind of messages.
+
+Nope, I don't see the message on linux-5.10.y either, but even if I look
+at the code I don't understand what goes on.
+
+Here are some facts:
+
+- __dev_queue_xmit only prints "Virtual device %s asks to queue packet!"
+  for devices which have a NULL dev->qdisc->enqueue, but return
+  NETDEV_TX_BUSY in dev_hard_start_xmit
+
+- only the noqueue qdisc manages that performance, normally register_qdisc
+  sets up a default of ->enqueue pointer of noop_qdisc_ops.enqueue, but
+  there is a hack in noqueue_init which subverts that.
+
+- The default qdiscs are assigned by attach_default_qdiscs(). There are
+  two ways in which an interface can get the noqueue_qdisc_ops by default:
+  (a) it declares the IFF_NO_QUEUE feature
+  (b) the init of its other default qdisc (for example mq) failed for
+      some reason, the kernel prints a warning and falls back to noqueue.
+
+- DSA declares IFF_NO_QUEUE, so it uses the noqueue qdisc by default
+
+- DSA never returns anything other than NETDEV_TX_OK in ndo_start_xmit.
+
+So my conclusion is:
+you have the noqueue qdisc on the DSA master, which got there either by
+accident due to a failure of the mq qdisc initialization, or
+intentionally by:
+
+tc qdisc add dev eth0 root noqueue
+
+When you use the noqueue qdisc and your DSA master device driver returns
+NETDEV_TX_BUSY, the packet won't get queued => the system pretty much is
+in its own right to complain.
