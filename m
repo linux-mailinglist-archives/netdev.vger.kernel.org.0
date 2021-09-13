@@ -2,262 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE3444097A0
-	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 17:40:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02DDD4097DC
+	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 17:51:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244341AbhIMPmA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Sep 2021 11:42:00 -0400
-Received: from www62.your-server.de ([213.133.104.62]:40292 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230039AbhIMPlr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Sep 2021 11:41:47 -0400
-Received: from 65.47.5.85.dynamic.wline.res.cust.swisscom.ch ([85.5.47.65] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mPo48-000C0m-OL; Mon, 13 Sep 2021 17:40:16 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, tj@kernel.org, davem@davemloft.net,
-        m@lambda.lt, alexei.starovoitov@gmail.com, andrii@kernel.org,
-        sdf@google.com, Daniel Borkmann <daniel@iogearbox.net>
-Subject: [PATCH bpf v3 3/3] bpf, selftests: Add test case for mixed cgroup v1/v2
-Date:   Mon, 13 Sep 2021 17:40:10 +0200
-Message-Id: <8872a808de2697887a64c8b52e3bdf625de2ac91.1631547359.git.daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <d9744c5af3d9ad3a74de2a209caca81ff76c3d42.1631547359.git.daniel@iogearbox.net>
-References: <d9744c5af3d9ad3a74de2a209caca81ff76c3d42.1631547359.git.daniel@iogearbox.net>
+        id S245253AbhIMPwv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Sep 2021 11:52:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35242 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244694AbhIMPwl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Sep 2021 11:52:41 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E163C05BD13
+        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 08:45:39 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id i21so22087784ejd.2
+        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 08:45:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=xRmh/Y1qC4SCsf+8wkoMdhsYLeyTPz3IqXaTG4YoU7s=;
+        b=I7uE/JXr48ALBl7y0gsZQ9l/ZU+4F+IauUGv9CL01TIFma5Ja0wfc0VDH+BwhLpGdT
+         UUQqDGnCsduUutZftLUCGSbOfiMh2WPBfSj65GLWPoIvL+xpqgssyhmblMOifdlOEcf4
+         7hgJS+iYTCRHpOA7iIcUHLrkUw2Bt+gj6p8b55qV5/eli+TSl+Gq/l0pO8EZfKPmTHJB
+         47y4WjtruaLSp45GhYw6UsXQRKBBBn5w9sekvx+cq8tiKN8dNCxlUAFykI+2APX5kDXh
+         48VyOZ+uw2B8VlNvpleqcgfdoewpW6o/sxVTo5MUnadzpHEldw7GQAujVwxb7VXIxzOH
+         iWfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=xRmh/Y1qC4SCsf+8wkoMdhsYLeyTPz3IqXaTG4YoU7s=;
+        b=1VDggtvCCQLQCB/1W09tdo5bky6IM+KYIwCw38kwKHe4DtsprbAQu/lYQ7hts6UXYy
+         tXkLbXRmaOuwDcUtviX9FrRBv+RjywndfZwrBGOG7oRGxEfDRF5cLYM/Hs9Wxv1yGScl
+         quDFj8xpva1a2RipiHoexPRC5GPjvL9aDx+1Xq4M6d7ZoF1o/ufTi2mmn/UXPoRDTcty
+         YjIuZ/IFBBAi3/S/763RJtn8j+FbhyaYEYrGCzrW93yACAL7ksdRLq61WXPCelwg9Jsg
+         BVpPMlS96jJ6nizGCDHDWRInj2eR46L9zMGAC79xutcGqU8tTugjCjMJitfpsJkGlJEA
+         FRmA==
+X-Gm-Message-State: AOAM533UVq1SwqvnCOSFzLU+IeOYg9dc6EcaUEpAL+x5tSiGkh13AsIw
+        Q7UVHTSFaV3gYggT+UiHBxg=
+X-Google-Smtp-Source: ABdhPJyXvLRyukQUR2cc42hz5n/jrkYAAoHdc7fFVSmTKBW8zqXTzYE2LRt+jS9gNOnQhr8AQE9KsQ==
+X-Received: by 2002:a17:907:3e20:: with SMTP id hp32mr13040070ejc.536.1631547937600;
+        Mon, 13 Sep 2021 08:45:37 -0700 (PDT)
+Received: from skbuf ([82.78.148.104])
+        by smtp.gmail.com with ESMTPSA id bw25sm3708255ejb.20.2021.09.13.08.45.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Sep 2021 08:45:37 -0700 (PDT)
+Date:   Mon, 13 Sep 2021 18:45:36 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Mauri Sandberg <sandberg@mailfence.com>,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        DENG Qingfang <dqfext@gmail.com>
+Subject: Re: [PATCH net-next 4/8] net: dsa: rtl8366rb: Always treat VLAN 0 as
+ untagged
+Message-ID: <20210913154536.v7rc7ln7ctcuqxl7@skbuf>
+References: <20210913144300.1265143-1-linus.walleij@linaro.org>
+ <20210913144300.1265143-5-linus.walleij@linaro.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.2/26293/Mon Sep 13 10:23:39 2021)
+In-Reply-To: <20210913144300.1265143-5-linus.walleij@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Minimal selftest which implements a small BPF policy program to the
-connect(2) hook which rejects TCP connection requests to port 60123
-with EPERM. This is being attached to a non-root cgroup v2 path. The
-test asserts that this works under cgroup v2-only and under a mixed
-cgroup v1/v2 environment where net_classid is set in the former case.
+On Mon, Sep 13, 2021 at 04:42:56PM +0200, Linus Walleij wrote:
+> VLAN 0 shall always be treated as untagged, as per example
+> from other drivers (I guess from the spec).
+> 
+> Cc: Vladimir Oltean <olteanv@gmail.com>
+> Cc: Mauri Sandberg <sandberg@mailfence.com>
+> Cc: Alvin Šipraga <alsi@bang-olufsen.dk>
+> Cc: Florian Fainelli <f.fainelli@gmail.com>
+> Cc: DENG Qingfang <dqfext@gmail.com>
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> ---
+> ChangeLog v1->v4:
+> - New patch after noting that other drivers always sets VLAN 0
+>   as untagged.
+> ---
 
-Before fix:
+"Other drivers" are not always a good example.
 
-  # ./test_progs -t cgroup_v1v2
-  test_cgroup_v1v2:PASS:server_fd 0 nsec
-  test_cgroup_v1v2:PASS:client_fd 0 nsec
-  test_cgroup_v1v2:PASS:cgroup_fd 0 nsec
-  test_cgroup_v1v2:PASS:server_fd 0 nsec
-  run_test:PASS:skel_open 0 nsec
-  run_test:PASS:prog_attach 0 nsec
-  test_cgroup_v1v2:PASS:cgroup-v2-only 0 nsec
-  run_test:PASS:skel_open 0 nsec
-  run_test:PASS:prog_attach 0 nsec
-  run_test:PASS:join_classid 0 nsec
-  (network_helpers.c:219: errno: None) Unexpected success to connect to server
-  test_cgroup_v1v2:FAIL:cgroup-v1v2 unexpected error: -1 (errno 0)
-  #27 cgroup_v1v2:FAIL
-  Summary: 0/0 PASSED, 0 SKIPPED, 1 FAILED
+Technically speaking, IEEE 802.1Q-2018 wants switches to _preserve_ the
+VID 0 found inside packets when forwarding them, but treat them the same
+as untagged packets otherwise (aka classify them to the port's PVID, and
+forward them according to the forwarding domain of the $(PVID) VLAN in
+that bridge).
 
-After fix:
+"Preserve" the VID 0 tag means "mark it as egress-tagged", so the
+opposite of the change you are making.
 
-  # ./test_progs -t cgroup_v1v2
-  #27 cgroup_v1v2:OK
-  Summary: 1/0 PASSED, 0 SKIPPED, 0 FAILED
+Now, I know all too well it is not always possible to satisfy that
+expectation, and we have had some back-and-forth on other drivers about
+this, and ended up accepting the fact that the processing of VID 0 is
+more or less broken. User space deals with that the best it can
+(read as: sometimes it can't):
+https://sourceforge.net/p/linuxptp/mailman/message/37318312/
 
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
----
- tools/testing/selftests/bpf/network_helpers.c | 27 +++++--
- tools/testing/selftests/bpf/network_helpers.h |  1 +
- .../selftests/bpf/prog_tests/cgroup_v1v2.c    | 79 +++++++++++++++++++
- .../selftests/bpf/progs/connect4_dropper.c    | 26 ++++++
- 4 files changed, 127 insertions(+), 6 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/cgroup_v1v2.c
- create mode 100644 tools/testing/selftests/bpf/progs/connect4_dropper.c
-
-diff --git a/tools/testing/selftests/bpf/network_helpers.c b/tools/testing/selftests/bpf/network_helpers.c
-index 7e9f6375757a..6db1af8fdee7 100644
---- a/tools/testing/selftests/bpf/network_helpers.c
-+++ b/tools/testing/selftests/bpf/network_helpers.c
-@@ -208,11 +208,26 @@ int fastopen_connect(int server_fd, const char *data, unsigned int data_len,
- 
- static int connect_fd_to_addr(int fd,
- 			      const struct sockaddr_storage *addr,
--			      socklen_t addrlen)
-+			      socklen_t addrlen, const bool must_fail)
- {
--	if (connect(fd, (const struct sockaddr *)addr, addrlen)) {
--		log_err("Failed to connect to server");
--		return -1;
-+	int ret;
-+
-+	errno = 0;
-+	ret = connect(fd, (const struct sockaddr *)addr, addrlen);
-+	if (must_fail) {
-+		if (!ret) {
-+			log_err("Unexpected success to connect to server");
-+			return -1;
-+		}
-+		if (errno != EPERM) {
-+			log_err("Unexpected error from connect to server");
-+			return -1;
-+		}
-+	} else {
-+		if (ret) {
-+			log_err("Failed to connect to server");
-+			return -1;
-+		}
- 	}
- 
- 	return 0;
-@@ -257,7 +272,7 @@ int connect_to_fd_opts(int server_fd, const struct network_helper_opts *opts)
- 		       strlen(opts->cc) + 1))
- 		goto error_close;
- 
--	if (connect_fd_to_addr(fd, &addr, addrlen))
-+	if (connect_fd_to_addr(fd, &addr, addrlen, opts->must_fail))
- 		goto error_close;
- 
- 	return fd;
-@@ -289,7 +304,7 @@ int connect_fd_to_fd(int client_fd, int server_fd, int timeout_ms)
- 		return -1;
- 	}
- 
--	if (connect_fd_to_addr(client_fd, &addr, len))
-+	if (connect_fd_to_addr(client_fd, &addr, len, false))
- 		return -1;
- 
- 	return 0;
-diff --git a/tools/testing/selftests/bpf/network_helpers.h b/tools/testing/selftests/bpf/network_helpers.h
-index da7e132657d5..d198181a5648 100644
---- a/tools/testing/selftests/bpf/network_helpers.h
-+++ b/tools/testing/selftests/bpf/network_helpers.h
-@@ -20,6 +20,7 @@ typedef __u16 __sum16;
- struct network_helper_opts {
- 	const char *cc;
- 	int timeout_ms;
-+	bool must_fail;
- };
- 
- /* ipv4 test vector */
-diff --git a/tools/testing/selftests/bpf/prog_tests/cgroup_v1v2.c b/tools/testing/selftests/bpf/prog_tests/cgroup_v1v2.c
-new file mode 100644
-index 000000000000..ab3b9bc5e6d1
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/cgroup_v1v2.c
-@@ -0,0 +1,79 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <test_progs.h>
-+
-+#include "connect4_dropper.skel.h"
-+
-+#include "cgroup_helpers.h"
-+#include "network_helpers.h"
-+
-+static int run_test(int cgroup_fd, int server_fd, bool classid)
-+{
-+	struct network_helper_opts opts = {
-+		.must_fail = true,
-+	};
-+	struct connect4_dropper *skel;
-+	int fd, err = 0;
-+
-+	skel = connect4_dropper__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "skel_open"))
-+		return -1;
-+
-+	skel->links.connect_v4_dropper =
-+		bpf_program__attach_cgroup(skel->progs.connect_v4_dropper,
-+					   cgroup_fd);
-+	if (!ASSERT_OK_PTR(skel->links.connect_v4_dropper, "prog_attach")) {
-+		err = -1;
-+		goto out;
-+	}
-+
-+	if (classid && !ASSERT_OK(join_classid(), "join_classid")) {
-+		err = -1;
-+		goto out;
-+	}
-+
-+	fd = connect_to_fd_opts(server_fd, &opts);
-+	if (fd < 0)
-+		err = -1;
-+	else
-+		close(fd);
-+out:
-+	connect4_dropper__destroy(skel);
-+	return err;
-+}
-+
-+void test_cgroup_v1v2(void)
-+{
-+	struct network_helper_opts opts = {};
-+	int server_fd, client_fd, cgroup_fd;
-+	static const int port = 60123;
-+
-+	/* Step 1: Check base connectivity works without any BPF. */
-+	server_fd = start_server(AF_INET, SOCK_STREAM, NULL, port, 0);
-+	if (!ASSERT_GE(server_fd, 0, "server_fd"))
-+		return;
-+	client_fd = connect_to_fd_opts(server_fd, &opts);
-+	if (!ASSERT_GE(client_fd, 0, "client_fd")) {
-+		close(server_fd);
-+		return;
-+	}
-+	close(client_fd);
-+	close(server_fd);
-+
-+	/* Step 2: Check BPF policy prog attached to cgroups drops connectivity. */
-+	cgroup_fd = test__join_cgroup("/connect_dropper");
-+	if (!ASSERT_GE(cgroup_fd, 0, "cgroup_fd"))
-+		return;
-+	server_fd = start_server(AF_INET, SOCK_STREAM, NULL, port, 0);
-+	if (!ASSERT_GE(server_fd, 0, "server_fd")) {
-+		close(cgroup_fd);
-+		return;
-+	}
-+	ASSERT_OK(run_test(cgroup_fd, server_fd, false), "cgroup-v2-only");
-+	setup_classid_environment();
-+	set_classid(42);
-+	ASSERT_OK(run_test(cgroup_fd, server_fd, true), "cgroup-v1v2");
-+	cleanup_classid_environment();
-+	close(server_fd);
-+	close(cgroup_fd);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/connect4_dropper.c b/tools/testing/selftests/bpf/progs/connect4_dropper.c
-new file mode 100644
-index 000000000000..b565d997810a
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/connect4_dropper.c
-@@ -0,0 +1,26 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <string.h>
-+
-+#include <linux/stddef.h>
-+#include <linux/bpf.h>
-+
-+#include <sys/socket.h>
-+
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_endian.h>
-+
-+#define VERDICT_REJECT	0
-+#define VERDICT_PROCEED	1
-+
-+SEC("cgroup/connect4")
-+int connect_v4_dropper(struct bpf_sock_addr *ctx)
-+{
-+	if (ctx->type != SOCK_STREAM)
-+		return VERDICT_PROCEED;
-+	if (ctx->user_port == bpf_htons(60123))
-+		return VERDICT_REJECT;
-+	return VERDICT_PROCEED;
-+}
-+
-+char _license[] SEC("license") = "GPL";
--- 
-2.21.0
-
+But the justification given here to make VID 0 egress-untagged is pretty
+weak as it is.
