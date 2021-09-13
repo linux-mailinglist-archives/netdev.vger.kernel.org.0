@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E4B1409763
-	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 17:34:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6DC2409764
+	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 17:34:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241712AbhIMPff (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Sep 2021 11:35:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59280 "EHLO
+        id S240662AbhIMPfh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Sep 2021 11:35:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230080AbhIMPfZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Sep 2021 11:35:25 -0400
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24984C12C745
-        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 07:45:34 -0700 (PDT)
-Received: by mail-lj1-x230.google.com with SMTP id s3so17751419ljp.11
-        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 07:45:34 -0700 (PDT)
+        with ESMTP id S233162AbhIMPf0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Sep 2021 11:35:26 -0400
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6672EC12C74C
+        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 07:45:36 -0700 (PDT)
+Received: by mail-lj1-x22e.google.com with SMTP id s12so17845609ljg.0
+        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 07:45:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Segi0yvuz1/GUUIwrgvIqZ9jyUD+kdlugOeE72ywQP4=;
-        b=ZPqE+VesFGU6Kly9pwUykJzXtz7ZqXStgDc/yREvjXjs98yrdH5KPrkzZqaVbs1BP6
-         dQgBPFO3zQ+u3jS8pn2AeK+r8dOcXhf/Ag0m3/4cmf02LPiEyxu6RREufd4qONmbMSjH
-         d8qAiCpzH4X/mxUA3yN9SySgs0boVMh+0VGX2scocDT3s/0g+C8P9I2ZdHSIchQVtTUB
-         Wnpn9zOpJGOUR4JbH6cKpjULif7B0LYPggL9KVjRld1hhi/MVQy1BrLbULeJEuwd7mvD
-         Vsebtd5oz6mbtpcQPondaKWbcXYM4YRoO7/7dhxJ5Guol2CNKmnY7UWNUxEhZ1igLUpy
-         54yw==
+        bh=YNvGPe0Dq+6R5la8j1qftPJtr3gJu4sNPynYBEMsuh0=;
+        b=EmYBJUcXWwb3PoCDeCt8UrFdPtMwJ9RW5MD/Kdz37bvUEcrNFPvZ9KFgNvSSDufN9l
+         PCBc9iN09/6aGspKx1kbSlW6EKkUbbL3wlGL7x+A552PWbBTK8iM3CYXckh/8lBWA9GM
+         8efrVIKiWKNM5HsHi/9U/8OKJ2Uhxw1hBeSL30SuDD2tgaNMBFiBxLcJS9mw8Kd5aCP0
+         aI+xItrm148Aq8LWcs5R4Y6p2gLNYDIW6Novj7/AP5PpPijpT73t1TK/gJK6ROuHA0Nu
+         YQ8fWTKoXPpLxgwNF1LS2Lf5S0YYn47SnJwFiXT11GQak43hc8TKkAHD4NMlMNDRiuVo
+         VNnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Segi0yvuz1/GUUIwrgvIqZ9jyUD+kdlugOeE72ywQP4=;
-        b=apfYAEWmpn9kOfuy/x//WS189VXY5RUN3u/nGAHpKheW3SsjYm6fgXlqmJTCO0oqSx
-         g04Na1wHm3zbn3bP86yPulhG/LSCcsacckmoe970ughsPoXucvokJY8EGeu0SyUUO/w7
-         g25ksdhjJU4Q9/x849gVsx+itdNiW9OXB+/o5c4+KctNdzIX88I3ln19R0kuU0QjnJm1
-         DDCdyqOjj1SfVhVtev5S4a48JkUYh/EgoUgVZne5vIla3Rh6IohsUK8kMTcwIckcAUxr
-         y9KoFJUGLovV0SKpGlgAZgJLpw3sfRgMbRc8CoU7p5l3qcKZFC/S9elTR3cuY6mwDcOa
-         EE3w==
-X-Gm-Message-State: AOAM532l1qzYDW+TRa/wKPwSm2kYGK7bk1V4hbBo8hfUkR1rUnmMxFu/
-        Jc/6XIt1RNYhoZ+gNfmPuD1lgg==
-X-Google-Smtp-Source: ABdhPJysNisMQ3W8I8r74uypActZ9QB/HaIf2KutkzaewyQsm3k7XErd+Iaf/SrFF4naI+hf+IFC5w==
-X-Received: by 2002:a2e:7d13:: with SMTP id y19mr10818111ljc.344.1631544332462;
-        Mon, 13 Sep 2021 07:45:32 -0700 (PDT)
+        bh=YNvGPe0Dq+6R5la8j1qftPJtr3gJu4sNPynYBEMsuh0=;
+        b=6G6yCIdPJrAy/OSJQV0EK96rIJo6d8jGI67+Ic2uwW4mX/GAHnFTT7nsCepjm3dPkq
+         wTbooz9gZBaGeTSOGCyzqKSeeskDpstEj1HTnZ/0/mUaw3GimZ+CnoxTI8K4+BihjcPv
+         9fvU8yLMMWssKC9hVf9dAF0z3GldSHDF77/GfnERgBMorpfA0N0a0RhKsr271BEqRr0z
+         QOBG6yjeIvpOtjYSW3FuoOjLHkJ27u+dYMhVpUIBxLRr2+JilicjoKUIiE/ESBisA4P5
+         yMC4C0qKDQ7+8SEJKYu+VF7YXT4C0NqTvPhegrivdruhS3Zq3Z8loXfMv0eU+e7i9pAP
+         8Cvg==
+X-Gm-Message-State: AOAM5335fcuMJr+PqTwOseg1VRPaWbcwFGD+6DSEhOwORdu95d3YCZ2A
+        GQP+8TWMInq9qQ3udOB8+zAvVw==
+X-Google-Smtp-Source: ABdhPJwEirZegF9npqyfvP5koDG91VRxvoCxhXz5ux+V6mBb4yMSqPt1XmL9V1By61LJCCximZMHAQ==
+X-Received: by 2002:a2e:9549:: with SMTP id t9mr10789580ljh.404.1631544334724;
+        Mon, 13 Sep 2021 07:45:34 -0700 (PDT)
 Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
-        by smtp.gmail.com with ESMTPSA id i12sm849825lfb.301.2021.09.13.07.45.31
+        by smtp.gmail.com with ESMTPSA id i12sm849825lfb.301.2021.09.13.07.45.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Sep 2021 07:45:31 -0700 (PDT)
+        Mon, 13 Sep 2021 07:45:34 -0700 (PDT)
 From:   Linus Walleij <linus.walleij@linaro.org>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -54,13 +54,13 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Vladimir Oltean <olteanv@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, DENG Qingfang <dqfext@gmail.com>,
+Cc:     netdev@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
         Mauri Sandberg <sandberg@mailfence.com>,
-        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH net-next 1/8] net: dsa: rtl8366rb: Support bridge offloading
-Date:   Mon, 13 Sep 2021 16:42:53 +0200
-Message-Id: <20210913144300.1265143-2-linus.walleij@linaro.org>
+        DENG Qingfang <dqfext@gmail.com>,
+        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>
+Subject: [PATCH net-next 2/8] net: dsa: rtl8366: Drop custom VLAN set-up
+Date:   Mon, 13 Sep 2021 16:42:54 +0200
+Message-Id: <20210913144300.1265143-3-linus.walleij@linaro.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210913144300.1265143-1-linus.walleij@linaro.org>
 References: <20210913144300.1265143-1-linus.walleij@linaro.org>
@@ -71,159 +71,128 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: DENG Qingfang <dqfext@gmail.com>
+This hacky default VLAN setup was done in order to direct
+packets to the right ports and provide port isolation, both
+which we now support properly using custom tags and proper
+bridge port isolation.
 
-Use port isolation registers to configure bridge offloading.
+We can drop the custom VLAN code and leave all VLAN handling
+alone, as users expect things to be. We can also drop
+ds->configure_vlan_while_not_filtering = false; and let
+the core deal with any VLANs it wants.
 
-Tested on the D-Link DIR-685, switching between ports and
-sniffing ports to make sure no packets leak.
-
-Cc: Vladimir Oltean <olteanv@gmail.com>
 Cc: Mauri Sandberg <sandberg@mailfence.com>
+Cc: DENG Qingfang <dqfext@gmail.com>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 Reviewed-by: Alvin Šipraga <alsi@bang-olufsen.dk>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: DENG Qingfang <dqfext@gmail.com>
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
 ChangeLog v3->v4:
-- Fix a bug where I managed to mask off the CPU port
-  from the ports we could access leading to numb
-  bridge.
-- Reword some comments.
+- No changes
 ChangeLog v2->v3:
-- Parens around the (pmask) in the port isolation macro.
-- Do not exit join/leave functions on regmap failures,
-  print an error and continue.
-- Clarify comments around the port in join/leave
-  functions.
+- Collect a bunch of reviewed-by tags
 ChangeLog v1->v2:
-- introduce RTL8366RB_PORT_ISO_PORTS() to shift the port
-  mask into place so we are not confused by the enable
-  bit.
-- Use this with dsa_user_ports() to isolate the CPU port
-  from itself.
+- No changes.
 ---
- drivers/net/dsa/rtl8366rb.c | 86 +++++++++++++++++++++++++++++++++++++
- 1 file changed, 86 insertions(+)
+ drivers/net/dsa/realtek-smi-core.h |  1 -
+ drivers/net/dsa/rtl8366.c          | 48 ------------------------------
+ drivers/net/dsa/rtl8366rb.c        |  4 +--
+ 3 files changed, 1 insertion(+), 52 deletions(-)
 
+diff --git a/drivers/net/dsa/realtek-smi-core.h b/drivers/net/dsa/realtek-smi-core.h
+index fcf465f7f922..c8fbd7b9fd0b 100644
+--- a/drivers/net/dsa/realtek-smi-core.h
++++ b/drivers/net/dsa/realtek-smi-core.h
+@@ -129,7 +129,6 @@ int rtl8366_set_pvid(struct realtek_smi *smi, unsigned int port,
+ int rtl8366_enable_vlan4k(struct realtek_smi *smi, bool enable);
+ int rtl8366_enable_vlan(struct realtek_smi *smi, bool enable);
+ int rtl8366_reset_vlan(struct realtek_smi *smi);
+-int rtl8366_init_vlan(struct realtek_smi *smi);
+ int rtl8366_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering,
+ 			   struct netlink_ext_ack *extack);
+ int rtl8366_vlan_add(struct dsa_switch *ds, int port,
+diff --git a/drivers/net/dsa/rtl8366.c b/drivers/net/dsa/rtl8366.c
+index 75897a369096..59c5bc4f7b71 100644
+--- a/drivers/net/dsa/rtl8366.c
++++ b/drivers/net/dsa/rtl8366.c
+@@ -292,54 +292,6 @@ int rtl8366_reset_vlan(struct realtek_smi *smi)
+ }
+ EXPORT_SYMBOL_GPL(rtl8366_reset_vlan);
+ 
+-int rtl8366_init_vlan(struct realtek_smi *smi)
+-{
+-	int port;
+-	int ret;
+-
+-	ret = rtl8366_reset_vlan(smi);
+-	if (ret)
+-		return ret;
+-
+-	/* Loop over the available ports, for each port, associate
+-	 * it with the VLAN (port+1)
+-	 */
+-	for (port = 0; port < smi->num_ports; port++) {
+-		u32 mask;
+-
+-		if (port == smi->cpu_port)
+-			/* For the CPU port, make all ports members of this
+-			 * VLAN.
+-			 */
+-			mask = GENMASK((int)smi->num_ports - 1, 0);
+-		else
+-			/* For all other ports, enable itself plus the
+-			 * CPU port.
+-			 */
+-			mask = BIT(port) | BIT(smi->cpu_port);
+-
+-		/* For each port, set the port as member of VLAN (port+1)
+-		 * and untagged, except for the CPU port: the CPU port (5) is
+-		 * member of VLAN 6 and so are ALL the other ports as well.
+-		 * Use filter 0 (no filter).
+-		 */
+-		dev_info(smi->dev, "VLAN%d port mask for port %d, %08x\n",
+-			 (port + 1), port, mask);
+-		ret = rtl8366_set_vlan(smi, (port + 1), mask, mask, 0);
+-		if (ret)
+-			return ret;
+-
+-		dev_info(smi->dev, "VLAN%d port %d, PVID set to %d\n",
+-			 (port + 1), port, (port + 1));
+-		ret = rtl8366_set_pvid(smi, port, (port + 1));
+-		if (ret)
+-			return ret;
+-	}
+-
+-	return rtl8366_enable_vlan(smi, true);
+-}
+-EXPORT_SYMBOL_GPL(rtl8366_init_vlan);
+-
+ int rtl8366_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering,
+ 			   struct netlink_ext_ack *extack)
+ {
 diff --git a/drivers/net/dsa/rtl8366rb.c b/drivers/net/dsa/rtl8366rb.c
-index a89093bc6c6a..b930050cfd1b 100644
+index b930050cfd1b..a5b7d7ff8884 100644
 --- a/drivers/net/dsa/rtl8366rb.c
 +++ b/drivers/net/dsa/rtl8366rb.c
-@@ -300,6 +300,13 @@
- #define RTL8366RB_INTERRUPT_STATUS_REG	0x0442
- #define RTL8366RB_NUM_INTERRUPT		14 /* 0..13 */
+@@ -985,7 +985,7 @@ static int rtl8366rb_setup(struct dsa_switch *ds)
+ 			return ret;
+ 	}
  
-+/* Port isolation registers */
-+#define RTL8366RB_PORT_ISO_BASE		0x0F08
-+#define RTL8366RB_PORT_ISO(pnum)	(RTL8366RB_PORT_ISO_BASE + (pnum))
-+#define RTL8366RB_PORT_ISO_EN		BIT(0)
-+#define RTL8366RB_PORT_ISO_PORTS_MASK	GENMASK(7, 1)
-+#define RTL8366RB_PORT_ISO_PORTS(pmask)	((pmask) << 1)
-+
- /* bits 0..5 enable force when cleared */
- #define RTL8366RB_MAC_FORCE_CTRL_REG	0x0F11
- 
-@@ -835,6 +842,21 @@ static int rtl8366rb_setup(struct dsa_switch *ds)
+-	ret = rtl8366_init_vlan(smi);
++	ret = rtl8366_reset_vlan(smi);
  	if (ret)
  		return ret;
  
-+	/* Isolate all user ports so they can only send packets to itself and the CPU port */
-+	for (i = 0; i < RTL8366RB_PORT_NUM_CPU; i++) {
-+		ret = regmap_write(smi->map, RTL8366RB_PORT_ISO(i),
-+				   RTL8366RB_PORT_ISO_PORTS(BIT(RTL8366RB_PORT_NUM_CPU)) |
-+				   RTL8366RB_PORT_ISO_EN);
-+		if (ret)
-+			return ret;
-+	}
-+	/* CPU port can send packets to all ports */
-+	ret = regmap_write(smi->map, RTL8366RB_PORT_ISO(RTL8366RB_PORT_NUM_CPU),
-+			   RTL8366RB_PORT_ISO_PORTS(dsa_user_ports(ds)) |
-+			   RTL8366RB_PORT_ISO_EN);
-+	if (ret)
-+		return ret;
-+
- 	/* Set up the "green ethernet" feature */
- 	ret = rtl8366rb_jam_table(rtl8366rb_green_jam,
- 				  ARRAY_SIZE(rtl8366rb_green_jam), smi, false);
-@@ -1127,6 +1149,68 @@ rtl8366rb_port_disable(struct dsa_switch *ds, int port)
- 	rb8366rb_set_port_led(smi, port, false);
+@@ -999,8 +999,6 @@ static int rtl8366rb_setup(struct dsa_switch *ds)
+ 		return -ENODEV;
+ 	}
+ 
+-	ds->configure_vlan_while_not_filtering = false;
+-
+ 	return 0;
  }
  
-+static int
-+rtl8366rb_port_bridge_join(struct dsa_switch *ds, int port,
-+			   struct net_device *bridge)
-+{
-+	struct realtek_smi *smi = ds->priv;
-+	unsigned int port_bitmap = 0;
-+	int ret, i;
-+
-+	/* Loop over all other ports than the current one */
-+	for (i = 0; i < RTL8366RB_PORT_NUM_CPU; i++) {
-+		/* Current port handled last */
-+		if (i == port)
-+			continue;
-+		/* Not on this bridge */
-+		if (dsa_to_port(ds, i)->bridge_dev != bridge)
-+			continue;
-+		/* Join this port to each other port on the bridge */
-+		ret = regmap_update_bits(smi->map, RTL8366RB_PORT_ISO(i),
-+					 RTL8366RB_PORT_ISO_PORTS(BIT(port)),
-+					 RTL8366RB_PORT_ISO_PORTS(BIT(port)));
-+		if (ret)
-+			dev_err(smi->dev, "failed to join port %d\n", port);
-+
-+		port_bitmap |= BIT(i);
-+	}
-+
-+	/* Set the bits for the ports we can access */
-+	return regmap_update_bits(smi->map, RTL8366RB_PORT_ISO(port),
-+				  RTL8366RB_PORT_ISO_PORTS(port_bitmap),
-+				  RTL8366RB_PORT_ISO_PORTS(port_bitmap));
-+}
-+
-+static void
-+rtl8366rb_port_bridge_leave(struct dsa_switch *ds, int port,
-+			    struct net_device *bridge)
-+{
-+	struct realtek_smi *smi = ds->priv;
-+	unsigned int port_bitmap = 0;
-+	int ret, i;
-+
-+	/* Loop over all other ports than this one */
-+	for (i = 0; i < RTL8366RB_PORT_NUM_CPU; i++) {
-+		/* Current port handled last */
-+		if (i == port)
-+			continue;
-+		/* Not on this bridge */
-+		if (dsa_to_port(ds, i)->bridge_dev != bridge)
-+			continue;
-+		/* Remove this port from any other port on the bridge */
-+		ret = regmap_update_bits(smi->map, RTL8366RB_PORT_ISO(i),
-+					 RTL8366RB_PORT_ISO_PORTS(BIT(port)), 0);
-+		if (ret)
-+			dev_err(smi->dev, "failed to leave port %d\n", port);
-+
-+		port_bitmap |= BIT(i);
-+	}
-+
-+	/* Clear the bits for the ports we can not access, leave ourselves */
-+	regmap_update_bits(smi->map, RTL8366RB_PORT_ISO(port),
-+			   RTL8366RB_PORT_ISO_PORTS(port_bitmap), 0);
-+}
-+
- static int rtl8366rb_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
- {
- 	struct realtek_smi *smi = ds->priv;
-@@ -1510,6 +1594,8 @@ static const struct dsa_switch_ops rtl8366rb_switch_ops = {
- 	.get_strings = rtl8366_get_strings,
- 	.get_ethtool_stats = rtl8366_get_ethtool_stats,
- 	.get_sset_count = rtl8366_get_sset_count,
-+	.port_bridge_join = rtl8366rb_port_bridge_join,
-+	.port_bridge_leave = rtl8366rb_port_bridge_leave,
- 	.port_vlan_filtering = rtl8366_vlan_filtering,
- 	.port_vlan_add = rtl8366_vlan_add,
- 	.port_vlan_del = rtl8366_vlan_del,
 -- 
 2.31.1
 
