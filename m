@@ -2,98 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9462940909A
-	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 15:52:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5BEC409662
+	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 16:50:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243736AbhIMNx5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Sep 2021 09:53:57 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:24869 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S242749AbhIMNvu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Sep 2021 09:51:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1631541034;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=aBjIIvcb5dunWtRsVviIpL9DBOBpPMCvEHR7NyeCpew=;
-        b=jVyALL4fF5rGaMeuDIctAKv2DgvLVwcUNFj5A+AglGbMxyGTxN9FEelKQNeLRLd/UGs1Mk
-        47F+ItWPYOk+znu0nB49VUz2pHEv1S9C0fljulPHGCr7lO0kk1pIABxAl1RmxfWY61Ehrq
-        mL56a7TNTnXw9OF3NuABmssn49yv7VM=
-Received: from mail-yb1-f198.google.com (mail-yb1-f198.google.com
- [209.85.219.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-309-u3Ub6kTzMiiNM7YFBjB9EQ-1; Mon, 13 Sep 2021 09:50:33 -0400
-X-MC-Unique: u3Ub6kTzMiiNM7YFBjB9EQ-1
-Received: by mail-yb1-f198.google.com with SMTP id f8-20020a2585480000b02905937897e3daso13054474ybn.2
-        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 06:50:33 -0700 (PDT)
+        id S1346148AbhIMOvc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Sep 2021 10:51:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48670 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346764AbhIMOtH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Sep 2021 10:49:07 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3B20C028BA3;
+        Mon, 13 Sep 2021 06:31:33 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id c22so12997860edn.12;
+        Mon, 13 Sep 2021 06:31:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=7Hugz/+OONUxuIBhoIuTQLQDjY595cqMrn5yj0K0lzM=;
+        b=cR8wuHYosPSDj/uz3fuTLgksvjvk1j8FNRACyVsbGIySnNK7/+iV3qiKlleBUvIyuW
+         QMcJGoao9TxQ0hZrcBwjAv0Scc+RA6IyK+fda8+/IpGogmboTd5ykH12mGHdWpvKQ+7v
+         Gl5ORap11bejGGFuCZxlAPGItJ5Gy0h4l2owY+CRMKvrnVPL0WCaoEh5MYp3FPIxhezJ
+         liOFdzY5s2EK5Z4xDooyxpIsTyFGRMT+Pu1SWaMVRIZLUit2X7YcIskokK5GgK+wtP4u
+         oOALSyOTK7t6zOqLX8UakUGcrkPKlbVjx8lioL1/4lr4AAk1DZ5kD7LNUtXf7pMvy9qE
+         w5Hg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=aBjIIvcb5dunWtRsVviIpL9DBOBpPMCvEHR7NyeCpew=;
-        b=47JSW8XhjfSbQxIifAhIVqQWyJVoi0mAW8c1SdBTdRchHoPJjlfX/m8WA5L14IJDX3
-         5EIblHDgAN8KuYaa0C5Kl+go5nFF3cGyiaY7NqEWaPgmDBOy8TT0z2nEL8ZNpm4WeuH3
-         ePdPBrUbqJ5bV83j35urC78u7SHBvZDcD7QdVrmel1sTUQB0WTcEqZTEkcSj0bqIZ+Bq
-         kXbPeesI0POSKTATu0B8x2+5YDISmbvGpF82UKp85JgOLvH8zVNOWF53OYlIFWTQhCFK
-         pRJpj3YSxJPXKwdg46XGIz9nvTqekT8C1lwjxJ/99eD86TyjmvwN88S/eV1HJNN3mDGp
-         8Q0w==
-X-Gm-Message-State: AOAM531ccY2tZvAlOZgi1Nj5OsRLwHnuZoRBZDVt7Z26sXwpUohgqJEl
-        59Xnq55iDv2RV2/KK0Yd5XsLV85sNcdRcDQEyv5QomkdkpE/X8X7MFGJBof0GOpopvoewG5bN6F
-        bUVcD+K/nMVN/y2Jo1BHHtztBgrm4X/n6
-X-Received: by 2002:a25:6913:: with SMTP id e19mr15482536ybc.25.1631541032795;
-        Mon, 13 Sep 2021 06:50:32 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxaynW83umBqEPokVSSibnO6NtuWoQhuE0RyA2lBp5gkMZ2HjvBKRYnpKQf1MqN054h1RGdfDAUtNC2myJBoIU=
-X-Received: by 2002:a25:6913:: with SMTP id e19mr15482493ybc.25.1631541032487;
- Mon, 13 Sep 2021 06:50:32 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210912122234.GA22469@asgard.redhat.com> <CAFqZXNtmN9827MQ0aX7ZcUia5amXuZWppb-9-ySxVP0QBy=O8Q@mail.gmail.com>
- <20210913102316.GA30886@asgard.redhat.com>
-In-Reply-To: <20210913102316.GA30886@asgard.redhat.com>
-From:   Ondrej Mosnacek <omosnace@redhat.com>
-Date:   Mon, 13 Sep 2021 15:50:21 +0200
-Message-ID: <CAFqZXNsp84kFLDfJfdu5fboB8vMm85FU7BDDjpiqeiJ2WSjWAg@mail.gmail.com>
-Subject: Re: [PATCH v2] include/uapi/linux/xfrm.h: Fix XFRM_MSG_MAPPING ABI breakage
-To:     Eugene Syromiatnikov <esyr@redhat.com>
-Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=7Hugz/+OONUxuIBhoIuTQLQDjY595cqMrn5yj0K0lzM=;
+        b=inKmxvMXNR1hXxwhC879rZxtNXtfNDp0sFOUSroX46NiY8DkYP6uyBt5XaWQppkUeZ
+         /0h9bntTdWNtVOOR57/x4qKge7btDGVyggI+xN+XHwU1EMP2EmjxL3U1AgfYcG+owWeq
+         osJfAen+JHyxVffAoRq5kUT6b2wJRdtqaDpp90aAFYtuiEMJ+lTlCM+eYqeIDvAu/HqX
+         DkwgXm4aYz8ISWJr6zYUjzpK2itmalgeIYtGSGDBQ06mxm1OIkb53tQibFZUvnc4KCS1
+         7n8YNdFrMR+/1fjdIA6bsk5pUUiqtlIUa38uDaTb6cVDFIYGSubNTvM9n8SPw9wY9yfx
+         PEGQ==
+X-Gm-Message-State: AOAM531W6YjL/YeGlJN0ijYmCVUGPoWDTy0UCk0uo5O0HdBqbql+BfRz
+        LRPty+X/rHnj9k+U4B2zu3k=
+X-Google-Smtp-Source: ABdhPJxc8GQPCQx5zgnEkg+JeF6ykMUDFH6iyZOsu/L92kgCejBT/hWMx52SSd15euMtpiLvG9zRIg==
+X-Received: by 2002:aa7:d1d3:: with SMTP id g19mr6012882edp.103.1631539892404;
+        Mon, 13 Sep 2021 06:31:32 -0700 (PDT)
+Received: from skbuf ([82.78.148.104])
+        by smtp.gmail.com with ESMTPSA id v13sm3458353ejh.62.2021.09.13.06.31.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Sep 2021 06:31:32 -0700 (PDT)
+Date:   Mon, 13 Sep 2021 16:31:30 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Antony Antony <antony.antony@secunet.com>,
-        Christian Langrock <christian.langrock@secunet.com>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        SElinux list <selinux@vger.kernel.org>,
-        Paul Moore <paul@paul-moore.com>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        Eric Paris <eparis@parisplace.org>,
-        network dev <netdev@vger.kernel.org>,
-        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
-        "Dmitry V. Levin" <ldv@strace.io>,
-        Linux API <linux-api@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Jakub Kicinski <kuba@kernel.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        George McCollister <george.mccollister@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Subject: Re: [RFC PATCH net 2/5] net: dsa: be compatible with masters which
+ unregister on shutdown
+Message-ID: <20210913133130.ohk4co56v4mtljyk@skbuf>
+References: <20210912120932.993440-1-vladimir.oltean@nxp.com>
+ <20210912120932.993440-3-vladimir.oltean@nxp.com>
+ <20210912131837.4i6pzwgn573xutmo@skbuf>
+ <YT9QwOA2DxaXNsfw@lunn.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YT9QwOA2DxaXNsfw@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 13, 2021 at 12:23 PM Eugene Syromiatnikov <esyr@redhat.com> wro=
-te:
-> On Mon, Sep 13, 2021 at 09:16:39AM +0200, Ondrej Mosnacek wrote:
-> > Perhaps it would be a good idea to put a comment here to make it less
-> > likely that this repeats in the future. Something like:
-> >
-> > /* IMPORTANT: Only insert new entries right above this line, otherwise
-> > you break ABI! */
->
-> Well, this statement is true for (almost) every UAPI-exposed enum, and
-> netlink is vast and relies on enums heavily.  I think it is already
-> mentioned somewhere in the documentation, and in the end it falls on the
-> shoulders of the maintainers=E2=80=94to pay additional attention to UAPI =
-changes.
+On Mon, Sep 13, 2021 at 03:23:12PM +0200, Andrew Lunn wrote:
+> > I will fix this when I send the v2 patch, but I will not send that now,
+> > as I would like to get some feedback on the approach first.
+> 
+> It would of been nice to have less boilerplate code, but the basic
+> idea seems O.K.
+> 
+> Have you tested it with a D in DSA system?
 
-Ok, fair enough.
+To various degrees.
 
---=20
-Ondrej Mosnacek
-Software Engineer, Linux Security - SELinux kernel
-Red Hat, Inc.
+I cannot easily patch DSA masters to just implement ->shutdown as
+->remove so as to reproduce Lino's case with the Raspberry Pi, but I did
+perform basic regression-testing on:
 
+- the Bluebox 3 board with the 2x SJA1110 switches in a "real" DSA multi
+  switch tree setup, with dpaa2-eth as the master and drivers/spi/spi-sc18is602.c
+  as the SPI controller
+
+- the weird board with disjoint DSA trees comprised of 2x SJA1105
+  switches hanging off of the internal Felix/Ocelot switch of the
+  LS1028A which in itself has the fsl-enetc driver as its master. Here I
+  could test the fsl-enetc driver with and without the ->shutdown method.
+  I also tested with and without dspi_shutdown so as to walk through
+  both the sja1105's shutdown and remove methods.
+
+- the Turris MOX board where I did not notice any issues during
+  regression testing. The only new message is that the link of the DSA
+  interfaces goes down, this is because the net devices are actually
+  unregistered on shutdown.
+
+It would be possible to have less boilerplate code, by implementing the
+DSA shutdown procedure as dsa_unregister_switch itself.
+
+For buses where the ->remove and ->shutdown have the same prototype
+(they both return void), like PCI, the code added is minimal (although
+we still need to add the "if this then not that" scheme, to avoid the
+function body getting executed twice). For the other buses, there would
+still need to be a separate shutdown method, which calls the remove
+method. Although in principle, this also has functional consequences
+which I am not sure whether I like or not. To walk the full-blown unbind
+code path or to do a shutdown with the minimal necessities?
