@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C188F409AB5
-	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 19:34:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2D6D409AB9
+	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 19:36:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242563AbhIMRgG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Sep 2021 13:36:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60760 "EHLO
+        id S243003AbhIMRhP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Sep 2021 13:37:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238180AbhIMRgF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Sep 2021 13:36:05 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14FD3C061574
-        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 10:34:50 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id n30so6838944pfq.5
-        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 10:34:50 -0700 (PDT)
+        with ESMTP id S243027AbhIMRhM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Sep 2021 13:37:12 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6166C061574
+        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 10:35:55 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id e7so10137837pgk.2
+        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 10:35:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=TQ1ch5IKCKpdtPErJzh0Q4aULiEy9nKEqBiYssfjG94=;
-        b=qvWmhf2YkaLPu57JMVdysfo+yN7Q+9fGLq9bDi7V4l644aLGl641+DHi5zA8DAm3IZ
-         RIHeIbunjW68K/EjxAe5WRM0VGqsa8HkvE2aau0JgPQvNZ/pRi+G/lcLJ+yXXgV+08wm
-         wcq/sNn5wa+BclTT2Nr2PdHvZ6Oecbx/o98e6EfqKS0SFXNw4Zu8F0K8b2R8oBHobbWP
-         BMFNqyO5Qz7EGfzanrEF8BTAUPJKKC8CRGZME54BvFzG4hZCcRv4Z90QuPDHSDuOT8HA
-         fGVB/bdkEShtGfLoxlx4S4CDft7HV8OE/GtkbLxN+kV9rK638gxsLhxyj35pTcB7Yqih
-         mpBg==
+        bh=I8NR9yudfChnSKOUbmx3DBZ58eNUhCPKTgafujvi1J0=;
+        b=QX1LlfEgaFiWj6CTJ9GuzIiLgg/R7rHUKvWsgJQ23X/232DzdGxW0Lq3g706Yk5B0m
+         yrMGxZt1h/dN846zIuQ9k432uzfLvcHPeOaOz8R1ox35HbRBaf98dmKaG0aXEPnGnhco
+         b5XKCjf2rHVAVWEsxF+Ddf+JumZ9ERDq5jRGU2yiLejBRLu382qpysduH9IKlcs7N2KT
+         zPXqj9hm5RsWp5uFetC2ivaAZWZKKDxB/gfiiO+NOW9eI3MbydgzGPLe6ZKYS4rrMK8Z
+         MmSRe6gjVBjPV5xKBU1hU1X8WzRk6StHmqiUrV+EOLSsyZjJ7nnxPvjWYVbc+2WmCmb9
+         zLCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=TQ1ch5IKCKpdtPErJzh0Q4aULiEy9nKEqBiYssfjG94=;
-        b=cwZrpa8icp74aW8MQgjckguDeZHqykVv0i4wvlkA7tbr6RYHAurvJvnjEAUsLMc4tk
-         fGPWE4NpYex0CKluhz0vuO1XjsicJXSaIwRuUCO/eaq/Euhi3Xo52ghf42QYet6AEdmj
-         OV50Gc1pNLNZrMWbJjesNZNAvl/R5xFh1B2SR6VRNtSu7f2roE5XBZxdJy76Za407W1k
-         e67bxut8iQBJdPz/ZJ2JWh77GPIlpohOPQF4bpSLKqmHMeYoGKDu1hovd4Tv2ua1jwHB
-         nrULqwuw3voitYVhPdUfxcw2tLVLtrhN/N0MQ/g+yytUxeR8sUSvokfpNwknpRhHctJb
-         +Wew==
-X-Gm-Message-State: AOAM532AeZasYkOSYURUALPzgNFcTZ5aAitCRNiVtvxK8CicLPsopbAF
-        0k276pW02PcJHGPrxi3U8a4=
-X-Google-Smtp-Source: ABdhPJzdSw3DhDSxfyfQ/k0MiS1DvrV3yfyIY7ZzPJdnwPWzFq+WyIz+7p0/kWMUpvcGLIEh7tAayA==
-X-Received: by 2002:a05:6a00:2410:b0:409:5fbd:cb40 with SMTP id z16-20020a056a00241000b004095fbdcb40mr656562pfh.8.1631554489602;
-        Mon, 13 Sep 2021 10:34:49 -0700 (PDT)
+        bh=I8NR9yudfChnSKOUbmx3DBZ58eNUhCPKTgafujvi1J0=;
+        b=RT+zCxDo1yAKqw3j1GxNnIKyYPRhYR+Cfes+1f3dBH5YjFKe+6Fve7KuqAcMsC0YSf
+         073gMFbZcs7oL4YqYMHf4t14g9X9OSKUQJXm18gfjY9u11ji9zm1/c+4oHfUQppNEPWq
+         YvrBWkiPqLIvNvuC8WbnsasYITgAaBvErJqLjY1r/tvx/Lj6UZMGpnkrwdnDauQ/aujl
+         zE2t1zMXz9gAm9xtN1RbCIFoedgChz0IV/G2cCes1Gq5XWum02FBRDqSA9wW1QRejbaI
+         CYIBDkey0LZS2YyrX3hjU7B53eTtAGTyjoG/E07YIq1B0ty6YOjmJ5m0/OU/sEyIH78g
+         v+Dg==
+X-Gm-Message-State: AOAM531RTHu5LTqStW4feqDH7WcdEII6c3EzbpsFZeSAMNxy0Yp6OlRI
+        9l2kkwLc+1Cb7QeQE5ftxXA=
+X-Google-Smtp-Source: ABdhPJyny/Dk4IUTBWOOI1gZ/OS4QhzfCQ77+C64pG+rkZr7B0ZHS6jE0vZZJ3PT/3g7wGHbQtHbAQ==
+X-Received: by 2002:a63:7984:: with SMTP id u126mr12003746pgc.468.1631554555449;
+        Mon, 13 Sep 2021 10:35:55 -0700 (PDT)
 Received: from [192.168.1.121] (99-44-17-11.lightspeed.irvnca.sbcglobal.net. [99.44.17.11])
-        by smtp.gmail.com with ESMTPSA id p18sm8971015pgk.28.2021.09.13.10.34.47
+        by smtp.gmail.com with ESMTPSA id d7sm9105409pgu.78.2021.09.13.10.35.54
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Sep 2021 10:34:48 -0700 (PDT)
-Message-ID: <43ee7616-ca74-b783-1810-bd11f9c03868@gmail.com>
-Date:   Mon, 13 Sep 2021 10:34:46 -0700
+        Mon, 13 Sep 2021 10:35:55 -0700 (PDT)
+Message-ID: <7e029178-c46a-9dbb-2ee4-58d062f6e001@gmail.com>
+Date:   Mon, 13 Sep 2021 10:35:53 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.1.0
-Subject: Re: [PATCH net-next 7/8] net: dsa: rtl8366: Fix a bug in deleting
- VLANs
+Subject: Re: [PATCH net-next 8/8] net: dsa: rtl8366: Drop and depromote
+ pointless prints
 Content-Language: en-US
 To:     Linus Walleij <linus.walleij@linaro.org>,
         Andrew Lunn <andrew@lunn.ch>,
@@ -66,9 +66,9 @@ Cc:     netdev@vger.kernel.org, Mauri Sandberg <sandberg@mailfence.com>,
         =?UTF-8?Q?Alvin_=c5=a0ipraga?= <alsi@bang-olufsen.dk>,
         DENG Qingfang <dqfext@gmail.com>
 References: <20210913144300.1265143-1-linus.walleij@linaro.org>
- <20210913144300.1265143-8-linus.walleij@linaro.org>
+ <20210913144300.1265143-9-linus.walleij@linaro.org>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20210913144300.1265143-8-linus.walleij@linaro.org>
+In-Reply-To: <20210913144300.1265143-9-linus.walleij@linaro.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -77,11 +77,11 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 9/13/2021 7:42 AM, Linus Walleij wrote:
-> We were checking that the MC (member config) was != 0
-> for some reason, all we need to check is that the config
-> has no ports, i.e. no members. Then it can be recycled.
-> This must be some misunderstanding.
+On 9/13/2021 7:43 AM, Linus Walleij wrote:
+> We don't need a message for every VLAN association, dbg
+> is fine. The message about adding the DSA or CPU
+> port to a VLAN is directly misleading, this is perfectly
+> fine.
 > 
 > Cc: Vladimir Oltean <olteanv@gmail.com>
 > Cc: Mauri Sandberg <sandberg@mailfence.com>
@@ -92,6 +92,8 @@ On 9/13/2021 7:42 AM, Linus Walleij wrote:
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 
-Might be worth adding a Fixes tag?
+Maybe at some point we should think about moving that kind of debugging 
+messages towards the DSA core, and just leave drivers with debug prints 
+that track an internal state not visible to the DSA framework.
 -- 
 Florian
