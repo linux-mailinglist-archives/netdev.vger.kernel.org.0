@@ -2,71 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3CF3408AC0
-	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 14:10:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99CF1408AD1
+	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 14:15:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239854AbhIMMLX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Sep 2021 08:11:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60138 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236301AbhIMMLW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Sep 2021 08:11:22 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 3E99560FBF;
-        Mon, 13 Sep 2021 12:10:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631535007;
-        bh=RaGhWI0o4MUqwZo1FJ6SXGSplQ5E5XdW6QpITu3+Zl4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=h2/VqlXvcAScByBmG1MM91aKZFl9ZJCytrylUZtUebzE6mNCPkpGwFRuuy4Q+b2xs
-         YDkPKqISDhuNM8zVZORHGqL3Bvq9Xh2oZx2fNeNZxfCECF9jCu3WralKLE8UpM3Vc8
-         BMz6+3nQWCJ1QnSXNGv6+5jVRf9gxh2nPQg5XBGn27C2rBY4q8sZ9k6kDAzBOQxflt
-         1FEQ6jgcTsPLflKMxKHNs8UCukKSZiLakTXOLpUKFbtgq4bn02Zsf1M3s5NYs5PSXg
-         F7IZWwdHgH4PnyN/NVMOuUIYC6STjEDIxYN/ZjwG9CowPEF2ikkTyTQmGafI5NHDXa
-         dLAUGDTGLngag==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 2C4E560A47;
-        Mon, 13 Sep 2021 12:10:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S239871AbhIMMQQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Sep 2021 08:16:16 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:29756 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S236646AbhIMMQP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Sep 2021 08:16:15 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18DBCZbM027773;
+        Mon, 13 Sep 2021 05:14:56 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=ZkYkSi87hsL+grghR6IhSwsdsAdctcJhvAJgiHkJ1eM=;
+ b=JrPUk8r7ERubuIZnN00OcckKXz5cZaMFyV2O1jH3/DoZQl9qRU+BUQI2L8ffWbVS9pVv
+ 36IfxpHoDYX31oC+YcFh9CTJndYkkk/kcAWTtEyyvpTwyCM/Vejbo9m2ilAbhGVp8pCj
+ 8M8Vl0AAn0iSRD0yVahrFuPsKm5l1QNb9hWWhpDU/GwtBxm8/HlbZ8zqY2cTclzSSxYZ
+ I1BPg2t1CUr9bdDrS9HmKpkBuoAj/O74qhd9cmrb0V2GWhKyznZ81i1KWnWDWRDI+V5G
+ HRC0P0P0XQpjEgH9fHD7HHSdm5o3IARbGdPIy9dU0fojQWUed4XSN3Mm9aynBcgwsXVs KA== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0a-0016f401.pphosted.com with ESMTP id 3b25je85tc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 13 Sep 2021 05:14:56 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 13 Sep
+ 2021 05:14:55 -0700
+Received: from lbtlvb-pcie154.il.qlogic.org (10.69.176.80) by
+ DC5-EXCH01.marvell.com (10.69.176.38) with Microsoft SMTP Server id
+ 15.0.1497.18 via Frontend Transport; Mon, 13 Sep 2021 05:14:53 -0700
+From:   Shai Malin <smalin@marvell.com>
+To:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <linux-rdma@vger.kernel.org>, <jgg@ziepe.ca>, <aelior@marvell.com>,
+        <smalin@marvell.com>, <malin1024@gmail.com>,
+        Michal Kalderon <mkalderon@marvell.com>
+Subject: [PATCH net] qed: rdma - don't wait for resources under hw error recovery flow
+Date:   Mon, 13 Sep 2021 15:14:42 +0300
+Message-ID: <20210913121442.10189-1-smalin@marvell.com>
+X-Mailer: git-send-email 2.16.6
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [net,v2] net: dsa: lantiq_gswip: Add 200ms assert delay
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163153500717.9327.7042325413099063008.git-patchwork-notify@kernel.org>
-Date:   Mon, 13 Sep 2021 12:10:07 +0000
-References: <20210912115807.3903-1-olek2@wp.pl>
-In-Reply-To: <20210912115807.3903-1-olek2@wp.pl>
-To:     Aleksander Jan Bajkowski <olek2@wp.pl>
-Cc:     hauke@hauke-m.de, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, martin.blumenstingl@googlemail.com
+Content-Type: text/plain
+X-Proofpoint-GUID: U3ZYdH0xZRVdNC57Iu2hoQZR4aFO4fmu
+X-Proofpoint-ORIG-GUID: U3ZYdH0xZRVdNC57Iu2hoQZR4aFO4fmu
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
+ definitions=2021-09-13_04,2021-09-09_01,2020-04-07_01
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+If the HW device is during recovery, the HW resources will never return,
+hence we shouldn't wait for the CID (HW context ID) bitmaps to clear.
+This fix speeds up the error recovery flow.
 
-This patch was applied to netdev/net.git (refs/heads/master):
+Fixes: 64515dc899df ("qed: Add infrastructure for error detection and recovery")
+Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
+Signed-off-by: Ariel Elior <aelior@marvell.com>
+Signed-off-by: Shai Malin <smalin@marvell.com>
+---
+ drivers/net/ethernet/qlogic/qed/qed_iwarp.c | 7 +++++++
+ drivers/net/ethernet/qlogic/qed/qed_roce.c  | 7 +++++++
+ 2 files changed, 14 insertions(+)
 
-On Sun, 12 Sep 2021 13:58:07 +0200 you wrote:
-> The delay is especially needed by the xRX300 and xRX330 SoCs. Without
-> this patch, some phys are sometimes not properly detected.
-> 
-> The patch was tested on BT Home Hub 5A and D-Link DWR-966.
-> 
-> Fixes: a09d042b0862 ("net: dsa: lantiq: allow to use all GPHYs on xRX300 and xRX330")
-> Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
-> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> 
-> [...]
-
-Here is the summary with links:
-  - [net,v2] net: dsa: lantiq_gswip: Add 200ms assert delay
-    https://git.kernel.org/netdev/net/c/111b64e35ea0
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
+index fc8b3e64f153..4967e383c31a 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
+@@ -1323,6 +1323,13 @@ static int qed_iwarp_wait_for_all_cids(struct qed_hwfn *p_hwfn)
+ 	int rc;
+ 	int i;
+ 
++	/* If the HW device is during recovery, all resources are immediately
++	 * reset without receiving a per-cid indication from HW. In this case
++	 * we don't expect the cid_map to be cleared.
++	 */
++	if (p_hwfn->cdev->recov_in_prog)
++		return 0;
++
+ 	rc = qed_iwarp_wait_cid_map_cleared(p_hwfn,
+ 					    &p_hwfn->p_rdma_info->tcp_cid_map);
+ 	if (rc)
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_roce.c b/drivers/net/ethernet/qlogic/qed/qed_roce.c
+index f16a157bb95a..aff5a2871b8f 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_roce.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_roce.c
+@@ -71,6 +71,13 @@ void qed_roce_stop(struct qed_hwfn *p_hwfn)
+ 	struct qed_bmap *rcid_map = &p_hwfn->p_rdma_info->real_cid_map;
+ 	int wait_count = 0;
+ 
++	/* If the HW device is during recovery, all resources are immediately
++	 * reset without receiving a per-cid indication from HW. In this case
++	 * we don't expect the cid bitmap to be cleared.
++	 */
++	if (p_hwfn->cdev->recov_in_prog)
++		return;
++
+ 	/* when destroying a_RoCE QP the control is returned to the user after
+ 	 * the synchronous part. The asynchronous part may take a little longer.
+ 	 * We delay for a short while if an async destroy QP is still expected.
+-- 
+2.22.0
 
