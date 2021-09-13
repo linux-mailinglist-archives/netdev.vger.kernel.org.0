@@ -2,84 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B763C409F72
-	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 00:06:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AD45409F7B
+	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 00:10:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235948AbhIMWHa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Sep 2021 18:07:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39086 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234740AbhIMWH3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Sep 2021 18:07:29 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 848F3C061574
-        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 15:06:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=9UDCdn/+J/ZFSw+PkN+Giy/F9a5T3Gga4WD8XYCOhuk=; b=edooB8xc5o9xDQYtIuD4sZpFd3
-        JQy8/WFXE8i5FY830/Y5NeOtmD3lrjc/XlOg6jcka2Vp9eC1+A0c9D+zGcg302+QJeYm8oGWsjD2+
-        SM2tDYm66EulQ+EFWH4v3Nnjv+HCoyruWL/TW+h0JT4jCO8Rm3GeaDlc29XkIqX2dN6i8sThEwxHm
-        8AUWR/BY4490kluCQtBQ4EQbPjZlt/w7uZ9TCAjEW7Z1Y1lIbdC4CIaS75ZypY85U2/UCj1DFegd3
-        7XvUrtwxhrzFJz+7fvzk/vP1Ijy2Hwp0lgShNo/lff1gVhh2y1V+C9Xua9Hbx8yXQ4yrZrPM//+ra
-        /w+ZP2dg==;
-Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1mPu5W-003Oig-Rm; Mon, 13 Sep 2021 22:06:06 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     netdev@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Richard Cochran <richard.cochran@omicron.at>,
-        John Stultz <john.stultz@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Subject: [PATCH -net] ptp: dp83640: don't define PAGE0
-Date:   Mon, 13 Sep 2021 15:06:05 -0700
-Message-Id: <20210913220605.19682-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.31.1
+        id S239465AbhIMWML (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Sep 2021 18:12:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:26534 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229502AbhIMWML (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Sep 2021 18:12:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1631571054;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=rQ0acbjQtHAV3rFR5+GgJ07ft28vuOa09pEy82ng1BQ=;
+        b=F8i5643mJyzt8I8sEbw8QtFSZu6n7IMM6QHpcYi1TvOChFK4oEJbjAnRY1oKgN6uS4gEV1
+        Kf1QjKkvBzLffQ87E4zDvwb8QoA+JobjOzxArwSaBSCChLz79UcZXL5co4X46LdV4zfRD4
+        5tNchioARI++9RATzj5y2Yw6f04wAEs=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-294-pe_lJmGQMMWOQ6kbFGs4eA-1; Mon, 13 Sep 2021 18:10:53 -0400
+X-MC-Unique: pe_lJmGQMMWOQ6kbFGs4eA-1
+Received: by mail-ej1-f72.google.com with SMTP id g18-20020a17090670d200b005f0df5ce29bso1594151ejk.1
+        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 15:10:52 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=rQ0acbjQtHAV3rFR5+GgJ07ft28vuOa09pEy82ng1BQ=;
+        b=WN3ewDyfCJnr4VZjofB0ffNpdAYc0tbp3RYZ9TnNm0g94SwslOQroO1HPvQ2vr1JWB
+         urD5HqjHAEOMm4E0+9uHop8u1w4oJ4BzjYp0hhTPz2JUi2SnTNv81OHlFqWMb2cK04Lv
+         1fqjtAju1SUx5iSX4zD8yfSFgQo23p9fYLfG46VwOm7p3W43osMq/LXLCL5Nv3FdbZ8L
+         6IVNQ6mQc7aHMLV+VlnDwfjnGYzjnMiwH4/l3jcchrjpOYs+0d8iFUXN3Fe+GHGbb2tY
+         XAE6kdki+/XKwCaGK8owPvHD63T+4VqaUHhWlxBua1OCu5vuV3I+pJ4LAwC9V4gx/VgW
+         Y5Pw==
+X-Gm-Message-State: AOAM5322G4X1tRrxYv/7i3pZ8HAOF0/K3W1VA3X+4Yvl7HmC3jsO1jI3
+        atpqIGv7GTF6ylDZdNVL01+IxtWXrQgZQYi0P5md/rwCHjvyCC4Y8LfGe8aL9dnmt2NQ0ILEgOF
+        KAA/R6GDLClXCFzQL
+X-Received: by 2002:a05:6402:897:: with SMTP id e23mr15548548edy.366.1631571051919;
+        Mon, 13 Sep 2021 15:10:51 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzKdcPr8fwbCL2Ow/xmTE9skucboofEHn/co0DLPi+a/8HIN/dV9hXHxNksTjN78Se4W+uCLA==
+X-Received: by 2002:a05:6402:897:: with SMTP id e23mr15548500edy.366.1631571051760;
+        Mon, 13 Sep 2021 15:10:51 -0700 (PDT)
+Received: from redhat.com ([2.55.151.134])
+        by smtp.gmail.com with ESMTPSA id b8sm4483234edv.96.2021.09.13.15.10.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Sep 2021 15:10:51 -0700 (PDT)
+Date:   Mon, 13 Sep 2021 18:10:49 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Li RongQing <lirongqing@baidu.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH][net-next][v2] virtio_net:
+ s/raw_smp_processor_id/smp_processor_id/ in virtnet_xdp_get_sq
+Message-ID: <20210913181040-mutt-send-email-mst@kernel.org>
+References: <1631173771-43848-1-git-send-email-lirongqing@baidu.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1631173771-43848-1-git-send-email-lirongqing@baidu.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Building dp83640.c on arch/parisc/ produces a build warning for
-PAGE0 being redefined. Since the macro is not used in the dp83640
-driver, just make it a comment for documentation purposes.
+On Thu, Sep 09, 2021 at 03:49:31PM +0800, Li RongQing wrote:
+> virtnet_xdp_get_sq() is called in non-preemptible context, so
+> it's safe to call the function smp_processor_id(), and keep
+> smp_processor_id(), and remove the calling of raw_smp_processor_id(),
+> this way we'll get a warning if this is ever called in a preemptible
+> context in the future
+> 
+> Signed-off-by: Li RongQing <lirongqing@baidu.com>
 
-In file included from ../drivers/net/phy/dp83640.c:23:
-../drivers/net/phy/dp83640_reg.h:8: warning: "PAGE0" redefined
-    8 | #define PAGE0                     0x0000
-                 from ../drivers/net/phy/dp83640.c:11:
-../arch/parisc/include/asm/page.h:187: note: this is the location of the previous definition
-  187 | #define PAGE0   ((struct zeropage *)__PAGE_OFFSET)
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
 
-Fixes: cb646e2b02b2 ("ptp: Added a clock driver for the National Semiconductor PHYTER.")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Richard Cochran <richard.cochran@omicron.at>
-Cc: John Stultz <john.stultz@linaro.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Andrew Lunn <andrew@lunn.ch>
-Cc: Heiner Kallweit <hkallweit1@gmail.com>
-Cc: Russell King <linux@armlinux.org.uk>
----
- drivers/net/phy/dp83640_reg.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> ---
+> diff with v1: change log based on Michael S. Tsirkin's suggestion
+> 
+>  drivers/net/virtio_net.c |    7 ++++---
+>  1 files changed, 4 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 2e42210..2a7b368 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -528,19 +528,20 @@ static int __virtnet_xdp_xmit_one(struct virtnet_info *vi,
+>   * functions to perfectly solve these three problems at the same time.
+>   */
+>  #define virtnet_xdp_get_sq(vi) ({                                       \
+> +	int cpu = smp_processor_id();                                   \
+>  	struct netdev_queue *txq;                                       \
+>  	typeof(vi) v = (vi);                                            \
+>  	unsigned int qp;                                                \
+>  									\
+>  	if (v->curr_queue_pairs > nr_cpu_ids) {                         \
+>  		qp = v->curr_queue_pairs - v->xdp_queue_pairs;          \
+> -		qp += smp_processor_id();                               \
+> +		qp += cpu;                                              \
+>  		txq = netdev_get_tx_queue(v->dev, qp);                  \
+>  		__netif_tx_acquire(txq);                                \
+>  	} else {                                                        \
+> -		qp = smp_processor_id() % v->curr_queue_pairs;          \
+> +		qp = cpu % v->curr_queue_pairs;                         \
+>  		txq = netdev_get_tx_queue(v->dev, qp);                  \
+> -		__netif_tx_lock(txq, raw_smp_processor_id());           \
+> +		__netif_tx_lock(txq, cpu);                              \
+>  	}                                                               \
+>  	v->sq + qp;                                                     \
+>  })
+> -- 
+> 1.7.1
 
---- linux-next-20210913.orig/drivers/net/phy/dp83640_reg.h
-+++ linux-next-20210913/drivers/net/phy/dp83640_reg.h
-@@ -5,7 +5,7 @@
- #ifndef HAVE_DP83640_REGISTERS
- #define HAVE_DP83640_REGISTERS
- 
--#define PAGE0                     0x0000
-+/* #define PAGE0                  0x0000 */
- #define PHYCR2                    0x001c /* PHY Control Register 2 */
- 
- #define PAGE4                     0x0004
