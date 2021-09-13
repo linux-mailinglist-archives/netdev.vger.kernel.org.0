@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D6DC2409764
-	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 17:34:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 306B2409765
+	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 17:34:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240662AbhIMPfh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Sep 2021 11:35:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59042 "EHLO
+        id S241940AbhIMPfj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Sep 2021 11:35:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233162AbhIMPf0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Sep 2021 11:35:26 -0400
+        with ESMTP id S235053AbhIMPf1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Sep 2021 11:35:27 -0400
 Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6672EC12C74C
-        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 07:45:36 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id s12so17845609ljg.0
-        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 07:45:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8795C12C750
+        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 07:45:37 -0700 (PDT)
+Received: by mail-lj1-x22e.google.com with SMTP id q21so17790047ljj.6
+        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 07:45:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=YNvGPe0Dq+6R5la8j1qftPJtr3gJu4sNPynYBEMsuh0=;
-        b=EmYBJUcXWwb3PoCDeCt8UrFdPtMwJ9RW5MD/Kdz37bvUEcrNFPvZ9KFgNvSSDufN9l
-         PCBc9iN09/6aGspKx1kbSlW6EKkUbbL3wlGL7x+A552PWbBTK8iM3CYXckh/8lBWA9GM
-         8efrVIKiWKNM5HsHi/9U/8OKJ2Uhxw1hBeSL30SuDD2tgaNMBFiBxLcJS9mw8Kd5aCP0
-         aI+xItrm148Aq8LWcs5R4Y6p2gLNYDIW6Novj7/AP5PpPijpT73t1TK/gJK6ROuHA0Nu
-         YQ8fWTKoXPpLxgwNF1LS2Lf5S0YYn47SnJwFiXT11GQak43hc8TKkAHD4NMlMNDRiuVo
-         VNnA==
+        bh=SCiUagspf3BSHg075BuKPVGIKuOKVCl19l+q5xDaUhI=;
+        b=Yfmwa744j9NOqudlSNaUEbZ+2fNINnDndc4f/C+7ndyDdf5a7jb6fp1jahmd8S4Krz
+         CwGGsevt5uzsxG4RqfNddlGdGpHFCuOEKfw2avsqpbXeQxN1FQa7qb8OIWRH1Dw4kZZ4
+         TQPks7zP8uwBliHDOPjM5v1PHt4CuLE8Na4oyPEDRLNS0FvwsZRZg7DNuXJuWHqueP8O
+         snusl5+uhOD0idQajGtfrynpM8v1YAUh8XU8eUjWv80Oou0UoHKTr3J/06IALmB429In
+         Ng8cyDNpti+fc/SXZOb0pJ2vKI7jcWDiN0xoossChuMosdCpJxbGtfAWTY7CXg/+NNhe
+         M9sg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=YNvGPe0Dq+6R5la8j1qftPJtr3gJu4sNPynYBEMsuh0=;
-        b=6G6yCIdPJrAy/OSJQV0EK96rIJo6d8jGI67+Ic2uwW4mX/GAHnFTT7nsCepjm3dPkq
-         wTbooz9gZBaGeTSOGCyzqKSeeskDpstEj1HTnZ/0/mUaw3GimZ+CnoxTI8K4+BihjcPv
-         9fvU8yLMMWssKC9hVf9dAF0z3GldSHDF77/GfnERgBMorpfA0N0a0RhKsr271BEqRr0z
-         QOBG6yjeIvpOtjYSW3FuoOjLHkJ27u+dYMhVpUIBxLRr2+JilicjoKUIiE/ESBisA4P5
-         yMC4C0qKDQ7+8SEJKYu+VF7YXT4C0NqTvPhegrivdruhS3Zq3Z8loXfMv0eU+e7i9pAP
-         8Cvg==
-X-Gm-Message-State: AOAM5335fcuMJr+PqTwOseg1VRPaWbcwFGD+6DSEhOwORdu95d3YCZ2A
-        GQP+8TWMInq9qQ3udOB8+zAvVw==
-X-Google-Smtp-Source: ABdhPJwEirZegF9npqyfvP5koDG91VRxvoCxhXz5ux+V6mBb4yMSqPt1XmL9V1By61LJCCximZMHAQ==
-X-Received: by 2002:a2e:9549:: with SMTP id t9mr10789580ljh.404.1631544334724;
-        Mon, 13 Sep 2021 07:45:34 -0700 (PDT)
+        bh=SCiUagspf3BSHg075BuKPVGIKuOKVCl19l+q5xDaUhI=;
+        b=wbJk9wZOa7mX66ieAEWXmgRgn4dpla/MWQqpwOUutwww9Yxhhx+Po3qwbduHBS96hy
+         YNPDhcNJ5CL2qgbrZe13taCcZlOPHINsBWk9EZAR5BKutEfMi01nQqL88TDaRLIIgrsS
+         BFZL/jDOGkuv3ShzX7Btv1vU/Z6m7ZA/pSCy2SySfz2bUEQhP0Snp5deJcMEnvlLAUpF
+         zTocyw6nJogWfVefPkvlt9SQSvMxZ+5lbioNjGKvZIxgaaU1YWw9zdg3+PqptVYgYQZX
+         VDxXnK2qsZxHZkr2DWyYtGNvQEGdG9CcpscbQHMiOM3o56dRHU2vMWRqLLF2SenXLQ2S
+         Q9jQ==
+X-Gm-Message-State: AOAM530Xy+YJhfrAwNRgcUZ9e6zKiV7ZF6z34Y//sylI4LrHWxWtT9OM
+        ZFM4Ghr5iEEy5/iMQHQ9cUj2uA==
+X-Google-Smtp-Source: ABdhPJzZ3RNfL+nFlQusRRJxry50phigQpZ8mFYmeYTXk9gBNQAagrpxzincuL858yiApr0iAYcvKA==
+X-Received: by 2002:a2e:bc1a:: with SMTP id b26mr11010558ljf.218.1631544336152;
+        Mon, 13 Sep 2021 07:45:36 -0700 (PDT)
 Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
-        by smtp.gmail.com with ESMTPSA id i12sm849825lfb.301.2021.09.13.07.45.34
+        by smtp.gmail.com with ESMTPSA id i12sm849825lfb.301.2021.09.13.07.45.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Sep 2021 07:45:34 -0700 (PDT)
+        Mon, 13 Sep 2021 07:45:35 -0700 (PDT)
 From:   Linus Walleij <linus.walleij@linaro.org>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -56,11 +56,11 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
         Mauri Sandberg <sandberg@mailfence.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>
-Subject: [PATCH net-next 2/8] net: dsa: rtl8366: Drop custom VLAN set-up
-Date:   Mon, 13 Sep 2021 16:42:54 +0200
-Message-Id: <20210913144300.1265143-3-linus.walleij@linaro.org>
+        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        DENG Qingfang <dqfext@gmail.com>
+Subject: [PATCH net-next 3/8] net: dsa: rtl8366rb: Rewrite weird VLAN filering enablement
+Date:   Mon, 13 Sep 2021 16:42:55 +0200
+Message-Id: <20210913144300.1265143-4-linus.walleij@linaro.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210913144300.1265143-1-linus.walleij@linaro.org>
 References: <20210913144300.1265143-1-linus.walleij@linaro.org>
@@ -71,128 +71,168 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This hacky default VLAN setup was done in order to direct
-packets to the right ports and provide port isolation, both
-which we now support properly using custom tags and proper
-bridge port isolation.
+While we were defining one VLAN per port for isolating the ports
+the port_vlan_filtering() callback was implemented to enable a
+VLAN on the port + 1. This function makes no sense, not only is
+it incomplete as it only enables the VLAN, it doesn't do what
+the callback is supposed to do, which is to selectively enable
+and disable filtering on a certain port.
 
-We can drop the custom VLAN code and leave all VLAN handling
-alone, as users expect things to be. We can also drop
-ds->configure_vlan_while_not_filtering = false; and let
-the core deal with any VLANs it wants.
+Implement the correct callback: we have two registers dealing
+with filtering on the RTL9366RB, so we implement an ASIC-specific
+callback, describe these and activate both.
 
+Cc: Vladimir Oltean <olteanv@gmail.com>
 Cc: Mauri Sandberg <sandberg@mailfence.com>
+Cc: Alvin Šipraga <alsi@bang-olufsen.dk>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
 Cc: DENG Qingfang <dqfext@gmail.com>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-Reviewed-by: Alvin Šipraga <alsi@bang-olufsen.dk>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
-ChangeLog v3->v4:
-- No changes
-ChangeLog v2->v3:
-- Collect a bunch of reviewed-by tags
-ChangeLog v1->v2:
-- No changes.
+ChangeLog v1->v4:
+- New patch after discovering that this weirdness of mine is
+  causing problems.
 ---
- drivers/net/dsa/realtek-smi-core.h |  1 -
- drivers/net/dsa/rtl8366.c          | 48 ------------------------------
- drivers/net/dsa/rtl8366rb.c        |  4 +--
- 3 files changed, 1 insertion(+), 52 deletions(-)
+ drivers/net/dsa/realtek-smi-core.h |  2 --
+ drivers/net/dsa/rtl8366.c          | 35 -----------------------------
+ drivers/net/dsa/rtl8366rb.c        | 36 +++++++++++++++++++++++++-----
+ 3 files changed, 30 insertions(+), 43 deletions(-)
 
 diff --git a/drivers/net/dsa/realtek-smi-core.h b/drivers/net/dsa/realtek-smi-core.h
-index fcf465f7f922..c8fbd7b9fd0b 100644
+index c8fbd7b9fd0b..214f710d7dd5 100644
 --- a/drivers/net/dsa/realtek-smi-core.h
 +++ b/drivers/net/dsa/realtek-smi-core.h
-@@ -129,7 +129,6 @@ int rtl8366_set_pvid(struct realtek_smi *smi, unsigned int port,
+@@ -129,8 +129,6 @@ int rtl8366_set_pvid(struct realtek_smi *smi, unsigned int port,
  int rtl8366_enable_vlan4k(struct realtek_smi *smi, bool enable);
  int rtl8366_enable_vlan(struct realtek_smi *smi, bool enable);
  int rtl8366_reset_vlan(struct realtek_smi *smi);
--int rtl8366_init_vlan(struct realtek_smi *smi);
- int rtl8366_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering,
- 			   struct netlink_ext_ack *extack);
+-int rtl8366_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering,
+-			   struct netlink_ext_ack *extack);
  int rtl8366_vlan_add(struct dsa_switch *ds, int port,
+ 		     const struct switchdev_obj_port_vlan *vlan,
+ 		     struct netlink_ext_ack *extack);
 diff --git a/drivers/net/dsa/rtl8366.c b/drivers/net/dsa/rtl8366.c
-index 75897a369096..59c5bc4f7b71 100644
+index 59c5bc4f7b71..0672dd56c698 100644
 --- a/drivers/net/dsa/rtl8366.c
 +++ b/drivers/net/dsa/rtl8366.c
-@@ -292,54 +292,6 @@ int rtl8366_reset_vlan(struct realtek_smi *smi)
+@@ -292,41 +292,6 @@ int rtl8366_reset_vlan(struct realtek_smi *smi)
  }
  EXPORT_SYMBOL_GPL(rtl8366_reset_vlan);
  
--int rtl8366_init_vlan(struct realtek_smi *smi)
+-int rtl8366_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering,
+-			   struct netlink_ext_ack *extack)
 -{
--	int port;
+-	struct realtek_smi *smi = ds->priv;
+-	struct rtl8366_vlan_4k vlan4k;
 -	int ret;
 -
--	ret = rtl8366_reset_vlan(smi);
+-	/* Use VLAN nr port + 1 since VLAN0 is not valid */
+-	if (!smi->ops->is_vlan_valid(smi, port + 1))
+-		return -EINVAL;
+-
+-	dev_info(smi->dev, "%s filtering on port %d\n",
+-		 vlan_filtering ? "enable" : "disable",
+-		 port);
+-
+-	/* TODO:
+-	 * The hardware support filter ID (FID) 0..7, I have no clue how to
+-	 * support this in the driver when the callback only says on/off.
+-	 */
+-	ret = smi->ops->get_vlan_4k(smi, port + 1, &vlan4k);
 -	if (ret)
 -		return ret;
 -
--	/* Loop over the available ports, for each port, associate
--	 * it with the VLAN (port+1)
--	 */
--	for (port = 0; port < smi->num_ports; port++) {
--		u32 mask;
+-	/* Just set the filter to FID 1 for now then */
+-	ret = rtl8366_set_vlan(smi, port + 1,
+-			       vlan4k.member,
+-			       vlan4k.untag,
+-			       1);
+-	if (ret)
+-		return ret;
 -
--		if (port == smi->cpu_port)
--			/* For the CPU port, make all ports members of this
--			 * VLAN.
--			 */
--			mask = GENMASK((int)smi->num_ports - 1, 0);
--		else
--			/* For all other ports, enable itself plus the
--			 * CPU port.
--			 */
--			mask = BIT(port) | BIT(smi->cpu_port);
--
--		/* For each port, set the port as member of VLAN (port+1)
--		 * and untagged, except for the CPU port: the CPU port (5) is
--		 * member of VLAN 6 and so are ALL the other ports as well.
--		 * Use filter 0 (no filter).
--		 */
--		dev_info(smi->dev, "VLAN%d port mask for port %d, %08x\n",
--			 (port + 1), port, mask);
--		ret = rtl8366_set_vlan(smi, (port + 1), mask, mask, 0);
--		if (ret)
--			return ret;
--
--		dev_info(smi->dev, "VLAN%d port %d, PVID set to %d\n",
--			 (port + 1), port, (port + 1));
--		ret = rtl8366_set_pvid(smi, port, (port + 1));
--		if (ret)
--			return ret;
--	}
--
--	return rtl8366_enable_vlan(smi, true);
+-	return 0;
 -}
--EXPORT_SYMBOL_GPL(rtl8366_init_vlan);
+-EXPORT_SYMBOL_GPL(rtl8366_vlan_filtering);
 -
- int rtl8366_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering,
- 			   struct netlink_ext_ack *extack)
- {
+ int rtl8366_vlan_add(struct dsa_switch *ds, int port,
+ 		     const struct switchdev_obj_port_vlan *vlan,
+ 		     struct netlink_ext_ack *extack)
 diff --git a/drivers/net/dsa/rtl8366rb.c b/drivers/net/dsa/rtl8366rb.c
-index b930050cfd1b..a5b7d7ff8884 100644
+index a5b7d7ff8884..6c35e1ed49aa 100644
 --- a/drivers/net/dsa/rtl8366rb.c
 +++ b/drivers/net/dsa/rtl8366rb.c
-@@ -985,7 +985,7 @@ static int rtl8366rb_setup(struct dsa_switch *ds)
- 			return ret;
- 	}
+@@ -143,6 +143,8 @@
+ #define RTL8366RB_PHY_NO_OFFSET			9
+ #define RTL8366RB_PHY_NO_MASK			(0x1f << 9)
  
--	ret = rtl8366_init_vlan(smi);
-+	ret = rtl8366_reset_vlan(smi);
++/* VLAN Ingress Control Register */
++#define RTL8366RB_VLAN_INGRESS_CTRL1_REG	0x037E
+ #define RTL8366RB_VLAN_INGRESS_CTRL2_REG	0x037f
+ 
+ /* LED control registers */
+@@ -933,11 +935,13 @@ static int rtl8366rb_setup(struct dsa_switch *ds)
  	if (ret)
  		return ret;
  
-@@ -999,8 +999,6 @@ static int rtl8366rb_setup(struct dsa_switch *ds)
- 		return -ENODEV;
- 	}
+-	/* Discard VLAN tagged packets if the port is not a member of
+-	 * the VLAN with which the packets is associated.
+-	 */
++	/* Accept all packets by default, we enable filtering on-demand */
++	ret = regmap_write(smi->map, RTL8366RB_VLAN_INGRESS_CTRL1_REG,
++			   0);
++	if (ret)
++		return ret;
+ 	ret = regmap_write(smi->map, RTL8366RB_VLAN_INGRESS_CTRL2_REG,
+-			   RTL8366RB_PORT_ALL);
++			   0);
+ 	if (ret)
+ 		return ret;
  
--	ds->configure_vlan_while_not_filtering = false;
--
- 	return 0;
+@@ -1209,6 +1213,26 @@ rtl8366rb_port_bridge_leave(struct dsa_switch *ds, int port,
+ 			   RTL8366RB_PORT_ISO_PORTS(port_bitmap), 0);
  }
  
++static int rtl8366rb_vlan_filtering(struct dsa_switch *ds, int port,
++				    bool vlan_filtering,
++				    struct netlink_ext_ack *extack)
++{
++	struct realtek_smi *smi = ds->priv;
++	int ret;
++
++	dev_dbg(smi->dev, "port %d: %s VLAN filtering\n", port,
++		vlan_filtering ? "enable" : "disable");
++
++	/* Any incoming frames without VID (untagged) will be dropped */
++	ret = regmap_update_bits(smi->map, RTL8366RB_VLAN_INGRESS_CTRL1_REG,
++				 BIT(port), vlan_filtering ? BIT(port) : 0);
++	if (ret)
++		return ret;
++	/* If the port is not in the member set, the frame will be dropped */
++	return regmap_update_bits(smi->map, RTL8366RB_VLAN_INGRESS_CTRL2_REG,
++				  BIT(port), vlan_filtering ? BIT(port) : 0);
++}
++
+ static int rtl8366rb_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
+ {
+ 	struct realtek_smi *smi = ds->priv;
+@@ -1437,7 +1461,7 @@ static bool rtl8366rb_is_vlan_valid(struct realtek_smi *smi, unsigned int vlan)
+ 	if (smi->vlan4k_enabled)
+ 		max = RTL8366RB_NUM_VIDS - 1;
+ 
+-	if (vlan == 0 || vlan > max)
++	if (vlan > max)
+ 		return false;
+ 
+ 	return true;
+@@ -1594,7 +1618,7 @@ static const struct dsa_switch_ops rtl8366rb_switch_ops = {
+ 	.get_sset_count = rtl8366_get_sset_count,
+ 	.port_bridge_join = rtl8366rb_port_bridge_join,
+ 	.port_bridge_leave = rtl8366rb_port_bridge_leave,
+-	.port_vlan_filtering = rtl8366_vlan_filtering,
++	.port_vlan_filtering = rtl8366rb_vlan_filtering,
+ 	.port_vlan_add = rtl8366_vlan_add,
+ 	.port_vlan_del = rtl8366_vlan_del,
+ 	.port_enable = rtl8366rb_port_enable,
 -- 
 2.31.1
 
