@@ -2,508 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65F5F408B79
-	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 15:01:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF454408B97
+	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 15:03:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236713AbhIMNCO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Sep 2021 09:02:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54064 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229613AbhIMNCM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Sep 2021 09:02:12 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FDB5C061574;
-        Mon, 13 Sep 2021 06:00:57 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id dw14so5333917pjb.1;
-        Mon, 13 Sep 2021 06:00:57 -0700 (PDT)
+        id S237368AbhIMNDg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Sep 2021 09:03:36 -0400
+Received: from mail-dm6nam12on2088.outbound.protection.outlook.com ([40.107.243.88]:14912
+        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S236918AbhIMNDe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Sep 2021 09:03:34 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hb2LvPD626wNpnO0enrp9Kar1sY9soww8jlEwX2zlztNpl3+Iu3JZR6XSG87mW3E97CS0B6cXnX3HSBbs7A3eF7/TnTtn7FmZwAM+fnr0t7cNvPU/RbaI8/4DAAztbY7aTfbKaSNnQYv56I99bq4Vo0B/o7Wf4l5jmjg3OUhn2yu5eTQRh3Uq1tjaS1xHH6N0d022tJBPtFBrIgajFYt9L1s9uN0BO1uW93VD5nNPnLrkIbxsZbNdIRtgkIjI1s12sF5ExNQoSDJp3EIWLtrseYg2JZCMdXQkutSpd3OkjVudMHELZNwVmSbLl7P4HVGv9VE/ckhVgCQAYW2mORpYw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
+ bh=vEasab9Ix4f7UzKncEVfA4qRm1ge3YVHkjWFEieBUvA=;
+ b=NyJ25kp6jrBGlZKPQLsN9/o39y445ibO5/OwLaulYrIxc0JBS+m+F843VnDzjYQbL4y0JrlXTxJI4tUwvUj/FoDl4uX3GVeQhEuZNHuccQIVG82hf0ZzU6vFUvR4e2fhjkP44g4vOlS4QMCvJy8VwPJVsr0pAJoqgWdC2PoVe/BuAt9t5YPbSm+nf6vjMAvNkFcpQfsfzy12o/RYihefx4PT8eS0m0p1bdw/mP3k4/0ps1MEDuSfe6+DhUSUH+lTPJSX1qDtl0GzFvt6b8y625uor1DLOhwwS+WNYKmpf9GQyHOpM2Uiof5kvQ7sJwutpdt0+kwpdS7TVooBEiBcDQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
+ dkim=pass header.d=silabs.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=VJzvchNolKiIErvOaXVAyqoYOzSLrgU9VMQw/CQKqD0=;
-        b=Q5jyRRyi5vk3EKIOJzNnzMdakwj91biXejC97wq4TjkM0mWwn9X3frn/YXlZ94cIyw
-         cihLbdfieuyS6XSHF3cQh7sm4oiBGt9mPSrJ7ZyY1f4iB0N7khFT+VFV6vUSJd78RrNu
-         Bw2WJMg1TGeDk8xgsNkGy9q0EhP3v4dZnqhBokA1IhPi+Y66U/ZLaDL7FyjOxNdoamr+
-         nqu+/0IUBRNi4qLfRx4rzvRixjpOgvEYYXKJyMCtn8AkejMdVHyR50VQLqgiiLoResST
-         UtxeE/rLE7DVhEALxikpKSYtU7XnwIJBCdK+2P16Q1cwzdSf03+pBsSRt6LWvoipMAlM
-         eq2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=VJzvchNolKiIErvOaXVAyqoYOzSLrgU9VMQw/CQKqD0=;
-        b=zG0OF3PEvuoNsTns3wpmKmyvDAaPw30ndT9JT7Z8qZsO35nMx7RrN0fJfRfC5dcDuy
-         w5HvfCUEtAAvSckSj17jYwGypjyNa4g0sE4P08+iLcg3SjuIiw5K7ioQMUtnGLE5YrcG
-         XFfH839Tns4MO/UDLmGYnGFcxnV7RWc/k6w83JmoFytKPrHEktJvrnPOwC+oc5BtbWJh
-         C9KgDN4pQ9i5JHVDxj2oUbaDsgk9PtbWqU4qn9Uc8oED/Jq4GLEdp5Lj0RrftlV9VdeH
-         xsauUDjXaTPRpzlerGC13W0I/YQQitPXGG45MEgvfnlbrvDvuPl5NR0U2pJHUhmzx8ID
-         gzWw==
-X-Gm-Message-State: AOAM532ImsRNFAy4lwk9IgH8h0pns/tu3uBS6piPmdQRW036Mo8pqfZW
-        8Ivodtsd8ZfBSRjHihe4AVqXzw7ZbAGLodSQ
-X-Google-Smtp-Source: ABdhPJyMDX38TNfh4mxNJfUoXYbgirO8EMxrkrfHGG5xyV2tNv6DEncnID34khWlsOmEvd6dH1hdgw==
-X-Received: by 2002:a17:902:8c83:b029:129:17e5:a1cc with SMTP id t3-20020a1709028c83b029012917e5a1ccmr10398323plo.49.1631538056560;
-        Mon, 13 Sep 2021 06:00:56 -0700 (PDT)
-Received: from localhost.localdomain ([101.229.51.254])
-        by smtp.googlemail.com with ESMTPSA id g24sm6357427pfk.52.2021.09.13.06.00.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Sep 2021 06:00:55 -0700 (PDT)
-From:   Zhongya Yan <yan2228598786@gmail.com>
-To:     edumazet@google.com, rostedt@goodmis.org, brendan.d.gregg@gmail.com
+ d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vEasab9Ix4f7UzKncEVfA4qRm1ge3YVHkjWFEieBUvA=;
+ b=YR2QHrDBRSAJAQyArWNLKB+btOv2MdXHWSQUSWSlqeCeOo4nR0auWzfyAUlJ1T1DIdKoqKGPOmtJ2yNJCPEwBf1ec2KeRts/wMbdiHDW03AdMvTcX+QFlj+ctGKxM6i91wdNdfXvRK6tjizxXp9DjMJy4iXOeX1WMtF/PQrVFcE=
+Authentication-Results: driverdev.osuosl.org; dkim=none (message not signed)
+ header.d=none;driverdev.osuosl.org; dmarc=none action=none
+ header.from=silabs.com;
+Received: from SN6PR11MB2718.namprd11.prod.outlook.com (2603:10b6:805:63::18)
+ by SN6PR11MB2894.namprd11.prod.outlook.com (2603:10b6:805:d7::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.17; Mon, 13 Sep
+ 2021 13:02:17 +0000
+Received: from SN6PR11MB2718.namprd11.prod.outlook.com
+ ([fe80::7050:a0a:415:2ccd]) by SN6PR11MB2718.namprd11.prod.outlook.com
+ ([fe80::7050:a0a:415:2ccd%7]) with mapi id 15.20.4500.017; Mon, 13 Sep 2021
+ 13:02:16 +0000
+From:   Jerome Pouiller <Jerome.Pouiller@silabs.com>
+To:     devel@driverdev.osuosl.org, linux-wireless@vger.kernel.org
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kuba@kernel.org, mingo@redhat.com, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, yhs@fb.com,
-        2228598786@qq.com, Zhongya Yan <yan2228598786@gmail.com>
-Subject: [PATCH] net: tcp_drop adds `reason`  v5
-Date:   Mon, 13 Sep 2021 06:00:34 -0700
-Message-Id: <20210913130034.103362-1-yan2228598786@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        =?UTF-8?q?J=C3=A9r=C3=B4me=20Pouiller?= 
+        <jerome.pouiller@silabs.com>
+Subject: [PATCH v3 00/32] staging/wfx: usual maintenance
+Date:   Mon, 13 Sep 2021 15:01:31 +0200
+Message-Id: <20210913130203.1903622-1-Jerome.Pouiller@silabs.com>
+X-Mailer: git-send-email 2.33.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
+X-ClientProxiedBy: PR2P264CA0021.FRAP264.PROD.OUTLOOK.COM (2603:10a6:101::33)
+ To SN6PR11MB2718.namprd11.prod.outlook.com (2603:10b6:805:63::18)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: from pc-42.silabs.com (37.71.187.125) by PR2P264CA0021.FRAP264.PROD.OUTLOOK.COM (2603:10a6:101::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.14 via Frontend Transport; Mon, 13 Sep 2021 13:02:15 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 64f06eda-6147-4190-85be-08d976b6b655
+X-MS-TrafficTypeDiagnostic: SN6PR11MB2894:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <SN6PR11MB2894779DF96CA8A85378498293D99@SN6PR11MB2894.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: rhaQpP2iwXLmp7jS3bIbqehf1F3mXhlQKL7yRNabIgLQGiVVZhurKy58yB4cfaLpMu8DjW69Cl16c9s8Vg/ALhmH8ti1CCJYXZLref0CfQg5wXZdRLm/eCETN6rKe/u83w1psDbH+JP0OlpzxSulrmSmnvv2ifzglDtc005psUBYQIfhwpKb3JDDN2Cw7XDWvjZ8vZY0Rs0+dFEvUTwx1Sebe4LfV2dr55Y+gAYqHVwrnvBS7P/60yDUOmUR3xwxzl2ymB4Mi1KmG4rVcTSNAHGM1oQvaT89sNoPbjUdyqwIv0NVMWa4xNTDjHrjs31bWvdgqB43Cyg/7Cz9Y44/RQoKA9HwfcmubR16uWBYjEB/pvq2bq/TsJdSlcei4MOo8gRNfJdvzYmtI5hyvSoBA11E/APMpvNDgxplQ1x5BRVdESyLsBMru6YvT9ZfD6nexlr7lKJRy3Fnu19W6XxmtX6nwxQL8LrRWdGrMM1DzAXJgdRxnZEXDUsCYqVvD7hX2xR0X5cjhWkHlc6S+UTM7JPdE6Mz+Fpq4hg74h1c8xMKgTW+C5BGV9SFKssV4y9HgkmaD8pm0ryljl2RTLOaG8gxzTZkGH/HzIKfuJXQIcKXXWt2FHp2B0rmAkkZVEHIGY1iDZ6EP25QvR+TFzxED/cLhEi/lDPJXuDvDmB2fqLiF+H35ss9dw4I7Snk5C80E4Kr+mbGmJa+xPo519danBah6kLRsEGfPLBeBh42BpPCMA1j5fyEsHnwlXFQieMSBIUt5j120HThnQgV/0ewTBkYT3zqQjrNDd4Oj8nU22g=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB2718.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(366004)(136003)(39850400004)(346002)(376002)(5660300002)(966005)(26005)(8936002)(6486002)(38350700002)(38100700002)(66946007)(7696005)(186003)(316002)(1076003)(8676002)(956004)(478600001)(2616005)(2906002)(52116002)(4326008)(36756003)(6666004)(54906003)(83380400001)(107886003)(66476007)(66556008)(86362001)(66574015);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?dmxyWnlYMGVlTlNOc0E3Z0lOWnRjbGFMckk3NGp0d2lEV1FOamM2eEd1L2xM?=
+ =?utf-8?B?N3NOL0pOSDVYTDlLd1VDTmdZL3libVlWVHRVdzBwV2UzeEFoU05jbEIyTFFO?=
+ =?utf-8?B?R25DemFlYnFPalFrd3lzaXQycDZZVWNXZTRITnFuZ3QzdkdMZmZBVjE1YmQ0?=
+ =?utf-8?B?NnJXVlBVMDlTSUkrNkkzUWpOeTgvWS84aXlyY1kxR1NTNm1kdG5nRy9DMnZT?=
+ =?utf-8?B?YzhrNVdDYk84L041L3dHejRuTlBIMExaN2d4cG1sRkd6dXlTNjNacGg1aUxZ?=
+ =?utf-8?B?QmhCby8wcW00dGRnT2RYVTNWNStLOTVPaUxEQ3o3SUZES2tkd3AyTWxDTG40?=
+ =?utf-8?B?anpGaGFkYmx4MHpXcjYwaUllcFU4TkgxNUNTVnFKa2h5OXpMNFo4dkVnNVRB?=
+ =?utf-8?B?Q21pQzB3YmZkUjRURGJiVFBOTVEvdzgvWWM2Tit2VUg3RXBOQWc1MC9ueUFi?=
+ =?utf-8?B?cUYrMFFweG9halNSSkFGQ3hIY1lmM1hWZ3o5U0w1R09qc2pBWjI2OUZQZG1h?=
+ =?utf-8?B?akpsTkg4MGE0MVpUaGRJNnBxVEtPbTd2VnRZV3FMNGE4UzVLM21GM0VrK3pz?=
+ =?utf-8?B?dFhjRHJKUUlHQnBrVlpIakZJeFVKenZnMERiV2xSVE1Vd1BnczZGRFo4b2d6?=
+ =?utf-8?B?VmpMd1RqRWRVaUlNd1hFN2hxUytHbGoyUlNFNGprclB6VDdUajd0RXU1MmZO?=
+ =?utf-8?B?Z3g3R3RacG1qeWpNMzljMUxwV1VBdEFSN1l0dVg3RkN2TVY1YzR1MXlWYWpQ?=
+ =?utf-8?B?M2kwbStHK0lmQWtKMzcyNG5KVmRsdmRESzYxR3ZzL0I3cmhhaUpzb1JsRHRD?=
+ =?utf-8?B?Y1Y1OUlKaUZzd0N1ZHJiSStVV2E0K0dQODM1enllMGtmQW12VzUwa3dMNkVz?=
+ =?utf-8?B?aDllNTBYTEZZa3ZTMkFlNGlwMlM2bnVmS0wxS2ZQeURsUjU5OFZXTXY3aXdN?=
+ =?utf-8?B?YXR5a3FDYlQzWlBsZHdHNWdhUDkreVJRM0pvRzZCTHplSklMQ3B5N3NueDhD?=
+ =?utf-8?B?UW5kY2xNNXdyN0J1QVRXNG5ycmQrRCtsVllPVEhmQmd6OURyNG1iYnJ2YjVI?=
+ =?utf-8?B?Zkw5c2RwdE1IaEcrVXJtNlNsMVBWazc2L2hJRWpiNEwvVVhuZTZ1N1lIUmVw?=
+ =?utf-8?B?TGlXWFV5UmxNbFZXYnpieVdoY1Jsak44Y1hJSWFXRTZqeThIS2dXSGRXMHV1?=
+ =?utf-8?B?NVVVR2kxNmNaa3FMUjR1Vzl4c0E5N2hsLzJYaS9HSHFUL1dIRkJJUytJQzBu?=
+ =?utf-8?B?Vzl0QXFnZk9UV3BDRFhvcE9Dek96YkVnWVkySEZON0piQytQelREWFVraC9O?=
+ =?utf-8?B?S3Q0SFJnUkQ5MFJkc2s5bkI2eVN1TXFxczVEYWQ5U2laWXYwNzBpS2xOY01U?=
+ =?utf-8?B?R0IvUWFzeEFLdjlJbTdkSDVJeDJXc2JYNUtWdTNTS2VqNXpTUGpvOGFKM09W?=
+ =?utf-8?B?NDdRVTVKQkJCZUhHQUphZi9LY051WlpjTUpZYjA5YjAxd1NUdENBTDJBSTBL?=
+ =?utf-8?B?cERXMEtxMFd4b0lFZmFhKzR0bGVGbmlKR1ZKNkF0VHVuNk5WR0NabFdmVHdC?=
+ =?utf-8?B?MHg5dkptK0VaK2NlSEdWMmxRcWdSVHRhbHNmWGpsb2U0SmViZ0RzVmhidjhZ?=
+ =?utf-8?B?bUphNFlLUkJScU9pbFk5djh2Y1ZNd21maG9DbWtFdUQ2ZHd0cG9zdWlYRWtt?=
+ =?utf-8?B?ZHpBZzRadUNIREZjOG13L3BKajBGT2krVk5rTkNEemgwQTF2ZTB5SUZVWHhw?=
+ =?utf-8?Q?9QcTzIsmPNHyEsWr1UpRM119wCDtglKa0P+cuSy?=
+X-OriginatorOrg: silabs.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 64f06eda-6147-4190-85be-08d976b6b655
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB2718.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Sep 2021 13:02:16.7397
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 54dbd822-5231-4b20-944d-6f4abcd541fb
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: rYbpXFCXKdDamnpjmn1DaPuQXoD6oiuv+gB0LIZyLuaTC7+hU4cmB97LjCs3bgh2MtaIBXKXFGt2QoSlPx1+BQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR11MB2894
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Description information in the reason field of tcp_drop, "Tcp" is changed to "TCP"
-Feel free to suggest changes
-
-Signed-off-by: Zhongya Yan <yan2228598786@gmail.com>
----
- include/trace/events/tcp.h |  62 ++++++++++++++++++
- net/ipv4/tcp_input.c       | 126 +++++++++++++++++++++++--------------
- 2 files changed, 142 insertions(+), 46 deletions(-)
-
-diff --git a/include/trace/events/tcp.h b/include/trace/events/tcp.h
-index 521059d8dc0a..68bbe8741ce8 100644
---- a/include/trace/events/tcp.h
-+++ b/include/trace/events/tcp.h
-@@ -371,6 +371,68 @@ DEFINE_EVENT(tcp_event_skb, tcp_bad_csum,
- 	TP_ARGS(skb)
- );
- 
-+TRACE_EVENT(tcp_drop,
-+		TP_PROTO(struct sock *sk, struct sk_buff *skb, int field, const char *reason),
-+
-+		TP_ARGS(sk, skb, field, reason),
-+
-+		TP_STRUCT__entry(
-+			__array(__u8, saddr, sizeof(struct sockaddr_in6))
-+			__array(__u8, daddr, sizeof(struct sockaddr_in6))
-+			__field(__u16, sport)
-+			__field(__u16, dport)
-+			__field(__u32, mark)
-+			__field(__u16, data_len)
-+			__field(__u32, snd_nxt)
-+			__field(__u32, snd_una)
-+			__field(__u32, snd_cwnd)
-+			__field(__u32, ssthresh)
-+			__field(__u32, snd_wnd)
-+			__field(__u32, srtt)
-+			__field(__u32, rcv_wnd)
-+			__field(__u64, sock_cookie)
-+			__field(int, field)
-+			__string(reason, reason)
-+			),
-+
-+		TP_fast_assign(
-+				const struct tcphdr *th = (const struct tcphdr *)skb->data;
-+				const struct inet_sock *inet = inet_sk(sk);
-+				const struct tcp_sock *tp = tcp_sk(sk);
-+
-+				memset(__entry->saddr, 0, sizeof(struct sockaddr_in6));
-+				memset(__entry->daddr, 0, sizeof(struct sockaddr_in6));
-+
-+				TP_STORE_ADDR_PORTS(__entry, inet, sk);
-+
-+				__entry->sport = ntohs(inet->inet_sport);
-+				__entry->dport = ntohs(inet->inet_dport);
-+				__entry->mark = skb->mark;
-+
-+				__entry->data_len = skb->len - __tcp_hdrlen(th);
-+				__entry->snd_nxt = tp->snd_nxt;
-+				__entry->snd_una = tp->snd_una;
-+				__entry->snd_cwnd = tp->snd_cwnd;
-+				__entry->snd_wnd = tp->snd_wnd;
-+				__entry->rcv_wnd = tp->rcv_wnd;
-+				__entry->ssthresh = tcp_current_ssthresh(sk);
-+				__entry->srtt = tp->srtt_us >> 3;
-+				__entry->sock_cookie = sock_gen_cookie(sk);
-+				__entry->field = field;
-+
-+				__assign_str(reason, reason);
-+		),
-+
-+		TP_printk("src=%pISpc dest=%pISpc mark=%#x data_len=%d snd_nxt=%#x snd_una=%#x \
-+				snd_cwnd=%u ssthresh=%u snd_wnd=%u srtt=%u rcv_wnd=%u \
-+				sock_cookie=%llx field=%d reason=%s",
-+				__entry->saddr, __entry->daddr, __entry->mark,
-+				__entry->data_len, __entry->snd_nxt, __entry->snd_una,
-+				__entry->snd_cwnd, __entry->ssthresh, __entry->snd_wnd,
-+				__entry->srtt, __entry->rcv_wnd, __entry->sock_cookie,
-+				__entry->field, __get_str(reason))
-+);
-+
- #endif /* _TRACE_TCP_H */
- 
- /* This part must be outside protection */
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 3f7bd7ae7d7a..1cebdcafb00f 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -4675,8 +4675,10 @@ static bool tcp_ooo_try_coalesce(struct sock *sk,
- 	return res;
- }
- 
--static void tcp_drop(struct sock *sk, struct sk_buff *skb)
-+static void tcp_drop(struct sock *sk, struct sk_buff *skb,
-+		int field, const char *reason)
- {
-+	trace_tcp_drop(sk, skb, field, reason);
- 	sk_drops_add(sk, skb);
- 	__kfree_skb(skb);
- }
-@@ -4708,7 +4710,7 @@ static void tcp_ofo_queue(struct sock *sk)
- 		rb_erase(&skb->rbnode, &tp->out_of_order_queue);
- 
- 		if (unlikely(!after(TCP_SKB_CB(skb)->end_seq, tp->rcv_nxt))) {
--			tcp_drop(sk, skb);
-+			tcp_drop(sk, skb, LINUX_MIB_TCPOFOQUEUE, "TCP queue error");
- 			continue;
- 		}
- 
-@@ -4764,7 +4766,7 @@ static void tcp_data_queue_ofo(struct sock *sk, struct sk_buff *skb)
- 	if (unlikely(tcp_try_rmem_schedule(sk, skb, skb->truesize))) {
- 		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPOFODROP);
- 		sk->sk_data_ready(sk);
--		tcp_drop(sk, skb);
-+		tcp_drop(sk, skb, LINUX_MIB_TCPOFODROP, "TCP rmem failed");
- 		return;
- 	}
- 
-@@ -4827,7 +4829,7 @@ static void tcp_data_queue_ofo(struct sock *sk, struct sk_buff *skb)
- 				/* All the bits are present. Drop. */
- 				NET_INC_STATS(sock_net(sk),
- 					      LINUX_MIB_TCPOFOMERGE);
--				tcp_drop(sk, skb);
-+				tcp_drop(sk, skb, LINUX_MIB_TCPOFOMERGE, "TCP bits are present");
- 				skb = NULL;
- 				tcp_dsack_set(sk, seq, end_seq);
- 				goto add_sack;
-@@ -4846,7 +4848,9 @@ static void tcp_data_queue_ofo(struct sock *sk, struct sk_buff *skb)
- 						 TCP_SKB_CB(skb1)->end_seq);
- 				NET_INC_STATS(sock_net(sk),
- 					      LINUX_MIB_TCPOFOMERGE);
--				tcp_drop(sk, skb1);
-+				tcp_drop(sk, skb1, LINUX_MIB_TCPOFOMERGE,
-+						"TCP replace(skb.seq eq skb1.seq)");
-+
- 				goto merge_right;
- 			}
- 		} else if (tcp_ooo_try_coalesce(sk, skb1,
-@@ -4874,7 +4878,7 @@ static void tcp_data_queue_ofo(struct sock *sk, struct sk_buff *skb)
- 		tcp_dsack_extend(sk, TCP_SKB_CB(skb1)->seq,
- 				 TCP_SKB_CB(skb1)->end_seq);
- 		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPOFOMERGE);
--		tcp_drop(sk, skb1);
-+		tcp_drop(sk, skb1, LINUX_MIB_TCPOFOMERGE, "TCP useless other segments");
- 	}
- 	/* If there is no skb after us, we are the last_skb ! */
- 	if (!skb1)
-@@ -5010,7 +5014,8 @@ static void tcp_data_queue(struct sock *sk, struct sk_buff *skb)
- 		else if (tcp_try_rmem_schedule(sk, skb, skb->truesize)) {
- 			NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPRCVQDROP);
- 			sk->sk_data_ready(sk);
--			goto drop;
-+			tcp_drop(sk, skb, LINUX_MIB_TCPRCVQDROP, "TCP rmem failed");
-+			goto end;
- 		}
- 
- 		eaten = tcp_queue_rcv(sk, skb, &fragstolen);
-@@ -5050,8 +5055,8 @@ static void tcp_data_queue(struct sock *sk, struct sk_buff *skb)
- out_of_window:
- 		tcp_enter_quickack_mode(sk, TCP_MAX_QUICKACKS);
- 		inet_csk_schedule_ack(sk);
--drop:
--		tcp_drop(sk, skb);
-+		tcp_drop(sk, skb, LINUX_MIB_TCPZEROWINDOWDROP, "TCP out of order or zero window");
-+end:
- 		return;
- 	}
- 
-@@ -5308,7 +5313,7 @@ static bool tcp_prune_ofo_queue(struct sock *sk)
- 		prev = rb_prev(node);
- 		rb_erase(node, &tp->out_of_order_queue);
- 		goal -= rb_to_skb(node)->truesize;
--		tcp_drop(sk, rb_to_skb(node));
-+		tcp_drop(sk, rb_to_skb(node), LINUX_MIB_OFOPRUNED, "TCP drop out-of-order queue");
- 		if (!prev || goal <= 0) {
- 			sk_mem_reclaim(sk);
- 			if (atomic_read(&sk->sk_rmem_alloc) <= sk->sk_rcvbuf &&
-@@ -5643,7 +5648,8 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
- 						  LINUX_MIB_TCPACKSKIPPEDPAWS,
- 						  &tp->last_oow_ack_time))
- 				tcp_send_dupack(sk, skb);
--			goto discard;
-+			tcp_drop(sk, skb, LINUX_MIB_PAWSESTABREJECTED, "TCP PAWS seq first");
-+			goto end;
- 		}
- 		/* Reset is accepted even if it did not pass PAWS. */
- 	}
-@@ -5666,7 +5672,8 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
- 		} else if (tcp_reset_check(sk, skb)) {
- 			tcp_reset(sk, skb);
- 		}
--		goto discard;
-+		tcp_drop(sk, skb, LINUX_MIB_PAWSESTABREJECTED, "TCP check sequence number");
-+		goto end;
- 	}
- 
- 	/* Step 2: check RST bit */
-@@ -5711,7 +5718,8 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
- 				tcp_fastopen_active_disable(sk);
- 			tcp_send_challenge_ack(sk, skb);
- 		}
--		goto discard;
-+		tcp_drop(sk, skb, LINUX_MIB_TCPCHALLENGEACK, "TCP check RST bit ");
-+		goto end;
- 	}
- 
- 	/* step 3: check security and precedence [ignored] */
-@@ -5725,15 +5733,15 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
- 			TCP_INC_STATS(sock_net(sk), TCP_MIB_INERRS);
- 		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPSYNCHALLENGE);
- 		tcp_send_challenge_ack(sk, skb);
--		goto discard;
-+		tcp_drop(sk, skb, LINUX_MIB_TCPSYNCHALLENGE, "TCP check for a SYN");
-+		goto end;
- 	}
- 
- 	bpf_skops_parse_hdr(sk, skb);
- 
- 	return true;
- 
--discard:
--	tcp_drop(sk, skb);
-+end:
- 	return false;
- }
- 
-@@ -5851,7 +5859,8 @@ void tcp_rcv_established(struct sock *sk, struct sk_buff *skb)
- 				return;
- 			} else { /* Header too small */
- 				TCP_INC_STATS(sock_net(sk), TCP_MIB_INERRS);
--				goto discard;
-+				tcp_drop(sk, skb, TCP_MIB_INERRS, "TCP header too small");
-+				goto end;
- 			}
- 		} else {
- 			int eaten = 0;
-@@ -5905,8 +5914,10 @@ void tcp_rcv_established(struct sock *sk, struct sk_buff *skb)
- 	if (len < (th->doff << 2) || tcp_checksum_complete(skb))
- 		goto csum_error;
- 
--	if (!th->ack && !th->rst && !th->syn)
--		goto discard;
-+	if (!th->ack && !th->rst && !th->syn) {
-+		tcp_drop(sk, skb, LINUX_MIB_TCPSLOWSTARTRETRANS, "TCP state not in ack|rst|syn");
-+		goto end;
-+	}
- 
- 	/*
- 	 *	Standard slow path.
-@@ -5916,8 +5927,10 @@ void tcp_rcv_established(struct sock *sk, struct sk_buff *skb)
- 		return;
- 
- step5:
--	if (tcp_ack(sk, skb, FLAG_SLOWPATH | FLAG_UPDATE_TS_RECENT) < 0)
--		goto discard;
-+	if (tcp_ack(sk, skb, FLAG_SLOWPATH | FLAG_UPDATE_TS_RECENT) < 0) {
-+		tcp_drop(sk, skb, LINUX_MIB_TCPSACKDISCARD, "TCP ack have not sent yet");
-+		goto end;
-+	}
- 
- 	tcp_rcv_rtt_measure_ts(sk, skb);
- 
-@@ -5935,9 +5948,10 @@ void tcp_rcv_established(struct sock *sk, struct sk_buff *skb)
- 	trace_tcp_bad_csum(skb);
- 	TCP_INC_STATS(sock_net(sk), TCP_MIB_CSUMERRORS);
- 	TCP_INC_STATS(sock_net(sk), TCP_MIB_INERRS);
-+	tcp_drop(sk, skb, TCP_MIB_CSUMERRORS, "TCP csum error");
- 
--discard:
--	tcp_drop(sk, skb);
-+end:
-+	return;
- }
- EXPORT_SYMBOL(tcp_rcv_established);
- 
-@@ -6137,7 +6151,8 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
- 
- 		if (th->rst) {
- 			tcp_reset(sk, skb);
--			goto discard;
-+			tcp_drop(sk, skb, LINUX_MIB_NUM, "TCP reset");
-+			goto end;
- 		}
- 
- 		/* rfc793:
-@@ -6226,9 +6241,9 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
- 			tcp_enter_quickack_mode(sk, TCP_MAX_QUICKACKS);
- 			inet_csk_reset_xmit_timer(sk, ICSK_TIME_DACK,
- 						  TCP_DELACK_MAX, TCP_RTO_MAX);
-+			tcp_drop(sk, skb, LINUX_MIB_TCPFASTOPENACTIVE, "TCP fast open ack error");
- 
--discard:
--			tcp_drop(sk, skb);
-+end:
- 			return 0;
- 		} else {
- 			tcp_send_ack(sk);
-@@ -6301,7 +6316,8 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
- 		 */
- 		return -1;
- #else
--		goto discard;
-+		tcp_drop(sk, skb, LINUX_MIB_SYNCOOKIESRECV, "TCP syn received error");
-+		goto end;
- #endif
- 	}
- 	/* "fifth, if neither of the SYN or RST bits is set then
-@@ -6311,7 +6327,8 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
- discard_and_undo:
- 	tcp_clear_options(&tp->rx_opt);
- 	tp->rx_opt.mss_clamp = saved_clamp;
--	goto discard;
-+	tcp_drop(sk, skb, LINUX_MIB_TCPSACKDISCARD, "TCP not neither of SYN or RST");
-+	goto end;
- 
- reset_and_undo:
- 	tcp_clear_options(&tp->rx_opt);
-@@ -6369,18 +6386,23 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
- 
- 	switch (sk->sk_state) {
- 	case TCP_CLOSE:
--		goto discard;
-+		tcp_drop(sk, skb, LINUX_MIB_TCPABORTONCLOSE, "TCP close");
-+		goto end;
- 
- 	case TCP_LISTEN:
- 		if (th->ack)
- 			return 1;
- 
--		if (th->rst)
--			goto discard;
-+		if (th->rst) {
-+			tcp_drop(sk, skb, LINUX_MIB_LISTENDROPS, "TCP rst");
-+			goto end;
-+		}
- 
- 		if (th->syn) {
--			if (th->fin)
--				goto discard;
-+			if (th->fin) {
-+				tcp_drop(sk, skb, LINUX_MIB_LISTENDROPS, "TCP fin");
-+				goto end;
-+			}
- 			/* It is possible that we process SYN packets from backlog,
- 			 * so we need to make sure to disable BH and RCU right there.
- 			 */
-@@ -6395,7 +6417,8 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
- 			consume_skb(skb);
- 			return 0;
- 		}
--		goto discard;
-+		tcp_drop(sk, skb, LINUX_MIB_LISTENDROPS, "TCP syn");
-+		goto end;
- 
- 	case TCP_SYN_SENT:
- 		tp->rx_opt.saw_tstamp = 0;
-@@ -6421,12 +6444,16 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
- 		WARN_ON_ONCE(sk->sk_state != TCP_SYN_RECV &&
- 		    sk->sk_state != TCP_FIN_WAIT1);
- 
--		if (!tcp_check_req(sk, skb, req, true, &req_stolen))
--			goto discard;
-+		if (!tcp_check_req(sk, skb, req, true, &req_stolen)) {
-+			tcp_drop(sk, skb, LINUX_MIB_LISTENDROPS, "TCP check req error");
-+			goto end;
-+		}
- 	}
- 
--	if (!th->ack && !th->rst && !th->syn)
--		goto discard;
-+	if (!th->ack && !th->rst && !th->syn) {
-+		tcp_drop(sk, skb, LINUX_MIB_LISTENDROPS, "TCP not ack|rst|syn");
-+		goto end;
-+	}
- 
- 	if (!tcp_validate_incoming(sk, skb, th, 0))
- 		return 0;
-@@ -6440,7 +6467,8 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
- 		if (sk->sk_state == TCP_SYN_RECV)
- 			return 1;	/* send one RST */
- 		tcp_send_challenge_ack(sk, skb);
--		goto discard;
-+		tcp_drop(sk, skb, LINUX_MIB_TCPCHALLENGEACK, "TCP check ack failed");
-+		goto end;
- 	}
- 	switch (sk->sk_state) {
- 	case TCP_SYN_RECV:
-@@ -6533,7 +6561,8 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
- 			inet_csk_reset_keepalive_timer(sk, tmo);
- 		} else {
- 			tcp_time_wait(sk, TCP_FIN_WAIT2, tmo);
--			goto discard;
-+			tcp_drop(sk, skb, LINUX_MIB_TCPABORTONDATA, "TCP fin wait2");
-+			goto end;
- 		}
- 		break;
- 	}
-@@ -6541,7 +6570,8 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
- 	case TCP_CLOSING:
- 		if (tp->snd_una == tp->write_seq) {
- 			tcp_time_wait(sk, TCP_TIME_WAIT, 0);
--			goto discard;
-+			tcp_drop(sk, skb, LINUX_MIB_TIMEWAITED, "TCP time wait");
-+			goto end;
- 		}
- 		break;
- 
-@@ -6549,7 +6579,8 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
- 		if (tp->snd_una == tp->write_seq) {
- 			tcp_update_metrics(sk);
- 			tcp_done(sk);
--			goto discard;
-+			tcp_drop(sk, skb, LINUX_MIB_TCPPUREACKS, "TCP last ack");
-+			goto end;
- 		}
- 		break;
- 	}
-@@ -6566,8 +6597,10 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
- 			/* If a subflow has been reset, the packet should not
- 			 * continue to be processed, drop the packet.
- 			 */
--			if (sk_is_mptcp(sk) && !mptcp_incoming_options(sk, skb))
--				goto discard;
-+			if (sk_is_mptcp(sk) && !mptcp_incoming_options(sk, skb)) {
-+				tcp_drop(sk, skb, LINUX_MIB_TCPPUREACKS, "TCP subflow been reset");
-+				goto end;
-+			}
- 			break;
- 		}
- 		fallthrough;
-@@ -6599,9 +6632,10 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
- 	}
- 
- 	if (!queued) {
--discard:
--		tcp_drop(sk, skb);
-+		tcp_drop(sk, skb, LINUX_MIB_TCPOFOQUEUE, "TCP rcv synsent state process");
- 	}
-+
-+end:
- 	return 0;
- }
- EXPORT_SYMBOL(tcp_rcv_state_process);
--- 
-2.25.1
-
+RnJvbTogSsOpcsO0bWUgUG91aWxsZXIgPGplcm9tZS5wb3VpbGxlckBzaWxhYnMuY29tPgoKSGks
+CgpUaGUgZm9sbG93aW5nIFBSIGNvbnRhaW5zIG5vdyB1c3VhbCBtYWludGVuYW5jZSBmb3IgdGhl
+IHdmeCBkcml2ZXIuIEkgaGF2ZQptb3JlLW9yLWxlc3Mgc29ydGVkIHRoZSBwYXRjaGVzIGJ5IGlt
+cG9ydGFuY2U6CiAgICAtIHRoZSBmaXJzdCBvbmVzIGFuZCB0aGUgdHdvIGxhc3Qgb25lcyBhcmUg
+Zml4ZXMgZm9yIGEgZmV3IGNvcm5lci1jYXNlcwogICAgICByZXBvcnRlZCBieSB1c2VycwogICAg
+LSB0aGUgcGF0Y2hlcyA5IGFuZCAxMCBhZGQgc3VwcG9ydCBmb3IgQ1NBIGFuZCBURExTCiAgICAt
+IHRoZW4gdGhlIGVuZCBvZiB0aGUgc2VyaWVzIGlzIG1vc3RseSBjb3NtZXRpY3MgYW5kIG5pdHBp
+Y2tpbmcKCkkgaGF2ZSB3YWl0IGxvbmdlciB0aGFuIEkgaW5pdGlhbGx5IHdhbnRlZCBiZWZvcmUg
+dG8gc2VuZCB0aGlzIFBSLiBJdCBpcwpiZWNhdXNlIGRpZG4ndCB3YW50IHRvIGNvbmZsaWN0IHdp
+dGggdGhlIFBSIGN1cnJlbnRseSBpbiByZXZpZXdbMV0gdG8KcmVsb2NhdGUgdGhpcyBkcml2ZXIg
+aW50byB0aGUgbWFpbiB0cmVlLiBIb3dldmVyLCB0aGlzIFBSIHN0YXJ0ZWQgdG8gYmUKdmVyeSBs
+YXJnZSBhbmQgbm90aGluZyBzZWVtcyB0byBtb3ZlIG9uIG1haW4tdHJlZSBzaWRlIHNvIEkgZGVj
+aWRlZCB0byBub3QKd2FpdCBsb25nZXIuCgpLYWxsZSwgSSBhbSBnb2luZyB0byBzZW5kIGEgbmV3
+IHZlcnNpb24gb2YgWzFdIGFzIHNvb24gYXMgdGhpcyBQUiB3aWxsIGJlCmFjY2VwdGVkLiBJIGhv
+cGUgeW91IHdpbGwgaGF2ZSB0aW1lIHRvIHJldmlldyBpdCBvbmUgZGF5IDotKS4KClsxXSBodHRw
+czovL2xvcmUua2VybmVsLm9yZy9hbGwvMjAyMTAzMTUxMzI1MDEuNDQxNjgxLTEtSmVyb21lLlBv
+dWlsbGVyQHNpbGFicy5jb20vCgp2MzoKICAtIEZpeCBwYXRjaCAxMSBhbmQgZHJvcCBwYXRjaCAz
+MyAoRGFuKQogIC0gRml4IG9uZSBtaXNzaW5nIEM5OSBjb21tZW50CiAgLSBEcm9wIHVzZWxlc3Mg
+V0FSTl9PTigpIChEYW4pCgp2MjoKICAtIEFkZCBwYXRjaGVzIDMyIGFuZCAzMyB0byBzb2x2ZSBh
+IHBvc3NpYmxlIHJhY2Ugd2hlbiBkZXZpY2UgaXMKICAgIG1pc2NvbmZpZ3VyZWQKICAtIEZpeCBD
+OTkgY29tbWVudHMgKEthcmkpCiAgLSBSZXBsYWNlICJBUEkgMy44IiBieSAiZmlybXdhcmUgQVBJ
+IDMuOCIgKEthcmkpCiAgLSBGaXggd29yZGluZyAiYWxpZ25lZCB3aXRoIGZpcnN0IGFyZ3VtZW50
+IiBpbnN0ZWFkIG9mICJhbGlnbmVkIHdpdGgKICAgIG9wZW5pbmcgcGFyZW50aGVzaXMiCgpKw6ly
+w7RtZSBQb3VpbGxlciAoMzIpOgogIHN0YWdpbmc6IHdmeDogdXNlIGFiYnJldmlhdGVkIG1lc3Nh
+Z2UgZm9yICJpbmNvcnJlY3Qgc2VxdWVuY2UiCiAgc3RhZ2luZzogd2Z4OiBkbyBub3Qgc2VuZCBD
+QUIgd2hpbGUgc2Nhbm5pbmcKICBzdGFnaW5nOiB3Zng6IGlnbm9yZSBQUyB3aGVuIFNUQS9BUCBz
+aGFyZSBzYW1lIGNoYW5uZWwKICBzdGFnaW5nOiB3Zng6IHdhaXQgZm9yIFNDQU5fQ01QTCBhZnRl
+ciBhIFNDQU5fU1RPUAogIHN0YWdpbmc6IHdmeDogYXZvaWQgcG9zc2libGUgbG9jay11cCBkdXJp
+bmcgc2NhbgogIHN0YWdpbmc6IHdmeDogZHJvcCB1bnVzZWQgYXJndW1lbnQgZnJvbSBoaWZfc2Nh
+bigpCiAgc3RhZ2luZzogd2Z4OiBmaXggYXRvbWljIGFjY2Vzc2VzIGluIHdmeF90eF9xdWV1ZV9l
+bXB0eSgpCiAgc3RhZ2luZzogd2Z4OiB0YWtlIGFkdmFudGFnZSBvZiB3ZnhfdHhfcXVldWVfZW1w
+dHkoKQogIHN0YWdpbmc6IHdmeDogZGVjbGFyZSBzdXBwb3J0IGZvciBURExTCiAgc3RhZ2luZzog
+d2Z4OiBmaXggc3VwcG9ydCBmb3IgQ1NBCiAgc3RhZ2luZzogd2Z4OiByZWxheCB0aGUgUERTIGV4
+aXN0ZW5jZSBjb25zdHJhaW50CiAgc3RhZ2luZzogd2Z4OiBzaW1wbGlmeSBBUEkgY29oZXJlbmN5
+IGNoZWNrCiAgc3RhZ2luZzogd2Z4OiB1cGRhdGUgd2l0aCB0aGUgZmlybXdhcmUgQVBJIDMuOAog
+IHN0YWdpbmc6IHdmeDogdW5pZm9ybWl6ZSBjb3VudGVyIG5hbWVzCiAgc3RhZ2luZzogd2Z4OiBm
+aXggbWlzbGVhZGluZyAncmF0ZV9pZCcgdXNhZ2UKICBzdGFnaW5nOiB3Zng6IGRlY2xhcmUgdmFy
+aWFibGVzIGF0IGJlZ2lubmluZyBvZiBmdW5jdGlvbnMKICBzdGFnaW5nOiB3Zng6IHNpbXBsaWZ5
+IGhpZl9qb2luKCkKICBzdGFnaW5nOiB3Zng6IHJlb3JkZXIgZnVuY3Rpb24gZm9yIHNsaWdodGx5
+IGJldHRlciBleWUgY2FuZHkKICBzdGFnaW5nOiB3Zng6IGZpeCBlcnJvciBuYW1lcwogIHN0YWdp
+bmc6IHdmeDogYXBwbHkgbmFtaW5nIHJ1bGVzIGluIGhpZl90eF9taWIuYwogIHN0YWdpbmc6IHdm
+eDogcmVtb3ZlIHVudXNlZCBkZWZpbml0aW9uCiAgc3RhZ2luZzogd2Z4OiByZW1vdmUgdXNlbGVz
+cyBkZWJ1ZyBzdGF0ZW1lbnQKICBzdGFnaW5nOiB3Zng6IGZpeCBzcGFjZSBhZnRlciBjYXN0IG9w
+ZXJhdG9yCiAgc3RhZ2luZzogd2Z4OiByZW1vdmUgcmVmZXJlbmNlcyB0byBXRnh4eCBpbiBjb21t
+ZW50cwogIHN0YWdpbmc6IHdmeDogdXBkYXRlIGZpbGVzIGRlc2NyaXB0aW9ucwogIHN0YWdpbmc6
+IHdmeDogcmVmb3JtYXQgY29tbWVudAogIHN0YWdpbmc6IHdmeDogYXZvaWQgYzk5IGNvbW1lbnRz
+CiAgc3RhZ2luZzogd2Z4OiBmaXggY29tbWVudHMgc3R5bGVzCiAgc3RhZ2luZzogd2Z4OiByZW1v
+dmUgdXNlbGVzcyBjb21tZW50cyBhZnRlciAjZW5kaWYKICBzdGFnaW5nOiB3Zng6IGV4cGxhaW4g
+dGhlIHB1cnBvc2Ugb2Ygd2Z4X3NlbmRfcGRzKCkKICBzdGFnaW5nOiB3Zng6IGluZGVudCBmdW5j
+dGlvbnMgYXJndW1lbnRzCiAgc3RhZ2luZzogd2Z4OiBlbnN1cmUgSVJRIGlzIHJlYWR5IGJlZm9y
+ZSBlbmFibGluZyBpdAoKIGRyaXZlcnMvc3RhZ2luZy93ZngvYmguYyAgICAgICAgICAgICAgfCAg
+MzcgKysrKy0tLQogZHJpdmVycy9zdGFnaW5nL3dmeC9iaC5oICAgICAgICAgICAgICB8ICAgNCAr
+LQogZHJpdmVycy9zdGFnaW5nL3dmeC9idXNfc2Rpby5jICAgICAgICB8ICAyOSArKystLS0KIGRy
+aXZlcnMvc3RhZ2luZy93ZngvYnVzX3NwaS5jICAgICAgICAgfCAgMjIgKystLS0KIGRyaXZlcnMv
+c3RhZ2luZy93ZngvZGF0YV9yeC5jICAgICAgICAgfCAgIDcgKy0KIGRyaXZlcnMvc3RhZ2luZy93
+ZngvZGF0YV9yeC5oICAgICAgICAgfCAgIDQgKy0KIGRyaXZlcnMvc3RhZ2luZy93ZngvZGF0YV90
+eC5jICAgICAgICAgfCAgODcgKysrKysrKysrLS0tLS0tLS0KIGRyaXZlcnMvc3RhZ2luZy93Zngv
+ZGF0YV90eC5oICAgICAgICAgfCAgIDYgKy0KIGRyaXZlcnMvc3RhZ2luZy93ZngvZGVidWcuYyAg
+ICAgICAgICAgfCAgNTQgKysrKysrLS0tLS0KIGRyaXZlcnMvc3RhZ2luZy93ZngvZGVidWcuaCAg
+ICAgICAgICAgfCAgIDIgKy0KIGRyaXZlcnMvc3RhZ2luZy93ZngvZndpby5jICAgICAgICAgICAg
+fCAgMjYgKystLS0KIGRyaXZlcnMvc3RhZ2luZy93ZngvZndpby5oICAgICAgICAgICAgfCAgIDIg
+Ky0KIGRyaXZlcnMvc3RhZ2luZy93ZngvaGlmX2FwaV9jbWQuaCAgICAgfCAgMTQgKy0tCiBkcml2
+ZXJzL3N0YWdpbmcvd2Z4L2hpZl9hcGlfZ2VuZXJhbC5oIHwgIDI1ICsrLS0tCiBkcml2ZXJzL3N0
+YWdpbmcvd2Z4L2hpZl9hcGlfbWliLmggICAgIHwgIDg1ICsrKysrKysrLS0tLS0tLS0KIGRyaXZl
+cnMvc3RhZ2luZy93ZngvaGlmX3J4LmMgICAgICAgICAgfCAgMjMgKystLS0KIGRyaXZlcnMvc3Rh
+Z2luZy93ZngvaGlmX3J4LmggICAgICAgICAgfCAgIDMgKy0KIGRyaXZlcnMvc3RhZ2luZy93Zngv
+aGlmX3R4LmMgICAgICAgICAgfCAgNjAgKysrKystLS0tLS0tCiBkcml2ZXJzL3N0YWdpbmcvd2Z4
+L2hpZl90eC5oICAgICAgICAgIHwgICA2ICstCiBkcml2ZXJzL3N0YWdpbmcvd2Z4L2hpZl90eF9t
+aWIuYyAgICAgIHwgIDE0ICstLQogZHJpdmVycy9zdGFnaW5nL3dmeC9oaWZfdHhfbWliLmggICAg
+ICB8ICAgMiArLQogZHJpdmVycy9zdGFnaW5nL3dmeC9od2lvLmMgICAgICAgICAgICB8ICAgNiAr
+LQogZHJpdmVycy9zdGFnaW5nL3dmeC9od2lvLmggICAgICAgICAgICB8ICAyMCArKy0tCiBkcml2
+ZXJzL3N0YWdpbmcvd2Z4L2tleS5jICAgICAgICAgICAgIHwgIDMwICsrKy0tLQogZHJpdmVycy9z
+dGFnaW5nL3dmeC9rZXkuaCAgICAgICAgICAgICB8ICAgNCArLQogZHJpdmVycy9zdGFnaW5nL3dm
+eC9tYWluLmMgICAgICAgICAgICB8ICAzNyArKysrKy0tCiBkcml2ZXJzL3N0YWdpbmcvd2Z4L21h
+aW4uaCAgICAgICAgICAgIHwgICAzICstCiBkcml2ZXJzL3N0YWdpbmcvd2Z4L3F1ZXVlLmMgICAg
+ICAgICAgIHwgIDQzICsrKystLS0tCiBkcml2ZXJzL3N0YWdpbmcvd2Z4L3F1ZXVlLmggICAgICAg
+ICAgIHwgICA2ICstCiBkcml2ZXJzL3N0YWdpbmcvd2Z4L3NjYW4uYyAgICAgICAgICAgIHwgIDU1
+ICsrKysrKystLS0tCiBkcml2ZXJzL3N0YWdpbmcvd2Z4L3NjYW4uaCAgICAgICAgICAgIHwgICA0
+ICstCiBkcml2ZXJzL3N0YWdpbmcvd2Z4L3N0YS5jICAgICAgICAgICAgIHwgMTM1ICsrKysrKysr
+KysrKysrKy0tLS0tLS0tLS0tCiBkcml2ZXJzL3N0YWdpbmcvd2Z4L3N0YS5oICAgICAgICAgICAg
+IHwgICA4ICstCiBkcml2ZXJzL3N0YWdpbmcvd2Z4L3RyYWNlcy5oICAgICAgICAgIHwgICAyICst
+CiBkcml2ZXJzL3N0YWdpbmcvd2Z4L3dmeC5oICAgICAgICAgICAgIHwgIDE0ICsrLQogMzUgZmls
+ZXMgY2hhbmdlZCwgNDcwIGluc2VydGlvbnMoKyksIDQwOSBkZWxldGlvbnMoLSkKCi0tIAoyLjMz
+LjAKCg==
