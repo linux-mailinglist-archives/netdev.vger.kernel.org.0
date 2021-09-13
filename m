@@ -2,149 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B996B40869D
-	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 10:32:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1980F40874A
+	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 10:44:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238171AbhIMIdE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Sep 2021 04:33:04 -0400
-Received: from mail-dm6nam11on2106.outbound.protection.outlook.com ([40.107.223.106]:5601
-        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S238152AbhIMIcs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Sep 2021 04:32:48 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cDYqUBH5dYYKHAodg6tMdGXR83GrIt1iTbaNCVI96Pdh/yaGWAhwK8ZRE6DQLVtrL88OpJFWb9icfn7Uljwx2GlDuhx50dja1pJ1ATLOWLYfC3MZ40y11m5ap9IU8b9dQvpX5ElU9AKyHhLgW3cnlzSQrpOYcGOeuDzHNsELttF6O6h2nSdm+X5QwAI9P713Rt96hPbnBETfI5MyvIFaPX/fKuA+EM4Bfpx30mjQ5MoMFLWKb9ACpu6RIYBtcxkTTkHG9n+SzEZUrrvGwhqjdiUiIqHmJmAldx1S3BQTm3cBI71/LwuEXcyPQ9Q/OSxkR1hkxNES4qF56zC6dyvyPQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=3pw8PRHgYZSWyr4uqLGmozteCtT2035EaAez7qeai0o=;
- b=XPNivy2cePvQ6lQDOZlDcZt1K3lyNjcEWiiPiF1C0d2Cm1H+dcZ8HGxdk5v22QmG3lS4PDH8q8o/fLfk0Wbau5Fu1O4ovOOpV12KvxjgXsI0OVw+h5Ex/pi2xr8XehmRwH4H0MauiIFyzWNUNAxZk9SwdyaJkMIZQzOOgoRx3G57zXqAm6qZ/Jw3Y35Pl5yzgB4uIwRb7g60WEaFcw7D2DSlZ1uRmtLti0F7uJGDPFVOL+m7fFRAoXpPCyhqKA6i9IwNf4SCxrVSbtQJtw9nrsTLXakUOhTncW2k8WUlX9cgb6C9vCG7yHGvrRBg67n5d89BubZN//EufaCHDgQ6Qg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3pw8PRHgYZSWyr4uqLGmozteCtT2035EaAez7qeai0o=;
- b=ukP0YMkmtK9zt31gbr5nikZJquGncmU25DSo2s+Pr38zJHjUBO6bjM6962F75an5uTTS8LZDmrfsj5sCxU8iQw/SuTHm3XGmYxgv5D6anjzGDdj74kFjguyfARSG8b9H7mDW068XYgvGgqiOiY2lphBMhoohN5sX3gq5thtsSII=
-Authentication-Results: gmx.com; dkim=none (message not signed)
- header.d=none;gmx.com; dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by PH0PR13MB4780.namprd13.prod.outlook.com (2603:10b6:510:79::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.10; Mon, 13 Sep
- 2021 08:31:30 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::e1d9:64d0:cb4f:3e90]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::e1d9:64d0:cb4f:3e90%7]) with mapi id 15.20.4523.013; Mon, 13 Sep 2021
- 08:31:30 +0000
-Date:   Mon, 13 Sep 2021 10:31:25 +0200
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Len Baker <len.baker@gmx.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Kees Cook <keescook@chromium.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        oss-drivers@corigine.com, netdev@vger.kernel.org,
-        linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] nfp: Prefer struct_size over open coded arithmetic
-Message-ID: <20210913083124.GB30223@corigine.com>
-References: <20210912131057.2285-1-len.baker@gmx.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210912131057.2285-1-len.baker@gmx.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-ClientProxiedBy: AM0PR03CA0103.eurprd03.prod.outlook.com
- (2603:10a6:208:69::44) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        id S238208AbhIMIpT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Sep 2021 04:45:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35594 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238084AbhIMIpO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Sep 2021 04:45:14 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A051E60F58;
+        Mon, 13 Sep 2021 08:43:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1631522637;
+        bh=q+ZH/C5x0FNGmn9ETKdlbFz6peLOM+PMwE/+FHWOQZI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=O3nB85auqOX6v/Mq4b9/rR/d0c+JISgiOy8kLpPT3l3KmNB2EEtpC0dYT6f/WYSzF
+         o72OHsKk4bWrs1/4b+HauAp5nlC4asFg9IF6UiAdxIP1apZtHAvwuuULqrr1cZsj1T
+         5Qrp7E1c/uiDg8boZLxxWztvedusqaNGJafl9Hw8=
+Date:   Mon, 13 Sep 2021 10:36:49 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     =?iso-8859-1?Q?H=E5kon?= Bugge <haakon.bugge@oracle.com>
+Cc:     sashal@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        stable@vger.kernel.org, dledford@redhat.com, jgg@nvidia.com,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
+        gnault@redhat.com
+Subject: Re: [PATCH 5.4] netns: protect netns ID lookups with RCU
+Message-ID: <YT8Noe9uawxlrPS9@kroah.com>
+References: <1631368706-22561-1-git-send-email-haakon.bugge@oracle.com>
 MIME-Version: 1.0
-Received: from corigine.com (2001:982:7ed1:403:201:8eff:fe22:8fea) by AM0PR03CA0103.eurprd03.prod.outlook.com (2603:10a6:208:69::44) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.14 via Frontend Transport; Mon, 13 Sep 2021 08:31:28 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1c5ff7dc-5157-4631-be04-08d97690e303
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4780:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <PH0PR13MB4780E73F5A501211D8FEB145E8D99@PH0PR13MB4780.namprd13.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: aVSHL+HFOozNPsVwrFGNC8gTSK8nEzMCpgAEPsS+rjkxOekL0vmgtk+Gq403zKzQYLt3uMdS36Ev0q/ZoISHWpRvKfTmNmhrcbngEUWoIwMO7lqv5Cap6Xg7oXNKvEEWWNmFwnFWNgwJyT/ntELzmlfexRTTA3j77ofY14UCqzW1BzJYChJFFbaggT7a94XzP2OWAMjsQjxNmmJh4r4BelU0KMwqL9KQ5/m/iGIWl9GudE0xkdaTKTat8Lmuj7dvALcIui8Kuyl19RVo/2BMRBIym0WGrH0rqf8Dj/rDG77WSt+q0E+fYdNOWwor/KKDc9s7IQOkgz62RQlDMhWw3VoCwUVofYy79FyGt+0eD1eMBlc5cuPeXJrky7Q/Mnu3vb1IbHUZQoobR9X7sDZFizbqRAm/RQgTnBblHyeT5JD5F+WZaEBEFV+k8W6VXV+XUaRdjLNF00iPZxOM+9jlASp29UfpoXF+YtJoG6NGFQoIA1JflAgoVe1+FLU++y2gkrtWy3QpPXKMvNIeheNzk/bc33FAKZH6be2CwHfNpHDUt6sjDSqpfg5C/tWjMLn79mFQpVTov+Tz7DX/pooqnX9Tc2MN2kcCniL319ZWXmbG+MGBGbAat51U8IF3JjJvTlDHyCK9GaFjI5RuocHVYoY2nyBnjtBxCrw5p63BGkAGFJEtkooKzRSEWHfkIU0/J02+pVVs7SsjKKkCfJ0sJyJKA0nrwuXfqkWOhTkzb5WmzGC+fW140x8yy9ZLTyWzkZkVlsxmuDwxH3FE8Rtg32x4YLF4E4e4uoAL29f8rbE=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(39830400003)(376002)(136003)(396003)(366004)(52116002)(2906002)(4326008)(316002)(6916009)(33656002)(2616005)(66476007)(66556008)(8886007)(86362001)(83380400001)(6666004)(36756003)(54906003)(1076003)(66946007)(8936002)(55016002)(38100700002)(966005)(5660300002)(7696005)(186003)(44832011)(8676002)(478600001)(518174003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?GZd69KRbXK5ZE4BSiFn7a44UZIPKIK0QNrZdFUn5d0rewOYio/TIIW3nvTMt?=
- =?us-ascii?Q?q4sG7FaGeamK34ax4M2gIRwTRWsbdtqMY4al2lzMB+sr7ri5vng+IKOlNVbJ?=
- =?us-ascii?Q?UhvvUlQYpAXTtZI5IpB5qIeEsh0X5m4/9tuesLp0KewxAwQhXWm3vMTD12EG?=
- =?us-ascii?Q?igBoKHh+ruB91Kq8o6sAAmsFw3Iwvrjyhh66wRZNNCYT7eJyA/o5pGU88tYU?=
- =?us-ascii?Q?n2OwOZFbYj34NzolAkg///FIA1maptf9d5A26Tus3BIHypHmrTGZF/k/Hukr?=
- =?us-ascii?Q?lNjw8JRkG6p/tmQ41+wfIrepuaEfus0I0Czjd5WFTJvqcf4JhDJe0rvhqjcf?=
- =?us-ascii?Q?3Rk0/v9k/IE+g0cuDh1cUCPrcnsbvCBXpMV7JE/ogfJT4nNhzia8R6Ddi5TL?=
- =?us-ascii?Q?QYi8rACYQCzTBbzgxLtDynvezWBgRYIFPz9/S+GtlTpIabhfA3zEqNkhLaLF?=
- =?us-ascii?Q?YyZwrydTxnLCfnCtSndpP1mdDstDLu7Zwnsa4KT8+HxkWf39h6Avh1dIs77H?=
- =?us-ascii?Q?Rv+jXP8Ol6iVLFCMLw/yhVsiC8ERvPcS6kpoV3+A2j9xaclze+9Y7vUYoREF?=
- =?us-ascii?Q?fhxCO95ilZqw7NnVRIk85xzWkfhJSIffhMtXlKADbPcJTHdEhrABlruXkOxn?=
- =?us-ascii?Q?c9xseF6TDXe7gCbkFum5pg7yl5MDrGUU5KKRP8Iex9uUPdNtV5NUHDfos/zE?=
- =?us-ascii?Q?gnl87egfsN0Mwjo/d6O8gKAba5+MgqA2zZksaJxaiBInSQajZv7b5aaC/z5P?=
- =?us-ascii?Q?HPeVxQ7gstbbWh98HJ3Ps1wkvQJiUhQrX1MaY7Bo5z1QH5e7Hz78H37DpESs?=
- =?us-ascii?Q?1XmFKBUvDerESaznWnGlbbWSieofZBAz2kYEhmDosiRZ2FBcFf9UP9gCy7/9?=
- =?us-ascii?Q?JZXe83dfETS7Gfd3+ZhKAT+sN1iUbVMRoKJGtR25xWU2cMMzPkUhh/FDGjTQ?=
- =?us-ascii?Q?CJiiPttQijqJ8VctEv9q+GSl8imBEH1hj1iF9ZyJDq9ZyaoxxamqM2XAEwwP?=
- =?us-ascii?Q?gDtnSmAWVFUw1/xyMNMRgS6gKtWmo1r3nho6+w7FRmuqpPY0qKw2twmLVrS6?=
- =?us-ascii?Q?nxGxtu6VmIqYs3JMDL6dZRCXhMG+ggx9kR8ncoXE1JGIZwudVEsoGwZu+itC?=
- =?us-ascii?Q?atrFEzil/jFYV5paKDW/F7t4mQFtcc0JJE3W4UiYeCd6W+J6zYgCoS6aH8Wm?=
- =?us-ascii?Q?sE+dB/JKpD/DdgMEJN+pEQphj5itZNGWjessU57pAj4GrgGPqrawJVVT5PXF?=
- =?us-ascii?Q?Sffef97BnWlOvhmNmPA39+bPxKPwR26L4RroeC+4OlN1K+kFtMuCmXrTzPfb?=
- =?us-ascii?Q?SzYqDrCbEtiz92Tfkv5gT8aoZ2ExaGzV13F02h23fXFbJUMOMt+SpHnwavEx?=
- =?us-ascii?Q?U02XkaypcF0oeHyNK5yzDXRdwnsL?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1c5ff7dc-5157-4631-be04-08d97690e303
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Sep 2021 08:31:30.6882
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: j9aKx0PsDpDLXckZLDNffHx5iQea/C6GWr8W99m2kq400VYqlDJZ7C9wgqLYmiZe/4p/G+Nb3JK4imOUHta0PTZwMPmT9Ss3C52u/+RbDaw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB4780
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1631368706-22561-1-git-send-email-haakon.bugge@oracle.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 12, 2021 at 03:10:57PM +0200, Len Baker wrote:
-> As noted in the "Deprecated Interfaces, Language Features, Attributes,
-> and Conventions" documentation [1], size calculations (especially
-> multiplication) should not be performed in memory allocator (or similar)
-> function arguments due to the risk of them overflowing. This could lead
-> to values wrapping around and a smaller allocation being made than the
-> caller was expecting. Using those allocations could lead to linear
-> overflows of heap memory and other misbehaviors.
+On Sat, Sep 11, 2021 at 03:58:26PM +0200, Håkon Bugge wrote:
+> From: Guillaume Nault <gnault@redhat.com>
 > 
-> So, use the struct_size() helper to do the arithmetic instead of the
-> argument "size + count * size" in the kzalloc() function.
+> __peernet2id() can be protected by RCU as it only calls idr_for_each(),
+> which is RCU-safe, and never modifies the nsid table.
 > 
-> [1] https://www.kernel.org/doc/html/v5.14/process/deprecated.html#open-coded-arithmetic-in-allocator-arguments
+> rtnl_net_dumpid() can also do lockless lookups. It does two nested
+> idr_for_each() calls on nsid tables (one direct call and one indirect
+> call because of rtnl_net_dumpid_one() calling __peernet2id()). The
+> netnsid tables are never updated. Therefore it is safe to not take the
+> nsid_lock and run within an RCU-critical section instead.
 > 
-> Signed-off-by: Len Baker <len.baker@gmx.com>
+> Signed-off-by: Guillaume Nault <gnault@redhat.com>
+> Signed-off-by: David S. Miller <davem@davemloft.net>
+> 
+> A nice side-effect of replacing spin_{lock,unlock}_bh() with
+> rcu_spin_{lock,unlock}() in peernet2id() is that it avoids the
+> situation where SoftIRQs get enabled whilst IRQs are turned off.
+> 
+> >From bugzilla.redhat.com/show_bug.cgi?id=1384179 (an ancient
+> 4.9.0-0.rc0 kernel):
+> 
+> dump_stack+0x86/0xc3
+> __warn+0xcb/0xf0
+> warn_slowpath_null+0x1d/0x20
+> __local_bh_enable_ip+0x9d/0xc0
+> _raw_spin_unlock_bh+0x35/0x40
+> peernet2id+0x54/0x80
+> netlink_broadcast_filtered+0x220/0x3c0
+> netlink_broadcast+0x1d/0x20
+> audit_log+0x6a/0x90
+> security_set_bools+0xee/0x200
+> []
+> 
+> Note, security_set_bools() calls write_lock_irq(). peernet2id() calls
+> spin_unlock_bh().
+> 
+> >From an internal (UEK) stack trace based on the v4.14.35 kernel (LTS
+> 4.14.231):
+> 
+> queued_spin_lock_slowpath+0xb/0xf
+> _raw_spin_lock_irqsave+0x46/0x48
+> send_mad+0x3d2/0x590 [ib_core]
+> ib_sa_path_rec_get+0x223/0x4d0 [ib_core]
+> path_rec_start+0xa3/0x140 [ib_ipoib]
+> ipoib_start_xmit+0x2b0/0x6a0 [ib_ipoib]
+> dev_hard_start_xmit+0xb2/0x237
+> sch_direct_xmit+0x114/0x1bf
+> __dev_queue_xmit+0x592/0x818
+> dev_queue_xmit+0x10/0x12
+> arp_xmit+0x38/0xa6
+> arp_send_dst.part.16+0x61/0x84
+> arp_process+0x825/0x889
+> arp_rcv+0x140/0x1c9
+> __netif_receive_skb_core+0x401/0xb39
+> __netif_receive_skb+0x18/0x59
+> netif_receive_skb_internal+0x45/0x119
+> napi_gro_receive+0xd8/0xf6
+> ipoib_ib_handle_rx_wc+0x1ca/0x520 [ib_ipoib]
+> ipoib_poll+0xcd/0x150 [ib_ipoib]
+> net_rx_action+0x289/0x3f4
+> __do_softirq+0xe1/0x2b5
+> do_softirq_own_stack+0x2a/0x35
+> </IRQ>
+> do_softirq+0x4d/0x6a
+> __local_bh_enable_ip+0x57/0x59
+> _raw_spin_unlock_bh+0x23/0x25
+> peernet2id+0x51/0x73
+> netlink_broadcast_filtered+0x223/0x41b
+> netlink_broadcast+0x1d/0x1f
+> rdma_nl_multicast+0x22/0x30 [ib_core]
+> send_mad+0x3e5/0x590 [ib_core]
+> ib_sa_path_rec_get+0x223/0x4d0 [ib_core]
+> rdma_resolve_route+0x287/0x810 [rdma_cm]
+> rds_rdma_cm_event_handler_cmn+0x311/0x7d0 [rds_rdma]
+> rds_rdma_cm_event_handler_worker+0x22/0x30 [rds_rdma]
+> process_one_work+0x169/0x3a6
+> worker_thread+0x4d/0x3e5
+> kthread+0x105/0x138
+> ret_from_fork+0x24/0x49
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+Please keep the original git changelog intact, otherwise it will mess
+with people who track these things.
 
-> ---
->  drivers/net/ethernet/netronome/nfp/nfp_net_repr.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
 > 
-> diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c b/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c
-> index 3b8e675087de..369f6ae700c7 100644
-> --- a/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c
-> +++ b/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c
-> @@ -499,8 +499,7 @@ struct nfp_reprs *nfp_reprs_alloc(unsigned int num_reprs)
->  {
->  	struct nfp_reprs *reprs;
+> Here, pay attention to ib_nl_make_request() which calls
+> spin_lock_irqsave() on a global lock just before calling
+> rdma_nl_multicast(). Thereafter, peernet2id() enables SoftIRQs, and
+> ipoib starts and calls the same path and ends up trying to acquire the
+> same global lock again.
 > 
-> -	reprs = kzalloc(sizeof(*reprs) +
-> -			num_reprs * sizeof(struct net_device *), GFP_KERNEL);
-> +	reprs = kzalloc(struct_size(reprs, reprs, num_reprs), GFP_KERNEL);
->  	if (!reprs)
->  		return NULL;
->  	reprs->num_reprs = num_reprs;
-> --
-> 2.25.1
+> (cherry picked from commit 2dce224f469f060b9998a5a869151ef83c08ce77)
 > 
+> Fixes: fba143c66abb ("netns: avoid disabling irq for netns id")
+> Signed-off-by: Håkon Bugge <haakon.bugge@oracle.com>
+> 
+> Conflicts:
+> 	net/core/net_namespace.c
+> 
+> 		* Due to context differences because v5.4 lacks commit
+>                   4905294162bd ("netns: Remove __peernet2id_alloc()").
+> 		  Only comments affected.
+
+No need for git conflicts messages here either :(
+
+I'll go fix this up by hand...
+
+thanks,
+
+greg k-h
