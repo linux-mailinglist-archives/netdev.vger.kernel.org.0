@@ -2,110 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02DDD4097DC
-	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 17:51:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B7124097E0
+	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 17:51:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245253AbhIMPwv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Sep 2021 11:52:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35242 "EHLO
+        id S231739AbhIMPxI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Sep 2021 11:53:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244694AbhIMPwl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Sep 2021 11:52:41 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E163C05BD13
-        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 08:45:39 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id i21so22087784ejd.2
-        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 08:45:39 -0700 (PDT)
+        with ESMTP id S243337AbhIMPxB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Sep 2021 11:53:01 -0400
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A54DC0698DD
+        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 08:46:11 -0700 (PDT)
+Received: by mail-io1-xd41.google.com with SMTP id g9so12698988ioq.11
+        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 08:46:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=xRmh/Y1qC4SCsf+8wkoMdhsYLeyTPz3IqXaTG4YoU7s=;
-        b=I7uE/JXr48ALBl7y0gsZQ9l/ZU+4F+IauUGv9CL01TIFma5Ja0wfc0VDH+BwhLpGdT
-         UUQqDGnCsduUutZftLUCGSbOfiMh2WPBfSj65GLWPoIvL+xpqgssyhmblMOifdlOEcf4
-         7hgJS+iYTCRHpOA7iIcUHLrkUw2Bt+gj6p8b55qV5/eli+TSl+Gq/l0pO8EZfKPmTHJB
-         47y4WjtruaLSp45GhYw6UsXQRKBBBn5w9sekvx+cq8tiKN8dNCxlUAFykI+2APX5kDXh
-         48VyOZ+uw2B8VlNvpleqcgfdoewpW6o/sxVTo5MUnadzpHEldw7GQAujVwxb7VXIxzOH
-         iWfw==
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=qYTa9jQaYR5csDF2LBAkpHj4XAZ2uOyXNEijJxDDpww=;
+        b=lLHSOV5Vd16f2qkqybU5UMjb4XenMdETfhV2hZ0321g4eumQ1vjinYuhCpvk8XmjeR
+         IRmcL4+if7p5Yk1Rkmo8uYuTLuh3HS/8g+/HvXxUEDqkfTpI3/Le34Rxo/QfmlktOtcn
+         iqDv4j55DEE4rYQiWpyxMkC706VoY2PeJl3KMZwioCJQJPHh8kn8uolBsIZxrdSmLwcl
+         9MKR1pGVmbvemSdqDAifBrXfYjSErA4B43fEbCB/zr+++p4TScITPlVlHUBn26AEUhSt
+         StdGIp25B01iPmibytSVyv43Be2sXQzLyqa9N/eD9SGrreEmDJ37dfRVU/O5Hg5c5e9t
+         Faaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=xRmh/Y1qC4SCsf+8wkoMdhsYLeyTPz3IqXaTG4YoU7s=;
-        b=1VDggtvCCQLQCB/1W09tdo5bky6IM+KYIwCw38kwKHe4DtsprbAQu/lYQ7hts6UXYy
-         tXkLbXRmaOuwDcUtviX9FrRBv+RjywndfZwrBGOG7oRGxEfDRF5cLYM/Hs9Wxv1yGScl
-         quDFj8xpva1a2RipiHoexPRC5GPjvL9aDx+1Xq4M6d7ZoF1o/ufTi2mmn/UXPoRDTcty
-         YjIuZ/IFBBAi3/S/763RJtn8j+FbhyaYEYrGCzrW93yACAL7ksdRLq61WXPCelwg9Jsg
-         BVpPMlS96jJ6nizGCDHDWRInj2eR46L9zMGAC79xutcGqU8tTugjCjMJitfpsJkGlJEA
-         FRmA==
-X-Gm-Message-State: AOAM533UVq1SwqvnCOSFzLU+IeOYg9dc6EcaUEpAL+x5tSiGkh13AsIw
-        Q7UVHTSFaV3gYggT+UiHBxg=
-X-Google-Smtp-Source: ABdhPJyXvLRyukQUR2cc42hz5n/jrkYAAoHdc7fFVSmTKBW8zqXTzYE2LRt+jS9gNOnQhr8AQE9KsQ==
-X-Received: by 2002:a17:907:3e20:: with SMTP id hp32mr13040070ejc.536.1631547937600;
-        Mon, 13 Sep 2021 08:45:37 -0700 (PDT)
-Received: from skbuf ([82.78.148.104])
-        by smtp.gmail.com with ESMTPSA id bw25sm3708255ejb.20.2021.09.13.08.45.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Sep 2021 08:45:37 -0700 (PDT)
-Date:   Mon, 13 Sep 2021 18:45:36 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Mauri Sandberg <sandberg@mailfence.com>,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        DENG Qingfang <dqfext@gmail.com>
-Subject: Re: [PATCH net-next 4/8] net: dsa: rtl8366rb: Always treat VLAN 0 as
- untagged
-Message-ID: <20210913154536.v7rc7ln7ctcuqxl7@skbuf>
-References: <20210913144300.1265143-1-linus.walleij@linaro.org>
- <20210913144300.1265143-5-linus.walleij@linaro.org>
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to:content-transfer-encoding;
+        bh=qYTa9jQaYR5csDF2LBAkpHj4XAZ2uOyXNEijJxDDpww=;
+        b=XyShdn9lTkymHImsrvILYQEu40Cnv2glXuS8dKHpO9gmKeF+tUTJuf4dAd0yGyDHrn
+         p5DvO8ce16rkV+o3C0cNpU12DqqZe+ipP5e99/TBY1OjjkUK63AWE+PIPZHYXBp8FERH
+         Bd8mWsMmN+WYTJsVvHCZ5NFQJVh2pYpJAvU2Dtp5vBvs1rnmDGQqD5u0rYQBbDLfLMhn
+         kDICCIfvIfKj5fEss4+2uCceLlTTEnqdqciBk0XBgU3xcjGI/UgaIsyWgu3eN+yUseFU
+         XReIxJgqs+MBUs+ptK5z8+MLvXDny/FsdQxCUnDOfbe2rFxKQ8m0ForKT8fJGyJedPMI
+         vUuA==
+X-Gm-Message-State: AOAM533EHlSdrzoK7tc+TxFrF1oqRKtobUPv2r07W220ypqZQwaiIXpM
+        KKIXkqvkOefNs6VOHNp53sVTAY9lTwtV0L2VrLs=
+X-Google-Smtp-Source: ABdhPJykqQhsJlMKkcxfWPqECIQbTrUgH3R5oVlfEio0LdGXfon2LKOoMzqN/XyGuZvDjUf3B5gO5OF7Ci0wg0D1YHY=
+X-Received: by 2002:a5d:9145:: with SMTP id y5mr9504192ioq.200.1631547970891;
+ Mon, 13 Sep 2021 08:46:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210913144300.1265143-5-linus.walleij@linaro.org>
+Reply-To: dr.morris.uadraguo1@gmail.com
+Sender: mrsnoorhidayah23@gmail.com
+Received: by 2002:a92:6012:0:0:0:0:0 with HTTP; Mon, 13 Sep 2021 08:46:10
+ -0700 (PDT)
+From:   =?UTF-8?Q?Ant=C3=B3nio_Manuel?= <dr.morris.uadraguo1@gmail.com>
+Date:   Mon, 13 Sep 2021 08:46:10 -0700
+X-Google-Sender-Auth: nf9tFdfrCgwuydjWIDvEB_77FCA
+Message-ID: <CAAZS_VWZygKi0nb-Fj33YfvWtZuQjw=46hs8uT1V44dumD5Y4w@mail.gmail.com>
+Subject: Attention Friend,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 13, 2021 at 04:42:56PM +0200, Linus Walleij wrote:
-> VLAN 0 shall always be treated as untagged, as per example
-> from other drivers (I guess from the spec).
-> 
-> Cc: Vladimir Oltean <olteanv@gmail.com>
-> Cc: Mauri Sandberg <sandberg@mailfence.com>
-> Cc: Alvin Šipraga <alsi@bang-olufsen.dk>
-> Cc: Florian Fainelli <f.fainelli@gmail.com>
-> Cc: DENG Qingfang <dqfext@gmail.com>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> ---
-> ChangeLog v1->v4:
-> - New patch after noting that other drivers always sets VLAN 0
->   as untagged.
-> ---
+Attention Friend,
 
-"Other drivers" are not always a good example.
+Your E-mail was selected online Lottery Lucky winner sum of
+=E2=82=AC2,500.000.00 Euros Only. Under Brexit/uk Lottery  and the United
+Nations. As World Leaders Come Together and summit a benefit
+conclusion for 2021/2022 Lottery. Congratulations you are the online
+Lottery Lucky Winner of the year 2021. you won the sum (Two Million
+Five Hundred Thousand Euros Only. our contact notice is to infor you
+to send your House or your Office Adress for your Claim. Meanwhile,
+your fund sum =E2=82=AC2,500.000.00 Euros will be Credit in ATM Card and se=
+nd
+to you without delay. the choice is yours. Congratulation!
 
-Technically speaking, IEEE 802.1Q-2018 wants switches to _preserve_ the
-VID 0 found inside packets when forwarding them, but treat them the same
-as untagged packets otherwise (aka classify them to the port's PVID, and
-forward them according to the forwarding domain of the $(PVID) VLAN in
-that bridge).
+Congratulations, you've won! The reality fact online lotteries.
 
-"Preserve" the VID 0 tag means "mark it as egress-tagged", so the
-opposite of the change you are making.
-
-Now, I know all too well it is not always possible to satisfy that
-expectation, and we have had some back-and-forth on other drivers about
-this, and ended up accepting the fact that the processing of VID 0 is
-more or less broken. User space deals with that the best it can
-(read as: sometimes it can't):
-https://sourceforge.net/p/linuxptp/mailman/message/37318312/
-
-But the justification given here to make VID 0 egress-untagged is pretty
-weak as it is.
+Yours Faithfully.
+Ant=C3=B3nio Manuel de Oliveira Guterres.
+UN Secretary General.
