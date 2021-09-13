@@ -2,225 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D19F4096B6
-	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 17:04:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFBFC4096BD
+	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 17:06:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344550AbhIMPGG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Sep 2021 11:06:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52316 "EHLO
+        id S1346314AbhIMPH5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Sep 2021 11:07:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243199AbhIMPGB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Sep 2021 11:06:01 -0400
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7666C0A893D;
-        Mon, 13 Sep 2021 06:38:18 -0700 (PDT)
-Received: by mail-oi1-x22e.google.com with SMTP id p2so14084591oif.1;
-        Mon, 13 Sep 2021 06:38:18 -0700 (PDT)
+        with ESMTP id S245253AbhIMPHv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Sep 2021 11:07:51 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD53EC0086C1
+        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 06:43:09 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id i4so4103570lfv.4
+        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 06:43:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=+A1PzhLE74Yrhc1O3usAzGVIUOozgkbbtbY+3Jj7aq0=;
-        b=Kfk4WHVTxvJDzCU/g7sFltp5ZTejJF+ZqnqLWtduIYpUdHSJjWiouiG3Uis5RJHXVT
-         8mbS881DwXU7XcvJihf9nIhGx5Gu1xrwPxcY3QRDt0A+QVOh3RiW4eyE1WCXTLjFwDIz
-         x8o8haSW7/Ytrp/HtRqYATwVZeucP2CFQzL/fU95RhMIGmGjNsuJ9nFIccw3sAQkKOFS
-         BmsbhG5r7W3Kp+zk2GZeFx2u1GCAPDPpCsA90yXEgdK+phVPgIdNSFGI2BNm0EYRp0a7
-         0HVrYQ68vhgrx3y+Uy4+ETvKUmUyUQRKUfFLU5nHjqezelTR1vjJXE38kqkmYNcVvHsr
-         z01Q==
+        bh=tQAMjy8VRvJI6lW4tYB0PDHpx0tw8jGULSmN/FaNG+g=;
+        b=Bbb/S9bUWOBSsQ3pUMTVPvPM3mELyvG1d1Lp39NxhVgmVk+79l6sqgb6LzWCOb4L0G
+         4xOUKFakiyAC6nrltsn+MB6bUBos4WlUB0nm7FHkp2RF21NdRLUEm4sunjTSdshoRv4K
+         eNLAmdHSnHkdwraYqYyvKCPiIaApFzA0oCxB65b4ONd9T/nu22W+N71E6gYzBiva34CW
+         IgswZYwE132B2XWdZPaLFJFxywQZsw2cZ4gmU7fM6bSCADjsWz2QqrQNXrytfyNxu0Ed
+         QWM6q7ZowPchznXUFAyvgGnmTOZr9Qu57dB5+Rp0N50r+t46TxzQtEkrBzX3RfDkuaUN
+         gsXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=+A1PzhLE74Yrhc1O3usAzGVIUOozgkbbtbY+3Jj7aq0=;
-        b=TTcmgjJjmG4clnTK7UmBlxQ4502foTi7o0av070h6tbSZiW9L0qXPMEHciX6srjuLk
-         Uex6zzz2NXL4lVZae1Frg8Nb+xn5CwaNerxio6NPpfgaA2hR2lNkw5UnY6I1AUUCJDMm
-         XaapLrB81jHnt1IIfPhmF4DzFHKDsoYrQQMKSDH3QFN6b73BNdP2LrEmW2NliYz8rn1+
-         dPHjMThoOi3yAevPNEoFxNDwk6od7nD6FPx7ahWKFEqFojZHqCsI4EK14jwkWeExh5nf
-         I5Ts9JeYMJMJvHLKHs7dTwXTBYzyWrxldHKosV/LodwpSF6wrwijN/anHDt/GWVAUIi7
-         05+w==
-X-Gm-Message-State: AOAM5319gC1C0rSsFklqHfcjdultD32+h7hLH59Zf+7hM+8WZ8gYDGHr
-        68hIhR9R5VyM9rwqiNgGgb82VbVLDzBjUcWNfg==
-X-Google-Smtp-Source: ABdhPJy5rGtbHvHSEHFoArM2w+Ui69oLC2M+l3QGHrBxg0R3q8AlcvYS1p1U2h5yD9kNDLcff/O1zQaHDfQYNTpHHuA=
-X-Received: by 2002:aca:6008:: with SMTP id u8mr8009784oib.127.1631540297900;
- Mon, 13 Sep 2021 06:38:17 -0700 (PDT)
+        bh=tQAMjy8VRvJI6lW4tYB0PDHpx0tw8jGULSmN/FaNG+g=;
+        b=JfGqHB09UeyBy6tbcHD0Y1+F3Rl2uqJDDW4DhieV+ojxs2em34o2ym0fE1GTN6vpwO
+         B4g1sMbw8zYE3qNtZr0CMdabSy1ysIdCRWZYU9NsWRqscgtk2Viedmd+j7H5bkHi48sW
+         YdfrP3dF289r90gYogrkd7/EqhUX+K9QGQQLJ3pcDs6NIIVwbAqYriAser1OxERHKTy5
+         IjMAb4Y1lEy9VOa9EAIysHW3+4WR9yvaQerl2Bu/Oq3gRa4CC5LZSrPXKPUEggIVejEv
+         q2vy6XqqtlKAb5StyhUe3iuSop/12ig9CGPUKRWEckwrz4kW8foysy24aaGFHSFkHGdp
+         Dlxg==
+X-Gm-Message-State: AOAM532oPzuRr9MLy514xlbQzWSdwjFg7YH6AsQYHv3EVXebVbiuah0y
+        NsxbCUsg7ymQW52cFghwJgrLWzdPQcKexwXXM3HQAA==
+X-Google-Smtp-Source: ABdhPJy07GBvfOdosgOPOaGQzsGX2CjzdZ3iQjt2WHHbgd+CW+rDXGN21SD5O2GYnEG/e8C/opszahQX3cMDMdCSpjk=
+X-Received: by 2002:a05:6512:6cd:: with SMTP id u13mr8847405lff.184.1631540588087;
+ Mon, 13 Sep 2021 06:43:08 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210912120932.993440-1-vladimir.oltean@nxp.com> <20210912120932.993440-6-vladimir.oltean@nxp.com>
-In-Reply-To: <20210912120932.993440-6-vladimir.oltean@nxp.com>
-From:   George McCollister <george.mccollister@gmail.com>
-Date:   Mon, 13 Sep 2021 08:38:05 -0500
-Message-ID: <CAFSKS=NjFM6FhaUntjZ30dbU50JYnNpjrZj2KL=HAgbxk+yyuQ@mail.gmail.com>
-Subject: Re: [RFC PATCH net 5/5] net: dsa: xrs700x: be compatible with masters
- which unregister on shutdown
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+References: <20210829131305.534417-1-dmitry.baryshkov@linaro.org>
+ <20210829131305.534417-2-dmitry.baryshkov@linaro.org> <CAPDyKFp9CM+x505URK=hcO0QFqcZrpqzQ6uJQ=ZLR6uq-_d5Ew@mail.gmail.com>
+ <a0f8766a-7810-0ca5-229a-a40f73041dd9@linaro.org>
+In-Reply-To: <a0f8766a-7810-0ca5-229a-a40f73041dd9@linaro.org>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Mon, 13 Sep 2021 15:42:31 +0200
+Message-ID: <CAPDyKFrfEQr0czXeNeJbKSfP0toKuowwOX7yb89c723BORRqCA@mail.gmail.com>
+Subject: Re: [RFC v2 01/13] power: add power sequencer subsystem
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Michael Grzeschik <m.grzeschik@pengutronix.de>,
-        open list <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
-        linux-mediatek@lists.infradead.org,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>
+        Stanimir Varbanov <svarbanov@mm-sol.com>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-bluetooth@vger.kernel.org, ath10k@lists.infradead.org,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 12, 2021 at 7:09 AM Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
->
-> Since commit 2f1e8ea726e9 ("net: dsa: link interfaces with the DSA
-> master to get rid of lockdep warnings"), DSA gained a requirement which
-> it did not fulfill, which is to unlink itself from the DSA master at
-> shutdown time.
->
-> Since the Arrow SpeedChips XRS700x driver was introduced after the bad
-> commit, it has never worked with DSA masters which decide to unregister
-> their net_device on shutdown, effectively hanging the reboot process.
-> To fix that, we need to call dsa_switch_shutdown.
->
-> These devices can be connected by I2C or by MDIO, and if I search for
-> I2C or MDIO bus drivers that implement their ->shutdown by redirecting
-> it to ->remove I don't see any, however this does not mean it would not
-> be possible. To be compatible with that pattern, it is necessary to
-> implement an "if this then not that" scheme, to avoid ->remove and
-> ->shutdown from being called both for the same struct device.
->
-> Fixes: ee00b24f32eb ("net: dsa: add Arrow SpeedChips XRS700x driver")
-> Link: https://lore.kernel.org/netdev/20210909095324.12978-1-LinoSanfilippo@gmx.de/
-> Reported-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
->  drivers/net/dsa/xrs700x/xrs700x.c      |  6 ++++++
->  drivers/net/dsa/xrs700x/xrs700x.h      |  1 +
->  drivers/net/dsa/xrs700x/xrs700x_i2c.c  | 18 ++++++++++++++++++
->  drivers/net/dsa/xrs700x/xrs700x_mdio.c | 18 ++++++++++++++++++
->  4 files changed, 43 insertions(+)
->
-> diff --git a/drivers/net/dsa/xrs700x/xrs700x.c b/drivers/net/dsa/xrs700x/xrs700x.c
-> index 130abb0f1438..469420941054 100644
-> --- a/drivers/net/dsa/xrs700x/xrs700x.c
-> +++ b/drivers/net/dsa/xrs700x/xrs700x.c
-> @@ -822,6 +822,12 @@ void xrs700x_switch_remove(struct xrs700x *priv)
->  }
->  EXPORT_SYMBOL(xrs700x_switch_remove);
->
-> +void xrs700x_switch_shutdown(struct xrs700x *priv)
-> +{
-> +       dsa_switch_shutdown(priv->ds);
-> +}
-> +EXPORT_SYMBOL(xrs700x_switch_shutdown);
-> +
->  MODULE_AUTHOR("George McCollister <george.mccollister@gmail.com>");
->  MODULE_DESCRIPTION("Arrow SpeedChips XRS700x DSA driver");
->  MODULE_LICENSE("GPL v2");
-> diff --git a/drivers/net/dsa/xrs700x/xrs700x.h b/drivers/net/dsa/xrs700x/xrs700x.h
-> index ff62cf61b091..4d58257471d2 100644
-> --- a/drivers/net/dsa/xrs700x/xrs700x.h
-> +++ b/drivers/net/dsa/xrs700x/xrs700x.h
-> @@ -40,3 +40,4 @@ struct xrs700x {
->  struct xrs700x *xrs700x_switch_alloc(struct device *base, void *devpriv);
->  int xrs700x_switch_register(struct xrs700x *priv);
->  void xrs700x_switch_remove(struct xrs700x *priv);
-> +void xrs700x_switch_shutdown(struct xrs700x *priv);
-> diff --git a/drivers/net/dsa/xrs700x/xrs700x_i2c.c b/drivers/net/dsa/xrs700x/xrs700x_i2c.c
-> index 489d9385b4f0..6deae388a0d6 100644
-> --- a/drivers/net/dsa/xrs700x/xrs700x_i2c.c
-> +++ b/drivers/net/dsa/xrs700x/xrs700x_i2c.c
-> @@ -109,11 +109,28 @@ static int xrs700x_i2c_remove(struct i2c_client *i2c)
->  {
->         struct xrs700x *priv = i2c_get_clientdata(i2c);
->
-> +       if (!priv)
-> +               return 0;
-> +
->         xrs700x_switch_remove(priv);
->
-> +       i2c_set_clientdata(i2c, NULL);
-> +
->         return 0;
->  }
->
-> +static void xrs700x_i2c_shutdown(struct i2c_client *i2c)
-> +{
-> +       struct xrs700x *priv = i2c_get_clientdata(i2c);
-> +
-> +       if (!priv)
-> +               return;
-> +
-> +       xrs700x_switch_shutdown(priv);
-> +
-> +       i2c_set_clientdata(i2c, NULL);
-> +}
-> +
->  static const struct i2c_device_id xrs700x_i2c_id[] = {
->         { "xrs700x-switch", 0 },
->         {},
-> @@ -137,6 +154,7 @@ static struct i2c_driver xrs700x_i2c_driver = {
->         },
->         .probe  = xrs700x_i2c_probe,
->         .remove = xrs700x_i2c_remove,
-> +       .shutdown = xrs700x_i2c_shutdown,
->         .id_table = xrs700x_i2c_id,
->  };
->
-> diff --git a/drivers/net/dsa/xrs700x/xrs700x_mdio.c b/drivers/net/dsa/xrs700x/xrs700x_mdio.c
-> index 44f58bee04a4..d01cf1073d49 100644
-> --- a/drivers/net/dsa/xrs700x/xrs700x_mdio.c
-> +++ b/drivers/net/dsa/xrs700x/xrs700x_mdio.c
-> @@ -136,7 +136,24 @@ static void xrs700x_mdio_remove(struct mdio_device *mdiodev)
->  {
->         struct xrs700x *priv = dev_get_drvdata(&mdiodev->dev);
->
-> +       if (!priv)
-> +               return;
-> +
->         xrs700x_switch_remove(priv);
-> +
-> +       dev_set_drvdata(&mdiodev->dev, NULL);
-> +}
-> +
-> +static void xrs700x_mdio_shutdown(struct mdio_device *mdiodev)
-> +{
-> +       struct xrs700x *priv = dev_get_drvdata(&mdiodev->dev);
-> +
-> +       if (!priv)
-> +               return;
-> +
-> +       xrs700x_switch_shutdown(priv);
-> +
-> +       dev_set_drvdata(&mdiodev->dev, NULL);
->  }
->
->  static const struct of_device_id __maybe_unused xrs700x_mdio_dt_ids[] = {
-> @@ -155,6 +172,7 @@ static struct mdio_driver xrs700x_mdio_driver = {
->         },
->         .probe  = xrs700x_mdio_probe,
->         .remove = xrs700x_mdio_remove,
-> +       .shutdown = xrs700x_mdio_shutdown,
->  };
->
->  mdio_module_driver(xrs700x_mdio_driver);
-> --
-> 2.25.1
->
+[...]
 
-Looks good to me.
-Assuming we do Reviewed-by for RFCs:
-Reviewed-by: George McCollister <george.mccollister@gmail.com>
+> >> +
+> >> +struct pwrseq *of_pwrseq_xlate_onecell(void *data, struct of_phandle_args *args)
+> >> +{
+> >> +       struct pwrseq_onecell_data *pwrseq_data = data;
+> >> +       unsigned int idx;
+> >> +
+> >> +       if (args->args_count != 1)
+> >> +               return ERR_PTR(-EINVAL);
+> >> +
+> >> +       idx = args->args[0];
+> >> +       if (idx >= pwrseq_data->num) {
+> >> +               pr_err("%s: invalid index %u\n", __func__, idx);
+> >> +               return ERR_PTR(-EINVAL);
+> >> +       }
+> >
+> > In many cases it's reasonable to leave room for future extensions, so
+> > that a provider could serve with more than one power-sequencer. I
+> > guess that is what you intend to do here, right?
+> >
+> > In my opinion, I don't think what would happen, especially since a
+> > power-sequence is something that should be specific to one particular
+> > device (a Qcom WiFi/Blutooth chip, for example).
+> >
+> > That said, I suggest limiting this to a 1:1 mapping between the device
+> > node and power-sequencer. I think that should simplify the code a bit.
+>
+> In fact the WiFi/BT example itself provides a non 1:1 mapping. In my
+> current design the power sequencer provides two instances (one for WiFi,
+> one for BT). This allows us to move the knowledge about "enable" pins to
+> the pwrseq. Once the QCA BT driver acquires and powers up the pwrseq,
+> the BT part is ready. No need to toggle any additional pins. Once the
+> WiFi pwrseq is powered up, the WiFi part is present on the bus and
+> ready, without any additional pin toggling.
+
+Aha, that seems reasonable.
+
+>
+> I can move onecell support to the separate patch if you think this might
+> simplify the code review.
+
+It doesn't matter, both options work for me.
+
+[...]
+
+Kind regards
+Uffe
