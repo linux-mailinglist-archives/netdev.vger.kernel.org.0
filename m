@@ -2,65 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35429408A6E
-	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 13:40:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C2A2408A70
+	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 13:40:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234635AbhIMLlZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Sep 2021 07:41:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47672 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236170AbhIMLlX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S239576AbhIMLlX (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 13 Sep 2021 07:41:23 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 83FE3610CE;
+Received: from mail.kernel.org ([198.145.29.99]:47670 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234635AbhIMLlX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Sep 2021 07:41:23 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 7283660EB4;
         Mon, 13 Sep 2021 11:40:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1631533207;
-        bh=4eocOMoUFWdGbngjx951r4htgeaDrO59c59Ughby/hY=;
+        bh=nKWtpchNTemXpf7ymtCDEYkYLMxGeRccqtAmbdDCegQ=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=CaoH7yqi8f+cuHPCjXK1RQZIuEvvt1qqVHtSG1nLsNa1CE4HszhYG71eBl3B634tN
-         s/TpWKbl+GAQxch38MTP8Pt2g9keQAxoFiuasW3WFIKH4PxX7SjMfiY3wxcRxajSlE
-         XtG+cR3+SD1h5LX9NaYRkJAYUU9W1gl6eclYI0RHT6tcH7yGsgMk0/aJzRQV2ev11d
-         65kbSEZg0FoB/Ok8MngLnFT4UIBPXkJeXog75GxWNQclioOb2k8K7qG9Em9SLARj0c
-         FLlgYUOgHyCVBVzDL0/xcYfSs4hRnB+vBy464cRx2sH9qBETm1g7d9xeK1fOc4LnwN
-         lFQpmPL72gryA==
+        b=Hp8OrOfvWDCm+fkOj6oNV/Cl3VLXJdBqtfDokKtHidgVwG9C6+NqNd+q7rnHzRRQg
+         V762kqpmSnHpswMSz/q/ZGVRY62tMXp4Cj9qCHL3iWMwrPGgxofTfP725yhhnqTlqx
+         Lpa9M2l3lC59Dk4W3bPyvDAHQscLY1MVcT2rDQIy6JWm8oF7PFrv4Gk8I7qdy1dkSX
+         BnCmMDaXqPX2HEB0LY1lxEyOR3FMyqn96Hsnnv0wgHjQW5ibu12HxxHUhy0CvbhIEO
+         Hgje9xP1HDrI4ds4CqIub9+uclygh5QFKBZ+74oZS+W67JOUnnBR/0jAexpkNAoTli
+         P0AHW1ZE21UNg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6683C60A6F;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 51C0060A47;
         Mon, 13 Sep 2021 11:40:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] Revert "ipv4: fix memory leaks in ip_cmsg_send() callers"
+Subject: Re: [PATCH net 0/3] bnxt_en: Bug fixes.
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163153320741.25807.6251954159474388165.git-patchwork-notify@kernel.org>
+Message-Id: <163153320733.25807.15907151450210347400.git-patchwork-notify@kernel.org>
 Date:   Mon, 13 Sep 2021 11:40:07 +0000
-References: <20210913040442.2627-1-yajun.deng@linux.dev>
-In-Reply-To: <20210913040442.2627-1-yajun.deng@linux.dev>
-To:     Yajun Deng <yajun.deng@linux.dev>
-Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org, edumazet@google.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+References: <1631464489-8046-1-git-send-email-michael.chan@broadcom.com>
+In-Reply-To: <1631464489-8046-1-git-send-email-michael.chan@broadcom.com>
+To:     Michael Chan <michael.chan@broadcom.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
+        edwin.peer@broadcom.com, gospo@broadcom.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This series was applied to netdev/net.git (refs/heads/master):
 
-On Mon, 13 Sep 2021 12:04:42 +0800 you wrote:
-> This reverts commit 919483096bfe75dda338e98d56da91a263746a0a.
+On Sun, 12 Sep 2021 12:34:46 -0400 you wrote:
+> The first patch fixes an error recovery regression just introduced
+> about a week ago.  The other two patches fix issues related to
+> freeing rings in the bnxt_close() path under error conditions.
 > 
-> There is only when ip_options_get() return zero need to free.
-> It already called kfree() when return error.
-> 
-> Fixes: 919483096bfe ("ipv4: fix memory leaks in ip_cmsg_send() callers")
-> Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
+> Edwin Peer (1):
+>   bnxt_en: make bnxt_free_skbs() safe to call after bnxt_free_mem()
 > 
 > [...]
 
 Here is the summary with links:
-  - Revert "ipv4: fix memory leaks in ip_cmsg_send() callers"
-    https://git.kernel.org/netdev/net/c/d7807a9adf48
+  - [net,1/3] bnxt_en: Fix error recovery regression
+    https://git.kernel.org/netdev/net/c/eca4cf12acda
+  - [net,2/3] bnxt_en: make bnxt_free_skbs() safe to call after bnxt_free_mem()
+    https://git.kernel.org/netdev/net/c/1affc01fdc60
+  - [net,3/3] bnxt_en: Clean up completion ring page arrays completely
+    https://git.kernel.org/netdev/net/c/985941e1dd5e
 
 You are awesome, thank you!
 --
