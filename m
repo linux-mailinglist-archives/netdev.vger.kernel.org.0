@@ -2,688 +2,244 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8795E409E3C
-	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 22:37:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 235AB409E24
+	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 22:29:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244376AbhIMUiO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Sep 2021 16:38:14 -0400
-Received: from pbmsgap01.intersil.com ([192.157.179.201]:35442 "EHLO
-        pbmsgap01.intersil.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241451AbhIMUiO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Sep 2021 16:38:14 -0400
-Received: from pps.filterd (pbmsgap01.intersil.com [127.0.0.1])
-        by pbmsgap01.intersil.com (8.16.0.42/8.16.0.42) with SMTP id 18DK36rl026133;
-        Mon, 13 Sep 2021 16:12:53 -0400
-Received: from pbmxdp02.intersil.corp (pbmxdp02.pb.intersil.com [132.158.200.223])
-        by pbmsgap01.intersil.com with ESMTP id 3b0r038t56-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 13 Sep 2021 16:12:52 -0400
-Received: from pbmxdp02.intersil.corp (132.158.200.223) by
- pbmxdp02.intersil.corp (132.158.200.223) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
- 15.1.2242.4; Mon, 13 Sep 2021 16:12:50 -0400
-Received: from localhost (132.158.202.109) by pbmxdp02.intersil.corp
- (132.158.200.223) with Microsoft SMTP Server id 15.1.2242.4 via Frontend
- Transport; Mon, 13 Sep 2021 16:12:50 -0400
-From:   <min.li.xe@renesas.com>
-To:     <richardcochran@gmail.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Min Li <min.li.xe@renesas.com>
-Subject: [PATCH net 3/3] ptp: ptp_clockmatrix: Add support for pll_mode=0 and manual ref switch of WF and WP
-Date:   Mon, 13 Sep 2021 16:12:34 -0400
-Message-ID: <1631563954-6700-3-git-send-email-min.li.xe@renesas.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1631563954-6700-1-git-send-email-min.li.xe@renesas.com>
-References: <1631563954-6700-1-git-send-email-min.li.xe@renesas.com>
-X-TM-AS-MML: disable
+        id S243725AbhIMUaz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Sep 2021 16:30:55 -0400
+Received: from mga17.intel.com ([192.55.52.151]:25818 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230404AbhIMUay (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Sep 2021 16:30:54 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10106"; a="201963708"
+X-IronPort-AV: E=Sophos;i="5.85,290,1624345200"; 
+   d="scan'208";a="201963708"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2021 13:29:38 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.85,290,1624345200"; 
+   d="scan'208";a="471701645"
+Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
+  by orsmga007.jf.intel.com with ESMTP; 13 Sep 2021 13:29:38 -0700
+Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
+ ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12; Mon, 13 Sep 2021 13:29:37 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12 via Frontend Transport; Mon, 13 Sep 2021 13:29:37 -0700
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.174)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2242.12; Mon, 13 Sep 2021 13:29:37 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LbjWD6yTu21eBqTI8gnxxGozK+93eqrnKVGSAslQgUjfR1z/yLEHO9qrv1WvapPi/tY/ylxUtriD9NdbFbmzpwazJfAxDhdPIBGJ2AIB1mfvpmD265zh1r667UEfTcY3wgH0h4c1zyFB7Nt0iRgwKdjPsZTa5snkPFAi/7u4jyseyOv5jKrmzpiFaSt8OGNLvGJGY9dMJPX7r4/aVMCU+EHZumRWmDXjmEZ8T1eq3ibtymgg+XbJvWs7apsLZF9CY6lh86NeOY8uLpWuJSqmq17U28paEHQ2DhEWSvl/oW05c4gjslbJY1zHqoP8yIAtnBmztNFokAQndOZnpkZIpg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
+ bh=0xETtVo1h/SpDiYCDFbYykZnELbyI2vX/2ovzxIWsag=;
+ b=BJIEF6v7fzYDcfDVqPGk6BW0mwjL0Mth4VXbqidxIcgzlfLDgr4c84/4kADw1tVmedjwps2LzSLmJBxGJIwnfKCvD7iJXj4QlhVNTD9lXxBfoKAUykGVEQi00oblj66HNQxJWCngxo98MEZEwWDJ5dHQSLMnZvxU/A/ledke8l/Am9WJkX25vI9zp9sHhUHFbLlQZag5FF/5dq5kJuuha7sNa4K/hUyOX2Q0DRulyQfy7t6aOsJIxCXlXhU/rVvy8WjvSroiJK5Xq3r0fGJY1bRHH3NGMSa1B52dMsbA+w6x6Q+1lj+pzQoWVI6wTjioTNBvhTb/Uz6XncCt3xMTNA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0xETtVo1h/SpDiYCDFbYykZnELbyI2vX/2ovzxIWsag=;
+ b=bM9eVzdocZ4iC5MdM9vJ6gxTfNtibIOv3yNb9j+hs6iAaGiGoNzcOFFKtzcnItrcIQPcHFvyjxm3wWlw4fBBg529PABSwpND5sZqya7P3cEHd/XcB6PYVlvF8dM/tpQrCoAtPypRQtTcsldqa2TehF2inTd3S8jUkUyHChR75qI=
+Received: from SN6PR11MB3229.namprd11.prod.outlook.com (2603:10b6:805:ba::28)
+ by SN6PR11MB2670.namprd11.prod.outlook.com (2603:10b6:805:61::25) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.17; Mon, 13 Sep
+ 2021 20:29:35 +0000
+Received: from SN6PR11MB3229.namprd11.prod.outlook.com
+ ([fe80::d0d5:c84e:41b8:a9e4]) by SN6PR11MB3229.namprd11.prod.outlook.com
+ ([fe80::d0d5:c84e:41b8:a9e4%3]) with mapi id 15.20.4500.019; Mon, 13 Sep 2021
+ 20:29:35 +0000
+From:   "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
+To:     "pwaskiewicz@jumptrading.com" <pwaskiewicz@jumptrading.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "pjwaskiewicz@gmail.com" <pjwaskiewicz@gmail.com>,
+        "Dziedziuch, SylwesterX" <sylwesterx.dziedziuch@intel.com>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        "Loktionov, Aleksandr" <aleksandr.loktionov@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
+Subject: Re: [PATCH 1/1] i40e: Avoid double IRQ free on error path in probe()
+Thread-Topic: [PATCH 1/1] i40e: Avoid double IRQ free on error path in probe()
+Thread-Index: AQHXmsiBRJTk/bztnkiJewAWaKSBqquMjXAAgAGS54CAFFexAIAAD6UA
+Date:   Mon, 13 Sep 2021 20:29:35 +0000
+Message-ID: <bebb58f34ed68025e95f8bc060af58a24333374b.camel@intel.com>
+References: <20210826221916.127243-1-pwaskiewicz@jumptrading.com>
+         <50c21a769633c8efa07f49fc8b20fdfb544cf3c5.camel@intel.com>
+         <20210831205831.GA115243@chidv-pwl1.w2k.jumptrading.com>
+         <MW4PR14MB4796AE05A868B47FE4F6E12AA1D99@MW4PR14MB4796.namprd14.prod.outlook.com>
+In-Reply-To: <MW4PR14MB4796AE05A868B47FE4F6E12AA1D99@MW4PR14MB4796.namprd14.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+authentication-results: jumptrading.com; dkim=none (message not signed)
+ header.d=none;jumptrading.com; dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 1c92a933-1a9e-4323-f4b9-08d976f53376
+x-ms-traffictypediagnostic: SN6PR11MB2670:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <SN6PR11MB2670EC2927B0D67CAF9A4225C6D99@SN6PR11MB2670.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: RJHw1TtqznI0K5DeNcQPbUuNW3GVkIfjuwP1SJGM0LeePcAd5uhK1SdZjn4MHkLNBrhXmlGmJQHqQ0Izw5XyK1b/yABn/B8V7noLpJQUFUNQW0gKoep8mW7jQ/XcwosZWS0GdjjOkZsRSPs/FfTH5gMHA+YE+OCbxJj4c73B+cQD9zWjcwhgSp9DJ2sO+QjXdK6mIx5Yu2qAx8uPShQ9lmwBM4LhoHdIn8xLtNJt5V/P76eqNrQF67IgYbn41hccuoSeJxP093G/pP8kXfB+opxq5SSNR0GvUVnCNUL5/ZHCKIIJyvoZnbzbS4bkZ4ksUpbI5tsiZIL/yBckmEv9LZw3ZMQGaHqCPhZd/EaULmM0/NXK1H+nZ67VAjNR1URQu86zWm8s3wHG25NTqRnGaYXvwqmLKw290JeW1O9ilIo+7ZzjQ3QcyHccXiYzsrggVORNxZ5gSTWBRZ27bh2FidCB2NL8GfCRvm3Tjwo3OX9NZkB839RZJGb1DA0BJaPH6NuoLwV7+MZEwyOBNsGzMIE9hzITp5Ew0hrHWorg8DFKg+kD8NyA/KDEKWkNkMaPQ1TWyJRRkDYl1RFZisQF1cubSSwk3oQ5XxCD0u4nyMVlwdd9Ttq2+y8EbrQmW/k+5uSYIrthmX74ipXZqNpakoNp1zHBCtfvJHnk/ZC7FerwxZBJgjR/FqDfZ5ndrgCFiy3C6uRBtLZxMH+oYTdFxQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB3229.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(366004)(396003)(136003)(346002)(376002)(5660300002)(6506007)(53546011)(26005)(8936002)(38100700002)(6486002)(91956017)(8676002)(76116006)(64756008)(478600001)(186003)(66446008)(38070700005)(66946007)(66476007)(66556008)(122000001)(6512007)(2906002)(4326008)(316002)(2616005)(6916009)(36756003)(54906003)(83380400001)(71200400001)(86362001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?RkxFbjgrNzBXRTQzdEk5RkQzbENNc2pvYlJ4cmxXd1BCUTNHbkVNZXlwaG9m?=
+ =?utf-8?B?NlJseU1VY1JsVHdJMkhzWFd4L3lQTmZRUHVmN0lCNkJSU2NOQUhlaXJUV0c2?=
+ =?utf-8?B?YnFWU3Z3R04wRGdtcE93RFd3R1NWNUR0QUVkMnQ0T3dSTFZQa2MvS3RBMDEw?=
+ =?utf-8?B?a2ttSG1MYUFKNkFkTHB3NDFzZldpN0ZhRHVrSXZ2cXR2ZkZNYUlzcS9rYmFy?=
+ =?utf-8?B?WnIxclRsemVzU2ZvMmJMUlluMHdFT0JJeVQzSWFYWkI3Nk5HNWFhNktnWi9O?=
+ =?utf-8?B?cElneUtYcXNTTkJRNGEvbXdLRG9HR3htMmFWblUxMGtVUmVxbjF3VUNmQUdO?=
+ =?utf-8?B?ZkJwb0FBSXBSdkd3djB2WWRGY2FTdEFBL1hhMXRBbXNEaGhwcFJCMmx5MDFV?=
+ =?utf-8?B?M0Jsd2h2N0RxUEVpaHR5RS80RTFGRm5pRm9ONmJUQmg3dXZpUkR3ME5xSGM4?=
+ =?utf-8?B?NjZDT1ZkVDdpS3NoRFZPVy9yU0FROFJoUXhIc29qOXhkbmtxclVLVkN1Smgy?=
+ =?utf-8?B?WGNkZ1NIbUQxZWRRL1hwajNzVVFDZzZUV2VFU2pDb1ZoRktKcmM2cGZlOTgr?=
+ =?utf-8?B?NEJlYVpOK3NzSHhlWmQ5bm9LeXJFTUgwelYzQTdJMllpMlc2dEpsQTFlLzVT?=
+ =?utf-8?B?Z2VGWHJibUZhdUo5MWxqeW9wUXN1YVYzKzZpVUQzTEdsd0U3OGhaV0hYWWEz?=
+ =?utf-8?B?UmI0S0FNSmozOTdVakNBNVM1TUd3cUYvRFFoYXYwMFFJMmRRNTJQMGc4Yyt1?=
+ =?utf-8?B?OFRwSG8wVVROU1E1bHB6OURpbXhUT09qK2xzRHR3N0dFNUY0Y2xPckc3anBa?=
+ =?utf-8?B?d3lNTTFuMjF4WUdpTThBcFJaWVFubFNVZkVTa2k2OVZDUG4rMEdpTDZTVit0?=
+ =?utf-8?B?T21rYTQ2ZG1yU29mckhYYnFIdUdkanlBQlppL2xYREZqdzloMUU3TzZlbWl6?=
+ =?utf-8?B?cSsrOUl2MXQ0ZHpyVmZuUzFPdVkvOUxneUx5Z3pZNUlmVFVsWG5jNytQOFE3?=
+ =?utf-8?B?cEw2NWNubVhwSkh4ZzkrS1UzcGhoWCs1YndvK3o4d2l3ejkxd1RUbzNjVFo4?=
+ =?utf-8?B?eVFFSTVTbFYzT0t5R1QwdUlpSGhKRlNIbnFnYXp1TFlISGRsTXZscFZYc0dz?=
+ =?utf-8?B?Nkl5QnVmZi8zY1N4bXIwYkkzTDg4WEVkRkZJMTcvaHFWZ2QxWkk4YjF4Qlp1?=
+ =?utf-8?B?REszbkh2Vk5mN3Q0dFNuT1lwWkF2VWdMVU0zNVIyQ2J0TjlrcUt2QXNFanFY?=
+ =?utf-8?B?aWhwRnlyOENtLzFzMEVJdm1ob3VoTEE0ZG8zZ1hLSXJrNk5IZ2JLL21BOStX?=
+ =?utf-8?B?aERtODdFRkRtY3NtWURYT3hIODJmN0V5Um50T0Q5U3Z4eVhwNnVmS1JxTjZk?=
+ =?utf-8?B?YzQ2QU5sOG5UUmFpVk8yUklXdXhhczErRkpoWWw2YUF4ZjFaQ0picU84azdS?=
+ =?utf-8?B?MTM0Qm00V3h0NjRZcnhHTmhicWJBNUxWaWc5ajhLeDcrVkpiVGZzUkxqSXFJ?=
+ =?utf-8?B?cU5Cb29ucHZCa2ZBSEtnTFZaUm1mMXhQS0NCT1lPb2VpRnJ2Ulp3NXp1YlEv?=
+ =?utf-8?B?US9GbVVaYmJCZXpOQzBleWpDbmx4MFFIZmwyMHFkcVJuZVFadDcxQjdMNUg0?=
+ =?utf-8?B?SHVvMGhOeXVJMUxtQXFhVG5BeVhFeHNKemJUOVVXV0VkZG1keTNmU25yYmY1?=
+ =?utf-8?B?SUMzZXEraHlLTmpBMjUvMHFQTS9PTHVJazNINjBnN1F6eWpTWE11RFh2MmFi?=
+ =?utf-8?B?VUpiZGR5THkrREhEMEpudzFZM3B4bUdZc08wdjNXSWl3Z09rL3k0eTd3VHZm?=
+ =?utf-8?B?aFViVnhTSUlKUGZQWm5QZz09?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <B90161EBAF766742B22CB46622E66296@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: kydTk9lugv6oQV-M2awbOv81H4-eTj92
-X-Proofpoint-GUID: kydTk9lugv6oQV-M2awbOv81H4-eTj92
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-09-13_09:2021-09-09,2021-09-13 signatures=0
-X-Proofpoint-Spam-Details: rule=junk_notspam policy=junk score=0 malwarescore=0 spamscore=0
- phishscore=0 mlxlogscore=999 mlxscore=0 adultscore=0 suspectscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2109030001 definitions=main-2109130120
-X-Proofpoint-Spam-Reason: mlx
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB3229.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1c92a933-1a9e-4323-f4b9-08d976f53376
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Sep 2021 20:29:35.0815
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: UUM5ce99CDJ7JWpUPrd9qOhlCE4iTSv2MtrXDrGd9SDyyXNWLapi+0s3d1JtboC5DJKOC2zlRoKQBE6Fyxcwi4NgF4wVpLM6kxQETUstQxQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR11MB2670
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Min Li <min.li.xe@renesas.com>
-
-Also correct how initialize_dco_operating_mode is called
-
-Signed-off-by: Min Li <min.li.xe@renesas.com>
----
- drivers/ptp/idt8a340_reg.h    |   4 +
- drivers/ptp/ptp_clockmatrix.c | 372 +++++++++++++++++++++++++++++++++++++-----
- drivers/ptp/ptp_clockmatrix.h |  47 +++++-
- 3 files changed, 376 insertions(+), 47 deletions(-)
-
-diff --git a/drivers/ptp/idt8a340_reg.h b/drivers/ptp/idt8a340_reg.h
-index dea8e1d..1c52101 100644
---- a/drivers/ptp/idt8a340_reg.h
-+++ b/drivers/ptp/idt8a340_reg.h
-@@ -635,6 +635,10 @@
- #define STATE_MODE_SHIFT                  (0)
- #define STATE_MODE_MASK                   (0x7)
- 
-+/* Bit definitions for the DPLL_MANU_REF_CFG register */
-+#define MANUAL_REFERENCE_SHIFT            (0)
-+#define MANUAL_REFERENCE_MASK             (0x1f)
-+
- /* Bit definitions for the GPIO_CFG_GBL register */
- #define SUPPLY_MODE_SHIFT                 (0)
- #define SUPPLY_MODE_MASK                  (0x3)
-diff --git a/drivers/ptp/ptp_clockmatrix.c b/drivers/ptp/ptp_clockmatrix.c
-index 2c552a0..1a2e3c2 100644
---- a/drivers/ptp/ptp_clockmatrix.c
-+++ b/drivers/ptp/ptp_clockmatrix.c
-@@ -33,6 +33,8 @@ module_param(firmware, charp, 0);
- 
- #define SETTIME_CORRECTION (0)
- 
-+static int _idtcm_adjfine(struct idtcm_channel *channel, long scaled_ppm);
-+
- static int contains_full_configuration(struct idtcm *idtcm,
- 				       const struct firmware *fw)
- {
-@@ -657,8 +659,8 @@ static int idtcm_sync_pps_output(struct idtcm_channel *channel)
- }
- 
- static int _idtcm_set_dpll_hw_tod(struct idtcm_channel *channel,
--			       struct timespec64 const *ts,
--			       enum hw_tod_write_trig_sel wr_trig)
-+				  struct timespec64 const *ts,
-+				  enum hw_tod_write_trig_sel wr_trig)
- {
- 	struct idtcm *idtcm = channel->idtcm;
- 	u8 buf[TOD_BYTE_COUNT];
-@@ -920,9 +922,9 @@ static int idtcm_start_phase_pull_in(struct idtcm_channel *channel)
- 	return err;
- }
- 
--static int idtcm_do_phase_pull_in(struct idtcm_channel *channel,
--				  s32 offset_ns,
--				  u32 max_ffo_ppb)
-+static int do_phase_pull_in_fw(struct idtcm_channel *channel,
-+			       s32 offset_ns,
-+			       u32 max_ffo_ppb)
- {
- 	int err;
- 
-@@ -991,7 +993,7 @@ static int _idtcm_adjtime_deprecated(struct idtcm_channel *channel, s64 delta)
- 	s64 now;
- 
- 	if (abs(delta) < PHASE_PULL_IN_THRESHOLD_NS_DEPRECATED) {
--		err = idtcm_do_phase_pull_in(channel, delta, 0);
-+		err = channel->do_phase_pull_in(channel, delta, 0);
- 	} else {
- 		idtcm->calculate_overhead_flag = 1;
- 
-@@ -1220,7 +1222,7 @@ static int idtcm_load_firmware(struct idtcm *idtcm,
- 	if (firmware) /* module parameter */
- 		snprintf(fname, sizeof(fname), "%s", firmware);
- 
--	dev_dbg(&idtcm->client->dev, "requesting firmware '%s'", fname);
-+	dev_info(&idtcm->client->dev, "firmware '%s'", fname);
- 
- 	err = request_firmware(&fw, fname, dev);
- 	if (err) {
-@@ -1354,7 +1356,7 @@ static int idtcm_perout_enable(struct idtcm_channel *channel,
- }
- 
- static int idtcm_get_pll_mode(struct idtcm_channel *channel,
--			      enum pll_mode *pll_mode)
-+			      enum pll_mode *mode)
- {
- 	struct idtcm *idtcm = channel->idtcm;
- 	int err;
-@@ -1366,13 +1368,13 @@ static int idtcm_get_pll_mode(struct idtcm_channel *channel,
- 	if (err)
- 		return err;
- 
--	*pll_mode = (dpll_mode >> PLL_MODE_SHIFT) & PLL_MODE_MASK;
-+	*mode = (dpll_mode >> PLL_MODE_SHIFT) & PLL_MODE_MASK;
- 
- 	return 0;
- }
- 
- static int idtcm_set_pll_mode(struct idtcm_channel *channel,
--			      enum pll_mode pll_mode)
-+			      enum pll_mode mode)
- {
- 	struct idtcm *idtcm = channel->idtcm;
- 	int err;
-@@ -1386,23 +1388,298 @@ static int idtcm_set_pll_mode(struct idtcm_channel *channel,
- 
- 	dpll_mode &= ~(PLL_MODE_MASK << PLL_MODE_SHIFT);
- 
--	dpll_mode |= (pll_mode << PLL_MODE_SHIFT);
--
--	channel->pll_mode = pll_mode;
-+	dpll_mode |= (mode << PLL_MODE_SHIFT);
- 
- 	err = idtcm_write(idtcm, channel->dpll_n,
- 			  IDTCM_FW_REG(idtcm->fw_ver, V520, DPLL_MODE),
- 			  &dpll_mode, sizeof(dpll_mode));
-+	return err;
-+}
-+
-+static int idtcm_get_manual_reference(struct idtcm_channel *channel,
-+				      enum manual_reference *ref)
-+{
-+	struct idtcm *idtcm = channel->idtcm;
-+	u8 dpll_manu_ref_cfg;
-+	int err;
-+
-+	err = idtcm_read(idtcm, channel->dpll_ctrl_n,
-+			 DPLL_CTRL_DPLL_MANU_REF_CFG,
-+			 &dpll_manu_ref_cfg, sizeof(dpll_manu_ref_cfg));
-+	if (err)
-+		return err;
-+
-+	dpll_manu_ref_cfg &= (MANUAL_REFERENCE_MASK << MANUAL_REFERENCE_SHIFT);
-+
-+	*ref = dpll_manu_ref_cfg >> MANUAL_REFERENCE_SHIFT;
-+
-+	return 0;
-+}
-+
-+static int idtcm_set_manual_reference(struct idtcm_channel *channel,
-+				      enum manual_reference ref)
-+{
-+	struct idtcm *idtcm = channel->idtcm;
-+	u8 dpll_manu_ref_cfg;
-+	int err;
-+
-+	err = idtcm_read(idtcm, channel->dpll_ctrl_n,
-+			 DPLL_CTRL_DPLL_MANU_REF_CFG,
-+			 &dpll_manu_ref_cfg, sizeof(dpll_manu_ref_cfg));
-+	if (err)
-+		return err;
-+
-+	dpll_manu_ref_cfg &= ~(MANUAL_REFERENCE_MASK << MANUAL_REFERENCE_SHIFT);
-+
-+	dpll_manu_ref_cfg |= (ref << MANUAL_REFERENCE_SHIFT);
-+
-+	err = idtcm_write(idtcm, channel->dpll_ctrl_n,
-+			  DPLL_CTRL_DPLL_MANU_REF_CFG,
-+			  &dpll_manu_ref_cfg, sizeof(dpll_manu_ref_cfg));
-+
-+	return err;
-+}
-+
-+static int configure_dpll_mode_write_frequency(struct idtcm_channel *channel)
-+{
-+	struct idtcm *idtcm = channel->idtcm;
-+	int err;
-+
-+	err = idtcm_set_pll_mode(channel, PLL_MODE_WRITE_FREQUENCY);
-+
-+	if (err)
-+		dev_err(&idtcm->client->dev, "Failed to set pll mode to write frequency");
-+	else
-+		channel->mode = PTP_PLL_MODE_WRITE_FREQUENCY;
-+
-+	return err;
-+}
-+
-+static int configure_dpll_mode_write_phase(struct idtcm_channel *channel)
-+{
-+	struct idtcm *idtcm = channel->idtcm;
-+	int err;
-+
-+	err = idtcm_set_pll_mode(channel, PLL_MODE_WRITE_PHASE);
-+
-+	if (err)
-+		dev_err(&idtcm->client->dev, "Failed to set pll mode to write phase");
-+	else
-+		channel->mode = PTP_PLL_MODE_WRITE_PHASE;
-+
-+	return err;
-+}
-+
-+static int configure_manual_reference_write_frequency(struct idtcm_channel *channel)
-+{
-+	struct idtcm *idtcm = channel->idtcm;
-+	int err;
-+
-+	err = idtcm_set_manual_reference(channel, MANU_REF_WRITE_FREQUENCY);
-+
-+	if (err)
-+		dev_err(&idtcm->client->dev, "Failed to set manual reference to write frequency");
-+	else
-+		channel->mode = PTP_PLL_MODE_WRITE_FREQUENCY;
-+
-+	return err;
-+}
-+
-+static int configure_manual_reference_write_phase(struct idtcm_channel *channel)
-+{
-+	struct idtcm *idtcm = channel->idtcm;
-+	int err;
-+
-+	err = idtcm_set_manual_reference(channel, MANU_REF_WRITE_PHASE);
-+
-+	if (err)
-+		dev_err(&idtcm->client->dev, "Failed to set manual reference to write phase");
-+	else
-+		channel->mode = PTP_PLL_MODE_WRITE_PHASE;
-+
-+	return err;
-+}
-+
-+static int idtcm_stop_phase_pull_in(struct idtcm_channel *channel)
-+{
-+	int err;
-+
-+	err = _idtcm_adjfine(channel, channel->current_freq_scaled_ppm);
- 	if (err)
- 		return err;
- 
-+	channel->phase_pull_in = false;
-+
- 	return 0;
- }
- 
-+static long idtcm_work_handler(struct ptp_clock_info *ptp)
-+{
-+	struct idtcm_channel *channel = container_of(ptp, struct idtcm_channel, caps);
-+	struct idtcm *idtcm = channel->idtcm;
-+
-+	mutex_lock(&idtcm->reg_lock);
-+
-+	(void)idtcm_stop_phase_pull_in(channel);
-+
-+	mutex_unlock(&idtcm->reg_lock);
-+
-+	/* Return a negative value here to not reschedule */
-+	return -1;
-+}
-+
-+static s32 phase_pull_in_scaled_ppm(s32 current_ppm, s32 phase_pull_in_ppb)
-+{
-+	/* ppb = scaled_ppm * 125 / 2^13 */
-+	/* scaled_ppm = ppb * 2^13 / 125 */
-+
-+	s64 max_scaled_ppm = (PHASE_PULL_IN_MAX_PPB << 13) / 125;
-+	s64 scaled_ppm = (phase_pull_in_ppb << 13) / 125;
-+
-+	current_ppm += scaled_ppm;
-+
-+	if (current_ppm > max_scaled_ppm)
-+		current_ppm = max_scaled_ppm;
-+	else if (current_ppm < -max_scaled_ppm)
-+		current_ppm = -max_scaled_ppm;
-+
-+	return current_ppm;
-+}
-+
-+static int do_phase_pull_in_sw(struct idtcm_channel *channel,
-+			       s32 delta_ns,
-+			       u32 max_ffo_ppb)
-+{
-+	s32 current_ppm = channel->current_freq_scaled_ppm;
-+	u32 duration_ms = MSEC_PER_SEC;
-+	s32 delta_ppm;
-+	s32 ppb;
-+	int err;
-+
-+	/* If the ToD correction is less than PHASE_PULL_IN_MIN_THRESHOLD_NS,
-+	 * skip. The error introduced by the ToD adjustment procedure would
-+	 * be bigger than the required ToD correction
-+	 */
-+	if (abs(delta_ns) < PHASE_PULL_IN_MIN_THRESHOLD_NS)
-+		return 0;
-+
-+	if (max_ffo_ppb == 0)
-+		max_ffo_ppb = PHASE_PULL_IN_MAX_PPB;
-+
-+	/* For most cases, keep phase pull-in duration 1 second */
-+	ppb = delta_ns;
-+	while (abs(ppb) > max_ffo_ppb) {
-+		duration_ms *= 2;
-+		ppb /= 2;
-+	}
-+
-+	delta_ppm = phase_pull_in_scaled_ppm(current_ppm, ppb);
-+
-+	err = _idtcm_adjfine(channel, delta_ppm);
-+
-+	if (err)
-+		return err;
-+
-+	/* schedule the worker to cancel phase pull-in */
-+	ptp_schedule_worker(channel->ptp_clock,
-+			    msecs_to_jiffies(duration_ms) - 1);
-+
-+	channel->phase_pull_in = true;
-+
-+	return 0;
-+}
-+
-+static int initialize_operating_mode_with_manual_reference(struct idtcm_channel *channel,
-+							   enum manual_reference ref)
-+{
-+	struct idtcm *idtcm = channel->idtcm;
-+
-+	channel->mode = PTP_PLL_MODE_UNSUPPORTED;
-+	channel->configure_write_frequency = configure_manual_reference_write_frequency;
-+	channel->configure_write_phase = configure_manual_reference_write_phase;
-+	channel->do_phase_pull_in = do_phase_pull_in_sw;
-+
-+	switch (ref) {
-+	case MANU_REF_WRITE_PHASE:
-+		channel->mode = PTP_PLL_MODE_WRITE_PHASE;
-+		break;
-+	case MANU_REF_WRITE_FREQUENCY:
-+		channel->mode = PTP_PLL_MODE_WRITE_FREQUENCY;
-+		break;
-+	default:
-+		dev_warn(&idtcm->client->dev,
-+			 "Unsupported MANUAL_REFERENCE: 0x%02x", ref);
-+	}
-+
-+	return 0;
-+}
-+
-+static int initialize_operating_mode_with_pll_mode(struct idtcm_channel *channel,
-+						   enum pll_mode mode)
-+{
-+	struct idtcm *idtcm = channel->idtcm;
-+	int err = 0;
-+
-+	channel->mode = PTP_PLL_MODE_UNSUPPORTED;
-+	channel->configure_write_frequency = configure_dpll_mode_write_frequency;
-+	channel->configure_write_phase = configure_dpll_mode_write_phase;
-+	channel->do_phase_pull_in = do_phase_pull_in_fw;
-+
-+	switch (mode) {
-+	case  PLL_MODE_WRITE_PHASE:
-+		channel->mode = PTP_PLL_MODE_WRITE_PHASE;
-+		break;
-+	case PLL_MODE_WRITE_FREQUENCY:
-+		channel->mode = PTP_PLL_MODE_WRITE_FREQUENCY;
-+		break;
-+	default:
-+		dev_err(&idtcm->client->dev,
-+			"Unsupported PLL_MODE: 0x%02x", mode);
-+		err = -EINVAL;
-+	}
-+
-+	return err;
-+}
-+
-+static int initialize_dco_operating_mode(struct idtcm_channel *channel)
-+{
-+	enum manual_reference ref = MANU_REF_XO_DPLL;
-+	enum pll_mode mode = PLL_MODE_DISABLED;
-+	struct idtcm *idtcm = channel->idtcm;
-+	int err;
-+
-+	channel->mode = PTP_PLL_MODE_UNSUPPORTED;
-+
-+	err = idtcm_get_pll_mode(channel, &mode);
-+	if (err) {
-+		dev_err(&idtcm->client->dev, "Unable to read pll mode!");
-+		return err;
-+	}
-+
-+	if (mode == PLL_MODE_PLL) {
-+		err = idtcm_get_manual_reference(channel, &ref);
-+		if (err) {
-+			dev_err(&idtcm->client->dev, "Unable to read manual reference!");
-+			return err;
-+		}
-+		err = initialize_operating_mode_with_manual_reference(channel, ref);
-+	} else {
-+		err = initialize_operating_mode_with_pll_mode(channel, mode);
-+	}
-+
-+	if (channel->mode == PTP_PLL_MODE_WRITE_PHASE)
-+		channel->configure_write_frequency(channel);
-+
-+	return err;
-+}
-+
- /* PTP Hardware Clock interface */
- 
- /**
-- * @brief Maximum absolute value for write phase offset in picoseconds
-+ * Maximum absolute value for write phase offset in picoseconds
-+ *
-+ * @channel:  channel
-+ * @delta_ns: delta in nanoseconds
-  *
-  * Destination signed register is 32-bit register in resolution of 50ps
-  *
-@@ -1417,8 +1694,8 @@ static int _idtcm_adjphase(struct idtcm_channel *channel, s32 delta_ns)
- 	s32 phase_50ps;
- 	s64 offset_ps;
- 
--	if (channel->pll_mode != PLL_MODE_WRITE_PHASE) {
--		err = idtcm_set_pll_mode(channel, PLL_MODE_WRITE_PHASE);
-+	if (channel->mode != PTP_PLL_MODE_WRITE_PHASE) {
-+		err = channel->configure_write_phase(channel);
- 		if (err)
- 			return err;
- 	}
-@@ -1456,8 +1733,8 @@ static int _idtcm_adjfine(struct idtcm_channel *channel, long scaled_ppm)
- 	u8 buf[6] = {0};
- 	s64 fcw;
- 
--	if (channel->pll_mode  != PLL_MODE_WRITE_FREQUENCY) {
--		err = idtcm_set_pll_mode(channel, PLL_MODE_WRITE_FREQUENCY);
-+	if (channel->mode  != PTP_PLL_MODE_WRITE_FREQUENCY) {
-+		err = channel->configure_write_frequency(channel);
- 		if (err)
- 			return err;
- 	}
-@@ -1574,29 +1851,29 @@ static int idtcm_adjtime(struct ptp_clock_info *ptp, s64 delta)
- 	enum scsr_tod_write_type_sel type;
- 	int err;
- 
-+	if (channel->phase_pull_in == true)
-+		return 0;
-+
-+	mutex_lock(&idtcm->reg_lock);
-+
- 	if (abs(delta) < PHASE_PULL_IN_THRESHOLD_NS) {
--		err = idtcm_do_phase_pull_in(channel, delta, 0);
-+		err = channel->do_phase_pull_in(channel, delta, 0);
- 		if (err)
- 			dev_err(&idtcm->client->dev,
- 				"Failed at line %d in %s!", __LINE__, __func__);
--		return err;
--	}
--
--	if (delta >= 0) {
--		ts = ns_to_timespec64(delta);
--		type = SCSR_TOD_WR_TYPE_SEL_DELTA_PLUS;
- 	} else {
--		ts = ns_to_timespec64(-delta);
--		type = SCSR_TOD_WR_TYPE_SEL_DELTA_MINUS;
-+		if (delta >= 0) {
-+			ts = ns_to_timespec64(delta);
-+			type = SCSR_TOD_WR_TYPE_SEL_DELTA_PLUS;
-+		} else {
-+			ts = ns_to_timespec64(-delta);
-+			type = SCSR_TOD_WR_TYPE_SEL_DELTA_MINUS;
-+		}
-+		err = _idtcm_settime(channel, &ts, type);
-+		if (err)
-+			dev_err(&idtcm->client->dev,
-+				"Failed at line %d in %s!", __LINE__, __func__);
- 	}
--
--	mutex_lock(&idtcm->reg_lock);
--
--	err = _idtcm_settime(channel, &ts, type);
--	if (err)
--		dev_err(&idtcm->client->dev,
--			"Failed at line %d in %s!", __LINE__, __func__);
--
- 	mutex_unlock(&idtcm->reg_lock);
- 
- 	return err;
-@@ -1626,15 +1903,21 @@ static int idtcm_adjfine(struct ptp_clock_info *ptp,  long scaled_ppm)
- 	struct idtcm *idtcm = channel->idtcm;
- 	int err;
- 
-+	if (channel->phase_pull_in == true)
-+		return 0;
-+
-+	if (scaled_ppm == channel->current_freq_scaled_ppm)
-+		return 0;
-+
- 	mutex_lock(&idtcm->reg_lock);
- 
- 	err = _idtcm_adjfine(channel, scaled_ppm);
--	if (err)
--		dev_err(&idtcm->client->dev,
--			"Failed at line %d in %s!", __LINE__, __func__);
- 
- 	mutex_unlock(&idtcm->reg_lock);
- 
-+	if (!err)
-+		channel->current_freq_scaled_ppm = scaled_ppm;
-+
- 	return err;
- }
- 
-@@ -1746,6 +2029,7 @@ static const struct ptp_clock_info idtcm_caps = {
- 	.gettime64	= &idtcm_gettime,
- 	.settime64	= &idtcm_settime,
- 	.enable		= &idtcm_enable,
-+	.do_aux_work	= &idtcm_work_handler,
- };
- 
- static const struct ptp_clock_info idtcm_caps_deprecated = {
-@@ -1758,6 +2042,7 @@ static const struct ptp_clock_info idtcm_caps_deprecated = {
- 	.gettime64	= &idtcm_gettime,
- 	.settime64	= &idtcm_settime_deprecated,
- 	.enable		= &idtcm_enable,
-+	.do_aux_work	= &idtcm_work_handler,
- };
- 
- static int configure_channel_pll(struct idtcm_channel *channel)
-@@ -1847,7 +2132,9 @@ static int idtcm_enable_channel(struct idtcm *idtcm, u32 index)
- 		return -EINVAL;
- 
- 	channel = &idtcm->channel[index];
-+
- 	channel->idtcm = idtcm;
-+	channel->current_freq_scaled_ppm = 0;
- 
- 	/* Set pll addresses */
- 	err = configure_channel_pll(channel);
-@@ -1892,13 +2179,9 @@ static int idtcm_enable_channel(struct idtcm *idtcm, u32 index)
- 	snprintf(channel->caps.name, sizeof(channel->caps.name),
- 		 "IDT CM TOD%u", index);
- 
--	/* Sync pll mode with hardware */
--	err = idtcm_get_pll_mode(channel, &channel->pll_mode);
--	if (err) {
--		dev_err(&idtcm->client->dev,
--			"Error: %s - Unable to read pll mode", __func__);
-+	err = initialize_dco_operating_mode(channel);
-+	if (err)
- 		return err;
--	}
- 
- 	err = idtcm_enable_tod(channel);
- 	if (err) {
-@@ -1931,7 +2214,6 @@ static void ptp_clock_unregister_all(struct idtcm *idtcm)
- 
- 	for (i = 0; i < MAX_TOD; i++) {
- 		channel = &idtcm->channel[i];
--
- 		if (channel->ptp_clock)
- 			ptp_clock_unregister(channel->ptp_clock);
- 	}
-diff --git a/drivers/ptp/ptp_clockmatrix.h b/drivers/ptp/ptp_clockmatrix.h
-index 843a9d7..833e590 100644
---- a/drivers/ptp/ptp_clockmatrix.h
-+++ b/drivers/ptp/ptp_clockmatrix.h
-@@ -57,15 +57,27 @@
- 
- #define IDTCM_MAX_WRITE_COUNT		(512)
- 
-+#define PHASE_PULL_IN_MAX_PPB		(144000)
-+#define PHASE_PULL_IN_MIN_THRESHOLD_NS	(2)
-+
- /*
-  * Return register address based on passed in firmware version
-  */
- #define IDTCM_FW_REG(FW, VER, REG)	(((FW) < (VER)) ? (REG) : (REG##_##VER))
- 
-+/* PTP PLL Mode */
-+enum ptp_pll_mode {
-+	PTP_PLL_MODE_MIN = 0,
-+	PTP_PLL_MODE_WRITE_FREQUENCY = PTP_PLL_MODE_MIN,
-+	PTP_PLL_MODE_WRITE_PHASE,
-+	PTP_PLL_MODE_UNSUPPORTED,
-+	PTP_PLL_MODE_MAX = PTP_PLL_MODE_UNSUPPORTED,
-+};
-+
- /* Values of DPLL_N.DPLL_MODE.PLL_MODE */
- enum pll_mode {
- 	PLL_MODE_MIN = 0,
--	PLL_MODE_NORMAL = PLL_MODE_MIN,
-+	PLL_MODE_PLL = PLL_MODE_MIN,
- 	PLL_MODE_WRITE_PHASE = 1,
- 	PLL_MODE_WRITE_FREQUENCY = 2,
- 	PLL_MODE_GPIO_INC_DEC = 3,
-@@ -75,6 +87,31 @@ enum pll_mode {
- 	PLL_MODE_MAX = PLL_MODE_DISABLED,
- };
- 
-+/* Values of DPLL_CTRL_n.DPLL_MANU_REF_CFG.MANUAL_REFERENCE */
-+enum manual_reference {
-+	MANU_REF_MIN = 0,
-+	MANU_REF_CLK0 = MANU_REF_MIN,
-+	MANU_REF_CLK1,
-+	MANU_REF_CLK2,
-+	MANU_REF_CLK3,
-+	MANU_REF_CLK4,
-+	MANU_REF_CLK5,
-+	MANU_REF_CLK6,
-+	MANU_REF_CLK7,
-+	MANU_REF_CLK8,
-+	MANU_REF_CLK9,
-+	MANU_REF_CLK10,
-+	MANU_REF_CLK11,
-+	MANU_REF_CLK12,
-+	MANU_REF_CLK13,
-+	MANU_REF_CLK14,
-+	MANU_REF_CLK15,
-+	MANU_REF_WRITE_PHASE,
-+	MANU_REF_WRITE_FREQUENCY,
-+	MANU_REF_XO_DPLL,
-+	MANU_REF_MAX = MANU_REF_XO_DPLL,
-+};
-+
- enum hw_tod_write_trig_sel {
- 	HW_TOD_WR_TRIG_SEL_MIN = 0,
- 	HW_TOD_WR_TRIG_SEL_MSB = HW_TOD_WR_TRIG_SEL_MIN,
-@@ -141,7 +178,13 @@ struct idtcm_channel {
- 	u16			tod_n;
- 	u16			hw_dpll_n;
- 	u8			sync_src;
--	enum pll_mode		pll_mode;
-+	enum ptp_pll_mode	mode;
-+	int			(*configure_write_frequency)(struct idtcm_channel *channel);
-+	int			(*configure_write_phase)(struct idtcm_channel *channel);
-+	int			(*do_phase_pull_in)(struct idtcm_channel *channel,
-+						    s32 offset_ns, u32 max_ffo_ppb);
-+	s32			current_freq_scaled_ppm;
-+	bool			phase_pull_in;
- 	u8			pll;
- 	u16			output_mask;
- };
--- 
-2.7.4
-
+T24gTW9uLCAyMDIxLTA5LTEzIGF0IDE5OjM3ICswMDAwLCBQSiBXYXNraWV3aWN6IHdyb3RlOg0K
+PiBIaSBUb255LA0KPiANCj4gPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiA+IEZyb206
+IFBKIFdhc2tpZXdpY3ogPHB3YXNraWV3aWN6QGp1bXB0cmFkaW5nLmNvbT4NCj4gPiBTZW50OiBU
+dWVzZGF5LCBBdWd1c3QgMzEsIDIwMjEgMTo1OSBQTQ0KPiA+IFRvOiBOZ3V5ZW4sIEFudGhvbnkg
+TCA8YW50aG9ueS5sLm5ndXllbkBpbnRlbC5jb20+DQo+ID4gQ2M6IGludGVsLXdpcmVkLWxhbkBs
+aXN0cy5vc3Vvc2wub3JnOyBwandhc2tpZXdpY3pAZ21haWwuY29tOw0KPiA+IExva3Rpb25vdiwN
+Cj4gPiBBbGVrc2FuZHIgPGFsZWtzYW5kci5sb2t0aW9ub3ZAaW50ZWwuY29tPjsgRmlqYWxrb3dz
+a2ksIE1hY2llag0KPiA+IDxtYWNpZWouZmlqYWxrb3dza2lAaW50ZWwuY29tPjsgRHppZWR6aXVj
+aCwgU3lsd2VzdGVyWA0KPiA+IDxzeWx3ZXN0ZXJ4LmR6aWVkeml1Y2hAaW50ZWwuY29tPjsgZGF2
+ZW1AZGF2ZW1sb2Z0Lm5ldDsgQnJhbmRlYnVyZywNCj4gPiBKZXNzZSA8amVzc2UuYnJhbmRlYnVy
+Z0BpbnRlbC5jb20+OyBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBQSg0KPiA+IFdhc2tpZXdpY3og
+PHB3YXNraWV3aWN6QGp1bXB0cmFkaW5nLmNvbT4NCj4gPiBTdWJqZWN0OiBSZTogW1BBVENIIDEv
+MV0gaTQwZTogQXZvaWQgZG91YmxlIElSUSBmcmVlIG9uIGVycm9yIHBhdGgNCj4gPiBpbiBwcm9i
+ZSgpDQo+ID4gDQo+ID4gT24gTW9uLCBBdWcgMzAsIDIwMjEgYXQgMDg6NTI6NDFQTSArMDAwMCwg
+Tmd1eWVuLCBBbnRob255IEwgd3JvdGU6DQo+ID4gPiBPbiBUaHUsIDIwMjEtMDgtMjYgYXQgMTc6
+MTkgLTA1MDAsIFBKIFdhc2tpZXdpY3ogd3JvdGU6DQo+ID4gPiA+IFRoaXMgZml4ZXMgYW4gZXJy
+b3IgcGF0aCBjb25kaXRpb24gd2hlbiBwcm9iZSgpIGZhaWxzIGR1ZSB0bw0KPiA+ID4gPiB0aGUN
+Cj4gPiA+ID4gZGVmYXVsdCBWU0kgbm90IGJlaW5nIGF2YWlsYWJsZSBvciBvbmxpbmUgeWV0IGlu
+IHRoZSBmaXJtd2FyZS4NCj4gPiA+ID4gSWYNCj4gPiA+ID4gdGhhdCBoYXBwZW5zLCB0aGUgcHJl
+dmlvdXMgdGVhcmRvd24gcGF0aCB3b3VsZCBjbGVhciB0aGUNCj4gPiA+ID4gaW50ZXJydXB0DQo+
+ID4gPiA+IHNjaGVtZSwgd2hpY2ggYWxzbyBmcmVlZCB0aGUgSVJRcyB3aXRoIHRoZSBPUy4gVGhl
+biB0aGUgZXJyb3INCj4gPiA+ID4gcGF0aA0KPiA+ID4gPiBmb3IgdGhlIHN3aXRjaCBzZXR1cCAo
+cHJlLVZTSSkgd291bGQgYXR0ZW1wdCB0byBmcmVlIHRoZSBPUw0KPiA+ID4gPiBJUlFzIGFzDQo+
+ID4gPiA+IHdlbGwuDQo+ID4gPiANCj4gPiA+IEhpIFBKLA0KPiA+IA0KPiA+IEhpIFRvbnksDQo+
+ID4gDQo+ID4gPiBUaGVzZSBjb21tZW50cyBhcmUgZnJvbSB0aGUgaTQwZSB0ZWFtLg0KPiA+ID4g
+DQo+ID4gPiBZZXMgaW4gY2FzZSB3ZSBmYWlsIGFuZCBnbyB0byBlcnJfdnNpcyBsYWJlbCBpbiBp
+NDBlX3Byb2JlKCkgd2UNCj4gPiA+IHdpbGwNCj4gPiA+IGNhbGwgaTQwZV9yZXNldF9pbnRlcnJ1
+cHRfY2FwYWJpbGl0eSB0d2ljZSBidXQgdGhpcyBpcyBub3QgYQ0KPiA+ID4gcHJvYmxlbS4NCj4g
+PiA+IFRoaXMgaXMgYmVjYXVzZSBwY2lfZGlzYWJsZV9tc2kvcGNpX2Rpc2FibGVfbXNpeCB3aWxs
+IGJlIGNhbGxlZA0KPiA+ID4gb25seQ0KPiA+ID4gaWYgYXBwcm9wcmlhdGUgZmxhZ3MgYXJlIHNl
+dCBvbiBQRiBhbmQgaWYgdGhpcyBmdW5jdGlvbiBpcyBjYWxsZWQNCj4gPiA+IG9uZXMNCj4gPiA+
+IGl0IHdpbGwgY2xlYXIgdGhvc2UgZmxhZ3MuIFNvIGV2ZW4gaWYgd2UgY2FsbA0KPiA+ID4gaTQw
+ZV9yZXNldF9pbnRlcnJ1cHRfY2FwYWJpbGl0eSB0d2ljZSB3ZSB3aWxsIG5vdCBkaXNhYmxlIG1z
+aQ0KPiA+ID4gdmVjdG9ycw0KPiA+ID4gdHdpY2UuDQo+ID4gPiANCj4gPiA+IFRoZSBpc3N1ZSBo
+ZXJlIGlzIGRpZmZlcmVudCBob3dldmVyLiBJdCBpcyBmYWlsaW5nIGluIGZyZWVfaXJxDQo+ID4g
+PiBiZWNhdXNlDQo+ID4gPiB3ZSBhcmUgdHJ5aW5nIHRvIGZyZWUgYWxyZWFkeSBmcmVlIHZlY3Rv
+ci4gVGhpcyBpcyBiZWNhdXNlIHNldHVwDQo+ID4gPiBvZg0KPiA+ID4gbWlzYyBpcnEgdmVjdG9y
+cyBpbiBpNDBlX3Byb2JlIGlzIGRvbmUgYWZ0ZXINCj4gPiA+IGk0MGVfc2V0dXBfcGZfc3dpdGNo
+LiBJZg0KPiA+ID4gaTQwZV9zZXR1cF9wZl9zd2l0Y2ggZmFpbHMgdGhlbiB3ZSB3aWxsIGp1bXAg
+dG8gZXJyX3ZzaXMgYW5kIGNhbGwNCj4gPiA+IGk0MGVfY2xlYXJfaW50ZXJydXB0X3NjaGVtZSB3
+aGljaCB3aWxsIHRyeSB0byBmcmVlIHRob3NlIG1pc2MgaXJxDQo+ID4gPiB2ZWN0b3JzIHdoaWNo
+IHdlcmUgbm90IHlldCBhbGxvY2F0ZWQuIFdlIHNob3VsZCBoYXZlIHRoZSBwcm9wZXINCj4gPiA+
+IGZpeA0KPiA+ID4gZm9yIHRoaXMgcmVhZHkgc29vbi4NCj4gPiANCj4gPiBZZXMsIEknbSBhd2Fy
+ZSBvZiB3aGF0J3MgaGFwcGVuaW5nIGhlcmUgYW5kIHdoeSBpdCdzIGZhaWxpbmcuDQo+ID4gU2Fk
+bHksIEkgYW0NCj4gPiBwcmV0dHkgc3VyZSBJIHdyb3RlIHRoaXMgY29kZSBiYWNrIGluIGxpa2Ug
+MjAxMSBvciAyMDEyLCBhbmQgYmVpbmcNCj4gPiBhbiBlcnJvcg0KPiA+IHBhdGgsIGl0IGhhc24n
+dCByZWFsbHkgYmVlbiB0ZXN0ZWQuDQo+ID4gDQo+ID4gSSBkb24ndCByZWFsbHkgY2FyZSBob3cg
+dGhpcyBnZXRzIGZpeGVkIHRvIGJlIGhvbmVzdC4gV2UgaGl0IHRoaXMNCj4gPiBpbiBwcm9kdWN0
+aW9uDQo+ID4gd2hlbiBvdXIgTE9NLCBmb3Igd2hhdGV2ZXIgcmVhc29uLCBmYWlsZWQgdG8gaW5p
+dGlhbGl6ZSB0aGUNCj4gPiBpbnRlcm5hbCBzd2l0Y2ggb24NCj4gPiBob3N0IGJvb3QuIFdlIGVz
+Y2FsYXRlZCB0byBvdXIgZGlzdHJvIHZlbmRvciwgdGhleSBkaWQgZXNjYWxhdGUgdG8NCj4gPiBJ
+bnRlbCwgYW5kDQo+ID4gaXQgd2Fzbid0IHJlYWxseSBwcmlvcml0aXplZC4gU28gSSBzZW50IGEg
+cGF0Y2ggdGhhdCBkb2VzIGZpeCB0aGUNCj4gPiBpc3N1ZS4NCj4gPiANCj4gPiBJZiB0aGUgdGVh
+bSB3YW50cyB0byByZXNwaW4gdGhpcyBzb21laG93LCBnbyBhaGVhZC4gQnV0IHRoaXMgZG9lcw0K
+PiA+IGZpeCB0aGUNCj4gPiBpbW1lZGlhdGUgaXNzdWUgdGhhdCB3aGVuIGJhaWxpbmcgb3V0IGlu
+IHByb2JlKCkgZHVlIHRvIHRoZSBtYWluDQo+ID4gVlNJIG5vdA0KPiA+IGJlaW5nIG9ubGluZSBm
+b3Igd2hhdGV2ZXIgcmVhc29uLCB0aGUgZHJpdmVyIGJsaW5kbHkgYXR0ZW1wdHMgdG8NCj4gPiBj
+bGVhbiB1cCB0aGUNCj4gPiBtaXNjIE1TSS1YIHZlY3RvciB0d2ljZS4gVGhpcyBjaGFuZ2UgZml4
+ZXMgdGhhdCBiZWhhdmlvci4gSSdkIGxpa2UNCj4gPiB0aGlzIHRvIG5vdA0KPiA+IGxhbmd1aXNo
+IHdhaXRpbmcgZm9yIGEgZGlmZmVyZW50IGZpeCwgc2luY2UgSSdkIGxpa2UgdG8gcG9pbnQgb3Vy
+DQo+ID4gZGlzdHJvIHZlbmRvciB0bw0KPiA+IHRoaXMgKG9yIGFub3RoZXIpIHBhdGNoIHRvIGNo
+ZXJyeS1waWNrLCBzbyB3ZSBjYW4gZ2V0IHRoaXMgaW50bw0KPiA+IHByb2R1Y3Rpb24uDQo+ID4g
+T3RoZXJ3aXNlIG91ciBwbGF0Zm9ybSByb2xsb3V0IGhpdHRpbmcgdGhpcyBwcm9ibGVtIGlzIGdv
+aW5nIHRvIGJlDQo+ID4gcXVpdGUNCj4gPiBidW1weSwgd2hpY2ggaXMgdmVyeSBtdWNoIG5vdCBp
+ZGVhbC4NCj4gDQo+IEl0J3MgYmVlbiAyIHdlZWtzIHNpbmNlIEkgcmVwbGllZC4gIEFueSB1cGRh
+dGUgb24gdGhpcz8gIE1hY2llaiBoYWQNCj4gYWxyZWFkeSByZXZpZXdlZCB0aGUgcGF0Y2gsIHNv
+IGhvcGluZyB3ZSBjYW4ganVzdCBtb3ZlIGFsb25nIHdpdGggaXQsDQo+IG9yIGdldCBzb21ldGhp
+bmcgZWxzZSBvdXQgc29vbj8NCj4gDQo+IEknZCByZWFsbHkgbGlrZSB0aGlzIHRvIG5vdCBqdXN0
+IGZhbGwgaW50byBhIHZvaWQgd2FpdGluZyBmb3IgYQ0KPiBkaWZmZXJlbnQgcGF0Y2ggd2hlbiB0
+aGlzIGZpeGVzIHRoZSBpc3N1ZS4NCg0KSGkgUEosDQoNCkkgaGF2ZW4ndCBzZWVuIGEgcmVjZW50
+IHVwZGF0ZSBvbiB0aGlzLiBJJ20gYXNraW5nIGZvciBhbiB1cGRhdGUuDQpPdGhlcndpc2UsIEFs
+ZXggYW5kIFN5bHdlc3RlciBhcmUgb24gdGhpcyB0aHJlYWQ7IHBlcmhhcHMgdGhleSBoYXZlDQpz
+b21lIGluZm8uDQoNClRoYW5rcywNClRvbnkNCg0KPiAtUEoNCj4gDQo+IF9fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fDQo+IA0KPiBOb3RlOiBUaGlzIGVtYWlsIGlzIGZvciB0aGUgY29u
+ZmlkZW50aWFsIHVzZSBvZiB0aGUgbmFtZWQNCj4gYWRkcmVzc2VlKHMpIG9ubHkgYW5kIG1heSBj
+b250YWluIHByb3ByaWV0YXJ5LCBjb25maWRlbnRpYWwsIG9yDQo+IHByaXZpbGVnZWQgaW5mb3Jt
+YXRpb24gYW5kL29yIHBlcnNvbmFsIGRhdGEuIElmIHlvdSBhcmUgbm90IHRoZQ0KPiBpbnRlbmRl
+ZCByZWNpcGllbnQsIHlvdSBhcmUgaGVyZWJ5IG5vdGlmaWVkIHRoYXQgYW55IHJldmlldywNCj4g
+ZGlzc2VtaW5hdGlvbiwgb3IgY29weWluZyBvZiB0aGlzIGVtYWlsIGlzIHN0cmljdGx5IHByb2hp
+Yml0ZWQsIGFuZA0KPiByZXF1ZXN0ZWQgdG8gbm90aWZ5IHRoZSBzZW5kZXIgaW1tZWRpYXRlbHkg
+YW5kIGRlc3Ryb3kgdGhpcyBlbWFpbCBhbmQNCj4gYW55IGF0dGFjaG1lbnRzLiBFbWFpbCB0cmFu
+c21pc3Npb24gY2Fubm90IGJlIGd1YXJhbnRlZWQgdG8gYmUgc2VjdXJlDQo+IG9yIGVycm9yLWZy
+ZWUuIFRoZSBDb21wYW55LCB0aGVyZWZvcmUsIGRvZXMgbm90IG1ha2UgYW55IGd1YXJhbnRlZXMN
+Cj4gYXMgdG8gdGhlIGNvbXBsZXRlbmVzcyBvciBhY2N1cmFjeSBvZiB0aGlzIGVtYWlsIG9yIGFu
+eSBhdHRhY2htZW50cy4NCj4gVGhpcyBlbWFpbCBpcyBmb3IgaW5mb3JtYXRpb25hbCBwdXJwb3Nl
+cyBvbmx5IGFuZCBkb2VzIG5vdCBjb25zdGl0dXRlDQo+IGEgcmVjb21tZW5kYXRpb24sIG9mZmVy
+LCByZXF1ZXN0LCBvciBzb2xpY2l0YXRpb24gb2YgYW55IGtpbmQgdG8gYnV5LA0KPiBzZWxsLCBz
+dWJzY3JpYmUsIHJlZGVlbSwgb3IgcGVyZm9ybSBhbnkgdHlwZSBvZiB0cmFuc2FjdGlvbiBvZiBh
+DQo+IGZpbmFuY2lhbCBwcm9kdWN0LiBQZXJzb25hbCBkYXRhLCBhcyBkZWZpbmVkIGJ5IGFwcGxp
+Y2FibGUgZGF0YQ0KPiBwcm90ZWN0aW9uIGFuZCBwcml2YWN5IGxhd3MsIGNvbnRhaW5lZCBpbiB0
+aGlzIGVtYWlsIG1heSBiZSBwcm9jZXNzZWQNCj4gYnkgdGhlIENvbXBhbnksIGFuZCBhbnkgb2Yg
+aXRzIGFmZmlsaWF0ZWQgb3IgcmVsYXRlZCBjb21wYW5pZXMsIGZvcg0KPiBsZWdhbCwgY29tcGxp
+YW5jZSwgYW5kL29yIGJ1c2luZXNzLXJlbGF0ZWQgcHVycG9zZXMuIFlvdSBtYXkgaGF2ZQ0KPiBy
+aWdodHMgcmVnYXJkaW5nIHlvdXIgcGVyc29uYWwgZGF0YTsgZm9yIGluZm9ybWF0aW9uIG9uIGV4
+ZXJjaXNpbmcNCj4gdGhlc2UgcmlnaHRzIG9yIHRoZSBDb21wYW554oCZcyB0cmVhdG1lbnQgb2Yg
+cGVyc29uYWwgZGF0YSwgcGxlYXNlDQo+IGVtYWlsIGRhdGFyZXF1ZXN0c0BqdW1wdHJhZGluZy5j
+b20uDQo=
