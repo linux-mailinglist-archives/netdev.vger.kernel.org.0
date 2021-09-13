@@ -2,183 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 595B640976E
-	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 17:35:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CF6C4097C8
+	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 17:49:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244937AbhIMPga (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Sep 2021 11:36:30 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:44280 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235347AbhIMPfx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Sep 2021 11:35:53 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.0.43) with SMTP id 18DF7CZ2026680;
-        Mon, 13 Sep 2021 08:33:57 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=UxMaJbZdLdOjea8LgFZRqICBPpo7hwVcAyafOhAkykA=;
- b=fhdTFgUoTKivocSiMtM95jLeR1w+VfjTcGs851XHmtIKkjxjzObqVB2RyZRr6GU1UmBz
- FqMW+YFiarnTTrLQnZ45H5XQep0yKa0qp/GV8z173UnY+bdHwaBJPWcT9TandI7qy/hZ
- zWxSIS5HioxNuIiKlQeqIFsjKLE2fCwre2E= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 3b1k9rnfuv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 13 Sep 2021 08:33:56 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.198) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.14; Mon, 13 Sep 2021 08:33:55 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=B5MtAPZ3P5NNjKSvdmW89Q5JhjlfZ9dc3o3QGx+pckL0Oz2x6AH55U6PpeUi0Wiecia4fVyXkT/50s4vTeZMLJNwXmjJiHx7pwqlnGfo/L0DwtqJi2yHRU1y1NM1wbrd3rBrj88lA8gK37tBtl8zob311K9GWPw3vWnN7kyqSL+N8+Rsu2xnT4SpLb5Jnpkl6JNXHUkr77Gdhg8LuHiZe3JD8Od7JtVH5ylXkA3h00bXkywQnlSCEkCepNW/B0gUcJsjgUhY70c5iG4WRJkEayW3r47sGshURVJSrmITym+3hnHOgBCFNkIQMgDLdZVYfDUeI35Dh0ojzczsk3/M3A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=UxMaJbZdLdOjea8LgFZRqICBPpo7hwVcAyafOhAkykA=;
- b=YvD4qtIOyIJ6g+OX5Kdu3/7FUtu+iuz+kYgilBBP+fGosb9WedZRbigxPori2f6qNqPgHEZ0iKvvIZQVDzyHnTMNAHfu219tQCHTvgJuWNWr8+JbFqe5hagNIEeLD6cFem41ZlMmf0eFIQQAx5ST7gu1mAqOvDqgMgoqnXvxoTMeI9zBdQKbcfzJl2gV7G+96qI8TLY/OQO6Axdi6jCyIxGdZSmxOEDriHseL8eUmJ+ourPkl+PJtJdRzgKCPnDsYZFNTcb6JAx3bmi90KAt5AZ9gmVu4NrVBtw9T7kFV9YjK+q70Y3i+g19L9RJTiMZK+Ca10+2a4za65aypRj/xA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=fb.com;
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
- by SA0PR15MB3790.namprd15.prod.outlook.com (2603:10b6:806:86::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.16; Mon, 13 Sep
- 2021 15:33:54 +0000
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::51ef:4b41:5aea:3f75]) by SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::51ef:4b41:5aea:3f75%6]) with mapi id 15.20.4500.019; Mon, 13 Sep 2021
- 15:33:54 +0000
-Subject: Re: [PATCH] bpf: fix kmalloc bug in bpf_check
-To:     Dongliang Mu <mudongliangabcd@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Willy Tarreau <w@1wt.eu>
-CC:     <syzbot+f3e749d4c662818ae439@syzkaller.appspotmail.com>,
-        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20210913110246.2955737-1-mudongliangabcd@gmail.com>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <4f260295-b7a2-92ad-3bb0-06074288dd23@fb.com>
-Date:   Mon, 13 Sep 2021 08:33:51 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.14.0
-In-Reply-To: <20210913110246.2955737-1-mudongliangabcd@gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-X-ClientProxiedBy: BY5PR16CA0030.namprd16.prod.outlook.com
- (2603:10b6:a03:1a0::43) To SN6PR1501MB2064.namprd15.prod.outlook.com
- (2603:10b6:805:d::27)
-Received: from [IPv6:2620:10d:c085:21e8::132d] (2620:10d:c090:400::5:a3) by BY5PR16CA0030.namprd16.prod.outlook.com (2603:10b6:a03:1a0::43) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.14 via Frontend Transport; Mon, 13 Sep 2021 15:33:53 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5548c946-dc59-4797-f158-08d976cbe530
-X-MS-TrafficTypeDiagnostic: SA0PR15MB3790:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <SA0PR15MB37904F24133643F93DF3011AD3D99@SA0PR15MB3790.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:3276;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: +eQH3sCZJa81UqSttYfFknqorvJLfqXJdwfS8f4/0AFNgDBblMla7Fe+s9mgl56j3q+UtWtwFI3OL9S5WJ2SvGS9oN7v2IPBTYtp7NJPg3Vp0ZLPgLw7r0ea59/7gkVnKIwUZHBXZr/Lc8sWIQp0CEM49vPDhf7WpxSne/5tenAa9wsSDkuUZZd2l+kyzc2T2Y1xMlR/Pk9KS4In1KFM78uG1ycboJ/ifNo6GlZ5lCuXXP466vVZbVz/aPbbGMUgaDmoB2QQASv/PyywKYKauH12vbx91Xd20wq6YHu50eeM+mzIZHhyVjCJlH3P4hNuwkZLRa/E7BdyQ7buxhNqmGTyGol6X140QDEELuixfbCTqum7vpo5WpDYoRVbhkcl9SghJ99sb3w28CO6G2n1L2pPEa6Q8vdhd1q7TF/nFJU5zwsJdMrjgA0Sk83GOnGvlQ97IKrkdYh08x9uQK1epQOYE2u2LDfps3vZ77iB2iJCqlhnQXkq1Z0d4AkQDlO1bTnsXYq/NZnfFu/rOmVxPM2PjTYu8y11dEz15x+gbYnzGS7N1PSY4A/b9TpBCp1zSbB38j/EP+BamNQ9jFrk1fZp13TgWmL42wDI+w4R0p674NTa0xrKIvHE3G4zNNqpTM/vQwnlt1o/Zic993Y3gsf9bTq5wdvgRv/aeTOVNgblfMd+IKfxDENY3wtyZEmucexMGeLTukIlRU/oNIuFdxEVzZUDzwXWZnlaz+32LOqOx/Dbjve+wc4xLRppvIywm3SI6xGQoUpnFJC26aNgGD4kmTfuY4o7wvmZ/YXzNTiTFYOQR1cPVCcCQQs/R0TyNIgKJstm8nyWMNkc4aF/Kw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(366004)(39860400002)(346002)(376002)(136003)(52116002)(5660300002)(478600001)(110136005)(53546011)(966005)(2906002)(186003)(31696002)(316002)(2616005)(8936002)(4326008)(83380400001)(8676002)(66556008)(66476007)(38100700002)(86362001)(66946007)(7416002)(31686004)(6486002)(36756003)(781001)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?cVpQMHBLWDBqNmtXNjk1S3NYczlZN1UrRlloVDVDeTRoalN1WjBhdkpPdDI4?=
- =?utf-8?B?OEVHUlhYejZJRytsbGdONXFkbzAvZGJZbHk1a3FHempSbktKbFlzUjNPWHJQ?=
- =?utf-8?B?cTZhQllsQkV4YVcyTDR2dHFkWkp1V2RaSHdmZS90ZTNmVjdJVmRqQ3RNU3Aw?=
- =?utf-8?B?Y1puaXZodnhSdmpOTTRFenlndkdaRlFLOHhISlhMY3hZcVNlcWdiWkRvQWM2?=
- =?utf-8?B?NGhQdjJYZHEzZXQwUUF2dWtKTHZqeHo2dER0SGVmY3JOZXFzVHExYjA3emQx?=
- =?utf-8?B?MTYwM08zM3JicC9XZUZVaXZkbDdBSDA4SHV3UjYvRk9FeW82dGhGdlhZMWJV?=
- =?utf-8?B?NmZUVThpQTJERkVvT2lTd09RQmZXNHdJS3JUckQ3MHU3MjdhVm40dUdPWTVY?=
- =?utf-8?B?QVVJLzM3QjQzSDFjMkNvV2xNVE9oYU55b0RDenF4K2o4dFZtMnVwRVRwVzhF?=
- =?utf-8?B?VVhLNnh0Ymhxb3VyeTNYcFptTFNvUnFvT3FhM3FCM3kyK1YyNlFrQkVMMVUw?=
- =?utf-8?B?ZERLV1IyNldrVEFncVcxNlIrRlVMbER5RlBhQXNTWDhmSWRUdko1TnNQNnpy?=
- =?utf-8?B?S3VRMFJscktnRHlLMDR6bVZrL0NaV25LQ0phS0tjdmJQZVhzYmsvQ093WDRv?=
- =?utf-8?B?NmNCcTJGRXZ4SENVeUErYmdpR0owZmVSdHkxRWtGS2hrUTRONndSSVV1b2tq?=
- =?utf-8?B?cTN1WDNqVlVvakJZWWlTZGRSMEZ2dklzVVlFMkFCMTEzUVliTURzUWNKNjNt?=
- =?utf-8?B?cHRpRy9VOXNqTk9jTFRpZFVtMkg4WnpBL2taM0NVUWVyQllTNmFiUEg4ODBi?=
- =?utf-8?B?VHZPK0VueUwxbFlSQ0RxZFhKODFwVW5NL3BFbFl2S3lWcVY4VCtTK29qT3BJ?=
- =?utf-8?B?OFVuWm1NY3dNSStpaHJEWEZiRUtYNXp1R1o2QVYyanRtV2l6K1Z0SFJkYk10?=
- =?utf-8?B?YVVJSkNxdnFSRlF6RVUrWXY4dU14ME9pTEdSMnVmMzBZeWlmN0gvdkZEOCtC?=
- =?utf-8?B?RVB4SDd3Z2pKQVJTazg5VExHNUF0Skt1R1RENkd5ZnY5ZEMzVTlqYXZHdEFD?=
- =?utf-8?B?NTRSMDdZOGljQ1FkY243RmlKSVcxZWtBNEhic3k1T3JIdmx2SWE4ZlUvbzBj?=
- =?utf-8?B?b0dwRC8zZmdGZVJsY2hreFZHdC9jRGZ1bnZYUjZSNFhKaWV3bndWaUVwVVRF?=
- =?utf-8?B?dTJQa3ZrMGtqeVZMQTR1cWswelNXdW0xQ0JyTFVIVkpBbS8xRmFITGpjUjJz?=
- =?utf-8?B?L1JXZENxZGhqWGQxLzRUaUhqK09LT2NQaTJEWGZsZjhiOTh1MUs5aTZyMHlL?=
- =?utf-8?B?azJHVm91WmxVeUhZVHUvcUZnMXJ3L05jeGRxcGExcjluT0NxRFNUeUpXNnhI?=
- =?utf-8?B?WjA5RWpSUUNudVpuKzAwYXVMWFVrRzNndVd3cCtIMFZmQ1FxbHVJNkZEcGkv?=
- =?utf-8?B?dEhxOVhaVDRFb3hBRXZMcytXa0hWVmtLYnJ3U2VUY2Z3ZmlIQmhtZmlHSkMv?=
- =?utf-8?B?Y3JGZzMvSkZRd05TczJ6VW1nenJtYUJZOWR4UTVWcXg0Sm9yTFhpQmZRTHRZ?=
- =?utf-8?B?TDBDMmUvY1BjTzRTUEFqYnRmVURqeTVpUmIwdjlSbDErb3N1M0hQVGFiMTdP?=
- =?utf-8?B?K203ZHEzQlRhUWVwMmVCWUI3dGZjZG9QcVUrRzJBNUZpUFI5OE1ScmlUcDdV?=
- =?utf-8?B?L3JGd3lzWmcwc1FXeTFYRTlHczVUeGJaZG9wY3k2ckdpY2NCMHhMQWp2U1Jn?=
- =?utf-8?B?V3RnaTdqS2xTVW1KdldtVFV4QTdBbm9ac2ljSU41dG1KYnNKV1Azc09iZDlU?=
- =?utf-8?B?bkl3eTN6MDl6U2lPUUtXZz09?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5548c946-dc59-4797-f158-08d976cbe530
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Sep 2021 15:33:54.7093
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: wxJ+FWDumLR07O5oXWoxpWaIYOE3aQCqEoYEIom5Socsi9UCrkogubatLORFoCXw
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR15MB3790
-X-OriginatorOrg: fb.com
-X-Proofpoint-GUID: Si5HtcKs9-eGH7JRocPIHAMSpb_EBsRP
-X-Proofpoint-ORIG-GUID: Si5HtcKs9-eGH7JRocPIHAMSpb_EBsRP
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        id S242514AbhIMPud (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Sep 2021 11:50:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34196 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238348AbhIMPuD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Sep 2021 11:50:03 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95AD7C06119D
+        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 08:34:28 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id qq21so16074910ejb.10
+        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 08:34:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=wjXNpwq2pWc65/d15zbPXUVq3RDJ2S2nbr99RYsLLsI=;
+        b=cEygAp2MrFu6vcJQODmHdqbQNUGU4DabmMYPAMvYPC1ScAEK5y5Oo0Oh8ZeaPIQq3p
+         QfK51vnSolWHI61RS36x9qwdirB33xCCduOpGekNxldcTeXX9DMaAIfIU2WV28Sb3WDN
+         coegSSv94Za+hjS1pjGVtMlbq8cLCNhpJTV75L+sbrydEO8Uta26cc4LeY01uxGVRhYi
+         xtZwWNSdjqrFMkeH8LUiamn3wX++43cVbydEkZZewdo7OcaPU8r60yQ1hFNRTBPXQgJh
+         nPi0XC+uUk4+F5gGejZz4Us0ejEp8+s2mAGjRqrQ9bE7HqPKyFH8SVIgqpD1gR3N0Oud
+         eC6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=wjXNpwq2pWc65/d15zbPXUVq3RDJ2S2nbr99RYsLLsI=;
+        b=r3+U5gNenVpzDUK3fI6sTLiNRYHV5D/Q8iL+pg/Jb4lQAHjn6w26k5E05leC4TMd2D
+         Ib8tscV86cFXds1FY+gpkYSdg2Mp0jiHkKABdwli9TtB3pXWfmsZ9OcRZu1wphkEIAWO
+         6ASw4NGefTiFTb+YgnZHYZdYdSwPmp3cUln4XFucwuqpCBS7Oj1fHep6T6Ihka1G6S5y
+         vhmrN8Atyd67ZH1FOS4rR50a13F+mdBpPcENHqGiuNB1Hy4FkNcDUdoLA3D/ZuPgzsw6
+         +990r6zOpcd5rybJpCVOLD+bf7kCcCGR19zMq7STQrHNS85368mVAIwFXWgzRRi8AlkV
+         sYNA==
+X-Gm-Message-State: AOAM530m0IazVsB/kobN3/j+eTfnICKF/xb9yVb1NOO32/z/LHCqRYIH
+        8ixzqXZZzGbhErVp0RVEy08=
+X-Google-Smtp-Source: ABdhPJwvq0fMhhK7z3XQEjY53Mwd9CLpHjBr2SeHLkM4DxQjgbtwrVY8H3UCKIbNIJ8sQCEDWFnMEg==
+X-Received: by 2002:a17:906:b1d5:: with SMTP id bv21mr13413861ejb.346.1631547267118;
+        Mon, 13 Sep 2021 08:34:27 -0700 (PDT)
+Received: from skbuf ([82.78.148.104])
+        by smtp.gmail.com with ESMTPSA id f21sm1120908ejc.18.2021.09.13.08.34.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Sep 2021 08:34:26 -0700 (PDT)
+Date:   Mon, 13 Sep 2021 18:34:25 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Mauri Sandberg <sandberg@mailfence.com>,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        DENG Qingfang <dqfext@gmail.com>
+Subject: Re: [PATCH net-next 5/8] net: dsa: rtl8366: Disable "4K" VLANs
+Message-ID: <20210913153425.pgm2zs4vgtnzzyps@skbuf>
+References: <20210913144300.1265143-1-linus.walleij@linaro.org>
+ <20210913144300.1265143-6-linus.walleij@linaro.org>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
- definitions=2021-09-13_07,2021-09-09_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0 bulkscore=0
- spamscore=0 lowpriorityscore=0 mlxlogscore=999 clxscore=1011
- priorityscore=1501 phishscore=0 impostorscore=0 mlxscore=0 malwarescore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2109030001 definitions=main-2109130103
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210913144300.1265143-6-linus.walleij@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 9/13/21 4:02 AM, Dongliang Mu wrote:
-> Since 7661809d493b ("mm: don't allow oversized kvmalloc() calls
-> ") does not allow oversized kvmalloc, it triggers a kmalloc bug warning
-> at bpf_check.
+On Mon, Sep 13, 2021 at 04:42:57PM +0200, Linus Walleij wrote:
+> I have to disable this feature to have working VLANs on the
+> RTL8366RB at least, probably on all of them.
 > 
-> Fix it by adding a sanity check in th check_btf_line.
+> It appears that the very custom VLAN set-up was using this
+> feature by setting up one VLAN per port for a reason: when
+> using "4K" VLAN, every frame transmitted by the switch
+> MUST have a VLAN tag.
 > 
-> Reported-by: syzbot+f3e749d4c662818ae439@syzkaller.appspotmail.com
-> Fixes: 7661809d493b ("mm: don't allow oversized kvmalloc() calls")
-> Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+> This is the reason that every port had its own VLAN,
+> including the CPU port, and all of them had PVID turned on:
+> this way every frame going in or out of the switch will
+> indeed have a VLAN tag.
+> 
+> However the way Linux userspace like to use VLANs such as
+> by default assigning all ports on a bridge to the same VLAN
+> this does not work at all because PVID is not set for these,
+> and all packets get lost.
+> 
+> Therefore we have to do with 16 VLAN for now, the "4K"
+> 4096 VLAN feature is clearly only for switches in
+> environments where everything is a VLAN.
+> 
+> This was discovered when testing with OpenWrt that join
+> the LAN ports lan0 ... lan3 into a bridge and then assign
+> each of them into VLAN 1 with PVID set on each port: without
+> this patch this will not work and the bridge goes numb.
 
-Thanks for the fix. A similar patch has been proposed here:
-https://lore.kernel.org/bpf/20210911005557.45518-1-cuibixuan@huawei.com/
+It is important to explain _why_ the switch will go "numb" and not pass
+packets if the Linux bridge assigns all ports to VLAN ID 1 as pvid. It
+is certainly not expected for that to happen.
 
-> ---
->   kernel/bpf/verifier.c | 3 +++
->   1 file changed, 3 insertions(+)
-> 
-> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index 047ac4b4703b..3c5a79f78bc5 100644
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -9913,6 +9913,9 @@ static int check_btf_line(struct bpf_verifier_env *env,
->   	if (!nr_linfo)
->   		return 0;
->   
-> +	if (nr_linfo > INT_MAX/sizeof(struct bpf_line_info))
-> +		return -EINVAL;
-> +
->   	rec_size = attr->line_info_rec_size;
->   	if (rec_size < MIN_BPF_LINEINFO_SIZE ||
->   	    rec_size > MAX_LINEINFO_REC_SIZE ||
-> 
+The purpose of the PVID feature is specifically to classify untagged
+packets to a port-based VLAN ID. So "everything is a VLAN" even for
+Linux user space, not sure what you're talking about.
+
+When the Linux bridge has the vlan_filtering attribute set to 1, the
+hardware should follow suit by making untagged packets get classified to
+the VLAN ID that the software bridge wants to see, on the ports that are
+members of that bridge.
+
+When the Linux bridge has the vlan_filtering attribute set to 0, the
+software bridge very much ignores any VLAN tags from packets, and does
+not perform any VLAN-based ingress admission checks. If the hardware
+classifies all packets to a VLAN even when VLAN "filtering" (i.e.
+ingress dropping on mismatch) is disabled, that is perfectly fine too,
+although the software bridge doesn't care. You need to set up a private
+VLAN ID for your VLAN-unaware ports, and make it the pvid on those ports,
+and somehow force the hardware to classify any packet towards that pvid
+on those VLAN-unaware ports, regardless of whether the packets are
+untagged or 802.1Q-tagged or 802.1ad-tagged or whatever. That is simply
+the way things are supposed to work.
+
+VLAN ID 0 and 4095 are good candidates to use privately within your
+driver as the pvid on VLAN-unaware ports, and you can/must manually
+bring up these VLANs, since the bridge will refuse to install these
+VLANs in its database.
+
+Other VLAN IDs like the range 4000-4094 are also potentially ok as long
+as you document the fact that your driver crops that range out of the
+usable range of the bridge, and you make sure that no packet leaks
+inside or outside of those private VLANs are possible ("attackers" could
+still try to send a packet tagged with VLAN ID 4094 towards a port that
+is under a VLAN-aware bridge. Since that port is VLAN-aware, it will
+recognize the VLAN ID as 4094, so unless you configure that port to drop
+VLAN ID 4094, it might well leak into the VLAN domain 4094 which is
+privately used by your driver to ensure VLAN-unaware forwarding between
+the ports of a nearby VLAN-unaware bridge.
+
+I know there are lots of things to think about, but this patch is way
+too simplistic and does not really offer solid explanations.
