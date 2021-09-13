@@ -2,34 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F626408337
-	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 05:56:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B672240833E
+	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 05:56:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238536AbhIMD5l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Sep 2021 23:57:41 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:45862 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235475AbhIMD5g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Sep 2021 23:57:36 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.0.43) with SMTP id 18CEPd2T010468
-        for <netdev@vger.kernel.org>; Sun, 12 Sep 2021 20:56:21 -0700
+        id S238594AbhIMD5w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Sep 2021 23:57:52 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:43124 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S238549AbhIMD5n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Sep 2021 23:57:43 -0400
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.1.2/8.16.0.43) with SMTP id 18C9AkSE019651
+        for <netdev@vger.kernel.org>; Sun, 12 Sep 2021 20:56:27 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : content-type : content-transfer-encoding :
- mime-version; s=facebook; bh=6LhiqS8n42JkyJN5O3rLiWaJ4TT3iis9ufhOs0lbXfw=;
- b=FgKoclcnzoHeal33YeYiDCxxUsZG+6R7L3NOhh5GWWXn3iCGrWXrzZsxObk2mO4sxEXN
- ElWOBjJmEA+sm9SL9kpflZd2S7WMtK0AumACbDokEy3/isRy06dCueC5k8AtQbxPP8UY
- J6ZZgZxhLBr+oOYOqYDRoU6miO8FcSQ0Fxw= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 3b1k9rj88j-3
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=facebook;
+ bh=97alYX/z8QxE9lWORbwieI/5718iOpkjwwZObzDguyE=;
+ b=P2nGpqu6iWkdmOCZbmq5cb2VN4n0LjGV8dA7pFPwrX2s7r8JHxsRiryHWXnTFnn6dd/x
+ xJPk4IQadSgrGR+daszXccdJ9aptFMmNvOfOseXxDMAMAcQ30tReMsnXVX62I3blX1Os
+ W0U9eqAugvtfuD/03PAU16gjyHlfIYyFJpk= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by m0001303.ppops.net with ESMTP id 3b0r4u7mr2-4
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Sun, 12 Sep 2021 20:56:21 -0700
-Received: from intmgw002.25.frc3.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Sun, 12 Sep 2021 20:56:27 -0700
+Received: from intmgw001.37.frc1.facebook.com (2620:10d:c085:108::4) by
+ mail.thefacebook.com (2620:10d:c085:21d::7) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.14; Sun, 12 Sep 2021 20:56:18 -0700
+ 15.1.2308.14; Sun, 12 Sep 2021 20:56:24 -0700
 Received: by devbig030.frc3.facebook.com (Postfix, from userid 158236)
-        id 1269C68234A3; Sun, 12 Sep 2021 20:56:15 -0700 (PDT)
+        id 0BC2B68234A9; Sun, 12 Sep 2021 20:56:17 -0700 (PDT)
 From:   Dave Marchevsky <davemarchevsky@fb.com>
 To:     <bpf@vger.kernel.org>
 CC:     Alexei Starovoitov <ast@kernel.org>,
@@ -37,152 +38,109 @@ CC:     Alexei Starovoitov <ast@kernel.org>,
         Andrii Nakryiko <andrii@kernel.org>,
         Yonghong Song <yhs@fb.com>, <netdev@vger.kernel.org>,
         Dave Marchevsky <davemarchevsky@fb.com>
-Subject: [PATCH v5 bpf-next 0/9] bpf: implement variadic printk helper
-Date:   Sun, 12 Sep 2021 20:56:00 -0700
-Message-ID: <20210913035609.160722-1-davemarchevsky@fb.com>
+Subject: [PATCH v5 bpf-next 1/9] bpf: merge printk and seq_printf VARARG max macros
+Date:   Sun, 12 Sep 2021 20:56:01 -0700
+Message-ID: <20210913035609.160722-2-davemarchevsky@fb.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210913035609.160722-1-davemarchevsky@fb.com>
+References: <20210913035609.160722-1-davemarchevsky@fb.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
 X-FB-Internal: Safe
 Content-Type: text/plain
 X-FB-Source: Intern
-X-Proofpoint-GUID: YosWzoM0PNCl_Km6dzEqgGvddJDlY5HC
-X-Proofpoint-ORIG-GUID: YosWzoM0PNCl_Km6dzEqgGvddJDlY5HC
-Content-Transfer-Encoding: quoted-printable
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
-MIME-Version: 1.0
+X-Proofpoint-GUID: kwv428LILAswYWR0odBcRRAQ7AozSesv
+X-Proofpoint-ORIG-GUID: kwv428LILAswYWR0odBcRRAQ7AozSesv
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
  definitions=2021-09-13_02,2021-09-09_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0 bulkscore=0
- spamscore=0 lowpriorityscore=0 mlxlogscore=999 clxscore=1015
- priorityscore=1501 phishscore=0 impostorscore=0 mlxscore=0 malwarescore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ adultscore=0 bulkscore=0 spamscore=0 impostorscore=0 phishscore=0
+ mlxscore=0 suspectscore=0 clxscore=1015 mlxlogscore=999 malwarescore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2109030001 definitions=main-2109130025
 X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series introduces a new helper, bpf_trace_vprintk, which functions
-like bpf_trace_printk but supports > 3 arguments via a pseudo-vararg u64
-array. The bpf_printk libbpf convenience macro is modified to use
-bpf_trace_vprintk when > 3 varargs are passed, otherwise the previous
-behavior - using bpf_trace_printk - is retained.
+MAX_SNPRINTF_VARARGS and MAX_SEQ_PRINTF_VARARGS are used by bpf helpers
+bpf_snprintf and bpf_seq_printf to limit their varargs. Both call into
+bpf_bprintf_prepare for print formatting logic and have convenience
+macros in libbpf (BPF_SNPRINTF, BPF_SEQ_PRINTF) which use the same
+helper macros to convert varargs to a byte array.
 
-Helper functions and macros added during the implementation of
-bpf_seq_printf and bpf_snprintf do most of the heavy lifting for
-bpf_trace_vprintk. There's no novel format string wrangling here.
+Changing shared functionality to support more varargs for either bpf
+helper would affect the other as well, so let's combine the _VARARGS
+macros to make this more obvious.
 
-Usecase here is straightforward: Giving BPF program writers a more
-powerful printk will ease development of BPF programs, particularly
-during debugging and testing, where printk tends to be used.
+Signed-off-by: Dave Marchevsky <davemarchevsky@fb.com>
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
+---
+ include/linux/bpf.h      | 2 ++
+ kernel/bpf/helpers.c     | 4 +---
+ kernel/trace/bpf_trace.c | 4 +---
+ 3 files changed, 4 insertions(+), 6 deletions(-)
 
-This feature was proposed by Andrii in libbpf mirror's issue tracker
-[1].
-
-[1] https://github.com/libbpf/libbpf/issues/315
-
-v4 -> v5:
-
-* patch 8: added test for "%pS" format string w/ NULL fmt arg [Daniel]
-* patch 8: dmesg -> /sys/kernel/debug/tracing/trace_pipe in commit message =
-[Andrii]
-* patch 9: squash into patch 8, remove the added test in favor of just bpf_=
-printk'ing in patch 8's test [Andrii]
-    * migrate comment to /* */
-* header comments improved$
-    * uapi/linux/bpf.h: u64 -> long return type [Daniel]
-    * uapi/linux/bpf.h: function description explains benefit of bpf_trace_=
-vprintk over bpf_trace_printk [Daniel]
-    * uapi/linux/bpf.h: added patch explaining that data_len should be a mu=
-ltiple of 8 in bpf_seq_printf, bpf_snprintf descriptions [Daniel]
-    * tools/lib/bpf/bpf_helpers.h: move comment to new bpf_printk [Andrii]
-* rebase
-
-v3 -> v4:
-* Add patch 2, which migrates reference_tracking prog_test away from=20
-  bpf_program__load. Could be placed a bit later in the series, but=20
-  wanted to keep the actual vprintk-related patches contiguous
-* Add patch 9, which adds a program w/ 0 fmt arg bpf_printk to vprintk
-  test
-* bpf_printk convenience macro isn't multiline anymore, so simplify [Andrii]
-* Add some comments to ___bpf_pick_printk to make it more obvious when
-  implementation switches from printk to vprintk [Andrii]
-* BPF_PRINTK_FMT_TYPE -> BPF_PRINTK_FMT_MOD for 'static const' fmt string
-  in printk wrapper macro [Andrii]
-    * checkpatch.pl doesn't like this, says "Macros with complex values=20
-      should be enclosed in parentheses". Strange that it didn't have simil=
-ar
-      complaints about v3's BPF_PRINTK_FMT_TYPE. Regardless, IMO the compla=
-int
-      is not highlighting a real issue in the case of this macro.
-* Fix alignment of __bpf_vprintk and __bpf_pick_printk [Andrii]
-* rebase
-
-v2 -> v3:
-* Clean up patch 3's commit message [Alexei]
-* Add patch 4, which modifies __bpf_printk to use 'static const char' to
-  store fmt string with fallback for older kernels [Andrii]
-* rebase
-
-v1 -> v2:
-
-* Naming conversation seems to have gone in favor of keeping
-  bpf_trace_vprintk, names are unchanged
-
-* Patch 3 now modifies bpf_printk convenience macro to choose between
-  __bpf_printk and __bpf_vprintk 'implementation' macros based on arg
-  count. __bpf_vprintk is a renaming of bpf_vprintk convenience macro
-  from v1, __bpf_printk is the existing bpf_printk implementation.
-
-  This patch could use some scrutiny as I think current implementation
-  may regress developer experience in a specific case, turning a
-  compile-time error into a load-time error. Unclear to me how
-  common the case is, or whether the macro magic I chose is ideal.
-
-* char ___fmt[] to static const char ___fmt[] change was not done,
-  wanted to leave __bpf_printk 'implementation' macro unchanged for v2
-  to ease discussion of above point
-
-* Removed __always_inline from __set_printk_clr_event [Andrii]
-* Simplified bpf_trace_printk docstring to refer to other functions
-  instead of copy/pasting and avoid specifying 12 vararg limit [Andrii]
-* Migrated trace_printk selftest to use ASSERT_ instead of CHECK
-  * Adds new patch 5, previous patch 5 is now 6
-* Migrated trace_vprintk selftest to use ASSERT_ instead of CHECK,
-  open_and_load instead of separate open, load [Andrii]
-* Patch 2's commit message now correctly mentions trace_pipe instead of
-  dmesg [Andrii]
-
-Dave Marchevsky (9):
-  bpf: merge printk and seq_printf VARARG max macros
-  selftests/bpf: stop using bpf_program__load
-  bpf: add bpf_trace_vprintk helper
-  libbpf: Modify bpf_printk to choose helper based on arg count
-  libbpf: use static const fmt string in __bpf_printk
-  bpftool: only probe trace_vprintk feature in 'full' mode
-  selftests/bpf: Migrate prog_tests/trace_printk CHECKs to ASSERTs
-  selftests/bpf: add trace_vprintk test prog
-  bpf: clarify data_len param in bpf_snprintf and bpf_seq_printf
-    comments
-
- include/linux/bpf.h                           |  3 +
- include/uapi/linux/bpf.h                      | 16 ++++-
- kernel/bpf/core.c                             |  5 ++
- kernel/bpf/helpers.c                          |  6 +-
- kernel/trace/bpf_trace.c                      | 54 ++++++++++++++-
- tools/bpf/bpftool/feature.c                   |  1 +
- tools/include/uapi/linux/bpf.h                | 16 ++++-
- tools/lib/bpf/bpf_helpers.h                   | 51 +++++++++++---
- tools/testing/selftests/bpf/Makefile          |  3 +-
- .../bpf/prog_tests/reference_tracking.c       | 39 ++++++++---
- .../selftests/bpf/prog_tests/trace_printk.c   | 24 +++----
- .../selftests/bpf/prog_tests/trace_vprintk.c  | 68 +++++++++++++++++++
- .../selftests/bpf/progs/trace_vprintk.c       | 33 +++++++++
- tools/testing/selftests/bpf/test_bpftool.py   | 22 +++---
- 14 files changed, 286 insertions(+), 55 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/trace_vprintk.c
- create mode 100644 tools/testing/selftests/bpf/progs/trace_vprintk.c
-
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index f4c16f19f83e..be8d57e6e78a 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -2216,6 +2216,8 @@ int bpf_arch_text_poke(void *ip, enum bpf_text_poke=
+_type t,
+ struct btf_id_set;
+ bool btf_id_set_contains(const struct btf_id_set *set, u32 id);
+=20
++#define MAX_BPRINTF_VARARGS		12
++
+ int bpf_bprintf_prepare(char *fmt, u32 fmt_size, const u64 *raw_args,
+ 			u32 **bin_buf, u32 num_args);
+ void bpf_bprintf_cleanup(void);
+diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+index 9aabf84afd4b..8f9f392c1322 100644
+--- a/kernel/bpf/helpers.c
++++ b/kernel/bpf/helpers.c
+@@ -979,15 +979,13 @@ int bpf_bprintf_prepare(char *fmt, u32 fmt_size, co=
+nst u64 *raw_args,
+ 	return err;
+ }
+=20
+-#define MAX_SNPRINTF_VARARGS		12
+-
+ BPF_CALL_5(bpf_snprintf, char *, str, u32, str_size, char *, fmt,
+ 	   const void *, data, u32, data_len)
+ {
+ 	int err, num_args;
+ 	u32 *bin_args;
+=20
+-	if (data_len % 8 || data_len > MAX_SNPRINTF_VARARGS * 8 ||
++	if (data_len % 8 || data_len > MAX_BPRINTF_VARARGS * 8 ||
+ 	    (data_len && !data))
+ 		return -EINVAL;
+ 	num_args =3D data_len / 8;
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index 8e2eb950aa82..10672ebc63b7 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -414,15 +414,13 @@ const struct bpf_func_proto *bpf_get_trace_printk_p=
+roto(void)
+ 	return &bpf_trace_printk_proto;
+ }
+=20
+-#define MAX_SEQ_PRINTF_VARARGS		12
+-
+ BPF_CALL_5(bpf_seq_printf, struct seq_file *, m, char *, fmt, u32, fmt_s=
+ize,
+ 	   const void *, data, u32, data_len)
+ {
+ 	int err, num_args;
+ 	u32 *bin_args;
+=20
+-	if (data_len & 7 || data_len > MAX_SEQ_PRINTF_VARARGS * 8 ||
++	if (data_len & 7 || data_len > MAX_BPRINTF_VARARGS * 8 ||
+ 	    (data_len && !data))
+ 		return -EINVAL;
+ 	num_args =3D data_len / 8;
 --=20
 2.30.2
 
