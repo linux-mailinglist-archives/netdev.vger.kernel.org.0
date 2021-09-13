@@ -2,79 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B7124097E0
-	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 17:51:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A4EE4097ED
+	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 17:52:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231739AbhIMPxI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Sep 2021 11:53:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34296 "EHLO
+        id S241709AbhIMPxg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Sep 2021 11:53:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243337AbhIMPxB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Sep 2021 11:53:01 -0400
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A54DC0698DD
-        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 08:46:11 -0700 (PDT)
-Received: by mail-io1-xd41.google.com with SMTP id g9so12698988ioq.11
-        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 08:46:11 -0700 (PDT)
+        with ESMTP id S245324AbhIMPx0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Sep 2021 11:53:26 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5AF9C06119C
+        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 08:49:54 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id m70so20313195ybm.5
+        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 08:49:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=qYTa9jQaYR5csDF2LBAkpHj4XAZ2uOyXNEijJxDDpww=;
-        b=lLHSOV5Vd16f2qkqybU5UMjb4XenMdETfhV2hZ0321g4eumQ1vjinYuhCpvk8XmjeR
-         IRmcL4+if7p5Yk1Rkmo8uYuTLuh3HS/8g+/HvXxUEDqkfTpI3/Le34Rxo/QfmlktOtcn
-         iqDv4j55DEE4rYQiWpyxMkC706VoY2PeJl3KMZwioCJQJPHh8kn8uolBsIZxrdSmLwcl
-         9MKR1pGVmbvemSdqDAifBrXfYjSErA4B43fEbCB/zr+++p4TScITPlVlHUBn26AEUhSt
-         StdGIp25B01iPmibytSVyv43Be2sXQzLyqa9N/eD9SGrreEmDJ37dfRVU/O5Hg5c5e9t
-         Faaw==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ck/JoeqBfAG5Qwan2vhamlBtmJkxVYHQWsrDPF21rO8=;
+        b=Y1qegMxY5Is6Pu6UdJghi9oO7V0m4IFUE5xwLn0QMgEci3r+L1FaOusWG2WQqKxHkH
+         5ZSpHUlX7yqphW0PprfmhFdHvzVW45nDsNnlfKtietjosiajXBedX/jVP6wcgLL+jv1X
+         OHJqLq6g2t2z2wMZYRw1Oa+9huyMbaQ+7CMk0taISaVPEfYi2Cn6mJ/ykw3WB5ko+Iph
+         oWNtZSJK7IMUEa2RsGCjOTO8fTlZjPELLxZp3kKLTF+QYTKZYSNzZQAfxit4qVYd0n2M
+         2u0PBiOwHFScHrT+SDAtCeRtpjuLwBQf7lwDf4ztvUI/maVpa0stU1IqbuY6NP9kyjf+
+         fE6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to:content-transfer-encoding;
-        bh=qYTa9jQaYR5csDF2LBAkpHj4XAZ2uOyXNEijJxDDpww=;
-        b=XyShdn9lTkymHImsrvILYQEu40Cnv2glXuS8dKHpO9gmKeF+tUTJuf4dAd0yGyDHrn
-         p5DvO8ce16rkV+o3C0cNpU12DqqZe+ipP5e99/TBY1OjjkUK63AWE+PIPZHYXBp8FERH
-         Bd8mWsMmN+WYTJsVvHCZ5NFQJVh2pYpJAvU2Dtp5vBvs1rnmDGQqD5u0rYQBbDLfLMhn
-         kDICCIfvIfKj5fEss4+2uCceLlTTEnqdqciBk0XBgU3xcjGI/UgaIsyWgu3eN+yUseFU
-         XReIxJgqs+MBUs+ptK5z8+MLvXDny/FsdQxCUnDOfbe2rFxKQ8m0ForKT8fJGyJedPMI
-         vUuA==
-X-Gm-Message-State: AOAM533EHlSdrzoK7tc+TxFrF1oqRKtobUPv2r07W220ypqZQwaiIXpM
-        KKIXkqvkOefNs6VOHNp53sVTAY9lTwtV0L2VrLs=
-X-Google-Smtp-Source: ABdhPJykqQhsJlMKkcxfWPqECIQbTrUgH3R5oVlfEio0LdGXfon2LKOoMzqN/XyGuZvDjUf3B5gO5OF7Ci0wg0D1YHY=
-X-Received: by 2002:a5d:9145:: with SMTP id y5mr9504192ioq.200.1631547970891;
- Mon, 13 Sep 2021 08:46:10 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ck/JoeqBfAG5Qwan2vhamlBtmJkxVYHQWsrDPF21rO8=;
+        b=OOMaSyx6XrUx3qhfq6gEI03CB/hOM5jTmMiNWwPWz/civPV71VXXte52RgD/IMhdzn
+         rjCCZjz+5Kjz/ZpFWUXKMkx9ZVQTRl1qneQ4W85d2ACIBdLBRKLb41Mq1SjtkiaZvwm8
+         Oj+uGWTAxWKlSc7vyAomMt+FQjasGYnTPn6Dz2EXvjHgduoEsgD+pePoUKIBUm7chuYU
+         96CCPkcCl3Iw3L+AUujVlFTFIUNJbNedPtYG17qF4MT5QSv+0cY43qokwTPS+vyrumB3
+         EnA5to43YJ9OQCMWc6iWctj+wVm+Lxre2kOiT5rCPENhNNqB3fQN5nexsuZ4+qEyR1VT
+         ARpQ==
+X-Gm-Message-State: AOAM531f/TIHO8Rzbv1qId+Qoqoi5OXRI7B25YkGtNrD3fZ/pX3vEx3X
+        8edA/w3V6gEQOmcJyQDYEbwtN8OaNq6rXsytWQcaUA==
+X-Google-Smtp-Source: ABdhPJzzpfXAq7AiBooKqs1nuULG6+n6zg33NDJnM7Cj2NQRq0sYSvHLsb6d+DI8IVLLiKE1JDkdBZJc4FpcrtEKE4Q=
+X-Received: by 2002:a25:2b07:: with SMTP id r7mr15094190ybr.296.1631548193609;
+ Mon, 13 Sep 2021 08:49:53 -0700 (PDT)
 MIME-Version: 1.0
-Reply-To: dr.morris.uadraguo1@gmail.com
-Sender: mrsnoorhidayah23@gmail.com
-Received: by 2002:a92:6012:0:0:0:0:0 with HTTP; Mon, 13 Sep 2021 08:46:10
- -0700 (PDT)
-From:   =?UTF-8?Q?Ant=C3=B3nio_Manuel?= <dr.morris.uadraguo1@gmail.com>
-Date:   Mon, 13 Sep 2021 08:46:10 -0700
-X-Google-Sender-Auth: nf9tFdfrCgwuydjWIDvEB_77FCA
-Message-ID: <CAAZS_VWZygKi0nb-Fj33YfvWtZuQjw=46hs8uT1V44dumD5Y4w@mail.gmail.com>
-Subject: Attention Friend,
-To:     undisclosed-recipients:;
+References: <1630314010-15792-1-git-send-email-zhenggy@chinatelecom.cn>
+In-Reply-To: <1630314010-15792-1-git-send-email-zhenggy@chinatelecom.cn>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 13 Sep 2021 08:49:42 -0700
+Message-ID: <CANn89iLMDQqVmhq38OhD3X1D93qzAye0AsQpZYdCi=fsLEuNsg@mail.gmail.com>
+Subject: Re: [PATCH v3] tcp: fix tp->undo_retrans accounting in tcp_sacktag_one()
+To:     zhenggy <zhenggy@chinatelecom.cn>
+Cc:     Neal Cardwell <ncardwell@google.com>,
+        netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Yuchung Cheng <ycheng@google.com>, qitiepeng@chinatelecom.cn,
+        wujianguo@chinatelecom.cn, liyonglong@chinatelecom.cn
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Attention Friend,
+On Mon, Sep 13, 2021 at 3:51 AM zhenggy <zhenggy@chinatelecom.cn> wrote:
+>
+> Commit 10d3be569243 ("tcp-tso: do not split TSO packets at retransmit
+> time") may directly retrans a multiple segments TSO/GSO packet without
+> split, Since this commit, we can no longer assume that a retransmitted
+> packet is a single segment.
+>
+> This patch fixes the tp->undo_retrans accounting in tcp_sacktag_one()
+> that use the actual segments(pcount) of the retransmitted packet.
+>
+> Before that commit (10d3be569243), the assumption underlying the
+> tp->undo_retrans-- seems correct.
+>
+> Fixes: 10d3be569243 ("tcp-tso: do not split TSO packets at retransmit time")
+>
 
-Your E-mail was selected online Lottery Lucky winner sum of
-=E2=82=AC2,500.000.00 Euros Only. Under Brexit/uk Lottery  and the United
-Nations. As World Leaders Come Together and summit a benefit
-conclusion for 2021/2022 Lottery. Congratulations you are the online
-Lottery Lucky Winner of the year 2021. you won the sum (Two Million
-Five Hundred Thousand Euros Only. our contact notice is to infor you
-to send your House or your Office Adress for your Claim. Meanwhile,
-your fund sum =E2=82=AC2,500.000.00 Euros will be Credit in ATM Card and se=
-nd
-to you without delay. the choice is yours. Congratulation!
+nit: We normally do not add an empty line between Fixes: tag and others.
 
-Congratulations, you've won! The reality fact online lotteries.
+Reviewed-by: Eric Dumazet <edumazet@google.com>
 
-Yours Faithfully.
-Ant=C3=B3nio Manuel de Oliveira Guterres.
-UN Secretary General.
+> Signed-off-by: zhenggy <zhenggy@chinatelecom.cn>
+> ---
+>  net/ipv4/tcp_input.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+> index 3f7bd7a..141e85e 100644
+> --- a/net/ipv4/tcp_input.c
+> +++ b/net/ipv4/tcp_input.c
+> @@ -1346,7 +1346,7 @@ static u8 tcp_sacktag_one(struct sock *sk,
+>         if (dup_sack && (sacked & TCPCB_RETRANS)) {
+>                 if (tp->undo_marker && tp->undo_retrans > 0 &&
+>                     after(end_seq, tp->undo_marker))
+> -                       tp->undo_retrans--;
+> +                       tp->undo_retrans = max_t(int, 0, tp->undo_retrans - pcount);
+>                 if ((sacked & TCPCB_SACKED_ACKED) &&
+>                     before(start_seq, state->reord))
+>                                 state->reord = start_seq;
+> --
+> 1.8.3.1
+>
