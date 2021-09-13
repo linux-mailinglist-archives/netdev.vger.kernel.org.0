@@ -2,151 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D66A5409516
-	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 16:40:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98034409762
+	for <lists+netdev@lfdr.de>; Mon, 13 Sep 2021 17:34:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345122AbhIMOh2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Sep 2021 10:37:28 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:59491 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1347843AbhIMOfe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Sep 2021 10:35:34 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1631543658;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZfryJxpK5ypx39qR3xTFVVXtpOzhn2v4T4s5MYbdHC0=;
-        b=dvNIRC3523oN5Xffx5GXLuVd6k/tEiEOAKVmgi/3ggmSnDnSeRVVWWQs9VUUX1DmvuZzKk
-        KyMuzwNQe03PGrySqT7hj7LFVhZXIjyEJ/1Zl6VZ66iOxU1t8mwrSp5boUqv4qnbNkNou5
-        5hlpijiIzYp6M5krBlCs7LGW+h7VeKQ=
-Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
- [209.85.167.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-468-EevkTZ9BPNuwgwA9NNDR1w-1; Mon, 13 Sep 2021 10:34:17 -0400
-X-MC-Unique: EevkTZ9BPNuwgwA9NNDR1w-1
-Received: by mail-lf1-f69.google.com with SMTP id p3-20020a0565121383b0290384997a48fcso3270823lfa.21
-        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 07:34:16 -0700 (PDT)
+        id S244798AbhIMPfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Sep 2021 11:35:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58836 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245524AbhIMPfG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Sep 2021 11:35:06 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64A70C1259C0
+        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 07:45:07 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id x27so21627391lfu.5
+        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 07:45:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PkJwHZP7oqCVg/74lYBt3k1cFYX9NNjRUfJMYks/UKk=;
+        b=rVOXVepXRTT+ZABzC6fLd+u3N9uW+l/SAjp6OhOEfT51YbBRzcDkriXOAqYhHWq9vM
+         DAfUoCrGZ3rlVhtfvzx2GtHtgWZPUPdU9gabpEIDbN++JGQOybWwpyk7PdguSY9iGljE
+         573RZgdI+3/qEO85anYnFMPgidxY2esFKw5ZhIGkXz2X5R6OEGtDA0hhQU2CIzry6nh8
+         3Szx21QhLrvN0VaB5dIyMXqbt69QJasYRrdGaC6E1J5WVmOEfG6/NAN1xWX79mzu3iY0
+         umoUbbnl/OxWE4aUoLdok20hGDIPPy1phfFeyuW3e9kriGXGICHaiy4HnU3P+JCpgby8
+         puTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZfryJxpK5ypx39qR3xTFVVXtpOzhn2v4T4s5MYbdHC0=;
-        b=Zq//ROzRpFPYqQd1nWIKcPAex6opAbMoMhtB0ifzDuFbCbUUNFjBnqsTh2ZVdrwmnN
-         N/cXAEl0/yDbIWipdLNrUH15X+bYRYMBvEg3Iod9I9FePOb+id1qj+ouxOVrySSPBn8n
-         lp7ilpSdW6223aQywZA/vT03AutU8b7vi+Nw+Jb+JFYmYvPV/JCw10s2tDbhogTPsoJi
-         sj22tHlfjGbh0ZDgIGHYFeKFcWeBZ96w95F8tOCDzx2VeRCVFqQiYL/g4MuLvRqPa5Dv
-         /SRU9ri0UYIW7oBDD1OrYcWqGGyrQ+NcC0lqax6BbFddBDtXIQMejmaboeE1pPtVDqQx
-         CJrQ==
-X-Gm-Message-State: AOAM532UCWxaIEIJcLLHdDRnKwvhto8s9p8FcaS8jEXLdwf/Ox2gwZfb
-        gYM76gXETLd57Ils3EaYindITrYAQgcg75DyOZfZjKRt921Nm8VQUMSPYe6qpd9ocEcKNLCzhyH
-        U/d7P4fAX8GxqmJttE+bINPMx4Ma6mbSZ
-X-Received: by 2002:a2e:8496:: with SMTP id b22mr10580112ljh.496.1631543655371;
-        Mon, 13 Sep 2021 07:34:15 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx5SXCQw8y9VkHHfq5++HMmDEHwpKWfarOYoyKiBkbH/mHk7DKQN7bm1Klq5kHtrFKCMkY+wbutOm0v72aYRO0=
-X-Received: by 2002:a2e:8496:: with SMTP id b22mr10580054ljh.496.1631543655145;
- Mon, 13 Sep 2021 07:34:15 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PkJwHZP7oqCVg/74lYBt3k1cFYX9NNjRUfJMYks/UKk=;
+        b=TWHqGetXnZdSUy5TtAWClvoAhMR17auvwP7b9pHj8mZF/nswz5rOzBNhyRTQjHaXZf
+         qJpJeKJ/xYQTrZWbVo1OOA7fOewWI9IQ2pcFwlI2u1VWFBrYooRkgQYR1qGcg5Hp8R8p
+         14IjdWIKSwv4MLasDtFZBxXg80sorPwBI+ydgtjoo8A1RNvSdgOdUiCHDvbeAVuD+d8t
+         HK2sCNROn55CFGg5JpUOKckXkbWRXTqNPIrkBjZeikOeIxXOxSWTmAsqlKwWeCc+2ZNN
+         0c4bvVYWHIhqSiog6NDL17TeNC0pGilUxnXOqEuvqrswz+ozExaS/TXCn2mrYZbNU9Ud
+         hotw==
+X-Gm-Message-State: AOAM531qRhx0lP6elDYeAAiL8VwMkrrJWRoNMFsFp08Vf8F3yisAUPRw
+        BY4ReSvLSO6JdSp+U9OftdDf7g==
+X-Google-Smtp-Source: ABdhPJxx6NyvG2fsYdmN2zSirxs9gy0pIsJfL6Og6f5DJJChFW6X5Rz1foSYclfTyBq1keYCPPbIhg==
+X-Received: by 2002:ac2:43b1:: with SMTP id t17mr6013322lfl.373.1631544304232;
+        Mon, 13 Sep 2021 07:45:04 -0700 (PDT)
+Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
+        by smtp.gmail.com with ESMTPSA id i12sm849825lfb.301.2021.09.13.07.45.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Sep 2021 07:45:03 -0700 (PDT)
+From:   Linus Walleij <linus.walleij@linaro.org>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH net-next 0/8] RTL8366(RB) cleanups part 1
+Date:   Mon, 13 Sep 2021 16:42:52 +0200
+Message-Id: <20210913144300.1265143-1-linus.walleij@linaro.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20210903152430.244937-1-nitesh@redhat.com>
-In-Reply-To: <20210903152430.244937-1-nitesh@redhat.com>
-From:   Nitesh Lal <nilal@redhat.com>
-Date:   Mon, 13 Sep 2021 10:34:03 -0400
-Message-ID: <CAFki+L=9Hw-2EONFEX6b7k6iRX_yLx1zcS+NmWsDSuBWg8w-Qw@mail.gmail.com>
-Subject: Re: [PATCH v6 00/14] genirq: Cleanup the abuse of irq_set_affinity_hint()
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
-        davem@davemloft.net, ajit.khaparde@broadcom.com,
-        sriharsha.basavapatna@broadcom.com, somnath.kotur@broadcom.com,
-        huangguangbin2@huawei.com, huangdaode@huawei.com,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Alex Belits <abelits@marvell.com>,
-        Bjorn Helgaas <bhelgaas@google.com>, rostedt@goodmis.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Ingo Molnar <mingo@kernel.org>, jbrandeb@kernel.org,
-        akpm@linuxfoundation.org, sfr@canb.auug.org.au,
-        stephen@networkplumber.org, rppt@linux.vnet.ibm.com,
-        chris.friesen@windriver.com, Marc Zyngier <maz@kernel.org>,
-        Neil Horman <nhorman@tuxdriver.com>, pjwaskiewicz@gmail.com,
-        Stefan Assmann <sassmann@redhat.com>,
-        Tomas Henzl <thenzl@redhat.com>, james.smart@broadcom.com,
-        Dick Kennedy <dick.kennedy@broadcom.com>,
-        Ken Cox <jkc@redhat.com>, faisal.latif@intel.com,
-        shiraz.saleem@intel.com, tariqt@nvidia.com,
-        Alaa Hleihel <ahleihel@redhat.com>,
-        Kamal Heib <kheib@redhat.com>, borisp@nvidia.com,
-        saeedm@nvidia.com,
-        "Nikolova, Tatyana E" <tatyana.e.nikolova@intel.com>,
-        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
-        Al Stone <ahs3@redhat.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Chandrakanth Patil <chandrakanth.patil@broadcom.com>,
-        bjorn.andersson@linaro.org, chunkuang.hu@kernel.org,
-        yongqiang.niu@mediatek.com, baolin.wang7@gmail.com,
-        Petr Oros <poros@redhat.com>, Ming Lei <minlei@redhat.com>,
-        Ewan Milne <emilne@redhat.com>, jejb@linux.ibm.com,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        kabel@kernel.org, Viresh Kumar <viresh.kumar@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>, kashyap.desai@broadcom.com,
-        Sumit Saxena <sumit.saxena@broadcom.com>,
-        shivasharan.srikanteshwara@broadcom.com,
-        sathya.prakash@broadcom.com,
-        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
-        suganath-prabu.subramani@broadcom.com, ley.foon.tan@intel.com,
-        jbrunet@baylibre.com, johannes@sipsolutions.net,
-        snelson@pensando.io, lewis.hanly@microchip.com, benve@cisco.com,
-        _govind@gmx.com, jassisinghbrar@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 3, 2021 at 11:25 AM Nitesh Narayan Lal <nitesh@redhat.com> wrote:
->
-> The drivers currently rely on irq_set_affinity_hint() to either set the
-> affinity_hint that is consumed by the userspace and/or to enforce a custom
-> affinity.
->
-> irq_set_affinity_hint() as the name suggests is originally introduced to
-> only set the affinity_hint to help the userspace in guiding the interrupts
-> and not the affinity itself. However, since the commit
->
->         e2e64a932556 "genirq: Set initial affinity in irq_set_affinity_hint()"
+This is a first set of patches making the RTL8366RB work out of
+the box with a default OpenWrt userspace.
 
-[...]
+We achieve bridge port isolation with the first patch, and the
+next 7 patches removes the very weird VLAN set-up with one
+VLAN with PVID per port that has been in this driver in all
+vendor trees and in OpenWrt for years.
 
->
-> Nitesh Narayan Lal (13):
->   iavf: Use irq_update_affinity_hint
->   i40e: Use irq_update_affinity_hint
->   scsi: megaraid_sas: Use irq_set_affinity_and_hint
->   scsi: mpt3sas: Use irq_set_affinity_and_hint
->   RDMA/irdma: Use irq_update_affinity_hint
->   enic: Use irq_update_affinity_hint
->   be2net: Use irq_update_affinity_hint
->   ixgbe: Use irq_update_affinity_hint
->   mailbox: Use irq_update_affinity_hint
->   scsi: lpfc: Use irq_set_affinity
->   hinic: Use irq_set_affinity_and_hint
->   net/mlx5: Use irq_set_affinity_and_hint
->   net/mlx4: Use irq_update_affinity_hint
->
-> Thomas Gleixner (1):
->   genirq: Provide new interfaces for affinity hints
->
+The switch is now managed the way a modern bridge/DSA switch
+shall be managed.
 
-Any suggestions on what should be the next steps here? Unfortunately, I haven't
-been able to get any reviews on the following two patches:
-  be2net: Use irq_update_affinity_hint
-  hinic: Use irq_set_affinity_and_hint
+After these patches are merged, I will send the next set which
+adds new features, some which have circulated before.
 
-One option would be to proceed with the remaining patches and I can try
-posting these two again when I post patches for the remaining drivers?
+DENG Qingfang (1):
+  net: dsa: rtl8366rb: Support bridge offloading
+
+Linus Walleij (7):
+  net: dsa: rtl8366: Drop custom VLAN set-up
+  net: dsa: rtl8366rb: Rewrite weird VLAN filering enablement
+  net: dsa: rtl8366rb: Always treat VLAN 0 as untagged
+  net: dsa: rtl8366: Disable "4K" VLANs
+  net: dsa: rtl8366rb: Fix off-by-one bug
+  net: dsa: rtl8366: Fix a bug in deleting VLANs
+  net: dsa: rtl8366: Drop and depromote pointless prints
+
+ drivers/net/dsa/realtek-smi-core.h |   3 -
+ drivers/net/dsa/rtl8366.c          | 113 ++++---------------------
+ drivers/net/dsa/rtl8366rb.c        | 128 ++++++++++++++++++++++++++---
+ 3 files changed, 135 insertions(+), 109 deletions(-)
 
 -- 
-Thanks
-Nitesh
+2.31.1
 
