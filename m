@@ -2,93 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E755A40B6C1
-	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 20:21:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 232F640B677
+	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 20:03:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230263AbhINSWt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 14:22:49 -0400
-Received: from gateway20.websitewelcome.com ([192.185.59.4]:17047 "EHLO
-        gateway20.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229605AbhINSWt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 14:22:49 -0400
-X-Greylist: delayed 1501 seconds by postgrey-1.27 at vger.kernel.org; Tue, 14 Sep 2021 14:22:48 EDT
-Received: from cm14.websitewelcome.com (cm14.websitewelcome.com [100.42.49.7])
-        by gateway20.websitewelcome.com (Postfix) with ESMTP id A4274400D3896
-        for <netdev@vger.kernel.org>; Tue, 14 Sep 2021 12:13:55 -0500 (CDT)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id QCIEmK7T1cEL1QCIFmwOZW; Tue, 14 Sep 2021 12:32:27 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=3sP6jXMNnxu6PJJC0Lvm+qOKW0f/dGtu/4FvN9Uf7iM=; b=g8Az3FMGHjcUQunQDfThX3OfVx
-        fI2MMchUpam/fzYsvIrUYzq3Ilrjsmjg+DZnyr7STqsjSE6Itbo44efKDrBR8yt4YU+riVw7lErnt
-        dR21PRArQDvU37USJICiFK8IoldkWyUV2C51+PhJihApbCnlTysBXPUGldNdXyzWcDPxzCuk9viYi
-        UOojkNYveJSd6GoERVUQOiaJEmTP0yFJ40vkx0Lblpafjwsw7qDE6uzkZbODbs5AN85CZa5jizmRL
-        nSBET8eexfyAaLddgskzpeW2PpEoY/fqAQxhOK8cuFH/FuHeLymn32wmV6yeWV3dneeYdtffFwStn
-        a3ziMzJw==;
-Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:34626 helo=[192.168.15.9])
-        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1mQCIE-0035SF-A2; Tue, 14 Sep 2021 12:32:26 -0500
-Subject: Re: [PATCH][next] ath11k: Replace one-element array with
- flexible-array member
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-References: <20210823172159.GA25800@embeddedor>
- <6e8229a1-187c-cd69-ad1c-018737e5e455@embeddedor.com>
- <87r1dr1vpf.fsf@codeaurora.org>
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Message-ID: <36d4e936-527d-e6ff-8f6a-e06fcb275327@embeddedor.com>
-Date:   Tue, 14 Sep 2021 12:36:13 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S230012AbhINSEg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 14:04:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48400 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229526AbhINSEe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Sep 2021 14:04:34 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 07E106109E;
+        Tue, 14 Sep 2021 18:03:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1631642597;
+        bh=nzELtPlyvwLTBG+56RGpEyyw/l4ak9OiKvwJpkVJ98I=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=FHjaegV9OkeFI/33PEiI0G7k2qcUuFz4qvHUr5KbHmtCzrO01r1IknojfvszPPYxj
+         3iz5dok9m0xhiejnNlbHZOCEJLKbG33+MbYosi6tmFc/LJwzEuQd58rNha1XaUaiPF
+         EOGCLS0sblsbYr/FQXcY9FTADMv7pBWzgIbyc7Lo0q8ZChomCgMYYi4D3xYnVwIdME
+         tvPwnbZL9syM51BkpHahNMXPXtpBKfQAM8jO9OFbv8SyO6ZNY+Ui2RPOMe2u/abqRl
+         0p9gEOK5issHqMH3XCXbRUDpMH04EU+w30Yl8VgWMaUWkvLAeYyoS/RTSYAvMXUY9L
+         28QXdYzEFU6ow==
+Date:   Tue, 14 Sep 2021 11:03:15 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     willemb@google.com, netdev@vger.kernel.org
+Subject: Re: [RFC net] net: stream: don't purge sk_error_queue without
+ holding its lock
+Message-ID: <20210914110315.32ebccce@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <8ce5b709-17bb-ea01-48b4-b80447fb5d3f@gmail.com>
+References: <20210913223850.660578-1-kuba@kernel.org>
+        <3b5549a2-cb0e-0dc1-3cb3-00d15a74873b@gmail.com>
+        <20210914071836.46813650@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <c945d4ee-591c-7c38-8322-3fb9db0f104f@gmail.com>
+        <20210914095621.5fa08637@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <8ce5b709-17bb-ea01-48b4-b80447fb5d3f@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <87r1dr1vpf.fsf@codeaurora.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 187.162.31.110
-X-Source-L: No
-X-Exim-ID: 1mQCIE-0035SF-A2
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.9]) [187.162.31.110]:34626
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 7
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 9/14/21 02:07, Kalle Valo wrote:
-> "Gustavo A. R. Silva" <gustavo@embeddedor.com> writes:
+On Tue, 14 Sep 2021 10:55:49 -0700 Eric Dumazet wrote:
+> On 9/14/21 9:56 AM, Jakub Kicinski wrote:
+> > Right, but then inet_sock_destruct() also purges the err queue, again.
+> > I was afraid of regressions but we could just remove the purging 
+> > from sk_stream_kill_queues(), and target net-next?
+> >   
 > 
->> I wonder if you can take this patch, please.
+> Yes, this would be the safest thing.
+
+Alright, let me do more testing and post a removal to net-next.
+
+> >> If you think there is a bug, it must be fixed in another way.
+> >>
+> >> IMO, preventing err packets from a prior session being queued after a tcp_disconnect()
+> >> is rather hard. We should not even try (packets could be stuck for hours in a qdisc)  
+> > 
+> > Indeed, we could rearrange the SOCK_DEAD check in sock_queue_err_skb()
+> > to skip queuing and put it under the err queue lock (provided we make
+> > sk_stream_kill_queues() take that lock as well). But seems like an
+> > overkill. I'd lean towards the existing patch or removing the purge from
+> > sk_stream_kill_queues(). LMK what you prefer, this is not urgent.
 > 
-> This is in my queue, please do not take ath11k patches.
+> The issue would really about the tcp_disconnect() case, 
+> followed by a reuse of the socket to establish another session.
+> 
+> In order to prevent polluting sk_error_queue with notifications
+> triggered by old packets (from prior flow), this would require
+> to record the socket cookie in skb, or something like that :/
 
-Great, and sure thing. :)
-
-Thanks
---
-Gustavo
+Ah, I see what you meant! I'll make a note of the disconnect case 
+in the commit message. I just care that we don't corrupt the queue
+on close.
