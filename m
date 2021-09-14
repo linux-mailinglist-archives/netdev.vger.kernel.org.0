@@ -2,244 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AEF840A960
-	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 10:35:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EEBBD40A98C
+	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 10:46:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231335AbhINIgp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 04:36:45 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:56552 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S230491AbhINIge (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 04:36:34 -0400
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.0.43) with SMTP id 18E6UNi7016104;
-        Tue, 14 Sep 2021 04:35:15 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=mKt9BhduL0o+K5FCP09PCkDBUGNZJjYSeXmf+hBqX1I=;
- b=PKAJ0kv2qnx4oPsMlWtnsD2gu6So0aNuxIe6tbH9wK+k1yl5H6LEifxdJ/YhfvaoFZRW
- 8x0OT3xVjmQPO3HwlpJ5lNhp6kFGMqm2b3q4Akrg7gAQ+ym95XmPVM+naDh3M0aVzWK3
- chlYvhfaCjh3jmCo0AeYiJ95/J1UFjhYWd2umjTifGD2kyYGgsmrahM7A3v2fz9f4CHq
- wNcSum+ubcQHUkVbtbwpQk5FMQRrCW3oRAZOVBGmX2NQC9c+BXBI6gMeRwqDE6xm6AGW
- 7JPL/mUETY70NyN4ZD3XnhhQM03mdYAqfQ8oTJz3HU0Qen4Nb2MjaGkUVYFtmq2h9WUy fw== 
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3b2phejpjp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 14 Sep 2021 04:35:14 -0400
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 18E8XO0J005454;
-        Tue, 14 Sep 2021 08:35:13 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma04ams.nl.ibm.com with ESMTP id 3b0m39rwku-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 14 Sep 2021 08:35:12 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 18E8UfkR58720662
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 14 Sep 2021 08:30:41 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 42F5AA4059;
-        Tue, 14 Sep 2021 08:35:09 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 02D43A406F;
-        Tue, 14 Sep 2021 08:35:09 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 14 Sep 2021 08:35:08 +0000 (GMT)
-From:   Guvenc Gulce <guvenc@linux.ibm.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>
-Subject: [PATCH net-next 3/3] net/smc: add generic netlink support for system EID
-Date:   Tue, 14 Sep 2021 10:35:07 +0200
-Message-Id: <20210914083507.511369-4-guvenc@linux.ibm.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210914083507.511369-1-guvenc@linux.ibm.com>
-References: <20210914083507.511369-1-guvenc@linux.ibm.com>
+        id S230346AbhINIrd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 04:47:33 -0400
+Received: from smtp-out1.suse.de ([195.135.220.28]:55408 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229648AbhINIrc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 04:47:32 -0400
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 3B18A21EA2;
+        Tue, 14 Sep 2021 08:46:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1631609174; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=kZkMH63iTQ1WWrdV9xSbbANfuGbUt17bCT5Dl2F/Da0=;
+        b=XWISWXbcR3YdaeFQmM4w9+ukkxf4jSK2eqmQDo5iZ73XBLhF4jEDM8+2E0VxGtr5eFJxiC
+        nmb3T0gwe1ndT5H4JdLDKKBI4kjUyc4fjA7c0T2KqDcf4D22+99oItZYY+wjvqFoIvzlqP
+        K00ktKQrEH5F+uB2Tz7EXYr8uqK/J68=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1631609174;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=kZkMH63iTQ1WWrdV9xSbbANfuGbUt17bCT5Dl2F/Da0=;
+        b=MJG30rqDnzxe65gQiiRdUUjTdYTTjoLnMy+u/ZtPzlpYnjvOOgqHQqAJZ29ngBM7p6RPor
+        ImJkDb/zx1w6yLBA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 29AD313D3F;
+        Tue, 14 Sep 2021 08:46:14 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id KUIwClZhQGGpLAAAMHmgww
+        (envelope-from <dwagner@suse.de>); Tue, 14 Sep 2021 08:46:14 +0000
+Date:   Tue, 14 Sep 2021 10:46:13 +0200
+From:   Daniel Wagner <dwagner@suse.de>
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [RFC v1] nvme-tcp: enable linger socket option on shutdown
+Message-ID: <20210914084613.75qykjxweh66mdpx@carbon>
+References: <20210903121757.140357-1-dwagner@suse.de>
+ <YTXKHOfnuf+urV1D@infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: KUE-O7jk2PgVk5qgC6LLguPGEgeqENv0
-X-Proofpoint-GUID: KUE-O7jk2PgVk5qgC6LLguPGEgeqENv0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.687,Hydra:6.0.235,FMLib:17.0.607.475
- definitions=2020-10-13_15,2020-10-13_02,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
- mlxlogscore=999 clxscore=1015 lowpriorityscore=0 bulkscore=0 spamscore=0
- impostorscore=0 phishscore=0 adultscore=0 priorityscore=1501 mlxscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2109030001 definitions=main-2109140026
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YTXKHOfnuf+urV1D@infradead.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Karsten Graul <kgraul@linux.ibm.com>
+On Mon, Sep 06, 2021 at 08:58:20AM +0100, Christoph Hellwig wrote:
+> On Fri, Sep 03, 2021 at 02:17:57PM +0200, Daniel Wagner wrote:
+> > When the no linger is set, the networking stack sends FIN followed by
+> > RST immediately when shutting down the socket. By enabling linger when
+> > shutting down we have a proper shutdown sequence on the wire.
+> > 
+> > Signed-off-by: Daniel Wagner <dwagner@suse.de>
+> > ---
+> > The current shutdown sequence on the wire is a bit harsh and
+> > doesn't let the remote host to react. I suppose we should
+> > introduce a short (how long?) linger pause when shutting down
+> > the connection. Thoughs?
+> 
+> Why?  I'm not really a TCP expert, but why is this different from
+> say iSCSI or NBD?
 
-With SMC-Dv2 users can configure if the static system EID should be used
-during CLC handshake, or if only user EIDs are allowed.
-Add generic netlink support to enable and disable the system EID, and
-to retrieve the system EID and its current enabled state.
+I am also no TCP expert. Adding netdev to Cc.
 
-Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
-Reviewed-by: Guvenc Gulce  <guvenc@linux.ibm.com>
-Signed-off-by: Guvenc Gulce <guvenc@linux.ibm.com>
----
- include/uapi/linux/smc.h | 12 ++++++++
- net/smc/smc_clc.c        | 62 ++++++++++++++++++++++++++++++++++++++++
- net/smc/smc_clc.h        |  3 ++
- net/smc/smc_netlink.c    | 15 ++++++++++
- 4 files changed, 92 insertions(+)
+During testing the nvme-tcp subsystem by one of our partners we observed
+this. Maybe this is perfectly fine. Just as I said it looks a bit weird
+that a proper shutdown of the connection a RST is send out right after
+the FIN.
 
-diff --git a/include/uapi/linux/smc.h b/include/uapi/linux/smc.h
-index e3728af2832b..b175bd0165a1 100644
---- a/include/uapi/linux/smc.h
-+++ b/include/uapi/linux/smc.h
-@@ -56,6 +56,9 @@ enum {
- 	SMC_NETLINK_ADD_UEID,
- 	SMC_NETLINK_REMOVE_UEID,
- 	SMC_NETLINK_FLUSH_UEID,
-+	SMC_NETLINK_DUMP_SEID,
-+	SMC_NETLINK_ENABLE_SEID,
-+	SMC_NETLINK_DISABLE_SEID,
- };
- 
- /* SMC_GENL_FAMILY top level attributes */
-@@ -257,4 +260,13 @@ enum {
- 	__SMC_NLA_EID_TABLE_MAX,
- 	SMC_NLA_EID_TABLE_MAX = __SMC_NLA_EID_TABLE_MAX - 1
- };
-+
-+/* SMC_NETLINK_SEID attributes */
-+enum {
-+	SMC_NLA_SEID_UNSPEC,
-+	SMC_NLA_SEID_ENTRY,	/* string */
-+	SMC_NLA_SEID_ENABLED,	/* u8 */
-+	__SMC_NLA_SEID_TABLE_MAX,
-+	SMC_NLA_SEID_TABLE_MAX = __SMC_NLA_SEID_TABLE_MAX - 1
-+};
- #endif /* _UAPI_LINUX_SMC_H */
-diff --git a/net/smc/smc_clc.c b/net/smc/smc_clc.c
-index 5a5ebf752860..4afd9e71e5c2 100644
---- a/net/smc/smc_clc.c
-+++ b/net/smc/smc_clc.c
-@@ -143,6 +143,10 @@ static int smc_clc_ueid_remove(char *ueid)
- 			rc = 0;
- 		}
- 	}
-+	if (!rc && !smc_clc_eid_table.ueid_cnt) {
-+		smc_clc_eid_table.seid_enabled = 1;
-+		rc = -EAGAIN;	/* indicate success and enabling of seid */
-+	}
- 	write_unlock(&smc_clc_eid_table.lock);
- 	return rc;
- }
-@@ -216,6 +220,64 @@ int smc_nl_dump_ueid(struct sk_buff *skb, struct netlink_callback *cb)
- 	return skb->len;
- }
- 
-+int smc_nl_dump_seid(struct sk_buff *skb, struct netlink_callback *cb)
-+{
-+	struct smc_nl_dmp_ctx *cb_ctx = smc_nl_dmp_ctx(cb);
-+	char seid_str[SMC_MAX_EID_LEN + 1];
-+	u8 seid_enabled;
-+	void *hdr;
-+	u8 *seid;
-+
-+	if (cb_ctx->pos[0])
-+		return skb->len;
-+
-+	hdr = genlmsg_put(skb, NETLINK_CB(cb->skb).portid, cb->nlh->nlmsg_seq,
-+			  &smc_gen_nl_family, NLM_F_MULTI,
-+			  SMC_NETLINK_DUMP_SEID);
-+	if (!hdr)
-+		return -ENOMEM;
-+	if (!smc_ism_is_v2_capable())
-+		goto end;
-+
-+	smc_ism_get_system_eid(&seid);
-+	snprintf(seid_str, sizeof(seid_str), "%s", seid);
-+	if (nla_put_string(skb, SMC_NLA_SEID_ENTRY, seid_str))
-+		goto err;
-+	read_lock(&smc_clc_eid_table.lock);
-+	seid_enabled = smc_clc_eid_table.seid_enabled;
-+	read_unlock(&smc_clc_eid_table.lock);
-+	if (nla_put_u8(skb, SMC_NLA_SEID_ENABLED, seid_enabled))
-+		goto err;
-+end:
-+	genlmsg_end(skb, hdr);
-+	cb_ctx->pos[0]++;
-+	return skb->len;
-+err:
-+	genlmsg_cancel(skb, hdr);
-+	return -EMSGSIZE;
-+}
-+
-+int smc_nl_enable_seid(struct sk_buff *skb, struct genl_info *info)
-+{
-+	write_lock(&smc_clc_eid_table.lock);
-+	smc_clc_eid_table.seid_enabled = 1;
-+	write_unlock(&smc_clc_eid_table.lock);
-+	return 0;
-+}
-+
-+int smc_nl_disable_seid(struct sk_buff *skb, struct genl_info *info)
-+{
-+	int rc = 0;
-+
-+	write_lock(&smc_clc_eid_table.lock);
-+	if (!smc_clc_eid_table.ueid_cnt)
-+		rc = -ENOENT;
-+	else
-+		smc_clc_eid_table.seid_enabled = 0;
-+	write_unlock(&smc_clc_eid_table.lock);
-+	return rc;
-+}
-+
- static bool _smc_clc_match_ueid(u8 *peer_ueid)
- {
- 	struct smc_clc_eid_entry *tmp_ueid;
-diff --git a/net/smc/smc_clc.h b/net/smc/smc_clc.h
-index 0699e0cee308..974d01d16bb5 100644
---- a/net/smc/smc_clc.h
-+++ b/net/smc/smc_clc.h
-@@ -347,5 +347,8 @@ int smc_nl_dump_ueid(struct sk_buff *skb, struct netlink_callback *cb);
- int smc_nl_add_ueid(struct sk_buff *skb, struct genl_info *info);
- int smc_nl_remove_ueid(struct sk_buff *skb, struct genl_info *info);
- int smc_nl_flush_ueid(struct sk_buff *skb, struct genl_info *info);
-+int smc_nl_dump_seid(struct sk_buff *skb, struct netlink_callback *cb);
-+int smc_nl_enable_seid(struct sk_buff *skb, struct genl_info *info);
-+int smc_nl_disable_seid(struct sk_buff *skb, struct genl_info *info);
- 
- #endif
-diff --git a/net/smc/smc_netlink.c b/net/smc/smc_netlink.c
-index 4548ff2df245..f13ab0661ed5 100644
---- a/net/smc/smc_netlink.c
-+++ b/net/smc/smc_netlink.c
-@@ -96,6 +96,21 @@ static const struct genl_ops smc_gen_nl_ops[] = {
- 		.flags = GENL_ADMIN_PERM,
- 		.doit = smc_nl_flush_ueid,
- 	},
-+	{
-+		.cmd = SMC_NETLINK_DUMP_SEID,
-+		/* can be retrieved by unprivileged users */
-+		.dumpit = smc_nl_dump_seid,
-+	},
-+	{
-+		.cmd = SMC_NETLINK_ENABLE_SEID,
-+		.flags = GENL_ADMIN_PERM,
-+		.doit = smc_nl_enable_seid,
-+	},
-+	{
-+		.cmd = SMC_NETLINK_DISABLE_SEID,
-+		.flags = GENL_ADMIN_PERM,
-+		.doit = smc_nl_disable_seid,
-+	},
- };
- 
- static const struct nla_policy smc_gen_nl_policy[2] = {
--- 
-2.25.1
-
+No idea how iSCSI or NBD handles this. I'll check.
