@@ -2,172 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE93940B5EF
-	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 19:32:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1B4D40B602
+	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 19:37:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231479AbhINRde (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 13:33:34 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:11136 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S230019AbhINRdd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 13:33:33 -0400
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.0.43) with SMTP id 18EGhd4g029046;
-        Tue, 14 Sep 2021 13:31:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=aIo1TaDICCdei1g5dVPm7EpGYyAVvfgdhezR0Ptp5c0=;
- b=s7hXSBA/32Y5ktAMPYe7jo9025Kjck+fWN6v/EzWvTwx3VGbrZ7VPw/zkFshlWQwU28A
- /CZHT3M3LfXH6tc7ThNn7FIWAgHhTAmJrMfd4hy5L7VCkjf3xzK1TyhW76AB4f57CvE6
- yZHVAt47J4mbivuUfXLlgLl6ZLbGvSSGUTg1YnIvQNV1lUSTJX2sQec8YkfhSEDEpc2u
- UBhUgRqRIvp/UcEM4R5EQXkAg8+3YZP4AwCXdjE/wSck4HkMfHv9YyZWy7vdnYvzoCJM
- D1tWCAdJ4CrbxsB7S49+1NG8YJDn3FK0+gNWTNxtm4gLNP48n8QOELhpTjrhn9I2I0g7 dw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3b2ygt19er-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 14 Sep 2021 13:31:38 -0400
-Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 18EGhuYX029606;
-        Tue, 14 Sep 2021 13:31:37 -0400
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3b2ygt19dt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 14 Sep 2021 13:31:37 -0400
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 18EHCBga013667;
-        Tue, 14 Sep 2021 17:31:35 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma02fra.de.ibm.com with ESMTP id 3b0m39dj50-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 14 Sep 2021 17:31:35 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 18EHVW7T46399848
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 14 Sep 2021 17:31:32 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9AC59AE051;
-        Tue, 14 Sep 2021 17:31:32 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BBDB0AE053;
-        Tue, 14 Sep 2021 17:31:29 +0000 (GMT)
-Received: from [9.171.20.178] (unknown [9.171.20.178])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 14 Sep 2021 17:31:29 +0000 (GMT)
-Message-ID: <a366c691-fb81-8e30-3853-3260ceabf080@linux.ibm.com>
-Date:   Tue, 14 Sep 2021 20:31:29 +0300
+        id S231206AbhINRir (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 13:38:47 -0400
+Received: from mail-il1-f197.google.com ([209.85.166.197]:42536 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229526AbhINRip (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 13:38:45 -0400
+Received: by mail-il1-f197.google.com with SMTP id p10-20020a92d28a000000b0022b5f9140f7so19205357ilp.9
+        for <netdev@vger.kernel.org>; Tue, 14 Sep 2021 10:37:28 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=ATCgKLO9n3GamsUnOnt5kLvtcJYFA9pwPWjRgjaEo5o=;
+        b=MLZFHBBeaSbpgUlQex382jBUuuKq72FGaRGZU2VnHkOX++8e2lcUCJjImgHtviZvhe
+         dUhdpWt6tBZNG4mlLfrk7ehTDb4VhQTDg2/BW/8nvaItNNvrttZ/E53F+4nH0aQgHph2
+         QoLfBy93PfTMJXRwPtgw6ma6Qc/V5mI3f2XVWdkj7Cp3YTtN1Y1a1qKC1vEgywdaP7vC
+         ahMDFNtmAfusQxSrpFiXR9Nmr+Ou5pWVY1pPqj9ciBayS/4ceF6+298EKQunpVzfi0Gr
+         ObVUFIyMWrvapeqVZSwC9rjA02FJpyvLTF4BwxUCs4F9Tf7kQIShCdTDnGdtDAP70JJ1
+         Sk7w==
+X-Gm-Message-State: AOAM5315R0Pf+HmLvrnI9tCT4AmHLoDJ0VxIPeDJ1H9YLh76+kpoM137
+        S+uNIp3HMvlk5msB2t2Kk0W47nNDo4yqFl0lI+g41kBxnjSd
+X-Google-Smtp-Source: ABdhPJzjK4K3/9mPPr1ed/2ix/JTjNgPF6bgEk8tGxBzYYeMWG5otRA095e+TUbmNeqRTIAhuSJ5qKn5kCfpS0YOu9RmdpUo5KwW
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.1.0
-Subject: Re: [PATCH V3 net-next 2/4] ethtool: extend coalesce setting uAPI
- with CQE mode
-Content-Language: en-US
-To:     Yufeng Mo <moyufeng@huawei.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, shenjian15@huawei.com,
-        lipeng321@huawei.com, yisen.zhuang@huawei.com,
-        linyunsheng@huawei.com, huangguangbin2@huawei.com,
-        chenhao288@hisilicon.com, salil.mehta@huawei.com,
-        linuxarm@huawei.com, linuxarm@openeuler.org, dledford@redhat.com,
-        jgg@ziepe.ca, netanel@amazon.com, akiyano@amazon.com,
-        thomas.lendacky@amd.com, irusskikh@marvell.com,
-        michael.chan@broadcom.com, edwin.peer@broadcom.com,
-        rohitm@chelsio.com, jacob.e.keller@intel.com,
-        ioana.ciornei@nxp.com, vladimir.oltean@nxp.com,
-        sgoutham@marvell.com, sbhatta@marvell.com, saeedm@nvidia.com,
-        ecree.xilinx@gmail.com, grygorii.strashko@ti.com,
-        merez@codeaurora.org, kvalo@codeaurora.org,
-        linux-wireless@vger.kernel.org
-References: <1629444920-25437-1-git-send-email-moyufeng@huawei.com>
- <1629444920-25437-3-git-send-email-moyufeng@huawei.com>
-From:   Julian Wiedmann <jwi@linux.ibm.com>
-In-Reply-To: <1629444920-25437-3-git-send-email-moyufeng@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: J9Eh5isQci_ecwaFFb4ZLD-60nRzRzVL
-X-Proofpoint-GUID: wCqWvBcAe21rS4r3kVmKye1GiH9Vqur8
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.687,Hydra:6.0.235,FMLib:17.0.607.475
- definitions=2020-10-13_15,2020-10-13_02,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
- priorityscore=1501 impostorscore=0 suspectscore=0 mlxlogscore=999
- bulkscore=0 lowpriorityscore=0 adultscore=0 spamscore=0 malwarescore=0
- clxscore=1011 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2109030001 definitions=main-2109140092
+X-Received: by 2002:a02:6d59:: with SMTP id e25mr2294116jaf.68.1631641048289;
+ Tue, 14 Sep 2021 10:37:28 -0700 (PDT)
+Date:   Tue, 14 Sep 2021 10:37:28 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000001597e105cbf8090a@google.com>
+Subject: [syzbot] WARNING: refcount bug in sco_conn_del
+From:   syzbot <syzbot+284f5086a790a6246920@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        luiz.dentz@gmail.com, marcel@holtmann.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20.08.21 10:35, Yufeng Mo wrote:
-> In order to support more coalesce parameters through netlink,
-> add two new parameter kernel_coal and extack for .set_coalesce
-> and .get_coalesce, then some extra info can return to user with
-> the netlink API.
-> 
-> Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
-> Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
-> ---
+Hello,
 
-[...]
+syzbot found the following issue on:
 
-> index 81fa36a..f2abc31 100644
-> --- a/net/ethtool/ioctl.c
-> +++ b/net/ethtool/ioctl.c
-> @@ -1619,12 +1619,14 @@ static noinline_for_stack int ethtool_get_coalesce(struct net_device *dev,
->  						   void __user *useraddr)
->  {
->  	struct ethtool_coalesce coalesce = { .cmd = ETHTOOL_GCOALESCE };
-> +	struct kernel_ethtool_coalesce kernel_coalesce = {};
->  	int ret;
->  
->  	if (!dev->ethtool_ops->get_coalesce)
->  		return -EOPNOTSUPP;
->  
-> -	ret = dev->ethtool_ops->get_coalesce(dev, &coalesce);
-> +	ret = dev->ethtool_ops->get_coalesce(dev, &coalesce, &kernel_coalesce,
-> +					     NULL);
->  	if (ret)
->  		return ret;
->  
-> @@ -1691,19 +1693,26 @@ ethtool_set_coalesce_supported(struct net_device *dev,
->  static noinline_for_stack int ethtool_set_coalesce(struct net_device *dev,
->  						   void __user *useraddr)
->  {
-> +	struct kernel_ethtool_coalesce kernel_coalesce = {};
->  	struct ethtool_coalesce coalesce;
->  	int ret;
->  
-> -	if (!dev->ethtool_ops->set_coalesce)
-> +	if (!dev->ethtool_ops->set_coalesce && !dev->ethtool_ops->get_coalesce)
->  		return -EOPNOTSUPP;
->  
+HEAD commit:    bf9f243f23e6 Merge tag '5.15-rc-ksmbd-part2' of git://git...
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=171c4ec7300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=e87940ff463e6c56
+dashboard link: https://syzkaller.appspot.com/bug?extid=284f5086a790a6246920
+compiler:       Debian clang version 11.0.1-2, GNU ld (GNU Binutils for Debian) 2.35.1
 
-This needs to be
+Unfortunately, I don't have any reproducer for this issue yet.
 
-	if (!set_coalesce || !get_coalesce)
-		return -EOPNOTSUPP;
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+284f5086a790a6246920@syzkaller.appspotmail.com
 
-Otherwise you end up calling a NULL pointer below if just _one_ of the
-callbacks is available.
+------------[ cut here ]------------
+refcount_t: addition on 0; use-after-free.
+WARNING: CPU: 0 PID: 8391 at lib/refcount.c:25 refcount_warn_saturate+0x13d/0x1a0 lib/refcount.c:25
+Modules linked in:
+CPU: 0 PID: 8391 Comm: syz-executor.4 Not tainted 5.14.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:refcount_warn_saturate+0x13d/0x1a0 lib/refcount.c:25
+Code: c7 60 d4 b3 8a 31 c0 e8 61 22 3d fd 0f 0b eb a3 e8 28 eb 71 fd c6 05 65 2e b8 09 01 48 c7 c7 c0 d4 b3 8a 31 c0 e8 43 22 3d fd <0f> 0b eb 85 e8 0a eb 71 fd c6 05 48 2e b8 09 01 48 c7 c7 20 d5 b3
+RSP: 0018:ffffc90006557a08 EFLAGS: 00010246
+RAX: 7631d2209bb18500 RBX: 0000000000000002 RCX: 0000000000040000
+RDX: ffffc90011c64000 RSI: 000000000003ffff RDI: 0000000000040000
+RBP: 0000000000000002 R08: ffffffff81681fd2 R09: ffffed10173857a8
+R10: ffffed10173857a8 R11: 0000000000000000 R12: dffffc0000000000
+R13: ffff88801f90c968 R14: ffff888078a85000 R15: 0000000000000067
+FS:  00007f49f645e700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000001b2be21000 CR3: 000000008081c000 CR4: 00000000001526f0
+Call Trace:
+ __refcount_inc include/linux/refcount.h:250 [inline]
+ refcount_inc include/linux/refcount.h:267 [inline]
+ sock_hold include/net/sock.h:702 [inline]
+ sco_conn_del+0x242/0x2f0 net/bluetooth/sco.c:193
+ hci_disconn_cfm include/net/bluetooth/hci_core.h:1518 [inline]
+ hci_conn_hash_flush+0x112/0x240 net/bluetooth/hci_conn.c:1608
+ hci_dev_do_close+0x93e/0xeb0 net/bluetooth/hci_core.c:1793
+ hci_rfkill_set_block+0x10f/0x180 net/bluetooth/hci_core.c:2233
+ rfkill_set_block+0x1f1/0x440 net/rfkill/core.c:344
+ rfkill_fop_write+0x5a4/0x760 net/rfkill/core.c:1268
+ vfs_write+0x320/0xe70 fs/read_write.c:592
+ ksys_write+0x18f/0x2c0 fs/read_write.c:647
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x4665f9
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f49f645e188 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+RAX: ffffffffffffffda RBX: 000000000056bf80 RCX: 00000000004665f9
+RDX: 0000000000000008 RSI: 0000000020000040 RDI: 0000000000000003
+RBP: 00000000004bfcc4 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 000000000056bf80
+R13: 00007ffdc243488f R14: 00007f49f645e300 R15: 0000000000022000
 
 
-> +	ret = dev->ethtool_ops->get_coalesce(dev, &coalesce, &kernel_coalesce,
-> +					     NULL);
-> +	if (ret)
-> +		return ret;
-> +
->  	if (copy_from_user(&coalesce, useraddr, sizeof(coalesce)))
->  		return -EFAULT;
->  
->  	if (!ethtool_set_coalesce_supported(dev, &coalesce))
->  		return -EOPNOTSUPP;
->  
-> -	ret = dev->ethtool_ops->set_coalesce(dev, &coalesce);
-> +	ret = dev->ethtool_ops->set_coalesce(dev, &coalesce, &kernel_coalesce,
-> +					     NULL);
->  	if (!ret)
->  		ethtool_notify(dev, ETHTOOL_MSG_COALESCE_NTF, NULL);
->  	return ret;
-> 
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
