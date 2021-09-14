@@ -2,106 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C8C940AF6D
-	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 15:42:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC67340AF68
+	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 15:41:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233550AbhINNn0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 09:43:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54604 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233597AbhINNmr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 09:42:47 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF76FC0613E1;
-        Tue, 14 Sep 2021 06:40:06 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id v123so12229121pfb.11;
-        Tue, 14 Sep 2021 06:40:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=n1xHERTWrj7D1DTPEGJj3xVwOdFR4NfsEg1IOHAruuw=;
-        b=N4HjvaGMKIHbXihQJY26tsfN0SewA/NZla4RAEMjOxtJnPQfLV4agqUhzeTnjj86Mt
-         LP0m9lTl6Gc6Dye+LCwhyvl/J0g772XxXhLEL/qoIq7xOen0Ca6jYCS8eZ2/qpZq0CpS
-         iO0vzwUwO6nDVOLORCamflLOU2mxqFvkBzACzG8ZqC8Bld+xFWgUSd0csXsxALqCZhCm
-         HPkXkL2TX1Gco+oKpFU9M6+4J58W844WQdDbfFQm7AV71OwP54oZplG9BA6hERNK2z6I
-         D6pebIdKVNWIMDx5h12PyCUXPFJzFt0WMgD+1+QclBKkdJL568CtTfs8ic03gNLoycKT
-         9AiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=n1xHERTWrj7D1DTPEGJj3xVwOdFR4NfsEg1IOHAruuw=;
-        b=DpCsJJLQd+AnV6U/cIdiXgGoezyFmChokJuuFxhcqdQj2+51D7BzbKvoCEhZkosU4l
-         FDsqruvis7USQThaWwPbA2752uxZXcVay37sXDaaAYkXvUsDAyuDr6uG+rbtcHuVY21Y
-         DMsHsEhVZC54tumdyubjWozXgtt2WdXoUJg2ERfV3kz5gP51j95p9YrvoI2SZmwMhfZ0
-         RrYyYJVLKvvqW6YZLeMYYvcHocYPuMoVrIw3cywMUJVnxTF/P9ZgXmXvZc2faKASMvkV
-         Pc+ayWRQI0QX0njYew1WdpfqaQcGc49834Rh2l+vVtoQd9uL4LJQylLse7wjmoRd73Jd
-         SO6A==
-X-Gm-Message-State: AOAM533ILMVNZPUCh3E61E8UQbslRwtI3zCchWlA11WhlwXn3xrb3YHe
-        WvJ8Bgf/eIjJBvTN81d2Rwg5IZ9WmCDN3ZckjJA=
-X-Google-Smtp-Source: ABdhPJyx6W1PZKwym79XKRlu1WIoa0lt5UEVm+XWEe1zmmFeUxgWA/N1FXcqIdWfUY+sZHxx2c6EUP6FZ4I55/6Q7mA=
-X-Received: by 2002:a62:770d:0:b0:43d:aff0:dbec with SMTP id
- s13-20020a62770d000000b0043daff0dbecmr4853543pfc.79.1631626806301; Tue, 14
- Sep 2021 06:40:06 -0700 (PDT)
+        id S233731AbhINNm4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 09:42:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55212 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233542AbhINNlZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Sep 2021 09:41:25 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 7B30D61107;
+        Tue, 14 Sep 2021 13:40:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1631626808;
+        bh=M5m8aOVqVbgMB0rsQlPtRMkCmz/sNk5nTp39tXw9pvk=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=tStRK2PJs+Ol1d9tsWF8QLjmnRjfJS4WjCTHshU5BhgKKE39XU8I3gu9k8ITIC9Nq
+         thc0t3uh6N5OEIAp1/0ySy4qJFKPtVjN7R1J+AIEGqiwwpkg8Uwz6eba+GAUZVuL7k
+         Y89AnCgww6Vptv5bsvtKGA7hl/C1LRP3tH8QJwYuiU96UD5quDVAJ8GbKz1gH/AVMI
+         8rzyK0nUpWKPhyt50peYkG0RNNefkTUrOz/ibWWVmyOZf1iqhJXiDqNNgD0aqR1AT7
+         xBS71G9TnR70Za+gptddfHsyyZksBeyqh185ysiLOh3KZHJB/6XDdkTyJBB7vK/Qdg
+         XhuIbYWkO44Kg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6FEC460A7D;
+        Tue, 14 Sep 2021 13:40:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <CAGjnhw920kNaJ9Vkg54WR8vh2TaomuTtA3WwR3eieD4v6iEJDw@mail.gmail.com>
- <2ada6f05-fc3a-a301-a008-594f7665a514@wolfvision.net>
-In-Reply-To: <2ada6f05-fc3a-a301-a008-594f7665a514@wolfvision.net>
-From:   =?UTF-8?Q?Sebastian_D=C3=B6ring?= 
-        <moralapostel+linuxkernel@gmail.com>
-Date:   Tue, 14 Sep 2021 15:39:39 +0200
-Message-ID: <CADkZQakh49i-M_1NgsENkqBnacVo6J3Rj8D2NFijvyBts9Pneg@mail.gmail.com>
-Subject: Re: [PATCH] net: stmmac: dwmac-rk: fix unbalanced pm_runtime_enable warnings
-To:     Michael Riesch <michael.riesch@wolfvision.net>
-Cc:     Ivan Babrou <ivan@ivan.computer>, sashal@kernel.org,
-        alexandre.torgue@foss.st.com, davem@davemloft.net,
-        joabreu@synopsys.com, kuba@kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
-        peppe.cavallaro@st.com, wens@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/2] PF support get MAC address space assigned by
+ firmware
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163162680845.2816.11518104751594889118.git-patchwork-notify@kernel.org>
+Date:   Tue, 14 Sep 2021 13:40:08 +0000
+References: <20210914121117.13054-1-huangguangbin2@huawei.com>
+In-Reply-To: <20210914121117.13054-1-huangguangbin2@huawei.com>
+To:     Guangbin Huang <huangguangbin2@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lipeng321@huawei.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Michael,
+Hello:
 
-I guess looking for a better or more ideal solution sounds good, but
-sorry if this is impertinent, as it's coming from a mostly uninvolved
-3rd party: This is affects a kernel that is labeled as "stable". It
-seems extremely unacceptable to break ethernet support for boards like
-the rockpro64, which are used largely in a headless fashion, when the
-offending commit has already been identified.
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-I don't expect a stable kernel release to completely break my hardware
-and then see people not immediately applying a workaround patch. It
-seems strange. I'm not fond of having to fix things through serial
-console and hunting through mailing lists to figure out what's going
-on. I'd only expect this for -rc kernels.
+On Tue, 14 Sep 2021 20:11:15 +0800 you wrote:
+> This series add support PF to get unicast/multicast MAC address space
+> assigned by firmware for the HNS3 ethernet driver.
+> 
+> Guangbin Huang (2):
+>   net: hns3: PF support get unicast MAC address space assigned by
+>     firmware
+>   net: hns3: PF support get multicast MAC address space assigned by
+>     firmware
+> 
+> [...]
 
-Just my two cents.
+Here is the summary with links:
+  - [net-next,1/2] net: hns3: PF support get unicast MAC address space assigned by firmware
+    https://git.kernel.org/netdev/net-next/c/e435a6b5315a
+  - [net-next,2/2] net: hns3: PF support get multicast MAC address space assigned by firmware
+    https://git.kernel.org/netdev/net-next/c/5c56ff486dfc
 
-Best regards,
-Sebastian
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Am Di., 14. Sept. 2021 um 12:09 Uhr schrieb Michael Riesch
-<michael.riesch@wolfvision.net>:
->
-> Hello Ivan,
->
-> On 9/14/21 3:10 AM, Ivan Babrou wrote:
-> > Is it possible to revert the patch from the 5.14 and 5.15 as well?
-> > I've tried upgrading my rockpro64 board from 5.13 to 5.15-rc1 and
-> > ended up bisecting the issue to this commit like the others. It would
-> > be nice to spare others from this exercise.
->
-> For what it is worth we believe that there is a different issue with the
-> dwmac-rk driver that was obscured by calling pm_runtime_get_sync()
-> early. Investigation in progress -- I hope that we can achieve a proper
-> solution before we have to revert the revert.
->
-> Best regards,
-> Michael
+
