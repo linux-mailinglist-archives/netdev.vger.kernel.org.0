@@ -2,121 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B77240AC6C
-	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 13:28:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 372DA40ACC6
+	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 13:51:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232185AbhINL3e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 07:29:34 -0400
-Received: from new2-smtp.messagingengine.com ([66.111.4.224]:45587 "EHLO
-        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232187AbhINL3a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 07:29:30 -0400
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
-        by mailnew.nyi.internal (Postfix) with ESMTP id CA9865805A9;
-        Tue, 14 Sep 2021 07:28:12 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute6.internal (MEProxy); Tue, 14 Sep 2021 07:28:12 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=Y2MBCAQ2jQEtDQ0uaBisEZ1yTBQijJXAFFk/J1keLdM=; b=TcdhUgun
-        sao8WhZwwD5LUlgKT9X4oKHREUfEp1A4XI/rnhXGRW7Y0dFp7dy67z8C6SgUVJ02
-        67bCusdBUYooFUjDq9NJZBRiNFb8PYU7ZT7TKqOMZaWaRIHO4S68XN120E2KDgjL
-        /NMQ8VvRJewwNnnlI17T2DaCHl5kabxl8offNgbuxExMp5T2JmedNuuwKtLhJDfu
-        SP4/XtjeWy7SEkFC2MFxstJ0DCULgdloCV+Xk4ZKNrBxwQ1OTIg2bI67TBfsI3Mr
-        VbUekqv+mHHPnoCQs28XPwbJBvh66sJOcA7O/1vBIjzBhB4ZOshaEgfHNnZ4pVIt
-        jXwg11dZYEfCZQ==
-X-ME-Sender: <xms:TIdAYTTv0RQPoCuabvlwg1u835wd9E7gVNgz_WENZEW9img71CuYSA>
-    <xme:TIdAYUytMV4zNNWfxsL2VRu7eYFguFVmDt8BSuaU47ejnpRUv1OYRh4vYX4FENjd7
-    ca2LmyTKQdfcZY>
-X-ME-Received: <xmr:TIdAYY1pSV4W1tpH15LM5N1E4atcUEHdSS6lXcv7ps6XfFdZWWoyQnvgSkOyTSpEvZSj0IJlJ-RSU1iJg6TREUN8Wnjnyt7_fQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrudegledgfeelucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
-    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
-    ehgfdtffethfelvdejgffghefgveejkefhnecuvehluhhsthgvrhfuihiivgeptdenucfr
-    rghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:TIdAYTAL9vKLlzra9H7B1N7ry5oJhOhclKJBWWH5_c3btNhZWLKcCg>
-    <xmx:TIdAYcinU61b9DQwa7clXPCnWGcu3kkxjrNZvDN9iw20giWrwQ3FBg>
-    <xmx:TIdAYXq8opLo-EzdbeKYPHMed3Jbir2kOh0vNo-aOwmK8KnZeVsqsg>
-    <xmx:TIdAYVXPCW_ekHSTLuijFFtMSLjir-ZdvGyZfq_ntwFDdCuiQME3_Q>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 14 Sep 2021 07:28:10 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     mkubecek@suse.cz, kuba@kernel.org, andrew@lunn.ch,
-        f.fainelli@gmail.com, vadimp@nvidia.com, mlxsw@nvidia.com,
-        vladyslavt@nvidia.com, moshe@nvidia.com, popadrian1996@gmail.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH ethtool 5/5] netlink: eeprom: Fix compilation when pretty dump is disabled
-Date:   Tue, 14 Sep 2021 14:27:38 +0300
-Message-Id: <20210914112738.358627-6-idosch@idosch.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210914112738.358627-1-idosch@idosch.org>
-References: <20210914112738.358627-1-idosch@idosch.org>
+        id S232545AbhINLuL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 07:50:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56372 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232394AbhINLtz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 07:49:55 -0400
+Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [IPv6:2001:67c:2050::465:201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79889C061574;
+        Tue, 14 Sep 2021 04:48:37 -0700 (PDT)
+Received: from smtp102.mailbox.org (smtp102.mailbox.org [80.241.60.233])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4H81nv4nfSzQlRK;
+        Tue, 14 Sep 2021 13:48:35 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+From:   =?UTF-8?q?Jonas=20Dre=C3=9Fler?= <verdre@v0yd.nl>
+To:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi017@gmail.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     =?UTF-8?q?Jonas=20Dre=C3=9Fler?= <verdre@v0yd.nl>,
+        Tsuchiya Yuto <kitakar@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Brian Norris <briannorris@chromium.org>
+Subject: [PATCH v2 0/2] mwifiex: Work around firmware bugs on 88W8897 chip
+Date:   Tue, 14 Sep 2021 13:48:11 +0200
+Message-Id: <20210914114813.15404-1-verdre@v0yd.nl>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Rspamd-Queue-Id: C163426B
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+This is the second revision of the patch, the first one is here:
+https://lore.kernel.org/linux-wireless/20210830123704.221494-1-verdre@v0yd.nl/
 
-When pretty dump is disabled (i.e., configure --disable-pretty-dump),
-the following errors are emitted:
+Changes between v1 and v2:
+ - Only read-back the register write to the TX ring write pointer, not all writes
+ - Mention firmware version in commit message+code comment for future reference
+ - Use -EIO return value in second patch
+ - Use definitions for waiting intervals in second patch
 
-/usr/bin/ld: netlink/module-eeprom.o: in function `decoder_print':
-netlink/module-eeprom.c:330: undefined reference to `sff8636_show_all_paged'
-netlink/module-eeprom.c:334: undefined reference to `cmis_show_all'
-netlink/module-eeprom.c:325: undefined reference to `sff8079_show_all'
+Jonas Dreßler (2):
+  mwifiex: Use non-posted PCI write when setting TX ring write pointer
+  mwifiex: Try waking the firmware until we get an interrupt
 
-The else clause is unreachable when pretty dump is disabled, so wrap it
-with ifdef directive.
+ drivers/net/wireless/marvell/mwifiex/pcie.c | 59 +++++++++++++++++----
+ 1 file changed, 50 insertions(+), 9 deletions(-)
 
-This will be re-worked in future patches where the netlink code only
-queries the SFF-8024 Identifier Value and defers page requests to
-individual parsers.
-
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
----
- netlink/module-eeprom.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/netlink/module-eeprom.c b/netlink/module-eeprom.c
-index e9a122df3259..48cd2cc55bee 100644
---- a/netlink/module-eeprom.c
-+++ b/netlink/module-eeprom.c
-@@ -275,6 +275,7 @@ static int page_fetch(struct nl_context *nlctx, const struct ethtool_module_eepr
- 	return nlsock_process_reply(nlsock, nomsg_reply_cb, NULL);
- }
- 
-+#ifdef ETHTOOL_ENABLE_PRETTY_DUMP
- static int decoder_prefetch(struct nl_context *nlctx)
- {
- 	struct ethtool_module_eeprom *page_zero_lower = cache_get(0, 0, ETH_I2C_ADDRESS_LOW);
-@@ -338,6 +339,7 @@ static void decoder_print(void)
- 		break;
- 	}
- }
-+#endif
- 
- int nl_getmodule(struct cmd_context *ctx)
- {
-@@ -414,10 +416,12 @@ int nl_getmodule(struct cmd_context *ctx)
- 		else
- 			dump_hex(stdout, eeprom_data, dump_length, request.offset);
- 	} else {
-+#ifdef ETHTOOL_ENABLE_PRETTY_DUMP
- 		ret = decoder_prefetch(nlctx);
- 		if (ret)
- 			goto cleanup;
- 		decoder_print();
-+#endif
- 	}
- 
- cleanup:
 -- 
 2.31.1
 
