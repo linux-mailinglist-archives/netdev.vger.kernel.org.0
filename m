@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A80A40BBE8
-	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 01:07:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50FFE40BBE4
+	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 01:07:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235873AbhINXJD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 19:09:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45134 "EHLO mail.kernel.org"
+        id S235723AbhINXI6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 19:08:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45084 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235594AbhINXJA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Sep 2021 19:09:00 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D250960F46;
-        Tue, 14 Sep 2021 23:07:41 +0000 (UTC)
+        id S235594AbhINXI5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Sep 2021 19:08:57 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7872561175;
+        Tue, 14 Sep 2021 23:07:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631660862;
-        bh=aaKaYR2sBksQpkejwPiEc/hFK8LOLip8JH6pG0FuYYQ=;
+        s=k20201202; t=1631660859;
+        bh=/JRyAnT5evEytQDDgxWGtZA22o9QDPBtDHQ4Wj2be8U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GdpSESlgOZVM9dF+qXPtUkqrOS+0LwY6sAC9iKummXUgP2gipTbABg/yP/eCZ82As
-         bvx4NiGnjJLSnMIUFvwyLTgKjYapAgJK4k83DSKfM/71vvFh3yFMeT9qtsuYfVCcOd
-         RaM0BqPaPKFaBioHvqDZM7tmF1PI8MndSNI7zX6BdjPxilAqml7KV+X/z+gZ/tXpYT
-         YX/VeXpLl87/S+wpQXf6WZsTUZe/KII6QZcngNDusziGVhrEo4kBGF7CisFXk3A24P
-         t8h6o9J3ZWoqqw190sOZdrKaqGMW5XkTM1czeNo7GWsn38RiV0DjveteFP1gGhPI9w
-         GHzLCAz0cCzhw==
+        b=rUMZJVBeVxOh36ZNAzoVUSCLsP+sAmIKqA4BMHmv/bJaqaBiH6/A4NI5PYUWyYF7J
+         8WDuR3zQkJtk4wgPtocHaa3U8NUPqCo/CS0Dqk51yvxv0X2SgrBGaSVbMwi42sVuSb
+         3yQGtEm564LfV9Hg+8VoT1IxBnOcSLnTezRhMpgoQpaGAwNQEgYpGLW4TSdh+9prn4
+         CXF7ByeI5VFcHjGRJxdeX2yxhub0RZM8fQq87r/W1hEk+QlryyMsTCfGqFk3i55EYw
+         asugghZT1mSUJbBYckulIxeDuYZwIpnACGKUcZ5NqC27XGab81ZG/BfHTT10JJcX+T
+         ZgX2EFlC1YW0g==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Doug Ledford <dledford@redhat.com>,
         Jason Gunthorpe <jgg@nvidia.com>
@@ -41,9 +41,9 @@ Cc:     Aharon Landau <aharonl@nvidia.com>,
         Shiraz Saleem <shiraz.saleem@intel.com>,
         Yishai Hadas <yishaih@nvidia.com>,
         Zhu Yanjun <zyjzyj2000@gmail.com>
-Subject: [PATCH mlx5-next v1 01/11] net/mlx5: Add ifc bits to support optional counters
-Date:   Wed, 15 Sep 2021 02:07:20 +0300
-Message-Id: <939e84d6d3e312330f4527dcd75df2275d675f19.1631660727.git.leonro@nvidia.com>
+Subject: [PATCH mlx5-next v1 02/11] net/mlx5: Add priorities for counters in RDMA namespaces
+Date:   Wed, 15 Sep 2021 02:07:21 +0300
+Message-Id: <eab53af5450b57a9065ed0a174915bbd98b2b19f.1631660727.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1631660727.git.leonro@nvidia.com>
 References: <cover.1631660727.git.leonro@nvidia.com>
@@ -55,75 +55,144 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Aharon Landau <aharonl@nvidia.com>
 
-Adding bth_opcode field and the relevant bits. This field will be used
-to capture and count congestion notification packets (CNP).
-
-Adding source_vhca_port support bit.
-This field will be used to check the capability to use the
-source_vhca_port as a match criteria in cases of dual port.
+Add additional flow steering priorities in the RDMA namespace.
+This allows adding flow counters to count filtered RDMA traffic and then
+continue processing in the regular RDMA steering flow.
 
 Signed-off-by: Aharon Landau <aharonl@nvidia.com>
 Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
-Signed-off-by: Mark Zhang <markzhang@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- include/linux/mlx5/mlx5_ifc.h | 22 +++++++++++++++++++---
- 1 file changed, 19 insertions(+), 3 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/fs_core.c | 54 ++++++++++++++++---
+ include/linux/mlx5/device.h                   |  2 +
+ include/linux/mlx5/fs.h                       |  2 +
+ 3 files changed, 50 insertions(+), 8 deletions(-)
 
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index 4a7e6914ed9b..d90a65b6824f 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -342,7 +342,7 @@ struct mlx5_ifc_flow_table_fields_supported_bits {
- 	u8         outer_geneve_oam[0x1];
- 	u8         outer_geneve_protocol_type[0x1];
- 	u8         outer_geneve_opt_len[0x1];
--	u8         reserved_at_1e[0x1];
-+	u8         source_vhca_port[0x1];
- 	u8         source_eswitch_port[0x1];
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
+index 9fe8e3c204d6..c9e2d2b0e2d1 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
+@@ -99,6 +99,9 @@
+ #define LEFTOVERS_NUM_LEVELS 1
+ #define LEFTOVERS_NUM_PRIOS 1
  
- 	u8         inner_dmac[0x1];
-@@ -393,6 +393,14 @@ struct mlx5_ifc_flow_table_fields_supported_bits {
- 	u8         metadata_reg_c_0[0x1];
++#define RDMA_RX_COUNTERS_PRIO_NUM_LEVELS 1
++#define RDMA_TX_COUNTERS_PRIO_NUM_LEVELS 1
++
+ #define BY_PASS_PRIO_NUM_LEVELS 1
+ #define BY_PASS_MIN_LEVEL (ETHTOOL_MIN_LEVEL + MLX5_BY_PASS_NUM_PRIOS +\
+ 			   LEFTOVERS_NUM_PRIOS)
+@@ -206,34 +209,63 @@ static struct init_tree_node egress_root_fs = {
+ 	}
  };
  
-+struct mlx5_ifc_flow_table_fields_supported_2_bits {
-+	u8         reserved_at_0[0xe];
-+	u8         bth_opcode[0x1];
-+	u8         reserved_at_f[0x11];
-+
-+	u8         reserved_at_20[0x60];
+-#define RDMA_RX_BYPASS_PRIO 0
+-#define RDMA_RX_KERNEL_PRIO 1
++enum {
++	RDMA_RX_COUNTERS_PRIO,
++	RDMA_RX_BYPASS_PRIO,
++	RDMA_RX_KERNEL_PRIO,
 +};
 +
- struct mlx5_ifc_flow_table_prop_layout_bits {
- 	u8         ft_support[0x1];
- 	u8         reserved_at_1[0x1];
-@@ -539,7 +547,7 @@ struct mlx5_ifc_fte_match_set_misc_bits {
- 	union mlx5_ifc_gre_key_bits gre_key;
- 
- 	u8         vxlan_vni[0x18];
--	u8         reserved_at_b8[0x8];
-+	u8         bth_opcode[0x8];
- 
- 	u8         geneve_vni[0x18];
- 	u8         reserved_at_d8[0x7];
-@@ -756,7 +764,15 @@ struct mlx5_ifc_flow_table_nic_cap_bits {
- 
- 	struct mlx5_ifc_flow_table_prop_layout_bits flow_table_properties_nic_transmit_sniffer;
- 
--	u8         reserved_at_e00[0x1200];
-+	u8         reserved_at_e00[0x700];
++#define RDMA_RX_BYPASS_MIN_LEVEL MLX5_BY_PASS_NUM_REGULAR_PRIOS
++#define RDMA_RX_KERNEL_MIN_LEVEL (RDMA_RX_BYPASS_MIN_LEVEL + 1)
++#define RDMA_RX_COUNTERS_MIN_LEVEL (RDMA_RX_KERNEL_MIN_LEVEL + 2)
 +
-+	struct mlx5_ifc_flow_table_fields_supported_2_bits ft_field_support_2_nic_receive_rdma;
-+
-+	u8         reserved_at_1580[0x280];
-+
-+	struct mlx5_ifc_flow_table_fields_supported_2_bits ft_field_support_2_nic_transmit_rdma;
-+
-+	u8         reserved_at_1880[0x780];
+ static struct init_tree_node rdma_rx_root_fs = {
+ 	.type = FS_TYPE_NAMESPACE,
+-	.ar_size = 2,
++	.ar_size = 3,
+ 	.children = (struct init_tree_node[]) {
++		[RDMA_RX_COUNTERS_PRIO] =
++		ADD_PRIO(0, RDMA_RX_COUNTERS_MIN_LEVEL, 0,
++			 FS_CHAINING_CAPS,
++			 ADD_NS(MLX5_FLOW_TABLE_MISS_ACTION_DEF,
++				ADD_MULTIPLE_PRIO(MLX5_RDMA_RX_NUM_COUNTERS_PRIOS,
++						  RDMA_RX_COUNTERS_PRIO_NUM_LEVELS))),
+ 		[RDMA_RX_BYPASS_PRIO] =
+-		ADD_PRIO(0, MLX5_BY_PASS_NUM_REGULAR_PRIOS, 0,
++		ADD_PRIO(0, RDMA_RX_BYPASS_MIN_LEVEL, 0,
+ 			 FS_CHAINING_CAPS,
+ 			 ADD_NS(MLX5_FLOW_TABLE_MISS_ACTION_DEF,
+ 				ADD_MULTIPLE_PRIO(MLX5_BY_PASS_NUM_REGULAR_PRIOS,
+ 						  BY_PASS_PRIO_NUM_LEVELS))),
+ 		[RDMA_RX_KERNEL_PRIO] =
+-		ADD_PRIO(0, MLX5_BY_PASS_NUM_REGULAR_PRIOS + 1, 0,
++		ADD_PRIO(0, RDMA_RX_KERNEL_MIN_LEVEL, 0,
+ 			 FS_CHAINING_CAPS,
+ 			 ADD_NS(MLX5_FLOW_TABLE_MISS_ACTION_SWITCH_DOMAIN,
+ 				ADD_MULTIPLE_PRIO(1, 1))),
+ 	}
+ };
  
- 	u8         sw_steering_nic_rx_action_drop_icm_address[0x40];
++enum {
++	RDMA_TX_COUNTERS_PRIO,
++	RDMA_TX_BYPASS_PRIO,
++};
++
++#define RDMA_TX_BYPASS_MIN_LEVEL MLX5_BY_PASS_NUM_PRIOS
++#define RDMA_TX_COUNTERS_MIN_LEVEL (RDMA_TX_BYPASS_MIN_LEVEL + 1)
++
+ static struct init_tree_node rdma_tx_root_fs = {
+ 	.type = FS_TYPE_NAMESPACE,
+-	.ar_size = 1,
++	.ar_size = 2,
+ 	.children = (struct init_tree_node[]) {
+-		ADD_PRIO(0, MLX5_BY_PASS_NUM_PRIOS, 0,
++		[RDMA_TX_COUNTERS_PRIO] =
++		ADD_PRIO(0, RDMA_TX_COUNTERS_MIN_LEVEL, 0,
++			 FS_CHAINING_CAPS,
++			 ADD_NS(MLX5_FLOW_TABLE_MISS_ACTION_DEF,
++				ADD_MULTIPLE_PRIO(MLX5_RDMA_TX_NUM_COUNTERS_PRIOS,
++						  RDMA_TX_COUNTERS_PRIO_NUM_LEVELS))),
++		[RDMA_TX_BYPASS_PRIO] =
++		ADD_PRIO(0, RDMA_TX_BYPASS_MIN_LEVEL, 0,
+ 			 FS_CHAINING_CAPS_RDMA_TX,
+ 			 ADD_NS(MLX5_FLOW_TABLE_MISS_ACTION_DEF,
+-				ADD_MULTIPLE_PRIO(MLX5_BY_PASS_NUM_PRIOS,
++				ADD_MULTIPLE_PRIO(RDMA_TX_BYPASS_MIN_LEVEL,
+ 						  BY_PASS_PRIO_NUM_LEVELS))),
+ 	}
+ };
+@@ -2216,6 +2248,12 @@ struct mlx5_flow_namespace *mlx5_get_flow_namespace(struct mlx5_core_dev *dev,
+ 		prio = RDMA_RX_KERNEL_PRIO;
+ 	} else if (type == MLX5_FLOW_NAMESPACE_RDMA_TX) {
+ 		root_ns = steering->rdma_tx_root_ns;
++	} else if (type == MLX5_FLOW_NAMESPACE_RDMA_RX_COUNTERS) {
++		root_ns = steering->rdma_rx_root_ns;
++		prio = RDMA_RX_COUNTERS_PRIO;
++	} else if (type == MLX5_FLOW_NAMESPACE_RDMA_TX_COUNTERS) {
++		root_ns = steering->rdma_tx_root_ns;
++		prio = RDMA_TX_COUNTERS_PRIO;
+ 	} else { /* Must be NIC RX */
+ 		root_ns = steering->root_ns;
+ 		prio = type;
+diff --git a/include/linux/mlx5/device.h b/include/linux/mlx5/device.h
+index 66eaf0aa7f69..ed0230ff9422 100644
+--- a/include/linux/mlx5/device.h
++++ b/include/linux/mlx5/device.h
+@@ -1456,6 +1456,8 @@ static inline u16 mlx5_to_sw_pkey_sz(int pkey_sz)
+ 	return MLX5_MIN_PKEY_TABLE_SIZE << pkey_sz;
+ }
  
++#define MLX5_RDMA_RX_NUM_COUNTERS_PRIOS 2
++#define MLX5_RDMA_TX_NUM_COUNTERS_PRIOS 1
+ #define MLX5_BY_PASS_NUM_REGULAR_PRIOS 16
+ #define MLX5_BY_PASS_NUM_DONT_TRAP_PRIOS 16
+ #define MLX5_BY_PASS_NUM_MULTICAST_PRIOS 1
+diff --git a/include/linux/mlx5/fs.h b/include/linux/mlx5/fs.h
+index 0106c67e8ccb..f2c3da2006d9 100644
+--- a/include/linux/mlx5/fs.h
++++ b/include/linux/mlx5/fs.h
+@@ -83,6 +83,8 @@ enum mlx5_flow_namespace_type {
+ 	MLX5_FLOW_NAMESPACE_RDMA_RX,
+ 	MLX5_FLOW_NAMESPACE_RDMA_RX_KERNEL,
+ 	MLX5_FLOW_NAMESPACE_RDMA_TX,
++	MLX5_FLOW_NAMESPACE_RDMA_RX_COUNTERS,
++	MLX5_FLOW_NAMESPACE_RDMA_TX_COUNTERS,
+ };
+ 
+ enum {
 -- 
 2.31.1
 
