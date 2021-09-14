@@ -2,229 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3769640B603
-	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 19:37:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1635E40B625
+	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 19:45:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231438AbhINRit (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 13:38:49 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:35673 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229731AbhINRiq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 13:38:46 -0400
-Received: by mail-io1-f70.google.com with SMTP id g14-20020a6be60e000000b005b62a0c2a41so16856249ioh.2
-        for <netdev@vger.kernel.org>; Tue, 14 Sep 2021 10:37:28 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=haN4VzRdJcgeC8n7ixJZsEGYZMjAa0jSxAQnlydaCsQ=;
-        b=exUWhe0MxmPIXaDoe0R4Twy0o3+ppuZCrMGKmf7uRiCbsq6mclfMqLrbk4wtOWk10r
-         geSZEPP8SNJncWRTuW01Gy4ld52o+FMHsB4qMTFveW1wMCtJTzk007L/8ctqfUun/DEL
-         ypYeA8wcpXG/3OmnknmKrSeKBzLxWJC9LTrf8pzSZQgOLrVBpu8w5e6Hx1Rg90EEpWmf
-         Dt/NveeUxgYn0uAmekq0St0CQ4g0JrG+C5sjrbdX0NWzIOtbTfv8FC/sUyelxsHCrA3n
-         Gfaa/hZ8tIjOKj66VxGr5ipHe7CJVTxTlkskxYABlAhQ4vd2LnA0eZrWcJrYRt1NnOOt
-         KEzw==
-X-Gm-Message-State: AOAM5332QfbHCjXksi68fu6y2xeiT+sdIzDZHdjAJrDhPiaGs6WBOxen
-        3VDSXsFVTuHdYJmkXIzkfRDe3q368IH+/a3Lt5FSfcj7qwsR
-X-Google-Smtp-Source: ABdhPJxBXgqV5p+WXfOOi/irAItn8l8cR0niAPeE+KiIyHFKXn1wDJQZqyuH8cMUbs2NpymM4b95hrTo85qTIZOWYW2Z+rXGnw6o
+        id S231423AbhINRqP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 13:46:15 -0400
+Received: from mail-eopbgr10061.outbound.protection.outlook.com ([40.107.1.61]:26530
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229526AbhINRqO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Sep 2021 13:46:14 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=O+duV7ar79r9eHk92jm2jHe5ekyu2+JR87MS6XuKHfaDj+8QU9R6fPBHmZc8nh/c+X8jUp08/d0GQiLXSm4BOd+kGMTJ7MhaCVOtUm5nog0fpOChpOK2/pwjvBzzB3DBO3qf8MsY4U35X1VJ4z5uKahkEiaEL72SxbS/xwNUpdpgS1iYT9gJ4q0b3qD1aRgwaENtNokWmY7Vf63vViDQo7Ni3bkD3kO35CFJXfAEtDrsIPJq2PNryqvTSrXMEyrWJW/KXqi5vu33W2n5ZDxtETfQxzGGimU8TDv5zKP5qrzUy7vTeLLYLrmdOdAORgHThpt7oQpIpqhs5H8mWkZn7g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
+ bh=dZQP6aW7KizcWZLaoXPtTX2ckJbWq6vEa9Ma6HXcFds=;
+ b=HYHMnWu5iteL4bH808HBIK3WeYRUy4Jg9sQtPAq0z+Uk7jEVOeVErilMov+qwDLWMPQsH+QEmjiEKNI3Y6LihBZ/NMWmo7mzVE+S8irg7BY75mn6cyWhWf0i088aFQ5cAZuSBTfOHiYBapS631QdOcO8AnSSaFTsesnROXp5uKYj1Ta2TxDvyMHtqKuqIwfBQrdveckJES/xNPGKkbjl1t4Jg5z+3sqrCj0WGLnHukldumhBuymORK/h9e2tmMhOxlQwDfzNRFuxOUDkBr+N3P7+6sbOqJ2ZLHZnfWi7nJ5hJ6jGitNugaSLcd4L6KcHLx6bGc4BrhFvCNcwUS9iBQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dZQP6aW7KizcWZLaoXPtTX2ckJbWq6vEa9Ma6HXcFds=;
+ b=qK7azjSlao1RDikGeKQlT+Aw5TfO2Ml1ikZxCHIgkjkQyATOE+ypUl9NmhyUvs2nEXIqj0fKdep/lPr1U6BdVqoqKUXfDhJcT31NX5Rg9DeTqPWg3ZViDabdDWhqxvUAbYTMR66g30sn/uEGn6n+Zl5x4I6jjalobHkp0vz5nRI=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR04MB6943.eurprd04.prod.outlook.com (2603:10a6:803:13a::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.16; Tue, 14 Sep
+ 2021 17:44:54 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4500.019; Tue, 14 Sep 2021
+ 17:44:54 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Gerhard Engleder <gerhard@engleder-embedded.com>
+CC:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH net] Revert "net: phy: Uniform PHY driver access"
+Thread-Topic: [RFC PATCH net] Revert "net: phy: Uniform PHY driver access"
+Thread-Index: AQHXqAxVhGZiRJqQ+0q4p0VsyQZ526ug3z6AgAAN1YCAAWLygIABIbqAgAApG4CAAAu8gIAAEXoAgAADV4CAAAxgAIAACJKA
+Date:   Tue, 14 Sep 2021 17:44:53 +0000
+Message-ID: <20210914174453.rq4iaje2ajok2fon@skbuf>
+References: <20210912192805.1394305-1-vladimir.oltean@nxp.com>
+ <CANr-f5wCpcPM+FbeW+x-JmZt0-WmE=b5Ys1Pa_G7p8v3nLyCcQ@mail.gmail.com>
+ <20210912213855.kxoyfqdyxktax6d3@skbuf> <YT+dL1R/DTVBWQ7D@lunn.ch>
+ <20210914120617.iaqaukal3riridew@skbuf> <YUCytc0+ChhcdOo+@lunn.ch>
+ <20210914151525.gg2ifaqqxrmytaxm@skbuf>
+ <CANr-f5zNnywpNxMAmNDv60otqXo2oGKiQpT2BL3VraOZftGc4w@mail.gmail.com>
+ <YUDOA9SKfCliXlTx@lunn.ch>
+ <CANr-f5yaLZnKwmsT6qpNgXCgm2wYk54f2x9ajuCzSx0as8o-Dg@mail.gmail.com>
+In-Reply-To: <CANr-f5yaLZnKwmsT6qpNgXCgm2wYk54f2x9ajuCzSx0as8o-Dg@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: engleder-embedded.com; dkim=none (message not signed)
+ header.d=none;engleder-embedded.com; dmarc=none action=none
+ header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 5afa6849-9f75-42dd-e411-08d977a75c3f
+x-ms-traffictypediagnostic: VI1PR04MB6943:
+x-microsoft-antispam-prvs: <VI1PR04MB69435C9BAB5A4241A993B6CCE0DA9@VI1PR04MB6943.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 0A85KvZ6qpYVcK2ulC9yqkfk1qXmCC/EFb3INawho0p+0WHmyBWDJZJerI4VQQueIMkbuGnRM9WE2oZ/VCkAK8iCgWixQiLlYkGWt6vceFCQ2hpOJJU//fyavLXmO/9dD2ngzgwGcQrOXx1kR3HPVpnYI5PlZDW0Zp0nAAc4M42nkMDD/8xFnWJpGxhDhqOITyjHtciv3HI5NfAsp5pTEgV6KhjUMoWBW1cg9X6RjPvon5pfRYJdJ/RWaes7mTzm/ldxl9FLX8NhgyKw34qAwd/scLfC9xTI2hTh4ivt6mIPg2qQiKdPyvCmkkwFzwZkQ+aZMSn1HpCG484AGOjtoUpS33qH1jqXB5dAzHk0tuKdQqolD0RQtaUUR7Usk/wd3NeBaiIrgRzMGZFbwMVAWlE9tkv6WK6yjxbninKL/BO73xck3thYePbpNrUkRSdA6b7fB29tr/dnCY3mqEzIZYQz4/cT1YSphT8EtrXrT4TDBwa4y9tfzHI1GqaLxZKBz6fGXf0HSK8Bh97jLbSRJ1A1vixpk30cvBJUvfrmzlJPlOzHwcavnX++MD1ecuKTnHZZcfZJE1Miv8uiGQaUp83ZhFImc+pOKqnuvg9m58xeCT4TTsswyyNQ/k8TkCKVmnpOjYjRG6ciOXN/cUGatP0i4+AECTiVQikmQtjZ1ezwC/Wv8XMnND6xV3sPuyOnrD1zmV2IyuOHgeTohWX9ug==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(346002)(136003)(366004)(376002)(39860400002)(396003)(66446008)(64756008)(76116006)(66946007)(91956017)(66476007)(66556008)(478600001)(86362001)(33716001)(6512007)(9686003)(2906002)(6486002)(71200400001)(186003)(83380400001)(38100700002)(1076003)(26005)(6506007)(54906003)(8936002)(38070700005)(316002)(6916009)(122000001)(8676002)(4326008)(5660300002)(44832011);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?XdsE6CrimLxc0FreIhKR6lOSsb9WS6SJM9PCLxPkv4n1Sghm/G0M7EqZi9rD?=
+ =?us-ascii?Q?C1baQG2gscpoLUwvFjfpZilAsxsfsgEwMbMsx1zUhiDM9Ho5GbI6Cok1UMmD?=
+ =?us-ascii?Q?M8QbamEUSzo/zXNPkzG7/4d27Asa+6l0+49ePQE1FhyB20ZkBcMdLRy4Jq0Z?=
+ =?us-ascii?Q?9tgDKSckcZzMiUIIcu71z1xm31TEKlb1m9msDKtt/PipjQFnzS5zNRReDAu+?=
+ =?us-ascii?Q?CpCvaJlp3Z0yJYRRZS7q+zvCcQR0DJRo/p2GCq8RqYFERclw8wCsGI9PLZfz?=
+ =?us-ascii?Q?ujksg/ep1e9F9qVhfqE7VrxvRz2cNgXsUVK02NsBQPYsueXFWxmGt6WJD8Qc?=
+ =?us-ascii?Q?hargft7Jfmh5ZJuu7gU6SWOUkC4o2cgaZs2FpI+jndqRL98IE8nR6kNDWyST?=
+ =?us-ascii?Q?578YdKIqtAqi6V1KptBdQiiu6SDEbbEU7Hnf6mPKcchGkfUXMc6k2kzSchbK?=
+ =?us-ascii?Q?FQrm0CeUuFf6JD52Xb+L1IKcSCJsA4WHCiYEM8viM1e5CAXvFexNoz7jpMrT?=
+ =?us-ascii?Q?TwMayLg3hjB5ByQTmSpgpZqOQtCLWyilXxcg2AyFboKYlbbXOcT2PJejAhGh?=
+ =?us-ascii?Q?ruXGQ+z9sWxZqknWtrhP/Sc+uUKAmCWkRgkOJfh6Ncfs+TLON7OicEiv2+mW?=
+ =?us-ascii?Q?Zr3+RN9bhdPtluBzFTP43r5g4/gpxY7PHLk4HsPDiYqY2qUggNJVG+lmUpqH?=
+ =?us-ascii?Q?IbLd9+uwJ0KMJ1bdMzpLo0F2KxCAATLLoGS0HunILTAr+gWEMbSDxkEobq9S?=
+ =?us-ascii?Q?+5FpaWQ9zNfWkQMmE2VkaqRz7iANjd++Z/PayOsOzXjZnOWoD0/unhHP2LNd?=
+ =?us-ascii?Q?IT6DfgIIYguZW5oWDv3LWiAAtjs8ml1Ugl0zPCokkVXElkdwq/8q58ewBOkt?=
+ =?us-ascii?Q?uEPbcPEX41BP0nyZGGfhJTusgciWH1g14pxbldJ6j4wvBImTYExmOeT0+VWp?=
+ =?us-ascii?Q?RJQaj7PmwpV8gzFO8RNLPCBkzkg87hBnoRp4IPTzE99nJm6YZFn1W+Du25ZK?=
+ =?us-ascii?Q?qtasUeDm+pOCBduEq0elwLtr9V4qsyF4rDAqA3JJQdbb12MP5/JWrVs+wcNU?=
+ =?us-ascii?Q?36Tnz/DFXuwjF9yEdjB1udbDyhFvBeNYVj+xAv48Fa9lHHckquGK8QJO5q4g?=
+ =?us-ascii?Q?pPJI+/vFRIWbKvBTLlnPqA6wJyCyS1tHBQnB6hyOzVMB0DBSi4QUs8sDZkJG?=
+ =?us-ascii?Q?GPJ3zE/sJ2XRAnwh0EeiDD4tCk2tEAXnJgrh0d8tm4QY+CYEWxmQMFdVwDxA?=
+ =?us-ascii?Q?uhG3kRTjquqUwkjen+mXgdIfXwzV7o6rqZZFXoih0BxABk8pmiSwkRWM/fOp?=
+ =?us-ascii?Q?MoNmZfTfycBuYnqQuiWEUWIV?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <CAE23115DD1EE84FAA603DA53F6FDC85@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-Received: by 2002:a5d:8458:: with SMTP id w24mr14452905ior.168.1631641048521;
- Tue, 14 Sep 2021 10:37:28 -0700 (PDT)
-Date:   Tue, 14 Sep 2021 10:37:28 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000019203305cbf809cf@google.com>
-Subject: [syzbot] KASAN: use-after-free Write in sco_conn_del
-From:   syzbot <syzbot+ba12d3e3c460f3c1d1e0@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        luiz.dentz@gmail.com, marcel@holtmann.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5afa6849-9f75-42dd-e411-08d977a75c3f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Sep 2021 17:44:53.9531
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: AQu4zEKjVwCxT/GlDq3TGXsDaZ5dOJ0tUSILAH8YQyIsfNT/5NNdLPcmmc2bAdfb20nyUWb1kpj56YrGGtlwHA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6943
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Tue, Sep 14, 2021 at 07:14:12PM +0200, Gerhard Engleder wrote:
+> > > I submitted it, but Michal Simek argumented that dts files of FPGA
+> > > logic shall not be part of mainline. I suggested that at least one
+> > > reference platform for every FPGA based IP core should be allowed,
+> > > but he said that no one is able to test it.  So it seems that you
+> > > will never see any dts file which contains FPGA logic in mainline. I
+> > > will try to submit it again if anyone will support me?
+> >
+> > My opinion: If there is a real product out in the field using this,
+> > the DT for the product can be in mainline.
+> >
+> > Reference Design Kits for ASICs are well supported in mainline. So the
+> > question is, is an FPGA sufficiently different to an ASIC that is
+> > should be treated differently? Do you have an off the shelf platform
+> > or something custom? How easy is it to get the platform which is used
+> > as an RDK? Can you make a bitstream available for anybody to use?
+>
+> At least in combination with the board I can see no difference between AS=
+IC
+> and FPGA. Usually a FPGA bitstream targets a specific board, so the devic=
+es
+> within the FPGA can be treated like devices on the board.
+>
+> The reference platform is based on off the shelf stuff (Xilinx ZCU104 and=
+ Avnet
+> AES-FMC-NETW1-G). At least I had no problem buying the boards.
+>
+> Yes, I can provide a bitstream for everybody.
 
-syzbot found the following issue on:
+My opinion is that Linux has gotten into the position of maintaining the
+central repository of device tree blobs by some sort of strange accident,
+and these blobs do not really have to describe "a real product out in
+the field" in order to have a place in that central repository, no
+matter where that might be hosted. On some platforms it is not even
+possible to change the device tree (easily) since it is provided by the
+firmware, nonetheless it is still valuable to be able to look at it for ref=
+erence.
 
-HEAD commit:    aa14a3016182 Add linux-next specific files for 20210910
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=15982715300000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=e400f2d70a0ed309
-dashboard link: https://syzkaller.appspot.com/bug?extid=ba12d3e3c460f3c1d1e0
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
+So I think anyone should be able to post their toy TSN driver running on
+their toy bit stream described by their toy device tree, and not be too
+concerned that they are littering the kernel. I would leave it upon the
+device tree maintainers to figure out the scalability concern, after all
+Linux took it upon itself to manage the central reference of device trees.
+But I do agree that the hardware setup needs at least to be reasonably
+reproducible by somebody non-you.
 
-Unfortunately, I don't have any reproducer for this issue yet.
+I think the implication of not welcoming this kind of work is marginalizing
+hardware vendors such as Xilinx, and their users ending up in a worse
+place than if the device trees had a place in the mainline kernel.
+I am not a Xilinx engineer nor a Xilinx customer, but I am dreading each
+time I get a support request for an NXP switch attached to a Zynq SoC,
+just because I am always told that the person I'm helping is trapped
+with some sort of odd and old SDK kernel with modifications and it is
+not possible for them to move to mainline. So I am really happy to see
+people getting past that barrier and submitting drivers developed on
+Xilinx SoCs, it would be even nicer if they had an unimpeded path to
+make forward progress with their work.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+ba12d3e3c460f3c1d1e0@syzkaller.appspotmail.com
+Does this invalidate my point about the GMII2RGMII converter, where I
+said that it would be better for all MAC drivers to treat it like a
+satellite device, instead of stowing it inside the PHY library with all
+the hacks associated with that? After all, Gerhard's TSN endpoint driver
+has nothing to do with Xilinx per se, it is only by chance that it runs
+on Xilinx hardware, so it may seem reasonable for his driver to not need
+to explicitly manage the platform's RGMII gasket. His TSN endpoint might
+be ported to a different FPGA manufacturer with no such oddity. Having
+this device hidden in the PHY library makes his life easier (at least
+apparently, until he hits things that don't work as they should).
 
-==================================================================
-BUG: KASAN: use-after-free in instrument_atomic_read_write include/linux/instrumented.h:101 [inline]
-BUG: KASAN: use-after-free in atomic_fetch_add_relaxed include/linux/atomic/atomic-instrumented.h:111 [inline]
-BUG: KASAN: use-after-free in __refcount_add include/linux/refcount.h:193 [inline]
-BUG: KASAN: use-after-free in __refcount_inc include/linux/refcount.h:250 [inline]
-BUG: KASAN: use-after-free in refcount_inc include/linux/refcount.h:267 [inline]
-BUG: KASAN: use-after-free in sock_hold include/net/sock.h:702 [inline]
-BUG: KASAN: use-after-free in sco_conn_del+0xbe/0x2c0 net/bluetooth/sco.c:193
-Write of size 4 at addr ffff888080fb7080 by task syz-executor.0/2780
-
-CPU: 0 PID: 2780 Comm: syz-executor.0 Not tainted 5.14.0-next-20210910-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_address_description.constprop.0.cold+0x6c/0x309 mm/kasan/report.c:256
- __kasan_report mm/kasan/report.c:442 [inline]
- kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
- check_region_inline mm/kasan/generic.c:183 [inline]
- kasan_check_range+0x13d/0x180 mm/kasan/generic.c:189
- instrument_atomic_read_write include/linux/instrumented.h:101 [inline]
- atomic_fetch_add_relaxed include/linux/atomic/atomic-instrumented.h:111 [inline]
- __refcount_add include/linux/refcount.h:193 [inline]
- __refcount_inc include/linux/refcount.h:250 [inline]
- refcount_inc include/linux/refcount.h:267 [inline]
- sock_hold include/net/sock.h:702 [inline]
- sco_conn_del+0xbe/0x2c0 net/bluetooth/sco.c:193
- sco_disconn_cfm+0x71/0xb0 net/bluetooth/sco.c:1384
- hci_disconn_cfm include/net/bluetooth/hci_core.h:1541 [inline]
- hci_conn_hash_flush+0x127/0x260 net/bluetooth/hci_conn.c:1742
- hci_dev_do_close+0x57d/0x1150 net/bluetooth/hci_core.c:1796
- hci_rfkill_set_block+0x19c/0x1d0 net/bluetooth/hci_core.c:2237
- rfkill_set_block+0x1f9/0x540 net/rfkill/core.c:344
- rfkill_fop_write+0x267/0x500 net/rfkill/core.c:1268
- vfs_write+0x28e/0xae0 fs/read_write.c:592
- ksys_write+0x1ee/0x250 fs/read_write.c:647
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x4665f9
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f65b5bc0188 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-RAX: ffffffffffffffda RBX: 000000000056c038 RCX: 00000000004665f9
-RDX: 0000000000000008 RSI: 0000000020000040 RDI: 0000000000000004
-RBP: 00000000004bfcc4 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 000000000056c038
-R13: 00007ffed0072e9f R14: 00007f65b5bc0300 R15: 0000000000022000
-
-Allocated by task 31886:
- kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
- kasan_set_track mm/kasan/common.c:46 [inline]
- set_alloc_info mm/kasan/common.c:434 [inline]
- ____kasan_kmalloc mm/kasan/common.c:513 [inline]
- ____kasan_kmalloc mm/kasan/common.c:472 [inline]
- __kasan_kmalloc+0xa4/0xd0 mm/kasan/common.c:522
- kmalloc include/linux/slab.h:599 [inline]
- kzalloc include/linux/slab.h:731 [inline]
- __reuseport_alloc+0x1b/0x90 net/core/sock_reuseport.c:94
- reuseport_alloc+0x1c1/0x370 net/core/sock_reuseport.c:136
- reuseport_attach_prog+0x1bb/0x300 net/core/sock_reuseport.c:595
- sk_reuseport_attach_filter+0xd1/0x230 net/core/filter.c:1554
- sock_setsockopt+0x110b/0x2520 net/core/sock.c:1185
- __sys_setsockopt+0x4f8/0x610 net/socket.c:2172
- __do_sys_setsockopt net/socket.c:2187 [inline]
- __se_sys_setsockopt net/socket.c:2184 [inline]
- __x64_sys_setsockopt+0xba/0x150 net/socket.c:2184
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Last potentially related work creation:
- kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
- kasan_record_aux_stack+0xe9/0x110 mm/kasan/generic.c:348
- __call_rcu kernel/rcu/tree.c:2985 [inline]
- call_rcu+0xb1/0x740 kernel/rcu/tree.c:3065
- reuseport_detach_sock+0x28f/0x4a0 net/core/sock_reuseport.c:370
- sk_destruct+0x7a/0xe0 net/core/sock.c:1951
- __sk_free+0xef/0x3d0 net/core/sock.c:1969
- sk_free+0x78/0xa0 net/core/sock.c:1980
- sock_put include/net/sock.h:1815 [inline]
- tcp_close+0x98/0xc0 net/ipv4/tcp.c:2883
- inet_release+0x12e/0x280 net/ipv4/af_inet.c:431
- __sock_release+0xcd/0x280 net/socket.c:649
- sock_close+0x18/0x20 net/socket.c:1314
- __fput+0x288/0x9f0 fs/file_table.c:280
- task_work_run+0xdd/0x1a0 kernel/task_work.c:164
- tracehook_notify_resume include/linux/tracehook.h:189 [inline]
- exit_to_user_mode_loop kernel/entry/common.c:175 [inline]
- exit_to_user_mode_prepare+0x27e/0x290 kernel/entry/common.c:209
- __syscall_exit_to_user_mode_work kernel/entry/common.c:291 [inline]
- syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:302
- do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Second to last potentially related work creation:
- kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
- kasan_record_aux_stack+0xe9/0x110 mm/kasan/generic.c:348
- __call_rcu kernel/rcu/tree.c:2985 [inline]
- call_rcu+0xb1/0x740 kernel/rcu/tree.c:3065
- netlink_release+0xdd4/0x1dd0 net/netlink/af_netlink.c:812
- __sock_release net/socket.c:649 [inline]
- sock_release+0x87/0x1b0 net/socket.c:677
- netlink_kernel_release+0x4b/0x60 net/netlink/af_netlink.c:2117
- xfrm_user_net_exit+0x62/0xb0 net/xfrm/xfrm_user.c:3560
- ops_exit_list+0x10d/0x160 net/core/net_namespace.c:171
- cleanup_net+0x4ea/0xb00 net/core/net_namespace.c:591
- process_one_work+0x9b2/0x1690 kernel/workqueue.c:2297
- worker_thread+0x658/0x11f0 kernel/workqueue.c:2444
- kthread+0x3e5/0x4d0 kernel/kthread.c:319
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
-
-The buggy address belongs to the object at ffff888080fb7000
- which belongs to the cache kmalloc-2k of size 2048
-The buggy address is located 128 bytes inside of
- 2048-byte region [ffff888080fb7000, ffff888080fb7800)
-The buggy address belongs to the page:
-page:ffffea000203ec00 refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff888080fb1000 pfn:0x80fb0
-head:ffffea000203ec00 order:3 compound_mapcount:0 compound_pincount:0
-flags: 0xfff00000010200(slab|head|node=0|zone=1|lastcpupid=0x7ff)
-raw: 00fff00000010200 ffffea000213b208 ffffea00020ea008 ffff888010c42000
-raw: ffff888080fb1000 0000000000080005 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-page_owner tracks the page as allocated
-page last allocated via order 3, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 6566, ts 196075656127, free_ts 0
- prep_new_page mm/page_alloc.c:2424 [inline]
- get_page_from_freelist+0xa72/0x2f80 mm/page_alloc.c:4153
- __alloc_pages+0x1b2/0x500 mm/page_alloc.c:5375
- alloc_pages+0x1a7/0x300 mm/mempolicy.c:2197
- alloc_slab_page mm/slub.c:1763 [inline]
- allocate_slab mm/slub.c:1900 [inline]
- new_slab+0x319/0x490 mm/slub.c:1963
- ___slab_alloc+0x921/0xfe0 mm/slub.c:2994
- __slab_alloc.constprop.0+0x4d/0xa0 mm/slub.c:3081
- slab_alloc_node mm/slub.c:3172 [inline]
- slab_alloc mm/slub.c:3214 [inline]
- __kmalloc+0x305/0x320 mm/slub.c:4387
- kmalloc_array include/linux/slab.h:636 [inline]
- kcalloc include/linux/slab.h:667 [inline]
- veth_alloc_queues drivers/net/veth.c:1314 [inline]
- veth_dev_init+0x114/0x2e0 drivers/net/veth.c:1341
- register_netdevice+0x51e/0x1500 net/core/dev.c:10225
- veth_newlink+0x58c/0xb20 drivers/net/veth.c:1726
- __rtnl_newlink+0x106d/0x1750 net/core/rtnetlink.c:3458
- rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3506
- rtnetlink_rcv_msg+0x413/0xb80 net/core/rtnetlink.c:5572
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2504
- netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1340
- netlink_sendmsg+0x86d/0xdb0 net/netlink/af_netlink.c:1929
-page_owner free stack trace missing
-
-Memory state around the buggy address:
- ffff888080fb6f80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff888080fb7000: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->ffff888080fb7080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                   ^
- ffff888080fb7100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff888080fb7180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+So while that is a valid point, there might be other places to put that
+converter, which are not in the direct path of the attached PHY's driver.
+For example, phylink is the melting pot of a lot of devices, on-board
+PHYs, SFP modules with and without PHYs, PCSes, it may even gain support
+for retimers, this was brought up a while ago. So maybe it would happily
+deal with another off-label device, a standalone RGMII gasket. It could
+have a structure with generic ops such as what is in place for struct
+phylink_pcs, and it ensures that this will be programmed to the right
+speed, put in loopback, etc etc, automatically. MAC driver uses phylink,
+the device tree has a phandle to the rgmii-gasket, and it works.
+Odd, and may or may not be worth it depending on how much demand there
+is, but at least it's an option worth considering.=
