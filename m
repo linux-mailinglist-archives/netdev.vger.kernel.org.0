@@ -2,96 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3868040B5BE
-	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 19:14:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE93940B5EF
+	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 19:32:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230458AbhINRPn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 13:15:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49812 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229574AbhINRPm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 13:15:42 -0400
-Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C69DAC061762
-        for <netdev@vger.kernel.org>; Tue, 14 Sep 2021 10:14:24 -0700 (PDT)
-Received: by mail-il1-x12d.google.com with SMTP id b15so14431145ils.10
-        for <netdev@vger.kernel.org>; Tue, 14 Sep 2021 10:14:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=engleder-embedded-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DcOhlwQsXjrwVRfV2koHmngYFauQ5CZdeeF2QL+PcHI=;
-        b=NqkITvCvDlakxX4GzgZGeY8hq1JNEZ2tmqrESQWm3pAui3+xlXw6EuSVl7PMFepL6s
-         X5OxTACT4niiBM8Pts20m7FFF/nOYdg3KRhjkEAb4Hlc1F3cNm4y6kl64TVD0zTVlpeZ
-         vjbg7Az1DLB2NlTk+ugdvwtBbKJas1dixTgJc2RDGYF39o5PWC1gqmdAtmzwgRor9sR1
-         pPDlZ4HmQgP+MvfbA6MavPpNEa2eim2q0kAxrpCMxgWsq48USjvt8+5C6idYy0DNgfL+
-         AG1czsik/KsXZJFgus/TT64RJ6X+0xSLb3tp68up/ZtCNkGIjB3VK5UdYAaLml8/8Bx/
-         ahBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DcOhlwQsXjrwVRfV2koHmngYFauQ5CZdeeF2QL+PcHI=;
-        b=npI+ExQ41mDYo/S2k8duSM7owvg/YTNv+vIrWTNORzCHU3rTihav1HQhI85SRO37iq
-         ZBkPcu7mplkBbKK+0I/tEE58Rm1Dx8NchINJCeIaltMGQroWB1E3vf4oLTiqCghWDMVK
-         eGs3gKctwo07Hdv2v850dYZdg/afmGwwSitr1jpT4s1tBESG5MdA+FTYCMdRiyeMPUm5
-         85dXezHzL2iZSl/BudQS3IWGfjE9Yz45JuFk2ieHiP1xPu3tzUQIM805s0JBKsTh95La
-         vO71skJxJoZKMJP2qAemNRgi4DeltY5wAgoQyDMn+1d4JCfaY/pSlDAoYQ9a0bdrjB5+
-         eQQA==
-X-Gm-Message-State: AOAM533iSjo3U7AtJfGL9dc8mIZydPtINXxFUVK/FFHhzGakUVgc76iq
-        SAFRXjO2J+hYMXKyKrAuP2EQygeyqGVEJ/qO2+GtZQ==
-X-Google-Smtp-Source: ABdhPJxhv7RXUJ/PWaU2opasINceJBzbsz+teV3HvtYyPW8Zh1yGiWJiY5XlUQsZmxizgm6FDEwDJChxnNNyjEUi4Ng=
-X-Received: by 2002:a92:c542:: with SMTP id a2mr13032279ilj.191.1631639664245;
- Tue, 14 Sep 2021 10:14:24 -0700 (PDT)
+        id S231479AbhINRde (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 13:33:34 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:11136 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S230019AbhINRdd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 13:33:33 -0400
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.0.43) with SMTP id 18EGhd4g029046;
+        Tue, 14 Sep 2021 13:31:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=aIo1TaDICCdei1g5dVPm7EpGYyAVvfgdhezR0Ptp5c0=;
+ b=s7hXSBA/32Y5ktAMPYe7jo9025Kjck+fWN6v/EzWvTwx3VGbrZ7VPw/zkFshlWQwU28A
+ /CZHT3M3LfXH6tc7ThNn7FIWAgHhTAmJrMfd4hy5L7VCkjf3xzK1TyhW76AB4f57CvE6
+ yZHVAt47J4mbivuUfXLlgLl6ZLbGvSSGUTg1YnIvQNV1lUSTJX2sQec8YkfhSEDEpc2u
+ UBhUgRqRIvp/UcEM4R5EQXkAg8+3YZP4AwCXdjE/wSck4HkMfHv9YyZWy7vdnYvzoCJM
+ D1tWCAdJ4CrbxsB7S49+1NG8YJDn3FK0+gNWTNxtm4gLNP48n8QOELhpTjrhn9I2I0g7 dw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3b2ygt19er-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 14 Sep 2021 13:31:38 -0400
+Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 18EGhuYX029606;
+        Tue, 14 Sep 2021 13:31:37 -0400
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3b2ygt19dt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 14 Sep 2021 13:31:37 -0400
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 18EHCBga013667;
+        Tue, 14 Sep 2021 17:31:35 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma02fra.de.ibm.com with ESMTP id 3b0m39dj50-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 14 Sep 2021 17:31:35 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 18EHVW7T46399848
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 14 Sep 2021 17:31:32 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9AC59AE051;
+        Tue, 14 Sep 2021 17:31:32 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id BBDB0AE053;
+        Tue, 14 Sep 2021 17:31:29 +0000 (GMT)
+Received: from [9.171.20.178] (unknown [9.171.20.178])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 14 Sep 2021 17:31:29 +0000 (GMT)
+Message-ID: <a366c691-fb81-8e30-3853-3260ceabf080@linux.ibm.com>
+Date:   Tue, 14 Sep 2021 20:31:29 +0300
 MIME-Version: 1.0
-References: <20210912192805.1394305-1-vladimir.oltean@nxp.com>
- <CANr-f5wCpcPM+FbeW+x-JmZt0-WmE=b5Ys1Pa_G7p8v3nLyCcQ@mail.gmail.com>
- <20210912213855.kxoyfqdyxktax6d3@skbuf> <YT+dL1R/DTVBWQ7D@lunn.ch>
- <20210914120617.iaqaukal3riridew@skbuf> <YUCytc0+ChhcdOo+@lunn.ch>
- <20210914151525.gg2ifaqqxrmytaxm@skbuf> <CANr-f5zNnywpNxMAmNDv60otqXo2oGKiQpT2BL3VraOZftGc4w@mail.gmail.com>
- <YUDOA9SKfCliXlTx@lunn.ch>
-In-Reply-To: <YUDOA9SKfCliXlTx@lunn.ch>
-From:   Gerhard Engleder <gerhard@engleder-embedded.com>
-Date:   Tue, 14 Sep 2021 19:14:12 +0200
-Message-ID: <CANr-f5yaLZnKwmsT6qpNgXCgm2wYk54f2x9ajuCzSx0as8o-Dg@mail.gmail.com>
-Subject: Re: [RFC PATCH net] Revert "net: phy: Uniform PHY driver access"
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.1.0
+Subject: Re: [PATCH V3 net-next 2/4] ethtool: extend coalesce setting uAPI
+ with CQE mode
+Content-Language: en-US
+To:     Yufeng Mo <moyufeng@huawei.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, shenjian15@huawei.com,
+        lipeng321@huawei.com, yisen.zhuang@huawei.com,
+        linyunsheng@huawei.com, huangguangbin2@huawei.com,
+        chenhao288@hisilicon.com, salil.mehta@huawei.com,
+        linuxarm@huawei.com, linuxarm@openeuler.org, dledford@redhat.com,
+        jgg@ziepe.ca, netanel@amazon.com, akiyano@amazon.com,
+        thomas.lendacky@amd.com, irusskikh@marvell.com,
+        michael.chan@broadcom.com, edwin.peer@broadcom.com,
+        rohitm@chelsio.com, jacob.e.keller@intel.com,
+        ioana.ciornei@nxp.com, vladimir.oltean@nxp.com,
+        sgoutham@marvell.com, sbhatta@marvell.com, saeedm@nvidia.com,
+        ecree.xilinx@gmail.com, grygorii.strashko@ti.com,
+        merez@codeaurora.org, kvalo@codeaurora.org,
+        linux-wireless@vger.kernel.org
+References: <1629444920-25437-1-git-send-email-moyufeng@huawei.com>
+ <1629444920-25437-3-git-send-email-moyufeng@huawei.com>
+From:   Julian Wiedmann <jwi@linux.ibm.com>
+In-Reply-To: <1629444920-25437-3-git-send-email-moyufeng@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: J9Eh5isQci_ecwaFFb4ZLD-60nRzRzVL
+X-Proofpoint-GUID: wCqWvBcAe21rS4r3kVmKye1GiH9Vqur8
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.687,Hydra:6.0.235,FMLib:17.0.607.475
+ definitions=2020-10-13_15,2020-10-13_02,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
+ priorityscore=1501 impostorscore=0 suspectscore=0 mlxlogscore=999
+ bulkscore=0 lowpriorityscore=0 adultscore=0 spamscore=0 malwarescore=0
+ clxscore=1011 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2109030001 definitions=main-2109140092
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > I submitted it, but Michal Simek argumented that dts files of FPGA
-> > logic shall not be part of mainline. I suggested that at least one
-> > reference platform for every FPGA based IP core should be allowed,
-> > but he said that no one is able to test it.  So it seems that you
-> > will never see any dts file which contains FPGA logic in mainline. I
-> > will try to submit it again if anyone will support me?
->
-> My opinion: If there is a real product out in the field using this,
-> the DT for the product can be in mainline.
->
-> Reference Design Kits for ASICs are well supported in mainline. So the
-> question is, is an FPGA sufficiently different to an ASIC that is
-> should be treated differently? Do you have an off the shelf platform
-> or something custom? How easy is it to get the platform which is used
-> as an RDK? Can you make a bitstream available for anybody to use?
+On 20.08.21 10:35, Yufeng Mo wrote:
+> In order to support more coalesce parameters through netlink,
+> add two new parameter kernel_coal and extack for .set_coalesce
+> and .get_coalesce, then some extra info can return to user with
+> the netlink API.
+> 
+> Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
+> Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+> ---
 
-At least in combination with the board I can see no difference between ASIC
-and FPGA. Usually a FPGA bitstream targets a specific board, so the devices
-within the FPGA can be treated like devices on the board.
+[...]
 
-The reference platform is based on off the shelf stuff (Xilinx ZCU104 and Avnet
-AES-FMC-NETW1-G). At least I had no problem buying the boards.
+> index 81fa36a..f2abc31 100644
+> --- a/net/ethtool/ioctl.c
+> +++ b/net/ethtool/ioctl.c
+> @@ -1619,12 +1619,14 @@ static noinline_for_stack int ethtool_get_coalesce(struct net_device *dev,
+>  						   void __user *useraddr)
+>  {
+>  	struct ethtool_coalesce coalesce = { .cmd = ETHTOOL_GCOALESCE };
+> +	struct kernel_ethtool_coalesce kernel_coalesce = {};
+>  	int ret;
+>  
+>  	if (!dev->ethtool_ops->get_coalesce)
+>  		return -EOPNOTSUPP;
+>  
+> -	ret = dev->ethtool_ops->get_coalesce(dev, &coalesce);
+> +	ret = dev->ethtool_ops->get_coalesce(dev, &coalesce, &kernel_coalesce,
+> +					     NULL);
+>  	if (ret)
+>  		return ret;
+>  
+> @@ -1691,19 +1693,26 @@ ethtool_set_coalesce_supported(struct net_device *dev,
+>  static noinline_for_stack int ethtool_set_coalesce(struct net_device *dev,
+>  						   void __user *useraddr)
+>  {
+> +	struct kernel_ethtool_coalesce kernel_coalesce = {};
+>  	struct ethtool_coalesce coalesce;
+>  	int ret;
+>  
+> -	if (!dev->ethtool_ops->set_coalesce)
+> +	if (!dev->ethtool_ops->set_coalesce && !dev->ethtool_ops->get_coalesce)
+>  		return -EOPNOTSUPP;
+>  
 
-Yes, I can provide a bitstream for everybody.
+This needs to be
 
-Gerhard
+	if (!set_coalesce || !get_coalesce)
+		return -EOPNOTSUPP;
+
+Otherwise you end up calling a NULL pointer below if just _one_ of the
+callbacks is available.
+
+
+> +	ret = dev->ethtool_ops->get_coalesce(dev, &coalesce, &kernel_coalesce,
+> +					     NULL);
+> +	if (ret)
+> +		return ret;
+> +
+>  	if (copy_from_user(&coalesce, useraddr, sizeof(coalesce)))
+>  		return -EFAULT;
+>  
+>  	if (!ethtool_set_coalesce_supported(dev, &coalesce))
+>  		return -EOPNOTSUPP;
+>  
+> -	ret = dev->ethtool_ops->set_coalesce(dev, &coalesce);
+> +	ret = dev->ethtool_ops->set_coalesce(dev, &coalesce, &kernel_coalesce,
+> +					     NULL);
+>  	if (!ret)
+>  		ethtool_notify(dev, ETHTOOL_MSG_COALESCE_NTF, NULL);
+>  	return ret;
+> 
+
