@@ -2,159 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4148940A2F6
-	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 03:58:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9682940A2FF
+	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 04:01:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231709AbhINCAF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Sep 2021 22:00:05 -0400
-Received: from out30-45.freemail.mail.aliyun.com ([115.124.30.45]:50482 "EHLO
-        out30-45.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229778AbhINCAE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Sep 2021 22:00:04 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R291e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=alimailimapcm10staff010182156082;MF=yun.wang@linux.alibaba.com;NM=1;PH=DS;RN=19;SR=0;TI=SMTPD_---0UoKP4AU_1631584724;
-Received: from testdeMacBook-Pro.local(mailfrom:yun.wang@linux.alibaba.com fp:SMTPD_---0UoKP4AU_1631584724)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 14 Sep 2021 09:58:45 +0800
-Subject: Re: [RFC PATCH] perf: fix panic by mark recursion inside
- perf_log_throttle
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "open list:PERFORMANCE EVENTS SUBSYSTEM" 
-        <linux-perf-users@vger.kernel.org>,
-        "open list:PERFORMANCE EVENTS SUBSYSTEM" 
-        <linux-kernel@vger.kernel.org>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <netdev@vger.kernel.org>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <bpf@vger.kernel.org>
-References: <ff979a43-045a-dc56-64d1-2c31dd4db381@linux.alibaba.com>
- <20210910153839.GH4323@worktop.programming.kicks-ass.net>
- <f38987a5-dc36-a20d-8c5e-81e8ead5b4dc@linux.alibaba.com>
- <YT8m2B6D2yWc5Umq@hirez.programming.kicks-ass.net>
-From:   =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
-Message-ID: <3fb7c51f-696b-da70-1965-1dda9910cb14@linux.alibaba.com>
-Date:   Tue, 14 Sep 2021 09:58:44 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:78.0)
- Gecko/20100101 Thunderbird/78.14.0
+        id S235664AbhINCCz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Sep 2021 22:02:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34850 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235213AbhINCCw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Sep 2021 22:02:52 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DB98C061760;
+        Mon, 13 Sep 2021 19:01:36 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id m26so10682271pff.3;
+        Mon, 13 Sep 2021 19:01:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CHO7jG1ANjcxZUFLXB4BV+Q4y1YvEtbhn3e34/bBo8g=;
+        b=jFFyEkq4JJ4Wd7JGuLpK5/Rsda352v3C2JYiuA61k8UjsqQENVsv+MdtqU5HNr9xa/
+         79Tpa2lccNGZg6AL8i69dRaYWSUzter7AE2DjZ1sEbJgh43Qwj61D1OPU5izuB2ncwkw
+         ecjM91SApJ5tP03l6KjGcgFCO+iNyHcQ04oMqzosU1L1SewJlKIwJztcbx7ZYOt9gFqq
+         Y7c5RO+lbKzA/1W1hm9JsOgb50TDJiJPNBeyj69jyNcpN6t1f/K0IUnD/sUvy60thwKJ
+         VGfgl4rGZZJ3GVF1Sz2P8v2xobvEIt3rkxUSlz/kwrvF0FZ7NRoHHVGd+PRIIncs0Vvu
+         2tFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CHO7jG1ANjcxZUFLXB4BV+Q4y1YvEtbhn3e34/bBo8g=;
+        b=zkanoO4zhsQftgPR2nip73Fi8gNCCABZQ7ZSlGEtdd0evzuPdEOgNsjJNNFuahvNhY
+         6iBYJlcYSa/haOXHumxryKmZ9df5FQL1nF4DkW33722C+Drddj52Y2yMBNtd6OA/JAIC
+         64vXIiFo/uI9zLA3v6SSFMZuZDGXMhxb/FOxDBj0OW1Yx8SSE/4VUOZBKO34kMXA3VYQ
+         Un9kUTFyXPXGzMq4FWLzhx0X+9bmeOQkt0YKlcfDltjlICBq62GgBREezmY9QnmHXlt6
+         ebVnqQ1cgUGSso/UszUC5DL9l2aFahnvfY4wf0vasrM9dylvMJ+1UN9+tbpzhxHZJpCx
+         GJmQ==
+X-Gm-Message-State: AOAM532adJTs0jFPeGpDy6AfTWdJeod0O9krGmN2gRl9Jgk5FEwJ8mE3
+        LnamOfYk+kWwBJNK37pFmM755vYbL+ek7/RxWzc=
+X-Google-Smtp-Source: ABdhPJyoJXNiUhznwiW34Xf5jyEKtYHuO+0B0RIkyCnoFM5U0HU6oSPV/LhpKFHHsEUg4NM69JfaXbxfVtZXLRulVc4=
+X-Received: by 2002:a62:b515:0:b0:438:42ab:2742 with SMTP id
+ y21-20020a62b515000000b0043842ab2742mr2284175pfe.77.1631584895596; Mon, 13
+ Sep 2021 19:01:35 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <YT8m2B6D2yWc5Umq@hirez.programming.kicks-ass.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20210913230759.2313-1-daniel@iogearbox.net>
+In-Reply-To: <20210913230759.2313-1-daniel@iogearbox.net>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Mon, 13 Sep 2021 19:01:24 -0700
+Message-ID: <CAADnVQKHcpmUp8eDzmJ2ktdtYg8ChnqK44W0_MrAQ95Y9VXVqQ@mail.gmail.com>
+Subject: Re: [PATCH bpf v4 1/3] bpf, cgroups: Fix cgroup v2 fallback on v1/v2
+ mixed mode
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Tejun Heo <tj@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Martynas Pumputis <m@lambda.lt>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Sep 13, 2021 at 4:08 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> Fix cgroup v1 interference when non-root cgroup v2 BPF programs are used.
+> Back in the days, commit bd1060a1d671 ("sock, cgroup: add sock->sk_cgroup")
+> embedded per-socket cgroup information into sock->sk_cgrp_data and in order
+> to save 8 bytes in struct sock made both mutually exclusive, that is, when
+> cgroup v1 socket tagging (e.g. net_cls/net_prio) is used, then cgroup v2
+> falls back to the root cgroup in sock_cgroup_ptr() (&cgrp_dfl_root.cgrp).
+>
+> The assumption made was "there is no reason to mix the two and this is in line
+> with how legacy and v2 compatibility is handled" as stated in bd1060a1d671.
+> However, with Kubernetes more widely supporting cgroups v2 as well nowadays,
+> this assumption no longer holds, and the possibility of the v1/v2 mixed mode
+> with the v2 root fallback being hit becomes a real security issue.
+>
+> Many of the cgroup v2 BPF programs are also used for policy enforcement, just
+> to pick _one_ example, that is, to programmatically deny socket related system
+> calls like connect(2) or bind(2). A v2 root fallback would implicitly cause
+> a policy bypass for the affected Pods.
+>
+> In production environments, we have recently seen this case due to various
+> circumstances: i) a different 3rd party agent and/or ii) a container runtime
+> such as [0] in the user's environment configuring legacy cgroup v1 net_cls
+> tags, which triggered implicitly mentioned root fallback. Another case is
+> Kubernetes projects like kind [1] which create Kubernetes nodes in a container
+> and also add cgroup namespaces to the mix, meaning programs which are attached
+> to the cgroup v2 root of the cgroup namespace get attached to a non-root
+> cgroup v2 path from init namespace point of view. And the latter's root is
+> out of reach for agents on a kind Kubernetes node to configure. Meaning, any
+> entity on the node setting cgroup v1 net_cls tag will trigger the bypass
+> despite cgroup v2 BPF programs attached to the namespace root.
+>
+> Generally, this mutual exclusiveness does not hold anymore in today's user
+> environments and makes cgroup v2 usage from BPF side fragile and unreliable.
+> This fix adds proper struct cgroup pointer for the cgroup v2 case to struct
+> sock_cgroup_data in order to address these issues; this implicitly also fixes
+> the tradeoffs being made back then with regards to races and refcount leaks
+> as stated in bd1060a1d671, and removes the fallback, so that cgroup v2 BPF
+> programs always operate as expected.
+>
+>   [0] https://github.com/nestybox/sysbox/
+>   [1] https://kind.sigs.k8s.io/
+>
+> Fixes: bd1060a1d671 ("sock, cgroup: add sock->sk_cgroup")
+> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+> Acked-by: Stanislav Fomichev <sdf@google.com>
+> Acked-by: Tejun Heo <tj@kernel.org>
+> Cc: David S. Miller <davem@davemloft.net>
+> Cc: Martynas Pumputis <m@lambda.lt>
 
-
-On 2021/9/13 下午6:24, Peter Zijlstra wrote:
-> On Mon, Sep 13, 2021 at 11:00:47AM +0800, 王贇 wrote:
->>
->>
->> On 2021/9/10 下午11:38, Peter Zijlstra wrote:
->>> On Thu, Sep 09, 2021 at 11:13:21AM +0800, 王贇 wrote:
->>>> When running with ftrace function enabled, we observed panic
->>>> as below:
->>>>
->>>>   traps: PANIC: double fault, error_code: 0x0
->>>>   [snip]
->>>>   RIP: 0010:perf_swevent_get_recursion_context+0x0/0x70
->>>>   [snip]
->>>>   Call Trace:
->>>>    <NMI>
->>>>    perf_trace_buf_alloc+0x26/0xd0
->>>>    perf_ftrace_function_call+0x18f/0x2e0
->>>>    kernelmode_fixup_or_oops+0x5/0x120
->>>>    __bad_area_nosemaphore+0x1b8/0x280
->>>>    do_user_addr_fault+0x410/0x920
->>>>    exc_page_fault+0x92/0x300
->>>>    asm_exc_page_fault+0x1e/0x30
->>>>   RIP: 0010:__get_user_nocheck_8+0x6/0x13
->>>>    perf_callchain_user+0x266/0x2f0
->>>>    get_perf_callchain+0x194/0x210
->>>>    perf_callchain+0xa3/0xc0
->>>>    perf_prepare_sample+0xa5/0xa60
->>>>    perf_event_output_forward+0x7b/0x1b0
->>>>    __perf_event_overflow+0x67/0x120
->>>>    perf_swevent_overflow+0xcb/0x110
->>>>    perf_swevent_event+0xb0/0xf0
->>>>    perf_tp_event+0x292/0x410
->>>>    perf_trace_run_bpf_submit+0x87/0xc0
->>>>    perf_trace_lock_acquire+0x12b/0x170
->>>>    lock_acquire+0x1bf/0x2e0
->>>>    perf_output_begin+0x70/0x4b0
->>>>    perf_log_throttle+0xe2/0x1a0
->>>>    perf_event_nmi_handler+0x30/0x50
->>>>    nmi_handle+0xba/0x2a0
->>>>    default_do_nmi+0x45/0xf0
->>>>    exc_nmi+0x155/0x170
->>>>    end_repeat_nmi+0x16/0x55
->>>
->>> kernel/events/Makefile has:
->>>
->>> ifdef CONFIG_FUNCTION_TRACER
->>> CFLAGS_REMOVE_core.o = $(CC_FLAGS_FTRACE)
->>> endif
->>>
->>> Which, afaict, should avoid the above, no?
->>
->> I'm afraid it's not working for this case, the
->> start point of tracing is at lock_acquire() which
->> is not from 'kernel/events/core', the following PF
->> related function are also not from 'core', prevent
->> ftrace on 'core' can't prevent this from happen...
-> 
-> I'm confused tho; where does the #DF come from? Because taking a #PF
-> from NMI should be perfectly fine.
-> 
-> AFAICT that callchain is something like:
-> 
-> 	NMI
-> 	  perf_event_nmi_handler()
-> 	    (part of the chain is missing here)
-> 	      perf_log_throttle()
-> 	        perf_output_begin() /* events/ring_buffer.c */
-> 		  rcu_read_lock()
-> 		    rcu_lock_acquire()
-> 		      lock_acquire()
-> 		        trace_lock_acquire() --> perf_trace_foo
-> 
-> 			  ...
-> 			    perf_callchain()
-> 			      perf_callchain_user()
-> 			        #PF (fully expected during a userspace callchain)
-> 				  (some stuff, until the first __fentry)
-> 				    perf_trace_function_call
-> 				      perf_trace_buf_alloc()
-> 				        perf_swevent_get_recursion_context()
-> 					  *BOOM*
-> 
-> Now, supposedly we then take another #PF from get_recursion_context() or
-> something, but that doesn't make sense. That should just work...
-> 
-> Can you figure out what's going wrong there? going with the RIP, this
-> almost looks like 'swhash->recursion' goes splat, but again that makes
-> no sense, that's a per-cpu variable.
-
-That's true, I actually have tried several approach to avoid the issue, but
-it trigger panic as long as we access 'swhash->recursion', the array should
-be accessible but somehow broken, that's why I consider this a suspected
-stack overflow, since nmi repeated and trace seems very long, but just a
-suspect...
-
-Regards,
-Michael Wang
-
-> 
+Applied. Thanks!
