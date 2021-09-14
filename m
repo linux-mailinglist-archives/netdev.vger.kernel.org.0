@@ -2,363 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3809B40A69B
-	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 08:17:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2698A40A6A9
+	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 08:23:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240076AbhINGSR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 02:18:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36298 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240092AbhINGSP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 02:18:15 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73573C061764
-        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 23:16:58 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id hx25so3428705ejc.6
-        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 23:16:58 -0700 (PDT)
+        id S240179AbhINGYZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 02:24:25 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:48766 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239908AbhINGYY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 02:24:24 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18DN5NlV009361;
+        Mon, 13 Sep 2021 23:23:04 -0700
+Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2173.outbound.protection.outlook.com [104.47.57.173])
+        by mx0b-0016f401.pphosted.com with ESMTP id 3b2380uuah-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 13 Sep 2021 23:23:04 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KBq/bEOV518QbM2N+PnbZuTzvnjYCjicVrCSBqrCaWubt5o9xDAG91d/iAuVo3XaVhxUu9uLLXx3hQZlUiOYv3C8cEZFou7nksjtIaLNdU48sSIw92NIhVDaRazG2JEFso9pNoS7IHtZ4KyItQgxRgpxXMSiqziNt2BAF1fjkBNE3GSFiw1Vq1aMDVhvWiHHTbrY+8jqXSFKqMPRDUR6m17S8LWnPANv5g1U7TMu53UiiA9Om5Uz6V+O74aBfV+7gf3oRA8O51aiO1VWIx0pAwOX+jwcAEdcUeuM+2ZCaaLmHGHli1oo3hCPV/0oplLK9V0Oi4Xek1++2Gfbvv2ktg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
+ bh=b03kM01ODuDSIEVuSf1sY+mem3jLq2Zhd4YHE0bT4BY=;
+ b=fZRuxVEOSZjqgxEfBeVS6K0+IFsgHaoy3YeuKavFKFadp46K81ob+9RnUOwaBpps9EfWu3dJ3VoNYcTtjZGRpLpX0A7N2zI9rnqGmzyKw+GpC+WJ1YPLmDJNLKR4Jt48cPlrOXrj31n/elfA7G+DBMrDvt3XxQOC25lK0skkZvlb8fSXWbtNxYGFfEprqt3kmD2lYOH4jiG74qK3vwR1Ws/HRhXx3M6zJGhAqlqdPk5cf9Z+mdi1VAJ7wi66F1jMUkm5P5Anw9N6dw07b2iUFK7+cw60lBuqj4fWgQynpK08fVxes4ZZNVBxrVEpHk0XTln4DJZ7P81yu6sHJyN9mA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=tJimLaSi/Y2g5hOELmbspRvHOYnQL67WURJ74CJWqAY=;
-        b=B14Jo0+joCzHGGHHzEhI/Hnm4RerS0Fcm6JGYMwZH1AwHYkank+ZeqOQlEiGUBFtJC
-         JRHaVsVcV8+as0NdUSS0ZrfrsXhzcmrllunjj5giBBHmO/oQv4BQyxtbTyT9jk7zWuFL
-         ZH1L3SshFOIQCGs3+cWcaG62oHcNyTs7ykjpB9M5UFB4k+1ZnHpdjb1h/HiJk2txe2oR
-         i8slWx/fvvz8GwN503wOAdigRbVVDyFrq/ld9K8D7IHm+JzXgP2Rhh1Li5NOJD0sYNXJ
-         ti/DH/eyLxWy0zqEz21plKrJnMY+ip7Ofejizu5FRtW6aM7tMqqihyghLD9amXQG2ry9
-         wJYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=tJimLaSi/Y2g5hOELmbspRvHOYnQL67WURJ74CJWqAY=;
-        b=ZIP8gsuZOPSfAMDHPgFTxr1tiJmqIcIjvRUQIb3QtEV37SmsA1mfj5IOyjDA7ueGme
-         ICcQJ+2mEw6kfFJK2O79O/0H+7RvGW64bbDn+aslYDkHWDjZXMGsfqzQeBHun8ivE3tf
-         dKAVTtxXY8ZcMAlntuCQ5n8B4iabEEN9SASBZoMBM9ky4KAQPvh4U5b2AufATSLLBXwX
-         khhwa3Eo3qYzD9U5A88ozHepsOabmagxgG/jAlVAMzQ6zWl2RNcjN9VYQdS0nulUxG6w
-         ejUciDf10MaYwOx6u0Mjq2IhPSC+4D/8YsQhya4KXczoS6DRl18Zx4QsqRi6+XiUnAqI
-         2u0w==
-X-Gm-Message-State: AOAM533KEuuAKeHIzwJ7DZsd1KSqnNhmbTVU19hstYA4jhyNK+tOe4Ab
-        qwMHQrDhzo+wOGIwxRInEN4=
-X-Google-Smtp-Source: ABdhPJyHkCDry7s2psir/YD3axETIHrGfYwmf2Nr+YXY9fP37b+EQfYJYJ/UookabBewE/7qx1Lx+g==
-X-Received: by 2002:a17:906:c0cd:: with SMTP id bn13mr16944849ejb.251.1631600216944;
-        Mon, 13 Sep 2021 23:16:56 -0700 (PDT)
-Received: from smtpclient.apple ([178.254.237.20])
-        by smtp.gmail.com with ESMTPSA id s4sm2577820eja.23.2021.09.13.23.16.55
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 13 Sep 2021 23:16:56 -0700 (PDT)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.120.0.1.13\))
-Subject: Re: Urgent  Bug report: PPPoE ioctl(PPPIOCCONNECT): Transport
- endpoint is not connected
-From:   Martin Zaharinov <micron10@gmail.com>
-In-Reply-To: <A16DCD3E-43AA-4D50-97FC-EBB776481840@gmail.com>
-Date:   Tue, 14 Sep 2021 09:16:55 +0300
-Cc:     =?utf-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=b03kM01ODuDSIEVuSf1sY+mem3jLq2Zhd4YHE0bT4BY=;
+ b=OQOZqTvm1coLpA4FpUfdZ62IzwodR/8QyeMdFqWDgz1O0rPf6pcZ8HQKupMb8G3hKublfsgzy/uT0pOqW9DMQHYQzvUOIjGDwWA4QKfffyOFuu7xzIyQNAgzf4dVSDzrpSM5vLUGbrcAuzGXu/NJdSlxI99LzDoPm6V/dydMI+Y=
+Received: from SJ0PR18MB3882.namprd18.prod.outlook.com (2603:10b6:a03:2c8::13)
+ by BYAPR18MB2501.namprd18.prod.outlook.com (2603:10b6:a03:131::29) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.18; Tue, 14 Sep
+ 2021 06:23:02 +0000
+Received: from SJ0PR18MB3882.namprd18.prod.outlook.com
+ ([fe80::c38:a710:6617:82a5]) by SJ0PR18MB3882.namprd18.prod.outlook.com
+ ([fe80::c38:a710:6617:82a5%4]) with mapi id 15.20.4500.019; Tue, 14 Sep 2021
+ 06:23:02 +0000
+From:   Shai Malin <smalin@marvell.com>
+To:     Leon Romanovsky <leon@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "jgg@ziepe.ca" <jgg@ziepe.ca>, Ariel Elior <aelior@marvell.com>,
+        "malin1024@gmail.com" <malin1024@gmail.com>,
+        Michal Kalderon <mkalderon@marvell.com>
+Subject: Re: [PATCH net] qed: rdma - don't wait for resources under hw error
+ recovery flow
+Thread-Topic: [PATCH net] qed: rdma - don't wait for resources under hw error
+ recovery flow
+Thread-Index: AdepMH6krEZHu5kxSOKllNhVhRVcsg==
+Date:   Tue, 14 Sep 2021 06:23:02 +0000
+Message-ID: <SJ0PR18MB3882BDDFA81A7FD3A541C282CCDA9@SJ0PR18MB3882.namprd18.prod.outlook.com>
+Accept-Language: he-IL, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=marvell.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 1054b52d-676c-47b0-e578-08d977481b01
+x-ms-traffictypediagnostic: BYAPR18MB2501:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR18MB250133097BB04CFD88D00450CCDA9@BYAPR18MB2501.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: qFIgSCR1Y0ZN/78qpcdJ9nN2JrnvQyAJ67TRrdGXavfX2R/XEwmPuBPnlxLC7yH2go7bpuDvFYquZ1iX0dTtXMOU1mnjvYKUHGCroTO3EKB9PXOdFiVN9KzipcZ3YzpOJOcmZZfJKKlwMzm6cPNjgyr1wu0pSaFgmRQ81sitsKKnuSLeOYBzKhgrnjlvOlUYx8FytKew63yjcbBYWigj4IObOBgppE/XlgzphLikqLuwuLU7AlYUO8uP/Q5qQx7jOHsW89wFgXFrtYiHB73S33kc7JyDBKWC0r+AtyxE5/hFKapKkd/ETFf5SeS7hBp6dpDwrkDcdcp4VXyjgNHLae3pMpC1cyGNpsSDSFzJi8/MDDHA1hJygUmvR4ubDo+Lapin0zBNsDblJQQNLIj1z/Z9BXm/GajhSWibocj9bIakFcvTMGOjTl005eY0sYB9+u9Azjjy6ZNUd6EHBU05mCUsjSuKexUp1zIheoqsbAMrlQZekuz9hoj6tvS+PNn5s2UWp18BjxWeAxdDzIPxkJcZyK0rfV/nlGPHomueclGHAUV0UptkTbXFcOtrcYtl3IpXVtXuPMMmBEAoAIr4rSRd9evGQ2dNuAQDueR+OE1Ta0pIKZvrBRnHQNgoTi/ak1GH9aQfHcSKI0JC5DHd9QERcklpc3jeJ2xkuhmGV0p1p8c+l7ru9rbedNox67xhGO38xRZm857GEa0hEG9H/A==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR18MB3882.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(366004)(346002)(396003)(376002)(39860400002)(2906002)(33656002)(71200400001)(8676002)(38070700005)(6506007)(86362001)(107886003)(55016002)(7696005)(6916009)(186003)(4326008)(54906003)(9686003)(66556008)(64756008)(83380400001)(76116006)(66446008)(316002)(122000001)(38100700002)(52536014)(478600001)(66946007)(66476007)(8936002)(5660300002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?uIQI8F3p7xDaqf9xK9b+PJ+audAbVNjBQO01indp8X3Qsfe5ES/UY3V4R8el?=
+ =?us-ascii?Q?haprvcKNjvC+zRrh7nkFKyuzyjPcfViZL1aOfaUdja/7ATR7VtK+FQmbyRf1?=
+ =?us-ascii?Q?6C+blbBbB4+ymQlsBPFdU8LMKeeqtY6vCPTx05rFqMroKku4xNZyb82GSkdJ?=
+ =?us-ascii?Q?4qEexGc+Ij+FrgpkkpqrNRkIfft854UziwUm7Q/pZxDqqZmZo63CGYG1q0Sd?=
+ =?us-ascii?Q?LvpH7ZEgCX3MZoqWyyUrAzjPxq51r6604fLAVNK3FEKIJnt07iFRv16Bdh9S?=
+ =?us-ascii?Q?dLonpXhoOky6ThQpQy5MTpdqBMk45YrSxJkvdmDBP91iNlu2Ukd02w4DAq0B?=
+ =?us-ascii?Q?9l6SlQSR23Kv+6VAqARmCJZ+YsWiicbAE36eBslr4/lu5g1I3qDWesRNBAHU?=
+ =?us-ascii?Q?zpa9vNn9dipn48WNZP1FXObxkVSJ1c7TDDAJjcY3X/t6pEeBvYvrGhTmQYat?=
+ =?us-ascii?Q?Fk/bDK581a0m4mv4/05pspOdLYvA8Wg05dMTj4ZEdTQZQj+XYxY3WuEk0Lyo?=
+ =?us-ascii?Q?rDRf8vaMt7pEz9gFhsDZO17YRV910Tqwh+zMnvW/NI1LW3lPx0XLyT8amZFr?=
+ =?us-ascii?Q?0Rq9Zhv7pd38W2aTmOdPTTI/uL0IWCsm8+89bx1y365V8Xhc8Rb9it+AUYAS?=
+ =?us-ascii?Q?it/rIWHirU5b8yM2vr1NC9wrXy6b/oj3gB/Wb7cVmXYHFyfbLD668gRcTov4?=
+ =?us-ascii?Q?HpGfEghlG9Lw+T9yLSToo2h0LpqFuMq+Yh5TQ5Hb0GUU1LpzjWzqCsilLzV2?=
+ =?us-ascii?Q?egCMhNUYgrf5qwTZkGojODLdvFr9RzC2qKQow+g7pbUmk7FIelrvWJQC4FW/?=
+ =?us-ascii?Q?/lJaqX5zvh4cTitQvICQW39qsFBe4xrvgLGaeU7ObIqledeMRU1DkzD9Qztk?=
+ =?us-ascii?Q?kIe34udb0cpNo14PLGkvT95oZS1VtyBqtl9+xPH7t09C+d0WEiKdO1fAMaqH?=
+ =?us-ascii?Q?qAYNdMLEerFX8Ggi7Kssd7DbyWeSA2EGXrQ1T5dgCf0WRWOZyVszbFrGQS2m?=
+ =?us-ascii?Q?QOHA/GwKsIOBfecuypFDcpwT/OxDsUEFWk8FQU2VypJnOgj1Fmqa8SYfRAlJ?=
+ =?us-ascii?Q?4rxkfHZBnz2rOaST/srcWFnUZ0J5TQX6h4Gn2XpWacTFjv2Gxu3ovx+xiPTs?=
+ =?us-ascii?Q?uA/ebb9rNawOQlxKYzLDmNpSyBrab7cvNjHerRqlaNGhOm87ELFVUqBjCWOk?=
+ =?us-ascii?Q?z6GOakg+3P2La7b/Tg5Cejq18wfFHLXOc0lSa0cO/mB4gNXswNjJqkYD/iIU?=
+ =?us-ascii?Q?UbRtswarbXzv7gBpUbVNN0Vu3WS/cT8L172RZwcqLbGAL9ejPOq8+qZ9qKor?=
+ =?us-ascii?Q?VjNkVswh1Wm/mTekBL8RA0Kj0pL6N037JwgKSLtaFj243PzQvTW6hL7iWGx3?=
+ =?us-ascii?Q?wUkqi90=3D?=
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Message-Id: <E95FDB1D-488B-4780-96A1-A2D5C9616A7A@gmail.com>
-References: <7EE80F78-6107-4C6E-B61D-01752D44155F@gmail.com>
- <YQy9JKgo+BE3G7+a@kroah.com> <08EC1CDD-21C4-41AB-B6A8-1CC2D40F5C05@gmail.com>
- <20210808152318.6nbbaj3bp6tpznel@pali>
- <8BDDA0B3-0BEE-4E80-9686-7F66CF58B069@gmail.com>
- <20210809151529.ymbq53f633253loz@pali>
- <FFD368DF-4C89-494B-8E7B-35C2A139E277@gmail.com>
- <20210811164835.GB15488@pc-32.home>
- <81FD1346-8CE6-4080-84C9-705E2E5E69C0@gmail.com>
- <6A3B4C11-EF48-4CE9-9EC7-5882E330D7EA@gmail.com>
- <A16DCD3E-43AA-4D50-97FC-EBB776481840@gmail.com>
-To:     Guillaume Nault <gnault@redhat.com>
-X-Mailer: Apple Mail (2.3654.120.0.1.13)
+MIME-Version: 1.0
+X-OriginatorOrg: marvell.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR18MB3882.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1054b52d-676c-47b0-e578-08d977481b01
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Sep 2021 06:23:02.2870
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 7VNt96Hnz+mxs9jajtnVi58nYRvW56ljUcZnOebyKoyVG4hGj0zhvm8ZsH4k4eX42Btv2Xbq3m2HdRNvPmVRYw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR18MB2501
+X-Proofpoint-ORIG-GUID: oNdLpI4JOv5z8suTKdX7bvkLMDBxHe0w
+X-Proofpoint-GUID: oNdLpI4JOv5z8suTKdX7bvkLMDBxHe0w
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
+ definitions=2021-09-13_09,2021-09-09_01,2020-04-07_01
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Nault
-
-See this stats :
-
-Linux 5.14.2 (testb)   09/14/21        _x86_64_        (12 CPU)
-
-11:33:44     CPU    %usr   %nice    %sys %iowait    %irq   %soft  %steal =
- %guest  %gnice   %idle
-11:33:45     all    1.75    0.00   18.85    0.00    0.00    5.00    0.00 =
-   0.00    0.00   74.40
-11:33:46     all    1.74    0.00   17.88    0.00    0.00    4.72    0.00 =
-   0.00    0.00   75.66
-11:33:47     all    2.23    0.00   17.62    0.00    0.00    5.05    0.00 =
-   0.00    0.00   75.10
-11:33:48     all    1.82    0.00   13.64    0.00    0.00    5.70    0.00 =
-   0.00    0.00   78.84
-11:33:49     all    1.50    0.00   13.46    0.00    0.00    5.15    0.00 =
-   0.00    0.00   79.90
-11:33:50     all    3.06    0.00   13.96    0.00    0.00    4.79    0.00 =
-   0.00    0.00   78.20
-11:33:51     all    1.40    0.00   16.53    0.00    0.00    5.21    0.00 =
-   0.00    0.00   76.86
-11:33:52     all    4.43    0.00   19.44    0.00    0.00    6.56    0.00 =
-   0.00    0.00   69.57
-11:33:53     all    1.51    0.00   16.40    0.00    0.00    4.77    0.00 =
-   0.00    0.00   77.32
-11:33:54     all    1.51    0.00   16.55    0.00    0.00    4.71    0.00 =
-   0.00    0.00   77.23
-11:33:55     all    1.00    0.00   13.21    0.00    0.00    5.90    0.00 =
-   0.00    0.00   79.90
-Average:     all    2.00    0.00   16.14    0.00    0.00    5.23    0.00 =
-   0.00    0.00   76.63
-
-
-  PerfTop:   28046 irqs/sec  kernel:96.3%  exact: 100.0% lost: 0/0 drop: =
-0/0 [4000Hz cycles],  (all, 12 CPUs)
-=
---------------------------------------------------------------------------=
---------------------------------------------------------------------------=
------------------------------------------------------------
-
-    23.37%  [nf_conntrack]           [k] nf_ct_iterate_cleanup
-    17.76%  [kernel]                 [k] mutex_spin_on_owner
-     9.47%  [pppoe]                  [k] pppoe_rcv
-     7.71%  [kernel]                 [k] osq_lock
-     2.77%  [nf_nat]                 [k] inet_cmp
-     2.59%  [nf_nat]                 [k] device_cmp
-     2.55%  [kernel]                 [k] __local_bh_enable_ip
-     2.04%  [kernel]                 [k] _raw_spin_lock
-     1.23%  [kernel]                 [k] __cond_resched
-     1.16%  [kernel]                 [k] rcu_all_qs
-     1.13%  libfrr.so.0.0.0          [.] 0x00000000000ce970
-     0.79%  [nf_conntrack]           [k] nf_conntrack_lock
-     0.75%  libfrr.so.0.0.0          [.] 0x00000000000ce94e
-     0.53%  [kernel]                 [k] =
-__netif_receive_skb_core.constprop.0
-     0.46%  [kernel]                 [k] fib_table_lookup
-     0.46%  [ip_tables]              [k] ipt_do_table
-     0.45%  [ixgbe]                  [k] ixgbe_clean_rx_irq
-     0.37%  [kernel]                 [k] __dev_queue_xmit
-     0.34%  [nf_conntrack]           [k] __nf_conntrack_find_get.isra.0
-     0.33%  [ixgbe]                  [k] ixgbe_clean_tx_irq
-     0.30%  [kernel]                 [k] menu_select
-     0.25%  [kernel]                 [k] vlan_do_receive
-     0.21%  [kernel]                 [k] ip_finish_output2
-     0.21%  [ixgbe]                  [k] ixgbe_poll
-     0.20%  [kernel]                 [k] _raw_spin_lock_irqsave
-     0.19%  [kernel]                 [k] get_rps_cpu
-     0.19%  libc.so.6                [.] 0x0000000000186afa
-     0.19%  [kernel]                 [k] queued_read_lock_slowpath
-     0.19%  [kernel]                 [k] do_poll.constprop.0
-     0.19%  [kernel]                 [k] cpuidle_enter_state
-     0.18%  [kernel]                 [k] dev_hard_start_xmit
-     0.18%  [kernel]                 [k] ___slab_alloc.constprop.0
-     0.17%  zebra                    [.] 0x00000000000b9271
-     0.16%  [kernel]                 [k] csum_partial_copy_generic
-     0.16%  zebra                    [.] 0x00000000000b91f1
-     0.16%  [kernel]                 [k] page_frag_free
-     0.16%  [kernel]                 [k] kmem_cache_alloc
-     0.15%  [kernel]                 [k] __skb_flow_dissect
-     0.15%  [kernel]                 [k] sched_clock
-     0.15%  libc.so.6                [.] 0x00000000000965a2
-     0.15%  [kernel]                 [k] kmem_cache_free_bulk.part.0
-     0.15%  [pppoe]                  [k] pppoe_flush_dev
-     0.15%  [ixgbe]                  [k] ixgbe_tx_map
-     0.14%  [kernel]                 [k] _raw_spin_lock_bh
-     0.14%  [kernel]                 [k] fib_table_flush
-     0.14%  [kernel]                 [k] native_irq_return_iret
-     0.14%  [kernel]                 [k] __dev_xmit_skb
-     0.13%  [kernel]                 [k] nf_hook_slow
-     0.13%  [kernel]                 [k] fib_lookup_good_nhc
-     0.12%  [kernel]                 [k] __fget_files
-     0.12%  [kernel]                 [k] process_backlog
-     0.12%  [xt_dtvqos]              [k] 0x00000000000008d1
-     0.12%  [kernel]                 [k] __list_del_entry_valid
-     0.12%  [kernel]                 [k] skb_release_data
-     0.12%  [kernel]                 [k] ip_route_input_slow
-     0.11%  [kernel]                 [k] netif_skb_features
-     0.11%  [kernel]                 [k] sock_poll
-     0.11%  [kernel]                 [k] __schedule
-     0.11%  [kernel]                 [k] __softirqentry_text_start
-
-
-And on time of problem when try to write : ip a=20
-to list interface wait 15-20 sec i finaly have options to simulate but =
-users is angry when down internet.
-
-In case need to know why system is overloaded when deconfig ppp =
-interface.
-
-
-Best regards,
-Martin
-
-
-
-
-> On 11 Sep 2021, at 9:26, Martin Zaharinov <micron10@gmail.com> wrote:
+On Mon, Sep 13, 2021 at 5:45:00PM +0300, Leon Romanovsky wrote:
+> On Mon, Sep 13, 2021 at 03:14:42PM +0300, Shai Malin wrote:
+> > If the HW device is during recovery, the HW resources will never return=
+,
+> > hence we shouldn't wait for the CID (HW context ID) bitmaps to clear.
+> > This fix speeds up the error recovery flow.
+> >
+> > Fixes: 64515dc899df ("qed: Add infrastructure for error detection and
+> recovery")
+> > Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
+> > Signed-off-by: Ariel Elior <aelior@marvell.com>
+> > Signed-off-by: Shai Malin <smalin@marvell.com>
+> > ---
+> >  drivers/net/ethernet/qlogic/qed/qed_iwarp.c | 7 +++++++
+> >  drivers/net/ethernet/qlogic/qed/qed_roce.c  | 7 +++++++
+> >  2 files changed, 14 insertions(+)
+> >
+> > diff --git a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
+> b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
+> > index fc8b3e64f153..4967e383c31a 100644
+> > --- a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
+> > +++ b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
+> > @@ -1323,6 +1323,13 @@ static int qed_iwarp_wait_for_all_cids(struct
+> qed_hwfn *p_hwfn)
+> >  	int rc;
+> >  	int i;
+> >
+> > +	/* If the HW device is during recovery, all resources are immediately
+> > +	 * reset without receiving a per-cid indication from HW. In this case
+> > +	 * we don't expect the cid_map to be cleared.
+> > +	 */
+> > +	if (p_hwfn->cdev->recov_in_prog)
+> > +		return 0;
 >=20
-> Hi Guillaume
->=20
-> Main problem is overload of service because have many finishing ppp =
-(customer) last two day down from 40-50 to 100-200 users and make =
-problem when is happen if try to type : ip a wait 10-20 sec to start =
-list interface .
-> But how to find where is a problem any locking or other.
-> And is there options to make fast remove ppp interface from kernel to =
-reduce this load.
->=20
->=20
-> Martin
->=20
->> On 7 Sep 2021, at 9:42, Martin Zaharinov <micron10@gmail.com> wrote:
->>=20
->> Perf top from text
->>=20
->>=20
->> PerfTop:   28391 irqs/sec  kernel:98.0%  exact: 100.0% lost: 0/0 =
-drop: 0/0 [4000Hz cycles],  (all, 12 CPUs)
->> =
---------------------------------------------------------------------------=
---------------------------------------------------------------------------=
------------------------------------------------------------
->>=20
->>   17.01%  [nf_conntrack]           [k] nf_ct_iterate_cleanup
->>    9.73%  [kernel]                 [k] mutex_spin_on_owner
->>    9.07%  [pppoe]                  [k] pppoe_rcv
->>    2.77%  [nf_nat]                 [k] device_cmp
->>    1.66%  [kernel]                 [k] osq_lock
->>    1.65%  [kernel]                 [k] _raw_spin_lock
->>    1.61%  [kernel]                 [k] __local_bh_enable_ip
->>    1.35%  [nf_nat]                 [k] inet_cmp
->>    1.30%  [kernel]                 [k] =
-__netif_receive_skb_core.constprop.0
->>    1.16%  [kernel]                 [k] menu_select
->>    0.99%  [kernel]                 [k] cpuidle_enter_state
->>    0.96%  [ixgbe]                  [k] ixgbe_clean_rx_irq
->>    0.86%  [kernel]                 [k] __dev_queue_xmit
->>    0.70%  [kernel]                 [k] __cond_resched
->>    0.69%  [sch_cake]               [k] cake_dequeue
->>    0.67%  [nf_tables]              [k] nft_do_chain
->>    0.63%  [kernel]                 [k] rcu_all_qs
->>    0.61%  [kernel]                 [k] fib_table_lookup
->>    0.57%  [kernel]                 [k] __schedule
->>    0.57%  [kernel]                 [k] skb_release_data
->>    0.54%  [kernel]                 [k] sched_clock
->>    0.54%  [kernel]                 [k] __copy_skb_header
->>    0.53%  [kernel]                 [k] dev_queue_xmit_nit
->>    0.53%  [kernel]                 [k] _raw_spin_lock_irqsave
->>    0.50%  [kernel]                 [k] kmem_cache_free
->>    0.48%  libfrr.so.0.0.0          [.] 0x00000000000ce970
->>    0.47%  [ixgbe]                  [k] ixgbe_clean_tx_irq
->>    0.45%  [kernel]                 [k] timerqueue_add
->>    0.45%  [kernel]                 [k] lapic_next_deadline
->>    0.45%  [kernel]                 [k] csum_partial_copy_generic
->>    0.44%  [nf_flow_table]          [k] nf_flow_offload_ip_hook
->>    0.44%  [kernel]                 [k] kmem_cache_alloc
->>    0.44%  [nf_conntrack]           [k] nf_conntrack_lock
->>=20
->>> On 7 Sep 2021, at 9:16, Martin Zaharinov <micron10@gmail.com> wrote:
->>>=20
->>> Hi=20
->>> Sorry for delay but not easy to catch moment .
->>>=20
->>>=20
->>> See this is mpstatl 1 :
->>>=20
->>> Linux 5.14.1 (demobng) 	09/07/21 	_x86_64_	(12 CPU)
->>>=20
->>> 11:12:16     CPU    %usr   %nice    %sys %iowait    %irq   %soft  =
-%steal  %guest  %gnice   %idle
->>> 11:12:17     all    0.17    0.00    6.66    0.00    0.00    4.13    =
-0.00    0.00    0.00   89.05
->>> 11:12:18     all    0.25    0.00    8.36    0.00    0.00    4.88    =
-0.00    0.00    0.00   86.51
->>> 11:12:19     all    0.26    0.00    9.62    0.00    0.00    3.91    =
-0.00    0.00    0.00   86.21
->>> 11:12:20     all    0.85    0.00    6.00    0.00    0.00    4.31    =
-0.00    0.00    0.00   88.84
->>> 11:12:21     all    0.08    0.00    4.45    0.00    0.00    4.79    =
-0.00    0.00    0.00   90.67
->>> 11:12:22     all    0.17    0.00    9.50    0.00    0.00    4.58    =
-0.00    0.00    0.00   85.75
->>> 11:12:23     all    0.00    0.00    6.92    0.00    0.00    2.48    =
-0.00    0.00    0.00   90.61
->>> 11:12:24     all    0.17    0.00    5.45    0.00    0.00    4.27    =
-0.00    0.00    0.00   90.11
->>> 11:12:25     all    0.25    0.00    5.38    0.00    0.00    4.79    =
-0.00    0.00    0.00   89.58
->>> 11:12:26     all    0.60    0.00    1.45    0.00    0.00    2.65    =
-0.00    0.00    0.00   95.30
->>> 11:12:27     all    0.42    0.00    6.91    0.00    0.00    4.47    =
-0.00    0.00    0.00   88.20
->>> 11:12:28     all    0.00    0.00    6.75    0.00    0.00    4.18    =
-0.00    0.00    0.00   89.07
->>> 11:12:29     all    0.17    0.00    3.52    0.00    0.00    5.11    =
-0.00    0.00    0.00   91.20
->>> 11:12:30     all    1.45    0.00   10.14    0.00    0.00    3.49    =
-0.00    0.00    0.00   84.92
->>> 11:12:31     all    0.09    0.00    5.11    0.00    0.00    4.77    =
-0.00    0.00    0.00   90.03
->>> 11:12:32     all    0.25    0.00    3.11    0.00    0.00    4.46    =
-0.00    0.00    0.00   92.17
->>> Average:     all    0.32    0.00    6.21    0.00    0.00    4.21    =
-0.00    0.00    0.00   89.26
->>>=20
->>>=20
->>> I attache and one screenshot from perf top (Screenshot is send on =
-preview mail)
->>>=20
->>> And I see in lsmod=20
->>>=20
->>> pppoe                  20480  8198
->>> pppox                  16384  1 pppoe
->>> ppp_generic            45056  16364 pppox,pppoe
->>> slhc                   16384  1 ppp_generic
->>>=20
->>> To slow remove pppoe session .
->>>=20
->>> And from log :=20
->>>=20
->>> [2021-09-07 11:01:11.129] vlan3020: ebdd1c5d8b5900f6: =
-ioctl(PPPIOCCONNECT): Transport endpoint is not connected
->>> [2021-09-07 11:01:53.621] vlan643: ebdd1c5d8b59014e: =
-ioctl(PPPIOCCONNECT): Transport endpoint is not connected
->>> [2021-09-07 11:02:00.359] vlan1616: ebdd1c5d8b590195: =
-ioctl(PPPIOCCONNECT): Transport endpoint is not connected
->>> [2021-09-07 11:02:05.859] vlan3020: ebdd1c5d8b5900d8: =
-ioctl(PPPIOCCONNECT): Transport endpoint is not connected
->>> [2021-09-07 11:02:08.258] vlan3005: ebdd1c5d8b590190: =
-ioctl(PPPIOCCONNECT): Transport endpoint is not connected
->>> [2021-09-07 11:02:13.820] vlan643: ebdd1c5d8b590152: =
-ioctl(PPPIOCCONNECT): Transport endpoint is not connected
->>> [2021-09-07 11:02:15.839] vlan727: ebdd1c5d8b590144: =
-ioctl(PPPIOCCONNECT): Transport endpoint is not connected
->>> [2021-09-07 11:02:20.139] vlan1693: ebdd1c5d8b59019f: =
-ioctl(PPPIOCCONNECT): Transport endpoint is not connected
->>>=20
->>>> On 11 Aug 2021, at 19:48, Guillaume Nault <gnault@redhat.com> =
-wrote:
->>>>=20
->>>> On Wed, Aug 11, 2021 at 02:10:32PM +0300, Martin Zaharinov wrote:
->>>>> And one more that see.
->>>>>=20
->>>>> Problem is come when accel start finishing sessions,
->>>>> Now in server have 2k users and restart on one of vlans 3 Olt with =
-400 users and affect other vlans ,
->>>>> And problem is start when start destroying dead sessions from vlan =
-with 3 Olt and this affect all other vlans.
->>>>> May be kernel destroy old session slow and entrained other users =
-by locking other sessions.
->>>>> is there a way to speed up the closing of stopped/dead sessions.
->>>>=20
->>>> What are the CPU stats when that happen? Is it users space or =
-kernel
->>>> space that keeps it busy?
->>>>=20
->>>> One easy way to check is to run "mpstat 1" for a few seconds when =
-the
->>>> problem occurs.
->>>>=20
->>>=20
->>=20
->=20
+> How do you ensure that this doesn't race with recovery flow?
 
+The HW recovery will start with the management FW which will detect and rep=
+ort
+the problem to the driver and it also set "cdev->recov_in_prog =3D ture" fo=
+r all=20
+the devices on the same HW.
+The qedr recovery flow is actually the qedr_remove flow but if=20
+"cdev->recov_in_prog =3D true" it will "ignore" the FW/HW resources.
+The changes introduced with this patch are part of this qedr remove flow.
+The cdev->recov_in_prog will be set to false only as part of the following=
+=20
+probe and after the HW was re-initialized.
+
+>=20
+> > +
+> >  	rc =3D qed_iwarp_wait_cid_map_cleared(p_hwfn,
+> >  					    &p_hwfn->p_rdma_info-
+> >tcp_cid_map);
+> >  	if (rc)
+> > diff --git a/drivers/net/ethernet/qlogic/qed/qed_roce.c
+> b/drivers/net/ethernet/qlogic/qed/qed_roce.c
+> > index f16a157bb95a..aff5a2871b8f 100644
+> > --- a/drivers/net/ethernet/qlogic/qed/qed_roce.c
+> > +++ b/drivers/net/ethernet/qlogic/qed/qed_roce.c
+> > @@ -71,6 +71,13 @@ void qed_roce_stop(struct qed_hwfn *p_hwfn)
+> >  	struct qed_bmap *rcid_map =3D &p_hwfn->p_rdma_info->real_cid_map;
+> >  	int wait_count =3D 0;
+> >
+> > +	/* If the HW device is during recovery, all resources are immediately
+> > +	 * reset without receiving a per-cid indication from HW. In this case
+> > +	 * we don't expect the cid bitmap to be cleared.
+> > +	 */
+> > +	if (p_hwfn->cdev->recov_in_prog)
+> > +		return;
+> > +
+> >  	/* when destroying a_RoCE QP the control is returned to the user afte=
+r
+> >  	 * the synchronous part. The asynchronous part may take a little long=
+er.
+> >  	 * We delay for a short while if an async destroy QP is still expecte=
+d.
+> > --
+> > 2.22.0
+> >
