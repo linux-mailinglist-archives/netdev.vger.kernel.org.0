@@ -2,128 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FF0040B453
-	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 18:17:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F95940B45B
+	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 18:18:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229931AbhINQSP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 12:18:15 -0400
-Received: from mga02.intel.com ([134.134.136.20]:41775 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229461AbhINQSO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Sep 2021 12:18:14 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10106"; a="209282641"
-X-IronPort-AV: E=Sophos;i="5.85,292,1624345200"; 
-   d="scan'208";a="209282641"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2021 09:16:56 -0700
-X-IronPort-AV: E=Sophos;i="5.85,292,1624345200"; 
-   d="scan'208";a="544161710"
-Received: from ldraghi-mobl1.amr.corp.intel.com (HELO [10.209.28.176]) ([10.209.28.176])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2021 09:16:55 -0700
-Subject: Re: [PATCH] perf: fix panic by disable ftrace on fault.c
-To:     =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "open list:X86 MM" <linux-kernel@vger.kernel.org>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <netdev@vger.kernel.org>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <bpf@vger.kernel.org>
-References: <ff979a43-045a-dc56-64d1-2c31dd4db381@linux.alibaba.com>
- <d16e7188-1afa-7513-990c-804811747bcb@linux.alibaba.com>
- <d85f9710-67c9-2573-07c4-05d9c677d615@intel.com>
- <d8853e49-8b34-4632-3e29-012eb605bea9@linux.alibaba.com>
- <09777a57-a771-5e17-7e17-afc03ea9b83b@linux.alibaba.com>
- <4f63c8bc-1d09-1717-cf81-f9091a9f9fb0@linux.alibaba.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Autocrypt: addr=dave.hansen@intel.com; keydata=
- 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
- z5cecg==
-Message-ID: <18252e42-9c30-73d4-e3bb-0e705a78af41@intel.com>
-Date:   Tue, 14 Sep 2021 09:16:53 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S229689AbhINQTb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 12:19:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35952 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229437AbhINQT1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 12:19:27 -0400
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FFC7C061574
+        for <netdev@vger.kernel.org>; Tue, 14 Sep 2021 09:18:10 -0700 (PDT)
+Received: by mail-io1-xd2d.google.com with SMTP id m11so17852359ioo.6
+        for <netdev@vger.kernel.org>; Tue, 14 Sep 2021 09:18:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=engleder-embedded-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RZGtX95KhDg6cOU6Ei2dCC/slYztCW/EyX0L9hAZFtM=;
+        b=ZJsotc+H2nYSr7+EQJ92nPpKJeN4hqtXVJ6wQN+VAhtNvYFgslAz+2Nbyj1loKz6R7
+         SfsLj04uR8i5G+ZMADV5pyLYwkiGM+CjVhrlhBHoFdat39xj7pnU+wi3kQnXL8/nCAnS
+         +ZmhHZVVTqvhSShkKo9FqC6kwBOagzOoEHdjPMXwZXSDPxvTXW9MhrXBpXfAwG9dWDyE
+         xecfpYKkXymSnbEajHYkUAulnlFPStl2skxJffCu+jRcIwIGj+gWlDAJooU1KYS/VGPy
+         HLrHvKArqtJkt3mA75f1xfcMb2cUG7Igs9af6Wq4jmPPAu1PprJvrX+uW1QpxEqU7+AF
+         og0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RZGtX95KhDg6cOU6Ei2dCC/slYztCW/EyX0L9hAZFtM=;
+        b=EG52pg2dPZlk/hPX2m1CeWIZq3ZBLZKJGC9GGAGyLDsu+TJe09ejLp/C8PHzP3K6dI
+         2iEXlcyq1zg77cE4RgK284pfnYRFKxKNMOGCkkidVkmilaMk3p12hsqDRa7IbZ8+12Ev
+         K6fAdO9hnSZbEO+7iF5jN0me3vhP4DDmUqkw5fjC09jZ7wUAufwsiaGY1pjBPUa7Wy+k
+         EREAoyLmzTWyxKmthiGHZMctQ9P+liVYXhWgAWD3d6tix9IVtfAqiYDmAQr3FxVKQxIg
+         JWw7uY08Not73iN8Q6kqfe/hNyZoRM6xsjQDFmg/2TOI9O2IOJoG43ZyB0dUQ+dpNzgU
+         9ZTQ==
+X-Gm-Message-State: AOAM532JU1PWgbXNNTMA4ap+UnIcrIdHhmIPY57ktSP2duCefPqlq7T2
+        8iJeAqYl3E8mO/Gd4DhrcbYHOsJyCr7iUh+vP+KlCQ==
+X-Google-Smtp-Source: ABdhPJxgZagzAwO71dWHLXcdxeoMc/StkZk6J673IGRLD9RYbM4wcXihL2Z0SpALCePj2yVn3BWZHM71Hq98MUBaxdY=
+X-Received: by 2002:a02:cf06:: with SMTP id q6mr15264233jar.89.1631636289436;
+ Tue, 14 Sep 2021 09:18:09 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <4f63c8bc-1d09-1717-cf81-f9091a9f9fb0@linux.alibaba.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20210912192805.1394305-1-vladimir.oltean@nxp.com>
+ <CANr-f5wCpcPM+FbeW+x-JmZt0-WmE=b5Ys1Pa_G7p8v3nLyCcQ@mail.gmail.com>
+ <20210912213855.kxoyfqdyxktax6d3@skbuf> <YT+dL1R/DTVBWQ7D@lunn.ch>
+ <20210914120617.iaqaukal3riridew@skbuf> <YUCytc0+ChhcdOo+@lunn.ch> <20210914151525.gg2ifaqqxrmytaxm@skbuf>
+In-Reply-To: <20210914151525.gg2ifaqqxrmytaxm@skbuf>
+From:   Gerhard Engleder <gerhard@engleder-embedded.com>
+Date:   Tue, 14 Sep 2021 18:17:58 +0200
+Message-ID: <CANr-f5zNnywpNxMAmNDv60otqXo2oGKiQpT2BL3VraOZftGc4w@mail.gmail.com>
+Subject: Re: [RFC PATCH net] Revert "net: phy: Uniform PHY driver access"
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/14/21 12:23 AM, 王贇 wrote:
-> 
-> On 2021/9/14 上午11:02, 王贇 wrote:
-> [snip]
->> [   44.133509][    C0] traps: PANIC: double fault, error_code: 0x0
->> [   44.133519][    C0] double fault: 0000 [#1] SMP PTI
->> [   44.133526][    C0] CPU: 0 PID: 743 Comm: a.out Not tainted 5.14.0-next-20210913 #469
->> [   44.133532][    C0] Hardware name: Red Hat KVM, BIOS 0.5.1 01/01/2011
->> [   44.133536][    C0] RIP: 0010:perf_swevent_get_recursion_context+0x0/0x70
->> [   44.133549][    C0] Code: 48 03 43 28 48 8b 0c 24 bb 01 00 00 00 4c 29 f0 48 39 c8 48 0f 47 c1 49 89 45 08 e9 48 ff ff ff 66 2e 0f 1f 84 00 00 00 00 00 <55> 53 e8 09 20 f2 ff 48 c7 c2 20 4d 03 00 65 48 03 15 5a 3b d2 7e
->> [   44.133556][    C0] RSP: 0018:fffffe000000b000 EFLAGS: 00010046
-> Another information is that I have printed '__this_cpu_ist_bottom_va(NMI)'
-> on cpu0, which is just the RSP fffffe000000b000, does this imply
-> we got an overflowed NMI stack?
+On Tue, Sep 14, 2021 at 5:15 PM Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+> On Tue, Sep 14, 2021 at 04:33:25PM +0200, Andrew Lunn wrote:
+> > On Tue, Sep 14, 2021 at 12:06:18PM +0000, Vladimir Oltean wrote:
+> > > On Mon, Sep 13, 2021 at 08:49:19PM +0200, Andrew Lunn wrote:
+> > > > > I am not sure why "to_phy_driver" needs cleanup. Au contraire, I think
+> > > > > the PHY library's usage of struct phy_device :: drv is what is strange
+> > > > > and potentially buggy, it is the only subsystem I know of that keeps its
+> > > > > own driver pointer rather than looking at struct device :: driver.
+> > > >
+> > > > There is one odd driver in the mix. Take a look at xilinx_gmii2rgmii.c.
+> > > >
+> > > > It probably could be done a better way, but that is what we have.
+> > >
+> > > Interesting, to say the least. Also, is there any connection between
+> > > that and the revert I'm proposing?
+> >
+> > If i remember correctly, Gerhard Engleder is actually using this, and
+> > ran into a problem because the wrong driver structure was used.
 
-Yep.  I have the feeling some of your sanitizer and other debugging is
-eating the stack:
+Yes, but that was about phy_loopback and was fixed in the commit before.
+With this commit I tried to fix the remaining similar problems like the wrong
+driver structure use in phy_loopback. But as explained by Vladimir I failed.
+So it is totally ok to revert this commit, no functionality is lost.
 
-> [   44.134987][    C0]  ? __sanitizer_cov_trace_pc+0x7/0x60
-> [   44.135005][    C0]  ? kcov_common_handle+0x30/0x30
+> > > So compared to other vendors, where the RGMII gasket is part of the MAC
+> > > device, with Xilinx Zynq it is accessible via MDIO?
+> >
+> > Yes. Its control plane sits on the MDIO bus. Unfortunately, it does
+> > not have any ID registers, so it does not directly appear as a PHY. So
+> > it does interesting things it put itself in the control path to the
+> > real PHY.
+> >
+> > > It looks like it is said that this GMII2RGMII converter can be placed in
+> > > front of any GMII MAC. Nice that there are zero in-tree users of
+> > > "xlnx,gmii-to-rgmii-1.0" so that I could figure out exactly how that
+> > > plays out in practice.
+> >
+> > If you look back at the thread for that patch, i think Gerhard posted
+> > a DT fragment he is using. Hopefully it will get submitted as a full
+> > board description at some point.
 
-Just turning off tracing for the page fault handler is papering over the
-problem.  It'll just come back later with a slightly different form.
+I submitted it, but Michal Simek argumented that dts files of FPGA logic shall
+not be part of mainline. I suggested that at least one reference
+platform for every
+FPGA based IP core should be allowed, but he said that no one is able
+to test it.
+So it seems that you will never see any dts file which contains FPGA logic in
+mainline. I will try to submit it again if anyone will support me?
+
+> > > Note that th                       e usage of priv->phy_dev, priv->phy_drv, priv->conv_phy_drv
+> > > beats me. Why is "phy_dev" kept inside "priv" even though it is accessed
+> > > only inside xgmiitorgmii_probe? Why does xgmiitorgmii_configure() need to
+> > > be called from xgmiitorgmii_read_status() which in turn hooks into the
+> > > attached PHY driver's phy_read_status()? Why does xgmiitorgmii_configure
+> > > not get exported and called from an .adjust_link method or the phylink
+> > > equivalent, like any other MAC-side hardware linked with the PHY library
+> > > in the kernel?
+> >
+> > I was never happy with this driver. It got submitted before i went on
+> > vacation, i had a few rounds trying to get the submitter to refactor
+> > it and was mostly ignored. I left on vacation with lots of open review
+> > points, and when i got back it had been merged. And the original
+> > submitters never responded to my requests for improvements.
+>
+> Sorry, this is a rabbit hole I really don't want to go into. Allowing it
+> to override PHY driver functions in order to 'automagically' configure
+> itself when the PHY driver does stuff is probably where the bad decision
+> was, everything from there is just the resulting fallout.
+>
+> Why don't all MAC drivers just hook themselves into the PHY driver's
+> ->read_status method and configure themselves from there?! Why do we
+> even need adjust_link, phylink, any of that? It's just a small
+> pointer/driver override, the PHY library supports it.
+>
+> I have dug up this discussion where your stance seemed to be that
+> "you want the MAC phy-handle to point to the gmii_to_rgmii 'PHY'"
+> https://lore.kernel.org/netdev/20190309161912.GD9000@lunn.ch/#t
+>
+> I am not really sure if that particular reply went towards making this
+> driver's design any saner than it is. As explained by Harini Katakam in
+> his reply to you, the GMII2RGMII converter is not a PHY, and should
+> therefore not be treated like one. It is an RGMII gasket for the MAC.
+> Treating it as a satellite device of the MAC, which happens by chance to
+> sit on an MDIO bus, but having otherwise nothing to do with the PHY
+> library, sounds like a more normal approach (please note that it is
+> quite likely I am oversimplifying some things since I just learned about
+> this).
+
+Just for information dts with working GMII2RGMII looks like this:
+
+       tnsep0: ethernet@a0000000 {
+                       compatible = "engleder,tsnep";
+                       reg = <0x0 0xa0000000 0x0 0x10000>;
+                       interrupts = <0 89 1>;
+                       interrupt-parent = <&gic>;
+                       local-mac-address = [00 00 00 00 00 00];
+                       phy-mode = "rgmii";
+                       phy-handle = <&phy1>;
+                       mdio {
+                               #address-cells = <1>;
+                               #size-cells = <0>;
+                               phy1: ethernet-phy@1 {
+                                       reg = <1>;
+                                       rxc-skew-ps = <1080>;
+                               };
+                               gmiitorgmii@8 {
+                                       compatible = "xlnx,gmii-to-rgmii-1.0";
+                                       reg = <8>;
+                                       phy-handle = <&phy1>;
+                               };
+                       };
+               };
+
+Gerhard
