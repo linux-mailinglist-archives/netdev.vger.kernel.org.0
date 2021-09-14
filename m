@@ -2,280 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 666AF40AF7F
-	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 15:47:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1E0640B03B
+	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 16:05:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233258AbhINNs6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 09:48:58 -0400
-Received: from mail-am6eur05on2069.outbound.protection.outlook.com ([40.107.22.69]:48097
-        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        id S233501AbhINOGt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 10:06:49 -0400
+Received: from mail-eopbgr50068.outbound.protection.outlook.com ([40.107.5.68]:57254
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232989AbhINNs5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Sep 2021 09:48:57 -0400
+        id S233438AbhINOGs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Sep 2021 10:06:48 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CR6Kxg0pd1ljWMXP0Pc7XYuLMiQjWFB1HHOmmUZi+ftqp/RypJ8dQPxjPpIRbvRrENp2JFScpCJrnsr+S0Ozp0degAYAmU17lmyqHyqdv1ibsSDZj1XKTLs3bJCrngO1RDP+jP7gziOKVlj8yWmD1EIvmTxFtg5jYnXPCi2pZoSd8uQA+fCJS8yUvxeihUUv2x/DthLb37t0F2KJyPkJEqjNg4MOjijAMqLOiCNNgNgEToEOeefS+8p3dJqcvliFcKigmrAM0dB5a3v71gk9gVu9CyTApf4yfrhvlqNqtfXN/FSbaoWeWeWihd9Iu7PAjTr7s7JbnG3tcxcIuY3myQ==
+ b=Pog3TfLIIW4MyPCEuxcmvuO1lASEYmL0N0X9mSFGQhpc2jRjpVn5ADn6l8QBSuAiw9Ot488pbB5MvxiKBgyqAG/5k2f1qv3Js0rfmlrDodZGqtIgngmwqOpxdjB/HvH3rrTh4R6KkqUnH1lEzc5ddSa9qfeIBW8B0jx0KmejiOI+V6BR7o8XhTuMhfFhdThEz+rPQKPfgCe9k1widtKO7GxrWITJS4XDpxUD6UbrZhSdPNwDIUzadSH4nEMcSGXIlDBK3Vxv4spjMYtOsRhTnN/Sj+IQ+OdqlgG9X9mwwRCsQ/G/X2jI7xuMOAgwErFTVSPoIQf/xK2TZ7vEz3K7gA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=DgWNLbfIN2RHQy6Igz/ruLJ47HGYBkS5V4xEn53HqU8=;
- b=k09N00EwFJ85ieAirS/KyPbwZR5Y0LtHLzIGwtcIqPAvedjiKfseXTMb1GZddnGiH9VDuJ5xsfocXwyq2s74OLlB20nRSIJ7EC4F10OoVNIU4dOHYVtvjdIZ6zfZhxQirr8OaN+Qcsjn4D9ziNdi+a4LbfSDZnmHj+sdaH0nUtFeydKHstAJPmWTFRUhJ4MQSRcgAKXZCD5eKcS8kPTIILSomk8BxFbCwsp9s4XWTqO2QIe3GJWVIMT49T7hGwAlJITk10fuasP0Xt2wnJeF10kvx8ZMBfTCmeRRPs9DS84R9KZNBVZh3G3Y+MXZoQUfp5s5Pp7of2rj/Ce9rwnOlA==
+ bh=0xF5QpYAFM0jv4Pch+wfC4CZWotiEPSjZ19Pk5akRYk=;
+ b=nI/69ftkEz7TpsZC7Pu3eFxhj78j0A6kF0j9OaEQRWR74Dtez64EFv6uLujUAmtjZXySmz6hUJQvwIKldSblCTXLgglKeepYjYFDnQvX9LFy/huVbUTmsv7lY73nHFZISO6IcSTJvYG9jZNNYbL27epLxknZokEJeVUDDvOPymGxkPzpzH+YCF6v+l/JF6Jk145ONrlhOFs22izAspL+jMhOcaEiwgNqLhjLJnhLj+IxjoaGQlhpZGet7pcgwpzbCaViBitVQR6SDj0hXYgS//bEQ26f6F8CR44OTb443hm7GSFAmr+kdcLCVU9e+qRuxTFDz2jGyB55gzqfDohY4A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DgWNLbfIN2RHQy6Igz/ruLJ47HGYBkS5V4xEn53HqU8=;
- b=DGHilgg9rzhcM0rp5F8YmwhIn06tpriypVESX5Sj6OmP0jAenmaZgqzPaIrlTEZxlcIDCgvbbQFFADvuwkQgPgkHrVIzC9NOYeK03cFyUDrripa71dQWIVI54MOol4wNmTJgezCWurTZxLfigoTrj0TleOnPAAhzKYMMAa5CW9U=
+ bh=0xF5QpYAFM0jv4Pch+wfC4CZWotiEPSjZ19Pk5akRYk=;
+ b=rgnTXzmGu71ZNG/F3ZVYa8959YX/3jKtafn/Mj+u65qrmIXzbiKdn8Z7/juSsHKmq4AQnqu6bN8quDY0fCmOMKWuLNNQhiV8J8z1WqAXAqsCNFDzepOeoauVfxHvsCkjT3tlY4XU5/677cUAH88YfUuwoFTy4h2qduNQE1Snas8=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR0401MB2687.eurprd04.prod.outlook.com (2603:10a6:800:57::9) with
+ by VI1PR04MB4816.eurprd04.prod.outlook.com (2603:10a6:803:5b::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.16; Tue, 14 Sep
- 2021 13:47:37 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.14; Tue, 14 Sep
+ 2021 14:05:28 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4500.019; Tue, 14 Sep 2021
- 13:47:37 +0000
+ 14:05:28 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH v2 net] net: dsa: flush switchdev workqueue before tearing down CPU/DSA ports
-Date:   Tue, 14 Sep 2021 16:47:26 +0300
-Message-Id: <20210914134726.2305133-1-vladimir.oltean@nxp.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Gerhard Engleder <gerhard@engleder-embedded.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 net] Revert "net: phy: Uniform PHY driver access"
+Date:   Tue, 14 Sep 2021 17:05:15 +0300
+Message-Id: <20210914140515.2311548-1-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: AM0PR03CA0026.eurprd03.prod.outlook.com
- (2603:10a6:208:14::39) To VI1PR04MB5136.eurprd04.prod.outlook.com
+X-ClientProxiedBy: AM0PR01CA0150.eurprd01.prod.exchangelabs.com
+ (2603:10a6:208:aa::19) To VI1PR04MB5136.eurprd04.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (82.78.148.104) by AM0PR03CA0026.eurprd03.prod.outlook.com (2603:10a6:208:14::39) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.14 via Frontend Transport; Tue, 14 Sep 2021 13:47:36 +0000
+Received: from localhost.localdomain (82.78.148.104) by AM0PR01CA0150.eurprd01.prod.exchangelabs.com (2603:10a6:208:aa::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.14 via Frontend Transport; Tue, 14 Sep 2021 14:05:27 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2cd64e56-9e68-4573-43e5-08d977863694
-X-MS-TrafficTypeDiagnostic: VI1PR0401MB2687:
-X-Microsoft-Antispam-PRVS: <VI1PR0401MB2687A39E7F7B553586733571E0DA9@VI1PR0401MB2687.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Office365-Filtering-Correlation-Id: 0ae1dc5f-718c-46c2-93d4-08d97788b508
+X-MS-TrafficTypeDiagnostic: VI1PR04MB4816:
+X-Microsoft-Antispam-PRVS: <VI1PR04MB4816CDA24B5BBF50D5754C06E0DA9@VI1PR04MB4816.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: jQuMXoYHWNyJ+CFZlAIu/0y/byMRw0sa/9E9HgcHphEm5ZKS8iIDzEG6V/Stun+wOJEGQ58nsFF+TJdIVRph6eZDBeA4VoVSXBwGH50S5D0X76V6ZhjrkGFYrph7t8pRqzxv5xqwYYNSZh+84K46o+XKkbZY3tlebAcKfYZUbK+y5UtEbmn33eE531tYGTxoWKaSaPA1rT2aNMTBvnIcmNFT9mn/Ju8MYmoHT4/zQcTRYbNwZcSwbtzvWi9hXRN7BNp71D7ia52zQFxf7P+9SfwSECekJpty3eQQ5gGC0tEwrtATejfwNBw2wH/vfukhyzvSQNpXkc4Jx+YnsJIXhYr2Hm2xWeSb3P+NJDwtGtdwq3ydDWA1Yc3bRgqQ723A7jXyFSN58UrMQDlzci1O9a5ymmT2W+Czwmi6dStQlbjuP0S5MNbsgDhdaFdiO2S6o4VREUVQy8ZkOswf629X5nClhS9WTYP4xk4EnaP1WfzEs7jgeWrYhjYzzMHQ3mifUug8YNMmho+zPjWgnRZr8GMaS0eH8ZjTVM8cDiljF7RoIYeo8i0m7G6QpvxZqWnt5IuLvbb+HcOevcKAoSDRoubOqT/16kcJxS+mpZ883uQo++t+wZ6BTP6l62g4Dllc+sGMmeAyprP4SDl7Cmjc1UiUwfncUgG0uqXHfINLA4hEyRIqXlRN6BgWVaxCZL7LCy9bw/0YiAZki4+RdyS+iA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(366004)(136003)(376002)(346002)(396003)(66556008)(36756003)(66946007)(66476007)(6666004)(6512007)(6506007)(6486002)(186003)(52116002)(956004)(86362001)(5660300002)(2616005)(83380400001)(26005)(54906003)(44832011)(478600001)(8676002)(6916009)(4326008)(2906002)(1076003)(316002)(38100700002)(38350700002)(8936002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: o6qGrBGiv97EDxtS4EwHxh6NKdJeVdC/89jdl31eWxoseknDqKG18LVq66Cg9uBoAgOKsXEZ8t1p+jaBxNza4EIZO2D4L0CKdU86J5SGUS/aMORfb3zKnaPxbs4edgDoQ16RrpjY8516lLraSiGCApt8efsuLVj4UmK4uvrovGGE7BJcL4k8LqlL2JPiQxO03YkK3fA0giNzr3RFEMP/J50L01AF7p039OSiQJttEv2D3xpdHPqj+8w+dmraN2k7B8mP7vIEklvqwlpxm6uSfxi/REVNl1OaSL6ZrYlP/vm2lV5PtD+CsWZNMUSHf2zIsePjcXLW3Dmln772/gjSfcJw0vUzf+t2v1GOPVtkDnhGLp3A5v9CRgjqkFFNYtEumRQuk/CAGp5hVN+3bJfjULtP26HOE29KAbWQ+9pf9RYf9oMoNlkB09fFt+SSoQFFlt8ji+ABS1Hm1p3TcvfD4wHbkmc605Y3X5bXSBkrh7bU+aNz0POGC58B0/nTYWk2FPIXBxtbVTYmaAdO1rC8w5ht9ua22bEi92n/4vnV4Pnuv17XFaedcjMOKQqz/6Zn1yiiC/QHlLyNnLkR+To+ApOjJv2Hph4QM46KXfoWFjnC5rtbc/zeMlIKXjMXQ6W1U+p3X/SNT2nqh6Q6SF2nVrkwAxMvZ+xixQYVZF5VDglx/fXhXSakQzwjCRJfDyQ+chM+9CnnZoz8uN67AZmM9g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(346002)(39860400002)(136003)(376002)(366004)(2906002)(6486002)(6666004)(4326008)(26005)(8676002)(1076003)(6916009)(38350700002)(316002)(66946007)(186003)(8936002)(5660300002)(66556008)(6506007)(6512007)(66476007)(86362001)(38100700002)(2616005)(956004)(54906003)(52116002)(478600001)(36756003)(44832011)(83380400001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?meL0cdfK5NM69D1C1ZEgthu/xNvYfI+A8iA1jhIkpKJTB2VRpBWn9YRdhfAW?=
- =?us-ascii?Q?U7n+JZQXzBWUmV4SUsVJIuS6FwL6yXf27DN2he1fKSnPjiK0tQP0c3EJDlRE?=
- =?us-ascii?Q?FTjyhrFlW/TPpwf85PxE2zgMF+VjELtRL5EVhC1PlBVWDevKZLqZcIelcRAP?=
- =?us-ascii?Q?kC0jVCP+ck0cyZeJhJ2WoCNvuUE5liwheITTIwmpoWyen3ynOPpAmB/+CYKn?=
- =?us-ascii?Q?pONB8L3cvmHd0c+MfDtQ0k7o1aHpRPPGIRwHzN+hAbAsLeWv9j9qTsD2psSh?=
- =?us-ascii?Q?p7ZnJDb3Fu6Nszqy/20B6FoBqrCDmuMsr1aha54trDIu0B7IoAsRGuvPJHVH?=
- =?us-ascii?Q?r6cg49sJx4qjD5J6aL/rKCz/i961jjhFPKpKL4w+gxxpJVY7NBJrwKLU6L/6?=
- =?us-ascii?Q?GcfKtGpAYJxE+YynvRovvGUyyOTzumx+oHbopbV50iPYPgkW03efjIOaE1mb?=
- =?us-ascii?Q?3TW9yA6SISNTTglMfKKJa9rHfq4dCCBe1jYQZof0RQZWhcfyXyNQVyufowBy?=
- =?us-ascii?Q?gxWZfBTWmM74p8GPS/8dahMFOHbx/E9hoYXDWYR0hdoz75WutImj9VZqFaj/?=
- =?us-ascii?Q?GEFiROxYQZ48hD6hORtk5w6PjY43B4fpGrmAP5omDKLS0+ef2Q8Uw6gndqGf?=
- =?us-ascii?Q?RGAH5sHx+VBfvGDgfW5S3BZ6sARBdgPG+aiJvrFfyiL53lxMF8L7LmPF9xzl?=
- =?us-ascii?Q?+MwLYMnmxLTZUFI+8EOaHsG+QcSINKNSRr4PCTSz68RI13Q0SDw1ht4eyJQs?=
- =?us-ascii?Q?YT7TQnfelPhgjm34Ef92FiaKfrXDkVKIfoXEzjLAtshj14zuIjX1cnWa9htE?=
- =?us-ascii?Q?mGiAb3d+hOMlTNN98ftsMGBT8iBgmOq0aRcQQcfLeESrxzfmCYoKf5UHO82U?=
- =?us-ascii?Q?LpmlMbBXvV3DVIOTnzGDU5IuTb3qf2DyfOmGuAZpNw7sDM/aSB7M7OY4QhTc?=
- =?us-ascii?Q?KVR5IZJjjdY4ZgIFfdVvqQ20YOzTKr23qf4P9pTojVZT7FtfnF72XsD8woJG?=
- =?us-ascii?Q?GpCVAi+UPoErVvZIllIXZPCPdY1jramB+rkIAk0cTYEWuJqVmwf+VwpzHGgO?=
- =?us-ascii?Q?EqGuG6vGWO0pOIpMKR11d+6JHkIbgR0fR0fcSsg05FxfDiM7F2mmZ7xyOPeE?=
- =?us-ascii?Q?EDLk2TWS5HLHGuttoHthXnpEP45Jv/1Ce52qn6e2oHbbtjYjJedNEjWLTREA?=
- =?us-ascii?Q?fG6csAnzBNUkpvmGDPZkEr7ka/0c0oUDAfs9I2ZFC7br2Vk++S9R9lJdLMWy?=
- =?us-ascii?Q?XEj1PHNJ3Gf1J4R14oc8bZJKSdceXV1AstRUcJoc1DxnohiKXCECsGz8W7Nc?=
- =?us-ascii?Q?zjEsihY+rsap0B0RzScYIyaj?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?08MHWFHoxrMQxWjJ/EEURJYmKpsQB/r9yImnX030MFOUZMGCy6vYI0LgW4gQ?=
+ =?us-ascii?Q?gnrf+EE1wOfcjIeIpNiQaSnRujgLHa8BRMVMu5kLGJek8AcqOY27b/h0J2Pg?=
+ =?us-ascii?Q?eTlahGgXllxRsCXHw6yCTf9xJRCSs5CO/wQGFrzKnpQvN8dwSuOmZlrMimAY?=
+ =?us-ascii?Q?gjh/HPIpWuGLjxdDLPFj8HHLndzWqTW30v3f53ffC0grMax/U8clWZKXFWr7?=
+ =?us-ascii?Q?4oyE4B9iFkIn1jdPG3Yr1eN1bvSUCjoU8s1A579s07B+ryfTQSBO8qn/Jw4U?=
+ =?us-ascii?Q?3Vt3bqPPNydpWvm47MLRdSRRrM24WdrBe9xNVJwZreYoq7E9X9CHJtQ4vwM+?=
+ =?us-ascii?Q?zZpUFrEwITt1+W5ekX8WwXCN2IcotIjADodo3nDGGsC3zoa4O0FRYox2Tlva?=
+ =?us-ascii?Q?sc5pLAovNZynkqbj23D/yfLn0tObF37cw9wtUQgNyXDdYCpDvBzvWZRyJ0LZ?=
+ =?us-ascii?Q?M6f4HIubrOK+riyaIOmkfX+/d49j77DvOaZF3PLH7Wtx1xqz8TS4LrVDLMSU?=
+ =?us-ascii?Q?bzKzBjim5TAyqutc7DleIIOD/wJERPoq1omX03P5lbDtsJj9GLLDhqK+zroY?=
+ =?us-ascii?Q?cUtH2Va4IwsX4QWUekFMO0vo/a/pZ4j3MbgQCD1CJ5XhPX8rHKNRKXwQGbjk?=
+ =?us-ascii?Q?hMDR13yAWKw/oZCRHXU6uTiSZ7moJs5/1HQ4q4XuuJfKMwMSv0BUnmtIs4tt?=
+ =?us-ascii?Q?u94alU8bMnzgEJ/4ftWTpgQEVupToDv05//vhyHF0O9OK4XyDBy0vucqMoOD?=
+ =?us-ascii?Q?F2xbaaD+BU9QERnOH5R4Ys10lIcIM3M1eHl8586mrYw6w/+iu4luHLKCau9R?=
+ =?us-ascii?Q?sFro8uN4J84uAWaNK7mmsCGO1tjuHeNZbwa/S1P5yXIRlxi3c60YVDPDKRaB?=
+ =?us-ascii?Q?d204Vp/przRjbkwUCRSDBMuq879e1oaMy6l54cyp5tDdKzWrlTeRzBGkAcaX?=
+ =?us-ascii?Q?xTKvlu+r+X3Zkev/XsemLA6DJlUOm+Z2RTBOTDeot0fh2dJh9TZEsGcC/lJs?=
+ =?us-ascii?Q?r+wojKWuW64mvkEizsxyQdUNNU7T8i5SJiEkA7pWR5rTDzqcC2cvx3j9rFCz?=
+ =?us-ascii?Q?5leV3Dj/n+RqaLLSDRUihviioq82q+a9v4vAybEKQxmojNL6q71yPbL4AoTD?=
+ =?us-ascii?Q?/91cEVRxBMbTp/lx5U4S9eMOxaUlOZzfjr6z78n6XRBoiBR9IS//62J8Pcgm?=
+ =?us-ascii?Q?4bkEUo3DdmAG2VZlmU6qyA6PD32Buer4+pTfTe1N4BU1uOpExGSk55VyywoY?=
+ =?us-ascii?Q?Rqn+I2aUHL/WmrcY5CHl2ooT/BwRrvEYbDIzDHnQQemoz0UwrzZSHdLcbWpr?=
+ =?us-ascii?Q?foa1YVnaxxRQ7IXp1P9nRqAd?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2cd64e56-9e68-4573-43e5-08d977863694
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0ae1dc5f-718c-46c2-93d4-08d97788b508
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Sep 2021 13:47:37.6124
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Sep 2021 14:05:28.7720
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: cTT6p1PVp6gkbDmmm46Rq7culGojOmaYofTiHyve3geiGNb1CxmGBa8Bo/5ljspzr6dBvKvbn/6hOse33+cizQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2687
+X-MS-Exchange-CrossTenant-UserPrincipalName: aqA9aDMdsDmIs5rt77zJe3muSRFzNCCbFFkq8uDZQG3n4TehlegNrprUqN1n9Sa1USFRDkxK+6t3I6e+upMU2g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4816
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sometimes when unbinding the mv88e6xxx driver on Turris MOX, these error
-messages appear:
+This reverts commit 3ac8eed62596387214869319379c1fcba264d8c6, which did
+more than it said on the box, and not only it replaced to_phy_driver
+with phydev->drv, but it also removed the "!drv" check, without actually
+explaining why that is fine.
 
-mv88e6085 d0032004.mdio-mii:12: port 1 failed to delete be:79:b4:9e:9e:96 vid 1 from fdb: -2
-mv88e6085 d0032004.mdio-mii:12: port 1 failed to delete be:79:b4:9e:9e:96 vid 0 from fdb: -2
-mv88e6085 d0032004.mdio-mii:12: port 1 failed to delete d8:58:d7:00:ca:6d vid 100 from fdb: -2
-mv88e6085 d0032004.mdio-mii:12: port 1 failed to delete d8:58:d7:00:ca:6d vid 1 from fdb: -2
-mv88e6085 d0032004.mdio-mii:12: port 1 failed to delete d8:58:d7:00:ca:6d vid 0 from fdb: -2
+That patch in fact breaks suspend/resume on any system which has PHY
+devices with no drivers bound.
 
-(and similarly for other ports)
+The stack trace is:
 
-What happens is that DSA has a policy "even if there are bugs, let's at
-least not leak memory" and dsa_port_teardown() clears the dp->fdbs and
-dp->mdbs lists, which are supposed to be empty.
+Unable to handle kernel NULL pointer dereference at virtual address 00000000000000e8
+pc : mdio_bus_phy_suspend+0xd8/0xec
+lr : dpm_run_callback+0x38/0x90
+Call trace:
+ mdio_bus_phy_suspend+0xd8/0xec
+ dpm_run_callback+0x38/0x90
+ __device_suspend+0x108/0x3cc
+ dpm_suspend+0x140/0x210
+ dpm_suspend_start+0x7c/0xa0
+ suspend_devices_and_enter+0x13c/0x540
+ pm_suspend+0x2a4/0x330
 
-But deleting that cleanup code, the warnings go away.
+Examples why that assumption is not fine:
 
-=> the FDB and MDB lists (used for refcounting on shared ports, aka CPU
-and DSA ports) will eventually be empty, but are not empty by the time
-we tear down those ports. Aka we are deleting them too soon.
+- There is an MDIO bus with a PHY device that doesn't have a specific
+  PHY driver loaded, because mdiobus_register() automatically creates a
+  PHY device for it but there is no specific PHY driver in the system.
+  Normally under those circumstances, the generic PHY driver will be
+  bound lazily to it (at phy_attach_direct time). But some Ethernet
+  drivers attach to their PHY at .ndo_open time. Until then it, the
+  to-be-driven-by-genphy PHY device will not have a driver. The blamed
+  patch amounts to saying "you need to open all net devices before the
+  system can suspend, to avoid the NULL pointer dereference".
 
-The addresses that DSA complains about are host-trapped addresses: the
-local addresses of the ports, and the MAC address of the bridge device.
+- There is any raw MDIO device which has 'plausible' values in the PHY
+  ID registers 2 and 3, which is located on an MDIO bus whose driver
+  does not set bus->phy_mask = ~0 (which prevents auto-scanning of PHY
+  devices). An example could be a MAC's internal MDIO bus with PCS
+  devices on it, for serial links such as SGMII. PHY devices will get
+  created for those PCSes too, due to that MDIO bus auto-scanning, and
+  although those PHY devices are not used, they do not bother anybody
+  either. PCS devices are usually managed in Linux as raw MDIO devices.
+  Nonetheless, they do not have a PHY driver, nor does anybody attempt
+  to connect to them (because they are not a PHY), and therefore this
+  patch breaks that.
 
-The problem is that offloading those entries happens from a deferred
-work item scheduled by the SWITCHDEV_FDB_DEL_TO_DEVICE handler, and this
-races with the teardown of the CPU and DSA ports where the refcounting
-is kept.
+The goal itself of the patch is questionable, so I am going for a
+straight revert. to_phy_driver does not seem to have a need to be
+replaced by phydev->drv, in fact that might even trigger code paths
+which were not given too deep of a thought.
 
-In fact, not only it races, but fundamentally speaking, if we iterate
-through the port list linearly, we might end up tearing down the shared
-ports even before we delete a DSA user port which has a bridge upper.
+For instance:
 
-So as it turns out, we need to first tear down the user ports (and the
-unused ones, for no better place of doing that), then the shared ports
-(the CPU and DSA ports). In between, we need to ensure that all work
-items scheduled by our switchdev handlers (which only run for user
-ports, hence the reason why we tear them down first) have finished.
+phy_probe populates phydev->drv at the beginning, but does not clean it
+up on any error (including EPROBE_DEFER). So if the phydev driver
+requests probe deferral, phydev->drv will remain populated despite there
+being no driver bound.
 
-Fixes: 161ca59d39e9 ("net: dsa: reference count the MDB entries at the cross-chip notifier level")
+If a system suspend starts in between the initial probe deferral request
+and the subsequent probe retry, we will be calling the phydev->drv->suspend
+method, but _before_ any phydev->drv->probe call has succeeded.
+
+That is to say, if the phydev->drv is allocating any driver-private data
+structure in ->probe, it pretty much expects that data structure to be
+available in ->suspend. But it may not. That is a pretty insane
+environment to present to PHY drivers.
+
+In the code structure before the blamed patch, mdio_bus_phy_may_suspend
+would just say "no, don't suspend" to any PHY device which does not have
+a driver pointer _in_the_device_structure_ (not the phydev->drv). That
+would essentially ensure that ->suspend will never get called for a
+device that has not yet successfully completed probe. This is the code
+structure the patch is returning to, via the revert.
+
+Fixes: 3ac8eed62596 ("net: phy: Uniform PHY driver access")
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
-v1->v2: none
+v1->v2: reworded commit message.
 
- include/net/dsa.h  |  5 +++++
- net/dsa/dsa.c      |  5 +++++
- net/dsa/dsa2.c     | 46 +++++++++++++++++++++++++++++++---------------
- net/dsa/dsa_priv.h |  1 +
- 4 files changed, 42 insertions(+), 15 deletions(-)
+ drivers/net/phy/phy_device.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index f9a17145255a..258867eff230 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -447,6 +447,11 @@ static inline bool dsa_port_is_user(struct dsa_port *dp)
- 	return dp->type == DSA_PORT_TYPE_USER;
- }
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 9e2891d8e8dd..ba5ad86ec826 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -233,9 +233,11 @@ static DEFINE_MUTEX(phy_fixup_lock);
  
-+static inline bool dsa_port_is_unused(struct dsa_port *dp)
-+{
-+	return dp->type == DSA_PORT_TYPE_UNUSED;
-+}
-+
- static inline bool dsa_is_unused_port(struct dsa_switch *ds, int p)
+ static bool mdio_bus_phy_may_suspend(struct phy_device *phydev)
  {
- 	return dsa_to_port(ds, p)->type == DSA_PORT_TYPE_UNUSED;
-diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
-index 1dc45e40f961..41f36ad8b0ec 100644
---- a/net/dsa/dsa.c
-+++ b/net/dsa/dsa.c
-@@ -345,6 +345,11 @@ bool dsa_schedule_work(struct work_struct *work)
- 	return queue_work(dsa_owq, work);
- }
++	struct device_driver *drv = phydev->mdio.dev.driver;
++	struct phy_driver *phydrv = to_phy_driver(drv);
+ 	struct net_device *netdev = phydev->attached_dev;
  
-+void dsa_flush_workqueue(void)
-+{
-+	flush_workqueue(dsa_owq);
-+}
-+
- int dsa_devlink_param_get(struct devlink *dl, u32 id,
- 			  struct devlink_param_gset_ctx *ctx)
- {
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index 1b2b25d7bd02..eef13cd20f19 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -897,6 +897,33 @@ static void dsa_switch_teardown(struct dsa_switch *ds)
- 	ds->setup = false;
- }
+-	if (!phydev->drv->suspend)
++	if (!drv || !phydrv->suspend)
+ 		return false;
  
-+/* First tear down the non-shared, then the shared ports. This ensures that
-+ * all work items scheduled by our switchdev handlers for user ports have
-+ * completed before we destroy the refcounting kept on the shared ports.
-+ */
-+static void dsa_tree_teardown_ports(struct dsa_switch_tree *dst)
-+{
-+	struct dsa_port *dp;
-+
-+	list_for_each_entry(dp, &dst->ports, list)
-+		if (dsa_port_is_user(dp) || dsa_port_is_unused(dp))
-+			dsa_port_teardown(dp);
-+
-+	dsa_flush_workqueue();
-+
-+	list_for_each_entry(dp, &dst->ports, list)
-+		if (dsa_port_is_dsa(dp) || dsa_port_is_cpu(dp))
-+			dsa_port_teardown(dp);
-+}
-+
-+static void dsa_tree_teardown_switches(struct dsa_switch_tree *dst)
-+{
-+	struct dsa_port *dp;
-+
-+	list_for_each_entry(dp, &dst->ports, list)
-+		dsa_switch_teardown(dp->ds);
-+}
-+
- static int dsa_tree_setup_switches(struct dsa_switch_tree *dst)
- {
- 	struct dsa_port *dp;
-@@ -923,26 +950,13 @@ static int dsa_tree_setup_switches(struct dsa_switch_tree *dst)
- 	return 0;
- 
- teardown:
--	list_for_each_entry(dp, &dst->ports, list)
--		dsa_port_teardown(dp);
-+	dsa_tree_teardown_ports(dst);
- 
--	list_for_each_entry(dp, &dst->ports, list)
--		dsa_switch_teardown(dp->ds);
-+	dsa_tree_teardown_switches(dst);
- 
- 	return err;
- }
- 
--static void dsa_tree_teardown_switches(struct dsa_switch_tree *dst)
--{
--	struct dsa_port *dp;
--
--	list_for_each_entry(dp, &dst->ports, list)
--		dsa_port_teardown(dp);
--
--	list_for_each_entry(dp, &dst->ports, list)
--		dsa_switch_teardown(dp->ds);
--}
--
- static int dsa_tree_setup_master(struct dsa_switch_tree *dst)
- {
- 	struct dsa_port *dp;
-@@ -1052,6 +1066,8 @@ static void dsa_tree_teardown(struct dsa_switch_tree *dst)
- 
- 	dsa_tree_teardown_master(dst);
- 
-+	dsa_tree_teardown_ports(dst);
-+
- 	dsa_tree_teardown_switches(dst);
- 
- 	dsa_tree_teardown_cpu_ports(dst);
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 33ab7d7af9eb..a5c9bc7b66c6 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -170,6 +170,7 @@ void dsa_tag_driver_put(const struct dsa_device_ops *ops);
- const struct dsa_device_ops *dsa_find_tagger_by_name(const char *buf);
- 
- bool dsa_schedule_work(struct work_struct *work);
-+void dsa_flush_workqueue(void);
- const char *dsa_tag_protocol_to_str(const struct dsa_device_ops *ops);
- 
- static inline int dsa_tag_protocol_overhead(const struct dsa_device_ops *ops)
+ 	/* PHY not attached? May suspend if the PHY has not already been
 -- 
 2.25.1
 
