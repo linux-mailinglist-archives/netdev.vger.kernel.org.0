@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01E0A40ADF9
+	by mail.lfdr.de (Postfix) with ESMTP id A543340ADFB
 	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 14:38:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233048AbhINMjo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 08:39:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40230 "EHLO
+        id S232975AbhINMjs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 08:39:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233076AbhINMjm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 08:39:42 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C22BFC061764;
-        Tue, 14 Sep 2021 05:38:24 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id d18so8079665pll.11;
-        Tue, 14 Sep 2021 05:38:24 -0700 (PDT)
+        with ESMTP id S233056AbhINMjp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 08:39:45 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0756C061760;
+        Tue, 14 Sep 2021 05:38:27 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id j6so11762394pfa.4;
+        Tue, 14 Sep 2021 05:38:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=tS94kaQlG2vX4CT1TvfjfE1uI4gq2voa3SQwROtG5wc=;
-        b=b5G9hIirCbdJ/3Zpq7fldi8IQEFjpKdtzYOqyGd1681B/uUzJ4SxuxosuJbxb610Iw
-         XMyQDSQV/Rin+jMbcY6Vg7873V6rqorory1LDA5eSs0v3GMxrHR23WBjyNhdeRngmGXD
-         b1GZs4T/ncoQ+XGZCU4oT65y2k81/LuNIYtYYQZEuTtR6kDZB4DOSSUQtagq123gXAEh
-         fFJwX7n1DV9ZgqVlncWbuMj3DC4eLD87fBY8b8Dv4aJeI1UCdFWRy21JRRqE3sxp7H0a
-         1FfYQi3YzeV7Pis0zztKfOENO7l85wnKl1uQC5qYDaSNC2TK4+Dwj7s+y0TWPw8EpCsw
-         zfCw==
+        bh=48Nh6eT11E5btG6zkXtV4a+WFM1wP5G2R8aeIs0Yjjs=;
+        b=ldLvGhRvda89SCmdEUT5mSHjOGH0VAZRFEqd59ZyZ6vYrz8Ky47NSI96LQQe7X4dxq
+         XEgd6xZo1Oe+hFPGZdW6DqB3V/2uQI2oZvdhk+5DUb3DljuJSK4wGSWBbJEZSx1ui1YD
+         uENqq5JbSTmPcntHPvRG5TwbuTbzdS/NkEZf6p9dAISh8uVYUvjmIZ5Jj8+aFfPtRbK6
+         g4JX7x3l6kcwDU2bOTHoZP9oyrS92ZK64pCQBzYhaAAO1WcvnlncBhLN6vqnzQ7nYkIw
+         v/q5IoozUGAXhC55pByFMBDrSNYn0JMLsCFOXiv+5sHpuMM0hfdI5AzP2dKyu4mbC1zj
+         bmnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=tS94kaQlG2vX4CT1TvfjfE1uI4gq2voa3SQwROtG5wc=;
-        b=0UT8oITjuG3u1diiyDLWyYNmQYFrYSn2A3NdBo9/X6YU6xWy138vFKogVdLLGSCxMS
-         mJkf2TlH7kxUXEZ9hEkqMa/fQfjpxDQGWI8DUOCKdGylrBThRpbFPY9FRJnehBlrVBsB
-         ZRD4jOJDxcKdbU9kZSJa64wUT5mPpwjCkna00pXPPQ6Qp6+yBoMJhvzswH7RMrvknbW3
-         xZ8+TKu3AB+438cmOcxbXgwwX5T6e7dEdCCVVRwvqgq1O0G6oedXWSVloSzgctlqzrI5
-         OlDUSR2kyNUUM/JAN2u9iuFXZrIkZb1WnPOlBdhLVLe2jDOwchdJxhqgax4HMgNp6Mca
-         jDXQ==
-X-Gm-Message-State: AOAM531XgnvUr8NeCn3RYaKn/PJ8/thVzwEaD+lPSVCTtsdMtBrhx6JC
-        6Se4Zdq4Izow/j0pTvh7g1EQcKawJUVI/w==
-X-Google-Smtp-Source: ABdhPJxKYLisnvSRl6u5hpUvWHqXyxbBghOJym7Mid+DLuD8BDg9mTlme4CUaZJ1QL231Lo/QjAGfg==
-X-Received: by 2002:a17:902:cec8:b0:13b:9ce1:b3ef with SMTP id d8-20020a170902cec800b0013b9ce1b3efmr6281355plg.4.1631623104042;
-        Tue, 14 Sep 2021 05:38:24 -0700 (PDT)
+        bh=48Nh6eT11E5btG6zkXtV4a+WFM1wP5G2R8aeIs0Yjjs=;
+        b=gNraCi7myqA8NYGgAPQKI6sT46MjHWjTadG+CDIk84E0j5x9AzzX9OjsuTg1UyE4qS
+         F8Kxa2s5B1knvnlZVxSQ/uA3QsOtOL7LiTfBuuTQIipa9Q0vfvEwniuGUuFQgIEXMRCj
+         EuBsJtQzTCw5BkRfb5yEYQvdjuu5+JB6K/H1dFy/cXnnf1cYhN9VwnZHTeAHDLrIsS//
+         jB0f+UtPyiTH3mpyFRL3kVEaJYIJBPWGaDFl3Axp8CWv1lBwHnuyMEN8XK30cx9IVbPt
+         n3zxyy/SvEggmj1qjtzyfn6QiU14eiPclXMgeRuEEaPGhi2OcsgHe9tB7HxtHOE6MFLs
+         vRug==
+X-Gm-Message-State: AOAM532rMPxljALSokFsyMiXftFjcjvvFI95Gpk5nJ4qbg3ENGosVQJT
+        VKP3qVLsKIViwQVzlYkxsDu6+gUzzzKukg==
+X-Google-Smtp-Source: ABdhPJwEsBFRRJ8p62mLdI6wSuI2cOCpiarUNpR4xyWMV6NKCwiSb7y3Y9iVqNVXjT7Mo2zzbsurQw==
+X-Received: by 2002:a63:9752:: with SMTP id d18mr15199853pgo.320.1631623107051;
+        Tue, 14 Sep 2021 05:38:27 -0700 (PDT)
 Received: from localhost ([2405:201:6014:d058:a28d:3909:6ed5:29e7])
-        by smtp.gmail.com with ESMTPSA id d13sm10306514pfn.114.2021.09.14.05.38.23
+        by smtp.gmail.com with ESMTPSA id b4sm11785925pga.69.2021.09.14.05.38.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Sep 2021 05:38:23 -0700 (PDT)
+        Tue, 14 Sep 2021 05:38:26 -0700 (PDT)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
@@ -58,248 +58,423 @@ Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         netdev@vger.kernel.org
-Subject: [PATCH bpf-next v2 09/10] libbpf: Update gen_loader to emit BTF_KIND_FUNC relocations
-Date:   Tue, 14 Sep 2021 18:07:48 +0530
-Message-Id: <20210914123750.460750-10-memxor@gmail.com>
+Subject: [PATCH bpf-next v2 10/10] bpf, selftests: Add basic test for module kfunc call
+Date:   Tue, 14 Sep 2021 18:07:49 +0530
+Message-Id: <20210914123750.460750-11-memxor@gmail.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20210914123750.460750-1-memxor@gmail.com>
 References: <20210914123750.460750-1-memxor@gmail.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=8801; h=from:subject; bh=DPIbJoKg4frzr51LEaLuHgculBnpynYjSGmMs82hyAI=; b=owEBbAKT/ZANAwAIAUzgyIZIvxHKAcsmYgBhQJdXfipYss2uGEW+VK8l2VJWU0BAyvrpo1hpu3bK yLqvJQiJAjIEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYUCXVwAKCRBM4MiGSL8RyjT9D/ imFI5HeSOYi2Wf0l5TXvwG1TWloofB9zuTbZyDeoFNk1kluMGiZ1/CK1Mh11yzxkYjalCO+SB5NiII EpufBvkHTo9+FnviN7qAchxXYHLpEUzRl6NxVaQBA6cnR1I0z3pTircCE18TcXTRqQgZtdQLLrhIML uq3X1ji6q4wrGgf7tC63w2+a/I15I6MYZ0zv1LllpKRl/nhfxMs7yGVxqpDNdfpvB7u5lJe1atHjUC rVChKlv5pH78gi7HXywy+4h6Q70vkkdSJa6CDPn9lAC34gEhHMqFfWtiUrxNq6EXwpxOGaAnTc6LAN wXr8So4qX/4pX7oqe7ltRPxHe5RxIFtmDtrMjvZWC6gXN43es39/GHFBoIUkyfzMueIAAGY96woslp KP1hZTNVY4EUlzAlHbH/4fUdB7cLWMUNaFdcSM7JPkOmetyZSf1OIQuxfzS8MtO1cQtFmUIv9Co4pt 3U05+w0uYWbBy2s9y/lRUN2YdZUZw3IlpJZx1lgLG9NpnVY2Wvz0TycPu7bt+HHZBkSp7Rmx2fdViQ jq+hxlb4endsSzpj2jqS9IleTJZwaouHhgwXV0f043E5OxgIFekFwiu4fGu/WymeZYloqIn3Rae2+O LBmHF/RZkO/R99ohm5tMxW2PCJnePlGm/o/M1CFajUptEDHGV7OTYu9sAx
+X-Developer-Signature: v=1; a=openpgp-sha256; l=14147; h=from:subject; bh=foLr6v1Cv+mwvK44wwwM0rB5kpCMmwWdQ0x5W3e5oxU=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBhQJdXcLl9WqVT7a7vu5Wl9Ld5Q2TGGAps3IQc6DOL flbJgjOJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYUCXVwAKCRBM4MiGSL8Ryl8HD/ 9O5kyf+nskJqSGE8yH1mT5N2G4j/LODI/F6VjDcO0HfxOZww7pBRFHsyJvi8qM1l05NNynYwalIbku DnCCXe7/VXpTJv/jKZdL+cBiLAYUutizU7+L4/2yAQpS3MJ2QpFQXWse90Nzi81KUDYryXiOoXssLy A/hziB6OMF7KoiuZiPWE/LGMRcboM/jE1zvJVNm2VnMofTTnjHiBbpf0rKXDshJEJK2OSKkt7vbzWs y9QtXltklWsYlpWEjhqf1o2PgIOc5ZZvJGJOA6EoRqDw8VPjjQ98t9yqNPbYs/DE7us2vQWWbdYss4 tr8lnZD3F06N59H4284rhxzjB56hjPTZQ3dae60T50ihWhAAkemFMhuzoFyBM5Ya3qFY20mz7a7lxc hgRm6sMjICr0Muv4Pbcaso92vdddrTx4ewZhruiv2+3b6SvVjiABVQ1kV9U491iSYyemrIv+TsmloB /UnyL2lB5mjCJbLgB0APvFk4J5ao01eXv4iRTRT52sQKMQMRUIT9tWxCiB1fMkwn03/UgTx3r/Cou8 fIUese3fkoLj8Afu1Dz+AgjDM8txHI+NTY/mh2awfNgkFm90tSHUEDJvlpsScgE5Tu0TxsZCbv4kdI uNeE3KBjh71G+dwJlWs6nsMbZwgSStyZVvNczZLajBuURBhH1vAmnyTI2eig==
 X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This change updates the BPF syscall loader to relocate BTF_KIND_FUNC
-relocations, with support for weak kfunc relocations.
+This also tests support for invalid kfunc calls we added in prior
+changes, such that verifier handles invalid call as long as it is
+removed by code elimination pass (before fixup_kfunc_call). A separate
+test for libbpf is added, which tests failure in loading.
 
-One of the disadvantages of gen_loader is that due to stack size
-limitation, BTF fd array size is clamped to a smaller limit than what
-the kernel allows. Also, finding an existing BTF fd's slot is not
-trivial, because that would require to open all module BTFs and match on
-the open fds (like we do for libbpf), so we do the next best thing:
-deduplicate slots for the same symbol.
+Also adjust verifier selftests which assume 512 byte stack to now assume
+768 byte stack.
 
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- tools/lib/bpf/bpf_gen_internal.h | 12 ++++-
- tools/lib/bpf/gen_loader.c       | 93 ++++++++++++++++++++++++++++----
- tools/lib/bpf/libbpf.c           |  8 +--
- 3 files changed, 99 insertions(+), 14 deletions(-)
+ include/linux/btf.h                           |  2 ++
+ kernel/bpf/btf.c                              |  2 ++
+ kernel/trace/bpf_trace.c                      |  1 +
+ tools/testing/selftests/bpf/Makefile          |  1 +
+ .../selftests/bpf/bpf_testmod/bpf_testmod.c   | 23 +++++++++++-
+ .../selftests/bpf/prog_tests/ksyms_module.c   | 13 ++++---
+ .../bpf/prog_tests/ksyms_module_libbpf.c      | 18 ++++++++++
+ .../selftests/bpf/progs/test_ksyms_module.c   |  9 +++++
+ .../bpf/progs/test_ksyms_module_libbpf.c      | 35 +++++++++++++++++++
+ tools/testing/selftests/bpf/verifier/calls.c  | 22 ++++++------
+ .../selftests/bpf/verifier/raw_stack.c        |  4 +--
+ .../selftests/bpf/verifier/stack_ptr.c        |  6 ++--
+ .../testing/selftests/bpf/verifier/var_off.c  |  4 +--
+ 13 files changed, 116 insertions(+), 24 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/ksyms_module_libbpf.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_ksyms_module_libbpf.c
 
-diff --git a/tools/lib/bpf/bpf_gen_internal.h b/tools/lib/bpf/bpf_gen_internal.h
-index 615400391e57..4826adf18d7b 100644
---- a/tools/lib/bpf/bpf_gen_internal.h
-+++ b/tools/lib/bpf/bpf_gen_internal.h
-@@ -7,8 +7,15 @@ struct ksym_relo_desc {
- 	const char *name;
- 	int kind;
- 	int insn_idx;
-+	bool is_weak;
- };
+diff --git a/include/linux/btf.h b/include/linux/btf.h
+index c7b6382123e1..585c66aa0529 100644
+--- a/include/linux/btf.h
++++ b/include/linux/btf.h
+@@ -271,7 +271,9 @@ static inline void unregister_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
+ 					 THIS_MODULE }
  
-+struct kfunc_desc {
-+	const char *name;
-+	int index;
-+};
-+
-+#define MAX_KFUNC_DESCS 94
- struct bpf_gen {
- 	struct gen_loader_opts *opts;
- 	void *data_start;
-@@ -24,6 +31,8 @@ struct bpf_gen {
- 	int relo_cnt;
- 	char attach_target[128];
- 	int attach_kind;
-+	struct kfunc_desc kfunc_descs[MAX_KFUNC_DESCS];
-+	__u32 nr_kfuncs;
- };
+ extern struct kfunc_btf_id_list bpf_tcp_ca_kfunc_list;
++extern struct kfunc_btf_id_list raw_tp_kfunc_list;
  
- void bpf_gen__init(struct bpf_gen *gen, int log_level);
-@@ -36,6 +45,7 @@ void bpf_gen__prog_load(struct bpf_gen *gen, struct bpf_prog_load_params *load_a
- void bpf_gen__map_update_elem(struct bpf_gen *gen, int map_idx, void *value, __u32 value_size);
- void bpf_gen__map_freeze(struct bpf_gen *gen, int map_idx);
- void bpf_gen__record_attach_target(struct bpf_gen *gen, const char *name, enum bpf_attach_type type);
--void bpf_gen__record_extern(struct bpf_gen *gen, const char *name, int kind, int insn_idx);
-+void bpf_gen__record_extern(struct bpf_gen *gen, const char *name, bool is_weak, int kind,
-+			    int insn_idx);
+ DECLARE_CHECK_KFUNC_CALLBACK(bpf_tcp_ca);
++DECLARE_CHECK_KFUNC_CALLBACK(raw_tp);
  
  #endif
-diff --git a/tools/lib/bpf/gen_loader.c b/tools/lib/bpf/gen_loader.c
-index 8df718a6b142..5e8c15e36c46 100644
---- a/tools/lib/bpf/gen_loader.c
-+++ b/tools/lib/bpf/gen_loader.c
-@@ -5,6 +5,7 @@
- #include <string.h>
- #include <errno.h>
- #include <linux/filter.h>
-+#include <linux/kernel.h>
- #include "btf.h"
- #include "bpf.h"
- #include "libbpf.h"
-@@ -13,6 +14,7 @@
- #include "bpf_gen_internal.h"
- #include "skel_internal.h"
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index 8240478b7398..06b21c4c50e5 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -6269,3 +6269,5 @@ EXPORT_SYMBOL_GPL(unregister_kfunc_btf_id_set);
  
-+/* MAX_BPF_STACK is 768 bytes, so (64 + 32 + 94 (MAX_KFUNC_DESCS) + 2) * 4 */
- #define MAX_USED_MAPS 64
- #define MAX_USED_PROGS 32
- 
-@@ -31,6 +33,8 @@ struct loader_stack {
- 	__u32 btf_fd;
- 	__u32 map_fd[MAX_USED_MAPS];
- 	__u32 prog_fd[MAX_USED_PROGS];
-+	/* Update insn->off store when reordering kfunc_btf_fd */
-+	__u32 kfunc_btf_fd[MAX_KFUNC_DESCS];
- 	__u32 inner_map_fd;
+ DEFINE_KFUNC_BTF_ID_LIST(bpf_tcp_ca_kfunc_list);
+ DEFINE_CHECK_KFUNC_CALLBACK(bpf_tcp_ca, bpf_tcp_ca_kfunc_list);
++DEFINE_KFUNC_BTF_ID_LIST(raw_tp_kfunc_list);
++DEFINE_CHECK_KFUNC_CALLBACK(raw_tp, raw_tp_kfunc_list);
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index 067e88c3d2ee..54cba3391f35 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -1629,6 +1629,7 @@ int __weak bpf_prog_test_run_tracing(struct bpf_prog *prog,
+ const struct bpf_verifier_ops raw_tracepoint_verifier_ops = {
+ 	.get_func_proto  = raw_tp_prog_func_proto,
+ 	.is_valid_access = raw_tp_prog_is_valid_access,
++	.check_kfunc_call = __bpf_check_raw_tp_kfunc_call,
  };
  
-@@ -506,8 +510,8 @@ static void emit_find_attach_target(struct bpf_gen *gen)
- 	 */
- }
+ const struct bpf_prog_ops raw_tracepoint_prog_ops = {
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index 1a4d30ff3275..064eef69e96a 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -174,6 +174,7 @@ $(OUTPUT)/bpf_testmod.ko: $(VMLINUX_BTF) $(wildcard bpf_testmod/Makefile bpf_tes
+ 	$(Q)$(RM) bpf_testmod/bpf_testmod.ko # force re-compilation
+ 	$(Q)$(MAKE) $(submake_extras) -C bpf_testmod
+ 	$(Q)cp bpf_testmod/bpf_testmod.ko $@
++	$(Q)$(RESOLVE_BTFIDS) -s ../../../../vmlinux bpf_testmod.ko
  
--void bpf_gen__record_extern(struct bpf_gen *gen, const char *name, int kind,
--			    int insn_idx)
-+void bpf_gen__record_extern(struct bpf_gen *gen, const char *name, bool is_weak,
-+			    int kind, int insn_idx)
- {
- 	struct ksym_relo_desc *relo;
+ $(OUTPUT)/test_stub.o: test_stub.c $(BPFOBJ)
+ 	$(call msg,CC,,$@)
+diff --git a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
+index 50fc5561110a..5b365a7b3f93 100644
+--- a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
++++ b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
+@@ -1,6 +1,8 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /* Copyright (c) 2020 Facebook */
+ #include <linux/error-injection.h>
++#include <linux/btf.h>
++#include <linux/btf_ids.h>
+ #include <linux/init.h>
+ #include <linux/module.h>
+ #include <linux/percpu-defs.h>
+@@ -13,6 +15,12 @@
  
-@@ -519,14 +523,39 @@ void bpf_gen__record_extern(struct bpf_gen *gen, const char *name, int kind,
- 	gen->relos = relo;
- 	relo += gen->relo_cnt;
- 	relo->name = name;
-+	relo->is_weak = is_weak;
- 	relo->kind = kind;
- 	relo->insn_idx = insn_idx;
- 	gen->relo_cnt++;
- }
+ DEFINE_PER_CPU(int, bpf_testmod_ksym_percpu) = 123;
  
-+static struct kfunc_desc *find_kfunc_desc(struct bpf_gen *gen, const char *name)
++noinline void
++bpf_testmod_test_mod_kfunc(int i)
 +{
-+	/* Try to reuse BTF fd index for repeating symbol */
-+	for (int i = 0; i < gen->nr_kfuncs; i++) {
-+		if (!strcmp(gen->kfunc_descs[i].name, name))
-+			return &gen->kfunc_descs[i];
++	pr_info("mod kfunc i=%d\n", i);
++}
++
+ noinline int bpf_testmod_loop_test(int n)
+ {
+ 	int i, sum = 0;
+@@ -71,13 +79,26 @@ static struct bin_attribute bin_attr_bpf_testmod_file __ro_after_init = {
+ 	.write = bpf_testmod_test_write,
+ };
+ 
++BTF_SET_START(bpf_testmod_kfunc_ids)
++BTF_ID(func, bpf_testmod_test_mod_kfunc)
++BTF_SET_END(bpf_testmod_kfunc_ids)
++
++static DEFINE_KFUNC_BTF_ID_SET(&bpf_testmod_kfunc_ids, bpf_testmod_kfunc_btf_set);
++
+ static int bpf_testmod_init(void)
+ {
+-	return sysfs_create_bin_file(kernel_kobj, &bin_attr_bpf_testmod_file);
++	int ret;
++
++	ret = sysfs_create_bin_file(kernel_kobj, &bin_attr_bpf_testmod_file);
++	if (ret)
++		return ret;
++	register_kfunc_btf_id_set(&raw_tp_kfunc_list, &bpf_testmod_kfunc_btf_set);
++	return 0;
+ }
+ 
+ static void bpf_testmod_exit(void)
+ {
++	unregister_kfunc_btf_id_set(&raw_tp_kfunc_list, &bpf_testmod_kfunc_btf_set);
+ 	return sysfs_remove_bin_file(kernel_kobj, &bin_attr_bpf_testmod_file);
+ }
+ 
+diff --git a/tools/testing/selftests/bpf/prog_tests/ksyms_module.c b/tools/testing/selftests/bpf/prog_tests/ksyms_module.c
+index 2cd5cded543f..7643141ec67b 100644
+--- a/tools/testing/selftests/bpf/prog_tests/ksyms_module.c
++++ b/tools/testing/selftests/bpf/prog_tests/ksyms_module.c
+@@ -6,19 +6,22 @@
+ #include <bpf/btf.h>
+ #include "test_ksyms_module.lskel.h"
+ 
+-static int duration;
+-
+ void test_ksyms_module(void)
+ {
+-	struct test_ksyms_module* skel;
++	struct test_ksyms_module *skel;
+ 	int err;
+ 
++	if (!env.has_testmod) {
++		test__skip();
++		return;
 +	}
-+	return NULL;
-+}
 +
-+static struct kfunc_desc *add_kfunc_desc(struct bpf_gen *gen, const char *name)
+ 	skel = test_ksyms_module__open_and_load();
+-	if (CHECK(!skel, "skel_open", "failed to open skeleton\n"))
++	if (!ASSERT_OK_PTR(skel, "test_ksyms_module__open_and_load"))
+ 		return;
+ 
+ 	err = test_ksyms_module__attach(skel);
+-	if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
++	if (!ASSERT_OK(err, "test_ksyms_module__attach"))
+ 		goto cleanup;
+ 
+ 	usleep(1);
+diff --git a/tools/testing/selftests/bpf/prog_tests/ksyms_module_libbpf.c b/tools/testing/selftests/bpf/prog_tests/ksyms_module_libbpf.c
+new file mode 100644
+index 000000000000..61fa2a0e156e
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/ksyms_module_libbpf.c
+@@ -0,0 +1,18 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include <test_progs.h>
++#include "test_ksyms_module_libbpf.skel.h"
++
++void test_ksyms_module_libbpf(void)
 +{
-+	struct kfunc_desc *kdesc;
++	struct test_ksyms_module_libbpf *skel;
 +
-+	if (gen->nr_kfuncs == ARRAY_SIZE(gen->kfunc_descs))
-+		return NULL;
-+	kdesc = &gen->kfunc_descs[gen->nr_kfuncs];
-+	kdesc->name = name;
-+	kdesc->index = gen->nr_kfuncs++;
-+	return kdesc;
++	if (!env.has_testmod) {
++		test__skip();
++		return;
++	}
++
++	skel = test_ksyms_module_libbpf__open_and_load();
++	if (!ASSERT_EQ(skel, NULL, "test_ksyms_module__open_and_load"))
++		test_ksyms_module_libbpf__destroy(skel);
++}
+diff --git a/tools/testing/selftests/bpf/progs/test_ksyms_module.c b/tools/testing/selftests/bpf/progs/test_ksyms_module.c
+index d6a0b3086b90..d3fff47791fc 100644
+--- a/tools/testing/selftests/bpf/progs/test_ksyms_module.c
++++ b/tools/testing/selftests/bpf/progs/test_ksyms_module.c
+@@ -6,8 +6,11 @@
+ #include <bpf/bpf_helpers.h>
+ 
+ extern const int bpf_testmod_ksym_percpu __ksym;
++extern void bpf_testmod_test_mod_kfunc(int i) __ksym;
++extern void bpf_testmod_invalid_mod_kfunc(void) __ksym __weak;
+ 
+ int out_mod_ksym_global = 0;
++const volatile int x = 0;
+ bool triggered = false;
+ 
+ SEC("raw_tp/sys_enter")
+@@ -16,6 +19,12 @@ int handler(const void *ctx)
+ 	int *val;
+ 	__u32 cpu;
+ 
++	/* This should be preserved by clang, but DCE'd by verifier, and still
++	 * allow loading the raw_tp prog
++	 */
++	if (x)
++		bpf_testmod_invalid_mod_kfunc();
++	bpf_testmod_test_mod_kfunc(42);
+ 	val = (int *)bpf_this_cpu_ptr(&bpf_testmod_ksym_percpu);
+ 	out_mod_ksym_global = *val;
+ 	triggered = true;
+diff --git a/tools/testing/selftests/bpf/progs/test_ksyms_module_libbpf.c b/tools/testing/selftests/bpf/progs/test_ksyms_module_libbpf.c
+new file mode 100644
+index 000000000000..52162858d25d
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/test_ksyms_module_libbpf.c
+@@ -0,0 +1,35 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include "vmlinux.h"
++
++#include <bpf/bpf_helpers.h>
++
++extern void bpf_testmod_test_mod_kfunc(int i) __ksym;
++extern void bpf_testmod_invalid_mod_kfunc(void) __ksym __weak;
++
++const volatile int x = 0;
++
++SEC("raw_tp/sys_enter")
++int handler_pass(const void *ctx)
++{
++	/* This should be preserved by clang, but DCE'd by verifier, and still
++	 * allow loading the raw_tp prog
++	 */
++	if (x)
++		bpf_testmod_invalid_mod_kfunc();
++	bpf_testmod_test_mod_kfunc(42);
++	return 0;
 +}
 +
- static void emit_relo(struct bpf_gen *gen, struct ksym_relo_desc *relo, int insns)
++SEC("raw_tp/sys_enter")
++int handler_fail(const void *ctx)
++{
++	/* This call should be preserved by clang, but fail verification.
++	 */
++	if (!x)
++		bpf_testmod_invalid_mod_kfunc();
++	bpf_testmod_test_mod_kfunc(42);
++	return 0;
++}
++
++char LICENSE[] SEC("license") = "GPL";
+diff --git a/tools/testing/selftests/bpf/verifier/calls.c b/tools/testing/selftests/bpf/verifier/calls.c
+index 336a749673d1..03467053996c 100644
+--- a/tools/testing/selftests/bpf/verifier/calls.c
++++ b/tools/testing/selftests/bpf/verifier/calls.c
+@@ -750,12 +750,12 @@
+ 	"calls: stack overflow using two frames (pre-call access)",
+ 	.insns = {
+ 	/* prog 1 */
+-	BPF_ST_MEM(BPF_B, BPF_REG_10, -300, 0),
++	BPF_ST_MEM(BPF_B, BPF_REG_10, -400, 0),
+ 	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1),
+ 	BPF_EXIT_INSN(),
+ 
+ 	/* prog 2 */
+-	BPF_ST_MEM(BPF_B, BPF_REG_10, -300, 0),
++	BPF_ST_MEM(BPF_B, BPF_REG_10, -400, 0),
+ 	BPF_MOV64_IMM(BPF_REG_0, 0),
+ 	BPF_EXIT_INSN(),
+ 	},
+@@ -768,11 +768,11 @@
+ 	.insns = {
+ 	/* prog 1 */
+ 	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 2),
+-	BPF_ST_MEM(BPF_B, BPF_REG_10, -300, 0),
++	BPF_ST_MEM(BPF_B, BPF_REG_10, -400, 0),
+ 	BPF_EXIT_INSN(),
+ 
+ 	/* prog 2 */
+-	BPF_ST_MEM(BPF_B, BPF_REG_10, -300, 0),
++	BPF_ST_MEM(BPF_B, BPF_REG_10, -400, 0),
+ 	BPF_MOV64_IMM(BPF_REG_0, 0),
+ 	BPF_EXIT_INSN(),
+ 	},
+@@ -846,12 +846,12 @@
+ 	/* B */
+ 	BPF_JMP_IMM(BPF_JGT, BPF_REG_1, 2, 1),
+ 	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, -6), /* call A */
+-	BPF_ST_MEM(BPF_B, BPF_REG_10, -256, 0),
++	BPF_ST_MEM(BPF_B, BPF_REG_10, -512, 0),
+ 	BPF_EXIT_INSN(),
+ 	},
+ 	.prog_type = BPF_PROG_TYPE_XDP,
+-	/* stack_main=64, stack_A=224, stack_B=256
+-	 * and max(main+A, main+A+B) > 512
++	/* stack_main=64, stack_A=224, stack_B=512
++	 * and max(main+A, main+A+B) > 768
+ 	 */
+ 	.errstr = "combined stack",
+ 	.result = REJECT,
+@@ -865,14 +865,14 @@
+ 	 * }
+ 	 * void func1(int alloc_or_recurse) {
+ 	 *   if (alloc_or_recurse) {
+-	 *     frame_pointer[-300] = 1;
++	 *     frame_pointer[-400] = 1;
+ 	 *   } else {
+ 	 *     func2(alloc_or_recurse);
+ 	 *   }
+ 	 * }
+ 	 * void func2(int alloc_or_recurse) {
+ 	 *   if (alloc_or_recurse) {
+-	 *     frame_pointer[-300] = 1;
++	 *     frame_pointer[-400] = 1;
+ 	 *   }
+ 	 * }
+ 	 */
+@@ -888,13 +888,13 @@
+ 	BPF_EXIT_INSN(),
+ 	/* A */
+ 	BPF_JMP_IMM(BPF_JEQ, BPF_REG_1, 0, 2),
+-	BPF_ST_MEM(BPF_B, BPF_REG_10, -300, 0),
++	BPF_ST_MEM(BPF_B, BPF_REG_10, -400, 0),
+ 	BPF_EXIT_INSN(),
+ 	BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 1), /* call B */
+ 	BPF_EXIT_INSN(),
+ 	/* B */
+ 	BPF_JMP_IMM(BPF_JEQ, BPF_REG_1, 0, 1),
+-	BPF_ST_MEM(BPF_B, BPF_REG_10, -300, 0),
++	BPF_ST_MEM(BPF_B, BPF_REG_10, -400, 0),
+ 	BPF_EXIT_INSN(),
+ 	},
+ 	.prog_type = BPF_PROG_TYPE_XDP,
+diff --git a/tools/testing/selftests/bpf/verifier/raw_stack.c b/tools/testing/selftests/bpf/verifier/raw_stack.c
+index cc8e8c3cdc03..238dedb3aa47 100644
+--- a/tools/testing/selftests/bpf/verifier/raw_stack.c
++++ b/tools/testing/selftests/bpf/verifier/raw_stack.c
+@@ -197,7 +197,7 @@
+ 	.insns = {
+ 	BPF_MOV64_IMM(BPF_REG_2, 4),
+ 	BPF_ALU64_REG(BPF_MOV, BPF_REG_6, BPF_REG_10),
+-	BPF_ALU64_IMM(BPF_ADD, BPF_REG_6, -513),
++	BPF_ALU64_IMM(BPF_ADD, BPF_REG_6, -769),
+ 	BPF_MOV64_REG(BPF_REG_3, BPF_REG_6),
+ 	BPF_MOV64_IMM(BPF_REG_4, 8),
+ 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_skb_load_bytes),
+@@ -205,7 +205,7 @@
+ 	BPF_EXIT_INSN(),
+ 	},
+ 	.result = REJECT,
+-	.errstr = "invalid indirect access to stack R3 off=-513 size=8",
++	.errstr = "invalid indirect access to stack R3 off=-769 size=8",
+ 	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
+ },
  {
- 	int name, insn, len = strlen(relo->name) + 1;
-+	int off = MAX_USED_MAPS + MAX_USED_PROGS;
-+	struct kfunc_desc *kdesc;
- 
- 	pr_debug("gen: emit_relo: %s at %d\n", relo->name, relo->insn_idx);
- 	name = add_data(gen, relo->name, len);
-@@ -539,18 +568,64 @@ static void emit_relo(struct bpf_gen *gen, struct ksym_relo_desc *relo, int insn
- 	emit(gen, BPF_EMIT_CALL(BPF_FUNC_btf_find_by_name_kind));
- 	emit(gen, BPF_MOV64_REG(BPF_REG_7, BPF_REG_0));
- 	debug_ret(gen, "find_by_name_kind(%s,%d)", relo->name, relo->kind);
--	emit_check_err(gen);
-+	/* if not weak kfunc, emit err check */
-+	if (relo->kind != BTF_KIND_FUNC || !relo->is_weak)
-+		emit_check_err(gen);
-+	insn = insns + sizeof(struct bpf_insn) * relo->insn_idx;
-+	emit2(gen, BPF_LD_IMM64_RAW_FULL(BPF_REG_0, BPF_PSEUDO_MAP_IDX_VALUE, 0, 0, 0, insn));
-+	/* set a default value */
-+	emit(gen, BPF_ST_MEM(BPF_W, BPF_REG_0, offsetof(struct bpf_insn, imm), 0));
-+	/* skip success case store if ret < 0 */
-+	emit(gen, BPF_JMP_IMM(BPF_JSLT, BPF_REG_7, 0, 1));
- 	/* store btf_id into insn[insn_idx].imm */
--	insn = insns + sizeof(struct bpf_insn) * relo->insn_idx +
--		offsetof(struct bpf_insn, imm);
--	emit2(gen, BPF_LD_IMM64_RAW_FULL(BPF_REG_0, BPF_PSEUDO_MAP_IDX_VALUE,
--					 0, 0, 0, insn));
--	emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_0, BPF_REG_7, 0));
-+	emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_0, BPF_REG_7, offsetof(struct bpf_insn, imm)));
- 	if (relo->kind == BTF_KIND_VAR) {
- 		/* store btf_obj_fd into insn[insn_idx + 1].imm */
- 		emit(gen, BPF_ALU64_IMM(BPF_RSH, BPF_REG_7, 32));
- 		emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_0, BPF_REG_7,
--				      sizeof(struct bpf_insn)));
-+				      sizeof(struct bpf_insn) + offsetof(struct bpf_insn, imm)));
-+	} else if (relo->kind == BTF_KIND_FUNC) {
-+		kdesc = find_kfunc_desc(gen, relo->name);
-+		if (!kdesc)
-+			kdesc = add_kfunc_desc(gen, relo->name);
-+		if (kdesc) {
-+			/* store btf_obj_fd in index in kfunc_btf_fd array
-+			 * but skip storing fd if ret < 0
-+			 */
-+			emit(gen, BPF_ST_MEM(BPF_W, BPF_REG_10,
-+			     stack_off(kfunc_btf_fd[kdesc->index]), 0));
-+			emit(gen, BPF_MOV64_REG(BPF_REG_8, BPF_REG_7));
-+			emit(gen, BPF_JMP_IMM(BPF_JSLT, BPF_REG_7, 0, 4));
-+			emit(gen, BPF_ALU64_IMM(BPF_RSH, BPF_REG_7, 32));
-+			/* if vmlinux BTF, skip store */
-+			emit(gen, BPF_JMP_IMM(BPF_JEQ, BPF_REG_7, 0, 1));
-+			emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_10, BPF_REG_7,
-+			     stack_off(kfunc_btf_fd[kdesc->index])));
-+			emit(gen, BPF_MOV64_REG(BPF_REG_7, BPF_REG_8));
-+			/* remember BTF obj fd */
-+			emit(gen, BPF_ALU64_IMM(BPF_RSH, BPF_REG_8, 32));
-+		} else {
-+			pr_warn("Out of BTF fd slots (total: %u), skipping for %s\n",
-+				gen->nr_kfuncs, relo->name);
-+			emit(gen, BPF_MOV64_REG(BPF_REG_1, BPF_REG_7));
-+			emit(gen, BPF_ALU64_IMM(BPF_RSH, BPF_REG_1, 32));
-+			__emit_sys_close(gen);
-+		}
-+		/* store index + 1 into insn[insn_idx].off */
-+		off = kdesc ? off + kdesc->index + 1 : 0;
-+		off = off > INT16_MAX ? 0 : off;
-+		/* set a default value */
-+		emit(gen, BPF_ST_MEM(BPF_H, BPF_REG_0, offsetof(struct bpf_insn, off), 0));
-+		/* skip success case store if ret < 0 */
-+		emit(gen, BPF_JMP_IMM(BPF_JSLT, BPF_REG_7, 0, 2));
-+		/* skip if vmlinux BTF */
-+		emit(gen, BPF_JMP_IMM(BPF_JEQ, BPF_REG_8, 0, 1));
-+		/* store offset */
-+		emit(gen, BPF_ST_MEM(BPF_H, BPF_REG_0, offsetof(struct bpf_insn, off), off));
-+		/* log relocation */
-+		emit(gen, BPF_LDX_MEM(BPF_W, BPF_REG_7, BPF_REG_0, offsetof(struct bpf_insn, imm)));
-+		emit(gen, BPF_LDX_MEM(BPF_H, BPF_REG_8, BPF_REG_0, offsetof(struct bpf_insn, off)));
-+		debug_regs(gen, BPF_REG_7, BPF_REG_8, "sym (%s): imm: %%d, off: %%d", relo->name);
- 	}
- }
- 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 9c6c1aa73e35..6a100c2e7d1c 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -6240,12 +6240,12 @@ static int bpf_program__record_externs(struct bpf_program *prog)
- 					ext->name);
- 				return -ENOTSUP;
- 			}
--			bpf_gen__record_extern(obj->gen_loader, ext->name, BTF_KIND_VAR,
--					       relo->insn_idx);
-+			bpf_gen__record_extern(obj->gen_loader, ext->name, ext->is_weak,
-+					       BTF_KIND_VAR, relo->insn_idx);
- 			break;
- 		case RELO_EXTERN_FUNC:
--			bpf_gen__record_extern(obj->gen_loader, ext->name, BTF_KIND_FUNC,
--					       relo->insn_idx);
-+			bpf_gen__record_extern(obj->gen_loader, ext->name, ext->is_weak,
-+					       BTF_KIND_FUNC, relo->insn_idx);
- 			break;
- 		default:
- 			continue;
+diff --git a/tools/testing/selftests/bpf/verifier/stack_ptr.c b/tools/testing/selftests/bpf/verifier/stack_ptr.c
+index 8ab94d65f3d5..566d79299ccd 100644
+--- a/tools/testing/selftests/bpf/verifier/stack_ptr.c
++++ b/tools/testing/selftests/bpf/verifier/stack_ptr.c
+@@ -165,7 +165,7 @@
+ 	"PTR_TO_STACK check low 2",
+ 	.insns = {
+ 	BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
+-	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -513),
++	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -769),
+ 	BPF_ST_MEM(BPF_B, BPF_REG_1, 1, 42),
+ 	BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1, 1),
+ 	BPF_EXIT_INSN(),
+@@ -179,13 +179,13 @@
+ 	"PTR_TO_STACK check low 3",
+ 	.insns = {
+ 	BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
+-	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -513),
++	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -769),
+ 	BPF_ST_MEM(BPF_B, BPF_REG_1, 0, 42),
+ 	BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1, 0),
+ 	BPF_EXIT_INSN(),
+ 	},
+ 	.errstr_unpriv = "R1 stack pointer arithmetic goes out of range",
+-	.errstr = "invalid write to stack R1 off=-513 size=1",
++	.errstr = "invalid write to stack R1 off=-769 size=1",
+ 	.result = REJECT,
+ },
+ {
+diff --git a/tools/testing/selftests/bpf/verifier/var_off.c b/tools/testing/selftests/bpf/verifier/var_off.c
+index eab1f7f56e2f..407bdee522a6 100644
+--- a/tools/testing/selftests/bpf/verifier/var_off.c
++++ b/tools/testing/selftests/bpf/verifier/var_off.c
+@@ -196,8 +196,8 @@
+ 	BPF_LDX_MEM(BPF_W, BPF_REG_2, BPF_REG_1, 0),
+ 	/* Make it small and 4-byte aligned */
+ 	BPF_ALU64_IMM(BPF_AND, BPF_REG_2, 4),
+-	BPF_ALU64_IMM(BPF_SUB, BPF_REG_2, 516),
+-	/* add it to fp.  We now have either fp-516 or fp-512, but
++	BPF_ALU64_IMM(BPF_SUB, BPF_REG_2, 772),
++	/* add it to fp.  We now have either fp-772 or fp-768, but
+ 	 * we don't know which
+ 	 */
+ 	BPF_ALU64_REG(BPF_ADD, BPF_REG_2, BPF_REG_10),
 -- 
 2.33.0
 
