@@ -2,170 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA94B40AE0A
-	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 14:41:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B14BB40AE12
+	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 14:42:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232867AbhINMmr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 08:42:47 -0400
-Received: from mail-bn8nam08on2046.outbound.protection.outlook.com ([40.107.100.46]:19392
-        "EHLO NAM04-BN8-obe.outbound.protection.outlook.com"
+        id S232916AbhINMnk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 08:43:40 -0400
+Received: from mail.loongson.cn ([114.242.206.163]:44054 "EHLO loongson.cn"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232800AbhINMmq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Sep 2021 08:42:46 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JXZBBCKaah7ZBxRhxiKGIeBcWbk1gL3pzUET0SnnHOeLfqglreSbb2/6T8VxA1MAXpeGvKBE2BskoY38yRyeuzKxYc9HxwxGftc9yVbA3FZultxOtPFz2YymhiATk5HEiPK7jb6Qpy6Zn6CdprthAVoJQNLOu9V3oe+gMJxNFi/q+EX16MW7XxPb/tDTDp3+FG/43D4TfJ2mjeWfdxN6AQa4/Tnf4i4NFtoOsZjaWlSR6WUkzPZZYRL6gEdlb78wuOZfLLF6gmBj+W84SXcJ832ejOoL3T1wkvcIPqYpC1g+GpW2m1PA0xZluNEQEunCXVi+PjQS5Rj3rNFc8Hv1RA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=1zZ0oGNc0kqgWdrGFmD/0Z8f973bbimjxLVn/zgMBXY=;
- b=DrWRTbRnjmyQ7yg4QUhxLm1NLgkaQxkao8344dGSvlHNBSTKPSpLris9D4BrbQVNf8+S8N50mctqyWnQLkz5/ROPrnU7DfBfTavILeo0sV9C9aM8mjJY9GR6SDFQejnC0DyjBxylBHVrkl41MjvYlnCshXCtTVVNMCVjSFYxEVkchAsiCodeiShumfgFv1a1KSuDAGFQuKdHi2JWkBktDt6pOcIYr80L1Kaf85eBwYkzUcTGzPzqKFyp10hC0S0EpQh+CNCVBQ0nyts7VUBTF/RRQUfR5jCmKLJ0iNqKrhtV4uu8U/yHNYPB+xaR6GOdtOVtig/MYk1Dpdw0H6JagA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.35) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
- dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1zZ0oGNc0kqgWdrGFmD/0Z8f973bbimjxLVn/zgMBXY=;
- b=L00j33Kfpvhi6mhBqknx8EHdVyr1gyF99C199ks4nnkpzBCKWac+AAJyziognCZL5Bbk839MBb0O0d11Z9kVs9JFmWzYR79MeSpJjCoDATScUjcL0v52cnkazZg19Hs7ZwrQTW/ApBI7QyloT2fUn3WxDT3vua15+7bS39U8onhzj+NT8EOUSgPiKe/e7UVJCTb6ZcDQCj31snCnX9MXAyxepLhGFy/m53r/OWHTINvh5eLckpv0vBivrji9aq45wvAQnnHGB0rhpis+vUTgP2ERya7fbiLEEBrHynI0Q4PEMQVNxTCGmBwaOKNREcfxp6Ta380gAOYOB14Vyi9/nA==
-Received: from DM5PR06CA0035.namprd06.prod.outlook.com (2603:10b6:3:5d::21) by
- SN1PR12MB2493.namprd12.prod.outlook.com (2603:10b6:802:2d::30) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4500.17; Tue, 14 Sep 2021 12:41:28 +0000
-Received: from DM6NAM11FT013.eop-nam11.prod.protection.outlook.com
- (2603:10b6:3:5d:cafe::71) by DM5PR06CA0035.outlook.office365.com
- (2603:10b6:3:5d::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.14 via Frontend
- Transport; Tue, 14 Sep 2021 12:41:28 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.35)
- smtp.mailfrom=nvidia.com; davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.35 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.35; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.35) by
- DM6NAM11FT013.mail.protection.outlook.com (10.13.173.142) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4500.14 via Frontend Transport; Tue, 14 Sep 2021 12:41:27 +0000
-Received: from DRHQMAIL107.nvidia.com (10.27.9.16) by HQMAIL111.nvidia.com
- (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 14 Sep
- 2021 12:41:27 +0000
-Received: from localhost (172.20.187.5) by DRHQMAIL107.nvidia.com (10.27.9.16)
- with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 14 Sep 2021 12:41:26
- +0000
-Date:   Tue, 14 Sep 2021 15:41:23 +0300
-From:   Leon Romanovsky <leonro@nvidia.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>
-CC:     <linux-kernel@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        Mark Bloch <mbloch@nvidia.com>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        <netdev@vger.kernel.org>, Roi Dayan <roid@nvidia.com>,
-        Vlad Buslov <vladbu@nvidia.com>
-Subject: Re: [PATCH net-next] net/mlx5: Fix use of uninitialized variable in
- bridge.c
-Message-ID: <YUCYc7XkOVWS8h1F@unreal>
-References: <9e9eb5df93dbcba6faff199d71222785c1f1faf7.1631621485.git.leonro@nvidia.com>
+        id S232664AbhINMnj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Sep 2021 08:43:39 -0400
+Received: from [10.130.0.135] (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxleWMmEBhmZkGAA--.21509S3;
+        Tue, 14 Sep 2021 20:41:49 +0800 (CST)
+Subject: Re: [PATCH bpf v4 13/14] bpf/tests: Fix error in tail call limit
+ tests
+To:     Johan Almbladh <johan.almbladh@anyfinetworks.com>, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org
+References: <20210914091842.4186267-1-johan.almbladh@anyfinetworks.com>
+ <20210914091842.4186267-14-johan.almbladh@anyfinetworks.com>
+Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, iii@linux.ibm.com,
+        paul@cilium.io, netdev@vger.kernel.org, bpf@vger.kernel.org
+From:   Tiezhu Yang <yangtiezhu@loongson.cn>
+Message-ID: <4b9db215-edcd-6089-6ecd-6fe9b20dcbbb@loongson.cn>
+Date:   Tue, 14 Sep 2021 20:41:48 +0800
+User-Agent: Mozilla/5.0 (X11; Linux mips64; rv:45.0) Gecko/20100101
+ Thunderbird/45.4.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <9e9eb5df93dbcba6faff199d71222785c1f1faf7.1631621485.git.leonro@nvidia.com>
-X-Originating-IP: [172.20.187.5]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- DRHQMAIL107.nvidia.com (10.27.9.16)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 62b209ff-3adc-47d3-cfaa-08d9777cf883
-X-MS-TrafficTypeDiagnostic: SN1PR12MB2493:
-X-Microsoft-Antispam-PRVS: <SN1PR12MB2493D6F9F81831A6C101845CBDDA9@SN1PR12MB2493.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4714;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Rvr1mxyXafwHx9c/V6CRX8DGzXcVdLx5uzlinLPuyWQxhnptvDeGrWbNY/JheBOkJWYnN97UniMzZgARLCJgwo8fAaqEUyb8r6kWnWoZsdRlcOUH/d4DQhQoHj//KhayiQyCAhGbPgtr3otJFc5WuRorZxw5D23mKqkB1dQVuWx61p90YjQIwVliDKMD+u19Al7Wnfvgu4OeEbfYDbQNsm3YbhHBalw5tGh6yf3P3WTwEGQzK+qZcnQd59nM4b8O+M4W3KdmMkPekw7/bk8ipBkkiN2rfdyzbdE+698y1/ytTF8go/n8th0DoVyVIJFmsls22alnDMPxC/Q0lUzRFv4z7pUcwfDhmQVn66T0zcN83/iaBuPGxj586HzqhNZAq2KMdckdsjjyvrDugiKFFCgwq3oAkukO1uyF0ld/8gPjufTgiB682dvlGvGRY/2hPJIKcFMnviTC0Y9Vi/4adNlTxVyGH4ZvAy5vGRj+sqdYIahyButO9LdUPz2jFbqtFm+CKBp6U2iCkOfXZ5R6Qhuzj30xUOXG55B16xu7Lzh7xyHXk1KCj8lYxjU81F3UqeQW4YNPhp0Ut3Es/LL8aOcBMZCHVnauNzgaCXjVmLZJmQ3vGn47AhtgFfJQ8p9OtgmQLkKzXDL3Crt1MfZ0Mokal+csKiHw37dCrHPnMj3yx9d1qKhIFEU8IgEIqbsof5SDtpCEONWN4IqcmwgNYWqPbfjCWOsli2o2LfQYYXD+QSedLS3WR+wz0EMNgpNqPkrzbgKM5pdnAa2JKqBZE1BnPkGqR3Thg51oz++9x9Q=
-X-Forefront-Antispam-Report: CIP:216.228.112.35;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid02.nvidia.com;CAT:NONE;SFS:(7916004)(4636009)(39860400002)(396003)(136003)(376002)(346002)(46966006)(36840700001)(36860700001)(82740400003)(6636002)(9686003)(356005)(36906005)(336012)(426003)(316002)(86362001)(6666004)(966005)(7636003)(8936002)(2906002)(70586007)(70206006)(478600001)(26005)(4326008)(16526019)(47076005)(107886003)(54906003)(83380400001)(110136005)(5660300002)(8676002)(33716001)(186003)(82310400003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Sep 2021 12:41:27.7584
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 62b209ff-3adc-47d3-cfaa-08d9777cf883
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.35];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT013.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN1PR12MB2493
+In-Reply-To: <20210914091842.4186267-14-johan.almbladh@anyfinetworks.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-CM-TRANSID: AQAAf9DxleWMmEBhmZkGAA--.21509S3
+X-Coremail-Antispam: 1UD129KBjvJXoW7uryDAr13Wr13Xw15urW8Crg_yoW8ZFW7pF
+        97J3ZxtrW8JFy7XFWakrW0g3Z5uFZ3JryUCrsxtryayFs3Aw18GFy8Kry8uryav3yF9a1I
+        yr40vrn8Ca1kJrJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUU9lb7Iv0xC_KF4lb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I2
+        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
+        A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xII
+        jxv20xvEc7CjxVAFwI0_Cr0_Gr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I
+        8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI
+        64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r106r15McIj6I8E87Iv67AKxVW8JVWxJw
+        Am72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lFIxGxcIEc7CjxVA2Y2ka0xkIwI1l
+        c7I2V7IY0VAS07AlzVAYIcxG8wCY02Avz4vE14v_Xr1l42xK82IYc2Ij64vIr41l4I8I3I
+        0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWU
+        GVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI
+        0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0
+        rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r
+        4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjxU4UDJDUUUU
+X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 14, 2021 at 03:12:47PM +0300, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
-> 
-> Rewrite the code to fix the following compilation warnings that were
-> discovered once Linus enabled -Werror flag.
-> 
-> drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c:157:11: error:
-> variable 'err' is used uninitialized whenever 'if' condition is false
-> [-Werror,-Wsometimes-uninitialized]
->         else if (mlx5_esw_bridge_dev_same_hw(rep, esw))
->                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c:164:9: note:
-> uninitialized use occurs here
->         return err;
->                ^~~
-> drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c:157:7: note:
-> remove the 'if' if its condition is always true
->         else if (mlx5_esw_bridge_dev_same_hw(rep, esw))
->              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c:140:9: note:
-> initialize the variable 'err' to silence this warning
->         int err;
->                ^
->                 = 0
-> drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c:262:7: error:
-> variable 'err' is used uninitialized whenever switch case is taken
-> [-Werror,-Wsometimes-uninitialized]
->         case SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS:
->              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c:276:9: note:
-> uninitialized use occurs here
->         return err;
->                ^~~
-> drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c:257:7: error:
-> variable 'err' is used uninitialized whenever 'if' condition is false
-> [-Werror,-Wsometimes-uninitialized]
->                 if (attr->u.brport_flags.mask & ~(BR_LEARNING |
-> BR_FLOOD | BR_MCAST_FLOOD)) {
-> 
-> ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c:276:9: note:
-> uninitialized use occurs here
->         return err;
->                ^~~
-> drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c:257:3: note:
-> remove the 'if' if its condition is always true
->                 if (attr->u.brport_flags.mask & ~(BR_LEARNING |
-> BR_FLOOD | BR_MCAST_FLOOD)) {
-> 
-> ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c:247:9: note:
-> initialize the variable 'err' to silence this warning
->         int err;
->                ^
->                 = 0
-> 3 errors generated.
-> 
-> Fixes: ff9b7521468b ("net/mlx5: Bridge, support LAG")
-> Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+On 09/14/2021 05:18 PM, Johan Almbladh wrote:
+> This patch fixes an error in the tail call limit test that caused the
+> test to fail on for x86-64 JIT. Previously, the register R0 was used to
+> report the total number of tail calls made. However, after a tail call
+> fall-through, the value of the R0 register is undefined. Now, all tail
+> call error path tests instead use context state to store the count.
+>
+> Fixes: 874be05f525e ("bpf, tests: Add tail call test suite")
+> Reported-by: Paul Chaignon <paul@cilium.io>
+> Reported-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+> Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
 > ---
->  .../mellanox/mlx5/core/en/rep/bridge.c        | 36 +++++++++++--------
->  1 file changed, 22 insertions(+), 14 deletions(-)
+>   lib/test_bpf.c | 37 +++++++++++++++++++++++++++----------
+>   1 file changed, 27 insertions(+), 10 deletions(-)
+>
+> diff --git a/lib/test_bpf.c b/lib/test_bpf.c
+> index 7475abfd2186..ddb9a8089d2e 100644
+> --- a/lib/test_bpf.c
+> +++ b/lib/test_bpf.c
+> @@ -12179,10 +12179,15 @@ static __init int test_bpf(void)
+>   struct tail_call_test {
+>   	const char *descr;
+>   	struct bpf_insn insns[MAX_INSNS];
+> +	int flags;
+>   	int result;
+>   	int stack_depth;
+>   };
+>   
+> +/* Flags that can be passed to tail call test cases */
+> +#define FLAG_NEED_STATE		BIT(0)
+> +#define FLAG_RESULT_IN_STATE	BIT(1)
+> +
+>   /*
+>    * Magic marker used in test snippets for tail calls below.
+>    * BPF_LD/MOV to R2 and R2 with this immediate value is replaced
+> @@ -12252,32 +12257,38 @@ static struct tail_call_test tail_call_tests[] = {
+>   	{
+>   		"Tail call error path, max count reached",
+>   		.insns = {
+> -			BPF_ALU64_IMM(BPF_ADD, R1, 1),
+> -			BPF_ALU64_REG(BPF_MOV, R0, R1),
+> +			BPF_LDX_MEM(BPF_W, R2, R1, 0),
+> +			BPF_ALU64_IMM(BPF_ADD, R2, 1),
+> +			BPF_STX_MEM(BPF_W, R1, R2, 0),
+>   			TAIL_CALL(0),
+>   			BPF_EXIT_INSN(),
+>   		},
+> -		.result = MAX_TAIL_CALL_CNT + 1,
+> +		.flags = FLAG_NEED_STATE | FLAG_RESULT_IN_STATE,
+> +		.result = (MAX_TAIL_CALL_CNT + 1 + 1) * MAX_TESTRUNS,
 
-Vlad pointed to me that similar patch was already accepted.
-https://patchwork.kernel.org/project/netdevbpf/patch/20210907212420.28529-2-saeed@kernel.org/
+Hi Johan,
 
-Can we please expedite the fix to Linus so our other branches (RDMA e.t.c)
-that are based on pure -rcX from Linus will be compilation error free? 
+I have tested this patch,
+It should be "MAX_TAIL_CALL_CNT + 1" instead of "MAX_TAIL_CALL_CNT + 1 + 1"?
 
-Thanks
+[...]
+
+Thanks,
+Tiezhu
+
