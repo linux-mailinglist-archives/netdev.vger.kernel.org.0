@@ -2,65 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1018440A25A
-	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 03:11:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6270040A283
+	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 03:31:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237395AbhINBMZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Sep 2021 21:12:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51636 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237165AbhINBMW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Sep 2021 21:12:22 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D51DC061574
-        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 18:11:06 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id y8so5177915pfa.7
-        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 18:11:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ivan-computer.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=z2lOZGZdanpaYVRAt/kvSmIvYXxBB8qSaA1o9kisjMg=;
-        b=Xt0ZPlRVNLKoo7f/9go3VQniX80+aRjOr3TNjoHcqY5VbakNlBn65Ufxe1U1HX9BXo
-         KLCBdzaE3tcqQezis8ZrR7yyG+i8he02WyzB3fzpticQI52MIDnkOK3FeWBEkFkelDiZ
-         8z0FJPwvunszsa6/Nm5Us8uZEcPyw9PFUHqnYe2Gy4O1vbBFGCVcZsOhiIyjbQFiw21J
-         FtlM70CKKLusdtTaqU5Xg6ZMxicEdN8zn1fDpCOvTv8EMXXc58hCRQmg1jnzvz9ymq8v
-         U4SNUEFjLQhbkjrsfS6PjkAbTrjs2HxVfNHMhFKktiR1j24tTNPkm0hQz7+5LFyZ4Cga
-         tqcQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=z2lOZGZdanpaYVRAt/kvSmIvYXxBB8qSaA1o9kisjMg=;
-        b=MoXoiK3SdlA9hKCUvZybkgjdJEXwjgB4EusgKcOmGqrcd6+kT+Eph67QDOL22b2Smq
-         9rLl9NmHXYBxQFDFzylhjlOm0U2jhx4Srljm4WY826C9S12dm7u1Nq1oNGMdglw+KcDq
-         +LZmoXq6r8NEq5V9/kzPqr2GWVEJSofloqCpKN7ZArCjC4GYUzkhxZvaochg+LeHnEMC
-         m8f2438ibjkZfqFC6Jg8hc254ZyooT+j048nT5S+wrtAC6phfR2EVeGyYrtUJwx6oefb
-         qg8WCCps3DfmwatnOpcjpa2xHZ+u6TP7GqeH99xvjF5OvMs/H79RmkOi9WcoPDkmtzvF
-         5eRQ==
-X-Gm-Message-State: AOAM533ehcW72bjxfqXvhNinrmt4h99sDuH0WxWfwGJMW23BRka/Dr0q
-        xSDzYhFY6L7h0orM9EInewJzEGJZteeB+e1BNX32tw==
-X-Google-Smtp-Source: ABdhPJxZLMOzU++Yr534PIvgmvPLqoY0wiy/m/5MqekCrmsD3aOr7SJTtlFVAA6QQu5SqxWHHHr0DfSDwMlxti/zU0Y=
-X-Received: by 2002:a62:2905:0:b0:3f3:d4ce:443d with SMTP id
- p5-20020a622905000000b003f3d4ce443dmr2213624pfp.44.1631581865674; Mon, 13 Sep
- 2021 18:11:05 -0700 (PDT)
+        id S229460AbhINBck (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Sep 2021 21:32:40 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:39322 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229637AbhINBcf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Sep 2021 21:32:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=KXOg1wnh22KbOjiVoErnse0MPToeoaHhPOYb0uwUyns=; b=K4Inj402fuVbGnCywXEmB2OIZb
+        j/MJqTfUMdGDXCqDwMPCx2HoKy8IZfDcJa1ePVQQqFtV7It3ciZmfNIDGp8NJvVBQcTcjtYNOlR0c
+        02EODSkYM+tvbiaCaBpyRovGW3qjhTrt4PQhI93R9lZWnPtP7AfUSGTHnsNPHPcg0CZs=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mPxHl-006Ulp-0X; Tue, 14 Sep 2021 03:30:57 +0200
+Date:   Tue, 14 Sep 2021 03:30:57 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        George McCollister <george.mccollister@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Subject: Re: [RFC PATCH net 2/5] net: dsa: be compatible with masters which
+ unregister on shutdown
+Message-ID: <YT/7UVJghbbyd1t9@lunn.ch>
+References: <20210912120932.993440-1-vladimir.oltean@nxp.com>
+ <20210912120932.993440-3-vladimir.oltean@nxp.com>
+ <20210912131837.4i6pzwgn573xutmo@skbuf>
+ <YT9QwOA2DxaXNsfw@lunn.ch>
+ <20210913133130.ohk4co56v4mtljyk@skbuf>
 MIME-Version: 1.0
-From:   Ivan Babrou <ivan@ivan.computer>
-Date:   Mon, 13 Sep 2021 18:10:55 -0700
-Message-ID: <CAGjnhw920kNaJ9Vkg54WR8vh2TaomuTtA3WwR3eieD4v6iEJDw@mail.gmail.com>
-Subject: Re: [PATCH] net: stmmac: dwmac-rk: fix unbalanced pm_runtime_enable warnings
-To:     sashal@kernel.org
-Cc:     alexandre.torgue@foss.st.com, davem@davemloft.net,
-        joabreu@synopsys.com, kuba@kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        mcoquelin.stm32@gmail.com, michael.riesch@wolfvision.net,
-        netdev@vger.kernel.org, peppe.cavallaro@st.com, wens@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210913133130.ohk4co56v4mtljyk@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Is it possible to revert the patch from the 5.14 and 5.15 as well?
-I've tried upgrading my rockpro64 board from 5.13 to 5.15-rc1 and
-ended up bisecting the issue to this commit like the others. It would
-be nice to spare others from this exercise.
+> > Have you tested it with a D in DSA system?
+> 
+> To various degrees.
+
+Hi Vladimir
+
+I tested on ZII devel C, which has two switches in a DSA
+configuration. This worked before, and still cleanly reboots with this
+patchset.
+
+Tested-by: Andrew Lunn <andrew@lunn.ch>
+
+    Andrew
