@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B82D40ADE9
-	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 14:38:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1630640ADEC
+	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 14:38:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232888AbhINMjW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 08:39:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40106 "EHLO
+        id S232716AbhINMjb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 08:39:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232898AbhINMjV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 08:39:21 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9127C061574;
-        Tue, 14 Sep 2021 05:38:03 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id 5so8090646plo.5;
-        Tue, 14 Sep 2021 05:38:03 -0700 (PDT)
+        with ESMTP id S232909AbhINMjY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 08:39:24 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0475AC061574;
+        Tue, 14 Sep 2021 05:38:07 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id f3-20020a17090a638300b00199097ddf1aso2058626pjj.0;
+        Tue, 14 Sep 2021 05:38:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=8H2t4nrL6OKI1S9DG0MWY1o7DOImDjh2AQh5r73KfwE=;
-        b=HSSkXn9E/xjh7qvVIHKvBqT9uHQd/tWBsDzMUuyKyO3jtlr8qVf2MZzZXJ5JKHY7Vt
-         Uy4tKOpvsr0ZRqnv0HpQh7KaH/dnlXQIeEsqNUmQHDMx20yaYXlUBiPV5QO6qMFWIYeV
-         Re+7WggvdBKONFLMuk+MF7iEZ9CbpDEpG6TuahgqYRw/BWszvfuLrQ1LafqHhWU/Ee+k
-         3o20Eln8VKH+/3jkHPQdbKb94tGhv69cI70tF70jzzn1taf04e0dV8qcV9BkqpBQ5C0u
-         8MCVPMFGkFT/K3/uIFZycAF/EJjZ7vTwpjEcJvE7lkRDn1IgT4Y8uJ9Braj3F2RLpIMY
-         Ni1Q==
+        bh=o2uir4PaWOGPcMyQFzYq+u0pT9SxwzyBbttgTlyAw3k=;
+        b=GRhH4wC3fTltWPJzNjdpktt0sG4vnb1Jv6mK4JsXL+Yt9kf9pvBBXssimCBiFEV37K
+         SYisBm/rAkOfljKq15tVtcCAbGxoI3ZHo41rEEJki9DYBy2fguiFbgorPLx6D8cXy66j
+         7DJCcceIEPBifVHNbvL8A00AeRaL8kET0mwuI+A2d8YS78kXG+zYuK1saEi8Tm3iQv10
+         rCKf6pGeOAKzCBsn5ecuiaMT1OC2VeqTbGR7LIgPdk7zyWJnfOmgGD7JcWyAGRx3swCV
+         VptiQIgV72d87KIRdIZ4sOSImMMlI5hNnh5jTmVbvslWVmgS8OGIrFFEstQ+FZ+naiHW
+         n3eQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=8H2t4nrL6OKI1S9DG0MWY1o7DOImDjh2AQh5r73KfwE=;
-        b=eNkG3PVq0IyaJyCVNAcJzdehvhLY6GVm8N6uNNFCBY1Gbm0SS63Rt0deiMSXccaoR5
-         10gXokIjuUOWsLkcMc9UjfeshfPOV1+YrosqgHZDZ0RYoZ08wujGc0Jkxv9uum3uk5aH
-         VuMU65IUWVDRGX/oXIslt5UQgnxytiUYZkYeYReD1wqK7TWFRg+qOozagsySZTi5glnU
-         e5VJ+TgVfhmqYicVLon7bARpzPvMR1JcKBOM1CzLHRtTWy9r5Bl5w03EwYlk8ET3ib+C
-         ZtHw5xQr76Ib5Es/ZbRPy/JUS70CDM+0AfVKtiT0wMbII2C8aWuUpomY7oHhjw2IxToq
-         JmqQ==
-X-Gm-Message-State: AOAM5307Pn6gpUGk86MV9M2yFYdzMpnr28FAwf/dQq8LdeL6HoWCK0xB
-        cDd7ghfm6sKSSFw2mjlHu8Lwnm7+MpY3HQ==
-X-Google-Smtp-Source: ABdhPJw9XmePtM+qL5wus8UU1NXXk34eNWX701/q+n8eJowfw55o4wMlGJlmYS4hWcAA3bB1T9ZQpg==
-X-Received: by 2002:a17:90b:46cd:: with SMTP id jx13mr1870661pjb.122.1631623083263;
-        Tue, 14 Sep 2021 05:38:03 -0700 (PDT)
+        bh=o2uir4PaWOGPcMyQFzYq+u0pT9SxwzyBbttgTlyAw3k=;
+        b=v3ym2TwlSpbnTBeFkacCWTtdvBne75s3qSEg6dbffmdwSCldREIjayJWmhKOj8JqGH
+         i6TAAwbit0RK0WrrIw+cI0VKMBM3L1niemgsJN9Ayj2f6FLBl9l+TSNfmq+TLDgRwnpb
+         XfJIntP/zN3Ud2iWMkpTGgw9y2sxj6YuIRSLQc8wwazTod9VBX1y8FfU68zc5EulDUWc
+         S4VLAQaXo18CeDdyAkzotk14FXxkbUjcfKhhfUObEak3/YEOXREX1I1WRJj3ix+fRqJA
+         m62OJ27YlZmGwGE4ASG0VO9LF4mrBPxWsimHgr7PcNnHv2RJUzF1Y7fNiilYAspLeZTG
+         o4hg==
+X-Gm-Message-State: AOAM532T2sUEoZZNHAV7HULXzSKfur+bD5ViiIJa9JtIrcUqG2iGFALB
+        4i0ksVpf5lxNaMfGgyhfc66QM7+r5wesNg==
+X-Google-Smtp-Source: ABdhPJxYxBXDFKCZPaTAHe9SzfUfhHbx3LheQrnFY4AIiwCHvt/TL3+LDMOU4P1nZHhs4p9A9dCJeg==
+X-Received: by 2002:a17:90b:4a44:: with SMTP id lb4mr1890054pjb.140.1631623086344;
+        Tue, 14 Sep 2021 05:38:06 -0700 (PDT)
 Received: from localhost ([2405:201:6014:d058:a28d:3909:6ed5:29e7])
-        by smtp.gmail.com with ESMTPSA id cm5sm1738453pjb.24.2021.09.14.05.38.02
+        by smtp.gmail.com with ESMTPSA id x26sm10413697pfm.77.2021.09.14.05.38.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Sep 2021 05:38:03 -0700 (PDT)
+        Tue, 14 Sep 2021 05:38:06 -0700 (PDT)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
@@ -58,79 +58,160 @@ Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         netdev@vger.kernel.org
-Subject: [PATCH bpf-next v2 02/10] bpf: Be conservative while processing invalid kfunc calls
-Date:   Tue, 14 Sep 2021 18:07:41 +0530
-Message-Id: <20210914123750.460750-3-memxor@gmail.com>
+Subject: [PATCH bpf-next v2 03/10] bpf: btf: Introduce helpers for dynamic BTF set registration
+Date:   Tue, 14 Sep 2021 18:07:42 +0530
+Message-Id: <20210914123750.460750-4-memxor@gmail.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20210914123750.460750-1-memxor@gmail.com>
 References: <20210914123750.460750-1-memxor@gmail.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2253; h=from:subject; bh=KwrtasYlogJBoIL6nFroYhICQdUm8Kr8EgPEOr5ZFWY=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBhQJdWIlzQb2Ml0Ubt+UAOvxa6xmTwJ5H8mn5f8ZNS wCNP8PyJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYUCXVgAKCRBM4MiGSL8RyoDeD/ 9fkForr9OuFOwjsaguAQOmYPqm1GiSyGvBWc99FqQoCDLL4WNyFF/7TFkQZOK+8p8nnZSJhaWSu+Ga E2BwwQbCEytEck+XVoyrB48NlyGe+xm2O3NgcruIPcVO0ZKzMYPcW5LzMUy4spQ6tImVd2lme+ilW5 bzMU0J3Gmsg6Csutkmb70bB/Em9Do7ML0hUw4FKmHcgor71qwqVCKywkIp2PkR4FuDmJf8p4V8MN9P ZhDIFM9CWSfm5V6MW0mIDoqqW8J6wHvMMFZl5Uy0QnMPrjrK3lS0bUAVhb8ZeR+rl+bfUd8BuRSU4V L2O2mPX+AuccMUBwaJopAuaWN6jlmGczTgeBjRg5jdcXNf7HWSK8MFExTGYtznj83yLerdPIQvvqUk RH6IOsCZ/7zaJmm8Uu5Aj9JFmKnwYJaOwv0o0Hd5O+vuBSK4fQKR+7y2xrq0Y8KCl0pQo2WEY3ho6Z nOoPGYyhg9Ub9fAtezXZ5sOexOvopKsa/h9vof5VFtw30uC9fZ+z6wxZPvLhTrYyjdGRH6N7oXjJD5 CLGy5Ll5brlY4s/2N9jjzObcudrZHPD0CFFaHvfx3NSb9dH7nJUCvH9j4GOcZSoP/fv5EW9R/i/hgD 2NMfXQmL0tkJLg4QLHeyfPb4Tmr+2nEYGtzI1fGm2HpJ4oSuPKLunbIBhWzw==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=5061; h=from:subject; bh=xIk+3p0yR6nDontP2RM+Qd15PO5zXVr+rOfltuzXi+A=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBhQJdWQTDX6mqAQpBBQhjssU+jDKZWQWpRO+akKeCp w/G8cAqJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYUCXVgAKCRBM4MiGSL8RyjOuD/ 9CVzLyyx/fzakF923YE3zGD0O+H01tFG7xg4lwPHGc3s1sMzODtomuDHBHcR3bKR2MA3NBLSqR0q8/ 1NgJGokExfM4INmng1po58QHPDMrsKDX7PWtdn/FINJxzp/Bv4QBcbaKVPUq9DtkyEMKfXu8Vs4TYp gLZqGE8/swk2O1Q3EZxbDbrBiYJiJAZI+zYCPDn2WnjrkIDcGEdZm36+mMvi3/mXCKGuOPQXBBRldl VgcoOspzl7BFLzyHZDTidZnkP67KLzvvVdL8c/8ZMo8rL4/jq2I2NwFB4H3zeEwcR1w6/HRjlKkR1D TJkgfXXcn+2a8Z9Usm2Mp9pe7jx7hB89sKLeOpFYElVqol3RKL0DbRo0xZ595CBqgKVA6oALtP7bQB GUEKi+RLs2Ze0GHYGxKnO75X48VtJIpitqeUb7v7Xe+Fm6lm9hznEbJ5m1dWuyBtUnezSrncM74ELY NkLweevfFRi/g0FEOO5lHhvtND+oJ9YBXUv9ymw34JQtw634Dx6x2RcUl3u4ntWelff/we/AShwsPg n+pRIKECoeIO2HyoAVkQ3BJi0vzKkLb4sG8SuNPua62lL1uUUxY1mMZTruM4pJBREdMT12LnnVo3Wd g/EoI465vgDLufoe6sepNB0vJNCnhDXlSlL4+rm0F6UlUpq2gtEIw0qIgsDA==
 X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch also modifies the BPF verifier to only return error for
-invalid kfunc calls specially marked by userspace (with insn->imm == 0,
-insn->off == 0) after the verifier has eliminated dead instructions.
-This can be handled in the fixup stage, and skip processing during add
-and check stages.
+This adds helpers for registering btf_id_set from modules and the
+check_kfunc_call callback that can be used to look them up.
 
-If such an invalid call is dropped, the fixup stage will not encounter
-insn->imm as 0, otherwise it bails out and returns an error.
+With in kernel sets, the way this is supposed to work is, in kernel
+callback looks up within the in-kernel kfunc whitelist, and then defers
+to the dynamic BTF set lookup if it doesn't find the BTF id. If there is
+no in-kernel BTF id set, this callback can be used directly.
 
-This will be exposed as weak ksym support in libbpf in subsequent patch.
+Also fix includes for btf.h and bpfptr.h so that they can included in
+isolation. This is in preparation for their usage in tcp_bbr, tcp_cubic
+and tcp_dctcp modules in the next patch.
 
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- kernel/bpf/verifier.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ include/linux/bpfptr.h |  1 +
+ include/linux/btf.h    | 32 ++++++++++++++++++++++++++
+ kernel/bpf/btf.c       | 51 ++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 84 insertions(+)
 
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 6bbbb98f4ee2..7dd2a632ea6f 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -1815,6 +1815,15 @@ static int add_kfunc_call(struct bpf_verifier_env *env, u32 func_id, s16 offset)
- 		prog_aux->kfunc_tab = tab;
- 	}
+diff --git a/include/linux/bpfptr.h b/include/linux/bpfptr.h
+index 546e27fc6d46..46e1757d06a3 100644
+--- a/include/linux/bpfptr.h
++++ b/include/linux/bpfptr.h
+@@ -3,6 +3,7 @@
+ #ifndef _LINUX_BPFPTR_H
+ #define _LINUX_BPFPTR_H
  
-+	/* btf idr allocates IDs from 1, so func_id == 0 is always invalid, but
-+	 * instead of returning an error, be conservative and wait until the
-+	 * code elimination pass before returning error, so that invalid calls
-+	 * that get pruned out can be in BPF programs loaded from userspace.
-+	 * It is also required that offset be untouched (0) for such calls.
-+	 */
-+	if (!func_id && !offset)
-+		return 0;
++#include <linux/mm.h>
+ #include <linux/sockptr.h>
+ 
+ typedef sockptr_t bpfptr_t;
+diff --git a/include/linux/btf.h b/include/linux/btf.h
+index 214fde93214b..e29a486d09d4 100644
+--- a/include/linux/btf.h
++++ b/include/linux/btf.h
+@@ -5,8 +5,10 @@
+ #define _LINUX_BTF_H 1
+ 
+ #include <linux/types.h>
++#include <linux/bpfptr.h>
+ #include <uapi/linux/btf.h>
+ #include <uapi/linux/bpf.h>
++#include <linux/mutex.h>
+ 
+ #define BTF_TYPE_EMIT(type) ((void)(type *)0)
+ #define BTF_TYPE_EMIT_ENUM(enum_val) ((void)enum_val)
+@@ -238,4 +240,34 @@ static inline const char *btf_name_by_offset(const struct btf *btf,
+ }
+ #endif
+ 
++struct kfunc_btf_id_set {
++	struct list_head list;
++	struct btf_id_set *set;
++	struct module *owner;
++};
 +
- 	if (!btf_tab && offset) {
- 		btf_tab = kzalloc(sizeof(*btf_tab), GFP_KERNEL);
- 		if (!btf_tab)
-@@ -6624,6 +6633,10 @@ static int check_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn)
- 	struct btf *desc_btf;
- 	int err;
- 
-+	/* skip for now, but return error when we find this in fixup_kfunc_call */
-+	if (!insn->imm)
-+		return 0;
++struct kfunc_btf_id_list;
 +
- 	desc_btf = find_kfunc_desc_btf(env, insn->imm, insn->off, &btf_mod);
- 	if (IS_ERR(desc_btf))
- 		return PTR_ERR(desc_btf);
-@@ -12758,6 +12771,11 @@ static int fixup_kfunc_call(struct bpf_verifier_env *env,
- {
- 	const struct bpf_kfunc_desc *desc;
++#ifdef CONFIG_DEBUG_INFO_BTF_MODULES
++void register_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
++			       struct kfunc_btf_id_set *s);
++void unregister_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
++				 struct kfunc_btf_id_set *s);
++#else
++static inline void register_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
++					     struct kfunc_btf_id_set *s)
++{
++}
++static inline void unregister_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
++					       struct kfunc_btf_id_set *s)
++{
++}
++#endif
++
++#define DECLARE_CHECK_KFUNC_CALLBACK(type)                                     \
++	bool __bpf_check_##type##_kfunc_call(u32 kfunc_id, struct module *owner)
++#define DEFINE_KFUNC_BTF_ID_SET(set, name)                                     \
++	struct kfunc_btf_id_set name = { LIST_HEAD_INIT(name.list), (set),     \
++					 THIS_MODULE }
++
+ #endif
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index dfe61df4f974..eecafed56300 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -6215,3 +6215,54 @@ const struct bpf_func_proto bpf_btf_find_by_name_kind_proto = {
+ };
  
-+	if (!insn->imm) {
-+		verbose(env, "invalid kernel function call not eliminated in verifier pass\n");
-+		return -EINVAL;
+ BTF_ID_LIST_GLOBAL_SINGLE(btf_task_struct_ids, struct, task_struct)
++
++struct kfunc_btf_id_list {
++	struct list_head list;
++	struct mutex mutex;
++};
++
++#ifdef CONFIG_DEBUG_INFO_BTF_MODULES
++
++void register_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
++			       struct kfunc_btf_id_set *s)
++{
++	mutex_lock(&l->mutex);
++	list_add(&s->list, &l->list);
++	mutex_unlock(&l->mutex);
++}
++EXPORT_SYMBOL_GPL(register_kfunc_btf_id_set);
++
++void unregister_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
++				 struct kfunc_btf_id_set *s)
++{
++	mutex_lock(&l->mutex);
++	list_del_init(&s->list);
++	mutex_unlock(&l->mutex);
++}
++EXPORT_SYMBOL_GPL(unregister_kfunc_btf_id_set);
++
++#endif
++
++#define DEFINE_KFUNC_BTF_ID_LIST(name)                                         \
++	struct kfunc_btf_id_list name = { LIST_HEAD_INIT(name.list),           \
++					  __MUTEX_INITIALIZER(name.mutex) }; \
++	EXPORT_SYMBOL_GPL(name)
++
++#define DEFINE_CHECK_KFUNC_CALLBACK(type, list_name)                           \
++	bool __bpf_check_##type##_kfunc_call(u32 kfunc_id,                     \
++					     struct module *owner)             \
++	{                                                                      \
++		struct kfunc_btf_id_set *s;                                    \
++		if (!owner || !IS_ENABLED(CONFIG_DEBUG_INFO_BTF_MODULES))      \
++			return false;                                          \
++		mutex_lock(&list_name.mutex);                                  \
++		list_for_each_entry(s, &list_name.list, list) {                \
++			if (s->owner == owner &&                               \
++			    btf_id_set_contains(s->set, kfunc_id)) {           \
++				mutex_unlock(&list_name.mutex);                \
++				return true;                                   \
++			}                                                      \
++		}                                                              \
++		mutex_unlock(&list_name.mutex);                                \
++		return false;                                                  \
 +	}
-+
- 	/* insn->imm has the btf func_id. Replace it with
- 	 * an address (relative to __bpf_base_call).
- 	 */
 -- 
 2.33.0
 
