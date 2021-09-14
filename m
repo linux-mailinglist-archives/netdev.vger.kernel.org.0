@@ -2,172 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D621940ADE0
-	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 14:37:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC04E40ADE5
+	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 14:38:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232613AbhINMib (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 08:38:31 -0400
-Received: from mail.loongson.cn ([114.242.206.163]:42754 "EHLO loongson.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232524AbhINMia (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Sep 2021 08:38:30 -0400
-Received: from [10.130.0.135] (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dxn2tEl0BhhZgGAA--.14513S3;
-        Tue, 14 Sep 2021 20:36:22 +0800 (CST)
-From:   Tiezhu Yang <yangtiezhu@loongson.cn>
-Subject: Re: [PATCH bpf-next v2] bpf: Change value of MAX_TAIL_CALL_CNT from
- 32 to 33
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Shubham Bansal <illusionist.neo@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+        id S232661AbhINMjQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 08:39:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40074 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232660AbhINMjP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 08:39:15 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED1CCC061574;
+        Tue, 14 Sep 2021 05:37:57 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id j1so8761592pjv.3;
+        Tue, 14 Sep 2021 05:37:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cYD/m3b2Xk2X8naBfXl1GBV3YhTAlAqRYF5wWM7FCKA=;
+        b=HuUYJcPF/fNSo4qapjD1cQBJH3sQDo0QAGH8/ls4rD1rQQVh82eBelgLCY3Qtpdqx6
+         6X7HTbmlFReqwSWRNk1UyNXWyg/YOlpeiqXWaJPBgQtqo/9VdmoGd+p8Xu8pu1HtvnGd
+         xI1K5TgzIL5nYtgExPnXMpD/QHvarU5ol2LW3aAIxACOKJnQ1cC5NgbMTJh/ThPrLp3L
+         csu+uQLE+d/Ly52bx4Y7qdojHCzbv2ciBSLvdbGLddA6+tWI2uGN5B39wg9avCl5om0O
+         3IcX44QwkZJyfOtbdRp18PdbebyfAE/ABFZwu9NLrDGG+GZLp6dHOD5dR9oPBubMnvKa
+         qyCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cYD/m3b2Xk2X8naBfXl1GBV3YhTAlAqRYF5wWM7FCKA=;
+        b=NwM9al85EgzayT2u68xfySWt55mnx2g/vQlYrQ+NkKOZhrkxzsBH/DNNVWyaOCao/T
+         TGrht4/6OlFoYf9cyJw+UWfOpPxjOzDCnsGlHrPNVZ7KjJXlBOR7EiYLkSoUyAi/oxdH
+         CNI8KkIrdO9gVjtWQGVg0nlb6XOcYvHPJjNuNdk4qVcGx9I87PwYAR+9PtaE7A11XU7e
+         +xvSTHu4c8HwwlkKEInef9x8s397OnoK78PmzOyFSQBVG8biinlijnSvycbNt1VmjLeA
+         XTY3+yeH+5lp9K3nkkIYx4htUWRHHFqpLAHZ5E8NuBXp5bCQfiYKOmbSlw7J3GRV+KhO
+         4wow==
+X-Gm-Message-State: AOAM530uofj26lcSmsAteHWhzNMofBANZ6T5e/WI/GwEr7LRaJVU6rDp
+        bIbmQ0Vips+NIOGEPMr6kKA4o5dPXEy1OQ==
+X-Google-Smtp-Source: ABdhPJzFDuTI19DZQZBBqK0+rzUbVW6xRxb7iNBVcSoc3JgM5R9LzUubL9EIlqEFgylbUd5lfrL/KA==
+X-Received: by 2002:a17:90a:a389:: with SMTP id x9mr1822342pjp.167.1631623077176;
+        Tue, 14 Sep 2021 05:37:57 -0700 (PDT)
+Received: from localhost ([2405:201:6014:d058:a28d:3909:6ed5:29e7])
+        by smtp.gmail.com with ESMTPSA id p18sm11683006pgk.28.2021.09.14.05.37.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Sep 2021 05:37:56 -0700 (PDT)
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
         Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Paul Burton <paulburton@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        naveen.n.rao@linux.ibm.com, Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Luke Nelson <luke.r.nels@gmail.com>,
-        Xi Wang <xi.wang@gmail.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>, bjorn@kernel.org,
-        davem@davemloft.net,
-        Johan Almbladh <johan.almbladh@anyfinetworks.com>,
-        Paul Chaignon <paul@cilium.io>
-References: <1631325361-9851-1-git-send-email-yangtiezhu@loongson.cn>
- <0fb8d16f-67e7-7197-fce2-a4c17f1e5987@iogearbox.net>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-riscv@lists.infradead.org, sparclinux@vger.kernel.org
-Message-ID: <9ad382ca-a254-f897-9ec6-c9b1920a6174@loongson.cn>
-Date:   Tue, 14 Sep 2021 20:36:20 +0800
-User-Agent: Mozilla/5.0 (X11; Linux mips64; rv:45.0) Gecko/20100101
- Thunderbird/45.4.0
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org
+Subject: [PATCH bpf-next v2 00/10] Support kernel module function calls from eBPF
+Date:   Tue, 14 Sep 2021 18:07:39 +0530
+Message-Id: <20210914123750.460750-1-memxor@gmail.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-In-Reply-To: <0fb8d16f-67e7-7197-fce2-a4c17f1e5987@iogearbox.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-CM-TRANSID: AQAAf9Dxn2tEl0BhhZgGAA--.14513S3
-X-Coremail-Antispam: 1UD129KBjvJXoWxurW7Gw1DJw1UGw4xGFW3KFg_yoW5Ar43pr
-        WUJanakr4kXFyrC3ZrKa1xZay0vFZ8tryUGrWrK342yFn8Zrn5WF4xK3yFgF1UAryrta4F
-        9ayFkr95C3WkZFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUU9Gb7Iv0xC_Kw4lb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I2
-        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
-        A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xII
-        jxv20xvEc7CjxVAFwI0_Cr0_Gr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I
-        8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI
-        64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r106r15McIj6I8E87Iv67AKxVW8JVWxJw
-        Am72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lFIxGxcIEc7CjxVA2Y2ka0xkIwI1l
-        c7I2V7IY0VAS07AlzVAYIcxG8wCY02Avz4vE14v_Xr1l42xK82IYc2Ij64vIr41l4I8I3I
-        0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWU
-        GVWUWwC2zVAF1VAY17CE14v26rWY6r4UJwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14
-        v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xva
-        j40_Wr1j6rW3Jr1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxV
-        W8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7IU5lsj5UUUUU==
-X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3872; h=from:subject; bh=Kb1FWmgAk3OV0RE2BfjxxKQA8rcri3S4RjYcS7QjK4g=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBhQJdVKIuNZlOdz1t7OybdkjWRNREutsaNMMKKIh0h QQ1sYWCJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYUCXVQAKCRBM4MiGSL8RykUXEA CbHMN00uSNJoAigQCPh2zBIBzOPGyFGYTXUAOCotPq6mEdSh9VYAhbeL0I+FsokR9YWC2SupVUMIBe Xzlfhkftv6sF8ZS02GpIHH8M2ZpBBscmhexykIxwq9Oq8JA2pFIIWi4ZYeZ0r9yFsJCWAdrvvS3g+W iALDzJpw1MZvwYFIflI8OTgCObUUlLJuNDDJe7BHoG0US/OJYEgU8Bq78WCKcAxGsaUpjOsqBIo0ia 498XKbsd+mq5ydSEmHp9lfwlyxBGxtsoY3xq4nabf4aweueJ4bnVJQEZiWLwm9hcTB8yQtuOYhotMo FP0fyNZmudqFsCXpmooIhGJZAOw6t0Fw7OP6eQ0ez4041khvriH4aNptisD7v3UHj1BrmFK217G1bD yWDIEzPWajIoQtu6I7FWL2+yE6w/4Jyc8OzPkS8K1IC5qQtIvIXPN34NS1wWXxptMfh51pxdCVFaaQ BEos3jyyBIyMsccbNs83N32fxf9iz8TRDpl36CoRTdLn8Pq9yg+UK12k5JvON1gmwzfVKqP1NzcE7E xqpPKLHIQ6O+sDdQ84aLyCYadOOtd0cX0diw3e0fUR9PGyN2EJY91tJu0kSbpwn4pWuvQLjcU4OEhp TcUe0z93FN1YXGiLXuVBWgFhp5Uysikl0GN3tJXM2g1DGuo89vmBhFKaRnjQ==
+X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/14/2021 03:30 PM, Daniel Borkmann wrote:
-> On 9/11/21 3:56 AM, Tiezhu Yang wrote:
->>
-[...]
->> With this patch, it does not change the current limit 33, 
->> MAX_TAIL_CALL_CNT
->> can reflect the actual max tail call count, the tailcall selftests 
->> can work
->> well, and also the above failed testcase in test_bpf can be fixed for 
->> the
->> interpreter (all archs) and the JIT (all archs except for x86).
->>
->>   # uname -m
->>   x86_64
->>   # echo 1 > /proc/sys/net/core/bpf_jit_enable
->>   # modprobe test_bpf
->>   # dmesg | grep -w FAIL
->>   Tail call error path, max count reached jited:1 ret 33 != 34 FAIL
->
-> Could you also state in here which archs you have tested with this 
-> change? I
-> presume /every/ arch which has a JIT?
+This set enables kernel module function calls, and also modifies verifier logic
+to permit invalid kernel function calls as long as they are pruned as part of
+dead code elimination. This is done to provide better runtime portability for
+BPF objects, which can conditionally disable parts of code that are pruned later
+by the verifier (e.g. const volatile vars, kconfig options). libbpf
+modifications are made along with kernel changes to support module function
+calls. The set includes gen_loader support for emitting kfunc relocations.
 
-OK, will do it in v3.
-I have tested on x86 and mips.
+It also converts TCP congestion control objects to use the module kfunc support
+instead of relying on IS_BUILTIN ifdef.
 
->
->> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
->> ---
->>
->> v2:
->>    -- fix the typos in the commit message and update the commit message.
->>    -- fix the failed tailcall selftests for x86 jit.
->>       I am not quite sure the change on x86 is proper, with this change,
->>       tailcall selftests passed, but tailcall limit test in test_bpf.ko
->>       failed, I do not know the reason now, I think this is another 
->> issue,
->>       maybe someone more versed in x86 jit could take a look.
->
-> There should be a series from Johan coming today with regards to 
-> test_bpf.ko
-> that will fix the "tail call error path, max count reached" test which 
-> had an
-> assumption in that R0 would always be valid for the fall-through and 
-> could be
-> passed to the bpf_exit insn whereas it is not guaranteed and verifier, 
-> for
-> example, forbids a subsequent access to R0 w/o reinit. For your 
-> testing, I
-> would suggested to recheck once this series is out.
+Changelog:
+----------
+RFC v1 -> v2
+v1: https://lore.kernel.org/bpf/20210830173424.1385796-1-memxor@gmail.com
 
-I will test the following patch on x86 and mips:
+ * Address comments from Alexei
+   * Reuse fd_array instead of introducing kfunc_btf_fds array
+   * Take btf and module reference as needed, instead of preloading
+   * Add BTF_KIND_FUNC relocation support to gen_loader infrastructure
+ * Address comments from Andrii
+   * Drop hashmap in libbpf for finding index of existing BTF in fd_array
+   * Preserve invalid kfunc calls only when the symbol is weak
+ * Adjust verifier selftests
 
-[PATCH bpf v4 13/14] bpf/tests: Fix error in tail call limit tests
+Kumar Kartikeya Dwivedi (10):
+  bpf: Introduce BPF support for kernel module function calls
+  bpf: Be conservative while processing invalid kfunc calls
+  bpf: btf: Introduce helpers for dynamic BTF set registration
+  tools: Allow specifying base BTF file in resolve_btfids
+  bpf: Enable TCP congestion control kfunc from modules
+  bpf: Bump MAX_BPF_STACK size to 768 bytes
+  libbpf: Support kernel module function calls
+  libbpf: Resolve invalid weak kfunc calls with imm = 0, off = 0
+  libbpf: Update gen_loader to emit BTF_KIND_FUNC relocations
+  bpf, selftests: Add basic test for module kfunc call
 
-[...]
+ include/linux/bpf.h                           |   8 +-
+ include/linux/bpf_verifier.h                  |   2 +
+ include/linux/bpfptr.h                        |   1 +
+ include/linux/btf.h                           |  38 ++++
+ include/linux/filter.h                        |   4 +-
+ kernel/bpf/btf.c                              |  56 +++++
+ kernel/bpf/core.c                             |   2 +
+ kernel/bpf/verifier.c                         | 200 ++++++++++++++++--
+ kernel/trace/bpf_trace.c                      |   1 +
+ net/bpf/test_run.c                            |   2 +-
+ net/ipv4/bpf_tcp_ca.c                         |  36 +---
+ net/ipv4/tcp_bbr.c                            |  28 ++-
+ net/ipv4/tcp_cubic.c                          |  26 ++-
+ net/ipv4/tcp_dctcp.c                          |  26 ++-
+ scripts/Makefile.modfinal                     |   1 +
+ tools/bpf/resolve_btfids/main.c               |  19 +-
+ tools/lib/bpf/bpf.c                           |   1 +
+ tools/lib/bpf/bpf_gen_internal.h              |  12 +-
+ tools/lib/bpf/gen_loader.c                    |  93 +++++++-
+ tools/lib/bpf/libbpf.c                        |  81 +++++--
+ tools/lib/bpf/libbpf_internal.h               |   1 +
+ tools/testing/selftests/bpf/Makefile          |   1 +
+ .../selftests/bpf/bpf_testmod/bpf_testmod.c   |  23 +-
+ .../selftests/bpf/prog_tests/ksyms_module.c   |  13 +-
+ .../bpf/prog_tests/ksyms_module_libbpf.c      |  18 ++
+ .../selftests/bpf/progs/test_ksyms_module.c   |   9 +
+ .../bpf/progs/test_ksyms_module_libbpf.c      |  35 +++
+ tools/testing/selftests/bpf/verifier/calls.c  |  22 +-
+ .../selftests/bpf/verifier/raw_stack.c        |   4 +-
+ .../selftests/bpf/verifier/stack_ptr.c        |   6 +-
+ .../testing/selftests/bpf/verifier/var_off.c  |   4 +-
+ 31 files changed, 661 insertions(+), 112 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/ksyms_module_libbpf.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_ksyms_module_libbpf.c
 
->> diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
->> index 0fe6aac..74a9e61 100644
->> --- a/arch/x86/net/bpf_jit_comp.c
->> +++ b/arch/x86/net/bpf_jit_comp.c
->> @@ -402,7 +402,7 @@ static int get_pop_bytes(bool *callee_regs_used)
->>    * ... bpf_tail_call(void *ctx, struct bpf_array *array, u64 index) 
->> ...
->>    *   if (index >= array->map.max_entries)
->>    *     goto out;
->> - *   if (++tail_call_cnt > MAX_TAIL_CALL_CNT)
->> + *   if (tail_call_cnt++ == MAX_TAIL_CALL_CNT)
->
-> Why such inconsistency to e.g. above with arm64 case but also compared to
-> x86 32 bit which uses JAE? If so, we should cleanly follow the reference
-> implementation (== interpreter) _everywhere_ and _not_ introduce 
-> additional
-> variants/implementations across JITs.
-
-In order tokeep consistencyand make as few changes as possible,
-<javascript:void(0);>I will modify the check condition as follows:
-
-#define MAX_TAIL_CALL_CNT 33
-(1) for x86, arm64, ... (0 ~ 32)
-tcc = 0;
-if (tcc == MAX_TAIL_CALL_CNT)
-     goto out;
-tcc++;
-
-(2) for mips, riscv (33 ~ 1)
-tcc = MAX_TAIL_CALL_CNT;
-if (tcc == 0)
-     goto out;
-tcc--;
-
-[...]
+-- 
+2.33.0
 
