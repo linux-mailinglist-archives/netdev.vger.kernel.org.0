@@ -2,31 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50FFE40BBE4
-	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 01:07:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EC4340BBF1
+	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 01:08:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235723AbhINXI6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 19:08:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45084 "EHLO mail.kernel.org"
+        id S236088AbhINXJR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 19:09:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45292 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235594AbhINXI5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Sep 2021 19:08:57 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7872561175;
-        Tue, 14 Sep 2021 23:07:38 +0000 (UTC)
+        id S235973AbhINXJO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Sep 2021 19:09:14 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AC37D60F46;
+        Tue, 14 Sep 2021 23:07:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631660859;
-        bh=/JRyAnT5evEytQDDgxWGtZA22o9QDPBtDHQ4Wj2be8U=;
+        s=k20201202; t=1631660876;
+        bh=bj/HlKLeZlR+3ctD5f9rob++kOcOKP/652a0PXuFXts=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rUMZJVBeVxOh36ZNAzoVUSCLsP+sAmIKqA4BMHmv/bJaqaBiH6/A4NI5PYUWyYF7J
-         8WDuR3zQkJtk4wgPtocHaa3U8NUPqCo/CS0Dqk51yvxv0X2SgrBGaSVbMwi42sVuSb
-         3yQGtEm564LfV9Hg+8VoT1IxBnOcSLnTezRhMpgoQpaGAwNQEgYpGLW4TSdh+9prn4
-         CXF7ByeI5VFcHjGRJxdeX2yxhub0RZM8fQq87r/W1hEk+QlryyMsTCfGqFk3i55EYw
-         asugghZT1mSUJbBYckulIxeDuYZwIpnACGKUcZ5NqC27XGab81ZG/BfHTT10JJcX+T
-         ZgX2EFlC1YW0g==
+        b=S/GWRA8di1lHHcIlrPSWKL9pdL1FHMtejPx0SgN0dTncoDDYjgMWavZYtG8cECcNN
+         uKz0QuxyIWoDssKKdfZtzlAGYJWxxaGvVwP+XHz9t9IwL1uv6xQqQCL56P6wHPebcv
+         BMVcx3WgZy6urUdojBrsPydsPaOPIbVz0qipyg/FGPG+D/xFPByVXOJRO+5wD+F8Jp
+         GWx/85fo2O0WauvvdhoL4cKzH+u/ByPrMzQUxGBfLu2M3p4ShdGQ+gqLzvj1ypHJ5k
+         BjiDLLkIEhpK6FUPQjZWnCJL7wR1XqBQybphP32HbqxLjLYzWRlYQhp9dqnDt9IOW4
+         UQv19XM2EpSZA==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Doug Ledford <dledford@redhat.com>,
         Jason Gunthorpe <jgg@nvidia.com>
 Cc:     Aharon Landau <aharonl@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
         Gal Pressman <galpress@amazon.com>,
         Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
@@ -41,9 +42,9 @@ Cc:     Aharon Landau <aharonl@nvidia.com>,
         Shiraz Saleem <shiraz.saleem@intel.com>,
         Yishai Hadas <yishaih@nvidia.com>,
         Zhu Yanjun <zyjzyj2000@gmail.com>
-Subject: [PATCH mlx5-next v1 02/11] net/mlx5: Add priorities for counters in RDMA namespaces
-Date:   Wed, 15 Sep 2021 02:07:21 +0300
-Message-Id: <eab53af5450b57a9065ed0a174915bbd98b2b19f.1631660727.git.leonro@nvidia.com>
+Subject: [PATCH rdma-next v1 03/11] RDMA/counter: Add a descriptor in struct rdma_hw_stats
+Date:   Wed, 15 Sep 2021 02:07:22 +0300
+Message-Id: <676f5980eedcc6f0132324fc7029dcd590d28346.1631660727.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1631660727.git.leonro@nvidia.com>
 References: <cover.1631660727.git.leonro@nvidia.com>
@@ -55,144 +56,1038 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Aharon Landau <aharonl@nvidia.com>
 
-Add additional flow steering priorities in the RDMA namespace.
-This allows adding flow counters to count filtered RDMA traffic and then
-continue processing in the regular RDMA steering flow.
+Add a counter statistic descriptor structure in rdma_hw_stats. In
+addition to the counter name, more meta-information will be added.
+This code extension is needed for optional-counter support in the
+following patches.
 
 Signed-off-by: Aharon Landau <aharonl@nvidia.com>
-Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
+Reviewed-by: Mark Zhang <markzhang@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/fs_core.c | 54 ++++++++++++++++---
- include/linux/mlx5/device.h                   |  2 +
- include/linux/mlx5/fs.h                       |  2 +
- 3 files changed, 50 insertions(+), 8 deletions(-)
+ drivers/infiniband/core/nldev.c             |   6 +-
+ drivers/infiniband/core/sysfs.c             |   8 +-
+ drivers/infiniband/hw/bnxt_re/hw_counters.c | 114 ++++++++++----------
+ drivers/infiniband/hw/cxgb4/provider.c      |  22 ++--
+ drivers/infiniband/hw/efa/efa_verbs.c       |  19 ++--
+ drivers/infiniband/hw/hfi1/verbs.c          |  43 ++++----
+ drivers/infiniband/hw/irdma/verbs.c         |  98 ++++++++---------
+ drivers/infiniband/hw/mlx4/main.c           |  37 +++----
+ drivers/infiniband/hw/mlx4/mlx4_ib.h        |   2 +-
+ drivers/infiniband/hw/mlx5/counters.c       |  39 +++----
+ drivers/infiniband/hw/mlx5/mlx5_ib.h        |   2 +-
+ drivers/infiniband/sw/rxe/rxe_hw_counters.c |  42 ++++----
+ include/rdma/ib_verbs.h                     |  22 ++--
+ 13 files changed, 235 insertions(+), 219 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-index 9fe8e3c204d6..c9e2d2b0e2d1 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-@@ -99,6 +99,9 @@
- #define LEFTOVERS_NUM_LEVELS 1
- #define LEFTOVERS_NUM_PRIOS 1
+diff --git a/drivers/infiniband/core/nldev.c b/drivers/infiniband/core/nldev.c
+index e9b4b2cccaa0..3f6b98a87566 100644
+--- a/drivers/infiniband/core/nldev.c
++++ b/drivers/infiniband/core/nldev.c
+@@ -969,7 +969,8 @@ static int fill_stat_counter_hwcounters(struct sk_buff *msg,
+ 		return -EMSGSIZE;
  
-+#define RDMA_RX_COUNTERS_PRIO_NUM_LEVELS 1
-+#define RDMA_TX_COUNTERS_PRIO_NUM_LEVELS 1
-+
- #define BY_PASS_PRIO_NUM_LEVELS 1
- #define BY_PASS_MIN_LEVEL (ETHTOOL_MIN_LEVEL + MLX5_BY_PASS_NUM_PRIOS +\
- 			   LEFTOVERS_NUM_PRIOS)
-@@ -206,34 +209,63 @@ static struct init_tree_node egress_root_fs = {
- 	}
+ 	for (i = 0; i < st->num_counters; i++)
+-		if (rdma_nl_stat_hwcounter_entry(msg, st->names[i], st->value[i]))
++		if (rdma_nl_stat_hwcounter_entry(msg, st->descs[i].name,
++						 st->value[i]))
+ 			goto err;
+ 
+ 	nla_nest_end(msg, table_attr);
+@@ -2105,7 +2106,8 @@ static int stat_get_doit_default_counter(struct sk_buff *skb,
+ 	for (i = 0; i < num_cnts; i++) {
+ 		v = stats->value[i] +
+ 			rdma_counter_get_hwstat_value(device, port, i);
+-		if (rdma_nl_stat_hwcounter_entry(msg, stats->names[i], v)) {
++		if (rdma_nl_stat_hwcounter_entry(msg,
++						 stats->descs[i].name, v)) {
+ 			ret = -EMSGSIZE;
+ 			goto err_table;
+ 		}
+diff --git a/drivers/infiniband/core/sysfs.c b/drivers/infiniband/core/sysfs.c
+index 6146c3c1cbe5..c3663cfdcd52 100644
+--- a/drivers/infiniband/core/sysfs.c
++++ b/drivers/infiniband/core/sysfs.c
+@@ -895,7 +895,7 @@ alloc_hw_stats_device(struct ib_device *ibdev)
+ 	stats = ibdev->ops.alloc_hw_device_stats(ibdev);
+ 	if (!stats)
+ 		return ERR_PTR(-ENOMEM);
+-	if (!stats->names || stats->num_counters <= 0)
++	if (!stats->descs || stats->num_counters <= 0)
+ 		goto err_free_stats;
+ 
+ 	/*
+@@ -957,7 +957,7 @@ int ib_setup_device_attrs(struct ib_device *ibdev)
+ 	for (i = 0; i < data->stats->num_counters; i++) {
+ 		attr = &data->attrs[i];
+ 		sysfs_attr_init(&attr->attr.attr);
+-		attr->attr.attr.name = data->stats->names[i];
++		attr->attr.attr.name = data->stats->descs[i].name;
+ 		attr->attr.attr.mode = 0444;
+ 		attr->attr.show = hw_stat_device_show;
+ 		attr->show = show_hw_stats;
+@@ -994,7 +994,7 @@ alloc_hw_stats_port(struct ib_port *port, struct attribute_group *group)
+ 	stats = ibdev->ops.alloc_hw_port_stats(port->ibdev, port->port_num);
+ 	if (!stats)
+ 		return ERR_PTR(-ENOMEM);
+-	if (!stats->names || stats->num_counters <= 0)
++	if (!stats->descs || stats->num_counters <= 0)
+ 		goto err_free_stats;
+ 
+ 	/*
+@@ -1047,7 +1047,7 @@ static int setup_hw_port_stats(struct ib_port *port,
+ 	for (i = 0; i < data->stats->num_counters; i++) {
+ 		attr = &data->attrs[i];
+ 		sysfs_attr_init(&attr->attr.attr);
+-		attr->attr.attr.name = data->stats->names[i];
++		attr->attr.attr.name = data->stats->descs[i].name;
+ 		attr->attr.attr.mode = 0444;
+ 		attr->attr.show = hw_stat_port_show;
+ 		attr->show = show_hw_stats;
+diff --git a/drivers/infiniband/hw/bnxt_re/hw_counters.c b/drivers/infiniband/hw/bnxt_re/hw_counters.c
+index 7ba07797845c..d1d693878ee5 100644
+--- a/drivers/infiniband/hw/bnxt_re/hw_counters.c
++++ b/drivers/infiniband/hw/bnxt_re/hw_counters.c
+@@ -57,59 +57,59 @@
+ #include "bnxt_re.h"
+ #include "hw_counters.h"
+ 
+-static const char * const bnxt_re_stat_name[] = {
+-	[BNXT_RE_ACTIVE_QP]		=  "active_qps",
+-	[BNXT_RE_ACTIVE_SRQ]		=  "active_srqs",
+-	[BNXT_RE_ACTIVE_CQ]		=  "active_cqs",
+-	[BNXT_RE_ACTIVE_MR]		=  "active_mrs",
+-	[BNXT_RE_ACTIVE_MW]		=  "active_mws",
+-	[BNXT_RE_RX_PKTS]		=  "rx_pkts",
+-	[BNXT_RE_RX_BYTES]		=  "rx_bytes",
+-	[BNXT_RE_TX_PKTS]		=  "tx_pkts",
+-	[BNXT_RE_TX_BYTES]		=  "tx_bytes",
+-	[BNXT_RE_RECOVERABLE_ERRORS]	=  "recoverable_errors",
+-	[BNXT_RE_RX_DROPS]		=  "rx_roce_drops",
+-	[BNXT_RE_RX_DISCARDS]		=  "rx_roce_discards",
+-	[BNXT_RE_TO_RETRANSMITS]        = "to_retransmits",
+-	[BNXT_RE_SEQ_ERR_NAKS_RCVD]     = "seq_err_naks_rcvd",
+-	[BNXT_RE_MAX_RETRY_EXCEEDED]    = "max_retry_exceeded",
+-	[BNXT_RE_RNR_NAKS_RCVD]         = "rnr_naks_rcvd",
+-	[BNXT_RE_MISSING_RESP]          = "missing_resp",
+-	[BNXT_RE_UNRECOVERABLE_ERR]     = "unrecoverable_err",
+-	[BNXT_RE_BAD_RESP_ERR]          = "bad_resp_err",
+-	[BNXT_RE_LOCAL_QP_OP_ERR]       = "local_qp_op_err",
+-	[BNXT_RE_LOCAL_PROTECTION_ERR]  = "local_protection_err",
+-	[BNXT_RE_MEM_MGMT_OP_ERR]       = "mem_mgmt_op_err",
+-	[BNXT_RE_REMOTE_INVALID_REQ_ERR] = "remote_invalid_req_err",
+-	[BNXT_RE_REMOTE_ACCESS_ERR]     = "remote_access_err",
+-	[BNXT_RE_REMOTE_OP_ERR]         = "remote_op_err",
+-	[BNXT_RE_DUP_REQ]               = "dup_req",
+-	[BNXT_RE_RES_EXCEED_MAX]        = "res_exceed_max",
+-	[BNXT_RE_RES_LENGTH_MISMATCH]   = "res_length_mismatch",
+-	[BNXT_RE_RES_EXCEEDS_WQE]       = "res_exceeds_wqe",
+-	[BNXT_RE_RES_OPCODE_ERR]        = "res_opcode_err",
+-	[BNXT_RE_RES_RX_INVALID_RKEY]   = "res_rx_invalid_rkey",
+-	[BNXT_RE_RES_RX_DOMAIN_ERR]     = "res_rx_domain_err",
+-	[BNXT_RE_RES_RX_NO_PERM]        = "res_rx_no_perm",
+-	[BNXT_RE_RES_RX_RANGE_ERR]      = "res_rx_range_err",
+-	[BNXT_RE_RES_TX_INVALID_RKEY]   = "res_tx_invalid_rkey",
+-	[BNXT_RE_RES_TX_DOMAIN_ERR]     = "res_tx_domain_err",
+-	[BNXT_RE_RES_TX_NO_PERM]        = "res_tx_no_perm",
+-	[BNXT_RE_RES_TX_RANGE_ERR]      = "res_tx_range_err",
+-	[BNXT_RE_RES_IRRQ_OFLOW]        = "res_irrq_oflow",
+-	[BNXT_RE_RES_UNSUP_OPCODE]      = "res_unsup_opcode",
+-	[BNXT_RE_RES_UNALIGNED_ATOMIC]  = "res_unaligned_atomic",
+-	[BNXT_RE_RES_REM_INV_ERR]       = "res_rem_inv_err",
+-	[BNXT_RE_RES_MEM_ERROR]         = "res_mem_err",
+-	[BNXT_RE_RES_SRQ_ERR]           = "res_srq_err",
+-	[BNXT_RE_RES_CMP_ERR]           = "res_cmp_err",
+-	[BNXT_RE_RES_INVALID_DUP_RKEY]  = "res_invalid_dup_rkey",
+-	[BNXT_RE_RES_WQE_FORMAT_ERR]    = "res_wqe_format_err",
+-	[BNXT_RE_RES_CQ_LOAD_ERR]       = "res_cq_load_err",
+-	[BNXT_RE_RES_SRQ_LOAD_ERR]      = "res_srq_load_err",
+-	[BNXT_RE_RES_TX_PCI_ERR]        = "res_tx_pci_err",
+-	[BNXT_RE_RES_RX_PCI_ERR]        = "res_rx_pci_err",
+-	[BNXT_RE_OUT_OF_SEQ_ERR]        = "oos_drop_count"
++static const struct rdma_stat_desc bnxt_re_stat_descs[] = {
++	[BNXT_RE_ACTIVE_QP].name		=  "active_qps",
++	[BNXT_RE_ACTIVE_SRQ].name		=  "active_srqs",
++	[BNXT_RE_ACTIVE_CQ].name		=  "active_cqs",
++	[BNXT_RE_ACTIVE_MR].name		=  "active_mrs",
++	[BNXT_RE_ACTIVE_MW].name		=  "active_mws",
++	[BNXT_RE_RX_PKTS].name		=  "rx_pkts",
++	[BNXT_RE_RX_BYTES].name		=  "rx_bytes",
++	[BNXT_RE_TX_PKTS].name		=  "tx_pkts",
++	[BNXT_RE_TX_BYTES].name		=  "tx_bytes",
++	[BNXT_RE_RECOVERABLE_ERRORS].name	=  "recoverable_errors",
++	[BNXT_RE_RX_DROPS].name		=  "rx_roce_drops",
++	[BNXT_RE_RX_DISCARDS].name		=  "rx_roce_discards",
++	[BNXT_RE_TO_RETRANSMITS].name        = "to_retransmits",
++	[BNXT_RE_SEQ_ERR_NAKS_RCVD].name     = "seq_err_naks_rcvd",
++	[BNXT_RE_MAX_RETRY_EXCEEDED].name    = "max_retry_exceeded",
++	[BNXT_RE_RNR_NAKS_RCVD].name         = "rnr_naks_rcvd",
++	[BNXT_RE_MISSING_RESP].name          = "missing_resp",
++	[BNXT_RE_UNRECOVERABLE_ERR].name     = "unrecoverable_err",
++	[BNXT_RE_BAD_RESP_ERR].name          = "bad_resp_err",
++	[BNXT_RE_LOCAL_QP_OP_ERR].name       = "local_qp_op_err",
++	[BNXT_RE_LOCAL_PROTECTION_ERR].name  = "local_protection_err",
++	[BNXT_RE_MEM_MGMT_OP_ERR].name       = "mem_mgmt_op_err",
++	[BNXT_RE_REMOTE_INVALID_REQ_ERR].name = "remote_invalid_req_err",
++	[BNXT_RE_REMOTE_ACCESS_ERR].name     = "remote_access_err",
++	[BNXT_RE_REMOTE_OP_ERR].name         = "remote_op_err",
++	[BNXT_RE_DUP_REQ].name               = "dup_req",
++	[BNXT_RE_RES_EXCEED_MAX].name        = "res_exceed_max",
++	[BNXT_RE_RES_LENGTH_MISMATCH].name   = "res_length_mismatch",
++	[BNXT_RE_RES_EXCEEDS_WQE].name       = "res_exceeds_wqe",
++	[BNXT_RE_RES_OPCODE_ERR].name        = "res_opcode_err",
++	[BNXT_RE_RES_RX_INVALID_RKEY].name   = "res_rx_invalid_rkey",
++	[BNXT_RE_RES_RX_DOMAIN_ERR].name     = "res_rx_domain_err",
++	[BNXT_RE_RES_RX_NO_PERM].name        = "res_rx_no_perm",
++	[BNXT_RE_RES_RX_RANGE_ERR].name      = "res_rx_range_err",
++	[BNXT_RE_RES_TX_INVALID_RKEY].name   = "res_tx_invalid_rkey",
++	[BNXT_RE_RES_TX_DOMAIN_ERR].name     = "res_tx_domain_err",
++	[BNXT_RE_RES_TX_NO_PERM].name        = "res_tx_no_perm",
++	[BNXT_RE_RES_TX_RANGE_ERR].name      = "res_tx_range_err",
++	[BNXT_RE_RES_IRRQ_OFLOW].name        = "res_irrq_oflow",
++	[BNXT_RE_RES_UNSUP_OPCODE].name      = "res_unsup_opcode",
++	[BNXT_RE_RES_UNALIGNED_ATOMIC].name  = "res_unaligned_atomic",
++	[BNXT_RE_RES_REM_INV_ERR].name       = "res_rem_inv_err",
++	[BNXT_RE_RES_MEM_ERROR].name         = "res_mem_err",
++	[BNXT_RE_RES_SRQ_ERR].name           = "res_srq_err",
++	[BNXT_RE_RES_CMP_ERR].name           = "res_cmp_err",
++	[BNXT_RE_RES_INVALID_DUP_RKEY].name  = "res_invalid_dup_rkey",
++	[BNXT_RE_RES_WQE_FORMAT_ERR].name    = "res_wqe_format_err",
++	[BNXT_RE_RES_CQ_LOAD_ERR].name       = "res_cq_load_err",
++	[BNXT_RE_RES_SRQ_LOAD_ERR].name      = "res_srq_load_err",
++	[BNXT_RE_RES_TX_PCI_ERR].name        = "res_tx_pci_err",
++	[BNXT_RE_RES_RX_PCI_ERR].name        = "res_rx_pci_err",
++	[BNXT_RE_OUT_OF_SEQ_ERR].name        = "oos_drop_count"
  };
  
--#define RDMA_RX_BYPASS_PRIO 0
--#define RDMA_RX_KERNEL_PRIO 1
-+enum {
-+	RDMA_RX_COUNTERS_PRIO,
-+	RDMA_RX_BYPASS_PRIO,
-+	RDMA_RX_KERNEL_PRIO,
-+};
-+
-+#define RDMA_RX_BYPASS_MIN_LEVEL MLX5_BY_PASS_NUM_REGULAR_PRIOS
-+#define RDMA_RX_KERNEL_MIN_LEVEL (RDMA_RX_BYPASS_MIN_LEVEL + 1)
-+#define RDMA_RX_COUNTERS_MIN_LEVEL (RDMA_RX_KERNEL_MIN_LEVEL + 2)
-+
- static struct init_tree_node rdma_rx_root_fs = {
- 	.type = FS_TYPE_NAMESPACE,
--	.ar_size = 2,
-+	.ar_size = 3,
- 	.children = (struct init_tree_node[]) {
-+		[RDMA_RX_COUNTERS_PRIO] =
-+		ADD_PRIO(0, RDMA_RX_COUNTERS_MIN_LEVEL, 0,
-+			 FS_CHAINING_CAPS,
-+			 ADD_NS(MLX5_FLOW_TABLE_MISS_ACTION_DEF,
-+				ADD_MULTIPLE_PRIO(MLX5_RDMA_RX_NUM_COUNTERS_PRIOS,
-+						  RDMA_RX_COUNTERS_PRIO_NUM_LEVELS))),
- 		[RDMA_RX_BYPASS_PRIO] =
--		ADD_PRIO(0, MLX5_BY_PASS_NUM_REGULAR_PRIOS, 0,
-+		ADD_PRIO(0, RDMA_RX_BYPASS_MIN_LEVEL, 0,
- 			 FS_CHAINING_CAPS,
- 			 ADD_NS(MLX5_FLOW_TABLE_MISS_ACTION_DEF,
- 				ADD_MULTIPLE_PRIO(MLX5_BY_PASS_NUM_REGULAR_PRIOS,
- 						  BY_PASS_PRIO_NUM_LEVELS))),
- 		[RDMA_RX_KERNEL_PRIO] =
--		ADD_PRIO(0, MLX5_BY_PASS_NUM_REGULAR_PRIOS + 1, 0,
-+		ADD_PRIO(0, RDMA_RX_KERNEL_MIN_LEVEL, 0,
- 			 FS_CHAINING_CAPS,
- 			 ADD_NS(MLX5_FLOW_TABLE_MISS_ACTION_SWITCH_DOMAIN,
- 				ADD_MULTIPLE_PRIO(1, 1))),
+ int bnxt_re_ib_get_hw_stats(struct ib_device *ibdev,
+@@ -231,15 +231,15 @@ int bnxt_re_ib_get_hw_stats(struct ib_device *ibdev,
+ 				rdev->stats.res_oos_drop_count;
  	}
- };
  
-+enum {
-+	RDMA_TX_COUNTERS_PRIO,
-+	RDMA_TX_BYPASS_PRIO,
-+};
-+
-+#define RDMA_TX_BYPASS_MIN_LEVEL MLX5_BY_PASS_NUM_PRIOS
-+#define RDMA_TX_COUNTERS_MIN_LEVEL (RDMA_TX_BYPASS_MIN_LEVEL + 1)
-+
- static struct init_tree_node rdma_tx_root_fs = {
- 	.type = FS_TYPE_NAMESPACE,
--	.ar_size = 1,
-+	.ar_size = 2,
- 	.children = (struct init_tree_node[]) {
--		ADD_PRIO(0, MLX5_BY_PASS_NUM_PRIOS, 0,
-+		[RDMA_TX_COUNTERS_PRIO] =
-+		ADD_PRIO(0, RDMA_TX_COUNTERS_MIN_LEVEL, 0,
-+			 FS_CHAINING_CAPS,
-+			 ADD_NS(MLX5_FLOW_TABLE_MISS_ACTION_DEF,
-+				ADD_MULTIPLE_PRIO(MLX5_RDMA_TX_NUM_COUNTERS_PRIOS,
-+						  RDMA_TX_COUNTERS_PRIO_NUM_LEVELS))),
-+		[RDMA_TX_BYPASS_PRIO] =
-+		ADD_PRIO(0, RDMA_TX_BYPASS_MIN_LEVEL, 0,
- 			 FS_CHAINING_CAPS_RDMA_TX,
- 			 ADD_NS(MLX5_FLOW_TABLE_MISS_ACTION_DEF,
--				ADD_MULTIPLE_PRIO(MLX5_BY_PASS_NUM_PRIOS,
-+				ADD_MULTIPLE_PRIO(RDMA_TX_BYPASS_MIN_LEVEL,
- 						  BY_PASS_PRIO_NUM_LEVELS))),
- 	}
- };
-@@ -2216,6 +2248,12 @@ struct mlx5_flow_namespace *mlx5_get_flow_namespace(struct mlx5_core_dev *dev,
- 		prio = RDMA_RX_KERNEL_PRIO;
- 	} else if (type == MLX5_FLOW_NAMESPACE_RDMA_TX) {
- 		root_ns = steering->rdma_tx_root_ns;
-+	} else if (type == MLX5_FLOW_NAMESPACE_RDMA_RX_COUNTERS) {
-+		root_ns = steering->rdma_rx_root_ns;
-+		prio = RDMA_RX_COUNTERS_PRIO;
-+	} else if (type == MLX5_FLOW_NAMESPACE_RDMA_TX_COUNTERS) {
-+		root_ns = steering->rdma_tx_root_ns;
-+		prio = RDMA_TX_COUNTERS_PRIO;
- 	} else { /* Must be NIC RX */
- 		root_ns = steering->root_ns;
- 		prio = type;
-diff --git a/include/linux/mlx5/device.h b/include/linux/mlx5/device.h
-index 66eaf0aa7f69..ed0230ff9422 100644
---- a/include/linux/mlx5/device.h
-+++ b/include/linux/mlx5/device.h
-@@ -1456,6 +1456,8 @@ static inline u16 mlx5_to_sw_pkey_sz(int pkey_sz)
- 	return MLX5_MIN_PKEY_TABLE_SIZE << pkey_sz;
+-	return ARRAY_SIZE(bnxt_re_stat_name);
++	return ARRAY_SIZE(bnxt_re_stat_descs);
  }
  
-+#define MLX5_RDMA_RX_NUM_COUNTERS_PRIOS 2
-+#define MLX5_RDMA_TX_NUM_COUNTERS_PRIOS 1
- #define MLX5_BY_PASS_NUM_REGULAR_PRIOS 16
- #define MLX5_BY_PASS_NUM_DONT_TRAP_PRIOS 16
- #define MLX5_BY_PASS_NUM_MULTICAST_PRIOS 1
-diff --git a/include/linux/mlx5/fs.h b/include/linux/mlx5/fs.h
-index 0106c67e8ccb..f2c3da2006d9 100644
---- a/include/linux/mlx5/fs.h
-+++ b/include/linux/mlx5/fs.h
-@@ -83,6 +83,8 @@ enum mlx5_flow_namespace_type {
- 	MLX5_FLOW_NAMESPACE_RDMA_RX,
- 	MLX5_FLOW_NAMESPACE_RDMA_RX_KERNEL,
- 	MLX5_FLOW_NAMESPACE_RDMA_TX,
-+	MLX5_FLOW_NAMESPACE_RDMA_RX_COUNTERS,
-+	MLX5_FLOW_NAMESPACE_RDMA_TX_COUNTERS,
+ struct rdma_hw_stats *bnxt_re_ib_alloc_hw_port_stats(struct ib_device *ibdev,
+ 						     u32 port_num)
+ {
+-	BUILD_BUG_ON(ARRAY_SIZE(bnxt_re_stat_name) != BNXT_RE_NUM_COUNTERS);
++	BUILD_BUG_ON(ARRAY_SIZE(bnxt_re_stat_descs) != BNXT_RE_NUM_COUNTERS);
+ 
+-	return rdma_alloc_hw_stats_struct(bnxt_re_stat_name,
+-					  ARRAY_SIZE(bnxt_re_stat_name),
++	return rdma_alloc_hw_stats_struct(bnxt_re_stat_descs,
++					  ARRAY_SIZE(bnxt_re_stat_descs),
+ 					  RDMA_HW_STATS_DEFAULT_LIFESPAN);
+ }
+diff --git a/drivers/infiniband/hw/cxgb4/provider.c b/drivers/infiniband/hw/cxgb4/provider.c
+index e7337662aff8..0c8fd5a85fcb 100644
+--- a/drivers/infiniband/hw/cxgb4/provider.c
++++ b/drivers/infiniband/hw/cxgb4/provider.c
+@@ -366,23 +366,23 @@ enum counters {
+ 	NR_COUNTERS
  };
  
- enum {
+-static const char * const names[] = {
+-	[IP4INSEGS] = "ip4InSegs",
+-	[IP4OUTSEGS] = "ip4OutSegs",
+-	[IP4RETRANSSEGS] = "ip4RetransSegs",
+-	[IP4OUTRSTS] = "ip4OutRsts",
+-	[IP6INSEGS] = "ip6InSegs",
+-	[IP6OUTSEGS] = "ip6OutSegs",
+-	[IP6RETRANSSEGS] = "ip6RetransSegs",
+-	[IP6OUTRSTS] = "ip6OutRsts"
++static const struct rdma_stat_desc cxgb4_descs[] = {
++	[IP4INSEGS].name = "ip4InSegs",
++	[IP4OUTSEGS].name = "ip4OutSegs",
++	[IP4RETRANSSEGS].name = "ip4RetransSegs",
++	[IP4OUTRSTS].name = "ip4OutRsts",
++	[IP6INSEGS].name = "ip6InSegs",
++	[IP6OUTSEGS].name = "ip6OutSegs",
++	[IP6RETRANSSEGS].name = "ip6RetransSegs",
++	[IP6OUTRSTS].name = "ip6OutRsts"
+ };
+ 
+ static struct rdma_hw_stats *c4iw_alloc_device_stats(struct ib_device *ibdev)
+ {
+-	BUILD_BUG_ON(ARRAY_SIZE(names) != NR_COUNTERS);
++	BUILD_BUG_ON(ARRAY_SIZE(cxgb4_descs) != NR_COUNTERS);
+ 
+ 	/* FIXME: these look like port stats */
+-	return rdma_alloc_hw_stats_struct(names, NR_COUNTERS,
++	return rdma_alloc_hw_stats_struct(cxgb4_descs, NR_COUNTERS,
+ 					  RDMA_HW_STATS_DEFAULT_LIFESPAN);
+ }
+ 
+diff --git a/drivers/infiniband/hw/efa/efa_verbs.c b/drivers/infiniband/hw/efa/efa_verbs.c
+index e5f9d90aad5e..35d818b38e77 100644
+--- a/drivers/infiniband/hw/efa/efa_verbs.c
++++ b/drivers/infiniband/hw/efa/efa_verbs.c
+@@ -60,13 +60,14 @@ struct efa_user_mmap_entry {
+ 	op(EFA_RDMA_READ_RESP_BYTES, "rdma_read_resp_bytes") \
+ 
+ #define EFA_STATS_ENUM(ename, name) ename,
+-#define EFA_STATS_STR(ename, name) [ename] = name,
++#define EFA_STATS_STR(ename, nam) \
++	[ename].name = nam,
+ 
+ enum efa_hw_device_stats {
+ 	EFA_DEFINE_DEVICE_STATS(EFA_STATS_ENUM)
+ };
+ 
+-static const char *const efa_device_stats_names[] = {
++static const struct rdma_stat_desc efa_device_stats_descs[] = {
+ 	EFA_DEFINE_DEVICE_STATS(EFA_STATS_STR)
+ };
+ 
+@@ -74,7 +75,7 @@ enum efa_hw_port_stats {
+ 	EFA_DEFINE_PORT_STATS(EFA_STATS_ENUM)
+ };
+ 
+-static const char *const efa_port_stats_names[] = {
++static const struct rdma_stat_desc efa_port_stats_descs[] = {
+ 	EFA_DEFINE_PORT_STATS(EFA_STATS_STR)
+ };
+ 
+@@ -1906,15 +1907,15 @@ int efa_destroy_ah(struct ib_ah *ibah, u32 flags)
+ struct rdma_hw_stats *efa_alloc_hw_port_stats(struct ib_device *ibdev,
+ 					      u32 port_num)
+ {
+-	return rdma_alloc_hw_stats_struct(efa_port_stats_names,
+-					  ARRAY_SIZE(efa_port_stats_names),
++	return rdma_alloc_hw_stats_struct(efa_port_stats_descs,
++					  ARRAY_SIZE(efa_port_stats_descs),
+ 					  RDMA_HW_STATS_DEFAULT_LIFESPAN);
+ }
+ 
+ struct rdma_hw_stats *efa_alloc_hw_device_stats(struct ib_device *ibdev)
+ {
+-	return rdma_alloc_hw_stats_struct(efa_device_stats_names,
+-					  ARRAY_SIZE(efa_device_stats_names),
++	return rdma_alloc_hw_stats_struct(efa_device_stats_descs,
++					  ARRAY_SIZE(efa_device_stats_descs),
+ 					  RDMA_HW_STATS_DEFAULT_LIFESPAN);
+ }
+ 
+@@ -1939,7 +1940,7 @@ static int efa_fill_device_stats(struct efa_dev *dev,
+ 	stats->value[EFA_CREATE_AH_ERR] = atomic64_read(&s->create_ah_err);
+ 	stats->value[EFA_MMAP_ERR] = atomic64_read(&s->mmap_err);
+ 
+-	return ARRAY_SIZE(efa_device_stats_names);
++	return ARRAY_SIZE(efa_device_stats_descs);
+ }
+ 
+ static int efa_fill_port_stats(struct efa_dev *dev, struct rdma_hw_stats *stats,
+@@ -1988,7 +1989,7 @@ static int efa_fill_port_stats(struct efa_dev *dev, struct rdma_hw_stats *stats,
+ 	stats->value[EFA_RDMA_READ_WR_ERR] = rrs->read_wr_err;
+ 	stats->value[EFA_RDMA_READ_RESP_BYTES] = rrs->read_resp_bytes;
+ 
+-	return ARRAY_SIZE(efa_port_stats_names);
++	return ARRAY_SIZE(efa_port_stats_descs);
+ }
+ 
+ int efa_get_hw_stats(struct ib_device *ibdev, struct rdma_hw_stats *stats,
+diff --git a/drivers/infiniband/hw/hfi1/verbs.c b/drivers/infiniband/hw/hfi1/verbs.c
+index 26bea51869bf..26e5f62d686d 100644
+--- a/drivers/infiniband/hw/hfi1/verbs.c
++++ b/drivers/infiniband/hw/hfi1/verbs.c
+@@ -1602,8 +1602,8 @@ static const char * const driver_cntr_names[] = {
+ };
+ 
+ static DEFINE_MUTEX(cntr_names_lock); /* protects the *_cntr_names bufers */
+-static const char **dev_cntr_names;
+-static const char **port_cntr_names;
++static struct rdma_stat_desc *dev_cntr_descs;
++static struct rdma_stat_desc *port_cntr_descs;
+ int num_driver_cntrs = ARRAY_SIZE(driver_cntr_names);
+ static int num_dev_cntrs;
+ static int num_port_cntrs;
+@@ -1618,9 +1618,10 @@ static int init_cntr_names(const char *names_in,
+ 			   const size_t names_len,
+ 			   int num_extra_names,
+ 			   int *num_cntrs,
+-			   const char ***cntr_names)
++			   struct rdma_stat_desc **cntr_descs)
+ {
+-	char *names_out, *p, **q;
++	struct rdma_stat_desc *q;
++	char *names_out, *p;
+ 	int i, n;
+ 
+ 	n = 0;
+@@ -1628,26 +1629,26 @@ static int init_cntr_names(const char *names_in,
+ 		if (names_in[i] == '\n')
+ 			n++;
+ 
+-	names_out = kmalloc((n + num_extra_names) * sizeof(char *) + names_len,
++	names_out = kmalloc((n + num_extra_names) * sizeof(struct rdma_stat_desc) + names_len,
+ 			    GFP_KERNEL);
+ 	if (!names_out) {
+ 		*num_cntrs = 0;
+-		*cntr_names = NULL;
++		*cntr_descs = NULL;
+ 		return -ENOMEM;
+ 	}
+ 
+-	p = names_out + (n + num_extra_names) * sizeof(char *);
++	p = names_out + (n + num_extra_names) * sizeof(struct rdma_stat_desc);
+ 	memcpy(p, names_in, names_len);
+ 
+-	q = (char **)names_out;
++	q = (struct rdma_stat_desc *)names_out;
+ 	for (i = 0; i < n; i++) {
+-		q[i] = p;
++		q[i].name = p;
+ 		p = strchr(p, '\n');
+ 		*p++ = '\0';
+ 	}
+ 
+ 	*num_cntrs = n;
+-	*cntr_names = (const char **)names_out;
++	*cntr_descs = (struct rdma_stat_desc *)names_out;
+ 	return 0;
+ }
+ 
+@@ -1661,18 +1662,18 @@ static int init_counters(struct ib_device *ibdev)
+ 		goto out_unlock;
+ 
+ 	err = init_cntr_names(dd->cntrnames, dd->cntrnameslen, num_driver_cntrs,
+-			      &num_dev_cntrs, &dev_cntr_names);
++			      &num_dev_cntrs, &dev_cntr_descs);
+ 	if (err)
+ 		goto out_unlock;
+ 
+ 	for (i = 0; i < num_driver_cntrs; i++)
+-		dev_cntr_names[num_dev_cntrs + i] = driver_cntr_names[i];
++		dev_cntr_descs[num_dev_cntrs + i].name = driver_cntr_names[i];
+ 
+ 	err = init_cntr_names(dd->portcntrnames, dd->portcntrnameslen, 0,
+-			      &num_port_cntrs, &port_cntr_names);
++			      &num_port_cntrs, &port_cntr_descs);
+ 	if (err) {
+-		kfree(dev_cntr_names);
+-		dev_cntr_names = NULL;
++		kfree(dev_cntr_descs);
++		dev_cntr_descs = NULL;
+ 		goto out_unlock;
+ 	}
+ 	cntr_names_initialized = 1;
+@@ -1686,7 +1687,7 @@ static struct rdma_hw_stats *hfi1_alloc_hw_device_stats(struct ib_device *ibdev)
+ {
+ 	if (init_counters(ibdev))
+ 		return NULL;
+-	return rdma_alloc_hw_stats_struct(dev_cntr_names,
++	return rdma_alloc_hw_stats_struct(dev_cntr_descs,
+ 					  num_dev_cntrs + num_driver_cntrs,
+ 					  RDMA_HW_STATS_DEFAULT_LIFESPAN);
+ }
+@@ -1696,7 +1697,7 @@ static struct rdma_hw_stats *hfi_alloc_hw_port_stats(struct ib_device *ibdev,
+ {
+ 	if (init_counters(ibdev))
+ 		return NULL;
+-	return rdma_alloc_hw_stats_struct(port_cntr_names, num_port_cntrs,
++	return rdma_alloc_hw_stats_struct(port_cntr_descs, num_port_cntrs,
+ 					  RDMA_HW_STATS_DEFAULT_LIFESPAN);
+ }
+ 
+@@ -1921,10 +1922,10 @@ void hfi1_unregister_ib_device(struct hfi1_devdata *dd)
+ 	verbs_txreq_exit(dev);
+ 
+ 	mutex_lock(&cntr_names_lock);
+-	kfree(dev_cntr_names);
+-	kfree(port_cntr_names);
+-	dev_cntr_names = NULL;
+-	port_cntr_names = NULL;
++	kfree(dev_cntr_descs);
++	kfree(port_cntr_descs);
++	dev_cntr_descs = NULL;
++	port_cntr_descs = NULL;
+ 	cntr_names_initialized = 0;
+ 	mutex_unlock(&cntr_names_lock);
+ }
+diff --git a/drivers/infiniband/hw/irdma/verbs.c b/drivers/infiniband/hw/irdma/verbs.c
+index 4fc323402073..611197ade009 100644
+--- a/drivers/infiniband/hw/irdma/verbs.c
++++ b/drivers/infiniband/hw/irdma/verbs.c
+@@ -3644,88 +3644,88 @@ static int irdma_iw_port_immutable(struct ib_device *ibdev, u32 port_num,
+ 	return 0;
+ }
+ 
+-static const char *const irdma_hw_stat_names[] = {
++static const struct rdma_stat_desc irdma_hw_stat_descs[] = {
+ 	/* 32bit names */
+-	[IRDMA_HW_STAT_INDEX_RXVLANERR] = "rxVlanErrors",
+-	[IRDMA_HW_STAT_INDEX_IP4RXDISCARD] = "ip4InDiscards",
+-	[IRDMA_HW_STAT_INDEX_IP4RXTRUNC] = "ip4InTruncatedPkts",
+-	[IRDMA_HW_STAT_INDEX_IP4TXNOROUTE] = "ip4OutNoRoutes",
+-	[IRDMA_HW_STAT_INDEX_IP6RXDISCARD] = "ip6InDiscards",
+-	[IRDMA_HW_STAT_INDEX_IP6RXTRUNC] = "ip6InTruncatedPkts",
+-	[IRDMA_HW_STAT_INDEX_IP6TXNOROUTE] = "ip6OutNoRoutes",
+-	[IRDMA_HW_STAT_INDEX_TCPRTXSEG] = "tcpRetransSegs",
+-	[IRDMA_HW_STAT_INDEX_TCPRXOPTERR] = "tcpInOptErrors",
+-	[IRDMA_HW_STAT_INDEX_TCPRXPROTOERR] = "tcpInProtoErrors",
+-	[IRDMA_HW_STAT_INDEX_RXRPCNPHANDLED] = "cnpHandled",
+-	[IRDMA_HW_STAT_INDEX_RXRPCNPIGNORED] = "cnpIgnored",
+-	[IRDMA_HW_STAT_INDEX_TXNPCNPSENT] = "cnpSent",
++	[IRDMA_HW_STAT_INDEX_RXVLANERR].name = "rxVlanErrors",
++	[IRDMA_HW_STAT_INDEX_IP4RXDISCARD].name = "ip4InDiscards",
++	[IRDMA_HW_STAT_INDEX_IP4RXTRUNC].name = "ip4InTruncatedPkts",
++	[IRDMA_HW_STAT_INDEX_IP4TXNOROUTE].name = "ip4OutNoRoutes",
++	[IRDMA_HW_STAT_INDEX_IP6RXDISCARD].name = "ip6InDiscards",
++	[IRDMA_HW_STAT_INDEX_IP6RXTRUNC].name = "ip6InTruncatedPkts",
++	[IRDMA_HW_STAT_INDEX_IP6TXNOROUTE].name = "ip6OutNoRoutes",
++	[IRDMA_HW_STAT_INDEX_TCPRTXSEG].name = "tcpRetransSegs",
++	[IRDMA_HW_STAT_INDEX_TCPRXOPTERR].name = "tcpInOptErrors",
++	[IRDMA_HW_STAT_INDEX_TCPRXPROTOERR].name = "tcpInProtoErrors",
++	[IRDMA_HW_STAT_INDEX_RXRPCNPHANDLED].name = "cnpHandled",
++	[IRDMA_HW_STAT_INDEX_RXRPCNPIGNORED].name = "cnpIgnored",
++	[IRDMA_HW_STAT_INDEX_TXNPCNPSENT].name = "cnpSent",
+ 
+ 	/* 64bit names */
+-	[IRDMA_HW_STAT_INDEX_IP4RXOCTS + IRDMA_HW_STAT_INDEX_MAX_32] =
++	[IRDMA_HW_STAT_INDEX_IP4RXOCTS + IRDMA_HW_STAT_INDEX_MAX_32].name =
+ 		"ip4InOctets",
+-	[IRDMA_HW_STAT_INDEX_IP4RXPKTS + IRDMA_HW_STAT_INDEX_MAX_32] =
++	[IRDMA_HW_STAT_INDEX_IP4RXPKTS + IRDMA_HW_STAT_INDEX_MAX_32].name =
+ 		"ip4InPkts",
+-	[IRDMA_HW_STAT_INDEX_IP4RXFRAGS + IRDMA_HW_STAT_INDEX_MAX_32] =
++	[IRDMA_HW_STAT_INDEX_IP4RXFRAGS + IRDMA_HW_STAT_INDEX_MAX_32].name =
+ 		"ip4InReasmRqd",
+-	[IRDMA_HW_STAT_INDEX_IP4RXMCOCTS + IRDMA_HW_STAT_INDEX_MAX_32] =
++	[IRDMA_HW_STAT_INDEX_IP4RXMCOCTS + IRDMA_HW_STAT_INDEX_MAX_32].name =
+ 		"ip4InMcastOctets",
+-	[IRDMA_HW_STAT_INDEX_IP4RXMCPKTS + IRDMA_HW_STAT_INDEX_MAX_32] =
++	[IRDMA_HW_STAT_INDEX_IP4RXMCPKTS + IRDMA_HW_STAT_INDEX_MAX_32].name =
+ 		"ip4InMcastPkts",
+-	[IRDMA_HW_STAT_INDEX_IP4TXOCTS + IRDMA_HW_STAT_INDEX_MAX_32] =
++	[IRDMA_HW_STAT_INDEX_IP4TXOCTS + IRDMA_HW_STAT_INDEX_MAX_32].name =
+ 		"ip4OutOctets",
+-	[IRDMA_HW_STAT_INDEX_IP4TXPKTS + IRDMA_HW_STAT_INDEX_MAX_32] =
++	[IRDMA_HW_STAT_INDEX_IP4TXPKTS + IRDMA_HW_STAT_INDEX_MAX_32].name =
+ 		"ip4OutPkts",
+-	[IRDMA_HW_STAT_INDEX_IP4TXFRAGS + IRDMA_HW_STAT_INDEX_MAX_32] =
++	[IRDMA_HW_STAT_INDEX_IP4TXFRAGS + IRDMA_HW_STAT_INDEX_MAX_32].name =
+ 		"ip4OutSegRqd",
+-	[IRDMA_HW_STAT_INDEX_IP4TXMCOCTS + IRDMA_HW_STAT_INDEX_MAX_32] =
++	[IRDMA_HW_STAT_INDEX_IP4TXMCOCTS + IRDMA_HW_STAT_INDEX_MAX_32].name =
+ 		"ip4OutMcastOctets",
+-	[IRDMA_HW_STAT_INDEX_IP4TXMCPKTS + IRDMA_HW_STAT_INDEX_MAX_32] =
++	[IRDMA_HW_STAT_INDEX_IP4TXMCPKTS + IRDMA_HW_STAT_INDEX_MAX_32].name =
+ 		"ip4OutMcastPkts",
+-	[IRDMA_HW_STAT_INDEX_IP6RXOCTS + IRDMA_HW_STAT_INDEX_MAX_32] =
++	[IRDMA_HW_STAT_INDEX_IP6RXOCTS + IRDMA_HW_STAT_INDEX_MAX_32].name =
+ 		"ip6InOctets",
+-	[IRDMA_HW_STAT_INDEX_IP6RXPKTS + IRDMA_HW_STAT_INDEX_MAX_32] =
++	[IRDMA_HW_STAT_INDEX_IP6RXPKTS + IRDMA_HW_STAT_INDEX_MAX_32].name =
+ 		"ip6InPkts",
+-	[IRDMA_HW_STAT_INDEX_IP6RXFRAGS + IRDMA_HW_STAT_INDEX_MAX_32] =
++	[IRDMA_HW_STAT_INDEX_IP6RXFRAGS + IRDMA_HW_STAT_INDEX_MAX_32].name =
+ 		"ip6InReasmRqd",
+-	[IRDMA_HW_STAT_INDEX_IP6RXMCOCTS + IRDMA_HW_STAT_INDEX_MAX_32] =
++	[IRDMA_HW_STAT_INDEX_IP6RXMCOCTS + IRDMA_HW_STAT_INDEX_MAX_32].name =
+ 		"ip6InMcastOctets",
+-	[IRDMA_HW_STAT_INDEX_IP6RXMCPKTS + IRDMA_HW_STAT_INDEX_MAX_32] =
++	[IRDMA_HW_STAT_INDEX_IP6RXMCPKTS + IRDMA_HW_STAT_INDEX_MAX_32].name =
+ 		"ip6InMcastPkts",
+-	[IRDMA_HW_STAT_INDEX_IP6TXOCTS + IRDMA_HW_STAT_INDEX_MAX_32] =
++	[IRDMA_HW_STAT_INDEX_IP6TXOCTS + IRDMA_HW_STAT_INDEX_MAX_32].name =
+ 		"ip6OutOctets",
+-	[IRDMA_HW_STAT_INDEX_IP6TXPKTS + IRDMA_HW_STAT_INDEX_MAX_32] =
++	[IRDMA_HW_STAT_INDEX_IP6TXPKTS + IRDMA_HW_STAT_INDEX_MAX_32].name =
+ 		"ip6OutPkts",
+-	[IRDMA_HW_STAT_INDEX_IP6TXFRAGS + IRDMA_HW_STAT_INDEX_MAX_32] =
++	[IRDMA_HW_STAT_INDEX_IP6TXFRAGS + IRDMA_HW_STAT_INDEX_MAX_32].name =
+ 		"ip6OutSegRqd",
+-	[IRDMA_HW_STAT_INDEX_IP6TXMCOCTS + IRDMA_HW_STAT_INDEX_MAX_32] =
++	[IRDMA_HW_STAT_INDEX_IP6TXMCOCTS + IRDMA_HW_STAT_INDEX_MAX_32].name =
+ 		"ip6OutMcastOctets",
+-	[IRDMA_HW_STAT_INDEX_IP6TXMCPKTS + IRDMA_HW_STAT_INDEX_MAX_32] =
++	[IRDMA_HW_STAT_INDEX_IP6TXMCPKTS + IRDMA_HW_STAT_INDEX_MAX_32].name =
+ 		"ip6OutMcastPkts",
+-	[IRDMA_HW_STAT_INDEX_TCPRXSEGS + IRDMA_HW_STAT_INDEX_MAX_32] =
++	[IRDMA_HW_STAT_INDEX_TCPRXSEGS + IRDMA_HW_STAT_INDEX_MAX_32].name =
+ 		"tcpInSegs",
+-	[IRDMA_HW_STAT_INDEX_TCPTXSEG + IRDMA_HW_STAT_INDEX_MAX_32] =
++	[IRDMA_HW_STAT_INDEX_TCPTXSEG + IRDMA_HW_STAT_INDEX_MAX_32].name =
+ 		"tcpOutSegs",
+-	[IRDMA_HW_STAT_INDEX_RDMARXRDS + IRDMA_HW_STAT_INDEX_MAX_32] =
++	[IRDMA_HW_STAT_INDEX_RDMARXRDS + IRDMA_HW_STAT_INDEX_MAX_32].name =
+ 		"iwInRdmaReads",
+-	[IRDMA_HW_STAT_INDEX_RDMARXSNDS + IRDMA_HW_STAT_INDEX_MAX_32] =
++	[IRDMA_HW_STAT_INDEX_RDMARXSNDS + IRDMA_HW_STAT_INDEX_MAX_32].name =
+ 		"iwInRdmaSends",
+-	[IRDMA_HW_STAT_INDEX_RDMARXWRS + IRDMA_HW_STAT_INDEX_MAX_32] =
++	[IRDMA_HW_STAT_INDEX_RDMARXWRS + IRDMA_HW_STAT_INDEX_MAX_32].name =
+ 		"iwInRdmaWrites",
+-	[IRDMA_HW_STAT_INDEX_RDMATXRDS + IRDMA_HW_STAT_INDEX_MAX_32] =
++	[IRDMA_HW_STAT_INDEX_RDMATXRDS + IRDMA_HW_STAT_INDEX_MAX_32].name =
+ 		"iwOutRdmaReads",
+-	[IRDMA_HW_STAT_INDEX_RDMATXSNDS + IRDMA_HW_STAT_INDEX_MAX_32] =
++	[IRDMA_HW_STAT_INDEX_RDMATXSNDS + IRDMA_HW_STAT_INDEX_MAX_32].name =
+ 		"iwOutRdmaSends",
+-	[IRDMA_HW_STAT_INDEX_RDMATXWRS + IRDMA_HW_STAT_INDEX_MAX_32] =
++	[IRDMA_HW_STAT_INDEX_RDMATXWRS + IRDMA_HW_STAT_INDEX_MAX_32].name =
+ 		"iwOutRdmaWrites",
+-	[IRDMA_HW_STAT_INDEX_RDMAVBND + IRDMA_HW_STAT_INDEX_MAX_32] =
++	[IRDMA_HW_STAT_INDEX_RDMAVBND + IRDMA_HW_STAT_INDEX_MAX_32].name =
+ 		"iwRdmaBnd",
+-	[IRDMA_HW_STAT_INDEX_RDMAVINV + IRDMA_HW_STAT_INDEX_MAX_32] =
++	[IRDMA_HW_STAT_INDEX_RDMAVINV + IRDMA_HW_STAT_INDEX_MAX_32].name =
+ 		"iwRdmaInv",
+-	[IRDMA_HW_STAT_INDEX_UDPRXPKTS + IRDMA_HW_STAT_INDEX_MAX_32] =
++	[IRDMA_HW_STAT_INDEX_UDPRXPKTS + IRDMA_HW_STAT_INDEX_MAX_32].name =
+ 		"RxUDP",
+-	[IRDMA_HW_STAT_INDEX_UDPTXPKTS + IRDMA_HW_STAT_INDEX_MAX_32] =
++	[IRDMA_HW_STAT_INDEX_UDPTXPKTS + IRDMA_HW_STAT_INDEX_MAX_32].name =
+ 		"TxUDP",
+-	[IRDMA_HW_STAT_INDEX_RXNPECNMARKEDPKTS + IRDMA_HW_STAT_INDEX_MAX_32] =
++	[IRDMA_HW_STAT_INDEX_RXNPECNMARKEDPKTS + IRDMA_HW_STAT_INDEX_MAX_32].name =
+ 		"RxECNMrkd",
+ };
+ 
+@@ -3750,10 +3750,10 @@ static struct rdma_hw_stats *irdma_alloc_hw_port_stats(struct ib_device *ibdev,
+ 			   IRDMA_HW_STAT_INDEX_MAX_64;
+ 	unsigned long lifespan = RDMA_HW_STATS_DEFAULT_LIFESPAN;
+ 
+-	BUILD_BUG_ON(ARRAY_SIZE(irdma_hw_stat_names) !=
++	BUILD_BUG_ON(ARRAY_SIZE(irdma_hw_stat_descs) !=
+ 		     (IRDMA_HW_STAT_INDEX_MAX_32 + IRDMA_HW_STAT_INDEX_MAX_64));
+ 
+-	return rdma_alloc_hw_stats_struct(irdma_hw_stat_names, num_counters,
++	return rdma_alloc_hw_stats_struct(irdma_hw_stat_descs, num_counters,
+ 					  lifespan);
+ }
+ 
+diff --git a/drivers/infiniband/hw/mlx4/main.c b/drivers/infiniband/hw/mlx4/main.c
+index f367f4a4abff..fd4dfb43006b 100644
+--- a/drivers/infiniband/hw/mlx4/main.c
++++ b/drivers/infiniband/hw/mlx4/main.c
+@@ -2105,10 +2105,10 @@ mlx4_ib_alloc_hw_device_stats(struct ib_device *ibdev)
+ 	struct mlx4_ib_dev *dev = to_mdev(ibdev);
+ 	struct mlx4_ib_diag_counters *diag = dev->diag_counters;
+ 
+-	if (!diag[0].name)
++	if (!diag[0].descs)
+ 		return NULL;
+ 
+-	return rdma_alloc_hw_stats_struct(diag[0].name, diag[0].num_counters,
++	return rdma_alloc_hw_stats_struct(diag[0].descs, diag[0].num_counters,
+ 					  RDMA_HW_STATS_DEFAULT_LIFESPAN);
+ }
+ 
+@@ -2118,10 +2118,10 @@ mlx4_ib_alloc_hw_port_stats(struct ib_device *ibdev, u32 port_num)
+ 	struct mlx4_ib_dev *dev = to_mdev(ibdev);
+ 	struct mlx4_ib_diag_counters *diag = dev->diag_counters;
+ 
+-	if (!diag[1].name)
++	if (!diag[1].descs)
+ 		return NULL;
+ 
+-	return rdma_alloc_hw_stats_struct(diag[1].name, diag[1].num_counters,
++	return rdma_alloc_hw_stats_struct(diag[1].descs, diag[1].num_counters,
+ 					  RDMA_HW_STATS_DEFAULT_LIFESPAN);
+ }
+ 
+@@ -2151,7 +2151,7 @@ static int mlx4_ib_get_hw_stats(struct ib_device *ibdev,
+ }
+ 
+ static int __mlx4_ib_alloc_diag_counters(struct mlx4_ib_dev *ibdev,
+-					 const char ***name,
++					 struct rdma_stat_desc **pdescs,
+ 					 u32 **offset,
+ 					 u32 *num,
+ 					 bool port)
+@@ -2166,25 +2166,26 @@ static int __mlx4_ib_alloc_diag_counters(struct mlx4_ib_dev *ibdev,
+ 	if (!port)
+ 		num_counters += ARRAY_SIZE(diag_device_only);
+ 
+-	*name = kcalloc(num_counters, sizeof(**name), GFP_KERNEL);
+-	if (!*name)
++	*pdescs = kcalloc(num_counters, sizeof(struct rdma_stat_desc),
++			  GFP_KERNEL);
++	if (!*pdescs)
+ 		return -ENOMEM;
+ 
+ 	*offset = kcalloc(num_counters, sizeof(**offset), GFP_KERNEL);
+ 	if (!*offset)
+-		goto err_name;
++		goto err;
+ 
+ 	*num = num_counters;
+ 
+ 	return 0;
+ 
+-err_name:
+-	kfree(*name);
++err:
++	kfree(*pdescs);
+ 	return -ENOMEM;
+ }
+ 
+ static void mlx4_ib_fill_diag_counters(struct mlx4_ib_dev *ibdev,
+-				       const char **name,
++				       struct rdma_stat_desc *descs,
+ 				       u32 *offset,
+ 				       bool port)
+ {
+@@ -2192,20 +2193,20 @@ static void mlx4_ib_fill_diag_counters(struct mlx4_ib_dev *ibdev,
+ 	int j;
+ 
+ 	for (i = 0, j = 0; i < ARRAY_SIZE(diag_basic); i++, j++) {
+-		name[i] = diag_basic[i].name;
++		descs[i].name = diag_basic[i].name;
+ 		offset[i] = diag_basic[i].offset;
+ 	}
+ 
+ 	if (ibdev->dev->caps.flags2 & MLX4_DEV_CAP_FLAG2_DIAG_PER_PORT) {
+ 		for (i = 0; i < ARRAY_SIZE(diag_ext); i++, j++) {
+-			name[j] = diag_ext[i].name;
++			descs[j].name = diag_ext[i].name;
+ 			offset[j] = diag_ext[i].offset;
+ 		}
+ 	}
+ 
+ 	if (!port) {
+ 		for (i = 0; i < ARRAY_SIZE(diag_device_only); i++, j++) {
+-			name[j] = diag_device_only[i].name;
++			descs[j].name = diag_device_only[i].name;
+ 			offset[j] = diag_device_only[i].offset;
+ 		}
+ 	}
+@@ -2233,13 +2234,13 @@ static int mlx4_ib_alloc_diag_counters(struct mlx4_ib_dev *ibdev)
+ 		if (i && !per_port)
+ 			continue;
+ 
+-		ret = __mlx4_ib_alloc_diag_counters(ibdev, &diag[i].name,
++		ret = __mlx4_ib_alloc_diag_counters(ibdev, &diag[i].descs,
+ 						    &diag[i].offset,
+ 						    &diag[i].num_counters, i);
+ 		if (ret)
+ 			goto err_alloc;
+ 
+-		mlx4_ib_fill_diag_counters(ibdev, diag[i].name,
++		mlx4_ib_fill_diag_counters(ibdev, diag[i].descs,
+ 					   diag[i].offset, i);
+ 	}
+ 
+@@ -2249,7 +2250,7 @@ static int mlx4_ib_alloc_diag_counters(struct mlx4_ib_dev *ibdev)
+ 
+ err_alloc:
+ 	if (i) {
+-		kfree(diag[i - 1].name);
++		kfree(diag[i - 1].descs);
+ 		kfree(diag[i - 1].offset);
+ 	}
+ 
+@@ -2262,7 +2263,7 @@ static void mlx4_ib_diag_cleanup(struct mlx4_ib_dev *ibdev)
+ 
+ 	for (i = 0; i < MLX4_DIAG_COUNTERS_TYPES; i++) {
+ 		kfree(ibdev->diag_counters[i].offset);
+-		kfree(ibdev->diag_counters[i].name);
++		kfree(ibdev->diag_counters[i].descs);
+ 	}
+ }
+ 
+diff --git a/drivers/infiniband/hw/mlx4/mlx4_ib.h b/drivers/infiniband/hw/mlx4/mlx4_ib.h
+index c60f6e9ac640..d84023b4b1b8 100644
+--- a/drivers/infiniband/hw/mlx4/mlx4_ib.h
++++ b/drivers/infiniband/hw/mlx4/mlx4_ib.h
+@@ -601,7 +601,7 @@ struct mlx4_ib_counters {
+ #define MLX4_DIAG_COUNTERS_TYPES 2
+ 
+ struct mlx4_ib_diag_counters {
+-	const char **name;
++	struct rdma_stat_desc *descs;
+ 	u32 *offset;
+ 	u32 num_counters;
+ };
+diff --git a/drivers/infiniband/hw/mlx5/counters.c b/drivers/infiniband/hw/mlx5/counters.c
+index 224ba36f2946..d2208b3c5925 100644
+--- a/drivers/infiniband/hw/mlx5/counters.c
++++ b/drivers/infiniband/hw/mlx5/counters.c
+@@ -167,7 +167,7 @@ mlx5_ib_alloc_hw_device_stats(struct ib_device *ibdev)
+ 	struct mlx5_ib_dev *dev = to_mdev(ibdev);
+ 	const struct mlx5_ib_counters *cnts = &dev->port[0].cnts;
+ 
+-	return rdma_alloc_hw_stats_struct(cnts->names,
++	return rdma_alloc_hw_stats_struct(cnts->descs,
+ 					  cnts->num_q_counters +
+ 						  cnts->num_cong_counters +
+ 						  cnts->num_ext_ppcnt_counters,
+@@ -180,7 +180,7 @@ mlx5_ib_alloc_hw_port_stats(struct ib_device *ibdev, u32 port_num)
+ 	struct mlx5_ib_dev *dev = to_mdev(ibdev);
+ 	const struct mlx5_ib_counters *cnts = &dev->port[port_num - 1].cnts;
+ 
+-	return rdma_alloc_hw_stats_struct(cnts->names,
++	return rdma_alloc_hw_stats_struct(cnts->descs,
+ 					  cnts->num_q_counters +
+ 						  cnts->num_cong_counters +
+ 						  cnts->num_ext_ppcnt_counters,
+@@ -302,7 +302,7 @@ mlx5_ib_counter_alloc_stats(struct rdma_counter *counter)
+ 	const struct mlx5_ib_counters *cnts =
+ 		get_counters(dev, counter->port - 1);
+ 
+-	return rdma_alloc_hw_stats_struct(cnts->names,
++	return rdma_alloc_hw_stats_struct(cnts->descs,
+ 					  cnts->num_q_counters +
+ 					  cnts->num_cong_counters +
+ 					  cnts->num_ext_ppcnt_counters,
+@@ -373,55 +373,55 @@ static int mlx5_ib_counter_unbind_qp(struct ib_qp *qp)
+ 
+ 
+ static void mlx5_ib_fill_counters(struct mlx5_ib_dev *dev,
+-				  const char **names,
++				  struct rdma_stat_desc *descs,
+ 				  size_t *offsets)
+ {
+ 	int i;
+ 	int j = 0;
+ 
+ 	for (i = 0; i < ARRAY_SIZE(basic_q_cnts); i++, j++) {
+-		names[j] = basic_q_cnts[i].name;
++		descs[j].name = basic_q_cnts[i].name;
+ 		offsets[j] = basic_q_cnts[i].offset;
+ 	}
+ 
+ 	if (MLX5_CAP_GEN(dev->mdev, out_of_seq_cnt)) {
+ 		for (i = 0; i < ARRAY_SIZE(out_of_seq_q_cnts); i++, j++) {
+-			names[j] = out_of_seq_q_cnts[i].name;
++			descs[j].name = out_of_seq_q_cnts[i].name;
+ 			offsets[j] = out_of_seq_q_cnts[i].offset;
+ 		}
+ 	}
+ 
+ 	if (MLX5_CAP_GEN(dev->mdev, retransmission_q_counters)) {
+ 		for (i = 0; i < ARRAY_SIZE(retrans_q_cnts); i++, j++) {
+-			names[j] = retrans_q_cnts[i].name;
++			descs[j].name = retrans_q_cnts[i].name;
+ 			offsets[j] = retrans_q_cnts[i].offset;
+ 		}
+ 	}
+ 
+ 	if (MLX5_CAP_GEN(dev->mdev, enhanced_error_q_counters)) {
+ 		for (i = 0; i < ARRAY_SIZE(extended_err_cnts); i++, j++) {
+-			names[j] = extended_err_cnts[i].name;
++			descs[j].name = extended_err_cnts[i].name;
+ 			offsets[j] = extended_err_cnts[i].offset;
+ 		}
+ 	}
+ 
+ 	if (MLX5_CAP_GEN(dev->mdev, roce_accl)) {
+ 		for (i = 0; i < ARRAY_SIZE(roce_accl_cnts); i++, j++) {
+-			names[j] = roce_accl_cnts[i].name;
++			descs[j].name = roce_accl_cnts[i].name;
+ 			offsets[j] = roce_accl_cnts[i].offset;
+ 		}
+ 	}
+ 
+ 	if (MLX5_CAP_GEN(dev->mdev, cc_query_allowed)) {
+ 		for (i = 0; i < ARRAY_SIZE(cong_cnts); i++, j++) {
+-			names[j] = cong_cnts[i].name;
++			descs[j].name = cong_cnts[i].name;
+ 			offsets[j] = cong_cnts[i].offset;
+ 		}
+ 	}
+ 
+ 	if (MLX5_CAP_PCAM_FEATURE(dev->mdev, rx_icrc_encapsulated_counter)) {
+ 		for (i = 0; i < ARRAY_SIZE(ext_ppcnt_cnts); i++, j++) {
+-			names[j] = ext_ppcnt_cnts[i].name;
++			descs[j].name = ext_ppcnt_cnts[i].name;
+ 			offsets[j] = ext_ppcnt_cnts[i].offset;
+ 		}
+ 	}
+@@ -457,20 +457,21 @@ static int __mlx5_ib_alloc_counters(struct mlx5_ib_dev *dev,
+ 		cnts->num_ext_ppcnt_counters = ARRAY_SIZE(ext_ppcnt_cnts);
+ 		num_counters += ARRAY_SIZE(ext_ppcnt_cnts);
+ 	}
+-	cnts->names = kcalloc(num_counters, sizeof(*cnts->names), GFP_KERNEL);
+-	if (!cnts->names)
++	cnts->descs = kcalloc(num_counters,
++			      sizeof(struct rdma_stat_desc), GFP_KERNEL);
++	if (!cnts->descs)
+ 		return -ENOMEM;
+ 
+ 	cnts->offsets = kcalloc(num_counters,
+ 				sizeof(*cnts->offsets), GFP_KERNEL);
+ 	if (!cnts->offsets)
+-		goto err_names;
++		goto err;
+ 
+ 	return 0;
+ 
+-err_names:
+-	kfree(cnts->names);
+-	cnts->names = NULL;
++err:
++	kfree(cnts->descs);
++	cnts->descs = NULL;
+ 	return -ENOMEM;
+ }
+ 
+@@ -491,7 +492,7 @@ static void mlx5_ib_dealloc_counters(struct mlx5_ib_dev *dev)
+ 				 dev->port[i].cnts.set_id);
+ 			mlx5_cmd_exec_in(dev->mdev, dealloc_q_counter, in);
+ 		}
+-		kfree(dev->port[i].cnts.names);
++		kfree(dev->port[i].cnts.descs);
+ 		kfree(dev->port[i].cnts.offsets);
+ 	}
+ }
+@@ -514,7 +515,7 @@ static int mlx5_ib_alloc_counters(struct mlx5_ib_dev *dev)
+ 		if (err)
+ 			goto err_alloc;
+ 
+-		mlx5_ib_fill_counters(dev, dev->port[i].cnts.names,
++		mlx5_ib_fill_counters(dev, dev->port[i].cnts.descs,
+ 				      dev->port[i].cnts.offsets);
+ 
+ 		MLX5_SET(alloc_q_counter_in, in, uid,
+diff --git a/drivers/infiniband/hw/mlx5/mlx5_ib.h b/drivers/infiniband/hw/mlx5/mlx5_ib.h
+index bf20a388eabe..6f5451d96dd7 100644
+--- a/drivers/infiniband/hw/mlx5/mlx5_ib.h
++++ b/drivers/infiniband/hw/mlx5/mlx5_ib.h
+@@ -798,7 +798,7 @@ struct mlx5_ib_resources {
+ };
+ 
+ struct mlx5_ib_counters {
+-	const char **names;
++	struct rdma_stat_desc *descs;
+ 	size_t *offsets;
+ 	u32 num_q_counters;
+ 	u32 num_cong_counters;
+diff --git a/drivers/infiniband/sw/rxe/rxe_hw_counters.c b/drivers/infiniband/sw/rxe/rxe_hw_counters.c
+index d5ceb706d964..83f464546d9a 100644
+--- a/drivers/infiniband/sw/rxe/rxe_hw_counters.c
++++ b/drivers/infiniband/sw/rxe/rxe_hw_counters.c
+@@ -6,22 +6,22 @@
+ #include "rxe.h"
+ #include "rxe_hw_counters.h"
+ 
+-static const char * const rxe_counter_name[] = {
+-	[RXE_CNT_SENT_PKTS]           =  "sent_pkts",
+-	[RXE_CNT_RCVD_PKTS]           =  "rcvd_pkts",
+-	[RXE_CNT_DUP_REQ]             =  "duplicate_request",
+-	[RXE_CNT_OUT_OF_SEQ_REQ]      =  "out_of_seq_request",
+-	[RXE_CNT_RCV_RNR]             =  "rcvd_rnr_err",
+-	[RXE_CNT_SND_RNR]             =  "send_rnr_err",
+-	[RXE_CNT_RCV_SEQ_ERR]         =  "rcvd_seq_err",
+-	[RXE_CNT_COMPLETER_SCHED]     =  "ack_deferred",
+-	[RXE_CNT_RETRY_EXCEEDED]      =  "retry_exceeded_err",
+-	[RXE_CNT_RNR_RETRY_EXCEEDED]  =  "retry_rnr_exceeded_err",
+-	[RXE_CNT_COMP_RETRY]          =  "completer_retry_err",
+-	[RXE_CNT_SEND_ERR]            =  "send_err",
+-	[RXE_CNT_LINK_DOWNED]         =  "link_downed",
+-	[RXE_CNT_RDMA_SEND]           =  "rdma_sends",
+-	[RXE_CNT_RDMA_RECV]           =  "rdma_recvs",
++static const struct rdma_stat_desc rxe_counter_descs[] = {
++	[RXE_CNT_SENT_PKTS].name           =  "sent_pkts",
++	[RXE_CNT_RCVD_PKTS].name           =  "rcvd_pkts",
++	[RXE_CNT_DUP_REQ].name             =  "duplicate_request",
++	[RXE_CNT_OUT_OF_SEQ_REQ].name      =  "out_of_seq_request",
++	[RXE_CNT_RCV_RNR].name             =  "rcvd_rnr_err",
++	[RXE_CNT_SND_RNR].name             =  "send_rnr_err",
++	[RXE_CNT_RCV_SEQ_ERR].name         =  "rcvd_seq_err",
++	[RXE_CNT_COMPLETER_SCHED].name     =  "ack_deferred",
++	[RXE_CNT_RETRY_EXCEEDED].name      =  "retry_exceeded_err",
++	[RXE_CNT_RNR_RETRY_EXCEEDED].name  =  "retry_rnr_exceeded_err",
++	[RXE_CNT_COMP_RETRY].name          =  "completer_retry_err",
++	[RXE_CNT_SEND_ERR].name            =  "send_err",
++	[RXE_CNT_LINK_DOWNED].name         =  "link_downed",
++	[RXE_CNT_RDMA_SEND].name           =  "rdma_sends",
++	[RXE_CNT_RDMA_RECV].name           =  "rdma_recvs",
+ };
+ 
+ int rxe_ib_get_hw_stats(struct ib_device *ibdev,
+@@ -34,18 +34,18 @@ int rxe_ib_get_hw_stats(struct ib_device *ibdev,
+ 	if (!port || !stats)
+ 		return -EINVAL;
+ 
+-	for (cnt = 0; cnt  < ARRAY_SIZE(rxe_counter_name); cnt++)
++	for (cnt = 0; cnt  < ARRAY_SIZE(rxe_counter_descs); cnt++)
+ 		stats->value[cnt] = atomic64_read(&dev->stats_counters[cnt]);
+ 
+-	return ARRAY_SIZE(rxe_counter_name);
++	return ARRAY_SIZE(rxe_counter_descs);
+ }
+ 
+ struct rdma_hw_stats *rxe_ib_alloc_hw_port_stats(struct ib_device *ibdev,
+ 						 u32 port_num)
+ {
+-	BUILD_BUG_ON(ARRAY_SIZE(rxe_counter_name) != RXE_NUM_OF_COUNTERS);
++	BUILD_BUG_ON(ARRAY_SIZE(rxe_counter_descs) != RXE_NUM_OF_COUNTERS);
+ 
+-	return rdma_alloc_hw_stats_struct(rxe_counter_name,
+-					  ARRAY_SIZE(rxe_counter_name),
++	return rdma_alloc_hw_stats_struct(rxe_counter_descs,
++					  ARRAY_SIZE(rxe_counter_descs),
+ 					  RDMA_HW_STATS_DEFAULT_LIFESPAN);
+ }
+diff --git a/include/rdma/ib_verbs.h b/include/rdma/ib_verbs.h
+index 4b50d9a3018a..6e484678b1fd 100644
+--- a/include/rdma/ib_verbs.h
++++ b/include/rdma/ib_verbs.h
+@@ -545,6 +545,15 @@ enum ib_port_speed {
+ 	IB_SPEED_NDR	= 128,
+ };
+ 
++/**
++ * struct rdma_stat_desc
++ * @name - The name of the counter
++ *
++ */
++struct rdma_stat_desc {
++	const char *name;
++};
++
+ /**
+  * struct rdma_hw_stats
+  * @lock - Mutex to protect parallel write access to lifespan and values
+@@ -555,8 +564,8 @@ enum ib_port_speed {
+  *   should be before being updated again.  Stored in jiffies, defaults
+  *   to 10 milliseconds, drivers can override the default be specifying
+  *   their own value during their allocation routine.
+- * @name - Array of pointers to static names used for the counters in
+- *   directory.
++ * @descs - Array of pointers to static descriptors used for the counters
++ *   in directory.
+  * @num_counters - How many hardware counters there are.  If name is
+  *   shorter than this number, a kernel oops will result.  Driver authors
+  *   are encouraged to leave BUILD_BUG_ON(ARRAY_SIZE(@name) < num_counters)
+@@ -568,7 +577,7 @@ struct rdma_hw_stats {
+ 	struct mutex	lock; /* Protect lifespan and values[] */
+ 	unsigned long	timestamp;
+ 	unsigned long	lifespan;
+-	const char * const *names;
++	const struct rdma_stat_desc *descs;
+ 	int		num_counters;
+ 	u64		value[];
+ };
+@@ -577,12 +586,12 @@ struct rdma_hw_stats {
+ /**
+  * rdma_alloc_hw_stats_struct - Helper function to allocate dynamic struct
+  *   for drivers.
+- * @names - Array of static const char *
++ * @descs - Array of static descriptors
+  * @num_counters - How many elements in array
+  * @lifespan - How many milliseconds between updates
+  */
+ static inline struct rdma_hw_stats *rdma_alloc_hw_stats_struct(
+-		const char * const *names, int num_counters,
++		const struct rdma_stat_desc *descs, int num_counters,
+ 		unsigned long lifespan)
+ {
+ 	struct rdma_hw_stats *stats;
+@@ -591,7 +600,8 @@ static inline struct rdma_hw_stats *rdma_alloc_hw_stats_struct(
+ 			GFP_KERNEL);
+ 	if (!stats)
+ 		return NULL;
+-	stats->names = names;
++
++	stats->descs = descs;
+ 	stats->num_counters = num_counters;
+ 	stats->lifespan = msecs_to_jiffies(lifespan);
+ 
 -- 
 2.31.1
 
