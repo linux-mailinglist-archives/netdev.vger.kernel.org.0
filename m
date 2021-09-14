@@ -2,132 +2,321 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC89040AC06
-	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 12:53:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 033DC40AC27
+	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 13:00:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231804AbhINKyl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 06:54:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43788 "EHLO
+        id S231863AbhINLCA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 07:02:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231851AbhINKyk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 06:54:40 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45369C061574
-        for <netdev@vger.kernel.org>; Tue, 14 Sep 2021 03:53:23 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id c21so11337530edj.0
-        for <netdev@vger.kernel.org>; Tue, 14 Sep 2021 03:53:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=0lhRthA/bSo5KcDjr/ssuFwMc8XUsRCWKq5Lwd9TeZk=;
-        b=gdsGVEGwGYDqdPvsA1tvoeEqHf1fKhT0TkenZEfAF6yTLh1pN5g9QNdDdWX1cchx2t
-         AHh//4loFtqDnUy0/70TVgQWL+uvt5do4euVXLaMjF5ggoX2OxmJaKLBpz8xuhcqaSqA
-         r8hPbZm6GJKzI/HFeWomkmeLCfiJLb2npRc///cNSUCITdmmqpbyWJea3+LBTsn9q7tp
-         K5/449ED1FISQkYNEacQ2Xc9GccDLa+AQNsNvPwX+UEBMoQ62naPPNceFHwZ2vYLWXgq
-         5Z4DhECLqCAme9tTy36KNu5iaRdeYSx2uB0QAx063z2oOtUM5GAVpaalEci9TSaVkltc
-         Zf9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=0lhRthA/bSo5KcDjr/ssuFwMc8XUsRCWKq5Lwd9TeZk=;
-        b=I1vXK9dpIKSSF2b0yMBwBIj0GwHmy6y7KMKfoh49ARKqCpxNI9ZL+UiY6G03ut5K7P
-         svHsTA14L44vb6phvkOoYQ+EoA9kUdTAkTC22QdrfIXmo8JEbY+owTRnbIBL312gMZX3
-         2rqLqi98tdvu00GOD3iPxfrYFilBMx7rAi5Re8AEt8ypqam0uNQoUQe72M/wzqpP/2pZ
-         eODRXSyc6t/tOMt9LLevc5om9dGW/w3bRm0WYe7bi3SozhGGHfx1WKPvfWPH09HwoHJl
-         +OSqSs2QIwXs7ZBsmkVe4CXST027LmXiqmHQYsMoh52VL1vNED5zdGJtN6Dd19CauNmU
-         Yfag==
-X-Gm-Message-State: AOAM53144KzKVS/0lmPAv25Z/t/9JnbI2vQEdR2bFfHG/q61XmFnV8C7
-        rphYlK1XlDhqp48wQjCd42M=
-X-Google-Smtp-Source: ABdhPJy9SneASGLsX1BH/2LyBow8qQgjLQ7LjybTQ1Lmfqzb80gOpprmJThdFqX+zZpahW7nmg4sWQ==
-X-Received: by 2002:aa7:c38b:: with SMTP id k11mr12886865edq.175.1631616801927;
-        Tue, 14 Sep 2021 03:53:21 -0700 (PDT)
-Received: from smtpclient.apple ([178.254.237.20])
-        by smtp.gmail.com with ESMTPSA id 90sm5170966edc.36.2021.09.14.03.53.21
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 14 Sep 2021 03:53:21 -0700 (PDT)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.120.0.1.13\))
+        with ESMTP id S231661AbhINLB7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 07:01:59 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1C6FC061574
+        for <netdev@vger.kernel.org>; Tue, 14 Sep 2021 04:00:42 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1mQ6B4-0006b0-H1; Tue, 14 Sep 2021 13:00:38 +0200
+Date:   Tue, 14 Sep 2021 13:00:38 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Martin Zaharinov <micron10@gmail.com>
+Cc:     Florian Westphal <fw@strlen.de>,
+        Guillaume Nault <gnault@redhat.com>,
+        netdev <netdev@vger.kernel.org>
 Subject: Re: Urgent  Bug report: PPPoE ioctl(PPPIOCCONNECT): Transport
  endpoint is not connected
-From:   Martin Zaharinov <micron10@gmail.com>
-In-Reply-To: <20210914095015.GA9076@breakpoint.cc>
-Date:   Tue, 14 Sep 2021 13:53:20 +0300
-Cc:     Guillaume Nault <gnault@redhat.com>,
-        =?utf-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <504E1119-3631-4A2A-BD0C-F74AEE2BDBF5@gmail.com>
-References: <20210808152318.6nbbaj3bp6tpznel@pali>
- <8BDDA0B3-0BEE-4E80-9686-7F66CF58B069@gmail.com>
- <20210809151529.ymbq53f633253loz@pali>
+Message-ID: <20210914110038.GA25110@breakpoint.cc>
+References: <20210809151529.ymbq53f633253loz@pali>
  <FFD368DF-4C89-494B-8E7B-35C2A139E277@gmail.com>
  <20210811164835.GB15488@pc-32.home>
  <81FD1346-8CE6-4080-84C9-705E2E5E69C0@gmail.com>
  <6A3B4C11-EF48-4CE9-9EC7-5882E330D7EA@gmail.com>
  <A16DCD3E-43AA-4D50-97FC-EBB776481840@gmail.com>
  <E95FDB1D-488B-4780-96A1-A2D5C9616A7A@gmail.com>
- <20210914080206.GA20454@pc-4.home> <20210914095015.GA9076@breakpoint.cc>
-To:     Florian Westphal <fw@strlen.de>
-X-Mailer: Apple Mail (2.3654.120.0.1.13)
+ <20210914080206.GA20454@pc-4.home>
+ <20210914095015.GA9076@breakpoint.cc>
+ <1724F1B4-5048-4625-88A5-1193D4445D5A@gmail.com>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="cNdxnHkX5QqsyA0e"
+Content-Disposition: inline
+In-Reply-To: <1724F1B4-5048-4625-88A5-1193D4445D5A@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Florian Hi=20
-One more=20
 
-please see i try to remove nf_nat and xt_MASQUERADE=20
+--cNdxnHkX5QqsyA0e
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-and on time of problem need 50-80 sec to remove and overload system .
+Martin Zaharinov <micron10@gmail.com> wrote:
 
-see perf from this moment:=20
+[ Trimming CC list ]
 
+> Florian: 
+> 
+> If you make patch send to test please.
 
+Attached.  No idea if it helps, but 'ip' should stay responsive
+even when masquerade processes netdevice events.
 
+--cNdxnHkX5QqsyA0e
+Content-Type: text/x-diff; charset=us-ascii
+Content-Disposition: attachment; filename="defer_masq_work.diff"
 
- PerfTop:    1738 irqs/sec  kernel:85.0%  exact: 100.0% lost: 0/0 drop: =
-0/0 [4000Hz cycles],  (all, 12 CPUs)
-=
---------------------------------------------------------------------------=
---------------------------------------------------------------------------=
------------------------------------------------------------
+diff --git a/net/netfilter/nf_nat_masquerade.c b/net/netfilter/nf_nat_masquerade.c
+index 8e8a65d46345..50c6d6992ed6 100644
+--- a/net/netfilter/nf_nat_masquerade.c
++++ b/net/netfilter/nf_nat_masquerade.c
+@@ -9,8 +9,19 @@
+ 
+ #include <net/netfilter/nf_nat_masquerade.h>
+ 
++struct masq_dev_work {
++	struct work_struct work;
++	struct net *net;
++	union nf_inet_addr addr;
++	int ifindex;
++	int (*iter)(struct nf_conn *i, void *data);
++};
++
++#define MAX_MASQ_WORKER_COUNT	16
++
+ static DEFINE_MUTEX(masq_mutex);
+ static unsigned int masq_refcnt __read_mostly;
++static atomic_t masq_worker_count __read_mostly;
+ 
+ unsigned int
+ nf_nat_masquerade_ipv4(struct sk_buff *skb, unsigned int hooknum,
+@@ -63,13 +74,68 @@ nf_nat_masquerade_ipv4(struct sk_buff *skb, unsigned int hooknum,
+ }
+ EXPORT_SYMBOL_GPL(nf_nat_masquerade_ipv4);
+ 
+-static int device_cmp(struct nf_conn *i, void *ifindex)
++static void iterate_cleanup_work(struct work_struct *work)
++{
++	struct masq_dev_work *w;
++
++	w = container_of(work, struct masq_dev_work, work);
++
++	nf_ct_iterate_cleanup_net(w->net, w->iter, (void *)w, 0, 0);
++
++	put_net(w->net);
++	kfree(w);
++	atomic_dec(&masq_worker_count);
++	module_put(THIS_MODULE);
++}
++
++/* Iterate conntrack table in the background and remove conntrack entries
++ * that use the device/address being removed.
++ *
++ * In case too many work items have been queued already or memory allocation
++ * fails iteration is skipped, conntrack entries will time out eventually.
++ */
++static void nf_nat_masq_schedule(struct net *net, union nf_inet_addr *addr,
++				 int ifindex,
++				 int (*iter)(struct nf_conn *i, void *data),
++				 gfp_t gfp_flags)
++{
++	struct masq_dev_work *w;
++
++	net = maybe_get_net(net);
++	if (!net)
++		return;
++
++	if (!try_module_get(THIS_MODULE))
++		goto err_module;
++
++	w = kzalloc(sizeof(*w), gfp_flags);
++	if (w) {
++		/* We can overshoot MAX_MASQ_WORKER_COUNT, no big deal */
++		atomic_inc(&masq_worker_count);
++
++		INIT_WORK(&w->work, iterate_cleanup_work);
++		w->ifindex = ifindex;
++		w->net = net;
++		w->iter = iter;
++		if (addr)
++			w->addr = *addr;
++		schedule_work(&w->work);
++		return;
++	}
++
++	module_put(THIS_MODULE);
++ err_module:
++	put_net(net);
++}
++
++static int device_cmp(struct nf_conn *i, void *arg)
+ {
+ 	const struct nf_conn_nat *nat = nfct_nat(i);
++	const struct masq_dev_work *w = arg;
+ 
+ 	if (!nat)
+ 		return 0;
+-	return nat->masq_index == (int)(long)ifindex;
++	return nat->masq_index == w->ifindex;
+ }
+ 
+ static int masq_device_event(struct notifier_block *this,
+@@ -85,8 +151,8 @@ static int masq_device_event(struct notifier_block *this,
+ 		 * and forget them.
+ 		 */
+ 
+-		nf_ct_iterate_cleanup_net(net, device_cmp,
+-					  (void *)(long)dev->ifindex, 0, 0);
++		nf_nat_masq_schedule(net, NULL, dev->ifindex,
++				     device_cmp, GFP_KERNEL);
+ 	}
+ 
+ 	return NOTIFY_DONE;
+@@ -94,35 +160,45 @@ static int masq_device_event(struct notifier_block *this,
+ 
+ static int inet_cmp(struct nf_conn *ct, void *ptr)
+ {
+-	struct in_ifaddr *ifa = (struct in_ifaddr *)ptr;
+-	struct net_device *dev = ifa->ifa_dev->dev;
+ 	struct nf_conntrack_tuple *tuple;
++	struct masq_dev_work *w = ptr;
+ 
+-	if (!device_cmp(ct, (void *)(long)dev->ifindex))
++	if (!device_cmp(ct, ptr))
+ 		return 0;
+ 
+ 	tuple = &ct->tuplehash[IP_CT_DIR_REPLY].tuple;
+ 
+-	return ifa->ifa_address == tuple->dst.u3.ip;
++	return nf_inet_addr_cmp(&w->addr, &tuple->dst.u3);
+ }
+ 
+ static int masq_inet_event(struct notifier_block *this,
+ 			   unsigned long event,
+ 			   void *ptr)
+ {
+-	struct in_device *idev = ((struct in_ifaddr *)ptr)->ifa_dev;
+-	struct net *net = dev_net(idev->dev);
++	const struct in_ifaddr *ifa = ptr;
++	const struct in_device *idev;
++	const struct net_device *dev;
++	union nf_inet_addr addr;
++
++	if (event != NETDEV_DOWN)
++		return NOTIFY_DONE;
+ 
+ 	/* The masq_dev_notifier will catch the case of the device going
+ 	 * down.  So if the inetdev is dead and being destroyed we have
+ 	 * no work to do.  Otherwise this is an individual address removal
+ 	 * and we have to perform the flush.
+ 	 */
++	idev = ifa->ifa_dev;
+ 	if (idev->dead)
+ 		return NOTIFY_DONE;
+ 
+-	if (event == NETDEV_DOWN)
+-		nf_ct_iterate_cleanup_net(net, inet_cmp, ptr, 0, 0);
++	memset(&addr, 0, sizeof(addr));
++
++	addr.ip = ifa->ifa_address;
++
++	dev = idev->dev;
++	nf_nat_masq_schedule(dev_net(idev->dev), &addr, dev->ifindex,
++			     inet_cmp, GFP_KERNEL);
+ 
+ 	return NOTIFY_DONE;
+ }
+@@ -136,8 +212,6 @@ static struct notifier_block masq_inet_notifier = {
+ };
+ 
+ #if IS_ENABLED(CONFIG_IPV6)
+-static atomic_t v6_worker_count __read_mostly;
+-
+ static int
+ nat_ipv6_dev_get_saddr(struct net *net, const struct net_device *dev,
+ 		       const struct in6_addr *daddr, unsigned int srcprefs,
+@@ -187,40 +261,6 @@ nf_nat_masquerade_ipv6(struct sk_buff *skb, const struct nf_nat_range2 *range,
+ }
+ EXPORT_SYMBOL_GPL(nf_nat_masquerade_ipv6);
+ 
+-struct masq_dev_work {
+-	struct work_struct work;
+-	struct net *net;
+-	struct in6_addr addr;
+-	int ifindex;
+-};
+-
+-static int inet6_cmp(struct nf_conn *ct, void *work)
+-{
+-	struct masq_dev_work *w = (struct masq_dev_work *)work;
+-	struct nf_conntrack_tuple *tuple;
+-
+-	if (!device_cmp(ct, (void *)(long)w->ifindex))
+-		return 0;
+-
+-	tuple = &ct->tuplehash[IP_CT_DIR_REPLY].tuple;
+-
+-	return ipv6_addr_equal(&w->addr, &tuple->dst.u3.in6);
+-}
+-
+-static void iterate_cleanup_work(struct work_struct *work)
+-{
+-	struct masq_dev_work *w;
+-
+-	w = container_of(work, struct masq_dev_work, work);
+-
+-	nf_ct_iterate_cleanup_net(w->net, inet6_cmp, (void *)w, 0, 0);
+-
+-	put_net(w->net);
+-	kfree(w);
+-	atomic_dec(&v6_worker_count);
+-	module_put(THIS_MODULE);
+-}
+-
+ /* atomic notifier; can't call nf_ct_iterate_cleanup_net (it can sleep).
+  *
+  * Defer it to the system workqueue.
+@@ -233,36 +273,19 @@ static int masq_inet6_event(struct notifier_block *this,
+ {
+ 	struct inet6_ifaddr *ifa = ptr;
+ 	const struct net_device *dev;
+-	struct masq_dev_work *w;
+-	struct net *net;
++	union nf_inet_addr addr;
+ 
+-	if (event != NETDEV_DOWN || atomic_read(&v6_worker_count) >= 16)
++	if (event != NETDEV_DOWN)
+ 		return NOTIFY_DONE;
+ 
+ 	dev = ifa->idev->dev;
+-	net = maybe_get_net(dev_net(dev));
+-	if (!net)
+-		return NOTIFY_DONE;
+-
+-	if (!try_module_get(THIS_MODULE))
+-		goto err_module;
+ 
+-	w = kmalloc(sizeof(*w), GFP_ATOMIC);
+-	if (w) {
+-		atomic_inc(&v6_worker_count);
++	memset(&addr, 0, sizeof(addr));
+ 
+-		INIT_WORK(&w->work, iterate_cleanup_work);
+-		w->ifindex = dev->ifindex;
+-		w->net = net;
+-		w->addr = ifa->addr;
+-		schedule_work(&w->work);
++	addr.in6 = ifa->addr;
+ 
+-		return NOTIFY_DONE;
+-	}
+-
+-	module_put(THIS_MODULE);
+- err_module:
+-	put_net(net);
++	nf_nat_masq_schedule(dev_net(dev), &addr, dev->ifindex, inet_cmp,
++				 GFP_ATOMIC);
+ 	return NOTIFY_DONE;
+ }
+ 
 
-    40.63%  [nf_conntrack]    [k] nf_ct_iterate_cleanup
-    21.23%  [kernel]          [k] __local_bh_enable_ip
-    10.93%  [kernel]          [k] __cond_resched
-     9.20%  [kernel]          [k] _raw_spin_lock
-     8.91%  [kernel]          [k] rcu_all_qs
-     5.83%  [nf_conntrack]    [k] nf_conntrack_lock
-     0.10%  [kernel]          [k] mutex_spin_on_owner
-     0.08%  telegraf          [.] 0x0000000000021bf0
-     0.06%  [kernel]          [k] osq_lock
-     0.06%  [kernel]          [k] kallsyms_expand_symbol.constprop.0
-     0.05%  [kernel]          [k] format_decode
-     0.04%  [kernel]          [k] rtnl_fill_ifinfo.constprop.0.isra.0
-     0.04%  perf              [.] 0x00000000000bc7b3
-     0.04%  [kernel]          [k] memcpy_erms
-     0.03%  [kernel]          [k] string
-     0.03%  [kernel]          [k] menu_select
-     0.03%  [kernel]          [k] nla_put
-     0.03%  [kernel]          [k] vsnprintf
-
-
-
-Martin
-
-> On 14 Sep 2021, at 12:50, Florian Westphal <fw@strlen.de> wrote:
->=20
-> Guillaume Nault <gnault@redhat.com> wrote:
->>> And on time of problem when try to write : ip a=20
->>> to list interface wait 15-20 sec i finaly have options to simulate =
-but users is angry when down internet.
->>=20
->> Probably some contention on the rtnl lock.
->=20
-> Yes, I'll create a patch.
-
+--cNdxnHkX5QqsyA0e--
