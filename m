@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA16240B87D
-	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 21:59:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DFDB40B882
+	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 21:59:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233416AbhINUAr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 16:00:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60356 "EHLO
+        id S233389AbhINUAy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 16:00:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233389AbhINUAq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 16:00:46 -0400
-Received: from mout-p-202.mailbox.org (mout-p-202.mailbox.org [IPv6:2001:67c:2050::465:202])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30E8AC061574;
-        Tue, 14 Sep 2021 12:59:28 -0700 (PDT)
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:105:465:1:1:0])
+        with ESMTP id S233476AbhINUAu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 16:00:50 -0400
+Received: from mout-p-102.mailbox.org (mout-p-102.mailbox.org [IPv6:2001:67c:2050::465:102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92F2FC061762;
+        Tue, 14 Sep 2021 12:59:31 -0700 (PDT)
+Received: from smtp1.mailbox.org (smtp1.mailbox.org [80.241.60.240])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4H8DhG4Yq6zQjhQ;
-        Tue, 14 Sep 2021 21:59:26 +0200 (CEST)
+        by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4H8DhK5vCtzQk8q;
+        Tue, 14 Sep 2021 21:59:29 +0200 (CEST)
 X-Virus-Scanned: amavisd-new at heinlein-support.de
 From:   =?UTF-8?q?Jonas=20Dre=C3=9Fler?= <verdre@v0yd.nl>
 To:     Amitkumar Karwar <amitkarwar@gmail.com>,
@@ -36,243 +36,78 @@ Cc:     =?UTF-8?q?Jonas=20Dre=C3=9Fler?= <verdre@v0yd.nl>,
         Maximilian Luz <luzmaximilian@gmail.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-Subject: [PATCH 2/9] mwifiex: Use function to check whether interface type change is allowed
-Date:   Tue, 14 Sep 2021 21:59:02 +0200
-Message-Id: <20210914195909.36035-3-verdre@v0yd.nl>
+Subject: [PATCH 3/9] mwifiex: Run SET_BSS_MODE when changing from P2P to STATION vif-type
+Date:   Tue, 14 Sep 2021 21:59:03 +0200
+Message-Id: <20210914195909.36035-4-verdre@v0yd.nl>
 In-Reply-To: <20210914195909.36035-1-verdre@v0yd.nl>
 References: <20210914195909.36035-1-verdre@v0yd.nl>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: AE7E11898
+X-Rspamd-Queue-Id: 023AE189C
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of bailing out in the function which is supposed to do the type
-change, detect invalid changes beforehand using a generic function and
-return an error if the change is not allowed.
+We currently handle changing from the P2P to the STATION virtual
+interface type slightly different than changing from P2P to ADHOC: When
+changing to STATION, we don't send the SET_BSS_MODE command. We do send
+that command on all other type-changes though, and it probably makes
+sense to send the command since after all we just changed our BSS_MODE.
+Looking at prior changes to this part of the code, it seems that this is
+simply a leftover from old refactorings.
+
+Since sending the SET_BSS_MODE command is the only difference between
+mwifiex_change_vif_to_sta_adhoc() and the current code, we can now use
+mwifiex_change_vif_to_sta_adhoc() for both switching to ADHOC and
+STATION interface type.
+
+This does not fix any particular bug and just "looked right", so there's
+a small chance it might be a regression.
 
 Signed-off-by: Jonas Dreßler <verdre@v0yd.nl>
 ---
- .../net/wireless/marvell/mwifiex/cfg80211.c   | 139 ++++++++++++------
- 1 file changed, 92 insertions(+), 47 deletions(-)
+ .../net/wireless/marvell/mwifiex/cfg80211.c   | 22 ++++---------------
+ 1 file changed, 4 insertions(+), 18 deletions(-)
 
 diff --git a/drivers/net/wireless/marvell/mwifiex/cfg80211.c b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
-index e8deba119ff1..dabc59c47de3 100644
+index dabc59c47de3..146aabe14753 100644
 --- a/drivers/net/wireless/marvell/mwifiex/cfg80211.c
 +++ b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
-@@ -939,6 +939,76 @@ mwifiex_init_new_priv_params(struct mwifiex_private *priv,
- 	return 0;
- }
+@@ -1270,29 +1270,15 @@ mwifiex_cfg80211_change_virtual_intf(struct wiphy *wiphy,
  
-+static bool
-+is_vif_type_change_allowed(struct mwifiex_adapter *adapter,
-+			   enum nl80211_iftype old_iftype,
-+			   enum nl80211_iftype new_iftype)
-+{
-+	switch (old_iftype) {
-+	case NL80211_IFTYPE_ADHOC:
-+		switch (new_iftype) {
-+		case NL80211_IFTYPE_STATION:
-+			return true;
-+		case NL80211_IFTYPE_P2P_CLIENT:
-+		case NL80211_IFTYPE_P2P_GO:
-+			return adapter->curr_iface_comb.p2p_intf !=
-+			       adapter->iface_limit.p2p_intf;
-+		case NL80211_IFTYPE_AP:
-+			return adapter->curr_iface_comb.uap_intf !=
-+			       adapter->iface_limit.uap_intf;
-+		default:
-+			return false;
-+		}
-+
-+	case NL80211_IFTYPE_STATION:
-+		switch (new_iftype) {
-+		case NL80211_IFTYPE_ADHOC:
-+			return true;
-+		case NL80211_IFTYPE_P2P_CLIENT:
-+		case NL80211_IFTYPE_P2P_GO:
-+			return adapter->curr_iface_comb.p2p_intf !=
-+			       adapter->iface_limit.p2p_intf;
-+		case NL80211_IFTYPE_AP:
-+			return adapter->curr_iface_comb.uap_intf !=
-+			       adapter->iface_limit.uap_intf;
-+		default:
-+			return false;
-+		}
-+
-+	case NL80211_IFTYPE_AP:
-+		switch (new_iftype) {
-+		case NL80211_IFTYPE_ADHOC:
-+		case NL80211_IFTYPE_STATION:
-+			return adapter->curr_iface_comb.sta_intf !=
-+			       adapter->iface_limit.sta_intf;
-+		case NL80211_IFTYPE_P2P_CLIENT:
-+		case NL80211_IFTYPE_P2P_GO:
-+			return adapter->curr_iface_comb.p2p_intf !=
-+			       adapter->iface_limit.p2p_intf;
-+		default:
-+			return false;
-+		}
-+
-+	case NL80211_IFTYPE_P2P_CLIENT:
-+	case NL80211_IFTYPE_P2P_GO:
-+		switch (new_iftype) {
-+		case NL80211_IFTYPE_ADHOC:
-+		case NL80211_IFTYPE_STATION:
-+			return true;
-+		case NL80211_IFTYPE_AP:
-+			return adapter->curr_iface_comb.uap_intf !=
-+			       adapter->iface_limit.uap_intf;
-+		default:
-+			return false;
-+		}
-+
-+	default:
-+		break;
-+	}
-+
-+	return false;
-+}
-+
- static int
- mwifiex_change_vif_to_p2p(struct net_device *dev,
- 			  enum nl80211_iftype curr_iftype,
-@@ -955,13 +1025,6 @@ mwifiex_change_vif_to_p2p(struct net_device *dev,
- 
- 	adapter = priv->adapter;
- 
--	if (adapter->curr_iface_comb.p2p_intf ==
--	    adapter->iface_limit.p2p_intf) {
--		mwifiex_dbg(adapter, ERROR,
--			    "cannot create multiple P2P ifaces\n");
--		return -1;
--	}
--
- 	mwifiex_dbg(adapter, INFO,
- 		    "%s: changing role to p2p\n", dev->name);
- 
-@@ -1027,15 +1090,6 @@ mwifiex_change_vif_to_sta_adhoc(struct net_device *dev,
- 
- 	adapter = priv->adapter;
- 
--	if ((curr_iftype != NL80211_IFTYPE_P2P_CLIENT &&
--	     curr_iftype != NL80211_IFTYPE_P2P_GO) &&
--	    (adapter->curr_iface_comb.sta_intf ==
--	     adapter->iface_limit.sta_intf)) {
--		mwifiex_dbg(adapter, ERROR,
--			    "cannot create multiple station/adhoc ifaces\n");
--		return -1;
--	}
--
- 	if (type == NL80211_IFTYPE_STATION)
- 		mwifiex_dbg(adapter, INFO,
- 			    "%s: changing role to station\n", dev->name);
-@@ -1086,13 +1140,6 @@ mwifiex_change_vif_to_ap(struct net_device *dev,
- 
- 	adapter = priv->adapter;
- 
--	if (adapter->curr_iface_comb.uap_intf ==
--	    adapter->iface_limit.uap_intf) {
--		mwifiex_dbg(adapter, ERROR,
--			    "cannot create multiple AP ifaces\n");
--		return -1;
--	}
--
- 	mwifiex_dbg(adapter, INFO,
- 		    "%s: changing role to AP\n", dev->name);
- 
-@@ -1155,6 +1202,13 @@ mwifiex_cfg80211_change_virtual_intf(struct wiphy *wiphy,
- 		return 0;
- 	}
- 
-+	if (!is_vif_type_change_allowed(priv->adapter, curr_iftype, type)) {
-+		mwifiex_dbg(priv->adapter, ERROR,
-+			    "%s: change from type %d to %d is not allowed\n",
-+			    dev->name, curr_iftype, type);
-+		return -EOPNOTSUPP;
-+	}
-+
- 	switch (curr_iftype) {
- 	case NL80211_IFTYPE_ADHOC:
- 		switch (type) {
-@@ -1175,12 +1229,9 @@ mwifiex_cfg80211_change_virtual_intf(struct wiphy *wiphy,
- 			return mwifiex_change_vif_to_ap(dev, curr_iftype, type,
- 							params);
- 		default:
--			mwifiex_dbg(priv->adapter, ERROR,
--				    "%s: changing to %d not supported\n",
--				    dev->name, type);
--			return -EOPNOTSUPP;
-+			goto errnotsupp;
- 		}
--		break;
-+
- 	case NL80211_IFTYPE_STATION:
- 		switch (type) {
- 		case NL80211_IFTYPE_ADHOC:
-@@ -1200,12 +1251,9 @@ mwifiex_cfg80211_change_virtual_intf(struct wiphy *wiphy,
- 			return mwifiex_change_vif_to_ap(dev, curr_iftype, type,
- 							params);
- 		default:
--			mwifiex_dbg(priv->adapter, ERROR,
--				    "%s: changing to %d not supported\n",
--				    dev->name, type);
--			return -EOPNOTSUPP;
-+			goto errnotsupp;
- 		}
--		break;
-+
- 	case NL80211_IFTYPE_AP:
- 		switch (type) {
- 		case NL80211_IFTYPE_ADHOC:
-@@ -1217,12 +1265,9 @@ mwifiex_cfg80211_change_virtual_intf(struct wiphy *wiphy,
- 			return mwifiex_change_vif_to_p2p(dev, curr_iftype,
- 							 type, params);
- 		default:
--			mwifiex_dbg(priv->adapter, ERROR,
--				    "%s: changing to %d not supported\n",
--				    dev->name, type);
--			return -EOPNOTSUPP;
-+			goto errnotsupp;
- 		}
--		break;
-+
  	case NL80211_IFTYPE_P2P_CLIENT:
  	case NL80211_IFTYPE_P2P_GO:
++		if (mwifiex_cfg80211_deinit_p2p(priv))
++			return -EFAULT;
++
  		switch (type) {
-@@ -1251,21 +1296,21 @@ mwifiex_cfg80211_change_virtual_intf(struct wiphy *wiphy,
+-		case NL80211_IFTYPE_STATION:
+-			if (mwifiex_cfg80211_deinit_p2p(priv))
+-				return -EFAULT;
+-			priv->adapter->curr_iface_comb.p2p_intf--;
+-			priv->adapter->curr_iface_comb.sta_intf++;
+-			dev->ieee80211_ptr->iftype = type;
+-			if (mwifiex_deinit_priv_params(priv))
+-				return -1;
+-			if (mwifiex_init_new_priv_params(priv, dev, type))
+-				return -1;
+-			if (mwifiex_sta_init_cmd(priv, false, false))
+-				return -1;
+-			break;
+ 		case NL80211_IFTYPE_ADHOC:
+-			if (mwifiex_cfg80211_deinit_p2p(priv))
+-				return -EFAULT;
++		case NL80211_IFTYPE_STATION:
+ 			return mwifiex_change_vif_to_sta_adhoc(dev, curr_iftype,
+ 							       type, params);
+-			break;
+ 		case NL80211_IFTYPE_AP:
+-			if (mwifiex_cfg80211_deinit_p2p(priv))
+-				return -EFAULT;
  			return mwifiex_change_vif_to_ap(dev, curr_iftype, type,
  							params);
  		default:
--			mwifiex_dbg(priv->adapter, ERROR,
--				    "%s: changing to %d not supported\n",
--				    dev->name, type);
--			return -EOPNOTSUPP;
-+			goto errnotsupp;
- 		}
--		break;
-+
- 	default:
--		mwifiex_dbg(priv->adapter, ERROR,
--			    "%s: unknown iftype: %d\n",
--			    dev->name, dev->ieee80211_ptr->iftype);
--		return -EOPNOTSUPP;
-+		goto errnotsupp;
- 	}
- 
- 
- 	return 0;
-+
-+errnotsupp:
-+	mwifiex_dbg(priv->adapter, ERROR,
-+		    "unsupported interface type transition: %d to %d\n",
-+		    curr_iftype, type);
-+	return -EOPNOTSUPP;
- }
- 
- static void
 -- 
 2.31.1
 
