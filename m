@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24CCF40AF5F
-	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 15:40:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1751340AF64
+	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 15:41:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233994AbhINNmH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 09:42:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54696 "EHLO
+        id S233666AbhINNmr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 09:42:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233500AbhINNlJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 09:41:09 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AFC3C0613CF;
-        Tue, 14 Sep 2021 06:39:52 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id w8so12730937pgf.5;
-        Tue, 14 Sep 2021 06:39:52 -0700 (PDT)
+        with ESMTP id S233519AbhINNlX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 09:41:23 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACEB0C0613E9;
+        Tue, 14 Sep 2021 06:39:54 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id f11-20020a17090aa78b00b0018e98a7cddaso2810178pjq.4;
+        Tue, 14 Sep 2021 06:39:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=V6GY3z4JvJviWkSRCk5kJjmxao2kOnqCUtugNfHg/pw=;
-        b=dDHEgjjhONvetT5YclBkax+X6EY3U8rrUfLy/aimO6iFEaJzZte34OHy3Gmk7JZfPE
-         Pggybi9YLY9iIVSeqJqx7clgxMGVMEP8TtLaHzOW6LPUCpK91pv50TaSb2AEO9aMpLBd
-         5vNa0hpfM90xmm+vOpPn4FaKRXi5urhJjU86eJpvLASlL+/dKBZuE22QOsg1W6uzTiyo
-         kH5MFhd5SbmeVWhmueq7+NQylhNDj3Eh9b63XJbTIpiudQB42/28UOhDAfQf8/ph6yE7
-         dcIqRYrSNXK3RNbQ3Xe+HFePVpn7E6KSoYLVPniJoegZD+jyC822quIHXse/2XucEYnb
-         Llbw==
+        bh=LkmXj6KxjUvBaz8z0a8dNOFjY1uabCCopAH/jkVX7K0=;
+        b=H0oAe82GjXdTdE+tPELa3975j1MGt/XfBwybJVWm9rXqcL3sZBlP4N3dVxqejuMmCR
+         fTxH2exCC64AO/wTOZvdNd7kolrZ/irkjYbpTtFRFS52HpEJiYpKx7tvDB22KmzcCOv7
+         c9DS1KJW86b06AqUV3XvHCJsPD24m0nR2St4Gm7JJGLUJisEPWa/XBbIzSmSmqfr13m7
+         8k2iUw5lq4EvEwGop+B0nMUmtEgs3N2LwGcdbL1UtdAgaL9kn7ZyWDVSGWcSLQCnunTP
+         f35mOoI/LXthKpV4WOGUGrXrLzkkUj0AyvgnRnOwf8rvVBG3C6mESM16QWBrymuP71V7
+         1ddg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=V6GY3z4JvJviWkSRCk5kJjmxao2kOnqCUtugNfHg/pw=;
-        b=UgQJS3DhyQ8Bdf59O4NWV5SnmcUg+NJ3aE805/OIipyYpW44lnznBxIPDx0XU49PV4
-         RBN2rLVb7mU+4dFFfdma278pmwqFs38LT1b31xqBSMqJf/LS8mq1z6wmPnE9/YOicby2
-         S3PPufYGvCYTywpCXthM63mn1XVrgurQQPJw3o4P8c/PvKgn3FQibTaZTro/5TpTrfxz
-         tJsKg/qJOSxaCvP8nGp9p11812B+7OjwGniM0f77XoPTVdSMRlhJ2OV8TANOV2pXiUo1
-         sNnQhf+KMRsB1ow86ue06G7oROqw7qkHvvGCRYBkYIs1xqUKc5sVpDeF7UWl0GeSVgbI
-         2uwQ==
-X-Gm-Message-State: AOAM533shT3LiCfyE+VHCEhqqVursf1lqvfASjPtvvzAqGokgVDBF2Yx
-        qZe99ZUlXOArEcQMZeKA0o8=
-X-Google-Smtp-Source: ABdhPJyd7B/cycREjmjwvYi/L8C41okdW25JkBh0jV2R9467KDZelN884wrT/mvAlGHMBU2oT9UWmg==
-X-Received: by 2002:a63:ec06:: with SMTP id j6mr15654053pgh.259.1631626791699;
-        Tue, 14 Sep 2021 06:39:51 -0700 (PDT)
+        bh=LkmXj6KxjUvBaz8z0a8dNOFjY1uabCCopAH/jkVX7K0=;
+        b=kkLFztWpROjBUfEV3KQb/pQVy6VjuZuBsg/UgdPVCqfTqLpCUDth0yXK9NBqZOphlm
+         +a7e/LH0t1bfxAHMtnHimgvd6y+7D1UmKyRaV/jAVMsgZln1s97B3zzUcLvZ6nu6enDE
+         r86A4yuOYvYk0EAQjVVSunslVs9CTQrh/iYxNX92kLCpZVPTbi42J988hHfa8rfAPe1G
+         KKSB3sByrlLckX6hX0q7ShEKohM6xvqr/GWBksIhOpuiCyuM5LJOwJXtqpwN46o3bIwx
+         8HUpWz/y8tYt0ND0sijnMQrZB7jkmoVx4YRIy/lehw/b2rKQTOrYR/YuBOigE88zp6bC
+         e4sQ==
+X-Gm-Message-State: AOAM531hq1CW5e1+xoHP4BYZy9iuTX/YB4IhT636Kc26LCEwlitgP/7J
+        WP6EQOhT8TaZcS+wmxpErxA=
+X-Google-Smtp-Source: ABdhPJzd50JbAXqZtpTD7xpue98Virh8fDhY7VdwfyRuohNOtMS2fLTQ6Ka6cqdkhWO9Ql38QPYNrQ==
+X-Received: by 2002:a17:902:da89:b0:13b:7d3d:59e9 with SMTP id j9-20020a170902da8900b0013b7d3d59e9mr14413893plx.41.1631626794081;
+        Tue, 14 Sep 2021 06:39:54 -0700 (PDT)
 Received: from ubuntu-Virtual-Machine.corp.microsoft.com ([2001:4898:80e8:7:6ea2:a529:4af3:5057])
-        by smtp.gmail.com with ESMTPSA id v13sm10461234pfm.16.2021.09.14.06.39.50
+        by smtp.gmail.com with ESMTPSA id v13sm10461234pfm.16.2021.09.14.06.39.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Sep 2021 06:39:51 -0700 (PDT)
+        Tue, 14 Sep 2021 06:39:53 -0700 (PDT)
 From:   Tianyu Lan <ltykernel@gmail.com>
 To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
         wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
@@ -69,9 +69,9 @@ Cc:     iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
         linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
         vkuznets@redhat.com, parri.andrea@gmail.com, dave.hansen@intel.com
-Subject: [PATCH V5 11/12] scsi: storvsc: Add Isolation VM support for storvsc driver
-Date:   Tue, 14 Sep 2021 09:39:12 -0400
-Message-Id: <20210914133916.1440931-12-ltykernel@gmail.com>
+Subject: [PATCH V5 12/12] net: netvsc: Add Isolation VM support for netvsc driver
+Date:   Tue, 14 Sep 2021 09:39:13 -0400
+Message-Id: <20210914133916.1440931-13-ltykernel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210914133916.1440931-1-ltykernel@gmail.com>
 References: <20210914133916.1440931-1-ltykernel@gmail.com>
@@ -85,143 +85,513 @@ From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
 In Isolation VM, all shared memory with host needs to mark visible
 to host via hvcall. vmbus_establish_gpadl() has already done it for
-storvsc rx/tx ring buffer. The page buffer used by vmbus_sendpacket_
-mpb_desc() still needs to be handled. Use DMA API(scsi_dma_map/unmap)
-to map these memory during sending/receiving packet and return swiotlb
-bounce buffer dma address. In Isolation VM, swiotlb  bounce buffer is
-marked to be visible to host and the swiotlb force mode is enabled.
+netvsc rx/tx ring buffer. The page buffer used by vmbus_sendpacket_
+pagebuffer() stills need to be handled. Use DMA API to map/umap
+these memory during sending/receiving packet and Hyper-V swiotlb
+bounce buffer dma address will be returned. The swiotlb bounce buffer
+has been masked to be visible to host during boot up.
 
-Set device's dma min align mask to HV_HYP_PAGE_SIZE - 1 in order to
-keep the original data offset in the bounce buffer.
+Allocate rx/tx ring buffer via alloc_pages() in Isolation VM and map
+these pages via vmap(). After calling vmbus_establish_gpadl() which
+marks these pages visible to host, unmap these pages to release the
+virtual address mapped with physical address below shared_gpa_boundary
+and map them in the extra address space via vmap_pfn().
 
 Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
 ---
 Change since v4:
-	* use scsi_dma_map/unmap() instead of dma_map/unmap_sg()
-	* Add deleted comments back.
-	* Fix error calculation of  hvpnfs_to_add
+	* Allocate rx/tx ring buffer via alloc_pages() in Isolation VM
+	* Map pages after calling vmbus_establish_gpadl().
+	* set dma_set_min_align_mask for netvsc driver.
 
 Change since v3:
-	* Rplace dma_map_page with dma_map_sg()
-	* Use for_each_sg() to populate payload->range.pfn_array.
-	* Remove storvsc_dma_map macro
+	* Add comment to explain why not to use dma_map_sg()
+	* Fix some error handle.
 ---
- drivers/hv/vmbus_drv.c     |  1 +
- drivers/scsi/storvsc_drv.c | 24 +++++++++++++++---------
- include/linux/hyperv.h     |  1 +
- 3 files changed, 17 insertions(+), 9 deletions(-)
+ drivers/net/hyperv/hyperv_net.h   |   7 +
+ drivers/net/hyperv/netvsc.c       | 287 +++++++++++++++++++++++++++++-
+ drivers/net/hyperv/netvsc_drv.c   |   1 +
+ drivers/net/hyperv/rndis_filter.c |   2 +
+ include/linux/hyperv.h            |   5 +
+ 5 files changed, 296 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
-index b0be287e9a32..9c53f823cde1 100644
---- a/drivers/hv/vmbus_drv.c
-+++ b/drivers/hv/vmbus_drv.c
-@@ -2121,6 +2121,7 @@ int vmbus_device_register(struct hv_device *child_device_obj)
- 	hv_debug_add_dev_dir(child_device_obj);
+diff --git a/drivers/net/hyperv/hyperv_net.h b/drivers/net/hyperv/hyperv_net.h
+index 315278a7cf88..87e8c74398a5 100644
+--- a/drivers/net/hyperv/hyperv_net.h
++++ b/drivers/net/hyperv/hyperv_net.h
+@@ -164,6 +164,7 @@ struct hv_netvsc_packet {
+ 	u32 total_bytes;
+ 	u32 send_buf_index;
+ 	u32 total_data_buflen;
++	struct hv_dma_range *dma_range;
+ };
  
- 	child_device_obj->device.dma_mask = &vmbus_dma_mask;
-+	child_device_obj->device.dma_parms = &child_device_obj->dma_parms;
- 	return 0;
+ #define NETVSC_HASH_KEYLEN 40
+@@ -1074,6 +1075,8 @@ struct netvsc_device {
  
- err_kset_unregister:
-diff --git a/drivers/scsi/storvsc_drv.c b/drivers/scsi/storvsc_drv.c
-index ebbbc1299c62..d10b450bcf0c 100644
---- a/drivers/scsi/storvsc_drv.c
-+++ b/drivers/scsi/storvsc_drv.c
-@@ -21,6 +21,8 @@
- #include <linux/device.h>
- #include <linux/hyperv.h>
- #include <linux/blkdev.h>
-+#include <linux/dma-mapping.h>
+ 	/* Receive buffer allocated by us but manages by NetVSP */
+ 	void *recv_buf;
++	struct page **recv_pages;
++	u32 recv_page_count;
+ 	u32 recv_buf_size; /* allocated bytes */
+ 	struct vmbus_gpadl recv_buf_gpadl_handle;
+ 	u32 recv_section_cnt;
+@@ -1082,6 +1085,8 @@ struct netvsc_device {
+ 
+ 	/* Send buffer allocated by us */
+ 	void *send_buf;
++	struct page **send_pages;
++	u32 send_page_count;
+ 	u32 send_buf_size;
+ 	struct vmbus_gpadl send_buf_gpadl_handle;
+ 	u32 send_section_cnt;
+@@ -1731,4 +1736,6 @@ struct rndis_message {
+ #define RETRY_US_HI	10000
+ #define RETRY_MAX	2000	/* >10 sec */
+ 
++void netvsc_dma_unmap(struct hv_device *hv_dev,
++		      struct hv_netvsc_packet *packet);
+ #endif /* _HYPERV_NET_H */
+diff --git a/drivers/net/hyperv/netvsc.c b/drivers/net/hyperv/netvsc.c
+index 1f87e570ed2b..7d5254bf043e 100644
+--- a/drivers/net/hyperv/netvsc.c
++++ b/drivers/net/hyperv/netvsc.c
+@@ -20,6 +20,7 @@
+ #include <linux/vmalloc.h>
+ #include <linux/rtnetlink.h>
+ #include <linux/prefetch.h>
++#include <linux/gfp.h>
+ 
+ #include <asm/sync_bitops.h>
+ #include <asm/mshyperv.h>
+@@ -150,11 +151,33 @@ static void free_netvsc_device(struct rcu_head *head)
+ {
+ 	struct netvsc_device *nvdev
+ 		= container_of(head, struct netvsc_device, rcu);
++	unsigned int alloc_unit;
+ 	int i;
+ 
+ 	kfree(nvdev->extension);
+-	vfree(nvdev->recv_buf);
+-	vfree(nvdev->send_buf);
 +
- #include <scsi/scsi.h>
- #include <scsi/scsi_cmnd.h>
- #include <scsi/scsi_host.h>
-@@ -1322,6 +1324,7 @@ static void storvsc_on_channel_callback(void *context)
- 					continue;
- 				}
- 				request = (struct storvsc_cmd_request *)scsi_cmd_priv(scmnd);
-+				scsi_dma_unmap(scmnd);
- 			}
++	if (nvdev->recv_pages) {
++		alloc_unit = (nvdev->recv_buf_size /
++			nvdev->recv_page_count) >> PAGE_SHIFT;
++
++		vunmap(nvdev->recv_buf);
++		for (i = 0; i < nvdev->recv_page_count; i++)
++			__free_pages(nvdev->recv_pages[i], alloc_unit);
++	} else {
++		vfree(nvdev->recv_buf);
++	}
++
++	if (nvdev->send_pages) {
++		alloc_unit = (nvdev->send_buf_size /
++			nvdev->send_page_count) >> PAGE_SHIFT;
++
++		vunmap(nvdev->send_buf);
++		for (i = 0; i < nvdev->send_page_count; i++)
++			__free_pages(nvdev->send_pages[i], alloc_unit);
++	} else {
++		vfree(nvdev->send_buf);
++	}
++
+ 	kfree(nvdev->send_section_map);
  
- 			storvsc_on_receive(stor_device, packet, request);
-@@ -1735,7 +1738,6 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
- 	struct hv_host_device *host_dev = shost_priv(host);
- 	struct hv_device *dev = host_dev->dev;
- 	struct storvsc_cmd_request *cmd_request = scsi_cmd_priv(scmnd);
--	int i;
- 	struct scatterlist *sgl;
- 	unsigned int sg_count;
- 	struct vmscsi_request *vm_srb;
-@@ -1817,10 +1819,11 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
- 	payload_sz = sizeof(cmd_request->mpb);
+ 	for (i = 0; i < VRSS_CHANNEL_MAX; i++) {
+@@ -330,6 +353,108 @@ int netvsc_alloc_recv_comp_ring(struct netvsc_device *net_device, u32 q_idx)
+ 	return nvchan->mrc.slots ? 0 : -ENOMEM;
+ }
  
- 	if (sg_count) {
--		unsigned int hvpgoff, hvpfns_to_add;
- 		unsigned long offset_in_hvpg = offset_in_hvpage(sgl->offset);
- 		unsigned int hvpg_count = HVPFN_UP(offset_in_hvpg + length);
--		u64 hvpfn;
-+		struct scatterlist *sg;
-+		unsigned long hvpfn, hvpfns_to_add;
-+		int j, i = 0;
++void *netvsc_alloc_pages(struct page ***pages_array, unsigned int *array_len,
++			 unsigned long size)
++{
++	struct page *page, **pages, **vmap_pages;
++	unsigned long pg_count = size >> PAGE_SHIFT;
++	int alloc_unit = MAX_ORDER_NR_PAGES;
++	int i, j, vmap_page_index = 0;
++	void *vaddr;
++
++	if (pg_count < alloc_unit)
++		alloc_unit = 1;
++
++	/* vmap() accepts page array with PAGE_SIZE as unit while try to
++	 * allocate high order pages here in order to save page array space.
++	 * vmap_pages[] is used as input parameter of vmap(). pages[] is to
++	 * store allocated pages and map them later.
++	 */
++	vmap_pages = kmalloc_array(pg_count, sizeof(*vmap_pages), GFP_KERNEL);
++	if (!vmap_pages)
++		return NULL;
++
++retry:
++	*array_len = pg_count / alloc_unit;
++	pages = kmalloc_array(*array_len, sizeof(*pages), GFP_KERNEL);
++	if (!pages)
++		goto cleanup;
++
++	for (i = 0; i < *array_len; i++) {
++		page = alloc_pages(GFP_KERNEL | __GFP_ZERO,
++				   get_order(alloc_unit << PAGE_SHIFT));
++		if (!page) {
++			/* Try allocating small pages if high order pages are not available. */
++			if (alloc_unit == 1) {
++				goto cleanup;
++			} else {
++				memset(vmap_pages, 0,
++				       sizeof(*vmap_pages) * vmap_page_index);
++				vmap_page_index = 0;
++
++				for (j = 0; j < i; j++)
++					__free_pages(pages[j], alloc_unit);
++
++				kfree(pages);
++				alloc_unit = 1;
++				goto retry;
++			}
++		}
++
++		pages[i] = page;
++		for (j = 0; j < alloc_unit; j++)
++			vmap_pages[vmap_page_index++] = page++;
++	}
++
++	vaddr = vmap(vmap_pages, vmap_page_index, VM_MAP, PAGE_KERNEL);
++	kfree(vmap_pages);
++
++	*pages_array = pages;
++	return vaddr;
++
++cleanup:
++	for (j = 0; j < i; j++)
++		__free_pages(pages[i], alloc_unit);
++
++	kfree(pages);
++	kfree(vmap_pages);
++	return NULL;
++}
++
++static void *netvsc_map_pages(struct page **pages, int count, int alloc_unit)
++{
++	int pg_count = count * alloc_unit;
++	struct page *page;
++	unsigned long *pfns;
++	int pfn_index = 0;
++	void *vaddr;
++	int i, j;
++
++	if (!pages)
++		return NULL;
++
++	pfns = kcalloc(pg_count, sizeof(*pfns), GFP_KERNEL);
++	if (!pfns)
++		return NULL;
++
++	for (i = 0; i < count; i++) {
++		page = pages[i];
++		if (!page) {
++			pr_warn("page is not available %d.\n", i);
++			return NULL;
++		}
++
++		for (j = 0; j < alloc_unit; j++) {
++			pfns[pfn_index++] = page_to_pfn(page++) +
++				(ms_hyperv.shared_gpa_boundary >> PAGE_SHIFT);
++		}
++	}
++
++	vaddr = vmap_pfn(pfns, pg_count, PAGE_KERNEL_IO);
++	kfree(pfns);
++	return vaddr;
++}
++
+ static int netvsc_init_buf(struct hv_device *device,
+ 			   struct netvsc_device *net_device,
+ 			   const struct netvsc_device_info *device_info)
+@@ -337,7 +462,7 @@ static int netvsc_init_buf(struct hv_device *device,
+ 	struct nvsp_1_message_send_receive_buffer_complete *resp;
+ 	struct net_device *ndev = hv_get_drvdata(device);
+ 	struct nvsp_message *init_packet;
+-	unsigned int buf_size;
++	unsigned int buf_size, alloc_unit;
+ 	size_t map_words;
+ 	int i, ret = 0;
  
- 		if (hvpg_count > MAX_PAGE_BUFFER_COUNT) {
+@@ -350,7 +475,14 @@ static int netvsc_init_buf(struct hv_device *device,
+ 		buf_size = min_t(unsigned int, buf_size,
+ 				 NETVSC_RECEIVE_BUFFER_SIZE_LEGACY);
  
-@@ -1834,8 +1837,11 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
- 		payload->range.len = length;
- 		payload->range.offset = offset_in_hvpg;
- 
-+		sg_count = scsi_dma_map(scmnd);
-+		if (sg_count < 0)
-+			return SCSI_MLQUEUE_DEVICE_BUSY;
- 
--		for (i = 0; sgl != NULL; sgl = sg_next(sgl)) {
-+		for_each_sg(sgl, sg, sg_count, j) {
- 			/*
- 			 * Init values for the current sgl entry. hvpgoff
- 			 * and hvpfns_to_add are in units of Hyper-V size
-@@ -1845,10 +1851,9 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
- 			 * even on other than the first sgl entry, provided
- 			 * they are a multiple of PAGE_SIZE.
- 			 */
--			hvpgoff = HVPFN_DOWN(sgl->offset);
--			hvpfn = page_to_hvpfn(sg_page(sgl)) + hvpgoff;
--			hvpfns_to_add =	HVPFN_UP(sgl->offset + sgl->length) -
--						hvpgoff;
-+			hvpfn = HVPFN_DOWN(sg_dma_address(sg));
-+			hvpfns_to_add = HVPFN_UP(sg_dma_address(sg) +
-+						 sg_dma_len(sg)) - hvpfn;
- 
- 			/*
- 			 * Fill the next portion of the PFN array with
-@@ -1858,7 +1863,7 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
- 			 * the PFN array is filled.
- 			 */
- 			while (hvpfns_to_add--)
--				payload->range.pfn_array[i++] =	hvpfn++;
-+				payload->range.pfn_array[i++] = hvpfn++;
- 		}
+-	net_device->recv_buf = vzalloc(buf_size);
++	if (hv_isolation_type_snp())
++		net_device->recv_buf =
++			netvsc_alloc_pages(&net_device->recv_pages,
++					   &net_device->recv_page_count,
++					   buf_size);
++	else
++		net_device->recv_buf = vzalloc(buf_size);
++
+ 	if (!net_device->recv_buf) {
+ 		netdev_err(ndev,
+ 			   "unable to allocate receive buffer of size %u\n",
+@@ -375,6 +507,27 @@ static int netvsc_init_buf(struct hv_device *device,
+ 		goto cleanup;
  	}
  
-@@ -2002,6 +2007,7 @@ static int storvsc_probe(struct hv_device *device,
- 	stor_device->vmscsi_size_delta = sizeof(struct vmscsi_win8_extension);
- 	spin_lock_init(&stor_device->lock);
- 	hv_set_drvdata(device, stor_device);
-+	dma_set_min_align_mask(&device->device, HV_HYP_PAGE_SIZE - 1);
++	if (hv_isolation_type_snp()) {
++		alloc_unit = (buf_size / net_device->recv_page_count)
++				>> PAGE_SHIFT;
++
++		/* Unmap previous virtual address and map pages in the extra
++		 * address space(above shared gpa boundary) in Isolation VM.
++		 */
++		vunmap(net_device->recv_buf);
++		net_device->recv_buf =
++			netvsc_map_pages(net_device->recv_pages,
++					 net_device->recv_page_count,
++					 alloc_unit);
++		if (!net_device->recv_buf) {
++			netdev_err(ndev,
++				   "unable to allocate receive buffer of size %u\n",
++				   buf_size);
++			ret = -ENOMEM;
++			goto cleanup;
++		}
++	}
++
+ 	/* Notify the NetVsp of the gpadl handle */
+ 	init_packet = &net_device->channel_init_pkt;
+ 	memset(init_packet, 0, sizeof(struct nvsp_message));
+@@ -456,13 +609,21 @@ static int netvsc_init_buf(struct hv_device *device,
+ 	buf_size = device_info->send_sections * device_info->send_section_size;
+ 	buf_size = round_up(buf_size, PAGE_SIZE);
  
- 	stor_device->port_number = host->host_no;
- 	ret = storvsc_connect_to_vsp(device, storvsc_ringbuffer_size, is_fc);
+-	net_device->send_buf = vzalloc(buf_size);
++	if (hv_isolation_type_snp())
++		net_device->send_buf =
++			netvsc_alloc_pages(&net_device->send_pages,
++					   &net_device->send_page_count,
++					   buf_size);
++	else
++		net_device->send_buf = vzalloc(buf_size);
++
+ 	if (!net_device->send_buf) {
+ 		netdev_err(ndev, "unable to allocate send buffer of size %u\n",
+ 			   buf_size);
+ 		ret = -ENOMEM;
+ 		goto cleanup;
+ 	}
++
+ 	net_device->send_buf_size = buf_size;
+ 
+ 	/* Establish the gpadl handle for this buffer on this
+@@ -478,6 +639,27 @@ static int netvsc_init_buf(struct hv_device *device,
+ 		goto cleanup;
+ 	}
+ 
++	if (hv_isolation_type_snp()) {
++		alloc_unit = (buf_size / net_device->send_page_count)
++				>> PAGE_SHIFT;
++
++		/* Unmap previous virtual address and map pages in the extra
++		 * address space(above shared gpa boundary) in Isolation VM.
++		 */
++		vunmap(net_device->send_buf);
++		net_device->send_buf =
++			netvsc_map_pages(net_device->send_pages,
++					 net_device->send_page_count,
++					 alloc_unit);
++		if (!net_device->send_buf) {
++			netdev_err(ndev,
++				   "unable to allocate receive buffer of size %u\n",
++				   buf_size);
++			ret = -ENOMEM;
++			goto cleanup;
++		}
++	}
++
+ 	/* Notify the NetVsp of the gpadl handle */
+ 	init_packet = &net_device->channel_init_pkt;
+ 	memset(init_packet, 0, sizeof(struct nvsp_message));
+@@ -768,7 +950,7 @@ static void netvsc_send_tx_complete(struct net_device *ndev,
+ 
+ 	/* Notify the layer above us */
+ 	if (likely(skb)) {
+-		const struct hv_netvsc_packet *packet
++		struct hv_netvsc_packet *packet
+ 			= (struct hv_netvsc_packet *)skb->cb;
+ 		u32 send_index = packet->send_buf_index;
+ 		struct netvsc_stats *tx_stats;
+@@ -784,6 +966,7 @@ static void netvsc_send_tx_complete(struct net_device *ndev,
+ 		tx_stats->bytes += packet->total_bytes;
+ 		u64_stats_update_end(&tx_stats->syncp);
+ 
++		netvsc_dma_unmap(ndev_ctx->device_ctx, packet);
+ 		napi_consume_skb(skb, budget);
+ 	}
+ 
+@@ -948,6 +1131,87 @@ static void netvsc_copy_to_send_buf(struct netvsc_device *net_device,
+ 		memset(dest, 0, padding);
+ }
+ 
++void netvsc_dma_unmap(struct hv_device *hv_dev,
++		      struct hv_netvsc_packet *packet)
++{
++	u32 page_count = packet->cp_partial ?
++		packet->page_buf_cnt - packet->rmsg_pgcnt :
++		packet->page_buf_cnt;
++	int i;
++
++	if (!hv_is_isolation_supported())
++		return;
++
++	if (!packet->dma_range)
++		return;
++
++	for (i = 0; i < page_count; i++)
++		dma_unmap_single(&hv_dev->device, packet->dma_range[i].dma,
++				 packet->dma_range[i].mapping_size,
++				 DMA_TO_DEVICE);
++
++	kfree(packet->dma_range);
++}
++
++/* netvsc_dma_map - Map swiotlb bounce buffer with data page of
++ * packet sent by vmbus_sendpacket_pagebuffer() in the Isolation
++ * VM.
++ *
++ * In isolation VM, netvsc send buffer has been marked visible to
++ * host and so the data copied to send buffer doesn't need to use
++ * bounce buffer. The data pages handled by vmbus_sendpacket_pagebuffer()
++ * may not be copied to send buffer and so these pages need to be
++ * mapped with swiotlb bounce buffer. netvsc_dma_map() is to do
++ * that. The pfns in the struct hv_page_buffer need to be converted
++ * to bounce buffer's pfn. The loop here is necessary because the
++ * entries in the page buffer array are not necessarily full
++ * pages of data.  Each entry in the array has a separate offset and
++ * len that may be non-zero, even for entries in the middle of the
++ * array.  And the entries are not physically contiguous.  So each
++ * entry must be individually mapped rather than as a contiguous unit.
++ * So not use dma_map_sg() here.
++ */
++static int netvsc_dma_map(struct hv_device *hv_dev,
++		   struct hv_netvsc_packet *packet,
++		   struct hv_page_buffer *pb)
++{
++	u32 page_count =  packet->cp_partial ?
++		packet->page_buf_cnt - packet->rmsg_pgcnt :
++		packet->page_buf_cnt;
++	dma_addr_t dma;
++	int i;
++
++	if (!hv_is_isolation_supported())
++		return 0;
++
++	packet->dma_range = kcalloc(page_count,
++				    sizeof(*packet->dma_range),
++				    GFP_KERNEL);
++	if (!packet->dma_range)
++		return -ENOMEM;
++
++	for (i = 0; i < page_count; i++) {
++		char *src = phys_to_virt((pb[i].pfn << HV_HYP_PAGE_SHIFT)
++					 + pb[i].offset);
++		u32 len = pb[i].len;
++
++		dma = dma_map_single(&hv_dev->device, src, len,
++				     DMA_TO_DEVICE);
++		if (dma_mapping_error(&hv_dev->device, dma)) {
++			kfree(packet->dma_range);
++			return -ENOMEM;
++		}
++
++		packet->dma_range[i].dma = dma;
++		packet->dma_range[i].mapping_size = len;
++		pb[i].pfn = dma >> HV_HYP_PAGE_SHIFT;
++		pb[i].offset = offset_in_hvpage(dma);
++		pb[i].len = len;
++	}
++
++	return 0;
++}
++
+ static inline int netvsc_send_pkt(
+ 	struct hv_device *device,
+ 	struct hv_netvsc_packet *packet,
+@@ -988,14 +1252,24 @@ static inline int netvsc_send_pkt(
+ 
+ 	trace_nvsp_send_pkt(ndev, out_channel, rpkt);
+ 
++	packet->dma_range = NULL;
+ 	if (packet->page_buf_cnt) {
+ 		if (packet->cp_partial)
+ 			pb += packet->rmsg_pgcnt;
+ 
++		ret = netvsc_dma_map(ndev_ctx->device_ctx, packet, pb);
++		if (ret) {
++			ret = -EAGAIN;
++			goto exit;
++		}
++
+ 		ret = vmbus_sendpacket_pagebuffer(out_channel,
+ 						  pb, packet->page_buf_cnt,
+ 						  &nvmsg, sizeof(nvmsg),
+ 						  req_id);
++
++		if (ret)
++			netvsc_dma_unmap(ndev_ctx->device_ctx, packet);
+ 	} else {
+ 		ret = vmbus_sendpacket(out_channel,
+ 				       &nvmsg, sizeof(nvmsg),
+@@ -1003,6 +1277,7 @@ static inline int netvsc_send_pkt(
+ 				       VMBUS_DATA_PACKET_FLAG_COMPLETION_REQUESTED);
+ 	}
+ 
++exit:
+ 	if (ret == 0) {
+ 		atomic_inc_return(&nvchan->queue_sends);
+ 
+diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
+index 382bebc2420d..c3dc884b31e3 100644
+--- a/drivers/net/hyperv/netvsc_drv.c
++++ b/drivers/net/hyperv/netvsc_drv.c
+@@ -2577,6 +2577,7 @@ static int netvsc_probe(struct hv_device *dev,
+ 	list_add(&net_device_ctx->list, &netvsc_dev_list);
+ 	rtnl_unlock();
+ 
++	dma_set_min_align_mask(&dev->device, HV_HYP_PAGE_SIZE - 1);
+ 	netvsc_devinfo_put(device_info);
+ 	return 0;
+ 
+diff --git a/drivers/net/hyperv/rndis_filter.c b/drivers/net/hyperv/rndis_filter.c
+index f6c9c2a670f9..448fcc325ed7 100644
+--- a/drivers/net/hyperv/rndis_filter.c
++++ b/drivers/net/hyperv/rndis_filter.c
+@@ -361,6 +361,8 @@ static void rndis_filter_receive_response(struct net_device *ndev,
+ 			}
+ 		}
+ 
++		netvsc_dma_unmap(((struct net_device_context *)
++			netdev_priv(ndev))->device_ctx, &request->pkt);
+ 		complete(&request->wait_event);
+ 	} else {
+ 		netdev_err(ndev,
 diff --git a/include/linux/hyperv.h b/include/linux/hyperv.h
-index bb1a1519b93a..c94c534a944e 100644
+index c94c534a944e..81e58dd582dc 100644
 --- a/include/linux/hyperv.h
 +++ b/include/linux/hyperv.h
-@@ -1274,6 +1274,7 @@ struct hv_device {
+@@ -1597,6 +1597,11 @@ struct hyperv_service_callback {
+ 	void (*callback)(void *context);
+ };
  
- 	struct vmbus_channel *channel;
- 	struct kset	     *channels_kset;
-+	struct device_dma_parameters dma_parms;
- 
- 	/* place holder to keep track of the dir for hv device in debugfs */
- 	struct dentry *debug_dir;
++struct hv_dma_range {
++	dma_addr_t dma;
++	u32 mapping_size;
++};
++
+ #define MAX_SRV_VER	0x7ffffff
+ extern bool vmbus_prep_negotiate_resp(struct icmsg_hdr *icmsghdrp, u8 *buf, u32 buflen,
+ 				const int *fw_version, int fw_vercnt,
 -- 
 2.25.1
 
