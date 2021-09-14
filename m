@@ -2,119 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB27040A950
-	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 10:34:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A797440A95A
+	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 10:35:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231229AbhINIf1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 04:35:27 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:41638 "EHLO
+        id S231151AbhINIge (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 04:36:34 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:14902 "EHLO
         mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230416AbhINIfR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 04:35:17 -0400
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.0.43) with SMTP id 18E85bss023214;
-        Tue, 14 Sep 2021 04:33:58 -0400
+        by vger.kernel.org with ESMTP id S230093AbhINIgc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 04:36:32 -0400
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.0.43) with SMTP id 18E8QdZl031399;
+        Tue, 14 Sep 2021 04:35:13 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=DyUp8rOK4/jZv7mgiOYxr1yFKTTFCb0zSlP/hGPVruk=;
- b=UE7ruEnL8/Z3P19UCr/xELRl7euXUT7bx82jUBLLVXdZu9QL6YTPROnp24dmXRAcH0wU
- wgn0gKqRtVYZP95ppL6bOtNcnYE+UUxxO/017qpohXvBp9FsoP+XGwwISk98aW36nVah
- wKpZqsFtP+5NEOgMawb7eiKUqYlGVYYu0ke+iUpU6AuW97raVhPv7NkqxpxPvBri+25A
- A+Sru14XlxaWABYOnrFaZcPUwtt6/ZaN/oovrU6ESYn5tskKpFb4F9c/D327aup/Bspz
- mPHuQ570O30Qt7iOctXmXKOQ7MljPWFqLx8IdAQDPNV8kY8sx6AWaBT/uKj6dQMcXEVB JA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3b2qx3rh84-1
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=LzHExfBqLUQA7MfiuMVN/6nNsxSfjFfCy3n4/Fzv7Io=;
+ b=B0MdQjXJmuc6cDIG3iM/XJo7T588g7K0qZijsEYHimMvE8M7HISt14BOCJhZVLoncond
+ BvSJLypUWFI9Suo2VYrY+11RfrV15mLwVnEu4ed60WdybPhObkHurJ53oL10/C9UflFj
+ RG0hheqfROaI2qdoYxG7Uf+O1K7hYHidgl0nm2KIxtMhhZgsZuewRunHs3XTzSP25+Xz
+ iP+nnlDDG/umY0+ImTfzQ8ibLILQdPZ6To8oF8bvPbQjD4NkDg4QkZyeIsUyDXS1RwXx
+ 7dGLxqjmApoFL8/m31v49/xLIC4JFVnQAR4QsWwfXfm/qZIUYaB7MEgwauzt+leyWgxL gg== 
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3b2nmkuwbj-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 14 Sep 2021 04:33:58 -0400
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 18E880BM027817;
-        Tue, 14 Sep 2021 04:33:58 -0400
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3b2qx3rh7m-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 14 Sep 2021 04:33:58 -0400
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 18E8W9Ga004557;
-        Tue, 14 Sep 2021 08:33:56 GMT
+        Tue, 14 Sep 2021 04:35:13 -0400
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 18E8WBXX023627;
+        Tue, 14 Sep 2021 08:35:11 GMT
 Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma02fra.de.ibm.com with ESMTP id 3b0m3980eg-1
+        by ppma03fra.de.ibm.com with ESMTP id 3b0m39802t-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 14 Sep 2021 08:33:55 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 18E8TK4k52035856
+        Tue, 14 Sep 2021 08:35:11 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 18E8UbAD51184070
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 14 Sep 2021 08:29:20 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2E0B44C044;
-        Tue, 14 Sep 2021 08:33:51 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C08304C04E;
-        Tue, 14 Sep 2021 08:33:50 +0000 (GMT)
+        Tue, 14 Sep 2021 08:30:37 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 1FCC5A406F;
+        Tue, 14 Sep 2021 08:35:08 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id CA1B6A4040;
+        Tue, 14 Sep 2021 08:35:07 +0000 (GMT)
 Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 14 Sep 2021 08:33:50 +0000 (GMT)
-From:   Karsten Graul <kgraul@linux.ibm.com>
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 14 Sep 2021 08:35:07 +0000 (GMT)
+From:   Guvenc Gulce <guvenc@linux.ibm.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
         Heiko Carstens <hca@linux.ibm.com>,
-        Julian Wiedmann <jwi@linux.ibm.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH net-next 4/4] s390/ism: switch from 'pci_' to 'dma_' API
-Date:   Tue, 14 Sep 2021 10:33:20 +0200
-Message-Id: <20210914083320.508996-5-kgraul@linux.ibm.com>
+        Karsten Graul <kgraul@linux.ibm.com>
+Subject: [PATCH net-next 0/3] net/smc: add EID support
+Date:   Tue, 14 Sep 2021 10:35:04 +0200
+Message-Id: <20210914083507.511369-1-guvenc@linux.ibm.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210914083320.508996-1-kgraul@linux.ibm.com>
-References: <20210914083320.508996-1-kgraul@linux.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 24lsStLs8TSHtOVDtjAGVUjcq5dZHrf7
-X-Proofpoint-ORIG-GUID: eKQ2_gPc-M0b2AQnvSJNJTrUaeJkcLRO
+X-Proofpoint-GUID: DVieTovBX7G6kfB8cil4kQf23TyxFHQG
+X-Proofpoint-ORIG-GUID: DVieTovBX7G6kfB8cil4kQf23TyxFHQG
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.182.1,Aquarius:18.0.687,Hydra:6.0.235,FMLib:17.0.607.475
  definitions=2020-10-13_15,2020-10-13_02,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 bulkscore=0
- suspectscore=0 impostorscore=0 adultscore=0 priorityscore=1501
- lowpriorityscore=0 phishscore=0 clxscore=1015 spamscore=0 mlxscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2109030001 definitions=main-2109140040
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 clxscore=1011
+ phishscore=0 spamscore=0 lowpriorityscore=0 malwarescore=0 suspectscore=0
+ adultscore=0 mlxscore=0 priorityscore=1501 mlxlogscore=822 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2109030001
+ definitions=main-2109140029
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Hi Dave & Jakub,
 
-The wrappers in include/linux/pci-dma-compat.h should go away.
+please apply the following patch series for smc to netdev's net-next 
+tree. The series introduce the so called Enterprise ID support for smc
+protocol. Including the generic netlink based interface.
 
-The patch has been generated with the coccinelle script below.
+Thanks,
 
-@@
-expression e1, e2;
-@@
--    pci_set_dma_mask(e1, e2)
-+    dma_set_mask(&e1->dev, e2)
+Guvenc Gulce
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
----
- drivers/s390/net/ism_drv.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Karsten Graul (3):
+  net/smc: add support for user defined EIDs
+  net/smc: keep static copy of system EID
+  net/smc: add generic netlink support for system EID
 
-diff --git a/drivers/s390/net/ism_drv.c b/drivers/s390/net/ism_drv.c
-index 26cc943d2034..5f7e28de8b15 100644
---- a/drivers/s390/net/ism_drv.c
-+++ b/drivers/s390/net/ism_drv.c
-@@ -555,7 +555,7 @@ static int ism_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	if (ret)
- 		goto err_disable;
- 
--	ret = pci_set_dma_mask(pdev, DMA_BIT_MASK(64));
-+	ret = dma_set_mask(&pdev->dev, DMA_BIT_MASK(64));
- 	if (ret)
- 		goto err_resource;
- 
+ include/uapi/linux/smc.h |  27 ++++
+ net/smc/af_smc.c         |  34 ++--
+ net/smc/smc.h            |   3 -
+ net/smc/smc_clc.c        | 330 +++++++++++++++++++++++++++++++++++++--
+ net/smc/smc_clc.h        |  19 ++-
+ net/smc/smc_core.c       |  10 +-
+ net/smc/smc_core.h       |   1 +
+ net/smc/smc_ism.c        |  16 +-
+ net/smc/smc_ism.h        |   2 +-
+ net/smc/smc_netlink.c    |  47 +++++-
+ net/smc/smc_netlink.h    |   2 +
+ 11 files changed, 443 insertions(+), 48 deletions(-)
+
 -- 
 2.25.1
 
