@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EA9D40B888
-	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 22:00:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B27D40B885
+	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 22:00:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233769AbhINUBE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 16:01:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60402 "EHLO
+        id S233775AbhINUBB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 16:01:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233585AbhINUAx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 16:00:53 -0400
-Received: from mout-p-102.mailbox.org (mout-p-102.mailbox.org [IPv6:2001:67c:2050::465:102])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50397C0613DE;
-        Tue, 14 Sep 2021 12:59:34 -0700 (PDT)
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:105:465:1:1:0])
+        with ESMTP id S233640AbhINUAy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 16:00:54 -0400
+Received: from mout-p-202.mailbox.org (mout-p-202.mailbox.org [IPv6:2001:67c:2050::465:202])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FF74C061574;
+        Tue, 14 Sep 2021 12:59:36 -0700 (PDT)
+Received: from smtp1.mailbox.org (smtp1.mailbox.org [80.241.60.240])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4H8DhP0GnQzQkBS;
-        Tue, 14 Sep 2021 21:59:33 +0200 (CEST)
+        by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4H8DhR1NGHzQjhQ;
+        Tue, 14 Sep 2021 21:59:35 +0200 (CEST)
 X-Virus-Scanned: amavisd-new at heinlein-support.de
 From:   =?UTF-8?q?Jonas=20Dre=C3=9Fler?= <verdre@v0yd.nl>
 To:     Amitkumar Karwar <amitkarwar@gmail.com>,
@@ -36,187 +36,113 @@ Cc:     =?UTF-8?q?Jonas=20Dre=C3=9Fler?= <verdre@v0yd.nl>,
         Maximilian Luz <luzmaximilian@gmail.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-Subject: [PATCH 4/9] mwifiex: Use helper function for counting interface types
-Date:   Tue, 14 Sep 2021 21:59:04 +0200
-Message-Id: <20210914195909.36035-5-verdre@v0yd.nl>
+Subject: [PATCH 5/9] mwifiex: Update virtual interface counters right after setting bss_type
+Date:   Tue, 14 Sep 2021 21:59:05 +0200
+Message-Id: <20210914195909.36035-6-verdre@v0yd.nl>
 In-Reply-To: <20210914195909.36035-1-verdre@v0yd.nl>
 References: <20210914195909.36035-1-verdre@v0yd.nl>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: 0910A188F
+X-Rspamd-Queue-Id: 57B83188F
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use a small helper function to increment and decrement the counter of
-the interface types we currently manage. This makes the code that
-actually changes and sets up the interface type a bit less messy and
-also helps avoiding mistakes in case someone increments/decrements a
-counter wrongly.
+In mwifiex_init_new_priv_params() we update our private driver state to
+reflect the currently selected virtual interface type. Most notably we
+set the bss_mode to the mode we're going to put the firmware in.
+
+Now after we updated the driver state we actually start talking to the
+firmware and instruct it to set up the new mode. Those commands can and
+will sometimes fail, in which case we return with an error from
+mwifiex_change_vif_to_*. We currently update our virtual interface type
+counters after this return, which means the code is never reached when a
+firmware error happens and we never update the counters. Since we have
+updated our bss_mode earlier though, the counters now no longer reflect
+the actual state of the driver.
+
+This will break things on the next virtual interface change, because the
+virtual interface type we're switching away from didn't get its counter
+incremented, and we end up decrementing a 0-counter.
+
+To fix this, simply update the virtual interface type counters right
+after updating our driver structures, so that they are always in sync.
 
 Signed-off-by: Jonas Dreßler <verdre@v0yd.nl>
 ---
- .../net/wireless/marvell/mwifiex/cfg80211.c   | 110 ++++++------------
- 1 file changed, 35 insertions(+), 75 deletions(-)
+ .../net/wireless/marvell/mwifiex/cfg80211.c   | 25 +++++++++++--------
+ 1 file changed, 14 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/net/wireless/marvell/mwifiex/cfg80211.c b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
-index 146aabe14753..8b9517c243c8 100644
+index 8b9517c243c8..f2797102c5a2 100644
 --- a/drivers/net/wireless/marvell/mwifiex/cfg80211.c
 +++ b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
-@@ -1009,6 +1009,32 @@ is_vif_type_change_allowed(struct mwifiex_adapter *adapter,
- 	return false;
- }
+@@ -1059,6 +1059,10 @@ mwifiex_change_vif_to_p2p(struct net_device *dev,
+ 	if (mwifiex_init_new_priv_params(priv, dev, type))
+ 		return -1;
  
-+static void
-+update_vif_type_counter(struct mwifiex_adapter *adapter,
-+			enum nl80211_iftype iftype,
-+			int change)
-+{
-+	switch (iftype) {
-+	case NL80211_IFTYPE_UNSPECIFIED:
-+	case NL80211_IFTYPE_ADHOC:
-+	case NL80211_IFTYPE_STATION:
-+		adapter->curr_iface_comb.sta_intf += change;
-+		break;
-+	case NL80211_IFTYPE_AP:
-+		adapter->curr_iface_comb.uap_intf += change;
-+		break;
-+	case NL80211_IFTYPE_P2P_CLIENT:
-+	case NL80211_IFTYPE_P2P_GO:
-+		adapter->curr_iface_comb.p2p_intf += change;
-+		break;
-+	default:
-+		mwifiex_dbg(adapter, ERROR,
-+			    "%s: Unsupported iftype passed: %d\n",
-+			    __func__, iftype);
-+		break;
-+	}
-+}
++	update_vif_type_counter(adapter, curr_iftype, -1);
++	update_vif_type_counter(adapter, type, +1);
++	dev->ieee80211_ptr->iftype = type;
 +
- static int
- mwifiex_change_vif_to_p2p(struct net_device *dev,
- 			  enum nl80211_iftype curr_iftype,
-@@ -1056,19 +1082,8 @@ mwifiex_change_vif_to_p2p(struct net_device *dev,
+ 	switch (type) {
+ 	case NL80211_IFTYPE_P2P_CLIENT:
+ 		if (mwifiex_cfg80211_init_p2p_client(priv))
+@@ -1082,10 +1086,6 @@ mwifiex_change_vif_to_p2p(struct net_device *dev,
  	if (mwifiex_sta_init_cmd(priv, false, false))
  		return -1;
  
--	switch (curr_iftype) {
--	case NL80211_IFTYPE_STATION:
--	case NL80211_IFTYPE_ADHOC:
--		adapter->curr_iface_comb.sta_intf--;
--		break;
--	case NL80211_IFTYPE_AP:
--		adapter->curr_iface_comb.uap_intf--;
--		break;
--	default:
--		break;
--	}
+-	update_vif_type_counter(adapter, curr_iftype, -1);
+-	update_vif_type_counter(adapter, type, +1);
+-	dev->ieee80211_ptr->iftype = type;
 -
--	adapter->curr_iface_comb.p2p_intf++;
-+	update_vif_type_counter(adapter, curr_iftype, -1);
-+	update_vif_type_counter(adapter, type, +1);
- 	dev->ieee80211_ptr->iftype = type;
- 
  	return 0;
-@@ -1107,20 +1122,10 @@ mwifiex_change_vif_to_sta_adhoc(struct net_device *dev,
- 	if (mwifiex_sta_init_cmd(priv, false, false))
- 		return -1;
+ }
  
--	switch (curr_iftype) {
--	case NL80211_IFTYPE_P2P_CLIENT:
--	case NL80211_IFTYPE_P2P_GO:
--		adapter->curr_iface_comb.p2p_intf--;
--		break;
--	case NL80211_IFTYPE_AP:
--		adapter->curr_iface_comb.uap_intf--;
--		break;
--	default:
--		break;
--	}
--
--	adapter->curr_iface_comb.sta_intf++;
-+	update_vif_type_counter(adapter, curr_iftype, -1);
-+	update_vif_type_counter(adapter, type, +1);
- 	dev->ieee80211_ptr->iftype = type;
+@@ -1116,16 +1116,17 @@ mwifiex_change_vif_to_sta_adhoc(struct net_device *dev,
+ 		return -1;
+ 	if (mwifiex_init_new_priv_params(priv, dev, type))
+ 		return -1;
 +
- 	return 0;
- }
- 
-@@ -1153,20 +1158,8 @@ mwifiex_change_vif_to_ap(struct net_device *dev,
++	update_vif_type_counter(adapter, curr_iftype, -1);
++	update_vif_type_counter(adapter, type, +1);
++	dev->ieee80211_ptr->iftype = type;
++
+ 	if (mwifiex_send_cmd(priv, HostCmd_CMD_SET_BSS_MODE,
+ 			     HostCmd_ACT_GEN_SET, 0, NULL, true))
+ 		return -1;
  	if (mwifiex_sta_init_cmd(priv, false, false))
  		return -1;
  
--	switch (curr_iftype) {
--	case NL80211_IFTYPE_P2P_CLIENT:
--	case NL80211_IFTYPE_P2P_GO:
--		adapter->curr_iface_comb.p2p_intf--;
--		break;
--	case NL80211_IFTYPE_STATION:
--	case NL80211_IFTYPE_ADHOC:
--		adapter->curr_iface_comb.sta_intf--;
--		break;
--	default:
--		break;
--	}
+-	update_vif_type_counter(adapter, curr_iftype, -1);
+-	update_vif_type_counter(adapter, type, +1);
+-	dev->ieee80211_ptr->iftype = type;
 -
--	adapter->curr_iface_comb.uap_intf++;
-+	update_vif_type_counter(adapter, curr_iftype, -1);
-+	update_vif_type_counter(adapter, type, +1);
- 	dev->ieee80211_ptr->iftype = type;
  	return 0;
  }
-@@ -3128,23 +3121,7 @@ struct wireless_dev *mwifiex_add_virtual_intf(struct wiphy *wiphy,
- 	mwifiex_dev_debugfs_init(priv);
- #endif
  
--	switch (type) {
--	case NL80211_IFTYPE_UNSPECIFIED:
--	case NL80211_IFTYPE_STATION:
--	case NL80211_IFTYPE_ADHOC:
--		adapter->curr_iface_comb.sta_intf++;
--		break;
--	case NL80211_IFTYPE_AP:
--		adapter->curr_iface_comb.uap_intf++;
--		break;
--	case NL80211_IFTYPE_P2P_CLIENT:
--		adapter->curr_iface_comb.p2p_intf++;
--		break;
--	default:
--		/* This should be dead code; checked above */
--		mwifiex_dbg(adapter, ERROR, "type not supported\n");
--		return ERR_PTR(-EINVAL);
--	}
+@@ -1152,15 +1153,17 @@ mwifiex_change_vif_to_ap(struct net_device *dev,
+ 		return -1;
+ 	if (mwifiex_init_new_priv_params(priv, dev, type))
+ 		return -1;
++
++	update_vif_type_counter(adapter, curr_iftype, -1);
 +	update_vif_type_counter(adapter, type, +1);
++	dev->ieee80211_ptr->iftype = type;
++
+ 	if (mwifiex_send_cmd(priv, HostCmd_CMD_SET_BSS_MODE,
+ 			     HostCmd_ACT_GEN_SET, 0, NULL, true))
+ 		return -1;
+ 	if (mwifiex_sta_init_cmd(priv, false, false))
+ 		return -1;
  
- 	return &priv->wdev;
- 
-@@ -3210,24 +3187,7 @@ int mwifiex_del_virtual_intf(struct wiphy *wiphy, struct wireless_dev *wdev)
- 	/* Clear the priv in adapter */
- 	priv->netdev = NULL;
- 
--	switch (priv->bss_mode) {
--	case NL80211_IFTYPE_UNSPECIFIED:
--	case NL80211_IFTYPE_STATION:
--	case NL80211_IFTYPE_ADHOC:
--		adapter->curr_iface_comb.sta_intf--;
--		break;
--	case NL80211_IFTYPE_AP:
--		adapter->curr_iface_comb.uap_intf--;
--		break;
--	case NL80211_IFTYPE_P2P_CLIENT:
--	case NL80211_IFTYPE_P2P_GO:
--		adapter->curr_iface_comb.p2p_intf--;
--		break;
--	default:
--		mwifiex_dbg(adapter, ERROR,
--			    "del_virtual_intf: type not supported\n");
--		break;
--	}
-+	update_vif_type_counter(adapter, priv->bss_mode, -1);
- 
- 	priv->bss_mode = NL80211_IFTYPE_UNSPECIFIED;
- 
+-	update_vif_type_counter(adapter, curr_iftype, -1);
+-	update_vif_type_counter(adapter, type, +1);
+-	dev->ieee80211_ptr->iftype = type;
+ 	return 0;
+ }
+ /*
 -- 
 2.31.1
 
