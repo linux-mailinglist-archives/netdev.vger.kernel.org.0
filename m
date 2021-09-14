@@ -2,66 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C9E840AEB7
-	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 15:14:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AEA040AEEA
+	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 15:30:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233230AbhINNQH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 09:16:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44634 "EHLO mail.kernel.org"
+        id S233237AbhINNbj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 09:31:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50368 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233218AbhINNQG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Sep 2021 09:16:06 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 0A054610E6;
-        Tue, 14 Sep 2021 13:14:49 +0000 (UTC)
+        id S232411AbhINNbY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Sep 2021 09:31:24 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 692DD610A6;
+        Tue, 14 Sep 2021 13:30:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631625289;
-        bh=fUex7wQvO0zbSR2isytRvogKnEwudA8k79GsUi7rsBE=;
+        s=k20201202; t=1631626207;
+        bh=QZ6PZcqZo5v6hDeq9EAgO0uqBYCgIk7IxHYHz3gMTt0=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=pna2ECYGRv+td7tL7HaWBu4JUSaJZwDNCg88lN3hvNzj6lffhu2iFHXOKMEMNeJ3P
-         SnnmYhEd6SiiciOxVRw+qkzLpOI/3u0cNF9tfj2F3gT2xGKyoTIA4vD25c77ItbI6w
-         +3WUyL17y/ZSUOZJzYeX9RzA3LOEcHGbfVjcMD1JyLyoqa8asGP7/Vx547fogZnRjh
-         piKsFh0IanA2yTN+8ZXJ9ul5VavvJA3Jc/wbsvMJqCKenmM0t7Or/BgqqvbW/BHvsl
-         Bjbav4IQGIySp29WVDJWZXuKYFgCJA8+VRGn4MjdHLWLYoh5ik8SWyiEld2Xbtot8g
-         o2JNKhhWCEWDg==
+        b=XE6ySgr2caHuqQLCJmn9b0iFAUwFT2oVH6txvSP98wvrzpY3/hRnEgTJiyZQ8z/Qq
+         +9bKZMpqxv4jT8umrS7v3H0uA0jRyJm+k3EZ5XDZGoJefnIDqaiqotj3a500/52cB4
+         0N9MjS3iF29qlqA2N2BcDMH1kDOdc/jI/RAGvRytSwgH3c0vvLmcA2fqp/i9zLQ+hF
+         BSHqsP5anMOriEghVanf8HQcSuTAUyS58hTgKb95noHEPyEuzOMbQ9KpQCwId/WsUf
+         YCsGrnweZKvcwe2E//1dl2UGCFrj83dpVrwLXa6DNOnEcqRyLaCGDZXPYlngqw/Y53
+         3IPlvYCVMaZCg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id F3A9E60A7D;
-        Tue, 14 Sep 2021 13:14:48 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5C04B60A7D;
+        Tue, 14 Sep 2021 13:30:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] r8169: remove support for chip version
- RTL_GIGA_MAC_VER_27
+Subject: Re: [PATCH net] Revert "Revert "ipv4: fix memory leaks in ip_cmsg_send()
+ callers""
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163162528899.7287.10575747689807632437.git-patchwork-notify@kernel.org>
-Date:   Tue, 14 Sep 2021 13:14:48 +0000
-References: <7892bfe6-ad86-2b1e-e2ea-7e1667e17151@gmail.com>
-In-Reply-To: <7892bfe6-ad86-2b1e-e2ea-7e1667e17151@gmail.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, nic_swsd@realtek.com,
-        netdev@vger.kernel.org
+Message-Id: <163162620737.30283.9519094171883283410.git-patchwork-notify@kernel.org>
+Date:   Tue, 14 Sep 2021 13:30:07 +0000
+References: <20210914051851.1056723-1-eric.dumazet@gmail.com>
+In-Reply-To: <20210914051851.1056723-1-eric.dumazet@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        edumazet@google.com, yajun.deng@linux.dev
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+This patch was applied to netdev/net.git (refs/heads/master):
 
-On Mon, 13 Sep 2021 21:46:06 +0200 you wrote:
-> This patch is a follow-up to beb401ec5006 ("r8169: deprecate support for
-> RTL_GIGA_MAC_VER_27") that came with 5.12. Nobody complained, so let's
-> remove support for this chip version.
+On Mon, 13 Sep 2021 22:18:51 -0700 you wrote:
+> From: Eric Dumazet <edumazet@google.com>
 > 
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-> ---
->  drivers/net/ethernet/realtek/r8169.h          |  2 +-
->  drivers/net/ethernet/realtek/r8169_main.c     | 41 +------------
->  .../net/ethernet/realtek/r8169_phy_config.c   | 59 -------------------
->  3 files changed, 3 insertions(+), 99 deletions(-)
+> This reverts commit d7807a9adf4856171f8441f13078c33941df48ab.
+> 
+> As mentioned in https://lkml.org/lkml/2021/9/13/1819
+> 5 years old commit 919483096bfe ("ipv4: fix memory leaks in ip_cmsg_send() callers")
+> was a correct fix.
+> 
+> [...]
 
 Here is the summary with links:
-  - [net-next] r8169: remove support for chip version RTL_GIGA_MAC_VER_27
-    https://git.kernel.org/netdev/net-next/c/01649011cc82
+  - [net] Revert "Revert "ipv4: fix memory leaks in ip_cmsg_send() callers""
+    https://git.kernel.org/netdev/net/c/d198b2776264
 
 You are awesome, thank you!
 --
