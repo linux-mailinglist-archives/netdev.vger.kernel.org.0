@@ -2,116 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2F0440ABE4
-	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 12:42:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC89040AC06
+	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 12:53:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231623AbhINKnr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 06:43:47 -0400
-Received: from mga07.intel.com ([134.134.136.100]:65032 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231401AbhINKnn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Sep 2021 06:43:43 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10106"; a="285645672"
-X-IronPort-AV: E=Sophos;i="5.85,292,1624345200"; 
-   d="scan'208";a="285645672"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2021 03:42:25 -0700
-X-IronPort-AV: E=Sophos;i="5.85,292,1624345200"; 
-   d="scan'208";a="543903493"
-Received: from krausnex-mobl.ger.corp.intel.com (HELO [10.13.9.164]) ([10.13.9.164])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2021 03:42:23 -0700
-Subject: Re: [Intel-wired-lan] [PATCH] igc: fix tunnel offloading
-To:     Corinna Vinschen <vinschen@redhat.com>,
-        intel-wired-lan@lists.osuosl.org
-Cc:     netdev@vger.kernel.org, pabeni@redhat.com
-References: <20210817131620.566614-1-vinschen@redhat.com>
-From:   "Kraus, NechamaX" <nechamax.kraus@linux.intel.com>
-Message-ID: <181feb46-eac6-8bd7-f75a-26d85b05da02@linux.intel.com>
-Date:   Tue, 14 Sep 2021 13:42:10 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
-MIME-Version: 1.0
-In-Reply-To: <20210817131620.566614-1-vinschen@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S231804AbhINKyl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 06:54:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43788 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231851AbhINKyk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 06:54:40 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45369C061574
+        for <netdev@vger.kernel.org>; Tue, 14 Sep 2021 03:53:23 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id c21so11337530edj.0
+        for <netdev@vger.kernel.org>; Tue, 14 Sep 2021 03:53:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=0lhRthA/bSo5KcDjr/ssuFwMc8XUsRCWKq5Lwd9TeZk=;
+        b=gdsGVEGwGYDqdPvsA1tvoeEqHf1fKhT0TkenZEfAF6yTLh1pN5g9QNdDdWX1cchx2t
+         AHh//4loFtqDnUy0/70TVgQWL+uvt5do4euVXLaMjF5ggoX2OxmJaKLBpz8xuhcqaSqA
+         r8hPbZm6GJKzI/HFeWomkmeLCfiJLb2npRc///cNSUCITdmmqpbyWJea3+LBTsn9q7tp
+         K5/449ED1FISQkYNEacQ2Xc9GccDLa+AQNsNvPwX+UEBMoQ62naPPNceFHwZ2vYLWXgq
+         5Z4DhECLqCAme9tTy36KNu5iaRdeYSx2uB0QAx063z2oOtUM5GAVpaalEci9TSaVkltc
+         Zf9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=0lhRthA/bSo5KcDjr/ssuFwMc8XUsRCWKq5Lwd9TeZk=;
+        b=I1vXK9dpIKSSF2b0yMBwBIj0GwHmy6y7KMKfoh49ARKqCpxNI9ZL+UiY6G03ut5K7P
+         svHsTA14L44vb6phvkOoYQ+EoA9kUdTAkTC22QdrfIXmo8JEbY+owTRnbIBL312gMZX3
+         2rqLqi98tdvu00GOD3iPxfrYFilBMx7rAi5Re8AEt8ypqam0uNQoUQe72M/wzqpP/2pZ
+         eODRXSyc6t/tOMt9LLevc5om9dGW/w3bRm0WYe7bi3SozhGGHfx1WKPvfWPH09HwoHJl
+         +OSqSs2QIwXs7ZBsmkVe4CXST027LmXiqmHQYsMoh52VL1vNED5zdGJtN6Dd19CauNmU
+         Yfag==
+X-Gm-Message-State: AOAM53144KzKVS/0lmPAv25Z/t/9JnbI2vQEdR2bFfHG/q61XmFnV8C7
+        rphYlK1XlDhqp48wQjCd42M=
+X-Google-Smtp-Source: ABdhPJy9SneASGLsX1BH/2LyBow8qQgjLQ7LjybTQ1Lmfqzb80gOpprmJThdFqX+zZpahW7nmg4sWQ==
+X-Received: by 2002:aa7:c38b:: with SMTP id k11mr12886865edq.175.1631616801927;
+        Tue, 14 Sep 2021 03:53:21 -0700 (PDT)
+Received: from smtpclient.apple ([178.254.237.20])
+        by smtp.gmail.com with ESMTPSA id 90sm5170966edc.36.2021.09.14.03.53.21
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 14 Sep 2021 03:53:21 -0700 (PDT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.120.0.1.13\))
+Subject: Re: Urgent  Bug report: PPPoE ioctl(PPPIOCCONNECT): Transport
+ endpoint is not connected
+From:   Martin Zaharinov <micron10@gmail.com>
+In-Reply-To: <20210914095015.GA9076@breakpoint.cc>
+Date:   Tue, 14 Sep 2021 13:53:20 +0300
+Cc:     Guillaume Nault <gnault@redhat.com>,
+        =?utf-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <504E1119-3631-4A2A-BD0C-F74AEE2BDBF5@gmail.com>
+References: <20210808152318.6nbbaj3bp6tpznel@pali>
+ <8BDDA0B3-0BEE-4E80-9686-7F66CF58B069@gmail.com>
+ <20210809151529.ymbq53f633253loz@pali>
+ <FFD368DF-4C89-494B-8E7B-35C2A139E277@gmail.com>
+ <20210811164835.GB15488@pc-32.home>
+ <81FD1346-8CE6-4080-84C9-705E2E5E69C0@gmail.com>
+ <6A3B4C11-EF48-4CE9-9EC7-5882E330D7EA@gmail.com>
+ <A16DCD3E-43AA-4D50-97FC-EBB776481840@gmail.com>
+ <E95FDB1D-488B-4780-96A1-A2D5C9616A7A@gmail.com>
+ <20210914080206.GA20454@pc-4.home> <20210914095015.GA9076@breakpoint.cc>
+To:     Florian Westphal <fw@strlen.de>
+X-Mailer: Apple Mail (2.3654.120.0.1.13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/17/2021 16:16, Corinna Vinschen wrote:
-> From: Paolo Abeni <pabeni@redhat.com>
-> 
-> Checking tunnel offloading, it turns out that offloading doesn't work
-> as expected.  The following script allows to reproduce the issue.
-> Call it as `testscript DEVICE LOCALIP REMOTEIP NETMASK'
-> 
-> === SNIP ===
-> if [ $# -ne 4 ]
-> then
->    echo "Usage $0 DEVICE LOCALIP REMOTEIP NETMASK"
->    exit 1
-> fi
-> DEVICE="$1"
-> LOCAL_ADDRESS="$2"
-> REMOTE_ADDRESS="$3"
-> NWMASK="$4"
-> echo "Driver: $(ethtool -i ${DEVICE} | awk '/^driver:/{print $2}') "
-> ethtool -k "${DEVICE}" | grep tx-udp
-> echo
-> echo "Set up NIC and tunnel..."
-> ip addr add "${LOCAL_ADDRESS}/${NWMASK}" dev "${DEVICE}"
-> ip link set "${DEVICE}" up
-> sleep 2
-> ip link add vxlan1 type vxlan id 42 \
-> 		   remote "${REMOTE_ADDRESS}" \
-> 		   local "${LOCAL_ADDRESS}" \
-> 		   dstport 0 \
-> 		   dev "${DEVICE}"
-> ip addr add fc00::1/64 dev vxlan1
-> ip link set vxlan1 up
-> sleep 2
-> rm -f vxlan.pcap
-> echo "Running tcpdump and iperf3..."
-> ( nohup tcpdump -i any -w vxlan.pcap >/dev/null 2>&1 ) &
-> sleep 2
-> iperf3 -c fc00::2 >/dev/null
-> pkill tcpdump
-> echo
-> echo -n "Max. Paket Size: "
-> tcpdump -r vxlan.pcap -nnle 2>/dev/null \
-> | grep "${LOCAL_ADDRESS}.*> ${REMOTE_ADDRESS}.*OTV" \
-> | awk '{print $8}' | awk -F ':' '{print $1}' \
-> | sort -n | tail -1
-> echo
-> ip link del vxlan1
-> ip addr del ${LOCAL_ADDRESS}/${NWMASK} dev "${DEVICE}"
-> === SNAP ===
-> 
-> The expected outcome is
-> 
->    Max. Paket Size: 64904
-> 
-> This is what you see on igb, the code igc has been taken from.
-> However, on igc the output is
-> 
->    Max. Paket Size: 1516
-> 
-> so the GSO aggregate packets are segmented by the kernel before calling
-> igc_xmit_frame.  Inside the subsequent call to igc_tso, the check for
-> skb_is_gso(skb) fails and the function returns prematurely.
-> 
-> It turns out that this occurs because the feature flags aren't set
-> entirely correctly in igc_probe.  In contrast to the original code
-> from igb_probe, igc_probe neglects to set the flags required to allow
-> tunnel offloading.
-> 
-> Setting the same flags as igb fixes the issue on igc.
-> 
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> Tested-by: Corinna Vinschen <vinschen@redhat.com>
-> ---
->   drivers/net/ethernet/intel/igc/igc_main.c | 4 +++-
->   1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-Tested-by: Nechama Kraus <nechamax.kraus@linux.intel.com>
+Florian Hi=20
+One more=20
+
+please see i try to remove nf_nat and xt_MASQUERADE=20
+
+and on time of problem need 50-80 sec to remove and overload system .
+
+see perf from this moment:=20
+
+
+
+
+ PerfTop:    1738 irqs/sec  kernel:85.0%  exact: 100.0% lost: 0/0 drop: =
+0/0 [4000Hz cycles],  (all, 12 CPUs)
+=
+--------------------------------------------------------------------------=
+--------------------------------------------------------------------------=
+-----------------------------------------------------------
+
+    40.63%  [nf_conntrack]    [k] nf_ct_iterate_cleanup
+    21.23%  [kernel]          [k] __local_bh_enable_ip
+    10.93%  [kernel]          [k] __cond_resched
+     9.20%  [kernel]          [k] _raw_spin_lock
+     8.91%  [kernel]          [k] rcu_all_qs
+     5.83%  [nf_conntrack]    [k] nf_conntrack_lock
+     0.10%  [kernel]          [k] mutex_spin_on_owner
+     0.08%  telegraf          [.] 0x0000000000021bf0
+     0.06%  [kernel]          [k] osq_lock
+     0.06%  [kernel]          [k] kallsyms_expand_symbol.constprop.0
+     0.05%  [kernel]          [k] format_decode
+     0.04%  [kernel]          [k] rtnl_fill_ifinfo.constprop.0.isra.0
+     0.04%  perf              [.] 0x00000000000bc7b3
+     0.04%  [kernel]          [k] memcpy_erms
+     0.03%  [kernel]          [k] string
+     0.03%  [kernel]          [k] menu_select
+     0.03%  [kernel]          [k] nla_put
+     0.03%  [kernel]          [k] vsnprintf
+
+
+
+Martin
+
+> On 14 Sep 2021, at 12:50, Florian Westphal <fw@strlen.de> wrote:
+>=20
+> Guillaume Nault <gnault@redhat.com> wrote:
+>>> And on time of problem when try to write : ip a=20
+>>> to list interface wait 15-20 sec i finaly have options to simulate =
+but users is angry when down internet.
+>>=20
+>> Probably some contention on the rtnl lock.
+>=20
+> Yes, I'll create a patch.
+
