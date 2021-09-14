@@ -2,130 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C4C240A43D
-	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 05:16:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A5FA40A4E3
+	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 05:50:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238695AbhINDRt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Sep 2021 23:17:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40346 "EHLO mail.kernel.org"
+        id S239185AbhINDvU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Sep 2021 23:51:20 -0400
+Received: from out0.migadu.com ([94.23.1.103]:64629 "EHLO out0.migadu.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237213AbhINDRs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Sep 2021 23:17:48 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E7B8F60FDA;
-        Tue, 14 Sep 2021 03:16:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631589391;
-        bh=W34OXpHVI8IRqoH+2KbWo+deibUpb2mP6Uf99tWa4No=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mB7vh8JYTdszNKhX1AtKYJeTmLz/5PNBNlVrtfJOPtqWBHZdQH35u7eRwjErtD4iK
-         E1iqgoA7/fk8BTgRM2awWB+DQ1lfjUwAbXMY+YKh0zstHRrzyf4WbKkEfuy5e5Shzx
-         5FZnNuZBqrXEzkicJwoY3FX1Hx/ask4KDqJz64i1jYHgvdIIv0U2UjvtwVntKOmtmL
-         OxpRXAybDUgS7Dk9Nr0WaijMocO+YNNYZTD8cCFaZcLe1qcOcHx3a3C13GYbul2vL8
-         ERy40P4yJTJp1LPX4GilQ3E3uIzkIFhxoX7OmrkNvBIagAFD+3fhMsuYxU/NJ01kcj
-         qTV7J47fU6V1g==
-Date:   Tue, 14 Sep 2021 06:16:27 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     "Ertman, David M" <david.m.ertman@intel.com>
-Cc:     "Saleem, Shiraz" <shiraz.saleem@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "yongxin.liu@windriver.com" <yongxin.liu@windriver.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "jgg@ziepe.ca" <jgg@ziepe.ca>,
-        "Williams, Dan J" <dan.j.williams@intel.com>,
-        "Singhai, Anjali" <anjali.singhai@intel.com>,
-        "Parikh, Neerav" <neerav.parikh@intel.com>,
-        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Subject: Re: [PATCH RESEND net] ice: Correctly deal with PFs that do not
- support RDMA
-Message-ID: <YUAUC1AJP6JVMxBr@unreal>
-References: <20210909151223.572918-1-david.m.ertman@intel.com>
- <YTsjDsFbBggL2X/8@unreal>
- <4bc2664ac89844a79242339f5e971335@intel.com>
- <PH0PR11MB49667F5B029D37D0E257A256DDD99@PH0PR11MB4966.namprd11.prod.outlook.com>
+        id S238424AbhINDvT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Sep 2021 23:51:19 -0400
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1631591401;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=d3Ti+xU/m2mhoHM45+Aq1RhmFTGFJaIipaoBsexQmRI=;
+        b=aoQ7gIpYbZWUFbq+zxhOTFRKPhFnjJ9qoeC+psB6ErTHfuKQZUOHSnrRU3+qHh0nRoxiFG
+        IyGbbAjbPYeIXZF923OwZ44zyRxtje0Yu9PHQjOhlMedL3ygnWvJNFEBW+Agex1f5iZxrz
+        ge28Q4NOI17iPOypwDl4CQw5bTLdws8=
+From:   Yajun Deng <yajun.deng@linux.dev>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yajun Deng <yajun.deng@linux.dev>,
+        kernel test robot <oliver.sang@intel.com>
+Subject: [PATCH net-next v2] skbuff: inline page_frag_alloc_align()
+Date:   Tue, 14 Sep 2021 11:49:35 +0800
+Message-Id: <20210914034935.19137-1-yajun.deng@linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <PH0PR11MB49667F5B029D37D0E257A256DDD99@PH0PR11MB4966.namprd11.prod.outlook.com>
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: yajun.deng@linux.dev
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 13, 2021 at 04:07:28PM +0000, Ertman, David M wrote:
-> > -----Original Message-----
-> > From: Saleem, Shiraz <shiraz.saleem@intel.com>
-> > Sent: Monday, September 13, 2021 8:50 AM
-> > To: Leon Romanovsky <leon@kernel.org>; Ertman, David M
-> > <david.m.ertman@intel.com>
-> > Cc: davem@davemloft.net; kuba@kernel.org; yongxin.liu@windriver.com;
-> > Nguyen, Anthony L <anthony.l.nguyen@intel.com>;
-> > netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Brandeburg, Jesse
-> > <jesse.brandeburg@intel.com>; intel-wired-lan@lists.osuosl.org; linux-
-> > rdma@vger.kernel.org; jgg@ziepe.ca; Williams, Dan J
-> > <dan.j.williams@intel.com>; Singhai, Anjali <anjali.singhai@intel.com>;
-> > Parikh, Neerav <neerav.parikh@intel.com>; Samudrala, Sridhar
-> > <sridhar.samudrala@intel.com>
-> > Subject: RE: [PATCH RESEND net] ice: Correctly deal with PFs that do not
-> > support RDMA
-> > 
-> > > Subject: Re: [PATCH RESEND net] ice: Correctly deal with PFs that do not
-> > > support RDMA
-> > >
-> > > On Thu, Sep 09, 2021 at 08:12:23AM -0700, Dave Ertman wrote:
-> > > > There are two cases where the current PF does not support RDMA
-> > > > functionality.  The first is if the NVM loaded on the device is set to
-> > > > not support RDMA (common_caps.rdma is false).  The second is if the
-> > > > kernel bonding driver has included the current PF in an active link
-> > > > aggregate.
-> > > >
-> > > > When the driver has determined that this PF does not support RDMA,
-> > > > then auxiliary devices should not be created on the auxiliary bus.
-> > >
-> > > This part is wrong, auxiliary devices should always be created, in your case it
-> > will
-> > > be one eth device only without extra irdma device.
-> > 
-> > It is worth considering having an eth aux device/driver but is it a hard-and-
-> > fast rule?
-> > In this case, the RDMA-capable PCI network device spawns an auxiliary
-> > device for RDMA
-> > and the core driver is a network driver.
-> > 
-> > >
-> > > Your "bug" is that you mixed auxiliary bus devices with "regular" ones and
-> > created
-> > > eth device not as auxiliary one. This is why you are calling to
-> > auxiliary_device_init()
-> > > for RDMA only and fallback to non-auxiliary mode.
-> > 
-> > It's a design choice on how you carve out function(s) off your PCI core device
-> > to be
-> > managed by auxiliary driver(s) and not a bug.
-> > 
-> > Shiraz
-> 
-> Also, regardless of whether netdev functionality is carved out into an auxiliary device or not, this code would still be necessary.
+The __alloc_frag_align() is short, and only called by two functions,
+so inline page_frag_alloc_align() for reduce the overhead of calls.
 
-Right
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
+---
+ net/core/skbuff.c | 19 ++++++++-----------
+ 1 file changed, 8 insertions(+), 11 deletions(-)
 
-> 
-> We don't want to carve out an auxiliary device to support a functionality that the base PCI device does not support.  Not having
-> the RDMA auxiliary device for an auxiliary driver to bind to is how we differentiate between devices that support RDMA and those
-> that don't.
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 2170bea2c7de..7c2ab27fcbf9 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -134,34 +134,31 @@ struct napi_alloc_cache {
+ static DEFINE_PER_CPU(struct page_frag_cache, netdev_alloc_cache);
+ static DEFINE_PER_CPU(struct napi_alloc_cache, napi_alloc_cache);
+ 
+-static void *__alloc_frag_align(unsigned int fragsz, gfp_t gfp_mask,
+-				unsigned int align_mask)
++void *__napi_alloc_frag_align(unsigned int fragsz, unsigned int align_mask)
+ {
+ 	struct napi_alloc_cache *nc = this_cpu_ptr(&napi_alloc_cache);
+ 
+-	return page_frag_alloc_align(&nc->page, fragsz, gfp_mask, align_mask);
+-}
+-
+-void *__napi_alloc_frag_align(unsigned int fragsz, unsigned int align_mask)
+-{
+ 	fragsz = SKB_DATA_ALIGN(fragsz);
+ 
+-	return __alloc_frag_align(fragsz, GFP_ATOMIC, align_mask);
++	return page_frag_alloc_align(&nc->page, fragsz, GFP_ATOMIC, align_mask);
+ }
+ EXPORT_SYMBOL(__napi_alloc_frag_align);
+ 
+ void *__netdev_alloc_frag_align(unsigned int fragsz, unsigned int align_mask)
+ {
+-	struct page_frag_cache *nc;
+ 	void *data;
+ 
+ 	fragsz = SKB_DATA_ALIGN(fragsz);
+ 	if (in_hardirq() || irqs_disabled()) {
+-		nc = this_cpu_ptr(&netdev_alloc_cache);
++		struct page_frag_cache *nc = this_cpu_ptr(&netdev_alloc_cache);
++
+ 		data = page_frag_alloc_align(nc, fragsz, GFP_ATOMIC, align_mask);
+ 	} else {
++		struct napi_alloc_cache *nc;
++
+ 		local_bh_disable();
+-		data = __alloc_frag_align(fragsz, GFP_ATOMIC, align_mask);
++		nc = this_cpu_ptr(&napi_alloc_cache);
++		data = page_frag_alloc_align(&nc->page, fragsz, GFP_ATOMIC, align_mask);
+ 		local_bh_enable();
+ 	}
+ 	return data;
+-- 
+2.32.0
 
-This is right too.
-
-My complain is that you mixed enumerator logic with eth driver and
-create auxiliary bus only if your RDMA device exists. It is wrong.
-
-Thanks
-
-> 
-> Thanks,
-> DaveE
-> 
