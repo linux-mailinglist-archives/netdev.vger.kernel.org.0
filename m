@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BA2940BC17
-	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 01:12:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60B9240BC14
+	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 01:12:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235895AbhINXMy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 19:12:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46772 "EHLO mail.kernel.org"
+        id S235786AbhINXMw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 19:12:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46726 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235845AbhINXMy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Sep 2021 19:12:54 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 447BD6008E;
-        Tue, 14 Sep 2021 23:11:35 +0000 (UTC)
+        id S235704AbhINXMu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Sep 2021 19:12:50 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D78E861165;
+        Tue, 14 Sep 2021 23:11:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631661096;
-        bh=jiouLZz/Q+SP5VeEmlrPZJs67Kq3f6zq2uFUufcpsU8=;
+        s=k20201202; t=1631661092;
+        bh=rzQxkSGW5RhH/yprfN/aghfBLsMqvTl+xRz6fuN8gMQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JwjftfBlPoLg5cBH8NiXntfUwHnW5+ZvFkEg2txYpmexzC15yrI2ktUbX8UdIdRWi
-         27cQhtoGNapZmLs2wY8gVby7DrCA31V/l8P6W5pPI8CIObCb9wsH5kotS/blda86E1
-         Op99CayZEarLYVSWS8q76nE0GDYbupHD8kDynTkx166nwKsKjKk1Kt1kX30F2xPha3
-         jOEq/Qyf5sQre7Iz76e3JbXEZxVcNnpKSBQERKJpsasiVFN62ygTOqgPn3jMEMEDkP
-         yxxd9XDX0Fa3JnQ71c08rU0prV3sG7OJJveXZPVbe/GDkPso+ac0zL5vUrY7W7sQ3n
-         dOCl6i9Dr1/Mw==
+        b=LugofJLtcdMYKZ1IIpiNuDyhTlDuuhJJOybsd3vFq1+lfOMmij7oE1AXYv8CdbClh
+         WCRulTr8fBQopt4Hi8sOFvWzKAcz8vtWeMbwPCA8lgEAt4L2oiHAML8rJuzzU32aEw
+         XMoz/uv2wPBI/ppNsrQGQNYNSn1/xD48wALvX5rwmXX0nEGyCe7XnCg2RZntFZYvKs
+         M4xTcNKUYMp+EO+j3dBrJIy2uU/ojOBu/KhVDr0Lyef4IS9IhVlvXdRcaZhUP2HW1Y
+         KXW2vYjbdWnsKLaYqzM09MBVEWvzzlFVyc6fZQp5OQtjYAMQw1N6CqGZEzQE344i9T
+         xbM+vCU64ohmA==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Doug Ledford <dledford@redhat.com>,
         Jason Gunthorpe <jgg@nvidia.com>
@@ -30,9 +30,9 @@ Cc:     Meir Lichtinger <meirl@nvidia.com>, linux-kernel@vger.kernel.org,
         linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
         Saeed Mahameed <saeedm@nvidia.com>,
         Yishai Hadas <yishaih@nvidia.com>
-Subject: [PATCH mlx5-next 1/2] net/mlx5: Add uid field to UAR allocation structures
-Date:   Wed, 15 Sep 2021 02:11:22 +0300
-Message-Id: <036da1f928405ad2786f1a0086f565353873edbf.1631660943.git.leonro@nvidia.com>
+Subject: [PATCH rdma-next 2/2] IB/mlx5: Enable UAR to have DevX UID
+Date:   Wed, 15 Sep 2021 02:11:23 +0300
+Message-Id: <b6580419a845f750014df75f6ee1916cc3f0d2d7.1631660943.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1631660943.git.leonro@nvidia.com>
 References: <cover.1631660943.git.leonro@nvidia.com>
@@ -44,40 +44,241 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Meir Lichtinger <meirl@nvidia.com>
 
-Add uid field to mlx5_ifc_alloc_uar_in_bits and
-mlx5_ifc_dealloc_uar_out_bits structs.
+UID field was added to alloc_uar and dealloc_uar PRM command, to specify
+DevX UID for UAR. This change enables firmware validating user access to
+its own UAR resources.
 
-This field will be used by FW to manage UAR according to uid.
+For the kernel allocated UARs the UID will stay 0 as of today.
 
 Signed-off-by: Meir Lichtinger <meirl@nvidia.com>
 Reviewed-by: Yishai Hadas <yishaih@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- include/linux/mlx5/mlx5_ifc.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/infiniband/hw/mlx5/cmd.c  | 24 ++++++++++++++
+ drivers/infiniband/hw/mlx5/cmd.h  |  2 ++
+ drivers/infiniband/hw/mlx5/main.c | 55 +++++++++++++++++--------------
+ 3 files changed, 57 insertions(+), 24 deletions(-)
 
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index 52e5baad3b93..4a7e6914ed9b 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -7573,7 +7573,7 @@ struct mlx5_ifc_dealloc_uar_out_bits {
+diff --git a/drivers/infiniband/hw/mlx5/cmd.c b/drivers/infiniband/hw/mlx5/cmd.c
+index a8db8a051170..0fe3c4ceec43 100644
+--- a/drivers/infiniband/hw/mlx5/cmd.c
++++ b/drivers/infiniband/hw/mlx5/cmd.c
+@@ -206,3 +206,27 @@ int mlx5_cmd_mad_ifc(struct mlx5_core_dev *dev, const void *inb, void *outb,
+ 	kfree(in);
+ 	return err;
+ }
++
++int mlx5_ib_cmd_uar_alloc(struct mlx5_core_dev *dev, u32 *uarn, u16 uid)
++{
++	u32 out[MLX5_ST_SZ_DW(alloc_uar_out)] = {};
++	u32 in[MLX5_ST_SZ_DW(alloc_uar_in)] = {};
++	int err;
++
++	MLX5_SET(alloc_uar_in, in, opcode, MLX5_CMD_OP_ALLOC_UAR);
++	MLX5_SET(alloc_uar_in, in, uid, uid);
++	err = mlx5_cmd_exec_inout(dev, alloc_uar, in, out);
++	if (!err)
++		*uarn = MLX5_GET(alloc_uar_out, out, uar);
++	return err;
++}
++
++int mlx5_ib_cmd_uar_dealloc(struct mlx5_core_dev *dev, u32 uarn, u16 uid)
++{
++	u32 in[MLX5_ST_SZ_DW(dealloc_uar_in)] = {};
++
++	MLX5_SET(dealloc_uar_in, in, opcode, MLX5_CMD_OP_DEALLOC_UAR);
++	MLX5_SET(dealloc_uar_in, in, uar, uarn);
++	MLX5_SET(dealloc_uar_in, in, uid, uid);
++	return mlx5_cmd_exec_in(dev, dealloc_uar, in);
++}
+diff --git a/drivers/infiniband/hw/mlx5/cmd.h b/drivers/infiniband/hw/mlx5/cmd.h
+index 66c96292ed43..a008938e52f4 100644
+--- a/drivers/infiniband/hw/mlx5/cmd.h
++++ b/drivers/infiniband/hw/mlx5/cmd.h
+@@ -57,4 +57,6 @@ int mlx5_cmd_xrcd_alloc(struct mlx5_core_dev *dev, u32 *xrcdn, u16 uid);
+ int mlx5_cmd_xrcd_dealloc(struct mlx5_core_dev *dev, u32 xrcdn, u16 uid);
+ int mlx5_cmd_mad_ifc(struct mlx5_core_dev *dev, const void *inb, void *outb,
+ 		     u16 opmod, u8 port);
++int mlx5_ib_cmd_uar_alloc(struct mlx5_core_dev *dev, u32 *uarn, u16 uid);
++int mlx5_ib_cmd_uar_dealloc(struct mlx5_core_dev *dev, u32 uarn, u16 uid);
+ #endif /* MLX5_IB_CMD_H */
+diff --git a/drivers/infiniband/hw/mlx5/main.c b/drivers/infiniband/hw/mlx5/main.c
+index 8664bcf6d3f5..a6dcdbbc242f 100644
+--- a/drivers/infiniband/hw/mlx5/main.c
++++ b/drivers/infiniband/hw/mlx5/main.c
+@@ -1643,7 +1643,8 @@ static int allocate_uars(struct mlx5_ib_dev *dev, struct mlx5_ib_ucontext *conte
  
- struct mlx5_ifc_dealloc_uar_in_bits {
- 	u8         opcode[0x10];
--	u8         reserved_at_10[0x10];
-+	u8         uid[0x10];
+ 	bfregi = &context->bfregi;
+ 	for (i = 0; i < bfregi->num_static_sys_pages; i++) {
+-		err = mlx5_cmd_alloc_uar(dev->mdev, &bfregi->sys_pages[i]);
++		err = mlx5_ib_cmd_uar_alloc(dev->mdev, &bfregi->sys_pages[i],
++					    context->devx_uid);
+ 		if (err)
+ 			goto error;
  
- 	u8         reserved_at_20[0x10];
- 	u8         op_mod[0x10];
-@@ -8420,7 +8420,7 @@ struct mlx5_ifc_alloc_uar_out_bits {
+@@ -1657,7 +1658,8 @@ static int allocate_uars(struct mlx5_ib_dev *dev, struct mlx5_ib_ucontext *conte
  
- struct mlx5_ifc_alloc_uar_in_bits {
- 	u8         opcode[0x10];
--	u8         reserved_at_10[0x10];
-+	u8         uid[0x10];
+ error:
+ 	for (--i; i >= 0; i--)
+-		if (mlx5_cmd_free_uar(dev->mdev, bfregi->sys_pages[i]))
++		if (mlx5_ib_cmd_uar_dealloc(dev->mdev, bfregi->sys_pages[i],
++					    context->devx_uid))
+ 			mlx5_ib_warn(dev, "failed to free uar %d\n", i);
  
- 	u8         reserved_at_20[0x10];
- 	u8         op_mod[0x10];
+ 	return err;
+@@ -1673,7 +1675,8 @@ static void deallocate_uars(struct mlx5_ib_dev *dev,
+ 	for (i = 0; i < bfregi->num_sys_pages; i++)
+ 		if (i < bfregi->num_static_sys_pages ||
+ 		    bfregi->sys_pages[i] != MLX5_IB_INVALID_UAR_INDEX)
+-			mlx5_cmd_free_uar(dev->mdev, bfregi->sys_pages[i]);
++			mlx5_ib_cmd_uar_dealloc(dev->mdev, bfregi->sys_pages[i],
++						context->devx_uid);
+ }
+ 
+ int mlx5_ib_enable_lb(struct mlx5_ib_dev *dev, bool td, bool qp)
+@@ -1891,6 +1894,13 @@ static int mlx5_ib_alloc_ucontext(struct ib_ucontext *uctx,
+ 	if (req.num_low_latency_bfregs > req.total_num_bfregs - 1)
+ 		return -EINVAL;
+ 
++	if (req.flags & MLX5_IB_ALLOC_UCTX_DEVX) {
++		err = mlx5_ib_devx_create(dev, true);
++		if (err < 0)
++			goto out_ctx;
++		context->devx_uid = err;
++	}
++
+ 	lib_uar_4k = req.lib_caps & MLX5_LIB_CAP_4K_UAR;
+ 	lib_uar_dyn = req.lib_caps & MLX5_LIB_CAP_DYN_UAR;
+ 	bfregi = &context->bfregi;
+@@ -1903,7 +1913,7 @@ static int mlx5_ib_alloc_ucontext(struct ib_ucontext *uctx,
+ 	/* updates req->total_num_bfregs */
+ 	err = calc_total_bfregs(dev, lib_uar_4k, &req, bfregi);
+ 	if (err)
+-		goto out_ctx;
++		goto out_devx;
+ 
+ 	mutex_init(&bfregi->lock);
+ 	bfregi->lib_uar_4k = lib_uar_4k;
+@@ -1911,7 +1921,7 @@ static int mlx5_ib_alloc_ucontext(struct ib_ucontext *uctx,
+ 				GFP_KERNEL);
+ 	if (!bfregi->count) {
+ 		err = -ENOMEM;
+-		goto out_ctx;
++		goto out_devx;
+ 	}
+ 
+ 	bfregi->sys_pages = kcalloc(bfregi->num_sys_pages,
+@@ -1927,17 +1937,10 @@ static int mlx5_ib_alloc_ucontext(struct ib_ucontext *uctx,
+ 		goto out_sys_pages;
+ 
+ uar_done:
+-	if (req.flags & MLX5_IB_ALLOC_UCTX_DEVX) {
+-		err = mlx5_ib_devx_create(dev, true);
+-		if (err < 0)
+-			goto out_uars;
+-		context->devx_uid = err;
+-	}
+-
+ 	err = mlx5_ib_alloc_transport_domain(dev, &context->tdn,
+ 					     context->devx_uid);
+ 	if (err)
+-		goto out_devx;
++		goto out_uars;
+ 
+ 	INIT_LIST_HEAD(&context->db_page_list);
+ 	mutex_init(&context->db_page_mutex);
+@@ -1972,9 +1975,6 @@ static int mlx5_ib_alloc_ucontext(struct ib_ucontext *uctx,
+ 
+ out_mdev:
+ 	mlx5_ib_dealloc_transport_domain(dev, context->tdn, context->devx_uid);
+-out_devx:
+-	if (req.flags & MLX5_IB_ALLOC_UCTX_DEVX)
+-		mlx5_ib_devx_destroy(dev, context->devx_uid);
+ 
+ out_uars:
+ 	deallocate_uars(dev, context);
+@@ -1985,6 +1985,10 @@ static int mlx5_ib_alloc_ucontext(struct ib_ucontext *uctx,
+ out_count:
+ 	kfree(bfregi->count);
+ 
++out_devx:
++	if (req.flags & MLX5_IB_ALLOC_UCTX_DEVX)
++		mlx5_ib_devx_destroy(dev, context->devx_uid);
++
+ out_ctx:
+ 	return err;
+ }
+@@ -2021,12 +2025,12 @@ static void mlx5_ib_dealloc_ucontext(struct ib_ucontext *ibcontext)
+ 	bfregi = &context->bfregi;
+ 	mlx5_ib_dealloc_transport_domain(dev, context->tdn, context->devx_uid);
+ 
+-	if (context->devx_uid)
+-		mlx5_ib_devx_destroy(dev, context->devx_uid);
+-
+ 	deallocate_uars(dev, context);
+ 	kfree(bfregi->sys_pages);
+ 	kfree(bfregi->count);
++
++	if (context->devx_uid)
++		mlx5_ib_devx_destroy(dev, context->devx_uid);
+ }
+ 
+ static phys_addr_t uar_index2pfn(struct mlx5_ib_dev *dev,
+@@ -2119,6 +2123,7 @@ static void mlx5_ib_mmap_free(struct rdma_user_mmap_entry *entry)
+ 	struct mlx5_user_mmap_entry *mentry = to_mmmap(entry);
+ 	struct mlx5_ib_dev *dev = to_mdev(entry->ucontext->device);
+ 	struct mlx5_var_table *var_table = &dev->var_table;
++	struct mlx5_ib_ucontext *context = to_mucontext(entry->ucontext);
+ 
+ 	switch (mentry->mmap_flag) {
+ 	case MLX5_IB_MMAP_TYPE_MEMIC:
+@@ -2133,7 +2138,8 @@ static void mlx5_ib_mmap_free(struct rdma_user_mmap_entry *entry)
+ 		break;
+ 	case MLX5_IB_MMAP_TYPE_UAR_WC:
+ 	case MLX5_IB_MMAP_TYPE_UAR_NC:
+-		mlx5_cmd_free_uar(dev->mdev, mentry->page_idx);
++		mlx5_ib_cmd_uar_dealloc(dev->mdev, mentry->page_idx,
++					context->devx_uid);
+ 		kfree(mentry);
+ 		break;
+ 	default:
+@@ -2211,7 +2217,8 @@ static int uar_mmap(struct mlx5_ib_dev *dev, enum mlx5_ib_mmap_cmd cmd,
+ 		bfregi->count[bfreg_dyn_idx]++;
+ 		mutex_unlock(&bfregi->lock);
+ 
+-		err = mlx5_cmd_alloc_uar(dev->mdev, &uar_index);
++		err = mlx5_ib_cmd_uar_alloc(dev->mdev, &uar_index,
++					    context->devx_uid);
+ 		if (err) {
+ 			mlx5_ib_warn(dev, "UAR alloc failed\n");
+ 			goto free_bfreg;
+@@ -2240,7 +2247,7 @@ static int uar_mmap(struct mlx5_ib_dev *dev, enum mlx5_ib_mmap_cmd cmd,
+ 	if (!dyn_uar)
+ 		return err;
+ 
+-	mlx5_cmd_free_uar(dev->mdev, idx);
++	mlx5_ib_cmd_uar_dealloc(dev->mdev, idx, context->devx_uid);
+ 
+ free_bfreg:
+ 	mlx5_ib_free_bfreg(dev, bfregi, bfreg_dyn_idx);
+@@ -3489,7 +3496,7 @@ alloc_uar_entry(struct mlx5_ib_ucontext *c,
+ 		return ERR_PTR(-ENOMEM);
+ 
+ 	dev = to_mdev(c->ibucontext.device);
+-	err = mlx5_cmd_alloc_uar(dev->mdev, &uar_index);
++	err = mlx5_ib_cmd_uar_alloc(dev->mdev, &uar_index, c->devx_uid);
+ 	if (err)
+ 		goto end;
+ 
+@@ -3507,7 +3514,7 @@ alloc_uar_entry(struct mlx5_ib_ucontext *c,
+ 	return entry;
+ 
+ err_insert:
+-	mlx5_cmd_free_uar(dev->mdev, uar_index);
++	mlx5_ib_cmd_uar_dealloc(dev->mdev, uar_index, c->devx_uid);
+ end:
+ 	kfree(entry);
+ 	return ERR_PTR(err);
 -- 
 2.31.1
 
