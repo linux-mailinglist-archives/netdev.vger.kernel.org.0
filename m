@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B57A940BBFC
-	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 01:08:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAEE940BBF4
+	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 01:08:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236325AbhINXJl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 19:09:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45670 "EHLO mail.kernel.org"
+        id S236078AbhINXJX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 19:09:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45512 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236160AbhINXJY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Sep 2021 19:09:24 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 57BD660F46;
-        Tue, 14 Sep 2021 23:08:05 +0000 (UTC)
+        id S236084AbhINXJR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Sep 2021 19:09:17 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7E1F160F46;
+        Tue, 14 Sep 2021 23:07:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631660886;
-        bh=MF/dxjTtUffh8+OcPsREHYqy7izg2J5B+2RWPBjZjJY=;
+        s=k20201202; t=1631660879;
+        bh=BKLRNSpziHIogTGyQwgRIzKdPL5GFjN/umPeU5uqcso=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BWzUffeCJyne/hInhBWlhWtiYPutSuU3Bh983vNngXKQttlMgUTgUihdfZrrUemYc
-         b9WPpKpELBrvPehUDNeEUlew6/iDtKygmBroC5GfiEpu5ptgdcwJ6d3AzfH/u35qPk
-         eSqsr2/pXcJkJJck248wqmgjE112Mb93wLsIYYMWSHlnJX8Fpz+M/SeccS6OWKf2Yt
-         pFV5YkvX4sRiUKHEwiec78m18Kp4ad5K+ABMacncmp8z2AhYS0FBDVp5NbpzPMzmsZ
-         zFRjTLeS7lZLd+AKwDIemdgxWSU37g0AZXI/Zey1njYWbBPeA+LTHD2m+OZveJScV8
-         S6JVaINL/phPA==
+        b=U9kXHfGzgVgzgCi+Y0rL0jAZGqtyYvEVDG91hKC7QAfFTmEDcxBoe8BPcXMCydixF
+         mk/c4d9l3wdybJruJ8s/Upgf81koz99Ll1KhkamzYM7ptcko5Dj5BdzS4185EMQYVE
+         wPK+pR7ZHGGVNQKjcJ7UZGxQu83+4/UpEZry6BQ3FVU+6Mm3TC97Y4hQun+866wyWh
+         tL7475wI12Og3vgLbT4WVo9pkc3zs1nnxkKeIlW+YJAsvdrTxPzGBkVzTSxkvcXZgL
+         qUwV7F0d9oByShrtikovuuqztKShG3iVTbsykjCjRfjvrGecIt+Li3td8GOZ5zwWGL
+         UoAHPDGuqOXSA==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Doug Ledford <dledford@redhat.com>,
         Jason Gunthorpe <jgg@nvidia.com>
@@ -43,9 +43,9 @@ Cc:     Aharon Landau <aharonl@nvidia.com>,
         Shiraz Saleem <shiraz.saleem@intel.com>,
         Yishai Hadas <yishaih@nvidia.com>,
         Zhu Yanjun <zyjzyj2000@gmail.com>
-Subject: [PATCH rdma-next v1 07/11] RDMA/nldev: Allow optional-counter status configuration through RDMA netlink
-Date:   Wed, 15 Sep 2021 02:07:26 +0300
-Message-Id: <ed88592c676c5926195a6f89926146acaa466641.1631660727.git.leonro@nvidia.com>
+Subject: [PATCH rdma-next v1 08/11] RDMA/mlx5: Support optional counters in hw_stats initialization
+Date:   Wed, 15 Sep 2021 02:07:27 +0300
+Message-Id: <f509c66a029d217411e8dc0e768b8cb952d18e88.1631660727.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1631660727.git.leonro@nvidia.com>
 References: <cover.1631660727.git.leonro@nvidia.com>
@@ -57,184 +57,178 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Aharon Landau <aharonl@nvidia.com>
 
-Provide an option to allow users to enable/disable optional counters
-through RDMA netlink. Limiting it to users with ADMIN capability only.
-
-Examples:
-1. Enable optional counters cc_rx_ce_pkts and cc_rx_cnp_pkts (and
-   disable all others):
-$ sudo rdma statistic set link rocep8s0f0/1 optional-counters \
-    cc_rx_ce_pkts,cc_rx_cnp_pkts
-
-2. Remove all optional counters:
-$ sudo rdma statistic unset link rocep8s0f0/1 optional-counters
+Add optional counter support when allocate and initialize hw_stats
+structure. Optional counters have IB_STAT_FLAG_OPTIONAL flag set
+and are disabled by default.
 
 Signed-off-by: Aharon Landau <aharonl@nvidia.com>
 Reviewed-by: Mark Zhang <markzhang@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- drivers/infiniband/core/nldev.c | 118 ++++++++++++++++++++++++--------
- 1 file changed, 88 insertions(+), 30 deletions(-)
+ drivers/infiniband/hw/mlx5/counters.c | 90 ++++++++++++++++++++++-----
+ drivers/infiniband/hw/mlx5/mlx5_ib.h  |  1 +
+ 2 files changed, 75 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/infiniband/core/nldev.c b/drivers/infiniband/core/nldev.c
-index d9443983efdc..b00e4257823d 100644
---- a/drivers/infiniband/core/nldev.c
-+++ b/drivers/infiniband/core/nldev.c
-@@ -1897,42 +1897,65 @@ static int nldev_set_sys_set_doit(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	return err;
+diff --git a/drivers/infiniband/hw/mlx5/counters.c b/drivers/infiniband/hw/mlx5/counters.c
+index d2208b3c5925..6aa54ee441db 100644
+--- a/drivers/infiniband/hw/mlx5/counters.c
++++ b/drivers/infiniband/hw/mlx5/counters.c
+@@ -75,6 +75,21 @@ static const struct mlx5_ib_counter ext_ppcnt_cnts[] = {
+ 	INIT_EXT_PPCNT_COUNTER(rx_icrc_encapsulated),
+ };
+ 
++#define INIT_OP_COUNTER(_name)                                          \
++	{ .name = #_name }
++
++static const struct mlx5_ib_counter basic_op_cnts[] = {
++	INIT_OP_COUNTER(cc_rx_ce_pkts),
++};
++
++static const struct mlx5_ib_counter rdmarx_cnp_op_cnts[] = {
++	INIT_OP_COUNTER(cc_rx_cnp_pkts),
++};
++
++static const struct mlx5_ib_counter rdmatx_cnp_op_cnts[] = {
++	INIT_OP_COUNTER(cc_tx_cnp_pkts),
++};
++
+ static int mlx5_ib_read_counters(struct ib_counters *counters,
+ 				 struct ib_counters_read_attr *read_attr,
+ 				 struct uverbs_attr_bundle *attrs)
+@@ -161,17 +176,34 @@ u16 mlx5_ib_get_counters_id(struct mlx5_ib_dev *dev, u32 port_num)
+ 	return cnts->set_id;
  }
  
--static int nldev_stat_set_doit(struct sk_buff *skb, struct nlmsghdr *nlh,
--			       struct netlink_ext_ack *extack)
-+static int nldev_stat_set_counter_dynamic_doit(struct nlattr *tb[],
-+					       struct ib_device *device,
-+					       u32 port)
- {
--	u32 index, port, mode, mask = 0, qpn, cntn = 0;
--	struct nlattr *tb[RDMA_NLDEV_ATTR_MAX];
--	struct ib_device *device;
--	struct sk_buff *msg;
--	int ret;
++static struct rdma_hw_stats *do_alloc_stats(const struct mlx5_ib_counters *cnts)
++{
 +	struct rdma_hw_stats *stats;
-+	int rem, i, index, ret = 0;
-+	bool need_enable, disabled;
-+	struct nlattr *entry_attr;
- 
--	ret = nlmsg_parse(nlh, 0, tb, RDMA_NLDEV_ATTR_MAX - 1,
--			  nldev_policy, extack);
--	/* Currently only counter for QP is supported */
--	if (ret || !tb[RDMA_NLDEV_ATTR_STAT_RES] ||
--	    !tb[RDMA_NLDEV_ATTR_DEV_INDEX] ||
--	    !tb[RDMA_NLDEV_ATTR_PORT_INDEX] || !tb[RDMA_NLDEV_ATTR_STAT_MODE])
-+	stats = ib_get_hw_stats_port(device, port);
++	u32 num_hw_counters;
++	int i;
++
++	num_hw_counters = cnts->num_q_counters + cnts->num_cong_counters +
++			  cnts->num_ext_ppcnt_counters;
++	stats = rdma_alloc_hw_stats_struct(cnts->descs,
++					   num_hw_counters +
++					   cnts->num_op_counters,
++					   RDMA_HW_STATS_DEFAULT_LIFESPAN);
 +	if (!stats)
- 		return -EINVAL;
- 
--	if (nla_get_u32(tb[RDMA_NLDEV_ATTR_STAT_RES]) != RDMA_NLDEV_ATTR_RES_QP)
--		return -EINVAL;
-+	for (i = 0; i < stats->num_counters; i++) {
-+		if (!(stats->descs[i].flags & IB_STAT_FLAG_OPTIONAL))
-+			continue;
- 
--	index = nla_get_u32(tb[RDMA_NLDEV_ATTR_DEV_INDEX]);
--	device = ib_device_get_by_index(sock_net(skb->sk), index);
--	if (!device)
--		return -EINVAL;
-+		need_enable = false;
-+		disabled = test_bit(i, stats->is_disabled);
-+		nla_for_each_nested(entry_attr,
-+				    tb[RDMA_NLDEV_ATTR_STAT_HWCOUNTERS], rem) {
-+			index = nla_get_u32(entry_attr);
-+			if (index >= stats->num_counters)
-+				return -EINVAL;
-+			if (i == index) {
-+				need_enable = true;
-+				break;
-+			}
-+		}
- 
--	port = nla_get_u32(tb[RDMA_NLDEV_ATTR_PORT_INDEX]);
--	if (!rdma_is_port_valid(device, port)) {
--		ret = -EINVAL;
--		goto err;
-+		if (disabled && need_enable)
-+			ret = rdma_counter_modify(device, port, i, true);
-+		else if (!disabled && !need_enable)
-+			ret = rdma_counter_modify(device, port, i, false);
++		return NULL;
 +
-+		if (ret)
-+			break;
- 	}
- 
-+	return ret;
++	for (i = 0; i < cnts->num_op_counters; i++)
++		set_bit(num_hw_counters + i, stats->is_disabled);
++
++	return stats;
 +}
 +
-+static int nldev_stat_set_mode_doit(struct sk_buff *skb, struct nlmsghdr *nlh,
-+				    struct netlink_ext_ack *extack,
-+				    struct nlattr *tb[],
-+				    struct ib_device *device, u32 port)
-+{
-+	u32 mode, mask = 0, qpn, cntn = 0;
-+	struct sk_buff *msg;
-+	int ret;
-+
-+	/* Currently only counter for QP is supported */
-+	if (nla_get_u32(tb[RDMA_NLDEV_ATTR_STAT_RES]) != RDMA_NLDEV_ATTR_RES_QP)
-+		return -EINVAL;
-+
- 	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
--	if (!msg) {
--		ret = -ENOMEM;
--		goto err;
--	}
-+	if (!msg)
-+		return -ENOMEM;
-+
- 	nlh = nlmsg_put(msg, NETLINK_CB(skb).portid, nlh->nlmsg_seq,
- 			RDMA_NL_GET_TYPE(RDMA_NL_NLDEV,
- 					 RDMA_NLDEV_CMD_STAT_SET),
-@@ -1947,8 +1970,10 @@ static int nldev_stat_set_doit(struct sk_buff *skb, struct nlmsghdr *nlh,
- 		if (ret)
- 			goto err_msg;
- 	} else {
--		if (!tb[RDMA_NLDEV_ATTR_RES_LQPN])
-+		if (!tb[RDMA_NLDEV_ATTR_RES_LQPN]) {
-+			ret = -EINVAL;
- 			goto err_msg;
-+		}
- 		qpn = nla_get_u32(tb[RDMA_NLDEV_ATTR_RES_LQPN]);
- 		if (tb[RDMA_NLDEV_ATTR_STAT_COUNTER_ID]) {
- 			cntn = nla_get_u32(tb[RDMA_NLDEV_ATTR_STAT_COUNTER_ID]);
-@@ -1970,14 +1995,47 @@ static int nldev_stat_set_doit(struct sk_buff *skb, struct nlmsghdr *nlh,
+ static struct rdma_hw_stats *
+ mlx5_ib_alloc_hw_device_stats(struct ib_device *ibdev)
+ {
+ 	struct mlx5_ib_dev *dev = to_mdev(ibdev);
+ 	const struct mlx5_ib_counters *cnts = &dev->port[0].cnts;
+ 
+-	return rdma_alloc_hw_stats_struct(cnts->descs,
+-					  cnts->num_q_counters +
+-						  cnts->num_cong_counters +
+-						  cnts->num_ext_ppcnt_counters,
+-					  RDMA_HW_STATS_DEFAULT_LIFESPAN);
++	return do_alloc_stats(cnts);
+ }
+ 
+ static struct rdma_hw_stats *
+@@ -180,11 +212,7 @@ mlx5_ib_alloc_hw_port_stats(struct ib_device *ibdev, u32 port_num)
+ 	struct mlx5_ib_dev *dev = to_mdev(ibdev);
+ 	const struct mlx5_ib_counters *cnts = &dev->port[port_num - 1].cnts;
+ 
+-	return rdma_alloc_hw_stats_struct(cnts->descs,
+-					  cnts->num_q_counters +
+-						  cnts->num_cong_counters +
+-						  cnts->num_ext_ppcnt_counters,
+-					  RDMA_HW_STATS_DEFAULT_LIFESPAN);
++	return do_alloc_stats(cnts);
+ }
+ 
+ static int mlx5_ib_query_q_counters(struct mlx5_core_dev *mdev,
+@@ -302,11 +330,7 @@ mlx5_ib_counter_alloc_stats(struct rdma_counter *counter)
+ 	const struct mlx5_ib_counters *cnts =
+ 		get_counters(dev, counter->port - 1);
+ 
+-	return rdma_alloc_hw_stats_struct(cnts->descs,
+-					  cnts->num_q_counters +
+-					  cnts->num_cong_counters +
+-					  cnts->num_ext_ppcnt_counters,
+-					  RDMA_HW_STATS_DEFAULT_LIFESPAN);
++	return do_alloc_stats(cnts);
+ }
+ 
+ static int mlx5_ib_counter_update_stats(struct rdma_counter *counter)
+@@ -425,13 +449,34 @@ static void mlx5_ib_fill_counters(struct mlx5_ib_dev *dev,
+ 			offsets[j] = ext_ppcnt_cnts[i].offset;
+ 		}
  	}
- 
- 	nlmsg_end(msg, nlh);
--	ib_device_put(device);
- 	return rdma_nl_unicast(sock_net(skb->sk), msg, NETLINK_CB(skb).portid);
- 
- err_fill:
- 	rdma_counter_unbind_qpn(device, port, qpn, cntn);
- err_msg:
- 	nlmsg_free(msg);
--err:
-+	return ret;
-+}
 +
-+static int nldev_stat_set_doit(struct sk_buff *skb, struct nlmsghdr *nlh,
-+			       struct netlink_ext_ack *extack)
-+{
-+	struct nlattr *tb[RDMA_NLDEV_ATTR_MAX];
-+	struct ib_device *device;
-+	u32 index, port;
-+	int ret;
-+
-+	ret = nlmsg_parse(nlh, 0, tb, RDMA_NLDEV_ATTR_MAX - 1, nldev_policy,
-+			  extack);
-+	if (ret)
-+		return -EINVAL;
-+
-+	index = nla_get_u32(tb[RDMA_NLDEV_ATTR_DEV_INDEX]);
-+	device = ib_device_get_by_index(sock_net(skb->sk), index);
-+	if (!device)
-+		return -EINVAL;
-+
-+	port = nla_get_u32(tb[RDMA_NLDEV_ATTR_PORT_INDEX]);
-+	if (!rdma_is_port_valid(device, port)) {
-+		ret = -EINVAL;
-+		goto end;
++	for (i = 0; i < ARRAY_SIZE(basic_op_cnts); i++, j++) {
++		descs[j].name = basic_op_cnts[i].name;
++		descs[j].flags |= IB_STAT_FLAG_OPTIONAL;
 +	}
 +
-+	if (tb[RDMA_NLDEV_ATTR_STAT_MODE])
-+		ret = nldev_stat_set_mode_doit(skb, nlh, extack, tb, device,
-+					       port);
-+	else if (tb[RDMA_NLDEV_ATTR_STAT_HWCOUNTER_DYNAMIC])
-+		ret = nldev_stat_set_counter_dynamic_doit(tb, device, port);
-+	else
-+		ret = -EINVAL;
-+end:
- 	ib_device_put(device);
- 	return ret;
++	if (MLX5_CAP_FLOWTABLE(dev->mdev,
++			       ft_field_support_2_nic_receive_rdma.bth_opcode)) {
++		for (i = 0; i < ARRAY_SIZE(rdmarx_cnp_op_cnts); i++, j++) {
++			descs[j].name = rdmarx_cnp_op_cnts[i].name;
++			descs[j].flags |= IB_STAT_FLAG_OPTIONAL;
++		}
++	}
++
++	if (MLX5_CAP_FLOWTABLE(dev->mdev,
++			       ft_field_support_2_nic_transmit_rdma.bth_opcode)) {
++		for (i = 0; i < ARRAY_SIZE(rdmatx_cnp_op_cnts); i++, j++) {
++			descs[j].name = rdmatx_cnp_op_cnts[i].name;
++			descs[j].flags |= IB_STAT_FLAG_OPTIONAL;
++		}
++	}
  }
+ 
+ 
+ static int __mlx5_ib_alloc_counters(struct mlx5_ib_dev *dev,
+ 				    struct mlx5_ib_counters *cnts)
+ {
+-	u32 num_counters;
++	u32 num_counters, num_op_counters;
+ 
+ 	num_counters = ARRAY_SIZE(basic_q_cnts);
+ 
+@@ -457,6 +502,19 @@ static int __mlx5_ib_alloc_counters(struct mlx5_ib_dev *dev,
+ 		cnts->num_ext_ppcnt_counters = ARRAY_SIZE(ext_ppcnt_cnts);
+ 		num_counters += ARRAY_SIZE(ext_ppcnt_cnts);
+ 	}
++
++	num_op_counters = ARRAY_SIZE(basic_op_cnts);
++
++	if (MLX5_CAP_FLOWTABLE(dev->mdev,
++			       ft_field_support_2_nic_receive_rdma.bth_opcode))
++		num_op_counters += ARRAY_SIZE(rdmarx_cnp_op_cnts);
++
++	if (MLX5_CAP_FLOWTABLE(dev->mdev,
++			       ft_field_support_2_nic_transmit_rdma.bth_opcode))
++		num_op_counters += ARRAY_SIZE(rdmatx_cnp_op_cnts);
++
++	cnts->num_op_counters = num_op_counters;
++	num_counters += num_op_counters;
+ 	cnts->descs = kcalloc(num_counters,
+ 			      sizeof(struct rdma_stat_desc), GFP_KERNEL);
+ 	if (!cnts->descs)
+diff --git a/drivers/infiniband/hw/mlx5/mlx5_ib.h b/drivers/infiniband/hw/mlx5/mlx5_ib.h
+index 6f5451d96dd7..8215d7ab579d 100644
+--- a/drivers/infiniband/hw/mlx5/mlx5_ib.h
++++ b/drivers/infiniband/hw/mlx5/mlx5_ib.h
+@@ -803,6 +803,7 @@ struct mlx5_ib_counters {
+ 	u32 num_q_counters;
+ 	u32 num_cong_counters;
+ 	u32 num_ext_ppcnt_counters;
++	u32 num_op_counters;
+ 	u16 set_id;
+ };
+ 
 -- 
 2.31.1
 
