@@ -2,136 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1757740AB66
-	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 12:06:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D3CC40ABAD
+	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 12:29:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231322AbhINKHb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 06:07:31 -0400
-Received: from mail-eopbgr40053.outbound.protection.outlook.com ([40.107.4.53]:3650
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230282AbhINKHa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Sep 2021 06:07:30 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UlnQ/++sU2zhQSMvCXT6mHVSxHNp2CnNIUTHfHnQOr284UskSsPlyNySoRGRe5GzAxmAoAm8L87J+MakXDcHwe2DBa5WO10GAtgKarACbg5iw2KjntRoLY62SY4Dj6hIrNYpxT2ni5k0fcvyutksBlhiVyVlC3k/XQynOt2paWm/EBqMtZJJkaxuheLE9it0BIZH4aVvrz0rwgPyjqtCc7jAo0l8m0SAK8n411jzr50x26czMdyjgyK8MCuScTwR1fKjoyHaiFmofpQH5CzGcFXu9E3LODdGLg1QMoI+lxm0d+t/ZB98QHncqHsReaiO6V0Y9SyjaeJf3jLMReqf8A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=ldJ6jA9V0RsXHBY3AFFxkI6p62eT4h2Tk7YMqZtNwc4=;
- b=DCyTJ1fLW7sIdxL4DeNI1x3z7Dzx8dEQdts0zyD0zlH0riDU/pU7Pk7LEWzCh72t5USAKHbfLgd+dlygSbSLYubK+uDxeeKlGd+Z5AEQ3efxK1/CSwqXBfj+dKS7mKcq/B33XwUcr4B5VIfUsy6xP1LnrqmWVKbHw0ynCyqfj1kwYQ1KeyRMovPA3lXKWZh9cesPeUl9J4MkAZZECKGh22ncNa2JwZbH+LULZKCBwYJFriHNoR49yNio3zoWh/HCkZ4WCLs/WuD2/MZ0C4z4Ffh/tH1hB0ZLIg//2QTFIl85oFM9KgoSOigLIIO/44O0uiDl6dErmiywDFKC1Nc3NA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=wolfvision.net; dmarc=pass action=none
- header.from=wolfvision.net; dkim=pass header.d=wolfvision.net; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wolfvision.net;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ldJ6jA9V0RsXHBY3AFFxkI6p62eT4h2Tk7YMqZtNwc4=;
- b=X0a5jAM8Bv8QEPN36KfF5g5p0lcq1h3UskaAsJGf/joW7rsWTqpYef32dO10ja4Jpl/QcfBri6E6+XIvscpNjC5e4R0IFwGnga0UehXNmAQFwLVwVaIIBgPTwAGAPCDfCBI2iNS/NCRxRbtQq4zo00ZCWLoVEd/ZETBniKSfntY=
-Authentication-Results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=wolfvision.net;
-Received: from DBBPR08MB4523.eurprd08.prod.outlook.com (2603:10a6:10:c8::19)
- by DB9PR08MB6874.eurprd08.prod.outlook.com (2603:10a6:10:2ac::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.14; Tue, 14 Sep
- 2021 10:06:11 +0000
-Received: from DBBPR08MB4523.eurprd08.prod.outlook.com
- ([fe80::452b:e508:9c57:a6e3]) by DBBPR08MB4523.eurprd08.prod.outlook.com
- ([fe80::452b:e508:9c57:a6e3%7]) with mapi id 15.20.4500.019; Tue, 14 Sep 2021
- 10:06:11 +0000
-Subject: Re: [PATCH] net: stmmac: dwmac-rk: fix unbalanced pm_runtime_enable
- warnings
-To:     Ivan Babrou <ivan@ivan.computer>, sashal@kernel.org
-Cc:     alexandre.torgue@foss.st.com, davem@davemloft.net,
-        joabreu@synopsys.com, kuba@kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
-        peppe.cavallaro@st.com, wens@kernel.org
-References: <CAGjnhw920kNaJ9Vkg54WR8vh2TaomuTtA3WwR3eieD4v6iEJDw@mail.gmail.com>
-From:   Michael Riesch <michael.riesch@wolfvision.net>
-Organization: WolfVision GmbH
-Message-ID: <2ada6f05-fc3a-a301-a008-594f7665a514@wolfvision.net>
-Date:   Tue, 14 Sep 2021 12:06:09 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
-In-Reply-To: <CAGjnhw920kNaJ9Vkg54WR8vh2TaomuTtA3WwR3eieD4v6iEJDw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: VI1P194CA0051.EURP194.PROD.OUTLOOK.COM
- (2603:10a6:803:3c::40) To DBBPR08MB4523.eurprd08.prod.outlook.com
- (2603:10a6:10:c8::19)
+        id S231650AbhINKaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 06:30:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38052 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229591AbhINKaP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 06:30:15 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7647FC061760;
+        Tue, 14 Sep 2021 03:28:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Transfer-Encoding:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=AkAmP+XwbC3u2EnOmWg1+d8TikSHpIOHKHRYg4gt8m4=; b=foLIYWAOURNP6S9e3efY4E2F63
+        /ox7MO547cQ0+xsln+MJfQULrWJ3p8DKN6l1dYf0D2gYrzNijDm0oJupoPwgLFjDKxNHJx82oZ8ea
+        Vx2NaDdVnJ+mGD/aME4xaVWc+g/zGrJyh7t0UXvIvzkaRH8aTb1ut08L+/jQ2YS9fCQ3WP8gAZV71
+        JNB5NeMRR3ImOff6K1MWJTb2mpaxLMaEC0Cc4fxlz3YKggS9uuHjzeOkVbRsJZyPzTLA10doxV47p
+        7LCBYC3gln9qFgg0U7JKAnlgz9zo6Jkqx7tZcPnbIZO4bUSeMrJbUvl74P3qckqsjcdymZEPcJeBu
+        4Gut303g==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1mQ5g7-0037U7-35; Tue, 14 Sep 2021 10:28:39 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 6F2E2300255;
+        Tue, 14 Sep 2021 12:28:37 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 579792D0615D5; Tue, 14 Sep 2021 12:28:37 +0200 (CEST)
+Date:   Tue, 14 Sep 2021 12:28:37 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     =?utf-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
+Cc:     Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "open list:PERFORMANCE EVENTS SUBSYSTEM" 
+        <linux-perf-users@vger.kernel.org>,
+        "open list:PERFORMANCE EVENTS SUBSYSTEM" 
+        <linux-kernel@vger.kernel.org>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <netdev@vger.kernel.org>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <bpf@vger.kernel.org>
+Subject: Re: [RFC PATCH] perf: fix panic by mark recursion inside
+ perf_log_throttle
+Message-ID: <YUB5VchM3a/MiZpX@hirez.programming.kicks-ass.net>
+References: <ff979a43-045a-dc56-64d1-2c31dd4db381@linux.alibaba.com>
+ <20210910153839.GH4323@worktop.programming.kicks-ass.net>
+ <f38987a5-dc36-a20d-8c5e-81e8ead5b4dc@linux.alibaba.com>
+ <YT8m2B6D2yWc5Umq@hirez.programming.kicks-ass.net>
+ <3fb7c51f-696b-da70-1965-1dda9910cb14@linux.alibaba.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.100.125] (91.118.163.37) by VI1P194CA0051.EURP194.PROD.OUTLOOK.COM (2603:10a6:803:3c::40) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.14 via Frontend Transport; Tue, 14 Sep 2021 10:06:10 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f7190f6f-dffe-4aad-2a47-08d97767475a
-X-MS-TrafficTypeDiagnostic: DB9PR08MB6874:
-X-Microsoft-Antispam-PRVS: <DB9PR08MB687484D78662DBBCC2617779F2DA9@DB9PR08MB6874.eurprd08.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: WPdqJ7xw0+XnK4Qwx4od0Rv92Vsok7DHx/AP2mdMd4Widl9Wn9jgBuGi1PQgqubWBeidAq4/zHosnFH4iuX7rzUqLbPM4BkXSIB70/jmYGPRo00jS18UUVo/OeAZ4Jcvusfwr216BGUZF2aZOVqRdLyWzEd2itM7Y9io5UWB3latzDON3AWMIOE+16StIJBRUtiw9ZMZtx4eAQrTywvMfiUAvEOOTNktzk5OlHcXS+qYQGtl33+1lfgnf0Q2OKJVJ/4196yKUOQEXS/8Lz9o4pqpQoi1cgGVztSy9tgsbOBJcoRUA5Crlk2F+BVEUJ83fQZpigu+6/WxXtWKRmY9WIAxQqDkJO6BEo3ePr4xnu3LBv8F+7AlEdkBc/ELxT8/VaUH+eeK3sZljG5iEqA1+bY/hafCNjCNxO/s5X13PkBSa1zWtkXO7W28VKoB0Bwbtot+ro4kI/WxJ9cWl9gPYOYg5gRmpaqbep2GGoaMS9huvJy6iA3Iw1pTazwAHsP8U+Vs6GRCaLyq0LgpU35dg4wGYq2EXdzUQbNawz/X7NRQK3SJrPCBdZw26648amvFPPc63naqmm3XuGK5ZT7lxFLLD3bwrkfrDEHCn+5HZSgnV89umfUtYSjKSubM8xzvLthbeGVZFr9+id/wxL3Sasw4HIfWXWeBEjwQyo6r4ke9Zt/8xVizkx4uk/AzakkFIdmmeEKMensukKqcc8+bUAEom7LEohOS3kBl69nrZYC1yRh+2/01oRBcFugKbDmjVxHXrkrShZLL1qxQAbqDcw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DBBPR08MB4523.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(376002)(136003)(366004)(39850400004)(346002)(31686004)(31696002)(38100700002)(53546011)(26005)(38350700002)(6486002)(36756003)(186003)(8936002)(478600001)(8676002)(4744005)(7416002)(2906002)(4326008)(5660300002)(83380400001)(86362001)(44832011)(66476007)(66556008)(66946007)(36916002)(2616005)(316002)(16576012)(52116002)(956004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?TThwS3FMV0dVRjNhUzFYQk1CSkx4aHpISGdTYXdtSlRJZU5wUU1rZENidEd6?=
- =?utf-8?B?VWlHQ01WenRtTUp3dlpwYkdVT3NCaDVjR1djd0ZINEphTFZKZit4Y25FZkxQ?=
- =?utf-8?B?ZUpuUDVVSUZYNUFGMEc2TEJxOU9tVE5VcHoyMEl3YXBwRW1HeGNuYkl4ejJ0?=
- =?utf-8?B?WGZMaUVpcTIwa1BJODFUbjZKQ2VXZDhHWkJ2T3VTVEo0M1VFa2xSYUdnRTZq?=
- =?utf-8?B?M3M5YU9IN01SZFErV2tVM01TQS8weXQxQjZWNVB1T20zT0ZFbFBpd3kvckdS?=
- =?utf-8?B?TkdBZ2lRUWFUU1Urb3RGaTZDZnQ0NzNSakZNQ0c1U1Y4ZG9YSFJrdy90RSta?=
- =?utf-8?B?TFNieVJ6Y0NmM3NUNXNQN1k3T0dzcXFta0Y0aDdxTUNVQmVuM29JTE9pOHV5?=
- =?utf-8?B?Y0hOaDNVR1o1UFZFeEg4VUVhMzUwcFNlS0pkSENxNGtHem82VXBWQ3ZyMzdF?=
- =?utf-8?B?QllOMDFDbjBsaWRNclovWk4xVVlLbDU2WEZKMlVkUXkyV2VkOSs2OXNyUmVw?=
- =?utf-8?B?ZXBLeDVZdWo4TWNxQWgyL0VqQTFBa2xmclpBSkNUZlZ6U00vMGI1U09NZ3ZU?=
- =?utf-8?B?T1NtRlJYZTdqZkJiMG1UeVVPY05VT0RCNTFCTWNBeVpyOXNacFpQbGg4WWZR?=
- =?utf-8?B?MU9JL3lzZUFqUERnQkNBZ2M1QmRkbzdHZ00rcmpQVzVCU0xzaXpiemVWdjgv?=
- =?utf-8?B?dWNray80VXBLaXZCdUY3dGdpems3SEU2N01abEllU3BlQ3FlOTQyayt5ekVj?=
- =?utf-8?B?Szc0YWZBUHVndGFPL21pWWFudGpBbjFEd3liQVoyQUdUYzQ4Y2p0VURSNDBZ?=
- =?utf-8?B?Ujh4ZlNjMi9yMHVNQVQrTWJlVUhqdnhqb1hIVVBqTkVMenBScEtjL2tyZUl1?=
- =?utf-8?B?dVdDcEoxOEpmYzFWbHhRRTlCNlBuMDl5YnplOVc1cEc0OFI1ZVpSY2hXU3VS?=
- =?utf-8?B?aVdvU3B4MDNuK2d1RDkxVnR5MUMxOTd1MnExRTFVeElJcHhRa3FrRTZYRmNr?=
- =?utf-8?B?SE80eUUwWTQxYVFtaGJEVVRReWpRSm1GQTFwb2V2WlpGK3RVV1dSRXlIemp1?=
- =?utf-8?B?c291aUtTZHNKQ0I1NlZSYTNBUkZnMFFvcWdMWGJ5Sm12c3Q1cjlsdVlyVmZS?=
- =?utf-8?B?L3NqRnlFNGk3OEQyUkhVYll1OFhUWHI4MFl2a09wWGZIbWtDSWRXRzNudy9r?=
- =?utf-8?B?ZElndDV3Yncwa0dUZ080VGt0T1RlQ2J6NXU1cndGMklmdENRMVl1WDlqeUxQ?=
- =?utf-8?B?TEIxZ2R3WUIzZEEwTE1XUFhsb0tFUXZXNVJoTVhneEtKMzRjbHlhcnRWZEwv?=
- =?utf-8?B?d3V1anJ3QXhxeXBJTWdBQUVQWkt1VG9wOGtVV1VWRzFtd0tRU0hRUFdOYmdP?=
- =?utf-8?B?Ylc2ekphRGlHczlZQVk4eUpla1UxaTgwZVc1Q2pXYS9iQ1Rhajc4dW0ybUx0?=
- =?utf-8?B?dWNZTUVZYUgyTDhTS0JETlcxWk9raVZkV1ZMMjI0cmRlTkx1dkFMWW9MaEZW?=
- =?utf-8?B?WjA3dzFXS0ljalFob0NrTU9sWVRINXlBZDdhN3pxT3dyMnBWamU0Vk43VVhz?=
- =?utf-8?B?YVhRdFluZ2VoQ1RBYkQ1T1lrcjd0c2h1ZHNGVHc4bC8zdVR0OTlBb1lyYUEr?=
- =?utf-8?B?cjYrRmxaQVVSNzlLMTdaaG9PVm4wV1lkU3VYQzBDS1dvNmFoM2lJd3JtejlI?=
- =?utf-8?B?V2hHczFrY09sQ3ZXUUxrRXEyeWhSb1l0NnpFMnFuL2xvVEUrdVcwc2xOcXhT?=
- =?utf-8?Q?bvp4xGVN+tpCsp8PZD7bD0bM1d8DSzgVKxcu9uR?=
-X-OriginatorOrg: wolfvision.net
-X-MS-Exchange-CrossTenant-Network-Message-Id: f7190f6f-dffe-4aad-2a47-08d97767475a
-X-MS-Exchange-CrossTenant-AuthSource: DBBPR08MB4523.eurprd08.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Sep 2021 10:06:11.3893
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: e94ec9da-9183-471e-83b3-51baa8eb804f
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: oefwP8qI/uPS3Sfc1eGSdH3AZV3nOTmvQ55RzCHf1lGm5AwiwRykuftgtHAP7+U5dO5326f4HM0OkpOe1PZElYYXPwB14dZjR8l4ifgSZPM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR08MB6874
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <3fb7c51f-696b-da70-1965-1dda9910cb14@linux.alibaba.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Ivan,
+On Tue, Sep 14, 2021 at 09:58:44AM +0800, 王贇 wrote:
+> On 2021/9/13 下午6:24, Peter Zijlstra wrote:
 
-On 9/14/21 3:10 AM, Ivan Babrou wrote:
-> Is it possible to revert the patch from the 5.14 and 5.15 as well?
-> I've tried upgrading my rockpro64 board from 5.13 to 5.15-rc1 and
-> ended up bisecting the issue to this commit like the others. It would
-> be nice to spare others from this exercise.
+> > I'm confused tho; where does the #DF come from? Because taking a #PF
+> > from NMI should be perfectly fine.
+> > 
+> > AFAICT that callchain is something like:
+> > 
+> > 	NMI
+> > 	  perf_event_nmi_handler()
+> > 	    (part of the chain is missing here)
+> > 	      perf_log_throttle()
+> > 	        perf_output_begin() /* events/ring_buffer.c */
+> > 		  rcu_read_lock()
+> > 		    rcu_lock_acquire()
+> > 		      lock_acquire()
+> > 		        trace_lock_acquire() --> perf_trace_foo
+> > 
+> > 			  ...
+> > 			    perf_callchain()
+> > 			      perf_callchain_user()
+> > 			        #PF (fully expected during a userspace callchain)
+> > 				  (some stuff, until the first __fentry)
+> > 				    perf_trace_function_call
+> > 				      perf_trace_buf_alloc()
+> > 				        perf_swevent_get_recursion_context()
+> > 					  *BOOM*
+> > 
+> > Now, supposedly we then take another #PF from get_recursion_context() or
+> > something, but that doesn't make sense. That should just work...
+> > 
+> > Can you figure out what's going wrong there? going with the RIP, this
+> > almost looks like 'swhash->recursion' goes splat, but again that makes
+> > no sense, that's a per-cpu variable.
+> 
+> That's true, I actually have tried several approach to avoid the issue, but
+> it trigger panic as long as we access 'swhash->recursion', the array should
+> be accessible but somehow broken, that's why I consider this a suspected
+> stack overflow, since nmi repeated and trace seems very long, but just a
+> suspect...
 
-For what it is worth we believe that there is a different issue with the
-dwmac-rk driver that was obscured by calling pm_runtime_get_sync()
-early. Investigation in progress -- I hope that we can achieve a proper
-solution before we have to revert the revert.
+You can simply increase the exception stack size to test this:
 
-Best regards,
-Michael
+diff --git a/arch/x86/include/asm/page_64_types.h b/arch/x86/include/asm/page_64_types.h
+index a8d4ad856568..e9e2c3ba5923 100644
+--- a/arch/x86/include/asm/page_64_types.h
++++ b/arch/x86/include/asm/page_64_types.h
+@@ -15,7 +15,7 @@
+ #define THREAD_SIZE_ORDER	(2 + KASAN_STACK_ORDER)
+ #define THREAD_SIZE  (PAGE_SIZE << THREAD_SIZE_ORDER)
+ 
+-#define EXCEPTION_STACK_ORDER (0 + KASAN_STACK_ORDER)
++#define EXCEPTION_STACK_ORDER (1 + KASAN_STACK_ORDER)
+ #define EXCEPTION_STKSZ (PAGE_SIZE << EXCEPTION_STACK_ORDER)
+ 
+ #define IRQ_STACK_ORDER (2 + KASAN_STACK_ORDER)
+
+
+
+Also, something like this might be useful:
+
+
+diff --git a/arch/x86/include/asm/stacktrace.h b/arch/x86/include/asm/stacktrace.h
+index f248eb2ac2d4..4dfdbb9395eb 100644
+--- a/arch/x86/include/asm/stacktrace.h
++++ b/arch/x86/include/asm/stacktrace.h
+@@ -33,6 +33,8 @@ bool in_task_stack(unsigned long *stack, struct task_struct *task,
+ 
+ bool in_entry_stack(unsigned long *stack, struct stack_info *info);
+ 
++bool in_exception_stack_guard(unsigned long *stack);
++
+ int get_stack_info(unsigned long *stack, struct task_struct *task,
+ 		   struct stack_info *info, unsigned long *visit_mask);
+ bool get_stack_info_noinstr(unsigned long *stack, struct task_struct *task,
+diff --git a/arch/x86/kernel/dumpstack_64.c b/arch/x86/kernel/dumpstack_64.c
+index 5601b95944fa..056cf4f31599 100644
+--- a/arch/x86/kernel/dumpstack_64.c
++++ b/arch/x86/kernel/dumpstack_64.c
+@@ -126,6 +126,39 @@ static __always_inline bool in_exception_stack(unsigned long *stack, struct stac
+ 	return true;
+ }
+ 
++noinstr bool in_exception_stack_guard(unsigned long *stack)
++{
++	unsigned long begin, end, stk = (unsigned long)stack;
++	const struct estack_pages *ep;
++	unsigned int k;
++
++	BUILD_BUG_ON(N_EXCEPTION_STACKS != 6);
++
++	begin = (unsigned long)__this_cpu_read(cea_exception_stacks);
++	/*
++	 * Handle the case where stack trace is collected _before_
++	 * cea_exception_stacks had been initialized.
++	 */
++	if (!begin)
++		return false;
++
++	end = begin + sizeof(struct cea_exception_stacks);
++	/* Bail if @stack is outside the exception stack area. */
++	if (stk < begin || stk >= end)
++		return false;
++
++	/* Calc page offset from start of exception stacks */
++	k = (stk - begin) >> PAGE_SHIFT;
++	/* Lookup the page descriptor */
++	ep = &estack_pages[k];
++	/* Guard page? */
++	if (!ep->size)
++		return true;
++
++	return false;
++}
++
++
+ static __always_inline bool in_irq_stack(unsigned long *stack, struct stack_info *info)
+ {
+ 	unsigned long *end = (unsigned long *)this_cpu_read(hardirq_stack_ptr);
+diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
+index a58800973aed..8b043ed02c0d 100644
+--- a/arch/x86/kernel/traps.c
++++ b/arch/x86/kernel/traps.c
+@@ -459,6 +459,9 @@ DEFINE_IDTENTRY_DF(exc_double_fault)
+ 		handle_stack_overflow("kernel stack overflow (double-fault)",
+ 				      regs, address);
+ 	}
++
++	if (in_exception_stack_guard((void *)address))
++		pr_emerg("PANIC: exception stack guard: 0x%lx\n", address);
+ #endif
+ 
+ 	pr_emerg("PANIC: double fault, error_code: 0x%lx\n", error_code);
