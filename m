@@ -2,152 +2,307 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 082DB40A8AC
-	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 09:53:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CE0A40A8CB
+	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 10:07:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229707AbhINHyH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 03:54:07 -0400
-Received: from mail-mw2nam12on2045.outbound.protection.outlook.com ([40.107.244.45]:20352
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229379AbhINHyG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Sep 2021 03:54:06 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ENC0GDke7ME6UmdaaghSGspiFfJdGqKebfKVrcffwj2Bjs4M2KsGadq9tbxnqGzTp4rscRPuElLvvjxs6Z8EOzHAvjIq15pME29Sytj8yWbxKfUoVGB6WxzcLQPGyTAy6fSwipdVhRYXzMOmHSS8UpYfh4U0rEN4NnJh6j7I5HGzbiJAQxkQRC36xt21zPNyzxwM4WOatQ7PlHLxetA7SDm0/cA+unP2eSKgEE0iZA5gPKzIFAxxzD4XCeT05KsCH51mtmpRW4jox1pa2UR2VUlzNeEuPUKIDw4KePujM2VfVoQPgiapR2/Fp85RLtxJ7YMeFyn0/6KFLQ4w8X9mpg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=ipaM8br1shJVWz70QSY9/GqUT7F384bBqjChtuToGhw=;
- b=ZaV1lptpTFDVP3tZZivY1TN3PAhJEjjB9o6Phfdz31yOBCt0XC/jy60hKF5Iawz3Z5yzBsvGkH9JyuieW386uazhFsKznaKIGFx1PLOzi/SQiDDO/QQbigrITXqAsea7LZ0NLE3KHrUuTV1k90ssdw7wOwSnAr08IjR7EDdYv36nvxbWtNHcLjsJV/Bt6sd/XiC8KXu4Fu/8aEAyZE79Lmj/H0HzKncrd0uVOF76sUzmfxdO+bDssU2HJwW8uidhKLuW36Im3CD88w1V6eQpacV028AMpkZnKHz+ECSiT+osH98ukyUrtIq13+jL5QqHfowegmPhZBO9dkb02gzsVQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ipaM8br1shJVWz70QSY9/GqUT7F384bBqjChtuToGhw=;
- b=GB7SkVxdGFUMrR6QNNFoQat1xwq8PAa8eM0eZQQSaYRn/iqORLTSs0Gg5RZGg2orDH70jBjTRK2cLhv0adOlKq87fknOAVdJaCScB25KdHiYXVDpVqAU8jFFs//tSgMN6DQmGzNcuOwr3AT6WBKsEVTDaeEtWSKv3FIN+YsqLz7izEeu5QLMS5r+WLK6f/T1TAtBoEd5u1GvPgbrshCNN7HlyXjNl5+tZ8wP59YBdWeH3IhbdZqBpPbXVUt9jrWrjg37cZ9JCbXGEUK/ZoIMMFRra9NfCyfqp0B+O52Mzhu9A1FYkNgUdxv3PZbJI36OkvTuAxoY7G6gyAVTP3eC/g==
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=nvidia.com;
-Received: from DM4PR12MB5278.namprd12.prod.outlook.com (2603:10b6:5:39e::17)
- by DM8PR12MB5461.namprd12.prod.outlook.com (2603:10b6:8:3a::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.14; Tue, 14 Sep
- 2021 07:52:48 +0000
-Received: from DM4PR12MB5278.namprd12.prod.outlook.com
- ([fe80::95f7:ab4d:a8e6:da7c]) by DM4PR12MB5278.namprd12.prod.outlook.com
- ([fe80::95f7:ab4d:a8e6:da7c%9]) with mapi id 15.20.4523.014; Tue, 14 Sep 2021
- 07:52:48 +0000
-Subject: Re: [PATCH net-next] net: core: fix the order in dev_put() and
- rtnl_lock()
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Yajun Deng <yajun.deng@linux.dev>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210914030150.5838-1-yajun.deng@linux.dev>
- <903c5bed-5958-8888-b55d-9c175664b2a1@gmail.com>
-From:   Nikolay Aleksandrov <nikolay@nvidia.com>
-Message-ID: <10890d5f-4486-0fee-0d8e-3c1c92f78937@nvidia.com>
-Date:   Tue, 14 Sep 2021 10:52:37 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
-In-Reply-To: <903c5bed-5958-8888-b55d-9c175664b2a1@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: ZR0P278CA0128.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:40::7) To DM4PR12MB5278.namprd12.prod.outlook.com
- (2603:10b6:5:39e::17)
+        id S230007AbhINIH2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 04:07:28 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:57655 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230027AbhINIDu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 04:03:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1631606535;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=RCW3shkd8lW9L0JeWL8nsxjNmCWFji7UqRY7myVEPkY=;
+        b=Z0O1lZsJyewYI2xV48IIGavuB+hvsIiWEb4WRDkNX+4vcyTtJKQ+uq+aY2wa3IyLdXeztG
+        XOVIIJInYO01vQTIlBDSyEqI8Q0U04PB0wXj4g0KjeHMlL9hSI2ROToQzrGzyXsJWAjzz5
+        YnlTaXKlzw+koTDGLhnggtWrcBotmGY=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-215-FJqYI6s9MV6sO6dY1pHdnA-1; Tue, 14 Sep 2021 04:02:13 -0400
+X-MC-Unique: FJqYI6s9MV6sO6dY1pHdnA-1
+Received: by mail-wm1-f71.google.com with SMTP id j21-20020a05600c1c1500b00300f1679e4dso398175wms.4
+        for <netdev@vger.kernel.org>; Tue, 14 Sep 2021 01:02:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=RCW3shkd8lW9L0JeWL8nsxjNmCWFji7UqRY7myVEPkY=;
+        b=hcFexWS0u+ow8J5C9GerovH7H2DY0SFz9r4BqD+KEZNqorN/zVthYDoDea4ISktpgE
+         fYv2OtSGgm73l8qq+LkWoJ7F6288ofj95d2C2+PgoPdbJ5D50SP+W7lVhPF4MhgkyZ3i
+         Mc5G/mrsPH5At320PdygVWiU/G/F18n6SZkAUvZW5lDXNmDZuiVMg+8QZm8VcFFywhgO
+         XNry1wgfu58O2HLYTyA3Sbey+SCwI8NuMaBZO4VGWnA+jjAs7c4Rasg+Xk2fPzTo+eoV
+         wQd1qeHbJeK3xbSIOyD0U+rOA+sDATRiTL25ap0rXvaNzGlTqEq4pX4WLPhguTjzGNMS
+         IfXg==
+X-Gm-Message-State: AOAM533WV2w/5hjWyXOH5nmpCioY5hOpmkzgsTFTrkmlDVb0yPH+F/ca
+        MDU1CJGFlFDffTt9vrsuyQy+UFOIqHlY9Od//Q/Zr6QFPSvvwkRyBWmA3OsZHMaOpfGt7YOzIFi
+        jiYup4b9qzeJGDK6e
+X-Received: by 2002:a1c:23cb:: with SMTP id j194mr667917wmj.1.1631606532353;
+        Tue, 14 Sep 2021 01:02:12 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyTNvOQdqVrix3ihVaPsJf5FnzJHbntYLrKPjv0dTVExHYaSlBuPrXfnTuO0RPqhzoL6+iPdA==
+X-Received: by 2002:a1c:23cb:: with SMTP id j194mr667890wmj.1.1631606532089;
+        Tue, 14 Sep 2021 01:02:12 -0700 (PDT)
+Received: from pc-4.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
+        by smtp.gmail.com with ESMTPSA id b16sm9795635wrp.82.2021.09.14.01.02.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Sep 2021 01:02:08 -0700 (PDT)
+Date:   Tue, 14 Sep 2021 10:02:06 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Martin Zaharinov <micron10@gmail.com>
+Cc:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: Re: Urgent  Bug report: PPPoE ioctl(PPPIOCCONNECT): Transport
+ endpoint is not connected
+Message-ID: <20210914080206.GA20454@pc-4.home>
+References: <08EC1CDD-21C4-41AB-B6A8-1CC2D40F5C05@gmail.com>
+ <20210808152318.6nbbaj3bp6tpznel@pali>
+ <8BDDA0B3-0BEE-4E80-9686-7F66CF58B069@gmail.com>
+ <20210809151529.ymbq53f633253loz@pali>
+ <FFD368DF-4C89-494B-8E7B-35C2A139E277@gmail.com>
+ <20210811164835.GB15488@pc-32.home>
+ <81FD1346-8CE6-4080-84C9-705E2E5E69C0@gmail.com>
+ <6A3B4C11-EF48-4CE9-9EC7-5882E330D7EA@gmail.com>
+ <A16DCD3E-43AA-4D50-97FC-EBB776481840@gmail.com>
+ <E95FDB1D-488B-4780-96A1-A2D5C9616A7A@gmail.com>
 MIME-Version: 1.0
-Received: from [10.21.241.42] (213.179.129.39) by ZR0P278CA0128.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:40::7) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.15 via Frontend Transport; Tue, 14 Sep 2021 07:52:46 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d3230dad-ad29-441c-957b-08d97754a502
-X-MS-TrafficTypeDiagnostic: DM8PR12MB5461:
-X-Microsoft-Antispam-PRVS: <DM8PR12MB546125A3FCB2A943660B9DB4DFDA9@DM8PR12MB5461.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1417;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: DNuXzOas75XjkvQhM1E8fWAWsZB4rvq3QkBidJqVN0LEd7AWoC8BV63t7U12yyC7hI1Ur0vyPTqwZetff8LLX99s5RHyey8aURdo2Wpuu1bun6ApuPUDtJxYIrkwej1NzrmOIO3SP45Minz1h7C41kWdfFi571FHmfIyUX+ESvOZ6zTpHU+PxMBUdgCtVDrqJ4hFeBsmNDQDZhHPQd7VZXyCAie/iyMaqzy7mGo2n90b5t/UXcmAej3xL8mltsci3aW/oMy4Oz5jiILOsqIRnhFsFL6YWaXxZpna2FBoO2czSu5BaiOw9PO5+OPlJtsl3whQQOqq6khy6207kpik4IfL3MaE4RK8vRnQPAL3/dWqrNI3uN/eNgx2gqtiV8b54k39WTxTs1MmOXzjTOK9O7yNqx6okgIsy59a03/1KY1Mef99PpXRSqS9QhVdMC5M08fW03QscwcdSA4dSrtmB40Z1GaadHVG2//jM6nQmabM5enfsmXRHk82cacXH8jeIMZ3+2mPbn/0Zobj1OY2sc1FoAj7BVSg9BOH76xfshRIKPc4mSW4TVSNkjlqNgY28IzfqYZYW6UQh5P9Bf2XTZ1Nj10rQ0xmANhWrSr0/vO6y6akdM6NLYDUh5PP6qzBnupJA9ljWTbgh0/3OLUW4aUDKgU1TTyi+uwzKX1baA4lOlG7zZHhOp2RF/aqqvK3sSjXk7JY/Jx3YogywV2Znu4L/tovjGhSWoD9gYESyDo=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5278.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(83380400001)(53546011)(6486002)(4744005)(36756003)(316002)(86362001)(26005)(31696002)(66476007)(2616005)(6666004)(186003)(66946007)(8936002)(66556008)(5660300002)(508600001)(8676002)(31686004)(4326008)(16576012)(2906002)(110136005)(38100700002)(956004)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?cTJmanhSZ3J6VWpXd2NGaEJMSGNjdmVJN1kxVXNNM2pTYnRJNjRlaEpQRVFC?=
- =?utf-8?B?RFZ2NlNaaTBQWGFubVNBS0JvTjRyNklwbE1GbFdHVlVHYWZJd0hMK2hUdDUw?=
- =?utf-8?B?NDYxYUNuOERQR1FaN3BSK01FblRSakpzc0REaXBnb1YvU0w5VUlseGlqK1NO?=
- =?utf-8?B?R1RNRG9LMkQvRVpDTUxLYUtRRHhZNVBKQ3dQRDRERVlrUG9BdWxRZEFUb01S?=
- =?utf-8?B?Rkp0cFlGNFNQTUE2VkhocUFyR3pub3JjcWlTN2NXNXVrbGhab2FENnZ0Q2dY?=
- =?utf-8?B?NWcyZ2ZrR2RUbXRTZXFsT0VVZnJqcHF0NDkra01FYW5NOEh3UnMyMXlGMG1K?=
- =?utf-8?B?OGtETkRiYk9XK3Y3b0Z0Qmo4VUhuaDZDckNvaU5Wclh2WmxiV1RFNVp0YjZV?=
- =?utf-8?B?Ykd1b2dtaTNBWGhjSjZOQkRya1RtbGdNLzFvaXp4REVLcElIeVRLNjRBSUNx?=
- =?utf-8?B?RGNzdTNPWFB3bTgvWGpVR2hVYUFkRGY4ZUoxWkhRWWpmZ0pNdXYrTkFaZWJ2?=
- =?utf-8?B?cm9tWHNGTEN6WVFHdkVlblZ1SW9UbXRteWpsUFhsWTUxcEVGckNtY2o3U3RT?=
- =?utf-8?B?WDlLcG5odFRsSDl4aVpqMm1qSWt5ejdtaFdxVWlUUnVUVWtkb2M0OXo3cStW?=
- =?utf-8?B?OGlyOXhxd0lLdXoxNEF4UU9KWklQdDRHcWU0aElxTGwyc2VrVi9FVnMwcVNn?=
- =?utf-8?B?Wm5GU1BJN25GVjhpZkZ5OElid0o2eU1xd2xlb2FNbW01Um5wT1plNmxTWGVM?=
- =?utf-8?B?Nks1SjZudFhEZ002Qm1QcG5scm1BR2JnMG5WSWlnS3dsMjEzdU9uTEdldkZ4?=
- =?utf-8?B?UUlielBpWStPVytWNUJlT09mNnJZTnBMZUpFaGNNS2Z5azMxS2wwbHRkdTdG?=
- =?utf-8?B?YXYzY1JwR0RVTERndWlwWGtCbzFlM2RiUE04K3FBRkkxUTFaeng1ekZaWkdQ?=
- =?utf-8?B?NGFMQnQ3ZFZzM2lTKzFXN1VSMWdYZjMwVXQ2TmtiajlBT0tyNEJqNmxLWUdr?=
- =?utf-8?B?WGdoYURTaGlTdFZ6enNkc0pDNXpXRlVSNEdYZTkxNklIU1F6b0o0eERGQ3RP?=
- =?utf-8?B?R3Q1SXBGWDljODhVU0w4dzN1VFZ3NmNFMmIyejVVanJlUFgrdmhhMncrK2gz?=
- =?utf-8?B?SzNZVHJLNnVLYzhPVG9tbXlsa1BXTDhVUWFMdGhkWEdpR2lDRjZXRkFPVEM4?=
- =?utf-8?B?bmZqNzRmSHZoczBsa3pia2JHZUk5YkFmMzRGYmRRTXRPdGFhSHB6ZnY2TW50?=
- =?utf-8?B?OEJ3dVR3QXBrbVlIUGZyNjNoNnNiQ3k3K093SFlONnRISUVGNklnSVg3WWFP?=
- =?utf-8?B?RVAwbCtkWDhDRGZVb3ZZYjhDM3lrZk81NXlrZDU4ZEUwdXlTRlhQZEdsN3ZY?=
- =?utf-8?B?Q3M4cXFveGhRU3cyZlQxWXlXVlFmejg1U0VCYjBtZ1pEcUZBWnFNS3hYWEV5?=
- =?utf-8?B?NkQwblNRcnZXK2xTOE8rakN5NDhaVDhvYVR6dG41US9EcmVXdktPdW5OQXFQ?=
- =?utf-8?B?N3J3U1pvYlFkckhjMWJtMHdsK1J2cDhLZUJhTFA4RlorR2M2T0F6VERNL2tw?=
- =?utf-8?B?disybWpDWDYzSnYzZ1JmWVA3Q05LSEE4cFZtK3U2d2ZGSUJYNTdMZmFnUHR3?=
- =?utf-8?B?ek9YSzNCUVFZcFhHOURDVGY4MUxZZHo2MG1oWXFaWE9ZRXFQNFNDWk9RV1A3?=
- =?utf-8?B?RTBRR1pMeWF1VUdyVmZJdlE0YTRiajdad1NuM0RZOHRZSVNZQUNNYjBTdk05?=
- =?utf-8?Q?PhDJODxpouK87g5Zzli2PiDCHaMoZO7zRc65+hl?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d3230dad-ad29-441c-957b-08d97754a502
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5278.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Sep 2021 07:52:48.1806
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: lvP6CedixJuIO6uRC8FIswSVMhU9X/PwKQlXhI/g5uXGZoaFLIvxtXPg78hAFSevM9CrLBnfnLLlox31w+BCEA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR12MB5461
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <E95FDB1D-488B-4780-96A1-A2D5C9616A7A@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14/09/2021 08:18, Eric Dumazet wrote:
+On Tue, Sep 14, 2021 at 09:16:55AM +0300, Martin Zaharinov wrote:
+> Hi Nault
+> 
+> See this stats :
+> 
+> Linux 5.14.2 (testb)   09/14/21        _x86_64_        (12 CPU)
+> 
+> 11:33:44     CPU    %usr   %nice    %sys %iowait    %irq   %soft  %steal  %guest  %gnice   %idle
+> 11:33:45     all    1.75    0.00   18.85    0.00    0.00    5.00    0.00    0.00    0.00   74.40
+> 11:33:46     all    1.74    0.00   17.88    0.00    0.00    4.72    0.00    0.00    0.00   75.66
+> 11:33:47     all    2.23    0.00   17.62    0.00    0.00    5.05    0.00    0.00    0.00   75.10
+> 11:33:48     all    1.82    0.00   13.64    0.00    0.00    5.70    0.00    0.00    0.00   78.84
+> 11:33:49     all    1.50    0.00   13.46    0.00    0.00    5.15    0.00    0.00    0.00   79.90
+> 11:33:50     all    3.06    0.00   13.96    0.00    0.00    4.79    0.00    0.00    0.00   78.20
+> 11:33:51     all    1.40    0.00   16.53    0.00    0.00    5.21    0.00    0.00    0.00   76.86
+> 11:33:52     all    4.43    0.00   19.44    0.00    0.00    6.56    0.00    0.00    0.00   69.57
+> 11:33:53     all    1.51    0.00   16.40    0.00    0.00    4.77    0.00    0.00    0.00   77.32
+> 11:33:54     all    1.51    0.00   16.55    0.00    0.00    4.71    0.00    0.00    0.00   77.23
+> 11:33:55     all    1.00    0.00   13.21    0.00    0.00    5.90    0.00    0.00    0.00   79.90
+> Average:     all    2.00    0.00   16.14    0.00    0.00    5.23    0.00    0.00    0.00   76.63
 > 
 > 
-> On 9/13/21 8:01 PM, Yajun Deng wrote:
->> The dev_put() should be after rtnl_lock() in case for race.
->>
->> Fixes: 893b19587534 ("net: bridge: fix ioctl locking")
->> Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
->> ---
->>  net/core/dev_ioctl.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/net/core/dev_ioctl.c b/net/core/dev_ioctl.c
->> index 0e87237fd871..9796fa35fe88 100644
->> --- a/net/core/dev_ioctl.c
->> +++ b/net/core/dev_ioctl.c
->> @@ -384,8 +384,8 @@ static int dev_ifsioc(struct net *net, struct ifreq *ifr, void __user *data,
->>  		dev_hold(dev);
->>  		rtnl_unlock();
->>  		err = br_ioctl_call(net, netdev_priv(dev), cmd, ifr, NULL);
->> -		dev_put(dev);
->>  		rtnl_lock();
->> +		dev_put(dev);
->>  		return err;
->>  
->>  	case SIOCSHWTSTAMP:
->>
+>   PerfTop:   28046 irqs/sec  kernel:96.3%  exact: 100.0% lost: 0/0 drop: 0/0 [4000Hz cycles],  (all, 12 CPUs)
+> ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 > 
-> What race exactly are you trying to avoid ?
+>     23.37%  [nf_conntrack]           [k] nf_ct_iterate_cleanup
+>     17.76%  [kernel]                 [k] mutex_spin_on_owner
+>      9.47%  [pppoe]                  [k] pppoe_rcv
+>      7.71%  [kernel]                 [k] osq_lock
+>      2.77%  [nf_nat]                 [k] inet_cmp
+>      2.59%  [nf_nat]                 [k] device_cmp
+>      2.55%  [kernel]                 [k] __local_bh_enable_ip
+>      2.04%  [kernel]                 [k] _raw_spin_lock
+>      1.23%  [kernel]                 [k] __cond_resched
+>      1.16%  [kernel]                 [k] rcu_all_qs
+>      1.13%  libfrr.so.0.0.0          [.] 0x00000000000ce970
+>      0.79%  [nf_conntrack]           [k] nf_conntrack_lock
+>      0.75%  libfrr.so.0.0.0          [.] 0x00000000000ce94e
+>      0.53%  [kernel]                 [k] __netif_receive_skb_core.constprop.0
+>      0.46%  [kernel]                 [k] fib_table_lookup
+>      0.46%  [ip_tables]              [k] ipt_do_table
+>      0.45%  [ixgbe]                  [k] ixgbe_clean_rx_irq
+>      0.37%  [kernel]                 [k] __dev_queue_xmit
+>      0.34%  [nf_conntrack]           [k] __nf_conntrack_find_get.isra.0
+>      0.33%  [ixgbe]                  [k] ixgbe_clean_tx_irq
+>      0.30%  [kernel]                 [k] menu_select
+>      0.25%  [kernel]                 [k] vlan_do_receive
+>      0.21%  [kernel]                 [k] ip_finish_output2
+>      0.21%  [ixgbe]                  [k] ixgbe_poll
+>      0.20%  [kernel]                 [k] _raw_spin_lock_irqsave
+>      0.19%  [kernel]                 [k] get_rps_cpu
+>      0.19%  libc.so.6                [.] 0x0000000000186afa
+>      0.19%  [kernel]                 [k] queued_read_lock_slowpath
+>      0.19%  [kernel]                 [k] do_poll.constprop.0
+>      0.19%  [kernel]                 [k] cpuidle_enter_state
+>      0.18%  [kernel]                 [k] dev_hard_start_xmit
+>      0.18%  [kernel]                 [k] ___slab_alloc.constprop.0
+>      0.17%  zebra                    [.] 0x00000000000b9271
+>      0.16%  [kernel]                 [k] csum_partial_copy_generic
+>      0.16%  zebra                    [.] 0x00000000000b91f1
+>      0.16%  [kernel]                 [k] page_frag_free
+>      0.16%  [kernel]                 [k] kmem_cache_alloc
+>      0.15%  [kernel]                 [k] __skb_flow_dissect
+>      0.15%  [kernel]                 [k] sched_clock
+>      0.15%  libc.so.6                [.] 0x00000000000965a2
+>      0.15%  [kernel]                 [k] kmem_cache_free_bulk.part.0
+>      0.15%  [pppoe]                  [k] pppoe_flush_dev
+>      0.15%  [ixgbe]                  [k] ixgbe_tx_map
+>      0.14%  [kernel]                 [k] _raw_spin_lock_bh
+>      0.14%  [kernel]                 [k] fib_table_flush
+>      0.14%  [kernel]                 [k] native_irq_return_iret
+>      0.14%  [kernel]                 [k] __dev_xmit_skb
+>      0.13%  [kernel]                 [k] nf_hook_slow
+>      0.13%  [kernel]                 [k] fib_lookup_good_nhc
+>      0.12%  [kernel]                 [k] __fget_files
+>      0.12%  [kernel]                 [k] process_backlog
+>      0.12%  [xt_dtvqos]              [k] 0x00000000000008d1
+>      0.12%  [kernel]                 [k] __list_del_entry_valid
+>      0.12%  [kernel]                 [k] skb_release_data
+>      0.12%  [kernel]                 [k] ip_route_input_slow
+>      0.11%  [kernel]                 [k] netif_skb_features
+>      0.11%  [kernel]                 [k] sock_poll
+>      0.11%  [kernel]                 [k] __schedule
+>      0.11%  [kernel]                 [k] __softirqentry_text_start
 > 
-> This patch does not look needed to me.
+> 
+> And on time of problem when try to write : ip a 
+> to list interface wait 15-20 sec i finaly have options to simulate but users is angry when down internet.
+
+Probably some contention on the rtnl lock.
+
+> In case need to know why system is overloaded when deconfig ppp interface.
+
+Does it help if you disable conntrack?
+
+> 
+> Best regards,
+> Martin
+> 
+> 
+> 
+> 
+> > On 11 Sep 2021, at 9:26, Martin Zaharinov <micron10@gmail.com> wrote:
+> > 
+> > Hi Guillaume
+> > 
+> > Main problem is overload of service because have many finishing ppp (customer) last two day down from 40-50 to 100-200 users and make problem when is happen if try to type : ip a wait 10-20 sec to start list interface .
+> > But how to find where is a problem any locking or other.
+> > And is there options to make fast remove ppp interface from kernel to reduce this load.
+> > 
+> > 
+> > Martin
+> > 
+> >> On 7 Sep 2021, at 9:42, Martin Zaharinov <micron10@gmail.com> wrote:
+> >> 
+> >> Perf top from text
+> >> 
+> >> 
+> >> PerfTop:   28391 irqs/sec  kernel:98.0%  exact: 100.0% lost: 0/0 drop: 0/0 [4000Hz cycles],  (all, 12 CPUs)
+> >> ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+> >> 
+> >>   17.01%  [nf_conntrack]           [k] nf_ct_iterate_cleanup
+> >>    9.73%  [kernel]                 [k] mutex_spin_on_owner
+> >>    9.07%  [pppoe]                  [k] pppoe_rcv
+> >>    2.77%  [nf_nat]                 [k] device_cmp
+> >>    1.66%  [kernel]                 [k] osq_lock
+> >>    1.65%  [kernel]                 [k] _raw_spin_lock
+> >>    1.61%  [kernel]                 [k] __local_bh_enable_ip
+> >>    1.35%  [nf_nat]                 [k] inet_cmp
+> >>    1.30%  [kernel]                 [k] __netif_receive_skb_core.constprop.0
+> >>    1.16%  [kernel]                 [k] menu_select
+> >>    0.99%  [kernel]                 [k] cpuidle_enter_state
+> >>    0.96%  [ixgbe]                  [k] ixgbe_clean_rx_irq
+> >>    0.86%  [kernel]                 [k] __dev_queue_xmit
+> >>    0.70%  [kernel]                 [k] __cond_resched
+> >>    0.69%  [sch_cake]               [k] cake_dequeue
+> >>    0.67%  [nf_tables]              [k] nft_do_chain
+> >>    0.63%  [kernel]                 [k] rcu_all_qs
+> >>    0.61%  [kernel]                 [k] fib_table_lookup
+> >>    0.57%  [kernel]                 [k] __schedule
+> >>    0.57%  [kernel]                 [k] skb_release_data
+> >>    0.54%  [kernel]                 [k] sched_clock
+> >>    0.54%  [kernel]                 [k] __copy_skb_header
+> >>    0.53%  [kernel]                 [k] dev_queue_xmit_nit
+> >>    0.53%  [kernel]                 [k] _raw_spin_lock_irqsave
+> >>    0.50%  [kernel]                 [k] kmem_cache_free
+> >>    0.48%  libfrr.so.0.0.0          [.] 0x00000000000ce970
+> >>    0.47%  [ixgbe]                  [k] ixgbe_clean_tx_irq
+> >>    0.45%  [kernel]                 [k] timerqueue_add
+> >>    0.45%  [kernel]                 [k] lapic_next_deadline
+> >>    0.45%  [kernel]                 [k] csum_partial_copy_generic
+> >>    0.44%  [nf_flow_table]          [k] nf_flow_offload_ip_hook
+> >>    0.44%  [kernel]                 [k] kmem_cache_alloc
+> >>    0.44%  [nf_conntrack]           [k] nf_conntrack_lock
+> >> 
+> >>> On 7 Sep 2021, at 9:16, Martin Zaharinov <micron10@gmail.com> wrote:
+> >>> 
+> >>> Hi 
+> >>> Sorry for delay but not easy to catch moment .
+> >>> 
+> >>> 
+> >>> See this is mpstatl 1 :
+> >>> 
+> >>> Linux 5.14.1 (demobng) 	09/07/21 	_x86_64_	(12 CPU)
+> >>> 
+> >>> 11:12:16     CPU    %usr   %nice    %sys %iowait    %irq   %soft  %steal  %guest  %gnice   %idle
+> >>> 11:12:17     all    0.17    0.00    6.66    0.00    0.00    4.13    0.00    0.00    0.00   89.05
+> >>> 11:12:18     all    0.25    0.00    8.36    0.00    0.00    4.88    0.00    0.00    0.00   86.51
+> >>> 11:12:19     all    0.26    0.00    9.62    0.00    0.00    3.91    0.00    0.00    0.00   86.21
+> >>> 11:12:20     all    0.85    0.00    6.00    0.00    0.00    4.31    0.00    0.00    0.00   88.84
+> >>> 11:12:21     all    0.08    0.00    4.45    0.00    0.00    4.79    0.00    0.00    0.00   90.67
+> >>> 11:12:22     all    0.17    0.00    9.50    0.00    0.00    4.58    0.00    0.00    0.00   85.75
+> >>> 11:12:23     all    0.00    0.00    6.92    0.00    0.00    2.48    0.00    0.00    0.00   90.61
+> >>> 11:12:24     all    0.17    0.00    5.45    0.00    0.00    4.27    0.00    0.00    0.00   90.11
+> >>> 11:12:25     all    0.25    0.00    5.38    0.00    0.00    4.79    0.00    0.00    0.00   89.58
+> >>> 11:12:26     all    0.60    0.00    1.45    0.00    0.00    2.65    0.00    0.00    0.00   95.30
+> >>> 11:12:27     all    0.42    0.00    6.91    0.00    0.00    4.47    0.00    0.00    0.00   88.20
+> >>> 11:12:28     all    0.00    0.00    6.75    0.00    0.00    4.18    0.00    0.00    0.00   89.07
+> >>> 11:12:29     all    0.17    0.00    3.52    0.00    0.00    5.11    0.00    0.00    0.00   91.20
+> >>> 11:12:30     all    1.45    0.00   10.14    0.00    0.00    3.49    0.00    0.00    0.00   84.92
+> >>> 11:12:31     all    0.09    0.00    5.11    0.00    0.00    4.77    0.00    0.00    0.00   90.03
+> >>> 11:12:32     all    0.25    0.00    3.11    0.00    0.00    4.46    0.00    0.00    0.00   92.17
+> >>> Average:     all    0.32    0.00    6.21    0.00    0.00    4.21    0.00    0.00    0.00   89.26
+> >>> 
+> >>> 
+> >>> I attache and one screenshot from perf top (Screenshot is send on preview mail)
+> >>> 
+> >>> And I see in lsmod 
+> >>> 
+> >>> pppoe                  20480  8198
+> >>> pppox                  16384  1 pppoe
+> >>> ppp_generic            45056  16364 pppox,pppoe
+> >>> slhc                   16384  1 ppp_generic
+> >>> 
+> >>> To slow remove pppoe session .
+> >>> 
+> >>> And from log : 
+> >>> 
+> >>> [2021-09-07 11:01:11.129] vlan3020: ebdd1c5d8b5900f6: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>> [2021-09-07 11:01:53.621] vlan643: ebdd1c5d8b59014e: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>> [2021-09-07 11:02:00.359] vlan1616: ebdd1c5d8b590195: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>> [2021-09-07 11:02:05.859] vlan3020: ebdd1c5d8b5900d8: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>> [2021-09-07 11:02:08.258] vlan3005: ebdd1c5d8b590190: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>> [2021-09-07 11:02:13.820] vlan643: ebdd1c5d8b590152: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>> [2021-09-07 11:02:15.839] vlan727: ebdd1c5d8b590144: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>> [2021-09-07 11:02:20.139] vlan1693: ebdd1c5d8b59019f: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>> 
+> >>>> On 11 Aug 2021, at 19:48, Guillaume Nault <gnault@redhat.com> wrote:
+> >>>> 
+> >>>> On Wed, Aug 11, 2021 at 02:10:32PM +0300, Martin Zaharinov wrote:
+> >>>>> And one more that see.
+> >>>>> 
+> >>>>> Problem is come when accel start finishing sessions,
+> >>>>> Now in server have 2k users and restart on one of vlans 3 Olt with 400 users and affect other vlans ,
+> >>>>> And problem is start when start destroying dead sessions from vlan with 3 Olt and this affect all other vlans.
+> >>>>> May be kernel destroy old session slow and entrained other users by locking other sessions.
+> >>>>> is there a way to speed up the closing of stopped/dead sessions.
+> >>>> 
+> >>>> What are the CPU stats when that happen? Is it users space or kernel
+> >>>> space that keeps it busy?
+> >>>> 
+> >>>> One easy way to check is to run "mpstat 1" for a few seconds when the
+> >>>> problem occurs.
+> >>>> 
+> >>> 
+> >> 
+> > 
 > 
 
-+1 
-
-There isn't a race there
