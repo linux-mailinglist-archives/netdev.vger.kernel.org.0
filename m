@@ -2,59 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A42740AEB2
-	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 15:14:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C9E840AEB7
+	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 15:14:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233093AbhINNPc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 09:15:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48704 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233143AbhINNPa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 09:15:30 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E14E3C061574
-        for <netdev@vger.kernel.org>; Tue, 14 Sep 2021 06:14:12 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id l11so28763683lfe.1
-        for <netdev@vger.kernel.org>; Tue, 14 Sep 2021 06:14:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=NW6/WWL4yihMFMED3vrhA42AyG+mlrrKIxC5OTUEN30=;
-        b=K8A1hgjN0lxAWN2rZrkbbJZ002bshs+2rqpfcenpFkxk8nDNvUANOdhR3NfINaK55+
-         6T0Jc0rZWKZl9Uqb00iPHKvd0LnwdcMJNdJT6q5yVpXTidVD1cvIER5G5M7y+MpAc9V1
-         1wTxmHDa1/Yw2HW4XZgJwAv58zOxZXbeRsKk/tNwyLBHkGOS0bwnAQ8l79un2m95oJge
-         GiXOVLFxetprSJFOYH7BY7r1nCHTzwYIbWM/SNI+wlCG/WyhV7dwNyoga9/Gb3u8+bHN
-         5cZHq+S2w+K4v6d+T0AbHcqw64RNENkmsK3C9+DeQfrmWvibZKemYEFpRs8Gh+eDtUeS
-         KEqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=NW6/WWL4yihMFMED3vrhA42AyG+mlrrKIxC5OTUEN30=;
-        b=6XEMNoF8+qTTiiiDmIG2BhmYeoOHliVx6axcivd+KSmwd+K6d4J8AS/pRPv2VTh3lh
-         UBtujjBDcEsEcLEDiQtavw5V+qYuCXxOseuu9iBVCN10Fa7ZVUEC+oI4jPLYPtbP9nnn
-         ugQAw6rjMLW15ICn03E6W4bd8sF3jTZw9HxAvhNcdhFHDi/QudwyLBw+gr6aOKjA2uFX
-         QfeeWfAe6UPBHTu6IvVfpOvvh3MavTZGZAJmuQsilbOFUoi171N83uzBwSqWexwEB1W+
-         rDtbvp0fgs2vnBfHzhhZ+4T1N7JHJUUXx2yGuuIkHI8kJNAX93NvKO/5NevQkthrutH+
-         6bcw==
-X-Gm-Message-State: AOAM533QJjwsqdj+7dIaQOm00FUERwU4C3hXs0Lfj2I3HMBy0s3phy4H
-        kPispltC3f7gH2quG9Bwx1bP6xNbGJJJ1BbyoYc=
-X-Google-Smtp-Source: ABdhPJxxIfWGDmAEi96XgiAT0Ne/pq60K7nWJku+rbtCil748k9MkpQCvAzq83l4nQPYDnbFpH6rQzEKD2TwxmmBCk0=
-X-Received: by 2002:a19:48c9:: with SMTP id v192mr12744597lfa.634.1631625251093;
- Tue, 14 Sep 2021 06:14:11 -0700 (PDT)
+        id S233230AbhINNQH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 09:16:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44634 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233218AbhINNQG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Sep 2021 09:16:06 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 0A054610E6;
+        Tue, 14 Sep 2021 13:14:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1631625289;
+        bh=fUex7wQvO0zbSR2isytRvogKnEwudA8k79GsUi7rsBE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=pna2ECYGRv+td7tL7HaWBu4JUSaJZwDNCg88lN3hvNzj6lffhu2iFHXOKMEMNeJ3P
+         SnnmYhEd6SiiciOxVRw+qkzLpOI/3u0cNF9tfj2F3gT2xGKyoTIA4vD25c77ItbI6w
+         +3WUyL17y/ZSUOZJzYeX9RzA3LOEcHGbfVjcMD1JyLyoqa8asGP7/Vx547fogZnRjh
+         piKsFh0IanA2yTN+8ZXJ9ul5VavvJA3Jc/wbsvMJqCKenmM0t7Or/BgqqvbW/BHvsl
+         Bjbav4IQGIySp29WVDJWZXuKYFgCJA8+VRGn4MjdHLWLYoh5ik8SWyiEld2Xbtot8g
+         o2JNKhhWCEWDg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id F3A9E60A7D;
+        Tue, 14 Sep 2021 13:14:48 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Sender: fadiwwamcc02@gmail.com
-Received: by 2002:a05:6512:1585:0:0:0:0 with HTTP; Tue, 14 Sep 2021 06:14:10
- -0700 (PDT)
-From:   Nadia Rahman <nadiarahman066@gmail.com>
-Date:   Tue, 14 Sep 2021 06:14:10 -0700
-X-Google-Sender-Auth: KYc6cJKZwyMZwUjGaDBQpK5xWMo
-Message-ID: <CAKaFvLuY0RzOYrGqgAVcKZgoWcX2rZ_74s+tHqsVNDQycMmWXQ@mail.gmail.com>
-Subject: Hola
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] r8169: remove support for chip version
+ RTL_GIGA_MAC_VER_27
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163162528899.7287.10575747689807632437.git-patchwork-notify@kernel.org>
+Date:   Tue, 14 Sep 2021 13:14:48 +0000
+References: <7892bfe6-ad86-2b1e-e2ea-7e1667e17151@gmail.com>
+In-Reply-To: <7892bfe6-ad86-2b1e-e2ea-7e1667e17151@gmail.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, nic_swsd@realtek.com,
+        netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-por favor responde es importante
+Hello:
+
+This patch was applied to netdev/net-next.git (refs/heads/master):
+
+On Mon, 13 Sep 2021 21:46:06 +0200 you wrote:
+> This patch is a follow-up to beb401ec5006 ("r8169: deprecate support for
+> RTL_GIGA_MAC_VER_27") that came with 5.12. Nobody complained, so let's
+> remove support for this chip version.
+> 
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+> ---
+>  drivers/net/ethernet/realtek/r8169.h          |  2 +-
+>  drivers/net/ethernet/realtek/r8169_main.c     | 41 +------------
+>  .../net/ethernet/realtek/r8169_phy_config.c   | 59 -------------------
+>  3 files changed, 3 insertions(+), 99 deletions(-)
+
+Here is the summary with links:
+  - [net-next] r8169: remove support for chip version RTL_GIGA_MAC_VER_27
+    https://git.kernel.org/netdev/net-next/c/01649011cc82
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
