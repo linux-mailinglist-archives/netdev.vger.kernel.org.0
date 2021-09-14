@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9157E40AAA2
-	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 11:19:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82FC640AAA4
+	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 11:19:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231652AbhINJUs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 05:20:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50188 "EHLO
+        id S231749AbhINJUv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 05:20:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231238AbhINJUg (ORCPT
+        with ESMTP id S230255AbhINJUg (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 05:20:36 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A485C0613EE
-        for <netdev@vger.kernel.org>; Tue, 14 Sep 2021 02:19:15 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id n27so27372935eja.5
-        for <netdev@vger.kernel.org>; Tue, 14 Sep 2021 02:19:15 -0700 (PDT)
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F3B4C06178A
+        for <netdev@vger.kernel.org>; Tue, 14 Sep 2021 02:19:16 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id n27so27373073eja.5
+        for <netdev@vger.kernel.org>; Tue, 14 Sep 2021 02:19:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=anyfinetworks-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ERmKu9v0BHUkZ0BciNHlQqtuD0MKt7tQcV0WrIj4XsU=;
-        b=br1b4Gpsh4L1gd+T7QFk4WlDcguOIRLM+dy0mJo9JywfO2ARsQhT1I4YY2lkXZPyB9
-         c6y5cszbTi+asTGjusUf/WAp/LeO332/TecnREF6Kx6z2p6XOMiU9sxmzDSHX9wNWXIo
-         WWXKOUoWSzxOcA846eXKUT/BVZIXG+K/sRfVen4ts6wwjpmToDzZOGrKFdY8rtPKo7C9
-         8FtjMz6R3dmgiw56ETeLdrRVFM7LO/3mRNK1VAKOcH+kAcUf4yUmf39FsD/p26hzIjxJ
-         gPD6tz5fRYCClW6/aTORxHtD6prJHnD6jO9V3NQQiLW+RIdlxlwIekc2jwMG/U+4cLCG
-         J8uQ==
+        bh=BrMA0XSQ71yLEbRWsyu+DocRPQut2y4m9TWpIdwAKEY=;
+        b=WTkmrADb5MIL/FjVj/XmCtl9SB541fxTCDJbYjx49D4Bq0WsWvRGcq038vpVI8HknF
+         J3tQq7YgnF2i76ZufAHDVV3DQYynpPLjvs52DxD5vqn7jK4T5L2SBq8x86vxhJUZn8aw
+         eUxGciS7RuWVbD0wM2K0hD9DhFhf7oSzwT/KeMFQk2NlzRWp3ETPHFGExHuBLeJT2yU5
+         b2jDv6GImhZVARFX1eZHI4pW/s/wqHrx+eI28i4BNOkobYZ5XoNy0gJQR+BwF6+59iv0
+         eVTB/O3rEN/hf+ylccKqaAS85dN5UxKfiW1XRmsqWj1jndaItZYGXmFxxlft4s7GS2ZV
+         XYdg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ERmKu9v0BHUkZ0BciNHlQqtuD0MKt7tQcV0WrIj4XsU=;
-        b=WOVPxHxAEIToIl7aZBAC7jAGuSp6lS6C2h4y4N6KcrkCB/wdOGlL5bA2Qf6b5SY5xX
-         Yxs60Pji8NqQXmhKGooOmOpzCFTtZPRy+OWC14GM7IvRHV6Ip1I18WHWnSQEBnESf8FF
-         3zQS9KqKuxt3ZoZUwhe9HxOXU1aKOASKdDf//HhBU1HfcCoEPtVTm+ADf2JidC4gdR+k
-         q753QN+KFIpNQV1zjRsEOiOXkNfzNAY3BNwluQzDymZGD/RCx2YxBfYuHkoHsmw9lnu6
-         vjqOl3/8p21LkXue+Um20XdRa58Qg64P99h7hIA9A8AV646BPqhc94JY3noQAIkEEAo+
-         xt+w==
-X-Gm-Message-State: AOAM530G4kR3kwRMAQxtewVHQKmcWQRqQWOdfNgDPqLot1Em7vvsaT8k
-        mhGAK6NRIGfd8B6Bc+LPbqYIeg==
-X-Google-Smtp-Source: ABdhPJxizgeK7CpOOOjxt8cwveMFcwn4cKM0OfSKCr2Tq8arsHVy7KR16pp8WyGdg0+ozBiW45OgcQ==
-X-Received: by 2002:a17:906:1d59:: with SMTP id o25mr17712721ejh.431.1631611153906;
-        Tue, 14 Sep 2021 02:19:13 -0700 (PDT)
+        bh=BrMA0XSQ71yLEbRWsyu+DocRPQut2y4m9TWpIdwAKEY=;
+        b=Ye4W+6TMlFqNBS0jm8tA4HSTGsjDc2ZO5v2owMIZ0YnyKjOnB1T5g5zkRONi7ABavk
+         wQuE6GpBRRlAHFk5dSEu5it5tdSQnk7OwgWy03Ww1WFwOTPtZ18/vx9P1K5Bxwvpey1u
+         TxDNf8m+y5gOdXmp9zUJUyJEzrrc0r9SufjOl6hnkCYgc+xfS71vwOHCaeiPbLaADKdZ
+         sPh1bkWRRvdvx7xTeNqk4ZLtF12f301vYREG1WA2vYuyT6H317JGQ2K1UAi5DJ9Do5LO
+         8wIg8zhG/2KKDrcHnp2qIcwuaNdTAO/hCrAQ5tNM+WWTaKng02DEBY0QMKkZECM4i3+i
+         a6kQ==
+X-Gm-Message-State: AOAM530W5jjOpp9nz4mjXUJj28fULKIwvDC0zm1xZTZSjD4IEMjfGdPd
+        J5I4jTOVDvWA/0TYeHvFus7P8A==
+X-Google-Smtp-Source: ABdhPJzMpG5u/M4HuY1VQdR9hJT+UzRrktVbcoXeqLboKHPpo8aQkSwISU1xJZuOsOVXTeovn2oq0A==
+X-Received: by 2002:a17:906:27cf:: with SMTP id k15mr18553726ejc.123.1631611155009;
+        Tue, 14 Sep 2021 02:19:15 -0700 (PDT)
 Received: from anpc2.lan (static-213-115-136-2.sme.telenor.se. [213.115.136.2])
-        by smtp.gmail.com with ESMTPSA id h10sm4615915ede.28.2021.09.14.02.19.12
+        by smtp.gmail.com with ESMTPSA id h10sm4615915ede.28.2021.09.14.02.19.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Sep 2021 02:19:13 -0700 (PDT)
+        Tue, 14 Sep 2021 02:19:14 -0700 (PDT)
 From:   Johan Almbladh <johan.almbladh@anyfinetworks.com>
 To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org
 Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
@@ -54,9 +54,9 @@ Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
         paul@cilium.io, yangtiezhu@loongson.cn, netdev@vger.kernel.org,
         bpf@vger.kernel.org,
         Johan Almbladh <johan.almbladh@anyfinetworks.com>
-Subject: [PATCH bpf v4 09/14] bpf/tests: Add JMP tests with small offsets
-Date:   Tue, 14 Sep 2021 11:18:37 +0200
-Message-Id: <20210914091842.4186267-10-johan.almbladh@anyfinetworks.com>
+Subject: [PATCH bpf v4 10/14] bpf/tests: Add JMP tests with degenerate conditional
+Date:   Tue, 14 Sep 2021 11:18:38 +0200
+Message-Id: <20210914091842.4186267-11-johan.almbladh@anyfinetworks.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210914091842.4186267-1-johan.almbladh@anyfinetworks.com>
 References: <20210914091842.4186267-1-johan.almbladh@anyfinetworks.com>
@@ -66,98 +66,254 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds a set of tests for JMP to verify that the JITed jump
-offset is calculated correctly. We pretend that the verifier has inserted
-any zero extensions to make the jump-over operations JIT to one
-instruction each, in order to control the exact JITed jump offset.
+This patch adds a set of tests for JMP and JMP32 operations where the
+branch decision is know at JIT time. Mainly testing JIT behaviour.
 
 Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
 ---
- lib/test_bpf.c | 71 ++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 71 insertions(+)
+ lib/test_bpf.c | 229 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 229 insertions(+)
 
 diff --git a/lib/test_bpf.c b/lib/test_bpf.c
-index 26f7c244c78a..7286cf347b95 100644
+index 7286cf347b95..ae261667ca0a 100644
 --- a/lib/test_bpf.c
 +++ b/lib/test_bpf.c
-@@ -10709,6 +10709,77 @@ static struct bpf_test tests[] = {
+@@ -10709,6 +10709,235 @@ static struct bpf_test tests[] = {
  		.fill_helper = bpf_fill_jmp32_jsle_reg,
  		.nr_testruns = NR_PATTERN_RUNS,
  	},
-+	/* Short relative jumps */
++	/* Conditional jumps with constant decision */
 +	{
-+		"Short relative jump: offset=0",
++		"JMP_JSET_K: imm = 0 -> never taken",
 +		.u.insns_int = {
++			BPF_ALU64_IMM(BPF_MOV, R0, 1),
++			BPF_JMP_IMM(BPF_JSET, R1, 0, 1),
 +			BPF_ALU64_IMM(BPF_MOV, R0, 0),
-+			BPF_JMP_IMM(BPF_JEQ, R0, 0, 0),
 +			BPF_EXIT_INSN(),
-+			BPF_ALU32_IMM(BPF_MOV, R0, -1),
 +		},
-+		INTERNAL | FLAG_NO_DATA | FLAG_VERIFIER_ZEXT,
++		INTERNAL | FLAG_NO_DATA,
 +		{ },
 +		{ { 0, 0 } },
 +	},
 +	{
-+		"Short relative jump: offset=1",
++		"JMP_JLT_K: imm = 0 -> never taken",
 +		.u.insns_int = {
++			BPF_ALU64_IMM(BPF_MOV, R0, 1),
++			BPF_JMP_IMM(BPF_JLT, R1, 0, 1),
 +			BPF_ALU64_IMM(BPF_MOV, R0, 0),
-+			BPF_JMP_IMM(BPF_JEQ, R0, 0, 1),
-+			BPF_ALU32_IMM(BPF_ADD, R0, 1),
 +			BPF_EXIT_INSN(),
-+			BPF_ALU32_IMM(BPF_MOV, R0, -1),
 +		},
-+		INTERNAL | FLAG_NO_DATA | FLAG_VERIFIER_ZEXT,
++		INTERNAL | FLAG_NO_DATA,
 +		{ },
 +		{ { 0, 0 } },
 +	},
 +	{
-+		"Short relative jump: offset=2",
++		"JMP_JGE_K: imm = 0 -> always taken",
 +		.u.insns_int = {
++			BPF_ALU64_IMM(BPF_MOV, R0, 1),
++			BPF_JMP_IMM(BPF_JGE, R1, 0, 1),
 +			BPF_ALU64_IMM(BPF_MOV, R0, 0),
-+			BPF_JMP_IMM(BPF_JEQ, R0, 0, 2),
-+			BPF_ALU32_IMM(BPF_ADD, R0, 1),
-+			BPF_ALU32_IMM(BPF_ADD, R0, 1),
 +			BPF_EXIT_INSN(),
-+			BPF_ALU32_IMM(BPF_MOV, R0, -1),
 +		},
-+		INTERNAL | FLAG_NO_DATA | FLAG_VERIFIER_ZEXT,
++		INTERNAL | FLAG_NO_DATA,
++		{ },
++		{ { 0, 1 } },
++	},
++	{
++		"JMP_JGT_K: imm = 0xffffffff -> never taken",
++		.u.insns_int = {
++			BPF_ALU64_IMM(BPF_MOV, R0, 1),
++			BPF_JMP_IMM(BPF_JGT, R1, U32_MAX, 1),
++			BPF_ALU64_IMM(BPF_MOV, R0, 0),
++			BPF_EXIT_INSN(),
++		},
++		INTERNAL | FLAG_NO_DATA,
 +		{ },
 +		{ { 0, 0 } },
 +	},
 +	{
-+		"Short relative jump: offset=3",
++		"JMP_JLE_K: imm = 0xffffffff -> always taken",
 +		.u.insns_int = {
++			BPF_ALU64_IMM(BPF_MOV, R0, 1),
++			BPF_JMP_IMM(BPF_JLE, R1, U32_MAX, 1),
 +			BPF_ALU64_IMM(BPF_MOV, R0, 0),
-+			BPF_JMP_IMM(BPF_JEQ, R0, 0, 3),
-+			BPF_ALU32_IMM(BPF_ADD, R0, 1),
-+			BPF_ALU32_IMM(BPF_ADD, R0, 1),
-+			BPF_ALU32_IMM(BPF_ADD, R0, 1),
 +			BPF_EXIT_INSN(),
-+			BPF_ALU32_IMM(BPF_MOV, R0, -1),
 +		},
-+		INTERNAL | FLAG_NO_DATA | FLAG_VERIFIER_ZEXT,
++		INTERNAL | FLAG_NO_DATA,
++		{ },
++		{ { 0, 1 } },
++	},
++	{
++		"JMP32_JSGT_K: imm = 0x7fffffff -> never taken",
++		.u.insns_int = {
++			BPF_ALU64_IMM(BPF_MOV, R0, 1),
++			BPF_JMP32_IMM(BPF_JSGT, R1, S32_MAX, 1),
++			BPF_ALU64_IMM(BPF_MOV, R0, 0),
++			BPF_EXIT_INSN(),
++		},
++		INTERNAL | FLAG_NO_DATA,
 +		{ },
 +		{ { 0, 0 } },
 +	},
 +	{
-+		"Short relative jump: offset=4",
++		"JMP32_JSGE_K: imm = -0x80000000 -> always taken",
 +		.u.insns_int = {
++			BPF_ALU64_IMM(BPF_MOV, R0, 1),
++			BPF_JMP32_IMM(BPF_JSGE, R1, S32_MIN, 1),
 +			BPF_ALU64_IMM(BPF_MOV, R0, 0),
-+			BPF_JMP_IMM(BPF_JEQ, R0, 0, 4),
-+			BPF_ALU32_IMM(BPF_ADD, R0, 1),
-+			BPF_ALU32_IMM(BPF_ADD, R0, 1),
-+			BPF_ALU32_IMM(BPF_ADD, R0, 1),
-+			BPF_ALU32_IMM(BPF_ADD, R0, 1),
 +			BPF_EXIT_INSN(),
-+			BPF_ALU32_IMM(BPF_MOV, R0, -1),
 +		},
-+		INTERNAL | FLAG_NO_DATA | FLAG_VERIFIER_ZEXT,
++		INTERNAL | FLAG_NO_DATA,
++		{ },
++		{ { 0, 1 } },
++	},
++	{
++		"JMP32_JSLT_K: imm = -0x80000000 -> never taken",
++		.u.insns_int = {
++			BPF_ALU64_IMM(BPF_MOV, R0, 1),
++			BPF_JMP32_IMM(BPF_JSLT, R1, S32_MIN, 1),
++			BPF_ALU64_IMM(BPF_MOV, R0, 0),
++			BPF_EXIT_INSN(),
++		},
++		INTERNAL | FLAG_NO_DATA,
 +		{ },
 +		{ { 0, 0 } },
 +	},
- 	/* Staggered jump sequences, immediate */
++	{
++		"JMP32_JSLE_K: imm = 0x7fffffff -> always taken",
++		.u.insns_int = {
++			BPF_ALU64_IMM(BPF_MOV, R0, 1),
++			BPF_JMP32_IMM(BPF_JSLE, R1, S32_MAX, 1),
++			BPF_ALU64_IMM(BPF_MOV, R0, 0),
++			BPF_EXIT_INSN(),
++		},
++		INTERNAL | FLAG_NO_DATA,
++		{ },
++		{ { 0, 1 } },
++	},
++	{
++		"JMP_JEQ_X: dst = src -> always taken",
++		.u.insns_int = {
++			BPF_ALU64_IMM(BPF_MOV, R0, 1),
++			BPF_JMP_REG(BPF_JEQ, R1, R1, 1),
++			BPF_ALU64_IMM(BPF_MOV, R0, 0),
++			BPF_EXIT_INSN(),
++		},
++		INTERNAL | FLAG_NO_DATA,
++		{ },
++		{ { 0, 1 } },
++	},
++	{
++		"JMP_JGE_X: dst = src -> always taken",
++		.u.insns_int = {
++			BPF_ALU64_IMM(BPF_MOV, R0, 1),
++			BPF_JMP_REG(BPF_JGE, R1, R1, 1),
++			BPF_ALU64_IMM(BPF_MOV, R0, 0),
++			BPF_EXIT_INSN(),
++		},
++		INTERNAL | FLAG_NO_DATA,
++		{ },
++		{ { 0, 1 } },
++	},
++	{
++		"JMP_JLE_X: dst = src -> always taken",
++		.u.insns_int = {
++			BPF_ALU64_IMM(BPF_MOV, R0, 1),
++			BPF_JMP_REG(BPF_JLE, R1, R1, 1),
++			BPF_ALU64_IMM(BPF_MOV, R0, 0),
++			BPF_EXIT_INSN(),
++		},
++		INTERNAL | FLAG_NO_DATA,
++		{ },
++		{ { 0, 1 } },
++	},
++	{
++		"JMP_JSGE_X: dst = src -> always taken",
++		.u.insns_int = {
++			BPF_ALU64_IMM(BPF_MOV, R0, 1),
++			BPF_JMP_REG(BPF_JSGE, R1, R1, 1),
++			BPF_ALU64_IMM(BPF_MOV, R0, 0),
++			BPF_EXIT_INSN(),
++		},
++		INTERNAL | FLAG_NO_DATA,
++		{ },
++		{ { 0, 1 } },
++	},
++	{
++		"JMP_JSLE_X: dst = src -> always taken",
++		.u.insns_int = {
++			BPF_ALU64_IMM(BPF_MOV, R0, 1),
++			BPF_JMP_REG(BPF_JSLE, R1, R1, 1),
++			BPF_ALU64_IMM(BPF_MOV, R0, 0),
++			BPF_EXIT_INSN(),
++		},
++		INTERNAL | FLAG_NO_DATA,
++		{ },
++		{ { 0, 1 } },
++	},
++	{
++		"JMP_JNE_X: dst = src -> never taken",
++		.u.insns_int = {
++			BPF_ALU64_IMM(BPF_MOV, R0, 1),
++			BPF_JMP_REG(BPF_JNE, R1, R1, 1),
++			BPF_ALU64_IMM(BPF_MOV, R0, 0),
++			BPF_EXIT_INSN(),
++		},
++		INTERNAL | FLAG_NO_DATA,
++		{ },
++		{ { 0, 0 } },
++	},
++	{
++		"JMP_JGT_X: dst = src -> never taken",
++		.u.insns_int = {
++			BPF_ALU64_IMM(BPF_MOV, R0, 1),
++			BPF_JMP_REG(BPF_JGT, R1, R1, 1),
++			BPF_ALU64_IMM(BPF_MOV, R0, 0),
++			BPF_EXIT_INSN(),
++		},
++		INTERNAL | FLAG_NO_DATA,
++		{ },
++		{ { 0, 0 } },
++	},
++	{
++		"JMP_JLT_X: dst = src -> never taken",
++		.u.insns_int = {
++			BPF_ALU64_IMM(BPF_MOV, R0, 1),
++			BPF_JMP_REG(BPF_JLT, R1, R1, 1),
++			BPF_ALU64_IMM(BPF_MOV, R0, 0),
++			BPF_EXIT_INSN(),
++		},
++		INTERNAL | FLAG_NO_DATA,
++		{ },
++		{ { 0, 0 } },
++	},
++	{
++		"JMP_JSGT_X: dst = src -> never taken",
++		.u.insns_int = {
++			BPF_ALU64_IMM(BPF_MOV, R0, 1),
++			BPF_JMP_REG(BPF_JSGT, R1, R1, 1),
++			BPF_ALU64_IMM(BPF_MOV, R0, 0),
++			BPF_EXIT_INSN(),
++		},
++		INTERNAL | FLAG_NO_DATA,
++		{ },
++		{ { 0, 0 } },
++	},
++	{
++		"JMP_JSLT_X: dst = src -> never taken",
++		.u.insns_int = {
++			BPF_ALU64_IMM(BPF_MOV, R0, 1),
++			BPF_JMP_REG(BPF_JSLT, R1, R1, 1),
++			BPF_ALU64_IMM(BPF_MOV, R0, 0),
++			BPF_EXIT_INSN(),
++		},
++		INTERNAL | FLAG_NO_DATA,
++		{ },
++		{ { 0, 0 } },
++	},
+ 	/* Short relative jumps */
  	{
- 		"Staggered jumps: JMP_JA",
+ 		"Short relative jump: offset=0",
 -- 
 2.30.2
 
