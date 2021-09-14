@@ -2,100 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AC6740A5DF
-	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 07:18:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 647F240A5E2
+	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 07:19:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239505AbhINFTd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 01:19:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51116 "EHLO
+        id S239515AbhINFUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 01:20:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232999AbhINFTc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 01:19:32 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 924E1C061574;
-        Mon, 13 Sep 2021 22:18:15 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id h3so11634996pgb.7;
-        Mon, 13 Sep 2021 22:18:15 -0700 (PDT)
+        with ESMTP id S232999AbhINFUL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 01:20:11 -0400
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28479C061574
+        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 22:18:55 -0700 (PDT)
+Received: by mail-pg1-x52e.google.com with SMTP id h3so11636373pgb.7
+        for <netdev@vger.kernel.org>; Mon, 13 Sep 2021 22:18:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=C028bT0FNMQ2VNhaDmAaFRTruEoGmAjnB6fsgimBiLY=;
-        b=b7+GDmi/tHbh9KnK3K3vX+jeQksjovD1asvvG5VUqlzcX1HE4fKaLX1VolzVQJ/TDx
-         PHn4c4oYmnSejBkf4lR+InMlsNnz+KQnAQvZgarCEE3ijsOcP1RjahZ79gezpZeP5CGw
-         3WC1mAtJ2z4rfarwoCZRqz+iLn6un4h6dxIT6g2JUB4IZQAFlDPk9FOmFIQ+OzoslDhW
-         jj1ux0+hFTTSoF7RONxRn/V9S7OtrhYKmW7eNVgLyCtAnoteQB9P3PSWY+dxv+5DaPt8
-         eCgMa6wYYvbHWmARhzVSQzJq+Mfc0te0iu1jhdJ7eAn6uGLigzz4xDEEd5OZBHRLm6oK
-         y9zQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WtbDDcJrGWDDTdVFkFJ4E28VZe4unPdXc0NjzTsWPZY=;
+        b=dKvq1bLol4LmQ+yz66SgxtB0bxEodNzV5bcqriL+RQ2uHz2eesru5xMzQBPlx8gTR0
+         fdKnJ48YsOGXoeoAn1f/zI5EvojJfYjVt/3/CNAWzRbwLmliBvPHY+PcQuLk9YHR0Ne9
+         qqtyfQNcejBZH6/DMz+hiyH4qHb8qIYz986sfajSpXCRq6NRGo+enNcDZxwGGdJp9Woy
+         Qi4Z/UuBd4605wejjSiq2Uo/pb4ISUxYA9MTOwJNMTyO092q4hZkyZ9dbdDdCs2CWRl2
+         FA0dJtu2A8+zcMeQbFXiHYxXaVmGMI1I1oBDGq3iHXFr6+SNJ5wNFh1GEtAOEj3F1Pwv
+         llvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=C028bT0FNMQ2VNhaDmAaFRTruEoGmAjnB6fsgimBiLY=;
-        b=Ash1vvnhxeS4O1H2Z9v9ZGapJ+R6RhADiPF+dchqXBA+28OA99lCSbQTYrlgNcf5XK
-         fxl49Ggyr5o5uRMELMG8iZokaBJtoCzfazGJ92un1ZNwBEM7q6/RCAcN9w7X/SAaXjop
-         UUHo3tf/eWoVfhC5YVITsN4pIM054JpU/aOqk/G6L992SnCmWa5s326hC90j7cD/XD7v
-         qf3LiMrwJFQs87VkbImnagzGG4iXwQFxrAiXSp8pmGSoihWCQvsEfGoqHgBQC3CDz3kK
-         /FU8VswGj9FrOD1frQc6Km11p7TXdiwEwriV58P6YvldIXaw3XyBqzDx8YlYitjrfTdk
-         /CEA==
-X-Gm-Message-State: AOAM533OZwuCoNr8RnrYlejtxMrLpobVHZf61zbjv0ym+uzVse6Fuopq
-        33YJkRhpkutfdb2/lZeE+8IKo8S7GA4=
-X-Google-Smtp-Source: ABdhPJzee7e3XdPCshLwbxsW/qraVLPMCYb0p3LmZR15wIP93lJBZle/OWyNsGipvlxcGAIsYJdovg==
-X-Received: by 2002:a62:ee11:0:b029:3e0:88dc:193f with SMTP id e17-20020a62ee110000b02903e088dc193fmr2924525pfi.78.1631596694878;
-        Mon, 13 Sep 2021 22:18:14 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id i7sm10006289pgd.56.2021.09.13.22.18.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Sep 2021 22:18:14 -0700 (PDT)
-Subject: Re: [PATCH net-next] net: core: fix the order in dev_put() and
- rtnl_lock()
-To:     Yajun Deng <yajun.deng@linux.dev>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     nikolay@nvidia.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210914030150.5838-1-yajun.deng@linux.dev>
+        bh=WtbDDcJrGWDDTdVFkFJ4E28VZe4unPdXc0NjzTsWPZY=;
+        b=X/FcSrvGMjF44WCrtbmvmh1lk8S84VXEx/UNZNepBCqw//IOyokOe/aW+tHwyjKuZj
+         SwIYta6ePJULcrQtkQ1FJ32ftYqb4FBNe7sPlzDLqGq2i08f3MrSoO6X+AY5TM7ULuJf
+         CfrfVjv9rzPsL/FtSJw1VxngHtrWtyjTQ1PQR3Nx6VvYynClOLvcuu2nwovifTFChwV+
+         MpE+0A8KWVaJpc3tmgq8QXdqs893JlssMNEedn0heTtH25bvYvHSATHZTDpNQcVKyj9I
+         Cb59dk+tTNeV75XneX3WHiI+lwBB6bMBwukgPGGlhR6agGkcr1DFOpiOcIAIQGD8q7ob
+         8wDg==
+X-Gm-Message-State: AOAM5338lYouXBNGpfa6V1pmd7WEHNdBrSs5h04BAE8kEL3ggLn4J3vL
+        6QpBRiTD793WBYL9/RHEc2AjEL7u1ok=
+X-Google-Smtp-Source: ABdhPJxJxrJB9qwT2zKRWMnbo8VAZoLktuxY6HmulGOSiJIYiO6hEJ8t1fufUFDorpXbWcPivNoyoQ==
+X-Received: by 2002:a05:6a00:164c:b0:434:a68b:326a with SMTP id m12-20020a056a00164c00b00434a68b326amr2952050pfc.63.1631596734674;
+        Mon, 13 Sep 2021 22:18:54 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:77da:7605:5a70:a0cd])
+        by smtp.gmail.com with ESMTPSA id e13sm8625614pfi.210.2021.09.13.22.18.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Sep 2021 22:18:54 -0700 (PDT)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <903c5bed-5958-8888-b55d-9c175664b2a1@gmail.com>
-Date:   Mon, 13 Sep 2021 22:18:13 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Yajun Deng <yajun.deng@linux.dev>
+Subject: [PATCH net] Revert "Revert "ipv4: fix memory leaks in ip_cmsg_send() callers""
+Date:   Mon, 13 Sep 2021 22:18:51 -0700
+Message-Id: <20210914051851.1056723-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.33.0.309.g3052b89438-goog
 MIME-Version: 1.0
-In-Reply-To: <20210914030150.5838-1-yajun.deng@linux.dev>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Eric Dumazet <edumazet@google.com>
 
+This reverts commit d7807a9adf4856171f8441f13078c33941df48ab.
 
-On 9/13/21 8:01 PM, Yajun Deng wrote:
-> The dev_put() should be after rtnl_lock() in case for race.
-> 
-> Fixes: 893b19587534 ("net: bridge: fix ioctl locking")
-> Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
-> ---
->  net/core/dev_ioctl.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/core/dev_ioctl.c b/net/core/dev_ioctl.c
-> index 0e87237fd871..9796fa35fe88 100644
-> --- a/net/core/dev_ioctl.c
-> +++ b/net/core/dev_ioctl.c
-> @@ -384,8 +384,8 @@ static int dev_ifsioc(struct net *net, struct ifreq *ifr, void __user *data,
->  		dev_hold(dev);
->  		rtnl_unlock();
->  		err = br_ioctl_call(net, netdev_priv(dev), cmd, ifr, NULL);
-> -		dev_put(dev);
->  		rtnl_lock();
-> +		dev_put(dev);
->  		return err;
->  
->  	case SIOCSHWTSTAMP:
-> 
+As mentioned in https://lkml.org/lkml/2021/9/13/1819
+5 years old commit 919483096bfe ("ipv4: fix memory leaks in ip_cmsg_send() callers")
+was a correct fix.
 
-What race exactly are you trying to avoid ?
+  ip_cmsg_send() can loop over multiple cmsghdr()
 
-This patch does not look needed to me.
+  If IP_RETOPTS has been successful, but following cmsghdr generates an error,
+  we do not free ipc.ok
+
+  If IP_RETOPTS is not successful, we have freed the allocated temporary space,
+  not the one currently in ipc.opt.
+
+Sure, code could be refactored, but let's not bring back old bugs.
+
+Fixes: d7807a9adf48 ("Revert "ipv4: fix memory leaks in ip_cmsg_send() callers"")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Yajun Deng <yajun.deng@linux.dev>
+---
+ net/ipv4/ip_sockglue.c | 2 +-
+ net/ipv4/ping.c        | 5 +++--
+ net/ipv4/raw.c         | 5 +++--
+ net/ipv4/udp.c         | 5 +++--
+ 4 files changed, 10 insertions(+), 7 deletions(-)
+
+diff --git a/net/ipv4/ip_sockglue.c b/net/ipv4/ip_sockglue.c
+index 7cef9987ab4ace4444c4b470a3393ce50219a69a..b297bb28556ec5cf383068f67ee910af38591cc3 100644
+--- a/net/ipv4/ip_sockglue.c
++++ b/net/ipv4/ip_sockglue.c
+@@ -279,7 +279,7 @@ int ip_cmsg_send(struct sock *sk, struct msghdr *msg, struct ipcm_cookie *ipc,
+ 		case IP_RETOPTS:
+ 			err = cmsg->cmsg_len - sizeof(struct cmsghdr);
+ 
+-			/* Our caller is responsible for freeing ipc->opt when err = 0 */
++			/* Our caller is responsible for freeing ipc->opt */
+ 			err = ip_options_get(net, &ipc->opt,
+ 					     KERNEL_SOCKPTR(CMSG_DATA(cmsg)),
+ 					     err < 40 ? err : 40);
+diff --git a/net/ipv4/ping.c b/net/ipv4/ping.c
+index c588f9f2f46c2b91fc9424ecfc0590b2b63a3470..1e44a43acfe2dfe57efdc64479c2d18402881d73 100644
+--- a/net/ipv4/ping.c
++++ b/net/ipv4/ping.c
+@@ -727,9 +727,10 @@ static int ping_v4_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 
+ 	if (msg->msg_controllen) {
+ 		err = ip_cmsg_send(sk, msg, &ipc, false);
+-		if (unlikely(err))
++		if (unlikely(err)) {
++			kfree(ipc.opt);
+ 			return err;
+-
++		}
+ 		if (ipc.opt)
+ 			free = 1;
+ 	}
+diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
+index 1c98063a3ae816ecfd7135b0168fea5a9380676f..bb446e60cf58057b448f094b4d6f48d6e91d113c 100644
+--- a/net/ipv4/raw.c
++++ b/net/ipv4/raw.c
+@@ -562,9 +562,10 @@ static int raw_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 
+ 	if (msg->msg_controllen) {
+ 		err = ip_cmsg_send(sk, msg, &ipc, false);
+-		if (unlikely(err))
++		if (unlikely(err)) {
++			kfree(ipc.opt);
+ 			goto out;
+-
++		}
+ 		if (ipc.opt)
+ 			free = 1;
+ 	}
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index d5f5981d7a43244cace63653b790a34174364e3e..8851c9463b4b62c9017565f545250c4ffe22927c 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -1122,9 +1122,10 @@ int udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 		if (err > 0)
+ 			err = ip_cmsg_send(sk, msg, &ipc,
+ 					   sk->sk_family == AF_INET6);
+-		if (unlikely(err < 0))
++		if (unlikely(err < 0)) {
++			kfree(ipc.opt);
+ 			return err;
+-
++		}
+ 		if (ipc.opt)
+ 			free = 1;
+ 		connected = 0;
+-- 
+2.33.0.309.g3052b89438-goog
+
