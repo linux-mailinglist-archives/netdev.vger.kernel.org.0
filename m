@@ -2,98 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6281540A29B
-	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 03:37:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A7EB40A2DF
+	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 03:51:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235632AbhINBix (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Sep 2021 21:38:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57494 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235350AbhINBiw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Sep 2021 21:38:52 -0400
-Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58D3FC061574;
-        Mon, 13 Sep 2021 18:37:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1631583453;
-        bh=DzZV5rkp+a8vep9FVFtVy8CeJ6UVgl8gQjVw2rD/Fs8=;
-        h=Date:From:To:Cc:Subject:From;
-        b=nrhJSITC4ykFWuxJsatAF+ZGdGEvNgjceRhsLpSR4XqLU+cGrDcpA4uXuvBeJZEp0
-         /QlwWfsib1qciywR1NlFeMy+67yAgUIbAumow4BZXMrIMzffRGLZEJqK9sAhq0BAB8
-         0BaPpwb5xkv3ceo6IOnXr+3Fs1t1xLVb9VXAW3R8kHjrEWe6XfHmasycb51fYCR4zE
-         ErXGGovGO3v8kMtFSRiX51DriHnRQDHPE1+WwKHj2WVKnpylZ9Cmbu4i8WS1hNlDeQ
-         xSuyjlGS/Gu6tmzvUmF/pOYsFacaR6mqgjSdAm0q4ldTVY2llz79oRcaVLbuxd37Cl
-         k2XBIFeR55SOw==
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4H7mDr5QR7z9t0Z;
-        Tue, 14 Sep 2021 11:37:32 +1000 (AEST)
-Date:   Tue, 14 Sep 2021 11:37:30 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build failure after merge of the bpf-next tree
-Message-ID: <20210914113730.74623156@canb.auug.org.au>
-MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/Ljt6f9KxeoK=CdtEGm_e9Fo";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+        id S230340AbhINBw4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Sep 2021 21:52:56 -0400
+Received: from prt-mail.chinatelecom.cn ([42.123.76.223]:38840 "EHLO
+        chinatelecom.cn" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S229732AbhINBwz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Sep 2021 21:52:55 -0400
+HMM_SOURCE_IP: 172.18.0.218:36198.1001769352
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-110.87.95.153 (unknown [172.18.0.218])
+        by chinatelecom.cn (HERMES) with SMTP id B008B280142;
+        Tue, 14 Sep 2021 09:51:16 +0800 (CST)
+X-189-SAVE-TO-SEND: +zhenggy@chinatelecom.cn
+Received: from  ([172.18.0.218])
+        by app0025 with ESMTP id 02d5a94c49a445c39fae088d54da1d24 for ncardwell@google.com;
+        Tue, 14 Sep 2021 09:51:32 CST
+X-Transaction-ID: 02d5a94c49a445c39fae088d54da1d24
+X-Real-From: zhenggy@chinatelecom.cn
+X-Receive-IP: 172.18.0.218
+Sender: zhenggy@chinatelecom.cn
+From:   zhenggy <zhenggy@chinatelecom.cn>
+To:     ncardwell@google.com, netdev@vger.kernel.org
+Cc:     edumazet@google.com, davem@davemloft.net, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, kuba@kernel.org, ycheng@google.com,
+        qitiepeng@chinatelecom.cn, wujianguo@chinatelecom.cn,
+        liyonglong@chinatelecom.cn, luchang1@chinatelecom.cn,
+        zhenggy <zhenggy@chinatelecom.cn>
+Subject: [PATCH v4] tcp: fix tp->undo_retrans accounting in tcp_sacktag_one()
+Date:   Tue, 14 Sep 2021 09:51:15 +0800
+Message-Id: <1631584275-3075-1-git-send-email-zhenggy@chinatelecom.cn>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/Ljt6f9KxeoK=CdtEGm_e9Fo
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Commit 10d3be569243 ("tcp-tso: do not split TSO packets at retransmit
+time") may directly retrans a multiple segments TSO/GSO packet without
+split, Since this commit, we can no longer assume that a retransmitted
+packet is a single segment.
 
-Hi all,
+This patch fixes the tp->undo_retrans accounting in tcp_sacktag_one()
+that use the actual segments(pcount) of the retransmitted packet.
 
-After merging the bpf-next tree, today's linux-next build (perf) failed
-like this:
+Before that commit (10d3be569243), the assumption underlying the
+tp->undo_retrans-- seems correct.
 
-util/bpf-event.c: In function 'btf__load_from_kernel_by_id':
-util/bpf-event.c:27:8: error: 'btf__get_from_id' is deprecated: libbpf v0.6=
-+: use btf__load_from_kernel_by_id instead [-Werror=3Ddeprecated-declaratio=
-ns]
-   27 |        int err =3D btf__get_from_id(id, &btf);
-      |        ^~~
-In file included from util/bpf-event.c:5:
-/home/sfr/next/next/tools/lib/bpf/btf.h:54:16: note: declared here
-   54 | LIBBPF_API int btf__get_from_id(__u32 id, struct btf **btf);
-      |                ^~~~~~~~~~~~~~~~
-cc1: all warnings being treated as errors
+Fixes: 10d3be569243 ("tcp-tso: do not split TSO packets at retransmit time")
+Signed-off-by: zhenggy <zhenggy@chinatelecom.cn>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Acked-by: Yuchung Cheng <ycheng@google.com>
+Acked-by: Neal Cardwell <ncardwell@google.com>
+---
+ net/ipv4/tcp_input.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Caused by commit
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 3f7bd7a..141e85e 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -1346,7 +1346,7 @@ static u8 tcp_sacktag_one(struct sock *sk,
+ 	if (dup_sack && (sacked & TCPCB_RETRANS)) {
+ 		if (tp->undo_marker && tp->undo_retrans > 0 &&
+ 		    after(end_seq, tp->undo_marker))
+-			tp->undo_retrans--;
++			tp->undo_retrans = max_t(int, 0, tp->undo_retrans - pcount);
+ 		if ((sacked & TCPCB_SACKED_ACKED) &&
+ 		    before(start_seq, state->reord))
+ 				state->reord = start_seq;
+-- 
+1.8.3.1
 
-  0b46b7550560 ("libbpf: Add LIBBPF_DEPRECATED_SINCE macro for scheduling A=
-PI deprecations")
-
-I have used the bpf-next tree from next-20210913 for today.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/Ljt6f9KxeoK=CdtEGm_e9Fo
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmE//NoACgkQAVBC80lX
-0GzcPwf+PViGcONJV39frBYvMQSz04U+bY6GPrqa+jkb1u2+xLE64kSPXJGn90Lk
-5Dr8o5bSleZ/9PO/EpXj7Tn5x1nlhKd2B1h8Lu7YOkkhX5IMZXvpW3LnpxMc0Iar
-Cs7ySEV2SzanWBQwWzfY15ekUsu20G4w3+RI0aSk/0xQ4dCvMbSrorFt4OMlokIg
-SRkx1UwgDlhPLd5S4tWYHetQzU0yQnnDZMQJXF/EAhYvJuqUjlPVeeswFrV6fsz4
-eOuLsWafDOIQUrzgLVgLFEuCtD+XCpA8jhT5uZzNfzaZGA5ykuLH97QW5wnOVBW8
-mkq+9T0U7AGQZ3/bEKOT8L56+Y9ZFw==
-=jleT
------END PGP SIGNATURE-----
-
---Sig_/Ljt6f9KxeoK=CdtEGm_e9Fo--
