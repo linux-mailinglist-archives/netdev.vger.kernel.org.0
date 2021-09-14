@@ -2,62 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C20B740BC12
-	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 01:11:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BA2940BC17
+	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 01:12:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235674AbhINXMr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 19:12:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46694 "EHLO mail.kernel.org"
+        id S235895AbhINXMy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 19:12:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46772 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235116AbhINXMq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Sep 2021 19:12:46 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0471461165;
-        Tue, 14 Sep 2021 23:11:27 +0000 (UTC)
+        id S235845AbhINXMy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Sep 2021 19:12:54 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 447BD6008E;
+        Tue, 14 Sep 2021 23:11:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631661088;
-        bh=XuegkM+ZMo3/PTwYhIMnNIlxH5Nhu9CSqElmdyEKcQ0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=L6I0y6htOiHrQd6+bb5G12K4AZYs37rtxlV+NWgIx8bdEaLkfXQtbNX4/1gHipNRp
-         lxG5xPZhJHNhqlHI7U/iXinJHlM9SfgNy259xxu3qH0Ad/QBIQ82E2nRCDpBA0coJ1
-         NFxdLVaVkbqRD/1FmGFtOem9h5WVjeYYQ5zZWrxvnp6uk7mK/wb88YvPSwd2iOEZhS
-         qZMsf3JKagTLfY0RBjsOw6pOYa0XPyJFz/fyIwr72N4b/Z1gpk8ylR2LoEqn+jMGJ0
-         FvwMh9JoOWgQ6wgjhSzkMZmQyIpXxgHIB532ZCunsV9aWPsf2QW99UjwAGcd/siiR3
-         xTuM8500nHcvw==
+        s=k20201202; t=1631661096;
+        bh=jiouLZz/Q+SP5VeEmlrPZJs67Kq3f6zq2uFUufcpsU8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=JwjftfBlPoLg5cBH8NiXntfUwHnW5+ZvFkEg2txYpmexzC15yrI2ktUbX8UdIdRWi
+         27cQhtoGNapZmLs2wY8gVby7DrCA31V/l8P6W5pPI8CIObCb9wsH5kotS/blda86E1
+         Op99CayZEarLYVSWS8q76nE0GDYbupHD8kDynTkx166nwKsKjKk1Kt1kX30F2xPha3
+         jOEq/Qyf5sQre7Iz76e3JbXEZxVcNnpKSBQERKJpsasiVFN62ygTOqgPn3jMEMEDkP
+         yxxd9XDX0Fa3JnQ71c08rU0prV3sG7OJJveXZPVbe/GDkPso+ac0zL5vUrY7W7sQ3n
+         dOCl6i9Dr1/Mw==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Doug Ledford <dledford@redhat.com>,
         Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Leon Romanovsky <leonro@nvidia.com>, linux-rdma@vger.kernel.org,
-        Meir Lichtinger <meirl@nvidia.com>, netdev@vger.kernel.org,
+Cc:     Meir Lichtinger <meirl@nvidia.com>, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
         Saeed Mahameed <saeedm@nvidia.com>,
         Yishai Hadas <yishaih@nvidia.com>
-Subject: [PATCH rdma-next 0/2] Extend UAR to have DevX UID
-Date:   Wed, 15 Sep 2021 02:11:21 +0300
-Message-Id: <cover.1631660943.git.leonro@nvidia.com>
+Subject: [PATCH mlx5-next 1/2] net/mlx5: Add uid field to UAR allocation structures
+Date:   Wed, 15 Sep 2021 02:11:22 +0300
+Message-Id: <036da1f928405ad2786f1a0086f565353873edbf.1631660943.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <cover.1631660943.git.leonro@nvidia.com>
+References: <cover.1631660943.git.leonro@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+From: Meir Lichtinger <meirl@nvidia.com>
 
-Hi,
+Add uid field to mlx5_ifc_alloc_uar_in_bits and
+mlx5_ifc_dealloc_uar_out_bits structs.
 
-This is short series from Meir that adds DevX UID to the UAR.
+This field will be used by FW to manage UAR according to uid.
 
-Thanks
+Signed-off-by: Meir Lichtinger <meirl@nvidia.com>
+Reviewed-by: Yishai Hadas <yishaih@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+---
+ include/linux/mlx5/mlx5_ifc.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Meir Lichtinger (2):
-  net/mlx5: Add uid field to UAR allocation structures
-  IB/mlx5: Enable UAR to have DevX UID
-
- drivers/infiniband/hw/mlx5/cmd.c  | 24 ++++++++++++++
- drivers/infiniband/hw/mlx5/cmd.h  |  2 ++
- drivers/infiniband/hw/mlx5/main.c | 55 +++++++++++++++++--------------
- include/linux/mlx5/mlx5_ifc.h     |  4 +--
- 4 files changed, 59 insertions(+), 26 deletions(-)
-
+diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+index 52e5baad3b93..4a7e6914ed9b 100644
+--- a/include/linux/mlx5/mlx5_ifc.h
++++ b/include/linux/mlx5/mlx5_ifc.h
+@@ -7573,7 +7573,7 @@ struct mlx5_ifc_dealloc_uar_out_bits {
+ 
+ struct mlx5_ifc_dealloc_uar_in_bits {
+ 	u8         opcode[0x10];
+-	u8         reserved_at_10[0x10];
++	u8         uid[0x10];
+ 
+ 	u8         reserved_at_20[0x10];
+ 	u8         op_mod[0x10];
+@@ -8420,7 +8420,7 @@ struct mlx5_ifc_alloc_uar_out_bits {
+ 
+ struct mlx5_ifc_alloc_uar_in_bits {
+ 	u8         opcode[0x10];
+-	u8         reserved_at_10[0x10];
++	u8         uid[0x10];
+ 
+ 	u8         reserved_at_20[0x10];
+ 	u8         op_mod[0x10];
 -- 
 2.31.1
 
