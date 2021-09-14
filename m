@@ -2,395 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74E3240AB69
-	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 12:06:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1757740AB66
+	for <lists+netdev@lfdr.de>; Tue, 14 Sep 2021 12:06:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231394AbhINKIE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 06:08:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32998 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230282AbhINKID (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 06:08:03 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A0D0C061574;
-        Tue, 14 Sep 2021 03:06:46 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id u13-20020a17090abb0db0290177e1d9b3f7so1734977pjr.1;
-        Tue, 14 Sep 2021 03:06:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=MO5pCuoV5w67nLR/zK2U+0MryvrqUOnOJ+Q65vu4SBE=;
-        b=Jg8KYPWrs204fWXWVFN6Ia1h7Wt/y3WgG4KfOISTuoXkSYXfYr4gfVyXMCt+YMP9Om
-         3tWFDozAIyvNGDkPcFFNPtJtyHeF1O3fY7Klkp+QXddlHQFGhe0iYPC4XZ9DoE0Y7A9I
-         e1mpsBJtbbsMGPF//mALQVJPpHoKh660MByCJ6FlmHIlqxb4BWv9LHJddiDzH3aQKEtg
-         OPgE0/73yYoCuv6CDim/W1L32j5jrHasrwiY3iPzfCQFUS7+Yvv6mv5Jad36RTjKiCho
-         K9/OkhuAcg+LhOM0O+LUImgRNMijCcD8yoR+sQmsE4BVCsuNLL0e237Pp4ojuhNUvHgO
-         0ZCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=MO5pCuoV5w67nLR/zK2U+0MryvrqUOnOJ+Q65vu4SBE=;
-        b=ADzeD606n3UadzWj2iOb9fvsmW50f+o9Es8Oec1Cr+rzb6Ml+iuLbQVPm+cJah6ed3
-         y8ImKhOZhLBFEqP4ivqPB7gA3/og5H+nM3lCx/XPjOnT2gx1Kq+ZAB3dcUZzofjVXHNt
-         mqCNXkFnqcDLcu8MYnX1rW0GG4d9WEePhrwHu5hXDcYRzu4ceTTQTvAIih4xv0/NELSn
-         yhPas/Dq6zREfa7bQaDXNHMzSrPVU7DNt1zKEIU9qHXekFfyoEC7yHhQkT+RESjn53Yx
-         lACNRZ8c+uv0q5jGKPNGr2Aw5GD4VTxhsen4nzS3sGVG5k/etFL/yD2SqwXSlYbM9MMk
-         BjCQ==
-X-Gm-Message-State: AOAM531j6DeBlFiC2WGrJ6vVkrxEV4IgjWwUC9fNpj9CPN9vuoPiyvNt
-        MDZbh4rynJtl/yoEodRnRvYe7gnRhOn/JuDL1Y8=
-X-Google-Smtp-Source: ABdhPJzLWDohFg33rnTJT5H2OJbsKXV6AJW1jzPAWi9d7G/nfcta2P8QSvFRqK/Dam7XL9uH2B/LIw==
-X-Received: by 2002:a17:902:6bc1:b0:137:10b6:972f with SMTP id m1-20020a1709026bc100b0013710b6972fmr14080602plt.69.1631614005656;
-        Tue, 14 Sep 2021 03:06:45 -0700 (PDT)
-Received: from arn.com ([49.206.7.248])
-        by smtp.googlemail.com with ESMTPSA id z9sm9787034pfa.2.2021.09.14.03.06.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Sep 2021 03:06:45 -0700 (PDT)
-From:   Abhiram R N <abhiramrn@gmail.com>
-To:     roid@nvidia.com
-Cc:     arn@redhat.com, hakhande@redhat.com, saeedm@nvidia.com,
-        Abhiram R N <abhiramrn@gmail.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v3] net/mlx5e: Add extack msgs related to TC for better debug
-Date:   Tue, 14 Sep 2021 15:36:01 +0530
-Message-Id: <20210914100601.32515-1-abhiramrn@gmail.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <76ab8d32-4457-8dd2-8df0-d31919d8441f@nvidia.com>
-References: <76ab8d32-4457-8dd2-8df0-d31919d8441f@nvidia.com>
+        id S231322AbhINKHb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 06:07:31 -0400
+Received: from mail-eopbgr40053.outbound.protection.outlook.com ([40.107.4.53]:3650
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230282AbhINKHa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Sep 2021 06:07:30 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UlnQ/++sU2zhQSMvCXT6mHVSxHNp2CnNIUTHfHnQOr284UskSsPlyNySoRGRe5GzAxmAoAm8L87J+MakXDcHwe2DBa5WO10GAtgKarACbg5iw2KjntRoLY62SY4Dj6hIrNYpxT2ni5k0fcvyutksBlhiVyVlC3k/XQynOt2paWm/EBqMtZJJkaxuheLE9it0BIZH4aVvrz0rwgPyjqtCc7jAo0l8m0SAK8n411jzr50x26czMdyjgyK8MCuScTwR1fKjoyHaiFmofpQH5CzGcFXu9E3LODdGLg1QMoI+lxm0d+t/ZB98QHncqHsReaiO6V0Y9SyjaeJf3jLMReqf8A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
+ bh=ldJ6jA9V0RsXHBY3AFFxkI6p62eT4h2Tk7YMqZtNwc4=;
+ b=DCyTJ1fLW7sIdxL4DeNI1x3z7Dzx8dEQdts0zyD0zlH0riDU/pU7Pk7LEWzCh72t5USAKHbfLgd+dlygSbSLYubK+uDxeeKlGd+Z5AEQ3efxK1/CSwqXBfj+dKS7mKcq/B33XwUcr4B5VIfUsy6xP1LnrqmWVKbHw0ynCyqfj1kwYQ1KeyRMovPA3lXKWZh9cesPeUl9J4MkAZZECKGh22ncNa2JwZbH+LULZKCBwYJFriHNoR49yNio3zoWh/HCkZ4WCLs/WuD2/MZ0C4z4Ffh/tH1hB0ZLIg//2QTFIl85oFM9KgoSOigLIIO/44O0uiDl6dErmiywDFKC1Nc3NA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=wolfvision.net; dmarc=pass action=none
+ header.from=wolfvision.net; dkim=pass header.d=wolfvision.net; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wolfvision.net;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ldJ6jA9V0RsXHBY3AFFxkI6p62eT4h2Tk7YMqZtNwc4=;
+ b=X0a5jAM8Bv8QEPN36KfF5g5p0lcq1h3UskaAsJGf/joW7rsWTqpYef32dO10ja4Jpl/QcfBri6E6+XIvscpNjC5e4R0IFwGnga0UehXNmAQFwLVwVaIIBgPTwAGAPCDfCBI2iNS/NCRxRbtQq4zo00ZCWLoVEd/ZETBniKSfntY=
+Authentication-Results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=wolfvision.net;
+Received: from DBBPR08MB4523.eurprd08.prod.outlook.com (2603:10a6:10:c8::19)
+ by DB9PR08MB6874.eurprd08.prod.outlook.com (2603:10a6:10:2ac::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.14; Tue, 14 Sep
+ 2021 10:06:11 +0000
+Received: from DBBPR08MB4523.eurprd08.prod.outlook.com
+ ([fe80::452b:e508:9c57:a6e3]) by DBBPR08MB4523.eurprd08.prod.outlook.com
+ ([fe80::452b:e508:9c57:a6e3%7]) with mapi id 15.20.4500.019; Tue, 14 Sep 2021
+ 10:06:11 +0000
+Subject: Re: [PATCH] net: stmmac: dwmac-rk: fix unbalanced pm_runtime_enable
+ warnings
+To:     Ivan Babrou <ivan@ivan.computer>, sashal@kernel.org
+Cc:     alexandre.torgue@foss.st.com, davem@davemloft.net,
+        joabreu@synopsys.com, kuba@kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-rockchip@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
+        peppe.cavallaro@st.com, wens@kernel.org
+References: <CAGjnhw920kNaJ9Vkg54WR8vh2TaomuTtA3WwR3eieD4v6iEJDw@mail.gmail.com>
+From:   Michael Riesch <michael.riesch@wolfvision.net>
+Organization: WolfVision GmbH
+Message-ID: <2ada6f05-fc3a-a301-a008-594f7665a514@wolfvision.net>
+Date:   Tue, 14 Sep 2021 12:06:09 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
+In-Reply-To: <CAGjnhw920kNaJ9Vkg54WR8vh2TaomuTtA3WwR3eieD4v6iEJDw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: VI1P194CA0051.EURP194.PROD.OUTLOOK.COM
+ (2603:10a6:803:3c::40) To DBBPR08MB4523.eurprd08.prod.outlook.com
+ (2603:10a6:10:c8::19)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [192.168.100.125] (91.118.163.37) by VI1P194CA0051.EURP194.PROD.OUTLOOK.COM (2603:10a6:803:3c::40) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.14 via Frontend Transport; Tue, 14 Sep 2021 10:06:10 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f7190f6f-dffe-4aad-2a47-08d97767475a
+X-MS-TrafficTypeDiagnostic: DB9PR08MB6874:
+X-Microsoft-Antispam-PRVS: <DB9PR08MB687484D78662DBBCC2617779F2DA9@DB9PR08MB6874.eurprd08.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: WPdqJ7xw0+XnK4Qwx4od0Rv92Vsok7DHx/AP2mdMd4Widl9Wn9jgBuGi1PQgqubWBeidAq4/zHosnFH4iuX7rzUqLbPM4BkXSIB70/jmYGPRo00jS18UUVo/OeAZ4Jcvusfwr216BGUZF2aZOVqRdLyWzEd2itM7Y9io5UWB3latzDON3AWMIOE+16StIJBRUtiw9ZMZtx4eAQrTywvMfiUAvEOOTNktzk5OlHcXS+qYQGtl33+1lfgnf0Q2OKJVJ/4196yKUOQEXS/8Lz9o4pqpQoi1cgGVztSy9tgsbOBJcoRUA5Crlk2F+BVEUJ83fQZpigu+6/WxXtWKRmY9WIAxQqDkJO6BEo3ePr4xnu3LBv8F+7AlEdkBc/ELxT8/VaUH+eeK3sZljG5iEqA1+bY/hafCNjCNxO/s5X13PkBSa1zWtkXO7W28VKoB0Bwbtot+ro4kI/WxJ9cWl9gPYOYg5gRmpaqbep2GGoaMS9huvJy6iA3Iw1pTazwAHsP8U+Vs6GRCaLyq0LgpU35dg4wGYq2EXdzUQbNawz/X7NRQK3SJrPCBdZw26648amvFPPc63naqmm3XuGK5ZT7lxFLLD3bwrkfrDEHCn+5HZSgnV89umfUtYSjKSubM8xzvLthbeGVZFr9+id/wxL3Sasw4HIfWXWeBEjwQyo6r4ke9Zt/8xVizkx4uk/AzakkFIdmmeEKMensukKqcc8+bUAEom7LEohOS3kBl69nrZYC1yRh+2/01oRBcFugKbDmjVxHXrkrShZLL1qxQAbqDcw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DBBPR08MB4523.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(376002)(136003)(366004)(39850400004)(346002)(31686004)(31696002)(38100700002)(53546011)(26005)(38350700002)(6486002)(36756003)(186003)(8936002)(478600001)(8676002)(4744005)(7416002)(2906002)(4326008)(5660300002)(83380400001)(86362001)(44832011)(66476007)(66556008)(66946007)(36916002)(2616005)(316002)(16576012)(52116002)(956004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?TThwS3FMV0dVRjNhUzFYQk1CSkx4aHpISGdTYXdtSlRJZU5wUU1rZENidEd6?=
+ =?utf-8?B?VWlHQ01WenRtTUp3dlpwYkdVT3NCaDVjR1djd0ZINEphTFZKZit4Y25FZkxQ?=
+ =?utf-8?B?ZUpuUDVVSUZYNUFGMEc2TEJxOU9tVE5VcHoyMEl3YXBwRW1HeGNuYkl4ejJ0?=
+ =?utf-8?B?WGZMaUVpcTIwa1BJODFUbjZKQ2VXZDhHWkJ2T3VTVEo0M1VFa2xSYUdnRTZq?=
+ =?utf-8?B?M3M5YU9IN01SZFErV2tVM01TQS8weXQxQjZWNVB1T20zT0ZFbFBpd3kvckdS?=
+ =?utf-8?B?TkdBZ2lRUWFUU1Urb3RGaTZDZnQ0NzNSakZNQ0c1U1Y4ZG9YSFJrdy90RSta?=
+ =?utf-8?B?TFNieVJ6Y0NmM3NUNXNQN1k3T0dzcXFta0Y0aDdxTUNVQmVuM29JTE9pOHV5?=
+ =?utf-8?B?Y0hOaDNVR1o1UFZFeEg4VUVhMzUwcFNlS0pkSENxNGtHem82VXBWQ3ZyMzdF?=
+ =?utf-8?B?QllOMDFDbjBsaWRNclovWk4xVVlLbDU2WEZKMlVkUXkyV2VkOSs2OXNyUmVw?=
+ =?utf-8?B?ZXBLeDVZdWo4TWNxQWgyL0VqQTFBa2xmclpBSkNUZlZ6U00vMGI1U09NZ3ZU?=
+ =?utf-8?B?T1NtRlJYZTdqZkJiMG1UeVVPY05VT0RCNTFCTWNBeVpyOXNacFpQbGg4WWZR?=
+ =?utf-8?B?MU9JL3lzZUFqUERnQkNBZ2M1QmRkbzdHZ00rcmpQVzVCU0xzaXpiemVWdjgv?=
+ =?utf-8?B?dWNray80VXBLaXZCdUY3dGdpems3SEU2N01abEllU3BlQ3FlOTQyayt5ekVj?=
+ =?utf-8?B?Szc0YWZBUHVndGFPL21pWWFudGpBbjFEd3liQVoyQUdUYzQ4Y2p0VURSNDBZ?=
+ =?utf-8?B?Ujh4ZlNjMi9yMHVNQVQrTWJlVUhqdnhqb1hIVVBqTkVMenBScEtjL2tyZUl1?=
+ =?utf-8?B?dVdDcEoxOEpmYzFWbHhRRTlCNlBuMDl5YnplOVc1cEc0OFI1ZVpSY2hXU3VS?=
+ =?utf-8?B?aVdvU3B4MDNuK2d1RDkxVnR5MUMxOTd1MnExRTFVeElJcHhRa3FrRTZYRmNr?=
+ =?utf-8?B?SE80eUUwWTQxYVFtaGJEVVRReWpRSm1GQTFwb2V2WlpGK3RVV1dSRXlIemp1?=
+ =?utf-8?B?c291aUtTZHNKQ0I1NlZSYTNBUkZnMFFvcWdMWGJ5Sm12c3Q1cjlsdVlyVmZS?=
+ =?utf-8?B?L3NqRnlFNGk3OEQyUkhVYll1OFhUWHI4MFl2a09wWGZIbWtDSWRXRzNudy9r?=
+ =?utf-8?B?ZElndDV3Yncwa0dUZ080VGt0T1RlQ2J6NXU1cndGMklmdENRMVl1WDlqeUxQ?=
+ =?utf-8?B?TEIxZ2R3WUIzZEEwTE1XUFhsb0tFUXZXNVJoTVhneEtKMzRjbHlhcnRWZEwv?=
+ =?utf-8?B?d3V1anJ3QXhxeXBJTWdBQUVQWkt1VG9wOGtVV1VWRzFtd0tRU0hRUFdOYmdP?=
+ =?utf-8?B?Ylc2ekphRGlHczlZQVk4eUpla1UxaTgwZVc1Q2pXYS9iQ1Rhajc4dW0ybUx0?=
+ =?utf-8?B?dWNZTUVZYUgyTDhTS0JETlcxWk9raVZkV1ZMMjI0cmRlTkx1dkFMWW9MaEZW?=
+ =?utf-8?B?WjA3dzFXS0ljalFob0NrTU9sWVRINXlBZDdhN3pxT3dyMnBWamU0Vk43VVhz?=
+ =?utf-8?B?YVhRdFluZ2VoQ1RBYkQ1T1lrcjd0c2h1ZHNGVHc4bC8zdVR0OTlBb1lyYUEr?=
+ =?utf-8?B?cjYrRmxaQVVSNzlLMTdaaG9PVm4wV1lkU3VYQzBDS1dvNmFoM2lJd3JtejlI?=
+ =?utf-8?B?V2hHczFrY09sQ3ZXUUxrRXEyeWhSb1l0NnpFMnFuL2xvVEUrdVcwc2xOcXhT?=
+ =?utf-8?Q?bvp4xGVN+tpCsp8PZD7bD0bM1d8DSzgVKxcu9uR?=
+X-OriginatorOrg: wolfvision.net
+X-MS-Exchange-CrossTenant-Network-Message-Id: f7190f6f-dffe-4aad-2a47-08d97767475a
+X-MS-Exchange-CrossTenant-AuthSource: DBBPR08MB4523.eurprd08.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Sep 2021 10:06:11.3893
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: e94ec9da-9183-471e-83b3-51baa8eb804f
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: oefwP8qI/uPS3Sfc1eGSdH3AZV3nOTmvQ55RzCHf1lGm5AwiwRykuftgtHAP7+U5dO5326f4HM0OkpOe1PZElYYXPwB14dZjR8l4ifgSZPM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR08MB6874
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As multiple places EOPNOTSUPP and EINVAL is returned from driver
-it becomes difficult to understand the reason only with error code.
-With the netlink extack message exact reason will be known and will
-aid in debugging.
+Hello Ivan,
 
-Signed-off-by: Abhiram R N <abhiramrn@gmail.com>
----
- .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 106 +++++++++++++-----
- 1 file changed, 76 insertions(+), 30 deletions(-)
+On 9/14/21 3:10 AM, Ivan Babrou wrote:
+> Is it possible to revert the patch from the 5.14 and 5.15 as well?
+> I've tried upgrading my rockpro64 board from 5.13 to 5.15-rc1 and
+> ended up bisecting the issue to this commit like the others. It would
+> be nice to spare others from this exercise.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index d273758255c3..3096f9eb812b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -1894,8 +1894,10 @@ static int parse_tunnel_attr(struct mlx5e_priv *priv,
- 	bool needs_mapping, sets_mapping;
- 	int err;
- 
--	if (!mlx5e_is_eswitch_flow(flow))
-+	if (!mlx5e_is_eswitch_flow(flow)) {
-+		NL_SET_ERR_MSG_MOD(extack, "Match on tunnel is not supported");
- 		return -EOPNOTSUPP;
-+	}
- 
- 	needs_mapping = !!flow->attr->chain;
- 	sets_mapping = !flow->attr->chain && flow_has_tc_fwd_action(f);
-@@ -2267,8 +2269,10 @@ static int __parse_cls_flower(struct mlx5e_priv *priv,
- 		addr_type = match.key->addr_type;
- 
- 		/* the HW doesn't support frag first/later */
--		if (match.mask->flags & FLOW_DIS_FIRST_FRAG)
-+		if (match.mask->flags & FLOW_DIS_FIRST_FRAG) {
-+			NL_SET_ERR_MSG_MOD(extack, "Match on frag first/later is not supported");
- 			return -EOPNOTSUPP;
-+		}
- 
- 		if (match.mask->flags & FLOW_DIS_IS_FRAGMENT) {
- 			MLX5_SET(fte_match_set_lyr_2_4, headers_c, frag, 1);
-@@ -2435,8 +2439,11 @@ static int __parse_cls_flower(struct mlx5e_priv *priv,
- 		switch (ip_proto) {
- 		case IPPROTO_ICMP:
- 			if (!(MLX5_CAP_GEN(priv->mdev, flex_parser_protocols) &
--			      MLX5_FLEX_PROTO_ICMP))
-+			      MLX5_FLEX_PROTO_ICMP)) {
-+				NL_SET_ERR_MSG_MOD(extack,
-+						   "Match on Flex protocols for ICMP is not supported");
- 				return -EOPNOTSUPP;
-+			}
- 			MLX5_SET(fte_match_set_misc3, misc_c_3, icmp_type,
- 				 match.mask->type);
- 			MLX5_SET(fte_match_set_misc3, misc_v_3, icmp_type,
-@@ -2448,8 +2455,11 @@ static int __parse_cls_flower(struct mlx5e_priv *priv,
- 			break;
- 		case IPPROTO_ICMPV6:
- 			if (!(MLX5_CAP_GEN(priv->mdev, flex_parser_protocols) &
--			      MLX5_FLEX_PROTO_ICMPV6))
-+			      MLX5_FLEX_PROTO_ICMPV6)) {
-+				NL_SET_ERR_MSG_MOD(extack,
-+						   "Match on Flex protocols for ICMPV6 is not supported");
- 				return -EOPNOTSUPP;
-+			}
- 			MLX5_SET(fte_match_set_misc3, misc_c_3, icmpv6_type,
- 				 match.mask->type);
- 			MLX5_SET(fte_match_set_misc3, misc_v_3, icmpv6_type,
-@@ -2555,15 +2565,19 @@ static int pedit_header_offsets[] = {
- #define pedit_header(_ph, _htype) ((void *)(_ph) + pedit_header_offsets[_htype])
- 
- static int set_pedit_val(u8 hdr_type, u32 mask, u32 val, u32 offset,
--			 struct pedit_headers_action *hdrs)
-+			 struct pedit_headers_action *hdrs,
-+			 struct netlink_ext_ack *extack)
- {
- 	u32 *curr_pmask, *curr_pval;
- 
- 	curr_pmask = (u32 *)(pedit_header(&hdrs->masks, hdr_type) + offset);
- 	curr_pval  = (u32 *)(pedit_header(&hdrs->vals, hdr_type) + offset);
- 
--	if (*curr_pmask & mask)  /* disallow acting twice on the same location */
-+	if (*curr_pmask & mask) {  /* disallow acting twice on the same location */
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "curr_pmask and new mask same. Acting twice on same location");
- 		goto out_err;
-+	}
- 
- 	*curr_pmask |= mask;
- 	*curr_pval  |= (val & mask);
-@@ -2893,7 +2907,7 @@ parse_pedit_to_modify_hdr(struct mlx5e_priv *priv,
- 	val = act->mangle.val;
- 	offset = act->mangle.offset;
- 
--	err = set_pedit_val(htype, ~mask, val, offset, &hdrs[cmd]);
-+	err = set_pedit_val(htype, ~mask, val, offset, &hdrs[cmd], extack);
- 	if (err)
- 		goto out_err;
- 
-@@ -2913,8 +2927,10 @@ parse_pedit_to_reformat(struct mlx5e_priv *priv,
- 	u32 mask, val, offset;
- 	u32 *p;
- 
--	if (act->id != FLOW_ACTION_MANGLE)
-+	if (act->id != FLOW_ACTION_MANGLE) {
-+		NL_SET_ERR_MSG_MOD(extack, "Unsupported action id");
- 		return -EOPNOTSUPP;
-+	}
- 
- 	if (act->mangle.htype != FLOW_ACT_MANGLE_HDR_TYPE_ETH) {
- 		NL_SET_ERR_MSG_MOD(extack, "Only Ethernet modification is supported");
-@@ -3363,12 +3379,16 @@ static int parse_tc_nic_actions(struct mlx5e_priv *priv,
- 	u32 action = 0;
- 	int err, i;
- 
--	if (!flow_action_has_entries(flow_action))
-+	if (!flow_action_has_entries(flow_action)) {
-+		NL_SET_ERR_MSG_MOD(extack, "Flow Action doesn't have any entries");
- 		return -EINVAL;
-+	}
- 
- 	if (!flow_action_hw_stats_check(flow_action, extack,
--					FLOW_ACTION_HW_STATS_DELAYED_BIT))
-+					FLOW_ACTION_HW_STATS_DELAYED_BIT)) {
-+		NL_SET_ERR_MSG_MOD(extack, "Flow Action HW stats check not supported");
- 		return -EOPNOTSUPP;
-+	}
- 
- 	nic_attr = attr->nic_attr;
- 
-@@ -3459,7 +3479,8 @@ static int parse_tc_nic_actions(struct mlx5e_priv *priv,
- 			flow_flag_set(flow, CT);
- 			break;
- 		default:
--			NL_SET_ERR_MSG_MOD(extack, "The offload action is not supported");
-+			NL_SET_ERR_MSG_MOD(extack,
-+					   "The offload action is not supported in NIC action");
- 			return -EOPNOTSUPP;
- 		}
- 	}
-@@ -3514,19 +3535,25 @@ static bool is_merged_eswitch_vfs(struct mlx5e_priv *priv,
- static int parse_tc_vlan_action(struct mlx5e_priv *priv,
- 				const struct flow_action_entry *act,
- 				struct mlx5_esw_flow_attr *attr,
--				u32 *action)
-+				u32 *action,
-+				struct netlink_ext_ack *extack)
- {
- 	u8 vlan_idx = attr->total_vlan;
- 
--	if (vlan_idx >= MLX5_FS_VLAN_DEPTH)
-+	if (vlan_idx >= MLX5_FS_VLAN_DEPTH) {
-+		NL_SET_ERR_MSG_MOD(extack, "Total vlans used is greater than supported");
- 		return -EOPNOTSUPP;
-+	}
- 
- 	switch (act->id) {
- 	case FLOW_ACTION_VLAN_POP:
- 		if (vlan_idx) {
- 			if (!mlx5_eswitch_vlan_actions_supported(priv->mdev,
--								 MLX5_FS_VLAN_DEPTH))
-+								 MLX5_FS_VLAN_DEPTH)) {
-+				NL_SET_ERR_MSG_MOD(extack,
-+						   "vlan pop action is not supported");
- 				return -EOPNOTSUPP;
-+			}
- 
- 			*action |= MLX5_FLOW_CONTEXT_ACTION_VLAN_POP_2;
- 		} else {
-@@ -3542,20 +3569,27 @@ static int parse_tc_vlan_action(struct mlx5e_priv *priv,
- 
- 		if (vlan_idx) {
- 			if (!mlx5_eswitch_vlan_actions_supported(priv->mdev,
--								 MLX5_FS_VLAN_DEPTH))
-+								 MLX5_FS_VLAN_DEPTH)) {
-+				NL_SET_ERR_MSG_MOD(extack,
-+						   "vlan push action is not supported for vlan depth > 1");
- 				return -EOPNOTSUPP;
-+			}
- 
- 			*action |= MLX5_FLOW_CONTEXT_ACTION_VLAN_PUSH_2;
- 		} else {
- 			if (!mlx5_eswitch_vlan_actions_supported(priv->mdev, 1) &&
- 			    (act->vlan.proto != htons(ETH_P_8021Q) ||
--			     act->vlan.prio))
-+			     act->vlan.prio)) {
-+				NL_SET_ERR_MSG_MOD(extack,
-+						   "vlan push action is not supported");
- 				return -EOPNOTSUPP;
-+			}
- 
- 			*action |= MLX5_FLOW_CONTEXT_ACTION_VLAN_PUSH;
- 		}
- 		break;
- 	default:
-+		NL_SET_ERR_MSG_MOD(extack, "Unexpected action id for VLAN");
- 		return -EINVAL;
- 	}
- 
-@@ -3589,7 +3623,8 @@ static struct net_device *get_fdb_out_dev(struct net_device *uplink_dev,
- static int add_vlan_push_action(struct mlx5e_priv *priv,
- 				struct mlx5_flow_attr *attr,
- 				struct net_device **out_dev,
--				u32 *action)
-+				u32 *action,
-+				struct netlink_ext_ack *extack)
- {
- 	struct net_device *vlan_dev = *out_dev;
- 	struct flow_action_entry vlan_act = {
-@@ -3600,7 +3635,7 @@ static int add_vlan_push_action(struct mlx5e_priv *priv,
- 	};
- 	int err;
- 
--	err = parse_tc_vlan_action(priv, &vlan_act, attr->esw_attr, action);
-+	err = parse_tc_vlan_action(priv, &vlan_act, attr->esw_attr, action, extack);
- 	if (err)
- 		return err;
- 
-@@ -3611,14 +3646,15 @@ static int add_vlan_push_action(struct mlx5e_priv *priv,
- 		return -ENODEV;
- 
- 	if (is_vlan_dev(*out_dev))
--		err = add_vlan_push_action(priv, attr, out_dev, action);
-+		err = add_vlan_push_action(priv, attr, out_dev, action, extack);
- 
- 	return err;
- }
- 
- static int add_vlan_pop_action(struct mlx5e_priv *priv,
- 			       struct mlx5_flow_attr *attr,
--			       u32 *action)
-+			       u32 *action,
-+			       struct netlink_ext_ack *extack)
- {
- 	struct flow_action_entry vlan_act = {
- 		.id = FLOW_ACTION_VLAN_POP,
-@@ -3628,7 +3664,7 @@ static int add_vlan_pop_action(struct mlx5e_priv *priv,
- 	nest_level = attr->parse_attr->filter_dev->lower_level -
- 						priv->netdev->lower_level;
- 	while (nest_level--) {
--		err = parse_tc_vlan_action(priv, &vlan_act, attr->esw_attr, action);
-+		err = parse_tc_vlan_action(priv, &vlan_act, attr->esw_attr, action, extack);
- 		if (err)
- 			return err;
- 	}
-@@ -3751,12 +3787,16 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 	int err, i, if_count = 0;
- 	bool mpls_push = false;
- 
--	if (!flow_action_has_entries(flow_action))
-+	if (!flow_action_has_entries(flow_action)) {
-+		NL_SET_ERR_MSG_MOD(extack, "Flow action doesn't have any entries");
- 		return -EINVAL;
-+	}
- 
- 	if (!flow_action_hw_stats_check(flow_action, extack,
--					FLOW_ACTION_HW_STATS_DELAYED_BIT))
-+					FLOW_ACTION_HW_STATS_DELAYED_BIT)) {
-+		NL_SET_ERR_MSG_MOD(extack, "Flow Action HW stats check is not supported");
- 		return -EOPNOTSUPP;
-+	}
- 
- 	esw_attr = attr->esw_attr;
- 	parse_attr = attr->parse_attr;
-@@ -3900,14 +3940,14 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 				if (is_vlan_dev(out_dev)) {
- 					err = add_vlan_push_action(priv, attr,
- 								   &out_dev,
--								   &action);
-+								   &action, extack);
- 					if (err)
- 						return err;
- 				}
- 
- 				if (is_vlan_dev(parse_attr->filter_dev)) {
- 					err = add_vlan_pop_action(priv, attr,
--								  &action);
-+								  &action, extack);
- 					if (err)
- 						return err;
- 				}
-@@ -3953,10 +3993,13 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 			break;
- 		case FLOW_ACTION_TUNNEL_ENCAP:
- 			info = act->tunnel;
--			if (info)
-+			if (info) {
- 				encap = true;
--			else
-+			} else {
-+				NL_SET_ERR_MSG_MOD(extack,
-+						   "Zero tunnel attributes is not supported");
- 				return -EOPNOTSUPP;
-+			}
- 
- 			break;
- 		case FLOW_ACTION_VLAN_PUSH:
-@@ -3970,7 +4013,7 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 							      act, parse_attr, hdrs,
- 							      &action, extack);
- 			} else {
--				err = parse_tc_vlan_action(priv, act, esw_attr, &action);
-+				err = parse_tc_vlan_action(priv, act, esw_attr, &action, extack);
- 			}
- 			if (err)
- 				return err;
-@@ -4023,7 +4066,8 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 			flow_flag_set(flow, SAMPLE);
- 			break;
- 		default:
--			NL_SET_ERR_MSG_MOD(extack, "The offload action is not supported");
-+			NL_SET_ERR_MSG_MOD(extack,
-+					   "The offload action is not supported in FDB action");
- 			return -EOPNOTSUPP;
- 		}
- 	}
-@@ -4731,8 +4775,10 @@ static int scan_tc_matchall_fdb_actions(struct mlx5e_priv *priv,
- 		return -EOPNOTSUPP;
- 	}
- 
--	if (!flow_action_basic_hw_stats_check(flow_action, extack))
-+	if (!flow_action_basic_hw_stats_check(flow_action, extack)) {
-+		NL_SET_ERR_MSG_MOD(extack, "Flow Action HW stats check is not supported");
- 		return -EOPNOTSUPP;
-+	}
- 
- 	flow_action_for_each(i, act, flow_action) {
- 		switch (act->id) {
--- 
-2.27.0
+For what it is worth we believe that there is a different issue with the
+dwmac-rk driver that was obscured by calling pm_runtime_get_sync()
+early. Investigation in progress -- I hope that we can achieve a proper
+solution before we have to revert the revert.
 
+Best regards,
+Michael
