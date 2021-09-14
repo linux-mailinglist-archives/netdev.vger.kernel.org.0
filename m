@@ -2,283 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60B9240BC14
-	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 01:12:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6936340BC23
+	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 01:26:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235786AbhINXMw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 19:12:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46726 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235704AbhINXMu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Sep 2021 19:12:50 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D78E861165;
-        Tue, 14 Sep 2021 23:11:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631661092;
-        bh=rzQxkSGW5RhH/yprfN/aghfBLsMqvTl+xRz6fuN8gMQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LugofJLtcdMYKZ1IIpiNuDyhTlDuuhJJOybsd3vFq1+lfOMmij7oE1AXYv8CdbClh
-         WCRulTr8fBQopt4Hi8sOFvWzKAcz8vtWeMbwPCA8lgEAt4L2oiHAML8rJuzzU32aEw
-         XMoz/uv2wPBI/ppNsrQGQNYNSn1/xD48wALvX5rwmXX0nEGyCe7XnCg2RZntFZYvKs
-         M4xTcNKUYMp+EO+j3dBrJIy2uU/ojOBu/KhVDr0Lyef4IS9IhVlvXdRcaZhUP2HW1Y
-         KXW2vYjbdWnsKLaYqzM09MBVEWvzzlFVyc6fZQp5OQtjYAMQw1N6CqGZEzQE344i9T
-         xbM+vCU64ohmA==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Meir Lichtinger <meirl@nvidia.com>, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Yishai Hadas <yishaih@nvidia.com>
-Subject: [PATCH rdma-next 2/2] IB/mlx5: Enable UAR to have DevX UID
-Date:   Wed, 15 Sep 2021 02:11:23 +0300
-Message-Id: <b6580419a845f750014df75f6ee1916cc3f0d2d7.1631660943.git.leonro@nvidia.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <cover.1631660943.git.leonro@nvidia.com>
-References: <cover.1631660943.git.leonro@nvidia.com>
+        id S233774AbhINX10 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 19:27:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51956 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229746AbhINX1Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 19:27:25 -0400
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C3B8C061574;
+        Tue, 14 Sep 2021 16:26:07 -0700 (PDT)
+Received: by mail-yb1-xb29.google.com with SMTP id c6so1664536ybm.10;
+        Tue, 14 Sep 2021 16:26:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8SPMZw7letZVOmwRFHSmDlggLNsURmXWVYspyUTzslg=;
+        b=jD0s0TcvVq3Pej0Lhf7QoXgiu11fIqsMP7scn9mqJQ01rYqvm7LaCAoBIS8zZK64jp
+         dS53GvTu+LWtfXg9aQAtbH7yW1Sah5QbYEahMeU6X1Jdi9kRNO/vkz4eo7sYBMSoKE+0
+         85Sa9iFS2zeQkyHnTaQqnjUxGZY8xbPToxIQsC/wK3Y9KwfabT/4pVBaVxDQN4pTpdkO
+         8I3aqw48UsmtmFHxt3sOejVVkw6AJbC1QQuLhA9MQ4qF0Phaxm8Wno8msPby9Ke2MmDv
+         Vhkihy+/9grCsLqiCNBvx6k0/Qv7cCtc9Y7bqOCskOG4N/1v429JbClTN9v/0vc7395B
+         WunQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8SPMZw7letZVOmwRFHSmDlggLNsURmXWVYspyUTzslg=;
+        b=gDBLOG5Nji2YEdGQTCmSt4nwhBwzz5zSKGlK6p4z49/20yztdFGZ16T1UakaSjgRBd
+         y/XsjGmlYHhhRoEUAFvAT3bz79In+qM57lo5GXiriH4veKngTdyYz1LI9BluqEndLiMg
+         IcP2lyeaSpjA7xWO7j22ZB8rKP47dr/tNheS2+3K9yMlqhK4eeeXC3hQ4s3oLnAttdl2
+         dTpmWlM46NvVGX8FI8ZzS0VFvsQ7gvjsY9RyOtMfdrZQocXFPWwyIT1Cpgh+ZE4TNAQ7
+         PSWk3u5jpKAQkHqyYf9lMQRVQfl8GfmBtkdJGOXVJbAgpGNsFpcyB39Jg2Txa2SZ+xJl
+         gUNg==
+X-Gm-Message-State: AOAM53165m0VxRNtXBQ3Tb8B6J4/Nb8J6r9fj8kRRYk6Zv0DPTtPIzr3
+        7UwbthejTgEbGAJ4+XwK4zaCjV+eXe67YCxXYkk=
+X-Google-Smtp-Source: ABdhPJwnPFV/2T5qq53PN9HPlJLcY/YHs+64oSKb5MTMiB2xsie7BC8FAOhkz7IfL1nWchIFhS9UueAEhsiusdfCp2k=
+X-Received: by 2002:a25:afcd:: with SMTP id d13mr2268759ybj.504.1631661966618;
+ Tue, 14 Sep 2021 16:26:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210914113730.74623156@canb.auug.org.au>
+In-Reply-To: <20210914113730.74623156@canb.auug.org.au>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 14 Sep 2021 16:25:55 -0700
+Message-ID: <CAEf4BzYt4XnHr=zxAEeA2=xF_LCNs_eqneO1R6j8=PMTBo5Z5w@mail.gmail.com>
+Subject: Re: linux-next: build failure after merge of the bpf-next tree
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Meir Lichtinger <meirl@nvidia.com>
+On Mon, Sep 13, 2021 at 6:37 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+>
+> Hi all,
+>
+> After merging the bpf-next tree, today's linux-next build (perf) failed
+> like this:
+>
+> util/bpf-event.c: In function 'btf__load_from_kernel_by_id':
+> util/bpf-event.c:27:8: error: 'btf__get_from_id' is deprecated: libbpf v0.6+: use btf__load_from_kernel_by_id instead [-Werror=deprecated-declarations]
+>    27 |        int err = btf__get_from_id(id, &btf);
+>       |        ^~~
+> In file included from util/bpf-event.c:5:
+> /home/sfr/next/next/tools/lib/bpf/btf.h:54:16: note: declared here
+>    54 | LIBBPF_API int btf__get_from_id(__u32 id, struct btf **btf);
+>       |                ^~~~~~~~~~~~~~~~
+> cc1: all warnings being treated as errors
+>
+> Caused by commit
+>
+>   0b46b7550560 ("libbpf: Add LIBBPF_DEPRECATED_SINCE macro for scheduling API deprecations")
 
-UID field was added to alloc_uar and dealloc_uar PRM command, to specify
-DevX UID for UAR. This change enables firmware validating user access to
-its own UAR resources.
+Should be fixed by [0], when applied to perf tree. Thanks for reporting!
 
-For the kernel allocated UARs the UID will stay 0 as of today.
+  [0] https://patchwork.kernel.org/project/netdevbpf/patch/20210914170004.4185659-1-andrii@kernel.org/
 
-Signed-off-by: Meir Lichtinger <meirl@nvidia.com>
-Reviewed-by: Yishai Hadas <yishaih@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- drivers/infiniband/hw/mlx5/cmd.c  | 24 ++++++++++++++
- drivers/infiniband/hw/mlx5/cmd.h  |  2 ++
- drivers/infiniband/hw/mlx5/main.c | 55 +++++++++++++++++--------------
- 3 files changed, 57 insertions(+), 24 deletions(-)
-
-diff --git a/drivers/infiniband/hw/mlx5/cmd.c b/drivers/infiniband/hw/mlx5/cmd.c
-index a8db8a051170..0fe3c4ceec43 100644
---- a/drivers/infiniband/hw/mlx5/cmd.c
-+++ b/drivers/infiniband/hw/mlx5/cmd.c
-@@ -206,3 +206,27 @@ int mlx5_cmd_mad_ifc(struct mlx5_core_dev *dev, const void *inb, void *outb,
- 	kfree(in);
- 	return err;
- }
-+
-+int mlx5_ib_cmd_uar_alloc(struct mlx5_core_dev *dev, u32 *uarn, u16 uid)
-+{
-+	u32 out[MLX5_ST_SZ_DW(alloc_uar_out)] = {};
-+	u32 in[MLX5_ST_SZ_DW(alloc_uar_in)] = {};
-+	int err;
-+
-+	MLX5_SET(alloc_uar_in, in, opcode, MLX5_CMD_OP_ALLOC_UAR);
-+	MLX5_SET(alloc_uar_in, in, uid, uid);
-+	err = mlx5_cmd_exec_inout(dev, alloc_uar, in, out);
-+	if (!err)
-+		*uarn = MLX5_GET(alloc_uar_out, out, uar);
-+	return err;
-+}
-+
-+int mlx5_ib_cmd_uar_dealloc(struct mlx5_core_dev *dev, u32 uarn, u16 uid)
-+{
-+	u32 in[MLX5_ST_SZ_DW(dealloc_uar_in)] = {};
-+
-+	MLX5_SET(dealloc_uar_in, in, opcode, MLX5_CMD_OP_DEALLOC_UAR);
-+	MLX5_SET(dealloc_uar_in, in, uar, uarn);
-+	MLX5_SET(dealloc_uar_in, in, uid, uid);
-+	return mlx5_cmd_exec_in(dev, dealloc_uar, in);
-+}
-diff --git a/drivers/infiniband/hw/mlx5/cmd.h b/drivers/infiniband/hw/mlx5/cmd.h
-index 66c96292ed43..a008938e52f4 100644
---- a/drivers/infiniband/hw/mlx5/cmd.h
-+++ b/drivers/infiniband/hw/mlx5/cmd.h
-@@ -57,4 +57,6 @@ int mlx5_cmd_xrcd_alloc(struct mlx5_core_dev *dev, u32 *xrcdn, u16 uid);
- int mlx5_cmd_xrcd_dealloc(struct mlx5_core_dev *dev, u32 xrcdn, u16 uid);
- int mlx5_cmd_mad_ifc(struct mlx5_core_dev *dev, const void *inb, void *outb,
- 		     u16 opmod, u8 port);
-+int mlx5_ib_cmd_uar_alloc(struct mlx5_core_dev *dev, u32 *uarn, u16 uid);
-+int mlx5_ib_cmd_uar_dealloc(struct mlx5_core_dev *dev, u32 uarn, u16 uid);
- #endif /* MLX5_IB_CMD_H */
-diff --git a/drivers/infiniband/hw/mlx5/main.c b/drivers/infiniband/hw/mlx5/main.c
-index 8664bcf6d3f5..a6dcdbbc242f 100644
---- a/drivers/infiniband/hw/mlx5/main.c
-+++ b/drivers/infiniband/hw/mlx5/main.c
-@@ -1643,7 +1643,8 @@ static int allocate_uars(struct mlx5_ib_dev *dev, struct mlx5_ib_ucontext *conte
- 
- 	bfregi = &context->bfregi;
- 	for (i = 0; i < bfregi->num_static_sys_pages; i++) {
--		err = mlx5_cmd_alloc_uar(dev->mdev, &bfregi->sys_pages[i]);
-+		err = mlx5_ib_cmd_uar_alloc(dev->mdev, &bfregi->sys_pages[i],
-+					    context->devx_uid);
- 		if (err)
- 			goto error;
- 
-@@ -1657,7 +1658,8 @@ static int allocate_uars(struct mlx5_ib_dev *dev, struct mlx5_ib_ucontext *conte
- 
- error:
- 	for (--i; i >= 0; i--)
--		if (mlx5_cmd_free_uar(dev->mdev, bfregi->sys_pages[i]))
-+		if (mlx5_ib_cmd_uar_dealloc(dev->mdev, bfregi->sys_pages[i],
-+					    context->devx_uid))
- 			mlx5_ib_warn(dev, "failed to free uar %d\n", i);
- 
- 	return err;
-@@ -1673,7 +1675,8 @@ static void deallocate_uars(struct mlx5_ib_dev *dev,
- 	for (i = 0; i < bfregi->num_sys_pages; i++)
- 		if (i < bfregi->num_static_sys_pages ||
- 		    bfregi->sys_pages[i] != MLX5_IB_INVALID_UAR_INDEX)
--			mlx5_cmd_free_uar(dev->mdev, bfregi->sys_pages[i]);
-+			mlx5_ib_cmd_uar_dealloc(dev->mdev, bfregi->sys_pages[i],
-+						context->devx_uid);
- }
- 
- int mlx5_ib_enable_lb(struct mlx5_ib_dev *dev, bool td, bool qp)
-@@ -1891,6 +1894,13 @@ static int mlx5_ib_alloc_ucontext(struct ib_ucontext *uctx,
- 	if (req.num_low_latency_bfregs > req.total_num_bfregs - 1)
- 		return -EINVAL;
- 
-+	if (req.flags & MLX5_IB_ALLOC_UCTX_DEVX) {
-+		err = mlx5_ib_devx_create(dev, true);
-+		if (err < 0)
-+			goto out_ctx;
-+		context->devx_uid = err;
-+	}
-+
- 	lib_uar_4k = req.lib_caps & MLX5_LIB_CAP_4K_UAR;
- 	lib_uar_dyn = req.lib_caps & MLX5_LIB_CAP_DYN_UAR;
- 	bfregi = &context->bfregi;
-@@ -1903,7 +1913,7 @@ static int mlx5_ib_alloc_ucontext(struct ib_ucontext *uctx,
- 	/* updates req->total_num_bfregs */
- 	err = calc_total_bfregs(dev, lib_uar_4k, &req, bfregi);
- 	if (err)
--		goto out_ctx;
-+		goto out_devx;
- 
- 	mutex_init(&bfregi->lock);
- 	bfregi->lib_uar_4k = lib_uar_4k;
-@@ -1911,7 +1921,7 @@ static int mlx5_ib_alloc_ucontext(struct ib_ucontext *uctx,
- 				GFP_KERNEL);
- 	if (!bfregi->count) {
- 		err = -ENOMEM;
--		goto out_ctx;
-+		goto out_devx;
- 	}
- 
- 	bfregi->sys_pages = kcalloc(bfregi->num_sys_pages,
-@@ -1927,17 +1937,10 @@ static int mlx5_ib_alloc_ucontext(struct ib_ucontext *uctx,
- 		goto out_sys_pages;
- 
- uar_done:
--	if (req.flags & MLX5_IB_ALLOC_UCTX_DEVX) {
--		err = mlx5_ib_devx_create(dev, true);
--		if (err < 0)
--			goto out_uars;
--		context->devx_uid = err;
--	}
--
- 	err = mlx5_ib_alloc_transport_domain(dev, &context->tdn,
- 					     context->devx_uid);
- 	if (err)
--		goto out_devx;
-+		goto out_uars;
- 
- 	INIT_LIST_HEAD(&context->db_page_list);
- 	mutex_init(&context->db_page_mutex);
-@@ -1972,9 +1975,6 @@ static int mlx5_ib_alloc_ucontext(struct ib_ucontext *uctx,
- 
- out_mdev:
- 	mlx5_ib_dealloc_transport_domain(dev, context->tdn, context->devx_uid);
--out_devx:
--	if (req.flags & MLX5_IB_ALLOC_UCTX_DEVX)
--		mlx5_ib_devx_destroy(dev, context->devx_uid);
- 
- out_uars:
- 	deallocate_uars(dev, context);
-@@ -1985,6 +1985,10 @@ static int mlx5_ib_alloc_ucontext(struct ib_ucontext *uctx,
- out_count:
- 	kfree(bfregi->count);
- 
-+out_devx:
-+	if (req.flags & MLX5_IB_ALLOC_UCTX_DEVX)
-+		mlx5_ib_devx_destroy(dev, context->devx_uid);
-+
- out_ctx:
- 	return err;
- }
-@@ -2021,12 +2025,12 @@ static void mlx5_ib_dealloc_ucontext(struct ib_ucontext *ibcontext)
- 	bfregi = &context->bfregi;
- 	mlx5_ib_dealloc_transport_domain(dev, context->tdn, context->devx_uid);
- 
--	if (context->devx_uid)
--		mlx5_ib_devx_destroy(dev, context->devx_uid);
--
- 	deallocate_uars(dev, context);
- 	kfree(bfregi->sys_pages);
- 	kfree(bfregi->count);
-+
-+	if (context->devx_uid)
-+		mlx5_ib_devx_destroy(dev, context->devx_uid);
- }
- 
- static phys_addr_t uar_index2pfn(struct mlx5_ib_dev *dev,
-@@ -2119,6 +2123,7 @@ static void mlx5_ib_mmap_free(struct rdma_user_mmap_entry *entry)
- 	struct mlx5_user_mmap_entry *mentry = to_mmmap(entry);
- 	struct mlx5_ib_dev *dev = to_mdev(entry->ucontext->device);
- 	struct mlx5_var_table *var_table = &dev->var_table;
-+	struct mlx5_ib_ucontext *context = to_mucontext(entry->ucontext);
- 
- 	switch (mentry->mmap_flag) {
- 	case MLX5_IB_MMAP_TYPE_MEMIC:
-@@ -2133,7 +2138,8 @@ static void mlx5_ib_mmap_free(struct rdma_user_mmap_entry *entry)
- 		break;
- 	case MLX5_IB_MMAP_TYPE_UAR_WC:
- 	case MLX5_IB_MMAP_TYPE_UAR_NC:
--		mlx5_cmd_free_uar(dev->mdev, mentry->page_idx);
-+		mlx5_ib_cmd_uar_dealloc(dev->mdev, mentry->page_idx,
-+					context->devx_uid);
- 		kfree(mentry);
- 		break;
- 	default:
-@@ -2211,7 +2217,8 @@ static int uar_mmap(struct mlx5_ib_dev *dev, enum mlx5_ib_mmap_cmd cmd,
- 		bfregi->count[bfreg_dyn_idx]++;
- 		mutex_unlock(&bfregi->lock);
- 
--		err = mlx5_cmd_alloc_uar(dev->mdev, &uar_index);
-+		err = mlx5_ib_cmd_uar_alloc(dev->mdev, &uar_index,
-+					    context->devx_uid);
- 		if (err) {
- 			mlx5_ib_warn(dev, "UAR alloc failed\n");
- 			goto free_bfreg;
-@@ -2240,7 +2247,7 @@ static int uar_mmap(struct mlx5_ib_dev *dev, enum mlx5_ib_mmap_cmd cmd,
- 	if (!dyn_uar)
- 		return err;
- 
--	mlx5_cmd_free_uar(dev->mdev, idx);
-+	mlx5_ib_cmd_uar_dealloc(dev->mdev, idx, context->devx_uid);
- 
- free_bfreg:
- 	mlx5_ib_free_bfreg(dev, bfregi, bfreg_dyn_idx);
-@@ -3489,7 +3496,7 @@ alloc_uar_entry(struct mlx5_ib_ucontext *c,
- 		return ERR_PTR(-ENOMEM);
- 
- 	dev = to_mdev(c->ibucontext.device);
--	err = mlx5_cmd_alloc_uar(dev->mdev, &uar_index);
-+	err = mlx5_ib_cmd_uar_alloc(dev->mdev, &uar_index, c->devx_uid);
- 	if (err)
- 		goto end;
- 
-@@ -3507,7 +3514,7 @@ alloc_uar_entry(struct mlx5_ib_ucontext *c,
- 	return entry;
- 
- err_insert:
--	mlx5_cmd_free_uar(dev->mdev, uar_index);
-+	mlx5_ib_cmd_uar_dealloc(dev->mdev, uar_index, c->devx_uid);
- end:
- 	kfree(entry);
- 	return ERR_PTR(err);
--- 
-2.31.1
-
+>
+> I have used the bpf-next tree from next-20210913 for today.
+>
+> --
+> Cheers,
+> Stephen Rothwell
