@@ -2,126 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0ACB40BF62
-	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 07:42:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 285B240BF97
+	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 08:21:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236297AbhIOFoF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Sep 2021 01:44:05 -0400
-Received: from mout.gmx.net ([212.227.15.19]:37079 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230312AbhIOFn7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Sep 2021 01:43:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1631684543;
-        bh=k/mBnaltl0V4HhcJYi79KyqmAelVS9deee9HO0j5FQs=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=eDB8TmsKSpUc9Lw8xmSOTmba+zkzvzG3kIOfIIUO5fjXE0PxbOdT2G6mpX/ycNGSU
-         o6IlFgIyxJugiJLZhduBsjbPdvUqFt5tf+T8J9uSgJCqA10CVkCeDtlVSiQQ/07GP1
-         U4A01NucfzdAgyAzMDYMUeTVfXlo5fclN1Ev+UH4=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.178.51] ([46.223.119.124]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MStCe-1mLXKz10AA-00UIsW; Wed, 15
- Sep 2021 07:42:23 +0200
-Subject: Re: [PATCH 0/3] Fix for KSZ DSA switch shutdown
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Saravana Kannan <saravanak@google.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, p.rosenberger@kunbus.com,
-        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
-        vivien.didelot@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <5b899bb3-ed37-19ae-8856-3dabce534cc6@gmx.de>
- <20210909225457.figd5e5o3yw76mcs@skbuf>
- <35466c02-16da-0305-6d53-1c3bbf326418@gmail.com> <YTtG3NbYjUbu4jJE@lunn.ch>
- <20210910145852.4te2zjkchnajb3qw@skbuf>
- <53f2509f-b648-b33d-1542-17a2c9d69966@gmx.de>
- <20210912202913.mu3o5u2l64j7mpwe@skbuf>
- <trinity-e5b95a34-015c-451d-bbfc-83bfb0bdecad-1631529134448@3c-app-gmx-bs55>
- <20210913104400.oyib42rfq5x2vc56@skbuf>
- <trinity-6fefc142-df4d-47af-b2bd-84c8212e5b1c-1631530880741@3c-app-gmx-bs55>
- <20210914184856.vmqv3je4oz5elxvp@skbuf>
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Message-ID: <69b914bb-de19-e168-fe9c-61e125410fb6@gmx.de>
-Date:   Wed, 15 Sep 2021 07:42:20 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S231158AbhIOGWh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Sep 2021 02:22:37 -0400
+Received: from mail-bn8nam11on2125.outbound.protection.outlook.com ([40.107.236.125]:51361
+        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230428AbhIOGWg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Sep 2021 02:22:36 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=k62UV2gJFQ7H2baOa1TMIgYXO4dvU2MyHDiY5573FCfYEywHyGNBcmugGOFSEB/MwGNvdTBRniSzSuNzWXWgyz5cVUuxuS1OH3mo8YvD+wLwlirmalFEqQVglmVyJ6deMOCErb1EGrbDRKCIOnNadwRCp0LyA8Y8MaE5jO11rLRlgjbWE/SOmve1QE6n2J7KJAdjv6c5nO+mvb4kw0WbVYeuyb48v3811lWDgkAyaRtV/WcQTQX+9y1AV+OwnDLThvd3yDEGfjA+EZ6IAZHXQcfzS2qIDRXG8PALqghKSe9jmNIScL0gvdWaxtsR595Nf/i/pohxbKVUFlIXypgZAA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
+ bh=dgTJKiqzTCr9dpGZsGNCXL5lhyFKhi75eHqp9eloRSk=;
+ b=cMrWfJWwGHbkQ0QoKS4VfnYVh0ooocIgKxaHIkwHR2h4emg0OE4vREKTHkRVjBzQyyVzt5LszJkkwCfuWMeVjr4q/yCXJ1qw2+YN959vmAGE/Di+fuNIrNFZ7JbSnga36oYZEfIHaY5wwv72OIUvALrXgtKHf+TnliCFO6DOc8C+n1ykJ4qphOJy8ZFqJYMTriBYUv9B1tK6yOU9D7b8AkA+3BYwWnyvkSdc0Hb2WzcptHgm7ESCxIxVM3ZIrFclXRouikmWR9q7Rqw7+mS3VZFfDW7w5Ebk+xEma4szGrTqdiSL7OY044FP7m7fbDxY1/hg6YxwNY5jsgrJcBAZnA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dgTJKiqzTCr9dpGZsGNCXL5lhyFKhi75eHqp9eloRSk=;
+ b=jRLEh3q0GlNF5L+5mJlQ7p5S+VSQcdggzZYNVfI01X5YxrpaYL5DDu3RBMsiT73ZbSpRRt6cTFZfJAJXLnJPm0Vps+96NAgMgacCnZQe3tviWjHtDk0wZzBcfkSLhAAM39YZrq2Rkwr5ZJ7HXw69dePQRIFb6nImvl1LYnMYuws=
+Authentication-Results: in-advantage.com; dkim=none (message not signed)
+ header.d=none;in-advantage.com; dmarc=none action=none
+ header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by MWHPR10MB1853.namprd10.prod.outlook.com
+ (2603:10b6:300:10a::16) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.16; Wed, 15 Sep
+ 2021 06:21:14 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::bc3f:264a:a18d:cf93]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::bc3f:264a:a18d:cf93%7]) with mapi id 15.20.4500.019; Wed, 15 Sep 2021
+ 06:21:14 +0000
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     colin.foster@in-advantage.com,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v1 net] net: ethernet: mscc: ocelot: bug fix when writing MAC speed
+Date:   Tue, 14 Sep 2021 23:21:02 -0700
+Message-Id: <20210915062103.149287-1-colin.foster@in-advantage.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MWHPR13CA0014.namprd13.prod.outlook.com
+ (2603:10b6:300:16::24) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
 MIME-Version: 1.0
-In-Reply-To: <20210914184856.vmqv3je4oz5elxvp@skbuf>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:vd35W0+nzHSNT7qGL8FeWPyrHLMVo5dM9FPqJBuDiKL1nbMqzQP
- bTDxcEmPTfiAOdze/PzfY8WDp6V8iBUfQiDAG75K6uK4TeTDoEJ+bPajbvSIzhbEJXHizuy
- yYeGG1GuQYSTLIphmnyZ4X1Ir76S4tHzdDUUQHMBGTbAoHQqwUQuc05pjbOU61/JjUv/5uR
- 08AE3GftuvqgXmvSQa8Eg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:yn1nOXrNt0o=:lfBWm5eNqVSyXYNJQPIzpR
- o3LkFwNmD62FPVWfulYx6XQ9vGslkCFxaubBX1l1G9kcXT+BvlKxyae9uk5srJWxyN52qEntK
- 1r274OxYwzhC8/iNEcS0mB4zyrYUYdH5W0XH3aJ9ImP6fnZC10DmIKSlpCCz1xZ0hzW33I+Lt
- vU1h9jVpoYT1JOQc1sGOMFlsbozS+uUU46yfQd/kMvdVd1MUx+0uyvq4HgZhx35nbplm4tXGp
- oSxuvw2OzJaA36iLVxK3zO6A6CJ8z08TWjjLQ5+CpoeL1SDf9mpgCGblJA0eVZOIltdJN16vq
- zx72bp8hH0vOO0bSeY2oYgKcZylIlwdAgh0Ud8GVEugxN2k9EFjFTsEPWlACzIiMz6iEsp3Gq
- xB/8p49EdiD4Bas3+pCbo2sxqQAi4x1bqNXFEzYRjWCDcA8wjmVgIrFgHrVKURALcf9VVGP+N
- 6Zj2BHQ9wmJPerz8XYFZ8C7ZlR7dOFsk/4YYKQqBxWq8rMW62B8sKeV8zwIB3jho/etlQMFJo
- L4c1oeUrWnInr09ZPsdkDOw36RalUyNkvfQuarMIcewD3a4dWW67m8YpbBR0L8QMoqHTdgDCn
- +c8ui68kt17IW8VSLDV2KKC7cNcMoc6btaGp8uwqaJ++TCCnxmOFkLMFBbJsck/SyAhj9s1mW
- FPJf5CXh0sbw9Yqz8JvPLEImSIH9BLwu4D9lAQABycdk9et2oK/WpVjVX7JlBOS9KquviLXR3
- xTRG5ir3KWH9lIqzBqakE47mMZ7i9r1nHSJnGOYD2vFxAYlH0x4TSkHZ1Md1oKc77XbKsuPVk
- N3bwCBld2Tca4apFw0m7D70BCgZ6B0vO9soUqaK1A3U6cQ2DwfB6/63xrpZvhgsqrQr9cVdUA
- quVsTUji1iJ7PTa0Is4XJ8iaBCv0YJtLU2H1iqiR+nKBXDMlAQOqEn+6rZj3KPZX7aqerK6t3
- do1qo+Az06TLLwSsm8cI0aWKtJcldEXEH+xZ7r3xahFFkfahym1Xf3QLxCg3K68YoQQLsCD0+
- cYH3nKRtakiDgVUNVm5mtVrXG/Lds//NCY2jFf+aPWNWa1DnRu47VW+qS1je/aNGOfInQ2nFS
- +GiggS/om4SNG0=
+Received: from localhost.localdomain (67.185.175.147) by MWHPR13CA0014.namprd13.prod.outlook.com (2603:10b6:300:16::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.5 via Frontend Transport; Wed, 15 Sep 2021 06:21:14 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 342db8f8-4aba-4ff0-9c38-08d9781104f1
+X-MS-TrafficTypeDiagnostic: MWHPR10MB1853:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <MWHPR10MB18530C5433ABA8F2CE2505FBA4DB9@MWHPR10MB1853.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:489;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 4prTJlSn7I3AtH37CSacU2WbIkQ2e/WgO1vsob7z4tA5kcH13mpLgl08muqjvH3qVQ8PY2AHkTbQ6EyW0+yEe2Xtypapp5DSFqVGwnsRBUS0ozNaYItk2DsjJJyUY/edoJ6Grjl8g1cdrj1jjBYav2P4SeMApYo92kqMof5Bxw1G/wfJBKBYEUmhlRXUxo+BPQcLofWIRqomvMUSPwpvoZpOk1swyLGTxVXeel0FZ1PVdbe4h6CbI8OPd6TJYNAtW+Wjh2UodNppx79286RWaDwZWav2pOB8EyI8vcUdD28kHE2ivB+FE7v/5hTYRri3NNbsq0JtxKN3eP6nJk/q9QKWVH8ykLyS+Lx6Z7+Kkcz3ZcKErmwBkOQXZDLI9RBjIm8gacx3odx31XWC3LHUsNLjpIQQGhThHB+PJF5nCeLX2uCl8oBzBGkSW9h0cO5NSPWOoL6STk983NqbOstL7zzm4n++XPipjSNDMZkQ4s7PIzLozFgH+FSSak+mVZbJHOCuLZEgwEO8nd8YOl6blhShn1KuEmtquwxX2hhyaRCFyevXQqLEIlxo0+bV7BRafnCGIcMD3H9wSxX+X8YeoDHaPHVq5gU57ryPDCTmA5CG3kj0LePHH464ZNcV/PYYq1u0HXfF8pBTEiQYw98hMLKFDSlHc71nV/aQxRtWS8bD0fyLq/6AMte6/tAGWuvATRnX/B5mDCOPLfL3zspVCQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(136003)(346002)(376002)(39830400003)(396003)(2906002)(4326008)(66556008)(110136005)(38100700002)(956004)(1076003)(66946007)(316002)(26005)(186003)(6506007)(36756003)(66476007)(8936002)(52116002)(83380400001)(38350700002)(8676002)(5660300002)(44832011)(6512007)(478600001)(6666004)(6486002)(86362001)(2616005);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?WC/Z9PIB1s9wHkUZRlk6P5RcUP1S4xrexosyQphOYKL+/YE7xmSNr/dGJqbm?=
+ =?us-ascii?Q?fCW62wt4Opo0xrQ/diBVunyjYV91B1c1pFokbJfpi07a1PKqDEGxHB3M9NFN?=
+ =?us-ascii?Q?Vf5P08zJ+/3AqOC74/3OaD5BbTxpx7kti3ev5hMgO3Sl5bnxiVzbGEbkdEwq?=
+ =?us-ascii?Q?Y+dbLKOZEg7/YfcXICpenajbXcTu15Xxo/Ayaq8albrnVXR7fJsOZLp+QCHU?=
+ =?us-ascii?Q?anFwUBibg9zYkD8Puu9UUqVOONk9FsvcrLzWRvBnHwUVl8biycjn4mTHCt+O?=
+ =?us-ascii?Q?eaJHZExJOfzdtTKbafe0xs6vE44Bld0HH7U601bIVkXg3tNRUFf9cZ+kNKC6?=
+ =?us-ascii?Q?Xv8ZJW5dwPrSF3p6TUfrn9zVP9qxLVrMS7/yREQzSflXvHDxFnRcm3JNW+XY?=
+ =?us-ascii?Q?wGQCEfefelOYeO3L6cCNouMapH+G9FDP39PPpAxhhmXdJMwcjjOUL5popdMA?=
+ =?us-ascii?Q?BwAESrhiFr13aQXIP6mSsoLVVFpUoRtRxCbZw8lWdF/+8wlz4tRuk9cwysDc?=
+ =?us-ascii?Q?7gPxWWCpjAfTEwW1HXyvNSLh2G7GnZlljb5Cc9OFnB0Wce6v+4d7mNW/NuDP?=
+ =?us-ascii?Q?zIPROv5KX/zKSIvSnbUDHn4mIokY6esDKzm8GhORi4unPHQM77OUdNmL2jPm?=
+ =?us-ascii?Q?5o6+v6k6DyslmGgAsSKXYRRB+qADpfeB9EdAQ0drSwb5ztoe1gbKyiurgcAg?=
+ =?us-ascii?Q?kw/krlKe+OJPtPfFtjKmRLcW+7DSh96ghEUQ/AsGkJNf7PRO9bOGRJE3Alqp?=
+ =?us-ascii?Q?RQN0BrqnuxKfcGkf5+7CMN6FDRZkj0NoGI60Cnnopw8AH2P1EWMybDD9OWN0?=
+ =?us-ascii?Q?gIgYOAt4P+S8N7fM2mCUZJCEGGi1/VBdAeopbFshG7ErxTfjAB1fo8h4rqNO?=
+ =?us-ascii?Q?nWEQEqyBo+D/XnTmdDsFW6WPb7zN+VKxVyJ8Pg4MZkuvLexFXo/SSEs45J4V?=
+ =?us-ascii?Q?plSMdkeah1nqhKUqkZYeTCXc1W5gSFMT/uV9CT1GU51XjvH4zu+gYL0H6C6u?=
+ =?us-ascii?Q?k6mSIJUhDtVABVo2hpJlJ5hbUuOXOaOU6WzkH/QAAwgbVUYASutSyr4lD7Cy?=
+ =?us-ascii?Q?kREey95x+r6UlQw+oBxgrV6gcbHTaBDJPhW+rkJBVcRAxka6AdSAF6QZFcuO?=
+ =?us-ascii?Q?Uvee8ac+covXzbrYxYaDyWh2spNWpgLpZVqyUZI1Wi3sGAljStgfgW53WcVP?=
+ =?us-ascii?Q?6R3FpiEwpsWYi4j1oSIqkitMgFvkaqT7JktFTZk1vFb5cGVHTQ7KCbIoFz8U?=
+ =?us-ascii?Q?D8hJZxCkxIMf7OtZso5xCvSNOhTdXAWpCTeqzhg5tOTTwEdFrkSJwBRktWbS?=
+ =?us-ascii?Q?MtnxraegIind4Kxn66dNVelu?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 342db8f8-4aba-4ff0-9c38-08d9781104f1
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Sep 2021 06:21:14.5304
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: dErehnNJ9IAliQY4kmv0NeNC9iGN2n9RDVVtcCsozDiRHstnrm9xEkO7paqSDb95Gwb5TW1d4mxzStPgDn6QeyA6xUwxyZdPKvL2uoyQVuM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR10MB1853
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Converting the ocelot driver to use phylink, commit e6e12df625f2, uses mac_speed
+in ocelot_phylink_mac_link_up instead of the local variable speed. Stale
+references to the old variable were missed, and so were always performing
+invalid second writes to the DEV_CLOCK_CFG and ANA_PFC_CFG registers.
 
-On 14.09.21 at 20:48, Vladimir Oltean wrote:
-> On Mon, Sep 13, 2021 at 01:01:20PM +0200, Lino Sanfilippo wrote:
->>>>> Could you post the full kernel output? The picture you've posted is
->>>>> truncated and only shows a WARN_ON in rpi_firmware_transaction and i=
-s
->>>>> probably a symptom and not the issue (which is above and not shown).
->>>>>
->>>>
->>>> Unfortunately I dont see anything in the kernel log. The console outp=
-ut is all I get,
->>>> thats why I made the photo.
->>>
->>> To clarify, are you saying nothing above this line gets printed? Becau=
-se
->>> the part of the log you've posted in the picture is pretty much
->>> unworkable:
->>>
->>> [   99.375389] [<bf0dc56c>] (bcm2835_spi_shutdown [spi_bcm2835]) from =
-[<c0863ca0>] (platform_drv_shutdown+0x2c/0x30)
->>>
->>> How do you access the device's serial console? Use a program with a
->>> scrollback buffer like GNU screen or something.
->>>
->>
->> Ah no, this is not over a serial console. This is what I see via hdmi. =
-I do not have a working serial connection yet.
->> Sorry I know this trace part is not very useful, I will try to get a fu=
-ll dump.
->
-> Lino, are you going to provide a kernel output so I could look at your n=
-ew breakage?
-> If you could set up a pstore logger with a ramoops region, you could
-> dump the log after the fact. Or if HDMI is all you have, you could use
-> an HDMI capture card to record it. Or just record the screen you're
-> looking at, as long as you don't have very shaky hands, whatever...
->
+Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+---
+ drivers/net/ethernet/mscc/ocelot.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Yes, I will try to get something useful. I have already set up a serial co=
-nnection
-now. I still see the shutdown stopping with your patch but I have not seen=
- the
-kernel dump any more. I will try further and provide a dump as soon as I a=
-m successful.
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index c581b955efb3..91a31523be8f 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -566,11 +566,11 @@ void ocelot_phylink_mac_link_up(struct ocelot *ocelot, int port,
+ 	/* Take MAC, Port, Phy (intern) and PCS (SGMII/Serdes) clock out of
+ 	 * reset
+ 	 */
+-	ocelot_port_writel(ocelot_port, DEV_CLOCK_CFG_LINK_SPEED(speed),
++	ocelot_port_writel(ocelot_port, DEV_CLOCK_CFG_LINK_SPEED(mac_speed),
+ 			   DEV_CLOCK_CFG);
+ 
+ 	/* No PFC */
+-	ocelot_write_gix(ocelot, ANA_PFC_PFC_CFG_FC_LINK_SPEED(speed),
++	ocelot_write_gix(ocelot, ANA_PFC_PFC_CFG_FC_LINK_SPEED(mac_speed),
+ 			 ANA_PFC_PFC_CFG, port);
+ 
+ 	/* Core: Enable port for frame transfer */
+-- 
+2.25.1
 
-Regards,
-Lino
