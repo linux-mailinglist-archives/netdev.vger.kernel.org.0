@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A03D840C36D
-	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 12:13:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4A4640C36E
+	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 12:13:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237403AbhIOKOw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Sep 2021 06:14:52 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:43819 "EHLO
+        id S237476AbhIOKOy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Sep 2021 06:14:54 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:55663 "EHLO
         out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237427AbhIOKOt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 06:14:49 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 85C5A5C0198;
-        Wed, 15 Sep 2021 06:13:30 -0400 (EDT)
+        by vger.kernel.org with ESMTP id S237446AbhIOKOv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 06:14:51 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id E5E325C00F4;
+        Wed, 15 Sep 2021 06:13:32 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Wed, 15 Sep 2021 06:13:30 -0400
+  by compute4.internal (MEProxy); Wed, 15 Sep 2021 06:13:32 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=Favshbg968JUDb6W47PyI5ofkx0yND+80r/OkjI0cEY=; b=s9+aJ7qC
-        Z4g0SiNQQQjksnJTfqDKg+x77fOLT4qgGLVEmYiK2tGq4EiNkpnn1oxOcce4I0kx
-        aO22Ci2hU+lpPDqKa+otOax5nB4ZsHNB82dvsOBotyDHdZBsutdSkYdHKbSeCmxR
-        S5eBLg4Jfx5ST6l5MZbivLS9Oz9GbQtc6x9traE+DH2iLakCQNS0sZNjz3JUv6cC
-        GtNPNfgMRAiDEKcXvzj40I8AWcQXDs/Fxy5xDZKQYNHOOBC+oBn+vZPhl+2Ywokz
-        Yj5naVqDHXeyJXUpJhXAPJhMA19hK3aBmasdo1F3MsTPIjEVK2jajawCjY10xp9R
-        mZIJHqwYYzzr/Q==
-X-ME-Sender: <xms:SsdBYZZACVgd6VeiF9X6lG-051VWeJ33skLAsWkBIs_zrZHDAxfz4A>
-    <xme:SsdBYQZgNbL2RDsaY0aSB9sUCydhKmeZAnCfqVYRA-zmGCH7TWUJ22o2jw-F2uXYQ
-    KFHN6d1d5vjHHM>
-X-ME-Received: <xmr:SsdBYb-e54W90Xw8rQZcHojRdI9Hf0P3bDAQRj6oO7aNoGGLLb4RmnWZVPhe3rZxspfbgCVbFlRpRZIeJtlEM_yISot5zmiY4Q>
+        fm3; bh=QqslgGeAUhhTJyU7zeenZChhFT84TNcp3cYacVwncho=; b=vvDo2BHb
+        J1LA5hSQYSacopE+NFYD5dsLhJ5N1Xc/YJ0Pqw6jf6XvBzs7gKEp/n2xeBe8+Gbz
+        vwr2VDAOuUDPa0oW5x+1Ez92IfWXYVVcQAYq44UnnaMKGL52ADmmhMrUaMbTM7PT
+        Jez6agdCim/wyG2wMm29Ptk70LrCiF0iwJQCjvC601orgEslWg5rD+F1euYoXNh5
+        /8MYUYHaU7V9AZVnWFtpQ82QH1W7y5s32GwhOqQptqqnw6QAvVGokulanC00re4k
+        w7DUr/HPvmmGi44urtKOvyB8UVmobEOOBsj6riSRCAUhykNt0nvjHXCO0TrmOYt/
+        ZnhWKYYZ+QH7IQ==
+X-ME-Sender: <xms:TMdBYSrwSZxWnVRjXilE-e_P7OBpyqv154tgW-CefROb_i1v_qDJtA>
+    <xme:TMdBYQoa7xNmRfXWSy4wot5R3F70hVWzqR0roS7u5nYEqTiJyvft9fZ8Mwu_8OjUg
+    MraFBrRiPJnfMo>
+X-ME-Received: <xmr:TMdBYXNqy_LreiRACwh_SN1tr_oD4W51w0VSmbk9Dcjh5YAtuOC5APYja-i9rM6fVCxogh16WRHoLhfobt85ax0J20hNprEE5w>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrudehuddgvddvucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -38,20 +38,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrudehuddgvddvucetufdoteggod
     shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
     ehgfdtffethfelvdejgffghefgveejkefhnecuvehluhhsthgvrhfuihiivgeptdenucfr
     rghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:SsdBYXqdNVvl5fFJQ3JpxIkNh3tFDCa-5h3BCKytE2i0xAXe02GSFg>
-    <xmx:SsdBYUptCzaa6ggWwuSomf3nyBMRHyiVnjM0jB1Rg3zVog5dYmZ-Pw>
-    <xmx:SsdBYdSgLLSfcco38rzS7h7Bs-0lXGl-Smj5ftTxAfavGRM6WIQpxw>
-    <xmx:SsdBYZC1fSGuKpJQyXdGH_rT_jiMzmk-BbsJu1M62P4Q9S8eBzfPqA>
+X-ME-Proxy: <xmx:TMdBYR4RJ0N2AEJzgKObgJzH5b2mPPqaEDF3fKYYMaeRXxLKmSCYzg>
+    <xmx:TMdBYR4C77hAb6EFhft7hpzOJeY1zz7jeQaIVWWDxWJVWWlQvGrF2Q>
+    <xmx:TMdBYRh3OfIFqMsCsppYEMWCyzj8LJxhO2Hto7o69nkDttD-kqwMng>
+    <xmx:TMdBYfQXiuBWFIzAUhZziV5nHYJv_N68TG1YAJ18n-0X12NdAYq19g>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 15 Sep 2021 06:13:28 -0400 (EDT)
+ 15 Sep 2021 06:13:30 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
         jiri@nvidia.com, vadimp@nvidia.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 02/10] mlxsw: core: Remove mlxsw_core_is_initialized()
-Date:   Wed, 15 Sep 2021 13:13:06 +0300
-Message-Id: <20210915101314.407476-3-idosch@idosch.org>
+Subject: [PATCH net-next 03/10] mlxsw: core_env: Defer handling of module temperature warning events
+Date:   Wed, 15 Sep 2021 13:13:07 +0300
+Message-Id: <20210915101314.407476-4-idosch@idosch.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210915101314.407476-1-idosch@idosch.org>
 References: <20210915101314.407476-1-idosch@idosch.org>
@@ -63,87 +63,88 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-After the previous patch, the switch driver is always initialized last,
-making this function redundant.
+Module temperature events are currently handled in softIRQ context,
+requiring the 'module_info_lock' to be a spin lock. In future patchsets
+we will need to be able to hold the lock while sleeping.
 
-Remove it.
+Therefore, defer handling of these events using a work queue so that the
+next patch will be able to convert the lock to a mutex.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/core.c     | 8 --------
- drivers/net/ethernet/mellanox/mlxsw/core.h     | 1 -
- drivers/net/ethernet/mellanox/mlxsw/core_env.c | 6 ------
- 3 files changed, 15 deletions(-)
+ .../net/ethernet/mellanox/mlxsw/core_env.c    | 39 ++++++++++++++++---
+ 1 file changed, 34 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
-index 44803746ded5..8c634976ca77 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
-@@ -90,7 +90,6 @@ struct mlxsw_core {
- 		struct devlink_health_reporter *fw_fatal;
- 	} health;
- 	struct mlxsw_env *env;
--	bool is_initialized; /* Denotes if core was already initialized. */
- 	unsigned long driver_priv[];
- 	/* driver_priv has to be always the last item */
- };
-@@ -2014,7 +2013,6 @@ __mlxsw_core_bus_device_register(const struct mlxsw_bus_info *mlxsw_bus_info,
- 			goto err_driver_init;
- 	}
- 
--	mlxsw_core->is_initialized = true;
- 	devlink_params_publish(devlink);
- 
- 	if (!reload)
-@@ -2099,7 +2097,6 @@ void mlxsw_core_bus_device_unregister(struct mlxsw_core *mlxsw_core,
- 	}
- 
- 	devlink_params_unpublish(devlink);
--	mlxsw_core->is_initialized = false;
- 	if (mlxsw_core->driver->fini)
- 		mlxsw_core->driver->fini(mlxsw_core);
- 	mlxsw_env_fini(mlxsw_core->env);
-@@ -2938,11 +2935,6 @@ struct mlxsw_env *mlxsw_core_env(const struct mlxsw_core *mlxsw_core)
- 	return mlxsw_core->env;
- }
- 
--bool mlxsw_core_is_initialized(const struct mlxsw_core *mlxsw_core)
--{
--	return mlxsw_core->is_initialized;
--}
--
- static void mlxsw_core_buf_dump_dbg(struct mlxsw_core *mlxsw_core,
- 				    const char *buf, size_t size)
- {
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.h b/drivers/net/ethernet/mellanox/mlxsw/core.h
-index d21981cc04ca..12023a550007 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.h
-@@ -249,7 +249,6 @@ mlxsw_core_port_devlink_port_get(struct mlxsw_core *mlxsw_core,
- 				 u8 local_port);
- bool mlxsw_core_port_is_xm(const struct mlxsw_core *mlxsw_core, u8 local_port);
- struct mlxsw_env *mlxsw_core_env(const struct mlxsw_core *mlxsw_core);
--bool mlxsw_core_is_initialized(const struct mlxsw_core *mlxsw_core);
- 
- int mlxsw_core_schedule_dw(struct delayed_work *dwork, unsigned long delay);
- bool mlxsw_core_schedule_work(struct work_struct *work);
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_env.c b/drivers/net/ethernet/mellanox/mlxsw/core_env.c
-index 3713c45cfa1e..27e721f96b3b 100644
+index 27e721f96b3b..27eba0a0c91c 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/core_env.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/core_env.c
-@@ -667,12 +667,6 @@ mlxsw_env_module_overheat_counter_get(struct mlxsw_core *mlxsw_core, u8 module,
+@@ -482,20 +482,30 @@ static int mlxsw_env_module_temp_event_enable(struct mlxsw_core *mlxsw_core,
+ 	return 0;
+ }
+ 
+-static void mlxsw_env_mtwe_event_func(const struct mlxsw_reg_info *reg,
+-				      char *mtwe_pl, void *priv)
++struct mlxsw_env_module_temp_warn_event {
++	struct mlxsw_env *mlxsw_env;
++	char mtwe_pl[MLXSW_REG_MTWE_LEN];
++	struct work_struct work;
++};
++
++static void mlxsw_env_mtwe_event_work(struct work_struct *work)
  {
- 	struct mlxsw_env *mlxsw_env = mlxsw_core_env(mlxsw_core);
+-	struct mlxsw_env *mlxsw_env = priv;
++	struct mlxsw_env_module_temp_warn_event *event;
++	struct mlxsw_env *mlxsw_env;
+ 	int i, sensor_warning;
+ 	bool is_overheat;
  
--	/* Prevent switch driver from accessing uninitialized data. */
--	if (!mlxsw_core_is_initialized(mlxsw_core)) {
--		*p_counter = 0;
--		return 0;
--	}
--
- 	if (WARN_ON_ONCE(module >= mlxsw_env->module_count))
- 		return -EINVAL;
++	event = container_of(work, struct mlxsw_env_module_temp_warn_event,
++			     work);
++	mlxsw_env = event->mlxsw_env;
++
+ 	for (i = 0; i < mlxsw_env->module_count; i++) {
+ 		/* 64-127 of sensor_index are mapped to the port modules
+ 		 * sequentially (module 0 is mapped to sensor_index 64,
+ 		 * module 1 to sensor_index 65 and so on)
+ 		 */
+ 		sensor_warning =
+-			mlxsw_reg_mtwe_sensor_warning_get(mtwe_pl,
++			mlxsw_reg_mtwe_sensor_warning_get(event->mtwe_pl,
+ 							  i + MLXSW_REG_MTMP_MODULE_INDEX_MIN);
+ 		spin_lock(&mlxsw_env->module_info_lock);
+ 		is_overheat =
+@@ -524,10 +534,29 @@ static void mlxsw_env_mtwe_event_func(const struct mlxsw_reg_info *reg,
+ 			spin_unlock(&mlxsw_env->module_info_lock);
+ 		}
+ 	}
++
++	kfree(event);
++}
++
++static void
++mlxsw_env_mtwe_listener_func(const struct mlxsw_reg_info *reg, char *mtwe_pl,
++			     void *priv)
++{
++	struct mlxsw_env_module_temp_warn_event *event;
++	struct mlxsw_env *mlxsw_env = priv;
++
++	event = kmalloc(sizeof(*event), GFP_ATOMIC);
++	if (!event)
++		return;
++
++	event->mlxsw_env = mlxsw_env;
++	memcpy(event->mtwe_pl, mtwe_pl, MLXSW_REG_MTWE_LEN);
++	INIT_WORK(&event->work, mlxsw_env_mtwe_event_work);
++	mlxsw_core_schedule_work(&event->work);
+ }
  
+ static const struct mlxsw_listener mlxsw_env_temp_warn_listener =
+-	MLXSW_EVENTL(mlxsw_env_mtwe_event_func, MTWE, MTWE);
++	MLXSW_EVENTL(mlxsw_env_mtwe_listener_func, MTWE, MTWE);
+ 
+ static int mlxsw_env_temp_warn_event_register(struct mlxsw_core *mlxsw_core)
+ {
 -- 
 2.31.1
 
