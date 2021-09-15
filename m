@@ -2,107 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1CBF40BE99
-	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 05:53:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9628040BE9B
+	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 05:53:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236463AbhIODyV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 23:54:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55572 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236435AbhIODx6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 23:53:58 -0400
-Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DAD7C061766;
-        Tue, 14 Sep 2021 20:52:40 -0700 (PDT)
-Received: by mail-ot1-x330.google.com with SMTP id l16-20020a9d6a90000000b0053b71f7dc83so1750928otq.7;
-        Tue, 14 Sep 2021 20:52:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=LJ4f8HmngmERpwG7jIZZPQRjRc0k1LbYpBN6nK8NBIc=;
-        b=LEgWaiRibOmqug5ZHTfRHkoXMuKiJ6jf2lFXyKM5BFmlPas2u3osFBzaEvEqGYmluF
-         bdeb5F9zoHSh9FIkwLNOi7uxo/di6b5B8XaK1+yojDAmnRwkJqTFPivpleBy+oTuPANb
-         N5tlheoijyXkHvQgLHRIfn1dLRz5B7qIgEOOOOdHvhejLR/9HJIhCjK3PN1B20Q+y16j
-         35mjX7Yk7E6L4CTd4qX4AU9HuPrM9G9Tdk3tOGtJMFqn2jOxUWvfdEjGTu0DV6aRJfI/
-         F+N/PN778SdT/lrcjXqwLfQ8R09Ba76wHGBB06qmoCqeHxOl08ZnLwAb76zmHlQtPxpJ
-         xXAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=LJ4f8HmngmERpwG7jIZZPQRjRc0k1LbYpBN6nK8NBIc=;
-        b=MiyilRJuyzM7vtmMMQPmykxohvsCOZArjc+zoX/sQjLLuYBDJfZYKolQODAkUnylRL
-         GXHjYGU57jqsWmH3O8csg8MsPnUvmvs5feMgyohDVyM6we/yAbIb52VJWBntYpR/7lk6
-         rbUG5GRIDKTJOGdvy9AEGP0yL28fueGOwdgpIhgpXN6Y+/U3sqHuYGsEcH/YKqAnREG1
-         etARF9Mhbk5NuYTDQtCB0FTWmT8zzXin6Oj1KH1lZF+8DsCoNJS4oLeUJgm8vjaXHrTw
-         gYaTik7X3o/q1lSDr0CzO7ZDbIuAfU5xcm9+pbvks2ykvCzxNKuZA9JZwBCoF5tWwZsW
-         zJjQ==
-X-Gm-Message-State: AOAM531CBgBU9DnNFGOEy3Sj2QqQUm+SKTBdkiqlV//hdx5W+bHltRl4
-        JSuxs2+we8fwV7/qgMLapZK2x/rc9tQ=
-X-Google-Smtp-Source: ABdhPJxe9e8UK7Sg6myyOGKSATtdvIhjCl3M+NXOvgAnzPQvbCtjJL2f8NojZzRjCkXoju56AhAL7Q==
-X-Received: by 2002:a9d:d35:: with SMTP id 50mr17575124oti.22.1631677959552;
-        Tue, 14 Sep 2021 20:52:39 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id y16sm3060719otq.1.2021.09.14.20.52.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Sep 2021 20:52:38 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        "James E . J . Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-alpha@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org,
-        netdev@vger.kernel.org, linux-sparse@vger.kernel.org,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH v2 4/4] alpha: Use absolute_pointer to define COMMAND_LINE
-Date:   Tue, 14 Sep 2021 20:52:27 -0700
-Message-Id: <20210915035227.630204-5-linux@roeck-us.net>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20210915035227.630204-1-linux@roeck-us.net>
-References: <20210915035227.630204-1-linux@roeck-us.net>
+        id S236277AbhIODyk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 23:54:40 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:8384 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236475AbhIODyW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 23:54:22 -0400
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.0.43) with SMTP id 18F1U6Vj006372
+        for <netdev@vger.kernel.org>; Tue, 14 Sep 2021 23:53:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=s9UgmSA5Q5oMi/jB4F1Iurt2iPNDtnBoycFp7GyHXYQ=;
+ b=FmqztGmV7/GpFXODfwNdMqAfxyy97jhvzGZujoGCRyLiKKjNeqLakrPQHCN6tqpuIgMY
+ KMk+E/nUnYQtop10LT7OLzEuP2iVkAwzgMJ4cpIcPkk+8kBre1uIB3WTe2Q8qBP3KbtF
+ /MkyHP8+pPXTkcUeBpgWgd/wGiQq2MyROeHmon46eCJHniWOWAInYi47WkCAN0LwR879
+ swNn4M+i2KVX+APrS/2ny41TkQG1IdsJJMvs/CPf6fuXTykV9rRZoecMpFvEYf009ckY
+ qYxXaUGI0Z+DURCDdmWsTU8Dd590/58WrkeBj65IWOwT7k5wrHVIPJ72gOdYiTyQ/NA0 iw== 
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3b377kj295-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 14 Sep 2021 23:53:03 -0400
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+        by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 18F3lpsZ024773
+        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 03:53:02 GMT
+Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
+        by ppma02dal.us.ibm.com with ESMTP id 3b0m3bhjnd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 03:53:02 +0000
+Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
+        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 18F3r1JW9962136
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 15 Sep 2021 03:53:01 GMT
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7992A112061;
+        Wed, 15 Sep 2021 03:53:01 +0000 (GMT)
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 30191112065;
+        Wed, 15 Sep 2021 03:53:00 +0000 (GMT)
+Received: from suka-w540.ibmuc.com (unknown [9.77.142.77])
+        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
+        Wed, 15 Sep 2021 03:52:59 +0000 (GMT)
+From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     Brian King <brking@linux.ibm.com>, cforno12@linux.ibm.com,
+        Dany Madden <drt@linux.ibm.com>,
+        Rick Lindsley <ricklind@linux.ibm.com>
+Subject: [PATCH net-next RESEND v2 0/9] ibmvnic: Reuse ltb, rx, tx pools
+Date:   Tue, 14 Sep 2021 20:52:50 -0700
+Message-Id: <20210915035259.355092-1-sukadev@linux.ibm.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: xBW0HkfBjaSZRdHkjp_0Jb6YBF-HXDpc
+X-Proofpoint-GUID: xBW0HkfBjaSZRdHkjp_0Jb6YBF-HXDpc
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.687,Hydra:6.0.235,FMLib:17.0.607.475
+ definitions=2020-10-13_15,2020-10-13_02,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=1
+ suspectscore=0 bulkscore=1 priorityscore=1501 impostorscore=0
+ clxscore=1015 malwarescore=0 spamscore=0 phishscore=0 adultscore=0
+ mlxscore=0 mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2109030001 definitions=main-2109140134
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-alpha:allmodconfig fails to build with the following error
-when using gcc 11.x.
+It can take a long time to free and reallocate rx and tx pools and long
+term buffer (LTB) during each reset of the VNIC. This is specially true
+when the partition (LPAR) is heavily loaded and going through a Logical
+Partition Migration (LPM). The long drawn reset causes the LPAR to lose
+connectivity for extended periods of time and results in "RMC connection"
+errors and the LPM failing.
 
-arch/alpha/kernel/setup.c: In function 'setup_arch':
-arch/alpha/kernel/setup.c:493:13: error:
-	'strcmp' reading 1 or more bytes from a region of size 0
+What is worse is that during the LPM we could get a failover because
+of the lost connectivity. At that point, the vnic driver releases
+even the resources it has already allocated and starts over.
 
-Avoid the problem by declaring COMMAND_LINE as absolute_pointer().
+As long as the resources we have already allocated are valid/applicable,
+we might as well hold on to them while trying to allocate the remaining
+resources. This patch set attempts to reuse the resources previously
+allocated as long as they are valid. It seems to vastly improve the
+time taken for the vnic reset and signficantly reduces the chances of
+getting the RMC connection errors. We do get still them occasionally,
+but appears to be for reasons other than memory allocation delays and
+those are still being investigated.
 
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
----
-v2: Declare COMMAND_LINE as absolute_pointer instead of using absolute_pointer
-    on the define
+If the backing devices for a vnic adapter are not "matched" (see "pool
+parameters" in patches 8 and 9) it is possible that we will still free
+all the resources and allocate them. If that becomes a common problem,
+we have to address it separately.
 
- arch/alpha/include/asm/setup.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks to input and extensive testing from Brian King, Cris Forno,
+Dany Madden, Rick Lindsley.
 
-diff --git a/arch/alpha/include/asm/setup.h b/arch/alpha/include/asm/setup.h
-index 58fe3f45a235..262aab99e391 100644
---- a/arch/alpha/include/asm/setup.h
-+++ b/arch/alpha/include/asm/setup.h
-@@ -36,7 +36,7 @@
-  * place.
-  */
- #define PARAM			ZERO_PGE
--#define COMMAND_LINE		((char *)(PARAM + 0x0000))
-+#define COMMAND_LINE		((char *)(absolute_pointer(PARAM + 0x0000)))
- #define INITRD_START		(*(unsigned long *) (PARAM+0x100))
- #define INITRD_SIZE		(*(unsigned long *) (PARAM+0x108))
- 
+Changelog[v2]
+	[Jakub Kicinski] Fix kdoc issues
+
+Sukadev Bhattiprolu (9):
+  ibmvnic: consolidate related code in replenish_rx_pool()
+  ibmvnic: Fix up some comments and messages
+  ibmvnic: Use/rename local vars in init_rx_pools
+  ibmvnic: Use/rename local vars in init_tx_pools
+  ibmvnic: init_tx_pools move loop-invariant code out
+  ibmvnic: use bitmap for LTB map_ids
+  ibmvnic: Reuse LTB when possible
+  ibmvnic: Reuse rx pools when possible
+  ibmvnic: Reuse tx pools when possible
+
+ drivers/net/ethernet/ibm/ibmvnic.c | 640 +++++++++++++++++++----------
+ drivers/net/ethernet/ibm/ibmvnic.h |  10 +-
+ 2 files changed, 427 insertions(+), 223 deletions(-)
+
 -- 
-2.33.0
+2.26.2
 
