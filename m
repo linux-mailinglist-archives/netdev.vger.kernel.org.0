@@ -2,114 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C693240CD45
-	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 21:35:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E3C340CD4B
+	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 21:36:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231601AbhIOTgs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Sep 2021 15:36:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46290 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230230AbhIOTgr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 15:36:47 -0400
-Received: from mail-oo1-xc35.google.com (mail-oo1-xc35.google.com [IPv6:2607:f8b0:4864:20::c35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46CC0C061574;
-        Wed, 15 Sep 2021 12:35:28 -0700 (PDT)
-Received: by mail-oo1-xc35.google.com with SMTP id t2-20020a4ae9a2000000b0028c7144f106so1268564ood.6;
-        Wed, 15 Sep 2021 12:35:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:to:cc:references:from:subject:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=P1ECcmsmuba1oAFsdBaIaunXX4jIoXBz4adWd+uAznQ=;
-        b=lNS86u2XWmjJVaOW2UI3pL79UP1Ks4vqPGTj8jc+1t6xRg7OAI5d95gkLp+ZhCV6jZ
-         AYLwqR8qUVdKzijyYwASyT47/6S4mNpAeONL5btF61E0ZLbBplc+vDJddX1qUeNWMGYr
-         BuKqTQxBhNt9BDRNshou7yG4f7t8arqoUSgT6X7KWHbfEfATnv2Cs2+vQ8WaGEqv+TJW
-         yEaiv/ZJ24fLjVW+6oIKph8lQTbM0YsFR9L++sq/5Dk6hsYBJ6nY5Q6xy28l5eFkhRcT
-         MZVKv1xAuh2RGw6JvSEL9jj04GlT8k2GEy8vkFkkgmuAHkiFq3IcMnC1fHWnzi2BJcWQ
-         gjYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:to:cc:references:from:subject:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=P1ECcmsmuba1oAFsdBaIaunXX4jIoXBz4adWd+uAznQ=;
-        b=NAeSPBteL0CnNnUjKt97LdO1m9iyXco1xFbSFajk/fv67tk3ugO6T4sx06XHYXJGZN
-         PcvTlzHt3aiOotAyNL/ILglFyiLLSFIvXsbfLNnJr1EXr3IVWqKdDtNNYzHaxbDFpbli
-         Yx2tKR4uIE4yNoSUhc5WFsec74bWimkMS57+byuz5ephXq0Paa4N91BKEepquQfumEds
-         3sByRVX0Gzh7DOwDPcHB/PQRsWDPIqBddhKye/Xp1frlONUVNEhFl2rgfsW0HyR2sLKu
-         ARuxdpBsDGALmoz1sPKUBBTksbauYEcB38Az4D7qoonWwGeaK2KOMtxGJO5KJJp+V+I+
-         2sig==
-X-Gm-Message-State: AOAM5333OmOOwEXNSsoDV6fVVrfLjYjQAe+RZmgDWS8B6UHNc9fDIAye
-        3STiySwWJtXZvwo2xbfsBwIk0GFgOpc=
-X-Google-Smtp-Source: ABdhPJwerRN9lMY4WH/E6kjE1a3oWD1opiz2Tpxg2yT0xmyCHXbAckelh2K7PFloaVahuOC4fRY1mg==
-X-Received: by 2002:a4a:a8c9:: with SMTP id r9mr1271861oom.49.1631734527451;
-        Wed, 15 Sep 2021 12:35:27 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id x13sm219710otk.42.2021.09.15.12.35.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Sep 2021 12:35:26 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        alpha <linux-alpha@vger.kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-parisc@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
-        Sparse Mailing-list <linux-sparse@vger.kernel.org>
-References: <20210915035227.630204-1-linux@roeck-us.net>
- <CAHk-=wjXr+NnNPTorhaW81eAbdF90foVo-5pQqRmXZi-ZGaX6Q@mail.gmail.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH v2 0/4] Introduce and use absolute_pointer macro
-Message-ID: <47fcc9cc-7d2e-bc79-122b-8eccfe00d8f3@roeck-us.net>
-Date:   Wed, 15 Sep 2021 12:35:24 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S231693AbhIOTiF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Sep 2021 15:38:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59244 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231689AbhIOTiE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Sep 2021 15:38:04 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2674360EB2;
+        Wed, 15 Sep 2021 19:36:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1631734604;
+        bh=t09GBjce9U7iHt0gfAcWTNTklqQCqovHzk5Q+rZNPjs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=vIFvSZ4xVtojfarRSYsvuAqhtFf+yXQ7xEuHJq+NXAXTtdcQ8m4Wi3mBiD7X5l4xp
+         b8KBugrBTf12gSVlmioN4Yz4b71I9mhE/ajoW3wG3kDYKtOgqWgA7GPH23/6oNTJ/2
+         bA3oh2Lw+vfss15SXR3BnSEWI7P2yi8L4Z+zh1cJtOXFenwa/hlmQYL/LGr2brVT1S
+         +ifGWoSYk7gWGMImb93nZqx7mzdSXS/IGToGexQscYLfRujBC3DEhlbxX3+BDrNj5j
+         Rc7xN6moMByGTcNzm7y5T7jNWPB7r2LqC/00D63SO5d37yDfeuCXHqRsP7Gj+YfpvW
+         ZxDUjHD6/ACYA==
+Date:   Wed, 15 Sep 2021 12:36:42 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Eric Dumazet <edumazet@google.com>,
+        Matthew Massey <matthewmassey@fb.com>,
+        Dave Taht <dave.taht@gmail.com>
+Subject: Re: [PATCH net-next 1/3] net: sched: update default qdisc
+ visibility after Tx queue cnt changes
+Message-ID: <20210915123642.218f7f11@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAM_iQpVec_FY-71n3VUUgo8YCcn00+QzBBck9h1RGNaFzXX_ig@mail.gmail.com>
+References: <20210913225332.662291-1-kuba@kernel.org>
+        <20210913225332.662291-2-kuba@kernel.org>
+        <CAM_iQpVec_FY-71n3VUUgo8YCcn00+QzBBck9h1RGNaFzXX_ig@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CAHk-=wjXr+NnNPTorhaW81eAbdF90foVo-5pQqRmXZi-ZGaX6Q@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/15/21 12:18 PM, Linus Torvalds wrote:
-> On Tue, Sep 14, 2021 at 8:52 PM Guenter Roeck <linux@roeck-us.net> wrote:
->>
->> This patch series introduces absolute_pointer() to fix the problem.
->> absolute_pointer() disassociates a pointer from its originating symbol
->> type and context, and thus prevents gcc from making assumptions about
->> pointers passed to memory operations.
+On Wed, 15 Sep 2021 09:31:08 -0700 Cong Wang wrote:
+> On Mon, Sep 13, 2021 at 3:53 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> > diff --git a/net/core/dev.c b/net/core/dev.c
+> > index 74fd402d26dd..f930329f0dc2 100644
+> > --- a/net/core/dev.c
+> > +++ b/net/core/dev.c
+> > @@ -2921,6 +2921,8 @@ int netif_set_real_num_tx_queues(struct net_device *dev, unsigned int txq)
+> >                 if (dev->num_tc)
+> >                         netif_setup_tc(dev, txq);
+> >
+> > +               dev_qdisc_change_real_num_tx(dev, txq);
+> > +  
 > 
-> Ok, I've applied this to my tree.
-> 
-> I note that the physical BOOT_PCB addresses in the alpha setup.h file
-> might be useful for things like MILO in user space, but since I
-> couldn't even find MILO sources any more, I couldn't really check.
-> 
-> I suspect alpha is basically on life support and presumably nobody
-> would ever compile a bootloader anyway, so it's unlikely to matter.
-> 
-> If somebody does find any issues, we'll know better and we can ask
-> where the user space sources are that might use that alpha setup.h
-> file.
-> 
+> Don't we need to flip the device with dev_deactivate()+dev_activate()?
+> It looks like the only thing this function resets is qdisc itself, and only
+> partially.
 
-FWIW, I did find a set of MILO sources. Search for milo-2.2-18.tar.bz2;
-it points to a variety of gentoo mirrors.
-That version does not reference BOOT_PCB. I thought about removing this
-define as well as a couple of other unused defines, but wanted to keep
-the changes minimal.
+We're only making the qdiscs visible, there should be 
+no datapath-visible change.
 
-On a side note, we may revive the parisc patch. Helge isn't entirely
-happy with the other solution for parisc; it is quite invasive and
-touches a total of 19 files if I counted correctly.
+> >                 dev->real_num_tx_queues = txq;
+> >
+> >                 if (disabling) {
 
-Thanks,
-Guenter
+> > diff --git a/net/sched/sch_mq.c b/net/sched/sch_mq.c
+> > index e79f1afe0cfd..db18d8a860f9 100644
+> > --- a/net/sched/sch_mq.c
+> > +++ b/net/sched/sch_mq.c
+> > @@ -125,6 +125,29 @@ static void mq_attach(struct Qdisc *sch)
+> >         priv->qdiscs = NULL;
+> >  }
+> >
+> > +static void mq_change_real_num_tx(struct Qdisc *sch, unsigned int new_real_tx)  
+> 
+> This is nearly identical to mqprio_change_real_num_tx(), can we reuse
+> it?
+
+Indeed, I was a little unsure where best to place the helper.
+Since mq is always built if mqprio is my instinct would be to
+export mq_change_real_num_tx and use it in mqprio. But I didn't 
+see any existing exports (mq_attach(), mq_queue_get() are also
+identical and are not shared) so I just copy&pasted the logic.
+
+LMK if (a) that's fine; (b) I should share the new code; 
+(c) I should post a patch to share all the code that's identical;...
