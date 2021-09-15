@@ -2,118 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 007FF40CA37
-	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 18:33:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D650F40CA8B
+	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 18:40:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229775AbhIOQfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Sep 2021 12:35:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60760 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbhIOQfP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 12:35:15 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12CA0C061574;
-        Wed, 15 Sep 2021 09:33:56 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id k23so2565451pji.0;
-        Wed, 15 Sep 2021 09:33:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=gsStG1sKSvkBjku+METZsN+9/Au7A/rdRxl9FnC/IiY=;
-        b=ea51/qqc727nuQy5bmxT1i9ZQljRuwNiYGuSIfXtrkH9xal0mYYwSEutUmCl5Ck2UJ
-         9Xe+AVkvmjE5bb6aueB5no5HKcui4pSDz7kGmTtS6OZJvifPd8VjFRyiqRM8hHCRlGRb
-         JdV0hFCqiepxRHnBiLXR0KeFzOqsSqQXk0MwG2/KMq7zT54oH1UHYfO8HiSIVqfE2qBA
-         Lx1MDzNV4wb6RKF3MRWWGnJtvUIzaRw4MbZ833HESHZudNsy17meT9IuDFHW9yQ0fzqj
-         NNSpKLCSr9XbEHJw1bdtjGxALd6QY0zE/dCNgJtFQdJV/IYMhmR1bfBefltrjlsKlYjF
-         w0vQ==
+        id S229822AbhIOQlr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Sep 2021 12:41:47 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:51914 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229747AbhIOQlp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 12:41:45 -0400
+Received: by mail-io1-f70.google.com with SMTP id i11-20020a056602134b00b005be82e3028bso2333268iov.18
+        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 09:40:26 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gsStG1sKSvkBjku+METZsN+9/Au7A/rdRxl9FnC/IiY=;
-        b=rMw9SQZgbjVHYRzGnCZO4gV9bxjjxDWACMqDSKjUbFdQw1v8843312Im9s7ZofFhf/
-         5oNKKEUiEzGW9J1aNLxT9bkvH+weMu02CWZUcsgrE8r13NuZhLTVPjjycDEGOnSskBMV
-         nai9hEuvxxEXUUFOYBGB2q81N5t+BdvZxxgDgcTs9bBOriCQ9lv/0DrR1XYU6GqluRK8
-         97FWZOBbDmlzn8zW43l/umMa5XBeUWn3VwO6m7iHfcDj1HgpQTx/YQtLlzt3rJ7BGwc3
-         znJhsAoAMkp7zsOEYDPdRAff8HUZmLWoDbAUd0vXmdsODTHgTDDEyBs5UvWPhOWSKArR
-         +03w==
-X-Gm-Message-State: AOAM530DYoIZSLDZSoSeXFaE0EK9MyzVMJwhWY8Mgk9E0WUJfSQ6JQf5
-        dV4b/1fNSrv7S+lzG8Q9f80=
-X-Google-Smtp-Source: ABdhPJw1xP3K8oECc/hOIBq9r8qH77Ggxt4KxGWem7cGR8Y0uK15DshxF3dUW1A2ih6tvRlVeblPVw==
-X-Received: by 2002:a17:90b:4f49:: with SMTP id pj9mr9473257pjb.188.1631723635426;
-        Wed, 15 Sep 2021 09:33:55 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:7b03])
-        by smtp.gmail.com with ESMTPSA id 21sm405233pfh.103.2021.09.15.09.33.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Sep 2021 09:33:55 -0700 (PDT)
-Date:   Wed, 15 Sep 2021 09:33:53 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH bpf-next v3 06/10] bpf: Bump MAX_BPF_STACK size to 768
- bytes
-Message-ID: <20210915163353.ysltf6edghj75koq@ast-mbp.dhcp.thefacebook.com>
-References: <20210915050943.679062-1-memxor@gmail.com>
- <20210915050943.679062-7-memxor@gmail.com>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=JKOXM3JGzxLlPHPJi+XJmgy9wU3yxfezlaCgrIxp3Y8=;
+        b=GbXc3ZH3FKrWTXZ83vC2+wk3TdAEQRxd95hir0YXPtsoZkIL360BQnIP4qnwxDYdxr
+         ZQZHKJSIzwOoUJEt1/Mk56Qa9Zr6ChjpRM6ql93Uuvr6btXS/O0JFpMb2PxwyUEEEBU7
+         RNuBVkGoYqY/uIzylFhGjxKDmYemWdGo1aU5aHKhIiYsh08XJGGnYTkw/0K+YGNknDUz
+         fFvyfUSVi7jztvOAU/knJUURqAXQIOX8Bdv804HpsyewKjpDE/eV3CMNNHM4zgDm6unX
+         i6DTtopKRALVDoMdIBgxj1E0oMiF1z/oFKCzSgLpj6nL+XJR6xHhT02zxEDAcUQktXv3
+         BzaQ==
+X-Gm-Message-State: AOAM532ifu3lqg53QTWvPvHDphA99lEr0WV0dvIbvr+fyjFLVN+d/tuC
+        p48B4+TLe4tyt4hDttZLKo9Q/28tOXNOC/ACTBOpi+JWueXx
+X-Google-Smtp-Source: ABdhPJyfqKzWRBgw+12y6+VHdVaoIy7XpOGr2lePCKUrkJy7xgLzyNCOwECznCI/W7pcCr8UgXom5LAutbz4R+udP8SWJr6ak7Lf
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210915050943.679062-7-memxor@gmail.com>
+X-Received: by 2002:a6b:5c0c:: with SMTP id z12mr764703ioh.171.1631724026177;
+ Wed, 15 Sep 2021 09:40:26 -0700 (PDT)
+Date:   Wed, 15 Sep 2021 09:40:26 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000f3aadf05cc0b5a3d@google.com>
+Subject: [syzbot] WARNING in ext4_evict_inode (2)
+From:   syzbot <syzbot+80d413b5e0bdc4e192ba@syzkaller.appspotmail.com>
+To:     adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, tytso@mit.edu
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 15, 2021 at 10:39:39AM +0530, Kumar Kartikeya Dwivedi wrote:
-> Increase the maximum stack size accessible to BPF program to 768 bytes.
-> This is done so that gen_loader can use 94 additional fds for kfunc BTFs
-> that it passes in to fd_array from the remaining space available for the
-> loader_stack struct to expand.
-> 
-> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> ---
->  include/linux/filter.h | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/linux/filter.h b/include/linux/filter.h
-> index 4a93c12543ee..b214189ece62 100644
-> --- a/include/linux/filter.h
-> +++ b/include/linux/filter.h
-> @@ -82,8 +82,8 @@ struct ctl_table_header;
->   */
->  #define BPF_SYM_ELF_TYPE	't'
->  
-> -/* BPF program can access up to 512 bytes of stack space. */
-> -#define MAX_BPF_STACK	512
-> +/* BPF program can access up to 768 bytes of stack space. */
-> +#define MAX_BPF_STACK	768
+Hello,
 
-Yikes.
-I guess you meant as RFC, right? You didn't really propose
-to increase prog stack size just for that, right?
+syzbot found the following issue on:
 
-In the later patch:
-+/* MAX_BPF_STACK is 768 bytes, so (64 + 32 + 94 (MAX_KFUNC_DESCS) + 2) * 4 */
- #define MAX_USED_MAPS 64
- #define MAX_USED_PROGS 32
+HEAD commit:    08dad2f4d541 net: stmmac: allow CSR clock of 300MHz
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=159f1853300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=16e23f04679ec35e
+dashboard link: https://syzkaller.appspot.com/bug?extid=80d413b5e0bdc4e192ba
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
 
-@@ -31,6 +33,8 @@ struct loader_stack {
-        __u32 btf_fd;
-        __u32 map_fd[MAX_USED_MAPS];
-        __u32 prog_fd[MAX_USED_PROGS];
-+       /* Update insn->off store when reordering kfunc_btf_fd */
-+       __u32 kfunc_btf_fd[MAX_KFUNC_DESCS];
-        __u32 inner_map_fd;
-};
+Unfortunately, I don't have any reproducer for this issue yet.
 
-There are few other ways to do that.
-For example:
-A: rename map_fd[] into fds[] and store both map and btf FDs in there.
-B: move map and btf FDs into data instead of stack.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+80d413b5e0bdc4e192ba@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+WARNING: CPU: 1 PID: 9028 at fs/ext4/inode.c:230 ext4_evict_inode+0xf9a/0x1950 fs/ext4/inode.c:230
+Modules linked in:
+CPU: 1 PID: 9028 Comm: syz-executor.5 Not tainted 5.14.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:ext4_evict_inode+0xf9a/0x1950 fs/ext4/inode.c:230
+Code: 28 41 bc 01 00 00 00 48 89 04 24 e9 60 f6 ff ff c7 44 24 24 06 00 00 00 c7 44 24 20 06 00 00 00 e9 df f6 ff ff e8 56 ad 62 ff <0f> 0b e9 c6 f5 ff ff e8 7a ee a9 ff e9 60 f1 ff ff 48 89 cf e8 6d
+RSP: 0018:ffffc90000f2fca0 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: 1ffff920001e5f9a RCX: 0000000000000000
+RDX: ffff88807ef11c80 RSI: ffffffff8213640a RDI: 0000000000000003
+RBP: ffff888042a282a0 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff821359ce R11: 0000000000000000 R12: 0000000000000000
+R13: 0000000000000001 R14: ffff88814050ab60 R15: ffff8880414e4038
+FS:  000000000230a400(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000001b32643000 CR3: 000000005087c000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ evict+0x2ed/0x6b0 fs/inode.c:586
+ iput_final fs/inode.c:1662 [inline]
+ iput.part.0+0x539/0x850 fs/inode.c:1688
+ iput+0x58/0x70 fs/inode.c:1678
+ do_unlinkat+0x418/0x650 fs/namei.c:4176
+ __do_sys_unlink fs/namei.c:4217 [inline]
+ __se_sys_unlink fs/namei.c:4215 [inline]
+ __x64_sys_unlink+0xc6/0x110 fs/namei.c:4215
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x465f37
+Code: 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 b8 57 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffd277ea528 EFLAGS: 00000206 ORIG_RAX: 0000000000000057
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 0000000000465f37
+RDX: 00007ffd277ea560 RSI: 00007ffd277ea560 RDI: 00007ffd277ea5f0
+RBP: 00007ffd277ea5f0 R08: 0000000000000001 R09: 00007ffd277ea3c0
+R10: 000000000230b89b R11: 0000000000000206 R12: 00000000004bee90
+R13: 00007ffd277eb6c0 R14: 000000000230b810 R15: 00007ffd277eb700
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
