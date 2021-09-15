@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE93540BE91
-	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 05:52:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A810A40BE94
+	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 05:52:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236440AbhIODx6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 23:53:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55558 "EHLO
+        id S236458AbhIODyB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 23:54:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236366AbhIODxy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 23:53:54 -0400
-Received: from mail-oo1-xc36.google.com (mail-oo1-xc36.google.com [IPv6:2607:f8b0:4864:20::c36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CDC0C061766;
-        Tue, 14 Sep 2021 20:52:36 -0700 (PDT)
-Received: by mail-oo1-xc36.google.com with SMTP id b5-20020a4ac285000000b0029038344c3dso436344ooq.8;
-        Tue, 14 Sep 2021 20:52:36 -0700 (PDT)
+        with ESMTP id S236406AbhIODx4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 23:53:56 -0400
+Received: from mail-oo1-xc32.google.com (mail-oo1-xc32.google.com [IPv6:2607:f8b0:4864:20::c32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02CCEC061768;
+        Tue, 14 Sep 2021 20:52:38 -0700 (PDT)
+Received: by mail-oo1-xc32.google.com with SMTP id l17-20020a4ae391000000b00294ad0b1f52so428843oov.10;
+        Tue, 14 Sep 2021 20:52:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=YbkO6eX3svmIKG5IOf3KbQnfzJzo05Zk/s9XsuhsdgM=;
-        b=jkECE0ZRStw6Q+C2y91NLFDDGbMCo24+eUfO5W8Zf2UooRooEgR6+ccD826ws8BQOT
-         egJP6pkgfrD8D/D6WBg4ybOgNN97BuF+ALm8IV7syJCNG23dtJrUQudCvZ2eBpar56cd
-         eXOODyByiVqpceuqOrBtJivz6GOuicpHqM1jNQItDPt0BTo3c1gp+4LrFetDoRfKSbLp
-         AZ5bmv7IwRLgfFKMSGwzJY4qpA3DTZ9o9t2d5Rm6WZI9XngbNVIHyBNwpuBO+ZWFWj9N
-         1ZAu1KhTyBj+FCIZTl/sex87MzTpSA33dMlts9CowFJlanAOw1xGk1UY0jtyPWRXC59T
-         rqZQ==
+        bh=3aaPF5vSGERQCaEoUNmmtyNjkH4NB7gnK3IgOPR3RPc=;
+        b=eSchhtH2NEH2+tJRmJu694dKY96qWoqIr+byFRhjZ0JtBGo6K0a51DfHqbpC8U70n8
+         J21fy+wOMHTVOZw3AL5RIXBVjhOP94A8qWIeozYRduDnrTClsTbfIOSpclyShMdAct/2
+         x5yCdIE9hWc0uY7w3OW0zoUQI58Mx8rBue/60ygP6ANECaDrJHeERWSyhAEBH4Yc9QBt
+         6cfzkfr2u1yCGwKa1NaFh4Rscusxu86BFipQIZrw9WutQSHjGQW2ilaYFmE1BCRQDpLT
+         5nriXqiLA08Q7iESCzgOw+38MzMlKylsSnk/mFx4hFg43e/inPhlwPQ2ZuEsc39/hNwp
+         dMwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
          :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=YbkO6eX3svmIKG5IOf3KbQnfzJzo05Zk/s9XsuhsdgM=;
-        b=ds9yFT0Mx5b6BX+99r36QhjxmNWxzdgKfcJCp8lYZuQMWfJkzvq8Bz0Nbce9D8r6Aj
-         JoCqa1Bl1YDrqB+gTKIJK6vt5nZGSu1UUAfn5e8iinK5lK6wa0uQXXV8P+k9B52B8KBd
-         XN1+oSKbAJrdW1YREvpzBFGsBikQokeSAY9TIjSM4MRpg00s1ixH4hyf6EksDksfRjWz
-         /dyXzCB9VURzNIGfrpW+1+/Hov8qY30mGLtijtyTDYPIr5KWpR10y2++rpeRJMZvD3Mu
-         kxW7d4SBHF8PiXRFTjqtOx4xaFEGvYXzt2Wgqw7ZkodI/wyGoiV1ovHOnOLBf6t31MU0
-         2wsw==
-X-Gm-Message-State: AOAM533+icDGokGalj494KTIjfFhhbkOSGxYPRxDGkK3zwiLxtiBmZGt
-        DZ2aI0FAZYgKG2/WjMYitVg=
-X-Google-Smtp-Source: ABdhPJz2YaJRzesVNAbWeshh6RZ6+fKrBG3TZLysCiV5rwm0LZkxT7peixep+VGV0LcI9nsEKF8ejQ==
-X-Received: by 2002:a4a:e60e:: with SMTP id f14mr16906786oot.84.1631677955492;
-        Tue, 14 Sep 2021 20:52:35 -0700 (PDT)
+        bh=3aaPF5vSGERQCaEoUNmmtyNjkH4NB7gnK3IgOPR3RPc=;
+        b=vwhwJgXIAqFCKrc51bGOogsTEkGZaPFTo+ihhyue+O3rPblabiy+VGwOHS97mBnOof
+         qgmfVOo0bGui7LKOASGy8pqnRutDrjH0tR7rkbrYGfj+9nW9pfkO/RUXz0veXc5TRkXU
+         4Gz2bDiEaZBLJ3FXSFBOg8JTnneGgVGp4afBJe6aFzfoDUwbruLRWV2wnitN+bGcUO+j
+         QP8Co8x1f+tkG/F3jL2MXt3cuxDZvmE4uqeid3z/YAA9gEgyREkglJddRJs1xujW9CXo
+         dIXzOJcZNy1kkxK0A51eZv12uIFgzbIZ+nZT2L7olHjDNheK/76cyrq1jN8cqkNT5hW5
+         WGPA==
+X-Gm-Message-State: AOAM5307q61crX+GyHJK4U+X7bEZF65HNcHMkcRiU6OeHP/C7fr2kgj+
+        tY08LGFDQb+qMaPMWTKkBrY=
+X-Google-Smtp-Source: ABdhPJyG7qgdY0XE0IfoKM/wbq5OhalJGAac/S3NVRZdg3v1upnGGPvwVAJ0n/LGx6dBNKkH0mVTiQ==
+X-Received: by 2002:a4a:4344:: with SMTP id l4mr4566709ooj.38.1631677957386;
+        Tue, 14 Sep 2021 20:52:37 -0700 (PDT)
 Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id w12sm3107794oor.23.2021.09.14.20.52.34
+        by smtp.gmail.com with ESMTPSA id b11sm3031089ooi.0.2021.09.14.20.52.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Sep 2021 20:52:34 -0700 (PDT)
+        Tue, 14 Sep 2021 20:52:36 -0700 (PDT)
 Sender: Guenter Roeck <groeck7@gmail.com>
 From:   Guenter Roeck <linux@roeck-us.net>
 To:     Linus Torvalds <torvalds@linux-foundation.org>
@@ -61,9 +61,9 @@ Cc:     Richard Henderson <rth@twiddle.net>,
         linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org,
         netdev@vger.kernel.org, linux-sparse@vger.kernel.org,
         Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH v2 2/4] net: i825xx: Use absolute_pointer for memcpy from fixed memory location
-Date:   Tue, 14 Sep 2021 20:52:25 -0700
-Message-Id: <20210915035227.630204-3-linux@roeck-us.net>
+Subject: [PATCH v2 3/4] alpha: Move setup.h out of uapi
+Date:   Tue, 14 Sep 2021 20:52:26 -0700
+Message-Id: <20210915035227.630204-4-linux@roeck-us.net>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20210915035227.630204-1-linux@roeck-us.net>
 References: <20210915035227.630204-1-linux@roeck-us.net>
@@ -73,36 +73,122 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-gcc 11.x reports the following compiler warning/error.
+Most of the contents of setup.h have no value for userspace
+applications. The file was probably moved to uapi accidentally.
 
-drivers/net/ethernet/i825xx/82596.c: In function 'i82596_probe':
-    ./arch/m68k/include/asm/string.h:72:25: error:
-            '__builtin_memcpy' reading 6 bytes from a region of size 0
-                    [-Werror=stringop-overread]
+Keep the file in uapi to define the alpha-specific COMMAND_LINE_SIZE.
+Move all other defines to arch/alpha/include/asm/setup.h.
 
-Use absolute_pointer() to work around the problem.
-
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 ---
-v2: No change
+v2: Added patch
 
- drivers/net/ethernet/i825xx/82596.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/alpha/include/asm/setup.h      | 43 +++++++++++++++++++++++++++++
+ arch/alpha/include/uapi/asm/setup.h | 42 ++--------------------------
+ 2 files changed, 46 insertions(+), 39 deletions(-)
+ create mode 100644 arch/alpha/include/asm/setup.h
 
-diff --git a/drivers/net/ethernet/i825xx/82596.c b/drivers/net/ethernet/i825xx/82596.c
-index b8a40146b895..b482f6f633bd 100644
---- a/drivers/net/ethernet/i825xx/82596.c
-+++ b/drivers/net/ethernet/i825xx/82596.c
-@@ -1144,7 +1144,7 @@ static struct net_device * __init i82596_probe(void)
- 			err = -ENODEV;
- 			goto out;
- 		}
--		memcpy(eth_addr, (void *) 0xfffc1f2c, ETH_ALEN);	/* YUCK! Get addr from NOVRAM */
-+		memcpy(eth_addr, absolute_pointer(0xfffc1f2c), ETH_ALEN); /* YUCK! Get addr from NOVRAM */
- 		dev->base_addr = MVME_I596_BASE;
- 		dev->irq = (unsigned) MVME16x_IRQ_I596;
- 		goto found;
+diff --git a/arch/alpha/include/asm/setup.h b/arch/alpha/include/asm/setup.h
+new file mode 100644
+index 000000000000..58fe3f45a235
+--- /dev/null
++++ b/arch/alpha/include/asm/setup.h
+@@ -0,0 +1,43 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++#ifndef __ALPHA_SETUP_H
++#define __ALPHA_SETUP_H
++
++#include <uapi/asm/setup.h>
++
++/*
++ * We leave one page for the initial stack page, and one page for
++ * the initial process structure. Also, the console eats 3 MB for
++ * the initial bootloader (one of which we can reclaim later).
++ */
++#define BOOT_PCB	0x20000000
++#define BOOT_ADDR	0x20000000
++/* Remove when official MILO sources have ELF support: */
++#define BOOT_SIZE	(16*1024)
++
++#ifdef CONFIG_ALPHA_LEGACY_START_ADDRESS
++#define KERNEL_START_PHYS	0x300000 /* Old bootloaders hardcoded this.  */
++#else
++#define KERNEL_START_PHYS	0x1000000 /* required: Wildfire/Titan/Marvel */
++#endif
++
++#define KERNEL_START	(PAGE_OFFSET+KERNEL_START_PHYS)
++#define SWAPPER_PGD	KERNEL_START
++#define INIT_STACK	(PAGE_OFFSET+KERNEL_START_PHYS+0x02000)
++#define EMPTY_PGT	(PAGE_OFFSET+KERNEL_START_PHYS+0x04000)
++#define EMPTY_PGE	(PAGE_OFFSET+KERNEL_START_PHYS+0x08000)
++#define ZERO_PGE	(PAGE_OFFSET+KERNEL_START_PHYS+0x0A000)
++
++#define START_ADDR	(PAGE_OFFSET+KERNEL_START_PHYS+0x10000)
++
++/*
++ * This is setup by the secondary bootstrap loader.  Because
++ * the zero page is zeroed out as soon as the vm system is
++ * initialized, we need to copy things out into a more permanent
++ * place.
++ */
++#define PARAM			ZERO_PGE
++#define COMMAND_LINE		((char *)(PARAM + 0x0000))
++#define INITRD_START		(*(unsigned long *) (PARAM+0x100))
++#define INITRD_SIZE		(*(unsigned long *) (PARAM+0x108))
++
++#endif
+diff --git a/arch/alpha/include/uapi/asm/setup.h b/arch/alpha/include/uapi/asm/setup.h
+index 13b7ee465b0e..f881ea5947cb 100644
+--- a/arch/alpha/include/uapi/asm/setup.h
++++ b/arch/alpha/include/uapi/asm/setup.h
+@@ -1,43 +1,7 @@
+ /* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+-#ifndef __ALPHA_SETUP_H
+-#define __ALPHA_SETUP_H
++#ifndef _UAPI__ALPHA_SETUP_H
++#define _UAPI__ALPHA_SETUP_H
+ 
+ #define COMMAND_LINE_SIZE	256
+ 
+-/*
+- * We leave one page for the initial stack page, and one page for
+- * the initial process structure. Also, the console eats 3 MB for
+- * the initial bootloader (one of which we can reclaim later).
+- */
+-#define BOOT_PCB	0x20000000
+-#define BOOT_ADDR	0x20000000
+-/* Remove when official MILO sources have ELF support: */
+-#define BOOT_SIZE	(16*1024)
+-
+-#ifdef CONFIG_ALPHA_LEGACY_START_ADDRESS
+-#define KERNEL_START_PHYS	0x300000 /* Old bootloaders hardcoded this.  */
+-#else
+-#define KERNEL_START_PHYS	0x1000000 /* required: Wildfire/Titan/Marvel */
+-#endif
+-
+-#define KERNEL_START	(PAGE_OFFSET+KERNEL_START_PHYS)
+-#define SWAPPER_PGD	KERNEL_START
+-#define INIT_STACK	(PAGE_OFFSET+KERNEL_START_PHYS+0x02000)
+-#define EMPTY_PGT	(PAGE_OFFSET+KERNEL_START_PHYS+0x04000)
+-#define EMPTY_PGE	(PAGE_OFFSET+KERNEL_START_PHYS+0x08000)
+-#define ZERO_PGE	(PAGE_OFFSET+KERNEL_START_PHYS+0x0A000)
+-
+-#define START_ADDR	(PAGE_OFFSET+KERNEL_START_PHYS+0x10000)
+-
+-/*
+- * This is setup by the secondary bootstrap loader.  Because
+- * the zero page is zeroed out as soon as the vm system is
+- * initialized, we need to copy things out into a more permanent
+- * place.
+- */
+-#define PARAM			ZERO_PGE
+-#define COMMAND_LINE		((char*)(PARAM + 0x0000))
+-#define INITRD_START		(*(unsigned long *) (PARAM+0x100))
+-#define INITRD_SIZE		(*(unsigned long *) (PARAM+0x108))
+-
+-#endif
++#endif /* _UAPI__ALPHA_SETUP_H */
 -- 
 2.33.0
 
