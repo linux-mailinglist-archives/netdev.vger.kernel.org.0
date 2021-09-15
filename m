@@ -2,131 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF3E640CC53
-	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 20:06:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E1DD40CC59
+	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 20:08:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230010AbhIOSHu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Sep 2021 14:07:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54292 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229479AbhIOSHs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 14:07:48 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60FC7C061574;
-        Wed, 15 Sep 2021 11:06:29 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id me5-20020a17090b17c500b0019af76b7bb4so4873098pjb.2;
-        Wed, 15 Sep 2021 11:06:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=pvEN7KugXHcnrzozoG39k+LPieQON2FX8llLC4usQH4=;
-        b=NPpAu0Cm9A5rFyd2g8YF9gXZrq26LGbyYM6amLOoYkCx2JRTPWFqCnWJ6mz46VLu5q
-         vAxcRFft0s0y6qSILHhaHJ7WN4VkPZxFrnKmuN6B/UGdw5YDjJZNayZ4ZY2UlxPc65Zq
-         K/kK+yosQGQ9waXq+lPCSEiHcA1B9dffSWd1PZFY9MJozhIbt8GfZFs3+LBp7pCkr9ZF
-         kv+N43op/LqqOwFCxOUIlPjIU5WCrTg3u1+MMiVQJ3mv3f1DyIx+T6KWqnTs6rdtuB9J
-         fleLMGjYLB48AOTkwqXS5NBYNoXJg/hIGAq0LUq/zq4ReoRUr8RlDy64GcgDYkFde/m1
-         BkSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=pvEN7KugXHcnrzozoG39k+LPieQON2FX8llLC4usQH4=;
-        b=YeJGd7cxaT3gTNICip8cg/X8KwXl63MciOcXLi/O13I5nT620kY4VqLapEQdmmHizM
-         D9NghJhjPgfrxqnsxhl78tCunA1+ZKZK0wXNn0M5/pQ+2CvEeyIaRr1qqcLYUvuVS4SI
-         S1ql+BDPLx8JDn9U5aI8aH8jYJUNJDPiHsV1RpP5j18gGFHCbQimATd6OBkSSGrKEEFE
-         ZXWzZzcjFGae0Fnb5KZ7IJgTDlhWAI6HjuPVvVdDE4ohry8/tGyPPr+DOiInzhhWYjqq
-         8rXijY5nlaE6ERcxEu7FDB/9YxDyo9k3RHR155UJoWPNVcTxmRnUjV5IoBNSsXz8tGNT
-         zEaw==
-X-Gm-Message-State: AOAM530DGfJS2zbJPrVIG6wXARB0Ag7rqSnCjCdRHZUSsBeXAE2Z4sXn
-        0XwcWKSU2Iww6MeRla8/9LU=
-X-Google-Smtp-Source: ABdhPJxVOmMhwZC0VWOanMP/iQsbUXhf0sAQAKOndvHx5Kd/DdCu1qX2Yv1X2IQFIDmr/Vz7gPT01Q==
-X-Received: by 2002:a17:90a:bb13:: with SMTP id u19mr9895904pjr.42.1631729188778;
-        Wed, 15 Sep 2021 11:06:28 -0700 (PDT)
-Received: from localhost ([2405:201:6014:d058:a28d:3909:6ed5:29e7])
-        by smtp.gmail.com with ESMTPSA id h4sm609171pgn.6.2021.09.15.11.06.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Sep 2021 11:06:28 -0700 (PDT)
-Date:   Wed, 15 Sep 2021 23:36:26 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH bpf-next v3 03/10] bpf: btf: Introduce helpers for
- dynamic BTF set registration
-Message-ID: <20210915180626.a367fkhp2gb23yfb@apollo.localdomain>
-References: <20210915050943.679062-1-memxor@gmail.com>
- <20210915050943.679062-4-memxor@gmail.com>
- <20210915161835.xipxa324own7s6ya@ast-mbp.dhcp.thefacebook.com>
+        id S230328AbhIOSKQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Sep 2021 14:10:16 -0400
+Received: from mail-bn8nam08on2080.outbound.protection.outlook.com ([40.107.100.80]:38720
+        "EHLO NAM04-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230010AbhIOSKP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Sep 2021 14:10:15 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PAFhYfI2ZO06fHhSR79IMJPyI3ms3sVqjEB5kWVsd2b9An4dh9/LXHEpe2RsNk64cZsmKfpHmyNeklqQ/KS2aw7Mlr6oje9id8m0q2MGWfTukzt6kCTYHCDXMwVD+rZtEOR5Qilr2ghkwMHO87/aJZLQayPZsGktM3++TQLh5Xhh78r2vldN9Lha2C+EvCrq88SDylLGEk+sXTNlCwVU2/DzwnE5qj28/0/Nq6rKyKDMFoEDRJu2X2RAdS5ourlMEXvYhG12W3sDk1UWEu4Pnnd36rLKh4ZXfAtfbOxcjAvKcGrpSygkRmZry3IFsFNc3StbNjN+wFLnKO+e1rOr5Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
+ bh=JaZvy6kfioGOXBtAgeiFOpWEYoQWHldP5uMqbWbgmPI=;
+ b=QXwvOecxC0O0SM6W6S4xYAFOQG+BIC7YQgKt3o4+2w/srymEb+tWbY+6Yvyj4Ud96AvwGVKbv8GppyqtmCtiG5Cplbz52ekbBO2CKIO3lcmYayngiq/DnV2vTtpSF6Mc5AP3wf+50UYxPCkNEX+Jf6+0mfRfaeMxG2avtTEQ/x4sv03Or0bVEICA31wNZm09dz9XYnqqWXJvvkZcLAADFXNKOvmtCOskFV6D0HRN4X2MqTaQjTMAlpEBSMyIMfI+t6ZiQ0ZW6iGCDfP6WF4jS2PHbJUJS9lXV6RkhgSJFWcb9znX+/vPyK0PBolFx0x0IVsro2fV7/NRrqGZMxlioA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=arndb.de smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JaZvy6kfioGOXBtAgeiFOpWEYoQWHldP5uMqbWbgmPI=;
+ b=YBysDnnS0Ivtk/wClALodcg1Xkrq/v5TRav5elhK3+RVziklh2E64Yi4zuHXH+era5SRSg8dDIR6FKpxPxCCbkwI/yZ2E0AwrLQgRp3hAIFujks/QskbVQe+ezEXYpo9mK1RRaT0XN2tOvm3QjctYL8tL5QhfPo4YAFD/9zlTKcRcJMjy8YAs50vMnp1ZDyi2/6E6f2NS7X1blYQcKTO+uyu7dztN8f6J/UKxmStqxRSFMSaepW5f3/rndM+ZVBxDuu1tNz2aHFzaTlsIe8k7Q/pqgJvMQNmyMUN8dnB8UyLqkT4Pmz/JdXQ1PV3tpUAHgGorczZejEZT4Ze21flEw==
+Received: from MW4PR04CA0127.namprd04.prod.outlook.com (2603:10b6:303:84::12)
+ by DM6PR12MB3339.namprd12.prod.outlook.com (2603:10b6:5:119::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.14; Wed, 15 Sep
+ 2021 18:08:54 +0000
+Received: from CO1NAM11FT026.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:84:cafe::b2) by MW4PR04CA0127.outlook.office365.com
+ (2603:10b6:303:84::12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.14 via Frontend
+ Transport; Wed, 15 Sep 2021 18:08:54 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; arndb.de; dkim=none (message not signed)
+ header.d=none;arndb.de; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ CO1NAM11FT026.mail.protection.outlook.com (10.13.175.67) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4523.14 via Frontend Transport; Wed, 15 Sep 2021 18:08:54 +0000
+Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 15 Sep
+ 2021 18:08:54 +0000
+Received: from vdi.nvidia.com (172.20.187.6) by mail.nvidia.com
+ (172.20.187.12) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Wed, 15 Sep 2021 18:08:52 +0000
+From:   David Thompson <davthompson@nvidia.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <limings@nvidia.com>, <arnd@arndb.de>,
+        <jgg@ziepe.ca>, <=caihuoqing@baidu.com>,
+        David Thompson <davthompson@nvidia.com>,
+        Asmaa Mnebhi <asmaa@nvidia.com>
+Subject: [PATCH net v2] mlxbf_gige: clear valid_polarity upon open
+Date:   Wed, 15 Sep 2021 14:08:48 -0400
+Message-ID: <20210915180848.32166-1-davthompson@nvidia.com>
+X-Mailer: git-send-email 2.30.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210915161835.xipxa324own7s6ya@ast-mbp.dhcp.thefacebook.com>
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a9d71cf7-584f-46fb-1383-08d97873e14f
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3339:
+X-Microsoft-Antispam-PRVS: <DM6PR12MB3339B54A38321969449C3DEAC7DB9@DM6PR12MB3339.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: W478cBQEMRG8HQ2IRoRrO6ozXMUYCvOUwXsklxU9aFP0RbcaJYlvKlMA8OruC+vTU9bjsAwaoidxRst7TTftSepVX+MpB45Wb8xNXidy9cI35w3qUhpTF99p+pxcs13nWhNnfl2yRkeSWSrRnrOnDBCUpdSN4txRcLUEcmHJiR4s+U0/MKd1kBmyBrY1LFIOyxyqLsB+9yZ+qjdIdVdfSuH1zM+bsQeHMfjSG73ILPEiR5FQEn+GG0J5Zg+9WAekaULEFqtxlP3L7eLT42fU6iFaVdyt4EcHE0ZwHmZbWcOiw9gljwx5bIJj+vCJaKwK3h6RWf5eNSrgmKSikdVJptvE183BD3RJcWmBUrDFiL/DMTP/b8SA6ptosd8109WokNpSGOIkQKygNV/t6jZPNGqEifp0Q+u4u0SGpS/dcHhSbuWfJZCkaUYE2Lvwl75Emdu9YFQtFRHLyp4oHl4X0OkRPuQQtnoO7fD8SIQWJt2NVpni9dZesOy0DYfB6G4wtd7G6Lwae69i3t2SjJC8MkcX0U6BJXaSWzEEMlQfwnDp20CmkKk2w/404XR+zkyI0Gu8plOTTGGJEAuNt7291KhGufhaDZfpORLOxn1xL9S1QWg+jHl+6Rz04Zr/Yhi8UKK3p5XdouIVS39FRuoV03XCaPBU3248i3/OndA3EvbzPcpelrOhbehF4vXiYZ+DTUZdQc/y4PvSYU+Ug/cK9A==
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(346002)(376002)(39860400002)(136003)(36840700001)(46966006)(7696005)(36906005)(107886003)(83380400001)(70206006)(82310400003)(70586007)(316002)(86362001)(7636003)(6666004)(47076005)(1076003)(186003)(2906002)(2616005)(5660300002)(478600001)(26005)(8936002)(36756003)(8676002)(356005)(110136005)(54906003)(336012)(4326008)(426003)(36860700001)(82740400003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Sep 2021 18:08:54.5154
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: a9d71cf7-584f-46fb-1383-08d97873e14f
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT026.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3339
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 15, 2021 at 09:48:35PM IST, Alexei Starovoitov wrote:
-> On Wed, Sep 15, 2021 at 10:39:36AM +0530, Kumar Kartikeya Dwivedi wrote:
-> > This adds helpers for registering btf_id_set from modules and the
-> > check_kfunc_call callback that can be used to look them up.
-> >
-> > With in kernel sets, the way this is supposed to work is, in kernel
-> > callback looks up within the in-kernel kfunc whitelist, and then defers
-> > to the dynamic BTF set lookup if it doesn't find the BTF id. If there is
-> > no in-kernel BTF id set, this callback can be used directly.
-> >
-> > Also fix includes for btf.h and bpfptr.h so that they can included in
-> > isolation. This is in preparation for their usage in tcp_bbr, tcp_cubic
-> > and tcp_dctcp modules in the next patch.
-> >
-> > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> > ---
-> >  include/linux/bpfptr.h |  1 +
-> >  include/linux/btf.h    | 32 ++++++++++++++++++++++++++
-> >  kernel/bpf/btf.c       | 51 ++++++++++++++++++++++++++++++++++++++++++
-> >  3 files changed, 84 insertions(+)
-> >
-> > diff --git a/include/linux/bpfptr.h b/include/linux/bpfptr.h
-> > index 546e27fc6d46..46e1757d06a3 100644
-> > --- a/include/linux/bpfptr.h
-> > +++ b/include/linux/bpfptr.h
-> > @@ -3,6 +3,7 @@
-> >  #ifndef _LINUX_BPFPTR_H
-> >  #define _LINUX_BPFPTR_H
-> >
-> > +#include <linux/mm.h>
->
-> Could you explain what this is for?
->
+The network interface managed by the mlxbf_gige driver can
+get into a problem state where traffic does not flow.
+In this state, the interface will be up and enabled, but
+will stop processing received packets.  This problem state
+will happen if three specific conditions occur:
+    1) driver has received more than (N * RxRingSize) packets but
+       less than (N+1 * RxRingSize) packets, where N is an odd number
+       Note: the command "ethtool -g <interface>" will display the
+       current receive ring size, which currently defaults to 128
+    2) the driver's interface was disabled via "ifconfig oob_net0 down"
+       during the window described in #1.
+    3) the driver's interface is re-enabled via "ifconfig oob_net0 up"
 
-When e.g. tcp_bbr.c includes btf.h and btf_ids.h without this, it leads to this
-error.
+This patch ensures that the driver's "valid_polarity" field is
+cleared during the open() method so that it always matches the
+receive polarity used by hardware.  Without this fix, the driver
+needs to be unloaded and reloaded to correct this problem state.
 
-                 from net/ipv4/tcp_bbr.c:59:
-./include/linux/bpfptr.h: In function ‘kvmemdup_bpfptr’:
-./include/linux/bpfptr.h:67:19: error: implicit declaration of function ‘kvmalloc’;
- did you mean ‘kmalloc’? [-Werror=implicit-function-declaration]
-   67 |         void *p = kvmalloc(len, GFP_USER | __GFP_NOWARN);
-      |                   ^~~~~~~~
-      |                   kmalloc
-./include/linux/bpfptr.h:67:19: warning: initialization of ‘void *’ from ‘int’
-	makes pointer from integer without a cast [-Wint-conversion]
-./include/linux/bpfptr.h:72:17: error: implicit declaration of function ‘kvfree’;
-	did you mean ‘kfree’? [-Werror=implicit-function-declaration]
-   72 |                 kvfree(p);
-      |                 ^~~~~~
-      |                 kfree
+Fixes: f92e1869d74e ("Add Mellanox BlueField Gigabit Ethernet driver")
+Reviewed-by: Asmaa Mnebhi <asmaa@nvidia.com>
+Signed-off-by: David Thompson <davthompson@nvidia.com>
+---
+ drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-> >  #include <linux/sockptr.h>
+diff --git a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c
+index 3e85b17f5857..6704f5c1aa32 100644
+--- a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c
++++ b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c
+@@ -142,6 +142,13 @@ static int mlxbf_gige_open(struct net_device *netdev)
+ 	err = mlxbf_gige_clean_port(priv);
+ 	if (err)
+ 		goto free_irqs;
++
++	/* Clear driver's valid_polarity to match hardware,
++	 * since the above call to clean_port() resets the
++	 * receive polarity used by hardware.
++	 */
++	priv->valid_polarity = 0;
++
+ 	err = mlxbf_gige_rx_init(priv);
+ 	if (err)
+ 		goto free_irqs;
+-- 
+2.30.1
 
---
-Kartikeya
