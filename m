@@ -2,107 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0B1840BD98
-	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 04:16:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4B5440BDA4
+	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 04:17:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235787AbhIOCSF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 22:18:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33906 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234174AbhIOCSB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 22:18:01 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 802F2C061574;
-        Tue, 14 Sep 2021 19:16:43 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id on12-20020a17090b1d0c00b001997c60aa29so3230277pjb.1;
-        Tue, 14 Sep 2021 19:16:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=+D5A14G2hXb76oWqzjkLZYFPjmPBH8kjDmRtrAsB1DE=;
-        b=DmYGfEbCDoyZqqq0wNDta8dDG7Tq+ObFdfzDwih20rDzPF0g3w61ns1wrTGJoOOAbk
-         GngPqnmGHZZoCS+CTcnxz5Uh6hl4CcVb9U9SnfrXFS/stUxRBKbZlhn+ragKdCz7Ysvn
-         28Eq/FeBW1yh1uUxVQ0MWtWwAJH0LZbpaeJTMKT7iojpZiBMzKqq3Utl62wm/7nnwUKF
-         Rh5wia60/9reVYyIzMdGQZURkXTV24s2Z7TmtmJuWEJEqk8sAuYd8GBx0Mcem74PZonU
-         w1/z6xVxSS8zNmSjxU+fVv4q/qG8mfRBhe8AekC13SGQqTa5ldhEuSsN3T5r2MZ9azBQ
-         q3BA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=+D5A14G2hXb76oWqzjkLZYFPjmPBH8kjDmRtrAsB1DE=;
-        b=NgC0vpjAnmwvYyXWbJie1QZN2RJQ8cJvGEDsOGYNmv5yiBAmfPlCqEMjWWuw6lnviD
-         r0uMSY2ve5OZPGoXTAeyQkQcm3FOqDxDH97t0YWAwAnGkI7Ez5dlkagaCiJ2uQZscIxQ
-         kiFcUnaWNO7pG9HRt2L7D1yN16POoLMxpOsifppXuuaGTq8eyD+A+U6sl0kiOYIqso6a
-         +zd0fvY0cX+mUARTuJdSKCvP1LNDPsI+ON9IUwmI8GMZd/Ph3ScJmGNlqqY3UFhSMFg8
-         cSD5c9txRKayr5MC63/sfEQdPiBU1J9jnWywM0QexSfqSK6jqZQ4Ys5FFq7+L+onj/6j
-         qQTQ==
-X-Gm-Message-State: AOAM5336rxwegSeH37d2W/w/ghBXD5dJcMcdUBMPExsiv9Pw2IOQtTzE
-        GVgS7kNXlm4gSbUK1NkxiBn70j3kYEZFhUFbNA==
-X-Google-Smtp-Source: ABdhPJx6iyPm7BgmjJuDklZ4hv6kH+sgS2bDlBpm/23orZxhMulxhdui1vSNCwTfAFAwB8L77uuwnmhPNymI7uwRWnI=
-X-Received: by 2002:a17:902:7b84:b0:13b:90a7:e270 with SMTP id
- w4-20020a1709027b8400b0013b90a7e270mr13016935pll.21.1631672202995; Tue, 14
- Sep 2021 19:16:42 -0700 (PDT)
+        id S236236AbhIOCSU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 22:18:20 -0400
+Received: from smtp5.emailarray.com ([65.39.216.39]:44300 "EHLO
+        smtp5.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236078AbhIOCSM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 22:18:12 -0400
+Received: (qmail 83692 invoked by uid 89); 15 Sep 2021 02:16:53 -0000
+Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21ANzEuMjEyLjEzOC4zOQ==) (POLARISLOCAL)  
+  by smtp5.emailarray.com with SMTP; 15 Sep 2021 02:16:53 -0000
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+To:     kuba@kernel.org, davem@davemloft.net, richardcochran@gmail.com
+Cc:     netdev@vger.kernel.org, kernel-team@fb.com
+Subject: [PATCH net-next 14/18] ptp: ocp: Add second GNSS device
+Date:   Tue, 14 Sep 2021 19:16:32 -0700
+Message-Id: <20210915021636.153754-15-jonathan.lemon@gmail.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210915021636.153754-1-jonathan.lemon@gmail.com>
+References: <20210915021636.153754-1-jonathan.lemon@gmail.com>
 MIME-Version: 1.0
-From:   Hao Sun <sunhao.th@gmail.com>
-Date:   Wed, 15 Sep 2021 10:16:32 +0800
-Message-ID: <CACkBjsbqK6wuYH66izxaZj=Knzzn8eKeX4CzeCxQB2DsEufT0g@mail.gmail.com>
-Subject: WARNING in sta_info_insert_rcu
-To:     davem@davemloft.net, johannes@sipsolutions.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Upcoming boards may have a second GNSS receiver, getting information
+from a different constellation than the first receiver, which provides
+some measure of anti-spoofing.
 
-When using Healer to fuzz the latest Linux kernel, the following crash
-was triggered.
+Expose the sysfs attribute for this device, if detected.
 
-HEAD commit: 6880fa6c5660 Linux 5.15-rc1
-git tree: upstream
-console output:
-https://drive.google.com/file/d/1JAoHNesGqAqeOvuCFuKXI-F9pBTcwDNo/view?usp=sharing
-kernel config: https://drive.google.com/file/d/1rUzyMbe5vcs6khA3tL9EHTLJvsUdWcgB/view?usp=sharing
+Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+---
+ drivers/ptp/ptp_ocp.c | 17 +++++++++++++++--
+ 1 file changed, 15 insertions(+), 2 deletions(-)
 
-Sorry, I don't have a reproducer for this crash, hope the symbolized
-report can help.
-If you fix this issue, please add the following tag to the commit:
-Reported-by: Hao Sun <sunhao.th@gmail.com>
+diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
+index 74b5561fbdae..d0e3096f53f6 100644
+--- a/drivers/ptp/ptp_ocp.c
++++ b/drivers/ptp/ptp_ocp.c
+@@ -232,6 +232,7 @@ struct ptp_ocp {
+ 	int			id;
+ 	int			n_irqs;
+ 	int			gnss_port;
++	int			gnss2_port;
+ 	int			mac_port;	/* miniature atomic clock */
+ 	int			nmea_port;
+ 	u8			serial[6];
+@@ -286,8 +287,8 @@ static int ptp_ocp_ts_enable(void *priv, bool enable);
+  * 0: N/C
+  * 1: TS0
+  * 2: TS1
+- * 3: GPS
+- * 4: GPS2 (n/c)
++ * 3: GNSS
++ * 4: GNSS2
+  * 5: MAC
+  * 6: TS2
+  * 7: I2C controller
+@@ -384,6 +385,10 @@ static struct ocp_resource ocp_fb_resource[] = {
+ 		OCP_SERIAL_RESOURCE(gnss_port),
+ 		.offset = 0x00160000 + 0x1000, .irq_vec = 3,
+ 	},
++	{
++		OCP_SERIAL_RESOURCE(gnss2_port),
++		.offset = 0x00170000 + 0x1000, .irq_vec = 4,
++	},
+ 	{
+ 		OCP_SERIAL_RESOURCE(mac_port),
+ 		.offset = 0x00180000 + 0x1000, .irq_vec = 5,
+@@ -2100,6 +2105,7 @@ ptp_ocp_device_init(struct ptp_ocp *bp, struct pci_dev *pdev)
+ 	bp->ptp_info = ptp_ocp_clock_info;
+ 	spin_lock_init(&bp->lock);
+ 	bp->gnss_port = -1;
++	bp->gnss2_port = -1;
+ 	bp->mac_port = -1;
+ 	bp->nmea_port = -1;
+ 	bp->pdev = pdev;
+@@ -2163,6 +2169,10 @@ ptp_ocp_complete(struct ptp_ocp *bp)
+ 		sprintf(buf, "ttyS%d", bp->gnss_port);
+ 		ptp_ocp_link_child(bp, buf, "ttyGNSS");
+ 	}
++	if (bp->gnss2_port != -1) {
++		sprintf(buf, "ttyS%d", bp->gnss2_port);
++		ptp_ocp_link_child(bp, buf, "ttyGNSS2");
++	}
+ 	if (bp->mac_port != -1) {
+ 		sprintf(buf, "ttyS%d", bp->mac_port);
+ 		ptp_ocp_link_child(bp, buf, "ttyMAC");
+@@ -2241,6 +2251,7 @@ ptp_ocp_info(struct ptp_ocp *bp)
+ 				 ver >> 16);
+ 	}
+ 	ptp_ocp_serial_info(dev, "GNSS", bp->gnss_port, 115200);
++	ptp_ocp_serial_info(dev, "GNSS2", bp->gnss2_port, 115200);
+ 	ptp_ocp_serial_info(dev, "MAC", bp->mac_port, 57600);
+ 	if (bp->nmea_out && bp->nmea_port != -1) {
+ 		int baud = -1;
+@@ -2281,6 +2292,8 @@ ptp_ocp_detach(struct ptp_ocp *bp)
+ 		ptp_ocp_unregister_ext(bp->pps);
+ 	if (bp->gnss_port != -1)
+ 		serial8250_unregister_port(bp->gnss_port);
++	if (bp->gnss2_port != -1)
++		serial8250_unregister_port(bp->gnss2_port);
+ 	if (bp->mac_port != -1)
+ 		serial8250_unregister_port(bp->mac_port);
+ 	if (bp->nmea_port != -1)
+-- 
+2.31.1
 
-------------[ cut here ]------------
-WARNING: CPU: 3 PID: 7312 at net/mac80211/sta_info.c:546
-sta_info_insert_check net/mac80211/sta_info.c:545 [inline]
-WARNING: CPU: 3 PID: 7312 at net/mac80211/sta_info.c:546
-sta_info_insert_rcu+0xa3/0x1130 net/mac80211/sta_info.c:723
-Modules linked in:
-CPU: 3 PID: 7312 Comm: kworker/u8:4 Not tainted 5.15.0-rc1 #16
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
-Workqueue: phy4 ieee80211_iface_work
-RIP: 0010:sta_info_insert_check net/mac80211/sta_info.c:545 [inline]
-RIP: 0010:sta_info_insert_rcu+0xa3/0x1130 net/mac80211/sta_info.c:723
-Code: 16 00 00 8b 90 a8 16 00 00 44 31 f9 44 31 e2 0f b7 c1 09 c2 74
-0f e8 dc c0 43 fd 41 f6 c4 01 0f 84 b2 00 00 00 e8 cd c0 43 fd <0f> 0b
-41 bc ea ff ff ff e8 c0 c0 43 fd 48 89 de 4c 89 f7 e8 35 fe
-RSP: 0018:ffffc90005b8bc98 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: ffff88810ce08000 RCX: 0000000000000000
-RDX: ffff88810cdda240 RSI: ffffffff83f3d133 RDI: 0000000000000000
-RBP: ffffc90005b8bd18 R08: ffffffff83f3d0d6 R09: 0000000000000000
-R10: ffffc90005b8bc98 R11: 0000000000000003 R12: 00000000000ecf85
-R13: ffff88810ce49708 R14: ffff88810ce48d60 R15: 0000000000000000
-FS:  0000000000000000(0000) GS:ffff88813dd00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000001b52c48 CR3: 000000010c909000 CR4: 0000000000750ee0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-PKRU: 55555554
-Call Trace:
- ieee80211_ibss_finish_sta+0xbc/0x170 net/mac80211/ibss.c:585
- ieee80211_ibss_work+0x13f/0x7d0 net/mac80211/ibss.c:1693
- ieee80211_iface_work+0x43a/0x5f0 net/mac80211/iface.c:1515
- process_one_work+0x359/0x850 kernel/workqueue.c:2297
- worker_thread+0x41/0x4d0 kernel/workqueue.c:2444
- kthread+0x178/0x1b0 kernel/kthread.c:319
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
