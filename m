@@ -2,74 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B91140C364
-	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 12:12:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C1C440C369
+	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 12:13:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237347AbhIOKN0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Sep 2021 06:13:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56844 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232154AbhIOKNV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 06:13:21 -0400
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19A00C061574;
-        Wed, 15 Sep 2021 03:12:03 -0700 (PDT)
-Received: by mail-oi1-x22e.google.com with SMTP id bi4so3454252oib.9;
-        Wed, 15 Sep 2021 03:12:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
-         :cc;
-        bh=70gsDuYlrJH7pHDgz8msDCSyfViuZkTIcdK8Iw5ZLgI=;
-        b=REbFIYtag9UPWO8o4gpMVTx58unEkBbVpfQUv+HE3SyD4ePUeyDG0a6nbr1+8yiD9Z
-         uGncX1lnXT6ceZ2AJWYTdILlEZ7B0K9yxnKHNv1LS6k5N1Bhk1mpRUV3q7CAwXagK35x
-         rzgVpMiXk7Bo8fipq8PLRzdK42O4i4LzyilQ1voaDvmLoGjmjgYut0zZJUqotpQ4snA7
-         7qGrQfMWWoe2A5cS8r1bk6iKBeoZcyBkbRhrenamoXXHogyF4JPx3yeI2G7FT2+e8Y01
-         OWtUBCeZ50NhiR5A8+i0Dtjux3UFGyGhYnX6yA6mC+n8abB++pX34BeffZQv1aRolI9I
-         kFKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
-         :message-id:subject:to:cc;
-        bh=70gsDuYlrJH7pHDgz8msDCSyfViuZkTIcdK8Iw5ZLgI=;
-        b=ya+TolMEiBdTpCpp9MrwfHeuQgob4qj4/9cF/VjeUYKnFrcsp+3CR0igusKrojRc/o
-         zhbtdmWCQsJBMjZHdlR4dwrReZHsu41yGG40XyArzVYadv6kLkd2y0xaRk72Gg/vjtOt
-         sMEbM0Mb9bEhY+eha5T2aKLLS/Oliz0OxRPUhpxUd2/co1Qban5KEvS1SRmBmMFrSYOw
-         nKCdYDHUGh7HbARf2eGMeoha9sbNXalifGkrk+iAAbjQScllf7tJ6v0RPL7jllLn5aKp
-         pHAZxm5QgP8mvKwmRpmXrkNAuyHVyE2N6X5rheJPZ3Il449DudJ6xC2qjzJ+4T38NAz/
-         0PEg==
-X-Gm-Message-State: AOAM530/0Q3ZXs9wkwn4kfxsCM+sDUNepiibdpzGnC3xCAt+jRdacNw6
-        nFyjYfBYS7lZ4OCcdwtN4Yjt3RG/HAgaiEnfhvUAmJ4F08UlIQ==
-X-Google-Smtp-Source: ABdhPJw6ZwCT1e6l1oGjcvU/MhBsT4PAtv1xG3T6l1p4uMLsPQzutee3ZEwosPeV186K3U4AM6gsxd1/oWu0ykbJids=
-X-Received: by 2002:a05:6808:1918:: with SMTP id bf24mr4563671oib.50.1631700722473;
- Wed, 15 Sep 2021 03:12:02 -0700 (PDT)
+        id S237390AbhIOKOp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Sep 2021 06:14:45 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:41049 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232154AbhIOKOo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 06:14:44 -0400
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
+        by mailout.nyi.internal (Postfix) with ESMTP id 088275C010D;
+        Wed, 15 Sep 2021 06:13:25 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute2.internal (MEProxy); Wed, 15 Sep 2021 06:13:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=+AOpHsMEHgFdhLLVv
+        F9SBsPksGrMhJhojcBVYI65YJw=; b=hkHWonDSt1S80PABYY09MoVxDz8/PtKAw
+        t+QGURh42s4pzIkFVICk8v9pJY+RxRu7Sw1S1Erj64essIGIRcQA4gS/5m+v8LED
+        f++ezqf9od7ZeEWhrr+e08Z0CKEQ53XLoaIiMP7ExTmcwESgaiIZRYxSGgmuHcgN
+        kkMey1HQIMgNt63CAV45Q2mvCFww2XsT2GM0t2nOyjPdlP8JWujfsV6iGxHZkxlP
+        eu3FtJV2AlOdrK0gf58sNvJ03nJyVE1IduzAYXerg++zAkwTuq9IoxxKU2cuH/Mg
+        k7XLZXYA7fhi0HBBVZufc6tPD3mdgHNtsWCmVkvX3s8CeDANESJpQ==
+X-ME-Sender: <xms:RMdBYSUYKRSqULFhj5c15zZKHHnrYz_Y_Q9R5BjV6B2rxSU4PQjBRg>
+    <xme:RMdBYemhQiGsCOqhQJleetnVO1WLWcDhwraXgqerg-FbWNXHR1h_RWedysMFXOCW4
+    O7NWFl9E-mq8QU>
+X-ME-Received: <xmr:RMdBYWaeAk9dgcbOhb8LLkIkC5uQWGJ6JwyyJi27a1miL9Ye97bD72zU-cUDNH78l0PKI7Nd5lOG2QAZZMJRRbhshTH0qWjtEw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrudehuddgvddvucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecuggftrfgrthhtvghrnhepleeuffeukeejteeugfdvgfdtheefgfejud
+    ethfdtveeujedvkefguddvudfhjeefnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghen
+    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
+    gthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:RMdBYZWBWL2Q3-Vje84WC0lBps2Jd3oWT8AXNMb8VoGcXhypPnNxNw>
+    <xmx:RMdBYcnOugoOs0CPBaAqHzCI_7BNP-RIGsDA1yJfRUNnw-38_skDCQ>
+    <xmx:RMdBYec9hdfAWm3qO0OUBF4p1jFYGAOG9EVEzVHjozE-rc2g2lsZBg>
+    <xmx:RcdBYbtOaRHeNuVQT7o5IEBbPdD4dto5q5swEank0gtP3tFfGoHUDg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 15 Sep 2021 06:13:22 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        jiri@nvidia.com, vadimp@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH net-next 00/10] mlxsw: Add support for transceiver modules reset
+Date:   Wed, 15 Sep 2021 13:13:04 +0300
+Message-Id: <20210915101314.407476-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Received: by 2002:a05:6830:1294:0:0:0:0 with HTTP; Wed, 15 Sep 2021 03:12:02
- -0700 (PDT)
-In-Reply-To: <20210915095650.GG25110@breakpoint.cc>
-References: <20210811084908.14744-10-pablo@netfilter.org> <20210915095116.14686-1-youling257@gmail.com>
- <20210915095650.GG25110@breakpoint.cc>
-From:   youling 257 <youling257@gmail.com>
-Date:   Wed, 15 Sep 2021 18:12:02 +0800
-Message-ID: <CAOzgRdb_Agb=vNcAc=TDjyB_vSjB8Jua_TPtWYcXZF0G3+pRAg@mail.gmail.com>
-Subject: Re: [PATCH net-next 09/10] netfilter: x_tables: never register tables
- by default
-To:     Florian Westphal <fw@strlen.de>
-Cc:     pablo@netfilter.org, netfilter-devel@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-record video screenshot, http://s7tu.com/images/2021/09/15/chBnr0.jpg
+From: Ido Schimmel <idosch@nvidia.com>
 
-2021-09-15 17:56 GMT+08:00, Florian Westphal <fw@strlen.de>:
-> youling257 <youling257@gmail.com> wrote:
->> This patch cause kernel panic on my userspace, my userspace is androidx86
->> 7.
->
-> You need to provide kernel panic backtrace or reproducer, else I can't do
-> anything
-> about this.
->
+This patchset prepares mlxsw for future transceiver modules related [1]
+changes and adds reset support via the existing 'ETHTOOL_RESET'
+interface.
+
+Patches #1-#6 are relatively straightforward preparations.
+
+Patch #7 tracks the number of logical ports that are mapped to the
+transceiver module and the number of logical ports using it that are
+administratively up. Needed for both reset support and power mode policy
+support.
+
+Patches #8-#9 add required fields in device registers.
+
+Patch #10 implements support for ethtool_ops::reset in order to reset
+transceiver modules.
+
+[1] https://lore.kernel.org/netdev/20210824130344.1828076-1-idosch@idosch.org/
+
+Ido Schimmel (10):
+  mlxsw: core: Initialize switch driver last
+  mlxsw: core: Remove mlxsw_core_is_initialized()
+  mlxsw: core_env: Defer handling of module temperature warning events
+  mlxsw: core_env: Convert 'module_info_lock' to a mutex
+  mlxsw: spectrum: Do not return an error in ndo_stop()
+  mlxsw: spectrum: Do not return an error in
+    mlxsw_sp_port_module_unmap()
+  mlxsw: Track per-module port status
+  mlxsw: reg: Add fields to PMAOS register
+  mlxsw: Make PMAOS pack function more generic
+  mlxsw: Add support for transceiver modules reset
+
+ drivers/net/ethernet/mellanox/mlxsw/core.c    |  29 +--
+ drivers/net/ethernet/mellanox/mlxsw/core.h    |   1 -
+ .../net/ethernet/mellanox/mlxsw/core_env.c    | 183 +++++++++++++++---
+ .../net/ethernet/mellanox/mlxsw/core_env.h    |  13 ++
+ drivers/net/ethernet/mellanox/mlxsw/minimal.c |  30 ++-
+ drivers/net/ethernet/mellanox/mlxsw/reg.h     |  31 ++-
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    |  42 +++-
+ .../mellanox/mlxsw/spectrum_ethtool.c         |  10 +
+ 8 files changed, 281 insertions(+), 58 deletions(-)
+
+-- 
+2.31.1
+
