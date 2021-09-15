@@ -2,222 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F02140BDA8
-	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 04:17:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E28E40BDC9
+	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 04:28:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236201AbhIOCSd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 22:18:33 -0400
-Received: from smtp8.emailarray.com ([65.39.216.67]:61003 "EHLO
-        smtp8.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236206AbhIOCSR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 22:18:17 -0400
-Received: (qmail 92237 invoked by uid 89); 15 Sep 2021 02:16:58 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21ANzEuMjEyLjEzOC4zOQ==) (POLARISLOCAL)  
-  by smtp8.emailarray.com with SMTP; 15 Sep 2021 02:16:58 -0000
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     kuba@kernel.org, davem@davemloft.net, richardcochran@gmail.com
-Cc:     netdev@vger.kernel.org, kernel-team@fb.com
-Subject: [PATCH net-next 18/18] docs: ABI: Add sysfs documentation for timecard
-Date:   Tue, 14 Sep 2021 19:16:36 -0700
-Message-Id: <20210915021636.153754-19-jonathan.lemon@gmail.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210915021636.153754-1-jonathan.lemon@gmail.com>
-References: <20210915021636.153754-1-jonathan.lemon@gmail.com>
+        id S229787AbhIOC3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 22:29:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48652 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229595AbhIOC3f (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Sep 2021 22:29:35 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BADDE61131;
+        Wed, 15 Sep 2021 02:28:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1631672897;
+        bh=wrESkK+A6pJf6sSL1ntWooGUWYIub5LxG6B56o4mieA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=nr2FsFomV/KuFGn1OsB1I2tyuuQ3eKqAMkESClzw6C5fIJp1RfLeK0w7ixDQARILR
+         zwpuFnuHK8f5PRnPGBx3Z+uk9hdQTzuhbSJVSzUomeMeCFxRn3Pj8UZb/liRzf5EWA
+         E/v0M+tddjVnW6j8S7vdmHmCveWixbJp9B84+toBxNkau4P6StLOLitfzT3BaJgH8l
+         S81d7hfKqQCwZo4f8mop1IDt4hb52qHJxm8J3JxwQcKOKp2qxIY5ixovf365KkQsRB
+         ksRW7EpTdoZikXAIzFBPIxLtc+8vdq8zHLA8UPdnae93VEkoqPQeeTAHWG/hUwSriy
+         kaWJOHpt8pVzg==
+Date:   Tue, 14 Sep 2021 19:28:15 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Shai Malin <smalin@marvell.com>, Adrian Bunk <bunk@kernel.org>
+Cc:     Ariel Elior <aelior@marvell.com>,
+        Sudarsana Reddy Kalluru <skalluru@marvell.com>,
+        GR-everest-linux-l2 <GR-everest-linux-l2@marvell.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] bnx2x: Fix enabling network interfaces without VFs
+Message-ID: <20210914192815.0376cb73@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <SJ0PR18MB3882AD2C9F93E24C35A2E6FECCD99@SJ0PR18MB3882.namprd18.prod.outlook.com>
+References: <SJ0PR18MB3882AD2C9F93E24C35A2E6FECCD99@SJ0PR18MB3882.namprd18.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch describes the sysfs interface implemented by the
-ptp_ocp driver, under /sys/class/timecard.
+On Mon, 13 Sep 2021 11:18:33 +0000 Shai Malin wrote:
+> On 9/12/2021 at 1:42PM, Adrian Bunk Wrote:
+> > On Mon, Sep 13, 2021 at 08:14:33AM +0000, Shai Malin wrote:  
+> > > Thanks for reporting this issue!
+> > > But the complete fix should also not use "goto failed".
+> > > Instead, please create a new "goto skip_vfs" so it will skip
+> > > the log of "Failed err=".  
+> > 
+> > Is this really desirable?
+> > It is a debug print not enabled by default,
+> > and trying to enable SR-IOV did fail.  
+> 
+> I agree.
+> 
+> Acked-by: Shai Malin <smalin@marvell.com>
 
-Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
----
- Documentation/ABI/testing/sysfs-timecard | 174 +++++++++++++++++++++++
- 1 file changed, 174 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-timecard
-
-diff --git a/Documentation/ABI/testing/sysfs-timecard b/Documentation/ABI/testing/sysfs-timecard
-new file mode 100644
-index 000000000000..97f6773794a5
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-timecard
-@@ -0,0 +1,174 @@
-+What:		/sys/class/timecard/
-+Date:		September 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	This directory contains files and directories
-+		providing a standardized interface to the ancillary
-+		features of the OpenCompute timecard.
-+
-+What:		/sys/class/timecard/ocpN/
-+Date:		September 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	This directory contains the attributes of the Nth timecard
-+		registered.
-+
-+What:		/sys/class/timecard/ocpN/available_clock_sources
-+Date:		September 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	(RO) The list of available time sources that the PHC
-+		uses for clock adjustments.
-+
-+		====  =================================================
-+                NONE  no adjustments
-+                PPS   adjustments come from the PPS1 selector (default)
-+                TOD   adjustments from the GNSS/TOD module
-+                IRIG  adjustments from external IRIG-B signal
-+                DCF   adjustments from external DCF signal
-+                ====  =================================================
-+
-+What:		/sys/class/timecard/ocpN/available_sma_inputs
-+Date:		September 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	(RO) Set of available destinations (sinks) for a SMA
-+		input signal.
-+
-+                =====  ================================================
-+                10Mhz  signal is used as the 10Mhz reference clock
-+                PPS1   signal is sent to the PPS1 selector
-+                PPS2   signal is sent to the PPS2 selector
-+                TS1    signal is sent to timestamper 1
-+                TS2    signal is sent to timestamper 2
-+                IRIG   signal is sent to the IRIG-B module
-+                DCF    signal is sent to the DCF module
-+                =====  ================================================
-+
-+What:		/sys/class/timecard/ocpN/available_sma_outputs
-+Date:		May 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	(RO) Set of available sources for a SMA output signal.
-+
-+                =====  ================================================
-+                10Mhz  output is from the 10Mhz reference clock
-+                PHC    output PPS is from the PHC clock
-+                MAC    output PPS is from the Miniature Atomic Clock
-+                GNSS   output PPS is from the GNSS module
-+                GNSS2  output PPS is from the second GNSS module
-+                IRIG   output is from the PHC, in IRIG-B format
-+                DCF    output is from the PHC, in DCF format
-+                =====  ================================================
-+
-+What:		/sys/class/timecard/ocpN/clock_source
-+Date:		September 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	(RW) Contains the current synchronization source used by
-+		the PHC.  May be changed by writing one of the listed
-+		values from the available_clock_sources attribute set.
-+
-+What:		/sys/class/timecard/ocpN/gnss_sync
-+Date:		September 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	(RO) Indicates whether a valid GNSS signal is received,
-+		or when the signal was lost.
-+
-+What:		/sys/class/timecard/ocpN/i2c
-+Date:		September 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	This optional attribute links to the associated i2c device.
-+
-+What:		/sys/class/timecard/ocpN/irig_b_mode
-+Date:		September 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	(RW) An integer from 0-7 indicating the timecode format
-+		of the IRIG-B output signal: B00<n>
-+
-+What:		/sys/class/timecard/ocpN/pps
-+Date:		September 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	This optional attribute links to the associated PPS device.
-+
-+What:		/sys/class/timecard/ocpN/ptp
-+Date:		September 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	This attribute links to the associated PTP device.
-+
-+What:		/sys/class/timecard/ocpN/serialnum
-+Date:		September 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	(RO) Provides the serial number of the timecard.
-+
-+What:		/sys/class/timecard/ocpN/sma1
-+What:		/sys/class/timecard/ocpN/sma2
-+What:		/sys/class/timecard/ocpN/sma3
-+What:		/sys/class/timecard/ocpN/sma4
-+Date:		September 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	(RW) These attributes specify the direction of the signal
-+		on the associated SMA connectors, and also the signal sink
-+		or source.
-+
-+		The display format of the attribute is a space separated
-+		list of signals, prefixed by the input/output direction.
-+
-+		The signal direction may be changed (if supported) by
-+		prefixing the signal list with either "in:" or "out:".
-+		If neither prefix is present, then the direction is unchanged.
-+
-+		The output signal may be changed by writing one of the listed
-+		values from the available_sma_outputs attribute set.
-+
-+		The input destinations may be changed by writing multiple
-+		values from the available_sma_inputs attribute set,
-+		separated by spaces.  If there are duplicated input
-+		destinations between connectors, the lowest numbered SMA
-+		connector is given priority.
-+
-+		Note that not all input combinations may make sense.
-+
-+		The 10Mhz reference clock input is currently only valid
-+		on SMA1 and may not be combined with other destination sinks.
-+
-+What:		/sys/class/timecard/ocpN/ts_window_adjust
-+Date:		September 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	(RW) When retrieving the PHC with the PTP SYS_OFFSET_EXTENDED
-+		ioctl, a system timestamp is made before and after the PHC
-+		time is retrieved.  The midpoint between the two system
-+		timestamps is usually taken to be the SYS time associated
-+		with the PHC time.  This estimate may be wrong, as it depends
-+		on PCI latencies, and when the PHC time was latched
-+
-+		The attribute value reduces the end timestamp by the given
-+		number of nanoseconds, so the computed midpoint matches the
-+		retrieved PHC time.
-+
-+		The initial value is set based on measured PCI latency and
-+		the estimated point where the FPGA latches the PHC time.  This
-+		value may be changed by writing an unsigned integer.
-+
-+What:		/sys/class/timecard/ocpN/ttyGNSS
-+What:		/sys/class/timecard/ocpN/ttyGNSS2
-+Date:		September 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	These optional attributes link to the TTY serial ports
-+		associated with the GNSS devices.
-+
-+What:		/sys/class/timecard/ocpN/ttyMAC
-+Date:		September 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	This optional attribute links to the TTY serial port
-+		associated with the Miniature Atomic Clock.
-+
-+What:		/sys/class/timecard/ocpN/ttyNMEA
-+Date:		September 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	This optional attribute links to the TTY serial port
-+		which outputs the PHC time in NMEA ZDA format.
-+
-+What:		/sys/class/timecard/ocpN/utc_tai_offset
-+Date:		September 2021
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	(RW) The DCF and IRIG output signals are in UTC, while the
-+		TimeCard operates on TAI.  This attribute allows setting the
-+		offset in seconds, which is added to the TAI timebase for
-+		these formats.
-+
-+		The offset may be changed by writing an unsigned integer.
--- 
-2.31.1
-
+Applied, thanks!
