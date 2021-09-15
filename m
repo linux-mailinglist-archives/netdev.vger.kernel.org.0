@@ -2,91 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A8E4240CD0D
-	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 21:16:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6501840CD16
+	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 21:18:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231439AbhIOTSM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Sep 2021 15:18:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42118 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230230AbhIOTSL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 15:18:11 -0400
-Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92C64C061574
-        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 12:16:52 -0700 (PDT)
-Received: by mail-ot1-x32e.google.com with SMTP id m7-20020a9d4c87000000b0051875f56b95so5012226otf.6
-        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 12:16:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Gh4bn35Ad0vdVDHCviL3VyTRYieJBj2Evni8i7+DXt8=;
-        b=RCtJ/Ww8JUDNqMB8/lBzwfKbEuvyuMvQfVHucjMXFjAQ/enuCZqYlrBNhbdVCr0oKu
-         9iFp65oC4NyHtVKs/aCybXOTk4NxoScw/jBy6nsLNNlV9XG+lEtdpOOKQB9uA3yNymCX
-         ri0s4ZJi5XGqIVcyKBsKKH9FrgvpI6afMzC71bYyjQ9ZF6bbT33NmlQ5Kft5+JApYC4C
-         ju6+IaA8gnJDNMELuoFDSm3f4CGDRO+dRf13dS8Fi3T8EQJCBsHcdtYApR5ydswGeiF4
-         kdcASjvWSTMooo/Lc6BnpGW4S6QB+u4/ug4LsP5DVpEHF9+NVv5x/Y+E0qvzdziZqdRb
-         fFGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Gh4bn35Ad0vdVDHCviL3VyTRYieJBj2Evni8i7+DXt8=;
-        b=r9ckE7N79N59A/N9kDH/TjWjgHoWvJy1TOHW6VcOxcmfqIgFdqYdJSqYVQcrrr4QEH
-         Zlk+9t4jdNWxXz1FCZYYSicNpWuAKEWXbTppucur5/vMB+PQlgHazOcOD6rcyib/fWof
-         0qJxolwga1WfBezisZXmZJSZEJa88Fh+YdDAY3EbYUfNRkeJtY+Fk4vdQy9bRbS1Fs5/
-         wkIWYypkGABynzEAl7I4c2UYwx8LV9aC8AL45G+V0HVgT8wCN0Tr2OP4ZXhRpvHHQ4Rp
-         Ft8hBOowIXW0YjcGxYMIrtI9Cq2nY2D7YidSvYddyCSXp6FDI3e08+vS2gO0br282qG2
-         kWLA==
-X-Gm-Message-State: AOAM5335/jRE0Ojs5ZQBH0Gcv8rmK2RzbcgkXgLdYjGz1Ckfr7HYK4yE
-        Rgl0egbmd9bU99d0HFk+TGO1lqSww2SE9GSvejE=
-X-Google-Smtp-Source: ABdhPJz9bs25IokICEolN5gSBqRcr2YDZADfY9nkr/HTiobh0+i8sLP1f90mgZ/ELxIDPa+3LTzvKopt9MtFjpisbSM=
-X-Received: by 2002:a05:6830:2b2c:: with SMTP id l44mr1451640otv.238.1631733411803;
- Wed, 15 Sep 2021 12:16:51 -0700 (PDT)
+        id S231529AbhIOTTf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Sep 2021 15:19:35 -0400
+Received: from mail.aperture-lab.de ([116.203.183.178]:37308 "EHLO
+        mail.aperture-lab.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231153AbhIOTTe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 15:19:34 -0400
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 9BD3A3EB3C;
+        Wed, 15 Sep 2021 21:18:05 +0200 (CEST)
+Date:   Wed, 15 Sep 2021 21:18:03 +0200
+From:   Linus =?utf-8?Q?L=C3=BCssing?= <linus.luessing@c0d3.blue>
+To:     Felix Fietkau <nbd@nbd.name>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        Sujith Manoharan <c_manoha@qca.qualcomm.com>,
+        ath9k-devel@qca.qualcomm.com, linux-wireless@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "John W . Linville" <linville@tuxdriver.com>,
+        Felix Fietkau <nbd@openwrt.org>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
+        Sven Eckelmann <sven@narfation.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Linus =?utf-8?Q?L=C3=BCssing?= <ll@simonwunderlich.de>
+Subject: Re: [PATCH 3/3] ath9k: Fix potential hw interrupt resume during reset
+Message-ID: <YUJGxZW1a+vlG335@sellars>
+References: <20210914192515.9273-1-linus.luessing@c0d3.blue>
+ <20210914192515.9273-4-linus.luessing@c0d3.blue>
+ <255a49c7-d763-50d9-87e0-da22f4a9b053@nbd.name>
 MIME-Version: 1.0
-References: <452ff4ddfef7fc8f558a8c8eb7a8050688760e11.1631609537.git.jbenc@redhat.com>
-In-Reply-To: <452ff4ddfef7fc8f558a8c8eb7a8050688760e11.1631609537.git.jbenc@redhat.com>
-From:   Jesse Brandeburg <jesse.brandeburg@gmail.com>
-Date:   Wed, 15 Sep 2021 12:16:40 -0700
-Message-ID: <CAEuXFExDWaQwJHHQLcMjbFSP-621KUi16BNg=VH-Y5KLk6dhCA@mail.gmail.com>
-Subject: Re: [Intel-wired-lan] [PATCH net v2] i40e: fix endless loop under rtnl
-To:     Jiri Benc <jbenc@redhat.com>
-Cc:     NetDEV list <netdev@vger.kernel.org>,
-        intel-wired-lan@lists.osuosl.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <255a49c7-d763-50d9-87e0-da22f4a9b053@nbd.name>
+X-Last-TLS-Session-Version: TLSv1.3
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 14, 2021 at 1:55 AM Jiri Benc <jbenc@redhat.com> wrote:
->
-> The loop in i40e_get_capabilities can never end. The problem is that
-> although i40e_aq_discover_capabilities returns with an error if there's
-> a firmware problem, the returned error is not checked. There is a check for
-> pf->hw.aq.asq_last_status but that value is set to I40E_AQ_RC_OK on most
-> firmware problems.
->
-> When i40e_aq_discover_capabilities encounters a firmware problem, it will
-> enocunter the same problem on its next invocation. As the result, the loop
-> becomes endless. We hit this with I40E_ERR_ADMIN_QUEUE_TIMEOUT but looking
-> at the code, it can happen with a range of other firmware errors.
->
-> I don't know what the correct behavior should be: whether the firmware
-> should be retried a few times, or whether pf->hw.aq.asq_last_status should
-> be always set to the encountered firmware error (but then it would be
-> pointless and can be just replaced by the i40e_aq_discover_capabilities
-> return value). However, the current behavior with an endless loop under the
-> rtnl mutex(!) is unacceptable and Intel has not submitted a fix, although we
-> explained the bug to them 7 months ago.
->
-> This may not be the best possible fix but it's better than hanging the whole
-> system on a firmware bug.
->
-> Fixes: 56a62fc86895 ("i40e: init code and hardware support")
-> Tested-by: Stefan Assmann <sassmann@redhat.com>
-> Signed-off-by: Jiri Benc <jbenc@redhat.com>
+On Wed, Sep 15, 2021 at 11:48:55AM +0200, Felix Fietkau wrote:
+> 
+> On 2021-09-14 21:25, Linus Lüssing wrote:
+> > From: Linus Lüssing <ll@simonwunderlich.de>
+> > 
+> > There is a small risk of the ath9k hw interrupts being reenabled in the
+> > following way:
+> > 
+> > 1) ath_reset_internal()
+> >    ...
+> >    -> disable_irq()
+> >       ...
+> >       <- returns
+> > 
+> >                       2) ath9k_tasklet()
+> >                          ...
+> >                          -> ath9k_hw_resume_interrupts()
+> >                          ...
+> > 
+> > 1) ath_reset_internal() continued:
+> >    -> tasklet_disable(&sc->intr_tq); (= ath9k_tasklet() off)
+> > 
+> > By first disabling the ath9k interrupt there is a small window
+> > afterwards which allows ath9k hw interrupts being reenabled through
+> > the ath9k_tasklet() before we disable this tasklet in
+> > ath_reset_internal(). Leading to having the ath9k hw interrupts enabled
+> > during the reset, which we should avoid.
+> I don't see a way in which interrupts can be re-enabled through the
+> tasklet. disable_irq disables the entire PCI IRQ (not through ath9k hw
+> registers), and they will only be re-enabled by the corresponding
+> enable_irq call.
+
+Ah, okay, then I think I misunderstood the previous fixes to the
+ath9k interrupt shutdown during reset here. I had only tested the
+following diff and assumed that it were not okay to have the ath9k
+hw interrupt registers enabled within the spinlock'd section:
+
+```
+@@ -299,11 +299,23 @@ static int ath_reset_internal(struct ath_softc *sc, struct ath9k_channel *hchan)
+ 
+        __ath_cancel_work(sc);
+ 
+        disable_irq(sc->irq);
++       for (r = 0; r < 200; r++) {
++               msleep(5);
++
++               if (REG_READ(ah, AR_INTR_SYNC_CAUSE) ||
++                   REG_READ(ah, AR_INTR_ASYNC_CAUSE)) {
++                       break;
++               }
++       }
+        tasklet_disable(&sc->intr_tq);
+        tasklet_disable(&sc->bcon_tasklet);
+        spin_lock_bh(&sc->sc_pcu_lock);
+ 
++       if (REG_READ(ah, AR_INTR_SYNC_CAUSE) ||
++           REG_READ(ah, AR_INTR_ASYNC_CAUSE))
++               ATH_DBG_WARN(1, "%s: interrupts are enabled", __func__);
++
+        if (!sc->cur_chan->offchannel) {
+                fastcc = false;
+                caldata = &sc->cur_chan->caldata;
+```
+
+And yes, the general ath9k interrupt should still be disabled. Didn't
+test for that but seems like it.
 
 
-Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+(And now I noticed that actually
+ ath_reset_internal()
+ -> ath_prepare_reset()
+   -> ath9k_hw_disable_interrupts()
+     -> ath9k_hw_kill_interrupts()
+ disables the ath9k hw interrupt registers before the
+ ath_reset_internal()->ath9k_hw_reset() call anyway.)
 
-Thanks!
+
+What would you prefer, should this patch just be dropped or should
+I resend it without the "Fixes:" line as a cosmetic change? (e.g. to
+have the order in reverse to reenablement at the end of
+ath_reset_internal(), to avoid confusion in the future?)
+
+Regards, Linus
