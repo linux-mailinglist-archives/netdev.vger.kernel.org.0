@@ -2,268 +2,348 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF00540C880
-	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 17:42:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C7C340C886
+	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 17:42:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238065AbhIOPnz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Sep 2021 11:43:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:39522 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237929AbhIOPnw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 11:43:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1631720553;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=10I9vICVDU27qD2XhuUhFV2kP1rV85dFmR2wwVqZ5zY=;
-        b=D780Zkg2tVjiJdQIJIdWNZmW0K61ErHAxQIw+QZU+DZ5QHc6dVzpHRqBX5OrAyMR/d9oc6
-        hoLqMBFR6OTDpA+V/w4g7GLvj3lgFnHery5LGETPDRnEezbjSsHG5L03pEVJ2X8rovecoi
-        Bdss4Q0QB4R6g/XK8mbzGPvt+W4quHQ=
-Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
- [209.85.208.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-380-vFdR0KaFOymgTLhmiZ8ZHg-1; Wed, 15 Sep 2021 11:42:32 -0400
-X-MC-Unique: vFdR0KaFOymgTLhmiZ8ZHg-1
-Received: by mail-lj1-f197.google.com with SMTP id m9-20020a2e5809000000b001dccccc2bf6so532243ljb.7
-        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 08:42:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:cc:subject:to:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=10I9vICVDU27qD2XhuUhFV2kP1rV85dFmR2wwVqZ5zY=;
-        b=gT6qV+vcUSt46E1ipHt+WyFamcKn+5OaocGDS46uodHigXxIcKd4pDO57mQLRGFtHc
-         wbegHuXPmj8ailm16JlrnOzIb2FXFlq0bfgVtxrb4CLz1PNh9IDzllb2hIWaC2HPVy61
-         rE9VbiSfMEdMcsEAXPa27z8KDu5B8p9loS6wpJ+8+wV6HtuTC9BB9woNW5Y4CiaZ+Zyt
-         /wN2b2ZDX7vbXH2dOUl7055HsDhw233CXOUKFAD1sXMfmRa4ETVu5gbVgOoNy3AbiC7q
-         jDerbg3xAB8I7G8lQvIG3QJN6xQfgiXC3Ylyx5KY7aLLEQghkNKPDiCI4GNr0R2diwC0
-         vwOw==
-X-Gm-Message-State: AOAM531KP+YoCPp+pZ4AogNIVWPnI6/JshR8MJ8vJ5g7CTtscRXaglhr
-        e8kX9xH/DNy1phCVflXnU/K7d3/44oBYc5AkR41QJYOw5OcKAds6Eu+Cva2BhiKgfXSizv0FJbT
-        7kjbZVT0lKK0hTzZv
-X-Received: by 2002:ac2:555b:: with SMTP id l27mr445485lfk.346.1631720550686;
-        Wed, 15 Sep 2021 08:42:30 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy4pfpem5vcsiqQwLICl2XkCcc68U6pwOP8hqu/zTtl1wKo6dr7igOSc9pdEGDkVkVxRkqrjg==
-X-Received: by 2002:ac2:555b:: with SMTP id l27mr445453lfk.346.1631720550322;
-        Wed, 15 Sep 2021 08:42:30 -0700 (PDT)
-Received: from [192.168.42.238] (87-59-106-155-cable.dk.customer.tdc.net. [87.59.106.155])
-        by smtp.gmail.com with ESMTPSA id x192sm14552lff.154.2021.09.15.08.42.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Sep 2021 08:42:29 -0700 (PDT)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     brouer@redhat.com, Alexander Duyck <alexander.duyck@gmail.com>,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linuxarm@openeuler.org,
-        hawk@kernel.org, jonathan.lemon@gmail.com, alobakin@pm.me,
-        willemb@google.com, cong.wang@bytedance.com, pabeni@redhat.com,
-        haokexin@gmail.com, nogikh@google.com, elver@google.com,
-        memxor@gmail.com, edumazet@google.com, dsahern@gmail.com
-Subject: Re: [PATCH net-next v2 3/3] skbuff: keep track of pp page when
- __skb_frag_ref() is called
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Yunsheng Lin <linyunsheng@huawei.com>
-References: <20210914121114.28559-1-linyunsheng@huawei.com>
- <20210914121114.28559-4-linyunsheng@huawei.com>
- <CAKgT0Ud7NXpHghiPeGzRg=83jYAP1Dx75z3ZE0qV8mT0zNMDhA@mail.gmail.com>
- <9467ec14-af34-bba4-1ece-6f5ea199ec97@huawei.com>
- <YUHtf+lI8ktBdjsQ@apalos.home>
-Message-ID: <0337e2f6-5428-2c75-71a5-6db31c60650a@redhat.com>
-Date:   Wed, 15 Sep 2021 17:42:27 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
-MIME-Version: 1.0
-In-Reply-To: <YUHtf+lI8ktBdjsQ@apalos.home>
-Content-Type: text/plain; charset=utf-8; format=flowed
+        id S238147AbhIOPoC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Sep 2021 11:44:02 -0400
+Received: from mail-oln040093003013.outbound.protection.outlook.com ([40.93.3.13]:26283
+        "EHLO na01-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S238022AbhIOPoA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Sep 2021 11:44:00 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RtKrp+lzji7XMd98vnSDmCDWfletLqhX00sGIiRD73cIb16nDoQkDGvE3pN2oe71HFHh2fae7NAh+o9A9cUJG1kbGMMR0FqXGeloiFfJxM0FwZ+od0+fMFISyMBI5xm785hYPNbO90c3+S5wopG7FoAl5Xzq5WMpHUvSexmExn585mcQBgCvPvR6vQKL1z7a9yQUFaNlUac+lG+j8OKyklDWcFaRdHxX7aZjnqxgjr0DOKJM62qKwrRHo116GW9T+9lylqesXiCK7ATh8+/loc5wNw8v3I1RqndDa/1H4t6DdQezIy+2b5eNr2GlUfQ3tXBGywAtOWuEAYlr5Gl92w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
+ bh=BmgFBrbCC5NBlik2Cix7zD+7gpr/CsJhBYJ5DLtJP7Y=;
+ b=eXZZn990OBqrqIvpN9oGye2FcerLP6uStqaDsTbq8TdVKy5c3vQRQB2iP7wnKOe5GZ7MUrjC+0vkhkQ90DoC/bWML8s1tYKRNBwcolvGwffFl2qlmdhflz3li/o15o6HUhkBuijrG4nSrfMzQz+q6tlrGfddmwHZJWOstlh9LBoZoNxA0Z1vK1FJiXvNnPasdfFD+ITiOaQFANhztPvHU6j80+b9YKQ6kihYi0dFx0kavy13WADN37JAAvIQ/q581zu6/PPxPpeJBJ56ZlFYki/3t8a42bt2UKlBJWIh5xGzQZyeZId6jfu6KVWniAYtq8p86O/LAIhhxYsKB57yRA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BmgFBrbCC5NBlik2Cix7zD+7gpr/CsJhBYJ5DLtJP7Y=;
+ b=GXftKEyuhJh++1UnWeEAC0QWnYCFvPvGVS19qUJcwlUra/4kknm0QX3H3UbafklD0YUWdGxFEBCRqxQeo7TZUNOoXba6qQ65e2/nw6aw96gFRHxc7kzqzrUE6OjfGTaZYOYqqtnPk8ZkV1Mh+Dh7RVOHbUAYvTHHxtMPY92DWJQ=
+Received: from MWHPR21MB1593.namprd21.prod.outlook.com (2603:10b6:301:7c::11)
+ by MW2PR2101MB1819.namprd21.prod.outlook.com (2603:10b6:302:8::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.2; Wed, 15 Sep
+ 2021 15:42:29 +0000
+Received: from MWHPR21MB1593.namprd21.prod.outlook.com
+ ([fe80::9cb:4254:eba4:a4c3]) by MWHPR21MB1593.namprd21.prod.outlook.com
+ ([fe80::9cb:4254:eba4:a4c3%7]) with mapi id 15.20.4544.005; Wed, 15 Sep 2021
+ 15:42:29 +0000
+From:   Michael Kelley <mikelley@microsoft.com>
+To:     Tianyu Lan <ltykernel@gmail.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>, "x86@kernel.org" <x86@kernel.org>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
+        "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>,
+        "jgross@suse.com" <jgross@suse.com>,
+        "sstabellini@kernel.org" <sstabellini@kernel.org>,
+        "joro@8bytes.org" <joro@8bytes.org>,
+        "will@kernel.org" <will@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
+        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
+        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+        "pgonda@google.com" <pgonda@google.com>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "rppt@kernel.org" <rppt@kernel.org>,
+        "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
+        "aneesh.kumar@linux.ibm.com" <aneesh.kumar@linux.ibm.com>,
+        "saravanand@fb.com" <saravanand@fb.com>,
+        "krish.sadhukhan@oracle.com" <krish.sadhukhan@oracle.com>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        "tj@kernel.org" <tj@kernel.org>,
+        "rientjes@google.com" <rientjes@google.com>
+CC:     "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        vkuznets <vkuznets@redhat.com>,
+        "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
+        "dave.hansen@intel.com" <dave.hansen@intel.com>
+Subject: RE: [PATCH V5 09/12] x86/Swiotlb: Add Swiotlb bounce buffer remap
+ function for HV IVM
+Thread-Topic: [PATCH V5 09/12] x86/Swiotlb: Add Swiotlb bounce buffer remap
+ function for HV IVM
+Thread-Index: AQHXqW4AcVkxLZ5eA0abh07NwOrvvKulNF0Q
+Date:   Wed, 15 Sep 2021 15:42:29 +0000
+Message-ID: <MWHPR21MB159349234C15D0F04F87845CD7DB9@MWHPR21MB1593.namprd21.prod.outlook.com>
+References: <20210914133916.1440931-1-ltykernel@gmail.com>
+ <20210914133916.1440931-10-ltykernel@gmail.com>
+In-Reply-To: <20210914133916.1440931-10-ltykernel@gmail.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=58de890b-0740-424d-90fe-6625ce1167d3;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-09-15T15:09:00Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 3711a4b1-0969-4987-2dd8-08d9785f6cec
+x-ms-traffictypediagnostic: MW2PR2101MB1819:
+x-ms-exchange-transport-forked: True
+x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+x-microsoft-antispam-prvs: <MW2PR2101MB181994E36D2DD88A5BA50479D7DB9@MW2PR2101MB1819.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3276;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: i6IDirtIG/JY8dhPqpLI67X0jaa0NIi01ef16Iln5fgM1oQ5SqZIRiU0HLKRkeetbD2VsbqvQEWuNL8nq2MQN1XJ3Sx/yrgsWCno6fJoZBG8EkY5iXMUO+JXxz/jGPSi0ATVfi8w3wjf26UBFIyExewxg9VzB4do/FjwZj+CViixlLmjUUeHoujzTx/QYyB8tatm0DGC4aZMo844Mmd8JMMwar3pTqndadrldKSUAEDf6aO8U2cYmqzUFNjM8H6mVFEsGmb2UWms4q9ZWDsBHP8ykbIvLKpOW2dKtnNDo/JgxTorLrDmmjaVOPzPEVZ1JxfwQL431y9qepoi+MYF+RERb3yw/MoJCOpva5RH8NvOdv5OuXY5qtNrtHW4xS6d93VQrjyPBgWBggyMMRwTWm7dnf+WdYeV3k60uBrE481GXpSONyQCUWhdP0ee+1ElB+Lo5ZIcmMM+XpFp5e3HYKr2C1wzJLORdMTqRDG3oufDbppyhfLNohzJVKd7hozVdid4/ayHYi19uYAbVYPxctGpIeTvzvubSuN4KVgLYTN47/iLp0fRH6KbigdPJTKUq3jVsLt0MPdehbGlZXVCSrAYp5Fo3K1y6K6rvZCGGlZUiB0W1GDN1tk+2C1WhukGuqpIkEmb1JGlRXG4clCcLkFDvMP91qLX/fOYkhA4whmYTM0pSQTTqonPumXYpaBCgeZ16BH11TZYG0XZZnAVwR0sXmd69b9+UXfx1MhqY8U=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR21MB1593.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(921005)(71200400001)(110136005)(82950400001)(54906003)(5660300002)(10290500003)(7406005)(6506007)(9686003)(33656002)(8936002)(83380400001)(66946007)(38070700005)(38100700002)(316002)(122000001)(7416002)(55016002)(26005)(66556008)(66446008)(86362001)(76116006)(66476007)(64756008)(8676002)(508600001)(7696005)(2906002)(82960400001)(52536014)(4326008)(186003)(8990500004);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?e63sg6qzwihPKEL2sQ0AiD7T/von3zNlILMkOCDOntRohQmYXi8yhQ62u2IC?=
+ =?us-ascii?Q?zQVrVzzeqS28QexASAlBYGWVE8KIZZzOLI7e1dKJqd0KDpTJ1tHmdY3iA1Ep?=
+ =?us-ascii?Q?4O7faisDjTP1du5xqGKm3kQqMi60TEXxot5LA/J8bSHta5WW2s/3T56VYswl?=
+ =?us-ascii?Q?9hmIMRNAADOzAgL21BUHquxLe/H7htXPzad0WgsG6M6x5eIqIwvm6kKN2XBf?=
+ =?us-ascii?Q?XaU/wBuwSR/bmGD8WcWSqsEYgyVcxlKdRpXvLzixuFQUQpMF8t0IKn1g4nvR?=
+ =?us-ascii?Q?FxSUfp42g0EeWqfeFo+cBUq+2/foBSVtwJG5j9IysfPVtJZkb3UkNILZOmAc?=
+ =?us-ascii?Q?WJB2m0l9u2O6Jz1QvQs0cQI7UgXWHuV6cXU4C4pWjAwSFTXy+P2BoJj3jcIJ?=
+ =?us-ascii?Q?OGqSDNfZhvMsuMRb1wYqev8b6WRs+JZ/2ONjDo05Y9s8tlbOmtVl+s5vlpQu?=
+ =?us-ascii?Q?FkZnkywD+JmEMhYAIY/5eG7u2gByWfQ/x+zvnFfxSEcqA98wzIbESm/7/bM8?=
+ =?us-ascii?Q?cAabRqL89E/+v8g7rr/rE0lMnEZ2hSQIi8DSSVcdleZ5SRM/uehRTyEkLbkW?=
+ =?us-ascii?Q?50H4h3VbPuNucjaqgVLE0EkYptAsCWCIvlPeRV1kK2UGbfAhAUFrDwnoDH7Z?=
+ =?us-ascii?Q?/R6FpRVigwiBuHMecqA7+gJyKG2/fOnv6Zcm5x3sgaqWslaPjKbPlGhJE4e7?=
+ =?us-ascii?Q?s+13149KLiP2Jke5Q0P6bALqwtfWKQJrLSOiQ+WDvAUlsR2yqZ1hJuiMEqNQ?=
+ =?us-ascii?Q?9lNkKo4dl2bvAWu4QFfcdX+38Rlf33+naaa22lvsEE2xroRFoCqai3tg1r7x?=
+ =?us-ascii?Q?j5ZVB4vhO3j+FVeeKXzkoEHAH4MTAY6QPF26rZ16F+8TpentmNOu3FL0JZJS?=
+ =?us-ascii?Q?lfMYPAsKfrAqYo9AZRWu472Lhlmo/ZTLzuShXlQNGjQJGtKEdrbgsZgxAPU4?=
+ =?us-ascii?Q?EUSQIekX5fy1Fxz6vaR0DPW57nZ5Z/+Unduro+LjdYy4zDE1A3BATkTdxnMw?=
+ =?us-ascii?Q?LItU1ujLcD61wgcZk3E/BWwabOWonqAT3Kvw5kfaQGUBz/XrOQMhc3tC/E4N?=
+ =?us-ascii?Q?+gp+iszOIOBcCQ2fKlNVPPBbmR3rPiUL7sjHxkP3YO9ojNliFqRLw/Rky7f+?=
+ =?us-ascii?Q?6GQi5Lxxii/dBpZ9/1Pcl520UPU7JmKp54X864TWxI4mvd2N95V7bbC5cn3T?=
+ =?us-ascii?Q?h57vuF5xSZK+AtEs/aYPM4An/4W1XDrlLspr5WY/tb2y7pQtmMJ+j2wXazfr?=
+ =?us-ascii?Q?k9NvkQnvWmN7uspM8uT6ejfXbHLs2dDQWB5LpIO/pgoMo4PUbIOmR3YESXZu?=
+ =?us-ascii?Q?Lq3utGvUcnJDcakCx6iaWr/U?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR21MB1593.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3711a4b1-0969-4987-2dd8-08d9785f6cec
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Sep 2021 15:42:29.1121
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: OfTbv+rW/eXSEDAIeHRYn6QW2NszlnXQS++cu8KUsMmq5B6uFZqOwTn+HhCrGrFIvF/UaX7eT2ijYBx0HsPtLg7TuAs/iDaGIARXtxHSfuo=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR2101MB1819
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Tianyu Lan <ltykernel@gmail.com> Sent: Tuesday, September 14, 2021 6:=
+39 AM
+>=20
+> In Isolation VM with AMD SEV, bounce buffer needs to be accessed via
+> extra address space which is above shared_gpa_boundary
+> (E.G 39 bit address line) reported by Hyper-V CPUID ISOLATION_CONFIG.
+> The access physical address will be original physical address +
+> shared_gpa_boundary. The shared_gpa_boundary in the AMD SEV SNP
+> spec is called virtual top of memory(vTOM). Memory addresses below
+> vTOM are automatically treated as private while memory above
+> vTOM is treated as shared.
+>=20
+> Expose swiotlb_unencrypted_base for platforms to set unencrypted
+> memory base offset and call memremap() to map bounce buffer in the
+> swiotlb code, store map address and use the address to copy data
+> from/to swiotlb bounce buffer.
+>=20
+> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+> ---
+> Change since v4:
+> 	* Expose swiotlb_unencrypted_base to set unencrypted memory
+> 	  offset.
+> 	* Use memremap() to map bounce buffer if swiotlb_unencrypted_
+> 	  base is set.
+>=20
+> Change since v1:
+> 	* Make swiotlb_init_io_tlb_mem() return error code and return
+>           error when dma_map_decrypted() fails.
+> ---
+>  include/linux/swiotlb.h |  6 ++++++
+>  kernel/dma/swiotlb.c    | 41 +++++++++++++++++++++++++++++++++++------
+>  2 files changed, 41 insertions(+), 6 deletions(-)
+>=20
+> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+> index b0cb2a9973f4..4998ed44ae3d 100644
+> --- a/include/linux/swiotlb.h
+> +++ b/include/linux/swiotlb.h
+> @@ -72,6 +72,9 @@ extern enum swiotlb_force swiotlb_force;
+>   * @end:	The end address of the swiotlb memory pool. Used to do a quick
+>   *		range check to see if the memory was in fact allocated by this
+>   *		API.
+> + * @vaddr:	The vaddr of the swiotlb memory pool. The swiotlb
+> + *		memory pool may be remapped in the memory encrypted case and store
+> + *		virtual address for bounce buffer operation.
+>   * @nslabs:	The number of IO TLB blocks (in groups of 64) between @start=
+ and
+>   *		@end. For default swiotlb, this is command line adjustable via
+>   *		setup_io_tlb_npages.
+> @@ -91,6 +94,7 @@ extern enum swiotlb_force swiotlb_force;
+>  struct io_tlb_mem {
+>  	phys_addr_t start;
+>  	phys_addr_t end;
+> +	void *vaddr;
+>  	unsigned long nslabs;
+>  	unsigned long used;
+>  	unsigned int index;
+> @@ -185,4 +189,6 @@ static inline bool is_swiotlb_for_alloc(struct device=
+ *dev)
+>  }
+>  #endif /* CONFIG_DMA_RESTRICTED_POOL */
+>=20
+> +extern phys_addr_t swiotlb_unencrypted_base;
+> +
+>  #endif /* __LINUX_SWIOTLB_H */
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index 87c40517e822..9e30cc4bd872 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -50,6 +50,7 @@
+>  #include <asm/io.h>
+>  #include <asm/dma.h>
+>=20
+> +#include <linux/io.h>
+>  #include <linux/init.h>
+>  #include <linux/memblock.h>
+>  #include <linux/iommu-helper.h>
+> @@ -72,6 +73,8 @@ enum swiotlb_force swiotlb_force;
+>=20
+>  struct io_tlb_mem io_tlb_default_mem;
+>=20
+> +phys_addr_t swiotlb_unencrypted_base;
+> +
+>  /*
+>   * Max segment that we can provide which (if pages are contingous) will
+>   * not be bounced (unless SWIOTLB_FORCE is set).
+> @@ -175,7 +178,7 @@ void __init swiotlb_update_mem_attributes(void)
+>  	memset(vaddr, 0, bytes);
+>  }
+>=20
+> -static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t =
+start,
+> +static int swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t s=
+tart,
+>  				    unsigned long nslabs, bool late_alloc)
+>  {
+>  	void *vaddr =3D phys_to_virt(start);
+> @@ -196,13 +199,34 @@ static void swiotlb_init_io_tlb_mem(struct io_tlb_m=
+em *mem, phys_addr_t start,
+>  		mem->slots[i].orig_addr =3D INVALID_PHYS_ADDR;
+>  		mem->slots[i].alloc_size =3D 0;
+>  	}
+> +
+> +	if (set_memory_decrypted((unsigned long)vaddr, bytes >> PAGE_SHIFT))
+> +		return -EFAULT;
+> +
+> +	/*
+> +	 * Map memory in the unencrypted physical address space when requested
+> +	 * (e.g. for Hyper-V AMD SEV-SNP Isolation VMs).
+> +	 */
+> +	if (swiotlb_unencrypted_base) {
+> +		phys_addr_t paddr =3D __pa(vaddr) + swiotlb_unencrypted_base;
 
-On 15/09/2021 14.56, Ilias Apalodimas wrote:
-> Hi Yunsheng,  Alexander,
-> 
-> On Wed, Sep 15, 2021 at 05:07:08PM +0800, Yunsheng Lin wrote:
->> On 2021/9/15 8:59, Alexander Duyck wrote:
->>> On Tue, Sep 14, 2021 at 5:12 AM Yunsheng Lin <linyunsheng@huawei.com> wrote:
->>>>
->>>> As the skb->pp_recycle and page->pp_magic may not be enough
->>>> to track if a frag page is from page pool after the calling
->>>> of __skb_frag_ref(), mostly because of a data race, see:
->>>> commit 2cc3aeb5eccc ("skbuff: Fix a potential race while
->>>> recycling page_pool packets").
->>>
->>> I'm not sure how this comment actually applies. It is an issue that
->>> was fixed. If anything my concern is that this change will introduce
->>> new races instead of fixing any existing ones.
->>
->> My initial thinking about adding the above comment is to emphasize
->> that we might clear cloned skb's pp_recycle when doing head expanding,
->> and page pool might need to give up on that page if that cloned skb is
->> the last one to be freed.
->>
->>>
->>>> There may be clone and expand head case that might lose the
->>>> track if a frag page is from page pool or not.
->>>
->>> Can you explain how? If there is such a case we should fix it instead
->>> of trying to introduce new features to address it. This seems more
->>> like a performance optimization rather than a fix.
->>
->> Yes, I consider it an optimization too, that's why I am targetting
->> net-next.
->>
->> Even for the below skb_split() case in tso_fragment(), I am not sure
->> how can a rx pp page can go through the tcp stack yet.
-> 
-> I am bit confused :).  We don't have that problem *now* right?  This will
-> appear if we try to pull in your patches on using page pool and recycling
-> for Tx where TSO and skb_split are used?
-> 
-> I'll be honest, when I came up with the recycling idea for page pool, I
-> never intended to support Tx.  I agree with Alexander here,  If people want
-> to use it on Tx and think there's value,  we might need to go back to the
-> drawing board and see what I've missed.  It's still early and there's a
-> handful of drivers using it,  so it will less painful now.
+Nit:  Use "start" instead of "__pa(vaddr)" since "start" is already the nee=
+ded
+physical address.
 
-I agree, page_pool is NOT designed or intended for TX support.
-E.g. it doesn't make sense to allocate a page_pool instance per socket, 
-as the backing memory structures for page_pool are too much.
-As the number RX-queues are more limited it was deemed okay that we use 
-page_pool per RX-queue, which sacrifice some memory to gain speed.
+> +
+> +		vaddr =3D memremap(paddr, bytes, MEMREMAP_WB);
+> +		if (!vaddr) {
+> +			pr_err("Failed to map the unencrypted memory.\n");
+> +			return -ENOMEM;
+> +		}
+> +	}
+> +
+>  	memset(vaddr, 0, bytes);
+> +	mem->vaddr =3D vaddr;
+> +	return 0;
+>  }
+>=20
+>  int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int ve=
+rbose)
+>  {
+>  	struct io_tlb_mem *mem =3D &io_tlb_default_mem;
+>  	size_t alloc_size;
+> +	int ret;
+>=20
+>  	if (swiotlb_force =3D=3D SWIOTLB_NO_FORCE)
+>  		return 0;
+> @@ -217,7 +241,11 @@ int __init swiotlb_init_with_tbl(char *tlb, unsigned=
+ long nslabs, int verbose)
+>  		panic("%s: Failed to allocate %zu bytes align=3D0x%lx\n",
+>  		      __func__, alloc_size, PAGE_SIZE);
+>=20
+> -	swiotlb_init_io_tlb_mem(mem, __pa(tlb), nslabs, false);
+> +	ret =3D swiotlb_init_io_tlb_mem(mem, __pa(tlb), nslabs, false);
+> +	if (ret) {
+> +		memblock_free(__pa(mem), alloc_size);
+> +		return ret;
+> +	}
+>=20
+>  	if (verbose)
+>  		swiotlb_print_info();
+> @@ -304,7 +332,7 @@ int
+>  swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
+>  {
+>  	struct io_tlb_mem *mem =3D &io_tlb_default_mem;
+> -	unsigned long bytes =3D nslabs << IO_TLB_SHIFT;
+> +	int ret;
+>=20
+>  	if (swiotlb_force =3D=3D SWIOTLB_NO_FORCE)
+>  		return 0;
+> @@ -318,8 +346,9 @@ swiotlb_late_init_with_tbl(char *tlb, unsigned long n=
+slabs)
+>  	if (!mem->slots)
+>  		return -ENOMEM;
+>=20
+> -	set_memory_decrypted((unsigned long)tlb, bytes >> PAGE_SHIFT);
+> -	swiotlb_init_io_tlb_mem(mem, virt_to_phys(tlb), nslabs, true);
+> +	ret =3D swiotlb_init_io_tlb_mem(mem, virt_to_phys(tlb), nslabs, true);
+> +	if (ret)
 
+Before returning the error, free the pages obtained from the earlier call
+to __get_free_pages()?
 
-> The pp_recycle_bit was introduced to make the checking faster, instead of
-> getting stuff into cache and check the page signature.  If that ends up
-> being counterproductive, we could just replace the entire logic with the
-> frag count and the page signature, couldn't we?  In that case we should be
-> very cautious and measure potential regression on the standard path.
-
-+1
-
-> But in general,  I'd be happier if we only had a simple logic in our
-> testing for the pages we have to recycle.  Debugging and understanding this
-> otherwise will end up being a mess.
-
-
-[...]
->>
->>>
->>>> For 32 bit systems with 64 bit dma, we preserve the orginial
->>>> behavior as frag count is used to trace how many time does a
->>>> frag page is called with __skb_frag_ref().
->>>>
->>>> We still use both skb->pp_recycle and page->pp_magic to decide
->>>> the head page for a skb is from page pool or not.
->>>>
-> 
-> [...]
-> 
->>>>
->>>> +/**
->>>> + * skb_frag_is_pp_page - decide if a page is recyclable.
->>>> + * @page: frag page
->>>> + * @recycle: skb->pp_recycle
->>>> + *
->>>> + * For 32 bit systems with 64 bit dma, the skb->pp_recycle is
->>>> + * also used to decide if a page can be recycled to the page
->>>> + * pool.
->>>> + */
->>>> +static inline bool skb_frag_is_pp_page(struct page *page,
->>>> +                                      bool recycle)
->>>> +{
->>>> +       return page_pool_is_pp_page(page) ||
->>>> +               (recycle && __page_pool_is_pp_page(page));
->>>> +}
->>>> +
->>>
->>> The logic for this check is ugly. You are essentially calling
->>> __page_pool_is_pp_page again if it fails the first check. It would
->>> probably make more sense to rearrange things and just call
->>> (!DMA_USE_PP_FRAG_COUNT || recycle)  && __page_pool_is_pp_page(). With
->>> that the check of recycle could be dropped entirely if frag count is
->>> valid to use, and in the non-fragcount case it reverts back to the
->>> original check.
->>
->> The reason I did not do that is I kind of did not want to use the
->> DMA_USE_PP_FRAG_COUNT outside of page pool.
->> I can use DMA_USE_PP_FRAG_COUNT directly in skbuff.h if the above
->> is considered harmless:)
->>
->> The 32 bit systems with 64 bit dma really seems a burden here, as
->> memtioned by Ilias [1], there seems to be no such system using page
->> pool, we might as well consider disabling page pool for such system?
->>
->> Ilias, Jesper, what do you think?
->>
->> 1. http://lkml.iu.edu/hypermail/linux/kernel/2107.1/06321.html
->>
-> 
-> Well I can't really disagree with myself too much :).  I still think we are
-> carrying a lot of code and complexity for systems that don't exist.
-
-I would be fine with rejecting such systems at page_pool setup time. 
-Meaning that NIC drivers using page_pool for DMA-mapping, getting 
-compiled on 32-bit systems and needing 64-bit DMA-mappings, will have 
-their call to page_pool_create() fail (with something else than -EINVAL 
-please).
-If drivers really want work on such systems, they have to implement 
-their own DMA-mapping fallback tracking outside page_pool.  Meaning it 
-is only the keeping track of DMA-mapping part of page_pool they cannot use.
-
-[...]
->>
->>>
->>>> +static inline bool __page_pool_is_pp_page(struct page *page)
->>>> +{
->>>> +       /* page->pp_magic is OR'ed with PP_SIGNATURE after the allocation
->>>> +        * in order to preserve any existing bits, such as bit 0 for the
->>>> +        * head page of compound page and bit 1 for pfmemalloc page, so
->>>> +        * mask those bits for freeing side when doing below checking,
->>>> +        * and page_is_pfmemalloc() is checked in __page_pool_put_page()
->>>> +        * to avoid recycling the pfmemalloc page.
->>>> +        */
->>>> +       return (page->pp_magic & ~0x3UL) == PP_SIGNATURE;
->>>> +}
->>>> +
->>>> +static inline bool page_pool_is_pp_page(struct page *page)
->>>> +{
->>>> +       /* For systems with the same dma addr as the bus addr, we can use
->>>> +        * page->pp_magic to indicate a pp page uniquely.
->>>> +        */
->>>> +       return !PAGE_POOL_DMA_USE_PP_FRAG_COUNT &&
->>>> +                       __page_pool_is_pp_page(page);
->>>> +}
->>>> +
->>>
->>> We should really change the name of the #define. I keep reading it as
->>> we are using the PP_FRAG_COUNT, not that it is already in use. Maybe
->>> we should look at something like PP_FRAG_COUNT_VALID and just invert
->>> the logic for it.
->>
->> Yes, Jesper seems to have the similar confusion.
-> 
-> +1
-
-+1
-
-
->> I seems better that we can remove that macro completely if the 32 bit
->> systems with 64 bit dma turn out to be not existing at all?
->>
->>>
->>> Also this function naming is really confusing. You don't have to have
->>> the frag count to be a page pool page. Maybe this should be something
->>> like page_pool_is_pp_frag_page.
->>
-> 
-> [...]
-> 
-> Regards
-> /Ilias
-
---Jesper
-
+> +		return ret;
+>=20
+>  	swiotlb_print_info();
+>  	swiotlb_set_max_segment(mem->nslabs << IO_TLB_SHIFT);
+> @@ -371,7 +400,7 @@ static void swiotlb_bounce(struct device *dev, phys_a=
+ddr_t tlb_addr, size_t size
+>  	phys_addr_t orig_addr =3D mem->slots[index].orig_addr;
+>  	size_t alloc_size =3D mem->slots[index].alloc_size;
+>  	unsigned long pfn =3D PFN_DOWN(orig_addr);
+> -	unsigned char *vaddr =3D phys_to_virt(tlb_addr);
+> +	unsigned char *vaddr =3D mem->vaddr + tlb_addr - mem->start;
+>  	unsigned int tlb_offset, orig_addr_offset;
+>=20
+>  	if (orig_addr =3D=3D INVALID_PHYS_ADDR)
+> --
+> 2.25.1
