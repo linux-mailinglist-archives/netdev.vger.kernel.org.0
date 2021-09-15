@@ -2,86 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 143A240CF1F
-	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 23:59:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F16F40CF45
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 00:20:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232602AbhIOWAR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Sep 2021 18:00:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50470 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232196AbhIOWAO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 18:00:14 -0400
-Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FD3FC061574
-        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 14:58:55 -0700 (PDT)
-Received: by mail-oi1-x232.google.com with SMTP id w19so6191977oik.10
-        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 14:58:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kali.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=Q3q75iaI8c/GKmL2kwc0ZJBRz/9HFRegVxTPyEThKGo=;
-        b=Y+PI9VFJyRkiGA4tp20AfGe0ZofVQJbtPNrDTbrFgrbCI/2RQhMvfJhxWT6ekyOqmh
-         p9WoYUzeJ2ww2XAhPYSFc8n3uPHH00ACC2oawqq8xU1Nyza76XE0KI1+8auUUsYVEp5R
-         4tirFYYEKxehGZZdEm+2mhIaOh6d9ksHldH+yKtr0eOZs3uXHshB2kZX0NlapImpGGJV
-         vVIZyFBz3UJr15SZxCHcjYOPZ1hqIxSMJ0jIyDlg2VGhrGuR/MPni6ueuwAO/OFoVuKb
-         wGr20yeuRhPHJloRAUPtWIqmjqPD/vyqXjRPqGpqBUs0prq+BWtPUPo07hyOm/mLljDk
-         1tDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=Q3q75iaI8c/GKmL2kwc0ZJBRz/9HFRegVxTPyEThKGo=;
-        b=xR3zdbMIYmojQzPnqGA9eAqHRQRO41ZZ0+UjVwaT0Xo6/f6Fz919M9b/nRd7YcSw5S
-         4xyDtG2HzLiBIuFoi7B/YuuiuGXpuY6J1qVKw0AFBmWHgqaNSyDdT/G7n2osr0NcwhkP
-         1J0oqOAOw8f8zO5NoHCad/ARU7v0b6MlDsduzeA5PtlyCCFIJ+XboTaXjwTJjsm27Cl+
-         /W2W01ZT1KUmOAhfTDe853R93x9LmsctUV0qIKCgYvFX915OIhhIkNU0N9GL8gZA5dHa
-         /ZuOnFs+DVPAeREfmoI5PT28NQYhGQ/AF6th5EL9Bfqr6v0sU3JPyojY04y+zNEhNPFI
-         /Urg==
-X-Gm-Message-State: AOAM531KTQvoYJr+LlMdyF8Lu3wsSV6CV+wgs9yUzaRUPeaPj3Z5piNI
-        mx1RFuqO54R/jWJ9w7uLBWBu2zTkwf6OB3Bo
-X-Google-Smtp-Source: ABdhPJzprS4i9uNMizONNl4FnOUGqGN2xQ3aqr2AjW11bB+1fZHbPpaL7KIscnN3Ucy3ntFFCuM81g==
-X-Received: by 2002:a54:4018:: with SMTP id x24mr6992028oie.125.1631743134454;
-        Wed, 15 Sep 2021 14:58:54 -0700 (PDT)
-Received: from MacBook-Pro.hackershack.net (cpe-173-173-107-246.satx.res.rr.com. [173.173.107.246])
-        by smtp.gmail.com with ESMTPSA id d10sm349838ooj.24.2021.09.15.14.58.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Sep 2021 14:58:53 -0700 (PDT)
-Subject: Re: [PATCH v2 net] net: qrtr: make checks in qrtr_endpoint_post()
- stricter
-To:     Yassine Oudjana <y.oudjana@protonmail.com>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        bjorn.andersson@linaro.org, butterflyhuangxx@gmail.com,
-        davem@davemloft.net, kuba@kernel.org,
-        linux-arm-msm@vger.kernel.org, loic.poulain@linaro.org,
-        mani@kernel.org, netdev@vger.kernel.org
-References: <S4IVYQ.R543O8OZ1IFR3@protonmail.com>
- <20210906065320.GC1935@kadam> <95ee6b7d-a51d-71bb-1245-501740357839@kali.org>
- <QvTONvzS6__GE_w1qYluX-y9sMtfeFFyTeDROhqnm8j6phRilXBJihf4Tp8COJkG54g-Hi64c2j5WLvJ-4rXeEiwkAgJ3jI0_H4ISzoJZ8E=@protonmail.com>
-From:   Steev Klimaszewski <steev@kali.org>
-Message-ID: <f7958ae4-c8c5-7a54-86df-4e689ae57950@kali.org>
-Date:   Wed, 15 Sep 2021 16:58:51 -0500
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.14.0
+        id S232640AbhIOWV2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Sep 2021 18:21:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57534 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231969AbhIOWV1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Sep 2021 18:21:27 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id B39C960F13;
+        Wed, 15 Sep 2021 22:20:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1631744407;
+        bh=k4v+ilBRTstt1QfEeMRafhbgscKQHL4dKAyAUwoFX4U=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=aCQtU9VLeCQNQrySE7JLYclbgw+kUvQosSwmdl7vSkYLG4ZxHdHQorwCYgEll2ivN
+         NDQPWfMFDgQsL9bUQsVZ5hp5bLH04lmaavSkCSe6Tl0VD8PRbA9CCuZZVA40PQKO/B
+         awJsknibLJTD47OfDdgu9Cb7IPVTk3iJncj/dlMOf9XtMSDxExGB4c71R+TNx+jCsm
+         JQJnjxj9mIYve9rFr7crRS8cVTDdf48c82uKNL9lWdz4lFlOIbcaEeMBomGP7+gLqe
+         Q5Cn5yVnnkgkExn4lZ+lGoPQER9+EruubSh/TuUONxXlCsk00DseEQQwYgIAt7yLGw
+         V2HVYpFwtjCJg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A02E760A9C;
+        Wed, 15 Sep 2021 22:20:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <QvTONvzS6__GE_w1qYluX-y9sMtfeFFyTeDROhqnm8j6phRilXBJihf4Tp8COJkG54g-Hi64c2j5WLvJ-4rXeEiwkAgJ3jI0_H4ISzoJZ8E=@protonmail.com>
-Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Subject: Re: [PATCH v2 net] Revert "net: phy: Uniform PHY driver access"
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163174440765.30266.10751515542533510401.git-patchwork-notify@kernel.org>
+Date:   Wed, 15 Sep 2021 22:20:07 +0000
+References: <20210914140515.2311548-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20210914140515.2311548-1-vladimir.oltean@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org,
+        gerhard@engleder-embedded.com, f.fainelli@gmail.com,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
-On 9/15/21 1:40 PM, Yassine Oudjana wrote:
->> Where has the fix been merged to?  5.14.4 released with this patch in
->>
->> it, and wifi is now crashing on the Lenovo Yoga C630 with the same
->>
->> messages that Yassine was seeing.
-> The fix is in master[1]. You need to cherry-pick it.
->
-> [1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=d2cabd2dc8da78faf9b690ea521d03776686c9fe
-Ah, thank you kindly.  Confirming that this also fixes 5.14 so hopefully
-it gets into 5.14.5
+This patch was applied to netdev/net.git (refs/heads/master):
+
+On Tue, 14 Sep 2021 17:05:15 +0300 you wrote:
+> This reverts commit 3ac8eed62596387214869319379c1fcba264d8c6, which did
+> more than it said on the box, and not only it replaced to_phy_driver
+> with phydev->drv, but it also removed the "!drv" check, without actually
+> explaining why that is fine.
+> 
+> That patch in fact breaks suspend/resume on any system which has PHY
+> devices with no drivers bound.
+> 
+> [...]
+
+Here is the summary with links:
+  - [v2,net] Revert "net: phy: Uniform PHY driver access"
+    https://git.kernel.org/netdev/net/c/301de697d869
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
