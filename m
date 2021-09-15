@@ -2,69 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 48DCE40BE04
+	by mail.lfdr.de (Postfix) with ESMTP id 91DB240BE05
 	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 05:10:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231847AbhIODL0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 23:11:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55872 "EHLO mail.kernel.org"
+        id S235700AbhIODL1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 23:11:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55896 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229758AbhIODLZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229888AbhIODLZ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 14 Sep 2021 23:11:25 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id D0AC4611ED;
-        Wed, 15 Sep 2021 03:10:06 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPS id 1A14561216;
+        Wed, 15 Sep 2021 03:10:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631675406;
-        bh=lf57Nvopw7ePrHp9LN5rP+Ur4wXJOevf6d91CwjDeik=;
+        s=k20201202; t=1631675407;
+        bh=NP81zxZ2T2LyWE2h8Socya3mbavsFzhvOfRA46C1NNw=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=leiN7EjXoAjLARUFl3FIJkU6lxUZLce1MVD7byUNZD9fIEp+BBqpYMh1D30jPChiL
-         5zhsBcqM+F7ETTYm55iF4jEDzOTtp2lo8w4K56avmuW7TyQwEEh7ymKZ/6Lsw4iXJD
-         TDphl8QmvNi6BOZYB8rxgwSNI74YrCH4blIvIsD1PFONvSt0eL8OEDaqO1njMK0L27
-         zJR4Qy48OwzgojDxv0KsYI1lHeeBHUV1Bq6CGPrHlXVkdEzxApqrhtQw155qWZPUcs
-         NRUGTpZQd7CM6Ln3TTEQh7Y8kFb6vlcfUIhYvzas+0M6OqrgoPB3y4DPwE59iYRhzT
-         wDjJ1nEHyphNg==
+        b=aWYA8RT82bqsNDyZ8gexmS0cE6TJ0NmNa7KAuu05IjKwDVRLNFLGG7JUOz6mqPxQN
+         ykpT8fK3ej2HYL+LRpqvnL2F+jgbz/w+7EleIvsCEn4bwrmoJKEOnSKxO20Md8UCcN
+         X+Zyj4F6rIzxNuU1OeR00sYs6ZUSSkqSbkhEzWMQD5icaG67NuHdSrA2ld0gnleqWB
+         bY4aNVtAQM/4xddoqwqcHInmS7ehWtDyxyJQUiPqY7TQLonNxuyEXSzYM1UO37bCmz
+         +eNvscQH6qQ/QmC9u1AKMCxU+cwg53so7G4PSYWTqveCEq5OHwch+kqrIXaOASBIJF
+         Ar5LIS3WuQZgg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B683760A8F;
-        Wed, 15 Sep 2021 03:10:06 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 13AA560970;
+        Wed, 15 Sep 2021 03:10:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH -net] ptp: dp83640: don't define PAGE0
+Subject: Re: [PATCH net-next] net: dsa: tag_rtl4_a: Drop bit 9 from egress frames
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163167540674.9269.1991816632448031713.git-patchwork-notify@kernel.org>
-Date:   Wed, 15 Sep 2021 03:10:06 +0000
-References: <20210913220605.19682-1-rdunlap@infradead.org>
-In-Reply-To: <20210913220605.19682-1-rdunlap@infradead.org>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     netdev@vger.kernel.org, geert@linux-m68k.org,
-        richard.cochran@omicron.at, john.stultz@linaro.org,
-        davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        hkallweit1@gmail.com, linux@armlinux.org.uk
+Message-Id: <163167540707.9269.153077674035924218.git-patchwork-notify@kernel.org>
+Date:   Wed, 15 Sep 2021 03:10:07 +0000
+References: <20210913143156.1264570-1-linus.walleij@linaro.org>
+In-Reply-To: <20210913143156.1264570-1-linus.walleij@linaro.org>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Mon, 13 Sep 2021 15:06:05 -0700 you wrote:
-> Building dp83640.c on arch/parisc/ produces a build warning for
-> PAGE0 being redefined. Since the macro is not used in the dp83640
-> driver, just make it a comment for documentation purposes.
+On Mon, 13 Sep 2021 16:31:56 +0200 you wrote:
+> This drops the code setting bit 9 on egress frames on the
+> Realtek "type A" (RTL8366RB) frames.
 > 
-> In file included from ../drivers/net/phy/dp83640.c:23:
-> ../drivers/net/phy/dp83640_reg.h:8: warning: "PAGE0" redefined
->     8 | #define PAGE0                     0x0000
->                  from ../drivers/net/phy/dp83640.c:11:
-> ../arch/parisc/include/asm/page.h:187: note: this is the location of the previous definition
->   187 | #define PAGE0   ((struct zeropage *)__PAGE_OFFSET)
+> This bit was set on ingress frames for unknown reason,
+> and was set on egress frames as the format of ingress
+> and egress frames was believed to be the same. As that
+> assumption turned out to be false, and since this bit
+> seems to have zero effect on the behaviour of the switch
+> let's drop this bit entirely.
 > 
 > [...]
 
 Here is the summary with links:
-  - [-net] ptp: dp83640: don't define PAGE0
-    https://git.kernel.org/netdev/net/c/7366c23ff492
+  - [net-next] net: dsa: tag_rtl4_a: Drop bit 9 from egress frames
+    https://git.kernel.org/netdev/net-next/c/339133f6c318
 
 You are awesome, thank you!
 --
