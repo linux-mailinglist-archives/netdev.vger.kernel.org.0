@@ -2,101 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9107F40C04A
-	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 09:13:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39C2440C059
+	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 09:20:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236604AbhIOHOo convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 15 Sep 2021 03:14:44 -0400
-Received: from mail-ua1-f41.google.com ([209.85.222.41]:36423 "EHLO
-        mail-ua1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236571AbhIOHOm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 03:14:42 -0400
-Received: by mail-ua1-f41.google.com with SMTP id u11so1093173uaw.3;
-        Wed, 15 Sep 2021 00:13:23 -0700 (PDT)
+        id S236528AbhIOHVp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Sep 2021 03:21:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45200 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231326AbhIOHVp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 03:21:45 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1439C061574
+        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 00:20:26 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id y17so1796460pfl.13
+        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 00:20:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=6GbSj7gEvOoqZlIdbKLmE5E6KdpY13xxBb7ovvikPwQ=;
+        b=Pf4AF4wSiP/2WLfaIKdllVt33XXXRcq9n0DhIlOhiTmi/oIERfi4lxfHdpspM3bVau
+         4CrB52Hh8DgkVTEcDOQLyboOPvfpb1Wfkel+5e+H1Zfc/DD1lmq1qWgB/OuzJfTSUMGA
+         HmQbKr9gvVFgTB79ZpOS/5omZl7WLyHZicHs7ddtMq6VGoJJS7uLxylGGQRp0fA05vBS
+         A4dloOlJgxloZ/oZQwX52bmC3gYcoIyjP2QbGNT3zaXbVXr7VONQrt9UTWGdMhtAmDsK
+         EBnwUdFC0tuqFM5H5NzMpIkgkvjqfMpkO+hzqe+PTAMxYh/KwDU9oqTpFv97S6L9MPSe
+         qtBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=gL3z2tWaeR9gQ68ZsbvDrdBbJQtIPd0iNGfdcj7Yqw0=;
-        b=MZnTBoLp0kte0QteC0VOy/nqLcEOBj1ddS6iv29JMD1qpgjYFy8K46SlaZwX2OipnY
-         UcfgSIFGW+X8YYRb8RCP3O79yyqQdRajgOvCj2fXaTtSybazm4mb+ynE9h725jkv9tRe
-         KqaJNu8mtoeCWZWoxJR8uzf0PlgX3gMIGurD3PkBjyB2g8dba85E8x6UpIOlmowvWBhQ
-         U6nkOgwouB4tZb3JNE2+yxZmK9wpP9OIjJixRnhhT/x9HCR7giqAHFEsxiEVTCNZPIUC
-         Xj93x2OanYpq/VtRj4VYj72kEb14mrC0ZnlPCcenTpaQsFk+gSfgZGddifTEAj4TUXb8
-         73iQ==
-X-Gm-Message-State: AOAM530kY5sRhGRAmr8aaOZ+eVkL63VqkvNHSlD9StDb4Uyhtr67LJF5
-        cAx3xBzZ9MwFPy101e1jrA+tUHoMIL2a/6bjaH0=
-X-Google-Smtp-Source: ABdhPJwMlq/6v9N2i8levGOTrmjVHBDQjw5jjBWFbomargFDdg/nJiQIcblwYe4WWeIs4KIzK7wOuDdDhvdAR/OeHzw=
-X-Received: by 2002:ab0:6ec9:: with SMTP id c9mr7777343uav.114.1631690002856;
- Wed, 15 Sep 2021 00:13:22 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210915035227.630204-1-linux@roeck-us.net> <20210915035227.630204-2-linux@roeck-us.net>
-In-Reply-To: <20210915035227.630204-2-linux@roeck-us.net>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 15 Sep 2021 09:13:11 +0200
-Message-ID: <CAMuHMdXZcrjGAE5OOipKsYpEgk9AZ_hrWKh+v81FMBtQTBv2LA@mail.gmail.com>
-Subject: Re: [PATCH v2 1/4] compiler.h: Introduce absolute_pointer macro
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=6GbSj7gEvOoqZlIdbKLmE5E6KdpY13xxBb7ovvikPwQ=;
+        b=3uhHtQb0cvB+fm9IjFE3hTYvJWtcq1jsB9LFMKj+/zxCg6O1DjZE3dcSu/f7wMEALD
+         G8AIOETlFC3NKWZT7LOXbIvucykV9Mj/nF7BwUWeZ/8C4OZldmRO0tNIPxpxKY6GdIeK
+         lVnHbIk3GXRBxqBOhySyi2OBTzYty3GK6oMR/ekWBel+wbhOWNADFthP+UCc3gwLgcxA
+         uf81SFT2z5/4w6L//LCQrhgQcn1jLqk0laYtRWUCLGB+jRk35xR4Czjh5ytsTI+nMnQa
+         NePeoOTJMS84y4qBvkB/XynumilbcAvzQIOeIokSgRBBrEDTA+ki6XEhWxRwxPYGz29U
+         d/Dg==
+X-Gm-Message-State: AOAM530SmZ03keo8z/tOh3oRy3Ux1Nmrzms1iqv7z1f1KQvQV/Kgc/0C
+        258tDJlA8x+juXOUCB1X8mE=
+X-Google-Smtp-Source: ABdhPJx2G/6eAHLZ1y/uCjGiLBrb8oEeCenodtDk9kUuLbrveFAUo9Dq4c6QEO0Gu6VJR4Q+NU5uoQ==
+X-Received: by 2002:a63:e00b:: with SMTP id e11mr19318038pgh.190.1631690426216;
+        Wed, 15 Sep 2021 00:20:26 -0700 (PDT)
+Received: from haswell-ubuntu20.lan ([138.197.212.246])
+        by smtp.gmail.com with ESMTPSA id l6sm12483936pff.74.2021.09.15.00.19.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Sep 2021 00:19:53 -0700 (PDT)
+From:   DENG Qingfang <dqfext@gmail.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        alpha <linux-alpha@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, linux-sparse@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: dsa: tag_rtl4_a: Drop bit 9 from egress frames
+Date:   Wed, 15 Sep 2021 15:19:01 +0800
+Message-Id: <20210915071901.1315-1-dqfext@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210913143156.1264570-1-linus.walleij@linaro.org>
+References: <20210913143156.1264570-1-linus.walleij@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Günter,
+On Mon, Sep 13, 2021 at 04:31:56PM +0200, Linus Walleij wrote:
+> This drops the code setting bit 9 on egress frames on the
+> Realtek "type A" (RTL8366RB) frames.
 
-On Wed, Sep 15, 2021 at 5:52 AM Guenter Roeck <linux@roeck-us.net> wrote:
-> absolute_pointer() disassociates a pointer from its originating symbol
-> type and context. Use it to prevent compiler warnings/errors such as
->
-> drivers/net/ethernet/i825xx/82596.c: In function 'i82596_probe':
-> ./arch/m68k/include/asm/string.h:72:25: error:
->         '__builtin_memcpy' reading 6 bytes from a region of size 0
->                 [-Werror=stringop-overread]
->
-> Such warnings may be reported by gcc 11.x for string and memory operations
-> on fixed addresses.
->
-> Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
-> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-> ---
-> v2: No change
->
->  include/linux/compiler.h | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/include/linux/compiler.h b/include/linux/compiler.h
-> index b67261a1e3e9..3d5af56337bd 100644
-> --- a/include/linux/compiler.h
-> +++ b/include/linux/compiler.h
-> @@ -188,6 +188,8 @@ void ftrace_likely_update(struct ftrace_likely_data *f, int val,
->      (typeof(ptr)) (__ptr + (off)); })
->  #endif
->
-> +#define absolute_pointer(val)  RELOC_HIDE((void *)(val), 0)
+FYI, on RTL8366S, bit 9 on egress frames is disable learning.
 
-I guess we're not worried about "val" being evaluated multiple
-times inside RELOC_HIDE(), as this is mainly intended for constants?
+> This bit was set on ingress frames for unknown reason,
 
-Gr{oetje,eeting}s,
+I think it could be the reason why the frame is forwarded to the CPU.
 
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+> and was set on egress frames as the format of ingress
+> and egress frames was believed to be the same. As that
+> assumption turned out to be false, and since this bit
+> seems to have zero effect on the behaviour of the switch
+> let's drop this bit entirely.
+> 
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
