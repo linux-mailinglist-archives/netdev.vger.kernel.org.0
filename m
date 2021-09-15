@@ -2,118 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E674440CEB7
-	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 23:20:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 430A440CEBC
+	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 23:21:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232343AbhIOVVW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Sep 2021 17:21:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41746 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230484AbhIOVVU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 17:21:20 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02FBCC061575
-        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 14:20:01 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id i25so9822974lfg.6
-        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 14:20:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=w3BMwFy0chXS7YMqLdf36Rg6yUUlp6nBZba3YILPvA0=;
-        b=WsNqD0Opa3lPgwayobITOeBYzY09REebVD84cTigbwiVy8RERoiSXisEu8y+Nk+bfI
-         rwr6ffFTpZComKTqahfaOR7CdEVqoy7csTG2SKHpEYZNr9AVK2EZciaTVWrgEw6jv2ed
-         w803wR6rUWc2E3pW5t7Ag7qcjFS9X02JepaeA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=w3BMwFy0chXS7YMqLdf36Rg6yUUlp6nBZba3YILPvA0=;
-        b=6XmDk8khfbCFyDEXrNeS237tB+5x+G/FMFtUSFTSvxvNYKqSmQ9GJhYYhexmE3EpEH
-         6XRiSaIFyOtWZ8xmm0CLFoBWF/NPVPZSKikuQYbvGisVdDdHdF4WWPDlEODAsiueaXVQ
-         SkK3ft7elR3qCK2p0LlnM5eM9nh+r6rzaxQZMb8JVmWKIOXsQBrqY+hLjdr/w9qfrBm9
-         bM38nqZNJSP9NuAFjVu4S0UT6kk77UtI3D8dEeBgh688v3C3Bf+0w6gI9iIROvmd9Z0o
-         J3gjCer2L8Xl42h8cCJDq37skcSd11Mg82IEelmzVq0pTguLYZdQyHtIbg5odNutsWCt
-         AWQw==
-X-Gm-Message-State: AOAM5334eXOvtf86ICJ3QNuXG5bInG5rYo9yNH7GJeh9ArW9KRrRCsk5
-        PkHyzKefRXvlJgDcoVnGunkrWCLdMb2yK7x3
-X-Google-Smtp-Source: ABdhPJzR+Bskad96Wq8vTEUV32qypeTb4pYzftpgXH+z7s+WNc2UAKc9qyg7w8+Sl4kXnsefba8UBQ==
-X-Received: by 2002:a2e:a4d1:: with SMTP id p17mr1803795ljm.82.1631740798813;
-        Wed, 15 Sep 2021 14:19:58 -0700 (PDT)
-Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com. [209.85.167.44])
-        by smtp.gmail.com with ESMTPSA id 9sm80520lfp.129.2021.09.15.14.19.56
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Sep 2021 14:19:57 -0700 (PDT)
-Received: by mail-lf1-f44.google.com with SMTP id c8so9843703lfi.3
-        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 14:19:56 -0700 (PDT)
-X-Received: by 2002:a2e:bc1e:: with SMTP id b30mr1593765ljf.191.1631740795868;
- Wed, 15 Sep 2021 14:19:55 -0700 (PDT)
+        id S232391AbhIOVWS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Sep 2021 17:22:18 -0400
+Received: from mout.gmx.net ([212.227.15.19]:55231 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231840AbhIOVWR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Sep 2021 17:22:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1631740841;
+        bh=85P8KOWSraZ/o7YpaEMBWIyHbIKI0hZfH9X8NVWLP4U=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=grhNpy7jIhxxhMdMqg5Zg1o4h7AatPM1ETiYAlHaEua4cv8Hrr0ebPnaJR1ZrXDSP
+         pX9VSKVTqWXLJg9ufHVhFWArbOBq1mwY9y/g4xGKFAqzhGqNiT368jaSRtLmYcJEgz
+         1uYOapKzYg9J6YAO7yW3pvosA/udd4MUL9wae4TM=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.178.51] ([46.223.119.124]) by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MFbW0-1mgYlT2Cbe-00H9fq; Wed, 15
+ Sep 2021 23:20:41 +0200
+Subject: Re: [PATCH] net/alacritech: Make use of the helper function
+ dev_err_probe()
+To:     Cai Huoqing <caihuoqing@baidu.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210915145734.7145-1-caihuoqing@baidu.com>
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Message-ID: <707ca3c3-f42a-d7f7-b52c-829d8e243c87@gmx.de>
+Date:   Wed, 15 Sep 2021 23:20:40 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20210915035227.630204-1-linux@roeck-us.net> <CAHk-=wjXr+NnNPTorhaW81eAbdF90foVo-5pQqRmXZi-ZGaX6Q@mail.gmail.com>
- <47fcc9cc-7d2e-bc79-122b-8eccfe00d8f3@roeck-us.net> <CAHk-=wgdEHPm6vGcJ_Zr-Q_p=Muv1Oby5H2+6QyPGxiZ7_Wv+w@mail.gmail.com>
- <CAHk-=whSkMh9mc7+OSBZZvpoEEJmS6qY7kX3qixEXTLKGc=wgw@mail.gmail.com>
-In-Reply-To: <CAHk-=whSkMh9mc7+OSBZZvpoEEJmS6qY7kX3qixEXTLKGc=wgw@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 15 Sep 2021 14:19:39 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wjynK7SSgTOvW7tfpFZZ0pzo67BsOsqtVHYtvju8F_bng@mail.gmail.com>
-Message-ID: <CAHk-=wjynK7SSgTOvW7tfpFZZ0pzo67BsOsqtVHYtvju8F_bng@mail.gmail.com>
-Subject: Re: [PATCH v2 0/4] Introduce and use absolute_pointer macro
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        alpha <linux-alpha@vger.kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-parisc@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
-        Sparse Mailing-list <linux-sparse@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210915145734.7145-1-caihuoqing@baidu.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:paAyYoaFbyKpHAcCZxjVr2PF77xbwlikriF3BL/QNmWXTgoPqBQ
+ 1xGkF7SRhnLKQJtrDFRE7/S0GuicjnjaaPIzCrfT+wRY5z9vhAe6K6iDi98kZNAErfcI+yj
+ qIQm3V8XHYeypH6QevOjKTSieEp+YyGMzzOPPycEnDjIxcnxyRLWffY+/Imcj3a9+N+mQ2a
+ LzktmtYX5vU2n0ObrnGZA==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:aXoFxURQWjs=:Y2edibHHn8J/dYWXu8TWBk
+ K3u4Qj2K5F19P01RVFUtSJcsqMJZ19ZFOY2pCL2aZY3pRuFAgCQygqZrgYp+1a9zFVUlPRDTR
+ Y4cxlyi3Q6knlZSwmvmdbNXeLe71KcrpTg3cUIfnzywmh81XRJcD7MODOhFSgNwJifjFyUJEB
+ dfD29thCUdLIYGm6kroN/zz9NutVYY50AXVdy3IMu+2qtXJfyTtAm2CG0x0ZGz9iSieT8A7EM
+ uTStZa35a6+L0JcCIxnyvPIY2FF2kTnTJMNMUGHfIT47cM7cXBSHjsB6I+QNm3StWfZZjnSie
+ ZOhhAKZPfQVjAqf38sHE0aHQmXh3eWyhfA6mkFqBFoR1mOyMqX/qlTnHryIIQ0l1zmo1Vk+FK
+ N+r7+JJITlRXIfpIrhuz5ACduImXT0Wgj2ctqB6JtuBwPTQyF/dmzOWyDGFgTrOfx2KlePeE/
+ qswezUVvbfE0hCjAKoXr4gDxACr9AlObIWcoKD+570U5pbUc+qApvYfAf1TANozN3+pxD8yFf
+ iSOA3WhDLzWGkR4QxJxCpxuVNRfYeQNoPi1q3rWQ3Y/mOdx7DsiPZEf/NK/Agdl0YdPiR+4gJ
+ z61sM87IBJcEdsTlqlViLd+fESzZKBqSXSDagW/8hSvz1jsLP7g/CKSxxnDXQiqjeUvx8FLwi
+ 2+qJAFNHKA8GzXojFnccqa7+2Qu5BdnZY6QGpXgIj3PI6J6GS2lWHbVIQjJjBnrfQN3SpYViZ
+ EdkyrsuF12gmoOSk6IW6zfOOzQked3aFfRrfUgAmid3MOMtSOjcPr0yrNL9IBkOVfXOlAV9yT
+ yt2GjnUejBCNvVaJW4lNOFwUdUUsjA/WpwUmnb90wl7NNa8tsLmdrGr8MZKqlBQOaX9T5nhc9
+ +z1XbNshtcNKqzWVyoR4drbK/3nzjhReoE0cIODVpSqNUaV6QexmHkyVJZfNHaB2r8oWHspsT
+ V7D2PFSMfMtjB5LCcyd9sUblKmoWMUenYDF+vaAYJLvAbHGc44zyyQhr5sOKAZiXsD3WgView
+ OuqPdWrV12nP84ROjy7fzufdwMVOK2kIqpB0bZZv2mDtOWExFGq7NRVnMD9Awe/fO8uY321Ma
+ +a4o1JKeqmeMjY=
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 15, 2021 at 12:50 PM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
+
+Hi,
+
+On 15.09.21 at 16:57, Cai Huoqing wrote:
+> When possible use dev_err_probe help to properly deal with the
+> PROBE_DEFER error, the benefit is that DEFER issue will be logged
+> in the devices_deferred debugfs file.
+> And using dev_err_probe() can reduce code size, and simplify the code.
 >
-> On Wed, Sep 15, 2021 at 12:47 PM Linus Torvalds
-> <torvalds@linux-foundation.org> wrote:
-> >
-> > What other notable issues end up being still live? I sent out that one
-> > patch for sparc, but didn't get any response to it. I'm inclined to
-> > just apply it (the 'struct mdesc_hdr' pointer misuse one).
+> Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
+> ---
+>  drivers/net/ethernet/alacritech/slicoss.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
 >
-> Oh, I forgot about the qnx4 one. That happens on sparc, possibly
-> others, but not on x86-64.
+> diff --git a/drivers/net/ethernet/alacritech/slicoss.c b/drivers/net/eth=
+ernet/alacritech/slicoss.c
+> index 696517eae77f..170ff8c77983 100644
+> --- a/drivers/net/ethernet/alacritech/slicoss.c
+> +++ b/drivers/net/ethernet/alacritech/slicoss.c
+> @@ -1743,10 +1743,8 @@ static int slic_probe(struct pci_dev *pdev, const=
+ struct pci_device_id *ent)
+>  	int err;
 >
-> I'll go look at that patch too.
+>  	err =3D pci_enable_device(pdev);
+> -	if (err) {
+> -		dev_err(&pdev->dev, "failed to enable PCI device\n");
+> -		return err;
+> -	}
+> +	if (err)
+> +		return dev_err_probe(&pdev->dev, err, "failed to enable PCI device\n"=
+);
+>
+>  	pci_set_master(pdev);
+>  	pci_try_set_mwi(pdev);
+>
 
-Ok, I didn't love any of the patches I saw for the qnx4 problem, so I
-silenced that warning with a new patch of my own. Like the sparc64
-case, the fix is to describe more extensively to the compiler what the
-code is actually doing.
+in which case does pci_enable_device() ever return -EPROBE_DEFER?
 
-I think it ended up making it clearer what is going on to humans too.
-Although that may be the old "peeing in the snow" effect - it looks
-more understandable to me only because I spent so much time trying to
-understand what it does, and then wrote the fix based on that possibly
-flawed understanding. So of course I find it more understandable.
-
-Looking at the qnx4 code-base history, I don't think it has gotten any
-actual development outside of cleanups in the git history timeframe,
-which makes me suspect nobody uses this code.
-
-But hey, maybe it just works so well for the very specialized user base ...
-
-Anyway, I pushed it out. I have a clean "allmodconfig" build on all
-the architectures I tested, but I didn't test _that_ many.  sparc64,
-arm64, powerpc64.
-
-Lots of dts warnings (which aren't fatal), though. Particularly for
-the powerpc64 build.
-
-             Linus
+Regards,
+Lino
