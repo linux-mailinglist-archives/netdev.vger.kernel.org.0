@@ -2,51 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AAA0E40CB6C
-	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 19:09:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 842CB40CB70
+	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 19:09:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230038AbhIORLH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Sep 2021 13:11:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41142 "EHLO
+        id S230232AbhIORLM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Sep 2021 13:11:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229465AbhIORLF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 13:11:05 -0400
-Received: from mail-qt1-x84a.google.com (mail-qt1-x84a.google.com [IPv6:2607:f8b0:4864:20::84a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0536C061574
-        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 10:09:46 -0700 (PDT)
-Received: by mail-qt1-x84a.google.com with SMTP id e6-20020ac84e46000000b0029baad9aaa0so5117702qtw.11
-        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 10:09:46 -0700 (PDT)
+        with ESMTP id S230075AbhIORLI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 13:11:08 -0400
+Received: from mail-qk1-x749.google.com (mail-qk1-x749.google.com [IPv6:2607:f8b0:4864:20::749])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA57BC061764
+        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 10:09:49 -0700 (PDT)
+Received: by mail-qk1-x749.google.com with SMTP id j27-20020a05620a0a5b00b0042874883070so5583344qka.19
+        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 10:09:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=G2WcbvK+PaXifH/TCT7HXkdAsMKjXqmq2vlholzbmpk=;
-        b=WT0fdnsqO6AZfZgkz8NrBSHO5BEL6157yGk8J57NcI7AzVyrtQSvNXpJ4+CTp5Ggse
-         aFpAgHabNUc8tnQpk++2h6YvQC+U2AUee8oewZ6MzsxMtJZYbEhMDUT49sC6bYZCgTQD
-         NhotxdJXk7LdTEfXU4aFsOz1VBGR9iUR/aH1Lw256rqIiAQIh7yV+RJd4qZdl1IML8Hq
-         sDEA2PKem275C8xVQ2B44G0AXAwEiREBCsCgpT8CPA0U+7kH36z7222EedDv0sdyUtm6
-         XBiZfkNqh9CUd6aiRWcR97jWP4ma3lrzGZ4FLvJRUdKXb2rdDfl0ZimLjjrtP+fCmXqj
-         82gw==
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=SK0Awx6gBdtKUkOkh7F3holwbySWbAOSfl3fXGrSMFk=;
+        b=j/6JMqqVwtPJr2PuYNwQ9wHyUtwghqpcHDRgXk+GpqAzIOKLLlEezdzFBuFFcvA3bk
+         lFWUqD4frWgBGCCe5sqKyNW9RTDZkP5GBw+rmHvsu78Kqu3BZ9BFR6OLgKh0+OdBAZ77
+         LMXJdaaUkF5RaBueu/TL8CHaIDou4p6a4kLpK87FJW3yiy5bAuZylth0AtGOwEDzBt/0
+         RsnqKLvC7W7ZiPQ+7OPB8fpQxfbzYXS34akl0jznUoy+gFauKX3DjrXQQAYh5A7nD39E
+         0xtxj7UWDMDfs9lkdv7KBSW1SMh1Uy0qu+e3rf6A6rn9bVwdSYkvFNqs6oFWhtUj27rr
+         KTzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=G2WcbvK+PaXifH/TCT7HXkdAsMKjXqmq2vlholzbmpk=;
-        b=rPDsZT5l+cg/u0hlcsTxfX0m/2vy3joQ9GCysvcvMoxZbW4+/UJyVlTkV0Pe4BcHhj
-         Yk0/K+KqEjZzuNcc67WMxqkhJBdiNnlJlElbd67FKY46jlbg7CW8Z6MFUGsrL6aYCrE/
-         LiNYTtpH1K+aw+J6/JvWT0BmnakdmgxBqUXMK8o26K3dc1C7DjIuS4m4BITh1vS+iVOV
-         GU7zXCWJmofDn6HTtK64iMSGEDqv8RHoFUfnXT1fEu0/DM4lc3FpOFcmiIgIehWNqoBv
-         QrbOJYZG4NlNrrcrgvNqOT5PVb6o+KpQI1TUwmcnuzSFlJGgPCe8SzSBJyRfY8TugKTR
-         WdwQ==
-X-Gm-Message-State: AOAM531St6ilBg8bzme9iHxaK45P2FAOQwsXS+lKiIrc11kuUernn8x+
-        39ArC8fK3kAekiMyibNJ0JfxyRikxnD3inQ=
-X-Google-Smtp-Source: ABdhPJxcb7UvYj5WzZFkfdnkysuUIWp0Nf5fLRSUqM2gZo1OCWg2hif2EW1CykPzlm1LoQB3AagcAWW8Slx8LXw=
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=SK0Awx6gBdtKUkOkh7F3holwbySWbAOSfl3fXGrSMFk=;
+        b=BF1tiHqMGIOQBNheBQjtQqHB3HjkJibxQSO75GHfnnxerzXZGMEGJxGKXoSywzM6ry
+         eHPsrNQMF8R6F/nTkbjDu/wOoPyaIGq1bKrZdEwBwgGR3cQxbs8Cib1/m490yDnChbfG
+         YS8wjnIiXu93zBh6BhxB/R7wbH8LcMCbavFsh82DPQX/vErfyWDXaTR+3KKe5V2si6YS
+         +wg0Fcya9mAT7YfU23S3Fkit/Lg6YCiCbYeZbCng5HU+yxrVsEis3Z/G/UX0L4RWBjCs
+         PUEHH0CG1jAC9k46LkmTGOZXu1UwjJ+qzvYq/ZZYv9lJ3ISLsHW37JjPe0l7joVUAUXN
+         1QYA==
+X-Gm-Message-State: AOAM532I7TDhrQxPuBDe54O+xOViF9TwBUY3CT/zaJ+v+Ga4RQGdLhdU
+        dE1JmvRc1QJKfpypZUWa+BjNs+Z29sNnlUc=
+X-Google-Smtp-Source: ABdhPJzpSB08zJBnLwbHl02W9xYuCHlr5gBvgb/tW3BrQDILrEXB073GvlAwzYRJ7nRDUowH61DjK//i7prT180=
 X-Received: from saravanak.san.corp.google.com ([2620:15c:2d:3:16d1:ab0e:fc4a:b9b1])
- (user=saravanak job=sendgmr) by 2002:a05:6214:732:: with SMTP id
- c18mr933459qvz.9.1631725785980; Wed, 15 Sep 2021 10:09:45 -0700 (PDT)
-Date:   Wed, 15 Sep 2021 10:09:36 -0700
-Message-Id: <20210915170940.617415-1-saravanak@google.com>
+ (user=saravanak job=sendgmr) by 2002:a0c:aa01:: with SMTP id
+ d1mr714696qvb.47.1631725789030; Wed, 15 Sep 2021 10:09:49 -0700 (PDT)
+Date:   Wed, 15 Sep 2021 10:09:37 -0700
+In-Reply-To: <20210915170940.617415-1-saravanak@google.com>
+Message-Id: <20210915170940.617415-2-saravanak@google.com>
 Mime-Version: 1.0
+References: <20210915170940.617415-1-saravanak@google.com>
 X-Mailer: git-send-email 2.33.0.309.g3052b89438-goog
-Subject: [PATCH v3 0/3] fw_devlink bug fixes
+Subject: [PATCH v3 1/3] driver core: fw_devlink: Improve handling of cyclic dependencies
 From:   Saravana Kannan <saravanak@google.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Rafael J. Wysocki" <rafael@kernel.org>,
@@ -59,42 +63,82 @@ To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
         Vladimir Oltean <olteanv@gmail.com>, kernel-team@android.com,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-acpi@vger.kernel.org
+        linux-acpi@vger.kernel.org,
+        Marek Szyprowski <m.szyprowski@samsung.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Intended for 5.15.
+When we have a dependency of the form:
 
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Andrew Lunn <andrew@lunn.ch>
-Cc: Vladimir Oltean <olteanv@gmail.com>
+Device-A -> Device-C
+	Device-B
 
-v1->v2:
-- Added a few Reviewed-by and Tested-by tags
-- Addressed Geert's comments in patches 3 and 5
-- Dropped the fw_devlink.debug patch
-- Added 2 more patches to the series to address other fw_devlink issues
+Device-C -> Device-B
 
-v2->v3:
-- Split the logging/debug changes into a separate series
+Where,
+* Indentation denotes "child of" parent in previous line.
+* X -> Y denotes X is consumer of Y based on firmware (Eg: DT).
 
-Thanks,
-Saravana
+We have cyclic dependency: device-A -> device-C -> device-B -> device-A
 
-Saravana Kannan (3):
-  driver core: fw_devlink: Improve handling of cyclic dependencies
-  driver core: fw_devlink: Add support for
-    FWNODE_FLAG_NEEDS_CHILD_BOUND_ON_ADD
-  net: mdiobus: Set FWNODE_FLAG_NEEDS_CHILD_BOUND_ON_ADD for mdiobus
-    parents
+fw_devlink current treats device-C -> device-B dependency as an invalid
+dependency and doesn't enforce it but leaves the rest of the
+dependencies as is.
 
- drivers/base/core.c        | 36 +++++++++++++++++++++++++++++++-----
- drivers/net/phy/mdio_bus.c |  4 ++++
- include/linux/fwnode.h     | 11 ++++++++---
- 3 files changed, 43 insertions(+), 8 deletions(-)
+While the current behavior is necessary, it is not sufficient if the
+false dependency in this example is actually device-A -> device-C. When
+this is the case, device-C will correctly probe defer waiting for
+device-B to be added, but device-A will be incorrectly probe deferred by
+fw_devlink waiting on device-C to probe successfully. Due to this, none
+of the devices in the cycle will end up probing.
 
+To fix this, we need to go relax all the dependencies in the cycle like
+we already do in the other instances where fw_devlink detects cycles.
+A real world example of this was reported[1] and analyzed[2].
+
+[1] - https://lore.kernel.org/lkml/0a2c4106-7f48-2bb5-048e-8c001a7c3fda@samsung.com/
+[2] - https://lore.kernel.org/lkml/CAGETcx8peaew90SWiux=TyvuGgvTQOmO4BFALz7aj0Za5QdNFQ@mail.gmail.com/
+Fixes: f9aa460672c9 ("driver core: Refactor fw_devlink feature")
+Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Signed-off-by: Saravana Kannan <saravanak@google.com>
+Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+---
+ drivers/base/core.c | 17 ++++++++++++-----
+ 1 file changed, 12 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/base/core.c b/drivers/base/core.c
+index e65dd803a453..316df6027093 100644
+--- a/drivers/base/core.c
++++ b/drivers/base/core.c
+@@ -1772,14 +1772,21 @@ static int fw_devlink_create_devlink(struct device *con,
+ 	 * be broken by applying logic. Check for these types of cycles and
+ 	 * break them so that devices in the cycle probe properly.
+ 	 *
+-	 * If the supplier's parent is dependent on the consumer, then
+-	 * the consumer-supplier dependency is a false dependency. So,
+-	 * treat it as an invalid link.
++	 * If the supplier's parent is dependent on the consumer, then the
++	 * consumer and supplier have a cyclic dependency. Since fw_devlink
++	 * can't tell which of the inferred dependencies are incorrect, don't
++	 * enforce probe ordering between any of the devices in this cyclic
++	 * dependency. Do this by relaxing all the fw_devlink device links in
++	 * this cycle and by treating the fwnode link between the consumer and
++	 * the supplier as an invalid dependency.
+ 	 */
+ 	sup_dev = fwnode_get_next_parent_dev(sup_handle);
+ 	if (sup_dev && device_is_dependent(con, sup_dev)) {
+-		dev_dbg(con, "Not linking to %pfwP - False link\n",
+-			sup_handle);
++		dev_info(con, "Fixing up cyclic dependency with %pfwP (%s)\n",
++			 sup_handle, dev_name(sup_dev));
++		device_links_write_lock();
++		fw_devlink_relax_cycle(con, sup_dev);
++		device_links_write_unlock();
+ 		ret = -EINVAL;
+ 	} else {
+ 		/*
 -- 
 2.33.0.309.g3052b89438-goog
 
