@@ -2,82 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BDF440CCBA
-	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 20:46:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8E4240CD0D
+	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 21:16:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231135AbhIOSrd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Sep 2021 14:47:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50044 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229479AbhIOSrc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Sep 2021 14:47:32 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E047F610E8;
-        Wed, 15 Sep 2021 18:46:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631731573;
-        bh=6Jqw5jLRzxyx4PJuZTL0bBKrYEWat+ZKCcmgiUfxurE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=f8WruA9MTg7Da0jXFREjQn0b+1c87NmW904DsjOTU2wpqZFIbBXEBJzGtXQazKB9W
-         WOaR2f1nHCiRI1ES0TEowGIOTguHQ/7lRKHW92Wz2M27TfwaCELUjWMItbLJkoSqgK
-         s5biim1BQjY5HS9d6NWiPCra0UvrElX4ms4pNlBd56gGr8kCLOzdr+fdkq5fpJrIJK
-         VgUo/FDfOc+iMPW5h30B/nRlMhz5PLW5DeHhgj8TyKcb8TjsprxTvyDaOqx06Bu1ZX
-         jmc886lmEV9eoyFe/lh2idFLIxmZLEwbh/7Lc/8s6wl/Ld8plbXvq+O0tMfxE7fYQo
-         4w36pPzB6qE+w==
-Received: by pali.im (Postfix)
-        id 6DB685E1; Wed, 15 Sep 2021 20:46:10 +0200 (CEST)
-Date:   Wed, 15 Sep 2021 20:46:10 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Jonas =?utf-8?Q?Dre=C3=9Fler?= <verdre@v0yd.nl>
-Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Sharvari Harisangam <sharvari.harisangam@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tsuchiya Yuto <kitakar@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH 0/9] mwifiex: Fixes for wifi p2p and AP mode
-Message-ID: <20210915184610.2bdiegl3oolhe7ey@pali>
-References: <20210914195909.36035-1-verdre@v0yd.nl>
+        id S231439AbhIOTSM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Sep 2021 15:18:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42118 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230230AbhIOTSL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 15:18:11 -0400
+Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92C64C061574
+        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 12:16:52 -0700 (PDT)
+Received: by mail-ot1-x32e.google.com with SMTP id m7-20020a9d4c87000000b0051875f56b95so5012226otf.6
+        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 12:16:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Gh4bn35Ad0vdVDHCviL3VyTRYieJBj2Evni8i7+DXt8=;
+        b=RCtJ/Ww8JUDNqMB8/lBzwfKbEuvyuMvQfVHucjMXFjAQ/enuCZqYlrBNhbdVCr0oKu
+         9iFp65oC4NyHtVKs/aCybXOTk4NxoScw/jBy6nsLNNlV9XG+lEtdpOOKQB9uA3yNymCX
+         ri0s4ZJi5XGqIVcyKBsKKH9FrgvpI6afMzC71bYyjQ9ZF6bbT33NmlQ5Kft5+JApYC4C
+         ju6+IaA8gnJDNMELuoFDSm3f4CGDRO+dRf13dS8Fi3T8EQJCBsHcdtYApR5ydswGeiF4
+         kdcASjvWSTMooo/Lc6BnpGW4S6QB+u4/ug4LsP5DVpEHF9+NVv5x/Y+E0qvzdziZqdRb
+         fFGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Gh4bn35Ad0vdVDHCviL3VyTRYieJBj2Evni8i7+DXt8=;
+        b=r9ckE7N79N59A/N9kDH/TjWjgHoWvJy1TOHW6VcOxcmfqIgFdqYdJSqYVQcrrr4QEH
+         Zlk+9t4jdNWxXz1FCZYYSicNpWuAKEWXbTppucur5/vMB+PQlgHazOcOD6rcyib/fWof
+         0qJxolwga1WfBezisZXmZJSZEJa88Fh+YdDAY3EbYUfNRkeJtY+Fk4vdQy9bRbS1Fs5/
+         wkIWYypkGABynzEAl7I4c2UYwx8LV9aC8AL45G+V0HVgT8wCN0Tr2OP4ZXhRpvHHQ4Rp
+         Ft8hBOowIXW0YjcGxYMIrtI9Cq2nY2D7YidSvYddyCSXp6FDI3e08+vS2gO0br282qG2
+         kWLA==
+X-Gm-Message-State: AOAM5335/jRE0Ojs5ZQBH0Gcv8rmK2RzbcgkXgLdYjGz1Ckfr7HYK4yE
+        Rgl0egbmd9bU99d0HFk+TGO1lqSww2SE9GSvejE=
+X-Google-Smtp-Source: ABdhPJz9bs25IokICEolN5gSBqRcr2YDZADfY9nkr/HTiobh0+i8sLP1f90mgZ/ELxIDPa+3LTzvKopt9MtFjpisbSM=
+X-Received: by 2002:a05:6830:2b2c:: with SMTP id l44mr1451640otv.238.1631733411803;
+ Wed, 15 Sep 2021 12:16:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210914195909.36035-1-verdre@v0yd.nl>
-User-Agent: NeoMutt/20180716
+References: <452ff4ddfef7fc8f558a8c8eb7a8050688760e11.1631609537.git.jbenc@redhat.com>
+In-Reply-To: <452ff4ddfef7fc8f558a8c8eb7a8050688760e11.1631609537.git.jbenc@redhat.com>
+From:   Jesse Brandeburg <jesse.brandeburg@gmail.com>
+Date:   Wed, 15 Sep 2021 12:16:40 -0700
+Message-ID: <CAEuXFExDWaQwJHHQLcMjbFSP-621KUi16BNg=VH-Y5KLk6dhCA@mail.gmail.com>
+Subject: Re: [Intel-wired-lan] [PATCH net v2] i40e: fix endless loop under rtnl
+To:     Jiri Benc <jbenc@redhat.com>
+Cc:     NetDEV list <netdev@vger.kernel.org>,
+        intel-wired-lan@lists.osuosl.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tuesday 14 September 2021 21:59:00 Jonas Dreßler wrote:
-> A bunch of bugfixes for running mwifiex in the P2P and AP mode, for some prior
-> discussions, see https://github.com/linux-surface/kernel/pull/71.
+On Tue, Sep 14, 2021 at 1:55 AM Jiri Benc <jbenc@redhat.com> wrote:
+>
+> The loop in i40e_get_capabilities can never end. The problem is that
+> although i40e_aq_discover_capabilities returns with an error if there's
+> a firmware problem, the returned error is not checked. There is a check for
+> pf->hw.aq.asq_last_status but that value is set to I40E_AQ_RC_OK on most
+> firmware problems.
+>
+> When i40e_aq_discover_capabilities encounters a firmware problem, it will
+> enocunter the same problem on its next invocation. As the result, the loop
+> becomes endless. We hit this with I40E_ERR_ADMIN_QUEUE_TIMEOUT but looking
+> at the code, it can happen with a range of other firmware errors.
+>
+> I don't know what the correct behavior should be: whether the firmware
+> should be retried a few times, or whether pf->hw.aq.asq_last_status should
+> be always set to the encountered firmware error (but then it would be
+> pointless and can be just replaced by the i40e_aq_discover_capabilities
+> return value). However, the current behavior with an endless loop under the
+> rtnl mutex(!) is unacceptable and Intel has not submitted a fix, although we
+> explained the bug to them 7 months ago.
+>
+> This may not be the best possible fix but it's better than hanging the whole
+> system on a firmware bug.
+>
+> Fixes: 56a62fc86895 ("i40e: init code and hardware support")
+> Tested-by: Stefan Assmann <sassmann@redhat.com>
+> Signed-off-by: Jiri Benc <jbenc@redhat.com>
 
-Changes look good,
 
-Acked-by: Pali Rohár <pali@kernel.org>
+Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
 
-> Jonas Dreßler (9):
->   mwifiex: Small cleanup for handling virtual interface type changes
->   mwifiex: Use function to check whether interface type change is
->     allowed
->   mwifiex: Run SET_BSS_MODE when changing from P2P to STATION vif-type
->   mwifiex: Use helper function for counting interface types
->   mwifiex: Update virtual interface counters right after setting
->     bss_type
->   mwifiex: Allow switching interface type from P2P_CLIENT to P2P_GO
->   mwifiex: Handle interface type changes from AP to STATION
->   mwifiex: Properly initialize private structure on interface type
->     changes
->   mwifiex: Fix copy-paste mistake when creating virtual interface
-> 
->  .../net/wireless/marvell/mwifiex/cfg80211.c   | 370 ++++++++++--------
->  1 file changed, 197 insertions(+), 173 deletions(-)
-> 
-> -- 
-> 2.31.1
-> 
+Thanks!
