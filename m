@@ -2,168 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1536C40C9B1
-	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 18:04:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 733DE40C9ED
+	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 18:18:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231693AbhIOQFx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Sep 2021 12:05:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53806 "EHLO
+        id S229547AbhIOQUA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Sep 2021 12:20:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229547AbhIOQFw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 12:05:52 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5584FC061574;
-        Wed, 15 Sep 2021 09:04:33 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id s16so6874545ybe.0;
-        Wed, 15 Sep 2021 09:04:33 -0700 (PDT)
+        with ESMTP id S229465AbhIOQT5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 12:19:57 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5296C061574;
+        Wed, 15 Sep 2021 09:18:38 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id v2so1937142plp.8;
+        Wed, 15 Sep 2021 09:18:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=a7KJPRjegr1Mk4SkxcSDTXpkviD5Dd9JHixf2CKgigA=;
-        b=mteEe17TA8bV7msOSGZlj1C4bkteYPBUJ4ef7OvAsDniLxuA6npsTGEi/92LE7PIVQ
-         kTx3rf/Uy62UTuudzjX5J3RH0WDAQVs8wJtUXn8mNS2s9shK6FCXzpJPFS6GBbAX6+Ia
-         To3ttowLFtUEsklgJzu+/gggdwtNDF1XqM69sKdJkwkhX1tkZMXBK/IJoT+yJYphrRcZ
-         8VlOvf/wfZr7oGaO07l6lzY15uMsWm6DsPUB03mtgnuS7HLIqBn0EzqC3ZTDnrBBtJzc
-         6u0gltVQh7zfGUJqwUNTpObJVh55kZsctCpc3CedvPTfHefjmIgpTcgIExYn846Dov7q
-         JQeg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=SsCbbjCE5kc+uLnSb51SXUB7ypUOWvKsCSrL5lvcgQ8=;
+        b=GIsq/FYQe4F/a1QmYNRlvr8tJhKlgZv0D2SF70g4rcR/zVleGw5cZft3zKIzt6LXtP
+         kyRXw3NHsoKzDoYetZFAxE8HgC/hL0qdAANnz7hL5QDfOxwK+s63XHIFpjkRbhULQhk3
+         eFF/7EFY4IO/keXur3HZztRSvONt6p/x2yWw474NFFaDLkZmBIXm9YOzYRtKcWqNIyM2
+         RNNozxb6xT7HaJB0XBt4j+FkeXPW5IevR8uEN3gVfuDatqw4CnwYzsT0dE8SENPy6IIF
+         9mQs/1J7N9rqcMLD9gZUHi9DBNqtG6kouXvqmbwmkJiOlp1wKilashUuBMKbe4S6mcLy
+         mXVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=a7KJPRjegr1Mk4SkxcSDTXpkviD5Dd9JHixf2CKgigA=;
-        b=lpmEERYmURh/2qaTktiLM9dFExFPY0i90kdnhSKMUx7Zh69nXHpmQiNSER1oaCSiJr
-         7kZ7klYt8eZA24KTLnkX7UP4IlhPF8wwaOdAxrgmFbiu3tBPlr/B9YNQ5UmnW64UCE9x
-         AoH8WhjzduFJZcTXoFFnMVkgxeMYAt9/bgPeEe7ntnStiuOs3ZYIZtDSB+RyWcudbjFQ
-         PMjv+CsFJXPDE3EKVG2cwqhxr43+hYZ4D0BDwE/oI+6f1lyU3/Eq41IqbNJr2DzHfVuU
-         SL33MTyXNP8JLcmh3mJdA/TXx5Iq+MMIne2geuxqJivekp7DNDj9Rm0ADAyNBLuDNwo0
-         Q4FQ==
-X-Gm-Message-State: AOAM5301QW4iX4ItwDEXEtyVJr2t0CDnJ6GfClboFvJ/5HqPRSungSUZ
-        h7WbeR+pLb2th88tkQob53LW4hGkRH4PHNl9v3k=
-X-Google-Smtp-Source: ABdhPJy5nsnKs1aUYx9LECcm/C12Eu1CWNbv5Cpv1NRZMmxSkNBphBs2iNb4NghXdVSYXFbdmOTfDRR/GmHc2yLzgk4=
-X-Received: by 2002:a25:9881:: with SMTP id l1mr858881ybo.455.1631721872604;
- Wed, 15 Sep 2021 09:04:32 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210915050943.679062-1-memxor@gmail.com>
-In-Reply-To: <20210915050943.679062-1-memxor@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 15 Sep 2021 09:04:21 -0700
-Message-ID: <CAEf4BzYwredoHa6Wv3AEMCfnqOXKcxk2yW3bSu3t6s_TmRmE5Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 00/10] Support kernel module function calls
- from eBPF
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=SsCbbjCE5kc+uLnSb51SXUB7ypUOWvKsCSrL5lvcgQ8=;
+        b=eVkb/FweMtJMZrOAa5mXv2GPrLx9YFsuBq/+8POrc6X/2ypTDqiKQ5xiAllCcNvbZ7
+         uF2b2/ajaXeigpw4BRphLaSWxy0K8MIzUXCpgbTpfPjos88Qx6avpvo/5Sy14+qSANyT
+         1J9/RKsyKAOfZH10e/CN+7RCkfFDnoinHLz3vqTV0580eEqWKYtIAC0zfVlzK0I0eB7n
+         iYg4uwaJgO5IW9vy9MMBdTr4tqpRfhwUA5jqr4yB7Cx7TULjGiWzwUeJ5vkGnSnRa8fP
+         DqdnzYkpSuURTvQibDrw4k94bmc4HNQwHcpZHjuWNzptgOeyIo709opZv1wuNivmnTZN
+         dhwg==
+X-Gm-Message-State: AOAM532ZYKgOjTlNiknyEMCQmmrwl/0FAI/Jh1F7xHkaaeerDDpQla3A
+        zuZofGOxYWWvx1zI4O2KN81/2OvKVi8=
+X-Google-Smtp-Source: ABdhPJyZKviwTMkAiQ8aHbELOEmY+f4QewLJ2xDoDJkojbJJOojyV0IAStCTApS3OTCx0hDiFCfCWg==
+X-Received: by 2002:a17:90b:4a84:: with SMTP id lp4mr9488294pjb.34.1631722718094;
+        Wed, 15 Sep 2021 09:18:38 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:7b03])
+        by smtp.gmail.com with ESMTPSA id d22sm326039pfv.196.2021.09.15.09.18.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Sep 2021 09:18:37 -0700 (PDT)
+Date:   Wed, 15 Sep 2021 09:18:35 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
 To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH bpf-next v3 03/10] bpf: btf: Introduce helpers for
+ dynamic BTF set registration
+Message-ID: <20210915161835.xipxa324own7s6ya@ast-mbp.dhcp.thefacebook.com>
+References: <20210915050943.679062-1-memxor@gmail.com>
+ <20210915050943.679062-4-memxor@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210915050943.679062-4-memxor@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 14, 2021 at 10:09 PM Kumar Kartikeya Dwivedi
-<memxor@gmail.com> wrote:
->
-> This set enables kernel module function calls, and also modifies verifier logic
-> to permit invalid kernel function calls as long as they are pruned as part of
-> dead code elimination. This is done to provide better runtime portability for
-> BPF objects, which can conditionally disable parts of code that are pruned later
-> by the verifier (e.g. const volatile vars, kconfig options). libbpf
-> modifications are made along with kernel changes to support module function
-> calls. The set includes gen_loader support for emitting kfunc relocations.
->
-> It also converts TCP congestion control objects to use the module kfunc support
-> instead of relying on IS_BUILTIN ifdef.
->
-> Changelog:
-> ----------
-> v2 -> v3:
-> v2: https://lore.kernel.org/bpf/20210914123750.460750-1-memxor@gmail.com
->
->  * Fix issues pointed out by Kernel Test Robot
->  * Fix find_kfunc_desc to also take offset into consideration when comparing
+On Wed, Sep 15, 2021 at 10:39:36AM +0530, Kumar Kartikeya Dwivedi wrote:
+> This adds helpers for registering btf_id_set from modules and the
+> check_kfunc_call callback that can be used to look them up.
+> 
+> With in kernel sets, the way this is supposed to work is, in kernel
+> callback looks up within the in-kernel kfunc whitelist, and then defers
+> to the dynamic BTF set lookup if it doesn't find the BTF id. If there is
+> no in-kernel BTF id set, this callback can be used directly.
+> 
+> Also fix includes for btf.h and bpfptr.h so that they can included in
+> isolation. This is in preparation for their usage in tcp_bbr, tcp_cubic
+> and tcp_dctcp modules in the next patch.
+> 
+> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> ---
+>  include/linux/bpfptr.h |  1 +
+>  include/linux/btf.h    | 32 ++++++++++++++++++++++++++
+>  kernel/bpf/btf.c       | 51 ++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 84 insertions(+)
+> 
+> diff --git a/include/linux/bpfptr.h b/include/linux/bpfptr.h
+> index 546e27fc6d46..46e1757d06a3 100644
+> --- a/include/linux/bpfptr.h
+> +++ b/include/linux/bpfptr.h
+> @@ -3,6 +3,7 @@
+>  #ifndef _LINUX_BPFPTR_H
+>  #define _LINUX_BPFPTR_H
+>  
+> +#include <linux/mm.h>
 
-See [0]:
+Could you explain what this is for?
 
-
-  [  444.075332] mod kfunc i=42
-  [  444.075383] mod kfunc i=42
-  [  444.075522] mod kfunc i=42
-  [  444.075578] mod kfunc i=42
-  [  444.075631] mod kfunc i=42
-  [  444.075683] mod kfunc i=42
-  [  444.075735] mod kfunc i=42
-  [  444.0
-This step has been truncated due to its large size. Download the full
-logs from the
-menu once the workflow run has completed.
-
-  [0] https://github.com/kernel-patches/bpf/runs/3606513281?check_suite_focus=true
-
->
-> RFC v1 -> v2
-> v1: https://lore.kernel.org/bpf/20210830173424.1385796-1-memxor@gmail.com
->
->  * Address comments from Alexei
->    * Reuse fd_array instead of introducing kfunc_btf_fds array
->    * Take btf and module reference as needed, instead of preloading
->    * Add BTF_KIND_FUNC relocation support to gen_loader infrastructure
->  * Address comments from Andrii
->    * Drop hashmap in libbpf for finding index of existing BTF in fd_array
->    * Preserve invalid kfunc calls only when the symbol is weak
->  * Adjust verifier selftests
->
-> Kumar Kartikeya Dwivedi (10):
->   bpf: Introduce BPF support for kernel module function calls
->   bpf: Be conservative while processing invalid kfunc calls
->   bpf: btf: Introduce helpers for dynamic BTF set registration
->   tools: Allow specifying base BTF file in resolve_btfids
->   bpf: Enable TCP congestion control kfunc from modules
->   bpf: Bump MAX_BPF_STACK size to 768 bytes
->   libbpf: Support kernel module function calls
->   libbpf: Resolve invalid weak kfunc calls with imm = 0, off = 0
->   libbpf: Update gen_loader to emit BTF_KIND_FUNC relocations
->   bpf, selftests: Add basic test for module kfunc call
->
->  include/linux/bpf.h                           |   8 +-
->  include/linux/bpf_verifier.h                  |   2 +
->  include/linux/bpfptr.h                        |   1 +
->  include/linux/btf.h                           |  38 +++
->  include/linux/filter.h                        |   4 +-
->  kernel/bpf/btf.c                              |  56 +++++
->  kernel/bpf/core.c                             |   4 +
->  kernel/bpf/verifier.c                         | 217 +++++++++++++++---
->  kernel/trace/bpf_trace.c                      |   1 +
->  net/bpf/test_run.c                            |   2 +-
->  net/ipv4/bpf_tcp_ca.c                         |  36 +--
->  net/ipv4/tcp_bbr.c                            |  28 ++-
->  net/ipv4/tcp_cubic.c                          |  26 ++-
->  net/ipv4/tcp_dctcp.c                          |  26 ++-
->  scripts/Makefile.modfinal                     |   1 +
->  tools/bpf/resolve_btfids/main.c               |  19 +-
->  tools/lib/bpf/bpf.c                           |   1 +
->  tools/lib/bpf/bpf_gen_internal.h              |  12 +-
->  tools/lib/bpf/gen_loader.c                    |  93 +++++++-
->  tools/lib/bpf/libbpf.c                        |  81 +++++--
->  tools/lib/bpf/libbpf_internal.h               |   1 +
->  tools/testing/selftests/bpf/Makefile          |   1 +
->  .../selftests/bpf/bpf_testmod/bpf_testmod.c   |  23 +-
->  .../selftests/bpf/prog_tests/ksyms_module.c   |  13 +-
->  .../bpf/prog_tests/ksyms_module_libbpf.c      |  18 ++
->  .../selftests/bpf/progs/test_ksyms_module.c   |   9 +
->  .../bpf/progs/test_ksyms_module_libbpf.c      |  35 +++
->  tools/testing/selftests/bpf/verifier/calls.c  |  22 +-
->  .../selftests/bpf/verifier/raw_stack.c        |   4 +-
->  .../selftests/bpf/verifier/stack_ptr.c        |   6 +-
->  .../testing/selftests/bpf/verifier/var_off.c  |   4 +-
->  31 files changed, 673 insertions(+), 119 deletions(-)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/ksyms_module_libbpf.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_ksyms_module_libbpf.c
->
-> --
-> 2.33.0
->
+>  #include <linux/sockptr.h>
