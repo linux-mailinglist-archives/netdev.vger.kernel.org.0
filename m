@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47D0E40BE27
-	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 05:24:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14F1C40BE21
+	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 05:23:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236154AbhIODZS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Sep 2021 23:25:18 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:19977 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236078AbhIODZR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 23:25:17 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4H8QSR4d1RzbmVT;
-        Wed, 15 Sep 2021 11:19:51 +0800 (CST)
+        id S235259AbhIODZM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Sep 2021 23:25:12 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:9871 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229758AbhIODZM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Sep 2021 23:25:12 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4H8QRx5Hw6z8yX3;
+        Wed, 15 Sep 2021 11:19:25 +0800 (CST)
 Received: from dggpeml500025.china.huawei.com (7.185.36.35) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.8; Wed, 15 Sep 2021 11:23:51 +0800
+ 15.1.2308.8; Wed, 15 Sep 2021 11:23:52 +0800
 Received: from huawei.com (10.175.124.27) by dggpeml500025.china.huawei.com
  (7.185.36.35) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.8; Wed, 15 Sep
@@ -29,15 +29,15 @@ To:     Alexei Starovoitov <ast@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>
 CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
         <houtao1@huawei.com>
-Subject: [RFC PATCH bpf-next 1/3] bpf: add dummy BPF STRUCT_OPS for test purpose
-Date:   Wed, 15 Sep 2021 11:37:51 +0800
-Message-ID: <20210915033753.1201597-2-houtao1@huawei.com>
+Subject: [RFC PATCH bpf-next 2/3] selftests/bpf: call dummy struct_ops in bpf_testmode
+Date:   Wed, 15 Sep 2021 11:37:52 +0800
+Message-ID: <20210915033753.1201597-3-houtao1@huawei.com>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210915033753.1201597-1-houtao1@huawei.com>
 References: <20210915033753.1201597-1-houtao1@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
 X-Originating-IP: [10.175.124.27]
 X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
  dggpeml500025.china.huawei.com (7.185.36.35)
@@ -46,282 +46,207 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently the test of BPF STRUCT_OPS depends on the specific bpf
-implementation of tcp_congestion_ops, and it can not cover all
-basic functionalities (e.g, return value handling), so introduce
-a dummy BPF STRUCT_OPS for test purpose.
+The dummy BPF STRUCT_OPS in kernel, in order to test it, we need
+provide a way to call its method and return state to userspace.
 
-Dummy BPF STRUCT_OPS may not being needed for release kernel, so
-adding a kconfig option BPF_DUMMY_STRUCT_OPS to enable it separatedly.
+So a new sysfs file /sys/kernel/bpf_test/dummy_ops_ctl is created.
+Its expected input is: "test_case_name [optinal_integer_state]",
+When the content is written to the file, the specific method of
+dummy struct_ops will be called and the returned state will be checked.
+
+Now only two test cases are added: one to check the return value of
+init() method, another to check the value returned by pointer
+assignment.
+
+It may be better to split the dummy struct_ops related code into
+a separated file.
 
 Signed-off-by: Hou Tao <houtao1@huawei.com>
 ---
- include/linux/bpf_dummy_ops.h     |  28 +++++
- kernel/bpf/Kconfig                |   7 ++
- kernel/bpf/Makefile               |   2 +
- kernel/bpf/bpf_dummy_struct_ops.c | 173 ++++++++++++++++++++++++++++++
- kernel/bpf/bpf_struct_ops_types.h |   4 +
- 5 files changed, 214 insertions(+)
- create mode 100644 include/linux/bpf_dummy_ops.h
- create mode 100644 kernel/bpf/bpf_dummy_struct_ops.c
+ .../selftests/bpf/bpf_testmod/bpf_testmod.c   | 152 +++++++++++++++++-
+ 1 file changed, 150 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/bpf_dummy_ops.h b/include/linux/bpf_dummy_ops.h
-new file mode 100644
-index 000000000000..b2aad3e6e2fe
---- /dev/null
-+++ b/include/linux/bpf_dummy_ops.h
-@@ -0,0 +1,28 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * Copyright (C) 2021. Huawei Technologies Co., Ltd
-+ */
-+#ifndef _BPF_DUMMY_OPS_H
-+#define _BPF_DUMMY_OPS_H
-+
-+#ifdef CONFIG_BPF_DUMMY_STRUCT_OPS
-+#include <linux/module.h>
-+
-+struct bpf_dummy_ops_state {
-+	int val;
-+};
-+
-+struct bpf_dummy_ops {
-+	int (*init)(struct bpf_dummy_ops_state *state);
-+	struct module *owner;
-+};
-+
-+extern struct bpf_dummy_ops *bpf_get_dummy_ops(void);
-+extern void bpf_put_dummy_ops(struct bpf_dummy_ops *ops);
-+#else
-+struct bpf_dummy_ops {}；
-+static inline struct bpf_dummy_ops *bpf_get_dummy_ops(void) { return NULL; }
-+static inline void bpf_put_dummy_ops(struct bpf_dummy_ops *ops) {}
-+#endif
-+
-+#endif
-diff --git a/kernel/bpf/Kconfig b/kernel/bpf/Kconfig
-index a82d6de86522..4a11eca42791 100644
---- a/kernel/bpf/Kconfig
-+++ b/kernel/bpf/Kconfig
-@@ -86,4 +86,11 @@ config BPF_LSM
- 
- 	  If you are unsure how to answer this question, answer N.
- 
-+config BPF_DUMMY_STRUCT_OPS
-+	bool "Enable dummy struct ops"
-+	depends on BPF_SYSCALL && BPF_JIT
-+	help
-+	  Enables dummy struct ops to test the basic functionalities of
-+	  BPF STRUCT_OPS.
-+
- endmenu # "BPF subsystem"
-diff --git a/kernel/bpf/Makefile b/kernel/bpf/Makefile
-index 7f33098ca63f..17e2bb59cceb 100644
---- a/kernel/bpf/Makefile
-+++ b/kernel/bpf/Makefile
-@@ -33,6 +33,8 @@ obj-$(CONFIG_DEBUG_INFO_BTF) += sysfs_btf.o
- endif
- ifeq ($(CONFIG_BPF_JIT),y)
- obj-$(CONFIG_BPF_SYSCALL) += bpf_struct_ops.o
-+obj-$(CONFIG_BPF_SYSCALL) += bpf_dummy_struct_ops.o
- obj-${CONFIG_BPF_LSM} += bpf_lsm.o
- endif
-+obj-$(CONFIG_BPF_DUMMY_STRUCT_OPS) += bpf_dummy_struct_ops.o
- obj-$(CONFIG_BPF_PRELOAD) += preload/
-diff --git a/kernel/bpf/bpf_dummy_struct_ops.c b/kernel/bpf/bpf_dummy_struct_ops.c
-new file mode 100644
-index 000000000000..f76c4a3733f0
---- /dev/null
-+++ b/kernel/bpf/bpf_dummy_struct_ops.c
-@@ -0,0 +1,173 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2021. Huawei Technologies Co., Ltd
-+ */
-+#include <linux/kernel.h>
-+#include <linux/spinlock.h>
-+#include <linux/bpf_verifier.h>
-+#include <linux/bpf.h>
-+#include <linux/btf.h>
+diff --git a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
+index 141d8da687d2..1286758b999c 100644
+--- a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
++++ b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
+@@ -6,11 +6,22 @@
+ #include <linux/percpu-defs.h>
+ #include <linux/sysfs.h>
+ #include <linux/tracepoint.h>
++#include <linux/string.h>
 +#include <linux/bpf_dummy_ops.h>
+ #include "bpf_testmod.h"
+ 
+ #define CREATE_TRACE_POINTS
+ #include "bpf_testmod-events.h"
+ 
++typedef int (*dummy_ops_test_fn)(struct bpf_dummy_ops *ops,
++				 const char *buf, size_t cnt);
++struct dummy_ops_test {
++	const char *name;
++	dummy_ops_test_fn fn;
++};
 +
-+static struct bpf_dummy_ops *bpf_dummy_ops_singletion;
-+static DEFINE_SPINLOCK(bpf_dummy_ops_lock);
++static struct kobject *bpf_test_kobj;
 +
-+static const struct btf_type *dummy_ops_state;
-+
-+struct bpf_dummy_ops *bpf_get_dummy_ops(void)
+ DEFINE_PER_CPU(int, bpf_testmod_ksym_percpu) = 123;
+ 
+ noinline ssize_t
+@@ -55,14 +66,151 @@ static struct bin_attribute bin_attr_bpf_testmod_file __ro_after_init = {
+ 	.write = bpf_testmod_test_write,
+ };
+ 
++static int dummy_ops_chk_ret(struct bpf_dummy_ops *ops,
++			     const char *buf, size_t cnt)
 +{
-+	struct bpf_dummy_ops *ops;
++	int exp;
++	int err;
 +
-+	spin_lock(&bpf_dummy_ops_lock);
-+	ops = bpf_dummy_ops_singletion;
-+	if (ops && !bpf_try_module_get(ops, ops->owner))
-+		ops = NULL;
-+	spin_unlock(&bpf_dummy_ops_lock);
-+
-+	return ops ? ops : ERR_PTR(-ENXIO);
-+}
-+EXPORT_SYMBOL_GPL(bpf_get_dummy_ops);
-+
-+void bpf_put_dummy_ops(struct bpf_dummy_ops *ops)
-+{
-+	bpf_module_put(ops, ops->owner);
-+}
-+EXPORT_SYMBOL_GPL(bpf_put_dummy_ops);
-+
-+static int bpf_dummy_init(struct btf *btf)
-+{
-+	s32 type_id;
-+
-+	type_id = btf_find_by_name_kind(btf, "bpf_dummy_ops_state",
-+					BTF_KIND_STRUCT);
-+	if (type_id < 0)
++	if (cnt <= 1)
 +		return -EINVAL;
 +
-+	dummy_ops_state = btf_type_by_id(btf, type_id);
++	if (kstrtoint(buf + 1, 0, &exp))
++		return -EINVAL;
++
++	err = ops->init(NULL);
++	if (err != exp)
++		return -EINVAL;
 +
 +	return 0;
 +}
 +
-+static const struct bpf_func_proto *
-+bpf_dummy_ops_get_func_proto(enum bpf_func_id func_id,
-+			     const struct bpf_prog *prog)
++static int dummy_ops_chk_ret_by_ptr(struct bpf_dummy_ops *ops,
++				    const char *buf, size_t cnt)
 +{
-+	switch (func_id) {
-+	case BPF_FUNC_map_lookup_elem:
-+		return &bpf_map_lookup_elem_proto;
-+	default:
-+		return NULL;
-+	}
++	int exp;
++	int err;
++	struct bpf_dummy_ops_state state;
++
++	if (cnt <= 1)
++		return -EINVAL;
++
++	if (kstrtoint(buf + 1, 0, &exp))
++		return -EINVAL;
++
++	memset(&state, 0, sizeof(state));
++	err = ops->init(&state);
++	if (err || state.val != exp)
++		return -EINVAL;
++
++	return 0;
 +}
 +
-+static bool bpf_dummy_ops_is_valid_access(int off, int size,
-+					  enum bpf_access_type type,
-+					  const struct bpf_prog *prog,
-+					  struct bpf_insn_access_aux *info)
-+{
-+	/* a common helper ? */
-+	if (off < 0 || off >= sizeof(__u64) * MAX_BPF_FUNC_ARGS)
-+		return false;
-+	if (type != BPF_READ)
-+		return false;
-+	if (off % size != 0)
-+		return false;
-+
-+	return btf_ctx_access(off, size, type, prog, info);
-+}
-+
-+static int bpf_dummy_ops_btf_struct_access(struct bpf_verifier_log *log,
-+					   const struct btf *btf,
-+					   const struct btf_type *t, int off,
-+					   int size, enum bpf_access_type atype,
-+					   u32 *next_btf_id)
-+{
-+	size_t end;
-+
-+	if (atype == BPF_READ)
-+		return btf_struct_access(log, btf, t, off, size, atype,
-+					 next_btf_id);
-+
-+	if (t != dummy_ops_state) {
-+		bpf_log(log, "only read is supported\n");
-+		return -EACCES;
-+	}
-+
-+	switch (off) {
-+	case offsetof(struct bpf_dummy_ops_state, val):
-+		end = offsetofend(struct bpf_dummy_ops_state, val);
-+		break;
-+	default:
-+		bpf_log(log, "no write support to bpf_dummy_ops_state at off %d\n",
-+			off);
-+		return -EACCES;
-+	}
-+
-+	if (off + size > end) {
-+		bpf_log(log,
-+			"write access at off %d with size %d beyond the member of bpf_dummy_ops_state ended at %zu\n",
-+			off, size, end);
-+		return -EACCES;
-+	}
-+
-+	return NOT_INIT;
-+}
-+
-+static const struct bpf_verifier_ops bpf_dummy_verifier_ops = {
-+	.get_func_proto = bpf_dummy_ops_get_func_proto,
-+	.is_valid_access = bpf_dummy_ops_is_valid_access,
-+	.btf_struct_access = bpf_dummy_ops_btf_struct_access,
++static const struct dummy_ops_test tests[] = {
++	{.name = "init_1", .fn = dummy_ops_chk_ret},
++	{.name = "init_2", .fn = dummy_ops_chk_ret_by_ptr},
 +};
 +
-+static int bpf_dummy_check_member(const struct btf_type *t,
-+				  const struct btf_member *member)
++static const struct dummy_ops_test *dummy_ops_find_test(const char *buf,
++							size_t cnt)
 +{
-+	return 0;
-+}
++	char *c;
++	size_t nm_len;
++	unsigned int i;
 +
-+
-+static int bpf_dummy_init_member(const struct btf_type *t,
-+				 const struct btf_member *member,
-+				 void *kdata, const void *udata)
-+{
-+	return 0;
-+}
-+
-+static int bpf_dummy_reg(void *kdata)
-+{
-+	struct bpf_dummy_ops *ops = kdata;
-+	int err = 0;
-+
-+	spin_lock(&bpf_dummy_ops_lock);
-+	if (!bpf_dummy_ops_singletion)
-+		bpf_dummy_ops_singletion = ops;
++	/*
++	 * There may be test-specific string (e.g, return value)
++	 * after the name of test. The delimiter is one space.
++	 */
++	c = strchr(buf, ' ');
++	if (c)
++		nm_len = c - buf;
 +	else
-+		err = -EEXIST;
-+	spin_unlock(&bpf_dummy_ops_lock);
++		nm_len = cnt;
++	for (i = 0; i < ARRAY_SIZE(tests); i++) {
++		if (nm_len >= strlen(tests[i].name) &&
++		    !strncmp(buf, tests[i].name, nm_len))
++			return &tests[i];
++	}
 +
++	return NULL;
++}
++
++static ssize_t dummy_ops_ctl_store(struct kobject *kobj,
++				   struct kobj_attribute *attr,
++				   const char *buf, size_t cnt)
++{
++	struct bpf_dummy_ops *ops = bpf_get_dummy_ops();
++	const struct dummy_ops_test *test;
++	size_t nm_len;
++	int err;
++
++	/* dummy struct_ops is disabled, so always return success */
++	if (!ops)
++		return cnt;
++	if (IS_ERR(ops))
++		return PTR_ERR(ops);
++
++	test = dummy_ops_find_test(buf, cnt);
++	if (!test) {
++		err = -EINVAL;
++		goto out;
++	}
++
++	nm_len = strlen(test->name);
++	err = test->fn(ops, buf + nm_len, cnt - nm_len);
++	if (!err)
++		err = cnt;
++out:
++	bpf_put_dummy_ops(ops);
 +	return err;
 +}
 +
-+static void bpf_dummy_unreg(void *kdata)
-+{
-+	struct bpf_dummy_ops *ops = kdata;
++static struct kobj_attribute dummy_ops_ctl = __ATTR_WO(dummy_ops_ctl);
 +
-+	spin_lock(&bpf_dummy_ops_lock);
-+	if (bpf_dummy_ops_singletion == ops)
-+		bpf_dummy_ops_singletion = NULL;
-+	else
-+		WARN_ON(1);
-+	spin_unlock(&bpf_dummy_ops_lock);
-+}
-+
-+extern struct bpf_struct_ops bpf_bpf_dummy_ops;
-+
-+struct bpf_struct_ops bpf_bpf_dummy_ops = {
-+	.verifier_ops = &bpf_dummy_verifier_ops,
-+	.init = bpf_dummy_init,
-+	.init_member = bpf_dummy_init_member,
-+	.check_member = bpf_dummy_check_member,
-+	.reg = bpf_dummy_reg,
-+	.unreg = bpf_dummy_unreg,
-+	.name = "bpf_dummy_ops",
++static struct attribute *bpf_test_attrs[] = {
++	&dummy_ops_ctl.attr,
++	NULL,
 +};
-diff --git a/kernel/bpf/bpf_struct_ops_types.h b/kernel/bpf/bpf_struct_ops_types.h
-index 7ec458ead497..6d24c75f4d70 100644
---- a/kernel/bpf/bpf_struct_ops_types.h
-+++ b/kernel/bpf/bpf_struct_ops_types.h
-@@ -2,6 +2,10 @@
- /* internal file - do not include directly */
++
++static const struct attribute_group bpf_test_attr_group = {
++	.attrs = bpf_test_attrs,
++};
++
+ static int bpf_testmod_init(void)
+ {
+-	return sysfs_create_bin_file(kernel_kobj, &bin_attr_bpf_testmod_file);
++	int err;
++
++	bpf_test_kobj = kobject_create_and_add("bpf_test", kernel_kobj);
++	if (!bpf_test_kobj) {
++		err = -ENOMEM;
++		goto out;
++	}
++
++	err = sysfs_create_group(bpf_test_kobj, &bpf_test_attr_group);
++	if (err)
++		goto put_out;
++
++	err = sysfs_create_bin_file(kernel_kobj, &bin_attr_bpf_testmod_file);
++	if (err)
++		goto rm_grp_out;
++
++	return 0;
++
++rm_grp_out:
++	sysfs_remove_group(bpf_test_kobj, &bpf_test_attr_group);
++put_out:
++	kobject_put(bpf_test_kobj);
++	bpf_test_kobj = NULL;
++out:
++	return err;
+ }
  
- #ifdef CONFIG_BPF_JIT
-+#ifdef CONFIG_BPF_DUMMY_STRUCT_OPS
-+#include <linux/bpf_dummy_ops.h>
-+BPF_STRUCT_OPS_TYPE(bpf_dummy_ops)
-+#endif
- #ifdef CONFIG_INET
- #include <net/tcp.h>
- BPF_STRUCT_OPS_TYPE(tcp_congestion_ops)
+ static void bpf_testmod_exit(void)
+ {
+-	return sysfs_remove_bin_file(kernel_kobj, &bin_attr_bpf_testmod_file);
++	sysfs_remove_bin_file(kernel_kobj, &bin_attr_bpf_testmod_file);
++	sysfs_remove_group(bpf_test_kobj, &bpf_test_attr_group);
++	kobject_put(bpf_test_kobj);
+ }
+ 
+ module_init(bpf_testmod_init);
 -- 
 2.29.2
 
