@@ -2,88 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39C2440C059
-	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 09:20:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A9DD40C067
+	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 09:22:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236528AbhIOHVp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Sep 2021 03:21:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45200 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231326AbhIOHVp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 03:21:45 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1439C061574
-        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 00:20:26 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id y17so1796460pfl.13
-        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 00:20:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=6GbSj7gEvOoqZlIdbKLmE5E6KdpY13xxBb7ovvikPwQ=;
-        b=Pf4AF4wSiP/2WLfaIKdllVt33XXXRcq9n0DhIlOhiTmi/oIERfi4lxfHdpspM3bVau
-         4CrB52Hh8DgkVTEcDOQLyboOPvfpb1Wfkel+5e+H1Zfc/DD1lmq1qWgB/OuzJfTSUMGA
-         HmQbKr9gvVFgTB79ZpOS/5omZl7WLyHZicHs7ddtMq6VGoJJS7uLxylGGQRp0fA05vBS
-         A4dloOlJgxloZ/oZQwX52bmC3gYcoIyjP2QbGNT3zaXbVXr7VONQrt9UTWGdMhtAmDsK
-         EBnwUdFC0tuqFM5H5NzMpIkgkvjqfMpkO+hzqe+PTAMxYh/KwDU9oqTpFv97S6L9MPSe
-         qtBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=6GbSj7gEvOoqZlIdbKLmE5E6KdpY13xxBb7ovvikPwQ=;
-        b=3uhHtQb0cvB+fm9IjFE3hTYvJWtcq1jsB9LFMKj+/zxCg6O1DjZE3dcSu/f7wMEALD
-         G8AIOETlFC3NKWZT7LOXbIvucykV9Mj/nF7BwUWeZ/8C4OZldmRO0tNIPxpxKY6GdIeK
-         lVnHbIk3GXRBxqBOhySyi2OBTzYty3GK6oMR/ekWBel+wbhOWNADFthP+UCc3gwLgcxA
-         uf81SFT2z5/4w6L//LCQrhgQcn1jLqk0laYtRWUCLGB+jRk35xR4Czjh5ytsTI+nMnQa
-         NePeoOTJMS84y4qBvkB/XynumilbcAvzQIOeIokSgRBBrEDTA+ki6XEhWxRwxPYGz29U
-         d/Dg==
-X-Gm-Message-State: AOAM530SmZ03keo8z/tOh3oRy3Ux1Nmrzms1iqv7z1f1KQvQV/Kgc/0C
-        258tDJlA8x+juXOUCB1X8mE=
-X-Google-Smtp-Source: ABdhPJx2G/6eAHLZ1y/uCjGiLBrb8oEeCenodtDk9kUuLbrveFAUo9Dq4c6QEO0Gu6VJR4Q+NU5uoQ==
-X-Received: by 2002:a63:e00b:: with SMTP id e11mr19318038pgh.190.1631690426216;
-        Wed, 15 Sep 2021 00:20:26 -0700 (PDT)
-Received: from haswell-ubuntu20.lan ([138.197.212.246])
-        by smtp.gmail.com with ESMTPSA id l6sm12483936pff.74.2021.09.15.00.19.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Sep 2021 00:19:53 -0700 (PDT)
-From:   DENG Qingfang <dqfext@gmail.com>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: dsa: tag_rtl4_a: Drop bit 9 from egress frames
-Date:   Wed, 15 Sep 2021 15:19:01 +0800
-Message-Id: <20210915071901.1315-1-dqfext@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210913143156.1264570-1-linus.walleij@linaro.org>
-References: <20210913143156.1264570-1-linus.walleij@linaro.org>
+        id S236647AbhIOHX7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Sep 2021 03:23:59 -0400
+Received: from out30-56.freemail.mail.aliyun.com ([115.124.30.56]:49856 "EHLO
+        out30-56.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236490AbhIOHX6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 03:23:58 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=alimailimapcm10staff010182156082;MF=yun.wang@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0UoSeiPZ_1631690555;
+Received: from testdeMacBook-Pro.local(mailfrom:yun.wang@linux.alibaba.com fp:SMTPD_---0UoSeiPZ_1631690555)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 15 Sep 2021 15:22:36 +0800
+Subject: Re: [PATCH] perf: fix panic by disable ftrace on fault.c
+To:     Dave Hansen <dave.hansen@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "open list:X86 MM" <linux-kernel@vger.kernel.org>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <netdev@vger.kernel.org>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <bpf@vger.kernel.org>
+References: <ff979a43-045a-dc56-64d1-2c31dd4db381@linux.alibaba.com>
+ <d16e7188-1afa-7513-990c-804811747bcb@linux.alibaba.com>
+ <d85f9710-67c9-2573-07c4-05d9c677d615@intel.com>
+ <d8853e49-8b34-4632-3e29-012eb605bea9@linux.alibaba.com>
+ <09777a57-a771-5e17-7e17-afc03ea9b83b@linux.alibaba.com>
+ <4f63c8bc-1d09-1717-cf81-f9091a9f9fb0@linux.alibaba.com>
+ <18252e42-9c30-73d4-e3bb-0e705a78af41@intel.com>
+ <4cba7088-f7c8-edcf-02cd-396eb2a56b46@linux.alibaba.com>
+ <bbe09ffb-08b7-824c-943f-dffef51e98c2@intel.com>
+From:   =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
+Message-ID: <ac31b8c7-122e-3467-566b-54f053ca0ae2@linux.alibaba.com>
+Date:   Wed, 15 Sep 2021 15:22:35 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:78.0)
+ Gecko/20100101 Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+In-Reply-To: <bbe09ffb-08b7-824c-943f-dffef51e98c2@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 13, 2021 at 04:31:56PM +0200, Linus Walleij wrote:
-> This drops the code setting bit 9 on egress frames on the
-> Realtek "type A" (RTL8366RB) frames.
 
-FYI, on RTL8366S, bit 9 on egress frames is disable learning.
 
-> This bit was set on ingress frames for unknown reason,
-
-I think it could be the reason why the frame is forwarded to the CPU.
-
-> and was set on egress frames as the format of ingress
-> and egress frames was believed to be the same. As that
-> assumption turned out to be false, and since this bit
-> seems to have zero effect on the behaviour of the switch
-> let's drop this bit entirely.
+On 2021/9/15 上午11:27, Dave Hansen wrote:
+> On 9/14/21 6:56 PM, 王贇 wrote:
+>>>> [   44.134987][    C0]  ? __sanitizer_cov_trace_pc+0x7/0x60
+>>>> [   44.135005][    C0]  ? kcov_common_handle+0x30/0x30
+>>> Just turning off tracing for the page fault handler is papering over the
+>>> problem.  It'll just come back later with a slightly different form.
+>>>
+>> Cool~ please let me know when you have the proper approach.
 > 
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> It's an entertaining issue, but I wasn't planning on fixing it myself.
+> 
+
+Do you have any suggestion on how should we fix the problem?
+
+I'd like to help fix it, but sounds like all the known working approach
+are not acceptable...
+
+Regards,
+Michael Wang
