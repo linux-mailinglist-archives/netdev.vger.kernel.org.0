@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3A5040BF30
-	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 07:10:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A837C40BF32
+	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 07:10:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236366AbhIOFLi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Sep 2021 01:11:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44408 "EHLO
+        id S236399AbhIOFLk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Sep 2021 01:11:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230225AbhIOFL2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 01:11:28 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12591C0613C1;
-        Tue, 14 Sep 2021 22:10:10 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id u13-20020a17090abb0db0290177e1d9b3f7so4057779pjr.1;
-        Tue, 14 Sep 2021 22:10:10 -0700 (PDT)
+        with ESMTP id S236295AbhIOFLb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 01:11:31 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E53B2C0613D8;
+        Tue, 14 Sep 2021 22:10:12 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id k24so1536807pgh.8;
+        Tue, 14 Sep 2021 22:10:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=unBtJ4BgEaQ1q3x2SN/FO8ndnAfXWb2rghCo8mQpwXY=;
-        b=D6P6oDA86AfKIfKnehKa+l5GHGTK6+EDuk0ntifX18se3+S0iBsrCvk0ZH2CmZcFC2
-         UA/kSanaiPgw1PG9TSKaMiBrdEbDn6BqrA3VHJRdg65INrASSPE89guCGDJVuEhwBIOX
-         nRrwhFyRHrIDakiTcsbjdSFmHeZKarsBmP1FofWlBDgKgugIrYBmGrC5PIgBdnZeTiay
-         +5EGCe8hhQBrNt6JuYuODCHSYvkhh+0Pf8AYTR3cHZjXWQ+kaXE+vwK5zdhy8lQpFrih
-         OzltjJxKwlo2QB8CwoKIg5DE5LKHuV7CQbTKQnlMkpWJrXlPFEEuwEU/h9fJwTSQFHXM
-         gvyw==
+        bh=32BI41DAg22Ier2vT7ndI8G/NSyHXIlhQoTx3oswHc8=;
+        b=fLw3ok9jwhHdOvDjfyXnxkam+ErK606yyYPJ1SfOhZtuFbT0NImqxxOwygrooTD3Eb
+         Fm8km2Us/XPVLIXwXTF+DbIz0eqABvzFpE4izYil63kkF4ffQQ6b5iEQ+VS6r9m2nZ3I
+         JU+7i1Tgi6sd2tEjjmv1ItXN1EjA6pgN8g3terCh/4WCIZodx+MmZhYnbiQ+m0h0nMdk
+         WS9HTqUhT/7Ky84Bgmrlx279X6cysxnEyQ9AfXN8+i3I2/r7JfGeskGtwILEe1YDUX0O
+         GeG25mTbfmUURfKV8ukZrax/YhX5kg9HRxfLfdy1thDTDQwQ+CAfn9q+7dEGHLwEWwnX
+         A20Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=unBtJ4BgEaQ1q3x2SN/FO8ndnAfXWb2rghCo8mQpwXY=;
-        b=wqXTkg0MkG8/EXqwTlMdNxiH3qc27zvgv1HubLsLj8cYy9aDAXsshgbFC+SJQwbEh1
-         q1MVa7BwIVhmHvbEw1eQyvTtbY0yN51lsP/pEqgpKbXXtVqWArPMELPuzu0Vi6lbBAEd
-         34eDuHCG3qusp/gYclx761TRiPgUKgn2I56N3qtkWM2ehmS0mA25XCjTTgjef+aQKdzu
-         AzZaaf1K2W3lJsBscumYPlsD3PJDnqM3x0/oqa/pXuVj9bI0ivJQWbunoSIF/iRZ6OPo
-         T0DHCX5B7OwVFkJKEpkEYu14Owk4WNDTSkg+EcsLb2WljpIXsH+188ULlvFyFaEKFy1r
-         2B4w==
-X-Gm-Message-State: AOAM533mwAhv9Cm6tOFw9dIHSQzwHyCdgPVkLBclgFmEooSi0o4TiNF/
-        1wU6ZB1+K5E0sMx1GSUlvPmnb71LNXGJkw==
-X-Google-Smtp-Source: ABdhPJwsSwzOPidEO306IfobM6wvCAiBPGySaLKkPpjKlXuptz73EgZWBVDgHyczJI7shGLTleg3gg==
-X-Received: by 2002:a17:90a:de16:: with SMTP id m22mr6382525pjv.54.1631682609454;
-        Tue, 14 Sep 2021 22:10:09 -0700 (PDT)
+        bh=32BI41DAg22Ier2vT7ndI8G/NSyHXIlhQoTx3oswHc8=;
+        b=NOAsWMJL+mE2WCDZ2rE99+J+XXHaRf9Ul6i1diggvHMwSg9o/Kvzw+ZjCP6nQVOyeL
+         so9lLt9f2YQbFx7b27fG4uHfHCmvEiYnwsMjcCtGbqdVQfIZaLNeqWEY6YRJS/hTZxTT
+         tUOIzuXBqX/VlATxQqjx50+J8PcypTObu7qLRqSMIIUQlyk7apatUPRlnPz845kkAfMR
+         VY+TOkRGBUDribofZP3MeETSA2LKdp0312Rjrsmvl6/4ImZ6Do9BXQMElPr1rpg7aV3Q
+         eoP/d8J+Q108S2OFwAID+nzbpb54YZsV63u6nCnuFdrgDCcnZu8qsbQsWcrn79MoTXsM
+         4SoQ==
+X-Gm-Message-State: AOAM5314rDKYPP2N1Y1PC/NbRtuvNa/+ROHTQT2Ie8nk749Ct6LTqI/R
+        odBaQ44CNu4xKfZZ22cfaAuW2zEil+q6Jw==
+X-Google-Smtp-Source: ABdhPJzsk4DtMzTZ3BXfTKxOhbYo0EZhTec1ZDSdVt065GEg1qDTb26i4qgBXPKJXo9zsBUv+uN2+A==
+X-Received: by 2002:aa7:9ec7:0:b0:43d:c46d:2540 with SMTP id r7-20020aa79ec7000000b0043dc46d2540mr8484642pfq.24.1631682612331;
+        Tue, 14 Sep 2021 22:10:12 -0700 (PDT)
 Received: from localhost ([2405:201:6014:d058:a28d:3909:6ed5:29e7])
-        by smtp.gmail.com with ESMTPSA id m10sm2333891pjs.21.2021.09.14.22.10.08
+        by smtp.gmail.com with ESMTPSA id a11sm660913pfo.31.2021.09.14.22.10.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Sep 2021 22:10:09 -0700 (PDT)
+        Tue, 14 Sep 2021 22:10:12 -0700 (PDT)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
@@ -58,165 +58,75 @@ Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         netdev@vger.kernel.org
-Subject: [PATCH bpf-next v3 07/10] libbpf: Support kernel module function calls
-Date:   Wed, 15 Sep 2021 10:39:40 +0530
-Message-Id: <20210915050943.679062-8-memxor@gmail.com>
+Subject: [PATCH bpf-next v3 08/10] libbpf: Resolve invalid weak kfunc calls with imm = 0, off = 0
+Date:   Wed, 15 Sep 2021 10:39:41 +0530
+Message-Id: <20210915050943.679062-9-memxor@gmail.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20210915050943.679062-1-memxor@gmail.com>
 References: <20210915050943.679062-1-memxor@gmail.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4871; h=from:subject; bh=1xbQtnet8ONbSdxejO5SOUckglIx2nhjKxRa61HQUGg=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBhQX4c2Y0kuFgftjf+pdnO7/VUz/pKeQlitvNrGk+d 8NpVdoKJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYUF+HAAKCRBM4MiGSL8RyjD5EA CUQ/KD+pRbfgnc5hqIp562Rk07O3uyGI8RvH5fy8pA4B65k6O3YCVWuhmh5REQ7f+HVLYt+uIC0Xgg UAGpUST1GJUpxC//uNKaz/w6VJuQOtimge/EhWriaITb6S7yVfFs7EFouQ9ZuGzF/sX+RXo++IJ3Ew caWHD6vahNguziY3HHyc6478QInDyWt2cjurPz05sf7jSjp8Ar4dObIDS36bG/d2I2W3/F5pWZ/j5n QmL3yjmMwydQkNj7aKjeoqElTKW409C5y+X5mh+oKnN49uYYRadFoxsnHqs8LYpAE/dNxiONb+NGc1 dMqyEPGPSSG6qJ7yh8hm9DWNKGltBZkxga82/4sRaDyXCpKMvms7UyjeghVOhzeuRziTOXx0L+yEiR K4bWnseLMeiTod8dsiCJPStwZvWVC6sQDgpLOownXBYgWPg2u+8Tcl1KG9POdzMKiL+hLQ4Wj1Xx2y h3Qr0qYN7Jdge+1flOYwnb7K42AZ6/aesbPGD7GSSp6f9iGaZND1kZNwGqF4IKodX+CzWfV226jj35 ne8W3mJCt7hnSjZgV5ND6DOLcxm/oo60x3b7RY2iizaZV3+ouIfgKPTKcdqHlsxYYxLDNhIvNkwq6Y eavHVDtFdfC0s15xXDeASKl8I21Yn1NRo/ujNjV3auUn08i6N4wY7BGpcJ2A==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2121; h=from:subject; bh=rxxSOTg/nYpcMpKfo1S2l+qYHiC3uCZSg3+Tco5RqP4=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBhQX4ceLBvB1x690/KaUTOqBvLZOlJsioqVaTbDN7k EdXkS+6JAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYUF+HAAKCRBM4MiGSL8Rygp3EA CCyOt/GPw5/hLocm93Vk+33/vpjO4yuR4h+hArdxlYIVcxAmTSYHEV69//Xx7ugT4UO2HkdHUpKNdJ ucvxxC4Rlkpsla+ELWq6LMM2xF1tu8G8muy3CIinZ2uJMcodRBOAoV9ep7Nsy2gH91iY2zwKyBkzzE HlhFX4MLSgVq5hbC0HWU74Fjxr0sfCgcx/iC7lFeuT3voHyKMd3GM0pbARDMFB7P+UFGLt4JkBT+8h TdTOn6ABj/89DowGuf/J0NkAe75jMzRr1AghiQ+kVjk7nVED9EKYttBz4HuYypo+QSzfzaq9pXCzuB yn9+5pzGhPAKoEepWF53MfYUTUOlmRQ4P+TQJAMOiV9Y7lAG1K3Tf+P6FIIU3F82bEGQAnjGF+pR7T g9UZMT6/psbkacuIoSFThiuqqqY72Je0fNkoADRj2erGIGP/sPYklou4XMKyv9dc1Uw16bncXt2R9B 98qCpfdZTdSvjHDF3aNC8DN74XHsibL2CnyPEoFlk0QLSdbY+gkhaHYmsO17pmeOjf0+GuliGhRDS/ H0KxdDZt2WfsQBKQXTFhSU7Fa/dajnD18xWf51zvsRKEDGiT2b2EixG528BaN9Rws0lfmXqTwnSVku VMEv3HQgSFhQEPfsIr71N0XTcOLKtpPVwG+ou+KpWNgdAFn+z47TZqWlLv+w==
 X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds libbpf support for kernel module function call support.
-The fd_array parameter is used during BPF program load is used to pass
-module BTFs referenced by the program. insn->off is set to index into
-this array + 1, because insn->off as 0 is reserved for btf_vmlinux. The
-kernel subtracts 1 from insn->off when indexing into env->fd_array.
-
-We try to use existing insn->off for a module, since the kernel limits
-the maximum distinct module BTFs for kfuncs to 256, and also because
-index must never exceed the maximum allowed value that can fit in
-insn->off (INT16_MAX). In the future, if kernel interprets signed offset
-as unsigned for kfunc calls, this limit can be increased to UINT16_MAX.
+Preserve these calls as it allows verifier to succeed in loading the
+program if they are determined to be unreachable after dead code
+elimination during program load. If not, the verifier will fail at
+runtime. This is done for ext->is_weak symbols similar to the case for
+variable ksyms.
 
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- tools/lib/bpf/bpf.c             |  1 +
- tools/lib/bpf/libbpf.c          | 56 +++++++++++++++++++++++++++++++--
- tools/lib/bpf/libbpf_internal.h |  1 +
- 3 files changed, 55 insertions(+), 3 deletions(-)
+ tools/lib/bpf/libbpf.c | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
 
-diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
-index 2401fad090c5..7d1741ceaa32 100644
---- a/tools/lib/bpf/bpf.c
-+++ b/tools/lib/bpf/bpf.c
-@@ -264,6 +264,7 @@ int libbpf__bpf_prog_load(const struct bpf_prog_load_params *load_attr)
- 	attr.line_info_rec_size = load_attr->line_info_rec_size;
- 	attr.line_info_cnt = load_attr->line_info_cnt;
- 	attr.line_info = ptr_to_u64(load_attr->line_info);
-+	attr.fd_array = ptr_to_u64(load_attr->fd_array);
- 
- 	if (load_attr->name)
- 		memcpy(attr.prog_name, load_attr->name,
 diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 62a43c408d73..accf2586fa76 100644
+index accf2586fa76..50a7c995979a 100644
 --- a/tools/lib/bpf/libbpf.c
 +++ b/tools/lib/bpf/libbpf.c
-@@ -420,6 +420,12 @@ struct extern_desc {
- 
- 			/* local btf_id of the ksym extern's type. */
- 			__u32 type_id;
-+			/* offset to be patched in for insn->off,
-+			 * this is 0 for btf_vmlinux, and index + 1
-+			 * for module BTF, where index is BTF index in
-+			 * obj->fd_array
-+			 */
-+			__s16 offset;
- 		} ksym;
- 	};
- };
-@@ -516,6 +522,10 @@ struct bpf_object {
- 	void *priv;
- 	bpf_object_clear_priv_t clear_priv;
- 
-+	int *fd_array;
-+	size_t fd_cap_cnt;
-+	int nr_fds;
-+
- 	char path[];
- };
- #define obj_elf_valid(o)	((o)->efile.elf)
-@@ -5357,6 +5367,7 @@ bpf_object__relocate_data(struct bpf_object *obj, struct bpf_program *prog)
+@@ -3413,11 +3413,6 @@ static int bpf_object__collect_externs(struct bpf_object *obj)
+ 				return -ENOTSUP;
+ 			}
+ 		} else if (strcmp(sec_name, KSYMS_SEC) == 0) {
+-			if (btf_is_func(t) && ext->is_weak) {
+-				pr_warn("extern weak function %s is unsupported\n",
+-					ext->name);
+-				return -ENOTSUP;
+-			}
+ 			ksym_sec = sec;
+ 			ext->type = EXT_KSYM;
+ 			skip_mods_and_typedefs(obj->btf, t->type,
+@@ -5366,8 +5361,12 @@ bpf_object__relocate_data(struct bpf_object *obj, struct bpf_program *prog)
+ 		case RELO_EXTERN_FUNC:
  			ext = &obj->externs[relo->sym_off];
  			insn[0].src_reg = BPF_PSEUDO_KFUNC_CALL;
- 			insn[0].imm = ext->ksym.kernel_btf_id;
-+			insn[0].off = ext->ksym.offset;
+-			insn[0].imm = ext->ksym.kernel_btf_id;
+-			insn[0].off = ext->ksym.offset;
++			if (ext->is_set) {
++				insn[0].imm = ext->ksym.kernel_btf_id;
++				insn[0].off = ext->ksym.offset;
++			} else { /* unresolved weak kfunc */
++				insn[0].imm = insn[0].off = 0;
++			}
  			break;
  		case RELO_SUBPROG_ADDR:
  			if (insn[0].src_reg != BPF_PSEUDO_FUNC) {
-@@ -6151,6 +6162,7 @@ load_program(struct bpf_program *prog, struct bpf_insn *insns, int insns_cnt,
+@@ -6765,8 +6764,10 @@ static int bpf_object__resolve_ksym_func_btf_id(struct bpf_object *obj,
+ 
+ 	kfunc_id = find_ksym_btf_id(obj, ext->name, BTF_KIND_FUNC,
+ 				    &kern_btf, &kern_btf_fd);
+-	if (kfunc_id < 0) {
+-		pr_warn("extern (func ksym) '%s': not found in kernel BTF\n",
++	if (kfunc_id == -ESRCH && ext->is_weak) {
++		return 0;
++	} else if (kfunc_id < 0) {
++		pr_warn("extern (func ksym) '%s': not found in kernel or module BTFs\n",
+ 			ext->name);
+ 		return kfunc_id;
  	}
- 	load_attr.log_level = prog->log_level;
- 	load_attr.prog_flags = prog->prog_flags;
-+	load_attr.fd_array = prog->obj->fd_array;
- 
- 	if (prog->obj->gen_loader) {
- 		bpf_gen__prog_load(prog->obj->gen_loader, &load_attr,
-@@ -6760,9 +6772,44 @@ static int bpf_object__resolve_ksym_func_btf_id(struct bpf_object *obj,
- 	}
- 
- 	if (kern_btf != obj->btf_vmlinux) {
--		pr_warn("extern (func ksym) '%s': function in kernel module is not supported\n",
--			ext->name);
--		return -ENOTSUP;
-+		int index = -1;
-+
-+		if (!obj->fd_array) {
-+			obj->fd_array = calloc(8, sizeof(*obj->fd_array));
-+			if (!obj->fd_array)
-+				return -ENOMEM;
-+			obj->fd_cap_cnt = 8;
-+		}
-+
-+		for (int i = 0; i < obj->nr_fds; i++) {
-+			if (obj->fd_array[i] == kern_btf_fd) {
-+				index = i;
-+				break;
-+			}
-+		}
-+
-+		if (index == -1) {
-+			if (obj->nr_fds == obj->fd_cap_cnt) {
-+				ret = libbpf_ensure_mem((void **)&obj->fd_array,
-+							&obj->fd_cap_cnt, sizeof(int),
-+							obj->fd_cap_cnt + 1);
-+				if (ret)
-+					return ret;
-+			}
-+
-+			index = obj->nr_fds;
-+			obj->fd_array[obj->nr_fds++] = kern_btf_fd;
-+		}
-+
-+		if (index >= INT16_MAX) {
-+			/* insn->off is s16 */
-+			pr_warn("extern (func ksym) '%s': module btf fd index too big\n",
-+				ext->name);
-+			return -E2BIG;
-+		}
-+		ext->ksym.offset = index + 1;
-+	} else {
-+		ext->ksym.offset = 0;
- 	}
- 
- 	kern_func = btf__type_by_id(kern_btf, kfunc_id);
-@@ -6938,6 +6985,9 @@ int bpf_object__load_xattr(struct bpf_object_load_attr *attr)
- 			err = bpf_gen__finish(obj->gen_loader);
- 	}
- 
-+	/* clean up fd_array */
-+	zfree(&obj->fd_array);
-+
- 	/* clean up module BTFs */
- 	for (i = 0; i < obj->btf_module_cnt; i++) {
- 		close(obj->btf_modules[i].fd);
-diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
-index ceb0c98979bc..44b8f381b035 100644
---- a/tools/lib/bpf/libbpf_internal.h
-+++ b/tools/lib/bpf/libbpf_internal.h
-@@ -291,6 +291,7 @@ struct bpf_prog_load_params {
- 	__u32 log_level;
- 	char *log_buf;
- 	size_t log_buf_sz;
-+	int *fd_array;
- };
- 
- int libbpf__bpf_prog_load(const struct bpf_prog_load_params *load_attr);
 -- 
 2.33.0
 
