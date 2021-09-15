@@ -2,90 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7286C40CD77
-	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 21:50:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E786240CD9A
+	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 21:58:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231728AbhIOTwH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Sep 2021 15:52:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49734 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231583AbhIOTwB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 15:52:01 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76C34C061574
-        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 12:50:42 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id x27so8879925lfu.5
-        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 12:50:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nI3oXjB5y7fgBDUAfkrt5Qjrdw7kij1HF6V7usZScd0=;
-        b=dDkQ2iIzDzvrHagUv0HQt/yEqNuVlVfROtNamlO02CizTu2FICtXWd210Bes/CwlqB
-         vjF/fdxzFxIz7v0M5Mc4QD77K9x8ec18TENbGfCqGbSG3HiLnbhqoA4lCtQEqvSsm3+w
-         v6hYS+kH7FyOqPuDkRIGswKh56YqlIWBTmiYA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nI3oXjB5y7fgBDUAfkrt5Qjrdw7kij1HF6V7usZScd0=;
-        b=kX09mJCk6fZU8BtDsIy2ElH3uDTEo0QRiZC+exinRGRxE0tAMNG+c7KOJYZgFjJdKE
-         IrXubNkGhJte/eA8FRc76cz6FxODinT1Ger8q1/Ceg5i28/KlGCXD+6aqZaMRl8Zyo25
-         MzfekSl1BguBRh6JVLBI/ZhCwBS0lonr5M5GhFKIM4sj6TCXf3JF3ygZjvJq4hJVwtT4
-         nSFOkxiNdMi8vF5tRagzlqoyAVWei/+wgqw28Q9pfbKAIQc2mxj922MrCriqA+KPAxtn
-         LymbWajbP/NYH29Cg0B79AiDgfDEn76/gt3fZMAKXN35GqYPt6aF1tLYfC6xPyPwGyt0
-         kjcg==
-X-Gm-Message-State: AOAM532fWtgyujvv6RBlH04R/cnScs3H8z4zKqrsO9201QLJjvGh+p71
-        BHqX7Q9nesNIhxhQDrcyW5why/gKGFeaD9chwdo=
-X-Google-Smtp-Source: ABdhPJzsJxI4dm5FDYATPnhj0MfhjRm45Pk3hRWPEY+/n57ouEIDHXhyPsIlNzMtXiBjQxIeu/kCiA==
-X-Received: by 2002:a05:6512:1308:: with SMTP id x8mr1243081lfu.161.1631735440385;
-        Wed, 15 Sep 2021 12:50:40 -0700 (PDT)
-Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com. [209.85.167.50])
-        by smtp.gmail.com with ESMTPSA id v27sm72286lfp.0.2021.09.15.12.50.38
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Sep 2021 12:50:39 -0700 (PDT)
-Received: by mail-lf1-f50.google.com with SMTP id p29so8801793lfa.11
-        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 12:50:38 -0700 (PDT)
-X-Received: by 2002:a05:6512:3991:: with SMTP id j17mr1268421lfu.280.1631735438424;
- Wed, 15 Sep 2021 12:50:38 -0700 (PDT)
+        id S231583AbhIOT7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Sep 2021 15:59:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34574 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229732AbhIOT7g (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Sep 2021 15:59:36 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 13D6661056;
+        Wed, 15 Sep 2021 19:58:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1631735897;
+        bh=chwJXG3cCxNkxThAaeaYd2H28rFX+0jWYFGsJuceJ0E=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=pHL3rgfrOBpACshuCWFSmZpCuiQScECRjk3qlbljiMw8IudtYTmlFxW4EoappohQ/
+         QgxVcRdxYIRn40RpKLwsJsaGSpH9TmzJlBXE9S7b5xHy8tFBIvPjIoFWprCwr9s1mS
+         uY3l5ERORaEUsnQ7h4EVwlZU+OMYRZHpDIs1y1H5UBkfkPJPaH8LZST8f0fxwtnjJj
+         qjjOIQsJmlMd3LeaV1mKPx5g8xwC0ZNMokgWeUyJywE3qxzx7TUR8gmt2lroNrn9fs
+         1WKiqUalek7w/cHJ80RiRvSgSlTrKKB2xBPXtVSKDpKlNkAiB/Z3vh0M7frrIBstSL
+         2Nbp+8LEmDJ4Q==
+Date:   Wed, 15 Sep 2021 12:58:15 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Kumar, M Chetan" <m.chetan.kumar@intel.com>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        linuxwwan <linuxwwan@intel.com>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>
+Subject: Re: [PATCH net-next] net: wwan: iosm: fix memory leak in
+ ipc_devlink_create_region()
+Message-ID: <20210915125815.5908968d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <SJ0PR11MB5008F3D88D66FAC431FC98BDD7DB9@SJ0PR11MB5008.namprd11.prod.outlook.com>
+References: <20210915103559.GA7060@kili>
+        <SJ0PR11MB5008F3D88D66FAC431FC98BDD7DB9@SJ0PR11MB5008.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-References: <20210915035227.630204-1-linux@roeck-us.net> <CAHk-=wjXr+NnNPTorhaW81eAbdF90foVo-5pQqRmXZi-ZGaX6Q@mail.gmail.com>
- <47fcc9cc-7d2e-bc79-122b-8eccfe00d8f3@roeck-us.net> <CAHk-=wgdEHPm6vGcJ_Zr-Q_p=Muv1Oby5H2+6QyPGxiZ7_Wv+w@mail.gmail.com>
-In-Reply-To: <CAHk-=wgdEHPm6vGcJ_Zr-Q_p=Muv1Oby5H2+6QyPGxiZ7_Wv+w@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 15 Sep 2021 12:50:22 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whSkMh9mc7+OSBZZvpoEEJmS6qY7kX3qixEXTLKGc=wgw@mail.gmail.com>
-Message-ID: <CAHk-=whSkMh9mc7+OSBZZvpoEEJmS6qY7kX3qixEXTLKGc=wgw@mail.gmail.com>
-Subject: Re: [PATCH v2 0/4] Introduce and use absolute_pointer macro
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        alpha <linux-alpha@vger.kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-parisc@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
-        Sparse Mailing-list <linux-sparse@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 15, 2021 at 12:47 PM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> What other notable issues end up being still live? I sent out that one
-> patch for sparc, but didn't get any response to it. I'm inclined to
-> just apply it (the 'struct mdesc_hdr' pointer misuse one).
+On Wed, 15 Sep 2021 11:05:42 +0000 Kumar, M Chetan wrote:
+> > This doesn't free the first region in devlink->cd_regions[0] so it's a memory
+> > leak.
+> > 
+> > Fixes: 13bb8429ca98 ("net: wwan: iosm: firmware flashing and coredump
+> > collection")
+> > Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> > ---
+> >  drivers/net/wwan/iosm/iosm_ipc_devlink.c | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)  
+> 
+> Reviewed-by: M Chetan Kumar <m.chetan.kumar@intel.com>
 
-Oh, I forgot about the qnx4 one. That happens on sparc, possibly
-others, but not on x86-64.
+I'll toss this from patchwork because I'm going to post a revert 
+of the entire patch.
 
-I'll go look at that patch too.
-
-          Linus
+The abuse of devlink params for configuring flashing process is
+unacceptable.
