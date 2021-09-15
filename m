@@ -2,151 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A21F240BF08
-	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 06:47:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCF1340BF22
+	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 07:09:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235806AbhIOEtI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Sep 2021 00:49:08 -0400
-Received: from mail-mw2nam08on2053.outbound.protection.outlook.com ([40.107.101.53]:18785
-        "EHLO NAM04-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231277AbhIOEtH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Sep 2021 00:49:07 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=h63OnptrU98yChz5QUE+n73qolSHjPnyLOcKv/kxMkjzJzvSeo4Xl2aKjQjaobw3xmF9tI0FTnv9za1WKWyVy6X1qUtjysE1Du1FIAtTZVAHr9jlFGv6ulufZoMgs5DVDwD1aFzeT6pbYrL2L4qjZ4G6c3AMeDE12dr4YtSPL8PERUk9FQTJbCJkBTzW4HBKuLhv/HpuxQrx4my7QlLJBaC1BH/0xHqWk+8shHPsiGuEa4y3vvv07q9z0L4ribbJiZR1u35kwGyMW5UURgAl0Lb2GVPDWfDrXLpscSLvhz30gPx1e6RbgdibK/UN5kmc+AzyGYIR/3ny9fo+4DePsg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=5sjBzbVxpamheXt9wCuNcwtcIjsYoXzm3rdBUSOY2nQ=;
- b=VGyyrMy6y8DVX7OiCFhoSIzrV7eAiucfslNjG0Cuw5SGEmDd0eECVx0AP2PMekKp+tfBnY7bw9Ux0VWVCF8+y4JCg0pGxc1gec0nBqTpqitsExzC4OnJKv+ik/YdjaGrPSzrqQULdmj/8DvuKXjIkCKqMxH9HN3v63p3gwNn8oVSxImbCrOspZtOOHzUAM27o6IyfsT1F8qfvXBt+VlnlvhjVf6oIJxeeDHTdZ4IMshlB6lV8Zh3NOegQwZXBT8w91cmv8xihaHpsNMTLuy7+VnhYE+CvY4KUNyQdxdIApFoVyL68J3d17OxGxkSTl2hZASZBThc7EquGFLpdRZI/Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.36) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5sjBzbVxpamheXt9wCuNcwtcIjsYoXzm3rdBUSOY2nQ=;
- b=qHzspfUZFXIY7RMzBfb703vFTr8ss8X9Qi4LYlvswLdrHcRg/j1Y3ygy0ielSeAC26vTOHrhQcVtAH3tJ2GU1PxQTQ3CVQG+L9/EymNjhGWBaNEzIgDmS3g6aFifgs2C63srU0agYFj2FlowyNOQ7nECuJC1/qVT/H8RC1qjX4aNW6+X7+c/ahMXS9e1r4Ty7qlLaiYSjACxhE5h3ZwL7ouaCfh3jBIMLXr9Pz92YUifiih6xy1PHLUq0b7mxRj5LNmdX9GrHma8+5pvownHqZWX/ab8leNZf+jODHN2HOktAJPDaiuMvZ3pfxAp9Z8vuTtKgLR/0okZQWKIsgYgCQ==
-Received: from DM5PR05CA0004.namprd05.prod.outlook.com (2603:10b6:3:d4::14) by
- DM6PR12MB4283.namprd12.prod.outlook.com (2603:10b6:5:211::21) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4500.17; Wed, 15 Sep 2021 04:47:47 +0000
-Received: from DM6NAM11FT035.eop-nam11.prod.protection.outlook.com
- (2603:10b6:3:d4:cafe::92) by DM5PR05CA0004.outlook.office365.com
- (2603:10b6:3:d4::14) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.9 via Frontend
- Transport; Wed, 15 Sep 2021 04:47:46 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.36)
- smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.36 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.36; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.36) by
- DM6NAM11FT035.mail.protection.outlook.com (10.13.172.100) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4523.14 via Frontend Transport; Wed, 15 Sep 2021 04:47:46 +0000
-Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL101.nvidia.com
- (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 15 Sep
- 2021 04:47:46 +0000
-Received: from vdi.nvidia.com (172.20.187.5) by mail.nvidia.com
- (172.20.187.12) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Wed, 15 Sep 2021 04:47:44 +0000
-From:   Eli Cohen <elic@nvidia.com>
-To:     <kuba@kernel.org>, <sriharsha.basavapatna@broadcom.com>,
-        <ozsh@mellanox.com>, <netdev@vger.kernel.org>
-CC:     <elic@nvidia.com>
-Subject: [PATCH] net/{mlx5|nfp|bnxt}: Remove unnecessary RTNL lock assert
-Date:   Wed, 15 Sep 2021 07:47:27 +0300
-Message-ID: <20210915044727.266009-1-elic@nvidia.com>
-X-Mailer: git-send-email 2.31.1
+        id S232576AbhIOFLM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Sep 2021 01:11:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44296 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230225AbhIOFLI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 01:11:08 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60608C061574;
+        Tue, 14 Sep 2021 22:09:49 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id j16so1645835pfc.2;
+        Tue, 14 Sep 2021 22:09:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dtosK1VKmzTHpkbVxMlwnj1Z7A67tAUA3Ttfcj79Sbw=;
+        b=jSAZXzQuJUp99idKxRbDj9zcpH/vG5E8RHuSwNl91ER72gYI95vtFq6hQp9yWU7GlO
+         GdsgEKpqjEhrDlssNWeZSPKxN1DyIpV+fsJhqp4h7o6oi6CKEmx48JTuhzShq/NKozqR
+         2lldaNQGnnbvaRLI96BaRLTROs3Aj3Cy7WfWovUIlaVnnjNupUH0xZYUbYtuqwY1+Y+K
+         SqQsVhxrF3dhU8JK17lpi8GIdCwg+1hH4Rak1E/9v5A+sRWIcGBY/BzhWNfnsVDQBxcG
+         P90W8fPayP7UX0QFzUfrHSIAsVC3rDSG14pQ+G13jol4pULMKfuGp2eavn+iAVon2cBh
+         5xYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dtosK1VKmzTHpkbVxMlwnj1Z7A67tAUA3Ttfcj79Sbw=;
+        b=nziA/+14tJ8CRT/+3u0jACeK1EhaWfO52Dkazv6h6A/clXavbVLtzbRnNVccyHxWGk
+         idWZ14G8LeeYqDCsuusYstDTbIHb86m/T6zjfx2xYZoI8zJIG4EFH+NWiMUJigy9Ve4C
+         d3xVi1mHdMwWVu0jQN3haeqIeWjeW5IJVVjyFa2yh+xdBkjsTXWEifdk33wobpm75Heg
+         DQRwxzDKJuPb2wfA7imiPwp/sQs0UXQy9uMFhKZNv3wpZjX8cxbTQ6OgeLLH0ndMLTg8
+         1W6UG/jLYiHPUCEjZu9qRgP9VljgtxJascpIrtCHqzwl9Hx8kipQac7KJZ0R3HP/rPoj
+         Ue4w==
+X-Gm-Message-State: AOAM532BeX6bz3JtFuumFdQ8UBsdTEJlJCOgnP4oz05D6Em8Q59Uqqma
+        3OSTHl1YA/+BwK98dv91hBmdFI6Kiws3Rg==
+X-Google-Smtp-Source: ABdhPJyTnyPdjzc4Hqw6pr+OySRdqx/BM2G2/mAERn55XUldNRzlDcSa2ESgSSJKTLIlXbV5DZ40nA==
+X-Received: by 2002:aa7:84d6:0:b0:43d:fe64:e8c0 with SMTP id x22-20020aa784d6000000b0043dfe64e8c0mr7438136pfn.48.1631682588638;
+        Tue, 14 Sep 2021 22:09:48 -0700 (PDT)
+Received: from localhost ([2405:201:6014:d058:a28d:3909:6ed5:29e7])
+        by smtp.gmail.com with ESMTPSA id 207sm9498298pfu.56.2021.09.14.22.09.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Sep 2021 22:09:48 -0700 (PDT)
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org
+Subject: [PATCH bpf-next v3 00/10] Support kernel module function calls from eBPF
+Date:   Wed, 15 Sep 2021 10:39:33 +0530
+Message-Id: <20210915050943.679062-1-memxor@gmail.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=4085; h=from:subject; bh=M3xfou/qUhrmj4bm/qug1DH61hLZMJIvVL0UceCG6AI=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBhQX4a+A7IQnjmGKq16V+Gy/76AkjxksW5z6+PfeYf +zNtSuGJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYUF+GgAKCRBM4MiGSL8RygUMD/ wOOy0JNjG3ovEs0ij2geMlcBQ06jk8xwFg9dYagEnTZ3aR8IbGaoXr+O5ZjJPg4kNjSN7SkeomxEC5 yskmCPGYnRsPAAL+FHma4uzu97GIjFTwIZqRwRkxpCU3YHhKJ9D5g7D+vSin3kw1uyJ01E0MZnbcfy ECVeXLCaMJGr14Kn5jL6ttlcJT7EIP9qLSR+igtgLQGXbXVJBM9VZR+SCcs0D0if7rqKXHVGa99YV8 KZOkmesF/OS0ENUuuoDyd96zd/Jlnqq6Hp9iPKfN668E4uU0c2G6TlPE/WFi7uxmKfm9CgAHIl77LI 6/gV5z9dMQUstxbQpo94HC0jEbEfIzspQsJQomO2AS562vuUkf6XoLPSqMIuwxkDH9cbKqwVg6cQeh AuNmr90YaMj0cUP2A1+LtwTxNMuRoGl4/DOq4XjIPkgLr9eIXLf8KGruGlhoWJ1km5X/rV35XvD+Cm sHqu5RbiV4S28UvlhxGFsklMrVyvxP/phOxLv5NAFwwXKuLWpxuXgXVgGFort/1GaviHYr0Y9YH6EA kojkQbYdISemyd+j/6Q5X7jjBzCUdIlz0AGOy3PcJEWStHqyefhgmHsJz9B1k84VQrhyyMtxgc1C3d 4mLbqtC3UE+WS5h+DH+hA7NYqOedoIgEPbheELtNX8t0RQrjOIUTZNjJiU6g==
+X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: fbe2ff39-33f3-4d0f-ab99-08d97803f6bd
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4283:
-X-Microsoft-Antispam-PRVS: <DM6PR12MB4283A68B60E71EDCEFF4262EABDB9@DM6PR12MB4283.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1247;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: HONt8TsqX6G4pCbqIBzK/Xcln3/i5b47J6v1qgFrSHjm96dSvDoefI+mAsdJqQy6qRbB4T927aoeKHDqcuSm193P/I9cjVy2d5wk/IDGgZLBVPqQZzf3aQBQ9+o3EO0bgSzhMUATIdp+qWLD6A8mGFPMBquSOA1EJR5Z2G0qIdQhR3ihXfHK3vAOlJ6tjcv+lIWW1vce78xczOJ/hOB3eaBIHi+GPkdILGk5SGLW61mgxwJActQ2ysQEIWVJusX6S84tM5z4uOiCCMNH+Kr971TvtFhPCQk+MLOtzQLvvvpHqPSeIRPUDTGh1oPddRje4dAJLXPEBaLejUsS6oafnRh+Boz/1ypCBkPkK412dbO52pElz6FTeqvGQe/viyBvT29UOs9/dzMSP0igzY6UDPTOLhNLGRSm/p1Xl0TopsE4WMaD4OjlbsDw4+Ys451RNs51euUWUe2bkAhD2hdSqW5yEEv4fvlydMtkB/cFHYkffROKYCpc607Iiqoa5JfkUYgORD6aB6sMMeJBoiy8dSalSJS0gbyducFNpQpqCJMQa/DLGpMbxr6Jb4a8tdsMEy/sT79tCiihzqhBgUUQLIiNwMjriTK2+0OOdg7r/aWKr2H4l+qxmA/Ixshzpdg+a4YUhpIcXaEtoJVRq7WDKdge6tIwuNbPKM/j3xsQFrDug+L/7e1q4dysChkpiNK9ShsT28TT1KgnOtIQig8REQ==
-X-Forefront-Antispam-Report: CIP:216.228.112.36;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid05.nvidia.com;CAT:NONE;SFS:(4636009)(376002)(39860400002)(396003)(136003)(346002)(46966006)(36840700001)(26005)(478600001)(8936002)(70586007)(2616005)(70206006)(336012)(5660300002)(7636003)(36860700001)(316002)(82740400003)(8676002)(86362001)(4326008)(7696005)(6666004)(110136005)(2906002)(83380400001)(186003)(36906005)(1076003)(36756003)(82310400003)(47076005)(107886003)(356005)(426003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Sep 2021 04:47:46.8426
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: fbe2ff39-33f3-4d0f-ab99-08d97803f6bd
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.36];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT035.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4283
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove the assert from the callback priv lookup function since it does
-not require RTNL lock and is already protected by flow_indr_block_lock.
+This set enables kernel module function calls, and also modifies verifier logic
+to permit invalid kernel function calls as long as they are pruned as part of
+dead code elimination. This is done to provide better runtime portability for
+BPF objects, which can conditionally disable parts of code that are pruned later
+by the verifier (e.g. const volatile vars, kconfig options). libbpf
+modifications are made along with kernel changes to support module function
+calls. The set includes gen_loader support for emitting kfunc relocations.
 
-This will avoid warnings from being emitted to dmesg if the driver
-registers its callback after an ingress qdisc was created for a
-netdevice.
+It also converts TCP congestion control objects to use the module kfunc support
+instead of relying on IS_BUILTIN ifdef.
 
-The warnings started after the following patch was merged:
-commit 74fc4f828769 ("net: Fix offloading indirect devices dependency on qdisc order creation")
+Changelog:
+----------
+v2 -> v3:
+v2: https://lore.kernel.org/bpf/20210914123750.460750-1-memxor@gmail.com
 
-Signed-off-by: Eli Cohen <elic@nvidia.com>
----
- drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c        | 3 ---
- drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c | 3 ---
- drivers/net/ethernet/netronome/nfp/flower/offload.c | 3 ---
- 3 files changed, 9 deletions(-)
+ * Fix issues pointed out by Kernel Test Robot
+ * Fix find_kfunc_desc to also take offset into consideration when comparing
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-index 46fae1acbeed..e6a4a768b10b 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-@@ -1884,9 +1884,6 @@ bnxt_tc_indr_block_cb_lookup(struct bnxt *bp, struct net_device *netdev)
- {
- 	struct bnxt_flower_indr_block_cb_priv *cb_priv;
- 
--	/* All callback list access should be protected by RTNL. */
--	ASSERT_RTNL();
--
- 	list_for_each_entry(cb_priv, &bp->tc_indr_block_list, list)
- 		if (cb_priv->tunnel_netdev == netdev)
- 			return cb_priv;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
-index 51a4d80f7fa3..de03684528bb 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
-@@ -300,9 +300,6 @@ mlx5e_rep_indr_block_priv_lookup(struct mlx5e_rep_priv *rpriv,
- {
- 	struct mlx5e_rep_indr_block_priv *cb_priv;
- 
--	/* All callback list access should be protected by RTNL. */
--	ASSERT_RTNL();
--
- 	list_for_each_entry(cb_priv,
- 			    &rpriv->uplink_priv.tc_indr_block_priv_list,
- 			    list)
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/offload.c b/drivers/net/ethernet/netronome/nfp/flower/offload.c
-index 556c3495211d..64c0ef57ad42 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/offload.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/offload.c
-@@ -1767,9 +1767,6 @@ nfp_flower_indr_block_cb_priv_lookup(struct nfp_app *app,
- 	struct nfp_flower_indr_block_cb_priv *cb_priv;
- 	struct nfp_flower_priv *priv = app->priv;
- 
--	/* All callback list access should be protected by RTNL. */
--	ASSERT_RTNL();
--
- 	list_for_each_entry(cb_priv, &priv->indr_block_cb_priv, list)
- 		if (cb_priv->netdev == netdev)
- 			return cb_priv;
+RFC v1 -> v2
+v1: https://lore.kernel.org/bpf/20210830173424.1385796-1-memxor@gmail.com
+
+ * Address comments from Alexei
+   * Reuse fd_array instead of introducing kfunc_btf_fds array
+   * Take btf and module reference as needed, instead of preloading
+   * Add BTF_KIND_FUNC relocation support to gen_loader infrastructure
+ * Address comments from Andrii
+   * Drop hashmap in libbpf for finding index of existing BTF in fd_array
+   * Preserve invalid kfunc calls only when the symbol is weak
+ * Adjust verifier selftests
+
+Kumar Kartikeya Dwivedi (10):
+  bpf: Introduce BPF support for kernel module function calls
+  bpf: Be conservative while processing invalid kfunc calls
+  bpf: btf: Introduce helpers for dynamic BTF set registration
+  tools: Allow specifying base BTF file in resolve_btfids
+  bpf: Enable TCP congestion control kfunc from modules
+  bpf: Bump MAX_BPF_STACK size to 768 bytes
+  libbpf: Support kernel module function calls
+  libbpf: Resolve invalid weak kfunc calls with imm = 0, off = 0
+  libbpf: Update gen_loader to emit BTF_KIND_FUNC relocations
+  bpf, selftests: Add basic test for module kfunc call
+
+ include/linux/bpf.h                           |   8 +-
+ include/linux/bpf_verifier.h                  |   2 +
+ include/linux/bpfptr.h                        |   1 +
+ include/linux/btf.h                           |  38 +++
+ include/linux/filter.h                        |   4 +-
+ kernel/bpf/btf.c                              |  56 +++++
+ kernel/bpf/core.c                             |   4 +
+ kernel/bpf/verifier.c                         | 217 +++++++++++++++---
+ kernel/trace/bpf_trace.c                      |   1 +
+ net/bpf/test_run.c                            |   2 +-
+ net/ipv4/bpf_tcp_ca.c                         |  36 +--
+ net/ipv4/tcp_bbr.c                            |  28 ++-
+ net/ipv4/tcp_cubic.c                          |  26 ++-
+ net/ipv4/tcp_dctcp.c                          |  26 ++-
+ scripts/Makefile.modfinal                     |   1 +
+ tools/bpf/resolve_btfids/main.c               |  19 +-
+ tools/lib/bpf/bpf.c                           |   1 +
+ tools/lib/bpf/bpf_gen_internal.h              |  12 +-
+ tools/lib/bpf/gen_loader.c                    |  93 +++++++-
+ tools/lib/bpf/libbpf.c                        |  81 +++++--
+ tools/lib/bpf/libbpf_internal.h               |   1 +
+ tools/testing/selftests/bpf/Makefile          |   1 +
+ .../selftests/bpf/bpf_testmod/bpf_testmod.c   |  23 +-
+ .../selftests/bpf/prog_tests/ksyms_module.c   |  13 +-
+ .../bpf/prog_tests/ksyms_module_libbpf.c      |  18 ++
+ .../selftests/bpf/progs/test_ksyms_module.c   |   9 +
+ .../bpf/progs/test_ksyms_module_libbpf.c      |  35 +++
+ tools/testing/selftests/bpf/verifier/calls.c  |  22 +-
+ .../selftests/bpf/verifier/raw_stack.c        |   4 +-
+ .../selftests/bpf/verifier/stack_ptr.c        |   6 +-
+ .../testing/selftests/bpf/verifier/var_off.c  |   4 +-
+ 31 files changed, 673 insertions(+), 119 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/ksyms_module_libbpf.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_ksyms_module_libbpf.c
+
 -- 
-2.31.1
+2.33.0
 
