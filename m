@@ -2,126 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6501840CD16
-	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 21:18:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B98FF40CD1A
+	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 21:19:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231529AbhIOTTf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Sep 2021 15:19:35 -0400
-Received: from mail.aperture-lab.de ([116.203.183.178]:37308 "EHLO
-        mail.aperture-lab.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231153AbhIOTTe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 15:19:34 -0400
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 9BD3A3EB3C;
-        Wed, 15 Sep 2021 21:18:05 +0200 (CEST)
-Date:   Wed, 15 Sep 2021 21:18:03 +0200
-From:   Linus =?utf-8?Q?L=C3=BCssing?= <linus.luessing@c0d3.blue>
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        Sujith Manoharan <c_manoha@qca.qualcomm.com>,
-        ath9k-devel@qca.qualcomm.com, linux-wireless@vger.kernel.org,
+        id S231562AbhIOTUi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Sep 2021 15:20:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42670 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231433AbhIOTUh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 15:20:37 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD682C061764
+        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 12:19:17 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id m3so6699945lfu.2
+        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 12:19:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hRAe5/tE1Mx+glbEumA/10LHbf2sLTrpOcfg2d46p4U=;
+        b=VWatl0Tg6Rs2+8cyQ1nNI7llz+Jwjnz45GyA7Ialu8h0m7yH1LKoqAuI6k/Ywlygil
+         KDQQX525bUWsnQP59sCymg2Xi7UR5AijXzfqK2/Z2O+QbzWUet5is4fYAxM3ieQOdqUi
+         Q6n8XepF4xgcAuR6YdqHkkzo9csOkkBGuEk5Y=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hRAe5/tE1Mx+glbEumA/10LHbf2sLTrpOcfg2d46p4U=;
+        b=NsIXeJzDTr5AhrNtFCF3uKtWur9nG464iqBXrLm+1lSw0G9WGSyktR+G0tqnAeumlX
+         wVum+J3eAjmOk5LZH/KFsn0PEHoVi8L0OpRjxWU6s/2w/x80utHIuG3r6N3/bLoY9ll1
+         muBawS6ncbrYDDJ4bhT1JwvdrEJFvpoHNkIICg8Z8LBusREstJI+eKCcDk+HheFKTOuC
+         x/V5q8eweGljmOV+mTKiDnbv+8ixULUFsVUMpHD4iBHkA8BIqtyBdFssivv07DyRuxQr
+         T8NkNVracEVB7Q3V0r/sT+bwJYGvPgR6N/fM8inrj02aoA0nqLjQSVTvarXDg/1nScPI
+         V7tg==
+X-Gm-Message-State: AOAM532EhF33IA75bii8eTZI/14bOjrXGDiPf55068U/HvH9E0beHwGF
+        KT+330wHLTmCuL35FMBEBQteXJ4Ks1b12idmecA=
+X-Google-Smtp-Source: ABdhPJw/X7Yg03G74H6Z5CgFsIzGUSpzRoxxHdRBzScQT/+/7uPW2wI2zjVgtGZgtnFwdrytjmEc3Q==
+X-Received: by 2002:a2e:9852:: with SMTP id e18mr1427455ljj.173.1631733555881;
+        Wed, 15 Sep 2021 12:19:15 -0700 (PDT)
+Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com. [209.85.167.47])
+        by smtp.gmail.com with ESMTPSA id y9sm58945lfh.52.2021.09.15.12.19.14
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Sep 2021 12:19:14 -0700 (PDT)
+Received: by mail-lf1-f47.google.com with SMTP id k4so8524710lfj.7
+        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 12:19:14 -0700 (PDT)
+X-Received: by 2002:a05:6512:94e:: with SMTP id u14mr1121103lft.173.1631733554128;
+ Wed, 15 Sep 2021 12:19:14 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210915035227.630204-1-linux@roeck-us.net>
+In-Reply-To: <20210915035227.630204-1-linux@roeck-us.net>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed, 15 Sep 2021 12:18:58 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wjXr+NnNPTorhaW81eAbdF90foVo-5pQqRmXZi-ZGaX6Q@mail.gmail.com>
+Message-ID: <CAHk-=wjXr+NnNPTorhaW81eAbdF90foVo-5pQqRmXZi-ZGaX6Q@mail.gmail.com>
+Subject: Re: [PATCH v2 0/4] Introduce and use absolute_pointer macro
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "John W . Linville" <linville@tuxdriver.com>,
-        Felix Fietkau <nbd@openwrt.org>,
-        Simon Wunderlich <sw@simonwunderlich.de>,
-        Sven Eckelmann <sven@narfation.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Linus =?utf-8?Q?L=C3=BCssing?= <ll@simonwunderlich.de>
-Subject: Re: [PATCH 3/3] ath9k: Fix potential hw interrupt resume during reset
-Message-ID: <YUJGxZW1a+vlG335@sellars>
-References: <20210914192515.9273-1-linus.luessing@c0d3.blue>
- <20210914192515.9273-4-linus.luessing@c0d3.blue>
- <255a49c7-d763-50d9-87e0-da22f4a9b053@nbd.name>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <255a49c7-d763-50d9-87e0-da22f4a9b053@nbd.name>
-X-Last-TLS-Session-Version: TLSv1.3
+        alpha <linux-alpha@vger.kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-parisc@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        Sparse Mailing-list <linux-sparse@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 15, 2021 at 11:48:55AM +0200, Felix Fietkau wrote:
-> 
-> On 2021-09-14 21:25, Linus Lüssing wrote:
-> > From: Linus Lüssing <ll@simonwunderlich.de>
-> > 
-> > There is a small risk of the ath9k hw interrupts being reenabled in the
-> > following way:
-> > 
-> > 1) ath_reset_internal()
-> >    ...
-> >    -> disable_irq()
-> >       ...
-> >       <- returns
-> > 
-> >                       2) ath9k_tasklet()
-> >                          ...
-> >                          -> ath9k_hw_resume_interrupts()
-> >                          ...
-> > 
-> > 1) ath_reset_internal() continued:
-> >    -> tasklet_disable(&sc->intr_tq); (= ath9k_tasklet() off)
-> > 
-> > By first disabling the ath9k interrupt there is a small window
-> > afterwards which allows ath9k hw interrupts being reenabled through
-> > the ath9k_tasklet() before we disable this tasklet in
-> > ath_reset_internal(). Leading to having the ath9k hw interrupts enabled
-> > during the reset, which we should avoid.
-> I don't see a way in which interrupts can be re-enabled through the
-> tasklet. disable_irq disables the entire PCI IRQ (not through ath9k hw
-> registers), and they will only be re-enabled by the corresponding
-> enable_irq call.
+On Tue, Sep 14, 2021 at 8:52 PM Guenter Roeck <linux@roeck-us.net> wrote:
+>
+> This patch series introduces absolute_pointer() to fix the problem.
+> absolute_pointer() disassociates a pointer from its originating symbol
+> type and context, and thus prevents gcc from making assumptions about
+> pointers passed to memory operations.
 
-Ah, okay, then I think I misunderstood the previous fixes to the
-ath9k interrupt shutdown during reset here. I had only tested the
-following diff and assumed that it were not okay to have the ath9k
-hw interrupt registers enabled within the spinlock'd section:
+Ok, I've applied this to my tree.
 
-```
-@@ -299,11 +299,23 @@ static int ath_reset_internal(struct ath_softc *sc, struct ath9k_channel *hchan)
- 
-        __ath_cancel_work(sc);
- 
-        disable_irq(sc->irq);
-+       for (r = 0; r < 200; r++) {
-+               msleep(5);
-+
-+               if (REG_READ(ah, AR_INTR_SYNC_CAUSE) ||
-+                   REG_READ(ah, AR_INTR_ASYNC_CAUSE)) {
-+                       break;
-+               }
-+       }
-        tasklet_disable(&sc->intr_tq);
-        tasklet_disable(&sc->bcon_tasklet);
-        spin_lock_bh(&sc->sc_pcu_lock);
- 
-+       if (REG_READ(ah, AR_INTR_SYNC_CAUSE) ||
-+           REG_READ(ah, AR_INTR_ASYNC_CAUSE))
-+               ATH_DBG_WARN(1, "%s: interrupts are enabled", __func__);
-+
-        if (!sc->cur_chan->offchannel) {
-                fastcc = false;
-                caldata = &sc->cur_chan->caldata;
-```
+I note that the physical BOOT_PCB addresses in the alpha setup.h file
+might be useful for things like MILO in user space, but since I
+couldn't even find MILO sources any more, I couldn't really check.
 
-And yes, the general ath9k interrupt should still be disabled. Didn't
-test for that but seems like it.
+I suspect alpha is basically on life support and presumably nobody
+would ever compile a bootloader anyway, so it's unlikely to matter.
 
+If somebody does find any issues, we'll know better and we can ask
+where the user space sources are that might use that alpha setup.h
+file.
 
-(And now I noticed that actually
- ath_reset_internal()
- -> ath_prepare_reset()
-   -> ath9k_hw_disable_interrupts()
-     -> ath9k_hw_kill_interrupts()
- disables the ath9k hw interrupt registers before the
- ath_reset_internal()->ath9k_hw_reset() call anyway.)
-
-
-What would you prefer, should this patch just be dropped or should
-I resend it without the "Fixes:" line as a cosmetic change? (e.g. to
-have the order in reverse to reenablement at the end of
-ath_reset_internal(), to avoid confusion in the future?)
-
-Regards, Linus
+                Linus
