@@ -2,103 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CEDE40CB90
-	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 19:19:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A80F40CB7E
+	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 19:15:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230052AbhIORUm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Sep 2021 13:20:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43420 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229566AbhIORUm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 13:20:42 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EFADC061574
-        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 10:19:23 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id k65so7109382yba.13
-        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 10:19:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fcARgMDO3sHmRKPtN7f2pmzPFunzoTl53IPz4NJSUaI=;
-        b=dKM6iCxT5AAQBmagGlPrp9ttSolaaBPV0lgwA6vmAQjNnNbzqaa3H3COonvJb/XbWm
-         2ihe9WBo5GOxOTwRZ+OgyvsAdLwtyZ4SBFC09Uqhjs2cM/B0SpCWhmoU0dfxd1S7IjUs
-         CZWLXk+kkWjvkYkMK5CUcd5JAkYdpAyjR1QTWhQ8GNNAk2vvJioOhWoDvUesjf/8GbNO
-         Z3eJSYo0cUs/NYdX1pUhkNHeHaY+ogdvGGDQzaWc7gScKuUJ7fcfOqms8y24HmFlDCRT
-         XmswJP69F3LoGSvqLSbvmJm0Hwxf7yt+WhMeBbCgFy2kx2NX8vasm/fiKScjoNRqFkRs
-         njDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fcARgMDO3sHmRKPtN7f2pmzPFunzoTl53IPz4NJSUaI=;
-        b=TpajrfbLBiotAkkVSrP7TTuMQnr5a1807qPkaB7UQpbzuwR9pmTaYgAiFP7Y0M2zrG
-         LsG18DGAs3TISXpbDAXr4QluAZEYIKZV79QkNNVenDb/OMuZglO8bxqloovGRCijBMSX
-         DgmRDSdAcscwwSZOCngnMluCvANjK1LDuJX0MjT0Z0tMnhinvFk+qR9UTJS07SqB3WoI
-         Cx54sGfNTjAXNIHsKac9UczGZOur9DKohRdwTxecRX1+VrLxCKXzS9eoIKwMhij9ZF7E
-         vD8bPm9DWcLpjCI0OmaWhnI+HiRkW8Kp/gKT8rKcjVmEZWkrGLvmM3lloWFYNEw12WaB
-         1fYA==
-X-Gm-Message-State: AOAM532CQkwMOCwINKJ6kbyc4kgjVmbjuseT4W5Nty4G5nhyTo5A+tiq
-        rf023aCk52eOb0X1h+x5/S0LbwzUJxeb75FhqYsXkg==
-X-Google-Smtp-Source: ABdhPJyO2jRMPKX2+rlE4hInFo5Tt738OyUO7N0J4cYlu9nL/Yd0y23SxmKlAUGsgPZIE8l2eCiodmmbiAd9PAEkuOk=
-X-Received: by 2002:a25:b94:: with SMTP id 142mr1334731ybl.508.1631726362131;
- Wed, 15 Sep 2021 10:19:22 -0700 (PDT)
+        id S229936AbhIORQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Sep 2021 13:16:38 -0400
+Received: from mga14.intel.com ([192.55.52.115]:33465 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229479AbhIORQh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Sep 2021 13:16:37 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10108"; a="222046049"
+X-IronPort-AV: E=Sophos;i="5.85,296,1624345200"; 
+   d="scan'208";a="222046049"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2021 10:15:18 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.85,296,1624345200"; 
+   d="scan'208";a="700305120"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by fmsmga005.fm.intel.com with ESMTP; 15 Sep 2021 10:15:17 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        anthony.l.nguyen@intel.com, sasha.neftin@intel.com,
+        vitaly.lifshits@intel.com, Corinna Vinschen <vinschen@redhat.com>,
+        Nechama Kraus <nechamax.kraus@linux.intel.com>
+Subject: [PATCH net 1/1] igc: fix tunnel offloading
+Date:   Wed, 15 Sep 2021 10:19:07 -0700
+Message-Id: <20210915171907.1652824-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-References: <20210915081139.480263-1-saravanak@google.com> <YUHjvKRX76Jf7Bt5@lunn.ch>
-In-Reply-To: <YUHjvKRX76Jf7Bt5@lunn.ch>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Wed, 15 Sep 2021 10:18:46 -0700
-Message-ID: <CAGETcx8s9iKJnw=LP_p6rtB+Lx7orkKF5hicGWPGc+bL8kpk=g@mail.gmail.com>
-Subject: Re: [PATCH v2 0/6] fw_devlink improvements
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Vladimir Oltean <olteanv@gmail.com>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-acpi@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 15, 2021 at 5:14 AM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> On Wed, Sep 15, 2021 at 01:11:32AM -0700, Saravana Kannan wrote:
-> > Patches ready for picking up:
-> > Patch 1 fixes a bug in fw_devlink.
-> > Patch 2-4 are meant to make debugging easier
-> > Patch 5 and 6 fix fw_devlink issues with PHYs and networking
-> >
-> > Andrew,
-> >
-> > I think Patch 5 and 6 should be picked up be Greg too. Let me know if
-> > you disagree.
-> >
-> > -Saravana
->
-> You are mixing fixes and development work. You should not do that,
-> please keep them separate. They are heading in different
-> directions. Fixed should get applied to -rc1, where as development
-> work will be queued for the next merge window.
+From: Paolo Abeni <pabeni@redhat.com>
 
-Done.
-https://lore.kernel.org/lkml/20210915170940.617415-1-saravanak@google.com/
+Checking tunnel offloading, it turns out that offloading doesn't work
+as expected.  The following script allows to reproduce the issue.
+Call it as `testscript DEVICE LOCALIP REMOTEIP NETMASK'
 
--Saravana
+=== SNIP ===
+if [ $# -ne 4 ]
+then
+  echo "Usage $0 DEVICE LOCALIP REMOTEIP NETMASK"
+  exit 1
+fi
+DEVICE="$1"
+LOCAL_ADDRESS="$2"
+REMOTE_ADDRESS="$3"
+NWMASK="$4"
+echo "Driver: $(ethtool -i ${DEVICE} | awk '/^driver:/{print $2}') "
+ethtool -k "${DEVICE}" | grep tx-udp
+echo
+echo "Set up NIC and tunnel..."
+ip addr add "${LOCAL_ADDRESS}/${NWMASK}" dev "${DEVICE}"
+ip link set "${DEVICE}" up
+sleep 2
+ip link add vxlan1 type vxlan id 42 \
+		   remote "${REMOTE_ADDRESS}" \
+		   local "${LOCAL_ADDRESS}" \
+		   dstport 0 \
+		   dev "${DEVICE}"
+ip addr add fc00::1/64 dev vxlan1
+ip link set vxlan1 up
+sleep 2
+rm -f vxlan.pcap
+echo "Running tcpdump and iperf3..."
+( nohup tcpdump -i any -w vxlan.pcap >/dev/null 2>&1 ) &
+sleep 2
+iperf3 -c fc00::2 >/dev/null
+pkill tcpdump
+echo
+echo -n "Max. Paket Size: "
+tcpdump -r vxlan.pcap -nnle 2>/dev/null \
+| grep "${LOCAL_ADDRESS}.*> ${REMOTE_ADDRESS}.*OTV" \
+| awk '{print $8}' | awk -F ':' '{print $1}' \
+| sort -n | tail -1
+echo
+ip link del vxlan1
+ip addr del ${LOCAL_ADDRESS}/${NWMASK} dev "${DEVICE}"
+=== SNAP ===
 
+The expected outcome is
 
--Saravana
+  Max. Paket Size: 64904
 
->
-> You are also missing Fixes: tags for the two MDIO patches. Stable
-> needs them to know how far back to port the fixes.
->
->       Andrew
+This is what you see on igb, the code igc has been taken from.
+However, on igc the output is
+
+  Max. Paket Size: 1516
+
+so the GSO aggregate packets are segmented by the kernel before calling
+igc_xmit_frame.  Inside the subsequent call to igc_tso, the check for
+skb_is_gso(skb) fails and the function returns prematurely.
+
+It turns out that this occurs because the feature flags aren't set
+entirely correctly in igc_probe.  In contrast to the original code
+from igb_probe, igc_probe neglects to set the flags required to allow
+tunnel offloading.
+
+Setting the same flags as igb fixes the issue on igc.
+
+Fixes: 34428dff3679 ("igc: Add GSO partial support")
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Tested-by: Corinna Vinschen <vinschen@redhat.com>
+Acked-by: Sasha Neftin <sasha.neftin@intel.com>
+Tested-by: Nechama Kraus <nechamax.kraus@linux.intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+---
+ drivers/net/ethernet/intel/igc/igc_main.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+index b877efae61df..0e19b4d02e62 100644
+--- a/drivers/net/ethernet/intel/igc/igc_main.c
++++ b/drivers/net/ethernet/intel/igc/igc_main.c
+@@ -6350,7 +6350,9 @@ static int igc_probe(struct pci_dev *pdev,
+ 	if (pci_using_dac)
+ 		netdev->features |= NETIF_F_HIGHDMA;
+ 
+-	netdev->vlan_features |= netdev->features;
++	netdev->vlan_features |= netdev->features | NETIF_F_TSO_MANGLEID;
++	netdev->mpls_features |= NETIF_F_HW_CSUM;
++	netdev->hw_enc_features |= netdev->vlan_features;
+ 
+ 	/* MTU range: 68 - 9216 */
+ 	netdev->min_mtu = ETH_MIN_MTU;
+-- 
+2.26.2
+
