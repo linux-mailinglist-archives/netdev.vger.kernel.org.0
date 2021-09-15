@@ -2,121 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E7F9440C6F2
-	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 16:03:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 477E340C708
+	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 16:06:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237602AbhIOOEv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Sep 2021 10:04:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53850 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233545AbhIOOEu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 10:04:50 -0400
-Received: from mail-oo1-xc30.google.com (mail-oo1-xc30.google.com [IPv6:2607:f8b0:4864:20::c30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94F9EC061574;
-        Wed, 15 Sep 2021 07:03:31 -0700 (PDT)
-Received: by mail-oo1-xc30.google.com with SMTP id q26-20020a4adc5a000000b002918a69c8eeso904251oov.13;
-        Wed, 15 Sep 2021 07:03:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=dXV0TdJQZj6j+f/Hi7EIzy0MEGNbxXGsvCh8JJLlODg=;
-        b=WPi3IOT8Z+un52mSPLE4sfqcvjdnW6YB61L3883DmVLJCseKT0/X5+UxUhOCmGoe6Z
-         HIGh4/nwJMlyK+3dCdARsx7O83eqW0mxZ8VZ0aedkBHAaEN7l82Gy6kEnotJu0yF+MU+
-         5a+7S37ulW2eIr6nSMyrGUZyXeMv3h4t8ZlzhCuIPCpxyX7J/TepZavW275hbZyhW2Gk
-         YOa17FQn9TO4Gk7XgljwpYzkzDT+C2SZhOQvgqFsx4nDUuzNklzbH8Hgi4XLuqrfB5c3
-         eMXBKePg1BOAfA5WW84beOgutATln1NmsNbVFEakI6+C4NMzrKEuxWlWU4otT5aApJjU
-         fABw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:subject:to:cc:references:from:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=dXV0TdJQZj6j+f/Hi7EIzy0MEGNbxXGsvCh8JJLlODg=;
-        b=lf/lxhHvy3JK2aJPkgydBUsoemjtuR+KI0105Nupx/NpGuVu7JvyzM8/6S6qSTxVBm
-         +IiG59FHPSbr5em/T4oTXqk6LBm04h14aYmPlOEHC0QCXiARbVnBi54Ah9N7C5XwwhEd
-         CPibysbq7N3TpOWbnKoHZBKlEL0/G7F9VNYeOhJXuub9kImyENfMwi5g1XRdUOomDNsH
-         d2E0N4ZizxQ+mCZBzsmskqsIaFaPkbTB02/c1kPr//p3EOz9cWQxbQs7iB+UEIBzvnKj
-         k+DvayEBKGAlHWj5N5whcl1QED2WexNkOcANgzEWnwgJ8qZ8vIreD+ltgXUi6kkTOJBo
-         5S7g==
-X-Gm-Message-State: AOAM531e8Bm3hWyaq8pqa1iIqIRKjkdExRXGL08OFZjzUTRAiM9P5rO/
-        uWN1KPgVr65ZW0dDMfcLbTaQwFxSQ0s=
-X-Google-Smtp-Source: ABdhPJxZWw0J/8Mllmga07N63Y8sT9KQNPV3ZJtz3dgQOrFH3hdHQmv0ainu2VlCw9qtyk8srn1muQ==
-X-Received: by 2002:a05:6820:555:: with SMTP id n21mr18699324ooj.56.1631714609412;
-        Wed, 15 Sep 2021 07:03:29 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id v16sm11201oou.45.2021.09.15.07.03.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Sep 2021 07:03:28 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Subject: Re: [PATCH v2 1/4] compiler.h: Introduce absolute_pointer macro
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        alpha <linux-alpha@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, linux-sparse@vger.kernel.org
-References: <20210915035227.630204-1-linux@roeck-us.net>
- <20210915035227.630204-2-linux@roeck-us.net>
- <CAMuHMdXZcrjGAE5OOipKsYpEgk9AZ_hrWKh+v81FMBtQTBv2LA@mail.gmail.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-Message-ID: <ab67dccf-cf29-523d-3cf7-7554c493dcd1@roeck-us.net>
-Date:   Wed, 15 Sep 2021 07:03:26 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S237798AbhIOOHQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Sep 2021 10:07:16 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:9878 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233698AbhIOOHO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 10:07:14 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4H8hhj5gh4z8yLV;
+        Wed, 15 Sep 2021 22:01:25 +0800 (CST)
+Received: from dggema772-chm.china.huawei.com (10.1.198.214) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2308.8; Wed, 15 Sep 2021 22:05:52 +0800
+Received: from huawei.com (10.175.101.6) by dggema772-chm.china.huawei.com
+ (10.1.198.214) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.8; Wed, 15
+ Sep 2021 22:05:51 +0800
+From:   Liu Jian <liujian56@huawei.com>
+To:     <john.fastabend@gmail.com>, <daniel@iogearbox.net>,
+        <jakub@cloudflare.com>, <lmb@cloudflare.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>
+CC:     <liujian56@huawei.com>
+Subject: [PATCH] skmsg: lose offset info in sk_psock_skb_ingress
+Date:   Wed, 15 Sep 2021 22:06:29 +0800
+Message-ID: <20210915140629.18558-1-liujian56@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-In-Reply-To: <CAMuHMdXZcrjGAE5OOipKsYpEgk9AZ_hrWKh+v81FMBtQTBv2LA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggema772-chm.china.huawei.com (10.1.198.214)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/15/21 12:13 AM, Geert Uytterhoeven wrote:
-> Hi Günter,
-> 
-> On Wed, Sep 15, 2021 at 5:52 AM Guenter Roeck <linux@roeck-us.net> wrote:
->> absolute_pointer() disassociates a pointer from its originating symbol
->> type and context. Use it to prevent compiler warnings/errors such as
->>
->> drivers/net/ethernet/i825xx/82596.c: In function 'i82596_probe':
->> ./arch/m68k/include/asm/string.h:72:25: error:
->>          '__builtin_memcpy' reading 6 bytes from a region of size 0
->>                  [-Werror=stringop-overread]
->>
->> Such warnings may be reported by gcc 11.x for string and memory operations
->> on fixed addresses.
->>
->> Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
->> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
->> ---
->> v2: No change
->>
->>   include/linux/compiler.h | 2 ++
->>   1 file changed, 2 insertions(+)
->>
->> diff --git a/include/linux/compiler.h b/include/linux/compiler.h
->> index b67261a1e3e9..3d5af56337bd 100644
->> --- a/include/linux/compiler.h
->> +++ b/include/linux/compiler.h
->> @@ -188,6 +188,8 @@ void ftrace_likely_update(struct ftrace_likely_data *f, int val,
->>       (typeof(ptr)) (__ptr + (off)); })
->>   #endif
->>
->> +#define absolute_pointer(val)  RELOC_HIDE((void *)(val), 0)
-> 
-> I guess we're not worried about "val" being evaluated multiple
-> times inside RELOC_HIDE(), as this is mainly intended for constants?
-> 
+If sockmap enable strparser, there are lose offset info in
+sk_psock_skb_ingress. If the length determined by parse_msg function
+is not skb->len, the skb will be converted to sk_msg multiple times,
+and userspace app will get the data multiple times.
 
-No, we are not. It is quite similar to RELOC_HIDE() in that regard.
+Fix this by get the offset and length from strp_msg.
 
-Guenter
+Signed-off-by: Liu Jian <liujian56@huawei.com>
+---
+ net/core/skmsg.c | 49 ++++++++++++++++++++++++++++++++++++++----------
+ 1 file changed, 39 insertions(+), 10 deletions(-)
+
+diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+index 2d6249b28928..83f76e568fad 100644
+--- a/net/core/skmsg.c
++++ b/net/core/skmsg.c
+@@ -9,6 +9,8 @@
+ #include <net/tcp.h>
+ #include <net/tls.h>
+ 
++static void sk_psock_strp_data_ready(struct sock *sk);
++
+ static bool sk_msg_try_coalesce_ok(struct sk_msg *msg, int elem_first_coalesce)
+ {
+ 	if (msg->sg.end > msg->sg.start &&
+@@ -494,6 +496,7 @@ static struct sk_msg *sk_psock_create_ingress_msg(struct sock *sk,
+ }
+ 
+ static int sk_psock_skb_ingress_enqueue(struct sk_buff *skb,
++					u32 off, u32 len,
+ 					struct sk_psock *psock,
+ 					struct sock *sk,
+ 					struct sk_msg *msg)
+@@ -507,11 +510,11 @@ static int sk_psock_skb_ingress_enqueue(struct sk_buff *skb,
+ 	 */
+ 	if (skb_linearize(skb))
+ 		return -EAGAIN;
+-	num_sge = skb_to_sgvec(skb, msg->sg.data, 0, skb->len);
++	num_sge = skb_to_sgvec(skb, msg->sg.data, off, len);
+ 	if (unlikely(num_sge < 0))
+ 		return num_sge;
+ 
+-	copied = skb->len;
++	copied = len;
+ 	msg->sg.start = 0;
+ 	msg->sg.size = copied;
+ 	msg->sg.end = num_sge;
+@@ -522,9 +525,11 @@ static int sk_psock_skb_ingress_enqueue(struct sk_buff *skb,
+ 	return copied;
+ }
+ 
+-static int sk_psock_skb_ingress_self(struct sk_psock *psock, struct sk_buff *skb);
++static int sk_psock_skb_ingress_self(struct sk_psock *psock, struct sk_buff *skb,
++				     u32 off, u32 len);
+ 
+-static int sk_psock_skb_ingress(struct sk_psock *psock, struct sk_buff *skb)
++static int sk_psock_skb_ingress(struct sk_psock *psock, struct sk_buff *skb,
++				u32 off, u32 len)
+ {
+ 	struct sock *sk = psock->sk;
+ 	struct sk_msg *msg;
+@@ -535,7 +540,7 @@ static int sk_psock_skb_ingress(struct sk_psock *psock, struct sk_buff *skb)
+ 	 * correctly.
+ 	 */
+ 	if (unlikely(skb->sk == sk))
+-		return sk_psock_skb_ingress_self(psock, skb);
++		return sk_psock_skb_ingress_self(psock, skb, off, len);
+ 	msg = sk_psock_create_ingress_msg(sk, skb);
+ 	if (!msg)
+ 		return -EAGAIN;
+@@ -547,7 +552,7 @@ static int sk_psock_skb_ingress(struct sk_psock *psock, struct sk_buff *skb)
+ 	 * into user buffers.
+ 	 */
+ 	skb_set_owner_r(skb, sk);
+-	err = sk_psock_skb_ingress_enqueue(skb, psock, sk, msg);
++	err = sk_psock_skb_ingress_enqueue(skb, off, len, psock, sk, msg);
+ 	if (err < 0)
+ 		kfree(msg);
+ 	return err;
+@@ -557,7 +562,8 @@ static int sk_psock_skb_ingress(struct sk_psock *psock, struct sk_buff *skb)
+  * skb. In this case we do not need to check memory limits or skb_set_owner_r
+  * because the skb is already accounted for here.
+  */
+-static int sk_psock_skb_ingress_self(struct sk_psock *psock, struct sk_buff *skb)
++static int sk_psock_skb_ingress_self(struct sk_psock *psock, struct sk_buff *skb,
++				     u32 off, u32 len)
+ {
+ 	struct sk_msg *msg = kzalloc(sizeof(*msg), __GFP_NOWARN | GFP_ATOMIC);
+ 	struct sock *sk = psock->sk;
+@@ -567,7 +573,7 @@ static int sk_psock_skb_ingress_self(struct sk_psock *psock, struct sk_buff *skb
+ 		return -EAGAIN;
+ 	sk_msg_init(msg);
+ 	skb_set_owner_r(skb, sk);
+-	err = sk_psock_skb_ingress_enqueue(skb, psock, sk, msg);
++	err = sk_psock_skb_ingress_enqueue(skb, off, len, psock, sk, msg);
+ 	if (err < 0)
+ 		kfree(msg);
+ 	return err;
+@@ -581,7 +587,7 @@ static int sk_psock_handle_skb(struct sk_psock *psock, struct sk_buff *skb,
+ 			return -EAGAIN;
+ 		return skb_send_sock(psock->sk, skb, off, len);
+ 	}
+-	return sk_psock_skb_ingress(psock, skb);
++	return sk_psock_skb_ingress(psock, skb, off, len);
+ }
+ 
+ static void sk_psock_skb_state(struct sk_psock *psock,
+@@ -604,6 +610,9 @@ static void sk_psock_backlog(struct work_struct *work)
+ {
+ 	struct sk_psock *psock = container_of(work, struct sk_psock, work);
+ 	struct sk_psock_work_state *state = &psock->work_state;
++#if IS_ENABLED(CONFIG_BPF_STREAM_PARSER)
++	struct strp_msg *stm = NULL;
++#endif
+ 	struct sk_buff *skb = NULL;
+ 	bool ingress;
+ 	u32 len, off;
+@@ -624,6 +633,13 @@ static void sk_psock_backlog(struct work_struct *work)
+ 	while ((skb = skb_dequeue(&psock->ingress_skb))) {
+ 		len = skb->len;
+ 		off = 0;
++#if IS_ENABLED(CONFIG_BPF_STREAM_PARSER)
++		if (psock->sk->sk_data_ready == sk_psock_strp_data_ready) {
++			stm = strp_msg(skb);
++			off = stm->offset;
++			len = stm->full_len;
++		}
++#endif
+ start:
+ 		ingress = skb_bpf_ingress(skb);
+ 		skb_bpf_redirect_clear(skb);
+@@ -930,6 +946,10 @@ static int sk_psock_verdict_apply(struct sk_psock *psock, struct sk_buff *skb,
+ {
+ 	struct sock *sk_other;
+ 	int err = 0;
++#if IS_ENABLED(CONFIG_BPF_STREAM_PARSER)
++	struct strp_msg *stm = NULL;
++	u32 len, off;
++#endif
+ 
+ 	switch (verdict) {
+ 	case __SK_PASS:
+@@ -949,7 +969,16 @@ static int sk_psock_verdict_apply(struct sk_psock *psock, struct sk_buff *skb,
+ 		 * retrying later from workqueue.
+ 		 */
+ 		if (skb_queue_empty(&psock->ingress_skb)) {
+-			err = sk_psock_skb_ingress_self(psock, skb);
++			len = skb->len;
++			off = 0;
++#if IS_ENABLED(CONFIG_BPF_STREAM_PARSER)
++			if (psock->sk->sk_data_ready == sk_psock_strp_data_ready) {
++				stm = strp_msg(skb);
++				off = stm->offset;
++				len = stm->full_len;
++			}
++#endif
++			err = sk_psock_skb_ingress_self(psock, skb, off, len);
+ 		}
+ 		if (err < 0) {
+ 			spin_lock_bh(&psock->ingress_lock);
+-- 
+2.17.1
+
