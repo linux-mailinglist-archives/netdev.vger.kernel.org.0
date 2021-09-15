@@ -2,146 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5716140C13F
-	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 10:09:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5533940C163
+	for <lists+netdev@lfdr.de>; Wed, 15 Sep 2021 10:12:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236739AbhIOIKP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Sep 2021 04:10:15 -0400
-Received: from phobos.denx.de ([85.214.62.61]:45640 "EHLO phobos.denx.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236528AbhIOIKO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Sep 2021 04:10:14 -0400
-Received: from tr.lan (ip-89-176-112-137.net.upcbroadband.cz [89.176.112.137])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: marex@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 9369F80ECB;
-        Wed, 15 Sep 2021 10:08:52 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1631693333;
-        bh=ko6X7H/DnGvaGKZE85SWIchKK/SUD0mUTu1kEH1i/rI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Tcu15NXUsR8CeNaOQT6ygdfTKtirZL3klz9KNezSNOULEVL/LdwEOLtreOtOxEfka
-         Gu/FIjOtHm5CFD11NvBkouCj5JRRZMiWyp356++UwjqJHEOE2v7wjw6CLKBfDeLcWY
-         C4yykIu060znignfKwe2vFeMnmoh2rS1WgvhFjNRkXx4ftP5Aktyuxscai7cNMNEQG
-         ikzhZ8zB9enA2NvJkp3FO2vvV7hp/68busFohn9b7cNRKdPxJwssBYJLWcx9DNAXTp
-         g4V5LFP9sTwxKWsidmUKrp3g2Nlh5GJB+j0B1x0ZKPnA6Mk3bE6ce06Lxj98KYr03a
-         yAiDURsedzvnQ==
-From:   Marek Vasut <marex@denx.de>
-To:     netdev@vger.kernel.org
-Cc:     Marek Vasut <marex@denx.de>,
-        Amitkumar Karwar <amit.karwar@redpinesignals.com>,
-        Angus Ainslie <angus@akkea.ca>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Karun Eagalapati <karun256@gmail.com>,
-        Martin Fuzzey <martin.fuzzey@flowbird.group>,
-        Martin Kepplinger <martink@posteo.de>,
-        Prameela Rani Garnepudi <prameela.j04cs@gmail.com>,
-        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
-        Siva Rebbagondla <siva8118@gmail.com>, stable@vger.kernel.org
-Subject: [PATCH] rsi: Fix module dev_oper_mode parameter description
-Date:   Wed, 15 Sep 2021 10:08:41 +0200
-Message-Id: <20210915080841.73938-1-marex@denx.de>
-X-Mailer: git-send-email 2.33.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.103.2 at phobos.denx.de
-X-Virus-Status: Clean
+        id S231689AbhIOINV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Sep 2021 04:13:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56844 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236788AbhIOINL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 04:13:11 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE5F3C0613A0
+        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 01:11:43 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id v66-20020a25abc8000000b0059ef57c3386so2685533ybi.1
+        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 01:11:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=yfa5Rx/Qiunlci+zcN20hGjk88ftJaLJ8MhJAuyVtPg=;
+        b=Bziq+JAqVVonT8FZlMTg9QRvlqbUqLE8pqptTBdcOCh1N6hQ7V85vIJZEmAJFOFIEe
+         MDN4tK9VdpMxrx7LFFTAiWGV79SBpHFjqNYqp2Ol6tOwYbR0gHIU9ZYA96tTgwPvBkkf
+         h7ar0uSpe9wkk6LZUVuo10u6lIWO7mb551gfLsgCWmYApmmUdoFc4dKx4Fn272xt1dff
+         5Zxkk94pxBzeNzjW0DcYthW+/Mg+upiqLEJbpFePYgaBiqUjbHIOyFrbEapt1nF4XkgP
+         cEaxl9cKDdiIasFtJFHqVpfT9/eLWIo9Lq6PvO8ARORvrLvJaHI9fizqKrvmdvGxuMQE
+         C/9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=yfa5Rx/Qiunlci+zcN20hGjk88ftJaLJ8MhJAuyVtPg=;
+        b=669oCWPnhtC17Ghx6nqXES83/STgpK+HJdm+3N7VTCyOUiNFhsdeakABtAzYRRy0Gc
+         rOqyMRnjAh5XlyNbbyLCqzmhIwIszZSUVPC9TQjUZsvShrN9wfNbclbFJFC3BxgrOe2C
+         3BUNmETwa+e/vgPENzXVjsC9ng3dBkJ6GWvUwna/LehHh3xv6QtIbm123guAvZFoLwmt
+         B91oDiNJktV723cjSjQ/vxWqr2TG7QaNLGcBsDJV1qQixO6hK79vpMoOOHJ5CxU3NjRO
+         rzjpq0OMejvUSXHy04PGwYooeKmSsh7PKxbWnKD0ERH82Qq9w021aBjYiOfOcQrwRnoj
+         CodA==
+X-Gm-Message-State: AOAM532Q34ylNR2Qby0My4CTZTaGE4IDqPGzRdnMKdmFR7J7BJBFi8ct
+        oS6vTPa5RbEMPtdmLc4AAsQKv0otLVVONqw=
+X-Google-Smtp-Source: ABdhPJw5lk8+hNRREG7eLjZEFSM4ko3LXxf98/UI9AGjkdcwerpLOs2cJ00+a4CoN07Yf0O8WeHlY6ZQDJGAc9Y=
+X-Received: from saravanak.san.corp.google.com ([2620:15c:2d:3:16d1:ab0e:fc4a:b9b1])
+ (user=saravanak job=sendgmr) by 2002:a25:9906:: with SMTP id
+ z6mr4480758ybn.373.1631693503120; Wed, 15 Sep 2021 01:11:43 -0700 (PDT)
+Date:   Wed, 15 Sep 2021 01:11:32 -0700
+Message-Id: <20210915081139.480263-1-saravanak@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.33.0.309.g3052b89438-goog
+Subject: [PATCH v2 0/6] fw_devlink improvements
+From:   Saravana Kannan <saravanak@google.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
+        Saravana Kannan <saravanak@google.com>
+Cc:     John Stultz <john.stultz@linaro.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Vladimir Oltean <olteanv@gmail.com>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-acpi@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The module parameters are missing dev_oper_mode 12, BT classic alone,
-add it. Moreover, the parameters encode newlines, which ends up being
-printed malformed e.g. by modinfo, so fix that too.
+Patches ready for picking up:
+Patch 1 fixes a bug in fw_devlink.
+Patch 2-4 are meant to make debugging easier
+Patch 5 and 6 fix fw_devlink issues with PHYs and networking
 
-However, the module parameter string is duplicated in both USB and SDIO
-modules and the dev_oper_mode mode enumeration in those module parameters
-is a duplicate of macros used by the driver. Furthermore, the enumeration
-is confusing.
+Andrew,
 
-So, deduplicate the module parameter string and use __stringify() to
-encode the correct mode enumeration values into the module parameter
-string. Finally, replace 'Wi-Fi' with 'Wi-Fi alone' and 'BT' with
-'BT classic alone' to clarify what those modes really mean.
+I think Patch 5 and 6 should be picked up be Greg too. Let me know if
+you disagree.
 
-Fixes: 898b255339310 ("rsi: add module parameter operating mode")
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Amitkumar Karwar <amit.karwar@redpinesignals.com>
-Cc: Angus Ainslie <angus@akkea.ca>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Kalle Valo <kvalo@codeaurora.org>
-Cc: Karun Eagalapati <karun256@gmail.com>
-Cc: Martin Fuzzey <martin.fuzzey@flowbird.group>
-Cc: Martin Kepplinger <martink@posteo.de>
-Cc: Prameela Rani Garnepudi <prameela.j04cs@gmail.com>
-Cc: Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>
-Cc: Siva Rebbagondla <siva8118@gmail.com>
-To: netdev@vger.kernel.org
-Cc: <stable@vger.kernel.org> # 4.17+
----
- drivers/net/wireless/rsi/rsi_91x_sdio.c |  5 +----
- drivers/net/wireless/rsi/rsi_91x_usb.c  |  5 +----
- drivers/net/wireless/rsi/rsi_hal.h      | 11 +++++++++++
- 3 files changed, 13 insertions(+), 8 deletions(-)
+-Saravana
 
-diff --git a/drivers/net/wireless/rsi/rsi_91x_sdio.c b/drivers/net/wireless/rsi/rsi_91x_sdio.c
-index e0c502bc42707..9f16128e4ffab 100644
---- a/drivers/net/wireless/rsi/rsi_91x_sdio.c
-+++ b/drivers/net/wireless/rsi/rsi_91x_sdio.c
-@@ -24,10 +24,7 @@
- /* Default operating mode is wlan STA + BT */
- static u16 dev_oper_mode = DEV_OPMODE_STA_BT_DUAL;
- module_param(dev_oper_mode, ushort, 0444);
--MODULE_PARM_DESC(dev_oper_mode,
--		 "1[Wi-Fi], 4[BT], 8[BT LE], 5[Wi-Fi STA + BT classic]\n"
--		 "9[Wi-Fi STA + BT LE], 13[Wi-Fi STA + BT classic + BT LE]\n"
--		 "6[AP + BT classic], 14[AP + BT classic + BT LE]");
-+MODULE_PARM_DESC(dev_oper_mode, DEV_OPMODE_PARAM_DESC);
- 
- /**
-  * rsi_sdio_set_cmd52_arg() - This function prepares cmd 52 read/write arg.
-diff --git a/drivers/net/wireless/rsi/rsi_91x_usb.c b/drivers/net/wireless/rsi/rsi_91x_usb.c
-index 416976f098882..6a120211800db 100644
---- a/drivers/net/wireless/rsi/rsi_91x_usb.c
-+++ b/drivers/net/wireless/rsi/rsi_91x_usb.c
-@@ -25,10 +25,7 @@
- /* Default operating mode is wlan STA + BT */
- static u16 dev_oper_mode = DEV_OPMODE_STA_BT_DUAL;
- module_param(dev_oper_mode, ushort, 0444);
--MODULE_PARM_DESC(dev_oper_mode,
--		 "1[Wi-Fi], 4[BT], 8[BT LE], 5[Wi-Fi STA + BT classic]\n"
--		 "9[Wi-Fi STA + BT LE], 13[Wi-Fi STA + BT classic + BT LE]\n"
--		 "6[AP + BT classic], 14[AP + BT classic + BT LE]");
-+MODULE_PARM_DESC(dev_oper_mode, DEV_OPMODE_PARAM_DESC);
- 
- static int rsi_rx_urb_submit(struct rsi_hw *adapter, u8 ep_num, gfp_t flags);
- 
-diff --git a/drivers/net/wireless/rsi/rsi_hal.h b/drivers/net/wireless/rsi/rsi_hal.h
-index d044a440fa080..e435df73ccce3 100644
---- a/drivers/net/wireless/rsi/rsi_hal.h
-+++ b/drivers/net/wireless/rsi/rsi_hal.h
-@@ -28,6 +28,17 @@
- #define DEV_OPMODE_AP_BT		6
- #define DEV_OPMODE_AP_BT_DUAL		14
- 
-+#define DEV_OPMODE_PARAM_DESC		\
-+	__stringify(DEV_OPMODE_WIFI_ALONE)	"[Wi-Fi alone], "	\
-+	__stringify(DEV_OPMODE_BT_ALONE)	"[BT classic alone], "	\
-+	__stringify(DEV_OPMODE_BT_LE_ALONE)	"[BT LE], "		\
-+	__stringify(DEV_OPMODE_BT_DUAL)		"[BT Dual], "		\
-+	__stringify(DEV_OPMODE_STA_BT)		"[Wi-Fi STA + BT classic], " \
-+	__stringify(DEV_OPMODE_STA_BT_LE)	"[Wi-Fi STA + BT LE], "	\
-+	__stringify(DEV_OPMODE_STA_BT_DUAL)	"[Wi-Fi STA + BT classic + BT LE], " \
-+	__stringify(DEV_OPMODE_AP_BT)		"[AP + BT classic], "	\
-+	__stringify(DEV_OPMODE_AP_BT_DUAL)	"[AP + BT classic + BT LE]"
-+
- #define FLASH_WRITE_CHUNK_SIZE		(4 * 1024)
- #define FLASH_SECTOR_SIZE		(4 * 1024)
- 
+Cc: John Stultz <john.stultz@linaro.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Vladimir Oltean <olteanv@gmail.com>
+
+v1->v2:
+- Added a few Reviewed-by and Tested-by tags
+- Addressed Geert's comments in patches 3 and 5
+- Dropped the fw_devlink.debug patch
+- Added 2 more patches to the series to address other fw_devlink issues
+
+Thanks,
+Saravana
+
+Saravana Kannan (6):
+  driver core: fw_devlink: Improve handling of cyclic dependencies
+  driver core: Set deferred probe reason when deferred by driver core
+  driver core: Create __fwnode_link_del() helper function
+  driver core: Add debug logs when fwnode links are added/deleted
+  driver core: fw_devlink: Add support for FWNODE_FLAG_NEEDS_CHILD_BOUND_ON_ADD
+  net: mdiobus: Set FWNODE_FLAG_NEEDS_CHILD_BOUND_ON_ADD for mdiobus parents
+
+ drivers/base/core.c        | 90 ++++++++++++++++++++++++++------------
+ drivers/net/phy/mdio_bus.c |  4 ++
+ include/linux/fwnode.h     | 11 +++--
+ 3 files changed, 75 insertions(+), 30 deletions(-)
+
 -- 
-2.33.0
+2.33.0.309.g3052b89438-goog
 
