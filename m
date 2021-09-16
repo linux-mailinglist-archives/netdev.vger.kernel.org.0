@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 313CB40EB3D
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 22:02:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 939B440EB3F
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 22:02:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236274AbhIPUDu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 16:03:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39834 "EHLO
+        id S236299AbhIPUD6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 16:03:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234838AbhIPUDt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 16:03:49 -0400
-Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8898CC061574
-        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 13:02:26 -0700 (PDT)
-Received: by mail-qk1-x734.google.com with SMTP id f22so10244755qkm.5
-        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 13:02:26 -0700 (PDT)
+        with ESMTP id S234838AbhIPUDx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 16:03:53 -0400
+Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C591CC061574
+        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 13:02:31 -0700 (PDT)
+Received: by mail-qk1-x72e.google.com with SMTP id c10so10186131qko.11
+        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 13:02:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=sipanda-io.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Q4OKFYOWcSEcatx5aT492+CSkyNK0GPlz7nabv6YqJM=;
-        b=2kYbuD/+4wEGdSxOMdkdHrg/H4oKkSEYGfPXne2Yk2bCMwlpJ0UWHKvaLXNXDq3dVg
-         47y7nVMHSMrO8eu4x9I2Hu8vNkiCvcMaEkk0anJq8ZC7iA6bpBU162mjGdqvgtg1hlAx
-         itBHka92fF+9CEjdKML3pRhVPN8QZNWrQJ84MokQzpLohvKKuDH1FM3MW+CuhG3Ew02e
-         JSoQyRE7/nB9LZjM6Oae8xREoTIEQmxwpOB5Z4hONUwZfb9uJg2tahfGDpIU3MFkB6Ux
-         JbHD5QnrvXvfGRbMjdFC1RPazGNKRHFcwpuKNXIdrFUitu4DV4YuAw9kLM2aBuzFRZNi
-         13EQ==
+        bh=KXU1PgDVKXGgm73qRuoIwr3PauWts7o33gZEp4l1l9w=;
+        b=6Mq4r/dhOWXADHTJ/D3bar34DvlOC8Xets9mSxmYc2ps94Mrvt53ZdJL4FhNpYmDO6
+         HZGz6nkvT88TY4OSiUXskEoUqwBRgPxJyYAK8K9rnIGW0W8qT4EAuXWhUXU4xAUVv9j1
+         vRTnt8OCaywu3kv+Q8qRy2WD5lQEqiNdAWb0QQYhKbJy9an3mXtqMf1WqobIIsSsZeAq
+         yQQnwByd2auzyy9yza0XcMvrBOUiLESmAdzvnG7R+twkRWY8U4zF7V3wMQRqksL1slQd
+         FBFebdTtlXLy/ZPwtE99NjdfRqXAscQdnKVSidpd/VTmeZZwoh9Dsq8gwx3GfDXtxM21
+         zmvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Q4OKFYOWcSEcatx5aT492+CSkyNK0GPlz7nabv6YqJM=;
-        b=Hng9uo4Yjb+qkWQxH0s23kAbwhT6Zvk2ms9Ad8aJI0g0pVRyJTZf34bo7AfDWisXea
-         wz+rTgFQgYTRTWyNHfIj429OmM3Zo6qwBhkWBDlIxgeUsEE/I9hfhQNtAQ06m7hZVlff
-         giZQhMi7BnABKg8/vIU4rPeE4e8I5H3kPz0wnND/sI45xujboekJGOYaiu2dk+/QpMvA
-         UTvYBK4SY8nKHAQNnA2Ugf/CAf+RUz6O6tSHzoHAEm0ups0sxDx6UJZtwwyffh+qOsbR
-         KflS2ls8a3MqbTd+kTnYHL4l7JXfQe7G5N25GRV8TRMtSth0c7+VAIah+h148lFBuocl
-         NTgg==
-X-Gm-Message-State: AOAM532fHWuWOuv5Rnz9MLji109lJLUqxOEJuAHF3TiTx03BBxPBCf5R
-        UrDj+so70awusi8kvL43FwlSnA==
-X-Google-Smtp-Source: ABdhPJy56AezqSjUDPoZj9n1TYsIuFYbRyCjdvxovUOXJnlt7nwP0H5EwIZChorM0KKEDTIcbQYyeA==
-X-Received: by 2002:a05:620a:2008:: with SMTP id c8mr6854518qka.493.1631822543958;
-        Thu, 16 Sep 2021 13:02:23 -0700 (PDT)
+        bh=KXU1PgDVKXGgm73qRuoIwr3PauWts7o33gZEp4l1l9w=;
+        b=lwlviCWrdcWW4BRSo6+hvenRMrShPbQ8SQdJpqEBfid1VeSMnPEPmSFj6obfEgEk34
+         jNdffa2Ig6ZvenfBSn+xA67osrVdOEQHuTLgUCWR35+YckbAEi0dGi/9cpemgMLOWR42
+         MusU4s5+2YcOz9iIF2M2Js16doI+gPFTAeQzIyHA2mQKq4Fp7R3029KyarhL9e2zYQCS
+         Qlve16b6qGih/6iAjaWWf5qP4sS+07peTum5u4VH5Bb7dUjO/53qUSOYhSFmtvvuxtj1
+         qzPqTmyHkR/PBi8inUH7wzxgW1CuS8aNxPx7E8JjtYV79LBgHszqOGavLaylVtYGaGIC
+         Yf2g==
+X-Gm-Message-State: AOAM533G8VqqA3woXK11jFfMA7fvi0Ft0uTIBL6lg+dz4jLnEwu1rdFO
+        zXI9lXpYxY5OPQXsaBsAZ/Tllw==
+X-Google-Smtp-Source: ABdhPJxqc/fngr1i3pfa1GUU/Od8iCrVg7QnQJHJGXwD6zHwU87g+Cz5kTI49VaTbWAmEh7vX0LssQ==
+X-Received: by 2002:a05:620a:2f1:: with SMTP id a17mr6875481qko.122.1631822550071;
+        Thu, 16 Sep 2021 13:02:30 -0700 (PDT)
 Received: from localhost.localdomain (200.146.127.228.dynamic.adsl.gvt.net.br. [200.146.127.228])
-        by smtp.googlemail.com with ESMTPSA id a24sm1307043qtp.90.2021.09.16.13.02.18
+        by smtp.googlemail.com with ESMTPSA id a24sm1307043qtp.90.2021.09.16.13.02.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Sep 2021 13:02:23 -0700 (PDT)
+        Thu, 16 Sep 2021 13:02:29 -0700 (PDT)
 From:   Felipe Magno de Almeida <felipe@sipanda.io>
 X-Google-Original-From: Felipe Magno de Almeida <felipe@expertise.dev>
 To:     jhs@mojatatu.com, jiri@resnulli.us, xiyou.wangcong@gmail.com
@@ -57,9 +57,9 @@ Cc:     netdev@vger.kernel.org, boris.sukholitko@broadcom.com,
         amritha.nambiar@intel.com, sridhar.samudrala@intel.com,
         tom@sipanda.io, pctammela@mojatatu.com, eric.dumazet@gmail.com,
         Felipe Magno de Almeida <felipe@sipanda.io>
-Subject: [PATCH RFC net-next 1/2] net: Add PANDA network packet parser
-Date:   Thu, 16 Sep 2021 17:00:40 -0300
-Message-Id: <20210916200041.810-2-felipe@expertise.dev>
+Subject: [PATCH RFC net-next 2/2] net/sched: Add flower2 packet classifier based on flower and PANDA parser
+Date:   Thu, 16 Sep 2021 17:00:41 -0300
+Message-Id: <20210916200041.810-3-felipe@expertise.dev>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20210916200041.810-1-felipe@expertise.dev>
 References: <20210916200041.810-1-felipe@expertise.dev>
@@ -71,4534 +71,134 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Felipe Magno de Almeida <felipe@sipanda.io>
 
-Adds the generic PANDA parser implementation to net/panda and the
-auxiliary include headers that are used by the optimized and generic
-implementation to include/net/panda.
+This commit reimplements the flower classifier, the main consumer of
+flow dissector, on top of the PANDA parser by mostly cutnpastying the
+flower code and modifying where the parser is used (fl_classify). The
+new classifier is called "flower2". The iproute2 patch is sent
+separately - but you'll notice other than replacing the user space tc
+commands with "flower2", the syntax is exactly the same. This
+classifier illustrates the flexibility of the PANDA parser and shows a
+few simple encapsulation use cases that become convoluted and complex
+because of flowdissector's intricacies below:
 
-The PANDA project allows the user to to create network packet parsers
-by combining and matching protocols in a declarative way, albeit in C
-code. This feature allows the flexibility users need to write parsers
-for specific protocols or to change the specifics on how and what data
-to extract from network packets.
+- Customizing parsing behavior is impossible and requires multiple
+   workarounds on client code to avoid pitfalls in special cases
+   handled by flow dissector and to avoid unnecessary overhead.
 
-The PANDA project also has a C-to-C compiler that reads a C file with
-a declarative parser definition and outputs an optimized version that
-uses the compiler inline optimizations to achieve much better
-performance than a generic implementation could. This compiler could
-be added later to the tools directory to be used in other subsystems
-to generate optimized versions of specialized parsers.
+- Due to its rigid nature, there's non-trivial loss of information when
+   you have multiple layers of encap (eg multiple repeated ethernet
+   headers, or ip headers etc).
 
-A couple drawbacks of this commit (which is meant as a RFC PATCH) is
-that it fails checkpatch in some cases and that it has some code
-repetition from existing code in kernel. Keep in mind that these
-drawbacks are known and they will get fixed with a proper submission
-patch.
+- It is not flexible enough to map well to the semantics of hardware
+   offloading of parsers i.e the software twin in the kernel and
+   specific hardware semantics may have different capabilities.
 
-For example, to define a very simple parser, you would define the
-parser nodes and a parser table for each non-terminal parser as such:
+This parser lets us match three levels of encapsulation and check for
+properties in four stacked protocols simultaneously in a single pass.
 
-```
-PANDA_MAKE_PARSE_NODE(ether_node, panda_parse_ether, NULL, NULL, ether_table);
-PANDA_MAKE_PARSE_NODE(ipv4_node, panda_parse_ipv4, extract_ipv4, NULL,
-		      ip_table);
-PANDA_MAKE_PARSE_NODE(ipv6_node, panda_parse_ipv6, extract_ipv6, NULL,
-		      ip_table);
-PANDA_MAKE_LEAF_PARSE_NODE(ports_node, panda_parse_ports, extract_ports, NULL);
+Some usage examples of the flower2 classifier:
 
-PANDA_MAKE_PROTO_TABLE(ether_table,
-	{ __cpu_to_be16(ETH_P_IP), &ipv4_node },
-	{ __cpu_to_be16(ETH_P_IPV6), &ipv6_node },
-);
-
-PANDA_MAKE_PROTO_TABLE(ip_table,
-	{ IPPROTO_TCP, &ports_node },
-	{ IPPROTO_UDP, &ports_node },
-);
-
-PANDA_PARSER(parser, "Simple parser without md templates", &ether_node);
-```
-
-Which you can run this way:
+To show how flower2 is compatible with current flower classifier,
+let's see how we would create a filter for the following packet
+(captured via tcpdump):
 
 ```
-panda_parse(parser, packet, len, &extracted_header_metadata, 0, 0);
+(oui Ethernet) > Broadcast, ethertype IPv4 (0x0800), length 60: \
+  localhost.22 > localhost.80: Flags [S], seq 0, win 8192, length
 ```
+
+As you can expect, the line command is almost identical for flower2:
+
+```
+tc filter add dev lo parent ffff: protocol ip prio 1 flower2 \
+  ip_proto tcp dst_port 80 action drop
+```
+
+Which will create the following filter after a single packet
+illuistrated earlier (via tcpdump) is seen:
+
+```
+filter protocol ip flower2 chain 0
+filter protocol ip flower2 chain 0 handle 0x1
+  eth_type ipv4
+  ip_proto tcp
+  dst_port 80
+  not_in_hw
+        action order 1: gact action drop
+         random type none pass val 0
+         index 1 ref 1 bind 1 installed 4 sec used 4 sec
+        Action statistics:
+        Sent 46 bytes 1 pkt (dropped 1, overlimits 0 requeues 0)
+        backlog 0b 0p requeues 0
+```
+
+However, by using PANDA, flower2, due to its use of PANDA, can be
+extended to easily cover more complex cases with ease relative to
+flower. Let us take an example of the following packet (captured via
+tcpdump) which is subject to discussions in [1]:
+
+```
+(oui Ethernet) > Broadcast, ethertype 802.1Q (0x8100), length 85: \
+  vlan 2, p 0, ethertype PPPoE S (0x8864), PPPoE  IP6 (0x0057), \
+  length 61: localhost.ftp-data > localhost.http: Flags [S], \
+  seq 0, win 8192, length 0
+```
+
+The above packet has three encapsulation layers, vlan, pppoe, ppp,
+ipv6, to drop ipv6 encapsulated packets with dst ip ::1, we would
+write a filter as such:
+
+```
+tc filter add dev lo parent ffff: protocol 802.1Q prio 1 flower2 \
+  vlan_id 2 vlan_ethtype 0x8864 ppp_proto ppp_ipv6 dst_ip ::1  \
+  action drop
+```
+
+And the result after a single such packet is seen:
+
+```
+filter protocol 802.1Q flower2 chain 0
+filter protocol 802.1Q flower2 chain 0 handle 0x1
+  ppp_proto ppp_ipv6
+  vlan_id 2
+  vlan_ethtype ppp_ses
+  eth_type 8864
+  dst_ip ::1
+  not_in_hw
+        action order 1: gact action drop
+         random type none pass val 0
+         index 1 ref 1 bind 1 installed 59 sec used 36 sec firstused 36 sec
+        Action statistics:
+        Sent 67 bytes 1 pkt (dropped 1, overlimits 0 requeues 0)
+        backlog 0b 0p requeues 0
+```
+
+[1]: https://patchwork.kernel.org/project/netdevbpf/patch/20210830080849.18695-1-boris.sukholitko@broadcom.com/
 
 Signed-off-by: Felipe Magno de Almeida <felipe@sipanda.io>
 ---
- include/net/panda/compiler_helpers.h          |  79 ++
- include/net/panda/flag_fields.h               | 369 ++++++++
- include/net/panda/parser.h                    | 394 ++++++++
- include/net/panda/parser_metadata.h           | 873 ++++++++++++++++++
- include/net/panda/parser_types.h              | 255 +++++
- include/net/panda/proto_nodes.h               |  48 +
- .../net/panda/proto_nodes/proto_arp_rarp.h    |  88 ++
- include/net/panda/proto_nodes/proto_batman.h  | 106 +++
- include/net/panda/proto_nodes/proto_ether.h   |  58 ++
- include/net/panda/proto_nodes/proto_fcoe.h    |  49 +
- include/net/panda/proto_nodes/proto_gre.h     | 290 ++++++
- include/net/panda/proto_nodes/proto_icmp.h    |  74 ++
- include/net/panda/proto_nodes/proto_igmp.h    |  49 +
- include/net/panda/proto_nodes/proto_ip.h      |  77 ++
- include/net/panda/proto_nodes/proto_ipv4.h    | 150 +++
- include/net/panda/proto_nodes/proto_ipv4ip.h  |  59 ++
- include/net/panda/proto_nodes/proto_ipv6.h    | 133 +++
- include/net/panda/proto_nodes/proto_ipv6_eh.h | 108 +++
- include/net/panda/proto_nodes/proto_ipv6ip.h  |  59 ++
- include/net/panda/proto_nodes/proto_mpls.h    |  49 +
- include/net/panda/proto_nodes/proto_ports.h   |  59 ++
- include/net/panda/proto_nodes/proto_ppp.h     |  79 ++
- include/net/panda/proto_nodes/proto_pppoe.h   |  98 ++
- include/net/panda/proto_nodes/proto_tcp.h     | 177 ++++
- include/net/panda/proto_nodes/proto_tipc.h    |  56 ++
- include/net/panda/proto_nodes/proto_vlan.h    |  66 ++
- include/net/panda/proto_nodes_def.h           |  40 +
- include/net/panda/tlvs.h                      | 289 ++++++
- net/Kconfig                                   |   9 +
- net/Makefile                                  |   1 +
- net/panda/Makefile                            |   8 +
- net/panda/panda_parser.c                      | 605 ++++++++++++
- 32 files changed, 4854 insertions(+)
- create mode 100644 include/net/panda/compiler_helpers.h
- create mode 100644 include/net/panda/flag_fields.h
- create mode 100644 include/net/panda/parser.h
- create mode 100644 include/net/panda/parser_metadata.h
- create mode 100644 include/net/panda/parser_types.h
- create mode 100644 include/net/panda/proto_nodes.h
- create mode 100644 include/net/panda/proto_nodes/proto_arp_rarp.h
- create mode 100644 include/net/panda/proto_nodes/proto_batman.h
- create mode 100644 include/net/panda/proto_nodes/proto_ether.h
- create mode 100644 include/net/panda/proto_nodes/proto_fcoe.h
- create mode 100644 include/net/panda/proto_nodes/proto_gre.h
- create mode 100644 include/net/panda/proto_nodes/proto_icmp.h
- create mode 100644 include/net/panda/proto_nodes/proto_igmp.h
- create mode 100644 include/net/panda/proto_nodes/proto_ip.h
- create mode 100644 include/net/panda/proto_nodes/proto_ipv4.h
- create mode 100644 include/net/panda/proto_nodes/proto_ipv4ip.h
- create mode 100644 include/net/panda/proto_nodes/proto_ipv6.h
- create mode 100644 include/net/panda/proto_nodes/proto_ipv6_eh.h
- create mode 100644 include/net/panda/proto_nodes/proto_ipv6ip.h
- create mode 100644 include/net/panda/proto_nodes/proto_mpls.h
- create mode 100644 include/net/panda/proto_nodes/proto_ports.h
- create mode 100644 include/net/panda/proto_nodes/proto_ppp.h
- create mode 100644 include/net/panda/proto_nodes/proto_pppoe.h
- create mode 100644 include/net/panda/proto_nodes/proto_tcp.h
- create mode 100644 include/net/panda/proto_nodes/proto_tipc.h
- create mode 100644 include/net/panda/proto_nodes/proto_vlan.h
- create mode 100644 include/net/panda/proto_nodes_def.h
- create mode 100644 include/net/panda/tlvs.h
- create mode 100644 net/panda/Makefile
- create mode 100644 net/panda/panda_parser.c
+ net/sched/Kconfig                   |   11 +
+ net/sched/Makefile                  |    2 +
+ net/sched/cls_flower2_main.c        | 3289 +++++++++++++++++++++++++++
+ net/sched/cls_flower2_panda_noopt.c |  305 +++
+ net/sched/cls_flower2_panda_opt.c   | 1536 +++++++++++++
+ 5 files changed, 5143 insertions(+)
+ create mode 100644 net/sched/cls_flower2_main.c
+ create mode 100644 net/sched/cls_flower2_panda_noopt.c
+ create mode 100644 net/sched/cls_flower2_panda_opt.c
 
-diff --git a/include/net/panda/compiler_helpers.h b/include/net/panda/compiler_helpers.h
-new file mode 100644
-index 000000000000..2f349529a78d
---- /dev/null
-+++ b/include/net/panda/compiler_helpers.h
-@@ -0,0 +1,79 @@
-+/* SPDX-License-Identifier: BSD-2-Clause-FreeBSD
-+ *
-+ * Copyright (c) 2020,2021 SiPanda Inc.
-+ *
-+ * Redistribution and use in source and binary forms, with or without
-+ * modification, are permitted provided that the following conditions
-+ * are met:
-+ * 1. Redistributions of source code must retain the above copyright
-+ *    notice, this list of conditions and the following disclaimer.
-+ * 2. Redistributions in binary form must reproduce the above copyright
-+ *    notice, this list of conditions and the following disclaimer in the
-+ *    documentation and/or other materials provided with the distribution.
-+ *
-+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
-+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
-+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-+ * SUCH DAMAGE.
-+ */
-+
-+#ifndef __PANDA_COMPILER_HELPERS_H__
-+#define __PANDA_COMPILER_HELPERS_H__
-+
-+/* Various helper defintions and functions that are compiler specific
-+ * (e.g. they use __attribute__
-+ */
-+
-+/* Define the __defaligned macro if it's not already defined */
-+#ifndef __defaligned
-+#define __defaligned() __attribute__ ((__aligned__))
-+#endif
-+
-+/* Define the __aligned macro if it's not already defined */
-+#ifndef __aligned
-+#define __aligned(size) __attribute__((__aligned__(size)))
-+#endif
-+
-+/* Define the __unused macro if it's not already defined */
-+#ifndef __unused
-+#define __unused() __attribute__((unused))
-+#endif
-+
-+/* Define the __always_inline macro if it's not already defined */
-+#ifndef __always_inline
-+#define __always_inline __attribute__((always_inline)) inline
-+#endif
-+
-+/* Utilities for dynamic arrays in sections */
-+
-+#define PANDA_DEFINE_SECTION(NAME, TYPE)				\
-+extern TYPE __start_##NAME[];						\
-+extern TYPE __stop_##NAME[];						\
-+static inline unsigned int panda_section_array_size_##NAME(void)	\
-+{									\
-+	return (unsigned int)(__stop_##NAME - __start_##NAME);		\
-+}									\
-+static inline TYPE *panda_section_base_##NAME(void)			\
-+{									\
-+	return __start_##NAME;						\
-+}
-+
-+#ifndef __bpf__
-+#define PANDA_SECTION_ATTR(NAME) __attribute__((__used__, __section__(#NAME)))
-+#else
-+#define PANDA_SECTION_ATTR(NAME)
-+#endif
-+
-+/* Assume cache line size of 64 for purposes of section alignment */
-+#ifndef PANDA_ALIGN_SECTION
-+#define PANDA_ALIGN_SECTION  __aligned(64)
-+#endif
-+
-+#endif /* __PANDA_COMPILER_HELPERS_H__ */
-diff --git a/include/net/panda/flag_fields.h b/include/net/panda/flag_fields.h
-new file mode 100644
-index 000000000000..406d653bf822
---- /dev/null
-+++ b/include/net/panda/flag_fields.h
-@@ -0,0 +1,369 @@
-+/* SPDX-License-Identifier: BSD-2-Clause-FreeBSD
-+ *
-+ * Copyright (c) 2020,2021 SiPanda Inc.
-+ *
-+ * Redistribution and use in source and binary forms, with or without
-+ * modification, are permitted provided that the following conditions
-+ * are met:
-+ * 1. Redistributions of source code must retain the above copyright
-+ *    notice, this list of conditions and the following disclaimer.
-+ * 2. Redistributions in binary form must reproduce the above copyright
-+ *    notice, this list of conditions and the following disclaimer in the
-+ *    documentation and/or other materials provided with the distribution.
-+ *
-+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
-+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
-+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-+ * SUCH DAMAGE.
-+ */
-+
-+#ifndef __PANDA_FLAG_FIELDS_H__
-+#define __PANDA_FLAG_FIELDS_H__
-+
-+/* Definitions and functions for processing and parsing flag-fields */
-+
-+#include <stddef.h>
-+#include <stdbool.h>
-+
-+#include <linux/types.h>
-+
-+#include "net/panda/parser_types.h"
-+
-+/* Definitions for parsing flag-fields
-+ *
-+ * Flag-fields is a common networking protocol construct that encodes optional
-+ * data in a set of flags and data fields. The flags indicate whether or not a
-+ * corresponding data field is present. The data fields are fixed length per
-+ * each flag-field definition and ordered by the ordering of the flags
-+ * indicating the presence of the fields (e.g. GRE and GUE employ flag-fields)
-+ */
-+
-+/* Flag-fields descriptors and tables
-+ *
-+ * A set of flag-fields is defined in a table of type struct panda_flag_fields.
-+ * Each entry in the table is a descriptor for one flag-field in a protocol and
-+ * includes a flag value, mask (for the case of a multi-bit flag), and size of
-+ * the cooresponding field. A flag is matched if "(flags & mask) == flag"
-+ */
-+
-+/* One descriptor for a flag
-+ *
-+ * flag: protocol value
-+ * mask: mask to apply to field
-+ * size: size for associated field data
-+ */
-+struct panda_flag_field {
-+	__u32 flag;
-+	__u32 mask;
-+	size_t size;
-+};
-+
-+/* Descriptor for a protocol field with flag fields
-+ *
-+ * Defines the flags and their data fields for one instance a flag field in
-+ * in a protocol header (e.g. GRE v0 flags):
-+ *
-+ * num_idx: Number of flag_field structures
-+ * fields: List of defined flag fields
-+ */
-+struct panda_flag_fields {
-+	size_t num_idx;
-+	struct panda_flag_field fields[];
-+};
-+
-+/* Compute the length of optional fields present in a flags field */
-+static inline size_t panda_flag_fields_length(__u32 flags,
-+					      const struct panda_flag_fields
-+							*flag_fields)
-+{
-+	size_t len = 0;
-+	__u32 mask;
-+	int i;
-+
-+	for (i = 0; i < flag_fields->num_idx; i++) {
-+		mask = flag_fields->fields[i].mask ? :
-+						flag_fields->fields[i].flag;
-+
-+		if ((flags & mask) == flag_fields->fields[i].flag)
-+			len += flag_fields->fields[i].size;
-+	}
-+
-+	return len;
-+}
-+
-+static inline ssize_t __panda_flag_fields_offset(__u32 targ_idx, __u32 flags,
-+						 const struct panda_flag_fields
-+							*flag_fields)
-+{
-+	size_t offset = 0;
-+	__u32 mask;
-+	int i;
-+
-+	for (i = 0; i < targ_idx; i++) {
-+		mask = flag_fields->fields[i].mask ? :
-+						flag_fields->fields[i].flag;
-+
-+		if ((flags & mask) == flag_fields->fields[i].flag)
-+			offset += flag_fields->fields[i].size;
-+	}
-+
-+	return offset;
-+}
-+
-+/* Determine offset of a field given a set of flags */
-+static inline ssize_t panda_flag_fields_offset(__u32 targ_idx, __u32 flags,
-+					       const struct panda_flag_fields
-+							*flag_fields)
-+{
-+	__u32 mask;
-+
-+	mask = flag_fields->fields[targ_idx].mask ? :
-+				flag_fields->fields[targ_idx].flag;
-+	if ((flags & mask) != flag_fields->fields[targ_idx].flag) {
-+		/* Flag not set */
-+		return -1;
-+	}
-+
-+	return __panda_flag_fields_offset(targ_idx, flags, flag_fields);
-+}
-+
-+/* Check flags are legal */
-+static inline bool panda_flag_fields_check_invalid(__u32 flags, __u32 mask)
-+{
-+	return !!(flags & ~mask);
-+}
-+
-+/* Retrieve a byte value from a flag field */
-+static inline __u8 panda_flag_fields_get8(const __u8 *fields, __u32 targ_idx,
-+					  __u32 flags,
-+					  const struct panda_flag_fields
-+							*flag_fields)
-+{
-+	ssize_t offset = panda_flag_fields_offset(targ_idx, flags, flag_fields);
-+
-+	if (offset < 0)
-+		return 0;
-+
-+	return *(__u8 *)&fields[offset];
-+}
-+
-+/* Retrieve a short value from a flag field */
-+static inline __u16 panda_flag_fields_get16(const __u8 *fields,
-+					    __u32 targ_idx,
-+					    __u32 flags,
-+					    const struct panda_flag_fields
-+							*flag_fields)
-+{
-+	ssize_t offset = panda_flag_fields_offset(targ_idx, flags, flag_fields);
-+
-+	if (offset < 0)
-+		return 0;
-+
-+	return *(__u16 *)&fields[offset];
-+}
-+
-+/* Retrieve a 32 bit value from a flag field */
-+static inline __u32 panda_get_flag_field32(const __u8 *fields, __u32 targ_idx,
-+					   __u32 flags,
-+					   const struct panda_flag_fields
-+							*flag_fields)
-+{
-+	ssize_t offset = panda_flag_fields_offset(targ_idx, flags, flag_fields);
-+
-+	if (offset < 0)
-+		return 0;
-+
-+	return *(__u32 *)&fields[offset];
-+}
-+
-+/* Retrieve a 64 bit value from a flag field */
-+static inline __u64 panda_get_flag_field64(const __u8 *fields, __u32 targ_idx,
-+					   __u32 flags,
-+					   const struct panda_flag_fields
-+							*flag_fields)
-+{
-+	ssize_t offset = panda_flag_fields_offset(targ_idx, flags, flag_fields);
-+
-+	if (offset < 0)
-+		return 0;
-+
-+	return *(__u64 *)&fields[offset];
-+}
-+
-+
-+/* Structure or parsing operations for flag-fields
-+ *
-+ * flags_offset: Offset of flags in the protocol header
-+ * start_fields_offset: Return the offset in the header of the start of the
-+ *	flag fields data
-+ */
-+struct panda_proto_flag_fields_ops {
-+	__u32 (*get_flags)(const void *hdr);
-+	size_t (*start_fields_offset)(const void *hdr);
-+};
-+
-+/* Flag-field parse node operations
-+ *
-+ * Operations to process a single flag-field
-+ *
-+ * extract_metadata: Extract metadata for the node. Input is the meta
-+ *	data frame which points to a parser defined metadata structure.
-+ *	If the value is NULL then no metadata is extracted
-+ * handle_flag_field: Per flag-field handler which allows arbitrary processing
-+ *	of a flag-field. Input is the flag-field data and a parser defined
-+ *	metadata structure for the current frame. Return value is a parser
-+ *	return code: PANDA_OKAY indicates no errors, PANDA_STOP* return
-+ *	values indicate to stop parsing
-+ */
-+struct panda_parse_flag_field_node_ops {
-+	void (*extract_metadata)(const void *hdr, void *frame,
-+				 struct panda_ctrl_data ctrl);
-+	int (*handle_flag_field)(const void *hdr, void *frame,
-+				 struct panda_ctrl_data ctrl);
-+};
-+
-+/* A parse node for a single flag field */
-+struct panda_parse_flag_field_node {
-+	const struct panda_parse_flag_field_node_ops ops;
-+	const char *name;
-+};
-+
-+/* One entry in a flag-fields protocol table:
-+ *	index: flag-field index (index in a flag-fields table)
-+ *	node: associated TLV parse structure for the type
-+ */
-+struct panda_proto_flag_fields_table_entry {
-+	int index;
-+	const struct panda_parse_flag_field_node *node;
-+};
-+
-+/* Flag-fields table
-+ *
-+ * Contains a table that maps a flag-field index to a flag-field parse node.
-+ * Note that the index correlates to an entry in a flag-fields table that
-+ * describes the flag-fields of a protocol
-+ */
-+struct panda_proto_flag_fields_table {
-+	int num_ents;
-+	const struct panda_proto_flag_fields_table_entry *entries;
-+};
-+
-+/* A flag-fields parse node. Note this is a super structure for a PANDA parse
-+ * node and tyoe is PANDA_NODE_TYPE_FLAG_FIELDS
-+ */
-+struct panda_parse_flag_fields_node {
-+	const struct panda_parse_node parse_node;
-+	const struct panda_proto_flag_fields_table *flag_fields_proto_table;
-+};
-+
-+/* A flag-fields protocol node. Note this is a super structure for a PANDA
-+ * protocol node and tyoe is PANDA_NODE_TYPE_FLAG_FIELDS
-+ */
-+struct panda_proto_flag_fields_node {
-+	struct panda_proto_node proto_node;
-+	struct panda_proto_flag_fields_ops ops;
-+	const struct panda_flag_fields *flag_fields;
-+};
-+
-+/* Helper to create a flag-fields protocol table */
-+#define PANDA_MAKE_FLAG_FIELDS_TABLE(NAME, ...)				\
-+	static const struct panda_proto_flag_fields_table_entry		\
-+					__##NAME[] =  { __VA_ARGS__ };	\
-+	static const struct panda_proto_flag_fields_table NAME = {	\
-+		.num_ents = sizeof(__##NAME) /				\
-+			sizeof(struct					\
-+				panda_proto_flag_fields_table_entry),	\
-+		.entries = __##NAME,					\
-+	}
-+
-+/* Forward declarations for flag-fields parse nodes */
-+#define PANDA_DECL_FLAG_FIELDS_PARSE_NODE(FLAG_FIELDS_PARSE_NODE)	\
-+	static const struct panda_parse_flag_fields_node		\
-+						FLAG_FIELDS_PARSE_NODE
-+
-+/* Forward declarations for flag-field proto tables */
-+#define PANDA_DECL_FLAG_FIELDS_TABLE(FLAG_FIELDS_TABLE)			\
-+	static const struct panda_proto_flag_fields_table		\
-+						FLAG_FIELDS_TABLE
-+
-+
-+/* Helper to create a parse node with a next protocol table */
-+#define __PANDA_MAKE_FLAG_FIELDS_PARSE_NODE(PARSE_FLAG_FIELDS_NODE,	\
-+					    PROTO_FLAG_FIELDS_NODE,	\
-+					    EXTRACT_METADATA, HANDLER,	\
-+					    WILDCARD_NODE,		\
-+					    PROTO_TABLE,		\
-+					    FLAG_FIELDS_TABLE)		\
-+	static const struct panda_parse_flag_fields_node		\
-+					PARSE_FLAG_FIELDS_NODE = {	\
-+		.flag_fields_proto_table = FLAG_FIELDS_TABLE,		\
-+		.parse_node.node_type = PANDA_NODE_TYPE_FLAG_FIELDS,	\
-+		.parse_node.proto_node =				\
-+				&PROTO_FLAG_FIELDS_NODE.proto_node,	\
-+		.parse_node.ops.extract_metadata = EXTRACT_METADATA,	\
-+		.parse_node.ops.handle_proto = HANDLER,			\
-+		.parse_node.wildcard_node = WILDCARD_NODE,		\
-+		.parse_node.proto_table = PROTO_TABLE,			\
-+	}
-+
-+/* Helper to create a flag-fields parse node */
-+#define PANDA_MAKE_FLAG_FIELDS_PARSE_NODE(PARSE_FLAG_FIELDS_NODE,	\
-+					  PROTO_FLAG_FIELDS_NODE,	\
-+					  EXTRACT_METADATA, HANDLER,	\
-+					  PROTO_TABLE,			\
-+					  FLAG_FIELDS_TABLE)		\
-+	PANDA_DECL_FLAG_FIELDS_TABLE(FLAG_FIELDS_TABLE);		\
-+	PANDA_DECL_PROTO_TABLE(PROTO_TABLE);				\
-+	__PANDA_MAKE_FLAG_FIELDS_PARSE_NODE(PARSE_FLAG_FIELDS_NODE,	\
-+					    PROTO_FLAG_FIELDS_NODE,	\
-+					    EXTRACT_METADATA, HANDLER,	\
-+					    NULL, &PROTO_TABLE,		\
-+					    &FLAG_FIELDS_TABLE)
-+
-+/* Helper to create an overlay flag-fields parse node */
-+#define PANDA_MAKE_FLAG_FIELDS_OVERLAY_PARSE_NODE(			\
-+					PARSE_FLAG_FIELDS_NODE,		\
-+					PROTO_FLAG_FIELDS_NODE,		\
-+					EXTRACT_METADATA, HANDLER,	\
-+					OVERLAY_NODE,			\
-+					FLAG_FIELDS_TABLE)		\
-+	PANDA_DECL_FLAG_FIELDS_TABLE(FLAG_FIELDS_TABLE);		\
-+	__PANDA_MAKE_FLAG_FIELDS_PARSE_NODE(PARSE_FLAG_FIELDS_NODE,	\
-+					    PROTO_FLAG_FIELDS_NODE,	\
-+					    EXTRACT_METADATA, HANDLER,	\
-+					    OVERLAY_NODE, NULL,		\
-+					    &FLAG_FIELDS_TABLE)		\
-+
-+/* Helper to create a leaf flag-fields parse node */
-+#define PANDA_MAKE_LEAF_FLAG_FIELDS_PARSE_NODE(PARSE_FLAG_FIELDS_NODE,	\
-+					       PROTO_FLAG_FIELDS_NODE,	\
-+					       EXTRACT_METADATA,	\
-+					       HANDLER,			\
-+					       FLAG_FIELDS_TABLE)	\
-+	PANDA_DECL_FLAG_FIELDS_TABLE(FLAG_FIELDS_TABLE);		\
-+	__PANDA_MAKE_FLAG_FIELDS_PARSE_NODE(PARSE_FLAG_FIELDS_NODE,	\
-+					    PROTO_FLAG_FIELDS_NODE,	\
-+					    EXTRACT_METADATA, HANDLER,	\
-+					    NULL, NULL,			\
-+					    &FLAG_FIELDS_TABLE)
-+
-+/* Helper to create a parse node for a single flag-field */
-+#define PANDA_MAKE_FLAG_FIELD_PARSE_NODE(NODE_NAME, METADATA_FUNC,	\
-+					 HANDLER_FUNC)			\
-+	static const struct panda_parse_flag_field_node NODE_NAME = {	\
-+		.ops.extract_metadata = METADATA_FUNC,			\
-+		.ops.handle_flag_field = HANDLER_FUNC,			\
-+		.name = #NODE_NAME,					\
-+	}
-+
-+/* Null flag-field node for filling out flag-fields table */
-+PANDA_MAKE_FLAG_FIELD_PARSE_NODE(PANDA_FLAG_NODE_NULL, NULL, NULL);
-+
-+#endif /* __PANDA_FLAG_FIELDS_H__ */
-diff --git a/include/net/panda/parser.h b/include/net/panda/parser.h
-new file mode 100644
-index 000000000000..a3e572eef40b
---- /dev/null
-+++ b/include/net/panda/parser.h
-@@ -0,0 +1,394 @@
-+/* SPDX-License-Identifier: BSD-2-Clause-FreeBSD
-+ *
-+ * Copyright (c) 2020,2021 SiPanda Inc.
-+ *
-+ * Redistribution and use in source and binary forms, with or without
-+ * modification, are permitted provided that the following conditions
-+ * are met:
-+ * 1. Redistributions of source code must retain the above copyright
-+ *    notice, this list of conditions and the following disclaimer.
-+ * 2. Redistributions in binary form must reproduce the above copyright
-+ *    notice, this list of conditions and the following disclaimer in the
-+ *    documentation and/or other materials provided with the distribution.
-+ *
-+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
-+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
-+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-+ * SUCH DAMAGE.
-+ */
-+
-+#ifndef __PANDA_PARSER_H__
-+#define __PANDA_PARSER_H__
-+
-+/* Parser interface for PANDA
-+ *
-+ * Definitions and functions for PANDA parser.
-+ */
-+
-+#include <linux/types.h>
-+
-+#include "net/panda/compiler_helpers.h"
-+#include "net/panda/flag_fields.h"
-+#include "net/panda/parser_types.h"
-+#include "net/panda/tlvs.h"
-+
-+/* Panda parser return codes */
-+enum {
-+	PANDA_OKAY = 0,			/* Okay and continue */
-+	PANDA_STOP_OKAY = -1,		/* Okay and stop parsing */
-+
-+	/* Parser failure */
-+	PANDA_STOP_FAIL = -2,
-+	PANDA_STOP_LENGTH = -3,
-+	PANDA_STOP_UNKNOWN_PROTO = -4,
-+	PANDA_STOP_ENCAP_DEPTH = -5,
-+	PANDA_STOP_UNKNOWN_TLV = -6,
-+	PANDA_STOP_TLV_LENGTH = -7,
-+	PANDA_STOP_BAD_FLAG = -8,
-+};
-+
-+/* Helper to create a parser */
-+#define __PANDA_PARSER(PARSER, NAME, ROOT_NODE)				\
-+static const struct panda_parser __##PARSER = {				\
-+	.name = NAME,							\
-+	.root_node = ROOT_NODE,						\
-+	.parser_type = PANDA_GENERIC,					\
-+	.parser_entry_point = NULL					\
-+};									\
-+
-+#define PANDA_PARSER(PARSER, NAME, ROOT_NODE)				\
-+	__PANDA_PARSER(PARSER, NAME, ROOT_NODE)				\
-+	static const struct panda_parser *PARSER __unused() =		\
-+							&__##PARSER;
-+
-+#define PANDA_PARSER_EXT(PARSER, NAME, ROOT_NODE)			\
-+	__PANDA_PARSER(PARSER, NAME, ROOT_NODE)				\
-+	const struct panda_parser *PARSER __unused() = &__##PARSER;
-+
-+/* Helper to create an optimized parservairant */
-+#define __PANDA_PARSER_OPT(PARSER, NAME, ROOT_NODE, FUNC)		\
-+static const struct panda_parser __##PARSER = {				\
-+	.name = NAME,							\
-+	.root_node = ROOT_NODE,						\
-+	.parser_type = PANDA_OPTIMIZED,					\
-+	.parser_entry_point = FUNC					\
-+};
-+
-+/* Helpers to create and use Kmod parser vairant */
-+#define __PANDA_PARSER_KMOD(PARSER, NAME, ROOT_NODE, FUNC)		\
-+const struct panda_parser __##PARSER##_kmod = {				\
-+	.name = NAME,							\
-+	.root_node = ROOT_NODE,						\
-+	.parser_type = PANDA_KMOD,					\
-+	.parser_entry_point = FUNC					\
-+};
-+
-+#define PANDA_PARSER_KMOD(PARSER, NAME, ROOT_NODE, FUNC)		\
-+	__PANDA_PARSER_KMOD(PARSER, NAME, ROOT_NODE, FUNC)		\
-+	const struct panda_parser *PARSER##_kmod = &__##PARSER##_kmod;
-+
-+#define PANDA_PARSER_KMOD_EXTERN(NAME)					\
-+	extern const struct panda_parser *NAME##_kmod
-+
-+#define PANDA_PARSER_KMOD_NAME(NAME) NAME##_kmod
-+
-+#define PANDA_PARSER_OPT(PARSER, NAME, ROOT_NODE, FUNC)			\
-+	__PANDA_PARSER_OPT(PARSER, NAME, ROOT_NODE, FUNC)		\
-+	static const struct panda_parser *PARSER __unused() =		\
-+							&__##PARSER;
-+
-+#define PANDA_PARSER_OPT_EXT(PARSER, NAME, ROOT_NODE, FUNC)		\
-+	__PANDA_PARSER_OPT(PARSER, NAME, ROOT_NODE, FUNC)		\
-+	const struct panda_parser *PARSER __unused() = &__##PARSER;
-+
-+/* Helper to create an XDP parser vairant */
-+#define __PANDA_PARSER_XDP(PARSER, NAME, ROOT_NODE, FUNC)		\
-+static const struct panda_parser __##PARSER = {				\
-+	.name = NAME,							\
-+	.root_node = ROOT_NODE,						\
-+	.parser_type = PANDA_XDP,					\
-+	.parser_xdp_entry_point = FUNC					\
-+};
-+
-+#define PANDA_PARSER_XDP(PARSER, NAME, ROOT_NODE, FUNC)			\
-+	__PANDA_PARSER_XDP(PARSER, NAME, ROOT_NODE, FUNC)		\
-+	static const struct panda_parser *__##PARSER##_ext =		\
-+							&__##PARSER;
-+
-+#define PANDA_PARSER_XDP_EXT(PARSER, NAME, ROOT_NODE, FUNC)		\
-+	__PANDA_PARSER_XDP(PARSER, NAME, ROOT_NODE, FUNC)		\
-+	const struct panda_parser *__##PARSER##_ext = &__##PARSER;
-+
-+/* Helper to create a parser table */
-+#define PANDA_MAKE_PARSER_TABLE(NAME, ...)				\
-+	static const struct panda_parser_table_entry __##NAME[] =	\
-+						{ __VA_ARGS__ };	\
-+	static const struct panda_parser_table NAME =	{		\
-+		.num_ents = sizeof(__##NAME) /				\
-+			sizeof(struct panda_parser_table_entry),	\
-+		.entries = __##NAME,					\
-+	}
-+
-+/* Helper to create a protocol table */
-+#define PANDA_MAKE_PROTO_TABLE(NAME, ...)				\
-+	static const struct panda_proto_table_entry __##NAME[] =	\
-+						{ __VA_ARGS__ };	\
-+	static const struct panda_proto_table NAME =	{		\
-+		.num_ents = sizeof(__##NAME) /				\
-+				sizeof(struct panda_proto_table_entry),	\
-+		.entries = __##NAME,					\
-+	}
-+
-+/* Forward declarations for parse nodes */
-+#define PANDA_DECL_PARSE_NODE(PARSE_NODE)				\
-+	static const struct panda_parse_node PARSE_NODE
-+
-+/* Forward declarations for protocol tables */
-+#define PANDA_DECL_PROTO_TABLE(PROTO_TABLE)				\
-+	static const struct panda_proto_table PROTO_TABLE
-+
-+/* Helper to create a parse node with a next protocol table */
-+#define __PANDA_MAKE_PARSE_NODE(PARSE_NODE, PROTO_NODE,			\
-+				EXTRACT_METADATA, HANDLER,		\
-+				UNKNOWN_RET, WILDCARD_NODE,		\
-+				PROTO_TABLE)				\
-+	static const struct panda_parse_node PARSE_NODE = {		\
-+		.proto_node = &PROTO_NODE,				\
-+		.ops.extract_metadata = EXTRACT_METADATA,		\
-+		.ops.handle_proto = HANDLER,				\
-+		.unknown_ret = UNKNOWN_RET,				\
-+		.wildcard_node = WILDCARD_NODE,				\
-+		.proto_table = PROTO_TABLE,				\
-+	}
-+
-+/* Helper to create a parse node with default unknown next proto function
-+ * that returns parser failure code
-+ */
-+#define PANDA_MAKE_PARSE_NODE(PARSE_NODE, PROTO_NODE,			\
-+			      EXTRACT_METADATA, HANDLER, PROTO_TABLE)	\
-+	PANDA_DECL_PROTO_TABLE(PROTO_TABLE);				\
-+	__PANDA_MAKE_PARSE_NODE(PARSE_NODE, PROTO_NODE,			\
-+				EXTRACT_METADATA, HANDLER,		\
-+				PANDA_STOP_UNKNOWN_PROTO, NULL,		\
-+				&PROTO_TABLE)
-+
-+/* Helper to create a parse node single overlay node */
-+#define PANDA_MAKE_OVERLAY_PARSE_NODE(PARSE_NODE, PROTO_NODE,		\
-+			      EXTRACT_METADATA, HANDLER, OVERLAY_NODE)	\
-+	__PANDA_MAKE_PARSE_NODE(PARSE_NODE, PROTO_NODE,			\
-+				EXTRACT_METADATA, HANDLER,		\
-+				PANDA_STOP_UNKNOWN_PROTO, OVERLAY_NODE,	\
-+				NULL)
-+
-+/* Helper to create a leaf parse node with no next protocol table */
-+#define PANDA_MAKE_LEAF_PARSE_NODE(PARSE_NODE, PROTO_NODE,		\
-+				   EXTRACT_METADATA, HANDLER)		\
-+	__PANDA_MAKE_PARSE_NODE(PARSE_NODE, PROTO_NODE,			\
-+				EXTRACT_METADATA, HANDLER,		\
-+				PANDA_STOP_UNKNOWN_PROTO, NULL,		\
-+				NULL)
-+
-+/* Parsing functions */
-+
-+/* Flags to Panda parser functions */
-+#define PANDA_F_DEBUG			(1 << 0)
-+
-+#ifndef __KERNEL__
-+/* Parse starting at the provided root node */
-+int __panda_parse(const struct panda_parser *parser, const void *hdr,
-+		  size_t len, struct panda_metadata *metadata,
-+		  unsigned int flags, unsigned int max_encaps);
-+#else
-+static inline int __panda_parse(const struct panda_parser *parser,
-+		  const void *hdr, size_t len, struct panda_metadata *metadata,
-+		  unsigned int flags, unsigned int max_encaps)
-+{
-+	return 0;
-+}
-+#endif
-+
-+/* Parse packet starting from a parser node
-+ *
-+ * Arguments:
-+ *	- parser: Parser being invoked
-+ *	- hdr: pointer to start of packet
-+ *	- len: length of packet
-+ *	- metadata: metadata structure
-+ *	- flags: allowed parameterized parsing
-+ *	- max_encaps: maximum layers of encapsulation to parse
-+ *
-+ * Returns PANDA return code value.
-+ */
-+static inline int panda_parse(const struct panda_parser *parser,
-+			      const void *hdr, size_t len,
-+			      struct panda_metadata *metadata,
-+			      unsigned int flags, unsigned int max_encaps)
-+{
-+	switch (parser->parser_type) {
-+	case PANDA_GENERIC:
-+		return __panda_parse(parser, hdr, len, metadata, flags,
-+				     max_encaps);
-+	case PANDA_KMOD:
-+	case PANDA_OPTIMIZED:
-+		return (parser->parser_entry_point)(parser, hdr, len, metadata,
-+						    flags, max_encaps);
-+	default:
-+		return PANDA_STOP_FAIL;
-+	}
-+}
-+
-+extern int panda_parse_ethernet(const void *hdr, size_t len,
-+			 struct panda_metadata *metadata,
-+			 unsigned int flags, unsigned int max_encaps);
-+
-+static inline const struct panda_parser *panda_lookup_parser_table(
-+				const struct panda_parser_table *table,
-+				int key)
-+{
-+	int i;
-+
-+	for (i = 0; i < table->num_ents; i++)
-+		if (table->entries[i].value == key)
-+			return *table->entries[i].parser;
-+
-+	return NULL;
-+}
-+
-+static inline int panda_parse_from_table(const struct panda_parser_table *table,
-+					 int key, const void *hdr, size_t len,
-+					 struct panda_metadata *metadata,
-+					 unsigned int flags,
-+					 unsigned int max_encaps)
-+{
-+	const struct panda_parser *parser;
-+
-+	if (!(parser = panda_lookup_parser_table(table, key)))
-+		return PANDA_STOP_FAIL;
-+
-+	return panda_parse(parser, hdr, len, metadata, flags, max_encaps);
-+}
-+
-+
-+static inline int panda_parse_xdp(const struct panda_parser *parser,
-+				  struct panda_ctx *ctx, const void **hdr,
-+				  const void *hdr_end, bool tailcall)
-+{
-+	if (parser->parser_type != PANDA_XDP)
-+		return PANDA_STOP_FAIL;
-+
-+	return (parser->parser_xdp_entry_point)(ctx, hdr, hdr_end, tailcall);
-+}
-+
-+#define PANDA_PARSE_XDP(PARSER, CTX, HDR, HDR_END, TAILCALL)		\
-+	panda_xdp_parser_##PARSER(CTX, HDR, HDR_END, TAILCALL)
-+
-+/* Helper to make an extern for a parser */
-+#define PANDA_PARSER_EXTERN(NAME)					\
-+	extern struct panda_parser *NAME
-+
-+/* Helper to make forward declaration for a const parser */
-+#define PANDA_PARSER_DECL(NAME)						\
-+	static const struct panda_parser *NAME
-+
-+#define PANDA_PARSER_EXT_DECL(NAME)					\
-+	extern const struct panda_parser *NAME
-+
-+struct panda_parser_def {
-+	struct panda_parser **parser;
-+	const char *name;
-+	const struct panda_parse_node *root_node;
-+	enum panda_parser_type parser_type;
-+	panda_parser_opt_entry_point parser_entry_point;
-+} PANDA_ALIGN_SECTION;
-+
-+PANDA_DEFINE_SECTION(panda_parsers, struct panda_parser_def)
-+
-+/* Helper to add parser to list of parser at initialization */
-+#define PANDA_PARSER_ADD(PARSER, NAME, ROOT_NODE)			\
-+struct panda_parser *PARSER;						\
-+static const struct panda_parser_def PANDA_SECTION_ATTR(panda_parsers)	\
-+			PANDA_UNIQUE_NAME(__panda_parsers_,) = {	\
-+	.parser = &PARSER,						\
-+	.name = NAME,							\
-+	.root_node = ROOT_NODE,						\
-+	.parser_type = PANDA_GENERIC,					\
-+}
-+
-+/* Helper to add parser to list of parser at initialization */
-+#define PANDA_PARSER_OPT_ADD(PARSER, NAME, ROOT_NODE, FUNC)		\
-+struct panda_parser *PARSER;						\
-+static const struct panda_parser_def PANDA_SECTION_ATTR(panda_parsers)	\
-+			PANDA_UNIQUE_NAME(__panda_parsers_,) = {	\
-+	.parser = &PARSER,						\
-+	.name = NAME,							\
-+	.root_node = ROOT_NODE,						\
-+	.parser_type = PANDA_OPTIMIZED,					\
-+	.parser_entry_point = FUNC					\
-+}
-+
-+
-+struct panda_parser *panda_parser_create(const char *name,
-+					 const struct panda_parse_node
-+								*root_node);
-+void panda_parser_destroy(struct panda_parser *parser);
-+int panda_parser_init(void);
-+
-+#ifndef __KERNEL__
-+
-+extern siphash_key_t __panda_hash_key;
-+
-+/* Helper functions to compute the siphash from start pointer
-+ * through len bytes. Note that siphash library expects start to
-+ * be aligned to 64 bits
-+ */
-+static inline __u32 panda_compute_hash(const void *start, size_t len)
-+{
-+	__u32 hash;
-+
-+	hash = siphash(start, len, &__panda_hash_key);
-+	if (!hash)
-+		hash = 1;
-+
-+	return hash;
-+}
-+
-+/* Helper macro to compute a hash from a metadata structure. METADATA
-+ * is a pointer to a metadata structure and HASH_START_FIELD is the offset
-+ * within the structure to start the hash. This macro requires that the
-+ * common metadata for IP addresses is defined in the metadata structure,
-+ * that is there is an addrs field of type PANDA_METADATA_addrs in the
-+ * metadata structure. The end offset of the hash area is the last byte
-+ * of the addrs structure which can be different depending on the type
-+ * of address (for instance, IPv6 addresses have more bytes than IPv4
-+ * addresses so the length of the bytes hashed area will be greater).
-+ */
-+#define PANDA_COMMON_COMPUTE_HASH(METADATA, HASH_START_FIELD) ({	\
-+	__u32 hash;							\
-+	const void *start = PANDA_HASH_START(METADATA,			\
-+					     HASH_START_FIELD);		\
-+	size_t olen = PANDA_HASH_LENGTH(METADATA,			\
-+				offsetof(typeof(*METADATA),		\
-+				HASH_START_FIELD));			\
-+									\
-+	hash = panda_compute_hash(start, olen);				\
-+	hash;								\
-+})
-+
-+/* Initialization function for hash key. If the argument is NULL the
-+ * hash key is randomly set
-+ */
-+void panda_hash_secret_init(siphash_key_t *init_key);
-+
-+/* Function to print the raw bytesused in a hash */
-+void panda_print_hash_input(const void *start, size_t len);
-+
-+#endif /* __KERNEL__ */
-+
-+#endif /* __PANDA_PARSER_H__ */
-diff --git a/include/net/panda/parser_metadata.h b/include/net/panda/parser_metadata.h
-new file mode 100644
-index 000000000000..ba6f76549438
---- /dev/null
-+++ b/include/net/panda/parser_metadata.h
-@@ -0,0 +1,873 @@
-+/* SPDX-License-Identifier: BSD-2-Clause-FreeBSD
-+ *
-+ * Copyright (c) 2020,2021 SiPanda Inc.
-+ *
-+ * Redistribution and use in source and binary forms, with or without
-+ * modification, are permitted provided that the following conditions
-+ * are met:
-+ * 1. Redistributions of source code must retain the above copyright
-+ *    notice, this list of conditions and the following disclaimer.
-+ * 2. Redistributions in binary form must reproduce the above copyright
-+ *    notice, this list of conditions and the following disclaimer in the
-+ *    documentation and/or other materials provided with the distribution.
-+ *
-+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
-+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
-+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-+ * SUCH DAMAGE.
-+ */
-+
-+#ifndef __PANDA_PARSER_METADATA_H__
-+#define __PANDA_PARSER_METADATA_H__
-+
-+/* Helper definitions for PANDA parser metadata handling
-+ *
-+ * This defines a set of macros, constants, and functions that can be
-+ * optionally used in constructing parse nodes and to assist in meta
-+ * data handling as well as packet hashing.
-+ */
-+
-+#ifndef __KERNEL__
-+#include <string.h>
-+#endif
-+
-+#include <linux/if_ether.h>
-+#include <linux/mpls.h>
-+
-+#include "net/panda/parser.h"
-+
-+/* The PANDA helpers defines a common set of fields that may be used in
-+ * parser specific metadata structures. This is done at the granularity of
-+ * field names. When the common names and their types are used in meta
-+ * data structure then helper marcos can be used to create functions
-+ * that take the parser specific data structure as an argument but
-+ * operate on the common fields. In this way we can essentially have
-+ * the same functions operate on different input structures, in particular
-+ * we can define per protocol macros that extract common fields into
-+ * different metadata structures. The type of the structure is an argument
-+ * to the macro, and then from that a function definition can be ommited that
-+ * uses the type. Here is an example to extract common metadata for IPv4
-+ * into a user defined metadata structure.
-+ *
-+ * #define PANDA_METADATA_ipv4_addrs(NAME, STRUCT)			\
-+ * static void NAME(const void *viph, void *iframe)			\
-+ * {									\
-+ *	struct STRUCT *frame = iframe;					\
-+ *	const struct iphdr *iph = viph;					\
-+ *									\
-+ *       frame->addr_type = PANDA_ADDR_TYPE_IPV4;			\
-+ *       frame->ip_proto = iph->protocol;				\
-+ *       memcpy(frame->addrs.v4_addrs, &iph->saddr,			\
-+ *              sizeof(frame->addrs.v4_addrs));				\
-+ * }
-+ *
-+ * In this example the common metadata field names used are addr_type,
-+ * addrs.v4, and ip_proto.
-+ *
-+ * #defines for metadata names and their types are below. Note the macros
-+ * can be used to define the common metadata fields in a data structure,
-+ * however this is not required. As long as the types and names are
-+ * maintained differnt definitions may be used. This is particulary relevant
-+ * when common names are in data structures and the user may wish to add
-+ * other elements in the structure
-+ */
-+
-+/* Common metadata names and macro definitions. Add new common meta
-+ * data names to this list
-+ */
-+
-+#define PANDA_METADATA_eth_proto	__be16	eth_proto
-+#define PANDA_METADATA_eth_addrs	__u8 eth_addrs[2 * ETH_ALEN]
-+#define PANDA_TCP_MAX_SACKS	4
-+
-+enum panda_addr_types {
-+	PANDA_ADDR_TYPE_INVALID = 0, /* Invalid addr type */
-+	PANDA_ADDR_TYPE_IPV4,
-+	PANDA_ADDR_TYPE_IPV6,
-+	PANDA_ADDR_TYPE_TIPC,
-+};
-+
-+#define	PANDA_METADATA_addr_type	__u8 addr_type
-+#define PANDA_METADATA_addrs						\
-+	union {								\
-+		union {							\
-+			__be32		v4_addrs[2];			\
-+			struct {					\
-+				__be32	saddr;				\
-+				__be32	daddr;				\
-+			} v4;						\
-+		};							\
-+		union {							\
-+			struct in6_addr v6_addrs[2];			\
-+			struct {					\
-+				struct in6_addr saddr;			\
-+				struct in6_addr daddr;			\
-+			} v6;						\
-+		};							\
-+		__be32		tipckey;				\
-+	} addrs
-+
-+#define	PANDA_METADATA_ip_proto	__u8 ip_proto
-+#define	PANDA_METADATA_is_fragment	__u8 is_fragment: 1
-+#define	PANDA_METADATA_first_frag	__u8 first_frag: 1
-+
-+#define PANDA_METADATA_flow_label	__u32 flow_label
-+
-+#define PANDA_METADATA_l2_off		__u16 l2_off
-+#define PANDA_METADATA_l3_off		__u16 l3_off
-+#define PANDA_METADATA_l4_off		__u16 l4_off
-+
-+#define PANDA_METADATA_ports						\
-+	union {								\
-+		__be32 ports;						\
-+		__be16 port16[2];					\
-+		struct {						\
-+			__be16 src_port;				\
-+			__be16 dst_port;				\
-+		};							\
-+		struct {						\
-+			__be16 sport;					\
-+			__be16 dport;					\
-+		} port_pair;						\
-+	}
-+
-+#define PANDA_METADATA_tcp_options					\
-+	struct {							\
-+		__u16 mss;						\
-+		__u8 window_scaling;					\
-+		struct {						\
-+			__u32 value;					\
-+			__u32 echo;					\
-+		} timestamp;						\
-+		struct {						\
-+			__u32 left_edge;				\
-+			__u32 right_edge;				\
-+		} sack[PANDA_TCP_MAX_SACKS];					\
-+	} tcp_options
-+
-+#define PANDA_METADATA_keyid		__be32  keyid
-+
-+#define PANDA_MAX_VLAN_CNT	2
-+#define PANDA_METADATA_vlan_count	__u8 vlan_count : 2
-+#define PANDA_METADATA_vlan						\
-+	struct {							\
-+		union {							\
-+			struct {					\
-+				__u16   id:12,				\
-+					dei:1,				\
-+					priority:3;			\
-+			};						\
-+			__be16  tci;					\
-+		};							\
-+		__be16  tpid;						\
-+	} vlan[PANDA_MAX_VLAN_CNT]
-+
-+#define PANDA_METADATA_icmp						\
-+	struct {							\
-+		__u8	type;						\
-+		__u8	code;						\
-+		__u16	id;						\
-+	} icmp
-+
-+#define PANDA_METADATA_mpls						\
-+	struct {							\
-+		__u32	ttl: 8;						\
-+		__u32	bos: 1;						\
-+		__u32	tc: 3;						\
-+		__u32	label: 20;					\
-+	} mpls
-+
-+#define PANDA_METADATA_arp						\
-+	struct {							\
-+		__u32	sip;						\
-+		__u32	tip;						\
-+		__u8	op;						\
-+		__u8	sha[ETH_ALEN];					\
-+		__u8	tha[ETH_ALEN];					\
-+	} arp
-+
-+#define PANDA_METADATA_gre						\
-+	struct {							\
-+		__u32 flags;						\
-+		__be16 csum;						\
-+		__be32 keyid;						\
-+		__be32 seq;						\
-+		__be32 routing;						\
-+	} gre
-+
-+#define PANDA_METADATA_gre_pptp						\
-+	struct {							\
-+		__u32 flags;						\
-+		__be16 length;						\
-+		__be16 callid;						\
-+		__be32 seq;						\
-+		__be32 ack;						\
-+	} gre_pptp
-+
-+/* Meta data structure containing all common metadata in canonical field
-+ * order. eth_proto is declared as the hash start field for the common
-+ * metadata structure. addrs is last field for canonical hashing.
-+ */
-+struct panda_metadata_all {
-+	PANDA_METADATA_addr_type;
-+	PANDA_METADATA_is_fragment;
-+	PANDA_METADATA_first_frag;
-+	PANDA_METADATA_vlan_count;
-+	PANDA_METADATA_eth_addrs;
-+	PANDA_METADATA_tcp_options;
-+	PANDA_METADATA_mpls;
-+	PANDA_METADATA_arp;
-+	PANDA_METADATA_gre;
-+	PANDA_METADATA_gre_pptp;
-+	PANDA_METADATA_l2_off;
-+	PANDA_METADATA_l3_off;
-+	PANDA_METADATA_l4_off;
-+
-+
-+#define PANDA_HASH_START_FIELD_ALL eth_proto
-+	PANDA_METADATA_eth_proto __aligned(8);
-+	PANDA_METADATA_ip_proto;
-+	PANDA_METADATA_flow_label;
-+	PANDA_METADATA_vlan;
-+	PANDA_METADATA_keyid;
-+	PANDA_METADATA_ports;
-+	PANDA_METADATA_icmp;
-+
-+	PANDA_METADATA_addrs; /* Must be last */
-+};
-+
-+#define PANDA_HASH_OFFSET_ALL					\
-+	offsetof(struct panda_metadata_all,			\
-+		 PANDA_HASH_START_FIELD_ALL)
-+
-+/* Template for hash consistentify. Sort the source and destination IP (and the
-+ * ports if the IP address are the same) to have consistent hash within the two
-+ * directions.
-+ */
-+#define PANDA_HASH_CONSISTENTIFY(FRAME) do {				\
-+	int addr_diff, i;						\
-+									\
-+	switch ((FRAME)->addr_type) {					\
-+	case PANDA_ADDR_TYPE_IPV4:					\
-+		addr_diff = (FRAME)->addrs.v4_addrs[1] -		\
-+					(FRAME)->addrs.v4_addrs[0];	\
-+		if ((addr_diff < 0) ||					\
-+		    (addr_diff == 0 && ((FRAME)->port16[1] <		\
-+					(FRAME)->port16[0]))) {		\
-+			PANDA_SWAP((FRAME)->addrs.v4_addrs[0],		\
-+				   (FRAME)->addrs.v4_addrs[1]);		\
-+			PANDA_SWAP((FRAME)->port16[0],			\
-+				   (FRAME)->port16[1]);			\
-+		}							\
-+		break;							\
-+	case PANDA_ADDR_TYPE_IPV6:					\
-+		addr_diff = memcmp(&(FRAME)->addrs.v6_addrs[1],		\
-+				   &(FRAME)->addrs.v6_addrs[0],		\
-+				   sizeof((FRAME)->addrs.v6_addrs[1]));	\
-+		if ((addr_diff < 0) ||					\
-+		    (addr_diff == 0 && ((FRAME)->port16[1] <		\
-+					(FRAME)->port16[0]))) {		\
-+			for (i = 0; i < 4; i++)				\
-+				PANDA_SWAP((FRAME)->addrs.v6_addrs[0].	\
-+							s6_addr32[i],	\
-+				     (FRAME)->addrs.v6_addrs[1].	\
-+							s6_addr32[i]);	\
-+			PANDA_SWAP((FRAME)->port16[0],			\
-+				   (FRAME)->port16[1]);			\
-+		}							\
-+		break;							\
-+	}								\
-+} while (0)
-+
-+/* Helper to get starting address for hash start. This is just the
-+ * address of the field name in HASH_START_FIELD of a metadata
-+ * structure instance (indicated by pointer in FRAME)
-+ */
-+#define PANDA_HASH_START(FRAME, HASH_START_FIELD)			\
-+	(&(FRAME)->HASH_START_FIELD)
-+
-+/* Helper that returns the hash length for a metadata structure. This
-+ * returns the end of the address fields for the given type (the
-+ * address fields are assumed to be the common metadata fields in a nion
-+ * in the last fields in the metadata structure). The macro returns the
-+ * offset of the last byte of address minus the offset of the field
-+ * where the hash starts as indicated by the HASH_OFFSET argument.
-+ */
-+#define PANDA_HASH_LENGTH(FRAME, HASH_OFFSET) ({			\
-+	size_t diff = HASH_OFFSET + sizeof((FRAME)->addrs);		\
-+									\
-+	switch ((FRAME)->addr_type) {					\
-+	case PANDA_ADDR_TYPE_IPV4:					\
-+		diff -= sizeof((FRAME)->addrs.v4_addrs);		\
-+		break;							\
-+	case PANDA_ADDR_TYPE_IPV6:					\
-+		diff -= sizeof((FRAME)->addrs.v6_addrs);		\
-+		break;							\
-+	}								\
-+	sizeof(*(FRAME)) - diff;					\
-+})
-+
-+/* Helpers to extract common metadata */
-+
-+/* Meta data helper for Ethernet.
-+ * Uses common metadata fields: eth_proto, eth_addrs
-+ */
-+#define PANDA_METADATA_TEMP_ether(NAME, STRUCT)				\
-+static void NAME(const void *veth, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	struct STRUCT *frame = iframe;					\
-+									\
-+	frame->eth_proto = ((struct ethhdr *)veth)->h_proto;		\
-+	memcpy(frame->eth_addrs, &((struct ethhdr *)veth)->h_dest,	\
-+	       sizeof(frame->eth_addrs));				\
-+}
-+
-+/* Meta data helper for Ethernet with setting L2 offset.
-+ * Uses common metadata fields: eth_proto, eth_addrs, l2_off
-+ */
-+#define PANDA_METADATA_TEMP_ether_off(NAME, STRUCT)			\
-+static void NAME(const void *veth, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	struct STRUCT *frame = iframe;					\
-+									\
-+	frame->l2_off = ctrl.hdr_offset;				\
-+	frame->eth_proto = ((struct ethhdr *)veth)->h_proto;		\
-+	memcpy(frame->eth_addrs, &((struct ethhdr *)veth)->h_dest,	\
-+	       sizeof(frame->eth_addrs));				\
-+}
-+
-+/* Meta data helper for Ethernet without extracting addresses.
-+ * Uses common metadata fields: eth_proto
-+ */
-+#define PANDA_METADATA_TEMP_ether_noaddrs(NAME, STRUCT)			\
-+static void NAME(const void *veth, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	struct STRUCT *frame = iframe;					\
-+									\
-+	frame->eth_proto = ((struct ethhdr *)veth)->h_proto;		\
-+}
-+
-+/* Meta data helper for IPv4.
-+ * Uses common metadata fields: is_fragment, first_frag, ip_proto,
-+ * addr_type, addrs.v4_addrs, l3_off
-+ */
-+#define PANDA_METADATA_TEMP_ipv4(NAME, STRUCT)				\
-+static void NAME(const void *viph, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	struct STRUCT *frame = iframe;					\
-+	const struct iphdr *iph = viph;					\
-+									\
-+	if (ip_is_fragment(iph)) {					\
-+		frame->is_fragment = 1;					\
-+		frame->first_frag =					\
-+				!(iph->frag_off & htons(IP_OFFSET));	\
-+	}								\
-+									\
-+	frame->l3_off = ctrl.hdr_offset;				\
-+	frame->addr_type = PANDA_ADDR_TYPE_IPV4;			\
-+	frame->ip_proto = iph->protocol;				\
-+	memcpy(frame->addrs.v4_addrs, &iph->saddr,			\
-+	       sizeof(frame->addrs.v4_addrs));				\
-+}
-+
-+/* Meta data helper for IPv4 to only extract IP address.
-+ * Uses common meta * data fields: ip_proto, addr_type, addrs.v4_addrs
-+ */
-+#define PANDA_METADATA_TEMP_ipv4_addrs(NAME, STRUCT)			\
-+static void NAME(const void *viph, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	struct STRUCT *frame = iframe;					\
-+	const struct iphdr *iph = viph;					\
-+									\
-+	frame->addr_type = PANDA_ADDR_TYPE_IPV4;			\
-+	frame->ip_proto = iph->protocol;				\
-+	memcpy(frame->addrs.v4_addrs, &iph->saddr,			\
-+	       sizeof(frame->addrs.v4_addrs));				\
-+}
-+
-+/* Meta data helper for IPv6.
-+ * Uses common metadata fields: ip_proto, addr_type, flow_label,
-+ * addrs.v6_addrs, l3_off
-+ */
-+#define PANDA_METADATA_TEMP_ipv6(NAME, STRUCT)				\
-+static void NAME(const void *viph, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	struct STRUCT *frame = iframe;					\
-+	const struct ipv6hdr *iph = viph;				\
-+									\
-+	frame->l3_off = ctrl.hdr_offset;				\
-+	frame->ip_proto = iph->nexthdr;					\
-+	frame->addr_type = PANDA_ADDR_TYPE_IPV6;			\
-+	frame->flow_label = ntohl(ip6_flowlabel(iph));			\
-+	memcpy(frame->addrs.v6_addrs, &iph->saddr,			\
-+	       sizeof(frame->addrs.v6_addrs));				\
-+}
-+
-+/* Meta data helper for IPv6 to only extract IP address.
-+ * Uses common metadata fields: ip_proto, addr_type, addrs.v6_addrs
-+ */
-+#define PANDA_METADATA_TEMP_ipv6_addrs(NAME, STRUCT)			\
-+static void NAME(const void *viph, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	struct STRUCT *frame = iframe;					\
-+	const struct ipv6hdr *iph = viph;				\
-+									\
-+	frame->ip_proto = iph->nexthdr;					\
-+	frame->addr_type = PANDA_ADDR_TYPE_IPV6;			\
-+	memcpy(frame->addrs.v6_addrs, &iph->saddr,			\
-+	       sizeof(frame->addrs.v6_addrs));				\
-+}
-+
-+/* Meta data helper for transport ports.
-+ * Uses common metadata fields: ports
-+ */
-+#define PANDA_METADATA_TEMP_ports(NAME, STRUCT)				\
-+static void NAME(const void *vphdr, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	struct STRUCT *frame = iframe;					\
-+									\
-+	frame->ports = ((struct port_hdr *)vphdr)->ports;		\
-+}
-+
-+/* Meta data helper for transport with ports and offset
-+ * Uses common metadata fields: ports, l4_off
-+ */
-+#define PANDA_METADATA_TEMP_ports_off(NAME, STRUCT)			\
-+static void NAME(const void *vphdr, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	struct STRUCT *frame = iframe;					\
-+									\
-+	frame->ports = ((struct port_hdr *)vphdr)->ports;		\
-+	frame->l4_off = ctrl.hdr_offset;				\
-+}
-+
-+/* Meta data helpers for TCP options */
-+
-+/* Meta data helper for TCP MSS option
-+ * Uses common metadata field: tcp_options
-+ */
-+#define PANDA_METADATA_TEMP_tcp_option_mss(NAME, STRUCT)		\
-+static void NAME(const void *vopt, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	const struct tcp_opt_union *opt = vopt;				\
-+	struct STRUCT *frame = iframe;					\
-+									\
-+	frame->tcp_options.mss = ntohs(opt->mss);			\
-+}
-+
-+/* Meta data helper for TCP window scaling option
-+ * Uses common metadata field: tcp_options
-+ */
-+#define PANDA_METADATA_TEMP_tcp_option_window_scaling(NAME, STRUCT)	\
-+static void NAME(const void *vopt, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	const struct tcp_opt_union *opt = vopt;				\
-+	struct STRUCT *frame = iframe;					\
-+									\
-+	frame->tcp_options.window_scaling = opt->window_scaling;	\
-+}
-+
-+/* Meta data helper for TCP timestamps option
-+ * Uses common metadata field: tcp_options
-+ */
-+#define PANDA_METADATA_TEMP_tcp_option_timestamp(NAME, STRUCT)		\
-+static void NAME(const void *vopt, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	const struct tcp_opt_union *opt = vopt;				\
-+	struct STRUCT *frame = iframe;					\
-+									\
-+	frame->tcp_options.timestamp.value =				\
-+				ntohl(opt->timestamp.value);		\
-+	frame->tcp_options.timestamp.echo =				\
-+				ntohl(opt->timestamp.echo);		\
-+}
-+
-+/* Common macro to set one metadata entry for sack. N indicates which
-+ * entry (per protocol specification that is 0, 1, 2, or 3)
-+ */
-+#define PANDA_METADATA_SET_TCP_SACK(N, VOPT, IFRAME, STRUCT) do {	\
-+	const struct tcp_opt_union *opt = vopt;				\
-+	struct STRUCT *frame = iframe;					\
-+									\
-+	frame->tcp_options.sack[N].left_edge =				\
-+				ntohl(opt->sack[N].left_edge);		\
-+	frame->tcp_options.sack[N].right_edge =				\
-+				ntohl(opt->sack[N].right_edge);		\
-+} while (0)
-+
-+/* Meta data helper for setting one TCP sack option
-+ * Uses common metadata field: tcp_options.sack[0]
-+ */
-+#define PANDA_METADATA_TEMP_tcp_option_sack_1(NAME, STRUCT)		\
-+static void NAME(const void *vopt, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	PANDA_METADATA_SET_TCP_SACK(0, vopt, iframe, STRUCT);		\
-+}
-+
-+/* Meta data helper for setting two TCP sack options
-+ * Uses common metadata field: tcp_options.sack[0], tcp_options.sack[1]
-+ */
-+#define PANDA_METADATA_TEMP_tcp_option_sack_2(NAME, STRUCT)		\
-+static void NAME(const void *vopt, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	PANDA_METADATA_SET_TCP_SACK(0, vopt, iframe, STRUCT);		\
-+	PANDA_METADATA_SET_TCP_SACK(1, vopt, iframe, STRUCT);		\
-+}
-+
-+/* Meta data helper for setting three TCP sack options
-+ * Uses common metadata field: tcp_options.sack[0], tcp_options.sack[1],
-+ * tcp_options.sack[2]
-+ */
-+#define PANDA_METADATA_TEMP_tcp_option_sack_3(NAME, STRUCT)		\
-+static void NAME(const void *vopt, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	PANDA_METADATA_SET_TCP_SACK(0, vopt, iframe, STRUCT);		\
-+	PANDA_METADATA_SET_TCP_SACK(1, vopt, iframe, STRUCT);		\
-+	PANDA_METADATA_SET_TCP_SACK(2, vopt, iframe, STRUCT);		\
-+}
-+
-+/* Meta data helper for setting four TCP sack options
-+ * Uses common metadata field: tcp_options.sack[0], tcp_options.sack[1],
-+ * tcp_options.sack[2], tcp_options.sack[3]
-+ */
-+#define PANDA_METADATA_TEMP_tcp_option_sack_4(NAME, STRUCT)		\
-+static void NAME(const void *vopt, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	PANDA_METADATA_SET_TCP_SACK(0, vopt, iframe, STRUCT);		\
-+	PANDA_METADATA_SET_TCP_SACK(1, vopt, iframe, STRUCT);		\
-+	PANDA_METADATA_SET_TCP_SACK(2, vopt, iframe, STRUCT);		\
-+	PANDA_METADATA_SET_TCP_SACK(3, vopt, iframe, STRUCT);		\
-+}
-+
-+/* Meta data helper for IP overlay (differentiate based on version number).
-+ * Uses common metadata fields: eth_proto
-+ */
-+#define PANDA_METADATA_TEMP_ip_overlay(NAME, STRUCT)			\
-+static void NAME(const void *viph, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	struct STRUCT *frame = iframe;					\
-+									\
-+	switch (((struct ip_hdr_byte *)viph)->version) {		\
-+	case 4:								\
-+		frame->eth_proto = __cpu_to_be16(ETH_P_IP);		\
-+		break;							\
-+	case 6:								\
-+		frame->eth_proto = __cpu_to_be16(ETH_P_IPV6);		\
-+		break;							\
-+	}								\
-+}
-+
-+/* Meta data helper for Routing, DestOpt, and Hop-by-Hop extension headers.
-+ * Uses common metadata fields: ip_proto
-+ */
-+#define PANDA_METADATA_TEMP_ipv6_eh(NAME, STRUCT)			\
-+static void NAME(const void *vopt, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	((struct STRUCT *)iframe)->ip_proto =				\
-+			((struct ipv6_opt_hdr *)vopt)->nexthdr;		\
-+}
-+
-+/* Meta data helper for Fragmentation extension header.
-+ * Uses common metadata fields: ip_proto, is_fragment, first_frag
-+ */
-+#define PANDA_METADATA_TEMP_ipv6_frag(NAME, STRUCT)			\
-+static void NAME(const void *vfrag, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	struct STRUCT *frame = iframe;					\
-+	const struct ipv6_frag_hdr *frag = vfrag;			\
-+									\
-+	frame->ip_proto = frag->nexthdr;				\
-+	frame->is_fragment = 1;						\
-+	frame->first_frag = !(frag->frag_off & htons(IP6_OFFSET));	\
-+}
-+
-+/* Meta data helper for Fragmentation extension header without info.
-+ * Uses common metadata fields: ip_proto
-+ */
-+#define PANDA_METADATA_TEMP_ipv6_frag_noinfo(NAME, STRUCT)		\
-+static void NAME(const void *vfrag, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	((struct STRUCT *)iframe)->ip_proto =				\
-+			((struct ipv6_frag_hdr *)vfrag)->nexthdr;	\
-+}
-+
-+#define PANDA_METADATA_TEMP_arp_rarp(NAME, STRUCT)			\
-+static void NAME(const void *vearp, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	struct STRUCT *frame = iframe;					\
-+	const struct earphdr *earp = vearp;				\
-+									\
-+	frame->arp.op = ntohs(earp->arp.ar_op) & 0xff;			\
-+									\
-+	/* Record Ethernet addresses */					\
-+	memcpy(frame->arp.sha, earp->ar_sha, ETH_ALEN);			\
-+	memcpy(frame->arp.tha, earp->ar_tha, ETH_ALEN);			\
-+									\
-+	/* Record IP addresses */					\
-+	memcpy(&frame->arp.sip, &earp->ar_sip, sizeof(frame->arp.sip));	\
-+	memcpy(&frame->arp.tip, &earp->ar_tip, sizeof(frame->arp.tip));	\
-+}
-+
-+/* Meta data helper for VLAN.
-+ * Uses common metadata fields: vlan_count, vlan[0].id, vlan[0].priority,
-+ * vlan[0].tci, vlan[0].tpid, vlan[1].id, vlan[1].priority, vlan[1].tci,
-+ * vlan[1].tpid
-+ */
-+#define PANDA_METADATA_TEMP_vlan_set_tpid(NAME, STRUCT, TPID)		\
-+static void NAME(const void *vvlan, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	struct STRUCT *frame = iframe;					\
-+	const struct vlan_hdr *vlan = vvlan;				\
-+	int index = (frame->vlan_count < PANDA_MAX_VLAN_CNT) ?		\
-+			frame->vlan_count++ : PANDA_MAX_VLAN_CNT - 1;	\
-+									\
-+	frame->vlan[index].id = ntohs(vlan->h_vlan_TCI) &		\
-+				VLAN_VID_MASK;				\
-+	frame->vlan[index].priority = (ntohs(vlan->h_vlan_TCI) &	\
-+				VLAN_PRIO_MASK) >> VLAN_PRIO_SHIFT;	\
-+	frame->vlan[index].tpid = TPID;					\
-+}
-+
-+#define PANDA_METADATA_TEMP_vlan_8021AD(NAME, STRUCT)			\
-+	PANDA_METADATA_TEMP_vlan_set_tpid(NAME, STRUCT, ETH_P_8021AD)
-+
-+#define PANDA_METADATA_TEMP_vlan_8021Q(NAME, STRUCT)			\
-+	PANDA_METADATA_TEMP_vlan_set_tpid(NAME, STRUCT, ETH_P_8021Q)
-+
-+/* Meta data helper for ICMP (ICMPv4 or ICMPv6).
-+ * Uses common metadata fields: icmp.type, icmp.code, icmp.id
-+ */
-+#define PANDA_METADATA_TEMP_icmp(NAME, STRUCT)				\
-+static void NAME(const void *vicmp, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	struct STRUCT *frame = iframe;					\
-+	const struct icmphdr *icmp = vicmp;				\
-+									\
-+	frame->icmp.type = icmp->type;					\
-+	frame->icmp.code = icmp->code;					\
-+	if (icmp_has_id(icmp->type))					\
-+		frame->icmp.id = icmp->un.echo.id ? : 1;		\
-+	else								\
-+		frame->icmp.id = 0;					\
-+}
-+
-+/* Meta data helper for MPLS.
-+ * Uses common metadata fields: mpls.label, mpls.ttl, mpls.tc, mpls.bos, keyid
-+ */
-+#define PANDA_METADATA_TEMP_mpls(NAME, STRUCT)				\
-+static void NAME(const void *vmpls, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	struct STRUCT *frame = iframe;					\
-+	const struct mpls_label *mpls = vmpls;				\
-+	__u32 entry, label;						\
-+									\
-+	entry = ntohl(mpls[0].entry);					\
-+	label = (entry & MPLS_LS_LABEL_MASK) >> MPLS_LS_LABEL_SHIFT;	\
-+									\
-+	frame->mpls.label = label;					\
-+	frame->mpls.ttl =						\
-+		(entry & MPLS_LS_TTL_MASK) >> MPLS_LS_TTL_SHIFT;	\
-+	frame->mpls.tc = (entry & MPLS_LS_TC_MASK) >> MPLS_LS_TC_SHIFT;	\
-+	frame->mpls.bos = (entry & MPLS_LS_S_MASK) >> MPLS_LS_S_SHIFT;	\
-+									\
-+	if (label == MPLS_LABEL_ENTROPY)				\
-+		frame->keyid =						\
-+			mpls[1].entry & htonl(MPLS_LS_LABEL_MASK);	\
-+}
-+
-+/* Meta data helper for tipc.
-+ * Uses common metadata fields: addr_type, tipckwy
-+ *
-+ * For non keepalive message set source node identity in tipc addresses.
-+ * For keepalive messages set the tipc address to a random number fo
-+ * spread PROBE/PROBE_REPLY messages across cores.
-+ */
-+#define PANDA_METADATA_TEMP_tipc(NAME, STRUCT)				\
-+static void NAME(const void *vtipc, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	struct STRUCT *frame = iframe;					\
-+	const struct tipc_basic_hdr *tipc = vtipc;			\
-+									\
-+	__u32 w0 = ntohl(tipc->w[0]);					\
-+	bool keepalive_msg;						\
-+									\
-+	keepalive_msg = (w0 & TIPC_KEEPALIVE_MSG_MASK) ==		\
-+					TIPC_KEEPALIVE_MSG_MASK;	\
-+	frame->addrs.tipckey = keepalive_msg ? 0 : tipc->w[3];		\
-+	frame->addr_type = PANDA_ADDR_TYPE_TIPC;			\
-+}
-+
-+/* Meta data helper for GRE (v0)
-+ * Uses common metadata field: gre.flags
-+ */
-+#define PANDA_METADATA_TEMP_gre(NAME, STRUCT)				\
-+static void NAME(const void *vhdr, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	struct STRUCT *frame = iframe;					\
-+									\
-+	frame->gre.flags = gre_get_flags(vhdr);				\
-+}
-+
-+/* Meta data helper for GRE-PPTP (GRE v1)
-+ * Uses common metadata field: gre_pptp.flags
-+ */
-+#define PANDA_METADATA_TEMP_gre_pptp(NAME, STRUCT)			\
-+static void NAME(const void *vhdr, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	struct STRUCT *frame = iframe;					\
-+									\
-+	frame->gre_pptp.flags = gre_get_flags(vhdr);			\
-+}
-+
-+/* Meta data helper for GRE checksum
-+ * Uses common metadata field: gre.checksum
-+ */
-+#define PANDA_METADATA_TEMP_gre_checksum(NAME, STRUCT)			\
-+static void NAME(const void *vdata, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	struct STRUCT *frame = iframe;					\
-+									\
-+	frame->gre.csum = *(__u16 *)vdata;				\
-+}
-+
-+/* Meta data helper for GRE keyid
-+ * Uses common metadata field: gre.keyid and keyid
-+ */
-+#define PANDA_METADATA_TEMP_gre_keyid(NAME, STRUCT)			\
-+static void NAME(const void *vdata, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	struct STRUCT *frame = iframe;					\
-+	__u32 v = *(__u32 *)vdata;					\
-+									\
-+	frame->gre.keyid = v;						\
-+	frame->keyid = v;						\
-+}
-+
-+/* Meta data helper for GRE sequence number
-+ * Uses common metadata field: gre.seq
-+ */
-+#define PANDA_METADATA_TEMP_gre_seq(NAME, STRUCT)			\
-+static void NAME(const void *vdata, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	struct STRUCT *frame = iframe;					\
-+									\
-+	frame->gre.seq = *(__u32 *)vdata;				\
-+}
-+
-+/* Meta data helper for GRE routing
-+ * Uses common metadata field: gre.routing
-+ */
-+#define PANDA_METADATA_TEMP_gre_routing(NAME, STRUCT)			\
-+static void NAME(const void *vdata, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	struct STRUCT *frame = iframe;					\
-+									\
-+	frame->gre.routing = *(__u32 *)vdata;				\
-+}
-+
-+
-+/* Meta data helper for GRE keyid
-+ * Uses common metadata field: pptp.length, pptp.call_id, and keyid
-+ */
-+#define PANDA_METADATA_TEMP_gre_pptp_key(NAME, STRUCT)			\
-+static void NAME(const void *vdata, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	struct STRUCT *frame = iframe;					\
-+	struct panda_pptp_id *key = (struct panda_pptp_id *)vdata;	\
-+									\
-+	frame->keyid = key->val32;					\
-+	frame->gre_pptp.length = key->payload_len;			\
-+	frame->gre_pptp.callid = key->call_id;				\
-+}
-+
-+/* Meta data helper for GRE-pptp sequence number
-+ * Uses common metadata field: pptp.seq
-+ */
-+#define PANDA_METADATA_TEMP_gre_pptp_seq(NAME, STRUCT)			\
-+static void NAME(const void *vdata, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	struct STRUCT *frame = iframe;					\
-+									\
-+	frame->gre_pptp.seq = *(__u32 *)vdata;				\
-+}
-+
-+/* Meta data helper for GRE-pptp ACK
-+ * Uses common metadata field: pptp.ack
-+ */
-+#define PANDA_METADATA_TEMP_gre_pptp_ack(NAME, STRUCT)			\
-+static void NAME(const void *vdata, void *iframe,			\
-+		 struct panda_ctrl_data ctrl)				\
-+{									\
-+	struct STRUCT *frame = iframe;					\
-+									\
-+	frame->gre_pptp.ack = *(__u32 *)vdata;				\
-+}
-+
-+/* Helper function to define a function to print common metadata */
-+#define PANDA_PRINT_METADATA(FRAME) do {				\
-+	char a4buf[INET_ADDRSTRLEN];					\
-+	char a6buf[INET6_ADDRSTRLEN];					\
-+									\
-+	switch ((FRAME)->addr_type) {					\
-+	case PANDA_ADDR_TYPE_IPV4:					\
-+		printf("IPv4 source address: %s\n",			\
-+		inet_ntop(AF_INET, &(FRAME)->addrs.v4_addrs[0],		\
-+			  a4buf, sizeof(a4buf)));			\
-+		printf("IPv4 destination address: %s\n",		\
-+		       inet_ntop(AF_INET, &(FRAME)->addrs.v4_addrs[1],	\
-+		       a4buf, sizeof(a4buf)));				\
-+		break;							\
-+	case PANDA_ADDR_TYPE_IPV6:					\
-+		printf("IPv6 source address: %s\n",			\
-+		       inet_ntop(AF_INET6, &(FRAME)->addrs.v6_addrs[0],	\
-+				 a6buf, sizeof(a6buf)));		\
-+		printf("IPv6 destination address: %s\n",		\
-+		       inet_ntop(AF_INET6, &(FRAME)->addrs.v6_addrs[1],	\
-+				 a6buf, sizeof(a6buf)));		\
-+		break;							\
-+	}								\
-+	printf("Source port %04x\n", ntohs((FRAME)->port16[0]));	\
-+	printf("Destination port %04x\n", ntohs((FRAME)->port16[1]));	\
-+} while (0)
-+
-+#endif /* __PANDA_PARSER_METADATA_H__ */
-diff --git a/include/net/panda/parser_types.h b/include/net/panda/parser_types.h
-new file mode 100644
-index 000000000000..f746b4de2bea
---- /dev/null
-+++ b/include/net/panda/parser_types.h
-@@ -0,0 +1,255 @@
-+/* SPDX-License-Identifier: BSD-2-Clause-FreeBSD
-+ *
-+ * Copyright (c) 2020,2021 SiPanda Inc.
-+ *
-+ * Redistribution and use in source and binary forms, with or without
-+ * modification, are permitted provided that the following conditions
-+ * are met:
-+ * 1. Redistributions of source code must retain the above copyright
-+ *    notice, this list of conditions and the following disclaimer.
-+ * 2. Redistributions in binary form must reproduce the above copyright
-+ *    notice, this list of conditions and the following disclaimer in the
-+ *    documentation and/or other materials provided with the distribution.
-+ *
-+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
-+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
-+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-+ * SUCH DAMAGE.
-+ */
-+
-+#ifndef __PANDA_TYPES_H__
-+#define __PANDA_TYPES_H__
-+
-+/* Type definitions for PANDA parser */
-+
-+#include <stddef.h>
-+#include <stdbool.h>
-+
-+#include <linux/types.h>
-+
-+#include "net/panda/compiler_helpers.h"
-+
-+/* Panda parser type codes */
-+enum panda_parser_type {
-+	/* Use non-optimized loop panda parser algorithm */
-+	PANDA_GENERIC = 0,
-+	/* Use optimized, generated, parser algorithm  */
-+	PANDA_OPTIMIZED = 1,
-+	/* XDP parser */
-+	PANDA_XDP = 2,
-+	/* Kernel module parser */
-+	PANDA_KMOD = 3,
-+};
-+
-+/* Parse and protocol node types */
-+enum panda_parser_node_type {
-+	/* Plain node, no super structure */
-+	PANDA_NODE_TYPE_PLAIN,
-+	/* TLVs node with super structure for TLVs */
-+	PANDA_NODE_TYPE_TLVS,
-+	/* Flag-fields with super structure for flag-fields */
-+	PANDA_NODE_TYPE_FLAG_FIELDS,
-+};
-+
-+/* Protocol parsing operations:
-+ *
-+ * len: Return length of protocol header. If value is NULL then the length of
-+ *	the header is taken from the min_len in the protocol node. If the
-+ *	return value < 0 (a PANDA_STOP_* return code value) this indicates an
-+ *	error and parsing is stopped. A the return value greater than or equal
-+ *	to zero then gives the protocol length. If the returned length is less
-+ *	than the minimum protocol length, indicated in min_len by the protocol
-+ *	node, then this considered and error.
-+ * next_proto: Return next protocol. If value is NULL then there is no
-+ *	next protocol. If return value is greater than or equal to zero
-+ *	this indicates a protocol number that is used in a table lookup
-+ *	to get the next layer protocol node.
-+ */
-+struct panda_parse_ops {
-+	ssize_t (*len)(const void *hdr);
-+	int (*next_proto)(const void *hdr);
-+};
-+
-+/* Protocol node
-+ *
-+ * This structure contains the definitions to describe parsing of one type
-+ * of protocol header. Fields are:
-+ *
-+ * node_type: The type of the node (plain, TLVs, flag-fields)
-+ * encap: Indicates an encapsulation protocol (e.g. IPIP, GRE)
-+ * overlay: Indicates an overlay protocol. This is used, for example, to
-+ *	switch on version number of a protocol header (e.g. IP version number
-+ *	or GRE version number)
-+ * name: Text name of protocol node for debugging
-+ * min_len: Minimum length of the protocol header
-+ * ops: Operations to parse protocol header
-+ */
-+struct panda_proto_node {
-+	enum panda_parser_node_type node_type;
-+	__u8 encap;
-+	__u8 overlay;
-+	const char *name;
-+	size_t min_len;
-+	const struct panda_parse_ops ops;
-+};
-+
-+/* Panda generic metadata
-+ *
-+ * Contains an array of parser specific (user defined) metadata structures.
-+ * Meta data structures are defined specifically for each parser. An
-+ * instance of this metadata is a frame. One frame is used for each
-+ * level of encapulation. When the number of encapsulation layers exceeds
-+ * max_num_frame then last frame is reused
-+ *	encaps: Number of encapsulation protocol encountered.
-+ *	max_frame_num: Maximum number of frames. One frame is used for each
-+ *		level of encapulation. When the number of encapsulation
-+ *		layers exceeds this value the last frame is reuse used
-+ *	frame_size: The size in bytes of each metadata frame
-+ *	frame_data: Contains max_frame_num metadata frames
-+ */
-+struct panda_metadata {
-+	unsigned int encaps;
-+	unsigned int max_frame_num;
-+	size_t frame_size;
-+
-+	/* Application specific metadata frames */
-+	__u8 frame_data[0] __aligned(8);
-+};
-+
-+struct panda_ctx {
-+	__u32 frame_num;
-+	__u32 next;
-+	__u32 offset;
-+	struct panda_metadata metadata;
-+};
-+
-+struct panda_ctrl_data {
-+	size_t hdr_len;
-+	size_t hdr_offset;
-+};
-+
-+/* Parse node operations
-+ *
-+ * Operations to process a parsing node
-+ *
-+ * extract_metadata: Extract metadata for the node. Input is the meta
-+ *	data frame which points to a parser defined metadata structure.
-+ *	If the value is NULL then no metadata is extracted
-+ * handle_proto: Per protocol handler which allows arbitrary processing
-+ *	of a protocol layer. Input is the header data and a parser defined
-+ *	metadata structure for the current frame. Return value is a parser
-+ *	return code: PANDA_OKAY indicates no errors, PANDA_STOP* return
-+ *	values indicate to stop parsing
-+ */
-+struct panda_parse_node_ops {
-+	void (*extract_metadata)(const void *hdr, void *frame,
-+				 const struct panda_ctrl_data ctrl);
-+	int (*handle_proto)(const void *hdr, void *frame,
-+			    const struct panda_ctrl_data ctrl);
-+};
-+
-+/* Protocol node and parse node operations ordering. When processing a
-+ * layer, operations are called in following order:
-+ *
-+ * protoop.len
-+ * parseop.extract_metadata
-+ * parseop.handle_proto
-+ * protoop.next_proto
-+ */
-+
-+struct panda_parse_node;
-+
-+/* One entry in a protocol table:
-+ *	value: protocol number
-+ *	node: associated parse node for the protocol number
-+ */
-+struct panda_proto_table_entry {
-+	int value;
-+	const struct panda_parse_node *node;
-+};
-+
-+/* Protocol table
-+ *
-+ * Contains a protocol table that maps a protocol number to a parse
-+ * node
-+ */
-+struct panda_proto_table {
-+	int num_ents;
-+	const struct panda_proto_table_entry *entries;
-+};
-+
-+/* Parse node definition. Defines parsing and processing for one node in
-+ * the parse graph of a parser. Contains:
-+ *
-+ * node_type: The type of the node (plain, TLVs, flag-fields)
-+ * proto_node: Protocol node
-+ * ops: Parse node operations
-+ * proto_table: Protocol table for next protocol. This must be non-null if
-+ * next_proto is not NULL
-+ */
-+struct panda_parse_node {
-+	enum panda_parser_node_type node_type;
-+	int unknown_ret;
-+	const struct panda_proto_node *proto_node;
-+	const struct panda_parse_node_ops ops;
-+	const struct panda_proto_table *proto_table;
-+	const struct panda_parse_node *wildcard_node;
-+};
-+
-+/* Declaration of a PANDA parser */
-+struct panda_parser;
-+
-+/* Panda entry-point for optimized parsers */
-+typedef int (*panda_parser_opt_entry_point)(const struct panda_parser *parser,
-+					    const void *hdr, size_t len,
-+					    struct panda_metadata *metadata,
-+					    unsigned int flags,
-+					    unsigned int max_encaps);
-+
-+/* Panda entry-point for XDP parsers */
-+typedef int (*panda_parser_xdp_entry_point)(struct panda_ctx *ctx,
-+					    const void **hdr,
-+					    const void *hdr_end,
-+					    bool tailcall);
-+
-+/* Definition of a PANDA parser. Fields are:
-+ *
-+ * name: Text name for the parser
-+ * root_node: Root parse node of the parser. When the parser is invoked
-+ *	parsing commences at this parse node
-+ */
-+struct panda_parser {
-+	const char *name;
-+	const struct panda_parse_node *root_node;
-+	enum panda_parser_type parser_type;
-+	panda_parser_opt_entry_point parser_entry_point;
-+	panda_parser_xdp_entry_point parser_xdp_entry_point;
-+};
-+
-+/* One entry in a parser table:
-+ *	value: key vlaue
-+ *	parser: parser associated with the key value
-+ */
-+struct panda_parser_table_entry {
-+	int value;
-+	struct panda_parser **parser;
-+};
-+
-+/* Parser table
-+ *
-+ * Contains a parser table that maps a key value, which could be a protocol
-+ * number, to a parser
-+ */
-+struct panda_parser_table {
-+	int num_ents;
-+	const struct panda_parser_table_entry *entries;
-+};
-+
-+#endif /* __PANDA_TYPES_H__ */
-diff --git a/include/net/panda/proto_nodes.h b/include/net/panda/proto_nodes.h
-new file mode 100644
-index 000000000000..76b3a4db49bf
---- /dev/null
-+++ b/include/net/panda/proto_nodes.h
-@@ -0,0 +1,48 @@
-+/* SPDX-License-Identifier: BSD-2-Clause-FreeBSD
-+ *
-+ * Copyright (c) 2020,2021 SiPanda Inc.
-+ *
-+ * Redistribution and use in source and binary forms, with or without
-+ * modification, are permitted provided that the following conditions
-+ * are met:
-+ * 1. Redistributions of source code must retain the above copyright
-+ *    notice, this list of conditions and the following disclaimer.
-+ * 2. Redistributions in binary form must reproduce the above copyright
-+ *    notice, this list of conditions and the following disclaimer in the
-+ *    documentation and/or other materials provided with the distribution.
-+ *
-+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
-+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
-+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-+ * SUCH DAMAGE.
-+ */
-+
-+/* Include for all defined proto nodes */
-+
-+#include "net/panda/proto_nodes/proto_ether.h"
-+#include "net/panda/proto_nodes/proto_pppoe.h"
-+#include "net/panda/proto_nodes/proto_ipv4.h"
-+#include "net/panda/proto_nodes/proto_ipv6.h"
-+#include "net/panda/proto_nodes/proto_ports.h"
-+#include "net/panda/proto_nodes/proto_tcp.h"
-+#include "net/panda/proto_nodes/proto_ip.h"
-+#include "net/panda/proto_nodes/proto_ipv6_eh.h"
-+#include "net/panda/proto_nodes/proto_ipv4ip.h"
-+#include "net/panda/proto_nodes/proto_ipv6ip.h"
-+#include "net/panda/proto_nodes/proto_gre.h"
-+#include "net/panda/proto_nodes/proto_vlan.h"
-+#include "net/panda/proto_nodes/proto_icmp.h"
-+#include "net/panda/proto_nodes/proto_ppp.h"
-+#include "net/panda/proto_nodes/proto_mpls.h"
-+#include "net/panda/proto_nodes/proto_arp_rarp.h"
-+#include "net/panda/proto_nodes/proto_tipc.h"
-+#include "net/panda/proto_nodes/proto_batman.h"
-+#include "net/panda/proto_nodes/proto_igmp.h"
-+#include "net/panda/proto_nodes/proto_fcoe.h"
-diff --git a/include/net/panda/proto_nodes/proto_arp_rarp.h b/include/net/panda/proto_nodes/proto_arp_rarp.h
-new file mode 100644
-index 000000000000..8e35b84e98af
---- /dev/null
-+++ b/include/net/panda/proto_nodes/proto_arp_rarp.h
-@@ -0,0 +1,88 @@
-+/* SPDX-License-Identifier: BSD-2-Clause-FreeBSD
-+ *
-+ * Copyright (c) 2020,2021 SiPanda Inc.
-+ *
-+ * Redistribution and use in source and binary forms, with or without
-+ * modification, are permitted provided that the following conditions
-+ * are met:
-+ * 1. Redistributions of source code must retain the above copyright
-+ *    notice, this list of conditions and the following disclaimer.
-+ * 2. Redistributions in binary form must reproduce the above copyright
-+ *    notice, this list of conditions and the following disclaimer in the
-+ *    documentation and/or other materials provided with the distribution.
-+ *
-+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
-+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
-+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-+ * SUCH DAMAGE.
-+ */
-+
-+#ifndef __PANDA_PROTO_ARP_RARP_H__
-+#define __PANDA_PROTO_ARP_RARP_H__
-+
-+#ifndef __KERNEL__
-+#include <arpa/inet.h>
-+#endif
-+
-+#include <linux/if_arp.h>
-+
-+#include "net/panda/parser.h"
-+
-+/* ARP and RARP node definitions */
-+
-+struct earphdr {
-+	struct arphdr arp;
-+	__u8 ar_sha[ETH_ALEN];
-+	__u8 ar_sip[4];
-+	__u8 ar_tha[ETH_ALEN];
-+	__u8 ar_tip[4];
-+};
-+
-+static inline ssize_t arp_len_check(const void *vearp)
-+{
-+	const struct earphdr *earp = vearp;
-+	const struct arphdr *arp = &earp->arp;
-+
-+	if (arp->ar_hrd != htons(ARPHRD_ETHER) ||
-+	    arp->ar_pro != htons(ETH_P_IP) ||
-+	    arp->ar_hln != ETH_ALEN ||
-+	    arp->ar_pln != 4 ||
-+	    (arp->ar_op != htons(ARPOP_REPLY) &&
-+	     arp->ar_op != htons(ARPOP_REQUEST)))
-+		return PANDA_STOP_FAIL;
-+
-+	return sizeof(struct earphdr);
-+}
-+
-+#endif /* __PANDA_PROTO_ARP_RARP_H__ */
-+
-+#ifdef PANDA_DEFINE_PARSE_NODE
-+
-+/* panda_parse_arp protocol node
-+ *
-+ * Parse ARP header
-+ */
-+static const struct panda_proto_node panda_parse_arp __unused() = {
-+	.name = "ARP",
-+	.min_len = sizeof(struct earphdr),
-+	.ops.len = arp_len_check,
-+};
-+
-+/* panda_parse_rarp protocol node
-+ *
-+ * Parse RARP header
-+ */
-+static const struct panda_proto_node panda_parse_rarp __unused() = {
-+	.name = "RARP",
-+	.min_len = sizeof(struct earphdr),
-+	.ops.len = arp_len_check,
-+};
-+
-+#endif /* PANDA_DEFINE_PARSE_NODE */
-diff --git a/include/net/panda/proto_nodes/proto_batman.h b/include/net/panda/proto_nodes/proto_batman.h
-new file mode 100644
-index 000000000000..40e95cd48836
---- /dev/null
-+++ b/include/net/panda/proto_nodes/proto_batman.h
-@@ -0,0 +1,106 @@
-+/* SPDX-License-Identifier: BSD-2-Clause-FreeBSD
-+ *
-+ * Copyright (c) 2020,2021 SiPanda Inc.
-+ *
-+ * Redistribution and use in source and binary forms, with or without
-+ * modification, are permitted provided that the following conditions
-+ * are met:
-+ * 1. Redistributions of source code must retain the above copyright
-+ *    notice, this list of conditions and the following disclaimer.
-+ * 2. Redistributions in binary form must reproduce the above copyright
-+ *    notice, this list of conditions and the following disclaimer in the
-+ *    documentation and/or other materials provided with the distribution.
-+ *
-+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
-+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
-+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-+ * SUCH DAMAGE.
-+ */
-+
-+#ifndef __PANDA_PROTO_BATMAN_H__
-+#define __PANDA_PROTO_BATMAN_H__
-+
-+#include <linux/if_ether.h>
-+
-+#include "net/panda/parser.h"
-+
-+/* ARP and RARP node definitions */
-+
-+#define BATADV_COMPAT_VERSION 15
-+
-+enum batadv_packettype {
-+	/* 0x00 - 0x3f: local packets or special rules for handling */
-+	BATADV_IV_OGM           = 0x00,
-+	BATADV_BCAST            = 0x01,
-+	BATADV_CODED            = 0x02,
-+	BATADV_ELP		= 0x03,
-+	BATADV_OGM2		= 0x04,
-+	/* 0x40 - 0x7f: unicast */
-+#define BATADV_UNICAST_MIN     0x40
-+	BATADV_UNICAST          = 0x40,
-+	BATADV_UNICAST_FRAG     = 0x41,
-+	BATADV_UNICAST_4ADDR    = 0x42,
-+	BATADV_ICMP             = 0x43,
-+	BATADV_UNICAST_TVLV     = 0x44,
-+#define BATADV_UNICAST_MAX     0x7f
-+	/* 0x80 - 0xff: reserved */
-+};
-+
-+struct batadv_unicast_packet {
-+	__u8 packet_type;
-+	__u8 version;
-+	__u8 ttl;
-+	__u8 ttvn; /* destination translation table version number */
-+	__u8 dest[ETH_ALEN];
-+	/* "4 bytes boundary + 2 bytes" long to make the payload after the
-+	 * following ethernet header again 4 bytes boundary aligned
-+	 */
-+};
-+
-+struct batadv_eth {
-+	struct batadv_unicast_packet batadv_unicast;
-+	struct ethhdr eth;
-+};
-+
-+static inline ssize_t batman_len_check(const void *vbeth)
-+{
-+	const struct batadv_eth *beth = vbeth;
-+
-+	if (beth->batadv_unicast.version != BATADV_COMPAT_VERSION ||
-+	    beth->batadv_unicast.packet_type != BATADV_UNICAST)
-+		return PANDA_STOP_FAIL;
-+
-+	return sizeof(struct batadv_eth);
-+}
-+
-+static inline int batman_proto(const void *vbeth)
-+{
-+	return ((struct batadv_eth *)vbeth)->eth.h_proto;
-+}
-+
-+#endif /* __PANDA_PROTO_BATMAN_H__ */
-+
-+#ifdef PANDA_DEFINE_PARSE_NODE
-+
-+/* parse_batman panda_protocol node
-+ *
-+ * Parse BATMAN header
-+ *
-+ * Next protocol operation returns Ethertype (e.g. ETH_P_IPV4)
-+ */
-+static const struct panda_proto_node panda_parse_batman __unused() = {
-+	.name = "BATMAN",
-+	.encap = 1,
-+	.min_len = sizeof(struct batadv_eth),
-+	.ops.len = batman_len_check,
-+	.ops.next_proto = batman_proto,
-+};
-+
-+#endif /* PANDA_DEFINE_PARSE_NODE */
-diff --git a/include/net/panda/proto_nodes/proto_ether.h b/include/net/panda/proto_nodes/proto_ether.h
-new file mode 100644
-index 000000000000..77f54dffeb3e
---- /dev/null
-+++ b/include/net/panda/proto_nodes/proto_ether.h
-@@ -0,0 +1,58 @@
-+/* SPDX-License-Identifier: BSD-2-Clause-FreeBSD
-+ *
-+ * Copyright (c) 2020,2021 SiPanda Inc.
-+ *
-+ * Redistribution and use in source and binary forms, with or without
-+ * modification, are permitted provided that the following conditions
-+ * are met:
-+ * 1. Redistributions of source code must retain the above copyright
-+ *    notice, this list of conditions and the following disclaimer.
-+ * 2. Redistributions in binary form must reproduce the above copyright
-+ *    notice, this list of conditions and the following disclaimer in the
-+ *    documentation and/or other materials provided with the distribution.
-+ *
-+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
-+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
-+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-+ * SUCH DAMAGE.
-+ */
-+
-+#ifndef __PANDA_PROTO_ETHER_H__
-+#define __PANDA_PROTO_ETHER_H__
-+
-+/* Ethernet node definitions */
-+
-+#include <linux/if_ether.h>
-+
-+#include "net/panda/parser.h"
-+
-+static inline int ether_proto(const void *veth)
-+{
-+	return ((struct ethhdr *)veth)->h_proto;
-+}
-+
-+#endif /* __PANDA_PROTO_ETHER_H__ */
-+
-+#ifdef PANDA_DEFINE_PARSE_NODE
-+
-+/* panda_parse_ether protocol node
-+ *
-+ * Parses Ethernet header
-+ *
-+ * Next protocol operation returns Ethertype (e.g. ETH_P_IPV4)
-+ */
-+
-+static const struct panda_proto_node panda_parse_ether __unused() = {
-+	.name = "Ethernet",
-+	.min_len = sizeof(struct ethhdr),
-+	.ops.next_proto = ether_proto,
-+};
-+
-+#endif /* PANDA_DEFINE_PARSE_NODE */
-diff --git a/include/net/panda/proto_nodes/proto_fcoe.h b/include/net/panda/proto_nodes/proto_fcoe.h
-new file mode 100644
-index 000000000000..2fa614345fe4
---- /dev/null
-+++ b/include/net/panda/proto_nodes/proto_fcoe.h
-@@ -0,0 +1,49 @@
-+/* SPDX-License-Identifier: BSD-2-Clause-FreeBSD
-+ *
-+ * Copyright (c) 2020,2021 SiPanda Inc.
-+ *
-+ * Redistribution and use in source and binary forms, with or without
-+ * modification, are permitted provided that the following conditions
-+ * are met:
-+ * 1. Redistributions of source code must retain the above copyright
-+ *    notice, this list of conditions and the following disclaimer.
-+ * 2. Redistributions in binary form must reproduce the above copyright
-+ *    notice, this list of conditions and the following disclaimer in the
-+ *    documentation and/or other materials provided with the distribution.
-+ *
-+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
-+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
-+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-+ * SUCH DAMAGE.
-+ */
-+
-+#ifndef __PANDA_PROTO_FCOE_H__
-+#define __PANDA_PROTO_FCOE_H__
-+
-+#include "net/panda/parser.h"
-+
-+/* Generic FCOE node definitions */
-+
-+#define FCOE_HEADER_LEN		38
-+
-+#endif /* __PANDA_PROTO_FCOE_H__ */
-+
-+#ifdef PANDA_DEFINE_PARSE_NODE
-+
-+/* panda_parse_fcoe protocol node
-+ *
-+ * Parse FCOE header
-+ */
-+static const struct panda_proto_node panda_parse_fcoe __unused() = {
-+	.name = "FCOE",
-+	.min_len = FCOE_HEADER_LEN,
-+};
-+
-+#endif /* PANDA_DEFINE_PARSE_NODE */
-diff --git a/include/net/panda/proto_nodes/proto_gre.h b/include/net/panda/proto_nodes/proto_gre.h
-new file mode 100644
-index 000000000000..3f39f2b46d20
---- /dev/null
-+++ b/include/net/panda/proto_nodes/proto_gre.h
-@@ -0,0 +1,290 @@
-+/* SPDX-License-Identifier: BSD-2-Clause-FreeBSD
-+ *
-+ * Copyright (c) 2020,2021 SiPanda Inc.
-+ *
-+ * Redistribution and use in source and binary forms, with or without
-+ * modification, are permitted provided that the following conditions
-+ * are met:
-+ * 1. Redistributions of source code must retain the above copyright
-+ *    notice, this list of conditions and the following disclaimer.
-+ * 2. Redistributions in binary form must reproduce the above copyright
-+ *    notice, this list of conditions and the following disclaimer in the
-+ *    documentation and/or other materials provided with the distribution.
-+ *
-+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
-+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
-+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-+ * SUCH DAMAGE.
-+ */
-+
-+#ifndef __PANDA_PROTO_GRE_H__
-+#define __PANDA_PROTO_GRE_H__
-+
-+/* GRE node definitions */
-+
-+#ifndef __KERNEL__
-+#include <arpa/inet.h>
-+#endif
-+
-+#include <linux/ip.h>
-+
-+#include "net/panda/parser.h"
-+
-+/* Define common GRE constants. These normally come from linux/if_tunnel.h,
-+ * however that include file has a lot of other definitions beyond just GRE
-+ * which can be a problem compiling especially with older kernel includes. So
-+ * we define the GRE values here if they aren't already defined elsewhere.
-+ */
-+#ifndef GRE_CSUM
-+#define GRE_CSUM	__cpu_to_be16(0x8000)
-+#endif
-+
-+#ifndef GRE_ROUTING
-+#define GRE_ROUTING	__cpu_to_be16(0x4000)
-+#endif
-+
-+#ifndef GRE_KEY
-+#define GRE_KEY		__cpu_to_be16(0x2000)
-+#endif
-+
-+#ifndef GRE_SEQ
-+#define GRE_SEQ		__cpu_to_be16(0x1000)
-+#endif
-+
-+#ifndef GRE_ACK
-+#define GRE_ACK		__cpu_to_be16(0x0080)
-+#endif
-+
-+#ifndef GRE_VERSION
-+#define GRE_VERSION	__cpu_to_be16(0x0007)
-+#endif
-+
-+#ifndef GRE_VERSION_0
-+#define GRE_VERSION_0	__cpu_to_be16(0x0000)
-+#endif
-+
-+#ifndef GRE_VERSION_1
-+#define GRE_VERSION_1	__cpu_to_be16(0x0001)
-+#endif
-+
-+#ifndef GRE_PROTO_PPP
-+#define GRE_PROTO_PPP	__cpu_to_be16(0x880b)
-+#endif
-+
-+#ifndef GRE_PPTP_KEY_MASK
-+#define GRE_PPTP_KEY_MASK	__cpu_to_be32(0xffff)
-+#endif
-+
-+/* GRE flag-field definitions */
-+static const struct panda_flag_fields gre_flag_fields = {
-+	.fields = {
-+		{
-+#define GRE_FLAGS_CSUM_IDX	0
-+			.flag = GRE_CSUM,
-+			.size = sizeof(__be32),
-+		},
-+		{
-+#define GRE_FLAGS_KEY_IDX	1
-+			.flag = GRE_KEY,
-+			.size = sizeof(__be32),
-+		},
-+#define GRE_FLAGS_SEQ_IDX	2
-+		{
-+			.flag = GRE_SEQ,
-+			.size = sizeof(__be32),
-+		},
-+#define GRE_FLAGS_NUM_IDX	3
-+	},
-+	.num_idx = GRE_FLAGS_NUM_IDX
-+};
-+
-+#define GRE_FLAGS_V0_MASK	(GRE_CSUM | GRE_KEY | GRE_SEQ | GRE_ROUTING)
-+
-+static const struct panda_flag_fields pptp_gre_flag_fields = {
-+	.fields = {
-+		{
-+#define GRE_PPTP_FLAGS_CSUM_IDX	0
-+			.flag = GRE_CSUM,
-+			.size = sizeof(__be32),
-+		},
-+		{
-+#define GRE_PPTP_FLAGS_KEY_IDX	1
-+			.flag = GRE_KEY,
-+			.size = sizeof(__be32),
-+		},
-+#define GRE_PPTP_FLAGS_SEQ_IDX	2
-+		{
-+			.flag = GRE_SEQ,
-+			.size = sizeof(__be32),
-+		},
-+#define GRE_PPTP_FLAGS_ACK_IDX	3
-+		{
-+			.flag = GRE_ACK,
-+			.size = sizeof(__be32),
-+		},
-+#define GRE_PPTP_FLAGS_NUM_IDX	4
-+	},
-+	.num_idx = GRE_PPTP_FLAGS_NUM_IDX
-+};
-+
-+#define GRE_FLAGS_V1_MASK	(GRE_CSUM | GRE_KEY | GRE_SEQ |		\
-+				 GRE_ROUTING | GRE_ACK)
-+
-+#define GRE_PPTP_KEY_MASK	__cpu_to_be32(0xffff)
-+
-+struct gre_hdr {
-+	__be16 flags;
-+	__be16 protocol;
-+	__u8 fields[0];
-+};
-+
-+struct panda_pptp_id {
-+	union {
-+		struct {
-+			__u16 payload_len;
-+			__u16 call_id;
-+		};
-+		__u32 val32;
-+	};
-+};
-+
-+static inline int gre_proto_version(const void *vgre)
-+{
-+	return ntohs(((struct gre_hdr *)vgre)->flags & GRE_VERSION);
-+}
-+
-+static inline size_t gre_v0_len_from_flags(unsigned int flags)
-+{
-+	return sizeof(struct gre_hdr) +
-+		panda_flag_fields_length(flags, &gre_flag_fields);
-+}
-+
-+static inline ssize_t gre_v0_len_check(const void *vgre)
-+{
-+	const struct gre_hdr *gre = vgre;
-+
-+	/* Check for valid set of flags */
-+	if (panda_flag_fields_check_invalid(gre->flags, GRE_FLAGS_V0_MASK |
-+								GRE_VERSION))
-+		return PANDA_STOP_BAD_FLAG;
-+
-+	/* Only look inside GRE without routing */
-+	if (((struct gre_hdr *)vgre)->flags & GRE_ROUTING)
-+		return PANDA_STOP_OKAY;
-+
-+	return gre_v0_len_from_flags(gre->flags);
-+}
-+
-+static inline int gre_v0_proto(const void *vgre)
-+{
-+	return ((struct gre_hdr *)vgre)->protocol;
-+}
-+
-+static inline size_t gre_v1_len_from_flags(unsigned int flags)
-+{
-+	return sizeof(struct gre_hdr) +
-+		panda_flag_fields_length(flags, &pptp_gre_flag_fields);
-+}
-+
-+static inline ssize_t gre_v1_len_check(const void *vgre)
-+{
-+	const struct gre_hdr *gre = vgre;
-+
-+	/* Check for valid set of flags */
-+	if (panda_flag_fields_check_invalid(gre->flags, GRE_FLAGS_V1_MASK |
-+								GRE_VERSION))
-+		return PANDA_STOP_BAD_FLAG;
-+
-+	/* Only look inside GRE without routing */
-+	if (((struct gre_hdr *)vgre)->flags & GRE_ROUTING)
-+		return PANDA_STOP_OKAY;
-+
-+	/* Version1 must be PPTP, and check that keyid id set */
-+	if (!(gre->protocol == GRE_PROTO_PPP && (gre->flags & GRE_KEY)))
-+		return PANDA_STOP_OKAY;
-+
-+	return gre_v1_len_from_flags(gre->flags);
-+}
-+
-+static inline int gre_v1_proto(const void *vgre)
-+{
-+	/* Protocol already checked in gre_v1_len_check. Returning zero
-+	 * means PPP
-+	 */
-+
-+	return 0;
-+}
-+
-+#endif /* __PANDA_PROTO_GRE_H__ */
-+
-+#ifdef PANDA_DEFINE_PARSE_NODE
-+
-+/* panda_parse_gre_base protocol node
-+ *
-+ * Parse base GRE header as an overlay to determine GRE version
-+ *
-+ * Next protocol operation returns GRE version number (i.e. 0 or 1).
-+ */
-+static const struct panda_proto_node panda_parse_gre_base __unused() = {
-+	.name = "GRE base",
-+	.overlay = 1,
-+	.min_len = sizeof(struct gre_hdr),
-+	.ops.next_proto = gre_proto_version,
-+};
-+
-+static inline __u32 gre_get_flags(const void *hdr)
-+{
-+	return ((struct gre_hdr *)hdr)->flags;
-+}
-+
-+static inline size_t gre_fields_offset(const void *hdr)
-+{
-+	return sizeof(struct gre_hdr);
-+}
-+
-+/* panda_parse_gre_v0 protocol node
-+ *
-+ * Parse a version 0 GRE header
-+ *
-+ * Next protocol operation returns a GRE protocol (e.g. ETH_P_IPV4).
-+ */
-+static const struct panda_proto_flag_fields_node
-+					panda_parse_gre_v0 __unused() = {
-+	.proto_node.node_type = PANDA_NODE_TYPE_FLAG_FIELDS,
-+	.proto_node.name = "GRE v0",
-+	.proto_node.encap = 1,
-+	.proto_node.min_len = sizeof(struct gre_hdr),
-+	.proto_node.ops.next_proto = gre_v0_proto,
-+	.proto_node.ops.len = gre_v0_len_check,
-+	.ops.get_flags = gre_get_flags,
-+	.ops.start_fields_offset = gre_fields_offset,
-+	.flag_fields = &gre_flag_fields,
-+};
-+
-+/* panda_parse_gre_v1 protocol node
-+ *
-+ * Parse a version 1 GRE header
-+ *
-+ * Next protocol operation returns GRE_PROTO_PPP.
-+ */
-+static const struct panda_proto_flag_fields_node
-+					panda_parse_gre_v1 __unused() = {
-+	.proto_node.node_type = PANDA_NODE_TYPE_FLAG_FIELDS,
-+	.proto_node.name = "GRE v1 - pptp",
-+	.proto_node.encap = 1,
-+	.proto_node.min_len = sizeof(struct gre_hdr),
-+	.proto_node.ops.next_proto = gre_v1_proto,
-+	.proto_node.ops.len = gre_v1_len_check,
-+	.ops.get_flags = gre_get_flags,
-+	.ops.start_fields_offset = gre_fields_offset,
-+	.flag_fields = &pptp_gre_flag_fields,
-+};
-+
-+#endif /* PANDA_DEFINE_PARSE_NODE */
-diff --git a/include/net/panda/proto_nodes/proto_icmp.h b/include/net/panda/proto_nodes/proto_icmp.h
-new file mode 100644
-index 000000000000..222863c83617
---- /dev/null
-+++ b/include/net/panda/proto_nodes/proto_icmp.h
-@@ -0,0 +1,74 @@
-+/* SPDX-License-Identifier: BSD-2-Clause-FreeBSD
-+ *
-+ * Copyright (c) 2020,2021 SiPanda Inc.
-+ *
-+ * Redistribution and use in source and binary forms, with or without
-+ * modification, are permitted provided that the following conditions
-+ * are met:
-+ * 1. Redistributions of source code must retain the above copyright
-+ *    notice, this list of conditions and the following disclaimer.
-+ * 2. Redistributions in binary form must reproduce the above copyright
-+ *    notice, this list of conditions and the following disclaimer in the
-+ *    documentation and/or other materials provided with the distribution.
-+ *
-+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
-+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
-+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-+ * SUCH DAMAGE.
-+ */
-+
-+#ifndef __PANDA_PROTO_ICMP_H__
-+#define __PANDA_PROTO_ICMP_H__
-+
-+/* Generic ICMP node definitions */
-+
-+#include <linux/icmp.h>
-+#include <linux/icmpv6.h>
-+
-+#include "net/panda/parser.h"
-+
-+static inline bool icmp_has_id(__u8 type)
-+{
-+	switch (type) {
-+	case ICMP_ECHO:
-+	case ICMP_ECHOREPLY:
-+	case ICMP_TIMESTAMP:
-+	case ICMP_TIMESTAMPREPLY:
-+	case ICMPV6_ECHO_REQUEST:
-+	case ICMPV6_ECHO_REPLY:
-+		return true;
-+	}
-+
-+	return false;
-+}
-+
-+#endif /* __PANDA_PROTO_ICMP_H__ */
-+
-+#ifdef PANDA_DEFINE_PARSE_NODE
-+
-+/* panda_parse_icmpv4 protocol node
-+ *
-+ * Parse ICMPv4 header
-+ */
-+static const struct panda_proto_node panda_parse_icmpv4 __unused() = {
-+	.name = "ICMPv4",
-+	.min_len = sizeof(struct icmphdr),
-+};
-+
-+/* panda_parse_icmpv6 protocol node
-+ *
-+ * Parse ICMPv6 header
-+ */
-+static const struct panda_proto_node panda_parse_icmpv6 __unused() = {
-+	.name = "ICMPv6",
-+	.min_len = sizeof(struct icmp6hdr),
-+};
-+
-+#endif /* PANDA_DEFINE_PARSE_NODE */
-diff --git a/include/net/panda/proto_nodes/proto_igmp.h b/include/net/panda/proto_nodes/proto_igmp.h
-new file mode 100644
-index 000000000000..1010ba3a55c9
---- /dev/null
-+++ b/include/net/panda/proto_nodes/proto_igmp.h
-@@ -0,0 +1,49 @@
-+/* SPDX-License-Identifier: BSD-2-Clause-FreeBSD
-+ *
-+ * Copyright (c) 2020,2021 SiPanda Inc.
-+ *
-+ * Redistribution and use in source and binary forms, with or without
-+ * modification, are permitted provided that the following conditions
-+ * are met:
-+ * 1. Redistributions of source code must retain the above copyright
-+ *    notice, this list of conditions and the following disclaimer.
-+ * 2. Redistributions in binary form must reproduce the above copyright
-+ *    notice, this list of conditions and the following disclaimer in the
-+ *    documentation and/or other materials provided with the distribution.
-+ *
-+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
-+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
-+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-+ * SUCH DAMAGE.
-+ */
-+
-+#ifndef __PANDA_PROTO_IGMP_H__
-+#define __PANDA_PROTO_IGMP_H__
-+
-+/* PANDA protocol node for IGMP */
-+
-+#include <linux/igmp.h>
-+
-+#include "net/panda/parser.h"
-+
-+#endif /* __PANDA_PROTO_IGMP_H__ */
-+
-+#ifdef PANDA_DEFINE_PARSE_NODE
-+
-+/* panda_parse_igmp protocol node
-+ *
-+ * Parse IGMP header
-+ */
-+static const struct panda_proto_node panda_parse_igmp __unused() = {
-+	.name = "IGMP",
-+	.min_len = sizeof(struct igmphdr),
-+};
-+
-+#endif /* PANDA_DEFINE_PARSE_NODE */
-diff --git a/include/net/panda/proto_nodes/proto_ip.h b/include/net/panda/proto_nodes/proto_ip.h
-new file mode 100644
-index 000000000000..4992a0d67786
---- /dev/null
-+++ b/include/net/panda/proto_nodes/proto_ip.h
-@@ -0,0 +1,77 @@
-+/* SPDX-License-Identifier: BSD-2-Clause-FreeBSD
-+ *
-+ * Copyright (c) 2020,2021 SiPanda Inc.
-+ *
-+ * Redistribution and use in source and binary forms, with or without
-+ * modification, are permitted provided that the following conditions
-+ * are met:
-+ * 1. Redistributions of source code must retain the above copyright
-+ *    notice, this list of conditions and the following disclaimer.
-+ * 2. Redistributions in binary form must reproduce the above copyright
-+ *    notice, this list of conditions and the following disclaimer in the
-+ *    documentation and/or other materials provided with the distribution.
-+ *
-+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
-+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
-+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-+ * SUCH DAMAGE.
-+ */
-+
-+#ifndef __PANDA_PROTO_IP_H__
-+#define __PANDA_PROTO_IP_H__
-+
-+#include "net/panda/parser.h"
-+
-+/* IP overlay node definitions */
-+
-+#include <asm/byteorder.h>
-+
-+struct ip_hdr_byte {
-+#if defined(__LITTLE_ENDIAN_BITFIELD)
-+	__u8    rsvd:4,
-+		version:4;
-+#elif defined(__BIG_ENDIAN_BITFIELD)
-+	__u8    version:4,
-+		rsvd:4;
-+#else
-+#error "Please fix <asm/byteorder.h>"
-+#endif
-+};
-+
-+static inline int ip_proto(const void *viph)
-+{
-+	return ((struct ip_hdr_byte *)viph)->version;
-+}
-+
-+static inline size_t ip_min_len(const void *viph)
-+{
-+	return sizeof(struct ip_hdr_byte);
-+}
-+
-+#endif /* __PANDA_PROTO_IP_H__ */
-+
-+#ifdef PANDA_DEFINE_PARSE_NODE
-+
-+/* parse_ip protocol node
-+ *
-+ * Parses first byte of IP header to distinguish IP version (i.e. IPv4
-+ * and IPv6)
-+ *
-+ * Next protocol operation returns IP version number (e.g. 4 for IPv4,
-+ * 6 for IPv6)
-+ */
-+static const struct panda_proto_node panda_parse_ip __unused() = {
-+	.name = "IP overlay",
-+	.overlay = 1,
-+	.min_len = sizeof(struct ip_hdr_byte),
-+	.ops.next_proto = ip_proto,
-+};
-+
-+#endif /* PANDA_DEFINE_PARSE_NODE */
-diff --git a/include/net/panda/proto_nodes/proto_ipv4.h b/include/net/panda/proto_nodes/proto_ipv4.h
-new file mode 100644
-index 000000000000..2a463713af9f
---- /dev/null
-+++ b/include/net/panda/proto_nodes/proto_ipv4.h
-@@ -0,0 +1,150 @@
-+/* SPDX-License-Identifier: BSD-2-Clause-FreeBSD
-+ *
-+ * Copyright (c) 2020,2021 SiPanda Inc.
-+ *
-+ * Redistribution and use in source and binary forms, with or without
-+ * modification, are permitted provided that the following conditions
-+ * are met:
-+ * 1. Redistributions of source code must retain the above copyright
-+ *    notice, this list of conditions and the following disclaimer.
-+ * 2. Redistributions in binary form must reproduce the above copyright
-+ *    notice, this list of conditions and the following disclaimer in the
-+ *    documentation and/or other materials provided with the distribution.
-+ *
-+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
-+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
-+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-+ * SUCH DAMAGE.
-+ */
-+
-+#ifndef __PROTO_IPV4_H__
-+#define __PROTO_IPV4_H__
-+
-+/* IPv4 node definitions */
-+
-+#ifndef __KERNEL__
-+#include <arpa/inet.h>
-+#endif
-+
-+#include <linux/ip.h>
-+
-+#include "net/panda/parser.h"
-+
-+#define IP_MF		0x2000	/* Flag: "More Fragments"   */
-+#define IP_OFFSET	0x1FFF	/* "Fragment Offset" part   */
-+
-+static inline size_t ipv4_len(const void *viph)
-+{
-+	return ((struct iphdr *)viph)->ihl * 4;
-+}
-+
-+static inline bool ip_is_fragment(const struct iphdr *iph)
-+{
-+	return (iph->frag_off & htons(IP_MF | IP_OFFSET)) != 0;
-+}
-+
-+static inline int ipv4_proto(const void *viph)
-+{
-+	const struct iphdr *iph = viph;
-+
-+	if (ip_is_fragment(iph) && (iph->frag_off & htons(IP_OFFSET))) {
-+		/* Stop at a non-first fragment */
-+		return PANDA_STOP_OKAY;
-+	}
-+
-+	return iph->protocol;
-+}
-+
-+static inline int ipv4_proto_stop1stfrag(const void *viph)
-+{
-+	const struct iphdr *iph = viph;
-+
-+	if (ip_is_fragment(iph)) {
-+		/* Stop at all fragments */
-+		return PANDA_STOP_OKAY;
-+	}
-+
-+	return iph->protocol;
-+}
-+
-+static inline ssize_t ipv4_length(const void *viph)
-+{
-+	return ipv4_len(viph);
-+}
-+
-+static inline ssize_t ipv4_length_check(const void *viph)
-+{
-+	const struct iphdr *iph = viph;
-+
-+	if (iph->version != 4)
-+		return PANDA_STOP_UNKNOWN_PROTO;
-+
-+	return ipv4_len(viph);
-+}
-+
-+#endif /* __PROTO_IPV4_H__ */
-+
-+#ifdef PANDA_DEFINE_PARSE_NODE
-+
-+/* panda_parse_ipv4 protocol node
-+ *
-+ * Parse IPv4 header
-+ *
-+ * Next protocol operation returns IP proto number (e.g. IPPROTO_TCP)
-+ */
-+static const struct panda_proto_node panda_parse_ipv4 __unused() = {
-+	.name = "IPv4",
-+	.min_len = sizeof(struct iphdr),
-+	.ops.len = ipv4_length,
-+	.ops.next_proto = ipv4_proto,
-+};
-+
-+/* panda_parse_ipv4_stop1stfrag protocol node
-+ *
-+ * Parse IPv4 header but don't parse into first fragment
-+ *
-+ * Next protocol operation returns IP proto number (e.g. IPPROTO_TCP)
-+ */
-+static const struct panda_proto_node panda_parse_ipv4_stop1stfrag __unused() = {
-+	.name = "IPv4 without parsing 1st fragment",
-+	.min_len = sizeof(struct iphdr),
-+	.ops.len = ipv4_length,
-+	.ops.next_proto = ipv4_proto_stop1stfrag,
-+};
-+
-+/* panda_parse_ipv4_check protocol node
-+ *
-+ * Check version is four and parse IPv4 header
-+ *
-+ * Next protocol operation returns IP proto number (e.g. IPPROTO_TCP)
-+ */
-+static const struct panda_proto_node panda_parse_ipv4_check __unused() = {
-+	.name = "IPv4-check",
-+	.min_len = sizeof(struct iphdr),
-+	.ops.len = ipv4_length_check,
-+	.ops.next_proto = ipv4_proto,
-+};
-+
-+/* panda_parse_ipv4_stop1stfrag_check protocol node
-+ *
-+ * Check IP version is four an parse IPv4 header but don't parse into first
-+ * fragment
-+ *
-+ * Next protocol operation returns IP proto number (e.g. IPPROTO_TCP)
-+ */
-+static const struct panda_proto_node panda_parse_ipv4_stop1stfrag_check
-+							__unused() = {
-+	.name = "IPv4 without parsing 1st fragment",
-+	.min_len = sizeof(struct iphdr),
-+	.ops.len = ipv4_length,
-+	.ops.next_proto = ipv4_proto_stop1stfrag,
-+};
-+
-+#endif /* PANDA_DEFINE_PARSE_NODE */
-diff --git a/include/net/panda/proto_nodes/proto_ipv4ip.h b/include/net/panda/proto_nodes/proto_ipv4ip.h
-new file mode 100644
-index 000000000000..80cfcb85c743
---- /dev/null
-+++ b/include/net/panda/proto_nodes/proto_ipv4ip.h
-@@ -0,0 +1,59 @@
-+/* SPDX-License-Identifier: BSD-2-Clause-FreeBSD
-+ *
-+ * Copyright (c) 2020,2021 SiPanda Inc.
-+ *
-+ * Redistribution and use in source and binary forms, with or without
-+ * modification, are permitted provided that the following conditions
-+ * are met:
-+ * 1. Redistributions of source code must retain the above copyright
-+ *    notice, this list of conditions and the following disclaimer.
-+ * 2. Redistributions in binary form must reproduce the above copyright
-+ *    notice, this list of conditions and the following disclaimer in the
-+ *    documentation and/or other materials provided with the distribution.
-+ *
-+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
-+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
-+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-+ * SUCH DAMAGE.
-+ */
-+
-+#ifndef __PANDA_PROTO_IPV4IP_H__
-+#define __PANDA_PROTO_IPV4IP_H__
-+
-+/* IPv4 in IP node definitions */
-+
-+#include <linux/ip.h>
-+
-+#include "net/panda/parser.h"
-+
-+static inline int ipv4_proto_default(const void *viph)
-+{
-+	return 0; /* Indicates IPv4 */
-+}
-+
-+#endif /* __PANDA_PROTO_IPV4IP_H__ */
-+
-+#ifdef PANDA_DEFINE_PARSE_NODE
-+
-+/* parse_ipv4ip protocol node
-+ *
-+ * Parses IPv4IP header
-+ *
-+ * Next protocol operation returns 0 indicating IPv4
-+ */
-+static const struct panda_proto_node panda_parse_ipv4ip __unused() = {
-+	.name = "IPv4 in IP",
-+	.encap = 1,
-+	.overlay = 1,
-+	.min_len = sizeof(struct iphdr),
-+	.ops.next_proto = ipv4_proto_default,
-+};
-+
-+#endif /* PANDA_DEFINE_PARSE_NODE */
-diff --git a/include/net/panda/proto_nodes/proto_ipv6.h b/include/net/panda/proto_nodes/proto_ipv6.h
-new file mode 100644
-index 000000000000..9e0043d95ab4
---- /dev/null
-+++ b/include/net/panda/proto_nodes/proto_ipv6.h
-@@ -0,0 +1,133 @@
-+/* SPDX-License-Identifier: BSD-2-Clause-FreeBSD
-+ *
-+ * Copyright (c) 2020,2021 SiPanda Inc.
-+ *
-+ * Redistribution and use in source and binary forms, with or without
-+ * modification, are permitted provided that the following conditions
-+ * are met:
-+ * 1. Redistributions of source code must retain the above copyright
-+ *    notice, this list of conditions and the following disclaimer.
-+ * 2. Redistributions in binary form must reproduce the above copyright
-+ *    notice, this list of conditions and the following disclaimer in the
-+ *    documentation and/or other materials provided with the distribution.
-+ *
-+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
-+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
-+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-+ * SUCH DAMAGE.
-+ */
-+
-+#ifndef __PANDA_PROTO_IPV6_H__
-+#define __PANDA_PROTO_IPV6_H__
-+
-+/* IPv6 node definitions */
-+
-+#ifndef __KERNEL__
-+#include <arpa/inet.h>
-+#endif
-+
-+#include <linux/ipv6.h>
-+
-+#include "net/panda/parser.h"
-+
-+#define ipv6_optlen(p)  (((p)->hdrlen+1) << 3)
-+
-+#define IPV6_FLOWLABEL_MASK	htonl(0x000FFFFF)
-+static inline __be32 ip6_flowlabel(const struct ipv6hdr *hdr)
-+{
-+	return *(__be32 *)hdr & IPV6_FLOWLABEL_MASK;
-+}
-+
-+static inline int ipv6_proto(const void *viph)
-+{
-+	return ((struct ipv6hdr *)viph)->nexthdr;
-+}
-+
-+static inline int ipv6_proto_stopflowlabel(const void *viph)
-+{
-+	const struct ipv6hdr *iph = viph;
-+
-+	if (ip6_flowlabel(iph)) {
-+		/* Don't continue if flowlabel is non-zero */
-+		return PANDA_STOP_OKAY;
-+	}
-+
-+	return iph->nexthdr;
-+}
-+
-+static inline ssize_t ipv6_length_check(const void *viph)
-+{
-+	const struct ipv6hdr *iph = viph;
-+
-+	if (iph->version != 6)
-+		return PANDA_STOP_UNKNOWN_PROTO;
-+
-+	return sizeof(struct ipv6hdr);
-+}
-+
-+#endif /* __PANDA_PROTO_IPV6_H__ */
-+
-+#ifdef PANDA_DEFINE_PARSE_NODE
-+
-+/* panda_parse_ipv6 protocol node
-+ *
-+ * Parse IPv6 header
-+ *
-+ * Next protocol operation returns IP proto number (e.g. IPPROTO_TCP)
-+ */
-+static const struct panda_proto_node panda_parse_ipv6 __unused() = {
-+	.name = "IPv6",
-+	.min_len = sizeof(struct ipv6hdr),
-+	.ops.next_proto = ipv6_proto,
-+};
-+
-+/* parse_ipv6_stopflowlabel protocol node
-+ *
-+ * Parse IPv6 header and stop at a non-zero flow label
-+ *
-+ * Next protocol operation returns IP proto number (e.g. IPPROTO_TCP)
-+ */
-+static const struct panda_proto_node
-+				panda_parse_ipv6_stopflowlabel __unused() = {
-+	.name = "IPv6 stop at non-zero flow label",
-+	.min_len = sizeof(struct ipv6hdr),
-+	.ops.next_proto = ipv6_proto_stopflowlabel,
-+};
-+
-+
-+/* panda_parse_ipv6_check protocol node
-+ *
-+ * Check version is six and parse IPv6 header
-+ *
-+ * Next protocol operation returns IP proto number (e.g. IPPROTO_TCP)
-+ */
-+static const struct panda_proto_node panda_parse_ipv6_check __unused() = {
-+	.name = "IPv6",
-+	.min_len = sizeof(struct ipv6hdr),
-+	.ops.len = ipv6_length_check,
-+	.ops.next_proto = ipv6_proto,
-+};
-+
-+/* parse_ipv6_stopflowlabel_check protocol node
-+ *
-+ * Check version is six, parse IPv6 header, and stop at a non-zero flow label
-+ *
-+ * Next protocol operation returns IP proto number (e.g. IPPROTO_TCP)
-+ */
-+static const struct panda_proto_node
-+				panda_parse_ipv6_stopflowlabel_check
-+							__unused() = {
-+	.name = "IPv6 stop at non-zero flow label",
-+	.min_len = sizeof(struct ipv6hdr),
-+	.ops.len = ipv6_length_check,
-+	.ops.next_proto = ipv6_proto_stopflowlabel,
-+};
-+
-+#endif /* PANDA_DEFINE_PARSE_NODE */
-diff --git a/include/net/panda/proto_nodes/proto_ipv6_eh.h b/include/net/panda/proto_nodes/proto_ipv6_eh.h
-new file mode 100644
-index 000000000000..e41131df6f32
---- /dev/null
-+++ b/include/net/panda/proto_nodes/proto_ipv6_eh.h
-@@ -0,0 +1,108 @@
-+/* SPDX-License-Identifier: BSD-2-Clause-FreeBSD
-+ *
-+ * Copyright (c) 2020,2021 SiPanda Inc.
-+ *
-+ * Redistribution and use in source and binary forms, with or without
-+ * modification, are permitted provided that the following conditions
-+ * are met:
-+ * 1. Redistributions of source code must retain the above copyright
-+ *    notice, this list of conditions and the following disclaimer.
-+ * 2. Redistributions in binary form must reproduce the above copyright
-+ *    notice, this list of conditions and the following disclaimer in the
-+ *    documentation and/or other materials provided with the distribution.
-+ *
-+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
-+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
-+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-+ * SUCH DAMAGE.
-+ */
-+
-+#ifndef __PANDA_PROTO_IPV6_EH_H__
-+#define __PANDA_PROTO_IPV6_EH_H__
-+
-+/* Generic definitions for IPv6 extension headers */
-+
-+#ifndef __KERNEL__
-+#include <arpa/inet.h>
-+#endif
-+
-+#include <linux/ipv6.h>
-+
-+#include "net/panda/parser.h"
-+
-+struct ipv6_frag_hdr {
-+	__u8    nexthdr;
-+	__u8    reserved;
-+	__be16  frag_off;
-+	__be32  identification;
-+};
-+
-+#define IP6_MF		0x0001
-+#define IP6_OFFSET	0xFFF8
-+
-+static inline int ipv6_eh_proto(const void *vopt)
-+{
-+	return ((struct ipv6_opt_hdr *)vopt)->nexthdr;
-+}
-+
-+static inline ssize_t ipv6_eh_len(const void *vopt)
-+{
-+	return ipv6_optlen((struct ipv6_opt_hdr *)vopt);
-+}
-+
-+static inline int ipv6_frag_proto(const void *vfraghdr)
-+{
-+	const struct ipv6_frag_hdr *fraghdr = vfraghdr;
-+
-+	if (fraghdr->frag_off & htons(IP6_OFFSET)) {
-+		/* Stop at non-first fragment */
-+		return PANDA_STOP_OKAY;
-+	}
-+
-+	return fraghdr->nexthdr;
-+}
-+
-+#endif /* __PANDA_PROTO_IPV6_EH_H__ */
-+
-+#ifdef PANDA_DEFINE_PARSE_NODE
-+
-+static const struct panda_proto_node panda_parse_ipv6_eh __unused() = {
-+	.name = "IPv6 EH",
-+	.min_len = sizeof(struct ipv6_opt_hdr),
-+	.ops.next_proto = ipv6_eh_proto,
-+	.ops.len = ipv6_eh_len,
-+};
-+
-+/* panda_parse_ipv6_eh protocol node
-+ *
-+ * Parse IPv6 extension header (Destinaion Options, Hop-by-Hop Options,
-+ * or Routing Header
-+ *
-+ * Next protocol operation returns IP proto number (e.g. IPPROTO_TCP)
-+ */
-+static const struct panda_proto_node panda_parse_ipv6_frag_eh __unused() = {
-+	.name = "IPv6 EH",
-+	.min_len = sizeof(struct ipv6_frag_hdr),
-+	.ops.next_proto = ipv6_frag_proto,
-+};
-+
-+/* panda_parse_ipv6_frag_eh protocol node
-+ *
-+ * Parse IPv6 fragmentation header, stop parsing at first fragment
-+ *
-+ * Next protocol operation returns IP proto number (e.g. IPPROTO_TCP)
-+ */
-+static const struct panda_proto_node panda_parse_ipv6_frag_eh_stop1stfrag
-+							__unused() = {
-+	.name = "IPv6 EH",
-+	.min_len = sizeof(struct ipv6_frag_hdr),
-+};
-+
-+#endif /* PANDA_DEFINE_PARSE_NODE */
-diff --git a/include/net/panda/proto_nodes/proto_ipv6ip.h b/include/net/panda/proto_nodes/proto_ipv6ip.h
-new file mode 100644
-index 000000000000..d73d95951c6b
---- /dev/null
-+++ b/include/net/panda/proto_nodes/proto_ipv6ip.h
-@@ -0,0 +1,59 @@
-+/* SPDX-License-Identifier: BSD-2-Clause-FreeBSD
-+ *
-+ * Copyright (c) 2020,2021 SiPanda Inc.
-+ *
-+ * Redistribution and use in source and binary forms, with or without
-+ * modification, are permitted provided that the following conditions
-+ * are met:
-+ * 1. Redistributions of source code must retain the above copyright
-+ *    notice, this list of conditions and the following disclaimer.
-+ * 2. Redistributions in binary form must reproduce the above copyright
-+ *    notice, this list of conditions and the following disclaimer in the
-+ *    documentation and/or other materials provided with the distribution.
-+ *
-+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
-+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
-+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-+ * SUCH DAMAGE.
-+ */
-+
-+#ifndef __PANDA_PROTO_IPV6IP_H__
-+#define __PANDA_PROTO_IPV6IP_H__
-+
-+/* IPv6 in IP node definitions */
-+
-+#include <linux/ipv6.h>
-+
-+#include "net/panda/parser.h"
-+
-+static inline int ipv6_proto_default(const void *viph)
-+{
-+	return 0; /* Indicates IPv6 */
-+}
-+
-+#endif /* __PANDA_PROTO_IPV6IP_H__ */
-+
-+#ifdef PANDA_DEFINE_PARSE_NODE
-+
-+/* panda_parse_ipv6ip protocol node
-+ *
-+ * Parses IPv6IP header
-+ *
-+ * Next protocol operation returns 0 indicating IPv4
-+ */
-+static const struct panda_proto_node panda_parse_ipv6ip __unused() = {
-+	.name = "IPv6 in IP",
-+	.encap = 1,
-+	.overlay = 1,
-+	.min_len = sizeof(struct ipv6hdr),
-+	.ops.next_proto = ipv6_proto_default,
-+};
-+
-+#endif /* PANDA_DEFINE_PARSE_NODE */
-diff --git a/include/net/panda/proto_nodes/proto_mpls.h b/include/net/panda/proto_nodes/proto_mpls.h
-new file mode 100644
-index 000000000000..e3ed5c614b9e
---- /dev/null
-+++ b/include/net/panda/proto_nodes/proto_mpls.h
-@@ -0,0 +1,49 @@
-+/* SPDX-License-Identifier: BSD-2-Clause-FreeBSD
-+ *
-+ * Copyright (c) 2020,2021 SiPanda Inc.
-+ *
-+ * Redistribution and use in source and binary forms, with or without
-+ * modification, are permitted provided that the following conditions
-+ * are met:
-+ * 1. Redistributions of source code must retain the above copyright
-+ *    notice, this list of conditions and the following disclaimer.
-+ * 2. Redistributions in binary form must reproduce the above copyright
-+ *    notice, this list of conditions and the following disclaimer in the
-+ *    documentation and/or other materials provided with the distribution.
-+ *
-+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
-+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
-+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-+ * SUCH DAMAGE.
-+ */
-+
-+#ifndef __PANDA_PROTO_MPLS_H__
-+#define __PANDA_PROTO_MPLS_H__
-+
-+/* MPLS node definitions */
-+
-+#include <linux/mpls.h>
-+
-+#include "net/panda/parser.h"
-+
-+#endif /* __PANDA_PROTO_MPLS_H__ */
-+
-+#ifdef PANDA_DEFINE_PARSE_NODE
-+
-+/* panda_parse_mpls protocol node
-+ *
-+ * Parse MPLS header
-+ */
-+static const struct panda_proto_node panda_parse_mpls __unused() = {
-+	.name = "MPLS",
-+	.min_len = 2 * sizeof(struct mpls_label),
-+};
-+
-+#endif /* PANDA_DEFINE_PARSE_NODE */
-diff --git a/include/net/panda/proto_nodes/proto_ports.h b/include/net/panda/proto_nodes/proto_ports.h
-new file mode 100644
-index 000000000000..ff4186bd6ddb
---- /dev/null
-+++ b/include/net/panda/proto_nodes/proto_ports.h
-@@ -0,0 +1,59 @@
-+/* SPDX-License-Identifier: BSD-2-Clause-FreeBSD
-+ *
-+ * Copyright (c) 2020,2021 SiPanda Inc.
-+ *
-+ * Redistribution and use in source and binary forms, with or without
-+ * modification, are permitted provided that the following conditions
-+ * are met:
-+ * 1. Redistributions of source code must retain the above copyright
-+ *    notice, this list of conditions and the following disclaimer.
-+ * 2. Redistributions in binary form must reproduce the above copyright
-+ *    notice, this list of conditions and the following disclaimer in the
-+ *    documentation and/or other materials provided with the distribution.
-+ *
-+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
-+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
-+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-+ * SUCH DAMAGE.
-+ */
-+
-+#ifndef __PANDA_PROTO_PORTS_H__
-+#define __PANDA_PROTO_PORTS_H__
-+
-+#include "net/panda/parser.h"
-+
-+/* Transport nodes with ports definitions */
-+
-+struct port_hdr {
-+	union {
-+		__be32   ports;
-+		struct {
-+			__be16 sport;
-+			__be16 dport;
-+		};
-+	};
-+};
-+
-+#endif /* __PANDA_PROTO_PORTS_H__ */
-+
-+#ifdef PANDA_DEFINE_PARSE_NODE
-+
-+/* Generic PANDA parse nodes for transport protocols that contain port
-+ * numbers cnanonical location
-+ *
-+ * Transport header starts with sixteen bit source and destination port
-+ * numbers. Applicable protocols include TCP, UDP, SCTP, etc.
-+ */
-+static const struct panda_proto_node panda_parse_ports __unused() = {
-+	.name = "Transport with ports",
-+	.min_len = sizeof(struct port_hdr),
-+};
-+
-+#endif /* PANDA_DEFINE_PARSE_NODE */
-diff --git a/include/net/panda/proto_nodes/proto_ppp.h b/include/net/panda/proto_nodes/proto_ppp.h
-new file mode 100644
-index 000000000000..59b50baef517
---- /dev/null
-+++ b/include/net/panda/proto_nodes/proto_ppp.h
-@@ -0,0 +1,79 @@
-+/* SPDX-License-Identifier: BSD-2-Clause-FreeBSD
-+ *
-+ * Copyright (c) 2020,2021 SiPanda Inc.
-+ *
-+ * Redistribution and use in source and binary forms, with or without
-+ * modification, are permitted provided that the following conditions
-+ * are met:
-+ * 1. Redistributions of source code must retain the above copyright
-+ *    notice, this list of conditions and the following disclaimer.
-+ * 2. Redistributions in binary form must reproduce the above copyright
-+ *    notice, this list of conditions and the following disclaimer in the
-+ *    documentation and/or other materials provided with the distribution.
-+ *
-+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
-+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
-+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-+ * SUCH DAMAGE.
-+ */
-+
-+#ifndef __PANDA_PROTO_PPP_H__
-+#define __PANDA_PROTO_PPP_H__
-+
-+#include <linux/ppp_defs.h>
-+
-+#include "net/panda/parser.h"
-+
-+/* PPP node definitions */
-+
-+struct ppp_hdr_proto8 {
-+	__u8 address;
-+	__u8 control;
-+	__u8 protocol;
-+};
-+
-+struct ppp_hdr_proto16 {
-+	__u8 address;
-+	__u8 control;
-+	__be16 protocol;
-+};
-+
-+static inline int ppp_proto(const void *vppp)
-+{
-+	/*
-+	https://tools.ietf.org/html/rfc1661#section-2
-+	if most significant byte is odd protcol length is 1 byte
-+	*/
-+	return ((struct ppp_hdr_proto8*)vppp)->protocol % 2 ? __be16_to_cpu(((struct ppp_hdr_proto8*)vppp)->protocol) : ((struct ppp_hdr_proto16*)vppp)->protocol;
-+}
-+
-+static inline ssize_t ppp_length(const void *vppp)
-+{
-+	return ((struct ppp_hdr_proto8*)vppp)->protocol % 2 ? sizeof(struct ppp_hdr_proto8) : sizeof(struct ppp_hdr_proto16);
-+}
-+
-+#endif /* __PANDA_PROTO_PPP_H__ */
-+
-+#ifdef PANDA_DEFINE_PARSE_NODE
-+
-+/* panda_parse_ppp protocol node
-+ *
-+ * Parse PPP header
-+ *
-+ * Next protocol operation returns IP proto number (e.g. IPPROTO_TCP)
-+ */
-+static const struct panda_proto_node panda_parse_ppp __unused() = {
-+	.name = "PPP",
-+	.min_len = sizeof(struct ppp_hdr_proto8),
-+	.ops.len = ppp_length,
-+	.ops.next_proto = ppp_proto,
-+};
-+
-+#endif /* PANDA_DEFINE_PARSE_NODE */
-diff --git a/include/net/panda/proto_nodes/proto_pppoe.h b/include/net/panda/proto_nodes/proto_pppoe.h
-new file mode 100644
-index 000000000000..75afc4f66ebd
---- /dev/null
-+++ b/include/net/panda/proto_nodes/proto_pppoe.h
-@@ -0,0 +1,98 @@
-+/* SPDX-License-Identifier: BSD-2-Clause-FreeBSD
-+ *
-+ * Copyright (c) 2020,2021 SiPanda Inc.
-+ *
-+ * Redistribution and use in source and binary forms, with or without
-+ * modification, are permitted provided that the following conditions
-+ * are met:
-+ * 1. Redistributions of source code must retain the above copyright
-+ *    notice, this list of conditions and the following disclaimer.
-+ * 2. Redistributions in binary form must reproduce the above copyright
-+ *    notice, this list of conditions and the following disclaimer in the
-+ *    documentation and/or other materials provided with the distribution.
-+ *
-+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
-+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
-+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-+ * SUCH DAMAGE.
-+ */
-+
-+#ifndef __PANDA_PROTO_PPPOE_H__
-+#define __PANDA_PROTO_PPPOE_H__
-+
-+#include "net/panda/parser.h"
-+
-+struct pppoe_hdr_proto8 {
-+#if defined(__LITTLE_ENDIAN_BITFIELD)
-+	__u8 type : 4;
-+	__u8 ver : 4;
-+#elif defined(__BIG_ENDIAN_BITFIELD)
-+	__u8 ver : 4;
-+	__u8 type : 4;
-+#else
-+#error	"Please fix <asm/byteorder.h>"
-+#endif
-+	__u8 code;
-+	__be16 sid;
-+	__be16 length;
-+	__u8 protocol;
-+} __attribute__((packed));
-+
-+struct pppoe_hdr_proto16 {
-+#if defined(__LITTLE_ENDIAN_BITFIELD)
-+	__u8 type : 4;
-+	__u8 ver : 4;
-+#elif defined(__BIG_ENDIAN_BITFIELD)
-+	__u8 ver : 4;
-+	__u8 type : 4;
-+#else
-+#error	"Please fix <asm/byteorder.h>"
-+#endif
-+	__u8 code;
-+	__be16 sid;
-+	__be16 length;
-+	__be16 protocol;
-+} __attribute__((packed));
-+
-+//int static_assert_global_v[sizeof(struct pppoe_hdr) == 6 ? -1 : 1];
-+
-+/* PPP node definitions */
-+static inline int pppoe_proto(const void *vppp)
-+{
-+	/*
-+	https://tools.ietf.org/html/rfc1661#section-2
-+	if most significant byte is odd protcol length is 1 byte
-+	*/
-+	return ((struct pppoe_hdr_proto8*)vppp)->protocol % 2 ? __be16_to_cpu(((struct pppoe_hdr_proto8*)vppp)->protocol) : ((struct pppoe_hdr_proto16*)vppp)->protocol;
-+}
-+
-+static inline ssize_t pppoe_length(const void *vppp)
-+{
-+	return ((struct pppoe_hdr_proto8*)vppp)->protocol % 2 ? sizeof(struct pppoe_hdr_proto8) : sizeof(struct pppoe_hdr_proto16);
-+}
-+
-+#endif /* __PANDA_PROTO_PPP_H__ */
-+
-+#ifdef PANDA_DEFINE_PARSE_NODE
-+
-+/* panda_parse_ppp protocol node
-+ *
-+ * Parse PPP header
-+ *
-+ * Next protocol operation returns IP proto number (e.g. IPPROTO_TCP)
-+ */
-+static const struct panda_proto_node panda_parse_pppoe __unused() = {
-+	.name = "PPPoE",
-+	.min_len = sizeof(struct pppoe_hdr_proto8),
-+	.ops.len = pppoe_length,
-+	.ops.next_proto = pppoe_proto,
-+};
-+
-+#endif /* PANDA_DEFINE_PARSE_NODE */
-diff --git a/include/net/panda/proto_nodes/proto_tcp.h b/include/net/panda/proto_nodes/proto_tcp.h
-new file mode 100644
-index 000000000000..85e2f930a285
---- /dev/null
-+++ b/include/net/panda/proto_nodes/proto_tcp.h
-@@ -0,0 +1,177 @@
-+/* SPDX-License-Identifier: BSD-2-Clause-FreeBSD
-+ *
-+ * Copyright (c) 2020,2021 SiPanda Inc.
-+ *
-+ * Redistribution and use in source and binary forms, with or without
-+ * modification, are permitted provided that the following conditions
-+ * are met:
-+ * 1. Redistributions of source code must retain the above copyright
-+ *    notice, this list of conditions and the following disclaimer.
-+ * 2. Redistributions in binary form must reproduce the above copyright
-+ *    notice, this list of conditions and the following disclaimer in the
-+ *    documentation and/or other materials provided with the distribution.
-+ *
-+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
-+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
-+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-+ * SUCH DAMAGE.
-+ */
-+
-+#ifndef __PANDA_PROTO_TCP_H__
-+#define __PANDA_PROTO_TCP_H__
-+
-+#include <linux/tcp.h>
-+
-+#include "net/panda/parser.h"
-+
-+/* TCP node definitions */
-+
-+#define TCPOPT_NOP		1	/* Padding */
-+#define TCPOPT_EOL		0	/* End of options */
-+#define TCPOPT_MSS		2	/* Segment size negotiating */
-+#define TCPOPT_WINDOW		3	/* Window scaling */
-+#define TCPOPT_SACK_PERM	4	/* SACK Permitted */
-+#define TCPOPT_SACK		5	/* SACK Block */
-+#define TCPOPT_TIMESTAMP	8	/* Better RTT estimations/PAWS */
-+#define TCPOPT_MD5SIG		19	/* MD5 Signature (RFC2385) */
-+#define TCPOPT_FASTOPEN		34	/* Fast open (RFC7413) */
-+#define TCPOPT_EXP		254	/* Experimental */
-+
-+struct tcp_opt {
-+	__u8 type;
-+	__u8 len;
-+	__u8 data[0];
-+};
-+
-+struct tcp_timestamp_option_data {
-+	__be32 value;
-+	__be32 echo;
-+};
-+
-+struct tcp_sack_option_data {
-+	__be32 left_edge;
-+	__be32 right_edge;
-+};
-+
-+#define TCP_MAX_SACKS	4
-+
-+struct tcp_opt_union {
-+	struct tcp_opt opt;
-+	union {
-+		__be16 mss;
-+		__u8 window_scaling;
-+		struct tcp_timestamp_option_data timestamp;
-+		struct tcp_sack_option_data sack[TCP_MAX_SACKS];
-+	} __attribute__((packed));
-+} __attribute__((packed));
-+
-+static inline ssize_t tcp_len(const void *vtcp)
-+{
-+	return ((struct tcphdr *)vtcp)->doff * 4;
-+}
-+
-+static inline ssize_t tcp_tlv_len(const void *hdr)
-+{
-+	return ((struct tcp_opt *)hdr)->len;
-+}
-+
-+static inline int tcp_tlv_type(const void *hdr)
-+{
-+	return ((struct tcp_opt *)hdr)->type;
-+}
-+
-+static inline size_t tcp_tlvs_start_offset(const void *hdr)
-+{
-+	return sizeof(struct tcphdr);
-+}
-+
-+#endif /* __PANDA_PROTO_TCP_H__ */
-+
-+#ifdef PANDA_DEFINE_PARSE_NODE
-+
-+/* PANDA protocol node for TCP
-+ *
-+ * There are two variants:
-+ *   - Parse TCP header and TLVs
-+ *   - Just parse header without parsing TLVs
-+ */
-+
-+/* panda_parse_tcp_tlvs protocol node
-+ *
-+ * Parse TCP header and any TLVs
-+ */
-+static const struct panda_proto_tlvs_node panda_parse_tcp_tlvs __unused() = {
-+	.proto_node.node_type = PANDA_NODE_TYPE_TLVS,
-+	.proto_node.name = "TCP with TLVs",
-+	.proto_node.min_len = sizeof(struct tcphdr),
-+	.proto_node.ops.len = tcp_len,
-+	.ops.len = tcp_tlv_len,
-+	.ops.type = tcp_tlv_type,
-+	.ops.start_offset = tcp_tlvs_start_offset,
-+	.pad1_val = TCPOPT_NOP,
-+	.pad1_enable = 1,
-+	.eol_val = TCPOPT_EOL,
-+	.eol_enable = 1,
-+	.min_len = sizeof(struct tcp_opt),
-+};
-+
-+/* panda_parse_tcp_no_tlvs protocol node
-+ *
-+ * Parse TCP header without considering TLVs
-+ */
-+static const struct panda_proto_node panda_parse_tcp_notlvs __unused() = {
-+	.name = "TCP without TLVs",
-+	.min_len = sizeof(struct tcphdr),
-+	.ops.len = tcp_len,
-+};
-+
-+/* Protocol nodes for individual TLVs */
-+
-+static const struct panda_proto_tlv_node panda_parse_tcp_option_mss
-+							__unused() = {
-+	.min_len = sizeof(struct tcp_opt) + sizeof(__be16),
-+};
-+
-+static const struct panda_proto_tlv_node panda_parse_tcp_option_window_scaling
-+							__unused() = {
-+	.min_len = sizeof(struct tcp_opt) + sizeof(__u8),
-+};
-+
-+static const struct panda_proto_tlv_node panda_parse_tcp_option_timestamp
-+							__unused() = {
-+	.min_len = sizeof(struct tcp_opt) +
-+				sizeof(struct tcp_timestamp_option_data),
-+};
-+
-+static const struct panda_proto_tlv_node panda_parse_tcp_option_sack_1
-+							__unused() = {
-+	.min_len = sizeof(struct tcp_opt) +
-+				sizeof(struct tcp_sack_option_data),
-+};
-+
-+static const struct panda_proto_tlv_node panda_parse_tcp_option_sack_2
-+							__unused() = {
-+	.min_len = sizeof(struct tcp_opt) +
-+				2 * sizeof(struct tcp_sack_option_data),
-+};
-+
-+static const struct panda_proto_tlv_node panda_parse_tcp_option_sack_3
-+							__unused() = {
-+	.min_len = sizeof(struct tcp_opt) +
-+				3 * sizeof(struct tcp_sack_option_data),
-+};
-+
-+static const struct panda_proto_tlv_node panda_parse_tcp_option_sack_4
-+							__unused() = {
-+	.min_len = sizeof(struct tcp_opt) +
-+				4 * sizeof(struct tcp_sack_option_data),
-+};
-+
-+#endif /* PANDA_DEFINE_PARSE_NODE */
-diff --git a/include/net/panda/proto_nodes/proto_tipc.h b/include/net/panda/proto_nodes/proto_tipc.h
-new file mode 100644
-index 000000000000..761f75a7e4f6
---- /dev/null
-+++ b/include/net/panda/proto_nodes/proto_tipc.h
-@@ -0,0 +1,56 @@
-+/* SPDX-License-Identifier: BSD-2-Clause-FreeBSD
-+ *
-+ * Copyright (c) 2020,2021 SiPanda Inc.
-+ *
-+ * Redistribution and use in source and binary forms, with or without
-+ * modification, are permitted provided that the following conditions
-+ * are met:
-+ * 1. Redistributions of source code must retain the above copyright
-+ *    notice, this list of conditions and the following disclaimer.
-+ * 2. Redistributions in binary form must reproduce the above copyright
-+ *    notice, this list of conditions and the following disclaimer in the
-+ *    documentation and/or other materials provided with the distribution.
-+ *
-+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
-+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
-+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-+ * SUCH DAMAGE.
-+ */
-+
-+#ifndef __PANDA_PROTO_TIPC_H__
-+#define __PANDA_PROTO_TIPC_H__
-+
-+/* TIPC node definitions */
-+
-+#include <linux/ppp_defs.h>
-+
-+#include "net/panda/parser.h"
-+
-+/* LINK_PROTOCOL + MSG_IS_KEEPALIVE */
-+#define TIPC_KEEPALIVE_MSG_MASK		0x0e080000
-+
-+struct tipc_basic_hdr {
-+	__be32 w[4];
-+};
-+
-+#endif /* __PANDA_PROTO_TIPC_H__ */
-+
-+#ifdef PANDA_DEFINE_PARSE_NODE
-+
-+/* panda_parse_tipc protocol node
-+ *
-+ * Parse TIPC header
-+ */
-+static const struct panda_proto_node panda_parse_tipc __unused() = {
-+	.name = "TIPC",
-+	.min_len = sizeof(struct tipc_basic_hdr),
-+};
-+
-+#endif /* PANDA_DEFINE_PARSE_NODE */
-diff --git a/include/net/panda/proto_nodes/proto_vlan.h b/include/net/panda/proto_nodes/proto_vlan.h
-new file mode 100644
-index 000000000000..b2db4a8fdfec
---- /dev/null
-+++ b/include/net/panda/proto_nodes/proto_vlan.h
-@@ -0,0 +1,66 @@
-+/* SPDX-License-Identifier: BSD-2-Clause-FreeBSD
-+ *
-+ * Copyright (c) 2020,2021 SiPanda Inc.
-+ *
-+ * Redistribution and use in source and binary forms, with or without
-+ * modification, are permitted provided that the following conditions
-+ * are met:
-+ * 1. Redistributions of source code must retain the above copyright
-+ *    notice, this list of conditions and the following disclaimer.
-+ * 2. Redistributions in binary form must reproduce the above copyright
-+ *    notice, this list of conditions and the following disclaimer in the
-+ *    documentation and/or other materials provided with the distribution.
-+ *
-+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
-+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
-+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-+ * SUCH DAMAGE.
-+ */
-+
-+#ifndef __PANDA_PROTO_VLAN_H__
-+#define __PANDA_PROTO_VLAN_H__
-+
-+#include "net/panda/parser.h"
-+
-+#define VLAN_PRIO_MASK		0xe000 /* Priority Code Point */
-+#define VLAN_PRIO_SHIFT		13
-+#define VLAN_VID_MASK		0x0fff /* VLAN Identifier */
-+
-+/* VLAN node definitions */
-+
-+#ifndef __KERNEL__
-+struct vlan_hdr {
-+	__be16  h_vlan_TCI;
-+	__be16  h_vlan_encapsulated_proto;
-+};
-+#endif
-+
-+static inline int vlan_proto(const void *vvlan)
-+{
-+	return ((struct vlan_hdr *)vvlan)->h_vlan_encapsulated_proto;
-+}
-+
-+#endif /* __PANDA_PROTO_VLAN_H__ */
-+
-+#ifdef PANDA_DEFINE_PARSE_NODE
-+
-+/* panda_parse_vlan protocol node
-+ *
-+ * Parse VLAN header
-+ *
-+ * Next protocol operation returns Ethertype (e.g. ETH_P_IPV4)
-+ */
-+static const struct panda_proto_node panda_parse_vlan __unused() = {
-+	.name = "VLAN",
-+	.min_len = sizeof(struct vlan_hdr),
-+	.ops.next_proto = vlan_proto,
-+};
-+
-+#endif /* PANDA_DEFINE_PARSE_NODE */
-diff --git a/include/net/panda/proto_nodes_def.h b/include/net/panda/proto_nodes_def.h
-new file mode 100644
-index 000000000000..c8fc924e2428
---- /dev/null
-+++ b/include/net/panda/proto_nodes_def.h
-@@ -0,0 +1,40 @@
-+/* SPDX-License-Identifier: BSD-2-Clause-FreeBSD
-+ *
-+ * Copyright (c) 2020,2021 SiPanda Inc.
-+ *
-+ * Redistribution and use in source and binary forms, with or without
-+ * modification, are permitted provided that the following conditions
-+ * are met:
-+ * 1. Redistributions of source code must retain the above copyright
-+ *    notice, this list of conditions and the following disclaimer.
-+ * 2. Redistributions in binary form must reproduce the above copyright
-+ *    notice, this list of conditions and the following disclaimer in the
-+ *    documentation and/or other materials provided with the distribution.
-+ *
-+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
-+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
-+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-+ * SUCH DAMAGE.
-+ */
-+
-+#ifndef __PANDA_PROTO_NODES_DEF_H__
-+#define __PANDA_PROTO_NODES_DEF_H__
-+
-+/* Include all proto nodes and define proto nodes */
-+
-+#define PANDA_DEFINE_PARSE_NODE_STATIC static
-+#define PANDA_DEFINE_PARSE_NODE 1
-+
-+#include "net/panda/proto_nodes.h"
-+
-+#undef PANDA_DEFINE_PARSE_NODE
-+#undef PANDA_DEFINE_PARSE_NODE_STATIC
-+
-+#endif /* __PANDA_PROTO_NODES_H__ */
-diff --git a/include/net/panda/tlvs.h b/include/net/panda/tlvs.h
-new file mode 100644
-index 000000000000..a3480d698358
---- /dev/null
-+++ b/include/net/panda/tlvs.h
-@@ -0,0 +1,289 @@
-+/* SPDX-License-Identifier: BSD-2-Clause-FreeBSD
-+ *
-+ * Copyright (c) 2020,2021 SiPanda Inc.
-+ *
-+ * Redistribution and use in source and binary forms, with or without
-+ * modification, are permitted provided that the following conditions
-+ * are met:
-+ * 1. Redistributions of source code must retain the above copyright
-+ *    notice, this list of conditions and the following disclaimer.
-+ * 2. Redistributions in binary form must reproduce the above copyright
-+ *    notice, this list of conditions and the following disclaimer in the
-+ *    documentation and/or other materials provided with the distribution.
-+ *
-+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
-+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
-+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-+ * SUCH DAMAGE.
-+ */
-+
-+#ifndef __PANDA_TLV_H__
-+#define __PANDA_TLV_H__
-+
-+/* Definitions and functions for processing and parsing TLVs */
-+
-+#ifndef __KERNEL__
-+#include <stddef.h>
-+#include <sys/types.h>
-+#endif
-+
-+#include <linux/types.h>
-+
-+#include "net/panda/parser_types.h"
-+
-+/* Definitions for parsing TLVs
-+ *
-+ * TLVs are a common protocol header structure consisting of Type, Length,
-+ * Value tuple (e.g. for handling TCP or IPv6 HBH options TLVs)
-+ */
-+
-+/* Descriptor for parsing operations of one type of TLV. Fields are:
-+ *
-+ * len: Return length of a TLV. Must be set. If the return value < 0 (a
-+ *	PANDA_STOP_* return code value) this indicates an error and parsing
-+ *	is stopped. A the return value greater than or equal to zero then
-+ *	gives the protocol length. If the returned length is less than the
-+ *	minimum TLV option length, indicated by min_len by the TLV protocol
-+ *	node, then this considered and error.
-+ * type: Return the type of the TLV. If the return value is less than zero
-+ *	(PANDA_STOP_* value) then this indicates and error and parsing stops
-+ */
-+struct panda_proto_tlvs_opts {
-+	size_t (*start_offset)(const void *hdr);
-+	ssize_t (*len)(const void *hdr);
-+	int (*type)(const void *hdr);
-+};
-+
-+/* TLV parse node operations
-+ *
-+ * Operations to process a sigle TLV parsenode
-+ *
-+ * extract_metadata: Extract metadata for the node. Input is the meta
-+ *	data frame which points to a parser defined metadata structure.
-+ *	If the value is NULL then no metadata is extracted
-+ * handle_tlv: Per TLV type handler which allows arbitrary processing
-+ *	of a TLV. Input is the TLV data and a parser defined metadata
-+ *	structure for the current frame. Return value is a parser
-+ *	return code: PANDA_OKAY indicates no errors, PANDA_STOP* return
-+ *	values indicate to stop parsing
-+ */
-+struct panda_parse_tlv_node_ops {
-+	void (*extract_metadata)(const void *hdr, void *frame,
-+				 const struct panda_ctrl_data ctrl);
-+	int (*handle_tlv)(const void *hdr, void *frame,
-+			  const struct panda_ctrl_data ctrl);
-+	int (*overlay_type)(const void *hdr);
-+};
-+
-+/* Parse node for a single TLV. Use common parse node operations
-+ * (extract_metadata and handle_proto)
-+ */
-+struct panda_parse_tlv_node {
-+	const struct panda_proto_tlv_node *proto_tlv_node;
-+	const struct panda_parse_tlv_node_ops tlv_ops;
-+	const struct panda_proto_tlvs_table *overlay_table;
-+	const struct panda_parse_tlv_node *overlay_wildcard_node;
-+	int unknown_overlay_ret;
-+	const char *name;
-+};
-+
-+/* One entry in a TLV table:
-+ *	value: TLV type
-+ *	node: associated TLV parse structure for the type
-+ */
-+struct panda_proto_tlvs_table_entry {
-+	int type;
-+	const struct panda_parse_tlv_node *node;
-+};
-+
-+/* TLV table
-+ *
-+ * Contains a table that maps a TLV type to a TLV parse node
-+ */
-+struct panda_proto_tlvs_table {
-+	int num_ents;
-+	const struct panda_proto_tlvs_table_entry *entries;
-+};
-+
-+/* Parse node for parsing a protocol header that contains TLVs to be
-+ * parser:
-+ *
-+ * parse_node: Node for main protocol header (e.g. IPv6 node in case of HBH
-+ *	options) Note that node_type is set in parse_node to
-+ *	PANDA_NODE_TYPE_TLVS and that the parse node can then be cast to a
-+ *	parse_tlv_node
-+ * tlv_proto_table: Lookup table for TLV type
-+ * max_tlvs: Maximum number of TLVs that are to be parseed in one list
-+ * max_tlv_len: Maximum length allowed for any TLV in a list
-+ *	one type of TLVS.
-+ */
-+struct panda_parse_tlvs_node {
-+	const struct panda_parse_node parse_node;
-+	const struct panda_proto_tlvs_table *tlv_proto_table;
-+	size_t max_tlvs;
-+	size_t max_tlv_len;
-+	int unknown_tlv_type_ret;
-+	const struct panda_parse_tlv_node *tlv_wildcard_node;
-+};
-+
-+/* A protocol node for parsing proto with TLVs
-+ *
-+ * proto_node: proto node
-+ * ops: Operations for parsing TLVs
-+ * pad1_val: Type value indicating one byte of TLV padding (e.g. would be
-+ *	for IPv6 HBH TLVs)
-+ * pad1_enable: Pad1 value is used to detect single byte padding
-+ * eol_val: Type value that indicates end of TLV list
-+ * eol_enable: End of list value in eol_val is used
-+ * start_offset: When there TLVs start relative the enapsulating protocol
-+ *	(e.g. would be twenty for TCP)
-+ * min_len: Minimal length of a TLV option
-+ */
-+struct panda_proto_tlvs_node {
-+	struct panda_proto_node proto_node;
-+	struct panda_proto_tlvs_opts ops;
-+	__u8 pad1_val;
-+	__u8 eol_val;
-+	__u8 pad1_enable;
-+	__u8 eol_enable;
-+	size_t min_len;
-+};
-+
-+/* A protocol node for parsing proto with TLVs
-+ *
-+ * min_len: Minimal length of TLV
-+ */
-+struct panda_proto_tlv_node {
-+	size_t min_len;
-+};
-+
-+/* Look up a TLV parse node given
-+ *
-+ * Arguments:
-+ *	- node: A TLVs parse node containing lookup table
-+ *	- type: TLV type to lookup
-+ *
-+ * Returns pointer to parse node if the protocol is matched else returns
-+ * NULL if the parse node isn't found
-+ */
-+const struct panda_parse_tlv_node *panda_parse_lookup_tlv(
-+				const struct panda_parse_tlvs_node *node,
-+				unsigned int type);
-+
-+/* Helper to create a TLV protocol table */
-+#define PANDA_MAKE_TLV_TABLE(NAME, ...)					\
-+	static const struct panda_proto_tlvs_table_entry __##NAME[] =	\
-+						{ __VA_ARGS__ };	\
-+	static const struct panda_proto_tlvs_table NAME = {		\
-+		.num_ents = sizeof(__##NAME) /				\
-+			sizeof(struct panda_proto_tlvs_table_entry),	\
-+		.entries = __##NAME,					\
-+	}
-+
-+/* Forward declarations for TLV parser nodes */
-+#define PANDA_DECL_TLVS_PARSE_NODE(TLVS_PARSE_NODE)			\
-+	static const struct panda_parse_tlvs_node TLVS_PARSE_NODE
-+
-+/* Forward declarations for TLV type tables */
-+#define PANDA_DECL_TLVS_TABLE(TLVS_TABLE)				\
-+	static const struct panda_proto_tlvs_table TLVS_TABLE
-+
-+/* Helper to create a parse node with a next protocol table */
-+#define __PANDA_MAKE_TLVS_PARSE_NODE(PARSE_TLV_NODE, PROTO_TLV_NODE,	\
-+				     EXTRACT_METADATA, HANDLER,		\
-+				     UNKNOWN_RET, WILDCARD_NODE,	\
-+				     UNKNOWN_TLV_TYPE_RET,		\
-+				     TLV_WILDCARD_NODE,			\
-+				     PROTO_TABLE, TLV_TABLE)		\
-+	static const struct panda_parse_tlvs_node PARSE_TLV_NODE = {	\
-+		.parse_node.node_type = PANDA_NODE_TYPE_TLVS,		\
-+		.parse_node.proto_node = &PROTO_TLV_NODE.proto_node,	\
-+		.parse_node.ops.extract_metadata = EXTRACT_METADATA,	\
-+		.parse_node.ops.handle_proto = HANDLER,			\
-+		.parse_node.unknown_ret = UNKNOWN_RET,			\
-+		.parse_node.wildcard_node = WILDCARD_NODE,		\
-+		.parse_node.proto_table = PROTO_TABLE,			\
-+		.tlv_proto_table = TLV_TABLE,				\
-+		.unknown_tlv_type_ret = UNKNOWN_TLV_TYPE_RET,		\
-+		.tlv_wildcard_node = TLV_WILDCARD_NODE,			\
-+	}
-+
-+/* Helper to create a TLVs parse node with default unknown next proto
-+ * function that returns parse failure code and default unknown TLV
-+ * function that ignores unknown TLVs
-+ */
-+#define PANDA_MAKE_TLVS_PARSE_NODE(PARSE_TLV_NODE, PROTO_TLV_NODE,	\
-+				   EXTRACT_METADATA, HANDLER,		\
-+				   PROTO_TABLE, TLV_TABLE)		\
-+	PANDA_DECL_TLVS_TABLE(TLV_TABLE);				\
-+	PANDA_DECL_PROTO_TABLE(PROTO_TABLE)				\
-+	__PANDA_MAKE_TLVS_PARSE_NODE(PARSE_TLV_NODE,			\
-+				    (PROTO_NODE).pnode,			\
-+				    EXTRACT_METADATA, HANDLER,		\
-+				    PANDA_STOP_UNKNOWN_PROTO, NULL,	\
-+				    PANDA_OKAY, NULL,			\
-+				    &PROTO_TABLE, &TLV_TABLE)
-+
-+/* Helper to create a TLVs parse node with default unknown next proto
-+ * function that returns parse failure code and default unknown TLV
-+ * function that ignores unknown TLVs
-+ */
-+#define PANDA_MAKE_TLVS_OVERLAY_PARSE_NODE(PARSE_TLV_NODE,		\
-+					   PROTO_TLV_NODE,		\
-+					   EXTRACT_METADATA, HANDLER,	\
-+					   OVERLAY_NODE, TLV_TABLE)	\
-+	PANDA_DECL_TLVS_TABLE(TLV_TABLE);				\
-+	__PANDA_MAKE_TLVS_PARSE_NODE(PARSE_TLV_NODE,			\
-+				    (PROTO_NODE).pnode,			\
-+				    EXTRACT_METADATA, HANDLER,		\
-+				    PANDA_STOP_UNKNOWN_PROTO,		\
-+				    OVERLAY_NODE, PANDA_OKAY, NULL,	\
-+				    &PROTO_TABLE, &TLV_TABLE)
-+
-+/* Helper to create a leaf TLVs parse node with default unknown TLV
-+ * function that ignores unknown TLVs
-+ */
-+#define PANDA_MAKE_LEAF_TLVS_PARSE_NODE(PARSE_TLV_NODE, PROTO_TLV_NODE,	\
-+					EXTRACT_METADATA, HANDLER,	\
-+					TLV_TABLE)			\
-+	PANDA_DECL_TLVS_TABLE(TLV_TABLE);				\
-+	__PANDA_MAKE_TLVS_PARSE_NODE(PARSE_TLV_NODE, PROTO_TLV_NODE,	\
-+				     EXTRACT_METADATA, HANDLER,		\
-+				     PANDA_STOP_UNKNOWN_PROTO, NULL,	\
-+				     PANDA_OKAY, NULL,			\
-+				     NULL, &TLV_TABLE)
-+
-+#define PANDA_MAKE_TLV_PARSE_NODE(NODE_NAME, PROTO_TLV_NODE,		\
-+				  METADATA_FUNC, HANDLER_FUNC)		\
-+	static const struct panda_parse_tlv_node NODE_NAME = {		\
-+		.proto_tlv_node = &PROTO_TLV_NODE,			\
-+		.tlv_ops.extract_metadata = METADATA_FUNC,		\
-+		.tlv_ops.handle_tlv = HANDLER_FUNC,			\
-+		.name = #NODE_NAME,					\
-+	}
-+
-+#define PANDA_MAKE_TLV_OVERLAY_PARSE_NODE(NODE_NAME,			\
-+					  METADATA_FUNC, HANDLER_FUNC,	\
-+					  OVERLAY_TABLE,		\
-+					  OVERLAY_TYPE_FUNC,		\
-+					  UNKNOWN_OVERLAY_RET,		\
-+					  OVERLAY_WILDCARD_NODE)	\
-+	PANDA_DECL_TLVS_TABLE(OVERLAY_TABLE);				\
-+	static const struct panda_parse_tlv_node NODE_NAME = {		\
-+		.tlv_ops.extract_metadata = METADATA_FUNC,		\
-+		.tlv_ops.handle_tlv = HANDLER_FUNC,			\
-+		.tlv_ops.overlay_type = OVERLAY_TYPE_FUNC,		\
-+		.unknown_overlay_ret = UNKNOWN_OVERLAY_RET,		\
-+		.overlay_wildcard_node = OVERLAY_WILDCARD_NODE,		\
-+		.overlay_table = &OVERLAY_TABLE,			\
-+		.name = #NODE_NAME,					\
-+	}
-+
-+#endif /* __PANDA_TLV_H__ */
-diff --git a/net/Kconfig b/net/Kconfig
-index fb13460c6dab..9f2ff50d1788 100644
---- a/net/Kconfig
-+++ b/net/Kconfig
-@@ -455,4 +455,13 @@ config ETHTOOL_NETLINK
- 	  netlink. It provides better extensibility and some new features,
- 	  e.g. notification messages.
+diff --git a/net/sched/Kconfig b/net/sched/Kconfig
+index 1e8ab4749c6c..02cd86492992 100644
+--- a/net/sched/Kconfig
++++ b/net/sched/Kconfig
+@@ -630,6 +630,17 @@ config NET_CLS_FLOWER
+ 	  To compile this code as a module, choose M here: the module will
+ 	  be called cls_flower.
  
-+config NET_PANDA
-+	bool "PANDA parser"
++config NET_CLS_FLOWER2
++	tristate "Flower PANDA classifier"
++	select NET_CLS
++	depends on NET_PANDA
 +	help
 +	  If you say Y here, you will be able to classify packets based on
 +	  a configurable combination of packet keys and masks.
@@ -4606,36 +206,3323 @@ index fb13460c6dab..9f2ff50d1788 100644
 +	  To compile this code as a module, choose M here: the module will
 +	  be called cls_flower.
 +
- endif   # if NET
-diff --git a/net/Makefile b/net/Makefile
-index fbfeb8a0bb37..e1f46d0b47b1 100644
---- a/net/Makefile
-+++ b/net/Makefile
-@@ -79,3 +79,4 @@ obj-$(CONFIG_NET_NCSI)		+= ncsi/
- obj-$(CONFIG_XDP_SOCKETS)	+= xdp/
- obj-$(CONFIG_MPTCP)		+= mptcp/
- obj-$(CONFIG_MCTP)		+= mctp/
-+obj-$(CONFIG_PANDA)		+= panda/
-diff --git a/net/panda/Makefile b/net/panda/Makefile
+ config NET_CLS_MATCHALL
+ 	tristate "Match-all classifier"
+ 	select NET_CLS
+diff --git a/net/sched/Makefile b/net/sched/Makefile
+index dd14ef413fda..d97f86ea9f4e 100644
+--- a/net/sched/Makefile
++++ b/net/sched/Makefile
+@@ -77,6 +77,8 @@ obj-$(CONFIG_NET_CLS_FLOW)	+= cls_flow.o
+ obj-$(CONFIG_NET_CLS_CGROUP)	+= cls_cgroup.o
+ obj-$(CONFIG_NET_CLS_BPF)	+= cls_bpf.o
+ obj-$(CONFIG_NET_CLS_FLOWER)	+= cls_flower.o
++obj-$(CONFIG_NET_CLS_FLOWER2)	+= cls_flower2.o
++cls_flower2-y := cls_flower2_main.o cls_flower2_panda_opt.o
+ obj-$(CONFIG_NET_CLS_MATCHALL)	+= cls_matchall.o
+ obj-$(CONFIG_NET_EMATCH)	+= ematch.o
+ obj-$(CONFIG_NET_EMATCH_CMP)	+= em_cmp.o
+diff --git a/net/sched/cls_flower2_main.c b/net/sched/cls_flower2_main.c
 new file mode 100644
-index 000000000000..44420a1edf12
+index 000000000000..8b92117a23d7
 --- /dev/null
-+++ b/net/panda/Makefile
-@@ -0,0 +1,8 @@
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Makefile for the Linux networking PANDA parser.
-+#
++++ b/net/sched/cls_flower2_main.c
+@@ -0,0 +1,3289 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * net/sched/cls_flower2.c		Flower classifier
++ *
++ * Copyright (c) 2015 Jiri Pirko <jiri@resnulli.us>
++ * Copyright (c) 2021 SiPanda
++ *   Authors: Felipe Magno de Almeida <felipe@sipanda.io>
++ */
 +
-+ifeq ($(CONFIG_NET_PANDA),y)
-+obj-$(CONFIG_NET_PANDA) += panda_parser.o
-+endif
-diff --git a/net/panda/panda_parser.c b/net/panda/panda_parser.c
++#include <linux/kernel.h>
++#include <linux/init.h>
++#include <linux/module.h>
++#include <linux/rhashtable.h>
++#include <linux/workqueue.h>
++#include <linux/refcount.h>
++
++#include <linux/if_ether.h>
++#include <linux/in6.h>
++#include <linux/ip.h>
++#include <linux/ppp_defs.h>
++#include <linux/mpls.h>
++
++#include <net/sch_generic.h>
++#include <net/pkt_cls.h>
++#include <net/ip.h>
++#include <net/flow_dissector.h>
++#include <net/geneve.h>
++#include <net/vxlan.h>
++#include <net/erspan.h>
++#include <net/panda/parser.h>
++
++#include <net/dst.h>
++#include <net/dst_metadata.h>
++
++#include <uapi/linux/netfilter/nf_conntrack_common.h>
++
++#include <net/panda/parser.h>
++
++PANDA_PARSER_KMOD_EXTERN(panda_parser_big_ether);
++
++//pkt_cls redefination for TCA_FLOWER_KEY_PPP_PROTO
++#define TCA_FLOWER2_KEY_PPP_PROTO 102
++#define TCA_FLOWER2_MAX 102
++
++#define TCA_FLOWER_KEY_CT_FLAGS_MAX \
++		((__TCA_FLOWER_KEY_CT_FLAGS_MAX - 1) << 1)
++#define TCA_FLOWER_KEY_CT_FLAGS_MASK \
++		(TCA_FLOWER_KEY_CT_FLAGS_MAX - 1)
++
++struct flow_dissector_key_ppp {
++	__be16 ppp_proto;
++};
++
++struct fl2_flow_key {
++	struct flow_dissector_key_meta meta;
++	struct flow_dissector_key_control control;
++	struct flow_dissector_key_control enc_control;
++	struct flow_dissector_key_basic basic;
++	struct flow_dissector_key_eth_addrs eth;
++	struct flow_dissector_key_vlan vlan;
++	struct flow_dissector_key_vlan cvlan;
++	union {
++		struct flow_dissector_key_ipv4_addrs ipv4;
++		struct flow_dissector_key_ipv6_addrs ipv6;
++	};
++	struct flow_dissector_key_ports tp;
++	struct flow_dissector_key_icmp icmp;
++	struct flow_dissector_key_arp arp;
++	struct flow_dissector_key_keyid enc_key_id;
++	union {
++		struct flow_dissector_key_ipv4_addrs enc_ipv4;
++		struct flow_dissector_key_ipv6_addrs enc_ipv6;
++	};
++	struct flow_dissector_key_ports enc_tp;
++	struct flow_dissector_key_mpls mpls;
++	struct flow_dissector_key_tcp tcp;
++	struct flow_dissector_key_ip ip;
++	struct flow_dissector_key_ip enc_ip;
++	struct flow_dissector_key_enc_opts enc_opts;
++	union {
++		struct flow_dissector_key_ports tp;
++		struct {
++			struct flow_dissector_key_ports tp_min;
++			struct flow_dissector_key_ports tp_max;
++		};
++	} tp_range;
++	struct flow_dissector_key_ct ct;
++	struct flow_dissector_key_hash hash;
++	struct flow_dissector_key_ppp ppp;
++} __aligned(BITS_PER_LONG / 8); /* Ensure that we can do comparisons as longs. */
++
++struct fl2_flow_mask_range {
++	unsigned short int start;
++	unsigned short int end;
++};
++
++struct fl2_flow_mask {
++	struct fl2_flow_key key;
++	struct fl2_flow_mask_range range;
++	u32 flags;
++	struct rhash_head ht_node;
++	struct rhashtable ht;
++	struct rhashtable_params filter_ht_params;
++	struct flow_dissector dissector;
++	struct list_head filters;
++	struct rcu_work rwork;
++	struct list_head list;
++	refcount_t refcnt;
++};
++
++struct fl2_flow_tmplt {
++	struct fl2_flow_key dummy_key;
++	struct fl2_flow_key mask;
++	struct flow_dissector dissector;
++	struct tcf_chain *chain;
++};
++
++struct cls_fl2_head {
++	struct rhashtable ht;
++	spinlock_t masks_lock; /* Protect masks list */
++	struct list_head masks;
++	struct list_head hw_filters;
++	struct rcu_work rwork;
++	struct idr handle_idr;
++};
++
++struct cls_fl2_filter {
++	struct fl2_flow_mask *mask;
++	struct rhash_head ht_node;
++	struct fl2_flow_key mkey;
++	struct tcf_exts exts;
++	struct tcf_result res;
++	struct fl2_flow_key key;
++	struct list_head list;
++	struct list_head hw_list;
++	u32 handle;
++	u32 flags;
++	u32 in_hw_count;
++	struct rcu_work rwork;
++	struct net_device *hw_dev;
++	/* Flower classifier is unlocked, which means that its reference counter
++	 * can be changed concurrently without any kind of external
++	 * synchronization. Use atomic reference counter to be concurrency-safe.
++	 */
++	refcount_t refcnt;
++	bool deleted;
++};
++
++/* Meta data structure for just one frame */
++struct panda_parser_big_metadata_one {
++	struct panda_metadata panda_data;
++	struct fl2_flow_key frame;
++};
++
++static const struct rhashtable_params mask_ht_params = {
++	.key_offset = offsetof(struct fl2_flow_mask, key),
++	.key_len = sizeof(struct fl2_flow_key),
++	.head_offset = offsetof(struct fl2_flow_mask, ht_node),
++	.automatic_shrinking = true,
++};
++
++static unsigned short int fl2_mask_range(const struct fl2_flow_mask *mask)
++{
++	return mask->range.end - mask->range.start;
++}
++
++static void fl2_mask_update_range(struct fl2_flow_mask *mask)
++{
++	const u8 *bytes = (const u8 *) &mask->key;
++	size_t size = sizeof(mask->key);
++	size_t i, first = 0, last;
++
++	for (i = 0; i < size; i++) {
++		if (bytes[i]) {
++			first = i;
++			break;
++		}
++	}
++	last = first;
++	for (i = size - 1; i != first; i--) {
++		if (bytes[i]) {
++			last = i;
++			break;
++		}
++	}
++	mask->range.start = rounddown(first, sizeof(long));
++	mask->range.end = roundup(last + 1, sizeof(long));
++}
++
++static void *fl2_key_get_start(struct fl2_flow_key *key,
++			      const struct fl2_flow_mask *mask)
++{
++	return (u8 *) key + mask->range.start;
++}
++
++static void fl2_set_masked_key(struct fl2_flow_key *mkey, struct fl2_flow_key *key,
++			      struct fl2_flow_mask *mask)
++{
++	const long *lkey = fl2_key_get_start(key, mask);
++	const long *lmask = fl2_key_get_start(&mask->key, mask);
++	long *lmkey = fl2_key_get_start(mkey, mask);
++	int i;
++
++	for (i = 0; i < fl2_mask_range(mask); i += sizeof(long))
++		*lmkey++ = *lkey++ & *lmask++;
++}
++
++static bool fl2_mask_fits_tmplt(struct fl2_flow_tmplt *tmplt,
++			       struct fl2_flow_mask *mask)
++{
++	const long *lmask = fl2_key_get_start(&mask->key, mask);
++	const long *ltmplt;
++	int i;
++
++	if (!tmplt)
++		return true;
++	ltmplt = fl2_key_get_start(&tmplt->mask, mask);
++	for (i = 0; i < fl2_mask_range(mask); i += sizeof(long)) {
++		if (~*ltmplt++ & *lmask++)
++			return false;
++	}
++	return true;
++}
++
++static void fl2_clear_masked_range(struct fl2_flow_key *key,
++				  struct fl2_flow_mask *mask)
++{
++	memset(fl2_key_get_start(key, mask), 0, fl2_mask_range(mask));
++}
++
++static bool fl2_range_port_dst_cmp(struct cls_fl2_filter *filter,
++				  struct fl2_flow_key *key,
++				  struct fl2_flow_key *mkey)
++{
++	u16 min_mask, max_mask, min_val, max_val;
++
++	min_mask = ntohs(filter->mask->key.tp_range.tp_min.dst);
++	max_mask = ntohs(filter->mask->key.tp_range.tp_max.dst);
++	min_val = ntohs(filter->key.tp_range.tp_min.dst);
++	max_val = ntohs(filter->key.tp_range.tp_max.dst);
++
++	if (min_mask && max_mask) {
++		if (ntohs(key->tp_range.tp.dst) < min_val ||
++		    ntohs(key->tp_range.tp.dst) > max_val)
++			return false;
++
++		/* skb does not have min and max values */
++		mkey->tp_range.tp_min.dst = filter->mkey.tp_range.tp_min.dst;
++		mkey->tp_range.tp_max.dst = filter->mkey.tp_range.tp_max.dst;
++	}
++	return true;
++}
++
++static bool fl2_range_port_src_cmp(struct cls_fl2_filter *filter,
++				  struct fl2_flow_key *key,
++				  struct fl2_flow_key *mkey)
++{
++	u16 min_mask, max_mask, min_val, max_val;
++
++	min_mask = ntohs(filter->mask->key.tp_range.tp_min.src);
++	max_mask = ntohs(filter->mask->key.tp_range.tp_max.src);
++	min_val = ntohs(filter->key.tp_range.tp_min.src);
++	max_val = ntohs(filter->key.tp_range.tp_max.src);
++
++	if (min_mask && max_mask) {
++		if (ntohs(key->tp_range.tp.src) < min_val ||
++		    ntohs(key->tp_range.tp.src) > max_val)
++			return false;
++
++		/* skb does not have min and max values */
++		mkey->tp_range.tp_min.src = filter->mkey.tp_range.tp_min.src;
++		mkey->tp_range.tp_max.src = filter->mkey.tp_range.tp_max.src;
++	}
++	return true;
++}
++
++static struct cls_fl2_filter *__fl2_lookup(struct fl2_flow_mask *mask,
++					 struct fl2_flow_key *mkey)
++{
++	return rhashtable_lookup_fast(&mask->ht, fl2_key_get_start(mkey, mask),
++				      mask->filter_ht_params);
++}
++
++static struct cls_fl2_filter *fl2_lookup_range(struct fl2_flow_mask *mask,
++					     struct fl2_flow_key *mkey,
++					     struct fl2_flow_key *key)
++{
++	struct cls_fl2_filter *filter, *f;
++
++	list_for_each_entry_rcu(filter, &mask->filters, list) {
++		if (!fl2_range_port_dst_cmp(filter, key, mkey))
++			continue;
++
++		if (!fl2_range_port_src_cmp(filter, key, mkey))
++			continue;
++
++		f = __fl2_lookup(mask, mkey);
++		if (f)
++			return f;
++	}
++	return NULL;
++}
++
++static noinline_for_stack
++struct cls_fl2_filter *fl2_mask_lookup(struct fl2_flow_mask *mask, struct fl2_flow_key *key)
++{
++	struct fl2_flow_key mkey;
++
++	fl2_set_masked_key(&mkey, key, mask);
++	if ((mask->flags & TCA_FLOWER_MASK_FLAGS_RANGE))
++		return fl2_lookup_range(mask, &mkey, key);
++
++	return __fl2_lookup(mask, &mkey);
++}
++
++int fl2_panda_parse(struct sk_buff *skb, struct fl2_flow_key* frame)
++{
++	int err;
++	struct panda_parser_big_metadata_one mdata;
++	void *data;
++	size_t pktlen;
++
++	memset(&mdata, 0, sizeof(mdata.panda_data));
++	memcpy(&mdata.frame, frame, sizeof(struct fl2_flow_key));
++
++	err = skb_linearize(skb);
++	if (err < 0)
++		return err;
++
++	BUG_ON(skb->data_len);
++
++	data = skb_mac_header(skb);
++	pktlen = skb_mac_header_len(skb) + skb->len;
++
++	err = panda_parse(PANDA_PARSER_KMOD_NAME(panda_parser_big_ether), data,
++			  pktlen, &mdata.panda_data, 0, 1);
++
++	if (err != PANDA_STOP_OKAY) {
++                pr_err("Failed to parse packet! (%d)", err);
++		return -1;
++        }
++
++	memcpy(frame, &mdata.frame, sizeof(struct fl2_flow_key));
++
++	return 0;
++}
++
++static int fl2_classify(struct sk_buff *skb, const struct tcf_proto *tp,
++		       struct tcf_result *res)
++{
++	struct cls_fl2_head *head = rcu_dereference_bh(tp->root);
++	struct fl2_flow_key skb_key;
++	struct fl2_flow_mask *mask;
++	struct cls_fl2_filter *f;
++
++	list_for_each_entry_rcu(mask, &head->masks, list) {
++		flow_dissector_init_keys(&skb_key.control, &skb_key.basic);
++		fl2_clear_masked_range(&skb_key, mask);
++
++		skb_flow_dissect_meta(skb, &mask->dissector, &skb_key);
++		/* skb_flow_dissect() does not set n_proto in case an unknown
++		 * protocol, so do it rather here.
++		 */
++		skb_key.basic.n_proto = skb_protocol(skb, false);
++
++		if(skb->vlan_present) {
++			skb_key.basic.n_proto = skb_protocol(skb, true);
++			skb_key.vlan.vlan_id = skb_vlan_tag_get_id(skb);
++			skb_key.vlan.vlan_priority = skb_vlan_tag_get_prio(skb);
++			skb_key.vlan.vlan_tpid = skb->vlan_proto;
++		}
++		
++		fl2_panda_parse(skb, &skb_key);
++
++		f = fl2_mask_lookup(mask, &skb_key);
++		if (f && !tc_skip_sw(f->flags)) {
++			*res = f->res;
++			return tcf_exts_exec(skb, &f->exts, res);
++		}
++	}
++	return -1;
++}
++
++static int fl2_init(struct tcf_proto *tp)
++{
++	struct cls_fl2_head *head;
++
++	head = kzalloc(sizeof(*head), GFP_KERNEL);
++	if (!head)
++		return -ENOBUFS;
++
++	spin_lock_init(&head->masks_lock);
++	INIT_LIST_HEAD_RCU(&head->masks);
++	INIT_LIST_HEAD(&head->hw_filters);
++	rcu_assign_pointer(tp->root, head);
++	idr_init(&head->handle_idr);
++
++	return rhashtable_init(&head->ht, &mask_ht_params);
++}
++
++static void fl2_mask_free(struct fl2_flow_mask *mask, bool mask_init_done)
++{
++	/* temporary masks don't have their filters list and ht initialized */
++	if (mask_init_done) {
++		WARN_ON(!list_empty(&mask->filters));
++		rhashtable_destroy(&mask->ht);
++	}
++	kfree(mask);
++}
++
++static void fl2_mask_free_work(struct work_struct *work)
++{
++	struct fl2_flow_mask *mask = container_of(to_rcu_work(work),
++						 struct fl2_flow_mask, rwork);
++
++	fl2_mask_free(mask, true);
++}
++
++static void fl2_uninit_mask_free_work(struct work_struct *work)
++{
++	struct fl2_flow_mask *mask = container_of(to_rcu_work(work),
++						 struct fl2_flow_mask, rwork);
++
++	fl2_mask_free(mask, false);
++}
++
++static bool fl2_mask_put(struct cls_fl2_head *head, struct fl2_flow_mask *mask)
++{
++	if (!refcount_dec_and_test(&mask->refcnt))
++		return false;
++
++	rhashtable_remove_fast(&head->ht, &mask->ht_node, mask_ht_params);
++
++	spin_lock(&head->masks_lock);
++	list_del_rcu(&mask->list);
++	spin_unlock(&head->masks_lock);
++
++	tcf_queue_work(&mask->rwork, fl2_mask_free_work);
++
++	return true;
++}
++
++static struct cls_fl2_head *fl2_head_dereference(struct tcf_proto *tp)
++{
++	/* Flower classifier only changes root pointer during init and destroy.
++	 * Users must obtain reference to tcf_proto instance before calling its
++	 * API, so tp->root pointer is protected from concurrent call to
++	 * fl2_destroy() by reference counting.
++	 */
++	return rcu_dereference_raw(tp->root);
++}
++
++static void __fl2_destroy_filter(struct cls_fl2_filter *f)
++{
++	tcf_exts_destroy(&f->exts);
++	tcf_exts_put_net(&f->exts);
++	kfree(f);
++}
++
++static void fl2_destroy_filter_work(struct work_struct *work)
++{
++	struct cls_fl2_filter *f = container_of(to_rcu_work(work),
++					struct cls_fl2_filter, rwork);
++
++	__fl2_destroy_filter(f);
++}
++
++static void fl2_hw_destroy_filter(struct tcf_proto *tp, struct cls_fl2_filter *f,
++				 bool rtnl_held, struct netlink_ext_ack *extack)
++{
++	struct tcf_block *block = tp->chain->block;
++	struct flow_cls_offload cls_flower = {};
++
++	tc_cls_common_offload_init(&cls_flower.common, tp, f->flags, extack);
++	cls_flower.command = FLOW_CLS_DESTROY;
++	cls_flower.cookie = (unsigned long) f;
++
++	tc_setup_cb_destroy(block, tp, TC_SETUP_CLSFLOWER, &cls_flower, false,
++			    &f->flags, &f->in_hw_count, rtnl_held);
++
++}
++
++static int fl2_hw_replace_filter(struct tcf_proto *tp,
++				struct cls_fl2_filter *f, bool rtnl_held,
++				struct netlink_ext_ack *extack)
++{
++	struct tcf_block *block = tp->chain->block;
++	struct flow_cls_offload cls_flower = {};
++	bool skip_sw = tc_skip_sw(f->flags);
++	int err = 0;
++
++	cls_flower.rule = flow_rule_alloc(tcf_exts_num_actions(&f->exts));
++	if (!cls_flower.rule)
++		return -ENOMEM;
++
++	tc_cls_common_offload_init(&cls_flower.common, tp, f->flags, extack);
++	cls_flower.command = FLOW_CLS_REPLACE;
++	cls_flower.cookie = (unsigned long) f;
++	cls_flower.rule->match.dissector = &f->mask->dissector;
++	cls_flower.rule->match.mask = &f->mask->key;
++	cls_flower.rule->match.key = &f->mkey;
++	cls_flower.classid = f->res.classid;
++
++	err = tc_setup_flow_action(&cls_flower.rule->action, &f->exts);
++	if (err) {
++		kfree(cls_flower.rule);
++		if (skip_sw) {
++			NL_SET_ERR_MSG_MOD(extack, "Failed to setup flow action");
++			return err;
++		}
++		return 0;
++	}
++
++	err = tc_setup_cb_add(block, tp, TC_SETUP_CLSFLOWER, &cls_flower,
++			      skip_sw, &f->flags, &f->in_hw_count, rtnl_held);
++	tc_cleanup_flow_action(&cls_flower.rule->action);
++	kfree(cls_flower.rule);
++
++	if (err) {
++		fl2_hw_destroy_filter(tp, f, rtnl_held, NULL);
++		return err;
++	}
++
++	if (skip_sw && !(f->flags & TCA_CLS_FLAGS_IN_HW))
++		return -EINVAL;
++
++	return 0;
++}
++
++static void fl2_hw_update_stats(struct tcf_proto *tp, struct cls_fl2_filter *f,
++			       bool rtnl_held)
++{
++	struct tcf_block *block = tp->chain->block;
++	struct flow_cls_offload cls_flower = {};
++
++	tc_cls_common_offload_init(&cls_flower.common, tp, f->flags, NULL);
++	cls_flower.command = FLOW_CLS_STATS;
++	cls_flower.cookie = (unsigned long) f;
++	cls_flower.classid = f->res.classid;
++
++	tc_setup_cb_call(block, TC_SETUP_CLSFLOWER, &cls_flower, false,
++			 rtnl_held);
++
++	tcf_exts_stats_update(&f->exts, cls_flower.stats.bytes,
++			      cls_flower.stats.pkts,
++			      cls_flower.stats.drops,
++			      cls_flower.stats.lastused,
++			      cls_flower.stats.used_hw_stats,
++			      cls_flower.stats.used_hw_stats_valid);
++}
++
++static void __fl2_put(struct cls_fl2_filter *f)
++{
++	if (!refcount_dec_and_test(&f->refcnt))
++		return;
++
++	if (tcf_exts_get_net(&f->exts))
++		tcf_queue_work(&f->rwork, fl2_destroy_filter_work);
++	else
++		__fl2_destroy_filter(f);
++}
++
++static struct cls_fl2_filter *__fl2_get(struct cls_fl2_head *head, u32 handle)
++{
++	struct cls_fl2_filter *f;
++
++	rcu_read_lock();
++	f = idr_find(&head->handle_idr, handle);
++	if (f && !refcount_inc_not_zero(&f->refcnt))
++		f = NULL;
++	rcu_read_unlock();
++
++	return f;
++}
++
++static int __fl2_delete(struct tcf_proto *tp, struct cls_fl2_filter *f,
++		       bool *last, bool rtnl_held,
++		       struct netlink_ext_ack *extack)
++{
++	struct cls_fl2_head *head = fl2_head_dereference(tp);
++
++	*last = false;
++
++	spin_lock(&tp->lock);
++	if (f->deleted) {
++		spin_unlock(&tp->lock);
++		return -ENOENT;
++	}
++
++	f->deleted = true;
++	rhashtable_remove_fast(&f->mask->ht, &f->ht_node,
++			       f->mask->filter_ht_params);
++	idr_remove(&head->handle_idr, f->handle);
++	list_del_rcu(&f->list);
++	spin_unlock(&tp->lock);
++
++	*last = fl2_mask_put(head, f->mask);
++	if (!tc_skip_hw(f->flags))
++		fl2_hw_destroy_filter(tp, f, rtnl_held, extack);
++	tcf_unbind_filter(tp, &f->res);
++	__fl2_put(f);
++
++	return 0;
++}
++
++static void fl2_destroy_sleepable(struct work_struct *work)
++{
++	struct cls_fl2_head *head = container_of(to_rcu_work(work),
++						struct cls_fl2_head,
++						rwork);
++
++	rhashtable_destroy(&head->ht);
++	kfree(head);
++	module_put(THIS_MODULE);
++}
++
++static void fl2_destroy(struct tcf_proto *tp, bool rtnl_held,
++		       struct netlink_ext_ack *extack)
++{
++	struct cls_fl2_head *head = fl2_head_dereference(tp);
++	struct fl2_flow_mask *mask, *next_mask;
++	struct cls_fl2_filter *f, *next;
++	bool last;
++
++	list_for_each_entry_safe(mask, next_mask, &head->masks, list) {
++		list_for_each_entry_safe(f, next, &mask->filters, list) {
++			__fl2_delete(tp, f, &last, rtnl_held, extack);
++			if (last)
++				break;
++		}
++	}
++	idr_destroy(&head->handle_idr);
++
++	__module_get(THIS_MODULE);
++	tcf_queue_work(&head->rwork, fl2_destroy_sleepable);
++}
++
++static void fl2_put(struct tcf_proto *tp, void *arg)
++{
++	struct cls_fl2_filter *f = arg;
++
++	__fl2_put(f);
++}
++
++static void *fl2_get(struct tcf_proto *tp, u32 handle)
++{
++	struct cls_fl2_head *head = fl2_head_dereference(tp);
++
++	return __fl2_get(head, handle);
++}
++
++static const struct nla_policy fl2_policy[TCA_FLOWER2_MAX + 1] = {
++	[TCA_FLOWER_UNSPEC]		= { .type = NLA_UNSPEC },
++	[TCA_FLOWER_CLASSID]		= { .type = NLA_U32 },
++	[TCA_FLOWER_INDEV]		= { .type = NLA_STRING,
++					    .len = IFNAMSIZ },
++	[TCA_FLOWER_KEY_ETH_DST]	= { .len = ETH_ALEN },
++	[TCA_FLOWER_KEY_ETH_DST_MASK]	= { .len = ETH_ALEN },
++	[TCA_FLOWER_KEY_ETH_SRC]	= { .len = ETH_ALEN },
++	[TCA_FLOWER_KEY_ETH_SRC_MASK]	= { .len = ETH_ALEN },
++	[TCA_FLOWER_KEY_ETH_TYPE]	= { .type = NLA_U16 },
++	[TCA_FLOWER_KEY_IP_PROTO]	= { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_IPV4_SRC]	= { .type = NLA_U32 },
++	[TCA_FLOWER_KEY_IPV4_SRC_MASK]	= { .type = NLA_U32 },
++	[TCA_FLOWER_KEY_IPV4_DST]	= { .type = NLA_U32 },
++	[TCA_FLOWER_KEY_IPV4_DST_MASK]	= { .type = NLA_U32 },
++	[TCA_FLOWER_KEY_IPV6_SRC]	= { .len = sizeof(struct in6_addr) },
++	[TCA_FLOWER_KEY_IPV6_SRC_MASK]	= { .len = sizeof(struct in6_addr) },
++	[TCA_FLOWER_KEY_IPV6_DST]	= { .len = sizeof(struct in6_addr) },
++	[TCA_FLOWER_KEY_IPV6_DST_MASK]	= { .len = sizeof(struct in6_addr) },
++	[TCA_FLOWER_KEY_TCP_SRC]	= { .type = NLA_U16 },
++	[TCA_FLOWER_KEY_TCP_DST]	= { .type = NLA_U16 },
++	[TCA_FLOWER_KEY_UDP_SRC]	= { .type = NLA_U16 },
++	[TCA_FLOWER_KEY_UDP_DST]	= { .type = NLA_U16 },
++	[TCA_FLOWER_KEY_VLAN_ID]	= { .type = NLA_U16 },
++	[TCA_FLOWER_KEY_VLAN_PRIO]	= { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_VLAN_ETH_TYPE]	= { .type = NLA_U16 },
++	[TCA_FLOWER_KEY_ENC_KEY_ID]	= { .type = NLA_U32 },
++	[TCA_FLOWER_KEY_ENC_IPV4_SRC]	= { .type = NLA_U32 },
++	[TCA_FLOWER_KEY_ENC_IPV4_SRC_MASK] = { .type = NLA_U32 },
++	[TCA_FLOWER_KEY_ENC_IPV4_DST]	= { .type = NLA_U32 },
++	[TCA_FLOWER_KEY_ENC_IPV4_DST_MASK] = { .type = NLA_U32 },
++	[TCA_FLOWER_KEY_ENC_IPV6_SRC]	= { .len = sizeof(struct in6_addr) },
++	[TCA_FLOWER_KEY_ENC_IPV6_SRC_MASK] = { .len = sizeof(struct in6_addr) },
++	[TCA_FLOWER_KEY_ENC_IPV6_DST]	= { .len = sizeof(struct in6_addr) },
++	[TCA_FLOWER_KEY_ENC_IPV6_DST_MASK] = { .len = sizeof(struct in6_addr) },
++	[TCA_FLOWER_KEY_TCP_SRC_MASK]	= { .type = NLA_U16 },
++	[TCA_FLOWER_KEY_TCP_DST_MASK]	= { .type = NLA_U16 },
++	[TCA_FLOWER_KEY_UDP_SRC_MASK]	= { .type = NLA_U16 },
++	[TCA_FLOWER_KEY_UDP_DST_MASK]	= { .type = NLA_U16 },
++	[TCA_FLOWER_KEY_SCTP_SRC_MASK]	= { .type = NLA_U16 },
++	[TCA_FLOWER_KEY_SCTP_DST_MASK]	= { .type = NLA_U16 },
++	[TCA_FLOWER_KEY_SCTP_SRC]	= { .type = NLA_U16 },
++	[TCA_FLOWER_KEY_SCTP_DST]	= { .type = NLA_U16 },
++	[TCA_FLOWER_KEY_ENC_UDP_SRC_PORT]	= { .type = NLA_U16 },
++	[TCA_FLOWER_KEY_ENC_UDP_SRC_PORT_MASK]	= { .type = NLA_U16 },
++	[TCA_FLOWER_KEY_ENC_UDP_DST_PORT]	= { .type = NLA_U16 },
++	[TCA_FLOWER_KEY_ENC_UDP_DST_PORT_MASK]	= { .type = NLA_U16 },
++	[TCA_FLOWER_KEY_FLAGS]		= { .type = NLA_U32 },
++	[TCA_FLOWER_KEY_FLAGS_MASK]	= { .type = NLA_U32 },
++	[TCA_FLOWER_KEY_ICMPV4_TYPE]	= { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_ICMPV4_TYPE_MASK] = { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_ICMPV4_CODE]	= { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_ICMPV4_CODE_MASK] = { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_ICMPV6_TYPE]	= { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_ICMPV6_TYPE_MASK] = { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_ICMPV6_CODE]	= { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_ICMPV6_CODE_MASK] = { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_ARP_SIP]	= { .type = NLA_U32 },
++	[TCA_FLOWER_KEY_ARP_SIP_MASK]	= { .type = NLA_U32 },
++	[TCA_FLOWER_KEY_ARP_TIP]	= { .type = NLA_U32 },
++	[TCA_FLOWER_KEY_ARP_TIP_MASK]	= { .type = NLA_U32 },
++	[TCA_FLOWER_KEY_ARP_OP]		= { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_ARP_OP_MASK]	= { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_ARP_SHA]	= { .len = ETH_ALEN },
++	[TCA_FLOWER_KEY_ARP_SHA_MASK]	= { .len = ETH_ALEN },
++	[TCA_FLOWER_KEY_ARP_THA]	= { .len = ETH_ALEN },
++	[TCA_FLOWER_KEY_ARP_THA_MASK]	= { .len = ETH_ALEN },
++	[TCA_FLOWER_KEY_MPLS_TTL]	= { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_MPLS_BOS]	= { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_MPLS_TC]	= { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_MPLS_LABEL]	= { .type = NLA_U32 },
++	[TCA_FLOWER_KEY_MPLS_OPTS]	= { .type = NLA_NESTED },
++	[TCA_FLOWER_KEY_TCP_FLAGS]	= { .type = NLA_U16 },
++	[TCA_FLOWER_KEY_TCP_FLAGS_MASK]	= { .type = NLA_U16 },
++	[TCA_FLOWER_KEY_IP_TOS]		= { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_IP_TOS_MASK]	= { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_IP_TTL]		= { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_IP_TTL_MASK]	= { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_CVLAN_ID]	= { .type = NLA_U16 },
++	[TCA_FLOWER_KEY_CVLAN_PRIO]	= { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_CVLAN_ETH_TYPE]	= { .type = NLA_U16 },
++	[TCA_FLOWER_KEY_ENC_IP_TOS]	= { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_ENC_IP_TOS_MASK] = { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_ENC_IP_TTL]	 = { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_ENC_IP_TTL_MASK] = { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_ENC_OPTS]	= { .type = NLA_NESTED },
++	[TCA_FLOWER_KEY_ENC_OPTS_MASK]	= { .type = NLA_NESTED },
++	[TCA_FLOWER_KEY_CT_STATE]	=
++		NLA_POLICY_MASK(NLA_U16, TCA_FLOWER_KEY_CT_FLAGS_MASK),
++	[TCA_FLOWER_KEY_CT_STATE_MASK]	=
++		NLA_POLICY_MASK(NLA_U16, TCA_FLOWER_KEY_CT_FLAGS_MASK),
++	[TCA_FLOWER_KEY_CT_ZONE]	= { .type = NLA_U16 },
++	[TCA_FLOWER_KEY_CT_ZONE_MASK]	= { .type = NLA_U16 },
++	[TCA_FLOWER_KEY_CT_MARK]	= { .type = NLA_U32 },
++	[TCA_FLOWER_KEY_CT_MARK_MASK]	= { .type = NLA_U32 },
++	[TCA_FLOWER_KEY_CT_LABELS]	= { .type = NLA_BINARY,
++					    .len = 128 / BITS_PER_BYTE },
++	[TCA_FLOWER_KEY_CT_LABELS_MASK]	= { .type = NLA_BINARY,
++					    .len = 128 / BITS_PER_BYTE },
++	[TCA_FLOWER_FLAGS]		= { .type = NLA_U32 },
++	[TCA_FLOWER_KEY_HASH]		= { .type = NLA_U32 },
++	[TCA_FLOWER_KEY_HASH_MASK]	= { .type = NLA_U32 },
++	[TCA_FLOWER2_KEY_PPP_PROTO]	= { .type = NLA_U16 },
++
++};
++
++static const struct nla_policy
++enc_opts_policy[TCA_FLOWER_KEY_ENC_OPTS_MAX + 1] = {
++	[TCA_FLOWER_KEY_ENC_OPTS_UNSPEC]        = {
++		.strict_start_type = TCA_FLOWER_KEY_ENC_OPTS_VXLAN },
++	[TCA_FLOWER_KEY_ENC_OPTS_GENEVE]        = { .type = NLA_NESTED },
++	[TCA_FLOWER_KEY_ENC_OPTS_VXLAN]         = { .type = NLA_NESTED },
++	[TCA_FLOWER_KEY_ENC_OPTS_ERSPAN]        = { .type = NLA_NESTED },
++};
++
++static const struct nla_policy
++geneve_opt_policy[TCA_FLOWER_KEY_ENC_OPT_GENEVE_MAX + 1] = {
++	[TCA_FLOWER_KEY_ENC_OPT_GENEVE_CLASS]      = { .type = NLA_U16 },
++	[TCA_FLOWER_KEY_ENC_OPT_GENEVE_TYPE]       = { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_ENC_OPT_GENEVE_DATA]       = { .type = NLA_BINARY,
++						       .len = 128 },
++};
++
++static const struct nla_policy
++vxlan_opt_policy[TCA_FLOWER_KEY_ENC_OPT_VXLAN_MAX + 1] = {
++	[TCA_FLOWER_KEY_ENC_OPT_VXLAN_GBP]         = { .type = NLA_U32 },
++};
++
++static const struct nla_policy
++erspan_opt_policy[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_MAX + 1] = {
++	[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_VER]        = { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_INDEX]      = { .type = NLA_U32 },
++	[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_DIR]        = { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_HWID]       = { .type = NLA_U8 },
++};
++
++static const struct nla_policy
++mpls_stack_entry_policy[TCA_FLOWER_KEY_MPLS_OPT_LSE_MAX + 1] = {
++	[TCA_FLOWER_KEY_MPLS_OPT_LSE_DEPTH]    = { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_MPLS_OPT_LSE_TTL]      = { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_MPLS_OPT_LSE_BOS]      = { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_MPLS_OPT_LSE_TC]       = { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_MPLS_OPT_LSE_LABEL]    = { .type = NLA_U32 },
++};
++
++static void fl2_set_key_val(struct nlattr **tb,
++			   void *val, int val_type,
++			   void *mask, int mask_type, int len)
++{
++	if (!tb[val_type])
++		return;
++	nla_memcpy(val, tb[val_type], len);
++	if (mask_type == TCA_FLOWER_UNSPEC || !tb[mask_type])
++		memset(mask, 0xff, len);
++	else
++		nla_memcpy(mask, tb[mask_type], len);
++}
++
++static int fl2_set_key_port_range(struct nlattr **tb, struct fl2_flow_key *key,
++				 struct fl2_flow_key *mask,
++				 struct netlink_ext_ack *extack)
++{
++	fl2_set_key_val(tb, &key->tp_range.tp_min.dst,
++		       TCA_FLOWER_KEY_PORT_DST_MIN, &mask->tp_range.tp_min.dst,
++		       TCA_FLOWER_UNSPEC, sizeof(key->tp_range.tp_min.dst));
++	fl2_set_key_val(tb, &key->tp_range.tp_max.dst,
++		       TCA_FLOWER_KEY_PORT_DST_MAX, &mask->tp_range.tp_max.dst,
++		       TCA_FLOWER_UNSPEC, sizeof(key->tp_range.tp_max.dst));
++	fl2_set_key_val(tb, &key->tp_range.tp_min.src,
++		       TCA_FLOWER_KEY_PORT_SRC_MIN, &mask->tp_range.tp_min.src,
++		       TCA_FLOWER_UNSPEC, sizeof(key->tp_range.tp_min.src));
++	fl2_set_key_val(tb, &key->tp_range.tp_max.src,
++		       TCA_FLOWER_KEY_PORT_SRC_MAX, &mask->tp_range.tp_max.src,
++		       TCA_FLOWER_UNSPEC, sizeof(key->tp_range.tp_max.src));
++
++	if (mask->tp_range.tp_min.dst && mask->tp_range.tp_max.dst &&
++	    ntohs(key->tp_range.tp_max.dst) <=
++	    ntohs(key->tp_range.tp_min.dst)) {
++		NL_SET_ERR_MSG_ATTR(extack,
++				    tb[TCA_FLOWER_KEY_PORT_DST_MIN],
++				    "Invalid destination port range (min must be strictly smaller than max)");
++		return -EINVAL;
++	}
++	if (mask->tp_range.tp_min.src && mask->tp_range.tp_max.src &&
++	    ntohs(key->tp_range.tp_max.src) <=
++	    ntohs(key->tp_range.tp_min.src)) {
++		NL_SET_ERR_MSG_ATTR(extack,
++				    tb[TCA_FLOWER_KEY_PORT_SRC_MIN],
++				    "Invalid source port range (min must be strictly smaller than max)");
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static int fl2_set_key_mpls_lse(const struct nlattr *nla_lse,
++			       struct flow_dissector_key_mpls *key_val,
++			       struct flow_dissector_key_mpls *key_mask,
++			       struct netlink_ext_ack *extack)
++{
++	struct nlattr *tb[TCA_FLOWER_KEY_MPLS_OPT_LSE_MAX + 1];
++	struct flow_dissector_mpls_lse *lse_mask;
++	struct flow_dissector_mpls_lse *lse_val;
++	u8 lse_index;
++	u8 depth;
++	int err;
++
++	err = nla_parse_nested(tb, TCA_FLOWER_KEY_MPLS_OPT_LSE_MAX, nla_lse,
++			       mpls_stack_entry_policy, extack);
++	if (err < 0)
++		return err;
++
++	if (!tb[TCA_FLOWER_KEY_MPLS_OPT_LSE_DEPTH]) {
++		NL_SET_ERR_MSG(extack, "Missing MPLS option \"depth\"");
++		return -EINVAL;
++	}
++
++	depth = nla_get_u8(tb[TCA_FLOWER_KEY_MPLS_OPT_LSE_DEPTH]);
++
++	/* LSE depth starts at 1, for consistency with terminology used by
++	 * RFC 3031 (section 3.9), where depth 0 refers to unlabeled packets.
++	 */
++	if (depth < 1 || depth > FLOW_DIS_MPLS_MAX) {
++		NL_SET_ERR_MSG_ATTR(extack,
++				    tb[TCA_FLOWER_KEY_MPLS_OPT_LSE_DEPTH],
++				    "Invalid MPLS depth");
++		return -EINVAL;
++	}
++	lse_index = depth - 1;
++
++	dissector_set_mpls_lse(key_val, lse_index);
++	dissector_set_mpls_lse(key_mask, lse_index);
++
++	lse_val = &key_val->ls[lse_index];
++	lse_mask = &key_mask->ls[lse_index];
++
++	if (tb[TCA_FLOWER_KEY_MPLS_OPT_LSE_TTL]) {
++		lse_val->mpls_ttl = nla_get_u8(tb[TCA_FLOWER_KEY_MPLS_OPT_LSE_TTL]);
++		lse_mask->mpls_ttl = MPLS_TTL_MASK;
++	}
++	if (tb[TCA_FLOWER_KEY_MPLS_OPT_LSE_BOS]) {
++		u8 bos = nla_get_u8(tb[TCA_FLOWER_KEY_MPLS_OPT_LSE_BOS]);
++
++		if (bos & ~MPLS_BOS_MASK) {
++			NL_SET_ERR_MSG_ATTR(extack,
++					    tb[TCA_FLOWER_KEY_MPLS_OPT_LSE_BOS],
++					    "Bottom Of Stack (BOS) must be 0 or 1");
++			return -EINVAL;
++		}
++		lse_val->mpls_bos = bos;
++		lse_mask->mpls_bos = MPLS_BOS_MASK;
++	}
++	if (tb[TCA_FLOWER_KEY_MPLS_OPT_LSE_TC]) {
++		u8 tc = nla_get_u8(tb[TCA_FLOWER_KEY_MPLS_OPT_LSE_TC]);
++
++		if (tc & ~MPLS_TC_MASK) {
++			NL_SET_ERR_MSG_ATTR(extack,
++					    tb[TCA_FLOWER_KEY_MPLS_OPT_LSE_TC],
++					    "Traffic Class (TC) must be between 0 and 7");
++			return -EINVAL;
++		}
++		lse_val->mpls_tc = tc;
++		lse_mask->mpls_tc = MPLS_TC_MASK;
++	}
++	if (tb[TCA_FLOWER_KEY_MPLS_OPT_LSE_LABEL]) {
++		u32 label = nla_get_u32(tb[TCA_FLOWER_KEY_MPLS_OPT_LSE_LABEL]);
++
++		if (label & ~MPLS_LABEL_MASK) {
++			NL_SET_ERR_MSG_ATTR(extack,
++					    tb[TCA_FLOWER_KEY_MPLS_OPT_LSE_LABEL],
++					    "Label must be between 0 and 1048575");
++			return -EINVAL;
++		}
++		lse_val->mpls_label = label;
++		lse_mask->mpls_label = MPLS_LABEL_MASK;
++	}
++
++	return 0;
++}
++
++static int fl2_set_key_mpls_opts(const struct nlattr *nla_mpls_opts,
++				struct flow_dissector_key_mpls *key_val,
++				struct flow_dissector_key_mpls *key_mask,
++				struct netlink_ext_ack *extack)
++{
++	struct nlattr *nla_lse;
++	int rem;
++	int err;
++
++	if (!(nla_mpls_opts->nla_type & NLA_F_NESTED)) {
++		NL_SET_ERR_MSG_ATTR(extack, nla_mpls_opts,
++				    "NLA_F_NESTED is missing");
++		return -EINVAL;
++	}
++
++	nla_for_each_nested(nla_lse, nla_mpls_opts, rem) {
++		if (nla_type(nla_lse) != TCA_FLOWER_KEY_MPLS_OPTS_LSE) {
++			NL_SET_ERR_MSG_ATTR(extack, nla_lse,
++					    "Invalid MPLS option type");
++			return -EINVAL;
++		}
++
++		err = fl2_set_key_mpls_lse(nla_lse, key_val, key_mask, extack);
++		if (err < 0)
++			return err;
++	}
++	if (rem) {
++		NL_SET_ERR_MSG(extack,
++			       "Bytes leftover after parsing MPLS options");
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static int fl2_set_key_mpls(struct nlattr **tb,
++			   struct flow_dissector_key_mpls *key_val,
++			   struct flow_dissector_key_mpls *key_mask,
++			   struct netlink_ext_ack *extack)
++{
++	struct flow_dissector_mpls_lse *lse_mask;
++	struct flow_dissector_mpls_lse *lse_val;
++
++	if (tb[TCA_FLOWER_KEY_MPLS_OPTS]) {
++		if (tb[TCA_FLOWER_KEY_MPLS_TTL] ||
++		    tb[TCA_FLOWER_KEY_MPLS_BOS] ||
++		    tb[TCA_FLOWER_KEY_MPLS_TC] ||
++		    tb[TCA_FLOWER_KEY_MPLS_LABEL]) {
++			NL_SET_ERR_MSG_ATTR(extack,
++					    tb[TCA_FLOWER_KEY_MPLS_OPTS],
++					    "MPLS label, Traffic Class, Bottom Of Stack and Time To Live must be encapsulated in the MPLS options attribute");
++			return -EBADMSG;
++		}
++
++		return fl2_set_key_mpls_opts(tb[TCA_FLOWER_KEY_MPLS_OPTS],
++					    key_val, key_mask, extack);
++	}
++
++	lse_val = &key_val->ls[0];
++	lse_mask = &key_mask->ls[0];
++
++	if (tb[TCA_FLOWER_KEY_MPLS_TTL]) {
++		lse_val->mpls_ttl = nla_get_u8(tb[TCA_FLOWER_KEY_MPLS_TTL]);
++		lse_mask->mpls_ttl = MPLS_TTL_MASK;
++		dissector_set_mpls_lse(key_val, 0);
++		dissector_set_mpls_lse(key_mask, 0);
++	}
++	if (tb[TCA_FLOWER_KEY_MPLS_BOS]) {
++		u8 bos = nla_get_u8(tb[TCA_FLOWER_KEY_MPLS_BOS]);
++
++		if (bos & ~MPLS_BOS_MASK) {
++			NL_SET_ERR_MSG_ATTR(extack,
++					    tb[TCA_FLOWER_KEY_MPLS_BOS],
++					    "Bottom Of Stack (BOS) must be 0 or 1");
++			return -EINVAL;
++		}
++		lse_val->mpls_bos = bos;
++		lse_mask->mpls_bos = MPLS_BOS_MASK;
++		dissector_set_mpls_lse(key_val, 0);
++		dissector_set_mpls_lse(key_mask, 0);
++	}
++	if (tb[TCA_FLOWER_KEY_MPLS_TC]) {
++		u8 tc = nla_get_u8(tb[TCA_FLOWER_KEY_MPLS_TC]);
++
++		if (tc & ~MPLS_TC_MASK) {
++			NL_SET_ERR_MSG_ATTR(extack,
++					    tb[TCA_FLOWER_KEY_MPLS_TC],
++					    "Traffic Class (TC) must be between 0 and 7");
++			return -EINVAL;
++		}
++		lse_val->mpls_tc = tc;
++		lse_mask->mpls_tc = MPLS_TC_MASK;
++		dissector_set_mpls_lse(key_val, 0);
++		dissector_set_mpls_lse(key_mask, 0);
++	}
++	if (tb[TCA_FLOWER_KEY_MPLS_LABEL]) {
++		u32 label = nla_get_u32(tb[TCA_FLOWER_KEY_MPLS_LABEL]);
++
++		if (label & ~MPLS_LABEL_MASK) {
++			NL_SET_ERR_MSG_ATTR(extack,
++					    tb[TCA_FLOWER_KEY_MPLS_LABEL],
++					    "Label must be between 0 and 1048575");
++			return -EINVAL;
++		}
++		lse_val->mpls_label = label;
++		lse_mask->mpls_label = MPLS_LABEL_MASK;
++		dissector_set_mpls_lse(key_val, 0);
++		dissector_set_mpls_lse(key_mask, 0);
++	}
++	return 0;
++}
++
++static void fl2_set_key_vlan(struct nlattr **tb,
++			    __be16 ethertype,
++			    int vlan_id_key, int vlan_prio_key,
++			    struct flow_dissector_key_vlan *key_val,
++			    struct flow_dissector_key_vlan *key_mask)
++{
++#define VLAN_PRIORITY_MASK	0x7
++
++	if (tb[vlan_id_key]) {
++		key_val->vlan_id =
++			nla_get_u16(tb[vlan_id_key]) & VLAN_VID_MASK;
++		key_mask->vlan_id = VLAN_VID_MASK;
++	}
++	if (tb[vlan_prio_key]) {
++		key_val->vlan_priority =
++			nla_get_u8(tb[vlan_prio_key]) &
++			VLAN_PRIORITY_MASK;
++		key_mask->vlan_priority = VLAN_PRIORITY_MASK;
++	}
++	key_val->vlan_tpid = ethertype;
++	key_mask->vlan_tpid = cpu_to_be16(~0);
++}
++
++static void fl2_set_key_flag(u32 flower_key, u32 flower_mask,
++			    u32 *dissector_key, u32 *dissector_mask,
++			    u32 flower_flag_bit, u32 dissector_flag_bit)
++{
++	if (flower_mask & flower_flag_bit) {
++		*dissector_mask |= dissector_flag_bit;
++		if (flower_key & flower_flag_bit)
++			*dissector_key |= dissector_flag_bit;
++	}
++}
++
++static int fl2_set_key_flags(struct nlattr **tb, u32 *flags_key,
++			    u32 *flags_mask, struct netlink_ext_ack *extack)
++{
++	u32 key, mask;
++
++	/* mask is mandatory for flags */
++	if (!tb[TCA_FLOWER_KEY_FLAGS_MASK]) {
++		NL_SET_ERR_MSG(extack, "Missing flags mask");
++		return -EINVAL;
++	}
++
++	key = be32_to_cpu(nla_get_be32(tb[TCA_FLOWER_KEY_FLAGS]));
++	mask = be32_to_cpu(nla_get_be32(tb[TCA_FLOWER_KEY_FLAGS_MASK]));
++
++	*flags_key  = 0;
++	*flags_mask = 0;
++
++	fl2_set_key_flag(key, mask, flags_key, flags_mask,
++			TCA_FLOWER_KEY_FLAGS_IS_FRAGMENT, FLOW_DIS_IS_FRAGMENT);
++	fl2_set_key_flag(key, mask, flags_key, flags_mask,
++			TCA_FLOWER_KEY_FLAGS_FRAG_IS_FIRST,
++			FLOW_DIS_FIRST_FRAG);
++
++	return 0;
++}
++
++static void fl2_set_key_ip(struct nlattr **tb, bool encap,
++			  struct flow_dissector_key_ip *key,
++			  struct flow_dissector_key_ip *mask)
++{
++	int tos_key = encap ? TCA_FLOWER_KEY_ENC_IP_TOS : TCA_FLOWER_KEY_IP_TOS;
++	int ttl_key = encap ? TCA_FLOWER_KEY_ENC_IP_TTL : TCA_FLOWER_KEY_IP_TTL;
++	int tos_mask = encap ? TCA_FLOWER_KEY_ENC_IP_TOS_MASK : TCA_FLOWER_KEY_IP_TOS_MASK;
++	int ttl_mask = encap ? TCA_FLOWER_KEY_ENC_IP_TTL_MASK : TCA_FLOWER_KEY_IP_TTL_MASK;
++
++	fl2_set_key_val(tb, &key->tos, tos_key, &mask->tos, tos_mask, sizeof(key->tos));
++	fl2_set_key_val(tb, &key->ttl, ttl_key, &mask->ttl, ttl_mask, sizeof(key->ttl));
++}
++
++static int fl2_set_geneve_opt(const struct nlattr *nla, struct fl2_flow_key *key,
++			     int depth, int option_len,
++			     struct netlink_ext_ack *extack)
++{
++	struct nlattr *tb[TCA_FLOWER_KEY_ENC_OPT_GENEVE_MAX + 1];
++	struct nlattr *class = NULL, *type = NULL, *data = NULL;
++	struct geneve_opt *opt;
++	int err, data_len = 0;
++
++	if (option_len > sizeof(struct geneve_opt))
++		data_len = option_len - sizeof(struct geneve_opt);
++
++	opt = (struct geneve_opt *)&key->enc_opts.data[key->enc_opts.len];
++	memset(opt, 0xff, option_len);
++	opt->length = data_len / 4;
++	opt->r1 = 0;
++	opt->r2 = 0;
++	opt->r3 = 0;
++
++	/* If no mask has been prodived we assume an exact match. */
++	if (!depth)
++		return sizeof(struct geneve_opt) + data_len;
++
++	if (nla_type(nla) != TCA_FLOWER_KEY_ENC_OPTS_GENEVE) {
++		NL_SET_ERR_MSG(extack, "Non-geneve option type for mask");
++		return -EINVAL;
++	}
++
++	err = nla_parse_nested_deprecated(tb,
++					  TCA_FLOWER_KEY_ENC_OPT_GENEVE_MAX,
++					  nla, geneve_opt_policy, extack);
++	if (err < 0)
++		return err;
++
++	/* We are not allowed to omit any of CLASS, TYPE or DATA
++	 * fields from the key.
++	 */
++	if (!option_len &&
++	    (!tb[TCA_FLOWER_KEY_ENC_OPT_GENEVE_CLASS] ||
++	     !tb[TCA_FLOWER_KEY_ENC_OPT_GENEVE_TYPE] ||
++	     !tb[TCA_FLOWER_KEY_ENC_OPT_GENEVE_DATA])) {
++		NL_SET_ERR_MSG(extack, "Missing tunnel key geneve option class, type or data");
++		return -EINVAL;
++	}
++
++	/* Omitting any of CLASS, TYPE or DATA fields is allowed
++	 * for the mask.
++	 */
++	if (tb[TCA_FLOWER_KEY_ENC_OPT_GENEVE_DATA]) {
++		int new_len = key->enc_opts.len;
++
++		data = tb[TCA_FLOWER_KEY_ENC_OPT_GENEVE_DATA];
++		data_len = nla_len(data);
++		if (data_len < 4) {
++			NL_SET_ERR_MSG(extack, "Tunnel key geneve option data is less than 4 bytes long");
++			return -ERANGE;
++		}
++		if (data_len % 4) {
++			NL_SET_ERR_MSG(extack, "Tunnel key geneve option data is not a multiple of 4 bytes long");
++			return -ERANGE;
++		}
++
++		new_len += sizeof(struct geneve_opt) + data_len;
++		BUILD_BUG_ON(FLOW_DIS_TUN_OPTS_MAX != IP_TUNNEL_OPTS_MAX);
++		if (new_len > FLOW_DIS_TUN_OPTS_MAX) {
++			NL_SET_ERR_MSG(extack, "Tunnel options exceeds max size");
++			return -ERANGE;
++		}
++		opt->length = data_len / 4;
++		memcpy(opt->opt_data, nla_data(data), data_len);
++	}
++
++	if (tb[TCA_FLOWER_KEY_ENC_OPT_GENEVE_CLASS]) {
++		class = tb[TCA_FLOWER_KEY_ENC_OPT_GENEVE_CLASS];
++		opt->opt_class = nla_get_be16(class);
++	}
++
++	if (tb[TCA_FLOWER_KEY_ENC_OPT_GENEVE_TYPE]) {
++		type = tb[TCA_FLOWER_KEY_ENC_OPT_GENEVE_TYPE];
++		opt->type = nla_get_u8(type);
++	}
++
++	return sizeof(struct geneve_opt) + data_len;
++}
++
++static int fl2_set_vxlan_opt(const struct nlattr *nla, struct fl2_flow_key *key,
++			    int depth, int option_len,
++			    struct netlink_ext_ack *extack)
++{
++	struct nlattr *tb[TCA_FLOWER_KEY_ENC_OPT_VXLAN_MAX + 1];
++	struct vxlan_metadata *md;
++	int err;
++
++	md = (struct vxlan_metadata *)&key->enc_opts.data[key->enc_opts.len];
++	memset(md, 0xff, sizeof(*md));
++
++	if (!depth)
++		return sizeof(*md);
++
++	if (nla_type(nla) != TCA_FLOWER_KEY_ENC_OPTS_VXLAN) {
++		NL_SET_ERR_MSG(extack, "Non-vxlan option type for mask");
++		return -EINVAL;
++	}
++
++	err = nla_parse_nested(tb, TCA_FLOWER_KEY_ENC_OPT_VXLAN_MAX, nla,
++			       vxlan_opt_policy, extack);
++	if (err < 0)
++		return err;
++
++	if (!option_len && !tb[TCA_FLOWER_KEY_ENC_OPT_VXLAN_GBP]) {
++		NL_SET_ERR_MSG(extack, "Missing tunnel key vxlan option gbp");
++		return -EINVAL;
++	}
++
++	if (tb[TCA_FLOWER_KEY_ENC_OPT_VXLAN_GBP]) {
++		md->gbp = nla_get_u32(tb[TCA_FLOWER_KEY_ENC_OPT_VXLAN_GBP]);
++		md->gbp &= VXLAN_GBP_MASK;
++	}
++
++	return sizeof(*md);
++}
++
++static int fl2_set_erspan_opt(const struct nlattr *nla, struct fl2_flow_key *key,
++			     int depth, int option_len,
++			     struct netlink_ext_ack *extack)
++{
++	struct nlattr *tb[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_MAX + 1];
++	struct erspan_metadata *md;
++	int err;
++
++	md = (struct erspan_metadata *)&key->enc_opts.data[key->enc_opts.len];
++	memset(md, 0xff, sizeof(*md));
++	md->version = 1;
++
++	if (!depth)
++		return sizeof(*md);
++
++	if (nla_type(nla) != TCA_FLOWER_KEY_ENC_OPTS_ERSPAN) {
++		NL_SET_ERR_MSG(extack, "Non-erspan option type for mask");
++		return -EINVAL;
++	}
++
++	err = nla_parse_nested(tb, TCA_FLOWER_KEY_ENC_OPT_ERSPAN_MAX, nla,
++			       erspan_opt_policy, extack);
++	if (err < 0)
++		return err;
++
++	if (!option_len && !tb[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_VER]) {
++		NL_SET_ERR_MSG(extack, "Missing tunnel key erspan option ver");
++		return -EINVAL;
++	}
++
++	if (tb[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_VER])
++		md->version = nla_get_u8(tb[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_VER]);
++
++	if (md->version == 1) {
++		if (!option_len && !tb[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_INDEX]) {
++			NL_SET_ERR_MSG(extack, "Missing tunnel key erspan option index");
++			return -EINVAL;
++		}
++		if (tb[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_INDEX]) {
++			nla = tb[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_INDEX];
++			memset(&md->u, 0x00, sizeof(md->u));
++			md->u.index = nla_get_be32(nla);
++		}
++	} else if (md->version == 2) {
++		if (!option_len && (!tb[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_DIR] ||
++				    !tb[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_HWID])) {
++			NL_SET_ERR_MSG(extack, "Missing tunnel key erspan option dir or hwid");
++			return -EINVAL;
++		}
++		if (tb[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_DIR]) {
++			nla = tb[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_DIR];
++			md->u.md2.dir = nla_get_u8(nla);
++		}
++		if (tb[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_HWID]) {
++			nla = tb[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_HWID];
++			set_hwid(&md->u.md2, nla_get_u8(nla));
++		}
++	} else {
++		NL_SET_ERR_MSG(extack, "Tunnel key erspan option ver is incorrect");
++		return -EINVAL;
++	}
++
++	return sizeof(*md);
++}
++
++static int fl2_set_enc_opt(struct nlattr **tb, struct fl2_flow_key *key,
++			  struct fl2_flow_key *mask,
++			  struct netlink_ext_ack *extack)
++{
++	const struct nlattr *nla_enc_key, *nla_opt_key, *nla_opt_msk = NULL;
++	int err, option_len, key_depth, msk_depth = 0;
++
++	err = nla_validate_nested_deprecated(tb[TCA_FLOWER_KEY_ENC_OPTS],
++					     TCA_FLOWER_KEY_ENC_OPTS_MAX,
++					     enc_opts_policy, extack);
++	if (err)
++		return err;
++
++	nla_enc_key = nla_data(tb[TCA_FLOWER_KEY_ENC_OPTS]);
++
++	if (tb[TCA_FLOWER_KEY_ENC_OPTS_MASK]) {
++		err = nla_validate_nested_deprecated(tb[TCA_FLOWER_KEY_ENC_OPTS_MASK],
++						     TCA_FLOWER_KEY_ENC_OPTS_MAX,
++						     enc_opts_policy, extack);
++		if (err)
++			return err;
++
++		nla_opt_msk = nla_data(tb[TCA_FLOWER_KEY_ENC_OPTS_MASK]);
++		msk_depth = nla_len(tb[TCA_FLOWER_KEY_ENC_OPTS_MASK]);
++		if (!nla_ok(nla_opt_msk, msk_depth)) {
++			NL_SET_ERR_MSG(extack, "Invalid nested attribute for masks");
++			return -EINVAL;
++		}
++	}
++
++	nla_for_each_attr(nla_opt_key, nla_enc_key,
++			  nla_len(tb[TCA_FLOWER_KEY_ENC_OPTS]), key_depth) {
++		switch (nla_type(nla_opt_key)) {
++		case TCA_FLOWER_KEY_ENC_OPTS_GENEVE:
++			if (key->enc_opts.dst_opt_type &&
++			    key->enc_opts.dst_opt_type != TUNNEL_GENEVE_OPT) {
++				NL_SET_ERR_MSG(extack, "Duplicate type for geneve options");
++				return -EINVAL;
++			}
++			option_len = 0;
++			key->enc_opts.dst_opt_type = TUNNEL_GENEVE_OPT;
++			option_len = fl2_set_geneve_opt(nla_opt_key, key,
++						       key_depth, option_len,
++						       extack);
++			if (option_len < 0)
++				return option_len;
++
++			key->enc_opts.len += option_len;
++			/* At the same time we need to parse through the mask
++			 * in order to verify exact and mask attribute lengths.
++			 */
++			mask->enc_opts.dst_opt_type = TUNNEL_GENEVE_OPT;
++			option_len = fl2_set_geneve_opt(nla_opt_msk, mask,
++						       msk_depth, option_len,
++						       extack);
++			if (option_len < 0)
++				return option_len;
++
++			mask->enc_opts.len += option_len;
++			if (key->enc_opts.len != mask->enc_opts.len) {
++				NL_SET_ERR_MSG(extack, "Key and mask miss aligned");
++				return -EINVAL;
++			}
++			break;
++		case TCA_FLOWER_KEY_ENC_OPTS_VXLAN:
++			if (key->enc_opts.dst_opt_type) {
++				NL_SET_ERR_MSG(extack, "Duplicate type for vxlan options");
++				return -EINVAL;
++			}
++			option_len = 0;
++			key->enc_opts.dst_opt_type = TUNNEL_VXLAN_OPT;
++			option_len = fl2_set_vxlan_opt(nla_opt_key, key,
++						      key_depth, option_len,
++						      extack);
++			if (option_len < 0)
++				return option_len;
++
++			key->enc_opts.len += option_len;
++			/* At the same time we need to parse through the mask
++			 * in order to verify exact and mask attribute lengths.
++			 */
++			mask->enc_opts.dst_opt_type = TUNNEL_VXLAN_OPT;
++			option_len = fl2_set_vxlan_opt(nla_opt_msk, mask,
++						      msk_depth, option_len,
++						      extack);
++			if (option_len < 0)
++				return option_len;
++
++			mask->enc_opts.len += option_len;
++			if (key->enc_opts.len != mask->enc_opts.len) {
++				NL_SET_ERR_MSG(extack, "Key and mask miss aligned");
++				return -EINVAL;
++			}
++			break;
++		case TCA_FLOWER_KEY_ENC_OPTS_ERSPAN:
++			if (key->enc_opts.dst_opt_type) {
++				NL_SET_ERR_MSG(extack, "Duplicate type for erspan options");
++				return -EINVAL;
++			}
++			option_len = 0;
++			key->enc_opts.dst_opt_type = TUNNEL_ERSPAN_OPT;
++			option_len = fl2_set_erspan_opt(nla_opt_key, key,
++						       key_depth, option_len,
++						       extack);
++			if (option_len < 0)
++				return option_len;
++
++			key->enc_opts.len += option_len;
++			/* At the same time we need to parse through the mask
++			 * in order to verify exact and mask attribute lengths.
++			 */
++			mask->enc_opts.dst_opt_type = TUNNEL_ERSPAN_OPT;
++			option_len = fl2_set_erspan_opt(nla_opt_msk, mask,
++						       msk_depth, option_len,
++						       extack);
++			if (option_len < 0)
++				return option_len;
++
++			mask->enc_opts.len += option_len;
++			if (key->enc_opts.len != mask->enc_opts.len) {
++				NL_SET_ERR_MSG(extack, "Key and mask miss aligned");
++				return -EINVAL;
++			}
++			break;
++		default:
++			NL_SET_ERR_MSG(extack, "Unknown tunnel option type");
++			return -EINVAL;
++		}
++
++		if (!msk_depth)
++			continue;
++
++		if (!nla_ok(nla_opt_msk, msk_depth)) {
++			NL_SET_ERR_MSG(extack, "A mask attribute is invalid");
++			return -EINVAL;
++		}
++		nla_opt_msk = nla_next(nla_opt_msk, &msk_depth);
++	}
++
++	return 0;
++}
++
++static int fl2_validate_ct_state(u16 state, struct nlattr *tb,
++				struct netlink_ext_ack *extack)
++{
++	if (state && !(state & TCA_FLOWER_KEY_CT_FLAGS_TRACKED)) {
++		NL_SET_ERR_MSG_ATTR(extack, tb,
++				    "no trk, so no other flag can be set");
++		return -EINVAL;
++	}
++
++	if (state & TCA_FLOWER_KEY_CT_FLAGS_NEW &&
++	    state & TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED) {
++		NL_SET_ERR_MSG_ATTR(extack, tb,
++				    "new and est are mutually exclusive");
++		return -EINVAL;
++	}
++
++	if (state & TCA_FLOWER_KEY_CT_FLAGS_INVALID &&
++	    state & ~(TCA_FLOWER_KEY_CT_FLAGS_TRACKED |
++		      TCA_FLOWER_KEY_CT_FLAGS_INVALID)) {
++		NL_SET_ERR_MSG_ATTR(extack, tb,
++				    "when inv is set, only trk may be set");
++		return -EINVAL;
++	}
++
++	if (state & TCA_FLOWER_KEY_CT_FLAGS_NEW &&
++	    state & TCA_FLOWER_KEY_CT_FLAGS_REPLY) {
++		NL_SET_ERR_MSG_ATTR(extack, tb,
++				    "new and rpl are mutually exclusive");
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static int fl2_set_key_ct(struct nlattr **tb,
++			 struct flow_dissector_key_ct *key,
++			 struct flow_dissector_key_ct *mask,
++			 struct netlink_ext_ack *extack)
++{
++	if (tb[TCA_FLOWER_KEY_CT_STATE]) {
++		int err;
++
++		if (!IS_ENABLED(CONFIG_NF_CONNTRACK)) {
++			NL_SET_ERR_MSG(extack, "Conntrack isn't enabled");
++			return -EOPNOTSUPP;
++		}
++		fl2_set_key_val(tb, &key->ct_state, TCA_FLOWER_KEY_CT_STATE,
++			       &mask->ct_state, TCA_FLOWER_KEY_CT_STATE_MASK,
++			       sizeof(key->ct_state));
++
++		err = fl2_validate_ct_state(key->ct_state & mask->ct_state,
++					   tb[TCA_FLOWER_KEY_CT_STATE_MASK],
++					   extack);
++		if (err)
++			return err;
++
++	}
++	if (tb[TCA_FLOWER_KEY_CT_ZONE]) {
++		if (!IS_ENABLED(CONFIG_NF_CONNTRACK_ZONES)) {
++			NL_SET_ERR_MSG(extack, "Conntrack zones isn't enabled");
++			return -EOPNOTSUPP;
++		}
++		fl2_set_key_val(tb, &key->ct_zone, TCA_FLOWER_KEY_CT_ZONE,
++			       &mask->ct_zone, TCA_FLOWER_KEY_CT_ZONE_MASK,
++			       sizeof(key->ct_zone));
++	}
++	if (tb[TCA_FLOWER_KEY_CT_MARK]) {
++		if (!IS_ENABLED(CONFIG_NF_CONNTRACK_MARK)) {
++			NL_SET_ERR_MSG(extack, "Conntrack mark isn't enabled");
++			return -EOPNOTSUPP;
++		}
++		fl2_set_key_val(tb, &key->ct_mark, TCA_FLOWER_KEY_CT_MARK,
++			       &mask->ct_mark, TCA_FLOWER_KEY_CT_MARK_MASK,
++			       sizeof(key->ct_mark));
++	}
++	if (tb[TCA_FLOWER_KEY_CT_LABELS]) {
++		if (!IS_ENABLED(CONFIG_NF_CONNTRACK_LABELS)) {
++			NL_SET_ERR_MSG(extack, "Conntrack labels aren't enabled");
++			return -EOPNOTSUPP;
++		}
++		fl2_set_key_val(tb, key->ct_labels, TCA_FLOWER_KEY_CT_LABELS,
++			       mask->ct_labels, TCA_FLOWER_KEY_CT_LABELS_MASK,
++			       sizeof(key->ct_labels));
++	}
++
++	return 0;
++}
++
++static int fl2_set_key(struct net *net, struct nlattr **tb,
++		      struct fl2_flow_key *key, struct fl2_flow_key *mask,
++		      struct netlink_ext_ack *extack)
++{
++	__be16 ethertype;
++	int ret = 0;
++
++	if (tb[TCA_FLOWER_INDEV]) {
++		int err = tcf_change_indev(net, tb[TCA_FLOWER_INDEV], extack);
++		if (err < 0)
++			return err;
++		key->meta.ingress_ifindex = err;
++		mask->meta.ingress_ifindex = 0xffffffff;
++	}
++
++
++	fl2_set_key_val(tb, key->eth.dst, TCA_FLOWER_KEY_ETH_DST,
++		       mask->eth.dst, TCA_FLOWER_KEY_ETH_DST_MASK,
++		       sizeof(key->eth.dst));
++	fl2_set_key_val(tb, key->eth.src, TCA_FLOWER_KEY_ETH_SRC,
++		       mask->eth.src, TCA_FLOWER_KEY_ETH_SRC_MASK,
++		       sizeof(key->eth.src));
++
++	if (tb[TCA_FLOWER_KEY_ETH_TYPE]) {
++		ethertype = nla_get_be16(tb[TCA_FLOWER_KEY_ETH_TYPE]);
++
++		if (eth_type_vlan(ethertype)) {
++			fl2_set_key_vlan(tb, ethertype, TCA_FLOWER_KEY_VLAN_ID,
++					TCA_FLOWER_KEY_VLAN_PRIO, &key->vlan,
++					&mask->vlan);
++
++			if (tb[TCA_FLOWER_KEY_VLAN_ETH_TYPE]) {
++				ethertype = nla_get_be16(tb[TCA_FLOWER_KEY_VLAN_ETH_TYPE]);
++				if (eth_type_vlan(ethertype)) {
++					fl2_set_key_vlan(tb, ethertype,
++							TCA_FLOWER_KEY_CVLAN_ID,
++							TCA_FLOWER_KEY_CVLAN_PRIO,
++							&key->cvlan, &mask->cvlan);
++					fl2_set_key_val(tb, &key->basic.n_proto,
++						       TCA_FLOWER_KEY_CVLAN_ETH_TYPE,
++						       &mask->basic.n_proto,
++						       TCA_FLOWER_UNSPEC,
++						       sizeof(key->basic.n_proto));
++				} else {
++					key->basic.n_proto = ethertype;
++					mask->basic.n_proto = cpu_to_be16(~0);
++				}
++			}
++		} else {
++			key->basic.n_proto = ethertype;
++			mask->basic.n_proto = cpu_to_be16(~0);
++		}
++	}
++
++	if (tb[TCA_FLOWER2_KEY_PPP_PROTO]){
++		fl2_set_key_val(tb, &key->ppp.ppp_proto, TCA_FLOWER2_KEY_PPP_PROTO,
++			       &mask->ppp.ppp_proto, TCA_FLOWER_UNSPEC,
++		    	   sizeof(key->ppp.ppp_proto));
++	}
++	if (key->basic.n_proto == htons(ETH_P_IP) ||
++	    key->basic.n_proto == htons(ETH_P_IPV6) ||
++		key->ppp.ppp_proto == htons(PPP_IP)		||
++		key->ppp.ppp_proto == htons(PPP_IPV6)
++		) {
++		fl2_set_key_val(tb, &key->basic.ip_proto, TCA_FLOWER_KEY_IP_PROTO,
++			       &mask->basic.ip_proto, TCA_FLOWER_UNSPEC,
++			       sizeof(key->basic.ip_proto));
++		fl2_set_key_ip(tb, false, &key->ip, &mask->ip);
++	}
++
++	if (tb[TCA_FLOWER_KEY_IPV4_SRC] || tb[TCA_FLOWER_KEY_IPV4_DST]) {
++		key->control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
++		mask->control.addr_type = ~0;
++		fl2_set_key_val(tb, &key->ipv4.src, TCA_FLOWER_KEY_IPV4_SRC,
++			       &mask->ipv4.src, TCA_FLOWER_KEY_IPV4_SRC_MASK,
++			       sizeof(key->ipv4.src));
++		fl2_set_key_val(tb, &key->ipv4.dst, TCA_FLOWER_KEY_IPV4_DST,
++			       &mask->ipv4.dst, TCA_FLOWER_KEY_IPV4_DST_MASK,
++			       sizeof(key->ipv4.dst));
++	} else if (tb[TCA_FLOWER_KEY_IPV6_SRC] || tb[TCA_FLOWER_KEY_IPV6_DST]) {
++		key->control.addr_type = FLOW_DISSECTOR_KEY_IPV6_ADDRS;
++		mask->control.addr_type = ~0;
++		fl2_set_key_val(tb, &key->ipv6.src, TCA_FLOWER_KEY_IPV6_SRC,
++			       &mask->ipv6.src, TCA_FLOWER_KEY_IPV6_SRC_MASK,
++			       sizeof(key->ipv6.src));
++		fl2_set_key_val(tb, &key->ipv6.dst, TCA_FLOWER_KEY_IPV6_DST,
++			       &mask->ipv6.dst, TCA_FLOWER_KEY_IPV6_DST_MASK,
++			       sizeof(key->ipv6.dst));
++	}
++
++	if (key->basic.ip_proto == IPPROTO_TCP) {
++		fl2_set_key_val(tb, &key->tp.src, TCA_FLOWER_KEY_TCP_SRC,
++			       &mask->tp.src, TCA_FLOWER_KEY_TCP_SRC_MASK,
++			       sizeof(key->tp.src));
++		fl2_set_key_val(tb, &key->tp.dst, TCA_FLOWER_KEY_TCP_DST,
++			       &mask->tp.dst, TCA_FLOWER_KEY_TCP_DST_MASK,
++			       sizeof(key->tp.dst));
++		fl2_set_key_val(tb, &key->tcp.flags, TCA_FLOWER_KEY_TCP_FLAGS,
++			       &mask->tcp.flags, TCA_FLOWER_KEY_TCP_FLAGS_MASK,
++			       sizeof(key->tcp.flags));
++	} else if (key->basic.ip_proto == IPPROTO_UDP) {
++		fl2_set_key_val(tb, &key->tp.src, TCA_FLOWER_KEY_UDP_SRC,
++			       &mask->tp.src, TCA_FLOWER_KEY_UDP_SRC_MASK,
++			       sizeof(key->tp.src));
++		fl2_set_key_val(tb, &key->tp.dst, TCA_FLOWER_KEY_UDP_DST,
++			       &mask->tp.dst, TCA_FLOWER_KEY_UDP_DST_MASK,
++			       sizeof(key->tp.dst));
++	} else if (key->basic.ip_proto == IPPROTO_SCTP) {
++		fl2_set_key_val(tb, &key->tp.src, TCA_FLOWER_KEY_SCTP_SRC,
++			       &mask->tp.src, TCA_FLOWER_KEY_SCTP_SRC_MASK,
++			       sizeof(key->tp.src));
++		fl2_set_key_val(tb, &key->tp.dst, TCA_FLOWER_KEY_SCTP_DST,
++			       &mask->tp.dst, TCA_FLOWER_KEY_SCTP_DST_MASK,
++			       sizeof(key->tp.dst));
++	} else if (key->basic.n_proto == htons(ETH_P_IP) &&
++		   key->basic.ip_proto == IPPROTO_ICMP) {
++		fl2_set_key_val(tb, &key->icmp.type, TCA_FLOWER_KEY_ICMPV4_TYPE,
++			       &mask->icmp.type,
++			       TCA_FLOWER_KEY_ICMPV4_TYPE_MASK,
++			       sizeof(key->icmp.type));
++		fl2_set_key_val(tb, &key->icmp.code, TCA_FLOWER_KEY_ICMPV4_CODE,
++			       &mask->icmp.code,
++			       TCA_FLOWER_KEY_ICMPV4_CODE_MASK,
++			       sizeof(key->icmp.code));
++	} else if (key->basic.n_proto == htons(ETH_P_IPV6) &&
++		   key->basic.ip_proto == IPPROTO_ICMPV6) {
++		fl2_set_key_val(tb, &key->icmp.type, TCA_FLOWER_KEY_ICMPV6_TYPE,
++			       &mask->icmp.type,
++			       TCA_FLOWER_KEY_ICMPV6_TYPE_MASK,
++			       sizeof(key->icmp.type));
++		fl2_set_key_val(tb, &key->icmp.code, TCA_FLOWER_KEY_ICMPV6_CODE,
++			       &mask->icmp.code,
++			       TCA_FLOWER_KEY_ICMPV6_CODE_MASK,
++			       sizeof(key->icmp.code));
++	} else if (key->basic.n_proto == htons(ETH_P_MPLS_UC) ||
++		   key->basic.n_proto == htons(ETH_P_MPLS_MC)) {
++		ret = fl2_set_key_mpls(tb, &key->mpls, &mask->mpls, extack);
++		if (ret)
++			return ret;
++	} else if (key->basic.n_proto == htons(ETH_P_ARP) ||
++		   key->basic.n_proto == htons(ETH_P_RARP)) {
++		fl2_set_key_val(tb, &key->arp.sip, TCA_FLOWER_KEY_ARP_SIP,
++			       &mask->arp.sip, TCA_FLOWER_KEY_ARP_SIP_MASK,
++			       sizeof(key->arp.sip));
++		fl2_set_key_val(tb, &key->arp.tip, TCA_FLOWER_KEY_ARP_TIP,
++			       &mask->arp.tip, TCA_FLOWER_KEY_ARP_TIP_MASK,
++			       sizeof(key->arp.tip));
++		fl2_set_key_val(tb, &key->arp.op, TCA_FLOWER_KEY_ARP_OP,
++			       &mask->arp.op, TCA_FLOWER_KEY_ARP_OP_MASK,
++			       sizeof(key->arp.op));
++		fl2_set_key_val(tb, key->arp.sha, TCA_FLOWER_KEY_ARP_SHA,
++			       mask->arp.sha, TCA_FLOWER_KEY_ARP_SHA_MASK,
++			       sizeof(key->arp.sha));
++		fl2_set_key_val(tb, key->arp.tha, TCA_FLOWER_KEY_ARP_THA,
++			       mask->arp.tha, TCA_FLOWER_KEY_ARP_THA_MASK,
++			       sizeof(key->arp.tha));
++	}
++
++	if (key->basic.ip_proto == IPPROTO_TCP ||
++	    key->basic.ip_proto == IPPROTO_UDP ||
++	    key->basic.ip_proto == IPPROTO_SCTP) {
++		ret = fl2_set_key_port_range(tb, key, mask, extack);
++		if (ret)
++			return ret;
++	}
++
++	if (tb[TCA_FLOWER_KEY_ENC_IPV4_SRC] ||
++	    tb[TCA_FLOWER_KEY_ENC_IPV4_DST]) {
++		key->enc_control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
++		mask->enc_control.addr_type = ~0;
++		fl2_set_key_val(tb, &key->enc_ipv4.src,
++			       TCA_FLOWER_KEY_ENC_IPV4_SRC,
++			       &mask->enc_ipv4.src,
++			       TCA_FLOWER_KEY_ENC_IPV4_SRC_MASK,
++			       sizeof(key->enc_ipv4.src));
++		fl2_set_key_val(tb, &key->enc_ipv4.dst,
++			       TCA_FLOWER_KEY_ENC_IPV4_DST,
++			       &mask->enc_ipv4.dst,
++			       TCA_FLOWER_KEY_ENC_IPV4_DST_MASK,
++			       sizeof(key->enc_ipv4.dst));
++	}
++
++	if (tb[TCA_FLOWER_KEY_ENC_IPV6_SRC] ||
++	    tb[TCA_FLOWER_KEY_ENC_IPV6_DST]) {
++		key->enc_control.addr_type = FLOW_DISSECTOR_KEY_IPV6_ADDRS;
++		mask->enc_control.addr_type = ~0;
++		fl2_set_key_val(tb, &key->enc_ipv6.src,
++			       TCA_FLOWER_KEY_ENC_IPV6_SRC,
++			       &mask->enc_ipv6.src,
++			       TCA_FLOWER_KEY_ENC_IPV6_SRC_MASK,
++			       sizeof(key->enc_ipv6.src));
++		fl2_set_key_val(tb, &key->enc_ipv6.dst,
++			       TCA_FLOWER_KEY_ENC_IPV6_DST,
++			       &mask->enc_ipv6.dst,
++			       TCA_FLOWER_KEY_ENC_IPV6_DST_MASK,
++			       sizeof(key->enc_ipv6.dst));
++	}
++
++	fl2_set_key_val(tb, &key->enc_key_id.keyid, TCA_FLOWER_KEY_ENC_KEY_ID,
++		       &mask->enc_key_id.keyid, TCA_FLOWER_UNSPEC,
++		       sizeof(key->enc_key_id.keyid));
++
++	fl2_set_key_val(tb, &key->enc_tp.src, TCA_FLOWER_KEY_ENC_UDP_SRC_PORT,
++		       &mask->enc_tp.src, TCA_FLOWER_KEY_ENC_UDP_SRC_PORT_MASK,
++		       sizeof(key->enc_tp.src));
++
++	fl2_set_key_val(tb, &key->enc_tp.dst, TCA_FLOWER_KEY_ENC_UDP_DST_PORT,
++		       &mask->enc_tp.dst, TCA_FLOWER_KEY_ENC_UDP_DST_PORT_MASK,
++		       sizeof(key->enc_tp.dst));
++
++	fl2_set_key_ip(tb, true, &key->enc_ip, &mask->enc_ip);
++
++	fl2_set_key_val(tb, &key->hash.hash, TCA_FLOWER_KEY_HASH,
++		       &mask->hash.hash, TCA_FLOWER_KEY_HASH_MASK,
++		       sizeof(key->hash.hash));
++	if (tb[TCA_FLOWER_KEY_ENC_OPTS]) {
++		ret = fl2_set_enc_opt(tb, key, mask, extack);
++		if (ret)
++			return ret;
++	}
++
++	ret = fl2_set_key_ct(tb, &key->ct, &mask->ct, extack);
++	if (ret)
++		return ret;
++
++	if (tb[TCA_FLOWER_KEY_FLAGS])
++		ret = fl2_set_key_flags(tb, &key->control.flags,
++				       &mask->control.flags, extack);
++
++	return ret;
++}
++
++static void fl2_mask_copy(struct fl2_flow_mask *dst,
++			 struct fl2_flow_mask *src)
++{
++	const void *psrc = fl2_key_get_start(&src->key, src);
++	void *pdst = fl2_key_get_start(&dst->key, src);
++
++	memcpy(pdst, psrc, fl2_mask_range(src));
++	dst->range = src->range;
++}
++
++static const struct rhashtable_params fl2_ht_params = {
++	.key_offset = offsetof(struct cls_fl2_filter, mkey), /* base offset */
++	.head_offset = offsetof(struct cls_fl2_filter, ht_node),
++	.automatic_shrinking = true,
++};
++
++static int fl2_init_mask_hashtable(struct fl2_flow_mask *mask)
++{
++	mask->filter_ht_params = fl2_ht_params;
++	mask->filter_ht_params.key_len = fl2_mask_range(mask);
++	mask->filter_ht_params.key_offset += mask->range.start;
++
++	return rhashtable_init(&mask->ht, &mask->filter_ht_params);
++}
++
++#define FL2_KEY_MEMBER_OFFSET(member) offsetof(struct fl2_flow_key, member)
++#define FL2_KEY_MEMBER_SIZE(member) sizeof_field(struct fl2_flow_key, member)
++
++#define FL2_KEY_IS_MASKED(mask, member)						\
++	memchr_inv(((char *)mask) + FL2_KEY_MEMBER_OFFSET(member),		\
++		   0, FL2_KEY_MEMBER_SIZE(member))				\
++
++#define FL2_KEY_SET(keys, cnt, id, member)					\
++	do {									\
++		keys[cnt].key_id = id;						\
++		keys[cnt].offset = FL2_KEY_MEMBER_OFFSET(member);		\
++		cnt++;								\
++	} while(0);
++
++#define FL2_KEY_SET_IF_MASKED(mask, keys, cnt, id, member)			\
++	do {									\
++		if (FL2_KEY_IS_MASKED(mask, member))				\
++			FL2_KEY_SET(keys, cnt, id, member);			\
++	} while(0);
++
++static void fl2_init_dissector(struct flow_dissector *dissector,
++			      struct fl2_flow_key *mask)
++{
++	struct flow_dissector_key keys[FLOW_DISSECTOR_KEY_MAX];
++	size_t cnt = 0;
++
++	FL2_KEY_SET_IF_MASKED(mask, keys, cnt,
++			     FLOW_DISSECTOR_KEY_META, meta);
++	FL2_KEY_SET(keys, cnt, FLOW_DISSECTOR_KEY_CONTROL, control);
++	FL2_KEY_SET(keys, cnt, FLOW_DISSECTOR_KEY_BASIC, basic);
++	FL2_KEY_SET_IF_MASKED(mask, keys, cnt,
++			     FLOW_DISSECTOR_KEY_ETH_ADDRS, eth);
++	FL2_KEY_SET_IF_MASKED(mask, keys, cnt,
++			     FLOW_DISSECTOR_KEY_IPV4_ADDRS, ipv4);
++	FL2_KEY_SET_IF_MASKED(mask, keys, cnt,
++			     FLOW_DISSECTOR_KEY_IPV6_ADDRS, ipv6);
++	FL2_KEY_SET_IF_MASKED(mask, keys, cnt,
++			     FLOW_DISSECTOR_KEY_PORTS, tp);
++	FL2_KEY_SET_IF_MASKED(mask, keys, cnt,
++			     FLOW_DISSECTOR_KEY_PORTS_RANGE, tp_range);
++	FL2_KEY_SET_IF_MASKED(mask, keys, cnt,
++			     FLOW_DISSECTOR_KEY_IP, ip);
++	FL2_KEY_SET_IF_MASKED(mask, keys, cnt,
++			     FLOW_DISSECTOR_KEY_TCP, tcp);
++	FL2_KEY_SET_IF_MASKED(mask, keys, cnt,
++			     FLOW_DISSECTOR_KEY_ICMP, icmp);
++	FL2_KEY_SET_IF_MASKED(mask, keys, cnt,
++			     FLOW_DISSECTOR_KEY_ARP, arp);
++	FL2_KEY_SET_IF_MASKED(mask, keys, cnt,
++			     FLOW_DISSECTOR_KEY_MPLS, mpls);
++	FL2_KEY_SET_IF_MASKED(mask, keys, cnt,
++			     FLOW_DISSECTOR_KEY_VLAN, vlan);
++	FL2_KEY_SET_IF_MASKED(mask, keys, cnt,
++			     FLOW_DISSECTOR_KEY_CVLAN, cvlan);
++	FL2_KEY_SET_IF_MASKED(mask, keys, cnt,
++			     FLOW_DISSECTOR_KEY_ENC_KEYID, enc_key_id);
++	FL2_KEY_SET_IF_MASKED(mask, keys, cnt,
++			     FLOW_DISSECTOR_KEY_ENC_IPV4_ADDRS, enc_ipv4);
++	FL2_KEY_SET_IF_MASKED(mask, keys, cnt,
++			     FLOW_DISSECTOR_KEY_ENC_IPV6_ADDRS, enc_ipv6);
++	if (FL2_KEY_IS_MASKED(mask, enc_ipv4) ||
++	    FL2_KEY_IS_MASKED(mask, enc_ipv6))
++		FL2_KEY_SET(keys, cnt, FLOW_DISSECTOR_KEY_ENC_CONTROL,
++			   enc_control);
++	FL2_KEY_SET_IF_MASKED(mask, keys, cnt,
++			     FLOW_DISSECTOR_KEY_ENC_PORTS, enc_tp);
++	FL2_KEY_SET_IF_MASKED(mask, keys, cnt,
++			     FLOW_DISSECTOR_KEY_ENC_IP, enc_ip);
++	FL2_KEY_SET_IF_MASKED(mask, keys, cnt,
++			     FLOW_DISSECTOR_KEY_ENC_OPTS, enc_opts);
++	FL2_KEY_SET_IF_MASKED(mask, keys, cnt,
++			     FLOW_DISSECTOR_KEY_CT, ct);
++	FL2_KEY_SET_IF_MASKED(mask, keys, cnt,
++			     FLOW_DISSECTOR_KEY_HASH, hash);
++
++	skb_flow_dissector_init(dissector, keys, cnt);
++}
++
++static struct fl2_flow_mask *fl2_create_new_mask(struct cls_fl2_head *head,
++					       struct fl2_flow_mask *mask)
++{
++	struct fl2_flow_mask *newmask;
++	int err;
++
++	newmask = kzalloc(sizeof(*newmask), GFP_KERNEL);
++	if (!newmask)
++		return ERR_PTR(-ENOMEM);
++
++	fl2_mask_copy(newmask, mask);
++
++	if ((newmask->key.tp_range.tp_min.dst &&
++	     newmask->key.tp_range.tp_max.dst) ||
++	    (newmask->key.tp_range.tp_min.src &&
++	     newmask->key.tp_range.tp_max.src))
++		newmask->flags |= TCA_FLOWER_MASK_FLAGS_RANGE;
++
++	err = fl2_init_mask_hashtable(newmask);
++	if (err)
++		goto errout_free;
++
++	fl2_init_dissector(&newmask->dissector, &newmask->key);
++
++	INIT_LIST_HEAD_RCU(&newmask->filters);
++
++	refcount_set(&newmask->refcnt, 1);
++	err = rhashtable_replace_fast(&head->ht, &mask->ht_node,
++				      &newmask->ht_node, mask_ht_params);
++	if (err)
++		goto errout_destroy;
++
++	spin_lock(&head->masks_lock);
++	list_add_tail_rcu(&newmask->list, &head->masks);
++	spin_unlock(&head->masks_lock);
++
++	return newmask;
++
++errout_destroy:
++	rhashtable_destroy(&newmask->ht);
++errout_free:
++	kfree(newmask);
++
++	return ERR_PTR(err);
++}
++
++static int fl2_check_assign_mask(struct cls_fl2_head *head,
++				struct cls_fl2_filter *fnew,
++				struct cls_fl2_filter *fold,
++				struct fl2_flow_mask *mask)
++{
++	struct fl2_flow_mask *newmask;
++	int ret = 0;
++
++	rcu_read_lock();
++
++	/* Insert mask as temporary node to prevent concurrent creation of mask
++	 * with same key. Any concurrent lookups with same key will return
++	 * -EAGAIN because mask's refcnt is zero.
++	 */
++	fnew->mask = rhashtable_lookup_get_insert_fast(&head->ht,
++						       &mask->ht_node,
++						       mask_ht_params);
++	if (!fnew->mask) {
++		rcu_read_unlock();
++
++		if (fold) {
++			ret = -EINVAL;
++			goto errout_cleanup;
++		}
++
++		newmask = fl2_create_new_mask(head, mask);
++		if (IS_ERR(newmask)) {
++			ret = PTR_ERR(newmask);
++			goto errout_cleanup;
++		}
++
++		fnew->mask = newmask;
++		return 0;
++	} else if (IS_ERR(fnew->mask)) {
++		ret = PTR_ERR(fnew->mask);
++	} else if (fold && fold->mask != fnew->mask) {
++		ret = -EINVAL;
++	} else if (!refcount_inc_not_zero(&fnew->mask->refcnt)) {
++		/* Mask was deleted concurrently, try again */
++		ret = -EAGAIN;
++	}
++	rcu_read_unlock();
++	return ret;
++
++errout_cleanup:
++	rhashtable_remove_fast(&head->ht, &mask->ht_node,
++			       mask_ht_params);
++	return ret;
++}
++
++static int fl2_set_parms(struct net *net, struct tcf_proto *tp,
++			struct cls_fl2_filter *f, struct fl2_flow_mask *mask,
++			unsigned long base, struct nlattr **tb,
++			struct nlattr *est,
++			struct fl2_flow_tmplt *tmplt, u32 flags,
++			struct netlink_ext_ack *extack)
++{
++	int err;
++
++	err = tcf_exts_validate(net, tp, tb, est, &f->exts, flags, extack);
++	if (err < 0)
++		return err;
++
++	if (tb[TCA_FLOWER_CLASSID]) {
++		f->res.classid = nla_get_u32(tb[TCA_FLOWER_CLASSID]);
++		if (flags & TCA_ACT_FLAGS_NO_RTNL)
++			rtnl_lock();
++		tcf_bind_filter(tp, &f->res, base);
++		if (flags & TCA_ACT_FLAGS_NO_RTNL)
++			rtnl_unlock();
++	}
++
++	err = fl2_set_key(net, tb, &f->key, &mask->key, extack);
++	if (err)
++		return err;
++
++	fl2_mask_update_range(mask);
++	fl2_set_masked_key(&f->mkey, &f->key, mask);
++
++	if (!fl2_mask_fits_tmplt(tmplt, mask)) {
++		NL_SET_ERR_MSG_MOD(extack, "Mask does not fit the template");
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static int fl2_ht_insert_unique(struct cls_fl2_filter *fnew,
++			       struct cls_fl2_filter *fold,
++			       bool *in_ht)
++{
++	struct fl2_flow_mask *mask = fnew->mask;
++	int err;
++
++	err = rhashtable_lookup_insert_fast(&mask->ht,
++					    &fnew->ht_node,
++					    mask->filter_ht_params);
++	if (err) {
++		*in_ht = false;
++		/* It is okay if filter with same key exists when
++		 * overwriting.
++		 */
++		return fold && err == -EEXIST ? 0 : err;
++	}
++
++	*in_ht = true;
++	return 0;
++}
++
++static int fl2_change(struct net *net, struct sk_buff *in_skb,
++		      struct tcf_proto *tp, unsigned long base,
++		      u32 handle, struct nlattr **tca,
++		      void **arg, u32 flags,
++		      struct netlink_ext_ack *extack)
++{
++	struct cls_fl2_head *head = fl2_head_dereference(tp);
++	bool rtnl_held = !(flags & TCA_ACT_FLAGS_NO_RTNL);
++	struct cls_fl2_filter *fold = *arg;
++	struct cls_fl2_filter *fnew;
++	struct fl2_flow_mask *mask;
++	struct nlattr **tb;
++	bool in_ht;
++	int err;
++
++	if (!tca[TCA_OPTIONS]) {
++		err = -EINVAL;
++		goto errout_fold;
++	}
++
++	mask = kzalloc(sizeof(struct fl2_flow_mask), GFP_KERNEL);
++	if (!mask) {
++		err = -ENOBUFS;
++		goto errout_fold;
++	}
++
++	tb = kcalloc(TCA_FLOWER2_MAX + 1, sizeof(struct nlattr *), GFP_KERNEL);
++	if (!tb) {
++		err = -ENOBUFS;
++		goto errout_mask_alloc;
++	}
++
++	err = nla_parse_nested_deprecated(tb, TCA_FLOWER2_MAX,
++					  tca[TCA_OPTIONS], fl2_policy, NULL);
++	if (err < 0)
++		goto errout_tb;
++
++	if (fold && handle && fold->handle != handle) {
++		err = -EINVAL;
++		goto errout_tb;
++	}
++
++	fnew = kzalloc(sizeof(*fnew), GFP_KERNEL);
++	if (!fnew) {
++		err = -ENOBUFS;
++		goto errout_tb;
++	}
++	INIT_LIST_HEAD(&fnew->hw_list);
++	refcount_set(&fnew->refcnt, 1);
++
++	err = tcf_exts_init(&fnew->exts, net, TCA_FLOWER_ACT, 0);
++	if (err < 0)
++		goto errout;
++
++	if (tb[TCA_FLOWER_FLAGS]) {
++		fnew->flags = nla_get_u32(tb[TCA_FLOWER_FLAGS]);
++
++		if (!tc_flags_valid(fnew->flags)) {
++			err = -EINVAL;
++			goto errout;
++		}
++	}
++
++	err = fl2_set_parms(net, tp, fnew, mask, base, tb, tca[TCA_RATE],
++			   tp->chain->tmplt_priv, flags, extack);
++	if (err)
++		goto errout;
++
++	err = fl2_check_assign_mask(head, fnew, fold, mask);
++	if (err)
++		goto errout;
++
++	err = fl2_ht_insert_unique(fnew, fold, &in_ht);
++	if (err)
++		goto errout_mask;
++
++	if (!tc_skip_hw(fnew->flags)) {
++		err = fl2_hw_replace_filter(tp, fnew, rtnl_held, extack);
++		if (err)
++			goto errout_ht;
++	}
++
++	if (!tc_in_hw(fnew->flags))
++		fnew->flags |= TCA_CLS_FLAGS_NOT_IN_HW;
++
++	spin_lock(&tp->lock);
++
++	/* tp was deleted concurrently. -EAGAIN will cause caller to lookup
++	 * proto again or create new one, if necessary.
++	 */
++	if (tp->deleting) {
++		err = -EAGAIN;
++		goto errout_hw;
++	}
++
++	if (fold) {
++		/* Fold filter was deleted concurrently. Retry lookup. */
++		if (fold->deleted) {
++			err = -EAGAIN;
++			goto errout_hw;
++		}
++
++		fnew->handle = handle;
++
++		if (!in_ht) {
++			struct rhashtable_params params =
++				fnew->mask->filter_ht_params;
++
++			err = rhashtable_insert_fast(&fnew->mask->ht,
++						     &fnew->ht_node,
++						     params);
++			if (err)
++				goto errout_hw;
++			in_ht = true;
++		}
++
++		refcount_inc(&fnew->refcnt);
++		rhashtable_remove_fast(&fold->mask->ht,
++				       &fold->ht_node,
++				       fold->mask->filter_ht_params);
++		idr_replace(&head->handle_idr, fnew, fnew->handle);
++		list_replace_rcu(&fold->list, &fnew->list);
++		fold->deleted = true;
++
++		spin_unlock(&tp->lock);
++
++		fl2_mask_put(head, fold->mask);
++		if (!tc_skip_hw(fold->flags))
++			fl2_hw_destroy_filter(tp, fold, rtnl_held, NULL);
++		tcf_unbind_filter(tp, &fold->res);
++		/* Caller holds reference to fold, so refcnt is always > 0
++		 * after this.
++		 */
++		refcount_dec(&fold->refcnt);
++		__fl2_put(fold);
++	} else {
++		if (handle) {
++			/* user specifies a handle and it doesn't exist */
++			err = idr_alloc_u32(&head->handle_idr, fnew, &handle,
++					    handle, GFP_ATOMIC);
++
++			/* Filter with specified handle was concurrently
++			 * inserted after initial check in cls_api. This is not
++			 * necessarily an error if NLM_F_EXCL is not set in
++			 * message flags. Returning EAGAIN will cause cls_api to
++			 * try to update concurrently inserted rule.
++			 */
++			if (err == -ENOSPC)
++				err = -EAGAIN;
++		} else {
++			handle = 1;
++			err = idr_alloc_u32(&head->handle_idr, fnew, &handle,
++					    INT_MAX, GFP_ATOMIC);
++		}
++		if (err)
++			goto errout_hw;
++
++		refcount_inc(&fnew->refcnt);
++		fnew->handle = handle;
++		list_add_tail_rcu(&fnew->list, &fnew->mask->filters);
++		spin_unlock(&tp->lock);
++	}
++
++	*arg = fnew;
++
++	kfree(tb);
++	tcf_queue_work(&mask->rwork, fl2_uninit_mask_free_work);
++	return 0;
++
++errout_ht:
++	spin_lock(&tp->lock);
++errout_hw:
++	fnew->deleted = true;
++	spin_unlock(&tp->lock);
++	if (!tc_skip_hw(fnew->flags))
++		fl2_hw_destroy_filter(tp, fnew, rtnl_held, NULL);
++	if (in_ht)
++		rhashtable_remove_fast(&fnew->mask->ht, &fnew->ht_node,
++				       fnew->mask->filter_ht_params);
++errout_mask:
++	fl2_mask_put(head, fnew->mask);
++errout:
++	__fl2_put(fnew);
++errout_tb:
++	kfree(tb);
++errout_mask_alloc:
++	tcf_queue_work(&mask->rwork, fl2_uninit_mask_free_work);
++errout_fold:
++	if (fold)
++		__fl2_put(fold);
++	return err;
++}
++
++static int fl2_delete(struct tcf_proto *tp, void *arg, bool *last,
++		     bool rtnl_held, struct netlink_ext_ack *extack)
++{
++	struct cls_fl2_head *head = fl2_head_dereference(tp);
++	struct cls_fl2_filter *f = arg;
++	bool last_on_mask;
++	int err = 0;
++
++	err = __fl2_delete(tp, f, &last_on_mask, rtnl_held, extack);
++	*last = list_empty(&head->masks);
++	__fl2_put(f);
++
++	return err;
++}
++
++static void fl2_walk(struct tcf_proto *tp, struct tcf_walker *arg,
++		    bool rtnl_held)
++{
++	struct cls_fl2_head *head = fl2_head_dereference(tp);
++	unsigned long id = arg->cookie, tmp;
++	struct cls_fl2_filter *f;
++
++	arg->count = arg->skip;
++
++	idr_for_each_entry_continue_ul(&head->handle_idr, f, tmp, id) {
++		/* don't return filters that are being deleted */
++		if (!refcount_inc_not_zero(&f->refcnt))
++			continue;
++		if (arg->fn(tp, f, arg) < 0) {
++			__fl2_put(f);
++			arg->stop = 1;
++			break;
++		}
++		__fl2_put(f);
++		arg->count++;
++	}
++	arg->cookie = id;
++}
++
++static struct cls_fl2_filter *
++fl2_get_next_hw_filter(struct tcf_proto *tp, struct cls_fl2_filter *f, bool add)
++{
++	struct cls_fl2_head *head = fl2_head_dereference(tp);
++
++	spin_lock(&tp->lock);
++	if (list_empty(&head->hw_filters)) {
++		spin_unlock(&tp->lock);
++		return NULL;
++	}
++
++	if (!f)
++		f = list_entry(&head->hw_filters, struct cls_fl2_filter,
++			       hw_list);
++	list_for_each_entry_continue(f, &head->hw_filters, hw_list) {
++		if (!(add && f->deleted) && refcount_inc_not_zero(&f->refcnt)) {
++			spin_unlock(&tp->lock);
++			return f;
++		}
++	}
++
++	spin_unlock(&tp->lock);
++	return NULL;
++}
++
++static int fl2_reoffload(struct tcf_proto *tp, bool add, flow_setup_cb_t *cb,
++			void *cb_priv, struct netlink_ext_ack *extack)
++{
++	struct tcf_block *block = tp->chain->block;
++	struct flow_cls_offload cls_flower = {};
++	struct cls_fl2_filter *f = NULL;
++	int err;
++
++	/* hw_filters list can only be changed by hw offload functions after
++	 * obtaining rtnl lock. Make sure it is not changed while reoffload is
++	 * iterating it.
++	 */
++	ASSERT_RTNL();
++
++	while ((f = fl2_get_next_hw_filter(tp, f, add))) {
++		cls_flower.rule =
++			flow_rule_alloc(tcf_exts_num_actions(&f->exts));
++		if (!cls_flower.rule) {
++			__fl2_put(f);
++			return -ENOMEM;
++		}
++
++		tc_cls_common_offload_init(&cls_flower.common, tp, f->flags,
++					   extack);
++		cls_flower.command = add ?
++			FLOW_CLS_REPLACE : FLOW_CLS_DESTROY;
++		cls_flower.cookie = (unsigned long)f;
++		cls_flower.rule->match.dissector = &f->mask->dissector;
++		cls_flower.rule->match.mask = &f->mask->key;
++		cls_flower.rule->match.key = &f->mkey;
++
++		err = tc_setup_flow_action(&cls_flower.rule->action, &f->exts);
++		if (err) {
++			kfree(cls_flower.rule);
++			if (tc_skip_sw(f->flags)) {
++				NL_SET_ERR_MSG_MOD(extack, "Failed to setup flow action");
++				__fl2_put(f);
++				return err;
++			}
++			goto next_flow;
++		}
++
++		cls_flower.classid = f->res.classid;
++
++		err = tc_setup_cb_reoffload(block, tp, add, cb,
++					    TC_SETUP_CLSFLOWER, &cls_flower,
++					    cb_priv, &f->flags,
++					    &f->in_hw_count);
++		tc_cleanup_flow_action(&cls_flower.rule->action);
++		kfree(cls_flower.rule);
++
++		if (err) {
++			__fl2_put(f);
++			return err;
++		}
++next_flow:
++		__fl2_put(f);
++	}
++
++	return 0;
++}
++
++static void fl2_hw_add(struct tcf_proto *tp, void *type_data)
++{
++	struct flow_cls_offload *cls_flower = type_data;
++	struct cls_fl2_filter *f =
++		(struct cls_fl2_filter *) cls_flower->cookie;
++	struct cls_fl2_head *head = fl2_head_dereference(tp);
++
++	spin_lock(&tp->lock);
++	list_add(&f->hw_list, &head->hw_filters);
++	spin_unlock(&tp->lock);
++}
++
++static void fl2_hw_del(struct tcf_proto *tp, void *type_data)
++{
++	struct flow_cls_offload *cls_flower = type_data;
++	struct cls_fl2_filter *f =
++		(struct cls_fl2_filter *) cls_flower->cookie;
++
++	spin_lock(&tp->lock);
++	if (!list_empty(&f->hw_list))
++		list_del_init(&f->hw_list);
++	spin_unlock(&tp->lock);
++}
++
++static int fl2_hw_create_tmplt(struct tcf_chain *chain,
++			      struct fl2_flow_tmplt *tmplt)
++{
++	struct flow_cls_offload cls_flower = {};
++	struct tcf_block *block = chain->block;
++
++	cls_flower.rule = flow_rule_alloc(0);
++	if (!cls_flower.rule)
++		return -ENOMEM;
++
++	cls_flower.common.chain_index = chain->index;
++	cls_flower.command = FLOW_CLS_TMPLT_CREATE;
++	cls_flower.cookie = (unsigned long) tmplt;
++	cls_flower.rule->match.dissector = &tmplt->dissector;
++	cls_flower.rule->match.mask = &tmplt->mask;
++	cls_flower.rule->match.key = &tmplt->dummy_key;
++
++	/* We don't care if driver (any of them) fails to handle this
++	 * call. It serves just as a hint for it.
++	 */
++	tc_setup_cb_call(block, TC_SETUP_CLSFLOWER, &cls_flower, false, true);
++	kfree(cls_flower.rule);
++
++	return 0;
++}
++
++static void fl2_hw_destroy_tmplt(struct tcf_chain *chain,
++				struct fl2_flow_tmplt *tmplt)
++{
++	struct flow_cls_offload cls_flower = {};
++	struct tcf_block *block = chain->block;
++
++	cls_flower.common.chain_index = chain->index;
++	cls_flower.command = FLOW_CLS_TMPLT_DESTROY;
++	cls_flower.cookie = (unsigned long) tmplt;
++
++	tc_setup_cb_call(block, TC_SETUP_CLSFLOWER, &cls_flower, false, true);
++}
++
++static void *fl2_tmplt_create(struct net *net, struct tcf_chain *chain,
++			     struct nlattr **tca,
++			     struct netlink_ext_ack *extack)
++{
++	struct fl2_flow_tmplt *tmplt;
++	struct nlattr **tb;
++	int err;
++
++	if (!tca[TCA_OPTIONS])
++		return ERR_PTR(-EINVAL);
++
++	tb = kcalloc(TCA_FLOWER2_MAX + 1, sizeof(struct nlattr *), GFP_KERNEL);
++	if (!tb)
++		return ERR_PTR(-ENOBUFS);
++	err = nla_parse_nested_deprecated(tb, TCA_FLOWER2_MAX,
++					  tca[TCA_OPTIONS], fl2_policy, NULL);
++	if (err)
++		goto errout_tb;
++
++	tmplt = kzalloc(sizeof(*tmplt), GFP_KERNEL);
++	if (!tmplt) {
++		err = -ENOMEM;
++		goto errout_tb;
++	}
++	tmplt->chain = chain;
++	err = fl2_set_key(net, tb, &tmplt->dummy_key, &tmplt->mask, extack);
++	if (err)
++		goto errout_tmplt;
++
++	fl2_init_dissector(&tmplt->dissector, &tmplt->mask);
++
++	err = fl2_hw_create_tmplt(chain, tmplt);
++	if (err)
++		goto errout_tmplt;
++
++	kfree(tb);
++	return tmplt;
++
++errout_tmplt:
++	kfree(tmplt);
++errout_tb:
++	kfree(tb);
++	return ERR_PTR(err);
++}
++
++static void fl2_tmplt_destroy(void *tmplt_priv)
++{
++	struct fl2_flow_tmplt *tmplt = tmplt_priv;
++
++	fl2_hw_destroy_tmplt(tmplt->chain, tmplt);
++	kfree(tmplt);
++}
++
++static int fl2_dump_key_val(struct sk_buff *skb,
++			   void *val, int val_type,
++			   void *mask, int mask_type, int len)
++{
++	int err;
++
++	if (!memchr_inv(mask, 0, len))
++		return 0;
++	err = nla_put(skb, val_type, len, val);
++	if (err)
++		return err;
++	if (mask_type != TCA_FLOWER_UNSPEC) {
++		err = nla_put(skb, mask_type, len, mask);
++		if (err)
++			return err;
++	}
++	return 0;
++}
++
++static int fl2_dump_key_port_range(struct sk_buff *skb, struct fl2_flow_key *key,
++				  struct fl2_flow_key *mask)
++{
++	if (fl2_dump_key_val(skb, &key->tp_range.tp_min.dst,
++			    TCA_FLOWER_KEY_PORT_DST_MIN,
++			    &mask->tp_range.tp_min.dst, TCA_FLOWER_UNSPEC,
++			    sizeof(key->tp_range.tp_min.dst)) ||
++	    fl2_dump_key_val(skb, &key->tp_range.tp_max.dst,
++			    TCA_FLOWER_KEY_PORT_DST_MAX,
++			    &mask->tp_range.tp_max.dst, TCA_FLOWER_UNSPEC,
++			    sizeof(key->tp_range.tp_max.dst)) ||
++	    fl2_dump_key_val(skb, &key->tp_range.tp_min.src,
++			    TCA_FLOWER_KEY_PORT_SRC_MIN,
++			    &mask->tp_range.tp_min.src, TCA_FLOWER_UNSPEC,
++			    sizeof(key->tp_range.tp_min.src)) ||
++	    fl2_dump_key_val(skb, &key->tp_range.tp_max.src,
++			    TCA_FLOWER_KEY_PORT_SRC_MAX,
++			    &mask->tp_range.tp_max.src, TCA_FLOWER_UNSPEC,
++			    sizeof(key->tp_range.tp_max.src)))
++		return -1;
++
++	return 0;
++}
++
++static int fl2_dump_key_mpls_opt_lse(struct sk_buff *skb,
++				    struct flow_dissector_key_mpls *mpls_key,
++				    struct flow_dissector_key_mpls *mpls_mask,
++				    u8 lse_index)
++{
++	struct flow_dissector_mpls_lse *lse_mask = &mpls_mask->ls[lse_index];
++	struct flow_dissector_mpls_lse *lse_key = &mpls_key->ls[lse_index];
++	int err;
++
++	err = nla_put_u8(skb, TCA_FLOWER_KEY_MPLS_OPT_LSE_DEPTH,
++			 lse_index + 1);
++	if (err)
++		return err;
++
++	if (lse_mask->mpls_ttl) {
++		err = nla_put_u8(skb, TCA_FLOWER_KEY_MPLS_OPT_LSE_TTL,
++				 lse_key->mpls_ttl);
++		if (err)
++			return err;
++	}
++	if (lse_mask->mpls_bos) {
++		err = nla_put_u8(skb, TCA_FLOWER_KEY_MPLS_OPT_LSE_BOS,
++				 lse_key->mpls_bos);
++		if (err)
++			return err;
++	}
++	if (lse_mask->mpls_tc) {
++		err = nla_put_u8(skb, TCA_FLOWER_KEY_MPLS_OPT_LSE_TC,
++				 lse_key->mpls_tc);
++		if (err)
++			return err;
++	}
++	if (lse_mask->mpls_label) {
++		err = nla_put_u32(skb, TCA_FLOWER_KEY_MPLS_OPT_LSE_LABEL,
++				  lse_key->mpls_label);
++		if (err)
++			return err;
++	}
++
++	return 0;
++}
++
++static int fl2_dump_key_mpls_opts(struct sk_buff *skb,
++				 struct flow_dissector_key_mpls *mpls_key,
++				 struct flow_dissector_key_mpls *mpls_mask)
++{
++	struct nlattr *opts;
++	struct nlattr *lse;
++	u8 lse_index;
++	int err;
++
++	opts = nla_nest_start(skb, TCA_FLOWER_KEY_MPLS_OPTS);
++	if (!opts)
++		return -EMSGSIZE;
++
++	for (lse_index = 0; lse_index < FLOW_DIS_MPLS_MAX; lse_index++) {
++		if (!(mpls_mask->used_lses & 1 << lse_index))
++			continue;
++
++		lse = nla_nest_start(skb, TCA_FLOWER_KEY_MPLS_OPTS_LSE);
++		if (!lse) {
++			err = -EMSGSIZE;
++			goto err_opts;
++		}
++
++		err = fl2_dump_key_mpls_opt_lse(skb, mpls_key, mpls_mask,
++					       lse_index);
++		if (err)
++			goto err_opts_lse;
++		nla_nest_end(skb, lse);
++	}
++	nla_nest_end(skb, opts);
++
++	return 0;
++
++err_opts_lse:
++	nla_nest_cancel(skb, lse);
++err_opts:
++	nla_nest_cancel(skb, opts);
++
++	return err;
++}
++
++static int fl2_dump_key_mpls(struct sk_buff *skb,
++			    struct flow_dissector_key_mpls *mpls_key,
++			    struct flow_dissector_key_mpls *mpls_mask)
++{
++	struct flow_dissector_mpls_lse *lse_mask;
++	struct flow_dissector_mpls_lse *lse_key;
++	int err;
++
++	if (!mpls_mask->used_lses)
++		return 0;
++
++	lse_mask = &mpls_mask->ls[0];
++	lse_key = &mpls_key->ls[0];
++
++	/* For backward compatibility, don't use the MPLS nested attributes if
++	 * the rule can be expressed using the old attributes.
++	 */
++	if (mpls_mask->used_lses & ~1 ||
++	    (!lse_mask->mpls_ttl && !lse_mask->mpls_bos &&
++	     !lse_mask->mpls_tc && !lse_mask->mpls_label))
++		return fl2_dump_key_mpls_opts(skb, mpls_key, mpls_mask);
++
++	if (lse_mask->mpls_ttl) {
++		err = nla_put_u8(skb, TCA_FLOWER_KEY_MPLS_TTL,
++				 lse_key->mpls_ttl);
++		if (err)
++			return err;
++	}
++	if (lse_mask->mpls_tc) {
++		err = nla_put_u8(skb, TCA_FLOWER_KEY_MPLS_TC,
++				 lse_key->mpls_tc);
++		if (err)
++			return err;
++	}
++	if (lse_mask->mpls_label) {
++		err = nla_put_u32(skb, TCA_FLOWER_KEY_MPLS_LABEL,
++				  lse_key->mpls_label);
++		if (err)
++			return err;
++	}
++	if (lse_mask->mpls_bos) {
++		err = nla_put_u8(skb, TCA_FLOWER_KEY_MPLS_BOS,
++				 lse_key->mpls_bos);
++		if (err)
++			return err;
++	}
++	return 0;
++}
++
++static int fl2_dump_key_ip(struct sk_buff *skb, bool encap,
++			  struct flow_dissector_key_ip *key,
++			  struct flow_dissector_key_ip *mask)
++{
++	int tos_key = encap ? TCA_FLOWER_KEY_ENC_IP_TOS : TCA_FLOWER_KEY_IP_TOS;
++	int ttl_key = encap ? TCA_FLOWER_KEY_ENC_IP_TTL : TCA_FLOWER_KEY_IP_TTL;
++	int tos_mask = encap ? TCA_FLOWER_KEY_ENC_IP_TOS_MASK : TCA_FLOWER_KEY_IP_TOS_MASK;
++	int ttl_mask = encap ? TCA_FLOWER_KEY_ENC_IP_TTL_MASK : TCA_FLOWER_KEY_IP_TTL_MASK;
++
++	if (fl2_dump_key_val(skb, &key->tos, tos_key, &mask->tos, tos_mask, sizeof(key->tos)) ||
++	    fl2_dump_key_val(skb, &key->ttl, ttl_key, &mask->ttl, ttl_mask, sizeof(key->ttl)))
++		return -1;
++
++	return 0;
++}
++
++static int fl2_dump_key_vlan(struct sk_buff *skb,
++			    int vlan_id_key, int vlan_prio_key,
++			    struct flow_dissector_key_vlan *vlan_key,
++			    struct flow_dissector_key_vlan *vlan_mask)
++{
++	int err;
++
++	if (!memchr_inv(vlan_mask, 0, sizeof(*vlan_mask)))
++		return 0;
++	if (vlan_mask->vlan_id) {
++		err = nla_put_u16(skb, vlan_id_key,
++				  vlan_key->vlan_id);
++		if (err)
++			return err;
++	}
++	if (vlan_mask->vlan_priority) {
++		err = nla_put_u8(skb, vlan_prio_key,
++				 vlan_key->vlan_priority);
++		if (err)
++			return err;
++	}
++	return 0;
++}
++
++static void fl2_get_key_flag(u32 dissector_key, u32 dissector_mask,
++			    u32 *flower_key, u32 *flower_mask,
++			    u32 flower_flag_bit, u32 dissector_flag_bit)
++{
++	if (dissector_mask & dissector_flag_bit) {
++		*flower_mask |= flower_flag_bit;
++		if (dissector_key & dissector_flag_bit)
++			*flower_key |= flower_flag_bit;
++	}
++}
++
++static int fl2_dump_key_flags(struct sk_buff *skb, u32 flags_key, u32 flags_mask)
++{
++	u32 key, mask;
++	__be32 _key, _mask;
++	int err;
++
++	if (!memchr_inv(&flags_mask, 0, sizeof(flags_mask)))
++		return 0;
++
++	key = 0;
++	mask = 0;
++
++	fl2_get_key_flag(flags_key, flags_mask, &key, &mask,
++			TCA_FLOWER_KEY_FLAGS_IS_FRAGMENT, FLOW_DIS_IS_FRAGMENT);
++	fl2_get_key_flag(flags_key, flags_mask, &key, &mask,
++			TCA_FLOWER_KEY_FLAGS_FRAG_IS_FIRST,
++			FLOW_DIS_FIRST_FRAG);
++
++	_key = cpu_to_be32(key);
++	_mask = cpu_to_be32(mask);
++
++	err = nla_put(skb, TCA_FLOWER_KEY_FLAGS, 4, &_key);
++	if (err)
++		return err;
++
++	return nla_put(skb, TCA_FLOWER_KEY_FLAGS_MASK, 4, &_mask);
++}
++
++static int fl2_dump_key_geneve_opt(struct sk_buff *skb,
++				  struct flow_dissector_key_enc_opts *enc_opts)
++{
++	struct geneve_opt *opt;
++	struct nlattr *nest;
++	int opt_off = 0;
++
++	nest = nla_nest_start_noflag(skb, TCA_FLOWER_KEY_ENC_OPTS_GENEVE);
++	if (!nest)
++		goto nla_put_failure;
++
++	while (enc_opts->len > opt_off) {
++		opt = (struct geneve_opt *)&enc_opts->data[opt_off];
++
++		if (nla_put_be16(skb, TCA_FLOWER_KEY_ENC_OPT_GENEVE_CLASS,
++				 opt->opt_class))
++			goto nla_put_failure;
++		if (nla_put_u8(skb, TCA_FLOWER_KEY_ENC_OPT_GENEVE_TYPE,
++			       opt->type))
++			goto nla_put_failure;
++		if (nla_put(skb, TCA_FLOWER_KEY_ENC_OPT_GENEVE_DATA,
++			    opt->length * 4, opt->opt_data))
++			goto nla_put_failure;
++
++		opt_off += sizeof(struct geneve_opt) + opt->length * 4;
++	}
++	nla_nest_end(skb, nest);
++	return 0;
++
++nla_put_failure:
++	nla_nest_cancel(skb, nest);
++	return -EMSGSIZE;
++}
++
++static int fl2_dump_key_vxlan_opt(struct sk_buff *skb,
++				 struct flow_dissector_key_enc_opts *enc_opts)
++{
++	struct vxlan_metadata *md;
++	struct nlattr *nest;
++
++	nest = nla_nest_start_noflag(skb, TCA_FLOWER_KEY_ENC_OPTS_VXLAN);
++	if (!nest)
++		goto nla_put_failure;
++
++	md = (struct vxlan_metadata *)&enc_opts->data[0];
++	if (nla_put_u32(skb, TCA_FLOWER_KEY_ENC_OPT_VXLAN_GBP, md->gbp))
++		goto nla_put_failure;
++
++	nla_nest_end(skb, nest);
++	return 0;
++
++nla_put_failure:
++	nla_nest_cancel(skb, nest);
++	return -EMSGSIZE;
++}
++
++static int fl2_dump_key_erspan_opt(struct sk_buff *skb,
++				  struct flow_dissector_key_enc_opts *enc_opts)
++{
++	struct erspan_metadata *md;
++	struct nlattr *nest;
++
++	nest = nla_nest_start_noflag(skb, TCA_FLOWER_KEY_ENC_OPTS_ERSPAN);
++	if (!nest)
++		goto nla_put_failure;
++
++	md = (struct erspan_metadata *)&enc_opts->data[0];
++	if (nla_put_u8(skb, TCA_FLOWER_KEY_ENC_OPT_ERSPAN_VER, md->version))
++		goto nla_put_failure;
++
++	if (md->version == 1 &&
++	    nla_put_be32(skb, TCA_FLOWER_KEY_ENC_OPT_ERSPAN_INDEX, md->u.index))
++		goto nla_put_failure;
++
++	if (md->version == 2 &&
++	    (nla_put_u8(skb, TCA_FLOWER_KEY_ENC_OPT_ERSPAN_DIR,
++			md->u.md2.dir) ||
++	     nla_put_u8(skb, TCA_FLOWER_KEY_ENC_OPT_ERSPAN_HWID,
++			get_hwid(&md->u.md2))))
++		goto nla_put_failure;
++
++	nla_nest_end(skb, nest);
++	return 0;
++
++nla_put_failure:
++	nla_nest_cancel(skb, nest);
++	return -EMSGSIZE;
++}
++
++static int fl2_dump_key_ct(struct sk_buff *skb,
++			  struct flow_dissector_key_ct *key,
++			  struct flow_dissector_key_ct *mask)
++{
++	if (IS_ENABLED(CONFIG_NF_CONNTRACK) &&
++	    fl2_dump_key_val(skb, &key->ct_state, TCA_FLOWER_KEY_CT_STATE,
++			    &mask->ct_state, TCA_FLOWER_KEY_CT_STATE_MASK,
++			    sizeof(key->ct_state)))
++		goto nla_put_failure;
++
++	if (IS_ENABLED(CONFIG_NF_CONNTRACK_ZONES) &&
++	    fl2_dump_key_val(skb, &key->ct_zone, TCA_FLOWER_KEY_CT_ZONE,
++			    &mask->ct_zone, TCA_FLOWER_KEY_CT_ZONE_MASK,
++			    sizeof(key->ct_zone)))
++		goto nla_put_failure;
++
++	if (IS_ENABLED(CONFIG_NF_CONNTRACK_MARK) &&
++	    fl2_dump_key_val(skb, &key->ct_mark, TCA_FLOWER_KEY_CT_MARK,
++			    &mask->ct_mark, TCA_FLOWER_KEY_CT_MARK_MASK,
++			    sizeof(key->ct_mark)))
++		goto nla_put_failure;
++
++	if (IS_ENABLED(CONFIG_NF_CONNTRACK_LABELS) &&
++	    fl2_dump_key_val(skb, &key->ct_labels, TCA_FLOWER_KEY_CT_LABELS,
++			    &mask->ct_labels, TCA_FLOWER_KEY_CT_LABELS_MASK,
++			    sizeof(key->ct_labels)))
++		goto nla_put_failure;
++
++	return 0;
++
++nla_put_failure:
++	return -EMSGSIZE;
++}
++
++static int fl2_dump_key_options(struct sk_buff *skb, int enc_opt_type,
++			       struct flow_dissector_key_enc_opts *enc_opts)
++{
++	struct nlattr *nest;
++	int err;
++
++	if (!enc_opts->len)
++		return 0;
++
++	nest = nla_nest_start_noflag(skb, enc_opt_type);
++	if (!nest)
++		goto nla_put_failure;
++
++	switch (enc_opts->dst_opt_type) {
++	case TUNNEL_GENEVE_OPT:
++		err = fl2_dump_key_geneve_opt(skb, enc_opts);
++		if (err)
++			goto nla_put_failure;
++		break;
++	case TUNNEL_VXLAN_OPT:
++		err = fl2_dump_key_vxlan_opt(skb, enc_opts);
++		if (err)
++			goto nla_put_failure;
++		break;
++	case TUNNEL_ERSPAN_OPT:
++		err = fl2_dump_key_erspan_opt(skb, enc_opts);
++		if (err)
++			goto nla_put_failure;
++		break;
++	default:
++		goto nla_put_failure;
++	}
++	nla_nest_end(skb, nest);
++	return 0;
++
++nla_put_failure:
++	nla_nest_cancel(skb, nest);
++	return -EMSGSIZE;
++}
++
++static int fl2_dump_key_enc_opt(struct sk_buff *skb,
++			       struct flow_dissector_key_enc_opts *key_opts,
++			       struct flow_dissector_key_enc_opts *msk_opts)
++{
++	int err;
++
++	err = fl2_dump_key_options(skb, TCA_FLOWER_KEY_ENC_OPTS, key_opts);
++	if (err)
++		return err;
++
++	return fl2_dump_key_options(skb, TCA_FLOWER_KEY_ENC_OPTS_MASK, msk_opts);
++}
++
++static int fl2_dump_key(struct sk_buff *skb, struct net *net,
++		       struct fl2_flow_key *key, struct fl2_flow_key *mask)
++{
++	if (mask->meta.ingress_ifindex) {
++		struct net_device *dev;
++
++		dev = __dev_get_by_index(net, key->meta.ingress_ifindex);
++		if (dev && nla_put_string(skb, TCA_FLOWER_INDEV, dev->name))
++			goto nla_put_failure;
++	}
++	if (fl2_dump_key_val(skb, &key->ppp.ppp_proto, TCA_FLOWER2_KEY_PPP_PROTO,
++			    &mask->ppp.ppp_proto, TCA_FLOWER_UNSPEC,
++			    sizeof(key->ppp.ppp_proto)))
++		goto nla_put_failure;
++	if (fl2_dump_key_val(skb, key->eth.dst, TCA_FLOWER_KEY_ETH_DST,
++			    mask->eth.dst, TCA_FLOWER_KEY_ETH_DST_MASK,
++			    sizeof(key->eth.dst)) ||
++	    fl2_dump_key_val(skb, key->eth.src, TCA_FLOWER_KEY_ETH_SRC,
++			    mask->eth.src, TCA_FLOWER_KEY_ETH_SRC_MASK,
++			    sizeof(key->eth.src)) ||
++	    fl2_dump_key_val(skb, &key->basic.n_proto, TCA_FLOWER_KEY_ETH_TYPE,
++			    &mask->basic.n_proto, TCA_FLOWER_UNSPEC,
++			    sizeof(key->basic.n_proto)))
++		goto nla_put_failure;
++
++	if (fl2_dump_key_mpls(skb, &key->mpls, &mask->mpls))
++		goto nla_put_failure;
++
++	if (fl2_dump_key_vlan(skb, TCA_FLOWER_KEY_VLAN_ID,
++			     TCA_FLOWER_KEY_VLAN_PRIO, &key->vlan, &mask->vlan))
++		goto nla_put_failure;
++
++	if (fl2_dump_key_vlan(skb, TCA_FLOWER_KEY_CVLAN_ID,
++			     TCA_FLOWER_KEY_CVLAN_PRIO,
++			     &key->cvlan, &mask->cvlan) ||
++	    (mask->cvlan.vlan_tpid &&
++	     nla_put_be16(skb, TCA_FLOWER_KEY_VLAN_ETH_TYPE,
++			  key->cvlan.vlan_tpid)))
++		goto nla_put_failure;
++
++	if (mask->basic.n_proto) {
++		if (mask->cvlan.vlan_tpid) {
++			if (nla_put_be16(skb, TCA_FLOWER_KEY_CVLAN_ETH_TYPE,
++					 key->basic.n_proto))
++				goto nla_put_failure;
++		} else if (mask->vlan.vlan_tpid) {
++			if (nla_put_be16(skb, TCA_FLOWER_KEY_VLAN_ETH_TYPE,
++					 key->basic.n_proto))
++				goto nla_put_failure;
++		}
++	}
++
++	if ((key->basic.n_proto == htons(ETH_P_IP) ||
++	     key->basic.n_proto == htons(ETH_P_IPV6) ||
++	     key->ppp.ppp_proto == htons(PPP_IP)	||
++	     key->ppp.ppp_proto == htons(PPP_IPV6)) &&
++	    (fl2_dump_key_val(skb, &key->basic.ip_proto, TCA_FLOWER_KEY_IP_PROTO,
++			    &mask->basic.ip_proto, TCA_FLOWER_UNSPEC,
++			    sizeof(key->basic.ip_proto)) ||
++	    fl2_dump_key_ip(skb, false, &key->ip, &mask->ip)))
++		goto nla_put_failure;
++
++	if (key->control.addr_type == FLOW_DISSECTOR_KEY_IPV4_ADDRS &&
++	    (fl2_dump_key_val(skb, &key->ipv4.src, TCA_FLOWER_KEY_IPV4_SRC,
++			     &mask->ipv4.src, TCA_FLOWER_KEY_IPV4_SRC_MASK,
++			     sizeof(key->ipv4.src)) ||
++	     fl2_dump_key_val(skb, &key->ipv4.dst, TCA_FLOWER_KEY_IPV4_DST,
++			     &mask->ipv4.dst, TCA_FLOWER_KEY_IPV4_DST_MASK,
++			     sizeof(key->ipv4.dst))))
++		goto nla_put_failure;
++	else if (key->control.addr_type == FLOW_DISSECTOR_KEY_IPV6_ADDRS &&
++		 (fl2_dump_key_val(skb, &key->ipv6.src, TCA_FLOWER_KEY_IPV6_SRC,
++				  &mask->ipv6.src, TCA_FLOWER_KEY_IPV6_SRC_MASK,
++				  sizeof(key->ipv6.src)) ||
++		  fl2_dump_key_val(skb, &key->ipv6.dst, TCA_FLOWER_KEY_IPV6_DST,
++				  &mask->ipv6.dst, TCA_FLOWER_KEY_IPV6_DST_MASK,
++				  sizeof(key->ipv6.dst))))
++		goto nla_put_failure;
++
++	if (key->basic.ip_proto == IPPROTO_TCP &&
++	    (fl2_dump_key_val(skb, &key->tp.src, TCA_FLOWER_KEY_TCP_SRC,
++			     &mask->tp.src, TCA_FLOWER_KEY_TCP_SRC_MASK,
++			     sizeof(key->tp.src)) ||
++	     fl2_dump_key_val(skb, &key->tp.dst, TCA_FLOWER_KEY_TCP_DST,
++			     &mask->tp.dst, TCA_FLOWER_KEY_TCP_DST_MASK,
++			     sizeof(key->tp.dst)) ||
++	     fl2_dump_key_val(skb, &key->tcp.flags, TCA_FLOWER_KEY_TCP_FLAGS,
++			     &mask->tcp.flags, TCA_FLOWER_KEY_TCP_FLAGS_MASK,
++			     sizeof(key->tcp.flags))))
++		goto nla_put_failure;
++	else if (key->basic.ip_proto == IPPROTO_UDP &&
++		 (fl2_dump_key_val(skb, &key->tp.src, TCA_FLOWER_KEY_UDP_SRC,
++				  &mask->tp.src, TCA_FLOWER_KEY_UDP_SRC_MASK,
++				  sizeof(key->tp.src)) ||
++		  fl2_dump_key_val(skb, &key->tp.dst, TCA_FLOWER_KEY_UDP_DST,
++				  &mask->tp.dst, TCA_FLOWER_KEY_UDP_DST_MASK,
++				  sizeof(key->tp.dst))))
++		goto nla_put_failure;
++	else if (key->basic.ip_proto == IPPROTO_SCTP &&
++		 (fl2_dump_key_val(skb, &key->tp.src, TCA_FLOWER_KEY_SCTP_SRC,
++				  &mask->tp.src, TCA_FLOWER_KEY_SCTP_SRC_MASK,
++				  sizeof(key->tp.src)) ||
++		  fl2_dump_key_val(skb, &key->tp.dst, TCA_FLOWER_KEY_SCTP_DST,
++				  &mask->tp.dst, TCA_FLOWER_KEY_SCTP_DST_MASK,
++				  sizeof(key->tp.dst))))
++		goto nla_put_failure;
++	else if (key->basic.n_proto == htons(ETH_P_IP) &&
++		 key->basic.ip_proto == IPPROTO_ICMP &&
++		 (fl2_dump_key_val(skb, &key->icmp.type,
++				  TCA_FLOWER_KEY_ICMPV4_TYPE, &mask->icmp.type,
++				  TCA_FLOWER_KEY_ICMPV4_TYPE_MASK,
++				  sizeof(key->icmp.type)) ||
++		  fl2_dump_key_val(skb, &key->icmp.code,
++				  TCA_FLOWER_KEY_ICMPV4_CODE, &mask->icmp.code,
++				  TCA_FLOWER_KEY_ICMPV4_CODE_MASK,
++				  sizeof(key->icmp.code))))
++		goto nla_put_failure;
++	else if (key->basic.n_proto == htons(ETH_P_IPV6) &&
++		 key->basic.ip_proto == IPPROTO_ICMPV6 &&
++		 (fl2_dump_key_val(skb, &key->icmp.type,
++				  TCA_FLOWER_KEY_ICMPV6_TYPE, &mask->icmp.type,
++				  TCA_FLOWER_KEY_ICMPV6_TYPE_MASK,
++				  sizeof(key->icmp.type)) ||
++		  fl2_dump_key_val(skb, &key->icmp.code,
++				  TCA_FLOWER_KEY_ICMPV6_CODE, &mask->icmp.code,
++				  TCA_FLOWER_KEY_ICMPV6_CODE_MASK,
++				  sizeof(key->icmp.code))))
++		goto nla_put_failure;
++	else if ((key->basic.n_proto == htons(ETH_P_ARP) ||
++		  key->basic.n_proto == htons(ETH_P_RARP)) &&
++		 (fl2_dump_key_val(skb, &key->arp.sip,
++				  TCA_FLOWER_KEY_ARP_SIP, &mask->arp.sip,
++				  TCA_FLOWER_KEY_ARP_SIP_MASK,
++				  sizeof(key->arp.sip)) ||
++		  fl2_dump_key_val(skb, &key->arp.tip,
++				  TCA_FLOWER_KEY_ARP_TIP, &mask->arp.tip,
++				  TCA_FLOWER_KEY_ARP_TIP_MASK,
++				  sizeof(key->arp.tip)) ||
++		  fl2_dump_key_val(skb, &key->arp.op,
++				  TCA_FLOWER_KEY_ARP_OP, &mask->arp.op,
++				  TCA_FLOWER_KEY_ARP_OP_MASK,
++				  sizeof(key->arp.op)) ||
++		  fl2_dump_key_val(skb, key->arp.sha, TCA_FLOWER_KEY_ARP_SHA,
++				  mask->arp.sha, TCA_FLOWER_KEY_ARP_SHA_MASK,
++				  sizeof(key->arp.sha)) ||
++		  fl2_dump_key_val(skb, key->arp.tha, TCA_FLOWER_KEY_ARP_THA,
++				  mask->arp.tha, TCA_FLOWER_KEY_ARP_THA_MASK,
++				  sizeof(key->arp.tha))))
++		goto nla_put_failure;
++
++	if ((key->basic.ip_proto == IPPROTO_TCP ||
++	     key->basic.ip_proto == IPPROTO_UDP ||
++	     key->basic.ip_proto == IPPROTO_SCTP) &&
++	     fl2_dump_key_port_range(skb, key, mask))
++		goto nla_put_failure;
++
++	if (key->enc_control.addr_type == FLOW_DISSECTOR_KEY_IPV4_ADDRS &&
++	    (fl2_dump_key_val(skb, &key->enc_ipv4.src,
++			    TCA_FLOWER_KEY_ENC_IPV4_SRC, &mask->enc_ipv4.src,
++			    TCA_FLOWER_KEY_ENC_IPV4_SRC_MASK,
++			    sizeof(key->enc_ipv4.src)) ||
++	     fl2_dump_key_val(skb, &key->enc_ipv4.dst,
++			     TCA_FLOWER_KEY_ENC_IPV4_DST, &mask->enc_ipv4.dst,
++			     TCA_FLOWER_KEY_ENC_IPV4_DST_MASK,
++			     sizeof(key->enc_ipv4.dst))))
++		goto nla_put_failure;
++	else if (key->enc_control.addr_type == FLOW_DISSECTOR_KEY_IPV6_ADDRS &&
++		 (fl2_dump_key_val(skb, &key->enc_ipv6.src,
++			    TCA_FLOWER_KEY_ENC_IPV6_SRC, &mask->enc_ipv6.src,
++			    TCA_FLOWER_KEY_ENC_IPV6_SRC_MASK,
++			    sizeof(key->enc_ipv6.src)) ||
++		 fl2_dump_key_val(skb, &key->enc_ipv6.dst,
++				 TCA_FLOWER_KEY_ENC_IPV6_DST,
++				 &mask->enc_ipv6.dst,
++				 TCA_FLOWER_KEY_ENC_IPV6_DST_MASK,
++			    sizeof(key->enc_ipv6.dst))))
++		goto nla_put_failure;
++
++	if (fl2_dump_key_val(skb, &key->enc_key_id, TCA_FLOWER_KEY_ENC_KEY_ID,
++			    &mask->enc_key_id, TCA_FLOWER_UNSPEC,
++			    sizeof(key->enc_key_id)) ||
++	    fl2_dump_key_val(skb, &key->enc_tp.src,
++			    TCA_FLOWER_KEY_ENC_UDP_SRC_PORT,
++			    &mask->enc_tp.src,
++			    TCA_FLOWER_KEY_ENC_UDP_SRC_PORT_MASK,
++			    sizeof(key->enc_tp.src)) ||
++	    fl2_dump_key_val(skb, &key->enc_tp.dst,
++			    TCA_FLOWER_KEY_ENC_UDP_DST_PORT,
++			    &mask->enc_tp.dst,
++			    TCA_FLOWER_KEY_ENC_UDP_DST_PORT_MASK,
++			    sizeof(key->enc_tp.dst)) ||
++	    fl2_dump_key_ip(skb, true, &key->enc_ip, &mask->enc_ip) ||
++	    fl2_dump_key_enc_opt(skb, &key->enc_opts, &mask->enc_opts))
++		goto nla_put_failure;
++
++	if (fl2_dump_key_ct(skb, &key->ct, &mask->ct))
++		goto nla_put_failure;
++
++	if (fl2_dump_key_flags(skb, key->control.flags, mask->control.flags))
++		goto nla_put_failure;
++
++	if (fl2_dump_key_val(skb, &key->hash.hash, TCA_FLOWER_KEY_HASH,
++			     &mask->hash.hash, TCA_FLOWER_KEY_HASH_MASK,
++			     sizeof(key->hash.hash)))
++		goto nla_put_failure;
++
++	return 0;
++
++nla_put_failure:
++	return -EMSGSIZE;
++}
++
++static int fl2_dump(struct net *net, struct tcf_proto *tp, void *fh,
++		   struct sk_buff *skb, struct tcmsg *t, bool rtnl_held)
++{
++	struct cls_fl2_filter *f = fh;
++	struct nlattr *nest;
++	struct fl2_flow_key *key, *mask;
++	bool skip_hw;
++
++	if (!f)
++		return skb->len;
++
++	t->tcm_handle = f->handle;
++
++	nest = nla_nest_start_noflag(skb, TCA_OPTIONS);
++	if (!nest)
++		goto nla_put_failure;
++
++	spin_lock(&tp->lock);
++
++	if (f->res.classid &&
++	    nla_put_u32(skb, TCA_FLOWER_CLASSID, f->res.classid))
++		goto nla_put_failure_locked;
++
++	key = &f->key;
++	mask = &f->mask->key;
++	skip_hw = tc_skip_hw(f->flags);
++
++	if (fl2_dump_key(skb, net, key, mask))
++		goto nla_put_failure_locked;
++
++	if (f->flags && nla_put_u32(skb, TCA_FLOWER_FLAGS, f->flags))
++		goto nla_put_failure_locked;
++
++	spin_unlock(&tp->lock);
++
++	if (!skip_hw)
++		fl2_hw_update_stats(tp, f, rtnl_held);
++
++	if (nla_put_u32(skb, TCA_FLOWER_IN_HW_COUNT, f->in_hw_count))
++		goto nla_put_failure;
++
++	if (tcf_exts_dump(skb, &f->exts))
++		goto nla_put_failure;
++
++	nla_nest_end(skb, nest);
++
++	if (tcf_exts_dump_stats(skb, &f->exts) < 0)
++		goto nla_put_failure;
++
++	return skb->len;
++
++nla_put_failure_locked:
++	spin_unlock(&tp->lock);
++nla_put_failure:
++	nla_nest_cancel(skb, nest);
++	return -1;
++}
++
++static int fl2_terse_dump(struct net *net, struct tcf_proto *tp, void *fh,
++			 struct sk_buff *skb, struct tcmsg *t, bool rtnl_held)
++{
++	struct cls_fl2_filter *f = fh;
++	struct nlattr *nest;
++	bool skip_hw;
++
++	if (!f)
++		return skb->len;
++
++	t->tcm_handle = f->handle;
++
++	nest = nla_nest_start_noflag(skb, TCA_OPTIONS);
++	if (!nest)
++		goto nla_put_failure;
++
++	spin_lock(&tp->lock);
++
++	skip_hw = tc_skip_hw(f->flags);
++
++	if (f->flags && nla_put_u32(skb, TCA_FLOWER_FLAGS, f->flags))
++		goto nla_put_failure_locked;
++
++	spin_unlock(&tp->lock);
++
++	if (!skip_hw)
++		fl2_hw_update_stats(tp, f, rtnl_held);
++
++	if (tcf_exts_terse_dump(skb, &f->exts))
++		goto nla_put_failure;
++
++	nla_nest_end(skb, nest);
++
++	return skb->len;
++
++nla_put_failure_locked:
++	spin_unlock(&tp->lock);
++nla_put_failure:
++	nla_nest_cancel(skb, nest);
++	return -1;
++}
++
++static int fl2_tmplt_dump(struct sk_buff *skb, struct net *net, void *tmplt_priv)
++{
++	struct fl2_flow_tmplt *tmplt = tmplt_priv;
++	struct fl2_flow_key *key, *mask;
++	struct nlattr *nest;
++
++	nest = nla_nest_start_noflag(skb, TCA_OPTIONS);
++	if (!nest)
++		goto nla_put_failure;
++
++	key = &tmplt->dummy_key;
++	mask = &tmplt->mask;
++
++	if (fl2_dump_key(skb, net, key, mask))
++		goto nla_put_failure;
++
++	nla_nest_end(skb, nest);
++
++	return skb->len;
++
++nla_put_failure:
++	nla_nest_cancel(skb, nest);
++	return -EMSGSIZE;
++}
++
++static void fl2_bind_class(void *fh, u32 classid, unsigned long cl, void *q,
++			  unsigned long base)
++{
++	struct cls_fl2_filter *f = fh;
++
++	if (f && f->res.classid == classid) {
++		if (cl)
++			__tcf_bind_filter(q, &f->res, base);
++		else
++			__tcf_unbind_filter(q, &f->res);
++	}
++}
++
++static bool fl2_delete_empty(struct tcf_proto *tp)
++{
++	struct cls_fl2_head *head = fl2_head_dereference(tp);
++
++	spin_lock(&tp->lock);
++	tp->deleting = idr_is_empty(&head->handle_idr);
++	spin_unlock(&tp->lock);
++
++	return tp->deleting;
++}
++
++static struct tcf_proto_ops cls_fl2_ops __read_mostly = {
++	.kind		= "flower2",
++	.classify	= fl2_classify,
++	.init		= fl2_init,
++	.destroy	= fl2_destroy,
++	.get		= fl2_get,
++	.put		= fl2_put,
++	.change		= fl2_change,
++	.delete		= fl2_delete,
++	.delete_empty	= fl2_delete_empty,
++	.walk		= fl2_walk,
++	.reoffload	= fl2_reoffload,
++	.hw_add		= fl2_hw_add,
++	.hw_del		= fl2_hw_del,
++	.dump		= fl2_dump,
++	.terse_dump	= fl2_terse_dump,
++	.bind_class	= fl2_bind_class,
++	.tmplt_create	= fl2_tmplt_create,
++	.tmplt_destroy	= fl2_tmplt_destroy,
++	.tmplt_dump	= fl2_tmplt_dump,
++	.owner		= THIS_MODULE,
++	.flags		= TCF_PROTO_OPS_DOIT_UNLOCKED,
++};
++
++static int __init cls_fl2_init(void)
++{
++	return register_tcf_proto_ops(&cls_fl2_ops);
++}
++
++static void __exit cls_fl2_exit(void)
++{
++	unregister_tcf_proto_ops(&cls_fl2_ops);
++}
++
++module_init(cls_fl2_init);
++module_exit(cls_fl2_exit);
++
++MODULE_AUTHOR("Jiri Pirko <jiri@resnulli.us>\nFelipe Magno de Almeida <felipe@sipanda.io>");
++MODULE_DESCRIPTION("Flower2 classifier based on PANDA parser");
++MODULE_LICENSE("GPL v2");
+diff --git a/net/sched/cls_flower2_panda_noopt.c b/net/sched/cls_flower2_panda_noopt.c
 new file mode 100644
-index 000000000000..62094a339709
+index 000000000000..b5c5f61db668
 --- /dev/null
-+++ b/net/panda/panda_parser.c
-@@ -0,0 +1,605 @@
++++ b/net/sched/cls_flower2_panda_noopt.c
+@@ -0,0 +1,305 @@
 +// SPDX-License-Identifier: BSD-2-Clause-FreeBSD
 +/*
 + * Copyright (c) 2020, 2021 SiPanda Inc.
@@ -4662,585 +3549,1827 @@ index 000000000000..62094a339709
 + * SUCH DAMAGE.
 + */
 +
++#include <linux/module.h>
++#include <linux/types.h>
 +#include <net/panda/parser.h>
++#include <net/panda/parser_metadata.h>
++#include <net/panda/proto_nodes_def.h>
 +
-+/* Lookup a type in a node table*/
-+static const struct panda_parse_node *lookup_node(int type,
-+				    const struct panda_proto_table *table)
++/* PANDA Big Parser
++ *
++ * Implement flow dissector in PANDA. A protocol parse graph is created and
++ * metadata is extracted at various nodes.
++ */
++struct flow_dissector_key_ppp {
++	__be16 ppp_proto;
++};
++
++struct fl2_flow_key {
++	struct flow_dissector_key_meta meta;
++	struct flow_dissector_key_control control;
++	struct flow_dissector_key_control enc_control;
++	struct flow_dissector_key_basic basic;
++	struct flow_dissector_key_eth_addrs eth;
++	struct flow_dissector_key_vlan vlan;
++	struct flow_dissector_key_vlan cvlan;
++	union {
++		struct flow_dissector_key_ipv4_addrs ipv4;
++		struct flow_dissector_key_ipv6_addrs ipv6;
++	};
++	struct flow_dissector_key_ports tp;
++	struct flow_dissector_key_icmp icmp;
++	struct flow_dissector_key_arp arp;
++	struct flow_dissector_key_keyid enc_key_id;
++	union {
++		struct flow_dissector_key_ipv4_addrs enc_ipv4;
++		struct flow_dissector_key_ipv6_addrs enc_ipv6;
++	};
++	struct flow_dissector_key_ports enc_tp;
++	struct flow_dissector_key_mpls mpls;
++	struct flow_dissector_key_tcp tcp;
++	struct flow_dissector_key_ip ip;
++	struct flow_dissector_key_ip enc_ip;
++	struct flow_dissector_key_enc_opts enc_opts;
++	union {
++		struct flow_dissector_key_ports tp;
++		struct {
++			struct flow_dissector_key_ports tp_min;
++			struct flow_dissector_key_ports tp_max;
++		};
++	} tp_range;
++	struct flow_dissector_key_ct ct;
++	struct flow_dissector_key_hash hash;
++	struct flow_dissector_key_ppp ppp;
++} __aligned(BITS_PER_LONG / 8); /* Ensure that we can do comparisons as longs. */
++
++
++/* Meta data structure for just one frame */
++struct panda_parser_big_metadata_one {
++	struct panda_metadata panda_data;
++	struct fl2_flow_key frame;
++};
++
++/* Meta data functions for parser nodes. Use the canned templates
++ * for common metadata
++ */
++static void ether_metadata(const void *veth, void *iframe, struct panda_ctrl_data ctrl)
 +{
-+	int i;
++	struct fl2_flow_key *frame = iframe;
 +
-+	for (i = 0; i < table->num_ents; i++)
-+		if (type == table->entries[i].value)
-+			return table->entries[i].node;
-+
-+	return NULL;
++	frame->basic.n_proto = ((struct ethhdr *)veth)->h_proto;
++	memcpy(&frame->eth, &((struct ethhdr *)veth)->h_dest,
++	       sizeof(frame->eth));
 +}
 +
-+/* Lookup a type in a node TLV table */
-+static const struct panda_parse_tlv_node *lookup_tlv_node(int type,
-+				const struct panda_proto_tlvs_table *table)
++static void ipv4_metadata(const void *viph, void *iframe, struct panda_ctrl_data ctrl)
 +{
-+	int i;
++	struct fl2_flow_key *frame = iframe;
++	const struct iphdr *iph = viph;
 +
-+	for (i = 0; i < table->num_ents; i++)
-+		if (type == table->entries[i].type)
-+			return table->entries[i].node;
-+
-+	return NULL;
++	frame->basic.ip_proto = iph->protocol;
++	
++	if (frame->vlan.vlan_id != 0 && frame->vlan.vlan_id != 1) {
++		frame->enc_control.addr_type = FLOW_DISSECTOR_KEY_ENC_IPV4_ADDRS;
++		memcpy(&frame->enc_ipv4.src, &iph->saddr,
++		       sizeof(frame->ipv4));
++	}
++	frame->control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
++	memcpy(&frame->ipv4.src, &iph->saddr,
++	       sizeof(frame->ipv4));
 +}
 +
-+/* Lookup up a protocol for the table associated with a parse node */
-+const struct panda_parse_tlv_node *panda_parse_lookup_tlv(
-+		const struct panda_parse_tlvs_node *node,
-+		unsigned int type)
++static void ipv6_metadata(const void *viph, void *iframe, struct panda_ctrl_data ctrl)
 +{
-+	return lookup_tlv_node(type, node->tlv_proto_table);
++	struct fl2_flow_key *frame = iframe;
++	const struct ipv6hdr *iph = viph;
++
++	frame->basic.ip_proto = iph->nexthdr;
++
++	frame->control.addr_type = FLOW_DISSECTOR_KEY_IPV6_ADDRS;
++	memcpy(&frame->ipv6.src, &iph->saddr,
++	       sizeof(frame->ipv6));
++
 +}
 +
-+/* Lookup a flag-fields index in a protocol node flag-fields table */
-+static const struct panda_parse_flag_field_node *lookup_flag_field_node(int idx,
-+				const struct panda_proto_flag_fields_table
-+								*table)
++static void ppp_metadata(const void *vppph, void *iframe, struct panda_ctrl_data ctrl)
 +{
-+	int i;
-+
-+	for (i = 0; i < table->num_ents; i++)
-+		if (idx == table->entries[i].index)
-+			return table->entries[i].node;
-+
-+	return NULL;
++	struct fl2_flow_key *frame = iframe;
++	//ppp protocol can have 8 or 16 bits
++	frame->ppp.ppp_proto = __cpu_to_be16(
++		ctrl.hdr_len == sizeof(struct pppoe_hdr_proto8) ? 
++		((struct pppoe_hdr_proto8*)vppph)->protocol : 
++		((struct pppoe_hdr_proto16*)vppph)->protocol
++		);
++		
 +}
 +
-+static int panda_parse_one_tlv(
-+		const struct panda_parse_tlvs_node *parse_tlvs_node,
++static void ports_metadata(const void *vphdr, void *iframe,			
++		 struct panda_ctrl_data ctrl)				
++{									
++	struct fl2_flow_key *frame = iframe;
++	frame->tp.ports = ((struct port_hdr *)vphdr)->ports;
++}
++
++static void arp_rarp_metadata(const void *vearp, void *iframe, struct panda_ctrl_data ctrl)
++{
++	
++	struct fl2_flow_key *frame = iframe;
++	const struct earphdr *earp = vearp;
++
++	frame->arp.op = ntohs(earp->arp.ar_op) & 0xff;
++
++	/* Record Ethernet addresses */
++	memcpy(frame->arp.sha, earp->ar_sha, ETH_ALEN);
++	memcpy(frame->arp.tha, earp->ar_tha, ETH_ALEN);
++
++	/* Record IP addresses */
++	memcpy(&frame->arp.sip, &earp->ar_sip, sizeof(frame->arp.sip));
++	memcpy(&frame->arp.tip, &earp->ar_tip, sizeof(frame->arp.tip));
++}
++
++static void icmp_metadata(const void *vicmp, void *iframe, struct panda_ctrl_data ctrl)
++{
++	struct fl2_flow_key *frame = iframe;
++	const struct icmphdr *icmp = vicmp;
++
++	frame->icmp.type = icmp->type;
++	frame->icmp.code = icmp->code;
++	if (icmp_has_id(icmp->type))
++		frame->icmp.id = icmp->un.echo.id ? : 1;
++	else
++		frame->icmp.id = 0;
++}
++
++static void e8021Q_metadata(const void *vvlan, void *iframe,
++		 struct panda_ctrl_data ctrl)
++{
++	struct fl2_flow_key *frame = iframe;
++	const struct vlan_hdr *vlan = vvlan;
++
++	frame->vlan.vlan_id = ntohs(vlan->h_vlan_TCI) &
++				VLAN_VID_MASK;
++	frame->vlan.vlan_priority = (ntohs(vlan->h_vlan_TCI) &
++				VLAN_PRIO_MASK) >> VLAN_PRIO_SHIFT;
++	frame->vlan.vlan_tpid = ETH_P_8021Q;
++}
++
++static void e8021AD_metadata(const void *vvlan, void *iframe,
++		 struct panda_ctrl_data ctrl)
++{
++	struct fl2_flow_key *frame = iframe;
++	const struct vlan_hdr *vlan = vvlan;
++
++	frame->vlan.vlan_id = ntohs(vlan->h_vlan_TCI) &
++				VLAN_VID_MASK;
++	frame->vlan.vlan_priority = (ntohs(vlan->h_vlan_TCI) &
++				VLAN_PRIO_MASK) >> VLAN_PRIO_SHIFT;
++	frame->vlan.vlan_tpid = ETH_P_8021AD;
++}
++
++/* Parse nodes. Parse nodes are composed of the common PANDA Parser protocol
++ * nodes, metadata functions defined above, and protocol tables defined
++ * below
++ */
++PANDA_MAKE_PARSE_NODE(ether_node, panda_parse_ether, ether_metadata,
++		      NULL, ether_table);
++PANDA_MAKE_PARSE_NODE(ip_overlay_node, panda_parse_ip, NULL,
++		      NULL, ip_table);
++PANDA_MAKE_PARSE_NODE(ipv4_check_node, panda_parse_ipv4_check, ipv4_metadata,
++		      NULL, ipv4_table);
++PANDA_MAKE_PARSE_NODE(ipv4_node, panda_parse_ipv4, ipv4_metadata, NULL,
++		      ipv4_table);
++PANDA_MAKE_PARSE_NODE(ipv6_node, panda_parse_ipv6, ipv6_metadata, NULL,
++		      ipv6_table);
++PANDA_MAKE_PARSE_NODE(ipv6_check_node, panda_parse_ipv6_check, ipv6_metadata,
++		      NULL, ipv6_table);
++PANDA_MAKE_PARSE_NODE(ipv6_eh_node, panda_parse_ipv6_eh, NULL,
++		      NULL, ipv6_table);
++PANDA_MAKE_PARSE_NODE(ipv6_frag_node, panda_parse_ipv6_frag_eh, NULL, NULL, ipv6_table);
++PANDA_MAKE_PARSE_NODE(ppp_node, panda_parse_ppp, NULL, NULL, ppp_table);
++PANDA_MAKE_PARSE_NODE(pppoe_node, panda_parse_pppoe, ppp_metadata, NULL,
++		      pppoe_table);
++
++PANDA_MAKE_PARSE_NODE(e8021AD_node, panda_parse_vlan, e8021AD_metadata, NULL,
++				ether_table);
++PANDA_MAKE_PARSE_NODE(e8021Q_node, panda_parse_vlan, e8021Q_metadata, NULL,
++		      	ether_table);
++PANDA_MAKE_OVERLAY_PARSE_NODE(ipv4ip_node, panda_parse_ipv4ip, NULL, NULL,
++			      &ipv4_node);
++PANDA_MAKE_OVERLAY_PARSE_NODE(ipv6ip_node, panda_parse_ipv6ip, NULL, NULL,
++			      &ipv6_node);
++
++PANDA_MAKE_LEAF_PARSE_NODE(ports_node, panda_parse_ports, ports_metadata,
++			   NULL);
++PANDA_MAKE_LEAF_PARSE_NODE(icmpv4_node, panda_parse_icmpv4, icmp_metadata,
++			   NULL);
++PANDA_MAKE_LEAF_PARSE_NODE(icmpv6_node, panda_parse_icmpv6, icmp_metadata,
++			   NULL);
++PANDA_MAKE_LEAF_PARSE_NODE(arp_node, panda_parse_arp, arp_rarp_metadata,
++			   NULL);
++PANDA_MAKE_LEAF_PARSE_NODE(rarp_node, panda_parse_rarp, arp_rarp_metadata,
++			   NULL);
++
++PANDA_MAKE_LEAF_PARSE_NODE(tcp_node, panda_parse_ports, ports_metadata,
++			   NULL);
++
++/* Protocol tables */
++PANDA_MAKE_PROTO_TABLE(ether_table,
++	{ __cpu_to_be16(ETH_P_IP), &ipv4_check_node },
++	{ __cpu_to_be16(ETH_P_IPV6), &ipv6_check_node },
++	{ __cpu_to_be16(ETH_P_8021AD), &e8021AD_node },
++	{ __cpu_to_be16(ETH_P_8021Q), &e8021Q_node },
++	{ __cpu_to_be16(ETH_P_ARP), &arp_node },
++	{ __cpu_to_be16(ETH_P_RARP), &rarp_node },
++	{ __cpu_to_be16(ETH_P_PPP_SES), &pppoe_node },
++);
++
++PANDA_MAKE_PROTO_TABLE(ipv4_table,
++	{ IPPROTO_TCP, &tcp_node },
++	{ IPPROTO_UDP, &ports_node },
++	{ IPPROTO_SCTP, &ports_node },
++	{ IPPROTO_DCCP, &ports_node },
++	{ IPPROTO_ICMP, &icmpv4_node },
++	{ IPPROTO_IPIP, &ipv4ip_node },
++	{ IPPROTO_IPV6, &ipv6ip_node },
++);
++
++PANDA_MAKE_PROTO_TABLE(ipv6_table,
++	{ IPPROTO_HOPOPTS, &ipv6_eh_node },
++	{ IPPROTO_ROUTING, &ipv6_eh_node },
++	{ IPPROTO_DSTOPTS, &ipv6_eh_node },
++	{ IPPROTO_FRAGMENT, &ipv6_frag_node },
++	{ IPPROTO_TCP, &tcp_node },
++	{ IPPROTO_UDP, &ports_node },
++	{ IPPROTO_SCTP, &ports_node },
++	{ IPPROTO_DCCP, &ports_node },
++	{ IPPROTO_ICMPV6, &icmpv6_node },
++	{ IPPROTO_IPIP, &ipv4ip_node },
++	{ IPPROTO_IPV6, &ipv6ip_node },
++);
++
++PANDA_MAKE_PROTO_TABLE(ip_table,
++	{ 4, &ipv4_node },
++	{ 6, &ipv6_node },
++);
++
++PANDA_MAKE_PROTO_TABLE(ppp_table,
++	{ __cpu_to_be16(PPP_IP), &ipv4_check_node },
++	{ __cpu_to_be16(PPP_IPV6), &ipv6_check_node },
++);
++
++PANDA_MAKE_PROTO_TABLE(pppoe_table,
++	{ __cpu_to_be16(PPP_IP), &ipv4_check_node },
++	{ __cpu_to_be16(PPP_IPV6), &ipv6_check_node },
++);
++
++/* Define parsers. Two of them: one for packets starting with an
++ * Ethernet header, and one for packets starting with an IP header.
++ */
++PANDA_PARSER_EXT(panda_parser_big_ether, "PANDA big parser for Ethernet",
++		 &ether_node);
++
+diff --git a/net/sched/cls_flower2_panda_opt.c b/net/sched/cls_flower2_panda_opt.c
+new file mode 100644
+index 000000000000..a169b2059b49
+--- /dev/null
++++ b/net/sched/cls_flower2_panda_opt.c
+@@ -0,0 +1,1536 @@
++
++// SPDX-License-Identifier: BSD-2-Clause-FreeBSD
++/*
++ * Copyright (c) 2020, 2021 by Mojatatu Networks.
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions
++ * are met:
++ * 1. Redistributions of source code must retain the above copyright
++ *    notice, this list of conditions and the following disclaimer.
++ * 2. Redistributions in binary form must reproduce the above copyright
++ *    notice, this list of conditions and the following disclaimer in the
++ *    documentation and/or other materials provided with the distribution.
++ *
++ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
++ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
++ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
++ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
++ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
++ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
++ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
++ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
++ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
++ * SUCH DAMAGE.
++ */
++
++
++
++
++// SPDX-License-Identifier: BSD-2-Clause-FreeBSD
++/*
++ * Copyright (c) 2020, 2021 SiPanda Inc.
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions
++ * are met:
++ * 1. Redistributions of source code must retain the above copyright
++ *    notice, this list of conditions and the following disclaimer.
++ * 2. Redistributions in binary form must reproduce the above copyright
++ *    notice, this list of conditions and the following disclaimer in the
++ *    documentation and/or other materials provided with the distribution.
++ *
++ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
++ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
++ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
++ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
++ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
++ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
++ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
++ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
++ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
++ * SUCH DAMAGE.
++ */
++
++#include "net/panda/parser.h"
++#include "net/panda/parser_metadata.h"
++#include "net/panda/proto_nodes_def.h"
++
++#include "cls_flower2_panda_noopt.c"
++
++#ifndef PANDA_LOOP_COUNT
++#define PANDA_LOOP_COUNT 8
++#endif
++
++#define PANDA_MAX_ENCAPS (PANDA_LOOP_COUNT + 32)
++enum {
++CODE_ether_node,
++CODE_ip_overlay_node,
++CODE_ipv4_check_node,
++CODE_ipv4_node,
++CODE_ipv6_node,
++CODE_ipv6_check_node,
++CODE_ipv6_eh_node,
++CODE_ipv6_frag_node,
++CODE_ppp_node,
++CODE_pppoe_node,
++CODE_e8021AD_node,
++CODE_e8021Q_node,
++CODE_ipv4ip_node,
++CODE_ipv6ip_node,
++CODE_ports_node,
++CODE_icmpv4_node,
++CODE_icmpv6_node,
++CODE_arp_node,
++CODE_rarp_node,
++CODE_tcp_node,
++CODE_IGNORE
++};
++
++/* Parser control */
++static long next = CODE_IGNORE;
++
++static inline __attribute__((always_inline)) int check_pkt_len(const void *hdr,
++		const struct panda_proto_node *pnode, size_t len, ssize_t *hlen)
++{
++	*hlen = pnode->min_len;
++
++	/* Protocol node length checks */
++	if (len < *hlen)
++		return PANDA_STOP_LENGTH;
++
++	if (pnode->ops.len) {
++		*hlen = pnode->ops.len(hdr);
++		if (len < *hlen)
++			return PANDA_STOP_LENGTH;
++		if (*hlen < pnode->min_len)
++			return *hlen < 0 ? *hlen : PANDA_STOP_LENGTH;
++	} else {
++		*hlen = pnode->min_len;
++	}
++
++	return PANDA_OKAY;
++}
++
++static inline __attribute__((always_inline)) int panda_encap_layer(
++		struct panda_metadata *metadata, unsigned int max_encaps,
++		void **frame, unsigned int *frame_num)
++{
++	/* New encapsulation layer. Check against number of encap layers
++	 * allowed and also if we need a new metadata frame.
++	 */
++	if (++metadata->encaps > max_encaps)
++		return PANDA_STOP_ENCAP_DEPTH;
++
++	if (metadata->max_frame_num > *frame_num) {
++		*frame += metadata->frame_size;
++		*frame_num = (*frame_num) + 1;
++	}
++
++	return PANDA_OKAY;
++}
++
++static inline __attribute__((always_inline)) int panda_parse_tlv(
++		const struct panda_parse_tlvs_node *parse_node,
 +		const struct panda_parse_tlv_node *parse_tlv_node,
-+		const void *hdr, void *frame, int type,
-+		struct panda_ctrl_data tlv_ctrl, unsigned int flags)
-+{
++		const __u8 *cp, void *frame, struct panda_ctrl_data tlv_ctrl) {
++	const struct panda_parse_tlv_node_ops *ops = &parse_tlv_node->tlv_ops;
 +	const struct panda_proto_tlv_node *proto_tlv_node =
 +					parse_tlv_node->proto_tlv_node;
-+	const struct panda_parse_tlv_node_ops *ops;
-+	int ret;
-+
-+parse_again:
-+
-+	if (flags & PANDA_F_DEBUG)
-+		printf("PANDA parsing TLV %s\n", parse_tlv_node->name);
 +
 +	if (proto_tlv_node && (tlv_ctrl.hdr_len < proto_tlv_node->min_len)) {
 +		/* Treat check length error as an unrecognized TLV */
-+		parse_tlv_node = parse_tlvs_node->tlv_wildcard_node;
-+		if (parse_tlv_node)
-+			goto parse_again;
++		if (parse_node->tlv_wildcard_node)
++			return panda_parse_tlv(parse_node,
++					parse_node->tlv_wildcard_node,
++					cp, frame, tlv_ctrl);
 +		else
-+			return parse_tlvs_node->unknown_tlv_type_ret;
++			return parse_node->unknown_tlv_type_ret;
 +	}
 +
-+	ops = &parse_tlv_node->tlv_ops;
-+
 +	if (ops->extract_metadata)
-+		ops->extract_metadata(hdr, frame, tlv_ctrl);
++		ops->extract_metadata(cp, frame, tlv_ctrl);
 +
-+	if (ops->handle_tlv) {
-+		ret = ops->handle_tlv(hdr, frame, tlv_ctrl);
++	if (ops->handle_tlv)
++		ops->handle_tlv(cp, frame, tlv_ctrl);
++
++	return PANDA_OKAY;
++}
++
++
++
++
++static __always_inline int __ether_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata, unsigned int flags,
++		unsigned int max_encaps, void *frame, unsigned frame_num);
++static __always_inline int __ip_overlay_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata, unsigned int flags,
++		unsigned int max_encaps, void *frame, unsigned frame_num);
++static __always_inline int __ipv4_check_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata, unsigned int flags,
++		unsigned int max_encaps, void *frame, unsigned frame_num);
++static __always_inline int __ipv4_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata, unsigned int flags,
++		unsigned int max_encaps, void *frame, unsigned frame_num);
++static __always_inline int __ipv6_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata, unsigned int flags,
++		unsigned int max_encaps, void *frame, unsigned frame_num);
++static __always_inline int __ipv6_check_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata, unsigned int flags,
++		unsigned int max_encaps, void *frame, unsigned frame_num);
++static __always_inline int __ipv6_eh_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata, unsigned int flags,
++		unsigned int max_encaps, void *frame, unsigned frame_num);
++static __always_inline int __ipv6_frag_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata, unsigned int flags,
++		unsigned int max_encaps, void *frame, unsigned frame_num);
++static __always_inline int __ppp_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata, unsigned int flags,
++		unsigned int max_encaps, void *frame, unsigned frame_num);
++static __always_inline int __pppoe_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata, unsigned int flags,
++		unsigned int max_encaps, void *frame, unsigned frame_num);
++static __always_inline int __e8021AD_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata, unsigned int flags,
++		unsigned int max_encaps, void *frame, unsigned frame_num);
++static __always_inline int __e8021Q_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata, unsigned int flags,
++		unsigned int max_encaps, void *frame, unsigned frame_num);
++static __always_inline int __ipv4ip_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata, unsigned int flags,
++		unsigned int max_encaps, void *frame, unsigned frame_num);
++static __always_inline int __ipv6ip_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata, unsigned int flags,
++		unsigned int max_encaps, void *frame, unsigned frame_num);
++static __always_inline int __ports_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata, unsigned int flags,
++		unsigned int max_encaps, void *frame, unsigned frame_num);
++static __always_inline int __icmpv4_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata, unsigned int flags,
++		unsigned int max_encaps, void *frame, unsigned frame_num);
++static __always_inline int __icmpv6_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata, unsigned int flags,
++		unsigned int max_encaps, void *frame, unsigned frame_num);
++static __always_inline int __arp_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata, unsigned int flags,
++		unsigned int max_encaps, void *frame, unsigned frame_num);
++static __always_inline int __rarp_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata, unsigned int flags,
++		unsigned int max_encaps, void *frame, unsigned frame_num);
++static __always_inline int __tcp_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata, unsigned int flags,
++		unsigned int max_encaps, void *frame, unsigned frame_num);
++
++static __always_inline int __ether_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata,
++		unsigned int flags, unsigned int max_encaps,
++		void *frame, unsigned frame_num)
++{
++	const struct panda_parse_node *parse_node =
++		(const struct panda_parse_node *)&ether_node;
++	const struct panda_proto_node *proto_node = parse_node->proto_node;
++	struct panda_ctrl_data ctrl;
++	ssize_t hlen;
++	int ret;
++
++	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
++	if (ret != PANDA_OKAY)
++		return ret;
++
++	ctrl.hdr_len = hlen;
++	ctrl.hdr_offset = *offset;
++
++	if (parse_node->ops.extract_metadata)
++		parse_node->ops.extract_metadata(*hdr, frame, ctrl);
++
++
++
++	if (proto_node->encap) {
++		ret = panda_encap_layer(metadata, max_encaps, &frame,
++					&frame_num);
 +		if (ret != PANDA_OKAY)
 +			return ret;
 +	}
 +
-+	if (!parse_tlv_node->overlay_table)
-+		return PANDA_OKAY;
++	{
++	int type = proto_node->ops.next_proto(*hdr);
 +
-+	/* We have an TLV overlay  node */
++	if (type < 0)
++		return type;
 +
-+	if (parse_tlv_node->tlv_ops.overlay_type)
-+		type = parse_tlv_node->tlv_ops.overlay_type(hdr);
-+	else
-+		type = tlv_ctrl.hdr_len;
-+
-+	/* Get TLV node */
-+	parse_tlv_node = lookup_tlv_node(type, parse_tlv_node->overlay_table);
-+	if (parse_tlv_node)
-+		goto parse_again;
-+
-+	/* Unknown TLV overlay node */
-+	parse_tlv_node = parse_tlv_node->overlay_wildcard_node;
-+	if (parse_tlv_node)
-+		goto parse_again;
-+
-+	return parse_tlv_node->unknown_overlay_ret;
-+}
-+
-+static int panda_parse_tlvs(const struct panda_parse_node *parse_node,
-+			    const void *hdr, void *frame,
-+			    const struct panda_ctrl_data ctrl,
-+			    unsigned int flags)
-+{
-+	const struct panda_parse_tlvs_node *parse_tlvs_node;
-+	const struct panda_proto_tlvs_node *proto_tlvs_node;
-+	const struct panda_parse_tlv_node *parse_tlv_node;
-+	size_t off, len, offset = ctrl.hdr_offset;
-+	struct panda_ctrl_data tlv_ctrl;
-+	const __u8 *cp = hdr;
-+	ssize_t tlv_len;
-+	int type, ret;
-+
-+	parse_tlvs_node = (struct panda_parse_tlvs_node *)parse_node;
-+	proto_tlvs_node = (struct panda_proto_tlvs_node *)
-+						parse_node->proto_node;
-+
-+	/* Assume hlen marks end of TLVs */
-+	off = proto_tlvs_node->ops.start_offset(hdr);
-+
-+	/* We assume start offset is less than or equal to minimal length */
-+	len = ctrl.hdr_len - off;
-+
-+	cp += off;
-+	offset += off;
-+
-+	while (len > 0) {
-+		if (proto_tlvs_node->pad1_enable &&
-+		   *cp == proto_tlvs_node->pad1_val) {
-+			/* One byte padding, just advance */
-+			cp++;
-+			offset++;
-+			len--;
-+			continue;
-+		}
-+
-+		if (proto_tlvs_node->eol_enable &&
-+		    *cp == proto_tlvs_node->eol_val) {
-+			cp++;
-+			offset++;
-+			len--;
-+
-+			/* Hit EOL, we're done */
-+			break;
-+		}
-+
-+		if (len < proto_tlvs_node->min_len) {
-+			/* Length error */
-+			return PANDA_STOP_TLV_LENGTH;
-+		}
-+
-+		/* If the len function is not set this degenerates to an
-+		 * array of fixed sized values (which maybe be useful in
-+		 * itself now that I think about it)
-+		 */
-+		if (proto_tlvs_node->ops.len) {
-+			tlv_len = proto_tlvs_node->ops.len(cp);
-+			if (!tlv_len || len < tlv_len)
-+				return PANDA_STOP_TLV_LENGTH;
-+
-+			if (tlv_len < proto_tlvs_node->min_len)
-+				return tlv_len < 0 ? tlv_len :
-+						PANDA_STOP_TLV_LENGTH;
-+		} else {
-+			tlv_len = proto_tlvs_node->min_len;
-+		}
-+
-+		tlv_ctrl.hdr_len = tlv_len;
-+		tlv_ctrl.hdr_offset = offset;
-+
-+		type = proto_tlvs_node->ops.type(cp);
-+
-+		/* Get TLV node */
-+		parse_tlv_node = lookup_tlv_node(type,
-+				parse_tlvs_node->tlv_proto_table);
-+		if (parse_tlv_node) {
-+parse_one_tlv:
-+			ret = panda_parse_one_tlv(parse_tlvs_node,
-+						  parse_tlv_node, cp, frame,
-+						  type, tlv_ctrl, flags);
-+			if (ret != PANDA_OKAY)
-+				return ret;
-+		} else {
-+			/* Unknown TLV */
-+			parse_tlv_node = parse_tlvs_node->tlv_wildcard_node;
-+			if (parse_tlv_node) {
-+				/* If a wilcard node is present parse that
-+				 * node as an overlay to this one. The
-+				 * wild card node can perform error processing
-+				 */
-+				goto parse_one_tlv;
-+			} else {
-+				/* Return default error code. Returning
-+				 * PANDA_OKAY means skip
-+				 */
-+				if (parse_tlvs_node->unknown_tlv_type_ret !=
-+				    PANDA_OKAY)
-+					return
-+					  parse_tlvs_node->unknown_tlv_type_ret;
-+			}
-+		}
-+
-+		/* Move over current header */
-+		cp += tlv_len;
-+		offset += tlv_len;
-+		len -= tlv_len;
++	if (!proto_node->overlay) {
++		*hdr += hlen;
++		*offset += hlen;
++		len -= hlen;
 +	}
 +
-+	return PANDA_OKAY;
-+}
-+
-+static int panda_parse_flag_fields(const struct panda_parse_node *parse_node,
-+				   const void *hdr, void *frame,
-+				   struct panda_ctrl_data ctrl,
-+				   unsigned int pflags)
-+{
-+	const struct panda_parse_flag_fields_node *parse_flag_fields_node;
-+	const struct panda_proto_flag_fields_node *proto_flag_fields_node;
-+	const struct panda_parse_flag_field_node *parse_flag_field_node;
-+	const struct panda_flag_fields *flag_fields;
-+	size_t offset = ctrl.hdr_offset, ioff;
-+	ssize_t off;
-+	__u32 flags;
-+	int i;
-+
-+	parse_flag_fields_node =
-+			(struct panda_parse_flag_fields_node *)parse_node;
-+	proto_flag_fields_node =
-+			(struct panda_proto_flag_fields_node *)
-+						parse_node->proto_node;
-+	flag_fields = proto_flag_fields_node->flag_fields;
-+
-+	flags = proto_flag_fields_node->ops.get_flags(hdr);
-+
-+	/* Position at start of field data */
-+	ioff = proto_flag_fields_node->ops.start_fields_offset(hdr);
-+	hdr += ioff;
-+	offset += ioff;
-+
-+	for (i = 0; i < flag_fields->num_idx; i++) {
-+		off = panda_flag_fields_offset(i, flags, flag_fields);
-+		if (off < 0)
-+			continue;
-+
-+		/* Flag field is present, try to find in the parse node
-+		 * table based on index in proto flag-fields
-+		 */
-+		parse_flag_field_node = lookup_flag_field_node(i,
-+			parse_flag_fields_node->flag_fields_proto_table);
-+		if (parse_flag_field_node) {
-+			const struct panda_parse_flag_field_node_ops
-+				*ops = &parse_flag_field_node->ops;
-+			struct panda_ctrl_data flag_ctrl;
-+			const __u8 *cp = hdr + off;
-+
-+			flag_ctrl.hdr_len = flag_fields->fields[i].size;
-+			flag_ctrl.hdr_offset = offset + off;
-+
-+			if (pflags & PANDA_F_DEBUG)
-+				printf("PANDA parsing flag-field %s\n",
-+				      parse_flag_field_node->name);
-+
-+			if (ops->extract_metadata)
-+				ops->extract_metadata(cp, frame, flag_ctrl);
-+
-+			if (ops->handle_flag_field)
-+				ops->handle_flag_field(cp, frame, flag_ctrl);
-+		}
++	switch (type) {
++	case __cpu_to_be16(ETH_P_IP):
++		next = CODE_ipv4_check_node;
++		return PANDA_STOP_OKAY;
++	case __cpu_to_be16(ETH_P_IPV6):
++		next = CODE_ipv6_check_node;
++		return PANDA_STOP_OKAY;
++	case __cpu_to_be16(ETH_P_8021AD):
++		next = CODE_e8021AD_node;
++		return PANDA_STOP_OKAY;
++	case __cpu_to_be16(ETH_P_8021Q):
++		next = CODE_e8021Q_node;
++		return PANDA_STOP_OKAY;
++	case __cpu_to_be16(ETH_P_ARP):
++		next = CODE_arp_node;
++		return PANDA_STOP_OKAY;
++	case __cpu_to_be16(ETH_P_RARP):
++		next = CODE_rarp_node;
++		return PANDA_STOP_OKAY;
++	case __cpu_to_be16(ETH_P_PPP_SES):
++		next = CODE_pppoe_node;
++		return PANDA_STOP_OKAY;
 +	}
-+
-+	return PANDA_OKAY;
++	/* Unknown protocol */
++	return PANDA_STOP_UNKNOWN_PROTO;
++	}
 +}
-+
-+/* Parse a packet
-+ *
-+ * Arguments:
-+ *   - parser: Parser being invoked
-+ *   - node: start root node (may be different than parser->root_node)
-+ *   - hdr: pointer to start of packet
-+ *   - len: length of packet
-+ *   - metadata: metadata structure
-+ *   - start_node: first node (typically node_ether)
-+ *   - flags: allowed parameterized parsing
-+ */
-+int __panda_parse(const struct panda_parser *parser, const void *hdr,
-+		  size_t len, struct panda_metadata *metadata,
-+		  unsigned int flags, unsigned int max_encaps)
++static __always_inline int __ip_overlay_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata,
++		unsigned int flags, unsigned int max_encaps,
++		void *frame, unsigned frame_num)
 +{
-+	const struct panda_parse_node *parse_node = parser->root_node;
-+	const struct panda_parse_node *next_parse_node;
-+	void *frame = metadata->frame_data;
++	const struct panda_parse_node *parse_node =
++		(const struct panda_parse_node *)&ip_overlay_node;
++	const struct panda_proto_node *proto_node = parse_node->proto_node;
 +	struct panda_ctrl_data ctrl;
++	ssize_t hlen;
++	int ret;
++
++	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
++	if (ret != PANDA_OKAY)
++		return ret;
++
++	ctrl.hdr_len = hlen;
++	ctrl.hdr_offset = *offset;
++
++	if (parse_node->ops.extract_metadata)
++		parse_node->ops.extract_metadata(*hdr, frame, ctrl);
++
++
++
++	if (proto_node->encap) {
++		ret = panda_encap_layer(metadata, max_encaps, &frame,
++					&frame_num);
++		if (ret != PANDA_OKAY)
++			return ret;
++	}
++
++	{
++	int type = proto_node->ops.next_proto(*hdr);
++
++	if (type < 0)
++		return type;
++
++	if (!proto_node->overlay) {
++		*hdr += hlen;
++		*offset += hlen;
++		len -= hlen;
++	}
++
++	switch (type) {
++	case 4:
++		next = CODE_ipv4_node;
++		return PANDA_STOP_OKAY;
++	case 6:
++		next = CODE_ipv6_node;
++		return PANDA_STOP_OKAY;
++	}
++	/* Unknown protocol */
++	return PANDA_STOP_UNKNOWN_PROTO;
++	}
++}
++static __always_inline int __ipv4_check_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata,
++		unsigned int flags, unsigned int max_encaps,
++		void *frame, unsigned frame_num)
++{
++	const struct panda_parse_node *parse_node =
++		(const struct panda_parse_node *)&ipv4_check_node;
++	const struct panda_proto_node *proto_node = parse_node->proto_node;
++	struct panda_ctrl_data ctrl;
++	ssize_t hlen;
++	int ret;
++
++	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
++	if (ret != PANDA_OKAY)
++		return ret;
++
++	ctrl.hdr_len = hlen;
++	ctrl.hdr_offset = *offset;
++
++	if (parse_node->ops.extract_metadata)
++		parse_node->ops.extract_metadata(*hdr, frame, ctrl);
++
++
++
++	if (proto_node->encap) {
++		ret = panda_encap_layer(metadata, max_encaps, &frame,
++					&frame_num);
++		if (ret != PANDA_OKAY)
++			return ret;
++	}
++
++	{
++	int type = proto_node->ops.next_proto(*hdr);
++
++	if (type < 0)
++		return type;
++
++	if (!proto_node->overlay) {
++		*hdr += hlen;
++		*offset += hlen;
++		len -= hlen;
++	}
++
++	switch (type) {
++	case IPPROTO_TCP:
++		next = CODE_tcp_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_UDP:
++		next = CODE_ports_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_SCTP:
++		next = CODE_ports_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_DCCP:
++		next = CODE_ports_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_ICMP:
++		next = CODE_icmpv4_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_IPIP:
++		next = CODE_ipv4ip_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_IPV6:
++		next = CODE_ipv6ip_node;
++		return PANDA_STOP_OKAY;
++	}
++	/* Unknown protocol */
++	return PANDA_STOP_UNKNOWN_PROTO;
++	}
++}
++static __always_inline int __ipv4_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata,
++		unsigned int flags, unsigned int max_encaps,
++		void *frame, unsigned frame_num)
++{
++	const struct panda_parse_node *parse_node =
++		(const struct panda_parse_node *)&ipv4_node;
++	const struct panda_proto_node *proto_node = parse_node->proto_node;
++	struct panda_ctrl_data ctrl;
++	ssize_t hlen;
++	int ret;
++
++	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
++	if (ret != PANDA_OKAY)
++		return ret;
++
++	ctrl.hdr_len = hlen;
++	ctrl.hdr_offset = *offset;
++
++	if (parse_node->ops.extract_metadata)
++		parse_node->ops.extract_metadata(*hdr, frame, ctrl);
++
++
++
++	if (proto_node->encap) {
++		ret = panda_encap_layer(metadata, max_encaps, &frame,
++					&frame_num);
++		if (ret != PANDA_OKAY)
++			return ret;
++	}
++
++	{
++	int type = proto_node->ops.next_proto(*hdr);
++
++	if (type < 0)
++		return type;
++
++	if (!proto_node->overlay) {
++		*hdr += hlen;
++		*offset += hlen;
++		len -= hlen;
++	}
++
++	switch (type) {
++	case IPPROTO_TCP:
++		next = CODE_tcp_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_UDP:
++		next = CODE_ports_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_SCTP:
++		next = CODE_ports_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_DCCP:
++		next = CODE_ports_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_ICMP:
++		next = CODE_icmpv4_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_IPIP:
++		next = CODE_ipv4ip_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_IPV6:
++		next = CODE_ipv6ip_node;
++		return PANDA_STOP_OKAY;
++	}
++	/* Unknown protocol */
++	return PANDA_STOP_UNKNOWN_PROTO;
++	}
++}
++static __always_inline int __ipv6_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata,
++		unsigned int flags, unsigned int max_encaps,
++		void *frame, unsigned frame_num)
++{
++	const struct panda_parse_node *parse_node =
++		(const struct panda_parse_node *)&ipv6_node;
++	const struct panda_proto_node *proto_node = parse_node->proto_node;
++	struct panda_ctrl_data ctrl;
++	ssize_t hlen;
++	int ret;
++
++	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
++	if (ret != PANDA_OKAY)
++		return ret;
++
++	ctrl.hdr_len = hlen;
++	ctrl.hdr_offset = *offset;
++
++	if (parse_node->ops.extract_metadata)
++		parse_node->ops.extract_metadata(*hdr, frame, ctrl);
++
++
++
++	if (proto_node->encap) {
++		ret = panda_encap_layer(metadata, max_encaps, &frame,
++					&frame_num);
++		if (ret != PANDA_OKAY)
++			return ret;
++	}
++
++	{
++	int type = proto_node->ops.next_proto(*hdr);
++
++	if (type < 0)
++		return type;
++
++	if (!proto_node->overlay) {
++		*hdr += hlen;
++		*offset += hlen;
++		len -= hlen;
++	}
++
++	switch (type) {
++	case IPPROTO_HOPOPTS:
++		next = CODE_ipv6_eh_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_ROUTING:
++		next = CODE_ipv6_eh_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_DSTOPTS:
++		next = CODE_ipv6_eh_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_FRAGMENT:
++		next = CODE_ipv6_frag_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_TCP:
++		next = CODE_tcp_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_UDP:
++		next = CODE_ports_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_SCTP:
++		next = CODE_ports_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_DCCP:
++		next = CODE_ports_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_ICMPV6:
++		next = CODE_icmpv6_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_IPIP:
++		next = CODE_ipv4ip_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_IPV6:
++		next = CODE_ipv6ip_node;
++		return PANDA_STOP_OKAY;
++	}
++	/* Unknown protocol */
++	return PANDA_STOP_UNKNOWN_PROTO;
++	}
++}
++static __always_inline int __ipv6_check_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata,
++		unsigned int flags, unsigned int max_encaps,
++		void *frame, unsigned frame_num)
++{
++	const struct panda_parse_node *parse_node =
++		(const struct panda_parse_node *)&ipv6_check_node;
++	const struct panda_proto_node *proto_node = parse_node->proto_node;
++	struct panda_ctrl_data ctrl;
++	ssize_t hlen;
++	int ret;
++
++	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
++	if (ret != PANDA_OKAY)
++		return ret;
++
++	ctrl.hdr_len = hlen;
++	ctrl.hdr_offset = *offset;
++
++	if (parse_node->ops.extract_metadata)
++		parse_node->ops.extract_metadata(*hdr, frame, ctrl);
++
++
++
++	if (proto_node->encap) {
++		ret = panda_encap_layer(metadata, max_encaps, &frame,
++					&frame_num);
++		if (ret != PANDA_OKAY)
++			return ret;
++	}
++
++	{
++	int type = proto_node->ops.next_proto(*hdr);
++
++	if (type < 0)
++		return type;
++
++	if (!proto_node->overlay) {
++		*hdr += hlen;
++		*offset += hlen;
++		len -= hlen;
++	}
++
++	switch (type) {
++	case IPPROTO_HOPOPTS:
++		next = CODE_ipv6_eh_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_ROUTING:
++		next = CODE_ipv6_eh_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_DSTOPTS:
++		next = CODE_ipv6_eh_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_FRAGMENT:
++		next = CODE_ipv6_frag_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_TCP:
++		next = CODE_tcp_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_UDP:
++		next = CODE_ports_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_SCTP:
++		next = CODE_ports_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_DCCP:
++		next = CODE_ports_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_ICMPV6:
++		next = CODE_icmpv6_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_IPIP:
++		next = CODE_ipv4ip_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_IPV6:
++		next = CODE_ipv6ip_node;
++		return PANDA_STOP_OKAY;
++	}
++	/* Unknown protocol */
++	return PANDA_STOP_UNKNOWN_PROTO;
++	}
++}
++static __always_inline int __ipv6_eh_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata,
++		unsigned int flags, unsigned int max_encaps,
++		void *frame, unsigned frame_num)
++{
++	const struct panda_parse_node *parse_node =
++		(const struct panda_parse_node *)&ipv6_eh_node;
++	const struct panda_proto_node *proto_node = parse_node->proto_node;
++	struct panda_ctrl_data ctrl;
++	ssize_t hlen;
++	int ret;
++
++	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
++	if (ret != PANDA_OKAY)
++		return ret;
++
++	ctrl.hdr_len = hlen;
++	ctrl.hdr_offset = *offset;
++
++	if (parse_node->ops.extract_metadata)
++		parse_node->ops.extract_metadata(*hdr, frame, ctrl);
++
++
++
++	if (proto_node->encap) {
++		ret = panda_encap_layer(metadata, max_encaps, &frame,
++					&frame_num);
++		if (ret != PANDA_OKAY)
++			return ret;
++	}
++
++	{
++	int type = proto_node->ops.next_proto(*hdr);
++
++	if (type < 0)
++		return type;
++
++	if (!proto_node->overlay) {
++		*hdr += hlen;
++		*offset += hlen;
++		len -= hlen;
++	}
++
++	switch (type) {
++	case IPPROTO_HOPOPTS:
++		next = CODE_ipv6_eh_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_ROUTING:
++		next = CODE_ipv6_eh_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_DSTOPTS:
++		next = CODE_ipv6_eh_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_FRAGMENT:
++		next = CODE_ipv6_frag_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_TCP:
++		next = CODE_tcp_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_UDP:
++		next = CODE_ports_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_SCTP:
++		next = CODE_ports_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_DCCP:
++		next = CODE_ports_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_ICMPV6:
++		next = CODE_icmpv6_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_IPIP:
++		next = CODE_ipv4ip_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_IPV6:
++		next = CODE_ipv6ip_node;
++		return PANDA_STOP_OKAY;
++	}
++	/* Unknown protocol */
++	return PANDA_STOP_UNKNOWN_PROTO;
++	}
++}
++static __always_inline int __ipv6_frag_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata,
++		unsigned int flags, unsigned int max_encaps,
++		void *frame, unsigned frame_num)
++{
++	const struct panda_parse_node *parse_node =
++		(const struct panda_parse_node *)&ipv6_frag_node;
++	const struct panda_proto_node *proto_node = parse_node->proto_node;
++	struct panda_ctrl_data ctrl;
++	ssize_t hlen;
++	int ret;
++
++	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
++	if (ret != PANDA_OKAY)
++		return ret;
++
++	ctrl.hdr_len = hlen;
++	ctrl.hdr_offset = *offset;
++
++	if (parse_node->ops.extract_metadata)
++		parse_node->ops.extract_metadata(*hdr, frame, ctrl);
++
++
++
++	if (proto_node->encap) {
++		ret = panda_encap_layer(metadata, max_encaps, &frame,
++					&frame_num);
++		if (ret != PANDA_OKAY)
++			return ret;
++	}
++
++	{
++	int type = proto_node->ops.next_proto(*hdr);
++
++	if (type < 0)
++		return type;
++
++	if (!proto_node->overlay) {
++		*hdr += hlen;
++		*offset += hlen;
++		len -= hlen;
++	}
++
++	switch (type) {
++	case IPPROTO_HOPOPTS:
++		next = CODE_ipv6_eh_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_ROUTING:
++		next = CODE_ipv6_eh_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_DSTOPTS:
++		next = CODE_ipv6_eh_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_FRAGMENT:
++		next = CODE_ipv6_frag_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_TCP:
++		next = CODE_tcp_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_UDP:
++		next = CODE_ports_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_SCTP:
++		next = CODE_ports_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_DCCP:
++		next = CODE_ports_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_ICMPV6:
++		next = CODE_icmpv6_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_IPIP:
++		next = CODE_ipv4ip_node;
++		return PANDA_STOP_OKAY;
++	case IPPROTO_IPV6:
++		next = CODE_ipv6ip_node;
++		return PANDA_STOP_OKAY;
++	}
++	/* Unknown protocol */
++	return PANDA_STOP_UNKNOWN_PROTO;
++	}
++}
++static __always_inline int __ppp_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata,
++		unsigned int flags, unsigned int max_encaps,
++		void *frame, unsigned frame_num)
++{
++	const struct panda_parse_node *parse_node =
++		(const struct panda_parse_node *)&ppp_node;
++	const struct panda_proto_node *proto_node = parse_node->proto_node;
++	struct panda_ctrl_data ctrl;
++	ssize_t hlen;
++	int ret;
++
++	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
++	if (ret != PANDA_OKAY)
++		return ret;
++
++	ctrl.hdr_len = hlen;
++	ctrl.hdr_offset = *offset;
++
++	if (parse_node->ops.extract_metadata)
++		parse_node->ops.extract_metadata(*hdr, frame, ctrl);
++
++
++
++	if (proto_node->encap) {
++		ret = panda_encap_layer(metadata, max_encaps, &frame,
++					&frame_num);
++		if (ret != PANDA_OKAY)
++			return ret;
++	}
++
++	{
++	int type = proto_node->ops.next_proto(*hdr);
++
++	if (type < 0)
++		return type;
++
++	if (!proto_node->overlay) {
++		*hdr += hlen;
++		*offset += hlen;
++		len -= hlen;
++	}
++
++	switch (type) {
++	case __cpu_to_be16(PPP_IP):
++		next = CODE_ipv4_check_node;
++		return PANDA_STOP_OKAY;
++	case __cpu_to_be16(PPP_IPV6):
++		next = CODE_ipv6_check_node;
++		return PANDA_STOP_OKAY;
++	}
++	/* Unknown protocol */
++	return PANDA_STOP_UNKNOWN_PROTO;
++	}
++}
++static __always_inline int __pppoe_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata,
++		unsigned int flags, unsigned int max_encaps,
++		void *frame, unsigned frame_num)
++{
++	const struct panda_parse_node *parse_node =
++		(const struct panda_parse_node *)&pppoe_node;
++	const struct panda_proto_node *proto_node = parse_node->proto_node;
++	struct panda_ctrl_data ctrl;
++	ssize_t hlen;
++	int ret;
++
++	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
++	if (ret != PANDA_OKAY)
++		return ret;
++
++	ctrl.hdr_len = hlen;
++	ctrl.hdr_offset = *offset;
++
++	if (parse_node->ops.extract_metadata)
++		parse_node->ops.extract_metadata(*hdr, frame, ctrl);
++
++
++
++	if (proto_node->encap) {
++		ret = panda_encap_layer(metadata, max_encaps, &frame,
++					&frame_num);
++		if (ret != PANDA_OKAY)
++			return ret;
++	}
++
++	{
++	int type = proto_node->ops.next_proto(*hdr);
++
++	if (type < 0)
++		return type;
++
++	if (!proto_node->overlay) {
++		*hdr += hlen;
++		*offset += hlen;
++		len -= hlen;
++	}
++
++	switch (type) {
++	case __cpu_to_be16(PPP_IP):
++		next = CODE_ipv4_check_node;
++		return PANDA_STOP_OKAY;
++	case __cpu_to_be16(PPP_IPV6):
++		next = CODE_ipv6_check_node;
++		return PANDA_STOP_OKAY;
++	}
++	/* Unknown protocol */
++	return PANDA_STOP_UNKNOWN_PROTO;
++	}
++}
++static __always_inline int __e8021AD_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata,
++		unsigned int flags, unsigned int max_encaps,
++		void *frame, unsigned frame_num)
++{
++	const struct panda_parse_node *parse_node =
++		(const struct panda_parse_node *)&e8021AD_node;
++	const struct panda_proto_node *proto_node = parse_node->proto_node;
++	struct panda_ctrl_data ctrl;
++	ssize_t hlen;
++	int ret;
++
++	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
++	if (ret != PANDA_OKAY)
++		return ret;
++
++	ctrl.hdr_len = hlen;
++	ctrl.hdr_offset = *offset;
++
++	if (parse_node->ops.extract_metadata)
++		parse_node->ops.extract_metadata(*hdr, frame, ctrl);
++
++
++
++	if (proto_node->encap) {
++		ret = panda_encap_layer(metadata, max_encaps, &frame,
++					&frame_num);
++		if (ret != PANDA_OKAY)
++			return ret;
++	}
++
++	{
++	int type = proto_node->ops.next_proto(*hdr);
++
++	if (type < 0)
++		return type;
++
++	if (!proto_node->overlay) {
++		*hdr += hlen;
++		*offset += hlen;
++		len -= hlen;
++	}
++
++	switch (type) {
++	case __cpu_to_be16(ETH_P_IP):
++		next = CODE_ipv4_check_node;
++		return PANDA_STOP_OKAY;
++	case __cpu_to_be16(ETH_P_IPV6):
++		next = CODE_ipv6_check_node;
++		return PANDA_STOP_OKAY;
++	case __cpu_to_be16(ETH_P_8021AD):
++		next = CODE_e8021AD_node;
++		return PANDA_STOP_OKAY;
++	case __cpu_to_be16(ETH_P_8021Q):
++		next = CODE_e8021Q_node;
++		return PANDA_STOP_OKAY;
++	case __cpu_to_be16(ETH_P_ARP):
++		next = CODE_arp_node;
++		return PANDA_STOP_OKAY;
++	case __cpu_to_be16(ETH_P_RARP):
++		next = CODE_rarp_node;
++		return PANDA_STOP_OKAY;
++	case __cpu_to_be16(ETH_P_PPP_SES):
++		next = CODE_pppoe_node;
++		return PANDA_STOP_OKAY;
++	}
++	/* Unknown protocol */
++	return PANDA_STOP_UNKNOWN_PROTO;
++	}
++}
++static __always_inline int __e8021Q_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata,
++		unsigned int flags, unsigned int max_encaps,
++		void *frame, unsigned frame_num)
++{
++	const struct panda_parse_node *parse_node =
++		(const struct panda_parse_node *)&e8021Q_node;
++	const struct panda_proto_node *proto_node = parse_node->proto_node;
++	struct panda_ctrl_data ctrl;
++	ssize_t hlen;
++	int ret;
++
++	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
++	if (ret != PANDA_OKAY)
++		return ret;
++
++	ctrl.hdr_len = hlen;
++	ctrl.hdr_offset = *offset;
++
++	if (parse_node->ops.extract_metadata)
++		parse_node->ops.extract_metadata(*hdr, frame, ctrl);
++
++
++
++	if (proto_node->encap) {
++		ret = panda_encap_layer(metadata, max_encaps, &frame,
++					&frame_num);
++		if (ret != PANDA_OKAY)
++			return ret;
++	}
++
++	{
++	int type = proto_node->ops.next_proto(*hdr);
++
++	if (type < 0)
++		return type;
++
++	if (!proto_node->overlay) {
++		*hdr += hlen;
++		*offset += hlen;
++		len -= hlen;
++	}
++
++	switch (type) {
++	case __cpu_to_be16(ETH_P_IP):
++		next = CODE_ipv4_check_node;
++		return PANDA_STOP_OKAY;
++	case __cpu_to_be16(ETH_P_IPV6):
++		next = CODE_ipv6_check_node;
++		return PANDA_STOP_OKAY;
++	case __cpu_to_be16(ETH_P_8021AD):
++		next = CODE_e8021AD_node;
++		return PANDA_STOP_OKAY;
++	case __cpu_to_be16(ETH_P_8021Q):
++		next = CODE_e8021Q_node;
++		return PANDA_STOP_OKAY;
++	case __cpu_to_be16(ETH_P_ARP):
++		next = CODE_arp_node;
++		return PANDA_STOP_OKAY;
++	case __cpu_to_be16(ETH_P_RARP):
++		next = CODE_rarp_node;
++		return PANDA_STOP_OKAY;
++	case __cpu_to_be16(ETH_P_PPP_SES):
++		next = CODE_pppoe_node;
++		return PANDA_STOP_OKAY;
++	}
++	/* Unknown protocol */
++	return PANDA_STOP_UNKNOWN_PROTO;
++	}
++}
++static __always_inline int __ipv4ip_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata,
++		unsigned int flags, unsigned int max_encaps,
++		void *frame, unsigned frame_num)
++{
++	const struct panda_parse_node *parse_node =
++		(const struct panda_parse_node *)&ipv4ip_node;
++	const struct panda_proto_node *proto_node = parse_node->proto_node;
++	struct panda_ctrl_data ctrl;
++	ssize_t hlen;
++	int ret;
++
++	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
++	if (ret != PANDA_OKAY)
++		return ret;
++
++	ctrl.hdr_len = hlen;
++	ctrl.hdr_offset = *offset;
++
++	if (parse_node->ops.extract_metadata)
++		parse_node->ops.extract_metadata(*hdr, frame, ctrl);
++
++
++
++	if (proto_node->encap) {
++		ret = panda_encap_layer(metadata, max_encaps, &frame,
++					&frame_num);
++		if (ret != PANDA_OKAY)
++			return ret;
++	}
++
++	next = CODE_IGNORE;
++	return PANDA_STOP_OKAY;
++}
++static __always_inline int __ipv6ip_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata,
++		unsigned int flags, unsigned int max_encaps,
++		void *frame, unsigned frame_num)
++{
++	const struct panda_parse_node *parse_node =
++		(const struct panda_parse_node *)&ipv6ip_node;
++	const struct panda_proto_node *proto_node = parse_node->proto_node;
++	struct panda_ctrl_data ctrl;
++	ssize_t hlen;
++	int ret;
++
++	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
++	if (ret != PANDA_OKAY)
++		return ret;
++
++	ctrl.hdr_len = hlen;
++	ctrl.hdr_offset = *offset;
++
++	if (parse_node->ops.extract_metadata)
++		parse_node->ops.extract_metadata(*hdr, frame, ctrl);
++
++
++
++	if (proto_node->encap) {
++		ret = panda_encap_layer(metadata, max_encaps, &frame,
++					&frame_num);
++		if (ret != PANDA_OKAY)
++			return ret;
++	}
++
++	next = CODE_IGNORE;
++	return PANDA_STOP_OKAY;
++}
++static __always_inline int __ports_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata,
++		unsigned int flags, unsigned int max_encaps,
++		void *frame, unsigned frame_num)
++{
++	const struct panda_parse_node *parse_node =
++		(const struct panda_parse_node *)&ports_node;
++	const struct panda_proto_node *proto_node = parse_node->proto_node;
++	struct panda_ctrl_data ctrl;
++	ssize_t hlen;
++	int ret;
++
++	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
++	if (ret != PANDA_OKAY)
++		return ret;
++
++	ctrl.hdr_len = hlen;
++	ctrl.hdr_offset = *offset;
++
++	if (parse_node->ops.extract_metadata)
++		parse_node->ops.extract_metadata(*hdr, frame, ctrl);
++
++
++
++	if (proto_node->encap) {
++		ret = panda_encap_layer(metadata, max_encaps, &frame,
++					&frame_num);
++		if (ret != PANDA_OKAY)
++			return ret;
++	}
++
++	next = CODE_IGNORE;
++	return PANDA_STOP_OKAY;
++}
++static __always_inline int __icmpv4_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata,
++		unsigned int flags, unsigned int max_encaps,
++		void *frame, unsigned frame_num)
++{
++	const struct panda_parse_node *parse_node =
++		(const struct panda_parse_node *)&icmpv4_node;
++	const struct panda_proto_node *proto_node = parse_node->proto_node;
++	struct panda_ctrl_data ctrl;
++	ssize_t hlen;
++	int ret;
++
++	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
++	if (ret != PANDA_OKAY)
++		return ret;
++
++	ctrl.hdr_len = hlen;
++	ctrl.hdr_offset = *offset;
++
++	if (parse_node->ops.extract_metadata)
++		parse_node->ops.extract_metadata(*hdr, frame, ctrl);
++
++
++
++	if (proto_node->encap) {
++		ret = panda_encap_layer(metadata, max_encaps, &frame,
++					&frame_num);
++		if (ret != PANDA_OKAY)
++			return ret;
++	}
++
++	next = CODE_IGNORE;
++	return PANDA_STOP_OKAY;
++}
++static __always_inline int __icmpv6_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata,
++		unsigned int flags, unsigned int max_encaps,
++		void *frame, unsigned frame_num)
++{
++	const struct panda_parse_node *parse_node =
++		(const struct panda_parse_node *)&icmpv6_node;
++	const struct panda_proto_node *proto_node = parse_node->proto_node;
++	struct panda_ctrl_data ctrl;
++	ssize_t hlen;
++	int ret;
++
++	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
++	if (ret != PANDA_OKAY)
++		return ret;
++
++	ctrl.hdr_len = hlen;
++	ctrl.hdr_offset = *offset;
++
++	if (parse_node->ops.extract_metadata)
++		parse_node->ops.extract_metadata(*hdr, frame, ctrl);
++
++
++
++	if (proto_node->encap) {
++		ret = panda_encap_layer(metadata, max_encaps, &frame,
++					&frame_num);
++		if (ret != PANDA_OKAY)
++			return ret;
++	}
++
++	next = CODE_IGNORE;
++	return PANDA_STOP_OKAY;
++}
++static __always_inline int __arp_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata,
++		unsigned int flags, unsigned int max_encaps,
++		void *frame, unsigned frame_num)
++{
++	const struct panda_parse_node *parse_node =
++		(const struct panda_parse_node *)&arp_node;
++	const struct panda_proto_node *proto_node = parse_node->proto_node;
++	struct panda_ctrl_data ctrl;
++	ssize_t hlen;
++	int ret;
++
++	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
++	if (ret != PANDA_OKAY)
++		return ret;
++
++	ctrl.hdr_len = hlen;
++	ctrl.hdr_offset = *offset;
++
++	if (parse_node->ops.extract_metadata)
++		parse_node->ops.extract_metadata(*hdr, frame, ctrl);
++
++
++
++	if (proto_node->encap) {
++		ret = panda_encap_layer(metadata, max_encaps, &frame,
++					&frame_num);
++		if (ret != PANDA_OKAY)
++			return ret;
++	}
++
++	next = CODE_IGNORE;
++	return PANDA_STOP_OKAY;
++}
++static __always_inline int __rarp_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata,
++		unsigned int flags, unsigned int max_encaps,
++		void *frame, unsigned frame_num)
++{
++	const struct panda_parse_node *parse_node =
++		(const struct panda_parse_node *)&rarp_node;
++	const struct panda_proto_node *proto_node = parse_node->proto_node;
++	struct panda_ctrl_data ctrl;
++	ssize_t hlen;
++	int ret;
++
++	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
++	if (ret != PANDA_OKAY)
++		return ret;
++
++	ctrl.hdr_len = hlen;
++	ctrl.hdr_offset = *offset;
++
++	if (parse_node->ops.extract_metadata)
++		parse_node->ops.extract_metadata(*hdr, frame, ctrl);
++
++
++
++	if (proto_node->encap) {
++		ret = panda_encap_layer(metadata, max_encaps, &frame,
++					&frame_num);
++		if (ret != PANDA_OKAY)
++			return ret;
++	}
++
++	next = CODE_IGNORE;
++	return PANDA_STOP_OKAY;
++}
++static __always_inline int __tcp_node_panda_parse(const struct panda_parser *parser,
++		const void **hdr, size_t len, size_t *offset,
++		struct panda_metadata *metadata,
++		unsigned int flags, unsigned int max_encaps,
++		void *frame, unsigned frame_num)
++{
++	const struct panda_parse_node *parse_node =
++		(const struct panda_parse_node *)&tcp_node;
++	const struct panda_proto_node *proto_node = parse_node->proto_node;
++	struct panda_ctrl_data ctrl;
++	ssize_t hlen;
++	int ret;
++
++	ret = check_pkt_len(*hdr, parse_node->proto_node, len, &hlen);
++	if (ret != PANDA_OKAY)
++		return ret;
++
++	ctrl.hdr_len = hlen;
++	ctrl.hdr_offset = *offset;
++
++	if (parse_node->ops.extract_metadata)
++		parse_node->ops.extract_metadata(*hdr, frame, ctrl);
++
++
++
++	if (proto_node->encap) {
++		ret = panda_encap_layer(metadata, max_encaps, &frame,
++					&frame_num);
++		if (ret != PANDA_OKAY)
++			return ret;
++	}
++
++	next = CODE_IGNORE;
++	return PANDA_STOP_OKAY;
++}
++
++static inline int panda_parser_big_ether_panda_parse_ether_node(
++		const struct panda_parser *parser,
++		const void *hdr, size_t len,
++		struct panda_metadata *metadata,
++		unsigned int flags, unsigned int max_encaps)
++{
++	void *frame = metadata->frame_data;
 +	unsigned int frame_num = 0;
-+	const void *base_hdr = hdr;
-+	int type, ret;
-+
-+	/* Main parsing loop. The loop normal teminates when we encounter a
-+	 * leaf protocol node, an error condition, hitting limit on layers of
-+	 * encapsulation, protocol condition to stop (i.e. flags that
-+	 * indicate to stop at flow label or hitting fragment), or
-+	 * unknown protocol result in table lookup for next node.
-+	 */
-+
-+	do {
-+		const struct panda_proto_node *proto_node =
-+						parse_node->proto_node;
-+		ssize_t hlen = proto_node->min_len;
-+
-+		/* Protocol node length checks */
-+
-+		if (flags & PANDA_F_DEBUG)
-+			printf("PANDA parsing %s\n", proto_node->name);
-+
-+		if (len < hlen)
-+			return PANDA_STOP_LENGTH;
-+
-+		if (proto_node->ops.len) {
-+			hlen = proto_node->ops.len(hdr);
-+			if (len < hlen)
-+				return PANDA_STOP_LENGTH;
-+
-+			if (hlen < proto_node->min_len)
-+				return hlen < 0 ? hlen : PANDA_STOP_LENGTH;
-+		} else {
-+			hlen = proto_node->min_len;
-+		}
-+
-+		ctrl.hdr_len = hlen;
-+		ctrl.hdr_offset = hdr - base_hdr;
-+
-+		/* Callback processing order
-+		 *    1) Extract Metadata
-+		 *    2) Process TLVs
-+		 *	2.a) Extract metadata from TLVs
-+		 *	2.b) Process TLVs
-+		 *    3) Process protocol
-+		 */
-+
-+		/* Extract metadata, per node processing */
-+
-+		if (parse_node->ops.extract_metadata)
-+			parse_node->ops.extract_metadata(hdr, frame, ctrl);
-+
-+		switch (parse_node->node_type) {
-+		case PANDA_NODE_TYPE_PLAIN:
-+		default:
-+			break;
-+		case PANDA_NODE_TYPE_TLVS:
-+			/* Process TLV nodes */
-+			if (parse_node->proto_node->node_type ==
-+			    PANDA_NODE_TYPE_TLVS) {
-+				/* Need error in case parse_node is TLVs type
-+				 * but proto_node is not TLVs type
-+				 */
-+				ret = panda_parse_tlvs(parse_node, hdr, frame,
-+						       ctrl, flags);
-+				if (ret != PANDA_OKAY)
-+					return ret;
-+			}
-+			break;
-+		case PANDA_NODE_TYPE_FLAG_FIELDS:
-+			/* Process flag-fields */
-+			if (parse_node->proto_node->node_type ==
-+						PANDA_NODE_TYPE_FLAG_FIELDS) {
-+				/* Need error in case parse_node is flag-fields
-+				 * type but proto_node is not flag-fields type
-+				 */
-+				ret = panda_parse_flag_fields(parse_node, hdr,
-+							      frame, ctrl,
-+							      flags);
-+				if (ret != PANDA_OKAY)
-+					return ret;
-+			}
-+			break;
-+		}
-+
-+		/* Process protocol */
-+		if (parse_node->ops.handle_proto)
-+			parse_node->ops.handle_proto(hdr, frame, ctrl);
-+
-+		/* Proceed to next protocol layer */
-+
-+		if (!parse_node->proto_table && !parse_node->wildcard_node) {
-+			/* Leaf parse node */
-+
-+			return PANDA_STOP_OKAY;
-+		}
-+
-+		if (proto_node->encap) {
-+			/* New encapsulation leyer. Check against
-+			 * number of encap layers allowed and also
-+			 * if we need a new metadata frame.
-+			 */
-+			if (++metadata->encaps > max_encaps)
-+				return PANDA_STOP_ENCAP_DEPTH;
-+
-+			if (metadata->max_frame_num > frame_num) {
-+				frame += metadata->frame_size;
-+				frame_num++;
-+			}
-+		}
-+
-+		if (proto_node->ops.next_proto && parse_node->proto_table) {
-+			/* Lookup next proto */
-+
-+			type = proto_node->ops.next_proto(hdr);
-+			if (type < 0)
-+				return type;
-+
-+			/* Get next node */
-+			next_parse_node = lookup_node(type,
-+						parse_node->proto_table);
-+
-+			if (next_parse_node)
-+				goto found_next;
-+		}
-+
-+		/* Try wildcard node. Either table lookup failed to find a node
-+		 * or there is only a wildcard
-+		 */
-+		if (parse_node->wildcard_node) {
-+			/* Perform default processing in a wildcard node */
-+
-+			next_parse_node = parse_node->wildcard_node;
-+		} else {
-+			/* Return default code. Parsing will stop
-+			 * with the inidicated code
-+			 */
-+
-+			return parse_node->unknown_ret;
-+		}
-+
-+found_next:
-+		/* Found next protocol node, set up to process */
-+
-+		if (!proto_node->overlay) {
-+			/* Move over current header */
-+			hdr += hlen;
-+			len -= hlen;
-+		}
-+
-+		parse_node = next_parse_node;
-+
-+	} while (1);
-+}
-+
-+struct panda_parser *panda_parser_create(const char *name,
-+					 const struct panda_parse_node
-+								*root_node)
-+{
-+	struct panda_parser *parser;
-+
-+	parser = calloc(1, sizeof(*parser));
-+	if (!parser)
-+		return NULL;
-+
-+	parser->name = name;
-+	parser->root_node = root_node;
-+
-+	return parser;
-+}
-+
-+static
-+struct panda_parser *panda_parser_opt_create(const char *name,
-+				const struct panda_parse_node *root_node,
-+				panda_parser_opt_entry_point parser_entry_point)
-+{
-+	struct panda_parser *parser;
-+
-+	parser = calloc(1, sizeof(*parser));
-+	if (!parser)
-+		return NULL;
-+
-+	parser->name = name;
-+	parser->root_node = root_node;
-+	parser->parser_type = PANDA_OPTIMIZED;
-+	parser->parser_entry_point = parser_entry_point;
-+
-+	return parser;
-+}
-+
-+void panda_parser_destroy(struct panda_parser *parser)
-+{
-+	free(parser);
-+}
-+
-+siphash_key_t __panda_hash_key;
-+void panda_hash_secret_init(siphash_key_t *init_key)
-+{
-+	if (init_key) {
-+		__panda_hash_key = *init_key;
-+	} else {
-+		__u8 *bytes = (__u8 *)&__panda_hash_key;
-+		int i;
-+
-+		for (i = 0; i < sizeof(__panda_hash_key); i++)
-+			bytes[i] = rand();
-+	}
-+}
-+
-+void panda_print_hash_input(const void *start, size_t len)
-+{
-+	const __u8 *data = start;
++	int ret = PANDA_STOP_OKAY;
 +	int i;
++	size_t offset;
 +
-+	printf("Hash input (size %lu): ", len);
-+	for (i = 0; i < len; i++)
-+		printf("%02x ", data[i]);
-+	printf("\n");
-+}
++	ret = __ether_node_panda_parse(parser, &hdr,
++		len, &offset, metadata, flags, max_encaps, frame, frame_num);
 +
-+/* Create a dummy parser to ensure that the section is defined */
-+static struct panda_parser_def PANDA_SECTION_ATTR(panda_parsers) dummy_parser;
-+
-+int panda_parser_init(void)
-+{
-+	const struct panda_parser_def *def_base =
-+					panda_section_base_panda_parsers();
-+	int i, j;
-+
-+	for (i = 0; i < panda_section_array_size_panda_parsers(); i++) {
-+		const struct panda_parser_def *def = &def_base[i];
-+
-+		if (!def->name && !def->root_node)
-+			continue;
-+
-+		switch (def->parser_type) {
-+		case  PANDA_GENERIC:
-+			*def->parser = panda_parser_create(def->name,
-+							   def->root_node);
-+			if (!def->parser) {
-+				fprintf(stderr, "Create parser \"%s\" failed\n",
-+					def->name);
-+				goto fail;
-+			}
++	for (i = 0; i < PANDA_LOOP_COUNT; i++) {
++		if (ret != PANDA_STOP_OKAY)
 +			break;
-+		case PANDA_OPTIMIZED:
-+			*def->parser = panda_parser_opt_create(def->name,
-+						def->root_node,
-+						def->parser_entry_point);
-+			if (!def->parser) {
-+				fprintf(stderr, "Create parser \"%s\" failed\n",
-+					def->name);
-+				goto fail;
-+			}
++		switch (next) {
++		case CODE_IGNORE:
++			break;
++		case CODE_ether_node:
++			ret = __ether_node_panda_parse(parser, &hdr, len, &offset,
++						     metadata, flags,
++						     max_encaps, frame,
++						     frame_num);
++			break;
++		case CODE_ip_overlay_node:
++			ret = __ip_overlay_node_panda_parse(parser, &hdr, len, &offset,
++						     metadata, flags,
++						     max_encaps, frame,
++						     frame_num);
++			break;
++		case CODE_ipv4_check_node:
++			ret = __ipv4_check_node_panda_parse(parser, &hdr, len, &offset,
++						     metadata, flags,
++						     max_encaps, frame,
++						     frame_num);
++			break;
++		case CODE_ipv4_node:
++			ret = __ipv4_node_panda_parse(parser, &hdr, len, &offset,
++						     metadata, flags,
++						     max_encaps, frame,
++						     frame_num);
++			break;
++		case CODE_ipv6_node:
++			ret = __ipv6_node_panda_parse(parser, &hdr, len, &offset,
++						     metadata, flags,
++						     max_encaps, frame,
++						     frame_num);
++			break;
++		case CODE_ipv6_check_node:
++			ret = __ipv6_check_node_panda_parse(parser, &hdr, len, &offset,
++						     metadata, flags,
++						     max_encaps, frame,
++						     frame_num);
++			break;
++		case CODE_ipv6_eh_node:
++			ret = __ipv6_eh_node_panda_parse(parser, &hdr, len, &offset,
++						     metadata, flags,
++						     max_encaps, frame,
++						     frame_num);
++			break;
++		case CODE_ipv6_frag_node:
++			ret = __ipv6_frag_node_panda_parse(parser, &hdr, len, &offset,
++						     metadata, flags,
++						     max_encaps, frame,
++						     frame_num);
++			break;
++		case CODE_ppp_node:
++			ret = __ppp_node_panda_parse(parser, &hdr, len, &offset,
++						     metadata, flags,
++						     max_encaps, frame,
++						     frame_num);
++			break;
++		case CODE_pppoe_node:
++			ret = __pppoe_node_panda_parse(parser, &hdr, len, &offset,
++						     metadata, flags,
++						     max_encaps, frame,
++						     frame_num);
++			break;
++		case CODE_e8021AD_node:
++			ret = __e8021AD_node_panda_parse(parser, &hdr, len, &offset,
++						     metadata, flags,
++						     max_encaps, frame,
++						     frame_num);
++			break;
++		case CODE_e8021Q_node:
++			ret = __e8021Q_node_panda_parse(parser, &hdr, len, &offset,
++						     metadata, flags,
++						     max_encaps, frame,
++						     frame_num);
++			break;
++		case CODE_ipv4ip_node:
++			ret = __ipv4ip_node_panda_parse(parser, &hdr, len, &offset,
++						     metadata, flags,
++						     max_encaps, frame,
++						     frame_num);
++			break;
++		case CODE_ipv6ip_node:
++			ret = __ipv6ip_node_panda_parse(parser, &hdr, len, &offset,
++						     metadata, flags,
++						     max_encaps, frame,
++						     frame_num);
++			break;
++		case CODE_ports_node:
++			ret = __ports_node_panda_parse(parser, &hdr, len, &offset,
++						     metadata, flags,
++						     max_encaps, frame,
++						     frame_num);
++			break;
++		case CODE_icmpv4_node:
++			ret = __icmpv4_node_panda_parse(parser, &hdr, len, &offset,
++						     metadata, flags,
++						     max_encaps, frame,
++						     frame_num);
++			break;
++		case CODE_icmpv6_node:
++			ret = __icmpv6_node_panda_parse(parser, &hdr, len, &offset,
++						     metadata, flags,
++						     max_encaps, frame,
++						     frame_num);
++			break;
++		case CODE_arp_node:
++			ret = __arp_node_panda_parse(parser, &hdr, len, &offset,
++						     metadata, flags,
++						     max_encaps, frame,
++						     frame_num);
++			break;
++		case CODE_rarp_node:
++			ret = __rarp_node_panda_parse(parser, &hdr, len, &offset,
++						     metadata, flags,
++						     max_encaps, frame,
++						     frame_num);
++			break;
++		case CODE_tcp_node:
++			ret = __tcp_node_panda_parse(parser, &hdr, len, &offset,
++						     metadata, flags,
++						     max_encaps, frame,
++						     frame_num);
 +			break;
 +		default:
-+			goto fail;
++			return PANDA_STOP_UNKNOWN_PROTO;
 +		}
 +	}
 +
-+	return 0;
-+
-+fail:
-+	for (j = 0; j < i; j++) {
-+		const struct panda_parser_def *def = &def_base[i];
-+
-+		panda_parser_destroy(*def->parser);
-+		*def->parser = NULL;
-+	}
-+	return -1;
++	return ret;
 +}
 +
-+module_init(panda_parser_init);
-+module_exit(panda_parser_exit);
-+
-+MODULE_AUTHOR("Tom Herbert <tom@expertise.dev>");
-+MODULE_DESCRIPTION("PANDA parser");
-+MODULE_LICENSE("GPL v2");
++PANDA_PARSER_KMOD(
++      panda_parser_big_ether,
++      "",
++      &ether_node,
++      panda_parser_big_ether_panda_parse_ether_node
++    );
 -- 
 2.33.0
 
