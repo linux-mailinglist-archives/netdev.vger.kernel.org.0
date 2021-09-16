@@ -2,70 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C6C5740D18F
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 04:07:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D983A40D1BD
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 04:44:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233903AbhIPCI5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Sep 2021 22:08:57 -0400
-Received: from smtp23.cstnet.cn ([159.226.251.23]:48582 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233745AbhIPCIz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Sep 2021 22:08:55 -0400
-Received: from localhost.localdomain (unknown [124.16.138.128])
-        by APP-03 (Coremail) with SMTP id rQCowADX3XnOpkJhmWOVAA--.28482S2;
-        Thu, 16 Sep 2021 10:07:10 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH] netlink: Remove extra brackets of nla_for_each_attr()
-Date:   Thu, 16 Sep 2021 02:07:08 +0000
-Message-Id: <1631758028-3805500-1-git-send-email-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.7.4
-X-CM-TRANSID: rQCowADX3XnOpkJhmWOVAA--.28482S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7JrWDXFyfXw18uF1UZFW7CFg_yoWxtrbEyw
-        s7ZrWvg3yrAFyakr18JFWkWF1Fkwn5JFyS9Fn3tw4fX348Jr13X395GrZxtFyfC397AFy3
-        J3WIqry7J3y3ujkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUb4kFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_
-        Gr1UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gr
-        1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv
-        7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r
-        1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_
-        Gr1l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxV
-        WUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI
-        7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r
-        1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVWUJVW8
-        JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfU5vtCUU
-        UUU
-X-Originating-IP: [124.16.138.128]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+        id S233932AbhIPCqO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Sep 2021 22:46:14 -0400
+Received: from dkpb0ek.cn ([106.75.27.222]:40736 "EHLO dkpb0ek.cn"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233825AbhIPCqL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Sep 2021 22:46:11 -0400
+X-Greylist: delayed 531 seconds by postgrey-1.27 at vger.kernel.org; Wed, 15 Sep 2021 22:46:10 EDT
+Received: from wuewbseyj (unknown [122.226.180.195])
+        by dkpb0ek.cn (Postfix) with ESMTPA id B2F1B335D7FB
+        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 10:35:46 +0800 (CST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dkpb0ek.cn; s=default;
+        t=1631759746;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=jL9s0ENlwEJaSxwBhwikFy1Q5mLZz1Y6eLsPuZ95dMY=;
+        b=PPj7lSFo3Z0pIaBZkVuMXrkuHKFY/prvZjOMMWDuchxTnFwVE+Syd1c8/oIjdP/LzJou4O
+        TE44u+vxMJwg6vSsMGSCyb/E6lFUIBgyGfojFRnnewXfGoKLZh0fcZROn8U0l4mtTq0i7E
+        VoPcXrAMAVMnPnA282SXTGhmIoxLYCA=
+Message-ID: <20210916103546716445@dkpb0ek.cn>
+From:   =?utf-8?B?77yl77y077yj44K144O844OT44K544Gu5LiA5pmC5YGc5q2i?= 
+        <etc@dkpb0ek.cn>
+To:     <netdev@vger.kernel.org>
+Subject: =?utf-8?B?RVRD44K144O844OT44K544KS44GU5Yip55So44Gu44GK5a6i5qeY?=
+Date:   Thu, 16 Sep 2021 10:35:36 +0800
+MIME-Version: 1.0
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: base64
+X-mailer: Wcdfhewgm 4
+X-Spam: Yes
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It's obvious that '&(rem)' has unneeded brackets.
-Therefore it's better to remove them.
+RVRD44K144O844OT44K544KS44GU5Yip55So44Gu44GK5a6i5qeYOg0KDQpFVEPjgrXjg7zjg5Pj
+grnjga/nhKHlirnjgavjgarjgorjgb7jgZfjgZ/jgIINCuW8leOBjee2muOBjeOCteODvOODk+OC
+ueOCkuOBlOWIqeeUqOOBhOOBn+OBoOOBjeOBn+OBhOWgtOWQiOOBr+OAgeS4i+iomOODquODs+OC
+r+OCiOOCiuips+e0sOOCkuOBlOeiuuiqjeOBj+OBoOOBleOBhOOAgg0KDQrkuIvoqJjjga7mjqXn
+tprjgYvjgonlgZzmraLljp/lm6DjgpLnorroqo3jgZfjgabjgY/jgaDjgZXjgYQNCg0KaHR0cHM6
+Ly9ldGMtbWVpc2FpLmpwLmZuLWluZm8udG9wLw0KDQoo55u05o6l44Ki44Kv44K744K544Gn44GN
+44Gq44GE5aC05ZCI44Gv44CB5omL5YuV44Gn44OW44Op44Km44K244Gr44Kz44OU44O844GX44Gm
+6ZaL44GE44Gm44GP44Gg44GV44GEKQ0KDQrigLvjgZPjga7jg6Hjg7zjg6vjga/pgIHkv6HlsILn
+lKjjgafjgZnjgIINCuOAgOOBk+OBruOCouODieODrOOCueOBq+mAgeS/oeOBhOOBn+OBoOOBhOOB
+puOCgui/lOS/oeOBhOOBn+OBl+OBi+OBreOBvuOBmeOBruOBp+OAgeOBguOCieOBi+OBmOOCgeOB
+lOS6huaJv+mhmOOBhOOBvuOBmeOAgg0K4oC744Gq44GK44CB44GU5LiN5piO44Gq54K544Gr44Gk
+44GN44G+44GX44Gm44Gv44CB44GK5omL5pWw44Gn44GZ44GM44CBDQogIEVUQ+OCteODvOODk+OC
+ueS6i+WLmeWxgOOBq+OBiuWVj+OBhOWQiOOCj+OBm+OBj+OBoOOBleOBhOOAgg0KDQrilqBFVEPl
+iKnnlKjnhafkvJrjgrXjg7zjg5Pjgrnkuovli5nlsYANCuW5tOS4reeEoeS8keOAgDk6MDDvvZ4x
+ODowMA0K44OK44OT44OA44Kk44Ok44Or44CAMDU3MC0wMTAxMzkNCu+8iOODiuODk+ODgOOCpOOD
+pOODq+OBjOOBlOWIqeeUqOOBhOOBn+OBoOOBkeOBquOBhOOBiuWuouOBleOBvuOAgDA0NS03NDQt
+MTM3Mu+8iQ0KMDQ1LTc0NC0zMTANCg==
 
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
- include/net/netlink.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/include/net/netlink.h b/include/net/netlink.h
-index 1ceec51..5822e0d 100644
---- a/include/net/netlink.h
-+++ b/include/net/netlink.h
-@@ -1920,7 +1920,7 @@ static inline int nla_total_size_64bit(int payload)
- #define nla_for_each_attr(pos, head, len, rem) \
- 	for (pos = head, rem = len; \
- 	     nla_ok(pos, rem); \
--	     pos = nla_next(pos, &(rem)))
-+	     pos = nla_next(pos, &rem))
- 
- /**
-  * nla_for_each_nested - iterate over nested attributes
--- 
-2.7.4
 
