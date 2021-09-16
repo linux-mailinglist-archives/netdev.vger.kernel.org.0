@@ -2,117 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE4CB40D29F
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 06:39:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF3C040D2BB
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 07:01:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234289AbhIPElR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 00:41:17 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:46273 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229521AbhIPElO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 00:41:14 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1631767194; h=Content-Type: MIME-Version: Message-ID: Date:
- References: In-Reply-To: Subject: Cc: To: From: Sender;
- bh=/+s/jscahNm5opYfahNTF4pek+pW4Sb5V6rCSNLcwfc=; b=DwlqTQHIELPi8q7fQVC4MvJXb/KjtHcKLzH2E4HpX4326iHAtHW25/7AGATKklCtPCzQwwbb
- OZ5ADTTp5LUP0EwkG197/7Ly5uQunUBJ8b9XaWZSD7mYMEAHZamXKNQnWenKT66EbMgNN+8Q
- 9C8rQq5e8xiT70f61CH8cHpG1ig=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-east-1.postgun.com with SMTP id
- 6142ca8e507800c880a4bef4 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 16 Sep 2021 04:39:42
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 33B47C43619; Thu, 16 Sep 2021 04:39:41 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from tykki (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id ABD35C4338F;
-        Thu, 16 Sep 2021 04:39:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org ABD35C4338F
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Marek Vasut <marex@denx.de>
-Cc:     netdev@vger.kernel.org,
-        Amitkumar Karwar <amit.karwar@redpinesignals.com>,
-        Angus Ainslie <angus@akkea.ca>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Karun Eagalapati <karun256@gmail.com>,
-        Martin Fuzzey <martin.fuzzey@flowbird.group>,
-        Martin Kepplinger <martink@posteo.de>,
-        Prameela Rani Garnepudi <prameela.j04cs@gmail.com>,
-        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
-        Siva Rebbagondla <siva8118@gmail.com>, stable@vger.kernel.org,
-        "linux-wireless\@vger.kernel.org" <linux-wireless@vger.kernel.org>
-Subject: Re: [PATCH] rsi: Fix module dev_oper_mode parameter description
-In-Reply-To: <20210915080841.73938-1-marex@denx.de> (Marek Vasut's message of
-        "Wed, 15 Sep 2021 10:08:41 +0200")
-References: <20210915080841.73938-1-marex@denx.de>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
-Date:   Thu, 16 Sep 2021 07:39:33 +0300
-Message-ID: <87fsu516d6.fsf@codeaurora.org>
+        id S233549AbhIPFCr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 01:02:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59052 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230193AbhIPFCr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 01:02:47 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FBCFC061764
+        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 22:01:27 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id j1so3690624pjv.3
+        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 22:01:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=MTko6+hR5hHl8nMrMUmqN57Vz3neo6Xcub26rTJpWK4=;
+        b=m+e7ZRNbAo9otvDsXlY7Gp7If0ssbdQrVZ2DVgYfPpDn1CNdQs6CAk+YxLK1pE70xk
+         ym2UfG9KIDHoDFqwMPmxhtWPJN2JMgM5uprz/f69yJMvy92I/xAlxSUn/IzvQe/EPDQ6
+         f0Fmqdtw7DMznUzUw1BtmjVLcODDaqOjQ2qhBSMMpKZoDdHXAQwUHqc0DWfYqq3NYPxz
+         8+2kT9Y1p7tlmpFPpknhPaxfE0BGZ1SXhrPufME9aPzVvDVKYqQKywGeFRJvqXeTto5G
+         3IlESGHpFKxf50z16I4KojAAIgO9hEvl5yK5MNr+K6LjddaZ1azgCzJAE1uhXhARCA55
+         TQmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=MTko6+hR5hHl8nMrMUmqN57Vz3neo6Xcub26rTJpWK4=;
+        b=53uwO2BxNNoIVxaJH5aT5XahLjDUF92XU3M+cWDZiqp6SV8FNvu5YfhCElsYAhxszM
+         6eSpipQme69g0HBbcJtnI4DKL3i0W/ACS4o659RDyoh6EjISjCo2XuMkRBeyqiHCD2Le
+         IHQhIuR5TkQDyx7C63x5ZTo97U6QAD1lnRbqv1eb4f1pdNYaAkSHDMWuTJc/6RvJQwX7
+         Y1wBItIF11mX7KB7tSrxxZQdKCseou3tmLdb2iC+nPRhGL6wubz0YPiH2kvpYTBB2LWP
+         cf88ELGQ3+43WYbFQkspdkncXrJQzZaRu2Z6OSFaH6ZLMhJGSvipYpdZ2d79TuwCceF1
+         Z6Rw==
+X-Gm-Message-State: AOAM533hrZKPt0y5H7X4eg8pC18LMKOVhZ1ph8SXz/02xQafUT4dwb/S
+        DOc7ag5iPYs1hLZq5D6cAg4XzA==
+X-Google-Smtp-Source: ABdhPJwonUznINb9jx3XlRd3H/dYiMOAUcgKuA74sol0t58TtUpa6gyreKcKCu5dsqpiME//R37yGw==
+X-Received: by 2002:a17:902:c40e:b0:138:a4d4:cf46 with SMTP id k14-20020a170902c40e00b00138a4d4cf46mr3144720plk.48.1631768486482;
+        Wed, 15 Sep 2021 22:01:26 -0700 (PDT)
+Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
+        by smtp.gmail.com with ESMTPSA id 13sm1447107pfw.73.2021.09.15.22.01.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Sep 2021 22:01:26 -0700 (PDT)
+Date:   Wed, 15 Sep 2021 22:01:23 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     davem@davemloft.net, daniel@iogearbox.net, kuba@kernel.org,
+        andrii@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-team@fb.com
+Subject: Re: [PATCH bpf-next] bpf: Document BPF licensing.
+Message-ID: <20210915220123.1dff1d98@hermes.local>
+In-Reply-To: <20210916032104.35822-1-alexei.starovoitov@gmail.com>
+References: <20210916032104.35822-1-alexei.starovoitov@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-+ linux-wireless
+On Wed, 15 Sep 2021 20:21:04 -0700
+Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
 
-Marek Vasut <marex@denx.de> writes:
+> From: Alexei Starovoitov <ast@kernel.org>
+>=20
+> Document and clarify BPF licensing.
+>=20
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> Acked-by: Daniel Borkmann <daniel@iogearbox.net>
+> Acked-by: Joe Stringer <joe@cilium.io>
+> Acked-by: Lorenz Bauer <lmb@cloudflare.com>
+> Acked-by: Dave Thaler <dthaler@microsoft.com>
 
-> The module parameters are missing dev_oper_mode 12, BT classic alone,
-> add it. Moreover, the parameters encode newlines, which ends up being
-> printed malformed e.g. by modinfo, so fix that too.
->
-> However, the module parameter string is duplicated in both USB and SDIO
-> modules and the dev_oper_mode mode enumeration in those module parameters
-> is a duplicate of macros used by the driver. Furthermore, the enumeration
-> is confusing.
->
-> So, deduplicate the module parameter string and use __stringify() to
-> encode the correct mode enumeration values into the module parameter
-> string. Finally, replace 'Wi-Fi' with 'Wi-Fi alone' and 'BT' with
-> 'BT classic alone' to clarify what those modes really mean.
->
-> Fixes: 898b255339310 ("rsi: add module parameter operating mode")
-> Signed-off-by: Marek Vasut <marex@denx.de>
-> Cc: Amitkumar Karwar <amit.karwar@redpinesignals.com>
-> Cc: Angus Ainslie <angus@akkea.ca>
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Kalle Valo <kvalo@codeaurora.org>
-> Cc: Karun Eagalapati <karun256@gmail.com>
-> Cc: Martin Fuzzey <martin.fuzzey@flowbird.group>
-> Cc: Martin Kepplinger <martink@posteo.de>
-> Cc: Prameela Rani Garnepudi <prameela.j04cs@gmail.com>
-> Cc: Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>
-> Cc: Siva Rebbagondla <siva8118@gmail.com>
-> To: netdev@vger.kernel.org
-> Cc: <stable@vger.kernel.org> # 4.17+
-> ---
->  drivers/net/wireless/rsi/rsi_91x_sdio.c |  5 +----
->  drivers/net/wireless/rsi/rsi_91x_usb.c  |  5 +----
->  drivers/net/wireless/rsi/rsi_hal.h      | 11 +++++++++++
->  3 files changed, 13 insertions(+), 8 deletions(-)
+Looks good, this helps other projects.
 
-linux-wireless is not included so patchwork won't see this patch. Please
-resubmit (as v2) and include linux-wireless, more info in the wiki
-below.
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Acked-by: Stephen Hemminger <stephen@networkplumber.org>
