@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 198FB40D7DF
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 12:52:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CDB240D807
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 12:57:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237104AbhIPKxt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 06:53:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53834 "EHLO
+        id S237459AbhIPK64 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 06:58:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235487AbhIPKxr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 06:53:47 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7187DC061574;
-        Thu, 16 Sep 2021 03:52:27 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id m26so5556456pff.3;
-        Thu, 16 Sep 2021 03:52:27 -0700 (PDT)
+        with ESMTP id S236506AbhIPK6z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 06:58:55 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03D45C061766;
+        Thu, 16 Sep 2021 03:57:35 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id g184so5780569pgc.6;
+        Thu, 16 Sep 2021 03:57:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=VNKbu9+xQ5ZpUtGvMTcqpK8Ho+xMSyVZ8+L+t3qGVwI=;
-        b=XSZj6K6WXxfevgNkMQWTVWN/pRsGZ48Hpf1aapa7yFejBTCFdA6HUCPwkA38CUvHOb
-         12EGRvxxebdCNuoE+ObAyvTNwWyxDdbNnDJYQNBCpkkMDkdT2sOdFGpKg9oYBfCBDwL0
-         XflKHpxQXjZ521DE/0ZBRDz1uCKiQSaIrItzbkcc7HCVprwqAzWPmTfhfdTuxhcGIkae
-         17ws4naiLQWag9g0raMGIBW/7G/5E7reQPZwNkqgzzUPtdDb0IjYRvViaMPYRdxPUde6
-         Bl5njgBd1GAcMu72JAentZ78PNGD3qywdjPZPtQPg3O6M2RygtB2NwLk/e/0AhwfWnul
-         yMPg==
+        bh=zetJ5G0LMyibhhBY6/35VWLw2vAGWh3kCNdD5BxkSZI=;
+        b=Iq+3mvGj2jY0H1hK5L2+2LJkiT3nS6liFloV8Frq8+FJ3Y0LxB2A38VNCla7awjuhj
+         Q3Cl5qmmvoV1YWOZQweI486bIgofq+t3jwjAQ3GGQ1BTx00wXTwDzZt3wO26vvMZXlEU
+         Srw78VlxUG3ClRIenDB9DS9KklBz8Gy2Kt0AIAheRW83PteD9N403WMbpA39HXJuq8IF
+         JiYUmg4zDGjeRBVLjEF25+aPcjKe8oOTUL3KuuMaaLo1G4aP3SLUOfZT+6b94AvHMe5Q
+         tcf8/9xlWcz7WQzaFSNkMRaXjJszFIpx0K2ojEu+E4bzhBM/xSgQmOnlb5Oz/8Q8cN9d
+         Qp1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=VNKbu9+xQ5ZpUtGvMTcqpK8Ho+xMSyVZ8+L+t3qGVwI=;
-        b=L3EYCg0A4Z1ArY4xwg8/HPwxIxgjfaR3QGsYVQaksyx+FOo1Q4bf/BqQZzu/w9AIHT
-         yiiGgsvny1PxeFpMRBSqJv/H+oiT5aLeBdDLeb+BRj7Z1JlPZxjy5LgHKYJwE1lHxAyU
-         cFkuKXXjrWwLtMVUQas0snNCKz0pYAC/9QtghBvCs0QNj+vM0fb7G85I9QLX6TcEieLH
-         hTGyE/3ZOqKQfuKq0sppMI3VDI/2MFrJSySxPPvglEqlXUlcrQTJXIAlT8Ab+RKsoR3v
-         lbLFo0z5V35m2PMJCUPtY2hAzwy2OefR954lMmEUxlLup+MV59mZUpZMNlu+u2BkVG/U
-         n5DA==
-X-Gm-Message-State: AOAM531ugxjHSZgg7RpjliV6siJ0Gvlu39H/XEwrOTmCNRf+jXxysCPm
-        pCBP/6iMa4JSb169H5GIRVZWctTCMFdb/Q==
-X-Google-Smtp-Source: ABdhPJyl+TWhw4qIPd+GNTqUwBCT0hUxX1fvNVQYkrBsEjf+FvFMSf2MpaDHDZtEUEbJwfeL0pUlhg==
-X-Received: by 2002:a63:4614:: with SMTP id t20mr4441488pga.372.1631789546934;
-        Thu, 16 Sep 2021 03:52:26 -0700 (PDT)
-Received: from ?IPv6:2404:f801:0:5:8000::50b? ([2404:f801:9000:18:efec::50b])
-        by smtp.gmail.com with ESMTPSA id 21sm2624212pfh.103.2021.09.16.03.52.13
+        bh=zetJ5G0LMyibhhBY6/35VWLw2vAGWh3kCNdD5BxkSZI=;
+        b=br+0t4HTIaRXvbi/MyqqC1WP2c9YNEHk7+0kVyBddZW5IY4kVPvnRykS2XchYZFTow
+         qpJAcHbbY2mjgE1kNSxkkyUsvyzXI2p2o7zMItlHSV6fjaEixx78O/fDlw5qIYg3IV3a
+         Z8lGsY0KAL8b+46f70EiSW/s7nT8V2IkamszMzmFKAyrdLia8h+GEXqx9mmB5DwrZYdz
+         wcWdaK3t0WGwQFMWnvXRq0KPOJZvWNkBu/FmFt+We/eiNFjVdtzpLTKksrA3YHNkBj1W
+         KC0K+ztkHx8GVwAuGjwm+J7cW0+/WXSPKa0Qg4pLvCOESOy/P9PNynmUkr5ydIz9+9Qm
+         MmvA==
+X-Gm-Message-State: AOAM531g+Z5KNhWe+8bef32XQ6LZ/HAE9LelXkeroLV8YO/i4K7fuMIG
+        m7+xHB72+j1ya69qE6fDwLA=
+X-Google-Smtp-Source: ABdhPJyJnHqPNf+opjGA7LpPgHFY6nzsERWLwilu6XCHi7kaSPNw+MpELyJKztS12zzhPWoDpdap2Q==
+X-Received: by 2002:aa7:959a:0:b0:43b:adeb:ef58 with SMTP id z26-20020aa7959a000000b0043badebef58mr4426857pfj.19.1631789854486;
+        Thu, 16 Sep 2021 03:57:34 -0700 (PDT)
+Received: from ?IPv6:2404:f801:0:5:8000::50b? ([2404:f801:9000:1a:efea::50b])
+        by smtp.gmail.com with ESMTPSA id n141sm2856237pfd.90.2021.09.16.03.57.21
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Sep 2021 03:52:26 -0700 (PDT)
-Subject: Re: [PATCH V5 07/12] Drivers: hv: vmbus: Add SNP support for VMbus
- channel initiate message
+        Thu, 16 Sep 2021 03:57:34 -0700 (PDT)
+Subject: Re: [PATCH V5 09/12] x86/Swiotlb: Add Swiotlb bounce buffer remap
+ function for HV IVM
 To:     Michael Kelley <mikelley@microsoft.com>,
         KY Srinivasan <kys@microsoft.com>,
         Haiyang Zhang <haiyangz@microsoft.com>,
@@ -101,15 +101,15 @@ Cc:     "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
         "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
         "dave.hansen@intel.com" <dave.hansen@intel.com>
 References: <20210914133916.1440931-1-ltykernel@gmail.com>
- <20210914133916.1440931-8-ltykernel@gmail.com>
- <MWHPR21MB1593D9CB27D41B128BF21DC9D7DB9@MWHPR21MB1593.namprd21.prod.outlook.com>
+ <20210914133916.1440931-10-ltykernel@gmail.com>
+ <MWHPR21MB159349234C15D0F04F87845CD7DB9@MWHPR21MB1593.namprd21.prod.outlook.com>
 From:   Tianyu Lan <ltykernel@gmail.com>
-Message-ID: <15d177f8-5e20-8630-2b2c-8a00a5309a61@gmail.com>
-Date:   Thu, 16 Sep 2021 18:52:12 +0800
+Message-ID: <3f6a6407-b8fd-803b-e4fe-ea9a873a5840@gmail.com>
+Date:   Thu, 16 Sep 2021 18:57:20 +0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.14.0
 MIME-Version: 1.0
-In-Reply-To: <MWHPR21MB1593D9CB27D41B128BF21DC9D7DB9@MWHPR21MB1593.namprd21.prod.outlook.com>
+In-Reply-To: <MWHPR21MB159349234C15D0F04F87845CD7DB9@MWHPR21MB1593.namprd21.prod.outlook.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -117,23 +117,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/15/2021 11:41 PM, Michael Kelley wrote:
->> diff --git a/drivers/hv/hyperv_vmbus.h b/drivers/hv/hyperv_vmbus.h
->> index 42f3d9d123a1..560cba916d1d 100644
->> --- a/drivers/hv/hyperv_vmbus.h
->> +++ b/drivers/hv/hyperv_vmbus.h
->> @@ -240,6 +240,8 @@ struct vmbus_connection {
->>   	 * is child->parent notification
->>   	 */
->>   	struct hv_monitor_page *monitor_pages[2];
->> +	void *monitor_pages_original[2];
->> +	unsigned long monitor_pages_pa[2];
-> The type of this field really should be phys_addr_t.  In addition to
-> just making semantic sense, then it will match the return type from
-> virt_to_phys() and the input arg to memremap() since resource_size_t
-> is typedef'ed as phys_addr_t.
+On 9/15/2021 11:42 PM, Michael Kelley wrote:
+>> @@ -196,13 +199,34 @@ static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
+>>   		mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
+>>   		mem->slots[i].alloc_size = 0;
+>>   	}
+>> +
+>> +	if (set_memory_decrypted((unsigned long)vaddr, bytes >> PAGE_SHIFT))
+>> +		return -EFAULT;
+>> +
+>> +	/*
+>> +	 * Map memory in the unencrypted physical address space when requested
+>> +	 * (e.g. for Hyper-V AMD SEV-SNP Isolation VMs).
+>> +	 */
+>> +	if (swiotlb_unencrypted_base) {
+>> +		phys_addr_t paddr = __pa(vaddr) + swiotlb_unencrypted_base;
+> Nit:  Use "start" instead of "__pa(vaddr)" since "start" is already the needed
+> physical address.
+
+
+Yes, "start" should be used here.
+
+> 
+>> @@ -304,7 +332,7 @@ int
+>>   swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
+>>   {
+>>   	struct io_tlb_mem *mem = &io_tlb_default_mem;
+>> -	unsigned long bytes = nslabs << IO_TLB_SHIFT;
+>> +	int ret;
+>>
+>>   	if (swiotlb_force == SWIOTLB_NO_FORCE)
+>>   		return 0;
+>> @@ -318,8 +346,9 @@ swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
+>>   	if (!mem->slots)
+>>   		return -ENOMEM;
+>>
+>> -	set_memory_decrypted((unsigned long)tlb, bytes >> PAGE_SHIFT);
+>> -	swiotlb_init_io_tlb_mem(mem, virt_to_phys(tlb), nslabs, true);
+>> +	ret = swiotlb_init_io_tlb_mem(mem, virt_to_phys(tlb), nslabs, true);
+>> +	if (ret)
+> Before returning the error, free the pages obtained from the earlier call
+> to __get_free_pages()?
 > 
 
-OK. Will update in the next version.
+Yes, will fix.
 
 Thanks.
