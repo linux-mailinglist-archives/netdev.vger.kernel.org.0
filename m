@@ -2,103 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1397C40ED31
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 00:14:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CBBC40ED41
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 00:19:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240825AbhIPWPZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 18:15:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41768 "EHLO
+        id S240932AbhIPWUf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 18:20:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240764AbhIPWPY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 18:15:24 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5ECFC061574
-        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 15:14:03 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id bb10so4849898plb.2
-        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 15:14:03 -0700 (PDT)
+        with ESMTP id S240949AbhIPWUd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 18:20:33 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 490A6C061756
+        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 15:19:08 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id b18so22907583lfb.1
+        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 15:19:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=nsKSUyu0hHQgB5UB2QohPE/woU2L0fc2RfDJ5uYvuQE=;
-        b=KTXECkHFaeqyUQrHRDqiE3dMQGDUNHyr56vKMCmZ0LyR+rzK2yMQx4oVNMWwuiM+gx
-         wQ0sHSYY9dsluytDuOtJSEqsnZN50+R0Ee8exRa6QVc3SXpMTSNUI/0fZFLu7ObQhRyn
-         gfWgfuH48PGhaoa0GR+TqUT6TfnRp+gPZ2ymisJhO2RhS67TktRs2z4B8snR4zFcv2OS
-         vaH0877El3zqg88BdmHSaPlb9Pt8wUdTqYLcUIKs27XzZaTeK3JB2MA4K7pSX3usVmar
-         OjLcxYTo9NWq6G0Td3C8nboMlBPw9TgCx/3GV7HD627zzLpkp68Ny4m9QBKofO1UPeki
-         RXcg==
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ZXGKR8r/HN56qTH2XDx/MfiA/uG/YME9xDPw73hqKJw=;
+        b=hr/znkwatsayH6ZNjZzlwGoQBQEzJja2k0yKqzRc8/lBD+5RMZsXlxt88Q5EXxhp5z
+         nGDNwThSRsaBjoJLe7AC1i33IwfBpPD7r46JAS4YFCng3pQye/gG/m+z3lxlxPm7pTm0
+         9PFhWPFRSwhWwgcLV8AFpWJwz3318DKaR6jyMNFQr6XGdkMA7oLZS0iIWu/8jpUc8n00
+         NUzjQoOaeqWWDyQKYVXTeXGOx2PN39GklWFNaKui6qWQ+fA9LHUJ882UamkdrNG/7bVw
+         JgqnNC5vUN9yiUgsAOW8ryI18GgNKRRF/UomN6LaBMEM2I972VTsd7eKK3+0wL73yRmJ
+         ebVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=nsKSUyu0hHQgB5UB2QohPE/woU2L0fc2RfDJ5uYvuQE=;
-        b=33EfFiG1aXVo2MuSTLtaowmrGODvNfVrRNpAIEqgyWG6e9A93TJMU/1NKsjsUEu7U/
-         bmzbU5jt/Jhuz17/lvIP5Z9QXIh8ZAndoYtBi/RptLIkSs6OpaUiCrq++jjoFSwcnAvv
-         w4ohjPdCzHjS2slL/0oE2oJh3Oxx7KK55bvjOUQSqKVDqTr3hG0/wSxvsjw676n0bFEP
-         fS0cp6vsDAnVe1R57pFwD9ojSMHm6Y2khHI6HW9A3FhOBnF58RTXxtpzurdl/XwQOE/3
-         qyk9s2FpL4DiqkH8LJeUendFQR4I/gkIPcPfsCHEPdfSfIXL4Kkn789LmJ4Ne6w0D/FL
-         lPKw==
-X-Gm-Message-State: AOAM53294D3JO48Ip89BwHf/nR0EZa9IJjCNQwGsVG4d0Kzdbah62lPa
-        RlICIOSc3VM/YlJuwLZdyPdcMjauLDGhSQ==
-X-Google-Smtp-Source: ABdhPJwhvTScpwUwUJC1hp9mKT7JGZA9I1zK8Rn3ZqsXAxD8elSEci1yrjr8BEf/J1Tw5DhrdY6aDQ==
-X-Received: by 2002:a17:902:dac7:b0:138:cee7:6bbc with SMTP id q7-20020a170902dac700b00138cee76bbcmr6663254plx.0.1631830443045;
-        Thu, 16 Sep 2021 15:14:03 -0700 (PDT)
-Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
-        by smtp.gmail.com with ESMTPSA id 4sm3573500pjb.21.2021.09.16.15.14.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Sep 2021 15:14:02 -0700 (PDT)
-Date:   Thu, 16 Sep 2021 15:13:59 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Mirko Lindner <mlindner@marvell.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next] sky2: Stop printing VPD info to debugfs
-Message-ID: <20210916151359.7bf742df@hermes.local>
-In-Reply-To: <bbaee8ab-9b2e-de04-ee7b-571e094cc5fe@gmail.com>
-References: <bbaee8ab-9b2e-de04-ee7b-571e094cc5fe@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ZXGKR8r/HN56qTH2XDx/MfiA/uG/YME9xDPw73hqKJw=;
+        b=1fS80LIAN1dKnlGlJ8sGgX1YiKwrCLKeTdylWahWSLVPgo/Oh9EhCeTAFR58qaq2Lv
+         yd75fZdrn6UzT0CiiElk+qPVFtWAgm+LzD/zgkvr8v4zZYnSpFdfax7PjUxPTSCanAhU
+         BsLP9esJ2BXsiamaUa6oQVuOAaskwU4JATvhqrCqTPfSZfTFghBGhG7wi5FLOqe7GikU
+         9pzMnLXBHqMyIlAOWcD5Z10OQnIjqUOGAQSlRgBDbRxS/Q7sHzWXPJ7IOllmp4SmL9sn
+         i1ByD67Y5kUc/LlGo7m24sl+cTLfUXaHdrUPYz6+absT6DLLkDOoIrWE3Wkb7Pe1lt2Z
+         kcNg==
+X-Gm-Message-State: AOAM532fmR8r00eUv1ZqaSK7NgNoQHk+ydL+jaNyZPelINwJYcGT6x7O
+        wSComGqNtJ+avKWtD1gIMv0=
+X-Google-Smtp-Source: ABdhPJxhmr6DriGTWC61I1rG7KBw6+1UzumW30Qn/3nu2bPOhd9tdbUkLgTo4VaC/LRP3B3hLVFn+A==
+X-Received: by 2002:a2e:7503:: with SMTP id q3mr6861229ljc.48.1631830746667;
+        Thu, 16 Sep 2021 15:19:06 -0700 (PDT)
+Received: from localhost.localdomain (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.googlemail.com with ESMTPSA id z7sm483072ljh.59.2021.09.16.15.19.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Sep 2021 15:19:05 -0700 (PDT)
+Subject: Re: [PATCH net-next 0/4] net: dsa: b53: Clean up CPU/IMP ports
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+References: <20210916120354.20338-1-zajec5@gmail.com>
+ <7c5e1cf8-2d98-91df-fc6b-f9edfa0f23c9@gmail.com>
+ <a8a684ce-bede-b1f1-1f7a-31e71dca3fd3@gmail.com>
+From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Message-ID: <1568bbc3-1652-7d01-2fc7-cb4189c71ad2@gmail.com>
+Date:   Fri, 17 Sep 2021 00:19:02 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <a8a684ce-bede-b1f1-1f7a-31e71dca3fd3@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 16 Sep 2021 23:40:37 +0200
-Heiner Kallweit <hkallweit1@gmail.com> wrote:
+On 16.09.2021 23:46, Florian Fainelli wrote:
+> On 9/16/21 9:23 AM, Florian Fainelli wrote:
+>> On 9/16/21 5:03 AM, Rafał Miłecki wrote:
+>>> From: Rafał Miłecki <rafal@milecki.pl>
+>>>
+>>> This has been tested on:
+>>>
+>>> 1. Luxul XBR-4500 with used CPU port 5
+>>> [    8.361438] b53-srab-switch 18007000.ethernet-switch: found switch: BCM53012, rev 0
+>>>
+>>> 2. Netgear R8000 with used CPU port 8
+>>> [    4.453858] b53-srab-switch 18007000.ethernet-switch: found switch: BCM53012, rev 5
+>>
+>> These look good at first glance, let me give them a try on 7445 and 7278
+>> at least before responding with Reviewed-by/Tested-by tags, thanks!
+>>
+> Found some issues on 7445 and 7278 while moving to the latest net-next
+> which I will be addressing but this worked nicely.
+> 
+> What do you think about removing dev->enabled_ports and
+> b53_for_each_port entirely and using a DSA helper that iterates over the
+> switch's port list? Now that we have dev->num_ports accurately reflect
+> the number of ports it should be equivalent.
 
-> Sky2 is parsing the VPD and adds the parsed information to its debugfs
-> file. This isn't needed in kernel, userspace tools like lspci can be
-> used to display such information nicely. Therefore remove this from
-> the driver.
-> 
-> lspci -vv:
-> 
-> Capabilities: [50] Vital Product Data
-> 	Product Name: Marvell Yukon 88E8070 Gigabit Ethernet Controller
-> 	Read-only fields:
-> 		[PN] Part number: Yukon 88E8070
-> 		[EC] Engineering changes: Rev. 1.0
-> 		[MN] Manufacture ID: Marvell
-> 		[SN] Serial number: AbCdEfG970FD4
-> 		[CP] Extended capability: 01 10 cc 03
-> 		[RV] Reserved: checksum good, 9 byte(s) reserved
-> 	Read/write fields:
-> 		[RW] Read-write area: 1 byte(s) free
-> 	End
-> 
-> Relevant part in debugfs file:
-> 
-> 0000:01:00.0 Product Data
-> Marvell Yukon 88E8070 Gigabit Ethernet Controller
->  Part Number: Yukon 88E8070
->  Engineering Level: Rev. 1.0
->  Manufacturer: Marvell
->  Serial Number: AbCdEfG970FD4
-> 
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+The limitation I see in DSA is skipping unavailable ports. E.g. BCM5301x
+switches that don't have port 6. The closest match for such case I found
+is DSA_PORT_TYPE_UNUSED but I'm not sure if it's enough to handle those
+cases.
 
-Make sense lspci seems to have gotten better at handling this now.
-
-Acked-by: Stephen Hemminger <stephen@networkplumber.org>
+That DSA_PORT_TYPE_UNUSED would probably require investigating DSA & b53
+behaviour *and* discussing it with DSA maintainer to make sure we don't
+abuse that.
