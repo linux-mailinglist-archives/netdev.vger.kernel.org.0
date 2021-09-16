@@ -2,338 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF78940D700
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 12:04:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45ED940D78B
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 12:38:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236277AbhIPKFx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 06:05:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42820 "EHLO
+        id S236705AbhIPKjj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 06:39:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235287AbhIPKFw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 06:05:52 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C43CC061574;
-        Thu, 16 Sep 2021 03:04:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=xO6cDSV5wGjT8fNnweb5kWrSN55pD3kXCauTwDvtqzY=; b=GnA7b29iRBLxA//NKRj4Ysbja/
-        J5izVdQHzEYsf5NZ2mpep/EPuXNNyJ3UbsQjY9lGv0OTLWTT/A8I3Wr5Dj48gvzAPLRNGWWt09f/r
-        AYuG7ZRMJXV2HCtnjb6pKRkjztCkrVurQlIrWJIsJGjEfHg2LFNL7FZtk3RMVRHulrIGQNe7a70k/
-        3jqquNmbN1ujZHaBAvkp4LX9a5TRr0D13Up5HxRSJa/Qzx43jtLURUqcI8RIPAxgY8JlqqO7BTrbV
-        I5jqeQ3tuCwbZkBAUQsZK7Uf4E2iP0EUGREvJxrF84ZKAjOo/5mKORvwcb6xbu/dWh1aU6kht/TGq
-        xdhXLFKg==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1mQoDo-00GXg8-6O; Thu, 16 Sep 2021 10:02:35 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 35733300238;
-        Thu, 16 Sep 2021 12:02:22 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id D8DA02CD49D71; Thu, 16 Sep 2021 12:02:21 +0200 (CEST)
-Date:   Thu, 16 Sep 2021 12:02:21 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     =?utf-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
-Cc:     Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "open list:PERFORMANCE EVENTS SUBSYSTEM" 
-        <linux-perf-users@vger.kernel.org>,
-        "open list:PERFORMANCE EVENTS SUBSYSTEM" 
-        <linux-kernel@vger.kernel.org>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <netdev@vger.kernel.org>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <bpf@vger.kernel.org>, jroedel@suse.de, x86@kernel.org,
-        Josh Poimboeuf <jpoimboe@redhat.com>
-Subject: Re: [PATCH] x86/dumpstack/64: Add guard pages to stack_info
-Message-ID: <YUMWLdijs8vSkRjo@hirez.programming.kicks-ass.net>
-References: <20210910153839.GH4323@worktop.programming.kicks-ass.net>
- <f38987a5-dc36-a20d-8c5e-81e8ead5b4dc@linux.alibaba.com>
- <YT8m2B6D2yWc5Umq@hirez.programming.kicks-ass.net>
- <3fb7c51f-696b-da70-1965-1dda9910cb14@linux.alibaba.com>
- <YUB5VchM3a/MiZpX@hirez.programming.kicks-ass.net>
- <3f26f7a2-0a09-056a-3a7a-4795b6723b60@linux.alibaba.com>
- <YUIOgmOfnOqPrE+z@hirez.programming.kicks-ass.net>
- <76de02b7-4d87-4a3a-e4d4-048829749887@linux.alibaba.com>
- <YUL5j/lY0mtx4NMq@hirez.programming.kicks-ass.net>
- <YUL6R5AH6WNxu5sH@hirez.programming.kicks-ass.net>
+        with ESMTP id S236359AbhIPKji (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 06:39:38 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2D09C061574
+        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 03:38:17 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id w29so8688718wra.8
+        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 03:38:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=hC1wOHmEVDsUVYA6s3dpbAFrj8DZGDMv59edh41sE84=;
+        b=fbzfjrsZro3iy1uhVG2TQlqum8yZXvAZxnb60qThpV6Qoot3t56af689JXns5fjiMQ
+         ODLwoMGaigbo+rtlCK5EsCv426pXl9dwl4jWliLMzQLCShep291BTx/y2ZaZnh95XAdm
+         21umtBrfDxQ8pcdIA9L4VbxCxdGXZ6askJ/hX4tf4EKQW/UnPkddlm3sVIJvY1U2aEjJ
+         hm1S3cjkl7fiz0hj5dhzh38KTO65qOvhnK9/IzuCa37sgChiACjLILuImphXw+6Jahih
+         /gTwkjDOhVOTpJNYM5CK7dm9qcvNyRwDN5RGJJiCsz4HAoRiY7hD4wBVdZxcOy2kPP7g
+         t0CA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=hC1wOHmEVDsUVYA6s3dpbAFrj8DZGDMv59edh41sE84=;
+        b=r0kSZmOuxAfixRPen0ksN1COqORI6Vjr4l18OFPZe1jyxnXmQVpxVeHrOaQbRFGu1K
+         bMBbH+NK5oWXpxKnkCkwoKDB5HSV8Et7VjB/PknLnRkdZgP0tyrAXjPSuD5y8Pz/aX1c
+         4SUMehKCG/r/7SVM8ZdRXCIcJUTakiQ1q4ysFEECMAk9/yBEzrH5c08aD2gDFwfqkCaS
+         eSSb2zhaN9J5TfdKAXjANGDIQ7rq4BbBo6NZU6E0m8baoNJI8WrIUO6PtZfThfHX5NHI
+         vftJTa44DegI2EYcK5hDwVILdalCjaxBvRHMWKZsf+Fe8GOuv5c1XasPvpT7O9rt08x2
+         5T7w==
+X-Gm-Message-State: AOAM530hQsTgiSauTraGa1FT8VzyhzZ3F8SnO4/WAFy5YSM6hh65LgQ4
+        WF/P245jQcI1MNjbrt/TDfOaug==
+X-Google-Smtp-Source: ABdhPJxTh7cP71BM0wNQKXiwQQWB/aFE2IF1+kSUGzcor0Ru/l0caut/rbnDFos5mGZsKIk+FcmHuA==
+X-Received: by 2002:adf:d185:: with SMTP id v5mr5210677wrc.378.1631788696265;
+        Thu, 16 Sep 2021 03:38:16 -0700 (PDT)
+Received: from apalos.home (ppp-94-66-220-137.home.otenet.gr. [94.66.220.137])
+        by smtp.gmail.com with ESMTPSA id l10sm3237715wrg.50.2021.09.16.03.38.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Sep 2021 03:38:15 -0700 (PDT)
+Date:   Thu, 16 Sep 2021 13:38:12 +0300
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     Jesper Dangaard Brouer <jbrouer@redhat.com>, brouer@redhat.com,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linuxarm@openeuler.org,
+        hawk@kernel.org, jonathan.lemon@gmail.com, alobakin@pm.me,
+        willemb@google.com, cong.wang@bytedance.com, pabeni@redhat.com,
+        haokexin@gmail.com, nogikh@google.com, elver@google.com,
+        memxor@gmail.com, edumazet@google.com, dsahern@gmail.com
+Subject: Re: [Linuxarm] Re: [PATCH net-next v2 3/3] skbuff: keep track of pp
+ page when __skb_frag_ref() is called
+Message-ID: <YUMelDd16Aw8w5ZH@apalos.home>
+References: <20210914121114.28559-1-linyunsheng@huawei.com>
+ <20210914121114.28559-4-linyunsheng@huawei.com>
+ <CAKgT0Ud7NXpHghiPeGzRg=83jYAP1Dx75z3ZE0qV8mT0zNMDhA@mail.gmail.com>
+ <9467ec14-af34-bba4-1ece-6f5ea199ec97@huawei.com>
+ <YUHtf+lI8ktBdjsQ@apalos.home>
+ <0337e2f6-5428-2c75-71a5-6db31c60650a@redhat.com>
+ <fef7d148-95d6-4893-8924-1071ed43ff1b@huawei.com>
+ <YUMD2v7ffs1xAjaW@apalos.home>
+ <ac16cc82-8d98-6a2c-b0a6-7c186808c72c@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YUL6R5AH6WNxu5sH@hirez.programming.kicks-ass.net>
+In-Reply-To: <ac16cc82-8d98-6a2c-b0a6-7c186808c72c@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 16, 2021 at 10:03:19AM +0200, Peter Zijlstra wrote:
+On Thu, Sep 16, 2021 at 05:33:39PM +0800, Yunsheng Lin wrote:
+> On 2021/9/16 16:44, Ilias Apalodimas wrote:
+> >>>> appear if we try to pull in your patches on using page pool and recycling
+> > 
+> > [...]
+> > 
+> >>>> for Tx where TSO and skb_split are used?
+> >>
+> >> As my understanding, the problem might exists without tx recycling, because a
+> >> skb from wire would be passed down to the tcp stack and retransmited back to
+> >> the wire theoretically. As I am not able to setup a configuration to verify
+> >> and test it and the handling seems tricky, so I am targetting net-next branch
+> >> instead of net branch.
+> >>
+> >>>>
+> >>>> I'll be honest, when I came up with the recycling idea for page pool, I
+> >>>> never intended to support Tx.  I agree with Alexander here,  If people want
+> >>>> to use it on Tx and think there's value,  we might need to go back to the
+> >>>> drawing board and see what I've missed.  It's still early and there's a
+> >>>> handful of drivers using it,  so it will less painful now.
+> >>
+> >> Yes, we also need to prototype it to see if there is something missing in the
+> >> drawing board and how much improvement we get from that:)
+> >>
+> >>>
+> >>> I agree, page_pool is NOT designed or intended for TX support.
+> >>> E.g. it doesn't make sense to allocate a page_pool instance per socket, as the backing memory structures for page_pool are too much.
+> >>> As the number RX-queues are more limited it was deemed okay that we use page_pool per RX-queue, which sacrifice some memory to gain speed.
+> >>
+> >> As memtioned before, Tx recycling is based on page_pool instance per socket.
+> >> it shares the page_pool instance with rx.
+> >>
+> >> Anyway, based on feedback from edumazet and dsahern, I am still trying to
+> >> see if the page pool is meaningful for tx.
+> >>
+> >>>
+> >>>
+> >>>> The pp_recycle_bit was introduced to make the checking faster, instead of
+> >>>> getting stuff into cache and check the page signature.  If that ends up
+> >>>> being counterproductive, we could just replace the entire logic with the
+> >>>> frag count and the page signature, couldn't we?  In that case we should be
+> >>>> very cautious and measure potential regression on the standard path.
+> >>>
+> >>> +1
+> >>
+> >> I am not sure "pp_recycle_bit was introduced to make the checking faster" is a
+> >> valid. The size of "struct page" is only about 9 words(36/72 bytes), which is
+> >> mostly to be in the same cache line, and both standard path and recycle path have
+> >> been touching the "struct page", so it seems the overhead for checking signature
+> >> seems minimal.
+> >>
+> >> I agree that we need to be cautious and measure potential regression on the
+> >> standard path.
+> > 
+> > well pp_recycle is on the same cache line boundary with the head_frag we
+> > need to decide on recycling. After that we start checking page signatures
+> > etc,  which means the default release path remains mostly unaffected.  
+> > 
+> > I guess what you are saying here, is that 'struct page' is going to be
+> > accessed eventually by the default network path,  so there won't be any 
+> > noticeable performance hit?  What about the other usecases we have
+> 
+> Yes.
 
-> Oh, I'm an idiot... yes it tries to read regs the stack, but clearly
-> that won't work for the guard page.
+In that case you'd need to call virt_to_head_page() early though, get it
+and then compare the signature.   I guess that's avoidable by using 
+frag->bv_page for the fragments?
 
-OK, extended it to also cover task and IRQ stacks. get_stack_info()
-doesn't seem to know about SOFTIRQ stacks on 64bit, might have to look
-into that next.
+> 
+> > for pp_recycle right now?  __skb_frag_unref() in skb_shift() or
+> > skb_try_coalesce() (the latter can probably be removed tbh).
+> 
+> If we decide to go with accurate indicator of a pp page, we just need
+> to make sure network stack use __skb_frag_unref() and __skb_frag_ref()
+> to put and get a page frag, the indicator checking need only done in
+> __skb_frag_unref() and __skb_frag_ref(), so the skb_shift() and
+> skb_try_coalesce() should be fine too.
+> 
+> > 
+> >>
+> >> Another way is to use the bit 0 of frag->bv_page ptr to indicate if a frag
+> >> page is from page pool.
+> > 
+> > Instead of the 'struct page' signature?  And the pp_recycle bit will
+> > continue to exist?  
+> 
+> pp_recycle bit might only exist or is only used for the head page for the skb.
+> The bit 0 of frag->bv_page ptr can be used to indicate a frag page uniquely.
+> Doing a memcpying of shinfo or "*fragto = *fragfrom" automatically pass the
+> indicator to the new shinfo before doing a __skb_frag_ref(), and __skb_frag_ref()
+> will increment the _refcount or pp_frag_count according to the bit 0 of
+> frag->bv_page.
+> 
+> By the way, I also prototype the above idea, and it seems to work well too.
+> 
 
-Andy, what's the story with page_fault_oops(), according to the comment
-in exc_double_fault() actual stack overflows will always hit #DF.
+As long as no one else touches this, it's just another way of identifying a
+page_pool allocated page.  But are we gaining by that?  Not using
+virt_to_head_page() as stated above? But in that case you still need to
+keep pp_recycle around. 
 
----
-diff --git a/arch/x86/include/asm/cpu_entry_area.h b/arch/x86/include/asm/cpu_entry_area.h
-index 3d52b094850a..c4e92462c2b4 100644
---- a/arch/x86/include/asm/cpu_entry_area.h
-+++ b/arch/x86/include/asm/cpu_entry_area.h
-@@ -61,6 +61,9 @@ enum exception_stack_ordering {
- #define CEA_ESTACK_OFFS(st)					\
- 	offsetof(struct cea_exception_stacks, st## _stack)
- 
-+#define CEA_EGUARD_OFFS(st)					\
-+	offsetof(struct cea_exception_stacks, st## _stack_guard)
-+
- #define CEA_ESTACK_PAGES					\
- 	(sizeof(struct cea_exception_stacks) / PAGE_SIZE)
- 
-diff --git a/arch/x86/include/asm/stacktrace.h b/arch/x86/include/asm/stacktrace.h
-index f248eb2ac2d4..8ff346579330 100644
---- a/arch/x86/include/asm/stacktrace.h
-+++ b/arch/x86/include/asm/stacktrace.h
-@@ -14,13 +14,14 @@
- #include <asm/switch_to.h>
- 
- enum stack_type {
--	STACK_TYPE_UNKNOWN,
-+	STACK_TYPE_UNKNOWN = 0,
- 	STACK_TYPE_TASK,
- 	STACK_TYPE_IRQ,
- 	STACK_TYPE_SOFTIRQ,
- 	STACK_TYPE_ENTRY,
- 	STACK_TYPE_EXCEPTION,
- 	STACK_TYPE_EXCEPTION_LAST = STACK_TYPE_EXCEPTION + N_EXCEPTION_STACKS-1,
-+	STACK_TYPE_GUARD = 0x80,
- };
- 
- struct stack_info {
-@@ -31,6 +32,15 @@ struct stack_info {
- bool in_task_stack(unsigned long *stack, struct task_struct *task,
- 		   struct stack_info *info);
- 
-+static __always_inline bool in_stack_guard(void *addr, void *begin, void *end)
-+{
-+#ifdef CONFIG_VMAP_STACK
-+	if (addr > (begin - PAGE_SIZE))
-+		return true;
-+#endif
-+	return false;
-+}
-+
- bool in_entry_stack(unsigned long *stack, struct stack_info *info);
- 
- int get_stack_info(unsigned long *stack, struct task_struct *task,
-diff --git a/arch/x86/kernel/dumpstack.c b/arch/x86/kernel/dumpstack.c
-index ea4fe192189d..91b406fe2a39 100644
---- a/arch/x86/kernel/dumpstack.c
-+++ b/arch/x86/kernel/dumpstack.c
-@@ -32,12 +32,19 @@ static struct pt_regs exec_summary_regs;
- bool noinstr in_task_stack(unsigned long *stack, struct task_struct *task,
- 			   struct stack_info *info)
- {
--	unsigned long *begin = task_stack_page(task);
--	unsigned long *end   = task_stack_page(task) + THREAD_SIZE;
--
--	if (stack < begin || stack >= end)
-+	void *begin = task_stack_page(task);
-+	void *end   = begin + THREAD_SIZE;
-+	int type    = STACK_TYPE_TASK;
-+
-+	if ((void *)stack < begin || (void *)stack >= end) {
-+		if (in_stack_guard(stack, begin, end)) {
-+			type |= STACK_TYPE_GUARD;
-+			goto fill_info;
-+		}
- 		return false;
-+	}
- 
-+fill_info:
- 	info->type	= STACK_TYPE_TASK;
- 	info->begin	= begin;
- 	info->end	= end;
-@@ -50,14 +57,20 @@ bool noinstr in_task_stack(unsigned long *stack, struct task_struct *task,
- bool noinstr in_entry_stack(unsigned long *stack, struct stack_info *info)
- {
- 	struct entry_stack *ss = cpu_entry_stack(smp_processor_id());
--
-+	int type = STACK_TYPE_ENTRY;
- 	void *begin = ss;
- 	void *end = ss + 1;
- 
--	if ((void *)stack < begin || (void *)stack >= end)
-+	if ((void *)stack < begin || (void *)stack >= end) {
-+		if (in_stack_guard(stack, begin, end)) {
-+			type |= STACK_TYPE_GUARD;
-+			goto fill_info;
-+		}
- 		return false;
-+	}
- 
--	info->type	= STACK_TYPE_ENTRY;
-+fill_info:
-+	info->type	= type;
- 	info->begin	= begin;
- 	info->end	= end;
- 	info->next_sp	= NULL;
-diff --git a/arch/x86/kernel/dumpstack_64.c b/arch/x86/kernel/dumpstack_64.c
-index 5601b95944fa..3634bdf9ab36 100644
---- a/arch/x86/kernel/dumpstack_64.c
-+++ b/arch/x86/kernel/dumpstack_64.c
-@@ -32,9 +32,15 @@ const char *stack_type_name(enum stack_type type)
- {
- 	BUILD_BUG_ON(N_EXCEPTION_STACKS != 6);
- 
-+	if (type == STACK_TYPE_TASK)
-+		return "TASK";
-+
- 	if (type == STACK_TYPE_IRQ)
- 		return "IRQ";
- 
-+	if (type == STACK_TYPE_SOFTIRQ)
-+		return "SOFTIRQ";
-+
- 	if (type == STACK_TYPE_ENTRY) {
- 		/*
- 		 * On 64-bit, we have a generic entry stack that we
-@@ -63,6 +69,11 @@ struct estack_pages {
- };
- 
- #define EPAGERANGE(st)							\
-+	[PFN_DOWN(CEA_EGUARD_OFFS(st))] = {				\
-+		.offs	= CEA_EGUARD_OFFS(st),				\
-+		.size	= PAGE_SIZE,					\
-+		.type	= STACK_TYPE_GUARD +				\
-+			  STACK_TYPE_EXCEPTION + ESTACK_ ##st, },	\
- 	[PFN_DOWN(CEA_ESTACK_OFFS(st)) ...				\
- 	 PFN_DOWN(CEA_ESTACK_OFFS(st) + CEA_ESTACK_SIZE(st) - 1)] = {	\
- 		.offs	= CEA_ESTACK_OFFS(st),				\
-@@ -111,7 +122,7 @@ static __always_inline bool in_exception_stack(unsigned long *stack, struct stac
- 	k = (stk - begin) >> PAGE_SHIFT;
- 	/* Lookup the page descriptor */
- 	ep = &estack_pages[k];
--	/* Guard page? */
-+	/* unknown entry */
- 	if (!ep->size)
- 		return false;
- 
-@@ -122,7 +133,12 @@ static __always_inline bool in_exception_stack(unsigned long *stack, struct stac
- 	info->type	= ep->type;
- 	info->begin	= (unsigned long *)begin;
- 	info->end	= (unsigned long *)end;
--	info->next_sp	= (unsigned long *)regs->sp;
-+	info->next_sp	= NULL;
-+
-+	/* Can't read regs from a guard page. */
-+	if (!(ep->type & STACK_TYPE_GUARD))
-+		info->next_sp = (unsigned long *)regs->sp;
-+
- 	return true;
- }
- 
-@@ -130,6 +146,7 @@ static __always_inline bool in_irq_stack(unsigned long *stack, struct stack_info
- {
- 	unsigned long *end = (unsigned long *)this_cpu_read(hardirq_stack_ptr);
- 	unsigned long *begin;
-+	int type = STACK_TYPE_IRQ;
- 
- 	/*
- 	 * @end points directly to the top most stack entry to avoid a -8
-@@ -144,19 +161,27 @@ static __always_inline bool in_irq_stack(unsigned long *stack, struct stack_info
- 	 * final operation is 'popq %rsp' which means after that RSP points
- 	 * to the original stack and not to @end.
- 	 */
--	if (stack < begin || stack >= end)
-+	if (stack < begin || stack >= end) {
-+		if (in_stack_guard(stack, begin, end)) {
-+			type |= STACK_TYPE_GUARD;
-+			goto fill_info;
-+		}
- 		return false;
-+	}
- 
--	info->type	= STACK_TYPE_IRQ;
-+fill_info:
-+	info->type	= type;
- 	info->begin	= begin;
- 	info->end	= end;
-+	info->next_sp	= NULL;
- 
- 	/*
- 	 * The next stack pointer is stored at the top of the irq stack
- 	 * before switching to the irq stack. Actual stack entries are all
- 	 * below that.
- 	 */
--	info->next_sp = (unsigned long *)*(end - 1);
-+	if (!(type & STACK_TYPE_GUARD))
-+		info->next_sp = (unsigned long *)*(end - 1);
- 
- 	return true;
- }
-@@ -193,6 +218,9 @@ int get_stack_info(unsigned long *stack, struct task_struct *task,
- 	if (!get_stack_info_noinstr(stack, task, info))
- 		goto unknown;
- 
-+	if (info->type & STACK_TYPE_GUARD)
-+		goto unknown;
-+
- 	/*
- 	 * Make sure we don't iterate through any given stack more than once.
- 	 * If it comes up a second time then there's something wrong going on:
-diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
-index a58800973aed..80f6d8d735eb 100644
---- a/arch/x86/kernel/traps.c
-+++ b/arch/x86/kernel/traps.c
-@@ -353,6 +353,7 @@ DEFINE_IDTENTRY_DF(exc_double_fault)
- 
- #ifdef CONFIG_VMAP_STACK
- 	unsigned long address = read_cr2();
-+	struct stack_info info;
- #endif
- 
- #ifdef CONFIG_X86_ESPFIX64
-@@ -455,9 +456,11 @@ DEFINE_IDTENTRY_DF(exc_double_fault)
- 	 * stack even if the actual trigger for the double fault was
- 	 * something else.
- 	 */
--	if ((unsigned long)task_stack_page(tsk) - 1 - address < PAGE_SIZE) {
--		handle_stack_overflow("kernel stack overflow (double-fault)",
--				      regs, address);
-+	if (get_stack_info_noinstr((void *)address, current, &info) &&
-+	    info.type & STACK_TYPE_GUARD) {
-+		const char *name = stack_type_name(info.type & ~STACK_TYPE_GUARD);
-+		pr_emerg("BUG: %s stack guard hit at %p (stack is %p..%p)\n",
-+			 name, (void *)address, info.begin, info.end);
- 	}
- #endif
- 
-@@ -708,7 +711,9 @@ asmlinkage __visible noinstr struct pt_regs *vc_switch_off_ist(struct pt_regs *r
- 	sp    = regs->sp;
- 	stack = (unsigned long *)sp;
- 
--	if (!get_stack_info_noinstr(stack, current, &info) || info.type == STACK_TYPE_ENTRY ||
-+	if (!get_stack_info_noinstr(stack, current, &info) ||
-+	    info.type & STACK_TYPE_GUARD ||
-+	    info.type == STACK_TYPE_ENTRY ||
- 	    info.type >= STACK_TYPE_EXCEPTION_LAST)
- 		sp = __this_cpu_ist_top_va(VC2);
- 
+> > .
+> > Right now the 'naive' explanation on the recycling decision is something like:
+> > 
+> > if (pp_recycle) <--- recycling bit is set
+> >     (check page signature) <--- signature matches page pool
+> > 		(check fragment refcnt) <--- If frags are enabled and is the last consumer
+> > 			recycle
+> > 
+> > If we can proove the performance is unaffected when we eliminate the first if,
+> > then obviously we should remove it.  I'll try running that test here and see,
+> > but keep in mind I am only testing on an 1GB interface.  Any chance we can get 
+> > measurements on a beefier hardware using hns3 ?
+> 
+> Sure, I will try it.
+> As the kind of performance overhead is small, any performance testcase in mind?
+> 
+
+'eliminate the first if' wasn't accurate.  I meant switch the first if and
+check the struct page signature instead.  That would be the best solution
+imho.  We effectively have a single rule to check if a packet comes from
+page_pool or not.
+
+You can start by sending a lot of packets and dropping those immediately.
+That should put enough stress on the receive path and the allocators and it
+should give us a rough idea. 
+
+> > 
+> >>
+> >>>
+> >>>> But in general,  I'd be happier if we only had a simple logic in our
+> >>>> testing for the pages we have to recycle.  Debugging and understanding this
+> >>>> otherwise will end up being a mess.
+> >>>
+> >>>
+> > 
+> > [...]
+> > 
+> > Regards
+> > /Ilias
+> > .
+> > 
+
+Regards
+/Ilias
