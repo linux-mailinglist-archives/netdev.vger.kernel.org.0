@@ -2,146 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 92D5440D1E8
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 05:04:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36C8040D1FE
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 05:21:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234010AbhIPDGJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Sep 2021 23:06:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33668 "EHLO
+        id S234098AbhIPDW1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Sep 2021 23:22:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233961AbhIPDGF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 23:06:05 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1718CC061574;
-        Wed, 15 Sep 2021 20:04:46 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id c13-20020a17090a558d00b00198e6497a4fso6460126pji.4;
-        Wed, 15 Sep 2021 20:04:46 -0700 (PDT)
+        with ESMTP id S234037AbhIPDW0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 23:22:26 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C8D6C061574;
+        Wed, 15 Sep 2021 20:21:06 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id m21-20020a17090a859500b00197688449c4so3781017pjn.0;
+        Wed, 15 Sep 2021 20:21:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=MJCDqLgFxyEe5DTpyLISiR8Fy82cK2SzhVk5c7Mnf80=;
-        b=nVKLa1MOXE/k1Lte634to4bk7/chUbQco2uRRSY+SJ7MCJiMbyhnTymviK/7m2H7dy
-         4VFH4PKJc4F4wzvAuXyf+iwisxWBWCwiPCVuI9164J6AwX/i1MViq/YXYmgkdSr7wV3i
-         pjrvblbgnqd9Tl9S1mqeLF8h6D+aBe0TW7zTOu6kqkQCtsOy04VfxloZunxS6w667Mb/
-         +OFRANYHoyOt6fI1rqT4u7PzPj6rtQjThkFdEUtNxmxWtsDJr4gkDAjqxzSqR/RPDvxu
-         fvhM055Cx+WfKVtW4Kp5vKN8sbjC6I1drpJGGnoajNkeOb+2nOPb0EiPWRF0rJYPeVHh
-         931Q==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=F/KGT5A07ZPxIeschCSaV/SSgAUrLa/GKYhWvkN70OE=;
+        b=Is/B2At2nlNpxePAIDBsGyCCLNuIeTXCL7KDKJctcZo80Kwwq9E7cARoMLkPeu1FSV
+         WiVcaXqJdEczQ1UnOljbMkRyulmfWG3W4ix8gvGAbUg7Gv6bQIiUnbuYAC4k83Gu3Pbk
+         KgtlC/BPqibBXNL2BjcVx/hXlty3ZeCnwWBC/0Eay/ORWRlAWFAC0m4IbqJY1Nkk/NaW
+         cEfB0ZZyDU35XS8L7g9KDDsvJCLn4XqIdjKNDerm71Z0HqegZNhrm2GTZ9rWF1euaYp2
+         vqGUiq42y2JN/2CNlCWE//fxnvTU4yJGinP02JvanBxXh5mjMdx0SQaMcl6khFbel9M9
+         4cww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=MJCDqLgFxyEe5DTpyLISiR8Fy82cK2SzhVk5c7Mnf80=;
-        b=HCMSz100HwbNfmFJw2XZllurm7aqnd48ZL0dXc57EQIMR5/UgvIPrjtGc4h9bXNZqo
-         iclcDwgC/9aWc6poXA2GcCkJAe6r1AcooY32mg7ndx8e3zxrdbzbev4nsqzZfirkGM64
-         ZqbEe3GR21g6ptgoDsa5lFmfcnknjpF/ErI/3ylB3HC2rmm4t5FQpNVqPRR9mDyNtoal
-         Tq341N2m2S8FTNVRKSRrkO/Pp9+MtQX8/kkCUS0P2VoSHwuwJuRNsqeL5GI1dkYxV4Y/
-         4mvhV02CCc4PUtucB06be9GFnKGbN5NOguii0ZDYyWfgGwf/ReKbMezb0WeAU094eycn
-         VdfA==
-X-Gm-Message-State: AOAM5338TcLpNOsJ8I3zhVmw8gwtStn9swUd4bZj43xdCsevJD107gg5
-        737gIYlZ+LMdl5PDeLNal2P/UpAZdHHSPgkFcL6FMpntVUM=
-X-Google-Smtp-Source: ABdhPJwRXXuo5SasRkE41tqB8l58BMSy148MmmPvkGg0PON7cJHU4F6xyY8b6MHd4VTwMd9wppQfcnJOY4nQKT96KdI=
-X-Received: by 2002:a17:902:710e:b0:139:3bd:59b9 with SMTP id
- a14-20020a170902710e00b0013903bd59b9mr2553959pll.3.1631761485434; Wed, 15 Sep
- 2021 20:04:45 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210915050943.679062-1-memxor@gmail.com> <20210915050943.679062-4-memxor@gmail.com>
- <20210915161835.xipxa324own7s6ya@ast-mbp.dhcp.thefacebook.com> <20210915180626.a367fkhp2gb23yfb@apollo.localdomain>
-In-Reply-To: <20210915180626.a367fkhp2gb23yfb@apollo.localdomain>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=F/KGT5A07ZPxIeschCSaV/SSgAUrLa/GKYhWvkN70OE=;
+        b=uq5DIOTxoPi5jV0JiZ/aGNdYsXVoNAitRN2F+/yj7iWDMfCxLrbHcB8m+Xsfavt4kG
+         n3LpVkk18vxqrTYV43Y0xqI02/PqR7Igx2VBHpVveOdph4LRF3YllP4UoRhAT5jlAg+h
+         DKUr2tCwzgxgBRn0pQLC7IyCMMbZePAqp4WkrxajfwOHHhUHDoGkHWZyVEjz4loB3VfG
+         Vr2ZaKnRc3KM9H3aMmIMBoxLDk0twnY1VjggVHn2PhltcIbHots2Mm1FABvvUlMegKvz
+         gioDTHC7vfS3qelIpVu3X3nV8etYFHCTpnbWJ1Xo6Jv/z0aBJRGfyMn8lmfNFLM7XZ7p
+         D1DA==
+X-Gm-Message-State: AOAM533bWIElOUCdyswtE2iPvhM+ciQ1L1mFTpNDWtRyL2BlACYK83Px
+        nLuwD4M+2GxNeUdVcn1VEwg=
+X-Google-Smtp-Source: ABdhPJzoo7Rezucxzgz9BudH4gM7JhYkZASOUi8J0rW8TaqgMIXy5nkidlxZVymJimYnG5FF0NqA7g==
+X-Received: by 2002:a17:902:834b:b0:13a:347b:8a00 with SMTP id z11-20020a170902834b00b0013a347b8a00mr2778524pln.54.1631762466024;
+        Wed, 15 Sep 2021 20:21:06 -0700 (PDT)
+Received: from ast-mbp.thefacebook.com ([2620:10d:c090:400::5:860c])
+        by smtp.gmail.com with ESMTPSA id g19sm5638587pjl.25.2021.09.15.20.21.05
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 15 Sep 2021 20:21:05 -0700 (PDT)
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 15 Sep 2021 20:04:34 -0700
-Message-ID: <CAADnVQLVpQeejimgdgntYtqw+EN2df1=rcpfxyqygbaHhiddnA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 03/10] bpf: btf: Introduce helpers for dynamic
- BTF set registration
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+To:     davem@davemloft.net
+Cc:     daniel@iogearbox.net, kuba@kernel.org, andrii@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
+Subject: [PATCH bpf-next] bpf: Document BPF licensing.
+Date:   Wed, 15 Sep 2021 20:21:04 -0700
+Message-Id: <20210916032104.35822-1-alexei.starovoitov@gmail.com>
+X-Mailer: git-send-email 2.32.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 15, 2021 at 11:06 AM Kumar Kartikeya Dwivedi
-<memxor@gmail.com> wrote:
->
-> On Wed, Sep 15, 2021 at 09:48:35PM IST, Alexei Starovoitov wrote:
-> > On Wed, Sep 15, 2021 at 10:39:36AM +0530, Kumar Kartikeya Dwivedi wrote=
-:
-> > > This adds helpers for registering btf_id_set from modules and the
-> > > check_kfunc_call callback that can be used to look them up.
-> > >
-> > > With in kernel sets, the way this is supposed to work is, in kernel
-> > > callback looks up within the in-kernel kfunc whitelist, and then defe=
-rs
-> > > to the dynamic BTF set lookup if it doesn't find the BTF id. If there=
- is
-> > > no in-kernel BTF id set, this callback can be used directly.
-> > >
-> > > Also fix includes for btf.h and bpfptr.h so that they can included in
-> > > isolation. This is in preparation for their usage in tcp_bbr, tcp_cub=
-ic
-> > > and tcp_dctcp modules in the next patch.
-> > >
-> > > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> > > ---
-> > >  include/linux/bpfptr.h |  1 +
-> > >  include/linux/btf.h    | 32 ++++++++++++++++++++++++++
-> > >  kernel/bpf/btf.c       | 51 ++++++++++++++++++++++++++++++++++++++++=
-++
-> > >  3 files changed, 84 insertions(+)
-> > >
-> > > diff --git a/include/linux/bpfptr.h b/include/linux/bpfptr.h
-> > > index 546e27fc6d46..46e1757d06a3 100644
-> > > --- a/include/linux/bpfptr.h
-> > > +++ b/include/linux/bpfptr.h
-> > > @@ -3,6 +3,7 @@
-> > >  #ifndef _LINUX_BPFPTR_H
-> > >  #define _LINUX_BPFPTR_H
-> > >
-> > > +#include <linux/mm.h>
-> >
-> > Could you explain what this is for?
-> >
->
-> When e.g. tcp_bbr.c includes btf.h and btf_ids.h without this, it leads t=
-o this
-> error.
->
->                  from net/ipv4/tcp_bbr.c:59:
-> ./include/linux/bpfptr.h: In function =E2=80=98kvmemdup_bpfptr=E2=80=99:
-> ./include/linux/bpfptr.h:67:19: error: implicit declaration of function =
-=E2=80=98kvmalloc=E2=80=99;
->  did you mean =E2=80=98kmalloc=E2=80=99? [-Werror=3Dimplicit-function-dec=
-laration]
->    67 |         void *p =3D kvmalloc(len, GFP_USER | __GFP_NOWARN);
->       |                   ^~~~~~~~
->       |                   kmalloc
-> ./include/linux/bpfptr.h:67:19: warning: initialization of =E2=80=98void =
-*=E2=80=99 from =E2=80=98int=E2=80=99
->         makes pointer from integer without a cast [-Wint-conversion]
-> ./include/linux/bpfptr.h:72:17: error: implicit declaration of function =
-=E2=80=98kvfree=E2=80=99;
->         did you mean =E2=80=98kfree=E2=80=99? [-Werror=3Dimplicit-functio=
-n-declaration]
->    72 |                 kvfree(p);
->       |                 ^~~~~~
->       |                 kfree
+From: Alexei Starovoitov <ast@kernel.org>
 
-Interesting.
-It's because of kvmalloc in kvmemdup_bpfptr.
-Which is used in ___bpf_copy_key.
-Which is used in map_update_elem.
-And afair all maps enforce key_size < KMALLOC_MAX_SIZE.
-Not sure why kvmalloc was there.
-If it was kmalloc instead then
-#include <linux/slab.h>
-in linux/sockptr.h that is included by linux/bpfptr.h
-would have been enough.
-A food for thought.
+Document and clarify BPF licensing.
+
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Acked-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Joe Stringer <joe@cilium.io>
+Acked-by: Lorenz Bauer <lmb@cloudflare.com>
+Acked-by: Dave Thaler <dthaler@microsoft.com>
+---
+ Documentation/bpf/bpf_licensing.rst | 91 +++++++++++++++++++++++++++++
+ 1 file changed, 91 insertions(+)
+ create mode 100644 Documentation/bpf/bpf_licensing.rst
+
+diff --git a/Documentation/bpf/bpf_licensing.rst b/Documentation/bpf/bpf_licensing.rst
+new file mode 100644
+index 000000000000..62391923af07
+--- /dev/null
++++ b/Documentation/bpf/bpf_licensing.rst
+@@ -0,0 +1,91 @@
++=============
++BPF licensing
++=============
++
++Background
++==========
++
++* Classic BPF was BSD licensed
++
++"BPF" was originally introduced as BSD Packet Filter in
++http://www.tcpdump.org/papers/bpf-usenix93.pdf. The corresponding instruction
++set and its implementation came from BSD with BSD license. That original
++instruction set is now known as "classic BPF".
++
++However an instruction set is a specification for machine-language interaction,
++similar to a programming language.  It is not a code. Therefore, the
++application of a BSD license may be misleading in a certain context, as the
++instruction set may enjoy no copyright protection.
++
++* eBPF (extended BPF) instruction set continues to be BSD
++
++In 2014, the classic BPF instruction set was significantly extended. We
++typically refer to this instruction set as eBPF to disambiguate it from cBPF.
++The eBPF instruction set is still BSD licensed.
++
++Implementations of eBPF
++=======================
++
++Using the eBPF instruction set requires implementing code in both kernel space
++and user space.
++
++In Linux Kernel
++---------------
++
++The reference implementations of the eBPF interpreter and various just-in-time
++compilers are part of Linux and are GPLv2 licensed. The implementation of
++eBPF helper functions is also GPLv2 licensed. Interpreters, JITs, helpers,
++and verifiers are called eBPF runtime.
++
++In User Space
++-------------
++
++There are also implementations of eBPF runtime (interpreter, JITs, helper
++functions) under
++Apache2 (https://github.com/iovisor/ubpf),
++MIT (https://github.com/qmonnet/rbpf), and
++BSD (https://github.com/DPDK/dpdk/blob/main/lib/librte_bpf).
++
++In HW
++-----
++
++The HW can choose to execute eBPF instruction natively and provide eBPF runtime
++in HW or via the use of implementing firmware with a proprietary license.
++
++In other operating systems
++--------------------------
++
++Other kernels or user space implementations of eBPF instruction set and runtime
++can have proprietary licenses.
++
++Using BPF programs in the Linux kernel
++======================================
++
++Linux Kernel (while being GPLv2) allows linking of proprietary kernel modules
++under these rules:
++https://www.kernel.org/doc/html/latest/process/license-rules.html#id1
++When a kernel module is loaded, the linux kernel checks which functions it
++intends to use. If any function is marked as "GPL only," the corresponding
++module or program has to have GPL compatible license.
++
++Loading BPF program into the Linux kernel is similar to loading a kernel
++module. BPF is loaded at run time and not statically linked to the Linux
++kernel. BPF program loading follows the same license checking rules as kernel
++modules. BPF programs can be proprietary if they don't use "GPL only" BPF
++helper functions.
++
++Further, some BPF program types - Linux Security Modules (LSM) and TCP
++Congestion Control (struct_ops), as of Aug 2021 - are required to be GPL
++compatible even if they don't use "GPL only" helper functions directly. The
++registration step of LSM and TCP congestion control modules of the Linux
++kernel is done through EXPORT_SYMBOL_GPL kernel functions. In that sense LSM
++and struct_ops BPF programs are implicitly calling "GPL only" functions.
++The same restriction applies to BPF programs that call kernel functions
++directly via unstable interface also known as "kfunc".
++
++Packaging BPF programs with user space applications
++====================================================
++
++Generally, proprietary-licensed applications and GPL licensed BPF programs
++written for the Linux kernel in the same package can co-exist because they are
++separate executable processes. This applies to both cBPF and eBPF programs.
+-- 
+2.30.2
+
