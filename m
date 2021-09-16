@@ -2,94 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D02640DA43
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 14:46:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1621740DA82
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 15:00:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239640AbhIPMrz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 08:47:55 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:44078 "EHLO vps0.lunn.ch"
+        id S239792AbhIPNB3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 09:01:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55750 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230299AbhIPMry (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Sep 2021 08:47:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=blLTBJBUXDjrO3ZZ8TPo9N3rgru39vDBHZ72imqGbm0=; b=j+bY353POdkkFTi0Yg5Io/vtDW
-        KKNt6puNypRB+qwdof2rDeewxXt5LVRSu6Y7WQf+WGKf8w0xhvmfFWvRu1fTnT95SWTqbnXArBHV/
-        Of53Gj0Dt8qfoCHrQF2q0YLGadFHWJPRyKyx1xXE8AzWRNqbXv7dmiDDQVoc7TTS2734=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mQqma-006uH7-VD; Thu, 16 Sep 2021 14:46:28 +0200
-Date:   Thu, 16 Sep 2021 14:46:28 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michael Heimpold <mhei@heimpold.de>
-Cc:     Stefan Wahren <stefan.wahren@i2se.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Heimpold <michael.heimpold@in-tech.com>,
-        jimmy.shen@vertexcom.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH RFC 3/3] net: vertexcom: Add MSE102x SPI support
-Message-ID: <YUM8pAkt7kxD7owG@lunn.ch>
-References: <20210914151717.12232-1-stefan.wahren@i2se.com>
- <20210914151717.12232-4-stefan.wahren@i2se.com>
- <YUJi0cVawjyiteEx@lunn.ch>
- <20210916112618.Horde.UWH1AKpXpmAwqSTq8U1y-WN@www.mhei.heimpold.org>
+        id S239741AbhIPNB2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Sep 2021 09:01:28 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id CC5F860EE9;
+        Thu, 16 Sep 2021 13:00:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1631797207;
+        bh=b2pU57FhVLp5+sAxVdLdiB8G3NtaTNgb27tj1GNVBSU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=gfcfXUtFYwc/wLuaB+FiiOL32FOzDeL63kkn1u/vSuBHebXZRlYQSRvPeAqu1Gw8k
+         8epXIMgEbA87h4Fb1bntHb9XTlDxAv2QebBEPAWFDtA7uH6Orj0+GhOLHpVe2nPttR
+         NRp4gxc0M8O8Tf8uKCQbOfr9DMECMLbMPktX8un5eYK4EPDbIZ7btwu1HLJjcMasjS
+         8jFGgY0Q/1y2US2ZNLwGX/enwCqkfoXFCXppPfBf074iXGRw8Z8MvFA7fYOhmNEt5j
+         AMk206vIZzX9isSHM0BxMrrt/mDDxVzzGtd033cv7xj7mVOOznvvtaAfi3P30sS8Hq
+         U/iBe2LTwVb5A==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B77E960A9E;
+        Thu, 16 Sep 2021 13:00:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210916112618.Horde.UWH1AKpXpmAwqSTq8U1y-WN@www.mhei.heimpold.org>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v3] selftests: nci: replace unsigned int with int
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163179720774.29332.2952119753951803388.git-patchwork-notify@kernel.org>
+Date:   Thu, 16 Sep 2021 13:00:07 +0000
+References: <20210916122442.14732-1-wangxiang@cdjrlc.com>
+In-Reply-To: <20210916122442.14732-1-wangxiang@cdjrlc.com>
+To:     Xiang wangx <wangxiang@cdjrlc.com>
+Cc:     bongsu.jeon@samsung.com, shuah@kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 16, 2021 at 11:26:18AM +0000, Michael Heimpold wrote:
-> Hi Andrew,
+Hello:
+
+This patch was applied to netdev/net.git (refs/heads/master):
+
+On Thu, 16 Sep 2021 20:24:42 +0800 you wrote:
+> Should not use comparison of unsigned expressions < 0.
 > 
-> Zitat von Andrew Lunn <andrew@lunn.ch>:
+> Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
+> ---
 > 
-> > > +static int mse102x_probe_spi(struct spi_device *spi)
-> > > +{
-> > 
-> > ...
-> > 
-> > > +	netif_carrier_off(mse->ndev);
-> > > +	ndev->if_port = IF_PORT_10BASET;
-> > 
-> > That is not correct. Maybe you should add a IF_PORT_HOMEPLUG ?
+> Changes since v1
+> * Change commit log
 > 
-> Would a simple IF_PORT_HOMEPLUG be sufficient, or should it be
-> more precise as for Ethernet (10BASET, 100BASET...), e.g.
-> IF_PORT_HOMEPLUG_10
-> IF_PORT_HOMEPLUG_AV
-> IF_PORT_HOMEPLUG_AV2
-> IF_PORT_HOMEPLUG_GREENPHY
+> [...]
 
-It is an interesting question. I think the first thing to find out is,
-what in userspace actually uses this. If it is a deprecated tool, i
-would not spend the energy.
+Here is the summary with links:
+  - [v3] selftests: nci: replace unsigned int with int
+    https://git.kernel.org/netdev/net/c/98dc68f8b0c2
 
-Probably a better interface is ethtool get_link_ksettings, and
-set_link_ksettings.
-
-$ /sbin/ethtool enp3s0
-Settings for enp3s0:
-	Supported ports: [ TP	 MII ]
-	Supported link modes:   10baseT/Half 10baseT/Full
-	                        100baseT/Half 100baseT/Full
-	                        1000baseT/Full
-
-You can set supported ports to HomePlug, and supported link modes to
-10, AV, AV2, GREENPHY etc.
-
-Is there a negotiation mechanism where different homeplug devices can
-find out what they have in common and select a mode? That would be
-very similar to Ethernet autoneg, so you can make use of the other
-fields ethtool provides to show this information, etc.
-
-       Andrew
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
