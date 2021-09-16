@@ -2,60 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D983A40D1BD
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 04:44:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F30340D1BF
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 04:50:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233932AbhIPCqO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Sep 2021 22:46:14 -0400
-Received: from dkpb0ek.cn ([106.75.27.222]:40736 "EHLO dkpb0ek.cn"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233825AbhIPCqL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Sep 2021 22:46:11 -0400
-X-Greylist: delayed 531 seconds by postgrey-1.27 at vger.kernel.org; Wed, 15 Sep 2021 22:46:10 EDT
-Received: from wuewbseyj (unknown [122.226.180.195])
-        by dkpb0ek.cn (Postfix) with ESMTPA id B2F1B335D7FB
-        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 10:35:46 +0800 (CST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dkpb0ek.cn; s=default;
-        t=1631759746;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=jL9s0ENlwEJaSxwBhwikFy1Q5mLZz1Y6eLsPuZ95dMY=;
-        b=PPj7lSFo3Z0pIaBZkVuMXrkuHKFY/prvZjOMMWDuchxTnFwVE+Syd1c8/oIjdP/LzJou4O
-        TE44u+vxMJwg6vSsMGSCyb/E6lFUIBgyGfojFRnnewXfGoKLZh0fcZROn8U0l4mtTq0i7E
-        VoPcXrAMAVMnPnA282SXTGhmIoxLYCA=
-Message-ID: <20210916103546716445@dkpb0ek.cn>
-From:   =?utf-8?B?77yl77y077yj44K144O844OT44K544Gu5LiA5pmC5YGc5q2i?= 
-        <etc@dkpb0ek.cn>
-To:     <netdev@vger.kernel.org>
-Subject: =?utf-8?B?RVRD44K144O844OT44K544KS44GU5Yip55So44Gu44GK5a6i5qeY?=
-Date:   Thu, 16 Sep 2021 10:35:36 +0800
+        id S233961AbhIPCv5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Sep 2021 22:51:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58774 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233827AbhIPCv5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 22:51:57 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA615C061574
+        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 19:50:37 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id g14so4601036pfm.1
+        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 19:50:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=3gWv6A3N5Yoof/ABF4bujeBdmvTFTrxpZ3ifZ7Z7xsk=;
+        b=hOaKMvo1/kiv6cwd+a/HUqfJVfZUpygDQMkuaQaPCr8xgggvoxG9W40HCfpb0Dca1R
+         F4Twq+CxnURmX3R11GkAX0nUXSctb6t/n955g3uVO1rpAM9c+15hDy8k4dfcI6ypMEmR
+         8U0TsNriQE2ZXQ+LtPCTxCkpV9k3oHV6e7iaNJggYl9HWb/V5qzCUJI9K1Kv1hQHeNW/
+         EaBO+w6Lu5xVoZLOGZYVn99lk+qpzl5A44jWcAOf2AK0DcUmPc5Zs8inZ0393tm5/YM5
+         Dlk7J0QJGjossHqDp5gqM7RXkVsyhGxIhNW+3cCoD0E5W0pnkzgsdcOoGi+sDk5xjSK8
+         1uYQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=3gWv6A3N5Yoof/ABF4bujeBdmvTFTrxpZ3ifZ7Z7xsk=;
+        b=1C0rpT9vdjR48brYPH+mny11TOmtpLaoRz7BLm3D+EgFhwc48huAA4uHaVGFARKgeM
+         sKtAok2Y2y4UWuoYOhOBBXi84zEbPlqM6DGhy1QzGMPwUKzZ7NdnDRFx1uqDoUQJHhyl
+         J/StYczYcuHKsD11QcJbgq8REL5jAgETVIKh5e/hiXRZF+OpVsZnPssnbOG4LMfhtCDe
+         2vVOPCGrsV8XiABkuJBeGmbDJ3LQHyFojVdNZmzZuIKw/KYyXkr8YymFSwX5AU6of3Jp
+         DxYg0N8cmXL+vQFw0EiIF7z6b6O8zzzEHkVfK/F/nADM3LRQmWDn9GP3nQKZvJPAkhe2
+         nUmQ==
+X-Gm-Message-State: AOAM532w6DU/nToHeT69L99eET3Sa/Gxds15uNnXyeogXv0xv9y9XQj3
+        Or2uYey/OVPEP228gWatRCClcA==
+X-Google-Smtp-Source: ABdhPJxV8+ZrX5+vnJALG+G80q/GKoPLRMJuxKfW8NGaZHPOiz8uPoILCwbdg4s4drVHgVBGmqkbUA==
+X-Received: by 2002:a63:720d:: with SMTP id n13mr2816612pgc.470.1631760637066;
+        Wed, 15 Sep 2021 19:50:37 -0700 (PDT)
+Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
+        by smtp.gmail.com with ESMTPSA id b7sm1187467pgs.64.2021.09.15.19.50.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Sep 2021 19:50:36 -0700 (PDT)
+Date:   Wed, 15 Sep 2021 19:50:34 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] netlink: Remove extra brackets of nla_for_each_attr()
+Message-ID: <20210915195034.280bd610@hermes.local>
+In-Reply-To: <1631758028-3805500-1-git-send-email-jiasheng@iscas.ac.cn>
+References: <1631758028-3805500-1-git-send-email-jiasheng@iscas.ac.cn>
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="utf-8"
-Content-Transfer-Encoding: base64
-X-mailer: Wcdfhewgm 4
-X-Spam: Yes
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RVRD44K144O844OT44K544KS44GU5Yip55So44Gu44GK5a6i5qeYOg0KDQpFVEPjgrXjg7zjg5Pj
-grnjga/nhKHlirnjgavjgarjgorjgb7jgZfjgZ/jgIINCuW8leOBjee2muOBjeOCteODvOODk+OC
-ueOCkuOBlOWIqeeUqOOBhOOBn+OBoOOBjeOBn+OBhOWgtOWQiOOBr+OAgeS4i+iomOODquODs+OC
-r+OCiOOCiuips+e0sOOCkuOBlOeiuuiqjeOBj+OBoOOBleOBhOOAgg0KDQrkuIvoqJjjga7mjqXn
-tprjgYvjgonlgZzmraLljp/lm6DjgpLnorroqo3jgZfjgabjgY/jgaDjgZXjgYQNCg0KaHR0cHM6
-Ly9ldGMtbWVpc2FpLmpwLmZuLWluZm8udG9wLw0KDQoo55u05o6l44Ki44Kv44K744K544Gn44GN
-44Gq44GE5aC05ZCI44Gv44CB5omL5YuV44Gn44OW44Op44Km44K244Gr44Kz44OU44O844GX44Gm
-6ZaL44GE44Gm44GP44Gg44GV44GEKQ0KDQrigLvjgZPjga7jg6Hjg7zjg6vjga/pgIHkv6HlsILn
-lKjjgafjgZnjgIINCuOAgOOBk+OBruOCouODieODrOOCueOBq+mAgeS/oeOBhOOBn+OBoOOBhOOB
-puOCgui/lOS/oeOBhOOBn+OBl+OBi+OBreOBvuOBmeOBruOBp+OAgeOBguOCieOBi+OBmOOCgeOB
-lOS6huaJv+mhmOOBhOOBvuOBmeOAgg0K4oC744Gq44GK44CB44GU5LiN5piO44Gq54K544Gr44Gk
-44GN44G+44GX44Gm44Gv44CB44GK5omL5pWw44Gn44GZ44GM44CBDQogIEVUQ+OCteODvOODk+OC
-ueS6i+WLmeWxgOOBq+OBiuWVj+OBhOWQiOOCj+OBm+OBj+OBoOOBleOBhOOAgg0KDQrilqBFVEPl
-iKnnlKjnhafkvJrjgrXjg7zjg5Pjgrnkuovli5nlsYANCuW5tOS4reeEoeS8keOAgDk6MDDvvZ4x
-ODowMA0K44OK44OT44OA44Kk44Ok44Or44CAMDU3MC0wMTAxMzkNCu+8iOODiuODk+ODgOOCpOOD
-pOODq+OBjOOBlOWIqeeUqOOBhOOBn+OBoOOBkeOBquOBhOOBiuWuouOBleOBvuOAgDA0NS03NDQt
-MTM3Mu+8iQ0KMDQ1LTc0NC0zMTANCg==
+On Thu, 16 Sep 2021 02:07:08 +0000
+Jiasheng Jiang <jiasheng@iscas.ac.cn> wrote:
 
+> It's obvious that '&(rem)' has unneeded brackets.
+> Therefore it's better to remove them.
+> 
+> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+> ---
+>  include/net/netlink.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/include/net/netlink.h b/include/net/netlink.h
+> index 1ceec51..5822e0d 100644
+> --- a/include/net/netlink.h
+> +++ b/include/net/netlink.h
+> @@ -1920,7 +1920,7 @@ static inline int nla_total_size_64bit(int payload)
+>  #define nla_for_each_attr(pos, head, len, rem) \
+>  	for (pos = head, rem = len; \
+>  	     nla_ok(pos, rem); \
+> -	     pos = nla_next(pos, &(rem)))
+> +	     pos = nla_next(pos, &rem))
+>  
+>  /**
+>   * nla_for_each_nested - iterate over nested attributes
 
+No.
+
+nla_for_each_attr is a macro and in a macro, there should be
+added parenthesis around any use of macro argument to prevent
+unintended side effects.
