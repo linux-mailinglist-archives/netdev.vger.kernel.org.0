@@ -2,172 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C7B740ECE4
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 23:48:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1658840ED48
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 00:20:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234236AbhIPVtY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 17:49:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35880 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240080AbhIPVtT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 17:49:19 -0400
-Received: from mail-vs1-xe30.google.com (mail-vs1-xe30.google.com [IPv6:2607:f8b0:4864:20::e30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8059DC061756
-        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 14:47:58 -0700 (PDT)
-Received: by mail-vs1-xe30.google.com with SMTP id p24so7609283vsg.0
-        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 14:47:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oA9LctENkBJ5sJNMua/y+6EbzvM+JMZ89gyKxI3VTHU=;
-        b=WoHuXDGahRZtYWBxAbVUP7TGVjMj/Wp+LQXq2bh7gzPK1lWLgWv9vqB5fyDHIPaARJ
-         Gh8tznd9tebH6LQi0S+VDgN2zXeaGY6Pei5p5wc3PelpRcrS1V7xNSFhLdvuLVoBu27R
-         Unx+ZLu8oC8FrN0FbWdUfeBY4gqlvN+OrvuOWAnMUophLVgOsTH6AoB51TcDrOabMeXR
-         zNQhYW+0nozKjh8PaR+6pYoqsIaCY+R7cS9cQtSmygHPkfD6Riq2O9yP8A6EElv26NJN
-         Adt/PAnJ2nkya337SbYULrhLaqjI9QN9GhWBOp43Sb4k7QkiQdRk/AYkHN8RnrP+r9KB
-         97Lg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oA9LctENkBJ5sJNMua/y+6EbzvM+JMZ89gyKxI3VTHU=;
-        b=n7mkTGmqRmJWu0eTAxZiI/juiVhUF8j89+1+4gBxcFh6c+FPn566XWh0S8W0GLaoTZ
-         +gVdoKZ0zdBDGOb1Tz1fEH2OJQr7AArW0T17xiMgC+FRqDEAoPYjKd4+pIn8mLuxpiy8
-         4syN2y9QAbN0qTm8p7kEfGaB4GQBV1y0sf/K0NiSfa7LO3ket2D7bpR9ayV5NuhZuEHv
-         AWGZvaWzX9MOUy1Op4+FSoUps1TDxeP3E52+a5KEKPKLJlEWd+ndhRem/j78pbyz3SPT
-         IuNKID4ePiEfJHlhdfIR+TqsUCBTEVn0bZ+OD9H3ZoLQpdWSbNSWmG5WoYZ9B1LpLCez
-         Krbg==
-X-Gm-Message-State: AOAM5325wSxpH3Y1PiG2ka22jHQ0fusje9vNO8zLMIuiUke8bTjQdPgQ
-        6dl67qxn+9/LBVyzPnDi+oAhYsAPMzacFKbbNivAlQ==
-X-Google-Smtp-Source: ABdhPJy210uAg/0ElKSM5o2KzK/AB+uWjGR8obPN/GF0YlN0llznZJQ/7QI6Segiv7lHOhoykDaF0GGDsZL67zk48NU=
-X-Received: by 2002:a67:f98d:: with SMTP id b13mr6552807vsq.58.1631828877519;
- Thu, 16 Sep 2021 14:47:57 -0700 (PDT)
+        id S240984AbhIPWV1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 18:21:27 -0400
+Received: from server.eikelenboom.it ([91.121.65.215]:39750 "EHLO
+        server.eikelenboom.it" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240961AbhIPWVY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 18:21:24 -0400
+X-Greylist: delayed 1871 seconds by postgrey-1.27 at vger.kernel.org; Thu, 16 Sep 2021 18:21:24 EDT
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=eikelenboom.it; s=20180706; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:Subject:From:References:Cc:To:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=+kmogzI7kwhnNwR3x3lgp5G8pQBmKvDxMAVeBzIgThY=; b=HzjMEh1Y5BxK04vXaYCv4o0Ryw
+        AdEqAi5XN3Zw1SQnlpjMHhQawsYbhR4RISsinSFbSgJ789gyo0C0b9fZP9utaDIGaMp4KqojWkoIl
+        RsBM5x1YMbDNG+QkRZ5ctr0ufXOPGTMK42vjt8W5MAL/Ux1fbt/wMhflQwqziHIFr6/k=;
+Received: from 76-24-144-85.ftth.glasoperator.nl ([85.144.24.76]:55038 helo=[172.16.1.50])
+        by server.eikelenboom.it with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.92)
+        (envelope-from <sander@eikelenboom.it>)
+        id 1mQzFN-0005CU-QZ; Thu, 16 Sep 2021 23:48:45 +0200
+To:     paul@xen.org, Jan Beulich <jbeulich@suse.com>, Wei Liu <wl@xen.org>
+Cc:     "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <4dd5b8ec-a255-7ab1-6dbf-52705acd6d62@suse.com>
+ <67bc0728-761b-c3dd-bdd5-1a850ff79fbb@xen.org>
+ <76c94541-21a8-7ae5-c4c4-48552f16c3fd@suse.com>
+ <17e50fb5-31f7-60a5-1eec-10d18a40ad9a@xen.org>
+ <57580966-3880-9e59-5d82-e1de9006aa0c@suse.com>
+ <a26c1ecd-e303-3138-eb7e-96f0203ca888@xen.org>
+ <1a522244-4be8-5e33-77c7-4ea5cf130335@suse.com>
+ <9d27a3eb-1d50-64bb-8785-81de1eef3102@suse.com>
+ <d4f381e9-6698-3339-1d17-15e3abc71d06@suse.com>
+ <0dff83ff-629a-7179-9fef-77bd1fbf3d09@xen.org>
+From:   Sander Eikelenboom <sander@eikelenboom.it>
+Subject: =?UTF-8?Q?Re=3a_Ping=c2=b2=3a_=5bPATCH=5d_xen-netback=3a_correct_su?=
+ =?UTF-8?Q?ccess/error_reporting_for_the_SKB-with-fraglist_case?=
+Message-ID: <5a8c1f28-eefb-87e2-998b-7cbfb0f0b8dd@eikelenboom.it>
+Date:   Thu, 16 Sep 2021 23:48:45 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-References: <20210915173758.2608988-1-weiwan@google.com> <4d9952e8-040b-1bde-51a4-9687d6adb320@gmail.com>
-In-Reply-To: <4d9952e8-040b-1bde-51a4-9687d6adb320@gmail.com>
-From:   Wei Wang <weiwan@google.com>
-Date:   Thu, 16 Sep 2021 14:47:46 -0700
-Message-ID: <CAEA6p_CE_hnEm3VcrLkd87K_dUifJ68aDjS-FTG4aeZY3rsGOA@mail.gmail.com>
-Subject: Re: [patch] send.2: Add MSG_FASTOPEN flag
-To:     "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
-Cc:     Michael Kerrisk <mtk.manpages@gmail.com>, netdev@vger.kernel.org,
-        Yuchung Cheng <ycheng@google.com>,
-        Eric Dumazet <edumazet@google.com>, linux-man@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <0dff83ff-629a-7179-9fef-77bd1fbf3d09@xen.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 15, 2021 at 1:14 PM Alejandro Colomar (man-pages)
-<alx.manpages@gmail.com> wrote:
->
-> Hello, Wei!
->
-> On 9/15/21 7:37 PM, Wei Wang wrote:
-> > MSG_FASTOPEN flag is available since Linux 3.7. Add detailed description
-> > in the manpage according to RFC7413.
-> >
-> > Signed-off-by: Wei Wang <weiwan@google.com>
-> > Reviewed-by: Yuchung Cheng <ycheng@google.com>
-> > Reviewed-by: Eric Dumazet <edumazet@google.com>
-> > ---
-> >   man2/send.2 | 27 +++++++++++++++++++++++++++
-> >   1 file changed, 27 insertions(+)
-> >
-> > diff --git a/man2/send.2 b/man2/send.2
-> > index fd28fed90..a40ae6214 100644
-> > --- a/man2/send.2
-> > +++ b/man2/send.2
-> > @@ -252,6 +252,33 @@ data on sockets that support this notion (e.g., of type
-> >   the underlying protocol must also support
-> >   .I out-of-band
-> >   data.
-> > +.TP
-> > +.BR MSG_FASTOPEN " (since Linux 3.7)"
-> > +Attempts TCP Fast Open (RFC7413) and sends data in the SYN like a
-> > +combination of
-> > +.BR connect (2)
-> > +and
-> > +.BR write (2)
->
-> You should merge the comma with the above, to avoid an unwanted space:
->
-> .BR write (2),
->
-> > +, by performing an implicit
-> > +.BR connect (2)
-> > +operation. It blocks until the data is buffered and the handshake
->
-> Please use semantic newlines.  See man-pages(7):
->
->     Use semantic newlines
->         In the source of a manual page,  new  sentences  should  be
->         started  on  new  lines, and long sentences should be split
->         into lines at clause breaks  (commas,  semicolons,  colons,
->         and  so on).  This convention, sometimes known as "semantic
->         newlines", makes it easier to see the  effect  of  patches,
->         which often operate at the level of individual sentences or
->         sentence clauses.
->
->
-> This is especially important after a period, since groff(1) will usually
-> put 2 spaces after it, but if you hardcode it like above, it will only
-> print 1 space.
->
->
-> > +has completed.
-> > +For a non-blocking socket, it returns the number of bytes buffered
-> > +and sent in the SYN packet. If the cookie is not available locally,
-> > +it returns
-> > +.B EINPROGRESS
->
-> .BR EINPROGRESS ,
->
-> > +, and sends a SYN with a Fast Open cookie request automatically.
-> > +The caller needs to write the data again when the socket is connected.
-> > +On errors, it returns the same errno as
->
-> errno should be highlighted:
->
-> .I errno
->
-> Also, errno is set, not returned (as far as user space is concerned); so
-> something along the lines of "errno is set by connect(2)" or "it can
-> fail for the same reasons that connect(2) can".  Michael probably knows
-> if there's a typical wording for this in the current manual pages, to
-> add some consistency.
->
-> BTW, should anything be added to the ERRORS section?
->
-> > +.BR connect (2) > +if the handshake fails. This flag requires enabling TCP Fast Open
-> > +client support on sysctl net.ipv4.tcp_fastopen.
->
-> net.ipv4.tcp_fastopen should be highlighted:
->
-> .IR net.ipv4.tcp_fastopen .
->
-> > +
->
-> Also from man-pages(7):
->
->     Formatting conventions (general)
->         Paragraphs should be separated by suitable markers (usually
->         either .PP or .IP).  Do not separate paragraphs using blank
->         lines, as this results in poor  rendering  in  some  output
->         formats (such as PostScript and PDF).
->
->
-> Thanks!
->
-> Alex
+On 16/09/2021 20:34, Paul Durrant wrote:
+> On 16/09/2021 16:45, Jan Beulich wrote:
+>> On 15.07.2021 10:58, Jan Beulich wrote:
+>>> On 20.05.2021 13:46, Jan Beulich wrote:
+>>>> On 25.02.2021 17:23, Paul Durrant wrote:
+>>>>> On 25/02/2021 14:00, Jan Beulich wrote:
+>>>>>> On 25.02.2021 13:11, Paul Durrant wrote:
+>>>>>>> On 25/02/2021 07:33, Jan Beulich wrote:
+>>>>>>>> On 24.02.2021 17:39, Paul Durrant wrote:
+>>>>>>>>> On 23/02/2021 16:29, Jan Beulich wrote:
+>>>>>>>>>> When re-entering the main loop of xenvif_tx_check_gop() a 2nd time, the
+>>>>>>>>>> special considerations for the head of the SKB no longer apply. Don't
+>>>>>>>>>> mistakenly report ERROR to the frontend for the first entry in the list,
+>>>>>>>>>> even if - from all I can tell - this shouldn't matter much as the overall
+>>>>>>>>>> transmit will need to be considered failed anyway.
+>>>>>>>>>>
+>>>>>>>>>> Signed-off-by: Jan Beulich <jbeulich@suse.com>
+>>>>>>>>>>
+>>>>>>>>>> --- a/drivers/net/xen-netback/netback.c
+>>>>>>>>>> +++ b/drivers/net/xen-netback/netback.c
+>>>>>>>>>> @@ -499,7 +499,7 @@ check_frags:
+>>>>>>>>>>       				 * the header's copy failed, and they are
+>>>>>>>>>>       				 * sharing a slot, send an error
+>>>>>>>>>>       				 */
+>>>>>>>>>> -				if (i == 0 && sharedslot)
+>>>>>>>>>> +				if (i == 0 && !first_shinfo && sharedslot)
+>>>>>>>>>>       					xenvif_idx_release(queue, pending_idx,
+>>>>>>>>>>       							   XEN_NETIF_RSP_ERROR);
+>>>>>>>>>>       				else
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> I think this will DTRT, but to my mind it would make more sense to clear
+>>>>>>>>> 'sharedslot' before the 'goto check_frags' at the bottom of the function.
+>>>>>>>>
+>>>>>>>> That was my initial idea as well, but
+>>>>>>>> - I think it is for a reason that the variable is "const".
+>>>>>>>> - There is another use of it which would then instead need further
+>>>>>>>>       amending (and which I believe is at least part of the reason for
+>>>>>>>>       the variable to be "const").
+>>>>>>>>
+>>>>>>>
+>>>>>>> Oh, yes. But now that I look again, don't you want:
+>>>>>>>
+>>>>>>> if (i == 0 && first_shinfo && sharedslot)
+>>>>>>>
+>>>>>>> ? (i.e no '!')
+>>>>>>>
+>>>>>>> The comment states that the error should be indicated when the first
+>>>>>>> frag contains the header in the case that the map succeeded but the
+>>>>>>> prior copy from the same ref failed. This can only possibly be the case
+>>>>>>> if this is the 'first_shinfo'
+>>>>>>
+>>>>>> I don't think so, no - there's a difference between "first frag"
+>>>>>> (at which point first_shinfo is NULL) and first frag list entry
+>>>>>> (at which point first_shinfo is non-NULL).
+>>>>>
+>>>>> Yes, I realise I got it backwards. Confusing name but the comment above
+>>>>> its declaration does explain.
+>>>>>
+>>>>>>
+>>>>>>> (which is why I still think it is safe to unconst 'sharedslot' and
+>>>>>>> clear it).
+>>>>>>
+>>>>>> And "no" here as well - this piece of code
+>>>>>>
+>>>>>> 		/* First error: if the header haven't shared a slot with the
+>>>>>> 		 * first frag, release it as well.
+>>>>>> 		 */
+>>>>>> 		if (!sharedslot)
+>>>>>> 			xenvif_idx_release(queue,
+>>>>>> 					   XENVIF_TX_CB(skb)->pending_idx,
+>>>>>> 					   XEN_NETIF_RSP_OKAY);
+>>>>>>
+>>>>>> specifically requires sharedslot to have the value that was
+>>>>>> assigned to it at the start of the function (this property
+>>>>>> doesn't go away when switching from fragments to frag list).
+>>>>>> Note also how it uses XENVIF_TX_CB(skb)->pending_idx, i.e. the
+>>>>>> value the local variable pending_idx was set from at the start
+>>>>>> of the function.
+>>>>>>
+>>>>>
+>>>>> True, we do have to deal with freeing up the header if the first map
+>>>>> error comes on the frag list.
+>>>>>
+>>>>> Reviewed-by: Paul Durrant <paul@xen.org>
+>>>>
+>>>> Since I've not seen this go into 5.13-rc, may I ask what the disposition
+>>>> of this is?
+>>>
+>>> I can't seem to spot this in 5.14-rc either. I have to admit I'm
+>>> increasingly puzzled ...
+>>
+>> Another two months (and another release) later and still nothing. Am
+>> I doing something wrong? Am I wrongly assuming that maintainers would
+>> push such changes up the chain?
+>>
+> 
+> It has my R-b so it ought to go in via netdev AFAICT.
+> 
+>     Paul
 
-Thanks Alex! Will address those and send out v2.
+Could it be the missing "net" or "net-next" designation in the subject 
+[1] which seems to be used and important within their patchwork 
+semi-automated workflow ?
 
->
->
->
-> --
-> Alejandro Colomar
-> Linux man-pages comaintainer; https://www.kernel.org/doc/man-pages/
-> http://www.alejandro-colomar.es/
+--
+Sander
+
+[1] 
+https://www.kernel.org/doc/html/latest/networking/netdev-FAQ.html#how-do-i-indicate-which-tree-net-vs-net-next-my-patch-should-be-in
