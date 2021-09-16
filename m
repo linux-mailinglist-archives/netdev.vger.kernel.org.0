@@ -2,39 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14F4C40DC7D
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 16:11:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE98440DCEF
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 16:36:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238289AbhIPOMh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 10:12:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52144 "EHLO mail.kernel.org"
+        id S236152AbhIPOiC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 10:38:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58252 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238063AbhIPOMh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Sep 2021 10:12:37 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6D8F361056;
-        Thu, 16 Sep 2021 14:11:16 +0000 (UTC)
+        id S235955AbhIPOiB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Sep 2021 10:38:01 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0BF9061164;
+        Thu, 16 Sep 2021 14:36:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631801476;
-        bh=zRKM9ywgNPfShQPgTqpbqd7+yg4RwBKPi0Wl+h62Wsg=;
+        s=k20201202; t=1631803001;
+        bh=Qqm3TnW06OUx8Ms7O6IvNEY02BAkvJWTijFgoy80DEE=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=aUk3hETcCCNBuwI9m8JCpw5R+ZEcEwCk4ihMMajLHCccmwpXzpj/9O0RkW0TxnF2J
-         Q3ENSDNsHEpfqE4pGy8lEmiGAs32rm1w+DGOWxWGDHNzrS6dRMEKz6/GOJ/2mbv/yg
-         yco8whsKWIKc1LNEdquLtI6H5r9geLJ6ned10Tv0yQujWTKMauWdeZT3xyJmEmdRst
-         6/8Zhq/eWxkdMdZEaOTkuETZil83P7RKGEjGwJDmZRLrlv2n2uqx8Z+TXzJRR8FRYM
-         uHWU+nRoDvXKl4NGc6//q8E+pNFMrKpNGiAJ7Qu34SnVJJwds7aDVa5HUAOukk2K3m
-         HcTUjt4kCJsFg==
-Date:   Thu, 16 Sep 2021 07:11:15 -0700
+        b=i2dYB1Q/8dDVkoHSuQjVDxUoB0+X6m3HY6uMVbtTI2Rd72glxkzVfk3PFP1mnM5c8
+         NTrarVJzkGHRnxpPkfjXQKatE78vXH5MWvJ8VTbkU9OD9WijEp2dWwPQW932a8yv2t
+         WnazG6f/eLOmyjO0/N3zULc1ZQ6V7lSznpUrrsPyQtfsowfUGvML4kNO8vFB7lUWLp
+         be38ebWGA4DZ6IGJm9nPZzZljRwvhdWY2m31EB1Iyhnbu3sPEEXMooE0FGD4ZZlvft
+         w9w2sKTEClRhg9INYp1Sjpryfxavp4Wza4KytogJ2eoz++8RaQGJzo2ZYJxkSH69+z
+         ZxcuGvUk367QQ==
+Date:   Thu, 16 Sep 2021 07:36:40 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@nvidia.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] devlink: Delete not-used devlink APIs
-Message-ID: <20210916071115.09cfc02a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <YUNMAi0Qjj5Dxiiw@unreal>
-References: <a45674a8cb1c1e0133811d95756357b787673e52.1631788678.git.leonro@nvidia.com>
-        <20210916063318.7275cadf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YUNMAi0Qjj5Dxiiw@unreal>
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     pshelar@ovn.org, davem@davemloft.net, netdev@vger.kernel.org,
+        dev@openvswitch.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] openvswitch: Fix condition check by using nla_ok()
+Message-ID: <20210916073640.7e87718a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1631756603-3706451-1-git-send-email-jiasheng@iscas.ac.cn>
+References: <1631756603-3706451-1-git-send-email-jiasheng@iscas.ac.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -42,31 +39,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 16 Sep 2021 16:52:02 +0300 Leon Romanovsky wrote:
-> > The port_param functions are "symmetric" with the global param 
-> > ones. Removing them makes the API look somewhat incomplete.  
+On Thu, 16 Sep 2021 01:43:23 +0000 Jiasheng Jiang wrote:
+> Just using 'rem > 0' might be unsafe, so it's better
+> to use the nla_ok() instead.
+> Because we can see from the nla_next() that
+> '*remaining' might be smaller than 'totlen'. And nla_ok()
+> will avoid it happening.
 > 
-> There is no value in having "complete" API that no one uses.
+> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-Well, for an API which we are hoping to attract vendors to, the
-"completeness" could be useful. If kernel needs to be extended
-some will fall back to their out of tree tools.
+Are the attributes coming from the user space here or are generated 
+by the kernel / were already validated?  Depending on that this is
+either a fix and needs to be backported or a possible cleanup.
 
-> > Obviously the general guidance is that we shouldn't export 
-> > functions which have no upstream users but that applies to 
-> > meaningful APIs. For all practical purposes this is just a 
-> > sliver of an API, completeness gives nice warm feelings.  
-> 
-> It is misleading, I have much more warm feeling when I see API that is
-> used. Once it will be needed, the next developer will copy/paste it
-> pretty fast.
-> 
-> > Anyway, just curious what made you do this. I wouldn't do it 
-> > myself but neither am I substantially opposed.  
-> 
-> Move of devlink_register() to be last command in the devlink init flow
-> and removal of devlink_*_publish() calls as an outcome of that.
+Please repost with the explanation where attrs come from in the commit
+message, and if it's indeed a bug please add a Fixes tag.
 
-Alrighty:
-
-Acked-by: Jakub Kicinski <kuba@kernel.org>
+If we do need the nla_ok() we should probably also switch to
+nla_for_each_attr() and nla_for_each_nested().
