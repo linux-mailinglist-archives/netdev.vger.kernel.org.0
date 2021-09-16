@@ -2,67 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2A5940DB03
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 15:20:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6AAF40DB49
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 15:33:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240010AbhIPNV2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 09:21:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60764 "EHLO mail.kernel.org"
+        id S240057AbhIPNem (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 09:34:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35386 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229474AbhIPNV1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Sep 2021 09:21:27 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id CFEAD61212;
-        Thu, 16 Sep 2021 13:20:06 +0000 (UTC)
+        id S240116AbhIPNek (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Sep 2021 09:34:40 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C392E60F11;
+        Thu, 16 Sep 2021 13:33:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631798406;
-        bh=cI/awQV9ZjwOhKVj1gpmmg3Qnl53AD8iX1idFJzA4Yg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=W9m7NjXXEEPOvdfwXRIpLKTXFYIW/NLUqfvcVB8HuPk/idkgwVPKn9F9J4GclW72J
-         pOnrtuqqa9sekB6U8xKEXlH7TinCM0HgQzR4W/mYcXd8BW3AW6zoTDaHWli2lls9hU
-         PPUazREbDrQEUAMVniFIR8/NffKVYWYWzGUqoST14Xo8bFI7boi+y34eoDgNkM4kjA
-         fPUumXXVik0CQ1vaXMM4gfgSD71ODSNWm7ujLjv5AhiBRwYbEV2dO3C29sZ7j/2wLq
-         wkPZcpn61HVGMfsOOE4nCCqAtOmVK9T+8jmtSFLkMJYqBwyhO01Ga9VLj9EeaM32Zf
-         REmE+9+Gm0yyA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C2BF460A9E;
-        Thu, 16 Sep 2021 13:20:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1631799200;
+        bh=uOL+5HttzD8vO7NoHwzx0B7Jm5+HQgl/bCl77os9SJ0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=XwNKOaZQvN8fjtbpM7bOI1PhjPU6IRi/fX7PcgLvZG9MN7kgSFISEYwOwTYM/BidG
+         vsXH4rZ5MOHmr0HbgevYl5WNxb02mK97sE8Vvl0MUXGF/Fg4TvUr3fubTupbF0FS9h
+         0VeJ/X6TjamewLo4V9ghyflNqyDJgeAbwRCC3CuG1srNweMDOQax2V2XY3nWPf3Blu
+         koYn4zqKx7jlUuv0SFauAGZb7s2FKflb4UkUddGD+TC5LRTSPIcyhLUbqj7DK7WGuk
+         qcIF/TKrTyCKi/olscn7Ql9t9TZX5cUmzxTGq8XkiiEfHEx8EP5asS6mjiJOyt0M48
+         yk5Uh6r+RLaAA==
+Date:   Thu, 16 Sep 2021 06:33:18 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jiri Pirko <jiri@nvidia.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] devlink: Delete not-used devlink APIs
+Message-ID: <20210916063318.7275cadf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <a45674a8cb1c1e0133811d95756357b787673e52.1631788678.git.leonro@nvidia.com>
+References: <a45674a8cb1c1e0133811d95756357b787673e52.1631788678.git.leonro@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net/{mlx5|nfp|bnxt}: Remove unnecessary RTNL lock assert
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163179840679.7555.9271360167851764548.git-patchwork-notify@kernel.org>
-Date:   Thu, 16 Sep 2021 13:20:06 +0000
-References: <20210915044727.266009-1-elic@nvidia.com>
-In-Reply-To: <20210915044727.266009-1-elic@nvidia.com>
-To:     Eli Cohen <elic@nvidia.com>
-Cc:     kuba@kernel.org, sriharsha.basavapatna@broadcom.com,
-        ozsh@mellanox.com, netdev@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Wed, 15 Sep 2021 07:47:27 +0300 you wrote:
-> Remove the assert from the callback priv lookup function since it does
-> not require RTNL lock and is already protected by flow_indr_block_lock.
+On Thu, 16 Sep 2021 13:38:33 +0300 Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
 > 
-> This will avoid warnings from being emitted to dmesg if the driver
-> registers its callback after an ingress qdisc was created for a
-> netdevice.
+> Devlink core exported generously the functions calls that were used
+> by netdevsim tests or not used at all.
 > 
-> [...]
+> Delete such APIs with one exception - devlink_alloc_ns(). That function
+> should be spared from deleting because it is a special form of devlink_alloc()
+> needed for the netdevsim.
 
-Here is the summary with links:
-  - net/{mlx5|nfp|bnxt}: Remove unnecessary RTNL lock assert
-    https://git.kernel.org/netdev/net/c/7c3a0a018e67
+Do you have a reason to do this or are you just cleaning up?
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+The fmsg functions are not actually removed, just unexported.
+Are there out of tree drivers abusing them?
 
+The port_param functions are "symmetric" with the global param 
+ones. Removing them makes the API look somewhat incomplete.
 
+Obviously the general guidance is that we shouldn't export 
+functions which have no upstream users but that applies to 
+meaningful APIs. For all practical purposes this is just a 
+sliver of an API, completeness gives nice warm feelings.
+
+Anyway, just curious what made you do this. I wouldn't do it 
+myself but neither am I substantially opposed.
