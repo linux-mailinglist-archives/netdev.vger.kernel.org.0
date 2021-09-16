@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E83040ECD9
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 23:44:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFE8C40ECDB
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 23:45:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237083AbhIPVqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 17:46:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35120 "EHLO
+        id S237745AbhIPVqW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 17:46:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234064AbhIPVqQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 17:46:16 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9D91C061574
-        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 14:44:55 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id u18so7584966pgf.0
-        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 14:44:55 -0700 (PDT)
+        with ESMTP id S238100AbhIPVqT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 17:46:19 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 309A5C061766
+        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 14:44:58 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id t20so5507337pju.5
+        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 14:44:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=nNhkyuKjI5tXvuO0GxWnGKDPFHuKELj6HwQch3Dl+cU=;
-        b=RdCAqzew0hgwM7IJIodHAuIxcYYqogozZunJPZeCd4VAqc4icaBOKUdNqtLomMMsSr
-         SYrxvgRs4Par89fJEqpPCDZ4+XLY7WO2ZcFStBbsxp22NnxyjT8XxsiXvmsWOLovl1S8
-         eRYPwD9x1heK58J8sna040Pj1tVdCa5AjEIDSgdMZ+hUWzlxYrJN35KGXusUjSzFUnNG
-         xjF0RiY+S9I+EecNi20gC3vYNw+5M2NwC8QmQ5XFIGfe7OG4swOXc7v6W8TbDOcVZu+F
-         L6R4b/3/fMY7Kb4/qFdOJ7EeADI2gvjGoiU2Qo6G+0EHPzyyADa52HwUU26v8KbIqwFz
-         OZVg==
+        bh=J7zGtdLvKvOe8ICH65aGgixwwBsF46sfmmNr6BguxYU=;
+        b=jsYa6l8OxInYrPcDf850gMevL8Ib/4g5G6K2fQYhyle7LVVynjDg8ZpCEcdCe1h5As
+         OYK6N+TKII0GS8JT4L+Ys2HNWzvztZ52ZwL8ZaZrKl1xhN/TBXeBZOqq2HZeFHz0B45v
+         lkiZ6C4wJwSyJR9JrluoaukLjRn0VedZcMth+BWFcno2rhogSUl1kSM7S/GdJzptOCVG
+         opzjKCtMUFztrNj8GrxVTtJAnHLwe1vSIgiUvH5MBciXE/1IzaTWclFtM8ThMfcLfM5L
+         pFwLTjLM2Y6cnWWXKXMYbFIRhqNcQimMSvSW62Ai+Pq7sZwuVfdFYJkH428tSiu2Y6O+
+         MB5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=nNhkyuKjI5tXvuO0GxWnGKDPFHuKELj6HwQch3Dl+cU=;
-        b=rtTViMh6RG4EqnQmK1Rn5miCms85zBRkPq4kKJZEywCuoeOIVdYxbu7m0QlEDuZDA2
-         X5qYa9874tyJ4w+NPITTHSiUgozyBWhttMp4AKe7EZ0aELMAiiYcjK5EDXwQaQrEu7B2
-         Giq6KJZeEGdMZ0LvD5ESVP1vaiWsyVRzpPyfWpuMCH4hVHjAI8lCpYK8z5INc3ViIBlX
-         fuSkioG42T1Xf1OEW7/zfmlHGmn27tYW+/2FjsGlsAYf04wnYz0mOYoPuIxOSjYJz/MN
-         Tebxl5G7K+Wav6dkY0fEbWUzZOSdniwdD7QlDSQ4s2Xryczxlcwc+fOyDLTEtEc9WVEy
-         uvNQ==
-X-Gm-Message-State: AOAM532DaNYwFxpcpJAdlGcs3fxmm9pR44BGf0xueFXRA6iQhsyZGW96
-        OGevoYqKz/LctDJQeQOTqls=
-X-Google-Smtp-Source: ABdhPJzVhWT5Sgs6NyGB+h5G/pJ/sSfVUYQJCbryOzs8m5KPMlhoKb/sKmaxmHzd+O1auOexbs70Yw==
-X-Received: by 2002:a63:9a19:: with SMTP id o25mr6835991pge.90.1631828695406;
-        Thu, 16 Sep 2021 14:44:55 -0700 (PDT)
+        bh=J7zGtdLvKvOe8ICH65aGgixwwBsF46sfmmNr6BguxYU=;
+        b=fsd2qjRjD8KVeU8RHexLSNiFN94BZQBejjWBH4aU6PPNS2QXKz4yKA2erlZ43zUJmk
+         jzuyPFXZXMR7dG6pLByVpuG+FxmDvMFJVllOASdkWK8cTrLAHVOzNZn8qC1sybW2QXdb
+         zihsnyfDCQ6/1mb4qN+GpS5E0DVFnFW2+YksVScdasN4DOBZD57knV6nJRZj/dLoy8fC
+         RtNmVGbBkba0KKuJyANtV0smVcBeVFb0CCc7L4IB2qNvcQUvbFvhB1At3iCkX+sE4UL6
+         4VlPDSOIJ6mdEcd0CNDrl1XLjrBwvr6kYJflXWl+OPpQKc5pf90seQhslyJu6jacB2Rc
+         U+pg==
+X-Gm-Message-State: AOAM533bw8P1K/jVYuvo3HUVk1/HlFwTVfUveBt9+ebWzs8OYI5bRd6V
+        WnrBd+h+Eyn1GiYo9cpOnuY=
+X-Google-Smtp-Source: ABdhPJz+r2bR5Cp4aK5/9SFR11GdphDuX9bH5Y9XpLcjMwKbVRmKoXiIGmmdb7slTJJKJEz57eHa7w==
+X-Received: by 2002:a17:902:8503:b0:13a:366:8c46 with SMTP id bj3-20020a170902850300b0013a03668c46mr6491917plb.37.1631828697644;
+        Thu, 16 Sep 2021 14:44:57 -0700 (PDT)
 Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id b12sm9017695pjg.0.2021.09.16.14.44.50
+        by smtp.googlemail.com with ESMTPSA id f205sm2937968pfa.92.2021.09.16.14.44.51
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Sep 2021 14:44:54 -0700 (PDT)
-Subject: Re: [PATCH net-next 2/4] net: dsa: b53: Drop BCM5301x workaround for
- a wrong CPU/IMP port
+        Thu, 16 Sep 2021 14:44:56 -0700 (PDT)
+Subject: Re: [PATCH net-next 3/4] net: dsa: b53: Improve flow control setup on
+ BCM5301x
 To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -59,14 +59,14 @@ To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
 Cc:     netdev@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
         =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
 References: <20210916120354.20338-1-zajec5@gmail.com>
- <20210916120354.20338-3-zajec5@gmail.com>
+ <20210916120354.20338-4-zajec5@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <53c85810-4ca5-8475-5f34-43467d018414@gmail.com>
-Date:   Thu, 16 Sep 2021 14:44:46 -0700
+Message-ID: <a0317dbb-0d41-7f9a-ff3e-84d92364c2db@gmail.com>
+Date:   Thu, 16 Sep 2021 14:44:48 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.13.0
 MIME-Version: 1.0
-In-Reply-To: <20210916120354.20338-3-zajec5@gmail.com>
+In-Reply-To: <20210916120354.20338-4-zajec5@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -77,15 +77,10 @@ X-Mailing-List: netdev@vger.kernel.org
 On 9/16/21 5:03 AM, Rafał Miłecki wrote:
 > From: Rafał Miłecki <rafal@milecki.pl>
 > 
-> On BCM5301x port 8 requires a fixed link when used.
-> 
-> Years ago when b53 was an OpenWrt downstream driver (with configuration
-> based on sometimes bugged NVRAM) there was a need for a fixup. In case
-> of forcing fixed link for (incorrectly specified) port 5 the code had to
-> actually setup port 8 link.
-> 
-> For upstream b53 driver with setup based on DT there is no need for that
-> workaround. In DT we have and require correct ports setup.
+> According to the Broadcom's reference driver flow control needs to be
+> enabled for any CPU switch port (5, 7 or 8 - depending on which one is
+> used). Current code makes it work only for the port 5. Use
+> dsa_is_cpu_port() which solved that problem.
 > 
 > Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
 
