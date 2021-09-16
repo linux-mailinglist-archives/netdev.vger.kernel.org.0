@@ -2,113 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4258440D3C0
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 09:25:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C88D40D3CA
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 09:29:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234776AbhIPH1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 03:27:13 -0400
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:16768 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232254AbhIPH1J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 03:27:09 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1631777149; x=1663313149;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=+cB0Ekh8IpXQNeJaDPNfiBsWeb1pt6pnZjUTIg4exrk=;
-  b=SMfISRg+f8NMfbxcTtYhrVORo1s8Q4KAl2JIFcDNsoC//RKFAvGoIIa+
-   8Zck7Di8Msap/6++ng7do/0EiayQi8ZlpHX8gRj2K87xOchaE3uOUdGg9
-   KTl0huPkz50YSn8Z1v/olVX1JujcS2G/4MDWklmFkVNOlHUhTF0r2LKub
-   5WN7Flk8o+8ykFyCqq1xXD8SuQXdRlptOY0j+dSylj61zZHQ7r7l5cN1q
-   ltujLSkwX+Q6N5WZ7tEGDSRAg2L2Uyk1GRJoovArrW7kXLF+E2Iljg9KU
-   zYzG/x4Qg5S1hWqnKzNw1w2hazP6mumvY16NlVxwftt+JvqW4/ZA5PFeo
-   Q==;
-IronPort-SDR: Gf7KAlYbfeU97ZXiPz7s1LTH2P/EKuKZ5dd3bjr2IG7rAy9BuljZP6aXbiXTKxlFES0l6j98wy
- k2Bn5iKBlESO6tkTq47kSGU40RmjCGeQ5dLc4vtQI5w/DXkUhaBZuJJU94dFVzctdNj2PWngyY
- ltPbo0oco0lDzTNN45y7MmLSJCNH5L0vq6zi3hZ8b7Jfsplrksn/OjXugPYjN5yLDTRqmMTPLM
- WChDFNpWEvvVNXtsU2bWd1uNDhAkVZlNP7clCMpS4F9TksLPT1Poa77tLy+f7NHrCqZ5MEVVGR
- VcVItcthE/i+Pct3DH63uxZ9
-X-IronPort-AV: E=Sophos;i="5.85,297,1624345200"; 
-   d="scan'208";a="144332533"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Sep 2021 00:25:48 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Thu, 16 Sep 2021 00:25:48 -0700
-Received: from [10.159.245.112] (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2176.14 via Frontend
- Transport; Thu, 16 Sep 2021 00:25:46 -0700
-Subject: Re: [PATCH] net: cadence: macb: Make use of the helper function
- dev_err_probe()
-To:     Cai Huoqing <caihuoqing@baidu.com>
-CC:     Claudiu Beznea <claudiu.beznea@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20210915145804.7357-1-caihuoqing@baidu.com>
-From:   Nicolas Ferre <nicolas.ferre@microchip.com>
-Organization: microchip
-Message-ID: <9318f9be-88f3-5405-11fa-b51a8ada7c2c@microchip.com>
-Date:   Thu, 16 Sep 2021 09:25:45 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S234809AbhIPHbD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 03:31:03 -0400
+Received: from mail-dm3nam07on2119.outbound.protection.outlook.com ([40.107.95.119]:34811
+        "EHLO NAM02-DM3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232254AbhIPHbA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Sep 2021 03:31:00 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RjUJEzP/1cOhbg+6IU3RJmy0oPafK7pJJiV5f5q0akB6fV+ZyB7lyxTBqcXj9WvilnKdivAPdw6ajBzuS6HKLBbVUJFWMrZBNEcjKTuAyhRW0fU7UjhY/pzdpJXXVONyzl5HIYuIgD0WCibsxjg+vXyonC+F/48EkFDf7HhUqg5IuY5xLJm5mWEFBhPcnh+bNEepJ6xsNcvkpP91nV79EYKq5Qin3UIGkDJuIl13BBYS6Z0kVJR8DMlxp9xOTZ9ALdqpWOtWNvSCqftD10tEMrKKkQs6j9SKdRHK3N+OOoguYAb8hXDdbOpuTG7jY1We/fHCyBXV8u8OpVehsXxA/g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
+ bh=rTjJNr1kh3rDTyc0MjML28LSHn0Ot1cDIL4AsPAYdmM=;
+ b=Avcl1OXiJqtuleU/ETXQ7OqXMjF0F7DyDVkmvqiIZ2sSec+W2s5f5pDwnQMxvgFKf/snPIF91y05mc2isf7hZ77Mgqm3OOS2DdDwpEwxE2D+1GaEtK36Fmxeje7mNL6wm+eCJlyA8irrixBxn1DxX/ForA5FRFLztYr9u0jSgFzp7aPSKkH8GqFEMbuZhdKllH3P2OMJNrPdy8tYSn/BIY1WyYt/xiwnluTPCiwKEXSBtiQFidTdWh51nKU/SfpYpc8oja3qF+rU7H8D4c70ENBSBSSm6ViW4Ldy/wzNqt2SX231QOvvRDR027li+5dpnGV4EEaxdWOTdIrBYMnu/g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rTjJNr1kh3rDTyc0MjML28LSHn0Ot1cDIL4AsPAYdmM=;
+ b=cAeq0VZqXCncHXkAed2+wpt4hM1owlQN8ipteaaNt8a6iW7E9VnDVZ7QQoR8aiNg9+rvbwhydl7lHs3xPOgs0JaPAE1c1r3JFR4wxHzZL82BtrnJPcM+M3TWJSiEaFcTGqHABktA+HkwuryqJyVCdai2E/VgUbdRw8Vqwqh50R4=
+Authentication-Results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by PH0PR13MB5380.namprd13.prod.outlook.com (2603:10b6:510:fe::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.5; Thu, 16 Sep
+ 2021 07:29:38 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::e1d9:64d0:cb4f:3e90]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::e1d9:64d0:cb4f:3e90%7]) with mapi id 15.20.4523.014; Thu, 16 Sep 2021
+ 07:29:37 +0000
+Date:   Thu, 16 Sep 2021 09:29:30 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     davem@davemloft.net, daniel@iogearbox.net, kuba@kernel.org,
+        andrii@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-team@fb.com
+Subject: Re: [PATCH bpf-next] bpf: Document BPF licensing.
+Message-ID: <20210916072929.GA7929@corigine.com>
+References: <20210916032104.35822-1-alexei.starovoitov@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210916032104.35822-1-alexei.starovoitov@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-ClientProxiedBy: AM3PR07CA0083.eurprd07.prod.outlook.com
+ (2603:10a6:207:6::17) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-In-Reply-To: <20210915145804.7357-1-caihuoqing@baidu.com>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Received: from corigine.com (2001:982:7ed1:403:201:8eff:fe22:8fea) by AM3PR07CA0083.eurprd07.prod.outlook.com (2603:10a6:207:6::17) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.8 via Frontend Transport; Thu, 16 Sep 2021 07:29:35 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 46c6ac3f-6e05-4775-aa4f-08d978e3bd05
+X-MS-TrafficTypeDiagnostic: PH0PR13MB5380:
+X-Microsoft-Antispam-PRVS: <PH0PR13MB5380E010FB0EBADDDE7EF87AE8DC9@PH0PR13MB5380.namprd13.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:626;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: iafOlxZL3nVB5VERXupdhPxnzkU9RRCNptAgKIWShvi/8jZOWjd7APNtQhr6I2UaltYk+P0UiPeIrnLZPDDH/0nbzVjYcX9Hzqh2olo/neU67Vmr5xahO2E6AbTUf0nVJBJUmvxGdYC5ur/LW9pt9MMYKSYC99aoE2SpQi0UZPgNLEwCc9+8dYitqg8F9cWxwauFT9XynpU//mFru3YE4hQYCJpjlb5JutQ7ifly7IOS7teapWWm2LkzxvCKqc1dgsZ/j+IpptrJNfiRl7SB/z4FIWRb0mcU9zxQNLr0TIAI+6uvhP2R+bLPwEIenvK8MGqbNyMkXZ/qzrDt+Vbk0IuGLTOeQ3VTEj8xw721/qyhoW6AqUNVBxKKvXSWxCGnthjK7vd2W4atsXNOCLfh65y0nawOHE2yWqkWp905tq75KTCqGOcuqwevW52Fe0+eu0X6LsOdHkrB4NiTHMrxy7oDFnjjUg5iAf2eVbRlUnTpP7R/57BBFvjSJXPRdmzajR4w7vPACC9VPKpMQu7LOMH1phb3C/AtNNoImdDlkEKfO8CTYhLh3Vpf8lI2U+/Dfx2BGMp8XB7zIOpyf1ET9I/rLJKhmzVzzNcj55ub81hAUWFiS8uhVgPQ3Igd7CUSPfPzhWxkBq0+W+fR8/RYYg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(396003)(136003)(346002)(39830400003)(366004)(45080400002)(4326008)(6916009)(8936002)(2616005)(66556008)(7696005)(52116002)(66946007)(316002)(38100700002)(8676002)(6666004)(33656002)(8886007)(86362001)(2906002)(508600001)(55016002)(36756003)(1076003)(186003)(44832011)(66476007)(5660300002)(4744005);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ckhJZjF5YzIxWHpGWEZ2enBTMTI1MVJlN3hFcHhEUStiRmZ6c0tFVVVOdmZQ?=
+ =?utf-8?B?UmIzd2xKdEJzbE5NbE5xQ09TUy84UlVqOUtnS0Exdis4WWtWN1MrNnZqQTRq?=
+ =?utf-8?B?cjZKWjkrdC9UaUdrS0daakZIMkY5OUtJUTVnRjlPaDAvT1VoSmpBM3o0a09L?=
+ =?utf-8?B?a1VOZEJkeVVkc3JDRzB6blRaQU03QVRZVG5FYkF0VnVLQlNvQStmTHlvUnJB?=
+ =?utf-8?B?dGQ1UFBWY05MZmVyazk4a09qc2Q1SGpuQm1DVi8xczZuT0JSU1A3R0pVR2E5?=
+ =?utf-8?B?Z2U2a3VkRXBZZXo0OWJDcEE2ci9XbitDM1hueEppZFhRWnZxWWpUb0Zpcks5?=
+ =?utf-8?B?T1ZZTFVmc0lpeXMrRjhsbG1Lb3RCaThDaXoxSGlMUHVJNlBreTcyRXgvTU1W?=
+ =?utf-8?B?SzJ1MkFQcFFrQTlxSjArdk02NE5Vdll5K1hYaVdjMXRKWUM0cWZWSFUzckxa?=
+ =?utf-8?B?V05NSCtOOW5uam9DVVNaY0Z1dDBuK2RSQ25TZHlYK29LMzZFMHNkZ3VYV1lI?=
+ =?utf-8?B?ekZZQS9Tck1TbWdSWHh2aDFLWHhuUDJsVUlENlF5cnVYMEpxWFpTZ094ZVVB?=
+ =?utf-8?B?MDFuRW04K0lDdTdlcGcwWldiTFg5cjltNVhyRnN4R0N0Unl5ZGV0MFVGTlRa?=
+ =?utf-8?B?Um9FM3BUWHVwMjVnTXdoRjRvaWVuT1ovNjlHeHpYNTRhYWhHRlU4aE1JbWtj?=
+ =?utf-8?B?Y1NnMUNscnZPZk51NFc4WVJpTWp1UFpsWjJOcSs2N09WczlFTUNhQ21McEtH?=
+ =?utf-8?B?akVHM1g2cHp3UUJJNzRWRndBNk5welUxTWtSZDFFT3JCbGFLQnNEQjQ3UTA5?=
+ =?utf-8?B?eCtYMDg5eEo4YlBpRGpMcUhOZU12K1BlYUw2MU0xUUhVS0NORThpeGlzaU5x?=
+ =?utf-8?B?VDNhb2dGQzVGT1Q4MG5DYmVSbVhxYU5qb3NkSlZWRk5PVWpTY0lTK0t0eFhl?=
+ =?utf-8?B?R1ZZYWtJbkZVVzMzSWZVYXl5UTlaTzIzYjBVSWp0Sy9VMG9tSmg2ZVVjcUhu?=
+ =?utf-8?B?eTJhZWhjTTFiTlpSSUc3TndjeStiVmNvSldmdmF1K1hsdFliZE1Pa1VYVDJU?=
+ =?utf-8?B?aG5iRHIxQUpyT1IrRE9xQlVpdVo0Z3JtMDd0VW1nOENEYkdBZXVWQzVPSk8r?=
+ =?utf-8?B?UEtWejJJSTJtb1hob0VxNS9rTkRreUxiZHB4OWJiejg3d2R1aFlBYVVjaDJB?=
+ =?utf-8?B?TUxiTkNaem4yeHoyUGdYUjBnbHZCZWNEbFo2dTBIZXF0Q0Z1Zjg2Qk1QbllY?=
+ =?utf-8?B?MXgxYzhWb1dML25NYkRIMG1aSjdjWVJpdmtVZmRkWnpRMmtGd3h3bVpkM0Fx?=
+ =?utf-8?B?VkFBMHhCQVlMZHJSajhaM0p3eU85N2QvT2Q0VmlWM21UVGtjK2tVZ0k5ZEFE?=
+ =?utf-8?B?dXFNYkFraU5JdEpacE5wKzRZa3B5ZEcrUngveDY3OXljcWVxK3UzSjg0bC9C?=
+ =?utf-8?B?QVQrMUlrTS9VM2NsQlpkOWJJeFFCVG1UckZZdWFpNC9kekk2czRLQ2tCUGRY?=
+ =?utf-8?B?OGpVUWxWYXRvNEp3bERmd29vcnRNM0h3VTlUdTRhOC9vbyszZUVsTUhMMlV3?=
+ =?utf-8?B?Yk5hbjFpeE4wdzJZSGEvZ0lPZ1hheFlRWlJveDBMRXVTQUdybFlZN2xXekhr?=
+ =?utf-8?B?OTlXOE9WNnlQSWhHUUV4dHNwWGJLN3VVaFF0eE9ERk1oekIwVWJsRFd0a094?=
+ =?utf-8?B?Z2p3NHVZazdGckxDYWFjRHNLWHl6TjJjK3RSdHZjS2R2SWRnQWhVVGhTNk1H?=
+ =?utf-8?B?akJJdXRYTDNXSFJKL0dyWFFEck9XdDZiazBJbG5tcStRZDJNSnFMU0hjMTlv?=
+ =?utf-8?B?dHRCU2lMS1NSak92eHhjV242aU1iVTYzVjFaMUNudVRRVFd1L2tieTF5ZjU1?=
+ =?utf-8?Q?7pPyAu94MXOEq?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 46c6ac3f-6e05-4775-aa4f-08d978e3bd05
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Sep 2021 07:29:37.4995
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: RC2xPkkOooGMKJRmgFDeDJTVrzyfG6p37Lx4FsmCdleMtUBmJelUngqu973msjFokO0X4qalAQKndmxm8BjP/eo5T1R1ibujlk06yhfc4go=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB5380
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 15/09/2021 at 16:58, Cai Huoqing wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+On Wed, Sep 15, 2021 at 08:21:04PM -0700, Alexei Starovoitov wrote:
+> From: Alexei Starovoitov <ast@kernel.org>
 > 
-> When possible use dev_err_probe help to properly deal with the
-> PROBE_DEFER error, the benefit is that DEFER issue will be logged
-> in the devices_deferred debugfs file.
-
-Well, I don't see where the PROBE_DEFER error could be triggered by the 
-call graph of this function: can you please point me to where this error 
-could come from?
-
-Best regards,
-   Nicolas
-
-
-> And using dev_err_probe() can reduce code size, and simplify the code.
+> Document and clarify BPF licensing.
 > 
-> Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
+> Acked-by: Daniel Borkmann <daniel@iogearbox.net>
+> Acked-by: Joe Stringer <joe@cilium.io>
+> Acked-by: Lorenz Bauer <lmb@cloudflare.com>
+> Acked-by: Dave Thaler <dthaler@microsoft.com>
 
-NACK, for now.
-
-> ---
->   drivers/net/ethernet/cadence/macb_pci.c | 6 ++----
->   1 file changed, 2 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/cadence/macb_pci.c b/drivers/net/ethernet/cadence/macb_pci.c
-> index 8b7b59908a1a..d09c570a15ae 100644
-> --- a/drivers/net/ethernet/cadence/macb_pci.c
-> +++ b/drivers/net/ethernet/cadence/macb_pci.c
-> @@ -35,10 +35,8 @@ static int macb_probe(struct pci_dev *pdev, const struct pci_device_id *id)
-> 
->          /* enable pci device */
->          err = pcim_enable_device(pdev);
-> -       if (err < 0) {
-> -               dev_err(&pdev->dev, "Enabling PCI device has failed: %d", err);
-> -               return err;
-> -       }
-> +       if (err < 0)
-> +               return dev_err_probe(&pdev->dev, err, "Enabling PCI device has failed\n");
-> 
->          pci_set_master(pdev);
-> 
-> --
-> 2.25.1
-> 
-
-
--- 
-Nicolas Ferre
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
