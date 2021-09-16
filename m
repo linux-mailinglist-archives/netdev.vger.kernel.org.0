@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40FD040DB7C
+	by mail.lfdr.de (Postfix) with ESMTP id AD8A740DB7D
 	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 15:40:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240312AbhIPNlc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 09:41:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37870 "EHLO mail.kernel.org"
+        id S240323AbhIPNle (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 09:41:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37886 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240252AbhIPNl2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S240260AbhIPNl2 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 16 Sep 2021 09:41:28 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 5CE9961212;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 6B5CD61260;
         Thu, 16 Sep 2021 13:40:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1631799608;
-        bh=rJpWAvWJGrZjF5cqGJ1sN0iaI/MsXiR02m8bJut01qs=;
+        bh=Hjx0c8lg9dMGRA6F8WMlYVGhCIGaUfqHQ6mBeueCLH0=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=KjEMgY60dDwLYL6rl6sRJhyfuy9cEZi16FII/mZfCEQLVWImUb2shGYfzPoSuDXvs
-         WcZ18chsli8ZNf7pyTnGXUthFFXzg7leERY4S3TGarf9cGmhbLrqwy5/I+Z9UYu8CS
-         xYn2D2MffGqt8anwaWi8rtD2R86PlRbTvMB76jkqe3mfXyHCvtd/NHKsJoMGTsAbd0
-         G9t2kwIJMWRZ0OaNGejqDJDjT8hbwdHbV8GmiKHgCCwRPmrDTkS9SusLMMtjiCAZ+t
-         xXl0KlHRjqOxnYuc5NkbXM4UJB8rJpzMd1wmsSN3coF1krF7golhdMqlG9FeklCSg3
-         thSiXA2HXx0CQ==
+        b=uxTIRTq46purS7okSlW2xY5he2axiOTeXCvjmztrfCfsWyYWZI1q/LP6AJzv84V4z
+         G9JZFHayyC2KxiJmFSrrnY/Tn8Ia9Nios1Lg8NB8RXntLeeEzdIRPu1sXRdQwn45wV
+         Ju/PDdpYkM639WjHBg7MZCJIxh1SNG3VvXX0fiSwTxPVhc9FUbHNQlSojj+v5rVO6T
+         BNXIuowFTF1A5Z4zUOlQ3IKDVc5L0Rwg5osjn4Ue2ysIUwFpui7qK0HBtPXZgB3UkP
+         EqvHC9Dj2x9Z2tLT8QYLKX7qZxzi/rTJvW7lQAEwQBfFpCpy1s+W3jMH3YmIk2D7qE
+         MK4LoQvpd8imQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 56F5960A22;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 613D360BCF;
         Thu, 16 Sep 2021 13:40:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] Revert "net: wwan: iosm: firmware flashing and
- coredump collection"
+Subject: Re: [PATCH v2] net/tls: support SM4 GCM/CCM algorithm
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163179960835.17264.14741744743525904152.git-patchwork-notify@kernel.org>
+Message-Id: <163179960839.17264.853854954765919907.git-patchwork-notify@kernel.org>
 Date:   Thu, 16 Sep 2021 13:40:08 +0000
-References: <20210915215823.11584-1-kuba@kernel.org>
-In-Reply-To: <20210915215823.11584-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        loic.poulain@linaro.org, ryazanov.s.a@gmail.com,
-        m.chetan.kumar@intel.com
+References: <20210916033738.11971-1-tianjia.zhang@linux.alibaba.com>
+In-Reply-To: <20210916033738.11971-1-tianjia.zhang@linux.alibaba.com>
+To:     Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
+Cc:     borisp@nvidia.com, john.fastabend@gmail.com, daniel@iogearbox.net,
+        kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kaishen.yy@antfin.com,
+        zhang.jia@linux.alibaba.com, YiLin.Li@linux.alibaba.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -48,19 +48,19 @@ Hello:
 
 This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Wed, 15 Sep 2021 14:58:23 -0700 you wrote:
-> The devlink parameters are not the right mechanism to pass
-> extra parameters to device flashing. The params added are
-> also undocumented.
+On Thu, 16 Sep 2021 11:37:38 +0800 you wrote:
+> The RFC8998 specification defines the use of the ShangMi algorithm
+> cipher suites in TLS 1.3, and also supports the GCM/CCM mode using
+> the SM4 algorithm.
 > 
-> This reverts commit 13bb8429ca98 ("net: wwan: iosm: firmware
-> flashing and coredump collection").
+> Signed-off-by: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
+> Acked-by: Jakub Kicinski <kuba@kernel.org>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] Revert "net: wwan: iosm: firmware flashing and coredump collection"
-    https://git.kernel.org/netdev/net-next/c/d1ab2647de32
+  - [v2] net/tls: support SM4 GCM/CCM algorithm
+    https://git.kernel.org/netdev/net-next/c/227b9644ab16
 
 You are awesome, thank you!
 --
