@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8231840D434
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 10:00:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B59340D43E
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 10:04:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234988AbhIPIB6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 04:01:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42356 "EHLO
+        id S235030AbhIPIFR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 04:05:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234882AbhIPIB5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 04:01:57 -0400
+        with ESMTP id S234982AbhIPIFF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 04:05:05 -0400
 Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78B0BC061574;
-        Thu, 16 Sep 2021 01:00:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D206EC061764;
+        Thu, 16 Sep 2021 01:03:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Transfer-Encoding:
         Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
         Sender:Reply-To:Content-ID:Content-Description;
-        bh=/QXwV71Kp89im184T0V/ymrJou00nyhzJ+R4oD+1+9E=; b=IkOcVzKq4+f8IOOQbzP3FeT1dy
-        G1WF51P7rzx3jxur49KY7W50vga9kSNq3gDNzq5+LEEVlP6/9A2H8BWfO9vE9O3WwiZSXCKqj+cXg
-        JIKU1QHpzZrloTIieHyQxKEd2th7ofkEa6bXEY63k5vDhpEwxvwHy8BvwQNMVo5unSgFZOESHDWdu
-        vhbUn20zbcRXG+dbat4OfdKSVfEEMtSISJKA3CRVWlhuU83d5iir6IVupT1Pe3lKJawvXgvSGzU64
-        f/NQpxQ4zzZ3UG4Dx3D1JRXhMn+90EGUHCmDeFm6PdMFmsRgPkZyKVI5XsRhFhnKLA3DvqkqokmHv
-        /vuzOSGA==;
+        bh=fpa9ttX7CF1WZpIhVuTpbNvQaQpZawGIXndIWrx5+jI=; b=da246jrz6odDZwWz+BVZfJ4yVr
+        kc2G1ZX29712svPo5vvsUWoJLZigW9CJuhX7+ms5NojlbOnq5+ioReV+ThkFGQoEUiN8dZYakN3vq
+        ZuVIm6a4pv0BeeUNgMThsJE09igsaVqzNbXmskExLG2bsRAkirGVP1oF6sJvmjGjvKpGIb5fjIfhI
+        HaJSE0EjAA7uNnvtbzAGlwnzOrZe+OSSytjVBZ3a5tXmk0HWZtLSfWQ4v582RlMKNMghoht4bUQW7
+        0zj9WYRHhfc/6QWWSkx4HGKz4qVGhI5WpcmoaiV4S/vaoxJMyd2z8D+p8/LLITI15kT2+WfIfO0i7
+        WEQgbzqQ==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
         by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1mQmJd-003bfD-7X; Thu, 16 Sep 2021 08:00:17 +0000
+        id 1mQmMZ-003bgn-QM; Thu, 16 Sep 2021 08:03:20 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id EFCD83000A3;
-        Thu, 16 Sep 2021 10:00:15 +0200 (CEST)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 5C822300093;
+        Thu, 16 Sep 2021 10:03:19 +0200 (CEST)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id A17002CD48C2B; Thu, 16 Sep 2021 10:00:15 +0200 (CEST)
-Date:   Thu, 16 Sep 2021 10:00:15 +0200
+        id 4348E2CD48C44; Thu, 16 Sep 2021 10:03:19 +0200 (CEST)
+Date:   Thu, 16 Sep 2021 10:03:19 +0200
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     =?utf-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
 Cc:     Ingo Molnar <mingo@redhat.com>,
@@ -60,7 +60,7 @@ Cc:     Ingo Molnar <mingo@redhat.com>,
         "open list:BPF (Safe dynamic programs and tools)" 
         <bpf@vger.kernel.org>, jroedel@suse.de, x86@kernel.org
 Subject: Re: [PATCH] x86/dumpstack/64: Add guard pages to stack_info
-Message-ID: <YUL5j/lY0mtx4NMq@hirez.programming.kicks-ass.net>
+Message-ID: <YUL6R5AH6WNxu5sH@hirez.programming.kicks-ass.net>
 References: <ff979a43-045a-dc56-64d1-2c31dd4db381@linux.alibaba.com>
  <20210910153839.GH4323@worktop.programming.kicks-ass.net>
  <f38987a5-dc36-a20d-8c5e-81e8ead5b4dc@linux.alibaba.com>
@@ -70,101 +70,40 @@ References: <ff979a43-045a-dc56-64d1-2c31dd4db381@linux.alibaba.com>
  <3f26f7a2-0a09-056a-3a7a-4795b6723b60@linux.alibaba.com>
  <YUIOgmOfnOqPrE+z@hirez.programming.kicks-ass.net>
  <76de02b7-4d87-4a3a-e4d4-048829749887@linux.alibaba.com>
+ <YUL5j/lY0mtx4NMq@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <76de02b7-4d87-4a3a-e4d4-048829749887@linux.alibaba.com>
+In-Reply-To: <YUL5j/lY0mtx4NMq@hirez.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 16, 2021 at 11:47:49AM +0800, 王贇 wrote:
-
-> I did some debug and found the issue, we are missing:
+On Thu, Sep 16, 2021 at 10:00:15AM +0200, Peter Zijlstra wrote:
+> On Thu, Sep 16, 2021 at 11:47:49AM +0800, 王贇 wrote:
 > 
-> @@ -122,7 +137,10 @@ static __always_inline bool in_exception_stack(unsigned long *stack, struct stac
->         info->type      = ep->type;
->         info->begin     = (unsigned long *)begin;
->         info->end       = (unsigned long *)end;
-> -       info->next_sp   = (unsigned long *)regs->sp;
-> +
-> +       if (!(ep->type & STACK_TYPE_GUARD))
-> +               info->next_sp   = (unsigned long *)regs->sp;
-> +
->         return true;
->  }
-> 
-> as the guard page are not working as real stack I guess?
-
-Correct, but I thought I put if (type & GUARD) terminators in all paths
-that ended up caring about ->next_sp. Clearly I seem to have missed one
-:/
-
-Let me try and figure out where that happens.
-
-> With that one things going on correctly, and some trivials below.
-
-> >  enum stack_type {
-> > -	STACK_TYPE_UNKNOWN,
-> > +	STACK_TYPE_UNKNOWN = 0,
-> 
-> Is this necessary?
-
-No, but it makes it more explicit we care about the value.
-
-> >  	STACK_TYPE_TASK,
-> >  	STACK_TYPE_IRQ,
-> >  	STACK_TYPE_SOFTIRQ,
-> >  	STACK_TYPE_ENTRY,
-> >  	STACK_TYPE_EXCEPTION,
-> >  	STACK_TYPE_EXCEPTION_LAST = STACK_TYPE_EXCEPTION + N_EXCEPTION_STACKS-1,
-> > +	STACK_TYPE_GUARD = 0x80,
-
-Note that this is a flag.
-
-> >  };
-> >  
-> >  struct stack_info {
-> > --- a/arch/x86/kernel/dumpstack_64.c
-> > +++ b/arch/x86/kernel/dumpstack_64.c
-> > @@ -32,9 +32,15 @@ const char *stack_type_name(enum stack_t
-> >  {
-> >  	BUILD_BUG_ON(N_EXCEPTION_STACKS != 6);
-> >  
-> > +	if (type == STACK_TYPE_TASK)
-> > +		return "TASK";
+> > I did some debug and found the issue, we are missing:
+> > 
+> > @@ -122,7 +137,10 @@ static __always_inline bool in_exception_stack(unsigned long *stack, struct stac
+> >         info->type      = ep->type;
+> >         info->begin     = (unsigned long *)begin;
+> >         info->end       = (unsigned long *)end;
+> > -       info->next_sp   = (unsigned long *)regs->sp;
 > > +
-> >  	if (type == STACK_TYPE_IRQ)
-> >  		return "IRQ";
-> >  
-> > +	if (type == STACK_TYPE_SOFTIRQ)
-> > +		return "SOFTIRQ";
+> > +       if (!(ep->type & STACK_TYPE_GUARD))
+> > +               info->next_sp   = (unsigned long *)regs->sp;
 > > +
+> >         return true;
+> >  }
+> > 
+> > as the guard page are not working as real stack I guess?
 > 
-> Do we need one for GUARD too?
-
-No, GUARD is not a single type but a flag. The caller can trivially do
-something like:
-
-	"%s %s", stack_type_name(type & ~GUARD),
-	         (type & GUARD) ?  "GUARD" : ""
-
-> >  	if (type == STACK_TYPE_ENTRY) {
-> >  		/*
-> >  		 * On 64-bit, we have a generic entry stack that we
-
-> > @@ -111,10 +122,11 @@ static __always_inline bool in_exception
-> >  	k = (stk - begin) >> PAGE_SHIFT;
-> >  	/* Lookup the page descriptor */
-> >  	ep = &estack_pages[k];
-> > -	/* Guard page? */
-> > +	/* unknown entry */
-> >  	if (!ep->size)
-> >  		return false;
-> >  
-> > +
+> Correct, but I thought I put if (type & GUARD) terminators in all paths
+> that ended up caring about ->next_sp. Clearly I seem to have missed one
+> :/
 > 
-> Extra line?
+> Let me try and figure out where that happens.
 
-Gone now, thanks!
+Oh, I'm an idiot... yes it tries to read regs the stack, but clearly
+that won't work for the guard page.
