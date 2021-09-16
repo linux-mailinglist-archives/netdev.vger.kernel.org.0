@@ -2,77 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3943440DBBC
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 15:51:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1082140DBBF
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 15:52:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236477AbhIPNww (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 09:52:52 -0400
-Received: from ssl.serverraum.org ([176.9.125.105]:46143 "EHLO
-        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236433AbhIPNwv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 09:52:51 -0400
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 1083522239;
-        Thu, 16 Sep 2021 15:51:29 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1631800290;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ORj/1YpuSNDPqULVXqQ2alAAdyZzofgAhRepXbWdap4=;
-        b=QuYcedHldgHD1L5o8D4fTOXCtT8DVtvyyZ8oIAPYfZik1OS7sLMT47IDqEdV97TSTsVnZR
-        thuI+KWf8J9L9tyUQyydchwl1VZwPU0lbJC0wcuMKKIgGvf+MXXUs8kQZhLOlkto8qbfXb
-        t2AtrUaUbrpW7vtwWaV3OI/2AodO9gQ=
+        id S236103AbhIPNx1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 09:53:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42900 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235830AbhIPNx0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Sep 2021 09:53:26 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4DAEB60EB4;
+        Thu, 16 Sep 2021 13:52:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1631800326;
+        bh=8ELhNZODoBEnLGmVtTcOezvWfOBIyyv5HdPY1TeJV+4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=tsSVmF47v39BfdWENa8eDDjjWXd1w54uLiCVo0OyD/iwal2WWQUWRKElcy9tGmzet
+         ZSL2SC2x/5W+CyvSCbBy3lp2ksaLuT7f3EPo1d8KtsWT70jlmSvDcfXMGrMZJpjAtH
+         X3sPJcyYS4dcFlOneQnnYq1ZoMt+M04v/w1hqd5T0C4dqPSYjiUt1EWFehxNhMXcHF
+         I3FNx/YV3+zgFOr6+VwUVICNBS+9bPQw4T+zuB92XUA8k1iZA5SDYEZLrAzs9NwpSc
+         Gt0eeNtedigIl82YUE97pe6kAKzqMf6YLl0GKDz5IRdfTAJdLJZ5Y7zLfC8fVmcmKZ
+         x59mD59iuEpuw==
+Date:   Thu, 16 Sep 2021 16:52:02 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@nvidia.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] devlink: Delete not-used devlink APIs
+Message-ID: <YUNMAi0Qjj5Dxiiw@unreal>
+References: <a45674a8cb1c1e0133811d95756357b787673e52.1631788678.git.leonro@nvidia.com>
+ <20210916063318.7275cadf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Thu, 16 Sep 2021 15:51:28 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        netdev@vger.kernel.org, Antoine Tenart <atenart@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com, bcm-kernel-feedback-list@broadcom.com
-Subject: Re: [RFC PATCH v2 net-next 0/5] Let phylink manage in-band AN for the
- PHY
-In-Reply-To: <20210916130908.zubzqs6i6i7kbbol@skbuf>
-References: <20210830155250.4029923-1-vladimir.oltean@nxp.com>
- <20210830183015.GY22278@shell.armlinux.org.uk>
- <20210830183623.kxtbohzy4sfdbpsl@skbuf>
- <20210916130908.zubzqs6i6i7kbbol@skbuf>
-User-Agent: Roundcube Webmail/1.4.11
-Message-ID: <f65348840296deb814f4a39f5146c29d@walle.cc>
-X-Sender: michael@walle.cc
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210916063318.7275cadf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2021-09-16 15:09, schrieb Vladimir Oltean:
-> On Mon, Aug 30, 2021 at 09:36:23PM +0300, Vladimir Oltean wrote:
->> On Mon, Aug 30, 2021 at 07:30:15PM +0100, Russell King (Oracle) wrote:
->> > Can we postpone this after this merge window please, so I've got time
->> > to properly review this. Thanks.
->> 
->> Please review at your discretion, I've no intention to post a v3 right
->> now, and to the best of my knowledge, RFC's are not even considered 
->> for
->> direct inclusion in the git tree.
+On Thu, Sep 16, 2021 at 06:33:18AM -0700, Jakub Kicinski wrote:
+> On Thu, 16 Sep 2021 13:38:33 +0300 Leon Romanovsky wrote:
+> > From: Leon Romanovsky <leonro@nvidia.com>
+> > 
+> > Devlink core exported generously the functions calls that were used
+> > by netdevsim tests or not used at all.
+> > 
+> > Delete such APIs with one exception - devlink_alloc_ns(). That function
+> > should be spared from deleting because it is a special form of devlink_alloc()
+> > needed for the netdevsim.
 > 
-> Hello Russell, can you please review these patches if possible? I
-> would like to repost them soon.
+> Do you have a reason to do this or are you just cleaning up?
 
-I planned to test this on my board with the AR8031 (and add support 
-there),
-but it seems I won't find time before my vacation, unfortunately.
+Yes for both questions. The trigger was my need to move parameter
+notifications to be delayed till devlink register (like you asked). At
+some point of time, I realized that devlink_*_publish() API is rubbish
+and can be deleted (integrated into devlink_register). So I started to
+cleanup as much as possible.
 
--michael
+> 
+> The fmsg functions are not actually removed, just unexported.
+> Are there out of tree drivers abusing them?
+
+I don't know, but exported symbols pollute symbols table and the less we
+have there, the better will be for everyone.
+
+> 
+> The port_param functions are "symmetric" with the global param 
+> ones. Removing them makes the API look somewhat incomplete.
+
+There is no value in having "complete" API that no one uses.
+
+> 
+> Obviously the general guidance is that we shouldn't export 
+> functions which have no upstream users but that applies to 
+> meaningful APIs. For all practical purposes this is just a 
+> sliver of an API, completeness gives nice warm feelings.
+
+It is misleading, I have much more warm feeling when I see API that is
+used. Once it will be needed, the next developer will copy/paste it
+pretty fast.
+
+> 
+> Anyway, just curious what made you do this. I wouldn't do it 
+> myself but neither am I substantially opposed.
+
+Move of devlink_register() to be last command in the devlink init flow
+and removal of devlink_*_publish() calls as an outcome of that.
+
+Thanks
