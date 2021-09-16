@@ -2,166 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B644E40DD4A
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 16:53:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57A0940DD62
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 16:57:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238930AbhIPOys (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 10:54:48 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:41010 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236188AbhIPOyr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 10:54:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1631804007;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5X1WyxGzxFyqToUNiUfnMNvJRCer2A9Q1/BuNT4BZq0=;
-        b=dm7TOZxZnwaQkC5BAIV54nQPCuxjcOuzDbAQQO3/BQjQptiL8HRqDv8S/pGXU7Wzdgw6//
-        sghLf8T2wiS8MWxN402/CkT8ipbSqauYwJOrLK908msPIIgM0QNNMdUwV8DI/ge3zSSTN6
-        rrlxOyS+AEj4MGHAtTJWU881xYisbNQ=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-60-b2JNeq__NMecOfw0hJ29hw-1; Thu, 16 Sep 2021 10:53:26 -0400
-X-MC-Unique: b2JNeq__NMecOfw0hJ29hw-1
-Received: by mail-wm1-f69.google.com with SMTP id x10-20020a7bc76a000000b002f8cba3fd65so2674467wmk.2
-        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 07:53:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=5X1WyxGzxFyqToUNiUfnMNvJRCer2A9Q1/BuNT4BZq0=;
-        b=Sqg2OUj7lEenxVOTzMmRSyw147/rcKVpZ37U0p0qK0wm+/5Q9PhmuNMVzziy7rpI0R
-         p0GWLnpMbXei50nasL5p+64KTABxPU8I71t1QH8A/oDDFkg7j5CpLQOvV8yg11toLfzX
-         eBmMlBUL5AJsCX4bSWaeVNe4iHGEbY1Tv+LOcyx0P+q16YMpodZUzUZ5hk2xO4FbUjo0
-         isBfS52JtD318j5o5bWQo9ty2t+IckcIaAyJuU7P2HFHVtVtK5iEfNGYDyW1ZCOefkU0
-         uXUdCekixLW+n09zDLwXc+ra+jbvppf/VHzTUJltAixbPEWbykNTeSmMFXPk/zEbG1vz
-         m6Nw==
-X-Gm-Message-State: AOAM530tmaM0VkBqob5WYOUPF5HchAVlkrbCptGgn3O331SavuXazIdB
-        lmtsWpzNRhdLd0g7O57E5q0wigRv/lMHpRiFCpGzHO9/FgCMTLNEZXV/pK0QwKhTW35eUW/uucp
-        CtqSmJW0sCT54pOTf
-X-Received: by 2002:a5d:4a46:: with SMTP id v6mr6526851wrs.262.1631804003944;
-        Thu, 16 Sep 2021 07:53:23 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxV5xgOkeZB5H90ZCtF/bGfzSRx+hPtuuQ4amdN6EOyU55Iwjfmfiwd7zRDOInLgxpelXGOig==
-X-Received: by 2002:a5d:4a46:: with SMTP id v6mr6526829wrs.262.1631804003721;
-        Thu, 16 Sep 2021 07:53:23 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-121-250.dyn.eolo.it. [146.241.121.250])
-        by smtp.gmail.com with ESMTPSA id l13sm3648972wrb.11.2021.09.16.07.53.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Sep 2021 07:53:23 -0700 (PDT)
-Message-ID: <14ce1879eeeff69a966d2583c45d22e9df0b6f5a.camel@redhat.com>
-Subject: Re: [syzbot] WARNING in mptcp_sendmsg_frag
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     syzbot <syzbot+263a248eec3e875baa7b@syzkaller.appspotmail.com>,
-        davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        mathew.j.martineau@linux.intel.com, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Date:   Thu, 16 Sep 2021 16:53:22 +0200
-In-Reply-To: <000000000000bf031105cc00ced8@google.com>
-References: <000000000000bf031105cc00ced8@google.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        id S238972AbhIPO6E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 10:58:04 -0400
+Received: from mail-db8eur05on2077.outbound.protection.outlook.com ([40.107.20.77]:8481
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S236506AbhIPO6C (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Sep 2021 10:58:02 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=O/jXwyqLW0FSe2+zZ4RyrFIv4OGRSHcbHlFb2MnQxshwTgdMsF188+jaf27TsvARLKBz+Z2pQX6UYQgS5h8MUlhbTXlRHydSx0rzrkCxvxPhN0bRHKCphnuXrVGfDUCqZwbPaVY++eOk+VeOvSDvX9LGylj21Kb1tszej0xkheiE69QbjEGVEV3MyXPGBgYIx9AlRLzg76tmf9X8U5dKQ2+ucVaqDAZvYC1sJKCHwl90IDicYmBWF5Kd2Q6CpM1bl7MULKS9GWxqO+6+z1495kuMHfnAM85+h+nFvpZJ1/W94SOmvRO4LjT5NcAx4kPbJqVSBOWsuWb20BIMRYen1w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
+ bh=LX5uBpkvS+X0t0UJxXfAowQFnWSBo/tqpsbi6aedkTw=;
+ b=jt41KbkNMbve/64grkCx12HXuKEgolCCNzc+OH75+zYHmk9V/LTX5d4VpOOTW50j/Bas22a8vwL8zkFhIzjIjiyJGmx4oDLiXKoQiFJbVygZqnmrr3nF5kpIBStvhrr0d/V2ri5zDruTXXqDlfhtzk+OrqXtHul8C/epAnkGRifi5mcbbWTdV6yZJQs0mMU1LfeBcctgaO1FcHbIKlGRJgYuE7aN8bE/pfs1pvsiIZZS0u0zLBiJc6JO6Huj75VgSnJjZqJYCOPQiU6P4G9SdZBniU50EE6HTKASP1unoTZIKN08aWiRlK5r/ZGQQ3gvGdVyS/h4W8XC3s8l41ar+w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LX5uBpkvS+X0t0UJxXfAowQFnWSBo/tqpsbi6aedkTw=;
+ b=ctMtk6OzkpJwnzJ6QKWoq2owcZ0auLor4uulXiIcnfc8szWOxn+LCzuYNKdGcRqNw59vblnPFWPdW0fHB6u8pQH3hl27za99WuSNGTTk280nMhP4uB9JqfKVJ1RQD8PWKpkGAvr2/mkdTRWcX5fT/5bcAu+Rf55QxaQ5uE6uh40=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR0402MB3710.eurprd04.prod.outlook.com (2603:10a6:803:25::29) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.14; Thu, 16 Sep
+ 2021 14:56:38 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4500.019; Thu, 16 Sep 2021
+ 14:56:38 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     Colin Foster <colin.foster@in-advantage.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1 net] net: mscc: ocelot: remove buggy and useless write
+ to ANA_PFC_PFC_CFG
+Thread-Topic: [PATCH v1 net] net: mscc: ocelot: remove buggy and useless write
+ to ANA_PFC_PFC_CFG
+Thread-Index: AQHXqpeh6y6SRE8JykW9vsuy+tc/X6umjJKAgAAzO4CAAAEcgA==
+Date:   Thu, 16 Sep 2021 14:56:38 +0000
+Message-ID: <20210916145637.yu63cf3mzkkx2eg2@skbuf>
+References: <20210916010938.517698-1-colin.foster@in-advantage.com>
+ <20210916114917.aielkefz5gg7flto@skbuf>
+ <20210916075239.4ac27011@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210916075239.4ac27011@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 73b16e82-485f-4b8e-7e68-08d979222f78
+x-ms-traffictypediagnostic: VI1PR0402MB3710:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR0402MB37100EA7B6296160271EDC99E0DC9@VI1PR0402MB3710.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3044;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: rg2wGN1vWM0+b+nuKjUGd1CrRGhDDjIqFlKufWUpp3asSrJbLeiXJpKaJqqO3VD1+8SXmQbuAicbIgloHUDnrFtf27LUIFKpPzn7poNPzUdLofPOKkv08uN4isxXjr2YolyaaDT88qBLlwipvi2qAoVHP0NtNm+l2LICLi93kboWYWZV5e/OaMQRrqpVmjby0NKKsYJNH1Z+JS2fZ7Q7kRCTq4ZVv6AoX/+Jdg7O0HQOtqGdW6TkwUMiHbNwH/HnOM/dn3KugNjqLcDf20yWUv+vqREet7TJPfMfco7buJ4N2ltpO4J2jo83amyKRzwA51E0qyakhmzbcasgPGXYRnltMIQvzk8SFM71ebUNWsm0GTT98Beaxbn5KhY9x8qjCfM6SkNGS0/IkyXCI93zhgClIgJAB2R1XxXRpR4N46zRG9frudTIUdbUFEHUOIt0l3g/hcXwxly/+vC0gr4Yl82o7i5ZHgxNew1/Y8DJyg4ULZWPkhs1ifGGBdPkfYUiY4rJz44i87tG96KOiOOK1F84XpLLQCB4zwX2oont4ohyOgPlu/SI2QBnMUEbCvtCNn+RKEmSs/VcGRzZyqOe2HJP5RocoYbw/khT5/zsBchxkEURSyJ/hsg0wQwrJBfsCTir2wBCBviiSJOXOSk4I94A+jEFgj4OvvOMOrIEdqtSvlHBty8WNUW4Cn1MVUYVHrvUyaur68NAaTh2zw4ezoTZkcYB1QzSKNBhd5RUL4iB4IzbyICX+V5ZX+ImU0bEWt5cF1bmayDvyUX2xKTM7zE8J/PE6K7I17Ozg5LemUI=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(346002)(376002)(39860400002)(136003)(396003)(366004)(38100700002)(8676002)(26005)(478600001)(8936002)(6486002)(122000001)(54906003)(71200400001)(1076003)(186003)(6512007)(33716001)(5660300002)(966005)(4326008)(316002)(9686003)(6506007)(64756008)(66476007)(66556008)(66446008)(38070700005)(91956017)(76116006)(66946007)(6916009)(2906002)(44832011)(4744005)(86362001)(83380400001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?YQxbASJ6l/dAcRzgsxsR4eEUWxOLIAptWXQncffWg8QVqHGlMM5KF16o8EaI?=
+ =?us-ascii?Q?wfMzBf5DSaUOu3AOBGv4i4EIr9GgaMYUDBOvnwwtbOynSsw+JMu5nQl25jWP?=
+ =?us-ascii?Q?U0DVsqKs4/rVMqX3Z4vuYBvcz+tjM23xneGbOfJZmZPGTD9AHgPd8KQNf2zJ?=
+ =?us-ascii?Q?zfgyVT4Z1XZO8CiB9zQvlGQ8QhXTD/roLekGHBAaL1PmITzNKoEM6ZDDZmhK?=
+ =?us-ascii?Q?cqlZUYct7HK/IkotoMRvgwY9314X+A7a/qDOuoamlzN4fIhY0kn49glAkfT4?=
+ =?us-ascii?Q?IiuFDhH3unVHrt9+OeBM0ADYgUQlqFcKbJRHPzxQo6LMV/ZRGhORJKqNJAqQ?=
+ =?us-ascii?Q?n0as1S5mSdy59ginieEWQgRZwRyO0DRr66AdRWoTOIIAUnCda3iWSsG6Tnzo?=
+ =?us-ascii?Q?uvc2opaaexEpM6i6+ELb/p/jm8eI/W3gEXYuyc1cwZyr5h65RnfXvWORbvHr?=
+ =?us-ascii?Q?U3I5KeoY5RIydPTLdQ3uPjvoQl7RPVs9cYS4oPVztwqnc0VSZN9CU9CV/N34?=
+ =?us-ascii?Q?RvPnlUkkz+NU+NKB4Jbhr21q33CE3odEycQCI3wXV5DMw+ZYzEGcQxjEguFU?=
+ =?us-ascii?Q?tBSpws7Uo62qxA1PQy0dy+GVRD1fp92PUsumYTPzDsgePhk8IO0Z1sZZAeP+?=
+ =?us-ascii?Q?jTJPjOkIl5HPOVW0nP+BBA66q6sFV7u19wgAhaHhybbf1fAZ18kMz6BaN18N?=
+ =?us-ascii?Q?y5IFlWmw0wD5QRW+DPhYQ7pMFX98rT5OWOEPBE9f0mOpaA6c6fXsdV3TwddU?=
+ =?us-ascii?Q?ZbxUdgVHAfcfsC93lF+TDClyVh3tNGvJA+c15O1cES8Gj4OCMQh/SGmICOmq?=
+ =?us-ascii?Q?tQt7Slp6LZfTJQXzpm/USGMdRsNYIUU4TZbIeKSYz1qWU787QcBioT/GMXmn?=
+ =?us-ascii?Q?DVkAg5GqimOQMTnmjVPs5m23C2wPuy0RI+Boe6rjy+2f4DJPqfASeugM1z5g?=
+ =?us-ascii?Q?j4zv5TSsT2pXCXMUx5PuoWWmFbERvPEg7N6/Ce/OjYPg5/Cuj8QL4Gf2TLd5?=
+ =?us-ascii?Q?Po1uHTeCOHlJCrgqEMqcDO1r0V3YPZse+V9xgIIULmsDljkzhsoHS8Pw0WCr?=
+ =?us-ascii?Q?i4rV0Bj3J5wuDnUtTGVodkDF4Mo5z3pkX8cr3+RO0zdSBM2PjdFmaeO0C/Nv?=
+ =?us-ascii?Q?vTYDVMEoF7fDJnF3M3wZWvtUR+TRPhM3ykdmJ5MSTVmmKoPqf1LbRHLNHy1C?=
+ =?us-ascii?Q?fp/m2l9i4FrTx1xu/03TZWPJF9sTfUKfLz5oO2Oi67t9cwydqG5EiYZa0awH?=
+ =?us-ascii?Q?CGAa/CZVa+gaEZgPDXcQTyw+GAKokiv6wi/0STCaxOToYSYzAXJoEUsIob+N?=
+ =?us-ascii?Q?PI2kFIrTpy2zJAO3m7w1AmQlii0U1iHXh1Vl+jVnFPEJTw=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <D2D0D2197E2293489DF0B7B750BE8E01@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 73b16e82-485f-4b8e-7e68-08d979222f78
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Sep 2021 14:56:38.0631
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Rvz6bnLDhSZSUrYCfbzcMAkDoml70PLT2EGOWqmZuB6qa7Y1WDJY+ggTBvgmQa0hdalZaxGLhDVdh4Z+QhEfNQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3710
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2021-09-14 at 21:05 -0700, syzbot wrote:
-> HEAD commit:    f306b90c69ce Merge tag 'smp-urgent-2021-09-12' of git://gi..
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=10694371300000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=2bfb13fa4527da4e
-> dashboard link: https://syzkaller.appspot.com/bug?extid=263a248eec3e875baa7b
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
-> 
-> Unfortunately, I don't have any reproducer for this issue yet.
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+263a248eec3e875baa7b@syzkaller.appspotmail.com
-> 
-> ------------[ cut here ]------------
-> WARNING: CPU: 1 PID: 810 at net/mptcp/protocol.c:1366 mptcp_sendmsg_frag+0x1362/0x1bc0 net/mptcp/protocol.c:1366
-> Modules linked in:
-> CPU: 1 PID: 810 Comm: syz-executor.4 Not tainted 5.14.0-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> RIP: 0010:mptcp_sendmsg_frag+0x1362/0x1bc0 net/mptcp/protocol.c:1366
-> Code: ff 4c 8b 74 24 50 48 8b 5c 24 58 e9 0f fb ff ff e8 13 44 8b f8 4c 89 e7 45 31 ed e8 98 57 2e fe e9 81 f4 ff ff e8 fe 43 8b f8 <0f> 0b 41 bd ea ff ff ff e9 6f f4 ff ff 4c 89 e7 e8 b9 8e d2 f8 e9
-> RSP: 0018:ffffc9000531f6a0 EFLAGS: 00010216
-> RAX: 000000000000697f RBX: 0000000000000000 RCX: ffffc90012107000
-> RDX: 0000000000040000 RSI: ffffffff88eac9e2 RDI: 0000000000000003
-> RBP: ffff888078b15780 R08: 0000000000000000 R09: 0000000000000000
-> R10: ffffffff88eac017 R11: 0000000000000000 R12: ffff88801de0a280
-> R13: 0000000000006b58 R14: ffff888066278280 R15: ffff88803c2fe9c0
-> FS:  00007fd9f866e700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00007faebcb2f718 CR3: 00000000267cb000 CR4: 00000000001506e0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->  __mptcp_push_pending+0x1fb/0x6b0 net/mptcp/protocol.c:1547
->  mptcp_release_cb+0xfe/0x210 net/mptcp/protocol.c:3003
->  release_sock+0xb4/0x1b0 net/core/sock.c:3206
->  sk_stream_wait_memory+0x604/0xed0 net/core/stream.c:145
->  mptcp_sendmsg+0xc39/0x1bc0 net/mptcp/protocol.c:1749
->  inet6_sendmsg+0x99/0xe0 net/ipv6/af_inet6.c:643
->  sock_sendmsg_nosec net/socket.c:704 [inline]
->  sock_sendmsg+0xcf/0x120 net/socket.c:724
->  sock_write_iter+0x2a0/0x3e0 net/socket.c:1057
->  call_write_iter include/linux/fs.h:2163 [inline]
->  new_sync_write+0x40b/0x640 fs/read_write.c:507
->  vfs_write+0x7cf/0xae0 fs/read_write.c:594
->  ksys_write+0x1ee/0x250 fs/read_write.c:647
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> RIP: 0033:0x4665f9
-> Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007fd9f866e188 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-> RAX: ffffffffffffffda RBX: 000000000056c038 RCX: 00000000004665f9
-> RDX: 00000000000e7b78 RSI: 0000000020000000 RDI: 0000000000000003
-> RBP: 00000000004bfcc4 R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000246 R12: 000000000056c038
-> R13: 0000000000a9fb1f R14: 00007fd9f866e300 R15: 0000000000022000
-> 
-> 
-> ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
-> 
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+On Thu, Sep 16, 2021 at 07:52:39AM -0700, Jakub Kicinski wrote:
+> On Thu, 16 Sep 2021 11:49:18 +0000 Vladimir Oltean wrote:
+> > git format-patch -2 --cover-letter
+>
+> Nice instructions, let me toss this version from pw.
+>
+> FWIW the patchwork checks don't complain about 2-patch series without
+> a cover letter [1]. Having cover letters is a good rule of thumb but
+> I thought I'd mention that 'cause unlikely anyone would realize otherwise=
+.
+>
+> [1] https://github.com/kuba-moo/nipa/blob/master/tests/series/cover_lette=
+r/test.py
 
-I think (mostly wild guess), this is caused by syzbot enabling tcp skb
-tx recycling, so that in mptcp_sendmsg_frag() we end up with:
-
-ssk->sk_tx_skb_cache != NULL
-
-but:
-
-skb_ext_find(ssk->sk_tx_skb_cache, SKB_EXT_MPTCP) == NULL.
-
-Hard to say given the lack of reproducer. For -net we could do
-something alike the following (some more testing needed), while for
-net-next we have the sk_tx_skb_cache removal pending which should
-address the issue.
-
-/P
----
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 2602f1386160..f0673541a764 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -1325,7 +1325,7 @@ static int mptcp_sendmsg_frag(struct sock *sk, struct sock *ssk,
-        }
- 
- alloc_skb:
--       if (!must_collapse && !ssk->sk_tx_skb_cache &&
-+       if (!must_collapse &&
-            !mptcp_alloc_tx_skb(sk, ssk, info->data_lock_held))
-                return 0;
-
-
+In my certainly limited experience I have found out that forcing
+yourself to write a change log and a cover letter makes you think more,
+which is sadly sometimes needed.=
