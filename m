@@ -2,90 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1868F40D3AB
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 09:18:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4258440D3C0
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 09:25:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234642AbhIPHT0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 03:19:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60950 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232254AbhIPHTV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 03:19:21 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A776C061574
-        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 00:18:00 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id y28so14776094lfb.0
-        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 00:18:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=D4ivxItkQdSMohX3qJ/w2JOj8Hig6YwbQ23bBenFjKY=;
-        b=NIp56w1+tnsB3DvXXqqIN3areORYZisEeC6cPVMN29l/9XVGU+uKhtWYrIfcqO82sQ
-         bKzvD20Hz6UWX7XLtrQlWd46JyeqCdXTFTikqY24hU7uZWH5Al3Mxz3r2fxQ5jrb0tt/
-         rlC9enoF/VLbNPZjLnxfkP6OhZnBhRlL1NotE2daHZikjoHr8tQkjLyN7mPIJMTgOkxJ
-         VH4kJwVnBx/yS7XK61aeiWPXn8Oo6lYo2r8xeZxgbV8LKqhdtjs5GJB+GF1PixdLJza3
-         rcqQie1/JQYHqAbeYRIPDNJd2F/B3vAgWhvjGtoyl342/C0XBdgga/pruH6nuw3fslz8
-         aJuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=D4ivxItkQdSMohX3qJ/w2JOj8Hig6YwbQ23bBenFjKY=;
-        b=cyhepGfpLxisHcjmcxjgqGuMptKAlJq8RfynCBgVa0H3Wg9H6Wg98d+zp54sX2DrFT
-         FqF69ftm1mAvXe3I3h8sfmjE+uXTjyxzm3LC8Lc9oTM3mh3hHwtS1dS3nncoFVYAWtEO
-         lbJQ7u5QMHgVKnrmM2AG3dPZPlJHXH9RaZ9zT40+FdiZGm9Vg0T/oStMtv3QMklpFn+S
-         Turq9TUdyZ7Yo/Vc+TjiSEFdaaRtIPQWuwTDcTymj5x32eTRlafZOlrgAg9K7nLXSA4u
-         /x4mRqbxxELkkbzQnLiqxsmPBwne4DAD0X/agWnxFputBnBQKHEWAdB0YJIF2+8pM6xe
-         Rtag==
-X-Gm-Message-State: AOAM531bBheoOAXOM/MS/RCvaHSIcBByCxnBQXJPDstz98Pv9Ob55Y6l
-        oCPLEytOYbeyvAzixNSdJZXkqfCljC9tMcXShvnK3mPV6ig=
-X-Google-Smtp-Source: ABdhPJzzGKKtUdu0GD7g+0tvRt2LpeHVLEJtio0zvqGoeX91+898nx3jfXTANBzU16f7JV4LswBiPz6epEXTATQ/D5g=
-X-Received: by 2002:a05:6512:450:: with SMTP id y16mr2958760lfk.200.1631776678762;
- Thu, 16 Sep 2021 00:17:58 -0700 (PDT)
+        id S234776AbhIPH1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 03:27:13 -0400
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:16768 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232254AbhIPH1J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 03:27:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1631777149; x=1663313149;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=+cB0Ekh8IpXQNeJaDPNfiBsWeb1pt6pnZjUTIg4exrk=;
+  b=SMfISRg+f8NMfbxcTtYhrVORo1s8Q4KAl2JIFcDNsoC//RKFAvGoIIa+
+   8Zck7Di8Msap/6++ng7do/0EiayQi8ZlpHX8gRj2K87xOchaE3uOUdGg9
+   KTl0huPkz50YSn8Z1v/olVX1JujcS2G/4MDWklmFkVNOlHUhTF0r2LKub
+   5WN7Flk8o+8ykFyCqq1xXD8SuQXdRlptOY0j+dSylj61zZHQ7r7l5cN1q
+   ltujLSkwX+Q6N5WZ7tEGDSRAg2L2Uyk1GRJoovArrW7kXLF+E2Iljg9KU
+   zYzG/x4Qg5S1hWqnKzNw1w2hazP6mumvY16NlVxwftt+JvqW4/ZA5PFeo
+   Q==;
+IronPort-SDR: Gf7KAlYbfeU97ZXiPz7s1LTH2P/EKuKZ5dd3bjr2IG7rAy9BuljZP6aXbiXTKxlFES0l6j98wy
+ k2Bn5iKBlESO6tkTq47kSGU40RmjCGeQ5dLc4vtQI5w/DXkUhaBZuJJU94dFVzctdNj2PWngyY
+ ltPbo0oco0lDzTNN45y7MmLSJCNH5L0vq6zi3hZ8b7Jfsplrksn/OjXugPYjN5yLDTRqmMTPLM
+ WChDFNpWEvvVNXtsU2bWd1uNDhAkVZlNP7clCMpS4F9TksLPT1Poa77tLy+f7NHrCqZ5MEVVGR
+ VcVItcthE/i+Pct3DH63uxZ9
+X-IronPort-AV: E=Sophos;i="5.85,297,1624345200"; 
+   d="scan'208";a="144332533"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Sep 2021 00:25:48 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Thu, 16 Sep 2021 00:25:48 -0700
+Received: from [10.159.245.112] (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2176.14 via Frontend
+ Transport; Thu, 16 Sep 2021 00:25:46 -0700
+Subject: Re: [PATCH] net: cadence: macb: Make use of the helper function
+ dev_err_probe()
+To:     Cai Huoqing <caihuoqing@baidu.com>
+CC:     Claudiu Beznea <claudiu.beznea@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20210915145804.7357-1-caihuoqing@baidu.com>
+From:   Nicolas Ferre <nicolas.ferre@microchip.com>
+Organization: microchip
+Message-ID: <9318f9be-88f3-5405-11fa-b51a8ada7c2c@microchip.com>
+Date:   Thu, 16 Sep 2021 09:25:45 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-References: <20210916055045.60032-1-wangxiang@cdjrlc.com>
-In-Reply-To: <20210916055045.60032-1-wangxiang@cdjrlc.com>
-From:   Bongsu Jeon <bongsu.jeon2@gmail.com>
-Date:   Thu, 16 Sep 2021 16:17:44 +0900
-Message-ID: <CACwDmQCyswon-WkVKtG7AUg2uwa0DD_xdvd=VrtK3OtJ_6i09w@mail.gmail.com>
-Subject: Re: [PATCH] selftests: nci: use int replace unsigned int
-To:     Xiang wangx <wangxiang@cdjrlc.com>
-Cc:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210915145804.7357-1-caihuoqing@baidu.com>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 16, 2021 at 2:55 PM Xiang wangx <wangxiang@cdjrlc.com> wrote:
->
-> Should not use unsigned expression compared with zero
->
-> Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
-> ---
->  tools/testing/selftests/nci/nci_dev.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/tools/testing/selftests/nci/nci_dev.c b/tools/testing/selftests/nci/nci_dev.c
-> index e1bf55dabdf6..162c41e9bcae 100644
-> --- a/tools/testing/selftests/nci/nci_dev.c
-> +++ b/tools/testing/selftests/nci/nci_dev.c
-> @@ -746,7 +746,7 @@ int read_write_nci_cmd(int nfc_sock, int virtual_fd, const __u8 *cmd, __u32 cmd_
->                        const __u8 *rsp, __u32 rsp_len)
->  {
->         char buf[256];
-> -       unsigned int len;
-> +       int len;
->
->         send(nfc_sock, &cmd[3], cmd_len - 3, 0);
->         len = read(virtual_fd, buf, cmd_len);
-> --
-> 2.20.1
->
+On 15/09/2021 at 16:58, Cai Huoqing wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> 
+> When possible use dev_err_probe help to properly deal with the
+> PROBE_DEFER error, the benefit is that DEFER issue will be logged
+> in the devices_deferred debugfs file.
 
-Thanks for fixing it.
-
-Reviewed-by: Bongsu Jeon
+Well, I don't see where the PROBE_DEFER error could be triggered by the 
+call graph of this function: can you please point me to where this error 
+could come from?
 
 Best regards,
-Bongsu
+   Nicolas
+
+
+> And using dev_err_probe() can reduce code size, and simplify the code.
+> 
+> Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
+
+NACK, for now.
+
+> ---
+>   drivers/net/ethernet/cadence/macb_pci.c | 6 ++----
+>   1 file changed, 2 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/cadence/macb_pci.c b/drivers/net/ethernet/cadence/macb_pci.c
+> index 8b7b59908a1a..d09c570a15ae 100644
+> --- a/drivers/net/ethernet/cadence/macb_pci.c
+> +++ b/drivers/net/ethernet/cadence/macb_pci.c
+> @@ -35,10 +35,8 @@ static int macb_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+> 
+>          /* enable pci device */
+>          err = pcim_enable_device(pdev);
+> -       if (err < 0) {
+> -               dev_err(&pdev->dev, "Enabling PCI device has failed: %d", err);
+> -               return err;
+> -       }
+> +       if (err < 0)
+> +               return dev_err_probe(&pdev->dev, err, "Enabling PCI device has failed\n");
+> 
+>          pci_set_master(pdev);
+> 
+> --
+> 2.25.1
+> 
+
+
+-- 
+Nicolas Ferre
