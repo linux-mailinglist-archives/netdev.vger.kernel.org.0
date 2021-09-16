@@ -2,123 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A8D8240D584
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 11:04:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E6C740D5B6
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 11:14:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235287AbhIPJFz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 05:05:55 -0400
-Received: from conssluserg-02.nifty.com ([210.131.2.81]:18443 "EHLO
-        conssluserg-02.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233839AbhIPJFy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 05:05:54 -0400
-Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174]) (authenticated)
-        by conssluserg-02.nifty.com with ESMTP id 18G943If031888;
-        Thu, 16 Sep 2021 18:04:04 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 18G943If031888
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1631783044;
-        bh=/Me94CHI6D7Grr/8zySCJznRVytvYJSDU0FIaolkDBw=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=fVl8pB5YtiFRnT0CZxZbTo+FfRuYBSqrQgg1faX3k5qXdY/eT1ZTr2uc+vJVu/wIc
-         yl85E+hBYJN5tLSdYBauy+5PIF1Ip044qrNNkW7QMiiqPDxO3gDgbc3HyKrt/+wFAA
-         m65HJ72UWerudX+gQT2IDU0Gad9hyfqDq8F5ja4yK3RyE4vhucQ+IWVaH9f1J+N+jk
-         EJfa6FkcNLhiIgXj7ncf4wlL6oVIZoD/qG9bO1WiuGbaw2+tPUoDscCm472NOSDN7a
-         +BKR0FnOqx/k4bd+SF+G6xz/pycaPdoYsBCorOBmd8cwE+lg7QKhcrWtfDqNfIS6S+
-         HTNwe502FDWKw==
-X-Nifty-SrcIP: [209.85.214.174]
-Received: by mail-pl1-f174.google.com with SMTP id v2so3372604plp.8;
-        Thu, 16 Sep 2021 02:04:03 -0700 (PDT)
-X-Gm-Message-State: AOAM533p76oBGSRxjymM71Sk39JfgHi3OZy+Zg8TgGimsTjlrBuje+TX
-        fEcFjAHP/erYEn8f5TO42wtqBxKQ8LTUtnCTSU0=
-X-Google-Smtp-Source: ABdhPJxEnFljfssNoXutqySyeUzI+AmBXxzdw4JCokqyxa1jombHYCaZ+PLCvcYjvH94X4x99MQ7AZPxoetqYajKAS0=
-X-Received: by 2002:a17:90a:192:: with SMTP id 18mr13726656pjc.119.1631783043186;
- Thu, 16 Sep 2021 02:04:03 -0700 (PDT)
+        id S235806AbhIPJPu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 05:15:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40926 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235418AbhIPJPm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Sep 2021 05:15:42 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4E1A0611CA;
+        Thu, 16 Sep 2021 09:14:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1631783661;
+        bh=HpXVplz89oKyc+hivBPzxb/s0fvvid7dqIkLDoV0E8s=;
+        h=From:To:Cc:Subject:Date:From;
+        b=lRyC+Gl6hpA65PTmNoIvzIyVlFwS1vvgpOXA4IShHvXBxni2jYB5SiQUoU+fAPpe7
+         MhnOfSEDpi0f8ZqYssR8CnOyMA/WbCzxSWt1mOakOCY8TqwNRCL3kQrQCKrB2zWRIB
+         5G0n7Tz6Uoky9NsNn5NDTtSzpSpYgyGclzrBZA3Gs8NpLY4HEgX3PjaPn8FmThtKR2
+         aBhvThsya5NVQoLmW1gxaxwHQwFF6ykyqS6fssrJvf8d7OLU9EwLMDYNfhy/Dw6CY7
+         InDJMP3HNKwr3VvEbl2g/5QXYa9v7CBmkpGyauf133KiKGoSP98tRVlSt1Mjgaucod
+         b9jsm+2PWf6gQ==
+Received: by mail.kernel.org with local (Exim 4.94.2)
+        (envelope-from <mchehab@kernel.org>)
+        id 1mQnTH-001sKa-8R; Thu, 16 Sep 2021 11:14:19 +0200
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>
+Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        linux-kernel@vger.kernel.org, Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Evgeniy Polyakov <zbr@ioremap.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        bpf@vger.kernel.org, devicetree@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-kselftest@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-mmc@vger.kernel.org,
+        linux-omap@vger.kernel.org, netdev@vger.kernel.org,
+        sparmaintainer@unisys.com
+Subject: [PATCH 00/24] Fix some issues at documentation
+Date:   Thu, 16 Sep 2021 11:13:53 +0200
+Message-Id: <cover.1631783482.git.mchehab+huawei@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20210914121550.39cfd366@canb.auug.org.au>
-In-Reply-To: <20210914121550.39cfd366@canb.auug.org.au>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Thu, 16 Sep 2021 18:03:26 +0900
-X-Gmail-Original-Message-ID: <CAK7LNASCbVJ0EYoGN8iz+yskpHUuR_PZnePUUtgJu9UZqGW2cg@mail.gmail.com>
-Message-ID: <CAK7LNASCbVJ0EYoGN8iz+yskpHUuR_PZnePUUtgJu9UZqGW2cg@mail.gmail.com>
-Subject: Re: linux-next: build failure after merge of the net-next tree
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Alexey Dobriyan <adobriyan@gmail.com>,
-        M Chetan Kumar <m.chetan.kumar@linux.intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Sender: Mauro Carvalho Chehab <mchehab@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 14, 2021 at 11:15 AM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
->
-> Hi all,
->
-> After merging the net-next tree, today's linux-next build (x86_64
-> allmodconfig) failed like this:
->
-> In file included from drivers/net/wwan/iosm/iosm_ipc_task_queue.c:6:
-> drivers/net/wwan/iosm/iosm_ipc_imem.h:10:10: fatal error: stdbool.h: No such file or directory
->    10 | #include <stdbool.h>
->       |          ^~~~~~~~~~~
-> In file included from drivers/net/wwan/iosm/iosm_ipc_protocol.h:9,
->                  from drivers/net/wwan/iosm/iosm_ipc_mux.h:9,
->                  from drivers/net/wwan/iosm/iosm_ipc_chnl_cfg.h:9,
->                  from drivers/net/wwan/iosm/iosm_ipc_imem_ops.c:8:
-> drivers/net/wwan/iosm/iosm_ipc_imem.h:10:10: fatal error: stdbool.h: No such file or directory
->    10 | #include <stdbool.h>
->       |          ^~~~~~~~~~~
-> In file included from drivers/net/wwan/iosm/iosm_ipc_protocol.h:9,
->                  from drivers/net/wwan/iosm/iosm_ipc_mux.h:9,
->                  from drivers/net/wwan/iosm/iosm_ipc_chnl_cfg.h:9,
->                  from drivers/net/wwan/iosm/iosm_ipc_imem.c:8:
-> drivers/net/wwan/iosm/iosm_ipc_imem.h:10:10: fatal error: stdbool.h: No such file or directory
->    10 | #include <stdbool.h>
->       |          ^~~~~~~~~~~
->
-> Caused by commit
->
->   13bb8429ca98 ("net: wwan: iosm: firmware flashing and coredump collection")
->
-> interacting with commit
->
->   0666a64a1f48 ("isystem: delete global -isystem compile option")
->
-> from the kbuild tree.
->
-> I have reverted the kbuild tree commit for today.  Please provide a
-> merge resolution patch.
+Hi John,
 
-I am sad to see the kbuild change reverted, not the net one.
+The first patch in this series fix a bad character used instead of
+a "(c)" UTF-8 symbol.
 
-13bb8429ca98 is apparently doing wrong.
+The remaining ones fix several broken references to files
+under Documentation/, several due to DT schema conversions
+from .txt to .yaml.
 
-Including <linux/types.h> should be fine.
+Mauro Carvalho Chehab (24):
+  visorbus: fix a copyright symbol that was bad encoded
+  dt-bindings: net: dsa: sja1105: update nxp,sja1105.yaml reference
+  dt-bindings: arm: mediatek: mmsys: update mediatek,mmsys.yaml
+    reference
+  dt-bindings: w1: update w1-gpio.yaml reference
+  dt-bindings: mmc: update mmc-card.yaml reference
+  libbpf: update index.rst reference
+  docs: accounting: update delay-accounting.rst reference
+  tools: bpftool: update bpftool-prog.rst reference
+  tools: bpftool: update bpftool-map.rst reference
+  bpftool: update bpftool-cgroup.rst reference
+  MAINTAINERS: update mtd-physmap.yaml reference
+  MAINTAINERS: update arm,vic.yaml reference
+  MAINTAINERS: update aspeed,i2c.yaml reference
+  MAINTAINERS: update faraday,ftrtc010.yaml reference
+  MAINTAINERS: update fsl,fec.yaml reference
+  MAINTAINERS: update mtd-physmap.yaml reference
+  MAINTAINERS: update ti,am654-hbmc.yaml reference
+  MAINTAINERS: update ti,sci.yaml reference
+  MAINTAINERS: update intel,ixp46x-rng.yaml reference
+  MAINTAINERS: update nxp,imx8-jpeg.yaml reference
+  MAINTAINERS: update gemini.yaml reference
+  MAINTAINERS: update brcm,unimac-mdio.yaml reference
+  MAINTAINERS: update chipone,icn8318.yaml reference
+  MAINTAINERS: update silergy,sy8106a.yaml reference
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-> --
-> Cheers,
-> Stephen Rothwell
-
-
+ Documentation/admin-guide/sysctl/kernel.rst   |  2 +-
+ Documentation/bpf/index.rst                   |  2 +-
+ .../display/mediatek/mediatek,disp.txt        |  2 +-
+ Documentation/networking/dsa/sja1105.rst      |  2 +-
+ Documentation/w1/masters/w1-gpio.rst          |  2 +-
+ MAINTAINERS                                   | 28 +++++++++----------
+ drivers/mmc/host/omap_hsmmc.c                 |  2 +-
+ drivers/visorbus/visorbus_main.c              |  2 +-
+ .../selftests/bpf/test_bpftool_synctypes.py   |  6 ++--
+ 9 files changed, 24 insertions(+), 24 deletions(-)
 
 -- 
-Best Regards
-Masahiro Yamada
+2.31.1
+
+
