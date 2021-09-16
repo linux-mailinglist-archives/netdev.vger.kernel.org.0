@@ -2,41 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE4C840D5B0
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 11:14:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E25C740D5A6
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 11:14:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235794AbhIPJPp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 05:15:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40908 "EHLO mail.kernel.org"
+        id S235632AbhIPJPm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 05:15:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40852 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235411AbhIPJPl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S235383AbhIPJPl (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 16 Sep 2021 05:15:41 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5BEA26120F;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5099861209;
         Thu, 16 Sep 2021 09:14:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1631783661;
-        bh=P40uukirW3FFGa1Zimq5CX1XaC1AElNM7bJsxfRbqLI=;
+        bh=83vkFWOnmUdHmvdZYCb71ZYm+RoKY7l/VWT0C4zUsJ4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mp0q2G4vT0EkLqQ2lHS9PNQGkJ6u75paaXDSXYYDB5upoLXu5Z2QsH8owaRIPQiuM
-         /ssCvGEvebj2QRG3ct6VB1VdDIRY6ZfMu9rYV7uDBfLb0+WGt6T94R6o4f7nRme1hM
-         FNscx5y6WE9lpaGxZ7NxDTuCcxZrljL7njAAP6vIsL/4j2Ff4dg34GGSCVizCes6UK
-         OPWinlBjn5ndSZ9GEErNvwYbCpWqoBGaaqw/RmY3PiQ7+ie+X07mLnBX9utxwv9vj1
-         GHpOURZAchb8rENAvJcv1KzyzsNZRW+5m+nJU+Y+DA1E5VZnwW6nIBhmK8EL1WmPI1
-         4JafdvcDxPWpA==
+        b=E+lyG1uloXhex9KJPzmERJ3/tNtAQeJV7eTNB8mZFXHv/gDwyyG+pYEv5ko8Dkn1T
+         UMNuZZPpEshs5pCUZ7dcLyjqwghAlh3HAtVR4RT0OUXRJOKKdtWKKw3G03zLGrAJTX
+         uVemPgyMaJuyNEermSBMcxsXQ9EWFuHa4RWSoYekzz8LdOE7sgx3RTQ6cYj1Dp0VAa
+         SeqEBrQipxYXiBpSXd63V5XTrzJKB5fuGD/0M/4MLWEfgzr03F7HZ7/7FqB3GmXJxm
+         XEHuflOkrFQttorRbUDFr8/CWGtkV89b1gAuwQwLTlhsrNqxdrMDb6vR6Wv+bDbePu
+         7x/XuJ4YYU2xA==
 Received: by mail.kernel.org with local (Exim 4.94.2)
         (envelope-from <mchehab@kernel.org>)
-        id 1mQnTH-001sKg-AW; Thu, 16 Sep 2021 11:14:19 +0200
+        id 1mQnTH-001sKx-Fd; Thu, 16 Sep 2021 11:14:19 +0200
 From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
         Jonathan Corbet <corbet@lwn.net>
 Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH 02/24] dt-bindings: net: dsa: sja1105: update nxp,sja1105.yaml reference
-Date:   Thu, 16 Sep 2021 11:13:55 +0200
-Message-Id: <cde8e4181286d7e0ea2c750528b2604d77863b98.1631783482.git.mchehab+huawei@kernel.org>
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Grant Seltzer <grantseltzer@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH 06/24] libbpf: update index.rst reference
+Date:   Thu, 16 Sep 2021 11:13:59 +0200
+Message-Id: <ae12f5de645a2ae07f183babe6615bdf0384f9a8.1631783482.git.mchehab+huawei@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1631783482.git.mchehab+huawei@kernel.org>
 References: <cover.1631783482.git.mchehab+huawei@kernel.org>
@@ -47,31 +52,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Changeset 62568bdbe6f6 ("dt-bindings: net: dsa: sja1105: convert to YAML schema")
-renamed: Documentation/devicetree/bindings/net/dsa/sja1105.txt
-to: Documentation/devicetree/bindings/net/dsa/nxp,sja1105.yaml.
+Changeset d20b41115ad5 ("libbpf: Rename libbpf documentation index file")
+renamed: Documentation/bpf/libbpf/libbpf.rst
+to: Documentation/bpf/libbpf/index.rst.
 
 Update its cross-reference accordingly.
 
-Fixes: 62568bdbe6f6 ("dt-bindings: net: dsa: sja1105: convert to YAML schema")
+Fixes: d20b41115ad5 ("libbpf: Rename libbpf documentation index file")
 Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 ---
- Documentation/networking/dsa/sja1105.rst | 2 +-
+ Documentation/bpf/index.rst | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/networking/dsa/sja1105.rst b/Documentation/networking/dsa/sja1105.rst
-index 564caeebe2b2..29b1bae0cf00 100644
---- a/Documentation/networking/dsa/sja1105.rst
-+++ b/Documentation/networking/dsa/sja1105.rst
-@@ -296,7 +296,7 @@ not available.
- Device Tree bindings and board design
- =====================================
+diff --git a/Documentation/bpf/index.rst b/Documentation/bpf/index.rst
+index 1ceb5d704a97..817a201a1282 100644
+--- a/Documentation/bpf/index.rst
++++ b/Documentation/bpf/index.rst
+@@ -15,7 +15,7 @@ that goes into great technical depth about the BPF Architecture.
+ libbpf
+ ======
  
--This section references ``Documentation/devicetree/bindings/net/dsa/sja1105.txt``
-+This section references ``Documentation/devicetree/bindings/net/dsa/nxp,sja1105.yaml``
- and aims to showcase some potential switch caveats.
+-Documentation/bpf/libbpf/libbpf.rst is a userspace library for loading and interacting with bpf programs.
++Documentation/bpf/libbpf/index.rst is a userspace library for loading and interacting with bpf programs.
  
- RMII PHY role and out-of-band signaling
+ BPF Type Format (BTF)
+ =====================
 -- 
 2.31.1
 
