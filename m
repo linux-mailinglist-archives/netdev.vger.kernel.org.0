@@ -2,88 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB09D40E52D
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 19:26:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A7FA40E82D
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 20:00:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350045AbhIPRIl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 13:08:41 -0400
-Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:54134
-        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1349623AbhIPRGd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 13:06:33 -0400
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com [209.85.128.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 1877C4025C
-        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 17:05:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1631811911;
-        bh=rJLndy7vYT8KK3DyfsRiA9NiE5njla3gXvJ0MjK8FFQ=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=AA6A4GkZWMAE5Q0jXK9qZJw5aGDocZDqrzEEaP4iUbiShcdpZ53HWqAF5Pg6EShuA
-         +wDG9m2hdGzc0OhdlyD12yOooo7Y1anVHUSMHG80s2xyWwJ6X83oXTXI78H05NGgli
-         ORevqNRBon82UgJuHXId2/IjKbk5PGNfvB01JgVMMiG2Un+6IfK3YS1xCb9Ew5BGr5
-         ZtHifXEPxUlNdMnfkygfywhNf/y0PWdUONru29n9HfpcBhgI4UDucCneeQHbvdQv+Q
-         LbAZVC8ycb7szcap/VyJ9SNv3vkOLfEJONkEmzrCJdWwkL5CAmUoo7peQisXvdy92y
-         7a9I5Ubq5OYqw==
-Received: by mail-wm1-f69.google.com with SMTP id x10-20020a7bc76a000000b002f8cba3fd65so2817002wmk.2
-        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 10:05:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rJLndy7vYT8KK3DyfsRiA9NiE5njla3gXvJ0MjK8FFQ=;
-        b=1efxZObt3dD0ieDlrfbuuQsPaz7mRu16udeiLeEuLAgFK2hAAJ77EjfyhhLARyYQPu
-         3zeTAOIJ4FvAR8qDcYfPOuZ5beJHglTpXy9nX2XBCHQVqt8XFXc8jXWXmRkUhQ+WdQq/
-         b4SznN8onREvYZ+RzjbwT3Dh9NYFzMJ+iWX4QaakrvY+WiD4aOglUB7jyHJ4MtKRT1ud
-         8FRrJE8Myex5/LURvL8xIPTBJOZ1g/ACE99geiTXm84yJvBn54RB3A56qQ3RdQGRAdPq
-         hhNsJi1nry/NBQnjXKbImLvurZhyQ3iqs369r+LZ0GLU2h0EKtq5YjPtzHGJ7flkouyE
-         dpmg==
-X-Gm-Message-State: AOAM533+nM9lbng/jDZ+VWKbX2aNJSEKMGyhMXHjAo4KLBShJqvysb55
-        VyzesRjhWmugd3BWTP0AIZ4XtUTtf41LaUVSnJ3/V/POK458ZBzkPnkmlYbV4xHidCH9pzW5TLc
-        SE6PeA37CEujWUtmdCUflJl6FwOYOySCF7g==
-X-Received: by 2002:adf:c550:: with SMTP id s16mr7421755wrf.25.1631811910775;
-        Thu, 16 Sep 2021 10:05:10 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxFYtHcY/pCrEnne5d5sj3Tc+0m4I8Dcf1ztUXT2sEDAI/adJeu3Bu9HXH0roVlg18oA0IcyA==
-X-Received: by 2002:adf:c550:: with SMTP id s16mr7421732wrf.25.1631811910658;
-        Thu, 16 Sep 2021 10:05:10 -0700 (PDT)
-Received: from kozik-lap.lan (lk.84.20.244.219.dc.cable.static.lj-kabel.net. [84.20.244.219])
-        by smtp.gmail.com with ESMTPSA id c15sm4139190wrc.83.2021.09.16.10.05.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Sep 2021 10:05:10 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH] net: microchip: encx24j600: drop unneeded MODULE_ALIAS
-Date:   Thu, 16 Sep 2021 19:05:08 +0200
-Message-Id: <20210916170508.137820-1-krzysztof.kozlowski@canonical.com>
-X-Mailer: git-send-email 2.30.2
+        id S1350471AbhIPRoD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 13:44:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57074 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1355819AbhIPRmK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Sep 2021 13:42:10 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 383E560F11;
+        Thu, 16 Sep 2021 17:07:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1631812062;
+        bh=2DlbyUjSYEPcA1CMZ9Xj/nlxDT/ODrhL02P3+ejffBw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=c5nCEV/4NySYk2cRe22gcl1DZ7WShDxH6uPrunRQ1wDUKlITwE5b4D/XqMgvYoCGw
+         nO7WtMQBbNIJWSdWkagTA1pA4Uql5Ly5JqoXj4CkR+1YiD4GLe7IheiwfCtss9Fbnt
+         rL/njAfGrIuT6hUtZH60zMDTN4L6jaxB9tiZlSQ0sMzoZcesBRI9RiFXjSkUhvCH/e
+         Nxdy7kc37Gse82AxSz3r4emrLHv5YCoT4Ojg4hUq0t+6tpXpqA+56tDGlILmlSzC9K
+         rRpukdOhay2GDin+lY+pyGGVrSOQ927FMnis/cNgK6eRlCFA9NAvY3b2y0WbVWXuFU
+         kXquaGnCBnW/w==
+Date:   Thu, 16 Sep 2021 12:07:40 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     hkallweit1@gmail.com, nic_swsd@realtek.com, bhelgaas@google.com,
+        davem@davemloft.net, kuba@kernel.org, anthony.wong@canonical.com,
+        netdev@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC] [PATCH net-next v5 2/3] r8169: Use PCIe ASPM status for
+ NIC ASPM enablement
+Message-ID: <20210916170740.GA1624437@bjorn-Precision-5520>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210916154417.664323-3-kai.heng.feng@canonical.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The MODULE_DEVICE_TABLE already creates proper alias for spi driver.
-Having another MODULE_ALIAS causes the alias to be duplicated.
+On Thu, Sep 16, 2021 at 11:44:16PM +0800, Kai-Heng Feng wrote:
+> Because ASPM control may not be granted by BIOS while ASPM is enabled,
+> and ASPM can be enabled via sysfs, so use pcie_aspm_enabled() directly
+> to check current ASPM enable status.
+> 
+> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+> ---
+> v5:
+>  - New patch.
+> 
+>  drivers/net/ethernet/realtek/r8169_main.c | 13 ++++++++-----
+>  1 file changed, 8 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+> index 0199914440abc..6f1a9bec40c05 100644
+> --- a/drivers/net/ethernet/realtek/r8169_main.c
+> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+> @@ -622,7 +622,6 @@ struct rtl8169_private {
+>  	} wk;
+>  
+>  	unsigned supports_gmii:1;
+> -	unsigned aspm_manageable:1;
+>  	dma_addr_t counters_phys_addr;
+>  	struct rtl8169_counters *counters;
+>  	struct rtl8169_tc_offsets tc_offset;
+> @@ -2664,8 +2663,13 @@ static void rtl_enable_exit_l1(struct rtl8169_private *tp)
+>  
+>  static void rtl_hw_aspm_clkreq_enable(struct rtl8169_private *tp, bool enable)
+>  {
+> -	/* Don't enable ASPM in the chip if OS can't control ASPM */
+> -	if (enable && tp->aspm_manageable) {
+> +	struct pci_dev *pdev = tp->pci_dev;
+> +
+> +	/* Don't enable ASPM in the chip if PCIe ASPM isn't enabled */
+> +	if (!pcie_aspm_enabled(pdev) && enable)
+> +		return;
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
----
- drivers/net/ethernet/microchip/encx24j600.c | 1 -
- 1 file changed, 1 deletion(-)
+What happens when the user enables or disables ASPM via sysfs (see
+https://git.kernel.org/linus/72ea91afbfb0)?
 
-diff --git a/drivers/net/ethernet/microchip/encx24j600.c b/drivers/net/ethernet/microchip/encx24j600.c
-index ee921a99e439..c548e6372352 100644
---- a/drivers/net/ethernet/microchip/encx24j600.c
-+++ b/drivers/net/ethernet/microchip/encx24j600.c
-@@ -1122,4 +1122,3 @@ module_spi_driver(encx24j600_spi_net_driver);
- MODULE_DESCRIPTION(DRV_NAME " ethernet driver");
- MODULE_AUTHOR("Jon Ringle <jringle@gridpoint.com>");
- MODULE_LICENSE("GPL");
--MODULE_ALIAS("spi:" DRV_NAME);
--- 
-2.30.2
+The driver is not going to know about that change.
 
+> +	if (enable) {
+>  		RTL_W8(tp, Config5, RTL_R8(tp, Config5) | ASPM_en);
+>  		RTL_W8(tp, Config2, RTL_R8(tp, Config2) | ClkReqEn);
+>  	} else {
+> @@ -5272,8 +5276,7 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  	/* Disable ASPM L1 as that cause random device stop working
+>  	 * problems as well as full system hangs for some PCIe devices users.
+>  	 */
+> -	rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1);
+> -	tp->aspm_manageable = !rc;
+> +	pci_disable_link_state(pdev, PCIE_LINK_STATE_L1);
+>  
+>  	/* enable device (incl. PCI PM wakeup and hotplug setup) */
+>  	rc = pcim_enable_device(pdev);
+> -- 
+> 2.32.0
+> 
