@@ -2,83 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32CE540DE36
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 17:36:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C871C40DE54
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 17:44:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239257AbhIPPhx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 11:37:53 -0400
-Received: from mx24.baidu.com ([111.206.215.185]:36928 "EHLO baidu.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S238146AbhIPPht (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Sep 2021 11:37:49 -0400
-Received: from BJHW-Mail-Ex13.internal.baidu.com (unknown [10.127.64.36])
-        by Forcepoint Email with ESMTPS id 5D66053E3965FAC9A189;
-        Thu, 16 Sep 2021 23:36:27 +0800 (CST)
-Received: from BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) by
- BJHW-Mail-Ex13.internal.baidu.com (10.127.64.36) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.14; Thu, 16 Sep 2021 23:36:27 +0800
-Received: from LAPTOP-UKSR4ENP.internal.baidu.com (172.31.63.8) by
- BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.14; Thu, 16 Sep 2021 23:36:26 +0800
-From:   Cai Huoqing <caihuoqing@baidu.com>
-To:     <caihuoqing@baidu.com>
-CC:     Mark Greer <mgreer@animalcreek.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] nfc: trf7970a: Make use of the helper function dev_err_probe()
-Date:   Thu, 16 Sep 2021 23:36:21 +0800
-Message-ID: <20210916153621.16576-1-caihuoqing@baidu.com>
-X-Mailer: git-send-email 2.17.1
+        id S239304AbhIPPpt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 11:45:49 -0400
+Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:33024
+        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231702AbhIPPps (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 11:45:48 -0400
+Received: from HP-EliteBook-840-G7.. (1-171-209-135.dynamic-ip.hinet.net [1.171.209.135])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 9328D40185;
+        Thu, 16 Sep 2021 15:44:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1631807066;
+        bh=D+6x42mV/eNHaJg6o/8m7nqSFdYIv9hJf3BQ21j7zcs=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=ri00jAUy9r6dPkWBuJUEzoYqptyPdG5gebAiAm55R/PCkcxPFYfLdc/J4za/sMNNs
+         +ANu94vpDQVCEIlLV4zZlOO0biSP1ZkCDUqh9FPWj5J4DLJMwhn2Hj+NKyYtubsZeq
+         mK+kyS/LaV8VnK6+64gLvr4SnEHNAKrmnBNIYGoVSOFUvLB/APWBc+5tISpi8XKUCm
+         NYcvJd2ggrjlsY6C8vhrU1/RG1ask+YObpDH96NHXTddhstAcAjHsCnx4b+z0Tfver
+         RAaadjezettzJT33lf31KRZqtVnB4rIC3SbzmjHgfNGfSBzLjshqYOTnXtlMk0t6hl
+         d4VbZGfoUjPSQ==
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+To:     hkallweit1@gmail.com, nic_swsd@realtek.com, bhelgaas@google.com
+Cc:     davem@davemloft.net, kuba@kernel.org, anthony.wong@canonical.com,
+        netdev@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>
+Subject: [RFC] [PATCH net-next v5 0/3] r8169: Implement dynamic ASPM mechanism for recent 1.0/2.5Gbps Realtek NICs
+Date:   Thu, 16 Sep 2021 23:44:14 +0800
+Message-Id: <20210916154417.664323-1-kai.heng.feng@canonical.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.31.63.8]
-X-ClientProxiedBy: BC-Mail-Ex09.internal.baidu.com (172.31.51.49) To
- BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42)
-X-Baidu-BdMsfe-DateCheck: 1_BJHW-Mail-Ex13_2021-09-16 23:36:27:470
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When possible use dev_err_probe help to properly deal with the
-PROBE_DEFER error, the benefit is that DEFER issue will be logged
-in the devices_deferred debugfs file.
-Using dev_err_probe() can reduce code size, and the error value
-gets printed.
+The purpose of the series is to get comments and reviews so we can merge
+and test the series in downstream kernel.
 
-Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
----
- drivers/nfc/trf7970a.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+The latest Realtek vendor driver and its Windows driver implements a
+feature called "dynamic ASPM" which can improve performance on it's
+ethernet NICs.
 
-diff --git a/drivers/nfc/trf7970a.c b/drivers/nfc/trf7970a.c
-index 8890fcd59c39..8459a2735f2c 100644
---- a/drivers/nfc/trf7970a.c
-+++ b/drivers/nfc/trf7970a.c
-@@ -2067,8 +2067,8 @@ static int trf7970a_probe(struct spi_device *spi)
- 
- 	trf->regulator = devm_regulator_get(&spi->dev, "vin");
- 	if (IS_ERR(trf->regulator)) {
--		ret = PTR_ERR(trf->regulator);
--		dev_err(trf->dev, "Can't get VIN regulator: %d\n", ret);
-+		ret = dev_err_probe(trf->dev, PTR_ERR(trf->regulator),
-+				    "Can't get VIN regulator\n");
- 		goto err_destroy_lock;
- 	}
- 
-@@ -2084,8 +2084,8 @@ static int trf7970a_probe(struct spi_device *spi)
- 
- 	trf->regulator = devm_regulator_get(&spi->dev, "vdd-io");
- 	if (IS_ERR(trf->regulator)) {
--		ret = PTR_ERR(trf->regulator);
--		dev_err(trf->dev, "Can't get VDD_IO regulator: %d\n", ret);
-+		ret = dev_err_probe(trf->dev, PTR_ERR(trf->regulator),
-+				    "Can't get VDD_IO regulator\n");
- 		goto err_destroy_lock;
- 	}
- 
+Heiner Kallweit pointed out the potential root cause can be that the
+buffer is to small for its ASPM exit latency.
+
+So bring the dynamic ASPM to r8169 so we can have both nice performance
+and powersaving at the same time.
+
+For the slow/fast alternating traffic pattern, we'll need some real
+world test to know if we need to lower the dynamic ASPM interval.
+
+v4:
+https://lore.kernel.org/netdev/20210827171452.217123-1-kai.heng.feng@canonical.com/
+
+v3:
+https://lore.kernel.org/netdev/20210819054542.608745-1-kai.heng.feng@canonical.com/
+
+v2:
+https://lore.kernel.org/netdev/20210812155341.817031-1-kai.heng.feng@canonical.com/
+
+v1:
+https://lore.kernel.org/netdev/20210803152823.515849-1-kai.heng.feng@canonical.com/
+
+Kai-Heng Feng (3):
+  PCI/ASPM: Introduce a new helper to report ASPM capability
+  r8169: Use PCIe ASPM status for NIC ASPM enablement
+  r8169: Implement dynamic ASPM mechanism
+
+ drivers/net/ethernet/realtek/r8169_main.c | 69 ++++++++++++++++++++---
+ drivers/pci/pcie/aspm.c                   | 11 ++++
+ include/linux/pci.h                       |  2 +
+ 3 files changed, 73 insertions(+), 9 deletions(-)
+
 -- 
-2.25.1
+2.32.0
 
