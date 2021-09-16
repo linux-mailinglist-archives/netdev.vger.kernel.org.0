@@ -2,211 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5041C40D212
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 05:37:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0792C40D21C
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 05:42:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234231AbhIPDjC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Sep 2021 23:39:02 -0400
-Received: from out30-131.freemail.mail.aliyun.com ([115.124.30.131]:55047 "EHLO
-        out30-131.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233856AbhIPDjB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 23:39:01 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=tianjia.zhang@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0UoXWxcb_1631763458;
-Received: from localhost(mailfrom:tianjia.zhang@linux.alibaba.com fp:SMTPD_---0UoXWxcb_1631763458)
+        id S234207AbhIPDnr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Sep 2021 23:43:47 -0400
+Received: from out30-56.freemail.mail.aliyun.com ([115.124.30.56]:56456 "EHLO
+        out30-56.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233630AbhIPDnq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 23:43:46 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=yun.wang@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0UoXWyLM_1631763742;
+Received: from testdeMacBook-Pro.local(mailfrom:yun.wang@linux.alibaba.com fp:SMTPD_---0UoXWyLM_1631763742)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 16 Sep 2021 11:37:39 +0800
-From:   Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
-To:     Boris Pismenny <borisp@nvidia.com>,
-        John Fastabend <john.fastabend@gmail.com>,
+          Thu, 16 Sep 2021 11:42:23 +0800
+Subject: Re: [PATCH] x86: Increase exception stack sizes
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Dave Hansen <dave.hansen@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Paul Yang <kaishen.yy@antfin.com>,
-        Jia Zhang <zhang.jia@linux.alibaba.com>,
-        "YiLin . Li" <YiLin.Li@linux.alibaba.com>
-Cc:     Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
-Subject: [PATCH v2] net/tls: support SM4 GCM/CCM algorithm
-Date:   Thu, 16 Sep 2021 11:37:38 +0800
-Message-Id: <20210916033738.11971-1-tianjia.zhang@linux.alibaba.com>
-X-Mailer: git-send-email 2.19.1.3.ge56e4f7
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "open list:X86 MM" <linux-kernel@vger.kernel.org>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <netdev@vger.kernel.org>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <bpf@vger.kernel.org>
+References: <d16e7188-1afa-7513-990c-804811747bcb@linux.alibaba.com>
+ <d85f9710-67c9-2573-07c4-05d9c677d615@intel.com>
+ <d8853e49-8b34-4632-3e29-012eb605bea9@linux.alibaba.com>
+ <09777a57-a771-5e17-7e17-afc03ea9b83b@linux.alibaba.com>
+ <4f63c8bc-1d09-1717-cf81-f9091a9f9fb0@linux.alibaba.com>
+ <18252e42-9c30-73d4-e3bb-0e705a78af41@intel.com>
+ <4cba7088-f7c8-edcf-02cd-396eb2a56b46@linux.alibaba.com>
+ <bbe09ffb-08b7-824c-943f-dffef51e98c2@intel.com>
+ <ac31b8c7-122e-3467-566b-54f053ca0ae2@linux.alibaba.com>
+ <09d0190b-f2cc-9e64-4d3a-4eb0def22b7b@linux.alibaba.com>
+ <YUIO9Ye98S5Eb68w@hirez.programming.kicks-ass.net>
+From:   =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
+Message-ID: <0278349e-3a6d-9ebd-6cc3-490fb99d1990@linux.alibaba.com>
+Date:   Thu, 16 Sep 2021 11:42:22 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:78.0)
+ Gecko/20100101 Thunderbird/78.14.0
 MIME-Version: 1.0
+In-Reply-To: <YUIO9Ye98S5Eb68w@hirez.programming.kicks-ass.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The RFC8998 specification defines the use of the ShangMi algorithm
-cipher suites in TLS 1.3, and also supports the GCM/CCM mode using
-the SM4 algorithm.
 
-Signed-off-by: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
-Acked-by: Jakub Kicinski <kuba@kernel.org>
----
-v2 change:
-  * fix error macro names
 
- include/uapi/linux/tls.h | 30 ++++++++++++++++++++++++++
- net/tls/tls_main.c       | 46 ++++++++++++++++++++++++++++++++++++++++
- net/tls/tls_sw.c         | 34 +++++++++++++++++++++++++++++
- 3 files changed, 110 insertions(+)
+On 2021/9/15 下午11:19, Peter Zijlstra wrote:
+> On Wed, Sep 15, 2021 at 03:34:20PM +0800, 王贇 wrote:
+>> Hi, Dave, Peter
+>>
+>> What if we just increase the stack size when ftrace enabled?
+> 
+> I think we can do an unconditional increase. But please first test that
+> guard page patch :-)
 
-diff --git a/include/uapi/linux/tls.h b/include/uapi/linux/tls.h
-index 0d54baea1d8d..5f38be0ec0f3 100644
---- a/include/uapi/linux/tls.h
-+++ b/include/uapi/linux/tls.h
-@@ -84,6 +84,20 @@
- #define TLS_CIPHER_CHACHA20_POLY1305_TAG_SIZE	16
- #define TLS_CIPHER_CHACHA20_POLY1305_REC_SEQ_SIZE	8
- 
-+#define TLS_CIPHER_SM4_GCM				55
-+#define TLS_CIPHER_SM4_GCM_IV_SIZE			8
-+#define TLS_CIPHER_SM4_GCM_KEY_SIZE		16
-+#define TLS_CIPHER_SM4_GCM_SALT_SIZE		4
-+#define TLS_CIPHER_SM4_GCM_TAG_SIZE		16
-+#define TLS_CIPHER_SM4_GCM_REC_SEQ_SIZE		8
-+
-+#define TLS_CIPHER_SM4_CCM				56
-+#define TLS_CIPHER_SM4_CCM_IV_SIZE			8
-+#define TLS_CIPHER_SM4_CCM_KEY_SIZE		16
-+#define TLS_CIPHER_SM4_CCM_SALT_SIZE		4
-+#define TLS_CIPHER_SM4_CCM_TAG_SIZE		16
-+#define TLS_CIPHER_SM4_CCM_REC_SEQ_SIZE		8
-+
- #define TLS_SET_RECORD_TYPE	1
- #define TLS_GET_RECORD_TYPE	2
- 
-@@ -124,6 +138,22 @@ struct tls12_crypto_info_chacha20_poly1305 {
- 	unsigned char rec_seq[TLS_CIPHER_CHACHA20_POLY1305_REC_SEQ_SIZE];
- };
- 
-+struct tls12_crypto_info_sm4_gcm {
-+	struct tls_crypto_info info;
-+	unsigned char iv[TLS_CIPHER_SM4_GCM_IV_SIZE];
-+	unsigned char key[TLS_CIPHER_SM4_GCM_KEY_SIZE];
-+	unsigned char salt[TLS_CIPHER_SM4_GCM_SALT_SIZE];
-+	unsigned char rec_seq[TLS_CIPHER_SM4_GCM_REC_SEQ_SIZE];
-+};
-+
-+struct tls12_crypto_info_sm4_ccm {
-+	struct tls_crypto_info info;
-+	unsigned char iv[TLS_CIPHER_SM4_CCM_IV_SIZE];
-+	unsigned char key[TLS_CIPHER_SM4_CCM_KEY_SIZE];
-+	unsigned char salt[TLS_CIPHER_SM4_CCM_SALT_SIZE];
-+	unsigned char rec_seq[TLS_CIPHER_SM4_CCM_REC_SEQ_SIZE];
-+};
-+
- enum {
- 	TLS_INFO_UNSPEC,
- 	TLS_INFO_VERSION,
-diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-index fde56ff49163..d44399efeac6 100644
---- a/net/tls/tls_main.c
-+++ b/net/tls/tls_main.c
-@@ -421,6 +421,46 @@ static int do_tls_getsockopt_conf(struct sock *sk, char __user *optval,
- 			rc = -EFAULT;
- 		break;
- 	}
-+	case TLS_CIPHER_SM4_GCM: {
-+		struct tls12_crypto_info_sm4_gcm *sm4_gcm_info =
-+			container_of(crypto_info,
-+				struct tls12_crypto_info_sm4_gcm, info);
-+
-+		if (len != sizeof(*sm4_gcm_info)) {
-+			rc = -EINVAL;
-+			goto out;
-+		}
-+		lock_sock(sk);
-+		memcpy(sm4_gcm_info->iv,
-+		       cctx->iv + TLS_CIPHER_SM4_GCM_SALT_SIZE,
-+		       TLS_CIPHER_SM4_GCM_IV_SIZE);
-+		memcpy(sm4_gcm_info->rec_seq, cctx->rec_seq,
-+		       TLS_CIPHER_SM4_GCM_REC_SEQ_SIZE);
-+		release_sock(sk);
-+		if (copy_to_user(optval, sm4_gcm_info, sizeof(*sm4_gcm_info)))
-+			rc = -EFAULT;
-+		break;
-+	}
-+	case TLS_CIPHER_SM4_CCM: {
-+		struct tls12_crypto_info_sm4_ccm *sm4_ccm_info =
-+			container_of(crypto_info,
-+				struct tls12_crypto_info_sm4_ccm, info);
-+
-+		if (len != sizeof(*sm4_ccm_info)) {
-+			rc = -EINVAL;
-+			goto out;
-+		}
-+		lock_sock(sk);
-+		memcpy(sm4_ccm_info->iv,
-+		       cctx->iv + TLS_CIPHER_SM4_CCM_SALT_SIZE,
-+		       TLS_CIPHER_SM4_CCM_IV_SIZE);
-+		memcpy(sm4_ccm_info->rec_seq, cctx->rec_seq,
-+		       TLS_CIPHER_SM4_CCM_REC_SEQ_SIZE);
-+		release_sock(sk);
-+		if (copy_to_user(optval, sm4_ccm_info, sizeof(*sm4_ccm_info)))
-+			rc = -EFAULT;
-+		break;
-+	}
- 	default:
- 		rc = -EINVAL;
- 	}
-@@ -524,6 +564,12 @@ static int do_tls_setsockopt_conf(struct sock *sk, sockptr_t optval,
- 	case TLS_CIPHER_CHACHA20_POLY1305:
- 		optsize = sizeof(struct tls12_crypto_info_chacha20_poly1305);
- 		break;
-+	case TLS_CIPHER_SM4_GCM:
-+		optsize = sizeof(struct tls12_crypto_info_sm4_gcm);
-+		break;
-+	case TLS_CIPHER_SM4_CCM:
-+		optsize = sizeof(struct tls12_crypto_info_sm4_ccm);
-+		break;
- 	default:
- 		rc = -EINVAL;
- 		goto err_crypto_info;
-diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index 4feb95e34b64..989d1423a245 100644
---- a/net/tls/tls_sw.c
-+++ b/net/tls/tls_sw.c
-@@ -2424,6 +2424,40 @@ int tls_set_sw_offload(struct sock *sk, struct tls_context *ctx, int tx)
- 		cipher_name = "rfc7539(chacha20,poly1305)";
- 		break;
- 	}
-+	case TLS_CIPHER_SM4_GCM: {
-+		struct tls12_crypto_info_sm4_gcm *sm4_gcm_info;
-+
-+		sm4_gcm_info = (void *)crypto_info;
-+		nonce_size = TLS_CIPHER_SM4_GCM_IV_SIZE;
-+		tag_size = TLS_CIPHER_SM4_GCM_TAG_SIZE;
-+		iv_size = TLS_CIPHER_SM4_GCM_IV_SIZE;
-+		iv = sm4_gcm_info->iv;
-+		rec_seq_size = TLS_CIPHER_SM4_GCM_REC_SEQ_SIZE;
-+		rec_seq = sm4_gcm_info->rec_seq;
-+		keysize = TLS_CIPHER_SM4_GCM_KEY_SIZE;
-+		key = sm4_gcm_info->key;
-+		salt = sm4_gcm_info->salt;
-+		salt_size = TLS_CIPHER_SM4_GCM_SALT_SIZE;
-+		cipher_name = "gcm(sm4)";
-+		break;
-+	}
-+	case TLS_CIPHER_SM4_CCM: {
-+		struct tls12_crypto_info_sm4_ccm *sm4_ccm_info;
-+
-+		sm4_ccm_info = (void *)crypto_info;
-+		nonce_size = TLS_CIPHER_SM4_CCM_IV_SIZE;
-+		tag_size = TLS_CIPHER_SM4_CCM_TAG_SIZE;
-+		iv_size = TLS_CIPHER_SM4_CCM_IV_SIZE;
-+		iv = sm4_ccm_info->iv;
-+		rec_seq_size = TLS_CIPHER_SM4_CCM_REC_SEQ_SIZE;
-+		rec_seq = sm4_ccm_info->rec_seq;
-+		keysize = TLS_CIPHER_SM4_CCM_KEY_SIZE;
-+		key = sm4_ccm_info->key;
-+		salt = sm4_ccm_info->salt;
-+		salt_size = TLS_CIPHER_SM4_CCM_SALT_SIZE;
-+		cipher_name = "ccm(sm4)";
-+		break;
-+	}
- 	default:
- 		rc = -EINVAL;
- 		goto free_priv;
--- 
-2.19.1.3.ge56e4f7
+Nice~ let's focus on the guard one firstly.
 
+Regards,
+Michael Wang
+
+> 
+> ---
+> Subject: x86: Increase exception stack sizes
+> From: Peter Zijlstra <peterz@infradead.org>
+> Date: Wed Sep 15 16:19:46 CEST 2021
+> 
+> It turns out that a single page of stack is trivial to overflow with
+> all the tracing gunk enabled. Raise the exception stacks to 2 pages,
+> which is still half the interrupt stacks, which are at 4 pages.
+> 
+> Reported-by: Michael Wang <yun.wang@linux.alibaba.com>
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> ---
+>  arch/x86/include/asm/page_64_types.h |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> --- a/arch/x86/include/asm/page_64_types.h
+> +++ b/arch/x86/include/asm/page_64_types.h
+> @@ -15,7 +15,7 @@
+>  #define THREAD_SIZE_ORDER	(2 + KASAN_STACK_ORDER)
+>  #define THREAD_SIZE  (PAGE_SIZE << THREAD_SIZE_ORDER)
+>  
+> -#define EXCEPTION_STACK_ORDER (0 + KASAN_STACK_ORDER)
+> +#define EXCEPTION_STACK_ORDER (1 + KASAN_STACK_ORDER)
+>  #define EXCEPTION_STKSZ (PAGE_SIZE << EXCEPTION_STACK_ORDER)
+>  
+>  #define IRQ_STACK_ORDER (2 + KASAN_STACK_ORDER)
+> 
