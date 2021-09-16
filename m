@@ -2,243 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96D6740D226
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 05:48:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB5D940D23B
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 06:11:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234257AbhIPDtS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Sep 2021 23:49:18 -0400
-Received: from out30-133.freemail.mail.aliyun.com ([115.124.30.133]:51809 "EHLO
-        out30-133.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234265AbhIPDtO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 23:49:14 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=yun.wang@linux.alibaba.com;NM=1;PH=DS;RN=21;SR=0;TI=SMTPD_---0UoXWzBQ_1631764069;
-Received: from testdeMacBook-Pro.local(mailfrom:yun.wang@linux.alibaba.com fp:SMTPD_---0UoXWzBQ_1631764069)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 16 Sep 2021 11:47:50 +0800
-Subject: Re: [PATCH] x86/dumpstack/64: Add guard pages to stack_info
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "open list:PERFORMANCE EVENTS SUBSYSTEM" 
-        <linux-perf-users@vger.kernel.org>,
-        "open list:PERFORMANCE EVENTS SUBSYSTEM" 
-        <linux-kernel@vger.kernel.org>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <netdev@vger.kernel.org>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <bpf@vger.kernel.org>, jroedel@suse.de, x86@kernel.org
-References: <ff979a43-045a-dc56-64d1-2c31dd4db381@linux.alibaba.com>
- <20210910153839.GH4323@worktop.programming.kicks-ass.net>
- <f38987a5-dc36-a20d-8c5e-81e8ead5b4dc@linux.alibaba.com>
- <YT8m2B6D2yWc5Umq@hirez.programming.kicks-ass.net>
- <3fb7c51f-696b-da70-1965-1dda9910cb14@linux.alibaba.com>
- <YUB5VchM3a/MiZpX@hirez.programming.kicks-ass.net>
- <3f26f7a2-0a09-056a-3a7a-4795b6723b60@linux.alibaba.com>
- <YUIOgmOfnOqPrE+z@hirez.programming.kicks-ass.net>
-From:   =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
-Message-ID: <76de02b7-4d87-4a3a-e4d4-048829749887@linux.alibaba.com>
-Date:   Thu, 16 Sep 2021 11:47:49 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:78.0)
- Gecko/20100101 Thunderbird/78.14.0
+        id S232311AbhIPEMc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 00:12:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48106 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231283AbhIPEMb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 00:12:31 -0400
+Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6F45C061764
+        for <netdev@vger.kernel.org>; Wed, 15 Sep 2021 21:11:10 -0700 (PDT)
+Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 36FC1806A8;
+        Thu, 16 Sep 2021 16:11:06 +1200 (NZST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1631765466;
+        bh=xzFoaghB6J50a9Z3r8Mfbhqg3yDoiQQCqdhnRGIjaIo=;
+        h=From:To:Cc:Subject:Date;
+        b=hluijJ9qmc0De+wXQjuFTPAKO0qurTKIKiPHotnV6JaLQndMqlJUAu33dx2W8ebTP
+         DsORN+UW6/NC7c35gAxMA1vlUenwVSVtsY+uENgfHdNuAOdnLlH9hqbK6egSrx6m8O
+         TINSk+rDssUSBeFmnScey/grDjMr0yVwQSfRPJfP4lCQKE3fLlu4xEqT6gs2kJLSzK
+         hngBnIse3w3YLe5hPIb7rvK3dRXNTPWChxcEG8p7VUrSFFnMrV+8k7xw/wnl318cKE
+         jGVMWg9zyCHGI9dMiF0IGvUTpgFlAEFcs5zENty1hR0oT9iZBy/afSsPhvkX/EYVQd
+         9/DUHIqepBp5A==
+Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
+        id <B6142c3d90000>; Thu, 16 Sep 2021 16:11:05 +1200
+Received: from coled-dl.ws.atlnz.lc (coled-dl.ws.atlnz.lc [10.33.25.26])
+        by pat.atlnz.lc (Postfix) with ESMTP id EA44113ED4A;
+        Thu, 16 Sep 2021 16:11:05 +1200 (NZST)
+Received: by coled-dl.ws.atlnz.lc (Postfix, from userid 1801)
+        id E38802428CC; Thu, 16 Sep 2021 16:11:05 +1200 (NZST)
+From:   Cole Dishington <Cole.Dishington@alliedtelesis.co.nz>
+To:     pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
+        davem@davemloft.net, kuba@kernel.org, shuah@kernel.org
+Cc:     linux-kernel@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, netdev@vger.kernel.org,
+        Cole Dishington <Cole.Dishington@alliedtelesis.co.nz>,
+        Anthony Lineham <anthony.lineham@alliedtelesis.co.nz>,
+        Scott Parlane <scott.parlane@alliedtelesis.co.nz>,
+        Blair Steven <blair.steven@alliedtelesis.co.nz>
+Subject: [PATCH net v4] net: netfilter: Fix port selection of FTP for NF_NAT_RANGE_PROTO_SPECIFIED
+Date:   Thu, 16 Sep 2021 16:10:57 +1200
+Message-Id: <20210916041057.459-1-Cole.Dishington@alliedtelesis.co.nz>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-In-Reply-To: <YUIOgmOfnOqPrE+z@hirez.programming.kicks-ass.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+X-SEG-SpamProfiler-Analysis: v=2.3 cv=fY/TNHYF c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=7QKq2e-ADPsA:10 a=xOT0nC9th1TpZTiSAT0A:9 a=7Zwj6sZBwVKJAoWSPKxL6X1jA+E=:19
+X-SEG-SpamProfiler-Score: 0
+x-atlnz-ls: pat
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+FTP port selection ignores specified port ranges (with iptables
+masquerade --to-ports) when creating an expectation, based on
+FTP commands PORT or PASV, for the data connection.
 
+For masquerading, this issue allows an FTP client to use unassigned sourc=
+e ports
+for their data connection (in both the PORT and PASV cases). This can
+cause problems in setups that allocate different masquerade port ranges f=
+or each
+client.
 
-On 2021/9/15 下午11:17, Peter Zijlstra wrote:
-> On Wed, Sep 15, 2021 at 09:51:57AM +0800, 王贇 wrote:
-> 
->>> +
->>> +	if (in_exception_stack_guard((void *)address))
->>> +		pr_emerg("PANIC: exception stack guard: 0x%lx\n", address);
->>>  #endif
->>>  
->>>  	pr_emerg("PANIC: double fault, error_code: 0x%lx\n", error_code);
->>>
->>
->> The panic triggered as below after the stack size recovered, I found this info
->> could be helpful, maybe we should keep it?
-> 
-> Could you please test this?
+The proposed fix involves storing a port range (on nf_conn_nat) to:
+- Fix FTP PORT data connections using the stored port range to select a
+  port number in nf_conntrack_ftp.
+- Fix FTP PASV data connections using the stored port range to specify a
+  port range on source port in nf_nat_helper if the FTP PORT/PASV packet
+  comes from the client.
 
-I did some debug and found the issue, we are missing:
+Co-developed-by: Anthony Lineham <anthony.lineham@alliedtelesis.co.nz>
+Signed-off-by: Anthony Lineham <anthony.lineham@alliedtelesis.co.nz>
+Co-developed-by: Scott Parlane <scott.parlane@alliedtelesis.co.nz>
+Signed-off-by: Scott Parlane <scott.parlane@alliedtelesis.co.nz>
+Co-developed-by: Blair Steven <blair.steven@alliedtelesis.co.nz>
+Signed-off-by: Blair Steven <blair.steven@alliedtelesis.co.nz>
+Signed-off-by: Cole Dishington <Cole.Dishington@alliedtelesis.co.nz>
+---
 
-@@ -122,7 +137,10 @@ static __always_inline bool in_exception_stack(unsigned long *stack, struct stac
-        info->type      = ep->type;
-        info->begin     = (unsigned long *)begin;
-        info->end       = (unsigned long *)end;
--       info->next_sp   = (unsigned long *)regs->sp;
+Notes:
+    Thanks for your time reviewing!
+   =20
+    Changes:
+    - Avoid allocating same port to ftp data connection expectation as us=
+ed for ftp control.
+      - Changed ftp port selection back to a for loop with expectation ch=
+ecking.
+      - Iterate over a range of ports rather than exp dst port to max por=
+t.
+    - Added further description to commit message to detail the problem t=
+his patch is fixing.
+
+ include/net/netfilter/nf_nat.h |  6 ++++++
+ net/netfilter/nf_nat_core.c    |  9 +++++++++
+ net/netfilter/nf_nat_ftp.c     | 29 +++++++++++++++++++++--------
+ net/netfilter/nf_nat_helper.c  | 10 ++++++++++
+ 4 files changed, 46 insertions(+), 8 deletions(-)
+
+diff --git a/include/net/netfilter/nf_nat.h b/include/net/netfilter/nf_na=
+t.h
+index 0d412dd63707..231cffc16722 100644
+--- a/include/net/netfilter/nf_nat.h
++++ b/include/net/netfilter/nf_nat.h
+@@ -27,12 +27,18 @@ union nf_conntrack_nat_help {
+ #endif
+ };
+=20
++struct nf_conn_nat_range_info {
++	union nf_conntrack_man_proto    min_proto;
++	union nf_conntrack_man_proto    max_proto;
++};
 +
-+       if (!(ep->type & STACK_TYPE_GUARD))
-+               info->next_sp   = (unsigned long *)regs->sp;
+ /* The structure embedded in the conntrack structure. */
+ struct nf_conn_nat {
+ 	union nf_conntrack_nat_help help;
+ #if IS_ENABLED(CONFIG_NF_NAT_MASQUERADE)
+ 	int masq_index;
+ #endif
++	struct nf_conn_nat_range_info range_info;
+ };
+=20
+ /* Set up the info structure to map into this range. */
+diff --git a/net/netfilter/nf_nat_core.c b/net/netfilter/nf_nat_core.c
+index ea923f8cf9c4..5ae27cf7e808 100644
+--- a/net/netfilter/nf_nat_core.c
++++ b/net/netfilter/nf_nat_core.c
+@@ -623,6 +623,15 @@ nf_nat_setup_info(struct nf_conn *ct,
+ 			   &ct->tuplehash[IP_CT_DIR_REPLY].tuple);
+=20
+ 	get_unique_tuple(&new_tuple, &curr_tuple, range, ct, maniptype);
++	if (range && (range->flags & NF_NAT_RANGE_PROTO_SPECIFIED)) {
++		struct nf_conn_nat *nat =3D nf_ct_nat_ext_add(ct);
 +
-        return true;
- }
++		if (!nat)
++			return NF_DROP;
++
++		nat->range_info.min_proto =3D range->min_proto;
++		nat->range_info.max_proto =3D range->max_proto;
++	}
+=20
+ 	if (!nf_ct_tuple_equal(&new_tuple, &curr_tuple)) {
+ 		struct nf_conntrack_tuple reply;
+diff --git a/net/netfilter/nf_nat_ftp.c b/net/netfilter/nf_nat_ftp.c
+index aace6768a64e..499798ade988 100644
+--- a/net/netfilter/nf_nat_ftp.c
++++ b/net/netfilter/nf_nat_ftp.c
+@@ -72,8 +72,14 @@ static unsigned int nf_nat_ftp(struct sk_buff *skb,
+ 	u_int16_t port;
+ 	int dir =3D CTINFO2DIR(ctinfo);
+ 	struct nf_conn *ct =3D exp->master;
++	struct nf_conn_nat *nat =3D nfct_nat(ct);
++	unsigned int i, first_port, min, range_size;
+ 	char buffer[sizeof("|1||65535|") + INET6_ADDRSTRLEN];
+ 	unsigned int buflen;
++	int ret;
++
++	if (WARN_ON_ONCE(!nat))
++		return NF_DROP;
+=20
+ 	pr_debug("type %i, off %u len %u\n", type, matchoff, matchlen);
+=20
+@@ -86,21 +92,28 @@ static unsigned int nf_nat_ftp(struct sk_buff *skb,
+ 	 * this one. */
+ 	exp->expectfn =3D nf_nat_follow_master;
+=20
++	/* Avoid applying nat->range to the reply direction */
++	if (!exp->dir || !nat->range_info.min_proto.all || !nat->range_info.max=
+_proto.all) {
++		min =3D ntohs(exp->saved_proto.tcp.port);
++		range_size =3D 65535 - min + 1;
++	} else {
++		min =3D ntohs(nat->range_info.min_proto.all);
++		range_size =3D ntohs(nat->range_info.max_proto.all) - min + 1;
++	}
++
+ 	/* Try to get same port: if not, try to change it. */
+-	for (port =3D ntohs(exp->saved_proto.tcp.port); port !=3D 0; port++) {
+-		int ret;
++	first_port =3D ntohs(exp->saved_proto.tcp.port);
++	if (min > first_port || first_port > (min + range_size - 1))
++		first_port =3D min;
+=20
++	for (i =3D 0, port =3D first_port; i < range_size; i++, port =3D (port =
+- first_port + i) % range_size) {
+ 		exp->tuple.dst.u.tcp.port =3D htons(port);
+ 		ret =3D nf_ct_expect_related(exp, 0);
+-		if (ret =3D=3D 0)
+-			break;
+-		else if (ret !=3D -EBUSY) {
+-			port =3D 0;
++		if (ret !=3D -EBUSY)
+ 			break;
+-		}
+ 	}
+=20
+-	if (port =3D=3D 0) {
++	if (ret !=3D 0) {
+ 		nf_ct_helper_log(skb, ct, "all ports in use");
+ 		return NF_DROP;
+ 	}
+diff --git a/net/netfilter/nf_nat_helper.c b/net/netfilter/nf_nat_helper.=
+c
+index a263505455fc..718fc423bc44 100644
+--- a/net/netfilter/nf_nat_helper.c
++++ b/net/netfilter/nf_nat_helper.c
+@@ -188,6 +188,16 @@ void nf_nat_follow_master(struct nf_conn *ct,
+ 	range.flags =3D NF_NAT_RANGE_MAP_IPS;
+ 	range.min_addr =3D range.max_addr
+ 		=3D ct->master->tuplehash[!exp->dir].tuple.dst.u3;
++	if (!exp->dir) {
++		struct nf_conn_nat *nat =3D nfct_nat(exp->master);
++
++		if (nat && nat->range_info.min_proto.all &&
++		    nat->range_info.max_proto.all) {
++			range.min_proto =3D nat->range_info.min_proto;
++			range.max_proto =3D nat->range_info.max_proto;
++			range.flags |=3D NF_NAT_RANGE_PROTO_SPECIFIED;
++		}
++	}
+ 	nf_nat_setup_info(ct, &range, NF_NAT_MANIP_SRC);
+=20
+ 	/* For DST manip, map port here to where it's expected. */
+--=20
+2.33.0
 
-as the guard page are not working as real stack I guess?
-
-With that one things going on correctly, and some trivials below.
-
-> 
-> ---
-> Subject: x86/dumpstack/64: Add guard pages to stack_info
-> From: Peter Zijlstra <peterz@infradead.org>
-> Date: Wed Sep 15 17:12:59 CEST 2021
-> 
-> Explicitly add the exception stack guard pages to stack_info and
-> report on them from #DF.
-> 
-> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> ---
->  arch/x86/include/asm/cpu_entry_area.h |    3 +++
->  arch/x86/include/asm/stacktrace.h     |    3 ++-
->  arch/x86/kernel/dumpstack_64.c        |   17 ++++++++++++++++-
->  arch/x86/kernel/traps.c               |   17 ++++++++++++++++-
->  4 files changed, 37 insertions(+), 3 deletions(-)
-> 
-> --- a/arch/x86/include/asm/cpu_entry_area.h
-> +++ b/arch/x86/include/asm/cpu_entry_area.h
-> @@ -61,6 +61,9 @@ enum exception_stack_ordering {
->  #define CEA_ESTACK_OFFS(st)					\
->  	offsetof(struct cea_exception_stacks, st## _stack)
->  
-> +#define CEA_EGUARD_OFFS(st)					\
-> +	offsetof(struct cea_exception_stacks, st## _stack_guard)
-> +
->  #define CEA_ESTACK_PAGES					\
->  	(sizeof(struct cea_exception_stacks) / PAGE_SIZE)
->  
-> --- a/arch/x86/include/asm/stacktrace.h
-> +++ b/arch/x86/include/asm/stacktrace.h
-> @@ -14,13 +14,14 @@
->  #include <asm/switch_to.h>
->  
->  enum stack_type {
-> -	STACK_TYPE_UNKNOWN,
-> +	STACK_TYPE_UNKNOWN = 0,
-
-Is this necessary?
-
->  	STACK_TYPE_TASK,
->  	STACK_TYPE_IRQ,
->  	STACK_TYPE_SOFTIRQ,
->  	STACK_TYPE_ENTRY,
->  	STACK_TYPE_EXCEPTION,
->  	STACK_TYPE_EXCEPTION_LAST = STACK_TYPE_EXCEPTION + N_EXCEPTION_STACKS-1,
-> +	STACK_TYPE_GUARD = 0x80,
->  };
->  
->  struct stack_info {
-> --- a/arch/x86/kernel/dumpstack_64.c
-> +++ b/arch/x86/kernel/dumpstack_64.c
-> @@ -32,9 +32,15 @@ const char *stack_type_name(enum stack_t
->  {
->  	BUILD_BUG_ON(N_EXCEPTION_STACKS != 6);
->  
-> +	if (type == STACK_TYPE_TASK)
-> +		return "TASK";
-> +
->  	if (type == STACK_TYPE_IRQ)
->  		return "IRQ";
->  
-> +	if (type == STACK_TYPE_SOFTIRQ)
-> +		return "SOFTIRQ";
-> +
-
-Do we need one for GUARD too?
-
->  	if (type == STACK_TYPE_ENTRY) {
->  		/*
->  		 * On 64-bit, we have a generic entry stack that we
-> @@ -63,6 +69,11 @@ struct estack_pages {
->  };
->  
->  #define EPAGERANGE(st)							\
-> +	[PFN_DOWN(CEA_EGUARD_OFFS(st))] = {				\
-> +		.offs	= CEA_EGUARD_OFFS(st),				\
-> +		.size	= PAGE_SIZE,					\
-> +		.type	= STACK_TYPE_GUARD +				\
-> +			  STACK_TYPE_EXCEPTION + ESTACK_ ##st, },	\
->  	[PFN_DOWN(CEA_ESTACK_OFFS(st)) ...				\
->  	 PFN_DOWN(CEA_ESTACK_OFFS(st) + CEA_ESTACK_SIZE(st) - 1)] = {	\
->  		.offs	= CEA_ESTACK_OFFS(st),				\
-> @@ -111,10 +122,11 @@ static __always_inline bool in_exception
->  	k = (stk - begin) >> PAGE_SHIFT;
->  	/* Lookup the page descriptor */
->  	ep = &estack_pages[k];
-> -	/* Guard page? */
-> +	/* unknown entry */
->  	if (!ep->size)
->  		return false;
->  
-> +
-
-Extra line?
-
-Regards,
-Michael Wang
-
->  	begin += (unsigned long)ep->offs;
->  	end = begin + (unsigned long)ep->size;
->  	regs = (struct pt_regs *)end - 1;
-> @@ -193,6 +205,9 @@ int get_stack_info(unsigned long *stack,
->  	if (!get_stack_info_noinstr(stack, task, info))
->  		goto unknown;
->  
-> +	if (info->type & STACK_TYPE_GUARD)
-> +		goto unknown;
-> +
->  	/*
->  	 * Make sure we don't iterate through any given stack more than once.
->  	 * If it comes up a second time then there's something wrong going on:
-> --- a/arch/x86/kernel/traps.c
-> +++ b/arch/x86/kernel/traps.c
-> @@ -461,6 +461,19 @@ DEFINE_IDTENTRY_DF(exc_double_fault)
->  	}
->  #endif
->  
-> +#ifdef CONFIG_X86_64
-> +	{
-> +		struct stack_info info;
-> +
-> +		if (get_stack_info_noinstr((void *)address, current, &info) &&
-> +		    info.type & STACK_TYPE_GUARD) {
-> +			const char *name = stack_type_name(info.type & ~STACK_TYPE_GUARD);
-> +			pr_emerg("BUG: %s stack guard hit at %p (stack is %p..%p)\n",
-> +				 name, (void *)address, info.begin, info.end);
-> +		}
-> +	}
-> +#endif
-> +
->  	pr_emerg("PANIC: double fault, error_code: 0x%lx\n", error_code);
->  	die("double fault", regs, error_code);
->  	panic("Machine halted.");
-> @@ -708,7 +721,9 @@ asmlinkage __visible noinstr struct pt_r
->  	sp    = regs->sp;
->  	stack = (unsigned long *)sp;
->  
-> -	if (!get_stack_info_noinstr(stack, current, &info) || info.type == STACK_TYPE_ENTRY ||
-> +	if (!get_stack_info_noinstr(stack, current, &info) ||
-> +	    info.type & STACK_TYPE_GUARD ||
-> +	    info.type == STACK_TYPE_ENTRY ||
->  	    info.type >= STACK_TYPE_EXCEPTION_LAST)
->  		sp = __this_cpu_ist_top_va(VC2);
->  
-> 
