@@ -2,67 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D6AAF40DB49
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 15:33:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 854BB40DB5B
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 15:35:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240057AbhIPNem (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 09:34:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35386 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240116AbhIPNek (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Sep 2021 09:34:40 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C392E60F11;
-        Thu, 16 Sep 2021 13:33:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631799200;
-        bh=uOL+5HttzD8vO7NoHwzx0B7Jm5+HQgl/bCl77os9SJ0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XwNKOaZQvN8fjtbpM7bOI1PhjPU6IRi/fX7PcgLvZG9MN7kgSFISEYwOwTYM/BidG
-         vsXH4rZ5MOHmr0HbgevYl5WNxb02mK97sE8Vvl0MUXGF/Fg4TvUr3fubTupbF0FS9h
-         0VeJ/X6TjamewLo4V9ghyflNqyDJgeAbwRCC3CuG1srNweMDOQax2V2XY3nWPf3Blu
-         koYn4zqKx7jlUuv0SFauAGZb7s2FKflb4UkUddGD+TC5LRTSPIcyhLUbqj7DK7WGuk
-         qcIF/TKrTyCKi/olscn7Ql9t9TZX5cUmzxTGq8XkiiEfHEx8EP5asS6mjiJOyt0M48
-         yk5Uh6r+RLaAA==
-Date:   Thu, 16 Sep 2021 06:33:18 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jiri Pirko <jiri@nvidia.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] devlink: Delete not-used devlink APIs
-Message-ID: <20210916063318.7275cadf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <a45674a8cb1c1e0133811d95756357b787673e52.1631788678.git.leonro@nvidia.com>
-References: <a45674a8cb1c1e0133811d95756357b787673e52.1631788678.git.leonro@nvidia.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        id S240220AbhIPNgl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 09:36:41 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:52022 "EHLO
+        mail.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240208AbhIPNgk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 09:36:40 -0400
+Received: from localhost (cpc147930-brnt3-2-0-cust60.4-2.cable.virginm.net [86.15.196.61])
+        by mail.monkeyblade.net (Postfix) with ESMTPSA id A4DAB4F7E6BDA;
+        Thu, 16 Sep 2021 06:35:17 -0700 (PDT)
+Date:   Thu, 16 Sep 2021 14:35:12 +0100 (BST)
+Message-Id: <20210916.143512.2183620325345107048.davem@davemloft.net>
+To:     asmaa@nvidia.com
+Cc:     andy.shevchenko@gmail.com, linux-gpio@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, andrew@lunn.ch, kuba@kernel.org,
+        linus.walleij@linaro.org, bgolaszewski@baylibre.com,
+        rjw@rjwysocki.net, davthompson@nvidia.com
+Subject: Re: [PATCH v1 2/2] net: mellanox: mlxbf_gige: Replace non-standard
+ interrupt handling
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20210915222847.10239-3-asmaa@nvidia.com>
+References: <20210915222847.10239-1-asmaa@nvidia.com>
+        <20210915222847.10239-3-asmaa@nvidia.com>
+X-Mailer: Mew version 6.8 on Emacs 27.2
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Thu, 16 Sep 2021 06:35:20 -0700 (PDT)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 16 Sep 2021 13:38:33 +0300 Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
+From: Asmaa Mnebhi <asmaa@nvidia.com>
+Date: Wed, 15 Sep 2021 18:28:47 -0400
+
+> Since the GPIO driver (gpio-mlxbf2.c) supports interrupt handling,
+> replace the custom routine with simple IRQ request.
 > 
-> Devlink core exported generously the functions calls that were used
-> by netdevsim tests or not used at all.
-> 
-> Delete such APIs with one exception - devlink_alloc_ns(). That function
-> should be spared from deleting because it is a special form of devlink_alloc()
-> needed for the netdevsim.
+> Signed-off-by: Asmaa Mnebhi <asmaa@nvidia.com>
 
-Do you have a reason to do this or are you just cleaning up?
-
-The fmsg functions are not actually removed, just unexported.
-Are there out of tree drivers abusing them?
-
-The port_param functions are "symmetric" with the global param 
-ones. Removing them makes the API look somewhat incomplete.
-
-Obviously the general guidance is that we shouldn't export 
-functions which have no upstream users but that applies to 
-meaningful APIs. For all practical purposes this is just a 
-sliver of an API, completeness gives nice warm feelings.
-
-Anyway, just curious what made you do this. I wouldn't do it 
-myself but neither am I substantially opposed.
+Acked-by: David S. Miller <davem@davemloft.net>
