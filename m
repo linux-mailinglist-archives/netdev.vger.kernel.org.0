@@ -2,71 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA90D40D9DF
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 14:25:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CAE140D9DD
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 14:24:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239507AbhIPM0W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 08:26:22 -0400
-Received: from smtpbg128.qq.com ([106.55.201.39]:39858 "EHLO smtpbg587.qq.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235816AbhIPM0U (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Sep 2021 08:26:20 -0400
-X-QQ-mid: bizesmtp32t1631795092to1nkx5k
-Received: from localhost.localdomain (unknown [180.113.36.229])
-        by esmtp6.qq.com (ESMTP) with 
-        id ; Thu, 16 Sep 2021 20:24:44 +0800 (CST)
-X-QQ-SSF: 0100000000800030B000000A0000000
-X-QQ-FEAT: gSGF8h2+s1IADEzB2CCwyyD6/XD9p1aGVRPyyJchy5+VAf++gx9oqFzn3LG1A
-        CovWeQ/XIp3aG7oPPk4Ps1jbU+32qjHlyeXKxVUHtvnuvWkjvDfSbH90uWaDy8dQHLuMSpv
-        vNzwDh/hHz7HlfZ55OI7tCUfq+KrL7lHOFqDTqcREgOaFdMeN6UFpkAnhmIzrNfWNJSJZjU
-        EpTFKN0GgJEKuBpOKbDMZnv9wlzycrdiXoJ0ukyqKQgWD1GNV9Jj3MKTPbMxMeFX+lK2tZz
-        yLl1klhtXNq/zJG9PnEprBe+xC4bg3x18gtBJL1kuxjAuVfs/TFi65ZxH7MXSgXVIsmjoZ1
-        RcaAag2WLBTbgy4uZh2mI+k2RzfAw==
-X-QQ-GoodBg: 0
-From:   Xiang wangx <wangxiang@cdjrlc.com>
-To:     bongsu.jeon@samsung.com
-Cc:     shuah@kernel.org, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xiang wangx <wangxiang@cdjrlc.com>
-Subject: [PATCH v3] selftests: nci: replace unsigned int with int
-Date:   Thu, 16 Sep 2021 20:24:42 +0800
-Message-Id: <20210916122442.14732-1-wangxiang@cdjrlc.com>
-X-Mailer: git-send-email 2.20.1
+        id S239437AbhIPM0L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 08:26:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47232 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235816AbhIPM0I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 08:26:08 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C825C061574;
+        Thu, 16 Sep 2021 05:24:48 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1mQqRX-0002d3-8B; Thu, 16 Sep 2021 14:24:43 +0200
+Date:   Thu, 16 Sep 2021 14:24:43 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     youling 257 <youling257@gmail.com>
+Cc:     Florian Westphal <fw@strlen.de>, pablo@netfilter.org,
+        netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 09/10] netfilter: x_tables: never register
+ tables by default
+Message-ID: <20210916122443.GD20414@breakpoint.cc>
+References: <20210811084908.14744-10-pablo@netfilter.org>
+ <20210915095116.14686-1-youling257@gmail.com>
+ <20210915095650.GG25110@breakpoint.cc>
+ <CAOzgRdb_Agb=vNcAc=TDjyB_vSjB8Jua_TPtWYcXZF0G3+pRAg@mail.gmail.com>
+ <20210915143415.GA20414@breakpoint.cc>
+ <CAOzgRdZKjg8iEdjEYQ07ENBvwtFPAqzESqrKJEppcNTBVw-RyQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam5
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAOzgRdZKjg8iEdjEYQ07ENBvwtFPAqzESqrKJEppcNTBVw-RyQ@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Should not use comparison of unsigned expressions < 0.
+youling 257 <youling257@gmail.com> wrote:
+> kernel 5.15rc1.
 
-Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
----
+Thanks, this is due to a leftover __init annotation.
+This patch should fix the bug:
 
-Changes since v1
-* Change commit log
-
-Changes since v2
-* Change commit log
-
- tools/testing/selftests/nci/nci_dev.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/tools/testing/selftests/nci/nci_dev.c b/tools/testing/selftests/nci/nci_dev.c
-index e1bf55dabdf6..162c41e9bcae 100644
---- a/tools/testing/selftests/nci/nci_dev.c
-+++ b/tools/testing/selftests/nci/nci_dev.c
-@@ -746,7 +746,7 @@ int read_write_nci_cmd(int nfc_sock, int virtual_fd, const __u8 *cmd, __u32 cmd_
- 		       const __u8 *rsp, __u32 rsp_len)
- {
- 	char buf[256];
--	unsigned int len;
-+	int len;
+diff --git a/net/ipv4/netfilter/iptable_raw.c b/net/ipv4/netfilter/iptable_raw.c
+--- a/net/ipv4/netfilter/iptable_raw.c
++++ b/net/ipv4/netfilter/iptable_raw.c
+@@ -42,7 +42,7 @@ iptable_raw_hook(void *priv, struct sk_buff *skb,
  
- 	send(nfc_sock, &cmd[3], cmd_len - 3, 0);
- 	len = read(virtual_fd, buf, cmd_len);
--- 
-2.20.1
-
+ static struct nf_hook_ops *rawtable_ops __read_mostly;
+ 
+-static int __net_init iptable_raw_table_init(struct net *net)
++static int iptable_raw_table_init(struct net *net)
+ {
+ 	struct ipt_replace *repl;
+ 	const struct xt_table *table = &packet_raw;
