@@ -2,224 +2,295 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45ED940D78B
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 12:38:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4097A40D78D
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 12:38:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236705AbhIPKjj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 06:39:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50428 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236359AbhIPKji (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 06:39:38 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2D09C061574
-        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 03:38:17 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id w29so8688718wra.8
-        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 03:38:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=hC1wOHmEVDsUVYA6s3dpbAFrj8DZGDMv59edh41sE84=;
-        b=fbzfjrsZro3iy1uhVG2TQlqum8yZXvAZxnb60qThpV6Qoot3t56af689JXns5fjiMQ
-         ODLwoMGaigbo+rtlCK5EsCv426pXl9dwl4jWliLMzQLCShep291BTx/y2ZaZnh95XAdm
-         21umtBrfDxQ8pcdIA9L4VbxCxdGXZ6askJ/hX4tf4EKQW/UnPkddlm3sVIJvY1U2aEjJ
-         hm1S3cjkl7fiz0hj5dhzh38KTO65qOvhnK9/IzuCa37sgChiACjLILuImphXw+6Jahih
-         /gTwkjDOhVOTpJNYM5CK7dm9qcvNyRwDN5RGJJiCsz4HAoRiY7hD4wBVdZxcOy2kPP7g
-         t0CA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=hC1wOHmEVDsUVYA6s3dpbAFrj8DZGDMv59edh41sE84=;
-        b=r0kSZmOuxAfixRPen0ksN1COqORI6Vjr4l18OFPZe1jyxnXmQVpxVeHrOaQbRFGu1K
-         bMBbH+NK5oWXpxKnkCkwoKDB5HSV8Et7VjB/PknLnRkdZgP0tyrAXjPSuD5y8Pz/aX1c
-         4SUMehKCG/r/7SVM8ZdRXCIcJUTakiQ1q4ysFEECMAk9/yBEzrH5c08aD2gDFwfqkCaS
-         eSSb2zhaN9J5TfdKAXjANGDIQ7rq4BbBo6NZU6E0m8baoNJI8WrIUO6PtZfThfHX5NHI
-         vftJTa44DegI2EYcK5hDwVILdalCjaxBvRHMWKZsf+Fe8GOuv5c1XasPvpT7O9rt08x2
-         5T7w==
-X-Gm-Message-State: AOAM530hQsTgiSauTraGa1FT8VzyhzZ3F8SnO4/WAFy5YSM6hh65LgQ4
-        WF/P245jQcI1MNjbrt/TDfOaug==
-X-Google-Smtp-Source: ABdhPJxTh7cP71BM0wNQKXiwQQWB/aFE2IF1+kSUGzcor0Ru/l0caut/rbnDFos5mGZsKIk+FcmHuA==
-X-Received: by 2002:adf:d185:: with SMTP id v5mr5210677wrc.378.1631788696265;
-        Thu, 16 Sep 2021 03:38:16 -0700 (PDT)
-Received: from apalos.home (ppp-94-66-220-137.home.otenet.gr. [94.66.220.137])
-        by smtp.gmail.com with ESMTPSA id l10sm3237715wrg.50.2021.09.16.03.38.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Sep 2021 03:38:15 -0700 (PDT)
-Date:   Thu, 16 Sep 2021 13:38:12 +0300
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     Jesper Dangaard Brouer <jbrouer@redhat.com>, brouer@redhat.com,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linuxarm@openeuler.org,
-        hawk@kernel.org, jonathan.lemon@gmail.com, alobakin@pm.me,
-        willemb@google.com, cong.wang@bytedance.com, pabeni@redhat.com,
-        haokexin@gmail.com, nogikh@google.com, elver@google.com,
-        memxor@gmail.com, edumazet@google.com, dsahern@gmail.com
-Subject: Re: [Linuxarm] Re: [PATCH net-next v2 3/3] skbuff: keep track of pp
- page when __skb_frag_ref() is called
-Message-ID: <YUMelDd16Aw8w5ZH@apalos.home>
-References: <20210914121114.28559-1-linyunsheng@huawei.com>
- <20210914121114.28559-4-linyunsheng@huawei.com>
- <CAKgT0Ud7NXpHghiPeGzRg=83jYAP1Dx75z3ZE0qV8mT0zNMDhA@mail.gmail.com>
- <9467ec14-af34-bba4-1ece-6f5ea199ec97@huawei.com>
- <YUHtf+lI8ktBdjsQ@apalos.home>
- <0337e2f6-5428-2c75-71a5-6db31c60650a@redhat.com>
- <fef7d148-95d6-4893-8924-1071ed43ff1b@huawei.com>
- <YUMD2v7ffs1xAjaW@apalos.home>
- <ac16cc82-8d98-6a2c-b0a6-7c186808c72c@huawei.com>
+        id S236785AbhIPKj7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 06:39:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34786 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235570AbhIPKj7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Sep 2021 06:39:59 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id EE7146120F;
+        Thu, 16 Sep 2021 10:38:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1631788718;
+        bh=8eNapddlcaRrVxc1VNMRrvE1AbLm5qHmft+xwzIJ8Wg=;
+        h=From:To:Cc:Subject:Date:From;
+        b=fG5Yu+DZzZ44XJNJbKPVQn+Nk4MzW8ZC67RWUkLCK+z/Ld5hM87Pn5QPOsMcPWzYh
+         dme45GIo4hhYPX66yeR5TL+c207AR5Rh4qOVvk2iYhrjttJhQ5esu8YDzaKgex9TDJ
+         e1G+qtxFLknnW/bMBSIQ/qlweYkY6rsOBYrQbkxhvGebACsWcZ6kX1vw1+uqBfx2O5
+         Qe0XY5gMOMNFfVrpCpyZtr3DJr+shtj/wqHIIJ7A3XGaTS5H3OcOiBHqI96l4Zc5QO
+         trKBH951xQM9BLc6A28PgnuvG7PUeSrlQ25NR2djFI0SGZPVsqxCLq3xOL/7VUpmck
+         ly0QQdZ+NDuvg==
+From:   Leon Romanovsky <leon@kernel.org>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Leon Romanovsky <leonro@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net-next] devlink: Delete not-used devlink APIs
+Date:   Thu, 16 Sep 2021 13:38:33 +0300
+Message-Id: <a45674a8cb1c1e0133811d95756357b787673e52.1631788678.git.leonro@nvidia.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ac16cc82-8d98-6a2c-b0a6-7c186808c72c@huawei.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 16, 2021 at 05:33:39PM +0800, Yunsheng Lin wrote:
-> On 2021/9/16 16:44, Ilias Apalodimas wrote:
-> >>>> appear if we try to pull in your patches on using page pool and recycling
-> > 
-> > [...]
-> > 
-> >>>> for Tx where TSO and skb_split are used?
-> >>
-> >> As my understanding, the problem might exists without tx recycling, because a
-> >> skb from wire would be passed down to the tcp stack and retransmited back to
-> >> the wire theoretically. As I am not able to setup a configuration to verify
-> >> and test it and the handling seems tricky, so I am targetting net-next branch
-> >> instead of net branch.
-> >>
-> >>>>
-> >>>> I'll be honest, when I came up with the recycling idea for page pool, I
-> >>>> never intended to support Tx.  I agree with Alexander here,  If people want
-> >>>> to use it on Tx and think there's value,  we might need to go back to the
-> >>>> drawing board and see what I've missed.  It's still early and there's a
-> >>>> handful of drivers using it,  so it will less painful now.
-> >>
-> >> Yes, we also need to prototype it to see if there is something missing in the
-> >> drawing board and how much improvement we get from that:)
-> >>
-> >>>
-> >>> I agree, page_pool is NOT designed or intended for TX support.
-> >>> E.g. it doesn't make sense to allocate a page_pool instance per socket, as the backing memory structures for page_pool are too much.
-> >>> As the number RX-queues are more limited it was deemed okay that we use page_pool per RX-queue, which sacrifice some memory to gain speed.
-> >>
-> >> As memtioned before, Tx recycling is based on page_pool instance per socket.
-> >> it shares the page_pool instance with rx.
-> >>
-> >> Anyway, based on feedback from edumazet and dsahern, I am still trying to
-> >> see if the page pool is meaningful for tx.
-> >>
-> >>>
-> >>>
-> >>>> The pp_recycle_bit was introduced to make the checking faster, instead of
-> >>>> getting stuff into cache and check the page signature.  If that ends up
-> >>>> being counterproductive, we could just replace the entire logic with the
-> >>>> frag count and the page signature, couldn't we?  In that case we should be
-> >>>> very cautious and measure potential regression on the standard path.
-> >>>
-> >>> +1
-> >>
-> >> I am not sure "pp_recycle_bit was introduced to make the checking faster" is a
-> >> valid. The size of "struct page" is only about 9 words(36/72 bytes), which is
-> >> mostly to be in the same cache line, and both standard path and recycle path have
-> >> been touching the "struct page", so it seems the overhead for checking signature
-> >> seems minimal.
-> >>
-> >> I agree that we need to be cautious and measure potential regression on the
-> >> standard path.
-> > 
-> > well pp_recycle is on the same cache line boundary with the head_frag we
-> > need to decide on recycling. After that we start checking page signatures
-> > etc,  which means the default release path remains mostly unaffected.  
-> > 
-> > I guess what you are saying here, is that 'struct page' is going to be
-> > accessed eventually by the default network path,  so there won't be any 
-> > noticeable performance hit?  What about the other usecases we have
-> 
-> Yes.
+From: Leon Romanovsky <leonro@nvidia.com>
 
-In that case you'd need to call virt_to_head_page() early though, get it
-and then compare the signature.   I guess that's avoidable by using 
-frag->bv_page for the fragments?
+Devlink core exported generously the functions calls that were used
+by netdevsim tests or not used at all.
 
-> 
-> > for pp_recycle right now?  __skb_frag_unref() in skb_shift() or
-> > skb_try_coalesce() (the latter can probably be removed tbh).
-> 
-> If we decide to go with accurate indicator of a pp page, we just need
-> to make sure network stack use __skb_frag_unref() and __skb_frag_ref()
-> to put and get a page frag, the indicator checking need only done in
-> __skb_frag_unref() and __skb_frag_ref(), so the skb_shift() and
-> skb_try_coalesce() should be fine too.
-> 
-> > 
-> >>
-> >> Another way is to use the bit 0 of frag->bv_page ptr to indicate if a frag
-> >> page is from page pool.
-> > 
-> > Instead of the 'struct page' signature?  And the pp_recycle bit will
-> > continue to exist?  
-> 
-> pp_recycle bit might only exist or is only used for the head page for the skb.
-> The bit 0 of frag->bv_page ptr can be used to indicate a frag page uniquely.
-> Doing a memcpying of shinfo or "*fragto = *fragfrom" automatically pass the
-> indicator to the new shinfo before doing a __skb_frag_ref(), and __skb_frag_ref()
-> will increment the _refcount or pp_frag_count according to the bit 0 of
-> frag->bv_page.
-> 
-> By the way, I also prototype the above idea, and it seems to work well too.
-> 
+Delete such APIs with one exception - devlink_alloc_ns(). That function
+should be spared from deleting because it is a special form of devlink_alloc()
+needed for the netdevsim.
 
-As long as no one else touches this, it's just another way of identifying a
-page_pool allocated page.  But are we gaining by that?  Not using
-virt_to_head_page() as stated above? But in that case you still need to
-keep pp_recycle around. 
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+---
+ drivers/net/netdevsim/health.c |  32 -----------
+ include/net/devlink.h          |  14 -----
+ net/core/devlink.c             | 102 +--------------------------------
+ 3 files changed, 3 insertions(+), 145 deletions(-)
 
-> > .
-> > Right now the 'naive' explanation on the recycling decision is something like:
-> > 
-> > if (pp_recycle) <--- recycling bit is set
-> >     (check page signature) <--- signature matches page pool
-> > 		(check fragment refcnt) <--- If frags are enabled and is the last consumer
-> > 			recycle
-> > 
-> > If we can proove the performance is unaffected when we eliminate the first if,
-> > then obviously we should remove it.  I'll try running that test here and see,
-> > but keep in mind I am only testing on an 1GB interface.  Any chance we can get 
-> > measurements on a beefier hardware using hns3 ?
-> 
-> Sure, I will try it.
-> As the kind of performance overhead is small, any performance testcase in mind?
-> 
+diff --git a/drivers/net/netdevsim/health.c b/drivers/net/netdevsim/health.c
+index 04aebdf85747..aa77af4a68df 100644
+--- a/drivers/net/netdevsim/health.c
++++ b/drivers/net/netdevsim/health.c
+@@ -110,26 +110,6 @@ static int nsim_dev_dummy_fmsg_put(struct devlink_fmsg *fmsg, u32 binary_len)
+ 	if (err)
+ 		return err;
+ 
+-	err = devlink_fmsg_arr_pair_nest_start(fmsg, "test_bool_array");
+-	if (err)
+-		return err;
+-	for (i = 0; i < 10; i++) {
+-		err = devlink_fmsg_bool_put(fmsg, true);
+-		if (err)
+-			return err;
+-	}
+-	err = devlink_fmsg_arr_pair_nest_end(fmsg);
+-	if (err)
+-		return err;
+-
+-	err = devlink_fmsg_arr_pair_nest_start(fmsg, "test_u8_array");
+-	if (err)
+-		return err;
+-	for (i = 0; i < 10; i++) {
+-		err = devlink_fmsg_u8_put(fmsg, i);
+-		if (err)
+-			return err;
+-	}
+ 	err = devlink_fmsg_arr_pair_nest_end(fmsg);
+ 	if (err)
+ 		return err;
+@@ -146,18 +126,6 @@ static int nsim_dev_dummy_fmsg_put(struct devlink_fmsg *fmsg, u32 binary_len)
+ 	if (err)
+ 		return err;
+ 
+-	err = devlink_fmsg_arr_pair_nest_start(fmsg, "test_u64_array");
+-	if (err)
+-		return err;
+-	for (i = 0; i < 10; i++) {
+-		err = devlink_fmsg_u64_put(fmsg, i);
+-		if (err)
+-			return err;
+-	}
+-	err = devlink_fmsg_arr_pair_nest_end(fmsg);
+-	if (err)
+-		return err;
+-
+ 	err = devlink_fmsg_arr_pair_nest_start(fmsg, "test_array_of_objects");
+ 	if (err)
+ 		return err;
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index cd89b2dc2354..0e06b3dbbec6 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -1663,18 +1663,7 @@ int devlink_param_driverinit_value_get(struct devlink *devlink, u32 param_id,
+ 				       union devlink_param_value *init_val);
+ int devlink_param_driverinit_value_set(struct devlink *devlink, u32 param_id,
+ 				       union devlink_param_value init_val);
+-int
+-devlink_port_param_driverinit_value_get(struct devlink_port *devlink_port,
+-					u32 param_id,
+-					union devlink_param_value *init_val);
+-int devlink_port_param_driverinit_value_set(struct devlink_port *devlink_port,
+-					    u32 param_id,
+-					    union devlink_param_value init_val);
+ void devlink_param_value_changed(struct devlink *devlink, u32 param_id);
+-void devlink_port_param_value_changed(struct devlink_port *devlink_port,
+-				      u32 param_id);
+-void devlink_param_value_str_fill(union devlink_param_value *dst_val,
+-				  const char *src);
+ struct devlink_region *
+ devlink_region_create(struct devlink *devlink,
+ 		      const struct devlink_region_ops *ops,
+@@ -1719,10 +1708,7 @@ int devlink_fmsg_binary_pair_nest_start(struct devlink_fmsg *fmsg,
+ 					const char *name);
+ int devlink_fmsg_binary_pair_nest_end(struct devlink_fmsg *fmsg);
+ 
+-int devlink_fmsg_bool_put(struct devlink_fmsg *fmsg, bool value);
+-int devlink_fmsg_u8_put(struct devlink_fmsg *fmsg, u8 value);
+ int devlink_fmsg_u32_put(struct devlink_fmsg *fmsg, u32 value);
+-int devlink_fmsg_u64_put(struct devlink_fmsg *fmsg, u64 value);
+ int devlink_fmsg_string_put(struct devlink_fmsg *fmsg, const char *value);
+ int devlink_fmsg_binary_put(struct devlink_fmsg *fmsg, const void *value,
+ 			    u16 value_len);
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index f30121f07467..0f1663453ca0 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -6269,23 +6269,21 @@ static int devlink_fmsg_put_value(struct devlink_fmsg *fmsg,
+ 	return 0;
+ }
+ 
+-int devlink_fmsg_bool_put(struct devlink_fmsg *fmsg, bool value)
++static int devlink_fmsg_bool_put(struct devlink_fmsg *fmsg, bool value)
+ {
+ 	if (fmsg->putting_binary)
+ 		return -EINVAL;
+ 
+ 	return devlink_fmsg_put_value(fmsg, &value, sizeof(value), NLA_FLAG);
+ }
+-EXPORT_SYMBOL_GPL(devlink_fmsg_bool_put);
+ 
+-int devlink_fmsg_u8_put(struct devlink_fmsg *fmsg, u8 value)
++static int devlink_fmsg_u8_put(struct devlink_fmsg *fmsg, u8 value)
+ {
+ 	if (fmsg->putting_binary)
+ 		return -EINVAL;
+ 
+ 	return devlink_fmsg_put_value(fmsg, &value, sizeof(value), NLA_U8);
+ }
+-EXPORT_SYMBOL_GPL(devlink_fmsg_u8_put);
+ 
+ int devlink_fmsg_u32_put(struct devlink_fmsg *fmsg, u32 value)
+ {
+@@ -6296,14 +6294,13 @@ int devlink_fmsg_u32_put(struct devlink_fmsg *fmsg, u32 value)
+ }
+ EXPORT_SYMBOL_GPL(devlink_fmsg_u32_put);
+ 
+-int devlink_fmsg_u64_put(struct devlink_fmsg *fmsg, u64 value)
++static int devlink_fmsg_u64_put(struct devlink_fmsg *fmsg, u64 value)
+ {
+ 	if (fmsg->putting_binary)
+ 		return -EINVAL;
+ 
+ 	return devlink_fmsg_put_value(fmsg, &value, sizeof(value), NLA_U64);
+ }
+-EXPORT_SYMBOL_GPL(devlink_fmsg_u64_put);
+ 
+ int devlink_fmsg_string_put(struct devlink_fmsg *fmsg, const char *value)
+ {
+@@ -10257,55 +10254,6 @@ int devlink_param_driverinit_value_set(struct devlink *devlink, u32 param_id,
+ }
+ EXPORT_SYMBOL_GPL(devlink_param_driverinit_value_set);
+ 
+-/**
+- *	devlink_port_param_driverinit_value_get - get configuration parameter
+- *						value for driver initializing
+- *
+- *	@devlink_port: devlink_port
+- *	@param_id: parameter ID
+- *	@init_val: value of parameter in driverinit configuration mode
+- *
+- *	This function should be used by the driver to get driverinit
+- *	configuration for initialization after reload command.
+- */
+-int devlink_port_param_driverinit_value_get(struct devlink_port *devlink_port,
+-					    u32 param_id,
+-					    union devlink_param_value *init_val)
+-{
+-	struct devlink *devlink = devlink_port->devlink;
+-
+-	if (!devlink_reload_supported(devlink->ops))
+-		return -EOPNOTSUPP;
+-
+-	return __devlink_param_driverinit_value_get(&devlink_port->param_list,
+-						    param_id, init_val);
+-}
+-EXPORT_SYMBOL_GPL(devlink_port_param_driverinit_value_get);
+-
+-/**
+- *     devlink_port_param_driverinit_value_set - set value of configuration
+- *                                               parameter for driverinit
+- *                                               configuration mode
+- *
+- *     @devlink_port: devlink_port
+- *     @param_id: parameter ID
+- *     @init_val: value of parameter to set for driverinit configuration mode
+- *
+- *     This function should be used by the driver to set driverinit
+- *     configuration mode default value.
+- */
+-int devlink_port_param_driverinit_value_set(struct devlink_port *devlink_port,
+-					    u32 param_id,
+-					    union devlink_param_value init_val)
+-{
+-	return __devlink_param_driverinit_value_set(devlink_port->devlink,
+-						    devlink_port->index,
+-						    &devlink_port->param_list,
+-						    param_id, init_val,
+-						    DEVLINK_CMD_PORT_PARAM_NEW);
+-}
+-EXPORT_SYMBOL_GPL(devlink_port_param_driverinit_value_set);
+-
+ /**
+  *	devlink_param_value_changed - notify devlink on a parameter's value
+  *				      change. Should be called by the driver
+@@ -10329,50 +10277,6 @@ void devlink_param_value_changed(struct devlink *devlink, u32 param_id)
+ }
+ EXPORT_SYMBOL_GPL(devlink_param_value_changed);
+ 
+-/**
+- *     devlink_port_param_value_changed - notify devlink on a parameter's value
+- *                                      change. Should be called by the driver
+- *                                      right after the change.
+- *
+- *     @devlink_port: devlink_port
+- *     @param_id: parameter ID
+- *
+- *     This function should be used by the driver to notify devlink on value
+- *     change, excluding driverinit configuration mode.
+- *     For driverinit configuration mode driver should use the function
+- *     devlink_port_param_driverinit_value_set() instead.
+- */
+-void devlink_port_param_value_changed(struct devlink_port *devlink_port,
+-				      u32 param_id)
+-{
+-	struct devlink_param_item *param_item;
+-
+-	param_item = devlink_param_find_by_id(&devlink_port->param_list,
+-					      param_id);
+-	WARN_ON(!param_item);
+-
+-	devlink_param_notify(devlink_port->devlink, devlink_port->index,
+-			     param_item, DEVLINK_CMD_PORT_PARAM_NEW);
+-}
+-EXPORT_SYMBOL_GPL(devlink_port_param_value_changed);
+-
+-/**
+- *	devlink_param_value_str_fill - Safely fill-up the string preventing
+- *				       from overflow of the preallocated buffer
+- *
+- *	@dst_val: destination devlink_param_value
+- *	@src: source buffer
+- */
+-void devlink_param_value_str_fill(union devlink_param_value *dst_val,
+-				  const char *src)
+-{
+-	size_t len;
+-
+-	len = strlcpy(dst_val->vstr, src, __DEVLINK_PARAM_MAX_STRING_VALUE);
+-	WARN_ON(len >= __DEVLINK_PARAM_MAX_STRING_VALUE);
+-}
+-EXPORT_SYMBOL_GPL(devlink_param_value_str_fill);
+-
+ /**
+  *	devlink_region_create - create a new address region
+  *
+-- 
+2.31.1
 
-'eliminate the first if' wasn't accurate.  I meant switch the first if and
-check the struct page signature instead.  That would be the best solution
-imho.  We effectively have a single rule to check if a packet comes from
-page_pool or not.
-
-You can start by sending a lot of packets and dropping those immediately.
-That should put enough stress on the receive path and the allocators and it
-should give us a rough idea. 
-
-> > 
-> >>
-> >>>
-> >>>> But in general,  I'd be happier if we only had a simple logic in our
-> >>>> testing for the pages we have to recycle.  Debugging and understanding this
-> >>>> otherwise will end up being a mess.
-> >>>
-> >>>
-> > 
-> > [...]
-> > 
-> > Regards
-> > /Ilias
-> > .
-> > 
-
-Regards
-/Ilias
