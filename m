@@ -2,231 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F358D40D81C
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 13:05:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD2AB40D830
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 13:13:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236506AbhIPLGW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 07:06:22 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:16219 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235657AbhIPLGT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 07:06:19 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4H9DjN5zVdz13VdT;
-        Thu, 16 Sep 2021 19:03:52 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.8; Thu, 16 Sep 2021 19:04:54 +0800
-Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.8; Thu, 16 Sep
- 2021 19:04:54 +0800
-Subject: Re: [Linuxarm] Re: [PATCH net-next v2 3/3] skbuff: keep track of pp
- page when __skb_frag_ref() is called
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
-CC:     Jesper Dangaard Brouer <jbrouer@redhat.com>, <brouer@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linuxarm@openeuler.org>,
-        <hawk@kernel.org>, <jonathan.lemon@gmail.com>, <alobakin@pm.me>,
-        <willemb@google.com>, <cong.wang@bytedance.com>,
-        <pabeni@redhat.com>, <haokexin@gmail.com>, <nogikh@google.com>,
-        <elver@google.com>, <memxor@gmail.com>, <edumazet@google.com>,
-        <dsahern@gmail.com>
-References: <20210914121114.28559-1-linyunsheng@huawei.com>
- <20210914121114.28559-4-linyunsheng@huawei.com>
- <CAKgT0Ud7NXpHghiPeGzRg=83jYAP1Dx75z3ZE0qV8mT0zNMDhA@mail.gmail.com>
- <9467ec14-af34-bba4-1ece-6f5ea199ec97@huawei.com>
- <YUHtf+lI8ktBdjsQ@apalos.home>
- <0337e2f6-5428-2c75-71a5-6db31c60650a@redhat.com>
- <fef7d148-95d6-4893-8924-1071ed43ff1b@huawei.com>
- <YUMD2v7ffs1xAjaW@apalos.home>
- <ac16cc82-8d98-6a2c-b0a6-7c186808c72c@huawei.com>
- <YUMelDd16Aw8w5ZH@apalos.home>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <e2e127be-c9e4-5236-ba3c-28fdb53aa29b@huawei.com>
-Date:   Thu, 16 Sep 2021 19:04:54 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S237226AbhIPLOS convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 16 Sep 2021 07:14:18 -0400
+Received: from mout.kundenserver.de ([217.72.192.73]:43773 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237251AbhIPLOQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 07:14:16 -0400
+Received: from [192.168.1.107] ([37.4.249.93]) by mrelayeu.kundenserver.de
+ (mreue108 [212.227.15.183]) with ESMTPSA (Nemesis) id
+ 1MRTIx-1mEXFt1Tan-00NPjF; Thu, 16 Sep 2021 13:12:24 +0200
+Subject: Re: [PATCH RFC 3/3] net: vertexcom: Add MSE102x SPI support
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Michael Heimpold <michael.heimpold@in-tech.com>,
+        jimmy.shen@vertexcom.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+References: <20210914151717.12232-1-stefan.wahren@i2se.com>
+ <20210914151717.12232-4-stefan.wahren@i2se.com> <YUJi0cVawjyiteEx@lunn.ch>
+From:   Stefan Wahren <stefan.wahren@i2se.com>
+Autocrypt: addr=stefan.wahren@i2se.com; keydata=
+ LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tClZlcnNpb246IEdudVBHIHYy
+ CgptUUlOQkZ0NmdCTUJFQUN1Yi9wQmV2SHhidkplZnlaRzMySklObW4yYnNFUFgyNVY2ZmVq
+ bXlZd21DR0tqRnRMCi9Eb1VNRVZIRHhDSjQ3Qk1YbzM0NGZIVjFDM0FudWRnTjFCZWhMb0J0
+ TEh4bW5lQ3pnSDNLY1B0V1c3cHRqNEcKdEp2OUNRRFp5MjdTS29FUHh5YUk4Q0YweWdSeEpj
+ NzJNOUk5d21zUFo1YlVIc0x1WVdNcVE3SmNSbVBzNkQ4ZwpCa2srOC95bmdFeU5FeHd4SnBS
+ MXlsajVianhXREh5WVF2dUo1THpaS3VPOUxCM2xYVnNjNGJxWEVqYzZWRnVaCkZDQ2svc3lp
+ by9ZaHNlOE4rUXN4N01RYWd6NHdLVWtRUWJmWGcxVnFrVG5BaXZYczQyVm5Ja211NWd6SXcv
+ MHQKUkp2NTBGUmhIaHhweUtBSThCOG5oTjhRdng3TVZrUGM1dkRmZDN1R1lXNDdKUGhWUUJj
+ VXdKd05rLzQ5RjllQQp2ZzJtdE1QRm5GT1JrV1VSdlArRzZGSmZtNitDdk92N1lmUDF1ZXdB
+ aTRsbitKTzFnK2dqVklXbC9XSnB5MG5UCmlwZGZlSDlkSGtnU2lmUXVuWWN1Y2lzTXlvUmJG
+ OTU1dENna0VZOUVNRWRZMXQ4aUdEaUNnWDZzNTBMSGJpM2sKNDUzdWFjcHhmUVhTYUF3UGtz
+ bDhNa0NPc3YyZUVyNElOQ0hZUUR5WmljbEJ1dUNnOEVOYlI2QUdWdFpTUGNRYgplbnpTektS
+ Wm9POUNhcUlEK2ZhdkxpQi9kaHptSEErOWJnSWhtWGZ2WFJMRFp6ZThwbzFkeXQzRTFzaFhp
+ ZGRaClBBOE51SlZ6RUl0MmxtSTZWOHBaRHBuMjIxcmZLaml2UlFpYW9zNTRUZ1pqak1ZSTdu
+ bko3ZTZ4endBUkFRQUIKdENCVGRHVm1ZVzRnVjJGb2NtVnVJRHgzWVdoeVpXNXpkRUJuYlhn
+ dWJtVjBQb2tDTndRVEFRZ0FJUVVDWElkYwo0Z0liQXdVTENRZ0hBZ1lWQ0FrS0N3SUVGZ0lE
+ QVFJZUFRSVhnQUFLQ1JDVWdld1BFWkR5MjFPVEQvOUdpWkxkCnRSWWNteVJKZ2x0aVFRekFp
+ UWRjSUQ3OGxHb1dwL3grci92Y1U2YjZqdVl1ZVR3Z1Iwclc3djdsMklSQnlEN24KSEp4YSt0
+ SVNvUVpCZ2hvbE1JZmI5TXRoR09KTENZNzdrL1FoQWhuMzJOR1prZWp3OXR6a3MvNDBtclpT
+ VVQ4NApaeWJzUVhyTE0vSFI2VElJL0RlUEIwbktEM0ppcHBzMlVIUUQ5cUQySWpFd1NRUGxI
+ akNPckVaaDQ1UFo3bTkrClo5M0x6aVRlc1dabFlRdUxpSndzNHJLcHRIVzFkL3dSZWxzaG1t
+ NlFxY0wybDRDL2U0MGVEQjlncTRkU1poOVgKUEVZbGxpeU5RaDdhMkxTZHVtRTFyK2NTd0lq
+ RS91ZHRSdmRPOWFLb0psT2JVSzVkTmpTUEg3d0tUYndkWGRZRApHUHdEaFhkNThOQXdyK1BY
+ QmxQajB0STFMQ3ErTEJ4ZUt6aFdYK0dWcTlEb2pWanlVREV4Rk5Ga1h1b0M3ZzhtClY5VDB0
+ ZUJpdVpSbm91WEt3VjJGcHRaT0hIN0JVRVd0a0t0aGgxZXRmT1dwaWdCemtVN2JQc2ZJWVQr
+ cnk5dGIKMW9KK3Y0MVBOYXFaRW1QVXBKeHZmek5UN3Ayd01lRDdaajlmMHJ1YlJQdExBSjJR
+ R2pyRkhzdVh3QU9xcHl6ZQoxOEVidHNZazBOMHp1SEVoY2orUEJJQmZoMFlJWWQ1MW9mNkdJ
+ aU95UjlxMFhYdHBsVUo3VDIvSDF1UXFrWGxwCitnVzRWa2lmc2NJckl1eWZueFpXMTJlSXZq
+ NnlicVdMN2FZS0dZbVQ2aUxDUGJIWXlZY2F5bDRFa0ZjckNGN0UKZTBXVC9zY1ZNaE8vNVgv
+ SGFOQTVIQngvcjUycGdMY3Y0aTlNeExRbVUzUmxabUZ1SUZkaGFISmxiaUE4YzNSbApabUZ1
+ TG5kaGFISmxia0JwTW5ObExtTnZiVDZKQWpnRUV3RUNBQ0lGQWx0NmdCTUNHd01HQ3drSUJ3
+ TUNCaFVJCkFna0tDd1FXQWdNQkFoNEJBaGVBQUFvSkVKU0I3QThSa1BMYmpic1AvamdqYVNz
+ NUh0bGtBSXZXUytGcm15N2MKaG5jT0F4TFRWL0Q2UkV3SU95R0poRkt3d29pck55UTJnOXZV
+ YTNZQ1lDZjFmSjh3RWhhS09COWQwTHBNUm5MNApkRVQ4ZDgyMzhFL3BLK0hxTktpSXNKaHM2
+ SnNLOFpnalZRR3JtbWZua0dyWisxdjBIQnV4ZGljZ0duUC9XdHVBClVsOGw2Mi9BTGJheXlq
+ KzYxQ2xyc0V0UklhcU82N0xJWXdQaVBEUkkrWGlNek5pR3pIRi8xUTZHUjAyUkg2YTMKRjg5
+ ejhhUHhjSGkxWnZDdDJ5a3o2VUVjaHpQMHI1Z3FGSisvTC9VcHU4ME1YaVk0djVlSWFCNTJn
+ VlBnaXlNQQpsTDJkRHMxbUladm5yUkxSWTJ0YjNtQVlOa1Y1QjVJRFQzcGtXeTZrS281T0Nn
+ SytZZFlPUjhGTloyb04ydDhPCnJLK1ZudGFLN01NU0tIbG1ZL3NPd3RSbEVoMU9CbXJjQ3dH
+ d21wLzA1R2tSNDZmL0lzaFJWZUZPUmF3K0dBcXQKUDIrQ0ZhMkNOQS9JSG5aTm95aWtsRHpQ
+ UUhVVUdzck5wcERyaFg5Sm1oQm1nMXYyeXdIMU5YdTFpRGZQMUJBdwpLZ29rdDVmNVVhUkY5
+ c0FBNTN2V0V2YlVVTjllZXNGR0x6UFdkSkdRNWhwZC9WSDVJUXk5U0JyaC93SWNla3E1Cm4w
+ a042cGJUSHhHRTUyU2kvTVZJa05UdURaM2FwbjJqbERaNHBPdHBCWEkydlAzYlBPK05pcUJa
+ anNVM3R4TGkKV2R2MkZqeXp6NlhMUndlV1JZVkw1SGE2TER0eG9yMnZ1NlVQMDdwOXh6MXhS
+ WmFPRFczb1lsSEZ6WXBhNFc1ZwpMSGIybEVrSXVVZlNjaWNHYmpqQXRDbFRkR1ZtWVc0Z1Yy
+ Rm9jbVZ1SUR4emRHVm1ZVzR1ZDJGb2NtVnVRR2x1CkxYUmxZMmd1WTI5dFBva0NOd1FUQVFn
+ QUlRVUNYSWRlaHdJYkF3VUxDUWdIQWdZVkNBa0tDd0lFRmdJREFRSWUKQVFJWGdBQUtDUkNV
+ Z2V3UEVaRHkyeUhURC85VUY3UWxEa0d4elE3QWFDSTZOOTVpUWY4LzFvU1VhRE51Mlk2SQpL
+ K0R6UXBiMVRiVE9yM1ZKd3dZOGEzT1d6NU5MU09MTVdlVnh0K29zTW1sUUlHdWJEM09EWko4
+ aXpQbEcvSnJOCnQ1elNkbU41SUE1ZjNlc1dXUVZLdmdoWkFnVERxZHB2K1pIVzJFbXhuQUox
+ dUxGWFhlUWQzVVpjQzVyMy9nL3YKU2FNbzl4ZWszSjVtTnVEbTcxbEVXc0FzL0JBY0ZjK3lu
+ TGh4d0JXQld3c3Z3UjhiSHRKNURPTVd2YUt1RHNrcApJR0ZVZS9LYjJCK2pyYXZRM1RuNnMv
+ SHFKTTBjZXhTSHo1cGUrMHNHdlArdDlKNzIzNEJGUXdlRkV4cmlleThVCkl4T3I0WEFiYWFi
+ U3J5WW5VL3pWSDlVMWkyQUlRWk1XSkFldkN2VmdRL1UrTmVSaFh1ZGU5WVVtRE1EbzJzQjIK
+ VkFGRUFxaUYyUVVIUEEybThhN0VPM3lmTDRyTWswaUh6TElLdmg2L3JIOFFDWThpM1h4VE5M
+ OWlDTHpCV3UvTgpPbkNBYlMremx2TFphaVNNaDVFZnV4VHR2NFBsVmRFamY2MlArWkhJRDE2
+ Z1VEd0VtYXpMQU1yeDY2NmpINWt1ClVDVFZ5bWJMMFR2Qis2TDZBUmw4QU55TTRBRG1rV2tw
+ eU0yMmtDdUlTWUFFZlFSM3VXWFo5WWd4YVBNcWJWK3cKQnJoSmc0SGFONkM2eFRxR3YzcjRC
+ MmFxYjc3L0NWb1JKMVo5Y3BIQ3dpT3pJYUFtdnl6UFU2TXhDRFhaOEZnWQpsVDR2MjNHNWlt
+ SlAyemdYNXMrRjZBQ1VKOVVRUEQwdVRmK0o5RGEycitza2gvc1dPbloreWNvSE5CUXZvY1pF
+ Ck5BSFFmN2tDRFFSYmVvQVRBUkFBMkhkMGZzRFZLNzJSTFNESGJ5ME9oZ0RjRGxWQk0yTSto
+ WVlwTzNmWDFyKysKc2hpcVBLQ0hWQXNRNWJ4ZTdIbUppbUhhNEtLWXMya3YvbWx0L0NhdUNK
+ Ly9wbWN5Y0JNN0d2d25Lem11WHp1QQpHbVZUWkM2V1I1TGtha0ZydEhPelZtc0VHcE52NVJj
+ OWw2SFlGcExrYlNrVmk1U1BRWkp5K0VNZ01DRmdqclpmClZGNnlvdHdFMWFmN0hOdE1oTlBh
+ TEROMW9VS0Y1aitSeVJnNWl3SnVDRGtuSGp3QlFWNHBndzIvNXZTOEE3WlEKdjJNYlcvVExF
+ eXBLWGlmNzhJaGdBelh0RTJYck0xbi9vNlpINzFvUkZGS096NDJsRmR6ZHJTWDBZc3FYZ0hD
+ WAo1Z0l0TGZxemoxcHNNYTlvMWVpTlRFbTFkVlFyVHFueXMwbDE4b2FsUk5zd1lsUW1uWUJ3
+ cHdDa2FUSExNSHdLCmZHQmJvNWRMUEVzaHRWb3dJNm5zZ3FMVHlRSG1xSFlxVVpZSXBpZ21t
+ QzNTd0JXWTFWNmZmVUVta3FwQUFDRW4KTDQvZ1Vnbjd5US81ZDBzZXFuQXEycFNCSE1VVW9D
+ Y1R6RVFVV1ZraUR2M1JrN2hURm1oVHNNcTc4eHYyWFJzWApNUjZ5UWhTVFBGWkNZRFVFeEVs
+ RXNTbzlGV0hXcjZ6SHlZY2M4cURMRnZHOUZQaG1RdVQyczlCbHg2Z0kzMjNHCm5FcTFsd1dQ
+ SlZ6UDRqUWtKS0lBWHdGcHYrVzhDV0xxekRXT3ZkbHJEYVRhVk1zY0ZUZUg1VzZVcHJsNjVq
+ cUYKUUdNcGNSR0NzOEdDVVcxM0gwSXlPdFF0d1dYQTRueStTTDgxcHZpQW1hU1hVOGxhS2FS
+ dTkxVk9WYUY5ZjRzQQpFUUVBQVlrQ0h3UVlBUUlBQ1FVQ1czcUFFd0liREFBS0NSQ1VnZXdQ
+ RVpEeTIrb1hELzljSEhSa0JaT2ZrbVNxCjE0U3Z4MDYyUHRVMEtWNDcwVFNucC9qV29ZSm5L
+ SXczRzBtWElSZ3J0SDJkUHdwSWdWanNZeVJTVk1LbVNwdDUKWnJEZjlOdFRiTldnazhWb0xl
+ WnpZRW8rSjNvUHFGclRNczNhWVl2N2U0K0pLNjk1WW5tUSttT0Q5bmlhOTE1dApyNUFaajk1
+ VWZTVGx5VW15aWMxZDhvdnNmMWZQN1hDVVZSRmNSamZOZkRGMW9ML3BEZ01QNUdaMk93YVRl
+ am15CkN1SGpNOElSMUNpYXZCcFlEbUJuVFlrN1B0aHk2YXRXdllsMGZ5L0NxYWpUS3N4Nytw
+ OXh6aXU4WmZWWCtpS0IKQ2MrSGUrRURFZEdJRGh2TlovSVFIZk9CMlBVWFdHUytzOUZOVHhy
+ L0E2bkxHWG5BOVk2dzkzaVBkWUl3eFM3SwpYTG9LSmVlMTBEamx6c1lzUmZsRk9XMFpPaVNp
+ aElDWGlRVjF1cU02dHpGRzlndFJjaXVzNVVBdGhXYU8xT3dVClNDUW1mQ09tNGZ2TUlKSUE5
+ cnh0b1M2T3FSUWNpRjNjcm1vMHJKQ3ROMmF3WmZnaThYRWlmN2Q2aGp2MEVLTTkKWFpvaUFa
+ WVpEKy9pTG01VGFLV042b0dJdGkwVmpKdjhaWk9aT2ZDYjZ2cUZJa0pXK2FPdTRvclRMRk16
+ MjhhbwpVM1F5V3BOQzhGRm1kWXNWdWE4czZnTjFOSWE2eTNxYS9aQjhiQS9pa3k1OUFFejRp
+ RElScmdVek1FZzhBazdUCmZtMUtpWWVpVHRCRENvMjVCdlhqYnFzeXhrUUQxbmtSbTZGQVZ6
+ RXVPUEllOEp1cVcyeEQ5aXhHWXZqVTVoa1IKZ0pwM2dQNWIrY25HM0xQcXF1UTJFNmdvS1VN
+ TEFia0NEUVJiZmw5REFSQUFzRExjYStMbFAydm5mdEVHaHBjQQpCR1ZOUUVGbkdQckNhdVU2
+ SGhOODA1V3RQVHRtc1JPdUp6cWdVVDBtcHFXSWZacTZzTXd5dkhLOVRzL0tIM0paClVWYlJD
+ M3oyaDNLZmhIL0RhZjk1cGQ2bVBjL2g5dkYvT3kzK2VUV2hnR25QNmNBNWtsUitmTzFXaEc4
+ VnJpWHYKck5lUkcyMHN6emplSG9jblNJY1Q1WHVaUjB1REhPaUd4T2l6MXNNUkZUR3h6R095
+ MTlSOXJ2dTYzdGlJM2Q3dgpnYzc1T0NBZGtlQi9TZUNFbGFSdzBUZjdMWmJQampzRjI2M0JZ
+ bk1mNGtrTkVLdnFXY1UyaWNNcCtxZXpqeW5CCnB2ZXVlMHJDVFFCWUFRbG9GQ1ZUR0hyV1dB
+ NkQ0VzVPMkFmSWRJYzF1MUpDWnAyZjVMV1ZvVUZUVklyUW5RUVUKU0hDaWZyOU1aeExUdFBK
+ ZFU1Mm9TUHczZGs0aExQOGlKSUx1dnYvYXZhakNzUVlIRXR3WXNiZUZaeGl1TGdscApBN1lj
+ Sk5ObXBnQ3BNRDR3VWh2bEN0QUtOQlFXeXIyOTc2OThFUVRuNDZlQmVVNkttMkNpaFhrZ3dD
+ eWY4ZXlLCkxFM3NYZXdhcTVrZ1pXdk5xNml1NXFZSVJCOXl3K2NYYzYwZE9aRE9scTkzWDVT
+ QVJZemFvZXBrSHo0cmtMa1AKUG8rdENIeUhRUHNHblBYYzlXVDgwREM5Tm5KR2R2VWx5NXJk
+ TUk0eHBaeWdlb2tqd293VlFsUFV1Y1M2TXluNwpmOHc4Y2dmQjdDMklBSWNEeDJwUC9IendY
+ dmtDT1FOQTdtVjFsTTA4bitnVmtUcnpweGlwNURicTRDSW9ZeDJNCkpaVDhiR1JINlhqY1VE
+ S2EwOVFoeVpzQUVRRUFBWWtFUkFRWUFRZ0FEd1VDVzM1ZlF3SWJBZ1VKQThKbkFBSXAKQ1JD
+ VWdld1BFWkR5MjhGZElBUVpBUWdBQmdVQ1czNWZRd0FLQ1JCVnhETFBjVk1NamNkc0QvMFJo
+ QXN1UVlPeQpyMTNCbDNOaFhrWUFaR3AyWkZER3VrZTdPU2tWOG9qT09UZFR5ei9jT1JHQ2J5
+ ZEQrRGd2cUZ5VmRuT1hLZ08wCmxKbUd3ckdlTGRnZ0F2aDBpaHJwNU8wWVVKOWJCU1htR01t
+ UVRZSC9BbUxUR2FkYnVqQ1dqNWZGVWtDeXd4aW0KSHV5MFBiMjRwelR2UzUwR1k1WStxSDBG
+ SE5haWdka2tpV04zcnVnN0haRXUvQ3lsUFpqT1h6K0QxUVBNckV4dwo3ZC9NS2FiVis5YU5i
+ UVlabGRJajk4UXd2VUYxS1N6YThqbFVJdnBoUnEyN0FUOGZER1lHUGZERU1nMmNCT2FlCkty
+ N29uUXM0YjdhV082aWZEbHhRVHB6c3pvK0FuODA3Tk1TdFZFRmYrczNBaFZEM2U3bmY4SkJh
+ dmJWckFlMGsKb20yNm96elBubnh6K2xxVlZ0dzZVazRYTUl6dGl4L0h3SFl3dUNuY1VYWndL
+ MEkzeUFKd2pZd29vck9DaEozUwpFVWJKUVB0R3NneFJERXhWQkZlNk5MUC82MnhQOU82dGFj
+ d09kYjBNbVAxYjM5cFJBVEM3YmdkMWxkVUxpNzVaCmxKckowL1NpVkVyb3FOWXk3OXRmbWdB
+ WjJVeFptczlTckV5Nm85UVNmc24xYVh2K01QTDlKYUNHbWtQNnpiTFEKTm5kajBKY2FRbmtD
+ MHZneWRPMUJtNk11OTZQOXVmbEtaY0FTNndtTE01SWRIT3lqTDg4d0h3anVjakFPQnRjdwpw
+ MG9HVG5WT25Sc05ZU084VzhZWi9LZGJ1Nzg1ZGF6TXFKMmlOakFEdUJiZG02TjRqNUVkTW5r
+ TG4wQklmUEpwCmRnbTR2bDJVcExqd1JHci9NM3dtbTVwdnMrNnVCN2hrL0ZKaUQvNGxsRU5Q
+ NGVNMWg3U200aitWcTZOMSt6VEIKSVhKQWViSXFhc0RwNXlaUzdYcnk0STM2bjg1WEVZZkcw
+ MWx0QXlob05WMkRPOFNJUlFwdWkydHErOVJQM1JLMQpKREJ4eEVKWTJFTzVKWjhNeGFQSFEw
+ RFQwNWxSRmpLMkFsaGRFSXRqTGpwSjNmVW05c3FMeE1XeHpQNlV6M2lpCjJ1YTR1bnJ0Nk9D
+ VHFRd2lqRi8zYlRXaXd2VkFBSG5NRlVpb1hzaEhhb2hWRGNWZm5lSU1mVjBiUUNYWWkzTnAK
+ WTB2MFp3Y2lGSCtnU0M3cUQ2WE51aHBWR1NMNElpbGlGeS9TemNhSkV6QUhlTERTaFpQMkNX
+ ZG5DNHZnbDM3dApocHg4aDU1WWhKbjZIU3VVelBnaGFLdFZCMmsrajdaZXlaK1NGeHA3SXVi
+ SEN3TEhsUWhUNzVSd1EzaUF4S242CjBxajUxY1lUbnF4ZFpYVzZmSDNQa3VNellVNUdwcVIv
+ MU9sNWMvd2ZJNmc2QW04eUtXLzBFVUx0K0tuNExGc1MKbTdZM201SDV2MTJVNkpCWXZWK3Ix
+ M2paaW9zNEVFREU5M0Q1c05IMk1JeVJ6Q0RxMXpkZHQ0WHV5S0ZqUEtXMQo5aWJaRGZGVjdL
+ dUNzdnVMMjNzQmMxc0NNb3ArRTFtVC9ReE9JQTZvRFQxTVFzdHdPVnVReURDdi9PdktTZ2Z6
+ CjhGWEdMNkFQY2xqQ3FqOEFKaHhReXN4ZG9pUVA4bS92dStialdHR3Z4dzVzMWxncGlSRFRS
+ VVBnY0pKTmFHWTIKVklEclpRaTROU2lOUTBOSWkrZGp1NGZOTW1DcFFxZzh0YkMzY0FhNnl3
+ bTZvUUIxU0JobURYMmUxMWdSbGx1SQpPblRHUEUwSFRvM2w3MmxoYmc9PQo9cVpNVgotLS0t
+ LUVORCBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCg==
+Message-ID: <bfbbf816-f467-7e2e-12ca-fb2172ce93f9@i2se.com>
+Date:   Thu, 16 Sep 2021 13:12:21 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <YUMelDd16Aw8w5ZH@apalos.home>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <YUJi0cVawjyiteEx@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme705-chm.china.huawei.com (10.1.199.101) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+X-Provags-ID: V03:K1:ZFfDLH+RJMOUQAXUr7mz+RAjra9lQMCy/tg2MPYIwjlQvpdMpCJ
+ L5w4x5/sAU28ZpTGQAwGa6oTnVKlecs+gv/VCgsiq9kixSIY29/ZJb5XUBsBGq1Uo1qo2DH
+ Lq1odqprO5FXS+uOWmShz0GTW1KWIyZYkYMiTHzs6ro69NIeB1/sJRLoXTVA4Ejn8/+PDsk
+ cIhcMtqPg8mMn0Q4XclmQ==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:EkBazkaaY88=:sKWyz6EjKkxE7+mm8eB9Mn
+ SqtXaRbkgD7g+0FHkJ6HpznBDKyEgmh5DcsaV1oWqbKTyeN+Ote07oDXCQMAltdCRAv51WaF5
+ 3FxacGQl05B8ty48H0rMFcXts10UUU8oWVvyeuD18dm6Smbn7O0gjg2sDv+KSdJkGuMNhrSDU
+ z0VNTo5AeRrYZiRHeqafI0CcsfxsF275fbS8U4Vh+oG7ZB3Bdg2sQNmUCh3geirTZ5zVEagEp
+ T+eHrNE9/wO3bTQyhXDzOK2udbm/+A8oiBzHuMY+ehdsWyFihPy6hqBWyTFnTrIwTtYPZjG58
+ dM/7Ywc0H4WcrJ08Nk6nuytYUbkXtazuw4KYSM6QD1zMbgx9rRxdutTXYfnqACgP4Fyi1w/Uq
+ RU6s+iPiRkkDnTMnvRZ9fuTHqnd9QNou7msotfUwHM9ok9MsJAlorA7oOwK1LBx8VLjBltXfq
+ 33mP8pfKN0PPfouHbAdS+LunPrsLrUeBDI6hfxKwciH0rf/RxmIPpkRDsOsVfBNjTcZQjpTl5
+ eIZinBhJINPq1OrsF2WRnqRwLgaXn5/KCL7fzIDTPnhemoqumA0LOSq6WeyjCEygVGUXAKDn1
+ F7vjIT1mwpwfnxrQSN4yfDZI+NyBJpojA0ebg98DKpvbLY8c7V3fZ7niQbPRbPWFkTAXRudF/
+ VR+o2R7puV2YYbF4CXHHqqPfgbl2d8sIO6kDu/Ir36Oh0qRxL7EI5X4O1Am0zESTHjYXAfHK0
+ PDIEFu34HBJjk028yBKoADvVwQlYzR4OHqi7kbifc6RR/Qpvws7LLqKYYdw=
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/9/16 18:38, Ilias Apalodimas wrote:
-> On Thu, Sep 16, 2021 at 05:33:39PM +0800, Yunsheng Lin wrote:
->> On 2021/9/16 16:44, Ilias Apalodimas wrote:
->>>>>> appear if we try to pull in your patches on using page pool and recycling
->>>
->>> [...]
->>>
->>>>>> for Tx where TSO and skb_split are used?
->>>>
->>>> As my understanding, the problem might exists without tx recycling, because a
->>>> skb from wire would be passed down to the tcp stack and retransmited back to
->>>> the wire theoretically. As I am not able to setup a configuration to verify
->>>> and test it and the handling seems tricky, so I am targetting net-next branch
->>>> instead of net branch.
->>>>
->>>>>>
->>>>>> I'll be honest, when I came up with the recycling idea for page pool, I
->>>>>> never intended to support Tx.  I agree with Alexander here,  If people want
->>>>>> to use it on Tx and think there's value,  we might need to go back to the
->>>>>> drawing board and see what I've missed.  It's still early and there's a
->>>>>> handful of drivers using it,  so it will less painful now.
->>>>
->>>> Yes, we also need to prototype it to see if there is something missing in the
->>>> drawing board and how much improvement we get from that:)
->>>>
->>>>>
->>>>> I agree, page_pool is NOT designed or intended for TX support.
->>>>> E.g. it doesn't make sense to allocate a page_pool instance per socket, as the backing memory structures for page_pool are too much.
->>>>> As the number RX-queues are more limited it was deemed okay that we use page_pool per RX-queue, which sacrifice some memory to gain speed.
->>>>
->>>> As memtioned before, Tx recycling is based on page_pool instance per socket.
->>>> it shares the page_pool instance with rx.
->>>>
->>>> Anyway, based on feedback from edumazet and dsahern, I am still trying to
->>>> see if the page pool is meaningful for tx.
->>>>
->>>>>
->>>>>
->>>>>> The pp_recycle_bit was introduced to make the checking faster, instead of
->>>>>> getting stuff into cache and check the page signature.  If that ends up
->>>>>> being counterproductive, we could just replace the entire logic with the
->>>>>> frag count and the page signature, couldn't we?  In that case we should be
->>>>>> very cautious and measure potential regression on the standard path.
->>>>>
->>>>> +1
->>>>
->>>> I am not sure "pp_recycle_bit was introduced to make the checking faster" is a
->>>> valid. The size of "struct page" is only about 9 words(36/72 bytes), which is
->>>> mostly to be in the same cache line, and both standard path and recycle path have
->>>> been touching the "struct page", so it seems the overhead for checking signature
->>>> seems minimal.
->>>>
->>>> I agree that we need to be cautious and measure potential regression on the
->>>> standard path.
->>>
->>> well pp_recycle is on the same cache line boundary with the head_frag we
->>> need to decide on recycling. After that we start checking page signatures
->>> etc,  which means the default release path remains mostly unaffected.  
->>>
->>> I guess what you are saying here, is that 'struct page' is going to be
->>> accessed eventually by the default network path,  so there won't be any 
->>> noticeable performance hit?  What about the other usecases we have
->>
->> Yes.
-> 
-> In that case you'd need to call virt_to_head_page() early though, get it
-> and then compare the signature.   I guess that's avoidable by using 
-> frag->bv_page for the fragments?
+Hi Andrew,
 
-If a page of a skb frag is from page pool, It seems frag->bv_page is
-always point to head_page of a compound page, so the calling of
-virt_to_head_page() does not seems necessary.
+thanks for your review.
 
-bit 0 of frag->bv_page is different way of indicatior for a pp page,
-it is better we do not confuse with the page signature way. Using
-a bit 0 may give us a free word in 'struct page' if we manage to
-use skb->pp_recycle to indicate a head page of the skb uniquely, meaning
-page->pp_magic can be used for future feature.
+Am 15.09.21 um 23:17 schrieb Andrew Lunn:
+>> +static void mse102x_init_mac(struct mse102x_net *mse, struct device_node *np)
+>> +{
+>> +	struct net_device *ndev = mse->ndev;
+>> +	int ret = of_get_mac_address(np, ndev->dev_addr);
+>> +
+>> +	if (ret) {
+>> +		eth_hw_addr_random(ndev);
+>> +		netdev_err(ndev, "Using random MAC address: %pM\n",
+>> +			   ndev->dev_addr);
+>> +	}
+>> +}
+> No need to tell the hardware? Does it work in promiscuous mode by
+> default?
+Yes and yes
+>
+>> +	netif_carrier_off(mse->ndev);
+>> +	ndev->if_port = IF_PORT_10BASET;
+> That is not correct. Maybe you should add a IF_PORT_HOMEPLUG ?
+There is already a driver (qca_spi, qcauart) for a similiar Homeplug
+device (QCA7000), which also uses IF_PORT_10BASET. Should i change this
+too or leave it because of resulting changes to userspace?
+>
+>> +static const struct of_device_id mse102x_match_table[] = {
+>> +	{ .compatible = "vertexcom,mse1021" },
+>> +	{ .compatible = "vertexcom,mse1022" },
+> Is there an ID register you can read to determine what device you
+> actually have? If so, i suggest you verify the correct compatible is
+> used.
 
+AFAIK the device doesn't have any kind of ID register.
 
-> 
->>
->>> for pp_recycle right now?  __skb_frag_unref() in skb_shift() or
->>> skb_try_coalesce() (the latter can probably be removed tbh).
->>
->> If we decide to go with accurate indicator of a pp page, we just need
->> to make sure network stack use __skb_frag_unref() and __skb_frag_ref()
->> to put and get a page frag, the indicator checking need only done in
->> __skb_frag_unref() and __skb_frag_ref(), so the skb_shift() and
->> skb_try_coalesce() should be fine too.
->>
->>>
->>>>
->>>> Another way is to use the bit 0 of frag->bv_page ptr to indicate if a frag
->>>> page is from page pool.
->>>
->>> Instead of the 'struct page' signature?  And the pp_recycle bit will
->>> continue to exist?  
->>
->> pp_recycle bit might only exist or is only used for the head page for the skb.
->> The bit 0 of frag->bv_page ptr can be used to indicate a frag page uniquely.
->> Doing a memcpying of shinfo or "*fragto = *fragfrom" automatically pass the
->> indicator to the new shinfo before doing a __skb_frag_ref(), and __skb_frag_ref()
->> will increment the _refcount or pp_frag_count according to the bit 0 of
->> frag->bv_page.
->>
->> By the way, I also prototype the above idea, and it seems to work well too.
->>
-> 
-> As long as no one else touches this, it's just another way of identifying a
-> page_pool allocated page.  But are we gaining by that?  Not using
-> virt_to_head_page() as stated above? But in that case you still need to
-> keep pp_recycle around. 
+@Jimmy Please correct me, if i'm wrong.
 
-No, we do not need the pp_recycle, as long as the we make sure __skb_frag_ref()
-is called after memcpying the shinfo or doing "*fragto = *fragfrom".
+Best regards
 
-> 
->>> .
->>> Right now the 'naive' explanation on the recycling decision is something like:
->>>
->>> if (pp_recycle) <--- recycling bit is set
->>>     (check page signature) <--- signature matches page pool
->>> 		(check fragment refcnt) <--- If frags are enabled and is the last consumer
->>> 			recycle
->>>
->>> If we can proove the performance is unaffected when we eliminate the first if,
->>> then obviously we should remove it.  I'll try running that test here and see,
->>> but keep in mind I am only testing on an 1GB interface.  Any chance we can get 
->>> measurements on a beefier hardware using hns3 ?
->>
->> Sure, I will try it.
->> As the kind of performance overhead is small, any performance testcase in mind?
->>
-> 
-> 'eliminate the first if' wasn't accurate.  I meant switch the first if and
-> check the struct page signature instead.  That would be the best solution
-> imho.  We effectively have a single rule to check if a packet comes from
-> page_pool or not.
+>
+> 	Andrew
 
-I am not sure what does "switch " means here, if the page signature can
-indicate a pp page uniquely, the "if (pp_recycle)" checking can be removed.
-
-> 
-> You can start by sending a lot of packets and dropping those immediately.
-> That should put enough stress on the receive path and the allocators and it
-> should give us a rough idea. 
-> 
->>>
->>>>
->>>>>
->>>>>> But in general,  I'd be happier if we only had a simple logic in our
->>>>>> testing for the pages we have to recycle.  Debugging and understanding this
->>>>>> otherwise will end up being a mess.
->>>>>
->>>>>
->>>
->>> [...]
->>>
->>> Regards
->>> /Ilias
->>> .
->>>
-> 
-> Regards
-> /Ilias
-> .
-> 
