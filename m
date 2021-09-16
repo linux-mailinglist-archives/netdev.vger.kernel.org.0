@@ -2,94 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD39840DC51
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 16:05:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5041940DC57
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 16:06:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238146AbhIPOGn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 10:06:43 -0400
-Received: from ssl.serverraum.org ([176.9.125.105]:49571 "EHLO
-        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235474AbhIPOGm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 10:06:42 -0400
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 632A722239;
-        Thu, 16 Sep 2021 16:05:20 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1631801120;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QRqBsNTBoOGvyLlATA7p9NzQtPWwSoU4M5S63n5fs5g=;
-        b=e9dMoUZtP5AxsfYAHXwtuTkaaRtyJzTlewq5K6tMsyKOGmXHFVrlERd5IHGcz/zP+eJRhs
-        czWoJPUpRpI/w1JOycb7YLPYu+IRHwfeaUGowMANPURgZrkLPdgu+NKR8HfUN5KGFzlwqJ
-        lDO9oryOuFztjMWzjvNzNvvAql6Z8uc=
+        id S238342AbhIPOHN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 10:07:13 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:44234 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235474AbhIPOHM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Sep 2021 10:07:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=8q+3bGjP97pZnvJgbNzp1eoHg35qG/qJ8mr6nBvLOCg=; b=WmZUuNz/HYoiHOxGlBT2eeFxl5
+        /a3TLcTIn0tMRszOVMoNN/NK9cugmc2x96ntVDd8dBVdlm5fbIk+odJpGjex4WYGxyk5uiu7bHY8g
+        2oFXBxLMtISOdsyh5tTnEaOX7KqpUya2gdbXElEi/1dnT+AeyiE9e9gp58SeyLleffzs=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mQs1L-006uuE-Gu; Thu, 16 Sep 2021 16:05:47 +0200
+Date:   Thu, 16 Sep 2021 16:05:47 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Asmaa Mnebhi <asmaa@nvidia.com>
+Cc:     andy.shevchenko@gmail.com, linux-gpio@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, kuba@kernel.org,
+        linus.walleij@linaro.org, bgolaszewski@baylibre.com,
+        davem@davemloft.net, rjw@rjwysocki.net, davthompson@nvidia.com
+Subject: Re: [PATCH v1 1/2] gpio: mlxbf2: Introduce IRQ support
+Message-ID: <YUNPO9/YacBNr/yQ@lunn.ch>
+References: <20210915222847.10239-1-asmaa@nvidia.com>
+ <20210915222847.10239-2-asmaa@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Thu, 16 Sep 2021 16:05:20 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        netdev@vger.kernel.org, Antoine Tenart <atenart@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com, bcm-kernel-feedback-list@broadcom.com
-Subject: Re: [RFC PATCH v2 net-next 0/5] Let phylink manage in-band AN for the
- PHY
-In-Reply-To: <20210916135445.euovk2aelndgtvid@skbuf>
-References: <20210830155250.4029923-1-vladimir.oltean@nxp.com>
- <20210830183015.GY22278@shell.armlinux.org.uk>
- <20210830183623.kxtbohzy4sfdbpsl@skbuf>
- <20210916130908.zubzqs6i6i7kbbol@skbuf>
- <f65348840296deb814f4a39f5146c29d@walle.cc>
- <20210916135445.euovk2aelndgtvid@skbuf>
-User-Agent: Roundcube Webmail/1.4.11
-Message-ID: <c5e4b74c3f7988bedbd74270021b4fb4@walle.cc>
-X-Sender: michael@walle.cc
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210915222847.10239-2-asmaa@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2021-09-16 15:54, schrieb Vladimir Oltean:
-> On Thu, Sep 16, 2021 at 03:51:28PM +0200, Michael Walle wrote:
->> Am 2021-09-16 15:09, schrieb Vladimir Oltean:
->> > On Mon, Aug 30, 2021 at 09:36:23PM +0300, Vladimir Oltean wrote:
->> > > On Mon, Aug 30, 2021 at 07:30:15PM +0100, Russell King (Oracle) wrote:
->> > > > Can we postpone this after this merge window please, so I've got time
->> > > > to properly review this. Thanks.
->> > >
->> > > Please review at your discretion, I've no intention to post a v3 right
->> > > now, and to the best of my knowledge, RFC's are not even considered
->> > > for
->> > > direct inclusion in the git tree.
->> >
->> > Hello Russell, can you please review these patches if possible? I
->> > would like to repost them soon.
->> 
->> I planned to test this on my board with the AR8031 (and add support 
->> there),
->> but it seems I won't find time before my vacation, unfortunately.
-> 
-> Oh, but there isn't any "support" to be added I though, your conclusion
-> last time seemed to be that it only supported in-band autoneg ON?
-> I was going to add a patch to implement .validate_inband_aneg for the
-> at803x driver to mark that fact too, I just didn't do it in the RFC.
-> That should also fix the ENETC ports on the LS1028A-RDB which were
-> migrated to phylink while they didn't have the 'managed = 
-> "in-band-status"'
-> OF property, and enable new kernels to still work with the old DT blob.
-> Or were you thinking of something else?
+> +static void mlxbf2_gpio_irq_enable(struct irq_data *irqd)
+> +{
+> +	struct gpio_chip *gc = irq_data_get_irq_chip_data(irqd);
+> +	struct mlxbf2_gpio_context *gs = gpiochip_get_data(gc);
+> +	int offset = irqd_to_hwirq(irqd);
+> +	unsigned long flags;
+> +	u32 val;
+> +
+> +	spin_lock_irqsave(&gs->gc.bgpio_lock, flags);
+> +	val = readl(gs->gpio_io + YU_GPIO_CAUSE_OR_CLRCAUSE);
+> +	val |= BIT(offset);
+> +	writel(val, gs->gpio_io + YU_GPIO_CAUSE_OR_CLRCAUSE);
+> +
+> +	/* Enable PHY interrupt by setting the priority level */
 
-No, but I won't find time to test it within the next.. uhm, 30minutes
-until I call it a day ;)
+This should be an abstract driver for a collection of GPIO lines.
+Yes, one of these GPIOs is used for the PHY, but the GPIO driver does
+not care. So please remove this comment.
 
--michael
+> +	val = readl(gs->gpio_io + YU_GPIO_CAUSE_OR_EVTEN0);
+> +	val |= BIT(offset);
+> +	writel(val, gs->gpio_io + YU_GPIO_CAUSE_OR_EVTEN0);
+
+What exactly does this do? It appears to clear the interrupt, if i
+understand mlxbf2_gpio_irq_handler(). I don't know the GPIO framework
+well enough to know if this is correct. It does mean if the interrupt
+signal is active but masked, and you enable it, you appear to loose
+the interrupt? Maybe you want the interrupt to fire as soon as it is
+enabled?
+
+> +static irqreturn_t mlxbf2_gpio_irq_handler(int irq, void *ptr)
+> +{
+> +	struct mlxbf2_gpio_context *gs = ptr;
+> +	struct gpio_chip *gc = &gs->gc;
+> +	unsigned long pending;
+> +	u32 level;
+> +
+> +	pending = readl(gs->gpio_io + YU_GPIO_CAUSE_OR_CAUSE_EVTEN0);
+> +	writel(pending, gs->gpio_io + YU_GPIO_CAUSE_OR_CLRCAUSE);
+> +
+> +	for_each_set_bit(level, &pending, gc->ngpio) {
+> +		int gpio_irq = irq_find_mapping(gc->irq.domain, level);
+> +		generic_handle_irq(gpio_irq);
+> +	}
+> +
+> +	return IRQ_RETVAL(pending);
+> +}
+> +
+> +static void mlxbf2_gpio_irq_mask(struct irq_data *irqd) {
+> +	mlxbf2_gpio_irq_disable(irqd);
+> +}
+> +
+> +static void mlxbf2_gpio_irq_unmask(struct irq_data *irqd) {
+> +	mlxbf2_gpio_irq_enable(irqd);
+> +}
+
+Do these two functions have any value?
+
+> +static int
+> +mlxbf2_gpio_irq_set_type(struct irq_data *irqd, unsigned int type)
+> +{
+> +	struct gpio_chip *gc = irq_data_get_irq_chip_data(irqd);
+> +	struct mlxbf2_gpio_context *gs = gpiochip_get_data(gc);
+> +	int offset = irqd_to_hwirq(irqd);
+> +	unsigned long flags;
+> +	bool fall = false;
+> +	bool rise = false;
+> +	u32 val;
+> +
+> +	switch (type & IRQ_TYPE_SENSE_MASK) {
+> +	case IRQ_TYPE_EDGE_BOTH:
+> +	case IRQ_TYPE_LEVEL_MASK:
+> +		fall = true;
+> +		rise = true;
+> +		break;
+> +	case IRQ_TYPE_EDGE_RISING:
+> +	case IRQ_TYPE_LEVEL_HIGH:
+> +		rise = true;
+> +		break;
+> +	case IRQ_TYPE_EDGE_FALLING:
+> +	case IRQ_TYPE_LEVEL_LOW:
+> +		fall = true;
+> +		break;
+
+This looks wrong. You cannot map a level interrupt into an edge. It
+looks like your hardware only supports edges. If asked to do level,
+return -EINVAL.
+
+> +	default:
+> +		break;
+> +	}
+> +
+> +	/* The INT_N interrupt level is active low.
+> +	 * So enable cause fall bit to detect when GPIO
+> +	 * state goes low.
+> +	 */
+
+I don't understand this comment.
+
+  Andrew
