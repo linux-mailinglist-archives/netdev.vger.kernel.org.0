@@ -2,136 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68CF140E81E
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 20:00:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E29D740E613
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 19:29:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350407AbhIPRnz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 13:43:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57072 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1355816AbhIPRmJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Sep 2021 13:42:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3605661354;
-        Thu, 16 Sep 2021 16:55:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631811345;
-        bh=Y6ogfNCq7iZeP1OxSikDX0fSuRFi/23SCRGDL/oRs6M=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=sRJ+eIzLseHdePhc/xawCa3Dl5sAMr/8edWkdvuK7J1b09ZrxQlMrlDj7cB9cBvmQ
-         2MWJQr9dpKtqFbqLdOCHQy6uwFcu4sB7vg84RDzDlsLW6/YG0BJmQByWlLmPWDph0A
-         6Cdx4Bb20w/m+RnKjziBw241q+tDsH8cyQ5WNwULFnmI5A7W5+RpFmDnRGG9cbNUbK
-         l5m8oOxJd7ABoXzllGz9XLRvKruZqA+7bA6P6Yt+iOFYiDjmOAqwDL0NnlQb/o1BPg
-         Bz3EWlqKlYluV1mO7o++vcYteUr0K31J0R5b4dziWF6cbvVcn2fWzqIA6xL6CXlnfl
-         tBj+v0QOnqPWA==
-Date:   Thu, 16 Sep 2021 09:55:44 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        lorenzo.bianconi@redhat.com, davem@davemloft.net, ast@kernel.org,
-        daniel@iogearbox.net, shayagr@amazon.com, john.fastabend@gmail.com,
-        dsahern@kernel.org, brouer@redhat.com, echaudro@redhat.com,
-        jasowang@redhat.com, alexander.duyck@gmail.com, saeed@kernel.org,
-        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
-        tirthendu.sarkar@intel.com, toke@redhat.com
-Subject: Re: [PATCH v14 bpf-next 10/18] bpf: add multi-buff support to the
- bpf_xdp_adjust_tail() API
-Message-ID: <20210916095544.50978cd0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <e07aa987d148c168f1ac95a315d45e24e58c54f5.1631289870.git.lorenzo@kernel.org>
-References: <cover.1631289870.git.lorenzo@kernel.org>
-        <e07aa987d148c168f1ac95a315d45e24e58c54f5.1631289870.git.lorenzo@kernel.org>
+        id S1351520AbhIPRRz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 13:17:55 -0400
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:53712
+        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1344113AbhIPQ52 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 12:57:28 -0400
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com [209.85.221.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 4CBF83F30E
+        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 16:56:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1631811367;
+        bh=NNyXWH0zPnl4XkyqEuGhQGilxobO7/w8aKocS2q24WY=;
+        h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:
+         In-Reply-To:Content-Type;
+        b=SnvXHv3lt3hFaXEv067f+sIAQzmrNDEu8/9goU3pYVPcXovtYxEJxtzR9D1SiefJy
+         YcbjWT47ZXbtJXzqL9ZGqojwgwqF1TlTSO1+wd7+bBZ65O2zTjFXEVbqP3cZvOBCfh
+         Mm0l2yx4hKsAv2d67Ht+ScGmgPJq9ZX58ATIiW+bfFEMfEEWoV4FJYsDPtTGbyl/xI
+         fM/km2Rs/u4iqvLQIHIIo9hymJhQS6av25e/dzOwPPLsrb/eZEmdp4jDUYhn3LSXGH
+         f0uQCb+N7O9tbqiPg7Nnov8ViFaUJtRDw7sS9dfenohlFwYZo6gNlpOJyDJXHrgEaD
+         gl3a2QQe2tVAQ==
+Received: by mail-wr1-f69.google.com with SMTP id i4-20020a5d5224000000b0015b14db14deso2672027wra.23
+        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 09:56:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=NNyXWH0zPnl4XkyqEuGhQGilxobO7/w8aKocS2q24WY=;
+        b=LY5O899lGz4uU3BQHwDO5GJ/j3w/AzW5m6U/8ZP76hgEhcDSYoJ5f7pKja8W6r4UDC
+         vfGIide8333eKgxfXXzCofkN7cfNCiKwIvR4DAIm9PUYhnQW/Gdhgp58L6UjIOb+ANfh
+         2zoc3zAm4Y8SLn5eXIlRa7yBLWncS4Jeh1CtuROUFFgl7FGbR1PNlPDK1JE8UsP5TR0u
+         QFS3I7ksRWGsJadWE5CniRYQ7k0FS+PGBCzzUozZDq83NKBwAL4gLNmzkx/63th/yDGy
+         BH02wnBRGvFC4P9hs4xApjuSV53sidozduObBFMmEoDwStw/9AerLso7//j3ki6EcHWJ
+         Kv7w==
+X-Gm-Message-State: AOAM533NTzVSnQkgv8s3k0G2sn7u/4II7jUj9EQo2O0TScTlal2IOpbf
+        sDHQ+Z4nQbiakkAH0U/uHgbcQXlzBhOG9p2PO3UGdcMjxKRlW+iNPeCsuIROHcw6TkHrX+rI57O
+        rXJ3xJ7hnHe+ppZs+hYnd/J9+bBQi9zrEaw==
+X-Received: by 2002:a05:600c:354a:: with SMTP id i10mr10505319wmq.77.1631811367001;
+        Thu, 16 Sep 2021 09:56:07 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwYvG+0AGIvigBn/pTCgBLDueNOPjU3WvM2vjEkvSVSlmAouj2a9ZpRgMta37+FkXPUz2kuYw==
+X-Received: by 2002:a05:600c:354a:: with SMTP id i10mr10505309wmq.77.1631811366847;
+        Thu, 16 Sep 2021 09:56:06 -0700 (PDT)
+Received: from [192.168.2.211] (lk.84.20.244.219.dc.cable.static.lj-kabel.net. [84.20.244.219])
+        by smtp.gmail.com with ESMTPSA id j4sm4068291wrt.67.2021.09.16.09.56.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Sep 2021 09:56:06 -0700 (PDT)
+Subject: Re: [PATCH] nfc: st95hf: Make use of the helper function
+ dev_err_probe()
+To:     Cai Huoqing <caihuoqing@baidu.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210916153614.16523-1-caihuoqing@baidu.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Message-ID: <8ded55ac-1f0a-764b-6b11-9323742aec9c@canonical.com>
+Date:   Thu, 16 Sep 2021 18:56:04 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20210916153614.16523-1-caihuoqing@baidu.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 10 Sep 2021 18:14:16 +0200 Lorenzo Bianconi wrote:
-> From: Eelco Chaudron <echaudro@redhat.com>
+On 16/09/2021 17:36, Cai Huoqing wrote:
+> When possible use dev_err_probe help to properly deal with the
+> PROBE_DEFER error, the benefit is that DEFER issue will be logged
+> in the devices_deferred debugfs file.
+> Using dev_err_probe() can reduce code size, and the error value
+> gets printed.
 > 
-> This change adds support for tail growing and shrinking for XDP multi-buff.
+> Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
+> ---
+>  drivers/nfc/st95hf/core.c | 7 +++----
+>  1 file changed, 3 insertions(+), 4 deletions(-)
 > 
-> When called on a multi-buffer packet with a grow request, it will always
-> work on the last fragment of the packet. So the maximum grow size is the
-> last fragments tailroom, i.e. no new buffer will be allocated.
-> 
-> When shrinking, it will work from the last fragment, all the way down to
-> the base buffer depending on the shrinking size. It's important to mention
-> that once you shrink down the fragment(s) are freed, so you can not grow
-> again to the original size.
-> 
-> Acked-by: John Fastabend <john.fastabend@gmail.com>
-> Co-developed-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+> diff --git a/drivers/nfc/st95hf/core.c b/drivers/nfc/st95hf/core.c
+> index d16cf3ff644e..8337c0e0c964 100644
+> --- a/drivers/nfc/st95hf/core.c
+> +++ b/drivers/nfc/st95hf/core.c
+> @@ -1087,10 +1087,9 @@ static int st95hf_probe(struct spi_device *nfc_spi_dev)
+>  		st95context->st95hf_supply =
+>  			devm_regulator_get(&nfc_spi_dev->dev,
+>  					   "st95hfvin");
+> -		if (IS_ERR(st95context->st95hf_supply)) {
+> -			dev_err(&nfc_spi_dev->dev, "failed to acquire regulator\n");
+> -			return PTR_ERR(st95context->st95hf_supply);
+> -		}
+> +		if (IS_ERR(st95context->st95hf_supply))
+> +			return dev_err_probe(&nfc_spi_dev->dev, PTR_ERR(st95context->st95hf_supply),
+> +					     "failed to acquire regulator\n");
 
-> +static inline unsigned int xdp_get_frag_tailroom(const skb_frag_t *frag)
-> +{
-> +	struct page *page = skb_frag_page(frag);
-> +
-> +	return page_size(page) - skb_frag_size(frag) - skb_frag_off(frag);
-> +}
+I think the preferred approach was Rob's dev_err removal. See:
 
-How do we deal with NICs which can pack multiple skbs into a page frag?
-skb_shared_info field to mark the end of last fragment? Just want to make 
-sure there is a path to supporting such designs.
+https://lore.kernel.org/lkml/20200911152943.GA17780@kozik-lap/
+https://lore.kernel.org/lkml/CAL_Jsq+ajm5aiAJfQdS2+2DO1ynBDHWha_7TsA4u-2qwd87y6g@mail.gmail.com/
 
-> +static int bpf_xdp_mb_adjust_tail(struct xdp_buff *xdp, int offset)
-> +{
-> +	struct skb_shared_info *sinfo;
-> +
-> +	sinfo = xdp_get_shared_info_from_buff(xdp);
-> +	if (offset >= 0) {
-> +		skb_frag_t *frag = &sinfo->frags[sinfo->nr_frags - 1];
-> +		int size;
-> +
-> +		if (unlikely(offset > xdp_get_frag_tailroom(frag)))
-> +			return -EINVAL;
-> +
-> +		size = skb_frag_size(frag);
-> +		memset(skb_frag_address(frag) + size, 0, offset);
-> +		skb_frag_size_set(frag, size + offset);
-> +		sinfo->xdp_frags_size += offset;
-> +	} else {
-> +		int i, n_frags_free = 0, len_free = 0, tlen_free = 0;
-> +
-> +		offset = abs(offset);
-> +		if (unlikely(offset > ((int)(xdp->data_end - xdp->data) +
-> +				       sinfo->xdp_frags_size - ETH_HLEN)))
-> +			return -EINVAL;
-> +
-> +		for (i = sinfo->nr_frags - 1; i >= 0 && offset > 0; i--) {
-> +			skb_frag_t *frag = &sinfo->frags[i];
-> +			int size = skb_frag_size(frag);
-> +			int shrink = min_t(int, offset, size);
-> +
-> +			len_free += shrink;
-> +			offset -= shrink;
-> +
-> +			if (unlikely(size == shrink)) {
-> +				struct page *page = skb_frag_page(frag);
-> +
-> +				__xdp_return(page_address(page), &xdp->rxq->mem,
-> +					     false, NULL);
-> +				tlen_free += page_size(page);
-> +				n_frags_free++;
-> +			} else {
-> +				skb_frag_size_set(frag, size - shrink);
-> +				break;
-> +			}
-> +		}
-> +		sinfo->nr_frags -= n_frags_free;
-> +		sinfo->xdp_frags_size -= len_free;
-> +		sinfo->xdp_frags_truesize -= tlen_free;
-> +
-> +		if (unlikely(offset > 0)) {
-> +			xdp_buff_clear_mb(xdp);
-> +			xdp->data_end -= offset;
-> +		}
-> +	}
-> +
-> +	return 0;
-> +}
+P.S. You need to Cc all folks and all lists. The cc-list here is too short.
 
-nit: most of this function is indented, situation is ripe for splitting
-     it into two
+Best regards,
+Krzysztof
