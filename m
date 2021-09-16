@@ -2,107 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CBBC40ED41
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 00:19:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDFCD40ED93
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 00:53:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240932AbhIPWUf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 18:20:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42948 "EHLO
+        id S235315AbhIPWzR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 18:55:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240949AbhIPWUd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 18:20:33 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 490A6C061756
-        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 15:19:08 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id b18so22907583lfb.1
-        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 15:19:08 -0700 (PDT)
+        with ESMTP id S235109AbhIPWzQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 18:55:16 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16F22C061574
+        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 15:53:55 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id g1so24813983lfj.12
+        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 15:53:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ZXGKR8r/HN56qTH2XDx/MfiA/uG/YME9xDPw73hqKJw=;
-        b=hr/znkwatsayH6ZNjZzlwGoQBQEzJja2k0yKqzRc8/lBD+5RMZsXlxt88Q5EXxhp5z
-         nGDNwThSRsaBjoJLe7AC1i33IwfBpPD7r46JAS4YFCng3pQye/gG/m+z3lxlxPm7pTm0
-         9PFhWPFRSwhWwgcLV8AFpWJwz3318DKaR6jyMNFQr6XGdkMA7oLZS0iIWu/8jpUc8n00
-         NUzjQoOaeqWWDyQKYVXTeXGOx2PN39GklWFNaKui6qWQ+fA9LHUJ882UamkdrNG/7bVw
-         JgqnNC5vUN9yiUgsAOW8ryI18GgNKRRF/UomN6LaBMEM2I972VTsd7eKK3+0wL73yRmJ
-         ebVA==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=64aRGDxfXVoa1qTlY3upuJ19yGXpI/+Kdh+ykSMARUA=;
+        b=PTTrrtcAQ0MZYQljqcAEHN2QYzJVOe5PNdmKDLNHnXNOiptmi9UeFaAlszfg18iSvT
+         eiofM9HmyYDvNuV1FZzVEmPcDKqNj4trR4GHfSKgNODjbzaFWGTvt+LhT0S7iUvFa+AQ
+         tNcfKN8zWtSBaXEAawLyLfvAWYTDFL/WImrGXyAdrERGD8EuOsrZ0iMqBb9GzDaWes0k
+         2FtXnVaX6RrQ+Ov8K0KA1+1V7MJvBEB/ztwWsdRpr8+5qiMtqZfuBKUI7wE/orRw8Wsa
+         Q50iSggylqcR6T2ihn2SYgYbNLABcZISk7Vp0Ml3MQtXVnF6F6r2As0l1+n1UzjVz61k
+         1ZmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ZXGKR8r/HN56qTH2XDx/MfiA/uG/YME9xDPw73hqKJw=;
-        b=1fS80LIAN1dKnlGlJ8sGgX1YiKwrCLKeTdylWahWSLVPgo/Oh9EhCeTAFR58qaq2Lv
-         yd75fZdrn6UzT0CiiElk+qPVFtWAgm+LzD/zgkvr8v4zZYnSpFdfax7PjUxPTSCanAhU
-         BsLP9esJ2BXsiamaUa6oQVuOAaskwU4JATvhqrCqTPfSZfTFghBGhG7wi5FLOqe7GikU
-         9pzMnLXBHqMyIlAOWcD5Z10OQnIjqUOGAQSlRgBDbRxS/Q7sHzWXPJ7IOllmp4SmL9sn
-         i1ByD67Y5kUc/LlGo7m24sl+cTLfUXaHdrUPYz6+absT6DLLkDOoIrWE3Wkb7Pe1lt2Z
-         kcNg==
-X-Gm-Message-State: AOAM532fmR8r00eUv1ZqaSK7NgNoQHk+ydL+jaNyZPelINwJYcGT6x7O
-        wSComGqNtJ+avKWtD1gIMv0=
-X-Google-Smtp-Source: ABdhPJxhmr6DriGTWC61I1rG7KBw6+1UzumW30Qn/3nu2bPOhd9tdbUkLgTo4VaC/LRP3B3hLVFn+A==
-X-Received: by 2002:a2e:7503:: with SMTP id q3mr6861229ljc.48.1631830746667;
-        Thu, 16 Sep 2021 15:19:06 -0700 (PDT)
-Received: from localhost.localdomain (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.googlemail.com with ESMTPSA id z7sm483072ljh.59.2021.09.16.15.19.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Sep 2021 15:19:05 -0700 (PDT)
-Subject: Re: [PATCH net-next 0/4] net: dsa: b53: Clean up CPU/IMP ports
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-References: <20210916120354.20338-1-zajec5@gmail.com>
- <7c5e1cf8-2d98-91df-fc6b-f9edfa0f23c9@gmail.com>
- <a8a684ce-bede-b1f1-1f7a-31e71dca3fd3@gmail.com>
-From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
-Message-ID: <1568bbc3-1652-7d01-2fc7-cb4189c71ad2@gmail.com>
-Date:   Fri, 17 Sep 2021 00:19:02 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=64aRGDxfXVoa1qTlY3upuJ19yGXpI/+Kdh+ykSMARUA=;
+        b=BHpbkv6EpHLqZGhMmXpq1SlRZ0c9BtXqbOmzg5bUoRvMdj1sme3eNOuKAUj5CMPybx
+         3ia0euZ+VWhtFe4xPapPt59pYqu5fTWOyOEZnwIkM/mVWf7fyGHQZ0oownSi1nbsZ5V1
+         sjb681pRRxrooSRJzXR+7mOd8cz1CYHJFEOkss6XaLsV8EtrB97/Gr4hOVTZ36RF35hI
+         AcycSDy7X4CEp3bJgj0ylRnhcjxw0FTQLC3A4pwNjwsB+GmSHJKIbdunUTEA5Xf5tvOy
+         MYV1QgJ7Qi1gO7X2WS33fU8pNTac/eQWihO0bh4H8BLcby8/8bCw+lKmh5Z6QOau5a9G
+         33jg==
+X-Gm-Message-State: AOAM531zwJ1y7EVF3JYC4nZ7bZSikwlEgjNuL79FIqqebBe/1yAxAc3p
+        QImF7XdCUaevgA2OeuDH+WZ4Swshx36ngq6LajDFpw==
+X-Google-Smtp-Source: ABdhPJwx8ITFkSsQzaVlRuqb8ifRkDnCbGjxFukpklP6ZORMZwGg6j2a4KP6PgB3oxlHxBr2VGB/Qe7r2bMKHCu2gfY=
+X-Received: by 2002:a05:6512:e89:: with SMTP id bi9mr5641322lfb.95.1631832833481;
+ Thu, 16 Sep 2021 15:53:53 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <a8a684ce-bede-b1f1-1f7a-31e71dca3fd3@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20210901091852.479202-1-maxime@cerno.tech> <20210901091852.479202-8-maxime@cerno.tech>
+In-Reply-To: <20210901091852.479202-8-maxime@cerno.tech>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Fri, 17 Sep 2021 00:53:42 +0200
+Message-ID: <CACRpkdYGnCd8fkAPPTP6VHFXC9k-_BNGqTE4cvPORyXJ=rVWLA@mail.gmail.com>
+Subject: Re: [PATCH v2 07/52] dt-bindings: bluetooth: broadcom: Fix clocks check
+To:     Maxime Ripard <maxime@cerno.tech>
+Cc:     "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        =?UTF-8?Q?Jernej_=C5=A0krabec?= <jernej.skrabec@gmail.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-sunxi <linux-sunxi@googlegroups.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>, Rob Herring <robh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 16.09.2021 23:46, Florian Fainelli wrote:
-> On 9/16/21 9:23 AM, Florian Fainelli wrote:
->> On 9/16/21 5:03 AM, Rafał Miłecki wrote:
->>> From: Rafał Miłecki <rafal@milecki.pl>
->>>
->>> This has been tested on:
->>>
->>> 1. Luxul XBR-4500 with used CPU port 5
->>> [    8.361438] b53-srab-switch 18007000.ethernet-switch: found switch: BCM53012, rev 0
->>>
->>> 2. Netgear R8000 with used CPU port 8
->>> [    4.453858] b53-srab-switch 18007000.ethernet-switch: found switch: BCM53012, rev 5
->>
->> These look good at first glance, let me give them a try on 7445 and 7278
->> at least before responding with Reviewed-by/Tested-by tags, thanks!
->>
-> Found some issues on 7445 and 7278 while moving to the latest net-next
-> which I will be addressing but this worked nicely.
-> 
-> What do you think about removing dev->enabled_ports and
-> b53_for_each_port entirely and using a DSA helper that iterates over the
-> switch's port list? Now that we have dev->num_ports accurately reflect
-> the number of ports it should be equivalent.
+On Wed, Sep 1, 2021 at 11:19 AM Maxime Ripard <maxime@cerno.tech> wrote:
 
-The limitation I see in DSA is skipping unavailable ports. E.g. BCM5301x
-switches that don't have port 6. The closest match for such case I found
-is DSA_PORT_TYPE_UNUSED but I'm not sure if it's enough to handle those
-cases.
+> The original binding was mentioning that valid values for the clocks and
+> clock-names property were one or two clocks from extclk, txco and lpo,
+> with extclk being deprecated in favor of txco.
+>
+> However, the current binding lists a valid array as extclk, txco and
+> lpo, with either one or two items.
+>
+> While this looks similar, it actually enforces that all the device trees
+> use either ["extclk"], or ["extclk", "txco"]. That doesn't make much
+> sense, since the two clocks are said to be equivalent, with one
+> superseeding the other.
+>
+> lpo is also not a valid clock anymore, and would be as the third clock
+> of the list, while we could have only this clock in the previous binding
+> (and in DTs).
+>
+> Let's rework the clock clause to allow to have either:
+>
+>  - extclk, and mark it a deprecated
+>  - txco alone
+>  - lpo alone
+>  - txco, lpo
+>
+> While ["extclk", "lpo"] wouldn't be valid, it wasn't found in any device
+> tree so it's not an issue in practice.
+>
+> Similarly, ["lpo", "txco"] is still considered invalid, but it's
+> generally considered as a best practice to fix the order of clocks.
+>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: netdev@vger.kernel.org
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 
-That DSA_PORT_TYPE_UNUSED would probably require investigating DSA & b53
-behaviour *and* discussing it with DSA maintainer to make sure we don't
-abuse that.
+Looks good to me!
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+
+Yours,
+Linus Walleij
