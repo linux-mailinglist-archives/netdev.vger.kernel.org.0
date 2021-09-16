@@ -2,295 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4097A40D78D
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 12:38:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36ED040D7CA
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 12:49:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236785AbhIPKj7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 06:39:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34786 "EHLO mail.kernel.org"
+        id S237040AbhIPKu6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 06:50:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38034 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235570AbhIPKj7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Sep 2021 06:39:59 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EE7146120F;
-        Thu, 16 Sep 2021 10:38:37 +0000 (UTC)
+        id S235644AbhIPKu5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Sep 2021 06:50:57 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B08C461212;
+        Thu, 16 Sep 2021 10:49:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631788718;
-        bh=8eNapddlcaRrVxc1VNMRrvE1AbLm5qHmft+xwzIJ8Wg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=fG5Yu+DZzZ44XJNJbKPVQn+Nk4MzW8ZC67RWUkLCK+z/Ld5hM87Pn5QPOsMcPWzYh
-         dme45GIo4hhYPX66yeR5TL+c207AR5Rh4qOVvk2iYhrjttJhQ5esu8YDzaKgex9TDJ
-         e1G+qtxFLknnW/bMBSIQ/qlweYkY6rsOBYrQbkxhvGebACsWcZ6kX1vw1+uqBfx2O5
-         Qe0XY5gMOMNFfVrpCpyZtr3DJr+shtj/wqHIIJ7A3XGaTS5H3OcOiBHqI96l4Zc5QO
-         trKBH951xQM9BLc6A28PgnuvG7PUeSrlQ25NR2djFI0SGZPVsqxCLq3xOL/7VUpmck
-         ly0QQdZ+NDuvg==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Leon Romanovsky <leonro@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next] devlink: Delete not-used devlink APIs
-Date:   Thu, 16 Sep 2021 13:38:33 +0300
-Message-Id: <a45674a8cb1c1e0133811d95756357b787673e52.1631788678.git.leonro@nvidia.com>
-X-Mailer: git-send-email 2.31.1
+        s=k20201202; t=1631789377;
+        bh=fp1TNMHOFsWq2J/VHlgIglOFHSB2pZWpIK3WKY20BB0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=JLBWL53G2batQtel8a586fQ7gSdE+AdJTh5qkJ7j9B1MTl3GkRcrJyjszQG1/PYzS
+         dfpeFx29TJZfq5rNLRu/8+/omTILNZe2pZ4D3h99zTnqwzPILu8LvtA6EY96z28cWR
+         KxHgbaZnB71knyCA2rQ+wK3XNAbDDFKlnwNyJuksfyGf5BgSGD67OWvqWq+zJghcGF
+         McFZ8aavNQq0Ul5HAjDlC0jLJDVtJq6iYq3zshXa0ErQmHn1jnAq44b53IpWC8C/66
+         vkplh0A3mOpQYrYTXyeLFrdyNeCMHXkpgmfzc1oxShgVo6RsjtMq18w98xGvby3sXx
+         tK7ipVa9SOzug==
+Date:   Thu, 16 Sep 2021 12:49:30 +0200
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To:     Quentin Monnet <quentin@isovalent.com>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Beckett <david.beckett@netronome.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 08/24] tools: bpftool: update bpftool-prog.rst reference
+Message-ID: <20210916124930.7ae3b722@coco.lan>
+In-Reply-To: <eb80e8f5-b9d7-5031-8ebb-4595bb295dbf@isovalent.com>
+References: <cover.1631783482.git.mchehab+huawei@kernel.org>
+        <dc4bae7a14518fbfff20a0f539df06a5c19b09de.1631783482.git.mchehab+huawei@kernel.org>
+        <eb80e8f5-b9d7-5031-8ebb-4595bb295dbf@isovalent.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.30; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+Hi Quentin,
 
-Devlink core exported generously the functions calls that were used
-by netdevsim tests or not used at all.
+Em Thu, 16 Sep 2021 10:43:45 +0100
+Quentin Monnet <quentin@isovalent.com> escreveu:
 
-Delete such APIs with one exception - devlink_alloc_ns(). That function
-should be spared from deleting because it is a special form of devlink_alloc()
-needed for the netdevsim.
+> 2021-09-16 11:14 UTC+0200 ~ Mauro Carvalho Chehab
+> <mchehab+huawei@kernel.org>
+> > The file name: Documentation/bpftool-prog.rst
+> > should be, instead: tools/bpf/bpftool/Documentation/bpftool-prog.rst.
+> > 
+> > Update its cross-reference accordingly.
+> > 
+> > Fixes: a2b5944fb4e0 ("selftests/bpf: Check consistency between bpftool source, doc, completion")
+> > Fixes: ff69c21a85a4 ("tools: bpftool: add documentation")  
+> 
+> Hi,
+> How is this a fix for the commit that added the documentation in bpftool?
+> 
+> > Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+> > ---
+> >  tools/testing/selftests/bpf/test_bpftool_synctypes.py | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/tools/testing/selftests/bpf/test_bpftool_synctypes.py b/tools/testing/selftests/bpf/test_bpftool_synctypes.py
+> > index be54b7335a76..27a2c369a798 100755
+> > --- a/tools/testing/selftests/bpf/test_bpftool_synctypes.py
+> > +++ b/tools/testing/selftests/bpf/test_bpftool_synctypes.py
+> > @@ -374,7 +374,7 @@ class ManProgExtractor(ManPageExtractor):
+> >      """
+> >      An extractor for bpftool-prog.rst.
+> >      """
+> > -    filename = os.path.join(BPFTOOL_DIR, 'Documentation/bpftool-prog.rst')
+> > +    filename = os.path.join(BPFTOOL_DIR, 'tools/bpf/bpftool/Documentation/bpftool-prog.rst')
+> >  
+> >      def get_attach_types(self):
+> >          return self.get_rst_list('ATTACH_TYPE')
+> >   
+> 
+> No I don't believe it should. BPFTOOL_DIR already contains
+> 'tools/bpf/bpftool' and the os.path.join() concatenates the two path
+> fragments.
+> 
+> Where is this suggestion coming from? Did you face an issue with the script?
 
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- drivers/net/netdevsim/health.c |  32 -----------
- include/net/devlink.h          |  14 -----
- net/core/devlink.c             | 102 +--------------------------------
- 3 files changed, 3 insertions(+), 145 deletions(-)
+No, I didn't face any issues with this script.
 
-diff --git a/drivers/net/netdevsim/health.c b/drivers/net/netdevsim/health.c
-index 04aebdf85747..aa77af4a68df 100644
---- a/drivers/net/netdevsim/health.c
-+++ b/drivers/net/netdevsim/health.c
-@@ -110,26 +110,6 @@ static int nsim_dev_dummy_fmsg_put(struct devlink_fmsg *fmsg, u32 binary_len)
- 	if (err)
- 		return err;
- 
--	err = devlink_fmsg_arr_pair_nest_start(fmsg, "test_bool_array");
--	if (err)
--		return err;
--	for (i = 0; i < 10; i++) {
--		err = devlink_fmsg_bool_put(fmsg, true);
--		if (err)
--			return err;
--	}
--	err = devlink_fmsg_arr_pair_nest_end(fmsg);
--	if (err)
--		return err;
--
--	err = devlink_fmsg_arr_pair_nest_start(fmsg, "test_u8_array");
--	if (err)
--		return err;
--	for (i = 0; i < 10; i++) {
--		err = devlink_fmsg_u8_put(fmsg, i);
--		if (err)
--			return err;
--	}
- 	err = devlink_fmsg_arr_pair_nest_end(fmsg);
- 	if (err)
- 		return err;
-@@ -146,18 +126,6 @@ static int nsim_dev_dummy_fmsg_put(struct devlink_fmsg *fmsg, u32 binary_len)
- 	if (err)
- 		return err;
- 
--	err = devlink_fmsg_arr_pair_nest_start(fmsg, "test_u64_array");
--	if (err)
--		return err;
--	for (i = 0; i < 10; i++) {
--		err = devlink_fmsg_u64_put(fmsg, i);
--		if (err)
--			return err;
--	}
--	err = devlink_fmsg_arr_pair_nest_end(fmsg);
--	if (err)
--		return err;
--
- 	err = devlink_fmsg_arr_pair_nest_start(fmsg, "test_array_of_objects");
- 	if (err)
- 		return err;
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index cd89b2dc2354..0e06b3dbbec6 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -1663,18 +1663,7 @@ int devlink_param_driverinit_value_get(struct devlink *devlink, u32 param_id,
- 				       union devlink_param_value *init_val);
- int devlink_param_driverinit_value_set(struct devlink *devlink, u32 param_id,
- 				       union devlink_param_value init_val);
--int
--devlink_port_param_driverinit_value_get(struct devlink_port *devlink_port,
--					u32 param_id,
--					union devlink_param_value *init_val);
--int devlink_port_param_driverinit_value_set(struct devlink_port *devlink_port,
--					    u32 param_id,
--					    union devlink_param_value init_val);
- void devlink_param_value_changed(struct devlink *devlink, u32 param_id);
--void devlink_port_param_value_changed(struct devlink_port *devlink_port,
--				      u32 param_id);
--void devlink_param_value_str_fill(union devlink_param_value *dst_val,
--				  const char *src);
- struct devlink_region *
- devlink_region_create(struct devlink *devlink,
- 		      const struct devlink_region_ops *ops,
-@@ -1719,10 +1708,7 @@ int devlink_fmsg_binary_pair_nest_start(struct devlink_fmsg *fmsg,
- 					const char *name);
- int devlink_fmsg_binary_pair_nest_end(struct devlink_fmsg *fmsg);
- 
--int devlink_fmsg_bool_put(struct devlink_fmsg *fmsg, bool value);
--int devlink_fmsg_u8_put(struct devlink_fmsg *fmsg, u8 value);
- int devlink_fmsg_u32_put(struct devlink_fmsg *fmsg, u32 value);
--int devlink_fmsg_u64_put(struct devlink_fmsg *fmsg, u64 value);
- int devlink_fmsg_string_put(struct devlink_fmsg *fmsg, const char *value);
- int devlink_fmsg_binary_put(struct devlink_fmsg *fmsg, const void *value,
- 			    u16 value_len);
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index f30121f07467..0f1663453ca0 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -6269,23 +6269,21 @@ static int devlink_fmsg_put_value(struct devlink_fmsg *fmsg,
- 	return 0;
- }
- 
--int devlink_fmsg_bool_put(struct devlink_fmsg *fmsg, bool value)
-+static int devlink_fmsg_bool_put(struct devlink_fmsg *fmsg, bool value)
- {
- 	if (fmsg->putting_binary)
- 		return -EINVAL;
- 
- 	return devlink_fmsg_put_value(fmsg, &value, sizeof(value), NLA_FLAG);
- }
--EXPORT_SYMBOL_GPL(devlink_fmsg_bool_put);
- 
--int devlink_fmsg_u8_put(struct devlink_fmsg *fmsg, u8 value)
-+static int devlink_fmsg_u8_put(struct devlink_fmsg *fmsg, u8 value)
- {
- 	if (fmsg->putting_binary)
- 		return -EINVAL;
- 
- 	return devlink_fmsg_put_value(fmsg, &value, sizeof(value), NLA_U8);
- }
--EXPORT_SYMBOL_GPL(devlink_fmsg_u8_put);
- 
- int devlink_fmsg_u32_put(struct devlink_fmsg *fmsg, u32 value)
- {
-@@ -6296,14 +6294,13 @@ int devlink_fmsg_u32_put(struct devlink_fmsg *fmsg, u32 value)
- }
- EXPORT_SYMBOL_GPL(devlink_fmsg_u32_put);
- 
--int devlink_fmsg_u64_put(struct devlink_fmsg *fmsg, u64 value)
-+static int devlink_fmsg_u64_put(struct devlink_fmsg *fmsg, u64 value)
- {
- 	if (fmsg->putting_binary)
- 		return -EINVAL;
- 
- 	return devlink_fmsg_put_value(fmsg, &value, sizeof(value), NLA_U64);
- }
--EXPORT_SYMBOL_GPL(devlink_fmsg_u64_put);
- 
- int devlink_fmsg_string_put(struct devlink_fmsg *fmsg, const char *value)
- {
-@@ -10257,55 +10254,6 @@ int devlink_param_driverinit_value_set(struct devlink *devlink, u32 param_id,
- }
- EXPORT_SYMBOL_GPL(devlink_param_driverinit_value_set);
- 
--/**
-- *	devlink_port_param_driverinit_value_get - get configuration parameter
-- *						value for driver initializing
-- *
-- *	@devlink_port: devlink_port
-- *	@param_id: parameter ID
-- *	@init_val: value of parameter in driverinit configuration mode
-- *
-- *	This function should be used by the driver to get driverinit
-- *	configuration for initialization after reload command.
-- */
--int devlink_port_param_driverinit_value_get(struct devlink_port *devlink_port,
--					    u32 param_id,
--					    union devlink_param_value *init_val)
--{
--	struct devlink *devlink = devlink_port->devlink;
--
--	if (!devlink_reload_supported(devlink->ops))
--		return -EOPNOTSUPP;
--
--	return __devlink_param_driverinit_value_get(&devlink_port->param_list,
--						    param_id, init_val);
--}
--EXPORT_SYMBOL_GPL(devlink_port_param_driverinit_value_get);
--
--/**
-- *     devlink_port_param_driverinit_value_set - set value of configuration
-- *                                               parameter for driverinit
-- *                                               configuration mode
-- *
-- *     @devlink_port: devlink_port
-- *     @param_id: parameter ID
-- *     @init_val: value of parameter to set for driverinit configuration mode
-- *
-- *     This function should be used by the driver to set driverinit
-- *     configuration mode default value.
-- */
--int devlink_port_param_driverinit_value_set(struct devlink_port *devlink_port,
--					    u32 param_id,
--					    union devlink_param_value init_val)
--{
--	return __devlink_param_driverinit_value_set(devlink_port->devlink,
--						    devlink_port->index,
--						    &devlink_port->param_list,
--						    param_id, init_val,
--						    DEVLINK_CMD_PORT_PARAM_NEW);
--}
--EXPORT_SYMBOL_GPL(devlink_port_param_driverinit_value_set);
--
- /**
-  *	devlink_param_value_changed - notify devlink on a parameter's value
-  *				      change. Should be called by the driver
-@@ -10329,50 +10277,6 @@ void devlink_param_value_changed(struct devlink *devlink, u32 param_id)
- }
- EXPORT_SYMBOL_GPL(devlink_param_value_changed);
- 
--/**
-- *     devlink_port_param_value_changed - notify devlink on a parameter's value
-- *                                      change. Should be called by the driver
-- *                                      right after the change.
-- *
-- *     @devlink_port: devlink_port
-- *     @param_id: parameter ID
-- *
-- *     This function should be used by the driver to notify devlink on value
-- *     change, excluding driverinit configuration mode.
-- *     For driverinit configuration mode driver should use the function
-- *     devlink_port_param_driverinit_value_set() instead.
-- */
--void devlink_port_param_value_changed(struct devlink_port *devlink_port,
--				      u32 param_id)
--{
--	struct devlink_param_item *param_item;
--
--	param_item = devlink_param_find_by_id(&devlink_port->param_list,
--					      param_id);
--	WARN_ON(!param_item);
--
--	devlink_param_notify(devlink_port->devlink, devlink_port->index,
--			     param_item, DEVLINK_CMD_PORT_PARAM_NEW);
--}
--EXPORT_SYMBOL_GPL(devlink_port_param_value_changed);
--
--/**
-- *	devlink_param_value_str_fill - Safely fill-up the string preventing
-- *				       from overflow of the preallocated buffer
-- *
-- *	@dst_val: destination devlink_param_value
-- *	@src: source buffer
-- */
--void devlink_param_value_str_fill(union devlink_param_value *dst_val,
--				  const char *src)
--{
--	size_t len;
--
--	len = strlcpy(dst_val->vstr, src, __DEVLINK_PARAM_MAX_STRING_VALUE);
--	WARN_ON(len >= __DEVLINK_PARAM_MAX_STRING_VALUE);
--}
--EXPORT_SYMBOL_GPL(devlink_param_value_str_fill);
--
- /**
-  *	devlink_region_create - create a new address region
-  *
--- 
-2.31.1
+The suggestion cames from the script at:
 
+	./scripts/documentation-file-ref-check
+
+which is meant to discover broken doc references. 
+
+Such script has already a rule to handle stuff under tools/:
+
+		# Accept relative Documentation patches for tools/
+		if ($f =~ m/tools/) {
+			my $path = $f;
+			$path =~ s,(.*)/.*,$1,;
+			next if (grep -e, glob("$path/$ref $path/../$ref $path/$fulref"));
+		}
+
+but it seems it needs a fixup in order for it to stop reporting issues
+at test_bpftool_synctypes.py:
+
+	$ ./scripts/documentation-file-ref-check 
+	...
+	tools/testing/selftests/bpf/test_bpftool_synctypes.py: Documentation/bpftool-prog.rst
+	tools/testing/selftests/bpf/test_bpftool_synctypes.py: Documentation/bpftool-map.rst
+	tools/testing/selftests/bpf/test_bpftool_synctypes.py: Documentation/bpftool-cgroup.rst
+
+I'll drop the patches touching it for a next version, probably
+adding a fix for such script.
+
+Thanks,
+Mauro
