@@ -2,97 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75C3B40EACD
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 21:28:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD2DA40EAFC
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 21:44:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231283AbhIPT3W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 15:29:22 -0400
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:35466
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229455AbhIPT3U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 15:29:20 -0400
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com [209.85.128.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 9652840267
-        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 19:27:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1631820478;
-        bh=MMcgzru3ZwhyKOsYx2iFuNW8JodY417NqNj4jNsFMOQ=;
-        h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:
-         In-Reply-To:Content-Type;
-        b=WmsgSjgvRZbCGGvLpwIqgyndnz1GO8TIzbqyguhA46DPqcSXONcGKWFEeHR8us0yl
-         erGEGG1N0iPahnFMhHjqKX68P8lhXEYttk61jD60yBxtOLHIELfL9O4BCRnBBua6F1
-         q/RZ5umPWYLE8Q8tsZ7nonXuoUXVi2qvoKDOdL9X2MbHnUfmy83R7srXi0m89tiCxU
-         pFbxqN4pR7IJiLrVqH3SMF1fxn0FKeouaOhwLgN6UvVvs93vL6D/XMW+l1WAbhbwop
-         ZDrNAbuDxucDrUvwiBjz9BL6vXQhq/5q4zmDe/YK2IlX6S40UCfUpuhYJOQdG/9AmO
-         kJzGcRCSp7VPQ==
-Received: by mail-wm1-f71.google.com with SMTP id q4-20020a1c4304000000b00306cd53b671so1193285wma.1
-        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 12:27:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=MMcgzru3ZwhyKOsYx2iFuNW8JodY417NqNj4jNsFMOQ=;
-        b=hnnldGJA0HgJx4qxW3J1vuBJjDbGosDORJhbaZe4BCd/9jxo0QqCOly2J3r6BCPxQL
-         UgLH8YMoce06FZQrhX2GiIKuZ8XClhcavWeou6ACQS4p18A2KrKxhF9Th6ABcI/tldR6
-         1MUVxqqWE8qzfV0vTj5R6Uws2lew58UUJg2ypw3Kln6vqloRZPBSvE4O+R5WIfmNoIzB
-         exXRFQJ+xm0RJLMUFL8vsr+z9hVylnAu6b8Cctjsc6l0XQALFV8EitC380yTK6fYvssN
-         HheLkFClHyc861HslOh3gGDMh3QtDJ0lKKIFswZvzEiPp7YaxuELF3TNBx2Dvt7ege9f
-         rEQw==
-X-Gm-Message-State: AOAM531PIAbIxe4SFNNPmKNVTE5K8JOAd8n3kMs11jXykAY0U7aG0c7N
-        6P0I4YuuQeu3a7UIMMtL1gO6b3kwWTwKoEuXLQlWrkBPfwWO+k6dFxWEbuMsUtLpYYOkeHuBfPk
-        ta9IDdxe42AElR/2ChZSOEl8N5lQXy5hjXw==
-X-Received: by 2002:a1c:7f57:: with SMTP id a84mr6593057wmd.34.1631820478294;
-        Thu, 16 Sep 2021 12:27:58 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwqn1+ESA3K0zllvSWstH2qMZ0N3R38ReyqO045tBhcLAJAO9cDYj4nPSe6W+hMxkhv/fTfPg==
-X-Received: by 2002:a1c:7f57:: with SMTP id a84mr6593050wmd.34.1631820478167;
-        Thu, 16 Sep 2021 12:27:58 -0700 (PDT)
-Received: from [192.168.2.211] (lk.84.20.244.219.dc.cable.static.lj-kabel.net. [84.20.244.219])
-        by smtp.gmail.com with ESMTPSA id k6sm7063711wmo.37.2021.09.16.12.27.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Sep 2021 12:27:57 -0700 (PDT)
-Subject: Re: [PATCH] nfc: trf7970a: Make use of the helper function
- dev_err_probe()
-To:     Cai Huoqing <caihuoqing@baidu.com>
-Cc:     Mark Greer <mgreer@animalcreek.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210916153621.16576-1-caihuoqing@baidu.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Message-ID: <21782e6d-038f-9009-ed8a-d65c2cdfb761@canonical.com>
-Date:   Thu, 16 Sep 2021 21:27:56 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S233864AbhIPTp0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 15:45:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57138 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230267AbhIPTpZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Sep 2021 15:45:25 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2574561250;
+        Thu, 16 Sep 2021 19:44:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1631821445;
+        bh=g9tCXJ+38jYZWrC5j09nXQRZrL0lHKFk7H/DYbskE58=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ohumdK34ws0N80Ht4JKesg/9Fyndg/zhf6+PZXShmjVj2syRDL1NsN+BZu4dqOIFs
+         wU17mrq4r9WA2+Y+vCEPFWVYsZnqGuEKGpQBU28EnoNWAs1Wf3bEbPOymcL8juWJq7
+         a79JnVwGbPsPyqX1ScLkjQCcZO9bkm3bCDM+VPql8Q8d0+HeGjpxR1DHkHiOKR02a8
+         AAGIQTFr34zjyrdJxJZfpm3NI+6ewoerWDCYLzaxSlr2uxGWBwjifZMtccBb0KbFhd
+         LNG/QJ3elXpVdPiJHJuHvGMMb+1gEK0FCkNGyKZ0agtF1KPaJ9tkKeP//EZe4agWyv
+         plk7QEsLNoLbQ==
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Richard Cochran <richardcochran@gmail.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>
+Subject: [PATCH] ptp: ocp: Avoid operator precedence warning in ptp_ocp_summary_show()
+Date:   Thu, 16 Sep 2021 12:43:51 -0700
+Message-Id: <20210916194351.3860836-1-nathan@kernel.org>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-In-Reply-To: <20210916153621.16576-1-caihuoqing@baidu.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Patchwork-Bot: notify
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 16/09/2021 17:36, Cai Huoqing wrote:
-> When possible use dev_err_probe help to properly deal with the
-> PROBE_DEFER error, the benefit is that DEFER issue will be logged
-> in the devices_deferred debugfs file.
-> Using dev_err_probe() can reduce code size, and the error value
-> gets printed.
-> 
-> Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
-> ---
->  drivers/nfc/trf7970a.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
+Clang warns twice:
 
-Please don't send patches one-by-one, but group them in series.
+drivers/ptp/ptp_ocp.c:2065:16: error: operator '?:' has lower precedence
+than '&'; '&' will be evaluated first
+[-Werror,-Wbitwise-conditional-parentheses]
+                           on & map ? " ON" : "OFF", src);
+                           ~~~~~~~~ ^
+drivers/ptp/ptp_ocp.c:2065:16: note: place parentheses around the '&'
+expression to silence this warning
+                           on & map ? " ON" : "OFF", src);
+                                    ^
+                           (       )
+drivers/ptp/ptp_ocp.c:2065:16: note: place parentheses around the '?:'
+expression to evaluate it first
+                           on & map ? " ON" : "OFF", src);
+                                    ^
 
-Same response - I think the preferred approach was Rob's dev_err removal.
+It is clearly intentional that the bitwise operation be done before the
+ternary operation so add the parentheses as it suggests to fix the
+warning.
 
-P.S. You need to Cc all folks and all lists. The cc-list here is too short.
+Fixes: a62a56d04e63 ("ptp: ocp: Enable 4th timestamper / PPS generator")
+Link: https://github.com/ClangBuiltLinux/linux/issues/1457
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+---
+ drivers/ptp/ptp_ocp.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Best regards,
-Krzysztof
+diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
+index 844b1401cc5d..4ba3fb254a92 100644
+--- a/drivers/ptp/ptp_ocp.c
++++ b/drivers/ptp/ptp_ocp.c
+@@ -2062,11 +2062,11 @@ ptp_ocp_summary_show(struct seq_file *s, void *data)
+ 		on = ioread32(&ts_reg->enable);
+ 		map = !!(bp->pps_req_map & OCP_REQ_TIMESTAMP);
+ 		seq_printf(s, "%7s: %s, src: %s\n", "TS3",
+-			   on & map ? " ON" : "OFF", src);
++			   (on & map) ? " ON" : "OFF", src);
+ 
+ 		map = !!(bp->pps_req_map & OCP_REQ_PPS);
+ 		seq_printf(s, "%7s: %s, src: %s\n", "PPS",
+-			   on & map ? " ON" : "OFF", src);
++			   (on & map) ? " ON" : "OFF", src);
+ 	}
+ 
+ 	if (bp->irig_out) {
+
+base-commit: 4b5a3ab17c6c942bd428984b6b37fe3c07f18ab3
+-- 
+2.33.0
+
