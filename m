@@ -2,274 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B048940D0A4
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 02:09:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EF2440D0D7
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 02:30:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233336AbhIPAKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Sep 2021 20:10:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51432 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232465AbhIPAKg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Sep 2021 20:10:36 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA811C061574;
-        Wed, 15 Sep 2021 17:09:16 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id c13-20020a17090a558d00b00198e6497a4fso6210443pji.4;
-        Wed, 15 Sep 2021 17:09:16 -0700 (PDT)
+        id S233463AbhIPAb2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Sep 2021 20:31:28 -0400
+Received: from mail-mw2nam12on2126.outbound.protection.outlook.com ([40.107.244.126]:56659
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S233237AbhIPAb0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Sep 2021 20:31:26 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Krl+ckGxIMlnjeMwy/1tLy+g+GMme7N19pAMPKA7Oao9k3Z7Rk7oaWEVIw7upbnbgUWAAF6cVK0//mGb8kynReL3/0C9sMkkPEB2mSq+9nfYe+XMuuozEURwhtu1gColJkPLwz9RTytUqtaF8Y4temZvg7mQuluHqZSuF8BQOLYlD16YkOXIKrOzp4BrDMATjptXyhJBJ1JBtqkvVkGzAGLNEKX541IlYuf8HCV5/e+vnrR4uooUah4Gj9zaCe6LPVQst9ggY9WU0cEP08luM81hdapabZSudfs3T5fOKQQo4zWMedEzhubB+sab0DWQ0hGJ3pdst3uI4e3cVoPyVg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
+ bh=JAP4e9bgENaPxy+/RMEzAlOj9heJ649ZB7DMUgOFI88=;
+ b=h/quFiysbLYqpkmG7neiJihFXHAXQdX4GXunTlmw12nIq6ItnQfYCwkyW1z9t0ql3YrSLa9SoUT6xGdS2vEmQtmZ9onbYOh+wrAp5fA2p42zrRtyzHlfFcusZy+0nDzl+WSC9X55tn/V6LvC7poInNPPMxrzmomWsS/+FmjjCwPE8pPp81TVB78oUG00/109+p71UPPkPE5w3kSQtIKF2of72c4QFuJFZN0aaIX6lYn8Rd9VO3w6rQeZY1R04AKfcGHGQRBd0sPsR5aYMYEF6bAYXgNqdCtbbx1SNmmL43CXOiUQvDpWyGA+sbQL3oTza8cp0Gtjn75n6jv0wxbp6Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=POz7B/cNCWIJvz8pVnhM5ZDIV6/Scz9emQ4JSgg4ILI=;
-        b=fTdc1tNHYuqoyOyLsrut+wrdO/M+1BBDNn97zAt21oLznqomAgqniyXRwpHNaG+H/h
-         BX8yoGBBn2ngujdkL/G0PkabMfUoHlLhr3OE2VjfygPvaTXvMnBFnqyivIeIt+pwIK6m
-         I5OH4rHD5hFt4em2BlawW6yj+oXkbLSefK0YD3xuFk+kt1IUrtQahxSUmQ3Pr87t5pGb
-         97q7yLBDAFPNexhxZAHj7SH1953Neit3GQ/g+KJS2daeGwJrgSqJvIfIErVz1OOeCRp4
-         rFOAl7b90UgUyeEcaiDI4hZy4X/Gi4VUl2EqBaH+IlBc6Dosca9X5Hg7wN4yrh014fJx
-         iJUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=POz7B/cNCWIJvz8pVnhM5ZDIV6/Scz9emQ4JSgg4ILI=;
-        b=Iu5zek2zhyuI7i5WP/17vtDlgNWAaW41KpDBLoW9PvJ/1GhxIB5M565cZcNN/Ec7bn
-         w99hSYK1iXR8D9ovDAdWNY8+pm5HtyaBCi6Zhb9jJbV5MYwYWhdKYmj/BZoxjIIGKDJ1
-         7c6PFZV2ZDFPYviTsngJR3DK/nL8Gb84QtQgFfwbDDpcPR4+owfRhmVWF7F4GkUGU2qV
-         WVIFdJ+tkkc/ui9CP+PWLqS11baW1olpmk/IzqU1/KEJ+LjeOl8d2jXBj5KxqChnkCnz
-         YqL9awS9cimpfHU/QH+2l4PySkOl0Jb1gmqPHH/CsJus3gAAav3DlQdwP+TMnVUhXMkr
-         281A==
-X-Gm-Message-State: AOAM533j8jHJNdKIkSIqUfu92pVYD/NVs58ZKDKUOGGkfUqzEYfzTYkV
-        1yu+GPWgJwdRMZa6EOX4x4QAVJ1WBpE=
-X-Google-Smtp-Source: ABdhPJxor5xhIiir+rlfX4NN3Tltf+5WOYXkICH5V/MRfR2mEDMyoGuvsepaqlCaCVE4zQo+b6cTwA==
-X-Received: by 2002:a17:90a:b78d:: with SMTP id m13mr11362403pjr.17.1631750956120;
-        Wed, 15 Sep 2021 17:09:16 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id v3sm860833pfc.193.2021.09.15.17.09.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Sep 2021 17:09:15 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JAP4e9bgENaPxy+/RMEzAlOj9heJ649ZB7DMUgOFI88=;
+ b=IvXbHvf3qTh+Po6/x+DHiSF8mqzsb7qnMiXdgv1Qd5bfMxUeG729V4BDrTlOEIypoXC5H42Ye2VPT3J2G7xf4f2uMMY0WI5WOd/Df30OPtP/t9I5EissDxVgTLTAKtDmdKt+CdC+VWYx4uLUdgHzPK0TDjQqaS4npay2N/xURxg=
+Authentication-Results: nxp.com; dkim=none (message not signed)
+ header.d=none;nxp.com; dmarc=none action=none header.from=in-advantage.com;
+Received: from DM5PR1001MB2345.namprd10.prod.outlook.com (2603:10b6:4:2d::31)
+ by DM6PR10MB3146.namprd10.prod.outlook.com (2603:10b6:5:1a6::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.17; Thu, 16 Sep
+ 2021 00:30:03 +0000
+Received: from DM5PR1001MB2345.namprd10.prod.outlook.com
+ ([fe80::fd7c:b9c6:ad90:72ba]) by DM5PR1001MB2345.namprd10.prod.outlook.com
+ ([fe80::fd7c:b9c6:ad90:72ba%6]) with mapi id 15.20.4523.014; Thu, 16 Sep 2021
+ 00:30:03 +0000
+Date:   Wed, 15 Sep 2021 17:29:57 -0700
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        bcm-kernel-feedback-list@broadcom.com (open list:BROADCOM ETHERNET PHY
-        DRIVERS), linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net-next] net: phy: broadcom: Enable 10BaseT DAC early wake
-Date:   Wed, 15 Sep 2021 17:09:03 -0700
-Message-Id: <20210916000904.193343-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Russell King <linux@armlinux.org.uk>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1 net] net: ethernet: mscc: ocelot: bug fix when writing
+ MAC speed
+Message-ID: <20210916002957.GA513411@euler>
+References: <20210915062103.149287-1-colin.foster@in-advantage.com>
+ <20210915122551.kol3f5jz4634nvrm@skbuf>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210915122551.kol3f5jz4634nvrm@skbuf>
+X-ClientProxiedBy: MW4PR03CA0104.namprd03.prod.outlook.com
+ (2603:10b6:303:b7::19) To DM5PR1001MB2345.namprd10.prod.outlook.com
+ (2603:10b6:4:2d::31)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: from euler (67.185.175.147) by MW4PR03CA0104.namprd03.prod.outlook.com (2603:10b6:303:b7::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.14 via Frontend Transport; Thu, 16 Sep 2021 00:30:02 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 208b0cff-e5ec-47e9-96ce-08d978a91fdd
+X-MS-TrafficTypeDiagnostic: DM6PR10MB3146:
+X-Microsoft-Antispam-PRVS: <DM6PR10MB3146578A030D9808B3654194A4DC9@DM6PR10MB3146.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: miAEqsIzv6myp1fBqLdQi3QsFZ+nxnfcnebnCJjOPPTtox/z5tPHSLmRKTnTn3mBlZ3nadkdYohyjtohNTOwxkgpQMlMSGcT/zEG4CWvqdBPc8w6pkTEEJbavtVYylwJIR+HpXOTNKFOFS1aDURsJWqB39GceE133HwQ0uxGIqpJybGlWndh1Yfw+PUczRiFSKPjSwEcuoyJaRcMiIEyIpmdLaRIwp8ZGflosfld42NXWjgLehyxKBVJSYA8TtDBr+fTw75ybXH8MLEVQ+w6GiK2oN9FBTC4YKqB+iHMWXGsKq9V0bv5Uy2439rAHPgkuNZrK4TyyRWU/Wt2/JMa6iruf6g6SaQpQgXflaIYuIFU7KpA+KpeTsz/G7ZOsW6Riy4LIEmHmklGYZJop433L7nqa8Zf84feU5s0xWHmRaDk/GAyZDnjGZFr2IVLIG1MNRJVpFBlxXWPgOEaugn3aqYHidbFb9bMRZ9ZbImuqqHPnDZyKW9rvtJh6EmDEro7qwb/+A4HRATomQztEJkIBHe3bILuLsZUpu+628FS2hu+KtHtGlMD5YYNq5PftRkLAJHUd3QLli/taO0cxESU7eavHzfzL21z2DVMeRmukMqOzjaLS66V59GPJtQ9xRVLBW75istFTHFGb2v2/9J1WAaveV+AXSDLRW7aBjb7j4g3FXdGV5tNDaF9Q3ZiI5ZOj9e/i1UbG+Wixxfcjm6K1xtW7UB6Bv9m2Rg4VC68mi0qh3TeARTgy3zcxFUHoDRwORgU9VKc+DPbun4WQQwJzIvCzgc197reQsN3PYU9n24=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR1001MB2345.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(396003)(376002)(366004)(136003)(39830400003)(33656002)(66476007)(66556008)(33716001)(956004)(9576002)(52116002)(54906003)(83380400001)(8936002)(55016002)(38350700002)(1076003)(44832011)(86362001)(6916009)(5660300002)(186003)(66946007)(26005)(8676002)(38100700002)(6666004)(4326008)(2906002)(6496006)(316002)(478600001)(9686003)(966005);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?sScwZlb2O8J52ijUXtZP2y9zu8riOsN6pUKJXDL2GXDqz5CLiMoD0WAr3PCp?=
+ =?us-ascii?Q?/a8YUM+xJ+7CB/vaSeg2YBXAicCdu6XUduC7cRS7m7kixL1aKyIJyRpd1WKO?=
+ =?us-ascii?Q?G/9x2g2o+jqGjJIiFxCso2cmu8yxWJrhvve+4V+0qnmoEbqqMi7FlpoOBUZW?=
+ =?us-ascii?Q?zqxjoaQCfxQVcNHjQq3tqRdyrRKhTnhWdprJ0bumimviPwODPASbuSlODZ4B?=
+ =?us-ascii?Q?V2pDpFtdNh+n1jyqcpWkisj7lrADcy0wQPKzBAjG+i9P8hqDXpluFIYfWQwU?=
+ =?us-ascii?Q?dqIYiZwiNkAgsx6pbuaCGNBZ+fDJYDcZ63wRj6bEr4nXgTJCcmsyfd3YJ/J5?=
+ =?us-ascii?Q?5Hi1g7oKs69aab//AX1Xz6zcfdASv1NhoMWEY6D8OczYUli09Qrt1tGbDICH?=
+ =?us-ascii?Q?/tWok/gDUWgq2VH3jnKMhGTUfXGaAWwR6p4lvWlG98xRS0Kd8l1CbPsY2VUF?=
+ =?us-ascii?Q?Xow2BTRgUrmJidSSVrJSzTxes3jBdpfGtJOoTxuxW/XFv2p5YTY/USPeNNAx?=
+ =?us-ascii?Q?zUyDCX2QfSXRFNjOynxqKONdf3f9wJMcwS/HCEa13bA9oKGvDsD16FeZYjxT?=
+ =?us-ascii?Q?z8HN/vPrdH5SwtsIwD8i+q4mS7MkPxbJDp1NCfEI7TA4QKwomJM3T5kEN9k1?=
+ =?us-ascii?Q?AcHzxCItrZ5MTo9ROU1sqMtXbK29kpfjhaBiwqSEIhKtJTNJ4tEYLKx0xXVn?=
+ =?us-ascii?Q?csvaS2D9agWpX1geu6JGV/2DwfL6HggKMnqzcEk0b1eqkEdjE2DLpdSj1ObD?=
+ =?us-ascii?Q?8305fe0xbmIX6wFDHdyYV99POg1tXUl99C9G+i5vCgPvcw2Es1ujJtfygirl?=
+ =?us-ascii?Q?sks4CM4P9nchUqtKBRXOAG0UZOhftrvYoKgzI5SJvty4MzpIo5dQPvILoleu?=
+ =?us-ascii?Q?RKZM0Z+k0feDxVqxY5iIN40+Qb7nJK4pkeYEKXd+EY/LmUCjj26/WRNKEsL4?=
+ =?us-ascii?Q?KC4f8cc7un2UsmxkhBJX89eR5ZeiWNJknpnqt8Hjt/ineqQhOfxsRjZQoIM+?=
+ =?us-ascii?Q?hhR7jW49wfLbyQRDg4r1Wed2XGau0NJBKv4D65anATiMAQ9QRtfX54jVQhHL?=
+ =?us-ascii?Q?Qjl6jqSvbwLKHlDSNHOzblzOKxJXlAKLGLB0ZHPENBSx1gpaOUziRiK7vQrF?=
+ =?us-ascii?Q?xQ+6+8iMbHu7+hdMK+2/OWto4CfPxJHHgsIzUk/Vyi9wUIOCY2M3ewyWWUEV?=
+ =?us-ascii?Q?1R1KoQCmy/mKm7sXIv5yspJybrSjwxltaIiE0jTUhPVqxcgglrNXt+RHZH/M?=
+ =?us-ascii?Q?dYPFKlv+XZJDyyToNWcltQ1F9ONr1iRpPh5R7Q47H+YQgaHpEurj/ydqsxP3?=
+ =?us-ascii?Q?aWrU64xwkH7v1ucjhh2abHeK?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 208b0cff-e5ec-47e9-96ce-08d978a91fdd
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR1001MB2345.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Sep 2021 00:30:03.3335
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: l2cjzTGe3h7Dj8+Fwo213Lu0vY6071xFghu+M4YevxbjYwmxpkBQXlXMokJaDPtH9MGt4hPbs+FH5QjRiq/fzxiG4f7l8txhAegNfPIgNkQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB3146
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Enable the DAC early wake when then link operates at 10BaseT allows
-power savings in the hundreds of milli Watts by shutting down the
-transmitter. A number of errata have been issued for various Gigabit
-PHYs and the recommendation is to enable both the early and forced DAC
-wake to be on the safe side. This needs to be done dynamically based
-upon the link state, which is why a link_change_notify callback is
-utilized.
+On Wed, Sep 15, 2021 at 12:25:52PM +0000, Vladimir Oltean wrote:
+> On Tue, Sep 14, 2021 at 11:21:02PM -0700, Colin Foster wrote:
+> > Converting the ocelot driver to use phylink, commit e6e12df625f2, uses mac_speed
+> > in ocelot_phylink_mac_link_up instead of the local variable speed. Stale
+> > references to the old variable were missed, and so were always performing
+> > invalid second writes to the DEV_CLOCK_CFG and ANA_PFC_CFG registers.
+> > 
+> > Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> > ---
+> >  drivers/net/ethernet/mscc/ocelot.c | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+> > index c581b955efb3..91a31523be8f 100644
+> > --- a/drivers/net/ethernet/mscc/ocelot.c
+> > +++ b/drivers/net/ethernet/mscc/ocelot.c
+> > @@ -566,11 +566,11 @@ void ocelot_phylink_mac_link_up(struct ocelot *ocelot, int port,
+> >  	/* Take MAC, Port, Phy (intern) and PCS (SGMII/Serdes) clock out of
+> >  	 * reset
+> >  	 */
+> > -	ocelot_port_writel(ocelot_port, DEV_CLOCK_CFG_LINK_SPEED(speed),
+> > +	ocelot_port_writel(ocelot_port, DEV_CLOCK_CFG_LINK_SPEED(mac_speed),
+> >  			   DEV_CLOCK_CFG);
+> 
+> Oh wow, I don't know how this piece did not get deleted. We write twice
+> to DEV_CLOCK_CFG, once with a good value and once with a bad value.
+> Please delete the second write entirely.
 
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/net/phy/broadcom.c | 47 ++++++++++++++++++++++++++++++++++++++
- include/linux/brcmphy.h    |  1 +
- 2 files changed, 48 insertions(+)
+It seemed odd to me at first, but I looked into the datasheet and saw
+that multiple writes to the DEV_CLOCK_CFG register in section 5.2.1
+https://ww1.microchip.com/downloads/en/DeviceDoc/VMDS-10491.pdf
 
-diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
-index 83aea5c5cd03..f8df692fc3ee 100644
---- a/drivers/net/phy/broadcom.c
-+++ b/drivers/net/phy/broadcom.c
-@@ -702,6 +702,36 @@ static void bcm54xx_get_stats(struct phy_device *phydev,
- 	bcm_phy_get_stats(phydev, priv->stats, stats, data);
- }
- 
-+static void bcm54xx_link_change_notify(struct phy_device *phydev)
-+{
-+	u16 mask = MII_BCM54XX_EXP_EXP08_EARLY_DAC_WAKE |
-+		   MII_BCM54XX_EXP_EXP08_FORCE_DAC_WAKE;
-+	int ret;
-+
-+	if (phydev->state != PHY_RUNNING)
-+	       return;
-+
-+	/* Don't change the DAC wake settings if auto power down
-+	 * is not requested.
-+	 */
-+	if (!(phydev->dev_flags & PHY_BRCM_AUTO_PWRDWN_ENABLE))
-+		return;
-+
-+	ret = bcm_phy_read_exp(phydev, MII_BCM54XX_EXP_EXP08);
-+	if (ret < 0)
-+		return;
-+
-+	/* Enable/disable 10BaseT auto and forced early DAC wake depending
-+	 * on the negotiated speed, those settings should only be done
-+	 * for 10Mbits/sec.
-+	 */
-+	if (phydev->speed == SPEED_10)
-+		ret |= mask;
-+	else
-+		ret &= ~mask;
-+	bcm_phy_write_exp(phydev, MII_BCM54XX_EXP_EXP08, ret);
-+}
-+
- static struct phy_driver broadcom_drivers[] = {
- {
- 	.phy_id		= PHY_ID_BCM5411,
-@@ -715,6 +745,7 @@ static struct phy_driver broadcom_drivers[] = {
- 	.config_init	= bcm54xx_config_init,
- 	.config_intr	= bcm_phy_config_intr,
- 	.handle_interrupt = bcm_phy_handle_interrupt,
-+	.link_change_notify	= bcm54xx_link_change_notify,
- }, {
- 	.phy_id		= PHY_ID_BCM5421,
- 	.phy_id_mask	= 0xfffffff0,
-@@ -727,6 +758,7 @@ static struct phy_driver broadcom_drivers[] = {
- 	.config_init	= bcm54xx_config_init,
- 	.config_intr	= bcm_phy_config_intr,
- 	.handle_interrupt = bcm_phy_handle_interrupt,
-+	.link_change_notify	= bcm54xx_link_change_notify,
- }, {
- 	.phy_id		= PHY_ID_BCM54210E,
- 	.phy_id_mask	= 0xfffffff0,
-@@ -739,6 +771,7 @@ static struct phy_driver broadcom_drivers[] = {
- 	.config_init	= bcm54xx_config_init,
- 	.config_intr	= bcm_phy_config_intr,
- 	.handle_interrupt = bcm_phy_handle_interrupt,
-+	.link_change_notify	= bcm54xx_link_change_notify,
- }, {
- 	.phy_id		= PHY_ID_BCM5461,
- 	.phy_id_mask	= 0xfffffff0,
-@@ -751,6 +784,7 @@ static struct phy_driver broadcom_drivers[] = {
- 	.config_init	= bcm54xx_config_init,
- 	.config_intr	= bcm_phy_config_intr,
- 	.handle_interrupt = bcm_phy_handle_interrupt,
-+	.link_change_notify	= bcm54xx_link_change_notify,
- }, {
- 	.phy_id		= PHY_ID_BCM54612E,
- 	.phy_id_mask	= 0xfffffff0,
-@@ -763,6 +797,7 @@ static struct phy_driver broadcom_drivers[] = {
- 	.config_init	= bcm54xx_config_init,
- 	.config_intr	= bcm_phy_config_intr,
- 	.handle_interrupt = bcm_phy_handle_interrupt,
-+	.link_change_notify	= bcm54xx_link_change_notify,
- }, {
- 	.phy_id		= PHY_ID_BCM54616S,
- 	.phy_id_mask	= 0xfffffff0,
-@@ -774,6 +809,7 @@ static struct phy_driver broadcom_drivers[] = {
- 	.handle_interrupt = bcm_phy_handle_interrupt,
- 	.read_status	= bcm54616s_read_status,
- 	.probe		= bcm54616s_probe,
-+	.link_change_notify	= bcm54xx_link_change_notify,
- }, {
- 	.phy_id		= PHY_ID_BCM5464,
- 	.phy_id_mask	= 0xfffffff0,
-@@ -788,6 +824,7 @@ static struct phy_driver broadcom_drivers[] = {
- 	.handle_interrupt = bcm_phy_handle_interrupt,
- 	.suspend	= genphy_suspend,
- 	.resume		= genphy_resume,
-+	.link_change_notify	= bcm54xx_link_change_notify,
- }, {
- 	.phy_id		= PHY_ID_BCM5481,
- 	.phy_id_mask	= 0xfffffff0,
-@@ -801,6 +838,7 @@ static struct phy_driver broadcom_drivers[] = {
- 	.config_aneg	= bcm5481_config_aneg,
- 	.config_intr	= bcm_phy_config_intr,
- 	.handle_interrupt = bcm_phy_handle_interrupt,
-+	.link_change_notify	= bcm54xx_link_change_notify,
- }, {
- 	.phy_id         = PHY_ID_BCM54810,
- 	.phy_id_mask    = 0xfffffff0,
-@@ -816,6 +854,7 @@ static struct phy_driver broadcom_drivers[] = {
- 	.handle_interrupt = bcm_phy_handle_interrupt,
- 	.suspend	= genphy_suspend,
- 	.resume		= bcm54xx_resume,
-+	.link_change_notify	= bcm54xx_link_change_notify,
- }, {
- 	.phy_id         = PHY_ID_BCM54811,
- 	.phy_id_mask    = 0xfffffff0,
-@@ -831,6 +870,7 @@ static struct phy_driver broadcom_drivers[] = {
- 	.handle_interrupt = bcm_phy_handle_interrupt,
- 	.suspend	= genphy_suspend,
- 	.resume		= bcm54xx_resume,
-+	.link_change_notify	= bcm54xx_link_change_notify,
- }, {
- 	.phy_id		= PHY_ID_BCM5482,
- 	.phy_id_mask	= 0xfffffff0,
-@@ -843,6 +883,7 @@ static struct phy_driver broadcom_drivers[] = {
- 	.config_init	= bcm54xx_config_init,
- 	.config_intr	= bcm_phy_config_intr,
- 	.handle_interrupt = bcm_phy_handle_interrupt,
-+	.link_change_notify	= bcm54xx_link_change_notify,
- }, {
- 	.phy_id		= PHY_ID_BCM50610,
- 	.phy_id_mask	= 0xfffffff0,
-@@ -855,6 +896,7 @@ static struct phy_driver broadcom_drivers[] = {
- 	.config_init	= bcm54xx_config_init,
- 	.config_intr	= bcm_phy_config_intr,
- 	.handle_interrupt = bcm_phy_handle_interrupt,
-+	.link_change_notify	= bcm54xx_link_change_notify,
- }, {
- 	.phy_id		= PHY_ID_BCM50610M,
- 	.phy_id_mask	= 0xfffffff0,
-@@ -867,6 +909,7 @@ static struct phy_driver broadcom_drivers[] = {
- 	.config_init	= bcm54xx_config_init,
- 	.config_intr	= bcm_phy_config_intr,
- 	.handle_interrupt = bcm_phy_handle_interrupt,
-+	.link_change_notify	= bcm54xx_link_change_notify,
- }, {
- 	.phy_id		= PHY_ID_BCM57780,
- 	.phy_id_mask	= 0xfffffff0,
-@@ -879,6 +922,7 @@ static struct phy_driver broadcom_drivers[] = {
- 	.config_init	= bcm54xx_config_init,
- 	.config_intr	= bcm_phy_config_intr,
- 	.handle_interrupt = bcm_phy_handle_interrupt,
-+	.link_change_notify	= bcm54xx_link_change_notify,
- }, {
- 	.phy_id		= PHY_ID_BCMAC131,
- 	.phy_id_mask	= 0xfffffff0,
-@@ -905,6 +949,7 @@ static struct phy_driver broadcom_drivers[] = {
- 	.get_strings	= bcm_phy_get_strings,
- 	.get_stats	= bcm54xx_get_stats,
- 	.probe		= bcm54xx_phy_probe,
-+	.link_change_notify	= bcm54xx_link_change_notify,
- }, {
- 	.phy_id		= PHY_ID_BCM53125,
- 	.phy_id_mask	= 0xfffffff0,
-@@ -918,6 +963,7 @@ static struct phy_driver broadcom_drivers[] = {
- 	.config_init	= bcm54xx_config_init,
- 	.config_intr	= bcm_phy_config_intr,
- 	.handle_interrupt = bcm_phy_handle_interrupt,
-+	.link_change_notify	= bcm54xx_link_change_notify,
- }, {
- 	.phy_id         = PHY_ID_BCM89610,
- 	.phy_id_mask    = 0xfffffff0,
-@@ -930,6 +976,7 @@ static struct phy_driver broadcom_drivers[] = {
- 	.config_init    = bcm54xx_config_init,
- 	.config_intr    = bcm_phy_config_intr,
- 	.handle_interrupt = bcm_phy_handle_interrupt,
-+	.link_change_notify	= bcm54xx_link_change_notify,
- } };
- 
- module_phy_driver(broadcom_drivers);
-diff --git a/include/linux/brcmphy.h b/include/linux/brcmphy.h
-index c2c2147dfeb8..3308cebe1c19 100644
---- a/include/linux/brcmphy.h
-+++ b/include/linux/brcmphy.h
-@@ -233,6 +233,7 @@
- #define MII_BCM54XX_EXP_EXP08			0x0F08
- #define  MII_BCM54XX_EXP_EXP08_RJCT_2MHZ	0x0001
- #define  MII_BCM54XX_EXP_EXP08_EARLY_DAC_WAKE	0x0200
-+#define  MII_BCM54XX_EXP_EXP08_FORCE_DAC_WAKE	0x0100
- #define MII_BCM54XX_EXP_EXP75			0x0f75
- #define  MII_BCM54XX_EXP_EXP75_VDACCTRL		0x003c
- #define  MII_BCM54XX_EXP_EXP75_CM_OSC		0x0001
--- 
-2.25.1
+11. Set up the switch port to the new mode of operation. Keep the reset bits in CLOCK_CFG set.
+12. Release the switch port from reset by clearing the reset bits in CLOCK_CFG.
 
+From that it seems like maybe the routine must be two-fold. First a
+write to set up the link speed with:
+ocelot_port_rmwl(ocelot_port, DEV_CLOCK_CFG_LINK_SPEED(mac_speed), 
+                 DEV_CLOCK_CFG_LINK_SPEED_M, DEV_CLK_CFG);
+ocelot_port_writel(ocelot_port, DEV_CLOCK_CFG_LINK_SPEED(mac_speed),
+                   DEV_CLK_CFG);
+
+Of note: I'm currently only using the VSC7512 ports 0-3, which don't
+have a PCS and therefore don't have the PCS_RATE_ADAPTATION requirement.
+So all of my ports should be good test candidates for this.
+
+> 
+> >  
+> >  	/* No PFC */
+> > -	ocelot_write_gix(ocelot, ANA_PFC_PFC_CFG_FC_LINK_SPEED(speed),
+> > +	ocelot_write_gix(ocelot, ANA_PFC_PFC_CFG_FC_LINK_SPEED(mac_speed),
+> >  			 ANA_PFC_PFC_CFG, port);
+> 
+> Both were supposed to be deleted in fact.
+> See, if priority flow control is disabled, it does not matter what is
+> the speed the port is operating at, so the write is useless.
+> 
+> Also, setting the FC_LINK_SPEED in ANA_PFC_PFC_CFG to mac_speed is not
+> quite correct for Felix/Seville, even if we were to enable PFC. The
+> documentation says:
+> 
+> Configures the link speed. This is used to
+> evaluate the time specifications in incoming
+> pause frames.
+> 0: 2500 Mbps
+> 1: 1000 Mbps
+> 2: 100 Mbps
+> 3: 10 Mbps
+> 
+> But mac_speed is always 1000 Mbps for Felix/Seville (1), due to
+> OCELOT_QUIRK_PCS_PERFORMS_RATE_ADAPTATION. If we were to set the correct
+> speed for the PFC PAUSE quanta, we'd need to introduce yet a third
+> variable, fc_link_speed, which is set similar to how mac_fc_cfg is, but
+> using the ANA_PFC_PFC_CFG_FC_LINK_SPEED macro instead of SYS_MAC_FC_CFG_FC_LINK_SPEED.
+> In other words, DEV_CLOCK_CFG may be fixed at 1000 Mbps, but if the port
+> operates at 100 Mbps via PCS rate adaptation, the PAUSE quanta values
+> in the MAC still need to be adapted.
+
+This makes sense. And I'm hopeful once I get around to the rest of the
+device's functionality (external phy / fiber) this level of
+understanding will be second nature for me.
+
+> 
+> >  
+> >  	/* Core: Enable port for frame transfer */
+> > -- 
+> > 2.25.1
+> > 
+> 
+> So please restructure the patch to delete both assignments (maybe even
+> create two patches, one for each), and rewrite your commit message and
+> title to a more canonical format.
+
+I'll make a submission for the PFC with the suggested formats. Thank you
+for the feedback.
+
+With CLOCK_CFG, there could be the fix for the duplicate write, and a
+second patch to do the reconfigure while the port is still in reset. Or
+a single patch that does both, since this behavior seems to have existed
+in ocelot_adjust_link.
+
+> 
+> Example:
+> "net: mscc: ocelot: remove buggy duplicate write to DEV_CLOCK_CFG")
+> "net: mscc: ocelot: remove buggy and useless write to ANA_PFC_PFC_CFG")
+> 
+> Be sure to include this at the end:
+> Fixes: e6e12df625f2 ("net: mscc: ocelot: convert to phylink")
+> 
+> So that it catches the stable maintainers' eyes.
+
+Thanks as always for your direction.
