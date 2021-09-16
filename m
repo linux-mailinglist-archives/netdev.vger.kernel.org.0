@@ -2,105 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC25D40EA5C
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 20:56:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AA8140EADB
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 21:31:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343771AbhIPS5b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 14:57:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52160 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245360AbhIPS5Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 14:57:25 -0400
-Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A878BC04A147;
-        Thu, 16 Sep 2021 11:15:13 -0700 (PDT)
-Received: by mail-qk1-x730.google.com with SMTP id t190so9228025qke.7;
-        Thu, 16 Sep 2021 11:15:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EAjkFUEsfXQq9m+NH377nLxFioGs0vqlQsNCCnQGszM=;
-        b=Fmi/z6191sBg6d5GFTA+l4arFm1+p7Be0zRoZBL3weKZHgObfQG6Ae1q11vAUXfPbA
-         vEaBXeXkXtuSwM3gB2Q6uxS9/mqqSRXEz9S0sNM2TFWNp5mkUb5g/BRr6wUZWOyfZ9t8
-         p2OG64u70MQCs8SEUaQ58ntR0m3Gd/cevZF67FyckQiz0hDkWl2vITY6j2tnO2BJTBoc
-         pGQo4TZZeLy1MNwGtHDjBhUrofp5clKEtENe+nmWs9w8nUyn8+o6sfncn3nBEyXZXiUN
-         xfDklhjjmZ68GmjfBaxw24xbTFny+BMXMJWzrMAFmWs5yRW9tEeRfhi95362pn3/iwkY
-         tMEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EAjkFUEsfXQq9m+NH377nLxFioGs0vqlQsNCCnQGszM=;
-        b=5DG0TAAydyy3SJxqoDajDpsszdidcJRst+cZkWot4W/k30u3GZZSNYI9KQ8Vpsxyt6
-         RKd8KmN/Gny+F53WaHyie6WhJcH8Gskp7hvAKm2IGILW89dt2iW/OhZWX2cQmkM2X36H
-         F8Fy6ksuQiSxLXseATMkuYhO+G1ZIEKgmXLeaYEFm+diaYi6nUBYGcU/xM/BYfs3OQr+
-         jQTesAZW4b9O+ypdSD0MWnQcOSf57iTP3jqs/yo8nmxEA6jWUUSJkuPNClI2f31lmuZi
-         SqUf5GoBFmbXGX25lvRYZJK1Z2vO9oU662nzj5kksYxoelYGmGmxqiT766+1QVR56xco
-         4Bhw==
-X-Gm-Message-State: AOAM530ielA8EPuuNArdm62+EIhgwwaw85AGrZNIyr5jyVnHwbf3VzSm
-        Rf6SOmbn8s1x5gsioMpEcUXe+q0GaM98jb55FucpeGv0t20=
-X-Google-Smtp-Source: ABdhPJwOTcoAREbB2hHzNgSIMj+VkJOgxTM+fwcIrAxa4Ds3cu+y2BPOWsdG+4whEAoSUXKA716SGF1HDyRbfiK/1Mc=
-X-Received: by 2002:a5b:408:: with SMTP id m8mr8687138ybp.2.1631816112770;
- Thu, 16 Sep 2021 11:15:12 -0700 (PDT)
-MIME-Version: 1.0
-References: <cover.1631785820.git.mchehab+huawei@kernel.org> <854e410df660c62e4e4c8f22c4ae9c6f6594f4a1.1631785820.git.mchehab+huawei@kernel.org>
-In-Reply-To: <854e410df660c62e4e4c8f22c4ae9c6f6594f4a1.1631785820.git.mchehab+huawei@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 16 Sep 2021 11:15:01 -0700
-Message-ID: <CAEf4BzYqW0Gc_tCtnykYiTVy3Z7-_WXsEfpVGaGPqaPR4aseLA@mail.gmail.com>
-Subject: Re: [PATCH v2 06/23] libbpf: update index.rst reference
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Grant Seltzer <grantseltzer@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S233191AbhIPTcR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 15:32:17 -0400
+Received: from lizzy.crudebyte.com ([91.194.90.13]:52197 "EHLO
+        lizzy.crudebyte.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232971AbhIPTcP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 15:32:15 -0400
+X-Greylist: delayed 1697 seconds by postgrey-1.27 at vger.kernel.org; Thu, 16 Sep 2021 15:32:14 EDT
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=crudebyte.com; s=lizzy; h=Cc:To:Subject:Date:From:References:In-Reply-To:
+        Message-Id:Content-Type:Content-Transfer-Encoding:MIME-Version:Content-ID:
+        Content-Description; bh=QPWFanfpCBF2qhY8OC7p/jDdXs1FdUBjf7+Y+u2GJu8=; b=WMiIx
+        B7BEmGI8Oka1l3oOmiaoLDtwgZxI10DZpnBDwu6RRSf+ZV+LfOor/dFeFsT0tDosgdUbmdE2Khugq
+        rSIi1a3p6jp71f0iV0ig8l/3HzMXDGmQXr8WJg4gqQy3ef10l6sj1a5g8OjouGBfDDSeifztcrTrd
+        f5rvRrVhlWL/YP8LQ7fANmz6ERNJdWxHdvywMBzfzX1jwZJzZN5XheBzJHxJqVrMcqJt0nrkVjfiC
+        qPe0M7IG2siiO0FKvtMmik8BfxVaewswnCp/TPjxdftjS4qU1HgEJGlpQdWD6MAynuaPhWDcwNm/n
+        /2xqQYVxcR/lBHlZJwClTIE6cRk1g==;
+Message-Id: <c9492a713e9fde483700c8eba2cb62d36f88f918.1631816768.git.linux_oss@crudebyte.com>
+In-Reply-To: <cover.1631816768.git.linux_oss@crudebyte.com>
+References: <cover.1631816768.git.linux_oss@crudebyte.com>
+From:   Christian Schoenebeck <linux_oss@crudebyte.com>
+Date:   Thu, 16 Sep 2021 20:24:24 +0200
+Subject: [PATCH 1/7] net/9p: show error message if user 'msize' cannot be
+ satisfied
+To:     v9fs-developer@lists.sourceforge.net
+Cc:     netdev@vger.kernel.org,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Greg Kurz <groug@kaod.org>, Vivek Goyal <vgoyal@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 16, 2021 at 2:55 AM Mauro Carvalho Chehab
-<mchehab+huawei@kernel.org> wrote:
->
-> Changeset d20b41115ad5 ("libbpf: Rename libbpf documentation index file")
-> renamed: Documentation/bpf/libbpf/libbpf.rst
-> to: Documentation/bpf/libbpf/index.rst.
->
-> Update its cross-reference accordingly.
->
-> Fixes: d20b41115ad5 ("libbpf: Rename libbpf documentation index file")
-> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-> ---
+If user supplied a large value with the 'msize' option, then
+client would silently limit that 'msize' value to the maximum
+value supported by transport. That's a bit confusing for users
+of not having any indication why the preferred 'msize' value
+could not be satisfied.
 
-Thanks!
+Reported-by: Vivek Goyal <vgoyal@redhat.com>
+Signed-off-by: Christian Schoenebeck <linux_oss@crudebyte.com>
+---
+ net/9p/client.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
+diff --git a/net/9p/client.c b/net/9p/client.c
+index 213f12ed76cd..fa2afeaf1394 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -1044,8 +1044,14 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
+ 	if (err)
+ 		goto put_trans;
+ 
+-	if (clnt->msize > clnt->trans_mod->maxsize)
++	if (clnt->msize > clnt->trans_mod->maxsize) {
+ 		clnt->msize = clnt->trans_mod->maxsize;
++		p9_debug(P9_DEBUG_ERROR,
++			 "Limiting 'msize' to %d as this is the maximum "
++			 "supported by transport %s\n",
++			 clnt->msize, clnt->trans_mod->name
++		);
++	}
+ 
+ 	if (clnt->msize < 4096) {
+ 		p9_debug(P9_DEBUG_ERROR,
+-- 
+2.20.1
 
->  Documentation/bpf/index.rst | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/Documentation/bpf/index.rst b/Documentation/bpf/index.rst
-> index 1ceb5d704a97..817a201a1282 100644
-> --- a/Documentation/bpf/index.rst
-> +++ b/Documentation/bpf/index.rst
-> @@ -15,7 +15,7 @@ that goes into great technical depth about the BPF Architecture.
->  libbpf
->  ======
->
-> -Documentation/bpf/libbpf/libbpf.rst is a userspace library for loading and interacting with bpf programs.
-> +Documentation/bpf/libbpf/index.rst is a userspace library for loading and interacting with bpf programs.
->
->  BPF Type Format (BTF)
->  =====================
-> --
-> 2.31.1
->
