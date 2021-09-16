@@ -2,137 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 135E440D98D
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 14:13:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA90D40D9DF
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 14:25:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239419AbhIPMOW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 08:14:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44370 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239402AbhIPMOV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 08:14:21 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA7D7C061768
-        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 05:13:00 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id t18so9200327wrb.0
-        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 05:13:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=nAa7hcN3ascpVQvM2OTeR2k2GxYPakXsr5xj8Xor+Lw=;
-        b=WmD/Z3+ncYgIZPTkselMJKRJwFC5I8QlynB+q8Lx4A4w+1BwjPde8V+HFZ6T61d3Z0
-         WKVnlly6gf/xyNqeuOpkTGnrKuo3Nxcf/0+NI5UBolir1q1MWuUtuIz/RXfmU9IeW4lo
-         Wn1ilNGM56xVE7XDbRQu4sBu+57OlID40Z97fV41DuOiSZVTetL3kTj2ZwthotdFdH/Q
-         SXUKvUGfvyzlorYs+n55BkMW476UbDatDv318GaIiqZLzQesajEooYAG0rOQ92vePetd
-         EhyWlX87ZPx152HdnX8/byXkwQz6eKseOdCyzYZYo0y2pwUyJfEPx4ro/AcoWJzqDAQt
-         ERWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=nAa7hcN3ascpVQvM2OTeR2k2GxYPakXsr5xj8Xor+Lw=;
-        b=bmONKOZrXrj7zeHytnpCgffUdnytUI7RPcUC0m9gY9Wl+30npfACIM1hEuAzLesHYb
-         8dl2F8TJEj5XO1cBreoUs5BMi2I3aGY2PlCouPAhkTHpcBJZ+H+u1d+u+jShQ1gwzEIL
-         vk9UBWw0Gihb78yrgwAl99f3rWaoskzJR0CB0JsxQ5/Skx5xZtoFE+jEkTD0t3SqzPz8
-         LJn6dsFwRcDkqsapyxeoaZ6lT4vepNW1BM8ydBlYqCz0NrZPABxvb4II6SZMzPs+3fX+
-         P8vv47FI6lWdSTkrf+LBAev1AaoLqBn3QFtVS1rb//ftE253tM0W4+Od9PAr2iKVEAPX
-         2BMg==
-X-Gm-Message-State: AOAM530jlQeDNr67a3dmKPnoOxD7Ib/tNT2NOypEUJkZetPSE4tM001B
-        alWqBbVrL4kCRY3HZAgU0E9dP1GLBZNatidW
-X-Google-Smtp-Source: ABdhPJzjhJgO8cFIT2GipL1pyLBESTYNhG5MXheT1l5nRxXPi6XFjSoeUvTa4kKMZP8Y/iAwUO0X0A==
-X-Received: by 2002:a5d:64ea:: with SMTP id g10mr2658238wri.274.1631794379049;
-        Thu, 16 Sep 2021 05:12:59 -0700 (PDT)
-Received: from [192.168.1.8] ([149.86.87.95])
-        by smtp.gmail.com with ESMTPSA id m29sm3450939wrb.89.2021.09.16.05.12.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Sep 2021 05:12:58 -0700 (PDT)
-Subject: Re: [PATCH 08/24] tools: bpftool: update bpftool-prog.rst reference
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Beckett <david.beckett@netronome.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org
-References: <cover.1631783482.git.mchehab+huawei@kernel.org>
- <dc4bae7a14518fbfff20a0f539df06a5c19b09de.1631783482.git.mchehab+huawei@kernel.org>
- <eb80e8f5-b9d7-5031-8ebb-4595bb295dbf@isovalent.com>
- <20210916124930.7ae3b722@coco.lan>
- <33d66a49-2fc0-57a1-c1e5-34e932bcc237@isovalent.com>
- <20210916133036.37c50383@coco.lan>
-From:   Quentin Monnet <quentin@isovalent.com>
-Message-ID: <8d5eaebb-29ac-5ee6-20ec-09d30d33dd73@isovalent.com>
-Date:   Thu, 16 Sep 2021 13:12:57 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S239507AbhIPM0W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 08:26:22 -0400
+Received: from smtpbg128.qq.com ([106.55.201.39]:39858 "EHLO smtpbg587.qq.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S235816AbhIPM0U (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Sep 2021 08:26:20 -0400
+X-QQ-mid: bizesmtp32t1631795092to1nkx5k
+Received: from localhost.localdomain (unknown [180.113.36.229])
+        by esmtp6.qq.com (ESMTP) with 
+        id ; Thu, 16 Sep 2021 20:24:44 +0800 (CST)
+X-QQ-SSF: 0100000000800030B000000A0000000
+X-QQ-FEAT: gSGF8h2+s1IADEzB2CCwyyD6/XD9p1aGVRPyyJchy5+VAf++gx9oqFzn3LG1A
+        CovWeQ/XIp3aG7oPPk4Ps1jbU+32qjHlyeXKxVUHtvnuvWkjvDfSbH90uWaDy8dQHLuMSpv
+        vNzwDh/hHz7HlfZ55OI7tCUfq+KrL7lHOFqDTqcREgOaFdMeN6UFpkAnhmIzrNfWNJSJZjU
+        EpTFKN0GgJEKuBpOKbDMZnv9wlzycrdiXoJ0ukyqKQgWD1GNV9Jj3MKTPbMxMeFX+lK2tZz
+        yLl1klhtXNq/zJG9PnEprBe+xC4bg3x18gtBJL1kuxjAuVfs/TFi65ZxH7MXSgXVIsmjoZ1
+        RcaAag2WLBTbgy4uZh2mI+k2RzfAw==
+X-QQ-GoodBg: 0
+From:   Xiang wangx <wangxiang@cdjrlc.com>
+To:     bongsu.jeon@samsung.com
+Cc:     shuah@kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xiang wangx <wangxiang@cdjrlc.com>
+Subject: [PATCH v3] selftests: nci: replace unsigned int with int
+Date:   Thu, 16 Sep 2021 20:24:42 +0800
+Message-Id: <20210916122442.14732-1-wangxiang@cdjrlc.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20210916133036.37c50383@coco.lan>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam5
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2021-09-16 13:30 UTC+0200 ~ Mauro Carvalho Chehab
-<mchehab+huawei@kernel.org>
+Should not use comparison of unsigned expressions < 0.
 
-> [PATCH] scripts: documentation-file-ref-check: fix bpf selftests path
-> 
-> tools/testing/selftests/bpf/test_bpftool_synctypes.py use
-> relative patches on the top of BPFTOOL_DIR:
-> 
-> 	BPFTOOL_DIR = os.path.join(LINUX_ROOT, 'tools/bpf/bpftool')
-> 
-> Change the script to automatically convert:
-> 
-> 	testing/selftests/bpf -> bpf/bpftool
-> 
-> In order to properly check the files used by such script.
-> 
-> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-> 
-> diff --git a/scripts/documentation-file-ref-check b/scripts/documentation-file-ref-check
-> index 7187ea5e5149..2d91cfe11cd2 100755
-> --- a/scripts/documentation-file-ref-check
-> +++ b/scripts/documentation-file-ref-check
-> @@ -144,6 +144,7 @@ while (<IN>) {
->  		if ($f =~ m/tools/) {
->  			my $path = $f;
->  			$path =~ s,(.*)/.*,$1,;
-> +			$path =~ s,testing/selftests/bpf,bpf/bpftool,;
->  			next if (grep -e, glob("$path/$ref $path/../$ref $path/$fulref"));
->  		}
->  
-> 
-> 
-> 
+Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
+---
 
-I tested the patch and it works well on my side.
+Changes since v1
+* Change commit log
 
-However, this looks a bit fragile to me. There is no particular reason
-to have testing/selftests/bpf point to bpf/bpftool other than to
-accommodate the current case, we could imagine other selftest files
-pointing to other parts of the documentation in the future. I would
-instead make an exception for test_bpftool_synctypes.py specifically
-(other selftest files don't usually parse documentation anyway).
-Alternatively, I would look at excluding lines where the path is used in
-code (tricky to detect), maybe at least when used with os.path.join():
+Changes since v2
+* Change commit log
 
-    next if ($ln =~ m,os\.path\.join\([^\,]*\,\s*['"]$fulref,);
+ tools/testing/selftests/nci/nci_dev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-But I'm not familiar with documentation-file-ref-check in the first
-place, so these are just my two cents.
+diff --git a/tools/testing/selftests/nci/nci_dev.c b/tools/testing/selftests/nci/nci_dev.c
+index e1bf55dabdf6..162c41e9bcae 100644
+--- a/tools/testing/selftests/nci/nci_dev.c
++++ b/tools/testing/selftests/nci/nci_dev.c
+@@ -746,7 +746,7 @@ int read_write_nci_cmd(int nfc_sock, int virtual_fd, const __u8 *cmd, __u32 cmd_
+ 		       const __u8 *rsp, __u32 rsp_len)
+ {
+ 	char buf[256];
+-	unsigned int len;
++	int len;
+ 
+ 	send(nfc_sock, &cmd[3], cmd_len - 3, 0);
+ 	len = read(virtual_fd, buf, cmd_len);
+-- 
+2.20.1
 
-Thanks,
-Quentin
