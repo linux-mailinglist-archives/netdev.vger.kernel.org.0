@@ -2,100 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45A5F40ECB0
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 23:33:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 544C340ECBE
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 23:40:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233741AbhIPVfG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 17:35:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60800 "EHLO
+        id S234461AbhIPVmJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 17:42:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230338AbhIPVfF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 17:35:05 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 715FFC061574;
-        Thu, 16 Sep 2021 14:33:44 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id bg1so4733076plb.13;
-        Thu, 16 Sep 2021 14:33:44 -0700 (PDT)
+        with ESMTP id S231255AbhIPVmI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 17:42:08 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CDDFC061574
+        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 14:40:47 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id w29so11716297wra.8
+        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 14:40:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ferZLYY6fTnKLI5lToHUrMElKCbn3+t8ZleK9UD2g+I=;
-        b=lZmLMAniugA8MavhAfTYUvsLN+4bRYD3KBXTY1Tyo8RfFjNcOuDEukmRwW4MoJl4tX
-         MNxXP+H9KXQ6izIETyGVw38P5EbR8FlZhiQSTn2m30FT1qjT1VRIYSLhvdVjKWu9qz+n
-         d8V4hPl6LYePS8YWSnL4aBD3JmMhPmptWiJuRe5qlCyyIQO7ifFioS8UWwbSUFuhL7Hu
-         k75rBIlZZSKOUqphUzEc/Qcz5piFAGDhAo6ugedQo40Oe6LaGl3SMSOG8UDwnFn7v05z
-         jr6hR81tGdeK6tPgP8mpgjnXfk3OfUiOil2/RN4rYH3WDM2Y12TYQpXwA5Ua7CaJ8IVh
-         qGGA==
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=Z6BKfFbl7LMRo66b1N/jfXXC13JLghX+xmovn6fl1rM=;
+        b=BHpaTolr1Br9nxpWDuZ3GCot0rR/PDtA1xqDIdnG+s6NW/ivkhRYJ2U43ln4bUMFHM
+         c7/gVuCwfucgJ5yX6o3gr863fKSILS7aRuH57XQRGAs4Hq8g5/Rjk48+gFxp27F37faF
+         I6JsAGYTbDO4X7E/kaX2cqW1grSH5R11KrTTYQfVk+USzI618ROCiCLC55NjcvDJCzXP
+         39+/Y3QCVJPhjghLdq9IU3D7jfM8p1PqMWyOR6bB3nI8pR4+OGfc1Vb49wIbYb/9oLEX
+         QhHzLySffUUzLq9vY7fZIQ777PlNFzJp6cD2C4QAznk7j/VHP+WydFa1YsPAkSm+eKMO
+         vq1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ferZLYY6fTnKLI5lToHUrMElKCbn3+t8ZleK9UD2g+I=;
-        b=ZJJNEkUXa8iGdzPCSHS2yO6dAzQ/zDVqJImpNwp1ftbK/8uGfNoQEdRMnZ6AMeUQww
-         VTxHw4E9xHCe0SA8uQlhFS/aA4prNvHg/lAJAy0watNzu+gSuhWClPtZWceVYtHdoB3o
-         hNmuHeN8tft4fdVxjN3D8Suvpv07px65uPhImWKopwUjii6XHNzXw5OHJPkiY1bD3vHQ
-         UN++rAewq7v/UpAaWU/Xm0SaV2BF9p+GSozamd3VmbRrDcmaPWSS3gBrT//39eznfFUq
-         K5snR4MbsH9rjH1lhmoMf170274OleFxsyitMzigw8EyCY8YbB7AJIxHK15e42GIp1yq
-         V6/A==
-X-Gm-Message-State: AOAM532NNpXDMUmKO6aKRgVzcnJPIWvVsAQ9g6cAYN3EHFYM+6wEhls5
-        ybKsfnjiGlxWghh/L5NGXoi/yEtj8ps=
-X-Google-Smtp-Source: ABdhPJx0rabQ3Lg3Q3fkqvrnD/4itZzHX00RW218Q6Vikj5oE0e4i1dc1Ak0UbVlEiyj3bzmugsU0Q==
-X-Received: by 2002:a17:90a:194a:: with SMTP id 10mr16586443pjh.221.1631828023519;
-        Thu, 16 Sep 2021 14:33:43 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id y1sm4125634pga.50.2021.09.16.14.33.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Sep 2021 14:33:42 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net] net: dsa: bcm_sf2: Fix array overrun in bcm_sf2_num_active_ports()
-Date:   Thu, 16 Sep 2021 14:33:35 -0700
-Message-Id: <20210916213336.1710044-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=Z6BKfFbl7LMRo66b1N/jfXXC13JLghX+xmovn6fl1rM=;
+        b=xilxi7Opft1InEAp1WstoXDs31hUVOfhBLOTgO5bFquZ0xd5UA/fFwlfH+jLh/FjEj
+         ZywU6RPud1DtEy50dod7sWrsEjdyFNjxMfaELYMZCETtJWQ9n2sf27Oii0QzprlDKTKY
+         RLgzvsyYoE675t0/0DFmAFM3el7i8NLoknfEqLZQci+tfwHw1vS4MRmbQ/pmxFGAwxHI
+         0e/5Er5o+RELvrWsl6JEUCNcjL1h+fKDmTDF5cS2eWFBG8PNr3B4E74r9ahD/A4xZass
+         mg7FF8kVgAQgS6ujbGYeWCf/+J8ZufpIujK9XPcSGtahPewHxKiz1ydKYZHMz6Gt6tYe
+         ynQA==
+X-Gm-Message-State: AOAM533LpOK30CoggC+rKqC2+9DDkkXfR106gb9nSaqDdR95z85IT0MG
+        Ydz+3VduT7Vd5p4VFDuiGO8dDUGULTQ=
+X-Google-Smtp-Source: ABdhPJwql43FgYl4pZecagg1+3vDJA4nHgMN+CsNtKArpyhN8ByVrn49uboeztR6nyERMcQ7XesZTw==
+X-Received: by 2002:a05:6000:168b:: with SMTP id y11mr4136676wrd.350.1631828445965;
+        Thu, 16 Sep 2021 14:40:45 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f08:4500:1510:9d4f:bc4b:635b? (p200300ea8f08450015109d4fbc4b635b.dip0.t-ipconnect.de. [2003:ea:8f08:4500:1510:9d4f:bc4b:635b])
+        by smtp.googlemail.com with ESMTPSA id g1sm4680307wrr.2.2021.09.16.14.40.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Sep 2021 14:40:45 -0700 (PDT)
+To:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Mirko Lindner <mlindner@marvell.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next] sky2: Stop printing VPD info to debugfs
+Message-ID: <bbaee8ab-9b2e-de04-ee7b-571e094cc5fe@gmail.com>
+Date:   Thu, 16 Sep 2021 23:40:37 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After d12e1c464988 ("net: dsa: b53: Set correct number of ports in the
-DSA struct") we stopped setting dsa_switch::num_ports to DSA_MAX_PORTS,
-which created an off by one error between the statically allocated
-bcm_sf2_priv::port_sts array (of size DSA_MAX_PORTS). When
-dsa_is_cpu_port() is used, we end-up accessing an out of bounds member
-and causing a NPD.
+Sky2 is parsing the VPD and adds the parsed information to its debugfs
+file. This isn't needed in kernel, userspace tools like lspci can be
+used to display such information nicely. Therefore remove this from
+the driver.
 
-Fix this by iterating with the appropriate port count using
-ds->num_ports.
+lspci -vv:
 
-Fixes: d12e1c464988 ("net: dsa: b53: Set correct number of ports in the DSA struct")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Capabilities: [50] Vital Product Data
+	Product Name: Marvell Yukon 88E8070 Gigabit Ethernet Controller
+	Read-only fields:
+		[PN] Part number: Yukon 88E8070
+		[EC] Engineering changes: Rev. 1.0
+		[MN] Manufacture ID: Marvell
+		[SN] Serial number: AbCdEfG970FD4
+		[CP] Extended capability: 01 10 cc 03
+		[RV] Reserved: checksum good, 9 byte(s) reserved
+	Read/write fields:
+		[RW] Read-write area: 1 byte(s) free
+	End
+
+Relevant part in debugfs file:
+
+0000:01:00.0 Product Data
+Marvell Yukon 88E8070 Gigabit Ethernet Controller
+ Part Number: Yukon 88E8070
+ Engineering Level: Rev. 1.0
+ Manufacturer: Marvell
+ Serial Number: AbCdEfG970FD4
+
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/net/dsa/bcm_sf2.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/marvell/sky2.c | 84 +----------------------------
+ 1 file changed, 1 insertion(+), 83 deletions(-)
 
-diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
-index 6ce9ec1283e0..b6c4b3adb171 100644
---- a/drivers/net/dsa/bcm_sf2.c
-+++ b/drivers/net/dsa/bcm_sf2.c
-@@ -68,7 +68,7 @@ static unsigned int bcm_sf2_num_active_ports(struct dsa_switch *ds)
- 	struct bcm_sf2_priv *priv = bcm_sf2_to_priv(ds);
- 	unsigned int port, count = 0;
+diff --git a/drivers/net/ethernet/marvell/sky2.c b/drivers/net/ethernet/marvell/sky2.c
+index e9fc74e54..3cb9c1271 100644
+--- a/drivers/net/ethernet/marvell/sky2.c
++++ b/drivers/net/ethernet/marvell/sky2.c
+@@ -4440,86 +4440,6 @@ static const struct ethtool_ops sky2_ethtool_ops = {
  
--	for (port = 0; port < ARRAY_SIZE(priv->port_sts); port++) {
-+	for (port = 0; port < ds->num_ports; port++) {
- 		if (dsa_is_cpu_port(ds, port))
- 			continue;
- 		if (priv->port_sts[port].enabled)
+ static struct dentry *sky2_debug;
+ 
+-
+-/*
+- * Read and parse the first part of Vital Product Data
+- */
+-#define VPD_SIZE	128
+-#define VPD_MAGIC	0x82
+-
+-static const struct vpd_tag {
+-	char tag[2];
+-	char *label;
+-} vpd_tags[] = {
+-	{ "PN",	"Part Number" },
+-	{ "EC", "Engineering Level" },
+-	{ "MN", "Manufacturer" },
+-	{ "SN", "Serial Number" },
+-	{ "YA", "Asset Tag" },
+-	{ "VL", "First Error Log Message" },
+-	{ "VF", "Second Error Log Message" },
+-	{ "VB", "Boot Agent ROM Configuration" },
+-	{ "VE", "EFI UNDI Configuration" },
+-};
+-
+-static void sky2_show_vpd(struct seq_file *seq, struct sky2_hw *hw)
+-{
+-	size_t vpd_size;
+-	loff_t offs;
+-	u8 len;
+-	unsigned char *buf;
+-	u16 reg2;
+-
+-	reg2 = sky2_pci_read16(hw, PCI_DEV_REG2);
+-	vpd_size = 1 << ( ((reg2 & PCI_VPD_ROM_SZ) >> 14) + 8);
+-
+-	seq_printf(seq, "%s Product Data\n", pci_name(hw->pdev));
+-	buf = kmalloc(vpd_size, GFP_KERNEL);
+-	if (!buf) {
+-		seq_puts(seq, "no memory!\n");
+-		return;
+-	}
+-
+-	if (pci_read_vpd(hw->pdev, 0, vpd_size, buf) < 0) {
+-		seq_puts(seq, "VPD read failed\n");
+-		goto out;
+-	}
+-
+-	if (buf[0] != VPD_MAGIC) {
+-		seq_printf(seq, "VPD tag mismatch: %#x\n", buf[0]);
+-		goto out;
+-	}
+-	len = buf[1];
+-	if (len == 0 || len > vpd_size - 4) {
+-		seq_printf(seq, "Invalid id length: %d\n", len);
+-		goto out;
+-	}
+-
+-	seq_printf(seq, "%.*s\n", len, buf + 3);
+-	offs = len + 3;
+-
+-	while (offs < vpd_size - 4) {
+-		int i;
+-
+-		if (!memcmp("RW", buf + offs, 2))	/* end marker */
+-			break;
+-		len = buf[offs + 2];
+-		if (offs + len + 3 >= vpd_size)
+-			break;
+-
+-		for (i = 0; i < ARRAY_SIZE(vpd_tags); i++) {
+-			if (!memcmp(vpd_tags[i].tag, buf + offs, 2)) {
+-				seq_printf(seq, " %s: %.*s\n",
+-					   vpd_tags[i].label, len, buf + offs + 3);
+-				break;
+-			}
+-		}
+-		offs += len + 3;
+-	}
+-out:
+-	kfree(buf);
+-}
+-
+ static int sky2_debug_show(struct seq_file *seq, void *v)
+ {
+ 	struct net_device *dev = seq->private;
+@@ -4529,9 +4449,7 @@ static int sky2_debug_show(struct seq_file *seq, void *v)
+ 	unsigned idx, last;
+ 	int sop;
+ 
+-	sky2_show_vpd(seq, hw);
+-
+-	seq_printf(seq, "\nIRQ src=%x mask=%x control=%x\n",
++	seq_printf(seq, "IRQ src=%x mask=%x control=%x\n",
+ 		   sky2_read32(hw, B0_ISRC),
+ 		   sky2_read32(hw, B0_IMSK),
+ 		   sky2_read32(hw, B0_Y2_SP_ICR));
 -- 
-2.25.1
+2.33.0
 
