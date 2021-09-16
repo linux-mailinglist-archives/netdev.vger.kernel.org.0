@@ -2,132 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57A0940DD62
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 16:57:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EFC540DDCB
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 17:18:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238972AbhIPO6E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 10:58:04 -0400
-Received: from mail-db8eur05on2077.outbound.protection.outlook.com ([40.107.20.77]:8481
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S236506AbhIPO6C (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Sep 2021 10:58:02 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=O/jXwyqLW0FSe2+zZ4RyrFIv4OGRSHcbHlFb2MnQxshwTgdMsF188+jaf27TsvARLKBz+Z2pQX6UYQgS5h8MUlhbTXlRHydSx0rzrkCxvxPhN0bRHKCphnuXrVGfDUCqZwbPaVY++eOk+VeOvSDvX9LGylj21Kb1tszej0xkheiE69QbjEGVEV3MyXPGBgYIx9AlRLzg76tmf9X8U5dKQ2+ucVaqDAZvYC1sJKCHwl90IDicYmBWF5Kd2Q6CpM1bl7MULKS9GWxqO+6+z1495kuMHfnAM85+h+nFvpZJ1/W94SOmvRO4LjT5NcAx4kPbJqVSBOWsuWb20BIMRYen1w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=LX5uBpkvS+X0t0UJxXfAowQFnWSBo/tqpsbi6aedkTw=;
- b=jt41KbkNMbve/64grkCx12HXuKEgolCCNzc+OH75+zYHmk9V/LTX5d4VpOOTW50j/Bas22a8vwL8zkFhIzjIjiyJGmx4oDLiXKoQiFJbVygZqnmrr3nF5kpIBStvhrr0d/V2ri5zDruTXXqDlfhtzk+OrqXtHul8C/epAnkGRifi5mcbbWTdV6yZJQs0mMU1LfeBcctgaO1FcHbIKlGRJgYuE7aN8bE/pfs1pvsiIZZS0u0zLBiJc6JO6Huj75VgSnJjZqJYCOPQiU6P4G9SdZBniU50EE6HTKASP1unoTZIKN08aWiRlK5r/ZGQQ3gvGdVyS/h4W8XC3s8l41ar+w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LX5uBpkvS+X0t0UJxXfAowQFnWSBo/tqpsbi6aedkTw=;
- b=ctMtk6OzkpJwnzJ6QKWoq2owcZ0auLor4uulXiIcnfc8szWOxn+LCzuYNKdGcRqNw59vblnPFWPdW0fHB6u8pQH3hl27za99WuSNGTTk280nMhP4uB9JqfKVJ1RQD8PWKpkGAvr2/mkdTRWcX5fT/5bcAu+Rf55QxaQ5uE6uh40=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR0402MB3710.eurprd04.prod.outlook.com (2603:10a6:803:25::29) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.14; Thu, 16 Sep
- 2021 14:56:38 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4500.019; Thu, 16 Sep 2021
- 14:56:38 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Colin Foster <colin.foster@in-advantage.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        id S238610AbhIPPTU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 11:19:20 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:49754 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238479AbhIPPTT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Sep 2021 11:19:19 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1631805479; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=W6szQ/LiyIiaf2JeeBlcAruOxPvIgc68+ew5H7jm+GE=; b=OP0KbVMtBWF/pk2auc0kk/As7qPgNn45+glDq/txAxx7W29yNDRwVI4nZERfKyao/zo8UXdm
+ +U3+vo62GzXWAiQVD5IKgi4moslUsinfu3BfW8FP9IponbYMcitOsDx/f4Ci8xz2ipLVrAur
+ AWfRibWZWb8PIQdVEYiyvzSN8Ak=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
+ 6143601265c3cc8c6365f456 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 16 Sep 2021 15:17:38
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 9E2EFC4361C; Thu, 16 Sep 2021 15:17:38 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from tykki (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 9BCC1C4338F;
+        Thu, 16 Sep 2021 15:17:33 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 9BCC1C4338F
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     Len Baker <len.baker@gmx.com>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
         "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1 net] net: mscc: ocelot: remove buggy and useless write
- to ANA_PFC_PFC_CFG
-Thread-Topic: [PATCH v1 net] net: mscc: ocelot: remove buggy and useless write
- to ANA_PFC_PFC_CFG
-Thread-Index: AQHXqpeh6y6SRE8JykW9vsuy+tc/X6umjJKAgAAzO4CAAAEcgA==
-Date:   Thu, 16 Sep 2021 14:56:38 +0000
-Message-ID: <20210916145637.yu63cf3mzkkx2eg2@skbuf>
-References: <20210916010938.517698-1-colin.foster@in-advantage.com>
- <20210916114917.aielkefz5gg7flto@skbuf>
- <20210916075239.4ac27011@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210916075239.4ac27011@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 73b16e82-485f-4b8e-7e68-08d979222f78
-x-ms-traffictypediagnostic: VI1PR0402MB3710:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR0402MB37100EA7B6296160271EDC99E0DC9@VI1PR0402MB3710.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3044;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: rg2wGN1vWM0+b+nuKjUGd1CrRGhDDjIqFlKufWUpp3asSrJbLeiXJpKaJqqO3VD1+8SXmQbuAicbIgloHUDnrFtf27LUIFKpPzn7poNPzUdLofPOKkv08uN4isxXjr2YolyaaDT88qBLlwipvi2qAoVHP0NtNm+l2LICLi93kboWYWZV5e/OaMQRrqpVmjby0NKKsYJNH1Z+JS2fZ7Q7kRCTq4ZVv6AoX/+Jdg7O0HQOtqGdW6TkwUMiHbNwH/HnOM/dn3KugNjqLcDf20yWUv+vqREet7TJPfMfco7buJ4N2ltpO4J2jo83amyKRzwA51E0qyakhmzbcasgPGXYRnltMIQvzk8SFM71ebUNWsm0GTT98Beaxbn5KhY9x8qjCfM6SkNGS0/IkyXCI93zhgClIgJAB2R1XxXRpR4N46zRG9frudTIUdbUFEHUOIt0l3g/hcXwxly/+vC0gr4Yl82o7i5ZHgxNew1/Y8DJyg4ULZWPkhs1ifGGBdPkfYUiY4rJz44i87tG96KOiOOK1F84XpLLQCB4zwX2oont4ohyOgPlu/SI2QBnMUEbCvtCNn+RKEmSs/VcGRzZyqOe2HJP5RocoYbw/khT5/zsBchxkEURSyJ/hsg0wQwrJBfsCTir2wBCBviiSJOXOSk4I94A+jEFgj4OvvOMOrIEdqtSvlHBty8WNUW4Cn1MVUYVHrvUyaur68NAaTh2zw4ezoTZkcYB1QzSKNBhd5RUL4iB4IzbyICX+V5ZX+ImU0bEWt5cF1bmayDvyUX2xKTM7zE8J/PE6K7I17Ozg5LemUI=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(346002)(376002)(39860400002)(136003)(396003)(366004)(38100700002)(8676002)(26005)(478600001)(8936002)(6486002)(122000001)(54906003)(71200400001)(1076003)(186003)(6512007)(33716001)(5660300002)(966005)(4326008)(316002)(9686003)(6506007)(64756008)(66476007)(66556008)(66446008)(38070700005)(91956017)(76116006)(66946007)(6916009)(2906002)(44832011)(4744005)(86362001)(83380400001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?YQxbASJ6l/dAcRzgsxsR4eEUWxOLIAptWXQncffWg8QVqHGlMM5KF16o8EaI?=
- =?us-ascii?Q?wfMzBf5DSaUOu3AOBGv4i4EIr9GgaMYUDBOvnwwtbOynSsw+JMu5nQl25jWP?=
- =?us-ascii?Q?U0DVsqKs4/rVMqX3Z4vuYBvcz+tjM23xneGbOfJZmZPGTD9AHgPd8KQNf2zJ?=
- =?us-ascii?Q?zfgyVT4Z1XZO8CiB9zQvlGQ8QhXTD/roLekGHBAaL1PmITzNKoEM6ZDDZmhK?=
- =?us-ascii?Q?cqlZUYct7HK/IkotoMRvgwY9314X+A7a/qDOuoamlzN4fIhY0kn49glAkfT4?=
- =?us-ascii?Q?IiuFDhH3unVHrt9+OeBM0ADYgUQlqFcKbJRHPzxQo6LMV/ZRGhORJKqNJAqQ?=
- =?us-ascii?Q?n0as1S5mSdy59ginieEWQgRZwRyO0DRr66AdRWoTOIIAUnCda3iWSsG6Tnzo?=
- =?us-ascii?Q?uvc2opaaexEpM6i6+ELb/p/jm8eI/W3gEXYuyc1cwZyr5h65RnfXvWORbvHr?=
- =?us-ascii?Q?U3I5KeoY5RIydPTLdQ3uPjvoQl7RPVs9cYS4oPVztwqnc0VSZN9CU9CV/N34?=
- =?us-ascii?Q?RvPnlUkkz+NU+NKB4Jbhr21q33CE3odEycQCI3wXV5DMw+ZYzEGcQxjEguFU?=
- =?us-ascii?Q?tBSpws7Uo62qxA1PQy0dy+GVRD1fp92PUsumYTPzDsgePhk8IO0Z1sZZAeP+?=
- =?us-ascii?Q?jTJPjOkIl5HPOVW0nP+BBA66q6sFV7u19wgAhaHhybbf1fAZ18kMz6BaN18N?=
- =?us-ascii?Q?y5IFlWmw0wD5QRW+DPhYQ7pMFX98rT5OWOEPBE9f0mOpaA6c6fXsdV3TwddU?=
- =?us-ascii?Q?ZbxUdgVHAfcfsC93lF+TDClyVh3tNGvJA+c15O1cES8Gj4OCMQh/SGmICOmq?=
- =?us-ascii?Q?tQt7Slp6LZfTJQXzpm/USGMdRsNYIUU4TZbIeKSYz1qWU787QcBioT/GMXmn?=
- =?us-ascii?Q?DVkAg5GqimOQMTnmjVPs5m23C2wPuy0RI+Boe6rjy+2f4DJPqfASeugM1z5g?=
- =?us-ascii?Q?j4zv5TSsT2pXCXMUx5PuoWWmFbERvPEg7N6/Ce/OjYPg5/Cuj8QL4Gf2TLd5?=
- =?us-ascii?Q?Po1uHTeCOHlJCrgqEMqcDO1r0V3YPZse+V9xgIIULmsDljkzhsoHS8Pw0WCr?=
- =?us-ascii?Q?i4rV0Bj3J5wuDnUtTGVodkDF4Mo5z3pkX8cr3+RO0zdSBM2PjdFmaeO0C/Nv?=
- =?us-ascii?Q?vTYDVMEoF7fDJnF3M3wZWvtUR+TRPhM3ykdmJ5MSTVmmKoPqf1LbRHLNHy1C?=
- =?us-ascii?Q?fp/m2l9i4FrTx1xu/03TZWPJF9sTfUKfLz5oO2Oi67t9cwydqG5EiYZa0awH?=
- =?us-ascii?Q?CGAa/CZVa+gaEZgPDXcQTyw+GAKokiv6wi/0STCaxOToYSYzAXJoEUsIob+N?=
- =?us-ascii?Q?PI2kFIrTpy2zJAO3m7w1AmQlii0U1iHXh1Vl+jVnFPEJTw=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <D2D0D2197E2293489DF0B7B750BE8E01@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        Jakub Kicinski <kuba@kernel.org>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Kees Cook <keescook@chromium.org>,
+        Shawn Guo <shawn.guo@linaro.org>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] brcmfmac: Replace zero-length array with flexible array member
+References: <20210904092217.2848-1-len.baker@gmx.com>
+        <20210912191536.GB146608@embeddedor>
+Date:   Thu, 16 Sep 2021 18:17:31 +0300
+In-Reply-To: <20210912191536.GB146608@embeddedor> (Gustavo A. R. Silva's
+        message of "Sun, 12 Sep 2021 14:15:36 -0500")
+Message-ID: <87o88sy2gk.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 73b16e82-485f-4b8e-7e68-08d979222f78
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Sep 2021 14:56:38.0631
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Rvz6bnLDhSZSUrYCfbzcMAkDoml70PLT2EGOWqmZuB6qa7Y1WDJY+ggTBvgmQa0hdalZaxGLhDVdh4Z+QhEfNQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3710
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 16, 2021 at 07:52:39AM -0700, Jakub Kicinski wrote:
-> On Thu, 16 Sep 2021 11:49:18 +0000 Vladimir Oltean wrote:
-> > git format-patch -2 --cover-letter
->
-> Nice instructions, let me toss this version from pw.
->
-> FWIW the patchwork checks don't complain about 2-patch series without
-> a cover letter [1]. Having cover letters is a good rule of thumb but
-> I thought I'd mention that 'cause unlikely anyone would realize otherwise=
-.
->
-> [1] https://github.com/kuba-moo/nipa/blob/master/tests/series/cover_lette=
-r/test.py
+"Gustavo A. R. Silva" <gustavoars@kernel.org> writes:
 
-In my certainly limited experience I have found out that forcing
-yourself to write a change log and a cover letter makes you think more,
-which is sadly sometimes needed.=
+> On Sat, Sep 04, 2021 at 11:22:17AM +0200, Len Baker wrote:
+>> There is a regular need in the kernel to provide a way to declare
+>> having a dynamically sized set of trailing elements in a structure.
+>> Kernel code should always use "flexible array members"[1] for these
+>> cases. The older style of one-element or zero-length arrays should
+>> no longer be used[2].
+>> 
+>> Also, make use of the struct_size() helper in devm_kzalloc().
+>> 
+>> [1] https://en.wikipedia.org/wiki/Flexible_array_member
+>> [2] https://www.kernel.org/doc/html/v5.14/process/deprecated.html#zero-length-and-one-element-arrays
+>> 
+>> Signed-off-by: Len Baker <len.baker@gmx.com>
+>
+> Reviewed-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+>
+> I'll take this in my -next tree. :)
+
+Why? It should go to wireless-drivers-next.
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
