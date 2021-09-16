@@ -2,68 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1621740DA82
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 15:00:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2FAD40DA96
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 15:03:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239792AbhIPNB3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 09:01:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55750 "EHLO mail.kernel.org"
+        id S239768AbhIPNFH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 09:05:07 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:44110 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239741AbhIPNB2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Sep 2021 09:01:28 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id CC5F860EE9;
-        Thu, 16 Sep 2021 13:00:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631797207;
-        bh=b2pU57FhVLp5+sAxVdLdiB8G3NtaTNgb27tj1GNVBSU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=gfcfXUtFYwc/wLuaB+FiiOL32FOzDeL63kkn1u/vSuBHebXZRlYQSRvPeAqu1Gw8k
-         8epXIMgEbA87h4Fb1bntHb9XTlDxAv2QebBEPAWFDtA7uH6Orj0+GhOLHpVe2nPttR
-         NRp4gxc0M8O8Tf8uKCQbOfr9DMECMLbMPktX8un5eYK4EPDbIZ7btwu1HLJjcMasjS
-         8jFGgY0Q/1y2US2ZNLwGX/enwCqkfoXFCXppPfBf074iXGRw8Z8MvFA7fYOhmNEt5j
-         AMk206vIZzX9isSHM0BxMrrt/mDDxVzzGtd033cv7xj7mVOOznvvtaAfi3P30sS8Hq
-         U/iBe2LTwVb5A==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B77E960A9E;
-        Thu, 16 Sep 2021 13:00:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S239126AbhIPNFE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Sep 2021 09:05:04 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=8B+OSG6AvJiUOcpkuo1so2J3WnuBg527X2nenttNjoQ=; b=tbWQib1AOzPx+m/HjVbjSuSgUi
+        Qxlvem8kHDl1TyqR2BDJ3v0G+DT9TAPKn6aLSsbMZjzTgYgt+MAVvaGZwt/ag13NgTiwnZiE+UMoU
+        2u52dsesIOKGU8Xl3sEv/8ymrNU61aUbYQe8+6R3J+c/eWXM+mF3AEPSmmwmxxn76678=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mQr3C-006uNJ-0a; Thu, 16 Sep 2021 15:03:38 +0200
+Date:   Thu, 16 Sep 2021 15:03:37 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Claudiu Beznea <claudiu.beznea@microchip.com>
+Cc:     nicolas.ferre@microchip.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/3] net: macb: add support for mii on rgmii
+Message-ID: <YUNAqSz3sUPqoGx6@lunn.ch>
+References: <20210915064721.5530-1-claudiu.beznea@microchip.com>
+ <20210915064721.5530-4-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3] selftests: nci: replace unsigned int with int
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163179720774.29332.2952119753951803388.git-patchwork-notify@kernel.org>
-Date:   Thu, 16 Sep 2021 13:00:07 +0000
-References: <20210916122442.14732-1-wangxiang@cdjrlc.com>
-In-Reply-To: <20210916122442.14732-1-wangxiang@cdjrlc.com>
-To:     Xiang wangx <wangxiang@cdjrlc.com>
-Cc:     bongsu.jeon@samsung.com, shuah@kernel.org, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210915064721.5530-4-claudiu.beznea@microchip.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Wed, Sep 15, 2021 at 09:47:21AM +0300, Claudiu Beznea wrote:
+> Cadence IP has option to enable MII support on RGMII interface. This
+> could be selected though bit 28 of network control register. This option
+> is not enabled on all the IP versions thus add a software capability to
+> be selected by the proper implementation of this IP.
 
-This patch was applied to netdev/net.git (refs/heads/master):
+Hi Claudiu
 
-On Thu, 16 Sep 2021 20:24:42 +0800 you wrote:
-> Should not use comparison of unsigned expressions < 0.
-> 
-> Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
-> ---
-> 
-> Changes since v1
-> * Change commit log
-> 
-> [...]
+You are adding a feature without a user. That is generally not
+accepted. Could you please also extend one of the macb_config structs
+to make use of this?
 
-Here is the summary with links:
-  - [v3] selftests: nci: replace unsigned int with int
-    https://git.kernel.org/netdev/net/c/98dc68f8b0c2
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Thanks
+	Andrew
