@@ -2,79 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D3B440EB85
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 22:18:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E0F1740EB6D
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 22:11:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238406AbhIPUTT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 16:19:19 -0400
-Received: from p3nlsmtpcp01-02.prod.phx3.secureserver.net ([184.168.200.140]:39992
-        "EHLO p3nlsmtpcp01-02.prod.phx3.secureserver.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229456AbhIPUTS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Sep 2021 16:19:18 -0400
-X-Greylist: delayed 450 seconds by postgrey-1.27 at vger.kernel.org; Thu, 16 Sep 2021 16:19:18 EDT
-Received: from p3plcpnl1062.prod.phx3.secureserver.net ([50.62.161.131])
-        by : HOSTING RELAY : with ESMTP
-        id QxhHmABAKNpW3QxhHmtvBP; Thu, 16 Sep 2021 13:09:27 -0700
-X-CMAE-Analysis: v=2.4 cv=IsXbzJzg c=1 sm=1 tr=0 ts=6143a477
- a=dUVmeoHZULcvEZmpJC9XRQ==:117 a=9+rZDBEiDlHhcck0kWbJtElFXBc=:19
- a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10 a=7y478MxDpPYA:10
- a=Vk7GA2kSAv4A:10 a=7QKq2e-ADPsA:10 a=2tQCi5rtVpkA:10 a=M51BFTxLslgA:10
- a=VwQbUJbxAAAA:8 a=401QvYogAAAA:8 a=oETo95l8tDZVEtLRtccA:9 a=QEXdDO2ut3YA:10
- a=BSHFW6nFAgUA:10 a=-YubsuZ0-RQA:10 a=qHuryBgDqF0A:10 a=NWVoK91CQyQA:10
- a=AjGcO6oz07-iQ99wixmX:22 a=NijDbifxZE5DWIws8XhU:22
-X-SECURESERVER-ACCT: fvegn7a7sey2
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=p3plcpnl1062.prod.phx3.secureserver.net; s=default;
-        h=Content-Transfer-Encoding:Content-Type:MIME-Version:Message-ID:From:Date:
-        Subject:To:Sender:Reply-To:Cc:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
-        References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
-        List-Owner:List-Archive; bh=hx0ClTgfRQ83MANuPp2Ce6cn5gOsz/b3voDPgnDTHWg=; b=M
-        xsw1ZHY4tE6tbIBVdUQOX890dQhzpdyrGZPcRfvX/AlWfW/3YuIgdLYBsBrmwFyn+K+eHLaO/P9BI
-        tDY/Z2T1oDF7AT7mZLDoKFKQLSgqq6BR8+Sf8e2wFRApUyP4r5o6rrGco10eFSFTp8WlUtXvkulEv
-        01msu3gsDKSdohDxW15uAUo8DDP62f/NweMviYq9FvowzZpakBBMCPHjtDrI9Z3tpRduGLagPUbSp
-        NMm0SCuEdRlAijkzxorSuSdIMnC3wxzdcAYMNrC66BMMvI+UepNKrwOxp3YTI+7oUYlR5EEAbCHra
-        wkhdSbztHCj2YhI7VBDPoJT+L6l/yzfkQ==;
-Received: from fvegn7a7sey2 by p3plcpnl1062.prod.phx3.secureserver.net with local (Exim 4.93)
-        (envelope-from <fvegn7a7sey2@p3plcpnl1062.prod.phx3.secureserver.net>)
-        id 1mQxhH-005CTx-Nd
-        for netdev@vger.kernel.org; Thu, 16 Sep 2021 13:09:27 -0700
-To:     netdev@vger.kernel.org
-Subject: You emailed Team-Kennedy ES
-X-PHP-Script: team-kennedy.com/es/index.php for 103.94.181.118
-X-PHP-Filename: /home/fvegn7a7sey2/public_html/es/index.php REMOTE_ADDR: 103.94.181.118
-Date:   Thu, 16 Sep 2021 20:09:27 +0000
-From:   =?UTF-8?B?5r6z6Zeo6YeR5rKZwrfms6jlhozpgIEzOA==?= 
-        <info@team-kennedy.com>
-Message-ID: <fed3dfb669145cc400d6d24bf81cdf76@team-kennedy.com>
-X-Mailer: PHPMailer 5.2.22 (https://github.com/PHPMailer/PHPMailer)
+        id S237719AbhIPUMT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 16:12:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41862 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237662AbhIPUMR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 16:12:17 -0400
+Received: from mail-oo1-xc2b.google.com (mail-oo1-xc2b.google.com [IPv6:2607:f8b0:4864:20::c2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4EC4C061574;
+        Thu, 16 Sep 2021 13:10:56 -0700 (PDT)
+Received: by mail-oo1-xc2b.google.com with SMTP id t2-20020a4ae9a2000000b0028c7144f106so2447442ood.6;
+        Thu, 16 Sep 2021 13:10:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=WLWGqFkB+rkCLRt7HtEehHip40OqdhGVEHuU0Lbj2v0=;
+        b=QhTYDEafPte6HruR3dXwwhy9+35mfz17LDaJTe6UplA3A9BzI64jhyIp++KkdjxcMV
+         Txn5wenBw/F1HPix1fkud5axGzHOmnw4S387BnjRCigZuIHzQkTouoCat6xlmJWzTt1G
+         vpdmamU+EHwwZb8VOybATL7QxhuVO5dKl8zPMI2MbSH+yDHRY1nmLpHnj6wxFt8dxd3Q
+         nvYD5/HFjK5Zjwsr/2DtT9z0jlZ+F87Ud6lCoZi+axcbyFgnOirlpy2vPxI7wggV2J8s
+         wzxuiDq8yrE+Z/5V9LETqiNvdDZIcJgkq0yLXlX3pJDZDWaJeO4Be5zugmR42ij/Lmus
+         Cgrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:subject:to:cc:references:from:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=WLWGqFkB+rkCLRt7HtEehHip40OqdhGVEHuU0Lbj2v0=;
+        b=MKiTq2Pki1yqj13hgkuWoIIvo8fYONhXH3nMkyDHTmXSelr1x+F7jhLnH96dTDZNRA
+         MMwd6va1SdoqDs3rt9ECbDbOpyLgZmsa4lKVSOatwJukpwT/+VWEKu+84ul9vgtnLzQ8
+         /5D1ZgH23Lf+rEych5yQFOMf8J0PN4d3LJkG/hBwZHpiLjzsO/Z39OselDo7CEb21Afd
+         xy5/uzjNywQsva/0KzcVX8kKvuxqDVAVvYH8QzTqMgdmmiTZWjci2HG8NQ9hsTYB+VOQ
+         fhLP6A1XdJBy5PSbuSw37/5JAb7nCCWD6leOVpPui8S3FKJeh0JEg+SyXEhWw2WfEcaN
+         /Wbw==
+X-Gm-Message-State: AOAM530AzKry5Sqv4xetCx6ZZXJ85Qn4ab7zJZ6KEa6+GB1sZZgJlKoD
+        E6lwZo0HpM5isqg1u7MLkTnsqJ+Kq4E=
+X-Google-Smtp-Source: ABdhPJw1S5b8I/aIk3QAU0j/C22AXgp+Yb2uOHTtRW7S1Ja1eAqtUrjvtbQRDaTQC6CEqrCBUO7zVQ==
+X-Received: by 2002:a4a:d0c2:: with SMTP id u2mr5879064oor.45.1631823055796;
+        Thu, 16 Sep 2021 13:10:55 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id j10sm949737oiw.32.2021.09.16.13.10.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Sep 2021 13:10:55 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Subject: Re: [PATCH] net: phy: dp83640: Drop unused PAGE0 define
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210916195055.1694099-1-linux@roeck-us.net>
+From:   Guenter Roeck <linux@roeck-us.net>
+Message-ID: <9b07c181-d039-eda0-d623-4e791bb2a43f@roeck-us.net>
+Date:   Thu, 16 Sep 2021 13:10:53 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - p3plcpnl1062.prod.phx3.secureserver.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [7831253 963] / [47 12]
-X-AntiAbuse: Sender Address Domain - p3plcpnl1062.prod.phx3.secureserver.net
-X-Get-Message-Sender-Via: p3plcpnl1062.prod.phx3.secureserver.net: authenticated_id: fvegn7a7sey2/from_h
-X-Authenticated-Sender: p3plcpnl1062.prod.phx3.secureserver.net: info@team-kennedy.com
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: team-kennedy.com:/public_html/es
-X-CMAE-Envelope: MS4xfKDm8OtVEPz9zTSmeevC/pU0YTCJigjXHBZuEpJlSpabcxfjVQrRUJ/TsnzVmN71UW28Fyaa7rzml56Pcg/fSuTMPVJnXJeCF2jIKBEpChIlTmzTavuk
- 0WhMoyvGrj19nM69BYFBKB3glnebzgTXzPFk94yrn5qTtEUtOS5ip2fjbJiUjdrJVCukXt7CnbmfjPuyZzfso2ls57eArlvmDhgScx08eLVawc6HSzuiCSr4
- LQJto/WvGeY3eYvMlM6RQFsqmNkt00K/PIQ14NyOv3A=
+In-Reply-To: <20210916195055.1694099-1-linux@roeck-us.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Name: 澳门金沙·注册送38 
+On 9/16/21 12:50 PM, Guenter Roeck wrote:
+> parisc:allmodconfig fails to build with the following error.
+> 
+> In file included from drivers/net/phy/dp83640.c:23:
+> drivers/net/phy/dp83640_reg.h:8: error: "PAGE0" redefined
+> 
+> The dp83640 driver does not use this define, so just remove it.
+> 
+> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+> ---
+>   drivers/net/phy/dp83640_reg.h | 1 -
+>   1 file changed, 1 deletion(-)
+> 
+> diff --git a/drivers/net/phy/dp83640_reg.h b/drivers/net/phy/dp83640_reg.h
+> index 21aa24c741b9..601e8d107723 100644
+> --- a/drivers/net/phy/dp83640_reg.h
+> +++ b/drivers/net/phy/dp83640_reg.h
+> @@ -5,7 +5,6 @@
+>   #ifndef HAVE_DP83640_REGISTERS
+>   #define HAVE_DP83640_REGISTERS
+>   
+> -#define PAGE0                     0x0000
+>   #define PHYCR2                    0x001c /* PHY Control Register 2 */
+>   
+>   #define PAGE4                     0x0004
+> 
 
-Email: netdev@vger.kernel.org 
+Sorry for the noise. I just learned that the problem is already fixed.
 
-Comments: 2021年相约【澳门金沙】：www.2220386.com/? 共享激情联赛，注册即送38，首充1000送88。+乐乐QQ:2018177429 QQ:2012312059 咨询
-----------
-既富以强。谓公吾父，孰违公令。可以师征，不宁守邦。 
-尊酒相逢十载前，君为壮夫我少年。尊酒相逢十载后，
-
+Guenter
