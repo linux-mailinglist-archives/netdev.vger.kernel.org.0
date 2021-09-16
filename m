@@ -2,73 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56CA240D397
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 09:08:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 351D440D391
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 09:03:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234653AbhIPHJ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 03:09:29 -0400
-Received: from mail.alarsen.net ([144.76.18.233]:52260 "EHLO mail.alarsen.net"
+        id S234642AbhIPHFK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 03:05:10 -0400
+Received: from comms.puri.sm ([159.203.221.185]:44780 "EHLO comms.puri.sm"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232254AbhIPHJ1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Sep 2021 03:09:27 -0400
-X-Greylist: delayed 345 seconds by postgrey-1.27 at vger.kernel.org; Thu, 16 Sep 2021 03:09:25 EDT
-Received: from oscar.alarsen.net (unknown [IPv6:fd8b:531:bccf:96:39a7:83c1:5247:58d7])
-        by joe.alarsen.net (Postfix) with ESMTPS id AAC7A180255;
-        Thu, 16 Sep 2021 09:02:17 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alarsen.net; s=joe;
-        t=1631775737; bh=oaWiy3941asGmQdU0t8Spdb3xrM4VKJq8AFtrBfhgJw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FA8bIvnmYzDGl1DiFArlpFrsxGozZYdTiPu3FAjfQ8BBaJL01aFd1YVLlrzsz8TEn
-         dv+GKlWr7ihbAGrWebwbn410wk8qOwdKRBK7xP0k6mB2I0HXtTuPbJCfnbgNIZytC4
-         jPDPqG0ytTKEtbkfS0IX9JQSPfWvwSGyORQqGtaA=
-Received: from oscar.localnet (localhost [IPv6:::1])
-        by oscar.alarsen.net (Postfix) with ESMTP id 9AAD227C050D;
-        Thu, 16 Sep 2021 09:02:17 +0200 (CEST)
-From:   Anders Larsen <al@alarsen.net>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
+        id S234539AbhIPHFH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Sep 2021 03:05:07 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by comms.puri.sm (Postfix) with ESMTP id 0EA49E014D;
+        Thu, 16 Sep 2021 00:03:17 -0700 (PDT)
+Received: from comms.puri.sm ([127.0.0.1])
+        by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id IV5lmIVpzozF; Thu, 16 Sep 2021 00:03:16 -0700 (PDT)
+From:   Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>
+To:     netdev@vger.kernel.org, Marek Vasut <marex@denx.de>
+Cc:     Marek Vasut <marex@denx.de>,
+        Amitkumar Karwar <amit.karwar@redpinesignals.com>,
+        Angus Ainslie <angus@akkea.ca>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        alpha <linux-alpha@vger.kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-parisc@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
-        Sparse Mailing-list <linux-sparse@vger.kernel.org>
-Subject: Re: [PATCH v2 0/4] Introduce and use absolute_pointer macro
-Date:   Thu, 16 Sep 2021 09:02:17 +0200
-Message-ID: <5497691.DvuYhMxLoT@alarsen.net>
-In-Reply-To: <CAHk-=wjynK7SSgTOvW7tfpFZZ0pzo67BsOsqtVHYtvju8F_bng@mail.gmail.com>
-References: <20210915035227.630204-1-linux@roeck-us.net> <CAHk-=whSkMh9mc7+OSBZZvpoEEJmS6qY7kX3qixEXTLKGc=wgw@mail.gmail.com> <CAHk-=wjynK7SSgTOvW7tfpFZZ0pzo67BsOsqtVHYtvju8F_bng@mail.gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+        Kalle Valo <kvalo@codeaurora.org>,
+        Karun Eagalapati <karun256@gmail.com>,
+        Martin Fuzzey <martin.fuzzey@flowbird.group>,
+        Martin Kepplinger <martink@posteo.de>,
+        Prameela Rani Garnepudi <prameela.j04cs@gmail.com>,
+        Siva Rebbagondla <siva8118@gmail.com>, stable@vger.kernel.org
+Subject: Re: [PATCH] rsi: Fix module dev_oper_mode parameter description
+Date:   Thu, 16 Sep 2021 09:03:08 +0200
+Message-ID: <5957470.R6RXr1ZQNe@pliszka>
+In-Reply-To: <20210915080841.73938-1-marex@denx.de>
+References: <20210915080841.73938-1-marex@denx.de>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wednesday, 2021-09-15 23:19 Linus Torvalds wrote:
-> Ok, I didn't love any of the patches I saw for the qnx4 problem, so I
-> silenced that warning with a new patch of my own. Like the sparc64
-> case, the fix is to describe more extensively to the compiler what the
-> code is actually doing.
+On =C5=9Broda, 15 wrze=C5=9Bnia 2021 10:08:41 CEST Marek Vasut wrote:
+> +#define DEV_OPMODE_PARAM_DESC		\
+> +	__stringify(DEV_OPMODE_WIFI_ALONE)	"[Wi-Fi alone], "	\
+> +	__stringify(DEV_OPMODE_BT_ALONE)	"[BT classic alone], "	\
+> +	__stringify(DEV_OPMODE_BT_LE_ALONE)	"[BT LE], "	=09
+\
+> +	__stringify(DEV_OPMODE_BT_DUAL)		"[BT Dual], "	=09
+\
+> +	__stringify(DEV_OPMODE_STA_BT)		"[Wi-Fi STA + BT=20
+classic], " \
+> +	__stringify(DEV_OPMODE_STA_BT_LE)	"[Wi-Fi STA + BT LE], "	\
+> +	__stringify(DEV_OPMODE_STA_BT_DUAL)	"[Wi-Fi STA + BT=20
+classic + BT LE], " \
+> +	__stringify(DEV_OPMODE_AP_BT)		"[AP + BT classic], "=09
+\
+> +	__stringify(DEV_OPMODE_AP_BT_DUAL)	"[AP + BT classic + BT LE]"
 
-thanks, looks good to me, too!
+There's still some inconsistency in mode naming - how about:=20
 
-> Looking at the qnx4 code-base history, I don't think it has gotten any
-> actual development outside of cleanups in the git history timeframe,
-> which makes me suspect nobody uses this code.
-> 
-> But hey, maybe it just works so well for the very specialized user base ...
+=2D Wi-Fi STA
+=2D BT classic
+=2D BT LE
+=2D BT classic + BT LE
+=2D Wi-Fi STA + BT classic
+=2D Wi-Fi STA + BT LE
+=2D Wi-Fi STA + BT classic + BT LE
+=2D Wi-Fi AP + BT classic
+=2D Wi-Fi AP + BT classic + BT LE
 
-it's actually the latter (although I guess the user base is shrinking)
+"alone" could be added to the first three modes (you missed it in BT LE).
 
-Cheers
-Anders
-
+Cheers,
+Sebastian
 
 
