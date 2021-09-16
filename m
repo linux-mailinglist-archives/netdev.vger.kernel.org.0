@@ -2,96 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99C5340D870
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 13:22:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECB5140D874
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 13:22:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238036AbhIPLXH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 07:23:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60666 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237538AbhIPLXG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 07:23:06 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35D64C061574;
-        Thu, 16 Sep 2021 04:21:46 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id k4so17095717lfj.7;
-        Thu, 16 Sep 2021 04:21:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wDLR99OSOvM6KNDG/1C/l2KjuCZ0rHPNIZ2eSIT1O9s=;
-        b=JlbJfqfV7CFnbvr6e2bh7h8ilYZnH/NDcO6pB1JnTDyXp47ju5Uvks0o+vuAG/P5AQ
-         R5ByurJRPP9V0eahCWvEkhk9H4yI29JL25lNEWrDc+hbnR0pqaxYEOR+y5+FFeefTOCA
-         E4YV+43/Ecxt6e3UUmHvXAjnHcBiJug4BPTrFCoM1PbxfDDJfAoNc5XwvwA2eC7dBHi7
-         SnOb3ghN3Y3+UR0AczDfIO1QhEUnmfSbiLeEZdvNze7EztUNe94yS4H8/Z/6TUOOjv5w
-         LNSOE47E1YFeQuRVlDG+2SY2OOTRX2c1Lze1AtsG4Cw030rfZ5dToVUziuYZGHTQefR6
-         wt1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wDLR99OSOvM6KNDG/1C/l2KjuCZ0rHPNIZ2eSIT1O9s=;
-        b=vBKxk+gKaPCaO78vgcs6/8NxKrLNZk0LzAVIfz1+RdqrRmaYI5roa2VMpk7Rel0U2d
-         FPBSMJtLHUTsdagjOfoHU7nrtE+0M/gGTn1Hb39prrFOlzZ2cVnxJYho3W/LPHqFrf02
-         hnGDBehgfXOJV1u40f8OhK9JLC0iWbvX3zJ/EUy6S6gkoMhMUAiaAkPj2vUCA+0dP7Pr
-         d1MZtxovOp0cOZiQobeXYCsR0wF3Nxd3PHHNU4hcw4Yay2RwJvjGAkmelsC2cYQ8bgdm
-         S5i/dFJE81240VJBxuDgS+y1E+BmV+35K6o2V2EimxBWTY1owH+BVvIkYsNqvg2dcugz
-         KuFw==
-X-Gm-Message-State: AOAM533t64F8/fQJT8p1JazGVKWCKEt4mF3XnCz9Jfek0idIRvBsTD0P
-        xmyk0Ux3LI3OTgmXNt0I5OkLQ8YXD0iP7o+1RIk=
-X-Google-Smtp-Source: ABdhPJyFx6upj60lPvi4jHawht0NQ+ZagUGFLSGRPDKJ7pQQYo3Mx7byy+gn2vsbOPl2hf+tIMLWEa01WGak4AdD7LU=
-X-Received: by 2002:a05:6512:450:: with SMTP id y16mr3603749lfk.200.1631791304159;
- Thu, 16 Sep 2021 04:21:44 -0700 (PDT)
+        id S237588AbhIPLXr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 07:23:47 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:33086 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235650AbhIPLXq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 07:23:46 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 18GBLvRN072416;
+        Thu, 16 Sep 2021 06:21:58 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1631791318;
+        bh=loyLdB1v5vUHIjEAh9kEXRTLBkdeLjMQwiy6qnyLWbk=;
+        h=From:To:CC:Subject:Date;
+        b=k30se4MwmAsqGZMdtXmRWPETKgNKMf8Mp06nzefr2D14KYzSycfFUU5zlWGNri28e
+         y7O5aMlslYSzV06wWD8+7BvcS24p+1GGh9ixAwjmg3NHk1tGeMUlt/zpDKthCzypOH
+         8NpZVJbg1slVtHbNLIjFAqCJ5YrGFb48sKANZdcE=
+Received: from DLEE104.ent.ti.com (dlee104.ent.ti.com [157.170.170.34])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 18GBLvlJ017550
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 16 Sep 2021 06:21:57 -0500
+Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE104.ent.ti.com
+ (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 16
+ Sep 2021 06:21:57 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE108.ent.ti.com
+ (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Thu, 16 Sep 2021 06:21:57 -0500
+Received: from gsaswath-HP-ProBook-640-G5.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 18GBLrV2074899;
+        Thu, 16 Sep 2021 06:21:53 -0500
+From:   Aswath Govindraju <a-govindraju@ti.com>
+CC:     Lokesh Vutla <lokeshvutla@ti.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Aswath Govindraju <a-govindraju@ti.com>,
+        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matt Kline <matt@bitbashing.io>, <linux-can@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH] can: m_can: m_can_platform: Fix the base address in iomap_write_fifo()
+Date:   Thu, 16 Sep 2021 16:51:51 +0530
+Message-ID: <20210916112151.26494-1-a-govindraju@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-References: <20210916105122.12523-1-wangxiang@cdjrlc.com>
-In-Reply-To: <20210916105122.12523-1-wangxiang@cdjrlc.com>
-From:   Bongsu Jeon <bongsu.jeon2@gmail.com>
-Date:   Thu, 16 Sep 2021 20:21:32 +0900
-Message-ID: <CACwDmQA+wzo06R1kEB-rcz=Td+egF+Kd8+mh46NHnXHK1sOh7w@mail.gmail.com>
-Subject: Re: [PATCH] selftests: nci: fix grammatical errors
-To:     Xiang wangx <wangxiang@cdjrlc.com>
-Cc:     shuah@kernel.org, Bongsu Jeon <bongsu.jeon@samsung.com>,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Actually I asked to fix grammatical errors in the subject.
-  For example => selftests: nci: replace unsigned int with int
+The write into fifo must be performed with an offset from the message ram
+base address. Therefore, fix the base address to mram_base.
 
- And please change the log in more detail and  put a period at the end
-of the log.
- For example => Should not use comparison of unsigned expressions < 0.
+Fixes: e39381770ec9 ("can: m_can: Disable IRQs on FIFO bus errors")
+Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
+---
+ drivers/net/can/m_can/m_can_platform.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-In addition to that, please send patch version 2 with changelog.
- For example=> [PATCH v2 net] ~~~~.
+diff --git a/drivers/net/can/m_can/m_can_platform.c b/drivers/net/can/m_can/m_can_platform.c
+index 308d4f2fff00..08eac03ebf2a 100644
+--- a/drivers/net/can/m_can/m_can_platform.c
++++ b/drivers/net/can/m_can/m_can_platform.c
+@@ -52,7 +52,7 @@ static int iomap_write_fifo(struct m_can_classdev *cdev, int offset,
+ {
+ 	struct m_can_plat_priv *priv = cdev_to_priv(cdev);
+ 
+-	iowrite32_rep(priv->base + offset, val, val_count);
++	iowrite32_rep(priv->mram_base + offset, val, val_count);
+ 
+ 	return 0;
+ }
+-- 
+2.17.1
 
-
-On Thu, Sep 16, 2021 at 7:53 PM Xiang wangx <wangxiang@cdjrlc.com> wrote:
->
-> Should not use unsigned expression compared with zero
->
-> Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
-> ---
->  tools/testing/selftests/nci/nci_dev.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/tools/testing/selftests/nci/nci_dev.c b/tools/testing/selftests/nci/nci_dev.c
-> index e1bf55dabdf6..162c41e9bcae 100644
-> --- a/tools/testing/selftests/nci/nci_dev.c
-> +++ b/tools/testing/selftests/nci/nci_dev.c
-> @@ -746,7 +746,7 @@ int read_write_nci_cmd(int nfc_sock, int virtual_fd, const __u8 *cmd, __u32 cmd_
->                        const __u8 *rsp, __u32 rsp_len)
->  {
->         char buf[256];
-> -       unsigned int len;
-> +       int len;
->
->         send(nfc_sock, &cmd[3], cmd_len - 3, 0);
->         len = read(virtual_fd, buf, cmd_len);
-> --
-> 2.20.1
->
