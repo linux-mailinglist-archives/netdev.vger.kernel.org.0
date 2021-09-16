@@ -2,88 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4498140DED4
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 17:59:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69FF440DF38
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 18:07:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240401AbhIPQAp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 12:00:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41568 "EHLO
+        id S232094AbhIPQHo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 12:07:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240084AbhIPQAo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 12:00:44 -0400
-Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6424C061574;
-        Thu, 16 Sep 2021 08:59:23 -0700 (PDT)
-Received: by mail-oi1-x22b.google.com with SMTP id r26so9700517oij.2;
-        Thu, 16 Sep 2021 08:59:23 -0700 (PDT)
+        with ESMTP id S235425AbhIPQGa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 12:06:30 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46340C0613E2
+        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 09:04:58 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id b64so8052560qkg.0
+        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 09:04:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
-         :cc;
-        bh=zfRiOmblNlYEJVb2A4IXa0n4chJWwdIG0Ry3RYirmas=;
-        b=Z8TcOFH8+jsKjyorX1zRbIbtVMQDN9W8CN3d72SAkXmuM9O2Nj8sExxt0lxuciJkRI
-         X5ReL+BNKdQzwb51hrsQKbAbvbksfVLWbgKkNPSWYeTnw2pJQXXWVsXqaCS/nZg+LLvA
-         lao5fMfxaXdtU0kxnvI6vqPX84VhzGzg3vyLgajYNUnD8ZtX43USJTbkqQ/KdddejM6h
-         cdG4yJON2atRQ7eyCKofFOjl0G7TJ6wbaq+RRcSGXO3En5xrzLR/7KiDaIssUisv9VSp
-         ZC29cZjf04SzjbGC7TfJM+W9ALMySzW3VGwP6m4E4lo2PiUNACqRLvTnyk8tzpuimQrD
-         uNhg==
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=8ylsrelrj9dzGtLLbA8rlCW+wU/3NIM9fySU/cZyB9U=;
+        b=GxmAsYjJSWBlzdbI9lnCkNfmnxaTpT/swCcB7swrX4rDuICQfcZMTJdJLtU/tmYdKy
+         5D+jIXj9JO0F97bIvA6muyvsuLlStw/cI3d30wlW8PYFCSbIrNdrWSXRgqbgL96OeTbT
+         R2eGt1lhRy/vxsu8mQtcJALdgcEQVid+8nstKqVzad6i5jieAs94IoJrEeOismzqfBhe
+         3zBiTQHaf3hlNIsvx0+m3Mk4tL/hIxPPEBLQrjbquJNcFQg1mHDYSTeSoSPOSc908s8t
+         X8EkGV7hppW1RJEhiRR5GiyW32MwQf3wp6g8pNq9Xw3joYlUCnN5yZampnNP2CCGktrI
+         0Izg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
-         :message-id:subject:to:cc;
-        bh=zfRiOmblNlYEJVb2A4IXa0n4chJWwdIG0Ry3RYirmas=;
-        b=U8SuYkmZlcyf1xzcN57DWnRkhJBzjHT5HOrQEPtwzKweLtvuR4RauNOgjyjObaQIhb
-         3wRrxn3CkRwilCQ4+FPIse33h/tInfZEEjknIm1/F/v4s8/qbGE3DLIlNDRCKdZ/5PJN
-         QBiL1ihoY52Kqr5wgoywGU6G+3OH19FZFICgFAW5ZBO5AqUatHTPy9ExfkuwnvEFwj7W
-         S7xs7anY6nQikdpGR7xIz277Rs80vPyUa1gxNvEwUSMGs6veaRQW8k/bmGpDU3Sp9KdK
-         HvOdTDfBT1+/cCxS+qJclTpb0Bai0PxclaHbYQe6E/K8GObViLYOqc6C2yygfmlb5wa6
-         Iblw==
-X-Gm-Message-State: AOAM530vn8G7/TvzzEZUjknglkfB3FPKJkxvGS5y6BHxk46yMeLZTO82
-        kNXTMs6t1jWhUDAvGPaEvvEroimiBp1T9Rt7U/qGzoLB
-X-Google-Smtp-Source: ABdhPJw9UcNcXehzFHCHHEjf5+51jtB/jzfWStW3qqGBXxSjjthxkLBoooDPFw4yHMgQN/d/fVm/mpZXlMsqFU05eT8=
-X-Received: by 2002:a05:6808:1787:: with SMTP id bg7mr9918512oib.39.1631807963209;
- Thu, 16 Sep 2021 08:59:23 -0700 (PDT)
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=8ylsrelrj9dzGtLLbA8rlCW+wU/3NIM9fySU/cZyB9U=;
+        b=Ac7F+hzaOBJ+QOCu73BaoKE+1Kga0a48Gx5SqPzrYVe62HBEoRnVOj9oqvYI+bC46m
+         xrtlm/hEoSmn6SXUCLfbB5EnaYBKt/Wg/g6cptSnZbMV7yvPgH0eVfRCkVbWCzqknlsv
+         JSiLsD1D8f7Ujxr0GOpWrBZ37f/fXUtt5OzAxLIUlLdV5S7nG8GbAPLUTZAwmLOhwxAN
+         mf6/7TT0yjKIAwcCzWLZhFQME8L3Z5lt38VHbtvAuAl0/n3B7QL/7AtCvfDCg54Xr1jp
+         hdBDOcEtYjzlzhC6UcWHWf/FYL0KYtwXS9G5HwWo0WD3xVEHKgCI5Zb3W9hWSglTuL1b
+         SQFw==
+X-Gm-Message-State: AOAM530oD5+Nlv6OtZ/UIwk8g7HZbJTkckFVzEGeN66gR6UN+zF97Gjm
+        kkj0VjDndpWsQUrDEIZq57aBwvZZrXYHFE8pPcA=
+X-Google-Smtp-Source: ABdhPJy8ZqI+6yf/Kw/SkzVD3Hkm392JhmPJQIizNrXk8wolLo+Rs+tF4CcrsDh0P8VasvSnQSurLiShZPg6iqri2OU=
+X-Received: by 2002:a25:83cc:: with SMTP id v12mr8044527ybm.435.1631808297163;
+ Thu, 16 Sep 2021 09:04:57 -0700 (PDT)
 MIME-Version: 1.0
-Received: by 2002:a9d:609e:0:0:0:0:0 with HTTP; Thu, 16 Sep 2021 08:59:22
- -0700 (PDT)
-In-Reply-To: <20210916122443.GD20414@breakpoint.cc>
-References: <20210811084908.14744-10-pablo@netfilter.org> <20210915095116.14686-1-youling257@gmail.com>
- <20210915095650.GG25110@breakpoint.cc> <CAOzgRdb_Agb=vNcAc=TDjyB_vSjB8Jua_TPtWYcXZF0G3+pRAg@mail.gmail.com>
- <20210915143415.GA20414@breakpoint.cc> <CAOzgRdZKjg8iEdjEYQ07ENBvwtFPAqzESqrKJEppcNTBVw-RyQ@mail.gmail.com>
- <20210916122443.GD20414@breakpoint.cc>
-From:   youling 257 <youling257@gmail.com>
-Date:   Thu, 16 Sep 2021 23:59:22 +0800
-Message-ID: <CAOzgRdbGuuvBdJRzGA_gLE3jxgey83xv6RT_rX+bDysDv3pt8Q@mail.gmail.com>
-Subject: Re: [PATCH net-next 09/10] netfilter: x_tables: never register tables
- by default
-To:     Florian Westphal <fw@strlen.de>
-Cc:     pablo@netfilter.org, netfilter-devel@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Received: by 2002:a25:10a:0:0:0:0:0 with HTTP; Thu, 16 Sep 2021 09:04:56 -0700 (PDT)
+Reply-To: lionellawson52@gmail.com
+From:   lionel lawson <richardclerk00@gmail.com>
+Date:   Thu, 16 Sep 2021 17:04:56 +0100
+Message-ID: <CAGMpgNYebwcQcVjdbTfxXdSGjz3uGR=MK-G6ZzPX_-0b-eL3-g@mail.gmail.com>
+Subject: Goedendag
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-test this patch can fix kernel panic.
+-- 
+Er is vorige week ergens een e-mail naar u verzonden met de
+verwachting dat u een
+mail van u terugsturen, maar tot mijn verbazing nam u nooit de moeite
+om te antwoorden. Welwillend
+antwoord voor verdere uitleg.
 
-2021-09-16 20:24 GMT+08:00, Florian Westphal <fw@strlen.de>:
-> youling 257 <youling257@gmail.com> wrote:
->> kernel 5.15rc1.
->
-> Thanks, this is due to a leftover __init annotation.
-> This patch should fix the bug:
->
-> diff --git a/net/ipv4/netfilter/iptable_raw.c
-> b/net/ipv4/netfilter/iptable_raw.c
-> --- a/net/ipv4/netfilter/iptable_raw.c
-> +++ b/net/ipv4/netfilter/iptable_raw.c
-> @@ -42,7 +42,7 @@ iptable_raw_hook(void *priv, struct sk_buff *skb,
->
->  static struct nf_hook_ops *rawtable_ops __read_mostly;
->
-> -static int __net_init iptable_raw_table_init(struct net *net)
-> +static int iptable_raw_table_init(struct net *net)
->  {
->  	struct ipt_replace *repl;
->  	const struct xt_table *table = &packet_raw;
->
+Hoogachtend,
+Lionel Lawson.
