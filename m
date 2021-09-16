@@ -2,146 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70F4940E96B
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 20:02:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD0A540E826
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 20:00:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245753AbhIPRyE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 13:54:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37782 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357110AbhIPRvZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 13:51:25 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA944C09B119
-        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 09:25:57 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id c8so20957142lfi.3
-        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 09:25:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+MrqPwjGprB21xOrKUeLYED8somKhoDI07GyEYlbbo4=;
-        b=giK/CoBDhVKoZODX7QaMWenK7M0Ef7/VMrMC+JpDOGq7hzKKMIt4+9kYx+W6zhvGu1
-         ySoWjCQyGMBQPbPsmJ+MdLSpu5kCyHc8//rajgrLTwILPMxsnm4mLr03RxEorH1wc86u
-         czJJF+ua9fGukgNanz1FEl1kMG76Vh0A/SWxI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+MrqPwjGprB21xOrKUeLYED8somKhoDI07GyEYlbbo4=;
-        b=rW4TmM4ojxvoDqZW9wOnU7MnRKq6tRLuB4P9O5mOlVkq4o7qvKm9ZcbZx6GIgPuzVQ
-         XhkSsML+1GzhsZ9h4Ejz6mjvxFZslNFylr52PPFWZ7PeUTPS7V1MKZ2ITFZhOEL0/p8L
-         1OEpX48qYgmLI/TfdxiT5hLWKegeg8fLFHIBhvgNGLlIpCpyy3f3XDxLfG1rlsHQIOe8
-         pfOcGOghE7j8v7Br2pIKhUXnd+u+rZDkEfxdSUNXYfliQSPOj1V/Z8Jt1XT+R2pVMYLr
-         V2U5RIpkTswOy+URaqVKuUncDpTG1yQafg+FhjbP/CR6DJe5FHqhTP9HlMCbzEK1TU7U
-         ZtFA==
-X-Gm-Message-State: AOAM533qUAfd82et2f1maV/b2PW61r0FLcKaot0qs0/8RVB3YLXkTiL5
-        NBdYeJ0E+oFP/hnR0k4fIJp6YrsRDtuhP4MW
-X-Google-Smtp-Source: ABdhPJxd1HcTo45vMdNXTX3IvQa9mXCH7yU8jrICaRTE4d+2l4jtGbY+tETUdChKTDc22gdDWkuwCg==
-X-Received: by 2002:a2e:b8cf:: with SMTP id s15mr5500954ljp.141.1631809555936;
-        Thu, 16 Sep 2021 09:25:55 -0700 (PDT)
-Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com. [209.85.167.43])
-        by smtp.gmail.com with ESMTPSA id 190sm94439ljf.50.2021.09.16.09.25.54
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Sep 2021 09:25:55 -0700 (PDT)
-Received: by mail-lf1-f43.google.com with SMTP id x27so20832292lfu.5
-        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 09:25:54 -0700 (PDT)
-X-Received: by 2002:a2e:8185:: with SMTP id e5mr5452535ljg.31.1631809554490;
- Thu, 16 Sep 2021 09:25:54 -0700 (PDT)
+        id S1350456AbhIPRn6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 13:43:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57070 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1355815AbhIPRmJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Sep 2021 13:42:09 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C0A2F6135D;
+        Thu, 16 Sep 2021 16:55:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1631811341;
+        bh=oet03B0tk8Jg1WKB9/4I0mmwl+aXd06NhAi5DrXnSfo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=B6OXBpmV/CUzXULybemleifI6HafjBtdAj4UraOYq3Pazde6rRjtlyWtRA9iQW4uj
+         poAf3qoLloG1uEhnS0bgRCWS+OEmgCAr+HztUF8vlsWpTEtFcRyrCmuitRqhwOoixP
+         vmSum37sMNXPdtLkqBMsDF1USGsELUOOOmf2WxQRPJ3zpCZ6ALP1Fyf2fYXilmGPB8
+         RZswsVM7rpXWZBLx+Qb//+RYsPetUS/k5W1NW4VqaZBb08y80Ffdkc7x4XDr/fPN+/
+         zhxPGBf44qI8+EElKC7+vel1jsAycr/6hq0YMGX30N+5DQHBK4wzGcDBJnf5+FOuPK
+         5ukY8EdA+Mnyg==
+Date:   Thu, 16 Sep 2021 09:55:39 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, davem@davemloft.net, ast@kernel.org,
+        daniel@iogearbox.net, shayagr@amazon.com, john.fastabend@gmail.com,
+        dsahern@kernel.org, brouer@redhat.com, echaudro@redhat.com,
+        jasowang@redhat.com, alexander.duyck@gmail.com, saeed@kernel.org,
+        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
+        tirthendu.sarkar@intel.com, toke@redhat.com
+Subject: Re: [PATCH v14 bpf-next 00/18] mvneta: introduce XDP multi-buffer
+ support
+Message-ID: <20210916095539.4696ae27@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <cover.1631289870.git.lorenzo@kernel.org>
+References: <cover.1631289870.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-References: <20210915035227.630204-1-linux@roeck-us.net> <CAHk-=whSkMh9mc7+OSBZZvpoEEJmS6qY7kX3qixEXTLKGc=wgw@mail.gmail.com>
- <CAHk-=wjynK7SSgTOvW7tfpFZZ0pzo67BsOsqtVHYtvju8F_bng@mail.gmail.com> <5497691.DvuYhMxLoT@alarsen.net>
-In-Reply-To: <5497691.DvuYhMxLoT@alarsen.net>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Thu, 16 Sep 2021 09:25:38 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wh84ks6FN2fBWrGZNKNhOmTZL-r5xZG7gYZ==jESG2GgA@mail.gmail.com>
-Message-ID: <CAHk-=wh84ks6FN2fBWrGZNKNhOmTZL-r5xZG7gYZ==jESG2GgA@mail.gmail.com>
-Subject: Re: [PATCH v2 0/4] Introduce and use absolute_pointer macro
-To:     Anders Larsen <al@alarsen.net>
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        alpha <linux-alpha@vger.kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-parisc@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
-        Sparse Mailing-list <linux-sparse@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 16, 2021 at 12:02 AM Anders Larsen <al@alarsen.net> wrote:
->
-> On Wednesday, 2021-09-15 23:19 Linus Torvalds wrote:
-> >
-> > But hey, maybe it just works so well for the very specialized user base ...
->
-> it's actually the latter (although I guess the user base is shrinking)
+On Fri, 10 Sep 2021 18:14:06 +0200 Lorenzo Bianconi wrote:
+> The two following ebpf helpers (and related selftests) has been introduced:
+> - bpf_xdp_adjust_data:
+>   Move xdp_md->data and xdp_md->data_end pointers in subsequent fragments
+>   according to the offset provided by the ebpf program. This helper can be
+>   used to read/write values in frame payload.
+> - bpf_xdp_get_buff_len:
+>   Return the total frame size (linear + paged parts)
 
-Hey, so if it's actively used, maybe you can answer a question or two
-that I have just because I looked at the code..
+> More info about the main idea behind this approach can be found here [1][2].
 
-In particular, the inode number calculation is odd. Is there a reason
-for the "-1"? Because iboth the link case and the direct inode case
-have it, but t's a _different_ "-1":
+Is there much critique of the skb helpers we have? My intuition would
+be to follow a similar paradigm from the API perspective. It may seem
+trivial to us to switch between the two but "normal" users could easily
+be confused.
 
-For the "inode_entry", it does
+By skb paradigm I mean skb_pull_data() and bpf_skb_load/store_bytes().
 
-                ino = blknum * QNX4_INODES_PER_BLOCK + ix - 1;
+Alternatively how about we produce a variation on skb_header_pointer()
+(use on-stack buffer or direct access if the entire region is in one
+frag).
 
-but it's worth noting that "ix" is zero-based (index within the
-block), so this kind of oddly removes one from a zero-based thing, and
-the 'ino' for the very first entry ends up being -1.
+bpf_xdp_adjust_data() seems to add cost to helpers and TBH I'm not sure
+how practical it would be to applications. My understanding is that the
+application is not supposed to make assumptions about the fragment
+geometry, meaning data can be split at any point. Parsing data
+arbitrarily split into buffers is hard if pull() is not an option, let
+alone making such parsing provably correct.
 
-Of course, it's possible that the first entry is always empty, but it
-does seem a bit odd.
+Won't applications end up building something like skb_header_pointer()
+based on bpf_xdp_adjust_data(), anyway? In which case why don't we
+provide them what they need?
 
-For the "link_info" case, it does
+say: 
 
-            ino = ( le32_to_cpu(de->link.dl_inode_blk) - 1 ) *
-                    QNX4_INODES_PER_BLOCK +
-                    de->link.dl_inode_ndx;
+void *xdp_mb_pointer(struct xdp_buff *xdp_md, u32 flags, 
+                     u32 offset, u32 len, void *stack_buf)
 
-so now it takes the _block_ index, and does that "-1" on it, and then
-multiplies it by the "entries per block" number, and adds the index.
+flags and offset can be squashed into one u64 as needed. Helper returns
+pointer to packet data, either real one or stack_buf. Verifier has to
+be taught that the return value is NULL or a pointer which is safe with
+offsets up to @len.
 
-So now if both are zero, the inode number is -8, not -1.
+If the reason for access is write we'd also need:
 
-But all of this matches what the *lookup* code does. It's very odd, though.
+void *xdp_mb_pointer_flush(struct xdp_buff *xdp_md, u32 flags, 
+                           u32 offset, u32 len, void *stack_buf)
 
-But to make it stranger, then in "qnx4_iget()", the calculations all
-makes sense. There it just does "take the inode number, and look up
-block and index into the block using it".
+Same inputs, if stack buffer was used it does write back, otherwise nop.
 
-Very strange and confusing. Because it means that iget() seems to look
-up a *different* inode entry than "lookup" and "readdir" actually look
-at.
+Sorry for the longish email if I'm missing something obvious and/or
+discussed earlier.
 
-I must be missing something. I obviously didn't touch any of this
-logic, I was just doing the "make the type system clearer for the
-compiler".
 
-Also, I have to say, since I was looking at compiler output, the
-calculations in readdir() are made much worse by the fact that the
-dir->pos is a "loff_t". That's signed. And then you use "%" to get the
-index within a block. Using '%' instead of bitops is fairly
-equivalent, but only for
-
- (a) unsigned types
-
- (b) when the divisor is a compile-time power-of-2
-
-In the qnx4 case, (b) is true, but (a) is not.
-
-Not a big deal. But usually, I tell people to avoid '% ENTRIES',
-because it really has very different behavior from '& MASK' for signed
-numbers.
-
-                  Linus
+The other thing I wanted to double check - was the decision on program
+compatibility made? Is a new program type an option? It'd be extremely
+useful operationally to be able to depend on kernel enforcement.
