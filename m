@@ -2,53 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5965E40DC6A
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 16:07:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14F4C40DC7D
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 16:11:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238379AbhIPOJP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 10:09:15 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:44262 "EHLO vps0.lunn.ch"
+        id S238289AbhIPOMh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 10:12:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52144 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238473AbhIPOJL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Sep 2021 10:09:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Y7ONHrozJTI92ehosxlMrkJMK5/1S9Q891cAYJYj7FA=; b=UzQkG8YtabapUi4fOmKFVhF98Z
-        Vl8HemrwSOs3WSxuHeeydVtxk1uTWw0WGLSBKzqBm5cbs8HlNEgw1qTXTA1gXMpfDP+JPYIBzZ1RQ
-        xGSKc5AURP6ZlcLBlM2eE4qjA6lIhi2JfRICMZOblEI/d+FeiAQR1ZuhftqZ+bioCBqw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mQs3J-006uwM-Rq; Thu, 16 Sep 2021 16:07:49 +0200
-Date:   Thu, 16 Sep 2021 16:07:49 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Asmaa Mnebhi <asmaa@nvidia.com>
-Cc:     andy.shevchenko@gmail.com, linux-gpio@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, kuba@kernel.org,
-        linus.walleij@linaro.org, bgolaszewski@baylibre.com,
-        davem@davemloft.net, rjw@rjwysocki.net, davthompson@nvidia.com
-Subject: Re: [PATCH v1 2/2] net: mellanox: mlxbf_gige: Replace non-standard
- interrupt handling
-Message-ID: <YUNPtcDs6yeSo40W@lunn.ch>
-References: <20210915222847.10239-1-asmaa@nvidia.com>
- <20210915222847.10239-3-asmaa@nvidia.com>
+        id S238063AbhIPOMh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Sep 2021 10:12:37 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6D8F361056;
+        Thu, 16 Sep 2021 14:11:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1631801476;
+        bh=zRKM9ywgNPfShQPgTqpbqd7+yg4RwBKPi0Wl+h62Wsg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=aUk3hETcCCNBuwI9m8JCpw5R+ZEcEwCk4ihMMajLHCccmwpXzpj/9O0RkW0TxnF2J
+         Q3ENSDNsHEpfqE4pGy8lEmiGAs32rm1w+DGOWxWGDHNzrS6dRMEKz6/GOJ/2mbv/yg
+         yco8whsKWIKc1LNEdquLtI6H5r9geLJ6ned10Tv0yQujWTKMauWdeZT3xyJmEmdRst
+         6/8Zhq/eWxkdMdZEaOTkuETZil83P7RKGEjGwJDmZRLrlv2n2uqx8Z+TXzJRR8FRYM
+         uHWU+nRoDvXKl4NGc6//q8E+pNFMrKpNGiAJ7Qu34SnVJJwds7aDVa5HUAOukk2K3m
+         HcTUjt4kCJsFg==
+Date:   Thu, 16 Sep 2021 07:11:15 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@nvidia.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] devlink: Delete not-used devlink APIs
+Message-ID: <20210916071115.09cfc02a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YUNMAi0Qjj5Dxiiw@unreal>
+References: <a45674a8cb1c1e0133811d95756357b787673e52.1631788678.git.leonro@nvidia.com>
+        <20210916063318.7275cadf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <YUNMAi0Qjj5Dxiiw@unreal>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210915222847.10239-3-asmaa@nvidia.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 15, 2021 at 06:28:47PM -0400, Asmaa Mnebhi wrote:
-> Since the GPIO driver (gpio-mlxbf2.c) supports interrupt handling,
-> replace the custom routine with simple IRQ request.
+On Thu, 16 Sep 2021 16:52:02 +0300 Leon Romanovsky wrote:
+> > The port_param functions are "symmetric" with the global param 
+> > ones. Removing them makes the API look somewhat incomplete.  
 > 
-> Signed-off-by: Asmaa Mnebhi <asmaa@nvidia.com>
+> There is no value in having "complete" API that no one uses.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Well, for an API which we are hoping to attract vendors to, the
+"completeness" could be useful. If kernel needs to be extended
+some will fall back to their out of tree tools.
 
-    Andrew
+> > Obviously the general guidance is that we shouldn't export 
+> > functions which have no upstream users but that applies to 
+> > meaningful APIs. For all practical purposes this is just a 
+> > sliver of an API, completeness gives nice warm feelings.  
+> 
+> It is misleading, I have much more warm feeling when I see API that is
+> used. Once it will be needed, the next developer will copy/paste it
+> pretty fast.
+> 
+> > Anyway, just curious what made you do this. I wouldn't do it 
+> > myself but neither am I substantially opposed.  
+> 
+> Move of devlink_register() to be last command in the devlink init flow
+> and removal of devlink_*_publish() calls as an outcome of that.
+
+Alrighty:
+
+Acked-by: Jakub Kicinski <kuba@kernel.org>
