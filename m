@@ -2,73 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C838640DBB3
-	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 15:50:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3943440DBBC
+	for <lists+netdev@lfdr.de>; Thu, 16 Sep 2021 15:51:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236381AbhIPNv3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 09:51:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42076 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235923AbhIPNv1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Sep 2021 09:51:27 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id ECB6261212;
-        Thu, 16 Sep 2021 13:50:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631800207;
-        bh=f0RCDBkeuLybOsenKyyTG2LmY1uaDHsvLuk75cwzZFk=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=DXplfQpQyy6HGH/TFmeoyEibGlNTnAy2c4gZZVpIhJJsYhTi9CXnMnFakLObljcvf
-         cTzV9tGRHu6X6gZPUXN5/2GrkEVgA4HYc37xd1L+2+ozpqQCTT0bR2kzFjCuQuQz34
-         W+LgtXEbT9G9gP3EReJZpDbUDmIawhoM5bAd4lvgE0AL4qLjbjnEWAnOPxps6QVBmp
-         EESQ7tZB/hQL+lAK30cZB3FPEsAz7ab3l0NPoOcykd9+k+YiGIMARpsEH+iiuO8oEA
-         wzAD5cYMwQjVqGcqATTBWgzB5+ji03aHQSMGD2YxZp0/MZhZqBpeIfJ6B20iekWbYC
-         DA0RSQtaRed+A==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D89B660A9E;
-        Thu, 16 Sep 2021 13:50:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S236477AbhIPNww (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 09:52:52 -0400
+Received: from ssl.serverraum.org ([176.9.125.105]:46143 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236433AbhIPNwv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 09:52:51 -0400
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 1083522239;
+        Thu, 16 Sep 2021 15:51:29 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1631800290;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ORj/1YpuSNDPqULVXqQ2alAAdyZzofgAhRepXbWdap4=;
+        b=QuYcedHldgHD1L5o8D4fTOXCtT8DVtvyyZ8oIAPYfZik1OS7sLMT47IDqEdV97TSTsVnZR
+        thuI+KWf8J9L9tyUQyydchwl1VZwPU0lbJC0wcuMKKIgGvf+MXXUs8kQZhLOlkto8qbfXb
+        t2AtrUaUbrpW7vtwWaV3OI/2AodO9gQ=
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] octeontx2-af: Hardware configuration for inline
- IPsec
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163180020688.23290.16343906865989562587.git-patchwork-notify@kernel.org>
-Date:   Thu, 16 Sep 2021 13:50:06 +0000
-References: <20210916094114.1538752-1-schalla@marvell.com>
-In-Reply-To: <20210916094114.1538752-1-schalla@marvell.com>
-To:     Srujana Challa <schalla@marvell.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        sgoutham@marvell.com, lcherian@marvell.com, gakula@marvell.com,
-        hkelam@marvell.com, jerinj@marvell.com, sbhatta@marvell.com,
-        vvelumuri@marvell.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Thu, 16 Sep 2021 15:51:28 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        netdev@vger.kernel.org, Antoine Tenart <atenart@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Steen Hegelund <steen.hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com, bcm-kernel-feedback-list@broadcom.com
+Subject: Re: [RFC PATCH v2 net-next 0/5] Let phylink manage in-band AN for the
+ PHY
+In-Reply-To: <20210916130908.zubzqs6i6i7kbbol@skbuf>
+References: <20210830155250.4029923-1-vladimir.oltean@nxp.com>
+ <20210830183015.GY22278@shell.armlinux.org.uk>
+ <20210830183623.kxtbohzy4sfdbpsl@skbuf>
+ <20210916130908.zubzqs6i6i7kbbol@skbuf>
+User-Agent: Roundcube Webmail/1.4.11
+Message-ID: <f65348840296deb814f4a39f5146c29d@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (refs/heads/master):
-
-On Thu, 16 Sep 2021 15:11:14 +0530 you wrote:
-> On OcteonTX2/CN10K SoC, the admin function (AF) is the only one
-> with all priviliges to configure HW and alloc resources, PFs and
-> it's VFs have to request AF via mailbox for all their needs.
-> This patch adds new mailbox messages for CPT PFs and VFs to configure
-> HW resources for inline-IPsec.
+Am 2021-09-16 15:09, schrieb Vladimir Oltean:
+> On Mon, Aug 30, 2021 at 09:36:23PM +0300, Vladimir Oltean wrote:
+>> On Mon, Aug 30, 2021 at 07:30:15PM +0100, Russell King (Oracle) wrote:
+>> > Can we postpone this after this merge window please, so I've got time
+>> > to properly review this. Thanks.
+>> 
+>> Please review at your discretion, I've no intention to post a v3 right
+>> now, and to the best of my knowledge, RFC's are not even considered 
+>> for
+>> direct inclusion in the git tree.
 > 
-> Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
-> Signed-off-by: Srujana Challa <schalla@marvell.com>
-> Signed-off-by: Vidya Sagar Velumuri <vvelumuri@marvell.com>
-> 
-> [...]
+> Hello Russell, can you please review these patches if possible? I
+> would like to repost them soon.
 
-Here is the summary with links:
-  - [net-next] octeontx2-af: Hardware configuration for inline IPsec
-    https://git.kernel.org/netdev/net-next/c/4b5a3ab17c6c
+I planned to test this on my board with the AR8031 (and add support 
+there),
+but it seems I won't find time before my vacation, unfortunately.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+-michael
