@@ -2,162 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7310440FAC8
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 16:51:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1AA540FAEF
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 16:58:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231626AbhIQOwl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 10:52:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52658 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238266AbhIQOwe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Sep 2021 10:52:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6C77C60FED;
-        Fri, 17 Sep 2021 14:51:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631890271;
-        bh=w2FcaLZBhWjv4VzM7AXLSn21yNm1APIXPTRFoygpwvI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RcGisOuGH71sY5ZPHJgCIWJ8+iDhKARmTQUE+Z01ofy3DeqEFZdurr5BuN/khpufJ
-         ZbgkoRBhqTlkda333rLGEtPxk+EF2k+4qDKdPyUlzCPFbkkOolZYfSUAS+RLC+XtmX
-         RqunVSrbCl+fAU8O6CznrfXTbevGl3fS+2KIKw262hMNXgg64x5Y4dpN1/TPovul8f
-         E5JAobJfTfb7ga6vyibbqh9dmIGz5MQaHAg09Dxdwge+zW50rmv80jMio/b0iW9QRw
-         huCRGU8absykC7DG2fhMSTtJ5s/zbKMREA25y12f4fOUfL+VDtfOEWGU2JBS46YMAo
-         hILmFTgq1MyzA==
-Date:   Fri, 17 Sep 2021 16:51:06 +0200
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        lorenzo.bianconi@redhat.com, davem@davemloft.net, ast@kernel.org,
-        daniel@iogearbox.net, shayagr@amazon.com, john.fastabend@gmail.com,
-        dsahern@kernel.org, brouer@redhat.com, echaudro@redhat.com,
-        jasowang@redhat.com, alexander.duyck@gmail.com, saeed@kernel.org,
-        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
-        tirthendu.sarkar@intel.com, toke@redhat.com
-Subject: Re: [PATCH v14 bpf-next 00/18] mvneta: introduce XDP multi-buffer
+        id S238987AbhIQO73 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 10:59:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42978 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236034AbhIQO72 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 10:59:28 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 508CDC061764
+        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 07:58:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=rwghMVgjahZVVBvOrycIfyU14EpdySi2pjQ0lErZJm4=; b=QripXe0n1mgrqQVkXeAil0QhUr
+        AAmo++xwtpypFI7pmWQQe3GYhYil+RLf6mpvcCkRfoG7o1olrxEKbaox9J8BfkKcK8sSoVXAzJfCi
+        IDx/dQ3zOM+bwojY18RGJdeEWyUtYGOZUrcDqY+Co2sdVP8eLtv++Wgs1ycG/oY5Sx/kUSVxkLLU3
+        VszT0A9r0yEzpRMg723+80qBH4kiLk2UYngTcW1IsSiVwxptX+jLEFvuCZaRRm4WcEJIxWXq0a2F/
+        zGY3nWuDhj2cZbOmqF5SdF+h67Sj9lh4NUtxe4glIRd9MtmZNJKvMvZgF5d44tWGeDbSbtNuLj1vx
+        tdm8qmdQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:45126)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mRFJU-0007nN-8w; Fri, 17 Sep 2021 15:58:03 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mRFJR-00060T-Iz; Fri, 17 Sep 2021 15:58:01 +0100
+Date:   Fri, 17 Sep 2021 15:58:01 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Marek Beh__n <kabel@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next] net: phy: marvell10g: add downshift tunable
  support
-Message-ID: <YUSrWiWh57Ys7UdB@lore-desk>
-References: <cover.1631289870.git.lorenzo@kernel.org>
- <20210916095539.4696ae27@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Message-ID: <YUSs+efLowuhL09Q@shell.armlinux.org.uk>
+References: <E1mREEN-001yxo-Da@rmk-PC.armlinux.org.uk>
+ <YUSp78o/vfZNFCJw@lunn.ch>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="9zAs7T1175FknEoo"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210916095539.4696ae27@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YUSp78o/vfZNFCJw@lunn.ch>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Sep 17, 2021 at 04:45:03PM +0200, Andrew Lunn wrote:
+> > +static int mv3310_set_downshift(struct phy_device *phydev, u8 ds)
+> > +{
+> > +	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
+> > +	u16 val;
+> > +	int err;
+> > +
+> > +	if (!priv->has_downshift)
+> > +		return -EOPNOTSUPP;
+> > +
+> > +	if (ds == DOWNSHIFT_DEV_DISABLE)
+> > +		return phy_clear_bits_mmd(phydev, MDIO_MMD_PCS, MV_PCS_DSC1,
+> > +					  MV_PCS_DSC1_ENABLE);
+> > +
+> > +	/* FIXME: The default is disabled, so should we disable? */
+> > +	if (ds == DOWNSHIFT_DEV_DEFAULT_COUNT)
+> > +		ds = 2;
+> 
+> Hi Russell
+> 
+> Rather than a FIXME, maybe just document that the hardware default is
+> disabled, which does not make too much sense, so default to 2 attempts?
 
---9zAs7T1175FknEoo
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Sadly, the downshift parameters aren't documented at all in the kernel,
+and one has to dig into the ethtool source to find out what they mean:
 
-> On Fri, 10 Sep 2021 18:14:06 +0200 Lorenzo Bianconi wrote:
-> > The two following ebpf helpers (and related selftests) has been introdu=
-ced:
-> > - bpf_xdp_adjust_data:
-> >   Move xdp_md->data and xdp_md->data_end pointers in subsequent fragmen=
-ts
-> >   according to the offset provided by the ebpf program. This helper can=
- be
-> >   used to read/write values in frame payload.
-> > - bpf_xdp_get_buff_len:
-> >   Return the total frame size (linear + paged parts)
->=20
-> > More info about the main idea behind this approach can be found here [1=
-][2].
->=20
-> Is there much critique of the skb helpers we have? My intuition would
-> be to follow a similar paradigm from the API perspective. It may seem
-> trivial to us to switch between the two but "normal" users could easily
-> be confused.
->=20
-> By skb paradigm I mean skb_pull_data() and bpf_skb_load/store_bytes().
->=20
-> Alternatively how about we produce a variation on skb_header_pointer()
-> (use on-stack buffer or direct access if the entire region is in one
-> frag).
->=20
-> bpf_xdp_adjust_data() seems to add cost to helpers and TBH I'm not sure
-> how practical it would be to applications. My understanding is that the
-> application is not supposed to make assumptions about the fragment
-> geometry, meaning data can be split at any point. Parsing data
-> arbitrarily split into buffers is hard if pull() is not an option, let
-> alone making such parsing provably correct.
->=20
-> Won't applications end up building something like skb_header_pointer()
-> based on bpf_xdp_adjust_data(), anyway? In which case why don't we
-> provide them what they need?
+DOWNSHIFT_DEV_DEFAULT_COUNT -
+	ethtool --set-phy-tunable ethN downshift on
+DOWNSHIFT_DEV_DISABLE -
+	ethtool --set-phy-tunable ethN downshift off
+otherwise:
+	ethtool --set-phy-tunable ethN downshift count N
 
-Please correct me if I am wrong, here you mean in bpf_xdp_adjust_data()
-we are moving the logic to read/write data across fragment boundaries
-to the caller. Right.
-I do not have a clear view about what could be a real use-case for the help=
-er
-(maybe John can help on this), but similar to what you are suggesting, what
-about doing something like bpf_skb_load/store_bytes()?
+This really needs to be documented somewhere in the kernel.
 
-- bpf_xdp_load_bytes(struct xdp_buff *xdp_md, u32 offset, u32 len,
-		     void *data)
-
-- bpf_xdp_store_bytes(struct xdp_buff *xdp_md, u32 offset, u32 len,
-		      void *data)
-
-the helper can take care of reading/writing across fragment boundaries
-and remove any layout info from the caller. The only downside here
-(as for bpf_skb_load/store_bytes()) is we need to copy. But in a
-real application, is it actually an issue? (since we have much less
-pps for xdp multi-buff).
-Moreover I do not know if this solution will requires some verifier
-changes.
-
-@John: can this approach works in your use-case?
-
-Anyway I think we should try to get everyone on the same page here since the
-helper can change according to specific use-case. Since this series is on t=
-he
-agenda for LPC next week, I hope you and others who have an opinion about t=
-his
-will find the time to come and discuss it during the conference :)
-
-Regards,
-Lorenzo
->=20
-> say:=20
->=20
-> void *xdp_mb_pointer(struct xdp_buff *xdp_md, u32 flags,=20
->                      u32 offset, u32 len, void *stack_buf)
->=20
-> flags and offset can be squashed into one u64 as needed. Helper returns
-> pointer to packet data, either real one or stack_buf. Verifier has to
-> be taught that the return value is NULL or a pointer which is safe with
-> offsets up to @len.
->=20
-> If the reason for access is write we'd also need:
->=20
-> void *xdp_mb_pointer_flush(struct xdp_buff *xdp_md, u32 flags,=20
->                            u32 offset, u32 len, void *stack_buf)
->=20
-> Same inputs, if stack buffer was used it does write back, otherwise nop.
->=20
-> Sorry for the longish email if I'm missing something obvious and/or
-> discussed earlier.
->=20
->=20
-> The other thing I wanted to double check - was the decision on program
-> compatibility made? Is a new program type an option? It'd be extremely
-> useful operationally to be able to depend on kernel enforcement.
-
---9zAs7T1175FknEoo
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYUSrVwAKCRA6cBh0uS2t
-rF61AQDmLDR/YEhJelyYt5ru1sfHdYDFeMrAQg0pUkMfQre4cgD9HrfchWKfueHb
-L9Kfn64WQALh9pnAThjpNblMNpJbNwg=
-=qpc4
------END PGP SIGNATURE-----
-
---9zAs7T1175FknEoo--
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
