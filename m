@@ -2,91 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21AEF4100EF
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 23:54:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F305C4100F3
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 23:56:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242904AbhIQVzZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 17:55:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52960 "EHLO
+        id S243808AbhIQV5M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 17:57:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242303AbhIQVzV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 17:55:21 -0400
-Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AB83C061757
-        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 14:53:59 -0700 (PDT)
-Received: by mail-il1-x12f.google.com with SMTP id x2so11745999ila.11
-        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 14:53:59 -0700 (PDT)
+        with ESMTP id S229942AbhIQV5L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 17:57:11 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B46E0C061574;
+        Fri, 17 Sep 2021 14:55:48 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id m26so10457231pff.3;
+        Fri, 17 Sep 2021 14:55:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
+        d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=fWR0esOBVBV64rKinxIgFxJ4wKagR9YhECkqxWxa0Tw=;
-        b=grs8gzHe5cek7z8ddLzkbZFT7aCOxQJODThfS5zh/JoI7HS4l1kwTTu7rDiPM2U1HS
-         50yJla7O7avcIoYd7ryDuwWFWQotD8dMUhzDqWtwm0za2axPDLgCp3WOYQ7XsTUahFBA
-         PmCw/f4CquFNZn9tPYHg/W1yqtFj2NG6e7mNM=
+        bh=zTxc3Wdtc4s3d3QzXi4IrshyvmO03k245cg+J15IPmw=;
+        b=nHw06hflDjXbOig9Rc0UBUMHaco0gAEGCfHq64OT8ZFPc2zXxUE4sHCSBAcgbdwKDM
+         bYIkKO+gBQS/TP9jWya1vAY8c+kaKnjsjtH9MmkAeSRk/x3QPvQs/pUbfSqnL95xTS6g
+         iAiLIou+ixEyMi0E5wFHDVQTIO1ak4d45lNKMslESz49iaUK40a5vB8kseMLK6xkMVGh
+         Pc/B1g5O43vz9pn6HGt4B6GjsXTBZ3Leo1g9cI3r/FZmx++c0mfSxc8IbXMsJnEXJjaD
+         tSI9V77pE8Mpp+Bf9Ym9d3NUwFucB1ysyIYVHWKk78Xhg4m4ZCbDSi95GHcb0xE3Vf2l
+         wGdg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=fWR0esOBVBV64rKinxIgFxJ4wKagR9YhECkqxWxa0Tw=;
-        b=U/yWOFgeVl8XA6E7fskxyiMYbN9CvYzcmg+txlcoF9BltqWsj7fl/XMd5M+Fx0KXDL
-         fWTyC/m3HFOHhNi2k99tIKlp6d3ERG7xn2Rhv4bzihwmURTg/GV5OoZ0SvwwrvGMM1jO
-         tP/G5PkvpFL9b0aA7i0xn10TY0TspRuqhC+ZjIiNI3v6eyKZhqQ3fhYDZkOY73HLXWNZ
-         8j2+oqR/NZWtLBxxLILc/4EvKVngnAdKCeWhe12j/ff3uoU25YpzDuO8SpzbJWfdgWgh
-         eZ8oSrmCDJQNpe7YQ8nI94/QWtQ+cRJW5fn8+iw0z0ARb7ZOoKfkdczTJmzcoioeAtm+
-         tUbg==
-X-Gm-Message-State: AOAM533eAvQDyIdAFxSca+DNFAuFaML6j6DB3vhoZTE+xYjsGj5Yakz9
-        ScWa5eaTNMIoZanrDTHOphwa4w==
-X-Google-Smtp-Source: ABdhPJy2rJ1ey28tHL7q/gFDZW67ncHgR3kfTnhfa8+NV1dCDCgJWrmoAMq2uukUi+T5BT3LGK0oQg==
-X-Received: by 2002:a92:cd09:: with SMTP id z9mr9916764iln.50.1631915638652;
-        Fri, 17 Sep 2021 14:53:58 -0700 (PDT)
-Received: from shuah-t480s.internal (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
-        by smtp.gmail.com with ESMTPSA id b3sm4390167ile.37.2021.09.17.14.53.57
+        bh=zTxc3Wdtc4s3d3QzXi4IrshyvmO03k245cg+J15IPmw=;
+        b=Y/1+FKL58dl76JZlkcUE4OwFLiGaKgJThnbrrAhLPAPNiTBEx5bXpM50c2CVAW2Ts1
+         J9gOwIibwRj9i8nEVcaS6dyulF6GDsZ+GynNpSZrl8AaUPCI9uTGsynh7T9R8FUgMMGw
+         4yNKfJ2JoL7jt4veVSE5SVGzf3V1V/gTvijMXsCURghENT2ejTLWvFdOU+ECtJhZu/Fh
+         lOwvhKmmbPfUXJBCo36tvbyYueyMMITRhhQM16YsRZj7HOGEQAhWR7gYRq7s+6Mao5sQ
+         6U6u0+4GhChc0tB48Rgc1+dJYlTyLTNHiPmg0QDh8LaTTFoqlTuo6eEbQBVqQJTavjqx
+         Frhg==
+X-Gm-Message-State: AOAM530uZbtsrOvhIUPTV4nZU1uFwGkTt1sxOBTThYFJHLVgFunAJHM7
+        jouhSGzE8UC+MHqZodxUK1HJ10hl10U=
+X-Google-Smtp-Source: ABdhPJyMVityzJdi38AlNeQkFoG4G8QDwRf+eyD88jCFD8HshiBgVvruNWcs6XVWlfLsexl+BcOgqQ==
+X-Received: by 2002:a63:7e11:: with SMTP id z17mr11632854pgc.436.1631915747807;
+        Fri, 17 Sep 2021 14:55:47 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id z33sm7007731pga.20.2021.09.17.14.55.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Sep 2021 14:53:58 -0700 (PDT)
-From:   Shuah Khan <skhan@linuxfoundation.org>
-To:     davem@davemloft.net, kuba@kernel.org, shuah@kernel.org
-Cc:     Shuah Khan <skhan@linuxfoundation.org>, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] selftests: net: af_unix: Fix makefile to use TEST_GEN_PROGS
-Date:   Fri, 17 Sep 2021 15:53:56 -0600
-Message-Id: <20210917215356.33791-1-skhan@linuxfoundation.org>
-X-Mailer: git-send-email 2.30.2
+        Fri, 17 Sep 2021 14:55:47 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Doug Berger <opendmb@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        bcm-kernel-feedback-list@broadcom.com (open list:BROADCOM GENET
+        ETHERNET DRIVER), linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net-next] net: bcmgenet: Patch PHY interface for dedicated PHY driver
+Date:   Fri, 17 Sep 2021 14:55:38 -0700
+Message-Id: <20210917215539.3020216-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Makefile uses TEST_PROGS instead of TEST_GEN_PROGS to define
-executables. TEST_PROGS is for shell scripts that need to be
-installed and run by the common lib.mk framework. The common
-framework doesn't touch TEST_PROGS when it does build and clean.
+When we are using a dedicated PHY driver (not the Generic PHY driver)
+chances are that it is going to configure RGMII delays and do that in a
+way that is incompatible with our incorrect interpretation of the
+phy_interface value.
 
-As a result "make kselftest-clean" and "make clean" fail to remove
-executables. Run and install work because the common framework runs
-and installs TEST_PROGS. Build works because the Makefile defines
-"all" rule which is unnecessary if TEST_GEN_PROGS is used.
+Add a quirk in order to reverse the PHY_INTERFACE_MODE_RGMII to the
+value of PHY_INTERFACE_MODE_RGMII_ID such that the MAC continues to be
+configured the way it used to be, but the PHY driver can account for
+adding delays. Conversely when PHY_INTERFACE_MODE_RGMII_TXID is
+specified, return PHY_INTERFACE_MODE_RGMII_RXID to the PHY since we will
+have enabled a TXC MAC delay (id_mode_dis=0, meaning there is a delay
+inserted).
 
-Use TEST_GEN_PROGS so the common framework can handle build/run/
-install/clean properly.
+This is not considered a bug fix at this point since it only affects
+Broadcom STB platforms shipping with a Device Tree blob that is not
+updatable in the field (quite a few devices out there) and which was
+generated using the scripted Device Tree environment shipped with those
+platforms' SDK.
 
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- tools/testing/selftests/net/af_unix/Makefile | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/net/ethernet/broadcom/genet/bcmmii.c | 38 ++++++++++++++++++--
+ 1 file changed, 36 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/net/af_unix/Makefile b/tools/testing/selftests/net/af_unix/Makefile
-index cfc7f4f97fd1..df341648f818 100644
---- a/tools/testing/selftests/net/af_unix/Makefile
-+++ b/tools/testing/selftests/net/af_unix/Makefile
-@@ -1,5 +1,2 @@
--##TEST_GEN_FILES := test_unix_oob
--TEST_PROGS := test_unix_oob
-+TEST_GEN_PROGS := test_unix_oob
- include ../../lib.mk
--
--all: $(TEST_PROGS)
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmmii.c b/drivers/net/ethernet/broadcom/genet/bcmmii.c
+index 89d16c587bb7..2d29de9a33e3 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmmii.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmmii.c
+@@ -286,6 +286,7 @@ int bcmgenet_mii_probe(struct net_device *dev)
+ 	struct bcmgenet_priv *priv = netdev_priv(dev);
+ 	struct device *kdev = &priv->pdev->dev;
+ 	struct device_node *dn = kdev->of_node;
++	phy_interface_t phy_iface = priv->phy_interface;
+ 	struct phy_device *phydev;
+ 	u32 phy_flags = 0;
+ 	int ret;
+@@ -300,9 +301,42 @@ int bcmgenet_mii_probe(struct net_device *dev)
+ 	priv->old_duplex = -1;
+ 	priv->old_pause = -1;
+ 
++	/* This is an ugly quirk but we have not been correctly interpreting
++	 * the phy_interface values and we have done that across different
++	 * drivers, so at least we are consistent in our mistakes.
++	 *
++	 * When the Generic PHY driver is in use either the PHY has been
++	 * strapped or programmed correctly by the boot loader so we should
++	 * stick to our incorrect interpretation since we have validated it.
++	 *
++	 * Now when a dedicated PHY driver is in use, we need to reverse the
++	 * meaning of the phy_interface_mode values to something that the PHY
++	 * driver will interpret and act on such that we have two mistakes
++	 * canceling themselves so to speak. We only do this for the two
++	 * modes that GENET driver officially supports on Broadcom STB chips:
++	 * PHY_INTERFACE_MODE_RGMII and PHY_INTERFACE_MODE_RGMII_TXID. Other
++	 * modes are not *officially* supported with the boot loader and the
++	 * scripted environment generating Device Tree blobs for those
++	 * platforms.
++	 *
++	 * Note that internal PHY, MoCA and fixed-link configurations are not
++	 * affected because they use different phy_interface_t values or the
++	 * Generic PHY driver.
++	 */
++	switch (priv->phy_interface) {
++	case PHY_INTERFACE_MODE_RGMII:
++		phy_iface = PHY_INTERFACE_MODE_RGMII_ID;
++		break;
++	case PHY_INTERFACE_MODE_RGMII_TXID:
++		phy_iface = PHY_INTERFACE_MODE_RGMII_RXID;
++		break;
++	default:
++		break;
++	}
++
+ 	if (dn) {
+ 		phydev = of_phy_connect(dev, priv->phy_dn, bcmgenet_mii_setup,
+-					phy_flags, priv->phy_interface);
++					phy_flags, phy_iface);
+ 		if (!phydev) {
+ 			pr_err("could not attach to PHY\n");
+ 			return -ENODEV;
+@@ -332,7 +366,7 @@ int bcmgenet_mii_probe(struct net_device *dev)
+ 		phydev->dev_flags = phy_flags;
+ 
+ 		ret = phy_connect_direct(dev, phydev, bcmgenet_mii_setup,
+-					 priv->phy_interface);
++					 phy_iface);
+ 		if (ret) {
+ 			pr_err("could not attach to PHY\n");
+ 			return -ENODEV;
 -- 
-2.30.2
+2.25.1
 
