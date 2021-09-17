@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BFD440FA7F
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 16:41:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 576AF40FA80
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 16:41:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242854AbhIQOml (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 10:42:41 -0400
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:33821 "EHLO
+        id S245718AbhIQOmo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 10:42:44 -0400
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:42967 "EHLO
         out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S243755AbhIQOmf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 10:42:35 -0400
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
-        by mailout.nyi.internal (Postfix) with ESMTP id F05E85C003E;
-        Fri, 17 Sep 2021 10:41:12 -0400 (EDT)
+        by vger.kernel.org with ESMTP id S245668AbhIQOmh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 10:42:37 -0400
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.nyi.internal (Postfix) with ESMTP id 65C1B5C0054;
+        Fri, 17 Sep 2021 10:41:15 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Fri, 17 Sep 2021 10:41:12 -0400
+  by compute1.internal (MEProxy); Fri, 17 Sep 2021 10:41:15 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=+NgSVV9rm0SMMf7ijt/zYMOjC5lAdnDUsSNmgCsSwGY=; b=gD0vP0fu
-        0wObVa0SY1m00aHN1LsQ5ZR50ydEiRi3EZB9ul57JBpKgWCA47PnJ6MjvNN9IHjn
-        Kfz1VYG4TrQUUqrRbnR/kIQ1O730bdvcb6TF21ViJLXzZv0byyBfVQZoqVTUEYPo
-        c7RBDwrJ9Oqw7Rv22Dg2HXPW3/ZfhoD4CpmQd/HRi7yktpChoRXjvsYBp/FoSyIg
-        dOz8iZ+XOCHPKSbDPBNLH8Gybh0iTLKaKajREQ5KLmbh1VjfjpjyMUFAvMxcO7jj
-        iXTeg7Z+aq/wwLNfWPZ8BYeSrGTbZKA6ieotlB88hOnmxj0f0rTQGdzz8TBCcsDO
-        QeNqZo6efqNHnA==
-X-ME-Sender: <xms:CKlEYX1I4cwuB0jH2iP36fL2O1ErSP5EPAZGl8lnxoKzSzyWtXNmPg>
-    <xme:CKlEYWFHPiSdcBwI0xziisivJm0DW0XppAq4gjpQYtTWIyl6KbCvcz1q30-5xd2Qb
-    onHLZknQnuHNk8>
-X-ME-Received: <xmr:CKlEYX7icUXPdgM4Rv0bP79q3sYbHxcMn5MBTjkyPYc5JV6Rqst4dmvhH91huBi6C7e1ESUG9VtXNxBf2HGmhBYdk57QexjnYg>
+        fm3; bh=x4J8reGaSF8uDtTVxmggr85GwMO34kOnvq4DCaJfDv0=; b=wPHqZ2uz
+        f6Si+JDm+dxvUnAQS9dQd6/3j40vyax3naw0N/Mfo3Fxmi1bV28pxn7l/3EKyzmD
+        4Ocr7FWari154iaftJXoJJuZcWdKPf/Ic5RLjsL3riQUQqTA9bK/pF/viQGpCWpz
+        aPRo4xXKOkpJ/pYBoDfz64pTb276N0ny+JjiclyaYV7HdPisiUjZKkqGpKESvx2J
+        cWNyaWMPggHVkyQfj1gwqsvcu80Hvr+B5jxw6oW177CPWnYN0VAI7k6qgtp89j3U
+        /s/S+7IeRRzjQuEfzV86G1IciSS2GpE/Fl3RgBVYbh/mMVQaBO/4kap0wiJTjC/i
+        /uKf917zTw5rCw==
+X-ME-Sender: <xms:C6lEYRXkpmaMDUmej1bGDBrodbwXtutS4PnCGZW4ZoyLi6arnSgl2g>
+    <xme:C6lEYRkXTGcw5iqEnmqOB-DmuBV-JTXs0IAEI_7yVspN3KGQtfuQ50jRQt4nMPG7G
+    kRAhlGfP9sODh4>
+X-ME-Received: <xmr:C6lEYdajkkgSmZILdY63xPZpzHjvE69p78zMkTuisH2sJoyapmMT3DDV2W88B-MCLiTzceYkHdsU3dS_zoMF_CpkNMlEYUlXkw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrudehiedgjeegucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
     shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
-    ehgfdtffethfelvdejgffghefgveejkefhnecuvehluhhsthgvrhfuihiivgepudenucfr
+    ehgfdtffethfelvdejgffghefgveejkefhnecuvehluhhsthgvrhfuihiivgeptdenucfr
     rghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:CKlEYc0PBjh6ggE6xbUAFhVk42d6fa1crfgwyiyI_ht6OnWw4Xm-Yw>
-    <xmx:CKlEYaGsBuA5NByLKkEP8JCDfzIfkaR3D-OPu_MBogK8Q5wK8XEbAQ>
-    <xmx:CKlEYd_CQqUy5WYSgTqQ8-H8m8jiOEU4j72Hf-X-1TAny9VFj86m_A>
-    <xmx:CKlEYWgpZca-A3mmSzZDffbMuN5Dk2ASfpgGSGj7-9kTXgku2IkyKw>
+X-ME-Proxy: <xmx:C6lEYUVyzYcKZGSQOEVxDyeJSjumogNMEMxHTMuurUte2afRamyLcg>
+    <xmx:C6lEYblpA9GEqw2ddSiOvDx6kSGW8FvnzLv0KGLVj-IWzxX83osukQ>
+    <xmx:C6lEYRfW4nS3_pUEmAXuHZudqLhvl5ipPOVpJx588_YKWRRYijlB9A>
+    <xmx:C6lEYUCrAYgjvw3uLqRD-Zllr4UpRZZ50g_Vf0JOMJdRuRFwluKuDA>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 17 Sep 2021 10:41:10 -0400 (EDT)
+ 17 Sep 2021 10:41:13 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     mkubecek@suse.cz, vadimp@nvidia.com, moshe@nvidia.com,
         popadrian1996@gmail.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH ethtool-next 5/7] sff-8636: Fix incorrect function name
-Date:   Fri, 17 Sep 2021 17:40:41 +0300
-Message-Id: <20210917144043.566049-6-idosch@idosch.org>
+Subject: [PATCH ethtool-next 6/7] sff-8636: Convert if statement to switch-case
+Date:   Fri, 17 Sep 2021 17:40:42 +0300
+Message-Id: <20210917144043.566049-7-idosch@idosch.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210917144043.566049-1-idosch@idosch.org>
 References: <20210917144043.566049-1-idosch@idosch.org>
@@ -63,46 +63,35 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-The specification is called SFF-8636, not SFF-6836.
-
-Rename the function accordingly.
+The indentation is wrong and the statement can be more clearly
+represented using a switch-case statement. Convert it.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- qsfp.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ qsfp.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
 diff --git a/qsfp.c b/qsfp.c
-index 263cf188377d..3401db84352d 100644
+index 3401db84352d..d1464cb50fdc 100644
 --- a/qsfp.c
 +++ b/qsfp.c
-@@ -820,7 +820,7 @@ static void sff8636_show_dom(const __u8 *id, const __u8 *page_three, __u32 eepro
- }
+@@ -863,11 +863,13 @@ void sff8636_show_all(const __u8 *id, __u32 eeprom_len)
+ 	}
  
- 
--static void sff6836_show_page_zero(const __u8 *id)
-+static void sff8636_show_page_zero(const __u8 *id)
- {
- 	sff8636_show_ext_identifier(id);
- 	sff8636_show_connector(id);
-@@ -866,7 +866,7 @@ void sff8636_show_all(const __u8 *id, __u32 eeprom_len)
- 	if ((id[SFF8636_ID_OFFSET] == SFF8024_ID_QSFP) ||
- 		(id[SFF8636_ID_OFFSET] == SFF8024_ID_QSFP_PLUS) ||
- 		(id[SFF8636_ID_OFFSET] == SFF8024_ID_QSFP28)) {
--		sff6836_show_page_zero(id);
-+		sff8636_show_page_zero(id);
+ 	sff8636_show_identifier(id);
+-	if ((id[SFF8636_ID_OFFSET] == SFF8024_ID_QSFP) ||
+-		(id[SFF8636_ID_OFFSET] == SFF8024_ID_QSFP_PLUS) ||
+-		(id[SFF8636_ID_OFFSET] == SFF8024_ID_QSFP28)) {
++	switch (id[SFF8636_ID_OFFSET]) {
++	case SFF8024_ID_QSFP:
++	case SFF8024_ID_QSFP_PLUS:
++	case SFF8024_ID_QSFP28:
+ 		sff8636_show_page_zero(id);
  		sff8636_show_dom(id, id + 3 * 0x80, eeprom_len);
++		break;
  	}
  }
-@@ -875,7 +875,7 @@ void sff8636_show_all_paged(const struct ethtool_module_eeprom *page_zero,
- 			    const struct ethtool_module_eeprom *page_three)
- {
- 	sff8636_show_identifier(page_zero->data);
--	sff6836_show_page_zero(page_zero->data);
-+	sff8636_show_page_zero(page_zero->data);
- 	if (page_three)
- 		sff8636_show_dom(page_zero->data, page_three->data - 0x80,
- 				 ETH_MODULE_SFF_8636_MAX_LEN);
+ 
 -- 
 2.31.1
 
