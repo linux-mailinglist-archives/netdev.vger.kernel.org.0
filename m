@@ -2,78 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C4DB140F436
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 10:34:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3396A40F454
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 10:45:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245411AbhIQIf4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 04:35:56 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:38616 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S245399AbhIQIfw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 04:35:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1631867670;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=mRvAXPuRtiVqIbpRHkAvC3odeA7PfoFZ93jl+i/JzVM=;
-        b=bMZKrX9kZ6wlBOE0wcjyf/Bx/3+ZwCFe/I4LvtsIQQwQ/Jk8BXbS+/M9BD5k4ZFqo+CrkN
-        lm3dwetv2O83RY6kHRfV/htj4QUQnAWxhX8MfPtYweUxQylhvIfjZGxyylFUtZpNNX8Qa4
-        bC0h4wlpUE4FnGM4A3+SlQm1cCkrJKQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-296-wt9JcRDnMlChs4kvkhcd6g-1; Fri, 17 Sep 2021 04:34:29 -0400
-X-MC-Unique: wt9JcRDnMlChs4kvkhcd6g-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 480F01006AAA;
-        Fri, 17 Sep 2021 08:34:27 +0000 (UTC)
-Received: from localhost.localdomain (ovpn-12-234.pek2.redhat.com [10.72.12.234])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5B42A60C82;
-        Fri, 17 Sep 2021 08:34:08 +0000 (UTC)
-From:   Jason Wang <jasowang@redhat.com>
-To:     mst@redhat.com, jasowang@redhat.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Subject: [PATCH net] virtio-net: fix pages leaking when building skb in big mode
-Date:   Fri, 17 Sep 2021 16:34:06 +0800
-Message-Id: <20210917083406.75602-1-jasowang@redhat.com>
+        id S245452AbhIQIqg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 04:46:36 -0400
+Received: from out30-56.freemail.mail.aliyun.com ([115.124.30.56]:59897 "EHLO
+        out30-56.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233688AbhIQIqe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 04:46:34 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0Uofyx2P_1631868310;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0Uofyx2P_1631868310)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 17 Sep 2021 16:45:10 +0800
+From:   tonylu_linux <tonylu@linux.alibaba.com>
+To:     mst@redhat.com, jasowang@redhat.com
+Cc:     linux-kernel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org
+Subject: [PATCH] virtio_net: introduce TX timeout watchdog
+Date:   Fri, 17 Sep 2021 16:40:06 +0800
+Message-Id: <20210917084004.44332-1-tonylu@linux.alibaba.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We try to use build_skb() if we had sufficient tailroom. But we forget
-to release the unused pages chained via private in big mode which will
-leak pages. Fixing this by release the pages after building the skb in
-big mode.
+From: Tony Lu <tony.ly@linux.alibaba.com>
 
-Cc: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Fixes: fb32856b16ad ("virtio-net: page_to_skb() use build_skb when there's sufficient tailroom")
-Signed-off-by: Jason Wang <jasowang@redhat.com>
+This implements ndo_tx_timeout handler and put this into stats. When
+there is something wrong to send out packets, we could notice tx timeout
+events and total timeout counter.
+
+We have suffered send timeout issues due to the backends hung. With this,
+we can find the details, and collect the counters by monitor systems.
+
+Signed-off-by: Tony Lu <tony.ly@linux.alibaba.com>
 ---
- drivers/net/virtio_net.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/virtio_net.c | 22 +++++++++++++++++++++-
+ 1 file changed, 21 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 271d38c1d9f8..79bd2585ec6b 100644
+index 271d38c1d9f8..90fed0fdc40f 100644
 --- a/drivers/net/virtio_net.c
 +++ b/drivers/net/virtio_net.c
-@@ -423,6 +423,10 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
+@@ -80,6 +80,7 @@ struct virtnet_sq_stats {
+ 	u64 xdp_tx;
+ 	u64 xdp_tx_drops;
+ 	u64 kicks;
++	u64 tx_timeouts;
+ };
  
- 		skb_reserve(skb, p - buf);
- 		skb_put(skb, len);
-+
-+		page = (struct page *)page->private;
-+		if (page)
-+			give_pages(rq, page);
- 		goto ok;
+ struct virtnet_rq_stats {
+@@ -103,6 +104,7 @@ static const struct virtnet_stat_desc virtnet_sq_stats_desc[] = {
+ 	{ "xdp_tx",		VIRTNET_SQ_STAT(xdp_tx) },
+ 	{ "xdp_tx_drops",	VIRTNET_SQ_STAT(xdp_tx_drops) },
+ 	{ "kicks",		VIRTNET_SQ_STAT(kicks) },
++	{ "tx_timeouts",	VIRTNET_SQ_STAT(tx_timeouts) },
+ };
+ 
+ static const struct virtnet_stat_desc virtnet_rq_stats_desc[] = {
+@@ -1856,7 +1858,7 @@ static void virtnet_stats(struct net_device *dev,
+ 	int i;
+ 
+ 	for (i = 0; i < vi->max_queue_pairs; i++) {
+-		u64 tpackets, tbytes, rpackets, rbytes, rdrops;
++		u64 tpackets, tbytes, terrors, rpackets, rbytes, rdrops;
+ 		struct receive_queue *rq = &vi->rq[i];
+ 		struct send_queue *sq = &vi->sq[i];
+ 
+@@ -1864,6 +1866,7 @@ static void virtnet_stats(struct net_device *dev,
+ 			start = u64_stats_fetch_begin_irq(&sq->stats.syncp);
+ 			tpackets = sq->stats.packets;
+ 			tbytes   = sq->stats.bytes;
++			terrors  = sq->stats.tx_timeouts;
+ 		} while (u64_stats_fetch_retry_irq(&sq->stats.syncp, start));
+ 
+ 		do {
+@@ -1878,6 +1881,7 @@ static void virtnet_stats(struct net_device *dev,
+ 		tot->rx_bytes   += rbytes;
+ 		tot->tx_bytes   += tbytes;
+ 		tot->rx_dropped += rdrops;
++		tot->tx_errors  += terrors;
  	}
  
+ 	tot->tx_dropped = dev->stats.tx_dropped;
+@@ -2659,6 +2663,21 @@ static int virtnet_set_features(struct net_device *dev,
+ 	return 0;
+ }
+ 
++static void virtnet_tx_timeout(struct net_device *dev, unsigned int txqueue)
++{
++	struct virtnet_info *priv = netdev_priv(dev);
++	struct send_queue *sq = &priv->sq[txqueue];
++	struct netdev_queue *txq = netdev_get_tx_queue(dev, txqueue);
++
++	u64_stats_update_begin(&sq->stats.syncp);
++	sq->stats.tx_timeouts++;
++	u64_stats_update_end(&sq->stats.syncp);
++
++	netdev_err(dev, "TX timeout on queue: %u, sq: %s, vq: 0x%x, name: %s, %u usecs ago\n",
++		   txqueue, sq->name, sq->vq->index, sq->vq->name,
++		   jiffies_to_usecs(jiffies - txq->trans_start));
++}
++
+ static const struct net_device_ops virtnet_netdev = {
+ 	.ndo_open            = virtnet_open,
+ 	.ndo_stop   	     = virtnet_close,
+@@ -2674,6 +2693,7 @@ static const struct net_device_ops virtnet_netdev = {
+ 	.ndo_features_check	= passthru_features_check,
+ 	.ndo_get_phys_port_name	= virtnet_get_phys_port_name,
+ 	.ndo_set_features	= virtnet_set_features,
++	.ndo_tx_timeout		= virtnet_tx_timeout,
+ };
+ 
+ static void virtnet_config_changed_work(struct work_struct *work)
 -- 
-2.25.1
+2.19.1.6.gb485710b
 
