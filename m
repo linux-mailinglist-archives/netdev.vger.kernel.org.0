@@ -2,187 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 914B640EE57
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 02:27:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C84540EEB4
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 03:24:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237878AbhIQA3D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 20:29:03 -0400
-Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:53068 "EHLO
-        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229684AbhIQA3C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 20:29:02 -0400
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18GNdEB9010806;
-        Fri, 17 Sep 2021 00:27:39 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : content-type : content-transfer-encoding :
- mime-version; s=corp-2021-07-09;
- bh=U16iQLH07Wd10UoKS03KWKKx0r6T2LJ1rpaSakzCdb0=;
- b=a2ldZJki5tmcFAdYsOttxMjezlPX9mXe/WGEe54LZJKWNRbqHOIcTNdeKBmXcuMwzTsi
- zJBpzxsDXW7nM91iENsE/MKJn1DnYJxL6IZHKnyR4dx6gQ9Qe6+w+lHrWexmKiEJLqmm
- gbIv2yuxOT/H9f73Qj9Qo6hPxfjvgM58EaccY1EQvY7s24eX6WFYL/fUZ+VHZhiWvBOn
- K08Kh6pyUWQSGm+k/NsbDOmcZVNg3bEYmrQ2FlgI2dv+Hb0lfIs2k/UVkYYGHtncb1Cf
- yn3fRELPgWhDCi9tv0anuLT45O9MwzIpfYdy/R1hyLMMTYIUfF3DopEKRf2ClEVMtodm SA== 
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : content-type : content-transfer-encoding :
- mime-version; s=corp-2020-01-29;
- bh=U16iQLH07Wd10UoKS03KWKKx0r6T2LJ1rpaSakzCdb0=;
- b=p8/QEhswCseACjGpzow36gZc/tN3A8xdZef3EZKUcAwkVkcd4xQEHpudSThLLJhn+hED
- 2GKWAxB4YXOflmaaA8V0zKi0xDkH/ul9Mltosxtw/3vWENzj6/9xYE7BIVorfLKZsH3Q
- S0xct16YdL8Mvdlvr7lHSUwYO2py/euNhG0wVmM8eK8lETDuYds8HrXiYRKBmH28E2cb
- CpTbz73B5na94Ti64XOf2ovLpQ0vcQj3F29KdAZiWbDJun42SWCdMyDM5axUBpdVMu0C
- /qJZe52Dzr7NVnCM/jQTruYMyvRXUfvlDlsIX4lSJKVXqAEoxmNgRW6hJj8a0tJLNJ14 Xg== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3b3tnhvdr2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 17 Sep 2021 00:27:39 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 18H0PIuh177958;
-        Fri, 17 Sep 2021 00:27:38 GMT
-Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2043.outbound.protection.outlook.com [104.47.66.43])
-        by userp3030.oracle.com with ESMTP id 3b0hk01dbq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 17 Sep 2021 00:27:38 +0000
+        id S242174AbhIQBZ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Sep 2021 21:25:59 -0400
+Received: from mail-dm6nam12on2123.outbound.protection.outlook.com ([40.107.243.123]:17761
+        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232222AbhIQBZ6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Sep 2021 21:25:58 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hgLxfsO3ep6dbbKmeu3xgWXNaASezmhlJCCJAWvWeNa0DluVRQppyJXq7AQCR7+2WhTNKypm7AGfB8h+4v22/LTyDyWGfC2XRk1XwHd/DlLssRtdxxUMzswC0w+ckHdtPc7PUBYAitM09hSoQLAa8Ds8qEduTZvJ782o/48CPGV60ryxiOOWqxv2w4IDkMDaVTu6oF7r4ALBbHYvWieNAka7Q7CtRB3wtGCf4RwO1Oi/yMPQT1tdWCs9qtv0khoE3k719eCGzynBlujX/IV7APQEfl38OWMR616INKDDtdQ/6dkbcpRo18AkdkTz9m1FaKzvu7lQvyUEx4hto+qctA==
+ b=lj3igesvG087rVoCbXnTe4Dj7GG/x37RxGQceB4p1mK330Oca/9vR5YFFbMmE8JRHGbDifoQqKsFn/6YZLGOF3VPwF/XOwjsPyc/FjfNN84C6I0fZCx0Vp2i7uCOUNjHuvjyXHDl4D8NpoY1bCZspXycWdr3Vva6uSrYPq1t5+wkIqQS5qRAEYtzDBzurKCLicN0gF9gl8IBuznqVDZT7HL1yc+IiYmQlgRY9wi6z/7FZMrsorfLo7yQsqLnIZHSAYS/utDagbcA4EaVdIBEgp49SUrGHjo0zF24VHlwHy6guNdUlcvHFv+3SxoaEsVXaeV1G+ELoFf1PtZ4OO/ZiQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=U16iQLH07Wd10UoKS03KWKKx0r6T2LJ1rpaSakzCdb0=;
- b=QNQSMvue037oKDfb2ys5tNif/5SnteXGxOWkNIMfVPEq2bT96EvZ1LDDksL81B/aZBTdcDiPlnBA2ioUa5ZgB3hu5lTwkZJhtnY1W5Y0h6BKRzwD8qWazRUlNnc0saSdra/3PFliHcqXXR9Nu9HPQknD5JL0NTaR28JCBfQSpdsGDAEsVgk36xnw9ceqZgYmvROcO6eEDgWnAT8oeaYn6dEHGnQOGvSCDWL5tx9iXC1xBnQw68nSVt4CeoZDoYvHqO1mA7gPCl61c8ECETmPJNRpeyGvUdhhIQfy5sOIemIn7ZSaYXMGbCS4GdhG/ST9O59EngCEeBuXwU9o92KO1A==
+ bh=pAylwhCLKQE6upkxOpTeuKjfnz6hUJrgci6PxFcqocw=;
+ b=UjJKi7xGpFpys011twiMmTtsGEpwAIpXUz3NCB1O6XBZhip1Dd8Xma+WWQhLTKkVlFXDb0c6Oz/rdKXLz3KiFknghdfRFl0Xa/zrJS+WCFuwSBjCTrgBW+A6I0gxH7SHsa+runLUJmwaZEypOnSRSuIVkrLPBXD2pJR+Og9bORo9iobF8tTumS4jEkJ6cpHfwKbn6WAk89moomwAWvLooCxoOSgVnkfYQLWEqKXVsmckdPF3aLYsLtf6zyfRFT5RmdrPx2AofUY5+LIRoA1LPwufAc0+p5h1kisEb4/a+Xs073GPV9ERrb3NYK+IHZMby6kgVpvsC8tPamNRDPA53w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=U16iQLH07Wd10UoKS03KWKKx0r6T2LJ1rpaSakzCdb0=;
- b=r583zkgRXqvKdTgUd5MkHHUtZa3zV6an3BG3KB5UklSEoG7lTFxvcQnhDmrwjfDLIKU7sDldFIBdrDnj9VIXPk9qk4ZpSMPDxsur9Qt+oMSNFgYilbPLnhYFfOfXI1jSrjHoiRyKPDB/uA8hjRLIPcGSMlNFBFsbFcDMKxoX1As=
-Received: from PH0PR10MB4504.namprd10.prod.outlook.com (2603:10b6:510:42::5)
- by PH0PR10MB5644.namprd10.prod.outlook.com (2603:10b6:510:fb::22) with
- Microsoft SMTP Server (version=TLS1_2,
+ bh=pAylwhCLKQE6upkxOpTeuKjfnz6hUJrgci6PxFcqocw=;
+ b=W7h/YV50uxsGofv+orzM49GnAYW3677PeqbCUrvR5A0Knrq479Rzg4qC8gLCtjJ7TXrJ3B9b7Yxm3L1Tkqa0oFeQiQ0z/p5fl9NIC0nuYbx8T6jrh43Tibeb6nn3I3mNIXwCI0xxkuKYWZrlvBV1TRMGnAJC9HnUs6eMiHy45tk=
+Authentication-Results: nxp.com; dkim=none (message not signed)
+ header.d=none;nxp.com; dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by CO1PR10MB4516.namprd10.prod.outlook.com
+ (2603:10b6:303:6e::19) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.14; Fri, 17 Sep
- 2021 00:27:36 +0000
-Received: from PH0PR10MB4504.namprd10.prod.outlook.com
- ([fe80::51d5:8873:e31d:a9e2]) by PH0PR10MB4504.namprd10.prod.outlook.com
- ([fe80::51d5:8873:e31d:a9e2%9]) with mapi id 15.20.4523.016; Fri, 17 Sep 2021
- 00:27:36 +0000
-From:   Venkat Venkatsubra <venkat.x.venkatsubra@oracle.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Konrad Wilk <konrad.wilk@oracle.com>,
-        Jay Vosburgh <jay.vosburgh@canonical.com>
-Subject: Sending ARP probes (for arp_ip_target) over backup slaves
-Thread-Topic: Sending ARP probes (for arp_ip_target) over backup slaves
-Thread-Index: AQHXq1kYV8J9s6Ll3kClY7u2hWEaxg==
-Date:   Fri, 17 Sep 2021 00:27:36 +0000
-Message-ID: <PH0PR10MB45042C88B70810807BAE023AACDD9@PH0PR10MB4504.namprd10.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-suggested_attachment_session_id: 9ab03846-6aeb-139f-ab31-e4f9f31e0e35
-authentication-results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=oracle.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5af69caf-a344-4ff5-4a8b-08d97971f2d5
-x-ms-traffictypediagnostic: PH0PR10MB5644:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <PH0PR10MB5644543F6062101320AF6325ACDD9@PH0PR10MB5644.namprd10.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: tqOMUZZXgsUgFsfJLw5XbWsGJLFAxUFHNrwCM9atpPam0iMR1GZnZ+5b54+41tWZWwrWQ0KO4kJQKbYzpBBveqazU2bKZcl7sY89SyVvOok9uqYT0EtKYj7RsHruDcbkyxgIQAIUoZz/aDeFvPLRCoI86Zj2BG1In7P6SMpfzCjwGQrFL5lfDpXK+tRhbvTAvbRam8elFy+FO6N9k9yeGwx0eyduDNRHeEvCRoHbkpdSo9tZD7nuOfdq+wXc/4KdhCjx6EPATyuooqYge8Rq90GfcSZ92o/c7AcPR0mK+F3Ro5Z125nOfJGL2jXfXbV3uAGSfRiWOUGX5khLnBGKHOszFFpJoScEXNbDvxagvV/a/6PjDqpYUl+1qGUlF4sVkhXXDYf28aRr07wAWY6IiL46C+IMpaClSdqCi9da7XCl1fgWB5z8XBi9sIVbVszqRKmMCfu8uNoTdJndr4CKIb8xt8VokhXGg5wTqjSsi7icKCW3+b04EIQ0QbzSMHzDY97VHC92+zVuOl6F6I9Mg9DrVVvWOavuWPxPOKUUxs8JAFPwlAFtTukOz9Hsk1vLgGEtveDciXnDb8zdnt9u3OvpPNB1W22w65cM47Q0FcAS6JMomIctGyik3qwiNaH/X5BgvfElkGAuEgfkM7mwIwTWHrjtBbQRM4uGq4YayXRp/nt3/q3bP+YOmgGo22q9PRBtIWK0jf72gNZp7DRtsg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR10MB4504.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(6916009)(76116006)(66946007)(86362001)(38070700005)(4326008)(186003)(7696005)(26005)(52536014)(5660300002)(33656002)(6506007)(55016002)(316002)(9686003)(54906003)(122000001)(8936002)(8676002)(38100700002)(66446008)(66556008)(71200400001)(83380400001)(508600001)(64756008)(66476007)(2906002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?tdhAkTlMhAt5nS8KNUJTnnRuCoe15K7jsD03OKam10NHQQyGxVBK+FDcWh?=
- =?iso-8859-1?Q?O8fzEG0gcUwPYV6ZwzhDeqvxHY/vFKlZr+/tjiDGvho+6vrl1NqpAvX4iU?=
- =?iso-8859-1?Q?aPbjfvDzR7yH7aR1msuIsiV1rKZ6hc/PphEUgemRxB0hGpasajNWlwj4Wx?=
- =?iso-8859-1?Q?Iy2yA3iE9slyB5KZHFrv+oqhgyE3My1LShakJ6cqiGd6KHsECFNLW5byOH?=
- =?iso-8859-1?Q?1QGfJJRlXZT7RHeO3UAM/6wZW4HWmVrh9eZw2RclrIrbwVrw5atkpCiE1t?=
- =?iso-8859-1?Q?/Y8lsIJfZ62l4tzN0VwJXqOXwBe2ZbR26qdXT7x0hkZbSNmtIlbGyr6krE?=
- =?iso-8859-1?Q?2vFK8tIgD4I4fXzddkucbWH3V2nVryVkaLKslM0wolrG8xM4zQJLrpCpxf?=
- =?iso-8859-1?Q?+2Xi3Q3M+WmHGk88JhWJZF184yhqZ+7w3ZLXNUEGRcgiepgy7n+7K+G7bp?=
- =?iso-8859-1?Q?fwif1c1J1Izcox1d3bsKAm/DleEPhclx/OGyfqxAZmtO1oPKFvGXSTNxqA?=
- =?iso-8859-1?Q?6TbyVzxMJvBL6oL9on+ZbZe1fnYw2D9e4cfzafXm2BfcKwY1avfrDWYxx1?=
- =?iso-8859-1?Q?5UnGCvJ03kkU8qofqgdY8jxN99L1C95rid5AC4rnLPjDxW+cPrChT5IIw4?=
- =?iso-8859-1?Q?/bWEYCJT8hZ9b7l165IFG1p6iy0T+2uR9JtJReWIw5Gnp58fxWv7O/Kd0e?=
- =?iso-8859-1?Q?b+NBvT1mOe8JcQxldLNbZGZ1AtYAsv1DwszvAPrpPynV8FvsvXaIyB2KaX?=
- =?iso-8859-1?Q?gkb4WLN++dhmyH4uDOf4yiPcEGut0G29BBN/D4ISi/KHelV4HGW8S7ZZXj?=
- =?iso-8859-1?Q?+bvyEsmp1UTNDmwtOzSmeN2UI9NomeIrJ9wGaWh9E+tAp2iXqPbfhow/fS?=
- =?iso-8859-1?Q?bX6gF4gZxybl34PR/EuXe+MIRCaKAnq/xLIgLzihg1YwXsgXs7ImG0Bz5c?=
- =?iso-8859-1?Q?HTLFmB7Lba12L4BrsoqSGJP01vgTUgzc7vDPwZBPGpt2MFlhh23ete84Yu?=
- =?iso-8859-1?Q?GOKN61H7yuuf4KYAZDBt1hmi/7L0296+pwcQucxhZl0h3LohWFQtH5WNvO?=
- =?iso-8859-1?Q?VCO8/+u2jTb/jDjUGxaMqgABMW2rNe+vHuXAxaSCehoa8O3n0Osn+Q8V3S?=
- =?iso-8859-1?Q?D014++lQZSbhz/48p2myxuSIMyDE6tDGkPaj3qciUl4RwT9tYbUeyQpdy+?=
- =?iso-8859-1?Q?c0qTcjp4kFD+J9xRIGng8HJUYlUVaWijfYRmPLZV/HeJ7J2Qbh2EHZilOM?=
- =?iso-8859-1?Q?cEA9wXLOnMRWJHGpW/sywDBjc5acC1PuQkP5KA76g1OWy4vDw0eJ23disL?=
- =?iso-8859-1?Q?nX/abwMaDkXTJLwqhGkqC6ZmybpfD9EqoJpBmEJWrf9nlBg=3D?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+ 2021 01:24:34 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::bc3f:264a:a18d:cf93]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::bc3f:264a:a18d:cf93%7]) with mapi id 15.20.4523.017; Fri, 17 Sep 2021
+ 01:24:34 +0000
+Date:   Thu, 16 Sep 2021 18:24:29 -0700
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1 net] net: mscc: ocelot: remove buggy and useless write
+ to ANA_PFC_PFC_CFG
+Message-ID: <20210917012429.GA647191@euler>
+References: <20210916010938.517698-1-colin.foster@in-advantage.com>
+ <20210916114917.aielkefz5gg7flto@skbuf>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210916114917.aielkefz5gg7flto@skbuf>
+X-ClientProxiedBy: MWHPR17CA0087.namprd17.prod.outlook.com
+ (2603:10b6:300:c2::25) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
 MIME-Version: 1.0
-X-OriginatorOrg: oracle.com
+Received: from euler (67.185.175.147) by MWHPR17CA0087.namprd17.prod.outlook.com (2603:10b6:300:c2::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.14 via Frontend Transport; Fri, 17 Sep 2021 01:24:33 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6e439240-34a7-43df-53b6-08d97979e7e2
+X-MS-TrafficTypeDiagnostic: CO1PR10MB4516:
+X-Microsoft-Antispam-PRVS: <CO1PR10MB45160B52456C771CD034F5EEA4DD9@CO1PR10MB4516.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: uPgfvPxJTrt0tAtsc20uIRV1XOYS5t12udwX/g1nBUwIQdd1GIFTV1IQH46lNaywruwxNeR3vn0W/pGwIM7mb+qyV1/5Vwfs1EEVQNM6dFX7yT+ycY1l9FMIECZxfEepz3Bt9MY8tTE2thn/q+EqVu+nNL1LfDpdZ1ll9S9OEOHy2Hnz3Ny0L69xFdG7KPPJdGx1YHDokkSHViUeJa6iidr0HOUpLDEGuE3cTGPdrPaMWmudIEyOaGJ9K2f/DTr3asugQGujHTCERc+f3kL3y9JAqMTHsyRZJYJH0MOh5Al1otGLt7SbN+mzloiGbSGxRPgBxQDSZBKPTciXQYjcUtAdc9RqfiGbmm5C2nB1uAUU7f7zQtguxDp6w4epbbMluUeDUXFMvsxkV42JKrMSZUArtH1cNB9H0XWZo6ZI70dwbTnMVnvHuHh+zDtWkyw4neTJ3q00IVGt6Ak4XydEAuzsgfW0xGAVDjFVH0FLy8EodHbPbpVE0YU/0YaSVqgnZDTTB/5/Mdae9XoOC7014TDXqX8cSPgqN2Sm7DEfLV5c9zUGncp1kcv7KDfyNKZpVENigWE/csBOu+j78o5Sqsb8xlH3wUfYVDAzuEAOrUO6YhRnC6ECA79w1iuDfRQarR+8iWp4oZsbofdvUXXPfo+31IHLdMrHIIW3j5b7I1k1x0u/QNwmvPj1CwqAoB0oVryM/5yZHCVNUUzbLhBQ17ISodS77viRj7ZA52nhwUnKfsZDJwabghsCFleE5CpSCS9S4bFmQIFKbmTTZModBsqmoP/7AN8BBIOpPulNgEw=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(376002)(396003)(39830400003)(346002)(136003)(55016002)(52116002)(9686003)(9576002)(44832011)(33656002)(6666004)(6496006)(66946007)(478600001)(1076003)(66476007)(66556008)(86362001)(966005)(33716001)(6916009)(4326008)(38350700002)(186003)(5660300002)(26005)(38100700002)(956004)(83380400001)(2906002)(316002)(8676002)(54906003)(8936002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?nvUJELUpz/0WeWpPRBlCKi1DEeomUzz12yTzs9yn35yZGwAgx7z0RDO3bY4L?=
+ =?us-ascii?Q?FiQDyNbDgttaKpQWDPxEIlBw+0Pi+wsFBJ2vmg7YJ1Y6XDy0QXm9Dktk8Q3K?=
+ =?us-ascii?Q?tSfTXCYfJqvfuswLHftnJPFnPiaG4v+/N8mZd4GIfLKY9R6PAKFn7l6tMH7a?=
+ =?us-ascii?Q?DYU70QvQ6XdhGJD20wk125KU5Qe0bPOGJpjQp5gJQXWkMB0dy2F7R67FaclS?=
+ =?us-ascii?Q?fMbGUcytmFFJy6UJ3vcf+3sVCPjLH/9MgOTw/7VCDdJzuXFw0iZUZ6WySBDt?=
+ =?us-ascii?Q?xUouVbEMckoSZEPp/zu2gMhCMLMvmedIN+qNZ23t2WmP/iSsOgk6Ga7TqDVo?=
+ =?us-ascii?Q?cGhX9cSa/4nnNKV3EoVm3aDJZFAGy1hlCjuba4+LOfrSP/rpwG+9KlZvPmsL?=
+ =?us-ascii?Q?8ywxYNKQX+Ir9+IXEFyA15no86srCy4HahXwOTbzhx64qs0Q22+RH+OtVzk5?=
+ =?us-ascii?Q?Ygg0EhFIaF8iQtVE9XSXepl55aWzpRkHb36e3rrCozl0fydvzzgZxIwbOi1P?=
+ =?us-ascii?Q?5IOMu9NbbQi4zlvKLw5rWiNbdv+XNaNklbyk4OupG3+galOBQwy/qGljyu0N?=
+ =?us-ascii?Q?U9g1EHVu9FYCB7sM7WPRqeeAKuhO90+bZdRlkJLEPIWXkQFBbMDnw2z/T8CY?=
+ =?us-ascii?Q?itQ/i2ipS4c99Che7VMCSljS/D3dzpT1UEppFHe7GaLDbOgKymPQIaTG1cHX?=
+ =?us-ascii?Q?aQV7WQAH4wwioR/uQ75yPTR63c6PTe0IiICUQCHjkpZWbDrBdx+ailCD0nMw?=
+ =?us-ascii?Q?pzxwLIfqVhIpXNaP97GPXe9jsKRw8D+Fec24ESEiKJCiju4AlCVExVS3TrTg?=
+ =?us-ascii?Q?OTcDslSJdExSYh4cH5+WG03WIGxOlj8722R2xUYYB/gA7gylUMfaOP5OIVuL?=
+ =?us-ascii?Q?whKnsAi2DvLyi+DSL0YQePczC5M8WQoeBOwlx/Xp74eUyYOQoJpukfuL1YX+?=
+ =?us-ascii?Q?1jKsf5317v6UbVTqwqb+4vdnZ4Wn/eJtjGORkmBrh4Ite+8xektS1iPxWnrH?=
+ =?us-ascii?Q?CECpSsm1iTXLSHH6Fa26RwnATlQeUL/BDjc+Lu0GleEr5gSwT0CF7l1Z6RsN?=
+ =?us-ascii?Q?JthJL0MnaSqw9udlj/12QoYvEcJPZPAismErIdZnScvEw+Ns//iKIAJ74W83?=
+ =?us-ascii?Q?RbhvEi1EeQ/LPogvJ9KZ4HeC0Sqwpr822X5c8FRlXhkJZziFT64h1R9OkJIj?=
+ =?us-ascii?Q?opuUkKHzUk6hrImHL4bheAL3tu1vzGWuYTovPJceaOpqixt7d4g36zExHAn4?=
+ =?us-ascii?Q?AG5gdyLgTcQmaCdIJ7gjhRNzq8ucO5cUP/vyRWv2aRn0E/wBNVuWNyQzjThT?=
+ =?us-ascii?Q?wURGMRP24iRrtl9WtQoCI5ek?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6e439240-34a7-43df-53b6-08d97979e7e2
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR10MB4504.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5af69caf-a344-4ff5-4a8b-08d97971f2d5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Sep 2021 00:27:36.1134
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Sep 2021 01:24:33.9827
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: amJ3G7Wkav3to1PAeVaJsc9wWHBwkN2GTFb9isVCMHYIKYSMl5UHLlwagk4rX6f16a1+wKA+59Rz3H6vewj0PPlF4fw530/MFLLjHiGpO0k=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR10MB5644
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10109 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 adultscore=0 phishscore=0
- mlxlogscore=668 suspectscore=0 spamscore=0 bulkscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2109030001
- definitions=main-2109170000
-X-Proofpoint-GUID: ho37_IRjxz0mDi_ylkIr9hjw721zT1K3
-X-Proofpoint-ORIG-GUID: ho37_IRjxz0mDi_ylkIr9hjw721zT1K3
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: +Mjh/J8YEbxsYpOobLIgbC7CcuiMc+kwRVaKYIR3DXImmy0BiUCnQBh8jqu5ZUqs3imSf/T2T2rw/coMxKWdinRq9blZ7hpRqPuORy8gOI4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR10MB4516
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For illustration purposes if we use this config for a bondeth0 =0A=
-with slaves eth0 and eth1=0A=
-=0A=
-"mode=3Dactive-backup arp_interval=3D100 arp_ip_target=3D192.168.1.1 ..."=
-=0A=
-=0A=
-and let's say eth0 is the current active slave and eth1 is the backup slave=
-.=0A=
-=0A=
-Currently bonding sends ARP requests over eth0 only.=0A=
-And our switch does not forward them back over to eth1.=0A=
-=0A=
-Let's say some packets keep coming in over eth1 every 1 second.=0A=
-And this brings the eth1 state to up (arp_validate not set).=0A=
-=0A=
-time t0:=0A=
-ARP probe sent over eth0.=0A=
-ARP reply comes back over eth0.=0A=
-So, eth0 remains up.=0A=
-But eth1 link state goes down due to lack of any incoming packets.=0A=
-=0A=
-time t0 + 1 second=0A=
-eth1 comes back up again due to arrival of that "some" packet.=0A=
-But only to go down quite soon again =0A=
-(no more incoming packets for another second).=0A=
-=0A=
-And this keeps repeating.=0A=
-=0A=
-Now, if we send the ARP probes over eth1 as well (every arp_interval),=0A=
-ARP response returns back for us over eth1.=0A=
-And this helps eth1's link state remain up and not go down.=0A=
-And we avoid the continuous link flapping.=0A=
-=0A=
-Seeking suggestion on adding a new option to select whether=0A=
-the ARP probes need to be sent over the backup slaves too.=0A=
-If there is a usefulness (at least in some scenarios), I can send out a pat=
-ch.=0A=
-The part that some might be able to relate is where some switches =0A=
-don't forward the ARP request over eth0 back on to eth1.=0A=
-=0A=
-Thanks,=0A=
-=0A=
-Venkat=0A=
-=0A=
+On Thu, Sep 16, 2021 at 11:49:18AM +0000, Vladimir Oltean wrote:
+> This will conflict with the other patch.... why didn't you send both as
+> part of a series? By not doing that, you are telling patchwork to
+> build-test them in parallel, which of course does not work:
+> https://patchwork.kernel.org/project/netdevbpf/patch/20210916012341.518512-1-colin.foster@in-advantage.com/
+> 
+> Also, why didn't you bump the version counter of the patch, and we're
+> still at v1 despite the earlier attempt?
+
+I wasn't sure if changing the names of the patch and the intent is what 
+would constitute a new "patch series" so then restart the counter for 
+the counters or not. I had figured "two new patches, two new counters"
+which I understand now was incorrect.
+
+In this particular case, should I have stuck with my first submission
+title:
+[PATCH v2 net] bug fix when writing MAC speed
+and submitted the two patches? 
+
+I assume it would only cause headaches if I incremented the counter and
+changed the name to something like
+[PATCH v2 net] remove unnecessary register writes
+or something simliar? Although your example below suggests I should
+maybe submit the next set as
+[PATCH v3 net] ocelot phylink fixes
+
+> 
+> git format-patch -2 --cover-letter --subject-prefix="PATCH v3 net" -o /opt/patches/linux/ocelot-phylink-fixes/v3/
+> ./scripts/get_maintainer.pl /opt/patches/linux/ocelot-phylink-fixes/v3/*.patch
+> ./scripts/checkpatch.pl --strict /opt/patches/linux/ocelot-phylink-fixes/v3/*.patch
+> # Go through patches, write change log compared to v2 using vimdiff, meld, git range-diff, whatever
+> # Write cover letter summarizing what changes and why. If fixing bugs explain the impact.
+> git send-email \
+> 	--to='netdev@vger.kernel.org' \
+> 	--to='linux-kernel@vger.kernel.org' \
+> 	--cc='Vladimir Oltean <vladimir.oltean@nxp.com>' \
+> 	--cc='Claudiu Manoil <claudiu.manoil@nxp.com>' \
+> 	--cc='Alexandre Belloni <alexandre.belloni@bootlin.com>' \
+> 	--cc='UNGLinuxDriver@microchip.com' \
+> 	--cc='"David S. Miller" <davem@davemloft.net>' \
+> 	--cc='Jakub Kicinski <kuba@kernel.org>' \
+> 	/opt/patches/linux/ocelot-phylink-fixes/v3/*.patch
+
+I've been using --to-cmd and --cc-cmd with get_maintainer.pl. If this is
+ill-advised, I'll stop. I noticed it seemed to determine the list on a
+per-patch-file basis instead of generating one single list.
+
+> 
+> Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> Please keep this tag but resend a new version. You can download the patch with the review tags automatically using:
+> git b4 20210916010938.517698-1-colin.foster@in-advantage.com
+> git b4 20210916012341.518512-1-colin.foster@in-advantage.com
+> 
+> where "git b4" is an alias configured like this in ~/.gitconfig:
+> 
+> [b4]
+> 	midmask = https://lore.kernel.org/r/%s
+> [alias]
+> 	b4 = "!f() { b4 am -t -o - $@ | git am -3; }; f"
+
+Thank you for all this. I understand you have better things to do than
+to hold my hand through this process, so I greatly appreciate your help.
