@@ -2,165 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86A9440F31D
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 09:20:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CEB840F377
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 09:45:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240815AbhIQHWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 03:22:08 -0400
-Received: from mout.kundenserver.de ([217.72.192.73]:51335 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245232AbhIQHVn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 03:21:43 -0400
-Received: from mail-wr1-f48.google.com ([209.85.221.48]) by
- mrelayeu.kundenserver.de (mreue108 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MZTua-1mMAcs3LDK-00WS52; Fri, 17 Sep 2021 09:20:20 +0200
-Received: by mail-wr1-f48.google.com with SMTP id q11so13518569wrr.9;
-        Fri, 17 Sep 2021 00:20:20 -0700 (PDT)
-X-Gm-Message-State: AOAM532SPEcujl2QPc8IMXQq+pB0k0jfbvK/SuBo2KwYcL6z46u4ZTEU
-        xZ8eNS4N/QpJ3cY/qjfn7bH78RuNQjyhLtIhNT8=
-X-Google-Smtp-Source: ABdhPJzdJSJ6F33yjr0CdyRsW+lkSspPGo4OPRsF+cxt6MZwRHtL6vt7o+1q/fpUCntoF20xXvSiehvIPKe8B/Avb6s=
-X-Received: by 2002:adf:f884:: with SMTP id u4mr9944710wrp.411.1631863220417;
- Fri, 17 Sep 2021 00:20:20 -0700 (PDT)
+        id S239213AbhIQHqu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 03:46:50 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:42538 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231263AbhIQHqu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 03:46:50 -0400
+Received: by mail-io1-f72.google.com with SMTP id i78-20020a6b3b51000000b005b8dd0f9e76so18853145ioa.9
+        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 00:45:28 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=qhsP2+cq+V34wONR8zohN2S7Vy1bYXDChrogQdy+HvA=;
+        b=O6FW4DyILdcEZIAfyYq3C3lVDrn0QJP3zCUzSmqfZfvZt1l9fmU5Ck40Mzjp5nJi2y
+         11QVPNM/LkqV4PTCpaWcou0QrdtIoZUavU0LppEw0XNggtAo/nQkgkK4ix1pEPAYW9wR
+         29WM3gM182rkEkeUdpjAanzDRF4UQzp5CjZSI6WGXeHYRuigkVphqAvwRam+gSn/aGx8
+         3EHJmdOP2EYuWMHqinmC+pquTdogBKd3K8+hriPmm8ZmVXBAhjvW0JPawVfKDRraA3et
+         mCaVvCWMQJ5Nk+eXxFitvUrkJ2i1Bs0i/a/3tcPIiPEOUzPTOqwj9FRCNh+ROPhvLAfT
+         AGuQ==
+X-Gm-Message-State: AOAM5326Ebc/8JlGEBwClXTTsDB3aQ510hdVgr8H4xF205bhqOEbObva
+        oAuShji72BeHJpE065qbjghQiY4s6vfDGYPfReX0CWuYeoX1
+X-Google-Smtp-Source: ABdhPJywQVM7bxgbMCGlFyaonYOt0+ZCdP7tNTOdXECGnpyCU0GwOMHdIoVIDu3qUEC0nK51gAqa/tgUBlfFad8m/JpmqbuGYIqf
 MIME-Version: 1.0
-References: <CA+G9fYtFvJdtBknaDKR54HHMf4XsXKD4UD3qXkQ1KhgY19n3tw@mail.gmail.com>
- <CAHk-=wisUqoX5Njrnnpp0pDx+bxSAJdPxfgEUv82tZkvUqoN1w@mail.gmail.com>
- <CAHk-=whF9F89vsfH8E9TGc0tZA-yhzi2Di8wOtquNB5vRkFX5w@mail.gmail.com>
- <36aa5cb7-e3d6-33cb-9ac6-c9ff1169d711@linuxfoundation.org>
- <CAK8P3a1vNx1s-tcjtu6VDxak4NHyztF0XZGe3wOrNbigx1f4tw@mail.gmail.com>
- <120389b9-f90b-0fa3-21d5-1f789b4c984d@linuxfoundation.org>
- <CAFd5g47MgGCoenw08hehegstQSujT7AwksQkxA7mQgKhChimNw@mail.gmail.com>
- <3bad5d2f-8ce7-d0b9-19ad-def68d4193dd@linuxfoundation.org>
- <CAFd5g47bZbqGgMn8PVa=DaSFfjnJsLGVsLTYzmmCOpdv-TfUSQ@mail.gmail.com>
- <CAK8P3a0wQC+9_3wJEACgOLa9C5_zLSmDfU=_79h_KMSE_9JxRw@mail.gmail.com>
- <CAFd5g44udqkDiYBWh+VeDVJ=ELXeoXwunjv0f9frEN6HJODZng@mail.gmail.com> <CAFd5g45=vkZL-H3EDrvYXvhMM2ekM_CBGN0ySyKitq=z+V+EwQ@mail.gmail.com>
-In-Reply-To: <CAFd5g45=vkZL-H3EDrvYXvhMM2ekM_CBGN0ySyKitq=z+V+EwQ@mail.gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Fri, 17 Sep 2021 09:20:03 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a3Atk72vb=JkQjqhR4PL00aUBQLXfzDvh=4DL5=rp0FmQ@mail.gmail.com>
-Message-ID: <CAK8P3a3Atk72vb=JkQjqhR4PL00aUBQLXfzDvh=4DL5=rp0FmQ@mail.gmail.com>
-Subject: Re: ipv4/tcp.c:4234:1: error: the frame size of 1152 bytes is larger
- than 1024 bytes [-Werror=frame-larger-than=]
-To:     Brendan Higgins <brendanhiggins@google.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ariel Elior <aelior@marvell.com>,
-        GR-everest-linux-l2@marvell.com, Wei Liu <wei.liu@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>, lkft-triage@lists.linaro.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        KUnit Development <kunit-dev@googlegroups.com>
+X-Received: by 2002:a05:6602:2c05:: with SMTP id w5mr7752796iov.160.1631864728261;
+ Fri, 17 Sep 2021 00:45:28 -0700 (PDT)
+Date:   Fri, 17 Sep 2021 00:45:28 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000073194a05cc2c1db6@google.com>
+Subject: [syzbot] WARNING: refcount bug in nr_release (2)
+From:   syzbot <syzbot+053c8d94c7f45da6e6c8@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, linux-hams@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        ralf@linux-mips.org, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:NuzFJeT2aMzpmFAJp2FWhBboQZtDkCJ3CsY9dMo64jXv+b3OlFO
- wLArjBrjhW+OJ6FkE/gZgAKM4enM8I+N3MR4ao459xLvY/pbqzn0zvKvag8xyjibulHxBA5
- eCfYC8wESoyP3lNqK16uLh4fYcHErIK27l7I3FIMY+SVI5aVlR8ia2+bm/nCu4hKqh1BXZ1
- D0A83fVvDm6UFhBVafoVQ==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:1zdVGf48HAA=:uqg8nAYAAgG2DJ6eK2U1fU
- S9FS1ttaogLXKnWho96HiNIzqXi8cl5eq3RB0S0gzvqHsnZivEUhrzQ4fAF3pRnwOyYaPUEnZ
- 3V3wLgcv5HMKzVGa/xRDM6PmFehpH0I1lPNRVdtIBaMaHVR0pxMPjtG/arVCMpWwo/9SGoCUW
- 2HxRzAs/t3ijopGxrruoayi2Bq+1BSv+pjR8EGwH886LQUW19tzIlbm57PkV7/KWdypAMGqaE
- rlCPwJk+IdVO3tfXRHaZxjFHZDhtlqKO1RKalHhpZnDefatkD4MT3FWlFjypcOiaz6YxX9YL2
- T5PVJraRMhE5jkFjW+pJwSBUo4pMOE2eruFr+mz+e6Pb+OzZV6ulhkph3I1pFazb7TNZGw3Op
- xGvqIWhYzls6etVv5IPTbzTYp+WJvnkCcK7r330pKMpK40qNEC9Cb4OHT80IK+7Xg1//kReWP
- nAGrVP5W1OZwZXCc8HMYAf/d4hzqX96BRN4VDswiLFHMr9OZCpXN7hl+TLjBivSFx7sfguOoJ
- KaYsT9hsx/rQQnFRCFjoweCDw1YvDUkSqiZEcYZwuSSWEAhjdPdKeF6Jh6eUATbgo691Tq3ZM
- QNa1u2Zyc7SYqc4uTcHxIoygcBJjHvpUKuGPStrkus8WC1sm0+7XqK8hT4dxMb5n1zLIFr8uR
- B1EH9Ge6m1uWuKmB4Cnere0NXtJCuTQN1rfInS/0MX+KyAsnwSKPXd7p2ik/zMq6rxjvwhSKo
- OfM1vp8443ilWaSzcL8HzHxfZzZNSY/hVZsXW3u954nP7iATFbhEKw7ANIqDOA0j7yHWeJHk7
- pM3/7xUWsddCoIMM4rkxo3MgsOAz/MhUj0LY6COw8zImYOBme784tEtaBJyvqk/UkKT/2wnju
- v5Rx/d1IxiucLtUFAFnw==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 17, 2021 at 8:16 AM Brendan Higgins
-<brendanhiggins@google.com> wrote:
->
-> On Thu, Sep 16, 2021 at 10:39 PM Brendan Higgins
-> <brendanhiggins@google.com> wrote:
-> >
-> > On Tue, Sep 14, 2021 at 3:04 PM Arnd Bergmann <arnd@arndb.de> wrote:
-> > >
-> > > On Tue, Sep 14, 2021 at 10:48 PM Brendan Higgins
-> > > <brendanhiggins@google.com> wrote:
-> > > >
-> > > > On Mon, Sep 13, 2021 at 1:55 PM Shuah Khan <skhan@linuxfoundation.org> wrote:
-> > > > >
-> > > > > On 9/8/21 3:24 PM, Brendan Higgins wrote:
-> [...]
-> > Alright, I incorporated all the above into a patchset that I think is
-> > ready to send out, but I had a couple of issues with the above
-> > suggestions:
+Hello,
 
-Thanks a lot for those suggestions.
+syzbot found the following issue on:
 
-> > - I could not find a config which causes a stacksize warning for
-> > sdhci-of-aspeed.
+HEAD commit:    c1b13fe76e95 Add linux-next specific files for 20210901
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=1564c986300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=e2afff7bc32736e5
+dashboard link: https://syzkaller.appspot.com/bug?extid=053c8d94c7f45da6e6c8
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
 
-I keep a history of my randconfig builds. This one only happened
-once before I fixed it, it may depend on some other combination of
-options. See my original defconfig file at
-https://pastebin.com/raw/XJxjVGYa
-rand/0xAB2DD5A0-failure:/git/arm-soc/drivers/mmc/host/sdhci-of-aspeed-test.c:47:1:
-error: the frame size of 1152 bytes is larger than 1024 bytes
-[-Werror=frame-larger-than=]
+Unfortunately, I don't have any reproducer for this issue yet.
 
-> > - test_scanf is not a KUnit test.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+053c8d94c7f45da6e6c8@syzkaller.appspotmail.com
 
-I have three defconfigs for this one, all on x86-64:
+------------[ cut here ]------------
+refcount_t: saturated; leaking memory.
+WARNING: CPU: 0 PID: 2068 at lib/refcount.c:22 refcount_warn_saturate+0x12d/0x1e0 lib/refcount.c:22
+Modules linked in:
+CPU: 0 PID: 2068 Comm: syz-executor.3 Not tainted 5.14.0-next-20210901-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:refcount_warn_saturate+0x12d/0x1e0 lib/refcount.c:22
+Code: 09 31 ff 89 de e8 f3 98 9e fd 84 db 0f 85 72 ff ff ff e8 a6 92 9e fd 48 c7 c7 60 00 e4 89 c6 05 62 76 82 09 01 e8 60 89 18 05 <0f> 0b e9 53 ff ff ff e8 87 92 9e fd 0f b6 1d 49 76 82 09 31 ff 89
+RSP: 0018:ffffc9000dd9fa78 EFLAGS: 00010282
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: ffff888095d91c80 RSI: ffffffff815dba38 RDI: fffff52001bb3f41
+RBP: 0000000000000001 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff815d581e R11: 0000000000000000 R12: ffff88803f939200
+R13: ffff8880a961a080 R14: ffff88803f939218 R15: ffff888011eccaa0
+FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f66614c8070 CR3: 00000000198d8000 CR4: 00000000001526f0
+Call Trace:
+ __refcount_add include/linux/refcount.h:201 [inline]
+ __refcount_inc include/linux/refcount.h:250 [inline]
+ refcount_inc include/linux/refcount.h:267 [inline]
+ sock_hold include/net/sock.h:702 [inline]
+ nr_release+0x3ba/0x450 net/netrom/af_netrom.c:520
+ __sock_release+0xcd/0x280 net/socket.c:649
+ sock_close+0x18/0x20 net/socket.c:1314
+ __fput+0x288/0x9f0 fs/file_table.c:280
+ task_work_run+0xdd/0x1a0 kernel/task_work.c:164
+ exit_task_work include/linux/task_work.h:32 [inline]
+ do_exit+0xbae/0x2a30 kernel/exit.c:825
+ do_group_exit+0x125/0x310 kernel/exit.c:922
+ get_signal+0x47f/0x2160 kernel/signal.c:2868
+ arch_do_signal_or_restart+0x2a9/0x1c40 arch/x86/kernel/signal.c:865
+ handle_signal_work kernel/entry/common.c:148 [inline]
+ exit_to_user_mode_loop kernel/entry/common.c:172 [inline]
+ exit_to_user_mode_prepare+0x17d/0x290 kernel/entry/common.c:209
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:291 [inline]
+ syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:302
+ do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x4665f9
+Code: Unable to access opcode bytes at RIP 0x4665cf.
+RSP: 002b:00007f1282a60218 EFLAGS: 00000246 ORIG_RAX: 00000000000000ca
+RAX: fffffffffffffe00 RBX: 000000000056bf88 RCX: 00000000004665f9
+RDX: 0000000000000000 RSI: 0000000000000080 RDI: 000000000056bf88
+RBP: 000000000056bf80 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 000000000056bf8c
+R13: 00007fffbb91b31f R14: 00007f1282a60300 R15: 0000000000022000
 
-rand86/0x30AD57FB-failure:/git/arm-soc/lib/test_scanf.c: In function
-'numbers_list_field_width_val_width':
-rand86/0x30AD57FB-failure:/git/arm-soc/lib/test_scanf.c:530:1: error:
-the frame size of 2488 bytes is larger than 2048 bytes
-[-Werror=frame-larger-than=]
-rand86/0x30AD57FB-failure:/git/arm-soc/lib/test_scanf.c: In function
-'numbers_list_field_width_typemax':
-rand86/0x30AD57FB-failure:/git/arm-soc/lib/test_scanf.c:488:1: error:
-the frame size of 2968 bytes is larger than 2048 bytes
-[-Werror=frame-larger-than=]
-rand86/0x30AD57FB-failure:/git/arm-soc/lib/test_scanf.c: In function
-'numbers_list':
-rand86/0x30AD57FB-failure:/git/arm-soc/lib/test_scanf.c:437:1: error:
-the frame size of 2488 bytes is larger than 2048 bytes
-[-Werror=frame-larger-than=]
 
-https://pastebin.com/raw/jUdY6d3G is the worst one of those
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-> > - Linus already fixed the thunderbolt test by breaking up the test cases.
-
-Ok.
-
-> > I am going to send out patches for the thunderbolt test and for the
-> > sdhci-of-aspeed test for the sake of completeness, but I am not sure
-> > if we should merge those two. I'll let y'all decide on the patch
-> > review.
->
-> Just in case I missed any interested parties on this thread, I posted
-> my patches here:
->
-> https://lore.kernel.org/linux-kselftest/20210917061104.2680133-1-brendanhiggins@google.com/T/#t
-
-Thanks! I'll reply to the particular patch as well, but I don't think
-that this is
-sufficient here:
-
-+CFLAGS_bitfield_kunit.o := $(call
-cc-option,-Wframe-larger-than=10240) $(DISABLE_STRUCTLEAK_PLUGIN)
-
-If 10KB is actually needed, this definitely overflows the 8KB stack on
-32-bit architectures.
-
-         Arnd
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
