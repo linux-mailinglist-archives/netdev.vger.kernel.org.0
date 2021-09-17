@@ -2,73 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C312740EEE4
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 03:45:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91CC940F07C
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 05:47:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242471AbhIQBqs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 21:46:48 -0400
-Received: from mail-il1-f173.google.com ([209.85.166.173]:43626 "EHLO
-        mail-il1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242460AbhIQBqr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 21:46:47 -0400
-Received: by mail-il1-f173.google.com with SMTP id b15so8598939ils.10;
-        Thu, 16 Sep 2021 18:45:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=SRwnAr4ILMQTscVFm9dj+WlM5ulz8L4gSSBzHDyH6hE=;
-        b=DhcF+WU5M/a4U5+noRdjbE8YGN7Gw0QKcgEr6XvZTActDAfFMoVn/VwaDqsGv1R91g
-         xKgvu8H2OUE/FrFn0abXVfT1uWmU4HBM3Fn63tr8PNORmeiLvs96eNx37XslnO9XxEA8
-         OUyeBgnU6FDVVdkI2QJFr6/SCBXsouX9O54BiMZxgPptg2yYbJBssdrJcqAtZpUGkgfy
-         wBBhYGK3JrxE/FQ5PNS2fWlRO1btI6t5fQIbM3gppgViOj3IVB87Z0nsl3+ZT2CvdGP7
-         FuLz4nwP2eLXuMHIs/v0guT1Ghu8eTskn4csmZsnCgdgTkaO9RNppSOT7Nzer0FGMAUm
-         uIaw==
-X-Gm-Message-State: AOAM533JvA9NZgFe9e5Sjv6/3dXKmw3ljNgp+Fcdca1aLUa/4HM6OFkc
-        /2AFOcT9Wh8N8HX+UchVEXJVlX6HKQ==
-X-Google-Smtp-Source: ABdhPJygin3qGV4r7vzWed2wcAhcroO7KQK88VkWP7w98SvJDjdIdKMV6DCIcvC+RzUU1axIysnQKQ==
-X-Received: by 2002:a05:6e02:156c:: with SMTP id k12mr6095416ilu.61.1631843126429;
-        Thu, 16 Sep 2021 18:45:26 -0700 (PDT)
-Received: from robh.at.kernel.org (96-84-70-89-static.hfc.comcastbusiness.net. [96.84.70.89])
-        by smtp.gmail.com with ESMTPSA id s7sm2543558ioe.11.2021.09.16.18.45.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Sep 2021 18:45:25 -0700 (PDT)
-Received: (nullmailer pid 1588176 invoked by uid 1000);
-        Fri, 17 Sep 2021 01:45:24 -0000
-Date:   Thu, 16 Sep 2021 20:45:24 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        netdev@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v2 02/23] dt-bindings: net: dsa: sja1105: update
- nxp,sja1105.yaml reference
-Message-ID: <YUPzNF0rPhjlQKDU@robh.at.kernel.org>
-References: <cover.1631785820.git.mchehab+huawei@kernel.org>
- <994ce6c6358746ff600459822b9f6e336db933c9.1631785820.git.mchehab+huawei@kernel.org>
+        id S244097AbhIQDtF convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 16 Sep 2021 23:49:05 -0400
+Received: from gw.math.univ-paris13.fr ([194.254.165.1]:5220 "EHLO
+        obelix.math.univ-paris13.fr" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S240920AbhIQDtE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 23:49:04 -0400
+Received: from DESKTOP-AH5A7AN.home (unknown [45.135.187.135])
+        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: landoulsi)
+        by obelix.math.univ-paris13.fr (Postfix) with ESMTPSA id E907836CC5;
+        Fri, 17 Sep 2021 02:38:56 +0200 (CEST)
+Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <994ce6c6358746ff600459822b9f6e336db933c9.1631785820.git.mchehab+huawei@kernel.org>
+Content-Transfer-Encoding: 8BIT
+Content-Description: Mail message body
+Subject: Re: Partnerskab
+To:     Recipients <assistant.sec@math.univ-paris13.fr>
+From:   "Dave Ramsden" <assistant.sec@math.univ-paris13.fr>
+Date:   Fri, 17 Sep 2021 01:38:53 +0100
+Reply-To: davdr1964@aol.com
+Message-Id: <20210917003856.E907836CC5@obelix.math.univ-paris13.fr>
+X-LAGA-MailScanner-Information: Please contact the ISP for more information
+X-LAGA-MailScanner-ID: E907836CC5.AD355
+X-LAGA-MailScanner: Found to be clean
+X-LAGA-MailScanner-From: assistant.sec@math.univ-paris13.fr
+X-Spam-Status: No
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 16 Sep 2021 11:55:01 +0200, Mauro Carvalho Chehab wrote:
-> Changeset 62568bdbe6f6 ("dt-bindings: net: dsa: sja1105: convert to YAML schema")
-> renamed: Documentation/devicetree/bindings/net/dsa/sja1105.txt
-> to: Documentation/devicetree/bindings/net/dsa/nxp,sja1105.yaml.
-> 
-> Update its cross-reference accordingly.
-> 
-> Fixes: 62568bdbe6f6 ("dt-bindings: net: dsa: sja1105: convert to YAML schema")
-> Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-> ---
->  Documentation/networking/dsa/sja1105.rst | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-
-Applied, thanks!
+16. september 2021.
+ 
+Er du åben for en forretningsouverture, der er et betydeligt beløb værd? Efter modtagelse af din bekræftelse til denne mail, vil jeg afsløre detaljer om min hensigt i min næste side mail.
+ 
+Angiv din interesse for engelsk, hvis det er muligt, for bedre kommunikation.
+ 
+Venlig hilsen,
+Dave Ramsden
+E-mail: davdr1964@aol.com
+__________________________
+Sekretær: Rose Anderson
