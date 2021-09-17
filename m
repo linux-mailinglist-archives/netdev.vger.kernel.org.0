@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C21DA40F915
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 15:26:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E151C40F913
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 15:26:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244786AbhIQN16 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 09:27:58 -0400
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:35300 "EHLO
+        id S243735AbhIQN1v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 09:27:51 -0400
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:41049 "EHLO
         esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241298AbhIQN1q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 09:27:46 -0400
+        with ESMTP id S241419AbhIQN1s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 09:27:48 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1631885184; x=1663421184;
+  t=1631885187; x=1663421187;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=PEhpboyKYhkZA63XA+bUNRdGy3auCyFQHbq/E5LZgck=;
-  b=fAgORmlWDjY0EJNmbfSQk9VUKi9xY11El3HIG80Meam0N2rTNSwnW2gO
-   /AKv86SZpzFw/0aMSvMLjiSnmWe1ER5nLoJ3D4gfxqoT1HjrYELH9/Ydz
-   ro2DjzVrRXlo5Cnj//+q2oR5JG4fcHlvW2+o4nh3S28ceptW2Y37S+9vU
-   MGUAY1MXDJr9C07Dc4IiNNVFLYP7UApJWMw6jM/m/dm31xctsuzLxtcXg
-   GBHGuGKVsxLrwUogy9x0u5IsN0kd4zcbd8EqDsCI5fWI+7p0PnMV8paJM
-   jS6EZqNSrKcMXYKHxz5+IAMEWvn+CJzAKHZY2i+lmxmkdOMaywyymePHa
-   A==;
-IronPort-SDR: +BEwzkOAvIJqQGE0yZaHrJTqVldx0kuIA0sCGDGnlnpsUstdKy1+W4xWAh4U/Bs1VrqTha9rhO
- vQxJilflgnyngS7MiEQCueM6YH+19/jsQMi3w3GlpOnM7rc42pSsECwJF2D7+XZqVlKxmUtUSg
- g0ZmtY5c3ymjf9+PW8lx6iRQcn/xE+6ZnHKISKOcEg4CLgX93fNBE9TsLu3WYttT87eK34ZWpw
- d0ABvMZbQTMKLWOqk+A82hmWIzXLg1F9vjq82341+NsHuAy58TxjexnK66+i6tPQ3bLqZCSPB9
- UXDUVKNHlMtnWuWD7kkowu4f
+  bh=QssFTqsZ5UAlTmqKAKaZZcz9WX/De78bpUot5wsvlI0=;
+  b=kdqCqkn8UdTe/9HIzpaw/fPcltHDHpLsmSGe2t/7t28qRP26v6qprOsY
+   +Zmhx1Bk+P6veJz5Uk/WuyGgON9OwaqJLMFbf1hEyX7TfmSVO/vAdmSQx
+   ZPtJvV/x8Cp0TgmOeRH8vs8Hb0s6DvQ5aPLNhtDtEYu44/Tmv4poVnOR3
+   RbQ+ZEDTNof2VaKqODI854tcl7zXa8F/uoASKUnW7/HL70eexgTO8AgOq
+   ml84K2Sk3YljbXXo0mxeanFmQfnP9DJ77pHdAN4fznAK+34PnoN65guB8
+   brk+jaXwrHpA0CGlrjCxZ0+w89NamOGj2TkqDbeZYSwGK2zbvLH9VjWL7
+   w==;
+IronPort-SDR: 3R+lmdd7iZ3OoRIT6G0O3tGMmM8OwlrF1F5NxpJQeOTH+XWAVDhMfegpBsQ6insIk5MSnJJEfJ
+ 9tkFEKc5i1h4bK8CY0WefzWua2a3eqjXUOtTTXIcme/ipP/JxWWgjaCi6/BGYhqIXheyLmbtch
+ kz6EVNOj3/+cPwuQWpNn5Zm49ikFLgm7jc/Hzrf2AFNPTaTarSthMGygPi6h92Dk3/vQjpgvYE
+ YzR2Q/USDQ9d+Q3iovpQ+x/oWmwyCJsx5WXfZbgO0Je583azCTLu16WrGTkP0MGFmkKY+vhVWT
+ g7AoaA6BkBNlCktK6HFaUoAr
 X-IronPort-AV: E=Sophos;i="5.85,301,1624345200"; 
-   d="scan'208";a="129681571"
+   d="scan'208";a="136363995"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Sep 2021 06:26:23 -0700
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Sep 2021 06:26:27 -0700
 Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
  chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Fri, 17 Sep 2021 06:26:23 -0700
+ 15.1.2176.14; Fri, 17 Sep 2021 06:26:25 -0700
 Received: from rob-dk-mpu01.microchip.com (10.10.115.15) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Fri, 17 Sep 2021 06:26:22 -0700
+ 15.1.2176.14 via Frontend Transport; Fri, 17 Sep 2021 06:26:24 -0700
 From:   Claudiu Beznea <claudiu.beznea@microchip.com>
 To:     <nicolas.ferre@microchip.com>, <davem@davemloft.net>,
         <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH v2 3/4] net: macb: add support for mii on rgmii
-Date:   Fri, 17 Sep 2021 16:26:14 +0300
-Message-ID: <20210917132615.16183-4-claudiu.beznea@microchip.com>
+Subject: [PATCH v2 4/4] net: macb: enable mii on rgmii for sama7g5
+Date:   Fri, 17 Sep 2021 16:26:15 +0300
+Message-ID: <20210917132615.16183-5-claudiu.beznea@microchip.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20210917132615.16183-1-claudiu.beznea@microchip.com>
 References: <20210917132615.16183-1-claudiu.beznea@microchip.com>
@@ -58,53 +58,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cadence IP has option to enable MII support on RGMII interface. This
-could be selected though bit 28 of network control register. This option
-is not enabled on all the IP versions thus add a software capability to
-be selected by the proper implementation of this IP.
+Both MAC IPs available on SAMA7G5 support MII on RGMII feature.
+Enable these by adding proper capability to proper macb_config
+objects.
 
 Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
 ---
- drivers/net/ethernet/cadence/macb.h      | 3 +++
- drivers/net/ethernet/cadence/macb_main.c | 3 +++
- 2 files changed, 6 insertions(+)
+ drivers/net/ethernet/cadence/macb_main.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/cadence/macb.h b/drivers/net/ethernet/cadence/macb.h
-index c33e98bfa5e8..5620b97b3482 100644
---- a/drivers/net/ethernet/cadence/macb.h
-+++ b/drivers/net/ethernet/cadence/macb.h
-@@ -246,6 +246,8 @@
- #define MACB_SRTSM_OFFSET	15 /* Store Receive Timestamp to Memory */
- #define MACB_OSSMODE_OFFSET	24 /* Enable One Step Synchro Mode */
- #define MACB_OSSMODE_SIZE	1
-+#define MACB_MIIONRGMII_OFFSET	28 /* MII Usage on RGMII Interface */
-+#define MACB_MIIONRGMII_SIZE	1
- 
- /* Bitfields in NCFGR */
- #define MACB_SPD_OFFSET		0 /* Speed */
-@@ -713,6 +715,7 @@
- #define MACB_CAPS_GEM_HAS_PTP			0x00000040
- #define MACB_CAPS_BD_RD_PREFETCH		0x00000080
- #define MACB_CAPS_NEEDS_RSTONUBR		0x00000100
-+#define MACB_CAPS_MIIONRGMII			0x00000200
- #define MACB_CAPS_CLK_HW_CHG			0x04000000
- #define MACB_CAPS_MACB_IS_EMAC			0x08000000
- #define MACB_CAPS_FIFO_MODE			0x10000000
 diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index d13fb1d31821..cdf3e35b5b33 100644
+index cdf3e35b5b33..e2730b3e1a57 100644
 --- a/drivers/net/ethernet/cadence/macb_main.c
 +++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -684,6 +684,9 @@ static void macb_mac_config(struct phylink_config *config, unsigned int mode,
- 		} else if (state->interface == PHY_INTERFACE_MODE_10GBASER) {
- 			ctrl |= GEM_BIT(PCSSEL);
- 			ncr |= GEM_BIT(ENABLE_HS_MAC);
-+		} else if (bp->caps & MACB_CAPS_MIIONRGMII &&
-+			   bp->phy_interface == PHY_INTERFACE_MODE_MII) {
-+			ncr |= MACB_BIT(MIIONRGMII);
- 		}
- 	}
+@@ -4597,7 +4597,8 @@ static const struct macb_config zynq_config = {
+ };
  
+ static const struct macb_config sama7g5_gem_config = {
+-	.caps = MACB_CAPS_GIGABIT_MODE_AVAILABLE | MACB_CAPS_CLK_HW_CHG,
++	.caps = MACB_CAPS_GIGABIT_MODE_AVAILABLE | MACB_CAPS_CLK_HW_CHG |
++		MACB_CAPS_MIIONRGMII,
+ 	.dma_burst_length = 16,
+ 	.clk_init = macb_clk_init,
+ 	.init = macb_init,
+@@ -4605,7 +4606,8 @@ static const struct macb_config sama7g5_gem_config = {
+ };
+ 
+ static const struct macb_config sama7g5_emac_config = {
+-	.caps = MACB_CAPS_USRIO_DEFAULT_IS_MII_GMII | MACB_CAPS_USRIO_HAS_CLKEN,
++	.caps = MACB_CAPS_USRIO_DEFAULT_IS_MII_GMII |
++		MACB_CAPS_USRIO_HAS_CLKEN | MACB_CAPS_MIIONRGMII,
+ 	.dma_burst_length = 16,
+ 	.clk_init = macb_clk_init,
+ 	.init = macb_init,
 -- 
 2.25.1
 
