@@ -2,149 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3D2B410046
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 22:19:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF9E441004B
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 22:23:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235138AbhIQUUh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 16:20:37 -0400
-Received: from mail-eopbgr1400101.outbound.protection.outlook.com ([40.107.140.101]:6162
-        "EHLO JPN01-TY1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231656AbhIQUUe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Sep 2021 16:20:34 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=F2pw75sFkwtjrRBDuZ2HSb+62sYvG8mwoY1r9PKZo5gknezDIql1wgySB7ihdrpJiEo3lPPsekdUrp11ATXapCt4TfZp32o4r4M0zJbrlI+NA5mvKcw/2SC0Qj62ITquBFdJu86Xfei8T3xQF4O9DJgGQL3PLOREEdFmapmHNs282Kdz9t6xWlNTIebmFjt8VTsauQRAxin0ZJmvD65t4HOd8thiPHYhjgYbLkn2tvvaAouFTAR9sKytXHidNRryrtBWv52WHrHyKoI0X3UqOQIqdwYT422ct/9pgJ8IwAh4NJKTxQNG/sHYELY5QiGsTP8cF9m3n/+ERFbL+D2eGA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=oHxiRO9bpM0rm79jgAL0KvFr+IBLs1i1ItTeBzElhTg=;
- b=fHC2hLEHeqafGf/VNaOiOB2j18RB1/zy1PWlxHoMcP66X37U6UwHZG5xjZWS7fY5DC31izs5t93ZIsSGnPEEuE0UEBLoXSknZ5fE276CRdAvNiAMhTp83x93lV+OFELRW/yZngWdTpoc/2D0LCVrMUXzY24RUpblXpOXUKVYp8arAJQ78nwdgpyOF3c8dT/ipwEiVYJ7GafJhnDhYM8xAxNAGDkeUTOFNemdLdS7JmNV7lGYLfNZAXRxVvXfydS9wH/PX8pOL58LZ11PRKPD+viKNId9vcY/dK/cOMStJp6LwRS5t/f7Ec0zmVYUByzIzc6vBATBUpB3LtQFxk0Faw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
- dkim=pass header.d=renesas.com; arc=none
+        id S236732AbhIQUZS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 16:25:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33002 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231656AbhIQUZQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 16:25:16 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A49EC061574
+        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 13:23:54 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id nn5-20020a17090b38c500b0019af1c4b31fso8217846pjb.3
+        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 13:23:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oHxiRO9bpM0rm79jgAL0KvFr+IBLs1i1ItTeBzElhTg=;
- b=WZXNxVPmxnX9mvpqiGTbxXX0BTfloDsi7Nf1HB400tHpVU3yFzE9rpvSZ7tS7qpMMfo/F52eY9fBp8Lq4OBQbYxCyKwioUhfmP2A1DFS9jnob/zx+33RugsXQNJtWelzLn/T1Q9Z3UXDHIBcwUYr3fzlakx2EyW5Cp7D7C4GCRc=
-Received: from OS3PR01MB6593.jpnprd01.prod.outlook.com (2603:1096:604:101::7)
- by OSAPR01MB4642.jpnprd01.prod.outlook.com (2603:1096:604:60::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.14; Fri, 17 Sep
- 2021 20:19:08 +0000
-Received: from OS3PR01MB6593.jpnprd01.prod.outlook.com
- ([fe80::84ad:ad49:6f8:1312]) by OS3PR01MB6593.jpnprd01.prod.outlook.com
- ([fe80::84ad:ad49:6f8:1312%6]) with mapi id 15.20.4523.017; Fri, 17 Sep 2021
- 20:19:08 +0000
-From:   Min Li <min.li.xe@renesas.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net v2 2/2] ptp: idt82p33: implement double dco time
- correction
-Thread-Topic: [PATCH net v2 2/2] ptp: idt82p33: implement double dco time
- correction
-Thread-Index: AQHXq9Hw5KOUR0ss3UKvyfLSiPV3fKuoo+GAgAAE1HA=
-Date:   Fri, 17 Sep 2021 20:19:08 +0000
-Message-ID: <OS3PR01MB65936ADCEF63D966B44C5FEFBADD9@OS3PR01MB6593.jpnprd01.prod.outlook.com>
-References: <1631889589-26941-1-git-send-email-min.li.xe@renesas.com>
-        <1631889589-26941-2-git-send-email-min.li.xe@renesas.com>
- <20210917125401.6e22ae13@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210917125401.6e22ae13@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-CA, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=renesas.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 1ddf71bf-de82-42df-0cd6-08d97a18676c
-x-ms-traffictypediagnostic: OSAPR01MB4642:
-x-microsoft-antispam-prvs: <OSAPR01MB464202123F50620806986FA1BADD9@OSAPR01MB4642.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: du77eJPZpZJFrPAkJVDJ/ws/SJ3hezYBTHCrleDlTscRzZK/NETjLDexIfI6Fijp9TY6HpzL+X29+lX8lbyDX9rtYTxiUeJAbdT6Iv0okgqRQM1c7NPMUpjoydGU/YkNWKesS1aCWlN7BanL5Lqo8+Kc30wyLMfi8dCnOv2jz4zl2CGoQYOkiPDbg4KfqYxLwYzsbycpAFl1MiCcP1DJuYVZmhe/sfgXp9c+pEi1wft/fS/AR4IG2fu4AzW8Oq2ypPOPhEJCnZ+OwKx1PlgqyUZ02YzZYVxNwoO1MmA8huCs/ABWJ5ERPng8Ta8Q8jEXBbesrWDBwrthZHkvkiDmwLQkXDrHHjeWj2FVImFf1jicpf+cplAqq+3plyrEhoPdOSDmWF64HchyX2WP+DcAtvJxHM9qiyGSeu1uHsi6FG67UtQSiCsXjSRtkEHM0NCswiE48OkuHtVlRLipPbZfxir01rqk+1RonlX6nXlPsMnCVi4vqHSGdoVCN/+IdRTHFeqIkkYaUDV6CI6CbBcf13wghKpDxfxW5RZuy1uyn/OQtXka9YiFS9ZXGIOhjeSHcsBc2GlbSfIwJ78q29SjW9FAVjd9MO2JJ4cl39ar+0yAVq4jZ6MU4+wuqIlbCxJU32KQPxcfz17sNuNi/hF1oX0EFUxP3tVv/F52ypQU5HneP1tKUguNAXgXS2a4EMq4ufaEPLyk4N+8dK7dIgDGiA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS3PR01MB6593.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(39860400002)(136003)(366004)(376002)(396003)(186003)(64756008)(66556008)(66946007)(66476007)(66446008)(8936002)(76116006)(122000001)(38100700002)(4326008)(8676002)(5660300002)(26005)(6916009)(71200400001)(9686003)(38070700005)(52536014)(316002)(54906003)(55016002)(6506007)(2906002)(7696005)(86362001)(33656002)(83380400001)(478600001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?CcN1e3XAHn5NzvTGjQaqbDZ9sWe9nS/i6MpgfpUWbC3+gpk8dR0NMGZMpItp?=
- =?us-ascii?Q?lOyQJjBTjOG0hJfrboDha0JsSRgvED0eP0KpDK/a1QOm05uspfLR3dyU1BaB?=
- =?us-ascii?Q?kdX8OpAzCWzW/YFusp4v5L6ykU5XbA06j/GLT/cWyY4N3m8fOefb3Z63RoXl?=
- =?us-ascii?Q?UAo5Qs8WnCaFe3ZtmAGjAnJap1L0tTD58gvTjbNYtNziDz8Akz5gLGRSn/73?=
- =?us-ascii?Q?5Il3EqyTZKRpDf0+IS7nommJT6GjnaViGXlwMJ3YMab0l6zwslsyCkPkiPCc?=
- =?us-ascii?Q?fzWV/bMhZB0MpJauyTn+4CCAQ/Dx9v5iN0di6C2dCHFOWpTtEMXqYy6g8BX3?=
- =?us-ascii?Q?vQ8S5vmlbzK9dUaGvjy4b43WI48vDGCYVjFzFYDOSoVgykY9EfnlbsZNKLnP?=
- =?us-ascii?Q?5GKYksEl70k+9eRtM4/QMg0G53Vrq7eMMoBhLeMv1reNLkyIhnqcqoM9XMG/?=
- =?us-ascii?Q?i7RYiSbzM/OCy/1RBbnRJmO8N9eS4drSxEYX0A7MzLLT0Eg15fY98QVw4J48?=
- =?us-ascii?Q?i7D76tSUk96WASwqvteWRlppF7XLjOm/2pAZs3+vsrus58Fx7QGraPHrefkU?=
- =?us-ascii?Q?vbJtKa5lA3+BXJMbyScc4myDWIS2DHSEMo1nIHcMrDkxGtUJYEbCewwsNEvq?=
- =?us-ascii?Q?BOBE9MshFwgJrvZTLTrodlLpfbudbWlevv8F3uj6JevlPtKseV4qgvkgJGIS?=
- =?us-ascii?Q?DOK7VHb4n9H+Bko60sZZu47H5lNVTVKej/19o5TB8J3f3PxeW0m0qH9MZdQ+?=
- =?us-ascii?Q?QjKm05Q9edmFeZ2cv3/5TZERBRn1mddaqjce2T0H0joNFMpbpA4xWUW5lwq0?=
- =?us-ascii?Q?f6SF3B3wWc2SCxNXYE2/vjn6iEEXjbisUufNBq29m28OphBXufoGyl7q/6f/?=
- =?us-ascii?Q?R8QxnZkCD5bCtoHSx125Z1ZS1+ZV0V/0vQZQeA4SEGVh68sJFjjiJ6ttKUza?=
- =?us-ascii?Q?3w8GTVTWD0Iv8PqHso16Z9XOvl4NOW7gYx3nXZes7hNJYeJjr+dHaDIixBG7?=
- =?us-ascii?Q?fgeRRPUzu3fsbjI7UpxT+iOzhYWXkX4/DDORCS7dWLmHDmjJRMVFm1/daQ9R?=
- =?us-ascii?Q?HX5v2yyj5XOzgMF4E1enOk81m5Po+kip89SKz4qNwDBNCIG/skRPkEtrulki?=
- =?us-ascii?Q?jEQjZ+94cONrR890Wod8FDlNWHsiKj9oPWKdKN766PaZfF+gJ/FNqiifhK0j?=
- =?us-ascii?Q?hXbkv06UUHYI4MZczKEPpBJhqLS0bPPlXl8u6KNbFgid7bQty+L78TzSv73u?=
- =?us-ascii?Q?f72IjO9+IGzvMIlVX+hK+GwOWdFhQjKoh41IVBtpHoHTBKNnZCu2NMsA2q5/?=
- =?us-ascii?Q?iPHDDlNB8lD6l4UKKTKagzPt?=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=G68LQzSZpMRTYksOEIRHyybj5emq5qa1W4kuhkkwq8U=;
+        b=mX8tG9BzSL+8xUo7RAA2a0XxrUkF/PLsh12EwDyH8Rfi02f/jN5y8P2HnJ+BktTNmV
+         L6h0fBPjg0nblqCVyjmetCieMotIafGn7fdBtkpwFM3nmD3wIs0PbanP0OIQalqKD31B
+         10fUYSD0y9H3fssSn88er4/58gpHdycg8hnNKfFzGLZrJVcFAY0ulXvVOhpQZJh4ZO3u
+         /IIdwevxkD7XK7oaAkVxQVbUkIvBGwETwXtQfWPlRFEopKamwVsMHYfG5DRyZsnjnG3S
+         rCxke5oHzkAin1rmg8mtfU1hXyRdCQg/u1W6WyMRIhoacrNbUaxfyETMB5Bdo2tBSvIB
+         WL6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=G68LQzSZpMRTYksOEIRHyybj5emq5qa1W4kuhkkwq8U=;
+        b=HsK4FowfH3+0Nzofipt9tF6IX5kWb7shE0RdHV7S4mlrdKkP85llSTPmvI1DBoRfPj
+         nEuCtKS6hd6gqqtCIvJuycNf76fxvFN48udCaYwtJvPV01I8hBRINfqkXMVLJQS/tDO8
+         xQGXDCrCzxn59PTsys3tvUi85NX9XEG3BvWHQBk9ARbI1BHvK3KLCeYmrmixRNPMfmCR
+         xpC5Zgt7ZR3Yxc2yk44GNosQroWXULEIyA3BJxypLKcz5s00xDCT5HtlrjLU0NiIxD47
+         PxFbZqlc9w2SPdbvosp+QoqUOluyhsC3fJ5V7e6o/m6UX+zm+OgxkcUsli5RoEjHvp0E
+         QNDg==
+X-Gm-Message-State: AOAM5325YKO0JXZZ/Y4CSLNYpELRwqntjgKYIC9Cl6iVlaiX8fOSAXNe
+        t4sSRkLaMLynnPhrpqRCGuuM+VJahXk=
+X-Google-Smtp-Source: ABdhPJxkmZwbCSPczv0Y3suJ1WC6HPiM5Z1iqewLOuU1FcyQKyqemmNRYsiau/d6wB5KUrAWg/KEEA==
+X-Received: by 2002:a17:902:784e:b0:139:d4ee:899e with SMTP id e14-20020a170902784e00b00139d4ee899emr11322792pln.48.1631910233105;
+        Fri, 17 Sep 2021 13:23:53 -0700 (PDT)
+Received: from localhost.localdomain ([49.206.116.228])
+        by smtp.googlemail.com with ESMTPSA id l6sm6972276pff.74.2021.09.17.13.23.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Sep 2021 13:23:52 -0700 (PDT)
+From:   Gokul Sivakumar <gokulkumar792@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Gokul Sivakumar <gokulkumar792@gmail.com>,
+        David Ahern <dsahern@gmail.com>, stephen@networkplumber.org
+Subject: [PATCH iproute2-next] lib: bpf_legacy: add prog name, load time, uid and btf id in prog info dump
+Date:   Sat, 18 Sep 2021 01:53:38 +0530
+Message-Id: <20210917202338.1810837-1-gokulkumar792@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: OS3PR01MB6593.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1ddf71bf-de82-42df-0cd6-08d97a18676c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Sep 2021 20:19:08.1130
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: x0+IH+YK3W2juEflrOK6hCOnFxUVwNwaYyICo3NIkg4k2Vhb4cXgR0Vp4e5oWR0/En53AFau/bSSUCAPzVLfZw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSAPR01MB4642
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->=20
-> > @@ -29,6 +29,14 @@ module_param(phase_snap_threshold, uint, 0);
-> > MODULE_PARM_DESC(phase_snap_threshold,
-> >  "threshold (1000ns by default) below which adjtime would ignore");
-> >
-> > +static bool delayed_accurate_adjtime =3D false;
-> > +module_param(delayed_accurate_adjtime, bool, false);
-> > +MODULE_PARM_DESC(delayed_accurate_adjtime,
-> > +"set to true to use more accurate adjtime that is delayed to next
-> > +1PPS signal");
->=20
-> Module parameters are discouraged. If you have multiple devices on the
-> system module parameters don't allow setting different options depending
-> on device. Unless Richard or someone else suggests a better API for this
-> please use something like devlink params instead (and remember to
-> document them).
->=20
-> > +static char *firmware;
-> > +module_param(firmware, charp, 0);
->=20
+The BPF program name is included when dumping the BPF program info and the
+kernel only stores the first (BPF_PROG_NAME_LEN - 1) bytes for the program
+name.
 
-Hi Jacob
+$ sudo ip link show dev docker0
+4: docker0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 xdpgeneric qdisc noqueue state UP mode DEFAULT group default
+    link/ether 02:42:4c:df:a4:54 brd ff:ff:ff:ff:ff:ff
+    prog/xdp id 789 name xdp_drop_func tag 57cd311f2e27366b jited
 
-Yes, this was suggested by Richard back then
+The BPF program load time (ns since boottime), UID of the user who loaded
+the program and the BTF ID are also included when dumping the BPF program
+information when the user expects a detailed ip link info output.
 
-On Fri, Jun 25, 2021 at 02:24:24PM +0000, Min Li wrote:
-> How would you suggest to implement the change that make the new driver be=
-havior optional?
+$ sudo ip -details link show dev docker0
+4: docker0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 xdpgeneric qdisc noqueue state UP mode DEFAULT group default
+    link/ether 02:42:4c:df:a4:54 brd ff:ff:ff:ff:ff:ff promiscuity 0 minmtu 68 maxmtu 65535
+    bridge forward_delay 1500 hello_time 200 max_age 2000 ageing_time 30000 stp_state 0 priority 32768 vlan_filt
+ering 0 vlan_protocol 802.1Q bridge_id 8000.2:42:4c:df:a4:54 designated_root 8000.2:42:4c:df:a4:54 root_port 0 r
+oot_path_cost 0 topology_change 0 topology_change_detected 0 hello_timer    0.00 tcn_timer    0.00 topology_chan
+ge_timer    0.00 gc_timer  265.36 vlan_default_pvid 1 vlan_stats_enabled 0 vlan_stats_per_port 0 group_fwd_mask
+0 group_address 01:80:c2:00:00:00 mcast_snooping 1 mcast_router 1 mcast_query_use_ifaddr 0 mcast_querier 0 mcast
+_hash_elasticity 16 mcast_hash_max 4096 mcast_last_member_count 2 mcast_startup_query_count 2 mcast_last_member_
+interval 100 mcast_membership_interval 26000 mcast_querier_interval 25500 mcast_query_interval 12500 mcast_query
+_response_interval 1000 mcast_startup_query_interval 3124 mcast_stats_enabled 0 mcast_igmp_version 2 mcast_mld_v
+ersion 1 nf_call_iptables 0 nf_call_ip6tables 0 nf_call_arptables 0 addrgenmode eui64 numtxqueues 1 numrxqueues
+1 gso_max_size 65536 gso_max_segs 65535
+    prog/xdp id 789 name xdp_drop_func tag 57cd311f2e27366b jited load_time 2676682607316255 created_by_uid 0 btf_id 708
 
-I would say, module parameter or debugfs knob.
+Signed-off-by: Gokul Sivakumar <gokulkumar792@gmail.com>
+---
+ lib/bpf_legacy.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-Thanks,
-Richard
+diff --git a/lib/bpf_legacy.c b/lib/bpf_legacy.c
+index 91086aa2..a0643000 100644
+--- a/lib/bpf_legacy.c
++++ b/lib/bpf_legacy.c
+@@ -203,12 +203,32 @@ int bpf_dump_prog_info(FILE *f, uint32_t id)
+ 	if (!ret && len) {
+ 		int jited = !!info.jited_prog_len;
+ 
++		if (info.name)
++			print_string(PRINT_ANY, "name", "name %s ", info.name);
++
+ 		print_string(PRINT_ANY, "tag", "tag %s ",
+ 			     hexstring_n2a(info.tag, sizeof(info.tag),
+ 					   tmp, sizeof(tmp)));
+ 		print_uint(PRINT_JSON, "jited", NULL, jited);
+ 		if (jited && !is_json_context())
+ 			fprintf(f, "jited ");
++
++		if (show_details) {
++			if (info.load_time) {
++				/* ns since boottime */
++				print_lluint(PRINT_ANY, "load_time",
++					     "load_time %llu ", info.load_time);
++
++				print_luint(PRINT_ANY, "created_by_uid",
++					    "created_by_uid %lu ",
++					    info.created_by_uid);
++			}
++
++			if (info.btf_id)
++				print_luint(PRINT_ANY, "btf_id", "btf_id %lu ",
++					    info.btf_id);
++		}
++
+ 		dump_ok = 1;
+ 	}
+ 
+-- 
+2.25.1
 
-> What's the point of this? Just rename the file in the filesystem.
-
-We use this parameter to specify firmware so that module can be autoloaded
-/etc/modprobe.d/modname.conf
