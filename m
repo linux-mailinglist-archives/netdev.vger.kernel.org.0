@@ -2,337 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CAD240FCC0
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 17:39:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 207F140FCC3
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 17:40:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244242AbhIQPlL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 11:41:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:54368 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S243645AbhIQPko (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 11:40:44 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1631893156;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=DPMZQjGr/REOSZoBnm/6ceWEy5fNbm264K7q21o8L/E=;
-        b=dcXIRAUM/lg87eDEcaZO4tDbpQRx873xpknvbSig5NQkOqwwsGikZ/ioNiB3H4cdqOjNeW
-        dfDdP2xDPh2cqObPzBeQ6+a39tzfLj3dff77sQMA+EpcXcBiPJkSrJyoTsVKPD+VWxhSEa
-        TYtFUl8n9XEKe2/sPnrNa1swjtKkhBI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-441--UN7reAHOfO3eV0QT_LFoQ-1; Fri, 17 Sep 2021 11:39:15 -0400
-X-MC-Unique: -UN7reAHOfO3eV0QT_LFoQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 890701084683;
-        Fri, 17 Sep 2021 15:39:13 +0000 (UTC)
-Received: from gerbillo.redhat.com (unknown [10.39.192.44])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D924118A8F;
-        Fri, 17 Sep 2021 15:39:11 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Ayush Sawal <ayush.sawal@chelsio.com>,
-        Eric Dumazet <edumazet@google.com>, mptcp@lists.linux.dev
-Subject: [RFC PATCH 5/5] tcp: remove sk_{tr}x_skb_cache
-Date:   Fri, 17 Sep 2021 17:38:40 +0200
-Message-Id: <936af3441ff8972df542fb571ea0ecfe031611fb.1631888517.git.pabeni@redhat.com>
-In-Reply-To: <cover.1631888517.git.pabeni@redhat.com>
-References: <cover.1631888517.git.pabeni@redhat.com>
-MIME-Version: 1.0
+        id S243822AbhIQPlV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 11:41:21 -0400
+Received: from mail-dm6nam08on2124.outbound.protection.outlook.com ([40.107.102.124]:58501
+        "EHLO NAM04-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S243684AbhIQPko (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Sep 2021 11:40:44 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nDHB2vi4zZgkRloWYqj5SXE/RmuztuB2QQwPExtjg5vxV2nMl3IlDFH2mWDYfj7yS4vqNKwSAGgtCzlyEanRqT1pfp1ClRp+1fI6bqIfhCtYnqedH/yjNneicKu4MgXS8LDVY9iVjiNZ2Jvbgpg+ceegXnzz8wprALXw07rMQVCD+3NOtQzYkorVJWnv0Crvgpu+vbX6FBM6UYJsR25LaPX36tiF2NftzMoN+qxkPJOQL7bHD9HeJAEzDAsOn6cnuuQf/NPqA7bY6Opb3XMn5ZZrpLZzWpTL1xJ/iALQHQJRaIuBsnZfKYs0CReMpt2InekQQBFliJk9e2ZHSjZ8Cw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
+ bh=+608CO442Q1zfrjS4eaYZ+luJKJLi4AvrJhaVCIS5yw=;
+ b=LHodfiQ55oJikLbiCDVIrQlTXX/kvbOBLIbTpoeNA99Y0yYaWMblnWZHMO+sY/liPNNKNllsQFwYzx942xivRGDgFlHBN1vUk5WY1yLrsU7G6Foologaa0n9QWHmmxVqEjkM7K+ODa/364lZQvQdvRZM8n34xJ0emwZsB2NZYc/A7EO0G1NxUmzzNUBbpQnfb7lpA/6tokRCd7hT6BbKZ7q4ZlIk/NU9rABDBY8ZO/pBswuiz+UgSEA35dC6bLhSr3g+kbYOWssENGbpHEf3q6glOg4fftMJy2pZg16rKwqNb1B9a18PxAfm7h1fp0RvS3Lf6awQma/bliR7WMKwxA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+608CO442Q1zfrjS4eaYZ+luJKJLi4AvrJhaVCIS5yw=;
+ b=Vyjhl0KcMj0WX1hpXdXRgyDsi1lq1bfprfzUK/oYAoZ8wzRv5/SBdXA9G7n8YlfrYYTcer7JMVWgsZC+dImOoI3Lcltj1WTiC/r9yPNf/gsrRcLEXhfYyz0B+KQ1trrfkYSEVlJLZCs2x7ZSejKRqHJoQhoZ0AFqfGid7b3bTok=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none
+ header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by MWHPR10MB1933.namprd10.prod.outlook.com
+ (2603:10b6:300:10b::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.14; Fri, 17 Sep
+ 2021 15:39:18 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::bc3f:264a:a18d:cf93]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::bc3f:264a:a18d:cf93%7]) with mapi id 15.20.4523.017; Fri, 17 Sep 2021
+ 15:39:18 +0000
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH v3 net 0/2] ocelot phylink fixes
+Date:   Fri, 17 Sep 2021 08:39:03 -0700
+Message-Id: <20210917153905.1173010-1-colin.foster@in-advantage.com>
+X-Mailer: git-send-email 2.25.1
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: text/plain
+X-ClientProxiedBy: BYAPR02CA0055.namprd02.prod.outlook.com
+ (2603:10b6:a03:54::32) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
+MIME-Version: 1.0
+Received: from localhost.localdomain (67.185.175.147) by BYAPR02CA0055.namprd02.prod.outlook.com (2603:10b6:a03:54::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.14 via Frontend Transport; Fri, 17 Sep 2021 15:39:17 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b58a59a9-9f92-4d3c-a862-08d979f14fc5
+X-MS-TrafficTypeDiagnostic: MWHPR10MB1933:
+X-Microsoft-Antispam-PRVS: <MWHPR10MB193342EFFA0D6F401479057AA4DD9@MWHPR10MB1933.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 2MkPpk/7ahzVa/j2zvuyexSW6XUxH5QDRe2U9tHabNSvOquFEVTO45giBupXy4w6iAlHIzzWYr4K3PQP/tagYLZkQGtHnHiv/zGp95NABwfn8uwF1cHpoLPtjZBCbJX+zPW6gF9yr4jfdvU3v39hS9ZuUQwd6/DxosHgeVVBX3AXn1iYeM7JEWgapLi7JglRne+f+mLO6MP0CZOwkzU24uORyIhOxrp1d9Ozu7M2PAgj9SVDEdcircO27Dz0rtr5hbk0iQcqtiRfVe0hunSKNjxOsYCqnU6IB+d/5Tb3kj3kBO049UHxLPj1zxqagSqC5ShxgUIagcGND6P/rG1zcq4kZyAshmgfREgiKYIQyEtEk4auoZR+I1nsSg8DBLeLV46sheYyrhInlOUN4k5mixmvj6WnGxQspaIaFnPjvGiKvBPIxKFAMwW080pjRrBh+QJZdsev9H/fKCxXDVejZswhGWs9YbhEneG3b9MsnHhCqy4eDvd0FSY0J7n68ICtNP8fumKXVhmCe0gFqZseNkA6Sg+arB88M37bqAAeOBblFr3lOnPThhW43gFZBCfnPHJlZXCGELq0YTWLkWLdYnmlO7tlL8rTPds4vI0ruxNz62GfS57WdAVxcFSkNq+y3HPXDrM86x3S1sSOLjpaUp4ihjlKHPcAHvFWbPs83JTouuQEcAFoBMZcbvKgjTXi
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(376002)(396003)(346002)(366004)(39830400003)(38350700002)(5660300002)(316002)(83380400001)(38100700002)(54906003)(2906002)(6512007)(1076003)(86362001)(6666004)(6486002)(508600001)(36756003)(44832011)(956004)(66556008)(4326008)(66476007)(8936002)(8676002)(52116002)(26005)(66946007)(6506007)(186003)(2616005);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?DcZ1WT7Q5iZBD1J1GZ4cAer+q1LUjXT33DR25Xp6GA1u//TzzrrqolUVFisF?=
+ =?us-ascii?Q?3B3mV2EXGOsBzqon3p9iz2w7uxilRWQ3AZaso/8+eG2Z92bE6Y7uF543RmOD?=
+ =?us-ascii?Q?BjHM6Wh3Fg6wFCirqIa3ST/KcLWCIdpRKK1//QwLrRk8FP5Eh7TGQRG2wtfR?=
+ =?us-ascii?Q?jvFhuXblLNzooNIhCQ7A/Zp7uY6QDlnZTBJUterMHLQIG7PNWw7wmO6veoEo?=
+ =?us-ascii?Q?NNve2C3tnege4XzQ8Wty/scMIX5JPCzmsMKtHxOO5/zfuJRA0dsezcjCzUAF?=
+ =?us-ascii?Q?eablR74rHq5T8RCZ1e6pIpVsbqoywzaSz05MnKHIQyw8j55UzAS43qDPHXAL?=
+ =?us-ascii?Q?R3ZPPs8ttE/X8fng6qsFLqAaIa8gu3FWbHRWt97pGJIjFKZsxMRkcO7xpIDI?=
+ =?us-ascii?Q?HkKva5fpxutnx+mi/j05zsFtVO1uUi+XOgO+5Iq7DpG+MgYzbd+HWG1ZZ7OI?=
+ =?us-ascii?Q?CbPOAR+IUebbJv1joJitMntW4yqHx2EWP+XxlqIVpdR+zqWhAo0QG97vKtcY?=
+ =?us-ascii?Q?jGpBRLwxUsSpCkQPXLPkygjZLEDJCOILi5CgWZYOa7XJ4JYt49MaCc0hWjFo?=
+ =?us-ascii?Q?TGnmq/3jjXcCAxv1cj/xKK1lN7aMyFazjO+7KqMH8mk4hTYnsPywUUe8FSuA?=
+ =?us-ascii?Q?Iga1cxdcQSqa7+5qwPlWocYiCc8wad3RzjLnNEJfMasJFs17p0dkj/p5/Gtf?=
+ =?us-ascii?Q?GCU+A85JISHwfADofNb7JNUEoecv6Z1kI0D3153ZYbgVeQTb8voXJO4KWAoe?=
+ =?us-ascii?Q?aJddGFCfgez1HcUCpC1Y9G0merghg/RMXC+Y9ulHVHO7i/ydiBKWyaSKsSQN?=
+ =?us-ascii?Q?ETFEAiKgzJ/r1OsW+Nti9QgcK57iDKJmfCY0LAZFJd9yRln8fCUypxKbw9yA?=
+ =?us-ascii?Q?35rD3khJ/R1WTiQ76zW9AfYMe1TyAXqlY9mh9JhQL1CIfPgnAgaAT/Ih/PQq?=
+ =?us-ascii?Q?6vJp9yOT0vPTZYi0ZcDT/oLcCMhoC2f4eYdq1RuoIP4XTV+F93o8vQjRQXTC?=
+ =?us-ascii?Q?P2W31LSOBMqaSscAnKzohFnvjKVuCBq/fnaNShh9y6g1Ryl7RrhLoAgYHXTV?=
+ =?us-ascii?Q?+b/ZhFzLIldCgahoWFJj5oEjIgM1QLxGpypeFiPI7qgKN8hLKafl3fT2IHTC?=
+ =?us-ascii?Q?uWeEhknD45rChvTHeNV6v5AURqeusIg7lHo84PtPlG4N7X+5DhqVbWZ8uypY?=
+ =?us-ascii?Q?aSw7SS9qtuMmcHnlKJYVBllMbZhwUAiVjFUb5AToszB6oFmLczM8WmiufLDd?=
+ =?us-ascii?Q?UQLJWDnA8UZOXCMxjsLoUR/2phDWUUPgOyTxflVN+0wvxth9PdEXwBk3sNbl?=
+ =?us-ascii?Q?ujH/KzvEtbWL0d7OnD50oqQ4?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b58a59a9-9f92-4d3c-a862-08d979f14fc5
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Sep 2021 15:39:18.4247
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: IJJ8jXEBXIOFh3qBpMP4nVanudHw7TUCvUVBOadbztFz6ZpbF3LGIYFQIW9ud/+zgxGcRCB5IgwslG5B4HSZPmnpsxVco1eIhyfTB2c+b8Y=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR10MB1933
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+When the ocelot driver was migrated to phylink, e6e12df625f2 ("net: 
+mscc: ocelot: convert to phylink") there were two additional writes to
+registers that became stale. One write was to DEV_CLOCK_CFG and one was
+to ANA_PFC_PCF_CFG.
 
-This reverts the following patches :
+Both of these writes referenced the variable "speed" which originally
+was set to OCELOT_SPEED_{10,100,1000,2500}. These macros expand to
+values of 3, 2, 1, or 0, respectively. After the update, the variable
+speed is set to SPEED_{10,100,1000,2500} which expand to 10, 100, 1000,
+and 2500. So invalid values were getting written to the two registers,
+which would lead to either a lack of functionality or undefined
+funcationality.
 
-- commit 2e05fcae83c4 ("tcp: fix compile error if !CONFIG_SYSCTL")
-- commit 4f661542a402 ("tcp: fix zerocopy and notsent_lowat issues")
-- commit 472c2e07eef0 ("tcp: add one skb cache for tx")
-- commit 8b27dae5a2e8 ("tcp: add one skb cache for rx")
+Fixing these values was the intent of v1 of this patch set - submitted
+as "[PATCH v1 net] net: ethernet: mscc: ocelot: bug fix when writing MAC
+speed"
 
-Having a cache of one skb (in each direction) per TCP socket is fragile,
-since it can cause a significant increase of memory needs,
-and not good enough for high speed flows anyway where more than one skb
-is needed.
+During that review it was determined that both writes were actually
+unnecessary. DEV_CLOCK_CFG is a duplicate write, so can be removed
+entirely. This was accidentally submitted as as a new, lone patch titled 
+"[PATCH v1 net] net: mscc: ocelot: remove buggy duplicate write to 
+DEV_CLOCK_CFG". This is part of what is considered v2 of this patch set.
 
-We want instead to add a generic infrastructure, with more flexible
-per-cpu caches, for alien NUMA nodes.
+Additionally, the write to ANA_PFC_PFC_CFG is also unnecessary. Priority
+flow contol is disabled, so configuring it is useless and should be
+removed. This was also submitted as a new, lone patch titled "[PATCH v1 
+net] net: mscc: ocelot: remove buggy and useless write to ANA_PFC_PFC_CFG".
+This is the rest of what is considered v2 of this patch set.
 
-Acked-by: Paolo Abeni <pabeni@redhat.com>
-Acked-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- Documentation/networking/ip-sysctl.rst |  8 --------
- include/net/sock.h                     | 19 -------------------
- net/ipv4/af_inet.c                     |  4 ----
- net/ipv4/sysctl_net_ipv4.c             | 12 ------------
- net/ipv4/tcp.c                         | 26 --------------------------
- net/ipv4/tcp_ipv4.c                    |  6 ------
- net/ipv6/tcp_ipv6.c                    |  6 ------
- 7 files changed, 81 deletions(-)
 
-diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-index d91ab28718d4..16b8bf72feaf 100644
---- a/Documentation/networking/ip-sysctl.rst
-+++ b/Documentation/networking/ip-sysctl.rst
-@@ -989,14 +989,6 @@ tcp_challenge_ack_limit - INTEGER
- 	in RFC 5961 (Improving TCP's Robustness to Blind In-Window Attacks)
- 	Default: 1000
- 
--tcp_rx_skb_cache - BOOLEAN
--	Controls a per TCP socket cache of one skb, that might help
--	performance of some workloads. This might be dangerous
--	on systems with a lot of TCP sockets, since it increases
--	memory usage.
--
--	Default: 0 (disabled)
--
- UDP variables
- =============
- 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 66a9a90f9558..708b9de3cdbb 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -262,7 +262,6 @@ struct bpf_local_storage;
-   *	@sk_dst_cache: destination cache
-   *	@sk_dst_pending_confirm: need to confirm neighbour
-   *	@sk_policy: flow policy
--  *	@sk_rx_skb_cache: cache copy of recently accessed RX skb
-   *	@sk_receive_queue: incoming packets
-   *	@sk_wmem_alloc: transmit queue bytes committed
-   *	@sk_tsq_flags: TCP Small Queues flags
-@@ -328,7 +327,6 @@ struct bpf_local_storage;
-   *	@sk_peek_off: current peek_offset value
-   *	@sk_send_head: front of stuff to transmit
-   *	@tcp_rtx_queue: TCP re-transmit queue [union with @sk_send_head]
--  *	@sk_tx_skb_cache: cache copy of recently accessed TX skb
-   *	@sk_security: used by security modules
-   *	@sk_mark: generic packet mark
-   *	@sk_cgrp_data: cgroup data for this cgroup
-@@ -393,7 +391,6 @@ struct sock {
- 	atomic_t		sk_drops;
- 	int			sk_rcvlowat;
- 	struct sk_buff_head	sk_error_queue;
--	struct sk_buff		*sk_rx_skb_cache;
- 	struct sk_buff_head	sk_receive_queue;
- 	/*
- 	 * The backlog queue is special, it is always used with
-@@ -442,7 +439,6 @@ struct sock {
- 		struct sk_buff	*sk_send_head;
- 		struct rb_root	tcp_rtx_queue;
- 	};
--	struct sk_buff		*sk_tx_skb_cache;
- 	struct sk_buff_head	sk_write_queue;
- 	__s32			sk_peek_off;
- 	int			sk_write_pending;
-@@ -1555,18 +1551,10 @@ static inline void sk_mem_uncharge(struct sock *sk, int size)
- 		__sk_mem_reclaim(sk, 1 << 20);
- }
- 
--DECLARE_STATIC_KEY_FALSE(tcp_tx_skb_cache_key);
- static inline void sk_wmem_free_skb(struct sock *sk, struct sk_buff *skb)
- {
- 	sk_wmem_queued_add(sk, -skb->truesize);
- 	sk_mem_uncharge(sk, skb->truesize);
--	if (static_branch_unlikely(&tcp_tx_skb_cache_key) &&
--	    !sk->sk_tx_skb_cache && !skb_cloned(skb)) {
--		skb_ext_reset(skb);
--		skb_zcopy_clear(skb, true);
--		sk->sk_tx_skb_cache = skb;
--		return;
--	}
- 	__kfree_skb(skb);
- }
- 
-@@ -2575,7 +2563,6 @@ static inline void skb_setup_tx_timestamp(struct sk_buff *skb, __u16 tsflags)
- 			   &skb_shinfo(skb)->tskey);
- }
- 
--DECLARE_STATIC_KEY_FALSE(tcp_rx_skb_cache_key);
- /**
-  * sk_eat_skb - Release a skb if it is no longer needed
-  * @sk: socket to eat this skb from
-@@ -2587,12 +2574,6 @@ DECLARE_STATIC_KEY_FALSE(tcp_rx_skb_cache_key);
- static inline void sk_eat_skb(struct sock *sk, struct sk_buff *skb)
- {
- 	__skb_unlink(skb, &sk->sk_receive_queue);
--	if (static_branch_unlikely(&tcp_rx_skb_cache_key) &&
--	    !sk->sk_rx_skb_cache) {
--		sk->sk_rx_skb_cache = skb;
--		skb_orphan(skb);
--		return;
--	}
- 	__kfree_skb(skb);
- }
- 
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index 1d816a5fd3eb..40558033f857 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -133,10 +133,6 @@ void inet_sock_destruct(struct sock *sk)
- 	struct inet_sock *inet = inet_sk(sk);
- 
- 	__skb_queue_purge(&sk->sk_receive_queue);
--	if (sk->sk_rx_skb_cache) {
--		__kfree_skb(sk->sk_rx_skb_cache);
--		sk->sk_rx_skb_cache = NULL;
--	}
- 	__skb_queue_purge(&sk->sk_error_queue);
- 
- 	sk_mem_reclaim(sk);
-diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index 6f1e64d49232..6eb43dc91218 100644
---- a/net/ipv4/sysctl_net_ipv4.c
-+++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -594,18 +594,6 @@ static struct ctl_table ipv4_table[] = {
- 		.extra1		= &sysctl_fib_sync_mem_min,
- 		.extra2		= &sysctl_fib_sync_mem_max,
- 	},
--	{
--		.procname	= "tcp_rx_skb_cache",
--		.data		= &tcp_rx_skb_cache_key.key,
--		.mode		= 0644,
--		.proc_handler	= proc_do_static_key,
--	},
--	{
--		.procname	= "tcp_tx_skb_cache",
--		.data		= &tcp_tx_skb_cache_key.key,
--		.mode		= 0644,
--		.proc_handler	= proc_do_static_key,
--	},
- 	{ }
- };
- 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index caf0c50d86bc..cbb0f807be46 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -325,11 +325,6 @@ struct tcp_splice_state {
- unsigned long tcp_memory_pressure __read_mostly;
- EXPORT_SYMBOL_GPL(tcp_memory_pressure);
- 
--DEFINE_STATIC_KEY_FALSE(tcp_rx_skb_cache_key);
--EXPORT_SYMBOL(tcp_rx_skb_cache_key);
--
--DEFINE_STATIC_KEY_FALSE(tcp_tx_skb_cache_key);
--
- void tcp_enter_memory_pressure(struct sock *sk)
- {
- 	unsigned long val;
-@@ -866,18 +861,6 @@ struct sk_buff *sk_stream_alloc_skb(struct sock *sk, int size, gfp_t gfp,
- {
- 	struct sk_buff *skb;
- 
--	if (likely(!size)) {
--		skb = sk->sk_tx_skb_cache;
--		if (skb) {
--			skb->truesize = SKB_TRUESIZE(skb_end_offset(skb));
--			sk->sk_tx_skb_cache = NULL;
--			pskb_trim(skb, 0);
--			INIT_LIST_HEAD(&skb->tcp_tsorted_anchor);
--			skb_shinfo(skb)->tx_flags = 0;
--			memset(TCP_SKB_CB(skb), 0, sizeof(struct tcp_skb_cb));
--			return skb;
--		}
--	}
- 	/* The TCP header must be at least 32-bit aligned.  */
- 	size = ALIGN(size, 4);
- 
-@@ -2905,11 +2888,6 @@ void tcp_write_queue_purge(struct sock *sk)
- 		sk_wmem_free_skb(sk, skb);
- 	}
- 	tcp_rtx_queue_purge(sk);
--	skb = sk->sk_tx_skb_cache;
--	if (skb) {
--		__kfree_skb(skb);
--		sk->sk_tx_skb_cache = NULL;
--	}
- 	INIT_LIST_HEAD(&tcp_sk(sk)->tsorted_sent_queue);
- 	sk_mem_reclaim(sk);
- 	tcp_clear_all_retrans_hints(tcp_sk(sk));
-@@ -2946,10 +2924,6 @@ int tcp_disconnect(struct sock *sk, int flags)
- 
- 	tcp_clear_xmit_timers(sk);
- 	__skb_queue_purge(&sk->sk_receive_queue);
--	if (sk->sk_rx_skb_cache) {
--		__kfree_skb(sk->sk_rx_skb_cache);
--		sk->sk_rx_skb_cache = NULL;
--	}
- 	WRITE_ONCE(tp->copied_seq, tp->rcv_nxt);
- 	tp->urg_data = 0;
- 	tcp_write_queue_purge(sk);
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 2e62e0d6373a..29a57bd159f0 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -1941,7 +1941,6 @@ static void tcp_v4_fill_cb(struct sk_buff *skb, const struct iphdr *iph,
- int tcp_v4_rcv(struct sk_buff *skb)
- {
- 	struct net *net = dev_net(skb->dev);
--	struct sk_buff *skb_to_free;
- 	int sdif = inet_sdif(skb);
- 	int dif = inet_iif(skb);
- 	const struct iphdr *iph;
-@@ -2082,17 +2081,12 @@ int tcp_v4_rcv(struct sk_buff *skb)
- 	tcp_segs_in(tcp_sk(sk), skb);
- 	ret = 0;
- 	if (!sock_owned_by_user(sk)) {
--		skb_to_free = sk->sk_rx_skb_cache;
--		sk->sk_rx_skb_cache = NULL;
- 		ret = tcp_v4_do_rcv(sk, skb);
- 	} else {
- 		if (tcp_add_backlog(sk, skb))
- 			goto discard_and_relse;
--		skb_to_free = NULL;
- 	}
- 	bh_unlock_sock(sk);
--	if (skb_to_free)
--		__kfree_skb(skb_to_free);
- 
- put_and_return:
- 	if (refcounted)
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 0ce52d46e4f8..8cf5ff2e9504 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -1618,7 +1618,6 @@ static void tcp_v6_fill_cb(struct sk_buff *skb, const struct ipv6hdr *hdr,
- 
- INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
- {
--	struct sk_buff *skb_to_free;
- 	int sdif = inet6_sdif(skb);
- 	int dif = inet6_iif(skb);
- 	const struct tcphdr *th;
-@@ -1754,17 +1753,12 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
- 	tcp_segs_in(tcp_sk(sk), skb);
- 	ret = 0;
- 	if (!sock_owned_by_user(sk)) {
--		skb_to_free = sk->sk_rx_skb_cache;
--		sk->sk_rx_skb_cache = NULL;
- 		ret = tcp_v6_do_rcv(sk, skb);
- 	} else {
- 		if (tcp_add_backlog(sk, skb))
- 			goto discard_and_relse;
--		skb_to_free = NULL;
- 	}
- 	bh_unlock_sock(sk);
--	if (skb_to_free)
--		__kfree_skb(skb_to_free);
- put_and_return:
- 	if (refcounted)
- 		sock_put(sk);
+v3
+Identical to v2, but fixes the patch numbering to v3 and submitting the
+two changes as a patch set.
+
+v2
+Note: I misunderstood and submitted two new "v1" patches instead of a
+single "v2" patch set.
+- Remove the buggy writes altogher
+
+
+Colin Foster (2):
+  net: mscc: ocelot: remove buggy and useless write to ANA_PFC_PFC_CFG
+  net: mscc: ocelot: remove buggy duplicate write to DEV_CLOCK_CFG
+
+ drivers/net/ethernet/mscc/ocelot.c | 10 ----------
+ 1 file changed, 10 deletions(-)
+
 -- 
-2.26.3
+2.25.1
 
