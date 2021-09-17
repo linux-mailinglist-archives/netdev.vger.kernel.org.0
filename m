@@ -2,99 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E721540F970
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 15:41:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1633940F97C
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 15:45:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236005AbhIQNmn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 09:42:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53536 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232046AbhIQNmm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 09:42:42 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02AFAC061574
-        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 06:41:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=1o6zjNUhu+7zs3OQ4aurJe+o7cpg4pA4gudaPng/NEQ=; b=zVBaT3nxpLNGRrVyAF1GnYsOIt
-        dNqTHPoKjBpvmafiuiyQ2be0adAUcGA/zMm5XKpIuzrUahoyaJOa27SS2LGIRTReJTAhyiHk0+4x3
-        jG4FUpTkHof6qjKhPTYv2ovmEj5UUOylvtXQa5rEe2tFKcUOgJbn+xU4CjFNXX9/g7bNQD2O0NFkM
-        wq19/N3evEsL6+sCXp+Sigqls4Gv9Kkv2/hE4f9P579XjnE0uh2mhFbq2XgdQUWXDvV9eYaxF7Bck
-        jVD9oQcxmKU9+y84/iqflEiPiCPzJoPd69ci3CaaXIdARB1prrRUBWr1RXlGbh2hWyvgK4dgkgqy1
-        o0UeAHyg==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:48996 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1mRE7D-0007l8-JD; Fri, 17 Sep 2021 14:41:18 +0100
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1mRE7B-001xlF-UX; Fri, 17 Sep 2021 14:41:17 +0100
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH RESEND net-next] net: dpaa2-mac: add support for more ethtool 10G
- link modes
+        id S240344AbhIQNrK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 09:47:10 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:9743 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234565AbhIQNrJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 09:47:09 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4H9wDT4glJzW96L;
+        Fri, 17 Sep 2021 21:44:41 +0800 (CST)
+Received: from dggpeml500025.china.huawei.com (7.185.36.35) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.8; Fri, 17 Sep 2021 21:45:45 +0800
+Received: from [10.174.176.117] (10.174.176.117) by
+ dggpeml500025.china.huawei.com (7.185.36.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.8; Fri, 17 Sep 2021 21:45:44 +0800
+Subject: Re: [PATCH 1/3] bpf: support writable context for bare tracepoint
+To:     Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>
+CC:     Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, <bpf@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+References: <20210916135511.3787194-1-houtao1@huawei.com>
+ <20210916135511.3787194-2-houtao1@huawei.com>
+ <9cbbb8b4-f3e3-cd2d-a1cc-e086e7d28946@fb.com>
+From:   Hou Tao <houtao1@huawei.com>
+Message-ID: <b76d4051-abff-5e75-c812-41c6f283327f@huawei.com>
+Date:   Fri, 17 Sep 2021 21:45:44 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <9cbbb8b4-f3e3-cd2d-a1cc-e086e7d28946@fb.com>
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1mRE7B-001xlF-UX@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Fri, 17 Sep 2021 14:41:17 +0100
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Originating-IP: [10.174.176.117]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpeml500025.china.huawei.com (7.185.36.35)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Phylink documentation says:
-  Note that the PHY may be able to transform from one connection
-  technology to another, so, eg, don't clear 1000BaseX just
-  because the MAC is unable to BaseX mode. This is more about
-  clearing unsupported speeds and duplex settings. The port modes
-  should not be cleared; phylink_set_port_modes() will help with this.
+Hi,
 
-So add the missing 10G modes.
+On 9/17/2021 7:16 AM, Yonghong Song wrote:
+>
+>
+> On 9/16/21 6:55 AM, Hou Tao wrote:
+>> Commit 9df1c28bb752 ("bpf: add writable context for raw tracepoints")
+>> supports writable context for tracepoint, but it misses the support
+>> for bare tracepoint which has no associated trace event.
+>>
+>> Bare tracepoint is defined by DECLARE_TRACE(), so adding a corresponding
+>> DECLARE_TRACE_WRITABLE() macro to generate a definition in __bpf_raw_tp_map
+>> section for bare tracepoint in a similar way to DEFINE_TRACE_WRITABLE().
+>>
+>> Signed-off-by: Hou Tao <houtao1@huawei.com>
+>> ---
+>>   include/trace/bpf_probe.h | 19 +++++++++++++++----
+>>   1 file changed, 15 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/include/trace/bpf_probe.h b/include/trace/bpf_probe.h
+>> index a23be89119aa..d08ee1060d82 100644
+>> --- a/include/trace/bpf_probe.h
+>> +++ b/include/trace/bpf_probe.h
+>> @@ -93,8 +93,7 @@ __section("__bpf_raw_tp_map") = {                    \
+>>     #define FIRST(x, ...) x
+>>   -#undef DEFINE_EVENT_WRITABLE
+>> -#define DEFINE_EVENT_WRITABLE(template, call, proto, args, size)    \
+>> +#define __CHECK_WRITABLE_BUF_SIZE(call, proto, args, size)        \
+>>   static inline void bpf_test_buffer_##call(void)                \
+>>   {                                    \
+>>       /* BUILD_BUG_ON() is ignored if the code is completely eliminated, but \
+>> @@ -103,8 +102,12 @@ static inline void
+>> bpf_test_buffer_##call(void)                \
+>>        */                                \
+>>       FIRST(proto);                            \
+>>       (void)BUILD_BUG_ON_ZERO(size != sizeof(*FIRST(args)));        \
+>> -}                                    \
+>> -__DEFINE_EVENT(template, call, PARAMS(proto), PARAMS(args), size)
+>> +}
+>> +
+>> +#undef DEFINE_EVENT_WRITABLE
+>> +#define DEFINE_EVENT_WRITABLE(template, call, proto, args, size) \
+>> +    __CHECK_WRITABLE_BUF_SIZE(call, PARAMS(proto), PARAMS(args), size) \
+>> +    __DEFINE_EVENT(template, call, PARAMS(proto), PARAMS(args), size)
+>>     #undef DEFINE_EVENT
+>>   #define DEFINE_EVENT(template, call, proto, args)            \
+>> @@ -119,10 +122,18 @@ __DEFINE_EVENT(template, call, PARAMS(proto),
+>> PARAMS(args), size)
+>>       __BPF_DECLARE_TRACE(call, PARAMS(proto), PARAMS(args))        \
+>>       __DEFINE_EVENT(call, call, PARAMS(proto), PARAMS(args), 0)
+>>   +#undef DECLARE_TRACE_WRITABLE
+>> +#define DECLARE_TRACE_WRITABLE(call, proto, args, size) \
+>> +    __CHECK_WRITABLE_BUF_SIZE(call, PARAMS(proto), PARAMS(args), size) \
+>> +    __BPF_DECLARE_TRACE(call, PARAMS(proto), PARAMS(args)) \
+>> +    __DEFINE_EVENT(call, call, PARAMS(proto), PARAMS(args), size)
+>> +
+>>   #include TRACE_INCLUDE(TRACE_INCLUDE_FILE)
+>>     #undef DEFINE_EVENT_WRITABLE
+>> +#undef DECLARE_TRACE_WRITABLE
+>>   #undef __DEFINE_EVENT
+>> +#undef __CHECK_WRITABLE_BUF_SIZE
+>
+> Put "#undef __CHECK_WRITABLE_BUF_SIZE" right after "#undef
+> DECLARE_TRACE_WRITABLE" since they are related to each other
+> and also they are in correct reverse order w.r.t. __DEFINE_EVENT?
+If considering __CHECK_WRITABLE_BUF_SIZE is used in both DECLARE_TRACE_WRITABLE and
+DEFINE_EVENT_WRITABLE and the order of definitions, is the following order better ?
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-Acked-by: Marek Behún <kabel@kernel.org>
-Acked-by: Ioana Ciornei <ioana.ciornei@nxp.com>
----
-This was supposed to be merged for the previous merge window, and
-further patches applied thereafter, but someone decided to mark it in
-patchwork as needing further work presumably while the discussion was
-still on-going. netdev patchwork really needs some way to inform
-authors that the fate of their patch has been decided, other than just
-the "applied" messages.
+#undef DECLARE_TRACE_WRITABLE
+#undef DEFINE_EVENT_WRITABLE
+#undef __CHECK_WRITABLE_BUF_SIZE
 
- drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-index ae6d382d8735..543c1f202420 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-@@ -140,6 +140,11 @@ static void dpaa2_mac_validate(struct phylink_config *config,
- 	case PHY_INTERFACE_MODE_10GBASER:
- 	case PHY_INTERFACE_MODE_USXGMII:
- 		phylink_set(mask, 10000baseT_Full);
-+		phylink_set(mask, 10000baseCR_Full);
-+		phylink_set(mask, 10000baseSR_Full);
-+		phylink_set(mask, 10000baseLR_Full);
-+		phylink_set(mask, 10000baseLRM_Full);
-+		phylink_set(mask, 10000baseER_Full);
- 		if (state->interface == PHY_INTERFACE_MODE_10GBASER)
- 			break;
- 		phylink_set(mask, 5000baseT_Full);
--- 
-2.30.2
+>
+>>   #undef FIRST
+>>     #endif /* CONFIG_BPF_EVENTS */
+>>
+> .
 
