@@ -2,80 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39A1A40F40F
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 10:25:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4DB140F436
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 10:34:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245118AbhIQI0v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 04:26:51 -0400
-Received: from smtp25.cstnet.cn ([159.226.251.25]:58466 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S243768AbhIQI0u (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Sep 2021 04:26:50 -0400
-Received: from localhost.localdomain (unknown [124.16.138.128])
-        by APP-05 (Coremail) with SMTP id zQCowACXna3bUERhrgjSAA--.4111S2;
-        Fri, 17 Sep 2021 16:24:59 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     pshelar@ovn.org, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, dev@openvswitch.org,
-        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH 2/2] openvswitch: Fix condition check in output_userspace() by using nla_ok()
-Date:   Fri, 17 Sep 2021 08:24:58 +0000
-Message-Id: <1631867098-3891002-1-git-send-email-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.7.4
-X-CM-TRANSID: zQCowACXna3bUERhrgjSAA--.4111S2
-X-Coremail-Antispam: 1UD129KBjvJXoWrtr13GrW5uF1xWw48WFW5trb_yoW8JrW7p3
-        Z293yUKrykA3W09w4kCw1vg348Ka4UZrWjga4DXw4SvFnxGw1vvFyvqr4F9r1UJFWUAa90
-        qrykZr18Xan7ZFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkl14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
-        6r4UJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
-        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
-        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6r43
-        MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr
-        0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0E
-        wIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJV
-        W8JwCI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAIcVC2z280aVAFwI0_Jr0_Gr1l
-        IxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUjNJ55UUUU
-        U==
-X-Originating-IP: [124.16.138.128]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+        id S245411AbhIQIf4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 04:35:56 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:38616 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S245399AbhIQIfw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 04:35:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1631867670;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=mRvAXPuRtiVqIbpRHkAvC3odeA7PfoFZ93jl+i/JzVM=;
+        b=bMZKrX9kZ6wlBOE0wcjyf/Bx/3+ZwCFe/I4LvtsIQQwQ/Jk8BXbS+/M9BD5k4ZFqo+CrkN
+        lm3dwetv2O83RY6kHRfV/htj4QUQnAWxhX8MfPtYweUxQylhvIfjZGxyylFUtZpNNX8Qa4
+        bC0h4wlpUE4FnGM4A3+SlQm1cCkrJKQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-296-wt9JcRDnMlChs4kvkhcd6g-1; Fri, 17 Sep 2021 04:34:29 -0400
+X-MC-Unique: wt9JcRDnMlChs4kvkhcd6g-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 480F01006AAA;
+        Fri, 17 Sep 2021 08:34:27 +0000 (UTC)
+Received: from localhost.localdomain (ovpn-12-234.pek2.redhat.com [10.72.12.234])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5B42A60C82;
+        Fri, 17 Sep 2021 08:34:08 +0000 (UTC)
+From:   Jason Wang <jasowang@redhat.com>
+To:     mst@redhat.com, jasowang@redhat.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Subject: [PATCH net] virtio-net: fix pages leaking when building skb in big mode
+Date:   Fri, 17 Sep 2021 16:34:06 +0800
+Message-Id: <20210917083406.75602-1-jasowang@redhat.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Just using 'rem > 0' might be unsafe, so it's better
-to use the nla_ok() instead.
-Because we can see from the nla_next() that
-'*remaining' might be smaller than 'totlen'. And nla_ok()
-will avoid it happening.
-For example, ovs_dp_process_packet() -> ovs_execute_actions()
--> do_execute_actions() -> output_userspace(), and attr comes
-from OVS_CB(skb)->input_vport,which restores the received packet
-from the user space.
+We try to use build_skb() if we had sufficient tailroom. But we forget
+to release the unused pages chained via private in big mode which will
+leak pages. Fixing this by release the pages after building the skb in
+big mode.
 
-Fixes: ccb1352e76cff0524e7ccb2074826a092dd13016
-('net: Add Open vSwitch kernel components.')
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Fixes: fb32856b16ad ("virtio-net: page_to_skb() use build_skb when there's sufficient tailroom")
+Signed-off-by: Jason Wang <jasowang@redhat.com>
 ---
- net/openvswitch/actions.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/virtio_net.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
-index c23537f..e8236dd 100644
---- a/net/openvswitch/actions.c
-+++ b/net/openvswitch/actions.c
-@@ -915,8 +915,7 @@ static int output_userspace(struct datapath *dp, struct sk_buff *skb,
- 	upcall.cmd = OVS_PACKET_CMD_ACTION;
- 	upcall.mru = OVS_CB(skb)->mru;
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 271d38c1d9f8..79bd2585ec6b 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -423,6 +423,10 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
  
--	for (a = nla_data(attr), rem = nla_len(attr); rem > 0;
--	     a = nla_next(a, &rem)) {
-+	nla_for_each_nested(a, attr, rem) {
- 		switch (nla_type(a)) {
- 		case OVS_USERSPACE_ATTR_USERDATA:
- 			upcall.userdata = a;
+ 		skb_reserve(skb, p - buf);
+ 		skb_put(skb, len);
++
++		page = (struct page *)page->private;
++		if (page)
++			give_pages(rq, page);
+ 		goto ok;
+ 	}
+ 
 -- 
-2.7.4
+2.25.1
 
