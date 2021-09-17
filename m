@@ -2,272 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24CD140FB00
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 17:01:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AC7240FB6A
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 17:11:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243330AbhIQPCc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 11:02:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43718 "EHLO
+        id S239263AbhIQPMz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 11:12:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234100AbhIQPCb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 11:02:31 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74CA0C061764
-        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 08:01:09 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id e26so7584323wmk.2
-        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 08:01:09 -0700 (PDT)
+        with ESMTP id S238936AbhIQPMx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 11:12:53 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03E34C061574;
+        Fri, 17 Sep 2021 08:11:32 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id mv7-20020a17090b198700b0019c843e7233so3875925pjb.4;
+        Fri, 17 Sep 2021 08:11:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=OM9DUBNltW0Ke/UY6cBJtBjSFC6/7yAWUQqV/FiHDlU=;
-        b=zed8/ofelLjuGcXmt9PxK4BJ1I/d6tws1QcXa/uJoscumKJyq+SBS+upPW+AQCBG9t
-         qYsDRvaPd5kyth69xaY/K+w+vWB7zvLR5VpILAHfcOaZA2+uFmx0oPMW1526PEdN3voA
-         XkRRSxW82118yTIT8ml/TIwKOEwEESC7zXx4WtuOigTMmUNOon7CqBzJeuLAfy5xsARr
-         wP1ZdE1MyCc+PQvzy/J4jMnDl49MCzAD8fDZ9Cucss8KVjBNQRTiS/bMoPHoLQ3zVAvH
-         lZqCp2cBcJ1SsCH2S9VSPPmZv9HW3WQz0j8nt1y0SWOl9v30eU2z+5toWP4k6Z4A7BGl
-         VI4A==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:references:date:in-reply-to:message-id
+         :user-agent:mime-version;
+        bh=r2RrJiEEpsRgQCHuxCAXJ8mbd4K7vVzXiaC0Gr2CnAw=;
+        b=pWgcVNMhEZOA69aKFNWJwg3VmHa5LdQCEBJJZO1xH+PRmYT56z0jSKa+ggijbbaG+g
+         12kQ25dUH682gtDxa6vXF55uC/0/19zjH+j+0L36RS1J8JRgiE049uGkBIzP3HQPaI/r
+         Yhly8/8LGIqQkwqBV35mLBjYOu59M4hLRNOZ4MCClnRVEd3rPP2Z7E3cDaMENg9aCXjT
+         vk5kzkSFX2KbPvVtDbVIOgQElOyLo27baw3lkKP0oWqE4nJcpRR7tLKQenEE+etmdOYO
+         4GBXodOv3+WWTJhkjZA+XxZdicCjBUw6ekDnmevPQlOVqs6udae13ua6WsxCfbx0ti8X
+         NSqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=OM9DUBNltW0Ke/UY6cBJtBjSFC6/7yAWUQqV/FiHDlU=;
-        b=N06KY8s8Y+U9XExzEHa6zwsUeymuE9Nx8jYQk6+BbtOilmITlMo7lOm+4vlyuO0UdB
-         3vGCS73HzR7Xi5r/hfqhrwPvVKsjJOVzDOUH3ZGrxNoTYGfEGkqLE6Gf6xlBusPEZ/x2
-         GQo5LwjIcYzsQfNResr/MNUOYeFqFUiU5NSOyWy4hwsnBwayUhL2gC0/3gIYnb211rFn
-         yXKk5cpbIZZ3YYeVdw8tYgJoDkEB44PIlSkhfqQEY0oOPTfC6mjTgMrFwP2Aa7vE5ROT
-         TGAgCWbA3wYS7iZPO6JYOYlp8viTSRqoE4bEwbnspCAB5TYMyNGg/7ZVBK4HTdGCi7c1
-         x3xw==
-X-Gm-Message-State: AOAM530SIm7iknpw5QjGLWe7yf0t71YcDB5V//nV9W69ZJq0u3rgdlVR
-        zzcfzxISwg5DB75+jIJWYV8AmPYwJ48BW/Dm
-X-Google-Smtp-Source: ABdhPJxUiysgGUlQKRIRIrCOX9eAyOfsIozlYbRjTRoLdqDVRozKRdT5f5Kw0KTJlXLcoer/eUuB1Q==
-X-Received: by 2002:a7b:cb02:: with SMTP id u2mr15693618wmj.103.1631890867910;
-        Fri, 17 Sep 2021 08:01:07 -0700 (PDT)
-Received: from Iliass-MBP (athedsl-269075.home.otenet.gr. [85.73.98.177])
-        by smtp.gmail.com with ESMTPSA id b188sm6916831wmd.39.2021.09.17.08.01.05
+        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
+         :message-id:user-agent:mime-version;
+        bh=r2RrJiEEpsRgQCHuxCAXJ8mbd4K7vVzXiaC0Gr2CnAw=;
+        b=gtrucg3rb0c9tvRyxCdNjY4lLsiZROzi/YFVgvVPyJwkLOXiO0eFTFflu2Ly4NDTo+
+         VYaxuqSqI9RDaAhalwoJRlJvMlbnpe7zKQAJEeCVt+/FZpGFgkR2otdVSXWDqo+Ud71d
+         jQPUJdB5upgr/mjRrdAljnA+oOTJZyR2C8Rdvnmr6wd+Wt7G9Ub+wztcROmzcT09KUs3
+         1UZbIReedM1yOJAn+suELMCHrwcavRGAde/YxHp0arDVOZyWX49jGHfVJ8FyZ1mJ5yuq
+         FSt1j0gtxuNwLdyvKuoJHPJKWrb7ihlBe/iy0KNfz+Em3BeG8qRmnysa1Q5cUlIbukVI
+         n5sw==
+X-Gm-Message-State: AOAM530NVEf3Xa71Rf0PYaXatofhD6f1lFgA6gmvcpj6MJP0C1x5bJJr
+        35eLKm9s/jHf/ekgeSn6FjY77hZb3olGtg==
+X-Google-Smtp-Source: ABdhPJxJ4+6F3QMapQMAbfBhQNz7vT4Jw2fiYFQYfg8YyrrllwIi2qtejMHSvQU8z3bC4P4bDpgqag==
+X-Received: by 2002:a17:90b:350d:: with SMTP id ls13mr21395876pjb.235.1631891491434;
+        Fri, 17 Sep 2021 08:11:31 -0700 (PDT)
+Received: from localhost (122x211x248x161.ap122.ftth.ucom.ne.jp. [122.211.248.161])
+        by smtp.gmail.com with ESMTPSA id b10sm6450960pfi.122.2021.09.17.08.11.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Sep 2021 08:01:07 -0700 (PDT)
-Date:   Fri, 17 Sep 2021 18:01:03 +0300
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     Jesper Dangaard Brouer <jbrouer@redhat.com>, brouer@redhat.com,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linuxarm@openeuler.org,
-        hawk@kernel.org, jonathan.lemon@gmail.com, alobakin@pm.me,
-        willemb@google.com, cong.wang@bytedance.com, pabeni@redhat.com,
-        haokexin@gmail.com, nogikh@google.com, elver@google.com,
-        memxor@gmail.com, edumazet@google.com, dsahern@gmail.com
-Subject: Re: [PATCH net-next v2 3/3] skbuff: keep track of pp page when
- __skb_frag_ref() is called
-Message-ID: <YUStryKMMhhqbQdz@Iliass-MBP>
-References: <0337e2f6-5428-2c75-71a5-6db31c60650a@redhat.com>
- <fef7d148-95d6-4893-8924-1071ed43ff1b@huawei.com>
- <YUMD2v7ffs1xAjaW@apalos.home>
- <ac16cc82-8d98-6a2c-b0a6-7c186808c72c@huawei.com>
- <YUMelDd16Aw8w5ZH@apalos.home>
- <e2e127be-c9e4-5236-ba3c-28fdb53aa29b@huawei.com>
- <YUMxKhzm+9MDR0jW@apalos.home>
- <36676c07-c2ca-bbd2-972c-95b4027c424f@huawei.com>
- <YUQ3ySFxc/DWzsMy@apalos.home>
- <4a682251-3b40-b16a-8999-69acb36634f3@huawei.com>
+        Fri, 17 Sep 2021 08:11:30 -0700 (PDT)
+From:   Punit Agrawal <punitagrawal@gmail.com>
+To:     Qu Wenruo <wqu@suse.com>
+Cc:     Michael Riesch <michael.riesch@wolfvision.net>, wens@kernel.org,
+        netdev <netdev@vger.kernel.org>,
+        "moderated list:ARM/STM32 ARCHITECTURE" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>, sashal@kernel.org
+Subject: Re: [PATCH] net: stmmac: dwmac-rk: fix unbalanced pm_runtime_enable
+ warnings
+References: <20210823143754.14294-1-michael.riesch@wolfvision.net>
+        <CAGb2v67Duk_56fOKVwZsYn2HKJ99o8WJ+d4jetD2UjDsAt9BcA@mail.gmail.com>
+        <568a0825-ed65-58d7-9c9c-cecb481cf9d9@wolfvision.net>
+        <87czpvcaab.fsf@stealth>
+        <aa905e4d-c5a7-e969-1171-3a90ecd9b9cc@wolfvision.net>
+        <2424d7da-7022-0b38-46ba-b48f43cda23d@suse.com>
+        <877dff7jq6.fsf@stealth>
+        <902ad36d-153c-857b-40a6-449f76aa17b0@suse.com>
+Date:   Sat, 18 Sep 2021 00:11:28 +0900
+In-Reply-To: <902ad36d-153c-857b-40a6-449f76aa17b0@suse.com> (Qu Wenruo's
+        message of "Fri, 17 Sep 2021 16:02:01 +0800")
+Message-ID: <87zgsb5ja7.fsf@stealth>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4a682251-3b40-b16a-8999-69acb36634f3@huawei.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> >>>>> In that case you'd need to call virt_to_head_page() early though, get it
+Qu Wenruo <wqu@suse.com> writes:
+
+> On 2021/9/17 15:18, Punit Agrawal wrote:
+>> Hi Qu,
+>> Qu Wenruo <wqu@suse.com> writes:
+>> 
+>>> On 2021/8/30 22:10, Michael Riesch wrote:
+>>>> Hi Punit,
+>>>> On 8/30/21 3:49 PM, Punit Agrawal wrote:
+>>>>> Hi Michael,
+>>>>>
+>>>>> Michael Riesch <michael.riesch@wolfvision.net> writes:
+>>>>>
+>>>>>> Hi ChenYu,
+>>>>>>
+>>>>>> On 8/29/21 7:48 PM, Chen-Yu Tsai wrote:
+>>>>>>> Hi,
+>>>>>>>
+>>>>>>> On Mon, Aug 23, 2021 at 10:39 PM Michael Riesch
+>>>>>>> <michael.riesch@wolfvision.net> wrote:
+>>>>>>>>
+>>>>>>>> This reverts commit 2c896fb02e7f65299646f295a007bda043e0f382
+>>>>>>>> "net: stmmac: dwmac-rk: add pd_gmac support for rk3399" and fixes
+>>>>>>>> unbalanced pm_runtime_enable warnings.
+>>>>>>>>
+>>>>>>>> In the commit to be reverted, support for power management was
+>>>>>>>> introduced to the Rockchip glue code. Later, power management support
+>>>>>>>> was introduced to the stmmac core code, resulting in multiple
+>>>>>>>> invocations of pm_runtime_{enable,disable,get_sync,put_sync}.
+>>>>>>>>
+>>>>>>>> The multiple invocations happen in rk_gmac_powerup and
+>>>>>>>> stmmac_{dvr_probe, resume} as well as in rk_gmac_powerdown and
+>>>>>>>> stmmac_{dvr_remove, suspend}, respectively, which are always called
+>>>>>>>> in conjunction.
+>>>>>>>>
+>>>>>>>> Signed-off-by: Michael Riesch <michael.riesch@wolfvision.net>
+>>>>>>>
+>>>>>>> I just found that Ethernet stopped working on my RK3399 devices,
+>>>>>>> and I bisected it down to this patch.
+>>>>>>
+>>>>>> Oh dear. First patch in a kernel release for a while and I already break
+>>>>>> things.
+>>>>>
+>>>>> I am seeing the same failure symptoms reported by ChenYu on my RockPro64
+>>>>> with v5.14. Reverting the revert i.e., 2d26f6e39afb ("net: stmmac:
+>>>>> dwmac-rk: fix unbalanced pm_runtime_enable warnings") brings back the
+>>>>> network.
+>>>>>
+>>>>>> Cc: Sasha as this patch has just been applied to 5.13-stable.
+>>>>>>
+>>>>>>> The symptom I see is no DHCP responses, either because the request
+>>>>>>> isn't getting sent over the wire, or the response isn't getting
+>>>>>>> received. The PHY seems to be working correctly.
+>>>>>>
+>>>>>> Unfortunately I don't have any RK3399 hardware. Is this a custom
+>>>>>> board/special hardware or something that is readily available in the
+>>>>>> shops? Maybe this is a good reason to buy a RK3399 based single-board
+>>>>>> computer :-)
+>>>>>
+>>>>> Not sure about the other RK3399 boards but RockPro64 is easily
+>>>>> available.
+>>>> I was thinking to get one of those anyway ;-)
+>>>>
+>>>>>> I am working on the RK3568 EVB1 and have not encountered faulty
+>>>>>> behavior. DHCP works fine and I can boot via NFS. Therefore, not sure
+>>>>>> whether I can be much of help in this matter, but in case you want to
+>>>>>> discuss this further please do not hesitate to contact me off-list.
+>>>>>
+>>>>> I tried to look for the differences between RK3568 and RK3399 but the
+>>>>> upstream device tree doesn't seem to carry a gmac node in the device
+>>>>> tree for EK3568 EVB1. Do you have a pointer for the dts you're using?
+>>>> The gmac nodes have been added recently and should enter
+>>>> 5.15-rc1. Until
+>>>> then, you can check out the dts from linux-rockchip/for-next [0].
+>>>
+>>> Do you have the upstream commit?
+>>>
+>>> As I compiled v5.15-rc1 and still can't get the ethernet work.
+>>>
+>>> Not sure if it's my Uboot->systemd-boot->customer kernel setup not
+>>> passing the device tree correctly or something else...
+>> For the RK3568 device tree changes, I think the pull request got
+>> delayed
+>> to the next cycle. So likely to land in v5.16.
+>> In case you're after ethernet on RK3399, there's no solution
+>> yet. Reverting 2d26f6e39afb ("net: stmmac: dwmac-rk: fix unbalanced
+>> pm_runtime_enable warnings") gets you there in the meanwhile.
+>
+> Thanks, currently I have seen other distros like ManjaroARM is already
+> reverting that commit.
+>
+> But even with that commit reverted, I still get some other strange
+> network behavior.
+>
+> The most weird one is distcc, when the RK3399 board is the client and
+> x86_64 desktop acts as a volunteer, after compiling hundreds of files, 
+> it suddenly no longer work.
+
+I haven't seen something like this - but then I am not a heavy user of
+the network on the board. 
+
+Is it just the network that dies or the whole system freezes? Sometimes
+I've seen the board lock up if it's under heavy load.
+
+> All work can no longer be distributed to the same volunteer.
+>
+>
+> But on RPI CM4 board, the same kernel (both upstream 5.14.2, even the
+> binary is the same), the same distro (Manjaro ARM), the same distcc 
+> setup, the setup works flawless.
+>
+>
+> Not sure if this is related, but it looks like a network related
+> problem, and considering both boards are using the same kernel, just 
+> different ethernet driver, I guess there is something more problematic
+> here in recent RK3399 code.
+
+If you are only seeing the problem with recent kernels, maybe a bisect
+might help narrow things down.
+
 [...]
-> >>>>> and then compare the signature.   I guess that's avoidable by using 
-> >>>>> frag->bv_page for the fragments?
-> >>>>
-> >>>> If a page of a skb frag is from page pool, It seems frag->bv_page is
-> >>>> always point to head_page of a compound page, so the calling of
-> >>>> virt_to_head_page() does not seems necessary.
-> >>>>
-> >>>
-> >>> I was mostly referring to the skb head here and how would you trigger the
-> >>> recycling path. 
-> >>>
-> >>> I think we are talking about different things here.  
-> >>> One idea is to use the last bit of frag->bv_page to identify fragments
-> >>> allocated from page_pool, which is done today with the signature.
-> >>>
-> >>> The signature however exists in the head page so my question was, can we rid
-> >>> of that without having a performance penalty?
-> >>
-> >> As both skb frag and head page is eventually operated on the head page
-> >> of a compound page(if it is a compound page) for normal case too, maybe
-> >> we can refactor the code to get the head page of a compound page before
-> >> the signature checking without doing a second virt_to_head_page() or
-> >> compound_head() call?
-> > 
-> > Yea that's doable, but my concern is different here.  If we do that the
-> > standard network stack, even for drivers that don't use page_pool,  will
-> > have to do a virt_to_head_page() -> check signature, to decide if it has to
-> > try recycling the packet.  That's the performance part I am worried about,
-> > since it happens for every packet. 
-> 
-> Yes, there is theoretically performance penalty for virt_to_head_page() or
-> compound_head(), will do more test if we decide to go with the signature
-> checking.
-
-Can we check this somehow?  I can send a patch for this,  but my 
-testing is limited to 1Gbit for the recycling.  I can find
-25/100Gbit interfaces for the 'normal' path.
-
-> 
-> > 
-> >>
-> >>>
-> >>> IOW in skb_free_head() an we replace:
-> >>>
-> >>> if (skb_pp_recycle(skb, head)) 
-> >>> with
-> >>> if (page->pp_magic & ~0x3UL) == PP_SIGNATURE)
-> >>> and get rid of the 'bool recycle' argument in __skb_frag_unref()?
-> >>
-> >> For the frag page of a skb, it seems ok to get rid of the 'bool recycle'
-> >> argument in __skb_frag_unref(), as __skb_frag_unref() and __skb_frag_ref()
-> >> is symmetrically called to put/get a page.
-> >>
-> >> For the head page of a skb, we might need to make sure the head page
-> >> passed to __build_skb_around() meet below condition:
-> >> do pp_frag_count incrementing instead of _refcount incrementing when
-> >> the head page is not newly allocated and it is from page pool.
-> >> It seems hard to audit that?
-> > 
-> > Yea that seems a bit weird at least to me and I am not sure, it's the only
-> > place we'll have to go and do that.
-> 
-> Yes, That is why I avoid changing the behavior of a head page for a skb.
-> In other word, maybe we should not track if head page for a skb is pp page
-> or not when the page'_refcount is incremented during network stack journey,
-> just treat it as normal page?
->  
-
-I am not sure I understand this.
-
-> > 
-> >>
-> >>
-> >>>
-> >>>> bit 0 of frag->bv_page is different way of indicatior for a pp page,
-> >>>> it is better we do not confuse with the page signature way. Using
-> >>>> a bit 0 may give us a free word in 'struct page' if we manage to
-> >>>> use skb->pp_recycle to indicate a head page of the skb uniquely, meaning
-> >>>> page->pp_magic can be used for future feature.
-> >>>>
-> >>>>
-> >>>>>
-> >>>>>>
-> >>>>>>> for pp_recycle right now?  __skb_frag_unref() in skb_shift() or
-> >>>>>>> skb_try_coalesce() (the latter can probably be removed tbh).
-> >>>>>>
-> >>>>>> If we decide to go with accurate indicator of a pp page, we just need
-> >>>>>> to make sure network stack use __skb_frag_unref() and __skb_frag_ref()
-> >>>>>> to put and get a page frag, the indicator checking need only done in
-> >>>>>> __skb_frag_unref() and __skb_frag_ref(), so the skb_shift() and
-> >>>>>> skb_try_coalesce() should be fine too.
-> >>>>>>
-> >>>>>>>
-> >>>>>>>>
-> >>>>>>>> Another way is to use the bit 0 of frag->bv_page ptr to indicate if a frag
-> >>>>>>>> page is from page pool.
-> >>>>>>>
-> >>>>>>> Instead of the 'struct page' signature?  And the pp_recycle bit will
-> >>>>>>> continue to exist?  
-> >>>>>>
-> >>>>>> pp_recycle bit might only exist or is only used for the head page for the skb.
-> >>>>>> The bit 0 of frag->bv_page ptr can be used to indicate a frag page uniquely.
-> >>>>>> Doing a memcpying of shinfo or "*fragto = *fragfrom" automatically pass the
-> >>>>>> indicator to the new shinfo before doing a __skb_frag_ref(), and __skb_frag_ref()
-> >>>>>> will increment the _refcount or pp_frag_count according to the bit 0 of
-> >>>>>> frag->bv_page.
-> >>>>>>
-> >>>>>> By the way, I also prototype the above idea, and it seems to work well too.
-> >>>>>>
-> >>>>>
-> >>>>> As long as no one else touches this, it's just another way of identifying a
-> >>>>> page_pool allocated page.  But are we gaining by that?  Not using
-> >>>>> virt_to_head_page() as stated above? But in that case you still need to
-> >>>>> keep pp_recycle around. 
-> >>>>
-> >>>> No, we do not need the pp_recycle, as long as the we make sure __skb_frag_ref()
-> >>>> is called after memcpying the shinfo or doing "*fragto = *fragfrom".
-> >>>
-> >>> But we'll have to keep it for the skb head in this case.
-> >>
-> >> As above, I am not really look into skb head case:)
-> > 
-> > Let me take a step back here, because I think we drifted a bit. 
-> > The page signature was introduced in order to be able to identify skb
-> > fragments. The problem was that you couldn't rely on the pp_recycle bit of
-> > the skb head,  since fragments could come from anywhere.  So you use the
-> > skb bit as a hint for skb frags, and you eventually decide using the page
-> > signature.
-> > 
-> > So we got 3 options (Anything I've missed ?)
-> > - try to remove pp_recycle bit, since the page signature is enough for the
-> >   skb head and fragments.  That in my opinion is the cleanest option,  as
-> >   long as we can prove there's no performance hit on the standard network
-> >   path.
-> > 
-> > - Replace the page signature with frag->bv_page bit0.  In that case we
-> >   still have to keep the pp_recycle bit,  but we do have an 'easier'
-> >   indication that a skb frag comes from page_pool.  That's still pretty
-> >   safe, since you now have unique identifiers for the skb and page
-> >   fragments and you can be sure of their origin (page pool or not).
-> >   What I am missing here, is what do we get out of this?  I think the
-> >   advantage is not having to call virt_to_head_page() for frags ?
-> 
-> Not using the signature will free a word space in struct page for future
-> feature?
-
-Yea that's another thing we gain,  but I am not sure how useful how this is
-going to turn out.  
-
-> 
-> > 
-> > - Keep all of them(?) and use frag->bv_page bit0 similarly to pp_recycle
-> >   bit?  I don't see much value on this one,  I am just keeping it here for
-> >   completeness.
-> 
-> 
-> For safty and performance reason:
-> 1. maybe we should move the pp_recycle bit from "struct sk_buff" to
->    "struct skb_shared_info", and use it to only indicate if the head page of
->    a skb is from page pool.
-
-What's the safety or performance we gain out of this?  The only performance
-I can think of is the dirty cache line of the recycle bit we set to 0.
-If we do move it to skb_shared)info we'll have to make sure it's on the
-same cacheline as the ones we already change.
-> 
-> 2. The frag->bv_page bit0 is used to indicate if the frag page of a skb is
->    from page pool, and modify __skb_frag_unref() and __skb_frag_ref() to keep
->    track of it.
-> 
-> 3. For safty or debugging reason, keep the page signature for now, and put a
->    page signature WARN_ON checking in page pool to catch any misbehaviour?
-> 
-> If there is not bug showing up later, maybe we can free the page signature space
-> for other usage?
-
-Yea that's essentially identical to (2) but we move the pp_recycle on the
-skb_shared_info.  I'd really prefer getting rid of the pp_recycle entirely,
-since it's the cleanest thing we can do in my head.  If we ever need an
-extra 4/8 bytes in the future,  we can always go back and implement this.
-
-Alexander/Jesper any additional thoughts?
-
-Regards
-/Ilias
-> 
-> > 
-> > Thanks
-> > /Ilias
-> 
