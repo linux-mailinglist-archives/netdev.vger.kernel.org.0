@@ -2,69 +2,251 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F40140F476
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 11:00:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A1BD40F49A
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 11:18:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236391AbhIQJBe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 05:01:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33256 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230245AbhIQJB2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Sep 2021 05:01:28 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 2A70961152;
-        Fri, 17 Sep 2021 09:00:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631869207;
-        bh=LlNRo9ulpDw2goO0z3N84Oc0AcbkbY2skOFc1MyH03o=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=CXsBB25DFyPM4+/sEVaUJr+Fdz8x6KUYNBlKKhCnxAXQOZwIc8pqd+JSYLfDDb/df
-         WNJz5zmOCdTz6J9bSy5d0ZBjBDi9mJEONHb6Og/q8duaLwLPV/yyTCdV+3nZiyd3Ms
-         jZW2UXZvM2JLRhXEAYqISQHVy9HzU7epnwuBQkABHtm06Ew4NHJGHPb/f4IovKqI6W
-         JraaD0hOOGh9zDTg26yYvSxUy2EjcmNS3pWUZZgxMfen2fExJ5cyyyXnWswYbFVIM9
-         F/xZxGzhCKhnmK5uHddoN/pR3uqorzvnhn4gqE2VOeqVOx8uoi27uVVPlBvi39024O
-         m2SPqFr6hUTbA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1B11D609AD;
-        Fri, 17 Sep 2021 09:00:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S240583AbhIQJUH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 05:20:07 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:16272 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235627AbhIQJSj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 05:18:39 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4H9pH53Tb9z8tDx;
+        Fri, 17 Sep 2021 17:16:33 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.8; Fri, 17 Sep 2021 17:17:09 +0800
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.8; Fri, 17 Sep
+ 2021 17:17:08 +0800
+Subject: Re: [PATCH net-next v2 3/3] skbuff: keep track of pp page when
+ __skb_frag_ref() is called
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
+CC:     Jesper Dangaard Brouer <jbrouer@redhat.com>, <brouer@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linuxarm@openeuler.org>,
+        <hawk@kernel.org>, <jonathan.lemon@gmail.com>, <alobakin@pm.me>,
+        <willemb@google.com>, <cong.wang@bytedance.com>,
+        <pabeni@redhat.com>, <haokexin@gmail.com>, <nogikh@google.com>,
+        <elver@google.com>, <memxor@gmail.com>, <edumazet@google.com>,
+        <dsahern@gmail.com>
+References: <9467ec14-af34-bba4-1ece-6f5ea199ec97@huawei.com>
+ <YUHtf+lI8ktBdjsQ@apalos.home>
+ <0337e2f6-5428-2c75-71a5-6db31c60650a@redhat.com>
+ <fef7d148-95d6-4893-8924-1071ed43ff1b@huawei.com>
+ <YUMD2v7ffs1xAjaW@apalos.home>
+ <ac16cc82-8d98-6a2c-b0a6-7c186808c72c@huawei.com>
+ <YUMelDd16Aw8w5ZH@apalos.home>
+ <e2e127be-c9e4-5236-ba3c-28fdb53aa29b@huawei.com>
+ <YUMxKhzm+9MDR0jW@apalos.home>
+ <36676c07-c2ca-bbd2-972c-95b4027c424f@huawei.com>
+ <YUQ3ySFxc/DWzsMy@apalos.home>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <4a682251-3b40-b16a-8999-69acb36634f3@huawei.com>
+Date:   Fri, 17 Sep 2021 17:17:08 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: netsec: Make use of the helper function dev_err_probe()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163186920710.22982.10637790677738130064.git-patchwork-notify@kernel.org>
-Date:   Fri, 17 Sep 2021 09:00:07 +0000
-References: <20210916073729.9163-1-caihuoqing@baidu.com>
-In-Reply-To: <20210916073729.9163-1-caihuoqing@baidu.com>
-To:     Cai Huoqing <caihuoqing@baidu.com>
-Cc:     jaswinder.singh@linaro.org, ilias.apalodimas@linaro.org,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+In-Reply-To: <YUQ3ySFxc/DWzsMy@apalos.home>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme720-chm.china.huawei.com (10.1.199.116) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (refs/heads/master):
-
-On Thu, 16 Sep 2021 15:37:29 +0800 you wrote:
-> When possible use dev_err_probe help to properly deal with the
-> PROBE_DEFER error, the benefit is that DEFER issue will be logged
-> in the devices_deferred debugfs file.
-> And using dev_err_probe() can reduce code size, and the error value
-> gets printed.
-> 
-> Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
+On 2021/9/17 14:38, Ilias Apalodimas wrote:
+> Hi Yunsheng,
 > 
 > [...]
+>>>>>>>> I am not sure "pp_recycle_bit was introduced to make the checking faster" is a
+>>>>>>>> valid. The size of "struct page" is only about 9 words(36/72 bytes), which is
+>>>>>>>> mostly to be in the same cache line, and both standard path and recycle path have
+>>>>>>>> been touching the "struct page", so it seems the overhead for checking signature
+>>>>>>>> seems minimal.
+>>>>>>>>
+>>>>>>>> I agree that we need to be cautious and measure potential regression on the
+>>>>>>>> standard path.
+>>>>>>>
+>>>>>>> well pp_recycle is on the same cache line boundary with the head_frag we
+>>>>>>> need to decide on recycling. After that we start checking page signatures
+>>>>>>> etc,  which means the default release path remains mostly unaffected.  
+>>>>>>>
+>>>>>>> I guess what you are saying here, is that 'struct page' is going to be
+>>>>>>> accessed eventually by the default network path,  so there won't be any 
+>>>>>>> noticeable performance hit?  What about the other usecases we have
+>>>>>>
+>>>>>> Yes.
+>>>>>
+>>>>> In that case you'd need to call virt_to_head_page() early though, get it
+>>>>> and then compare the signature.   I guess that's avoidable by using 
+>>>>> frag->bv_page for the fragments?
+>>>>
+>>>> If a page of a skb frag is from page pool, It seems frag->bv_page is
+>>>> always point to head_page of a compound page, so the calling of
+>>>> virt_to_head_page() does not seems necessary.
+>>>>
+>>>
+>>> I was mostly referring to the skb head here and how would you trigger the
+>>> recycling path. 
+>>>
+>>> I think we are talking about different things here.  
+>>> One idea is to use the last bit of frag->bv_page to identify fragments
+>>> allocated from page_pool, which is done today with the signature.
+>>>
+>>> The signature however exists in the head page so my question was, can we rid
+>>> of that without having a performance penalty?
+>>
+>> As both skb frag and head page is eventually operated on the head page
+>> of a compound page(if it is a compound page) for normal case too, maybe
+>> we can refactor the code to get the head page of a compound page before
+>> the signature checking without doing a second virt_to_head_page() or
+>> compound_head() call?
+> 
+> Yea that's doable, but my concern is different here.  If we do that the
+> standard network stack, even for drivers that don't use page_pool,  will
+> have to do a virt_to_head_page() -> check signature, to decide if it has to
+> try recycling the packet.  That's the performance part I am worried about,
+> since it happens for every packet. 
 
-Here is the summary with links:
-  - net: netsec: Make use of the helper function dev_err_probe()
-    https://git.kernel.org/netdev/net-next/c/61524e43abad
+Yes, there is theoretically performance penalty for virt_to_head_page() or
+compound_head(), will do more test if we decide to go with the signature
+checking.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> 
+>>
+>>>
+>>> IOW in skb_free_head() an we replace:
+>>>
+>>> if (skb_pp_recycle(skb, head)) 
+>>> with
+>>> if (page->pp_magic & ~0x3UL) == PP_SIGNATURE)
+>>> and get rid of the 'bool recycle' argument in __skb_frag_unref()?
+>>
+>> For the frag page of a skb, it seems ok to get rid of the 'bool recycle'
+>> argument in __skb_frag_unref(), as __skb_frag_unref() and __skb_frag_ref()
+>> is symmetrically called to put/get a page.
+>>
+>> For the head page of a skb, we might need to make sure the head page
+>> passed to __build_skb_around() meet below condition:
+>> do pp_frag_count incrementing instead of _refcount incrementing when
+>> the head page is not newly allocated and it is from page pool.
+>> It seems hard to audit that?
+> 
+> Yea that seems a bit weird at least to me and I am not sure, it's the only
+> place we'll have to go and do that.
 
+Yes, That is why I avoid changing the behavior of a head page for a skb.
+In other word, maybe we should not track if head page for a skb is pp page
+or not when the page'_refcount is incremented during network stack journey,
+just treat it as normal page?
+
+> 
+>>
+>>
+>>>
+>>>> bit 0 of frag->bv_page is different way of indicatior for a pp page,
+>>>> it is better we do not confuse with the page signature way. Using
+>>>> a bit 0 may give us a free word in 'struct page' if we manage to
+>>>> use skb->pp_recycle to indicate a head page of the skb uniquely, meaning
+>>>> page->pp_magic can be used for future feature.
+>>>>
+>>>>
+>>>>>
+>>>>>>
+>>>>>>> for pp_recycle right now?  __skb_frag_unref() in skb_shift() or
+>>>>>>> skb_try_coalesce() (the latter can probably be removed tbh).
+>>>>>>
+>>>>>> If we decide to go with accurate indicator of a pp page, we just need
+>>>>>> to make sure network stack use __skb_frag_unref() and __skb_frag_ref()
+>>>>>> to put and get a page frag, the indicator checking need only done in
+>>>>>> __skb_frag_unref() and __skb_frag_ref(), so the skb_shift() and
+>>>>>> skb_try_coalesce() should be fine too.
+>>>>>>
+>>>>>>>
+>>>>>>>>
+>>>>>>>> Another way is to use the bit 0 of frag->bv_page ptr to indicate if a frag
+>>>>>>>> page is from page pool.
+>>>>>>>
+>>>>>>> Instead of the 'struct page' signature?  And the pp_recycle bit will
+>>>>>>> continue to exist?  
+>>>>>>
+>>>>>> pp_recycle bit might only exist or is only used for the head page for the skb.
+>>>>>> The bit 0 of frag->bv_page ptr can be used to indicate a frag page uniquely.
+>>>>>> Doing a memcpying of shinfo or "*fragto = *fragfrom" automatically pass the
+>>>>>> indicator to the new shinfo before doing a __skb_frag_ref(), and __skb_frag_ref()
+>>>>>> will increment the _refcount or pp_frag_count according to the bit 0 of
+>>>>>> frag->bv_page.
+>>>>>>
+>>>>>> By the way, I also prototype the above idea, and it seems to work well too.
+>>>>>>
+>>>>>
+>>>>> As long as no one else touches this, it's just another way of identifying a
+>>>>> page_pool allocated page.  But are we gaining by that?  Not using
+>>>>> virt_to_head_page() as stated above? But in that case you still need to
+>>>>> keep pp_recycle around. 
+>>>>
+>>>> No, we do not need the pp_recycle, as long as the we make sure __skb_frag_ref()
+>>>> is called after memcpying the shinfo or doing "*fragto = *fragfrom".
+>>>
+>>> But we'll have to keep it for the skb head in this case.
+>>
+>> As above, I am not really look into skb head case:)
+> 
+> Let me take a step back here, because I think we drifted a bit. 
+> The page signature was introduced in order to be able to identify skb
+> fragments. The problem was that you couldn't rely on the pp_recycle bit of
+> the skb head,  since fragments could come from anywhere.  So you use the
+> skb bit as a hint for skb frags, and you eventually decide using the page
+> signature.
+> 
+> So we got 3 options (Anything I've missed ?)
+> - try to remove pp_recycle bit, since the page signature is enough for the
+>   skb head and fragments.  That in my opinion is the cleanest option,  as
+>   long as we can prove there's no performance hit on the standard network
+>   path.
+> 
+> - Replace the page signature with frag->bv_page bit0.  In that case we
+>   still have to keep the pp_recycle bit,  but we do have an 'easier'
+>   indication that a skb frag comes from page_pool.  That's still pretty
+>   safe, since you now have unique identifiers for the skb and page
+>   fragments and you can be sure of their origin (page pool or not).
+>   What I am missing here, is what do we get out of this?  I think the
+>   advantage is not having to call virt_to_head_page() for frags ?
+
+Not using the signature will free a word space in struct page for future
+feature?
+
+> 
+> - Keep all of them(?) and use frag->bv_page bit0 similarly to pp_recycle
+>   bit?  I don't see much value on this one,  I am just keeping it here for
+>   completeness.
+
+
+For safty and performance reason:
+1. maybe we should move the pp_recycle bit from "struct sk_buff" to
+   "struct skb_shared_info", and use it to only indicate if the head page of
+   a skb is from page pool.
+
+2. The frag->bv_page bit0 is used to indicate if the frag page of a skb is
+   from page pool, and modify __skb_frag_unref() and __skb_frag_ref() to keep
+   track of it.
+
+3. For safty or debugging reason, keep the page signature for now, and put a
+   page signature WARN_ON checking in page pool to catch any misbehaviour?
+
+If there is not bug showing up later, maybe we can free the page signature space
+for other usage?
+
+> 
+> Thanks
+> /Ilias
 
