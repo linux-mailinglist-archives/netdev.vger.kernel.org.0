@@ -2,135 +2,513 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF9E441004B
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 22:23:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68A9F410068
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 22:50:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236732AbhIQUZS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 16:25:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33002 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231656AbhIQUZQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 16:25:16 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A49EC061574
-        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 13:23:54 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id nn5-20020a17090b38c500b0019af1c4b31fso8217846pjb.3
-        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 13:23:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=G68LQzSZpMRTYksOEIRHyybj5emq5qa1W4kuhkkwq8U=;
-        b=mX8tG9BzSL+8xUo7RAA2a0XxrUkF/PLsh12EwDyH8Rfi02f/jN5y8P2HnJ+BktTNmV
-         L6h0fBPjg0nblqCVyjmetCieMotIafGn7fdBtkpwFM3nmD3wIs0PbanP0OIQalqKD31B
-         10fUYSD0y9H3fssSn88er4/58gpHdycg8hnNKfFzGLZrJVcFAY0ulXvVOhpQZJh4ZO3u
-         /IIdwevxkD7XK7oaAkVxQVbUkIvBGwETwXtQfWPlRFEopKamwVsMHYfG5DRyZsnjnG3S
-         rCxke5oHzkAin1rmg8mtfU1hXyRdCQg/u1W6WyMRIhoacrNbUaxfyETMB5Bdo2tBSvIB
-         WL6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=G68LQzSZpMRTYksOEIRHyybj5emq5qa1W4kuhkkwq8U=;
-        b=HsK4FowfH3+0Nzofipt9tF6IX5kWb7shE0RdHV7S4mlrdKkP85llSTPmvI1DBoRfPj
-         nEuCtKS6hd6gqqtCIvJuycNf76fxvFN48udCaYwtJvPV01I8hBRINfqkXMVLJQS/tDO8
-         xQGXDCrCzxn59PTsys3tvUi85NX9XEG3BvWHQBk9ARbI1BHvK3KLCeYmrmixRNPMfmCR
-         xpC5Zgt7ZR3Yxc2yk44GNosQroWXULEIyA3BJxypLKcz5s00xDCT5HtlrjLU0NiIxD47
-         PxFbZqlc9w2SPdbvosp+QoqUOluyhsC3fJ5V7e6o/m6UX+zm+OgxkcUsli5RoEjHvp0E
-         QNDg==
-X-Gm-Message-State: AOAM5325YKO0JXZZ/Y4CSLNYpELRwqntjgKYIC9Cl6iVlaiX8fOSAXNe
-        t4sSRkLaMLynnPhrpqRCGuuM+VJahXk=
-X-Google-Smtp-Source: ABdhPJxkmZwbCSPczv0Y3suJ1WC6HPiM5Z1iqewLOuU1FcyQKyqemmNRYsiau/d6wB5KUrAWg/KEEA==
-X-Received: by 2002:a17:902:784e:b0:139:d4ee:899e with SMTP id e14-20020a170902784e00b00139d4ee899emr11322792pln.48.1631910233105;
-        Fri, 17 Sep 2021 13:23:53 -0700 (PDT)
-Received: from localhost.localdomain ([49.206.116.228])
-        by smtp.googlemail.com with ESMTPSA id l6sm6972276pff.74.2021.09.17.13.23.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Sep 2021 13:23:52 -0700 (PDT)
-From:   Gokul Sivakumar <gokulkumar792@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Gokul Sivakumar <gokulkumar792@gmail.com>,
-        David Ahern <dsahern@gmail.com>, stephen@networkplumber.org
-Subject: [PATCH iproute2-next] lib: bpf_legacy: add prog name, load time, uid and btf id in prog info dump
-Date:   Sat, 18 Sep 2021 01:53:38 +0530
-Message-Id: <20210917202338.1810837-1-gokulkumar792@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S236333AbhIQUv6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 16:51:58 -0400
+Received: from pbmsgap01.intersil.com ([192.157.179.201]:50760 "EHLO
+        pbmsgap01.intersil.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229771AbhIQUv5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 16:51:57 -0400
+Received: from pps.filterd (pbmsgap01.intersil.com [127.0.0.1])
+        by pbmsgap01.intersil.com (8.16.0.42/8.16.0.42) with SMTP id 18HKoWFu002430;
+        Fri, 17 Sep 2021 16:50:32 -0400
+Received: from pbmxdp01.intersil.corp (pbmxdp01.pb.intersil.com [132.158.200.222])
+        by pbmsgap01.intersil.com with ESMTP id 3b4e8dran3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Fri, 17 Sep 2021 16:50:32 -0400
+Received: from pbmxdp03.intersil.corp (132.158.200.224) by
+ pbmxdp01.intersil.corp (132.158.200.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
+ 15.1.2242.4; Fri, 17 Sep 2021 16:50:30 -0400
+Received: from localhost (132.158.202.109) by pbmxdp03.intersil.corp
+ (132.158.200.224) with Microsoft SMTP Server id 15.1.2242.4 via Frontend
+ Transport; Fri, 17 Sep 2021 16:50:30 -0400
+From:   <min.li.xe@renesas.com>
+To:     <richardcochran@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Min Li <min.li.xe@renesas.com>
+Subject: [PATCH net v2 1/2] ptp: idt82p33: optimize idt82p33_adjtime
+Date:   Fri, 17 Sep 2021 16:50:20 -0400
+Message-ID: <1631911821-31142-1-git-send-email-min.li.xe@renesas.com>
+X-Mailer: git-send-email 2.7.4
+X-TM-AS-MML: disable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-GUID: 8gprqYjsWd6VhTxuwArCb0iFHdb538jA
+X-Proofpoint-ORIG-GUID: 8gprqYjsWd6VhTxuwArCb0iFHdb538jA
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-09-17_08:2021-09-17,2021-09-17 signatures=0
+X-Proofpoint-Spam-Details: rule=junk_notspam policy=junk score=0 adultscore=0 spamscore=0
+ suspectscore=0 bulkscore=0 malwarescore=0 phishscore=0 mlxlogscore=999
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2109150000 definitions=main-2109170122
+X-Proofpoint-Spam-Reason: mlx
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The BPF program name is included when dumping the BPF program info and the
-kernel only stores the first (BPF_PROG_NAME_LEN - 1) bytes for the program
-name.
+From: Min Li <min.li.xe@renesas.com>
 
-$ sudo ip link show dev docker0
-4: docker0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 xdpgeneric qdisc noqueue state UP mode DEFAULT group default
-    link/ether 02:42:4c:df:a4:54 brd ff:ff:ff:ff:ff:ff
-    prog/xdp id 789 name xdp_drop_func tag 57cd311f2e27366b jited
+The current adjtime implementation is read-modify-write and immediately
+triggered, which is not accurate due to slow i2c bus access. Therefore,
+we will use internally generated 1 PPS pulse as trigger, which will
+improve adjtime accuracy significantly. On the other hand, the new trigger
+will not change TOD immediately but delay it to the next 1 PPS pulse.
 
-The BPF program load time (ns since boottime), UID of the user who loaded
-the program and the BTF ID are also included when dumping the BPF program
-information when the user expects a detailed ip link info output.
-
-$ sudo ip -details link show dev docker0
-4: docker0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 xdpgeneric qdisc noqueue state UP mode DEFAULT group default
-    link/ether 02:42:4c:df:a4:54 brd ff:ff:ff:ff:ff:ff promiscuity 0 minmtu 68 maxmtu 65535
-    bridge forward_delay 1500 hello_time 200 max_age 2000 ageing_time 30000 stp_state 0 priority 32768 vlan_filt
-ering 0 vlan_protocol 802.1Q bridge_id 8000.2:42:4c:df:a4:54 designated_root 8000.2:42:4c:df:a4:54 root_port 0 r
-oot_path_cost 0 topology_change 0 topology_change_detected 0 hello_timer    0.00 tcn_timer    0.00 topology_chan
-ge_timer    0.00 gc_timer  265.36 vlan_default_pvid 1 vlan_stats_enabled 0 vlan_stats_per_port 0 group_fwd_mask
-0 group_address 01:80:c2:00:00:00 mcast_snooping 1 mcast_router 1 mcast_query_use_ifaddr 0 mcast_querier 0 mcast
-_hash_elasticity 16 mcast_hash_max 4096 mcast_last_member_count 2 mcast_startup_query_count 2 mcast_last_member_
-interval 100 mcast_membership_interval 26000 mcast_querier_interval 25500 mcast_query_interval 12500 mcast_query
-_response_interval 1000 mcast_startup_query_interval 3124 mcast_stats_enabled 0 mcast_igmp_version 2 mcast_mld_v
-ersion 1 nf_call_iptables 0 nf_call_ip6tables 0 nf_call_arptables 0 addrgenmode eui64 numtxqueues 1 numrxqueues
-1 gso_max_size 65536 gso_max_segs 65535
-    prog/xdp id 789 name xdp_drop_func tag 57cd311f2e27366b jited load_time 2676682607316255 created_by_uid 0 btf_id 708
-
-Signed-off-by: Gokul Sivakumar <gokulkumar792@gmail.com>
+Signed-off-by: Min Li <min.li.xe@renesas.com>
 ---
- lib/bpf_legacy.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+ drivers/ptp/ptp_idt82p33.c | 221 ++++++++++++++++++++++++++++++---------------
+ drivers/ptp/ptp_idt82p33.h |  28 +++---
+ 2 files changed, 165 insertions(+), 84 deletions(-)
 
-diff --git a/lib/bpf_legacy.c b/lib/bpf_legacy.c
-index 91086aa2..a0643000 100644
---- a/lib/bpf_legacy.c
-+++ b/lib/bpf_legacy.c
-@@ -203,12 +203,32 @@ int bpf_dump_prog_info(FILE *f, uint32_t id)
- 	if (!ret && len) {
- 		int jited = !!info.jited_prog_len;
+diff --git a/drivers/ptp/ptp_idt82p33.c b/drivers/ptp/ptp_idt82p33.c
+index c1c959f..abe628c 100644
+--- a/drivers/ptp/ptp_idt82p33.c
++++ b/drivers/ptp/ptp_idt82p33.c
+@@ -24,15 +24,10 @@ MODULE_LICENSE("GPL");
+ MODULE_FIRMWARE(FW_FILENAME);
  
-+		if (info.name)
-+			print_string(PRINT_ANY, "name", "name %s ", info.name);
+ /* Module Parameters */
+-static u32 sync_tod_timeout = SYNC_TOD_TIMEOUT_SEC;
+-module_param(sync_tod_timeout, uint, 0);
+-MODULE_PARM_DESC(sync_tod_timeout,
+-"duration in second to keep SYNC_TOD on (set to 0 to keep it always on)");
+-
+ static u32 phase_snap_threshold = SNAP_THRESHOLD_NS;
+ module_param(phase_snap_threshold, uint, 0);
+ MODULE_PARM_DESC(phase_snap_threshold,
+-"threshold (150000ns by default) below which adjtime would ignore");
++"threshold (1000ns by default) below which adjtime would ignore");
+ 
+ static void idt82p33_byte_array_to_timespec(struct timespec64 *ts,
+ 					    u8 buf[TOD_BYTE_COUNT])
+@@ -206,26 +201,47 @@ static int idt82p33_dpll_set_mode(struct idt82p33_channel *channel,
+ 	if (err)
+ 		return err;
+ 
+-	channel->pll_mode = dpll_mode;
++	channel->pll_mode = mode;
+ 
+ 	return 0;
+ }
+ 
+-static int _idt82p33_gettime(struct idt82p33_channel *channel,
+-			     struct timespec64 *ts)
++static int idt82p33_set_tod_trigger(struct idt82p33_channel *channel,
++				    u8 trigger, bool write)
+ {
+ 	struct idt82p33 *idt82p33 = channel->idt82p33;
+-	u8 buf[TOD_BYTE_COUNT];
+-	u8 trigger;
+ 	int err;
++	u8 cfg;
+ 
+-	trigger = TOD_TRIGGER(HW_TOD_WR_TRIG_SEL_MSB_TOD_CNFG,
+-			      HW_TOD_RD_TRIG_SEL_LSB_TOD_STS);
++	if (trigger > WR_TRIG_SEL_MAX)
++		return -EINVAL;
+ 
++	err = idt82p33_read(idt82p33, channel->dpll_tod_trigger,
++			    &cfg, sizeof(cfg));
+ 
+-	err = idt82p33_write(idt82p33, channel->dpll_tod_trigger,
+-			     &trigger, sizeof(trigger));
++	if (err)
++		return err;
 +
- 		print_string(PRINT_ANY, "tag", "tag %s ",
- 			     hexstring_n2a(info.tag, sizeof(info.tag),
- 					   tmp, sizeof(tmp)));
- 		print_uint(PRINT_JSON, "jited", NULL, jited);
- 		if (jited && !is_json_context())
- 			fprintf(f, "jited ");
++	if (write == true)
++		trigger = (trigger << WRITE_TRIGGER_SHIFT) |
++			  (cfg & READ_TRIGGER_MASK);
++	else
++		trigger = (trigger << READ_TRIGGER_SHIFT) |
++			  (cfg & WRITE_TRIGGER_MASK);
 +
-+		if (show_details) {
-+			if (info.load_time) {
-+				/* ns since boottime */
-+				print_lluint(PRINT_ANY, "load_time",
-+					     "load_time %llu ", info.load_time);
++	return idt82p33_write(idt82p33, channel->dpll_tod_trigger,
++			      &trigger, sizeof(trigger));
++}
 +
-+				print_luint(PRINT_ANY, "created_by_uid",
-+					    "created_by_uid %lu ",
-+					    info.created_by_uid);
-+			}
++static int _idt82p33_gettime(struct idt82p33_channel *channel,
++			     struct timespec64 *ts)
++{
++	struct idt82p33 *idt82p33 = channel->idt82p33;
++	u8 buf[TOD_BYTE_COUNT];
++	int err;
+ 
++	err = idt82p33_set_tod_trigger(channel, HW_TOD_RD_TRIG_SEL_LSB_TOD_STS,
++				       false);
+ 	if (err)
+ 		return err;
+ 
+@@ -255,16 +271,11 @@ static int _idt82p33_settime(struct idt82p33_channel *channel,
+ 	struct timespec64 local_ts = *ts;
+ 	char buf[TOD_BYTE_COUNT];
+ 	s64 dynamic_overhead_ns;
+-	unsigned char trigger;
+ 	int err;
+ 	u8 i;
+ 
+-	trigger = TOD_TRIGGER(HW_TOD_WR_TRIG_SEL_MSB_TOD_CNFG,
+-			      HW_TOD_RD_TRIG_SEL_LSB_TOD_STS);
+-
+-	err = idt82p33_write(idt82p33, channel->dpll_tod_trigger,
+-			&trigger, sizeof(trigger));
+-
++	err = idt82p33_set_tod_trigger(channel, HW_TOD_WR_TRIG_SEL_MSB_TOD_CNFG,
++				       true);
+ 	if (err)
+ 		return err;
+ 
+@@ -292,7 +303,8 @@ static int _idt82p33_settime(struct idt82p33_channel *channel,
+ 	return err;
+ }
+ 
+-static int _idt82p33_adjtime(struct idt82p33_channel *channel, s64 delta_ns)
++static int _idt82p33_adjtime_immediate(struct idt82p33_channel *channel,
++				       s64 delta_ns)
+ {
+ 	struct idt82p33 *idt82p33 = channel->idt82p33;
+ 	struct timespec64 ts;
+@@ -316,6 +328,60 @@ static int _idt82p33_adjtime(struct idt82p33_channel *channel, s64 delta_ns)
+ 	return err;
+ }
+ 
++static int _idt82p33_adjtime_internal_triggered(struct idt82p33_channel *channel,
++						s64 delta_ns)
++{
++	struct idt82p33 *idt82p33 = channel->idt82p33;
++	char buf[TOD_BYTE_COUNT];
++	struct timespec64 ts;
++	const u8 delay_ns = 32;
++	s32 delay_ns_remainder;
++	s64 ns;
++	int err;
 +
-+			if (info.btf_id)
-+				print_luint(PRINT_ANY, "btf_id", "btf_id %lu ",
-+					    info.btf_id);
++	err = _idt82p33_gettime(channel, &ts);
++
++	if (err)
++		return err;
++
++	if (ts.tv_nsec > (NSEC_PER_SEC - 5 * NSEC_PER_MSEC)) {
++		/*  Too close to miss next trigger, so skip it */
++		mdelay(6);
++		ns = (ts.tv_sec + 2) * NSEC_PER_SEC + delta_ns + delay_ns;
++	} else
++		ns = (ts.tv_sec + 1) * NSEC_PER_SEC + delta_ns + delay_ns;
++
++	ts = ns_to_timespec64(ns);
++	idt82p33_timespec_to_byte_array(&ts, buf);
++
++	/*
++	 * Store the new time value.
++	 */
++	err = idt82p33_write(idt82p33, channel->dpll_tod_cnfg, buf, sizeof(buf));
++	if (err)
++		return err;
++
++	/* Schedule to implement the workaround in one second */
++	div_s64_rem(delta_ns, NSEC_PER_SEC, &delay_ns_remainder);
++	if (delay_ns_remainder)
++		schedule_delayed_work(&channel->adjtime_work, HZ);
++
++	return idt82p33_set_tod_trigger(channel, HW_TOD_TRIG_SEL_TOD_PPS, true);
++}
++
++static void idt82p33_adjtime_workaround(struct work_struct *work)
++{
++	struct idt82p33_channel *channel = container_of(work,
++							struct idt82p33_channel,
++							adjtime_work.work);
++	struct idt82p33 *idt82p33 = channel->idt82p33;
++
++	mutex_lock(&idt82p33->reg_lock);
++	/* Workaround for TOD-to-output alignment issue */
++	_idt82p33_adjtime_internal_triggered(channel, 0);
++	mutex_unlock(&idt82p33->reg_lock);
++}
++
+ static int _idt82p33_adjfine(struct idt82p33_channel *channel, long scaled_ppm)
+ {
+ 	struct idt82p33 *idt82p33 = channel->idt82p33;
+@@ -397,6 +463,39 @@ static int idt82p33_measure_one_byte_write_overhead(
+ 	return err;
+ }
+ 
++static int idt82p33_measure_one_byte_read_overhead(
++		struct idt82p33_channel *channel, s64 *overhead_ns)
++{
++	struct idt82p33 *idt82p33 = channel->idt82p33;
++	ktime_t start, stop;
++	u8 trigger = 0;
++	s64 total_ns;
++	int err;
++	u8 i;
++
++	total_ns = 0;
++	*overhead_ns = 0;
++
++	for (i = 0; i < MAX_MEASURMENT_COUNT; i++) {
++
++		start = ktime_get_raw();
++
++		err = idt82p33_read(idt82p33, channel->dpll_tod_trigger,
++				    &trigger, sizeof(trigger));
++
++		stop = ktime_get_raw();
++
++		if (err)
++			return err;
++
++		total_ns += ktime_to_ns(stop) - ktime_to_ns(start);
++	}
++
++	*overhead_ns = div_s64(total_ns, MAX_MEASURMENT_COUNT);
++
++	return err;
++}
++
+ static int idt82p33_measure_tod_write_9_byte_overhead(
+ 			struct idt82p33_channel *channel)
+ {
+@@ -458,7 +557,7 @@ static int idt82p33_measure_settime_gettime_gap_overhead(
+ 
+ static int idt82p33_measure_tod_write_overhead(struct idt82p33_channel *channel)
+ {
+-	s64 trailing_overhead_ns, one_byte_write_ns, gap_ns;
++	s64 trailing_overhead_ns, one_byte_write_ns, gap_ns, one_byte_read_ns;
+ 	struct idt82p33 *idt82p33 = channel->idt82p33;
+ 	int err;
+ 
+@@ -478,12 +577,19 @@ static int idt82p33_measure_tod_write_overhead(struct idt82p33_channel *channel)
+ 	if (err)
+ 		return err;
+ 
++	err = idt82p33_measure_one_byte_read_overhead(channel,
++						      &one_byte_read_ns);
++
++	if (err)
++		return err;
++
+ 	err = idt82p33_measure_tod_write_9_byte_overhead(channel);
+ 
+ 	if (err)
+ 		return err;
+ 
+-	trailing_overhead_ns = gap_ns - (2 * one_byte_write_ns);
++	trailing_overhead_ns = gap_ns - 2 * one_byte_write_ns
++			       - one_byte_read_ns;
+ 
+ 	idt82p33->tod_write_overhead_ns -= trailing_overhead_ns;
+ 
+@@ -500,7 +606,7 @@ static int idt82p33_check_and_set_masks(struct idt82p33 *idt82p33,
+ 	if (page == PLLMASK_ADDR_HI && offset == PLLMASK_ADDR_LO) {
+ 		if ((val & 0xfc) || !(val & 0x3)) {
+ 			dev_err(&idt82p33->client->dev,
+-				"Invalid PLL mask 0x%hhx\n", val);
++				"Invalid PLL mask 0x%02x\n", val);
+ 			err = -EINVAL;
+ 		} else {
+ 			idt82p33->pll_mask = val;
+@@ -539,11 +645,6 @@ static int idt82p33_sync_tod(struct idt82p33_channel *channel, bool enable)
+ 	u8 sync_cnfg;
+ 	int err;
+ 
+-	/* Turn it off after sync_tod_timeout seconds */
+-	if (enable && sync_tod_timeout)
+-		ptp_schedule_worker(channel->ptp_clock,
+-				    sync_tod_timeout * HZ);
+-
+ 	err = idt82p33_read(idt82p33, channel->dpll_sync_cnfg,
+ 			    &sync_cnfg, sizeof(sync_cnfg));
+ 	if (err)
+@@ -557,22 +658,6 @@ static int idt82p33_sync_tod(struct idt82p33_channel *channel, bool enable)
+ 			      &sync_cnfg, sizeof(sync_cnfg));
+ }
+ 
+-static long idt82p33_sync_tod_work_handler(struct ptp_clock_info *ptp)
+-{
+-	struct idt82p33_channel *channel =
+-			container_of(ptp, struct idt82p33_channel, caps);
+-	struct idt82p33 *idt82p33 = channel->idt82p33;
+-
+-	mutex_lock(&idt82p33->reg_lock);
+-
+-	(void)idt82p33_sync_tod(channel, false);
+-
+-	mutex_unlock(&idt82p33->reg_lock);
+-
+-	/* Return a negative value here to not reschedule */
+-	return -1;
+-}
+-
+ static int idt82p33_output_enable(struct idt82p33_channel *channel,
+ 				  bool enable, unsigned int outn)
+ {
+@@ -634,13 +719,6 @@ static int idt82p33_enable_tod(struct idt82p33_channel *channel)
+ 	struct idt82p33 *idt82p33 = channel->idt82p33;
+ 	struct timespec64 ts = {0, 0};
+ 	int err;
+-	u8 val;
+-
+-	val = 0;
+-	err = idt82p33_write(idt82p33, channel->dpll_input_mode_cnfg,
+-			     &val, sizeof(val));
+-	if (err)
+-		return err;
+ 
+ 	err = idt82p33_measure_tod_write_overhead(channel);
+ 
+@@ -664,11 +742,12 @@ static void idt82p33_ptp_clock_unregister_all(struct idt82p33 *idt82p33)
+ 	u8 i;
+ 
+ 	for (i = 0; i < MAX_PHC_PLL; i++) {
+-
+ 		channel = &idt82p33->channel[i];
+ 
+-		if (channel->ptp_clock)
++		if (channel->ptp_clock) {
++			channel = &idt82p33->channel[i];
+ 			ptp_clock_unregister(channel->ptp_clock);
 +		}
+ 	}
+ }
+ 
+@@ -753,10 +832,11 @@ static int idt82p33_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
+ 
+ 	mutex_lock(&idt82p33->reg_lock);
+ 	err = _idt82p33_adjfine(channel, scaled_ppm);
++	mutex_unlock(&idt82p33->reg_lock);
 +
- 		dump_ok = 1;
+ 	if (err)
+ 		dev_err(&idt82p33->client->dev,
+ 			"Failed in %s with err %d!\n", __func__, err);
+-	mutex_unlock(&idt82p33->reg_lock);
+ 
+ 	return err;
+ }
+@@ -775,21 +855,16 @@ static int idt82p33_adjtime(struct ptp_clock_info *ptp, s64 delta_ns)
+ 		return 0;
  	}
  
+-	err = _idt82p33_adjtime(channel, delta_ns);
++	/* Use more accurate internal 1pps triggered write first */
++	err = _idt82p33_adjtime_internal_triggered(channel, delta_ns);
++	if (err && delta_ns > IMMEDIATE_SNAP_THRESHOLD_NS)
++		err = _idt82p33_adjtime_immediate(channel, delta_ns);
+ 
+-	if (err) {
+-		mutex_unlock(&idt82p33->reg_lock);
+-		dev_err(&idt82p33->client->dev,
+-			"Adjtime failed in %s with err %d!\n", __func__, err);
+-		return err;
+-	}
++	mutex_unlock(&idt82p33->reg_lock);
+ 
+-	err = idt82p33_sync_tod(channel, true);
+ 	if (err)
+ 		dev_err(&idt82p33->client->dev,
+-			"Sync_tod failed in %s with err %d!\n", __func__, err);
+-
+-	mutex_unlock(&idt82p33->reg_lock);
++			"Adjtime failed in %s with err %d!\n", __func__, err);
+ 
+ 	return err;
+ }
+@@ -803,10 +878,11 @@ static int idt82p33_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
+ 
+ 	mutex_lock(&idt82p33->reg_lock);
+ 	err = _idt82p33_gettime(channel, ts);
++	mutex_unlock(&idt82p33->reg_lock);
++
+ 	if (err)
+ 		dev_err(&idt82p33->client->dev,
+ 			"Failed in %s with err %d!\n", __func__, err);
+-	mutex_unlock(&idt82p33->reg_lock);
+ 
+ 	return err;
+ }
+@@ -821,11 +897,11 @@ static int idt82p33_settime(struct ptp_clock_info *ptp,
+ 
+ 	mutex_lock(&idt82p33->reg_lock);
+ 	err = _idt82p33_settime(channel, ts);
++	mutex_unlock(&idt82p33->reg_lock);
++
+ 	if (err)
+ 		dev_err(&idt82p33->client->dev,
+ 			"Failed in %s with err %d!\n", __func__, err);
+-	mutex_unlock(&idt82p33->reg_lock);
+-
+ 	return err;
+ }
+ 
+@@ -872,7 +948,6 @@ static void idt82p33_caps_init(struct ptp_clock_info *caps)
+ 	caps->gettime64 = idt82p33_gettime;
+ 	caps->settime64 = idt82p33_settime;
+ 	caps->enable = idt82p33_enable;
+-	caps->do_aux_work = idt82p33_sync_tod_work_handler;
+ }
+ 
+ static int idt82p33_enable_channel(struct idt82p33 *idt82p33, u32 index)
+@@ -895,6 +970,8 @@ static int idt82p33_enable_channel(struct idt82p33 *idt82p33, u32 index)
+ 
+ 	channel->idt82p33 = idt82p33;
+ 
++	INIT_DELAYED_WORK(&channel->adjtime_work, idt82p33_adjtime_workaround);
++
+ 	idt82p33_caps_init(&channel->caps);
+ 	snprintf(channel->caps.name, sizeof(channel->caps.name),
+ 		 "IDT 82P33 PLL%u", index);
+diff --git a/drivers/ptp/ptp_idt82p33.h b/drivers/ptp/ptp_idt82p33.h
+index 1c7a0f0..a8b0923 100644
+--- a/drivers/ptp/ptp_idt82p33.h
++++ b/drivers/ptp/ptp_idt82p33.h
+@@ -89,13 +89,13 @@ enum hw_tod_trig_sel {
+ };
+ 
+ /* Register bit definitions end */
+-#define FW_FILENAME	"idt82p33xxx.bin"
+-#define MAX_PHC_PLL (2)
+-#define TOD_BYTE_COUNT (10)
+-#define MAX_MEASURMENT_COUNT (5)
+-#define SNAP_THRESHOLD_NS (150000)
+-#define SYNC_TOD_TIMEOUT_SEC (5)
+-#define IDT82P33_MAX_WRITE_COUNT (512)
++#define FW_FILENAME			"idt82p33xxx.bin"
++#define MAX_PHC_PLL			(2)
++#define TOD_BYTE_COUNT			(10)
++#define MAX_MEASURMENT_COUNT		(5)
++#define SNAP_THRESHOLD_NS		(10000)
++#define IMMEDIATE_SNAP_THRESHOLD_NS	(50000)
++#define IDT82P33_MAX_WRITE_COUNT	(512)
+ 
+ #define PLLMASK_ADDR_HI	0xFF
+ #define PLLMASK_ADDR_LO	0xA5
+@@ -116,15 +116,19 @@ enum hw_tod_trig_sel {
+ #define DEFAULT_OUTPUT_MASK_PLL0	(0xc0)
+ #define DEFAULT_OUTPUT_MASK_PLL1	DEFAULT_OUTPUT_MASK_PLL0
+ 
++/* Bit definitions for DPLL_TOD_TRIGGER register */
++#define READ_TRIGGER_MASK	(0xF)
++#define READ_TRIGGER_SHIFT	(0x0)
++#define WRITE_TRIGGER_MASK	(0xF0)
++#define WRITE_TRIGGER_SHIFT	(0x4)
++
+ /* PTP Hardware Clock interface */
+ struct idt82p33_channel {
+ 	struct ptp_clock_info	caps;
+ 	struct ptp_clock	*ptp_clock;
+-	struct idt82p33	*idt82p33;
+-	enum pll_mode	pll_mode;
+-	/* task to turn off SYNC_TOD bit after pps sync */
+-	struct delayed_work	sync_tod_work;
+-	bool			sync_tod_on;
++	struct idt82p33		*idt82p33;
++	enum pll_mode		pll_mode;
++	struct delayed_work	adjtime_work;
+ 	s32			current_freq_ppb;
+ 	u8			output_mask;
+ 	u16			dpll_tod_cnfg;
 -- 
-2.25.1
+2.7.4
 
