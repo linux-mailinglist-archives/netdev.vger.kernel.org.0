@@ -2,110 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD05840FFAB
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 21:10:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A26BF40FFD2
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 21:26:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240863AbhIQTMJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 15:12:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44856 "EHLO
+        id S243499AbhIQT1n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 15:27:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbhIQTMI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 15:12:08 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9B8FC061574;
-        Fri, 17 Sep 2021 12:10:45 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id f21so6821156plb.4;
-        Fri, 17 Sep 2021 12:10:45 -0700 (PDT)
+        with ESMTP id S243124AbhIQT1j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 15:27:39 -0400
+Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51E94C061764
+        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 12:26:17 -0700 (PDT)
+Received: by mail-il1-x12e.google.com with SMTP id h20so11366222ilj.13
+        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 12:26:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HwxK+YqpENHgGuG8yym74+S0PpE2xFj7pJ0EzdVBFpg=;
-        b=jNmO9Irag4pFM754+7+B7oCXxJClQEQ3frW0A/V320C1kVXJOmR4JaRoDlGmpTCP/d
-         4o0eajanihDKjW3a0NpGtLfjZDMmBM6OxV6OAC1nhtyCGJOM2rSAJeXLwYyEV8c2nBHS
-         0hKk3vX7Ba8zHDz8NJqx/NTLu2YuW2xTyiDwVbXvKq2+8O/KRqCjEeQLC6jFkTJIu8jq
-         9TcbMU0UZLziLvqcnH9Y1WcsTRbqmd/ThQNsBT4AT7bYFULQtrAcY+l5ttQRfaHIAzS6
-         Rn+KuiMDkjAzLmmt5WKjdFa0w7gwyIYBcKSSQ6IkUoZUMVORuJPJKf/yC0NH7v98i2E1
-         DfcQ==
+        d=linuxfoundation.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LfjPbohhavkhWKwUH/1kohR8OTnMGA2qFf1xFiq2UHI=;
+        b=Lo+woY7Spj8UgYNNeMHQdnMWU2klrZ/GBMQ5e6FdAoGYqsYn5+G5X8wBnUoZFSsJEe
+         poHOvO/0mVPmln7opKC0a5Wib3EmkEzGmvUPq+Rb/RqI9chpE4ieOOAxd5r73EHJ/OMl
+         PQntOfNV9bLZZyW2qHGIH98GfWG8TXul36wUI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HwxK+YqpENHgGuG8yym74+S0PpE2xFj7pJ0EzdVBFpg=;
-        b=6nULEpGCdysyZwztbmd8erXvZAG8lTeDaP9tUDuMVIvg2TbdB7CTPXrVvwyOAPm5lW
-         o6D2Qm/me4Yo7RCXbvGBJoX54Hqb4qi7RJK1oE5ef0BAF79w4JyY3e/olVvYf9YwIhH3
-         KE2MCwhVkYXZhfwFI5FEAUwyPn++DfqOV5kJGtdHd/Y1VHzbzvsyCUYI6A5uvx7Cr8dr
-         2h68AhOVxiZJDTIuMhVAW/6lFpBVRGDJ3+gzTmenfYfFR1LDbjT1PQ3j/to/aZCvpRH+
-         WGt6eIn9xc95Dwm5wGg0MdXbpK+Rq3aYvDb5QYpj6RKMbLQwzKOtXEblFM7tmVLDJ1T2
-         KVqw==
-X-Gm-Message-State: AOAM533fSM6s2cnv593I5PXeVxjDLMyZW+7WWehfK2iFFBxGgp8Ge2Yq
-        b2to09Q+ysnNE0dDSC57StEr78q8R0jTAXT2EA8=
-X-Google-Smtp-Source: ABdhPJyAyQ2HEe3XdZOaYH1l8wMv3p+rdnXtCU8E7RKhvcvW8uMFEmAXi2trAW1yUaZRzMJbovwZFys2YE97N2rFxPc=
-X-Received: by 2002:a17:902:7246:b0:138:a6ed:66cc with SMTP id
- c6-20020a170902724600b00138a6ed66ccmr11140819pll.22.1631905845177; Fri, 17
- Sep 2021 12:10:45 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LfjPbohhavkhWKwUH/1kohR8OTnMGA2qFf1xFiq2UHI=;
+        b=iQ+q8nBpKBRMZxS5lbS+oGrBhy93X8LzNS0e4t0zRmusgDFMXLxRPJLM/RzkbTIYWy
+         wnXEEkoaHIo0VFrSKSZeIqDqwnyZ6gNBC9xHqjOZFKQGhBovTLWDySQ1sNZ+FIZowMaK
+         gq/Ay78wYyL+X+VXm/kQjDo003ZqQO3W8VdmuSlN0KdkTQ32xClwdRLOSy9iji9kCLk9
+         zH0hyrHVcuB2tT+zOa1rD9sdIptNALNwpKgXQSE0sMtrljBM6XXE57t6O3r6QGlwyJ50
+         ibz/3WaF4IYfStokyLwg1qkTkaTnD2ZhkZrJUypgUYP4Opr2cRQkrGnzeVv4y2RKTmCX
+         qg1A==
+X-Gm-Message-State: AOAM5321O6wGc3MGkoY45IQ+hTV4kK3PKPhgNa3wbagNpuTmQQ5OYtOV
+        Ugue874FZ+RBqxoAKKkXLbnTxw==
+X-Google-Smtp-Source: ABdhPJyM9NIWQgoA1uI3YhwlV9QCsoV76t9AMOguXV/oSCSoFT/5S3blhepGLBj6aij3GGKOp05Z5A==
+X-Received: by 2002:a92:c145:: with SMTP id b5mr8896077ilh.203.1631906776241;
+        Fri, 17 Sep 2021 12:26:16 -0700 (PDT)
+Received: from shuah-t480s.internal (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
+        by smtp.gmail.com with ESMTPSA id 9sm4049208ily.9.2021.09.17.12.26.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Sep 2021 12:26:15 -0700 (PDT)
+From:   Shuah Khan <skhan@linuxfoundation.org>
+To:     davem@davemloft.net, kuba@kernel.org, shuah@kernel.org
+Cc:     Shuah Khan <skhan@linuxfoundation.org>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] selftests: net: af_unix: Fix incorrect args in test result msg
+Date:   Fri, 17 Sep 2021 13:26:14 -0600
+Message-Id: <20210917192614.24862-1-skhan@linuxfoundation.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <cover.1631289870.git.lorenzo@kernel.org> <20210916095539.4696ae27@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <YUSrWiWh57Ys7UdB@lore-desk> <20210917113310.4be9b586@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAADnVQL15NAqbswXedF0r2om8SOiMQE80OSjbyCA56s-B4y8zA@mail.gmail.com> <20210917120053.1ec617c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210917120053.1ec617c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 17 Sep 2021 12:10:34 -0700
-Message-ID: <CAADnVQKbrkOxfNoixUx-RLJEWULJLyhqjZ=M_X2cFG_APwNyCg@mail.gmail.com>
-Subject: Re: [PATCH v14 bpf-next 00/18] mvneta: introduce XDP multi-buffer support
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, shayagr@amazon.com,
-        John Fastabend <john.fastabend@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        tirthendu.sarkar@intel.com,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 17, 2021 at 12:00 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Fri, 17 Sep 2021 11:43:07 -0700 Alexei Starovoitov wrote:
-> > > If bpf_xdp_load_bytes() / bpf_xdp_store_bytes() works for most we
-> > > can start with that. In all honesty I don't know what the exact
-> > > use cases for looking at data are, either. I'm primarily worried
-> > > about exposing the kernel internals too early.
-> >
-> > I don't mind the xdp equivalent of skb_load_bytes,
-> > but skb_header_pointer() idea is superior.
-> > When we did xdp with data/data_end there was no refine_retval_range
-> > concept in the verifier (iirc or we just missed that opportunity).
-> > We'd need something more advanced: a pointer with valid range
-> > refined by input argument 'len' or NULL.
-> > The verifier doesn't have such thing yet, but it fits as a combination of
-> > value_or_null plus refine_retval_range.
-> > The bpf_xdp_header_pointer() and bpf_skb_header_pointer()
-> > would probably simplify bpf programs as well.
-> > There would be no need to deal with data/data_end.
->
-> What are your thoughts on inlining? Can we inline the common case
-> of the header being in the "head"? Otherwise data/end comparisons
-> would be faster.
+Fix the args to fprintf(). Splitting the message ends up passing
+incorrect arg for "sigurg %d" and an extra arg overall. The test
+result message ends up incorrect.
 
-Yeah. It can be inlined by the verifier.
-It would still look like a call from bpf prog pov with llvm doing spill/fill
-of scratched regs, but it's minor.
+test_unix_oob.c: In function ‘main’:
+test_unix_oob.c:274:43: warning: format ‘%d’ expects argument of type ‘int’, but argument 3 has type ‘char *’ [-Wformat=]
+  274 |   fprintf(stderr, "Test 3 failed, sigurg %d len %d OOB %c ",
+      |                                          ~^
+      |                                           |
+      |                                           int
+      |                                          %s
+  275 |   "atmark %d\n", signal_recvd, len, oob, atmark);
+      |   ~~~~~~~~~~~~~
+      |   |
+      |   char *
+test_unix_oob.c:274:19: warning: too many arguments for format [-Wformat-extra-args]
+  274 |   fprintf(stderr, "Test 3 failed, sigurg %d len %d OOB %c ",
 
-Also we can use the same bpf_header_pointer(ctx, ...)
-helper for both xdp and skb program types. They will have different
-implementation underneath, but this might make possible writing bpf
-programs that could work in both xdp and skb context.
-I believe cilium has fancy macros to achieve that.
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+---
+ tools/testing/selftests/net/af_unix/test_unix_oob.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/tools/testing/selftests/net/af_unix/test_unix_oob.c b/tools/testing/selftests/net/af_unix/test_unix_oob.c
+index 0f3e3763f4f8..3dece8b29253 100644
+--- a/tools/testing/selftests/net/af_unix/test_unix_oob.c
++++ b/tools/testing/selftests/net/af_unix/test_unix_oob.c
+@@ -271,8 +271,9 @@ main(int argc, char **argv)
+ 	read_oob(pfd, &oob);
+ 
+ 	if (!signal_recvd || len != 127 || oob != '%' || atmark != 1) {
+-		fprintf(stderr, "Test 3 failed, sigurg %d len %d OOB %c ",
+-		"atmark %d\n", signal_recvd, len, oob, atmark);
++		fprintf(stderr,
++			"Test 3 failed, sigurg %d len %d OOB %c atmark %d\n",
++			signal_recvd, len, oob, atmark);
+ 		die(1);
+ 	}
+ 
+-- 
+2.30.2
+
