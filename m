@@ -2,92 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 566F640F986
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 15:50:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A92E40F9A3
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 15:55:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241194AbhIQNvZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 09:51:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55504 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240099AbhIQNvY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 09:51:24 -0400
-Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15F7CC061574
-        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 06:50:01 -0700 (PDT)
-Received: by mail-qv1-xf31.google.com with SMTP id gs10so6389512qvb.13
-        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 06:50:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=piBRpEE+WWHlWllIUzB+ODVSBg/qtTReQB6Vdl5TiMQ=;
-        b=QhBHO8WCAz0Nd0vl3OXDyPxZPaacuXWvOVBXISQKsz0CMPuqFQV+Z3rTARpzPSmDR8
-         hHTkzcYXPO5+/KZ9CEAOVPnh/cJ5a3WN1FbpuMyA+V5xuFFXtiFxZwb+X7ifA8i+97Wc
-         H/1zit8xyMceylXSwniUE8DB0gohz+phjXOgI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=piBRpEE+WWHlWllIUzB+ODVSBg/qtTReQB6Vdl5TiMQ=;
-        b=YQEh6/xy9zMqJAgUFG/dV9s6ZGOT7poy8oidGsSpXJRurP4bYhGfYtvcHkxOmoEYLT
-         we0RygRnl+7sPNVupSOTJBffW3QGEMMjh6+V08C83G4WcnOplfN/kFGJAsebP3fx8ZC1
-         FJ+/6DqEN4JOihtgs9x9Sul2V33C1bViIEPuQ63Pz9BYjpICdSMCBTWsMyvtzNAS4uhZ
-         02dZ4ujJv1jCFMnvEaYQgOUMzD9D/rwFrV0b6kpPde8n+ZqtoGu9tBFbMYtCOCsHeKH0
-         Kbjd0HK+9k2vBFVJwzthf8yW2eevVDCmilX3Z3JH812W2dZXIqUHnsROiZehcxl5QNNw
-         zlZw==
-X-Gm-Message-State: AOAM531sv/O6xke+RSkjQIgpfNBcK3hb+gvzRg3u9VxOXStETtAe8ngZ
-        4c20h0IvTMuys26Jm61+bA6kcw==
-X-Google-Smtp-Source: ABdhPJzLhk3+6YH/nHR1yn4MtkGwS/tE79GZt3HiHObF1HIfEAtV1p8s5KFv4j8ECtFsiY6rFmPxVg==
-X-Received: by 2002:a05:6214:1492:: with SMTP id bn18mr8463440qvb.44.1631886601105;
-        Fri, 17 Sep 2021 06:50:01 -0700 (PDT)
-Received: from meerkat.local (bras-base-mtrlpq5031w-grc-32-216-209-220-181.dsl.bell.ca. [216.209.220.181])
-        by smtp.gmail.com with ESMTPSA id a9sm4857113qkk.82.2021.09.17.06.50.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Sep 2021 06:50:00 -0700 (PDT)
-Date:   Fri, 17 Sep 2021 09:49:58 -0400
-From:   Konstantin Ryabitsev <konstantin@linuxfoundation.org>
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     Colin Foster <colin.foster@in-advantage.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S241589AbhIQN4e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 09:56:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37188 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235669AbhIQN4d (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Sep 2021 09:56:33 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 82034611C3;
+        Fri, 17 Sep 2021 13:55:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1631886911;
+        bh=c+1/5v3W6h8KgmWxYsyBGxKIVtsLsWwfXcuinAfdwX0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=pP4ep/EEJhEDCU7kg2oVkSWjf9bpNP69kg/JLEsxEKm3CGbCg9c/XQoEW3WgPYC72
+         Odg879w15XREpXHV6Rn8jRIoWHQAUrLVTALi+kaLl+iwv/o5tZfz4MIRO9GXZ2wbfb
+         hDkCcry2Qc/UIKYvmgBHhUfASiDjInE8bjBimDYC41qa9W6Zw3ukNt6JuXtVf6lPKJ
+         erFGzS8nvnZs52hdxMMqH4ACLJjaaaPsQIvq9h5nkeNa7/ZqIVgfNKT+na0t5rpHdI
+         qhyLXZo4ORON8MpbX3jNSgrVMpqSOK21nruqpyLSLU0sWismVkwctHJfcD/x57ndMs
+         YHeL45xmtTwCQ==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net, xiyou.wangcong@gmail.com
+Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, jiri@resnulli.us,
         Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1 net] net: mscc: ocelot: remove buggy and useless write
- to ANA_PFC_PFC_CFG
-Message-ID: <20210917134958.6o2jev2ngegzmpfo@meerkat.local>
-References: <20210916010938.517698-1-colin.foster@in-advantage.com>
- <20210916114917.aielkefz5gg7flto@skbuf>
- <DB8PR04MB67954EE02059714DD9A72435E6DD9@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <20210917033802.GA681448@euler>
- <DB8PR04MB6795DF1A354A33F3BE8F563CE6DD9@DB8PR04MB6795.eurprd04.prod.outlook.com>
+        Cong Wang <cong.wang@bytedance.com>
+Subject: [PATCH net-next] net: sched: move and reuse mq_change_real_num_tx()
+Date:   Fri, 17 Sep 2021 06:55:06 -0700
+Message-Id: <20210917135506.1408151-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <DB8PR04MB6795DF1A354A33F3BE8F563CE6DD9@DB8PR04MB6795.eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 17, 2021 at 10:39:18AM +0000, Joakim Zhang wrote:
-> But it still failed at my side, after I google, have not found a solution, could you please
-> help have a look about below error?
-> 
-> $ git b4 20210916010938.517698-1-colin.foster@in-advantage.com
-> Traceback (most recent call last):
->   File "/home/zqq/.local/bin/b4", line 7, in <module>
->     from b4.command import cmd
->   File "/home/zqq/.local/lib/python2.7/site-packages/b4/__init__.py", line 11, in <module>
-                              ^^^^^^^^^^^
-You seem to be trying to run it with python 2.7
+The code for handling active queue changes is identical
+between mq and mqprio, reuse it.
 
->     import email.policy
-> ImportError: No module named policy
+Suggested-by: Cong Wang <cong.wang@bytedance.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ include/net/sch_generic.h |  2 ++
+ net/sched/sch_generic.c   | 24 ++++++++++++++++++++++++
+ net/sched/sch_mq.c        | 23 -----------------------
+ net/sched/sch_mqprio.c    | 24 +-----------------------
+ 4 files changed, 27 insertions(+), 46 deletions(-)
 
-I'm not sure how you managed to make it install, but it won't work with python
-versions < 3.6. Python version 2 is no longer maintained.
+diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+index 8c2d611639fc..5a011f8d394e 100644
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -1345,6 +1345,8 @@ void mini_qdisc_pair_init(struct mini_Qdisc_pair *miniqp, struct Qdisc *qdisc,
+ void mini_qdisc_pair_block_init(struct mini_Qdisc_pair *miniqp,
+ 				struct tcf_block *block);
+ 
++void mq_change_real_num_tx(struct Qdisc *sch, unsigned int new_real_tx);
++
+ int sch_frag_xmit_hook(struct sk_buff *skb, int (*xmit)(struct sk_buff *skb));
+ 
+ #endif
+diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+index 66d2fbe9ef50..8c64a552a64f 100644
+--- a/net/sched/sch_generic.c
++++ b/net/sched/sch_generic.c
+@@ -1339,6 +1339,30 @@ void dev_qdisc_change_real_num_tx(struct net_device *dev,
+ 		qdisc->ops->change_real_num_tx(qdisc, new_real_tx);
+ }
+ 
++void mq_change_real_num_tx(struct Qdisc *sch, unsigned int new_real_tx)
++{
++#ifdef CONFIG_NET_SCHED
++	struct net_device *dev = qdisc_dev(sch);
++	struct Qdisc *qdisc;
++	unsigned int i;
++
++	for (i = new_real_tx; i < dev->real_num_tx_queues; i++) {
++		qdisc = netdev_get_tx_queue(dev, i)->qdisc_sleeping;
++		/* Only update the default qdiscs we created,
++		 * qdiscs with handles are always hashed.
++		 */
++		if (qdisc != &noop_qdisc && !qdisc->handle)
++			qdisc_hash_del(qdisc);
++	}
++	for (i = dev->real_num_tx_queues; i < new_real_tx; i++) {
++		qdisc = netdev_get_tx_queue(dev, i)->qdisc_sleeping;
++		if (qdisc != &noop_qdisc && !qdisc->handle)
++			qdisc_hash_add(qdisc, false);
++	}
++#endif
++}
++EXPORT_SYMBOL(mq_change_real_num_tx);
++
+ int dev_qdisc_change_tx_queue_len(struct net_device *dev)
+ {
+ 	bool up = dev->flags & IFF_UP;
+diff --git a/net/sched/sch_mq.c b/net/sched/sch_mq.c
+index db18d8a860f9..e04f1a87642b 100644
+--- a/net/sched/sch_mq.c
++++ b/net/sched/sch_mq.c
+@@ -125,29 +125,6 @@ static void mq_attach(struct Qdisc *sch)
+ 	priv->qdiscs = NULL;
+ }
+ 
+-static void mq_change_real_num_tx(struct Qdisc *sch, unsigned int new_real_tx)
+-{
+-#ifdef CONFIG_NET_SCHED
+-	struct net_device *dev = qdisc_dev(sch);
+-	struct Qdisc *qdisc;
+-	unsigned int i;
+-
+-	for (i = new_real_tx; i < dev->real_num_tx_queues; i++) {
+-		qdisc = netdev_get_tx_queue(dev, i)->qdisc_sleeping;
+-		/* Only update the default qdiscs we created,
+-		 * qdiscs with handles are always hashed.
+-		 */
+-		if (qdisc != &noop_qdisc && !qdisc->handle)
+-			qdisc_hash_del(qdisc);
+-	}
+-	for (i = dev->real_num_tx_queues; i < new_real_tx; i++) {
+-		qdisc = netdev_get_tx_queue(dev, i)->qdisc_sleeping;
+-		if (qdisc != &noop_qdisc && !qdisc->handle)
+-			qdisc_hash_add(qdisc, false);
+-	}
+-#endif
+-}
+-
+ static int mq_dump(struct Qdisc *sch, struct sk_buff *skb)
+ {
+ 	struct net_device *dev = qdisc_dev(sch);
+diff --git a/net/sched/sch_mqprio.c b/net/sched/sch_mqprio.c
+index 7f23a92849d5..0bc10234e306 100644
+--- a/net/sched/sch_mqprio.c
++++ b/net/sched/sch_mqprio.c
+@@ -306,28 +306,6 @@ static void mqprio_attach(struct Qdisc *sch)
+ 	priv->qdiscs = NULL;
+ }
+ 
+-static void mqprio_change_real_num_tx(struct Qdisc *sch,
+-				      unsigned int new_real_tx)
+-{
+-	struct net_device *dev = qdisc_dev(sch);
+-	struct Qdisc *qdisc;
+-	unsigned int i;
+-
+-	for (i = new_real_tx; i < dev->real_num_tx_queues; i++) {
+-		qdisc = netdev_get_tx_queue(dev, i)->qdisc_sleeping;
+-		/* Only update the default qdiscs we created,
+-		 * qdiscs with handles are always hashed.
+-		 */
+-		if (qdisc != &noop_qdisc && !qdisc->handle)
+-			qdisc_hash_del(qdisc);
+-	}
+-	for (i = dev->real_num_tx_queues; i < new_real_tx; i++) {
+-		qdisc = netdev_get_tx_queue(dev, i)->qdisc_sleeping;
+-		if (qdisc != &noop_qdisc && !qdisc->handle)
+-			qdisc_hash_add(qdisc, false);
+-	}
+-}
+-
+ static struct netdev_queue *mqprio_queue_get(struct Qdisc *sch,
+ 					     unsigned long cl)
+ {
+@@ -645,7 +623,7 @@ static struct Qdisc_ops mqprio_qdisc_ops __read_mostly = {
+ 	.init		= mqprio_init,
+ 	.destroy	= mqprio_destroy,
+ 	.attach		= mqprio_attach,
+-	.change_real_num_tx = mqprio_change_real_num_tx,
++	.change_real_num_tx = mq_change_real_num_tx,
+ 	.dump		= mqprio_dump,
+ 	.owner		= THIS_MODULE,
+ };
+-- 
+2.31.1
 
--K
