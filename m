@@ -2,481 +2,513 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BFD9040FA23
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 16:29:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EB0F40FB41
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 17:06:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241900AbhIQOa4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 10:30:56 -0400
-Received: from mail-eopbgr50049.outbound.protection.outlook.com ([40.107.5.49]:58734
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233943AbhIQOaw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Sep 2021 10:30:52 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LsqzLzfDL2yDK2ItgQ+eI1HYcHxulMImvNWLBvQYyaS9v1jy7sEAWd1cagfXunGHlwmQNEwEVLM8V2jC/AAQZuSs+q+wEK0ChNnlC+3WDnJvUwPoVCJMbogTxbQH8syAgRODuzJMyzXMya3EKX9vS1w1UvcYDJA5qPE8iSwTA6KdCHuChKFh3f1ePdkoYXsxdVTekijQmHSv5pijrK85ln7rrXqxLI63N7HDm+fz/q4dc5atTrn8QUtM15FQ0l1sot/R4P13P6lzFmCUPtRhIVxTnDnfOIbJ63pfaOEO0L7CDQe+HM/XfIRZ19PaVO5L3BrtPBHYIKHGIR1YG/VVeg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=sitKBKroyj6gAHpeBPK70gjr1qSXRBe02e6vJIX+Xlk=;
- b=oFytQhdifG8oom+2MPx0xtEjywA43ujn/1WpJirrwPptFszNj71r1ffDi7ltPRuJCfxmC8sIqZ8393eowaJvRvSvwYQNP+kaZdWOXF0nVLHZql7+KrxMB2Khic1Z83icq95MBfoJBLMGZCiPJaKUBp96pXHNj3idbSKKrCxehP+W0AJmvWCduEaUetdzDiZgkqI5aO8fzj2JPDrRImnm7SOIfCbBO41ZIYrhqEL+FnE461qTZyn+b6ybmIW9dfzPAHNq6Rahdpi8lSODQDVD+Gj9YeKaSiDpsIDr2835clFazO1bWSmK1rlTdH/nkl02SqVqxZCX5qdNCA02MHqgyw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sitKBKroyj6gAHpeBPK70gjr1qSXRBe02e6vJIX+Xlk=;
- b=JuHotRxlyMBk0k83y5x8lEbGYqtBTTVqgJFGKjDL1ITB51qHvBB0AhBWz3JuQFNGlx2uRRbdb1agOCChMFiTfDeL97B6w45eA4Tk2fwlMW/jV7u24YOTRvjqHMotcVMhV0qg2gVnULvhLDNY8EdMMb1tbau9yMucCD85DjWOFRA=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR04MB5293.eurprd04.prod.outlook.com (2603:10a6:803:5f::30) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.14; Fri, 17 Sep
- 2021 14:29:28 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4500.019; Fri, 17 Sep 2021
- 14:29:28 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH v2 net] net: dsa: tear down devlink port regions when tearing down the devlink port on error
-Date:   Fri, 17 Sep 2021 17:29:16 +0300
-Message-Id: <20210917142916.688090-1-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM3PR07CA0075.eurprd07.prod.outlook.com
- (2603:10a6:207:4::33) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
+        id S245152AbhIQPH2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 11:07:28 -0400
+Received: from pbmsgap02.intersil.com ([192.157.179.202]:54000 "EHLO
+        pbmsgap02.intersil.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343629AbhIQPHL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 11:07:11 -0400
+Received: from pps.filterd (pbmsgap02.intersil.com [127.0.0.1])
+        by pbmsgap02.intersil.com (8.16.0.42/8.16.0.42) with SMTP id 18HEPDGX008354;
+        Fri, 17 Sep 2021 10:40:16 -0400
+Received: from pbmxdp01.intersil.corp (pbmxdp01.pb.intersil.com [132.158.200.222])
+        by pbmsgap02.intersil.com with ESMTP id 3b4e7wr7xe-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Fri, 17 Sep 2021 10:40:15 -0400
+Received: from pbmxdp02.intersil.corp (132.158.200.223) by
+ pbmxdp01.intersil.corp (132.158.200.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
+ 15.1.2242.4; Fri, 17 Sep 2021 10:40:14 -0400
+Received: from localhost (132.158.202.109) by pbmxdp02.intersil.corp
+ (132.158.200.223) with Microsoft SMTP Server id 15.1.2242.4 via Frontend
+ Transport; Fri, 17 Sep 2021 10:40:13 -0400
+From:   <min.li.xe@renesas.com>
+To:     <richardcochran@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Min Li <min.li.xe@renesas.com>
+Subject: [PATCH net v2 1/2] ptp: idt82p33: optimize idt82p33_adjtime
+Date:   Fri, 17 Sep 2021 10:39:48 -0400
+Message-ID: <1631889589-26941-1-git-send-email-min.li.xe@renesas.com>
+X-Mailer: git-send-email 2.7.4
+X-TM-AS-MML: disable
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (82.78.148.104) by AM3PR07CA0075.eurprd07.prod.outlook.com (2603:10a6:207:4::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.9 via Frontend Transport; Fri, 17 Sep 2021 14:29:27 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6c14f67a-e5e3-4786-aa45-08d979e78e60
-X-MS-TrafficTypeDiagnostic: VI1PR04MB5293:
-X-Microsoft-Antispam-PRVS: <VI1PR04MB52933F4C333ADCC8ED1BE3CDE0DD9@VI1PR04MB5293.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: RomZS4GkC2FyHjLvB+jx9YtcfU6Ulsh2muNmxQ21W9O7K7STDxIQ7qIj7RSSHwJBJrfZhFKR+HldgAwoc/bhTJKW15vnDQzv4AcuntzZthEMowS4xdH7xlADAhxVVA07pwbgnFwlVNf7FovZhKCTzmOQnc/zVAGEb+EIktayMEbDJureuR7vELXYwD1alj6QJX9/BFsSlldMyezIB+xWarGM7WoFWTviQEjjNbVWWYrPGk4Dff81qEZ6mmJAnn7yq8bXxze8DH/h6qsrG5VX8+JBkVv+JnK3x5PIPd5FqBEb2HKZ0PEtlV67yPX0ieZZr+oR6+aFIyi6TOL3+Ab/HglVvbSl97sYV2IH0yzTi488YYg210OE7Ah0sJIMZW8A2mnx5tdcXLwW1Os8Ka09hTiQ6cvkb2SQJKuFMnX2KAwQ4s7noe9uQnk8CjNcyoH5sLF1z2k4q9KJXNBHLCm/Eb2uJlimtgz+uWEW8IOQN8UHOCmMhALLX/sTUEe58IXGIT7S3b8vuH/sksQmmQICrl3c8KeEW2amiiJyLMhgSnTxtEBcn8qiIXGKeEjPiarTapqggknTKRYaOIPxGBn0hAwOgiyK8oYp4ACWdwtm3uNPKCf+o4cNHy0AWIUsbUhDvd3khRzEyL+re5RBRq9CIxtq4+8/UU9uVWnRNtNdiO6IjVAJ6/41cEUrLpVhSel0oTxfG14VCgXXWCa0tzQRjg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(366004)(136003)(376002)(396003)(346002)(38100700002)(38350700002)(6486002)(5660300002)(86362001)(6506007)(66946007)(26005)(30864003)(478600001)(956004)(2616005)(44832011)(66556008)(66476007)(186003)(4326008)(6512007)(1076003)(2906002)(52116002)(83380400001)(6916009)(8936002)(54906003)(36756003)(8676002)(6666004)(316002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?tUq1HU0B+pnTLt7WCsfsYIKIPnvPet0LCsZYgT7rlBo2SQ/4VTtmUtP9YqNw?=
- =?us-ascii?Q?Cpr6XNEQzruEDKSX9Hl0xA8mhuqeo2Yrt07OZ6gzVWeZ+vXkpmdUEgdKVEXd?=
- =?us-ascii?Q?rb8eezzPjcorMoYubJ6O62FoPUOa4UhPqmMww9TRP5MI9AeWwfEB+5Qttj6n?=
- =?us-ascii?Q?cO2ejrRhUS6C5WFbSMQSLZXQiAVVXCsVh5a3ramL8FPEoIiTqI/8aDiurN7Z?=
- =?us-ascii?Q?pw+QQ7nvVXbLgwHjyucDYilw5EWxdJweSfersOZGXoZ9/nvOl7AzcUM8A6wT?=
- =?us-ascii?Q?sLURx5IJDPR7ZLcPyAiAvaKxf9lrZjkJx5l0XJu8FYTInV4z8+WwKWM3xbbo?=
- =?us-ascii?Q?WbvRpeb3RZK9ypU0wfv9tqUUX/I203S9XRdDwQGCs36j4GK8sFS8HLbSRUBb?=
- =?us-ascii?Q?mQv84OesW76nczBQe2RJZg843c9XqtGm6CtTBzTgZcmDSAVzBPbKYIr+popH?=
- =?us-ascii?Q?g6QgMW9p6fj5bDXvuF5ARhKRdYynVsNMlfh3zbKc38QudUg1LNes+47apkec?=
- =?us-ascii?Q?H9Ha971As72Hs3EDwyqa+8XinCwqOx3e6p7kwhHYcIRimTDdN0OXaCHJmbQj?=
- =?us-ascii?Q?HHhWus0h776NIFZ6G4r3hBjY3i+rA7esyAVo+ZrVMF6keVQjue3aTvJtmngs?=
- =?us-ascii?Q?00qIY6GtCmePFOV8Amo6ZY0Y0AN9jod/aK+ip0QCI7a8hrywDpsKv5Doi/UL?=
- =?us-ascii?Q?pgNVSRSm5DhgGqn0QIrnPaNFeEDSvUnSshRGVp13JZ6wjYx4PdOorI7VkVFg?=
- =?us-ascii?Q?2wmZLquue1AOMckVszC7UNgXw5vFG6UDqmn22rlZ8rPuYyW5Kxk5ZnM8/9cb?=
- =?us-ascii?Q?CjxfJ/C4h2uBkSmIeo1/jntnUtOZITOVPNRxBoFn48wo/pgebG1i5jyZjOEE?=
- =?us-ascii?Q?RBQod0NK3g28ExcQjJA1IlUSJdEfROMAhTIUjOtrOmnwAw09AAdZ8uWS/8Pu?=
- =?us-ascii?Q?7eMgwCcbEJuP2J24odTM/IPMT79LFQF+qftBYi3MvR4IALj2vpUcVd9xcwhr?=
- =?us-ascii?Q?A9wY2YTBjxKZXLmRH2b5BcPdKVEgTARHZeKtdkdr/kovaRIGzqC7e7eQH/n3?=
- =?us-ascii?Q?MfxId0FNzrH78DZaJXNOCCcLAX82DDvttm0Mj2ouwWeyRnQkyWlZbK4SNw+Y?=
- =?us-ascii?Q?zJiGr3yUfkGuoZV/Z7LceLgMoAzFunKRoF/Gt4o7QclXDLhGRXxpFK07cCdK?=
- =?us-ascii?Q?cH08pgSFBzujCcdyqb4xe4vXC4OjcgV6qGjA1wMS+J6ZNysB2kA3NU8pIDWM?=
- =?us-ascii?Q?476h8M6YesD6vzz7utvj4bBDCShYKOX34x8Mr/Sd2XOaWeJ2D+mr9uiHpx/y?=
- =?us-ascii?Q?T0tEGS6RDw7KacSWqPVpHFmG?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6c14f67a-e5e3-4786-aa45-08d979e78e60
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Sep 2021 14:29:28.4210
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7sQJocu2UeARXFPMVZWFgN53kY/yP68setZtI1HYyw5T6XqRKKeFQfO7bgDuLft1x/Dq5h6L9qAArBAjozrEcQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5293
+Content-Type: text/plain
+X-Proofpoint-GUID: O6kALiFYIkRbbIGJ8qcoJg3VWEeDKTkQ
+X-Proofpoint-ORIG-GUID: O6kALiFYIkRbbIGJ8qcoJg3VWEeDKTkQ
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-09-17_06:2021-09-17,2021-09-17 signatures=0
+X-Proofpoint-Spam-Details: rule=junk_notspam policy=junk score=0 suspectscore=0 spamscore=0
+ adultscore=0 phishscore=0 bulkscore=0 mlxscore=0 mlxlogscore=999
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2109150000 definitions=main-2109170092
+X-Proofpoint-Spam-Reason: mlx
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 86f8b1c01a0a ("net: dsa: Do not make user port errors fatal")
-decided it was fine to ignore errors on certain ports that fail to
-probe, and go on with the ports that do probe fine.
+From: Min Li <min.li.xe@renesas.com>
 
-Commit fb6ec87f7229 ("net: dsa: Fix type was not set for devlink port")
-noticed that devlink_port_type_eth_set(dlp, dp->slave); does not get
-called, and devlink notices after a timeout of 3600 seconds and prints a
-WARN_ON. So it went ahead to unregister the devlink port. And because
-there exists an UNUSED port flavour, we actually re-register the devlink
-port as UNUSED.
+The current adjtime implementation is read-modify-write and immediately
+triggered, which is not accurate due to slow i2c bus access. Therefore,
+we will use internally generated 1 PPS pulse as trigger, which will
+improve adjtime accuracy significantly. On the other hand, the new trigger
+will not change TOD immediately but delay it to the next 1 PPS pulse.
 
-Commit 08156ba430b4 ("net: dsa: Add devlink port regions support to
-DSA") added devlink port regions, which are set up by the driver and not
-by DSA.
-
-When we trigger the devlink port deregistration and reregistration as
-unused, devlink now prints another WARN_ON, from here:
-
-devlink_port_unregister:
-	WARN_ON(!list_empty(&devlink_port->region_list));
-
-So the port still has regions, which makes sense, because they were set
-up by the driver, and the driver doesn't know we're unregistering the
-devlink port.
-
-Somebody needs to tear them down, and optionally (actually it would be
-nice, to be consistent) set them up again for the new devlink port.
-
-But DSA's layering stays in our way quite badly here.
-
-The options I've considered are:
-
-1. Introduce a function in devlink to just change a port's type and
-   flavour. No dice, devlink keeps a lot of state, it really wants the
-   port to not be registered when you set its parameters, so changing
-   anything can only be done by destroying what we currently have and
-   recreating it.
-
-2. Make DSA cache the parameters passed to dsa_devlink_port_region_create,
-   and the region returned, keep those in a list, then when the devlink
-   port unregister needs to take place, the existing devlink regions are
-   destroyed by DSA, and we replay the creation of new regions using the
-   cached parameters. Problem: mv88e6xxx keeps the region pointers in
-   chip->ports[port].region, and these will remain stale after DSA frees
-   them. There are many things DSA can do, but updating mv88e6xxx's
-   private pointers is not one of them.
-
-3. Just let the driver do it (i.e. introduce a very specific method
-   called ds->ops->port_reinit_as_unused, which unregisters its devlink
-   port devlink regions, then the old devlink port, then registers the
-   new one, then the devlink port regions for it). While it does work,
-   as opposed to the others, it's pretty horrible from an API
-   perspective and we can do better.
-
-4. Introduce a new pair of methods, ->port_setup and ->port_teardown,
-   which in the case of mv88e6xxx must register and unregister the
-   devlink port regions. Call these 2 methods when the port must be
-   reinitialized as unused.
-
-Naturally, I went for the 4th approach.
-
-Fixes: 08156ba430b4 ("net: dsa: Add devlink port regions support to DSA")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Min Li <min.li.xe@renesas.com>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c    | 16 ++++++-
- drivers/net/dsa/mv88e6xxx/devlink.c | 73 ++++-------------------------
- drivers/net/dsa/mv88e6xxx/devlink.h |  6 ++-
- include/net/dsa.h                   |  8 ++++
- net/dsa/dsa2.c                      | 51 ++++++++++++++++++--
- 5 files changed, 81 insertions(+), 73 deletions(-)
+ drivers/ptp/ptp_idt82p33.c | 221 ++++++++++++++++++++++++++++++---------------
+ drivers/ptp/ptp_idt82p33.h |  28 +++---
+ 2 files changed, 165 insertions(+), 84 deletions(-)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index c45ca2473743..eb482be9df0d 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -3071,7 +3071,7 @@ static void mv88e6xxx_teardown(struct dsa_switch *ds)
- {
- 	mv88e6xxx_teardown_devlink_params(ds);
- 	dsa_devlink_resources_unregister(ds);
--	mv88e6xxx_teardown_devlink_regions(ds);
-+	mv88e6xxx_teardown_devlink_regions_global(ds);
- }
+diff --git a/drivers/ptp/ptp_idt82p33.c b/drivers/ptp/ptp_idt82p33.c
+index c1c959f..abe628c 100644
+--- a/drivers/ptp/ptp_idt82p33.c
++++ b/drivers/ptp/ptp_idt82p33.c
+@@ -24,15 +24,10 @@ MODULE_LICENSE("GPL");
+ MODULE_FIRMWARE(FW_FILENAME);
  
- static int mv88e6xxx_setup(struct dsa_switch *ds)
-@@ -3215,7 +3215,7 @@ static int mv88e6xxx_setup(struct dsa_switch *ds)
+ /* Module Parameters */
+-static u32 sync_tod_timeout = SYNC_TOD_TIMEOUT_SEC;
+-module_param(sync_tod_timeout, uint, 0);
+-MODULE_PARM_DESC(sync_tod_timeout,
+-"duration in second to keep SYNC_TOD on (set to 0 to keep it always on)");
+-
+ static u32 phase_snap_threshold = SNAP_THRESHOLD_NS;
+ module_param(phase_snap_threshold, uint, 0);
+ MODULE_PARM_DESC(phase_snap_threshold,
+-"threshold (150000ns by default) below which adjtime would ignore");
++"threshold (1000ns by default) below which adjtime would ignore");
+ 
+ static void idt82p33_byte_array_to_timespec(struct timespec64 *ts,
+ 					    u8 buf[TOD_BYTE_COUNT])
+@@ -206,26 +201,47 @@ static int idt82p33_dpll_set_mode(struct idt82p33_channel *channel,
  	if (err)
- 		goto out_resources;
+ 		return err;
  
--	err = mv88e6xxx_setup_devlink_regions(ds);
-+	err = mv88e6xxx_setup_devlink_regions_global(ds);
- 	if (err)
- 		goto out_params;
+-	channel->pll_mode = dpll_mode;
++	channel->pll_mode = mode;
  
-@@ -3229,6 +3229,16 @@ static int mv88e6xxx_setup(struct dsa_switch *ds)
- 	return err;
- }
- 
-+static int mv88e6xxx_port_setup(struct dsa_switch *ds, int port)
-+{
-+	return mv88e6xxx_setup_devlink_regions_port(ds, port);
-+}
-+
-+static void mv88e6xxx_port_teardown(struct dsa_switch *ds, int port)
-+{
-+	mv88e6xxx_teardown_devlink_regions_port(ds, port);
-+}
-+
- /* prod_id for switch families which do not have a PHY model number */
- static const u16 family_prod_id_table[] = {
- 	[MV88E6XXX_FAMILY_6341] = MV88E6XXX_PORT_SWITCH_ID_PROD_6341,
-@@ -6116,6 +6126,8 @@ static const struct dsa_switch_ops mv88e6xxx_switch_ops = {
- 	.change_tag_protocol	= mv88e6xxx_change_tag_protocol,
- 	.setup			= mv88e6xxx_setup,
- 	.teardown		= mv88e6xxx_teardown,
-+	.port_setup		= mv88e6xxx_port_setup,
-+	.port_teardown		= mv88e6xxx_port_teardown,
- 	.phylink_validate	= mv88e6xxx_validate,
- 	.phylink_mac_link_state	= mv88e6xxx_serdes_pcs_get_state,
- 	.phylink_mac_config	= mv88e6xxx_mac_config,
-diff --git a/drivers/net/dsa/mv88e6xxx/devlink.c b/drivers/net/dsa/mv88e6xxx/devlink.c
-index 0c0f5ea6680c..381068395c63 100644
---- a/drivers/net/dsa/mv88e6xxx/devlink.c
-+++ b/drivers/net/dsa/mv88e6xxx/devlink.c
-@@ -647,26 +647,25 @@ static struct mv88e6xxx_region mv88e6xxx_regions[] = {
- 	},
- };
- 
--static void
--mv88e6xxx_teardown_devlink_regions_global(struct mv88e6xxx_chip *chip)
-+void mv88e6xxx_teardown_devlink_regions_global(struct dsa_switch *ds)
- {
-+	struct mv88e6xxx_chip *chip = ds->priv;
- 	int i;
- 
- 	for (i = 0; i < ARRAY_SIZE(mv88e6xxx_regions); i++)
- 		dsa_devlink_region_destroy(chip->regions[i]);
- }
- 
--static void
--mv88e6xxx_teardown_devlink_regions_port(struct mv88e6xxx_chip *chip,
--					int port)
-+void mv88e6xxx_teardown_devlink_regions_port(struct dsa_switch *ds, int port)
- {
-+	struct mv88e6xxx_chip *chip = ds->priv;
-+
- 	dsa_devlink_region_destroy(chip->ports[port].region);
- }
- 
--static int mv88e6xxx_setup_devlink_regions_port(struct dsa_switch *ds,
--						struct mv88e6xxx_chip *chip,
--						int port)
-+int mv88e6xxx_setup_devlink_regions_port(struct dsa_switch *ds, int port)
- {
-+	struct mv88e6xxx_chip *chip = ds->priv;
- 	struct devlink_region *region;
- 
- 	region = dsa_devlink_port_region_create(ds,
-@@ -681,40 +680,10 @@ static int mv88e6xxx_setup_devlink_regions_port(struct dsa_switch *ds,
  	return 0;
  }
  
--static void
--mv88e6xxx_teardown_devlink_regions_ports(struct mv88e6xxx_chip *chip)
--{
--	int port;
--
--	for (port = 0; port < mv88e6xxx_num_ports(chip); port++)
--		mv88e6xxx_teardown_devlink_regions_port(chip, port);
--}
--
--static int mv88e6xxx_setup_devlink_regions_ports(struct dsa_switch *ds,
--						 struct mv88e6xxx_chip *chip)
--{
--	int port;
--	int err;
--
--	for (port = 0; port < mv88e6xxx_num_ports(chip); port++) {
--		err = mv88e6xxx_setup_devlink_regions_port(ds, chip, port);
--		if (err)
--			goto out;
--	}
--
--	return 0;
--
--out:
--	while (port-- > 0)
--		mv88e6xxx_teardown_devlink_regions_port(chip, port);
--
--	return err;
--}
--
--static int mv88e6xxx_setup_devlink_regions_global(struct dsa_switch *ds,
--						  struct mv88e6xxx_chip *chip)
-+int mv88e6xxx_setup_devlink_regions_global(struct dsa_switch *ds)
+-static int _idt82p33_gettime(struct idt82p33_channel *channel,
+-			     struct timespec64 *ts)
++static int idt82p33_set_tod_trigger(struct idt82p33_channel *channel,
++				    u8 trigger, bool write)
  {
- 	bool (*cond)(struct mv88e6xxx_chip *chip);
-+	struct mv88e6xxx_chip *chip = ds->priv;
- 	struct devlink_region_ops *ops;
- 	struct devlink_region *region;
- 	u64 size;
-@@ -753,30 +722,6 @@ static int mv88e6xxx_setup_devlink_regions_global(struct dsa_switch *ds,
- 	return PTR_ERR(region);
- }
+ 	struct idt82p33 *idt82p33 = channel->idt82p33;
+-	u8 buf[TOD_BYTE_COUNT];
+-	u8 trigger;
+ 	int err;
++	u8 cfg;
  
--int mv88e6xxx_setup_devlink_regions(struct dsa_switch *ds)
--{
--	struct mv88e6xxx_chip *chip = ds->priv;
--	int err;
--
--	err = mv88e6xxx_setup_devlink_regions_global(ds, chip);
--	if (err)
--		return err;
--
--	err = mv88e6xxx_setup_devlink_regions_ports(ds, chip);
--	if (err)
--		mv88e6xxx_teardown_devlink_regions_global(chip);
--
--	return err;
--}
--
--void mv88e6xxx_teardown_devlink_regions(struct dsa_switch *ds)
--{
--	struct mv88e6xxx_chip *chip = ds->priv;
--
--	mv88e6xxx_teardown_devlink_regions_ports(chip);
--	mv88e6xxx_teardown_devlink_regions_global(chip);
--}
--
- int mv88e6xxx_devlink_info_get(struct dsa_switch *ds,
- 			       struct devlink_info_req *req,
- 			       struct netlink_ext_ack *extack)
-diff --git a/drivers/net/dsa/mv88e6xxx/devlink.h b/drivers/net/dsa/mv88e6xxx/devlink.h
-index 3d72db3dcf95..65ce6a6858b9 100644
---- a/drivers/net/dsa/mv88e6xxx/devlink.h
-+++ b/drivers/net/dsa/mv88e6xxx/devlink.h
-@@ -12,8 +12,10 @@ int mv88e6xxx_devlink_param_get(struct dsa_switch *ds, u32 id,
- 				struct devlink_param_gset_ctx *ctx);
- int mv88e6xxx_devlink_param_set(struct dsa_switch *ds, u32 id,
- 				struct devlink_param_gset_ctx *ctx);
--int mv88e6xxx_setup_devlink_regions(struct dsa_switch *ds);
--void mv88e6xxx_teardown_devlink_regions(struct dsa_switch *ds);
-+int mv88e6xxx_setup_devlink_regions_global(struct dsa_switch *ds);
-+void mv88e6xxx_teardown_devlink_regions_global(struct dsa_switch *ds);
-+int mv88e6xxx_setup_devlink_regions_port(struct dsa_switch *ds, int port);
-+void mv88e6xxx_teardown_devlink_regions_port(struct dsa_switch *ds, int port);
+-	trigger = TOD_TRIGGER(HW_TOD_WR_TRIG_SEL_MSB_TOD_CNFG,
+-			      HW_TOD_RD_TRIG_SEL_LSB_TOD_STS);
++	if (trigger > WR_TRIG_SEL_MAX)
++		return -EINVAL;
  
- int mv88e6xxx_devlink_info_get(struct dsa_switch *ds,
- 			       struct devlink_info_req *req,
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 258867eff230..57845fdabd4f 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -585,8 +585,16 @@ struct dsa_switch_ops {
- 	int	(*change_tag_protocol)(struct dsa_switch *ds, int port,
- 				       enum dsa_tag_protocol proto);
++	err = idt82p33_read(idt82p33, channel->dpll_tod_trigger,
++			    &cfg, sizeof(cfg));
  
-+	/* Optional switch-wide initialization and destruction methods */
- 	int	(*setup)(struct dsa_switch *ds);
- 	void	(*teardown)(struct dsa_switch *ds);
-+
-+	/* Per-port initialization and destruction methods. Mandatory if the
-+	 * driver registers devlink port regions, optional otherwise.
-+	 */
-+	int	(*port_setup)(struct dsa_switch *ds, int port);
-+	void	(*port_teardown)(struct dsa_switch *ds, int port);
-+
- 	u32	(*get_phy_flags)(struct dsa_switch *ds, int port);
- 
- 	/*
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index eef13cd20f19..1fa6f9c50782 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -429,6 +429,7 @@ static int dsa_port_setup(struct dsa_port *dp)
- {
- 	struct devlink_port *dlp = &dp->devlink_port;
- 	bool dsa_port_link_registered = false;
-+	struct dsa_switch *ds = dp->ds;
- 	bool dsa_port_enabled = false;
- 	int err = 0;
- 
-@@ -438,6 +439,12 @@ static int dsa_port_setup(struct dsa_port *dp)
- 	INIT_LIST_HEAD(&dp->fdbs);
- 	INIT_LIST_HEAD(&dp->mdbs);
- 
-+	if (ds->ops->port_setup) {
-+		err = ds->ops->port_setup(ds, dp->index);
-+		if (err)
-+			return err;
-+	}
-+
- 	switch (dp->type) {
- 	case DSA_PORT_TYPE_UNUSED:
- 		dsa_port_disable(dp);
-@@ -480,8 +487,11 @@ static int dsa_port_setup(struct dsa_port *dp)
- 		dsa_port_disable(dp);
- 	if (err && dsa_port_link_registered)
- 		dsa_port_link_unregister_of(dp);
--	if (err)
-+	if (err) {
-+		if (ds->ops->port_teardown)
-+			ds->ops->port_teardown(ds, dp->index);
- 		return err;
-+	}
- 
- 	dp->setup = true;
- 
-@@ -533,11 +543,15 @@ static int dsa_port_devlink_setup(struct dsa_port *dp)
- static void dsa_port_teardown(struct dsa_port *dp)
- {
- 	struct devlink_port *dlp = &dp->devlink_port;
-+	struct dsa_switch *ds = dp->ds;
- 	struct dsa_mac_addr *a, *tmp;
- 
- 	if (!dp->setup)
- 		return;
- 
-+	if (ds->ops->port_teardown)
-+		ds->ops->port_teardown(ds, dp->index);
-+
- 	devlink_port_type_clear(dlp);
- 
- 	switch (dp->type) {
-@@ -581,6 +595,36 @@ static void dsa_port_devlink_teardown(struct dsa_port *dp)
- 	dp->devlink_port_setup = false;
- }
- 
-+/* Destroy the current devlink port, and create a new one which has the UNUSED
-+ * flavour. At this point, any call to ds->ops->port_setup has been already
-+ * balanced out by a call to ds->ops->port_teardown, so we know that any
-+ * devlink port regions the driver had are now unregistered. We then call its
-+ * ds->ops->port_setup again, in order for the driver to re-create them on the
-+ * new devlink port.
-+ */
-+static int dsa_port_reinit_as_unused(struct dsa_port *dp)
-+{
-+	struct dsa_switch *ds = dp->ds;
-+	int err;
-+
-+	dsa_port_devlink_teardown(dp);
-+	dp->type = DSA_PORT_TYPE_UNUSED;
-+	err = dsa_port_devlink_setup(dp);
+-	err = idt82p33_write(idt82p33, channel->dpll_tod_trigger,
+-			     &trigger, sizeof(trigger));
 +	if (err)
 +		return err;
 +
-+	if (ds->ops->port_setup) {
-+		/* On error, leave the devlink port registered,
-+		 * dsa_switch_teardown will clean it up later.
-+		 */
-+		err = ds->ops->port_setup(ds, dp->index);
-+		if (err)
-+			return err;
-+	}
++	if (write == true)
++		trigger = (trigger << WRITE_TRIGGER_SHIFT) |
++			  (cfg & READ_TRIGGER_MASK);
++	else
++		trigger = (trigger << READ_TRIGGER_SHIFT) |
++			  (cfg & WRITE_TRIGGER_MASK);
 +
-+	return 0;
++	return idt82p33_write(idt82p33, channel->dpll_tod_trigger,
++			      &trigger, sizeof(trigger));
 +}
 +
- static int dsa_devlink_info_get(struct devlink *dl,
- 				struct devlink_info_req *req,
- 				struct netlink_ext_ack *extack)
-@@ -938,12 +982,9 @@ static int dsa_tree_setup_switches(struct dsa_switch_tree *dst)
- 	list_for_each_entry(dp, &dst->ports, list) {
- 		err = dsa_port_setup(dp);
- 		if (err) {
--			dsa_port_devlink_teardown(dp);
--			dp->type = DSA_PORT_TYPE_UNUSED;
--			err = dsa_port_devlink_setup(dp);
-+			err = dsa_port_reinit_as_unused(dp);
- 			if (err)
- 				goto teardown;
--			continue;
- 		}
++static int _idt82p33_gettime(struct idt82p33_channel *channel,
++			     struct timespec64 *ts)
++{
++	struct idt82p33 *idt82p33 = channel->idt82p33;
++	u8 buf[TOD_BYTE_COUNT];
++	int err;
+ 
++	err = idt82p33_set_tod_trigger(channel, HW_TOD_RD_TRIG_SEL_LSB_TOD_STS,
++				       false);
+ 	if (err)
+ 		return err;
+ 
+@@ -255,16 +271,11 @@ static int _idt82p33_settime(struct idt82p33_channel *channel,
+ 	struct timespec64 local_ts = *ts;
+ 	char buf[TOD_BYTE_COUNT];
+ 	s64 dynamic_overhead_ns;
+-	unsigned char trigger;
+ 	int err;
+ 	u8 i;
+ 
+-	trigger = TOD_TRIGGER(HW_TOD_WR_TRIG_SEL_MSB_TOD_CNFG,
+-			      HW_TOD_RD_TRIG_SEL_LSB_TOD_STS);
+-
+-	err = idt82p33_write(idt82p33, channel->dpll_tod_trigger,
+-			&trigger, sizeof(trigger));
+-
++	err = idt82p33_set_tod_trigger(channel, HW_TOD_WR_TRIG_SEL_MSB_TOD_CNFG,
++				       true);
+ 	if (err)
+ 		return err;
+ 
+@@ -292,7 +303,8 @@ static int _idt82p33_settime(struct idt82p33_channel *channel,
+ 	return err;
+ }
+ 
+-static int _idt82p33_adjtime(struct idt82p33_channel *channel, s64 delta_ns)
++static int _idt82p33_adjtime_immediate(struct idt82p33_channel *channel,
++				       s64 delta_ns)
+ {
+ 	struct idt82p33 *idt82p33 = channel->idt82p33;
+ 	struct timespec64 ts;
+@@ -316,6 +328,60 @@ static int _idt82p33_adjtime(struct idt82p33_channel *channel, s64 delta_ns)
+ 	return err;
+ }
+ 
++static int _idt82p33_adjtime_internal_triggered(struct idt82p33_channel *channel,
++						s64 delta_ns)
++{
++	struct idt82p33 *idt82p33 = channel->idt82p33;
++	char buf[TOD_BYTE_COUNT];
++	struct timespec64 ts;
++	const u8 delay_ns = 32;
++	s32 delay_ns_remainder;
++	s64 ns;
++	int err;
++
++	err = _idt82p33_gettime(channel, &ts);
++
++	if (err)
++		return err;
++
++	if (ts.tv_nsec > (NSEC_PER_SEC - 5 * NSEC_PER_MSEC)) {
++		/*  Too close to miss next trigger, so skip it */
++		mdelay(6);
++		ns = (ts.tv_sec + 2) * NSEC_PER_SEC + delta_ns + delay_ns;
++	} else
++		ns = (ts.tv_sec + 1) * NSEC_PER_SEC + delta_ns + delay_ns;
++
++	ts = ns_to_timespec64(ns);
++	idt82p33_timespec_to_byte_array(&ts, buf);
++
++	/*
++	 * Store the new time value.
++	 */
++	err = idt82p33_write(idt82p33, channel->dpll_tod_cnfg, buf, sizeof(buf));
++	if (err)
++		return err;
++
++	/* Schedule to implement the workaround in one second */
++	div_s64_rem(delta_ns, NSEC_PER_SEC, &delay_ns_remainder);
++	if (delay_ns_remainder)
++		schedule_delayed_work(&channel->adjtime_work, HZ);
++
++	return idt82p33_set_tod_trigger(channel, HW_TOD_TRIG_SEL_TOD_PPS, true);
++}
++
++static void idt82p33_adjtime_workaround(struct work_struct *work)
++{
++	struct idt82p33_channel *channel = container_of(work,
++							struct idt82p33_channel,
++							adjtime_work.work);
++	struct idt82p33 *idt82p33 = channel->idt82p33;
++
++	mutex_lock(&idt82p33->reg_lock);
++	/* Workaround for TOD-to-output alignment issue */
++	_idt82p33_adjtime_internal_triggered(channel, 0);
++	mutex_unlock(&idt82p33->reg_lock);
++}
++
+ static int _idt82p33_adjfine(struct idt82p33_channel *channel, long scaled_ppm)
+ {
+ 	struct idt82p33 *idt82p33 = channel->idt82p33;
+@@ -397,6 +463,39 @@ static int idt82p33_measure_one_byte_write_overhead(
+ 	return err;
+ }
+ 
++static int idt82p33_measure_one_byte_read_overhead(
++		struct idt82p33_channel *channel, s64 *overhead_ns)
++{
++	struct idt82p33 *idt82p33 = channel->idt82p33;
++	ktime_t start, stop;
++	u8 trigger = 0;
++	s64 total_ns;
++	int err;
++	u8 i;
++
++	total_ns = 0;
++	*overhead_ns = 0;
++
++	for (i = 0; i < MAX_MEASURMENT_COUNT; i++) {
++
++		start = ktime_get_raw();
++
++		err = idt82p33_read(idt82p33, channel->dpll_tod_trigger,
++				    &trigger, sizeof(trigger));
++
++		stop = ktime_get_raw();
++
++		if (err)
++			return err;
++
++		total_ns += ktime_to_ns(stop) - ktime_to_ns(start);
++	}
++
++	*overhead_ns = div_s64(total_ns, MAX_MEASURMENT_COUNT);
++
++	return err;
++}
++
+ static int idt82p33_measure_tod_write_9_byte_overhead(
+ 			struct idt82p33_channel *channel)
+ {
+@@ -458,7 +557,7 @@ static int idt82p33_measure_settime_gettime_gap_overhead(
+ 
+ static int idt82p33_measure_tod_write_overhead(struct idt82p33_channel *channel)
+ {
+-	s64 trailing_overhead_ns, one_byte_write_ns, gap_ns;
++	s64 trailing_overhead_ns, one_byte_write_ns, gap_ns, one_byte_read_ns;
+ 	struct idt82p33 *idt82p33 = channel->idt82p33;
+ 	int err;
+ 
+@@ -478,12 +577,19 @@ static int idt82p33_measure_tod_write_overhead(struct idt82p33_channel *channel)
+ 	if (err)
+ 		return err;
+ 
++	err = idt82p33_measure_one_byte_read_overhead(channel,
++						      &one_byte_read_ns);
++
++	if (err)
++		return err;
++
+ 	err = idt82p33_measure_tod_write_9_byte_overhead(channel);
+ 
+ 	if (err)
+ 		return err;
+ 
+-	trailing_overhead_ns = gap_ns - (2 * one_byte_write_ns);
++	trailing_overhead_ns = gap_ns - 2 * one_byte_write_ns
++			       - one_byte_read_ns;
+ 
+ 	idt82p33->tod_write_overhead_ns -= trailing_overhead_ns;
+ 
+@@ -500,7 +606,7 @@ static int idt82p33_check_and_set_masks(struct idt82p33 *idt82p33,
+ 	if (page == PLLMASK_ADDR_HI && offset == PLLMASK_ADDR_LO) {
+ 		if ((val & 0xfc) || !(val & 0x3)) {
+ 			dev_err(&idt82p33->client->dev,
+-				"Invalid PLL mask 0x%hhx\n", val);
++				"Invalid PLL mask 0x%02x\n", val);
+ 			err = -EINVAL;
+ 		} else {
+ 			idt82p33->pll_mask = val;
+@@ -539,11 +645,6 @@ static int idt82p33_sync_tod(struct idt82p33_channel *channel, bool enable)
+ 	u8 sync_cnfg;
+ 	int err;
+ 
+-	/* Turn it off after sync_tod_timeout seconds */
+-	if (enable && sync_tod_timeout)
+-		ptp_schedule_worker(channel->ptp_clock,
+-				    sync_tod_timeout * HZ);
+-
+ 	err = idt82p33_read(idt82p33, channel->dpll_sync_cnfg,
+ 			    &sync_cnfg, sizeof(sync_cnfg));
+ 	if (err)
+@@ -557,22 +658,6 @@ static int idt82p33_sync_tod(struct idt82p33_channel *channel, bool enable)
+ 			      &sync_cnfg, sizeof(sync_cnfg));
+ }
+ 
+-static long idt82p33_sync_tod_work_handler(struct ptp_clock_info *ptp)
+-{
+-	struct idt82p33_channel *channel =
+-			container_of(ptp, struct idt82p33_channel, caps);
+-	struct idt82p33 *idt82p33 = channel->idt82p33;
+-
+-	mutex_lock(&idt82p33->reg_lock);
+-
+-	(void)idt82p33_sync_tod(channel, false);
+-
+-	mutex_unlock(&idt82p33->reg_lock);
+-
+-	/* Return a negative value here to not reschedule */
+-	return -1;
+-}
+-
+ static int idt82p33_output_enable(struct idt82p33_channel *channel,
+ 				  bool enable, unsigned int outn)
+ {
+@@ -634,13 +719,6 @@ static int idt82p33_enable_tod(struct idt82p33_channel *channel)
+ 	struct idt82p33 *idt82p33 = channel->idt82p33;
+ 	struct timespec64 ts = {0, 0};
+ 	int err;
+-	u8 val;
+-
+-	val = 0;
+-	err = idt82p33_write(idt82p33, channel->dpll_input_mode_cnfg,
+-			     &val, sizeof(val));
+-	if (err)
+-		return err;
+ 
+ 	err = idt82p33_measure_tod_write_overhead(channel);
+ 
+@@ -664,11 +742,12 @@ static void idt82p33_ptp_clock_unregister_all(struct idt82p33 *idt82p33)
+ 	u8 i;
+ 
+ 	for (i = 0; i < MAX_PHC_PLL; i++) {
+-
+ 		channel = &idt82p33->channel[i];
+ 
+-		if (channel->ptp_clock)
++		if (channel->ptp_clock) {
++			channel = &idt82p33->channel[i];
+ 			ptp_clock_unregister(channel->ptp_clock);
++		}
+ 	}
+ }
+ 
+@@ -753,10 +832,11 @@ static int idt82p33_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
+ 
+ 	mutex_lock(&idt82p33->reg_lock);
+ 	err = _idt82p33_adjfine(channel, scaled_ppm);
++	mutex_unlock(&idt82p33->reg_lock);
++
+ 	if (err)
+ 		dev_err(&idt82p33->client->dev,
+ 			"Failed in %s with err %d!\n", __func__, err);
+-	mutex_unlock(&idt82p33->reg_lock);
+ 
+ 	return err;
+ }
+@@ -775,21 +855,16 @@ static int idt82p33_adjtime(struct ptp_clock_info *ptp, s64 delta_ns)
+ 		return 0;
  	}
  
+-	err = _idt82p33_adjtime(channel, delta_ns);
++	/* Use more accurate internal 1pps triggered write first */
++	err = _idt82p33_adjtime_internal_triggered(channel, delta_ns);
++	if (err && delta_ns > IMMEDIATE_SNAP_THRESHOLD_NS)
++		err = _idt82p33_adjtime_immediate(channel, delta_ns);
+ 
+-	if (err) {
+-		mutex_unlock(&idt82p33->reg_lock);
+-		dev_err(&idt82p33->client->dev,
+-			"Adjtime failed in %s with err %d!\n", __func__, err);
+-		return err;
+-	}
++	mutex_unlock(&idt82p33->reg_lock);
+ 
+-	err = idt82p33_sync_tod(channel, true);
+ 	if (err)
+ 		dev_err(&idt82p33->client->dev,
+-			"Sync_tod failed in %s with err %d!\n", __func__, err);
+-
+-	mutex_unlock(&idt82p33->reg_lock);
++			"Adjtime failed in %s with err %d!\n", __func__, err);
+ 
+ 	return err;
+ }
+@@ -803,10 +878,11 @@ static int idt82p33_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
+ 
+ 	mutex_lock(&idt82p33->reg_lock);
+ 	err = _idt82p33_gettime(channel, ts);
++	mutex_unlock(&idt82p33->reg_lock);
++
+ 	if (err)
+ 		dev_err(&idt82p33->client->dev,
+ 			"Failed in %s with err %d!\n", __func__, err);
+-	mutex_unlock(&idt82p33->reg_lock);
+ 
+ 	return err;
+ }
+@@ -821,11 +897,11 @@ static int idt82p33_settime(struct ptp_clock_info *ptp,
+ 
+ 	mutex_lock(&idt82p33->reg_lock);
+ 	err = _idt82p33_settime(channel, ts);
++	mutex_unlock(&idt82p33->reg_lock);
++
+ 	if (err)
+ 		dev_err(&idt82p33->client->dev,
+ 			"Failed in %s with err %d!\n", __func__, err);
+-	mutex_unlock(&idt82p33->reg_lock);
+-
+ 	return err;
+ }
+ 
+@@ -872,7 +948,6 @@ static void idt82p33_caps_init(struct ptp_clock_info *caps)
+ 	caps->gettime64 = idt82p33_gettime;
+ 	caps->settime64 = idt82p33_settime;
+ 	caps->enable = idt82p33_enable;
+-	caps->do_aux_work = idt82p33_sync_tod_work_handler;
+ }
+ 
+ static int idt82p33_enable_channel(struct idt82p33 *idt82p33, u32 index)
+@@ -895,6 +970,8 @@ static int idt82p33_enable_channel(struct idt82p33 *idt82p33, u32 index)
+ 
+ 	channel->idt82p33 = idt82p33;
+ 
++	INIT_DELAYED_WORK(&channel->adjtime_work, idt82p33_adjtime_workaround);
++
+ 	idt82p33_caps_init(&channel->caps);
+ 	snprintf(channel->caps.name, sizeof(channel->caps.name),
+ 		 "IDT 82P33 PLL%u", index);
+diff --git a/drivers/ptp/ptp_idt82p33.h b/drivers/ptp/ptp_idt82p33.h
+index 1c7a0f0..a8b0923 100644
+--- a/drivers/ptp/ptp_idt82p33.h
++++ b/drivers/ptp/ptp_idt82p33.h
+@@ -89,13 +89,13 @@ enum hw_tod_trig_sel {
+ };
+ 
+ /* Register bit definitions end */
+-#define FW_FILENAME	"idt82p33xxx.bin"
+-#define MAX_PHC_PLL (2)
+-#define TOD_BYTE_COUNT (10)
+-#define MAX_MEASURMENT_COUNT (5)
+-#define SNAP_THRESHOLD_NS (150000)
+-#define SYNC_TOD_TIMEOUT_SEC (5)
+-#define IDT82P33_MAX_WRITE_COUNT (512)
++#define FW_FILENAME			"idt82p33xxx.bin"
++#define MAX_PHC_PLL			(2)
++#define TOD_BYTE_COUNT			(10)
++#define MAX_MEASURMENT_COUNT		(5)
++#define SNAP_THRESHOLD_NS		(10000)
++#define IMMEDIATE_SNAP_THRESHOLD_NS	(50000)
++#define IDT82P33_MAX_WRITE_COUNT	(512)
+ 
+ #define PLLMASK_ADDR_HI	0xFF
+ #define PLLMASK_ADDR_LO	0xA5
+@@ -116,15 +116,19 @@ enum hw_tod_trig_sel {
+ #define DEFAULT_OUTPUT_MASK_PLL0	(0xc0)
+ #define DEFAULT_OUTPUT_MASK_PLL1	DEFAULT_OUTPUT_MASK_PLL0
+ 
++/* Bit definitions for DPLL_TOD_TRIGGER register */
++#define READ_TRIGGER_MASK	(0xF)
++#define READ_TRIGGER_SHIFT	(0x0)
++#define WRITE_TRIGGER_MASK	(0xF0)
++#define WRITE_TRIGGER_SHIFT	(0x4)
++
+ /* PTP Hardware Clock interface */
+ struct idt82p33_channel {
+ 	struct ptp_clock_info	caps;
+ 	struct ptp_clock	*ptp_clock;
+-	struct idt82p33	*idt82p33;
+-	enum pll_mode	pll_mode;
+-	/* task to turn off SYNC_TOD bit after pps sync */
+-	struct delayed_work	sync_tod_work;
+-	bool			sync_tod_on;
++	struct idt82p33		*idt82p33;
++	enum pll_mode		pll_mode;
++	struct delayed_work	adjtime_work;
+ 	s32			current_freq_ppb;
+ 	u8			output_mask;
+ 	u16			dpll_tod_cnfg;
 -- 
-2.25.1
+2.7.4
 
