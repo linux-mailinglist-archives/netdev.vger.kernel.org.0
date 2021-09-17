@@ -2,209 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59A4D40F0FA
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 06:17:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22CA740F0FF
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 06:19:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244367AbhIQES2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 00:18:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37988 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244281AbhIQES0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 00:18:26 -0400
-Received: from mail-qv1-xf4a.google.com (mail-qv1-xf4a.google.com [IPv6:2607:f8b0:4864:20::f4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B431CC061574
-        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 21:17:04 -0700 (PDT)
-Received: by mail-qv1-xf4a.google.com with SMTP id r18-20020a056214069200b0037a291a6081so85721211qvz.18
-        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 21:17:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=po/J2aY3w2DrwYVofE73DYMDHBE9Wi6+GVbdpbw2KWk=;
-        b=QdkOYawtyVHtrpmqYMPOagzWardAk8M8gARIqdE1kVO6o49SLOLjMfj2fJdUPzjpAi
-         A6jJHWAoVDe5/yEtqB+cgRqMzKBuluu5y9fTLFwM+wbMF8YcMFIsHLbp4ZKPy61P9mdV
-         QjRlQb4M8a1DFvxhDpdR5vCyxfdBgZS9UiPfpiCNFOhNDWc2CNHbw52aOHaNDzfQmAer
-         7rtfG4wdly93xhN4PAKLThDOX0hDFTCKOGWrTOsdp0FsF61mSvHoiDrm703XYc2vrVHL
-         QmJT/EwJQJaAQXU2Bc8CtN49jNg1mJFrvazbtz7KKJtEvo7weLYZnIlZcEXRweYiksj8
-         JcCQ==
+        id S244432AbhIQEUj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 00:20:39 -0400
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:41228
+        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230407AbhIQEUf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 00:20:35 -0400
+Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com [209.85.210.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 4C08D3F338
+        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 04:19:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1631852353;
+        bh=UUDjDxYA0DPw3fgzrTN4mBMpElX++DxNM0RaIoCame4=;
+        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+         To:Cc:Content-Type;
+        b=r+TqK7uwYaGHWjMo5nS/iJ0CQM+mrf69lLEwsqKzwJ8K8jqkz9Kvyi2pOPXuAHHvs
+         FetcamnYvscSupxsAWFauGl/KiUEw/VqLtwQ4BmwfYAKha/owv0Kdgdqaepcm8i3zU
+         Y2zP8UeHM46ICw/pLRZMGfpRODh+TqUJ/aC31p3i8KaiAXSjRIJA8jPwAwB7TDMEIL
+         sWKOXMtKPmG4K0tpcppBbAD+w3+7AG1Kq/rDJyzbcDHghGBISMItq6Tc3cfNutjJCO
+         ytWafQCjKRTmApPEpIo/fR3jJGdVSsQ7Bo3w30O4nisR9H2sJrnb10WHJilHm61GXg
+         a0+nGeWT+0XnQ==
+Received: by mail-ot1-f70.google.com with SMTP id m12-20020a0568301e6c00b005469f1a7d70so1645298otr.15
+        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 21:19:13 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=po/J2aY3w2DrwYVofE73DYMDHBE9Wi6+GVbdpbw2KWk=;
-        b=rkRpJ9DV3ejV6SjI44OipWfp48LQYbcNF/ynHEaEHOGI/t5dXTqhGSYijbp67a4dTa
-         k9QjMl7odNBMo4x4k8BrhhaZ4+oi5kNjQ0WzgBXMvR8ovCUma3r5QCiyD2H+/0usHq5t
-         9DDfUJpJwWIaiuOEtyeOKCYDDYlNQuaXUg7pX91D8FZzUPyNt/QDVs01dJWzu+7aswhB
-         4oKpP0+rkHKXp6NX/UXSCvCCrLJaOFnFWi9Y5X8nCvwaYfvv8+G9mC/eiNqewAdzrUkR
-         PFCkJY+jRxMTRo6XZ2SAhfCRkfAap2jATxaqnBtic4RERIb7bjtta3s0n8hJyuDUDmVE
-         zAKg==
-X-Gm-Message-State: AOAM53128+EegdcPgOQyknVZT4pzEx35/qSb2KYUKwQn1vo4UxWfesaI
-        wQwjEgvhU2mvdw66x8m52ATmqPk9kAo=
-X-Google-Smtp-Source: ABdhPJyu74Ao5eS3sdHnuoZzZqLPA9BZeIODyGaYLe49QI/9JWJR9lsQCnAiE32cn48wg4UhzkrLfWoLMxc=
-X-Received: from weiwan.svl.corp.google.com ([2620:15c:2c4:201:9e5e:759d:5f68:9395])
- (user=weiwan job=sendgmr) by 2002:a05:6214:1142:: with SMTP id
- b2mr9391775qvt.0.1631852223959; Thu, 16 Sep 2021 21:17:03 -0700 (PDT)
-Date:   Thu, 16 Sep 2021 21:17:02 -0700
-Message-Id: <20210917041702.167622-1-weiwan@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.33.0.464.g1972c5931b-goog
-Subject: [patch v2] tcp.7: Add description for TCP_FASTOPEN and
- TCP_FASTOPEN_CONNECT options
-From:   Wei Wang <weiwan@google.com>
-To:     linux-man@vger.kernel.org,
-        Alejandro Colomar <alx.manpages@gmail.com>,
-        Michael Kerrisk <mtk.manpages@gmail.com>
-Cc:     netdev@vger.kernel.org, Yuchung Cheng <ycheng@google.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UUDjDxYA0DPw3fgzrTN4mBMpElX++DxNM0RaIoCame4=;
+        b=i3dskMJgaaSR6iJk9kPTdN0tH2jAfNEqirBF20m1KT0HlwOIc0uilehbfF7AabCayR
+         ubVzQynLdfg5Gehxs58KVbQ7tzJjbVIYIajXpfDp7iR3fmPZhmMFJ8JjROqdAD4MO038
+         0zdLCWGfblNWRFj6b0gMcz3vIxGtNQkF8IpGBHt5EwUaApwaEbD/XT0atKOjt12Nqums
+         H+SsgnCbOKd2liqC85oWnzuVp3OFUstR/DnM7fgbAE0gACpVt2P1w7gblxgWlLs0THXq
+         3hOFPA97c67K8y2ANOaSp7m863AVvn/MqvoZsjrFLt7Rh+vNbI6i4PYTPuWBjuZeDRi8
+         cWgw==
+X-Gm-Message-State: AOAM533zDUGmqtp2Yxz70C7ILQxKDDKI2uStVbPR15HltaTQRmBfEt8o
+        f5ITXjwefoIG3657iyDIzgQheiCRK+T0e9+cTklNNbTWNhn2bI8zm3/QPhCKAY4wrE3N8baWYa5
+        T0hEk9/9NXikfhdgLdHuhG+CQDRvuhH5Rr4VUxg1SHyyrGHzyKQ==
+X-Received: by 2002:a9d:1708:: with SMTP id i8mr121638ota.233.1631852352164;
+        Thu, 16 Sep 2021 21:19:12 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy8BWvVRCIlOJi8BFuwwjSCsvzkqqa2wh2Z9e6SpR3Fxj99L8az3VQO5HrHlQdiS87jESWpUulbibbQ/b0/2Js=
+X-Received: by 2002:a9d:1708:: with SMTP id i8mr121620ota.233.1631852351941;
+ Thu, 16 Sep 2021 21:19:11 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210916154417.664323-4-kai.heng.feng@canonical.com> <20210916171232.GA1624808@bjorn-Precision-5520>
+In-Reply-To: <20210916171232.GA1624808@bjorn-Precision-5520>
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+Date:   Fri, 17 Sep 2021 12:19:00 +0800
+Message-ID: <CAAd53p4OKjX8EAuujasaDRD_V=bO5A=euETR5kJeAGfa-84DcA@mail.gmail.com>
+Subject: Re: [RFC] [PATCH net-next v5 3/3] r8169: Implement dynamic ASPM mechanism
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        nic_swsd <nic_swsd@realtek.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Anthony Wong <anthony.wong@canonical.com>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TCP_FASTOPEN socket option was added by:
-commit 8336886f786fdacbc19b719c1f7ea91eb70706d4
-TCP_FASTOPEN_CONNECT socket option was added by the following patch
-series:
-commit 065263f40f0972d5f1cd294bb0242bd5aa5f06b2
-commit 25776aa943401662617437841b3d3ea4693ee98a
-commit 19f6d3f3c8422d65b5e3d2162e30ef07c6e21ea2
-commit 3979ad7e82dfe3fb94a51c3915e64ec64afa45c3
-Add detailed description for these 2 options.
-Also add descriptions for /proc entry tcp_fastopen and tcp_fastopen_key.
+On Fri, Sep 17, 2021 at 1:12 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
+>
+> On Thu, Sep 16, 2021 at 11:44:17PM +0800, Kai-Heng Feng wrote:
+> > r8169 NICs on some platforms have abysmal speed when ASPM is enabled.
+> > Same issue can be observed with older vendor drivers.
+> >
+> > The issue is however solved by the latest vendor driver. There's a new
+> > mechanism, which disables r8169's internal ASPM when the NIC traffic has
+> > more than 10 packets, and vice versa.
+>
+> Obviously this is a *rate*, not an absolute number.  I think you mean
+> something like "10 packets in 1000ms".
 
-Signed-off-by: Wei Wang <weiwan@google.com>
-Reviewed-by: Yuchung Cheng <ycheng@google.com>
----
-Change in v2: corrected some format issues
+Will amend this in next iteration.
 
- man7/tcp.7 | 110 +++++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 110 insertions(+)
+>
+> > The possible reason for this is
+> > likely because the buffer on the chip is too small for its ASPM exit
+> > latency.
+> >
+> > Realtek confirmed that all their PCIe LAN NICs, r8106, r8168 and r8125
+> > use dynamic ASPM under Windows. So implement the same mechanism here to
+> > resolve the issue.
+> >
+> > Also introduce a lock to prevent race on accessing config registers.
+>
+> Can you please include the bugzilla link where you attached lspci
+> data?  I think it's this:
+>
+>   https://bugzilla.kernel.org/show_bug.cgi?id=214307
 
-diff --git a/man7/tcp.7 b/man7/tcp.7
-index 0a7c61a37..5a6fa7f50 100644
---- a/man7/tcp.7
-+++ b/man7/tcp.7
-@@ -423,6 +423,28 @@ option.
- .\" Since 2.4.0-test7
- Enable RFC\ 2883 TCP Duplicate SACK support.
- .TP
-+.IR tcp_fastopen  " (Bitmask; default: 0x1; since Linux 3.7)"
-+Enables RFC\ 7413 Fast Open support.
-+The flag is used as a bitmap with the following values:
-+.RS
-+.IP 0x1
-+Enables client side Fast Open support
-+.IP 0x2
-+Enables server side Fast Open support
-+.IP 0x4
-+Allows client side to transmit data in SYN without Fast Open option
-+.IP 0x200
-+Allows server side to accept SYN data without Fast Open option
-+.IP 0x400
-+Enables Fast Open on all listeners without
-+.B TCP_FASTOPEN
-+socket option
-+.RE
-+.TP
-+.IR tcp_fastopen_key " (since Linux 3.7)"
-+Set server side RFC\ 7413 Fast Open key to generate Fast Open cookie
-+when server side Fast Open support is enabled.
-+.TP
- .IR tcp_ecn " (Integer; default: see below; since Linux 2.4)"
- .\" Since 2.4.0-test7
- Enable RFC\ 3168 Explicit Congestion Notification.
-@@ -1202,6 +1224,94 @@ Bound the size of the advertised window to this value.
- The kernel imposes a minimum size of SOCK_MIN_RCVBUF/2.
- This option should not be used in code intended to be
- portable.
-+.TP
-+.BR TCP_FASTOPEN " (since Linux 3.6)"
-+This option enables Fast Open (RFC\ 7413) on the listener socket.
-+The value specifies the maximum length of pending SYNs
-+(similar to the backlog argument in
-+.BR listen (2)).
-+Once enabled,
-+the listener socket grants the TCP Fast Open cookie on incoming
-+SYN with TCP Fast Open option.
-+.IP
-+More importantly it accepts the data in SYN with a valid Fast Open cookie
-+and responds SYN-ACK acknowledging both the data and the SYN sequence.
-+.BR accept (2)
-+returns a socket that is available for read and write when the handshake
-+has not completed yet.
-+Thus the data exchange can commence before the handshake completes.
-+This option requires enabling the server-side support on sysctl
-+.IR net.ipv4.tcp_fastopen
-+(see above).
-+For TCP Fast Open client-side support,
-+see
-+.BR send (2)
-+.B MSG_FASTOPEN
-+or
-+.B TCP_FASTOPEN_CONNECT
-+below.
-+.TP
-+.BR TCP_FASTOPEN_CONNECT " (since Linux 4.11)"
-+This option enables an alternative way to perform Fast Open on the active
-+side (client).
-+When this option is enabled,
-+.BR connect (2)
-+would behave differently depending if a Fast Open cookie is available for
-+the destination.
-+.IP
-+If a cookie is not available (i.e. first contact to the destination),
-+.BR connect (2)
-+behaves as usual by sending a SYN immediately,
-+except the SYN would include an empty Fast Open cookie option to solicit a
-+cookie.
-+.IP
-+If a cookie is available,
-+.BR connect (2)
-+would return 0 immediately but the SYN transmission is defered.
-+A subsequent
-+.BR write (2)
-+or
-+.BR sendmsg (2)
-+would trigger a SYN with data plus cookie in the Fast Open option.
-+In other words,
-+the actual connect operation is deferred until data is supplied.
-+.IP
-+.B Note:
-+While this option is designed for convenience,
-+enabling it does change the behaviors and might set new
-+.I errnos
-+of socket calls.
-+With cookie present,
-+.BR write (2)
-+/
-+.BR sendmsg (2)
-+must be called right after
-+.BR connect (2)
-+in order to send out SYN+data to complete 3WHS and establish connection.
-+Calling
-+.BR read (2)
-+right after
-+.BR connect (2)
-+without
-+.BR write (2)
-+will cause the blocking socket to be blocked forever.
-+The application should use either
-+.B TCP_FASTOPEN_CONNECT
-+or
-+.BR send (2)
-+with
-+.B MSG_FASTOPEN ,
-+instead of both on the same connection.
-+.IP
-+Here is the typical call flow with this new option:
-+  s = socket();
-+  setsockopt(s, IPPROTO_TCP, TCP_FASTOPEN_CONNECT, 1, ...);
-+  connect(s);
-+  write(s); // write() should always follow connect() in order to
-+            // trigger SYN to go out
-+  read(s)/write(s);
-+  ...
-+  close(s);
- .SS Sockets API
- TCP provides limited support for out-of-band data,
- in the form of (a single byte of) urgent data.
--- 
-2.33.0.464.g1972c5931b-goog
+Yes I forgot to add it. Will include in in next iteration.
 
+Kai-Heng
+
+>
+> > Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
