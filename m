@@ -2,125 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 528F940FC39
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 17:26:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6334040FC65
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 17:31:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234189AbhIQP1h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 11:27:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40716 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230429AbhIQP1g (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Sep 2021 11:27:36 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8EFCE60E08;
-        Fri, 17 Sep 2021 15:26:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631892373;
-        bh=UZqfTYO7RI9M+7Vxrv3DWw7RCxWe7AbDW1byXQjcEYY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=jjqePD6AzWn+Hen3UKqGFgCjQuKC561K7fvobsKR6kTj9I03GXn0dhABnk0/Dbj6m
-         Di870ru5X8c8V3GEdHcXzBjzq60KuxU/LMXL5jHJ/RFyaJQCOLh4dcitg2KsHmk2ID
-         yskcHVUTdnu8lJE//948lBkRGt9RdfX4lo/Ufx9hgnlz9R+LXS4SR+XqIcoAP2i+1c
-         bqkitcYuQgzKVqdNKiwXZY02UiSRw/MwY9q9MQFSblEowBf1lQJgvhqsXsEawDzg/Y
-         VMbMzjRSCvblIyse53ZzBViADeqllirMQwD87etmwyJakdSBbRNLGlcV3qbg8qpQ6A
-         HKy5tGL5v/Pkw==
-Date:   Fri, 17 Sep 2021 10:26:12 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        nic_swsd <nic_swsd@realtek.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Anthony Wong <anthony.wong@canonical.com>,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        Linux PCI <linux-pci@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC] [PATCH net-next v5 2/3] r8169: Use PCIe ASPM status for
- NIC ASPM enablement
-Message-ID: <20210917152612.GA1717817@bjorn-Precision-5520>
+        id S239439AbhIQPdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 11:33:18 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:45550 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234080AbhIQPdR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 11:33:17 -0400
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18HEx3Tp001646;
+        Fri, 17 Sep 2021 11:31:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : content-transfer-encoding : mime-version; s=pp1;
+ bh=Wcxa0KaGI3+VtVzU9bMJvtplPPj38p/AZ9sWvP2LaaA=;
+ b=SeHSPxLe0c+WiwDwR9cHvDvMVcCS92PNAOJDyYAlWQadv1GipZrf+u5KVK6M0WHYqgah
+ 9aHVmj+vBeug4Gv/OT9P5VV1Qm2FWdPsMCRI8AcAkMsuFf0ZBHHLVY9h6sss4ZWAzbM4
+ t2cyHEPz1kLpr+pxYejPGsVRg/Me9fYlMeRMHu6a0HXuF/GUEQUEk+EuROfUSu08cJ3t
+ ClDbs2WSnvxVOQtaB2yctJSohhBS2fI9NMVNMi0fuo0r4lGufbrDObEWEFjiWZ6Yev0Z
+ eSMjZCswsUVzDxsXH5vjHN6DB3X9RIbhG8Y7DPDCa1xBYtM7araFa3fTTr4ETpwRHmkv 6g== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3b4hdd9r27-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 17 Sep 2021 11:31:19 -0400
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 18HEx9Sk002296;
+        Fri, 17 Sep 2021 11:31:19 -0400
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3b4hdd9r15-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 17 Sep 2021 11:31:19 -0400
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 18HFH42Z013864;
+        Fri, 17 Sep 2021 15:31:16 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma03ams.nl.ibm.com with ESMTP id 3b0m3ag6u5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 17 Sep 2021 15:31:16 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 18HFVCRr54591906
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 17 Sep 2021 15:31:12 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4187511C06C;
+        Fri, 17 Sep 2021 15:31:12 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 788DC11C04A;
+        Fri, 17 Sep 2021 15:31:07 +0000 (GMT)
+Received: from hbathini-workstation.ibm.com (unknown [9.43.59.213])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 17 Sep 2021 15:31:07 +0000 (GMT)
+From:   Hari Bathini <hbathini@linux.ibm.com>
+To:     naveen.n.rao@linux.ibm.com, mpe@ellerman.id.au, ast@kernel.org,
+        daniel@iogearbox.net
+Cc:     christophe.leroy@csgroup.eu, paulus@samba.org, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org,
+        Hari Bathini <hbathini@linux.ibm.com>
+Subject: [PATCH v2 0/8] bpf powerpc: Add BPF_PROBE_MEM support in powerpc JIT compiler
+Date:   Fri, 17 Sep 2021 21:00:39 +0530
+Message-Id: <20210917153047.177141-1-hbathini@linux.ibm.com>
+X-Mailer: git-send-email 2.31.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: NiwdhFSYJvedcjoihbSDQzv5XnVuCFni
+X-Proofpoint-ORIG-GUID: LWn4aa2SqR6BQP7g4gyz-k1qnP4GEIsV
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAAd53p445rDeL1VFRYFA3QEbKZ6JtjzhCb9fxpR3eZ9E9NAETA@mail.gmail.com>
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
+ definitions=2021-09-17_06,2021-09-17_02,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 phishscore=0
+ priorityscore=1501 suspectscore=0 adultscore=0 bulkscore=0 mlxscore=0
+ impostorscore=0 mlxlogscore=655 malwarescore=0 lowpriorityscore=0
+ clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2109030001 definitions=main-2109170096
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 17, 2021 at 12:09:08PM +0800, Kai-Heng Feng wrote:
-> On Fri, Sep 17, 2021 at 1:07 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
-> > On Thu, Sep 16, 2021 at 11:44:16PM +0800, Kai-Heng Feng wrote:
-> > > Because ASPM control may not be granted by BIOS while ASPM is enabled,
-> > > and ASPM can be enabled via sysfs, so use pcie_aspm_enabled() directly
-> > > to check current ASPM enable status.
-> > >
-> > > Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> > > ---
-> > > v5:
-> > >  - New patch.
-> > >
-> > >  drivers/net/ethernet/realtek/r8169_main.c | 13 ++++++++-----
-> > >  1 file changed, 8 insertions(+), 5 deletions(-)
-> > >
-> > > diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-> > > index 0199914440abc..6f1a9bec40c05 100644
-> > > --- a/drivers/net/ethernet/realtek/r8169_main.c
-> > > +++ b/drivers/net/ethernet/realtek/r8169_main.c
-> > > @@ -622,7 +622,6 @@ struct rtl8169_private {
-> > >       } wk;
-> > >
-> > >       unsigned supports_gmii:1;
-> > > -     unsigned aspm_manageable:1;
-> > >       dma_addr_t counters_phys_addr;
-> > >       struct rtl8169_counters *counters;
-> > >       struct rtl8169_tc_offsets tc_offset;
-> > > @@ -2664,8 +2663,13 @@ static void rtl_enable_exit_l1(struct rtl8169_private *tp)
-> > >
-> > >  static void rtl_hw_aspm_clkreq_enable(struct rtl8169_private *tp, bool enable)
-> > >  {
-> > > -     /* Don't enable ASPM in the chip if OS can't control ASPM */
-> > > -     if (enable && tp->aspm_manageable) {
-> > > +     struct pci_dev *pdev = tp->pci_dev;
-> > > +
-> > > +     /* Don't enable ASPM in the chip if PCIe ASPM isn't enabled */
-> > > +     if (!pcie_aspm_enabled(pdev) && enable)
-> > > +             return;
-> >
-> > What happens when the user enables or disables ASPM via sysfs (see
-> > https://git.kernel.org/linus/72ea91afbfb0)?
-> >
-> > The driver is not going to know about that change.
-> 
-> So it's still better to fold this patch into next one? So the periodic
-> delayed_work can toggle ASPM accordingly.
+Patch #1 & #2 are simple cleanup patches. Patch #3 refactors JIT
+compiler code with the aim to simplify adding BPF_PROBE_MEM support.
+Patch #4 introduces PPC_RAW_BRANCH() macro instead of open coding
+branch instruction. Patch #5 & #7 add BPF_PROBE_MEM support for PPC64
+& PPC32 JIT compilers respectively. Patch #6 & #8 add explicit
+addr > TASK_SIZE_MAX check to handle bad userspace pointers for
+PPC64 & PPC32 cases respectively.
 
-No, my point is that the user can enable/disable ASPM via sysfs, and
-the driver will not know anything about it.  There's no callback that
-tells the driver when this happens.
+Link to v1 posted by Ravi:
 
-My question is whether this code works when that happens.  I doubt it
-works, because if ASPM is not enabled at this moment, you return
-without doing enabling ASPM in the chip below.
+  https://lore.kernel.org/all/20210706073211.349889-1-ravi.bangoria@linux.ibm.com/
+  ("[PATCH 0/4] bpf powerpc: Add BPF_PROBE_MEM support for 64bit JIT")
 
-If the user subsequently enables ASPM via sysfs, the chip setup below
-will not be done.
 
-If there's chip-specific setup to make ASPM work, I think the
-chip-specific part needs to be done unconditionally.
+Hari Bathini (4):
+  bpf powerpc: refactor JIT compiler code
+  powerpc/ppc-opcode: introduce PPC_RAW_BRANCH() macro
+  bpf ppc32: Add BPF_PROBE_MEM support for JIT
+  bpf ppc32: Add addr > TASK_SIZE_MAX explicit check
 
-> > > +     if (enable) {
-> > >               RTL_W8(tp, Config5, RTL_R8(tp, Config5) | ASPM_en);
-> > >               RTL_W8(tp, Config2, RTL_R8(tp, Config2) | ClkReqEn);
-> > >       } else {
-> > > @@ -5272,8 +5276,7 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
-> > >       /* Disable ASPM L1 as that cause random device stop working
-> > >        * problems as well as full system hangs for some PCIe devices users.
-> > >        */
-> > > -     rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1);
-> > > -     tp->aspm_manageable = !rc;
-> > > +     pci_disable_link_state(pdev, PCIE_LINK_STATE_L1);
-> > >
-> > >       /* enable device (incl. PCI PM wakeup and hotplug setup) */
-> > >       rc = pcim_enable_device(pdev);
-> > > --
-> > > 2.32.0
-> > >
+Ravi Bangoria (4):
+  bpf powerpc: Remove unused SEEN_STACK
+  bpf powerpc: Remove extra_pass from bpf_jit_build_body()
+  bpf ppc64: Add BPF_PROBE_MEM support for JIT
+  bpf ppc64: Add addr > TASK_SIZE_MAX explicit check
+
+ arch/powerpc/include/asm/ppc-opcode.h |   2 +
+ arch/powerpc/net/bpf_jit.h            |  19 ++--
+ arch/powerpc/net/bpf_jit_comp.c       |  75 ++++++++++++++--
+ arch/powerpc/net/bpf_jit_comp32.c     | 123 +++++++++++++++++++++-----
+ arch/powerpc/net/bpf_jit_comp64.c     | 114 ++++++++++++++++--------
+ 5 files changed, 260 insertions(+), 73 deletions(-)
+
+-- 
+2.31.1
+
