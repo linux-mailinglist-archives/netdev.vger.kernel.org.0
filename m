@@ -2,99 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22DD240FEA9
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 19:31:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9431340FEAC
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 19:32:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233291AbhIQRcf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 13:32:35 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:21418 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231855AbhIQRcd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 13:32:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1631899870;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=aEhlSynRz4N3FlqjKloHS3Kh6FbRHHHviXrUI8c+7hU=;
-        b=efrrvyKp1zgzZm/y6FIufpIdLg9Uwap++8HwOaWXm58ORNFcL3vxlvRSAG10izvxWbF7RU
-        CPagKpikeYdrUPE1ae2Qb3e28CaSRvLqnkZg8ePDvkn0WKwpple4qMH1LyDPoh8V7JXVoh
-        tR5BZv0eWT/V5hETH3Pu/CiJgvVRDJA=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-584-BAXfB_1zNsScRGDqnN35_A-1; Fri, 17 Sep 2021 13:31:07 -0400
-X-MC-Unique: BAXfB_1zNsScRGDqnN35_A-1
-Received: by mail-wr1-f72.google.com with SMTP id m1-20020a056000180100b0015e1ec30ac3so3966584wrh.8
-        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 10:31:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=aEhlSynRz4N3FlqjKloHS3Kh6FbRHHHviXrUI8c+7hU=;
-        b=AXp7H5IwiPHOjjXIsaYaRPE2bpFm4UEr6wEgazHBeSKHGClbHA9DJoftQPIQjJiw7g
-         RraGKSYZ4PVTcrYk0xj+rLcerH2EpRJhsrRdU27UYoE60bswsVydCBS/uOy6zjIGehfD
-         WVCpjibHPBOy1goz8Wji6TIGtylfZPZGXuKZc0KAYwV2pfAixNloo/mSRd/piqjYLy3o
-         dOOMB0t7UTmr+dJFAxHdIFbGYJThNi2DtTVrHhksu/EPtkbpk4kX+hd0NCXoxUkuwqiE
-         1zBCFVPPWHpfDbotIlnq/oDILDZTPkzgzXS6EBIXPrwBSLx3m7v4ULR1D4SxsNdf0M6m
-         cPEg==
-X-Gm-Message-State: AOAM531BKpM/ZTTPl56qZs/nVfUmZOPa4l34GnN4Q3qTyeYoKxYKWlPb
-        HhDrZQS44vl0zKLlyvQBHCEWFwOiXi+91teQ/N1pho5kVzfkL1EitQuldtVM5YYgvnh6PJuLkGp
-        j6oPz+ltldvctXNnB
-X-Received: by 2002:a1c:f60c:: with SMTP id w12mr16611802wmc.3.1631899866381;
-        Fri, 17 Sep 2021 10:31:06 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxzVIUlMhzaUcH8l76E4hgTLORUq4B9hZOc19zV/fBmI/JkObBLUeLEOY5d8c74bW5TKIB7kQ==
-X-Received: by 2002:a1c:f60c:: with SMTP id w12mr16611785wmc.3.1631899866185;
-        Fri, 17 Sep 2021 10:31:06 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-244-134.dyn.eolo.it. [146.241.244.134])
-        by smtp.gmail.com with ESMTPSA id a72sm11730585wme.5.2021.09.17.10.31.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Sep 2021 10:31:05 -0700 (PDT)
-Message-ID: <ef20848328710215a2d237dbbab18ca953737c5a.camel@redhat.com>
-Subject: Re: [RFC PATCH 4/5] Partially revert "tcp: factor out
- tcp_build_frag()"
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Ayush Sawal <ayush.sawal@chelsio.com>,
-        MPTCP Upstream <mptcp@lists.linux.dev>
-Date:   Fri, 17 Sep 2021 19:31:04 +0200
-In-Reply-To: <CANn89i+e7xVLia3epGLpSR70kxuTMyV=VtKGRp3g0m56Ee30gQ@mail.gmail.com>
-References: <cover.1631888517.git.pabeni@redhat.com>
-         <aa710c161dda06ce999e760fed7dcbe66497b28f.1631888517.git.pabeni@redhat.com>
-         <CANn89i+e7xVLia3epGLpSR70kxuTMyV=VtKGRp3g0m56Ee30gQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        id S237030AbhIQReH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 13:34:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46212 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231295AbhIQReH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Sep 2021 13:34:07 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1F76F610D1;
+        Fri, 17 Sep 2021 17:32:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1631899964;
+        bh=k7IXvAbIA8eaijHGPxu1HGiN3un89nIcKNNqBYPFw0k=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=FVtBt4U5ENuZiDTOxFPNs+tMSlgFBGoBmf+lxL3RgAULL6xhguVWtV8owvwFHyA7F
+         VwJ7qvA1qZn3TiSHsI3Z+X7mHlkN5KGRKlLmQxHMxSUm9/P4biKpU3YV5xLOw12Vfp
+         ZsdkvoX2ofcFghfhjcfmN3bzUqfd6xQz0wPXi5RJ5Qtbk77LW/H23vZU6cFQsfoRPN
+         GiYgdVQ1b0cV7jaZAoZ9pyzxdtaJ7SCKvnTE54d6GrA2Ciwg8WrYJINEzMkAlUKeSd
+         nCoNOnr08BhXjfRXLY6OWucTvysqHM2VuGZsm7NgOdnsaluk+4GI6Mfu+YViCra5mu
+         I1pxwfGcvxNeA==
+Date:   Fri, 17 Sep 2021 10:32:43 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+Subject: Re: [PATCH net-next v2] ptp: ocp: Avoid operator precedence warning
+ in ptp_ocp_summary_show()
+Message-ID: <20210917103243.560c1777@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210917054114.u7ivmjfdsw7ta72m@bsd-mbp.dhcp.thefacebook.com>
+References: <20210917045204.1385801-1-nathan@kernel.org>
+        <20210917054114.u7ivmjfdsw7ta72m@bsd-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2021-09-17 at 09:41 -0700, Eric Dumazet wrote:
-> On Fri, Sep 17, 2021 at 8:39 AM Paolo Abeni <pabeni@redhat.com> wrote:
-> > This is a partial revert for commit b796d04bd014 ("tcp:
-> > factor out tcp_build_frag()").
+On Thu, 16 Sep 2021 22:41:14 -0700 Jonathan Lemon wrote:
+> On Thu, Sep 16, 2021 at 09:52:05PM -0700, Nathan Chancellor wrote:
+> > Clang warns twice:
 > > 
-> > MPTCP was the only user of the tcp_build_frag helper, and after
-> > the previous patch MPTCP does not use the mentioned helper anymore.
-> > Let's avoid exposing TCP internals.
+> > drivers/ptp/ptp_ocp.c:2065:16: error: operator '?:' has lower precedence
+> > than '&'; '&' will be evaluated first
+> > [-Werror,-Wbitwise-conditional-parentheses]
+> >                            on & map ? " ON" : "OFF", src);
+> >                            ~~~~~~~~ ^
+> > drivers/ptp/ptp_ocp.c:2065:16: note: place parentheses around the '&'
+> > expression to silence this warning
+> >                            on & map ? " ON" : "OFF", src);
+> >                                     ^
+> >                            (       )
+> > drivers/ptp/ptp_ocp.c:2065:16: note: place parentheses around the '?:'
+> > expression to evaluate it first
+> >                            on & map ? " ON" : "OFF", src);
+> >                                     ^
 > > 
-> > The revert is partial, as tcp_remove_empty_skb(), exposed
-> > by the same commit is still required.
+> > on and map are both booleans so this should be a logical AND, which
+> > clears up the operator precedence issue.
 > > 
+> > Fixes: a62a56d04e63 ("ptp: ocp: Enable 4th timestamper / PPS generator")
+> > Link: https://github.com/ClangBuiltLinux/linux/issues/1457
+> > Suggested-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+> > Signed-off-by: Nathan Chancellor <nathan@kernel.org>  
 > 
-> I would simply remove the extern in include, and make this nice helper static ?
-> 
-> This would avoid code churn, and keep a clean code.
+> Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
 
-I thought you would have preferred otherwise. I'll make the helper
-static in the next iteration.
-
-Thanks!
-
-Paolo
-
+Applied, thanks!
