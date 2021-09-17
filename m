@@ -2,282 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E06740F09E
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 05:57:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9EE540F0EC
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 06:11:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244155AbhIQD6q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Sep 2021 23:58:46 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:15431 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242306AbhIQD6m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Sep 2021 23:58:42 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4H9g5z0fP5zRGXB;
-        Fri, 17 Sep 2021 11:53:11 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.8; Fri, 17 Sep 2021 11:57:18 +0800
-Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.8; Fri, 17 Sep
- 2021 11:57:18 +0800
-Subject: Re: Re: [PATCH net-next v2 3/3] skbuff: keep track of pp page when
- __skb_frag_ref() is called
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
-CC:     Jesper Dangaard Brouer <jbrouer@redhat.com>, <brouer@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linuxarm@openeuler.org>,
-        <hawk@kernel.org>, <jonathan.lemon@gmail.com>, <alobakin@pm.me>,
-        <willemb@google.com>, <cong.wang@bytedance.com>,
-        <pabeni@redhat.com>, <haokexin@gmail.com>, <nogikh@google.com>,
-        <elver@google.com>, <memxor@gmail.com>, <edumazet@google.com>,
-        <dsahern@gmail.com>
-References: <20210914121114.28559-4-linyunsheng@huawei.com>
- <CAKgT0Ud7NXpHghiPeGzRg=83jYAP1Dx75z3ZE0qV8mT0zNMDhA@mail.gmail.com>
- <9467ec14-af34-bba4-1ece-6f5ea199ec97@huawei.com>
- <YUHtf+lI8ktBdjsQ@apalos.home>
- <0337e2f6-5428-2c75-71a5-6db31c60650a@redhat.com>
- <fef7d148-95d6-4893-8924-1071ed43ff1b@huawei.com>
- <YUMD2v7ffs1xAjaW@apalos.home>
- <ac16cc82-8d98-6a2c-b0a6-7c186808c72c@huawei.com>
- <YUMelDd16Aw8w5ZH@apalos.home>
- <e2e127be-c9e4-5236-ba3c-28fdb53aa29b@huawei.com>
- <YUMxKhzm+9MDR0jW@apalos.home>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <36676c07-c2ca-bbd2-972c-95b4027c424f@huawei.com>
-Date:   Fri, 17 Sep 2021 11:57:18 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S244466AbhIQEMb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 00:12:31 -0400
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:41060
+        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S244307AbhIQEKn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 00:10:43 -0400
+Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com [209.85.210.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id E92623F2FC
+        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 04:09:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1631851760;
+        bh=2kNbCKPeMI5ps1oSfYt0rhq/83SKx4ifSFqd7Ngd/x8=;
+        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+         To:Cc:Content-Type;
+        b=E9ZKtLBKkzbX5b4UnwrvP0It2m/UEsJWLxrjYDDN0zLniLN+bccJ4nQZTTUBvXqN6
+         UBnEhRd5FLmtwwoE2xZGNFq63MOFMShRvDmICtMtjX7VG/87ebf0LyBxDsMhmxtQh1
+         MV2jnSJzuzWWX8GmGA5aevDZX8dbRxABzeRAhq9wlUj+pwV5r99dlK6BJm6gNCAylG
+         xk0ZgVJPySSfxOlJdz5D58FpPrxtgMVBMWrTjH36DTxZgNllpAaTNp6Lp63hghZGHP
+         a61TuStLiPVl0dKENMzQSdLGIITsapqSlGG+OFaRCNMtQbYZH57nvWH5QaHoqh2zN4
+         4Xyl3Cu5lEdjg==
+Received: by mail-ot1-f72.google.com with SMTP id k18-20020a9d7dd2000000b0051aec75d1abso38529792otn.5
+        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 21:09:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2kNbCKPeMI5ps1oSfYt0rhq/83SKx4ifSFqd7Ngd/x8=;
+        b=dmAmPzrROfyoVUlFfaRfZxIz82w8hDBhTS9Z+3IvMhZhUWYOFRLGQihEPcoq6mDpYT
+         KuAFEgSXzGjr1x+0e8it9w+NvYnvIeBKPWpYW/YZZ0OJBt2bzS2uBc25kiv8Fzw8TPd8
+         WIA9o5UQ8h9InM8CMo8cO+Ex7tKk076JbtAB4k5zCsdoGSN3cyU+lLdhGthiEscnGPaU
+         iHEhTCX1BBavxJRgUzLWLKtXPYl1Cj655Tz6R2vmn8txEkPX4UpikGbWtie0WZDvyTgO
+         6zvm5OcJVwGJe3m/zVn3JWvAPxdO9NszeEI2UB32Y4kqXEZP6XF8F9lQbehdfVaPwZU3
+         5GFA==
+X-Gm-Message-State: AOAM533GGWe2ZT+QQ5sbVcaAILFTnleDH1yzgU9J6TPggOU2Sy+dpFHK
+        9LTrXR0INY8umNL/upHZrxSCKtnDCjgS1TNQNydpqf/Y+H1wh3HkMjpwlxyhpZhjlBhgKgIDskK
+        G4vdI+GgXI8iWLZfDFpdYPJHocHFM6z1DimVkka+5LK6oQpSSRQ==
+X-Received: by 2002:a05:6830:1355:: with SMTP id r21mr7577217otq.11.1631851759596;
+        Thu, 16 Sep 2021 21:09:19 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxMF308vBhb8hL4uK4kU9xdvxAyxq4JZckv5A+wbG2eFi1WlX0r+u8n875Mh+huTOVd1HQxckgRdKQLPj1/D5A=
+X-Received: by 2002:a05:6830:1355:: with SMTP id r21mr7577204otq.11.1631851759263;
+ Thu, 16 Sep 2021 21:09:19 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <YUMxKhzm+9MDR0jW@apalos.home>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme713-chm.china.huawei.com (10.1.199.109) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+References: <20210916154417.664323-3-kai.heng.feng@canonical.com> <20210916170740.GA1624437@bjorn-Precision-5520>
+In-Reply-To: <20210916170740.GA1624437@bjorn-Precision-5520>
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+Date:   Fri, 17 Sep 2021 12:09:08 +0800
+Message-ID: <CAAd53p445rDeL1VFRYFA3QEbKZ6JtjzhCb9fxpR3eZ9E9NAETA@mail.gmail.com>
+Subject: Re: [RFC] [PATCH net-next v5 2/3] r8169: Use PCIe ASPM status for NIC
+ ASPM enablement
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        nic_swsd <nic_swsd@realtek.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Anthony Wong <anthony.wong@canonical.com>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/9/16 19:57, Ilias Apalodimas wrote:
-> On Thu, Sep 16, 2021 at 07:04:54PM +0800, Yunsheng Lin wrote:
->> On 2021/9/16 18:38, Ilias Apalodimas wrote:
->>> On Thu, Sep 16, 2021 at 05:33:39PM +0800, Yunsheng Lin wrote:
->>>> On 2021/9/16 16:44, Ilias Apalodimas wrote:
->>>>>>>> appear if we try to pull in your patches on using page pool and recycling
->>>>>
->>>>> [...]
->>>>>
->>>>>>>> for Tx where TSO and skb_split are used?
->>>>>>
->>>>>> As my understanding, the problem might exists without tx recycling, because a
->>>>>> skb from wire would be passed down to the tcp stack and retransmited back to
->>>>>> the wire theoretically. As I am not able to setup a configuration to verify
->>>>>> and test it and the handling seems tricky, so I am targetting net-next branch
->>>>>> instead of net branch.
->>>>>>
->>>>>>>>
->>>>>>>> I'll be honest, when I came up with the recycling idea for page pool, I
->>>>>>>> never intended to support Tx.  I agree with Alexander here,  If people want
->>>>>>>> to use it on Tx and think there's value,  we might need to go back to the
->>>>>>>> drawing board and see what I've missed.  It's still early and there's a
->>>>>>>> handful of drivers using it,  so it will less painful now.
->>>>>>
->>>>>> Yes, we also need to prototype it to see if there is something missing in the
->>>>>> drawing board and how much improvement we get from that:)
->>>>>>
->>>>>>>
->>>>>>> I agree, page_pool is NOT designed or intended for TX support.
->>>>>>> E.g. it doesn't make sense to allocate a page_pool instance per socket, as the backing memory structures for page_pool are too much.
->>>>>>> As the number RX-queues are more limited it was deemed okay that we use page_pool per RX-queue, which sacrifice some memory to gain speed.
->>>>>>
->>>>>> As memtioned before, Tx recycling is based on page_pool instance per socket.
->>>>>> it shares the page_pool instance with rx.
->>>>>>
->>>>>> Anyway, based on feedback from edumazet and dsahern, I am still trying to
->>>>>> see if the page pool is meaningful for tx.
->>>>>>
->>>>>>>
->>>>>>>
->>>>>>>> The pp_recycle_bit was introduced to make the checking faster, instead of
->>>>>>>> getting stuff into cache and check the page signature.  If that ends up
->>>>>>>> being counterproductive, we could just replace the entire logic with the
->>>>>>>> frag count and the page signature, couldn't we?  In that case we should be
->>>>>>>> very cautious and measure potential regression on the standard path.
->>>>>>>
->>>>>>> +1
->>>>>>
->>>>>> I am not sure "pp_recycle_bit was introduced to make the checking faster" is a
->>>>>> valid. The size of "struct page" is only about 9 words(36/72 bytes), which is
->>>>>> mostly to be in the same cache line, and both standard path and recycle path have
->>>>>> been touching the "struct page", so it seems the overhead for checking signature
->>>>>> seems minimal.
->>>>>>
->>>>>> I agree that we need to be cautious and measure potential regression on the
->>>>>> standard path.
->>>>>
->>>>> well pp_recycle is on the same cache line boundary with the head_frag we
->>>>> need to decide on recycling. After that we start checking page signatures
->>>>> etc,  which means the default release path remains mostly unaffected.  
->>>>>
->>>>> I guess what you are saying here, is that 'struct page' is going to be
->>>>> accessed eventually by the default network path,  so there won't be any 
->>>>> noticeable performance hit?  What about the other usecases we have
->>>>
->>>> Yes.
->>>
->>> In that case you'd need to call virt_to_head_page() early though, get it
->>> and then compare the signature.   I guess that's avoidable by using 
->>> frag->bv_page for the fragments?
->>
->> If a page of a skb frag is from page pool, It seems frag->bv_page is
->> always point to head_page of a compound page, so the calling of
->> virt_to_head_page() does not seems necessary.
->>
-> 
-> I was mostly referring to the skb head here and how would you trigger the
-> recycling path. 
-> 
-> I think we are talking about different things here.  
-> One idea is to use the last bit of frag->bv_page to identify fragments
-> allocated from page_pool, which is done today with the signature.
-> 
-> The signature however exists in the head page so my question was, can we rid
-> of that without having a performance penalty?
+On Fri, Sep 17, 2021 at 1:07 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
+>
+> On Thu, Sep 16, 2021 at 11:44:16PM +0800, Kai-Heng Feng wrote:
+> > Because ASPM control may not be granted by BIOS while ASPM is enabled,
+> > and ASPM can be enabled via sysfs, so use pcie_aspm_enabled() directly
+> > to check current ASPM enable status.
+> >
+> > Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+> > ---
+> > v5:
+> >  - New patch.
+> >
+> >  drivers/net/ethernet/realtek/r8169_main.c | 13 ++++++++-----
+> >  1 file changed, 8 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+> > index 0199914440abc..6f1a9bec40c05 100644
+> > --- a/drivers/net/ethernet/realtek/r8169_main.c
+> > +++ b/drivers/net/ethernet/realtek/r8169_main.c
+> > @@ -622,7 +622,6 @@ struct rtl8169_private {
+> >       } wk;
+> >
+> >       unsigned supports_gmii:1;
+> > -     unsigned aspm_manageable:1;
+> >       dma_addr_t counters_phys_addr;
+> >       struct rtl8169_counters *counters;
+> >       struct rtl8169_tc_offsets tc_offset;
+> > @@ -2664,8 +2663,13 @@ static void rtl_enable_exit_l1(struct rtl8169_private *tp)
+> >
+> >  static void rtl_hw_aspm_clkreq_enable(struct rtl8169_private *tp, bool enable)
+> >  {
+> > -     /* Don't enable ASPM in the chip if OS can't control ASPM */
+> > -     if (enable && tp->aspm_manageable) {
+> > +     struct pci_dev *pdev = tp->pci_dev;
+> > +
+> > +     /* Don't enable ASPM in the chip if PCIe ASPM isn't enabled */
+> > +     if (!pcie_aspm_enabled(pdev) && enable)
+> > +             return;
+>
+> What happens when the user enables or disables ASPM via sysfs (see
+> https://git.kernel.org/linus/72ea91afbfb0)?
+>
+> The driver is not going to know about that change.
 
-As both skb frag and head page is eventually operated on the head page
-of a compound page(if it is a compound page) for normal case too, maybe
-we can refactor the code to get the head page of a compound page before
-the signature checking without doing a second virt_to_head_page() or
-compound_head() call?
+So it's still better to fold this patch into next one? So the periodic
+delayed_work can toggle ASPM accordingly.
 
-> 
-> IOW in skb_free_head() an we replace:
-> 
-> if (skb_pp_recycle(skb, head)) 
-> with
-> if (page->pp_magic & ~0x3UL) == PP_SIGNATURE)
-> and get rid of the 'bool recycle' argument in __skb_frag_unref()?
+Kai-Heng
 
-For the frag page of a skb, it seems ok to get rid of the 'bool recycle'
-argument in __skb_frag_unref(), as __skb_frag_unref() and __skb_frag_ref()
-is symmetrically called to put/get a page.
-
-For the head page of a skb, we might need to make sure the head page
-passed to __build_skb_around() meet below condition:
-do pp_frag_count incrementing instead of _refcount incrementing when
-the head page is not newly allocated and it is from page pool.
-It seems hard to audit that?
-
-
-> 
->> bit 0 of frag->bv_page is different way of indicatior for a pp page,
->> it is better we do not confuse with the page signature way. Using
->> a bit 0 may give us a free word in 'struct page' if we manage to
->> use skb->pp_recycle to indicate a head page of the skb uniquely, meaning
->> page->pp_magic can be used for future feature.
->>
->>
->>>
->>>>
->>>>> for pp_recycle right now?  __skb_frag_unref() in skb_shift() or
->>>>> skb_try_coalesce() (the latter can probably be removed tbh).
->>>>
->>>> If we decide to go with accurate indicator of a pp page, we just need
->>>> to make sure network stack use __skb_frag_unref() and __skb_frag_ref()
->>>> to put and get a page frag, the indicator checking need only done in
->>>> __skb_frag_unref() and __skb_frag_ref(), so the skb_shift() and
->>>> skb_try_coalesce() should be fine too.
->>>>
->>>>>
->>>>>>
->>>>>> Another way is to use the bit 0 of frag->bv_page ptr to indicate if a frag
->>>>>> page is from page pool.
->>>>>
->>>>> Instead of the 'struct page' signature?  And the pp_recycle bit will
->>>>> continue to exist?  
->>>>
->>>> pp_recycle bit might only exist or is only used for the head page for the skb.
->>>> The bit 0 of frag->bv_page ptr can be used to indicate a frag page uniquely.
->>>> Doing a memcpying of shinfo or "*fragto = *fragfrom" automatically pass the
->>>> indicator to the new shinfo before doing a __skb_frag_ref(), and __skb_frag_ref()
->>>> will increment the _refcount or pp_frag_count according to the bit 0 of
->>>> frag->bv_page.
->>>>
->>>> By the way, I also prototype the above idea, and it seems to work well too.
->>>>
->>>
->>> As long as no one else touches this, it's just another way of identifying a
->>> page_pool allocated page.  But are we gaining by that?  Not using
->>> virt_to_head_page() as stated above? But in that case you still need to
->>> keep pp_recycle around. 
->>
->> No, we do not need the pp_recycle, as long as the we make sure __skb_frag_ref()
->> is called after memcpying the shinfo or doing "*fragto = *fragfrom".
-> 
-> But we'll have to keep it for the skb head in this case.
-
-As above, I am not really look into skb head case:)
-
-> 
-> Regards
-> /Ilias
-> 
->>
->>>
->>>>> .
->>>>> Right now the 'naive' explanation on the recycling decision is something like:
->>>>>
->>>>> if (pp_recycle) <--- recycling bit is set
->>>>>     (check page signature) <--- signature matches page pool
->>>>> 		(check fragment refcnt) <--- If frags are enabled and is the last consumer
->>>>> 			recycle
->>>>>
->>>>> If we can proove the performance is unaffected when we eliminate the first if,
->>>>> then obviously we should remove it.  I'll try running that test here and see,
->>>>> but keep in mind I am only testing on an 1GB interface.  Any chance we can get 
->>>>> measurements on a beefier hardware using hns3 ?
->>>>
->>>> Sure, I will try it.
->>>> As the kind of performance overhead is small, any performance testcase in mind?
->>>>
->>>
->>> 'eliminate the first if' wasn't accurate.  I meant switch the first if and
->>> check the struct page signature instead.  That would be the best solution
->>> imho.  We effectively have a single rule to check if a packet comes from
->>> page_pool or not.
->>
->> I am not sure what does "switch " means here, if the page signature can
->> indicate a pp page uniquely, the "if (pp_recycle)" checking can be removed.
->>
->>>
->>> You can start by sending a lot of packets and dropping those immediately.
->>> That should put enough stress on the receive path and the allocators and it
->>> should give us a rough idea. 
->>>
->>>>>
->>>>>>
->>>>>>>
->>>>>>>> But in general,  I'd be happier if we only had a simple logic in our
->>>>>>>> testing for the pages we have to recycle.  Debugging and understanding this
->>>>>>>> otherwise will end up being a mess.
->>>>>>>
->>>>>>>
->>>>>
->>>>> [...]
->>>>>
->>>>> Regards
->>>>> /Ilias
->>>>> .
->>>>>
->>>
->>> Regards
->>> /Ilias
->>> .
->>>
-> .
-> 
+>
+> > +     if (enable) {
+> >               RTL_W8(tp, Config5, RTL_R8(tp, Config5) | ASPM_en);
+> >               RTL_W8(tp, Config2, RTL_R8(tp, Config2) | ClkReqEn);
+> >       } else {
+> > @@ -5272,8 +5276,7 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+> >       /* Disable ASPM L1 as that cause random device stop working
+> >        * problems as well as full system hangs for some PCIe devices users.
+> >        */
+> > -     rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1);
+> > -     tp->aspm_manageable = !rc;
+> > +     pci_disable_link_state(pdev, PCIE_LINK_STATE_L1);
+> >
+> >       /* enable device (incl. PCI PM wakeup and hotplug setup) */
+> >       rc = pcim_enable_device(pdev);
+> > --
+> > 2.32.0
+> >
