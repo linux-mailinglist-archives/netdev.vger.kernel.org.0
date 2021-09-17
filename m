@@ -2,143 +2,293 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D239B40F254
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 08:27:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 104B340F284
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 08:38:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234037AbhIQG2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 02:28:39 -0400
-Received: from de-smtp-delivery-102.mimecast.com ([194.104.109.102]:31572 "EHLO
-        de-smtp-delivery-102.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233157AbhIQG2i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 02:28:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=mimecast20200619;
-        t=1631860035;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=HWKHW7ZoiNVaIy0mfo3LS1NtMKPljl8Txy7BqM8aytQ=;
-        b=IMMEwipMnSpV5qPVcVNpI56p6qKegI16gbBPl5XOBItKJmHNJxKZ+hr4QR9GV9u5BwphqX
-        enUCNypDP8eqWDghfdS4cmWDTgmXxlTrswj9sy0lJFa7+Fb1Pwn4BZGOiQvi5JJIbc5Gla
-        71wUOzLu30v4wTFPhyD/kBaJ6Cn9H60=
-Received: from EUR01-HE1-obe.outbound.protection.outlook.com
- (mail-he1eur01lp2054.outbound.protection.outlook.com [104.47.0.54]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- de-mta-15-s9X0kTPrPVa5rO-rDPYSaw-1; Fri, 17 Sep 2021 08:27:14 +0200
-X-MC-Unique: s9X0kTPrPVa5rO-rDPYSaw-1
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Q25i2ebGgB79+F5oGE336FliMymy9jndvpF6sCPFMpktHzv9fCJBD6V6/RDhbTOb/8v+/+UTwoWnDgX2PGmf6EWUU/Vewo44f+sVf0543zaZlqQ7Zy0Iv0S5r10aSgjfyShMbf6JidR3YQOMwF2IR3TVP8XebuZNgXLFMKxBGR5Fv9oHff0rrmu2THRs8k0sTQlbtzhclbn8CBQsEHkGKzLJjTYQQipsJwzYUJ1TMYT0hWkk9LDatGGg8M7tvQ5L0FzlBBjXfSUzWg87jy4fduWxsWH5bPXCfC3QFRHwCToW8MUCPm2X3d3BN3dxi01MwPnbC/0hEElEeQHtcUhxOw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=HWKHW7ZoiNVaIy0mfo3LS1NtMKPljl8Txy7BqM8aytQ=;
- b=iFP8GZQRiNLvgYFHFfd/cZRlx8c/xh71RocLtmSEFJu2Abx7keyP9LNBpMsYGYff/5D1h35pA01hG8x7RnsBhpCEOhxxFQ68z0RTE4qJfJgCvCJ0HLFQH2UR0JnMmAObOC8q8+1dR0qSzW6ZD6IsxzreDn1OWuSIhxZ+LLvcVCb5B2pgKkWZxMMACkRNvvtoX2bgHV9n/rPPg7PvRtP16pu07bOv6xyq+brhLPgpZG/2HLsKs1MFyJ6/abf289bCZHTUWwBeOijnQ30I/rANzj+x8/fN5U449y2yRGjJyMTeLPP/p4fhnjeMthEK+d98gpfTmn8etW2orxZyrraV4Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
- dkim=pass header.d=suse.com; arc=none
-Authentication-Results: lists.xenproject.org; dkim=none (message not signed)
- header.d=none;lists.xenproject.org; dmarc=none action=none
- header.from=suse.com;
-Received: from VI1PR04MB5600.eurprd04.prod.outlook.com (2603:10a6:803:e7::16)
- by VI1PR04MB5904.eurprd04.prod.outlook.com (2603:10a6:803:e6::29) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.14; Fri, 17 Sep
- 2021 06:27:12 +0000
-Received: from VI1PR04MB5600.eurprd04.prod.outlook.com
- ([fe80::4d37:ec64:4e90:b16b]) by VI1PR04MB5600.eurprd04.prod.outlook.com
- ([fe80::4d37:ec64:4e90:b16b%7]) with mapi id 15.20.4523.016; Fri, 17 Sep 2021
- 06:27:12 +0000
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     Paul Durrant <paul@xen.org>, Wei Liu <wl@xen.org>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>
-From:   Jan Beulich <jbeulich@suse.com>
-Subject: [PATCH net][RESEND] xen-netback: correct success/error reporting for
- the SKB-with-fraglist case
-Message-ID: <ef9e1ab6-17b9-c2d7-ef6c-99ef6726a765@suse.com>
-Date:   Fri, 17 Sep 2021 08:27:10 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AM0PR02CA0108.eurprd02.prod.outlook.com
- (2603:10a6:208:154::49) To VI1PR04MB5600.eurprd04.prod.outlook.com
- (2603:10a6:803:e7::16)
+        id S235213AbhIQGjc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 02:39:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41218 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234935AbhIQGj1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 02:39:27 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35111C061767
+        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 23:38:06 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id d207-20020a1c1dd8000000b00307e2d1ec1aso6110943wmd.5
+        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 23:38:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=FwESuS+Kh0JYha0mJK0tNrlmndza4It54ay0fJKb+x8=;
+        b=Z7QZP/tNIa99vmfyMrSkI4rOs7NAyESjVFjMjaaYG8VfLALzjZzK2Haha/QAcoE5bT
+         GshM9bjJjfDgQaQxk6T2Dhgh3F0m5ojPKlk1DuPnrALSc2NgCj4szyU/tUIY3kafKj8N
+         qyXKOn72f29lAJIVnw6h0f5B/4Wd7lVfq5IG5zmg7ppLZuihRX3WXDtw5hJeZE2i3UyT
+         scVfP4/vkOpKTd6eVvCBgHPfLOh1a9yVSVdT6CqCAbVBEqy65Gs+NTFxoQN/INdpcOTc
+         O3m8AM1NXbou1cHDFuSX4Ur6Qxb0J79rvDu4SqrBB7Tarq+ATEnbVCloS4BWI0rXduqP
+         BxlQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FwESuS+Kh0JYha0mJK0tNrlmndza4It54ay0fJKb+x8=;
+        b=zP7IPA1QjTme/vokYQKCUF05tM6mNyuL6RO6uTDe9+6Xfkn/5v5DyAvHD8WKSMIc9W
+         VmQ8KqCOXRlRxx+8g1aydmNoI+krJwZuinxh4x5E2exGxbH0d7jq/gpUwCBYQjfTkLNA
+         6Y7rRyG+2we29qJn3RUjSSg6mRkgqF3dEFdupCtXirc9ur2Iydqvpg+DZE8ZqJdhyCo3
+         D9MDWstSRsa6+p5T0zxAo59DYL6kFb76wZ5EWSBeUdZJHLlTFQgv9xomldeCFT4nxFCo
+         LrIIeGamorwVUWSfCLX63BB2VfEvpAyWrKK5TcgoEBfXUx+54VXOcnjjsgDwlLwcRb24
+         JZqQ==
+X-Gm-Message-State: AOAM531nbGVCY1l2FV5+uncSe0shaD9is8r1tV+1oNv4XxkSlKBuVFwf
+        WjYB1tjyY+rOOmfUkx9Y0C2FXg==
+X-Google-Smtp-Source: ABdhPJzmOpp10tAZLicy1SJeDSt5vM7SEtSK6iRIcqk+h+3OGz9bqC5HzvYWucrsALxftMC8fQOyYA==
+X-Received: by 2002:a1c:4b15:: with SMTP id y21mr8422129wma.183.1631860684658;
+        Thu, 16 Sep 2021 23:38:04 -0700 (PDT)
+Received: from apalos.home (ppp-94-66-220-137.home.otenet.gr. [94.66.220.137])
+        by smtp.gmail.com with ESMTPSA id k22sm6139578wrd.59.2021.09.16.23.38.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Sep 2021 23:38:04 -0700 (PDT)
+Date:   Fri, 17 Sep 2021 09:38:01 +0300
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     Jesper Dangaard Brouer <jbrouer@redhat.com>, brouer@redhat.com,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linuxarm@openeuler.org,
+        hawk@kernel.org, jonathan.lemon@gmail.com, alobakin@pm.me,
+        willemb@google.com, cong.wang@bytedance.com, pabeni@redhat.com,
+        haokexin@gmail.com, nogikh@google.com, elver@google.com,
+        memxor@gmail.com, edumazet@google.com, dsahern@gmail.com
+Subject: Re: Re: [PATCH net-next v2 3/3] skbuff: keep track of pp page when
+ __skb_frag_ref() is called
+Message-ID: <YUQ3ySFxc/DWzsMy@apalos.home>
+References: <9467ec14-af34-bba4-1ece-6f5ea199ec97@huawei.com>
+ <YUHtf+lI8ktBdjsQ@apalos.home>
+ <0337e2f6-5428-2c75-71a5-6db31c60650a@redhat.com>
+ <fef7d148-95d6-4893-8924-1071ed43ff1b@huawei.com>
+ <YUMD2v7ffs1xAjaW@apalos.home>
+ <ac16cc82-8d98-6a2c-b0a6-7c186808c72c@huawei.com>
+ <YUMelDd16Aw8w5ZH@apalos.home>
+ <e2e127be-c9e4-5236-ba3c-28fdb53aa29b@huawei.com>
+ <YUMxKhzm+9MDR0jW@apalos.home>
+ <36676c07-c2ca-bbd2-972c-95b4027c424f@huawei.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [10.156.60.236] (37.24.206.209) by AM0PR02CA0108.eurprd02.prod.outlook.com (2603:10a6:208:154::49) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.14 via Frontend Transport; Fri, 17 Sep 2021 06:27:12 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b47cc365-0393-44f9-1ca5-08d979a42f49
-X-MS-TrafficTypeDiagnostic: VI1PR04MB5904:
-X-Microsoft-Antispam-PRVS: <VI1PR04MB59041FE61A77E0DA91B850D4B3DD9@VI1PR04MB5904.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4502;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 6rZLycOOX7gljECy/boTmyNvbOBUQfqn0Jjmn8YQ50XeNytYYLyVDdJLwkWzdonrZ650Jp+BjDknK/Ui8GZtgIY6xMP5FPMiw/l3iVlq8yh9ZRI4K/6akHdFxrK+4P0WKnienl0MHtuUbXQjpHVf1lUBxOL9DYKUhFN8q+B1kqDKwu3ERrx5KtXzK/dlJCuzFVS/QYglp9TxVvnglX6nAXHHui+rax1LpXhT9hMepTSZgijQa5OpN///GAHZQKiBpjM+af3wbTu4BZYKazBEH2OB3AHE3vwFfsoznuwWJ0HBZarRCRyA/Wm2/Ipozx4IYxUD8zfa6RdKDnatAUoWEfP42C/KTsZ896jM4Jnw+/4xqQNgo9Hc78VU08I8QyFaEJZUGJ8QVUuikYyb8JO13fmIQgF8KvPxKgR658WAW+emP4xiYpfwOcfW91GWlYipLy7IPUXvluVguAM0DArrhx/WeXA9GJebUtWReVWsblQW0B949Vgw/Rs58Tbc/ELo2hYaB4xT2Q0d072ccNlOigrTrUgtqoXZyX+rMuSry9Jn2c7/Ktz7pME80pkTI198jX5NwI7HHayfh5TkpouLbE+A1gFlltkEWdl+o1MF1vR3LhJoeed2dlEYnM68ZiVNpxwysOMcvGT6XfLDNp/2tI6jtk7JeROkshUXJ+/axz91zcf1FqHtUNjY3Cv8C2jnTHdb1sVUhjFoAS2elx/jvVcyQPjpFDBbVpCvLVZsJkU=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5600.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(2906002)(4326008)(8936002)(66556008)(38100700002)(956004)(4744005)(2616005)(6916009)(66946007)(54906003)(508600001)(186003)(6486002)(16576012)(8676002)(31696002)(31686004)(316002)(36756003)(5660300002)(26005)(86362001)(66476007)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?UkdhWmVFTTRNUUZZWmxiVUxyazBBMWcyUURsTTBoQ293Nk0xa3lCOEdKeHlH?=
- =?utf-8?B?OThJQm5oc1kvRmVreEZVWC9JNXVvNlUyRVEvd2tER083ZVFrSTZoZzlZeUc2?=
- =?utf-8?B?TjNTc2FYTFlTK3JPR2kzMU9rcjRrdXVsWXFZb1BFUFIzRFRGMldWQXpZclRM?=
- =?utf-8?B?bkIwd3ZNWTF6S0ZOOWQwZ1puMUZYcWJaM1M2bTVLVHBrRXdqcW55Qnd1K2Vv?=
- =?utf-8?B?OGNRaFh6ZUwzMk9POTRXSzhjVnJFU3B5WXU5OGxrdHZCZGFXYlVMa29wc3ZM?=
- =?utf-8?B?Nk1DL0k4WTVWSWRrT0Q0N2pESWNoWXNveWdMUkgvYnNweHNWckNJRFRuMndX?=
- =?utf-8?B?dzM3QlV4aDFqa1BpYkFXeWI0Y3RwaDllWXFiMlU2U0FOK0FETWk2UTdsVGFx?=
- =?utf-8?B?V2VBNUNUaW04dWhqMTZoSmtaaDZ0OWRJaWRnbURzQzhwZTZVR1NyN3YxZktB?=
- =?utf-8?B?UjRXdWpYNDBiRzlyLzBWY1REeit2QzNLVDBpeVJoK0lMZGlmZEtrVE5QYXFR?=
- =?utf-8?B?VDU3bFRDS2o2ZmhjclhoeXhtVUtSSURFT1BYMk54dXRYOE9KdWxnVEdwN1Ni?=
- =?utf-8?B?KzhTR3kyTythVjNqaTlrZ2h0SnJBL2xRVWlJamRLNEJuYkdNc2xPMnhOc3Mr?=
- =?utf-8?B?cVdKZERhM1R5SkYveVZRdnQ0MUd3WDg1cktHTlpqZDdHM0o2b0s3anh4dGtp?=
- =?utf-8?B?aWFIall0TTdZWFZ2SFhIaEIzRUpUZ0dYOTFRbU02bWhLcjc3TUFVRXRHWko0?=
- =?utf-8?B?M2VXVjNZZ0JtU05EYjBWbC9abjhWUWlrbjhJSk16Y05VNEtRUURldm9aenhU?=
- =?utf-8?B?NEpUOEhTeHAzVUx4Qm5OTGhKNktVVUpNMmVpK3pabFV1amk1d2JRS3FPMWds?=
- =?utf-8?B?a3Vza2IyblNZVEFUQkl3ZWxJby92SThQMVQwYW52R0JsWndCWUs2d2RndlF2?=
- =?utf-8?B?TDVIRzVEdnpZL3hkMnNRTjJkUGZ3aEtpRWNZTU9JMnJyQ3BXcVdrOWZBU2Jq?=
- =?utf-8?B?WjRaZUFzaUh5WHFYaUtVMHVERm56bTZsdHBhOEc5eXVEMmR3ckw3bEFuSHZi?=
- =?utf-8?B?SG5kcVZKdGdTTTFobTNadE52Qk1wMUxvdEVyQnBNOTVucTBKUmVETlZoMHFs?=
- =?utf-8?B?MStlajFlc1RiWlRpa1IzVmFmd0d4MlJGQ2kwSk9iWFFBaEc0SzRnbE1IR1RM?=
- =?utf-8?B?ZkdwRmdqaWFTZTRDYjl4bFJyd05pR2g5OUNLMzZIMHRad3JCaUVuQmlva3RF?=
- =?utf-8?B?YWR1cXdQZzErbkkxQmRZQS92Z2haM2tmb2xzK0JrbzJlM3E1Y0d1QU44K012?=
- =?utf-8?B?eVcwejNmcE95a05nWE1hSW5xcHRzS3FkQmhKTFhKYkc2UVVSaUtldFJ1NitQ?=
- =?utf-8?B?bUs4WkhIdFJzY3AwRmxXVWgwNzlXdFJyMTBYeHg1V3Ixd2xwR1hScVp1eVdT?=
- =?utf-8?B?WmhjL0JlRWNMUXp2RnN6MVNiejRMc2pwVnlnWFRsSzhEMEtRcUovM21nVWUz?=
- =?utf-8?B?aFFveWtwT1VDUHFPMEFkSU1lUytuYklPL2t1R1lMbElrMHBkaENFUnk0a3JY?=
- =?utf-8?B?Nk1EY2xadHNObGdvdHVRYjlCK2ZvcEg1TmpwUFNxTWZ3T2FIOUNIb1JpZUlH?=
- =?utf-8?B?WUdCSDBKUTZZK1BVWVB1RUxNeHMrdG95dDBmTTN2SnlodzlEeVgzMmN3WHdH?=
- =?utf-8?B?UnZmSkNlSko1Y095S2RhbkRJSG9EVUIrQ0FuZk9NWHNBWmQzVy9ZYW1HRU0v?=
- =?utf-8?Q?TiFPAtX2OQLpS5QyEpdzeuUWnrWhI+HbqySlpkO?=
-X-OriginatorOrg: suse.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b47cc365-0393-44f9-1ca5-08d979a42f49
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5600.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Sep 2021 06:27:12.6642
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2TG1/VZESJloobIdrSjVMOIwvM8w5GQv39oMIE/jTFYNbdmyGELDJ1l0J6iPzWm1cnRyOXZUNi/WJ9L8zsfl0w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5904
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <36676c07-c2ca-bbd2-972c-95b4027c424f@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When re-entering the main loop of xenvif_tx_check_gop() a 2nd time, the
-special considerations for the head of the SKB no longer apply. Don't
-mistakenly report ERROR to the frontend for the first entry in the list,
-even if - from all I can tell - this shouldn't matter much as the overall
-transmit will need to be considered failed anyway.
+Hi Yunsheng,
 
-Signed-off-by: Jan Beulich <jbeulich@suse.com>
-Reviewed-by: Paul Durrant <paul@xen.org>
+[...]
+> >>>>>> I am not sure "pp_recycle_bit was introduced to make the checking faster" is a
+> >>>>>> valid. The size of "struct page" is only about 9 words(36/72 bytes), which is
+> >>>>>> mostly to be in the same cache line, and both standard path and recycle path have
+> >>>>>> been touching the "struct page", so it seems the overhead for checking signature
+> >>>>>> seems minimal.
+> >>>>>>
+> >>>>>> I agree that we need to be cautious and measure potential regression on the
+> >>>>>> standard path.
+> >>>>>
+> >>>>> well pp_recycle is on the same cache line boundary with the head_frag we
+> >>>>> need to decide on recycling. After that we start checking page signatures
+> >>>>> etc,  which means the default release path remains mostly unaffected.  
+> >>>>>
+> >>>>> I guess what you are saying here, is that 'struct page' is going to be
+> >>>>> accessed eventually by the default network path,  so there won't be any 
+> >>>>> noticeable performance hit?  What about the other usecases we have
+> >>>>
+> >>>> Yes.
+> >>>
+> >>> In that case you'd need to call virt_to_head_page() early though, get it
+> >>> and then compare the signature.   I guess that's avoidable by using 
+> >>> frag->bv_page for the fragments?
+> >>
+> >> If a page of a skb frag is from page pool, It seems frag->bv_page is
+> >> always point to head_page of a compound page, so the calling of
+> >> virt_to_head_page() does not seems necessary.
+> >>
+> > 
+> > I was mostly referring to the skb head here and how would you trigger the
+> > recycling path. 
+> > 
+> > I think we are talking about different things here.  
+> > One idea is to use the last bit of frag->bv_page to identify fragments
+> > allocated from page_pool, which is done today with the signature.
+> > 
+> > The signature however exists in the head page so my question was, can we rid
+> > of that without having a performance penalty?
+> 
+> As both skb frag and head page is eventually operated on the head page
+> of a compound page(if it is a compound page) for normal case too, maybe
+> we can refactor the code to get the head page of a compound page before
+> the signature checking without doing a second virt_to_head_page() or
+> compound_head() call?
 
---- a/drivers/net/xen-netback/netback.c
-+++ b/drivers/net/xen-netback/netback.c
-@@ -499,7 +499,7 @@ check_frags:
- 				 * the header's copy failed, and they are
- 				 * sharing a slot, send an error
- 				 */
--				if (i == 0 && sharedslot)
-+				if (i == 0 && !first_shinfo && sharedslot)
- 					xenvif_idx_release(queue, pending_idx,
- 							   XEN_NETIF_RSP_ERROR);
- 				else
+Yea that's doable, but my concern is different here.  If we do that the
+standard network stack, even for drivers that don't use page_pool,  will
+have to do a virt_to_head_page() -> check signature, to decide if it has to
+try recycling the packet.  That's the performance part I am worried about,
+since it happens for every packet. 
 
+> 
+> > 
+> > IOW in skb_free_head() an we replace:
+> > 
+> > if (skb_pp_recycle(skb, head)) 
+> > with
+> > if (page->pp_magic & ~0x3UL) == PP_SIGNATURE)
+> > and get rid of the 'bool recycle' argument in __skb_frag_unref()?
+> 
+> For the frag page of a skb, it seems ok to get rid of the 'bool recycle'
+> argument in __skb_frag_unref(), as __skb_frag_unref() and __skb_frag_ref()
+> is symmetrically called to put/get a page.
+> 
+> For the head page of a skb, we might need to make sure the head page
+> passed to __build_skb_around() meet below condition:
+> do pp_frag_count incrementing instead of _refcount incrementing when
+> the head page is not newly allocated and it is from page pool.
+> It seems hard to audit that?
+
+Yea that seems a bit weird at least to me and I am not sure, it's the only
+place we'll have to go and do that.
+
+> 
+> 
+> > 
+> >> bit 0 of frag->bv_page is different way of indicatior for a pp page,
+> >> it is better we do not confuse with the page signature way. Using
+> >> a bit 0 may give us a free word in 'struct page' if we manage to
+> >> use skb->pp_recycle to indicate a head page of the skb uniquely, meaning
+> >> page->pp_magic can be used for future feature.
+> >>
+> >>
+> >>>
+> >>>>
+> >>>>> for pp_recycle right now?  __skb_frag_unref() in skb_shift() or
+> >>>>> skb_try_coalesce() (the latter can probably be removed tbh).
+> >>>>
+> >>>> If we decide to go with accurate indicator of a pp page, we just need
+> >>>> to make sure network stack use __skb_frag_unref() and __skb_frag_ref()
+> >>>> to put and get a page frag, the indicator checking need only done in
+> >>>> __skb_frag_unref() and __skb_frag_ref(), so the skb_shift() and
+> >>>> skb_try_coalesce() should be fine too.
+> >>>>
+> >>>>>
+> >>>>>>
+> >>>>>> Another way is to use the bit 0 of frag->bv_page ptr to indicate if a frag
+> >>>>>> page is from page pool.
+> >>>>>
+> >>>>> Instead of the 'struct page' signature?  And the pp_recycle bit will
+> >>>>> continue to exist?  
+> >>>>
+> >>>> pp_recycle bit might only exist or is only used for the head page for the skb.
+> >>>> The bit 0 of frag->bv_page ptr can be used to indicate a frag page uniquely.
+> >>>> Doing a memcpying of shinfo or "*fragto = *fragfrom" automatically pass the
+> >>>> indicator to the new shinfo before doing a __skb_frag_ref(), and __skb_frag_ref()
+> >>>> will increment the _refcount or pp_frag_count according to the bit 0 of
+> >>>> frag->bv_page.
+> >>>>
+> >>>> By the way, I also prototype the above idea, and it seems to work well too.
+> >>>>
+> >>>
+> >>> As long as no one else touches this, it's just another way of identifying a
+> >>> page_pool allocated page.  But are we gaining by that?  Not using
+> >>> virt_to_head_page() as stated above? But in that case you still need to
+> >>> keep pp_recycle around. 
+> >>
+> >> No, we do not need the pp_recycle, as long as the we make sure __skb_frag_ref()
+> >> is called after memcpying the shinfo or doing "*fragto = *fragfrom".
+> > 
+> > But we'll have to keep it for the skb head in this case.
+> 
+> As above, I am not really look into skb head case:)
+
+Let me take a step back here, because I think we drifted a bit. 
+The page signature was introduced in order to be able to identify skb
+fragments. The problem was that you couldn't rely on the pp_recycle bit of
+the skb head,  since fragments could come from anywhere.  So you use the
+skb bit as a hint for skb frags, and you eventually decide using the page
+signature.
+
+So we got 3 options (Anything I've missed ?)
+- try to remove pp_recycle bit, since the page signature is enough for the
+  skb head and fragments.  That in my opinion is the cleanest option,  as
+  long as we can prove there's no performance hit on the standard network
+  path.
+
+- Replace the page signature with frag->bv_page bit0.  In that case we
+  still have to keep the pp_recycle bit,  but we do have an 'easier'
+  indication that a skb frag comes from page_pool.  That's still pretty
+  safe, since you now have unique identifiers for the skb and page
+  fragments and you can be sure of their origin (page pool or not).
+  What I am missing here, is what do we get out of this?  I think the
+  advantage is not having to call virt_to_head_page() for frags ?
+
+- Keep all of them(?) and use frag->bv_page bit0 similarly to pp_recycle
+  bit?  I don't see much value on this one,  I am just keeping it here for
+  completeness.
+
+Thanks
+/Ilias
+
+> 
+> > 
+> > Regards
+> > /Ilias
+> > 
+> >>
+> >>>
+> >>>>> .
+> >>>>> Right now the 'naive' explanation on the recycling decision is something like:
+> >>>>>
+> >>>>> if (pp_recycle) <--- recycling bit is set
+> >>>>>     (check page signature) <--- signature matches page pool
+> >>>>> 		(check fragment refcnt) <--- If frags are enabled and is the last consumer
+> >>>>> 			recycle
+> >>>>>
+> >>>>> If we can proove the performance is unaffected when we eliminate the first if,
+> >>>>> then obviously we should remove it.  I'll try running that test here and see,
+> >>>>> but keep in mind I am only testing on an 1GB interface.  Any chance we can get 
+> >>>>> measurements on a beefier hardware using hns3 ?
+> >>>>
+> >>>> Sure, I will try it.
+> >>>> As the kind of performance overhead is small, any performance testcase in mind?
+> >>>>
+> >>>
+> >>> 'eliminate the first if' wasn't accurate.  I meant switch the first if and
+> >>> check the struct page signature instead.  That would be the best solution
+> >>> imho.  We effectively have a single rule to check if a packet comes from
+> >>> page_pool or not.
+> >>
+> >> I am not sure what does "switch " means here, if the page signature can
+> >> indicate a pp page uniquely, the "if (pp_recycle)" checking can be removed.
+> >>
+> >>>
+> >>> You can start by sending a lot of packets and dropping those immediately.
+> >>> That should put enough stress on the receive path and the allocators and it
+> >>> should give us a rough idea. 
+> >>>
+> >>>>>
+> >>>>>>
+> >>>>>>>
+> >>>>>>>> But in general,  I'd be happier if we only had a simple logic in our
+> >>>>>>>> testing for the pages we have to recycle.  Debugging and understanding this
+> >>>>>>>> otherwise will end up being a mess.
+> >>>>>>>
+> >>>>>>>
+> >>>>>
+> >>>>> [...]
+> >>>>>
+> >>>>> Regards
+> >>>>> /Ilias
+> >>>>> .
+> >>>>>
+> >>>
+> >>> Regards
+> >>> /Ilias
+> >>> .
+> >>>
+> > .
+> > 
