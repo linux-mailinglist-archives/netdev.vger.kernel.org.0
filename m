@@ -2,116 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CEB840F377
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 09:45:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFAC740F39A
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 09:54:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239213AbhIQHqu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 03:46:50 -0400
-Received: from mail-io1-f72.google.com ([209.85.166.72]:42538 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231263AbhIQHqu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 03:46:50 -0400
-Received: by mail-io1-f72.google.com with SMTP id i78-20020a6b3b51000000b005b8dd0f9e76so18853145ioa.9
-        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 00:45:28 -0700 (PDT)
+        id S244197AbhIQH4H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 03:56:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58826 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241682AbhIQH4H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 03:56:07 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A931C061574
+        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 00:54:45 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id u18so11929005wrg.5
+        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 00:54:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=6wind.com; s=google;
+        h=reply-to:subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=lEMrqRFvHCI9WtSnFZ5s8+gUDEo4Nn3YrG808Z17kgI=;
+        b=QswdL5/FhK5Rp3rDkkEIprXBS/oma/8BSVGzD0SEmCp/5s3SoFkFuoqjL9Pr8914tP
+         4p7W3lQnkwN3IFcvtURsJNwQF3nr/PecaE5adANsmJov76IPMGWqADX35LX5BQ1aM8CR
+         FZzk45t1oKQMrYBBhMO3DGek9GO0wQAtqZkdLc4Sv3Rr18Cs+R1zEiravNdWZkKAv3jl
+         rYLCw8eMMPlwqHtin3o+v1xbx9gsKNZ2rC6ZkdLeywvKObgP+IMz8LEuEj3gs0rWCMrj
+         hWqd20YVb3b/ozOKnFKK/hZ+EF9CHwtMk3rDt/tDsjYcsdaAwWJVuWWSFBDPQpc7SPVn
+         NmwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=qhsP2+cq+V34wONR8zohN2S7Vy1bYXDChrogQdy+HvA=;
-        b=O6FW4DyILdcEZIAfyYq3C3lVDrn0QJP3zCUzSmqfZfvZt1l9fmU5Ck40Mzjp5nJi2y
-         11QVPNM/LkqV4PTCpaWcou0QrdtIoZUavU0LppEw0XNggtAo/nQkgkK4ix1pEPAYW9wR
-         29WM3gM182rkEkeUdpjAanzDRF4UQzp5CjZSI6WGXeHYRuigkVphqAvwRam+gSn/aGx8
-         3EHJmdOP2EYuWMHqinmC+pquTdogBKd3K8+hriPmm8ZmVXBAhjvW0JPawVfKDRraA3et
-         mCaVvCWMQJ5Nk+eXxFitvUrkJ2i1Bs0i/a/3tcPIiPEOUzPTOqwj9FRCNh+ROPhvLAfT
-         AGuQ==
-X-Gm-Message-State: AOAM5326Ebc/8JlGEBwClXTTsDB3aQ510hdVgr8H4xF205bhqOEbObva
-        oAuShji72BeHJpE065qbjghQiY4s6vfDGYPfReX0CWuYeoX1
-X-Google-Smtp-Source: ABdhPJywQVM7bxgbMCGlFyaonYOt0+ZCdP7tNTOdXECGnpyCU0GwOMHdIoVIDu3qUEC0nK51gAqa/tgUBlfFad8m/JpmqbuGYIqf
+        h=x-gm-message-state:reply-to:subject:to:cc:references:from
+         :organization:message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=lEMrqRFvHCI9WtSnFZ5s8+gUDEo4Nn3YrG808Z17kgI=;
+        b=Pdku00jhfUF3jZmaV6cn4RfouDQ3UPOyApIoY/5QJDHzvMgX67t6Or7Yx62ZOU3JFM
+         Nl7RVE8a0vf39Pdfd/s38/Yyw8oGdG0zYKoykPf6FjVd0C8JKbp/VCafm7mJZLFl3AkT
+         InrYtiNTnASBTWfmQRfAb1EZ8HQCM+NAHXzOAuAInAGrfZrd6obm1n3oijGKwRsY+QiD
+         h/9BE14Bi97e9oXW/z+MLcwd+Q28xE0jmFkDujBdRZUvAf1Tzd706PMrJ9BmtLqhJ45/
+         q0vvm47fedgPyKFdAYD3KWyyu2xDJUogwKP0IVMTcI4fuqRfROEsFQl6GaWemv16uD9a
+         KYlg==
+X-Gm-Message-State: AOAM532z3QG+vP/0pbf20Qlfl2TMX4E/E6CoaEbnSfDjgPm+Q9Y98NZ5
+        zh6V8XkPGbdVHeJPfvgs3bBNore9QRqEHw==
+X-Google-Smtp-Source: ABdhPJyGGxFMPJSNf2JAd0TEWa/U4XoPzRIjTAlYAQMXZjVQEMMLJ4FbanL/NxlPm4PoceVNavDK6g==
+X-Received: by 2002:a5d:4a08:: with SMTP id m8mr10239714wrq.263.1631865283824;
+        Fri, 17 Sep 2021 00:54:43 -0700 (PDT)
+Received: from ?IPv6:2a01:e0a:410:bb00:c55c:1af:42ea:ba9e? ([2a01:e0a:410:bb00:c55c:1af:42ea:ba9e])
+        by smtp.gmail.com with ESMTPSA id i27sm9801959wmb.40.2021.09.17.00.54.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Sep 2021 00:54:43 -0700 (PDT)
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH ipsec v3 0/2] xfrm: fix uapi for the default policy
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, antony.antony@secunet.com,
+        netdev@vger.kernel.org
+References: <20210908072341.5647-1-nicolas.dichtel@6wind.com>
+ <20210914144635.6850-1-nicolas.dichtel@6wind.com>
+ <20210917070610.GB1407957@gauss3.secunet.de>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+Message-ID: <abc75aeb-d23f-99ca-60f4-382675f11557@6wind.com>
+Date:   Fri, 17 Sep 2021 09:54:42 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:2c05:: with SMTP id w5mr7752796iov.160.1631864728261;
- Fri, 17 Sep 2021 00:45:28 -0700 (PDT)
-Date:   Fri, 17 Sep 2021 00:45:28 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000073194a05cc2c1db6@google.com>
-Subject: [syzbot] WARNING: refcount bug in nr_release (2)
-From:   syzbot <syzbot+053c8d94c7f45da6e6c8@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, linux-hams@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        ralf@linux-mips.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210917070610.GB1407957@gauss3.secunet.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-syzbot found the following issue on:
-
-HEAD commit:    c1b13fe76e95 Add linux-next specific files for 20210901
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=1564c986300000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=e2afff7bc32736e5
-dashboard link: https://syzkaller.appspot.com/bug?extid=053c8d94c7f45da6e6c8
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+053c8d94c7f45da6e6c8@syzkaller.appspotmail.com
-
-------------[ cut here ]------------
-refcount_t: saturated; leaking memory.
-WARNING: CPU: 0 PID: 2068 at lib/refcount.c:22 refcount_warn_saturate+0x12d/0x1e0 lib/refcount.c:22
-Modules linked in:
-CPU: 0 PID: 2068 Comm: syz-executor.3 Not tainted 5.14.0-next-20210901-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:refcount_warn_saturate+0x12d/0x1e0 lib/refcount.c:22
-Code: 09 31 ff 89 de e8 f3 98 9e fd 84 db 0f 85 72 ff ff ff e8 a6 92 9e fd 48 c7 c7 60 00 e4 89 c6 05 62 76 82 09 01 e8 60 89 18 05 <0f> 0b e9 53 ff ff ff e8 87 92 9e fd 0f b6 1d 49 76 82 09 31 ff 89
-RSP: 0018:ffffc9000dd9fa78 EFLAGS: 00010282
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: ffff888095d91c80 RSI: ffffffff815dba38 RDI: fffff52001bb3f41
-RBP: 0000000000000001 R08: 0000000000000000 R09: 0000000000000000
-R10: ffffffff815d581e R11: 0000000000000000 R12: ffff88803f939200
-R13: ffff8880a961a080 R14: ffff88803f939218 R15: ffff888011eccaa0
-FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f66614c8070 CR3: 00000000198d8000 CR4: 00000000001526f0
-Call Trace:
- __refcount_add include/linux/refcount.h:201 [inline]
- __refcount_inc include/linux/refcount.h:250 [inline]
- refcount_inc include/linux/refcount.h:267 [inline]
- sock_hold include/net/sock.h:702 [inline]
- nr_release+0x3ba/0x450 net/netrom/af_netrom.c:520
- __sock_release+0xcd/0x280 net/socket.c:649
- sock_close+0x18/0x20 net/socket.c:1314
- __fput+0x288/0x9f0 fs/file_table.c:280
- task_work_run+0xdd/0x1a0 kernel/task_work.c:164
- exit_task_work include/linux/task_work.h:32 [inline]
- do_exit+0xbae/0x2a30 kernel/exit.c:825
- do_group_exit+0x125/0x310 kernel/exit.c:922
- get_signal+0x47f/0x2160 kernel/signal.c:2868
- arch_do_signal_or_restart+0x2a9/0x1c40 arch/x86/kernel/signal.c:865
- handle_signal_work kernel/entry/common.c:148 [inline]
- exit_to_user_mode_loop kernel/entry/common.c:172 [inline]
- exit_to_user_mode_prepare+0x17d/0x290 kernel/entry/common.c:209
- __syscall_exit_to_user_mode_work kernel/entry/common.c:291 [inline]
- syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:302
- do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x4665f9
-Code: Unable to access opcode bytes at RIP 0x4665cf.
-RSP: 002b:00007f1282a60218 EFLAGS: 00000246 ORIG_RAX: 00000000000000ca
-RAX: fffffffffffffe00 RBX: 000000000056bf88 RCX: 00000000004665f9
-RDX: 0000000000000000 RSI: 0000000000000080 RDI: 000000000056bf88
-RBP: 000000000056bf80 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 000000000056bf8c
-R13: 00007fffbb91b31f R14: 00007f1282a60300 R15: 0000000000022000
+Le 17/09/2021 à 09:06, Steffen Klassert a écrit :
+> On Tue, Sep 14, 2021 at 04:46:32PM +0200, Nicolas Dichtel wrote:
+>> This feature has just been merged after the last release, thus it's still
+>> time to fix the uapi.
+>> As stated in the thread, the uapi is based on some magic values (from the
+>> userland POV).
+>> Here is a proposal to simplify this uapi and make it clear how to use it.
+>> The other problem was the notification: changing the default policy may
+>> radically change the packets flows.
+>>
+>> v2 -> v3: rebase on top of ipsec tree
+>>
+>> v1 -> v2: fix warnings reported by the kernel test robot
+>>
+>> Nicolas Dichtel (2):
+>>   xfrm: make user policy API complete
+>>   xfrm: notify default policy on update
+> 
+> Applied, thanks a lot Nicolas!
+> 
+Thanks Steffen. I will write the follow up patch once the ipsec tree is merged
+into ipsec-next.
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Regards,
+Nicolas
