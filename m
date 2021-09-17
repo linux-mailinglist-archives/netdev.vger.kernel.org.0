@@ -2,145 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2423940FFA5
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 21:06:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD05840FFAB
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 21:10:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239371AbhIQTHd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 15:07:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43868 "EHLO
+        id S240863AbhIQTMJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 15:12:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbhIQTHc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 15:07:32 -0400
-Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04983C061574
-        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 12:06:09 -0700 (PDT)
-Received: by mail-qk1-x733.google.com with SMTP id y144so20621155qkb.6
-        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 12:06:09 -0700 (PDT)
+        with ESMTP id S229475AbhIQTMI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 15:12:08 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9B8FC061574;
+        Fri, 17 Sep 2021 12:10:45 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id f21so6821156plb.4;
+        Fri, 17 Sep 2021 12:10:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=qjZcue21qOctF3YISxpub/wZCs1lhX8leeYqFdj7v8g=;
-        b=Ld0pCZ4k/ujOgMKf5NflrXovt8qaE6GwpUQpRIYouNYe8MwnNo20hb1uNVBeogWbuu
-         WNyl3ICBi5l+4/w+/MwvlUi2tgPkEzLfDlcCF+ixQ7Gf4rlSKBJJWZ+iyQ26bGhilXkc
-         rbRyaobe5AzKW+PCBdHwKfzY9sPDPppYOM4MdiIUzTWMWjlwjtvrcHtqdtcqiTgV2BYi
-         NZOWe7uCLUOU5pxKQe6XgN+KcoIc2VlbN3IjxwNyLfQOooPrd/oDTbXidPDqknRLy3Wz
-         xQLQ1jm8qZs3gX2POYmq8i8g8KEylBopGHxPQjDdhu9KXwLu0+Yb3YEKQsbRyx/3EiWy
-         H6QQ==
+         :cc;
+        bh=HwxK+YqpENHgGuG8yym74+S0PpE2xFj7pJ0EzdVBFpg=;
+        b=jNmO9Irag4pFM754+7+B7oCXxJClQEQ3frW0A/V320C1kVXJOmR4JaRoDlGmpTCP/d
+         4o0eajanihDKjW3a0NpGtLfjZDMmBM6OxV6OAC1nhtyCGJOM2rSAJeXLwYyEV8c2nBHS
+         0hKk3vX7Ba8zHDz8NJqx/NTLu2YuW2xTyiDwVbXvKq2+8O/KRqCjEeQLC6jFkTJIu8jq
+         9TcbMU0UZLziLvqcnH9Y1WcsTRbqmd/ThQNsBT4AT7bYFULQtrAcY+l5ttQRfaHIAzS6
+         Rn+KuiMDkjAzLmmt5WKjdFa0w7gwyIYBcKSSQ6IkUoZUMVORuJPJKf/yC0NH7v98i2E1
+         DfcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=qjZcue21qOctF3YISxpub/wZCs1lhX8leeYqFdj7v8g=;
-        b=MDId3Fo0Qn43jZkV06DT8mNNcRpoVOYFbG14Eflh/wrx0VHVlGD+WSFgC/5L8sNLVM
-         ELzg/lD4bR6pMMWAd/IBtmQcr6WozrhxGIAV9QP9ORRx8cJrYTwbIx5/iWEfXJAlbuZU
-         oiQZ2FNZmR4P/M7Y1vgX4XxjRK3CYye+nkbes92IIUgNmFlKxAC6XLN8e1egCLOeKrZb
-         HOBcu8rF35MN9hFInwUQzokTLe0LqIA4SQBphmEJlkNkyu0Dg7LOHbK+X5eGbu8SBO3J
-         MjVtz2RMdwpc1NTVFW8/jN83A93WPo5IGdBMO2B4050BWR0qv6gNZylJro9/QrNbxRDF
-         6Pww==
-X-Gm-Message-State: AOAM5321+Gj5HQCfOmYlDpO6LtVFHXXuMV/GkmMyX6GD+IQZYZoJdNNd
-        mgGSOdzLDw4Pot3cxh+tncRKkMhFSFrSOPtsEkzcaA==
-X-Google-Smtp-Source: ABdhPJwpGZANDa4islg/6RNEgiaW/U6PR2K4bysTpk1P7oB7WbGtJipzHMMIv08sp/tsZi4EdUZngOTG6JFs9XSPeTs=
-X-Received: by 2002:a25:5606:: with SMTP id k6mr15567664ybb.476.1631905568350;
- Fri, 17 Sep 2021 12:06:08 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=HwxK+YqpENHgGuG8yym74+S0PpE2xFj7pJ0EzdVBFpg=;
+        b=6nULEpGCdysyZwztbmd8erXvZAG8lTeDaP9tUDuMVIvg2TbdB7CTPXrVvwyOAPm5lW
+         o6D2Qm/me4Yo7RCXbvGBJoX54Hqb4qi7RJK1oE5ef0BAF79w4JyY3e/olVvYf9YwIhH3
+         KE2MCwhVkYXZhfwFI5FEAUwyPn++DfqOV5kJGtdHd/Y1VHzbzvsyCUYI6A5uvx7Cr8dr
+         2h68AhOVxiZJDTIuMhVAW/6lFpBVRGDJ3+gzTmenfYfFR1LDbjT1PQ3j/to/aZCvpRH+
+         WGt6eIn9xc95Dwm5wGg0MdXbpK+Rq3aYvDb5QYpj6RKMbLQwzKOtXEblFM7tmVLDJ1T2
+         KVqw==
+X-Gm-Message-State: AOAM533fSM6s2cnv593I5PXeVxjDLMyZW+7WWehfK2iFFBxGgp8Ge2Yq
+        b2to09Q+ysnNE0dDSC57StEr78q8R0jTAXT2EA8=
+X-Google-Smtp-Source: ABdhPJyAyQ2HEe3XdZOaYH1l8wMv3p+rdnXtCU8E7RKhvcvW8uMFEmAXi2trAW1yUaZRzMJbovwZFys2YE97N2rFxPc=
+X-Received: by 2002:a17:902:7246:b0:138:a6ed:66cc with SMTP id
+ c6-20020a170902724600b00138a6ed66ccmr11140819pll.22.1631905845177; Fri, 17
+ Sep 2021 12:10:45 -0700 (PDT)
 MIME-Version: 1.0
-References: <CANP3RGeaOqxOMwCFKb=3X5EFaXNG+k3N2CfV4YT-8NiY5GW3Tg@mail.gmail.com>
- <20210917114924.2a7bda93@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210917114924.2a7bda93@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Date:   Fri, 17 Sep 2021 21:05:55 +0200
-Message-ID: <CANP3RGfPzXTMX+FAvd73EWjQnqUPyczuTD0dTQ79RMoVpjyQMg@mail.gmail.com>
-Subject: Re: nt: usb: USB_RTL8153_ECM should not default to y
+References: <cover.1631289870.git.lorenzo@kernel.org> <20210916095539.4696ae27@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YUSrWiWh57Ys7UdB@lore-desk> <20210917113310.4be9b586@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAADnVQL15NAqbswXedF0r2om8SOiMQE80OSjbyCA56s-B4y8zA@mail.gmail.com> <20210917120053.1ec617c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210917120053.1ec617c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 17 Sep 2021 12:10:34 -0700
+Message-ID: <CAADnVQKbrkOxfNoixUx-RLJEWULJLyhqjZ=M_X2cFG_APwNyCg@mail.gmail.com>
+Subject: Re: [PATCH v14 bpf-next 00/18] mvneta: introduce XDP multi-buffer support
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux NetDev <netdev@vger.kernel.org>,
-        Hayes Wang <hayeswang@realtek.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, shayagr@amazon.com,
+        John Fastabend <john.fastabend@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        tirthendu.sarkar@intel.com,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 17, 2021 at 8:49 PM Jakub Kicinski <kuba@kernel.org> wrote:
+On Fri, Sep 17, 2021 at 12:00 PM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> On Fri, 17 Sep 2021 19:59:15 +0200 Maciej =C5=BBenczykowski wrote:
-> > I've been browsing some usb ethernet dongle related stuff in the
-> > kernel (trying to figure out which options to enable in Android 13
-> > 5.~15 kernels), and I've come across the following patch (see topic,
-> > full patch quoted below).
+> On Fri, 17 Sep 2021 11:43:07 -0700 Alexei Starovoitov wrote:
+> > > If bpf_xdp_load_bytes() / bpf_xdp_store_bytes() works for most we
+> > > can start with that. In all honesty I don't know what the exact
+> > > use cases for looking at data are, either. I'm primarily worried
+> > > about exposing the kernel internals too early.
 > >
-> > Doesn't it entirely defeat the purpose of the patch it claims to fix
-> > (and the patch that fixed)?
-> > Certainly the reasoning provided (in general device drivers should not
-> > be enabled by default) doesn't jive with me.
-> > The device driver is CDC_ETHER and AFAICT this is just a compatibility
-> > option for it.
-> >
-> > Shouldn't it be reverted (ie. the 'default y' line be re-added) ?
-> >
-> > AFAICT the logic should be:
-> >   if we have CDC ETHER (aka. ECM), but we don't have R8152 then we
-> > need to have R8153_ECM.
-> >
-> > Alternatively, maybe there shouldn't be a config option for this at all=
-?
-> >
-> > Instead r8153_ecm should simply be part of cdc_ether.ko iff r8152=3Dn
-> >
-> > I'm not knowledgeable enough about Kconfig syntax to know how to
-> > phrase the logic...
-> > Maybe there shouldn't be a Kconfig option at all, and just some Makefil=
-e if'ery.
-> >
-> > Something like:
-> >
-> > obj-$(CONFIG_USB_RTL8152) +=3D r8152.o
-> > obj-$(CONFIG_USB_NET_CDCETHER) +=3D cdc_ether.o obj-
-> > ifndef CONFIG_USB_RTL8152
-> > obj-$(CONFIG_USB_NET_CDCETHER) +=3D r8153_ecm.o
-> > endif
-> >
-> > Though it certainly would be nice to use 8153 devices with the
-> > CDCETHER driver even with the r8152 driver enabled...
+> > I don't mind the xdp equivalent of skb_load_bytes,
+> > but skb_header_pointer() idea is superior.
+> > When we did xdp with data/data_end there was no refine_retval_range
+> > concept in the verifier (iirc or we just missed that opportunity).
+> > We'd need something more advanced: a pointer with valid range
+> > refined by input argument 'len' or NULL.
+> > The verifier doesn't have such thing yet, but it fits as a combination of
+> > value_or_null plus refine_retval_range.
+> > The bpf_xdp_header_pointer() and bpf_skb_header_pointer()
+> > would probably simplify bpf programs as well.
+> > There would be no need to deal with data/data_end.
 >
-> Yeah.. more context here:
->
-> https://lore.kernel.org/all/7fd014f2-c9a5-e7ec-f1c6-b3e4bb0f6eb6@samsung.=
-com/
->
-> default !USB_RTL8152 would be my favorite but that probably doesn't
-> compute in kconfig land. Or perhaps bring back the 'y' but more clearly
-> mark it as a sub-option of CDCETHER? It's hard to blame people for
-> expecting drivers to default to n, we should make it clearer that this
-> is more of a "make driver X support variation Y", 'cause now it sounds
-> like a completely standalone driver from the Kconfig wording. At least
-> to a lay person like myself.
+> What are your thoughts on inlining? Can we inline the common case
+> of the header being in the "head"? Otherwise data/end comparisons
+> would be faster.
 
-I think:
-        depends on USB_NET_CDCETHER && (USB_RTL8152 || USB_RTL8152=3Dn)
-        default y
-accomplished exactly what was wanted.
+Yeah. It can be inlined by the verifier.
+It would still look like a call from bpf prog pov with llvm doing spill/fill
+of scratched regs, but it's minor.
 
-USB_NET_CDCETHER is a dependency, hence:
-
-USB_NET_CDCETHER=3Dn forces it off - as it should - it's an addon to cdceth=
-er.
-
-USB_NET_CDCETHER=3Dm disallows 'y' - module implies addon must be module.
-
-similarly USB_RTL8152 is a dependency, so it being a module disallows 'y'.
-This is desired, because if CDCETHER is builtin, so this addon could
-be builtin, then RTL8152 would fail to bind it by default.
-ie. CDCETHER=3Dy && RTL8152=3Dm must force RTL8153_ECM !=3D y  (this is the=
- bugfix)
-
-basically the funky 'USB_RTL8152 || USB_RTL8152=3Dn' --> disallows 'y'
-iff RTL8152=3Dm
-
-'default y' enables it by default as 'y' if possible, as 'm' if not,
-and disables it if impossible.
-
-So I believe this had the exact right default behaviour - and allowed
-all the valid options.
+Also we can use the same bpf_header_pointer(ctx, ...)
+helper for both xdp and skb program types. They will have different
+implementation underneath, but this might make possible writing bpf
+programs that could work in both xdp and skb context.
+I believe cilium has fancy macros to achieve that.
