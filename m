@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1152140F957
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 15:35:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0ABE40F95A
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 15:35:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344427AbhIQNge (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 09:36:34 -0400
-Received: from mail-eopbgr80082.outbound.protection.outlook.com ([40.107.8.82]:4832
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        id S1344473AbhIQNgx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 09:36:53 -0400
+Received: from mail-eopbgr40079.outbound.protection.outlook.com ([40.107.4.79]:32296
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S244662AbhIQNgN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Sep 2021 09:36:13 -0400
+        id S1343564AbhIQNg1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Sep 2021 09:36:27 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=n+PlaIi9j8fWHPH3lEECH5H/AcUC35WfCZBeq8FrbHo3+Yr9w64jezNZfgrKLwPBWyyOtkw2EOwUOLU8wA/R2AUyJl1xFYfsTHRGQXrXH0vKCk1pVYBEuy35p0V2804bZlNqojvXLGGxPmUaMqj62chZWyXYZfZn5RS15EX8irw/uk9U1NPhm7pbTuU4fIUv4Vd3Z6hDUmfRXqiGIF8muvrF8mG7ZrQ51nqZ5TWKgeTYuW1Shqz0nn0r7AcpClDIG3vJoEXh6oH9lXrl+S1oaKjIoaGI9+5fILUgpJRvIJ2CrbmP4dD5s6IafqYlc2kmy4J0h503VT7axWvpIfDgEg==
+ b=IvQaDYDgX/rVNK2HEtc8d1kmL8RHkN9HlEYAdHT0H1YVq58r7CkG3SRe8XBBFJ1kxWdtC+Q58Ll1js50yntp67fBt6mpZmKO6FbzygWDCEK3gCRLcZMFTiU3+XWRM8QwQ91GcvbZOs+7qeaLOoa7sZjMhJqMzLEx0HvU7MlyklSHEkHtxM22dNUdNq2WZ9ElOOZ48N/qfVInj+vsAcDubaNlTuB/1FQPQZwYEimNlgD46ZzjezIFvAVkSCRmZLZ/HBGaUWfG7huXzZ96Ev9GzOaG365UUayi7FDcLHcdQGadz+wcbjTr9cNd+c6QkPLnwpJc8Uy//eHjC0YlUcSULQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=LwJ59Yi5GcAxZQXwokAFNKOBXp7/+wq5dkINbobpu/0=;
- b=k8CwbDBNpMcBdR4wwCXeF7JVfL+dvY0DsCxngiyO8hZpQMEb94AI62eEIeEesd9csdswGjS8YBRH5JKQaNRFGBAuAwpD9xLYOvpUtAv61t2guNCqIQ1pJOW2YsP0R64J3At/ezZJfmIUZO61ObFxIp5+pKhsSjiIm/HoVzUnEL4acppcCTKC3/yA0jurybOwIhdSbAp39faxfwZzNYwXnyUnqnKESJpJWGNvzgm5QVl9aZl0vb32aCPjSYk/NCGlNanIjmR65IxME0g3b10ZL1ceOMr29XrO4XHBWI/v38tzFKWenwqaVRMZa9b5c9QFjjUx62wDtmwYrjDfN4jlaQ==
+ bh=pjd39OuiyfPLTnwLybfGezRem2rn9KKpaPy2kqVnG6Y=;
+ b=GRcNKummeMBW1hxBbGha2VmRRAj94HaLqRwgRZk6OmW9z3MW37MIRWYPIWjzswx6aZ/zDCxpKnoLTGwX/6T9kztZyZTf5t28gs0Bxrs4StYNoliOcC/FLcaFs3O7pZCZJxTrOTaVe4vKULwAVdl8TY0NyRxXFIy7ri98+9NPjYWIhZgOC204VqLYtMVannW1fvwJL3x1A5znygEzvRdWhLjie7yHZQnbS1psaWkZcO2Y2lfVG3SMK+toHB/OlGBNtqvaeTNWTf1jI1FhSR2iMAveRe9si1pWde7ggwTwaQRAnzyejfN0MopkSsc8Rym3+WKi/X72h5yj+XWtEjacFg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LwJ59Yi5GcAxZQXwokAFNKOBXp7/+wq5dkINbobpu/0=;
- b=H6jI6dAH8UKFTvd246b2+o+TBnns/uIzpJKomuHQIEkrzzJNkak07A6SzdFUP5FcuX4L/cJIEeJGLCJjg6r+PzVf/ORI1J1uLTuroJe/1yLB46BtkfOht1Jws2XuwKv2mylJi7MS609o6fvulhK1AUBlbMuMkedjKbnLlbIEBgw=
+ bh=pjd39OuiyfPLTnwLybfGezRem2rn9KKpaPy2kqVnG6Y=;
+ b=W4BrBG6lAOScpdveFdOmPmDh8G/IuuX5IEQz1c8p6uJOh02tnGRXVMP51s5GUJmb9yi2wLJJ7cSg3w0X32oX06K7A25GpUM03irruYr4bIOgFehM4SaIzWL/xjG3C9vPJHVxbUP+VjtUu6/4kd71qV+IoWJB4+0zo/MOSTNEpHs=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VE1PR04MB7341.eurprd04.prod.outlook.com (2603:10a6:800:1a6::18) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.16; Fri, 17 Sep
- 2021 13:34:50 +0000
+ 2021 13:34:52 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4500.019; Fri, 17 Sep 2021
- 13:34:49 +0000
+ 13:34:52 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -62,10 +62,12 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org,
         Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Subject: [PATCH v2 net 0/5] Make DSA switch drivers compatible with masters which unregister on shutdown
-Date:   Fri, 17 Sep 2021 16:34:31 +0300
-Message-Id: <20210917133436.553995-1-vladimir.oltean@nxp.com>
+Subject: [PATCH v2 net 1/5] net: mdio: introduce a shutdown method to mdio device drivers
+Date:   Fri, 17 Sep 2021 16:34:32 +0300
+Message-Id: <20210917133436.553995-2-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210917133436.553995-1-vladimir.oltean@nxp.com>
+References: <20210917133436.553995-1-vladimir.oltean@nxp.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: AM0PR02CA0199.eurprd02.prod.outlook.com
@@ -73,140 +75,120 @@ X-ClientProxiedBy: AM0PR02CA0199.eurprd02.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (82.78.148.104) by AM0PR02CA0199.eurprd02.prod.outlook.com (2603:10a6:20b:28f::6) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.14 via Frontend Transport; Fri, 17 Sep 2021 13:34:47 +0000
+Received: from localhost.localdomain (82.78.148.104) by AM0PR02CA0199.eurprd02.prod.outlook.com (2603:10a6:20b:28f::6) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.14 via Frontend Transport; Fri, 17 Sep 2021 13:34:50 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f0877e87-c970-44a4-c9fa-08d979dfec33
+X-MS-Office365-Filtering-Correlation-Id: 0abbda9d-8b6e-4e9e-f278-08d979dfed8f
 X-MS-TrafficTypeDiagnostic: VE1PR04MB7341:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VE1PR04MB7341A23347C4BCA4090AC5AAE0DD9@VE1PR04MB7341.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4941;
+X-Microsoft-Antispam-PRVS: <VE1PR04MB73417430C16F3FEADF448984E0DD9@VE1PR04MB7341.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1923;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: pA5rVuGRVWwTPFsCruyyEbMKABYdPTfH+tVSetcF+tKfBdeCKBF9hXbWEtDUp9iY8CXHC31CgFvN4zg8p19BMNBAW+t6uNZC+kHREhGR59GhvA5sc8/YSfPM6sQISKeKeTNy4KN6NzrOXMv0nBbibsejqr17Eq83orkANDH6itayQ0ACxIdhdYuPhm+Bn9vM7kD2MhFGyPRxa1ElOAFtVucfR4gGk1nqCYy2L/xofiZxZCu1gJD4JN5r4OZ5woKCsKKkSNKYHy8bBwctFI3Dmj1Z8EnouN3mEh7TwV+CFmMlLWfXV+HYjr8OjDGQGODlVUUrC5rqcUabGqe7gkwUMWf7wsLsrt8HHzfHSmiytdGvE0qmAUOtI32SyBswdcq0cUADZE3rK9y2lxoinTCsBX18shn0K1mwJALenP4bXjLFKE+6EviMdkHLDORIGwGLshrstkNK70BQSmn9cfE3VOmTuAQkjBmOiQG8pat/Gfjw/S60sIeRa0e0o5HAlxMlQ3KYmRbYU3b2wtawc+5Ajil8Dc/DLNrEyEm7MFr6Y9E+gF5hN7QuKI1a1na3znpVD/dkoLO4bqn0StZu/nhOkvH/oRywjpm905yeA3ax6fQZwkDMWu4BdIChTwXeoTyNldSSVsupLMRN1lRKobM0z9nnNz22agiih5dxfVbFBe9azgk5EY1t+piEQFa5/aHJLNCM372anugfR1p6oAJ9E6/q6ynOfsBdpO2Qa0k2T1qibCZENGNYIz/pd94Goa4o4W/Cc3Fs1nFs5VdgyLpJkn8eBIAV2A8QXnHfPp5yLtM=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(366004)(376002)(136003)(39860400002)(346002)(54906003)(316002)(38100700002)(38350700002)(36756003)(44832011)(2616005)(86362001)(6916009)(66556008)(478600001)(6512007)(6666004)(966005)(6486002)(8936002)(8676002)(26005)(1076003)(5660300002)(6506007)(52116002)(186003)(83380400001)(2906002)(4326008)(7416002)(66946007)(66476007)(956004);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: pDMY4zuRWVVn9kAvXuQE+NMiaqB+YLPIUY3Y6fylArOg/0gUCut7PFA9TmgnYNig5NawxwCEAE2SL3pbneoIw/lJjfjyCPviFRyQt5YxdV2gYBluGY0+PCy7diUuCGqTBSOLVyixT2VixdHpbR6AMLE88NzdrNWeO1Q4QM56jFFgH2FcLylfgj/aZsdpSEUDTaR27VsKdxKGp7DZ9NIhJ+7+QxnqvkSRitK9SbJjwU7LFBoJS+J1wI6W04hsZfrIt7GCS4tLgiep4BwSQZU7FVIWEmKZfEEKhBs47m+IuOnyw5oHYTHZOQnN/UP5kkMiCNmOp7rTH5xiPIdEn8PLFI7dw8uyrX9BoN+6VrO9A5nbAa/uvykdiZw7ysjwJJSx0Fl/pCBxF2CDqaBjRmIJ7RzKjYNO7U955XUgpk345IoyVFUo0JphYYM+VDzMlTbJgbMDKOstPfwV1ZZLGpsIYcfsL2bKgQsQ+YpbrUmI6cdoIuFtC2zxkWPJOiZpBNHySe82OW6+z4FsumDY/Stbcs+wfJ9x2uWQ6dD+IP4LxxNM2nP9bTqe+D3D1Fgc+MjWMJARkihkvFJjtduF7uuLB7QC6wHApcT6aQ7IjyBec7vymnRz+/vUJT7tQvPKTB8edkzu0rDxamwHXyo4J0xvgSlY7kcFUVuZGFH2XPFP9M8x+osIw8KEliOQATT/qpsxvReCoimfNuO8tyoF3oQcWw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(366004)(376002)(136003)(39860400002)(346002)(54906003)(316002)(38100700002)(38350700002)(36756003)(44832011)(2616005)(86362001)(6916009)(66556008)(478600001)(6512007)(6666004)(6486002)(8936002)(8676002)(26005)(1076003)(5660300002)(6506007)(52116002)(186003)(83380400001)(2906002)(4326008)(7416002)(66946007)(66476007)(956004);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?XMMrQTp5K6ZGssd76fTOirnwT4YE75zHdQPyA562bCQikv2KIKRNtn5Lbp85?=
- =?us-ascii?Q?lQZ+Ra/JvznuqMi6gx1cd/so/rBdRL7zQ6UkiBeZvfnbNdiHNIS3ToerbFIu?=
- =?us-ascii?Q?d07ZQgdzcFoJXoJeXNhTEmczYO2HmMFZS6VOw7axjStRwLnxE8v4MxssvGvf?=
- =?us-ascii?Q?wA1/0/Tr/Dvw3iTwcLwWyNKQqe4pTWT2P+bVKncx09aiY4kSXcCElswSXhdX?=
- =?us-ascii?Q?SFAX/gldmeXCwVfZ56vgJShm/JioyHgsPlpuof88u0n604nlBsLrOT5aMly2?=
- =?us-ascii?Q?Pyesw97EQPY+RoPTeTPts3lbEckWI+lUzktg+PCNRRO+OfCIngX338aml75I?=
- =?us-ascii?Q?r1WWBt5dkEYnLMAtSgZewlJprefle09vETlltwpH9Lzk0z/dFy9wbcwllv+6?=
- =?us-ascii?Q?oVdEqpzUiOc0IW3OZRZyv8pOGy+c4rxQxCjH/PDEgDG3v8TkyFMY4ZywnlXN?=
- =?us-ascii?Q?qscOpFBJYelHh5Erabozljhj6yvsdWq5SCgE/9XWUxbcAMVHTO7I5eYIm1Qg?=
- =?us-ascii?Q?CrXOM5Nx86Jclnl0GTdDA2R8kjnB1aoJRO1MUFXrn3LOdzQubPteuxgpm169?=
- =?us-ascii?Q?8pckwaXCICOR6Y9EOAXSrmbusRDMTp1+XDpimzG9Y5iAS1mWcd8pYeP0Q+/G?=
- =?us-ascii?Q?67xJA7sfblkTFYn/BKY2RfFGWd2+YWeL1DTZe1g9rOAGBqZMHYGunTHl9U7Y?=
- =?us-ascii?Q?iUqZRmtbGnr7/Ryh6DD3itndXvQoueSr01MHGJjp3DSG7pDGeECOOTXDhNjb?=
- =?us-ascii?Q?rsmN8SdUBoq6FQbw27RZH6nEoRTX8HJpm6Vhmv1sP/4951kat4/8VQfysZ7/?=
- =?us-ascii?Q?Wt+//mMxAthx0B69dtXx4forJiBul+QHg+7hGsFaG+wz8WucX8q5fdhYSQyz?=
- =?us-ascii?Q?80Z7YckhoDvZJ6yxrHitAYrYsZR+oG//lzYdDDRS3qySHhdQ2xF3UN1n+9NQ?=
- =?us-ascii?Q?lZQ3hDGPgIInKtrzSFFF2sK9iFejbX7A7HJT01++EOwsQt0zs5wLBanLVHzQ?=
- =?us-ascii?Q?vF6TxFOTrK9pTHusVMXPw64ZUj33aq/QwcBR7FD7bWOrQAPICMhul/Q1LcLd?=
- =?us-ascii?Q?wKDXfMvnubQk46Hytfn6AiOJ2PcakDXu3HeRAwxSfzB9flRcr9fY0lRGi4aG?=
- =?us-ascii?Q?gvcl7SPCCSdKmSWp+ni6weg9v4w0Zs9o2aq614ObTLoOU6OtFI9B2nSrDTcw?=
- =?us-ascii?Q?Ja8cA93f6phLPB15RKe58S/lq2o9A+hHOxziYczxuAuu1JBBy/DLHJOb+1QS?=
- =?us-ascii?Q?1CdEBvEYO+XK/oFvFqMqJVjg2PSlx36NRFnfZsF42zgLPZAKKNeFgH3QK8vu?=
- =?us-ascii?Q?qzW/QvAZkXly6BF8723Nn9Af?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?KS1nV9WOsEYU5h7nsgegyAmNV4t2yYDN0DQSUf8PiKUeiPhnKyLtaZ8+Qbdz?=
+ =?us-ascii?Q?S3pCDZaIdq1wpEBxYThx08vgfMz2N3MLXV7g77iJOHlTQtp3XoWCFN5r29+4?=
+ =?us-ascii?Q?zKISE78ZbopB5jcz2TXLvZWqfQFCgtXvUbPNReKx62WKMzByVczq8JyAwLXq?=
+ =?us-ascii?Q?Xz7nIGDBoUx4mchKm0TqJxylrtloyClfizYrD6GdkCorUcCDs0fgvtq91w6l?=
+ =?us-ascii?Q?sy/wy4MFmAR1wwtYqUgEJ3FcOpA3guIVxEF3QH6UcEcLDJGQ8pJnv987EYG7?=
+ =?us-ascii?Q?y8eMHqBlhE28cRexeQxlLsTA7E35V4Gn85KTMgjUohSUXgSpcfpxdgcrM76P?=
+ =?us-ascii?Q?cZcqSk52nrsGPNWKoLTU+r9krO/wMWS2fxYx6xbXSkJMzdbK/2uP0mY26nNF?=
+ =?us-ascii?Q?lEbJvp/BY/lJA5htWGINq8AMXJ6dUYphevfuNQcankyeszfxfkgx/ha6pnJG?=
+ =?us-ascii?Q?ZGX79ORt0sCta2RtpO4s7vtV5QwpfMaHTEvtSFmggj9XjrWlcsD1WWeDdoAQ?=
+ =?us-ascii?Q?RopgerVh55s3W93l75NQpaPZ84AgAKH86WCU2zT03SamIQT5XMb+c28vGrTw?=
+ =?us-ascii?Q?v+IZI2Z9N8sraUgdpJXrKYXL0/noP0Af/25q5MvaAfQ0aqoxwzMVgvK3gDtt?=
+ =?us-ascii?Q?dv3qyOq9ginIxkTrV+hdigZyLHfMwrYS2oSKdAYmIqE+ZzMXcbNjsMh0Ytj2?=
+ =?us-ascii?Q?v6A7Ktc4mcBMYZs3qln1/sl/Bvj3kQ4RsbnTQa9L6c+ukRrBzm/QxYV/VyX2?=
+ =?us-ascii?Q?Th20OETyxNKN9lAXwsXYJ5a5IRiIjQFnrPJjC4X+QTbAUctK52U3FQ7r4tz6?=
+ =?us-ascii?Q?EsINb2dlOmurB3RAYa6g/luCE3n6wYUx4kogJUD7zdBteZbmD8yQm7oSG9HX?=
+ =?us-ascii?Q?w4+nXTzhIHswzxHCuSiFpwdi1QKSs+WC/CQsZ0kiZg2iVzux0bmajJ0Hzi0A?=
+ =?us-ascii?Q?xkyvt11Ilx/7WIm/dlChrQt7NbQIltnLclYR/4nE3doinlz5XV6tjjjq52+c?=
+ =?us-ascii?Q?/F07CFXtrXxNSjBNKfQ4KK0Avw6h0KhlZspub3pbRuxF9pqlxog3mMePQ5w5?=
+ =?us-ascii?Q?f/ZnLbtgQRkleTpyhwKfsisPBCsj2FgPpyt9TPoHukzLY9360Ri73bGfo+Mq?=
+ =?us-ascii?Q?r4xW/4k6AptV8ENXzlReSBbuBlyMBj6tK4KNDbv3AxzRLxmwEd8HR0DdOtLT?=
+ =?us-ascii?Q?NhYjQ7B8WRAwXQ6SXt2jKfN1COnwBqsVBJAMF3M4w10X+8qOcznbrj88/pfn?=
+ =?us-ascii?Q?Ce8i/pIryAwvbkLzwCtM9k4fWrHQauC2rDFk99wQPBti3XuP6BNKnyciL9TW?=
+ =?us-ascii?Q?YlMqjPZhJlDfe1i7LSucVJAz?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f0877e87-c970-44a4-c9fa-08d979dfec33
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0abbda9d-8b6e-4e9e-f278-08d979dfed8f
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Sep 2021 13:34:49.9119
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Sep 2021 13:34:52.2036
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: koGjziAXM2XA+C6m/NmJ5uFamo/WrHSw+cyIKDNp9nijr4Q6q7CdUOGcyeJUx0UwRWG8dbzZtviwcAkT90vb3A==
+X-MS-Exchange-CrossTenant-UserPrincipalName: xY0Qaj7Fpl00e4Vku2jwdOtpNN0mfaVYX6XJw/5hy6V//PtCqe1Wtzmo1q1X/5ve6GvdptufgyQN2+tzDGiV7w==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB7341
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Changes in v2:
-- fix build for b53_mmap
-- use unregister_netdevice_many
+MDIO-attached devices might have interrupts and other things that might
+need quiesced when we kexec into a new kernel. Things are even more
+creepy when those interrupt lines are shared, and in that case it is
+absolutely mandatory to disable all interrupt sources.
 
-It was reported by Lino here:
+Moreover, MDIO devices might be DSA switches, and DSA needs its own
+shutdown method to unlink from the DSA master, which is a new
+requirement that appeared after commit 2f1e8ea726e9 ("net: dsa: link
+interfaces with the DSA master to get rid of lockdep warnings").
 
-https://lore.kernel.org/netdev/20210909095324.12978-1-LinoSanfilippo@gmx.de/
+So introduce a ->shutdown method in the MDIO device driver structure.
 
-that when the DSA master attempts to unregister its net_device on
-shutdown, DSA should prevent that operation from succeeding because it
-holds a reference to it. This hangs the shutdown process.
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ drivers/net/phy/mdio_device.c | 11 +++++++++++
+ include/linux/mdio.h          |  3 +++
+ 2 files changed, 14 insertions(+)
 
-This issue was essentially introduced in commit 2f1e8ea726e9 ("net: dsa:
-link interfaces with the DSA master to get rid of lockdep warnings").
-The present series patches all DSA drivers to handle that case,
-depending on whether those drivers were introduced before or after the
-offending commit, a different Fixes: tag is specified for them.
-
-The approach taken by this series solves the issue in essentially the
-same way as Lino's patches, except for three key differences:
-
-- this series takes a more minimal approach in what is done on shutdown,
-  we do not attempt a full tree teardown as that is not strictly
-  necessary. I might revisit this if there are compelling reasons to do
-  otherwise
-
-- this series fixes the issues for all DSA drivers, not just KSZ9897
-
-- this series works even if the ->remove driver method gets called for
-  the same device too, not just ->shutdown. This is really possible to
-  happen for SPI device drivers, and potentially possible for other bus
-  device drivers too.
-
-Vladimir Oltean (5):
-  net: mdio: introduce a shutdown method to mdio device drivers
-  net: dsa: be compatible with masters which unregister on shutdown
-  net: dsa: hellcreek: be compatible with masters which unregister on
-    shutdown
-  net: dsa: microchip: ksz8863: be compatible with masters which
-    unregister on shutdown
-  net: dsa: xrs700x: be compatible with masters which unregister on
-    shutdown
-
- drivers/net/dsa/b53/b53_mdio.c             | 21 ++++++++-
- drivers/net/dsa/b53/b53_mmap.c             | 13 ++++++
- drivers/net/dsa/b53/b53_priv.h             |  5 +++
- drivers/net/dsa/b53/b53_spi.c              | 13 ++++++
- drivers/net/dsa/b53/b53_srab.c             | 21 ++++++++-
- drivers/net/dsa/bcm_sf2.c                  | 12 ++++++
- drivers/net/dsa/dsa_loop.c                 | 22 +++++++++-
- drivers/net/dsa/hirschmann/hellcreek.c     | 16 +++++++
- drivers/net/dsa/lan9303-core.c             |  6 +++
- drivers/net/dsa/lan9303.h                  |  1 +
- drivers/net/dsa/lan9303_i2c.c              | 24 +++++++++--
- drivers/net/dsa/lan9303_mdio.c             | 15 +++++++
- drivers/net/dsa/lantiq_gswip.c             | 18 ++++++++
- drivers/net/dsa/microchip/ksz8795_spi.c    | 11 ++++-
- drivers/net/dsa/microchip/ksz8863_smi.c    | 13 ++++++
- drivers/net/dsa/microchip/ksz9477_i2c.c    | 14 +++++-
- drivers/net/dsa/microchip/ksz9477_spi.c    |  8 +++-
- drivers/net/dsa/mt7530.c                   | 18 ++++++++
- drivers/net/dsa/mv88e6060.c                | 18 ++++++++
- drivers/net/dsa/mv88e6xxx/chip.c           | 22 +++++++++-
- drivers/net/dsa/ocelot/felix_vsc9959.c     | 20 ++++++++-
- drivers/net/dsa/ocelot/seville_vsc9953.c   | 20 ++++++++-
- drivers/net/dsa/qca/ar9331.c               | 18 ++++++++
- drivers/net/dsa/qca8k.c                    | 18 ++++++++
- drivers/net/dsa/realtek-smi-core.c         | 20 ++++++++-
- drivers/net/dsa/sja1105/sja1105_main.c     | 21 ++++++++-
- drivers/net/dsa/vitesse-vsc73xx-core.c     |  6 +++
- drivers/net/dsa/vitesse-vsc73xx-platform.c | 22 +++++++++-
- drivers/net/dsa/vitesse-vsc73xx-spi.c      | 22 +++++++++-
- drivers/net/dsa/vitesse-vsc73xx.h          |  1 +
- drivers/net/dsa/xrs700x/xrs700x.c          |  6 +++
- drivers/net/dsa/xrs700x/xrs700x.h          |  1 +
- drivers/net/dsa/xrs700x/xrs700x_i2c.c      | 18 ++++++++
- drivers/net/dsa/xrs700x/xrs700x_mdio.c     | 18 ++++++++
- drivers/net/phy/mdio_device.c              | 11 +++++
- include/linux/mdio.h                       |  3 ++
- include/net/dsa.h                          |  1 +
- net/dsa/dsa2.c                             | 50 ++++++++++++++++++++++
- 38 files changed, 543 insertions(+), 24 deletions(-)
-
+diff --git a/drivers/net/phy/mdio_device.c b/drivers/net/phy/mdio_device.c
+index c94cb5382dc9..250742ffdfd9 100644
+--- a/drivers/net/phy/mdio_device.c
++++ b/drivers/net/phy/mdio_device.c
+@@ -179,6 +179,16 @@ static int mdio_remove(struct device *dev)
+ 	return 0;
+ }
+ 
++static void mdio_shutdown(struct device *dev)
++{
++	struct mdio_device *mdiodev = to_mdio_device(dev);
++	struct device_driver *drv = mdiodev->dev.driver;
++	struct mdio_driver *mdiodrv = to_mdio_driver(drv);
++
++	if (mdiodrv->shutdown)
++		mdiodrv->shutdown(mdiodev);
++}
++
+ /**
+  * mdio_driver_register - register an mdio_driver with the MDIO layer
+  * @drv: new mdio_driver to register
+@@ -193,6 +203,7 @@ int mdio_driver_register(struct mdio_driver *drv)
+ 	mdiodrv->driver.bus = &mdio_bus_type;
+ 	mdiodrv->driver.probe = mdio_probe;
+ 	mdiodrv->driver.remove = mdio_remove;
++	mdiodrv->driver.shutdown = mdio_shutdown;
+ 
+ 	retval = driver_register(&mdiodrv->driver);
+ 	if (retval) {
+diff --git a/include/linux/mdio.h b/include/linux/mdio.h
+index ffb787d5ebde..5e6dc38f418e 100644
+--- a/include/linux/mdio.h
++++ b/include/linux/mdio.h
+@@ -80,6 +80,9 @@ struct mdio_driver {
+ 
+ 	/* Clears up any memory if needed */
+ 	void (*remove)(struct mdio_device *mdiodev);
++
++	/* Quiesces the device on system shutdown, turns off interrupts etc */
++	void (*shutdown)(struct mdio_device *mdiodev);
+ };
+ 
+ static inline struct mdio_driver *
 -- 
 2.25.1
 
