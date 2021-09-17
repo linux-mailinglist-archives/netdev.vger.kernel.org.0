@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FCF840FE83
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 19:18:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E77540FE89
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 19:19:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234934AbhIQRTV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 13:19:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47678 "EHLO
+        id S245153AbhIQRUe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 13:20:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232173AbhIQRTU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 13:19:20 -0400
-Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FADFC061574;
-        Fri, 17 Sep 2021 10:17:58 -0700 (PDT)
-Received: by mail-qk1-x72d.google.com with SMTP id c7so14146442qka.2;
-        Fri, 17 Sep 2021 10:17:58 -0700 (PDT)
+        with ESMTP id S238596AbhIQRUV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 13:20:21 -0400
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60566C061766;
+        Fri, 17 Sep 2021 10:18:58 -0700 (PDT)
+Received: by mail-qk1-x729.google.com with SMTP id 72so7906359qkk.7;
+        Fri, 17 Sep 2021 10:18:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=40fDEg3fABnjTm2Jeh1ku9dFDScBQkyGxaPi+SrGI08=;
-        b=GbjCn6xIGP18QKsyjQ75a+2uuzkA7jodKc8CftKHKkWgQWG2S6k7S7GRF5cwQC43Tw
-         x4EiDuMqtlpoXk87DL2KldWpMbR1KJpcfTPBRj/2ztLH2Ejhd7+CekUaOPOp6zmK9D+V
-         HO0PTMr3/bRqoBSFdO7kAujOnhHi0GiKmidc63hbCW+Q9yrEwiR9Z13Kzd3RaOGVSRjL
-         87WHiPeEtbQkV4FPHug+fkK1ZnjnHeBfKzG9JJACkJHvQHY/7p+n7ucDfuvKoVYrTQd2
-         7Zx20w0zYEbnNZ7moeuE1VQBwQcWmTTaYkkR6BmeNIuyEqdvE1riMUxABU8xUxlMKxky
-         Fzhw==
+        bh=dYb2BZZV5QZRj/vCF5Pconj91/y7PtBTQGXA05qL2nU=;
+        b=Qim5f7i8X697lymtns/mCW+/tumzkctJOgEl67atf318GP1lGjxTsMqfS7EF06+a1W
+         Iw0/SDq48Dfdc8Cg04HlJ+1i2ceXvqosAkcFUVcOUz5ttfk2h052knQQBpJAfjT7EVry
+         dgvDw4sdqjEpvR0QrjebnYksrElh2WhA5R8hfTgRIbGYBdZflwscZ9qIUU0FjNmodPix
+         FKigxPMhRLmaGDIdicHvuSmbpr8IRy2bEmkhPwkeMXoeepPiq1mpR3znaPzwCCps7NFg
+         G0yMwMQc7AG3rVELX3r3KCsu1+rSDU8hBAEcSdwmhKqQTeCn1bzyCVFpvk7q6AHz9qPY
+         bqiA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=40fDEg3fABnjTm2Jeh1ku9dFDScBQkyGxaPi+SrGI08=;
-        b=Z1mVBN8BgDtgw6G45Abazg4OjGh7rJ1/hWPNq8G+Fk04AAJRDibDRuFVbA9SW+S7j0
-         vYYUHwPPGF+s6GKQNUKIAqY65Ur714hX+5t+zkownBORQ1hNhdtfvUZlwisof8izeM9m
-         jz6nxVSazgh4vStHJQj/WWVRpSiLKICcVhNLXgLN5UgZXpBBzqs3pccDgZJlUOWyduMw
-         ASdgHBx8UXIIaLkMrFNvqtX9WkaoLrtkmsH0KZKKwHf2dL2mehnrQJbdNkVoPiSBRohZ
-         Cj94kScSj/zb2RMN7taqQQr5ApDcIWB89zlqbJmZDisv/GOPm/YZu/yVU9vO35SSi8Ha
-         5T3g==
-X-Gm-Message-State: AOAM532aY4EX5OJumpTAvjTyXqqFCuvbjWIZK5agdX1VY+aEPxtsmic1
-        mT2rPdwtc20y7yoggjZsg7ZwWR7HxlNlBPjVm9L1S8Dm
-X-Google-Smtp-Source: ABdhPJyGl6QvysJfh5QnTncuKTK9qBA1RXZO68+G0cToZkCIWY3mJF0VImgBstLSGjhj9D27kdeyXXB+1Azs2dHhsgw=
-X-Received: by 2002:a25:fc5:: with SMTP id 188mr14498879ybp.51.1631899077169;
- Fri, 17 Sep 2021 10:17:57 -0700 (PDT)
+        bh=dYb2BZZV5QZRj/vCF5Pconj91/y7PtBTQGXA05qL2nU=;
+        b=nqC5nfPGu/EU1VwZGEPeNiCX6Z77W3D1FFLZcNXfz6r3NdYwijkYcJX5qHEJ4YAuQG
+         Dsd4cJBM1fJpp8kL9hIstirmpkDB4XyMUpozPRm6PgHAA82ZAT7E9OirnKwjgDbG9Gft
+         05hdQ4yaTh4dLphg1ep8K/clb4BpH4Lsh/hitkTsOLfS5fC5ZVQ0DFY2/qkybOtPca44
+         1AfpxZRHc/oNtE4pBxVJgJ2DZe7+x10gc4L9WCGW5lQmWNt1ia2I4pzhYpcs2R0nKp+p
+         Derpcxe7KCvdOez80FUz2kY9pNxQ2MWvyTY3asdscmarrXxY9sh8btd75ni33bgAKg+W
+         o0Pg==
+X-Gm-Message-State: AOAM5328iGjCUFmuxdCJSdiuo2MCH2I8Gibknmcd2Lm/Lez8Z3s0b7C0
+        l6qrItqMPRGWN1Z8iKgP4x9ha2ZwoNsm2qJZXnM=
+X-Google-Smtp-Source: ABdhPJxpAzPLHZ6zsEg1qSbGUgHYbRqDSia/GUjrrLAeK05HCPRHvGVUUCdcKN6J/2/9tXrls8EgUr2qzUY/O0FIXpg=
+X-Received: by 2002:a25:840d:: with SMTP id u13mr1005772ybk.455.1631899137563;
+ Fri, 17 Sep 2021 10:18:57 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1631785820.git.mchehab+huawei@kernel.org> <803e3a74d7f9b5fe23e4f8222af0e6629d1cd76a.1631785820.git.mchehab+huawei@kernel.org>
-In-Reply-To: <803e3a74d7f9b5fe23e4f8222af0e6629d1cd76a.1631785820.git.mchehab+huawei@kernel.org>
+References: <cover.1631785820.git.mchehab+huawei@kernel.org> <fe4bb3cf5984623976b3e8d751657bc1bcbb598e.1631785820.git.mchehab+huawei@kernel.org>
+In-Reply-To: <fe4bb3cf5984623976b3e8d751657bc1bcbb598e.1631785820.git.mchehab+huawei@kernel.org>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 17 Sep 2021 10:17:46 -0700
-Message-ID: <CAEf4BzaULanV_QFbZxA=f-vYZ5LrFZji1Nwq3xn68qO08AHQpw@mail.gmail.com>
-Subject: Re: [PATCH v2 09/23] tools: bpftool: update bpftool-map.rst reference
+Date:   Fri, 17 Sep 2021 10:18:46 -0700
+Message-ID: <CAEf4Bzaf3ShnjKDQ3Dw4X977aaDO2Awe=x-uNMxFLdEvqWK9bg@mail.gmail.com>
+Subject: Re: [PATCH v2 08/23] tools: bpftool: update bpftool-prog.rst reference
 To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
         Jonathan Corbet <corbet@lwn.net>,
@@ -77,8 +77,8 @@ X-Mailing-List: netdev@vger.kernel.org
 On Thu, Sep 16, 2021 at 2:55 AM Mauro Carvalho Chehab
 <mchehab+huawei@kernel.org> wrote:
 >
-> The file name: Documentation/bpftool-map.rst
-> should be, instead: tools/bpf/bpftool/Documentation/bpftool-map.rst.
+> The file name: Documentation/bpftool-prog.rst
+> should be, instead: tools/bpf/bpftool/Documentation/bpftool-prog.rst.
 >
 > Update its cross-reference accordingly.
 >
@@ -90,25 +90,22 @@ On Thu, Sep 16, 2021 at 2:55 AM Mauro Carvalho Chehab
 >  1 file changed, 1 insertion(+), 1 deletion(-)
 >
 > diff --git a/tools/testing/selftests/bpf/test_bpftool_synctypes.py b/tools/testing/selftests/bpf/test_bpftool_synctypes.py
-> index 27a2c369a798..2d7eb683bd5a 100755
+> index be54b7335a76..27a2c369a798 100755
 > --- a/tools/testing/selftests/bpf/test_bpftool_synctypes.py
 > +++ b/tools/testing/selftests/bpf/test_bpftool_synctypes.py
-> @@ -383,7 +383,7 @@ class ManMapExtractor(ManPageExtractor):
+> @@ -374,7 +374,7 @@ class ManProgExtractor(ManPageExtractor):
 >      """
->      An extractor for bpftool-map.rst.
+>      An extractor for bpftool-prog.rst.
 >      """
-> -    filename = os.path.join(BPFTOOL_DIR, 'Documentation/bpftool-map.rst')
-> +    filename = os.path.join(BPFTOOL_DIR, 'tools/bpf/bpftool/Documentation/bpftool-map.rst')
+> -    filename = os.path.join(BPFTOOL_DIR, 'Documentation/bpftool-prog.rst')
+> +    filename = os.path.join(BPFTOOL_DIR, 'tools/bpf/bpftool/Documentation/bpftool-prog.rst')
 
-this is wrong, BPFTOOL_DIR already includes "tools/bpf/bpftool" part.
-Did you test this? There are many places where BPFTOOL_DIR is joined
-with bpftool-local file paths, you haven't updated them. So I assume
-this was done blindly with some sort of script? Please be careful with
-such changes.
+Same as on another patch, this is wrong, BPFTOOL_DIR points to the
+correct bpftool path already
 
 >
->      def get_map_types(self):
->          return self.get_rst_list('TYPE')
+>      def get_attach_types(self):
+>          return self.get_rst_list('ATTACH_TYPE')
 > --
 > 2.31.1
 >
