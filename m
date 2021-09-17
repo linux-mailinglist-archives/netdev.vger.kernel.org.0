@@ -2,187 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19BEA40FDD3
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 18:24:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20F6640FE02
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 18:39:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242835AbhIQQZt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 12:25:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56192 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229925AbhIQQZt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Sep 2021 12:25:49 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id ABF2361100;
-        Fri, 17 Sep 2021 16:24:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631895866;
-        bh=5KWQndG4p0DXH6K47zytg8Avj1HbjadJQvfWZGBdZVg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=iAhm69a18nW/O93EkGbpJAPWt6O9onBYTl1KWZq7YpRruXBg6ovVfh/kPt/2oxRjr
-         SOfZhX/ekJaVDcpcfQKRsqCzkOez4dwSdBKWUPQrrCypN+Vk/jL+fUzIE8S2Wkt0yt
-         tdWE/fnqZZ0doNIe6Ph3op9/50x7SI8dYO8NAlnKKEF2NEG6VgRTbLv3ZRZzrGPakV
-         Jmq+yQuMPYQDfqGhOoS6VqJ5vusEItHauPLOScGy0O75d5sPrD1JjLrouJjutzqa6U
-         fcKQx9F6sFj+O0XoFcpjJKuebTCTUKQUiMZxVdJThx9AMBE0LLbcnDWu6s8vCFf+G8
-         zvLBjIxPYPUvA==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     eric.dumazet@gmail.com
-Cc:     netdev@vger.kernel.org, Vasily Averin <vvs@virtuozzo.com>,
-        Christoph Paasch <christoph.paasch@gmail.com>,
-        Hao Sun <sunhao.th@gmail.com>, Jakub Kicinski <kuba@kernel.org>
-Subject: [RFC net v7] net: skb_expand_head() adjust skb->truesize incorrectly
-Date:   Fri, 17 Sep 2021 09:24:18 -0700
-Message-Id: <20210917162418.1437772-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.31.1
+        id S235717AbhIQQkp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 12:40:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38816 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229456AbhIQQkp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 12:40:45 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9FD1C061574
+        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 09:39:22 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id n2so3942989plk.12
+        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 09:39:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=KrirNFc94bDZ+DaNprmjb6rDfzZ79YbZtw2NW2kK2K0=;
+        b=Xt7mmdBsGoMNXUJv8PQe6OHlGCbGx8jms6u3tk/8tAqaBqw/jo8KanzICTQDHhvcf5
+         OEuwiHl1xSmz7oiGiBZh92A1X7egO8j7pjNJlrk6Ry9x1V7tMFg+LHAmEdRAK7eSx7T3
+         ObmF3c9IkLXnwK42xmtEn9zIaywNvkDFwGiODJcrkpz2zi3RkFt5+RIv3yPRnCiSXOF3
+         gXQmXevL6OHcnjUd6NCHgqPZ5bxBnY6FjJL+E6NjW7Xk4DQSpdjw6KzLq9EdDzb5LHJ9
+         UUHGSRVx2dHw0aKudnSjU9gKE+5Z7HD44P33AXWq2GXatSIqd7qujcx3GMMEk2ArlWLc
+         fVMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=KrirNFc94bDZ+DaNprmjb6rDfzZ79YbZtw2NW2kK2K0=;
+        b=sF7gFoE04GXnG3d/NHUYljgjZsse+gUNpaNsCIu3tQtxSqRRiGNzGZgPtgHe3d0vx9
+         LJmjf3bYwVL+zl5Bllnvbpw3QKq8g1Z4pLbsroIPZMjKeOUGGlDg8kJGqzTKqf2zafH1
+         lkrQpm17XTVESVJK2Qxrz9y+PKxn7eX7JrryMQLMmyu95CsCeRC2ZMJJe6MmsrnibvaR
+         wDThWCCMWlRdLsjngfuennHzX8++jvYNmI89RbYSS8VtOII4I/rJOV8vdl4B/FJFnpvX
+         8oOM9i32aEqt+p5WGEjUp6I6XmdmV/AtP5eyQziI0tEJz3PvurQ9/GDA4NO5Pa7CFvVA
+         z2tA==
+X-Gm-Message-State: AOAM530yO/OeaqRiz0gF8sXLtVJdJZKqp+TF+U5yN30c9TSP1r0NKyAj
+        UEdKTgoqbF+IQl7loXHwB7w=
+X-Google-Smtp-Source: ABdhPJy91XexvgP7KjmnIaeiUZ/3K6uHJVd6bpYzcoIvKKl7QPd7Sp1ivAPW3ysTtVnUaCYcU7oIXQ==
+X-Received: by 2002:a17:90a:eb02:: with SMTP id j2mr22371770pjz.174.1631896762261;
+        Fri, 17 Sep 2021 09:39:22 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id ga24sm10981095pjb.41.2021.09.17.09.39.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Sep 2021 09:39:21 -0700 (PDT)
+Subject: Re: [PATCH net-next 0/4] net: dsa: b53: Clean up CPU/IMP ports
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+References: <20210916120354.20338-1-zajec5@gmail.com>
+ <7c5e1cf8-2d98-91df-fc6b-f9edfa0f23c9@gmail.com>
+ <a8a684ce-bede-b1f1-1f7a-31e71dca3fd3@gmail.com>
+ <1568bbc3-1652-7d01-2fc7-cb4189c71ad2@gmail.com>
+ <20210917100051.254mzlfxwvaromcn@skbuf>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <5f73aeef-d972-eb9e-7e29-07bf6eb9e6a3@gmail.com>
+Date:   Fri, 17 Sep 2021 09:39:14 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
+In-Reply-To: <20210917100051.254mzlfxwvaromcn@skbuf>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vasily Averin <vvs@virtuozzo.com>
+On 9/17/21 3:00 AM, Vladimir Oltean wrote:
+> On Fri, Sep 17, 2021 at 12:19:02AM +0200, Rafał Miłecki wrote:
+>> On 16.09.2021 23:46, Florian Fainelli wrote:
+>>> On 9/16/21 9:23 AM, Florian Fainelli wrote:
+>>>> On 9/16/21 5:03 AM, Rafał Miłecki wrote:
+>>>>> From: Rafał Miłecki <rafal@milecki.pl>
+>>>>>
+>>>>> This has been tested on:
+>>>>>
+>>>>> 1. Luxul XBR-4500 with used CPU port 5
+>>>>> [    8.361438] b53-srab-switch 18007000.ethernet-switch: found switch: BCM53012, rev 0
+>>>>>
+>>>>> 2. Netgear R8000 with used CPU port 8
+>>>>> [    4.453858] b53-srab-switch 18007000.ethernet-switch: found switch: BCM53012, rev 5
+>>>>
+>>>> These look good at first glance, let me give them a try on 7445 and 7278
+>>>> at least before responding with Reviewed-by/Tested-by tags, thanks!
+>>>>
+>>> Found some issues on 7445 and 7278 while moving to the latest net-next
+>>> which I will be addressing but this worked nicely.
+>>>
+>>> What do you think about removing dev->enabled_ports and
+>>> b53_for_each_port entirely and using a DSA helper that iterates over the
+>>> switch's port list? Now that we have dev->num_ports accurately reflect
+>>> the number of ports it should be equivalent.
+>>
+>> The limitation I see in DSA is skipping unavailable ports. E.g. BCM5301x
+>> switches that don't have port 6. The closest match for such case I found
+>> is DSA_PORT_TYPE_UNUSED but I'm not sure if it's enough to handle those
+>> cases.
+>>
+>> That DSA_PORT_TYPE_UNUSED would probably require investigating DSA & b53
+>> behaviour *and* discussing it with DSA maintainer to make sure we don't
+>> abuse that.
+> 
+> How absent are these ports in hardware? For DSA_PORT_TYPE_UNUSED we do
+> register a devlink port, but if those ports are really not present in
+> hardware, I'm thinking maybe the easiest way would be to supply a
+> ds->disabled_port_mask before dsa_register_switch(), and DSA will simply
+> skip those ports when allocating the dp, the devlink_port etc. So you
+> will literally have nothing for them.
+> 
 
-Christoph Paasch reports [1] about incorrect skb->truesize
-after skb_expand_head() call in ip6_xmit.
-This may happen because of two reasons:
- - skb_set_owner_w() for newly cloned skb is called too early,
-   before pskb_expand_head() where truesize is adjusted for (!skb-sk) case.
- - pskb_expand_head() does not adjust truesize in (skb->sk) case.
-   In this case sk->sk_wmem_alloc should be adjusted too.
+Port 6 on all of the newer switches where the "ideal" IMP port is 8 is
+completely absent and does not exist at all as a hardware resource. The
+registers are not necessarily consistent however and you typically see
+two patterns:
 
-Eric cautions us against increasing sk_wmem_alloc if the old
-skb did not hold any wmem references.
+- specifying bit 6 or port 6 as a numerical port does not nothing and no
+special casing is required, this is the majority of the registers and
+the maximum supported bitmask is 0x1ff and you can also set bit 8 to
+address port 8 of the CPU (I would say this is intuitive)
 
-[1] https://lkml.org/lkml/2021/8/20/1082
+- specifying bit 6/number 6 may alias to port 7, this is the case with
+the CFP code for instance that specifically checks for port >= 7 and
+subtracts one when needed (this is not intuitive)
 
-Fixes: f1260ff15a71 ("skbuff: introduce skb_expand_head()")
-Reported-by: Christoph Paasch <christoph.paasch@gmail.com>
-Reported-by: Hao Sun <sunhao.th@gmail.com>
-Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
-v7: - shift more magic into helpers
-    - follow Eric's advice and don't inherit non-wmem sks for now
+Whether we truly consider a port being absent from a port being unused
+is not probably making much difference from a semantic perspective as
+long as you do not try to switch a port from unused to used (whether it
+is DSA, CPU or USER). This is not an use case we support today, but if
+we did in the future (say in the context of multi CPU port devices), we
+would have to call back into the driver most likely and the driver could
+veto changing that port from unused to used. What do you think?
 
-Looks like we stalled here, let me try to push this forward.
-This builds, is it possible to repro without syzcaller?
-Anyone willing to test?
----
- include/net/sock.h |  2 ++
- net/core/skbuff.c  | 50 +++++++++++++++++++++++++++++++++++-----------
- net/core/sock.c    | 10 ++++++++++
- 3 files changed, 50 insertions(+), 12 deletions(-)
-
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 66a9a90f9558..102e3e1009d1 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -1707,6 +1707,8 @@ void sock_pfree(struct sk_buff *skb);
- #define sock_edemux sock_efree
- #endif
- 
-+bool is_skb_wmem(const struct sk_buff *skb);
-+
- int sock_setsockopt(struct socket *sock, int level, int op,
- 		    sockptr_t optval, unsigned int optlen);
- 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 7c2ab27fcbf9..5093321c2b65 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -1786,6 +1786,24 @@ struct sk_buff *skb_realloc_headroom(struct sk_buff *skb, unsigned int headroom)
- }
- EXPORT_SYMBOL(skb_realloc_headroom);
- 
-+static void skb_owner_inherit(struct sk_buff *nskb, struct sk_buff *oskb)
-+{
-+	if (is_skb_wmem(oskb))
-+		skb_set_owner_w(nskb, oskb->sk);
-+
-+	/* handle rmem sock etc. as needed .. */
-+}
-+
-+static void skb_increase_truesize(struct sk_buff *skb, unsigned int add)
-+{
-+	if (is_skb_wmem(skb))
-+		refcount_add(add, &skb->sk->sk_wmem_alloc);
-+	/* handle rmem sock etc. as needed .. */
-+	WARN_ON(skb->destructor == sock_rfree);
-+
-+	skb->truesize += add;
-+}
-+
- /**
-  *	skb_expand_head - reallocate header of &sk_buff
-  *	@skb: buffer to reallocate
-@@ -1801,6 +1819,7 @@ EXPORT_SYMBOL(skb_realloc_headroom);
- struct sk_buff *skb_expand_head(struct sk_buff *skb, unsigned int headroom)
- {
- 	int delta = headroom - skb_headroom(skb);
-+	int osize = skb_end_offset(skb);
- 
- 	if (WARN_ONCE(delta <= 0,
- 		      "%s is expecting an increase in the headroom", __func__))
-@@ -1810,21 +1829,28 @@ struct sk_buff *skb_expand_head(struct sk_buff *skb, unsigned int headroom)
- 	if (skb_shared(skb)) {
- 		struct sk_buff *nskb = skb_clone(skb, GFP_ATOMIC);
- 
--		if (likely(nskb)) {
--			if (skb->sk)
--				skb_set_owner_w(nskb, skb->sk);
--			consume_skb(skb);
--		} else {
--			kfree_skb(skb);
--		}
-+		if (unlikely(!nskb))
-+			goto err_free;
-+
-+		skb_owner_inherit(nskb, skb);
-+		consume_skb(skb);
- 		skb = nskb;
- 	}
--	if (skb &&
--	    pskb_expand_head(skb, SKB_DATA_ALIGN(delta), 0, GFP_ATOMIC)) {
--		kfree_skb(skb);
--		skb = NULL;
--	}
-+
-+	if (pskb_expand_head(skb, SKB_DATA_ALIGN(delta), 0, GFP_ATOMIC))
-+		goto err_free;
-+	delta = skb_end_offset(skb) - osize;
-+
-+	/* pskb_expand_head() will adjust truesize itself for non-sk cases
-+	 * todo: move the adjustment there at some point?
-+	 */
-+	if (skb->sk && skb->destructor != sock_edemux)
-+		skb_increase_truesize(skb, delta);
-+
- 	return skb;
-+err_free:
-+	kfree_skb(skb);
-+	return NULL;
- }
- EXPORT_SYMBOL(skb_expand_head);
- 
-diff --git a/net/core/sock.c b/net/core/sock.c
-index 62627e868e03..1483b4f755ef 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -2227,6 +2227,16 @@ void skb_set_owner_w(struct sk_buff *skb, struct sock *sk)
- }
- EXPORT_SYMBOL(skb_set_owner_w);
- 
-+/* Should clones of this skb count towards skb->sk->sk_wmem_alloc
-+ * and use sock_wfree() as their destructor?
-+ */
-+bool is_skb_wmem(const struct sk_buff *skb)
-+{
-+	return skb->destructor == sock_wfree ||
-+		skb->destructor == __sock_wfree ||
-+		(IS_ENABLED(CONFIG_INET) && skb->destructor == tcp_wfree);
-+}
-+
- static bool can_skb_orphan_partial(const struct sk_buff *skb)
- {
- #ifdef CONFIG_TLS_DEVICE
+NB: the enabled_port mask for the 7278 and 7445 switches is currently
+incorrectly advertising the presence of port 6 (0x1ff), that needs fixing.
 -- 
-2.31.1
-
+Florian
