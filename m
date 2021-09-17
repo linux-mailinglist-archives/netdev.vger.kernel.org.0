@@ -2,259 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6276140F985
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 15:48:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 566F640F986
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 15:50:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241014AbhIQNuJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 09:50:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55224 "EHLO
+        id S241194AbhIQNvZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 09:51:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234565AbhIQNuI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 09:50:08 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC4E4C061574
-        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 06:48:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=OFnMjaIqECUXJ2evCIUOAoVvIniPNf+QrshjyDxbe1M=; b=XHuxPFsOkllfFsKipW7JAeMG4K
-        nPAkIb9rlz9pZWq6iEGvsvc0y7k9dQZUgz8D1OsmeAttCOSJfMEIvWCY10SN9xBnQIvuWC0hvWosD
-        dEQAFYr5P0DUSzeDLdr+5NlJtyuvv06WKpM03HEHHKWE1YfT7hOLirL3pWcnVKTgDBzYIHA/K3LnJ
-        IromNd25QmphL48vv4hPk3/HJOlgT4nBk6t1iRrGXFPqeFjZ3QgA1SAfUDQqFe+7UzSq3LgWr5NgS
-        BzO1JrfKCslJe3m04knvtFOLOzCMGsp3huMYjjFAxcqG9cex5FiUk/k2vuUBshDr5a7LCSgcnb9yG
-        nsHYjkHQ==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:49046 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1mREEP-0007lW-2n; Fri, 17 Sep 2021 14:48:43 +0100
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1mREEN-001yxo-Da; Fri, 17 Sep 2021 14:48:43 +0100
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        "Marek Beh__n" <kabel@kernel.org>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next] net: phy: marvell10g: add downshift tunable support
+        with ESMTP id S240099AbhIQNvY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 09:51:24 -0400
+Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15F7CC061574
+        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 06:50:01 -0700 (PDT)
+Received: by mail-qv1-xf31.google.com with SMTP id gs10so6389512qvb.13
+        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 06:50:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=piBRpEE+WWHlWllIUzB+ODVSBg/qtTReQB6Vdl5TiMQ=;
+        b=QhBHO8WCAz0Nd0vl3OXDyPxZPaacuXWvOVBXISQKsz0CMPuqFQV+Z3rTARpzPSmDR8
+         hHTkzcYXPO5+/KZ9CEAOVPnh/cJ5a3WN1FbpuMyA+V5xuFFXtiFxZwb+X7ifA8i+97Wc
+         H/1zit8xyMceylXSwniUE8DB0gohz+phjXOgI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=piBRpEE+WWHlWllIUzB+ODVSBg/qtTReQB6Vdl5TiMQ=;
+        b=YQEh6/xy9zMqJAgUFG/dV9s6ZGOT7poy8oidGsSpXJRurP4bYhGfYtvcHkxOmoEYLT
+         we0RygRnl+7sPNVupSOTJBffW3QGEMMjh6+V08C83G4WcnOplfN/kFGJAsebP3fx8ZC1
+         FJ+/6DqEN4JOihtgs9x9Sul2V33C1bViIEPuQ63Pz9BYjpICdSMCBTWsMyvtzNAS4uhZ
+         02dZ4ujJv1jCFMnvEaYQgOUMzD9D/rwFrV0b6kpPde8n+ZqtoGu9tBFbMYtCOCsHeKH0
+         Kbjd0HK+9k2vBFVJwzthf8yW2eevVDCmilX3Z3JH812W2dZXIqUHnsROiZehcxl5QNNw
+         zlZw==
+X-Gm-Message-State: AOAM531sv/O6xke+RSkjQIgpfNBcK3hb+gvzRg3u9VxOXStETtAe8ngZ
+        4c20h0IvTMuys26Jm61+bA6kcw==
+X-Google-Smtp-Source: ABdhPJzLhk3+6YH/nHR1yn4MtkGwS/tE79GZt3HiHObF1HIfEAtV1p8s5KFv4j8ECtFsiY6rFmPxVg==
+X-Received: by 2002:a05:6214:1492:: with SMTP id bn18mr8463440qvb.44.1631886601105;
+        Fri, 17 Sep 2021 06:50:01 -0700 (PDT)
+Received: from meerkat.local (bras-base-mtrlpq5031w-grc-32-216-209-220-181.dsl.bell.ca. [216.209.220.181])
+        by smtp.gmail.com with ESMTPSA id a9sm4857113qkk.82.2021.09.17.06.50.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Sep 2021 06:50:00 -0700 (PDT)
+Date:   Fri, 17 Sep 2021 09:49:58 -0400
+From:   Konstantin Ryabitsev <konstantin@linuxfoundation.org>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>
+Cc:     Colin Foster <colin.foster@in-advantage.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1 net] net: mscc: ocelot: remove buggy and useless write
+ to ANA_PFC_PFC_CFG
+Message-ID: <20210917134958.6o2jev2ngegzmpfo@meerkat.local>
+References: <20210916010938.517698-1-colin.foster@in-advantage.com>
+ <20210916114917.aielkefz5gg7flto@skbuf>
+ <DB8PR04MB67954EE02059714DD9A72435E6DD9@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <20210917033802.GA681448@euler>
+ <DB8PR04MB6795DF1A354A33F3BE8F563CE6DD9@DB8PR04MB6795.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1mREEN-001yxo-Da@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Fri, 17 Sep 2021 14:48:43 +0100
+In-Reply-To: <DB8PR04MB6795DF1A354A33F3BE8F563CE6DD9@DB8PR04MB6795.eurprd04.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for the downshift tunable for the Marvell 88x3310 PHY.
-Downshift is only usable with firmware 0.3.5.0 and later.
+On Fri, Sep 17, 2021 at 10:39:18AM +0000, Joakim Zhang wrote:
+> But it still failed at my side, after I google, have not found a solution, could you please
+> help have a look about below error?
+> 
+> $ git b4 20210916010938.517698-1-colin.foster@in-advantage.com
+> Traceback (most recent call last):
+>   File "/home/zqq/.local/bin/b4", line 7, in <module>
+>     from b4.command import cmd
+>   File "/home/zqq/.local/lib/python2.7/site-packages/b4/__init__.py", line 11, in <module>
+                              ^^^^^^^^^^^
+You seem to be trying to run it with python 2.7
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
- drivers/net/phy/marvell10g.c | 101 ++++++++++++++++++++++++++++++++++-
- 1 file changed, 100 insertions(+), 1 deletion(-)
+>     import email.policy
+> ImportError: No module named policy
 
-diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
-index bd310e8d5e43..dffd71def9e3 100644
---- a/drivers/net/phy/marvell10g.c
-+++ b/drivers/net/phy/marvell10g.c
-@@ -22,6 +22,7 @@
-  * If both the fiber and copper ports are connected, the first to gain
-  * link takes priority and the other port is completely locked out.
-  */
-+#include <linux/bitfield.h>
- #include <linux/ctype.h>
- #include <linux/delay.h>
- #include <linux/hwmon.h>
-@@ -33,6 +34,8 @@
- #define MV_PHY_ALASKA_NBT_QUIRK_MASK	0xfffffffe
- #define MV_PHY_ALASKA_NBT_QUIRK_REV	(MARVELL_PHY_ID_88X3310 | 0xa)
- 
-+#define MV_VERSION(a,b,c,d) ((a) << 24 | (b) << 16 | (c) << 8 | (d))
-+
- enum {
- 	MV_PMA_FW_VER0		= 0xc011,
- 	MV_PMA_FW_VER1		= 0xc012,
-@@ -62,6 +65,15 @@ enum {
- 	MV_PCS_CSCR1_MDIX_MDIX	= 0x0020,
- 	MV_PCS_CSCR1_MDIX_AUTO	= 0x0060,
- 
-+	MV_PCS_DSC1		= 0x8003,
-+	MV_PCS_DSC1_ENABLE	= BIT(9),
-+	MV_PCS_DSC1_10GBT	= 0x01c0,
-+	MV_PCS_DSC1_1GBR	= 0x0038,
-+	MV_PCS_DSC1_100BTX	= 0x0007,
-+	MV_PCS_DSC2		= 0x8004,
-+	MV_PCS_DSC2_2P5G	= 0xf000,
-+	MV_PCS_DSC2_5G		= 0x0f00,
-+
- 	MV_PCS_CSSR1		= 0x8008,
- 	MV_PCS_CSSR1_SPD1_MASK	= 0xc000,
- 	MV_PCS_CSSR1_SPD1_SPD2	= 0xc000,
-@@ -125,6 +137,7 @@ enum {
- };
- 
- struct mv3310_chip {
-+	bool (*has_downshift)(struct phy_device *phydev);
- 	void (*init_supported_interfaces)(unsigned long *mask);
- 	int (*get_mactype)(struct phy_device *phydev);
- 	int (*init_interface)(struct phy_device *phydev, int mactype);
-@@ -138,6 +151,7 @@ struct mv3310_priv {
- 	DECLARE_BITMAP(supported_interfaces, PHY_INTERFACE_MODE_MAX);
- 
- 	u32 firmware_ver;
-+	bool has_downshift;
- 	bool rate_match;
- 	phy_interface_t const_interface;
- 
-@@ -330,6 +344,65 @@ static int mv3310_reset(struct phy_device *phydev, u32 unit)
- 					 5000, 100000, true);
- }
- 
-+static int mv3310_get_downshift(struct phy_device *phydev, u8 *ds)
-+{
-+	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
-+	int val;
-+
-+	if (!priv->has_downshift)
-+		return -EOPNOTSUPP;
-+
-+	val = phy_read_mmd(phydev, MDIO_MMD_PCS, MV_PCS_DSC1);
-+	if (val < 0)
-+		return val;
-+
-+	if (val & MV_PCS_DSC1_ENABLE)
-+		/* assume that all fields are the same */
-+		*ds = 1 + FIELD_GET(MV_PCS_DSC1_10GBT, (u16)val);
-+	else
-+		*ds = DOWNSHIFT_DEV_DISABLE;
-+
-+	return 0;
-+}
-+
-+static int mv3310_set_downshift(struct phy_device *phydev, u8 ds)
-+{
-+	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
-+	u16 val;
-+	int err;
-+
-+	if (!priv->has_downshift)
-+		return -EOPNOTSUPP;
-+
-+	if (ds == DOWNSHIFT_DEV_DISABLE)
-+		return phy_clear_bits_mmd(phydev, MDIO_MMD_PCS, MV_PCS_DSC1,
-+					  MV_PCS_DSC1_ENABLE);
-+
-+	/* FIXME: The default is disabled, so should we disable? */
-+	if (ds == DOWNSHIFT_DEV_DEFAULT_COUNT)
-+		ds = 2;
-+
-+	if (ds > 8)
-+		return -E2BIG;
-+
-+	ds -= 1;
-+	val = FIELD_PREP(MV_PCS_DSC2_2P5G, ds);
-+	val |= FIELD_PREP(MV_PCS_DSC2_5G, ds);
-+	err = phy_modify_mmd(phydev, MDIO_MMD_PCS, MV_PCS_DSC2,
-+			     MV_PCS_DSC2_2P5G | MV_PCS_DSC2_5G, val);
-+	if (err < 0)
-+		return err;
-+
-+	val = MV_PCS_DSC1_ENABLE;
-+	val |= FIELD_PREP(MV_PCS_DSC1_10GBT, ds);
-+	val |= FIELD_PREP(MV_PCS_DSC1_1GBR, ds);
-+	val |= FIELD_PREP(MV_PCS_DSC1_100BTX, ds);
-+
-+	return phy_modify_mmd(phydev, MDIO_MMD_PCS, MV_PCS_DSC1,
-+			      MV_PCS_DSC1_ENABLE | MV_PCS_DSC1_10GBT |
-+			      MV_PCS_DSC1_1GBR | MV_PCS_DSC1_100BTX, val);
-+}
-+
- static int mv3310_get_edpd(struct phy_device *phydev, u16 *edpd)
- {
- 	int val;
-@@ -448,6 +521,9 @@ static int mv3310_probe(struct phy_device *phydev)
- 		    priv->firmware_ver >> 24, (priv->firmware_ver >> 16) & 255,
- 		    (priv->firmware_ver >> 8) & 255, priv->firmware_ver & 255);
- 
-+	if (chip->has_downshift)
-+		priv->has_downshift = chip->has_downshift(phydev);
-+
- 	/* Powering down the port when not in use saves about 600mW */
- 	ret = mv3310_power_down(phydev);
- 	if (ret)
-@@ -616,7 +692,16 @@ static int mv3310_config_init(struct phy_device *phydev)
- 	}
- 
- 	/* Enable EDPD mode - saving 600mW */
--	return mv3310_set_edpd(phydev, ETHTOOL_PHY_EDPD_DFLT_TX_MSECS);
-+	err = mv3310_set_edpd(phydev, ETHTOOL_PHY_EDPD_DFLT_TX_MSECS);
-+	if (err)
-+		return err;
-+
-+	/* Allow downshift */
-+	err = mv3310_set_downshift(phydev, DOWNSHIFT_DEV_DEFAULT_COUNT);
-+	if (err && err != -EOPNOTSUPP)
-+		return err;
-+
-+	return 0;
- }
- 
- static int mv3310_get_features(struct phy_device *phydev)
-@@ -886,6 +971,8 @@ static int mv3310_get_tunable(struct phy_device *phydev,
- 			      struct ethtool_tunable *tuna, void *data)
- {
- 	switch (tuna->id) {
-+	case ETHTOOL_PHY_DOWNSHIFT:
-+		return mv3310_get_downshift(phydev, data);
- 	case ETHTOOL_PHY_EDPD:
- 		return mv3310_get_edpd(phydev, data);
- 	default:
-@@ -897,6 +984,8 @@ static int mv3310_set_tunable(struct phy_device *phydev,
- 			      struct ethtool_tunable *tuna, const void *data)
- {
- 	switch (tuna->id) {
-+	case ETHTOOL_PHY_DOWNSHIFT:
-+		return mv3310_set_downshift(phydev, *(u8 *)data);
- 	case ETHTOOL_PHY_EDPD:
- 		return mv3310_set_edpd(phydev, *(u16 *)data);
- 	default:
-@@ -904,6 +993,14 @@ static int mv3310_set_tunable(struct phy_device *phydev,
- 	}
- }
- 
-+static bool mv3310_has_downshift(struct phy_device *phydev)
-+{
-+	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
-+
-+	/* Fails to downshift with firmware older than v0.3.5.0 */
-+	return priv->firmware_ver >= MV_VERSION(0,3,5,0);
-+}
-+
- static void mv3310_init_supported_interfaces(unsigned long *mask)
- {
- 	__set_bit(PHY_INTERFACE_MODE_SGMII, mask);
-@@ -943,6 +1040,7 @@ static void mv2111_init_supported_interfaces(unsigned long *mask)
- }
- 
- static const struct mv3310_chip mv3310_type = {
-+	.has_downshift = mv3310_has_downshift,
- 	.init_supported_interfaces = mv3310_init_supported_interfaces,
- 	.get_mactype = mv3310_get_mactype,
- 	.init_interface = mv3310_init_interface,
-@@ -953,6 +1051,7 @@ static const struct mv3310_chip mv3310_type = {
- };
- 
- static const struct mv3310_chip mv3340_type = {
-+	.has_downshift = mv3310_has_downshift,
- 	.init_supported_interfaces = mv3340_init_supported_interfaces,
- 	.get_mactype = mv3310_get_mactype,
- 	.init_interface = mv3340_init_interface,
--- 
-2.30.2
+I'm not sure how you managed to make it install, but it won't work with python
+versions < 3.6. Python version 2 is no longer maintained.
 
+-K
