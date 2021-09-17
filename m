@@ -2,282 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C31340FDD1
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 18:22:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19BEA40FDD3
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 18:24:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242090AbhIQQYP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 12:24:15 -0400
-Received: from pegase2.c-s.fr ([93.17.235.10]:59135 "EHLO pegase2.c-s.fr"
+        id S242835AbhIQQZt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 12:25:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56192 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229979AbhIQQYM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Sep 2021 12:24:12 -0400
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4H9zkw5B7Fz9sTL;
-        Fri, 17 Sep 2021 18:22:48 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id XisN4gEuTEfD; Fri, 17 Sep 2021 18:22:48 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4H9zkw3MNPz9sSX;
-        Fri, 17 Sep 2021 18:22:48 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 5105F8B799;
-        Fri, 17 Sep 2021 18:22:48 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id gqpxav95SML6; Fri, 17 Sep 2021 18:22:48 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.202.36])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id D7CF48B768;
-        Fri, 17 Sep 2021 18:22:46 +0200 (CEST)
-Subject: Re: [PATCH v2 3/8] bpf powerpc: refactor JIT compiler code
-To:     Hari Bathini <hbathini@linux.ibm.com>, naveen.n.rao@linux.ibm.com,
-        mpe@ellerman.id.au, ast@kernel.org, daniel@iogearbox.net
-Cc:     paulus@samba.org, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org
-References: <20210917153047.177141-1-hbathini@linux.ibm.com>
- <20210917153047.177141-4-hbathini@linux.ibm.com>
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-Message-ID: <7bf850cd-f423-4079-57cb-2f60eb239d3c@csgroup.eu>
-Date:   Fri, 17 Sep 2021 18:22:45 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S229925AbhIQQZt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Sep 2021 12:25:49 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id ABF2361100;
+        Fri, 17 Sep 2021 16:24:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1631895866;
+        bh=5KWQndG4p0DXH6K47zytg8Avj1HbjadJQvfWZGBdZVg=;
+        h=From:To:Cc:Subject:Date:From;
+        b=iAhm69a18nW/O93EkGbpJAPWt6O9onBYTl1KWZq7YpRruXBg6ovVfh/kPt/2oxRjr
+         SOfZhX/ekJaVDcpcfQKRsqCzkOez4dwSdBKWUPQrrCypN+Vk/jL+fUzIE8S2Wkt0yt
+         tdWE/fnqZZ0doNIe6Ph3op9/50x7SI8dYO8NAlnKKEF2NEG6VgRTbLv3ZRZzrGPakV
+         Jmq+yQuMPYQDfqGhOoS6VqJ5vusEItHauPLOScGy0O75d5sPrD1JjLrouJjutzqa6U
+         fcKQx9F6sFj+O0XoFcpjJKuebTCTUKQUiMZxVdJThx9AMBE0LLbcnDWu6s8vCFf+G8
+         zvLBjIxPYPUvA==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     eric.dumazet@gmail.com
+Cc:     netdev@vger.kernel.org, Vasily Averin <vvs@virtuozzo.com>,
+        Christoph Paasch <christoph.paasch@gmail.com>,
+        Hao Sun <sunhao.th@gmail.com>, Jakub Kicinski <kuba@kernel.org>
+Subject: [RFC net v7] net: skb_expand_head() adjust skb->truesize incorrectly
+Date:   Fri, 17 Sep 2021 09:24:18 -0700
+Message-Id: <20210917162418.1437772-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-In-Reply-To: <20210917153047.177141-4-hbathini@linux.ibm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: fr-FR
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Vasily Averin <vvs@virtuozzo.com>
 
+Christoph Paasch reports [1] about incorrect skb->truesize
+after skb_expand_head() call in ip6_xmit.
+This may happen because of two reasons:
+ - skb_set_owner_w() for newly cloned skb is called too early,
+   before pskb_expand_head() where truesize is adjusted for (!skb-sk) case.
+ - pskb_expand_head() does not adjust truesize in (skb->sk) case.
+   In this case sk->sk_wmem_alloc should be adjusted too.
 
-Le 17/09/2021 à 17:30, Hari Bathini a écrit :
-> Refactor powerpc JITing. This simplifies adding BPF_PROBE_MEM support.
-> 
-> Signed-off-by: Hari Bathini <hbathini@linux.ibm.com>
-> ---
-> 
-> Changes in v2:
-> * New patch to refactor a bit of JITing code.
-> 
-> 
->   arch/powerpc/net/bpf_jit_comp32.c | 50 +++++++++++---------
->   arch/powerpc/net/bpf_jit_comp64.c | 76 ++++++++++++++++---------------
->   2 files changed, 68 insertions(+), 58 deletions(-)
-> 
-> diff --git a/arch/powerpc/net/bpf_jit_comp32.c b/arch/powerpc/net/bpf_jit_comp32.c
-> index b60b59426a24..c8ae14c316e3 100644
-> --- a/arch/powerpc/net/bpf_jit_comp32.c
-> +++ b/arch/powerpc/net/bpf_jit_comp32.c
-> @@ -276,17 +276,17 @@ int bpf_jit_build_body(struct bpf_prog *fp, u32 *image, struct codegen_context *
->   	u32 exit_addr = addrs[flen];
->   
->   	for (i = 0; i < flen; i++) {
-> -		u32 code = insn[i].code;
->   		u32 dst_reg = bpf_to_ppc(ctx, insn[i].dst_reg);
-> -		u32 dst_reg_h = dst_reg - 1;
->   		u32 src_reg = bpf_to_ppc(ctx, insn[i].src_reg);
-> -		u32 src_reg_h = src_reg - 1;
->   		u32 tmp_reg = bpf_to_ppc(ctx, TMP_REG);
-> +		u32 true_cond, code = insn[i].code;
-> +		u32 dst_reg_h = dst_reg - 1;
-> +		u32 src_reg_h = src_reg - 1;
-> +		u32 size = BPF_SIZE(code);
->   		s16 off = insn[i].off;
->   		s32 imm = insn[i].imm;
->   		bool func_addr_fixed;
->   		u64 func_addr;
-> -		u32 true_cond;
->   
->   		/*
->   		 * addrs[] maps a BPF bytecode address into a real offset from
-> @@ -809,25 +809,33 @@ int bpf_jit_build_body(struct bpf_prog *fp, u32 *image, struct codegen_context *
->   		/*
->   		 * BPF_LDX
->   		 */
-> -		case BPF_LDX | BPF_MEM | BPF_B: /* dst = *(u8 *)(ul) (src + off) */
-> -			EMIT(PPC_RAW_LBZ(dst_reg, src_reg, off));
-> -			if (!fp->aux->verifier_zext)
-> -				EMIT(PPC_RAW_LI(dst_reg_h, 0));
-> -			break;
-> -		case BPF_LDX | BPF_MEM | BPF_H: /* dst = *(u16 *)(ul) (src + off) */
-> -			EMIT(PPC_RAW_LHZ(dst_reg, src_reg, off));
-> -			if (!fp->aux->verifier_zext)
-> -				EMIT(PPC_RAW_LI(dst_reg_h, 0));
-> -			break;
-> -		case BPF_LDX | BPF_MEM | BPF_W: /* dst = *(u32 *)(ul) (src + off) */
-> -			EMIT(PPC_RAW_LWZ(dst_reg, src_reg, off));
-> -			if (!fp->aux->verifier_zext)
-> +		/* dst = *(u8 *)(ul) (src + off) */
-> +		case BPF_LDX | BPF_MEM | BPF_B:
-> +		/* dst = *(u16 *)(ul) (src + off) */
-> +		case BPF_LDX | BPF_MEM | BPF_H:
-> +		/* dst = *(u32 *)(ul) (src + off) */
-> +		case BPF_LDX | BPF_MEM | BPF_W:
-> +		/* dst = *(u64 *)(ul) (src + off) */
-> +		case BPF_LDX | BPF_MEM | BPF_DW:
+Eric cautions us against increasing sk_wmem_alloc if the old
+skb did not hold any wmem references.
 
-You have to add the 'fallthrough;' keyword to avoid build failure with 
-later versions of GCC.
+[1] https://lkml.org/lkml/2021/8/20/1082
 
+Fixes: f1260ff15a71 ("skbuff: introduce skb_expand_head()")
+Reported-by: Christoph Paasch <christoph.paasch@gmail.com>
+Reported-by: Hao Sun <sunhao.th@gmail.com>
+Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+v7: - shift more magic into helpers
+    - follow Eric's advice and don't inherit non-wmem sks for now
 
-> +			switch (size) {
-> +			case BPF_B:
-> +				EMIT(PPC_RAW_LBZ(dst_reg, src_reg, off));
-> +				break;
-> +			case BPF_H:
-> +				EMIT(PPC_RAW_LHZ(dst_reg, src_reg, off));
-> +				break;
-> +			case BPF_W:
-> +				EMIT(PPC_RAW_LWZ(dst_reg, src_reg, off));
-> +				break;
-> +			case BPF_DW:
-> +				EMIT(PPC_RAW_LWZ(dst_reg_h, src_reg, off));
-> +				EMIT(PPC_RAW_LWZ(dst_reg, src_reg, off + 4));
-> +				break;
-> +			}
-> +
-> +			if ((size != BPF_DW) && !fp->aux->verifier_zext)
->   				EMIT(PPC_RAW_LI(dst_reg_h, 0));
->   			break;
-> -		case BPF_LDX | BPF_MEM | BPF_DW: /* dst = *(u64 *)(ul) (src + off) */
-> -			EMIT(PPC_RAW_LWZ(dst_reg_h, src_reg, off));
-> -			EMIT(PPC_RAW_LWZ(dst_reg, src_reg, off + 4));
-> -			break;
->   
->   		/*
->   		 * Doubleword load
-> diff --git a/arch/powerpc/net/bpf_jit_comp64.c b/arch/powerpc/net/bpf_jit_comp64.c
-> index 2a87da50d9a4..78b28f25555c 100644
-> --- a/arch/powerpc/net/bpf_jit_comp64.c
-> +++ b/arch/powerpc/net/bpf_jit_comp64.c
-> @@ -282,16 +282,15 @@ int bpf_jit_build_body(struct bpf_prog *fp, u32 *image, struct codegen_context *
->   	u32 exit_addr = addrs[flen];
->   
->   	for (i = 0; i < flen; i++) {
-> -		u32 code = insn[i].code;
->   		u32 dst_reg = b2p[insn[i].dst_reg];
->   		u32 src_reg = b2p[insn[i].src_reg];
-> +		u32 tmp_idx, code = insn[i].code;
-> +		u32 size = BPF_SIZE(code);
->   		s16 off = insn[i].off;
->   		s32 imm = insn[i].imm;
->   		bool func_addr_fixed;
-> -		u64 func_addr;
-> -		u64 imm64;
-> +		u64 func_addr, imm64;
->   		u32 true_cond;
-> -		u32 tmp_idx;
->   
->   		/*
->   		 * addrs[] maps a BPF bytecode address into a real offset from
-> @@ -638,35 +637,34 @@ int bpf_jit_build_body(struct bpf_prog *fp, u32 *image, struct codegen_context *
->   		 */
->   		case BPF_STX | BPF_MEM | BPF_B: /* *(u8 *)(dst + off) = src */
->   		case BPF_ST | BPF_MEM | BPF_B: /* *(u8 *)(dst + off) = imm */
-> -			if (BPF_CLASS(code) == BPF_ST) {
-> -				EMIT(PPC_RAW_LI(b2p[TMP_REG_1], imm));
-> -				src_reg = b2p[TMP_REG_1];
-> -			}
-> -			EMIT(PPC_RAW_STB(src_reg, dst_reg, off));
-> -			break;
->   		case BPF_STX | BPF_MEM | BPF_H: /* (u16 *)(dst + off) = src */
->   		case BPF_ST | BPF_MEM | BPF_H: /* (u16 *)(dst + off) = imm */
-> -			if (BPF_CLASS(code) == BPF_ST) {
-> -				EMIT(PPC_RAW_LI(b2p[TMP_REG_1], imm));
-> -				src_reg = b2p[TMP_REG_1];
-> -			}
-> -			EMIT(PPC_RAW_STH(src_reg, dst_reg, off));
-> -			break;
->   		case BPF_STX | BPF_MEM | BPF_W: /* *(u32 *)(dst + off) = src */
->   		case BPF_ST | BPF_MEM | BPF_W: /* *(u32 *)(dst + off) = imm */
-> -			if (BPF_CLASS(code) == BPF_ST) {
-> -				PPC_LI32(b2p[TMP_REG_1], imm);
-> -				src_reg = b2p[TMP_REG_1];
-> -			}
-> -			EMIT(PPC_RAW_STW(src_reg, dst_reg, off));
-> -			break;
+Looks like we stalled here, let me try to push this forward.
+This builds, is it possible to repro without syzcaller?
+Anyone willing to test?
+---
+ include/net/sock.h |  2 ++
+ net/core/skbuff.c  | 50 +++++++++++++++++++++++++++++++++++-----------
+ net/core/sock.c    | 10 ++++++++++
+ 3 files changed, 50 insertions(+), 12 deletions(-)
 
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 66a9a90f9558..102e3e1009d1 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -1707,6 +1707,8 @@ void sock_pfree(struct sk_buff *skb);
+ #define sock_edemux sock_efree
+ #endif
+ 
++bool is_skb_wmem(const struct sk_buff *skb);
++
+ int sock_setsockopt(struct socket *sock, int level, int op,
+ 		    sockptr_t optval, unsigned int optlen);
+ 
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 7c2ab27fcbf9..5093321c2b65 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -1786,6 +1786,24 @@ struct sk_buff *skb_realloc_headroom(struct sk_buff *skb, unsigned int headroom)
+ }
+ EXPORT_SYMBOL(skb_realloc_headroom);
+ 
++static void skb_owner_inherit(struct sk_buff *nskb, struct sk_buff *oskb)
++{
++	if (is_skb_wmem(oskb))
++		skb_set_owner_w(nskb, oskb->sk);
++
++	/* handle rmem sock etc. as needed .. */
++}
++
++static void skb_increase_truesize(struct sk_buff *skb, unsigned int add)
++{
++	if (is_skb_wmem(skb))
++		refcount_add(add, &skb->sk->sk_wmem_alloc);
++	/* handle rmem sock etc. as needed .. */
++	WARN_ON(skb->destructor == sock_rfree);
++
++	skb->truesize += add;
++}
++
+ /**
+  *	skb_expand_head - reallocate header of &sk_buff
+  *	@skb: buffer to reallocate
+@@ -1801,6 +1819,7 @@ EXPORT_SYMBOL(skb_realloc_headroom);
+ struct sk_buff *skb_expand_head(struct sk_buff *skb, unsigned int headroom)
+ {
+ 	int delta = headroom - skb_headroom(skb);
++	int osize = skb_end_offset(skb);
+ 
+ 	if (WARN_ONCE(delta <= 0,
+ 		      "%s is expecting an increase in the headroom", __func__))
+@@ -1810,21 +1829,28 @@ struct sk_buff *skb_expand_head(struct sk_buff *skb, unsigned int headroom)
+ 	if (skb_shared(skb)) {
+ 		struct sk_buff *nskb = skb_clone(skb, GFP_ATOMIC);
+ 
+-		if (likely(nskb)) {
+-			if (skb->sk)
+-				skb_set_owner_w(nskb, skb->sk);
+-			consume_skb(skb);
+-		} else {
+-			kfree_skb(skb);
+-		}
++		if (unlikely(!nskb))
++			goto err_free;
++
++		skb_owner_inherit(nskb, skb);
++		consume_skb(skb);
+ 		skb = nskb;
+ 	}
+-	if (skb &&
+-	    pskb_expand_head(skb, SKB_DATA_ALIGN(delta), 0, GFP_ATOMIC)) {
+-		kfree_skb(skb);
+-		skb = NULL;
+-	}
++
++	if (pskb_expand_head(skb, SKB_DATA_ALIGN(delta), 0, GFP_ATOMIC))
++		goto err_free;
++	delta = skb_end_offset(skb) - osize;
++
++	/* pskb_expand_head() will adjust truesize itself for non-sk cases
++	 * todo: move the adjustment there at some point?
++	 */
++	if (skb->sk && skb->destructor != sock_edemux)
++		skb_increase_truesize(skb, delta);
++
+ 	return skb;
++err_free:
++	kfree_skb(skb);
++	return NULL;
+ }
+ EXPORT_SYMBOL(skb_expand_head);
+ 
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 62627e868e03..1483b4f755ef 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -2227,6 +2227,16 @@ void skb_set_owner_w(struct sk_buff *skb, struct sock *sk)
+ }
+ EXPORT_SYMBOL(skb_set_owner_w);
+ 
++/* Should clones of this skb count towards skb->sk->sk_wmem_alloc
++ * and use sock_wfree() as their destructor?
++ */
++bool is_skb_wmem(const struct sk_buff *skb)
++{
++	return skb->destructor == sock_wfree ||
++		skb->destructor == __sock_wfree ||
++		(IS_ENABLED(CONFIG_INET) && skb->destructor == tcp_wfree);
++}
++
+ static bool can_skb_orphan_partial(const struct sk_buff *skb)
+ {
+ #ifdef CONFIG_TLS_DEVICE
+-- 
+2.31.1
 
-You have to add the 'fallthrough;' keyword to avoid build failure with 
-later versions of GCC.
-
-
->   		case BPF_STX | BPF_MEM | BPF_DW: /* (u64 *)(dst + off) = src */
->   		case BPF_ST | BPF_MEM | BPF_DW: /* *(u64 *)(dst + off) = imm */
->   			if (BPF_CLASS(code) == BPF_ST) {
-> -				PPC_LI32(b2p[TMP_REG_1], imm);
-> +				if ((size == BPF_B) || (size == BPF_H))
-> +					EMIT(PPC_RAW_LI(b2p[TMP_REG_1], imm));
-> +				else /* size == BPF_W || size == BPF_DW */
-> +					PPC_LI32(b2p[TMP_REG_1], imm);
->   				src_reg = b2p[TMP_REG_1];
->   			}
-> -			PPC_BPF_STL(src_reg, dst_reg, off);
-> +
-> +			switch (size) {
-> +			case BPF_B:
-> +				EMIT(PPC_RAW_STB(src_reg, dst_reg, off));
-> +				break;
-> +			case BPF_H:
-> +				EMIT(PPC_RAW_STH(src_reg, dst_reg, off));
-> +				break;
-> +			case BPF_W:
-> +				EMIT(PPC_RAW_STW(src_reg, dst_reg, off));
-> +				break;
-> +			case BPF_DW:
-> +				PPC_BPF_STL(src_reg, dst_reg, off);
-> +				break;
-> +			}
->   			break;
->   
->   		/*
-> @@ -716,25 +714,29 @@ int bpf_jit_build_body(struct bpf_prog *fp, u32 *image, struct codegen_context *
->   		 */
->   		/* dst = *(u8 *)(ul) (src + off) */
->   		case BPF_LDX | BPF_MEM | BPF_B:
-> -			EMIT(PPC_RAW_LBZ(dst_reg, src_reg, off));
-> -			if (insn_is_zext(&insn[i + 1]))
-> -				addrs[++i] = ctx->idx * 4;
-> -			break;
->   		/* dst = *(u16 *)(ul) (src + off) */
->   		case BPF_LDX | BPF_MEM | BPF_H:
-> -			EMIT(PPC_RAW_LHZ(dst_reg, src_reg, off));
-> -			if (insn_is_zext(&insn[i + 1]))
-> -				addrs[++i] = ctx->idx * 4;
-> -			break;
->   		/* dst = *(u32 *)(ul) (src + off) */
->   		case BPF_LDX | BPF_MEM | BPF_W:
-> -			EMIT(PPC_RAW_LWZ(dst_reg, src_reg, off));
-> -			if (insn_is_zext(&insn[i + 1]))
-> -				addrs[++i] = ctx->idx * 4;
-> -			break;
->   		/* dst = *(u64 *)(ul) (src + off) */
->   		case BPF_LDX | BPF_MEM | BPF_DW:
-> -			PPC_BPF_LL(dst_reg, src_reg, off);
-> +			switch (size) {
-> +			case BPF_B:
-> +				EMIT(PPC_RAW_LBZ(dst_reg, src_reg, off));
-> +				break;
-> +			case BPF_H:
-> +				EMIT(PPC_RAW_LHZ(dst_reg, src_reg, off));
-> +				break;
-> +			case BPF_W:
-> +				EMIT(PPC_RAW_LWZ(dst_reg, src_reg, off));
-> +				break;
-> +			case BPF_DW:
-> +				PPC_BPF_LL(dst_reg, src_reg, off);
-> +				break;
-> +			}
-> +
-> +			if ((size != BPF_DW) && insn_is_zext(&insn[i + 1]))
-> +				addrs[++i] = ctx->idx * 4;
->   			break;
->   
->   		/*
-> 
