@@ -2,81 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EAF940F717
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 14:05:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D22440F75A
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 14:21:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243248AbhIQMGW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 08:06:22 -0400
-Received: from kylie.crudebyte.com ([5.189.157.229]:39771 "EHLO
-        kylie.crudebyte.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243166AbhIQMGV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 08:06:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
-        Content-ID:Content-Description;
-        bh=hN7PXduh+4F9HCcwImkhXok2Qq7HXWLR5dTfGzrGPic=; b=oVnW+udNM9sIU2SCDBSDw6wzV8
-        9tGH4VZa+ofwuYMl/zl7RymYxYT3hvoY91w0Wd8rdYrho4hkO65lqeurgG5ZQMnaHeJVeG7MtpE2d
-        Wme3ZZENQvQEdqE+pp+MOC4/wDsMizai5QJJ0Hje+/41j/pMSZHLtuVscGXgrT7Dc46g3PysrhGHY
-        +cRf8qX5HztCLbN+3wiCe9mVUd3xj02aoZnfXkLj7SfpRL9S2WS2evJMhaDmTItZ5CtsOY++z7MSY
-        P3nSYD9Z5IeUZb95VF7Ys691uwTVVt7ZROt/wz2OLcMqA+Rp71i3h8xjEnQ7sovQkpWyR2CXL8MyO
-        PDDK59atOsXRyquRnTCJR6LbOTaey64n/MMD/d69JdrBfF961gqUMcCgmqtmRUwwLWukAOpZiyDXh
-        8AmPSkBsbipY78c8BCvWUppVKNYcdpYCNGH1Z2TIjgkl8fxEZtClmpZtIbxq73qK4qPm9XAH+w3gu
-        2P/gIFyXacED12bprXGO0rRZ8fqDqRJPeueNQ8/J8/4LuJt9iffNEb16K0cxoACz5T4SRTt5uRl7D
-        a0bgPAxsFarI8ZT+dwU4sHzbyeTmOvNXKKHaqsNrey13Fw9uXk5DNZ/BHTgDlTxuBNXrCa0byrjeN
-        24QFvY9T1ayEDrpju46bqwzA+EoUsEQ5IJ0VQcK1M=;
-From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Greg Kurz <groug@kaod.org>, Vivek Goyal <vgoyal@redhat.com>
-Subject: Re: [PATCH 0/7] net/9p: remove msize limit in virtio transport
-Date:   Fri, 17 Sep 2021 14:04:50 +0200
-Message-ID: <2915494.F4Y4y7BOdD@silver>
-In-Reply-To: <20210916190908.19824be5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <cover.1631816768.git.linux_oss@crudebyte.com> <20210916190908.19824be5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S243276AbhIQMWp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 08:22:45 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:46180 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232880AbhIQMWo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Sep 2021 08:22:44 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=ZXk8POf9xloOumdtczqRSIGFEQphjzL3fTseGtszg3c=; b=tn8wu8TF/6fHkkMlO9UfLt98I1
+        ykQb3JCO5/bJv13MkXsZ954VX5FF8Ca2XtYcjNlpX3WZRkX/2Lu2fwWN7puXg79TruzwSOVLDvcxR
+        3NoTxCtTH3mGerKSMS3j/eZkoyOTkV5H1TeqFo1HD7cDZejBxH5t1LmgfR64UXacrlkA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mRCrk-0074AE-ES; Fri, 17 Sep 2021 14:21:16 +0200
+Date:   Fri, 17 Sep 2021 14:21:16 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+Subject: Re: [PATCH net-next 0/4] net: dsa: b53: Clean up CPU/IMP ports
+Message-ID: <YUSIPMBSAT93oZKo@lunn.ch>
+References: <20210916120354.20338-1-zajec5@gmail.com>
+ <7c5e1cf8-2d98-91df-fc6b-f9edfa0f23c9@gmail.com>
+ <a8a684ce-bede-b1f1-1f7a-31e71dca3fd3@gmail.com>
+ <1568bbc3-1652-7d01-2fc7-cb4189c71ad2@gmail.com>
+ <20210917100051.254mzlfxwvaromcn@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210917100051.254mzlfxwvaromcn@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Freitag, 17. September 2021 04:09:08 CEST Jakub Kicinski wrote:
-> On Thu, 16 Sep 2021 20:26:08 +0200 Christian Schoenebeck wrote:
-> > This is an initial draft for getting rid of the current 500k 'msize'
-> > limitation in the 9p virtio transport, which is currently a bottleneck for
-> > performance of Linux 9p mounts.
-> > 
-> > This is a follow-up of the following series and discussion:
-> > https://lore.kernel.org/all/28bb651ae0349a7d57e8ddc92c1bd5e62924a912.16307
-> > 70829.git.linux_oss@crudebyte.com/T/#eb647d0c013616cee3eb8ba9d87da7d8b1f47
-> > 6f37
-> > 
-> > Known limitation: With this series applied I can run
-> > 
-> >   QEMU host <-> 9P virtio <-> Linux guest
-> > 
-> > with up to 3 MB msize. If I try to run it with 4 MB it seems to hit some
-> > 
-> > limitation on QEMU side:
-> >   qemu-system-x86_64: virtio: too many write descriptors in indirect table
-> > 
-> > I haven't looked into this issue yet.
-> > 
-> > Testing and feedback appreciated!
+> > That DSA_PORT_TYPE_UNUSED would probably require investigating DSA & b53
+> > behaviour *and* discussing it with DSA maintainer to make sure we don't
+> > abuse that.
 > 
-> nit - please run ./scripts/kernel-doc -none on files you're changing.
-> There seems to be a handful of warnings like this added by the series:
-> 
-> net/9p/trans_virtio.c:155: warning: This comment starts with '/**', but
-> isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+> How absent are these ports in hardware? For DSA_PORT_TYPE_UNUSED we do
+> register a devlink port, but if those ports are really not present in
+> hardware, I'm thinking maybe the easiest way would be to supply a
+> ds->disabled_port_mask before dsa_register_switch(), and DSA will simply
+> skip those ports when allocating the dp, the devlink_port etc. So you
+> will literally have nothing for them.
 
-Sure, I'll take care about that in v2. Thanks!
+The basic idea seems O.K, we just need to be careful.
 
-Best regards,
-Christian Schoenebeck
+We have code like:
 
+static inline bool dsa_is_dsa_port(struct dsa_switch *ds, int p)
+{
+	return dsa_to_port(ds, p)->type == DSA_PORT_TYPE_DSA;
+}
 
+static inline bool dsa_is_user_port(struct dsa_switch *ds, int p)
+{
+	return dsa_to_port(ds, p)->type == DSA_PORT_TYPE_USER;
+}
+
+dsa_to_port(ds, p) will return NULL, and then bad things will happen.
+
+Maybe it would be safer to add DSA_PORT_TYPE_PHANTOM and do allocate
+the dp?
+
+    Andrew
